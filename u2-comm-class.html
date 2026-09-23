@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>봉수 신호를 보내라</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.scene{position:relative;flex:1;min-height:0;border-radius:26px;margin:12px 0;overflow:hidden;background:var(--sky);transition:background .6s;display:flex;align-items:flex-end;justify-content:space-around;padding:0 2% 0}
+.scene.day{--sky:linear-gradient(#9FD3F7,#DDF0FB)}
+.scene.night{--sky:linear-gradient(#0E1A3A,#2A3A6A)}
+.mt{position:relative;width:21%;display:flex;flex-direction:column;align-items:center}
+.mt .hill{width:100%;height:clamp(120px,22vh,220px);background:#4E8A55;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.scene.night .mt .hill{background:#27463A}
+.mt .pots{position:absolute;top:-4px;left:50%;transform:translate(-50%,-100%);display:flex;gap:4px}
+.pot{width:clamp(22px,2.2vw,34px);height:clamp(22px,2.2vw,34px);background:#8A7A6A;border-radius:6px 6px 2px 2px;position:relative}
+.pot.on::after{content:var(--fx);position:absolute;left:50%;bottom:80%;transform:translateX(-50%);font-size:clamp(28px,3vw,46px);animation:flick .6s infinite alternate}
+@keyframes flick{from{transform:translateX(-50%) scale(1)}to{transform:translateX(-50%) scale(1.15)}}
+.mt .name{font-family:var(--display);font-size:clamp(22px,2vw,30px);color:#fff;background:rgba(0,0,0,.45);border-radius:12px;padding:2px 12px;margin:6px 0 10px}
+.fog{position:absolute;inset:0;background:linear-gradient(90deg,transparent 30%,rgba(235,240,245,.97) 45%);opacity:0;transition:opacity .8s;display:flex;align-items:center;justify-content:flex-end;padding-right:6%;font-family:var(--display);font-size:clamp(34px,3.6vw,56px);color:#44506A}
+.fog.on{opacity:1}
+.sit{font-family:var(--display);text-align:center;font-size:clamp(34px,3.6vw,56px);background:var(--paper);border-radius:22px;padding:14px 20px;word-break:keep-all}
+.choose{display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:12px}
+.choose button{font-size:clamp(28px,2.8vw,42px);padding:10px 22px;border-radius:20px;border:4px solid var(--line);background:var(--paper);min-width:120px}
+.legend{display:grid;grid-template-columns:repeat(5,1fr);gap:12px;width:min(1200px,96vw)}
+.legend div{background:var(--paper);border-radius:18px;padding:12px;text-align:center;font-size:clamp(22px,2.1vw,30px);word-break:keep-all}
+.legend b{display:block;font-family:var(--display);font-weight:400;font-size:clamp(34px,3.4vw,50px);color:#D2453A}
+.phone{width:min(420px,80vw);margin:0 auto 18px;background:#1F2A44;border-radius:40px;padding:22px 16px}
+.phone .noti{background:#fff;color:#1F2A44;border-radius:18px;padding:14px 16px;text-align:left;font-size:clamp(22px,2vw,28px);transform:translateY(-20px);opacity:0;transition:all .5s}
+.phone .noti.on{transform:none;opacity:1}
+.phone .noti b{font-family:var(--display);font-weight:400;color:#D2453A}
+@media (max-width:800px){.legend{grid-template-columns:1fr 1fr}}
+</style></head><body>
+
+<section id="start" class="screen on center-col">
+  <h1 class="title">🔥 봉수 신호를 보내라!</h1>
+  <p class="lead">옛날에는 산꼭대기 봉수대에서 낮에는 연기, 밤에는 불을 피워<br>나라의 위급한 소식을 한양까지 전했어요. 불(연기)의 개수에는 약속이 있어요.</p>
+  <div class="legend">
+   <div><b>1개</b>평상시<br>(적이 없을 때)</div><div><b>2개</b>적이<br>나타났을 때</div><div><b>3개</b>적이<br>가까이 왔을 때</div><div><b>4개</b>적이<br>쳐들어왔을 때</div><div><b>5개</b>적과 싸움이<br>시작됐을 때</div>
+  </div>
+  <button class="big-btn" id="btnGo">봉수대로 출발</button>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar"><span class="chip" id="score"></span>
+    <div class="tools"><span class="row-label" id="prog"></span><button class="tool" id="btnLegend">📜 약속</button><button class="tool" data-sound>🔊</button><button class="tool" data-full>⛶</button><button class="tool" data-home>🏠</button></div></div>
+  <div class="sit" id="sit"></div>
+  <div class="scene day" id="scene">
+    <div class="mt"><div class="pots" id="p0"></div><div class="hill"></div><div class="name">바닷가 봉수대</div></div>
+    <div class="mt"><div class="pots" id="p1"></div><div class="hill"></div><div class="name">봉수대</div></div>
+    <div class="mt"><div class="pots" id="p2"></div><div class="hill"></div><div class="name">봉수대</div></div>
+    <div class="mt"><div class="pots" id="p3"></div><div class="hill"></div><div class="name">🏯 한양</div></div>
+    <div class="fog" id="fog">🌫️ 안개 때문에 보이지 않아요!</div>
+  </div>
+  <div class="choose" id="choose"></div>
+</section>
+
+<section id="end" class="screen center-col">
+  <h1 class="title">📯 임무 완료!</h1><p class="lead" id="endLead"></p>
+  <div class="row"><button class="big-btn" id="btnToday" style="background:#2F74E0">📱 오늘날이라면?</button><button class="big-btn" id="btnAgain">다시 하기</button></div>
+</section>
+
+<div class="overlay" id="fb"><div class="panel" id="fbP"><h2 id="fbT"></h2><p class="why" id="fbW"></p><button class="big-btn" id="btnNext">다음 소식</button></div></div>
+<div class="overlay" id="lg"><div class="panel"><h2>📜 봉수의 약속</h2><div class="legend" style="margin:0 auto 20px" id="lgBox"></div><button class="big-btn" id="lgClose">닫기</button></div></div>
+<div class="overlay" id="today"><div class="panel" style="--pc:#2F74E0">
+  <h2>📱 오늘날에는 이렇게 전해요</h2>
+  <div class="phone"><div class="noti" id="noti"><b>[긴급 재난 문자]</b><br>우리 지역에 위급한 상황이 생겼습니다. 안내에 따라 안전한 곳으로 대피하세요.</div></div>
+  <p class="why" style="text-align:left">✔️ 옛날 통신수단은 소식을 전하는 데 시간이 오래 걸리고, 날씨의 영향을 많이 받았어요. 많은 내용을 자세하게 전하기도 어려웠어요.<br>✔️ 오늘날 통신수단은 여러 사람에게 실시간으로 빠르게, 많은 정보를 한 번에 전할 수 있어요.</p>
+  <button class="big-btn" id="todayClose">닫기</button></div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+
+
+const L=['','평상시(적이 없을 때)','적이 나타났을 때','적이 가까이 왔을 때','적이 쳐들어왔을 때','적과 싸움이 시작됐을 때'];
+const SIT=['','오늘도 바다는 조용해요. 적의 모습은 보이지 않아요.','저 멀리 바다에 적의 배가 나타났어요!','적의 배가 우리 땅 가까이 다가오고 있어요!','적이 우리 땅으로 쳐들어왔어요!','적과 싸움이 시작되었어요!'];
+$('lgBox').innerHTML=[1,2,3,4,5].map(n=>`<div><b>${n}개</b>${L[n]}</div>`).join('');
+$('btnLegend').onclick=()=>openO('lg');$('lgClose').onclick=()=>closeO('lg');
+document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>{['fb','lg','today'].forEach(closeO);show('start');});
+let R=[],I=0,S=0,busy=false;
+function start(){const lv=shuffle([1,2,3,4,5]).map(n=>({n,fog:false}));const f=Math.floor(Math.random()*3)+2;lv.splice(f,0,{n:[2,3,4][Math.floor(Math.random()*3)],fog:true});
+  R=lv.map(r=>({...r,night:Math.random()<.5}));I=0;S=0;show('game');draw();}
+function pots(fx,n){for(let m=0;m<4;m++){$('p'+m).innerHTML=[0,1,2,3,4].map(()=>'<div class="pot"></div>').join('');}}
+function draw(){
+  const r=R[I];busy=false;$('scene').className='scene '+(r.night?'night':'day');$('scene').style.setProperty('--fx',r.night?'"🔥"':'"💨"');
+  $('fog').className='fog';pots();
+  $('sit').textContent=(r.night?'🌙 밤이에요. ':'☀️ 낮이에요. ')+SIT[r.n];
+  $('prog').textContent=`${I+1} / ${R.length}`;$('score').textContent=`⭐ ${S}`;
+  $('choose').innerHTML=[1,2,3,4,5].map(n=>`<button data-n="${n}">${r.night?'🔥':'💨'} ${n}개</button>`).join('');
+  $('choose').querySelectorAll('button').forEach(b=>b.onclick=()=>pick(+b.dataset.n));
+}
+function light(m,n){[...$('p'+m).children].forEach((p,i)=>p.classList.toggle('on',i<n));}
+function pick(n){
+  if(busy)return;busy=true;const r=R[I],ok=n===r.n;if(ok)S++;
+  let m=0;const reach=r.fog?2:4;
+  const step=()=>{if(m<reach){light(m,n);beep('tick');m++;
+      if(r.fog&&m===2){$('fog').className='fog on';}
+      setTimeout(step,650);} else setTimeout(()=>result(ok,n),500);};
+  step();
+}
+function result(ok,n){
+  const r=R[I];beep(ok?'ok':'no');
+  $('fbP').style.setProperty('--pc',ok?'var(--ok)':'var(--no)');
+  $('fbT').textContent=ok?`알맞게 보냈어요! (${n}개)`:`약속과 달라요. ${r.n}개를 피워야 해요`;
+  $('fbW').innerHTML=`${r.n}개는 <b>${L[r.n]}</b>이라는 뜻이에요.`+(r.fog?'<br><br>🌫️ 그런데 안개 때문에 다음 봉수대에서 신호를 볼 수 없었어요. 봉수는 날씨의 영향을 많이 받았어요. 이럴 때는 사람이 말을 타고 달려가 문서로 소식을 전하는 <b>파발</b>을 이용했어요.':'');
+  $('btnNext').textContent=I+1<R.length?'다음 소식':'결과 보기';openO('fb');$('btnNext').focus();
+}
+$('btnNext').onclick=()=>{closeO('fb');I++;if(I<R.length)draw();else{$('endLead').textContent=`${R.length}번 중 ${S}번 약속에 맞게 신호를 보냈어요.`;beep('win');show('end');}};
+$('btnGo').onclick=start;$('btnAgain').onclick=start;
+$('btnToday').onclick=()=>{$('noti').className='noti';openO('today');setTimeout(()=>{$('noti').className='noti on';beep('tick');},700);};
+$('todayClose').onclick=()=>closeO('today');
+document.addEventListener('keydown',e=>{
+  if($('fb').classList.contains('on')){if(e.key==='Enter'||e.key===' '){$('btnNext').click();e.preventDefault();}return;}
+  if($('game').classList.contains('on')&&/^[1-5]$/.test(e.key))pick(+e.key);
+});
+
+wireTools();</script></body></html>

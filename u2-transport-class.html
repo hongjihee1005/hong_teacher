@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>부산에서 서울까지</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.race{flex:1;min-height:0;display:flex;flex-direction:column;justify-content:center;gap:clamp(12px,2vh,22px);margin-top:10px}
+.ends{display:flex;justify-content:space-between;font-family:var(--display);font-size:clamp(30px,3vw,46px);padding:0 4px}
+.lane{position:relative;height:clamp(110px,15vh,150px);background:var(--paper);border-radius:22px;border:4px solid var(--line);overflow:hidden}
+.lane .road{position:absolute;left:5%;right:5%;top:50%;border-top:6px dashed var(--line)}
+.lane .who{position:absolute;left:14px;top:8px;font-family:var(--display);font-size:clamp(22px,2vw,30px);color:var(--soft)}
+.lane .flag{position:absolute;right:2%;top:50%;transform:translateY(-50%);font-size:clamp(40px,4vw,60px)}
+.lane .runner{position:absolute;top:50%;left:5%;transform:translate(-50%,-50%);font-size:clamp(58px,6vw,90px);line-height:1}
+.lane .runner span{display:inline-block;transform:scaleX(-1)}
+.lane .time{position:absolute;left:40%;top:8px;font-family:var(--display);font-size:clamp(24px,2.3vw,34px);color:var(--ok)}
+.stop{position:absolute;top:auto;bottom:6px;transform:translateX(-50%);font-size:clamp(18px,1.6vw,22px);color:var(--soft);font-family:var(--display);white-space:nowrap}
+.clock{font-family:var(--display);font-size:clamp(38px,4vw,62px);text-align:center}
+.clock .sky{display:inline-block;width:1.3em}
+.callout{background:#FFF4D6;color:#1F2A44;border:4px solid #E8961E;border-radius:20px;padding:12px 22px;font-size:clamp(28px,2.7vw,40px);text-align:center;word-break:keep-all;display:none}
+.callout.on{display:block}
+.ctrl{display:flex;gap:14px;justify-content:center;flex-wrap:wrap}
+table.cmp{border-collapse:collapse;margin:0 auto 18px;font-size:clamp(26px,2.5vw,36px)}
+.cmp td,.cmp th{border-bottom:3px solid var(--line);padding:8px 22px;text-align:left}
+.cmp th{font-family:var(--display);font-weight:400}
+.life{text-align:left;max-width:36em;margin:0 auto 20px;font-size:clamp(26px,2.4vw,34px);line-height:1.6}
+.pred{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.pred button{font-size:clamp(28px,2.8vw,40px);padding:16px 28px;border-radius:24px;border:4px solid var(--line);background:var(--paper)}
+.pred button[aria-pressed="true"]{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+</style></head><body>
+
+<section id="start" class="screen on center-col">
+  <h1 class="title">🚄 부산에서 서울까지!</h1>
+  <p class="lead">조선 시대 박 선비와 오늘날의 고속버스, 고속 열차가 함께 출발해요.<br>누가 먼저 서울에 도착할까요? 예상해 보세요.</p>
+  <div class="pred" id="pred"></div>
+  <button class="big-btn" id="btnGo">경주 보러 가기</button>
+</section>
+
+<section id="race" class="screen">
+  <div class="topbar"><span class="clock"><span class="sky" id="sky">☀️</span> 걸린 시간 <span id="clock">0시간</span></span>
+    <div class="tools"><button class="tool" data-full>⛶</button><button class="tool" data-home>🏠</button></div></div>
+  <div class="race">
+    <div class="ends"><span>📍 부산</span><span>서울 🏁</span></div>
+    <div class="lane"><span class="who">🚄 고속 열차</span><div class="road"></div><span class="flag">🏁</span><div class="runner" id="r0"><span>🚄</span></div><span class="time" id="t0"></span></div>
+    <div class="lane"><span class="who">🚌 고속버스</span><div class="road"></div><span class="flag">🏁</span><div class="runner" id="r1"><span>🚌</span></div><span class="time" id="t1"></span></div>
+    <div class="lane"><span class="who">🧑‍🎓 조선 시대 박 선비</span><div class="road"></div><span class="flag">🏁</span>
+      <span class="stop" style="left:50%">상주</span><span class="stop" style="left:72%">충주</span>
+      <div class="runner" id="r2"><span id="r2e">🚶</span></div><span class="time" id="t2"></span></div>
+    <div class="callout" id="call"></div>
+  </div>
+  <div class="ctrl"><button class="big-btn" id="btnStart">출발!</button><button class="big-btn" id="btnFF" style="display:none;background:#6A4FC9">⏩ 박 선비 따라가기</button><button class="big-btn" id="btnEnd" style="display:none">정리하기</button></div>
+</section>
+
+<div class="overlay" id="sum"><div class="panel">
+  <h2>🚶 → 🚄 교통이 발달하면서</h2>
+  <table class="cmp"><tr><th>누가</th><th>어떻게</th><th>걸린 시간</th></tr>
+   <tr><td>박 선비</td><td>걷기 → 말 → 나룻배</td><td>약 15일<br><small>(보통 10~20일)</small></td></tr>
+   <tr><td>고속버스</td><td>도로</td><td>약 4시간</td></tr>
+   <tr><td>고속 열차</td><td>철도</td><td>약 2시간 40분</td></tr></table>
+  <div class="life">✔️ 같은 거리도 더 빠르게 갈 수 있게 되었어요.<br>✔️ 같은 시간에 더 먼 곳까지 갈 수 있게 되었어요.<br>✔️ 한 번에 실어 나르는 짐이 많아졌어요.<br>✔️ 사람들의 생활 공간이 넓어졌어요.</div>
+  <p class="why">💬 하루 만에 서울에 다녀올 수 있다면, 무엇을 해 보고 싶나요?</p>
+  <button class="big-btn" id="btnClose">닫기</button>
+  <p style="font-size:20px;color:var(--soft);margin-top:14px">그림 속 이동 모습은 이해를 돕기 위해 간단히 나타냈어요.</p>
+</div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+
+
+const R=[{h:2+40/60,label:'2시간 40분'},{h:4,label:'4시간'},{h:360,label:'약 15일'}];
+let pred=null;
+const P=[['train','🚄 고속 열차'],['bus','🚌 고속버스'],['walk','🧑‍🎓 박 선비']];
+function drawPred(){$('pred').innerHTML=P.map(([k,l])=>`<button aria-pressed="${pred===k}" data-k="${k}">${l}</button>`).join('');$('pred').querySelectorAll('button').forEach(b=>b.onclick=()=>{pred=b.dataset.k;drawPred();});}
+drawPred();
+document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>{cancelAnimationFrame(raf);closeO('sum');show('start');});
+let t=0,raf=0,last=0,rate=1,stopAt=0,phase=0;
+function fmt(h){if(h<24){const H=Math.floor(h),M=Math.round((h-H)*60);return `${H}시간`+(M?` ${M}분`:'');}const d=Math.floor(h/24),H=Math.round(h%24);return `${d}일`+(H?` ${H}시간`:'');}
+function place(){
+  R.forEach((r,i)=>{const p=Math.min(1,t/r.h);$('r'+i).style.left=(5+p*88)+'%';if(p>=1&&!$('t'+i).textContent){$('t'+i).textContent='도착! '+r.label;beep('ok');}});
+  const p2=t/360;$('r2e').textContent=p2<.5?'🚶':p2<.72?'🐎':'🛶';
+  $('clock').textContent=fmt(t);$('sky').textContent=(t%24)<12?'☀️':'🌙';
+}
+function loop(now){const dt=(now-last)/1000;last=now;t=Math.min(stopAt,t+dt*rate);place();if(t<stopAt)raf=requestAnimationFrame(loop);else done();}
+function run(r,s){rate=r;stopAt=s;last=performance.now();raf=requestAnimationFrame(loop);}
+function reset(){t=0;phase=0;[0,1,2].forEach(i=>$('t'+i).textContent='');$('call').className='callout';$('btnStart').style.display='';$('btnFF').style.display='none';$('btnEnd').style.display='none';place();}
+function done(){
+  if(phase===1){const km=Math.round(400*4.5/360);$('call').innerHTML=`🚌 고속버스까지 도착했을 때, 박 선비는 부산에서 겨우 약 ${km}km 왔어요!<br>(부산에서 서울까지는 약 400km)`;$('call').className='callout on';$('btnFF').style.display='';}
+  if(phase===2){$('call').innerHTML=`🧑‍🎓 박 선비는 걷고, 말을 타고, 나룻배를 타고 약 15일 만에 도착했어요.`;$('call').className='callout on';$('btnEnd').style.display='';beep('win');}
+}
+$('btnGo').onclick=()=>{show('race');reset();};
+$('btnStart').onclick=()=>{$('btnStart').style.display='none';phase=1;run(1.2,4.5);};
+$('btnFF').onclick=()=>{$('btnFF').style.display='none';$('call').className='callout';phase=2;run(24,360);};
+$('btnEnd').onclick=()=>openO('sum');$('btnClose').onclick=()=>closeO('sum');
+
+wireTools();</script></body></html>

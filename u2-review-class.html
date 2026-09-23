@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>옛날과 오늘날 윷 말판</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.board{flex:1;min-height:0;display:grid;grid-template-columns:repeat(11,1fr);grid-template-rows:1fr 1fr;gap:clamp(6px,.8vw,12px);margin:12px 0}
+.cell{position:relative;border-radius:18px;background:var(--paper);border:4px solid var(--cc,var(--line));display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:6px;font-family:var(--display)}
+.cell .ic{font-size:clamp(28px,2.6vw,42px);line-height:1.1}
+.cell .no{font-size:clamp(16px,1.3vw,20px);color:var(--soft)}
+.cell .tk{display:flex;flex-wrap:wrap;gap:3px;justify-content:center;margin-top:4px}
+.tok{width:clamp(28px,2.6vw,42px);aspect-ratio:1;border-radius:50%;background:var(--tc);color:#fff;display:grid;place-items:center;font-size:clamp(16px,1.5vw,24px);border:3px solid #fff;box-shadow:0 2px 0 rgba(0,0,0,.3)}
+.cell.p{--cc:#E0506B}.cell.t{--cc:#2F74E0}.cell.c{--cc:#1F9E63}.cell.go{--cc:#E8961E;background:#FFF4D6}.cell.fog{--cc:#8A94A6;background:#EEF1F5}.cell.st,.cell.fi{--cc:var(--ink)}
+.bottom{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.who{font-family:var(--display);font-size:clamp(32px,3.2vw,50px);display:flex;align-items:center;gap:12px}
+.yut{display:flex;gap:10px;align-items:center}
+.stick{width:clamp(22px,2vw,30px);height:clamp(90px,10vh,120px);border-radius:14px;border:3px solid #8A6A3A;background:#E9C98A;transition:transform .2s}
+.stick.back{background:repeating-linear-gradient(0deg,#B8894A 0 10px,#E9C98A 10px 20px)}
+.stick.roll{animation:spin .25s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.yname{font-family:var(--display);font-size:clamp(40px,4vw,64px);min-width:3.2em;text-align:center}
+.legendb{display:flex;gap:14px;flex-wrap:wrap;font-size:clamp(18px,1.6vw,24px);color:var(--soft)}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:18px 0}
+.opt{font-family:var(--body);font-size:clamp(26px,2.5vw,36px);padding:14px 18px;border-radius:18px;border:4px solid var(--line);background:var(--paper);text-align:left;word-break:keep-all}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.opt.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 14%,var(--paper))}
+.qtext{font-family:var(--display);font-size:clamp(34px,3.6vw,54px);line-height:1.35;word-break:keep-all}
+.qwhy{font-size:clamp(26px,2.4vw,34px);line-height:1.5;margin:0 0 18px;word-break:keep-all;display:none}
+@media (max-width:800px){.opts{grid-template-columns:1fr}}
+</style></head><body>
+
+<section id="start" class="screen on center-col">
+  <h1 class="title">🎲 옛날과 오늘날 윷 말판</h1>
+  <p class="lead">윷을 던져 말을 옮기고, 도착한 칸의 문제를 맞혀요.<br>틀리면 던지기 전 자리로 돌아가요. 먼저 도착하는 모둠이 이겨요!</p>
+  <div class="row"><span class="row-label">모둠</span><div class="seg" id="segT"></div></div>
+  <div class="legendb" style="font-size:24px"><span>🎎 풍습 문제</span><span>🚌 교통 문제</span><span>📱 통신 문제</span><span>⏩ 교통 발달! 2칸 앞으로</span><span>🌫️ 안개! 1칸 뒤로</span></div>
+  <button class="big-btn" id="btnStart">시작하기</button>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar"><div class="scores" id="teams"></div>
+    <div class="tools"><button class="tool" data-sound>🔊</button><button class="tool" data-full>⛶</button><button class="tool" data-home>🏠</button></div></div>
+  <div class="board" id="board"></div>
+  <div class="bottom">
+    <div class="who" id="who"></div>
+    <div class="yut"><div id="sticks" class="yut"></div><span class="yname" id="yname"></span><button class="big-btn" id="btnThrow">윷 던지기</button></div>
+  </div>
+</section>
+
+<section id="end" class="screen center-col">
+  <h1 class="title">🏆 도착!</h1><p class="lead" id="endLead" style="font-size:clamp(34px,3.4vw,50px);color:var(--ink)"></p>
+  <div class="row"><button class="big-btn" id="btnAgain">다시 하기</button><button class="ghost-btn" data-home>처음으로</button></div>
+</section>
+
+<div class="overlay" id="qo"><div class="panel" id="qP">
+  <div class="qtext" id="qT"></div><div class="opts" id="qO"></div><p class="qwhy" id="qW"></p>
+  <button class="big-btn" id="qNext" style="display:none">확인</button></div></div>
+<div class="overlay" id="msg"><div class="panel"><h2 id="mT"></h2><p class="why" id="mW"></p><button class="big-btn" id="mNext">확인</button></div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+
+
+const QS=[["p", "옛날부터 되풀이되어 전해 오는 사람들의 생활 습관과 생활 모습을 무엇이라고 할까요?", ["풍습", "교통", "통신", "교통로"], "풍습은 옛날부터 되풀이되어 전해 오는 생활 습관과 생활 모습이에요."], ["p", "해마다 일정한 때에 되풀이하는 풍습을 무엇이라고 할까요?", ["세시 풍속", "품앗이", "두레", "파발"], "명절이나 절기마다 하는 일, 먹는 음식, 즐기는 놀이 등이 세시 풍속이에요."], ["p", "한 집에서 하기에 일손이 모자란 일을 서로 돌아가며 돕는 것은 무엇일까요?", ["품앗이", "두레", "봉수", "성묘"], "품앗이는 이웃끼리 일을 서로 돌아가며 도와주는 풍습이에요."], ["p", "농사일을 함께하려고 만든 마을의 공동 조직은 무엇일까요?", ["두레", "품앗이", "서찰", "방"], "두레는 많은 일손이 필요한 농사일을 함께하려고 만든 마을 조직이에요."], ["p", "설날에 먹는 음식은 무엇일까요?", ["떡국", "송편", "팥죽", "오곡밥"], "설날에는 떡국을 먹고 세배를 드려요."], ["p", "추석에 빚어 먹는 음식은 무엇일까요?", ["송편", "떡국", "팥죽", "수리취떡"], "추석에는 송편을 빚고 차례를 지내요."], ["p", "정월 대보름에 하는 일이 아닌 것은 무엇일까요?", ["송편 빚기", "부럼 깨물기", "쥐불놀이", "달맞이"], "송편 빚기는 추석에 하는 일이에요."], ["p", "단오에 하는 일은 무엇일까요?", ["창포물에 머리 감기", "팥죽 먹기", "세배하기", "성묘하기"], "단오에는 창포물에 머리를 감고, 그네뛰기와 씨름을 해요."], ["p", "일 년 중 밤이 가장 긴 날로, 팥죽을 먹는 날은 언제일까요?", ["동지", "단오", "추석", "설날"], "동지에는 팥죽을 먹고 버선과 달력을 주고받았어요."], ["p", "옛날 결혼식에서 신랑과 신부가 주고받던 물건은 무엇일까요?", ["나무로 만든 기러기", "반지", "부채", "버선"], "옛날에는 나무 기러기를, 오늘날에는 반지를 주고받아요."], ["p", "병에 화살을 던져 넣는 전통 놀이는 무엇일까요?", ["투호", "제기차기", "고누", "널뛰기"], "투호는 투호 병에 화살을 던져 넣는 놀이예요."], ["t", "사람이 이동하거나 물건을 옮길 때 사용하는 도구를 무엇이라고 할까요?", ["교통수단", "교통로", "통신수단", "풍습"], "교통수단은 사람이 이동하거나 물건을 옮길 때 쓰는 도구예요."], ["t", "교통에 이용하는 길을 무엇이라고 할까요?", ["교통로", "교통수단", "봉수", "통신"], "도로, 철도, 뱃길, 하늘길처럼 교통에 이용하는 길이 교통로예요."], ["t", "옛날 교통수단이 아닌 것은 무엇일까요?", ["지하철", "가마", "뗏목", "달구지"], "지하철은 오늘날의 교통수단이에요."], ["t", "옛날 교통수단의 특징으로 알맞은 것은 무엇일까요?", ["사람이나 동물, 자연의 힘으로 움직였어요", "기계의 힘으로 움직였어요", "전기로 움직였어요", "아주 빨리 달렸어요"], "옛날 교통수단은 자연에서 얻은 재료로 만들고 사람, 동물, 자연의 힘으로 움직였어요."], ["t", "과학 기술이 발달하면서 새로 생겨난 교통수단은 무엇일까요?", ["증기 기차", "가마", "뗏목", "돛단배"], "증기 기차, 증기선, 자동차 같은 교통수단은 기계의 힘으로 움직여요."], ["t", "하늘이나 바다에서 이용하는 교통수단이 아닌 것은 무엇일까요?", ["버스", "비행기", "여객선", "잠수함"], "버스는 땅 위(육상)에서 이용하는 교통수단이에요."], ["t", "교통이 발달하면서 달라진 점으로 알맞지 않은 것은 무엇일까요?", ["갈 수 있는 곳이 줄어들었어요", "같은 거리를 더 빨리 가요", "한 번에 짐을 더 많이 옮겨요", "생활 공간이 넓어졌어요"], "교통이 발달하면서 사람들이 갈 수 있는 곳은 오히려 넓어졌어요."], ["t", "교통의 변화로 나타난 문제가 아닌 것은 무엇일까요?", ["세배를 드려요", "교통 체증", "교통사고 증가", "환경 문제"], "교통 체증, 교통사고 증가, 환경 문제 등이 교통의 변화로 나타난 문제예요."], ["t", "조선 시대에 부산에서 서울까지 가려면 보통 얼마나 걸렸을까요?", ["10일에서 20일 정도", "3시간 정도", "하루", "1년"], "옛날에는 대부분 걸어서 이동해 보통 10~20일 정도 걸렸어요."], ["t", "길을 건널 때 지켜야 할 약속은 무엇일까요?", ["차가 오는지 살피고 건너요", "스마트폰을 보며 건너요", "뛰어서 건너요", "빨간불에 건너요"], "항상 차가 오는지 살피며 조심해서 건너야 해요."], ["c", "소식이나 정보를 주고받는 것을 무엇이라고 할까요?", ["통신", "교통", "풍습", "세시 풍속"], "통신은 소식이나 정보를 주고받는 것이에요."], ["c", "낮에는 연기, 밤에는 불을 피워 위급한 소식을 알린 통신수단은 무엇일까요?", ["봉수", "파발", "서찰", "방"], "봉수는 연기나 불의 개수로 위급한 정도를 알렸어요."], ["c", "나라의 중요한 문서를 말을 타고 가거나 걸어가서 전한 통신수단은 무엇일까요?", ["파발", "봉수", "신호 연", "나발"], "파발은 사람이 직접 문서를 가지고 가서 전했어요."], ["c", "봉수에서 적이 나타났을 때 피우는 연기나 불의 개수는 몇 개일까요?", ["2개", "1개", "4개", "5개"], "평상시 1개, 적이 나타나면 2개, 가까이 오면 3개, 쳐들어오면 4개, 싸움이 시작되면 5개예요."], ["c", "옛날 통신수단의 특징이 아닌 것은 무엇일까요?", ["여러 사람에게 실시간으로 전해요", "시간이 오래 걸렸어요", "날씨의 영향을 많이 받았어요", "자세한 내용을 전하기 어려웠어요"], "실시간으로 여러 사람에게 전하는 것은 오늘날 통신수단의 특징이에요."], ["c", "오늘날의 통신수단이 아닌 것은 무엇일까요?", ["봉수", "휴대 전화", "텔레비전", "재난 경보기"], "봉수는 옛날 사람들이 이용했던 통신수단이에요."], ["c", "오늘날 통신수단의 특징으로 알맞은 것은 무엇일까요?", ["여러 사람과 동시에 연락할 수 있어요", "날씨 때문에 자주 못 써요", "말을 타고 가서 전해요", "소식이 며칠 걸려 도착해요"], "오늘날에는 여러 사람과 동시에, 실시간으로 정보를 주고받을 수 있어요."], ["c", "통신수단을 올바르게 사용하는 모습은 무엇일까요?", ["정해진 시간에만 사용해요", "밤늦게까지 게임을 해요", "걸으면서 스마트폰을 봐요", "친구 사진을 허락 없이 올려요"], "몸과 마음의 건강을 위해, 다른 사람에게 피해를 주지 않도록 바르게 사용해요."], ["c", "통신수단이 발달하면서 새로 생겨난 시설은 무엇일까요?", ["휴대 전화 기지국", "봉수대", "가마", "나룻배"], "휴대 전화 기지국, 방송국, 우주 센터 등이 생겨났어요."]];
+const COL=['#E0506B','#2F74E0','#1F9E63','#E8961E','#6A4FC9','#16A3B5'];
+const N=22, SPECIAL={5:'go',13:'go',9:'fog',17:'fog'};
+const KIND=['p','t','c'];
+function kindOf(i){if(i===0)return'st';if(i===N-1)return'fi';if(SPECIAL[i])return SPECIAL[i];return KIND[i%3];}
+const ICON={st:'🚩',fi:'🏁',go:'⏩',fog:'🌫️',p:'🎎',t:'🚌',c:'📱'};
+let T=4,pos=[],turn=0,pool={},busy=false;
+seg('segT',[[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']],()=>T,v=>T=v);
+document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>{closeO('qo');closeO('msg');show('start');});
+function cellPos(i){return i<11?{r:1,c:i+1}:{r:2,c:11-(i-11)};}
+function drawBoard(){
+  let h='';for(let i=0;i<N;i++){const k=kindOf(i),p=cellPos(i);
+    h+=`<div class="cell ${k}" style="grid-row:${p.r};grid-column:${p.c}"><span class="ic">${ICON[k]}</span><span class="no">${i===0?'출발':i===N-1?'도착':i}</span><div class="tk">${pos.map((q,t)=>q===i?`<span class="tok" style="--tc:${COL[t]}">${t+1}</span>`:'').join('')}</div></div>`;}
+  $('board').innerHTML=h;
+  $('teams').innerHTML=pos.map((q,t)=>`<span class="chip ${t===turn?'now':''}"><span class="tok" style="--tc:${COL[t]};display:inline-grid;width:1.3em;vertical-align:middle">${t+1}</span> ${t+1}모둠</span>`).join('');
+  $('who').innerHTML=`<span class="tok" style="--tc:${COL[turn]};width:1.6em">${turn+1}</span>${turn+1}모둠 차례예요`;
+}
+function sticks(flat,roll){$('sticks').innerHTML=[0,1,2,3].map(i=>`<div class="stick ${i<flat?'':'back'} ${roll?'roll':''}"></div>`).join('');}
+function start(){pos=Array(T).fill(0);turn=0;pool={p:shuffle(QS.filter(q=>q[0]==='p')),t:shuffle(QS.filter(q=>q[0]==='t')),c:shuffle(QS.filter(q=>q[0]==='c'))};busy=false;$('yname').textContent='';sticks(2,false);show('game');drawBoard();}
+const YN=['모','도','개','걸','윷'],YS=[5,1,2,3,4];
+function throwYut(){
+  if(busy)return;busy=true;$('btnThrow').disabled=true;sticks(2,true);beep('tick');
+  setTimeout(()=>{let f=0;for(let i=0;i<4;i++)if(Math.random()<.5)f++;sticks(f,false);$('yname').textContent=YN[f];beep('ok');
+    const from=pos[turn],steps=YS[f];move(from,steps,()=>land(from));},900);
+}
+function move(from,steps,cb){let s=0;const iv=setInterval(()=>{if(s>=steps||pos[turn]>=N-1){clearInterval(iv);cb();return;}pos[turn]++;s++;beep('tick');drawBoard();},330);}
+function land(from){
+  const p=pos[turn];
+  if(p>=N-1){pos[turn]=N-1;drawBoard();win();return;}
+  const k=kindOf(p);
+  if(k==='go'){msg('⏩ 교통이 발달했어요!','더 빠르게 이동할 수 있어요. 2칸 앞으로 가요.',()=>move(p,2,()=>{if(pos[turn]>=N-1){win();}else nextTurn();}));return;}
+  if(k==='fog'){msg('🌫️ 안개가 꼈어요!','봉수 신호가 보이지 않아요. 1칸 뒤로 가요.',()=>{pos[turn]--;drawBoard();nextTurn();});return;}
+  ask(k,from);
+}
+function ask(k,from){
+  if(!pool[k].length)pool[k]=shuffle(QS.filter(q=>q[0]===k));
+  const q=pool[k].pop(),order=shuffle([0,1,2,3]);
+  $('qP').style.setProperty('--pc',{p:'#E0506B',t:'#2F74E0',c:'#1F9E63'}[k]);
+  $('qT').textContent=`${ICON[k]} ${q[1]}`;$('qW').style.display='none';$('qNext').style.display='none';
+  $('qO').innerHTML=order.map((o,n)=>`<button class="opt" data-o="${o}">${n+1}. ${q[2][o]}</button>`).join('');
+  $('qO').querySelectorAll('.opt').forEach(b=>b.onclick=()=>{
+    const ok=+b.dataset.o===0;$('qO').querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.o===0)x.classList.add('right');});
+    if(!ok)b.classList.add('wrong');beep(ok?'ok':'no');
+    $('qW').innerHTML=(ok?'<b>정답! 그 자리에 머물러요.</b><br>':`<b>아쉬워요. 던지기 전 자리(${from===0?'출발':from+'번 칸'})로 돌아가요.</b><br>`)+q[3];$('qW').style.display='block';
+    $('qNext').style.display='inline-block';$('qNext').focus();
+    $('qNext').onclick=()=>{closeO('qo');if(!ok){pos[turn]=from;drawBoard();}nextTurn();};
+  });
+  openO('qo');
+}
+function msg(t,w,cb){$('mT').textContent=t;$('mW').textContent=w;openO('msg');$('mNext').onclick=()=>{closeO('msg');cb();};$('mNext').focus();}
+function nextTurn(){turn=(turn+1)%T;busy=false;$('btnThrow').disabled=false;$('yname').textContent='';drawBoard();}
+function win(){beep('win');$('endLead').textContent=`${turn+1}모둠이 가장 먼저 도착했어요! 🎉`;setTimeout(()=>show('end'),700);}
+$('btnStart').onclick=start;$('btnAgain').onclick=start;$('btnThrow').onclick=throwYut;
+document.addEventListener('keydown',e=>{if(e.key===' '&&$('game').classList.contains('on')&&!$('qo').classList.contains('on')&&!$('msg').classList.contains('on')){throwYut();e.preventDefault();}});
+
+wireTools();</script></body></html>

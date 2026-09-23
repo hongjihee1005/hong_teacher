@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>우리 반 존중 신호등</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.card{width:min(1150px,94vw);background:var(--paper);border-radius:26px;border:4px solid var(--line);padding:clamp(22px,3vw,44px) clamp(24px,4vw,60px);display:flex;gap:clamp(18px,3vw,40px);align-items:center}
+.card .e{font-size:clamp(90px,10vw,150px);line-height:1;flex:none}
+.card .x{font-family:var(--display);font-size:clamp(36px,4.2vw,62px);line-height:1.38;word-break:keep-all}
+.stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0}
+.ask{font-family:var(--display);text-align:center;font-size:clamp(28px,2.8vw,42px);margin:4px 0}
+.light{align-self:center;display:flex;gap:clamp(24px,4vw,70px);background:#27303F;border-radius:120px;padding:clamp(14px,1.8vw,24px) clamp(30px,4vw,60px);margin-top:10px;box-shadow:0 10px 0 rgba(0,0,0,.25)}
+.lamp{width:clamp(170px,17vw,250px);aspect-ratio:1;border-radius:50%;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;color:#fff;font-size:clamp(28px,2.8vw,40px);filter:saturate(.65) brightness(.8);transition:filter .15s,transform .15s}
+.lamp span{font-size:clamp(56px,6vw,86px);line-height:1}
+.lamp.g{background:radial-gradient(circle at 35% 30%,#7BE3A6,#1F9E63 60%,#157048)}
+.lamp.r{background:radial-gradient(circle at 35% 30%,#FF9C8E,#D2453A 60%,#9A2A22)}
+.lamp:hover,.lamp:focus-visible{filter:none;transform:scale(1.04)}
+.lamp.lit{filter:none;box-shadow:0 0 60px 10px var(--glow)}
+.fix{background:var(--bg);border-radius:18px;padding:14px 22px;font-size:clamp(28px,2.6vw,38px);line-height:1.5;margin:0 auto 22px;max-width:36em;word-break:keep-all;text-align:left}
+.fix b{font-family:var(--display);font-weight:400}
+.promise{width:min(1100px,94vw);display:grid;gap:12px}
+.promise div{background:var(--paper);border-radius:16px;padding:14px 22px;font-size:clamp(26px,2.4vw,34px);border-left:14px solid var(--ok);word-break:keep-all}
+</style></head><body>
+
+<section id="start" class="screen on center-col">
+  <h1 class="title">🚦 우리 반 존중 신호등</h1>
+  <p class="lead">이 말과 행동은 서로 다른 문화를 존중하는 모습일까요?<br>초록불과 빨간불 중에서 골라 보세요.</p>
+  <div class="row"><span class="row-label">문제 수</span><div class="seg" id="segN"></div></div>
+  <button class="big-btn" id="btnStart">시작하기</button>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar">
+    <span class="chip" id="score"></span>
+    <div class="tools"><span class="row-label" id="prog"></span>
+      <button class="tool" data-sound>🔊</button><button class="tool" data-full>⛶</button><button class="tool" id="btnHome">🏠</button></div>
+  </div>
+  <div class="stage"><article class="card" aria-live="polite"><div class="e" id="cE"></div><div class="x" id="cX"></div></article></div>
+  <p class="ask">모두 생각해 보고, 손을 들어 골라 보세요.</p>
+  <div class="light">
+    <button class="lamp g" id="lampG" style="--glow:#1F9E63"><span>😊</span>존중해요</button>
+    <button class="lamp r" id="lampR" style="--glow:#D2453A"><span>✋</span>다시 생각해요</button>
+  </div>
+</section>
+
+<section id="end" class="screen center-col" style="justify-content:flex-start">
+  <h1 class="title">🚦 신호등 끝!</h1>
+  <p class="lead" id="endLead"></p>
+  <div class="row"><button class="big-btn" id="btnAgain">다시 하기</button><button class="ghost-btn" id="btnHome2">처음으로</button></div>
+  <h3 style="font-size:clamp(30px,3vw,44px)">우리 반 존중 약속</h3>
+  <div class="promise" id="promise"></div>
+</section>
+
+<div class="overlay" id="fb"><div class="panel" id="fbP">
+  <h2 id="fbT"></h2><p class="why" id="fbW"></p><div class="fix" id="fbF"></div>
+  <button class="big-btn" id="btnNext">다음 문제</button></div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+
+
+const Q=[
+ {a:'r',e:'🍛',x:'친구가 가져온 다른 나라 음식을 보고 “이상한 냄새 나!” 하고 놀려요.',w:'낯선 문화라고 놀리는 것은 편견과 차별이에요.',f:'“처음 보는 음식이네! 무슨 음식이야?” 하고 물어봐요.'},
+ {a:'g',e:'🗣️',x:'한국말이 아직 서툰 친구에게 천천히, 쉬운 말로 이야기해 줘요.',w:'다양한 문화를 배경으로 사는 사람이 겪는 어려움에 관심을 갖고 돕는 모습이에요.'},
+ {a:'r',e:'🙅',x:'생김새가 다르다는 까닭으로 친구를 놀이에 끼워 주지 않아요.',w:'생김새로 친구를 따돌리는 것은 차별이에요.',f:'“우리 같이 놀자!” 하고 먼저 말해요.'},
+ {a:'g',e:'🐕',x:'강아지와 산책할 때 목줄을 하고 배변 봉투를 챙겨요.',w:'반려동물 예절을 지키면 이웃과의 갈등을 막을 수 있어요.'},
+ {a:'r',e:'📦',x:'키우던 강아지가 귀찮아져서 먼 곳에 두고 와요.',w:'버려진 동물은 제때 돌봄을 받지 못하고, 다른 사람에게 피해를 주기도 해요.',f:'반려동물은 끝까지 책임지고 돌봐요.'},
+ {a:'r',e:'🌙',x:'밤늦게 반려견이 계속 짖는데도 신경 쓰지 않아요.',w:'반려동물 때문에 이웃 사이에 갈등이 생길 수 있어요.',f:'이웃에게 피해가 가지 않도록 살피고 돌봐요.'},
+ {a:'g',e:'🎎',x:'다른 나라에서 온 친구 나라의 명절을 함께 알아봐요.',w:'다른 문화에 관심을 갖고 알아보는 것은 존중하는 태도예요.'},
+ {a:'r',e:'😆',x:'다른 나라 전통 옷을 입은 사람을 보고 손가락질하며 웃어요.',w:'다른 나라 문화를 우습게 여기는 것은 편견이에요.',f:'우리 한복처럼 그 나라에서 소중히 여기는 옷이라는 것을 생각해요.'},
+ {a:'g',e:'👵',x:'혼자 사시는 이웃 할머니께 반갑게 인사드리고 안부를 여쭤요.',w:'1인 가구의 건강과 안전에 관심을 갖는 따뜻한 모습이에요.'},
+ {a:'g',e:'🏢',x:'우리말이 서툰 이웃 가족에게 통역을 도와주는 곳을 알려 드려요.',w:'외국인 이주민을 위한 통역 지원은 다양한 문화로 생긴 어려움을 해결하는 노력이에요.'},
+ {a:'r',e:'🙉',x:'“우리 방식만 옳아!” 하며 다른 방식을 무시해요.',w:'서로 다름을 인정하지 않으면 갈등이 생겨요.',f:'“나라마다, 사람마다 방식이 다를 수 있구나.” 하고 생각해요.'},
+ {a:'g',e:'📚',x:'여러 나라의 문화를 배우는 시간에 즐겁게 참여해요.',w:'다문화 이해 교육은 편견을 줄이는 좋은 방법이에요.'},
+ {a:'r',e:'🏷️',x:'친구 이름이 낯설다고 마음대로 다른 별명으로 불러요.',w:'이름은 그 사람과 그 문화를 나타내는 소중한 것이에요.',f:'친구에게 이름을 어떻게 부르는지 물어보고 바르게 불러요.'},
+ {a:'g',e:'🏠',x:'혼자 사는 삶을 선택한 사람의 생활 방식도 존중해요.',w:'사람마다 원하는 생활 방식이 다를 수 있다는 것을 인정하는 모습이에요.'}
+];
+let N=10,D=[],I=0,S=0;
+seg('segN',[[6,'6개'],[10,'10개'],[14,'모두']],()=>N,v=>N=v);
+function start(){D=shuffle(Q).slice(0,N);I=0;S=0;show('game');draw();}
+function draw(){const q=D[I];$('cE').textContent=q.e;$('cX').textContent=q.x;$('prog').textContent=`${I+1} / ${D.length}`;$('score').textContent=`⭐ ${S}`;['lampG','lampR'].forEach(i=>{$(i).classList.remove('lit');$(i).disabled=false;});}
+function pick(c){
+  const q=D[I],ok=c===q.a;if(ok)S++;beep(ok?'ok':'no');
+  $(q.a==='g'?'lampG':'lampR').classList.add('lit');['lampG','lampR'].forEach(i=>$(i).disabled=true);
+  $('score').textContent=`⭐ ${S}`;
+  setTimeout(()=>{
+    $('fbP').style.setProperty('--pc',q.a==='g'?'var(--ok)':'var(--no)');
+    $('fbT').textContent=(ok?'맞아요! ':'')+(q.a==='g'?'🟢 존중하는 모습이에요':'🔴 다시 생각해 봐요');
+    $('fbW').textContent=q.w;
+    $('fbF').style.display=q.f?'block':'none';$('fbF').innerHTML=q.f?`<b>이렇게 바꿔 봐요</b><br>${q.f}`:'';
+    $('btnNext').textContent=I+1<D.length?'다음 문제':'결과 보기';openO('fb');$('btnNext').focus();
+  },500);
+}
+function next(){closeO('fb');I++;if(I<D.length)draw();else end();}
+function end(){
+  $('endLead').textContent=`${D.length}문제 중 ${S}문제를 알맞게 골랐어요.`;
+  $('promise').innerHTML=['다른 문화에 대한 편견을 갖지 않고 차별하지 않아요.','다양한 문화를 배경으로 사는 사람이 겪는 어려움에 관심을 갖고 함께 도와요.','서로 다름을 인정하고 존중해요.'].map(t=>`<div>🤝 ${t}</div>`).join('');
+  beep('win');show('end');
+}
+$('btnStart').onclick=start;$('btnAgain').onclick=start;
+$('lampG').onclick=()=>pick('g');$('lampR').onclick=()=>pick('r');$('btnNext').onclick=next;
+$('btnHome').onclick=()=>{if(confirm('처음 화면으로 돌아갈까요?')){closeO('fb');show('start');}};$('btnHome2').onclick=()=>show('start');
+document.addEventListener('keydown',e=>{
+  if($('fb').classList.contains('on')){if(e.key==='Enter'||e.key===' '){next();e.preventDefault();}return;}
+  if($('game').classList.contains('on')&&!$('lampG').disabled){if(e.key==='1'||e.key==='g')pick('g');if(e.key==='2'||e.key==='r')pick('r');}
+});
+
+wireTools();</script></body></html>

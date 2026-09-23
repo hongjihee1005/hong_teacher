@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>사회 변화 우체국</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#E7F1FA; --paper:#FFFDF8; --ink:#1F2A44; --ink-soft:#4A5572; --line:#C9D6E6;
+  --c-low:#E0506B; --c-old:#E8961E; --c-ai:#2F74E0; --c-glo:#1F9E63;
+  --ok:#1F9E63; --no:#D2453A;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#16213A; --paper:#223152; --ink:#F2F5FB; --ink-soft:#B7C3DB; --line:#3A4C74;
+  }
+}
+:root[data-theme="dark"]{ --bg:#16213A; --paper:#223152; --ink:#F2F5FB; --ink-soft:#B7C3DB; --line:#3A4C74; }
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--c-ai);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,32px)}
+.screen.on{display:flex}
+
+/* ---------- 시작 화면 ---------- */
+#start{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.title{font-family:var(--display);font-size:clamp(52px,7vw,104px);margin:0;line-height:1.1;text-align:center}
+.title .stamp-mini{display:inline-block;transform:rotate(-8deg);margin-right:.2em}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--ink-soft);margin:0;text-align:center}
+.boxes-preview{display:flex;gap:clamp(10px,2vw,28px);flex-wrap:wrap;justify-content:center}
+.pick{border:4px solid var(--line);background:var(--paper);border-radius:22px;padding:14px 22px;font-size:clamp(24px,2.3vw,34px);display:flex;align-items:center;gap:10px;opacity:.45;transition:opacity .15s,border-color .15s}
+.pick[aria-pressed="true"]{opacity:1;border-color:var(--cc)}
+.pick .dot{width:22px;height:22px;border-radius:50%;background:var(--cc)}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(34px,3.4vw,50px);padding:16px 56px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.hint-text{font-size:22px;color:var(--ink-soft);margin:0}
+
+/* ---------- 게임 화면 ---------- */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.progress{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.turn{font-family:var(--display);text-align:center;font-size:clamp(28px,2.8vw,42px);margin:6px 0 0;min-height:1.3em}
+
+.stage{flex:1;display:flex;align-items:center;justify-content:center;min-height:0;padding:10px 0}
+.card{position:relative;width:min(1100px,92vw);background:var(--paper);border-radius:18px;padding:clamp(22px,3vw,44px) clamp(26px,4vw,64px);
+  box-shadow:0 10px 0 var(--line);border:3px solid var(--line);display:flex;align-items:center;gap:clamp(18px,3vw,44px);
+  background-image:repeating-linear-gradient(135deg,var(--c-low) 0 18px,transparent 18px 36px,var(--c-ai) 36px 54px,transparent 54px 72px);
+  background-size:100% 14px;background-repeat:no-repeat;background-position:top}
+.card .emoji{font-size:clamp(80px,10vw,150px);line-height:1;flex:none}
+.card .text{font-family:var(--display);font-size:clamp(36px,4.2vw,64px);line-height:1.35;word-break:keep-all}
+.stamp{position:absolute;top:-22px;right:28px;transform:rotate(6deg);font-family:var(--display);font-size:clamp(22px,2vw,30px);
+  padding:6px 16px;border:4px dashed var(--ink-soft);border-radius:10px;background:var(--paper);color:var(--ink-soft)}
+.card.fly{transition:transform .55s cubic-bezier(.5,-0.2,.7,1),opacity .55s;opacity:0}
+
+.mailboxes{display:grid;grid-template-columns:repeat(var(--n,4),1fr);gap:clamp(10px,1.6vw,24px);padding-top:6px}
+.mbox{position:relative;border:0;background:var(--cc);color:#fff;border-radius:60px 60px 18px 18px;padding:clamp(18px,2.4vh,30px) 10px clamp(14px,2vh,24px);
+  display:flex;flex-direction:column;align-items:center;gap:6px;box-shadow:0 8px 0 rgba(0,0,0,.22)}
+.mbox::before{content:"";width:55%;height:12px;border-radius:8px;background:rgba(0,0,0,.35)}
+.mbox .e{font-size:clamp(46px,5vw,76px);line-height:1}
+.mbox .n{font-size:clamp(32px,3.2vw,50px);text-shadow:0 2px 0 rgba(0,0,0,.2)}
+.mbox .k{position:absolute;left:14px;bottom:10px;font-size:20px;opacity:.8}
+.mbox:active{transform:translateY(5px);box-shadow:0 3px 0 rgba(0,0,0,.22)}
+.mbox.good{animation:bounce .5s}
+.mbox.bad{animation:shake .45s}
+@keyframes bounce{30%{transform:translateY(-16px)}60%{transform:translateY(0)}80%{transform:translateY(-6px)}}
+@keyframes shake{20%{transform:translateX(-10px)}40%{transform:translateX(10px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+
+/* ---------- 알림 창 ---------- */
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-family:var(--display);font-size:clamp(46px,5vw,76px);margin:0 0 10px;font-weight:400}
+.panel .recap{font-size:clamp(26px,2.4vw,34px);background:var(--bg);border-radius:14px;padding:10px 20px;margin:0 auto 14px;display:inline-block;word-break:keep-all}
+.panel .answer{font-family:var(--display);font-size:clamp(30px,3vw,44px);margin:0 0 14px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 24px;max-width:36em;word-break:keep-all}
+.defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,420px),1fr));gap:18px;text-align:left;margin:10px 0 24px}
+.def{border-left:14px solid var(--cc);background:var(--bg);border-radius:14px;padding:16px 22px}
+.def b{font-family:var(--display);font-weight:400;font-size:clamp(34px,3vw,46px);display:block}
+.def span{font-size:clamp(26px,2.3vw,34px);line-height:1.45;word-break:keep-all}
+
+/* ---------- 결과 화면 ---------- */
+#end{align-items:center;justify-content:flex-start;gap:18px;overflow-y:auto}
+.podium{display:flex;gap:16px;flex-wrap:wrap;justify-content:center}
+.podium .chip{font-size:clamp(28px,2.8vw,42px);padding:10px 26px}
+.podium .chip.win{border-color:var(--c-old);background:var(--c-old);color:#fff}
+.review{width:min(1100px,94vw);display:flex;flex-direction:column;gap:12px}
+.review h3{font-family:var(--display);font-weight:400;font-size:clamp(30px,3vw,44px);margin:10px 0 0;text-align:center}
+.ritem{background:var(--paper);border-radius:16px;padding:14px 22px;border-left:14px solid var(--cc);font-size:clamp(26px,2.3vw,34px);line-height:1.45;word-break:keep-all}
+.ritem b{font-family:var(--display);font-weight:400}
+
+@media (max-width:760px){
+  .mailboxes{grid-template-columns:repeat(2,1fr)}
+  .card{flex-direction:column;text-align:center}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+
+<!-- 시작 화면 -->
+<section id="start" class="screen on" aria-label="시작 화면">
+  <h1 class="title"><span class="stamp-mini">📮</span>사회 변화 우체국</h1>
+  <p class="lead">편지를 읽고, 알맞은 우체통에 넣어 보세요.</p>
+
+  <div class="row-label">우리가 배운 사회 변화를 골라요</div>
+  <div class="boxes-preview" id="picks"></div>
+
+  <div class="row">
+    <span class="row-label">모둠</span>
+    <div class="seg" id="segTeams"></div>
+  </div>
+  <div class="row">
+    <span class="row-label">편지 수</span>
+    <div class="seg" id="segCount"></div>
+  </div>
+  <p class="hint-text" id="startHint">사회 변화를 두 가지 이상 골라야 시작할 수 있어요.</p>
+  <div class="row">
+    <button class="ghost-btn" id="btnDefs">뜻 먼저 보기</button>
+    <button class="big-btn" id="btnStart">시작하기</button>
+  </div>
+</section>
+
+<!-- 게임 화면 -->
+<section id="game" class="screen" aria-label="게임 화면">
+  <div class="topbar">
+    <div class="scores" id="scores"></div>
+    <div class="tools">
+      <span class="progress" id="progress"></span>
+      <button class="tool" id="btnHint" title="뜻 보기">📖 뜻</button>
+      <button class="tool" id="btnSound" title="소리 켜고 끄기">🔊</button>
+      <button class="tool" id="btnFull" title="전체 화면">⛶</button>
+      <button class="tool" id="btnHome" title="처음으로">🏠</button>
+    </div>
+  </div>
+  <p class="turn" id="turn"></p>
+  <div class="stage">
+    <article class="card" id="card" aria-live="polite">
+      <span class="stamp" id="stamp"></span>
+      <div class="emoji" id="cEmoji"></div>
+      <div class="text" id="cText"></div>
+    </article>
+  </div>
+  <div class="mailboxes" id="mailboxes"></div>
+</section>
+
+<!-- 결과 화면 -->
+<section id="end" class="screen" aria-label="결과 화면">
+  <h1 class="title">📮 배달 끝!</h1>
+  <p class="lead" id="endLead"></p>
+  <div class="podium" id="podium"></div>
+  <div class="row">
+    <button class="big-btn" id="btnAgain">다시 하기</button>
+    <button class="ghost-btn" id="btnHome2">처음으로</button>
+  </div>
+  <div class="review" id="review"></div>
+</section>
+
+<!-- 정답 확인 창 -->
+<div class="overlay" id="fb" role="dialog" aria-modal="true" aria-labelledby="fbTitle">
+  <div class="panel" id="fbPanel">
+    <h2 id="fbTitle"></h2>
+    <p class="recap" id="fbCard"></p>
+    <p class="answer" id="fbAnswer"></p>
+    <p class="why" id="fbWhy"></p>
+    <button class="big-btn" id="btnNext">다음 편지</button>
+  </div>
+</div>
+
+<!-- 뜻 보기 창 -->
+<div class="overlay" id="defsBox" role="dialog" aria-modal="true" aria-labelledby="defsTitle">
+  <div class="panel">
+    <h2 id="defsTitle">사회 변화의 뜻</h2>
+    <div class="defs" id="defs"></div>
+    <button class="big-btn" id="btnCloseDefs">닫기</button>
+  </div>
+</div>
+
+<script>
+const CATS = {
+  low:{name:'저출산',emoji:'👶',color:'var(--c-low)',
+       def:'태어나는 아이의 수가 줄어들어 출산율이 낮아지는 현상'},
+  old:{name:'고령화',emoji:'👵',color:'var(--c-old)',
+       def:'전체 사람 수에서 노인(65세 이상)이 차지하는 비율이 높아지는 현상'},
+  ai: {name:'지능정보화',emoji:'🤖',color:'var(--c-ai)',
+       def:'인공지능을 활용한 여러 기술이 우리 사회 곳곳에 큰 영향을 주는 현상'},
+  glo:{name:'세계화',emoji:'🌏',color:'var(--c-glo)',
+       def:'세계 여러 나라가 여러 분야에서 교류하며 하나로 연결되는 현상'}
+};
+const ORDER = ['low','old','ai','glo'];
+const TYPE = {life:'생활 모습', prob:'문제점', effort:'해결 노력'};
+
+const CARDS = [
+  // 저출산
+  {c:'low',t:'life',e:'👨‍👩‍👧',x:'한 가족의 식구 수가 예전보다 줄어들었어요.',w:'태어나는 아이가 줄어들면서 가족 구성원의 수도 줄어들고 있어요.'},
+  {c:'low',t:'life',e:'🏫',x:'학생 수가 줄어서 문을 닫는 학교가 생겼어요.',w:'아이가 적게 태어나니 학교에 다니는 학생도 줄어들어 폐교하는 학교가 늘고 있어요.'},
+  {c:'low',t:'life',e:'🏥',x:'아기가 태어나는 것을 돕는 병원이 줄어들고 있어요.',w:'태어나는 아이가 줄어들면서 출산을 돕는 병원의 수도 줄어들고 있어요.'},
+  {c:'low',t:'life',e:'👷',x:'앞으로 일할 수 있는 사람의 수가 줄어들고 있어요.',w:'아이가 적게 태어나면 자라서 일할 사람의 수도 줄어들어요.'},
+  {c:'low',t:'effort',e:'🍼',x:'아이를 낳고 키우는 데 필요한 돈과 물건을 지원해요.',w:'아이를 키우는 부담을 줄여 주려는 저출산 해결 노력이에요.'},
+  {c:'low',t:'effort',e:'🧸',x:'안전하고 깨끗한 보육 시설을 운영해요.',w:'부모가 안심하고 아이를 맡길 수 있게 돕는 저출산 해결 노력이에요.'},
+  {c:'low',t:'effort',e:'🏠',x:'부모가 아이를 키우려고 잠시 일을 쉴 수 있는 제도를 만들어요.',w:'부모가 아이를 돌볼 시간을 가질 수 있게 돕는 저출산 해결 노력이에요.'},
+  // 고령화
+  {c:'old',t:'life',e:'🏢',x:'노인 복지관이 새로 많이 생기고 있어요.',w:'사람들이 오래 살게 되어 노인이 많아지면서 노인 복지관이 늘고 있어요.'},
+  {c:'old',t:'life',e:'🩺',x:'노인 전문 병원과 요양 시설이 늘어났어요.',w:'노인의 비율이 높아지면서 노인을 돌보는 시설이 많아졌어요.'},
+  {c:'old',t:'life',e:'🎨',x:'노인을 위한 여러 가지 배움 프로그램이 열려요.',w:'노인이 많아지면서 노인 대학처럼 노인을 위한 프로그램이 늘고 있어요.'},
+  {c:'old',t:'life',e:'💼',x:'일하는 할머니, 할아버지가 많아졌어요.',w:'오래 건강하게 사는 노인이 늘면서 일하는 노인도 많아졌어요.'},
+  {c:'old',t:'effort',e:'📢',x:'노인 일자리 설명회를 열어 알맞은 일자리를 알려 줘요.',w:'노인에게 일자리를 마련해 주는 고령화 대비 노력이에요.'},
+  {c:'old',t:'effort',e:'🦯',x:'노인이 쓰기 편한 다양한 물건을 개발해요.',w:'노인의 생활을 돕기 위한 고령화 대비 노력이에요.'},
+  {c:'old',t:'effort',e:'📋',x:'노인이 되었을 때의 생활을 미리 준비하도록 도와줘요.',w:'노후 준비 지원 센터 같은 곳에서 하는 고령화 대비 노력이에요.'},
+  // 지능정보화
+  {c:'ai',t:'life',e:'📦',x:'인공지능 배달 로봇이 물건을 날라다 줘요.',w:'인공지능을 활용한 기술이 생활 곳곳에 쓰이는 지능정보화의 모습이에요.'},
+  {c:'ai',t:'life',e:'📱',x:'인공지능 학습 프로그램으로 공부해요.',w:'인공지능이 공부를 도와주는 것은 지능정보화로 달라진 생활 모습이에요.'},
+  {c:'ai',t:'life',e:'🚗',x:'인공지능이 자동차의 안전 운전을 도와줘요.',w:'인공지능 기술이 운전에도 쓰이는 지능정보화의 모습이에요.'},
+  {c:'ai',t:'prob',e:'📰',x:'인터넷에서 거짓 정보가 빠르게 퍼져요.',w:'정보를 쉽게 주고받게 되면서 생긴 지능정보화의 문제예요.'},
+  {c:'ai',t:'prob',e:'📵',x:'스마트폰을 너무 오래 써서 스스로 멈추기 어려워요.',w:'인터넷·스마트폰 과의존은 지능정보화로 나타난 문제예요.'},
+  {c:'ai',t:'effort',e:'🔒',x:'내 이름, 주소, 전화번호를 인터넷에 함부로 올리지 않아요.',w:'개인 정보를 지키는 것은 지능정보화 문제에 대응하는 방법이에요.'},
+  {c:'ai',t:'effort',e:'🧐',x:'인터넷에 있는 정보를 무조건 믿지 않고 따져 봐요.',w:'거짓 정보에 속지 않도록 하는 지능정보화 대응 방법이에요.'},
+  // 세계화
+  {c:'glo',t:'life',e:'🍌',x:'다른 나라에서 온 과일과 물건을 쉽게 살 수 있어요.',w:'여러 나라와 교류하면서 달라진 세계화의 생활 모습이에요.'},
+  {c:'glo',t:'life',e:'🍝',x:'우리 동네에 여러 나라 음식을 파는 가게가 많아졌어요.',w:'다른 나라와의 교류가 활발해지면서 생긴 세계화의 모습이에요.'},
+  {c:'glo',t:'life',e:'🍜',x:'우리나라 과자와 라면이 다른 나라에서 인기가 많아요.',w:'우리나라의 생활 모습이 다른 나라에 소개되는 것도 세계화의 모습이에요.'},
+  {c:'glo',t:'prob',e:'😷',x:'여러 나라를 오가는 사람이 많아져 감염병이 빠르게 퍼질 수 있어요.',w:'나라 사이의 이동이 많아지면서 생긴 세계화의 문제예요.'},
+  {c:'glo',t:'prob',e:'🏮',x:'각 나라의 전통적인 생활 모습이 약해질 수 있어요.',w:'다른 나라의 생활 방식을 무조건 따르면 생길 수 있는 세계화의 문제예요.'},
+  {c:'glo',t:'effort',e:'⚖️',x:'다른 나라의 생활 방식을 좋은 점과 나쁜 점을 따져서 받아들여요.',w:'세계화로 생긴 문제에 대응하는 바람직한 태도예요.'},
+  {c:'glo',t:'effort',e:'🤝',x:'세계의 문제에 관심을 갖고 여러 나라와 함께 해결해요.',w:'세계가 하나로 연결된 만큼 함께 해결하려는 세계화 대응 노력이에요.'}
+];
+
+const $ = id => document.getElementById(id);
+const S = {enabled:new Set(ORDER), teams:4, count:12, deck:[], idx:0, scores:[], turn:0, wrong:[], lock:false, sound:true};
+
+/* ---- 시작 화면 구성 ---- */
+function buildStart(){
+  const p = $('picks'); p.innerHTML='';
+  ORDER.forEach(k=>{
+    const b=document.createElement('button');
+    b.className='pick'; b.style.setProperty('--cc',CATS[k].color);
+    b.setAttribute('aria-pressed',S.enabled.has(k));
+    b.innerHTML=`<span class="dot"></span>${CATS[k].emoji} ${CATS[k].name}`;
+    b.onclick=()=>{S.enabled.has(k)?S.enabled.delete(k):S.enabled.add(k);buildStart();};
+    p.appendChild(b);
+  });
+  seg('segTeams',[[1,'반 전체'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']],'teams');
+  seg('segCount',[[8,'8장'],[12,'12장'],[16,'16장'],[99,'모두']],'count');
+  const ok=S.enabled.size>=2;
+  $('btnStart').disabled=!ok; $('btnStart').style.opacity=ok?1:.4;
+  $('startHint').style.visibility=ok?'hidden':'visible';
+}
+function seg(id,opts,key){
+  const s=$(id); s.innerHTML='';
+  opts.forEach(([v,l])=>{
+    const b=document.createElement('button'); b.textContent=l;
+    b.setAttribute('aria-pressed',S[key]===v);
+    b.onclick=()=>{S[key]=v;buildStart();};
+    s.appendChild(b);
+  });
+}
+function buildDefs(){
+  $('defs').innerHTML = ORDER.filter(k=>S.enabled.has(k)).map(k=>
+    `<div class="def" style="--cc:${CATS[k].color}"><b>${CATS[k].emoji} ${CATS[k].name}</b><span>${CATS[k].def}</span></div>`).join('');
+}
+
+/* ---- 게임 ---- */
+const shuffle=a=>{for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+function makeDeck(){
+  const cats=ORDER.filter(k=>S.enabled.has(k));
+  const pools=cats.map(k=>shuffle(CARDS.filter(c=>c.c===k)));
+  const total=Math.min(S.count,pools.reduce((n,p)=>n+p.length,0));
+  const deck=[]; let i=0;
+  while(deck.length<total){const p=pools[i%pools.length]; if(p.length) deck.push(p.pop()); i++;}
+  return shuffle(deck);
+}
+function startGame(){
+  S.deck=makeDeck(); S.idx=0; S.turn=0; S.wrong=[];
+  S.scores=Array(S.teams).fill(0);
+  const cats=ORDER.filter(k=>S.enabled.has(k));
+  const mb=$('mailboxes'); mb.innerHTML=''; mb.style.setProperty('--n',cats.length);
+  cats.forEach((k,i)=>{
+    const b=document.createElement('button');
+    b.className='mbox'; b.dataset.k=k; b.style.setProperty('--cc',CATS[k].color);
+    b.innerHTML=`<span class="e">${CATS[k].emoji}</span><span class="n">${CATS[k].name}</span><span class="k">${i+1}</span>`;
+    b.setAttribute('aria-label',`${CATS[k].name} 우체통에 넣기`);
+    b.onclick=()=>choose(k,b);
+    mb.appendChild(b);
+  });
+  show('game'); showCard();
+}
+function renderScores(){
+  $('scores').innerHTML = S.teams===1
+    ? `<span class="chip now">⭐ ${S.scores[0]}점</span>`
+    : S.scores.map((s,i)=>`<span class="chip ${i===S.turn?'now':''}">${i+1}모둠 ${s}</span>`).join('');
+  $('turn').textContent = S.teams===1 ? '' : `지금은 ${S.turn+1}모둠 차례예요`;
+  $('progress').textContent = `${S.idx+1} / ${S.deck.length}`;
+}
+function showCard(){
+  const c=S.deck[S.idx], card=$('card');
+  card.classList.remove('fly'); card.style.transform='';
+  $('cEmoji').textContent=c.e; $('cText').textContent=c.x; $('stamp').textContent=TYPE[c.t];
+  renderScores(); S.lock=false;
+}
+function choose(k,btn){
+  if(S.lock) return; S.lock=true;
+  const c=S.deck[S.idx], ok=(k===c.c);
+  const card=$('card'), r1=card.getBoundingClientRect(), r2=btn.getBoundingClientRect();
+  card.style.transform=`translate(${(r2.left+r2.width/2)-(r1.left+r1.width/2)}px,${(r2.top+20)-(r1.top+r1.height/2)}px) scale(.12) rotate(${ok?8:-8}deg)`;
+  card.classList.add('fly');
+  if(ok) S.scores[S.turn]++; else S.wrong.push(c);
+  beep(ok);
+  setTimeout(()=>{
+    btn.classList.add(ok?'good':'bad');
+    setTimeout(()=>btn.classList.remove('good','bad'),600);
+    const right=CATS[c.c];
+    $('fbPanel').style.setProperty('--pc',ok?'var(--ok)':'var(--no)');
+    $('fbTitle').textContent= ok?'딩동! 잘 배달했어요':'앗, 다시 생각해 봐요';
+    $('fbAnswer').innerHTML = ok?`${right.emoji} ${right.name} 우체통이 맞아요`:`이 편지는 ${right.emoji} <span style="color:${right.color}">${right.name}</span> 우체통으로 가야 해요`;
+    $('fbWhy').textContent=c.w;
+    $('fbCard').textContent=`${c.e} ${c.x}`;
+    $('btnNext').textContent = S.idx+1<S.deck.length?'다음 편지':'결과 보기';
+    renderScores();
+    open('fb'); $('btnNext').focus();
+  },450);
+}
+function next(){
+  close('fb');
+  S.idx++;
+  if(S.idx>=S.deck.length){finish();return;}
+  if(S.teams>1) S.turn=(S.turn+1)%S.teams;
+  showCard();
+}
+function finish(){
+  const total=S.deck.length;
+  if(S.teams===1){
+    $('endLead').textContent=`${total}통 중 ${S.scores[0]}통을 알맞은 우체통에 넣었어요.`;
+    $('podium').innerHTML=`<span class="chip win">⭐ ${S.scores[0]}점</span>`;
+  }else{
+    const max=Math.max(...S.scores);
+    const winners=S.scores.map((s,i)=>s===max?i+1:null).filter(Boolean);
+    $('endLead').textContent=`${winners.join(', ')}모둠이 가장 많이 배달했어요!`;
+    $('podium').innerHTML=S.scores.map((s,i)=>`<span class="chip ${s===max?'win':''}">${i+1}모둠 ${s}점</span>`).join('');
+  }
+  $('review').innerHTML = S.wrong.length
+    ? `<h3>다시 살펴볼 편지</h3>`+S.wrong.map(c=>`<div class="ritem" style="--cc:${CATS[c.c].color}">${c.e} ${c.x}<br><b>→ ${CATS[c.c].name}</b> (${TYPE[c.t]})</div>`).join('')
+    : `<h3>모든 편지를 알맞게 배달했어요! 👏</h3>`;
+  show('end');
+}
+
+/* ---- 공통 ---- */
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function open(id){$(id).classList.add('on');}
+function close(id){$(id).classList.remove('on');}
+let actx=null;
+function beep(ok){
+  if(!S.sound) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const notes= ok?[660,880]:[300,220];
+    notes.forEach((f,i)=>{
+      const o=actx.createOscillator(),g=actx.createGain();
+      o.type= ok?'triangle':'square'; o.frequency.value=f;
+      g.gain.setValueAtTime(.0001,actx.currentTime+i*.13);
+      g.gain.exponentialRampToValueAtTime(.18,actx.currentTime+i*.13+.02);
+      g.gain.exponentialRampToValueAtTime(.0001,actx.currentTime+i*.13+.2);
+      o.connect(g).connect(actx.destination); o.start(actx.currentTime+i*.13); o.stop(actx.currentTime+i*.13+.22);
+    });
+  }catch(e){}
+}
+function toggleFull(){
+  try{
+    if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+    else document.exitFullscreen();
+  }catch(e){}
+}
+
+$('btnStart').onclick=()=>{if(S.enabled.size>=2) startGame();};
+$('btnDefs').onclick=$('btnHint').onclick=()=>{buildDefs();open('defsBox');$('btnCloseDefs').focus();};
+$('btnCloseDefs').onclick=()=>close('defsBox');
+$('btnNext').onclick=next;
+$('btnAgain').onclick=startGame;
+$('btnHome').onclick=()=>{if(confirm('처음 화면으로 돌아갈까요? 점수가 사라져요.')){close('fb');show('start');}};
+$('btnHome2').onclick=()=>show('start');
+$('btnFull').onclick=toggleFull;
+$('btnSound').onclick=()=>{S.sound=!S.sound;$('btnSound').textContent=S.sound?'🔊':'🔇';};
+
+document.addEventListener('keydown',e=>{
+  if($('defsBox').classList.contains('on')){ if(e.key==='Escape'||e.key==='Enter'){close('defsBox');e.preventDefault();} return; }
+  if($('fb').classList.contains('on')){ if(e.key==='Enter'||e.key===' '){next();e.preventDefault();} return; }
+  if($('game').classList.contains('on')){
+    const n=parseInt(e.key,10);
+    const boxes=[...document.querySelectorAll('.mbox')];
+    if(n>=1&&n<=boxes.length) choose(boxes[n-1].dataset.k,boxes[n-1]);
+  }
+});
+
+buildStart();
+</script>
+</body>
+</html>

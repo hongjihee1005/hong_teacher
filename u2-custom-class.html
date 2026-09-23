@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>세시 풍속 달력</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.saekdong{height:16px;background:linear-gradient(90deg,#E0506B 0 20%,#E8961E 20% 40%,#F2D035 40% 60%,#1F9E63 60% 80%,#2F74E0 80%);border-radius:8px;margin-bottom:10px}
+.year{position:relative;height:clamp(210px,28vh,280px);margin:10px 0 0;border-radius:24px;overflow:hidden;display:grid;grid-template-columns:repeat(4,1fr)}
+.season{display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px;font-family:var(--display);font-size:clamp(24px,2.2vw,32px);color:rgba(0,0,0,.45)}
+.season:nth-child(1){background:#FBE3EA}.season:nth-child(2){background:#DDF3E4}.season:nth-child(3){background:#FCEBD2}.season:nth-child(4){background:#DDE8F8}
+.medal{position:absolute;top:18%;transform:translateX(-50%);width:clamp(120px,11vw,168px);aspect-ratio:1;border-radius:50%;border:6px solid #fff;background:var(--mc);color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;box-shadow:0 8px 0 rgba(0,0,0,.18);font-size:clamp(24px,2.3vw,34px);line-height:1.1}
+.mlabel{position:absolute;bottom:10px;transform:translateX(-50%);font-family:var(--display);font-size:clamp(20px,1.8vw,26px);color:rgba(0,0,0,.55);white-space:nowrap}
+.medal span{font-size:clamp(40px,4vw,60px)}
+.medal[aria-pressed="true"]{outline:6px solid var(--ink);outline-offset:4px}
+.detail{flex:1;min-height:0;margin-top:22px;background:var(--paper);border-radius:24px;border-top:14px solid var(--dc,var(--line));padding:clamp(16px,2vw,30px);overflow-y:auto}
+.detail h2{font-size:clamp(44px,4.6vw,68px)}
+.detail .when{font-size:clamp(24px,2.3vw,32px);color:var(--soft);margin:2px 0 14px}
+.cols{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+.col{background:var(--bg);border-radius:18px;padding:14px 18px}
+.col b{font-family:var(--display);font-weight:400;font-size:clamp(28px,2.6vw,38px);display:block;margin-bottom:6px}
+.col li{font-size:clamp(28px,2.6vw,38px);line-height:1.5;list-style:none}
+.col ul{margin:0;padding:0}
+.keep{font-size:.7em;background:#F2D035;color:#1F2A44;border-radius:8px;padding:0 8px;margin-left:6px;vertical-align:middle;font-family:var(--display)}
+.empty{display:flex;align-items:center;justify-content:center;font-family:var(--display);font-size:clamp(32px,3.2vw,48px);color:var(--soft);text-align:center}
+.hints{flex:1;display:flex;flex-direction:column;gap:14px;justify-content:center;align-items:center;margin-top:16px}
+.hint{width:min(1100px,94vw);background:var(--paper);border-radius:20px;border:4px dashed var(--line);padding:16px 26px;font-family:var(--display);font-size:clamp(34px,3.6vw,54px);min-height:1.8em;display:flex;align-items:center;gap:18px}
+.hint i{font-style:normal;font-size:.6em;background:var(--ink);color:var(--bg);border-radius:999px;padding:2px 16px;flex:none}
+.hint.off{color:transparent}.hint.off i{background:var(--line)}
+.guessbar{display:flex;gap:12px;justify-content:center;flex-wrap:wrap}
+@media (max-width:800px){.cols{grid-template-columns:1fr}}
+</style></head><body>
+
+<section id="start" class="screen on center-col">
+  <h1 class="title">🌕 세시 풍속 달력</h1>
+  <p class="lead">해마다 일정한 때에 되풀이하는 풍습, 세시 풍속을 알아봐요.</p>
+  <div class="row"><button class="big-btn" id="goExplore">📅 달력 탐험</button><button class="big-btn" id="goGuess" style="background:#6A4FC9">❓ 명절 수수께끼</button></div>
+  <p class="lead" style="font-size:22px">달력 탐험으로 먼저 알아본 뒤, 명절 수수께끼로 확인해 보세요.</p>
+</section>
+
+<section id="explore" class="screen">
+  <div class="saekdong"></div>
+  <div class="topbar"><h2 style="font-size:clamp(34px,3.4vw,50px)">📅 명절을 눌러 보세요</h2>
+    <div class="tools"><button class="tool" data-full>⛶</button><button class="tool" data-home>🏠</button></div></div>
+  <div class="year" id="year"><div class="season"></div><div class="season"></div><div class="season"></div><div class="season"></div></div>
+  <div class="detail" id="detail"><div class="empty" style="height:100%">위의 명절을 누르면 먹는 음식, 즐기는 놀이, 하는 일이 나와요.</div></div>
+</section>
+
+<section id="guess" class="screen">
+  <div class="saekdong"></div>
+  <div class="topbar"><span class="chip" id="gScore"></span>
+    <div class="tools"><span class="row-label" id="gProg"></span><button class="tool" data-sound>🔊</button><button class="tool" data-full>⛶</button><button class="tool" data-home>🏠</button></div></div>
+  <h2 class="lead" style="font-family:var(--display);font-size:clamp(34px,3.4vw,50px);color:var(--ink);margin-top:10px">이날은 어떤 명절일까요?</h2>
+  <div class="hints" id="hints"></div>
+  <div class="row" style="margin:10px 0"><button class="ghost-btn" id="btnMore">💡 힌트 더 보기</button></div>
+  <div class="guessbar" id="gbar"></div>
+</section>
+
+<section id="gend" class="screen center-col">
+  <h1 class="title">🎉 수수께끼 끝!</h1><p class="lead" id="gLead"></p>
+  <div class="row"><button class="big-btn" id="gAgain">다시 하기</button><button class="ghost-btn" data-home>처음으로</button></div>
+</section>
+
+<div class="overlay" id="fb"><div class="panel" id="fbP"><h2 id="fbT"></h2><p class="why" id="fbW"></p><button class="big-btn" id="btnNext">다음 문제</button></div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+
+
+const H={
+ seol:{m:'음력 1월 1일',n:'설날',e:'🧧',c:'#E0506B',pos:7,when:'음력 1월 1일, 새해의 첫날',food:['떡국'],play:['연날리기','윷놀이','널뛰기'],doing:['차례 지내기','세배하기','복조리 걸기'],
+   keep:['떡국','윷놀이','차례 지내기'],hints:['복조리를 걸어 복이 들어오기를 빌어요.','연을 날리고, 널을 뛰며 놀아요.','떡국을 먹고, 웃어른께 세배를 드려요.']},
+ bo:{m:'음력 1월 15일',n:'정월 대보름',e:'🌕',c:'#6A4FC9',pos:20,when:'음력 1월 15일, 새해 첫 보름달이 뜨는 날',food:['부럼 깨물기','오곡밥과 나물'],play:['쥐불놀이','다리밟기','달집태우기'],doing:['달맞이(소원 빌기)'],
+   keep:[],hints:['다리밟기를 하고 달집을 태워요.','쥐불놀이를 하며 놀아요.','부럼을 깨물고 오곡밥을 먹어요. 보름달에 소원을 빌어요.']},
+ dan:{m:'음력 5월 5일',n:'단오',e:'🪭',c:'#1F9E63',pos:40,when:'음력 5월 5일',food:['수리취떡','앵두화채'],play:['그네뛰기','씨름'],doing:['부채 주고받기','창포물에 머리 감기'],
+   keep:[],hints:['수리취떡과 앵두화채를 먹어요.','창포물에 머리를 감아요.','그네를 뛰고 씨름을 하며, 부채를 주고받아요.']},
+ chu:{m:'음력 8월 15일',n:'추석',e:'🌾',c:'#E8961E',pos:64,when:'음력 8월 15일, 한 해 농사를 거두는 때',food:['송편'],play:['강강술래','소싸움'],doing:['차례 지내기','성묘하기'],
+   keep:['송편','차례 지내기'],hints:['소싸움을 구경해요.','성묘를 하고 강강술래를 해요.','송편을 빚어 먹어요.']},
+ dong:{m:'12월 22일 무렵',n:'동지',e:'🥣',c:'#2F74E0',pos:91,when:'12월 22일 무렵, 일 년 중 밤이 가장 긴 날',food:['팥죽'],play:[],doing:['버선 주고받기','달력 주고받기'],
+   keep:['팥죽'],hints:['일 년 중 밤이 가장 긴 날이에요.','버선과 달력을 주고받아요.','붉은 팥죽을 쑤어 먹어요.']}
+};
+const K=Object.keys(H);
+document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>{closeO('fb');show('start');});
+$('goExplore').onclick=()=>{show('explore');};
+function medals(){
+  $('year').querySelectorAll('.medal,.mlabel').forEach(m=>m.remove());
+  K.forEach(k=>{const h=H[k],b=document.createElement('button');b.className='medal';b.style.left=h.pos+'%';b.style.setProperty('--mc',h.c);
+    b.innerHTML=`<span>${h.e}</span>${h.n}`;const m=document.createElement('span');m.className='mlabel';m.style.left=h.pos+'%';m.textContent=h.m;$('year').appendChild(m);b.onclick=()=>detail(k,b);$('year').appendChild(b);});
+}
+function li(arr,keep){return arr.length?arr.map(t=>`<li>${t}${keep.includes(t)?'<span class="keep">오늘날에도 해요</span>':''}</li>`).join(''):'<li style="color:var(--soft)">―</li>';}
+function detail(k,btn){
+  const h=H[k];document.querySelectorAll('.medal').forEach(m=>m.setAttribute('aria-pressed',m===btn));
+  $('detail').style.setProperty('--dc',h.c);
+  $('detail').innerHTML=`<h2>${h.e} ${h.n}</h2><p class="when">${h.when}</p><div class="cols">
+   <div class="col"><b>🍲 먹는 음식</b><ul>${li(h.food,h.keep)}</ul></div>
+   <div class="col"><b>🎲 즐기는 놀이</b><ul>${li(h.play,h.keep)}</ul></div>
+   <div class="col"><b>🙏 하는 일</b><ul>${li(h.doing,h.keep)}</ul></div></div>`;
+}
+medals();
+/* 수수께끼 */
+let G={order:[],i:0,shown:1,score:0};
+$('goGuess').onclick=$('gAgain').onclick=()=>{G={order:shuffle(K),i:0,shown:1,score:0};show('guess');drawG();};
+function drawG(){
+  const h=H[G.order[G.i]];
+  $('hints').innerHTML=h.hints.map((t,i)=>`<div class="hint ${i<G.shown?'':'off'}"><i>힌트 ${i+1}</i>${i<G.shown?t:'?'}</div>`).join('');
+  $('btnMore').disabled=G.shown>=3;$('btnMore').style.opacity=G.shown>=3?.35:1;
+  $('gProg').textContent=`${G.i+1} / ${K.length}`;$('gScore').textContent=`⭐ ${G.score}`;
+  $('gbar').innerHTML=K.map(k=>`<button class="big-btn" style="background:${H[k].c};font-size:clamp(26px,2.4vw,36px);padding:12px 26px" data-k="${k}">${H[k].e} ${H[k].n}</button>`).join('');
+  $('gbar').querySelectorAll('button').forEach(b=>b.onclick=()=>answer(b.dataset.k));
+}
+$('btnMore').onclick=()=>{if(G.shown<3){G.shown++;beep('tick');drawG();}};
+function answer(k){
+  const ans=G.order[G.i],h=H[ans],ok=k===ans,pts=ok?4-G.shown:0;G.score+=pts;beep(ok?'ok':'no');
+  $('fbP').style.setProperty('--pc',h.c);
+  $('fbT').textContent=ok?`딩동! ${h.e} ${h.n}이에요 (+${pts}점)`:`정답은 ${h.e} ${h.n}이에요`;
+  $('fbW').innerHTML=h.hints.join('<br>');
+  $('btnNext').textContent=G.i+1<K.length?'다음 문제':'결과 보기';openO('fb');$('btnNext').focus();
+}
+$('btnNext').onclick=()=>{closeO('fb');G.i++;G.shown=1;if(G.i<K.length)drawG();else{$('gLead').textContent=`우리 반 점수는 ${G.score}점이에요! (힌트를 적게 보고 맞힐수록 점수가 커요)`;beep('win');show('gend');}};
+document.addEventListener('keydown',e=>{if($('fb').classList.contains('on')&&(e.key==='Enter'||e.key===' ')){$('btnNext').click();e.preventDefault();}});
+
+wireTools();</script></body></html>

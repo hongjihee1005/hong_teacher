@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>사회 변화 우표첩 - 집에서 공부하기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF4EA; --paper:#FFFFFF; --ink:#23324A; --soft:#5A6A80; --line:#CFDCCB;
+  --c-low:#E0506B; --c-old:#E8961E; --c-ai:#2F74E0; --c-glo:#1F9E63;
+  --ok:#1F9E63; --no:#D2453A; --accent:#6A4FC9;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#18241C;--paper:#243329;--ink:#F1F5EF;--soft:#B8C6B8;--line:#3C5143;}
+}
+:root[data-theme="dark"]{--bg:#18241C;--paper:#243329;--ink:#F1F5EF;--soft:#B8C6B8;--line:#3C5143;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:clamp(22px,2.4vw,28px);line-height:1.5}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid var(--accent);outline-offset:3px}
+main{max-width:980px;margin:0 auto;padding:clamp(14px,3vw,36px)}
+.screen{display:none}.screen.on{display:block}
+h1,h2{font-family:var(--display);font-weight:400;margin:0}
+h1{font-size:clamp(40px,6vw,68px);line-height:1.15}
+h2{font-size:clamp(32px,4.4vw,48px)}
+.sub{color:var(--soft);margin:6px 0 0}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.homeb{border:3px solid var(--line);background:var(--paper);border-radius:14px;padding:6px 16px;font-size:22px}
+.btn{border:0;background:var(--ink);color:var(--bg);border-radius:999px;padding:12px 34px;font-size:clamp(26px,3vw,34px);box-shadow:0 5px 0 rgba(0,0,0,.2)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.btn[disabled]{opacity:.35}
+.speak{border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 14px;font-size:20px;vertical-align:middle}
+.center{text-align:center}
+
+/* 홈: 우표첩 */
+.album{margin-top:22px;display:grid;gap:18px}
+.slot{display:flex;align-items:center;gap:18px;background:var(--paper);border:3px dashed var(--line);border-radius:22px;padding:16px 20px;text-align:left;width:100%;font-family:var(--body);font-size:inherit}
+.slot .stamp{flex:none;width:clamp(84px,12vw,112px);aspect-ratio:1;border-radius:10px;display:grid;place-items:center;font-size:clamp(40px,6vw,56px);
+  background:var(--bg);border:4px dashed var(--line);filter:grayscale(1);opacity:.55}
+.slot.done{border-style:solid;border-color:var(--sc)}
+.slot.done .stamp{filter:none;opacity:1;border:6px dotted var(--sc);background:var(--paper);transform:rotate(-6deg)}
+.slot b{font-family:var(--display);font-weight:400;font-size:clamp(28px,3.6vw,38px);display:block}
+.slot small{color:var(--soft);font-size:clamp(20px,2.2vw,24px)}
+.slot .num{font-family:var(--display);font-size:22px;color:var(--soft)}
+.learned{margin-top:24px;background:var(--paper);border-radius:18px;padding:14px 18px}
+.learned p{margin:0 0 10px}
+.picks{display:flex;flex-wrap:wrap;gap:10px}
+.pick{border:3px solid var(--line);background:var(--bg);border-radius:14px;padding:6px 14px;font-size:clamp(20px,2.4vw,26px);opacity:.5}
+.pick[aria-pressed="true"]{opacity:1;border-color:var(--cc);background:var(--paper)}
+.reset{margin-top:16px;background:none;border:0;color:var(--soft);font-family:var(--body);font-size:18px;text-decoration:underline}
+
+/* 1. 뜻 카드 */
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:18px;margin:14px 0 22px}
+.flip{position:relative;min-height:250px;border:0;padding:0;background:none;perspective:1200px;text-align:left;font-family:var(--body);font-size:inherit}
+.flip .in{position:absolute;inset:0;transition:transform .5s;transform-style:preserve-3d}
+.flip.open .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;padding:18px 22px;display:flex;flex-direction:column;justify-content:center}
+.front{background:var(--cc);color:#fff;align-items:center;text-align:center}
+.front .e{font-size:72px;line-height:1}
+.front .n{font-family:var(--display);font-size:clamp(36px,4.6vw,48px)}
+.front small{opacity:.9;font-size:20px}
+.back{background:var(--paper);border:5px solid var(--cc);transform:rotateY(180deg);gap:6px}
+.back b{font-family:var(--display);font-weight:400;font-size:clamp(28px,3.4vw,34px);color:var(--cc)}
+.back .d{font-size:clamp(22px,2.6vw,27px);word-break:keep-all}
+.back .ex{font-size:clamp(19px,2.2vw,22px);color:var(--soft);word-break:keep-all}
+@media (prefers-reduced-motion: reduce){.flip .in{transition:none}}
+
+/* 2. 배달 연습 */
+.prog{height:14px;background:var(--paper);border-radius:99px;overflow:hidden;border:2px solid var(--line);margin:4px 0 16px}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.letter{background:var(--paper);border-radius:18px;padding:22px 24px;border:3px solid var(--line);position:relative;
+  background-image:repeating-linear-gradient(135deg,var(--c-low) 0 14px,transparent 14px 28px,var(--c-ai) 28px 42px,transparent 42px 56px);background-size:100% 10px;background-repeat:no-repeat}
+.letter .tag{display:inline-block;border:3px dashed var(--soft);color:var(--soft);border-radius:8px;padding:0 10px;font-family:var(--display);font-size:20px;transform:rotate(-3deg)}
+.letter .row{display:flex;gap:16px;align-items:center;margin-top:8px}
+.letter .e{font-size:clamp(60px,9vw,88px);line-height:1;flex:none}
+.letter .x{font-family:var(--display);font-size:clamp(28px,3.8vw,40px);line-height:1.35;word-break:keep-all}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:18px}
+.mbox{border:0;background:var(--cc);color:#fff;border-radius:40px 40px 14px 14px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;box-shadow:0 5px 0 rgba(0,0,0,.2)}
+.mbox .e{font-size:44px;line-height:1.1}.mbox .n{font-size:clamp(24px,3vw,30px)}
+.mbox.dim{opacity:.3}
+.mbox.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
+.msg{margin-top:16px;border-radius:16px;padding:14px 18px;display:none;word-break:keep-all}
+.msg.on{display:block}
+.msg.ok{background:color-mix(in srgb,var(--ok) 16%,var(--paper));border:3px solid var(--ok)}
+.msg.no{background:color-mix(in srgb,var(--no) 12%,var(--paper));border:3px solid var(--no)}
+.msg b{font-family:var(--display);font-weight:400;font-size:clamp(26px,3vw,32px);display:block}
+.next{margin-top:14px;text-align:right}
+
+/* 3. 확인 퀴즈 */
+.q{background:var(--paper);border-radius:18px;padding:22px 24px;border:3px solid var(--line)}
+.q .qt{font-family:var(--display);font-size:clamp(28px,3.8vw,40px);line-height:1.35;word-break:keep-all}
+.opts{display:grid;gap:12px;margin-top:16px}
+.opts.ox{grid-template-columns:1fr 1fr}
+.opt{border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:12px 18px;font-size:clamp(24px,3vw,30px);text-align:left;word-break:keep-all}
+.opts.ox .opt{font-size:clamp(56px,9vw,84px);text-align:center;padding:6px}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.opt.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 14%,var(--paper))}
+
+.result{text-align:center;padding:10px 0}
+.result .big{font-size:96px;line-height:1.1}
+.result .stars{font-size:52px;letter-spacing:6px}
+.retry{margin-top:18px;background:var(--paper);border-radius:16px;padding:14px 18px;text-align:left}
+.retry div{padding:8px 0;border-bottom:2px dashed var(--line);word-break:keep-all}
+.retry div:last-child{border:0}
+</style>
+</head>
+<body>
+<main>
+
+<!-- 홈 -->
+<section id="home" class="screen on">
+  <h1>📒 사회 변화 우표첩</h1>
+  <p class="sub">세 가지 공부를 마치고 우표를 모아 보세요. 순서대로 하면 더 쉬워요.</p>
+  <div class="album" id="album"></div>
+  <div class="learned">
+    <p>학교에서 배운 사회 변화만 골라 공부할 수 있어요.</p>
+    <div class="picks" id="picks"></div>
+  </div>
+  <div class="center"><button class="reset" id="btnReset">우표첩 처음부터 다시 모으기</button></div>
+</section>
+
+<!-- 1. 뜻 알기 -->
+<section id="s1" class="screen">
+  <div class="bar"><button class="homeb" data-home>🏠 우표첩</button><h2>① 뜻 알아보기</h2></div>
+  <p class="sub">카드를 눌러 뒤집어 보세요. 모든 카드를 뒤집으면 우표를 받아요.</p>
+  <div class="flipgrid" id="flips"></div>
+  <div class="center"><button class="btn" id="btnS1Done" disabled>우표 받기</button></div>
+</section>
+
+<!-- 2. 배달 연습 -->
+<section id="s2" class="screen">
+  <div class="bar"><button class="homeb" data-home>🏠 우표첩</button><h2>② 배달 연습</h2><span id="s2Count"></span></div>
+  <div class="prog"><i id="s2Bar"></i></div>
+  <div class="letter">
+    <span class="tag" id="lTag"></span> <button class="speak" id="lSpeak">🔈 읽어 주기</button>
+    <div class="row"><div class="e" id="lE"></div><div class="x" id="lX"></div></div>
+  </div>
+  <div class="boxes" id="boxes"></div>
+  <div class="msg" id="lMsg"></div>
+  <div class="next"><button class="btn" id="btnL" style="display:none">다음 편지</button></div>
+</section>
+
+<!-- 3. 확인 퀴즈 -->
+<section id="s3" class="screen">
+  <div class="bar"><button class="homeb" data-home>🏠 우표첩</button><h2>③ 확인 퀴즈</h2><span id="s3Count"></span></div>
+  <div class="prog"><i id="s3Bar"></i></div>
+  <div class="q">
+    <div class="qt" id="qT"></div>
+    <button class="speak" id="qSpeak" style="margin-top:8px">🔈 읽어 주기</button>
+    <div class="opts" id="qO"></div>
+  </div>
+  <div class="msg" id="qMsg"></div>
+  <div class="next"><button class="btn" id="btnQ" style="display:none">다음 문제</button></div>
+</section>
+
+<!-- 결과 -->
+<section id="res" class="screen">
+  <div class="result" id="resBox"></div>
+</section>
+
+</main>
+<script>
+const CATS={
+  low:{name:'저출산',e:'👶',c:'var(--c-low)',d:'태어나는 아이의 수가 줄어들어 출산율이 낮아지는 현상',
+       ex:'예) 가족 수가 줄어요, 문을 닫는 학교가 생겨요'},
+  old:{name:'고령화',e:'👵',c:'var(--c-old)',d:'전체 사람 수에서 노인(65세 이상)이 차지하는 비율이 높아지는 현상',
+       ex:'예) 노인 복지관이 늘어요, 일하는 노인이 많아져요'},
+  ai:{name:'지능정보화',e:'🤖',c:'var(--c-ai)',d:'인공지능을 활용한 여러 기술이 우리 사회 곳곳에 큰 영향을 주는 현상',
+       ex:'예) 배달 로봇, 인공지능 학습 프로그램'},
+  glo:{name:'세계화',e:'🌏',c:'var(--c-glo)',d:'세계 여러 나라가 여러 분야에서 교류하며 하나로 연결되는 현상',
+       ex:'예) 다른 나라 물건을 쉽게 사요, 우리 음식이 외국에서 인기예요'}
+};
+const ORDER=['low','old','ai','glo'];
+const TYPE={life:'생활 모습',prob:'문제점',effort:'해결 노력'};
+const CARDS=[
+ {c:'low',t:'life',e:'👨‍👩‍👧',x:'한 가족의 식구 수가 예전보다 줄어들었어요.',w:'태어나는 아이가 줄어들면서 가족 구성원의 수도 줄어들어요.'},
+ {c:'low',t:'life',e:'🏫',x:'학생 수가 줄어서 문을 닫는 학교가 생겼어요.',w:'아이가 적게 태어나니 학생도 줄어 폐교하는 학교가 늘어요.'},
+ {c:'low',t:'life',e:'🏥',x:'아기가 태어나는 것을 돕는 병원이 줄어들고 있어요.',w:'태어나는 아이가 줄어들어 출산을 돕는 병원도 줄어요.'},
+ {c:'low',t:'life',e:'👷',x:'앞으로 일할 수 있는 사람의 수가 줄어들고 있어요.',w:'아이가 적게 태어나면 자라서 일할 사람도 줄어들어요.'},
+ {c:'low',t:'effort',e:'🍼',x:'아이를 낳고 키우는 데 필요한 돈과 물건을 지원해요.',w:'아이를 키우는 부담을 줄여 주는 저출산 해결 노력이에요.'},
+ {c:'low',t:'effort',e:'🧸',x:'안전하고 깨끗한 보육 시설을 운영해요.',w:'부모가 안심하고 아이를 맡기게 돕는 저출산 해결 노력이에요.'},
+ {c:'low',t:'effort',e:'🏠',x:'부모가 아이를 키우려고 잠시 일을 쉴 수 있는 제도를 만들어요.',w:'부모가 아이를 돌볼 시간을 갖게 돕는 저출산 해결 노력이에요.'},
+ {c:'old',t:'life',e:'🏢',x:'노인 복지관이 새로 많이 생기고 있어요.',w:'노인이 많아지면서 노인 복지관이 늘고 있어요.'},
+ {c:'old',t:'life',e:'🩺',x:'노인 전문 병원과 요양 시설이 늘어났어요.',w:'노인의 비율이 높아지면서 노인을 돌보는 시설이 많아졌어요.'},
+ {c:'old',t:'life',e:'🎨',x:'노인을 위한 여러 가지 배움 프로그램이 열려요.',w:'노인이 많아지면서 노인을 위한 프로그램이 늘고 있어요.'},
+ {c:'old',t:'life',e:'💼',x:'일하는 할머니, 할아버지가 많아졌어요.',w:'건강하게 오래 사는 노인이 늘면서 일하는 노인도 많아졌어요.'},
+ {c:'old',t:'effort',e:'📢',x:'노인 일자리 설명회를 열어 알맞은 일자리를 알려 줘요.',w:'노인에게 일자리를 마련해 주는 고령화 대비 노력이에요.'},
+ {c:'old',t:'effort',e:'🦯',x:'노인이 쓰기 편한 다양한 물건을 개발해요.',w:'노인의 생활을 돕는 고령화 대비 노력이에요.'},
+ {c:'old',t:'effort',e:'📋',x:'노인이 되었을 때의 생활을 미리 준비하도록 도와줘요.',w:'노후 준비를 돕는 고령화 대비 노력이에요.'},
+ {c:'ai',t:'life',e:'📦',x:'인공지능 배달 로봇이 물건을 날라다 줘요.',w:'인공지능 기술이 생활 곳곳에 쓰이는 지능정보화의 모습이에요.'},
+ {c:'ai',t:'life',e:'📱',x:'인공지능 학습 프로그램으로 공부해요.',w:'인공지능이 공부를 돕는 것은 지능정보화의 모습이에요.'},
+ {c:'ai',t:'life',e:'🚗',x:'인공지능이 자동차의 안전 운전을 도와줘요.',w:'인공지능 기술이 운전에도 쓰이는 지능정보화의 모습이에요.'},
+ {c:'ai',t:'prob',e:'📰',x:'인터넷에서 거짓 정보가 빠르게 퍼져요.',w:'정보를 쉽게 주고받게 되면서 생긴 지능정보화의 문제예요.'},
+ {c:'ai',t:'prob',e:'📵',x:'스마트폰을 너무 오래 써서 스스로 멈추기 어려워요.',w:'스마트폰 과의존은 지능정보화로 나타난 문제예요.'},
+ {c:'ai',t:'effort',e:'🔒',x:'내 이름, 주소, 전화번호를 인터넷에 함부로 올리지 않아요.',w:'개인 정보를 지키는 것은 지능정보화 문제에 대응하는 방법이에요.'},
+ {c:'ai',t:'effort',e:'🧐',x:'인터넷에 있는 정보를 무조건 믿지 않고 따져 봐요.',w:'거짓 정보에 속지 않게 하는 지능정보화 대응 방법이에요.'},
+ {c:'glo',t:'life',e:'🍌',x:'다른 나라에서 온 과일과 물건을 쉽게 살 수 있어요.',w:'여러 나라와 교류하면서 달라진 세계화의 모습이에요.'},
+ {c:'glo',t:'life',e:'🍝',x:'우리 동네에 여러 나라 음식을 파는 가게가 많아졌어요.',w:'다른 나라와의 교류가 활발해져 생긴 세계화의 모습이에요.'},
+ {c:'glo',t:'life',e:'🍜',x:'우리나라 과자와 라면이 다른 나라에서 인기가 많아요.',w:'우리나라의 생활 모습이 다른 나라에 소개되는 것도 세계화예요.'},
+ {c:'glo',t:'prob',e:'😷',x:'여러 나라를 오가는 사람이 많아져 감염병이 빠르게 퍼질 수 있어요.',w:'나라 사이의 이동이 많아지면서 생긴 세계화의 문제예요.'},
+ {c:'glo',t:'prob',e:'🏮',x:'각 나라의 전통적인 생활 모습이 약해질 수 있어요.',w:'다른 나라 생활 방식을 무조건 따르면 생길 수 있는 세계화의 문제예요.'},
+ {c:'glo',t:'effort',e:'⚖️',x:'다른 나라의 생활 방식을 좋은 점과 나쁜 점을 따져서 받아들여요.',w:'세계화 문제에 대응하는 바람직한 태도예요.'},
+ {c:'glo',t:'effort',e:'🤝',x:'세계의 문제에 관심을 갖고 여러 나라와 함께 해결해요.',w:'세계가 연결된 만큼 함께 해결하려는 세계화 대응 노력이에요.'}
+];
+// 퀴즈: cats = 이 문제를 풀려면 배워야 하는 사회 변화
+const QUIZ=[
+ {k:['low'],ox:true,q:'저출산은 태어나는 아이의 수가 줄어드는 현상이에요.',a:0,w:'맞아요. 태어나는 아이가 줄어 출산율이 낮아지는 현상이 저출산이에요.'},
+ {k:['old'],ox:true,q:'고령화는 전체 사람 중에서 어린이의 비율이 높아지는 현상이에요.',a:1,w:'어린이가 아니라 노인(65세 이상)의 비율이 높아지는 현상이 고령화예요.'},
+ {k:['old'],ox:true,q:'보통 65세 이상인 사람을 노인이라고 해요.',a:0,w:'맞아요. 65세 이상인 사람을 노인이라고 해요.'},
+ {k:['ai'],ox:true,q:'인터넷에 있는 정보는 모두 사실이니까 그대로 믿어도 돼요.',a:1,w:'인터넷에는 거짓 정보도 있어요. 무조건 믿지 말고 따져 봐야 해요.'},
+ {k:['glo'],ox:true,q:'세계화로 다른 나라에서 온 물건을 쉽게 살 수 있게 되었어요.',a:0,w:'맞아요. 여러 나라와 교류하면서 생긴 세계화의 모습이에요.'},
+ {k:['glo'],ox:true,q:'다른 나라의 생활 방식은 무조건 따라 해야 해요.',a:1,w:'좋은 점과 나쁜 점을 따져 보고 받아들여야 해요. 우리 생활 방식도 소중히 여겨야 해요.'},
+ {k:['low','old'],q:'우리 사회가 변하는 까닭이 아닌 것은 무엇일까요?',o:['사람 수의 변화','과학 기술의 발달','다른 나라와의 교류','오늘 날씨가 흐린 것'],a:3,w:'사회가 변하는 까닭에는 사람 수의 변화, 평균 수명의 증가, 사람들의 생각 변화, 과학 기술의 발달, 다른 나라와의 교류 등이 있어요.'},
+ {k:['low'],q:'저출산 문제를 해결하기 위한 노력은 무엇일까요?',o:['안전한 보육 시설 운영하기','노인 일자리 설명회 열기','인터넷 정보 따져 보기','외국 음식 가게 열기'],a:0,w:'아이를 안심하고 맡길 수 있는 보육 시설은 저출산 해결 노력이에요.'},
+ {k:['old'],q:'고령화로 달라진 생활 모습은 무엇일까요?',o:['문을 닫는 학교가 생겨요','노인 복지관이 늘어나요','배달 로봇이 물건을 날라요','외국 과자가 인기예요'],a:1,w:'노인이 많아지면서 노인 복지관이 늘어나요.'},
+ {k:['old'],q:'사람들이 예전보다 오래 살게 된 까닭은 무엇일까요?',o:['의학 기술이 발달해서','학교가 줄어서','스마트폰이 생겨서','아이가 적게 태어나서'],a:0,w:'의학 기술이 발달하고 깨끗한 환경에서 생활하게 되어 오래 살게 되었어요.'},
+ {k:['ai'],q:'지능정보화로 나타난 문제는 무엇일까요?',o:['요양 시설이 늘어나요','거짓 정보가 빠르게 퍼져요','출산을 돕는 병원이 줄어요','전통 음식이 사라져요'],a:1,w:'정보를 쉽게 주고받게 되면서 거짓 정보가 빠르게 퍼지는 문제가 생겼어요.'},
+ {k:['ai'],q:'인터넷을 안전하게 쓰는 방법으로 알맞은 것은 무엇일까요?',o:['내 주소를 게시판에 올려요','비밀번호를 친구에게 알려 줘요','개인 정보를 함부로 올리지 않아요','모르는 사람이 보낸 링크를 눌러요'],a:2,w:'이름, 주소, 전화번호 같은 개인 정보는 인터넷에 함부로 올리지 않아요.'},
+ {k:['glo'],q:'세계화로 나타날 수 있는 문제는 무엇일까요?',o:['감염병이 빠르게 퍼질 수 있어요','노인 복지관이 늘어요','학생 수가 줄어요','배달 로봇이 생겨요'],a:0,w:'여러 나라를 오가는 사람이 많아져 감염병이 빠르게 퍼질 수 있어요.'},
+ {k:['glo'],q:'세계화의 뜻으로 알맞은 것은 무엇일까요?',o:['태어나는 아이가 줄어드는 것','노인의 비율이 높아지는 것','세계 여러 나라가 교류하며 하나로 연결되는 것','인공지능이 생활에 쓰이는 것'],a:2,w:'세계화는 세계 여러 나라가 교류하며 하나로 연결되는 현상이에요.'}
+];
+
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const KEY='sahoe-stamps-v1';
+let ST={s1:false,s2:false,s3:0,learned:[...ORDER]};
+try{const v=JSON.parse(localStorage.getItem(KEY)||'null'); if(v) ST={...ST,...v};}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(ST));}catch(e){}}
+const learned=()=>ORDER.filter(k=>ST.learned.includes(k));
+
+function speak(t){
+  try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';u.rate=.9;speechSynthesis.speak(u);}catch(e){}
+}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));window.scrollTo(0,0);try{speechSynthesis.cancel();}catch(e){}}
+document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>{renderHome();show('home');});
+
+/* 홈 */
+function renderHome(){
+  const stars=ST.s3?'⭐'.repeat(ST.s3):'';
+  const items=[
+    {id:'s1',done:ST.s1,e:'📖',c:'var(--c-ai)',t:'뜻 알아보기',d:'네 가지 사회 변화의 뜻을 카드로 알아봐요.'},
+    {id:'s2',done:ST.s2,e:'📮',c:'var(--c-low)',t:'배달 연습',d:'편지를 읽고 알맞은 우체통에 넣어요. 틀리면 한 번 더 기회가 있어요.'},
+    {id:'s3',done:ST.s3>0,e:'🏅',c:'var(--c-old)',t:'확인 퀴즈',d:ST.s3?`받은 별 ${stars} · 다시 풀어 별을 더 모아 보세요.`:'10문제를 풀고 별을 받아요.'}
+  ];
+  $('album').innerHTML=items.map((it,i)=>`<button class="slot ${it.done?'done':''}" style="--sc:${it.c}" data-go="${it.id}">
+    <span class="stamp">${it.e}</span><span><span class="num">${i+1}단계 ${it.done?'· 우표 받음':''}</span><b>${it.t}</b><small>${it.d}</small></span></button>`).join('');
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>({s1:startS1,s2:startS2,s3:startS3})[b.dataset.go]());
+  $('picks').innerHTML=ORDER.map(k=>`<button class="pick" style="--cc:${CATS[k].c}" aria-pressed="${ST.learned.includes(k)}" data-k="${k}">${CATS[k].e} ${CATS[k].name}</button>`).join('');
+  document.querySelectorAll('.pick').forEach(b=>b.onclick=()=>{
+    const k=b.dataset.k;
+    if(ST.learned.includes(k)){ if(ST.learned.length>1) ST.learned=ST.learned.filter(x=>x!==k); }
+    else ST.learned.push(k);
+    save();renderHome();
+  });
+}
+$('btnReset').onclick=()=>{if(confirm('모은 우표를 모두 지우고 처음부터 할까요?')){ST.s1=false;ST.s2=false;ST.s3=0;save();renderHome();}};
+
+/* 1단계 */
+function startS1(){
+  const ks=learned(), seen=new Set();
+  $('flips').innerHTML=ks.map(k=>{const c=CATS[k];return `<button class="flip" style="--cc:${c.c}" data-k="${k}" aria-label="${c.name} 카드 뒤집기">
+    <span class="in"><span class="face front"><span class="e">${c.e}</span><span class="n">${c.name}</span><small>눌러서 뜻 보기</small></span>
+    <span class="face back"><b>${c.e} ${c.name}</b><span class="d">${c.d}</span><span class="ex">${c.ex}</span></span></span></button>`;}).join('');
+  $('btnS1Done').disabled=true;
+  document.querySelectorAll('.flip').forEach(f=>f.onclick=()=>{
+    f.classList.toggle('open');
+    if(f.classList.contains('open')){const c=CATS[f.dataset.k];speak(`${c.name}. ${c.d}`);seen.add(f.dataset.k);}
+    if(seen.size===ks.length) $('btnS1Done').disabled=false;
+  });
+  show('s1');
+}
+$('btnS1Done').onclick=()=>{ST.s1=true;save();result('📖','뜻 알아보기 우표를 받았어요!','이제 ② 배달 연습을 해 볼까요?');};
+
+/* 2단계 */
+let L={deck:[],i:0,tries:0,first:0,miss:[]};
+function startS2(){
+  const ks=learned();
+  const pools=ks.map(k=>shuffle(CARDS.filter(c=>c.c===k)));
+  const deck=[];let n=0;const total=Math.min(12,pools.reduce((a,p)=>a+p.length,0));
+  while(deck.length<total){const p=pools[n%pools.length];if(p.length)deck.push(p.pop());n++;}
+  L={deck:shuffle(deck),i:0,tries:0,first:0,miss:[]};
+  $('boxes').innerHTML=ks.map(k=>`<button class="mbox" style="--cc:${CATS[k].c}" data-k="${k}"><span class="e">${CATS[k].e}</span><span class="n">${CATS[k].name}</span></button>`).join('');
+  document.querySelectorAll('.mbox').forEach(b=>b.onclick=()=>pick(b));
+  show('s2');showLetter();
+}
+function showLetter(){
+  const c=L.deck[L.i];L.tries=0;
+  $('lTag').textContent=TYPE[c.t];$('lE').textContent=c.e;$('lX').textContent=c.x;
+  $('s2Count').textContent=`${L.i+1} / ${L.deck.length}`;
+  $('s2Bar').style.width=(L.i/L.deck.length*100)+'%';
+  $('lMsg').className='msg';$('btnL').style.display='none';
+  document.querySelectorAll('.mbox').forEach(b=>{b.disabled=false;b.classList.remove('dim');});
+}
+$('lSpeak').onclick=()=>speak(L.deck[L.i].x);
+function pick(b){
+  const c=L.deck[L.i],ok=b.dataset.k===c.c,m=$('lMsg');L.tries++;
+  if(ok){
+    if(L.tries===1)L.first++;
+    m.className='msg on ok';m.innerHTML=`<b>딩동! ${CATS[c.c].name} 우체통이 맞아요 🎉</b>${c.w}`;
+    finishLetter();speak('맞아요! '+c.w);
+  }else if(L.tries===1){
+    b.classList.add('shake','dim');b.disabled=true;setTimeout(()=>b.classList.remove('shake'),450);
+    m.className='msg on no';m.innerHTML=`<b>한 번 더 생각해 봐요</b>힌트: 이 편지는 '${TYPE[c.t]}'에 대한 이야기예요. 무엇 때문에 생긴 일인지 떠올려 보세요.`;
+  }else{
+    L.miss.push(c);
+    m.className='msg on no';m.innerHTML=`<b>이 편지는 ${CATS[c.c].e} ${CATS[c.c].name} 우체통에 가야 해요</b>${c.w}`;
+    finishLetter();speak(`${CATS[c.c].name} 우체통이에요. `+c.w);
+  }
+}
+function finishLetter(){
+  document.querySelectorAll('.mbox').forEach(b=>b.disabled=true);
+  $('btnL').textContent=L.i+1<L.deck.length?'다음 편지':'결과 보기';
+  $('btnL').style.display='inline-block';$('btnL').focus();
+}
+$('btnL').onclick=()=>{
+  L.i++;
+  if(L.i<L.deck.length){showLetter();return;}
+  ST.s2=true;save();
+  const list=L.miss.length?`<div class="retry"><b style="font-family:var(--display);font-weight:400">다시 살펴볼 편지</b>${L.miss.map(c=>`<div>${c.e} ${c.x}<br>→ ${CATS[c.c].name}</div>`).join('')}</div>`:'';
+  result('📮',`${L.deck.length}통 중 ${L.first}통을 한 번에 배달했어요!`,'배달 연습 우표를 받았어요. 이제 ③ 확인 퀴즈에 도전해 봐요.',list);
+};
+
+/* 3단계 */
+let Q={list:[],i:0,score:0,miss:[]};
+function startS3(){
+  const ks=learned();
+  const pool=QUIZ.filter(q=>q.k.every(k=>ks.includes(k)));
+  Q={list:shuffle(pool).slice(0,10),i:0,score:0,miss:[]};
+  show('s3');showQ();
+}
+function showQ(){
+  const q=Q.list[Q.i];
+  $('s3Count').textContent=`${Q.i+1} / ${Q.list.length}`;
+  $('s3Bar').style.width=(Q.i/Q.list.length*100)+'%';
+  $('qT').textContent=q.q;$('qMsg').className='msg';$('btnQ').style.display='none';
+  const opts=q.ox?['⭕','❌']:q.o;
+  $('qO').className='opts'+(q.ox?' ox':'');
+  $('qO').innerHTML=opts.map((o,i)=>`<button class="opt" data-i="${i}" aria-label="${q.ox?(i?'엑스':'오'):o}">${q.ox?o:(i+1)+'. '+o}</button>`).join('');
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+}
+$('qSpeak').onclick=()=>{const q=Q.list[Q.i];speak(q.ox?q.q+' 맞으면 오, 틀리면 엑스를 누르세요.':q.q+' '+q.o.map((o,i)=>(i+1)+'번, '+o).join('. '));};
+function answer(i){
+  const q=Q.list[Q.i],ok=i===q.a,btns=[...document.querySelectorAll('.opt')];
+  btns.forEach(b=>b.disabled=true);btns[q.a].classList.add('right');if(!ok)btns[i].classList.add('wrong');
+  if(ok)Q.score++;else Q.miss.push(q);
+  const m=$('qMsg');m.className='msg on '+(ok?'ok':'no');
+  m.innerHTML=`<b>${ok?'정답이에요! 🎉':'아쉬워요, 정답을 확인해 봐요'}</b>${q.w}`;
+  speak((ok?'정답이에요. ':'')+q.w);
+  $('btnQ').textContent=Q.i+1<Q.list.length?'다음 문제':'결과 보기';$('btnQ').style.display='inline-block';$('btnQ').focus();
+}
+$('btnQ').onclick=()=>{
+  Q.i++;
+  if(Q.i<Q.list.length){showQ();return;}
+  const ratio=Q.score/Q.list.length, stars=ratio>=.9?3:ratio>=.6?2:1;
+  ST.s3=Math.max(ST.s3,stars);save();
+  const list=Q.miss.length?`<div class="retry"><b style="font-family:var(--display);font-weight:400">틀린 문제 다시 보기</b>${Q.miss.map(q=>`<div>${q.q}<br>→ ${q.w}</div>`).join('')}</div>`:'';
+  result('🏅',`${Q.list.length}문제 중 ${Q.score}문제를 맞혔어요!`,`<span class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</span>`,list);
+};
+
+/* 결과 */
+function result(e,t,d,extra=''){
+  $('resBox').innerHTML=`<div class="big">${e}</div><h2>${t}</h2><p class="sub" style="font-size:1.1em">${d}</p>
+    <p><button class="btn" id="btnBack">우표첩 보기</button></p>${extra}`;
+  $('btnBack').onclick=()=>{renderHome();show('home');};
+  show('res');
+}
+renderHome();
+</script>
+</body>
+</html>
