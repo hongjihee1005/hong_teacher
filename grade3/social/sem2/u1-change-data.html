@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>👶 저출산·고령화 자료실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.wrap{flex:1;min-height:0;overflow-y:auto;padding:4px 2px 20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1300px;margin:0 auto}
+.dc{background:var(--paper);border-radius:24px;border-top:14px solid var(--cc);padding:clamp(16px,2vw,26px)}
+.dc .big{font-family:var(--display);font-size:clamp(40px,4.6vw,70px);color:var(--cc);line-height:1.1}
+.dc h3{font-family:var(--display);font-weight:400;font-size:clamp(25px,2.5vw,34px);margin:2px 0 8px}
+.dc p{margin:0 0 10px;font-size:clamp(21px,2.1vw,28px);line-height:1.5}
+.bar2{height:22px;background:var(--bg);border-radius:99px;overflow:hidden;border:2px solid var(--line);margin:6px 0 12px}
+.bar2 i{display:block;height:100%;background:var(--cc);width:var(--w)}
+.ask2{background:var(--bg);border-radius:14px;padding:10px 16px;font-size:clamp(20px,2vw,26px);margin-bottom:10px}
+.ask2 b{font-family:var(--display);font-weight:400}
+.src{font-size:clamp(16px,1.6vw,20px);color:var(--soft);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.go{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-size:clamp(18px,1.8vw,23px);text-decoration:none;color:inherit;border:3px solid var(--line);border-radius:999px;padding:4px 14px}
+.go:hover{border-color:var(--ink)}
+.sec{max-width:1300px;margin:26px auto 0}
+.sec h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,2.6vw,36px);margin:0 0 12px}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.lk{display:flex;gap:16px;align-items:center;background:var(--paper);border:4px solid var(--line);border-radius:22px;padding:14px 18px;text-decoration:none;color:inherit}
+.lk:hover{border-color:var(--ink)}
+.lk .e{font-size:clamp(36px,3.6vw,52px);flex:none}
+.lk b{font-family:var(--display);font-weight:400;font-size:clamp(23px,2.3vw,30px);display:block}
+.lk small{font-size:clamp(17px,1.7vw,22px);color:var(--soft)}
+.rel{display:none;grid-template-columns:1fr 1fr;gap:16px}
+.rel.on{display:grid}
+.rl{display:flex;gap:14px;align-items:center;background:var(--paper);border:4px solid var(--rc);border-radius:22px;padding:14px 18px;text-decoration:none;color:inherit}
+.rl .e{font-size:clamp(34px,3.4vw,48px)}
+.rl b{font-family:var(--display);font-weight:400;font-size:clamp(23px,2.3vw,30px);display:block}
+.rl small{font-size:clamp(17px,1.7vw,22px);color:var(--soft)}
+.notice{max-width:1300px;margin:20px auto 0;background:var(--paper);border-left:14px solid #6A4FC9;border-radius:16px;padding:16px 22px;font-size:clamp(19px,1.9vw,25px);line-height:1.6}
+.notice b{font-family:var(--display);font-weight:400;color:#6A4FC9}
+@media (max-width:860px){.grid,.links,.rel.on{grid-template-columns:1fr}}
+
+body,h1,h2,h3,h4,p,li,span,div,button,a,td,th,small,b,i{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:16px}
+.creditbar .madeby{width:100%}
+.tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(20px,2vw,26px);
+  text-decoration:none;color:inherit;border:3px solid var(--line,#ccc);background:var(--paper,#fff);border-radius:999px;padding:8px 22px}
+.tolist.on{display:inline-flex}
+.rel.on{display:grid!important}
+.madeby{font-size:16px;color:var(--soft,#666);opacity:.85;text-align:center;font-family:var(--body,sans-serif)}
+
+h1,h2,h3,h4,.title,.hd,.qt,.x,.n,.nm,.big,.lead,.sit,.ask,.qtext,.front .n,.slot b,.dc h3,.lk b,.rl b,dt{text-wrap:balance}
+p,li,small,.d,.ex,.why,.blurb,.ask2,.sub,.msg,.notice,.fix,.retry div,.opt,.opt2,.way,.mbox .n,.dc p,.lk small,.rl small{text-wrap:pretty}
+</style></head><body>
+
+<section id="main" class="screen on">
+  <div class="topbar"><h1 style="font-size:clamp(28px,2.9vw,42px)">👶 저출산·고령화 자료실</h1>
+    <div class="tools"><button class="tool" data-full>⛶</button></div></div>
+  <p class="lead" style="font-size:clamp(20px,1.9vw,26px)">1단원 2~8차시 · 정부가 발표한 통계로 사회 변화를 살펴봐요.</p>
+  <div class="wrap" id="wrap"></div>
+<div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><p class="madeby">만든 사람: 초등교사 홍지희</p></div></section>
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+
+const CFG={"h": "👶 저출산·고령화 자료실", "sub": "1단원 2~8차시 · 정부가 발표한 통계로 사회 변화를 살펴봐요.", "file": "/mnt/user-data/outputs/자료실_사회변화.html", "cards": [{"c": "#E0506B", "big": "25만 4,300명", "t": "2025년에 태어난 아기 수", "p": "2025년 한 해 동안 태어난 아기는 25만 4,300명이에요. 2024년보다 1만 6,000명 늘어 2년 연속 증가했어요.", "q": "아기가 조금 늘었는데도 문을 닫는 학교가 생기는 까닭은 무엇일까요?", "s": "2025년 출생 통계 · 국가데이터처 · 2026년 8월 26일 발표", "u": "https://eiec.kdi.re.kr/policy/materialView.do?num=285815"}, {"c": "#E0506B", "big": "0.80명", "t": "합계출산율", "p": "여자 어른 한 명이 낳을 것으로 예상되는 아기 수예요. 4년 만에 다시 0.8명대가 되었어요.", "q": "우리 부모님, 할머니 할아버지 때는 형제자매가 몇 명이었는지 여쭤볼까요?", "s": "2025년 출생 통계 · 국가데이터처 · 2026년 8월 26일 발표", "u": "https://eiec.kdi.re.kr/policy/materialView.do?num=285815"}, {"c": "#E8961E", "big": "20.7%", "t": "65세 이상 노인의 비율", "w": "20.7%", "p": "우리나라 사람 100명 중 약 21명이 65세 이상이에요. 2000년에는 100명 중 7명이었어요.", "q": "노인이 많아지면 우리 동네에 어떤 시설과 일자리가 더 필요해질까요?", "s": "2025년 인구주택총조사 · 국가데이터처 · 2026년 7월 28일 발표", "u": "https://www.korea.kr/briefing/policyBriefingView.do?newsId=156772432"}, {"c": "#E8961E", "big": "10.1%", "t": "0~14세 어린이의 비율", "w": "10.1%", "p": "2000년에는 100명 중 21명이 어린이였는데 지금은 10명이에요. 25년 만에 절반 아래로 줄었어요.", "q": "어린이가 줄면 우리 학교와 놀이터는 어떻게 달라질까요?", "s": "2025년 인구주택총조사 · 국가데이터처 · 2026년 7월 28일 발표", "u": "https://www.korea.kr/briefing/policyBriefingView.do?newsId=156772432"}, {"c": "#1F9E63", "big": "5.0%", "t": "외국인 주민의 비율 (세계화)", "w": "5%", "p": "우리나라에 사는 외국인 주민은 258만 명으로, 100명 중 5명이에요. 17개 시·도 모두에서 늘고 있어요.", "q": "다른 나라와 교류가 활발해지면서 우리 생활에서 달라진 점은 무엇일까요?", "s": "2024 지방자치단체 외국인주민 현황 · 행정안전부 · 2025년 10월 31일 발표", "u": "https://www.mois.go.kr/frt/bbs/type010/commonSelectBoardArticle.do?bbsId=BBSMSTR_000000000008&nttId=121193"}], "links": [{"e": "📰", "t": "대한민국 정책브리핑", "d": "정부가 발표한 통계 원문과 보도자료를 볼 수 있어요.", "u": "https://www.korea.kr/briefing/policyBriefingView.do?newsId=156772432"}, {"e": "🗞️", "t": "어린이동아", "d": "어린이 눈높이로 쓴 뉴스 기사를 검색해 읽을 수 있어요.", "u": "https://kids.donga.com"}, {"e": "📄", "t": "소년한국일보", "d": "1960년에 창간한 어린이 신문이에요. 사회 기사도 실려요.", "u": "https://www.kidshankook.kr/"}, {"e": "🎬", "t": "EBS 클립뱅크", "d": "교과와 연결되는 짧은 교육 영상 모음이에요.", "u": "https://www.youtube.com/playlist?list=PLvNzObWMMx6sAwgFhXTjGvPp4L2Dq38mD"}, {"e": "🏫", "t": "에듀넷 티-클리어", "d": "성취기준으로 검색하면 차시에 맞는 사진·영상 자료가 나와요.", "u": "https://www.edunet.net"}, {"e": "🎞️", "t": "e영상역사관 · 대한뉴스", "d": "1950년대부터의 옛 기록 영상을 무료로 볼 수 있어요. 옛 생활 모습이 그대로 담겨 있어요.", "u": "https://www.ehistory.go.kr/koreanews/korea_news"}], "rel": [{"e": "📮", "t": "사회 변화 우체국", "d": "수업용 · 사례를 네 가지 변화로 분류하는 게임", "f": "u1-change-class.html", "c": "#E0506B"}, {"e": "📒", "t": "사회 변화 우표첩", "d": "개별 학습용 · 뜻 알기 → 분류 연습 → 퀴즈", "f": "u1-change-home.html", "c": "#1F9E63"}], "note": "지능정보화(인공지능 관련) 부분은 3학년에게 알맞고 출처가 분명한 통계를 아직 찾지 못해 카드로 넣지 않았습니다. 대신 교과서의 사례(배달 로봇, 인공지능 학습 프로그램)를 아이들의 경험과 연결해 이야기 나누시는 편이 좋겠습니다.<br><br>출생아 수가 2년 연속 늘어난 점은 교과서 설명과 결이 조금 다릅니다. \"그래도 왜 학교는 문을 닫을까?\"로 이어 가면 좋은 탐구 거리가 됩니다."};
+function card(d){return `<article class="dc" style="--cc:${d.c}">
+  ${d.big?`<div class="big">${d.big}</div>`:''}<h3>${d.t}</h3>
+  ${d.w?`<div class="bar2"><i style="--w:${d.w}"></i></div>`:''}
+  <p>${d.p}</p><div class="ask2"><b>💬 함께 생각해요</b><br>${d.q}</div>
+  <div class="src"><span>출처: ${d.s}</span>${d.u?`<a class="go" href="${d.u}" target="_blank" rel="noopener">원문 보기 ↗</a>`:''}</div></article>;`.replace(';','');}
+$('wrap').innerHTML=`<div class="grid">${CFG.cards.map(card).join('')}</div>
+ <div class="sec"><h2>🎬 영상·사진·기사 찾아보기</h2><div class="links">${CFG.links.map(l=>`<a class="lk" href="${l.u}" target="_blank" rel="noopener"><span class="e">${l.e}</span><span><b>${l.t} ↗</b><small>${l.d}</small></span></a>`).join('')}</div></div>
+ <div class="sec"><h2>🔗 이 주제의 수업 자료</h2><div class="rel tolist" id="rel">${CFG.rel.map(r=>`<a class="rl" href="${r.f}" style="--rc:${r.c}"><span class="e">${r.e}</span><span><b>${r.t}</b><small>${r.d}</small></span></a>`).join('')}</div>
+   <p class="lead" style="font-size:19px" id="relNote">수업 자료 연결 버튼은 자료를 내려받아 폴더에서 열거나 누리집에 올렸을 때 나타나요.</p></div>
+ <div class="notice"><b>👩‍🏫 선생님께</b><br>지능정보화(인공지능 관련) 부분은 3학년에게 알맞고 출처가 분명한 통계를 아직 찾지 못해 카드로 넣지 않았습니다. 대신 교과서의 사례(배달 로봇, 인공지능 학습 프로그램)를 아이들의 경험과 연결해 이야기 나누시는 편이 좋겠습니다.<br><br>출생아 수가 2년 연속 늘어난 점은 교과서 설명과 결이 조금 다릅니다. "그래도 왜 학교는 문을 닫을까?"로 이어 가면 좋은 탐구 거리가 됩니다.</div>`;
+
+wireTools();</script><script>
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});var n=document.getElementById('relNote');if(n)n.style.display='none';}})();
+</script></body></html>
