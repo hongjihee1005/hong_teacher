@@ -1,0 +1,1688 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>도깨비 학교 분수와 소수 · 3-1 수학 6. 분수와 소수(교과서)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#1F2F4A; --night2:#2C4166; --pine:#2F6B57; --pine-soft:#DDEDE5;
+  --lantern:#F4C542; --tent:#E47A38; --ring:#2B7BD6; --ring-soft:#DCEAFB;
+  --paper:#F5F7F4; --ink:#1D2A2A; --muted:#5B6B6B; --line:#C9D4CF;
+  --ok:#2E8B57; --no:#C8472E; --white:#FFFFFF;
+  --fs:clamp(16px, 0.75vw + 10px, 28px);
+  --fs-s:calc(var(--fs) * .82); --fs-l:calc(var(--fs) * 1.3); --fs-xl:calc(var(--fs) * 1.8);
+  --r:clamp(10px,1vw,18px); --pad:clamp(12px,1.4vw,28px);
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:var(--fs);line-height:1.55;-webkit-text-size-adjust:100%}
+h1,h2,h3,.jua{font-family:"Jua","Gowun Dodum","Malgun Gothic",sans-serif;font-weight:400;letter-spacing:.01em}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:4px solid var(--lantern);outline-offset:2px}
+svg{touch-action:none;user-select:none;-webkit-user-select:none}
+.hidden{display:none!important}
+
+/* 상단 */
+.top{background:var(--night);color:#fff;display:flex;align-items:center;gap:var(--pad);padding:calc(var(--pad)*.6) var(--pad);position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:.5em;font-family:"Jua",sans-serif;font-size:var(--fs-l);white-space:nowrap}
+.brand svg{width:1.6em;height:1.6em}
+.who{margin-left:auto;display:flex;align-items:center;gap:.5em;font-size:var(--fs-s)}
+.chip{white-space:nowrap;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:.25em .9em}
+.chip.btn:hover{background:rgba(255,255,255,.22)}
+
+/* 시작 화면 */
+.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);background:
+ radial-gradient(circle at 80% 18%, rgba(244,197,66,.25) 0 6%, transparent 6.5%),
+ linear-gradient(180deg,var(--night) 0,var(--night2) 55%,var(--pine) 55.2%,var(--pine) 100%)}
+.gate-card{background:#fff;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 18px 40px rgba(0,0,0,.25)}
+.gate-card h1{font-size:var(--fs-xl);margin:0 0 .2em;color:var(--night)}
+.nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(3.1em,1fr));gap:.45em;margin:.6em 0 1em}
+.nums button{padding:.5em 0;border-radius:.6em;border:2px solid var(--line);background:#fff;font-family:"Jua";font-size:var(--fs)}
+.nums button.on{background:var(--ring);color:#fff;border-color:var(--ring)}
+.row{display:flex;gap:.6em;align-items:center;flex-wrap:wrap}
+input[type=text],input[type=password],input[type=number],textarea{font:inherit;padding:.45em .7em;border:2px solid var(--line);border-radius:.6em;background:#fff;color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:3.2em;resize:vertical}
+.big{font-family:"Jua";font-size:var(--fs-l);padding:.45em 1.4em;border-radius:999px;border:0;background:var(--tent);color:#fff;box-shadow:0 4px 0 #B85A22}
+.big:active{transform:translateY(3px);box-shadow:0 1px 0 #B85A22}
+.big[disabled]{background:#B9C2BF;box-shadow:none;cursor:not-allowed}
+.ghost{background:#fff;border:2px solid var(--line);color:var(--ink);border-radius:999px;padding:.35em 1em}
+
+/* 차시 지도 */
+.map{padding:var(--pad);max-width:1600px;margin:0 auto}
+.map h2{font-size:var(--fs-xl);margin:.2em 0 .1em;color:var(--night)}
+.story{background:#fff;border-left:8px solid var(--tent);border-radius:.6em;padding:var(--pad);margin-top:var(--pad)}
+.story p{margin:.3em 0}
+.scene{font-size:var(--fs-s);color:var(--pine);background:var(--pine-soft);border-radius:.5em;padding:.25em .8em;margin-bottom:.5em;display:inline-block}
+.trail{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,15em),1fr));gap:var(--pad);margin-top:var(--pad)}
+.site{position:relative;text-align:left;background:#fff;border:3px solid var(--line);border-radius:var(--r);padding:var(--pad);display:flex;flex-direction:column;gap:.3em;min-height:9em}
+.site:hover{border-color:var(--ring)}
+.site .n{font-family:"Jua";font-size:var(--fs-l);color:var(--ring)}
+.site .t{font-family:"Jua";font-size:var(--fs);line-height:1.3}
+.site .soop{font-size:var(--fs-s);color:var(--muted)}
+.site .prog{margin-top:auto;display:flex;gap:.25em}
+.site .prog i{flex:1;height:.45em;border-radius:1em;background:var(--line)}
+.site .prog i.on{background:var(--ok)}
+.site .prog i.half{background:var(--lantern)}
+.stair.passed .k{background:var(--lantern);color:var(--ink)}
+.site.done{border-color:var(--ok)}
+.site .star{position:absolute;right:.6em;top:.4em;font-size:var(--fs-l)}
+
+/* 학습 화면 */
+.lesson{display:grid;grid-template-columns:minmax(9em,14em) 1fr;gap:var(--pad);padding:var(--pad);max-width:1800px;margin:0 auto;min-height:calc(100% - 4em)}
+.stairs{display:flex;flex-direction:column;gap:.5em;position:sticky;top:5em;align-self:start}
+.stairs .title{font-family:"Jua";font-size:var(--fs-l);line-height:1.25;color:var(--night)}
+.stairs .soopb{display:inline-block;background:var(--pine-soft);color:var(--pine);border-radius:.5em;padding:.1em .6em;font-size:var(--fs-s);margin:.2em 0 .4em}
+.stair{display:flex;align-items:center;gap:.5em;text-align:left;border:2px solid var(--line);background:#fff;border-radius:.8em;padding:.45em .7em;color:var(--ink)}
+.stair .k{flex:0 0 1.8em;height:1.8em;border-radius:50%;display:grid;place-items:center;background:var(--line);color:#fff;font-family:"Jua"}
+.stair.cur{border-color:var(--ring);box-shadow:0 0 0 3px var(--ring-soft)}
+.stair.cur .k{background:var(--ring)}
+.stair.ok .k{background:var(--ok)}
+.stair.lock{opacity:.45;cursor:not-allowed}
+.stair.chal .k{background:var(--tent)}
+.stairs .back{margin-top:.6em}
+.work{background:#fff;border-radius:calc(var(--r)*1.3);padding:calc(var(--pad)*1.2);border:2px solid var(--line);min-width:0}
+.q{background:var(--ring-soft);border-radius:var(--r);padding:.5em .9em;margin-bottom:.8em;font-family:"Jua";color:var(--night)}
+.stepname{font-family:"Jua";font-size:var(--fs-xl);color:var(--night);margin:0}
+.inst{margin:.2em 0 .8em;font-size:var(--fs)}
+.panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(12em,19em);gap:var(--pad);align-items:start}
+.stage{min-width:0}
+.stage svg{width:100%;height:auto;max-height:calc(100vh - 13em);display:block;background:#FBFCFB;border:2px solid var(--line);border-radius:var(--r)}
+.side{min-width:0;display:flex;flex-direction:column;gap:.7em}
+.readout{font-family:"Jua";font-size:var(--fs-l);color:var(--night)}
+.readout small{font-family:"Gowun Dodum";font-size:var(--fs-s);color:var(--muted)}
+.card{border:3px solid var(--night);border-radius:var(--r);padding:.8em 1em;background:#fff}
+.card b{color:var(--ring)}
+.opts{display:flex;flex-wrap:wrap;gap:.5em;margin:.4em 0}
+.opt{border:2px solid var(--line);background:#fff;border-radius:.7em;padding:.4em .9em;text-align:left}
+.opt.on{border-color:var(--ring);background:var(--ring-soft)}
+.opt.good{border-color:var(--ok);background:#E3F4EA}
+.opt.bad{border-color:var(--no);background:#FBE7E2}
+.opt.good::after{content:" ○";color:var(--ok);font-weight:bold}
+.opt.bad::after{content:" ×";color:var(--no);font-weight:bold}
+.hintbox{margin-top:.8em;background:#FFF8E1;border-left:8px solid var(--lantern);border-radius:.5em;padding:.5em .9em}
+.hintbox p{margin:.3em 0}
+.wordbank{margin:.5em 0}
+.wordbank .word{display:inline-block;background:#fff;border:2px solid var(--line);border-radius:999px;padding:.1em .8em;margin:.2em .3em .2em 0}
+.copybox{margin-top:.6em;background:#fff;border:3px dashed var(--tent);border-radius:.6em;padding:.6em .9em}
+.copyrow{display:flex;gap:.6em;align-items:center;flex-wrap:wrap;margin:.35em 0}
+.copyrow .target{font-family:"Jua",sans-serif;background:#FDF1E8;border-radius:.4em;padding:.15em .6em;min-width:9em}
+.copyrow input{flex:1 1 10em;min-width:8em}
+.help{border-color:var(--lantern)}
+.stephead{display:flex;align-items:center;gap:.8em;flex-wrap:wrap}
+.speak{font-size:var(--fs-s);padding:.2em .8em}
+.sent{line-height:2.4}
+.slot{display:inline-flex;gap:.3em;vertical-align:middle;flex-wrap:wrap;background:#F2F5F4;border-radius:.6em;padding:.15em .3em}
+.slot .opt{padding:.1em .6em}
+.qitem{border-bottom:1px dashed var(--line);padding:.6em 0}
+.qitem:last-child{border-bottom:0}
+.fb{min-height:1.6em;font-family:"Jua";margin-top:.4em}
+.fb.good{color:var(--ok)} .fb.bad{color:var(--no)}
+.actions{display:flex;gap:.6em;align-items:center;margin-top:.8em;flex-wrap:wrap;
+  position:sticky;bottom:0;background:#fff;padding:.5em 0 .2em;z-index:3;border-top:1px solid transparent}
+.actions.stuck{border-top-color:var(--line)}
+.tools{display:flex;flex-wrap:wrap;gap:.4em;align-items:center}
+.tools button{border:2px solid var(--line);background:#fff;border-radius:.6em;padding:.25em .8em}
+.tools button.on{background:var(--night);color:#fff;border-color:var(--night)}
+input[type=range]{width:100%;accent-color:var(--ring);height:2em}
+.pill{display:inline-block;background:var(--night);color:#fff;border-radius:999px;padding:.05em .7em;font-size:var(--fs-s)}
+.safe{border-left:6px solid var(--tent);background:#FDF1E8;padding:.5em .8em;border-radius:.4em;font-size:var(--fs-s)}
+.seq{display:flex;gap:.5em;flex-wrap:wrap}
+.seq .opt{flex:1 1 12em}
+.seq .opt .no{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--ring);color:#fff;margin-right:.4em;font-family:"Jua"}
+
+/* 완료 */
+.finish{text-align:center;padding:1em}
+.finish .medal{font-size:calc(var(--fs)*4)}
+
+/* 교사 화면 */
+.teacher{padding:var(--pad);max-width:1800px;margin:0 auto}
+.tbl-wrap{overflow-x:auto;border:2px solid var(--line);border-radius:var(--r);background:#fff}
+table.dash{border-collapse:collapse;width:100%;font-size:var(--fs-s)}
+table.dash th,table.dash td{border:1px solid var(--line);padding:.35em .5em;text-align:center;white-space:nowrap}
+table.dash th{background:var(--night);color:#fff;font-weight:400;font-family:"Jua"}
+table.dash td.nm{text-align:left}
+td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa}
+.detail{margin-top:var(--pad)}
+.detail li{margin:.2em 0}
+.toast{position:fixed;left:50%;bottom:1.2em;transform:translateX(-50%);background:var(--night);color:#fff;padding:.5em 1.2em;border-radius:999px;font-size:var(--fs-s);z-index:20}
+
+@media (max-height: 820px){
+  :root{--fs:clamp(15px,.62vw + 9px,22px);--pad:clamp(8px,1vw,16px)}
+  .stage svg{max-height:calc(100vh - 17em)}
+  .work{padding:.8em 1em}
+  .q{margin-bottom:.4em;padding:.35em .8em}
+  .inst{margin:.15em 0 .5em}
+  .qitem{padding:.35em 0}
+  .stepname{font-size:calc(var(--fs) * 1.45)}
+  .stairs{gap:.3em}
+  .stair{padding:.3em .6em}
+  .copylink{display:none}
+}
+@media (max-width: 1000px){ .panel{grid-template-columns:1fr} .stage svg{max-height:none} }
+@media (max-width: 820px){
+  .lesson{grid-template-columns:1fr}
+  .stairs{position:static;flex-direction:row;flex-wrap:wrap}
+  .stairs .title,.stairs .soopb,.stairs .back{flex-basis:100%}
+  .stair{flex:1 1 auto}
+  .stair .lbl{display:none}
+  .brand span.long{display:none}
+  .who{gap:.3em} .chip{padding:.2em .6em}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+.creditbar{display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px 16px 24px}
+.tolist{display:none;align-items:center;gap:8px;font-family:"Jua",sans-serif;font-size:clamp(18px,1.8vw,24px);text-decoration:none;color:var(--ink);border:3px solid var(--line);background:#fff;border-radius:999px;padding:6px 20px}
+.tolist.on{display:inline-flex}
+.hjfoot{display:block;width:100%;margin:6px 0 0;padding:14px 0 4px;border-top:3px solid var(--line);text-align:center;color:var(--muted);font-size:clamp(14px,1.2vw,17px);line-height:1.7;word-break:keep-all}
+.hjfoot p{margin:2px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div>
+<script>
+const APP={title:"도깨비 학교 분수와 소수", unit:"3-1 수학 6. 분수와 소수(교과서)", key:"t31-fracdec-v1", welcome:"도깨비 학교 분수와 소수 교실에 온 것을 환영해요", intro:"교과서 차시 그대로, 도깨비 학교에서 떡·감자전·도자기를 만들며 분수와 소수를 배워요."};
+
+/* ===== 설정 ===== */
+const CONFIG = {
+  unit: APP.unit,
+  // 구글 앱스 스크립트 웹 앱 주소(선택). 앱스 스크립트 안에서 열면 비워 두어도 자동 연결돼요.
+  endpoint: "",
+  localPin: "1234"   // 앱스 스크립트 없이 이 기기 기록만 볼 때 쓰는 선생님 비밀번호
+};
+const STEP_NAMES = ["만져 보기", "그려 보기", "말해 보기", "약속하기", "확인하기"];
+const KEY = APP.key;
+
+/* ===== 저장 ===== */
+const store = {
+  load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } },
+  save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+};
+let S = store.load();
+S.student = S.student || null;     // {ban, no, name}
+S.prog = S.prog || {};             // prog[`${ban}-${no}`][chasiId] = {steps:{i:{ok,tries,ans}}, chal:{...}}
+S.log = S.log || [];               // 이 기기의 모든 기록
+S.queue = S.queue || [];           // 보내지 못한 기록
+
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(k));
+  return e;
+};
+function toast(msg) { const t = h("div", { class: "toast" }, msg); document.body.append(t); setTimeout(() => t.remove(), 2200); }
+const sid = () => S.student ? `${S.student.ban}-${S.student.no}` : "guest";
+function myProg(cid) { const p = (S.prog[sid()] = S.prog[sid()] || {}); return (p[cid] = p[cid] || { steps: {}, chal: null }); }
+
+/* ===== 기록 보내기 ===== */
+const hasGAS = () => typeof google !== "undefined" && google.script && google.script.run;
+function send(rec) {
+  if (hasGAS()) {
+    google.script.run.withFailureHandler(() => { S.queue.push(rec); store.save(S); }).saveRecord(rec);
+  } else if (CONFIG.endpoint) {
+    fetch(CONFIG.endpoint, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(rec) })
+      .catch(() => { S.queue.push(rec); store.save(S); });
+  }
+}
+function flushQueue() {
+  if (!S.queue.length || (!hasGAS() && !CONFIG.endpoint)) return;
+  const q = S.queue.splice(0); store.save(S); q.forEach(send);
+}
+function record(chasi, stepNo, stepName, ok, tries, answer, level) {
+  const st = S.student || { ban: "", no: "", name: "" };
+  const rec = { time: new Date().toISOString(), ban: st.ban, no: st.no, name: st.name, unit: CONFIG.unit,
+    chasi: chasi.no, title: chasi.title, step: stepNo, stepName, ok: !!ok, tries, answer: String(answer || "").slice(0, 400), level: level || "기본" };
+  S.log.push(rec); if (S.log.length > 3000) S.log.splice(0, S.log.length - 3000);
+  store.save(S); send(rec);
+}
+
+/* ===== 화면 ===== */
+const root = () => $("#app");
+function topbar() {
+  const st = S.student;
+  return h("header", { class: "top" },
+    h("div", { class: "brand" }, ringLogo(), h("span", {}, APP.title), h("span", { class: "long" }, " · " + APP.unit)),
+    h("div", { class: "who" },
+      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번 ${st.name || ""}`) : null,
+      st ? h("button", { class: "chip btn", onclick: () => { S.student = null; store.save(S); showGate(); } }, "바꾸기") : null,
+      h("button", { class: "chip btn", onclick: showTeacher }, "선생님")));
+}
+function ringLogo() {
+  const s = svgEl("svg", { viewBox: "0 0 40 40", "aria-hidden": "true" });
+  s.append(svgEl("circle", { cx: 20, cy: 20, r: 16, fill: "none", stroke: "#F4C542", "stroke-width": 4 }),
+    svgEl("line", { x1: 20, y1: 20, x2: 34, y2: 12, stroke: "#fff", "stroke-width": 3, "stroke-linecap": "round" }),
+    svgEl("circle", { cx: 20, cy: 20, r: 3.5, fill: "#fff" }));
+  return s;
+}
+function mount(...els) { const r = root(); r.innerHTML = ""; r.append(topbar(), ...els); window.scrollTo(0, 0); }
+
+/* 시작: 번호 고르기 */
+function showGate() {
+  let ban = (S.student && S.student.ban) || "2", no = null;
+  const nums = h("div", { class: "nums" });
+  for (let i = 1; i <= 40; i++) nums.append(h("button", { onclick: (e) => { no = i; [...nums.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); go.disabled = false; } }, String(i)));
+  const banIn = h("input", { type: "number", min: 1, max: 15, value: ban, style: "width:4.5em", "aria-label": "반" });
+  const nameIn = h("input", { type: "text", placeholder: "이름 (선택)", maxlength: 10, style: "width:9em" });
+  const go = h("button", { class: "big", disabled: true, onclick: () => {
+    S.student = { ban: String(banIn.value || "2"), no, name: nameIn.value.trim() }; store.save(S); flushQueue(); showMap();
+  } }, "입장하기");
+  mount(h("main", { class: "gate" }, h("section", { class: "gate-card" },
+    h("h1", {}, APP.welcome),
+    h("p", { class: "inst" }, APP.intro + " 내 번호를 눌러 주세요."),
+    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반"), nameIn),
+    nums, go)));
+}
+
+/* 차시 지도 */
+function wantedLesson() {
+  const h = (location.hash || "").replace("#", "").trim();
+  const q = new URLSearchParams(location.search).get("lesson");
+  const key = q || h;
+  if (!key) return null;
+  return LESSONS.find(L => String(L.no) === key || L.id === key) || null;
+}
+function showMap() {
+  if (!S.student) return showGate();
+  const want = wantedLesson();
+  if (want && !showMap._used) { showMap._used = true; return openLesson(want.id); }
+  const trail = h("div", { class: "trail" });
+  LESSONS.forEach(L => {
+    const p = myProg(L.id), done = L.steps.filter((_, i) => p.steps[i] && p.steps[i].ok).length;
+    const prog = h("div", { class: "prog" }, L.steps.map((_, i) => {
+      const r = p.steps[i];
+      return h("i", { class: r && r.ok ? (r.help === "넘어감" ? "half" : "on") : "" });
+    }));
+    trail.append(h("button", { class: "site" + (done === L.steps.length ? " done" : ""), onclick: () => openLesson(L.id) },
+      p.chal && p.chal.ok ? h("span", { class: "star", title: "도전 완료" }, "★") : null,
+      h("span", { class: "n" }, `${L.no}차시`), h("span", { class: "t" }, L.title),
+      h("span", { class: "soop" }, `S.O.O.P. ${L.soop}`), prog));
+  });
+  const story = (typeof UNIT_STORY !== "undefined") ? UNIT_STORY : null;
+  const storyCard = story ? h("section", { class: "story" },
+    h("div", { class: "jua" }, `📖 이야기 · ${story.title}`),
+    story.lines.map(t => h("p", {}, t))) : null;
+  mount(h("main", { class: "map" }, h("h2", {}, "어느 차시를 탐험할까요?"),
+    h("p", { class: "inst" }, "각 차시는 ‘개념 계단’ 다섯 칸으로 되어 있어요. 앞 계단을 해결해야 다음 계단이 열려요."),
+    storyCard, trail));
+}
+
+/* 차시 학습 */
+let CUR = null;
+function openLesson(id, stepIdx) {
+  const L = LESSONS.find(x => x.id === id); const p = myProg(id);
+  let first = L.steps.findIndex((_, i) => !(p.steps[i] && p.steps[i].ok)); if (first < 0) first = L.steps.length - 1;
+  CUR = { L, idx: stepIdx != null ? stepIdx : first };
+  renderLesson();
+}
+function unlocked(L, i) { const p = myProg(L.id); for (let k = 0; k < i; k++) if (!(p.steps[k] && p.steps[k].ok)) return false; return true; }
+function renderLesson() {
+  const { L, idx } = CUR; const p = myProg(L.id);
+  const stairs = h("nav", { class: "stairs", "aria-label": "개념 계단" },
+    h("div", { class: "title" }, `${L.no}차시 · ${L.title}`), h("span", { class: "soopb" }, `S.O.O.P. ${L.soop}`));
+  L.steps.forEach((st, i) => {
+    const rec0 = p.steps[i], ok = rec0 && rec0.ok, lock = !unlocked(L, i);
+    stairs.append(h("button", { class: "stair" + (i === idx ? " cur" : "") + (ok ? " ok" : "") + (lock ? " lock" : ""), disabled: lock,
+      onclick: () => { CUR.idx = i; renderLesson(); } }, h("span", { class: "k" }, ok ? (rec0 && rec0.help === "넘어감" ? "△" : "✓") : String(i + 1)), h("span", { class: "lbl" }, st.name || STEP_NAMES[i])));
+  });
+  if (L.challenge) {
+    const allOk = L.steps.every((_, i) => p.steps[i] && p.steps[i].ok);
+    stairs.append(h("button", { class: "stair chal" + (idx === "chal" ? " cur" : "") + (p.chal && p.chal.ok ? " ok" : "") + (allOk ? "" : " lock"), disabled: !allOk,
+      onclick: () => { CUR.idx = "chal"; renderLesson(); } }, h("span", { class: "k" }, "★"), h("span", { class: "lbl" }, "도전 계단")));
+  }
+  stairs.append(h("button", { class: "ghost back", onclick: showMap }, "차시 지도로"));
+  stairs.append(h("button", { class: "ghost back copylink", onclick: () => {
+    const url = location.origin + location.pathname + location.search.replace(/[?&]lesson=[^&]*/, "") + "#" + L.no;
+    try { navigator.clipboard.writeText(url); toast("이 차시 주소를 복사했어요"); }
+    catch (err) { toast(url); }
+  } }, "이 차시 주소 복사"));
+
+  const work = h("section", { class: "work" });
+  const step = idx === "chal" ? L.challenge : L.steps[idx];
+  const stepNo = idx === "chal" ? 6 : idx + 1;
+  const name = idx === "chal" ? "도전 계단" : (step.name || STEP_NAMES[idx]);
+  const speakText = () => `탐구 질문. ${L.question}. ${name}. ${step.inst || ""}`;
+  const speakBtn = h("button", { class: "ghost speak", title: "문제를 읽어 줘요", onclick: () => {
+    try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(speakText()); u.lang = "ko-KR"; u.rate = .9; speechSynthesis.speak(u); }
+    catch (err) { toast("이 기기에서는 읽어 주기를 쓸 수 없어요."); }
+  } }, "🔊 읽어 주기");
+  if (typeof UNIT_STORY !== "undefined") work.append(h("div", { class: "scene" }, "📖 " + UNIT_STORY.one));
+  work.append(h("div", { class: "q" }, "탐구 질문 · " + L.question),
+    h("div", { class: "stephead" }, h("h2", { class: "stepname" }, `${idx === "chal" ? "★" : stepNo}. ${name}`), speakBtn));
+  if (step.inst) work.append(h("p", { class: "inst" }, step.inst));
+  const body = h("div"); work.append(body);
+  const nextBtn = h("button", { class: "big", disabled: true }, "다음 계단");
+  const fb = h("div", { class: "fb", role: "status", "aria-live": "polite" });
+  const acts = h("div", { class: "actions" }, nextBtn, fb);
+  work.append(acts);
+
+  let tries = 0, finished = false, fails = 0;
+  const helpBox = h("div", { class: "hintbox hidden" });
+  const h1 = h("button", { class: "ghost help hidden", onclick: () => help1() }, "도움 1단계 · 단서 보기");
+  const h2 = h("button", { class: "ghost help hidden", onclick: () => help2() }, "도움 2단계 · 중요한 낱말 보기");
+  const h3 = h("button", { class: "ghost help hidden", onclick: () => help3() }, "도움 3단계 · 답 보고 따라 쓰기");
+  const easyBtn = h("button", { class: "ghost hidden", onclick: () => openEasy() }, "조금 쉬운 문제로");
+  acts.append(h1, h2, h3, easyBtn);
+  work.append(helpBox);
+  let given = { words: [], answers: [] };          // 도우미가 알려 주는 낱말·정답
+  const hintList = (step.hints && step.hints.length ? step.hints.slice() : []).concat([L.summary]);
+  let hintShown = 0;
+  function help1() {
+    if (hintShown >= hintList.length) { h1.disabled = true; return; }
+    helpBox.classList.remove("hidden");
+    helpBox.append(h("p", {}, h("b", {}, `단서 ${hintShown + 1}. `), hintList[hintShown]));
+    hintShown++;
+    h1.textContent = hintShown >= hintList.length ? "단서를 모두 봤어요" : "도움 1단계 · 단서 더 보기";
+    if (hintShown >= hintList.length) h1.disabled = true;
+  }
+  function help2() {
+    h2.disabled = true; helpBox.classList.remove("hidden");
+    const words = (step.words && step.words.length ? step.words
+      : (given.words && given.words.length ? given.words
+      : (L.keywords || (typeof UNIT_KEYWORDS !== "undefined" ? UNIT_KEYWORDS : []))));
+    helpBox.append(h("div", { class: "wordbank" },
+      h("b", {}, "중요한 낱말 상자 "),
+      words.length ? words.map(w => h("span", { class: "word" }, w)) : h("span", {}, "이 계단의 핵심 개념: " + L.summary)));
+  }
+  function passOver() {
+    if (finished) return;
+    api.done("[도움 3단계까지 보고 넘어감]", "괜찮아요. 다음 계단으로 가요. 시간이 있을 때 이 계단에 다시 와서 한 번 더 해 봐요.", "넘어감");
+  }
+  function help3() {
+    h3.disabled = true; helpBox.classList.remove("hidden");
+    nextBtn.disabled = false;   // 여기까지 왔으면 다음 계단으로 갈 수 있어요
+    const ans = (step.answer ? [step.answer] : given.answers).filter(Boolean);
+    if (!ans.length) {
+      helpBox.append(h("p", {}, h("b", {}, "답 보기 · "), "이 계단은 직접 해 보는 활동이에요. 위 단서를 보고 한 번 더 해 보고, 어려우면 선생님이나 짝에게 도움을 청해요."),
+        h("p", { class: "inst" }, "지금 어려우면 아래 ‘다음 계단’을 눌러 넘어가도 괜찮아요."));
+      return;
+    }
+    const box = h("div", { class: "copybox" }, h("p", {}, h("b", {}, "답을 보고 그대로 따라 써요")));
+    const rows = ans.map(t => {
+      const inp = h("input", { type: "text", "aria-label": "따라 쓰기" });
+      box.append(h("div", { class: "copyrow" }, h("span", { class: "target" }, t), inp));
+      return { t, inp };
+    });
+    box.append(h("p", { class: "inst" }, "쓰면서 왜 그렇게 되는지 소리 내어 말해 봐요."));
+    box.append(h("p", { class: "inst" }, "따라 쓰기가 어려우면 아래 ‘다음 계단’을 눌러 넘어가도 괜찮아요."));
+    const norm = s => String(s).replace(/\s+/g, "").replace(/[，,]/g, "");
+    box.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+      let allOk = true;
+      rows.forEach(r => { const good = norm(r.inp.value) === norm(r.t); r.inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) allOk = false; });
+      if (!allOk) return api.hint("위의 답과 똑같이 써 보세요.");
+      api.done("[따라 쓰기] " + ans.join(" / "), "잘 따라 썼어요. 다음에는 단서만 보고도 할 수 있을 거예요.", "도움");
+    } }, "다 썼어요")));
+    helpBox.append(box);
+  }
+  function openEasy() {
+    if (!step.easy) return;
+    easyBtn.classList.add("hidden");
+    body.innerHTML = "";
+    body.append(h("p", { class: "inst" }, "수를 작게 바꾼 문제예요. 이것부터 해 봐요."));
+    step.easy(body, Object.assign({}, api, { done: (ans, msg) => api.done("[쉬운 문제] " + (ans || ""), msg || "좋아요! 같은 방법으로 큰 수도 할 수 있어요.") }));
+  }
+  const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
+  if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
+  const api = {
+    tryOnce() { tries++; },
+    provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
+    fail(msg, answer) {
+      tries++; fails++;
+      fb.className = "fb bad"; fb.textContent = "× " + (msg || "다시 생각해 봐요.");
+      record(L, stepNo, name, false, tries, answer, idx === "chal" ? "도전" : "기본");
+      if (fails >= 2) h1.classList.remove("hidden");
+      if (fails >= 3) { h2.classList.remove("hidden"); if (step.easy) easyBtn.classList.remove("hidden"); }
+      if (fails >= 4) h3.classList.remove("hidden");
+    },
+    hint(msg) { fb.className = "fb"; fb.textContent = msg; },
+    done(answer, msg, level) {
+      if (finished) return; finished = true; tries = Math.max(tries, 1);
+      const rec = { ok: true, tries, ans: answer || "", help: level || null };
+      if (idx === "chal") p.chal = rec; else p.steps[idx] = rec;
+      store.save(S);
+      record(L, stepNo, name, true, tries, answer, level || (idx === "chal" ? "도전" : "기본"));
+      fb.className = "fb good"; fb.textContent = "○ " + (msg || "좋아요! 계단을 올라갔어요.");
+      nextBtn.disabled = false;
+      renderStairsOnly();
+    }
+  };
+  function renderStairsOnly() {
+    const fresh = myProg(L.id);
+    [...stairs.querySelectorAll(".stair")].forEach((b, i) => {
+      if (i < L.steps.length) {
+        const r = fresh.steps[i], ok = r && r.ok; b.classList.toggle("ok", !!ok);
+        b.classList.toggle("passed", !!(r && r.help === "넘어감"));
+        b.querySelector(".k").textContent = ok ? (r.help === "넘어감" ? "△" : "✓") : String(i + 1);
+        const lock = !unlocked(L, i); b.classList.toggle("lock", lock); b.disabled = lock;
+      } else {
+        const allOk = L.steps.every((_, k) => fresh.steps[k] && fresh.steps[k].ok);
+        b.classList.toggle("lock", !allOk); b.disabled = !allOk; b.classList.toggle("ok", !!(fresh.chal && fresh.chal.ok));
+      }
+    });
+  }
+  nextBtn.onclick = () => {
+    if (!finished && !prevOk) passOver();
+    if (idx === "chal") return showFinish(L, true);
+    if (idx < L.steps.length - 1) { CUR.idx = idx + 1; renderLesson(); }
+    else showFinish(L, false);
+  };
+  mount(h("main", { class: "lesson" }, stairs, work));
+  const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
+  markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
+  step.render(body, api);
+}
+function showFinish(L, chal) {
+  const p = myProg(L.id);
+  const box = h("section", { class: "work finish" },
+    h("div", { class: "medal", "aria-hidden": "true" }, chal ? "★" : "◎"),
+    h("h2", { class: "stepname" }, chal ? "도전 계단까지 모두 올랐어요!" : `${L.no}차시 개념 계단을 모두 올랐어요!`),
+    h("div", { class: "card", style: "text-align:left;margin:1em auto;max-width:40em" }, h("div", { class: "jua" }, "오늘의 정리"), h("p", {}, L.summary)),
+    h("div", { class: "actions", style: "justify-content:center" },
+      (!chal && L.challenge && !(p.chal && p.chal.ok)) ? h("button", { class: "big", onclick: () => { CUR = { L, idx: "chal" }; renderLesson(); } }, "도전 계단 오르기") : null,
+      h("button", { class: "ghost", onclick: showMap }, "차시 지도로")));
+  mount(h("main", { class: "lesson", style: "grid-template-columns:1fr" }, box));
+}
+
+/* ===== 교사 화면 ===== */
+function showTeacher() {
+  const pin = h("input", { type: "password", placeholder: "비밀번호", style: "width:9em", inputmode: "numeric" });
+  const msg = h("div", { class: "fb" });
+  const area = h("div");
+  const load = () => {
+    msg.className = "fb"; msg.textContent = "기록을 불러오는 중…";
+    const done = (rows) => { msg.textContent = `기록 ${rows.length}개를 불러왔어요.`; renderDash(area, rows); };
+    const fail = (e) => { msg.className = "fb bad"; msg.textContent = (e && e.message) || "기록을 불러오지 못했어요. 비밀번호와 연결 주소를 확인해 주세요."; };
+    if (hasGAS()) google.script.run.withSuccessHandler(done).withFailureHandler(fail).getRecords(pin.value);
+    else if (CONFIG.endpoint) fetch(CONFIG.endpoint + "?pin=" + encodeURIComponent(pin.value)).then(r => r.json()).then(j => j.error ? fail(new Error(j.error)) : done(j.rows)).catch(fail);
+    else { if (pin.value !== CONFIG.localPin) return fail(new Error("비밀번호가 맞지 않아요.")); msg.textContent = "이 기기에 저장된 기록만 보여요. 반 전체 기록은 구글 시트와 연결하면 볼 수 있어요."; renderDash(area, S.log); }
+  };
+  mount(h("main", { class: "teacher" }, h("h2", { class: "stepname" }, "선생님 확인 화면"),
+    h("p", { class: "inst" }, hasGAS() || CONFIG.endpoint ? "구글 시트에 모인 반 전체 기록을 봅니다." : "지금은 구글 시트와 연결되지 않은 상태예요(이 기기 기록만 보여요)."),
+    h("div", { class: "row" }, pin, h("button", { class: "big", onclick: load }, "기록 보기"),
+      h("button", { class: "ghost", onclick: () => S.student ? showMap() : showGate() }, "돌아가기")), msg, area));
+  pin.focus();
+}
+function renderDash(area, rows) {
+  area.innerHTML = "";
+  rows = rows.filter(r => !r.unit || r.unit === CONFIG.unit);   // 지금 열어 둔 단원의 기록만 보기
+  const isOk = r => r.ok === true || r.ok === "true" || r.ok === "O";
+  const students = {};
+  const stepStat = {};      // `${차시}-${계단}` -> {name, wrong, ok, answers:{오답:횟수}}
+  rows.forEach(r => {
+    const k = `${r.ban}-${r.no}`;
+    const s = (students[k] = students[k] || { ban: r.ban, no: +r.no, name: r.name, c: {} });
+    if (r.name) s.name = r.name;
+    const c = (s.c[r.chasi] = s.c[r.chasi] || { steps: new Set(), chal: false, tries: 0, wrong: 0, answers: [], wrongAnswers: [], helped: new Set() });
+    if (isOk(r)) {
+      if (+r.step === 6) c.chal = true; else c.steps.add(+r.step);
+      if (r.level === "넘어감" || r.level === "도움") c.helped.add(+r.step);
+      if (r.answer) c.answers.push(`${r.step}. ${r.stepName}: ${r.answer}`);
+    }
+    else { c.wrong++; if (r.answer) c.wrongAnswers.push(`${r.step}. ${r.stepName}: ${r.answer}`); }
+    const sk = `${r.chasi}-${r.step}`;
+    const st = (stepStat[sk] = stepStat[sk] || { chasi: r.chasi, step: r.step, name: r.stepName, wrong: 0, ok: 0, answers: {} });
+    if (isOk(r)) st.ok++;
+    else { st.wrong++; if (r.answer) st.answers[r.answer] = (st.answers[r.answer] || 0) + 1; }
+  });
+  const list = Object.values(students).sort((a, b) => (a.ban + "").localeCompare(b.ban + "") || a.no - b.no);
+  const thead = h("tr", {}, h("th", {}, "번호"), h("th", {}, "이름"), LESSONS.map(L => h("th", {}, `${L.no}차시`)));
+  const tbody = h("tbody");
+  const detail = h("div", { class: "detail" });
+  list.forEach(s => {
+    tbody.append(h("tr", {}, h("td", {}, `${s.ban}-${s.no}`), h("td", { class: "nm" }, s.name || ""),
+      LESSONS.map(L => {
+        const c = s.c[L.no]; if (!c) return h("td", { class: "c-none" }, "–");
+        const n = c.steps.size, full = n >= L.steps.length;
+        return h("td", { class: full ? "c-full" : "c-part", style: "cursor:pointer", title: "눌러서 자세히 보기",
+          onclick: () => { detail.innerHTML = ""; detail.append(
+            h("h3", {}, `${s.no}번 ${s.name || ""} · ${L.no}차시 ${L.title}`),
+            h("p", {}, `해결한 계단 ${n}/${L.steps.length}${c.chal ? " + 도전 ★" : ""} · 틀린 횟수 ${c.wrong}번` + (c.helped.size ? ` · 도움을 받아 통과한 계단 △${c.helped.size}개 (${[...c.helped].sort().join(", ")}번 계단)` : "")),
+            c.wrongAnswers.length ? h("div", {}, h("b", {}, "틀린 답"), h("ul", {}, c.wrongAnswers.map(a => h("li", {}, a)))) : null,
+            h("div", {}, h("b", {}, "학생이 쓴 답"), h("ul", {}, c.answers.map(a => h("li", {}, a))))); detail.scrollIntoView({ behavior: "smooth" }); } },
+          `${n}/${L.steps.length}${c.chal ? " ★" : ""}${c.helped.size ? ` △${c.helped.size}` : ""}${c.wrong ? ` (×${c.wrong})` : ""}`);
+      })));
+  });
+  // 많이 틀린 계단 요약
+  const hard = Object.values(stepStat).filter(x => x.wrong > 0).sort((a, b) => b.wrong - a.wrong).slice(0, 5);
+  const hardBox = h("section", { class: "detail" }, h("h3", {}, "학생들이 많이 틀린 계단"));
+  if (!hard.length) hardBox.append(h("p", {}, "아직 틀린 기록이 없어요."));
+  hard.forEach(x => {
+    const tops = Object.entries(x.answers).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    hardBox.append(h("div", { class: "qitem" },
+      h("b", {}, `${x.chasi}차시 ${x.step}. ${x.name}`), h("span", {}, ` — 틀린 횟수 ${x.wrong}번`),
+      tops.length ? h("div", {}, "자주 나온 오답: " + tops.map(([a, n]) => `${a} (${n}번)`).join(" · ")) : null));
+  });
+  area.append(h("div", { class: "tbl-wrap" }, h("table", { class: "dash" }, h("thead", {}, thead), tbody)), hardBox, detail);
+  if (!list.length) area.append(h("p", {}, "아직 기록이 없어요."));
+}
+/* ===== 공통 부품 ===== */
+const NS = "http://www.w3.org/2000/svg";
+function svgEl(tag, attrs = {}) { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); return e; }
+function svgPt(svg, ev) { const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+function makeSvg(w, hgt, grid) {
+  const s = svgEl("svg", { viewBox: `0 0 ${w} ${hgt}`, role: "img" });
+  if (grid) { const g = svgEl("g", { stroke: "#DCE4E0", "stroke-width": 1 }); for (let x = 0; x <= w; x += grid) g.append(svgEl("line", { x1: x, y1: 0, x2: x, y2: hgt })); for (let y = 0; y <= hgt; y += grid) g.append(svgEl("line", { x1: 0, y1: y, x2: w, y2: y })); s.append(g); }
+  return s;
+}
+function txt(x, y, t, size = 22, attrs = {}) { const e = svgEl("text", Object.assign({ x, y, "font-size": size, "text-anchor": "middle", "dominant-baseline": "middle", "font-family": "Jua, sans-serif", fill: "#1D2A2A" }, attrs)); e.textContent = t; return e; }
+
+/* 선택형 문제 여러 개 (mcq/ox) */
+function quiz(body, api, items, opts = {}) {
+  const state = items.map(() => (null));
+  const wrap = h("div");
+  items.forEach((it, qi) => {
+    const box = h("div", { class: "qitem" });
+    if (it.q) box.append(h("div", { class: "jua" }, `${items.length > 1 ? qi + 1 + ". " : ""}${it.q}`));
+    if (it.fig) box.append(it.fig());
+    const multi = Array.isArray(it.a);
+    const row = h("div", { class: "opts" });
+    const sel = new Set();
+    it.o.forEach((o, oi) => row.append(h("button", { class: "opt", onclick: (e) => {
+      if (multi) { sel.has(oi) ? sel.delete(oi) : sel.add(oi); e.currentTarget.classList.toggle("on"); state[qi] = [...sel]; }
+      else { [...row.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); state[qi] = oi; }
+    } }, o)));
+    box.append(row); wrap.append(box);
+  });
+  api.provide && api.provide({
+    words: items.flatMap(it => (Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i])),
+    answers: items.map((it, qi) => `${items.length > 1 ? (qi + 1) + ") " : ""}${(Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i]).join(", ")}`)
+  });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce();
+    let allOk = true; const ans = [];
+    items.forEach((it, qi) => {
+      const box = wrap.children[qi], btns = box.querySelectorAll(".opt"), v = state[qi];
+      const good = Array.isArray(it.a) ? (Array.isArray(v) && v.length === it.a.length && it.a.every(x => v.includes(x))) : v === it.a;
+      btns.forEach(b => b.classList.remove("good", "bad"));
+      if (v != null) (Array.isArray(v) ? v : [v]).forEach(i => btns[i].classList.add(good ? "good" : "bad"));
+      if (!good) allOk = false;
+      ans.push(v == null ? "-" : (Array.isArray(v) ? v.map(i => it.o[i]).join("·") : it.o[v]));
+    });
+    if (allOk) { api.done(ans.join(" / "), opts.ok); }
+    else {
+      const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
+      const w = items[wrongIdx];
+      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
+    }
+  } }, "확인하기");
+  body.append(wrap, h("div", { class: "actions" }, check));
+}
+/* 빈칸 문장 */
+function blanks(body, api, parts, opts = {}) {
+  const sel = [];
+  const sent = h("p", { class: "sent" });
+  parts.forEach(pt => {
+    if (typeof pt === "string") sent.append(pt);
+    else {
+      const k = sel.length; sel.push(null);
+      const slot = h("span", { class: "slot" });
+      pt.o.forEach((o, oi) => slot.append(h("button", { class: "opt", onclick: (e) => { [...slot.children].forEach(b => b.classList.remove("on", "good", "bad")); e.currentTarget.classList.add("on"); sel[k] = oi; } }, o)));
+      slot.dataset.a = pt.a; sent.append(slot);
+    }
+  });
+  api.provide && api.provide({
+    words: parts.filter(p => typeof p !== "string").flatMap(p => p.o),
+    answers: [parts.map(p => typeof p === "string" ? p : p.o[p.a]).join("")]
+  });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce(); let ok = true; const ans = [];
+    [...sent.querySelectorAll(".slot")].forEach((slot, k) => {
+      const a = +slot.dataset.a; const btn = slot.children[sel[k]];
+      if (sel[k] !== a) ok = false; if (btn) btn.classList.add(sel[k] === a ? "good" : "bad");
+      ans.push(btn ? btn.textContent : "-");
+    });
+    ok ? api.done(ans.join(" / "), opts.ok) : api.fail(opts.bad || "빨간 낱말을 다시 골라 봐요.", ans.join(" / "));
+  } }, "확인하기");
+  body.append(sent, h("div", { class: "actions" }, check));
+}
+/* 글쓰기(자기 생각) */
+function writeStep(body, api, prompts, opts = {}) {
+  const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); body.append(h("div", { class: "jua", style: "margin-top:.6em" }, p.q), t); return t; });
+  body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    const vals = areas.map(t => t.value.trim());
+    if (vals.some(v => v.length < (opts.min || 4))) return api.fail("모든 칸에 내 생각을 조금 더 자세히 써 봐요.", vals.join(" | "));
+    api.done(prompts.map((p, i) => `${p.tag || p.q}: ${vals[i]}`).join(" | "), opts.ok || "생각을 잘 적었어요!");
+  } }, "다 썼어요")));
+}
+/* 순서 맞추기 */
+function sequence(body, api, cards, order, opts = {}) {
+  const picked = [];
+  const row = h("div", { class: "seq" });
+  const show = h("div", { class: "readout" }, "순서: ");
+  cards.forEach((c, i) => row.append(h("button", { class: "opt", onclick: (e) => {
+    if (picked.includes(i)) return; picked.push(i); e.currentTarget.classList.add("on");
+    e.currentTarget.prepend(h("span", { class: "no" }, String(picked.length))); show.textContent = "순서: " + picked.map(k => c0(k)).join(" → ");
+    if (picked.length === cards.length) {
+      api.tryOnce();
+      if (picked.every((v, k) => v === order[k])) api.done(picked.map(c0).join("→"), opts.ok);
+      else { api.fail("순서가 달라요. ‘다시’를 누르고 한 번 더 해 봐요.", picked.map(c0).join("→")); }
+    }
+  } }, c)));
+  const c0 = k => cards[k].slice(0, 1);
+  body.append(row, show, h("div", { class: "actions" }, h("button", { class: "ghost", onclick: () => { picked.length = 0; [...row.children].forEach(b => { b.classList.remove("on"); const n = b.querySelector(".no"); n && n.remove(); }); show.textContent = "순서: "; } }, "다시")));
+}
+
+/* ===== 조작 부품 (1 cm = 40) ===== */
+const CM = 40;
+const BLUE = "#2B7BD6", INK = "#1D2A2A", TENT = "#E47A38", PINE = "#2F6B57";
+function stageWrap(svg, side) { return h("div", { class: "panel" }, h("div", { class: "stage" }, svg), side || h("div", { class: "side" })); }
+function dragOn(svg, onDown, onMove, onUp) {
+  let active = false;
+  svg.addEventListener("pointerdown", e => { active = onDown(svgPt(svg, e), e) !== false; if (active) svg.setPointerCapture(e.pointerId); });
+  svg.addEventListener("pointermove", e => { if (active) onMove(svgPt(svg, e), e); });
+  const up = e => { if (active) { active = false; onUp && onUp(svgPt(svg, e), e); } };
+  svg.addEventListener("pointerup", up); svg.addEventListener("pointercancel", up);
+}
+function sweepTracker() { const bins = new Set(); return { add(a) { bins.add(Math.floor(((a + Math.PI * 2) % (Math.PI * 2)) / (Math.PI * 2) * 36)); }, full() { return bins.size >= 34; }, count() { return bins.size; }, reset() { bins.clear(); } }; }
+/* ===== 공통: 수 입력 ===== */
+/* ===== 곱셈 단원 조작 부품 ===== */
+function numbers(body, api, items, opts = {}) {
+  const ins = [];
+  const wrap = h("div");
+  items.forEach(it => {
+    const inp = h("input", { type: "number", inputmode: "numeric", style: "width:6em;font-size:1.2em", "aria-label": it.q });
+    ins.push({ inp, a: it.a });
+    wrap.append(h("div", { class: "qitem" }, h("span", { class: "jua" }, it.q + " "), inp, it.unit ? h("span", {}, " " + it.unit) : null));
+  });
+  api.provide && api.provide({
+    words: opts.words || [],
+    answers: items.map(it => `${it.q} ${it.a}${it.unit ? " " + it.unit : ""}`)
+  });
+  body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    api.tryOnce(); let ok = true;
+    ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
+    const given = ins.map(x => x.inp.value).join(", ");
+    if (ok) return api.done(given, opts.ok);
+    const bad = ins.find(({ inp, a }) => Number(inp.value) !== a);
+    const item = items[ins.indexOf(bad)];
+    const why = item && item.why && item.why[String(Number(bad.inp.value))];
+    api.fail(why || opts.bad || "빨간 칸을 다시 계산해 봐요.", given);
+  } }, "확인하기")));
+}
+
+/* ===== 3-1 수학 6. 분수와 소수 — 단원 조작 부품 (접두어 u6) =====
+   글 안의 [3/5] 는 세로 분수(5분의 3)로 그려지고, 답 따라 쓰기·읽어 주기에는 '5분의 3'으로 바뀐다.
+   모양 spec: {kind:"bar", den|cuts, w, h, shade}, {kind:"circle", den|angs, r}, {kind:"grid", rows, cols, cell},
+              {kind:"cup", den, w, h}, {kind:"poly", polys:[[[x,y],…]], unit}, {kind:"tenths", n, max, w}
+   shade: 칠할 칸 수(앞에서부터) 또는 칸 번호 목록. label: 그림 아래 글자.
+*/
+const U6_SOFT = "#DCEAFB", U6_SHADE = "#8FBFE8", U6_ORANGE = "#F0B27A", U6_GUIDE = "#C9D4CF", U6_GRAY = "#8795A1", U6_LIGHT = "#E6ECE9";
+const U6_KO = ["가", "나", "다", "라", "마", "바", "사", "아"];
+
+function u6FracHtml(n, d) { return `<span style="display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 .15em;font-family:Jua,sans-serif"><span>${n}</span><span style="border-top:3px solid currentColor;padding:2px .2em 0">${d}</span></span>`; }
+function u6Esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
+function u6R(s) { return u6Esc(s).replace(/\[(\d+|□)\/(\d+|□)\]/g, (m, n, d) => u6FracHtml(n, d)).replace(/\*\*(.+?)\*\*/g, "<b>$1</b>"); }
+function u6T(s) { return String(s).replace(/\[(\d+|□)\/(\d+|□)\]/g, (m, n, d) => `${d}분의 ${n}`).replace(/\*\*/g, ""); }
+function u6H(tag, attrs, s) { const e = h(tag, attrs || {}); e.innerHTML = u6R(s); return e; }
+/* 소수 읽기: 1.7 → 일 점 칠 */
+const U6_DIG = ["영", "일", "이", "삼", "사", "오", "육", "칠", "팔", "구"];
+function u6IntRead(k) { if (k < 10) return U6_DIG[k]; const t = Math.floor(k / 10), o = k % 10; return (t > 1 ? U6_DIG[t] : "") + "십" + (o ? U6_DIG[o] : ""); }
+function u6ReadDec(tenths) { return `${u6IntRead(Math.floor(tenths / 10))} 점 ${U6_DIG[tenths % 10]}`; }
+function u6Ro(k) { return [0, 3, 6].includes(k % 10) ? "으로" : "로"; }
+function u6Fit(svg) { svg.style.maxHeight = "54vh"; return svg; }
+function u6Dec(tenths) { return (tenths / 10).toFixed(1); }
+
+/* ---------- 모양 조각 만들기 (x, y 는 왼쪽 위) ---------- */
+function u6Parts(spec, x, y) {
+  const g = svgEl("g"), cells = [];
+  let w = 0, hh = 0;
+  const cell = (el) => { cells.push(el); g.append(el); return el; };
+  const st = { fill: "#fff", stroke: INK, "stroke-width": 3 };
+  if (spec.kind === "bar" || spec.kind === "cup") {
+    const vert = spec.kind === "cup";
+    w = spec.w || (vert ? 110 : 520); hh = spec.h || (vert ? 260 : 80);
+    const L = vert ? hh : w;
+    const cuts = spec.cuts ? [0].concat(spec.cuts, [1]) : Array.from({ length: spec.den + 1 }, (_, k) => k / spec.den);
+    for (let i = 0; i < cuts.length - 1; i++) {
+      const a = cuts[i] * L, b = cuts[i + 1] * L;
+      if (vert) cell(svgEl("rect", Object.assign({ x, y: y + hh - b, width: w, height: b - a }, st)));
+      else cell(svgEl("rect", Object.assign({ x: x + a, y, width: b - a, height: hh }, st)));
+    }
+  } else if (spec.kind === "circle") {
+    const r = spec.r || 80; w = hh = 2 * r;
+    const cx = x + r, cy = y + r;
+    const angs = spec.angs || Array.from({ length: spec.den }, (_, k) => k * 360 / spec.den);
+    if (angs.length === 1) cell(svgEl("circle", Object.assign({ cx, cy, r }, st)));
+    for (let i = 0; i < angs.length && angs.length > 1; i++) {
+      const a0 = (angs[i] - 90) * Math.PI / 180, a1 = ((i + 1 < angs.length ? angs[i + 1] : angs[0] + 360) - 90) * Math.PI / 180;
+      const p = `M${cx} ${cy} L${cx + r * Math.cos(a0)} ${cy + r * Math.sin(a0)} A${r} ${r} 0 ${(a1 - a0) > Math.PI ? 1 : 0} 1 ${cx + r * Math.cos(a1)} ${cy + r * Math.sin(a1)} Z`;
+      cell(svgEl("path", Object.assign({ d: p }, st)));
+    }
+  } else if (spec.kind === "grid") {
+    const c = spec.cell || 60; w = spec.cols * c; hh = spec.rows * c;
+    for (let r = 0; r < spec.rows; r++) for (let k = 0; k < spec.cols; k++) cell(svgEl("rect", Object.assign({ x: x + k * c, y: y + r * c, width: c, height: c }, st)));
+  } else if (spec.kind === "poly") {
+    const u = spec.unit || 40;
+    spec.polys.forEach(P => { P.forEach(p => { w = Math.max(w, p[0] * u); hh = Math.max(hh, p[1] * u); }); });
+    spec.polys.forEach(P => cell(svgEl("polygon", Object.assign({ points: P.map(p => `${x + p[0] * u},${y + p[1] * u}`).join(" ") }, st))));
+  } else if (spec.kind === "tenths") {
+    const max = spec.max || 1; w = spec.w || 600; hh = spec.h || 60;
+    const cw = w / (max * 10);
+    for (let i = 0; i < max * 10; i++) cell(svgEl("rect", { x: x + i * cw, y, width: cw, height: hh, fill: "#fff", stroke: INK, "stroke-width": i % 10 === 9 ? 3 : 1.5 }));
+    g.append(svgEl("rect", { x, y, width: w, height: hh, fill: "none", stroke: INK, "stroke-width": 3 }));
+    for (let k = 0; k <= max; k++) g.append(txt(x + k * cw * 10, y + hh + 22, String(k), 22));
+    hh += 36;
+  }
+  const sh = spec.shade == null ? [] : (Array.isArray(spec.shade) ? spec.shade : Array.from({ length: spec.shade }, (_, k) => k));
+  sh.forEach(i => cells[i] && cells[i].setAttribute("fill", spec.color || U6_SHADE));
+  if (spec.kind === "tenths" && spec.n != null) cells.forEach((c, i) => c.setAttribute("fill", i < spec.n ? (spec.color || U6_SHADE) : "#fff"));
+  return { g, cells, w, h: hh };
+}
+/* 그림 여러 개를 한 줄로 (quiz 의 fig 용) */
+function u6FigSvg(specs, opt = {}) {
+  const gap = opt.gap || 40, pad = 16;
+  const built = specs.map(s => ({ s, p: u6Parts(s, 0, 0) }));
+  const H = Math.max(...built.map(b => b.p.h)) + (specs.some(s => s.label) ? 44 : 0);
+  let x = pad; const W = built.reduce((t, b) => t + b.p.w, 0) + gap * (specs.length - 1) + 2 * pad;
+  const svg = makeSvg(W, H + 2 * pad);
+  built.forEach(({ s, p }) => {
+    const top = pad + (H - (specs.some(q => q.label) ? 44 : 0) - p.h) / 2;
+    const q = u6Parts(s, x, top); svg.append(q.g);
+    if (s.label) { const lb = txt(x + p.w / 2, pad + H - 16, u6T(s.label), 24); svg.append(lb); }
+    x += p.w + gap;
+  });
+  svg.style.cssText = `width:100%;max-width:${opt.maxW || Math.min(W, 900)}px;height:auto;display:block;margin:.3em 0;background:#FBFCFB;border:2px solid var(--line);border-radius:12px`;
+  return svg;
+}
+
+/* ---------- 여러 가지 답 칸 (분수·수·고르기) ----------
+   item: {q, fig, t:"frac"|"num"|"pick", a, o, unit, why, fixD}
+   frac: a=[분자, 분모] · num: a=수(소수 가능) · pick: o=[보기], a=번호 또는 번호 목록 */
+function u6Ask(body, api, items, opts = {}) {
+  const wrap = h("div"), rows = [];
+  const ansText = it => it.t === "frac" ? `${it.a[1]}분의 ${it.a[0]}` : it.t === "pick" ? (Array.isArray(it.a) ? it.a : [it.a]).map(i => u6T(it.o[i])).join(", ") : `${it.a}${it.unit ? " " + it.unit : ""}`;
+  items.forEach((it, qi) => {
+    const box = h("div", { class: "qitem" });
+    const qline = u6H("div", { class: "jua" }, `${items.length > 1 ? qi + 1 + ". " : ""}${it.q || ""}`);
+    box.append(qline);
+    if (it.fig) box.append(it.fig());
+    const row = { it, box };
+    if (it.t === "pick") {
+      const sel = new Set(); const multi = Array.isArray(it.a);
+      const opts2 = h("div", { class: "opts" });
+      it.o.forEach((o, oi) => {
+        const b = u6H("button", { class: "opt" }, o);
+        b.onclick = () => { if (multi) { sel.has(oi) ? sel.delete(oi) : sel.add(oi); b.classList.toggle("on"); } else { sel.clear(); sel.add(oi); [...opts2.children].forEach(x => x.classList.remove("on")); b.classList.add("on"); } };
+        opts2.append(b);
+      });
+      box.append(opts2);
+      row.get = () => [...sel].sort((a, b) => a - b);
+      row.ok = () => { const v = row.get(); const want = (multi ? it.a : [it.a]).slice().sort((a, b) => a - b); return v.length === want.length && want.every((x, i) => x === v[i]); };
+      row.show = good => { [...opts2.children].forEach((b, i) => { b.classList.remove("good", "bad"); if (sel.has(i)) b.classList.add(good ? "good" : "bad"); }); };
+      row.val = () => row.get().map(i => u6T(it.o[i])).join("·") || "-";
+      row.key = () => row.get().join(",");
+    } else if (it.t === "frac") {
+      const st = "width:2.6em;font-size:1.15em;text-align:center;padding:.1em";
+      const iN = h("input", { type: "text", inputmode: "numeric", style: st, "aria-label": "분자" });
+      const iD = it.fixD ? null : h("input", { type: "text", inputmode: "numeric", style: st, "aria-label": "분모" });
+      const fr = h("span", { style: "display:inline-flex;flex-direction:column;align-items:center;gap:3px;vertical-align:middle;margin:.2em .4em" },
+        iN, h("span", { style: "display:block;width:3.2em;border-top:4px solid var(--ink,#1D2A2A)" }), iD || h("b", { class: "jua", style: "font-size:1.2em" }, String(it.a[1])));
+      box.append(h("div", { style: "display:flex;align-items:center;gap:.4em;flex-wrap:wrap" }, h("span", {}, it.pre || "답:"), fr, it.unit ? h("span", {}, it.unit) : null));
+      const num = e => Number(String(e.value).trim());
+      row.ok = () => num(iN) === it.a[0] && (it.fixD ? true : num(iD) === it.a[1]);
+      row.show = good => [iN, iD].forEach(e => e && (e.style.borderColor = good ? "var(--ok)" : "var(--no)"));
+      row.val = () => `${it.fixD ? it.a[1] : iD.value}분의 ${iN.value}`;
+      row.key = () => `${iN.value.trim()}/${it.fixD ? it.a[1] : iD.value.trim()}`;
+    } else {
+      const inp = h("input", { type: "text", inputmode: "decimal", style: "width:5.5em;font-size:1.15em", "aria-label": u6T(it.q || "답") });
+      box.append(h("div", {}, h("span", {}, it.pre || "답: "), inp, it.unit ? h("span", {}, " " + it.unit) : null));
+      const v = () => { const s = String(inp.value).trim().replace(/\s+/g, ""); return s === "" ? NaN : Number(s); };
+      row.ok = () => Math.abs(v() - it.a) < 1e-9;
+      row.show = good => inp.style.borderColor = good ? "var(--ok)" : "var(--no)";
+      row.val = () => inp.value.trim() || "-";
+      row.key = () => String(v());
+    }
+    rows.push(row); wrap.append(box);
+  });
+  api.provide && api.provide({
+    words: opts.words || items.filter(it => it.t === "pick").map(ansText),
+    answers: items.map((it, qi) => `${items.length > 1 ? (qi + 1) + ") " : ""}${ansText(it)}`)
+  });
+  body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    api.tryOnce();
+    let all = true; rows.forEach(r => { const g = r.ok(); r.show(g); if (!g) all = false; });
+    const given = rows.map(r => r.val()).join(" / ");
+    if (all) return api.done(given, opts.ok);
+    const bad = rows.find(r => !r.ok());
+    const why = bad.it.why && bad.it.why[bad.key()];
+    api.fail(why || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 보며 차근차근 세어 봐요.", given);
+  } }, "확인하기")));
+}
+
+/* ---------- 색칠하기 (여러 그림 가능) ----------
+   opt.items: [{spec, target, label}], opt.mode: "frac"(분수로 보여 줌) | "unit"(단위분수 개수) | "count", opt.rest: 색칠하지 않은 부분도 보여 줌
+   cup/bar 에 opt.level=true 이면 누른 칸까지 차례로 칠해짐(물 높이처럼) */
+function u6Shade(body, api, opt) {
+  const items = opt.items;
+  const gap = 50, pad = 20;
+  const parts0 = items.map(it => u6Parts(it.spec, 0, 0));
+  const vertical = opt.stack;   // 위아래로 쌓기
+  const W = vertical ? Math.max(...parts0.map(p => p.w)) + 2 * pad + (opt.labelW || 0) : parts0.reduce((t, p) => t + p.w, 0) + gap * (items.length - 1) + 2 * pad;
+  const H = vertical ? parts0.reduce((t, p) => t + p.h + 30, 0) + 2 * pad : Math.max(...parts0.map(p => p.h)) + 2 * pad + (items.some(i => i.label) ? 40 : 0);
+  const svg = makeSvg(W, H);
+  const state = items.map(() => new Set());
+  const outs = items.map(() => h("div", { class: "readout" }));
+  let x = pad, y = pad;
+  const built = items.map((it, k) => {
+    const p = vertical ? u6Parts(it.spec, pad + (opt.labelW || 0), y) : u6Parts(it.spec, x, pad);
+    svg.append(p.g);
+    if (it.label) svg.append(vertical ? txt(pad + (opt.labelW || 0) / 2, y + p.h / 2, u6T(it.label), 24) : txt(x + p.w / 2, pad + Math.max(...parts0.map(q => q.h)) + 26, u6T(it.label), 24));
+    if (vertical) y += p.h + 30; else x += p.w + gap;
+    return p;
+  });
+  const paint = k => built[k].cells.forEach((c, i) => c.setAttribute("fill", state[k].has(i) ? (items[k].color || U6_SHADE) : "#fff"));
+  const den = k => built[k].cells.length;
+  const upd = () => items.forEach((it, k) => {
+    const n = state[k].size, d = den(k), who = it.label ? u6T(it.label) + ": " : "";
+    if (opt.mode === "unit") outs[k].innerHTML = u6R(`${who}[1/${d}]이 **${n}**개`);
+    else if (opt.mode === "count") outs[k].innerHTML = u6R(`${who}색칠한 칸 **${n}**칸`);
+    else outs[k].innerHTML = u6R(`${who}똑같이 ${d}${u6Ro(d)} 나눈 것 중 **${n}**` + (n ? ` → [${n}/${d}]` : "")) + (opt.rest && n < d ? "<br>" + u6R(`색칠하지 않은 부분 → [${d - n}/${d}]`) : "");
+  });
+  built.forEach((p, k) => p.cells.forEach((c, i) => {
+    c.style.cursor = "pointer";
+    c.addEventListener("click", () => {
+      if (opt.level) { const lv = state[k].has(i) && !state[k].has(i + 1) ? i : i + 1; state[k] = new Set(Array.from({ length: lv }, (_, j) => j)); }
+      else state[k].has(i) ? state[k].delete(i) : state[k].add(i);
+      paint(k); upd();
+    });
+  }));
+  const tools = items.map((it, k) => h("div", { class: "tools" }, it.label ? h("span", {}, u6T(it.label)) : null,
+    h("button", { onclick: () => { const d = den(k); for (let i = 0; i < d; i++) if (!state[k].has(i)) { state[k].add(i); break; } paint(k); upd(); } }, "+ 한 칸"),
+    h("button", { onclick: () => { const arr = [...state[k]].sort((a, b) => b - a); if (arr.length) state[k].delete(arr[0]); paint(k); upd(); } }, "− 한 칸")));
+  upd();
+  api.provide({ words: opt.words || ["분모", "분자", "똑같이 나눈 것 중"], answers: [] });
+  const side = h("div", { class: "side" }, h("p", {}, u6T(opt.tip || "조각을 눌러 색칠해요. 다시 누르면 지워져요.")), ...outs, ...tools,
+    h("button", { class: "big", onclick: () => {
+      api.tryOnce();
+      const bad = items.findIndex((it, k) => state[k].size !== it.target);
+      const ans = items.map((it, k) => `${den(k)}분의 ${state[k].size}`).join(", ");
+      if (bad < 0) return api.done(ans, opt.ok);
+      const it = items[bad], n = state[bad].size, d = den(bad);
+      api.fail((it.label ? u6T(it.label) + "은(는) " : "") + (opt.mode === "unit" ? `지금 ${d}분의 1이 ${n}개예요. ` : `지금 ${d}칸 중 ${n}칸을 칠했어요. `) + (it.why || `${u6T(it.want || `[${it.target}/${d}]`)}만큼이 되게 바꿔 봐요.`), ans);
+    } }, "확인하기"));
+  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, u6Fit(svg)), side));
+}
+
+/* ---------- 똑같이 나누기 (선 긋기) ----------
+   base:"rect"(w,h 칸) | "circle". 흐린 점선을 누르면 선이 그어지고 다시 누르면 지워져요.
+   target 조각 수, choose:[2,3,4,6] 이면 먼저 수를 골라요. ways: 서로 다른 방법 몇 가지. */
+function u6Divide(body, api, opt) {
+  const isC = opt.base === "circle";
+  const U = opt.U || 70, W = isC ? 4 : opt.w, H = isC ? 4 : opt.h, pad = 30;
+  const svg = makeSvg(W * U + 2 * pad, H * U + 2 * pad);
+  const X = v => pad + v * U, Y = v => pad + v * U;
+  const cand = [];
+  if (!isC) {
+    const fr = opt.fr || [1 / 4, 1 / 3, 1 / 2, 2 / 3, 3 / 4];
+    fr.forEach(f => cand.push({ a: [f * W, 0], b: [f * W, H] }));
+    (opt.frY || fr).forEach(f => cand.push({ a: [0, f * H], b: [W, f * H] }));
+    if (opt.diag) { cand.push({ a: [0, 0], b: [W, H] }); cand.push({ a: [W, 0], b: [0, H] }); }
+  } else {
+    [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330].forEach(d => { const r = d * Math.PI / 180; cand.push({ ang: d, a: [2, 2], b: [2 + 2 * Math.sin(r), 2 - 2 * Math.cos(r)] }); });
+  }
+  const on = new Set(); let target = opt.target || null; const found = [];
+  const layer = svgEl("g"), fillG = svgEl("g");
+  svg.append(fillG);
+  if (isC) svg.append(svgEl("circle", { cx: X(2), cy: Y(2), r: 2 * U, fill: "none", stroke: INK, "stroke-width": 4 }));
+  else svg.append(svgEl("rect", { x: X(0), y: Y(0), width: W * U, height: H * U, fill: "none", stroke: INK, "stroke-width": 4 }));
+  svg.append(layer);
+  const out = h("div", { class: "readout" });
+  // 조각 계산
+  function pieces() {
+    if (isC) {
+      const a = [...on].map(i => cand[i].ang).sort((p, q) => p - q);
+      if (a.length < 2) return { n: 1, equal: true, sizes: [360] };
+      const gaps = a.map((v, i) => (i + 1 < a.length ? a[i + 1] : a[0] + 360) - v);
+      return { n: a.length, equal: gaps.every(g => g === gaps[0]), sizes: gaps };
+    }
+    const L = [...on].map(i => cand[i]); const cnt = new Map(); const N = 90;
+    for (let i = 0; i < N; i++) for (let j = 0; j < N; j++) {
+      const px = (i + .37) / N * W, py = (j + .61) / N * H;
+      const key = L.map(l => ((l.b[0] - l.a[0]) * (py - l.a[1]) - (l.b[1] - l.a[1]) * (px - l.a[0])) > 0 ? 1 : 0).join("");
+      cnt.set(key, (cnt.get(key) || 0) + 1);
+    }
+    const sizes = [...cnt.values()];
+    return { n: sizes.length, equal: Math.max(...sizes) / Math.min(...sizes) < 1.05, sizes };
+  }
+  function draw() {
+    layer.innerHTML = "";
+    cand.forEach((c, i) => layer.append(svgEl("line", { x1: X(c.a[0]), y1: Y(c.a[1]), x2: X(c.b[0]), y2: Y(c.b[1]), stroke: on.has(i) ? INK : U6_GUIDE, "stroke-width": on.has(i) ? 5 : 2, "stroke-dasharray": on.has(i) ? "" : "6 7", "stroke-linecap": "round" })));
+    if (isC) layer.append(svgEl("circle", { cx: X(2), cy: Y(2), r: 5, fill: INK }));
+    const p = pieces();
+    out.innerHTML = (opt.choose ? `고른 수: <b>${target || "?"}</b><br>` : "") + `지금 조각 수: <b>${p.n}</b>조각` + (found.length && opt.ways > 1 ? `<br><small>찾은 방법 ${found.length}가지 / ${opt.ways}가지</small>` : "");
+  }
+  svg.addEventListener("pointerdown", ev => {
+    const pt = svgPt(svg, ev);
+    let best = -1, bd = 22;
+    cand.forEach((c, i) => {
+      const ax = X(c.a[0]), ay = Y(c.a[1]), bx = X(c.b[0]), by = Y(c.b[1]);
+      const dx = bx - ax, dy = by - ay, t = Math.max(0, Math.min(1, ((pt.x - ax) * dx + (pt.y - ay) * dy) / (dx * dx + dy * dy)));
+      const d = Math.hypot(pt.x - ax - t * dx, pt.y - ay - t * dy);
+      if (d < bd) { bd = d; best = i; }
+    });
+    if (best >= 0) { on.has(best) ? on.delete(best) : on.add(best); draw(); }
+  });
+  draw();
+  api.provide({ words: ["똑같이", "모양과 크기가 같게", "겹쳐 보기"], answers: [] });
+  const chooser = opt.choose ? h("div", { class: "tools" }, h("span", {}, "수 고르기:"), ...opt.choose.map(n => h("button", { onclick: e => { target = n; [...e.currentTarget.parentNode.querySelectorAll("button")].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); draw(); } }, String(n)))) : null;
+  const side = h("div", { class: "side" }, h("p", {}, opt.tip || "흐린 점선을 누르면 선이 그어져요. 다시 누르면 지워져요."), chooser, out,
+    h("div", { class: "tools" }, h("button", { onclick: () => { on.clear(); draw(); } }, "선 모두 지우기")),
+    h("button", { class: "big", onclick: () => {
+      api.tryOnce();
+      if (!target) return api.fail("먼저 나눌 수를 하나 골라요.", "-");
+      const p = pieces(), ans = `${p.n}조각`;
+      if (p.n !== target) return api.fail(`지금은 ${p.n}조각이에요. 똑같이 ${target}조각이 되게 선을 그어요.`, ans);
+      if (!p.equal) return api.fail(`${target}조각이지만 조각의 크기가 서로 달라요. 겹쳐 보면 꼭 맞게 겹쳐지도록 나누어요.`, ans);
+      const sig = [...on].sort((a, b) => a - b).join(",");
+      if ((opt.ways || 1) > 1) {
+        if (found.includes(sig)) return api.fail("이미 찾은 방법이에요. 다른 방법으로 나누어 봐요.", ans);
+        found.push(sig);
+        if (found.length < opt.ways) { on.clear(); draw(); api.hint(`좋아요! ${found.length}가지 방법을 찾았어요. 선을 지웠어요. 다른 방법으로 한 번 더 나누어 봐요.`); return; }
+      }
+      api.done(`${target}조각(똑같이)`, opt.ok || "조각의 모양과 크기가 모두 같아요. 똑같이 나누었어요!");
+    } }, "확인하기"));
+  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, u6Fit(svg)), side));
+}
+
+/* ---------- 부분을 보고 전체 그리기 (모눈 칸 누르기) ---------- */
+function u6PartWhole(body, api, opt) {
+  const C = opt.cell || 56, cols = opt.cols, rows = opt.rows, pad = 16;
+  const svg = makeSvg(cols * C + 2 * pad, rows * C + 2 * pad);
+  const key = (x, y) => x + "," + y;
+  const fixed = new Set(opt.part.map(p => key(p[0], p[1]))), on = new Set();
+  const rects = {};
+  for (let y = 0; y < rows; y++) for (let x = 0; x < cols; x++) {
+    const r = svgEl("rect", { x: pad + x * C, y: pad + y * C, width: C, height: C, fill: "#fff", stroke: U6_GUIDE, "stroke-width": 1.5, style: "cursor:pointer" });
+    rects[key(x, y)] = r; svg.append(r);
+    r.addEventListener("click", () => { if (fixed.has(key(x, y))) return; on.has(key(x, y)) ? on.delete(key(x, y)) : on.add(key(x, y)); paint(); });
+  }
+  const xs = opt.part.map(p => p[0]), ys = opt.part.map(p => p[1]);
+  svg.append(svgEl("rect", { x: pad + Math.min(...xs) * C, y: pad + Math.min(...ys) * C, width: (Math.max(...xs) - Math.min(...xs) + 1) * C, height: (Math.max(...ys) - Math.min(...ys) + 1) * C, fill: "none", stroke: INK, "stroke-width": 4, "pointer-events": "none" }));
+  const out = h("div", { class: "readout" });
+  const need = opt.part.length * opt.den;
+  function paint() {
+    Object.entries(rects).forEach(([k, r]) => r.setAttribute("fill", fixed.has(k) ? U6_ORANGE : on.has(k) ? U6_SHADE : "#fff"));
+    out.innerHTML = u6R(`부분 [1/${opt.den}] 한 개 = ${opt.part.length}칸`) + "<br>" + u6R(`그린 전체: **${on.size + fixed.size}**칸`);
+  }
+  paint();
+  function connected() {
+    const all = new Set([...fixed, ...on]); const start = [...all][0], seen = new Set([start]), st = [start];
+    while (st.length) { const [x, y] = st.pop().split(",").map(Number); [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(([dx, dy]) => { const k = key(x + dx, y + dy); if (all.has(k) && !seen.has(k)) { seen.add(k); st.push(k); } }); }
+    return seen.size === all.size;
+  }
+  api.provide({ words: ["부분", "전체", "이어 붙이기", "분모만큼"], answers: [] });
+  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, u6Fit(svg)), h("div", { class: "side" },
+    h("p", {}, u6T(opt.tip)), out, h("div", { class: "tools" }, h("button", { onclick: () => { on.clear(); paint(); } }, "모두 지우기")),
+    h("button", { class: "big", onclick: () => {
+      api.tryOnce();
+      const tot = on.size + fixed.size, ans = `${tot}칸`;
+      if (tot !== need) return api.fail(`전체는 부분(${opt.part.length}칸)이 ${opt.den}개 모인 것이에요. 지금은 ${tot}칸이에요.`, ans);
+      if (!connected()) return api.fail("떨어져 있는 칸이 있어요. 조각끼리 변이 맞닿게 이어서 그려요.", ans);
+      api.done(ans, opt.ok);
+    } }, "확인하기"))));
+}
+
+/* ---------- 0.1 칸 색칠하기 (소수 막대) ----------
+   opt.items: [{label, target(0.1의 개수), max(칸 묶음 수)}], showFrac: 분수도 보여 줌, hide: 소수 값을 숨김 */
+function u6Tenths(body, api, opt) {
+  const items = opt.items, pad = 24, Wbar = opt.w || 780, rowH = 110;
+  const svg = makeSvg(Wbar + 2 * pad + (opt.labelW || 0), items.length * rowH + pad);
+  const state = items.map(it => it.start || 0);
+  const outs = items.map(() => h("div", { class: "readout" }));
+  const built = items.map((it, k) => {
+    const lx = pad + (opt.labelW || 0);
+    const p = u6Parts({ kind: "tenths", max: it.max || 1, w: Wbar, h: 56 }, lx, pad + k * rowH);
+    svg.append(p.g);
+    if (it.label) svg.append(txt(pad + (opt.labelW || 0) / 2, pad + k * rowH + 28, u6T(it.label), 24));
+    p.cells.forEach((c, i) => { c.style.cursor = "pointer"; c.addEventListener("click", () => { state[k] = state[k] === i + 1 ? i : i + 1; paint(k); }); });
+    return p;
+  });
+  function paint(k) {
+    const n = state[k], it = items[k];
+    built[k].cells.forEach((c, i) => c.setAttribute("fill", i < n ? (it.color || U6_SHADE) : "#fff"));
+    const who = it.label ? u6T(it.label) + ": " : "";
+    let s = `${who}0.1이 **${n}**개`;
+    if (!opt.hide && n > 0) s += ` → **${u6Dec(n)}**`;
+    if (opt.showFrac && n > 0 && n < 10 && !opt.hide) s += ` = [${n}/10]`;
+    outs[k].innerHTML = u6R(s);
+  }
+  items.forEach((_, k) => paint(k));
+  const tools = items.map((it, k) => h("div", { class: "tools" }, it.label ? h("span", {}, u6T(it.label)) : null,
+    h("button", { onclick: () => { state[k] = Math.max(0, state[k] - 1); paint(k); } }, "− 0.1"),
+    h("button", { onclick: () => { state[k] = Math.min((it.max || 1) * 10, state[k] + 1); paint(k); } }, "+ 0.1"),
+    (it.max || 1) > 1 ? h("button", { onclick: () => { state[k] = Math.min((it.max || 1) * 10, state[k] + 10); paint(k); } }, "+ 1") : null));
+  api.provide({ words: opt.words || ["0.1", "소수점", "0.1이 몇 개"], answers: [] });
+  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, u6Fit(svg)), h("div", { class: "side" },
+    h("p", {}, u6T(opt.tip || "칸을 누르면 0부터 그 칸까지 색칠돼요. 버튼으로도 할 수 있어요.")), ...outs, ...tools,
+    h("button", { class: "big", onclick: () => {
+      api.tryOnce();
+      const ans = state.map(u6Dec).join(", ");
+      const bad = items.findIndex((it, k) => state[k] !== it.target);
+      if (bad < 0) return api.done(ans, opt.ok);
+      const it = items[bad];
+      api.fail(`${it.label ? u6T(it.label) + "은(는) " : ""}지금 0.1이 ${state[bad]}개예요. ${u6Dec(it.target)}은(는) 0.1이 몇 개인지 생각해 봐요.`, ans);
+    } }, "확인하기"))));
+}
+
+/* ---------- 수직선에 소수 나타내기 (끌기 + 버튼) ---------- */
+function u6DecLine(body, api, opt) {
+  const items = opt.items, x0 = 50, x1 = 870, rowH = 130, top = 20;
+  const svg = makeSvg(920, items.length * rowH + 20);
+  const pos = items.map(() => 0), marks = [];
+  items.forEach((it, k) => {
+    const max = it.max || 3, y = top + k * rowH + 70;
+    svg.append(svgEl("line", { x1: x0, y1: y, x2: x1, y2: y, stroke: INK, "stroke-width": 4 }));
+    for (let i = 0; i <= max * 10; i++) {
+      const x = x0 + (x1 - x0) * i / (max * 10), big = i % 10 === 0, mid = i % 5 === 0;
+      svg.append(svgEl("line", { x1: x, y1: y - (big ? 20 : mid ? 14 : 9), x2: x, y2: y + (big ? 20 : mid ? 14 : 9), stroke: INK, "stroke-width": big ? 4 : 2 }));
+      if (big) svg.append(txt(x, y + 44, String(i / 10), 24));
+    }
+    if (it.label) svg.append(txt(x1, y - 46, u6T(it.label), 24, { "text-anchor": "end" }));
+    const m = svgEl("polygon", { points: "0,0 15,-26 -15,-26", fill: it.color || TENT, style: "cursor:grab" });
+    svg.append(m); marks.push(m);
+  });
+  const outs = items.map(() => h("div", { class: "readout" }));
+  const setPos = (k, i) => {
+    const max = items[k].max || 3; pos[k] = Math.max(0, Math.min(max * 10, i));
+    marks[k].setAttribute("transform", `translate(${x0 + (x1 - x0) * pos[k] / (max * 10)},${top + k * rowH + 70 - 22})`);
+    outs[k].innerHTML = (items[k].label ? u6T(items[k].label) + ": " : "") + (opt.hide ? `0에서 작은 눈금 <b>${pos[k]}</b>칸` : `<b>${u6Dec(pos[k])}</b>`);
+  };
+  items.forEach((_, k) => setPos(k, 0));
+  let act = -1;
+  const idxAt = p => { const k = Math.max(0, Math.min(items.length - 1, Math.floor((p.y - top) / rowH))); return k; };
+  const toI = (k, p) => Math.round((p.x - x0) / (x1 - x0) * (items[k].max || 3) * 10);
+  dragOn(svg, p => { act = idxAt(p); setPos(act, toI(act, p)); }, p => { if (act >= 0) setPos(act, toI(act, p)); }, () => { act = -1; });
+  const tools = items.map((it, k) => h("div", { class: "tools" }, it.label ? h("span", {}, u6T(it.label)) : null,
+    h("button", { onclick: () => setPos(k, pos[k] - 10) }, "◀ 1"), h("button", { onclick: () => setPos(k, pos[k] - 1) }, "◀ 0.1"),
+    h("button", { onclick: () => setPos(k, pos[k] + 1) }, "0.1 ▶"), h("button", { onclick: () => setPos(k, pos[k] + 10) }, "1 ▶")));
+  api.provide({ words: ["작은 눈금 한 칸 = 0.1", "0.1이 몇 개"], answers: [] });
+  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, u6Fit(svg)), h("div", { class: "side" },
+    h("p", {}, u6T(opt.tip || "▲를 끌거나 버튼을 눌러 옮겨요. 작은 눈금 한 칸은 0.1이에요.")), ...outs, ...tools,
+    h("button", { class: "big", onclick: () => {
+      api.tryOnce();
+      const ans = pos.map(u6Dec).join(", ");
+      const bad = items.findIndex((it, k) => pos[k] !== it.target);
+      if (bad < 0) return api.done(ans, opt.ok);
+      api.fail(`${items[bad].label ? u6T(items[bad].label) + "은(는) " : ""}지금 ${u6Dec(pos[bad])}에 있어요. 큰 눈금(0, 1, 2, 3)을 먼저 찾고 작은 눈금을 세어 봐요.`, ans);
+    } }, "확인하기"))));
+}
+
+/* ---------- 자 그림 (cm, mm) ---------- */
+function u6RulerFig(mm, opt = {}) {
+  const Ucm = opt.U || 80, L = opt.cm || Math.ceil(mm / 10) + 1, pad = 30;
+  const svg = makeSvg(L * Ucm + 2 * pad, 190);
+  const x0 = pad, yR = 110;
+  const obj = opt.obj || "접시";
+  svg.append(svgEl("rect", { x: x0, y: 40, width: mm / 10 * Ucm, height: 44, rx: 18, fill: opt.fill || U6_SOFT, stroke: INK, "stroke-width": 3 }));
+  svg.append(txt(x0 + mm / 20 * Ucm, 62, obj, 22));
+  svg.append(svgEl("rect", { x: x0 - 12, y: yR, width: L * Ucm + 24, height: 70, fill: "#FDF6E3", stroke: INK, "stroke-width": 2 }));
+  for (let k = 0; k <= L * 10; k++) {
+    const x = x0 + k * Ucm / 10, len = k % 10 === 0 ? 26 : k % 5 === 0 ? 18 : 11;
+    svg.append(svgEl("line", { x1: x, y1: yR, x2: x, y2: yR + len, stroke: INK, "stroke-width": k % 10 === 0 ? 3 : 1.5 }));
+    if (k % 10 === 0) svg.append(txt(x, yR + 48, String(k / 10), 22));
+  }
+  svg.append(svgEl("line", { x1: x0, y1: 30, x2: x0, y2: yR, stroke: U6_GRAY, "stroke-width": 2, "stroke-dasharray": "5 5" }));
+  svg.append(svgEl("line", { x1: x0 + mm / 10 * Ucm, y1: 30, x2: x0 + mm / 10 * Ucm, y2: yR, stroke: U6_GRAY, "stroke-width": 2, "stroke-dasharray": "5 5" }));
+  svg.append(txt(x0 + L * Ucm, yR + 48, "(cm)", 18, { "text-anchor": "end" }));
+  svg.style.cssText = `width:100%;max-width:${Math.min(L * Ucm + 2 * pad, 900)}px;height:auto;display:block;margin:.3em 0;background:#FBFCFB;border:2px solid var(--line);border-radius:12px`;
+  return svg;
+}
+/* 1 cm 확대 그림 (10칸) */
+function u6CmZoom(n, opt = {}) {
+  const svg = makeSvg(760, 170), x0 = 40, W = 680;
+  svg.append(svgEl("rect", { x: x0, y: 30, width: W * n / 10, height: 50, fill: opt.fill || U6_ORANGE, stroke: INK, "stroke-width": 2 }));
+  if (opt.obj) svg.append(txt(x0 + W * n / 20, 55, opt.obj, 22));
+  svg.append(svgEl("line", { x1: x0, y1: 100, x2: x0 + W, y2: 100, stroke: INK, "stroke-width": 3 }));
+  for (let i = 0; i <= 10; i++) { const x = x0 + W * i / 10; svg.append(svgEl("line", { x1: x, y1: 100 - (i % 10 === 0 ? 18 : i === 5 ? 13 : 9), x2: x, y2: 100 + (i % 10 === 0 ? 18 : i === 5 ? 13 : 9), stroke: INK, "stroke-width": i % 10 === 0 ? 4 : 2 })); }
+  svg.append(txt(x0, 138, "0", 24)); svg.append(txt(x0 + W, 138, "1 cm", 24));
+  svg.style.cssText = "width:100%;max-width:760px;height:auto;display:block;margin:.3em 0;background:#FBFCFB;border:2px solid var(--line);border-radius:12px";
+  return svg;
+}
+/* 소수 수직선 그림(표시만) */
+function u6LineFig(max, marks, opt = {}) {
+  const x0 = 40, x1 = 860, y = 70, svg = makeSvg(900, 130);
+  svg.append(svgEl("line", { x1: x0, y1: y, x2: x1, y2: y, stroke: INK, "stroke-width": 4 }));
+  for (let i = 0; i <= max * 10; i++) {
+    const x = x0 + (x1 - x0) * i / (max * 10), big = i % 10 === 0;
+    svg.append(svgEl("line", { x1: x, y1: y - (big ? 18 : 9), x2: x, y2: y + (big ? 18 : 9), stroke: INK, "stroke-width": big ? 4 : 2 }));
+    if (big) svg.append(txt(x, y + 40, String(i / 10), 24));
+  }
+  (marks || []).forEach(m => { const x = x0 + (x1 - x0) * m.at / (max * 10); svg.append(svgEl("polygon", { points: `${x},${y - 20} ${x + 12},${y - 42} ${x - 12},${y - 42}`, fill: TENT })); svg.append(txt(x, y - 56, u6T(m.t || ""), 22)); });
+  svg.style.cssText = "width:100%;max-width:900px;height:auto;display:block;margin:.3em 0;background:#FBFCFB;border:2px solid var(--line);border-radius:12px";
+  return svg;
+}
+
+/* ---------- 똑같은 모양으로 나누기(렙타일) ----------
+   cells: [[ [x,y],… ], …] 작은 조각(단위 좌표), shaded: 색칠된 조각 번호, target: 나눌 조각 수,
+   piece(조각 번호 목록) → 원래 도형과 같은 모양인지, ask: [분자, 분모] */
+function u6Reptile(body, api, opt) {
+  const U = opt.U || 80, pad = 26, cells = opt.cells;
+  let mx = 0, my = 0; cells.forEach(P => P.forEach(p => { mx = Math.max(mx, p[0]); my = Math.max(my, p[1]); }));
+  const svg = makeSvg(mx * U + 2 * pad, my * U + 2 * pad);
+  const P = p => [pad + p[0] * U, pad + p[1] * U];
+  const k2 = p => `${Math.round(p[0] * 100)},${Math.round(p[1] * 100)}`;
+  const edgeMap = new Map();
+  cells.forEach((poly, ci) => poly.forEach((a, i) => { const b = poly[(i + 1) % poly.length]; const k = [k2(a), k2(b)].sort().join("|"); if (!edgeMap.has(k)) edgeMap.set(k, { a, b, cells: [] }); edgeMap.get(k).cells.push(ci); }));
+  const inner = [...edgeMap.values()].filter(e => e.cells.length === 2), outer = [...edgeMap.values()].filter(e => e.cells.length === 1);
+  const shaded = new Set(opt.shaded || []);
+  cells.forEach((poly, ci) => svg.append(svgEl("polygon", { points: poly.map(p => P(p).join(",")).join(" "), fill: shaded.has(ci) ? U6_SHADE : "#fff", stroke: "none" })));
+  const on = new Set(); const lines = svgEl("g"); svg.append(lines);
+  outer.forEach(e => { const a = P(e.a), b = P(e.b); svg.append(svgEl("line", { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: INK, "stroke-width": 5, "stroke-linecap": "round" })); });
+  function draw() {
+    lines.innerHTML = "";
+    inner.forEach((e, i) => { const a = P(e.a), b = P(e.b); lines.append(svgEl("line", { x1: a[0], y1: a[1], x2: b[0], y2: b[1], stroke: on.has(i) ? INK : U6_GUIDE, "stroke-width": on.has(i) ? 5 : 2, "stroke-dasharray": on.has(i) ? "" : "6 6", "stroke-linecap": "round" })); });
+  }
+  draw();
+  svg.addEventListener("pointerdown", ev => {
+    const pt = svgPt(svg, ev); let best = -1, bd = 20;
+    inner.forEach((e, i) => { const a = P(e.a), b = P(e.b), dx = b[0] - a[0], dy = b[1] - a[1]; const t = Math.max(0, Math.min(1, ((pt.x - a[0]) * dx + (pt.y - a[1]) * dy) / (dx * dx + dy * dy))); const d = Math.hypot(pt.x - a[0] - t * dx, pt.y - a[1] - t * dy); if (d < bd) { bd = d; best = i; } });
+    if (best >= 0) { on.has(best) ? on.delete(best) : on.add(best); draw(); }
+  });
+  function regions() {
+    const par = cells.map((_, i) => i), f = i => par[i] === i ? i : (par[i] = f(par[i]));
+    inner.forEach((e, i) => { if (!on.has(i)) par[f(e.cells[0])] = f(e.cells[1]); });
+    const m = new Map(); cells.forEach((_, i) => { const r = f(i); if (!m.has(r)) m.set(r, []); m.get(r).push(i); });
+    return [...m.values()];
+  }
+  const iN = h("input", { type: "text", inputmode: "numeric", style: "width:2.6em;font-size:1.15em;text-align:center", "aria-label": "분자" });
+  const iD = h("input", { type: "text", inputmode: "numeric", style: "width:2.6em;font-size:1.15em;text-align:center", "aria-label": "분모" });
+  const fr = h("span", { style: "display:inline-flex;flex-direction:column;align-items:center;gap:3px;vertical-align:middle;margin:.2em .4em" }, iN, h("span", { style: "display:block;width:3.2em;border-top:4px solid var(--ink,#1D2A2A)" }), iD);
+  api.provide({ words: ["똑같은 모양", "몇 개로 나누었나", "색칠한 조각 수"], answers: [] });
+  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, u6Fit(svg)), h("div", { class: "side" },
+    h("p", {}, u6T(opt.tip || "흐린 점선을 눌러 선을 그어요. 다시 누르면 지워져요.")),
+    opt.ask ? h("div", { style: "display:flex;align-items:center;gap:.4em;flex-wrap:wrap" }, h("span", {}, "색칠한 부분은 전체의"), fr) : null,
+    h("div", { class: "tools" }, h("button", { onclick: () => { on.clear(); draw(); } }, "선 모두 지우기")),
+    h("button", { class: "big", onclick: () => {
+      api.tryOnce();
+      const R = regions(), ans = `${R.length}조각, ${iD.value}분의 ${iN.value}`;
+      if (R.length !== opt.target) return api.fail(`지금은 ${R.length}조각이에요. 원래 도형과 똑같은 모양 ${opt.target}개가 되도록 선을 그어요.`, ans);
+      if (!R.every(r => opt.piece(r))) return api.fail("모양이 원래 도형과 다른 조각이 있어요. 조각 하나하나가 원래 도형을 작게 만든 모양인지 살펴봐요.", ans);
+      if (!R.every(r => r.every(c => shaded.has(c)) || r.every(c => !shaded.has(c)))) return api.fail("색칠한 부분이 조각을 가로질러요. 색칠한 부분이 조각과 꼭 맞게 나누어 봐요.", ans);
+      if (opt.ask) {
+        iN.style.borderColor = iD.style.borderColor = "";
+        if (Number(iN.value) !== opt.ask[0] || Number(iD.value) !== opt.ask[1]) { iN.style.borderColor = iD.style.borderColor = "var(--no)"; return api.fail(`잘 나누었어요! 이제 분수를 다시 봐요. 전체를 똑같이 몇으로 나누었고, 그중 색칠한 조각은 몇 개인가요?`, ans); }
+      }
+      api.done(ans, opt.ok);
+    } }, "확인하기"))));
+}
+function u6SqCells(list) { return list.map(([x, y]) => [[x, y], [x + 1, y], [x + 1, y + 1], [x, y + 1]]); }
+function u6TriCells(n, s) {   // 한 변을 n 등분한 정삼각형(한 변 s)
+  const hgt = s * Math.sqrt(3) / 2, pt = (r, c) => [s / 2 - r * s / (2 * n) + c * s / n, r * hgt / n], out = [];
+  for (let r = 0; r < n; r++) for (let c = 0; c <= r; c++) {
+    out.push([pt(r, c), pt(r + 1, c + 1), pt(r + 1, c)]);
+    if (c < r) out.push([pt(r, c), pt(r, c + 1), pt(r + 1, c + 1)]);
+  }
+  return out.map(P => P.map(p => [p[0] + .05, p[1] + .05]));
+}
+
+/* ---------- 소수 카드 놀이판 ----------
+   mode:"plan" — 카드 모두 공개, 차례로 칸에 써서 모두 커지게 / mode:"play" — 카드를 한 장씩 뒤집어 칸에 쓰고, 가장 긴 연속 칸 세기 */
+function u6Board(body, api, opt) {
+  const n = opt.cells || 6;
+  let deck, board, cur;
+  const boardRow = h("div", { class: "opts", style: "gap:.4em" });
+  const cardBox = h("div", { class: "readout" });
+  const seen = h("div", { class: "inst" });
+  const ask = h("div", { class: "hidden" });
+  const runIn = h("input", { type: "text", inputmode: "numeric", style: "width:4em;font-size:1.15em", "aria-label": "가장 긴 칸 수" });
+  ask.append(h("p", { class: "jua" }, "놀이판을 다 채웠어요. 왼쪽에서 오른쪽으로 소수가 연속되게 커지는 칸은 가장 길게 몇 칸인가요?"), h("div", {}, runIn, " 칸"));
+  const longest = () => { let best = 1, c = 1; for (let i = 1; i < n; i++) { c = board[i] > board[i - 1] ? c + 1 : 1; best = Math.max(best, c); } return best; };
+  function reset() {
+    deck = opt.mode === "plan" ? opt.cards.slice() : (() => { const d = opt.deck.slice(); for (let i = d.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [d[i], d[j]] = [d[j], d[i]]; } return d.slice(0, n); })();
+    board = Array(n).fill(null); cur = 0; ask.classList.add("hidden"); runIn.value = ""; draw();
+  }
+  function draw() {
+    boardRow.innerHTML = "";
+    board.forEach((v, i) => boardRow.append(h("button", { class: "opt" + (v != null ? " on" : ""), style: "min-width:3.6em;min-height:2.6em;font-size:1.2em", onclick: () => {
+      if (v != null || cur >= deck.length) return;
+      board[i] = deck[cur]; cur++; draw();
+      if (cur >= n && opt.mode === "play") { ask.classList.remove("hidden"); api.provide({ words: ["왼쪽이 작고 오른쪽이 커요"], answers: [`${longest()}`] }); }
+    } }, v == null ? `${i + 1}번 칸` : u6Dec(v))));
+    cardBox.innerHTML = cur < deck.length ? `이번 카드: <b style="font-size:1.4em">${u6Dec(deck[cur])}</b>` : "카드를 모두 썼어요.";
+    seen.textContent = opt.mode === "plan" ? `카드가 나오는 순서: ${deck.map(u6Dec).join(" → ")}` : `나온 카드: ${deck.slice(0, cur).map(u6Dec).join(", ") || "없음"}`;
+  }
+  reset();
+  api.provide({ words: ["소수점 왼쪽의 수", "0.1의 개수", "작은 수는 왼쪽"], answers: [] });
+  body.append(h("p", {}, u6T(opt.tip)), cardBox, h("div", { class: "jua" }, "놀이판 (왼쪽 → 오른쪽으로 갈수록 커지게)"), boardRow, seen, ask,
+    h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+      api.tryOnce();
+      if (board.some(v => v == null)) return api.fail("카드를 한 장씩 빈칸에 써서 놀이판을 모두 채워요.", "-");
+      const ans = board.map(u6Dec).join(" · ");
+      if (opt.mode === "plan") {
+        if (board.every((v, i) => i === 0 || v > board[i - 1])) return api.done(ans, opt.ok);
+        return api.fail("오른쪽으로 갈수록 커지지 않은 곳이 있어요. ‘다시 하기’를 누르고 카드의 크기 순서를 먼저 생각해 봐요.", ans);
+      }
+      if (Number(runIn.value) === longest()) return api.done(ans + ` / 가장 긴 칸 ${longest()}`, opt.ok || `맞아요! 연속되게 커지는 칸이 ${longest()}칸이에요.`);
+      api.fail("왼쪽 칸부터 옆 칸과 크기를 비교하며, 계속 커지는 칸이 몇 칸 이어지는지 세어 봐요.", ans + ` / ${runIn.value}`);
+    } }, "확인하기"), h("button", { class: "ghost", onclick: reset }, "다시 하기")));
+}
+
+/* ===== 그림 모음 ===== */
+const U6_TANGRAM = [[[0, 0], [4, 0], [2, 2]], [[0, 0], [2, 2], [0, 4]], [[4, 2], [4, 4], [2, 4]], [[4, 0], [4, 2], [3, 3], [3, 1]], [[2, 2], [3, 1], [3, 3]], [[2, 2], [3, 3], [2, 4], [1, 3]], [[0, 4], [1, 3], [2, 4]]];
+const U6_FOODS = () => u6FigSvg([
+  { kind: "bar", den: 4, w: 200, h: 50, label: "가 가래떡" }, { kind: "circle", den: 4, r: 60, label: "나 감자전" },
+  { kind: "bar", cuts: [.2, .55, .72], w: 200, h: 50, label: "다 인절미" }, { kind: "circle", angs: [0, 70, 200], r: 60, label: "라 꽃전" },
+  { kind: "bar", den: 6, w: 200, h: 110, label: "마 병풍" }], { gap: 34 });
+const U6_EQ6 = () => u6FigSvg([
+  { kind: "bar", cuts: [.36], w: 150, h: 100, label: "가" },
+  { kind: "poly", unit: 26, polys: [[[0, 0], [4, 0], [2, 2]], [[4, 0], [4, 4], [2, 2]], [[4, 4], [0, 4], [2, 2]], [[0, 4], [0, 0], [2, 2]]], label: "나" },
+  { kind: "circle", angs: [0, 100, 230], r: 52, label: "다" }, { kind: "bar", den: 3, w: 150, h: 100, label: "라" },
+  { kind: "circle", den: 6, r: 52, label: "마" },
+  { kind: "poly", unit: 26, polys: [[[0, 0], [2, 0], [2, 1.3], [0, 1.3]], [[2, 0], [4, 0], [4, 1.3], [2, 1.3]], [[0, 1.3], [2, 1.3], [2, 4], [0, 4]], [[2, 1.3], [4, 1.3], [4, 4], [2, 4]]], label: "바" }], { gap: 30 });
+const U6_L_CELLS = [[0, 0], [1, 0], [0, 1], [1, 1], [0, 2], [1, 2], [2, 2], [3, 2], [0, 3], [1, 3], [2, 3], [3, 3]];
+const U6_L_PIECE = r => { if (r.length !== 3) return false; const c = r.map(i => U6_L_CELLS[i]); return !c.every(p => p[0] === c[0][0]) && !c.every(p => p[1] === c[0][1]); };
+
+const UNIT_STORY = { title: "도깨비 학교에서 분수와 소수 배우기", lines: [
+  "학교 가는 길, 신호등 불빛이 도깨비불로 바뀌더니 도깨비 버스가 나타났어요. 지환이는 버스를 타고 도깨비 학교에 갔어요.",
+  "깨비와 꼬마 도깨비들과 함께 병풍, 감자전, 떡케이크, 오미자차, 가래떡, 사자탈, 도자기, 장승을 만들며 똑같이 나누기, 분수, 단위분수, 소수를 배워요.",
+  "교과서 『수학 3-1』 6. 분수와 소수의 13차시 순서 그대로 만들었어요."],
+  one: "분수와 소수 · 도깨비 학교에서 똑같이 나누고, 분수와 소수로 나타내요." };
+const UNIT_KEYWORDS = ["똑같이 나누기", "전체와 부분", "분수", "분모", "분자", "단위분수", "분자가 클수록", "분모가 작을수록", "소수", "소수점", "0.1이 몇 개", "1 mm = 0.1 cm"];
+
+const LESSONS = [
+{
+  id: "f1", no: 1, title: "단원 도입 ― 도깨비 학교에 가요", soop: "개념 찾기(S)",
+  question: "도깨비 학교에서 똑같이 나누는 모습을 어디에서 찾을 수 있을까요?",
+  summary: "우리 주변에는 가래떡, 감자전, 병풍처럼 전체를 똑같이 나누는 상황이 많아요. 이 단원에서는 똑같이 나눈 것을 분수로, 1보다 작은 크기를 소수로 나타내는 방법을 배워요.",
+  steps: [
+    { inst: "지환이가 도깨비 학교에서 전통 음식과 병풍을 보았어요. 똑같이 나누어진 것을 모두 골라 보세요.", hints: ["조각의 크기가 모두 같은지 하나씩 견주어 봐요.", "크기가 다른 조각이 하나라도 있으면 똑같이 나눈 것이 아니에요."],
+      render: (b, a) => u6Ask(b, a, [{ q: "똑같이 나누어진 것을 모두 고르세요.", fig: U6_FOODS, t: "pick", o: ["가 가래떡", "나 감자전", "다 인절미", "라 꽃전", "마 병풍"], a: [0, 1, 4], why: { "0,1,2,4": "다 인절미는 조각의 크기가 서로 달라요.", "0,1,3,4": "라 꽃전은 조각의 크기가 서로 달라요." } }],
+        { ok: "가래떡, 감자전, 병풍은 조각의 크기가 모두 같아요. 똑같이 나누었어요!" }) },
+    { inst: "깨비와 지환이가 감자전을 똑같이 둘로 나누어 먹으려고 해요. 흐린 점선을 눌러 감자전을 똑같이 둘로 나누어 보세요.", hints: ["원의 가운데를 지나가는 곧은 선을 생각해 봐요.", "가운데 점에서 양쪽으로 반대 방향인 선 두 개를 그으면 돼요."],
+      render: (b, a) => u6Divide(b, a, { base: "circle", target: 2, tip: "흐린 점선(가운데 점에서 나가는 선)을 누르면 선이 그어져요.", ok: "두 조각의 크기가 같아요. 감자전을 똑같이 둘로 나누었어요!" }) },
+    { inst: "도깨비 학교 그림을 보고 보기-생각하기-궁금해하기로 써 보세요.", render: (b, a) => writeStep(b, a, [
+      { q: "보기: 도깨비 학교에서 무엇을 똑같이 나누고 있었나요?", tag: "보기" },
+      { q: "생각하기: 생활 속에서 똑같이 나누어 본 경험을 써 보세요.", tag: "생각" },
+      { q: "궁금해하기: 분수와 소수에 대해 무엇이 궁금한가요?", tag: "궁금" }]) },
+    { name: "떠올리기", inst: "2학년 때 배운 칠교판을 떠올려요. 칠교 조각을 세어 보세요.", hints: ["곧은 선 3개로 둘러싸인 조각이 삼각형이에요.", "나머지 조각은 곧은 선 4개로 둘러싸인 사각형이에요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "칠교판 조각은 모두 몇 개인가요?", fig: () => u6FigSvg([{ kind: "poly", unit: 50, polys: U6_TANGRAM }], { maxW: 260 }), t: "num", a: 7, unit: "개" },
+        { q: "삼각형 조각은 몇 개인가요?", t: "num", a: 5, unit: "개" },
+        { q: "사각형 조각은 몇 개인가요?", t: "num", a: 2, unit: "개", why: { "1": "기울어진 사각형 조각도 사각형이에요." } }], { ok: "칠교판은 삼각형 5개와 사각형 2개로 이루어져 있어요." }) },
+    { inst: "똑같이 나누는 것에 대해 알맞은 것을 골라요.", hints: ["똑같이 나누면 조각의 모양과 크기가 같아요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "감자전을 크기가 서로 다르게 4조각으로 잘랐어요. 똑같이 나누었다고 할 수 있나요?", t: "pick", o: ["할 수 있어요", "할 수 없어요"], a: 1 },
+        { q: "1 cm보다 짧은 물건의 길이를 cm로 나타낼 때 새로 필요한 것은?", t: "pick", o: ["1보다 작은 크기를 나타내는 수", "1, 2, 3과 같은 더 큰 수"], a: 0 }], { ok: "이 단원에서는 똑같이 나눈 것을 나타내는 분수와, 1보다 작은 크기를 나타내는 소수를 배워요." }) }
+  ],
+  challenge: { inst: "가래떡을 똑같이 셋으로 나누어 보세요.", hints: ["가래떡의 길이를 똑같이 3부분으로 나누는 세로선 2개가 필요해요."],
+    render: (b, a) => u6Divide(b, a, { base: "rect", w: 9, h: 2, U: 80, fr: [1 / 4, 1 / 3, 1 / 2, 2 / 3, 3 / 4], frY: [1 / 2], target: 3, tip: "흐린 점선을 눌러 가래떡을 자를 선을 그어요.", ok: "세 조각의 길이가 모두 같아요. 가래떡을 똑같이 셋으로 나누었어요!" }) }
+},
+{
+  id: "f2", no: 2, title: "똑같이 나누어 볼까요", soop: "개념 구축하기(O)",
+  question: "종이를 똑같이 나누려면 어떻게 해야 할까요?",
+  summary: "똑같이 나눈다는 것은 나누어진 조각의 모양과 크기가 모두 같게 나누는 것이에요. 겹쳐 보았을 때 꼭 맞게 겹쳐지면 똑같이 나눈 것이에요.",
+  steps: [
+    { inst: "깨비가 병풍을 만들 종이를 꺼냈어요. 종이를 똑같이 둘로 나누어 보세요.", hints: ["반으로 접었을 때 생기는 선을 생각해 봐요."],
+      render: (b, a) => u6Divide(b, a, { base: "rect", w: 6, h: 4, target: 2, tip: "흐린 점선을 눌러 종이를 나눌 선을 그어요.", ok: "두 조각이 꼭 맞게 겹쳐져요. 똑같이 둘로 나누었어요!" }) },
+    { inst: "이번에는 종이를 똑같이 넷으로 나누어 보세요.", hints: ["둘로 나눈 조각을 다시 똑같이 둘로 나누어 봐요.", "나누는 선이 모두 몇 개 필요한지 생각해 봐요."],
+      render: (b, a) => u6Divide(b, a, { base: "rect", w: 6, h: 4, target: 4, tip: "흐린 점선을 눌러 종이를 넷으로 나누는 선을 그어요.", ok: "네 조각의 모양과 크기가 모두 같아요. 병풍 칸이 똑같아졌어요!" }) },
+    { inst: "똑같이 나누어진 도형을 모두 찾아보세요.", hints: ["나누어진 조각의 모양과 크기가 모두 같은지 살펴봐요.", "한 조각만 커도 똑같이 나눈 것이 아니에요."],
+      render: (b, a) => u6Ask(b, a, [{ q: "똑같이 나누어진 도형을 모두 고르세요.", fig: U6_EQ6, t: "pick", o: ["가", "나", "다", "라", "마", "바"], a: [1, 3, 4], why: { "0,1,3,4": "가는 두 조각의 크기가 달라요.", "1,3,4,5": "바는 위쪽 조각과 아래쪽 조각의 크기가 달라요.", "1,2,3,4": "다는 세 조각의 크기가 서로 달라요." } }],
+        { ok: "나, 라, 마는 나누어진 조각의 모양과 크기가 모두 같아요." }) },
+    { inst: "약속을 완성해요.", hints: ["겹쳐 보았을 때 꼭 맞게 겹쳐지는지 생각해요."],
+      render: (b, a) => blanks(b, a, ["똑같이 나눈다는 것은 나누어진 조각의 ", { o: ["모양과 크기가 모두 같게", "개수가 많게", "색깔이 같게"], a: 0 }, " 나누는 것이에요. 똑같이 나누었는지 알아보려면 조각을 ", { o: ["겹쳐 보아요", "세어 보아요"], a: 0 }, "."]) },
+    { inst: "2, 3, 4, 6 중에서 수를 하나 골라, 고른 수만큼 원을 똑같이 나누어 보세요.", hints: ["원의 가운데 점에서 선을 그어요.", "3으로 나누려면 가운데에서 나가는 선 3개가 똑같이 벌어져 있어야 해요."],
+      render: (b, a) => u6Divide(b, a, { base: "circle", choose: [2, 3, 4, 6], tip: "먼저 아래에서 수를 고르고, 흐린 점선을 눌러 원을 나누어요.", ok: "고른 수만큼 원을 똑같이 나누었어요!" }) }
+  ],
+  challenge: { inst: "정사각형 모양 색종이를 똑같이 넷으로 나누는 방법을 서로 다르게 두 가지 찾아보세요.", hints: ["세로로만, 가로와 세로로, 마주 보는 꼭짓점끼리 이어서… 여러 방법이 있어요.", "한 가지를 찾으면 선이 지워져요. 다른 방법으로 다시 나누어요."],
+    render: (b, a) => u6Divide(b, a, { base: "rect", w: 4, h: 4, U: 80, target: 4, ways: 2, diag: true, tip: "흐린 점선을 눌러 색종이를 똑같이 넷으로 나누어요.", ok: "색종이를 똑같이 넷으로 나누는 방법을 두 가지 찾았어요!" }) }
+},
+{
+  id: "f3", no: 3, title: "분수를 알아볼까요 ⑴", soop: "개념 구축하기(O)",
+  question: "나눈 부분은 전체의 얼마인지 어떻게 나타낼까요?",
+  summary: "전체를 똑같이 2로 나눈 것 중의 1을 2분의 1(1/2)이라 쓰고 2분의 1이라고 읽어요. 이런 수를 분수라고 해요. 선 아래의 수를 분모, 선 위의 수를 분자라고 해요.",
+  steps: [
+    { inst: "지환이와 도깨비들이 감자전을 똑같이 나누었어요. 색칠한 부분을 살펴보세요.", hints: ["감자전이 몇 조각으로 똑같이 나누어져 있는지 세어요.", "색칠한 조각이 몇 개인지 세어요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "가 감자전은 전체를 똑같이 몇으로 나누었나요?", fig: () => u6FigSvg([{ kind: "circle", den: 2, r: 70, shade: 1, label: "가" }, { kind: "circle", den: 4, r: 70, shade: 3, label: "나" }], { maxW: 420 }), t: "num", a: 2 },
+        { q: "가에서 색칠한 부분은 몇 조각인가요?", t: "num", a: 1 },
+        { q: "나 감자전은 전체를 똑같이 몇으로 나누었나요?", t: "num", a: 4 },
+        { q: "나에서 색칠한 부분은 몇 조각인가요?", t: "num", a: 3 }], { ok: "가는 똑같이 2로 나눈 것 중의 1, 나는 똑같이 4로 나눈 것 중의 3이에요." }) },
+    { inst: "감자전을 똑같이 4로 나눈 것 중의 3만큼 색칠해 보세요. 오른쪽에 분수가 어떻게 나타나는지 보세요.", hints: ["조각을 3개 눌러 색칠해요."],
+      render: (b, a) => u6Shade(b, a, { items: [{ spec: { kind: "circle", den: 4, r: 150 }, target: 3 }], tip: "감자전 조각을 누르면 색칠돼요.", ok: "똑같이 4로 나눈 것 중의 3을 4분의 3이라고 해요." }) },
+    { inst: "색칠한 부분은 전체의 얼마인지 분수로 써 보세요. 분모(아래)와 분자(위) 칸에 수를 써요.", hints: ["분모 칸에는 똑같이 나눈 수, 분자 칸에는 색칠한 조각 수를 써요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "가의 색칠한 부분을 분수로 써 보세요.", fig: () => u6FigSvg([{ kind: "bar", den: 5, w: 250, h: 70, shade: 2, label: "가" }, { kind: "circle", den: 3, r: 55, shade: 1, label: "나" }, { kind: "circle", den: 6, r: 55, shade: 5, label: "다" }], { maxW: 620 }), t: "frac", a: [2, 5], why: { "5/2": "분모에는 똑같이 나눈 수, 분자에는 색칠한 조각 수를 써요." } },
+        { q: "나의 색칠한 부분을 분수로 써 보세요.", t: "frac", a: [1, 3] },
+        { q: "다의 색칠한 부분을 분수로 써 보세요.", t: "frac", a: [5, 6] },
+        { q: "다의 분수를 바르게 읽은 것은?", t: "pick", o: ["5분의 6", "6분의 5", "6과 5"], a: 1, why: { "0": "분수는 분모를 먼저, 분자를 나중에 읽어요." } }], { ok: "5분의 2, 3분의 1, 6분의 5예요. 분수는 분모를 먼저 읽어요." }) },
+    { inst: "분수의 약속을 완성해요.", hints: ["전체를 똑같이 나눈 수가 선 아래에 가요."],
+      render: (b, a) => blanks(b, a, ["전체를 똑같이 4로 나눈 것 중의 3을 ", { o: ["4분의 3", "3분의 4"], a: 0 }, "이라고 해요. 선 아래의 수 4를 ", { o: ["분모", "분자"], a: 0 }, ", 선 위의 수 3을 ", { o: ["분자", "분모"], a: 0 }, "라고 해요."]) },
+    { inst: "분모와 분자를 구분해 보세요.", hints: ["분모는 선 아래, 분자는 선 위에 있는 수예요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "분모가 7인 분수를 모두 고르세요.", t: "pick", o: ["[5/7]", "[7/8]", "[3/7]"], a: [0, 2], why: { "1": "8분의 7은 분자가 7이에요. 분모는 선 아래의 수예요." } },
+        { q: "분자가 7인 분수를 고르세요.", t: "pick", o: ["[5/7]", "[7/8]", "[3/7]"], a: 1 },
+        { q: "우리 주변에서 분수를 이용하는 경우로 알맞은 것은?", t: "pick", o: ["요리 방법에서 재료의 양을 설명할 때", "친구 이름을 부를 때"], a: 0 }], { ok: "분모와 분자를 잘 구분했어요. 요리, 종이접기처럼 똑같이 나눌 때 분수를 써요." }) }
+  ],
+  challenge: { inst: "설명을 읽고 분수로 써 보세요.", hints: ["똑같이 나눈 수가 분모예요."],
+    render: (b, a) => u6Ask(b, a, [
+      { q: "전체를 똑같이 8로 나눈 것 중의 5", t: "frac", a: [5, 8] },
+      { q: "분모가 9이고 분자가 4인 분수", t: "frac", a: [4, 9] },
+      { q: "12분의 7", t: "frac", a: [7, 12] },
+      { q: "색칠한 부분은 전체의 얼마인가요?", fig: () => u6FigSvg([{ kind: "grid", rows: 2, cols: 5, cell: 55, shade: [0, 2, 4, 6, 8, 9, 7] }], { maxW: 330 }), t: "frac", a: [7, 10] }], { ok: "분수를 정확하게 썼어요!" }) }
+},
+{
+  id: "f4", no: 4, title: "분수를 알아볼까요 ⑵", soop: "개념 구축하기(O)",
+  question: "색칠한 부분과 색칠하지 않은 부분은 전체의 얼마일까요?",
+  summary: "색칠한 부분과 색칠하지 않은 부분을 합하면 전체가 돼요. 5분의 2만큼 색칠하면 색칠하지 않은 부분은 5분의 3이에요. 부분이 전체의 3분의 1이면 부분 3개를 이어 붙인 것이 전체예요.",
+  steps: [
+    { inst: "지환이와 도깨비들이 감자전과 수정과를 먹었어요. 색칠한 부분(남은 부분)과 색칠하지 않은 부분(먹은 부분)을 분수로 써 보세요.", hints: ["전체를 똑같이 몇으로 나누었는지 먼저 세어요. 그 수가 분모예요.", "색칠하지 않은 칸을 세면 그 수가 분자예요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "가에서 색칠한 부분", fig: () => u6FigSvg([{ kind: "circle", den: 2, r: 60, shade: 1, label: "가" }, { kind: "bar", den: 5, w: 300, h: 70, shade: 2, label: "나" }], { maxW: 520 }), t: "frac", a: [1, 2] },
+        { q: "가에서 색칠하지 않은 부분", t: "frac", a: [1, 2] },
+        { q: "나에서 색칠한 부분", t: "frac", a: [2, 5] },
+        { q: "나에서 색칠하지 않은 부분", t: "frac", a: [3, 5], why: { "2/5": "색칠하지 않은 칸을 세어 봐요. 5칸 중 몇 칸이 비어 있나요?" } }], { ok: "색칠한 부분과 색칠하지 않은 부분을 합하면 전체가 돼요." }) },
+    { inst: "주어진 분수만큼 색칠해 보세요. 9분의 5만큼 색칠하고, 색칠하지 않은 부분도 살펴보세요.", hints: ["9칸 중 5칸을 색칠해요."],
+      render: (b, a) => u6Shade(b, a, { rest: true, items: [{ spec: { kind: "grid", rows: 3, cols: 3, cell: 100 }, target: 5, want: "[5/9]" }], ok: "9분의 5만큼 색칠하면 색칠하지 않은 부분은 9분의 4예요." }) },
+    { inst: "주어진 분수만큼 색칠했을 때 색칠하지 않은 부분을 분수로 써 보세요.", hints: ["분모는 그대로예요. 분모에서 색칠한 칸 수를 빼면 색칠하지 않은 칸 수예요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "[3/4]만큼 색칠하면 색칠하지 않은 부분은?", fig: () => u6FigSvg([{ kind: "grid", rows: 2, cols: 2, cell: 50, shade: 3, label: "[3/4]" }, { kind: "circle", den: 8, r: 50, shade: 4, label: "[4/8]" }], { maxW: 330 }), t: "frac", a: [1, 4] },
+        { q: "[4/8]만큼 색칠하면 색칠하지 않은 부분은?", t: "frac", a: [4, 8] },
+        { q: "[5/9]만큼 색칠하면 색칠하지 않은 부분은?", t: "frac", a: [4, 9] }], { ok: "색칠한 부분과 색칠하지 않은 부분의 분자를 합하면 분모와 같아요." }) },
+    { inst: "부분과 전체의 약속을 완성해요.", hints: ["부분이 3분의 1이면 전체를 똑같이 3으로 나눈 것 중의 1이에요."],
+      render: (b, a) => blanks(b, a, ["색칠한 부분과 색칠하지 않은 부분을 합하면 ", { o: ["전체", "절반"], a: 0 }, "가 돼요. 부분이 전체의 3분의 1이면 전체는 부분이 ", { o: ["3개", "1개", "2개"], a: 0 }, " 있어야 해요."]) },
+    { inst: "부분을 보고 전체가 될 수 있는 도형을 모두 찾아보세요.", hints: ["부분이 3분의 1이므로 전체는 부분 3개가 모인 크기예요.", "모양은 달라도 부분 3개 크기이면 전체가 될 수 있어요."],
+      render: (b, a) => u6Ask(b, a, [{ q: "부분이 전체의 [1/3]이에요. 전체가 될 수 있는 도형을 모두 고르세요.", fig: () => u6FigSvg([
+        { kind: "grid", rows: 1, cols: 1, cell: 55, shade: 1, color: U6_ORANGE, label: "부분" },
+        { kind: "poly", unit: 55, polys: [[[0, 0], [2, 0], [2, 1], [0, 1]]], label: "가" }, { kind: "poly", unit: 55, polys: [[[0, 0], [2, 0], [2, 2], [0, 2]]], label: "나" },
+        { kind: "poly", unit: 55, polys: [[[0, 0], [3, 0], [3, 1], [0, 1]]], label: "다" }, { kind: "poly", unit: 55, polys: [[[0, 0], [1, 0], [1, 1], [2, 1], [2, 2], [0, 2]]], label: "라" }], { gap: 34 }),
+        t: "pick", o: ["가", "나", "다", "라"], a: [2, 3], why: { "2": "라도 부분 3개로 만들 수 있는 모양이에요.", "0,2,3": "가는 부분 2개 크기예요.", "1,2,3": "나는 부분 4개 크기예요." } }], { ok: "다와 라는 부분 3개가 모인 크기라서 전체가 될 수 있어요." }) }
+  ],
+  challenge: { inst: "부분을 보고 전체를 그려 보세요. 주황색 부분이 전체의 4분의 1이에요.", hints: ["부분이 4분의 1이면 부분 4개를 이어 붙여야 전체예요.", "조각끼리 변이 맞닿게, 떨어지지 않게 그려요."],
+    render: (b, a) => u6PartWhole(b, a, { cols: 9, rows: 5, part: [[3, 2], [4, 2]], den: 4, tip: "칸을 눌러 칠해 전체를 그려요. 주황색 부분(2칸)이 전체의 4분의 1이에요.", ok: "부분 4개(8칸)를 이어 붙여 전체를 그렸어요!" }) }
+},
+{
+  id: "f5", no: 5, title: "단위분수를 알아볼까요", soop: "개념 구축하기(O)",
+  question: "분자가 1인 분수에는 어떤 특징이 있을까요?",
+  summary: "2분의 1, 3분의 1, 4분의 1과 같이 분자가 1인 분수를 단위분수라고 해요. 6분의 5는 6분의 1이 5개예요. 단위분수가 분모의 수만큼 모이면 전체가 돼요.",
+  steps: [
+    { inst: "깨비가 떡케이크를 각각 2조각, 3조각, 4조각으로 똑같이 나누었어요. 1조각은 전체의 얼마인지 분수로 써 보세요.", hints: ["똑같이 나눈 조각 수가 분모, 1조각이니까 분자는 1이에요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "가의 1조각", fig: () => u6FigSvg([{ kind: "circle", den: 2, r: 60, shade: 1, label: "가" }, { kind: "circle", den: 3, r: 60, shade: 1, label: "나" }, { kind: "circle", den: 4, r: 60, shade: 1, label: "다" }], { maxW: 520 }), t: "frac", a: [1, 2] },
+        { q: "나의 1조각", t: "frac", a: [1, 3] },
+        { q: "다의 1조각", t: "frac", a: [1, 4] }], { ok: "2분의 1, 3분의 1, 4분의 1이에요. 모두 분자가 1이에요." }) },
+    { inst: "전체를 똑같이 5로 나눈 도형이에요. 5분의 1 스티커를 한 장씩 붙이듯 조각을 눌러 전체를 채워 보세요.", hints: ["조각 하나하나가 5분의 1이에요. 빈 곳이 없게 모두 채워요."],
+      render: (b, a) => u6Shade(b, a, { mode: "unit", items: [{ spec: { kind: "bar", den: 5, w: 700, h: 130 }, target: 5, why: "빈 곳 없이 전체를 모두 채워 봐요." }], tip: "조각을 누르면 5분의 1 스티커가 붙어요.", ok: "5분의 1이 5개 모이니 전체가 되었어요!" }) },
+    { inst: "단위분수와 전체, 분수와 단위분수의 관계를 말해 보세요.", hints: ["스티커를 몇 장 붙였는지 떠올려요.", "6분의 5는 6칸 중 5칸이에요. 한 칸이 6분의 1이에요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "[1/5] 몇 개로 전체를 만들 수 있나요?", t: "num", a: 5, unit: "개" },
+        { q: "[5/6]만큼 색칠했어요. [5/6]은 [1/6]이 몇 개인가요?", fig: () => u6FigSvg([{ kind: "bar", den: 6, w: 480, h: 60, shade: 5 }], { maxW: 520 }), t: "num", a: 5, unit: "개" },
+        { q: "[1/2], [1/3], [1/4]의 같은 점은?", t: "pick", o: ["분자가 모두 1이에요", "분모가 모두 같아요", "분모가 모두 1이에요"], a: 0 }], { ok: "단위분수가 분모의 수만큼 모이면 전체가 되고, 6분의 5는 6분의 1이 5개예요." }) },
+    { inst: "단위분수의 약속을 완성해요.", hints: ["2분의 1, 3분의 1의 위에 있는 수를 봐요."],
+      render: (b, a) => blanks(b, a, ["2분의 1, 3분의 1, 4분의 1과 같이 ", { o: ["분자", "분모"], a: 0 }, "가 1인 분수를 ", { o: ["단위분수", "소수"], a: 0 }, "라고 해요. 6분의 5는 6분의 1이 ", { o: ["5개", "6개"], a: 0 }, "예요."]) },
+    { inst: "분수와 단위분수의 관계를 알아보세요.", hints: ["분자의 수가 단위분수의 개수예요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "[2/3]은 [1/3]이 몇 개인가요?", t: "num", a: 2, unit: "개" },
+        { q: "[5/9]는 [1/9]가 몇 개인가요?", t: "num", a: 5, unit: "개" },
+        { q: "[1/7]이 6개이면 얼마인가요?", t: "frac", a: [6, 7], fixD: true },
+        { q: "[1/8]이 3개이면 얼마인가요?", t: "frac", a: [3, 8] }], { ok: "분수의 분자는 단위분수가 몇 개인지를 나타내요." }) }
+  ],
+  challenge: { inst: "단위분수를 찾고 만들어 보세요.", hints: ["분자가 1인지 봐요.", "수 카드 1은 꼭 분자에 놓아야 단위분수가 돼요."],
+    render: (b, a) => u6Ask(b, a, [
+      { q: "단위분수를 모두 고르세요.", t: "pick", o: ["[5/6]", "[1/11]", "[10/13]", "[1/5]", "[10/12]", "[10/15]"], a: [1, 3] },
+      { q: "수 카드 6, 7, 1, 9 중에서 2장을 골라 한 번씩만 써서 만들 수 있는 단위분수를 모두 고르세요.", t: "pick", o: ["[1/6]", "[6/7]", "[1/7]", "[7/9]", "[1/9]", "[6/9]"], a: [0, 2, 4] }], { ok: "분자가 1인 분수가 단위분수예요!" }) }
+},
+{
+  id: "f6", no: 6, title: "분모가 같은 분수의 크기를 비교해 볼까요", soop: "개념 구축하기(O)",
+  question: "분모가 같은 분수는 어떻게 크기를 비교할까요?",
+  summary: "분모가 같은 분수는 단위분수의 개수가 많을수록, 곧 분자가 클수록 더 큰 분수예요. 8분의 7은 8분의 1이 7개, 8분의 5는 5개이므로 8분의 7이 더 커요.",
+  steps: [
+    { inst: "같은 크기의 컵에 지환이는 5분의 3만큼, 깨비는 5분의 2만큼 오미자차를 담았어요. 컵의 칸을 눌러 담은 만큼 색칠해 보세요.", hints: ["컵을 똑같이 5로 나누었어요. 아래에서부터 칸을 채워요."],
+      render: (b, a) => u6Shade(b, a, { level: true, items: [{ spec: { kind: "cup", den: 5, w: 130, h: 300 }, target: 3, label: "지환", color: "#E8A0A0", want: "[3/5]" }, { spec: { kind: "cup", den: 5, w: 130, h: 300 }, target: 2, label: "깨비", color: "#E8A0A0", want: "[2/5]" }],
+        tip: "칸을 누르면 아래에서부터 그 칸까지 오미자차가 차요.", ok: "지환이의 컵이 더 많이 차 있어요." }) },
+    { inst: "8분의 5와 8분의 7만큼 각각 색칠해 보세요.", hints: ["두 띠 모두 똑같이 8로 나누었어요. 위는 5칸, 아래는 7칸이에요."],
+      render: (b, a) => u6Shade(b, a, { stack: true, labelW: 110, items: [{ spec: { kind: "bar", den: 8, w: 600, h: 70 }, target: 5, label: "[5/8]", want: "[5/8]" }, { spec: { kind: "bar", den: 8, w: 600, h: 70 }, target: 7, label: "[7/8]", want: "[7/8]" }], ok: "8분의 7이 더 길게 색칠되었어요." }) },
+    { inst: "색칠한 그림을 보며 크기를 비교해 말해 보세요.", hints: ["색칠한 칸 수를 비교해요.", "분모가 같으면 한 칸(단위분수)의 크기가 같아요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "[3/5]과 [2/5] 중에서 더 큰 분수는?", t: "pick", o: ["[3/5]", "[2/5]"], a: 0 },
+        { q: "누가 오미자차를 더 많이 담았나요?", t: "pick", o: ["지환", "깨비"], a: 0 },
+        { q: "[5/8]은 [1/8]이 몇 개인가요?", t: "num", a: 5, unit: "개" },
+        { q: "[7/8]은 [1/8]이 몇 개인가요?", t: "num", a: 7, unit: "개" },
+        { q: "[5/8]과 [7/8] 중에서 더 큰 분수는?", t: "pick", o: ["[5/8]", "[7/8]"], a: 1 }], { ok: "단위분수가 더 많은 쪽이 더 큰 분수예요." }) },
+    { inst: "분모가 같은 분수의 크기를 비교하는 방법을 정리해요.", hints: ["분모가 같으면 분자가 단위분수의 개수를 알려 줘요."],
+      render: (b, a) => blanks(b, a, ["분모가 같은 분수는 ", { o: ["분자", "분모"], a: 0 }, "가 클수록 더 큰 분수예요. 단위분수의 개수가 ", { o: ["많을수록", "적을수록"], a: 0 }, " 더 커요."]) },
+    { inst: "두 분수의 크기를 비교하여 알맞은 것을 골라요.", hints: ["분모가 같으니 분자끼리 비교해요.", "벌린 쪽(큰 쪽)이 더 큰 수를 향해요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "[1/6] ○ [3/6]", t: "pick", o: [">", "=", "<"], a: 2 },
+        { q: "[7/9] ○ [5/9]", t: "pick", o: [">", "=", "<"], a: 0 },
+        { q: "[8/12] ○ [3/12]", t: "pick", o: [">", "=", "<"], a: 0 }], { ok: "1<3, 7>5, 8>3처럼 분자를 비교했어요." }) }
+  ],
+  challenge: { inst: "더 큰 수, 가장 큰 수를 찾아보세요.", hints: ["7분의 1이 3개인 수는 7분의 3이에요."],
+    render: (b, a) => u6Ask(b, a, [
+      { q: "서준: “[1/7]이 3개인 수.” 윤아: “[1/7]이 5개인 수.” 더 큰 수를 말한 사람은?", t: "pick", o: ["서준", "윤아"], a: 1 },
+      { q: "가장 큰 분수를 고르세요.", t: "pick", o: ["[2/10]", "[8/10]", "[7/10]"], a: 1 },
+      { q: "가장 작은 분수를 고르세요.", t: "pick", o: ["[2/10]", "[8/10]", "[7/10]"], a: 0 },
+      { q: "지원이는 색 테이프를 [2/5]만큼, 성우는 [4/5]만큼 사용했어요. 더 많이 사용한 사람은?", t: "pick", o: ["지원", "성우"], a: 1 }], { ok: "분모가 같을 때 분자를 비교해 모두 해결했어요!" }) }
+},
+{
+  id: "f7", no: 7, title: "단위분수의 크기를 비교해 볼까요", soop: "개념 구축하기(O)",
+  question: "단위분수는 어떻게 크기를 비교할까요?",
+  summary: "더 많은 조각으로 똑같이 나눌수록 한 조각의 크기는 작아져요. 그래서 단위분수는 분모가 작을수록 더 큰 분수예요. 2분의 1은 4분의 1보다 커요.",
+  steps: [
+    { inst: "같은 크기의 가래떡을 지환이는 한 개의 2분의 1만큼, 깨비는 한 개의 4분의 1만큼 먹으려고 해요. 먹으려는 만큼 색칠해 보세요.", hints: ["지환이의 가래떡은 똑같이 2로, 깨비의 가래떡은 똑같이 4로 나누었어요.", "각각 1칸씩 색칠해요."],
+      render: (b, a) => u6Shade(b, a, { stack: true, labelW: 110, items: [{ spec: { kind: "bar", den: 2, w: 600, h: 70 }, target: 1, label: "지환", want: "[1/2]" }, { spec: { kind: "bar", den: 4, w: 600, h: 70 }, target: 1, label: "깨비", want: "[1/4]" }], ok: "지환이가 색칠한 부분이 더 길어요." }) },
+    { inst: "똑같이 나누어진 종이띠에 2분의 1, 3분의 1, 4분의 1만큼 각각 색칠해 보세요.", hints: ["세 띠 모두 1칸씩만 색칠해요."],
+      render: (b, a) => u6Shade(b, a, { stack: true, labelW: 110, items: [{ spec: { kind: "bar", den: 2, w: 600, h: 60 }, target: 1, label: "[1/2]", want: "[1/2]" }, { spec: { kind: "bar", den: 3, w: 600, h: 60 }, target: 1, label: "[1/3]", want: "[1/3]" }, { spec: { kind: "bar", den: 4, w: 600, h: 60 }, target: 1, label: "[1/4]", want: "[1/4]" }], ok: "나누는 조각 수가 많을수록 한 칸이 짧아져요." }) },
+    { inst: "색칠한 그림을 보며 말해 보세요.", hints: ["색칠한 부분의 길이를 견주어 봐요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "[1/2]과 [1/4] 중에서 더 큰 분수는?", t: "pick", o: ["[1/2]", "[1/4]"], a: 0, why: { "1": "4는 2보다 크지만, 4로 나눈 한 조각은 2로 나눈 한 조각보다 작아요. 그림을 다시 봐요." } },
+        { q: "누가 가래떡을 더 많이 먹을까요?", t: "pick", o: ["지환", "깨비"], a: 0 },
+        { q: "더 많은 조각으로 똑같이 나눌수록 한 조각의 크기는?", t: "pick", o: ["커져요", "작아져요", "그대로예요"], a: 1 },
+        { q: "큰 분수부터 차례대로 쓴 것은?", t: "pick", o: ["[1/2], [1/3], [1/4]", "[1/4], [1/3], [1/2]", "[1/3], [1/2], [1/4]"], a: 0 }], { ok: "분모가 클수록 한 조각이 작아져요." }) },
+    { inst: "단위분수의 크기를 비교하는 방법을 정리해요.", hints: ["분모는 전체를 똑같이 나눈 수예요. 많이 나눌수록 한 조각은 작아요."],
+      render: (b, a) => blanks(b, a, ["단위분수는 ", { o: ["분모", "분자"], a: 0 }, "가 작을수록 더 큰 분수예요. 분모가 클수록 한 조각의 크기는 ", { o: ["작아요", "커요"], a: 0 }, "."]) },
+    { inst: "두 분수의 크기를 비교하여 알맞은 것을 골라요.", hints: ["단위분수는 분모가 작은 쪽이 더 커요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "[1/7] ○ [1/4]", t: "pick", o: [">", "=", "<"], a: 2, why: { "0": "7로 나눈 한 조각은 4로 나눈 한 조각보다 작아요." } },
+        { q: "[1/3] ○ [1/6]", t: "pick", o: [">", "=", "<"], a: 0 },
+        { q: "[1/8] ○ [1/5]", t: "pick", o: [">", "=", "<"], a: 2 }], { ok: "분모가 작은 단위분수가 더 커요." }) }
+  ],
+  challenge: { inst: "단위분수의 크기 비교를 이용해 해결해 보세요.", hints: ["거리가 더 짧은 곳이 더 가까워요.", "7분의 1보다 크려면 분모가 7보다 작아야 해요."],
+    render: (b, a) => u6Ask(b, a, [
+      { q: "도윤이네 집에서 도서관까지는 [1/4] km, 학교까지는 [1/5] km예요. 더 가까운 곳은?", t: "pick", o: ["도서관", "학교"], a: 1, why: { "0": "5분의 1은 4분의 1보다 작아요. 거리가 짧은 곳이 더 가까워요." } },
+      { q: "[1/7]보다 크고 [1/3]보다 작은 단위분수를 모두 고르세요.", t: "pick", o: ["[1/8]", "[1/6]", "[1/5]", "[1/4]", "[1/3]", "[1/2]"], a: [1, 2, 3] }], { ok: "단위분수의 크기 비교로 문제를 해결했어요!" }) }
+},
+{
+  id: "f8", no: 8, title: "소수를 알아볼까요 ⑴", soop: "개념 구축하기(O)",
+  question: "1 cm보다 짧은 길이를 cm로 어떻게 나타낼까요?",
+  summary: "10분의 1, 10분의 2, …, 10분의 9를 0.1, 0.2, …, 0.9라 쓰고 영 점 일, 영 점 이, …, 영 점 구라고 읽어요. 이런 수를 소수라 하고 ‘.’을 소수점이라고 해요.",
+  steps: [
+    { inst: "지환이가 사자탈에 붙일 종이의 폭을 재었더니 1 cm보다 짧았어요. 1 cm를 크게 늘린 그림을 보고 답해 보세요.", hints: ["0과 1 cm 사이의 작은 칸을 세어 봐요.", "종이의 폭이 몇 칸인지 세어요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "1 cm를 똑같이 몇 칸으로 나누었나요?", fig: () => u6CmZoom(8, { obj: "종이의 폭" }), t: "num", a: 10, unit: "칸" },
+        { q: "종이의 폭은 몇 칸인가요?", t: "num", a: 8, unit: "칸" },
+        { q: "종이의 폭을 분수로 나타내어 보세요.", t: "frac", a: [8, 10], unit: "cm" }], { ok: "종이의 폭은 10분의 8 cm예요. 1 cm를 똑같이 10으로 나누면 한 칸은 10분의 1 cm예요." }) },
+    { inst: "0부터 1까지를 똑같이 10칸으로 나누었어요. 10분의 7만큼 색칠해 보세요.", hints: ["한 칸이 10분의 1이에요. 7칸을 색칠해요."],
+      render: (b, a) => u6Tenths(b, a, { showFrac: true, items: [{ target: 7, max: 1 }], ok: "10분의 7은 0.7이라고 써요." }) },
+    { inst: "색칠한 부분을 분수와 소수로 나타내어 보세요.", hints: ["10칸 중 색칠한 칸을 세어요.", "10분의 1을 0.1이라고 써요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "색칠한 부분을 분수로 나타내면?", fig: () => u6FigSvg([{ kind: "tenths", max: 1, n: 7, w: 600, h: 60 }], { maxW: 640 }), t: "frac", a: [7, 10] },
+        { q: "색칠한 부분은 [1/10]이 몇 개인가요?", t: "num", a: 7, unit: "개" },
+        { q: "색칠한 부분을 소수로 나타내면?", t: "num", a: 0.7, why: { "7": "7칸이지만 한 칸이 0.1이에요. 소수점을 찍어 써요." } },
+        { q: "0.7을 바르게 읽은 것은?", t: "pick", o: ["영 점 칠", "칠 점 영", "영 칠"], a: 0 }], { ok: "10분의 7 = 0.7, 영 점 칠이라고 읽어요." }) },
+    { inst: "소수의 약속을 완성해요.", hints: ["10분의 1을 소수로 쓰면 0 다음에 점을 찍고 1을 써요."],
+      render: (b, a) => blanks(b, a, ["10분의 1을 ", { o: ["0.1", "10"], a: 0 }, "이라 쓰고 ", { o: ["영 점 일", "일 점 영"], a: 0 }, "이라고 읽어요. 0.1, 0.2, 0.3과 같은 수를 ", { o: ["소수", "분수"], a: 0 }, "라 하고 ‘.’을 ", { o: ["소수점", "분모"], a: 0 }, "이라고 해요."]) },
+    { inst: "색칠한 부분을 분수와 소수로 나타내고, 0.1의 개수를 알아보세요.", hints: ["한 칸은 10분의 1, 곧 0.1이에요.", "0.1이 몇 개인지 세면 소수를 알 수 있어요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "가를 분수로", fig: () => u6FigSvg([{ kind: "bar", den: 10, w: 330, h: 50, shade: 4, label: "가" }, { kind: "bar", den: 10, w: 330, h: 50, shade: 6, label: "나" }], { maxW: 760 }), t: "frac", a: [4, 10] },
+        { q: "가를 소수로", t: "num", a: 0.4 },
+        { q: "나를 소수로", t: "num", a: 0.6 },
+        { q: "0.1이 9개이면?", t: "num", a: 0.9 },
+        { q: "0.5는 0.1이 몇 개인가요?", t: "num", a: 5, unit: "개" }], { ok: "0.1이 몇 개인지로 소수를 나타낼 수 있어요." }) }
+  ],
+  challenge: { inst: "우유의 양을 소수로 나타내어 보세요.", hints: ["우유 한 병을 똑같이 10으로 나눈 것 중의 3은 10분의 3이에요.", "남은 우유는 10칸 중 몇 칸일까요?"],
+    render: (b, a) => u6Ask(b, a, [
+      { q: "보라: “우유 한 병을 똑같이 10으로 나눈 것 중의 3만큼 사용해서 요거트를 만들었어.” 보라가 사용한 우유는 몇 병?", fig: () => u6FigSvg([{ kind: "cup", den: 10, w: 90, h: 260, shade: 3 }], { maxW: 140 }), t: "num", a: 0.3, unit: "병" },
+      { q: "언니: “보라가 사용하고 남은 우유를 모두 사용했어.” 언니가 사용한 우유는 몇 병?", t: "num", a: 0.7, unit: "병" },
+      { q: "0.7은 0.1이 몇 개인가요?", t: "num", a: 7, unit: "개" }], { ok: "보라는 0.3병, 언니는 0.7병을 사용했어요!" }) }
+},
+{
+  id: "f9", no: 9, title: "소수를 알아볼까요 ⑵", soop: "개념 구축하기(O)",
+  question: "1보다 큰 수도 소수로 나타낼 수 있을까요?",
+  summary: "9와 0.3만큼을 9.3이라 쓰고 구 점 삼이라고 읽어요. 1 mm는 0.1 cm이므로 9 cm 3 mm는 9.3 cm예요. 0.1이 10개이면 1이에요.",
+  steps: [
+    { inst: "지환이와 깨비가 만든 도자기 접시의 길이를 자로 재었어요. 그림을 보고 답해 보세요.", hints: ["9 cm 눈금에서 작은 눈금을 몇 칸 더 갔는지 세어요.", "1 cm를 똑같이 10으로 나눈 한 칸이 1 mm, 곧 0.1 cm예요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "접시의 길이는 9 cm보다 몇 mm 더 긴가요?", fig: () => u6RulerFig(93, { cm: 10, U: 80, obj: "도자기 접시" }), t: "num", a: 3, unit: "mm" },
+        { q: "1 mm는 소수로 몇 cm인가요?", t: "num", a: 0.1, unit: "cm" },
+        { q: "3 mm는 소수로 몇 cm인가요?", t: "num", a: 0.3, unit: "cm" },
+        { q: "접시의 길이는 몇 cm인가요?", t: "num", a: 9.3, unit: "cm", why: { "93": "93은 mm로 나타낸 길이예요. cm로는 9와 0.3만큼이에요." } }], { ok: "9 cm와 0.3 cm이므로 접시의 길이는 9.3 cm예요." }) },
+    { inst: "소수만큼 색칠해 보세요. 위 막대는 1.5만큼, 아래 막대는 2.8만큼 색칠해요.", hints: ["1.5는 1만큼 색칠하고 0.5만큼 더 색칠해요.", "2.8은 0.1이 28개예요."],
+      render: (b, a) => u6Tenths(b, a, { labelW: 70, items: [{ label: "1.5", target: 15, max: 3 }, { label: "2.8", target: 28, max: 3 }], ok: "1.5는 0.1이 15개, 2.8은 0.1이 28개예요." }) },
+    { inst: "색칠한 부분을 보고 답해 보세요.", hints: ["큰 눈금 0, 1, 2 사이는 각각 10칸이에요.", "1은 0.1이 10개예요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "한 칸의 크기는 얼마인가요?", fig: () => u6FigSvg([{ kind: "tenths", max: 2, n: 17, w: 700, h: 56 }], { maxW: 740 }), t: "num", a: 0.1 },
+        { q: "색칠한 부분은 1에서 몇 칸 더 색칠한 것인가요?", t: "num", a: 7, unit: "칸" },
+        { q: "색칠한 부분을 소수로 나타내면?", t: "num", a: 1.7 },
+        { q: "1.7을 바르게 읽은 것은?", t: "pick", o: ["일 점 칠", "십칠", "칠 점 일"], a: 0 },
+        { q: "색칠한 부분은 0.1이 몇 개인가요?", t: "num", a: 17, unit: "개", why: { "7": "1도 0.1이 10개예요. 1까지의 칸도 함께 세어요." } }], { ok: "1과 0.7만큼은 1.7, 0.1이 17개예요." }) },
+    { inst: "1보다 큰 소수의 약속을 완성해요.", hints: ["9 cm와 0.3 cm를 합한 길이예요."],
+      render: (b, a) => blanks(b, a, ["9와 0.3만큼을 ", { o: ["9.3", "93"], a: 0 }, "이라 쓰고 ", { o: ["구 점 삼", "구십삼"], a: 0 }, "이라고 읽어요. 1 mm는 ", { o: ["0.1 cm", "1 cm"], a: 0 }, "이고, 0.1이 10개이면 ", { o: ["1", "10"], a: 0 }, "이에요."]) },
+    { inst: "소수로 나타내어 보세요.", hints: ["1 mm는 0.1 cm예요.", "76 mm는 7 cm 6 mm예요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "5와 0.4만큼은?", t: "num", a: 5.4 },
+        { q: "2.9는 0.1이 몇 개인가요?", t: "num", a: 29, unit: "개" },
+        { q: "4 cm 2 mm는 몇 cm인가요?", t: "num", a: 4.2, unit: "cm" },
+        { q: "76 mm는 몇 cm인가요?", t: "num", a: 7.6, unit: "cm", why: { "76": "cm로 나타내요. 76 mm는 7 cm 6 mm예요." } },
+        { q: "우리 주변에서 소수를 쓰는 경우로 알맞은 것은?", t: "pick", o: ["표지판에 거리를 나타낼 때", "반 번호를 정할 때"], a: 0 }], { ok: "mm를 cm로 바꿀 때 소수가 편리해요." }) }
+  ],
+  challenge: { inst: "승환이가 관찰한 강낭콩의 길이는 23 mm예요. 강낭콩의 길이는 몇 cm인지 수직선에 ▲로 나타내어 보세요.", hints: ["23 mm는 2 cm 3 mm예요.", "2에서 작은 눈금 3칸을 더 가요."],
+    render: (b, a) => u6DecLine(b, a, { hide: true, items: [{ label: "강낭콩 길이(cm)", target: 23, max: 3 }], ok: "23 mm = 2.3 cm, 2에서 0.3만큼 더 간 곳이에요!" }) }
+},
+{
+  id: "f10", no: 10, title: "소수의 크기를 비교해 볼까요", soop: "개념 구축하기(O)",
+  question: "소수의 크기는 어떻게 비교할까요?",
+  summary: "0.1의 개수가 많을수록 더 큰 소수예요. 소수점 왼쪽의 수가 클수록 더 크고, 소수점 왼쪽의 수가 같으면 소수점 오른쪽의 수가 클수록 더 커요.",
+  steps: [
+    { inst: "지환이는 길이가 0.9 m, 깨비는 0.7 m인 장승을 만들었어요. 0.9와 0.7만큼 각각 색칠해 보세요.", hints: ["0부터 차례로 색칠해요. 0.9는 9칸, 0.7은 7칸이에요."],
+      render: (b, a) => u6Tenths(b, a, { labelW: 80, items: [{ label: "지환", target: 9, max: 1, color: "#C9A27A" }, { label: "깨비", target: 7, max: 1, color: "#C9A27A" }], ok: "0.9가 더 길게 색칠되었어요. 지환이의 장승이 더 길어요." }) },
+    { inst: "1.7과 2.1을 수직선에 각각 ▲로 표시해 보세요.", hints: ["1.7은 1에서 0.7만큼 더 간 곳이에요.", "2.1은 2에서 0.1만큼 더 간 곳이에요."],
+      render: (b, a) => u6DecLine(b, a, { hide: true, items: [{ label: "1.7", target: 17, max: 3 }, { label: "2.1", target: 21, max: 3, color: BLUE }], ok: "2.1이 1.7보다 오른쪽에 있어요. 오른쪽에 있을수록 더 큰 수예요." }) },
+    { inst: "여러 가지 방법으로 1.7과 2.1의 크기를 비교해 보세요.", hints: ["0.1이 몇 개인지 세어 봐요.", "소수점 왼쪽의 수(1과 2)를 먼저 비교해요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "1.7은 0.1이 몇 개인가요?", t: "num", a: 17, unit: "개" },
+        { q: "2.1은 0.1이 몇 개인가요?", t: "num", a: 21, unit: "개" },
+        { q: "1.7은 1과 얼마만큼인 수인가요?", t: "num", a: 0.7 },
+        { q: "2.1은 2와 얼마만큼인 수인가요?", t: "num", a: 0.1 },
+        { q: "1.7과 2.1 중에서 더 큰 수는?", t: "pick", o: ["1.7", "2.1"], a: 1, why: { "0": "소수점 오른쪽의 7이 1보다 크지만, 소수점 왼쪽의 수를 먼저 비교해야 해요." } }], { ok: "0.1의 개수로도, 소수점 왼쪽의 수로도 2.1이 더 커요." }) },
+    { inst: "소수의 크기를 비교하는 방법을 정리해요.", hints: ["소수점 왼쪽의 수를 먼저 비교해요."],
+      render: (b, a) => blanks(b, a, ["0.1의 개수가 ", { o: ["많을수록", "적을수록"], a: 0 }, " 더 큰 소수예요. 소수점 ", { o: ["왼쪽", "오른쪽"], a: 0 }, "의 수를 먼저 비교하고, 그 수가 같으면 소수점 ", { o: ["오른쪽", "왼쪽"], a: 0 }, "의 수를 비교해요."]) },
+    { inst: "두 소수의 크기를 비교하여 알맞은 것을 골라요.", hints: ["소수점 왼쪽의 수부터 비교해요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "0.7 ○ 0.8", t: "pick", o: [">", "=", "<"], a: 2 },
+        { q: "4.9 ○ 6.2", t: "pick", o: [">", "=", "<"], a: 2, why: { "0": "9가 2보다 크지만, 소수점 왼쪽의 4와 6을 먼저 비교해요." } },
+        { q: "5.6 ○ 5.3", t: "pick", o: [">", "=", "<"], a: 0 }], { ok: "0.7<0.8, 4.9<6.2, 5.6>5.3이에요." }) }
+  ],
+  challenge: { inst: "소수의 크기 비교를 이용해 해결해 보세요.", hints: ["가장 작은 소수를 만들려면 소수점 왼쪽에 가장 작은 수를 놓아요.", "9.4보다 작아야 하니 소수점 오른쪽 수가 4보다 작아야 해요."],
+    render: (b, a) => u6Ask(b, a, [
+      { q: "수 카드 3, 5, 9, 2 중에서 2장을 골라 한 번씩만 써서 □.□ 모양의 가장 작은 소수를 만들어 보세요.", t: "num", a: 2.3 },
+      { q: "9.4 > 9.□ 에서 □ 안에 들어갈 수 있는 수를 모두 고르세요.", t: "pick", o: ["1", "2", "3", "4", "5"], a: [0, 1, 2], why: { "0,1,2,3": "9.4와 9.4는 크기가 같아요. 9.4보다 작아야 해요." } },
+      { q: "큰 것부터 차례대로 쓴 것은? (7.1, 0.4, 7.4)", t: "pick", o: ["7.4, 7.1, 0.4", "7.1, 7.4, 0.4", "0.4, 7.1, 7.4"], a: 0 }], { ok: "소수의 크기 비교를 자유롭게 할 수 있어요!" }) }
+},
+{
+  id: "f11", no: 11, title: "생각을 더하다 ― 똑같은 모양으로 나누어 볼까요", soop: "탐구 정리하기(O)",
+  question: "원래 도형과 똑같은 모양으로 나누고, 색칠한 부분을 분수로 나타낼 수 있을까요?",
+  summary: "모양과 크기가 같은 조각으로 나누었을 때 조각의 모양이 원래 도형과 같은 도형을 렙타일이라고 해요. 똑같은 모양 4개로 나눈 것 중 2개를 색칠하면 전체의 4분의 2예요.",
+  steps: [
+    { name: "이해해요", inst: "유빈이는 원래 도형과 똑같은 모양으로 도형을 나누는 활동을 하고 있어요. 문제를 이해해 보세요.", hints: ["나누어진 작은 조각이 원래 도형을 작게 만든 모양인지 봐요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "정사각형을 나눈 두 방법이에요. 작은 조각의 모양이 원래 도형(정사각형)과 같은 것은?", fig: () => u6FigSvg([{ kind: "grid", rows: 2, cols: 2, cell: 60, label: "가" }, { kind: "poly", unit: 30, polys: [[[0, 0], [4, 0], [2, 2]], [[4, 0], [4, 4], [2, 2]], [[4, 4], [0, 4], [2, 2]], [[0, 4], [0, 0], [2, 2]]], label: "나" }], { maxW: 360 }), t: "pick", o: ["가", "나"], a: 0, why: { "1": "나의 조각은 삼각형이에요. 원래 도형은 사각형이에요." } },
+        { q: "이 문제에서 분수로 나타내야 하는 것은?", t: "pick", o: ["색칠한 부분은 전체의 얼마인지", "조각의 둘레"], a: 0 }], { ok: "가처럼 나누어진 조각의 모양이 원래 도형과 같아야 해요." }) },
+    { name: "해결해요", inst: "원래 도형과 똑같은 모양 4개로 나누어지도록 선을 그어 보고, 색칠한 부분은 전체의 얼마인지 분수로 나타내어 보세요.", hints: ["작은 조각 하나는 칸 3개로 된 ㄴ 모양이에요.", "색칠한 부분이 조각 2개가 되도록 나누어 봐요.", "가운데에도 ㄴ 모양 조각이 하나 들어가요."],
+      render: (b, a) => u6Reptile(b, a, { cells: u6SqCells(U6_L_CELLS), shaded: [0, 1, 2, 7, 10, 11], target: 4, piece: U6_L_PIECE, ask: [2, 4], U: 90, tip: "흐린 점선을 눌러 선을 그어요. 작은 조각이 원래 도형과 똑같은 모양이 되게 나누어요.", ok: "원래 도형과 똑같은 모양 4개로 나누었고, 색칠한 부분은 4분의 2예요!" }) },
+    { name: "되돌아봐요", inst: "문제를 해결한 방법을 되돌아보세요.", render: (b, a) => writeStep(b, a, [
+      { q: "원래 도형과 똑같은 모양으로 어떻게 나누었나요?", tag: "방법" },
+      { q: "색칠한 부분을 분수로 어떻게 나타냈나요?", tag: "분수" }]) },
+    { inst: "오늘 알게 된 것을 정리해요.", hints: ["원래 도형과 같은 모양으로 나누어지는 도형의 이름을 떠올려요."],
+      render: (b, a) => blanks(b, a, ["모양과 크기가 같은 조각으로 나누었을 때 조각의 모양이 원래 도형과 같은 도형을 ", { o: ["렙타일", "단위분수"], a: 0 }, "이라고 해요. 똑같은 모양 4개 중 2개를 색칠하면 전체의 ", { o: ["4분의 2", "2분의 4"], a: 0 }, "예요."]) },
+    { name: "내 힘으로", inst: "척척! 내 힘으로 풀어요. 삼각형을 원래 도형과 똑같은 모양으로 나누어지도록 선을 그어 보고, 색칠한 부분은 전체의 얼마인지 분수로 나타내어 보세요.", hints: ["작은 삼각형 하나하나가 모두 따로 떨어지도록 선을 그어요.", "나누어진 조각은 모두 몇 개인지, 그중 색칠한 조각은 몇 개인지 세어요."],
+      render: (b, a) => u6Reptile(b, a, { cells: u6TriCells(3, 3), shaded: [0, 2, 4, 8], target: 9, piece: r => r.length === 1, ask: [4, 9], U: 110, ok: "똑같은 모양 9개로 나눈 것 중 4개를 색칠했으니 9분의 4예요!" }) }
+  ],
+  challenge: { inst: "렙타일로 나눈 그림을 보고 분수로 나타내어 보세요.", hints: ["작은 정사각형은 모두 몇 개인지 세어요."],
+    render: (b, a) => u6Ask(b, a, [
+      { q: "왼쪽 정사각형은 똑같은 모양 몇 개로 나누었나요?", fig: () => u6FigSvg([{ kind: "grid", rows: 3, cols: 3, cell: 60, shade: [0, 2, 4, 6, 8] }, { kind: "grid", rows: 4, cols: 4, cell: 45, shade: [1, 2, 4, 7, 8, 11, 13, 14] }], { maxW: 460 }), t: "num", a: 9, unit: "개" },
+      { q: "왼쪽 그림에서 색칠한 부분은 전체의 얼마인가요?", t: "frac", a: [5, 9] },
+      { q: "오른쪽 그림에서 색칠한 부분은 전체의 얼마인가요?", t: "frac", a: [8, 16] }], { ok: "똑같은 모양으로 나눈 조각 수가 분모, 색칠한 조각 수가 분자예요!" }) }
+},
+{
+  id: "f12", no: 12, title: "놀이를 더하다 ― 도전! 소수가 커지도록 연결해요", soop: "발표하기(P)",
+  question: "소수 카드를 어느 칸에 써야 오른쪽으로 갈수록 소수가 커질까요?",
+  summary: "소수의 크기를 비교하며 칸을 골라요. 작은 소수는 왼쪽 칸에, 큰 소수는 오른쪽 칸에 쓰면 연속되게 커지는 칸이 길어져요.",
+  steps: [
+    { name: "놀이 방법 알기", inst: "놀이 방법을 읽고 알맞은 것을 골라요. (소수 카드를 한 장씩 뒤집어, 오른쪽으로 갈수록 소수가 커지도록 놀이판의 빈칸 중 한 칸에 적어요.)", hints: ["놀이판에 한 번 쓴 소수는 바꿀 수 없어요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "소수 카드를 한 장 뒤집으면 무엇을 하나요?", t: "pick", o: ["놀이판의 빈칸 중 한 칸을 골라 적어요", "카드를 버려요", "친구 놀이판에 적어요"], a: 0 },
+        { q: "놀이판에 한 번 쓴 소수를 바꿀 수 있나요?", t: "pick", o: ["바꿀 수 있어요", "바꿀 수 없어요"], a: 1 },
+        { q: "놀이에서 이기는 사람은?", t: "pick", o: ["소수가 연속되게 커지도록 적힌 칸이 가장 긴 사람", "가장 큰 소수 카드를 가진 사람"], a: 0 }], { ok: "놀이 방법을 알았어요. 연습해 봐요!" }) },
+    { name: "연습하기", inst: "카드가 나오는 순서를 미리 알려 줄게요. 카드를 한 장씩 알맞은 칸에 써서 6칸 모두 오른쪽으로 갈수록 커지게 만들어 보세요.", hints: ["먼저 카드 6장을 작은 것부터 순서대로 늘어놓아 봐요.", "가장 작은 0.3은 1번 칸, 가장 큰 3.4는 6번 칸에 가요."],
+      render: (b, a) => u6Board(b, a, { mode: "plan", cells: 6, cards: [15, 3, 27, 9, 34, 21], tip: "이번 카드를 쓸 칸을 눌러요. 틀리면 ‘다시 하기’를 눌러요.", ok: "0.3 < 0.9 < 1.5 < 2.1 < 2.7 < 3.4, 모두 커지게 연결했어요!" }) },
+    { name: "놀이하기", inst: "이번에는 카드가 무엇이 나올지 몰라요. 카드를 한 장씩 뒤집어 칸을 골라 쓰고, 다 채우면 연속되게 커지는 칸이 몇 칸인지 세어 보세요.", hints: ["처음에 작은 소수가 나오면 왼쪽에, 큰 소수가 나오면 오른쪽에 써요.", "가운데 칸은 중간 크기의 소수를 위해 남겨 두면 좋아요."],
+      render: (b, a) => u6Board(b, a, { mode: "play", cells: 6, deck: [2, 5, 8, 11, 14, 17, 23, 26, 32, 35, 41, 48], tip: "카드를 쓸 칸을 눌러요. ‘다시 하기’로 새 놀이를 할 수 있어요." }) },
+    { name: "전략 세우기", inst: "놀이에서 이기는 방법을 정리해요.", hints: ["소수의 크기를 비교할 때 무엇부터 비교했는지 떠올려요."],
+      render: (b, a) => blanks(b, a, ["작은 소수가 나오면 ", { o: ["왼쪽", "오른쪽"], a: 0 }, " 칸에, 큰 소수가 나오면 ", { o: ["오른쪽", "왼쪽"], a: 0 }, " 칸에 써요. 소수의 크기는 먼저 ", { o: ["소수점 왼쪽의 수", "소수점 오른쪽의 수"], a: 0 }, "를 비교해요."]) },
+    { name: "발표하기", inst: "놀이를 되돌아보고 친구에게 발표할 내용을 써 보세요.", render: (b, a) => writeStep(b, a, [
+      { q: "카드를 어느 칸에 쓸지 어떻게 정했나요?", tag: "방법" },
+      { q: "놀이를 하며 알게 된 점이나 어려웠던 점은?", tag: "알게 된 점" }]) }
+  ],
+  challenge: { inst: "놀이판의 빈칸에 쓸 수 있는 카드를 찾아보세요. 놀이판: 0.6 · □ · 1.4 · □ · 2.5", hints: ["두 번째 칸은 0.6보다 크고 1.4보다 작아야 해요.", "네 번째 칸은 1.4보다 크고 2.5보다 작아야 해요."],
+    render: (b, a) => u6Ask(b, a, [
+      { q: "두 번째 칸에 쓸 수 있는 카드를 모두 고르세요.", t: "pick", o: ["0.4", "0.9", "1.2", "1.5", "0.6"], a: [1, 2], why: { "1,2,4": "0.6은 0.6보다 크지 않아요. 같은 수는 커지는 것이 아니에요." } },
+      { q: "네 번째 칸에 쓸 수 있는 카드를 모두 고르세요.", t: "pick", o: ["1.3", "1.8", "2.4", "2.7"], a: [1, 2] }], { ok: "앞 칸보다 크고 뒤 칸보다 작은 소수를 찾았어요!" }) }
+},
+{
+  id: "f13", no: 13, title: "공부한 내용을 확인해요", soop: "발표하기(P)",
+  question: "분수와 소수를 이해하고 크기를 비교할 수 있나요?",
+  summary: "똑같이 나누기, 분수 쓰고 읽기, 단위분수, 분모가 같은 분수와 단위분수의 크기 비교, 소수 쓰고 읽기, 소수의 크기 비교를 모두 확인했어요.",
+  steps: [
+    { name: "확인 1", inst: "똑같이 나누어진 도형을 모두 찾아보세요.", hints: ["조각의 모양과 크기가 모두 같은지 봐요."],
+      render: (b, a) => u6Ask(b, a, [{ q: "똑같이 나누어진 도형을 모두 고르세요.", fig: () => u6FigSvg([
+        { kind: "circle", angs: [0, 150, 240], r: 55, label: "가" }, { kind: "bar", den: 3, w: 150, h: 90, label: "나" },
+        { kind: "bar", cuts: [.25, .5, .9], w: 150, h: 90, label: "다" }, { kind: "poly", unit: 28, polys: [[[0, 0], [4, 0], [4, 1.5], [0, 1.5]], [[0, 1.5], [4, 1.5], [4, 4], [0, 4]]], label: "라" },
+        { kind: "circle", den: 4, r: 55, label: "마" }], { gap: 34 }), t: "pick", o: ["가", "나", "다", "라", "마"], a: [1, 4] }], { ok: "나와 마는 조각의 모양과 크기가 모두 같아요." }) },
+    { name: "확인 2", inst: "주어진 분수만큼 색칠해 보세요. 위는 4분의 2, 아래는 5분의 4만큼이에요.", hints: ["분모만큼 나눈 것 중 분자만큼 색칠해요."],
+      render: (b, a) => u6Shade(b, a, { stack: true, labelW: 110, items: [{ spec: { kind: "bar", den: 4, w: 560, h: 70 }, target: 2, label: "[2/4]", want: "[2/4]" }, { spec: { kind: "bar", den: 5, w: 560, h: 70 }, target: 4, label: "[4/5]", want: "[4/5]" }], ok: "색칠한 위치와 상관없이 분자만큼 색칠하면 돼요." }) },
+    { name: "확인 3", inst: "두 분수의 크기를 비교하여 알맞은 것을 골라요.", hints: ["분모가 같으면 분자를, 단위분수이면 분모를 비교해요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "[6/7] ○ [2/7]", t: "pick", o: [">", "=", "<"], a: 0 },
+        { q: "[1/11] ○ [1/9]", t: "pick", o: [">", "=", "<"], a: 2, why: { "0": "단위분수는 분모가 작을수록 더 커요." } }], { ok: "분모가 같으면 분자를, 단위분수는 분모를 비교했어요." }) },
+    { name: "확인 4", inst: "분수와 소수, 길이를 소수로 나타내어 보세요.", hints: ["수직선에서 한 칸은 10분의 1 = 0.1이에요.", "1 mm = 0.1 cm예요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "[3/10]을 소수로 나타내면?", fig: () => u6LineFig(1, [{ at: 3, t: "㉠" }, { at: 5, t: "㉡" }, { at: 7, t: "㉢" }]), t: "num", a: 0.3 },
+        { q: "0.5를 분수로 나타내면?", t: "frac", a: [5, 10], fixD: true },
+        { q: "[7/10]을 소수로 나타내면?", t: "num", a: 0.7 },
+        { q: "서준이의 손가락 둘레는 4 cm 7 mm예요. 몇 cm인가요?", t: "num", a: 4.7, unit: "cm" },
+        { q: "어머니의 손가락 둘레는 5 cm 3 mm예요. 몇 cm인가요?", t: "num", a: 5.3, unit: "cm" }], { ok: "분수와 소수, cm와 mm의 관계를 잘 알고 있어요." }) },
+    { name: "확인 5", inst: "분수와 소수에 대해 옳게 설명했는지 골라요.", hints: ["7.1은 칠 점 일이라고 읽어요.", "단위분수는 분모가 작을수록 커요."],
+      render: (b, a) => u6Ask(b, a, [
+        { q: "[1/4], [1/5], [1/6]은 단위분수예요.", t: "pick", o: ["맞아요", "틀려요"], a: 0 },
+        { q: "[1/4]은 [3/4]보다 더 작아요.", t: "pick", o: ["맞아요", "틀려요"], a: 0 },
+        { q: "[1/8]은 [1/2]보다 더 커요.", t: "pick", o: ["맞아요", "틀려요"], a: 1 },
+        { q: "0.8은 0.1이 8개예요.", t: "pick", o: ["맞아요", "틀려요"], a: 0 },
+        { q: "7.1은 ‘칠 일’이라고 읽어요.", t: "pick", o: ["맞아요", "틀려요"], a: 1 },
+        { q: "5.7은 4.8보다 더 커요.", t: "pick", o: ["맞아요", "틀려요"], a: 0 }], { ok: "옳은 설명과 틀린 설명을 모두 가려냈어요!" }) }
+  ],
+  challenge: { inst: "하은, 예원, 도윤이의 지우개 길이예요. 하은: 2.3 cm, 예원: 3.2 cm, 도윤: 36 mm. 해결해 보세요.", hints: ["도윤이의 지우개 길이를 먼저 cm로 바꿔요.", "소수점 왼쪽의 수를 먼저 비교해요."],
+    render: (b, a) => u6Ask(b, a, [
+      { q: "도윤이의 지우개 길이를 cm로 나타내면?", t: "num", a: 3.6, unit: "cm" },
+      { q: "길이가 짧은 지우개를 가진 사람부터 차례대로 쓴 것은?", t: "pick", o: ["하은, 예원, 도윤", "도윤, 예원, 하은", "예원, 하은, 도윤"], a: 0 },
+      { q: "수 카드 9, 1, 6, 2 중에서 2장을 골라 한 번씩만 써서 만들 수 있는 가장 큰 단위분수는?", t: "frac", a: [1, 2] }], { ok: "분수와 소수 단원을 모두 해냈어요!" }) }
+}];
+
+window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
+window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.student) openLesson(L.id); });
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});}})();
+</script>
+</body>
+</html>
+

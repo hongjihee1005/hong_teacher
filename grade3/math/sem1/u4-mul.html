@@ -1,0 +1,1666 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>다독다독 도서관 곱셈 · 3-1 수학 4. 곱셈(교과서)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#1F2F4A; --night2:#2C4166; --pine:#2F6B57; --pine-soft:#DDEDE5;
+  --lantern:#F4C542; --tent:#E47A38; --ring:#2B7BD6; --ring-soft:#DCEAFB;
+  --paper:#F5F7F4; --ink:#1D2A2A; --muted:#5B6B6B; --line:#C9D4CF;
+  --ok:#2E8B57; --no:#C8472E; --white:#FFFFFF;
+  --fs:clamp(16px, 0.75vw + 10px, 28px);
+  --fs-s:calc(var(--fs) * .82); --fs-l:calc(var(--fs) * 1.3); --fs-xl:calc(var(--fs) * 1.8);
+  --r:clamp(10px,1vw,18px); --pad:clamp(12px,1.4vw,28px);
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:var(--fs);line-height:1.55;-webkit-text-size-adjust:100%}
+h1,h2,h3,.jua{font-family:"Jua","Gowun Dodum","Malgun Gothic",sans-serif;font-weight:400;letter-spacing:.01em}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:4px solid var(--lantern);outline-offset:2px}
+svg{touch-action:none;user-select:none;-webkit-user-select:none}
+.hidden{display:none!important}
+
+/* 상단 */
+.top{background:var(--night);color:#fff;display:flex;align-items:center;gap:var(--pad);padding:calc(var(--pad)*.6) var(--pad);position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:.5em;font-family:"Jua",sans-serif;font-size:var(--fs-l);white-space:nowrap}
+.brand svg{width:1.6em;height:1.6em}
+.who{margin-left:auto;display:flex;align-items:center;gap:.5em;font-size:var(--fs-s)}
+.chip{white-space:nowrap;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:.25em .9em}
+.chip.btn:hover{background:rgba(255,255,255,.22)}
+
+/* 시작 화면 */
+.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);background:
+ radial-gradient(circle at 80% 18%, rgba(244,197,66,.25) 0 6%, transparent 6.5%),
+ linear-gradient(180deg,var(--night) 0,var(--night2) 55%,var(--pine) 55.2%,var(--pine) 100%)}
+.gate-card{background:#fff;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 18px 40px rgba(0,0,0,.25)}
+.gate-card h1{font-size:var(--fs-xl);margin:0 0 .2em;color:var(--night)}
+.nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(3.1em,1fr));gap:.45em;margin:.6em 0 1em}
+.nums button{padding:.5em 0;border-radius:.6em;border:2px solid var(--line);background:#fff;font-family:"Jua";font-size:var(--fs)}
+.nums button.on{background:var(--ring);color:#fff;border-color:var(--ring)}
+.row{display:flex;gap:.6em;align-items:center;flex-wrap:wrap}
+input[type=text],input[type=password],input[type=number],textarea{font:inherit;padding:.45em .7em;border:2px solid var(--line);border-radius:.6em;background:#fff;color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:3.2em;resize:vertical}
+.big{font-family:"Jua";font-size:var(--fs-l);padding:.45em 1.4em;border-radius:999px;border:0;background:var(--tent);color:#fff;box-shadow:0 4px 0 #B85A22}
+.big:active{transform:translateY(3px);box-shadow:0 1px 0 #B85A22}
+.big[disabled]{background:#B9C2BF;box-shadow:none;cursor:not-allowed}
+.ghost{background:#fff;border:2px solid var(--line);color:var(--ink);border-radius:999px;padding:.35em 1em}
+
+/* 차시 지도 */
+.map{padding:var(--pad);max-width:1600px;margin:0 auto}
+.map h2{font-size:var(--fs-xl);margin:.2em 0 .1em;color:var(--night)}
+.story{background:#fff;border-left:8px solid var(--tent);border-radius:.6em;padding:var(--pad);margin-top:var(--pad)}
+.story p{margin:.3em 0}
+.scene{font-size:var(--fs-s);color:var(--pine);background:var(--pine-soft);border-radius:.5em;padding:.25em .8em;margin-bottom:.5em;display:inline-block}
+.trail{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,15em),1fr));gap:var(--pad);margin-top:var(--pad)}
+.site{position:relative;text-align:left;background:#fff;border:3px solid var(--line);border-radius:var(--r);padding:var(--pad);display:flex;flex-direction:column;gap:.3em;min-height:9em}
+.site:hover{border-color:var(--ring)}
+.site .n{font-family:"Jua";font-size:var(--fs-l);color:var(--ring)}
+.site .t{font-family:"Jua";font-size:var(--fs);line-height:1.3}
+.site .soop{font-size:var(--fs-s);color:var(--muted)}
+.site .prog{margin-top:auto;display:flex;gap:.25em}
+.site .prog i{flex:1;height:.45em;border-radius:1em;background:var(--line)}
+.site .prog i.on{background:var(--ok)}
+.site .prog i.half{background:var(--lantern)}
+.stair.passed .k{background:var(--lantern);color:var(--ink)}
+.site.done{border-color:var(--ok)}
+.site .star{position:absolute;right:.6em;top:.4em;font-size:var(--fs-l)}
+
+/* 학습 화면 */
+.lesson{display:grid;grid-template-columns:minmax(9em,14em) 1fr;gap:var(--pad);padding:var(--pad);max-width:1800px;margin:0 auto;min-height:calc(100% - 4em)}
+.stairs{display:flex;flex-direction:column;gap:.5em;position:sticky;top:5em;align-self:start}
+.stairs .title{font-family:"Jua";font-size:var(--fs-l);line-height:1.25;color:var(--night)}
+.stairs .soopb{display:inline-block;background:var(--pine-soft);color:var(--pine);border-radius:.5em;padding:.1em .6em;font-size:var(--fs-s);margin:.2em 0 .4em}
+.stair{display:flex;align-items:center;gap:.5em;text-align:left;border:2px solid var(--line);background:#fff;border-radius:.8em;padding:.45em .7em;color:var(--ink)}
+.stair .k{flex:0 0 1.8em;height:1.8em;border-radius:50%;display:grid;place-items:center;background:var(--line);color:#fff;font-family:"Jua"}
+.stair.cur{border-color:var(--ring);box-shadow:0 0 0 3px var(--ring-soft)}
+.stair.cur .k{background:var(--ring)}
+.stair.ok .k{background:var(--ok)}
+.stair.lock{opacity:.45;cursor:not-allowed}
+.stair.chal .k{background:var(--tent)}
+.stairs .back{margin-top:.6em}
+.work{background:#fff;border-radius:calc(var(--r)*1.3);padding:calc(var(--pad)*1.2);border:2px solid var(--line);min-width:0}
+.q{background:var(--ring-soft);border-radius:var(--r);padding:.5em .9em;margin-bottom:.8em;font-family:"Jua";color:var(--night)}
+.stepname{font-family:"Jua";font-size:var(--fs-xl);color:var(--night);margin:0}
+.inst{margin:.2em 0 .8em;font-size:var(--fs)}
+.panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(12em,19em);gap:var(--pad);align-items:start}
+.stage{min-width:0}
+.stage svg{width:100%;height:auto;max-height:calc(100vh - 13em);display:block;background:#FBFCFB;border:2px solid var(--line);border-radius:var(--r)}
+.side{min-width:0;display:flex;flex-direction:column;gap:.7em}
+.readout{font-family:"Jua";font-size:var(--fs-l);color:var(--night)}
+.readout small{font-family:"Gowun Dodum";font-size:var(--fs-s);color:var(--muted)}
+.card{border:3px solid var(--night);border-radius:var(--r);padding:.8em 1em;background:#fff}
+.card b{color:var(--ring)}
+.opts{display:flex;flex-wrap:wrap;gap:.5em;margin:.4em 0}
+.opt{border:2px solid var(--line);background:#fff;border-radius:.7em;padding:.4em .9em;text-align:left}
+.opt.on{border-color:var(--ring);background:var(--ring-soft)}
+.opt.good{border-color:var(--ok);background:#E3F4EA}
+.opt.bad{border-color:var(--no);background:#FBE7E2}
+.opt.good::after{content:" ○";color:var(--ok);font-weight:bold}
+.opt.bad::after{content:" ×";color:var(--no);font-weight:bold}
+.hintbox{margin-top:.8em;background:#FFF8E1;border-left:8px solid var(--lantern);border-radius:.5em;padding:.5em .9em}
+.hintbox p{margin:.3em 0}
+.wordbank{margin:.5em 0}
+.wordbank .word{display:inline-block;background:#fff;border:2px solid var(--line);border-radius:999px;padding:.1em .8em;margin:.2em .3em .2em 0}
+.copybox{margin-top:.6em;background:#fff;border:3px dashed var(--tent);border-radius:.6em;padding:.6em .9em}
+.copyrow{display:flex;gap:.6em;align-items:center;flex-wrap:wrap;margin:.35em 0}
+.copyrow .target{font-family:"Jua",sans-serif;background:#FDF1E8;border-radius:.4em;padding:.15em .6em;min-width:9em}
+.copyrow input{flex:1 1 10em;min-width:8em}
+.help{border-color:var(--lantern)}
+.stephead{display:flex;align-items:center;gap:.8em;flex-wrap:wrap}
+.speak{font-size:var(--fs-s);padding:.2em .8em}
+.sent{line-height:2.4}
+.slot{display:inline-flex;gap:.3em;vertical-align:middle;flex-wrap:wrap;background:#F2F5F4;border-radius:.6em;padding:.15em .3em}
+.slot .opt{padding:.1em .6em}
+.qitem{border-bottom:1px dashed var(--line);padding:.6em 0}
+.qitem:last-child{border-bottom:0}
+.fb{min-height:1.6em;font-family:"Jua";margin-top:.4em}
+.fb.good{color:var(--ok)} .fb.bad{color:var(--no)}
+.actions{display:flex;gap:.6em;align-items:center;margin-top:.8em;flex-wrap:wrap;
+  position:sticky;bottom:0;background:#fff;padding:.5em 0 .2em;z-index:3;border-top:1px solid transparent}
+.actions.stuck{border-top-color:var(--line)}
+.tools{display:flex;flex-wrap:wrap;gap:.4em;align-items:center}
+.tools button{border:2px solid var(--line);background:#fff;border-radius:.6em;padding:.25em .8em}
+.tools button.on{background:var(--night);color:#fff;border-color:var(--night)}
+input[type=range]{width:100%;accent-color:var(--ring);height:2em}
+.pill{display:inline-block;background:var(--night);color:#fff;border-radius:999px;padding:.05em .7em;font-size:var(--fs-s)}
+.safe{border-left:6px solid var(--tent);background:#FDF1E8;padding:.5em .8em;border-radius:.4em;font-size:var(--fs-s)}
+.seq{display:flex;gap:.5em;flex-wrap:wrap}
+.seq .opt{flex:1 1 12em}
+.seq .opt .no{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--ring);color:#fff;margin-right:.4em;font-family:"Jua"}
+
+/* 완료 */
+.finish{text-align:center;padding:1em}
+.finish .medal{font-size:calc(var(--fs)*4)}
+
+/* 교사 화면 */
+.teacher{padding:var(--pad);max-width:1800px;margin:0 auto}
+.tbl-wrap{overflow-x:auto;border:2px solid var(--line);border-radius:var(--r);background:#fff}
+table.dash{border-collapse:collapse;width:100%;font-size:var(--fs-s)}
+table.dash th,table.dash td{border:1px solid var(--line);padding:.35em .5em;text-align:center;white-space:nowrap}
+table.dash th{background:var(--night);color:#fff;font-weight:400;font-family:"Jua"}
+table.dash td.nm{text-align:left}
+td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa}
+.detail{margin-top:var(--pad)}
+.detail li{margin:.2em 0}
+.toast{position:fixed;left:50%;bottom:1.2em;transform:translateX(-50%);background:var(--night);color:#fff;padding:.5em 1.2em;border-radius:999px;font-size:var(--fs-s);z-index:20}
+
+@media (max-height: 820px){
+  :root{--fs:clamp(15px,.62vw + 9px,22px);--pad:clamp(8px,1vw,16px)}
+  .stage svg{max-height:calc(100vh - 17em)}
+  .work{padding:.8em 1em}
+  .q{margin-bottom:.4em;padding:.35em .8em}
+  .inst{margin:.15em 0 .5em}
+  .qitem{padding:.35em 0}
+  .stepname{font-size:calc(var(--fs) * 1.45)}
+  .stairs{gap:.3em}
+  .stair{padding:.3em .6em}
+  .copylink{display:none}
+}
+@media (max-width: 1000px){ .panel{grid-template-columns:1fr} .stage svg{max-height:none} }
+@media (max-width: 820px){
+  .lesson{grid-template-columns:1fr}
+  .stairs{position:static;flex-direction:row;flex-wrap:wrap}
+  .stairs .title,.stairs .soopb,.stairs .back{flex-basis:100%}
+  .stair{flex:1 1 auto}
+  .stair .lbl{display:none}
+  .brand span.long{display:none}
+  .who{gap:.3em} .chip{padding:.2em .6em}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+.creditbar{display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px 16px 24px}
+.tolist{display:none;align-items:center;gap:8px;font-family:"Jua",sans-serif;font-size:clamp(18px,1.8vw,24px);text-decoration:none;color:var(--ink);border:3px solid var(--line);background:#fff;border-radius:999px;padding:6px 20px}
+.tolist.on{display:inline-flex}
+.hjfoot{display:block;width:100%;margin:6px 0 0;padding:14px 0 4px;border-top:3px solid var(--line);text-align:center;color:var(--muted);font-size:clamp(14px,1.2vw,17px);line-height:1.7;word-break:keep-all}
+.hjfoot p{margin:2px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div>
+<script>
+const APP = {title:"다독다독 도서관 곱셈", unit:"3-1 수학 4. 곱셈(교과서)", key:"t31-mul-v1", welcome:"다독다독 도서관 곱셈 교실에 온 것을 환영해요", intro:"교과서 차시 그대로, 다독다독 도서관에서 사서 선생님을 도우며 곱셈을 배워요."};
+
+/* ===== 설정 ===== */
+const CONFIG = {
+  unit: APP.unit,
+  // 구글 앱스 스크립트 웹 앱 주소(선택). 앱스 스크립트 안에서 열면 비워 두어도 자동 연결돼요.
+  endpoint: "",
+  localPin: "1234"   // 앱스 스크립트 없이 이 기기 기록만 볼 때 쓰는 선생님 비밀번호
+};
+const STEP_NAMES = ["만져 보기", "그려 보기", "말해 보기", "약속하기", "확인하기"];
+const KEY = APP.key;
+
+/* ===== 저장 ===== */
+const store = {
+  load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } },
+  save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+};
+let S = store.load();
+S.student = S.student || null;     // {ban, no, name}
+S.prog = S.prog || {};             // prog[`${ban}-${no}`][chasiId] = {steps:{i:{ok,tries,ans}}, chal:{...}}
+S.log = S.log || [];               // 이 기기의 모든 기록
+S.queue = S.queue || [];           // 보내지 못한 기록
+
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(k));
+  return e;
+};
+function toast(msg) { const t = h("div", { class: "toast" }, msg); document.body.append(t); setTimeout(() => t.remove(), 2200); }
+const sid = () => S.student ? `${S.student.ban}-${S.student.no}` : "guest";
+function myProg(cid) { const p = (S.prog[sid()] = S.prog[sid()] || {}); return (p[cid] = p[cid] || { steps: {}, chal: null }); }
+
+/* ===== 기록 보내기 ===== */
+const hasGAS = () => typeof google !== "undefined" && google.script && google.script.run;
+function send(rec) {
+  if (hasGAS()) {
+    google.script.run.withFailureHandler(() => { S.queue.push(rec); store.save(S); }).saveRecord(rec);
+  } else if (CONFIG.endpoint) {
+    fetch(CONFIG.endpoint, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(rec) })
+      .catch(() => { S.queue.push(rec); store.save(S); });
+  }
+}
+function flushQueue() {
+  if (!S.queue.length || (!hasGAS() && !CONFIG.endpoint)) return;
+  const q = S.queue.splice(0); store.save(S); q.forEach(send);
+}
+function record(chasi, stepNo, stepName, ok, tries, answer, level) {
+  const st = S.student || { ban: "", no: "", name: "" };
+  const rec = { time: new Date().toISOString(), ban: st.ban, no: st.no, name: st.name, unit: CONFIG.unit,
+    chasi: chasi.no, title: chasi.title, step: stepNo, stepName, ok: !!ok, tries, answer: String(answer || "").slice(0, 400), level: level || "기본" };
+  S.log.push(rec); if (S.log.length > 3000) S.log.splice(0, S.log.length - 3000);
+  store.save(S); send(rec);
+}
+
+/* ===== 화면 ===== */
+const root = () => $("#app");
+function topbar() {
+  const st = S.student;
+  return h("header", { class: "top" },
+    h("div", { class: "brand" }, ringLogo(), h("span", {}, APP.title), h("span", { class: "long" }, " · " + APP.unit)),
+    h("div", { class: "who" },
+      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번 ${st.name || ""}`) : null,
+      st ? h("button", { class: "chip btn", onclick: () => { S.student = null; store.save(S); showGate(); } }, "바꾸기") : null,
+      h("button", { class: "chip btn", onclick: showTeacher }, "선생님")));
+}
+function ringLogo() {
+  const s = svgEl("svg", { viewBox: "0 0 40 40", "aria-hidden": "true" });
+  s.append(svgEl("circle", { cx: 20, cy: 20, r: 16, fill: "none", stroke: "#F4C542", "stroke-width": 4 }),
+    svgEl("line", { x1: 20, y1: 20, x2: 34, y2: 12, stroke: "#fff", "stroke-width": 3, "stroke-linecap": "round" }),
+    svgEl("circle", { cx: 20, cy: 20, r: 3.5, fill: "#fff" }));
+  return s;
+}
+function mount(...els) { const r = root(); r.innerHTML = ""; r.append(topbar(), ...els); window.scrollTo(0, 0); }
+
+/* 시작: 번호 고르기 */
+function showGate() {
+  let ban = (S.student && S.student.ban) || "2", no = null;
+  const nums = h("div", { class: "nums" });
+  for (let i = 1; i <= 40; i++) nums.append(h("button", { onclick: (e) => { no = i; [...nums.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); go.disabled = false; } }, String(i)));
+  const banIn = h("input", { type: "number", min: 1, max: 15, value: ban, style: "width:4.5em", "aria-label": "반" });
+  const nameIn = h("input", { type: "text", placeholder: "이름 (선택)", maxlength: 10, style: "width:9em" });
+  const go = h("button", { class: "big", disabled: true, onclick: () => {
+    S.student = { ban: String(banIn.value || "2"), no, name: nameIn.value.trim() }; store.save(S); flushQueue(); showMap();
+  } }, "입장하기");
+  mount(h("main", { class: "gate" }, h("section", { class: "gate-card" },
+    h("h1", {}, APP.welcome),
+    h("p", { class: "inst" }, APP.intro + " 내 번호를 눌러 주세요."),
+    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반"), nameIn),
+    nums, go)));
+}
+
+/* 차시 지도 */
+function wantedLesson() {
+  const h = (location.hash || "").replace("#", "").trim();
+  const q = new URLSearchParams(location.search).get("lesson");
+  const key = q || h;
+  if (!key) return null;
+  return LESSONS.find(L => String(L.no) === key || L.id === key) || null;
+}
+function showMap() {
+  if (!S.student) return showGate();
+  const want = wantedLesson();
+  if (want && !showMap._used) { showMap._used = true; return openLesson(want.id); }
+  const trail = h("div", { class: "trail" });
+  LESSONS.forEach(L => {
+    const p = myProg(L.id), done = L.steps.filter((_, i) => p.steps[i] && p.steps[i].ok).length;
+    const prog = h("div", { class: "prog" }, L.steps.map((_, i) => {
+      const r = p.steps[i];
+      return h("i", { class: r && r.ok ? (r.help === "넘어감" ? "half" : "on") : "" });
+    }));
+    trail.append(h("button", { class: "site" + (done === L.steps.length ? " done" : ""), onclick: () => openLesson(L.id) },
+      p.chal && p.chal.ok ? h("span", { class: "star", title: "도전 완료" }, "★") : null,
+      h("span", { class: "n" }, `${L.no}차시`), h("span", { class: "t" }, L.title),
+      h("span", { class: "soop" }, `S.O.O.P. ${L.soop}`), prog));
+  });
+  const story = (typeof UNIT_STORY !== "undefined") ? UNIT_STORY : null;
+  const storyCard = story ? h("section", { class: "story" },
+    h("div", { class: "jua" }, `📖 이야기 · ${story.title}`),
+    story.lines.map(t => h("p", {}, t))) : null;
+  mount(h("main", { class: "map" }, h("h2", {}, "어느 차시를 탐험할까요?"),
+    h("p", { class: "inst" }, "각 차시는 ‘개념 계단’ 다섯 칸으로 되어 있어요. 앞 계단을 해결해야 다음 계단이 열려요."),
+    storyCard, trail));
+}
+
+/* 차시 학습 */
+let CUR = null;
+function openLesson(id, stepIdx) {
+  const L = LESSONS.find(x => x.id === id); const p = myProg(id);
+  let first = L.steps.findIndex((_, i) => !(p.steps[i] && p.steps[i].ok)); if (first < 0) first = L.steps.length - 1;
+  CUR = { L, idx: stepIdx != null ? stepIdx : first };
+  renderLesson();
+}
+function unlocked(L, i) { const p = myProg(L.id); for (let k = 0; k < i; k++) if (!(p.steps[k] && p.steps[k].ok)) return false; return true; }
+function renderLesson() {
+  const { L, idx } = CUR; const p = myProg(L.id);
+  const stairs = h("nav", { class: "stairs", "aria-label": "개념 계단" },
+    h("div", { class: "title" }, `${L.no}차시 · ${L.title}`), h("span", { class: "soopb" }, `S.O.O.P. ${L.soop}`));
+  L.steps.forEach((st, i) => {
+    const rec0 = p.steps[i], ok = rec0 && rec0.ok, lock = !unlocked(L, i);
+    stairs.append(h("button", { class: "stair" + (i === idx ? " cur" : "") + (ok ? " ok" : "") + (lock ? " lock" : ""), disabled: lock,
+      onclick: () => { CUR.idx = i; renderLesson(); } }, h("span", { class: "k" }, ok ? (rec0 && rec0.help === "넘어감" ? "△" : "✓") : String(i + 1)), h("span", { class: "lbl" }, st.name || STEP_NAMES[i])));
+  });
+  if (L.challenge) {
+    const allOk = L.steps.every((_, i) => p.steps[i] && p.steps[i].ok);
+    stairs.append(h("button", { class: "stair chal" + (idx === "chal" ? " cur" : "") + (p.chal && p.chal.ok ? " ok" : "") + (allOk ? "" : " lock"), disabled: !allOk,
+      onclick: () => { CUR.idx = "chal"; renderLesson(); } }, h("span", { class: "k" }, "★"), h("span", { class: "lbl" }, "도전 계단")));
+  }
+  stairs.append(h("button", { class: "ghost back", onclick: showMap }, "차시 지도로"));
+  stairs.append(h("button", { class: "ghost back copylink", onclick: () => {
+    const url = location.origin + location.pathname + location.search.replace(/[?&]lesson=[^&]*/, "") + "#" + L.no;
+    try { navigator.clipboard.writeText(url); toast("이 차시 주소를 복사했어요"); }
+    catch (err) { toast(url); }
+  } }, "이 차시 주소 복사"));
+
+  const work = h("section", { class: "work" });
+  const step = idx === "chal" ? L.challenge : L.steps[idx];
+  const stepNo = idx === "chal" ? 6 : idx + 1;
+  const name = idx === "chal" ? "도전 계단" : (step.name || STEP_NAMES[idx]);
+  const speakText = () => `탐구 질문. ${L.question}. ${name}. ${step.inst || ""}`;
+  const speakBtn = h("button", { class: "ghost speak", title: "문제를 읽어 줘요", onclick: () => {
+    try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(speakText()); u.lang = "ko-KR"; u.rate = .9; speechSynthesis.speak(u); }
+    catch (err) { toast("이 기기에서는 읽어 주기를 쓸 수 없어요."); }
+  } }, "🔊 읽어 주기");
+  if (typeof UNIT_STORY !== "undefined") work.append(h("div", { class: "scene" }, "📖 " + UNIT_STORY.one));
+  work.append(h("div", { class: "q" }, "탐구 질문 · " + L.question),
+    h("div", { class: "stephead" }, h("h2", { class: "stepname" }, `${idx === "chal" ? "★" : stepNo}. ${name}`), speakBtn));
+  if (step.inst) work.append(h("p", { class: "inst" }, step.inst));
+  const body = h("div"); work.append(body);
+  const nextBtn = h("button", { class: "big", disabled: true }, "다음 계단");
+  const fb = h("div", { class: "fb", role: "status", "aria-live": "polite" });
+  const acts = h("div", { class: "actions" }, nextBtn, fb);
+  work.append(acts);
+
+  let tries = 0, finished = false, fails = 0;
+  const helpBox = h("div", { class: "hintbox hidden" });
+  const h1 = h("button", { class: "ghost help hidden", onclick: () => help1() }, "도움 1단계 · 단서 보기");
+  const h2 = h("button", { class: "ghost help hidden", onclick: () => help2() }, "도움 2단계 · 중요한 낱말 보기");
+  const h3 = h("button", { class: "ghost help hidden", onclick: () => help3() }, "도움 3단계 · 답 보고 따라 쓰기");
+  const easyBtn = h("button", { class: "ghost hidden", onclick: () => openEasy() }, "조금 쉬운 문제로");
+  acts.append(h1, h2, h3, easyBtn);
+  work.append(helpBox);
+  let given = { words: [], answers: [] };          // 도우미가 알려 주는 낱말·정답
+  const hintList = (step.hints && step.hints.length ? step.hints.slice() : []).concat([L.summary]);
+  let hintShown = 0;
+  function help1() {
+    if (hintShown >= hintList.length) { h1.disabled = true; return; }
+    helpBox.classList.remove("hidden");
+    helpBox.append(h("p", {}, h("b", {}, `단서 ${hintShown + 1}. `), hintList[hintShown]));
+    hintShown++;
+    h1.textContent = hintShown >= hintList.length ? "단서를 모두 봤어요" : "도움 1단계 · 단서 더 보기";
+    if (hintShown >= hintList.length) h1.disabled = true;
+  }
+  function help2() {
+    h2.disabled = true; helpBox.classList.remove("hidden");
+    const words = (step.words && step.words.length ? step.words
+      : (given.words && given.words.length ? given.words
+      : (L.keywords || (typeof UNIT_KEYWORDS !== "undefined" ? UNIT_KEYWORDS : []))));
+    helpBox.append(h("div", { class: "wordbank" },
+      h("b", {}, "중요한 낱말 상자 "),
+      words.length ? words.map(w => h("span", { class: "word" }, w)) : h("span", {}, "이 계단의 핵심 개념: " + L.summary)));
+  }
+  function passOver() {
+    if (finished) return;
+    api.done("[도움 3단계까지 보고 넘어감]", "괜찮아요. 다음 계단으로 가요. 시간이 있을 때 이 계단에 다시 와서 한 번 더 해 봐요.", "넘어감");
+  }
+  function help3() {
+    h3.disabled = true; helpBox.classList.remove("hidden");
+    nextBtn.disabled = false;   // 여기까지 왔으면 다음 계단으로 갈 수 있어요
+    const ans = (step.answer ? [step.answer] : given.answers).filter(Boolean);
+    if (!ans.length) {
+      helpBox.append(h("p", {}, h("b", {}, "답 보기 · "), "이 계단은 직접 해 보는 활동이에요. 위 단서를 보고 한 번 더 해 보고, 어려우면 선생님이나 짝에게 도움을 청해요."),
+        h("p", { class: "inst" }, "지금 어려우면 아래 ‘다음 계단’을 눌러 넘어가도 괜찮아요."));
+      return;
+    }
+    const box = h("div", { class: "copybox" }, h("p", {}, h("b", {}, "답을 보고 그대로 따라 써요")));
+    const rows = ans.map(t => {
+      const inp = h("input", { type: "text", "aria-label": "따라 쓰기" });
+      box.append(h("div", { class: "copyrow" }, h("span", { class: "target" }, t), inp));
+      return { t, inp };
+    });
+    box.append(h("p", { class: "inst" }, "쓰면서 왜 그렇게 되는지 소리 내어 말해 봐요."));
+    box.append(h("p", { class: "inst" }, "따라 쓰기가 어려우면 아래 ‘다음 계단’을 눌러 넘어가도 괜찮아요."));
+    const norm = s => String(s).replace(/\s+/g, "").replace(/[，,]/g, "");
+    box.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+      let allOk = true;
+      rows.forEach(r => { const good = norm(r.inp.value) === norm(r.t); r.inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) allOk = false; });
+      if (!allOk) return api.hint("위의 답과 똑같이 써 보세요.");
+      api.done("[따라 쓰기] " + ans.join(" / "), "잘 따라 썼어요. 다음에는 단서만 보고도 할 수 있을 거예요.", "도움");
+    } }, "다 썼어요")));
+    helpBox.append(box);
+  }
+  function openEasy() {
+    if (!step.easy) return;
+    easyBtn.classList.add("hidden");
+    body.innerHTML = "";
+    body.append(h("p", { class: "inst" }, "수를 작게 바꾼 문제예요. 이것부터 해 봐요."));
+    step.easy(body, Object.assign({}, api, { done: (ans, msg) => api.done("[쉬운 문제] " + (ans || ""), msg || "좋아요! 같은 방법으로 큰 수도 할 수 있어요.") }));
+  }
+  const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
+  if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
+  const api = {
+    tryOnce() { tries++; },
+    provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
+    fail(msg, answer) {
+      tries++; fails++;
+      fb.className = "fb bad"; fb.textContent = "× " + (msg || "다시 생각해 봐요.");
+      record(L, stepNo, name, false, tries, answer, idx === "chal" ? "도전" : "기본");
+      if (fails >= 2) h1.classList.remove("hidden");
+      if (fails >= 3) { h2.classList.remove("hidden"); if (step.easy) easyBtn.classList.remove("hidden"); }
+      if (fails >= 4) h3.classList.remove("hidden");
+    },
+    hint(msg) { fb.className = "fb"; fb.textContent = msg; },
+    done(answer, msg, level) {
+      if (finished) return; finished = true; tries = Math.max(tries, 1);
+      const rec = { ok: true, tries, ans: answer || "", help: level || null };
+      if (idx === "chal") p.chal = rec; else p.steps[idx] = rec;
+      store.save(S);
+      record(L, stepNo, name, true, tries, answer, level || (idx === "chal" ? "도전" : "기본"));
+      fb.className = "fb good"; fb.textContent = "○ " + (msg || "좋아요! 계단을 올라갔어요.");
+      nextBtn.disabled = false;
+      renderStairsOnly();
+    }
+  };
+  function renderStairsOnly() {
+    const fresh = myProg(L.id);
+    [...stairs.querySelectorAll(".stair")].forEach((b, i) => {
+      if (i < L.steps.length) {
+        const r = fresh.steps[i], ok = r && r.ok; b.classList.toggle("ok", !!ok);
+        b.classList.toggle("passed", !!(r && r.help === "넘어감"));
+        b.querySelector(".k").textContent = ok ? (r.help === "넘어감" ? "△" : "✓") : String(i + 1);
+        const lock = !unlocked(L, i); b.classList.toggle("lock", lock); b.disabled = lock;
+      } else {
+        const allOk = L.steps.every((_, k) => fresh.steps[k] && fresh.steps[k].ok);
+        b.classList.toggle("lock", !allOk); b.disabled = !allOk; b.classList.toggle("ok", !!(fresh.chal && fresh.chal.ok));
+      }
+    });
+  }
+  nextBtn.onclick = () => {
+    if (!finished && !prevOk) passOver();
+    if (idx === "chal") return showFinish(L, true);
+    if (idx < L.steps.length - 1) { CUR.idx = idx + 1; renderLesson(); }
+    else showFinish(L, false);
+  };
+  mount(h("main", { class: "lesson" }, stairs, work));
+  const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
+  markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
+  step.render(body, api);
+}
+function showFinish(L, chal) {
+  const p = myProg(L.id);
+  const box = h("section", { class: "work finish" },
+    h("div", { class: "medal", "aria-hidden": "true" }, chal ? "★" : "◎"),
+    h("h2", { class: "stepname" }, chal ? "도전 계단까지 모두 올랐어요!" : `${L.no}차시 개념 계단을 모두 올랐어요!`),
+    h("div", { class: "card", style: "text-align:left;margin:1em auto;max-width:40em" }, h("div", { class: "jua" }, "오늘의 정리"), h("p", {}, L.summary)),
+    h("div", { class: "actions", style: "justify-content:center" },
+      (!chal && L.challenge && !(p.chal && p.chal.ok)) ? h("button", { class: "big", onclick: () => { CUR = { L, idx: "chal" }; renderLesson(); } }, "도전 계단 오르기") : null,
+      h("button", { class: "ghost", onclick: showMap }, "차시 지도로")));
+  mount(h("main", { class: "lesson", style: "grid-template-columns:1fr" }, box));
+}
+
+/* ===== 교사 화면 ===== */
+function showTeacher() {
+  const pin = h("input", { type: "password", placeholder: "비밀번호", style: "width:9em", inputmode: "numeric" });
+  const msg = h("div", { class: "fb" });
+  const area = h("div");
+  const load = () => {
+    msg.className = "fb"; msg.textContent = "기록을 불러오는 중…";
+    const done = (rows) => { msg.textContent = `기록 ${rows.length}개를 불러왔어요.`; renderDash(area, rows); };
+    const fail = (e) => { msg.className = "fb bad"; msg.textContent = (e && e.message) || "기록을 불러오지 못했어요. 비밀번호와 연결 주소를 확인해 주세요."; };
+    if (hasGAS()) google.script.run.withSuccessHandler(done).withFailureHandler(fail).getRecords(pin.value);
+    else if (CONFIG.endpoint) fetch(CONFIG.endpoint + "?pin=" + encodeURIComponent(pin.value)).then(r => r.json()).then(j => j.error ? fail(new Error(j.error)) : done(j.rows)).catch(fail);
+    else { if (pin.value !== CONFIG.localPin) return fail(new Error("비밀번호가 맞지 않아요.")); msg.textContent = "이 기기에 저장된 기록만 보여요. 반 전체 기록은 구글 시트와 연결하면 볼 수 있어요."; renderDash(area, S.log); }
+  };
+  mount(h("main", { class: "teacher" }, h("h2", { class: "stepname" }, "선생님 확인 화면"),
+    h("p", { class: "inst" }, hasGAS() || CONFIG.endpoint ? "구글 시트에 모인 반 전체 기록을 봅니다." : "지금은 구글 시트와 연결되지 않은 상태예요(이 기기 기록만 보여요)."),
+    h("div", { class: "row" }, pin, h("button", { class: "big", onclick: load }, "기록 보기"),
+      h("button", { class: "ghost", onclick: () => S.student ? showMap() : showGate() }, "돌아가기")), msg, area));
+  pin.focus();
+}
+function renderDash(area, rows) {
+  area.innerHTML = "";
+  rows = rows.filter(r => !r.unit || r.unit === CONFIG.unit);   // 지금 열어 둔 단원의 기록만 보기
+  const isOk = r => r.ok === true || r.ok === "true" || r.ok === "O";
+  const students = {};
+  const stepStat = {};      // `${차시}-${계단}` -> {name, wrong, ok, answers:{오답:횟수}}
+  rows.forEach(r => {
+    const k = `${r.ban}-${r.no}`;
+    const s = (students[k] = students[k] || { ban: r.ban, no: +r.no, name: r.name, c: {} });
+    if (r.name) s.name = r.name;
+    const c = (s.c[r.chasi] = s.c[r.chasi] || { steps: new Set(), chal: false, tries: 0, wrong: 0, answers: [], wrongAnswers: [], helped: new Set() });
+    if (isOk(r)) {
+      if (+r.step === 6) c.chal = true; else c.steps.add(+r.step);
+      if (r.level === "넘어감" || r.level === "도움") c.helped.add(+r.step);
+      if (r.answer) c.answers.push(`${r.step}. ${r.stepName}: ${r.answer}`);
+    }
+    else { c.wrong++; if (r.answer) c.wrongAnswers.push(`${r.step}. ${r.stepName}: ${r.answer}`); }
+    const sk = `${r.chasi}-${r.step}`;
+    const st = (stepStat[sk] = stepStat[sk] || { chasi: r.chasi, step: r.step, name: r.stepName, wrong: 0, ok: 0, answers: {} });
+    if (isOk(r)) st.ok++;
+    else { st.wrong++; if (r.answer) st.answers[r.answer] = (st.answers[r.answer] || 0) + 1; }
+  });
+  const list = Object.values(students).sort((a, b) => (a.ban + "").localeCompare(b.ban + "") || a.no - b.no);
+  const thead = h("tr", {}, h("th", {}, "번호"), h("th", {}, "이름"), LESSONS.map(L => h("th", {}, `${L.no}차시`)));
+  const tbody = h("tbody");
+  const detail = h("div", { class: "detail" });
+  list.forEach(s => {
+    tbody.append(h("tr", {}, h("td", {}, `${s.ban}-${s.no}`), h("td", { class: "nm" }, s.name || ""),
+      LESSONS.map(L => {
+        const c = s.c[L.no]; if (!c) return h("td", { class: "c-none" }, "–");
+        const n = c.steps.size, full = n >= L.steps.length;
+        return h("td", { class: full ? "c-full" : "c-part", style: "cursor:pointer", title: "눌러서 자세히 보기",
+          onclick: () => { detail.innerHTML = ""; detail.append(
+            h("h3", {}, `${s.no}번 ${s.name || ""} · ${L.no}차시 ${L.title}`),
+            h("p", {}, `해결한 계단 ${n}/${L.steps.length}${c.chal ? " + 도전 ★" : ""} · 틀린 횟수 ${c.wrong}번` + (c.helped.size ? ` · 도움을 받아 통과한 계단 △${c.helped.size}개 (${[...c.helped].sort().join(", ")}번 계단)` : "")),
+            c.wrongAnswers.length ? h("div", {}, h("b", {}, "틀린 답"), h("ul", {}, c.wrongAnswers.map(a => h("li", {}, a)))) : null,
+            h("div", {}, h("b", {}, "학생이 쓴 답"), h("ul", {}, c.answers.map(a => h("li", {}, a))))); detail.scrollIntoView({ behavior: "smooth" }); } },
+          `${n}/${L.steps.length}${c.chal ? " ★" : ""}${c.helped.size ? ` △${c.helped.size}` : ""}${c.wrong ? ` (×${c.wrong})` : ""}`);
+      })));
+  });
+  // 많이 틀린 계단 요약
+  const hard = Object.values(stepStat).filter(x => x.wrong > 0).sort((a, b) => b.wrong - a.wrong).slice(0, 5);
+  const hardBox = h("section", { class: "detail" }, h("h3", {}, "학생들이 많이 틀린 계단"));
+  if (!hard.length) hardBox.append(h("p", {}, "아직 틀린 기록이 없어요."));
+  hard.forEach(x => {
+    const tops = Object.entries(x.answers).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    hardBox.append(h("div", { class: "qitem" },
+      h("b", {}, `${x.chasi}차시 ${x.step}. ${x.name}`), h("span", {}, ` — 틀린 횟수 ${x.wrong}번`),
+      tops.length ? h("div", {}, "자주 나온 오답: " + tops.map(([a, n]) => `${a} (${n}번)`).join(" · ")) : null));
+  });
+  area.append(h("div", { class: "tbl-wrap" }, h("table", { class: "dash" }, h("thead", {}, thead), tbody)), hardBox, detail);
+  if (!list.length) area.append(h("p", {}, "아직 기록이 없어요."));
+}
+/* ===== 공통 부품 ===== */
+const NS = "http://www.w3.org/2000/svg";
+function svgEl(tag, attrs = {}) { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); return e; }
+function svgPt(svg, ev) { const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+function makeSvg(w, hgt, grid) {
+  const s = svgEl("svg", { viewBox: `0 0 ${w} ${hgt}`, role: "img" });
+  if (grid) { const g = svgEl("g", { stroke: "#DCE4E0", "stroke-width": 1 }); for (let x = 0; x <= w; x += grid) g.append(svgEl("line", { x1: x, y1: 0, x2: x, y2: hgt })); for (let y = 0; y <= hgt; y += grid) g.append(svgEl("line", { x1: 0, y1: y, x2: w, y2: y })); s.append(g); }
+  return s;
+}
+function txt(x, y, t, size = 22, attrs = {}) { const e = svgEl("text", Object.assign({ x, y, "font-size": size, "text-anchor": "middle", "dominant-baseline": "middle", "font-family": "Jua, sans-serif", fill: "#1D2A2A" }, attrs)); e.textContent = t; return e; }
+
+/* 선택형 문제 여러 개 (mcq/ox) */
+function quiz(body, api, items, opts = {}) {
+  const state = items.map(() => (null));
+  const wrap = h("div");
+  items.forEach((it, qi) => {
+    const box = h("div", { class: "qitem" });
+    if (it.q) box.append(h("div", { class: "jua" }, `${items.length > 1 ? qi + 1 + ". " : ""}${it.q}`));
+    if (it.fig) box.append(it.fig());
+    const multi = Array.isArray(it.a);
+    const row = h("div", { class: "opts" });
+    const sel = new Set();
+    it.o.forEach((o, oi) => row.append(h("button", { class: "opt", onclick: (e) => {
+      if (multi) { sel.has(oi) ? sel.delete(oi) : sel.add(oi); e.currentTarget.classList.toggle("on"); state[qi] = [...sel]; }
+      else { [...row.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); state[qi] = oi; }
+    } }, o)));
+    box.append(row); wrap.append(box);
+  });
+  api.provide && api.provide({
+    words: items.flatMap(it => (Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i])),
+    answers: items.map((it, qi) => `${items.length > 1 ? (qi + 1) + ") " : ""}${(Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i]).join(", ")}`)
+  });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce();
+    let allOk = true; const ans = [];
+    items.forEach((it, qi) => {
+      const box = wrap.children[qi], btns = box.querySelectorAll(".opt"), v = state[qi];
+      const good = Array.isArray(it.a) ? (Array.isArray(v) && v.length === it.a.length && it.a.every(x => v.includes(x))) : v === it.a;
+      btns.forEach(b => b.classList.remove("good", "bad"));
+      if (v != null) (Array.isArray(v) ? v : [v]).forEach(i => btns[i].classList.add(good ? "good" : "bad"));
+      if (!good) allOk = false;
+      ans.push(v == null ? "-" : (Array.isArray(v) ? v.map(i => it.o[i]).join("·") : it.o[v]));
+    });
+    if (allOk) { api.done(ans.join(" / "), opts.ok); }
+    else {
+      const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
+      const w = items[wrongIdx];
+      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
+    }
+  } }, "확인하기");
+  body.append(wrap, h("div", { class: "actions" }, check));
+}
+/* 빈칸 문장 */
+function blanks(body, api, parts, opts = {}) {
+  const sel = [];
+  const sent = h("p", { class: "sent" });
+  parts.forEach(pt => {
+    if (typeof pt === "string") sent.append(pt);
+    else {
+      const k = sel.length; sel.push(null);
+      const slot = h("span", { class: "slot" });
+      pt.o.forEach((o, oi) => slot.append(h("button", { class: "opt", onclick: (e) => { [...slot.children].forEach(b => b.classList.remove("on", "good", "bad")); e.currentTarget.classList.add("on"); sel[k] = oi; } }, o)));
+      slot.dataset.a = pt.a; sent.append(slot);
+    }
+  });
+  api.provide && api.provide({
+    words: parts.filter(p => typeof p !== "string").flatMap(p => p.o),
+    answers: [parts.map(p => typeof p === "string" ? p : p.o[p.a]).join("")]
+  });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce(); let ok = true; const ans = [];
+    [...sent.querySelectorAll(".slot")].forEach((slot, k) => {
+      const a = +slot.dataset.a; const btn = slot.children[sel[k]];
+      if (sel[k] !== a) ok = false; if (btn) btn.classList.add(sel[k] === a ? "good" : "bad");
+      ans.push(btn ? btn.textContent : "-");
+    });
+    ok ? api.done(ans.join(" / "), opts.ok) : api.fail(opts.bad || "빨간 낱말을 다시 골라 봐요.", ans.join(" / "));
+  } }, "확인하기");
+  body.append(sent, h("div", { class: "actions" }, check));
+}
+/* 글쓰기(자기 생각) */
+function writeStep(body, api, prompts, opts = {}) {
+  const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); body.append(h("div", { class: "jua", style: "margin-top:.6em" }, p.q), t); return t; });
+  body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    const vals = areas.map(t => t.value.trim());
+    if (vals.some(v => v.length < (opts.min || 4))) return api.fail("모든 칸에 내 생각을 조금 더 자세히 써 봐요.", vals.join(" | "));
+    api.done(prompts.map((p, i) => `${p.tag || p.q}: ${vals[i]}`).join(" | "), opts.ok || "생각을 잘 적었어요!");
+  } }, "다 썼어요")));
+}
+/* 순서 맞추기 */
+function sequence(body, api, cards, order, opts = {}) {
+  const picked = [];
+  const row = h("div", { class: "seq" });
+  const show = h("div", { class: "readout" }, "순서: ");
+  cards.forEach((c, i) => row.append(h("button", { class: "opt", onclick: (e) => {
+    if (picked.includes(i)) return; picked.push(i); e.currentTarget.classList.add("on");
+    e.currentTarget.prepend(h("span", { class: "no" }, String(picked.length))); show.textContent = "순서: " + picked.map(k => c0(k)).join(" → ");
+    if (picked.length === cards.length) {
+      api.tryOnce();
+      if (picked.every((v, k) => v === order[k])) api.done(picked.map(c0).join("→"), opts.ok);
+      else { api.fail("순서가 달라요. ‘다시’를 누르고 한 번 더 해 봐요.", picked.map(c0).join("→")); }
+    }
+  } }, c)));
+  const c0 = k => cards[k].slice(0, 1);
+  body.append(row, show, h("div", { class: "actions" }, h("button", { class: "ghost", onclick: () => { picked.length = 0; [...row.children].forEach(b => { b.classList.remove("on"); const n = b.querySelector(".no"); n && n.remove(); }); show.textContent = "순서: "; } }, "다시")));
+}
+
+/* ===== 조작 부품 (1 cm = 40) ===== */
+const CM = 40;
+const BLUE = "#2B7BD6", INK = "#1D2A2A", TENT = "#E47A38", PINE = "#2F6B57";
+function stageWrap(svg, side) { return h("div", { class: "panel" }, h("div", { class: "stage" }, svg), side || h("div", { class: "side" })); }
+function dragOn(svg, onDown, onMove, onUp) {
+  let active = false;
+  svg.addEventListener("pointerdown", e => { active = onDown(svgPt(svg, e), e) !== false; if (active) svg.setPointerCapture(e.pointerId); });
+  svg.addEventListener("pointermove", e => { if (active) onMove(svgPt(svg, e), e); });
+  const up = e => { if (active) { active = false; onUp && onUp(svgPt(svg, e), e); } };
+  svg.addEventListener("pointerup", up); svg.addEventListener("pointercancel", up);
+}
+function sweepTracker() { const bins = new Set(); return { add(a) { bins.add(Math.floor(((a + Math.PI * 2) % (Math.PI * 2)) / (Math.PI * 2) * 36)); }, full() { return bins.size >= 34; }, count() { return bins.size; }, reset() { bins.clear(); } }; }
+/* ===== 공통: 수 입력 ===== */
+/* ===== 곱셈 단원 조작 부품 ===== */
+function numbers(body, api, items, opts = {}) {
+  const ins = [];
+  const wrap = h("div");
+  items.forEach(it => {
+    const inp = h("input", { type: "number", inputmode: "numeric", style: "width:6em;font-size:1.2em", "aria-label": it.q });
+    ins.push({ inp, a: it.a });
+    wrap.append(h("div", { class: "qitem" }, h("span", { class: "jua" }, it.q + " "), inp, it.unit ? h("span", {}, " " + it.unit) : null));
+  });
+  api.provide && api.provide({
+    words: opts.words || [],
+    answers: items.map(it => `${it.q} ${it.a}${it.unit ? " " + it.unit : ""}`)
+  });
+  body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    api.tryOnce(); let ok = true;
+    ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
+    const given = ins.map(x => x.inp.value).join(", ");
+    if (ok) return api.done(given, opts.ok);
+    const bad = ins.find(({ inp, a }) => Number(inp.value) !== a);
+    const item = items[ins.indexOf(bad)];
+    const why = item && item.why && item.why[String(Number(bad.inp.value))];
+    api.fail(why || opts.bad || "빨간 칸을 다시 계산해 봐요.", given);
+  } }, "확인하기")));
+}
+
+/* ===== 3-1 수학 4. 곱셈 — 단원 조작 부품 (접두어 u4) =====
+   범위: (몇십)×(몇), (몇십몇)×(몇) (올림 없음 / 십의 자리 올림 / 일의 자리 올림 / 두 번 올림)
+   모든 부품은 function u4Xxx(body, api, opt) 꼴이고, 수·문구는 opt로 바꿀 수 있어요(이야기 버전에서 재사용).
+*/
+const U4_FILL = "#DCEAFB", U4_LINE = "#9BB6D6", U4_SOFT = "#FDF1E8", U4_LANT = "#F4C542", U4_GRAY = "#C9D4CF", U4_PSOFT = "#DDEDE5";
+
+/* --- 공통 도우미 --- */
+function u4Style() {
+  if (document.getElementById("u4-style")) return;
+  const s = document.createElement("style"); s.id = "u4-style";
+  s.textContent = `
+.u4vwrap{display:flex;gap:1.2em;flex-wrap:wrap;align-items:flex-start}
+.u4vert{display:inline-block;border:3px solid var(--night);border-radius:var(--r);padding:.5em .9em;background:#fff;font-family:Jua,sans-serif}
+.u4vert .ttl{font-size:var(--fs);color:var(--pine);margin-bottom:.2em}
+.u4row{display:flex;align-items:center}
+.u4row.line{border-top:3px solid var(--ink);margin:.15em 0}
+.u4c{width:1.55em;height:1.55em;display:inline-flex;align-items:center;justify-content:center;font-size:calc(var(--fs)*1.55)}
+.u4row.carry .u4c{height:1.1em}
+.u4lab{font-size:var(--fs-s);color:var(--muted);margin-left:.6em;white-space:nowrap;font-family:"Gowun Dodum",sans-serif}
+input.u4cell{width:1.35em;height:1.35em;padding:0;text-align:center;font-family:Jua,sans-serif;font-size:1em;border:2px solid var(--line);border-radius:.3em}
+input.u4cell.sm{width:1.05em;height:1.05em;font-size:.62em;border-color:var(--tent)}
+.u4cards{display:flex;gap:.5em;flex-wrap:wrap}
+.u4cards .opt{font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.4);min-width:2.2em;text-align:center}
+.u4tbl{border-collapse:collapse;font-size:var(--fs-s)}
+.u4tbl td,.u4tbl th{border:1px solid var(--line);padding:.15em .5em;text-align:center}
+.u4tbl th{background:var(--pine-soft);font-weight:400;font-family:Jua,sans-serif}
+.u4est{background:var(--ring-soft);border-radius:.6em;padding:.4em .6em}
+`;
+  document.head.append(s);
+}
+function u4Ten(x, y, u, hl) {
+  const g = svgEl("g");
+  g.append(svgEl("rect", { x, y, width: u, height: 10 * u, fill: hl ? U4_LANT : U4_FILL, stroke: INK, "stroke-width": 2 }));
+  for (let k = 1; k < 10; k++) g.append(svgEl("line", { x1: x, y1: y + k * u, x2: x + u, y2: y + k * u, stroke: U4_LINE }));
+  return g;
+}
+function u4One(x, y, s, hl) { return svgEl("rect", { x, y, width: s, height: s, fill: hl ? U4_LANT : U4_FILL, stroke: INK, "stroke-width": 2 }); }
+function u4Hund(x, y, u) {
+  const g = svgEl("g");
+  g.append(svgEl("rect", { x, y, width: 10 * u, height: 10 * u, fill: U4_FILL, stroke: INK, "stroke-width": 2 }));
+  for (let k = 1; k < 10; k++) g.append(svgEl("line", { x1: x, y1: y + k * u, x2: x + 10 * u, y2: y + k * u, stroke: U4_LINE }), svgEl("line", { x1: x + k * u, y1: y, x2: x + k * u, y2: y + 10 * u, stroke: U4_LINE }));
+  return g;
+}
+const u4In = (p, r) => p.x >= r[0] && p.x <= r[0] + r[2] && p.y >= r[1] && p.y <= r[1] + r[3];
+/* 조작이 끝나야 정답 확인이 되도록 api를 감싸요 */
+function u4Gate(api, ready, msg) {
+  return Object.assign({}, api, { done: (ans, m, lv) => ready() ? api.done(ans, m, lv) : api.fail(typeof msg === "function" ? msg() : msg, ans) });
+}
+
+/* ① 묶음 만들기: 수 모형 (몇십)×(몇), (몇십몇)×(몇)
+   opt: a(몇십 또는 몇십몇), b(묶음 수), item, tip, after:[numbers 문항], ok */
+function u4BuildGroups(body, api, opt) {
+  u4Style();
+  const a = opt.a, b = opt.b, T = Math.floor(a / 10), O = a % 10;
+  const boxes = Array.from({ length: b }, () => ({ t: 0, o: 0 }));
+  const hist = [];
+  let tool = T > 0 ? "t" : "o", placed = false;
+  const bw = Math.max(118, (T + 1) * 18 + (O ? Math.ceil((O + 2) / 5) * 17 + 10 : 0) + 26), bh = 150;
+  const per = Math.max(1, Math.floor(710 / (bw + 14)));
+  const rows = Math.ceil(b / per);
+  const W = 900, H = Math.max(330, 64 + rows * (bh + 18));
+  const svg = makeSvg(W, H);
+  const boxR = k => [180 + (k % per) * (bw + 14), 52 + Math.floor(k / per) * (bh + 18), bw, bh];
+  const trayT = [22, 56, 60, 150], trayO = [96, 56, 60, 150];
+  const ghost = svgEl("g", { opacity: .85, "pointer-events": "none" });
+  const draw = () => {
+    svg.innerHTML = "";
+    svg.append(txt(540, 26, opt.title || `${a}씩 ${b}묶음 — 묶음마다 ${a}만큼 놓아요`, 22));
+    svg.append(svgEl("rect", { x: 10, y: 44, width: 156, height: H - 56, rx: 12, fill: "#fff", stroke: U4_GRAY, "stroke-width": 2 }));
+    if (T > 0 || opt.ones === false) {
+      svg.append(svgEl("rect", { x: trayT[0], y: trayT[1], width: trayT[2], height: trayT[3], rx: 10, fill: tool === "t" ? U4_SOFT : "#fff", stroke: tool === "t" ? TENT : U4_GRAY, "stroke-width": 3 }));
+      svg.append(u4Ten(trayT[0] + 24, trayT[1] + 12, 11), txt(trayT[0] + 30, trayT[1] + 138, "십", 20));
+    }
+    if (O > 0) {
+      svg.append(svgEl("rect", { x: trayO[0], y: trayO[1], width: trayO[2], height: trayO[3], rx: 10, fill: tool === "o" ? U4_SOFT : "#fff", stroke: tool === "o" ? TENT : U4_GRAY, "stroke-width": 3 }));
+      svg.append(u4One(trayO[0] + 22, trayO[1] + 55, 16), txt(trayO[0] + 30, trayO[1] + 138, "일", 20));
+    }
+    svg.append(txt(88, 238, "끌어다", 20), txt(88, 264, "놓아요", 20));
+    boxes.forEach((bx, k) => {
+      const [x0, y0] = boxR(k);
+      const full = bx.t === T && bx.o === O;
+      svg.append(svgEl("rect", { x: x0, y: y0, width: bw, height: bh, rx: 12, fill: full ? "#F2F9F4" : "#fff", stroke: full ? PINE : TENT, "stroke-width": 3, "stroke-dasharray": "9 7" }));
+      for (let i = 0; i < bx.t; i++) svg.append(u4Ten(x0 + 14 + i * 18, y0 + 20, 11));
+      const ox = x0 + 14 + Math.max(bx.t, T) * 18 + 8;
+      for (let j = 0; j < bx.o; j++) svg.append(u4One(ox + Math.floor(j / 5) * 17, y0 + 22 + (j % 5) * 18, 13));
+    });
+    svg.append(ghost);
+    const st = boxes.reduce((s, x) => [s[0] + x.t, s[1] + x.o], [0, 0]);
+    out.innerHTML = `놓은 모형: 십 모형 ${st[0]}개${O || st[1] ? `, 일 모형 ${st[1]}개` : ""}`;
+  };
+  const out = h("div", { class: "readout" });
+  const add = (k, type) => {
+    if (placed) return;
+    const bx = boxes[k];
+    if (type === "t" && bx.t >= T + 1) return api.hint(`한 묶음에는 십 모형이 ${T}개 필요해요. 너무 많아요.`);
+    if (type === "o" && bx.o >= O + 2) return api.hint(`한 묶음에는 일 모형이 ${O}개 필요해요. 너무 많아요.`);
+    bx[type]++; hist.push([k, type]); draw();
+  };
+  const hitBox = p => boxes.findIndex((_, k) => u4In(p, boxR(k)));
+  let drag = null;
+  dragOn(svg, p => {
+    if (placed) return false;
+    const tt = (T > 0 && u4In(p, trayT)) ? "t" : (O > 0 && u4In(p, trayO)) ? "o" : null;
+    if (tt) { tool = tt; drag = tt; draw(); ghost.innerHTML = ""; ghost.append(tt === "t" ? u4Ten(-5, -55, 11) : u4One(-8, -8, 16)); ghost.setAttribute("transform", `translate(${p.x},${p.y})`); return true; }
+    const k = hitBox(p); if (k >= 0) add(k, tool);
+    return false;
+  }, p => ghost.setAttribute("transform", `translate(${p.x},${p.y})`),
+  p => { ghost.innerHTML = ""; const k = hitBox(p); if (drag && k >= 0) add(k, drag); drag = null; });
+  const btnT = h("button", { class: "ghost", onclick: () => boxes.forEach((_, k) => add(k, "t")) }, "모든 묶음에 십 모형 1개씩");
+  const btnO = h("button", { class: "ghost", onclick: () => boxes.forEach((_, k) => add(k, "o")) }, "모든 묶음에 일 모형 1개씩");
+  const undo = h("button", { class: "ghost", onclick: () => { if (placed) return; const x = hist.pop(); if (x) { boxes[x[0]][x[1]]--; draw(); } } }, "한 개 빼기");
+  const ans = h("div");
+  const after = opt.after || (O === 0
+    ? [{ q: `십 모형은 모두 ${T} × ${b} =`, a: T * b, unit: "개" }, { q: "십 모형이 나타내는 수는", a: T * b * 10 }, { q: `${a} × ${b} =`, a: a * b }]
+    : [{ q: "십 모형은 모두 몇 개?", a: T * b, unit: "개" }, { q: "일 모형은 모두 몇 개?", a: O * b, unit: "개" }, { q: `${a} × ${b} =`, a: a * b }]);
+  api.provide({ words: ["묶음", "십 모형", "일 모형"], answers: after.map(it => `${it.q} ${it.a}`) });
+  const check = h("button", { class: "big", onclick: () => {
+    const okAll = boxes.every(x => x.t === T && x.o === O);
+    const given = boxes.map(x => `${x.t}/${x.o}`).join(" ");
+    if (!okAll) {
+      api.tryOnce();
+      const bad = boxes.findIndex(x => x.t !== T || x.o !== O);
+      return api.fail(`${bad + 1}번째 묶음을 보세요. 묶음마다 십 모형 ${T}개${O ? `, 일 모형 ${O}개` : ""}가 있어야 ${a}예요.`, "[묶음] " + given);
+    }
+    placed = true; check.remove(); btnT.remove(); btnO.remove(); undo.remove();
+    api.hint(`${a}씩 ${b}묶음을 잘 만들었어요. 이제 모형을 세어 답해요.`);
+    numbers(ans, api, after, { ok: opt.ok || `${a} × ${b} = ${a * b}이에요.` });
+  } }, "다 놓았어요");
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "수 모형을 끌어다 묶음 칸에 놓아요. 칸을 눌러도 놓여요."), out,
+    T > 0 ? btnT : null, O > 0 ? btnO : null, undo, h("div", { class: "actions" }, check), ans)));
+}
+
+/* ② 10배 알아보기: n×b 와 (n0)×b 를 수 모형으로 견주기  opt: n, b, extra:[numbers 문항], ok */
+function u4TenTimes(body, api, opt) {
+  const n = opt.n, b = opt.b;
+  let shown = false;
+  const svg = makeSvg(900, 380);
+  const gw = Math.max(90, n * 22 + 30);
+  const draw = () => {
+    svg.innerHTML = "";
+    svg.append(txt(80, 95, "일 모형", 22), txt(80, 270, "십 모형", 22));
+    for (let k = 0; k < b; k++) {
+      const x0 = 160 + k * (gw + 14);
+      svg.append(svgEl("rect", { x: x0, y: 60, width: gw, height: 70, rx: 10, fill: "#fff", stroke: TENT, "stroke-width": 3, "stroke-dasharray": "8 6" }));
+      for (let i = 0; i < n; i++) svg.append(u4One(x0 + 16 + i * 22, 86, 16));
+      svg.append(svgEl("rect", { x: x0, y: 180, width: gw, height: 170, rx: 10, fill: "#fff", stroke: shown ? TENT : U4_GRAY, "stroke-width": 3, "stroke-dasharray": "8 6" }));
+      if (shown) for (let i = 0; i < n; i++) svg.append(u4Ten(x0 + 16 + i * 22, 208, 12));
+    }
+    const ax = 160 + b * (gw + 14) + 30;
+    svg.append(txt(ax + 70, 95, `${n} × ${b}`, 28));
+    if (shown) {
+      svg.append(svgEl("line", { x1: ax + 70, y1: 125, x2: ax + 70, y2: 235, stroke: TENT, "stroke-width": 5 }),
+        svgEl("polygon", { points: `${ax + 58},230 ${ax + 82},230 ${ax + 70},250`, fill: TENT }),
+        txt(ax + 125, 180, "10배", 24, { fill: TENT }), txt(ax + 70, 275, `${n * 10} × ${b}`, 28));
+    } else svg.append(txt(ax + 70, 265, "?", 30));
+  };
+  draw();
+  const ans = h("div");
+  const items = [{ q: `${n} × ${b} =`, a: n * b }, { q: `${n * 10} × ${b} =`, a: n * 10 * b }].concat(opt.extra || []);
+  const g = u4Gate(api, () => shown, "먼저 ‘일 모형을 십 모형으로 바꾸기’를 눌러 두 줄을 견주어 보세요.");
+  numbers(ans, g, items, { ok: opt.ok || `${n * 10}은 ${n}의 10배예요. 곱해지는 수가 10배가 되면 곱도 10배가 돼요.` });
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "일 모형 하나하나를 십 모형으로 바꾸면 무엇이 달라질까요?"),
+    h("button", { class: "ghost", onclick: () => { shown = true; draw(); } }, "일 모형을 십 모형으로 바꾸기"), ans)));
+}
+
+/* ③ 뛰어 세기 수직선  opt: step, n, unit, ask:[numbers 문항], ok */
+function u4JumpLine(body, api, opt) {
+  const step = opt.step, n = opt.n, max = step * (opt.len || n + 1);
+  let k = 0;
+  const svg = makeSvg(900, 260);
+  const X = v => 60 + v / max * 780;
+  const minor = step % 10 === 0 ? 10 : 1;
+  const draw = () => {
+    svg.innerHTML = "";
+    svg.append(svgEl("line", { x1: 50, y1: 180, x2: 860, y2: 180, stroke: INK, "stroke-width": 3 }));
+    for (let v = 0; v <= max; v += minor) {
+      const big = v % step === 0;
+      svg.append(svgEl("line", { x1: X(v), y1: big ? 164 : 172, x2: X(v), y2: big ? 196 : 188, stroke: INK, "stroke-width": big ? 3 : 1.5 }));
+      if (big) svg.append(txt(X(v), 222, String(v), 22));
+    }
+    for (let i = 0; i < k; i++) {
+      const x1 = X(i * step), x2 = X((i + 1) * step), mx = (x1 + x2) / 2;
+      svg.append(svgEl("path", { d: `M${x1},172 Q${mx},70 ${x2},172`, fill: "none", stroke: TENT, "stroke-width": 4 }),
+        svgEl("polygon", { points: `${x2 - 12},160 ${x2},174 ${x2 + 2},156`, fill: TENT }), txt(mx, 104, `+${step}`, 22, { fill: TENT }));
+    }
+    svg.append(svgEl("circle", { cx: X(k * step), cy: 180, r: 12, fill: BLUE, stroke: "#fff", "stroke-width": 3 }));
+    out.textContent = "0" + Array.from({ length: k }, (_, i) => " → " + (i + 1) * step).join("");
+  };
+  const out = h("div", { class: "readout" });
+  const jump = () => { if (k * step + step > max) return api.hint("수직선 끝까지 왔어요."); k++; draw(); };
+  dragOn(svg, p => { if (Math.abs(p.x - X((k + 1) * step)) < 40) jump(); return false; }, () => {}, null);
+  const ans = h("div");
+  const g = u4Gate(api, () => k >= n, `${step}씩 ${n}번 뛰어 센 다음 답을 확인해요.`);
+  numbers(ans, g, opt.ask || [{ q: `${step}씩 ${n}번 뛰어 세면`, a: step * n, unit: opt.unit || "" }, { q: `${step} × ${n} =`, a: step * n }],
+    { ok: opt.ok || `${step}씩 ${n}번 뛰어 센 것은 ${step} × ${n} = ${step * n}과 같아요.` });
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || `‘${step}만큼 뛰기’를 누르거나 수직선의 다음 눈금을 눌러요.`), out,
+    h("button", { class: "ghost", onclick: jump }, `${step}만큼 뛰기`), h("button", { class: "ghost", onclick: () => { k = 0; draw(); } }, "처음부터"), ans)));
+}
+
+/* ④ 대나무 키 (단원 도입)  opt: per(하루에 자라는 cm), max(날수), gate, ask, ok */
+function u4Bamboo(body, api, opt) {
+  const per = opt.per || 60, max = opt.max || 10, gate = opt.gate || 5;
+  let d = 1, seen = 1;
+  const svg = makeSvg(900, 460);
+  const Y0 = 420, sc = 36 / per;   // per cm = 36 px
+  const draw = () => {
+    svg.innerHTML = "";
+    svg.append(svgEl("line", { x1: 40, y1: Y0, x2: 330, y2: Y0, stroke: PINE, "stroke-width": 4 }));
+    svg.append(svgEl("line", { x1: 110, y1: Y0, x2: 110, y2: Y0 - max * per * sc - 6, stroke: INK, "stroke-width": 2 }));
+    for (let i = 1; i <= max; i++) {
+      const y = Y0 - i * per * sc;
+      svg.append(svgEl("line", { x1: 102, y1: y, x2: 118, y2: y, stroke: INK, "stroke-width": 2 }));
+      if (i % 2 === 0 || max <= 6) svg.append(txt(62, y, String(i * per), 20));
+    }
+    svg.append(txt(62, Y0 + 24, "(cm)", 20));
+    for (let i = 0; i < d; i++) {
+      const y = Y0 - (i + 1) * per * sc;
+      svg.append(svgEl("rect", { x: 180, y, width: 34, height: per * sc, rx: 6, fill: U4_PSOFT, stroke: PINE, "stroke-width": 3 }));
+    }
+    svg.append(svgEl("path", { d: `M214,${Y0 - d * per * sc + 20} q40,-10 60,-40`, fill: "none", stroke: PINE, "stroke-width": 4 }));
+    for (let i = 1; i <= max; i++) {
+      const cx = 380 + ((i - 1) % 5) * 102, cy = 110 + Math.floor((i - 1) / 5) * 150;
+      const on = i <= d;
+      svg.append(svgEl("rect", { x: cx - 46, y: cy - 50, width: 92, height: 100, rx: 12, fill: on ? U4_PSOFT : "#fff", stroke: on ? PINE : U4_GRAY, "stroke-width": 3 }),
+        txt(cx, cy - 22, `${i}일`, 22), txt(cx, cy + 16, on ? String(i * per) : "?", 26, { fill: on ? PINE : "#9aa" }));
+    }
+    svg.append(txt(635, 400, `${d}일 동안 자란 키: ${d * per} cm`, 26));
+    rng.value = d;
+  };
+  const rng = h("input", { type: "range", min: 1, max, step: 1, value: 1, "aria-label": "날수" });
+  const set = v => { d = Math.max(1, Math.min(max, v)); seen = Math.max(seen, d); draw(); };
+  rng.oninput = () => set(+rng.value);
+  const ans = h("div");
+  const g = u4Gate(api, () => seen >= gate, `막대를 움직여 ${gate}일까지 대나무를 키워 본 다음 답해요.`);
+  numbers(ans, g, opt.ask || [{ q: `${per}씩 ${gate}번 뛰어 세면`, a: per * gate, unit: "cm" }, { q: `${per} × ${gate} =`, a: per * gate }],
+    { ok: opt.ok || `하루에 ${per} cm씩 자라니까 곱셈으로 빨리 구할 수 있어요.` });
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || `하루에 ${per} cm씩 자라는 대나무예요. 날수를 바꾸어 보세요.`), rng,
+    h("div", { class: "row" }, h("button", { class: "ghost", onclick: () => set(d - 1) }, "하루 전"), h("button", { class: "ghost", onclick: () => set(d + 1) }, "하루 더")), ans)));
+}
+
+/* ⑤ 수 모형 정리하기(올림): 모든 묶음을 모은 수 모형을 10개씩 바꾸기
+   opt: a, b, tip, estimate:{q,o:[],a,ok}, ask:[numbers], ok */
+function u4Regroup(body, api, opt) {
+  u4Style();
+  const a = opt.a, b = opt.b, T = Math.floor(a / 10), O = a % 10;
+  let H = 0, t = T * b, o = O * b, estOk = !opt.estimate;
+  const svg = makeSvg(900, 470);
+  const colH = [10, 44, 270, 380], colT = [290, 44, 300, 380], colO = [600, 44, 290, 380];
+  const ghost = svgEl("g", { opacity: .85, "pointer-events": "none" });
+  let hl = null;
+  const draw = () => {
+    svg.innerHTML = "";
+    [[colH, "백 모형"], [colT, "십 모형"], [colO, "일 모형"]].forEach(([r, name]) => {
+      svg.append(svgEl("rect", { x: r[0], y: r[1], width: r[2], height: r[3], rx: 12, fill: "#fff", stroke: U4_GRAY, "stroke-width": 2 }), txt(r[0] + r[2] / 2, 24, name, 22));
+    });
+    for (let i = 0; i < H; i++) svg.append(u4Hund(30 + (i % 2) * 125, 60 + Math.floor(i / 2) * 118, 10.5));
+    for (let i = 0; i < t; i++) svg.append(u4Ten(308 + (i % 10) * 28, 60 + Math.floor(i / 10) * 118, 11, hl === "t" && i < 10));
+    if (t >= 10) for (let r = 0; r < Math.floor(t / 10); r++) svg.append(svgEl("rect", { x: 302, y: 54 + r * 118, width: 290, height: 122, rx: 10, fill: "none", stroke: TENT, "stroke-width": 2, "stroke-dasharray": "6 5" }));
+    for (let i = 0; i < o; i++) svg.append(u4One(616 + (i % 10) * 26, 62 + Math.floor(i / 10) * 30, 18, hl === "o" && i < 10));
+    if (o >= 10) for (let r = 0; r < Math.floor(o / 10); r++) svg.append(svgEl("rect", { x: 608, y: 55 + r * 30, width: 272, height: 30, rx: 8, fill: "none", stroke: TENT, "stroke-width": 2, "stroke-dasharray": "6 5" }));
+    svg.append(txt(colH[0] + colH[2] / 2, 448, `${H}개`, 24), txt(colT[0] + colT[2] / 2, 448, `${t}개`, 24), txt(colO[0] + colO[2] / 2, 448, `${o}개`, 24));
+    svg.append(ghost);
+    out.innerHTML = `백 모형 ${H}개, 십 모형 ${t}개, 일 모형 ${o}개<br><small>처음: 십 모형 ${T}개씩 ${b}묶음${O ? `, 일 모형 ${O}개씩 ${b}묶음` : ""}</small>`;
+  };
+  const out = h("div", { class: "readout" });
+  const upO = () => { if (o < 10) return api.hint("일 모형이 10개보다 적어요. 더 바꿀 수 없어요."); o -= 10; t += 1; draw(); api.hint("일 모형 10개를 십 모형 1개로 바꾸었어요."); };
+  const upT = () => { if (t < 10) return api.hint("십 모형이 10개보다 적어요. 더 바꿀 수 없어요."); t -= 10; H += 1; draw(); api.hint("십 모형 10개를 백 모형 1개로 바꾸었어요."); };
+  let drag = null;
+  dragOn(svg, p => {
+    if (u4In(p, colO) && o >= 10) { drag = "o"; hl = "o"; }
+    else if (u4In(p, colT) && t >= 10) { drag = "t"; hl = "t"; }
+    else return false;
+    draw(); ghost.innerHTML = "";
+    if (drag === "o") for (let i = 0; i < 10; i++) ghost.append(u4One(-100 + i * 20, -8, 16, true));
+    else for (let i = 0; i < 10; i++) ghost.append(u4Ten(-100 + i * 20, -55, 11, true));
+    ghost.setAttribute("transform", `translate(${p.x},${p.y})`); return true;
+  }, p => ghost.setAttribute("transform", `translate(${p.x},${p.y})`),
+  p => {
+    const d = drag; drag = null; hl = null; ghost.innerHTML = "";
+    if (d === "o" && u4In(p, colT)) upO(); else if (d === "t" && u4In(p, colH)) upT();
+    else { draw(); api.hint(d === "o" ? "일 모형 10개를 십 모형 칸으로 옮겨 놓아요." : "십 모형 10개를 백 모형 칸으로 옮겨 놓아요."); }
+  });
+  const side = h("div", { class: "side" });
+  if (opt.estimate) {
+    const e = opt.estimate, row = h("div", { class: "opts" });
+    const box = h("div", { class: "u4est" }, h("div", { class: "jua" }, "먼저 어림해요 · " + e.q), row);
+    e.o.forEach((c, i) => row.append(h("button", { class: "opt", onclick: ev => {
+      [...row.children].forEach(x => x.classList.remove("good", "bad"));
+      if (i === e.a) { estOk = true; ev.currentTarget.classList.add("good"); api.hint(e.ok || "좋아요. 이제 수 모형으로 정확하게 구해요."); }
+      else { ev.currentTarget.classList.add("bad"); api.fail(e.bad || "몇십몇을 가까운 몇십으로 생각해서 어림해 봐요.", "[어림] " + c); }
+    } }, c)));
+    side.append(box);
+  }
+  const ask = opt.ask || [{ q: "백 모형은 몇 개?", a: Math.floor(a * b / 100), unit: "개" }, { q: "십 모형은 몇 개?", a: Math.floor(a * b / 10) % 10, unit: "개" }, { q: "일 모형은 몇 개?", a: a * b % 10, unit: "개" }, { q: `${a} × ${b} =`, a: a * b }];
+  const ans = h("div");
+  const g = u4Gate(api, () => estOk && t < 10 && o < 10, () => !estOk ? "먼저 위에서 어림한 값을 골라요." : "아직 10개가 모인 모형이 있어요. 10개씩 윗자리 모형으로 바꾸어 정리해요.");
+  numbers(ans, g, ask, { ok: opt.ok || `${a} × ${b} = ${a * b}이에요.` });
+  draw();
+  side.append(h("p", {}, opt.tip || "10개가 모이면 윗자리 모형 1개로 바꿀 수 있어요. 끌어 옮기거나 버튼을 눌러요."), out,
+    h("button", { class: "ghost", onclick: upO }, "일 모형 10개 → 십 모형 1개"), h("button", { class: "ghost", onclick: upT }, "십 모형 10개 → 백 모형 1개"), ans);
+  body.append(stageWrap(svg, side));
+}
+
+/* ⑥ 세로셈 칸: (몇십몇)×(몇)
+   opt: a, b, mode "partial"(두 줄로) | "short"(간단히, 올림 표시) | "both", labels(true), tip, ok */
+function u4Vertical(body, api, opt) {
+  u4Style();
+  const a = opt.a, b = opt.b, T = Math.floor(a / 10), O = a % 10, p1 = O * b, p2 = T * 10 * b, r = a * b, c = Math.floor(p1 / 10);
+  const mode = opt.mode || "both", labels = opt.labels !== false;
+  const ins = [];
+  const cell = (want, row, small) => { const i = h("input", { type: "text", inputmode: "numeric", maxlength: 1, autocomplete: "off", class: "u4cell" + (small ? " sm" : ""), "aria-label": row }); ins.push({ i, want: String(want), row }); return i; };
+  const numRow = (g, val, row, label) => {
+    const s = String(val), pad = 3 - s.length, rr = h("div", { class: "u4row" }, h("span", { class: "u4c" }, ""));
+    for (let k = 0; k < 3; k++) rr.append(h("span", { class: "u4c" }, k < pad ? "" : cell(s[k - pad], row)));
+    rr.append(h("span", { class: "u4lab" }, labels && label ? label : "")); g.append(rr);
+  };
+  const head = (g, carry) => {
+    if (carry) { const cr = h("div", { class: "u4row carry" }, h("span", { class: "u4c" }, ""), h("span", { class: "u4c" }, ""), h("span", { class: "u4c" }, c > 0 ? cell(c, "올림", true) : ""), h("span", { class: "u4c" }, "")); g.append(cr); }
+    g.append(h("div", { class: "u4row" }, h("span", { class: "u4c" }, ""), h("span", { class: "u4c" }, ""), h("span", { class: "u4c" }, String(T)), h("span", { class: "u4c" }, String(O))),
+      h("div", { class: "u4row" }, h("span", { class: "u4c" }, "×"), h("span", { class: "u4c" }, ""), h("span", { class: "u4c" }, ""), h("span", { class: "u4c" }, String(b))),
+      h("div", { class: "u4row line" }));
+  };
+  const wrap = h("div", { class: "u4vwrap" });
+  if (mode === "partial" || mode === "both") {
+    const g = h("div", { class: "u4vert" }, h("div", { class: "ttl" }, "두 줄로 계산하기"));
+    head(g, false);
+    numRow(g, p1, "첫째 줄", `← ${O} × ${b}`); numRow(g, p2, "둘째 줄", `← ${T * 10} × ${b}`);
+    g.append(h("div", { class: "u4row line" })); numRow(g, r, "합", "← 두 줄의 합");
+    wrap.append(g);
+  }
+  if (mode === "short" || mode === "both") {
+    const g = h("div", { class: "u4vert" }, h("div", { class: "ttl" }, c > 0 ? "간단히 계산하기(올림 표시)" : "간단히 계산하기"));
+    head(g, true); numRow(g, r, "곱", "");
+    wrap.append(g);
+  }
+  api.provide({ words: ["일의 자리부터", "올림", "십의 자리 위에 작게"],
+    answers: [mode === "short" ? `${a} × ${b} = ${r}` : `${O} × ${b} = ${p1}, ${T * 10} × ${b} = ${p2}, ${p1} + ${p2} = ${r}`] });
+  const rowVal = row => ins.filter(x => x.row === row).map(x => x.i.value.trim()).join("");
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce();
+    let bad = null;
+    ins.forEach(x => { const good = x.i.value.trim() === x.want; x.i.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good && !bad) bad = x.row; });
+    const given = ["올림", "첫째 줄", "둘째 줄", "합", "곱"].filter(rw => ins.some(x => x.row === rw)).map(rw => `${rw} ${rowVal(rw) || "-"}`).join(" | ");
+    if (!bad) return api.done(given, opt.ok || `${a} × ${b} = ${r}. 정확해요!`);
+    const noCarry = (T * b + 0) * 10 + p1 % 10;
+    const msg = {
+      "올림": `${O} × ${b} = ${p1}에서 일의 자리에 ${p1 % 10}을 쓰고 남은 ${c * 10}은 십의 자리 위에 ${c}로 작게 써요.`,
+      "첫째 줄": `첫째 줄은 일의 자리 계산 ${O} × ${b}의 값이에요.`,
+      "둘째 줄": `둘째 줄은 ${T * 10} × ${b}의 값이에요. ${T} × ${b}의 10배예요.`,
+      "합": "두 줄의 수를 자리를 맞추어 더해 보세요.",
+      "곱": c > 0 && rowVal("곱") === String(noCarry) ? `올림한 ${c}을(를) 십의 자리 계산에 더하지 않았어요. ${T} × ${b}에 ${c}을(를) 더해요.` : c > 0 ? "일의 자리부터 차례로 곱해 보세요. 십의 자리 계산에 올림한 수를 더해요." : `일의 자리부터 차례로 곱해 보세요. 일의 자리에는 ${O} × ${b}의 값, 그 왼쪽에는 ${T} × ${b}의 값을 써요.`
+    }[bad];
+    api.fail(msg, given);
+  } }, "확인하기");
+  body.append(h("p", { class: "inst" }, opt.tip || "빈칸에 숫자를 한 개씩 써요."), wrap, h("div", { class: "actions" }, check));
+}
+
+/* 세로셈 그림(글자만, 확인용): u4VertFig(29, 4, "86", "") */
+function u4VertFig(a, b, res, carry) {
+  u4Style();
+  const T = Math.floor(a / 10), O = a % 10, s = String(res), pad = 3 - s.length;
+  const g = h("div", { class: "u4vert" });
+  const row = cells => { const r = h("div", { class: "u4row" }); cells.forEach(x => r.append(h("span", { class: "u4c" }, x))); g.append(r); };
+  if (carry) { const r = h("div", { class: "u4row carry" }); ["", "", carry, ""].forEach(x => r.append(h("span", { class: "u4c", style: "font-size:calc(var(--fs)*1.0);color:var(--tent)" }, x))); g.append(r); }
+  row(["", "", String(T), String(O)]); row(["×", "", "", String(b)]); g.append(h("div", { class: "u4row line" }));
+  row(["", ...Array.from({ length: 3 }, (_, k) => k < pad ? "" : s[k - pad])]);
+  return g;
+}
+
+/* ⑦ 잘못 계산한 곳 찾기  opt: a, b, wrong, reasons:[], ra(정답 번호), ok */
+function u4FixError(body, api, opt) {
+  u4Style();
+  const a = opt.a, b = opt.b, r = a * b;
+  let pick = null;
+  const row = h("div", { class: "opts" });
+  opt.reasons.forEach((t, i) => row.append(h("button", { class: "opt", onclick: e => { pick = i; [...row.children].forEach(x => x.classList.remove("on", "good", "bad")); e.currentTarget.classList.add("on"); } }, t)));
+  const inp = h("input", { type: "number", inputmode: "numeric", style: "width:6em;font-size:1.2em", "aria-label": "옳은 곱" });
+  api.provide({ words: ["올림", "십의 자리"], answers: [opt.reasons[opt.ra], `${a} × ${b} = ${r}`] });
+  body.append(h("div", { class: "u4vwrap" }, h("div", {}, h("div", { class: "jua" }, "친구의 계산"), u4VertFig(a, b, opt.wrong, "")),
+    h("div", { style: "flex:1;min-width:14em" }, h("div", { class: "jua" }, "잘못 계산한 까닭은?"), row,
+      h("div", { class: "qitem" }, h("span", { class: "jua" }, `옳게 계산하면 ${a} × ${b} = `), inp))),
+    h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+      api.tryOnce();
+      const v = Number(inp.value), given = `${pick == null ? "-" : opt.reasons[pick]} / ${inp.value}`;
+      const btn = pick == null ? null : row.children[pick];
+      if (btn) btn.classList.add(pick === opt.ra ? "good" : "bad");
+      inp.style.borderColor = v === r ? "var(--ok)" : "var(--no)";
+      if (pick === opt.ra && v === r) return api.done(given, opt.ok || `올림한 수를 더하면 ${a} × ${b} = ${r}이에요.`);
+      api.fail(pick !== opt.ra ? "까닭을 다시 골라 보세요. 일의 자리 곱에서 올림한 수는 어디로 갔을까요?" : "옳은 곱을 다시 계산해 보세요.", given);
+    } }, "확인하기")));
+}
+
+/* ⑧ 간격과 전체 거리 (생각을 더하다)
+   opt: gap, target(개수), unit, item("접시 콘"), shape("cone"|"hurdle"), ask, ok */
+function u4Distance(body, api, opt) {
+  u4Style();
+  const gap = opt.gap, N = opt.target, unit = opt.unit || "cm", item = opt.item || "접시 콘", shape = opt.shape || "cone";
+  let n = 1;
+  const svg = makeSvg(900, 320);
+  const span = 700 / (N - 1), X = k => 70 + k * span, GY = 230;
+  const tray = [800, 150, 90, 110];
+  const ghost = svgEl("g", { opacity: .8, "pointer-events": "none" });
+  const mark = (x, y) => shape === "cone"
+    ? svgEl("polygon", { points: `${x - 20},${y} ${x + 20},${y} ${x},${y - 38}`, fill: U4_SOFT, stroke: TENT, "stroke-width": 3 })
+    : svgEl("path", { d: `M${x - 18},${y} L${x - 18},${y - 40} L${x + 18},${y - 40} L${x + 18},${y} M${x - 18},${y - 28} L${x + 18},${y - 28}`, fill: "none", stroke: TENT, "stroke-width": 4 });
+  const draw = () => {
+    svg.innerHTML = "";
+    svg.append(svgEl("line", { x1: 30, y1: GY, x2: 790, y2: GY, stroke: PINE, "stroke-width": 4 }));
+    svg.append(svgEl("rect", { x: tray[0], y: tray[1], width: tray[2], height: tray[3], rx: 10, fill: "#fff", stroke: U4_GRAY, "stroke-width": 2 }), mark(845, 225), txt(845, 250, "끌기", 20));
+    for (let k = 0; k < n; k++) svg.append(mark(X(k), GY), txt(X(k), GY + 30, String(k + 1), 20));
+    for (let k = 0; k + 1 < n; k++) {
+      const x1 = X(k), x2 = X(k + 1), mx = (x1 + x2) / 2;
+      svg.append(svgEl("path", { d: `M${x1},${GY - 44} Q${mx},${GY - 110} ${x2},${GY - 44}`, fill: "none", stroke: BLUE, "stroke-width": 3 }), txt(mx, GY - 100, `${gap}`, 22, { fill: BLUE }));
+    }
+    if (n >= 2) svg.append(svgEl("line", { x1: X(0), y1: GY + 56, x2: X(n - 1), y2: GY + 56, stroke: INK, "stroke-width": 2, "stroke-dasharray": "6 5" }), txt((X(0) + X(n - 1)) / 2, GY + 78, "첫째와 마지막 사이", 20));
+    svg.append(txt(420, 30, `간격 ${gap} ${unit} · ${item} ${n}개 · 간격 ${Math.max(0, n - 1)}군데`, 24));
+    svg.append(ghost);
+    tb.innerHTML = "";
+    tb.append(h("tr", {}, h("th", {}, `${item} 수`), h("th", {}, "간격 수"), h("th", {}, `거리(${unit})`)));
+    for (let m = 2; m <= n; m++) tb.append(h("tr", {}, h("td", {}, `${m}개`), h("td", {}, `${m - 1}군데`), h("td", {}, m === 2 ? String(gap) : `${gap} × ${m - 1}`)));
+  };
+  const tb = h("table", { class: "u4tbl" });
+  const addOne = () => { if (n >= N) return api.hint(`${item}는 ${N}개까지 세워요.`); n++; draw(); };
+  dragOn(svg, p => {
+    if (u4In(p, tray)) { ghost.innerHTML = ""; ghost.append(mark(0, 20)); ghost.setAttribute("transform", `translate(${p.x},${p.y})`); return true; }
+    if (p.y > GY - 60 && p.y < GY + 20 && p.x < 790) addOne();
+    return false;
+  }, p => ghost.setAttribute("transform", `translate(${p.x},${p.y})`),
+  p => { ghost.innerHTML = ""; if (p.x < 790 && p.y > 60) addOne(); });
+  const ans = h("div");
+  const g = u4Gate(api, () => n === N, `${item}를 ${N}개 세운 다음 답해요.`);
+  numbers(ans, g, opt.ask || [{ q: `${item} ${N}개 사이의 간격은 몇 군데?`, a: N - 1, unit: "군데" }, { q: `첫째와 마지막 ${item} 사이의 거리는`, a: gap * (N - 1), unit: unit }],
+    { ok: opt.ok || `간격의 수는 ${item} 수보다 1 작아요. ${gap} × ${N - 1} = ${gap * (N - 1)}` });
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || `${item}를 하나씩 세워 보며 간격의 수를 세어 보세요.`),
+    h("div", { class: "row" }, h("button", { class: "ghost", onclick: addOne }, "하나 더 세우기"), h("button", { class: "ghost", onclick: () => { if (n > 1) { n--; draw(); } } }, "하나 치우기")), tb, ans)));
+}
+
+/* ⑨ 말판 놀이 (교과서 95쪽 놀이판)
+   opt.mode "fill"(빈칸에 31~45 쓰기) | "play"(주사위 놀이). play: goal(맞힐 곱셈 수), dice:[정해진 눈 순서(점검용)] */
+const U4_PATH = [[8, 0, "출발"], [8, 1, null], [8, 2, 29, "f3"], [8, 3, 72], [8, 4, null], [8, 5, null], [8, 6, 18], [8, 7, null], [8, 8, 63],
+  [7, 8, 82], [6, 8, 66], [5, 8, 90], [4, 8, null], [3, 8, 74], [2, 8, null], [1, 8, 93, "c4"], [0, 8, 70],
+  [0, 7, 12], [0, 6, 65], [0, 5, 83], [0, 4, null], [0, 3, null], [0, 2, 77], [0, 1, 13], [0, 0, null],
+  [1, 0, 96], [2, 0, null], [3, 0, null], [4, 0, 68], [5, 0, 20], [6, 0, 62],
+  [6, 1, 15], [6, 2, 27], [6, 3, 85], [6, 4, null], [6, 5, 76], [6, 6, 98],
+  [5, 6, 51], [4, 6, null], [3, 6, 80], [2, 6, 29], [2, 5, 55], [2, 4, null], [2, 3, 47], [2, 2, 94, "b2"], [3, 2, null], [4, 2, 17], [4, 3, 52], [4, 4, "도착"]];
+const U4_ARROWS = [[46, 32], [41, 19], [11, 37]];   // 17 → 27, 55 → 83, 90 → 51 (길 번호)
+let U4_BOARD_FILL = null;
+function u4BoardLoad() {
+  if (U4_BOARD_FILL) return U4_BOARD_FILL;
+  try { const v = JSON.parse(localStorage.getItem(KEY + "-u4board")); if (v && typeof v === "object") U4_BOARD_FILL = v; } catch (e) {}
+  return U4_BOARD_FILL;
+}
+function u4BoardSave(f) { U4_BOARD_FILL = f; try { localStorage.setItem(KEY + "-u4board", JSON.stringify(f)); } catch (e) {} }
+function u4Board(body, api, opt) {
+  u4Style();
+  const mode = opt.mode || "play", lo = opt.lo || 31, hi = opt.hi || 45;
+  const blanks = U4_PATH.map((c, i) => c[2] === null ? i : -1).filter(i => i >= 0);
+  const pool = Array.from({ length: hi - lo + 1 }, (_, i) => lo + i);
+  let fill = Object.assign({}, u4BoardLoad() || {});
+  const shuffleFill = () => { const rest = pool.filter(v => !Object.values(fill).includes(v)).sort(() => Math.random() - .5); blanks.forEach(i => { if (fill[i] == null) fill[i] = rest.pop(); }); };
+  const val = i => { const v = U4_PATH[i][2]; return v === null ? fill[i] : v; };
+  const C = 50, OX = 14, OY = 14, last = U4_PATH.length - 1;
+  const cxy = i => [OX + U4_PATH[i][0] * C + C / 2, OY + U4_PATH[i][1] * C + C / 2];
+  const svg = makeSvg(740, 480);
+  let sel = null, pos = 0, pending = null, rest = false, correct = 0, busy = false, dseq = (opt.dice || []).slice();
+  const goal = opt.goal || 4;
+  const dieG = svgEl("g");
+  const drawDie = d => {
+    dieG.innerHTML = "";
+    dieG.append(svgEl("rect", { x: 560, y: 40, width: 110, height: 110, rx: 18, fill: "#fff", stroke: INK, "stroke-width": 4 }));
+    const P = { 1: [[0, 0]], 2: [[-1, -1], [1, 1]], 3: [[-1, -1], [0, 0], [1, 1]], 4: [[-1, -1], [1, -1], [-1, 1], [1, 1]], 5: [[-1, -1], [1, -1], [0, 0], [-1, 1], [1, 1]], 6: [[-1, -1], [1, -1], [-1, 0], [1, 0], [-1, 1], [1, 1]] }[d] || [];
+    P.forEach(([dx, dy]) => dieG.append(svgEl("circle", { cx: 615 + dx * 28, cy: 95 + dy * 28, r: 10, fill: d === 1 ? TENT : INK })));
+    if (!d) dieG.append(txt(615, 95, "?", 40));
+  };
+  const info = svgEl("g");
+  const draw = () => {
+    svg.innerHTML = "";
+    U4_PATH.forEach((c, i) => {
+      const x = OX + c[0] * C, y = OY + c[1] * C, sp = c[3], isBlank = c[2] === null, v = val(i);
+      svg.append(svgEl("rect", { x, y, width: C, height: C, fill: sp ? U4_SOFT : (i === 0 || i === last) ? U4_PSOFT : "#fff", stroke: sp ? TENT : INK, "stroke-width": sp ? 3 : 1.5 }));
+      if (isBlank) svg.append(svgEl("rect", { x: x + 5, y: y + 5, width: C - 10, height: C - 10, fill: "none", stroke: sel === i ? TENT : "#9aa", "stroke-width": sel === i ? 4 : 1.5, "stroke-dasharray": "5 4" }));
+      if (typeof v === "string") svg.append(txt(x + C / 2, y + C / 2, v, 20, { fill: PINE }));
+      else if (v != null) svg.append(txt(x + C / 2, y + C / 2 + 1, String(v), 23, { fill: isBlank ? BLUE : INK }));
+    });
+    U4_ARROWS.forEach(([f, t]) => {
+      const [x1, y1] = cxy(f), [x2, y2] = cxy(t), dx = Math.sign(x2 - x1), dy = Math.sign(y2 - y1);
+      const sx = x1 + dx * 22, sy = y1 + dy * 22, ex = x2 - dx * 24, ey = y2 - dy * 24;
+      svg.append(svgEl("line", { x1: sx, y1: sy, x2: ex, y2: ey, stroke: TENT, "stroke-width": 6 }),
+        svgEl("polygon", { points: `${ex + dx * 14},${ey + dy * 14} ${ex - dy * 11},${ey + dx * 11} ${ex + dy * 11},${ey - dx * 11}`, fill: TENT }));
+    });
+    if (mode === "play") { const [px, py] = cxy(pos); svg.append(svgEl("rect", { x: px - 23, y: py - 23, width: 46, height: 46, rx: 6, fill: "none", stroke: BLUE, "stroke-width": 5 }), svgEl("circle", { cx: px + 16, cy: py + 16, r: 8, fill: BLUE, stroke: "#fff", "stroke-width": 2 })); }
+    svg.append(dieG, info);
+  };
+  const side = h("div", { class: "side" });
+  const legend = h("p", { class: "inst", style: "font-size:var(--fs-s)" }, "주황 칸: 29 → 앞으로 3칸 더 · 94 → 뒤로 2칸 · 93 → 눈의 수가 4보다 작으면 앞으로 4칸 더. 주황 화살표 끝 칸에 멈추면 화살표를 따라 옮겨요.");
+  if (mode === "fill") {
+    const cards = h("div", { class: "u4cards" });
+    const redraw = () => { draw(); [...cards.children].forEach((b, k) => b.classList.toggle("on", Object.values(fill).includes(pool[k]))); count.textContent = `채운 빈칸 ${Object.keys(fill).filter(k => fill[k] != null).length} / ${blanks.length}`; };
+    const count = h("div", { class: "readout" });
+    pool.forEach(v => cards.append(h("button", { class: "opt", onclick: () => {
+      if (sel == null) { const nb = blanks.find(i => fill[i] == null); if (nb == null) return api.hint("빈칸을 먼저 눌러 골라요."); sel = nb; }
+      Object.keys(fill).forEach(k => { if (fill[k] === v) delete fill[k]; });
+      fill[sel] = v; sel = blanks.find(i => fill[i] == null) ?? null; redraw();
+    } }, String(v))));
+    dragOn(svg, p => { const i = blanks.find(k => { const [x, y] = cxy(k); return Math.abs(p.x - x) < C / 2 && Math.abs(p.y - y) < C / 2; }); if (i != null) { sel = i; redraw(); } return false; }, () => {}, null);
+    info.append(txt(615, 190, "빈칸을 누르고", 22), txt(615, 222, "오른쪽 수를 골라요", 22), txt(615, 290, `${lo}부터 ${hi}까지`, 22), txt(615, 322, "한 번씩 써요", 22));
+    side.append(h("p", {}, opt.tip || `놀이판의 빈칸 ${blanks.length}개에 ${lo}부터 ${hi}까지의 수를 한 번씩 써서 놀이판을 완성해요.`), count, cards,
+      h("div", { class: "row" }, h("button", { class: "ghost", onclick: () => { shuffleFill(); sel = null; redraw(); } }, "남은 빈칸 섞어서 채우기"), h("button", { class: "ghost", onclick: () => { fill = {}; sel = blanks[0]; redraw(); } }, "모두 지우기")),
+      h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+        api.tryOnce();
+        const vs = blanks.map(i => fill[i]);
+        if (vs.some(v => v == null)) return api.fail("아직 비어 있는 칸이 있어요.", vs.join(","));
+        if (new Set(vs).size !== vs.length) return api.fail(`${lo}부터 ${hi}까지의 수를 한 번씩만 써요.`, vs.join(","));
+        u4BoardSave(Object.assign({}, fill));
+        api.done("놀이판: " + vs.join(","), "놀이판을 완성했어요! 이제 주사위를 굴려 놀이해요.");
+      } }, "놀이판 완성!")));
+    sel = blanks.find(i => fill[i] == null) ?? null;
+    body.append(stageWrap(svg, side)); redraw();
+    return;
+  }
+  /* play */
+  let auto = false;
+  if (blanks.some(i => fill[i] == null)) { shuffleFill(); auto = true; }
+  const expr = svgEl("g");
+  const status = h("div", { class: "readout" });
+  const inp = h("input", { type: "number", inputmode: "numeric", style: "width:6em;font-size:1.2em", "aria-label": "곱", disabled: true });
+  const rollB = h("button", { class: "ghost", style: "font-size:var(--fs-l)" }, "🎲 주사위 굴리기");
+  const log = h("div", { style: "font-size:var(--fs-s);max-height:7em;overflow:auto" });
+  const setInfo = (l1, l2) => { info.innerHTML = ""; info.append(txt(615, 205, l1 || "", 22), txt(615, 250, l2 || "", 30), txt(615, 330, `맞힌 곱셈 ${correct} / ${goal}`, 22), txt(615, 370, `지금 칸: ${pos === 0 ? "출발" : val(pos)}`, 22)); };
+  const special = d => {
+    const sp = U4_PATH[pos][3];
+    const arr = U4_ARROWS.find(x => x[0] === pos);
+    let msg = "";
+    if (sp === "f3") { pos = Math.min(last, pos + 3); msg = "앞으로 3칸 더 이동!"; }
+    else if (sp === "b2") { pos = pos - 2; msg = "뒤로 2칸 이동!"; }
+    else if (sp === "c4" && d < 4) { pos = Math.min(last, pos + 4); msg = "눈의 수가 4보다 작아서 앞으로 4칸 더 이동!"; }
+    else if (arr) { pos = arr[1]; msg = "화살표를 따라 이동!"; }
+    return msg;
+  };
+  const finishIf = () => {
+    if (pos === last) { draw(); setInfo("도착!", "🎉"); rollB.disabled = true; api.done(`도착 · 맞힌 곱셈 ${correct}번`, `도착 칸에 도착했어요! 곱셈을 ${correct}번 맞혔어요.`); return true; }
+    return false;
+  };
+  rollB.onclick = () => {
+    if (busy) return;
+    if (pending) return api.hint("먼저 칸의 수와 눈의 수를 곱해요.");
+    if (rest) { rest = false; setInfo("이번 차례는", "쉬어요"); return api.hint("규칙에 따라 이번 차례는 쉬었어요. 다시 굴려요."); }
+    const d = dseq.length ? dseq.shift() : 1 + Math.floor(Math.random() * 6);
+    drawDie(d); busy = true; rollB.disabled = true;
+    let k = 0;
+    const tick = () => {
+      if (k < d && pos < last) { pos++; k++; draw(); setInfo(`눈의 수 ${d}`, ""); setTimeout(tick, 170); return; }
+      busy = false; rollB.disabled = false;
+      if (finishIf()) return;
+      pending = { n: val(pos), d };
+      inp.disabled = false; inp.value = ""; inp.focus && inp.focus();
+      setInfo("칸의 수 × 눈의 수", `${pending.n} × ${d} = ?`);
+      status.textContent = `${pending.n} × ${d}를 계산해요.`;
+    };
+    tick();
+  };
+  const check = h("button", { class: "big", onclick: () => {
+    if (!pending) { api.tryOnce(); return api.fail("먼저 ‘주사위 굴리기’를 눌러 말을 옮긴 뒤, 칸의 수와 눈의 수의 곱을 써요.", "(주사위를 굴리기 전)"); }
+    api.tryOnce();
+    const { n, d } = pending, v = Number(inp.value), p = n * d;
+    pending = null; inp.disabled = true;
+    const good = inp.value !== "" && v === p;
+    log.prepend(h("div", {}, `${good ? "○" : "×"} ${n} × ${d} = ${inp.value || "?"}`));
+    const mv = special(d);
+    draw(); setInfo(good ? "맞았어요!" : "계산기로 확인", `${n} × ${d} = ${good ? p : "?"}`);
+    status.textContent = mv;
+    if (good) {
+      correct++;
+      if (finishIf()) return;
+      setInfo("맞았어요!", `${n} × ${d} = ${p}`);
+      if (correct >= goal) return api.done(`맞힌 곱셈 ${correct}번`, `곱셈을 ${correct}번 맞혔어요! 친구와 도착할 때까지 이어서 해도 좋아요.`);
+      api.hint(`○ 맞았어요. ${mv} 다음 차례에 주사위를 굴려요.`);
+    } else {
+      rest = true;
+      if (finishIf()) return;
+      api.fail(`곱이 달라요. 십의 자리와 일의 자리를 나누어 다시 계산해 봐요. 규칙대로 다음 차례는 한 번 쉬어요. ${mv}`, `${n}×${d}=${inp.value}`);
+    }
+  } }, "확인하기");
+  drawDie(0); draw(); setInfo("주사위를", "굴려요");
+  side.append(...[h("p", {}, opt.tip || `주사위를 굴려 말을 옮기고, 칸의 수와 눈의 수를 곱해요. 곱셈을 ${goal}번 맞히거나 도착하면 이 계단을 통과해요.`),
+    auto ? h("p", { class: "inst", style: "font-size:var(--fs-s)" }, `빈칸은 ${lo}~${hi}로 채워 두었어요.`) : null,
+    legend, rollB, h("div", { class: "qitem", style: "display:flex;gap:10px;align-items:center" }, h("span", { class: "jua" }, "곱: "), inp, check), status, log].filter(Boolean));
+  body.append(stageWrap(svg, side));
+}
+
+/* ⑩ 사다리 타기  opt: tops:[], mults:[], map:[top i → 아래 칸 번호], ok */
+function u4Ladder(body, api, opt) {
+  const tops = opt.tops, mults = opt.mults, map = opt.map, N = tops.length;
+  const X = c => 110 + c * (680 / (N - 1)), Y0 = 90, Y1 = 350;
+  // map 이 되도록 이웃 칸 바꾸기(가로선) 만들기
+  const cur = tops.map((_, i) => i), rungs = [];
+  for (let pass = 0; pass < N; pass++) for (let c = 0; c + 1 < N; c++) if (map[cur[c]] > map[cur[c + 1]]) { [cur[c], cur[c + 1]] = [cur[c + 1], cur[c]]; rungs.push(c); }
+  const dy = (Y1 - Y0) / (rungs.length + 1);
+  const pathOf = i => { let c = i; const pts = [[X(c), Y0]]; rungs.forEach((rc, k) => { const y = Y0 + (k + 1) * dy; if (rc === c || rc === c - 1) { const nc = rc === c ? c + 1 : c - 1; pts.push([X(c), y], [X(nc), y]); c = nc; } }); pts.push([X(c), Y1]); return { pts, end: c }; };
+  const svg = makeSvg(900, 440);
+  const traced = new Set();
+  const lay = svgEl("g");
+  const draw = () => {
+    svg.innerHTML = "";
+    for (let c = 0; c < N; c++) svg.append(svgEl("line", { x1: X(c), y1: Y0, x2: X(c), y2: Y1, stroke: INK, "stroke-width": 4 }));
+    rungs.forEach((c, k) => svg.append(svgEl("line", { x1: X(c), y1: Y0 + (k + 1) * dy, x2: X(c + 1), y2: Y0 + (k + 1) * dy, stroke: INK, "stroke-width": 4 })));
+    svg.append(lay);
+    tops.forEach((v, i) => svg.append(svgEl("rect", { x: X(i) - 42, y: 22, width: 84, height: 52, rx: 26, fill: traced.has(i) ? U4_PSOFT : U4_FILL, stroke: traced.has(i) ? PINE : BLUE, "stroke-width": 3, style: "cursor:pointer" }), txt(X(i), 49, String(v), 28)));
+    mults.forEach((m, c) => {
+      svg.append(txt(X(c), 380, `× ${m}`, 26));
+      const who = [...traced].find(i => pathOf(i).end === c);
+      svg.append(svgEl("polygon", { points: `${X(c) - 34},418 ${X(c) - 22},400 ${X(c) + 22},400 ${X(c) + 34},418 ${X(c)},438`, fill: who != null ? U4_SOFT : "#fff", stroke: TENT, "stroke-width": 3 }));
+      if (who != null) svg.append(txt(X(c), 416, `${tops[who]}×${m}`, 20));
+    });
+  };
+  const trace = i => {
+    const { pts } = pathOf(i);
+    const pl = svgEl("polyline", { points: pts.map(p => p.join(",")).join(" "), fill: "none", stroke: TENT, "stroke-width": 8, "stroke-linejoin": "round", opacity: .75 });
+    let L = 0; for (let k = 1; k < pts.length; k++) L += Math.hypot(pts[k][0] - pts[k - 1][0], pts[k][1] - pts[k - 1][1]);
+    pl.setAttribute("stroke-dasharray", L); pl.setAttribute("stroke-dashoffset", L); pl.style.transition = "stroke-dashoffset 1.2s linear";
+    lay.innerHTML = ""; lay.append(pl);
+    requestAnimationFrame(() => requestAnimationFrame(() => pl.setAttribute("stroke-dashoffset", 0)));
+    setTimeout(() => { traced.add(i); draw(); }, 1250);   // 선을 다 그은 뒤 보석에 곱셈식이 보여요 (lay 는 draw 뒤에도 남아요)
+  };
+  dragOn(svg, p => { const i = tops.findIndex((_, k) => Math.abs(p.x - X(k)) < 44 && p.y < 80); if (i >= 0) trace(i); return false; }, () => {}, null);
+  const btns = h("div", { class: "opts" }, tops.map((v, i) => h("button", { class: "opt", onclick: () => trace(i) }, `${v}에서 출발`)));
+  const ans = h("div");
+  const items = mults.map((m, c) => { const i = map.indexOf(c); return { q: `× ${m} 아래 보석에 쓸 곱:`, a: tops[i] * m }; });
+  const g = u4Gate(api, () => traced.size === N, "위의 수를 모두 눌러 사다리를 타 본 다음 답해요.");
+  numbers(ans, g, items, { ok: opt.ok || "사다리를 타고 내려가 곱셈을 모두 해냈어요!" });
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "위의 수를 누르거나 아래 단추를 눌러 사다리를 타요."), btns, ans)));
+}
+
+/* ⑪ 수 카드로 곱셈 만들기
+   opt: cards:[], b(곱하는 수를 정해 두면 두 장만 고름), mode "all"(서로 다른 곱셈 need개) | "max"(가장 큰 곱) | "cond"(조건 맞추기),
+        need, best, cond(p)=>bool, condText, ok */
+function u4CardMake(body, api, opt) {
+  u4Style();
+  const cards = opt.cards, fixed = opt.b || null, slots = fixed ? 2 : 3, mode = opt.mode || "all";
+  let placed = [], used = [];
+  const found = [];
+  const row = h("div", { class: "u4cards" });
+  const show = h("div", { class: "readout" });
+  const list = h("div", { class: "readout", style: "font-size:var(--fs)" });
+  const inp = h("input", { type: "number", inputmode: "numeric", style: "width:6em;font-size:1.2em", "aria-label": "곱" });
+  const draw = () => {
+    const s = placed.map(String).concat(Array(slots - placed.length).fill("□"));
+    show.textContent = `${s[0]}${s[1]} × ${fixed || s[2]} = `;
+    [...row.children].forEach((b, i) => b.classList.toggle("on", used.includes(i)));
+    list.textContent = mode === "all" ? `찾은 곱셈 ${found.length} / ${opt.need}: ${found.join(", ")}` : "";
+  };
+  cards.forEach((c, i) => row.append(h("button", { class: "opt", onclick: () => { if (used.includes(i) || placed.length >= slots) return; placed.push(c); used.push(i); draw(); } }, String(c))));
+  const reset = () => { placed = []; used = []; inp.value = ""; draw(); };
+  api.provide({ words: ["수 카드", "곱"], answers: opt.answers || [] });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce();
+    if (placed.length < slots) return api.fail(`수 카드를 ${slots}장 모두 골라 놓고 곱을 써요.`, "(카드를 다 놓지 않음)");
+    const L = placed[0] * 10 + placed[1], R = fixed || placed[2], p = L * R, v = Number(inp.value), tag = `${L}×${R}=${inp.value}`;
+    if (placed[0] === 0) return api.fail("십의 자리에는 0을 놓을 수 없어요.", tag);
+    if (inp.value === "" || v !== p) return api.fail(`${L} × ${R}의 곱을 다시 계산해 봐요. 십의 자리와 일의 자리를 나누어 곱해요.`, tag);
+    if (mode === "all") {
+      const e = `${L}×${R}=${p}`;
+      if (found.includes(e)) { reset(); return api.hint("이미 찾은 곱셈이에요. 다른 카드를 골라 봐요."); }
+      found.push(e); reset();
+      if (found.length >= opt.need) return api.done(found.join(", "), opt.ok || `곱셈 ${found.length}개를 모두 찾았어요!`);
+      return api.hint(`○ 맞았어요! 다른 곱셈도 만들어 봐요. (${found.length}/${opt.need})`);
+    }
+    if (mode === "max") {
+      if (p === opt.best) return api.done(tag, opt.ok || `가장 큰 곱이에요! ${L} × ${R} = ${p}`);
+      reset(); return api.fail(`${p}도 맞게 계산했어요. 그런데 더 큰 곱을 만들 수 있어요. 큰 수를 어디에 놓아야 할까요?`, tag);
+    }
+    if (opt.cond(p)) return api.done(tag, opt.ok || `${L} × ${R} = ${p}. 조건에 맞아요!`);
+    reset(); api.fail(`${p}는 ‘${opt.condText}’ 조건에 맞지 않아요. 다른 곱셈을 만들어 봐요.`, tag);
+  } }, "확인하기");
+  draw();
+  body.append(h("p", {}, opt.tip || (fixed ? `카드 2장을 골라 (몇십몇) × ${fixed}를 만들고 곱을 구해요.` : "카드 3장을 모두 써서 (몇십몇) × (몇)을 만들고 곱을 구해요.")),
+    row, h("div", { class: "row" }, show, inp, h("button", { class: "ghost", onclick: reset }, "다시 놓기")), list, h("div", { class: "actions" }, check));
+}
+
+
+const UNIT_STORY = { title: "다독다독 도서관", lines: [
+  "신기한 것이 가득한 ‘다독다독 도서관’이 문을 열었어요. 승우와 지현이는 ‘작가 만남의 날’ 일일 사서가 되었어요.",
+  "강당의 의자, 책 소개 그림, 동화책, 색연필, 만화 창작실 체험까지 — 도서관 곳곳에서 곱셈이 필요해요.",
+  "교과서 『수학 3-1』 4. 곱셈의 차시 순서 그대로 만들었어요."],
+  one: "다독다독 도서관 · 의자, 그림, 책, 색연필의 수를 곱셈으로 구해요." };
+const UNIT_KEYWORDS = ["곱해지는 수", "곱하는 수", "곱", "10배", "십 모형", "일 모형", "백 모형", "올림", "세로로 계산하기", "어림하기"];
+
+/* ===== 4. 곱셈 — 교과서 차시 버전 (9차시) ===== */
+const LESSONS = [
+{
+  id: "t1", no: 1, title: "단원 도입 ― 다독다독 도서관이 문을 열었어요", soop: "개념 찾기(S)",
+  question: "우리 주변에서 곱셈은 언제 쓰일까요?",
+  summary: "같은 수가 여러 번 되풀이될 때 곱셈을 쓰면 빠르고 간단하게 구할 수 있어요. 이 단원에서는 (몇십) × (몇)과 (몇십몇) × (몇)을 배워요.",
+  steps: [
+    { inst: "하루에 60 cm씩 자라는 대나무도 있대요. 날수를 바꾸며 대나무의 키를 뛰어 세어 보세요.", hints: ["막대를 5일까지 움직이며 오른쪽 칸의 수를 읽어 봐요.", "10일은 5일을 두 번 한 것과 같아요."],
+      render: (b, a) => u4Bamboo(b, a, { per: 60, max: 10, gate: 5, ask: [
+        { q: "60씩 5번 뛰어 세면", a: 300, unit: "cm" }, { q: "60 × 5 =", a: 300 },
+        { q: "10일 동안 자란 키는 5일 동안 자란 키의 2배예요. 300 + 300 =", a: 600, unit: "cm" }],
+        ok: "대나무는 5일 동안 300 cm, 10일 동안 600 cm 자라요. 곱셈으로 빨리 구할 수 있어요." }) },
+    { name: "곱셈 상황 찾기", inst: "다독다독 도서관 그림에서 곱셈이 필요한 상황을 찾아보세요.", hints: ["같은 수가 여러 번 되풀이되는지 살펴봐요."],
+      render: (b, a) => quiz(b, a, [
+        { q: "강당의 책상 한 개에 의자가 20개씩, 책상이 3개 있어요. 의자 수를 구하는 식은?", o: ["20 + 3", "20 × 3", "20 − 3"], a: 1, why: { "0": "20 + 3은 의자 20개에 3개를 더한 것이에요. 20개씩 3번이에요." } },
+        { q: "게시판에 그림이 한 줄에 12장씩 4줄 있어요. 알맞은 식은?", o: ["12 × 4", "12 + 4"], a: 0 },
+        { q: "곱셈을 쓰면 좋은 까닭은?", o: ["같은 수를 여러 번 더할 때 빠르고 간단해서", "수가 더 커져서"], a: 0 }]) },
+    { inst: "도서관 그림을 보며 떠오른 생각을 써 보세요.", hints: ["도서관에 가 본 경험을 떠올려 봐요."],
+      render: (b, a) => writeStep(b, a, [
+        { q: "보기: 도서관 그림에서 무엇이 보이나요?", tag: "보기" },
+        { q: "생각하기: 곱셈에 대해 알고 있는 것을 써 보세요.", tag: "생각" },
+        { q: "궁금해하기: 큰 수의 곱셈에 대해 무엇이 궁금한가요?", tag: "궁금" }]) },
+    { name: "배운 내용 떠올리기", inst: "2학년 때 배운 곱셈식과 곱셈구구를 떠올려요.", hints: ["3을 4번 더했어요.", "곱셈표에서 곱하는 두 수의 순서를 바꾸어도 곱은 같아요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "3 + 3 + 3 + 3 = 3 × □ 에서 □ =", a: 4 }, { q: "6 × 7 =", a: 42 }, { q: "9 × 8 =", a: 72 },
+        { q: "곱셈표에서 4 × 6과 곱이 같은 6 × □ 의 □ =", a: 4 }],
+        { ok: "곱셈구구를 잘 기억하고 있어요. 이제 더 큰 수의 곱셈을 해 봐요." }) },
+    { inst: "곱셈식으로 나타내 보세요.", hints: ["‘몇씩 몇 번’을 ‘몇 × 몇’으로 써요."],
+      render: (b, a) => quiz(b, a, [
+        { q: "하루에 60 cm씩 3일 동안 자란 키를 구하는 식은?", o: ["60 × 3", "60 + 3", "3 × 3"], a: 0 },
+        { q: "20 + 20 + 20과 같은 곱셈식은?", o: ["20 × 3", "20 + 3", "3 × 3"], a: 0 }]) }
+  ],
+  challenge: { inst: "대나무가 하루에 60 cm씩 자라요.", hints: ["60씩 뛰어 세어도 돼요."], render: (b, a) => numbers(b, a, [
+    { q: "3일 동안 자란 키 60 × 3 =", a: 180, unit: "cm" },
+    { q: "7일 동안 자란 키 60 × 7 =", a: 420, unit: "cm" },
+    { q: "20 + 20 + 20 + 20 = 20 × □ 에서 □ =", a: 4 }],
+    { ok: "같은 수를 여러 번 더하는 것을 곱셈으로 나타냈어요!" }) }
+},
+{
+  id: "t2", no: 2, title: "(몇십) × (몇)을 구해 볼까요", soop: "개념 구축하기(O)",
+  question: "20 × 3은 어떻게 계산할까요?",
+  summary: "(몇십) × (몇)은 (몇) × (몇)을 계산한 뒤 10배 해요. 곱해지는 수가 10배가 되면 곱도 10배가 돼요.",
+  steps: [
+    { inst: "강당의 책상 한 개에 의자가 20개씩 놓여 있어요. 책상 3개에 놓인 의자 수를 20씩 뛰어 세어 보세요.", hints: ["‘20만큼 뛰기’를 3번 눌러요.", "20, 40, 다음은?"],
+      render: (b, a) => u4JumpLine(b, a, { step: 20, n: 3, unit: "개", ask: [{ q: "20씩 3번 뛰어 세면", a: 60, unit: "개" }, { q: "20 + 20 + 20 =", a: 60 }],
+        ok: "의자는 모두 60개예요. 20 + 20 + 20은 20 × 3과 같아요." }) },
+    { inst: "의자 20개를 십 모형 2개로 나타내요. 십 모형 2개씩 3묶음을 만들어 보세요.", hints: ["묶음마다 십 모형을 2개씩 놓아요.", "십 모형 1개는 10을 나타내요."],
+      render: (b, a) => u4BuildGroups(b, a, { a: 20, b: 3, title: "십 모형 2개씩 3묶음", tip: "십 모형을 끌어다 놓거나 ‘모든 묶음에 십 모형 1개씩’을 눌러요." }) },
+    { inst: "20 × 3을 계산하는 방법을 말로 정리해요.", hints: ["20은 2의 10배예요."],
+      render: (b, a) => blanks(b, a, ["2 × 3 = 6이에요. 20 × 3은 곱해지는 수 2가 ", { o: ["10배", "2배"], a: 0 }, "가 된 것이므로 곱도 6의 ", { o: ["10배", "3배"], a: 0 }, "인 ", { o: ["60", "600", "9"], a: 0 }, "이 돼요."]) },
+    { inst: "(몇) × (몇)을 이용하여 (몇십) × (몇)을 구해요.", hints: ["일 모형이 십 모형으로 바뀌면 나타내는 수는 10배가 돼요."],
+      render: (b, a) => u4TenTimes(b, a, { n: 2, b: 3, extra: [{ q: "1 × 8 = 8이니까 10 × 8 =", a: 80 }],
+        ok: "곱해지는 수가 10배가 되면 곱도 10배가 돼요." }) },
+    { inst: "계산해 보세요.", hints: ["먼저 (몇) × (몇)을 계산하고 10배 해요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "10 × 5 =", a: 50 }, { q: "30 × 3 =", a: 90, why: { "9": "30은 3의 10배예요. 3 × 3 = 9의 10배를 해야 해요." } }, { q: "40 × 2 =", a: 80 },
+        { q: "사과가 한 상자에 10개씩 4상자면 10 × 4 =", a: 40, unit: "개" }],
+        { ok: "(몇십) × (몇)을 잘 계산했어요!" }) }
+  ],
+  challenge: { inst: "(몇십) × (몇)에 도전해요.", hints: ["2 × □ = 4를 먼저 생각해 봐요.", "10 × 3을 먼저 구하고 그 수에 다시 3을 곱해요."], render: (b, a) => numbers(b, a, [
+    { q: "□0 × 2 = 40 일 때 □ =", a: 2 },
+    { q: "10에 3을 곱한 수에 다시 3을 곱하면", a: 90 },
+    { q: "20 × 3과 50 × 1 중 더 작은 곱은", a: 50 }],
+    { ok: "(몇십) × (몇)을 자유롭게 쓸 수 있어요!" }) }
+},
+{
+  id: "t3", no: 3, title: "(몇십몇) × (몇)을 구해 볼까요 ⑴ 올림이 없는 경우", soop: "개념 구축하기(O)",
+  question: "12 × 4는 어떻게 계산할까요?",
+  summary: "(몇십몇) × (몇)은 십의 자리와 일의 자리를 따로 곱한 뒤 더해요. 23 × 3은 20 × 3 = 60과 3 × 3 = 9를 더한 69예요.",
+  steps: [
+    { inst: "책을 소개하는 그림이 한 줄에 12장씩 4줄 전시되어 있어요. 수 모형으로 12씩 4묶음을 만들어 보세요.", hints: ["12는 십 모형 1개와 일 모형 2개예요.", "묶음마다 똑같이 놓아요."],
+      render: (b, a) => u4BuildGroups(b, a, { a: 12, b: 4, title: "그림 12장씩 4줄", after: [
+        { q: "십 모형은 모두 몇 개?", a: 4, unit: "개" }, { q: "일 모형은 모두 몇 개?", a: 8, unit: "개" }, { q: "12 × 4 =", a: 48 }],
+        ok: "12 × 4 = 40 + 8 = 48. 그림은 모두 48장이에요." }) },
+    { inst: "23 × 3을 수 모형으로 나타내고 자리별로 계산해 보세요.", hints: ["십 모형이 나타내는 수는 20 × 3이에요.", "일 모형이 나타내는 수는 3 × 3이에요."],
+      render: (b, a) => u4BuildGroups(b, a, { a: 23, b: 3, after: [
+        { q: "십 모형이 나타내는 수 20 × 3 =", a: 60 }, { q: "일 모형이 나타내는 수 3 × 3 =", a: 9 }, { q: "23 × 3 =", a: 69 }],
+        ok: "23 × 3 = 60 + 9 = 69예요." }) },
+    { inst: "계산 방법을 말로 정리해요.", hints: ["23 = 20 + 3이에요."],
+      render: (b, a) => blanks(b, a, ["23 × 3은 23의 ", { o: ["각 자리 수에 3을 곱한 뒤 더해요", "십의 자리 수에만 3을 곱해요"], a: 0 }, ". 십 모형과 일 모형을 ", { o: ["따로 계산하여 더해요", "한꺼번에 세기만 해요"], a: 0 }, "."]) },
+    { inst: "23 × 3을 세로로 계산해 보세요. 두 줄로 계산한 것을 간단히 한 줄로 쓸 수 있어요.", hints: ["첫째 줄은 3 × 3, 둘째 줄은 20 × 3이에요.", "간단히 쓸 때는 일의 자리에 9, 십의 자리에 6을 써요."],
+      render: (b, a) => u4Vertical(b, a, { a: 23, b: 3, mode: "both" }) },
+    { inst: "계산해 보세요.", hints: ["일의 자리와 십의 자리를 따로 곱해요."],
+      render: (b, a) => numbers(b, a, [{ q: "14 × 2 =", a: 28 }, { q: "31 × 3 =", a: 93 }, { q: "22 × 4 =", a: 88 }],
+        { ok: "올림이 없는 (몇십몇) × (몇)을 잘 계산했어요!" }) }
+  ],
+  challenge: { inst: "수 카드 4, 1, 3 중 2장을 골라 (몇십몇) × 2를 만들고 계산해요. 곱셈을 모두 몇 가지 만들 수 있을까요?", hints: ["십의 자리 카드를 하나 정하고 일의 자리 카드를 바꾸어 봐요.", "모두 6가지예요."],
+    render: (b, a) => u4CardMake(b, a, { cards: [4, 1, 3], b: 2, mode: "all", need: 6,
+      answers: ["13×2=26, 14×2=28, 31×2=62, 34×2=68, 41×2=82, 43×2=86"], ok: "만들 수 있는 곱셈 6가지를 모두 찾았어요!" }) }
+},
+{
+  id: "t4", no: 4, title: "(몇십몇) × (몇)을 구해 볼까요 ⑵ 십의 자리에서 올림이 있는 경우", soop: "개념 구축하기(O)",
+  question: "십 모형이 10개보다 많아지면 어떻게 할까요?",
+  summary: "십의 자리 곱이 10이거나 크면 십 모형 10개를 백 모형 1개로 바꾸어요. 십의 자리에서 올림한 수는 백의 자리에 써요.",
+  steps: [
+    { inst: "동화책을 한 칸에 42권씩 3칸에 꽂았어요. 42씩 3묶음을 모은 수 모형이에요. 십 모형 10개를 백 모형 1개로 바꾸어 보세요.", hints: ["십 모형 10개는 백 모형 1개와 같아요.", "40 × 3 = 120, 2 × 3 = 6이에요."],
+      render: (b, a) => u4Regroup(b, a, { a: 42, b: 3, ok: "42 × 3 = 120 + 6 = 126. 동화책은 모두 126권이에요." }) },
+    { inst: "72 × 2를 두 줄로 계산해 보세요.", hints: ["72 × 2는 70 × 2와 2 × 2의 합이에요."],
+      render: (b, a) => u4Vertical(b, a, { a: 72, b: 2, mode: "partial" }) },
+    { inst: "계산 방법을 말로 정리해요.", hints: ["70 × 2 = 140이에요."],
+      render: (b, a) => blanks(b, a, ["72 × 2는 70 × 2와 2 × 2의 ", { o: ["합", "차"], a: 0 }, "으로 구해요. 70 × 2 = 140이므로 십의 자리에서 올림한 1은 ", { o: ["백의 자리", "일의 자리"], a: 0 }, "에 써요."]) },
+    { inst: "72 × 2를 간단히 계산해 보세요. 일의 자리부터 차례대로 계산해요.", hints: ["일의 자리: 2 × 2 = 4", "십의 자리: 7 × 2 = 14 → 십의 자리에 4, 백의 자리에 1"],
+      render: (b, a) => u4Vertical(b, a, { a: 72, b: 2, mode: "short" }) },
+    { inst: "계산해 보세요.", hints: ["십의 자리 곱이 10이 넘으면 백의 자리로 올림해요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "81 × 3 =", a: 243, why: { "43": "십의 자리는 80 × 3 = 240이에요. 백의 자리에 2를 써요." } }, { q: "62 × 4 =", a: 248 }, { q: "51 × 5 =", a: 255 },
+        { q: "산불 피해 지역에 보낼 수건이 한 상자에 32장씩 4상자면 32 × 4 =", a: 128, unit: "장" }],
+        { ok: "십의 자리에서 올림이 있는 곱셈을 잘 계산했어요!" }) }
+  ],
+  challenge: { inst: "□ 안에 알맞은 수를 찾고 문제를 풀어 보세요.", hints: ["일의 자리: 2 × 4 = 8이에요.", "십의 자리: □ × 4 = 36이 되는 수를 찾아요."], render: (b, a) => numbers(b, a, [
+    { q: "□2 × 4 = 36□ 에서 앞의 □ =", a: 9 }, { q: "뒤의 □ =", a: 8 },
+    { q: "하루에 31쪽씩 일주일(7일) 동안 읽으면 31 × 7 =", a: 217, unit: "쪽" }],
+    { ok: "92 × 4 = 368이에요. 곱셈을 거꾸로도 생각할 수 있어요!" }) }
+},
+{
+  id: "t5", no: 5, title: "(몇십몇) × (몇)을 구해 볼까요 ⑶ 일의 자리에서 올림이 있는 경우", soop: "개념 구축하기(O)",
+  question: "일 모형이 10개보다 많아지면 어떻게 할까요?",
+  summary: "일의 자리 곱이 10이거나 크면 일 모형 10개를 십 모형 1개로 바꾸어요. 세로셈에서는 올림한 수를 십의 자리 위에 작게 쓰고 십의 자리 곱에 더해요.",
+  steps: [
+    { inst: "색연필이 한 통에 14자루씩 6통 있어요. 14씩 6묶음을 모은 수 모형이에요. 일 모형 10개를 십 모형 1개로 바꾸어 정리해 보세요.", hints: ["일 모형이 24개예요. 10개씩 두 번 바꿀 수 있어요.", "10 × 6 = 60, 4 × 6 = 24예요."],
+      render: (b, a) => u4Regroup(b, a, { a: 14, b: 6, ok: "14 × 6 = 60 + 24 = 84. 색연필은 모두 84자루예요." }) },
+    { inst: "15 × 3을 두 줄로 계산해 보세요.", hints: ["첫째 줄은 5 × 3, 둘째 줄은 10 × 3이에요."],
+      render: (b, a) => u4Vertical(b, a, { a: 15, b: 3, mode: "partial" }) },
+    { inst: "올림을 말로 정리해요.", hints: ["15는 10과 5예요."],
+      render: (b, a) => blanks(b, a, ["5 × 3 = 15에서 5는 일의 자리에 쓰고, 10은 올림하여 ", { o: ["십의 자리 위에 1로 작게", "백의 자리에"], a: 0 }, " 써요. 작게 쓴 1은 ", { o: ["십의 자리 곱에 더해요", "지워요"], a: 0 }, "."]) },
+    { inst: "15 × 3을 간단히 계산해 보세요. 올림한 수를 십의 자리 위에 작게 써요.", hints: ["5 × 3 = 15 → 일의 자리에 5, 십의 자리 위에 작게 1", "1 × 3 = 3에 작게 쓴 1을 더해요."],
+      render: (b, a) => u4Vertical(b, a, { a: 15, b: 3, mode: "short" }) },
+    { inst: "계산해 보세요.", hints: ["작게 쓴 올림 수를 잊지 말고 더해요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "18 × 5 =", a: 90, why: { "50": "8 × 5 = 40에서 올림한 4를 십의 자리 곱에 더하지 않았어요." } },
+        { q: "27 × 3 =", a: 81, why: { "61": "7 × 3 = 21에서 올림한 2를 십의 자리 곱에 더하지 않았어요." } },
+        { q: "36 × 2 =", a: 72, why: { "62": "6 × 2 = 12에서 올림한 1을 십의 자리 곱에 더하지 않았어요." } }],
+        { ok: "일의 자리에서 올림이 있는 곱셈을 잘 계산했어요!" }) }
+  ],
+  challenge: { inst: "토마토를 더 많이 딴 사람은 누구일까요? 서준이는 한 상자에 12개씩 6상자, 윤아는 한 상자에 17개씩 5상자를 땄어요.", hints: ["두 사람이 딴 토마토 수를 각각 곱셈으로 구해요.", "16 × 3 = 48, 16 × 4 = 64예요."], render: (b, a) => numbers(b, a, [
+    { q: "서준: 12 × 6 =", a: 72, unit: "개" }, { q: "윤아: 17 × 5 =", a: 85, unit: "개" },
+    { q: "윤아는 서준이보다 몇 개 더 땄나요? 85 − 72 =", a: 13, unit: "개" },
+    { q: "16 × □ 가 50보다 작을 때 □에 들어갈 수 있는 가장 큰 수는", a: 3 }],
+    { ok: "윤아가 13개 더 많이 땄어요!" }) }
+},
+{
+  id: "t6", no: 6, title: "(몇십몇) × (몇)을 구해 볼까요 ⑷ 올림이 두 번 있는 경우", soop: "개념 구축하기(O)",
+  question: "올림이 두 번 있을 때는 어떻게 계산할까요?",
+  summary: "일의 자리에서 올림한 수는 십의 자리 곱에 더하고, 십의 자리에서 올림한 수는 백의 자리에 써요. 몇십몇을 가까운 몇십으로 생각하면 곱을 어림할 수 있어요.",
+  steps: [
+    { inst: "만화 창작실에서 만화 만들기 체험을 한 회에 23명씩 5회 해요. 먼저 어림하고, 수 모형을 10개씩 바꾸어 정확히 구해 보세요.", hints: ["23을 20으로 생각하여 어림해요.", "일 모형 15개, 십 모형 10개예요. 두 번 바꾸어요."],
+      render: (b, a) => u4Regroup(b, a, { a: 23, b: 5,
+        estimate: { q: "23 × 5는 약 몇 명일까요?", o: ["약 50명", "약 100명", "약 150명"], a: 1, ok: "23을 20으로 생각하면 20 × 5 = 100, 약 100명이에요. 이제 수 모형으로 정확히 구해요." },
+        ok: "23 × 5 = 100 + 15 = 115. 어림한 약 100명과 비슷해요." }) },
+    { inst: "36 × 4를 두 줄로 계산해 보세요.", hints: ["첫째 줄은 6 × 4, 둘째 줄은 30 × 4예요."],
+      render: (b, a) => u4Vertical(b, a, { a: 36, b: 4, mode: "partial" }) },
+    { inst: "올림이 두 번 있는 계산을 말로 정리해요.", hints: ["24는 20과 4예요.", "120 + 20 = 140이에요."],
+      render: (b, a) => blanks(b, a, ["36 × 4에서 6 × 4 = 24의 20은 올림하여 ", { o: ["십의 자리 위에 2로 작게", "일의 자리에"], a: 0 }, " 써요. 30 × 4 = 120에 올림한 20을 더하면 140이므로 백의 자리에 ", { o: ["1", "2"], a: 0 }, "을 써요."]) },
+    { inst: "36 × 4를 간단히 계산해 보세요. 십의 자리 위에 작게 쓴 2를 잊지 말고 더해요.", hints: ["6 × 4 = 24 → 일의 자리에 4, 작게 2", "3 × 4 = 12, 12 + 2 = 14 → 십의 자리에 4, 백의 자리에 1"],
+      render: (b, a) => u4Vertical(b, a, { a: 36, b: 4, mode: "short" }) },
+    { inst: "계산해 보세요.", hints: ["일의 자리부터 곱하고 올림한 수를 더해요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "58 × 3 =", a: 174, why: { "154": "8 × 3 = 24에서 올림한 2를 십의 자리 곱에 더하지 않았어요." } },
+        { q: "75 × 6 =", a: 450, why: { "420": "5 × 6 = 30에서 올림한 3을 십의 자리 곱에 더하지 않았어요." } },
+        { q: "63 × 9 =", a: 567, why: { "547": "3 × 9 = 27에서 올림한 2를 십의 자리 곱에 더하지 않았어요." } },
+        { q: "사탕이 한 봉지에 42개씩 6봉지면 42 × 6 =", a: 252, unit: "개" }],
+        { ok: "올림이 두 번 있는 곱셈을 잘 계산했어요!" }) }
+  ],
+  challenge: { inst: "수 카드 5, 6, 9를 한 번씩 사용하여 곱이 가장 큰 (몇십몇) × (몇)을 만들고 계산해 보세요.", hints: ["가장 큰 수 9를 곱하는 수 자리에 놓아 봐요.", "95 × 6, 65 × 9, 96 × 5를 견주어 봐요."],
+    render: (b, a) => u4CardMake(b, a, { cards: [5, 6, 9], mode: "max", best: 585, answers: ["65 × 9 = 585"], ok: "65 × 9 = 585가 가장 큰 곱이에요!" }) }
+},
+{
+  id: "t7", no: 7, title: "생각을 더하다 ― 전체 거리가 얼마지?", soop: "탐구 정리하기(O)",
+  question: "첫째로 세운 접시 콘과 마지막으로 세운 접시 콘 사이의 거리는 어떻게 구할까요?",
+  summary: "물건을 한 줄로 세우면 간격의 수는 물건의 수보다 1 작아요. 간단한 수로 바꾸어 규칙을 찾으면 어려운 문제도 풀 수 있어요.",
+  steps: [
+    { name: "이해하고 세워 보기", inst: "공 몰기 연습을 하려고 접시 콘을 50 cm 간격으로 7개 세워요. 접시 콘을 하나씩 세우며 간격을 세어 보세요.", hints: ["접시 콘 2개일 때 간격은 1군데예요.", "간격 수를 세어 50을 곱해요."],
+      render: (b, a) => u4Distance(b, a, { gap: 50, target: 7, item: "접시 콘", ask: [
+        { q: "접시 콘 7개 사이의 간격은 몇 군데?", a: 6, unit: "군데" }, { q: "첫째와 마지막 접시 콘 사이의 거리는", a: 300, unit: "cm" }],
+        ok: "간격은 6군데이므로 50 × 6 = 300(cm)이에요." }) },
+    { name: "규칙을 표로 나타내기", inst: "접시 콘 수에 따라 거리를 구해 보세요.", hints: ["접시 콘 수보다 간격 수가 1 작아요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "접시 콘 2개일 때 거리는", a: 50, unit: "cm" }, { q: "접시 콘 3개일 때 50 × 2 =", a: 100 },
+        { q: "접시 콘 4개일 때 50 × 3 =", a: 150 }, { q: "접시 콘 7개일 때 간격 수는", a: 6, unit: "군데", why: { "7": "간격은 접시 콘과 접시 콘 사이예요. 접시 콘 수보다 1 작아요." } }],
+        { ok: "접시 콘 수가 1 늘 때마다 거리가 50 cm씩 늘어요." }) },
+    { name: "해결 방법 말하기", inst: "찾은 규칙을 말로 정리해요.", hints: ["접시 콘 2개일 때 간격은 1군데였어요."],
+      render: (b, a) => blanks(b, a, ["접시 콘 수에 따라 규칙을 살펴보면 간격의 수는 접시 콘 수보다 ", { o: ["1 작아요", "1 커요", "같아요"], a: 0 }, ". 그래서 7개일 때 거리는 50 × ", { o: ["6", "7"], a: 0 }, " = 300(cm)이에요."]) },
+    { name: "되돌아보기", inst: "문제를 잘 해결했는지 되돌아봐요.", hints: ["그림을 다시 보며 간격을 세어 봐요."],
+      render: (b, a) => quiz(b, a, [
+        { q: "친구가 50 × 7 = 350(cm)이라고 했어요. 무엇이 잘못되었나요?", o: ["간격의 수를 접시 콘 수와 같게 생각했어요", "곱셈을 잘못 계산했어요"], a: 0 },
+        { q: "문제가 어려울 때 오늘 쓴 좋은 방법은?", o: ["더 간단한 수로 바꾸어 규칙 찾기", "아무 수나 곱하기"], a: 0 }]) },
+    { name: "내 힘으로 풀어요", inst: "뛰어넘기 연습을 하려고 장애물을 65 cm 간격으로 6개 세웠어요. 첫째와 마지막 장애물 사이의 거리를 구해 보세요.", hints: ["장애물 6개 사이의 간격은 몇 군데일까요?", "65 × 5를 계산해요."],
+      render: (b, a) => u4Distance(b, a, { gap: 65, target: 6, item: "장애물", shape: "hurdle", ask: [
+        { q: "장애물 6개 사이의 간격은 몇 군데?", a: 5, unit: "군데" }, { q: "첫째와 마지막 장애물 사이의 거리는", a: 325, unit: "cm", why: { "390": "65 × 6을 했어요. 간격은 장애물 수보다 1 작아요." } }],
+        ok: "65 × 5 = 325(cm)예요. 규칙을 잘 적용했어요!" }) }
+  ],
+  challenge: { inst: "간격 문제에 도전해요.", hints: ["간격 수 = 물건 수 − 1", "30 × □ = 240에서 3 × □ = 24를 생각해요."], render: (b, a) => numbers(b, a, [
+    { q: "깃발을 40 cm 간격으로 9개 세웠어요. 첫째와 마지막 깃발 사이의 거리는", a: 320, unit: "cm", why: { "360": "40 × 9를 했어요. 간격은 8군데예요." } },
+    { q: "접시 콘을 30 cm 간격으로 세웠더니 첫째와 마지막 사이가 240 cm였어요. 간격은 몇 군데?", a: 8, unit: "군데" },
+    { q: "그러면 접시 콘은 몇 개?", a: 9, unit: "개" }],
+    { ok: "간격 수와 물건 수의 관계를 거꾸로도 쓸 수 있어요!" }) }
+},
+{
+  id: "t8", no: 8, title: "놀이를 더하다 ― 말판 놀이를 해 볼까요", soop: "발표하기(P)",
+  question: "말판 놀이를 하며 (몇십몇) × (몇)을 정확하게 계산할 수 있나요?",
+  summary: "칸의 수와 주사위 눈의 수를 곱할 때도 십의 자리와 일의 자리를 나누어 곱한 뒤 더해요. 틀렸을 때는 계산기로 확인하고 틀린 까닭을 생각해요.",
+  steps: [
+    { name: "준비하기", inst: "놀이판의 빈칸에 31부터 45까지의 수를 한 번씩 써넣어 놀이판을 완성해요.", hints: ["빈칸을 누르고 오른쪽 수 카드를 눌러요.", "‘남은 빈칸 섞어서 채우기’를 눌러도 돼요."],
+      render: (b, a) => u4Board(b, a, { mode: "fill" }) },
+    { name: "놀이하기", inst: "주사위를 굴려 나온 눈의 수만큼 말을 옮기고, 칸의 수와 눈의 수를 곱해요. 곱이 맞으면 다음 차례에 주사위를 굴리고, 틀리면 한 번 쉬어요.", hints: ["십의 자리와 일의 자리를 나누어 곱한 뒤 더해요.", "올림한 수를 잊지 말고 더해요."],
+      render: (b, a) => u4Board(b, a, { mode: "play", goal: 4 }) },
+    { name: "말해 보기", inst: "놀이를 되돌아보며 써 보세요.", hints: ["계산기로 확인했을 때 어느 자리가 달랐는지 떠올려 봐요."],
+      render: (b, a) => writeStep(b, a, [
+        { q: "놀이에서 계산이 어려웠던 곱셈은 무엇이었나요?", tag: "어려웠던 곱셈" },
+        { q: "틀렸을 때 까닭은 무엇이었나요? 어떻게 고쳤나요?", tag: "틀린 까닭" }]) },
+    { name: "또 다른 놀이", inst: "수 카드 8, 3, 6을 한 번씩 써서 (몇십몇) × (몇)을 만들어요. 이번 조건은 ‘곱이 500보다 큰 수’예요.", hints: ["곱하는 수로 큰 수를 놓아 봐요.", "83 × 6과 63 × 8을 견주어 봐요."],
+      render: (b, a) => u4CardMake(b, a, { cards: [8, 3, 6], mode: "cond", cond: p => p > 500, condText: "500보다 큰 수", answers: ["63 × 8 = 504"], ok: "63 × 8 = 504. 조건에 맞는 곱셈을 만들었어요!" }) },
+    { name: "확인하기", inst: "놀이판에 나온 수로 계산해 보세요.", hints: ["십의 자리와 일의 자리를 나누어 곱해요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "72 × 3 =", a: 216 }, { q: "98 × 6 =", a: 588 }, { q: "20 × 5 =", a: 100 }, { q: "45 × 4 =", a: 180 }, { q: "93 × 2 =", a: 186 }],
+        { ok: "놀이판의 곱셈을 모두 정확하게 계산했어요!" }) }
+  ],
+  challenge: { inst: "놀이판의 특별한 칸 문제예요.", hints: ["93 칸은 ‘주사위 눈의 수가 4보다 작으면 앞으로 4칸 더 이동’이에요."], render: (b, a) => numbers(b, a, [
+    { q: "93 칸에 멈추었고 눈의 수가 3이에요. 93 × 3 =", a: 279 },
+    { q: "눈의 수가 4보다 작으니 앞으로 몇 칸 더 이동하나요?", a: 4, unit: "칸" },
+    { q: "출발에서 눈의 수 2로 29 칸에 멈추었어요. 29 × 2 =", a: 58 }],
+    { ok: "놀이 규칙과 곱셈을 모두 잘 알고 있어요!" }) }
+},
+{
+  id: "t9", no: 9, title: "공부한 내용을 확인해요", soop: "발표하기(P)",
+  question: "곱셈을 배우기 전과 후, 내 생각은 어떻게 달라졌나요?",
+  summary: "(몇십) × (몇)은 (몇) × (몇)의 10배예요. (몇십몇) × (몇)은 자리별로 곱해 더하고, 올림한 수는 잊지 말고 더해요.",
+  steps: [
+    { name: "확인 1", inst: "수 모형으로 십 모형 3개씩 2묶음을 만들고 □ 안에 알맞은 수를 구해요.", hints: ["십 모형 1개는 10이에요."],
+      render: (b, a) => u4BuildGroups(b, a, { a: 30, b: 2, title: "십 모형 3개씩 2묶음", after: [
+        { q: "십 모형은 3 × 2 =", a: 6, unit: "개" }, { q: "십 모형이 나타내는 수는", a: 60, why: { "6": "십 모형의 개수가 6이에요. 십 모형 1개는 10이니 나타내는 수는 60이에요." } }, { q: "30 × 2 =", a: 60 }],
+        ok: "30 × 2 = 60이에요." }) },
+    { name: "확인 2", inst: "계산해 보세요.", hints: ["올림한 수를 잊지 말아요.", "일주일은 7일이에요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "71 × 3 =", a: 213 }, { q: "19 × 2 =", a: 38 }, { q: "32 × 2 =", a: 64 }, { q: "52 × 7 =", a: 364 },
+        { q: "하은이가 책을 하루에 35쪽씩 일주일(7일) 동안 읽으면 35 × 7 =", a: 245, unit: "쪽" }],
+        { ok: "(몇십몇) × (몇)을 정확하게 계산했어요!" }) },
+    { name: "확인 3", inst: "곱을 비교해 보세요.", hints: ["먼저 곱을 계산한 뒤 견주어 봐요."],
+      render: (b, a) => quiz(b, a, [
+        { q: "10 × 7과 곱이 같은 것은?", o: ["60 × 4", "13 × 4", "35 × 2"], a: 2 },
+        { q: "26 × 2와 곱이 같은 것은?", o: ["60 × 4", "13 × 4", "35 × 2"], a: 1 },
+        { q: "30 × 8과 곱이 같은 것은?", o: ["60 × 4", "13 × 4", "35 × 2"], a: 0 },
+        { q: "곱이 작은 것부터 차례대로 쓴 것은? (㉠ 44 × 7  ㉡ 67 × 4  ㉢ 59 × 5)", o: ["㉡, ㉢, ㉠", "㉠, ㉡, ㉢", "㉢, ㉡, ㉠"], a: 0 }]) },
+    { name: "확인 4", inst: "친구가 29 × 4를 잘못 계산했어요. 잘못된 까닭을 고르고 옳게 계산해 보세요.", hints: ["9 × 4 = 36이에요. 3은 어디로 갔을까요?"],
+      render: (b, a) => u4FixError(b, a, { a: 29, b: 4, wrong: 86, ra: 0, reasons: [
+        "9 × 4 = 36에서 올림한 3을 십의 자리 계산에 더하지 않았어요", "2 × 4를 잘못 계산했어요", "곱하는 수를 잘못 보았어요"] }) },
+    { name: "예전 생각, 지금 생각", inst: "생각이 어떻게 달라졌는지 써 보세요.", hints: ["곱셈을 배우기 전에 큰 수의 곱셈을 어떻게 생각했는지 떠올려 봐요."],
+      render: (b, a) => writeStep(b, a, [
+        { q: "예전에는 (몇십몇) × (몇)을 ……라고 생각했어요.", tag: "예전" }, { q: "지금은 ……라고 생각해요.", tag: "지금" }]) }
+  ],
+  challenge: { inst: "사다리 타기를 하여 곱셈을 하고 곱을 보석에 써 보세요.", hints: ["위의 수를 누르면 사다리를 따라 내려가요.", "만난 곱하는 수를 곱해요."],
+    render: (b, a) => u4Ladder(b, a, { tops: [50, 43, 21, 23, 85], mults: [5, 6, 4, 3, 2], map: [3, 4, 2, 1, 0], ok: "425, 138, 84, 150, 86. 곱셈 단원을 모두 해냈어요!" }) }
+}];
+
+window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
+window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.student) openLesson(L.id); });
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});}})();
+</script>
+</body>
+</html>
+

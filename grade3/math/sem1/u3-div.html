@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>체육 행사 나눗셈 · 3-1 수학 3. 나눗셈(교과서)</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{
+  --night:#1F2F4A; --night2:#2C4166; --pine:#2F6B57; --pine-soft:#DDEDE5;
+  --lantern:#F4C542; --tent:#E47A38; --ring:#2B7BD6; --ring-soft:#DCEAFB;
+  --paper:#F5F7F4; --ink:#1D2A2A; --muted:#5B6B6B; --line:#C9D4CF;
+  --ok:#2E8B57; --no:#C8472E; --white:#FFFFFF;
+  --fs:clamp(16px, 0.75vw + 10px, 28px);
+  --fs-s:calc(var(--fs) * .82); --fs-l:calc(var(--fs) * 1.3); --fs-xl:calc(var(--fs) * 1.8);
+  --r:clamp(10px,1vw,18px); --pad:clamp(12px,1.4vw,28px);
+}
+*{box-sizing:border-box}
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+html,body{margin:0;height:100%}
+body{background:var(--paper);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;font-size:var(--fs);line-height:1.55;-webkit-text-size-adjust:100%}
+h1,h2,h3,.jua{font-family:"Jua","Gowun Dodum","Malgun Gothic",sans-serif;font-weight:400;letter-spacing:.01em}
+button{font:inherit;cursor:pointer;touch-action:manipulation}
+button:focus-visible,input:focus-visible{outline:4px solid var(--lantern);outline-offset:2px}
+svg{touch-action:none;user-select:none;-webkit-user-select:none}
+.hidden{display:none!important}
+
+/* 상단 */
+.top{background:var(--night);color:#fff;display:flex;align-items:center;gap:var(--pad);padding:calc(var(--pad)*.6) var(--pad);position:sticky;top:0;z-index:5}
+.brand{display:flex;align-items:center;gap:.5em;font-family:"Jua",sans-serif;font-size:var(--fs-l);white-space:nowrap}
+.brand svg{width:1.6em;height:1.6em}
+.who{margin-left:auto;display:flex;align-items:center;gap:.5em;font-size:var(--fs-s)}
+.chip{white-space:nowrap;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.25);color:#fff;border-radius:999px;padding:.25em .9em}
+.chip.btn:hover{background:rgba(255,255,255,.22)}
+
+/* 시작 화면 */
+.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);background:
+ radial-gradient(circle at 80% 18%, rgba(244,197,66,.25) 0 6%, transparent 6.5%),
+ linear-gradient(180deg,var(--night) 0,var(--night2) 55%,var(--pine) 55.2%,var(--pine) 100%)}
+.gate-card{background:#fff;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 18px 40px rgba(0,0,0,.25)}
+.gate-card h1{font-size:var(--fs-xl);margin:0 0 .2em;color:var(--night)}
+.nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(3.1em,1fr));gap:.45em;margin:.6em 0 1em}
+.nums button{padding:.5em 0;border-radius:.6em;border:2px solid var(--line);background:#fff;font-family:"Jua";font-size:var(--fs)}
+.nums button.on{background:var(--ring);color:#fff;border-color:var(--ring)}
+.row{display:flex;gap:.6em;align-items:center;flex-wrap:wrap}
+input[type=text],input[type=password],input[type=number],textarea{font:inherit;padding:.45em .7em;border:2px solid var(--line);border-radius:.6em;background:#fff;color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:3.2em;resize:vertical}
+.big{font-family:"Jua";font-size:var(--fs-l);padding:.45em 1.4em;border-radius:999px;border:0;background:var(--tent);color:#fff;box-shadow:0 4px 0 #B85A22}
+.big:active{transform:translateY(3px);box-shadow:0 1px 0 #B85A22}
+.big[disabled]{background:#B9C2BF;box-shadow:none;cursor:not-allowed}
+.ghost{background:#fff;border:2px solid var(--line);color:var(--ink);border-radius:999px;padding:.35em 1em}
+
+/* 차시 지도 */
+.map{padding:var(--pad);max-width:1600px;margin:0 auto}
+.map h2{font-size:var(--fs-xl);margin:.2em 0 .1em;color:var(--night)}
+.story{background:#fff;border-left:8px solid var(--tent);border-radius:.6em;padding:var(--pad);margin-top:var(--pad)}
+.story p{margin:.3em 0}
+.scene{font-size:var(--fs-s);color:var(--pine);background:var(--pine-soft);border-radius:.5em;padding:.25em .8em;margin-bottom:.5em;display:inline-block}
+.trail{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,15em),1fr));gap:var(--pad);margin-top:var(--pad)}
+.site{position:relative;text-align:left;background:#fff;border:3px solid var(--line);border-radius:var(--r);padding:var(--pad);display:flex;flex-direction:column;gap:.3em;min-height:9em}
+.site:hover{border-color:var(--ring)}
+.site .n{font-family:"Jua";font-size:var(--fs-l);color:var(--ring)}
+.site .t{font-family:"Jua";font-size:var(--fs);line-height:1.3}
+.site .soop{font-size:var(--fs-s);color:var(--muted)}
+.site .prog{margin-top:auto;display:flex;gap:.25em}
+.site .prog i{flex:1;height:.45em;border-radius:1em;background:var(--line)}
+.site .prog i.on{background:var(--ok)}
+.site .prog i.half{background:var(--lantern)}
+.stair.passed .k{background:var(--lantern);color:var(--ink)}
+.site.done{border-color:var(--ok)}
+.site .star{position:absolute;right:.6em;top:.4em;font-size:var(--fs-l)}
+
+/* 학습 화면 */
+.lesson{display:grid;grid-template-columns:minmax(9em,14em) 1fr;gap:var(--pad);padding:var(--pad);max-width:1800px;margin:0 auto;min-height:calc(100% - 4em)}
+.stairs{display:flex;flex-direction:column;gap:.5em;position:sticky;top:5em;align-self:start}
+.stairs .title{font-family:"Jua";font-size:var(--fs-l);line-height:1.25;color:var(--night)}
+.stairs .soopb{display:inline-block;background:var(--pine-soft);color:var(--pine);border-radius:.5em;padding:.1em .6em;font-size:var(--fs-s);margin:.2em 0 .4em}
+.stair{display:flex;align-items:center;gap:.5em;text-align:left;border:2px solid var(--line);background:#fff;border-radius:.8em;padding:.45em .7em;color:var(--ink)}
+.stair .k{flex:0 0 1.8em;height:1.8em;border-radius:50%;display:grid;place-items:center;background:var(--line);color:#fff;font-family:"Jua"}
+.stair.cur{border-color:var(--ring);box-shadow:0 0 0 3px var(--ring-soft)}
+.stair.cur .k{background:var(--ring)}
+.stair.ok .k{background:var(--ok)}
+.stair.lock{opacity:.45;cursor:not-allowed}
+.stair.chal .k{background:var(--tent)}
+.stairs .back{margin-top:.6em}
+.work{background:#fff;border-radius:calc(var(--r)*1.3);padding:calc(var(--pad)*1.2);border:2px solid var(--line);min-width:0}
+.q{background:var(--ring-soft);border-radius:var(--r);padding:.5em .9em;margin-bottom:.8em;font-family:"Jua";color:var(--night)}
+.stepname{font-family:"Jua";font-size:var(--fs-xl);color:var(--night);margin:0}
+.inst{margin:.2em 0 .8em;font-size:var(--fs)}
+.panel{display:grid;grid-template-columns:minmax(0,1fr) minmax(12em,19em);gap:var(--pad);align-items:start}
+.stage{min-width:0}
+.stage svg{width:100%;height:auto;max-height:calc(100vh - 13em);display:block;background:#FBFCFB;border:2px solid var(--line);border-radius:var(--r)}
+.side{min-width:0;display:flex;flex-direction:column;gap:.7em}
+.readout{font-family:"Jua";font-size:var(--fs-l);color:var(--night)}
+.readout small{font-family:"Gowun Dodum";font-size:var(--fs-s);color:var(--muted)}
+.card{border:3px solid var(--night);border-radius:var(--r);padding:.8em 1em;background:#fff}
+.card b{color:var(--ring)}
+.opts{display:flex;flex-wrap:wrap;gap:.5em;margin:.4em 0}
+.opt{border:2px solid var(--line);background:#fff;border-radius:.7em;padding:.4em .9em;text-align:left}
+.opt.on{border-color:var(--ring);background:var(--ring-soft)}
+.opt.good{border-color:var(--ok);background:#E3F4EA}
+.opt.bad{border-color:var(--no);background:#FBE7E2}
+.opt.good::after{content:" ○";color:var(--ok);font-weight:bold}
+.opt.bad::after{content:" ×";color:var(--no);font-weight:bold}
+.hintbox{margin-top:.8em;background:#FFF8E1;border-left:8px solid var(--lantern);border-radius:.5em;padding:.5em .9em}
+.hintbox p{margin:.3em 0}
+.wordbank{margin:.5em 0}
+.wordbank .word{display:inline-block;background:#fff;border:2px solid var(--line);border-radius:999px;padding:.1em .8em;margin:.2em .3em .2em 0}
+.copybox{margin-top:.6em;background:#fff;border:3px dashed var(--tent);border-radius:.6em;padding:.6em .9em}
+.copyrow{display:flex;gap:.6em;align-items:center;flex-wrap:wrap;margin:.35em 0}
+.copyrow .target{font-family:"Jua",sans-serif;background:#FDF1E8;border-radius:.4em;padding:.15em .6em;min-width:9em}
+.copyrow input{flex:1 1 10em;min-width:8em}
+.help{border-color:var(--lantern)}
+.stephead{display:flex;align-items:center;gap:.8em;flex-wrap:wrap}
+.speak{font-size:var(--fs-s);padding:.2em .8em}
+.sent{line-height:2.4}
+.slot{display:inline-flex;gap:.3em;vertical-align:middle;flex-wrap:wrap;background:#F2F5F4;border-radius:.6em;padding:.15em .3em}
+.slot .opt{padding:.1em .6em}
+.qitem{border-bottom:1px dashed var(--line);padding:.6em 0}
+.qitem:last-child{border-bottom:0}
+.fb{min-height:1.6em;font-family:"Jua";margin-top:.4em}
+.fb.good{color:var(--ok)} .fb.bad{color:var(--no)}
+.actions{display:flex;gap:.6em;align-items:center;margin-top:.8em;flex-wrap:wrap;
+  position:sticky;bottom:0;background:#fff;padding:.5em 0 .2em;z-index:3;border-top:1px solid transparent}
+.actions.stuck{border-top-color:var(--line)}
+.tools{display:flex;flex-wrap:wrap;gap:.4em;align-items:center}
+.tools button{border:2px solid var(--line);background:#fff;border-radius:.6em;padding:.25em .8em}
+.tools button.on{background:var(--night);color:#fff;border-color:var(--night)}
+input[type=range]{width:100%;accent-color:var(--ring);height:2em}
+.pill{display:inline-block;background:var(--night);color:#fff;border-radius:999px;padding:.05em .7em;font-size:var(--fs-s)}
+.safe{border-left:6px solid var(--tent);background:#FDF1E8;padding:.5em .8em;border-radius:.4em;font-size:var(--fs-s)}
+.seq{display:flex;gap:.5em;flex-wrap:wrap}
+.seq .opt{flex:1 1 12em}
+.seq .opt .no{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--ring);color:#fff;margin-right:.4em;font-family:"Jua"}
+
+/* 완료 */
+.finish{text-align:center;padding:1em}
+.finish .medal{font-size:calc(var(--fs)*4)}
+
+/* 교사 화면 */
+.teacher{padding:var(--pad);max-width:1800px;margin:0 auto}
+.tbl-wrap{overflow-x:auto;border:2px solid var(--line);border-radius:var(--r);background:#fff}
+table.dash{border-collapse:collapse;width:100%;font-size:var(--fs-s)}
+table.dash th,table.dash td{border:1px solid var(--line);padding:.35em .5em;text-align:center;white-space:nowrap}
+table.dash th{background:var(--night);color:#fff;font-weight:400;font-family:"Jua"}
+table.dash td.nm{text-align:left}
+td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa}
+.detail{margin-top:var(--pad)}
+.detail li{margin:.2em 0}
+.toast{position:fixed;left:50%;bottom:1.2em;transform:translateX(-50%);background:var(--night);color:#fff;padding:.5em 1.2em;border-radius:999px;font-size:var(--fs-s);z-index:20}
+
+@media (max-height: 820px){
+  :root{--fs:clamp(15px,.62vw + 9px,22px);--pad:clamp(8px,1vw,16px)}
+  .stage svg{max-height:calc(100vh - 17em)}
+  .work{padding:.8em 1em}
+  .q{margin-bottom:.4em;padding:.35em .8em}
+  .inst{margin:.15em 0 .5em}
+  .qitem{padding:.35em 0}
+  .stepname{font-size:calc(var(--fs) * 1.45)}
+  .stairs{gap:.3em}
+  .stair{padding:.3em .6em}
+  .copylink{display:none}
+}
+@media (max-width: 1000px){ .panel{grid-template-columns:1fr} .stage svg{max-height:none} }
+@media (max-width: 820px){
+  .lesson{grid-template-columns:1fr}
+  .stairs{position:static;flex-direction:row;flex-wrap:wrap}
+  .stairs .title,.stairs .soopb,.stairs .back{flex-basis:100%}
+  .stair{flex:1 1 auto}
+  .stair .lbl{display:none}
+  .brand span.long{display:none}
+  .who{gap:.3em} .chip{padding:.2em .6em}
+}
+@media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+.creditbar{display:flex;flex-direction:column;align-items:center;gap:10px;padding:10px 16px 24px}
+.tolist{display:none;align-items:center;gap:8px;font-family:"Jua",sans-serif;font-size:clamp(18px,1.8vw,24px);text-decoration:none;color:var(--ink);border:3px solid var(--line);background:#fff;border-radius:999px;padding:6px 20px}
+.tolist.on{display:inline-flex}
+.hjfoot{display:block;width:100%;margin:6px 0 0;padding:14px 0 4px;border-top:3px solid var(--line);text-align:center;color:var(--muted);font-size:clamp(14px,1.2vw,17px);line-height:1.7;word-break:keep-all}
+.hjfoot p{margin:2px 0}
+</style>
+</head>
+<body>
+<div id="app"></div>
+<div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div>
+<script>
+const APP={title:"체육 행사 나눗셈", unit:"3-1 수학 3. 나눗셈(교과서)", key:"t31-div-v1", welcome:"체육 행사 나눗셈 교실에 온 것을 환영해요", intro:"교과서 차시 그대로, 다인이네 학교 체육 행사에서 똑같이 나누며 나눗셈을 배워요."};
+
+/* ===== 설정 ===== */
+const CONFIG = {
+  unit: APP.unit,
+  // 구글 앱스 스크립트 웹 앱 주소(선택). 앱스 스크립트 안에서 열면 비워 두어도 자동 연결돼요.
+  endpoint: "",
+  localPin: "1234"   // 앱스 스크립트 없이 이 기기 기록만 볼 때 쓰는 선생님 비밀번호
+};
+const STEP_NAMES = ["만져 보기", "그려 보기", "말해 보기", "약속하기", "확인하기"];
+const KEY = APP.key;
+
+/* ===== 저장 ===== */
+const store = {
+  load() { try { return JSON.parse(localStorage.getItem(KEY)) || {}; } catch (e) { return {}; } },
+  save(s) { try { localStorage.setItem(KEY, JSON.stringify(s)); } catch (e) {} }
+};
+let S = store.load();
+S.student = S.student || null;     // {ban, no, name}
+S.prog = S.prog || {};             // prog[`${ban}-${no}`][chasiId] = {steps:{i:{ok,tries,ans}}, chal:{...}}
+S.log = S.log || [];               // 이 기기의 모든 기록
+S.queue = S.queue || [];           // 보내지 못한 기록
+
+const $ = (s, el = document) => el.querySelector(s);
+const h = (tag, attrs = {}, ...kids) => {
+  const e = document.createElement(tag);
+  for (const [k, v] of Object.entries(attrs)) {
+    if (k === "class") e.className = v;
+    else if (k.startsWith("on")) e.addEventListener(k.slice(2), v);
+    else if (v !== false && v != null) e.setAttribute(k, v === true ? "" : v);
+  }
+  for (const k of kids.flat()) if (k != null) e.append(k.nodeType ? k : document.createTextNode(k));
+  return e;
+};
+function toast(msg) { const t = h("div", { class: "toast" }, msg); document.body.append(t); setTimeout(() => t.remove(), 2200); }
+const sid = () => S.student ? `${S.student.ban}-${S.student.no}` : "guest";
+function myProg(cid) { const p = (S.prog[sid()] = S.prog[sid()] || {}); return (p[cid] = p[cid] || { steps: {}, chal: null }); }
+
+/* ===== 기록 보내기 ===== */
+const hasGAS = () => typeof google !== "undefined" && google.script && google.script.run;
+function send(rec) {
+  if (hasGAS()) {
+    google.script.run.withFailureHandler(() => { S.queue.push(rec); store.save(S); }).saveRecord(rec);
+  } else if (CONFIG.endpoint) {
+    fetch(CONFIG.endpoint, { method: "POST", mode: "no-cors", headers: { "Content-Type": "text/plain;charset=utf-8" }, body: JSON.stringify(rec) })
+      .catch(() => { S.queue.push(rec); store.save(S); });
+  }
+}
+function flushQueue() {
+  if (!S.queue.length || (!hasGAS() && !CONFIG.endpoint)) return;
+  const q = S.queue.splice(0); store.save(S); q.forEach(send);
+}
+function record(chasi, stepNo, stepName, ok, tries, answer, level) {
+  const st = S.student || { ban: "", no: "", name: "" };
+  const rec = { time: new Date().toISOString(), ban: st.ban, no: st.no, name: st.name, unit: CONFIG.unit,
+    chasi: chasi.no, title: chasi.title, step: stepNo, stepName, ok: !!ok, tries, answer: String(answer || "").slice(0, 400), level: level || "기본" };
+  S.log.push(rec); if (S.log.length > 3000) S.log.splice(0, S.log.length - 3000);
+  store.save(S); send(rec);
+}
+
+/* ===== 화면 ===== */
+const root = () => $("#app");
+function topbar() {
+  const st = S.student;
+  return h("header", { class: "top" },
+    h("div", { class: "brand" }, ringLogo(), h("span", {}, APP.title), h("span", { class: "long" }, " · " + APP.unit)),
+    h("div", { class: "who" },
+      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번 ${st.name || ""}`) : null,
+      st ? h("button", { class: "chip btn", onclick: () => { S.student = null; store.save(S); showGate(); } }, "바꾸기") : null,
+      h("button", { class: "chip btn", onclick: showTeacher }, "선생님")));
+}
+function ringLogo() {
+  const s = svgEl("svg", { viewBox: "0 0 40 40", "aria-hidden": "true" });
+  s.append(svgEl("circle", { cx: 20, cy: 20, r: 16, fill: "none", stroke: "#F4C542", "stroke-width": 4 }),
+    svgEl("line", { x1: 20, y1: 20, x2: 34, y2: 12, stroke: "#fff", "stroke-width": 3, "stroke-linecap": "round" }),
+    svgEl("circle", { cx: 20, cy: 20, r: 3.5, fill: "#fff" }));
+  return s;
+}
+function mount(...els) { const r = root(); r.innerHTML = ""; r.append(topbar(), ...els); window.scrollTo(0, 0); }
+
+/* 시작: 번호 고르기 */
+function showGate() {
+  let ban = (S.student && S.student.ban) || "2", no = null;
+  const nums = h("div", { class: "nums" });
+  for (let i = 1; i <= 40; i++) nums.append(h("button", { onclick: (e) => { no = i; [...nums.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); go.disabled = false; } }, String(i)));
+  const banIn = h("input", { type: "number", min: 1, max: 15, value: ban, style: "width:4.5em", "aria-label": "반" });
+  const nameIn = h("input", { type: "text", placeholder: "이름 (선택)", maxlength: 10, style: "width:9em" });
+  const go = h("button", { class: "big", disabled: true, onclick: () => {
+    S.student = { ban: String(banIn.value || "2"), no, name: nameIn.value.trim() }; store.save(S); flushQueue(); showMap();
+  } }, "입장하기");
+  mount(h("main", { class: "gate" }, h("section", { class: "gate-card" },
+    h("h1", {}, APP.welcome),
+    h("p", { class: "inst" }, APP.intro + " 내 번호를 눌러 주세요."),
+    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반"), nameIn),
+    nums, go)));
+}
+
+/* 차시 지도 */
+function wantedLesson() {
+  const h = (location.hash || "").replace("#", "").trim();
+  const q = new URLSearchParams(location.search).get("lesson");
+  const key = q || h;
+  if (!key) return null;
+  return LESSONS.find(L => String(L.no) === key || L.id === key) || null;
+}
+function showMap() {
+  if (!S.student) return showGate();
+  const want = wantedLesson();
+  if (want && !showMap._used) { showMap._used = true; return openLesson(want.id); }
+  const trail = h("div", { class: "trail" });
+  LESSONS.forEach(L => {
+    const p = myProg(L.id), done = L.steps.filter((_, i) => p.steps[i] && p.steps[i].ok).length;
+    const prog = h("div", { class: "prog" }, L.steps.map((_, i) => {
+      const r = p.steps[i];
+      return h("i", { class: r && r.ok ? (r.help === "넘어감" ? "half" : "on") : "" });
+    }));
+    trail.append(h("button", { class: "site" + (done === L.steps.length ? " done" : ""), onclick: () => openLesson(L.id) },
+      p.chal && p.chal.ok ? h("span", { class: "star", title: "도전 완료" }, "★") : null,
+      h("span", { class: "n" }, `${L.no}차시`), h("span", { class: "t" }, L.title),
+      h("span", { class: "soop" }, `S.O.O.P. ${L.soop}`), prog));
+  });
+  const story = (typeof UNIT_STORY !== "undefined") ? UNIT_STORY : null;
+  const storyCard = story ? h("section", { class: "story" },
+    h("div", { class: "jua" }, `📖 이야기 · ${story.title}`),
+    story.lines.map(t => h("p", {}, t))) : null;
+  mount(h("main", { class: "map" }, h("h2", {}, "어느 차시를 탐험할까요?"),
+    h("p", { class: "inst" }, "각 차시는 ‘개념 계단’ 다섯 칸으로 되어 있어요. 앞 계단을 해결해야 다음 계단이 열려요."),
+    storyCard, trail));
+}
+
+/* 차시 학습 */
+let CUR = null;
+function openLesson(id, stepIdx) {
+  const L = LESSONS.find(x => x.id === id); const p = myProg(id);
+  let first = L.steps.findIndex((_, i) => !(p.steps[i] && p.steps[i].ok)); if (first < 0) first = L.steps.length - 1;
+  CUR = { L, idx: stepIdx != null ? stepIdx : first };
+  renderLesson();
+}
+function unlocked(L, i) { const p = myProg(L.id); for (let k = 0; k < i; k++) if (!(p.steps[k] && p.steps[k].ok)) return false; return true; }
+function renderLesson() {
+  const { L, idx } = CUR; const p = myProg(L.id);
+  const stairs = h("nav", { class: "stairs", "aria-label": "개념 계단" },
+    h("div", { class: "title" }, `${L.no}차시 · ${L.title}`), h("span", { class: "soopb" }, `S.O.O.P. ${L.soop}`));
+  L.steps.forEach((st, i) => {
+    const rec0 = p.steps[i], ok = rec0 && rec0.ok, lock = !unlocked(L, i);
+    stairs.append(h("button", { class: "stair" + (i === idx ? " cur" : "") + (ok ? " ok" : "") + (lock ? " lock" : ""), disabled: lock,
+      onclick: () => { CUR.idx = i; renderLesson(); } }, h("span", { class: "k" }, ok ? (rec0 && rec0.help === "넘어감" ? "△" : "✓") : String(i + 1)), h("span", { class: "lbl" }, st.name || STEP_NAMES[i])));
+  });
+  if (L.challenge) {
+    const allOk = L.steps.every((_, i) => p.steps[i] && p.steps[i].ok);
+    stairs.append(h("button", { class: "stair chal" + (idx === "chal" ? " cur" : "") + (p.chal && p.chal.ok ? " ok" : "") + (allOk ? "" : " lock"), disabled: !allOk,
+      onclick: () => { CUR.idx = "chal"; renderLesson(); } }, h("span", { class: "k" }, "★"), h("span", { class: "lbl" }, "도전 계단")));
+  }
+  stairs.append(h("button", { class: "ghost back", onclick: showMap }, "차시 지도로"));
+  stairs.append(h("button", { class: "ghost back copylink", onclick: () => {
+    const url = location.origin + location.pathname + location.search.replace(/[?&]lesson=[^&]*/, "") + "#" + L.no;
+    try { navigator.clipboard.writeText(url); toast("이 차시 주소를 복사했어요"); }
+    catch (err) { toast(url); }
+  } }, "이 차시 주소 복사"));
+
+  const work = h("section", { class: "work" });
+  const step = idx === "chal" ? L.challenge : L.steps[idx];
+  const stepNo = idx === "chal" ? 6 : idx + 1;
+  const name = idx === "chal" ? "도전 계단" : (step.name || STEP_NAMES[idx]);
+  const speakText = () => `탐구 질문. ${L.question}. ${name}. ${step.inst || ""}`;
+  const speakBtn = h("button", { class: "ghost speak", title: "문제를 읽어 줘요", onclick: () => {
+    try { speechSynthesis.cancel(); const u = new SpeechSynthesisUtterance(speakText()); u.lang = "ko-KR"; u.rate = .9; speechSynthesis.speak(u); }
+    catch (err) { toast("이 기기에서는 읽어 주기를 쓸 수 없어요."); }
+  } }, "🔊 읽어 주기");
+  if (typeof UNIT_STORY !== "undefined") work.append(h("div", { class: "scene" }, "📖 " + UNIT_STORY.one));
+  work.append(h("div", { class: "q" }, "탐구 질문 · " + L.question),
+    h("div", { class: "stephead" }, h("h2", { class: "stepname" }, `${idx === "chal" ? "★" : stepNo}. ${name}`), speakBtn));
+  if (step.inst) work.append(h("p", { class: "inst" }, step.inst));
+  const body = h("div"); work.append(body);
+  const nextBtn = h("button", { class: "big", disabled: true }, "다음 계단");
+  const fb = h("div", { class: "fb", role: "status", "aria-live": "polite" });
+  const acts = h("div", { class: "actions" }, nextBtn, fb);
+  work.append(acts);
+
+  let tries = 0, finished = false, fails = 0;
+  const helpBox = h("div", { class: "hintbox hidden" });
+  const h1 = h("button", { class: "ghost help hidden", onclick: () => help1() }, "도움 1단계 · 단서 보기");
+  const h2 = h("button", { class: "ghost help hidden", onclick: () => help2() }, "도움 2단계 · 중요한 낱말 보기");
+  const h3 = h("button", { class: "ghost help hidden", onclick: () => help3() }, "도움 3단계 · 답 보고 따라 쓰기");
+  const easyBtn = h("button", { class: "ghost hidden", onclick: () => openEasy() }, "조금 쉬운 문제로");
+  acts.append(h1, h2, h3, easyBtn);
+  work.append(helpBox);
+  let given = { words: [], answers: [] };          // 도우미가 알려 주는 낱말·정답
+  const hintList = (step.hints && step.hints.length ? step.hints.slice() : []).concat([L.summary]);
+  let hintShown = 0;
+  function help1() {
+    if (hintShown >= hintList.length) { h1.disabled = true; return; }
+    helpBox.classList.remove("hidden");
+    helpBox.append(h("p", {}, h("b", {}, `단서 ${hintShown + 1}. `), hintList[hintShown]));
+    hintShown++;
+    h1.textContent = hintShown >= hintList.length ? "단서를 모두 봤어요" : "도움 1단계 · 단서 더 보기";
+    if (hintShown >= hintList.length) h1.disabled = true;
+  }
+  function help2() {
+    h2.disabled = true; helpBox.classList.remove("hidden");
+    const words = (step.words && step.words.length ? step.words
+      : (given.words && given.words.length ? given.words
+      : (L.keywords || (typeof UNIT_KEYWORDS !== "undefined" ? UNIT_KEYWORDS : []))));
+    helpBox.append(h("div", { class: "wordbank" },
+      h("b", {}, "중요한 낱말 상자 "),
+      words.length ? words.map(w => h("span", { class: "word" }, w)) : h("span", {}, "이 계단의 핵심 개념: " + L.summary)));
+  }
+  function passOver() {
+    if (finished) return;
+    api.done("[도움 3단계까지 보고 넘어감]", "괜찮아요. 다음 계단으로 가요. 시간이 있을 때 이 계단에 다시 와서 한 번 더 해 봐요.", "넘어감");
+  }
+  function help3() {
+    h3.disabled = true; helpBox.classList.remove("hidden");
+    nextBtn.disabled = false;   // 여기까지 왔으면 다음 계단으로 갈 수 있어요
+    const ans = (step.answer ? [step.answer] : given.answers).filter(Boolean);
+    if (!ans.length) {
+      helpBox.append(h("p", {}, h("b", {}, "답 보기 · "), "이 계단은 직접 해 보는 활동이에요. 위 단서를 보고 한 번 더 해 보고, 어려우면 선생님이나 짝에게 도움을 청해요."),
+        h("p", { class: "inst" }, "지금 어려우면 아래 ‘다음 계단’을 눌러 넘어가도 괜찮아요."));
+      return;
+    }
+    const box = h("div", { class: "copybox" }, h("p", {}, h("b", {}, "답을 보고 그대로 따라 써요")));
+    const rows = ans.map(t => {
+      const inp = h("input", { type: "text", "aria-label": "따라 쓰기" });
+      box.append(h("div", { class: "copyrow" }, h("span", { class: "target" }, t), inp));
+      return { t, inp };
+    });
+    box.append(h("p", { class: "inst" }, "쓰면서 왜 그렇게 되는지 소리 내어 말해 봐요."));
+    box.append(h("p", { class: "inst" }, "따라 쓰기가 어려우면 아래 ‘다음 계단’을 눌러 넘어가도 괜찮아요."));
+    const norm = s => String(s).replace(/\s+/g, "").replace(/[，,]/g, "");
+    box.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+      let allOk = true;
+      rows.forEach(r => { const good = norm(r.inp.value) === norm(r.t); r.inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) allOk = false; });
+      if (!allOk) return api.hint("위의 답과 똑같이 써 보세요.");
+      api.done("[따라 쓰기] " + ans.join(" / "), "잘 따라 썼어요. 다음에는 단서만 보고도 할 수 있을 거예요.", "도움");
+    } }, "다 썼어요")));
+    helpBox.append(box);
+  }
+  function openEasy() {
+    if (!step.easy) return;
+    easyBtn.classList.add("hidden");
+    body.innerHTML = "";
+    body.append(h("p", { class: "inst" }, "수를 작게 바꾼 문제예요. 이것부터 해 봐요."));
+    step.easy(body, Object.assign({}, api, { done: (ans, msg) => api.done("[쉬운 문제] " + (ans || ""), msg || "좋아요! 같은 방법으로 큰 수도 할 수 있어요.") }));
+  }
+  const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
+  if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
+  const api = {
+    tryOnce() { tries++; },
+    provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
+    fail(msg, answer) {
+      tries++; fails++;
+      fb.className = "fb bad"; fb.textContent = "× " + (msg || "다시 생각해 봐요.");
+      record(L, stepNo, name, false, tries, answer, idx === "chal" ? "도전" : "기본");
+      if (fails >= 2) h1.classList.remove("hidden");
+      if (fails >= 3) { h2.classList.remove("hidden"); if (step.easy) easyBtn.classList.remove("hidden"); }
+      if (fails >= 4) h3.classList.remove("hidden");
+    },
+    hint(msg) { fb.className = "fb"; fb.textContent = msg; },
+    done(answer, msg, level) {
+      if (finished) return; finished = true; tries = Math.max(tries, 1);
+      const rec = { ok: true, tries, ans: answer || "", help: level || null };
+      if (idx === "chal") p.chal = rec; else p.steps[idx] = rec;
+      store.save(S);
+      record(L, stepNo, name, true, tries, answer, level || (idx === "chal" ? "도전" : "기본"));
+      fb.className = "fb good"; fb.textContent = "○ " + (msg || "좋아요! 계단을 올라갔어요.");
+      nextBtn.disabled = false;
+      renderStairsOnly();
+    }
+  };
+  function renderStairsOnly() {
+    const fresh = myProg(L.id);
+    [...stairs.querySelectorAll(".stair")].forEach((b, i) => {
+      if (i < L.steps.length) {
+        const r = fresh.steps[i], ok = r && r.ok; b.classList.toggle("ok", !!ok);
+        b.classList.toggle("passed", !!(r && r.help === "넘어감"));
+        b.querySelector(".k").textContent = ok ? (r.help === "넘어감" ? "△" : "✓") : String(i + 1);
+        const lock = !unlocked(L, i); b.classList.toggle("lock", lock); b.disabled = lock;
+      } else {
+        const allOk = L.steps.every((_, k) => fresh.steps[k] && fresh.steps[k].ok);
+        b.classList.toggle("lock", !allOk); b.disabled = !allOk; b.classList.toggle("ok", !!(fresh.chal && fresh.chal.ok));
+      }
+    });
+  }
+  nextBtn.onclick = () => {
+    if (!finished && !prevOk) passOver();
+    if (idx === "chal") return showFinish(L, true);
+    if (idx < L.steps.length - 1) { CUR.idx = idx + 1; renderLesson(); }
+    else showFinish(L, false);
+  };
+  mount(h("main", { class: "lesson" }, stairs, work));
+  const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
+  markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
+  step.render(body, api);
+}
+function showFinish(L, chal) {
+  const p = myProg(L.id);
+  const box = h("section", { class: "work finish" },
+    h("div", { class: "medal", "aria-hidden": "true" }, chal ? "★" : "◎"),
+    h("h2", { class: "stepname" }, chal ? "도전 계단까지 모두 올랐어요!" : `${L.no}차시 개념 계단을 모두 올랐어요!`),
+    h("div", { class: "card", style: "text-align:left;margin:1em auto;max-width:40em" }, h("div", { class: "jua" }, "오늘의 정리"), h("p", {}, L.summary)),
+    h("div", { class: "actions", style: "justify-content:center" },
+      (!chal && L.challenge && !(p.chal && p.chal.ok)) ? h("button", { class: "big", onclick: () => { CUR = { L, idx: "chal" }; renderLesson(); } }, "도전 계단 오르기") : null,
+      h("button", { class: "ghost", onclick: showMap }, "차시 지도로")));
+  mount(h("main", { class: "lesson", style: "grid-template-columns:1fr" }, box));
+}
+
+/* ===== 교사 화면 ===== */
+function showTeacher() {
+  const pin = h("input", { type: "password", placeholder: "비밀번호", style: "width:9em", inputmode: "numeric" });
+  const msg = h("div", { class: "fb" });
+  const area = h("div");
+  const load = () => {
+    msg.className = "fb"; msg.textContent = "기록을 불러오는 중…";
+    const done = (rows) => { msg.textContent = `기록 ${rows.length}개를 불러왔어요.`; renderDash(area, rows); };
+    const fail = (e) => { msg.className = "fb bad"; msg.textContent = (e && e.message) || "기록을 불러오지 못했어요. 비밀번호와 연결 주소를 확인해 주세요."; };
+    if (hasGAS()) google.script.run.withSuccessHandler(done).withFailureHandler(fail).getRecords(pin.value);
+    else if (CONFIG.endpoint) fetch(CONFIG.endpoint + "?pin=" + encodeURIComponent(pin.value)).then(r => r.json()).then(j => j.error ? fail(new Error(j.error)) : done(j.rows)).catch(fail);
+    else { if (pin.value !== CONFIG.localPin) return fail(new Error("비밀번호가 맞지 않아요.")); msg.textContent = "이 기기에 저장된 기록만 보여요. 반 전체 기록은 구글 시트와 연결하면 볼 수 있어요."; renderDash(area, S.log); }
+  };
+  mount(h("main", { class: "teacher" }, h("h2", { class: "stepname" }, "선생님 확인 화면"),
+    h("p", { class: "inst" }, hasGAS() || CONFIG.endpoint ? "구글 시트에 모인 반 전체 기록을 봅니다." : "지금은 구글 시트와 연결되지 않은 상태예요(이 기기 기록만 보여요)."),
+    h("div", { class: "row" }, pin, h("button", { class: "big", onclick: load }, "기록 보기"),
+      h("button", { class: "ghost", onclick: () => S.student ? showMap() : showGate() }, "돌아가기")), msg, area));
+  pin.focus();
+}
+function renderDash(area, rows) {
+  area.innerHTML = "";
+  rows = rows.filter(r => !r.unit || r.unit === CONFIG.unit);   // 지금 열어 둔 단원의 기록만 보기
+  const isOk = r => r.ok === true || r.ok === "true" || r.ok === "O";
+  const students = {};
+  const stepStat = {};      // `${차시}-${계단}` -> {name, wrong, ok, answers:{오답:횟수}}
+  rows.forEach(r => {
+    const k = `${r.ban}-${r.no}`;
+    const s = (students[k] = students[k] || { ban: r.ban, no: +r.no, name: r.name, c: {} });
+    if (r.name) s.name = r.name;
+    const c = (s.c[r.chasi] = s.c[r.chasi] || { steps: new Set(), chal: false, tries: 0, wrong: 0, answers: [], wrongAnswers: [], helped: new Set() });
+    if (isOk(r)) {
+      if (+r.step === 6) c.chal = true; else c.steps.add(+r.step);
+      if (r.level === "넘어감" || r.level === "도움") c.helped.add(+r.step);
+      if (r.answer) c.answers.push(`${r.step}. ${r.stepName}: ${r.answer}`);
+    }
+    else { c.wrong++; if (r.answer) c.wrongAnswers.push(`${r.step}. ${r.stepName}: ${r.answer}`); }
+    const sk = `${r.chasi}-${r.step}`;
+    const st = (stepStat[sk] = stepStat[sk] || { chasi: r.chasi, step: r.step, name: r.stepName, wrong: 0, ok: 0, answers: {} });
+    if (isOk(r)) st.ok++;
+    else { st.wrong++; if (r.answer) st.answers[r.answer] = (st.answers[r.answer] || 0) + 1; }
+  });
+  const list = Object.values(students).sort((a, b) => (a.ban + "").localeCompare(b.ban + "") || a.no - b.no);
+  const thead = h("tr", {}, h("th", {}, "번호"), h("th", {}, "이름"), LESSONS.map(L => h("th", {}, `${L.no}차시`)));
+  const tbody = h("tbody");
+  const detail = h("div", { class: "detail" });
+  list.forEach(s => {
+    tbody.append(h("tr", {}, h("td", {}, `${s.ban}-${s.no}`), h("td", { class: "nm" }, s.name || ""),
+      LESSONS.map(L => {
+        const c = s.c[L.no]; if (!c) return h("td", { class: "c-none" }, "–");
+        const n = c.steps.size, full = n >= L.steps.length;
+        return h("td", { class: full ? "c-full" : "c-part", style: "cursor:pointer", title: "눌러서 자세히 보기",
+          onclick: () => { detail.innerHTML = ""; detail.append(
+            h("h3", {}, `${s.no}번 ${s.name || ""} · ${L.no}차시 ${L.title}`),
+            h("p", {}, `해결한 계단 ${n}/${L.steps.length}${c.chal ? " + 도전 ★" : ""} · 틀린 횟수 ${c.wrong}번` + (c.helped.size ? ` · 도움을 받아 통과한 계단 △${c.helped.size}개 (${[...c.helped].sort().join(", ")}번 계단)` : "")),
+            c.wrongAnswers.length ? h("div", {}, h("b", {}, "틀린 답"), h("ul", {}, c.wrongAnswers.map(a => h("li", {}, a)))) : null,
+            h("div", {}, h("b", {}, "학생이 쓴 답"), h("ul", {}, c.answers.map(a => h("li", {}, a))))); detail.scrollIntoView({ behavior: "smooth" }); } },
+          `${n}/${L.steps.length}${c.chal ? " ★" : ""}${c.helped.size ? ` △${c.helped.size}` : ""}${c.wrong ? ` (×${c.wrong})` : ""}`);
+      })));
+  });
+  // 많이 틀린 계단 요약
+  const hard = Object.values(stepStat).filter(x => x.wrong > 0).sort((a, b) => b.wrong - a.wrong).slice(0, 5);
+  const hardBox = h("section", { class: "detail" }, h("h3", {}, "학생들이 많이 틀린 계단"));
+  if (!hard.length) hardBox.append(h("p", {}, "아직 틀린 기록이 없어요."));
+  hard.forEach(x => {
+    const tops = Object.entries(x.answers).sort((a, b) => b[1] - a[1]).slice(0, 3);
+    hardBox.append(h("div", { class: "qitem" },
+      h("b", {}, `${x.chasi}차시 ${x.step}. ${x.name}`), h("span", {}, ` — 틀린 횟수 ${x.wrong}번`),
+      tops.length ? h("div", {}, "자주 나온 오답: " + tops.map(([a, n]) => `${a} (${n}번)`).join(" · ")) : null));
+  });
+  area.append(h("div", { class: "tbl-wrap" }, h("table", { class: "dash" }, h("thead", {}, thead), tbody)), hardBox, detail);
+  if (!list.length) area.append(h("p", {}, "아직 기록이 없어요."));
+}
+/* ===== 공통 부품 ===== */
+const NS = "http://www.w3.org/2000/svg";
+function svgEl(tag, attrs = {}) { const e = document.createElementNS(NS, tag); for (const [k, v] of Object.entries(attrs)) e.setAttribute(k, v); return e; }
+function svgPt(svg, ev) { const pt = svg.createSVGPoint(); pt.x = ev.clientX; pt.y = ev.clientY; return pt.matrixTransform(svg.getScreenCTM().inverse()); }
+const dist = (a, b) => Math.hypot(a.x - b.x, a.y - b.y);
+function makeSvg(w, hgt, grid) {
+  const s = svgEl("svg", { viewBox: `0 0 ${w} ${hgt}`, role: "img" });
+  if (grid) { const g = svgEl("g", { stroke: "#DCE4E0", "stroke-width": 1 }); for (let x = 0; x <= w; x += grid) g.append(svgEl("line", { x1: x, y1: 0, x2: x, y2: hgt })); for (let y = 0; y <= hgt; y += grid) g.append(svgEl("line", { x1: 0, y1: y, x2: w, y2: y })); s.append(g); }
+  return s;
+}
+function txt(x, y, t, size = 22, attrs = {}) { const e = svgEl("text", Object.assign({ x, y, "font-size": size, "text-anchor": "middle", "dominant-baseline": "middle", "font-family": "Jua, sans-serif", fill: "#1D2A2A" }, attrs)); e.textContent = t; return e; }
+
+/* 선택형 문제 여러 개 (mcq/ox) */
+function quiz(body, api, items, opts = {}) {
+  const state = items.map(() => (null));
+  const wrap = h("div");
+  items.forEach((it, qi) => {
+    const box = h("div", { class: "qitem" });
+    if (it.q) box.append(h("div", { class: "jua" }, `${items.length > 1 ? qi + 1 + ". " : ""}${it.q}`));
+    if (it.fig) box.append(it.fig());
+    const multi = Array.isArray(it.a);
+    const row = h("div", { class: "opts" });
+    const sel = new Set();
+    it.o.forEach((o, oi) => row.append(h("button", { class: "opt", onclick: (e) => {
+      if (multi) { sel.has(oi) ? sel.delete(oi) : sel.add(oi); e.currentTarget.classList.toggle("on"); state[qi] = [...sel]; }
+      else { [...row.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); state[qi] = oi; }
+    } }, o)));
+    box.append(row); wrap.append(box);
+  });
+  api.provide && api.provide({
+    words: items.flatMap(it => (Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i])),
+    answers: items.map((it, qi) => `${items.length > 1 ? (qi + 1) + ") " : ""}${(Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i]).join(", ")}`)
+  });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce();
+    let allOk = true; const ans = [];
+    items.forEach((it, qi) => {
+      const box = wrap.children[qi], btns = box.querySelectorAll(".opt"), v = state[qi];
+      const good = Array.isArray(it.a) ? (Array.isArray(v) && v.length === it.a.length && it.a.every(x => v.includes(x))) : v === it.a;
+      btns.forEach(b => b.classList.remove("good", "bad"));
+      if (v != null) (Array.isArray(v) ? v : [v]).forEach(i => btns[i].classList.add(good ? "good" : "bad"));
+      if (!good) allOk = false;
+      ans.push(v == null ? "-" : (Array.isArray(v) ? v.map(i => it.o[i]).join("·") : it.o[v]));
+    });
+    if (allOk) { api.done(ans.join(" / "), opts.ok); }
+    else {
+      const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
+      const w = items[wrongIdx];
+      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
+    }
+  } }, "확인하기");
+  body.append(wrap, h("div", { class: "actions" }, check));
+}
+/* 빈칸 문장 */
+function blanks(body, api, parts, opts = {}) {
+  const sel = [];
+  const sent = h("p", { class: "sent" });
+  parts.forEach(pt => {
+    if (typeof pt === "string") sent.append(pt);
+    else {
+      const k = sel.length; sel.push(null);
+      const slot = h("span", { class: "slot" });
+      pt.o.forEach((o, oi) => slot.append(h("button", { class: "opt", onclick: (e) => { [...slot.children].forEach(b => b.classList.remove("on", "good", "bad")); e.currentTarget.classList.add("on"); sel[k] = oi; } }, o)));
+      slot.dataset.a = pt.a; sent.append(slot);
+    }
+  });
+  api.provide && api.provide({
+    words: parts.filter(p => typeof p !== "string").flatMap(p => p.o),
+    answers: [parts.map(p => typeof p === "string" ? p : p.o[p.a]).join("")]
+  });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce(); let ok = true; const ans = [];
+    [...sent.querySelectorAll(".slot")].forEach((slot, k) => {
+      const a = +slot.dataset.a; const btn = slot.children[sel[k]];
+      if (sel[k] !== a) ok = false; if (btn) btn.classList.add(sel[k] === a ? "good" : "bad");
+      ans.push(btn ? btn.textContent : "-");
+    });
+    ok ? api.done(ans.join(" / "), opts.ok) : api.fail(opts.bad || "빨간 낱말을 다시 골라 봐요.", ans.join(" / "));
+  } }, "확인하기");
+  body.append(sent, h("div", { class: "actions" }, check));
+}
+/* 글쓰기(자기 생각) */
+function writeStep(body, api, prompts, opts = {}) {
+  const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); body.append(h("div", { class: "jua", style: "margin-top:.6em" }, p.q), t); return t; });
+  body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    const vals = areas.map(t => t.value.trim());
+    if (vals.some(v => v.length < (opts.min || 4))) return api.fail("모든 칸에 내 생각을 조금 더 자세히 써 봐요.", vals.join(" | "));
+    api.done(prompts.map((p, i) => `${p.tag || p.q}: ${vals[i]}`).join(" | "), opts.ok || "생각을 잘 적었어요!");
+  } }, "다 썼어요")));
+}
+/* 순서 맞추기 */
+function sequence(body, api, cards, order, opts = {}) {
+  const picked = [];
+  const row = h("div", { class: "seq" });
+  const show = h("div", { class: "readout" }, "순서: ");
+  cards.forEach((c, i) => row.append(h("button", { class: "opt", onclick: (e) => {
+    if (picked.includes(i)) return; picked.push(i); e.currentTarget.classList.add("on");
+    e.currentTarget.prepend(h("span", { class: "no" }, String(picked.length))); show.textContent = "순서: " + picked.map(k => c0(k)).join(" → ");
+    if (picked.length === cards.length) {
+      api.tryOnce();
+      if (picked.every((v, k) => v === order[k])) api.done(picked.map(c0).join("→"), opts.ok);
+      else { api.fail("순서가 달라요. ‘다시’를 누르고 한 번 더 해 봐요.", picked.map(c0).join("→")); }
+    }
+  } }, c)));
+  const c0 = k => cards[k].slice(0, 1);
+  body.append(row, show, h("div", { class: "actions" }, h("button", { class: "ghost", onclick: () => { picked.length = 0; [...row.children].forEach(b => { b.classList.remove("on"); const n = b.querySelector(".no"); n && n.remove(); }); show.textContent = "순서: "; } }, "다시")));
+}
+
+/* ===== 조작 부품 (1 cm = 40) ===== */
+const CM = 40;
+const BLUE = "#2B7BD6", INK = "#1D2A2A", TENT = "#E47A38", PINE = "#2F6B57";
+function stageWrap(svg, side) { return h("div", { class: "panel" }, h("div", { class: "stage" }, svg), side || h("div", { class: "side" })); }
+function dragOn(svg, onDown, onMove, onUp) {
+  let active = false;
+  svg.addEventListener("pointerdown", e => { active = onDown(svgPt(svg, e), e) !== false; if (active) svg.setPointerCapture(e.pointerId); });
+  svg.addEventListener("pointermove", e => { if (active) onMove(svgPt(svg, e), e); });
+  const up = e => { if (active) { active = false; onUp && onUp(svgPt(svg, e), e); } };
+  svg.addEventListener("pointerup", up); svg.addEventListener("pointercancel", up);
+}
+function sweepTracker() { const bins = new Set(); return { add(a) { bins.add(Math.floor(((a + Math.PI * 2) % (Math.PI * 2)) / (Math.PI * 2) * 36)); }, full() { return bins.size >= 34; }, count() { return bins.size; }, reset() { bins.clear(); } }; }
+/* ===== 공통: 수 입력 ===== */
+/* ===== 곱셈 단원 조작 부품 ===== */
+function numbers(body, api, items, opts = {}) {
+  const ins = [];
+  const wrap = h("div");
+  items.forEach(it => {
+    const inp = h("input", { type: "number", inputmode: "numeric", style: "width:6em;font-size:1.2em", "aria-label": it.q });
+    ins.push({ inp, a: it.a });
+    wrap.append(h("div", { class: "qitem" }, h("span", { class: "jua" }, it.q + " "), inp, it.unit ? h("span", {}, " " + it.unit) : null));
+  });
+  api.provide && api.provide({
+    words: opts.words || [],
+    answers: items.map(it => `${it.q} ${it.a}${it.unit ? " " + it.unit : ""}`)
+  });
+  body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    api.tryOnce(); let ok = true;
+    ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
+    const given = ins.map(x => x.inp.value).join(", ");
+    if (ok) return api.done(given, opts.ok);
+    const bad = ins.find(({ inp, a }) => Number(inp.value) !== a);
+    const item = items[ins.indexOf(bad)];
+    const why = item && item.why && item.why[String(Number(bad.inp.value))];
+    api.fail(why || opts.bad || "빨간 칸을 다시 계산해 봐요.", given);
+  } }, "확인하기")));
+}
+
+/* ===== 3-1 수학 3. 나눗셈 — 단원 조작 부품 (접두어 u3) =====
+   모든 부품: function u3Xxx(body, api, opt)
+   - 수·물건 이름·문구는 opt로 받는다(이야기 버전에서 그대로 재사용).
+   - 곱셈구구 범위, 나누어떨어지는 나눗셈만(나머지·세로 나눗셈 없음).
+   공통 opt: item(물건 이름), unit(단위, 기본 "개"), kind(그림 종류), tip(안내), ok(칭찬), ask(확인 문항 [{q,a,unit,why}])
+   kind: arrow(투호 화살) stone(바둑돌) fish(물고기) cookie(진저브레드) disc(원반) block(나무 도막) pebble(공깃돌)
+         cup(컵) pencil(연필) drum(장구) berry(딸기) jegi(제기) flower(꽃) candy(사탕) dot(동그라미)
+*/
+const U3_SOFT = { blue: "#DCEAFB", pine: "#EAF3EC", tent: "#FDF1E8", gold: "#F4C542", paper: "#FBFCFB" };
+
+/* 받침에 따라 조사 붙이기: u3J("화살","이","가") → "화살이" */
+function u3J(w, a, b) {
+  const s = String(w), c = s.charCodeAt(s.length - 1);
+  const has = (c >= 0xAC00 && c <= 0xD7A3) ? (c - 0xAC00) % 28 !== 0 : /[013678]$/.test(s);
+  return s + (has ? a : b);
+}
+
+/* 숫자·낱말 뒤 '으로/로': u3Ro(3) → "3으로", u3Ro(7) → "7로" */
+function u3Ro(w) {
+  const s = String(w), c = s.charCodeAt(s.length - 1);
+  if (c >= 0xAC00 && c <= 0xD7A3) { const j = (c - 0xAC00) % 28; return s + (j === 0 || j === 8 ? "로" : "으로"); }
+  return s + (/[036]$/.test(s) ? "으로" : "로");
+}
+
+/* 물건 그림 하나 (가운데 x,y · 크기 s) */
+function u3Icon(kind, x, y, s) {
+  const g = svgEl("g", { transform: `translate(${x.toFixed(1)},${y.toFixed(1)})` });
+  const r = s / 2, E = (t, a) => { const e = svgEl(t, a); g.append(e); return e; };
+  switch (kind) {
+    case "arrow":
+      E("line", { x1: 0, y1: r * .95, x2: 0, y2: -r * .55, stroke: INK, "stroke-width": 3.5, "stroke-linecap": "round" });
+      E("polygon", { points: `0,${-r} ${-r * .3},${-r * .45} ${r * .3},${-r * .45}`, fill: INK });
+      E("path", { d: `M0 ${r * .45}L${-r * .38} ${r * .9}M0 ${r * .45}L${r * .38} ${r * .9}M0 ${r * .15}L${-r * .38} ${r * .6}M0 ${r * .15}L${r * .38} ${r * .6}`, stroke: TENT, "stroke-width": 3.5, "stroke-linecap": "round", fill: "none" });
+      break;
+    case "stone":
+      E("circle", { r: r * .78, fill: INK });
+      E("circle", { cx: -r * .25, cy: -r * .28, r: r * .18, fill: "#fff", opacity: .7 });
+      break;
+    case "fish":
+      E("polygon", { points: `${r * .45},0 ${r * .98},${-r * .45} ${r * .98},${r * .45}`, fill: TENT, stroke: INK, "stroke-width": 2 });
+      E("ellipse", { cx: -r * .1, cy: 0, rx: r * .65, ry: r * .42, fill: TENT, stroke: INK, "stroke-width": 2 });
+      E("circle", { cx: -r * .45, cy: -r * .08, r: r * .09, fill: INK });
+      break;
+    case "cookie":
+      E("circle", { cx: 0, cy: -r * .55, r: r * .32, fill: TENT, stroke: INK, "stroke-width": 2 });
+      E("path", { d: `M${-r * .85} ${-r * .15}H${r * .85}L${r * .75} ${r * .12}H${r * .32}L${r * .6} ${r * .95}H${r * .12}L0 ${r * .5}L${-r * .12} ${r * .95}H${-r * .6}L${-r * .32} ${r * .12}H${-r * .75}Z`, fill: TENT, stroke: INK, "stroke-width": 2, "stroke-linejoin": "round" });
+      E("circle", { cx: 0, cy: r * .05, r: r * .08, fill: "#fff" });
+      E("circle", { cx: 0, cy: r * .3, r: r * .08, fill: "#fff" });
+      break;
+    case "disc":
+      E("circle", { r: r * .8, fill: PINE, stroke: INK, "stroke-width": 2 });
+      E("circle", { r: r * .45, fill: "none", stroke: "#fff", "stroke-width": 2.5 });
+      break;
+    case "block":
+      E("rect", { x: -r * .85, y: -r * .45, width: r * 1.7, height: r * .9, rx: 3, fill: U3_SOFT.gold, stroke: INK, "stroke-width": 2.5 });
+      E("path", { d: `M${-r * .55} ${-r * .1}Q0 ${-r * .3} ${r * .55} ${-r * .1}M${-r * .45} ${r * .18}Q0 0 ${r * .45} ${r * .18}`, stroke: INK, "stroke-width": 1.5, fill: "none" });
+      break;
+    case "pebble":
+      E("circle", { r: r * .6, fill: U3_SOFT.gold, stroke: INK, "stroke-width": 2.5 });
+      break;
+    case "cup":
+      E("path", { d: `M${-r * .55} ${r * .8}L${-r * .35} ${-r * .8}H${r * .35}L${r * .55} ${r * .8}Z`, fill: TENT, stroke: INK, "stroke-width": 2.5, "stroke-linejoin": "round" });
+      E("line", { x1: -r * .58, y1: r * .8, x2: r * .58, y2: r * .8, stroke: INK, "stroke-width": 4, "stroke-linecap": "round" });
+      break;
+    case "pencil":
+      E("rect", { x: -r * .2, y: -r * .9, width: r * .4, height: r * 1.3, fill: U3_SOFT.gold, stroke: INK, "stroke-width": 2 });
+      E("polygon", { points: `${-r * .2},${r * .4} ${r * .2},${r * .4} 0,${r * .95}`, fill: "#fff", stroke: INK, "stroke-width": 2 });
+      E("circle", { cx: 0, cy: r * .85, r: r * .06, fill: INK });
+      break;
+    case "drum":
+      E("polygon", { points: `${-r * .95},${-r * .6} ${-r * .12},${-r * .22} ${-r * .12},${r * .22} ${-r * .95},${r * .6}`, fill: BLUE, stroke: INK, "stroke-width": 2 });
+      E("polygon", { points: `${r * .95},${-r * .6} ${r * .12},${-r * .22} ${r * .12},${r * .22} ${r * .95},${r * .6}`, fill: TENT, stroke: INK, "stroke-width": 2 });
+      E("rect", { x: -r * .14, y: -r * .22, width: r * .28, height: r * .44, fill: INK });
+      break;
+    case "berry":
+      E("path", { d: `M0 ${r * .9}C${-r * .9} ${r * .2} ${-r * .8} ${-r * .55} 0 ${-r * .45}C${r * .8} ${-r * .55} ${r * .9} ${r * .2} 0 ${r * .9}Z`, fill: TENT, stroke: INK, "stroke-width": 2 });
+      E("path", { d: `M${-r * .4} ${-r * .6}L0 ${-r * .4}L${r * .4} ${-r * .6}L0 ${-r * .85}Z`, fill: PINE });
+      [[-.25, 0], [.25, 0], [0, .35], [-.2, .3], [.2, .3]].forEach(([a, b]) => E("circle", { cx: r * a, cy: r * b, r: r * .06, fill: "#fff" }));
+      break;
+    case "jegi":
+      E("path", { d: `M0 ${r * .35}L${-r * .6} ${-r * .85}M0 ${r * .35}L0 ${-r * .95}M0 ${r * .35}L${r * .6} ${-r * .85}`, stroke: BLUE, "stroke-width": 4, "stroke-linecap": "round" });
+      E("ellipse", { cx: 0, cy: r * .55, rx: r * .6, ry: r * .32, fill: TENT, stroke: INK, "stroke-width": 2 });
+      break;
+    case "flower":
+      for (let k = 0; k < 5; k++) { const a = k * Math.PI * 2 / 5 - Math.PI / 2; E("circle", { cx: Math.cos(a) * r * .45, cy: Math.sin(a) * r * .45, r: r * .33, fill: TENT, stroke: INK, "stroke-width": 1.5 }); }
+      E("circle", { r: r * .25, fill: U3_SOFT.gold, stroke: INK, "stroke-width": 1.5 });
+      break;
+    case "candy":
+      E("polygon", { points: `${-r * .45},0 ${-r * .95},${-r * .4} ${-r * .95},${r * .4}`, fill: BLUE, stroke: INK, "stroke-width": 1.5 });
+      E("polygon", { points: `${r * .45},0 ${r * .95},${-r * .4} ${r * .95},${r * .4}`, fill: BLUE, stroke: INK, "stroke-width": 1.5 });
+      E("circle", { r: r * .5, fill: TENT, stroke: INK, "stroke-width": 2 });
+      break;
+    default:
+      E("circle", { r: r * .68, fill: U3_SOFT.blue, stroke: INK, "stroke-width": 2.5 });
+  }
+  return g;
+}
+
+/* 입력 문항 줄(부품 안에서 함께 채점할 때) */
+function u3AskRows(items) {
+  const wrap = h("div");
+  const rows = items.map(it => {
+    const inp = h("input", { type: "number", inputmode: "numeric", style: "width:4.5em;font-size:1.15em", "aria-label": it.q });
+    wrap.append(h("div", { class: "qitem" }, h("span", { class: "jua" }, it.q + " "), inp, it.unit ? h("span", {}, " " + it.unit) : null));
+    return { it, inp };
+  });
+  return {
+    wrap, rows,
+    values: () => rows.map(r => r.inp.value).join(", "),
+    check() {   // 틀린 첫 문항 또는 null
+      let bad = null;
+      rows.forEach(r => { const good = r.inp.value !== "" && Number(r.inp.value) === r.it.a; r.inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good && !bad) bad = r; });
+      return bad;
+    },
+    whyOf(r) { return r && r.it.why && r.it.why[String(Number(r.inp.value))]; },
+    answers: () => items.map(it => `${it.q} ${it.a}${it.unit ? " " + it.unit : ""}`)
+  };
+}
+
+/* ---------------------------------------------------------------
+   1) 똑같이 나누어 담기 — 하나씩 번갈아 나누어 주기 (등분제)
+   opt: n(전체), g(나누는 곳 수), item, unit, kind, box("명"|"접시"|"어항"|"바구니"…),
+        labels([이름…]), ask([{q,a,unit,why}]), eq(true면 "n ÷ g =" 칸 추가), size(그림 크기)
+   조작: 물건을 끌어 원하는 곳에 놓기 / 누르면 차례대로 한 곳씩 / 버튼 '하나씩 번갈아 주기'·'한 바퀴 나누어 주기'
+--------------------------------------------------------------- */
+function u3ShareOut(body, api, opt) {
+  const n = opt.n, g = opt.g, q = n / g, item = opt.item || "물건", unit = opt.unit || "개", kind = opt.kind || "dot";
+  const box = opt.box || "명";
+  const labels = opt.labels || Array.from({ length: g }, (_, k) => box === "명" ? `${k + 1}번 친구` : `${box} ${k + 1}`);
+  const W = 860, H = 460, s = opt.size || 44, step = s + 10;
+  const svg = makeSvg(W, H);
+  const perRow = Math.min(n, Math.floor((W - 40) / step));
+  const poolRows = Math.ceil(n / perRow);
+  const poolX0 = (W - perRow * step) / 2;
+  const slot = i => ({ x: poolX0 + (i % perRow) * step + step / 2, y: 48 + Math.floor(i / perRow) * step + s / 2 });
+  const poolBottom = 48 + poolRows * step + 4;
+  const boxTop = poolBottom + 22, boxH = H - boxTop - 42;
+  const bw = Math.min(260, (W - 40 - (g - 1) * 16) / g), x0 = (W - (g * bw + (g - 1) * 16)) / 2;
+  const boxX = k => x0 + k * (bw + 16);
+  const bcols = Math.max(1, Math.floor((bw - 12) / (s + 6)));
+  const inBox = (k, j) => ({ x: boxX(k) + 6 + (j % bcols) * (s + 6) + (s + 6) / 2, y: boxTop + 10 + Math.floor(j / bcols) * (s + 6) + s / 2 + 2 });
+  const loc = Array(n).fill(-1), boxes = Array.from({ length: g }, () => []);
+  let turn = 0;
+  const bg = svgEl("g"), layer = svgEl("g");
+  bg.append(svgEl("rect", { x: 10, y: 10, width: W - 20, height: poolBottom - 4, rx: 14, fill: U3_SOFT.blue, stroke: BLUE, "stroke-width": 2 }),
+    txt(W / 2, 30, `나누어 줄 ${item}`, 20, { fill: BLUE }));
+  for (let k = 0; k < g; k++) {
+    bg.append(svgEl("rect", { x: boxX(k), y: boxTop, width: bw, height: boxH, rx: 14, fill: "#fff", stroke: PINE, "stroke-width": 3, "stroke-dasharray": "9 7" }),
+      txt(boxX(k) + bw / 2, boxTop + boxH + 22, labels[k], 22));
+  }
+  svg.append(bg, layer);
+  const posOf = i => loc[i] < 0 ? slot(i) : inBox(loc[i], boxes[loc[i]].indexOf(i));
+  const out = h("div", { class: "readout" });
+  const draw = () => {
+    layer.innerHTML = "";
+    for (let i = 0; i < n; i++) { const p = posOf(i); const e = u3Icon(kind, p.x, p.y, s); e.dataset.i = i; layer.append(e); }
+    const left = loc.filter(v => v < 0).length;
+    out.innerHTML = `남은 ${item} <span class="pill">${left}${unit}</span>`;
+  };
+  const moveTo = (i, k) => {
+    if (loc[i] >= 0) boxes[loc[i]].splice(boxes[loc[i]].indexOf(i), 1);
+    loc[i] = k; if (k >= 0) boxes[k].push(i);
+  };
+  const firstPool = () => loc.findIndex(v => v < 0);
+  const giveNext = () => { const i = firstPool(); if (i < 0) return api.hint(`${u3J(item, "을", "를")} 모두 나누어 주었어요.`); moveTo(i, turn); turn = (turn + 1) % g; draw(); };
+  const giveRound = () => {
+    const left = loc.filter(v => v < 0).length;
+    if (left === 0) return api.hint(`${u3J(item, "을", "를")} 모두 나누어 주었어요.`);
+    if (left < g) return api.hint(`남은 ${u3J(item, "이", "가")} ${g}${unit}보다 적어요. 하나씩 나누어 주세요.`);
+    for (let k = 0; k < g; k++) moveTo(firstPool(), k);
+    draw();
+  };
+  let drag = null;
+  dragOn(svg, p => {
+    let best = -1, bd = s * .62;
+    for (let i = 0; i < n; i++) { const d = dist(posOf(i), p); if (d < bd) { bd = d; best = i; } }
+    if (best < 0) return false;
+    const ghost = u3Icon(kind, p.x, p.y, s * 1.1); ghost.setAttribute("opacity", .85); svg.append(ghost);
+    const orig = layer.querySelector(`[data-i="${best}"]`); if (orig) orig.setAttribute("opacity", .3);
+    drag = { i: best, start: p, moved: false, ghost };
+  }, p => {
+    if (!drag) return;
+    if (dist(p, drag.start) > 8) drag.moved = true;
+    drag.ghost.setAttribute("transform", `translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`);
+  }, p => {
+    if (!drag) return;
+    const { i, moved, ghost } = drag; ghost.remove(); drag = null;
+    if (!moved) {                                   // 누르기: 차례대로 나누어 주기 / 되돌리기
+      if (loc[i] < 0) { moveTo(i, turn); turn = (turn + 1) % g; } else moveTo(i, -1);
+    } else {
+      let k = -1;
+      for (let b = 0; b < g; b++) if (p.x >= boxX(b) && p.x <= boxX(b) + bw && p.y >= boxTop - 10 && p.y <= boxTop + boxH + 30) k = b;
+      if (k >= 0) moveTo(i, k); else if (p.y < poolBottom + 10) moveTo(i, -1);
+    }
+    draw();
+  });
+  const askItems = (opt.ask || [{ q: `${opt.one || "한 곳"}에 몇 ${unit}씩인가요?`, a: q, unit }])
+    .concat(opt.eq ? [{ q: `${n} ÷ ${g} =`, a: q }] : []);
+  const ask = u3AskRows(askItems);
+  api.provide({ words: ["똑같이", "하나씩 번갈아", "나눗셈", "몫"].concat(opt.words || []), answers: ask.answers() });
+  const check = h("button", { class: "big", onclick: () => {
+    const counts = boxes.map(b => b.length), left = loc.filter(v => v < 0).length;
+    const ans = `나눔 [${counts.join(",")}] / 답 ${ask.values()}`;
+    api.tryOnce();
+    if (left > 0) return api.fail(`아직 나누어 주지 않은 ${u3J(item, "이", "가")} ${left}${unit} 있어요. 남김없이 나누어 주세요.`, ans);
+    if (counts.some(c => c !== counts[0])) return api.fail(`${labels.join(", ")}에 있는 ${item} 수가 서로 달라요. 똑같이 나누어 보세요.`, ans);
+    const bad = ask.check();
+    if (bad) return api.fail(ask.whyOf(bad) || opt.bad || "빨간 칸을 다시 살펴봐요. 한 곳에 있는 수를 세어 봐요.", ans);
+    api.done(ans, opt.ok || `${n} ÷ ${g} = ${q}. 똑같이 나누었어요!`);
+  } }, "확인하기");
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" },
+    h("p", {}, opt.tip || `${u3J(item, "을", "를")} 끌어서 옮기거나, 눌러서 차례대로 하나씩 나누어 주세요.`),
+    h("div", { class: "row" },
+      h("button", { class: "ghost", onclick: giveNext }, "하나씩 번갈아 주기"),
+      h("button", { class: "ghost", onclick: giveRound }, `한 바퀴 (${g}${unit})`),
+      h("button", { class: "ghost", onclick: () => { for (let i = 0; i < n; i++) moveTo(i, -1); turn = 0; draw(); } }, "처음부터")),
+    out, ask.wrap, h("div", { class: "actions" }, check))));
+}
+
+/* ---------------------------------------------------------------
+   2) 몇씩 묶어 덜어 내기 (포함제) — 덜어 낼 때마다 뺄셈식이 이어져요 12-3-3-3-3=0
+   opt: n, per, item, unit, kind, mode("sub" 뺄셈식 / "group" 묶기), who(묶음 이름 "명"|"묶음"…),
+        groupLabel(k→문자열), ask, eq(true면 "n ÷ per =" 칸 추가), size
+   조작: 물건을 누르거나 아래로 끌면 지금 만드는 묶음에 들어가요 / 버튼 'per개씩 덜어 내기' / '하나 되돌리기'
+--------------------------------------------------------------- */
+function u3TakeAway(body, api, opt) {
+  const n = opt.n, per = opt.per, cnt = n / per, item = opt.item || "물건", unit = opt.unit || "개", kind = opt.kind || "dot";
+  const mode = opt.mode || "sub", verb = mode === "sub" ? "덜어 내기" : "묶기";
+  const W = 880, H = 470, s = opt.size || 42, step = s + 10;
+  const svg = makeSvg(W, H);
+  const perRow = Math.min(n, 10);
+  const poolRows = Math.ceil(n / perRow), poolX0 = (W - perRow * step) / 2;
+  const slot = i => ({ x: poolX0 + (i % perRow) * step + step / 2, y: 48 + Math.floor(i / perRow) * step + s / 2 });
+  const poolBottom = 48 + poolRows * step + 4;
+  const gcols = Math.min(per, 5), grows = Math.ceil(per / gcols);
+  const gw = gcols * (s + 6) + 14, gh = grows * (s + 6) + 12, gap = 16, labH = 34;
+  const perLine = Math.max(1, Math.floor((W - 20 + gap) / (gw + gap)));
+  const gTop = poolBottom + 20;
+  const gX = k => { const inLine = Math.min(perLine, cnt); return (W - (inLine * gw + (inLine - 1) * gap)) / 2 + (k % perLine) * (gw + gap); };
+  const gY = k => gTop + Math.floor(k / perLine) * (gh + labH + 8);
+  const inGroup = (k, j) => ({ x: gX(k) + 7 + (j % gcols) * (s + 6) + (s + 6) / 2, y: gY(k) + 6 + Math.floor(j / gcols) * (s + 6) + (s + 6) / 2 });
+  const taken = [];                     // 덜어 낸 순서
+  const bg = svgEl("g"), layer = svgEl("g");
+  bg.append(svgEl("rect", { x: 10, y: 10, width: W - 20, height: poolBottom - 4, rx: 14, fill: U3_SOFT.blue, stroke: BLUE, "stroke-width": 2 }),
+    txt(W / 2, 30, opt.poolLabel || `${item} ${n}${unit}`, 20, { fill: BLUE }));
+  svg.append(bg, layer);
+  const label = k => opt.groupLabel ? opt.groupLabel(k) : (mode === "sub" ? `${n - k * per} - ${per} = ${n - (k + 1) * per}` : `${k + 1}묶음`);
+  const posOf = i => { const t = taken.indexOf(i); return t < 0 ? slot(i) : inGroup(Math.floor(t / per), t % per); };
+  const out = h("div", { class: "readout" });
+  const draw = () => {
+    layer.innerHTML = "";
+    const full = Math.floor(taken.length / per), open = taken.length % per ? full + 1 : full;
+    for (let k = 0; k < Math.min(cnt, open + (taken.length < n ? (taken.length % per ? 0 : 1) : 0)); k++) {
+      const done = k < full;
+      layer.append(svgEl("rect", { x: gX(k), y: gY(k), width: gw, height: gh, rx: 12, fill: done ? U3_SOFT.pine : "#fff", stroke: done ? PINE : TENT, "stroke-width": 3, "stroke-dasharray": done ? "" : "9 7" }));
+      if (done) layer.append(txt(gX(k) + gw / 2, gY(k) + gh + 18, label(k), 20));
+    }
+    for (let i = 0; i < n; i++) { const p = posOf(i); const e = u3Icon(kind, p.x, p.y, s); e.dataset.i = i; layer.append(e); }
+    const left = n - taken.length;
+    if (mode === "sub") {
+      out.innerHTML = full ? `뺄셈식<br><span style="font-size:.9em">${n}${" - " + per}${(" - " + per).repeat(full - 1)} = ${n - full * per}</span>` : `남은 ${item} <span class="pill">${left}${unit}</span>`;
+    } else out.innerHTML = `남은 ${item} <span class="pill">${left}${unit}</span>`;
+  };
+  const takeOne = i => { if (taken.includes(i)) return; taken.push(i); };
+  const takeGroup = () => {
+    const pool = [...Array(n).keys()].filter(i => !taken.includes(i));
+    if (!pool.length) return api.hint(`${u3J(item, "을", "를")} 모두 ${verb === "묶기" ? "묶었" : "덜어 냈"}어요.`);
+    const need = per - taken.length % per;
+    if (pool.length < need) return api.hint(`남은 ${u3J(item, "이", "가")} ${per}${unit}보다 적어요.`);
+    pool.slice(0, need).forEach(takeOne); draw();
+  };
+  let drag = null;
+  dragOn(svg, p => {
+    let best = -1, bd = s * .62;
+    for (let i = 0; i < n; i++) { if (taken.includes(i)) continue; const d = dist(slot(i), p); if (d < bd) { bd = d; best = i; } }
+    if (best < 0) return false;
+    const ghost = u3Icon(kind, p.x, p.y, s * 1.1); ghost.setAttribute("opacity", .85); svg.append(ghost);
+    drag = { i: best, start: p, moved: false, ghost };
+  }, p => {
+    if (!drag) return;
+    if (dist(p, drag.start) > 8) drag.moved = true;
+    drag.ghost.setAttribute("transform", `translate(${p.x.toFixed(1)},${p.y.toFixed(1)})`);
+  }, p => {
+    if (!drag) return;
+    const { i, moved, ghost } = drag; ghost.remove(); drag = null;
+    if (!moved || p.y > poolBottom) takeOne(i);
+    draw();
+  });
+  const askItems = (opt.ask || [{ q: `${per}${unit}씩 몇 번 ${verb === "묶기" ? "묶었나요" : "덜어 냈나요"}?`, a: cnt, unit: "번" }])
+    .concat(opt.eq ? [{ q: `${n} ÷ ${per} =`, a: cnt }] : []);
+  const ask = u3AskRows(askItems);
+  api.provide({ words: (mode === "sub" ? ["덜어 내기", "뺄셈식", "뺀 횟수", "몫"] : ["묶음", "묶음 수", "몫"]).concat(opt.words || []), answers: ask.answers() });
+  const check = h("button", { class: "big", onclick: () => {
+    const left = n - taken.length, full = Math.floor(taken.length / per);
+    const ans = `${verb} ${full}번(남은 ${left}) / 답 ${ask.values()}`;
+    api.tryOnce();
+    if (left > 0) return api.fail(`아직 남은 ${u3J(item, "이", "가")} ${left}${unit} 있어요. 0이 될 때까지 ${per}${unit}씩 ${verb === "묶기" ? "묶어" : "덜어 내"} 보세요.`, ans);
+    const bad = ask.check();
+    if (bad) return api.fail(ask.whyOf(bad) || opt.bad || (mode === "sub" ? "뺄셈식에서 빼는 수가 몇 번 나오는지 세어 봐요." : "묶음이 몇 개인지 다시 세어 봐요."), ans);
+    api.done(ans, opt.ok || `${n} ÷ ${per} = ${cnt}. ${per}${unit}씩 ${cnt}번이에요!`);
+  } }, "확인하기");
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" },
+    h("p", {}, opt.tip || `${u3J(item, "을", "를")} 누르거나 아래로 끌어 ${per}${unit}씩 ${verb === "묶기" ? "묶어" : "덜어 내어"} 보세요.`),
+    h("div", { class: "row" },
+      h("button", { class: "ghost", onclick: takeGroup }, `${per}${unit}씩 ${verb}`),
+      h("button", { class: "ghost", onclick: () => { taken.pop(); draw(); } }, "하나 되돌리기"),
+      h("button", { class: "ghost", onclick: () => { taken.length = 0; draw(); } }, "처음부터")),
+    out, ask.wrap, h("div", { class: "actions" }, check))));
+}
+
+/* ---------------------------------------------------------------
+   3) 배열 그림으로 곱셈식 ↔ 나눗셈식 (곱셈식 1개 → 나눗셈식 2개)
+   opt: rows, cols, item, unit, kind, eqs([{t:"3 × 7 =", a:21, show:"col"|"row"}]), start("col"|"row"|null)
+   세로 묶음(col): 한 묶음에 rows개씩 cols묶음 / 가로 묶음(row): 한 묶음에 cols개씩 rows묶음
+--------------------------------------------------------------- */
+function u3MulDiv(body, api, opt) {
+  const R = opt.rows, C = opt.cols, item = opt.item || "물건", kind = opt.kind || "dot", unit = opt.unit || "개";
+  const cell = Math.min(64, 760 / C, 330 / R), s = cell * .72;
+  const W = Math.max(700, C * cell + 140), H = R * cell + 150;
+  const X0 = (W - C * cell) / 2, Y0 = 70;
+  const svg = makeSvg(W, H);
+  const grp = svgEl("g"), items = svgEl("g");
+  svg.append(grp, items);
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) items.append(u3Icon(kind, X0 + c * cell + cell / 2, Y0 + r * cell + cell / 2, s));
+  let mode = null;
+  const show = m => {
+    mode = m; grp.innerHTML = "";
+    if (m === "col") for (let c = 0; c < C; c++) {
+      grp.append(svgEl("rect", { x: X0 + c * cell + 4, y: Y0 - 4, width: cell - 8, height: R * cell + 8, rx: 14, fill: U3_SOFT.pine, stroke: PINE, "stroke-width": 3 }),
+        txt(X0 + c * cell + cell / 2, Y0 + R * cell + 26, String(c + 1), 20, { fill: PINE }));
+    }
+    if (m === "row") for (let r = 0; r < R; r++) {
+      grp.append(svgEl("rect", { x: X0 - 6, y: Y0 + r * cell + 4, width: C * cell + 12, height: cell - 8, rx: 14, fill: U3_SOFT.tent, stroke: TENT, "stroke-width": 3 }),
+        txt(X0 - 28, Y0 + r * cell + cell / 2, String(r + 1), 20, { fill: TENT }));
+    }
+    svg.querySelectorAll(".u3cap").forEach(e => e.remove());
+    const cap = txt(W / 2, 32, m === "col" ? `세로로 ${R}${unit}씩 묶었어요. 묶음은 몇 개일까요?` : m === "row" ? `가로로 ${C}${unit}씩 묶었어요. 묶음은 몇 개일까요?` : `${item} 그림을 여러 가지로 묶어 보세요.`, 22);
+    cap.setAttribute("class", "u3cap"); svg.append(cap);
+  };
+  show(opt.start || null);
+  const ask = u3AskRows(opt.eqs.map(e => ({ q: e.t, a: e.a, why: e.why })));
+  ask.rows.forEach((r, k) => r.inp.addEventListener("focus", () => { if (opt.eqs[k].show) show(opt.eqs[k].show); }));
+  api.provide({ words: ["곱셈식", "나눗셈식", "묶음", "곱셈식 1개 → 나눗셈식 2개"], answers: ask.answers() });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce();
+    const bad = ask.check(), ans = ask.values();
+    if (bad) {
+      const e = opt.eqs[ask.rows.indexOf(bad)]; if (e.show) show(e.show);
+      return api.fail(ask.whyOf(bad) || opt.bad || "빨간 칸의 식에 맞게 그림을 묶어 보고 다시 세어 봐요.", ans);
+    }
+    api.done(ans, opt.ok || "곱셈식 하나로 나눗셈식 두 개를 만들 수 있어요!");
+  } }, "확인하기");
+  body.append(stageWrap(svg, h("div", { class: "side" },
+    h("p", {}, opt.tip || "버튼을 눌러 묶어 보고, 식의 빈칸을 채워요. 칸을 누르면 알맞은 묶음이 보여요."),
+    h("div", { class: "row" },
+      h("button", { class: "ghost", onclick: () => show("col") }, `세로로 ${R}${unit}씩 묶기`),
+      h("button", { class: "ghost", onclick: () => show("row") }, `가로로 ${C}${unit}씩 묶기`),
+      h("button", { class: "ghost", onclick: () => show(null) }, "묶음 지우기")),
+    ask.wrap, h("div", { class: "actions" }, check))));
+}
+
+/* ---------------------------------------------------------------
+   4) 관계 나무 — 곱셈식 1개 → 나눗셈식 2개, 나눗셈식 1개 → 곱셈식 2개
+   opt: trees([{from:"mul", a, b} | {from:"div", n, d}])  (두 수가 같은 식은 쓰지 않음)
+--------------------------------------------------------------- */
+function u3RelTree(body, api, opt) {
+  const W = 860, trees = opt.trees, TH = 190, H = trees.length * TH + 20;
+  const svg = makeSvg(W, H);
+  const rows = [];
+  const wrap = h("div");
+  trees.forEach((t, k) => {
+    const y = 20 + k * TH;
+    const n = t.from === "mul" ? t.a * t.b : t.n, d2 = t.from === "mul" ? null : t.n / t.d;
+    const top = t.from === "mul" ? `${t.a} × ${t.b} = ${n}` : `${t.n} ÷ ${t.d} = ${d2}`;
+    svg.append(svgEl("rect", { x: W / 2 - 130, y, width: 260, height: 56, rx: 14, fill: t.from === "mul" ? U3_SOFT.tent : U3_SOFT.pine, stroke: t.from === "mul" ? TENT : PINE, "stroke-width": 3 }),
+      txt(W / 2, y + 29, top, 28));
+    const leaf = t.from === "mul" ? `${n} ÷ □ = □` : `□ × □ = ${n}`;
+    [0, 1].forEach(j => {
+      const cx = j ? W * .72 : W * .28, ly = y + 110;
+      svg.append(svgEl("line", { x1: W / 2, y1: y + 56, x2: cx, y2: ly, stroke: INK, "stroke-width": 3 }),
+        svgEl("rect", { x: cx - 120, y: ly, width: 240, height: 54, rx: 14, fill: "#fff", stroke: INK, "stroke-width": 2.5 }));
+      const tt = txt(cx, ly + 28, leaf, 26); tt.dataset.k = `${k}-${j}`; svg.append(tt);
+    });
+    const mk = (lbl) => h("input", { type: "number", inputmode: "numeric", style: "width:3.6em;font-size:1.1em", "aria-label": lbl });
+    const box = h("div", { class: "qitem" }, h("div", { class: "jua" }, `${k + 1}) ${top}`));
+    const pair = [0, 1].map(j => {
+      const x = mk(`${k + 1}-${j + 1} 첫째 빈칸`), y2 = mk(`${k + 1}-${j + 1} 둘째 빈칸`);
+      const upd = () => { const e = svg.querySelector(`[data-k="${k}-${j}"]`); const a = x.value || "□", b = y2.value || "□"; e.textContent = t.from === "mul" ? `${n} ÷ ${a} = ${b}` : `${a} × ${b} = ${n}`; };
+      x.oninput = upd; y2.oninput = upd;
+      box.append(h("div", { class: "row", style: "margin:.25em 0" }, h("span", {}, j ? "② " : "① "),
+        ...(t.from === "mul" ? [`${n} ÷ `, x, " = ", y2] : [x, " × ", y2, ` = ${n}`])));
+      return [x, y2];
+    });
+    rows.push({ t, n, pair }); wrap.append(box);
+  });
+  const need = r => r.t.from === "mul" ? [[r.t.a, r.t.b], [r.t.b, r.t.a]] : [[r.t.d, r.n / r.t.d], [r.n / r.t.d, r.t.d]];
+  api.provide({ words: ["곱셈식 1개 → 나눗셈식 2개", "나눗셈식 1개 → 곱셈식 2개", "나누어지는 수", "몫"],
+    answers: rows.map(r => r.t.from === "mul" ? `${r.n} ÷ ${r.t.a} = ${r.t.b}, ${r.n} ÷ ${r.t.b} = ${r.t.a}` : `${need(r)[0][0]} × ${need(r)[0][1]} = ${r.n}, ${need(r)[1][0]} × ${need(r)[1][1]} = ${r.n}`) });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce();
+    const vals = rows.map(r => r.pair.map(p => p.map(i => i.value)));
+    const ans = vals.map(v => v.map(p => p.join("·")).join(" / ")).join(" | ");
+    let msg = null;
+    rows.forEach((r, k) => {
+      const got = r.pair.map(p => p.map(i => Number(i.value)));
+      const want = need(r);
+      const okEach = got.map(g2 => want.some(w => w[0] === g2[0] && w[1] === g2[1]));
+      const distinct = !(got[0][0] === got[1][0] && got[0][1] === got[1][1]);
+      r.pair.forEach((p, j) => p.forEach(i => i.style.borderColor = okEach[j] && distinct ? "var(--ok)" : "var(--no)"));
+      if (!msg && !(okEach[0] && okEach[1])) msg = r.t.from === "mul" ? `${r.t.a} × ${r.t.b} = ${r.n}에서 ${u3J(r.n, "은", "는")} 나누어지는 수가 돼요. ${u3J(r.n, "을", "를")} ${u3Ro(r.t.a)} 나누면? ${u3Ro(r.t.b)} 나누면?` : `${r.t.n} ÷ ${r.t.d} = ${r.n / r.t.d}에서 곱하는 두 수는 나누는 수와 몫이에요.`;
+      if (!msg && !distinct) msg = "두 식이 똑같아요. 두 수의 자리를 바꾸어 다른 식을 만들어 봐요.";
+    });
+    if (msg) return api.fail(msg, ans);
+    api.done(ans, opt.ok || "곱셈식과 나눗셈식을 서로 바꾸어 나타낼 수 있어요!");
+  } }, "확인하기");
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "위의 식을 보고 아래 두 식의 빈칸을 채워요."), wrap, h("div", { class: "actions" }, check))));
+}
+
+/* ---------------------------------------------------------------
+   5) 곱셈식으로 몫 찾기 — b × □ = a 가 되는 □를 찾아요 (배열이 늘었다 줄었다)
+   opt: a(나누어지는 수), b(나누는 수), item, unit, kind, groupBy("col": 한 묶음 b개씩 □묶음 | "row": b묶음에 □개씩),
+        groupName(k→이름, 예: k=>`${k+1}반`), qText(예 "몇 명에게 줄 수 있나요?"), qUnit
+   조작: − / + 버튼 또는 그림을 옆으로 끌어 □를 바꿔요
+--------------------------------------------------------------- */
+function u3FindByMul(body, api, opt) {
+  const a = opt.a, b = opt.b, q = a / b, item = opt.item || "물건", unit = opt.unit || "개", kind = opt.kind || "dot";
+  const by = opt.groupBy || "col", MAX = 9;
+  const W = 860, H = 470, cell = Math.min(62, (H - 110) / b), s = cell * .7;
+  const X0 = 110, Y0 = 60;
+  const svg = makeSvg(W, H);
+  const layer = svgEl("g"); svg.append(layer);
+  let m = opt.start || 1;
+  const out = h("div", { class: "readout" });
+  const draw = () => {
+    layer.innerHTML = "";
+    layer.append(txt(W / 2, 28, `${a} ÷ ${b} = □  →  ${b} × □ = ${a}`, 24));
+    for (let c = 0; c < m; c++) {
+      if (by === "col") layer.append(svgEl("rect", { x: X0 + c * cell + 3, y: Y0 - 4, width: cell - 6, height: b * cell + 8, rx: 12, fill: U3_SOFT.pine, stroke: PINE, "stroke-width": 2.5 }),
+        txt(X0 + c * cell + cell / 2, Y0 + b * cell + 24, opt.groupName ? opt.groupName(c) : String(c + 1), 20, { fill: PINE }));
+    }
+    if (by === "row") for (let r = 0; r < b; r++) layer.append(svgEl("rect", { x: X0 - 6, y: Y0 + r * cell + 3, width: m * cell + 12, height: cell - 6, rx: 12, fill: U3_SOFT.tent, stroke: TENT, "stroke-width": 2.5 }),
+      txt(X0 - 50, Y0 + r * cell + cell / 2, opt.groupName ? opt.groupName(r) : `${r + 1}`, 20, { fill: TENT }));
+    for (let c = 0; c < m; c++) for (let r = 0; r < b; r++) layer.append(u3Icon(kind, X0 + c * cell + cell / 2, Y0 + r * cell + cell / 2, s));
+    const hx = X0 + m * cell + 14;
+    layer.append(svgEl("rect", { x: hx, y: Y0 + b * cell / 2 - 30, width: 26, height: 60, rx: 10, fill: BLUE }), txt(hx + 13, Y0 + b * cell / 2, "↔", 20, { fill: "#fff" }));
+    const prod = b * m;
+    out.innerHTML = `${b} × <span class="pill">${m}</span> = ${prod}<br><small>${item} 모두 ${prod}${unit} · 나누어지는 수는 ${a}</small>`;
+  };
+  dragOn(svg, p => { if (p.y < Y0 - 20 || p.y > Y0 + b * cell + 30) return false; },
+    p => { const k = Math.round((p.x - X0) / cell); const v = Math.max(1, Math.min(MAX, k)); if (v !== m) { m = v; draw(); } });
+  const ask = u3AskRows([{ q: opt.qText || `${a} ÷ ${b}의 몫 □는?`, a: q, unit: opt.qUnit, why: opt.why }]);
+  api.provide({ words: ["곱셈식", `${b}과(와) 곱해서 ${a}`, "몫"], answers: [`${b} × ${q} = ${a} → ${a} ÷ ${b} = ${q}`] });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce();
+    const bad = ask.check(), ans = `그림 ${b}×${m} / 답 ${ask.values()}`;
+    if (bad) return api.fail(ask.whyOf(bad) || `${b} × □ = ${a}이 되는 □를 찾아요. 그림을 늘리거나 줄여서 ${u3J(item, "이", "가")} 모두 ${u3J(a + unit, "이", "가")} 되게 해 봐요.`, ans);
+    api.done(ans, opt.ok || `${b} × ${q} = ${a}이므로 ${a} ÷ ${b} = ${q}이에요!`);
+  } }, "확인하기");
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" },
+    h("p", {}, opt.tip || `− / + 버튼이나 파란 손잡이를 옆으로 끌어 □를 바꿔요. ${u3J(item, "이", "가")} 모두 ${u3J(a + unit, "이", "가")} 되는 때를 찾아요.`),
+    h("div", { class: "row" }, h("button", { class: "ghost", onclick: () => { if (m > 1) { m--; draw(); } } }, "− 1"), h("button", { class: "ghost", onclick: () => { if (m < MAX) { m++; draw(); } } }, "+ 1")),
+    out, ask.wrap, h("div", { class: "actions" }, check))));
+}
+
+/* ---------------------------------------------------------------
+   6) 곱셈표에서 몫 찾기 — 나누는 수의 단(줄)을 누르고, 그 줄에서 나누어지는 수를 찾아 누르면 위의 수가 몫
+   opt: probs([[a,b],…]) 또는 a,b / rows(보여 줄 단, 기본 1~9) / qUnit / ok
+--------------------------------------------------------------- */
+function u3TableFind(body, api, opt) {
+  const probs = opt.probs || [[opt.a, opt.b]];
+  const rowsList = opt.rows || [1, 2, 3, 4, 5, 6, 7, 8, 9];
+  const cw = 66, ch = Math.min(44, 400 / (rowsList.length + 1)), X0 = 40, Y0 = 20;
+  const W = X0 + cw * 10 + 20, H = Y0 + ch * (rowsList.length + 1) + 20;
+  const svg = makeSvg(W, H);
+  const layer = svgEl("g"); svg.append(layer);
+  let pi = 0, selRow = null, selCol = null;
+  const solved = [];
+  const head = h("div", { class: "readout" });
+  const out = h("div", { class: "readout" });
+  const draw = () => {
+    layer.innerHTML = "";
+    const [a, b] = probs[pi];
+    head.innerHTML = `${probs.length > 1 ? `(${pi + 1}/${probs.length}) ` : ""}<span class="pill" style="font-size:1em">${a} ÷ ${b}</span>`;
+    for (let r = -1; r < rowsList.length; r++) for (let c = -1; c < 9; c++) {
+      const x = X0 + (c + 1) * cw, y = Y0 + (r + 1) * ch;
+      const rv = r < 0 ? null : rowsList[r], cv = c < 0 ? null : c + 1;
+      const hdr = r < 0 || c < 0;
+      let fill = hdr ? U3_SOFT.blue : "#fff";
+      if (rv != null && rv === selRow) fill = hdr ? U3_SOFT.gold : U3_SOFT.tent;
+      if (r < 0 && cv != null && cv === selCol && selRow != null) fill = U3_SOFT.gold;
+      if (!hdr && rv === selRow && cv === selCol) fill = U3_SOFT.gold;
+      const rect = svgEl("rect", { x, y, width: cw, height: ch, fill, stroke: INK, "stroke-width": hdr ? 2 : 1.2 });
+      layer.append(rect);
+      const t = r < 0 && c < 0 ? "×" : r < 0 ? String(cv) : c < 0 ? String(rv) : String(rv * cv);
+      layer.append(txt(x + cw / 2, y + ch / 2 + 1, t, hdr ? 22 : 20, hdr ? { fill: BLUE } : {}));
+    }
+    if (selRow != null && selCol != null) {
+      const r = rowsList.indexOf(selRow), x = X0 + (selCol) * cw + cw / 2, y = Y0 + (r + 1) * ch + ch / 2;
+      layer.append(svgEl("line", { x1: x, y1: y - ch / 2, x2: x, y2: Y0 + ch, stroke: TENT, "stroke-width": 4, "stroke-dasharray": "6 5" }),
+        svgEl("circle", { cx: x, cy: y, r: ch * .45, fill: "none", stroke: TENT, "stroke-width": 3.5 }));
+    }
+    out.innerHTML = selRow == null ? "① 왼쪽에서 몇 단 곱셈구구를 쓸지 눌러요." : selCol == null ? `② ${selRow}단 줄에서 나누어지는 수를 찾아 눌러요.` : `${selRow} × ${selCol} = ${selRow * selCol}`;
+  };
+  const hit = p => {
+    const c = Math.floor((p.x - X0) / cw) - 1, r = Math.floor((p.y - Y0) / ch) - 1;
+    if (c < -1 || c > 8 || r < -1 || r >= rowsList.length) return null; return { r, c };
+  };
+  svg.addEventListener("pointerdown", e => {
+    const p = hit(svgPt(svg, e)); if (!p || p.r < 0) return;
+    const rv = rowsList[p.r];
+    if (p.c < 0) { selRow = rv; selCol = null; }
+    else if (selRow !== rv) { selRow = rv; selCol = p.c + 1; }
+    else selCol = p.c + 1;
+    draw();
+  });
+  const ask = u3AskRows([{ q: "몫 =", a: probs[0][0] / probs[0][1], unit: opt.qUnit }]);
+  api.provide({ words: ["나누는 수의 단", "곱셈표", "곱이 나누어지는 수", "몫"], answers: probs.map(([a, b]) => `${b}단에서 ${b} × ${a / b} = ${a} → ${a} ÷ ${b} = ${a / b}`) });
+  const check = h("button", { class: "big", onclick: () => {
+    const [a, b] = probs[pi], qv = a / b;
+    ask.rows[0].it.a = qv;
+    api.tryOnce();
+    const ans = `${a}÷${b}: ${selRow ?? "-"}단, ${selRow && selCol ? selRow * selCol : "-"} 선택, 몫 ${ask.values()}`;
+    if (selRow !== b) return api.fail(selRow == null ? "먼저 몇 단 곱셈구구를 쓸지 왼쪽에서 골라요." : `${selRow}단이 아니에요. ${a} ÷ ${b}에서 나누는 수는 무엇인가요? 나누는 수의 단을 찾아요.`, ans);
+    if (selCol == null || selRow * selCol !== a) return api.fail(`${b}단 줄에서 곱이 ${u3J(a, "이", "가")} 되는 칸을 찾아 눌러요.`, ans);
+    const bad = ask.check();
+    if (bad) return api.fail(`${b} × ${selCol} = ${a}. 이 칸 맨 위의 수가 몫이에요.`, ans);
+    solved.push(ans);
+    if (pi < probs.length - 1) {
+      pi++; selRow = null; selCol = null; ask.rows[0].inp.value = ""; ask.rows[0].inp.style.borderColor = ""; draw();
+      return api.hint(`○ ${a} ÷ ${b} = ${qv}. 다음 문제도 곱셈표에서 찾아요.`);
+    }
+    api.done(solved.join(" / "), opt.ok || `${b}단 곱셈구구에서 ${b} × ${qv} = ${a}, 그래서 ${a} ÷ ${b} = ${qv}이에요!`);
+  } }, "확인하기");
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "곱셈표에서 나누는 수의 단을 찾은 다음, 그 줄에서 나누어지는 수를 찾아요."), head, out, ask.wrap, h("div", { class: "actions" }, check))));
+}
+
+/* ---------------------------------------------------------------
+   7) 사람 수를 바꾸며 똑같이 나누기 (나누어지는 수는 그대로)
+   opt: n, gs([2,3,4]), item, unit, kind, who("명"), person(사람 이름 앞말, 기본 "친구"), ok
+--------------------------------------------------------------- */
+function u3ShareCompare(body, api, opt) {
+  const n = opt.n, gs = opt.gs, item = opt.item || "물건", unit = opt.unit || "개", kind = opt.kind || "dot", who = opt.who || "명";
+  const W = 880, H = 440, s = 40;
+  const svg = makeSvg(W, H);
+  const layer = svgEl("g"); svg.append(layer);
+  let g = null;
+  const seen = new Set();
+  const draw = () => {
+    layer.innerHTML = "";
+    if (!g) {
+      const per = Math.min(n, 12);
+      for (let i = 0; i < n; i++) layer.append(u3Icon(kind, W / 2 - per * 27 + (i % per) * 54 + 27, 110 + Math.floor(i / per) * 56, s));
+      layer.append(txt(W / 2, 40, `${item} ${n}${unit}`, 24), txt(W / 2, 330, "아래 버튼으로 옮길 사람 수를 골라요.", 22, { fill: PINE }));
+      return;
+    }
+    const q = n / g, bw = Math.min(200, (W - 40 - (g - 1) * 14) / g), x0 = (W - (g * bw + (g - 1) * 14)) / 2;
+    layer.append(txt(W / 2, 30, `${item} ${u3J(n + unit, "을", "를")} ${u3J(g + who, "이", "가")} 똑같이 나누어 옮겨요`, 22));
+    const cols = Math.max(1, Math.floor((bw - 10) / (s + 6)));
+    for (let k = 0; k < g; k++) {
+      const x = x0 + k * (bw + 14);
+      layer.append(svgEl("rect", { x, y: 60, width: bw, height: 330, rx: 14, fill: "#fff", stroke: PINE, "stroke-width": 3, "stroke-dasharray": "9 7" }),
+        svgEl("circle", { cx: x + bw / 2, cy: 360, r: 16, fill: U3_SOFT.gold, stroke: INK, "stroke-width": 2 }),
+        txt(x + bw / 2, 412, `${opt.person || "친구"} ${k + 1}`, 20));
+      for (let j = 0; j < q; j++) layer.append(u3Icon(kind, x + 5 + (j % cols) * (s + 6) + (s + 6) / 2, 90 + Math.floor(j / cols) * (s + 8), s));
+    }
+  };
+  const pick = h("div", { class: "row" });
+  gs.forEach(v => pick.append(h("button", { class: "ghost", onclick: () => { g = v; seen.add(v); draw(); } }, `${v}${who}이 옮기기`)));
+  const ask = u3AskRows(gs.map(v => ({ q: `${v}${who}이 옮기면 한 ${who}이`, a: n / v, unit })));
+  const trend = h("div", { class: "opts" });
+  const trendOpts = ["적어져요", "많아져요", "그대로예요"]; let tsel = null;
+  trendOpts.forEach((t, i) => trend.append(h("button", { class: "opt", onclick: e => { [...trend.children].forEach(b => b.classList.remove("on", "good", "bad")); e.currentTarget.classList.add("on"); tsel = i; } }, t)));
+  api.provide({ words: ["나누어지는 수", "나누는 수", "몫", "적어져요"], answers: ask.answers().concat([`사람이 많아지면 한 명이 옮기는 ${u3J(item, "은", "는")} 적어져요`]) });
+  const check = h("button", { class: "big", onclick: () => {
+    api.tryOnce();
+    const ans = `${ask.values()} / ${tsel == null ? "-" : trendOpts[tsel]}`;
+    if (seen.size < gs.length) return api.fail(`${gs.filter(v => !seen.has(v)).join(", ")}${who}이 옮기는 것도 눌러서 살펴봐요.`, ans);
+    const bad = ask.check();
+    if (bad) return api.fail(ask.whyOf(bad) || "그 사람 수를 눌러 한 명이 옮기는 수를 다시 세어 봐요.", ans);
+    [...trend.children].forEach((b, i) => b.classList.toggle(tsel === 0 ? "good" : "bad", i === tsel));
+    if (tsel !== 0) return api.fail(`옮기는 사람이 많아질 때 한 ${who}이 옮기는 ${item} 수를 차례로 비교해 봐요.`, ans);
+    api.done(ans, opt.ok || "옮기는 사람이 많아질수록 한 명이 옮기는 수는 적어져요!");
+  } }, "확인하기");
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "사람 수를 바꾸어 가며 똑같이 나누어 보세요."), pick, ask.wrap,
+    h("div", { class: "jua" }, `옮기는 사람이 많아지면 한 ${u3J(who, "이", "가")} 옮기는 ${u3J(item, "은", "는")}`), trend, h("div", { class: "actions" }, check))));
+}
+
+/* ---------------------------------------------------------------
+   8) 놀이: 가자! 내 땅으로! (2명, 교과서 74~75쪽)
+   가로줄 5줄, 가운데 분홍 칸에 바둑돌 1개씩, 분홍 칸 양쪽에 9칸, 왼쪽 끝 연두 도착 칸 · 오른쪽 끝 노랑 도착 칸.
+   카드의 몫을 옳게 구하면 바둑돌 하나를 골라 내 땅 쪽으로 몫만큼 옮겨요(같은 줄로만).
+   opt: cards(["12 ÷ 4", …]), side(한쪽 칸 수, 기본 9), stones(기본 5), names(["연두","노랑"]), vs("computer"|"pair" 처음 선택)
+--------------------------------------------------------------- */
+function u3LandGame(body, api, opt) {
+  const cards0 = opt.cards, SIDE = opt.side || 9, N = opt.stones || 5;
+  const names = opt.names || ["연두", "노랑"];
+  const W = 900, H = 420, cw = 34, zone = 76;
+  const bx0 = (W - (zone * 2 + cw * (SIDE * 2 + 1))) / 2, rowH = 64, by0 = 36;
+  const cellX = p => bx0 + zone + (p + SIDE) * cw;        // p: -SIDE..SIDE
+  const svg = makeSvg(W, H);
+  const board = svgEl("g"), stonesG = svgEl("g"), fx = svgEl("g");
+  svg.append(board, stonesG, fx);
+  // 판 그리기
+  board.append(svgEl("rect", { x: bx0 - 6, y: by0 - 10, width: zone * 2 + cw * (SIDE * 2 + 1) + 12, height: N * rowH + 12, rx: 12, fill: "#fff", stroke: INK, "stroke-width": 3 }),
+    svgEl("rect", { x: bx0, y: by0 - 4, width: zone, height: N * rowH, rx: 8, fill: U3_SOFT.pine, stroke: PINE, "stroke-width": 3 }),
+    svgEl("rect", { x: bx0 + zone + cw * (SIDE * 2 + 1), y: by0 - 4, width: zone, height: N * rowH, rx: 8, fill: U3_SOFT.gold, stroke: INK, "stroke-width": 3 }),
+    txt(bx0 + zone / 2, by0 + N * rowH + 26, `${names[0]} 땅`, 22, { fill: PINE }), txt(bx0 + zone * 1.5 + cw * (SIDE * 2 + 1), by0 + N * rowH + 26, `${names[1]} 땅`, 22));
+  for (let r = 0; r < N; r++) for (let p = -SIDE; p <= SIDE; p++)
+    board.append(svgEl("rect", { x: cellX(p) + 2, y: by0 + r * rowH + 12, width: cw - 4, height: rowH - 28, rx: 3, fill: p === 0 ? U3_SOFT.tent : "#fff", stroke: p === 0 ? TENT : INK, "stroke-width": p === 0 ? 3 : 1.5 }));
+  let pos, turn, deck, phase, card, vs = opt.vs || "computer", over = false, busy = false;
+  const status = h("div", { class: "readout" });
+  const cardBox = h("div", { class: "jua", style: "font-size:1.6em;min-width:4.2em;text-align:center;border:3px solid var(--tent);border-radius:.6em;padding:.1em .3em;background:#fff" }, "?");
+  const inp = h("input", { type: "number", inputmode: "numeric", style: "width:4.5em;font-size:1.2em", "aria-label": "몫" });
+  const drawBtn = h("button", { class: "big", onclick: () => drawCard() }, "카드 뽑기");
+  const ansBtn = h("button", { class: "big", onclick: () => answer(Number(inp.value), false) }, "몫 말하기");
+  const modeRow = h("div", { class: "row" });
+  const ansRow = h("div", { class: "row" }, h("span", { class: "jua" }, "몫 = "), inp, ansBtn);
+  const log = [];
+  const stoneXY = r => { const p = pos[r]; const x = p <= -(SIDE + 1) ? bx0 + zone / 2 : p >= SIDE + 1 ? bx0 + zone * 1.5 + cw * (SIDE * 2 + 1) : cellX(p) + cw / 2; return { x, y: by0 + r * rowH + rowH / 2 - 2 }; };
+  const arrived = r => Math.abs(pos[r]) > SIDE;
+  const drawStones = (hl) => {
+    stonesG.innerHTML = "";
+    for (let r = 0; r < N; r++) {
+      const { x, y } = stoneXY(r);
+      if (hl && !arrived(r)) stonesG.append(svgEl("circle", { cx: x, cy: y, r: 20, fill: "none", stroke: BLUE, "stroke-width": 4, "stroke-dasharray": "5 4" }));
+      stonesG.append(svgEl("circle", { cx: x, cy: y, r: 14, fill: INK }), svgEl("circle", { cx: x - 4, cy: y - 5, r: 3.5, fill: "#fff", opacity: .7 }));
+    }
+  };
+  const shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
+  const qOf = c => { const m = String(c).match(/(\d+)\s*÷\s*(\d+)/); return +m[1] / +m[2]; };
+  const who = () => names[turn];
+  const isComp = () => vs === "computer" && turn === 1;
+  const setStatus = t => { status.innerHTML = t; };
+  const reset = () => {
+    pos = Array(N).fill(0); turn = 0; deck = shuffle(cards0); phase = "draw"; card = null; over = false; busy = false; log.length = 0;
+    cardBox.textContent = "?"; inp.value = ""; fx.innerHTML = ""; drawStones(false); refresh();
+  };
+  const refresh = () => {
+    drawBtn.disabled = phase !== "draw" || isComp() || !vs;
+    ansBtn.disabled = phase !== "answer" || isComp();
+    inp.disabled = phase !== "answer" || isComp();
+    if (!vs) return setStatus("누구와 놀이할지 먼저 골라요.");
+    if (over) return;
+    const dir = turn === 0 ? "왼쪽(연두 땅)" : "오른쪽(노랑 땅)";
+    if (phase === "draw") setStatus(`<span class="pill">${who()}</span> 차례예요. 카드를 뽑아요.<br><small>내 땅은 ${dir}이에요.</small>`);
+    if (phase === "answer") setStatus(`<span class="pill">${who()}</span> 카드의 몫을 구해요.`);
+    if (phase === "move") setStatus(`<span class="pill">${who()}</span> 몫 ${qOf(card)}만큼 옮길 바둑돌을 눌러요.<br><small>${dir} 쪽으로, 같은 줄로만 움직여요.</small>`);
+  };
+  const drawCard = () => {
+    if (phase !== "draw" || over) return;
+    if (!deck.length) deck = shuffle(cards0);
+    card = deck.pop(); cardBox.textContent = card; phase = "answer"; inp.value = ""; refresh();
+    if (!isComp()) inp.focus();
+  };
+  const nextTurn = () => { turn = 1 - turn; phase = "draw"; card = null; refresh(); if (isComp()) compPlay(); };
+  const answer = (v, comp) => {
+    if (phase !== "answer" || over) return;
+    const q = qOf(card);
+    if (!comp) api.tryOnce();
+    log.push(`${who()} ${card}=${v}${v === q ? "" : "(×)"}`);
+    if (v === q) { phase = "move"; drawStones(true); refresh(); if (!comp) api.hint(`○ ${card} = ${q}. 바둑돌을 ${q}칸 옮길 수 있어요.`); }
+    else {
+      if (!comp) api.fail(`${card}의 몫이 아니에요. 곱셈구구로 다시 확인해 봐요. 이번 차례에는 바둑돌을 옮길 수 없어요.`, `${card} = ${v}`);
+      nextTurn();
+    }
+  };
+  const moveStone = r => {
+    if (phase !== "move" || arrived(r) || over) return;
+    const q = qOf(card), d = turn === 0 ? -1 : 1;
+    pos[r] = Math.max(-(SIDE + 1), Math.min(SIDE + 1, pos[r] + d * q));
+    drawStones(false);
+    if (pos.every((_, k) => arrived(k))) return finish();
+    nextTurn();
+  };
+  const finish = () => {
+    over = true; phase = "over"; drawBtn.disabled = true; ansBtn.disabled = true;
+    const left = pos.filter(p => p < 0).length, right = N - left;
+    const win = left === right ? "비겼어요" : `${u3J(left > right ? names[0] : names[1], "이", "가")} 이겼어요`;
+    setStatus(`놀이 끝! ${names[0]} 땅 <span class="pill">${left}개</span> · ${names[1]} 땅 <span class="pill">${right}개</span><br>${win}.`);
+    api.done(`${names[0]} ${left} : ${names[1]} ${right} · ${log.slice(-12).join(", ")}`, opt.ok || `놀이를 끝까지 했어요. ${win}! 몫을 정확히 구해야 바둑돌을 옮길 수 있었어요.`);
+  };
+  const compPlay = () => {
+    if (busy) return; busy = true;
+    const alive = () => svg.isConnected && !over;
+    setTimeout(() => {
+      if (!alive()) return (busy = false);
+      drawCard();
+      setTimeout(() => {
+        if (!alive()) return (busy = false);
+        const q = qOf(card); inp.value = q; answer(q, true);
+        setTimeout(() => {
+          busy = false;
+          if (!alive() || phase !== "move") return;
+          // 컴퓨터: 도착할 수 있는 돌 → 가장 오른쪽 가까운 돌
+          const cand = [...Array(N).keys()].filter(r => !arrived(r));
+          let best = cand.find(r => pos[r] + q > SIDE);
+          if (best == null) best = cand.sort((x, y) => pos[y] - pos[x])[0];
+          moveStone(best);
+        }, 700);
+      }, 700);
+    }, 600);
+  };
+  svg.addEventListener("pointerdown", e => {
+    if (phase !== "move" || isComp()) return;
+    const p = svgPt(svg, e);
+    let best = -1, bd = 26;
+    for (let r = 0; r < N; r++) { const d = dist(stoneXY(r), p); if (d < bd && !arrived(r)) { bd = d; best = r; } }
+    if (best < 0) {   // 같은 줄 아무 곳을 눌러도 그 줄 돌
+      const r = Math.floor((p.y - by0) / rowH); if (r >= 0 && r < N && !arrived(r)) best = r;
+    }
+    if (best >= 0) moveStone(best);
+  });
+  inp.addEventListener("keydown", e => { if (e.key === "Enter") answer(Number(inp.value), false); });
+  [["computer", "컴퓨터 친구와"], ["pair", "짝과 함께"]].forEach(([k, t]) => modeRow.append(h("button", { class: "opt" + (vs === k ? " on" : ""), onclick: e => {
+    vs = k; [...modeRow.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); reset();
+  } }, t)));
+  modeRow.append(h("button", { class: "ghost", onclick: () => reset() }, "처음부터"));
+  api.provide({ words: ["몫", "곱셈구구", "몫만큼 옮기기", "같은 줄로만"], answers: [] });
+  reset();
+  body.append(stageWrap(svg, h("div", { class: "side" },
+    modeRow, status, h("div", { class: "row" }, cardBox, drawBtn), ansRow,
+    h("p", { style: "font-size:var(--fs-s);margin:0" }, opt.tip || `몫을 옳게 구하면 바둑돌 하나를 골라 내 땅 쪽으로 몫만큼 옮겨요(같은 줄로만). 바둑돌 ${N}개가 모두 도착했을 때 내 땅에 더 많은 사람이 이겨요.`))));
+}
+
+/* ---------------------------------------------------------------
+   9) 몫을 따라 길 찾기 (교과서 78쪽 '재미를 더하다' 형식)
+   opt: forks([{e:"12 ÷ 2", o:[6,5]}, …]) — o 중 몫이 맞는 길로 가요. start/goal 이름
+--------------------------------------------------------------- */
+function u3QuotientPath(body, api, opt) {
+  const forks = opt.forks, F = forks.length;
+  const W = 900, H = 420, gapX = (W - 180) / F;
+  const svg = makeSvg(W, H);
+  const layer = svgEl("g"); svg.append(layer);
+  let at = 0; const picks = [];
+  const nodeX = k => 70 + k * gapX, midY = 220;
+  const out = h("div", { class: "readout" });
+  const qOf = e => { const m = e.match(/(\d+)\s*÷\s*(\d+)/); return +m[1] / +m[2]; };
+  const draw = () => {
+    layer.innerHTML = "";
+    layer.append(svgEl("rect", { x: 0, y: 0, width: W, height: H, fill: U3_SOFT.pine }));
+    // 나무(도착)
+    const tx = nodeX(F) + 30;
+    layer.append(svgEl("rect", { x: tx - 12, y: midY - 10, width: 24, height: 90, fill: TENT, stroke: INK, "stroke-width": 2 }),
+      svgEl("circle", { cx: tx, cy: midY - 40, r: 56, fill: PINE, stroke: INK, "stroke-width": 2 }), txt(tx, midY + 110, opt.goal || "나무", 22));
+    for (let k = 0; k < F; k++) {
+      const x = nodeX(k), x2 = nodeX(k + 1);
+      forks[k].o.forEach((v, j) => {
+        const y = j ? midY + 95 : midY - 95;
+        const chosen = picks[k] === j;
+        layer.append(svgEl("path", { d: `M${x} ${midY} Q${(x + x2) / 2} ${y} ${x2} ${midY}`, fill: "none", stroke: chosen ? TENT : "#fff", "stroke-width": 16, "stroke-linecap": "round" }),
+          svgEl("path", { d: `M${x} ${midY} Q${(x + x2) / 2} ${y} ${x2} ${midY}`, fill: "none", stroke: INK, "stroke-width": 1.5, "stroke-dasharray": "4 6" }));
+        const g = svgEl("g", { class: "sign", "data-k": k, "data-j": j, style: k === at ? "cursor:pointer" : "" });
+        g.append(svgEl("rect", { x: (x + x2) / 2 - 34, y: (y + midY) / 2 - 24 + (j ? 8 : -8), width: 68, height: 48, rx: 10, fill: k === at ? "#fff" : U3_SOFT.blue, stroke: k === at ? BLUE : INK, "stroke-width": k === at ? 3.5 : 1.5 }),
+          txt((x + x2) / 2, (y + midY) / 2 + (j ? 8 : -8), String(v), 26));
+        layer.append(g);
+      });
+      layer.append(svgEl("rect", { x: x - 52, y: midY - 22, width: 104, height: 44, rx: 10, fill: k < at ? U3_SOFT.pine : U3_SOFT.gold, stroke: INK, "stroke-width": 2 }), txt(x, midY, forks[k].e, 22));
+    }
+    // 다람쥐
+    const sx = (at >= F ? nodeX(F) : nodeX(at)) - 18, sy = midY - 64;
+    layer.append(svgEl("path", { d: `M${sx - 14} ${sy + 12} C${sx - 44} ${sy} ${sx - 40} ${sy - 36} ${sx - 18} ${sy - 30}`, fill: "none", stroke: TENT, "stroke-width": 12, "stroke-linecap": "round" }),
+      svgEl("ellipse", { cx: sx, cy: sy + 8, rx: 16, ry: 20, fill: TENT, stroke: INK, "stroke-width": 2 }),
+      svgEl("circle", { cx: sx + 6, cy: sy - 14, r: 11, fill: TENT, stroke: INK, "stroke-width": 2 }), svgEl("circle", { cx: sx + 10, cy: sy - 16, r: 2.5, fill: INK }));
+    out.innerHTML = at >= F ? `${u3J(opt.who || "다람쥐", "이", "가")} ${opt.goal || "나무"}에 도착했어요!` : `<span class="pill" style="font-size:1em">${forks[at].e}</span>의 몫이 적힌 길을 골라 눌러요.`;
+  };
+  svg.addEventListener("pointerdown", e => {
+    const g = e.target.closest && e.target.closest(".sign"); if (!g || at >= F) return;
+    const k = +g.dataset.k, j = +g.dataset.j; if (k !== at) return;
+    const v = forks[k].o[j], q = qOf(forks[k].e);
+    api.tryOnce();
+    if (v !== q) { api.fail(`${forks[k].e} = ${u3J(v, "이", "가")} 맞는지 곱셈구구로 확인해 봐요.`, `${forks[k].e} → ${v}`); return; }
+    picks[k] = j; at++; draw();
+    if (at >= F) api.done(forks.map(f => `${f.e}=${qOf(f.e)}`).join(", "), opt.ok || "몫을 따라 끝까지 갔어요!");
+    else api.hint(`○ ${forks[k].e} = ${q}. 다음 갈림길로 가요.`);
+  });
+  api.provide({ words: ["몫", "곱셈구구"], answers: [forks.map(f => `${f.e} = ${qOf(f.e)}`).join(", ")] });
+  draw();
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "갈림길마다 나눗셈의 몫을 구하고, 몫이 적힌 길을 눌러요."), out)));
+}
+
+const UNIT_STORY = { title: "다인이네 학교 체육 행사", lines: [
+  "햇살 가득한 푸른 하늘, 다인이네 학교에서 3학년 체육 행사를 해요.",
+  "투호, 비사치기, 원반던지기, 컵 쌓기, 달리기를 하면서 화살·나무 도막·원반·컵을 똑같이 나누어요.",
+  "교과서 『수학 3-1』 3. 나눗셈의 차시 순서 그대로 만들었어요."],
+  one: "체육 행사 · 똑같이 나누는 일을 나눗셈으로 해결해요." };
+const UNIT_KEYWORDS = ["똑같이 나누기", "하나씩 번갈아", "나눗셈", "나눗셈식", "나누어지는 수", "나누는 수", "몫", "÷", "덜어 내기", "곱셈식 1개 → 나눗셈식 2개", "곱셈구구"];
+
+/* 8차시 놀이 카드(교과서 부록 준비물 11의 목록은 지도서에 없어 곱셈구구 범위로 만듦 — NOTES.md 참고) */
+const U3_CARDS = ["12 ÷ 4", "6 ÷ 2", "8 ÷ 4", "10 ÷ 5", "14 ÷ 7", "15 ÷ 3", "16 ÷ 2", "18 ÷ 6", "20 ÷ 4", "21 ÷ 7", "24 ÷ 3", "27 ÷ 9",
+  "28 ÷ 4", "30 ÷ 5", "32 ÷ 8", "35 ÷ 7", "36 ÷ 4", "42 ÷ 6", "45 ÷ 5", "48 ÷ 8", "54 ÷ 9", "56 ÷ 7", "63 ÷ 9", "72 ÷ 8"];
+
+/* ===== 3. 나눗셈 — 교과서 차시 버전 (9차시, 지도서 240~269쪽) ===== */
+const LESSONS = [
+{
+  id: "t1", no: 1, title: "단원 도입 ― 체육 행사에서 똑같이 나누어요", soop: "개념 찾기(S)",
+  question: "과자 4개를 2명이 똑같이 나누어 먹으려면 어떻게 나누어야 할까요?",
+  summary: "똑같이 나누면 모두 같은 수만큼 가질 수 있어요. 하나씩 번갈아 가며 나누면 똑같이 나눌 수 있어요.",
+  steps: [
+    { inst: "진저브레드 과자 4개를 2명이 똑같이 나누어 먹으려고 해요. 과자를 두 접시에 나누어 담아 보세요.",
+      hints: ["과자를 한 개씩 번갈아 가며 접시에 놓아 보세요.", "두 접시에 있는 과자 수가 같은지 세어 봐요."],
+      render: (b, a) => u3ShareOut(b, a, { n: 4, g: 2, item: "과자", kind: "cookie", box: "명", labels: ["1번 친구 접시", "2번 친구 접시"], size: 56,
+        ask: [{ q: "한 명이 먹는 과자는?", a: 2, unit: "개", why: { "4": "4개는 과자 전체의 수예요. 한 명이 먹는 수를 세어 봐요." } }],
+        ok: "한 명이 과자를 2개씩 먹을 수 있어요. 똑같이 나누었어요!" }) },
+    { name: "장면 찾기", inst: "체육 행사 그림에서 물건을 똑같이 나누는 장면을 모두 골라 보세요.",
+      hints: ["‘나누어 가진다’, ‘몇 개씩 준다’는 말이 있는지 살펴봐요.", "응원하기처럼 물건을 나누지 않는 장면도 있어요."],
+      render: (b, a) => quiz(b, a, [
+        { q: "물건을 똑같이 나누는 장면을 모두 고르세요.", o: ["원반을 친구들과 똑같이 나누어 가지기", "컵 쌓기용 컵을 한 명에게 6개씩 주기", "나무 도막을 한 명이 2개씩 가지기", "달리기하는 친구를 응원하기"], a: [0, 1, 2] }],
+        { ok: "체육 행사에는 똑같이 나누는 일이 많아요!", bad: "물건을 나누는 장면인지, 똑같이 나누는지 다시 살펴봐요." }) },
+    { inst: "생각을 써 보세요.",
+      hints: ["모둠 친구와 색종이, 사탕, 피자를 나누었던 때를 떠올려 봐요.", "‘어떻게 하면 똑같이 나눌 수 있을까?’처럼 궁금한 것을 써도 좋아요."],
+      render: (b, a) => writeStep(b, a, [
+        { q: "보기: 물건을 똑같이 나누어 가졌던 경험을 써 보세요.", tag: "보기", ph: "예) 공깃돌을 똑같이 5개씩 나누어서 놀았어요." },
+        { q: "생각하기: 똑같이 나누려면 어떻게 해야 할까요?", tag: "생각" },
+        { q: "궁금해하기: 나눗셈에 대해 무엇이 궁금한가요?", tag: "궁금" }]) },
+    { name: "배운 내용 떠올리기", inst: "2학년 때 배운 곱셈식과 곱셈구구를 떠올려요. (『수학익힘』 37쪽)",
+      hints: ["3 × 4는 3을 4번 더한 것이에요.", "곱셈구구를 외워 봐요. 칠 오 삼십오!"],
+      render: (b, a) => numbers(b, a, [
+        { q: "3 × 4 =", a: 12 }, { q: "6 × 3 =", a: 18 }, { q: "7 × 5 =", a: 35 }, { q: "8 × 9 =", a: 72 }],
+        { ok: "곱셈구구를 잘 기억하고 있어요. 나눗셈을 배울 때 곱셈구구가 꼭 필요해요." }) },
+    { inst: "똑같이 나눈 것을 확인해요.",
+      hints: ["똑같이 나누었다는 것은 모두 같은 수만큼 가졌다는 뜻이에요.", "색종이 6장을 3명에게 하나씩 번갈아 나누어 준다고 생각해 봐요."],
+      render: (b, a) => quiz(b, a, [
+        { q: "과자 4개를 2명이 똑같이 나눈 것은?", o: ["2개와 2개", "3개와 1개", "4개와 0개"], a: 0 },
+        { q: "색종이 6장을 3명이 똑같이 나누면 한 명은 몇 장?", o: ["1장", "2장", "3장"], a: 1, why: { "2": "3장씩이면 3명에게 9장이 필요해요." } }],
+        { ok: "똑같이 나누는 것이 무엇인지 알았어요!" }) }
+  ],
+  challenge: { inst: "원반 12개를 3명이 똑같이 나누어 가져요. 한 명이 몇 개씩 가질 수 있을까요?",
+    hints: ["한 바퀴 나누어 주기를 여러 번 해 봐요."],
+    render: (b, a) => u3ShareOut(b, a, { n: 12, g: 3, item: "원반", kind: "disc", box: "명",
+      ask: [{ q: "한 명이 가지는 원반은?", a: 4, unit: "개" }], ok: "원반 12개를 3명이 4개씩 똑같이 나누었어요!" }) }
+},
+{
+  id: "t2", no: 2, title: "똑같이 나누어 볼까요 ⑴", soop: "개념 구축하기(O)",
+  question: "화살 6개를 2명이 똑같이 나누어 가지면 한 명이 몇 개씩 가질 수 있을까요?",
+  summary: "6을 2로 나누면 몫이 3이 돼요. 이것을 6 ÷ 2 = 3이라 쓰고 ‘6 나누기 2는 3과 같습니다’라고 읽어요. 6은 나누어지는 수, 2는 나누는 수, 3은 몫이에요.",
+  steps: [
+    { inst: "다인이와 짝 호원이가 투호용 화살 6개를 똑같이 나누어 가지려고 해요. 화살을 두 사람에게 나누어 놓아 보세요.",
+      hints: ["화살을 1개씩 번갈아 가며 나누어 놓아요.", "화살이 모두 없어질 때까지 나누어요."],
+      render: (b, a) => u3ShareOut(b, a, { n: 6, g: 2, item: "화살", kind: "arrow", box: "명", labels: ["다인", "호원"], size: 56,
+        ask: [{ q: "한 명이 가지는 화살은?", a: 3, unit: "개", why: { "2": "2는 사람 수예요. 한 명이 가진 화살을 세어 봐요.", "6": "6은 화살 전체의 수예요." } }],
+        ok: "화살을 1개씩 번갈아 가며 나누니 한 명이 3개씩 가졌어요!" }) },
+    { inst: "바둑돌 12개를 접시 3개에 똑같이 나누어 놓고, 나눗셈식으로 나타내 보세요.",
+      hints: ["바둑돌을 접시마다 1개씩 번갈아 가며 놓아요.", "나눗셈식은 (전체 바둑돌 수) ÷ (접시 수) = (한 접시의 바둑돌 수)예요."],
+      render: (b, a) => u3ShareOut(b, a, { n: 12, g: 3, item: "바둑돌", kind: "stone", box: "접시", labels: ["접시 1", "접시 2", "접시 3"], eq: true,
+        ask: [{ q: "한 접시에 놓인 바둑돌은?", a: 4, unit: "개", why: { "3": "3은 접시의 수예요." } }],
+        ok: "12 ÷ 3 = 4. 12 나누기 3은 4와 같습니다!" }) },
+    { inst: "몫이 무엇을 나타내는지 말해 보세요.",
+      hints: ["12 ÷ 3 = 4에서 12는 바둑돌 전체, 3은 접시 수예요.", "4는 한 접시에 몇 개가 놓였는지를 나타내요."],
+      render: (b, a) => blanks(b, a, ["12 ÷ 3 = 4에서 몫 4는 ", { o: ["한 접시에 놓인 바둑돌의 수", "접시의 수", "바둑돌 전체의 수"], a: 0 },
+        "예요. 바둑돌을 ", { o: ["1개씩 번갈아 가며", "한 접시에 모두"], a: 0 }, " 놓으면 똑같이 나눌 수 있어요."],
+        { ok: "몫의 뜻을 잘 말했어요." }) },
+    { inst: "약속: 나눗셈식의 이름과 읽는 방법을 정리해요.",
+      hints: ["나누어지는 수는 ÷ 앞에, 나누는 수는 ÷ 뒤에 있어요.", "= 뒤의 수가 몫이에요."],
+      render: (b, a) => blanks(b, a, ["6 ÷ 2 = 3에서 6은 ", { o: ["나누어지는 수", "나누는 수", "몫"], a: 0 }, ", 2는 ", { o: ["나누어지는 수", "나누는 수", "몫"], a: 1 },
+        ", 3은 ", { o: ["나누어지는 수", "나누는 수", "몫"], a: 2 }, "이에요. ‘6 ", { o: ["나누기", "곱하기", "빼기"], a: 0 }, " 2는 3과 같습니다.’라고 읽어요."],
+        { ok: "6을 2로 나누는 것과 같은 계산을 나눗셈이라고 해요." }) },
+    { inst: "물고기 10마리를 어항 2개에 똑같이 나누어 넣어요. 나눗셈식과 답을 써 보세요.",
+      hints: ["물고기를 어항 2개에 1마리씩 번갈아 넣는다고 생각해요.", "나누어지는 수는 물고기 수, 나누는 수는 어항 수예요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "10 ÷ 2 =", a: 5, why: { "2": "2는 나누는 수(어항 수)예요. 몫을 구해요.", "8": "10 - 2를 했나요? 나눗셈은 똑같이 나누는 거예요." } },
+        { q: "어항 한 개에 몇 마리씩?", a: 5, unit: "마리" },
+        { q: "18 ÷ 3 = 6에서 나누는 수는?", a: 3, why: { "18": "18은 나누어지는 수예요.", "6": "6은 몫이에요." } }],
+        { ok: "몫 5는 어항 한 개에 넣을 수 있는 물고기의 수예요!" }) }
+  ],
+  challenge: { inst: "나눗셈으로 해결해 보세요.",
+    hints: ["북어 한 쾌는 북어 20마리예요.", "(전체 수) ÷ (나누는 곳의 수)를 계산해요."],
+    render: (b, a) => numbers(b, a, [
+      { q: "공깃돌 15개를 통 3개에 똑같이 나누면 통 한 개에 몇 개? ", a: 5, unit: "개" },
+      { q: "사탕 14개를 접시 2개에 똑같이 나누면 한 접시에 몇 개? ", a: 7, unit: "개" },
+      { q: "북어 한 쾌(20마리)를 봉지 5개에 똑같이 나누면 한 봉지에 몇 마리? ", a: 4, unit: "마리" }],
+      { ok: "여러 가지 상황을 나눗셈으로 해결했어요!" }) }
+},
+{
+  id: "t3", no: 3, title: "똑같이 나누어 볼까요 ⑵", soop: "개념 구축하기(O)",
+  question: "나무 도막 8개를 한 명이 2개씩 가지면 몇 명이 가질 수 있을까요?",
+  summary: "8에서 2를 4번 빼면 0이 돼요. 이것을 나눗셈식으로 나타내면 8 ÷ 2 = 4예요. 몫 4는 2개씩 덜어 낸 횟수, 곧 나무 도막을 가질 수 있는 사람 수예요.",
+  steps: [
+    { inst: "비사치기에 쓸 나무 도막 8개를 한 명이 2개씩 가지려고 해요. 바구니에서 2개씩 덜어 내어 보세요.",
+      hints: ["0이 될 때까지 2개씩 계속 덜어 내요.", "덜어 낼 때마다 뺄셈식이 한 번씩 늘어나요. 몇 번 뺐는지 세어 봐요."],
+      render: (b, a) => u3TakeAway(b, a, { n: 8, per: 2, item: "나무 도막", kind: "block", mode: "sub", poolLabel: "바구니 · 나무 도막 8개", size: 52,
+        groupLabel: k => `${k + 1}번째 친구`,
+        ask: [{ q: "2개씩 몇 번 덜어 냈나요?", a: 4, unit: "번" }, { q: "나무 도막을 몇 명이 가질 수 있나요?", a: 4, unit: "명", why: { "2": "2는 한 명이 가지는 나무 도막 수예요." } }],
+        ok: "8 - 2 - 2 - 2 - 2 = 0. 4명이 가질 수 있어요!" }) },
+    { inst: "공깃돌 15개를 5개씩 묶어 보고, 나눗셈식으로 나타내 보세요.",
+      hints: ["공깃돌을 눌러 5개씩 묶음을 만들어요.", "몫은 묶음의 수예요."],
+      render: (b, a) => u3TakeAway(b, a, { n: 15, per: 5, item: "공깃돌", kind: "pebble", mode: "group", eq: true,
+        ask: [{ q: "공깃돌은 몇 묶음이 되나요?", a: 3, unit: "묶음", why: { "5": "5는 한 묶음의 공깃돌 수예요." } }],
+        ok: "15 ÷ 5 = 3. 몫 3은 5개씩 묶은 공깃돌의 묶음 수예요!" }) },
+    { inst: "꽃 12송이를 4송이씩 묶어 꽃다발을 만들어요. 옳게 말한 사람을 골라 보세요.",
+      hints: ["12송이에서 4송이씩 몇 번 덜어 낼 수 있는지 생각해요.", "꽃다발의 수는 나눗셈식에서 몫이에요."],
+      render: (b, a) => quiz(b, a, [
+        { q: "옳게 말한 사람은?", o: ["윤아: 12 - 4 - 4 - 4 = 0이니까 꽃다발 3개를 만들 수 있어.", "도윤: 12 ÷ 4 = 3이니까 꽃다발 4개를 만들 수 있어."], a: 0,
+          why: { "1": "도윤이는 나누는 수 4와 몫 3을 바꾸어 말했어요. 꽃다발 수는 몫 3이에요." } },
+        { q: "12 ÷ 4 = 3에서 3은 무엇을 나타내나요?", o: ["만들 수 있는 꽃다발의 수", "꽃다발 한 개의 꽃 수", "꽃 전체의 수"], a: 0 }],
+        { ok: "12송이에서 4송이씩 3번 덜어 낼 수 있으므로 꽃다발은 3개예요." }) },
+    { inst: "약속: 뺄셈식과 나눗셈식의 관계를 정리해요.",
+      hints: ["8 - 2 - 2 - 2 - 2 = 0에서 2가 몇 번 나오는지 세어 봐요.", "빼는 수는 나누는 수, 뺀 횟수는 몫이 돼요."],
+      render: (b, a) => blanks(b, a, ["8에서 2를 ", { o: ["4번", "2번", "8번"], a: 0 }, " 빼면 0이 됩니다. 이것을 나눗셈식으로 나타내면 ",
+        { o: ["8 ÷ 2 = 4", "8 ÷ 4 = 2", "8 - 2 = 6"], a: 0 }, "입니다. 몫은 ", { o: ["뺀 횟수", "빼는 수"], a: 0 }, "와 같아요."],
+        { ok: "뺄셈식으로도 나눗셈의 몫을 구할 수 있어요." }) },
+    { inst: "귤 16개를 한 명에게 4개씩 나누어 주려고 해요. 뺄셈식과 나눗셈식으로 구해 보세요.",
+      hints: ["16에서 4씩 빼 보세요. 16 - 4 = 12, 12 - 4 = 8, …", "4를 몇 번 뺐는지가 몫이에요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "16 - 4 - 4 - 4 - 4 =", a: 0 },
+        { q: "4를 몇 번 뺐나요?", a: 4, unit: "번" },
+        { q: "16 ÷ 4 =", a: 4 },
+        { q: "배지 25개를 상자 한 개에 5개씩 담으면 상자는 몇 개? ", a: 5, unit: "개" }],
+        { ok: "뺄셈식과 나눗셈식으로 몫을 구했어요!" }) }
+  ],
+  challenge: { inst: "옳은 방법을 생각하며 풀어 보세요.",
+    hints: ["연필 36자루에서 9자루씩 몇 번 뺄 수 있을까요?", "사과 14개에서 2개씩 빼면 몇 번 뺄 수 있을까요?"],
+    render: (b, a) => numbers(b, a, [
+      { q: "연필 36자루를 한 모둠에 9자루씩 주면 몇 모둠? ", a: 4, unit: "모둠", why: { "6": "6자루씩 나눈 것이 아니에요. 9자루씩 나누어요." } },
+      { q: "사과 14개를 바구니 한 개에 2개씩 담으면 바구니 몇 개? ", a: 7, unit: "개" },
+      { q: "가방 32개를 상자 한 개에 8개씩 담으면 상자 몇 개? ", a: 4, unit: "개" }],
+      { ok: "몇씩 덜어 내는 나눗셈을 잘 해결했어요!" }) }
+},
+{
+  id: "t4", no: 4, title: "곱셈과 나눗셈의 관계를 알아볼까요", soop: "개념 구축하기(O)",
+  question: "원반 21개를 똑같이 나누는 방법을 곱셈식과 나눗셈식으로 어떻게 나타낼까요?",
+  summary: "곱셈식은 나눗셈식 2개로, 나눗셈식은 곱셈식 2개로 바꾸어 나타낼 수 있어요. 3 × 7 = 21 → 21 ÷ 3 = 7, 21 ÷ 7 = 3.",
+  steps: [
+    { inst: "원반던지기에 쓸 원반 21개가 있어요. 세로로 3개씩, 가로로 7개씩 묶어 보고 식을 완성해 보세요.",
+      hints: ["세로로 3개씩 묶으면 몇 묶음인지 세어 봐요.", "한 명이 3개씩 가지면 가질 수 있는 사람 수는 묶음 수와 같아요."],
+      render: (b, a) => u3MulDiv(b, a, { rows: 3, cols: 7, item: "원반", kind: "disc", start: "col",
+        eqs: [{ t: "3 × 7 =", a: 21, show: "col" }, { t: "한 명이 3개씩: 21 ÷ 3 =", a: 7, show: "col", why: { "3": "3은 한 명이 가지는 원반 수예요. 묶음 수를 세어 봐요." } },
+          { t: "7 × 3 =", a: 21, show: "row" }, { t: "한 명이 7개씩: 21 ÷ 7 =", a: 3, show: "row" }],
+        ok: "3 × 7 = 21로 21 ÷ 3 = 7과 21 ÷ 7 = 3을 만들 수 있어요!" }) },
+    { inst: "딸기 14개 그림을 보고 곱셈식과 나눗셈식으로 나타내 보세요.",
+      hints: ["세로로 2개씩 묶으면 7묶음, 가로로 7개씩 묶으면 2묶음이에요.", "곱셈식의 곱 14가 나눗셈식의 나누어지는 수가 돼요."],
+      render: (b, a) => u3MulDiv(b, a, { rows: 2, cols: 7, item: "딸기", kind: "berry",
+        eqs: [{ t: "2 × 7 =", a: 14, show: "col" }, { t: "14 ÷ 2 =", a: 7, show: "col" }, { t: "7 × 2 =", a: 14, show: "row" }, { t: "14 ÷ 7 =", a: 2, show: "row" }],
+        ok: "같은 딸기 그림을 곱셈식과 나눗셈식으로 나타냈어요!" }) },
+    { inst: "곱셈식과 나눗셈식이 어떤 관계인지 말해 보세요.",
+      hints: ["원반을 3개씩 묶은 묶음 수와 3개씩 가지는 사람 수를 비교해 봐요.", "곱셈식과 나눗셈식은 모양은 다르지만 같은 그림을 나타내요."],
+      render: (b, a) => blanks(b, a, ["원반 21개를 3개씩 묶으면 7묶음이라 3 × 7 = 21이에요. 한 명이 3개씩 가지면 ", { o: ["7명", "3명", "21명"], a: 0 },
+        "이 가질 수 있어 21 ÷ 3 = 7이에요. 곱셈식과 나눗셈식은 ", { o: ["같은 상황", "서로 다른 상황"], a: 0 }, "을 나타내요."],
+        { ok: "한 가지 상황을 곱셈식과 나눗셈식으로 나타낼 수 있어요." }) },
+    { inst: "약속: 곱셈과 나눗셈의 관계를 정리해요.",
+      hints: ["2 × 7 = 14에서 나눗셈식 14 ÷ 2 = 7, 14 ÷ 7 = 2를 만들었어요.", "14 ÷ 2 = 7에서 곱셈식 2 × 7 = 14, 7 × 2 = 14를 만들 수 있어요."],
+      render: (b, a) => blanks(b, a, ["곱셈식은 나눗셈식 ", { o: ["2개", "1개", "3개"], a: 0 }, "로, 나눗셈식은 곱셈식 ", { o: ["2개", "1개", "3개"], a: 0 },
+        "로 바꾸어 나타낼 수 있습니다. 2 × 7 = 14 → 14 ÷ 2 = 7, ", { o: ["14 ÷ 7 = 2", "14 ÷ 7 = 7", "14 ÷ 2 = 14"], a: 0 }],
+        { ok: "곱셈과 나눗셈은 서로 바꾸어 나타낼 수 있어요." }) },
+    { inst: "곱셈식은 나눗셈식 2개로, 나눗셈식은 곱셈식 2개로 나타내 보세요.",
+      hints: ["곱셈식의 곱은 나눗셈식의 나누어지는 수가 돼요.", "나눗셈식의 나누는 수와 몫을 곱하면 나누어지는 수가 돼요."],
+      render: (b, a) => u3RelTree(b, a, { trees: [{ from: "mul", a: 6, b: 9 }, { from: "div", n: 35, d: 7 }],
+        ok: "6 × 9 = 54 → 54 ÷ 6 = 9, 54 ÷ 9 = 6 / 35 ÷ 7 = 5 → 7 × 5 = 35, 5 × 7 = 35" }) }
+  ],
+  challenge: { inst: "수 카드 7, 4, 28을 한 번씩만 사용하여 곱셈식과 나눗셈식을 만들어 보세요.",
+    hints: ["가장 큰 수 28이 곱셈식의 곱, 나눗셈식의 나누어지는 수가 돼요.", "7과 4를 곱하면 28이에요."],
+    render: (b, a) => numbers(b, a, [
+      { q: "7 × 4 =", a: 28 }, { q: "28 ÷ 7 =", a: 4 }, { q: "28 ÷ 4 =", a: 7 },
+      { q: "달걀이 8개씩 4줄 있어요. 그릇 한 개에 8개씩 담으면 그릇 몇 개? ", a: 4, unit: "개" }],
+      { ok: "수 카드로 곱셈식 1개와 나눗셈식 2개를 만들었어요!" }) }
+},
+{
+  id: "t5", no: 5, title: "나눗셈의 몫을 곱셈식으로 구해 볼까요", soop: "개념 구축하기(O)",
+  question: "컵 18개를 한 명에게 6개씩 주면 몇 명에게 나누어 줄 수 있을까요?",
+  summary: "18 ÷ 6 = □의 몫 □는 6과 곱해서 18이 되는 수예요. 6 × 3 = 18이므로 18 ÷ 6 = 3이에요.",
+  steps: [
+    { inst: "컵 쌓기 대회에서 컵 18개를 한 명에게 6개씩 주려고 해요. 컵 묶음 수(□)를 바꾸어 6 × □ = 18이 되는 때를 찾아보세요.",
+      hints: ["6개씩 한 묶음이 한 사람 몫이에요.", "6 × 1 = 6, 6 × 2 = 12, … 18이 될 때까지 늘려 봐요."],
+      render: (b, a) => u3FindByMul(b, a, { a: 18, b: 6, item: "컵", kind: "cup", groupBy: "col", groupName: k => `${k + 1}명`,
+        qText: "몇 명에게 나누어 줄 수 있나요?", qUnit: "명", why: { "6": "6은 한 명이 받는 컵 수예요.", "12": "6 × 2 = 12는 18이 아니에요." },
+        ok: "6 × 3 = 18이므로 18 ÷ 6 = 3. 3명에게 줄 수 있어요!" }) },
+    { inst: "연필 40자루를 5개 반에 똑같이 나누어 주려고 해요. 한 반에 몇 자루씩 주어야 하는지 곱셈식으로 구해 보세요.",
+      hints: ["구하는 식은 40 ÷ 5예요.", "5 × □ = 40이 되는 □를 찾아요."],
+      render: (b, a) => u3FindByMul(b, a, { a: 40, b: 5, item: "연필", unit: "자루", kind: "pencil", groupBy: "row", groupName: k => `${k + 1}반`, start: 2,
+        qText: "한 반에 몇 자루씩?", qUnit: "자루", why: { "5": "5는 반의 수예요." },
+        ok: "5 × 8 = 40이므로 40 ÷ 5 = 8. 한 반에 8자루씩이에요!" }) },
+    { inst: "곱셈식으로 몫을 구하는 방법을 말해 보세요.",
+      hints: ["18 ÷ 6에서 나누는 수 6과 무엇을 곱하면 18이 될까요?"],
+      render: (b, a) => blanks(b, a, ["18 ÷ 6의 몫은 6과 곱해서 ", { o: ["18", "6", "3"], a: 0 }, "이 되는 수예요. 6 × 3 = 18이므로 18 ÷ 6의 몫은 ",
+        { o: ["3", "6", "18"], a: 0 }, "이에요. 이 몫은 컵을 받을 수 있는 ", { o: ["사람 수", "컵 수"], a: 0 }, "예요."],
+        { ok: "나눗셈의 몫을 곱셈식으로 구하는 방법을 말했어요." }) },
+    { inst: "약속: 18 ÷ 6 = □의 몫 □는 6 × □ = 18을 이용하여 구할 수 있어요. 빈칸을 채워 보세요.",
+      hints: ["7 × □ = 28에서 □는 7단 곱셈구구로 찾아요.", "곱셈식의 □와 나눗셈식의 몫은 같은 수예요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "7 × □ = 28 에서 □ =", a: 4 }, { q: "28 ÷ 7 =", a: 4 },
+        { q: "8 × □ = 56 에서 □ =", a: 7 }, { q: "56 ÷ 8 =", a: 7 }],
+        { ok: "곱셈식의 □가 바로 나눗셈의 몫이에요." }) },
+    { inst: "약과 32개를 한 봉지에 4개씩 넣으면 몇 봉지가 되는지 곱셈식으로 구해 보세요.",
+      hints: ["4 × □ = 32가 되는 □를 찾아요.", "4단 곱셈구구: 4, 8, 12, 16, 20, 24, 28, 32"],
+      render: (b, a) => numbers(b, a, [
+        { q: "4 × □ = 32 에서 □ =", a: 8 }, { q: "32 ÷ 4 =", a: 8 }, { q: "약과는 몇 봉지?", a: 8, unit: "봉지", why: { "4": "4는 한 봉지에 넣는 약과 수예요." } }],
+        { ok: "4 × 8 = 32이므로 약과는 8봉지가 돼요!" }) }
+  ],
+  challenge: { inst: "곱셈식을 떠올려 몫을 구해 보세요.",
+    hints: ["8명에게 똑같이 나누면 8 × □ = 56이에요.", "복숭아 24개를 3개씩 → 3 × □ = 24"],
+    render: (b, a) => numbers(b, a, [
+      { q: "딱지 56장을 8명에게 똑같이 나누면 한 명에게 몇 장? ", a: 7, unit: "장" },
+      { q: "복숭아 24개를 한 명에게 3개씩 주면 몇 명? ", a: 8, unit: "명" },
+      { q: "20 ÷ 4 =", a: 5 }, { q: "54 ÷ 6 =", a: 9 }],
+      { ok: "곱셈식으로 나눗셈의 몫을 척척 구했어요!" }) }
+},
+{
+  id: "t6", no: 6, title: "나눗셈의 몫을 곱셈구구로 구해 볼까요", soop: "개념 구축하기(O)",
+  question: "학생 28명이 한 번에 4명씩 달리기를 하면 달리기를 몇 번 해야 할까요?",
+  summary: "나누는 수의 단 곱셈구구에서 곱이 나누어지는 수가 되는 곱셈을 찾으면 몫을 구할 수 있어요. 4단에서 4 × 7 = 28이므로 28 ÷ 4 = 7이에요.",
+  steps: [
+    { inst: "학생 28명이 한 번에 4명씩 달리기를 해요. 곱셈표에서 4단을 찾은 다음 28을 찾아보세요.",
+      hints: ["28 ÷ 4에서 나누는 수는 4예요. 왼쪽에서 4를 눌러요.", "4단 줄에서 28을 찾고, 그 칸의 맨 위 수를 봐요."],
+      render: (b, a) => u3TableFind(b, a, { a: 28, b: 4, qUnit: "번", ok: "4 × 7 = 28이므로 28 ÷ 4 = 7. 달리기를 7번 해야 해요!" }) },
+    { inst: "공책 42권을 한 명에게 7권씩 주려고 해요. 몇 명에게 줄 수 있는지 곱셈구구로 구해 보세요.",
+      hints: ["42 ÷ 7이에요. 7단 곱셈구구를 써요.", "7 × 1 = 7, 7 × 2 = 14, 7 × 3 = 21, …"],
+      render: (b, a) => u3TableFind(b, a, { a: 42, b: 7, qUnit: "명", ok: "7 × 6 = 42이므로 42 ÷ 7 = 6. 6명에게 줄 수 있어요!" }) },
+    { inst: "나눗셈의 몫을 구할 때 필요한 곱셈구구를 골라 보세요.",
+      hints: ["나눗셈식에서 ÷ 뒤의 수(나누는 수)를 봐요.", "나누는 수의 단 곱셈구구를 써요."],
+      render: (b, a) => quiz(b, a, [
+        { q: "63 ÷ 7의 몫을 구할 때 필요한 곱셈구구는?", o: ["5단", "7단", "8단"], a: 1, why: { "0": "5단에는 63이 없어요." } },
+        { q: "20 ÷ 5의 몫을 구할 때 필요한 곱셈구구는?", o: ["5단", "7단", "8단"], a: 0 },
+        { q: "72 ÷ 8의 몫을 구할 때 필요한 곱셈구구는?", o: ["5단", "7단", "8단"], a: 2 }],
+        { ok: "나누는 수의 단 곱셈구구를 쓰면 돼요!" }) },
+    { inst: "약속: 곱셈구구로 몫을 구하는 방법을 정리해요.",
+      hints: ["28 ÷ 4에서 나누는 수는 4, 나누어지는 수는 28이에요."],
+      render: (b, a) => blanks(b, a, ["나눗셈의 몫은 ", { o: ["나누는 수", "나누어지는 수", "몫"], a: 0 }, "의 단 곱셈구구에서 곱이 ",
+        { o: ["나누어지는 수", "나누는 수"], a: 0 }, "가 되는 곱셈을 찾아 구해요. 28 ÷ 4는 4단에서 4 × 7 = 28을 찾아 몫이 ", { o: ["7", "4", "28"], a: 0 }, "이에요."],
+        { ok: "곱셈구구로 나눗셈의 몫을 구할 수 있어요." }) },
+    { inst: "나눗셈의 몫을 곱셈구구로 구해 보세요.",
+      hints: ["40 ÷ 8은 8단, 30 ÷ 5는 5단, 63 ÷ 9는 9단 곱셈구구를 떠올려요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "40 ÷ 8 =", a: 5 }, { q: "30 ÷ 5 =", a: 6 }, { q: "63 ÷ 9 =", a: 7 },
+        { q: "클립 24개를 3명에게 똑같이 나누어 주면 한 명에게 몇 개? ", a: 8, unit: "개" }],
+        { ok: "곱셈구구로 몫을 척척 구했어요!" }) }
+  ],
+  challenge: { inst: "곱셈구구로 해결해 보세요.",
+    hints: ["어떤 수 ÷ 4 = 6이면 4 × 6 = 어떤 수예요.", "몫이 큰 것을 고르려면 각각 몫을 구해 비교해요."],
+    render: (b, a) => numbers(b, a, [
+      { q: "어떤 수를 4로 나눈 몫이 6이에요. 어떤 수는? ", a: 24, why: { "10": "4 + 6이 아니에요. 4 × 6을 생각해요." } },
+      { q: "그 어떤 수를 3으로 나눈 몫은? ", a: 8 },
+      { q: "14 ÷ 2, 18 ÷ 6, 25 ÷ 5, 42 ÷ 7 중 가장 큰 몫은? ", a: 7 },
+      { q: "경서는 붕어빵 28개를 한 봉지에 4개씩 담았어요. 몇 봉지? ", a: 7, unit: "봉지" }],
+      { ok: "곱셈구구와 나눗셈의 관계를 잘 이용했어요!" }) }
+},
+{
+  id: "t7", no: 7, title: "생각을 더하다 ― 함께 하면 더 쉬워져요", soop: "탐구 정리하기(O)",
+  question: "장구 12개를 친구와 똑같이 나누어 옮기면 한 명이 몇 개씩 옮겨야 할까요?",
+  summary: "12 ÷ 2 = 6, 12 ÷ 3 = 4, 12 ÷ 4 = 3이에요. 장구 수는 그대로인데 옮기는 친구가 많아지면 한 명이 옮기는 장구는 적어져요. 힘을 합하면 일이 더 쉬워져요.",
+  steps: [
+    { name: "나누어 옮기기", inst: "은찬이가 장구 12개를 강당으로 옮기려고 해요. 옮기는 사람 수를 바꾸어 가며 똑같이 나누어 보세요.",
+      hints: ["2명, 3명, 4명 버튼을 모두 눌러 봐요.", "한 사람 칸에 있는 장구를 세어요."],
+      render: (b, a) => u3ShareCompare(b, a, { n: 12, gs: [2, 3, 4], item: "장구", kind: "drum", who: "명" }) },
+    { name: "식으로 쓰기", inst: "장구 12개를 나누어 옮기는 상황을 나눗셈식으로 나타내 보세요.",
+      hints: ["나누어지는 수는 장구 수 12, 나누는 수는 옮기는 사람 수예요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "2명이 옮길 때: 12 ÷ 2 =", a: 6 }, { q: "3명이 옮길 때: 12 ÷ 3 =", a: 4 }, { q: "4명이 옮길 때: 12 ÷ 4 =", a: 3 }],
+        { ok: "상황에 맞게 나눗셈식을 세웠어요." }) },
+    { inst: "알게 된 것을 말해 보세요.",
+      hints: ["6개, 4개, 3개로 어떻게 변했나요?", "나누어지는 수 12는 그대로예요."],
+      render: (b, a) => blanks(b, a, ["장구를 옮기는 친구의 수가 많아지면 한 명이 옮겨야 하는 장구의 수는 ", { o: ["적어져요", "많아져요", "그대로예요"], a: 0 },
+        ". 나누어지는 수가 같을 때 나누는 수가 커지면 몫은 ", { o: ["작아져요", "커져요"], a: 0 }, "."],
+        { ok: "함께 하면 한 사람이 할 일이 줄어들어요." }) },
+    { name: "생각 정리하기", inst: "‘백지장도 맞들면 낫다’는 속담을 떠올리며 생각을 정리해요.",
+      hints: ["쉬운 일이라도 힘을 합하여 서로 도우면 더 쉬워진다는 뜻이에요.", "친구와 함께 청소하거나 물건을 옮긴 경험을 떠올려 봐요."],
+      render: (b, a) => writeStep(b, a, [
+        { q: "연결하기: 장구 문제를 나눗셈으로 어떻게 해결했나요?", tag: "연결" },
+        { q: "확장하기: 친구와 함께 해서 더 쉽게 해결한 경험을 써 보세요.", tag: "경험" }]) },
+    { inst: "다른 수로도 해결해 보세요.",
+      hints: ["(전체 장구 수) ÷ (옮기는 사람 수)를 계산해요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "장구 24개를 3명이 똑같이 나누어 옮기면 한 명이 몇 개? ", a: 8, unit: "개" },
+        { q: "장구 24개를 4명이 똑같이 나누어 옮기면 한 명이 몇 개? ", a: 6, unit: "개" },
+        { q: "장구 24개를 6명이 똑같이 나누어 옮기면 한 명이 몇 개? ", a: 4, unit: "개" }],
+        { ok: "사람이 많아질수록 한 명이 옮기는 장구가 적어졌어요." }) }
+  ],
+  challenge: { inst: "거꾸로 생각해 보세요.",
+    hints: ["한 명이 3개씩 옮기면 12 ÷ 3을 계산해요.", "북 15개를 5명이 → 15 ÷ 5"],
+    render: (b, a) => numbers(b, a, [
+      { q: "장구 12개를 한 명이 3개씩 옮기면 몇 명이 필요해요? ", a: 4, unit: "명" },
+      { q: "북 15개를 3명이 똑같이 나누어 옮기면 한 명이 몇 개? ", a: 5, unit: "개" },
+      { q: "북 15개를 5명이 똑같이 나누어 옮기면 한 명이 몇 개? ", a: 3, unit: "개" }],
+      { ok: "나눗셈으로 함께 하는 일을 계획할 수 있어요!" }) }
+},
+{
+  id: "t8", no: 8, title: "놀이를 더하다 ― 가자! 내 땅으로!", soop: "발표하기(P)",
+  question: "나눗셈의 몫만큼 바둑돌을 옮겨 내 땅에 더 많이 도착하게 하려면 어떻게 해야 할까요?",
+  summary: "카드에 적힌 나눗셈의 몫을 정확하게 구해야 바둑돌을 옮길 수 있어요. 몫이 크면 더 멀리 옮길 수 있고, 상대가 옮긴 바둑돌도 도착 칸에 가기 전이면 내 땅 쪽으로 옮길 수 있어요.",
+  steps: [
+    { name: "놀이하기", inst: "짝이나 컴퓨터 친구와 ‘가자! 내 땅으로!’ 놀이를 해요. 바둑돌 5개가 모두 도착할 때까지 해 보세요.",
+      hints: ["카드의 나눗셈은 나누는 수의 단 곱셈구구로 몫을 구해요.", "몫이 크면 내 땅에 가까운 바둑돌을 옮겨 도착시켜 봐요."],
+      render: (b, a) => u3LandGame(b, a, { cards: U3_CARDS }) },
+    { name: "몫만큼 옮기기", inst: "놀이에서 바둑돌이 움직인 칸 수를 알아봐요.",
+      hints: ["12 ÷ 4 = 3이면 3칸 옮겨요.", "같은 바둑돌을 두 번 옮기면 두 몫을 더한 만큼 움직여요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "12 ÷ 4 카드를 뽑았어요. 몫은?", a: 3 },
+        { q: "분홍 칸의 바둑돌을 내 땅 쪽으로 몇 칸 옮기나요?", a: 3, unit: "칸" },
+        { q: "다음 차례에 21 ÷ 7 카드로 같은 바둑돌을 또 옮겼어요. 분홍 칸에서 모두 몇 칸 왔나요?", a: 6, unit: "칸" }],
+        { ok: "몫만큼 바둑돌을 옮겨요!" }) },
+    { inst: "놀이에서 이기는 방법을 말해 보세요.",
+      hints: ["몫을 잘못 구하면 바둑돌을 옮길 수 없어요.", "바둑돌 5개 중 몇 개가 내 땅에 와야 이길까요?"],
+      render: (b, a) => blanks(b, a, ["놀이에서 이기려면 카드에 적힌 나눗셈의 몫을 ", { o: ["정확하게", "빨리 아무렇게나"], a: 0 },
+        " 구해야 해요. 바둑돌 5개 중 ", { o: ["3개", "1개"], a: 0 }, "나 그보다 많은 바둑돌을 내 땅으로 옮겨야 이겨요."],
+        { ok: "좋은 작전을 세웠어요." }) },
+    { name: "놀이 규칙 정리", inst: "‘가자! 내 땅으로!’의 규칙을 정리해요.",
+      hints: ["교과서 75쪽 놀이 방법을 다시 읽어 봐요.", "바둑돌은 연결된 칸으로만 옮겨요."],
+      render: (b, a) => quiz(b, a, [
+        { q: "몫을 옳게 구하면 어떻게 하나요?", o: ["원하는 바둑돌을 골라 몫만큼 내 땅 쪽으로 옮겨요", "나누는 수만큼 옮겨요"], a: 0 },
+        { q: "바둑돌을 옆줄로 넘어가게 옮길 수 있나요?", o: ["있어요", "없어요"], a: 1 },
+        { q: "상대방이 옮겼던 바둑돌도 옮길 수 있나요?", o: ["도착 칸에 도착하지 않았으면 옮길 수 있어요", "절대 옮길 수 없어요"], a: 0 }],
+        { ok: "규칙을 잘 알고 있어요." }) },
+    { inst: "놀이에 나온 카드의 몫을 구해 보세요.",
+      hints: ["나누는 수의 단 곱셈구구를 떠올려요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "36 ÷ 4 =", a: 9 }, { q: "45 ÷ 5 =", a: 9 }, { q: "42 ÷ 6 =", a: 7 }, { q: "56 ÷ 8 =", a: 7 }, { q: "27 ÷ 9 =", a: 3 }],
+        { ok: "몫을 정확하게 구했어요!" }) }
+  ],
+  challenge: { inst: "작전을 세워 보세요.",
+    hints: ["카드마다 몫을 먼저 구해 비교해요.", "도착 칸까지 4칸 남았으면 몫이 4보다 크거나 같으면 돼요."],
+    render: (b, a) => quiz(b, a, [
+      { q: "바둑돌을 가장 멀리 옮길 수 있는 카드는?", o: ["48 ÷ 8", "63 ÷ 7", "35 ÷ 7"], a: 1, why: { "0": "48 ÷ 8 = 6이에요. 63 ÷ 7의 몫과 비교해 봐요." } },
+      { q: "내 바둑돌이 도착 칸까지 4칸 남았어요. 한 번에 도착할 수 있는 카드는?", o: ["6 ÷ 2", "32 ÷ 8", "9 ÷ 3"], a: 1 }],
+      { ok: "몫의 크기를 생각해 작전을 세웠어요!" }) }
+},
+{
+  id: "t9", no: 9, title: "공부한 내용을 확인해요", soop: "발표하기(P)",
+  question: "나눗셈을 배우기 전과 후, 내 생각은 어떻게 달라졌나요?",
+  summary: "똑같이 나누기, 몇씩 덜어 내기, 곱셈과 나눗셈의 관계, 곱셈식과 곱셈구구로 몫 구하기 — 나눗셈에서 배운 것을 모두 확인했어요.",
+  steps: [
+    { name: "확인 1", inst: "제기 16개를 바구니 2개에 똑같이 나누어 담아 보세요.",
+      hints: ["한 개씩 번갈아 가며 담아요."],
+      render: (b, a) => u3ShareOut(b, a, { n: 16, g: 2, item: "제기", kind: "jegi", box: "바구니", eq: true,
+        ask: [{ q: "바구니 한 개에 몇 개씩?", a: 8, unit: "개" }], ok: "16 ÷ 2 = 8. 바구니 한 개에 8개씩이에요!" }) },
+    { name: "확인 2", inst: "뺄셈식과 곱셈식으로 나눗셈을 나타내 보세요.",
+      hints: ["쿠키 20개에서 5개씩 빼 보세요.", "사탕이 6개씩 4묶음이면 6 × 4예요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "쿠키 20개를 한 명에게 5개씩: 20 - 5 - 5 - 5 - 5 =", a: 0 },
+        { q: "20 ÷ 5 =", a: 4 }, { q: "쿠키를 몇 명에게 줄 수 있나요?", a: 4, unit: "명" },
+        { q: "사탕 6개씩 4묶음: 6 × 4 =", a: 24 }, { q: "24 ÷ 4 =", a: 6 }, { q: "24 ÷ 6 =", a: 4 }],
+        { ok: "뺄셈식, 곱셈식, 나눗셈식을 서로 연결했어요!" }) },
+    { name: "확인 3", inst: "곱셈표를 이용하여 나눗셈의 몫을 구해 보세요.",
+      hints: ["나누는 수의 단 줄에서 나누어지는 수를 찾아요."],
+      render: (b, a) => u3TableFind(b, a, { probs: [[36, 6], [56, 7], [48, 8]], rows: [6, 7, 8], ok: "36 ÷ 6 = 6, 56 ÷ 7 = 8, 48 ÷ 8 = 6. 곱셈표로 몫을 모두 찾았어요!" }) },
+    { name: "확인 4", inst: "관계있는 곱셈식으로 몫을 구하고, 문제를 해결해 보세요.",
+      hints: ["18 ÷ 6의 몫은 6 × □ = 18의 □예요.", "음료수 문제는 먼저 음료수가 모두 몇 개인지 구해요."],
+      render: (b, a) => numbers(b, a, [
+        { q: "6 × 3 = 18 이므로 18 ÷ 6 =", a: 3 }, { q: "7 × 5 = 35 이므로 35 ÷ 7 =", a: 5 }, { q: "3 × 4 = 12 이므로 12 ÷ 3 =", a: 4 },
+        { q: "상추 모종 72개를 화분 8개에 똑같이 나누어 심으면 화분 한 개에 몇 개? ", a: 9, unit: "개" },
+        { q: "음료수가 3개씩 8줄 있어요. 음료수는 모두 몇 개? ", a: 24, unit: "개" },
+        { q: "음료수를 한 모둠에 4개씩 주면 몇 모둠? ", a: 6, unit: "모둠", why: { "8": "8은 줄 수예요. 전체 24개를 4개씩 나누어요." } }],
+        { ok: "나눗셈으로 여러 가지 문제를 해결했어요!" }) },
+    { name: "예전 생각, 지금 생각", inst: "생각이 어떻게 달라졌는지 써 보세요.",
+      hints: ["‘12 ÷ 4는 무엇인가요?’라는 물음에 그림이나 말로 설명해 봐요."],
+      render: (b, a) => writeStep(b, a, [
+        { q: "예전에는 나누기를 ……라고 생각했어요.", tag: "예전" }, { q: "지금은 나눗셈이 ……라고 생각해요.", tag: "지금" }]) }
+  ],
+  challenge: { inst: "재미를 더하다: 나눗셈의 몫을 따라가면 다람쥐가 나무에 도착할 수 있어요.",
+    hints: ["갈림길마다 나눗셈의 몫을 먼저 구해요."],
+    render: (b, a) => u3QuotientPath(b, a, { forks: [
+      { e: "12 ÷ 2", o: [6, 5] }, { e: "21 ÷ 3", o: [3, 7] }, { e: "36 ÷ 9", o: [4, 9] }, { e: "48 ÷ 6", o: [6, 8] }, { e: "16 ÷ 4", o: [4, 8] }],
+      who: "다람쥐", goal: "나무", ok: "몫을 따라 나무에 도착했어요. 나눗셈 단원을 모두 해냈어요!" }) }
+}];
+
+window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
+window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.student) openLesson(L.id); });
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});}})();
+</script>
+</body>
+</html>
+
