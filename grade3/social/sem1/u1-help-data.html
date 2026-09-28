@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🏥 도움을 주는 장소 자료실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.wrap{flex:1;min-height:0;overflow-y:auto;padding:4px 2px 20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1300px;margin:0 auto}
+.dc{background:var(--paper);border-radius:24px;border-top:14px solid var(--cc);padding:clamp(16px,2vw,26px)}
+.dc .big{font-family:var(--display);font-size:clamp(40px,4.6vw,70px);color:var(--cc);line-height:1.1}
+.dc h3{font-family:var(--display);font-weight:400;font-size:clamp(25px,2.5vw,34px);margin:2px 0 8px}
+.dc p{margin:0 0 10px;font-size:clamp(21px,2.1vw,28px);line-height:1.5}
+.bar2{height:22px;background:var(--bg);border-radius:99px;overflow:hidden;border:2px solid var(--line);margin:6px 0 12px}
+.bar2 i{display:block;height:100%;background:var(--cc);width:var(--w)}
+.ask2{background:var(--bg);border-radius:14px;padding:10px 16px;font-size:clamp(20px,2vw,26px);margin-bottom:10px}
+.ask2 b{font-family:var(--display);font-weight:400}
+.src{font-size:clamp(16px,1.6vw,20px);color:var(--soft);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.go{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-size:clamp(18px,1.8vw,23px);text-decoration:none;color:inherit;border:3px solid var(--line);border-radius:999px;padding:4px 14px}
+.go:hover{border-color:var(--ink)}
+.sec{max-width:1300px;margin:26px auto 0}
+.sec h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,2.6vw,36px);margin:0 0 12px}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.lk{display:flex;gap:16px;align-items:center;background:var(--paper);border:4px solid var(--line);border-radius:22px;padding:14px 18px;text-decoration:none;color:inherit}
+.lk:hover{border-color:var(--ink)}
+.lk .e{font-size:clamp(36px,3.6vw,52px);flex:none}
+.lk b{font-family:var(--display);font-weight:400;font-size:clamp(23px,2.3vw,30px);display:block}
+.lk small{font-size:clamp(17px,1.7vw,22px);color:var(--soft)}
+.rel{display:none;grid-template-columns:1fr 1fr;gap:16px}
+.rel.on{display:grid}
+.rl{display:flex;gap:14px;align-items:center;background:var(--paper);border:4px solid var(--rc);border-radius:22px;padding:14px 18px;text-decoration:none;color:inherit}
+.rl .e{font-size:clamp(34px,3.4vw,48px)}
+.rl b{font-family:var(--display);font-weight:400;font-size:clamp(23px,2.3vw,30px);display:block}
+.rl small{font-size:clamp(17px,1.7vw,22px);color:var(--soft)}
+.notice{max-width:1300px;margin:20px auto 0;background:var(--paper);border-left:14px solid #6A4FC9;border-radius:16px;padding:16px 22px;font-size:clamp(19px,1.9vw,25px);line-height:1.6}
+.notice b{font-family:var(--display);font-weight:400;color:#6A4FC9}
+@media (max-width:860px){.grid,.links,.rel.on{grid-template-columns:1fr}}
+
+body,h1,h2,h3,h4,p,li,span,div,button,a,td,th,small,b,i{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:16px}
+.creditbar .madeby{width:100%}
+.tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(20px,2vw,26px);
+  text-decoration:none;color:inherit;border:3px solid var(--line,#ccc);background:var(--paper,#fff);border-radius:999px;padding:8px 22px}
+.tolist.on{display:inline-flex}
+.rel.on{display:grid!important}
+.madeby{font-size:16px;color:var(--soft,#666);opacity:.85;text-align:center;font-family:var(--body,sans-serif)}
+
+h1,h2,h3,h4,.title,.hd,.qt,.x,.n,.nm,.big,.lead,.sit,.ask,.qtext,.front .n,.slot b,.dc h3,.lk b,.rl b,dt{text-wrap:balance}
+p,li,small,.d,.ex,.why,.blurb,.ask2,.sub,.msg,.notice,.fix,.retry div,.opt,.opt2,.way,.mbox .n,.dc p,.lk small,.rl small{text-wrap:pretty}
+</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style></head><body>
+
+<section id="main" class="screen on">
+  <div class="topbar"><h1 style="font-size:clamp(28px,2.9vw,42px)">🏥 도움을 주는 장소 자료실</h1>
+    <div class="tools"><button class="tool" data-full>⛶</button></div></div>
+  <p class="lead" style="font-size:clamp(20px,1.9vw,26px)">1단원 11~21차시 · 생활에 도움을 주는 장소와 살기 좋은 곳을 알아봐요.</p>
+  <div class="wrap" id="wrap"></div>
+<div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div></section>
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+
+const CFG={"h": "🏥 도움을 주는 장소 자료실", "sub": "1단원 11~21차시 · 생활에 도움을 주는 장소와 살기 좋은 곳을 알아봐요.", "cards": [{"c": "#2F74E0", "big": "하늘에서 본 지도", "t": "디지털 영상 지도란?", "p": "비행기나 인공위성으로 찍은 사진에 도로, 경계선, 지명 등 다양한 정보를 표시해 만든 지도예요. 확대하면 우리가 사는 곳의 실제 모습을 자세히 볼 수 있어요.", "q": "디지털 영상 지도로 우리 학교 주변에서 어떤 장소를 찾아보고 싶나요?", "s": "사회 3-1 교과서 43~47쪽 · 교사용 지도서 86쪽", "u": ""}, {"c": "#16A3B5", "t": "여러 가지 디지털 영상 지도", "p": "교과서에 나온 '국토 정보 맵'은 국토지리정보원의 '국토 정보 플랫폼'에 있어요. 네이버 지도, 카카오맵, 구글 지도로도 디지털 영상 지도를 볼 수 있어요.", "q": "일반 지도와 디지털 영상 지도를 번갈아 보면 무엇이 달라 보이나요?", "s": "사회 3-1 교사용 지도서 86쪽", "u": ""}, {"c": "#E0506B", "big": "119", "t": "부산 119 안전체험관", "p": "부산광역시 소방재난본부가 운영하는 곳이에요. 심폐 소생술, 교통안전처럼 안전을 지키는 방법을 직접 체험해 볼 수 있어요. 누리집에서 예약해요.", "q": "소방서는 불을 끄는 일 말고 또 어떤 일로 우리를 도와줄까요?", "s": "부산광역시 119 안전체험관 누리집, 2026. 9. 확인", "u": "https://119.busan.go.kr/firesafe/main"}, {"c": "#1F9E63", "t": "도서관을 찾는 방법", "p": "부산광역시 도서관포털에서 읽고 싶은 책이 부산의 어느 도서관에 있는지 한꺼번에 검색하고, 도서관 이용 방법도 알아볼 수 있어요.", "q": "도서관은 우리 생활에 어떤 도움을 주나요?", "s": "부산광역시 도서관포털, 2026. 9. 확인", "u": "https://library.busan.go.kr/portal/index.do"}, {"c": "#E8961E", "big": "117.38점", "t": "아동 삶의 질, 부산이 전국 1위", "p": "세이브더칠드런과 서울대학교 사회복지연구소가 발표한 '2024 한국 아동의 삶의 질'에서 부산이 1위를 했어요. 건강, 아동의 관계, 주거 환경 영역에서 가장 높은 점수를 받았어요.", "q": "어린이에게 살기 좋은 곳은 어떤 곳일까요? 친구의 생각은 나와 어떻게 다른가요?", "s": "세이브더칠드런·서울대학교 사회복지연구소, 2024. 7. 2. 발표 (머니투데이 2024. 7. 7. 보도)", "u": "https://v.daum.net/v/yQw3IpkPbK"}, {"c": "#6A4FC9", "big": "2019년", "t": "유니세프 아동친화도시 부산", "p": "부산시는 2019년에 유니세프 아동친화도시 인증을 처음 받았어요. 2025년에 다시 인증을 받아 2029년까지 이어 가요.", "q": "어린이가 살기 좋은 도시가 되려면 어떤 장소가 더 있으면 좋을까요?", "s": "유니세프 한국위원회 아동친화도시 심의위원회(2025. 12. 1.) · 서울경제 2025. 12. 22. 보도", "u": "https://www.sedaily.com/NewsView/2H1TUCSDMI"}], "links": [{"e": "🛰️", "t": "국토 정보 플랫폼(국토지리정보원)", "d": "교과서에 나온 '국토 정보 맵'으로 디지털 영상 지도를 봐요.", "u": "https://map.ngii.go.kr/"}, {"e": "📍", "t": "카카오맵", "d": "스카이뷰로 우리 동네의 실제 모습을 살펴봐요.", "u": "https://map.kakao.com/"}, {"e": "🚒", "t": "소방청 소방안전교육 플랫폼", "d": "소방청이 만든 안전 교육 영상과 체험 자료가 있어요.", "u": "https://119metaverse.nfa.go.kr/"}, {"e": "🧯", "t": "부산광역시 119 안전체험관", "d": "부산에서 안전 체험을 할 수 있는 곳이에요.", "u": "https://119.busan.go.kr/firesafe/main"}, {"e": "🏛️", "t": "부산광역시 동구청", "d": "우리 구청이 하는 일과 동구 소식을 알아봐요.", "u": "https://www.bsdonggu.go.kr/"}, {"e": "📚", "t": "부산광역시 도서관포털", "d": "가까운 도서관과 책을 찾아봐요.", "u": "https://library.busan.go.kr/portal/index.do"}], "rel": [{"f": "u1-l11.html", "c": "#2F74E0", "e": "🏥", "t": "11차시 우리 생활에 도움을 주는 장소를 알아볼까요", "d": "도움을 주는 장소 살펴보기"}, {"f": "u1-l12.html", "c": "#1F9E63", "e": "🙌", "t": "12차시 우리 생활에 도움을 주는 장소에서 하는 일은 무엇일까요", "d": "장소에서 하는 일 알아보기"}, {"f": "u1-l1314.html", "c": "#E8961E", "e": "🛰️", "t": "13~14차시 우리가 사는 곳에서 생활에 도움을 주는 장소를 찾아볼까요", "d": "디지털 영상 지도로 장소 찾기"}, {"f": "u1-l15.html", "c": "#E0506B", "e": "🏡", "t": "15차시 우리가 생각하는 살기 좋은 곳의 조건을 이야기해 볼까요", "d": "살기 좋은 곳의 조건 토의하기"}, {"f": "u1-l16.html", "c": "#6A4FC9", "e": "💡", "t": "16차시 우리가 사는 곳을 더 살기 좋은 곳으로 만드는 방안을 이야기해 볼까요", "d": "더 살기 좋게 만드는 방안 토의하기"}, {"f": "u1-l1718.html", "c": "#16A3B5", "e": "🖌️", "t": "17~18차시 우리가 생각한 살기 좋은 곳을 표현해 볼까요", "d": "살기 좋은 곳 표현하고 전시하기"}, {"f": "u1-l19.html", "c": "#2F74E0", "e": "💌", "t": "19차시 생각을 펼쳐요 · 재미있게 확인해요", "d": "감사 편지, 지역 화폐, 용어 정리"}, {"f": "u1-l2021.html", "c": "#1F9E63", "e": "🕸️", "t": "20~21차시 생각 그물을 완성해요 · 교실 놀이를 함께해요", "d": "단원 정리와 장소 카드 놀이"}], "notice": "<b>디지털 영상 지도<\/b><br>지도서 86쪽: 교과서의 ‘국토 정보 플랫폼’ 외에 네이버 지도, 카카오 맵, 구글 지도 등을 활용할 수 있으므로 찾고자 하는 정보와 수업 여건에 알맞은 지도를 고릅니다. 지도 서비스 화면과 메뉴 이름은 수시로 바뀌니 수업 전에 한 번 열어 봐 주세요.<br><br><b>살기 좋은 곳 통계<\/b><br>‘아동 삶의 질 1위’는 2024년 7월 발표, 아동친화도시는 2025년 12월 갱신 기준입니다. 교과서의 기사·수치와 기준 연도가 다를 수 있습니다. 지도서는 사람마다 살기 좋은 곳이 다를 수 있다고 보므로, 통계는 ‘이렇게 보는 방법도 있다’는 예시로만 쓰고 학생의 생각을 맞고 틀림으로 판단하지 않도록 해 주세요.<br><br><b>안전 누리집<\/b><br>경찰청의 어린이 전용 누리집은 이번에 확인하지 못해 넣지 않았습니다. 경찰서가 하는 일은 교과서 자료로 다뤄 주세요.<br><br><b>지도상의 유의점(주제 2, 지도서 71쪽)<\/b><br>•학생들의 삶과 관련이 깊은 주변의 장소를 탐색할 수 있도록 한다.<br>•여러 장소를 탐색할 때 디지털 영상 지도, 사진, 현장 답사 등을 학교(학급) 상황에 맞게 활용한다.<br>•학생의 관점에서 자기가 사는 곳을 더 살기 좋은 곳으로 만드는 방안을 마련하는 대화와 토론, 문제 해결 과정을 경험해 보게 한다.<br><br><b>링크 확인(2026. 9. 28.)<\/b><br>네이버 지도·브이월드는 확인 때 열리지 않아 링크에서 뺐습니다(카드 글에서 이름만 소개). ‘국토 정보 플랫폼’(map.ngii.go.kr)도 이번 확인 때 접속되지 않았지만 교과서(43~47쪽)와 지도서 86쪽이 직접 쓰는 도구라 남겨 두었으니 수업 전에 꼭 열어 봐 주세요. 119 안전체험관 주소는 확인하지 못했습니다. ‘2024 한국 아동의 삶의 질’보다 새로 나온 조사는 찾지 못했습니다."};
+function card(d){return `<article class="dc" style="--cc:${d.c}">
+  ${d.big?`<div class="big">${d.big}</div>`:''}<h3>${d.t}</h3>
+  ${d.w?`<div class="bar2"><i style="--w:${d.w}"></i></div>`:''}
+  <p>${d.p}</p><div class="ask2"><b>💬 함께 생각해요</b><br>${d.q}</div>
+  <div class="src"><span>출처: ${d.s}</span>${d.u?`<a class="go" href="${d.u}" target="_blank" rel="noopener">원문 보기 ↗</a>`:''}</div></article>;`.replace(';','');}
+$('wrap').innerHTML=`<div class="grid">${CFG.cards.map(card).join('')}</div>
+ <div class="sec"><h2>🎬 영상·사진·기사 찾아보기</h2><div class="links">${CFG.links.map(l=>`<a class="lk" href="${l.u}" target="_blank" rel="noopener"><span class="e">${l.e}</span><span><b>${l.t} ↗</b><small>${l.d}</small></span></a>`).join('')}</div></div>
+ <div class="sec"><h2>🔗 이 주제의 수업 자료</h2><div class="rel tolist" id="rel">${CFG.rel.map(r=>`<a class="rl" href="${r.f}" style="--rc:${r.c}"><span class="e">${r.e}</span><span><b>${r.t}</b><small>${r.d}</small></span></a>`).join('')}</div>
+   <p class="lead" style="font-size:19px" id="relNote">수업 자료 연결 버튼은 자료를 내려받아 폴더에서 열거나 누리집에 올렸을 때 나타나요.</p></div>
+ <div class="notice"><b>👩‍🏫 선생님께</b><br><b>디지털 영상 지도</b><br>지도서 86쪽: 교과서의 ‘국토 정보 플랫폼’ 외에 네이버 지도, 카카오 맵, 구글 지도 등을 활용할 수 있으므로 찾고자 하는 정보와 수업 여건에 알맞은 지도를 고릅니다. 지도 서비스 화면과 메뉴 이름은 수시로 바뀌니 수업 전에 한 번 열어 봐 주세요.<br><br><b>살기 좋은 곳 통계</b><br>‘아동 삶의 질 1위’는 2024년 7월 발표, 아동친화도시는 2025년 12월 갱신 기준입니다. 교과서의 기사·수치와 기준 연도가 다를 수 있습니다. 지도서는 사람마다 살기 좋은 곳이 다를 수 있다고 보므로, 통계는 ‘이렇게 보는 방법도 있다’는 예시로만 쓰고 학생의 생각을 맞고 틀림으로 판단하지 않도록 해 주세요.<br><br><b>안전 누리집</b><br>경찰청의 어린이 전용 누리집은 이번에 확인하지 못해 넣지 않았습니다. 경찰서가 하는 일은 교과서 자료로 다뤄 주세요.<br><br><b>지도상의 유의점(주제 2, 지도서 71쪽)</b><br>•학생들의 삶과 관련이 깊은 주변의 장소를 탐색할 수 있도록 한다.<br>•여러 장소를 탐색할 때 디지털 영상 지도, 사진, 현장 답사 등을 학교(학급) 상황에 맞게 활용한다.<br>•학생의 관점에서 자기가 사는 곳을 더 살기 좋은 곳으로 만드는 방안을 마련하는 대화와 토론, 문제 해결 과정을 경험해 보게 한다.<br><br><b>링크 확인(2026. 9. 28.)</b><br>네이버 지도·브이월드는 확인 때 열리지 않아 링크에서 뺐습니다(카드 글에서 이름만 소개). ‘국토 정보 플랫폼’(map.ngii.go.kr)도 이번 확인 때 접속되지 않았지만 교과서(43~47쪽)와 지도서 86쪽이 직접 쓰는 도구라 남겨 두었으니 수업 전에 꼭 열어 봐 주세요. 119 안전체험관 주소는 확인하지 못했습니다. ‘2024 한국 아동의 삶의 질’보다 새로 나온 조사는 찾지 못했습니다.</div>`;
+
+wireTools();</script><script>
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});var n=document.getElementById('relNote');if(n)n.style.display='none';}})();
+</script></body></html>

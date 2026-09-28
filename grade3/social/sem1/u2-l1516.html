@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🏛️ 옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸며 볼까요</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.stagebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.st{font-family:var(--display);cursor:pointer;font-size:clamp(19px,1.8vw,26px);padding:6px 14px;border-radius:999px;border:3px solid var(--line);background:var(--paper);color:var(--soft)}
+.st.now{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.st.done{border-color:var(--ok);color:var(--ok)}
+.goal{font-family:var(--display);font-size:clamp(20px,1.9vw,28px);color:var(--soft);text-align:center;margin:4px 0 0}
+.body{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:clamp(10px,1.6vh,20px);overflow-y:auto;padding:6px 0}
+.hd{font-family:var(--display);font-size:clamp(30px,3.3vw,48px);text-align:center;margin:0}
+.expq ul,.sumbox ul{margin:4px 0 0;padding-left:1.2em}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:6px}
+.tnote{border:3px solid #6A4FC9;color:#6A4FC9;background:var(--paper);border-radius:16px;padding:8px 18px;font-size:clamp(19px,1.8vw,25px)}
+.recall{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:min(1200px,96vw)}
+.rc{position:relative;min-height:clamp(170px,23vh,250px);border:0;background:none;perspective:1200px;font-family:var(--body)}
+.rc .in{position:absolute;inset:0;transition:transform .5s;transform-style:preserve-3d}
+.rc.open .in{transform:rotateY(180deg)}
+.rc .f{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}
+.rc .front{background:var(--cc);color:#fff;font-family:var(--display);font-size:clamp(25px,2.6vw,36px)}
+.rc .front span{font-size:clamp(46px,4.6vw,68px)}
+.rc .front img,.card1 img.cphoto{border-radius:14px;object-fit:cover}
+.rc .front img{width:100%;flex:1 1 0;min-height:0;height:auto;}
+.rc .front{overflow:hidden;line-height:1.2}
+.rc .front small{flex:none}
+.card1 img.cphoto{width:clamp(150px,22vw,300px);aspect-ratio:4/3;border:3px solid var(--line);cursor:zoom-in}
+.zoomhint{display:block;font-size:14px;color:var(--soft);text-align:center;margin-top:4px}
+.bigview{position:fixed;inset:0;background:rgba(8,12,22,.95);display:none;align-items:center;justify-content:center;z-index:30;padding:6px}
+.bigview.on{display:flex}
+.bigview img{max-width:98vw;max-height:88vh;border-radius:12px}
+.bigview .close{position:fixed;top:14px;right:16px;font-size:28px;border:0;border-radius:50%;width:60px;height:60px;background:rgba(255,255,255,.9);color:#1F2A44}
+.bigview .meta{position:fixed;left:0;right:0;bottom:0;padding:10px 16px 14px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;text-align:center}
+.bigview .meta b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.4vw,32px);display:block}
+.bigview .meta small{color:#dbe3f0;font-size:14px}
+.exp{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px;width:min(1250px,96vw)}
+.ec{background:var(--paper);border-radius:20px;border-top:12px solid var(--cc);padding:12px 16px;text-align:left}
+.ec img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;cursor:zoom-in;border:3px solid var(--line)}
+.ec .num{font-family:var(--display);font-size:clamp(34px,3.6vw,52px);color:var(--cc);line-height:1.1}
+.ec b{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.1vw,28px);display:block;margin-top:6px}
+.ec p{font-size:clamp(18px,1.8vw,24px);line-height:1.45;margin:4px 0 0}
+.ec small{font-size:14px;color:var(--soft);display:block;margin-top:6px}
+.expq{background:#FFF4D6;color:#1F2A44;border:4px solid #E8961E;border-radius:20px;padding:12px 20px;width:min(1250px,96vw);font-size:clamp(21px,2.1vw,30px);text-align:left}
+.expq b{font-family:var(--display);font-weight:400;display:block;margin-bottom:4px}
+.expq li{margin-bottom:4px}
+.howbtn{border:3px solid #6A4FC9;color:#6A4FC9;background:var(--paper);border-radius:16px;padding:8px 20px;font-size:clamp(19px,1.8vw,25px)}
+.lklist{display:grid;gap:12px;text-align:left;margin-bottom:18px}
+.lkrow{display:flex;gap:14px;align-items:center;background:var(--bg);border-radius:16px;padding:12px 18px;text-decoration:none;color:inherit;border:3px solid var(--line)}
+.lkrow:hover{border-color:var(--ink)}
+.lkrow .e{font-size:clamp(30px,3vw,42px)}
+.lkrow b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.2vw,30px);display:block}
+.lkrow small{color:var(--soft);font-size:clamp(17px,1.7vw,22px)}
+.rc .back2{background:var(--paper);border:5px solid var(--cc);transform:rotateY(180deg);font-size:clamp(21px,2.1vw,29px)}
+.qbox{background:#FFF4D6;color:#1F2A44;border:5px solid #E8961E;border-radius:26px;padding:clamp(16px,2.2vw,30px);width:min(1100px,94vw);text-align:center;font-family:var(--display);font-size:clamp(28px,3.1vw,46px);line-height:1.4}
+.card1{width:min(1100px,92vw);background:var(--paper);border-radius:26px;border:4px solid var(--line);padding:clamp(16px,2.2vw,32px);display:flex;gap:clamp(16px,3vw,36px);align-items:center;justify-content:center}
+.card1 .e{font-size:clamp(60px,7vw,110px);line-height:1;flex:none}
+.card1 .x{font-family:var(--display);font-size:clamp(28px,3.4vw,50px);line-height:1.35}
+.bins{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:clamp(10px,1.6vw,20px);width:min(1200px,96vw)}
+.bin{border:0;background:var(--cc);color:#fff;border-radius:40px 40px 18px 18px;padding:clamp(14px,2vh,24px) 10px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 7px 0 rgba(0,0,0,.22)}
+.bin .e{font-size:clamp(38px,4.4vw,66px);line-height:1}
+.bin .n{font-size:clamp(24px,2.6vw,38px);text-align:center}
+.bin .k{position:absolute;left:12px;bottom:8px;font-size:18px;opacity:.8}
+.bin:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.22)}
+.bin.lit{outline:6px solid var(--ink);outline-offset:4px}
+.prob{width:min(1150px,95vw);background:var(--paper);border:5px solid var(--pc2);border-radius:24px;padding:clamp(12px,1.8vw,24px);display:flex;gap:18px;align-items:center}
+.prob .e{font-size:clamp(44px,4.6vw,70px)}
+.prob b{font-family:var(--display);font-weight:400;font-size:clamp(26px,2.8vw,40px);display:block;color:var(--pc2)}
+.prob p{margin:4px 0 0;font-size:clamp(20px,2.1vw,30px)}
+.ways{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:min(1200px,96vw)}
+.way{border:4px solid var(--line);background:var(--paper);border-radius:18px;padding:10px 12px;font-family:var(--body);font-size:clamp(19px,1.9vw,26px);text-align:center;min-height:clamp(86px,11vh,132px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.way span{font-size:clamp(28px,2.8vw,40px)}
+.way[aria-pressed="true"]{border-color:var(--ink);background:var(--bg);box-shadow:inset 0 0 0 4px var(--ink)}
+.way.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.way.miss{border-color:var(--no);background:color-mix(in srgb,var(--no) 12%,var(--paper))}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:min(1150px,95vw)}
+.sumbox{background:var(--paper);border-radius:22px;border-top:14px solid var(--cc);padding:16px 22px}
+.sumbox b{font-family:var(--display);font-weight:400;font-size:clamp(25px,2.6vw,36px);display:block;margin-bottom:6px}
+.sumbox li{font-size:clamp(21px,2.1vw,29px);line-height:1.5;margin-bottom:4px}
+.opts2{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(1000px,94vw)}
+.opt2{border:4px solid var(--line);background:var(--paper);border-radius:18px;padding:12px 18px;font-family:var(--body);font-size:clamp(23px,2.4vw,33px)}
+.opt2.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.opt2.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 14%,var(--paper))}
+.fix{background:var(--bg);border-radius:18px;padding:12px 20px;font-size:clamp(23px,2.3vw,32px);margin:0 auto 18px;max-width:34em;text-align:left}
+.promise{width:min(1100px,94vw);display:grid;gap:10px}
+.promise div{background:var(--paper);border-radius:16px;padding:12px 20px;font-size:clamp(23px,2.2vw,32px);border-left:14px solid var(--ok)}
+.tpanel{text-align:left}
+.tpanel h3{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.2vw,32px);margin:14px 0 6px;color:#6A4FC9}
+.tpanel li,.tpanel p{font-size:clamp(20px,1.9vw,26px);line-height:1.55}
+
+/* 크롬북(가로 1366×680)처럼 낮은 화면: 한 화면에 들어오도록 조금 촘촘하게 */
+@media (max-height:760px) and (min-width:900px){
+ .screen{padding:10px 20px}
+ .body{gap:8px;padding:2px 0}
+ .hd{font-size:clamp(26px,2.6vw,38px)}
+ .goal{font-size:clamp(18px,1.6vw,24px);margin:0}
+ .ec{padding:8px 12px;border-top-width:9px}
+ .ec img{aspect-ratio:16/9}
+ .ec .num{font-size:clamp(28px,2.8vw,42px)}
+ .ec p{font-size:clamp(17px,1.5vw,22px)}
+ .expq{padding:8px 16px;font-size:clamp(19px,1.7vw,25px)}
+ .expq li{margin-bottom:0}
+ .rc{min-height:clamp(150px,26vh,210px)}
+ .card1{padding:12px 20px}
+ .card1 .e{font-size:clamp(50px,5vw,80px)}
+ .card1 .x{font-size:clamp(25px,2.6vw,40px)}
+ .bin{padding:10px 8px}
+ .bin .e{font-size:clamp(32px,3.4vw,50px)}
+ .ways{grid-template-columns:repeat(5,1fr);gap:8px}
+ .way{min-height:58px;padding:6px 10px;flex-direction:row;gap:8px;font-size:clamp(18px,1.6vw,23px)}
+ .way span{font-size:clamp(24px,2.2vw,32px)}
+ .prob{padding:8px 16px}
+ .prob .e{font-size:clamp(36px,3.6vw,54px)}
+ .prob b{font-size:clamp(23px,2.3vw,33px)}
+ .prob p{font-size:clamp(18px,1.8vw,26px)}
+ .sumbox{padding:10px 16px}
+ .sumbox li{font-size:clamp(19px,1.7vw,25px);margin-bottom:2px}
+ .qbox{padding:12px 20px}
+ .promise div{padding:8px 16px;font-size:clamp(20px,1.9vw,28px)}
+ .opt2{padding:8px 14px;font-size:clamp(21px,2vw,29px)}
+ .foot{padding-top:2px}
+}
+@media (max-width:860px){.recall,.ways,.sum,.opts2,.bins{grid-template-columns:1fr 1fr}.way{min-height:72px;flex-direction:row;gap:8px}}
+
+body,h1,h2,h3,h4,p,li,span,div,button,a,td,th,small,b,i{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:16px}
+.creditbar .madeby{width:100%}
+.tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(20px,2vw,26px);
+  text-decoration:none;color:inherit;border:3px solid var(--line,#ccc);background:var(--paper,#fff);border-radius:999px;padding:8px 22px}
+.tolist.on{display:inline-flex}
+.rel.on{display:grid!important}
+.madeby{font-size:16px;color:var(--soft,#666);opacity:.85;text-align:center;font-family:var(--body,sans-serif)}
+
+h1,h2,h3,h4,.title,.hd,.qt,.x,.n,.nm,.big,.lead,.sit,.ask,.qtext,.front .n,.slot b,.dc h3,.lk b,.rl b{text-wrap:balance}
+p,li,small,.d,.ex,.why,.blurb,.ask2,.sub,.msg,.notice,.fix,.retry div,.opt,.opt2,.way,.mbox .n,.dc p,.lk small,.rl small{text-wrap:pretty}
+</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style></head><body>
+
+<section id="cover" class="screen on center-col">
+  <h1 class="title">🏛️ 옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸며 볼까요</h1>
+  <p class="lead">3학년 1학기 사회 2단원 · 15~16차시</p>
+  <div class="qbox" style="font-size:clamp(25px,2.6vw,38px)">학습 문제<br>옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸며 봅시다.</div>
+  <div class="stagebar" style="justify-content:center" id="plan"></div>
+  <div class="row"><span class="row-label">활동 단위</span><div class="seg" id="segTeam"></div></div>
+  <div class="row"><button class="big-btn" id="btnGo">수업 시작</button><button class="tnote" id="tOpen0">👩‍🏫 교사 안내</button><button class="tnote" id="tOpenL" style="border-color:#2F74E0;color:#2F74E0">📰 자료 보기</button></div>
+  <p class="lead" id="phc" style="font-size:15px"></p>
+<div class="creditbar"><a class="tolist" data-topic href="u2-past-data.html">📊 🏺 옛 물건과 자료 자료실</a><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div></section>
+<section id="stage" class="screen">
+  <div class="topbar">
+    <div class="stagebar" id="bar"></div>
+    <div class="tools"><div class="scores" id="score" style="display:none"></div><button class="tool" id="btnLinks">📰 자료</button><button class="tool" data-sound>🔊</button><button class="tool" data-full>⛶</button><button class="tool" id="btnCover">🏠</button></div>
+  </div>
+  <p class="goal" id="turnLine" style="min-height:1.2em"></p>
+  <p class="goal">옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸며 봅시다.</p>
+  <div class="body" id="body"></div>
+  <div class="foot">
+    <button class="tnote" id="tOpen">👩‍🏫 교사 안내</button>
+    <div class="row"><button class="ghost-btn" id="btnPrev">← 이전</button><button class="big-btn" id="btnNext2" style="font-size:clamp(24px,2.2vw,34px);padding:12px 30px">다음 →</button></div>
+  </div>
+</section>
+<div class="overlay" id="fb"><div class="panel" id="fbP"><h2 id="fbT"></h2><p class="why" id="fbW"></p><div class="fix" id="fbF"></div><button class="big-btn" id="fbNext">계속하기</button></div></div>
+<div class="bigview" id="bv"><button class="close" id="bvX" aria-label="닫기">✕</button><img id="bvI" alt=""><div class="meta"><b id="bvT"></b><small id="bvS"></small></div></div>
+<div class="overlay" id="lk"><div class="panel" style="--pc:#2F74E0"><h2>📰 함께 보면 좋은 자료</h2><div class="lklist" id="lkB"></div><button class="big-btn" id="lkX">닫기</button></div></div>
+<div class="overlay" id="tn"><div class="panel tpanel" style="--pc:#6A4FC9"><h2 style="text-align:center" id="tnT"></h2><div id="tnB"></div><p style="text-align:center"><button class="big-btn" id="tnClose">닫기</button></p></div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+/* 활동 단위(반·개별·짝·모둠·분단·번호순·기타) 공통 기능 */
+let MODE='class',TEAMS=4,LINES=4,CLASSN=25,ETCNOTE='',TURN=0,SCORES=[];
+const MODES=[['class','🏫 반'],['solo','🙋 개별'],['pair','👫 짝'],['group','👨‍👩‍👧 모둠'],['line','🪑 분단'],['number','🔢 번호순'],['etc','✏️ 기타']];
+function teamSeg(id){
+  const host=$(id); if(!host) return;
+  host.classList.remove('seg');
+  host.style.cssText='display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;border:0;background:none';
+  host.innerHTML=`<span class="seg" id="${id}-m">${MODES.map(([k,l])=>`<button data-m="${k}" aria-pressed="${MODE===k}">${l}</button>`).join('')}</span><span id="${id}-sub"></span>`;
+  host.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{MODE=b.dataset.m;teamSeg(id);});
+  const sb=$(id+'-sub'); sb.style.cssText='display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap';
+  const numInput=(sid,val,max)=>`<input id="${sid}" type="number" min="2" max="${max}" value="${val}" style="width:4.5em;font-size:clamp(20px,2vw,28px);padding:6px 10px;border:3px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font-family:var(--body)">`;
+  if(MODE==='group'){
+    sb.innerHTML=`<span class="row-label">몇 모둠</span><span class="seg" id="${id}-n">${[2,3,4,5,6].map(v=>`<button data-n="${v}" aria-pressed="${TEAMS===v}">${v}</button>`).join('')}</span>`;
+    sb.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{TEAMS=+b.dataset.n;teamSeg(id);});
+  }else if(MODE==='line'){
+    sb.innerHTML=`<span class="row-label">몇 분단</span><span class="seg" id="${id}-l">${[2,3,4,5,6].map(v=>`<button data-l="${v}" aria-pressed="${LINES===v}">${v}</button>`).join('')}</span>`;
+    sb.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{LINES=+b.dataset.l;teamSeg(id);});
+  }else if(MODE==='number'){
+    sb.innerHTML=`<span class="row-label">우리 반</span>${numInput(id+'-c',CLASSN,40)}<span class="row-label">명 · 1번부터 차례로 답해요</span>`;
+    $(id+'-c').oninput=()=>{CLASSN=Math.max(2,+$(id+'-c').value||25);};
+  }else if(MODE==='etc'){
+    sb.innerHTML=`<input id="${id}-e" type="text" placeholder="예: 두 모둠씩 짝지어 대결" value="${ETCNOTE.replace(/"/g,'&quot;')}" style="width:min(22em,60vw);font-size:clamp(19px,1.9vw,26px);padding:8px 14px;border:3px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink);font-family:var(--body)">
+      <span class="row-label" style="font-size:clamp(17px,1.6vw,22px);color:var(--soft)">선생님이 방법을 설명한 뒤 '다음'으로 진행해요</span>`;
+    $(id+'-e').oninput=()=>{ETCNOTE=$(id+'-e').value;};
+  }else{
+    const t={class:'반 전체가 함께 답하고 점수를 모아요.',solo:'각자 생각하고 답해요. 점수는 매기지 않아요.',pair:'짝과 의논해서 답해요. 점수는 매기지 않아요.'}[MODE];
+    sb.innerHTML=`<span class="row-label" style="font-size:clamp(18px,1.7vw,23px);color:var(--soft)">${t}</span>`;
+  }
+}
+function unitName(){return MODE==='line'?'분단':'모둠';}
+function teamCount(){
+  if(MODE==='group')return TEAMS;
+  if(MODE==='line')return LINES;
+  return 1;
+}
+function usesTeams(){return MODE==='group'||MODE==='line';}
+function noScore(){return MODE==='solo'||MODE==='pair'||MODE==='etc';}
+function teamInit(){SCORES=Array(teamCount()).fill(0);TURN=0;}
+function teamAdd(n){if(noScore())return;SCORES[TURN]=(SCORES[TURN]||0)+n;}
+function teamNext(){
+  if(usesTeams())TURN=(TURN+1)%teamCount();
+  else if(MODE==='number')TURN=(TURN+1)%Math.max(2,CLASSN);
+}
+function teamChips(el){
+  if(!el)return;el.className='scores';
+  if(noScore()){el.innerHTML='';el.style.display='none';return;}
+  el.style.display='flex';
+  if(usesTeams()){el.innerHTML=SCORES.map((s,i)=>`<span class="chip ${i===TURN?'now':''}">${i+1}${unitName()} ${s}</span>`).join('');}
+  else el.innerHTML=`<span class="chip now">⭐ ${SCORES[0]}점</span>`;
+}
+function teamTurn(){
+  if(MODE==='solo')return '🙋 각자 생각해 보세요';
+  if(MODE==='pair')return '👫 짝과 의논해 보세요';
+  if(MODE==='class')return '🏫 반 전체가 함께 답해요';
+  if(MODE==='number')return `🔢 지금은 ${TURN+1}번 차례예요`;
+  if(MODE==='etc')return ETCNOTE?('✏️ '+ETCNOTE):'✏️ 선생님 안내에 따라 활동해요';
+  return `🙋 지금은 ${TURN+1}${unitName()} 차례예요`;
+}
+function teamPodium(){
+  if(noScore())return '';
+  if(!usesTeams())return `<span class="chip win">⭐ ${SCORES[0]}점</span>`;
+  const mx=Math.max(...SCORES);
+  return SCORES.map((s,i)=>`<span class="chip ${s===mx?'win':''}">${i+1}${unitName()} ${s}점</span>`).join('');
+}
+function teamWinnerText(){
+  if(MODE==='solo')return '각자 푼 문제를 공책과 맞춰 봐요.';
+  if(MODE==='pair')return '짝과 함께 잘 해냈어요.';
+  if(MODE==='etc')return '모두 수고했어요.';
+  if(!usesTeams())return `우리 반 점수는 ${SCORES[0]}점이에요.`;
+  const mx=Math.max(...SCORES),w=SCORES.map((s,i)=>s===mx?i+1:null).filter(Boolean);
+  return `${w.join(', ')}${unitName()}이 가장 많은 점수를 얻었어요!`;
+}
+
+
+const C={"photos": {}, "links": [{"e": "🏺", "t": "e뮤지엄", "d": "전국 박물관의 옛날 물건 사진과 설명 찾아보기 (지도서 소개)", "u": "https://www.emuseum.go.kr/"}, {"e": "🏠", "t": "국립민속박물관", "d": "옛날 사람들이 쓰던 생활 도구와 옛 생활 모습 살펴보기", "u": "https://www.nfm.go.kr/"}, {"e": "🏫", "t": "에듀넷·티-클리어", "d": "3학년 사회 교과 자료 찾아보기", "u": "https://www.edunet.net/"}], "title": "🏛️ 옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸며 볼까요", "sub": "3학년 1학기 사회 2단원 · 15~16차시", "goal": "옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸며 봅시다.", "plan": ["도입 10분", "자료 탐구 15분", "활동 1 · 어느 전시관일까 20분", "활동 2 · 전시관 열기 25분", "정리 10분"], "intro": {"hd": "여러 물건을 한눈에 보려면 어떻게 해야 할까요?", "q": "옛날 물건을 모아 전시관을 꾸미면 어떤 점이 좋을까요?", "cards": [{"e": "🧺", "c": "#2F74E0", "t": "한눈에 보려면?", "d": "한자리에 모아 놓으면 돼요."}, {"e": "🏛️", "c": "#6A4FC9", "t": "전시관이란?", "d": "어떤 물품을 한자리에 모아 볼 수 있게 한 것이에요."}, {"e": "👀", "c": "#1F9E63", "t": "옛날 물건 전시관의 좋은 점", "d": "옛날 사람들의 다양한 생활 모습을 한눈에 볼 수 있어요."}]}, "explore": {"hd": "우리 모둠은 무엇을 전시할까요?", "method": {"k": "gallery", "e": "🖼️", "n": "갤러리 워크", "c": "#E8961E", "time": "10~15분", "type": "자료 다루기", "goal": "교실 벽에 붙인 자료를 돌아다니며 관찰하고 메모해요.", "need": "자료 인쇄본 4~6장, 모둠별 메모지, 붙임쪽지", "steps": ["① 모둠 전시관을 교실 곳곳에 차려요. 한 사람은 남아서 설명해요.", "② 다른 모둠 전시관 앞에서 3분 동안 관람하고 기억에 남는 전시품을 적어요.", "③ 신호에 맞춰 다음 전시관으로 이동해요. 설명하는 사람도 바꿔요.", "④ 자리로 돌아와 가장 인상적인 전시관과 그 까닭을 말해요."], "tip": "붙임쪽지에 “질문 한 가지”를 남기게 하면 다음 활동의 탐구 질문이 됩니다.", "when": "15~16차시 모둠 전시관 관람하기"}, "cards": [{"c": "#E8961E", "big": "👨‍👩‍👧", "t": "나와 가족의 과거", "d": "가족의 옛 생활을 알 수 있는 물건", "s": "교과서 112쪽"}, {"c": "#2F74E0", "big": "🏫", "t": "우리 학교의 과거", "d": "학교의 변화 모습이 담긴 사진과 영상", "s": "교과서 111~112쪽"}, {"c": "#E0506B", "big": "🧸", "t": "나의 애장품", "d": "친구들이 고이 간직해 온 물건", "s": "교과서 112~113쪽"}, {"c": "#1F9E63", "big": "👵", "t": "어른들의 애장품", "d": "주변 어른들의 추억이 담긴 물건", "s": "교과서 113쪽"}, {"c": "#6A4FC9", "big": "✍️", "t": "전시하는 까닭", "d": "‘예뻐서’보다 관련된 과거의 기억을 써요.", "s": "지도서 220쪽"}], "qs": ["무엇을 전시하고 싶나요? 전시 주제를 정해 봐요.", "우리 모둠의 전시품은 옛날의 어떤 생활 모습을 보여 주나요?"]}, "act1": {"ask": "이 전시품은 어느 주제의 전시관에 놓으면 좋을까요?", "bins": [{"k": "me", "n": "나의 애장품", "e": "🧸", "c": "#E0506B"}, {"k": "family", "n": "나와 가족의 과거", "e": "👨‍👩‍👧", "c": "#E8961E"}, {"k": "school", "n": "우리 학교의 과거", "e": "🏫", "c": "#2F74E0"}, {"k": "adult", "n": "주변 어른들의 애장품", "e": "👵", "c": "#1F9E63"}], "items": [{"k": "me", "e": "🧸", "x": "내가 소중히 간직해 온 곰 인형", "w": "어렸을 때 즐겁게 놀던 기억이 담긴 나의 애장품이에요."}, {"k": "me", "e": "🥇", "x": "내가 소중히 간직한 첫 태권도 메달", "w": "태권도 대회에서 처음 딴 메달이라 소중한 나의 애장품이에요."}, {"k": "family", "e": "📱", "x": "부모님이 옛날에 서로 통화하던 휴대 전화", "w": "우리 가족의 과거 생활을 보여 주는 물건이에요."}, {"k": "family", "e": "🪮", "x": "우리 집에서 오래 써 온 참빗", "w": "우리 가족의 과거 생활을 보여 주는 물건이에요."}, {"k": "school", "e": "🍱", "x": "옛날 학생들이 교실에서 도시락을 먹는 사진", "w": "급식 전 학교 모습을 알 수 있는 사진이에요."}, {"k": "school", "e": "🧑‍🤝‍🧑", "x": "옛날 우리 학교 운동장 조회 사진", "w": "옛날 우리 학교 학생 수를 짐작할 수 있는 사진이에요."}, {"k": "school", "e": "📸", "x": "학교가 세워졌을 때 모습 사진", "w": "우리 학교의 과거를 보여 주는 사진이에요."}, {"k": "adult", "e": "💴", "x": "이웃 어른이 아끼며 모으신 옛날 돈", "w": "주변 어른의 추억이 담긴 애장품이에요."}, {"k": "adult", "e": "📮", "x": "동네 어르신이 소중히 모으신 옛날 우표 책자", "w": "주변 어른의 애장품으로, 옛날 모습이 담긴 그림이 있어요."}]}, "act2": {"ask": "전시관을 꾸미고 관람할 때 지킬 점을 골라요", "options": [{"k": "theme", "e": "🎯", "n": "주제가 드러나게 꾸미기"}, {"k": "note", "e": "🗒️", "n": "설명 쪽지·직접 설명"}, {"k": "arrange", "e": "🧭", "n": "관람 방법 생각해 배치"}, {"k": "notouch", "e": "🙅", "n": "함부로 만지지 않기"}, {"k": "noswap", "e": "🔄", "n": "자리 바꾸지 않기"}, {"k": "think", "e": "🤔", "n": "어떤 생활 모습인지 생각하기"}, {"k": "record", "e": "📝", "n": "기억에 남는 것 적기"}, {"k": "run", "e": "🏃", "n": "뛰어다니며 보기"}, {"k": "take", "e": "🎒", "n": "전시품 가져가기"}], "problems": [{"e": "🛠️", "t": "전시관을 꾸밀 때", "p": "우리 모둠 전시관을 꾸밀 때 주의할 점을 모두 골라요.", "c": "#E8961E", "a": ["theme", "note", "arrange", "think"], "talk": "전시품이 옛날의 어떤 생활 모습을 보여 주는지 드러나게 정리해요. 우리 모둠 전시관의 소개 글과 관람 방법도 말해 봐요."}, {"e": "🚶", "t": "다른 모둠 전시관을 관람할 때", "p": "다른 모둠의 전시관을 관람할 때 지킬 점을 모두 골라요.", "c": "#2F74E0", "a": ["notouch", "noswap", "think", "record"], "talk": "가장 인상적인 전시관은 어느 모둠의 어떤 전시관인가요? 그 까닭은?"}]}, "summary": [{"t": "🏛️ 전시관 꾸미기", "c": "#6A4FC9", "items": ["① 전시 주제와 전시품 정하기", "② 전시관 소개 글과 관람 방법 정리하고 전시관 열기", "전시하는 까닭에는 물건과 관련 있는 과거의 사실이나 기억을 써요."]}, {"t": "🚶 전시관 관람하기", "c": "#2F74E0", "items": ["① 다른 모둠의 전시품 소중히 다루기", "② 기억에 남는 전시 주제와 전시품 기록하기", "오래된 물건이나 자료는 옛날 생활 모습을 알려 주는 중요한 것이라 소중히 여겨요."]}], "quiz": [{"q": "어떤 물품을 한자리에 모아 볼 수 있게 한 것을 무엇이라고 할까요?", "o": ["전시관", "애장품", "증언", "시장"], "a": 0, "w": "어떤 물품을 한자리에 모아 볼 수 있게 한 것을 전시관이라고 해요."}, {"q": "전시품을 전시하는 까닭으로 가장 알맞게 쓴 것은?", "o": ["태권도 대회에서 처음 딴 메달이라서", "예뻐서", "오래되어서", "그냥 좋아서"], "a": 0, "w": "물건과 관련 있는 과거의 사실이나 기억을 구체적으로 써요."}, {"q": "다른 모둠의 전시관을 관람할 때 바른 모습은?", "o": ["전시품을 함부로 만지거나 자리를 바꾸지 않아요.", "전시품을 마음대로 옮겨요.", "뛰어다니며 빨리 봐요.", "마음에 드는 전시품을 가져가요."], "a": 0, "w": "다른 모둠의 전시품은 소중히 다뤄요."}, {"q": "전시관을 꾸밀 때 중요한 것은 무엇일까요?", "o": ["전시 주제를 잘 드러낼 수 있게 꾸미기", "비싼 물건만 전시하기", "새 물건만 전시하기", "설명 없이 물건만 놓기"], "a": 0, "w": "전시 주제를 잘 드러낼 수 있는 전시 방법으로 꾸미는 것이 중요해요."}], "final": {"hd": "🏛️ 오늘의 정리", "lines": ["오래된 물건이나 자료를 준비해 옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸밀 수 있어요.", "전시 주제를 정하고, 전시품과 전시하는 까닭, 소개 글과 관람 방법을 정리해요.", "다른 모둠의 전시품은 함부로 만지지 않고 소중히 다뤄요.", "다음 시간에는 ‘주변에서 만나는 과거의 모습’에서 공부한 내용을 정리해요. (준비물: 타임캡슐로 쓸 빈 병, 넣을 물건, 종이)"]}, "notes": {"0": ["수업 준비", "<h3>학습 목표<\/h3><p>옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸밀 수 있다. (지도서 219쪽)<\/p><h3>흐름 (두 차시 80분)<\/h3><ul><li>도입 10분 → 자료 탐구 15분(무엇을 전시할지 이야기 나누기) → 활동 1 20분(전시 주제 정하고 전시할 것 정리하기) → 활동 2 25분(소개 글·관람 방법 쓰기, 전시관 열고 관람하기) → 정리 10분<\/li><li>교과서 111~114쪽 · 지도서 219~229쪽 · 수업 기법: 협동 학습, 추체험<\/li><\/ul><h3>준비물·활동지<\/h3><ul><li>모둠별 전시품(집에서 가져온 오래된 물건, 애장품, 사진 등), 설명 쪽지, 붙임쪽지<\/li><li>활동지 「우리 반 전시관 안내도 만들기」(지도서 224쪽, 풀이 225쪽) — 평가 관점: 우리 반 전시관 관람에 필요한 정보를 담아 안내도를 만들 수 있는가? (관찰·서술 평가)<\/li><li>“전시 주제에 따라 이전 차시에 활용한 수업 자료 외의 물건이나 자료가 필요할 수도 있다. 이를 미리 살펴 사전에 준비할 수 있도록 안내한다.” (지도서 220쪽)<\/li><li>다음 시간 준비물 안내: 타임캡슐로 쓸 빈 병, 타임캡슐에 넣을 물건, 종이 (교과서 114쪽)<\/li><\/ul><h3>과정 중심 평가 — 오래된 물건과 자료를 이용해 옛날 사람들의 생활 모습 전시관 꾸미기 (지도서 226~229쪽)<\/h3><ul><li><b>평가 목표<\/b>: 오래된 물건이나 자료를 이용해 옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸밀 수 있다.<\/li><li><b>평가 방법<\/b>: 서술 평가, 관찰 평가 (과제 ❶ 전시 계획 세우기 — 서술·관찰 / 과제 ❷ 전시관 꾸미기 — 관찰 / 과제 ❸ 전시관 꾸미기 활동 소감 나누기 — 구술)<\/li><li><b>핵심 역량<\/b>: 창의적 사고력, 문제 해결력 및 의사 결정력, 의사소통 및 협업 능력<\/li><li><b>평가 문항<\/b>: 1 전시관을 꾸밀 계획 세우기(전시할 주제, 필요한 물건이나 자료, 역할 나누기) 2 ⑴ 물건이나 자료로 알 수 있는 옛날 생활 모습 정리 ⑵ 알맞은 전시 방법과 까닭 3 ⑴ 주의할 점 ⑵ 알게 된 점 ⑶ 오래된 물건이나 자료에 관한 생각<\/li><\/ul><h3>채점 기준 (지도서 228쪽)<\/h3><ul><li><b>전시 계획 세우기<\/b>(의사소통 및 협업 능력) — 상: 모둠 친구들과 협업하여 옛날 사람들의 생활 모습 전시관을 꾸밀 계획을 수립할 수 있다. / 중: 자기의 생각에 따라 옛날 사람들의 생활 모습 전시관을 꾸밀 계획을 수립할 수 있다. / 하: 친구들과 함께 옛날 사람들의 생활 모습 전시관 꾸미기 활동을 하는 데 어려움이 있다.<\/li><li><b>전시관 꾸미기<\/b>(문제 해결력 및 의사 결정력) — 상: 수립한 전시 계획에 따라 필요한 자료를 수집하고 선별하여 옛날 사람들의 생활 모습을 전시할 수 있다. / 중: 수립한 전시 계획에 따라 옛날 사람들의 생활 모습을 전시하나 자료의 중요성에 관한 판단이 미흡하다. / 하: 옛날 사람들의 생활 모습 전시관을 꾸밀 수 있으나 앞서 세운 계획과 거리가 있다.<\/li><li><b>전시 결과 정리하기<\/b>(창의적 사고력) — 상: 전시관 꾸미기 활동을 마치고 활동 과정에서 생각하거나 느낀 점을 정리해 발표할 수 있다. / 중: 전시관 꾸미기 활동에 열심히 참여하나 전시 목적 등에 관한 이해가 다소 부족하다. / 하: 전시관 꾸미기 활동에 참여하나 활동의 목적 등에 관해 이해하려는 노력이 필요하다.<\/li><\/ul><p>평가지 수업 설계의 도입은 ‘상자 속 옛날 물건 알아맞히기’ 놀이(똬리 등을 넣은 상자 속 물건을 손으로 알아맞히기, 5분)입니다. 평가 차시로 운영할 때는 이 도입을 써도 좋습니다. (지도서 227쪽)<\/p><h3>배려할 점<\/h3><p>‘나와 가족의 과거’ 전시는 가족 형태나 형편이 드러나지 않도록 강요하지 말고, 학교·동네 자료를 고를 수 있게 열어 두세요.<\/p><h3>성취 기준<\/h3><p>[4사02-02] 오래된 물건이나 자료들을 주변에서 찾아보고, 이를 통해 과거의 모습을 살펴볼 수 있음을 이해한다.<\/p><h3>성취 수준<\/h3><ul><li><b>A<\/b> 주변에서 오래된 물건이나 자료들을 찾아보며 과거의 모습을 탐색하고, 역사가 증거를 바탕으로 구성된다는 것을 추정할 수 있다.<\/li><li><b>B<\/b> 주변에서 오래된 물건이나 자료들을 찾아보고, 이들이 과거의 모습을 알려 주는 증거임을 짐작하여 설명할 수 있다.<\/li><li><b>C<\/b> 주변에서 과거의 모습을 살펴볼 수 있는 오래된 물건이나 자료들을 찾을 수 있다.<\/li><\/ul><h3>주제 「지도상의 유의점」 (지도서 187쪽)<\/h3><ul><li>오래된 물건, 자료, 증언 등은 학생들이 공감할 수 있는 친숙한 사례를 찾아 활용하도록 한다.<\/li><li>역사적 맥락을 고려하되, 되도록 현재와 가까운 과거의 자료를 제시해 학생들이 과거의 생활 모습을 쉽게 인식할 수 있게 한다.<\/li><li>과거에 관해 설명할 때 자기와 다른 자료를 선택한 친구를 존중하는 태도를 기를 수 있도록 한다.<\/li><\/ul><h3>주제의 평가 계획 (지도서 187쪽)<\/h3><ul><li>주변의 오래된 물건, 자료 등을 활용해 과거의 모습을 설명할 수 있다. — 구술 평가<\/li><li>다양한 자료를 활용하여 옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸밀 수 있다. — 관찰 평가<\/li><li>오래된 물건, 자료, 증언 등을 소중히 여기는 태도를 기른다. — 관찰 평가<\/li><\/ul><h3>지도서 대조 검증<\/h3><ul><li>차시명·학습 문제·전시관 뜻(지도서 219쪽)·꼭! 기억해요·주요 내용 정리·평가 기준(지도서 226~229쪽)·유의점 대조 완료.<\/li><li>활동 2 문제 1(꾸밀 때 주의할 점)에서 ‘어떤 생활 모습인지 생각하기’가 오답으로 채점되던 것을 정답에 넣음. 근거: 교과서 112쪽 말풍선 “전시품이 옛날의 어떤 생활 모습을 보여 주는 것인지 드러나도록 정리해 봐요.”, 지도서 220쪽 “전시품이 옛날 사람들의 생활 모습과 관련이 있는 것인지 생각해 보도록 지도한다.”<\/li><li>활동 1 전시품 분류가 애매하던 것을 고침: ‘나와 가족의 과거’에도 ‘나’가 들어 있어 곰 인형·메달(교과서 112쪽 ‘나의 애장품’ 예시)이 두 통에 다 맞을 수 있었음 → “내가 소중히 간직해 온/간직한”을 넣어 애장품임을 드러냄. 옛날 휴대 전화는 지도서 220쪽에 주제가 정해져 있지 않아, 가족이 쓰던 물건임만 남기고 ‘소중히 간직’ 표현을 넣지 않음. 교사 안내 ③에 실제 활동에서는 까닭이 맞으면 다른 분류도 인정하도록 적음(주제 유의점: 다른 자료를 선택한 친구 존중).<\/li><\/ul>"], "1": ["① 도입 (10분)", "<h3>발문 (지도서 219쪽)<\/h3><ul><li>여러 물건을 한눈에 보려면 어떻게 해야 할까요? → 한자리에 모아 놓으면 됩니다.<\/li><li>어떤 물품을 한자리에 모아 볼 수 있게 한 것을 전시관이라고 합니다. 옛날 물건을 모아 전시관을 꾸미면 어떤 점이 좋을까요? → 옛날 사람들의 다양한 생활 모습을 한눈에 볼 수 있습니다.<\/li><\/ul>"], "2": ["② 자료 탐구 (15분)", "<h3>진행<\/h3><ul><li>교과서 111쪽 「친구와 활동」 ①: 무엇을 전시할지 친구들과 이야기합니다. 화면 카드는 교과서 112~113쪽의 네 가지 전시 주제입니다.<\/li><\/ul><h3>예상 반응 (지도서 219~220쪽)<\/h3><ul><li>우리 모둠은 각자 집에서 가져온 오래된 물건을 전시하고 싶습니다. / 일기, 사진 등 과거를 보여 주는 자료를 수집해 전시하면 좋겠습니다. / 학교의 변화 모습이 담긴 사진을 모아 영상으로 만들어 상영하고 싶습니다. / 모둠원들의 애장품을 전시하고 싶습니다.<\/li><\/ul><h3>지도 꿀 Tip<\/h3><p>“무엇을 전시할지 이야기하는 과정에서는 학생들이 자기의 생각을 자유롭게 말하도록 해 교과서에 제시된 것 이외의 창의적인 전시 주제를 끌어낸다.” (지도서 219쪽) “이번 주제에서 공부한 여러 가지 자료를 활용하도록 하며 되도록 다양한 전시가 이루어질 수 있도록 안내한다.” (지도서 220쪽)<\/p>"], "3": ["③ 활동 1 · 어느 전시관일까 (20분)", "<h3>진행<\/h3><ul><li>교과서 112쪽 ②: 모둠별로 전시 주제를 정하고, 전시할 것과 전시하는 까닭을 정리합니다.<\/li><li>화면 활동은 지도서 예시 전시품을 네 주제에 나누어 보며 ‘주제에 맞는 전시품 고르기’를 연습하는 보조 활동입니다. 전시품마다 누구의 물건인지, 소중히 간직한 것인지를 밝혀 두어 답이 하나로 정해지게 했습니다(‘나의 애장품’ = 내가 소중히 간직한 것, ‘주변 어른들의 애장품’ = 이웃 어른이 아끼며 모은 것, ‘나와 가족의 과거’ = 가족이 옛날에 쓰던 물건). 실제 모둠 활동에서는 같은 물건도 여러 주제에 넣을 수 있으니, 까닭이 맞으면 인정해 주세요.<\/li><\/ul><h3>지도서 근거<\/h3><ul><li>나의 애장품 예시: 곰 인형(어렸을 때 즐겁게 놀던 기억이 나서), 메달(태권도 대회에서 처음 딴 메달이라서), 게임기, 동화책 (지도서 220쪽 예시 답안)<\/li><li>옛날 휴대 전화(이것으로 부모님이 서로 통화를 많이 했었기 때문), 도시락 사진(급식이 시작되기 이전의 모습), 운동장 조회 사진(학생이 얼마나 많았는지 짐작), 옛날 돈, 옛날 우표 책자 (지도서 220쪽 예상 반응)<\/li><li>오래된 참빗(우정 모둠 ‘나와 가족의 과거’), 옛날 돈(기쁨 모둠 ‘주변 어른들의 애장품’), 학교가 세워졌을 때 모습 사진(웃음 모둠 ‘우리 학교의 과거’) (지도서 222쪽 예시 답안)<\/li><\/ul><h3>유의할 점<\/h3><p>“물건을 전시하는 까닭을 쓸 때 단순히 ‘예뻐서’, ‘오래되어서’라고 표현하는 것을 지양하고, 물건과 관련 있는 과거의 사실이나 기억을 구체적으로 서술하도록 지도한다.” (지도서 220쪽) 모둠이 고른 실제 전시품의 주제 분류는 모둠 생각을 존중합니다(주제 유의점: 자기와 다른 자료를 선택한 친구 존중).<\/p>"], "4": ["④ 활동 2 · 전시관 열기 (25분)", "<h3>진행<\/h3><ul><li>교과서 113쪽 ③ 소개 글과 재미있게 관람하는 방법 쓰기 → ④ 전시관 열기 → 교과서 114쪽 다른 모둠 전시관을 관람하고 기억에 남는 전시품과 느낀 점 쓰기 → 「스스로 활동」 자기 평가.<\/li><li>관람은 <b>갤러리 워크<\/b>로 운영합니다. 화면 활동은 꾸미기·관람 때 지킬 점을 먼저 확인하는 짧은 활동입니다.<\/li><\/ul><h3>예상 반응 (지도서 221~222쪽)<\/h3><ul><li>꾸밀 때 주의할 점: 전시 주제를 잘 드러낼 수 있는 전시 방법으로 꾸미는 것이 중요합니다. / 친구들이 재미있게 관람할 방법을 생각하면서 전시품을 배치합니다. / 설명 쪽지를 준비하거나 직접 설명합니다.<\/li><li>관람할 때 주의할 점: 다른 모둠의 전시물은 함부로 만지지 않습니다. / 전시물이 어떤 생활 모습을 보여 주고 있는지 생각하면서 감상합니다. 교과서 114쪽: “전시품을 함부로 만지거나 전시품의 자리를 바꾸지 않도록 주의해요.”<\/li><li>소개 글 예: 우리 모둠 친구들이 간직한 과거의 추억이 궁금하지 않으신가요? 모둠 친구들이 고이 간직해 온 물건들을 모았습니다. (지도서 221쪽)<\/li><\/ul><h3>자기 평가 (교과서 114쪽)<\/h3><p>전시 주제에 알맞은 전시품을 준비했나요? / 전시된 물건을 보고 옛날 사람들의 생활 모습을 알 수 있었나요? / 전시관 꾸미기 활동에 적극적으로 참여했나요? / 다른 모둠의 전시관을 관람할 때 올바른 관람 태도를 지켰나요?<\/p><h3>지도 꿀 Tip<\/h3><p>“가능한 범위에서 옛날 물건의 사용 방법을 시연하고, 물건을 직접 사용해 보도록 하여 추체험의 기회를 제공할 수 있다.” (지도서 221쪽)<\/p>"], "5": ["⑤ 정리 (10분)", "<h3>꼭! 기억해요 (교과서 114쪽)<\/h3><p>오래된 물건이나 자료를 준비해 옛날 사람들의 생활 모습을 보여 주는 전시관을 꾸밀 수 있습니다. ( <b>○<\/b> )<\/p><h3>차시별 주요 내용 정리 (지도서 222쪽)<\/h3><ul><li>옛날 사람들의 생활 모습 전시관 꾸미기 ① 전시 주제와 전시품 정하기 ② 전시관 소개 글과 관람 방법 정리하고 전시관 열기<\/li><li>옛날 사람들의 생활 모습 전시관 관람하기 ① 다른 모둠의 전시품 소중히 다루기 ② 기억에 남는 전시 주제와 전시품 기록하기<\/li><\/ul><h3>정리 발문<\/h3><p>전시관을 열면서 느낀 점을 말해 봅시다. (예: 친구들에게 옛날 생활 모습을 잘 설명하려면 옛날 물건과 자료가 만들어진 때를 정확히 알아야 함을 느꼈습니다.)<\/p><h3>다음 차시<\/h3><p>17차시: 생각을 펼쳐요 / 재미있게 확인해요 — 준비물: 타임캡슐로 쓸 빈 병, 타임캡슐에 넣을 물건, 종이<\/p>"]}};
+const PH=C.photos||{};
+const NAMES=['도입','자료 탐구','활동 1','활동 2','정리'];
+let stage=0,S={a1:0,a2:0,sel:new Set(),q:0,qs:0};
+teamSeg('segTeam');
+$('tOpenL').onclick=()=>$('btnLinks').onclick();
+$('phc').innerHTML=Object.keys(PH).length?'사진 출처 · 위키미디어 공용: '+Object.values(PH).map(p=>`${p.name}(${p.title} / ${p.artist} / ${p.lic})`).join(' · '):'';
+$('plan').innerHTML=C.plan.map((t,i)=>`<button class="st" data-s="${i+1}">${['①','②','③','④','⑤'][i]} ${t}</button>`).join('');
+$('plan').querySelectorAll('.st').forEach(b=>b.onclick=()=>goStage(+b.dataset.s));
+function bar(){$('bar').innerHTML=NAMES.map((n,i)=>`<button class="st ${stage===i+1?'now':stage>i+1?'done':''}" data-s="${i+1}">${['①','②','③','④','⑤'][i]} ${n}</button>`).join('');
+  $('bar').querySelectorAll('.st').forEach(b=>b.onclick=()=>{const t=+b.dataset.s;if(t!==stage){stage=t;closeO('fb');render();}});}
+function tnote(i){$('tnT').textContent='👩‍🏫 '+C.notes[i][0];$('tnB').innerHTML=C.notes[i][1];openO('tn');}
+$('tOpen0').onclick=()=>tnote(0);$('tOpen').onclick=()=>tnote(stage);$('tnClose').onclick=()=>closeO('tn');
+$('btnCover').onclick=()=>show('cover');
+function goStage(n){stage=n;S={a1:0,a2:0,sel:new Set(),q:0,qs:0};C.act1.deck=shuffle(C.act1.items);teamInit();closeO('fb');show('stage');render();}
+$('btnGo').onclick=()=>goStage(1);
+$('btnPrev').onclick=()=>{if(stage>1){stage--;render();}else show('cover');};
+$('btnNext2').onclick=()=>{if(stage<5){stage++;render();}else show('cover');};
+$('btnLinks').onclick=()=>{$('lkB').innerHTML=(C.links||[]).map(l=>`<a class="lkrow" href="${l.u}" target="_blank" rel="noopener"><span class="e">${l.e}</span><span><b>${l.t} ↗</b><small>${l.d}</small></span></a>`).join('');openO('lk');};
+$('lkX').onclick=()=>closeO('lk');
+$('bvX').onclick=()=>$('bv').classList.remove('on');
+$('bv').onclick=e=>{if(e.target.id!=='bvI')$('bv').classList.remove('on');};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('bv').classList.remove('on');closeO('lk');}});
+function render(){bar();
+  const t=(stage===3||stage===4);
+  $('score').style.display=t?'flex':'none';if(t)teamChips($('score'));
+  $('turnLine').textContent=t?teamTurn():'';
+  [intro,explore,act1,act2,wrap][stage-1]();}
+function intro(){
+  $('body').innerHTML=`<p class="hd">${C.intro.hd}</p>
+   <div class="recall">${C.intro.cards.map(r=>`<button class="rc" style="--cc:${r.c}"><span class="in">
+    <span class="f front">${r.p&&PH[r.p]?`<img src="${PH[r.p].data}" alt="">`:`<span>${r.e}</span>`}${r.t}<small style="font-size:.5em;opacity:.85">눌러서 확인</small></span>
+    <span class="f back2">${r.d}</span></span></button>`).join('')}</div>
+   <div class="qbox">💭 ${C.intro.q}</div>`;
+  document.querySelectorAll('.rc').forEach(c=>c.onclick=()=>{c.classList.toggle('open');beep('tick');});
+}
+function explore(){
+  const E=C.explore;
+  $('body').innerHTML=`<p class="hd">${E.hd}</p>
+   <div class="exp">${E.cards.map(c=>`<article class="ec" style="--cc:${c.c}">
+     ${c.p&&PH[c.p]?`<img src="${PH[c.p].data}" alt="" data-ph="${c.p}">`:`<div class="num">${c.big||''}</div>`}
+     <b>${c.t}</b><p>${c.d}</p><small>${c.s}</small></article>`).join('')}</div>
+   <div class="expq"><b>💬 자료를 보고 이야기해 봐요</b><ul>${E.qs.map(q=>`<li>${q}</li>`).join('')}</ul></div>
+   <button class="howbtn" id="how">📋 이렇게 해 봐요 — ${E.method.n}</button>`;
+  document.querySelectorAll('.ec img').forEach(im=>im.onclick=()=>{const p=PH[im.dataset.ph];
+    $('bvI').src=p.data;$('bvT').textContent=p.name;
+    $('bvS').textContent=`${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on');});
+  $('how').onclick=()=>{const m=E.method;
+    $('lkB').innerHTML=`<div style="text-align:left"><b style="font-family:var(--display);font-size:1.2em">${m.e} ${m.n}</b>
+      <p style="color:var(--soft)">${m.type} · ${m.time} · 준비물: ${m.need}</p>
+      <p>${m.goal}</p>${m.steps.map(x=>`<div class="lkrow" style="cursor:default">${x}</div>`).join('')}
+      <p style="background:#FFF4D6;color:#1F2A44;border-radius:12px;padding:10px 14px;margin-top:10px">💡 ${m.tip}</p></div>`;
+    openO('lk');};
+}
+function act1(){
+  const it=C.act1.deck[S.a1];
+  $('body').innerHTML=`<p class="hd">${C.act1.ask}</p>
+   <div class="card1">${it.p&&PH[it.p]?`<img class="cphoto" src="${PH[it.p].data}" alt="" data-ph="${it.p}">`:`<div class="e">${it.e}</div>`}<div class="x">${it.x}</div></div>
+   <div class="bins" style="--n:${C.act1.bins.length}">${C.act1.bins.map((b,i)=>`<button class="bin" data-k="${b.k}" style="--cc:${b.c}"><span class="e">${b.e}</span><span class="n">${b.n}</span></button>`).join('')}</div>`;
+  document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>pick1(b));
+  const im=document.querySelector('.cphoto');
+  if(im)im.onclick=()=>{const p=PH[im.dataset.ph];$('bvI').src=p.data;$('bvT').textContent=p.name;
+    $('bvS').textContent=`${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on');};
+}
+function pick1(btn){
+  const it=C.act1.deck[S.a1],ok=btn.dataset.k===it.k,bin=C.act1.bins.find(b=>b.k===it.k);
+  if(ok)teamAdd(1);beep(ok?'ok':'no');
+  document.querySelectorAll('.bin').forEach(b=>{b.disabled=true;if(b.dataset.k===it.k)b.classList.add('lit');});
+  teamChips($('score'));
+  $('fbP').style.setProperty('--pc',bin.c);
+  $('fbT').textContent=ok?'맞아요! 🎉':`${bin.e} ${bin.n}이에요`;
+  $('fbW').textContent=it.w;$('fbF').style.display='none';
+  $('fbNext').textContent=S.a1+1<C.act1.deck.length?'다음 카드':'활동 2로 넘어가기';
+  $('fbNext').onclick=()=>{closeO('fb');teamNext();if(S.a1+1<C.act1.deck.length){S.a1++;act1();render();}else{stage=4;render();}};
+  openO('fb');$('fbNext').focus();
+}
+function act2(){
+  const p=C.act2.problems[S.a2];S.sel=new Set();
+  $('body').innerHTML=`<p class="hd">${C.act2.ask} <small style="font-size:.55em;color:var(--soft)">(알맞은 것을 모두 고르세요)</small></p>
+   <div class="prob" style="--pc2:${p.c}"><div class="e">${p.e}</div><div><b>${p.t}</b><p>${p.p}</p></div></div>
+   <div class="ways">${shuffle(C.act2.options).map(o=>`<button class="way" data-k="${o.k}" aria-pressed="false"><span>${o.e}</span>${o.n}</button>`).join('')}</div>
+   <button class="big-btn" id="chk" style="font-size:clamp(24px,2.2vw,34px);padding:12px 36px">확인하기</button>`;
+  document.querySelectorAll('.way').forEach(b=>b.onclick=()=>{const k=b.dataset.k;
+    if(S.sel.has(k)){S.sel.delete(k);b.setAttribute('aria-pressed','false');}else{S.sel.add(k);b.setAttribute('aria-pressed','true');}beep('tick');});
+  $('chk').onclick=()=>{
+    const ok=p.a.every(k=>S.sel.has(k))&&[...S.sel].every(k=>p.a.includes(k));
+    document.querySelectorAll('.way').forEach(b=>{b.disabled=true;
+      if(p.a.includes(b.dataset.k))b.classList.add('right');else if(S.sel.has(b.dataset.k))b.classList.add('miss');});
+    if(ok)teamAdd(1);teamChips($('score'));beep(ok?'ok':'no');$('chk').style.display='none';
+    $('fbP').style.setProperty('--pc',p.c);
+    $('fbT').textContent=ok?'모두 찾았어요! 🎉':'알맞은 것을 확인해 봐요';
+    $('fbW').innerHTML=p.a.map(k=>{const o=C.act2.options.find(x=>x.k===k);return `${o.e} ${o.n}`;}).join('<br>');
+    $('fbF').style.display='block';$('fbF').innerHTML=`<b style="font-family:var(--display)">함께 생각해요</b><br>${p.talk}`;
+    $('fbNext').textContent=S.a2+1<C.act2.problems.length?'다음 문제':'정리로 넘어가기';
+    $('fbNext').onclick=()=>{closeO('fb');teamNext();if(S.a2+1<C.act2.problems.length){S.a2++;act2();render();}else{stage=5;render();}};
+    openO('fb');$('fbNext').focus();};
+}
+function wrap(){
+  S.q=0;S.qs=0;
+  $('body').innerHTML=`<p class="hd">오늘 배운 내용을 정리해 볼까요?</p>
+   <div class="sum">${C.summary.map(b=>`<div class="sumbox" style="--cc:${b.c}"><b>${b.t}</b><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}</div>
+   <button class="big-btn" id="toQuiz" style="font-size:clamp(24px,2.2vw,34px);padding:12px 36px">확인 문제 풀기</button>`;
+  $('toQuiz').onclick=quiz;
+}
+function quiz(){
+  const q=C.quiz[S.q],ord=shuffle(q.o.map((_,i)=>i));
+  $('body').innerHTML=`<p class="hd">확인 문제 ${S.q+1} / ${C.quiz.length}</p>
+   <div class="card1"><div class="x" style="text-align:center">${q.q}</div></div>
+   <div class="opts2">${ord.map((o,n)=>`<button class="opt2" data-o="${o}">${n+1}. ${q.o[o]}</button>`).join('')}</div>`;
+  document.querySelectorAll('.opt2').forEach(b=>b.onclick=()=>{
+    const ok=+b.dataset.o===q.a;if(ok)S.qs++;beep(ok?'ok':'no');
+    document.querySelectorAll('.opt2').forEach(x=>{x.disabled=true;if(+x.dataset.o===q.a)x.classList.add('right');});
+    if(!ok)b.classList.add('wrong');
+    $('fbP').style.setProperty('--pc',ok?'var(--ok)':'var(--no)');
+    $('fbT').textContent=ok?'정답이에요! 🎉':'정답을 확인해 봐요';$('fbW').textContent=q.w;$('fbF').style.display='none';
+    $('fbNext').textContent=S.q+1<C.quiz.length?'다음 문제':'마무리하기';
+    $('fbNext').onclick=()=>{closeO('fb');if(S.q+1<C.quiz.length){S.q++;quiz();}else final();};
+    openO('fb');$('fbNext').focus();});
+}
+function final(){
+  beep('win');
+  $('body').innerHTML=`<p class="hd">${C.final.hd}</p>
+   <div class="promise">${C.final.lines.map(t=>`<div>${t}</div>`).join('')}</div>
+   <p class="lead" style="font-size:clamp(22px,2.1vw,30px)">확인 문제 ${C.quiz.length}문제 중 ${S.qs}문제를 맞혔어요. ${teamWinnerText()}</p>
+   <div class="scores" style="justify-content:center">${teamPodium()}</div>`;
+}
+
+
+wireTools();</script><script>
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});var n=document.getElementById('relNote');if(n)n.style.display='none';}})();
+</script></body></html>

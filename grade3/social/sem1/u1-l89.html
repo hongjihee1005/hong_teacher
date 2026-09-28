@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🖼️ 우리가 사는 곳에 있는 여러 장소를 소개해 볼까요</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.stagebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.st{font-family:var(--display);cursor:pointer;font-size:clamp(19px,1.8vw,26px);padding:6px 14px;border-radius:999px;border:3px solid var(--line);background:var(--paper);color:var(--soft)}
+.st.now{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.st.done{border-color:var(--ok);color:var(--ok)}
+.goal{font-family:var(--display);font-size:clamp(20px,1.9vw,28px);color:var(--soft);text-align:center;margin:4px 0 0}
+.body{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:clamp(10px,1.6vh,20px);overflow-y:auto;padding:6px 0}
+.hd{font-family:var(--display);font-size:clamp(30px,3.3vw,48px);text-align:center;margin:0}
+.expq ul,.sumbox ul{margin:4px 0 0;padding-left:1.2em}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:6px}
+.tnote{border:3px solid #6A4FC9;color:#6A4FC9;background:var(--paper);border-radius:16px;padding:8px 18px;font-size:clamp(19px,1.8vw,25px)}
+.recall{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:min(1200px,96vw)}
+.rc{position:relative;min-height:clamp(170px,23vh,250px);border:0;background:none;perspective:1200px;font-family:var(--body)}
+.rc .in{position:absolute;inset:0;transition:transform .5s;transform-style:preserve-3d}
+.rc.open .in{transform:rotateY(180deg)}
+.rc .f{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}
+.rc .front{background:var(--cc);color:#fff;font-family:var(--display);font-size:clamp(25px,2.6vw,36px)}
+.rc .front span{font-size:clamp(46px,4.6vw,68px)}
+.rc .front img,.card1 img.cphoto{border-radius:14px;object-fit:cover}
+.rc .front img{width:100%;flex:1 1 0;min-height:0;height:auto;}
+.rc .front{overflow:hidden;line-height:1.2}
+.rc .front small{flex:none}
+.card1 img.cphoto{width:clamp(150px,22vw,300px);aspect-ratio:4/3;border:3px solid var(--line);cursor:zoom-in}
+.zoomhint{display:block;font-size:14px;color:var(--soft);text-align:center;margin-top:4px}
+.bigview{position:fixed;inset:0;background:rgba(8,12,22,.95);display:none;align-items:center;justify-content:center;z-index:30;padding:6px}
+.bigview.on{display:flex}
+.bigview img{max-width:98vw;max-height:88vh;border-radius:12px}
+.bigview .close{position:fixed;top:14px;right:16px;font-size:28px;border:0;border-radius:50%;width:60px;height:60px;background:rgba(255,255,255,.9);color:#1F2A44}
+.bigview .meta{position:fixed;left:0;right:0;bottom:0;padding:10px 16px 14px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;text-align:center}
+.bigview .meta b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.4vw,32px);display:block}
+.bigview .meta small{color:#dbe3f0;font-size:14px}
+.exp{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px;width:min(1250px,96vw)}
+.ec{background:var(--paper);border-radius:20px;border-top:12px solid var(--cc);padding:12px 16px;text-align:left}
+.ec img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;cursor:zoom-in;border:3px solid var(--line)}
+.ec .num{font-family:var(--display);font-size:clamp(34px,3.6vw,52px);color:var(--cc);line-height:1.1}
+.ec b{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.1vw,28px);display:block;margin-top:6px}
+.ec p{font-size:clamp(18px,1.8vw,24px);line-height:1.45;margin:4px 0 0}
+.ec small{font-size:14px;color:var(--soft);display:block;margin-top:6px}
+.expq{background:#FFF4D6;color:#1F2A44;border:4px solid #E8961E;border-radius:20px;padding:12px 20px;width:min(1250px,96vw);font-size:clamp(21px,2.1vw,30px);text-align:left}
+.expq b{font-family:var(--display);font-weight:400;display:block;margin-bottom:4px}
+.expq li{margin-bottom:4px}
+.howbtn{border:3px solid #6A4FC9;color:#6A4FC9;background:var(--paper);border-radius:16px;padding:8px 20px;font-size:clamp(19px,1.8vw,25px)}
+.lklist{display:grid;gap:12px;text-align:left;margin-bottom:18px}
+.lkrow{display:flex;gap:14px;align-items:center;background:var(--bg);border-radius:16px;padding:12px 18px;text-decoration:none;color:inherit;border:3px solid var(--line)}
+.lkrow:hover{border-color:var(--ink)}
+.lkrow .e{font-size:clamp(30px,3vw,42px)}
+.lkrow b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.2vw,30px);display:block}
+.lkrow small{color:var(--soft);font-size:clamp(17px,1.7vw,22px)}
+.rc .back2{background:var(--paper);border:5px solid var(--cc);transform:rotateY(180deg);font-size:clamp(21px,2.1vw,29px)}
+.qbox{background:#FFF4D6;color:#1F2A44;border:5px solid #E8961E;border-radius:26px;padding:clamp(16px,2.2vw,30px);width:min(1100px,94vw);text-align:center;font-family:var(--display);font-size:clamp(28px,3.1vw,46px);line-height:1.4}
+.card1{width:min(1100px,92vw);background:var(--paper);border-radius:26px;border:4px solid var(--line);padding:clamp(16px,2.2vw,32px);display:flex;gap:clamp(16px,3vw,36px);align-items:center;justify-content:center}
+.card1 .e{font-size:clamp(60px,7vw,110px);line-height:1;flex:none}
+.card1 .x{font-family:var(--display);font-size:clamp(28px,3.4vw,50px);line-height:1.35}
+.bins{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:clamp(10px,1.6vw,20px);width:min(1200px,96vw)}
+.bin{border:0;background:var(--cc);color:#fff;border-radius:40px 40px 18px 18px;padding:clamp(14px,2vh,24px) 10px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 7px 0 rgba(0,0,0,.22)}
+.bin .e{font-size:clamp(38px,4.4vw,66px);line-height:1}
+.bin .n{font-size:clamp(24px,2.6vw,38px);text-align:center}
+.bin .k{position:absolute;left:12px;bottom:8px;font-size:18px;opacity:.8}
+.bin:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.22)}
+.bin.lit{outline:6px solid var(--ink);outline-offset:4px}
+.prob{width:min(1150px,95vw);background:var(--paper);border:5px solid var(--pc2);border-radius:24px;padding:clamp(12px,1.8vw,24px);display:flex;gap:18px;align-items:center}
+.prob .e{font-size:clamp(44px,4.6vw,70px)}
+.prob b{font-family:var(--display);font-weight:400;font-size:clamp(26px,2.8vw,40px);display:block;color:var(--pc2)}
+.prob p{margin:4px 0 0;font-size:clamp(20px,2.1vw,30px)}
+.ways{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:min(1200px,96vw)}
+.way{border:4px solid var(--line);background:var(--paper);border-radius:18px;padding:10px 12px;font-family:var(--body);font-size:clamp(19px,1.9vw,26px);text-align:center;min-height:clamp(86px,11vh,132px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.way span{font-size:clamp(28px,2.8vw,40px)}
+.way[aria-pressed="true"]{border-color:var(--ink);background:var(--bg);box-shadow:inset 0 0 0 4px var(--ink)}
+.way.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.way.miss{border-color:var(--no);background:color-mix(in srgb,var(--no) 12%,var(--paper))}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:min(1150px,95vw)}
+.sumbox{background:var(--paper);border-radius:22px;border-top:14px solid var(--cc);padding:16px 22px}
+.sumbox b{font-family:var(--display);font-weight:400;font-size:clamp(25px,2.6vw,36px);display:block;margin-bottom:6px}
+.sumbox li{font-size:clamp(21px,2.1vw,29px);line-height:1.5;margin-bottom:4px}
+.opts2{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(1000px,94vw)}
+.opt2{border:4px solid var(--line);background:var(--paper);border-radius:18px;padding:12px 18px;font-family:var(--body);font-size:clamp(23px,2.4vw,33px)}
+.opt2.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.opt2.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 14%,var(--paper))}
+.fix{background:var(--bg);border-radius:18px;padding:12px 20px;font-size:clamp(23px,2.3vw,32px);margin:0 auto 18px;max-width:34em;text-align:left}
+.promise{width:min(1100px,94vw);display:grid;gap:10px}
+.promise div{background:var(--paper);border-radius:16px;padding:12px 20px;font-size:clamp(23px,2.2vw,32px);border-left:14px solid var(--ok)}
+.tpanel{text-align:left}
+.tpanel h3{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.2vw,32px);margin:14px 0 6px;color:#6A4FC9}
+.tpanel li,.tpanel p{font-size:clamp(20px,1.9vw,26px);line-height:1.55}
+
+/* 크롬북(가로 1366×680)처럼 낮은 화면: 한 화면에 들어오도록 조금 촘촘하게 */
+@media (max-height:760px) and (min-width:900px){
+ .screen{padding:10px 20px}
+ .body{gap:8px;padding:2px 0}
+ .hd{font-size:clamp(26px,2.6vw,38px)}
+ .goal{font-size:clamp(18px,1.6vw,24px);margin:0}
+ .ec{padding:8px 12px;border-top-width:9px}
+ .ec img{aspect-ratio:16/9}
+ .ec .num{font-size:clamp(28px,2.8vw,42px)}
+ .ec p{font-size:clamp(17px,1.5vw,22px)}
+ .expq{padding:8px 16px;font-size:clamp(19px,1.7vw,25px)}
+ .expq li{margin-bottom:0}
+ .rc{min-height:clamp(150px,26vh,210px)}
+ .card1{padding:12px 20px}
+ .card1 .e{font-size:clamp(50px,5vw,80px)}
+ .card1 .x{font-size:clamp(25px,2.6vw,40px)}
+ .bin{padding:10px 8px}
+ .bin .e{font-size:clamp(32px,3.4vw,50px)}
+ .ways{grid-template-columns:repeat(5,1fr);gap:8px}
+ .way{min-height:58px;padding:6px 10px;flex-direction:row;gap:8px;font-size:clamp(18px,1.6vw,23px)}
+ .way span{font-size:clamp(24px,2.2vw,32px)}
+ .prob{padding:8px 16px}
+ .prob .e{font-size:clamp(36px,3.6vw,54px)}
+ .prob b{font-size:clamp(23px,2.3vw,33px)}
+ .prob p{font-size:clamp(18px,1.8vw,26px)}
+ .sumbox{padding:10px 16px}
+ .sumbox li{font-size:clamp(19px,1.7vw,25px);margin-bottom:2px}
+ .qbox{padding:12px 20px}
+ .promise div{padding:8px 16px;font-size:clamp(20px,1.9vw,28px)}
+ .opt2{padding:8px 14px;font-size:clamp(21px,2vw,29px)}
+ .foot{padding-top:2px}
+}
+@media (max-width:860px){.recall,.ways,.sum,.opts2,.bins{grid-template-columns:1fr 1fr}.way{min-height:72px;flex-direction:row;gap:8px}}
+
+body,h1,h2,h3,h4,p,li,span,div,button,a,td,th,small,b,i{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:16px}
+.creditbar .madeby{width:100%}
+.tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(20px,2vw,26px);
+  text-decoration:none;color:inherit;border:3px solid var(--line,#ccc);background:var(--paper,#fff);border-radius:999px;padding:8px 22px}
+.tolist.on{display:inline-flex}
+.rel.on{display:grid!important}
+.madeby{font-size:16px;color:var(--soft,#666);opacity:.85;text-align:center;font-family:var(--body,sans-serif)}
+
+h1,h2,h3,h4,.title,.hd,.qt,.x,.n,.nm,.big,.lead,.sit,.ask,.qtext,.front .n,.slot b,.dc h3,.lk b,.rl b{text-wrap:balance}
+p,li,small,.d,.ex,.why,.blurb,.ask2,.sub,.msg,.notice,.fix,.retry div,.opt,.opt2,.way,.mbox .n,.dc p,.lk small,.rl small{text-wrap:pretty}
+</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style></head><body>
+
+<section id="cover" class="screen on center-col">
+  <h1 class="title">🖼️ 우리가 사는 곳에 있는 여러 장소를 소개해 볼까요</h1>
+  <p class="lead">3학년 1학기 사회 1단원 · 8~9차시</p>
+  <div class="qbox" style="font-size:clamp(25px,2.6vw,38px)">학습 문제<br>우리가 사는 곳에 있는 여러 장소를 소개해 봅시다.</div>
+  <div class="stagebar" style="justify-content:center" id="plan"></div>
+  <div class="row"><span class="row-label">활동 단위</span><div class="seg" id="segTeam"></div></div>
+  <div class="row"><button class="big-btn" id="btnGo">수업 시작</button><button class="tnote" id="tOpen0">👩‍🏫 교사 안내</button><button class="tnote" id="tOpenL" style="border-color:#2F74E0;color:#2F74E0">📰 자료 보기</button></div>
+  <p class="lead" id="phc" style="font-size:15px"></p>
+<div class="creditbar"><a class="tolist" data-topic href="u1-place-data.html">📊 🏡 여러 장소 자료실</a><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div></section>
+<section id="stage" class="screen">
+  <div class="topbar">
+    <div class="stagebar" id="bar"></div>
+    <div class="tools"><div class="scores" id="score" style="display:none"></div><button class="tool" id="btnLinks">📰 자료</button><button class="tool" data-sound>🔊</button><button class="tool" data-full>⛶</button><button class="tool" id="btnCover">🏠</button></div>
+  </div>
+  <p class="goal" id="turnLine" style="min-height:1.2em"></p>
+  <p class="goal">우리가 사는 곳에 있는 여러 장소를 소개해 봅시다.</p>
+  <div class="body" id="body"></div>
+  <div class="foot">
+    <button class="tnote" id="tOpen">👩‍🏫 교사 안내</button>
+    <div class="row"><button class="ghost-btn" id="btnPrev">← 이전</button><button class="big-btn" id="btnNext2" style="font-size:clamp(24px,2.2vw,34px);padding:12px 30px">다음 →</button></div>
+  </div>
+</section>
+<div class="overlay" id="fb"><div class="panel" id="fbP"><h2 id="fbT"></h2><p class="why" id="fbW"></p><div class="fix" id="fbF"></div><button class="big-btn" id="fbNext">계속하기</button></div></div>
+<div class="bigview" id="bv"><button class="close" id="bvX" aria-label="닫기">✕</button><img id="bvI" alt=""><div class="meta"><b id="bvT"></b><small id="bvS"></small></div></div>
+<div class="overlay" id="lk"><div class="panel" style="--pc:#2F74E0"><h2>📰 함께 보면 좋은 자료</h2><div class="lklist" id="lkB"></div><button class="big-btn" id="lkX">닫기</button></div></div>
+<div class="overlay" id="tn"><div class="panel tpanel" style="--pc:#6A4FC9"><h2 style="text-align:center" id="tnT"></h2><div id="tnB"></div><p style="text-align:center"><button class="big-btn" id="tnClose">닫기</button></p></div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+/* 활동 단위(반·개별·짝·모둠·분단·번호순·기타) 공통 기능 */
+let MODE='class',TEAMS=4,LINES=4,CLASSN=25,ETCNOTE='',TURN=0,SCORES=[];
+const MODES=[['class','🏫 반'],['solo','🙋 개별'],['pair','👫 짝'],['group','👨‍👩‍👧 모둠'],['line','🪑 분단'],['number','🔢 번호순'],['etc','✏️ 기타']];
+function teamSeg(id){
+  const host=$(id); if(!host) return;
+  host.classList.remove('seg');
+  host.style.cssText='display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;border:0;background:none';
+  host.innerHTML=`<span class="seg" id="${id}-m">${MODES.map(([k,l])=>`<button data-m="${k}" aria-pressed="${MODE===k}">${l}</button>`).join('')}</span><span id="${id}-sub"></span>`;
+  host.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{MODE=b.dataset.m;teamSeg(id);});
+  const sb=$(id+'-sub'); sb.style.cssText='display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap';
+  const numInput=(sid,val,max)=>`<input id="${sid}" type="number" min="2" max="${max}" value="${val}" style="width:4.5em;font-size:clamp(20px,2vw,28px);padding:6px 10px;border:3px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font-family:var(--body)">`;
+  if(MODE==='group'){
+    sb.innerHTML=`<span class="row-label">몇 모둠</span><span class="seg" id="${id}-n">${[2,3,4,5,6].map(v=>`<button data-n="${v}" aria-pressed="${TEAMS===v}">${v}</button>`).join('')}</span>`;
+    sb.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{TEAMS=+b.dataset.n;teamSeg(id);});
+  }else if(MODE==='line'){
+    sb.innerHTML=`<span class="row-label">몇 분단</span><span class="seg" id="${id}-l">${[2,3,4,5,6].map(v=>`<button data-l="${v}" aria-pressed="${LINES===v}">${v}</button>`).join('')}</span>`;
+    sb.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{LINES=+b.dataset.l;teamSeg(id);});
+  }else if(MODE==='number'){
+    sb.innerHTML=`<span class="row-label">우리 반</span>${numInput(id+'-c',CLASSN,40)}<span class="row-label">명 · 1번부터 차례로 답해요</span>`;
+    $(id+'-c').oninput=()=>{CLASSN=Math.max(2,+$(id+'-c').value||25);};
+  }else if(MODE==='etc'){
+    sb.innerHTML=`<input id="${id}-e" type="text" placeholder="예: 두 모둠씩 짝지어 대결" value="${ETCNOTE.replace(/"/g,'&quot;')}" style="width:min(22em,60vw);font-size:clamp(19px,1.9vw,26px);padding:8px 14px;border:3px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink);font-family:var(--body)">
+      <span class="row-label" style="font-size:clamp(17px,1.6vw,22px);color:var(--soft)">선생님이 방법을 설명한 뒤 '다음'으로 진행해요</span>`;
+    $(id+'-e').oninput=()=>{ETCNOTE=$(id+'-e').value;};
+  }else{
+    const t={class:'반 전체가 함께 답하고 점수를 모아요.',solo:'각자 생각하고 답해요. 점수는 매기지 않아요.',pair:'짝과 의논해서 답해요. 점수는 매기지 않아요.'}[MODE];
+    sb.innerHTML=`<span class="row-label" style="font-size:clamp(18px,1.7vw,23px);color:var(--soft)">${t}</span>`;
+  }
+}
+function unitName(){return MODE==='line'?'분단':'모둠';}
+function teamCount(){
+  if(MODE==='group')return TEAMS;
+  if(MODE==='line')return LINES;
+  return 1;
+}
+function usesTeams(){return MODE==='group'||MODE==='line';}
+function noScore(){return MODE==='solo'||MODE==='pair'||MODE==='etc';}
+function teamInit(){SCORES=Array(teamCount()).fill(0);TURN=0;}
+function teamAdd(n){if(noScore())return;SCORES[TURN]=(SCORES[TURN]||0)+n;}
+function teamNext(){
+  if(usesTeams())TURN=(TURN+1)%teamCount();
+  else if(MODE==='number')TURN=(TURN+1)%Math.max(2,CLASSN);
+}
+function teamChips(el){
+  if(!el)return;el.className='scores';
+  if(noScore()){el.innerHTML='';el.style.display='none';return;}
+  el.style.display='flex';
+  if(usesTeams()){el.innerHTML=SCORES.map((s,i)=>`<span class="chip ${i===TURN?'now':''}">${i+1}${unitName()} ${s}</span>`).join('');}
+  else el.innerHTML=`<span class="chip now">⭐ ${SCORES[0]}점</span>`;
+}
+function teamTurn(){
+  if(MODE==='solo')return '🙋 각자 생각해 보세요';
+  if(MODE==='pair')return '👫 짝과 의논해 보세요';
+  if(MODE==='class')return '🏫 반 전체가 함께 답해요';
+  if(MODE==='number')return `🔢 지금은 ${TURN+1}번 차례예요`;
+  if(MODE==='etc')return ETCNOTE?('✏️ '+ETCNOTE):'✏️ 선생님 안내에 따라 활동해요';
+  return `🙋 지금은 ${TURN+1}${unitName()} 차례예요`;
+}
+function teamPodium(){
+  if(noScore())return '';
+  if(!usesTeams())return `<span class="chip win">⭐ ${SCORES[0]}점</span>`;
+  const mx=Math.max(...SCORES);
+  return SCORES.map((s,i)=>`<span class="chip ${s===mx?'win':''}">${i+1}${unitName()} ${s}점</span>`).join('');
+}
+function teamWinnerText(){
+  if(MODE==='solo')return '각자 푼 문제를 공책과 맞춰 봐요.';
+  if(MODE==='pair')return '짝과 함께 잘 해냈어요.';
+  if(MODE==='etc')return '모두 수고했어요.';
+  if(!usesTeams())return `우리 반 점수는 ${SCORES[0]}점이에요.`;
+  const mx=Math.max(...SCORES),w=SCORES.map((s,i)=>s===mx?i+1:null).filter(Boolean);
+  return `${w.join(', ')}${unitName()}이 가장 많은 점수를 얻었어요!`;
+}
+
+
+const C={"photos": {}, "links": [{"e": "🧳", "t": "대한민국 구석구석", "d": "교과서 31~32쪽의 특별한 장소 홍보 영상과 여행 정보 찾아보기 (한국관광공사)", "u": "https://korean.visitkorea.or.kr/"}, {"e": "🗺️", "t": "국토정보플랫폼", "d": "검룡소, 신두리 해안 사구, 나로 우주 센터, 한라산의 위치를 지도에서 찾아보기", "u": "https://map.ngii.go.kr/"}, {"e": "🏫", "t": "에듀넷·티-클리어", "d": "3학년 사회 교과 자료 찾아보기", "u": "https://www.edunet.net/"}], "title": "🖼️ 우리가 사는 곳에 있는 여러 장소를 소개해 볼까요", "sub": "3학년 1학기 사회 1단원 · 8~9차시", "goal": "우리가 사는 곳에 있는 여러 장소를 소개해 봅시다.", "plan": ["도입 5분", "자료 탐구 · 모둠에서 작품 소개하기 20분", "활동 1 · 전시 작품 관람하기 25분", "활동 2 · 공유하고 특별한 장소 알기 20분", "정리 10분"], "intro": {"hd": "장소를 소개하는 자료를 본 적이 있나요?", "q": "지난 시간에 표현한 작품은 어떻게 소개할 수 있을까요?", "cards": [{"e": "📄", "c": "#E8961E", "t": "① 광고지", "d": "예: 새로 생긴 음식점을 소개하는 광고지를 본 적이 있어요."}, {"e": "🧾", "c": "#2F74E0", "t": "② 안내 자료", "d": "예: 우리 동네 도서관을 안내하는 자료를 본 적이 있어요."}, {"e": "🖼️", "c": "#1F9E63", "t": "③ 우리가 만든 작품", "d": "지난 시간에 그림, 책, 신문으로 여러 장소를 표현했어요."}]}, "explore": {"hd": "친구들에게 작품을 소개하고 비교해요", "method": {"k": "gallery", "e": "🖼️", "n": "갤러리 워크", "c": "#E8961E", "time": "20~25분", "type": "자료 다루기", "goal": "미술관에서 작품을 감상하듯 교실을 돌아다니며 친구들의 작품을 살펴봐요.", "need": "장소 표현 작품, 붙임쪽지, 활동지(지도서 62쪽)", "steps": ["① 전시장 꾸미기: 책상과 벽에 작품을 전시해요.", "② 활동 준비: 모둠에서 안내자를 정하고, 관람하는 사람은 관람 동선을 정해요.", "③ 전시 관람: 돌아다니며 묻고 답하고, 느낌과 감상을 붙임쪽지에 써서 작품 옆에 붙여요.", "④ 정리: 활동지에 기록하고 느낀 점을 나눠요."], "tip": "안내자는 돌아가면서 맡게 하세요. 붙임쪽지 대신 스티커를 붙인다면 경쟁이 되지 않도록 유의합니다.", "when": "8~9차시 장소 표현 작품 전시·관람"}, "cards": [{"c": "#2F74E0", "big": "🗣️", "t": "소개하기", "d": "작품을 보여 주며 장소에 관한 생각과 느낌을 말해요.", "s": "교과서 28쪽"}, {"c": "#1F9E63", "big": "🟰", "t": "공통점", "d": "나와 ◇◇이는 책을 만들어 장소를 소개했어요.", "s": "교과서 28쪽"}, {"c": "#E0506B", "big": "↔️", "t": "차이점", "d": "나에게 소중한 장소와 □□이가 소중하게 생각하는 장소가 달라요.", "s": "교과서 28쪽"}, {"c": "#E8961E", "big": "📝", "t": "붙임쪽지", "d": "친구 작품에 내 경험이나 생각, 느낌을 써서 붙여요.", "s": "교과서 29쪽"}], "qs": ["우리가 사는 곳에 있는 장소를 어떻게 표현했나요?", "친구가 소개한 내용과 내가 소개한 내용에서 비슷한 점과 다른 점은 무엇인가요?", "작품을 소개하면서 무엇을 알 수 있나요?"]}, "act1": {"ask": "나와 친구의 작품을 비교했어요. 공통점일까요, 차이점일까요?", "bins": [{"k": "same", "n": "공통점", "e": "🟰", "c": "#1F9E63"}, {"k": "diff", "n": "차이점", "e": "↔️", "c": "#E0506B"}], "items": [{"k": "same", "e": "🏫", "x": "나와 친구의 작품에 모두 학교가 있어요.", "w": "둘 다 표현한 장소는 공통점이에요."}, {"k": "same", "e": "🛝", "x": "나와 친구 모두 놀이터를 표현했어요.", "w": "둘 다 표현한 장소는 공통점이에요."}, {"k": "same", "e": "📖", "x": "나와 ◇◇이는 모두 책을 만들어 소개했어요.", "w": "표현 방법이 같으니 공통점이에요."}, {"k": "diff", "e": "🖍️", "x": "나는 그림으로, 친구는 책으로 나타냈어요.", "w": "표현 방법이 다르니 차이점이에요."}, {"k": "diff", "e": "🗂️", "x": "나는 자주 가는 장소를, 친구는 좋아하는 장소를 표현했어요.", "w": "표현 주제가 다르니 차이점이에요."}, {"k": "diff", "e": "🥋", "x": "태권도장은 내 작품에만 있어요.", "w": "한 사람만 표현한 장소는 차이점이에요."}, {"k": "diff", "e": "🍎", "x": "과일 가게는 친구 작품에만 있어요.", "w": "한 사람만 표현한 장소는 차이점이에요."}]}, "act2": {"ask": "작품을 공유하고, 특별한 장소를 알아봐요", "options": [{"k": "c1", "e": "👍", "n": "보기 좋게 잘 나타냈어요"}, {"k": "c2", "e": "💡", "n": "소중한 장소를 알 수 있어요"}, {"k": "c3", "e": "🙅", "n": "네 생각은 틀렸어요"}, {"k": "c4", "e": "🏆", "n": "내 작품이 더 잘했어요"}, {"k": "geom", "e": "💧", "n": "검룡소"}, {"k": "dune", "e": "🏜️", "n": "신두리 해안 사구"}, {"k": "naro", "e": "🚀", "n": "나로 우주 센터"}, {"k": "halla", "e": "⛰️", "n": "한라산"}], "problems": [{"e": "💬", "t": "댓글로 감상 남기기", "p": "다른 반 친구의 작품에 남길 알맞은 댓글을 모두 골라요.", "c": "#2F74E0", "a": ["c1", "c2"], "talk": "친구 작품을 보고 떠오른 내 경험을 댓글로 써 볼까요?"}, {"e": "💧", "t": "우리나라에 단 한 곳 ①", "p": "한강이 시작되는 곳으로 알려져 있어요. 일 년 내내 많은 양의 지하수가 솟아나요.", "c": "#16A3B5", "a": ["geom"], "talk": "사진 속 장소 중에서 가 본 곳이 있나요?"}, {"e": "🏜️", "t": "우리나라에 단 한 곳 ②", "p": "바닷가의 모래가 바람에 의해 옮겨져 낮은 언덕 모양으로 쌓여서 만들어졌어요.", "c": "#E8961E", "a": ["dune"], "talk": "이 장소가 특별한 까닭은 무엇일까요?"}, {"e": "🚀", "t": "우리나라에 단 한 곳 ③", "p": "우리나라 최초의 우주 발사체 발사 기지예요.", "c": "#6A4FC9", "a": ["naro"], "talk": "이밖에 우리나라에 단 한 곳뿐인 장소에는 어떤 것들이 있을까요?"}]}, "summary": [{"t": "🖼️ 여러 장소 소개하기", "c": "#2F74E0", "items": ["여러 장소를 표현한 작품을 소개하면서 장소에 관한 생각과 느낌을 나눌 수 있어요.", "작품을 살펴보면 장소에 관한 생각과 느낌이 다양하다는 것을 알 수 있어요."]}, {"t": "🤝 서로 존중하기", "c": "#1F9E63", "items": ["장소에 관한 서로 다른 생각과 느낌을 이해하고 존중해야 해요.", "우리나라에는 검룡소, 신두리 해안 사구, 나로 우주 센터, 한라산처럼 단 한 곳뿐인 특별한 장소도 있어요."]}], "quiz": [{"q": "여러 장소를 표현한 작품을 살펴보면 무엇을 알 수 있을까요?", "o": ["장소에 관한 생각과 느낌이 다양하다는 것", "모든 사람의 느낌이 같다는 것", "장소는 한 가지 방법으로만 표현한다는 것", "가장 잘 그린 작품만 맞다는 것"], "a": 0, "w": "작품을 살펴보면 장소에 관한 생각과 느낌이 다양하다는 것을 알 수 있어요."}, {"q": "장소에 관한 서로 다른 생각과 느낌을 이해하고 어떻게 해야 할까요?", "o": ["존중해요.", "무시해요.", "놀려요.", "모른 척해요."], "a": 0, "w": "장소에 관한 서로 다른 생각과 느낌을 이해하고 존중해야 해요."}, {"q": "공유 애플리케이션으로 작품을 알릴 때 먼저 할 일은 무엇일까요?", "o": ["작품 사진 찍기", "댓글 달기", "친구 작품 고치기", "작품 버리기"], "a": 0, "w": "먼저 여러 장소를 표현한 작품의 사진을 찍어요."}, {"q": "제주도에 있는 산으로, 꼭대기에 백록담이라는 호수가 있는 곳은?", "o": ["한라산", "검룡소", "신두리 해안 사구", "나로 우주 센터"], "a": 0, "w": "한라산은 우리나라에서 가장 큰 섬인 제주도에 있는 산이에요."}, {"q": "우리나라 최초의 우주 발사체 발사 기지는 어디일까요?", "o": ["나로 우주 센터", "한라산", "검룡소", "신두리 해안 사구"], "a": 0, "w": "나로 우주 센터는 전라남도 고흥군에 있어요."}], "final": {"hd": "🖼️ 오늘의 정리", "lines": ["여러 장소를 표현한 작품을 소개하며 장소에 관한 생각과 느낌을 나누었어요.", "작품을 살펴보면 장소에 관한 생각과 느낌이 다양하다는 것을 알 수 있어요.", "장소에 관한 서로 다른 생각과 느낌을 이해하고 존중해요.", "다음 시간에는 ‘우리가 사는 곳의 여러 장소’에서 공부한 내용을 정리해 봐요. (준비물: 도화지, 색종이, 종이 상자, 가위, 풀, 색칠 도구)"]}, "notes": {"0": ["수업 준비", "<h3>학습 목표<\/h3><p>우리가 사는 곳에 있는 여러 장소를 소개할 수 있다. (지도서 56쪽)<\/p><h3>흐름 (80분)<\/h3><ul><li>도입 5분 → 자료 탐구(모둠에서 작품 소개하기) 20분 → 활동 1(전시 작품 관람하기) 25분 → 활동 2(공유 애플리케이션, 풍덩 사회 속으로) 20분 → 정리 10분<\/li><li>교과서 28~32쪽 · 지도서 56~67쪽<\/li><li>수업 기법 및 전략: <b>전시 작품 관람하기, 비교하기, 의견 나누기<\/b> (지도서 56쪽) → 화면 방법 카드는 ‘갤러리 워크’(지도서 61쪽 순서)<\/li><\/ul><h3>준비물·자료<\/h3><ul><li>지난 시간에 만든 장소 표현 작품(그림, 책, 신문), 붙임쪽지<\/li><li>활동지 「우리가 사는 곳에 있는 여러 장소를 표현한 작품 비교하기」 (지도서 62쪽, 풀이 63쪽)<\/li><li>(디지털) 공유 애플리케이션을 스마트 기기에 미리 설치, 교사 시연 (지도서 58쪽)<\/li><li>(대체 활동) 우리가 사는 곳의 장소 이어 글쓰기 (지도서 60쪽)<\/li><\/ul><h3>성취 기준<\/h3><p>[4사01-01] 주변 여러 장소에서의 경험과 느낌을 다양한 방식으로 표현하고, 장소감을 나누며 서로 존중하는 태도를 지닌다.<\/p><h3>성취 수준<\/h3><ul><li><b>A<\/b> 주변 여러 장소에서의 경험과 느낌을 다양한 방식으로 표현하며 주변 장소에 관심을 가지고, 다른 사람과 장소감을 비교하며 서로 다른 장소감을 존중하는 태도를 가진다.<\/li><li><b>B<\/b> 주변 여러 장소에서의 경험과 느낌을 다양한 방식으로 표현하고, 다른 사람의 장소감을 관찰하며 서로 다른 장소감을 존중하는 태도를 가진다.<\/li><li><b>C<\/b> 주변 여러 장소에서의 경험과 느낌을 표현하고, 다른 사람의 장소감을 관찰하며 서로 다른 장소감의 차이를 발견할 수 있다.<\/li><\/ul><h3>주제 「지도상의 유의점」 (지도서 25쪽)<\/h3><ul><li>우리가 사는 곳의 범위는 생활권을 기반으로 하되 여가, 쇼핑을 위한 이동 및 학생의 경험 등 일상생활이 이루어지는 공간 범위를 고려한다.<\/li><li>삶의 터전에 관심을 두고 학생의 생활과 관련이 깊은 주변의 장소를 탐색하는 데 중점을 둔다.<\/li><li>학생들의 생활과 관련이 있는 장소를 활용하여 학생들이 공감하며 활동에 참여할 수 있도록 한다.<\/li><li>사람마다 장소에 관한 생각과 느낌이 다를 수 있음을 이해하고, 이를 존중할 수 있도록 지도하는 데 중점을 둔다.<\/li><li>여러 장소에서의 경험을 공유하는 과정에서 장소감의 차이를 이해하고 서로 존중하며, 주변의 장소를 알아가면서 이에 관한 관심을 심화하도록 한다.<\/li><\/ul><h3>과정 중심 평가 「우리 주변의 장소를 그림으로 표현하고 다른 사람의 생각과 비교하기」 (지도서 64~67쪽)<\/h3><ul><li><b>평가 목표<\/b>: 우리가 사는 곳의 여러 장소 중 인상 깊었던 장소를 그림으로 표현하고 다른 사람의 생각과 비교할 수 있다.<\/li><li><b>평가 방법<\/b>: 서술 평가, 관찰 평가, 자기 평가, 동료 평가 / 핵심 역량: 창의적 사고력, 비판적 사고력, 의사소통 및 협업 능력<\/li><li><b>평가 문항<\/b>: 1 장소 하나를 선택해 내 생각이나 느낌을 정리하고 그림으로 표현하기 / 2 내가 소개하는 장소와 다른 사람이 소개하는 장소의 같은 점과 다른 점 비교하기 / 3 생각이나 느낌에 차이가 있는 까닭 찾기(장소는 다르지만 느낌이 같은 사례, 장소는 같지만 느낌이 다른 사례, 한 문장으로 정리하기)<\/li><li><b>평가 과제<\/b>: ❶ 소개할 장소를 정하고 그림으로 표현하기(관찰) ❷ 다른 사람의 발표를 듣고 자기 생각과 비교하기(서술·관찰) ❸ 다른 사람의 생각을 자기 생각과 비교하여 정리하기(관찰·자기·동료)<\/li><\/ul><h3>채점 기준 (지도서 66쪽)<\/h3><ul><li><b>1 창의적 사고력 · 그림으로 표현한 장소<\/b> — 상: 자기 생각과 느낌이 잘 드러나도록 소개하고 싶은 장소를 그림으로 잘 표현한다. / 중: 장소에 관한 자기 생각과 느낌을 분명히 표현한다. / 하: 장소에 관한 자기 생각과 느낌을 그림으로 나타내는 데 어려움이 있다.<\/li><li><b>2 비판적 사고력 · 타인의 생각과 비교<\/b> — 상: 다른 사람들의 장소에 관한 생각이나 느낌을 자기 생각이나 느낌과 견주어 비교할 수 있다. / 중: 다른 사람들의 장소에 관한 생각이나 느낌을 잘 정리할 수 있다. / 하: 다른 사람들이 장소에 관해 생각하는 내용을 이해할 수 있으나 정리하는 데 어려움이 있다.<\/li><li><b>3 의사소통 및 협업 능력 · 장소에 관한 생각이나 느낌 정리<\/b> — 상: 사람들이 장소에 관해 느끼는 감정이나 생각을 효과적으로 비교하고 정리할 수 있다. / 중: 사람들이 장소에 관해 느끼는 감정이나 생각이 다를 수 있음을 이해한다. / 하: 장소에 관해 사람마다 느끼는 감정이나 생각이 다름은 알지만, 정리하여 요약하는 데 어려움이 있다.<\/li><\/ul><p><b>유의 사항<\/b>: 평가 문항 1은 자기 생각이나 느낌이 담긴 장소를 선정하고 표현하는가를 관찰한다. 평가 문항 2는 다른 사람의 발표를 경청하고, 자기 생각이나 느낌과 비교할 수 있는가에 중점을 둔다. 평가 문항 3은 다른 사람의 발표 내용을 일반적인 관점에서 정리하고 내용을 요약할 수 있는가를 평가한다. (지도서 66쪽)<\/p><p>평가 예시 답안(지도서 67쪽): “같은 장소라 하더라도 장소에서 겪은 경험이 다르면 생각이나 느낌이 달라질 수 있다.” — 느낌의 내용 자체가 아니라 비교·정리하는 능력을 평가합니다.<\/p><h3>과정 중심 평가 연계 (활동지, 지도서 63쪽)<\/h3><ul><li>평가 관점: 나와 친구들이 표현한 장소, 방법 등을 비교하여 정리할 수 있는가?<\/li><li>평가 방법: 관찰·서술 평가<\/li><\/ul><h3>지도서 대조 검증<\/h3><ul><li>차시명·내용·용어·정답 근거·유의점 5항목 대조 완료, 수정 없음 (교과서 28~32쪽 표·댓글·특별한 장소 설명, 지도서 63쪽 활동지 예시 답안, 66쪽 채점 기준을 PDF 원본 이미지로 확인)<\/li><\/ul>"], "1": ["① 도입 (5분)", "<h3>발문과 예상 반응 (지도서 56쪽)<\/h3><ul><li>지난 시간에 무엇을 했나요? → 우리가 사는 곳에 있는 여러 장소를 글, 그림, 신문 등으로 표현해 봤습니다. 장소 신문, 장소에 관한 책을 만들어 봤습니다.<\/li><li>우리가 사는 곳의 여러 장소를 소개하는 광고지나 홍보물을 본 적이 있나요? → 새로 생긴 음식점을 소개하는 광고지를 본 적이 있습니다. 우리 동네 도서관을 안내하는 자료를 본 적이 있습니다.<\/li><\/ul><h3>유의할 점<\/h3><p>“이전 차시에서 표현한 것을 떠올리며 학습 내용을 유추하도록 한다.” (지도서 56쪽)<\/p><p>과정 중심 평가 수업 설계(지도서 65쪽)를 따른다면 도입에서 ‘우리 지역엔’ 놀이(“우리 지역엔 산이 있고, 산이 있고 공원이 있고…”)를 3분 동안 할 수 있습니다.<\/p><h3>학습 문제<\/h3><p>우리가 사는 곳에 있는 여러 장소를 소개해 봅시다.<\/p>"], "2": ["② 자료 탐구 · 모둠에서 작품 소개하기 (20분)", "<h3>진행<\/h3><ul><li>교과서 28쪽 「친구와 활동」: 모둠 친구들이 소개한 작품을 보고 공통점과 차이점을 표에 정리합니다.<\/li><li>교과서 28쪽 표 예시: 나 – 소중한 장소 / 장◇◇ – 자주 가는 장소 / 한□□ – 소중하게 생각하는 장소 / 최○○ – 알리고 싶은 장소. 공통점: 내가 소중하게 생각하는 장소 중에 ○○이가 알리고 싶은 장소가 있다. 나와 ◇◇이는 책을 만들어 장소를 소개했다. 차이점: 나에게 소중한 장소와 □□이가 소중하게 생각하는 장소가 다르다.<\/li><\/ul><h3>발문과 예상 반응 (지도서 57쪽)<\/h3><ul><li>우리가 사는 곳에 있는 장소를 어떻게 표현했나요? → 그림을 그려 나타냈습니다. 접는 책을 만들어 표현했습니다. 신문을 만들어 표현했습니다.<\/li><li>여러 장소를 표현한 작품을 어떻게 소개할 수 있을까요? → 모둠 친구들에게 보여 주면서 소개할 수 있습니다. 반 전체 친구들이 볼 수 있도록 전시회를 열 수 있습니다.<\/li><li>(핵심 질문) 친구가 소개한 내용과 여러분이 소개한 내용에서 비슷한 점과 다른 점을 말해 볼까요? → 저와 친구는 모두 소중하게 생각하는 장소를 소개했는데, 저는 책으로 만들고, 친구는 그림으로 표현했습니다. 표현한 방법이 다릅니다.<\/li><li>작품을 소개하면서 무엇을 알 수 있나요? → 장소에 관한 친구들의 생각과 느낌을 알 수 있습니다.<\/li><\/ul><h3>유의할 점<\/h3><p>“표현한 장소, 방법 등 비슷한 점과 다른 점을 비교하려면 친구들이 소개할 때 중요한 내용을 표에 기록하면서 듣도록 지도한다.” (지도서 57쪽)<\/p><p>“같은 장소에 대해 서로 다른 생각과 느낌이 들었다면 구체적으로 경험을 더 이야기해 봄으로써 서로 다른 장소감을 나눌 수 있도록 지도한다.” (지도서 56쪽 「지도 꿀 Tip」)<\/p>"], "3": ["③ 활동 1 · 전시 작품 관람하기 (25분)", "<h3>진행<\/h3><ul><li>교과서 29쪽: 작품을 교실에 전시하고, 친구 작품에 표현된 장소에 관한 자기 경험이나 생각, 느낌을 붙임쪽지에 써서 붙입니다. 이어서 우리가 사는 곳에 관한 생각과 느낌을 씁니다.<\/li><li>화면 활동은 활동지(지도서 62~63쪽) 예시 답안(나: 자주 가는 장소·그림·학교, 학원, 놀이터, 태권도장, 문구점 / 친구: 좋아하는 장소·책·공원, 학교, 놀이터, 도서관, 과일 가게)과 교과서 28쪽 표로 <b>공통점·차이점을 구분하는 보조 활동<\/b>입니다. 느낌의 옳고 그름은 묻지 않습니다.<\/li><\/ul><h3>발문과 예상 반응 (지도서 58쪽)<\/h3><ul><li>(핵심 질문) 친구들의 작품을 잘 살펴봤나요? 우리가 사는 곳에 관한 생각과 느낌을 말해 봅시다. → 우리가 사는 곳에 다양한 장소가 있다는 것을 알았습니다. 제가 가 본 장소도 있고, 처음 알게 된 장소도 있습니다. 소개한 내용을 비교해 보니 장소에 관한 생각과 느낌이 다양한 것 같습니다.<\/li><\/ul><h3>유의할 점<\/h3><p>“학생들이 만든 장소 표현 작품을 전시하는 전시회장을 학생들과 함께 꾸민다. 책상을 이용하거나 교실 벽면을 이용하여 게시하고 작품을 자유롭게 관람할 수 있도록 한다.” (지도서 58쪽)<\/p><p>“붙임쪽지에 경험과 느낌을 써서 붙이는 활동 대신에 잘 표현했다고 생각하는 작품에 스티커를 붙이는 활동을 해도 좋다. 단, 경쟁이 되지 않도록 유의하여 지도한다.” (지도서 58쪽)<\/p><p>“작은 박물관의 느낌이 살아나도록 교실 전시회 환경을 꾸며, 즐거운 수업이 이루어지도록 한다. 학생들이 안내원이 되어 자기 작품을 직접 소개해 보는 활동으로 진행할 수 있다.” (지도서 57쪽)<\/p>"], "4": ["④ 활동 2 · 공유하고 특별한 장소 알기 (20분)", "<h3>공유 애플리케이션으로 여러 장소 알리기 (교과서 30쪽)<\/h3><ul><li>① 여러 장소를 표현한 작품의 사진을 찍습니다. ② 작품 사진을 공유할 누리집이나 애플리케이션을 정하고, 반·만든 사람·작품 제목 등을 입력해 저장하고 공유합니다. ③ 다른 반 친구들의 작품을 살펴보고, 댓글을 달아 감상을 남깁니다.<\/li><li>화면의 알맞은 댓글 두 개는 교과서 30쪽 예시 댓글(“우리가 사는 곳의 여러 장소를 보기 좋게 잘 나타냈습니다.”, “친구가 어떤 장소들을 소중하게 생각하는지 알 수 있습니다.”)을 줄인 것입니다.<\/li><li>“친구들의 작품을 보고 댓글을 쓸 때는 악성 댓글이나 장난으로 쓰지 않도록 하고, 온라인 공간에서의 예절을 철저히 지키도록 지도한다.” (지도서 59쪽) 공유 애플리케이션 사용이 어려우면 학급별 온라인 소통 공간을 이용합니다.<\/li><\/ul><h3>풍덩 사회 속으로 (교과서 31~32쪽)<\/h3><ul><li>검룡소(강원특별자치도 태백시): 한강이 시작되는 곳, 일 년 내내 많은 양의 지하수가 솟아남<\/li><li>신두리 해안 사구(충청남도 태안군): 바닷가의 모래가 바람에 의해 옮겨져 낮은 언덕 모양으로 쌓여서 만들어진 곳<\/li><li>나로 우주 센터(전라남도 고흥군): 우리나라 최초의 우주 발사체 발사 기지<\/li><li>한라산(제주특별자치도): 우리나라에서 가장 큰 섬인 제주도에 있는 산, 꼭대기에 백록담<\/li><li>“학생들이 우리나라에 단 한 곳뿐인 장소를 자유롭게 생각하여 이야기를 나누어 보도록 한다. … 우리나라의 특별한 장소들의 특징과 가치를 이해하고 소중함을 느낄 수 있도록 지도한다.” (지도서 60쪽) 예: 국립 중앙 박물관<\/li><li>가 본 곳을 묻는 발문은 여행 경험이 없는 학생도 있으므로 “처음 들어 본 곳들입니다.”(지도서 60쪽 예상 반응)도 자연스러운 답으로 받아 줍니다.<\/li><\/ul>"], "5": ["⑤ 정리 (10분)", "<h3>꼭! 기억해요 (교과서 30쪽)<\/h3><ul><li>1 우리가 사는 곳의 여러 장소를 표현한 작품을 살펴보면 장소에 관한 생각과 느낌이 다양하다는 것을 알 수 있습니다. (◯)<\/li><li>2 장소에 관한 서로 다른 생각과 느낌을 이해하고 <b>존중<\/b>해야 합니다. (빈칸 힌트: ㅈ ㅈ)<\/li><\/ul><h3>차시별 주요 내용 정리 (지도서 60쪽)<\/h3><ul><li>1. 우리가 사는 곳에 있는 여러 장소를 소개하기: ① 우리가 사는 곳의 여러 장소를 표현한 자료를 소개하면서 장소에 관한 생각과 느낌을 나눌 수 있음. ② 장소에 관한 생각과 느낌이 다양함을 알 수 있음.<\/li><li>2. 장소에 관한 서로 다른 생각과 느낌을 이해하고 존중하는 태도가 필요함.<\/li><\/ul><h3>예상 반응 (지도서 60쪽)<\/h3><p>우리 반 친구들의 장소에 관한 생각과 느낌을 비교할 수 있었습니다. 경험에 따라 장소에 관해 생각과 느낌이 다를 수 있다는 것을 알았습니다. 장소에 관한 생각이 서로 다르더라도 존중해야 한다고 생각했습니다.<\/p><h3>다음 차시<\/h3><p>10차시: 생각을 펼쳐요 / 재미있게 확인해요<\/p><p>다음 시간 준비물: 도화지, 색종이, 종이 상자, 가위, 풀, 색칠 도구 (지도서 60쪽)<\/p>"]}};
+const PH=C.photos||{};
+const NAMES=['도입','자료 탐구','활동 1','활동 2','정리'];
+let stage=0,S={a1:0,a2:0,sel:new Set(),q:0,qs:0};
+teamSeg('segTeam');
+$('tOpenL').onclick=()=>$('btnLinks').onclick();
+$('phc').innerHTML=Object.keys(PH).length?'사진 출처 · 위키미디어 공용: '+Object.values(PH).map(p=>`${p.name}(${p.title} / ${p.artist} / ${p.lic})`).join(' · '):'';
+$('plan').innerHTML=C.plan.map((t,i)=>`<button class="st" data-s="${i+1}">${['①','②','③','④','⑤'][i]} ${t}</button>`).join('');
+$('plan').querySelectorAll('.st').forEach(b=>b.onclick=()=>goStage(+b.dataset.s));
+function bar(){$('bar').innerHTML=NAMES.map((n,i)=>`<button class="st ${stage===i+1?'now':stage>i+1?'done':''}" data-s="${i+1}">${['①','②','③','④','⑤'][i]} ${n}</button>`).join('');
+  $('bar').querySelectorAll('.st').forEach(b=>b.onclick=()=>{const t=+b.dataset.s;if(t!==stage){stage=t;closeO('fb');render();}});}
+function tnote(i){$('tnT').textContent='👩‍🏫 '+C.notes[i][0];$('tnB').innerHTML=C.notes[i][1];openO('tn');}
+$('tOpen0').onclick=()=>tnote(0);$('tOpen').onclick=()=>tnote(stage);$('tnClose').onclick=()=>closeO('tn');
+$('btnCover').onclick=()=>show('cover');
+function goStage(n){stage=n;S={a1:0,a2:0,sel:new Set(),q:0,qs:0};C.act1.deck=shuffle(C.act1.items);teamInit();closeO('fb');show('stage');render();}
+$('btnGo').onclick=()=>goStage(1);
+$('btnPrev').onclick=()=>{if(stage>1){stage--;render();}else show('cover');};
+$('btnNext2').onclick=()=>{if(stage<5){stage++;render();}else show('cover');};
+$('btnLinks').onclick=()=>{$('lkB').innerHTML=(C.links||[]).map(l=>`<a class="lkrow" href="${l.u}" target="_blank" rel="noopener"><span class="e">${l.e}</span><span><b>${l.t} ↗</b><small>${l.d}</small></span></a>`).join('');openO('lk');};
+$('lkX').onclick=()=>closeO('lk');
+$('bvX').onclick=()=>$('bv').classList.remove('on');
+$('bv').onclick=e=>{if(e.target.id!=='bvI')$('bv').classList.remove('on');};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('bv').classList.remove('on');closeO('lk');}});
+function render(){bar();
+  const t=(stage===3||stage===4);
+  $('score').style.display=t?'flex':'none';if(t)teamChips($('score'));
+  $('turnLine').textContent=t?teamTurn():'';
+  [intro,explore,act1,act2,wrap][stage-1]();}
+function intro(){
+  $('body').innerHTML=`<p class="hd">${C.intro.hd}</p>
+   <div class="recall">${C.intro.cards.map(r=>`<button class="rc" style="--cc:${r.c}"><span class="in">
+    <span class="f front">${r.p&&PH[r.p]?`<img src="${PH[r.p].data}" alt="">`:`<span>${r.e}</span>`}${r.t}<small style="font-size:.5em;opacity:.85">눌러서 확인</small></span>
+    <span class="f back2">${r.d}</span></span></button>`).join('')}</div>
+   <div class="qbox">💭 ${C.intro.q}</div>`;
+  document.querySelectorAll('.rc').forEach(c=>c.onclick=()=>{c.classList.toggle('open');beep('tick');});
+}
+function explore(){
+  const E=C.explore;
+  $('body').innerHTML=`<p class="hd">${E.hd}</p>
+   <div class="exp">${E.cards.map(c=>`<article class="ec" style="--cc:${c.c}">
+     ${c.p&&PH[c.p]?`<img src="${PH[c.p].data}" alt="" data-ph="${c.p}">`:`<div class="num">${c.big||''}</div>`}
+     <b>${c.t}</b><p>${c.d}</p><small>${c.s}</small></article>`).join('')}</div>
+   <div class="expq"><b>💬 자료를 보고 이야기해 봐요</b><ul>${E.qs.map(q=>`<li>${q}</li>`).join('')}</ul></div>
+   <button class="howbtn" id="how">📋 이렇게 해 봐요 — ${E.method.n}</button>`;
+  document.querySelectorAll('.ec img').forEach(im=>im.onclick=()=>{const p=PH[im.dataset.ph];
+    $('bvI').src=p.data;$('bvT').textContent=p.name;
+    $('bvS').textContent=`${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on');});
+  $('how').onclick=()=>{const m=E.method;
+    $('lkB').innerHTML=`<div style="text-align:left"><b style="font-family:var(--display);font-size:1.2em">${m.e} ${m.n}</b>
+      <p style="color:var(--soft)">${m.type} · ${m.time} · 준비물: ${m.need}</p>
+      <p>${m.goal}</p>${m.steps.map(x=>`<div class="lkrow" style="cursor:default">${x}</div>`).join('')}
+      <p style="background:#FFF4D6;color:#1F2A44;border-radius:12px;padding:10px 14px;margin-top:10px">💡 ${m.tip}</p></div>`;
+    openO('lk');};
+}
+function act1(){
+  const it=C.act1.deck[S.a1];
+  $('body').innerHTML=`<p class="hd">${C.act1.ask}</p>
+   <div class="card1">${it.p&&PH[it.p]?`<img class="cphoto" src="${PH[it.p].data}" alt="" data-ph="${it.p}">`:`<div class="e">${it.e}</div>`}<div class="x">${it.x}</div></div>
+   <div class="bins" style="--n:${C.act1.bins.length}">${C.act1.bins.map((b,i)=>`<button class="bin" data-k="${b.k}" style="--cc:${b.c}"><span class="e">${b.e}</span><span class="n">${b.n}</span></button>`).join('')}</div>`;
+  document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>pick1(b));
+  const im=document.querySelector('.cphoto');
+  if(im)im.onclick=()=>{const p=PH[im.dataset.ph];$('bvI').src=p.data;$('bvT').textContent=p.name;
+    $('bvS').textContent=`${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on');};
+}
+function pick1(btn){
+  const it=C.act1.deck[S.a1],ok=btn.dataset.k===it.k,bin=C.act1.bins.find(b=>b.k===it.k);
+  if(ok)teamAdd(1);beep(ok?'ok':'no');
+  document.querySelectorAll('.bin').forEach(b=>{b.disabled=true;if(b.dataset.k===it.k)b.classList.add('lit');});
+  teamChips($('score'));
+  $('fbP').style.setProperty('--pc',bin.c);
+  $('fbT').textContent=ok?'맞아요! 🎉':`${bin.e} ${bin.n}이에요`;
+  $('fbW').textContent=it.w;$('fbF').style.display='none';
+  $('fbNext').textContent=S.a1+1<C.act1.deck.length?'다음 카드':'활동 2로 넘어가기';
+  $('fbNext').onclick=()=>{closeO('fb');teamNext();if(S.a1+1<C.act1.deck.length){S.a1++;act1();render();}else{stage=4;render();}};
+  openO('fb');$('fbNext').focus();
+}
+function act2(){
+  const p=C.act2.problems[S.a2];S.sel=new Set();
+  $('body').innerHTML=`<p class="hd">${C.act2.ask} <small style="font-size:.55em;color:var(--soft)">(알맞은 것을 모두 고르세요)</small></p>
+   <div class="prob" style="--pc2:${p.c}"><div class="e">${p.e}</div><div><b>${p.t}</b><p>${p.p}</p></div></div>
+   <div class="ways">${shuffle(C.act2.options).map(o=>`<button class="way" data-k="${o.k}" aria-pressed="false"><span>${o.e}</span>${o.n}</button>`).join('')}</div>
+   <button class="big-btn" id="chk" style="font-size:clamp(24px,2.2vw,34px);padding:12px 36px">확인하기</button>`;
+  document.querySelectorAll('.way').forEach(b=>b.onclick=()=>{const k=b.dataset.k;
+    if(S.sel.has(k)){S.sel.delete(k);b.setAttribute('aria-pressed','false');}else{S.sel.add(k);b.setAttribute('aria-pressed','true');}beep('tick');});
+  $('chk').onclick=()=>{
+    const ok=p.a.every(k=>S.sel.has(k))&&[...S.sel].every(k=>p.a.includes(k));
+    document.querySelectorAll('.way').forEach(b=>{b.disabled=true;
+      if(p.a.includes(b.dataset.k))b.classList.add('right');else if(S.sel.has(b.dataset.k))b.classList.add('miss');});
+    if(ok)teamAdd(1);teamChips($('score'));beep(ok?'ok':'no');$('chk').style.display='none';
+    $('fbP').style.setProperty('--pc',p.c);
+    $('fbT').textContent=ok?'모두 찾았어요! 🎉':'알맞은 것을 확인해 봐요';
+    $('fbW').innerHTML=p.a.map(k=>{const o=C.act2.options.find(x=>x.k===k);return `${o.e} ${o.n}`;}).join('<br>');
+    $('fbF').style.display='block';$('fbF').innerHTML=`<b style="font-family:var(--display)">함께 생각해요</b><br>${p.talk}`;
+    $('fbNext').textContent=S.a2+1<C.act2.problems.length?'다음 문제':'정리로 넘어가기';
+    $('fbNext').onclick=()=>{closeO('fb');teamNext();if(S.a2+1<C.act2.problems.length){S.a2++;act2();render();}else{stage=5;render();}};
+    openO('fb');$('fbNext').focus();};
+}
+function wrap(){
+  S.q=0;S.qs=0;
+  $('body').innerHTML=`<p class="hd">오늘 배운 내용을 정리해 볼까요?</p>
+   <div class="sum">${C.summary.map(b=>`<div class="sumbox" style="--cc:${b.c}"><b>${b.t}</b><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}</div>
+   <button class="big-btn" id="toQuiz" style="font-size:clamp(24px,2.2vw,34px);padding:12px 36px">확인 문제 풀기</button>`;
+  $('toQuiz').onclick=quiz;
+}
+function quiz(){
+  const q=C.quiz[S.q],ord=shuffle(q.o.map((_,i)=>i));
+  $('body').innerHTML=`<p class="hd">확인 문제 ${S.q+1} / ${C.quiz.length}</p>
+   <div class="card1"><div class="x" style="text-align:center">${q.q}</div></div>
+   <div class="opts2">${ord.map((o,n)=>`<button class="opt2" data-o="${o}">${n+1}. ${q.o[o]}</button>`).join('')}</div>`;
+  document.querySelectorAll('.opt2').forEach(b=>b.onclick=()=>{
+    const ok=+b.dataset.o===q.a;if(ok)S.qs++;beep(ok?'ok':'no');
+    document.querySelectorAll('.opt2').forEach(x=>{x.disabled=true;if(+x.dataset.o===q.a)x.classList.add('right');});
+    if(!ok)b.classList.add('wrong');
+    $('fbP').style.setProperty('--pc',ok?'var(--ok)':'var(--no)');
+    $('fbT').textContent=ok?'정답이에요! 🎉':'정답을 확인해 봐요';$('fbW').textContent=q.w;$('fbF').style.display='none';
+    $('fbNext').textContent=S.q+1<C.quiz.length?'다음 문제':'마무리하기';
+    $('fbNext').onclick=()=>{closeO('fb');if(S.q+1<C.quiz.length){S.q++;quiz();}else final();};
+    openO('fb');$('fbNext').focus();});
+}
+function final(){
+  beep('win');
+  $('body').innerHTML=`<p class="hd">${C.final.hd}</p>
+   <div class="promise">${C.final.lines.map(t=>`<div>${t}</div>`).join('')}</div>
+   <p class="lead" style="font-size:clamp(22px,2.1vw,30px)">확인 문제 ${C.quiz.length}문제 중 ${S.qs}문제를 맞혔어요. ${teamWinnerText()}</p>
+   <div class="scores" style="justify-content:center">${teamPodium()}</div>`;
+}
+
+
+wireTools();</script><script>
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});var n=document.getElementById('relNote');if(n)n.style.display='none';}})();
+</script></body></html>

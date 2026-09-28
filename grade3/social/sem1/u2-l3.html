@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🧒 나에게 있었던 중요한 일을 떠올려 볼까요</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.stagebar{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.st{font-family:var(--display);cursor:pointer;font-size:clamp(19px,1.8vw,26px);padding:6px 14px;border-radius:999px;border:3px solid var(--line);background:var(--paper);color:var(--soft)}
+.st.now{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.st.done{border-color:var(--ok);color:var(--ok)}
+.goal{font-family:var(--display);font-size:clamp(20px,1.9vw,28px);color:var(--soft);text-align:center;margin:4px 0 0}
+.body{flex:1;min-height:0;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:clamp(10px,1.6vh,20px);overflow-y:auto;padding:6px 0}
+.hd{font-family:var(--display);font-size:clamp(30px,3.3vw,48px);text-align:center;margin:0}
+.expq ul,.sumbox ul{margin:4px 0 0;padding-left:1.2em}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:6px}
+.tnote{border:3px solid #6A4FC9;color:#6A4FC9;background:var(--paper);border-radius:16px;padding:8px 18px;font-size:clamp(19px,1.8vw,25px)}
+.recall{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;width:min(1200px,96vw)}
+.rc{position:relative;min-height:clamp(170px,23vh,250px);border:0;background:none;perspective:1200px;font-family:var(--body)}
+.rc .in{position:absolute;inset:0;transition:transform .5s;transform-style:preserve-3d}
+.rc.open .in{transform:rotateY(180deg)}
+.rc .f{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;padding:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center}
+.rc .front{background:var(--cc);color:#fff;font-family:var(--display);font-size:clamp(25px,2.6vw,36px)}
+.rc .front span{font-size:clamp(46px,4.6vw,68px)}
+.rc .front img,.card1 img.cphoto{border-radius:14px;object-fit:cover}
+.rc .front img{width:100%;flex:1 1 0;min-height:0;height:auto;}
+.rc .front{overflow:hidden;line-height:1.2}
+.rc .front small{flex:none}
+.card1 img.cphoto{width:clamp(150px,22vw,300px);aspect-ratio:4/3;border:3px solid var(--line);cursor:zoom-in}
+.zoomhint{display:block;font-size:14px;color:var(--soft);text-align:center;margin-top:4px}
+.bigview{position:fixed;inset:0;background:rgba(8,12,22,.95);display:none;align-items:center;justify-content:center;z-index:30;padding:6px}
+.bigview.on{display:flex}
+.bigview img{max-width:98vw;max-height:88vh;border-radius:12px}
+.bigview .close{position:fixed;top:14px;right:16px;font-size:28px;border:0;border-radius:50%;width:60px;height:60px;background:rgba(255,255,255,.9);color:#1F2A44}
+.bigview .meta{position:fixed;left:0;right:0;bottom:0;padding:10px 16px 14px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;text-align:center}
+.bigview .meta b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.4vw,32px);display:block}
+.bigview .meta small{color:#dbe3f0;font-size:14px}
+.exp{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,210px),1fr));gap:14px;width:min(1250px,96vw)}
+.ec{background:var(--paper);border-radius:20px;border-top:12px solid var(--cc);padding:12px 16px;text-align:left}
+.ec img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;cursor:zoom-in;border:3px solid var(--line)}
+.ec .num{font-family:var(--display);font-size:clamp(34px,3.6vw,52px);color:var(--cc);line-height:1.1}
+.ec b{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.1vw,28px);display:block;margin-top:6px}
+.ec p{font-size:clamp(18px,1.8vw,24px);line-height:1.45;margin:4px 0 0}
+.ec small{font-size:14px;color:var(--soft);display:block;margin-top:6px}
+.expq{background:#FFF4D6;color:#1F2A44;border:4px solid #E8961E;border-radius:20px;padding:12px 20px;width:min(1250px,96vw);font-size:clamp(21px,2.1vw,30px);text-align:left}
+.expq b{font-family:var(--display);font-weight:400;display:block;margin-bottom:4px}
+.expq li{margin-bottom:4px}
+.howbtn{border:3px solid #6A4FC9;color:#6A4FC9;background:var(--paper);border-radius:16px;padding:8px 20px;font-size:clamp(19px,1.8vw,25px)}
+.lklist{display:grid;gap:12px;text-align:left;margin-bottom:18px}
+.lkrow{display:flex;gap:14px;align-items:center;background:var(--bg);border-radius:16px;padding:12px 18px;text-decoration:none;color:inherit;border:3px solid var(--line)}
+.lkrow:hover{border-color:var(--ink)}
+.lkrow .e{font-size:clamp(30px,3vw,42px)}
+.lkrow b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.2vw,30px);display:block}
+.lkrow small{color:var(--soft);font-size:clamp(17px,1.7vw,22px)}
+.rc .back2{background:var(--paper);border:5px solid var(--cc);transform:rotateY(180deg);font-size:clamp(21px,2.1vw,29px)}
+.qbox{background:#FFF4D6;color:#1F2A44;border:5px solid #E8961E;border-radius:26px;padding:clamp(16px,2.2vw,30px);width:min(1100px,94vw);text-align:center;font-family:var(--display);font-size:clamp(28px,3.1vw,46px);line-height:1.4}
+.card1{width:min(1100px,92vw);background:var(--paper);border-radius:26px;border:4px solid var(--line);padding:clamp(16px,2.2vw,32px);display:flex;gap:clamp(16px,3vw,36px);align-items:center;justify-content:center}
+.card1 .e{font-size:clamp(60px,7vw,110px);line-height:1;flex:none}
+.card1 .x{font-family:var(--display);font-size:clamp(28px,3.4vw,50px);line-height:1.35}
+.bins{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:clamp(10px,1.6vw,20px);width:min(1200px,96vw)}
+.bin{border:0;background:var(--cc);color:#fff;border-radius:40px 40px 18px 18px;padding:clamp(14px,2vh,24px) 10px;display:flex;flex-direction:column;align-items:center;gap:4px;box-shadow:0 7px 0 rgba(0,0,0,.22)}
+.bin .e{font-size:clamp(38px,4.4vw,66px);line-height:1}
+.bin .n{font-size:clamp(24px,2.6vw,38px);text-align:center}
+.bin .k{position:absolute;left:12px;bottom:8px;font-size:18px;opacity:.8}
+.bin:active{transform:translateY(4px);box-shadow:0 3px 0 rgba(0,0,0,.22)}
+.bin.lit{outline:6px solid var(--ink);outline-offset:4px}
+.prob{width:min(1150px,95vw);background:var(--paper);border:5px solid var(--pc2);border-radius:24px;padding:clamp(12px,1.8vw,24px);display:flex;gap:18px;align-items:center}
+.prob .e{font-size:clamp(44px,4.6vw,70px)}
+.prob b{font-family:var(--display);font-weight:400;font-size:clamp(26px,2.8vw,40px);display:block;color:var(--pc2)}
+.prob p{margin:4px 0 0;font-size:clamp(20px,2.1vw,30px)}
+.ways{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;width:min(1200px,96vw)}
+.way{border:4px solid var(--line);background:var(--paper);border-radius:18px;padding:10px 12px;font-family:var(--body);font-size:clamp(19px,1.9vw,26px);text-align:center;min-height:clamp(86px,11vh,132px);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.way span{font-size:clamp(28px,2.8vw,40px)}
+.way[aria-pressed="true"]{border-color:var(--ink);background:var(--bg);box-shadow:inset 0 0 0 4px var(--ink)}
+.way.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.way.miss{border-color:var(--no);background:color-mix(in srgb,var(--no) 12%,var(--paper))}
+.sum{display:grid;grid-template-columns:1fr 1fr;gap:16px;width:min(1150px,95vw)}
+.sumbox{background:var(--paper);border-radius:22px;border-top:14px solid var(--cc);padding:16px 22px}
+.sumbox b{font-family:var(--display);font-weight:400;font-size:clamp(25px,2.6vw,36px);display:block;margin-bottom:6px}
+.sumbox li{font-size:clamp(21px,2.1vw,29px);line-height:1.5;margin-bottom:4px}
+.opts2{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(1000px,94vw)}
+.opt2{border:4px solid var(--line);background:var(--paper);border-radius:18px;padding:12px 18px;font-family:var(--body);font-size:clamp(23px,2.4vw,33px)}
+.opt2.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.opt2.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 14%,var(--paper))}
+.fix{background:var(--bg);border-radius:18px;padding:12px 20px;font-size:clamp(23px,2.3vw,32px);margin:0 auto 18px;max-width:34em;text-align:left}
+.promise{width:min(1100px,94vw);display:grid;gap:10px}
+.promise div{background:var(--paper);border-radius:16px;padding:12px 20px;font-size:clamp(23px,2.2vw,32px);border-left:14px solid var(--ok)}
+.tpanel{text-align:left}
+.tpanel h3{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.2vw,32px);margin:14px 0 6px;color:#6A4FC9}
+.tpanel li,.tpanel p{font-size:clamp(20px,1.9vw,26px);line-height:1.55}
+
+/* 크롬북(가로 1366×680)처럼 낮은 화면: 한 화면에 들어오도록 조금 촘촘하게 */
+@media (max-height:760px) and (min-width:900px){
+ .screen{padding:10px 20px}
+ .body{gap:8px;padding:2px 0}
+ .hd{font-size:clamp(26px,2.6vw,38px)}
+ .goal{font-size:clamp(18px,1.6vw,24px);margin:0}
+ .ec{padding:8px 12px;border-top-width:9px}
+ .ec img{aspect-ratio:16/9}
+ .ec .num{font-size:clamp(28px,2.8vw,42px)}
+ .ec p{font-size:clamp(17px,1.5vw,22px)}
+ .expq{padding:8px 16px;font-size:clamp(19px,1.7vw,25px)}
+ .expq li{margin-bottom:0}
+ .rc{min-height:clamp(150px,26vh,210px)}
+ .card1{padding:12px 20px}
+ .card1 .e{font-size:clamp(50px,5vw,80px)}
+ .card1 .x{font-size:clamp(25px,2.6vw,40px)}
+ .bin{padding:10px 8px}
+ .bin .e{font-size:clamp(32px,3.4vw,50px)}
+ .ways{grid-template-columns:repeat(5,1fr);gap:8px}
+ .way{min-height:58px;padding:6px 10px;flex-direction:row;gap:8px;font-size:clamp(18px,1.6vw,23px)}
+ .way span{font-size:clamp(24px,2.2vw,32px)}
+ .prob{padding:8px 16px}
+ .prob .e{font-size:clamp(36px,3.6vw,54px)}
+ .prob b{font-size:clamp(23px,2.3vw,33px)}
+ .prob p{font-size:clamp(18px,1.8vw,26px)}
+ .sumbox{padding:10px 16px}
+ .sumbox li{font-size:clamp(19px,1.7vw,25px);margin-bottom:2px}
+ .qbox{padding:12px 20px}
+ .promise div{padding:8px 16px;font-size:clamp(20px,1.9vw,28px)}
+ .opt2{padding:8px 14px;font-size:clamp(21px,2vw,29px)}
+ .foot{padding-top:2px}
+}
+@media (max-width:860px){.recall,.ways,.sum,.opts2,.bins{grid-template-columns:1fr 1fr}.way{min-height:72px;flex-direction:row;gap:8px}}
+
+body,h1,h2,h3,h4,p,li,span,div,button,a,td,th,small,b,i{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:16px}
+.creditbar .madeby{width:100%}
+.tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(20px,2vw,26px);
+  text-decoration:none;color:inherit;border:3px solid var(--line,#ccc);background:var(--paper,#fff);border-radius:999px;padding:8px 22px}
+.tolist.on{display:inline-flex}
+.rel.on{display:grid!important}
+.madeby{font-size:16px;color:var(--soft,#666);opacity:.85;text-align:center;font-family:var(--body,sans-serif)}
+
+h1,h2,h3,h4,.title,.hd,.qt,.x,.n,.nm,.big,.lead,.sit,.ask,.qtext,.front .n,.slot b,.dc h3,.lk b,.rl b{text-wrap:balance}
+p,li,small,.d,.ex,.why,.blurb,.ask2,.sub,.msg,.notice,.fix,.retry div,.opt,.opt2,.way,.mbox .n,.dc p,.lk small,.rl small{text-wrap:pretty}
+</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style></head><body>
+
+<section id="cover" class="screen on center-col">
+  <h1 class="title">🧒 나에게 있었던 중요한 일을 떠올려 볼까요</h1>
+  <p class="lead">3학년 1학기 사회 2단원 · 3차시</p>
+  <div class="qbox" style="font-size:clamp(25px,2.6vw,38px)">학습 문제<br>나에게 있었던 중요한 일을 떠올려 봅시다.</div>
+  <div class="stagebar" style="justify-content:center" id="plan"></div>
+  <div class="row"><span class="row-label">활동 단위</span><div class="seg" id="segTeam"></div></div>
+  <div class="row"><button class="big-btn" id="btnGo">수업 시작</button><button class="tnote" id="tOpen0">👩‍🏫 교사 안내</button><button class="tnote" id="tOpenL" style="border-color:#2F74E0;color:#2F74E0">📰 자료 보기</button></div>
+  <p class="lead" id="phc" style="font-size:15px"></p>
+<div class="creditbar"><a class="tolist" data-topic href="u2-time-data.html">📊 ⏳ 시간의 흐름 자료실</a><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div></section>
+<section id="stage" class="screen">
+  <div class="topbar">
+    <div class="stagebar" id="bar"></div>
+    <div class="tools"><div class="scores" id="score" style="display:none"></div><button class="tool" id="btnLinks">📰 자료</button><button class="tool" data-sound>🔊</button><button class="tool" data-full>⛶</button><button class="tool" id="btnCover">🏠</button></div>
+  </div>
+  <p class="goal" id="turnLine" style="min-height:1.2em"></p>
+  <p class="goal">나에게 있었던 중요한 일을 떠올려 봅시다.</p>
+  <div class="body" id="body"></div>
+  <div class="foot">
+    <button class="tnote" id="tOpen">👩‍🏫 교사 안내</button>
+    <div class="row"><button class="ghost-btn" id="btnPrev">← 이전</button><button class="big-btn" id="btnNext2" style="font-size:clamp(24px,2.2vw,34px);padding:12px 30px">다음 →</button></div>
+  </div>
+</section>
+<div class="overlay" id="fb"><div class="panel" id="fbP"><h2 id="fbT"></h2><p class="why" id="fbW"></p><div class="fix" id="fbF"></div><button class="big-btn" id="fbNext">계속하기</button></div></div>
+<div class="bigview" id="bv"><button class="close" id="bvX" aria-label="닫기">✕</button><img id="bvI" alt=""><div class="meta"><b id="bvT"></b><small id="bvS"></small></div></div>
+<div class="overlay" id="lk"><div class="panel" style="--pc:#2F74E0"><h2>📰 함께 보면 좋은 자료</h2><div class="lklist" id="lkB"></div><button class="big-btn" id="lkX">닫기</button></div></div>
+<div class="overlay" id="tn"><div class="panel tpanel" style="--pc:#6A4FC9"><h2 style="text-align:center" id="tnT"></h2><div id="tnB"></div><p style="text-align:center"><button class="big-btn" id="tnClose">닫기</button></p></div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+/* 활동 단위(반·개별·짝·모둠·분단·번호순·기타) 공통 기능 */
+let MODE='class',TEAMS=4,LINES=4,CLASSN=25,ETCNOTE='',TURN=0,SCORES=[];
+const MODES=[['class','🏫 반'],['solo','🙋 개별'],['pair','👫 짝'],['group','👨‍👩‍👧 모둠'],['line','🪑 분단'],['number','🔢 번호순'],['etc','✏️ 기타']];
+function teamSeg(id){
+  const host=$(id); if(!host) return;
+  host.classList.remove('seg');
+  host.style.cssText='display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;border:0;background:none';
+  host.innerHTML=`<span class="seg" id="${id}-m">${MODES.map(([k,l])=>`<button data-m="${k}" aria-pressed="${MODE===k}">${l}</button>`).join('')}</span><span id="${id}-sub"></span>`;
+  host.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{MODE=b.dataset.m;teamSeg(id);});
+  const sb=$(id+'-sub'); sb.style.cssText='display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap';
+  const numInput=(sid,val,max)=>`<input id="${sid}" type="number" min="2" max="${max}" value="${val}" style="width:4.5em;font-size:clamp(20px,2vw,28px);padding:6px 10px;border:3px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font-family:var(--body)">`;
+  if(MODE==='group'){
+    sb.innerHTML=`<span class="row-label">몇 모둠</span><span class="seg" id="${id}-n">${[2,3,4,5,6].map(v=>`<button data-n="${v}" aria-pressed="${TEAMS===v}">${v}</button>`).join('')}</span>`;
+    sb.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{TEAMS=+b.dataset.n;teamSeg(id);});
+  }else if(MODE==='line'){
+    sb.innerHTML=`<span class="row-label">몇 분단</span><span class="seg" id="${id}-l">${[2,3,4,5,6].map(v=>`<button data-l="${v}" aria-pressed="${LINES===v}">${v}</button>`).join('')}</span>`;
+    sb.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{LINES=+b.dataset.l;teamSeg(id);});
+  }else if(MODE==='number'){
+    sb.innerHTML=`<span class="row-label">우리 반</span>${numInput(id+'-c',CLASSN,40)}<span class="row-label">명 · 1번부터 차례로 답해요</span>`;
+    $(id+'-c').oninput=()=>{CLASSN=Math.max(2,+$(id+'-c').value||25);};
+  }else if(MODE==='etc'){
+    sb.innerHTML=`<input id="${id}-e" type="text" placeholder="예: 두 모둠씩 짝지어 대결" value="${ETCNOTE.replace(/"/g,'&quot;')}" style="width:min(22em,60vw);font-size:clamp(19px,1.9vw,26px);padding:8px 14px;border:3px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink);font-family:var(--body)">
+      <span class="row-label" style="font-size:clamp(17px,1.6vw,22px);color:var(--soft)">선생님이 방법을 설명한 뒤 '다음'으로 진행해요</span>`;
+    $(id+'-e').oninput=()=>{ETCNOTE=$(id+'-e').value;};
+  }else{
+    const t={class:'반 전체가 함께 답하고 점수를 모아요.',solo:'각자 생각하고 답해요. 점수는 매기지 않아요.',pair:'짝과 의논해서 답해요. 점수는 매기지 않아요.'}[MODE];
+    sb.innerHTML=`<span class="row-label" style="font-size:clamp(18px,1.7vw,23px);color:var(--soft)">${t}</span>`;
+  }
+}
+function unitName(){return MODE==='line'?'분단':'모둠';}
+function teamCount(){
+  if(MODE==='group')return TEAMS;
+  if(MODE==='line')return LINES;
+  return 1;
+}
+function usesTeams(){return MODE==='group'||MODE==='line';}
+function noScore(){return MODE==='solo'||MODE==='pair'||MODE==='etc';}
+function teamInit(){SCORES=Array(teamCount()).fill(0);TURN=0;}
+function teamAdd(n){if(noScore())return;SCORES[TURN]=(SCORES[TURN]||0)+n;}
+function teamNext(){
+  if(usesTeams())TURN=(TURN+1)%teamCount();
+  else if(MODE==='number')TURN=(TURN+1)%Math.max(2,CLASSN);
+}
+function teamChips(el){
+  if(!el)return;el.className='scores';
+  if(noScore()){el.innerHTML='';el.style.display='none';return;}
+  el.style.display='flex';
+  if(usesTeams()){el.innerHTML=SCORES.map((s,i)=>`<span class="chip ${i===TURN?'now':''}">${i+1}${unitName()} ${s}</span>`).join('');}
+  else el.innerHTML=`<span class="chip now">⭐ ${SCORES[0]}점</span>`;
+}
+function teamTurn(){
+  if(MODE==='solo')return '🙋 각자 생각해 보세요';
+  if(MODE==='pair')return '👫 짝과 의논해 보세요';
+  if(MODE==='class')return '🏫 반 전체가 함께 답해요';
+  if(MODE==='number')return `🔢 지금은 ${TURN+1}번 차례예요`;
+  if(MODE==='etc')return ETCNOTE?('✏️ '+ETCNOTE):'✏️ 선생님 안내에 따라 활동해요';
+  return `🙋 지금은 ${TURN+1}${unitName()} 차례예요`;
+}
+function teamPodium(){
+  if(noScore())return '';
+  if(!usesTeams())return `<span class="chip win">⭐ ${SCORES[0]}점</span>`;
+  const mx=Math.max(...SCORES);
+  return SCORES.map((s,i)=>`<span class="chip ${s===mx?'win':''}">${i+1}${unitName()} ${s}점</span>`).join('');
+}
+function teamWinnerText(){
+  if(MODE==='solo')return '각자 푼 문제를 공책과 맞춰 봐요.';
+  if(MODE==='pair')return '짝과 함께 잘 해냈어요.';
+  if(MODE==='etc')return '모두 수고했어요.';
+  if(!usesTeams())return `우리 반 점수는 ${SCORES[0]}점이에요.`;
+  const mx=Math.max(...SCORES),w=SCORES.map((s,i)=>s===mx?i+1:null).filter(Boolean);
+  return `${w.join(', ')}${unitName()}이 가장 많은 점수를 얻었어요!`;
+}
+
+
+const C={"photos": {}, "links": [{"e": "🗄️", "t": "국가기록원", "d": "기록을 모아 보관하는 곳 · 어린이 눈높이 기록 이야기", "u": "https://www.archives.go.kr/"}, {"e": "🏫", "t": "에듀넷·티-클리어", "d": "3학년 사회 교과 자료 찾아보기", "u": "https://www.edunet.net/"}], "title": "🧒 나에게 있었던 중요한 일을 떠올려 볼까요", "sub": "3학년 1학기 사회 2단원 · 3차시", "goal": "나에게 있었던 중요한 일을 떠올려 봅시다.", "plan": ["도입 5분", "자료 탐구 10분", "활동 1 · 중요한 일 기록하기 10분", "활동 2 · 옛날 사진과 지금의 나 10분", "정리 5분"], "intro": {"hd": "태어났을 때의 나를 기억하나요?", "q": "오늘은 과거의 나를 떠올리는 시간을 가져 봐요.", "cards": [{"e": "👶", "c": "#E0506B", "t": "교과서 75쪽 아기 그림은 어떤 모습일까요?", "d": "아기가 태어난 직후의 모습을 그린 거예요."}, {"e": "🖼️", "c": "#2F74E0", "t": "태어났을 때 모습을 기억하나요?", "d": "기억은 못 하지만, 그때 찍은 사진이 남아 있어요."}, {"e": "📏", "c": "#1F9E63", "t": "2학년 때와 달라진 점은 무엇인가요?", "d": "키가 더 커졌어요. 학년이 올라갔어요."}]}, "explore": {"hd": "주현이에게는 어떤 일이 있었을까요?", "method": {"k": "compare", "e": "⚖️", "n": "옛날·오늘날 짝 비교", "c": "#6A4FC9", "time": "10분", "type": "자료 다루기", "goal": "옛날의 나와 지금의 나를 나란히 놓고 달라진 점과 그대로인 점을 찾아요.", "need": "내 옛날 사진(없으면 기억나는 모습을 그림이나 글로 대신)", "steps": ["① 옛날 사진을 보고 언제, 어디에서 찍었는지 말해요.", "② 겉모습이 달라진 점을 찾아 적어요.", "③ 지금은 할 수 있게 된 일을 적어요.", "④ 그대로인 점도 1가지 찾아 적어요."], "tip": "“그대로인 점”을 꼭 찾게 하면 변화만 보지 않고 이어짐도 보게 됩니다. 사진은 강요하지 않습니다.", "when": "3차시 과거와 현재의 내 모습 비교하기"}, "cards": [{"c": "#E0506B", "big": "👶", "t": "2017년", "d": "태어났습니다.", "s": "교과서 75쪽"}, {"c": "#E8961E", "big": "🐱", "t": "2022년", "d": "고양이를 입양했습니다.", "s": "교과서 75쪽"}, {"c": "#2F74E0", "big": "🎒", "t": "2024년", "d": "초등학교에 입학했습니다.", "s": "교과서 75쪽"}, {"c": "#1F9E63", "big": "🥇", "t": "2025년", "d": "태권도 대회에서 금메달을 땄습니다.", "s": "교과서 75쪽"}, {"c": "#6A4FC9", "big": "⭐", "t": "중요한 일", "d": "내 일상의 변화에 영향을 주거나 기억에 남는 일이에요.", "s": "교과서 75쪽"}], "qs": ["주현이에게 일어난 일을 순서대로 말해 볼까요? 주현이의 모습은 어떻게 변했나요?", "주현이에게 일어난 일들의 공통점은 무엇일까요?"]}, "act1": {"ask": "내가 겪은 중요한 일은 어떻게 남길까요?", "bins": [{"k": "tool", "n": "무엇으로 남길까요?", "e": "📷", "c": "#2F74E0"}, {"k": "write", "n": "무엇을 함께 쓸까요?", "e": "📝", "c": "#E8961E"}], "items": [{"k": "tool", "e": "📸", "x": "카메라로 사진을 찍어요.", "w": "사진으로 남길 수 있어요."}, {"k": "tool", "e": "🎥", "x": "휴대 전화로 영상을 찍어요.", "w": "영상으로 남길 수 있어요."}, {"k": "tool", "e": "📓", "x": "일기를 써요.", "w": "일기와 같이 글을 써서 남길 수 있어요."}, {"k": "tool", "e": "✉️", "x": "편지를 써요.", "w": "편지 같은 글로도 남길 수 있어요."}, {"k": "write", "e": "📅", "x": "그 일이 일어난 날짜", "w": "그 일이 일어난 날짜를 쓰는 것이 중요해요."}, {"k": "write", "e": "📍", "x": "그 일이 일어난 장소", "w": "그 일이 일어난 장소를 쓰는 것이 좋아요."}]}, "act2": {"ask": "옛날 사진과 지금의 나를 비교해요", "options": [{"k": "date", "e": "📅", "n": "사진을 찍은 날짜"}, {"k": "place", "e": "📍", "n": "사진을 찍은 장소"}, {"k": "tall", "e": "📏", "n": "키가 자랐어요"}, {"k": "hair", "e": "💇", "n": "머리 모양이 달라졌어요"}, {"k": "clothes", "e": "👕", "n": "옷차림이 달라졌어요"}, {"k": "bike", "e": "🚲", "n": "자전거를 탈 수 있게 됐어요"}, {"k": "swim", "e": "🏊", "n": "수영을 잘할 수 있게 됐어요"}, {"k": "tkd", "e": "🥋", "n": "태권도를 배워 대회에 나갈 수 있게 됐어요"}], "problems": [{"e": "🖼️", "t": "언제, 어디에서 찍은 사진인가요?", "p": "옛날 사진을 볼 때 먼저 살펴볼 것을 모두 골라요.", "c": "#2F74E0", "a": ["date", "place"], "talk": "교과서 77쪽 친구는 사진을 보고 무엇을 깨달았나요? (언제 자전거를 탈 수 있게 되었는지)"}, {"e": "🧍", "t": "내 겉모습은 어떻게 달라졌나요?", "p": "겉모습이 달라진 점을 모두 골라요.", "c": "#E0506B", "a": ["tall", "hair", "clothes"], "talk": "내 모습 중에 변하지 않은 것도 있나요?"}, {"e": "💪", "t": "현재의 나는 무엇을 할 수 있게 됐나요?", "p": "할 수 있게 된 일을 모두 골라요.", "c": "#1F9E63", "a": ["bike", "swim", "tkd"], "talk": "여러분은 무엇을 할 수 있게 되었나요? 앞으로는 어떻게 달라질까요?"}]}, "summary": [{"t": "🧒 과거와 달라진 내 모습", "c": "#E0506B", "items": ["현재의 나는 과거의 나와 달라요. 겉모습이 변했고, 아는 것과 할 수 있는 일이 많아졌어요.", "내가 겪은 중요한 일은 내 일상의 변화에 영향을 주기도 해요."]}, {"t": "📝 중요한 일 기록하기", "c": "#2F74E0", "items": ["내가 겪은 중요한 일들은 사진, 영상, 글 등으로 남길 수 있어요.", "그 일이 일어난 날짜와 장소 등을 쓰고, 일이 일어난 순서대로 기록하는 것이 좋아요."]}], "quiz": [{"q": "주현이에게 있었던 일 가운데 가장 먼저 일어난 일은 무엇일까요?", "o": ["2017년에 태어났습니다.", "2022년에 고양이를 입양했습니다.", "2024년에 초등학교에 입학했습니다.", "2025년에 태권도 대회에서 금메달을 땄습니다."], "a": 0, "w": "주현이의 이야기는 2017년에 태어나면서 시작돼요."}, {"q": "주현이가 초등학교에 입학한 해는 언제일까요?", "o": ["2024년", "2017년", "2022년", "2025년"], "a": 0, "w": "주현이는 2024년에 초등학교에 입학했어요."}, {"q": "내가 겪은 중요한 일은 내 일상의 ○○에 영향을 주기도 합니다. ○○에 알맞은 말은?", "o": ["변화", "날씨", "숙제", "급식"], "a": 0, "w": "내가 겪은 중요한 일은 내 일상의 변화에 영향을 주기도 해요."}, {"q": "내가 겪은 중요한 일을 남길 때 좋은 방법은 무엇일까요?", "o": ["일이 일어난 순서대로 기록해요.", "생각나는 대로 섞어서 기록해요.", "날짜와 장소는 빼고 기록해요.", "기록하지 않고 기억만 해요."], "a": 0, "w": "그 일이 일어난 날짜와 장소 등을 쓰고, 일이 일어난 순서대로 기록하는 것이 좋아요."}, {"q": "현재의 나는 과거의 나와 비교해 어떻게 달라졌을까요?", "o": ["아는 것과 할 수 있는 일이 많아졌어요.", "아는 것이 모두 사라졌어요.", "할 수 있는 일이 줄어들었어요.", "겉모습이 전혀 변하지 않았어요."], "a": 0, "w": "현재의 나는 겉모습이 변했고, 아는 것과 할 수 있는 일이 많아졌어요."}], "final": {"hd": "🧒 오늘의 정리", "lines": ["현재의 나는 과거의 나와 달라요. 아는 것과 할 수 있는 일이 많아졌어요.", "내가 겪은 중요한 일은 내 일상의 변화에 영향을 주기도 해요.", "중요한 일은 날짜와 장소 등을 쓰고, 일이 일어난 순서대로 기록하면 좋아요.", "다음 시간에는 우리 가족에게 있었던 중요한 일을 살펴봐요."]}, "notes": {"0": ["수업 준비", "<h3>학습 목표<\/h3><p>나에게 있었던 중요한 일들을 떠올려 시간 순서대로 정리하고, 과거와 달라진 내 모습을 인식할 수 있다. (지도서 143쪽)<\/p><p>학습 문제: 나에게 있었던 중요한 일을 떠올려 봅시다.<\/p><h3>흐름<\/h3><ul><li>도입 5분 → 자료 탐구 10분 → 활동 1 10분 → 활동 2 10분 → 정리 5분<\/li><li>교과서 75~77쪽 · 지도서 143~149쪽 · 수업 기법: 순서대로 나타내기, 비교하기(화면 방법 카드: 옛날·오늘날 짝 비교)<\/li><\/ul><h3>준비물·활동지<\/h3><ul><li>내 옛날 사진(교과서 77쪽 준비물). 사진이나 일기를 미리 가져오도록 안내하면 좋음(지도서 144쪽 「지도 꿀 Tip」)<\/li><li>활동지 「내 인생의 결정적 한 장면 그리기」(지도서 148쪽, 풀이 149쪽)<\/li><\/ul><h3>성취 기준<\/h3><p>[4사02-01] 일상 속에서 시간의 흐름을 경험할 수 있는 사례를 살펴보고, 이를 바탕으로 역사의 시간 개념을 이해한다.<\/p><h3>성취 수준<\/h3><ul><li><b>A<\/b> 일상 속에서 시간의 흐름을 경험할 수 있는 사례를 분석하여 역사의 시간 개념을 탐구하고 시간의 흐름 속에서 자신의 위치를 확인할 수 있다.<\/li><li><b>B<\/b> 일상 속에서 시간의 흐름을 경험할 수 있는 사례를 찾아보고 이를 바탕으로 역사의 시간 개념을 설명할 수 있다.<\/li><li><b>C<\/b> 일상 속에서 시간의 흐름을 경험할 수 있는 사례를 찾을 수 있다.<\/li><\/ul><h3>주제 「지도상의 유의점」 (지도서 135쪽)<\/h3><ul><li>역사적 시간 개념을 설명할 때는 학생들이 직접 경험한 일상 사례나 학생들이 공감할 수 있는 사례를 활용하도록 한다.<\/li><li>일상이 드러나는 일기, 사진첩 등 친숙한 소재를 활용하여 시간의 흐름을 경험해 보게 한다.<\/li><li>학생이 자기와 가족, 학교의 중요한 일을 과거와 현재의 거리감에 따라 배열할 수 있도록 지도하되 엄격하게 평가하지 않도록 유의한다.<\/li><\/ul><h3>가정 형편·가족 형태 배려<\/h3><ul><li>옛날 사진이 없거나 가져오기 어려운 학생도 있습니다. 사진은 강요하지 말고, 기억이나 그림, 일기로 대신해도 된다고 미리 안내해 주세요.<\/li><li>“학급 사정에 따라 가능한 수준에서 각자 정리한 것을 발표해 본다.” “학생들의 생각을 자유롭게 이야기하도록 편안한 분위기를 유도한다.” (지도서 144쪽) — 발표는 학생이 말하고 싶은 일만 고르게 합니다.<\/li><\/ul><h3>과정 중심 평가 (활동지 148쪽 연계)<\/h3><ul><li>평가 관점: 나에게 일어난 중요한 일을 시간의 흐름에 따라 정리할 수 있는가?<\/li><li>평가 방법: 관찰·서술 평가<\/li><li>활동지: 나에게 일어난 중요한 일 세 가지를 시간의 흐름에 따라 표에 정리하고, 가장 기억하고 싶은 일을 한 장면으로 그려 까닭 쓰기 (지도서 149쪽)<\/li><li>주제 평가 계획(지도서 135쪽): 중요한 일 조사(구술 평가) · 시간의 흐름에 따라 배열(서술 평가) · 역사적 시간 속 나의 위치 파악(자기 평가)<\/li><\/ul><h3>지도서 대조 검증<\/h3><ul><li>차시명·학습 문제·교과서 75~77쪽 문장·주현이의 연도(2017 태어남, 2022 고양이 입양, 2024 초등학교 입학, 2025 태권도 금메달)를 교과서 75쪽 축소본(지도서 143쪽)과 대조, 일치<\/li><li>④ 교사 안내의 교과서 77쪽 사진 글씨에 빠진 연도(2023년)를 넣고 말풍선 문장을 원문대로 옮김, 지도서 예상 반응 “2020년 7월 수영장에서 찍은 사진입니다.”를 덧붙임 (지도서 145쪽)<\/li><li>꼭! 기억해요 정답(○, 기록)·주요 내용 정리·유의점(변하지 않는 것도 있음, 사진 강요하지 않음) 확인, 정답 모두 교과서·지도서 근거 있음<\/li><\/ul>"], "1": ["① 도입 (5분)", "<h3>발문<\/h3><ul><li>(교과서 75쪽의 신생아 그림을 보며) 어떤 모습인가요?<\/li><li>여러분이 태어났을 때의 모습을 기억하나요?<\/li><li>현재 여러분은 몇 학년인가요? 2학년 때와 달라진 점은 무엇인가요?<\/li><\/ul><h3>예상 반응 (지도서 143쪽)<\/h3><ul><li>아기가 태어난 직후의 모습을 그린 것입니다.<\/li><li>기억 못 하지만, 그때 찍은 사진이 남아 있습니다.<\/li><li>3학년입니다. 과거보다 키가 더 커졌습니다. 학년이 올라갔습니다.<\/li><\/ul><h3>교과서 문장 (교과서 75쪽)<\/h3><p>현재의 나는 과거의 나와 다릅니다. 겉모습이 변했고, 아는 것과 할 수 있는 일이 많아졌습니다. 과거부터 현재까지 나는 많은 일을 겪었습니다. 그중에는 내 일상의 변화에 영향을 주거나 기억에 남는 중요한 일들이 있습니다.<\/p>"], "2": ["② 자료 탐구 (10분)", "<h3>진행<\/h3><ul><li>교과서 75쪽 주현이의 그림을 보고 주현이에게 일어난 일을 순서대로 말합니다.<\/li><li>이어서 나에게 있었던 중요한 일 세 가지를 떠올려 시간 순서대로 씁니다(교과서 76쪽 「스스로 활동」).<\/li><\/ul><h3>발문과 예상 반응 (지도서 144쪽)<\/h3><ul><li>주현이에게 일어난 일을 순서대로 말해 볼까요? → 2017년에 태어났습니다. (2022년 고양이 입양 → 2024년 초등학교 입학 → 2025년 태권도 대회 금메달, 교과서 75쪽)<\/li><li>주현이의 모습은 어떻게 변했나요? → 아기에서 어린이로, 또 초등학생으로 변했습니다.<\/li><li>주현이에게 일어난 일들의 공통점은 무엇일까요? → 모두 주현이에게 중요한 일이라는 것입니다.<\/li><li>내가 겪은 중요한 일은 나에게 어떤 영향을 주었나요? → 내 일상이 달라지는 데 영향을 주었습니다.<\/li><\/ul><h3>그림 해설 (지도서 143쪽)<\/h3><p>“나의 역사는 내가 태어난 후부터 시작하고, 이어 고양이 입양, 초등학교 입학, 태권도 대회 참여 등 다양한 사건을 시간의 흐름에 따라 겪으며 전개된다.”<\/p><h3>지도 꿀 Tip (지도서 144쪽)<\/h3><p>“그림을 잘 그리기보다 중요한 일이 일어난 때와 일어난 순서에 관심을 두도록 유도한다.” 교과서 76쪽 예시 답안: 2017년 태어났습니다 → 2019년 유치원에 입학했습니다 → 2022년 강아지를 입양했습니다 → 2024년 제주도에 다녀왔습니다.<\/p><p>지도서 146쪽 「만 나이」: 3학년에게는 연도보다 ‘몇 살 때’로 떠올리는 것이 더 쉬울 수 있습니다.<\/p>"], "3": ["③ 활동 1 · 중요한 일 기록하기 (10분)", "<h3>진행<\/h3><ul><li>교과서 76쪽 글과 말풍선(“기록은 어떻게 하나요?”)을 읽습니다.<\/li><li>화면 활동은 기록하는 도구(사진, 영상, 글)와 기록할 때 함께 쓸 것(날짜, 장소)을 나누어 보는 보조 활동입니다. 교과서 활동은 나에게 있었던 중요한 일 세 가지를 시간 순서대로 쓰고 그림을 그리는 것입니다.<\/li><\/ul><h3>교과서 문장 (교과서 76쪽)<\/h3><p>내가 겪은 중요한 일들은 사진, 영상, 글 등으로 남길 수 있습니다. 이때 그 일이 일어난 날짜와 장소 등을 쓰고, 일이 일어난 순서대로 기록하는 것이 좋습니다. (말풍선: 카메라나 휴대 전화를 이용해 사진, 영상 등을 찍거나 일기와 같이 글을 써서 기록할 수 있습니다.)<\/p><h3>발문과 예상 반응 (지도서 144쪽)<\/h3><ul><li>내가 겪은 중요한 일을 기억하려면 어떻게 기록해야 할까요? → 사진을 찍어서 / 글로 일기나 편지 등을 써서 / 영상으로 찍어 기억합니다.<\/li><li>과거의 중요한 일을 기록할 때 주의할 점은? → 그 일이 일어난 날짜를 쓰는 것이 중요합니다. 장소를 기록하는 것이 좋습니다.<\/li><li>어떻게 정리하면 좋을까요? → 일이 일어난 순서에 따라 정리하면 좋습니다.<\/li><\/ul><h3>핵심 질문<\/h3><p>과거에 내가 겪은 중요한 일을 기록하는 까닭은 무엇일까요? → 잘 기억하려고 / 시간이 많이 지나가면 잊어버릴 수도 있기 때문에 / 기록하지 않으면 정확하게 기억할 수 없기 때문에. “기록은 과거를 정확히 기억하려면 꼭 필요한 일이라는 점을 이해하도록 지도한다.” (지도서 144쪽)<\/p>"], "4": ["④ 활동 2 · 옛날 사진과 지금의 나 (10분)", "<h3>진행<\/h3><ul><li><b>옛날·오늘날 짝 비교<\/b> 방법으로 진행합니다. 교과서 77쪽: 과거에 찍은 내 사진을 보고, 현재의 내 모습은 과거와 비교해 어떻게 달라졌는지 씁니다.<\/li><li>화면 활동은 지도서 예시 답안을 세 질문(언제·어디에서 / 겉모습 / 할 수 있게 된 것)에 맞게 골라 보는 보조 활동입니다.<\/li><\/ul><h3>발문과 예상 반응 (지도서 145쪽)<\/h3><ul><li>(교과서 77쪽) 그림 속 학생은 무엇을 하고 있나요? → 자기의 옛날 사진을 보며 언제 자전거를 탈 수 있게 되었는지 깨달았습니다. (사진 글씨: “2023년 9월 8일 집 앞 공원에서 ○○이가 처음 자전거를 탄 날”, 말풍선: “2023년 9월에 자전거를 탈 수 있게 됐네!”, 교과서 77쪽)<\/li><li>언제, 어디에서 찍은 사진인지 말해 봅시다. → 2020년 7월 수영장에서 찍은 사진입니다. (지도서 145쪽)<\/li><li>내 겉모습은 어떻게 달라졌나요? → 키가 자랐습니다. 머리 모양이 달라졌습니다. 옷차림도 달라졌습니다.<\/li><li>현재의 나는 무엇을 할 수 있게 되었나요? → 수영을 잘할 수 있게 되었습니다. 스스로 수영할 준비를 할 수 있게 되었습니다.<\/li><li>교과서 예시 답안: 2022년 10월 태권도 대회에서 찍은 사진 / 키가 커지고 몸무게가 늘어났다 / 태권도를 배워 체육 대회에 나갈 수 있게 되었다.<\/li><\/ul><h3>유의할 점<\/h3><ul><li>“내 모습 중에는 변하지 않는 것도 있다는 점에 유의한다.” (지도서 145쪽)<\/li><li>“현재 내가 할 수 있게 된 것을 중심으로 쓰되 앞으로 나는 어떻게 달라질지 상상할 수 있도록 추가 질문을 던질 수 있다. 이때 자기의 미래 모습은 현재의 내 노력과 선택의 영향을 받는다는 점을 상기하도록 한다.” (지도서 145쪽)<\/li><li>사진이 없는 학생은 기억나는 모습을 떠올려 말하게 합니다. 겉모습(키, 몸무게 등)을 친구와 비교하거나 놀리지 않도록 미리 약속합니다.<\/li><\/ul>"], "5": ["⑤ 정리 (5분)", "<h3>꼭! 기억해요 (교과서 77쪽)<\/h3><ul><li>내가 겪은 중요한 일은 내 일상의 변화에 영향을 주기도 합니다. ( <b>○<\/b> , × )<\/li><li>내가 겪은 중요한 일을 남길 때는 일이 일어난 순서대로 <b>기록<\/b>하는 것이 좋습니다.<\/li><\/ul><h3>차시별 주요 내용 정리 (지도서 145쪽)<\/h3><ul><li>과거와 달라진 내 모습: ① 아는 것과 할 수 있는 일이 많아짐. ② 내가 겪은 중요한 일이 내 일상의 변화에 영향을 주었음.<\/li><li>나에게 있었던 중요한 일 기록하기: ① 방법: 일이 있었던 날짜, 장소 등을 쓰고, 일이 일어난 순서대로 기록하면 좋음. ② 도구: 사진, 영상, 글 등<\/li><\/ul><h3>다음 차시<\/h3><p>4차시: 우리 가족에게 있었던 중요한 일을 살펴볼까요 · “가족에게 있었던 중요한 일을 미리 조사해 봅시다.” (지도서 145쪽) — 가족 형태가 다양하므로 ‘함께 사는 어른 한 분’께 여쭈어 오도록 열어 두세요.<\/p>"]}};
+const PH=C.photos||{};
+const NAMES=['도입','자료 탐구','활동 1','활동 2','정리'];
+let stage=0,S={a1:0,a2:0,sel:new Set(),q:0,qs:0};
+teamSeg('segTeam');
+$('tOpenL').onclick=()=>$('btnLinks').onclick();
+$('phc').innerHTML=Object.keys(PH).length?'사진 출처 · 위키미디어 공용: '+Object.values(PH).map(p=>`${p.name}(${p.title} / ${p.artist} / ${p.lic})`).join(' · '):'';
+$('plan').innerHTML=C.plan.map((t,i)=>`<button class="st" data-s="${i+1}">${['①','②','③','④','⑤'][i]} ${t}</button>`).join('');
+$('plan').querySelectorAll('.st').forEach(b=>b.onclick=()=>goStage(+b.dataset.s));
+function bar(){$('bar').innerHTML=NAMES.map((n,i)=>`<button class="st ${stage===i+1?'now':stage>i+1?'done':''}" data-s="${i+1}">${['①','②','③','④','⑤'][i]} ${n}</button>`).join('');
+  $('bar').querySelectorAll('.st').forEach(b=>b.onclick=()=>{const t=+b.dataset.s;if(t!==stage){stage=t;closeO('fb');render();}});}
+function tnote(i){$('tnT').textContent='👩‍🏫 '+C.notes[i][0];$('tnB').innerHTML=C.notes[i][1];openO('tn');}
+$('tOpen0').onclick=()=>tnote(0);$('tOpen').onclick=()=>tnote(stage);$('tnClose').onclick=()=>closeO('tn');
+$('btnCover').onclick=()=>show('cover');
+function goStage(n){stage=n;S={a1:0,a2:0,sel:new Set(),q:0,qs:0};C.act1.deck=shuffle(C.act1.items);teamInit();closeO('fb');show('stage');render();}
+$('btnGo').onclick=()=>goStage(1);
+$('btnPrev').onclick=()=>{if(stage>1){stage--;render();}else show('cover');};
+$('btnNext2').onclick=()=>{if(stage<5){stage++;render();}else show('cover');};
+$('btnLinks').onclick=()=>{$('lkB').innerHTML=(C.links||[]).map(l=>`<a class="lkrow" href="${l.u}" target="_blank" rel="noopener"><span class="e">${l.e}</span><span><b>${l.t} ↗</b><small>${l.d}</small></span></a>`).join('');openO('lk');};
+$('lkX').onclick=()=>closeO('lk');
+$('bvX').onclick=()=>$('bv').classList.remove('on');
+$('bv').onclick=e=>{if(e.target.id!=='bvI')$('bv').classList.remove('on');};
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){$('bv').classList.remove('on');closeO('lk');}});
+function render(){bar();
+  const t=(stage===3||stage===4);
+  $('score').style.display=t?'flex':'none';if(t)teamChips($('score'));
+  $('turnLine').textContent=t?teamTurn():'';
+  [intro,explore,act1,act2,wrap][stage-1]();}
+function intro(){
+  $('body').innerHTML=`<p class="hd">${C.intro.hd}</p>
+   <div class="recall">${C.intro.cards.map(r=>`<button class="rc" style="--cc:${r.c}"><span class="in">
+    <span class="f front">${r.p&&PH[r.p]?`<img src="${PH[r.p].data}" alt="">`:`<span>${r.e}</span>`}${r.t}<small style="font-size:.5em;opacity:.85">눌러서 확인</small></span>
+    <span class="f back2">${r.d}</span></span></button>`).join('')}</div>
+   <div class="qbox">💭 ${C.intro.q}</div>`;
+  document.querySelectorAll('.rc').forEach(c=>c.onclick=()=>{c.classList.toggle('open');beep('tick');});
+}
+function explore(){
+  const E=C.explore;
+  $('body').innerHTML=`<p class="hd">${E.hd}</p>
+   <div class="exp">${E.cards.map(c=>`<article class="ec" style="--cc:${c.c}">
+     ${c.p&&PH[c.p]?`<img src="${PH[c.p].data}" alt="" data-ph="${c.p}">`:`<div class="num">${c.big||''}</div>`}
+     <b>${c.t}</b><p>${c.d}</p><small>${c.s}</small></article>`).join('')}</div>
+   <div class="expq"><b>💬 자료를 보고 이야기해 봐요</b><ul>${E.qs.map(q=>`<li>${q}</li>`).join('')}</ul></div>
+   <button class="howbtn" id="how">📋 이렇게 해 봐요 — ${E.method.n}</button>`;
+  document.querySelectorAll('.ec img').forEach(im=>im.onclick=()=>{const p=PH[im.dataset.ph];
+    $('bvI').src=p.data;$('bvT').textContent=p.name;
+    $('bvS').textContent=`${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on');});
+  $('how').onclick=()=>{const m=E.method;
+    $('lkB').innerHTML=`<div style="text-align:left"><b style="font-family:var(--display);font-size:1.2em">${m.e} ${m.n}</b>
+      <p style="color:var(--soft)">${m.type} · ${m.time} · 준비물: ${m.need}</p>
+      <p>${m.goal}</p>${m.steps.map(x=>`<div class="lkrow" style="cursor:default">${x}</div>`).join('')}
+      <p style="background:#FFF4D6;color:#1F2A44;border-radius:12px;padding:10px 14px;margin-top:10px">💡 ${m.tip}</p></div>`;
+    openO('lk');};
+}
+function act1(){
+  const it=C.act1.deck[S.a1];
+  $('body').innerHTML=`<p class="hd">${C.act1.ask}</p>
+   <div class="card1">${it.p&&PH[it.p]?`<img class="cphoto" src="${PH[it.p].data}" alt="" data-ph="${it.p}">`:`<div class="e">${it.e}</div>`}<div class="x">${it.x}</div></div>
+   <div class="bins" style="--n:${C.act1.bins.length}">${C.act1.bins.map((b,i)=>`<button class="bin" data-k="${b.k}" style="--cc:${b.c}"><span class="e">${b.e}</span><span class="n">${b.n}</span></button>`).join('')}</div>`;
+  document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>pick1(b));
+  const im=document.querySelector('.cphoto');
+  if(im)im.onclick=()=>{const p=PH[im.dataset.ph];$('bvI').src=p.data;$('bvT').textContent=p.name;
+    $('bvS').textContent=`${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on');};
+}
+function pick1(btn){
+  const it=C.act1.deck[S.a1],ok=btn.dataset.k===it.k,bin=C.act1.bins.find(b=>b.k===it.k);
+  if(ok)teamAdd(1);beep(ok?'ok':'no');
+  document.querySelectorAll('.bin').forEach(b=>{b.disabled=true;if(b.dataset.k===it.k)b.classList.add('lit');});
+  teamChips($('score'));
+  $('fbP').style.setProperty('--pc',bin.c);
+  $('fbT').textContent=ok?'맞아요! 🎉':`${bin.e} ${bin.n}이에요`;
+  $('fbW').textContent=it.w;$('fbF').style.display='none';
+  $('fbNext').textContent=S.a1+1<C.act1.deck.length?'다음 카드':'활동 2로 넘어가기';
+  $('fbNext').onclick=()=>{closeO('fb');teamNext();if(S.a1+1<C.act1.deck.length){S.a1++;act1();render();}else{stage=4;render();}};
+  openO('fb');$('fbNext').focus();
+}
+function act2(){
+  const p=C.act2.problems[S.a2];S.sel=new Set();
+  $('body').innerHTML=`<p class="hd">${C.act2.ask} <small style="font-size:.55em;color:var(--soft)">(알맞은 것을 모두 고르세요)</small></p>
+   <div class="prob" style="--pc2:${p.c}"><div class="e">${p.e}</div><div><b>${p.t}</b><p>${p.p}</p></div></div>
+   <div class="ways">${shuffle(C.act2.options).map(o=>`<button class="way" data-k="${o.k}" aria-pressed="false"><span>${o.e}</span>${o.n}</button>`).join('')}</div>
+   <button class="big-btn" id="chk" style="font-size:clamp(24px,2.2vw,34px);padding:12px 36px">확인하기</button>`;
+  document.querySelectorAll('.way').forEach(b=>b.onclick=()=>{const k=b.dataset.k;
+    if(S.sel.has(k)){S.sel.delete(k);b.setAttribute('aria-pressed','false');}else{S.sel.add(k);b.setAttribute('aria-pressed','true');}beep('tick');});
+  $('chk').onclick=()=>{
+    const ok=p.a.every(k=>S.sel.has(k))&&[...S.sel].every(k=>p.a.includes(k));
+    document.querySelectorAll('.way').forEach(b=>{b.disabled=true;
+      if(p.a.includes(b.dataset.k))b.classList.add('right');else if(S.sel.has(b.dataset.k))b.classList.add('miss');});
+    if(ok)teamAdd(1);teamChips($('score'));beep(ok?'ok':'no');$('chk').style.display='none';
+    $('fbP').style.setProperty('--pc',p.c);
+    $('fbT').textContent=ok?'모두 찾았어요! 🎉':'알맞은 것을 확인해 봐요';
+    $('fbW').innerHTML=p.a.map(k=>{const o=C.act2.options.find(x=>x.k===k);return `${o.e} ${o.n}`;}).join('<br>');
+    $('fbF').style.display='block';$('fbF').innerHTML=`<b style="font-family:var(--display)">함께 생각해요</b><br>${p.talk}`;
+    $('fbNext').textContent=S.a2+1<C.act2.problems.length?'다음 문제':'정리로 넘어가기';
+    $('fbNext').onclick=()=>{closeO('fb');teamNext();if(S.a2+1<C.act2.problems.length){S.a2++;act2();render();}else{stage=5;render();}};
+    openO('fb');$('fbNext').focus();};
+}
+function wrap(){
+  S.q=0;S.qs=0;
+  $('body').innerHTML=`<p class="hd">오늘 배운 내용을 정리해 볼까요?</p>
+   <div class="sum">${C.summary.map(b=>`<div class="sumbox" style="--cc:${b.c}"><b>${b.t}</b><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}</div>
+   <button class="big-btn" id="toQuiz" style="font-size:clamp(24px,2.2vw,34px);padding:12px 36px">확인 문제 풀기</button>`;
+  $('toQuiz').onclick=quiz;
+}
+function quiz(){
+  const q=C.quiz[S.q],ord=shuffle(q.o.map((_,i)=>i));
+  $('body').innerHTML=`<p class="hd">확인 문제 ${S.q+1} / ${C.quiz.length}</p>
+   <div class="card1"><div class="x" style="text-align:center">${q.q}</div></div>
+   <div class="opts2">${ord.map((o,n)=>`<button class="opt2" data-o="${o}">${n+1}. ${q.o[o]}</button>`).join('')}</div>`;
+  document.querySelectorAll('.opt2').forEach(b=>b.onclick=()=>{
+    const ok=+b.dataset.o===q.a;if(ok)S.qs++;beep(ok?'ok':'no');
+    document.querySelectorAll('.opt2').forEach(x=>{x.disabled=true;if(+x.dataset.o===q.a)x.classList.add('right');});
+    if(!ok)b.classList.add('wrong');
+    $('fbP').style.setProperty('--pc',ok?'var(--ok)':'var(--no)');
+    $('fbT').textContent=ok?'정답이에요! 🎉':'정답을 확인해 봐요';$('fbW').textContent=q.w;$('fbF').style.display='none';
+    $('fbNext').textContent=S.q+1<C.quiz.length?'다음 문제':'마무리하기';
+    $('fbNext').onclick=()=>{closeO('fb');if(S.q+1<C.quiz.length){S.q++;quiz();}else final();};
+    openO('fb');$('fbNext').focus();});
+}
+function final(){
+  beep('win');
+  $('body').innerHTML=`<p class="hd">${C.final.hd}</p>
+   <div class="promise">${C.final.lines.map(t=>`<div>${t}</div>`).join('')}</div>
+   <p class="lead" style="font-size:clamp(22px,2.1vw,30px)">확인 문제 ${C.quiz.length}문제 중 ${S.qs}문제를 맞혔어요. ${teamWinnerText()}</p>
+   <div class="scores" style="justify-content:center">${teamPodium()}</div>`;
+}
+
+
+wireTools();</script><script>
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});var n=document.getElementById('relNote');if(n)n.style.display='none';}})();
+</script></body></html>

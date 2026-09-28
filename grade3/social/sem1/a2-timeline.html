@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>연표 만들기 도구</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.tabs{display:flex;gap:6px;flex-wrap:wrap}
+.tabs button{font-size:clamp(20px,1.8vw,26px);padding:6px 14px;border-radius:14px;border:3px solid var(--line);background:var(--paper)}
+.tabs button[aria-current="step"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.pane{flex:1;min-height:0;display:none;flex-direction:column;gap:12px;margin-top:10px}
+.pane.on{display:flex}
+.box{background:var(--paper);border:3px solid var(--line);border-radius:22px;padding:clamp(12px,1.6vw,22px)}
+.say{font-size:clamp(21px,2vw,27px);line-height:1.45;margin:0}
+.say b{font-family:var(--display);font-weight:400}
+.topics{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.topic{font-size:clamp(26px,2.6vw,36px);padding:10px 16px;border-radius:22px;border:4px solid var(--line);background:var(--paper);display:grid;grid-template-columns:auto 1fr;align-items:center;column-gap:14px;text-align:left}
+.topic small{grid-column:2}
+.topic .e{font-size:clamp(40px,4.4vw,56px);line-height:1;grid-row:span 2}
+.topic small{font-family:var(--body);font-size:clamp(18px,1.6vw,22px);color:var(--soft)}
+.topic[aria-pressed="true"]{border-color:#1F9E63;background:color-mix(in srgb,#1F9E63 16%,var(--paper))}
+.field{display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.field label{font-family:var(--display);font-size:clamp(22px,2vw,28px)}
+input.txt{font-family:var(--body);font-size:clamp(20px,1.9vw,26px);padding:8px 12px;border:3px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink);min-width:0}
+input.txt:focus{outline:4px solid var(--acc);outline-offset:1px}
+.exs{display:flex;gap:10px;flex-wrap:wrap}
+.tbl{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:8px}
+.trow{display:grid;grid-template-columns:6.2em minmax(0,1fr) auto auto;gap:8px;align-items:center}
+.trow .yr{width:100%}
+.trow.bad .yr{border-color:var(--no)}
+.pic{font-size:clamp(24px,2.2vw,30px);width:2.2em;height:2.2em;border-radius:14px;border:3px dashed var(--line);background:var(--bg);padding:0}
+.del{font-size:22px;border:3px solid var(--line);background:var(--paper);border-radius:14px;padding:6px 10px}
+.thead{display:grid;grid-template-columns:6.2em minmax(0,1fr) auto auto;gap:8px;font-family:var(--display);font-size:clamp(20px,1.8vw,25px);color:var(--soft);padding:0 4px}
+.acts{display:flex;gap:10px;flex-wrap:wrap;justify-content:center}
+.tlhead{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap}
+.tltitle{font-family:var(--display);font-size:clamp(28px,3vw,44px);background:#FFF4D6;color:#1F2A44;border:3px solid #E8961E;border-radius:14px;padding:2px 18px}
+.sub{display:flex;gap:6px;flex-wrap:wrap}
+.sub button{font-size:clamp(19px,1.7vw,24px);padding:6px 12px;border-radius:14px;border:3px solid var(--line);background:var(--paper)}
+.sub button[aria-pressed="true"]{background:#1F9E63;border-color:#1F9E63;color:#fff}
+.tlwrap{flex:1;min-height:0;position:relative;background:var(--paper);border:3px solid var(--line);border-radius:22px;overflow:hidden}
+.tl{position:absolute;inset:0}
+.tl .ln{position:absolute;background:#1F9E63;border-radius:8px}
+.tl.h .ln{left:3%;right:1.5%;top:50%;height:12px;transform:translateY(-50%)}
+.tl.h .ln::after{content:'';position:absolute;right:-14px;top:50%;transform:translateY(-50%);border:16px solid transparent;border-left:22px solid #1F9E63;border-right:0}
+.tl.v .ln{top:2%;bottom:3%;left:50%;width:12px;transform:translateX(-50%)}
+.tl.v .ln::after{content:'';position:absolute;bottom:-14px;left:50%;transform:translateX(-50%);border:16px solid transparent;border-top:22px solid #1F9E63;border-bottom:0}
+.yb{position:absolute;transform:translate(-50%,-50%);font-family:var(--display);font-size:clamp(19px,1.7vw,24px);background:#fff;color:#1F2A44;border:3px solid #1F9E63;border-radius:12px;padding:2px 8px;white-space:nowrap;z-index:2}
+.ev{position:absolute;display:flex;flex-direction:column;align-items:center;text-align:center;gap:2px;font-size:clamp(20px,1.7vw,24px);line-height:1.3;width:var(--ew,150px)}
+.ev .em{font-size:clamp(30px,3vw,44px);line-height:1}
+.tl.h .ev.up{transform:translate(-50%,-100%)}
+.tl.h .ev.dn{transform:translate(-50%,0)}
+.tl.v .ev{flex-direction:row;text-align:left;gap:8px;transform:translateY(-50%)}
+.tl.v .ev.rt{flex-direction:row-reverse;text-align:right}
+.tl .stick{position:absolute;background:#1F9E63;opacity:.5}
+.tl.h .stick{width:3px}
+.tl.v .stick{height:3px}
+.empty{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:clamp(22px,2vw,28px);color:var(--soft);padding:20px;text-align:center}
+.checks{display:grid;grid-template-columns:1fr 1fr;align-content:start;gap:10px;flex:1;min-height:0;overflow-y:auto}
+.checks .hintbar{grid-column:1/-1}
+@media (max-width:900px){.checks{grid-template-columns:1fr}}
+.ck{display:flex;gap:12px;align-items:center;font-size:clamp(21px,1.9vw,26px);background:var(--paper);border:3px solid var(--line);border-radius:18px;padding:8px 14px;line-height:1.35}
+.ck .m{font-size:clamp(26px,2.4vw,34px)}
+.ck.ok{border-color:var(--ok)}
+.ck.no{border-color:#E8961E}
+.hintbar{font-size:clamp(18px,1.6vw,22px);color:var(--soft);margin:0}
+.stickers{display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin:0 auto 18px;max-width:640px}
+.stickers button{font-size:clamp(34px,3.4vw,46px);border-radius:16px;border:3px solid var(--line);background:var(--bg);padding:8px 0}
+.stickers button.none{font-size:clamp(18px,1.6vw,22px);font-family:var(--body)}
+.unitnote{font-size:clamp(18px,1.6vw,22px);color:var(--soft)}
+@media (max-width:700px){.topics{grid-template-columns:1fr}}
+@page{size:A4 landscape;margin:12mm}
+@media print{
+  html,body{height:auto;overflow:visible;background:#fff!important;color:#000}
+  :root{--paper:#fff;--ink:#000;--soft:#333;--line:#999;--bg:#fff}
+  body>*:not(#tool),#tool .topbar,.pane:not(#p3),#p3 .sub,#p3 .say,#p3 .gapsel,.hintbar,.creditbar{display:none!important}
+  #tool{position:static;display:block;padding:0}
+  #p3{display:block!important;margin:0}
+  .tlhead{justify-content:center;margin-bottom:6mm}
+  .tlwrap{position:relative;height:150mm;border:0}
+  .tl.h .ln,.tl .stick,.tl.h .ln::after{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+
+.center-col{justify-content:flex-start}.center-col>:first-child{margin-top:auto}.center-col>:last-child{margin-bottom:auto}
+body,h1,h2,h3,h4,p,li,span,div,button,a,td,th,small,b,i,label,input{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.creditbar{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:18px}
+.tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(20px,2vw,26px);
+  text-decoration:none;color:inherit;border:3px solid var(--line,#ccc);background:var(--paper,#fff);border-radius:999px;padding:8px 22px}
+.tolist.on{display:inline-flex}
+h1,h2,h3,h4,.title,.lead,.qtext{text-wrap:balance}
+p,li,small,.why{text-wrap:pretty}
+</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style></head><body>
+
+<section id="start" class="screen on center-col">
+  <h1 class="title">📏 연표 만들기 도구</h1>
+  <p class="lead"><b>연표</b>는 시간의 순서에 따라 중요한 일을 늘어놓은 것이에요.<br>나와 가족, 우리 학교의 중요한 일을 연표로 나타내 봐요.</p>
+  <div class="row"><span class="row-label">활동 단위</span><div class="seg" id="segTeam"></div></div>
+  <div class="row"><button class="big-btn" id="btnGo">시작하기</button></div>
+  <p class="hintbar">✍️ 입력한 내용은 이 기기에만 저장돼요.</p>
+<div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div>
+</section>
+
+<section id="tool" class="screen">
+  <div class="topbar">
+    <div class="tabs" id="tabs">
+      <button data-p="1">① 주제</button><button data-p="2">② 중요한 일</button><button data-p="3">③ 연표</button><button data-p="4">④ 확인</button>
+    </div>
+    <div class="tools"><span class="unitnote" id="unitNote"></span><button class="tool" id="btnPrint" title="인쇄">🖨️</button><button class="tool" data-sound>🔊</button><button class="tool" data-full>⛶</button><button class="tool" data-home>🏠</button></div>
+  </div>
+
+  <div class="pane" id="p1">
+    <p class="say"><b>① 어떤 연표를 만들지 골라요.</b></p>
+    <div class="topics">
+      <button class="topic" data-t="family"><span class="e">👨‍👩‍👧</span>나와 가족의 연표<small>내가 태어난 일, 가족에게 있었던 일</small></button>
+      <button class="topic" data-t="school"><span class="e">🏫</span>우리 학교의 연표<small>학교가 세워진 일, 학교에 있었던 일</small></button>
+    </div>
+    <div class="box field"><label for="ttl">연표의 제목</label><input id="ttl" class="txt" maxlength="24" style="flex:1 1 12em" placeholder="예: 수연이네 가족이 지나온 길"><button class="big-btn" data-go="2">다음 ▶</button></div>
+    <p class="hintbar">💡 제목을 처음부터 정하기 어려우면 연표를 다 만든 뒤에 써도 돼요. 가족 이야기를 쓰기 어렵다면 ‘우리 학교의 연표’를 골라도 돼요.</p>
+    <div class="box exs" style="align-items:center"><span class="say"><b>교과서 예시</b></span><button class="ghost-btn" data-ex="0">📗 수연이네 가족이 지나온 길 (84쪽)</button><button class="ghost-btn" data-ex="1">📗 나와 가족의 연표 (86쪽)</button><button class="ghost-btn" id="btnClear">🧽 모두 지우기</button></div>
+  </div>
+
+  <div class="pane" id="p2">
+    <p class="say"><b>② 연표에 들어갈 중요한 일을 정리해요.</b> 일이 일어난 연도와 중요한 일을 써요.</p>
+    <div class="thead"><span>연도</span><span>중요한 일</span><span>그림</span><span style="width:2.4em"></span></div>
+    <div class="tbl" id="tbl"></div>
+    <div class="acts"><button class="ghost-btn" id="btnAdd">➕ 한 줄 더하기</button><button class="ghost-btn" id="btnSort">🔢 시간 순서대로 줄 세우기</button><button class="big-btn" data-go="3">연표로 ▶</button></div>
+  </div>
+
+  <div class="pane" id="p3">
+    <div class="tlhead">
+      <span class="tltitle" id="tlTitle"></span>
+      <div class="sub" id="sub"><button data-s="1">❶ 연도 붙이기</button><button data-s="2">❷ 일어난 일 쓰기</button><button data-s="3">❸ 그림 붙이기</button></div>
+    </div>
+    <p class="say" id="subSay"></p>
+    <div class="tlwrap" id="tlwrap"><div class="tl h" id="tl"></div></div>
+    <div class="tlhead gapsel"><div class="sub" id="gapSel"><button data-g="eq">간격 똑같이</button><button data-g="yr">햇수만큼 간격</button></div><button class="ghost-btn" data-go="4">확인하기 ▶</button></div>
+  </div>
+
+  <div class="pane" id="p4">
+    <p class="say"><b>④ 연표를 완성한 뒤 들어간 내용을 확인해요.</b></p>
+    <div class="checks" id="checks"></div>
+    <div class="acts"><button class="ghost-btn" data-go="3">◀ 연표 다시 보기</button><button class="big-btn" id="btnPrint2">🖨️ 인쇄하기</button></div>
+  </div>
+</section>
+
+<div class="overlay" id="picO"><div class="panel" style="--pc:#E8961E">
+  <h2 style="font-size:clamp(34px,3.6vw,50px)">🖍️ 관련 있는 그림 고르기</h2>
+  <div class="stickers" id="stk"></div>
+  <button class="ghost-btn" data-close="picO">닫기</button></div></div>
+
+<div class="overlay" id="askO"><div class="panel"><h2 id="aT" style="font-size:clamp(34px,3.6vw,50px)"></h2><p class="why" id="aW"></p>
+  <div class="row"><button class="big-btn" id="aYes">네</button><button class="ghost-btn" data-close="askO">아니요</button></div></div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+/* 활동 단위(반·개별·짝·모둠·분단·번호순·기타) 공통 기능 */
+let MODE='class',TEAMS=4,LINES=4,CLASSN=25,ETCNOTE='',TURN=0,SCORES=[];
+const MODES=[['class','🏫 반'],['solo','🙋 개별'],['pair','👫 짝'],['group','👨‍👩‍👧 모둠'],['line','🪑 분단'],['number','🔢 번호순'],['etc','✏️ 기타']];
+function teamSeg(id){
+  const host=$(id); if(!host) return;
+  host.classList.remove('seg');
+  host.style.cssText='display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;border:0;background:none';
+  host.innerHTML=`<span class="seg" id="${id}-m">${MODES.map(([k,l])=>`<button data-m="${k}" aria-pressed="${MODE===k}">${l}</button>`).join('')}</span><span id="${id}-sub"></span>`;
+  host.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{MODE=b.dataset.m;teamSeg(id);});
+  const sb=$(id+'-sub'); sb.style.cssText='display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap';
+  const numInput=(sid,val,max)=>`<input id="${sid}" type="number" min="2" max="${max}" value="${val}" style="width:4.5em;font-size:clamp(20px,2vw,28px);padding:6px 10px;border:3px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font-family:var(--body)">`;
+  if(MODE==='group'){
+    sb.innerHTML=`<span class="row-label">몇 모둠</span><span class="seg" id="${id}-n">${[2,3,4,5,6].map(v=>`<button data-n="${v}" aria-pressed="${TEAMS===v}">${v}</button>`).join('')}</span>`;
+    sb.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{TEAMS=+b.dataset.n;teamSeg(id);});
+  }else if(MODE==='line'){
+    sb.innerHTML=`<span class="row-label">몇 분단</span><span class="seg" id="${id}-l">${[2,3,4,5,6].map(v=>`<button data-l="${v}" aria-pressed="${LINES===v}">${v}</button>`).join('')}</span>`;
+    sb.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{LINES=+b.dataset.l;teamSeg(id);});
+  }else if(MODE==='number'){
+    sb.innerHTML=`<span class="row-label">우리 반</span>${numInput(id+'-c',CLASSN,40)}<span class="row-label">명 · 1번부터 차례로 발표해요</span>`;
+    $(id+'-c').oninput=()=>{CLASSN=Math.max(2,+$(id+'-c').value||25);};
+  }else if(MODE==='etc'){
+    sb.innerHTML=`<input id="${id}-e" type="text" placeholder="예: 두 모둠씩 짝지어 대결" value="${ETCNOTE.replace(/"/g,'&quot;')}" style="width:min(22em,60vw);font-size:clamp(19px,1.9vw,26px);padding:8px 14px;border:3px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink);font-family:var(--body)">
+      <span class="row-label" style="font-size:clamp(17px,1.6vw,22px);color:var(--soft)">선생님이 방법을 설명한 뒤 '다음'으로 진행해요</span>`;
+    $(id+'-e').oninput=()=>{ETCNOTE=$(id+'-e').value;};
+  }else{
+    const t={class:'반 전체가 함께 연표를 만들어 봐요.',solo:'각자 나만의 연표를 만들어요.',pair:'짝과 서로 연표를 보여 주며 순서를 확인해요.'}[MODE];
+    sb.innerHTML=`<span class="row-label" style="font-size:clamp(18px,1.7vw,23px);color:var(--soft)">${t}</span>`;
+  }
+}
+function unitName(){return MODE==='line'?'분단':'모둠';}
+function teamCount(){
+  if(MODE==='group')return TEAMS;
+  if(MODE==='line')return LINES;
+  return 1;
+}
+function usesTeams(){return MODE==='group'||MODE==='line';}
+function noScore(){return MODE==='solo'||MODE==='pair'||MODE==='etc';}
+function teamInit(){SCORES=Array(teamCount()).fill(0);TURN=0;}
+function teamAdd(n){if(noScore())return;SCORES[TURN]=(SCORES[TURN]||0)+n;}
+function teamNext(){
+  if(usesTeams())TURN=(TURN+1)%teamCount();
+  else if(MODE==='number')TURN=(TURN+1)%Math.max(2,CLASSN);
+}
+function teamChips(el){
+  if(!el)return;el.className='scores';
+  if(noScore()){el.innerHTML='';el.style.display='none';return;}
+  el.style.display='flex';
+  if(usesTeams()){el.innerHTML=SCORES.map((s,i)=>`<span class="chip ${i===TURN?'now':''}">${i+1}${unitName()} ${s}</span>`).join('');}
+  else el.innerHTML=`<span class="chip now">⭐ ${SCORES[0]}점</span>`;
+}
+function teamTurn(){
+  if(MODE==='solo')return '🙋 각자 생각해 보세요';
+  if(MODE==='pair')return '👫 짝과 의논해 보세요';
+  if(MODE==='class')return '🏫 반 전체가 함께 답해요';
+  if(MODE==='number')return `🔢 지금은 ${TURN+1}번 차례예요`;
+  if(MODE==='etc')return ETCNOTE?('✏️ '+ETCNOTE):'✏️ 선생님 안내에 따라 활동해요';
+  return `🙋 지금은 ${TURN+1}${unitName()} 차례예요`;
+}
+function teamPodium(){
+  if(noScore())return '';
+  if(!usesTeams())return `<span class="chip win">⭐ ${SCORES[0]}점</span>`;
+  const mx=Math.max(...SCORES);
+  return SCORES.map((s,i)=>`<span class="chip ${s===mx?'win':''}">${i+1}${unitName()} ${s}점</span>`).join('');
+}
+function teamWinnerText(){
+  if(MODE==='solo')return '각자 푼 문제를 공책과 맞춰 봐요.';
+  if(MODE==='pair')return '짝과 함께 잘 해냈어요.';
+  if(MODE==='etc')return '모두 수고했어요.';
+  if(!usesTeams())return `우리 반 점수는 ${SCORES[0]}점이에요.`;
+  const mx=Math.max(...SCORES),w=SCORES.map((s,i)=>s===mx?i+1:null).filter(Boolean);
+  return `${w.join(', ')}${unitName()}이 가장 많은 점수를 얻었어요!`;
+}
+
+
+
+
+const KEY='hj31-timeline-v1';
+const STK=['💒','👶','🍼','🎂','🏠','🐶','🐱','🎒','🏫','📷','🥋','🏅','🚲','✈️','📚','🎹','🌸','⭐','🎉','🏥','🍱','⚽','🎈','🏆'];
+const EX=[
+ {topic:'family',title:'수연이네 가족이 지나온 길',rows:[[2013,'부모님이 결혼함.','💒'],[2017,'내가 태어남.','👶'],[2022,'우리 동네로 이사함.','🏠'],[2024,'강아지 ‘뭉이’를 입양함.','🐶']]},
+ {topic:'family',title:'나와 가족의 연표',rows:[[2012,'부모님이 결혼함.','💒'],[2017,'내가 태어남.','👶'],[2018,'동생(윤경민) 태어남.','🍼'],[2020,'부모님과 내가 태권도를 배우기 시작함.','🥋'],[2024,'내가 ○○ 초등학교에 입학함.','🎒'],[2025,'사진관에 가서 가족사진을 찍음.','📷']]}
+];
+let S={topic:'',title:'',rows:[],gap:'eq'},P=1,SUB=3,PICK=-1;
+function blankRows(){return [{y:'',t:'',e:''},{y:'',t:'',e:''},{y:'',t:'',e:''}];}
+function load(){try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v&&Array.isArray(v.rows))S=Object.assign(S,v);}catch(e){}if(!S.rows.length)S.rows=blankRows();}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+load();
+teamSeg('segTeam');
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeO(b.dataset.close));
+document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>{['picO','askO'].forEach(closeO);show('start');teamSeg('segTeam');});
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(+b.dataset.go));
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>go(+b.dataset.p));
+function unitText(){return {class:'🏫 반 전체가 함께',solo:'🙋 각자',pair:'👫 짝과 함께',group:`👨‍👩‍👧 ${TEAMS}모둠`,line:`🪑 ${LINES}분단`,number:'🔢 번호순 발표',etc:ETCNOTE?('✏️ '+ETCNOTE):'✏️ 기타'}[MODE]||'';}
+$('btnGo').onclick=()=>{$('unitNote').textContent=unitText();show('tool');go(S.topic?2:1);};
+function go(p){P=p;document.querySelectorAll('.pane').forEach(x=>x.classList.toggle('on',x.id==='p'+p));
+  document.querySelectorAll('#tabs button').forEach(b=>b.setAttribute('aria-current',+b.dataset.p===p?'step':'false'));
+  if(p===1)drawP1();if(p===2)drawP2();if(p===3){SUB=3;drawP3();}if(p===4)drawP4();beep('tick');}
+function ask(t,w,yes){$('aT').textContent=t;$('aW').textContent=w;openO('askO');$('aYes').onclick=()=>{closeO('askO');yes();};}
+/* ① 주제 */
+function drawP1(){document.querySelectorAll('.topic').forEach(b=>b.setAttribute('aria-pressed',S.topic===b.dataset.t));$('ttl').value=S.title;}
+document.querySelectorAll('.topic').forEach(b=>b.onclick=()=>{S.topic=b.dataset.t;
+  if(!S.title)$('ttl').placeholder=S.topic==='school'?'예: 우리 학교가 걸어온 길':'예: 수연이네 가족이 지나온 길';save();drawP1();beep('tick');});
+$('ttl').oninput=()=>{S.title=$('ttl').value;save();};
+function hasData(){return S.rows.some(r=>r.y||r.t);}
+document.querySelectorAll('[data-ex]').forEach(b=>b.onclick=()=>{const ex=EX[+b.dataset.ex];
+  const put=()=>{S.topic=ex.topic;S.title=ex.title;S.rows=ex.rows.map(r=>({y:String(r[0]),t:r[1],e:r[2]}));save();drawP1();go(3);};
+  hasData()?ask('예시를 불러올까요?','지금 쓴 내용은 지워지고 교과서 예시로 바뀌어요.',put):put();});
+$('btnClear').onclick=()=>ask('모두 지울까요?','이 기기에 저장된 연표 내용이 모두 지워져요.',()=>{S={topic:'',title:'',rows:blankRows(),gap:'eq'};save();drawP1();});
+/* ② 중요한 일 */
+function yearOk(y){return /^\d{4}$/.test(String(y).trim())&&+y>=1000&&+y<=2100;}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function drawP2(){
+  $('tbl').innerHTML=S.rows.map((r,i)=>`<div class="trow ${r.y&&!yearOk(r.y)?'bad':''}" data-i="${i}">
+    <input class="txt yr" inputmode="numeric" maxlength="4" placeholder="2017" value="${esc(r.y)}" aria-label="${i+1}번째 연도">
+    <input class="txt evt" maxlength="30" placeholder="중요한 일" value="${esc(r.t)}" aria-label="${i+1}번째 중요한 일">
+    <button class="pic" aria-label="그림 고르기">${r.e||'🖍️'}</button><button class="del" aria-label="줄 지우기">🗑️</button></div>`).join('');
+  $('tbl').querySelectorAll('.trow').forEach(row=>{const i=+row.dataset.i;
+    row.querySelector('.yr').oninput=e=>{S.rows[i].y=e.target.value.replace(/[^0-9]/g,'');e.target.value=S.rows[i].y;row.classList.toggle('bad',!!S.rows[i].y&&S.rows[i].y.length===4&&!yearOk(S.rows[i].y));save();};
+    row.querySelector('.evt').oninput=e=>{S.rows[i].t=e.target.value;save();};
+    row.querySelector('.pic').onclick=()=>{PICK=i;openPic();};
+    row.querySelector('.del').onclick=()=>{S.rows.splice(i,1);if(!S.rows.length)S.rows=blankRows();save();drawP2();};
+  });
+}
+$('btnAdd').onclick=()=>{if(S.rows.length>=12)return;S.rows.push({y:'',t:'',e:''});save();drawP2();const ins=$('tbl').querySelectorAll('.yr');ins[ins.length-1].focus();};
+$('btnSort').onclick=()=>{S.rows=sorted(S.rows,true);save();drawP2();beep('ok');};
+function sorted(rows,keepBlank){const a=rows.map((r,i)=>({r,i}));
+  const ok=a.filter(x=>yearOk(x.r.y)).sort((p,q)=>(+p.r.y)-(+q.r.y)||p.i-q.i).map(x=>x.r);
+  return keepBlank?ok.concat(a.filter(x=>!yearOk(x.r.y)).map(x=>x.r)):ok;}
+function openPic(){$('stk').innerHTML=STK.map(e=>`<button data-e="${e}">${e}</button>`).join('')+'<button class="none" data-e="">그림 없음</button>';
+  $('stk').querySelectorAll('button').forEach(b=>b.onclick=()=>{S.rows[PICK].e=b.dataset.e;save();closeO('picO');drawP2();beep('tick');});openO('picO');}
+/* ③ 연표 */
+const SUBSAY=['','❶ 제목을 쓰고, 일이 일어난 순서에 따라 연도를 선 위에 붙여요.','❷ 각 연도에 일어난 일을 연표의 위나 아래에 써요.','❸ 관련 있는 그림을 찾아 붙이거나 직접 그려 연표를 완성해요.'];
+document.querySelectorAll('#sub button').forEach(b=>b.onclick=()=>{SUB=+b.dataset.s;drawP3();beep('tick');});
+document.querySelectorAll('#gapSel button').forEach(b=>b.onclick=()=>{S.gap=b.dataset.g;save();drawP3();});
+let FORCE_H=false;
+function layoutPos(items){
+  const n=items.length;if(n===1)return [0.5];
+  let pos;
+  if(S.gap==='yr'){const a=+items[0].y,b=+items[n-1].y;pos=items.map(r=>b===a?0:(+r.y-a)/(b-a));
+    const mg=Math.min(0.9/(n-1),0.12);for(let i=1;i<n;i++)pos[i]=Math.max(pos[i],pos[i-1]+mg);
+    const mx=pos[n-1];if(mx>1)pos=pos.map(p=>p/mx);}
+  else pos=items.map((r,i)=>i/(n-1));
+  return pos;
+}
+function drawP3(){
+  document.querySelectorAll('#sub button').forEach(b=>b.setAttribute('aria-pressed',+b.dataset.s<=SUB));
+  document.querySelectorAll('#gapSel button').forEach(b=>b.setAttribute('aria-pressed',S.gap===b.dataset.g));
+  $('subSay').textContent=SUBSAY[SUB];
+  $('tlTitle').textContent=S.title.trim()||'(연표의 제목)';
+  const items=sorted(S.rows,false).filter(r=>r.y);
+  const tl=$('tl'),wrap=$('tlwrap'),W=wrap.clientWidth,H=wrap.clientHeight;
+  const vert=!FORCE_H&&(W<700||H>W*1.1);
+  tl.className='tl '+(vert?'v':'h');
+  if(!items.length){tl.innerHTML=`<div class="empty">② 중요한 일에서 연도와 일을 먼저 써 주세요.</div>`;return;}
+  const pos=layoutPos(items),n=items.length;
+  let h='<div class="ln"></div>';
+  let ew=vert?Math.min(W/2-80,420):Math.max(120,Math.min(270,(W-60)/Math.max(1,n)*1.85));
+  if(!vert&&n>2){let md=1;for(let i=2;i<n;i++)md=Math.min(md,pos[i]-pos[i-2]);ew=Math.max(110,Math.min(ew,md*(W-140)*0.96));}
+  const pc=v=>(v/W*100).toFixed(2)+'%';
+  items.forEach((r,i)=>{
+    const p=pos[i],side=i%2===0;
+    const ev=`${SUB>=3&&r.e?`<span class="em">${r.e}</span>`:''}${SUB>=2?`<span>${esc(r.t)}</span>`:''}`;
+    if(!vert){const L0=Math.max(ew/2+6,50),R0=W-Math.max(ew/2+6,70),x=pc(L0+p*(R0-L0));
+      h+=`<span class="stick" style="left:${x};${side?'bottom:50%':'top:50%'};height:${SUB>=2?'28px':'0'}"></span>`;
+      h+=`<span class="yb" style="left:${x};top:50%">${esc(r.y)}년</span>`;
+      if(SUB>=2)h+=`<div class="ev ${side?'up':'dn'}" style="--ew:${pc(ew)};left:${x};${side?'top:calc(50% - 32px)':'top:calc(50% + 32px)'}">${ev}</div>`;}
+    else{const T0=40,B0=H-60,y=Math.round(T0+p*(B0-T0))+'px';
+      h+=`<span class="yb" style="top:${y};left:50%">${esc(r.y)}년</span>`;
+      if(SUB>=2)h+=`<div class="ev ${side?'lt':'rt'}" style="--ew:${ew}px;top:${y};${side?'right:calc(50% + 62px)':'left:calc(50% + 62px)'}">${ev}</div>`;}
+  });
+  tl.innerHTML=h;
+}
+addEventListener('resize',()=>{if(P===3)drawP3();});
+/* ④ 확인 */
+function drawP4(){
+  const rows=S.rows.filter(r=>r.y||r.t),good=rows.filter(r=>yearOk(r.y)&&r.t.trim());
+  const ordered=rows.every((r,i)=>i===0||!yearOk(r.y)||!yearOk(rows[i-1].y)||+rows[i-1].y<=+r.y);
+  const C=[
+    [!!S.title.trim(),'연표의 제목을 썼나요?',S.title.trim()?`제목: ${esc(S.title)}`:'① 주제에서 제목을 써요.'],
+    [rows.length>0&&rows.every(r=>yearOk(r.y)),'연도를 모두 썼나요?',rows.length?(rows.every(r=>yearOk(r.y))?`연도 ${rows.length}개`:'연도가 비었거나 네 자리 숫자가 아닌 줄이 있어요.'):'② 중요한 일을 써요.'],
+    [rows.length>0&&rows.every(r=>r.t.trim()),'각 연도에 일어난 일을 썼나요?',rows.length?`${good.length}개 / ${rows.length}개`:''],
+    [rows.length>0&&rows.every(r=>r.e),'관련 있는 그림을 붙였나요?','그림 없이 직접 그려도 좋아요.'],
+    [ordered,'있었던 일을 시간의 순서에 따라 배열했나요?',ordered?'연표에서는 자동으로 시간 순서대로 줄을 세워요.':'② 중요한 일 표의 순서가 섞여 있어요. ‘시간 순서대로 줄 세우기’를 눌러 봐요.'],
+    [null,'연도와 일어난 일이 서로 맞나요?','가족이나 선생님께 여쭈어 확인해 봐요.']
+  ];
+  $('checks').innerHTML=C.map(([ok,q,d])=>`<div class="ck ${ok===null?'':ok?'ok':'no'}"><span class="m">${ok===null?'🔍':ok?'✅':'✏️'}</span><span><b style="font-family:var(--display);font-weight:400">${q}</b><br><small style="color:var(--soft)">${d}</small></span></div>`).join('')
+   +`<p class="hintbar">💬 연표를 만들면서 알게 된 점이나 느낀 점을 말해 봐요. 완성한 연표는 잘 보관했다가 다음 시간에 발표해요.</p>`;
+}
+/* 인쇄 */
+function doPrint(){go(3);SUB=3;FORCE_H=true;drawP3();setTimeout(()=>{try{window.print();}catch(e){}},60);}
+$('btnPrint').onclick=doPrint;$('btnPrint2').onclick=doPrint;
+addEventListener('beforeprint',()=>{if(P!==3){go(3);}FORCE_H=true;SUB=3;drawP3();});
+addEventListener('afterprint',()=>{FORCE_H=false;drawP3();});
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.classList&&e.target.classList.contains('evt')){e.preventDefault();const r=e.target.closest('.trow');const nx=r&&r.nextElementSibling;if(nx)nx.querySelector('.yr').focus();else $('btnAdd').click();}});
+
+wireTools();</script><script>
+(function(){var h=location.hostname,f=location.protocol==='file:';
+ if(f||/github\.io$/.test(h)||/^localhost$/.test(h)){var e=document.getElementById('tolist');if(e)e.classList.add('on');}})();
+</script></body></html>

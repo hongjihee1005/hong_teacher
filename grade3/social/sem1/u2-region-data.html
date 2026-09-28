@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🏘️ 우리 지역 자료실</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.wrap{flex:1;min-height:0;overflow-y:auto;padding:4px 2px 20px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:18px;max-width:1300px;margin:0 auto}
+.dc{background:var(--paper);border-radius:24px;border-top:14px solid var(--cc);padding:clamp(16px,2vw,26px)}
+.dc .big{font-family:var(--display);font-size:clamp(40px,4.6vw,70px);color:var(--cc);line-height:1.1}
+.dc h3{font-family:var(--display);font-weight:400;font-size:clamp(25px,2.5vw,34px);margin:2px 0 8px}
+.dc p{margin:0 0 10px;font-size:clamp(21px,2.1vw,28px);line-height:1.5}
+.bar2{height:22px;background:var(--bg);border-radius:99px;overflow:hidden;border:2px solid var(--line);margin:6px 0 12px}
+.bar2 i{display:block;height:100%;background:var(--cc);width:var(--w)}
+.ask2{background:var(--bg);border-radius:14px;padding:10px 16px;font-size:clamp(20px,2vw,26px);margin-bottom:10px}
+.ask2 b{font-family:var(--display);font-weight:400}
+.src{font-size:clamp(16px,1.6vw,20px);color:var(--soft);display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.go{display:inline-flex;align-items:center;gap:6px;font-family:var(--display);font-size:clamp(18px,1.8vw,23px);text-decoration:none;color:inherit;border:3px solid var(--line);border-radius:999px;padding:4px 14px}
+.go:hover{border-color:var(--ink)}
+.sec{max-width:1300px;margin:26px auto 0}
+.sec h2{font-family:var(--display);font-weight:400;font-size:clamp(26px,2.6vw,36px);margin:0 0 12px}
+.links{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.lk{display:flex;gap:16px;align-items:center;background:var(--paper);border:4px solid var(--line);border-radius:22px;padding:14px 18px;text-decoration:none;color:inherit}
+.lk:hover{border-color:var(--ink)}
+.lk .e{font-size:clamp(36px,3.6vw,52px);flex:none}
+.lk b{font-family:var(--display);font-weight:400;font-size:clamp(23px,2.3vw,30px);display:block}
+.lk small{font-size:clamp(17px,1.7vw,22px);color:var(--soft)}
+.rel{display:none;grid-template-columns:1fr 1fr;gap:16px}
+.rel.on{display:grid}
+.rl{display:flex;gap:14px;align-items:center;background:var(--paper);border:4px solid var(--rc);border-radius:22px;padding:14px 18px;text-decoration:none;color:inherit}
+.rl .e{font-size:clamp(34px,3.4vw,48px)}
+.rl b{font-family:var(--display);font-weight:400;font-size:clamp(23px,2.3vw,30px);display:block}
+.rl small{font-size:clamp(17px,1.7vw,22px);color:var(--soft)}
+.notice{max-width:1300px;margin:20px auto 0;background:var(--paper);border-left:14px solid #6A4FC9;border-radius:16px;padding:16px 22px;font-size:clamp(19px,1.9vw,25px);line-height:1.6}
+.notice b{font-family:var(--display);font-weight:400;color:#6A4FC9}
+@media (max-width:860px){.grid,.links,.rel.on{grid-template-columns:1fr}}
+
+body,h1,h2,h3,h4,p,li,span,div,button,a,td,th,small,b,i{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:16px}
+.creditbar .madeby{width:100%}
+.tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(20px,2vw,26px);
+  text-decoration:none;color:inherit;border:3px solid var(--line,#ccc);background:var(--paper,#fff);border-radius:999px;padding:8px 22px}
+.tolist.on{display:inline-flex}
+.rel.on{display:grid!important}
+.madeby{font-size:16px;color:var(--soft,#666);opacity:.85;text-align:center;font-family:var(--body,sans-serif)}
+
+h1,h2,h3,h4,.title,.hd,.qt,.x,.n,.nm,.big,.lead,.sit,.ask,.qtext,.front .n,.slot b,.dc h3,.lk b,.rl b,dt{text-wrap:balance}
+p,li,small,.d,.ex,.why,.blurb,.ask2,.sub,.msg,.notice,.fix,.retry div,.opt,.opt2,.way,.mbox .n,.dc p,.lk small,.rl small{text-wrap:pretty}
+</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style></head><body>
+
+<section id="main" class="screen on">
+  <div class="topbar"><h1 style="font-size:clamp(28px,2.9vw,42px)">🏘️ 우리 지역 자료실</h1>
+    <div class="tools"><button class="tool" data-full>⛶</button></div></div>
+  <p class="lead" style="font-size:clamp(20px,1.9vw,26px)">2단원 18~27차시 · 부산과 동구의 옛 모습과 달라진 모습을 찾아봐요.</p>
+  <div class="wrap" id="wrap"></div>
+<div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div></section>
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+
+const CFG={"h": "🏘️ 우리 지역 자료실", "sub": "2단원 18~27차시 · 부산과 동구의 옛 모습과 달라진 모습을 찾아봐요.", "cards": [{"c": "#2F74E0", "big": "가마솥 산", "t": "'부산'이라는 이름의 유래", "p": "1530년에 펴낸 책 『신증동국여지승람』에 '산이 가마솥 모양과 같아 이렇게 이름 지었다'는 기록이 있어요. 부산의 '부(釜)'가 가마솥을 뜻해요.", "q": "옛날 사람들은 왜 산 모양을 보고 이름을 지었을까요?", "s": "부산광역시 누리집 「부산유래」, 2026. 9. 확인", "u": "https://www.busan.go.kr/bhnorigin01"}, {"c": "#1F9E63", "big": "범내", "t": "범일동 이름에 담긴 옛이야기", "p": "옛날 이곳 냇가에 때때로 범(호랑이)이 나타나 '범내'라고 불렀다고 해요. 범내 주위에 생긴 마을 '범천1리'를 줄여 부른 이름이 범일동이 되었어요.", "q": "범이 나타나던 곳이 지금은 어떤 모습으로 바뀌었을까요?", "s": "부산광역시 누리집 「동명유래 – 동구」, 2026. 9. 확인", "u": "https://www.busan.go.kr/donggu"}, {"c": "#E8961E", "big": "샛디", "t": "초량은 풀밭이었대요", "p": "옛날 이 근처는 사람이 살지 않고 억새풀과 띠풀이 자라는 풀밭이었대요. 이런 풀밭을 '샛디'라고 불렀고, 풀언덕을 뜻하는 초량이라는 이름이 나왔다고 해요.", "q": "풀밭이던 초량은 지금 어떤 모습인가요? 무엇이 달라졌을까요?", "s": "부산광역시 누리집 「동명유래 – 동구」, 2026. 9. 확인", "u": "https://www.busan.go.kr/donggu"}, {"c": "#16A3B5", "big": "1876년", "t": "바다로 열린 문, 부산항", "p": "부산항은 1876년에 문을 연 뒤 큰 항구로 자라났어요. 2022년 5월 4일부터는 북항의 옛 항구 자리 일부가 시민이 쉬는 공간으로 바뀌어 열렸어요.", "q": "항구가 쉼터로 바뀌면 사람들의 생활은 어떻게 달라질까요?", "s": "부산광역시 발표 (서울신문 2022. 5. 3. 보도)", "u": "https://www.seoul.co.kr/news/society/2022/05/03/20220503500108"}, {"c": "#6A4FC9", "big": "1964년", "t": "산 중턱의 길, 산복도로", "p": "산복도로는 산의 중턱을 깎아 만든 도로예요. 부산의 첫 산복도로인 초량 산복도로는 1962년에 공사를 시작해 1964년에 완성됐어요.", "q": "산비탈에 살던 사람들에게 산복도로가 생기자 무엇이 편해졌을까요?", "s": "부산미래유산(부산광역시) 「미래유산 이야기 – 산복도로」, 2026. 9. 확인", "u": "https://www.busan.go.kr/futureheritage/meetfuture01/1574027"}, {"c": "#E0506B", "big": "388만 → 324만", "t": "부산 사람 수의 변화", "p": "부산 인구는 1995년에 약 388만 명으로 가장 많았어요. 2025년 12월에는 324만 1600명으로 줄었어요.", "q": "사람 수가 줄어들면 우리 지역의 학교나 가게는 어떻게 달라질까요?", "s": "1995년: 부산광역시 인구종합대책 발표(2021. 7. 22.) · 2025년: 행정안전부 주민등록인구 2025년 12월 기준(부산일보 2026. 1. 13. 보도)", "u": "https://v.daum.net/v/20260113182030156"}], "links": [{"e": "🏷️", "t": "부산광역시 · 동구 동명유래", "d": "초량동, 수정동, 좌천동, 범일동 이름의 유래를 읽어요.", "u": "https://www.busan.go.kr/donggu"}, {"e": "🏔️", "t": "부산광역시 · 부산유래", "d": "'부산'이라는 이름이 어떻게 생겼는지 알아봐요.", "u": "https://www.busan.go.kr/bhnorigin01"}, {"e": "🛣️", "t": "부산미래유산 · 산복도로", "d": "산복도로가 생긴 까닭과 옛 모습을 알아봐요.", "u": "https://www.busan.go.kr/futureheritage/meetfuture01/1574027"}, {"e": "🚶", "t": "비짓부산 · 초량이바구길", "d": "옛 이야기가 남아 있는 동구의 길을 알아봐요.", "u": "https://www.visitbusan.net/index.do?menuCd=DOM_000000202004001000&uc_seq=58&lang_cd=ko"}, {"e": "🏦", "t": "부산근현대역사관 관람 안내", "d": "부산의 가까운 옛날 모습을 전시해요.", "u": "https://access.visitkorea.or.kr/ms/detail.do?cotId=9cc53fca-22e7-4d00-ae24-4a6ea0d79feb"}, {"e": "🎞️", "t": "e영상역사관 · 대한뉴스", "d": "'부산'을 검색해 옛 부산 영상을 찾아봐요.", "u": "https://www.ehistory.go.kr/koreanews/korea_news"}, {"e": "🗄️", "t": "국가기록원 디지털 컬렉션", "d": "옛 기록 영상을 살펴봐요.", "u": "https://www.archives.go.kr/next/newtheme/contentsList.do"}, {"e": "📚", "t": "부산광역시 도서관포털", "d": "'부산의 기억' 메뉴에서 부산의 옛 자료를 찾아봐요.", "u": "https://library.busan.go.kr/portal/index.do"}], "rel": [{"f": "u2-l18.html", "c": "#2F74E0", "e": "🔭", "t": "18차시 지역 사람들의 옛 생활 모습을 어떻게 알 수 있을까요", "d": "옛 생활 모습을 알려 주는 자료"}, {"f": "u2-l19.html", "c": "#1F9E63", "e": "📖", "t": "19차시 옛이야기로 지역 사람들의 생활 모습을 알아볼까요", "d": "옛이야기 속 지역의 유래"}, {"f": "u2-l20.html", "c": "#E8961E", "e": "📰", "t": "20차시 여러 가지 자료로 지역 사람들의 옛 생활 모습을 살펴볼까요", "d": "사진·영상·신문으로 옛 모습 보기"}, {"f": "u2-l2122.html", "c": "#E0506B", "e": "📝", "t": "21~22차시 우리 지역 사람들의 달라진 생활 모습을 조사해 볼까요", "d": "달라진 생활 모습 조사하기"}, {"f": "u2-l2324.html", "c": "#6A4FC9", "e": "🎬", "t": "23~24차시 우리 지역 사람들의 달라진 생활 모습을 표현해 볼까요", "d": "달라진 모습 함께 표현하기"}, {"f": "u2-l25.html", "c": "#16A3B5", "e": "📕", "t": "25차시 생각을 펼쳐요 · 재미있게 확인해요", "d": "그림책 만들기, 용어 정리"}, {"f": "u2-l2627.html", "c": "#2F74E0", "e": "🕸️", "t": "26~27차시 생각 그물을 완성해요 · 교실 놀이를 함께해요", "d": "단원 정리와 문장 완성 놀이"}], "notice": "<b>지도상의 유의점(주제 3)<\/b><br>•우리 지역의 역사가 담긴 다양한 자료를 탐색해 볼 수 있도록 한다.<br>•역사 자료를 활용하여 지역과 지역 사람들의 변화상을 합리적으로 추론할 수 있도록 한다.<br>•적절한 자료를 직접 조사해 지역과 지역 사람들의 변화상을 이해해 보는 경험을 제공한다.<br>※ 지도서 235쪽: 이 주제에서는 3학년 수준을 고려하여 성취 기준에 제시된 ‘역사 자료’라는 용어를 개념어로 제시하지 않았습니다. 그래서 학생 화면에는 ‘역사 자료’라는 말을 쓰지 않고 ‘옛 생활 모습을 알려 주는 자료’처럼 풀어 썼습니다.<br><br><b>교과서와 다른 우리 지역 예시<\/b><br>교과서 19차시는 울산 염포동의 유래 웹툰을 다룹니다. 범내·샛디·가마솥 산 카드는 같은 활동을 부산 동구로 옮겨 볼 때 쓰는 보조 자료입니다. 지명 유래는 ‘~라 한다’, ‘~라는 설이 있다’처럼 전해 오는 이야기이니 ‘확정된 사실’이 아니라 ‘전해 오는 이야기’로 안내해 주세요.<br><br><b>인구 수치<\/b><br>1995년 수치(약 388만 명)는 부산시 발표, 2025년 수치(324만 1600명)는 행정안전부 주민등록인구로 집계 기준이 다를 수 있습니다. ‘많이 줄었다’는 흐름을 보는 자료로 써 주세요.<br><br><b>부산항 개항<\/b><br>개항의 역사적 배경은 3학년 수준에서 깊이 다루지 않고, ‘1876년에 문을 연 항구가 오늘날 시민의 쉼터로도 바뀌었다’는 변화에 초점을 맞춰 주세요.<br><br><b>확인(2026. 9. 28.)<\/b><br>북항 친수 공간 개방은 부산시가 발표했습니다(1단계 재개발 사업 시행은 부산항만공사). 부산근현대역사관 누리집은 확인 때 열리지 않아 한국관광공사 열린관광 안내로 링크를 바꾸었습니다."};
+function card(d){return `<article class="dc" style="--cc:${d.c}">
+  ${d.big?`<div class="big">${d.big}</div>`:''}<h3>${d.t}</h3>
+  ${d.w?`<div class="bar2"><i style="--w:${d.w}"></i></div>`:''}
+  <p>${d.p}</p><div class="ask2"><b>💬 함께 생각해요</b><br>${d.q}</div>
+  <div class="src"><span>출처: ${d.s}</span>${d.u?`<a class="go" href="${d.u}" target="_blank" rel="noopener">원문 보기 ↗</a>`:''}</div></article>;`.replace(';','');}
+$('wrap').innerHTML=`<div class="grid">${CFG.cards.map(card).join('')}</div>
+ <div class="sec"><h2>🎬 영상·사진·기사 찾아보기</h2><div class="links">${CFG.links.map(l=>`<a class="lk" href="${l.u}" target="_blank" rel="noopener"><span class="e">${l.e}</span><span><b>${l.t} ↗</b><small>${l.d}</small></span></a>`).join('')}</div></div>
+ <div class="sec"><h2>🔗 이 주제의 수업 자료</h2><div class="rel tolist" id="rel">${CFG.rel.map(r=>`<a class="rl" href="${r.f}" style="--rc:${r.c}"><span class="e">${r.e}</span><span><b>${r.t}</b><small>${r.d}</small></span></a>`).join('')}</div>
+   <p class="lead" style="font-size:19px" id="relNote">수업 자료 연결 버튼은 자료를 내려받아 폴더에서 열거나 누리집에 올렸을 때 나타나요.</p></div>
+ <div class="notice"><b>👩‍🏫 선생님께</b><br><b>지도상의 유의점(주제 3)</b><br>•우리 지역의 역사가 담긴 다양한 자료를 탐색해 볼 수 있도록 한다.<br>•역사 자료를 활용하여 지역과 지역 사람들의 변화상을 합리적으로 추론할 수 있도록 한다.<br>•적절한 자료를 직접 조사해 지역과 지역 사람들의 변화상을 이해해 보는 경험을 제공한다.<br>※ 지도서 235쪽: 이 주제에서는 3학년 수준을 고려하여 성취 기준에 제시된 ‘역사 자료’라는 용어를 개념어로 제시하지 않았습니다. 그래서 학생 화면에는 ‘역사 자료’라는 말을 쓰지 않고 ‘옛 생활 모습을 알려 주는 자료’처럼 풀어 썼습니다.<br><br><b>교과서와 다른 우리 지역 예시</b><br>교과서 19차시는 울산 염포동의 유래 웹툰을 다룹니다. 범내·샛디·가마솥 산 카드는 같은 활동을 부산 동구로 옮겨 볼 때 쓰는 보조 자료입니다. 지명 유래는 ‘~라 한다’, ‘~라는 설이 있다’처럼 전해 오는 이야기이니 ‘확정된 사실’이 아니라 ‘전해 오는 이야기’로 안내해 주세요.<br><br><b>인구 수치</b><br>1995년 수치(약 388만 명)는 부산시 발표, 2025년 수치(324만 1600명)는 행정안전부 주민등록인구로 집계 기준이 다를 수 있습니다. ‘많이 줄었다’는 흐름을 보는 자료로 써 주세요.<br><br><b>부산항 개항</b><br>개항의 역사적 배경은 3학년 수준에서 깊이 다루지 않고, ‘1876년에 문을 연 항구가 오늘날 시민의 쉼터로도 바뀌었다’는 변화에 초점을 맞춰 주세요.<br><br><b>확인(2026. 9. 28.)</b><br>북항 친수 공간 개방은 부산시가 발표했습니다(1단계 재개발 사업 시행은 부산항만공사). 부산근현대역사관 누리집은 확인 때 열리지 않아 한국관광공사 열린관광 안내로 링크를 바꾸었습니다.</div>`;
+
+wireTools();</script><script>
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});var n=document.getElementById('relNote');if(n)n.style.display='none';}})();
+</script></body></html>

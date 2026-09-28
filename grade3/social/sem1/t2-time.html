@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>⏳ 주제 1 · 생활 속에서 만나는 시간의 흐름</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.tabs{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin:8px 0}
+.tab{font-family:var(--display);font-size:clamp(20px,2vw,28px);padding:9px 22px;border-radius:999px;border:4px solid var(--line);background:var(--paper)}
+.tab[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.wrap{flex:1;min-height:0;overflow-y:auto;padding:6px 2px 20px}
+.flow{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:12px;max-width:1300px;margin:0 auto}
+.fc{background:var(--paper);border-radius:18px;border-left:12px solid var(--cc);padding:12px 16px}
+.fc .n{font-family:var(--display);color:var(--cc);font-size:clamp(18px,1.8vw,23px)}
+.fc b{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.1vw,28px);display:block;margin:2px 0 4px}
+.fc p{font-size:clamp(17px,1.7vw,22px);color:var(--soft);margin:0}
+.fc a{display:inline-block;margin-top:8px;font-family:var(--display);font-size:clamp(17px,1.7vw,22px);color:inherit;text-decoration:none;border:3px solid var(--line);border-radius:999px;padding:3px 12px}
+.words{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;max-width:1300px;margin:18px auto 0}
+.wd{background:var(--paper);border-radius:18px;border-top:12px solid var(--cc);padding:14px 18px}
+.wd b{font-family:var(--display);font-weight:400;font-size:clamp(23px,2.3vw,31px);display:block;color:var(--cc)}
+.wd p{font-size:clamp(18px,1.8vw,24px);line-height:1.5;margin:4px 0 0}
+.gal2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:14px;max-width:1300px;margin:0 auto}
+.g2{background:var(--paper);border-radius:18px;border-top:12px solid var(--cc);padding:12px 16px;text-align:left}
+.g2 img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:12px;cursor:zoom-in;border:3px solid var(--line)}
+.g2 .num{font-family:var(--display);font-size:clamp(32px,3.4vw,50px);color:var(--cc);line-height:1.1}
+.g2 b{font-family:var(--display);font-weight:400;font-size:clamp(20px,2vw,27px);display:block;margin-top:6px}
+.g2 p{font-size:clamp(17px,1.7vw,23px);margin:4px 0 0;line-height:1.45}
+.g2 small{font-size:14px;color:var(--soft);display:block;margin-top:6px}
+.acts{display:grid;gap:14px;max-width:1100px;margin:0 auto}
+.act{background:var(--paper);border-radius:20px;border-left:14px solid var(--cc);padding:14px 20px;text-align:left}
+.act b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.2vw,30px);display:block}
+.act .m{color:var(--soft);font-size:clamp(17px,1.7vw,22px);margin:2px 0 6px}
+.act p{font-size:clamp(18px,1.8vw,25px);line-height:1.5;margin:0}
+.act button{margin-top:10px;border:3px solid #6A4FC9;color:#6A4FC9;background:var(--paper);border-radius:14px;padding:6px 16px;font-size:clamp(17px,1.7vw,22px)}
+.qz{max-width:1000px;margin:0 auto;background:var(--paper);border-radius:20px;border:4px solid var(--line);padding:clamp(16px,2.2vw,30px)}
+.qz .qt{font-family:var(--display);font-size:clamp(24px,2.6vw,36px);line-height:1.35}
+.opts3{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.opt3{border:4px solid var(--line);background:var(--paper);border-radius:16px;padding:12px 16px;font-family:var(--body);font-size:clamp(19px,2vw,27px);text-align:left}
+.opt3.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.opt3.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 14%,var(--paper))}
+.qmsg{margin-top:12px;border-radius:14px;padding:12px 16px;display:none;font-size:clamp(18px,1.8vw,25px);line-height:1.5}
+.qmsg.on{display:block}
+.qmsg.ok{background:color-mix(in srgb,var(--ok) 16%,var(--paper));border:3px solid var(--ok)}
+.qmsg.no{background:color-mix(in srgb,var(--no) 12%,var(--paper));border:3px solid var(--no)}
+.bigview{position:fixed;inset:0;background:rgba(8,12,22,.95);display:none;align-items:center;justify-content:center;z-index:30;padding:6px}
+.bigview.on{display:flex}
+.bigview img{max-width:98vw;max-height:88vh;border-radius:12px}
+.bigview .close{position:fixed;top:14px;right:16px;font-size:28px;border:0;border-radius:50%;width:60px;height:60px;background:rgba(255,255,255,.9);color:#1F2A44}
+.bigview .meta{position:fixed;left:0;right:0;bottom:0;padding:10px 16px 14px;background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;text-align:center}
+.bigview .meta b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.4vw,32px);display:block}
+.bigview .meta small{color:#dbe3f0;font-size:14px}
+.steps2{display:grid;gap:8px;text-align:left;margin:10px 0 16px}
+.steps2 div{background:var(--bg);border-radius:12px;padding:10px 14px;font-size:clamp(18px,1.8vw,24px)}
+@media (max-width:860px){.opts3{grid-template-columns:1fr}}
+
+body,h1,h2,h3,h4,p,li,span,div,button,a,td,th,small,b,i{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:16px}
+.creditbar .madeby{width:100%}
+.tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(20px,2vw,26px);
+  text-decoration:none;color:inherit;border:3px solid var(--line,#ccc);background:var(--paper,#fff);border-radius:999px;padding:8px 22px}
+.tolist.on{display:inline-flex}
+.rel.on{display:grid!important}
+.madeby{font-size:16px;color:var(--soft,#666);opacity:.85;text-align:center;font-family:var(--body,sans-serif)}
+
+h1,h2,h3,h4,.title,.hd,.qt,.x,.n,.nm,.big,.lead,.sit,.ask,.qtext,.front .n,.slot b,.dc h3,.lk b,.rl b{text-wrap:balance}
+p,li,small,.d,.ex,.why,.blurb,.ask2,.sub,.msg,.notice,.fix,.retry div,.opt,.opt2,.way,.mbox .n,.dc p,.lk small,.rl small{text-wrap:pretty}
+</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style></head><body>
+
+<section id="main" class="screen on">
+  <div class="topbar"><h1 style="font-size:clamp(26px,2.7vw,40px)">⏳ 주제 1 · 생활 속에서 만나는 시간의 흐름</h1>
+    <div class="tools"><button class="tool" data-full>⛶</button></div></div>
+  <p class="lead" style="font-size:clamp(18px,1.8vw,24px)">2단원 2~9차시를 한 번에 훑어보는 자료예요.</p>
+  <div class="tabs" id="tabs"></div>
+  <div class="wrap" id="wrap"></div>
+<div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div></section>
+<div class="bigview" id="bv"><button class="close" id="bvX">✕</button><img id="bvI" alt=""><div class="meta"><b id="bvT"></b><small id="bvS"></small></div></div>
+<div class="overlay" id="mo"><div class="panel" style="--pc:#6A4FC9"><h2 id="moT"></h2><p class="why" id="moG"></p><div class="steps2" id="moS"></div><p class="why" id="moTip" style="font-size:clamp(18px,1.8vw,24px)"></p><button class="big-btn" id="moX">닫기</button></div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+/* 모둠(팀) 공통 기능 */
+let TEAMS=4,TURN=0,SCORES=[];
+function teamSeg(id){seg(id,[[1,'반 전체'],[2,'2'],[3,'3'],[4,'4'],[5,'5'],[6,'6']],()=>TEAMS,v=>TEAMS=v);}
+function teamInit(){SCORES=Array(TEAMS).fill(0);TURN=0;}
+function teamAdd(n){SCORES[TURN]=(SCORES[TURN]||0)+n;}
+function teamNext(){TURN=(TURN+1)%TEAMS;}
+function teamChips(el){if(!el)return;el.className='scores';
+  el.innerHTML=TEAMS===1?`<span class="chip now">⭐ ${SCORES[0]}점</span>`:SCORES.map((s,i)=>`<span class="chip ${i===TURN?'now':''}">${i+1}모둠 ${s}</span>`).join('');}
+function teamTurn(){return TEAMS===1?'':`🙋 지금은 ${TURN+1}모둠 차례예요`;}
+function teamPodium(){
+  if(TEAMS===1)return `<span class="chip win">⭐ ${SCORES[0]}점</span>`;
+  const mx=Math.max(...SCORES);
+  return SCORES.map((s,i)=>`<span class="chip ${s===mx?'win':''}">${i+1}모둠 ${s}점</span>`).join('');
+}
+function teamWinnerText(){
+  if(TEAMS===1)return `우리 반 점수는 ${SCORES[0]}점이에요.`;
+  const mx=Math.max(...SCORES),w=SCORES.map((s,i)=>s===mx?i+1:null).filter(Boolean);
+  return `${w.join(', ')}모둠이 가장 많은 점수를 얻었어요!`;
+}
+
+const C={"h": "⏳ 주제 1 · 생활 속에서 만나는 시간의 흐름", "color": "#6A4FC9", "sub": "2단원 2~9차시를 한 번에 훑어보는 자료예요.", "photos": {}, "flow": [{"n": "2차시", "t": "일상에서 시간을 나타내는 말을 살펴볼까요", "d": "과거·현재·미래와 시간을 나타내는 말", "u": "u2-l2.html"}, {"n": "3차시", "t": "나에게 있었던 중요한 일을 떠올려 볼까요", "d": "과거와 달라진 내 모습, 중요한 일 기록하기", "u": "u2-l3.html"}, {"n": "4차시", "t": "우리 가족에게 있었던 중요한 일을 살펴볼까요", "d": "가족의 중요한 일, ‘10년간’과 연도", "u": "u2-l4.html"}, {"n": "5차시", "t": "우리 학교에 있었던 중요한 일을 조사해 볼까요", "d": "학교 역사관·누리집, 학교 연혁과 연대", "u": "u2-l5.html"}, {"n": "6~7차시", "t": "나와 가족, 우리 학교의 중요한 일을 시간의 흐름에 따라 나타내 볼까요", "d": "연표의 뜻과 연표 만들기", "u": "u2-l67.html"}, {"n": "8차시", "t": "나와 가족, 우리 학교의 중요한 일을 소개해 볼까요", "d": "시간을 나타내는 말로 연표 소개하기", "u": "u2-l8.html"}, {"n": "9차시", "t": "생각을 펼쳐요 / 재미있게 확인해요", "d": "인생 삼각 책·오감 연표, 타임머신 암호", "u": "u2-l9.html"}], "words": [{"t": "과거", "d": "지나간 시간을 말하며 ‘어제’, ‘옛날’, ‘오래전’과 같은 말로 나타내요."}, {"t": "현재", "d": "지금의 시간을 말하며 ‘오늘’, ‘오늘날’과 같은 말로 나타내요."}, {"t": "미래", "d": "아직 오지 않은 시간을 말하며 ‘내일’, ‘나중’, ‘훗날’과 같은 말로 나타내요."}, {"t": "연월일", "d": "해와 달과 날을 함께 이르는 말이에요."}, {"t": "연도", "d": "시간을 나타내는 말 중 어느 한 해 동안을 가리키는 말이에요."}, {"t": "연표", "d": "시간의 순서에 따라 중요한 일을 늘어놓은 것이에요."}], "data": [{"big": "과거·현재·미래", "c": "#6A4FC9", "t": "시간은 흘러가요", "d": "시간은 과거, 현재, 미래로 흘러가요. 시간을 나타내는 말과 연월일 날짜로 어느 때와 기간을 나타내요.", "s": "교과서 73쪽 · 지도서 138쪽"}, {"big": "2017 → 2025", "c": "#E0506B", "t": "주현이에게 있었던 중요한 일", "d": "2017년 태어남 → 2022년 고양이 입양 → 2024년 초등학교 입학 → 2025년 태권도 금메달", "s": "교과서 75쪽"}, {"big": "15년 전", "c": "#1F9E63", "t": "민수네 가족에게 있었던 일", "d": "15년 전 부모님 결혼 → 6년 전 동생 출생 → 3년 전 입원 → 한 달 전 이사", "s": "교과서 78쪽"}, {"big": "1894년", "c": "#E8961E", "t": "교과서 속 학교의 연혁", "d": "1894년 학교가 세워짐 → 1963년 재학생 5,250명 → 1994년 100년 기념 행사 → 2017년 역사관을 다시 엶", "s": "교과서 81쪽"}, {"big": "연표", "c": "#2F74E0", "t": "연표에 적는 것", "d": "제목, 중요한 일과 그 일이 일어난 때를 적어요. 모양과 내용은 만드는 사람에 따라 달라요.", "s": "교과서 84~85쪽 · 지도서 165쪽"}, {"big": "📦", "c": "#16A3B5", "t": "타임캡슐", "d": "어느 한 때를 대표하는 기록이나 물건을 담아 보관하는 도구예요.", "s": "교과서 92쪽"}], "acts": [{"t": "시간을 나타내는 말 모으기", "m": {"k": "round", "e": "🔄", "n": "돌아가며 말하기", "c": "#1F9E63", "time": "5분", "type": "이야기 나누기", "goal": "모둠원이 빠짐없이 한 번씩 말하게 해요.", "need": "모둠 자리, 말하기 순서표(또는 지우개 같은 말하기 막대)", "steps": ["① 순서를 정해요. 1번부터 시계 방향으로 돌아가요.", "② 과거, 현재, 미래를 나타내는 말을 한 사람이 한 가지씩만 말해요. 앞사람과 같은 말은 안 돼요.", "③ 더 말할 것이 없으면 “통과”라고 말하고 넘겨요.", "④ 한 바퀴가 끝나면 모둠에서 나온 말을 과거, 현재, 미래로 나누어 봐요."], "tip": "“통과”를 허용해야 말이 느린 아이도 부담 없이 참여합니다.", "when": "2차시 시간을 나타내는 말 모으기, 9차시 주제 정리"}, "d": "모둠이 돌아가며 시간을 나타내는 말을 하나씩 말하고, 모은 말을 과거·현재·미래로 나눠요. (2차시)"}, {"t": "옛날의 나와 지금의 나", "m": {"k": "compare", "e": "⚖️", "n": "옛날·오늘날 짝 비교", "c": "#6A4FC9", "time": "10분", "type": "자료 다루기", "goal": "옛날의 나와 지금의 나를 나란히 놓고 달라진 점과 그대로인 점을 찾아요.", "need": "내 옛날 사진(없으면 기억나는 모습을 그림이나 글로 대신)", "steps": ["① 옛날 사진을 보고 언제, 어디에서 찍었는지 말해요.", "② 겉모습이 달라진 점을 찾아 적어요.", "③ 지금은 할 수 있게 된 일을 적어요.", "④ 그대로인 점도 1가지 찾아 적어요."], "tip": "“그대로인 점”을 꼭 찾게 하면 변화만 보지 않고 이어짐도 보게 됩니다. 사진은 강요하지 않습니다.", "when": "3차시 과거와 현재의 내 모습 비교하기"}, "d": "옛날 사진(없으면 그림이나 글)을 보고 달라진 점과 할 수 있게 된 일을 찾아요. (3차시)"}, {"t": "우리 학교를 졸업한 어른께 여쭙기", "m": {"k": "interview", "e": "🎤", "n": "가족 인터뷰", "c": "#E0506B", "time": "과제 + 10분", "type": "조사", "goal": "가족에게 물어보며 옛날과 오늘날을 직접 비교해요.", "need": "인터뷰 질문지(3문항) · 지도서 162쪽 활동지", "steps": ["① 우리 학교 누리집의 ‘학교 연혁’을 보고 궁금한 점으로 질문 3개를 정해요. (예: 그때는 한 반에 몇 명이 공부했나요?)", "② 가족이나 이웃 중 우리 학교를 졸업한 어른께 여쭙고 답을 적어 와요.", "③ 들은 일이 언제 있었던 일인지 학교 연혁으로 한 번 더 확인해요.", "④ 모둠끼리 새롭게 알게 된 사실을 모아 시간 순서대로 정리해요."], "tip": "가족 상황이 다양하므로 “가족 중 어른 한 분”으로 열어 두고, 어려우면 선생님과 하도록 합니다.", "when": "5차시 우리 학교에 있었던 중요한 일 조사하기"}, "d": "학교 누리집의 ‘학교 연혁’을 보고 궁금한 점을 질문으로 만들어 여쭤요. (5차시)"}, {"t": "나와 가족, 우리 학교의 연표 만들기", "m": {"k": "timeline", "e": "📏", "n": "시간 줄 세우기", "c": "#E8961E", "time": "10분", "type": "자료 다루기", "goal": "연표에 넣을 일을 시간 순서대로 놓으며 흐름을 잡아요.", "need": "붙임쪽지(일 한 가지에 한 장), 교과서 86쪽에 정리한 내용", "steps": ["① 연표에 넣을 중요한 일을 붙임쪽지에 한 가지씩 써요.", "② 가장 오래된 일부터 가장 최근 일까지 순서대로 놓아요.", "③ 연도가 순서에 맞는지 짝과 서로 확인해요.", "④ 순서가 정해지면 활동 자료 7·8로 연표를 만들어요."], "tip": "지도서 167쪽 꿀 Tip처럼 “교과서 86쪽에 정리한 내용을 시간 순서대로 다시 배열한 후” 연표를 만들면 순서 실수가 줄어듭니다.", "when": "6~7차시 연표 만들기"}, "d": "중요한 일을 붙임쪽지에 한 가지씩 써서 시간 순서대로 놓은 뒤 연표로 만들어요. (6~7차시)"}, {"t": "내가 만든 연표 소개하기", "m": {"k": "round", "e": "🔄", "n": "돌아가며 말하기", "c": "#1F9E63", "time": "10분", "type": "이야기 나누기", "goal": "모둠원이 빠짐없이 한 번씩 자기 연표를 소개하게 해요.", "need": "지난 시간에 만든 연표, 모둠 자리, 말하기 순서표", "steps": ["① 모둠에서 소개 순서를 정해요. 1번부터 시계 방향으로 돌아가요.", "② 내 연표를 들고 시간을 나타내는 말을 넣어 일이 일어난 순서대로 소개해요.", "③ 듣는 친구는 나와 같은 점 한 가지, 다른 점 한 가지를 말해요.", "④ 한 바퀴가 끝나면 반 전체에 소개할 연표를 하나 골라요."], "tip": "소개하고 싶지 않은 일은 빼고 말해도 된다고 먼저 알려 주면 가족 이야기를 부담 없이 나눌 수 있습니다.", "when": "8차시 내가 만든 연표 소개하기"}, "d": "시간을 나타내는 말을 넣어 일이 일어난 순서대로 소개하고, 친구 연표와 같은 점·다른 점을 말해요. (8차시)"}], "quiz": [{"q": "지나간 시간을 말하며 ‘어제’, ‘옛날’, ‘오래전’과 같은 말로 나타내는 것은 무엇일까요?", "o": ["과거", "현재", "미래", "연월일"], "a": 0, "w": "과거는 지나간 시간이에요. (2차시, 교과서 73쪽)"}, {"q": "아직 오지 않은 시간을 무엇이라고 할까요?", "o": ["미래", "과거", "현재", "오래전"], "a": 0, "w": "미래는 ‘내일’, ‘나중’, ‘훗날’과 같은 말로 나타내요. (2차시)"}, {"q": "해와 달과 날을 함께 이르는 말은 무엇일까요?", "o": ["연월일", "연도", "연표", "요일"], "a": 0, "w": "연월일은 해와 달과 날을 함께 이르는 말이에요. (2차시)"}, {"q": "내가 겪은 중요한 일을 남길 때 좋은 방법은 무엇일까요?", "o": ["일이 일어난 순서대로 기록해요.", "생각나는 대로 섞어서 기록해요.", "날짜와 장소는 빼고 기록해요.", "기록하지 않고 기억만 해요."], "a": 0, "w": "날짜와 장소 등을 쓰고, 일이 일어난 순서대로 기록하는 것이 좋아요. (3차시)"}, {"q": "시간을 나타내는 말 중 어느 한 해 동안을 가리키는 말은 무엇일까요?", "o": ["연도", "오늘날", "훗날", "요일"], "a": 0, "w": "어느 한 해 동안을 가리키는 말은 연도예요. (4차시)"}, {"q": "현재 우리 가족의 모습과 생활이 달라진 까닭은 무엇일까요?", "o": ["과거에 일어난 중요한 일들 때문이에요.", "달력의 모양이 바뀌었기 때문이에요.", "아무 까닭 없이 저절로 바뀌었어요.", "날씨가 매일 바뀌기 때문이에요."], "a": 0, "w": "현재 우리 가족의 모습과 생활은 과거에 일어난 중요한 일들로 달라졌어요. (4차시)"}, {"q": "과거의 여러 해를 묶어서 무엇이라고 할까요?", "o": ["연대", "연도", "연월일", "오늘날"], "a": 0, "w": "과거의 여러 해를 묶어서 ‘연대’라고 해요. 1960년대는 1960년부터 1969년까지예요. (5차시)"}, {"q": "학교의 발전 과정을 과거부터 중요한 사건별로 정리한 표는 무엇일까요?", "o": ["학교 연혁", "졸업 앨범", "일기", "달력"], "a": 0, "w": "학교 연혁은 학교 누리집에서 찾아볼 수 있어요. (5차시, 지도서 158쪽)"}, {"q": "시간의 순서에 따라 중요한 일을 늘어놓은 것을 무엇이라고 할까요?", "o": ["연표", "일기", "달력", "지도"], "a": 0, "w": "연표를 보면 과거에 있었던 일을 한눈에 알 수 있어요. (6~7차시, 교과서 84쪽)"}, {"q": "내가 만든 연표를 소개하는 방법으로 알맞은 것은 무엇일까요?", "o": ["시간을 나타내는 말과 함께 일이 일어난 순서에 따라 이야기해요.", "생각나는 대로 순서 없이 이야기해요.", "연도는 빼고 이야기해요.", "친구의 연표와 똑같이 이야기해요."], "a": 0, "w": "연표를 소개할 때는 시간을 나타내는 말과 함께 순서에 따라 이야기해요. (8차시, 교과서 91쪽)"}]};const PH=C.photos||{};
+let tab='flow',qi=0,qs=0;
+const TABS=[['flow','🗺️ 주제 한눈에 보기'],['data','📷 자료 살펴보기'],['act','🔍 탐구 활동'],['quiz','✅ 주제 정리 퀴즈']];
+function render(){
+  $('tabs').innerHTML=TABS.map(([k,n])=>`<button class="tab" data-k="${k}" aria-pressed="${tab===k}">${n}</button>`).join('');
+  $('tabs').querySelectorAll('.tab').forEach(b=>b.onclick=()=>{tab=b.dataset.k;if(tab==='quiz'){qi=0;qs=0;}render();$('wrap').scrollTop=0;});
+  ({flow:flow,data:data,act:acts,quiz:quiz})[tab]();
+}
+function flow(){
+  $('wrap').innerHTML=`<div class="flow">${C.flow.map(f=>`<article class="fc" style="--cc:${C.color}">
+    <span class="n">${f.n}</span><b>${f.t}</b><p>${f.d}</p>${f.u?`<a href="${f.u}" target="_blank" rel="noopener">수업 자료 열기 ↗</a>`:''}</article>`).join('')}</div>
+   <div class="words">${C.words.map(w=>`<div class="wd" style="--cc:${C.color}"><b>${w.t}</b><p>${w.d}</p></div>`).join('')}</div>`;
+}
+function data(){
+  $('wrap').innerHTML=`<div class="gal2">${C.data.map(d=>`<article class="g2" style="--cc:${d.c||C.color}">
+    ${d.p&&PH[d.p]?`<img src="${PH[d.p].data}" alt="" data-ph="${d.p}">`:`<div class="num">${d.big||''}</div>`}
+    <b>${d.t}</b><p>${d.d}</p><small>${d.s}</small></article>`).join('')}</div>`;
+  $('wrap').querySelectorAll('img[data-ph]').forEach(im=>im.onclick=()=>{const p=PH[im.dataset.ph];
+    $('bvI').src=p.data;$('bvT').textContent=p.name;
+    $('bvS').textContent=`${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on');});
+}
+function acts(){
+  $('wrap').innerHTML=`<div class="acts">${C.acts.map((a,i)=>`<article class="act" style="--cc:${C.color}">
+    <b>${a.t}</b><p class="m">${a.m.type} · ${a.m.time} · 준비물: ${a.m.need}</p><p>${a.d}</p>
+    <button data-i="${i}">📋 ${a.m.n} 진행 순서 보기</button></article>`).join('')}</div>`;
+  $('wrap').querySelectorAll('.act button').forEach(b=>b.onclick=()=>{
+    const m=C.acts[+b.dataset.i].m;
+    $('moT').textContent=`${m.e} ${m.n}`;$('moG').textContent=m.goal;
+    $('moS').innerHTML=m.steps.map(s=>`<div>${s}</div>`).join('');
+    $('moTip').innerHTML=`💡 ${m.tip}`;openO('mo');});
+}
+$('moX').onclick=()=>closeO('mo');
+$('bvX').onclick=()=>$('bv').classList.remove('on');
+$('bv').onclick=e=>{if(e.target.id!=='bvI')$('bv').classList.remove('on');};
+function quiz(){
+  if(qi>=C.quiz.length){
+    $('wrap').innerHTML=`<div class="qz" style="text-align:center"><div style="font-size:70px">🎉</div>
+      <p class="qt">${C.quiz.length}문제 중 ${qs}문제를 맞혔어요!</p>
+      <p style="font-size:clamp(19px,1.9vw,26px);color:var(--soft)">틀린 문제는 '주제 한눈에 보기'에서 다시 확인해 봐요.</p>
+      <button class="big-btn" id="again">다시 풀기</button></div>`;
+    $('again').onclick=()=>{qi=0;qs=0;quiz();};return;}
+  const q=C.quiz[qi],ord=shuffle(q.o.map((_,i)=>i));
+  $('wrap').innerHTML=`<div class="qz"><p style="color:var(--soft);font-size:clamp(17px,1.7vw,22px);margin:0 0 6px">${qi+1} / ${C.quiz.length}</p>
+    <div class="qt">${q.q}</div><div class="opts3">${ord.map((o,n)=>`<button class="opt3" data-o="${o}">${n+1}. ${q.o[o]}</button>`).join('')}</div>
+    <div class="qmsg" id="qm"></div><div style="text-align:right"><button class="big-btn" id="qn" style="display:none;font-size:clamp(20px,2vw,28px);padding:10px 26px">다음</button></div></div>`;
+  $('wrap').querySelectorAll('.opt3').forEach(b=>b.onclick=()=>{
+    const ok=+b.dataset.o===q.a;if(ok)qs++;beep(ok?'ok':'no');
+    $('wrap').querySelectorAll('.opt3').forEach(x=>{x.disabled=true;if(+x.dataset.o===q.a)x.classList.add('right');});
+    if(!ok)b.classList.add('wrong');
+    $('qm').className='qmsg on '+(ok?'ok':'no');$('qm').innerHTML=`<b style="font-family:var(--display)">${ok?'정답이에요!':'정답을 확인해 봐요'}</b><br>${q.w}`;
+    $('qn').style.display='inline-block';$('qn').onclick=()=>{qi++;quiz();};});
+}
+render();
+
+wireTools();</script><script>
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});var n=document.getElementById('relNote');if(n)n.style.display='none';}})();
+</script></body></html>

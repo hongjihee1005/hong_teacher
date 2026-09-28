@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>⏳ 시간의 흐름 우표첩</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EEF4EA; --paper:#FFFFFF; --ink:#23324A; --soft:#5A6A80; --line:#CFDCCB;
+  --ok:#1F9E63; --no:#D2453A; --accent:#6A4FC9;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#18241C;--paper:#243329;--ink:#F1F5EF;--soft:#B8C6B8;--line:#3C5143;}
+}
+:root[data-theme="dark"]{--bg:#18241C;--paper:#243329;--ink:#F1F5EF;--soft:#B8C6B8;--line:#3C5143;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;min-height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:clamp(22px,2.4vw,28px);line-height:1.5}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:4px solid var(--accent);outline-offset:3px}
+main{max-width:980px;margin:0 auto;padding:clamp(14px,3vw,36px)}
+.screen{display:none}.screen.on{display:block}
+h1,h2{font-family:var(--display);font-weight:400;margin:0}
+h1{font-size:clamp(38px,5.6vw,64px);line-height:1.15}
+h2{font-size:clamp(30px,4.2vw,46px)}
+.sub{color:var(--soft);margin:6px 0 0;word-break:keep-all}
+.bar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:18px;flex-wrap:wrap}
+.homeb{border:3px solid var(--line);background:var(--paper);border-radius:14px;padding:6px 16px;font-size:22px}
+.btn{border:0;background:var(--ink);color:var(--bg);border-radius:999px;padding:12px 34px;font-size:clamp(26px,3vw,34px);box-shadow:0 5px 0 rgba(0,0,0,.2)}
+.btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.btn[disabled]{opacity:.35}
+.speak{border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 14px;font-size:20px;vertical-align:middle}
+.center{text-align:center}
+.badge{display:inline-grid;place-items:center;width:1.2em;height:1.2em;border-radius:50%;background:var(--accent);color:#fff;font-family:var(--display);font-size:.8em;line-height:1}
+.album{margin-top:22px;display:grid;gap:18px}
+.slot{display:flex;align-items:center;gap:18px;background:var(--paper);border:3px dashed var(--line);border-radius:22px;padding:16px 20px;text-align:left;width:100%;font-family:var(--body);font-size:inherit}
+.slot .stamp{flex:none;width:clamp(84px,12vw,112px);aspect-ratio:1;border-radius:10px;display:grid;place-items:center;font-size:clamp(40px,6vw,56px);background:var(--bg);border:4px dashed var(--line);filter:grayscale(1);opacity:.55}
+.slot.done{border-style:solid;border-color:var(--sc)}
+.slot.done .stamp{filter:none;opacity:1;border:6px dotted var(--sc);background:var(--paper);transform:rotate(-6deg)}
+.slot b{font-family:var(--display);font-weight:400;font-size:clamp(28px,3.6vw,38px);display:block}
+.slot small{color:var(--soft);font-size:clamp(20px,2.2vw,24px)}
+.slot .num{font-family:var(--display);font-size:22px;color:var(--soft)}
+.reset{margin-top:16px;background:none;border:0;color:var(--soft);font-family:var(--body);font-size:18px;text-decoration:underline}
+.flipgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,400px),1fr));gap:18px;margin:14px 0 22px}
+.flip{position:relative;min-height:260px;border:0;padding:0;background:none;perspective:1200px;text-align:left;font-family:var(--body);font-size:inherit}
+.flip .in{position:absolute;inset:0;transition:transform .5s;transform-style:preserve-3d}
+.flip.open .in{transform:rotateY(180deg)}
+.face{position:absolute;inset:0;backface-visibility:hidden;border-radius:22px;padding:18px 22px;display:flex;flex-direction:column;justify-content:center}
+.front{background:var(--cc);color:#fff;align-items:center;text-align:center}
+.front .e{font-size:72px;line-height:1}
+.front .n{font-family:var(--display);font-size:clamp(34px,4.4vw,46px)}
+.front small{opacity:.9;font-size:20px}
+.back{background:var(--paper);border:5px solid var(--cc);transform:rotateY(180deg);gap:6px}
+.back b{font-family:var(--display);font-weight:400;font-size:clamp(28px,3.4vw,34px);color:var(--cc)}
+.back .d{font-size:clamp(22px,2.6vw,27px);word-break:keep-all}
+.back .ex{font-size:clamp(19px,2.2vw,22px);color:var(--soft);word-break:keep-all}
+.prog{height:14px;background:var(--paper);border-radius:99px;overflow:hidden;border:2px solid var(--line);margin:4px 0 16px}
+.prog i{display:block;height:100%;background:var(--accent);width:0;transition:width .3s}
+.letter{background:var(--paper);border-radius:18px;padding:22px 24px;border:3px solid var(--line);position:relative;
+  background-image:repeating-linear-gradient(135deg,#E0506B 0 14px,transparent 14px 28px,#2F74E0 28px 42px,transparent 42px 56px);background-size:100% 10px;background-repeat:no-repeat}
+.letter .tag{display:inline-block;border:3px dashed var(--soft);color:var(--soft);border-radius:8px;padding:0 10px;font-family:var(--display);font-size:20px;transform:rotate(-3deg)}
+.letter .row{display:flex;gap:16px;align-items:center;margin-top:8px}
+.letter .e{font-size:clamp(60px,9vw,88px);line-height:1;flex:none}
+.cimg{width:clamp(120px,20vw,220px);aspect-ratio:4/3;object-fit:cover;border-radius:14px;display:block;border:3px solid var(--line);cursor:zoom-in}
+.zoomhint{display:block;font-size:14px;color:var(--soft);text-align:center;margin-top:4px}
+.bigview{position:fixed;inset:0;background:rgba(8,12,22,.95);display:none;align-items:center;justify-content:center;z-index:30;padding:6px}
+.bigview.on{display:flex}
+.bigview img{max-width:98vw;max-height:88vh;border-radius:12px}
+.bigview .close{position:fixed;top:calc(14px + env(safe-area-inset-top,0px));right:16px;font-size:28px;border:0;border-radius:50%;width:60px;height:60px;background:rgba(255,255,255,.9);color:#1F2A44}
+.bigview .meta{position:fixed;left:0;right:0;bottom:0;padding:10px 16px calc(12px + env(safe-area-inset-bottom,0px));background:linear-gradient(transparent,rgba(0,0,0,.75));color:#fff;text-align:center}
+.bigview .meta b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.4vw,32px);display:block}
+.bigview .meta small{color:#dbe3f0;font-size:14px}
+.phcredit{margin-top:22px;background:var(--paper);border-left:12px solid var(--accent);border-radius:14px;padding:12px 18px;font-size:15px;color:var(--soft);line-height:1.5}
+.phcredit b{font-family:var(--display);font-weight:400;color:var(--accent);font-size:18px}
+.letter .x{font-family:var(--display);font-size:clamp(28px,3.8vw,40px);line-height:1.35;word-break:keep-all}
+.boxes{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-top:18px}
+.mbox{border:0;background:var(--cc);color:#fff;border-radius:40px 40px 14px 14px;padding:14px 8px;display:flex;flex-direction:column;align-items:center;box-shadow:0 5px 0 rgba(0,0,0,.2)}
+.mbox .e{font-size:44px;line-height:1.1}.mbox .n{font-size:clamp(22px,2.8vw,28px);text-align:center;word-break:keep-all}
+.mbox.dim{opacity:.3}
+.mbox.shake{animation:shake .4s}
+@keyframes shake{25%{transform:translateX(-8px)}50%{transform:translateX(8px)}75%{transform:translateX(-4px)}}
+.msg{margin-top:16px;border-radius:16px;padding:14px 18px;display:none;word-break:keep-all}
+.msg.on{display:block}
+.msg.ok{background:color-mix(in srgb,var(--ok) 16%,var(--paper));border:3px solid var(--ok)}
+.msg.no{background:color-mix(in srgb,var(--no) 12%,var(--paper));border:3px solid var(--no)}
+.msg b{font-family:var(--display);font-weight:400;font-size:clamp(26px,3vw,32px);display:block}
+.next{margin-top:14px;text-align:right}
+.q{background:var(--paper);border-radius:18px;padding:22px 24px;border:3px solid var(--line)}
+.q .qt{font-family:var(--display);font-size:clamp(28px,3.8vw,40px);line-height:1.35;word-break:keep-all}
+.opts{display:grid;gap:12px;margin-top:16px}
+.opts.ox{grid-template-columns:1fr 1fr}
+.opt{border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:12px 18px;font-size:clamp(24px,3vw,30px);text-align:left;word-break:keep-all}
+.opts.ox .opt{font-size:clamp(56px,9vw,84px);text-align:center;padding:6px}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.opt.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 14%,var(--paper))}
+.result{text-align:center;padding:10px 0}
+.result .big{font-size:96px;line-height:1.1}
+.result .stars{font-size:52px;letter-spacing:6px}
+.retry{margin-top:18px;background:var(--paper);border-radius:16px;padding:14px 18px;text-align:left}
+.retry div{padding:8px 0;border-bottom:2px dashed var(--line);word-break:keep-all}
+.retry div:last-child{border:0}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+body,h1,h2,h3,h4,p,li,span,div,button,a,td,th,small,b,i{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:10px;margin-top:16px}
+.creditbar .madeby{width:100%}
+.tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(20px,2vw,26px);
+  text-decoration:none;color:inherit;border:3px solid var(--line,#ccc);background:var(--paper,#fff);border-radius:999px;padding:8px 22px}
+.tolist.on{display:inline-flex}
+.rel.on{display:grid!important}
+.madeby{font-size:16px;color:var(--soft,#666);opacity:.85;text-align:center;font-family:var(--body,sans-serif)}
+
+h1,h2,h3,h4,.title,.hd,.qt,.x,.n,.nm,.big,.lead,.sit,.ask,.qtext,.front .n,.slot b,.dc h3,.lk b,.rl b{text-wrap:balance}
+p,li,small,.d,.ex,.why,.blurb,.ask2,.sub,.msg,.notice,.fix,.retry div,.opt,.opt2,.way,.mbox .n,.dc p,.lk small,.rl small{text-wrap:pretty}
+</style>
+<style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style></head>
+<body>
+<main>
+<section id="home" class="screen on">
+  <h1 id="hTitle"></h1>
+  <p class="sub">세 가지 공부를 마치고 우표를 모아 보세요. 순서대로 하면 더 쉬워요.</p>
+  <div class="album" id="album"></div>
+  <div class="center"><button class="reset" id="btnReset">우표첩 처음부터 다시 모으기</button></div>
+<div class="creditbar"><a class="tolist" data-topic href="u2-time-data.html">📊 ⏳ 시간의 흐름 자료실</a><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div></section>
+<section id="s1" class="screen">
+  <div class="bar"><button class="homeb" data-home>🏠 우표첩</button><h2>① 뜻 알아보기</h2></div>
+  <p class="sub">카드를 눌러 뒤집어 보세요. 모든 카드를 뒤집으면 우표를 받아요.</p>
+  <div class="flipgrid" id="flips"></div>
+  <div class="center"><button class="btn" id="btnS1Done" disabled>우표 받기</button></div>
+</section>
+<section id="s2" class="screen">
+  <div class="bar"><button class="homeb" data-home>🏠 우표첩</button><h2>② 분류 연습</h2><span id="s2Count"></span></div>
+  <div class="prog"><i id="s2Bar"></i></div>
+  <p class="sub" id="s2Ask" style="margin-bottom:10px"></p>
+  <div class="letter">
+    <span class="tag" id="lTag"></span> <button class="speak" id="lSpeak">🔈 읽어 주기</button>
+    <div class="row"><div class="e" id="lE"></div><div class="x" id="lX"></div></div>
+  </div>
+  <div class="boxes" id="boxes"></div>
+  <div class="msg" id="lMsg"></div>
+  <div class="next"><button class="btn" id="btnL" style="display:none">다음</button></div>
+</section>
+<section id="s3" class="screen">
+  <div class="bar"><button class="homeb" data-home>🏠 우표첩</button><h2>③ 확인 퀴즈</h2><span id="s3Count"></span></div>
+  <div class="prog"><i id="s3Bar"></i></div>
+  <div class="q">
+    <div class="qt" id="qT"></div>
+    <button class="speak" id="qSpeak" style="margin-top:8px">🔈 읽어 주기</button>
+    <div class="opts" id="qO"></div>
+  </div>
+  <div class="msg" id="qMsg"></div>
+  <div class="next"><button class="btn" id="btnQ" style="display:none">다음 문제</button></div>
+</section>
+<section id="res" class="screen"><div class="result" id="resBox"></div></section>
+<div class="bigview" id="bv"><button class="close" id="bvX" aria-label="닫기">✕</button><img id="bvI" alt=""><div class="meta"><b id="bvT"></b><small id="bvS"></small></div></div>
+</main>
+<script>
+const CFG={"title": "⏳ 시간의 흐름 우표첩", "key": "s31-time-v1", "tag": "", "ask": "이 말은 과거, 현재, 미래 중 언제를 나타낼까요?", "s2desc": "시간을 나타내는 말을 과거·현재·미래로 나눠요.", "hint": "힌트: 이미 지나갔는지, 지금인지, 아직 오지 않았는지 생각해 보세요.", "photos": {}, "concepts": [{"n": "과거", "e": "⏪", "c": "#6A4FC9", "d": "지나간 시간", "ex": "예) 어제, 옛날, 오래전"}, {"n": "현재", "e": "📍", "c": "#1F9E63", "d": "지금의 시간", "ex": "예) 오늘, 오늘날"}, {"n": "미래", "e": "⏩", "c": "#2F74E0", "d": "아직 오지 않은 시간", "ex": "예) 내일, 나중, 훗날"}, {"n": "연월일", "e": "🗓️", "c": "#E8961E", "d": "해와 달과 날을 함께 이르는 말", "ex": "예) 2026년 5월 4일"}, {"n": "연도", "e": "📆", "c": "#E0506B", "d": "시간을 나타내는 말 중 어느 한 해 동안을 가리키는 말", "ex": "예) 내가 태어난 2017년"}, {"n": "연표", "e": "📏", "c": "#16A3B5", "d": "시간의 순서에 따라 중요한 일을 늘어놓은 것", "ex": "연표를 보면 과거에 있었던 일을 한눈에 알 수 있어요."}], "bins": [{"k": "past", "n": "과거", "e": "⏪", "c": "#6A4FC9"}, {"k": "now", "n": "현재", "e": "📍", "c": "#1F9E63"}, {"k": "fut", "n": "미래", "e": "⏩", "c": "#2F74E0"}], "cards": [{"c": "past", "e": "🌙", "x": "어제", "w": "‘어제’는 지나간 시간, 과거를 나타내요."}, {"c": "past", "e": "📜", "x": "옛날", "w": "‘옛날’은 과거를 나타내는 말이에요."}, {"c": "past", "e": "🕰️", "x": "오래전", "w": "‘오래전’은 과거를 나타내는 말이에요."}, {"c": "now", "e": "☀️", "x": "오늘", "w": "‘오늘’은 지금의 시간, 현재를 나타내요."}, {"c": "now", "e": "🏙️", "x": "오늘날", "w": "‘오늘날’은 현재를 나타내는 말이에요."}, {"c": "fut", "e": "🌅", "x": "내일", "w": "‘내일’은 아직 오지 않은 시간, 미래를 나타내요."}, {"c": "fut", "e": "⏳", "x": "나중", "w": "‘나중’은 미래를 나타내는 말이에요."}, {"c": "fut", "e": "🔭", "x": "훗날", "w": "‘훗날’은 미래를 나타내는 말이에요."}, {"c": "past", "e": "📆", "x": "어제는 5월 3일이었습니다.", "w": "어제는 이미 지나간 과거예요.", "t": "교과서 속 오늘: 2026년 5월 4일"}, {"c": "past", "e": "🎒", "x": "나는 2024년에 초등학교에 입학했습니다.", "w": "2024년에 입학한 일은 이미 지나간 과거의 일이에요.", "t": "교과서 속 오늘: 2026년 5월 4일"}, {"c": "now", "e": "🗓️", "x": "오늘은 2026년 5월 4일입니다.", "w": "오늘은 지금의 시간, 현재예요.", "t": "교과서 속 오늘: 2026년 5월 4일"}, {"c": "fut", "e": "4️⃣", "x": "나는 2027년에 4학년이 됩니다.", "w": "4학년이 되는 해는 아직 오지 않은 미래예요.", "t": "교과서 속 오늘: 2026년 5월 4일", "h": "힌트: 교과서 속 오늘은 2026년이에요. 2027년은 지났을까요?"}, {"c": "past", "e": "👶", "x": "주현이는 2017년에 태어났습니다.", "w": "주현이가 태어난 일은 이미 지나간 과거의 일이에요.", "t": "교과서 속 오늘: 2026년 5월 4일"}, {"c": "past", "e": "💍", "x": "민수네 부모님은 15년 전에 결혼했습니다.", "w": "‘15년 전’은 지나간 시간, 과거예요."}], "quiz": [{"q": "지나간 시간을 무엇이라고 할까요?", "o": ["과거", "현재", "미래", "연도"], "a": 0, "w": "과거는 지나간 시간이에요. ‘어제’, ‘옛날’, ‘오래전’으로 나타내요."}, {"q": "아직 오지 않은 시간을 무엇이라고 할까요?", "o": ["미래", "과거", "현재", "오래전"], "a": 0, "w": "미래는 ‘내일’, ‘나중’, ‘훗날’과 같은 말로 나타내요."}, {"q": "현재를 나타내는 말은 무엇일까요?", "o": ["오늘날", "옛날", "훗날", "오래전"], "a": 0, "w": "현재는 지금의 시간이에요. ‘오늘’, ‘오늘날’로 나타내요."}, {"q": "해와 달과 날을 함께 이르는 말은 무엇일까요?", "o": ["연월일", "연도", "연표", "요일"], "a": 0, "w": "연월일은 해와 달과 날을 함께 이르는 말이에요."}, {"ox": true, "q": "일기, 신문, 책, 달력 등에서 시간을 나타내는 말을 찾을 수 있어요.", "a": 0, "w": "맞아요. 일기의 날짜, 신문의 ‘오늘’ 같은 말을 찾을 수 있어요."}, {"ox": true, "q": "내가 겪은 중요한 일을 남길 때는 일이 일어난 순서대로 기록하는 것이 좋아요.", "a": 0, "w": "맞아요. 날짜와 장소도 함께 쓰면 좋아요."}, {"q": "어느 한 해 동안을 가리키는 말은 무엇일까요?", "o": ["연도", "오늘날", "훗날", "요일"], "a": 0, "w": "시간을 나타내는 말 중 어느 한 해 동안을 가리키는 말은 연도예요."}, {"q": "과거의 일정한 시간(기간)을 나타내는 말은 무엇일까요?", "o": ["‘한 달 동안’", "‘내일’", "‘훗날’", "‘오늘날’"], "a": 0, "w": "과거의 일정한 시간은 ‘한 달 동안’, ‘10년간’처럼 나타내요."}, {"ox": true, "q": "현재 우리 가족의 모습과 생활은 과거에 일어난 일과 관계가 없어요.", "a": 1, "w": "아니에요. 현재 우리 가족의 모습과 생활은 과거에 일어난 중요한 일들로 달라졌어요."}, {"q": "1960년대는 언제부터 언제까지일까요?", "o": ["1960년부터 1969년까지", "1960년부터 1970년까지", "1950년부터 1960년까지", "1961년부터 1970년까지"], "a": 0, "w": "과거의 여러 해를 묶어서 ‘연대’라고 해요."}, {"q": "시간의 순서에 따라 중요한 일을 늘어놓은 것은 무엇일까요?", "o": ["연표", "일기", "달력", "지도"], "a": 0, "w": "연표에는 제목, 중요한 일과 그 일이 일어난 때를 적어요."}, {"q": "내가 만든 연표를 소개할 때 알맞은 방법은 무엇일까요?", "o": ["시간을 나타내는 말과 함께 일이 일어난 순서에 따라 말해요.", "생각나는 대로 순서 없이 말해요.", "연도는 빼고 말해요.", "친구의 연표와 똑같이 말해요."], "a": 0, "w": "‘2017년에’처럼 때를 넣어 순서대로 말하면 듣는 친구가 알기 쉬워요."}]};
+const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+const BIN=Object.fromEntries(CFG.bins.map(b=>[b.k,b]));
+const PH=CFG.photos||{};
+const icon=(c)=>c.p&&PH[c.p]?`<img class="cimg" src="${PH[c.p].data}" alt="${PH[c.p].name}" data-ph="${c.p}"><span class="zoomhint">🔍 눌러서 크게</span>`:(c.e?c.e:`<span class="badge">${c.x.trim()[0]}</span>`);
+let ST={s1:false,s2:false,s3:0};
+try{const v=JSON.parse(localStorage.getItem(CFG.key)||'null');if(v)ST={...ST,...v};}catch(e){}
+function save(){try{localStorage.setItem(CFG.key,JSON.stringify(ST));}catch(e){}}
+function speak(t){try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ko-KR';u.rate=.9;speechSynthesis.speak(u);}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));window.scrollTo(0,0);try{speechSynthesis.cancel();}catch(e){}}
+document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>{renderHome();show('home');});
+$('hTitle').textContent=CFG.title;document.title=CFG.title+' - 집에서 공부하기';
+$('s2Ask').textContent=CFG.ask;
+function renderHome(){
+  const stars=ST.s3?'⭐'.repeat(ST.s3):'';
+  const items=[
+    {id:'s1',done:ST.s1,e:'📖',c:'#2F74E0',t:'뜻 알아보기',d:'중요한 낱말의 뜻을 카드로 알아봐요.'},
+    {id:'s2',done:ST.s2,e:'📮',c:'#E0506B',t:'분류 연습',d:CFG.s2desc+' 틀리면 한 번 더 기회가 있어요.'},
+    {id:'s3',done:ST.s3>0,e:'🏅',c:'#E8961E',t:'확인 퀴즈',d:ST.s3?`받은 별 ${stars} · 다시 풀어 별을 더 모아 보세요.`:'10문제를 풀고 별을 받아요.'}
+  ];
+  $('album').innerHTML=items.map((it,i)=>`<button class="slot ${it.done?'done':''}" style="--sc:${it.c}" data-go="${it.id}">
+    <span class="stamp">${it.e}</span><span><span class="num">${i+1}단계 ${it.done?'· 우표 받음':''}</span><b>${it.t}</b><small>${it.d}</small></span></button>`).join('');
+  const pk=Object.keys(PH);
+  document.querySelectorAll('.phcredit').forEach(e=>e.remove());
+  if(pk.length)$('album').insertAdjacentHTML('afterend',`<div class="phcredit"><b>사진 출처</b> · 위키미디어 공용에서 자유롭게 쓸 수 있는 사진이에요.<br>${pk.map(k=>`${PH[k].name} — ${PH[k].title} / ${PH[k].artist||'작자 미상'} / ${PH[k].lic}`).join('<br>')}</div>`);
+  document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>({s1:startS1,s2:startS2,s3:startS3})[b.dataset.go]());
+}
+$('btnReset').onclick=()=>{if(confirm('모은 우표를 모두 지우고 처음부터 할까요?')){ST={s1:false,s2:false,s3:0};save();renderHome();}};
+function startS1(){
+  const seen=new Set();
+  $('flips').innerHTML=CFG.concepts.map((c,i)=>`<button class="flip" style="--cc:${c.c}" data-i="${i}" aria-label="${c.n} 카드 뒤집기">
+    <span class="in"><span class="face front"><span class="e">${c.e}</span><span class="n">${c.n}</span><small>눌러서 뜻 보기</small></span>
+    <span class="face back"><b>${c.e} ${c.n}</b><span class="d">${c.d}</span><span class="ex">${c.ex||''}</span></span></span></button>`).join('');
+  $('btnS1Done').disabled=true;
+  document.querySelectorAll('.flip').forEach(f=>f.onclick=()=>{
+    f.classList.toggle('open');const c=CFG.concepts[+f.dataset.i];
+    if(f.classList.contains('open')){speak(`${c.n}. ${c.d}`);seen.add(f.dataset.i);}
+    if(seen.size===CFG.concepts.length)$('btnS1Done').disabled=false;
+  });
+  show('s1');
+}
+$('btnS1Done').onclick=()=>{ST.s1=true;save();result('📖','뜻 알아보기 우표를 받았어요!','이제 ② 분류 연습을 해 볼까요?');};
+let L={deck:[],i:0,tries:0,first:0,miss:[]};
+function startS2(){
+  const pools=CFG.bins.map(b=>shuffle(CFG.cards.filter(c=>c.c===b.k)));
+  const deck=[];let n=0;const total=Math.min(12,CFG.cards.length);
+  while(deck.length<total){const p=pools[n%pools.length];if(p.length)deck.push(p.pop());n++;}
+  L={deck:shuffle(deck),i:0,tries:0,first:0,miss:[]};
+  $('boxes').innerHTML=CFG.bins.map(b=>`<button class="mbox" style="--cc:${b.c}" data-k="${b.k}"><span class="e">${b.e}</span><span class="n">${b.n}</span></button>`).join('');
+  document.querySelectorAll('.mbox').forEach(b=>b.onclick=()=>pick(b));
+  show('s2');showLetter();
+}
+function showLetter(){
+  const c=L.deck[L.i];L.tries=0;
+  $('lTag').textContent=c.t||CFG.tag;$('lTag').style.display=(c.t||CFG.tag)?'inline-block':'none';
+  $('lE').innerHTML=icon(c);
+  const im=$('lE').querySelector('.cimg');
+  if(im)im.onclick=()=>{const p=PH[im.dataset.ph];$('bvI').src=p.data;$('bvT').textContent=p.name;
+    $('bvS').textContent=`${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on');};$('lX').textContent=c.x;
+  $('s2Count').textContent=`${L.i+1} / ${L.deck.length}`;$('s2Bar').style.width=(L.i/L.deck.length*100)+'%';
+  $('lMsg').className='msg';$('btnL').style.display='none';
+  document.querySelectorAll('.mbox').forEach(b=>{b.disabled=false;b.classList.remove('dim');});
+}
+$('lSpeak').onclick=()=>speak(L.deck[L.i].x);
+function pick(b){
+  const c=L.deck[L.i],ok=b.dataset.k===c.c,m=$('lMsg'),bin=BIN[c.c];L.tries++;
+  if(ok){if(L.tries===1)L.first++;m.className='msg on ok';m.innerHTML=`<b>딩동! ${bin.n}, 맞아요 🎉</b>${c.w}`;finishLetter();speak('맞아요! '+c.w);}
+  else if(L.tries===1){b.classList.add('shake','dim');b.disabled=true;setTimeout(()=>b.classList.remove('shake'),450);
+    m.className='msg on no';m.innerHTML=`<b>한 번 더 생각해 봐요</b>${c.h||CFG.hint}`;speak('한 번 더 생각해 봐요.');}
+  else{L.miss.push(c);m.className='msg on no';m.innerHTML=`<b>정답은 ${bin.e} ${bin.n}이에요</b>${c.w}`;finishLetter();speak(`정답은 ${bin.n}이에요. `+c.w);}
+}
+function finishLetter(){document.querySelectorAll('.mbox').forEach(b=>b.disabled=true);$('btnL').textContent=L.i+1<L.deck.length?'다음':'결과 보기';$('btnL').style.display='inline-block';$('btnL').focus();}
+$('btnL').onclick=()=>{
+  L.i++;if(L.i<L.deck.length){showLetter();return;}
+  ST.s2=true;save();
+  const list=L.miss.length?`<div class="retry"><b style="font-family:var(--display);font-weight:400">다시 살펴볼 것</b>${L.miss.map(c=>`<div>${c.e||'•'} ${c.x}<br>→ ${BIN[c.c].n}</div>`).join('')}</div>`:'';
+  result('📮',`${L.deck.length}개 중 ${L.first}개를 한 번에 맞혔어요!`,'분류 연습 우표를 받았어요. 이제 ③ 확인 퀴즈에 도전해 봐요.',list);
+};
+let Q={list:[],i:0,score:0,miss:[]};
+function startS3(){Q={list:shuffle(CFG.quiz).slice(0,10),i:0,score:0,miss:[]};show('s3');showQ();}
+function showQ(){
+  const q=Q.list[Q.i];
+  $('s3Count').textContent=`${Q.i+1} / ${Q.list.length}`;$('s3Bar').style.width=(Q.i/Q.list.length*100)+'%';
+  $('qT').textContent=q.q;$('qMsg').className='msg';$('btnQ').style.display='none';
+  $('qO').className='opts'+(q.ox?' ox':'');
+  if(q.ox){q._ord=[0,1];$('qO').innerHTML=['⭕','❌'].map((o,i)=>`<button class="opt" data-i="${i}" aria-label="${i?'엑스':'오'}">${o}</button>`).join('');}
+  else{q._ord=shuffle(q.o.map((_,i)=>i));$('qO').innerHTML=q._ord.map((o,n)=>`<button class="opt" data-i="${o}">${n+1}. ${q.o[o]}</button>`).join('');}
+  document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>answer(+b.dataset.i));
+}
+$('qSpeak').onclick=()=>{const q=Q.list[Q.i];speak(q.ox?q.q+' 맞으면 오, 틀리면 엑스를 누르세요.':q.q+' '+q._ord.map((o,n)=>(n+1)+'번, '+q.o[o]).join('. '));};
+function answer(i){
+  const q=Q.list[Q.i],ok=i===q.a,btns=[...document.querySelectorAll('.opt')];
+  btns.forEach(b=>{b.disabled=true;if(+b.dataset.i===q.a)b.classList.add('right');if(+b.dataset.i===i&&!ok)b.classList.add('wrong');});
+  if(ok)Q.score++;else Q.miss.push(q);
+  const m=$('qMsg');m.className='msg on '+(ok?'ok':'no');m.innerHTML=`<b>${ok?'정답이에요! 🎉':'아쉬워요, 정답을 확인해 봐요'}</b>${q.w}`;
+  speak((ok?'정답이에요. ':'')+q.w);
+  $('btnQ').textContent=Q.i+1<Q.list.length?'다음 문제':'결과 보기';$('btnQ').style.display='inline-block';$('btnQ').focus();
+}
+$('btnQ').onclick=()=>{
+  Q.i++;if(Q.i<Q.list.length){showQ();return;}
+  const r=Q.score/Q.list.length,stars=r>=.9?3:r>=.6?2:1;ST.s3=Math.max(ST.s3,stars);save();
+  const list=Q.miss.length?`<div class="retry"><b style="font-family:var(--display);font-weight:400">틀린 문제 다시 보기</b>${Q.miss.map(q=>`<div>${q.q}<br>→ ${q.w}</div>`).join('')}</div>`:'';
+  result('🏅',`${Q.list.length}문제 중 ${Q.score}문제를 맞혔어요!`,`<span class="stars">${'⭐'.repeat(stars)}${'☆'.repeat(3-stars)}</span>`,list);
+};
+function result(e,t,d,extra=''){
+  $('resBox').innerHTML=`<div class="big">${e}</div><h2>${t}</h2><p class="sub" style="font-size:1.1em">${d}</p><p><button class="btn" id="btnBack">우표첩 보기</button></p>${extra}`;
+  $('btnBack').onclick=()=>{renderHome();show('home');};show('res');
+}
+$('bvX').onclick=()=>$('bv').classList.remove('on');
+$('bv').onclick=e=>{if(e.target.id!=='bvI')$('bv').classList.remove('on');};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('bv').classList.remove('on');});
+renderHome();
+</script>
+<script>
+(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);
+ if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});var n=document.getElementById('relNote');if(n)n.style.display='none';}})();
+</script></body>
+</html>

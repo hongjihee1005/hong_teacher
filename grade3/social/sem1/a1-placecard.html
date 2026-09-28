@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>장소 카드 놀이</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>:root{
+  --bg:#EAF1F8; --paper:#FFFFFF; --ink:#1F2A44; --soft:#4F5B75; --line:#CAD6E4;
+  --ok:#1F9E63; --no:#D2453A; --acc:#2F74E0;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;}
+*,*::before,*::after{box-sizing:inherit}
+html{height:100%;scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:26px;overflow:hidden}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible{outline:5px solid var(--acc);outline-offset:4px}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(14px,2vw,30px)}
+.screen.on{display:flex}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.title{font-size:clamp(52px,7vw,100px);line-height:1.1;text-align:center}
+.lead{font-size:clamp(24px,2.4vw,34px);color:var(--soft);margin:0;text-align:center;word-break:keep-all}
+.center-col{align-items:center;justify-content:center;gap:clamp(14px,2.2vh,28px);overflow-y:auto}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap;justify-content:center}
+.row-label{font-family:var(--display);font-size:clamp(24px,2.2vw,32px)}
+.seg{display:flex;border:3px solid var(--line);border-radius:18px;overflow:hidden;background:var(--paper)}
+.seg button{border:0;background:transparent;font-size:clamp(22px,2vw,30px);padding:10px 20px;min-width:70px}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg)}
+.big-btn{font-size:clamp(32px,3.2vw,48px);padding:14px 50px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 6px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.big-btn[disabled]{opacity:.35}
+.ghost-btn{font-size:clamp(22px,2vw,30px);padding:10px 26px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.tools{display:flex;gap:10px;align-items:center}
+.tool{font-size:24px;border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 16px}
+.chip{font-family:var(--display);font-size:clamp(22px,2vw,30px);padding:6px 18px;border-radius:999px;background:var(--paper);border:3px solid var(--line)}
+.chip.now{border-color:var(--ink);background:var(--ink);color:var(--bg)}
+.chip.win{border-color:#E8961E;background:#E8961E;color:#fff}
+.scores{display:flex;gap:10px;flex-wrap:wrap}
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:20px;z-index:10}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:28px;padding:clamp(24px,3vw,48px);width:min(1100px,94vw);max-height:92vh;overflow-y:auto;text-align:center;border-top:18px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(44px,5vw,72px);margin:0 0 10px}
+.panel .why{font-size:clamp(28px,2.6vw,38px);line-height:1.55;margin:0 auto 22px;max-width:36em;word-break:keep-all}
+@media (prefers-reduced-motion: reduce){*{animation:none!important;transition:none!important}}
+
+
+.hand{display:inline-block}
+.legend2{display:flex;gap:14px;flex-wrap:wrap;justify-content:center;width:min(1100px,96vw)}
+.legend2 div{background:var(--paper);border-radius:18px;padding:10px 18px;font-size:clamp(20px,1.9vw,26px);border:3px solid var(--line);max-width:32em;text-align:left;line-height:1.45}
+.legend2 b{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.3vw,32px)}
+.stage{flex:1;min-height:0;display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:clamp(12px,1.6vw,24px);margin:10px 0 0}
+.cardwrap{min-height:0;display:flex;align-items:center;justify-content:center}
+.pcard{height:100%;max-height:560px;aspect-ratio:3/4;max-width:100%;border-radius:28px;border:6px solid var(--pc,var(--line));background:var(--paper);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:18px;text-align:center;position:relative;font-family:var(--display);box-shadow:0 8px 0 rgba(0,0,0,.15)}
+.pcard.back{background:repeating-linear-gradient(45deg,#6A4FC9 0 18px,#7B62D6 18px 36px);border-color:#4B3596;color:#fff;cursor:pointer}
+.pcard.back .n{background:rgba(0,0,0,.35);border-radius:18px;padding:8px 18px;font-size:clamp(26px,2.6vw,38px)}
+.pcard .big{font-size:clamp(70px,9vh,120px);line-height:1}
+.pcard .nm{font-size:clamp(40px,4.4vw,64px);line-height:1.15}
+.pcard .how{font-size:clamp(26px,2.5vw,36px);border-radius:999px;padding:6px 20px;background:var(--pc);color:#fff}
+.pcard .hint{font-family:var(--body);font-size:clamp(20px,1.9vw,26px);line-height:1.45;color:var(--ink)}
+.pcard .src{font-family:var(--body);font-size:17px;color:var(--soft)}
+.peek{font-size:clamp(22px,2vw,28px);padding:12px 20px;border-radius:18px;border:4px dashed var(--pc);background:var(--paper);user-select:none;-webkit-user-select:none;touch-action:none}
+.side{min-height:0;overflow-y:auto;display:flex;flex-direction:column;gap:8px;background:var(--paper);border-radius:24px;padding:clamp(14px,1.6vw,24px);border:3px solid var(--line)}
+.side .step{font-size:clamp(21px,2vw,27px);line-height:1.45;margin:0}
+.side .step b{font-family:var(--display);font-weight:400}
+.srow{display:flex;flex-direction:column;gap:4px}
+.srow .lb{font-family:var(--display);font-size:clamp(21px,2vw,27px)}
+.sbtns{display:flex;flex-wrap:wrap;gap:8px}
+.sbtns button{font-size:clamp(20px,1.9vw,26px);padding:4px 14px;border-radius:14px;border:3px solid var(--line);background:var(--bg);min-width:3.4em}
+.sbtns button[aria-pressed="true"]{background:var(--ok);border-color:var(--ok);color:#fff}
+.note{font-size:clamp(19px,1.8vw,24px);color:var(--soft);line-height:1.45;margin:0}
+.side .big-btn{align-self:center;margin-top:auto}
+.turnl{font-family:var(--display);text-align:center;font-size:clamp(24px,2.3vw,34px);margin:6px 0 0}
+.rules{text-align:left;margin:0 auto 20px;padding-left:1.4em;font-size:clamp(21px,2vw,27px);line-height:1.5;max-width:40em}
+.rules li{margin:6px 0;break-inside:avoid}
+@media (min-width:1000px) and (min-aspect-ratio:1/1){.rules{columns:2;column-gap:36px;max-width:none}.panel{width:min(1240px,96vw)}}
+.pick{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 16px}
+.pick button{font-family:var(--body);font-size:clamp(20px,1.8vw,25px);padding:5px 12px;border-radius:16px;border:3px solid var(--line);background:var(--bg)}
+.pick button[aria-pressed="true"]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 18%,var(--paper))}
+.addrow{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:12px}
+.addrow input{font-family:var(--body);font-size:clamp(20px,1.9vw,26px);padding:8px 14px;border:3px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink);width:min(12em,60vw)}
+@media (max-aspect-ratio: 1/1){
+  .stage{grid-template-columns:1fr;grid-template-rows:minmax(0,1fr) auto}
+  .pcard{max-height:48vh}
+  .side{max-height:44vh}
+}
+
+
+.center-col{justify-content:flex-start}.center-col>:first-child{margin-top:auto}.center-col>:last-child{margin-bottom:auto}
+body,h1,h2,h3,h4,p,li,span,div,button,a,td,th,small,b,i,label,input{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+.creditbar{display:flex;flex-direction:column;align-items:center;gap:10px;margin-top:18px}
+.tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(20px,2vw,26px);
+  text-decoration:none;color:inherit;border:3px solid var(--line,#ccc);background:var(--paper,#fff);border-radius:999px;padding:8px 22px}
+.tolist.on{display:inline-flex}
+h1,h2,h3,h4,.title,.lead,.qtext{text-wrap:balance}
+p,li,small,.why{text-wrap:pretty}
+</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style></head><body>
+
+<section id="start" class="screen on center-col">
+  <h1 class="title">🃏 장소 카드 놀이</h1>
+  <p class="lead">‘우리가 사는 곳’에서 공부한 내용을 떠올리며 장소 카드 놀이를 해 봐요.</p>
+  <div class="legend2">
+    <div><b>✋ 손 그림 카드</b> 몸짓으로 표현해요</div>
+    <div><b>💬 입 그림 카드</b> 말로 설명해요</div>
+  </div>
+  <div class="row"><span class="row-label">활동 단위</span><div class="seg" id="segTeam"></div></div>
+  <div class="row"><button class="ghost-btn" id="btnRules">📖 놀이 방법</button><button class="ghost-btn" id="btnPick">🃏 카드 고르기 (<span id="pickN"></span>장)</button><button class="big-btn" id="btnGo">시작하기</button></div>
+<div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div>
+</section>
+
+<section id="game" class="screen">
+  <div class="topbar"><div class="scores" id="score"></div>
+    <div class="tools"><span class="row-label" id="prog"></span><button class="tool" data-rules>📖</button><button class="tool" data-sound>🔊</button><button class="tool" data-full>⛶</button><button class="tool" data-home>🏠</button></div></div>
+  <p class="turnl" id="turn"></p>
+  <div class="stage">
+    <div class="cardwrap"><div class="pcard back" id="card" role="button" tabindex="0"></div></div>
+    <div class="side" id="side"></div>
+  </div>
+</section>
+
+<section id="end" class="screen center-col">
+  <h1 class="title">🏆 카드를 모두 썼어요!</h1>
+  <p class="lead" id="endLead" style="color:var(--ink)"></p>
+  <div class="scores" id="podium" style="justify-content:center"></div>
+  <p class="lead">💬 우리가 사는 곳의 여러 장소에서의 경험을 이야기해 봐요.<br>사람마다 장소에 관한 생각과 느낌이 다를 수 있어요.</p>
+  <div class="row"><button class="big-btn" id="btnAgain">다시 하기</button><button class="ghost-btn" data-home>처음으로</button></div>
+</section>
+
+<div class="overlay" id="rulesO"><div class="panel" style="--pc:#6A4FC9">
+  <h2 style="font-size:clamp(34px,3.6vw,52px)">📖 놀이 방법</h2>
+  <ol class="rules">
+    <li>장소 카드를 섞어서 뒤집어 놓아요. <small>(화면이 섞어 줘요)</small></li>
+    <li>모둠 친구들과 순서를 정해 돌아가며 카드 한 장을 뽑아 문제를 내요.</li>
+    <li>문제를 내는 사람은 카드에 있는 그림을 보고 그림에 맞는 방법으로 문제를 내요.<br>✋ 장소에서 하는 일을 몸짓으로 표현해요. 책, 학용품, 가방 등 주변 물건을 활용할 수 있어요.<br>💬 카드에 쓰여 있는 문제를 읽거나 장소에서 하는 일을 말로 설명해요.</li>
+    <li>정답을 아는 사람은 자기 이름을 외치고 장소를 말해요. 정답을 먼저 말한 사람이 <b>2점</b>을 얻어요.</li>
+    <li>정답을 말한 사람을 뺀 나머지 사람은 ‘<b>더하기</b>’라고 외치고 그 장소와 관련한 자기 경험이나 느낌을 말해요. 가장 먼저 말한 사람은 <b>2점</b>, 그다음에 말한 사람은 <b>1점</b>을 얻어요.</li>
+    <li>카드를 모두 사용한 뒤 점수를 가장 많이 얻은 사람이 이겨요.</li>
+  </ol>
+  <p class="why" style="font-size:clamp(20px,1.9vw,26px)">💡 경험과 느낌에는 맞고 틀림이 없어요. 친구의 생각이 나와 달라도 존중해요.</p>
+  <button class="big-btn" data-close="rulesO">닫기</button></div></div>
+
+<div class="overlay" id="pickO"><div class="panel" style="--pc:#2F74E0">
+  <h2>🃏 카드 고르기</h2>
+  <p class="why" style="font-size:clamp(19px,1.8vw,24px);margin-bottom:12px">교과서 1단원에 나온 장소예요. 놀이에 쓸 카드를 골라요. (2장 이상)</p>
+  <div class="pick" id="pickBox"></div>
+  <div class="addrow"><input id="addIn" type="text" maxlength="12" placeholder="장소 이름 더하기"><button class="ghost-btn" id="addBtn">➕ 더하기</button><button class="ghost-btn" id="allBtn">모두 고르기</button></div>
+  <button class="big-btn" data-close="pickO">확인</button></div></div>
+
+<div class="overlay" id="msg"><div class="panel"><h2 id="mT"></h2><p class="why" id="mW"></p><button class="big-btn" data-close="msg">확인</button></div></div>
+
+<script>const $=id=>document.getElementById(id);
+const shuffle=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+let SOUND=true,actx=null;
+function beep(kind){
+  if(!SOUND) return;
+  try{
+    actx=actx||new (window.AudioContext||window.webkitAudioContext)();
+    const map={ok:[[660,'triangle'],[880,'triangle']],no:[[300,'square'],[220,'square']],tick:[[520,'sine']],win:[[523,'triangle'],[659,'triangle'],[784,'triangle'],[1047,'triangle']]};
+    (map[kind]||map.tick).forEach(([f,t],i)=>{
+      const o=actx.createOscillator(),g=actx.createGain(),s=actx.currentTime+i*.13;
+      o.type=t;o.frequency.value=f;g.gain.setValueAtTime(.0001,s);
+      g.gain.exponentialRampToValueAtTime(.16,s+.02);g.gain.exponentialRampToValueAtTime(.0001,s+.22);
+      o.connect(g).connect(actx.destination);o.start(s);o.stop(s+.24);
+    });
+  }catch(e){}
+}
+function toggleFull(){try{if(!document.fullscreenElement)document.documentElement.requestFullscreen();else document.exitFullscreen();}catch(e){}}
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id));}
+function openO(id){$(id).classList.add('on');}
+function closeO(id){$(id).classList.remove('on');}
+function wireTools(){
+  document.querySelectorAll('[data-full]').forEach(b=>b.onclick=toggleFull);
+  document.querySelectorAll('[data-sound]').forEach(b=>b.onclick=()=>{SOUND=!SOUND;document.querySelectorAll('[data-sound]').forEach(x=>x.textContent=SOUND?'🔊':'🔇');});
+}
+function seg(id,opts,get,set){
+  const s=$(id);s.innerHTML='';
+  opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
+}
+/* 활동 단위(반·개별·짝·모둠·분단·번호순·기타) 공통 기능 */
+let MODE='class',TEAMS=4,LINES=4,CLASSN=25,ETCNOTE='',TURN=0,SCORES=[];
+const MODES=[['class','🏫 반'],['solo','🙋 개별'],['pair','👫 짝'],['group','👨‍👩‍👧 모둠'],['line','🪑 분단'],['number','🔢 번호순'],['etc','✏️ 기타']];
+function teamSeg(id){
+  const host=$(id); if(!host) return;
+  host.classList.remove('seg');
+  host.style.cssText='display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center;border:0;background:none';
+  host.innerHTML=`<span class="seg" id="${id}-m">${MODES.map(([k,l])=>`<button data-m="${k}" aria-pressed="${MODE===k}">${l}</button>`).join('')}</span><span id="${id}-sub"></span>`;
+  host.querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{MODE=b.dataset.m;teamSeg(id);});
+  const sb=$(id+'-sub'); sb.style.cssText='display:inline-flex;gap:10px;align-items:center;flex-wrap:wrap';
+  const numInput=(sid,val,max)=>`<input id="${sid}" type="number" min="2" max="${max}" value="${val}" style="width:4.5em;font-size:clamp(20px,2vw,28px);padding:6px 10px;border:3px solid var(--line);border-radius:12px;background:var(--paper);color:var(--ink);font-family:var(--body)">`;
+  if(MODE==='group'){
+    sb.innerHTML=`<span class="row-label">몇 모둠</span><span class="seg" id="${id}-n">${[2,3,4,5,6].map(v=>`<button data-n="${v}" aria-pressed="${TEAMS===v}">${v}</button>`).join('')}</span>`;
+    sb.querySelectorAll('[data-n]').forEach(b=>b.onclick=()=>{TEAMS=+b.dataset.n;teamSeg(id);});
+  }else if(MODE==='line'){
+    sb.innerHTML=`<span class="row-label">몇 분단</span><span class="seg" id="${id}-l">${[2,3,4,5,6].map(v=>`<button data-l="${v}" aria-pressed="${LINES===v}">${v}</button>`).join('')}</span>`;
+    sb.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{LINES=+b.dataset.l;teamSeg(id);});
+  }else if(MODE==='number'){
+    sb.innerHTML=`<span class="row-label">우리 반</span>${numInput(id+'-c',CLASSN,40)}<span class="row-label">명 · 1번부터 차례로 답해요</span>`;
+    $(id+'-c').oninput=()=>{CLASSN=Math.max(2,+$(id+'-c').value||25);};
+  }else if(MODE==='etc'){
+    sb.innerHTML=`<input id="${id}-e" type="text" placeholder="예: 두 모둠씩 짝지어 대결" value="${ETCNOTE.replace(/"/g,'&quot;')}" style="width:min(22em,60vw);font-size:clamp(19px,1.9vw,26px);padding:8px 14px;border:3px solid var(--line);border-radius:14px;background:var(--paper);color:var(--ink);font-family:var(--body)">
+      <span class="row-label" style="font-size:clamp(17px,1.6vw,22px);color:var(--soft)">선생님이 방법을 설명한 뒤 '다음'으로 진행해요</span>`;
+    $(id+'-e').oninput=()=>{ETCNOTE=$(id+'-e').value;};
+  }else{
+    const t={class:'반 전체가 함께 답하고 점수를 모아요.',solo:'각자 생각하고 답해요. 점수는 매기지 않아요.',pair:'짝과 의논해서 답해요. 점수는 매기지 않아요.'}[MODE];
+    sb.innerHTML=`<span class="row-label" style="font-size:clamp(18px,1.7vw,23px);color:var(--soft)">${t}</span>`;
+  }
+}
+function unitName(){return MODE==='line'?'분단':'모둠';}
+function teamCount(){
+  if(MODE==='group')return TEAMS;
+  if(MODE==='line')return LINES;
+  return 1;
+}
+function usesTeams(){return MODE==='group'||MODE==='line';}
+function noScore(){return MODE==='solo'||MODE==='pair'||MODE==='etc';}
+function teamInit(){SCORES=Array(teamCount()).fill(0);TURN=0;}
+function teamAdd(n){if(noScore())return;SCORES[TURN]=(SCORES[TURN]||0)+n;}
+function teamNext(){
+  if(usesTeams())TURN=(TURN+1)%teamCount();
+  else if(MODE==='number')TURN=(TURN+1)%Math.max(2,CLASSN);
+}
+function teamChips(el){
+  if(!el)return;el.className='scores';
+  if(noScore()){el.innerHTML='';el.style.display='none';return;}
+  el.style.display='flex';
+  if(usesTeams()){el.innerHTML=SCORES.map((s,i)=>`<span class="chip ${i===TURN?'now':''}">${i+1}${unitName()} ${s}</span>`).join('');}
+  else el.innerHTML=`<span class="chip now">⭐ ${SCORES[0]}점</span>`;
+}
+function teamTurn(){
+  if(MODE==='solo')return '🙋 각자 생각해 보세요';
+  if(MODE==='pair')return '👫 짝과 의논해 보세요';
+  if(MODE==='class')return '🏫 반 전체가 함께 답해요';
+  if(MODE==='number')return `🔢 지금은 ${TURN+1}번 차례예요`;
+  if(MODE==='etc')return ETCNOTE?('✏️ '+ETCNOTE):'✏️ 선생님 안내에 따라 활동해요';
+  return `🙋 지금은 ${TURN+1}${unitName()} 차례예요`;
+}
+function teamPodium(){
+  if(noScore())return '';
+  if(!usesTeams())return `<span class="chip win">⭐ ${SCORES[0]}점</span>`;
+  const mx=Math.max(...SCORES);
+  return SCORES.map((s,i)=>`<span class="chip ${s===mx?'win':''}">${i+1}${unitName()} ${s}점</span>`).join('');
+}
+function teamWinnerText(){
+  if(MODE==='solo')return '각자 푼 문제를 공책과 맞춰 봐요.';
+  if(MODE==='pair')return '짝과 함께 잘 해냈어요.';
+  if(MODE==='etc')return '모두 수고했어요.';
+  if(!usesTeams())return `우리 반 점수는 ${SCORES[0]}점이에요.`;
+  const mx=Math.max(...SCORES),w=SCORES.map((s,i)=>s===mx?i+1:null).filter(Boolean);
+  return `${w.join(', ')}${unitName()}이 가장 많은 점수를 얻었어요!`;
+}
+
+
+
+
+const PLACES=[["병원", "🏥", "t", "아픈 사람을 치료하는 곳이야.", "교과서 64쪽"], ["소방서", "🚒", "g", "불을 끄거나 소방 안전 교육을 하고, 각종 사고로 위험에 빠진 사람을 돕습니다.", "교과서 40쪽"], ["경찰서", "👮", "t", "주민들의 생명과 재산을 보호하여 사람들이 안전하게 생활하도록 살핍니다.", "교과서 40쪽"], ["행정 복지 센터", "🏢", "t", "주민 등록증 발급, 출생 신고 처리, 이웃 돕기 등의 일을 합니다.", "교과서 40쪽"], ["우체국", "📮", "g", "사람들이 원하는 곳으로 편지나 물건 등의 우편물을 전달해 줍니다.", "교과서 40쪽"], ["보건소", "💉", "t", "예방 접종과 방역 활동으로 질병을 미리 막아 사람들의 건강을 지킵니다.", "교과서 40쪽"], ["학교", "🏫", "t", "교실, 운동장 등을 갖추고 학생들이 교육받을 수 있도록 돕습니다.", "교과서 41쪽"], ["도서관", "📚", "t", "사람들에게 책을 빌려주고, 다양한 독서 행사를 엽니다.", "교과서 41쪽"], ["체육관", "🏀", "g", "운동할 수 있는 공간을 제공하거나 건강을 위한 프로그램을 운영합니다.", "교과서 41쪽"], ["공원", "🌳", "g", "사람들이 여가를 즐기거나 휴식, 산책할 수 있는 공간을 제공합니다.", "교과서 41쪽"], ["산", "⛰️", "t", "나무가 우거진 산", "교과서 13쪽"], ["강", "🏞️", "t", "물이 흐르는 강", "교과서 13쪽"], ["시장", "🛒", "g", "물건을 사고파는 시장", "교과서 13쪽"], ["놀이터", "🤸", "g", "놀이터에서 친구와 그네를 탔습니다.", "교과서 62쪽"], ["수영장", "🏊", "g", "수영장에서 수영했습니다.", "교과서 62쪽"]].map(p=>({n:p[0],e:p[1],m:p[2],h:p[3],s:p[4],on:true}));
+const HOW={g:['✋','몸짓으로 표현해요','#E8961E'],t:['💬','말로 설명해요','#2F74E0']};
+let DECK=[],I=0,PH='deck',GOT={a:null,p1:null,p2:null};
+teamSeg('segTeam');
+function openRules(){openO('rulesO');}
+$('btnRules').onclick=openRules;document.querySelectorAll('[data-rules]').forEach(b=>b.onclick=openRules);
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>closeO(b.dataset.close));
+document.querySelectorAll('[data-home]').forEach(b=>b.onclick=()=>{['rulesO','pickO','msg'].forEach(closeO);show('start');});
+function drawPick(){
+  $('pickBox').innerHTML=PLACES.map((p,i)=>`<button data-i="${i}" aria-pressed="${p.on}">${HOW[p.m][0]} ${p.e} ${p.n}</button>`).join('');
+  $('pickBox').querySelectorAll('button').forEach(b=>b.onclick=()=>{const p=PLACES[+b.dataset.i];p.on=!p.on;drawPick();});
+  $('pickN').textContent=PLACES.filter(p=>p.on).length;
+}
+$('btnPick').onclick=()=>{drawPick();openO('pickO');};
+$('allBtn').onclick=()=>{const all=PLACES.every(p=>p.on);PLACES.forEach(p=>p.on=!all);drawPick();};
+$('addBtn').onclick=()=>{const v=$('addIn').value.trim();if(!v)return;
+  const m=PLACES.filter(p=>p.s==='').length%2?'t':'g';
+  PLACES.push({n:v,e:'📍',m,h:'경험을 살려 자유롭게 문제를 내요.',s:'',on:true});$('addIn').value='';drawPick();};
+$('addIn').onkeydown=e=>{if(e.key==='Enter')$('addBtn').click();};
+drawPick();
+
+function targets(){ if(noScore())return []; if(usesTeams())return SCORES.map((s,i)=>i); return [0]; }
+function tName(i){return usesTeams()?`${i+1}${unitName()}`:'우리 반';}
+function questioner(){
+  if(usesTeams())return `${TURN+1}${unitName()}`;
+  if(MODE==='number')return `${TURN+1}번`;
+  return '';
+}
+function start(){
+  const on=PLACES.filter(p=>p.on);
+  if(on.length<2){msg('카드가 부족해요','카드 고르기에서 2장 이상 골라 주세요.');return;}
+  DECK=shuffle(on);I=0;teamInit();PH='deck';show('game');draw();
+}
+function msg(t,w){$('mT').textContent=t;$('mW').textContent=w;openO('msg');}
+function turnText(){
+  const q=questioner();
+  if(q)return `🃏 ${q}이 카드를 뽑아 문제를 내요`;
+  return teamTurn()+' · 문제 낼 사람을 정해요';
+}
+function draw(){
+  teamChips($('score'));$('prog').textContent=`남은 카드 ${DECK.length-I-(PH==='deck'?0:1)}장`;
+  $('turn').textContent=turnText();
+  const c=$('card'),p=DECK[I],h=p?HOW[p.m]:null;
+  c.style.removeProperty('--pc');
+  if(PH==='deck'){
+    c.className='pcard back';c.innerHTML=`<span class="big">🃏</span><span class="n">눌러서 카드 뽑기</span>`;
+    $('side').innerHTML=`<p class="step"><b>② 카드 한 장을 뽑아요.</b></p><p class="step">문제를 내는 사람이 카드를 눌러요. 다른 친구들은 화면을 보지 않아요.</p><p class="note">남은 카드: ${DECK.length-I}장</p><button class="big-btn" id="bDraw">카드 뽑기</button>`;
+    $('bDraw').onclick=pickCard;return;
+  }
+  c.className='pcard';c.style.setProperty('--pc',h[2]);
+  if(PH==='secret'){
+    c.innerHTML=`<span class="big">${h[0]}</span><span class="how">${h[1]}</span><span class="nm" id="secretNm">❓</span><div id="secretH" class="hint" style="visibility:hidden">${p.h}</div>
+      <button class="peek" id="peek">👀 누르고 있으면 보여요<br><small>문제 내는 사람만 봐요</small></button>`;
+    const pk=$('peek'),on=v=>{$('secretNm').textContent=v?`${p.e} ${p.n}`:'❓';$('secretH').style.visibility=v?'visible':'hidden';};
+    pk.onpointerdown=e=>{e.preventDefault();on(true);};['pointerup','pointerleave','pointercancel'].forEach(t=>pk.addEventListener(t,()=>on(false)));
+    pk.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();on(true);}};pk.onkeyup=()=>on(false);
+    $('side').innerHTML=`<p class="step"><b>③ ${h[0]} 그림에 맞게 문제를 내요.</b></p>
+      <p class="step">${p.m==='g'?'카드에 쓰여 있는 장소에서 하는 일을 <b>몸짓</b>으로 표현해요. 책, 학용품, 가방 등 주변 물건을 활용할 수 있어요.':'카드에 쓰여 있는 문제를 읽거나 장소에서 하는 일을 <b>말</b>로 설명해요.'}</p>
+      <p class="step"><b>④ 정답을 아는 사람은 자기 이름을 외치고 장소를 말해요.</b></p>
+      <button class="big-btn" id="bOpen">정답 공개</button>`;
+    $('bOpen').onclick=()=>{PH='open';beep('ok');draw();};return;
+  }
+  c.innerHTML=`<span class="big">${p.e}</span><span class="nm">${p.n}</span><span class="how">${h[0]} ${h[1]}</span><div class="hint">${p.h}</div>${p.s?`<span class="src">${p.s}</span>`:''}`;
+  const T=targets(),last=I+1>=DECK.length;
+  const row=(k,lb)=>T.length?`<div class="srow"><span class="lb">${lb}</span><div class="sbtns" data-k="${k}">${T.map(i=>`<button data-t="${i}" aria-pressed="${GOT[k]===i}">${tName(i)}</button>`).join('')}</div></div>`:'';
+  $('side').innerHTML=`${row('a','④ 정답을 먼저 말했어요 +2')}${row('p1','⑤ ‘더하기’ 가장 먼저 말했어요 +2')}${row('p2','⑤ ‘더하기’ 그다음에 말했어요 +1')}
+    ${T.length?'':`<p class="step"><b>⑤ ‘더하기!’</b> 정답을 말한 사람을 뺀 나머지 사람이 그 장소와 관련한 자기 경험이나 느낌을 말해요.</p>`}
+    <p class="note">💡 경험과 느낌은 맞고 틀림이 없어요. 먼저 말한 순서대로 점수를 얻어요.</p>
+    <button class="big-btn" id="bNext">${last?'결과 보기':'다음 카드'}</button>`;
+  $('side').querySelectorAll('.sbtns button').forEach(b=>b.onclick=()=>{
+    const k=b.parentNode.dataset.k,t=+b.dataset.t,pt=k==='p2'?1:2;
+    if(GOT[k]!==null)SCORES[GOT[k]]-=pt;
+    if(GOT[k]===t)GOT[k]=null;else{GOT[k]=t;SCORES[t]=(SCORES[t]||0)+pt;beep('tick');}
+    draw();});
+  $('bNext').onclick=next;
+}
+function pickCard(){if(PH!=='deck')return;PH='secret';GOT={a:null,p1:null,p2:null};beep('tick');draw();}
+function next(){
+  I++;if(I>=DECK.length){end();return;}
+  teamNext();PH='deck';GOT={a:null,p1:null,p2:null};draw();
+}
+function end(){beep('win');$('endLead').textContent=teamWinnerText().replace('각자 푼 문제를 공책과 맞춰 봐요.','모두 잘 참여했어요.');$('podium').innerHTML=teamPodium();show('end');}
+$('card').onclick=()=>{if(PH==='deck')pickCard();};
+$('card').onkeydown=e=>{if((e.key==='Enter'||e.key===' ')&&PH==='deck'){e.preventDefault();pickCard();}};
+$('btnGo').onclick=start;$('btnAgain').onclick=start;
+
+wireTools();</script><script>
+(function(){var h=location.hostname,f=location.protocol==='file:';
+ if(f||/github\.io$/.test(h)||/^localhost$/.test(h)){var e=document.getElementById('tolist');if(e)e.classList.add('on');}})();
+</script></body></html>
