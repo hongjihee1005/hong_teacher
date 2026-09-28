@@ -9,6 +9,7 @@
 
 3학년 2학기 자료(아래 세 폴더)는 주소를 그대로 두고 `grade3/…`에서 연결합니다.
 
+- `grade3/science/sem1/` : 3학년 1학기 과학방 — 1~4단원 탐구 앱 28개 (`u단원-번호.html`) + `index.html`
 - `science/` : 과학방 — 1~4단원 탐구 앱 25개 (`u단원-번호.html`)
 - `social/` : 사회방 — `*-class.html` 수업용, `*-home.html` 개별 학습용
 - `math/` : 수학방
