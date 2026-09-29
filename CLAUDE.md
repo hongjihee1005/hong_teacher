@@ -61,6 +61,8 @@ grade1/ … grade6/
 - 맨 아래에 `만든 사람: 초등교사 홍지희`
 - 맨 아래 **`📋 자료 목록으로`** 단추 (`<a class="tolist" href="index.html">`).
   이 단추는 `file://`·`github.io`·`localhost`에서만 보이도록 스크립트로 제어합니다.
+- 왼쪽 아래 **`🏠 홈`** 떠 있는 단추(`<a id="hj-home" href="../../../index.html">`, 첫 화면으로 가는 상대 경로).
+  `자료 목록으로`와 같이 `file://`·`github.io`·`localhost`에서만 보이게 합니다. 기존 자료 페이지에 있는 조각을 그대로 복사해 쓰세요.
 - 목록 페이지(`sem2/index.html`)에는 **🏠 / 🚀 학년 / 🗺️ 과목방** 이동 단추(`nav.crumb`)를 답니다.
 - 다크 모드: `@media (prefers-color-scheme: dark)`와 `:root[data-theme="dark"]` 둘 다 정의합니다.
 - 가로 스크롤이 생기면 안 됩니다. `word-break: keep-all`을 씁니다.
