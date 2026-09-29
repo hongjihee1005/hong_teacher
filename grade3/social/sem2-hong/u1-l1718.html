@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🕸️ 생각 그물을 완성해요 / 교실 놀이를 함께해요</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF1F8;--paper:#FFFFFF;--ink:#1F2A44;--soft:#4F5B75;--line:#CAD6E4;
+  --ok:#1F9E63;--no:#D2453A;--acc:#2F74E0;--note:#FFF4C2;--note-ink:#3B3200;
+  --S:#E0506B;--O1:#2F74E0;--O2:#6A4FC9;--P:#1F9E63;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;--note:#4A4420;--note-ink:#FFF6CC}}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;--note:#4A4420;--note-ink:#FFF6CC}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:clamp(19px,1.9vw,24px);line-height:1.45;overflow:hidden}
+body,h1,h2,h3,p,li,span,div,button,a,small,b,label{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+h1,h2,h3,.hd,.ttl{text-wrap:balance} p,li,small{text-wrap:pretty}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:4px solid var(--acc);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(10px,1.6vw,24px)}
+.screen.on{display:flex}
+/* 표지 */
+#cover{overflow-y:auto;align-items:center;gap:14px}
+#cover .inner{width:min(1100px,100%);display:flex;flex-direction:column;gap:14px;align-items:center;margin:auto 0}
+.badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);color:#fff;border-radius:999px;padding:4px 16px;font-size:clamp(17px,1.6vw,22px);background:var(--sc)}
+.title{font-size:clamp(34px,4.6vw,64px);text-align:center;line-height:1.15}
+.lead{color:var(--soft);text-align:center;margin:0;font-size:clamp(18px,1.7vw,23px)}
+.bq{width:100%;background:var(--paper);border:4px solid var(--sc);border-radius:22px;padding:12px 20px;text-align:center}
+.bq small{display:block;color:var(--soft);font-size:clamp(15px,1.4vw,19px)}
+.bq b{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.6vw,36px)}
+.goalbox{background:#FFF4D6;color:#1F2A44;border:4px solid #E8961E;border-radius:18px;padding:8px 20px;font-family:var(--display);font-size:clamp(21px,2.1vw,30px);text-align:center}
+.map{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+.mcol{background:var(--paper);border-radius:16px;border-top:10px solid var(--mc);padding:8px 10px}
+.mcol h3{font-size:clamp(17px,1.6vw,21px);color:var(--mc)}
+.mcol a,.mcol span.cur{display:block;font-size:clamp(15px,1.35vw,18px);color:var(--ink);text-decoration:none;padding:3px 6px;border-radius:8px;margin-top:3px}
+.mcol a:hover{background:var(--bg)}
+.mcol .cur{background:var(--mc);color:#fff!important;font-family:var(--display)}
+.plan{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.big-btn{font-size:clamp(24px,2.4vw,34px);padding:10px 40px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 5px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.ghost{font-size:clamp(17px,1.6vw,22px);padding:8px 18px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+/* 수업 화면 */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.steps{display:flex;gap:5px;align-items:center;flex:1;min-width:0;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.st{flex:none;font-family:var(--display);font-size:clamp(14px,1.2vw,18px);padding:4px 10px;border-radius:999px;border:3px solid var(--line);background:var(--paper);color:var(--soft)}
+.st.now{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.st.done{border-color:var(--ok);color:var(--ok)}
+.tools{display:flex;gap:5px;align-items:center;flex:none}
+.tool{font-size:clamp(15px,1.3vw,19px);border:3px solid var(--line);background:var(--paper);border-radius:14px;padding:4px 9px;white-space:nowrap}
+.tool.qb{border-color:#E8961E}
+.tool .n{display:inline-block;min-width:1.5em;border-radius:999px;background:#E8961E;color:#fff;font-size:.8em;padding:0 5px;margin-left:4px}
+.sthead{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:6px 0 2px}
+.routine{font-family:var(--display);font-size:clamp(15px,1.35vw,19px);background:var(--sc);color:#fff;border-radius:999px;padding:3px 12px}
+.hd{font-family:var(--display);font-size:clamp(26px,2.8vw,40px);text-align:center;margin:0}
+.ask{color:var(--soft);text-align:center;margin:0;font-size:clamp(17px,1.6vw,22px)}
+.body{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:10px;padding:6px 2px}
+.wrap{width:min(1240px,100%)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:6px}
+.tnote{border:3px solid #6A4FC9;color:#6A4FC9;background:var(--paper);border-radius:14px;padding:6px 14px;font-size:clamp(16px,1.5vw,21px)}
+/* 붙임쪽지 칸 */
+.cols{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:10px;width:100%}
+.col{background:var(--paper);border-radius:18px;border-top:10px solid var(--cc);padding:8px 10px;display:flex;flex-direction:column;gap:6px;min-height:170px}
+.col h3{font-size:clamp(20px,2vw,27px);color:var(--cc);display:flex;align-items:center;gap:6px}
+.col .frame{font-size:clamp(14px,1.3vw,17px);color:var(--soft);margin:0}
+.notes{display:flex;flex-direction:column;gap:6px;max-height:34vh;overflow-y:auto;flex:1}
+.note{background:var(--note);color:var(--note-ink);border-radius:10px;padding:6px 10px;font-size:clamp(17px,1.6vw,22px);display:flex;gap:6px;align-items:flex-start;justify-content:space-between}
+.note .x{border:0;background:none;font-size:15px;opacity:.6;padding:0 2px}
+.note .up{border:0;background:#E8961E;color:#fff;border-radius:8px;font-size:13px;padding:2px 6px;white-space:nowrap}
+.add{display:flex;gap:6px}
+.add input{flex:1;min-width:0;font-family:var(--body);font-size:clamp(17px,1.6vw,21px);padding:6px 10px;border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.add button{border:0;border-radius:10px;background:var(--cc);color:#fff;font-size:clamp(16px,1.5vw,20px);padding:4px 12px}
+/* 보기 자료 */
+.gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:10px;width:100%}
+.pic{background:var(--paper);border:3px solid var(--line);border-radius:16px;padding:6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--body)}
+.pic img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px}
+.pic .e{font-size:clamp(46px,5vw,70px);line-height:1.2}
+.pic b{font-family:var(--display);font-weight:400;font-size:clamp(18px,1.7vw,23px)}
+.pic small{color:var(--soft);font-size:clamp(14px,1.3vw,17px)}
+.pic .num{font-family:var(--display);background:var(--ink);color:var(--bg);border-radius:999px;padding:0 10px;font-size:15px;align-self:flex-start}
+.split{display:flex;flex-direction:column;gap:10px;width:100%}
+.split .gal{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}
+.split .pic img{aspect-ratio:16/9;max-height:17vh}.split .pic .e{font-size:clamp(40px,4vw,56px)}
+.mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:8px;width:100%}
+.mini .m{display:flex;gap:10px;align-items:center;background:var(--paper);border:3px solid var(--line);border-radius:14px;padding:6px 10px;text-align:left}
+.mini .m img{width:96px;height:72px;object-fit:cover;border-radius:10px;flex:none;cursor:zoom-in}
+.mini .m .e{font-size:40px;flex:none;width:60px;text-align:center}
+.mini .m b{font-family:var(--display);font-weight:400;font-size:clamp(17px,1.6vw,21px);display:block}
+.mini .m span.d{font-size:clamp(14px,1.3vw,17px);display:block}
+.mini .m small{font-size:12px;color:var(--soft)}
+.mini .num{font-family:var(--display);background:var(--ink);color:var(--bg);border-radius:999px;padding:0 8px;font-size:14px}
+.col.cmp{min-height:0}.col.cmp .notes{max-height:14vh}
+/* 분류 */
+.deck{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.card1{width:min(900px,100%);background:var(--paper);border:4px solid var(--line);border-radius:22px;padding:12px 20px;display:flex;gap:16px;align-items:center;justify-content:center}
+.card1 .e{font-size:clamp(50px,5vw,80px);line-height:1}
+.card1 img{width:clamp(130px,16vw,220px);aspect-ratio:4/3;object-fit:cover;border-radius:12px}
+.card1 .x{font-family:var(--display);font-size:clamp(24px,2.6vw,38px)}
+.bins{display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:10px;width:min(1000px,100%)}
+.bin{border:0;background:var(--cc);color:#fff;border-radius:30px 30px 14px 14px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 6px 0 rgba(0,0,0,.2);font-size:clamp(21px,2.2vw,31px)}
+.bin .e{font-size:clamp(30px,3.2vw,46px)}
+.bin .c{font-family:var(--body);font-size:15px;opacity:.9}
+.fb{width:min(900px,100%);border-radius:16px;padding:8px 16px;font-size:clamp(18px,1.7vw,23px);display:none}
+.fb.on{display:block}.fb.ok{background:color-mix(in srgb,var(--ok) 18%,var(--paper));border:3px solid var(--ok)}
+.fb.no{background:color-mix(in srgb,var(--no) 12%,var(--paper));border:3px solid var(--no)}
+.fb.open{background:color-mix(in srgb,#E8961E 16%,var(--paper));border:3px solid #E8961E}
+.sorted{display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:10px;width:min(1000px,100%)}
+.sorted div{background:var(--paper);border-radius:14px;border-top:8px solid var(--cc);padding:6px 10px;font-size:clamp(15px,1.4vw,19px)}
+.after{background:#FFF4D6;color:#1F2A44;border:4px solid #E8961E;border-radius:18px;padding:8px 16px;width:min(1000px,100%);font-size:clamp(19px,1.8vw,25px)}
+/* 뜻 만들기 */
+.frameline{font-family:var(--display);font-size:clamp(24px,2.6vw,36px);text-align:center;background:var(--paper);border-radius:18px;padding:10px 16px;width:min(1100px,100%)}
+.frameline input{font-family:var(--display);font-size:inherit;width:min(26ch,70%);border:0;border-bottom:4px dashed var(--acc);background:transparent;color:var(--acc);text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.chip{font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 12px}
+.chip[aria-pressed="true"]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 16%,var(--paper))}
+.book{display:none;width:min(1100px,100%);border:4px solid var(--ok);border-radius:18px;background:var(--paper);padding:10px 16px;text-align:center}
+.book.on{display:block}
+.book b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.3vw,32px)}
+.book mark{background:color-mix(in srgb,var(--ok) 25%,transparent);color:inherit;border-radius:6px;padding:0 3px}
+/* 주장-근거-질문 */
+.csq{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%}
+.evi{display:flex;flex-wrap:wrap;gap:6px}
+.evi button{font-family:var(--display);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);background:var(--paper);border-radius:12px;padding:4px 10px}
+.evi button[aria-pressed="true"]{border-color:#1F9E63;background:color-mix(in srgb,#1F9E63 18%,var(--paper))}
+.qpick{width:min(1100px,100%);background:var(--paper);border:4px solid #E8961E;border-radius:18px;padding:4px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.qpick select{flex:1;min-width:220px;font-family:var(--body);font-size:clamp(17px,1.6vw,21px);padding:6px;border-radius:10px;border:3px solid var(--line);background:var(--bg);color:var(--ink)}
+.log{width:100%;display:grid;gap:6px}
+.log div{background:var(--paper);border-left:10px solid #1F9E63;border-radius:10px;padding:6px 12px;font-size:clamp(16px,1.5vw,20px)}
+/* 활동 안내 */
+.task{width:min(1100px,100%);display:grid;gap:8px}
+.task label{display:flex;gap:10px;align-items:center;background:var(--paper);border-radius:14px;padding:8px 14px;font-size:clamp(19px,1.8vw,25px);border:3px solid var(--line)}
+.task input{width:26px;height:26px;accent-color:var(--ok)}
+.task label.done{border-color:var(--ok);opacity:.8}
+.tip{background:#FFF4D6;color:#1F2A44;border-radius:14px;padding:8px 14px;width:min(1100px,100%);font-size:clamp(17px,1.6vw,21px)}
+/* 확인 */
+.qz{width:min(1000px,100%);display:flex;flex-direction:column;gap:8px;align-items:center}
+.qt{font-family:var(--display);font-size:clamp(23px,2.4vw,34px);text-align:center;background:var(--paper);border-radius:18px;padding:10px 16px;width:100%}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.opt{font-family:var(--body);font-size:clamp(19px,1.9vw,26px);border:4px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 12px}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.opt.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 12%,var(--paper))}
+/* 겹침 창 */
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:14px;z-index:20}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:24px;padding:clamp(14px,2vw,28px);width:min(1150px,96vw);max-height:92vh;overflow-y:auto;border-top:16px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(28px,3vw,42px);margin-bottom:6px}
+.tpanel h3{font-size:clamp(20px,1.9vw,26px);color:#6A4FC9;margin:12px 0 4px}
+.tpanel li,.tpanel p{font-size:clamp(17px,1.6vw,21px);line-height:1.55}
+.qadd{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.qadd select,.qadd input{font-family:var(--body);font-size:clamp(17px,1.6vw,21px);padding:6px 10px;border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.qadd input{flex:1;min-width:240px}
+.qadd button{border:0;border-radius:10px;background:#E8961E;color:#fff;font-size:clamp(17px,1.6vw,21px);padding:4px 14px}
+.stems{display:flex;flex-wrap:wrap;gap:6px}
+.stems button{font-family:var(--body);font-size:clamp(15px,1.4vw,18px);border:2px dashed #E8961E;background:transparent;border-radius:999px;padding:2px 10px}
+.qlist{display:grid;gap:8px;margin-top:10px}
+.qi{border:3px solid var(--line);border-radius:14px;padding:8px 12px;display:grid;gap:4px;background:var(--bg)}
+.qi.s1{border-color:#2F74E0}.qi.s2{border-color:var(--ok)}
+.qi .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qi .ty{font-family:var(--display);font-size:14px;background:#E8961E;color:#fff;border-radius:999px;padding:1px 9px}
+.qi .from{font-size:13px;color:var(--soft)}
+.qi .q{font-size:clamp(18px,1.7vw,23px);flex:1}
+.qi .stt{font-family:var(--display);font-size:15px;border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:2px 10px}
+.qi .ans{font-size:clamp(16px,1.5vw,20px);color:var(--ink)}
+.qi input{font-family:var(--body);font-size:16px;padding:4px 8px;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);width:100%}
+.picker{font-family:var(--display);font-size:clamp(90px,14vw,170px);text-align:center;line-height:1.1}
+.bigview{position:fixed;inset:0;background:rgba(8,12,22,.95);display:none;align-items:center;justify-content:center;z-index:30}
+.bigview.on{display:flex}.bigview img{max-width:96vw;max-height:84vh;border-radius:12px}
+.bigview .meta{position:fixed;left:0;right:0;bottom:0;padding:8px 14px;color:#fff;text-align:center;font-size:15px;background:linear-gradient(transparent,rgba(0,0,0,.8))}
+.bigview .close{position:fixed;top:12px;right:14px;width:56px;height:56px;border-radius:50%;border:0;font-size:26px;background:#fff;color:#1F2A44}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px;width:100%}
+.tolist{display:none;font-family:var(--display);font-size:clamp(17px,1.6vw,21px);text-decoration:none;color:inherit;border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 18px}
+.tolist.on{display:inline-flex}
+.hjfoot{display:block;width:100%;margin:14px 0 0;padding:10px 0 2px;border-top:3px solid var(--line);text-align:center;color:var(--soft);font-size:16px;line-height:1.7}
+.hjfoot p{margin:2px 0}
+.pcredit{font-size:13px;color:var(--soft);text-align:center;margin:0}
+@media (max-height:760px) and (min-width:900px){
+  .notes{max-height:24vh}.col{min-height:140px}.pic img{aspect-ratio:16/10}
+  .hd{font-size:clamp(24px,2.4vw,34px)}.sthead{margin:0}.ask{font-size:17px}.col .frame{display:none}
+}
+@media (max-width:900px){
+  .cols,.csq{grid-template-columns:1fr}.split{grid-template-columns:1fr}.map{grid-template-columns:1fr 1fr}
+  .opts{grid-template-columns:1fr}.notes{max-height:22vh}
+}
+@media print{
+  body{overflow:visible;background:#fff;color:#000}.screen{position:static;display:none}
+  .overlay{display:none!important}#qbPanel.printme{display:block!important;position:static;background:#fff}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+
+<section id="cover" class="screen on">
+ <div class="inner">
+  <span class="lead" style="font-family:var(--display)">🧑‍🏫 홍지희 선생님 버전 · SOOP 탐구 수업</span>
+  <span class="badge" id="cBadge"></span>
+  <h1 class="title" id="cTitle"></h1>
+  <p class="lead" id="cSub"></p>
+  <div class="bq" id="cBq"></div>
+  <div class="goalbox" id="cGoal"></div>
+  <div class="map" id="cMap"></div>
+  <div class="plan" id="cPlan"></div>
+  <div class="row"><button class="big-btn" id="go">수업 시작</button><button class="tnote" id="tn0">👩‍🏫 교사 안내</button><button class="ghost" id="qb0">💬 우리 반 질문 판</button></div>
+  <p class="pcredit" id="pcredit"></p>
+  <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a>
+   <footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div>
+ </div>
+</section>
+
+<section id="lesson" class="screen">
+ <div class="topbar">
+  <div class="steps" id="steps"></div>
+  <div class="tools">
+   <button class="tool qb" id="qbBtn">💬 질문 판<span class="n" id="qn">0</span></button>
+   <button class="tool" id="pickBtn">🎲 발표자</button>
+   <button class="tool" id="timerBtn">⏱ <span id="tm">--:--</span></button>
+   <button class="tool" data-full>⛶</button>
+   <button class="tool" id="home">🏠</button>
+  </div>
+ </div>
+ <div class="sthead"><span class="routine" id="rt"></span></div>
+ <h2 class="hd" id="hd"></h2>
+ <p class="ask" id="ask"></p>
+ <div class="body" id="body"></div>
+ <div class="foot">
+  <button class="tnote" id="tn">👩‍🏫 교사 안내</button>
+  <div class="row"><button class="ghost" id="prev">← 이전</button><button class="big-btn" id="next" style="font-size:clamp(20px,2vw,28px);padding:8px 26px">다음 →</button></div>
+ </div>
+</section>
+
+<div class="overlay" id="tnO"><div class="panel tpanel" style="--pc:#6A4FC9"><h2 id="tnT"></h2><div id="tnB"></div><p style="text-align:center"><button class="big-btn" data-close="tnO">닫기</button></p></div></div>
+<div class="overlay" id="qbO"><div class="panel" id="qbPanel" style="--pc:#E8961E">
+ <h2>💬 우리 반 질문 판</h2>
+ <p class="ask" style="text-align:left">친구가 만든 질문에 자료를 근거로 답을 찾아요. 이 주제(<span id="qbTopic"></span>)의 모든 차시에서 같은 질문 판을 써요.</p>
+ <div class="stems" id="stems"></div>
+ <div class="qadd"><select id="qType"><option>왜</option><option>어떻게</option><option>만약에</option><option>무엇이 다를까</option><option>그 밖에</option></select><input id="qText" placeholder="질문을 써요 (예: 왜 같은 놀이터인데 느낌이 다를까?)"><button id="qAdd">올리기</button></div>
+ <div class="qlist" id="qList"></div>
+ <p class="row" style="margin-top:12px"><button class="ghost" id="qPrint">🖨️ 인쇄</button><button class="ghost" id="qClear">질문 판 비우기</button><button class="big-btn" data-close="qbO">닫기</button></p>
+</div></div>
+<div class="overlay" id="pkO"><div class="panel" style="--pc:#2F74E0;text-align:center"><h2>🎲 누가 말해 볼까요?</h2>
+ <div class="picker" id="pkN">?</div>
+ <p class="row"><label>우리 반 <input id="pkMax" type="number" min="2" max="40" value="25" style="width:4.5em;font-size:20px"> 명</label><button class="big-btn" id="pkGo">뽑기</button><button class="ghost" id="pkReset">처음부터</button><button class="ghost" data-close="pkO">닫기</button></p>
+ <p class="ask" id="pkLeft"></p></div></div>
+<div class="bigview" id="bv"><button class="close" id="bvX" aria-label="닫기">✕</button><img id="bvI" alt=""><div class="meta" id="bvM"></div></div>
+
+<script>
+const C={"file": "u1-l1718.html", "topicKey": "s2u1t2", "lessonKey": "s2-u1-l1718", "short": "17~18차시", "soop": "P", "title": "🕸️ 생각 그물을 완성해요 / 교실 놀이를 함께해요", "sub": "3학년 2학기 사회 1단원 · 17~18차시 · 교과서 56~59쪽", "goal": "단원에서 공부한 내용을 생각 그물과 교실 놀이로 정리할 수 있다.", "photos": {}, "notes0": "<h3>SOOP 탐구 흐름으로 다시 짠 까닭<\/h3><ul><li>이 차시는 <b>1단원 「사회 변화와 다양한 문화」 전체 정리<\/b>이자 주제 2의 마지막 <b>P(발표하기)<\/b>입니다. 두 주제의 핵심 질문에 배운 내용을 근거로 답해 발표하고(주장-근거-질문), 생각 그물과 딩고 놀이로 정리한 뒤, <b>두 핵심 질문으로 예전 생각-지금 생각<\/b>을 써서 단원 전체에서 생각이 어떻게 자랐는지 돌아봅니다.<\/li><li>두 주제 핵심 질문: ① 사회 변화로 달라진 생활 모습 — “우리 사회는 어떻게 변하고 있고, 그 변화로 사람들의 생활은 어떻게 달라졌을까?” ② 다양한 문화에 대한 이해와 존중 — “서로 다른 문화를 가진 사람들이 함께 잘 어울려 살려면 어떻게 해야 할까?” (이 탐구 수업의 주제 지도 topic-s2u1t1·s2u1t2에 있는 문장이며 교과서 문장이 아닙니다.)<\/li><li>질문 판: 이 화면의 질문 판은 <b>주제 2의 질문 판<\/b>입니다. 주제 1 질문 판은 주제 1 페이지(2~8차시)에 따로 저장되어 여기서는 보이지 않습니다. 그래서 1단계 🎯 목록과 5단계 안내에 주제 1 핵심 질문을 직접 적어 두었습니다.<\/li><li>교과서 활동(생각 그물 56~57쪽, 교실 놀이 ‘딩고 놀이’ 58~59쪽)은 그대로 합니다. 딩고 카드는 157·159쪽 활동 자료 5를 씁니다.<\/li><li><b>채점하지 않는 것<\/b>: 새로 알게 된 점·느낀 점, 바람직한 태도 쓰기, 놀이, 예전 생각-지금 생각. 화면에서 채점하는 것은 생각 그물·딩고 카드의 교과서 뜻과 사실뿐입니다.<\/li><li>흐름(80분): 두 핵심 질문에 답하기 12분 → 생각 그물 낱말 나누기 10분 → 생각 그물 완성 15분 → 딩고 놀이 25분 → 예전 생각-지금 생각 10분 → 개념 확인 8분<\/li><li>교과서 56~59쪽 (교사용 교과서) · 단원 평가 안내 지도서 114쪽<\/li><\/ul><h3>성취 기준<\/h3><ul><li><b>[4사03-01]<\/b> 최근 사회 변화의 양상과 특징을 파악하고, 그로 인해 나타난 생활 모습의 변화를 탐색한다.<\/li><li><b>[4사03-02]<\/b> 우리 사회에 다양한 문화가 확산되면서 나타나는 긍정적 효과와 문제를 분석하고, 나와 다른 사람이나 집단의 문화를 존중하는 태도를 기른다.<\/li><\/ul><h3>유의할 점 (교사용 교과서 「1주제·2주제 지도상의 유의점」)<\/h3><ul><li>1주제: “학생들이 일상생활에서 경험할 수 있는 사례를 활용해 사회 변화의 의미와 특징을 이해하도록 한다.” “학생들이 다양한 형태의 자료(일기, 신문 기사, 그래프, 정보 그림 등)를 주도적으로 분석하도록 한다.” “사회 변화에 따른 미래 생활 모습의 변화를 예상하거나 사회 변화에 대응하기 위한 기존의 노력을 평가하고 새로운 방안을 창안하는 학습 활동에서는 학생들에게 판단 근거를 생각해 보도록 한다.”<\/li><li>2주제: “우리 사회의 다양한 문화를 다룰 때는 교과서에 제시된 외국인 이주민, 1인 가구, 반려동물 양육 등을 중심으로 다루되, 학교와 교실 맥락에 따라 지역 문화, 세대 문화와 같은 내용을 다룰 수도 있다.” “우리 사회에 다양한 문화가 함께하기 위해 필요한 태도를 토의하는 과정에서는 문화 상대주의 관점에서 편견과 차별의 문제를 생각해 보도록 지도하되, 학생의 다양한 의견을 충분히 수렴할 수 있도록 한다.”<\/li><li>저출산·고령화·1인 가구·이주민·반려동물 카드를 다룰 때 아이들의 가족 형태나 배경을 떠올리게 하는 말(“너희 집은?”)을 하지 않습니다.<\/li><\/ul><h3>교사용 교과서 대조 검증 (작성 때 자체 점검)<\/h3><ul><li>차시명(단원 차시표)·학습 목표(56쪽), 생각 그물 빈칸 정답(56쪽: 학생, 보육 시설, 고령화, 지능정보화, 세계화 / 57쪽: 문화, 차별, 갈등 — PDF 쪽 그림의 붉은 글씨로 확인), 57쪽 예시 답(바람직한 태도, 새로 알게 된 점), 딩고 놀이 방법 1~7·준비·놀이 유의점(58~59쪽), 딩고 카드 다섯 주제 20장의 문장(59쪽 그림)을 원문과 대조함<\/li><li>57쪽 ‘새로 알게 된 점’ 칸의 텍스트 추출에 면담 관련 문장이 겹쳐 나오지만, PDF 쪽 그림으로 예시 답이 “사회 변화로 달라진 생활 모습, 우리 사회의 다양한 문화를 알게 됐다.”임을 확인했습니다.<\/li><\/ul><h3>지도서 대조 검증<\/h3><ul><li>경미: 1단계 자료 4의 ‘서로 다름을 인정하고 존중해요’는 57쪽에서는 붉은 예시 답이므로 출처를 ‘교과서 57쪽 · 태도 문장은 51쪽’(51쪽 본문)으로 고침. 5단계 교사 안내 ‘교과서 57쪽 예시 답’을 ‘교사용 교과서 57쪽 예시 답’으로 고침.<\/li><li>생각 그물 빈칸 정답(56쪽 학생·보육 시설·고령화·지능정보화·세계화 / 57쪽 문화·차별·갈등)과 딩고 카드 20장 문장을 PDF 49·50·52쪽 그림으로 확인, 모두 일치.<\/li><\/ul>", "steps": [{"k": "csq", "t": "두 핵심 질문", "min": 12, "hd": "두 주제의 핵심 질문에 답해요", "ask": "모둠이 질문 하나를 맡아, 배운 낱말을 근거로 답하고 친구에게 되물어요.", "qs": ["우리 사회는 어떻게 변하고 있고, 그 변화로 사람들의 생활은 어떻게 달라졌을까?", "서로 다른 문화를 가진 사람들이 함께 잘 어울려 살려면 어떻게 해야 할까?"], "cards": [{"e": "👶", "t": "저출산·고령화", "d": "학생 수 감소, 일할 수 있는 사람 수 감소 / 노인을 위한 시설 증가, 일을 하거나 일자리를 찾는 노인 증가", "s": "교과서 56쪽"}, {"e": "🤖", "t": "지능정보화·세계화", "d": "인공지능 발달, 사이버 범죄 / 다른 나라와의 교류 활발, 전통적인 생활 양식 약화", "s": "교과서 56쪽"}, {"e": "🌈", "t": "다양한 문화의 확산", "d": "다양한 나라의 문화 경험, 1인 가구를 위한 제품이나 활동 증가 / 편견과 차별, 1인 가구의 건강과 안전 문제", "s": "교과서 57쪽"}, {"e": "💚", "t": "해결 노력과 태도", "d": "다문화 이해 교육, 1인 가구를 위한 지원 활동, 반려동물 예절 준수 / 서로 다름을 인정하고 존중해요.", "s": "교과서 57쪽 · 태도 문장은 51쪽"}], "note": "<h3>도입 (3분)<\/h3><ul><li>‘사회 변화와 다양한 문화’에서 공부한 내용은 무엇인가요? (교과서 56쪽 “‘사회 변화와 다양한 문화’에서 공부한 내용을 글이나 그림으로 정리해 봅시다.”)<\/li><li>예상 반응: 저출산, 고령화, 지능정보화, 세계화로 달라진 생활 모습을 알아보았습니다. / 문화의 뜻과 우리 사회의 다양한 문화를 알아보았습니다. / 다양한 문화가 퍼지며 생긴 좋은 점과 문제, 해결 노력을 알아보았습니다.<\/li><\/ul><h3>주장-근거-질문 (9분)<\/h3><ul><li>모둠을 두 무리로 나누어 핵심 질문 ①②를 하나씩 맡깁니다. 카드(교과서 56~57쪽 생각 그물 내용)를 근거로 답합니다.<\/li><li>예상 반응 ①(재구성): 아이가 적게 태어나고 노인이 많아지고, 인공지능이 발달하고 세계 여러 나라와 교류가 많아지고 있어요. 그래서 학생 수가 줄고, 노인을 위한 시설이 늘고, 사이버 범죄 같은 문제도 생겼어요. (근거: 자료 1, 2)<\/li><li>예상 반응 ②(재구성): 편견을 갖지 않고 차별하지 않아요. 서로 다름을 인정하고 존중해요. 사회도 다문화 이해 교육, 1인 가구 지원 같은 노력을 해요. (근거: 자료 3, 4 · 14~15차시 우리 반 실천 약속)<\/li><\/ul><h3>질문 판<\/h3><p>핵심 질문 ①은 주제 1 질문이라 이 화면(주제 2) 질문 판에는 없습니다. 기록해도 질문 판 상태는 바뀌지 않고 기록 목록에만 남습니다. ②는 16차시에 ‘✅ 답 찾음’이 되었다면 목록 맨 위의 직접 적어 둔 문장으로 고르면 됩니다.<\/p><h3>유의할 점<\/h3><p>화면 카드는 교과서 생각 그물 문장을 줄인 것입니다. “학생의 다양한 의견을 충분히 수렴”(2주제 지도상의 유의점)하고, 근거가 부족하면 되묻기로 도와주세요.<\/p>"}, {"k": "sort", "t": "낱말 나누기", "min": 10, "hd": "다양한 문화의 확산, 어디에 들어갈까요?", "ask": "교과서 57쪽 생각 그물을 떠올리며 카드를 알맞은 칸에 나누어요.", "routine": "생각 그물 낱말 나누기", "bins": [{"k": "g", "n": "긍정적 영향", "e": "😊", "c": "#1F9E63"}, {"k": "b", "n": "문제", "e": "⚠️", "c": "#E0506B"}, {"k": "s", "n": "해결 노력", "e": "🛠️", "c": "#2F74E0"}], "items": [{"k": "g", "e": "🌏", "x": "다양한 나라의 문화 경험", "w": "긍정적 영향이에요. (교과서 57쪽 생각 그물)"}, {"k": "b", "e": "😣", "x": "낯선 문화에 대한 편견과 차별", "w": "문제예요. (교과서 57쪽 생각 그물)"}, {"k": "s", "e": "📚", "x": "다문화 이해 교육", "w": "해결 노력이에요. (교과서 57쪽 생각 그물)"}, {"k": "g", "e": "🧺", "x": "1인 가구를 위한 제품이나 활동 증가", "w": "긍정적 영향이에요. (교과서 57쪽 생각 그물)"}, {"k": "b", "e": "🚑", "x": "1인 가구의 건강과 안전 문제", "w": "문제예요. (교과서 57쪽 생각 그물)"}, {"k": "s", "e": "📋", "x": "1인 가구를 위한 지원 활동", "w": "해결 노력이에요. (교과서 57쪽 생각 그물)"}, {"k": "g", "e": "🐕", "x": "반려동물과 화목한 생활", "w": "긍정적 영향이에요. (교과서 57쪽 생각 그물)"}, {"k": "b", "e": "🔊", "x": "반려동물로 이웃 간에 갈등 발생", "w": "문제예요. (교과서 57쪽 생각 그물)"}, {"k": "s", "e": "🦮", "x": "반려동물 예절 준수", "w": "해결 노력이에요. (교과서 57쪽 생각 그물)"}], "after": "같은 줄끼리 이어 보세요. 외국인 이주민, 1인 가구, 반려동물마다 좋은 점·문제·노력이 하나씩 있나요?", "col": "🔗 서로 이어지는 점", "note": "<h3>진행<\/h3><p>교과서 57쪽 생각 그물 ‘다양한 문화의 확산’ 가지의 낱말을 카드로 나눕니다. 다 나누면 ‘같은 문화끼리’ 이어 봅니다(예: 1인 가구 — 제품이나 활동 증가 / 건강과 안전 문제 / 지원 활동). 카드 문장은 모두 교과서 57쪽 생각 그물 그대로입니다(‘편견과 차별’, ‘갈등’은 빈칸 정답을 넣은 문장).<\/p><h3>주제 1 가지 (교과서 56쪽) — 시간이 남으면 말로 확인<\/h3><ul><li>저출산: (학생) 수 감소, 일할 수 있는 사람 수 감소 → 해결 노력: 양육비 지원, (보육 시설) 운영<\/li><li>(고령화): 노인을 위한 시설 증가, 일을 하거나 일자리를 찾는 노인 증가 → 해결 노력: 복지 제도 운영, 일자리 제공<\/li><li>(지능정보화): 인공지능 발달, 문제: 사이버 범죄, 거짓 정보 확산, 인터넷·스마트폰 과의존 → 해결 노력: 사이버 범죄 예방, 올바른 인터넷·스마트폰 사용 습관<\/li><li>(세계화): 다른 나라와의 교류 활발, 문제: 전통적인 생활 양식 약화, 감염병의 빠른 확산 → 해결 노력: 우리나라의 생활 양식을 소중히 여기는 태도, 세계적인 문제에 관심<\/li><\/ul>"}, {"k": "task", "t": "생각 그물", "min": 15, "hd": "생각 그물을 완성해요", "ask": "교과서 56~57쪽 빈칸을 스스로 채워요. 끝난 것에 ✔ 해요.", "list": ["56쪽(사회 변화로 달라진 생활 모습): 빈칸 5개를 채워요.", "57쪽(다양한 문화에 대한 이해와 존중): 빈칸 3개를 채워요.", "다양한 문화를 대하는 바람직한 태도를 써요.", "새로 알게 된 점이나 느낀 점을 써요."], "col": "💡 새로 알게 된 점이나 느낀 점", "note": "<h3>교과서 활동<\/h3><p>생각 그물(교과서 56~57쪽)의 빈칸을 채우고, 다양한 문화를 대하는 바람직한 태도와 새로 알게 된 점이나 느낀 점을 씁니다. 화면에는 정답을 보이지 않게 칸 수만 적었습니다.<\/p><h3>빈칸 정답 (교사용 교과서 56~57쪽 붉은 글씨)<\/h3><ul><li>56쪽: (학생) 수 감소, (보육 시설) 운영, (고령화), (지능정보화), (세계화)<\/li><li>57쪽: 한 사회의 사람들이 지닌 공통의 생활 양식 — (문화), 낯선 문화에 대한 편견과 (차별), 반려동물로 이웃 간에 (갈등) 발생<\/li><\/ul><h3>예시 답 (교사용 교과서 57쪽)<\/h3><ul><li>다양한 문화를 대하는 바람직한 태도: 예 다양한 문화를 대할 때 서로 다름을 인정하고 존중한다.<\/li><li>새로 알게 된 점이나 느낀 점: 사회 변화로 달라진 생활 모습, 우리 사회의 다양한 문화를 알게 됐다.<\/li><\/ul><h3>지도 방법 (교사용 교과서 57쪽)<\/h3><ul><li>생각 그물의 빈칸을 채우면서 공부한 내용을 정리하도록 지도한다.<\/li><li>학생들이 공부한 내용을 떠올리며 스스로 할 수 있도록 지도한다.<\/li><li>단원을 공부하며 알게 된 점이나 느낀 점을 자유롭게 써 보도록 한다.<\/li><\/ul><h3>진행 팁<\/h3><p>14~15차시 우리 반 실천 약속과 2단계 나누기 결과를 보며 쓰게 하면 ‘바람직한 태도’ 칸을 채우기 쉽습니다. 새로 알게 된 점은 화면 붙임쪽지로도 모읍니다(채점하지 않음).<\/p>"}, {"k": "task", "t": "딩고 놀이", "min": 25, "hd": "교실 놀이 · 딩고 놀이", "ask": "교과서 58~59쪽 순서대로 놀이해요. 끝난 것에 ✔ 해요.", "list": ["3~4명이 한 모둠이 되고, 진행자를 한 명 정해요.", "① 카드를 섞어 4장씩 나눠 갖고, 남은 카드는 뒤집어 펼쳐 놓아요.", "②③ 필요 없는 카드를 정하고, “버려!” 하면 1장을 뒤집어 내려놓아요.", "④⑤ “집어!” 하면 1장을 가져오고, 필요 없는 카드를 다시 정해요.", "⑥⑦ 되풀이해서 4장을 한 주제로 모아 “딩고!”를 먼저 외치면 이겨요."], "tip": "카드 4장을 한 주제로 모으는 것이 중요해요.", "note": "<h3>놀이 활동 목표 (교과서 58쪽)<\/h3><p>딩고 놀이를 하며 단원 내용을 정리할 수 있다. 준비물: 활동 자료 5(157, 159쪽) · 교과서 58쪽 QR 「교실 놀이 영상」<\/p><h3>놀이 방법 (교과서 58~59쪽)<\/h3><ul><li>3~4명이 한 모둠이 됩니다. 모둠에서 한 명을 진행자로 정합니다. 카드 4장을 한 주제로 모으는 것이 중요합니다.<\/li><li>① 딩고 카드를 섞어서 각자 4장씩 나눠 갖습니다. 남은 카드는 뒤집어서 책상 위에 펼쳐 놓습니다.<\/li><li>② 자신이 받은 카드 4장을 한 주제로 모을 때 가장 필요 없다고 생각하는 카드를 정합니다.<\/li><li>③ 진행자가 “버려!”를 외치면 각자 필요 없다고 생각한 카드 1장을 동시에 책상 가운데 뒤집어서 내려놓습니다.<\/li><li>④ 진행자가 “집어!”를 외치면 각자 책상에 놓인 카드 중 1장을 집어 가져갑니다.<\/li><li>⑤ 새로 가져온 카드를 살펴보고, 카드 4장을 한 주제로 모을 때 필요 없다고 생각하는 카드를 다시 정합니다.<\/li><li>⑥ 카드 4장을 한 주제로 모으기 위해 카드를 버리고 집는 과정을 반복합니다.<\/li><li>⑦ 카드 4장을 한 주제로 모아 “딩고!”라고 먼저 외친 사람이 이깁니다.<\/li><\/ul><h3>딩고 카드 (교과서 59쪽 그림, 활동 자료 5)<\/h3><ul><li>저출산: 저출산 / 태어나는 아이의 수가 줄어들어 출산율이 감소하는 현상 / 학생 수 감소 / 안전하고 쾌적한 보육 시설 운영<\/li><li>고령화: 고령화 / 전체 사람 수에서 노인의 수가 차지하는 비율이 높아지는 현상 / 노인들의 건강을 관리하고 생활을 유지하는 데 필요한 비용 증가 / 노인들에게 일자리 제공<\/li><li>지능정보화: 지능정보화 / 인공지능을 활용한 다양한 기술이 사회 전반에 폭넓은 영향을 미치는 현상 / 사이버 범죄 / 사이버 범죄 예방<\/li><li>세계화: 세계화 / 세계 여러 나라가 다양한 분야에서 교류하면서 전 세계가 하나로 연결되는 현상 / 각 나라의 전통적인 생활 양식 약화 / 우리나라의 생활 양식을 소중히 여기는 태도<\/li><li>문화: 문화 / 한 사회의 사람들이 지닌 공통의 생활 양식 / 다른 문화에 대한 편견과 차별 / 다양한 문화를 존중하는 태도<\/li><\/ul><h3>지도 방법과 놀이 유의점 (교사용 교과서 58쪽)<\/h3><ul><li>3~4명이 한 모둠이 되며, 모둠에서 한 명을 진행자로 정하도록 한다.<\/li><li>카드 4장을 한 주제로 모으는 것이 중요하다는 점을 안내한다.<\/li><li>한 명이 남을 때까지 딩고 놀이를 진행할 수도 있다.<\/li><li>놀이하며 ‘사회 변화와 다양한 문화’에서 공부한 내용을 정리할 수 있도록 지도한다.<\/li><li>교사는 학생들이 공부한 내용으로 교실 놀이를 할 수 있도록 지도한다.<\/li><\/ul><h3>화면 목록<\/h3><p>화면 목록은 교과서 ①~⑦을 다섯 줄로 줄인 것입니다(원문은 위 「놀이 방법」). 교과서 58~59쪽 그림을 함께 보여 주세요.<\/p><h3>진행 팁<\/h3><p>“딩고!”를 외친 친구는 모은 카드 4장을 소리 내어 읽고, 왜 한 주제인지 한 문장으로 말하게 하세요(예: 세계화로 전통적인 생활 양식이 약해져서 우리나라의 생활 양식을 소중히 여겨야 해요). 이긴 사람보다 설명을 잘한 모둠을 칭찬해 주세요.<\/p>"}, {"k": "iuti", "t": "예전·지금", "min": 10, "hd": "두 핵심 질문, 내 생각은 어떻게 바뀌었나요?", "ask": "두 질문 가운데 하나 이상을 골라 처음 생각과 지금 생각을 써요. 질문 번호를 앞에 적어요.", "f": ["① 처음에 나는 ~라고 생각했어요.", "① 지금은 ~라고 생각해요."], "after": "① 우리 사회는 어떻게 변하고 있고, 그 변화로 사람들의 생활은 어떻게 달라졌을까?  ② 서로 다른 문화를 가진 사람들이 함께 잘 어울려 살려면 어떻게 해야 할까?", "note": "<h3>진행<\/h3><ul><li>두 주제 핵심 질문(화면 아래) 가운데 생각이 더 많이 바뀐 질문을 골라, 쪽지 앞에 번호(①②)를 적고 처음 생각과 지금 생각을 씁니다. 두세 명에게 바뀐 까닭(어느 시간의 어떤 활동 때문인지)을 발표하게 하세요.<\/li><li>주제 2는 16차시에 한 번 썼으니 ①을 먼저 고르게 해도 좋습니다. 주제 1 질문 판은 주제 1 페이지에 있으니, 필요하면 8차시 화면을 함께 띄워 예전 질문을 보여 주세요.<\/li><\/ul><h3>예상 반응 (재구성한 예시)<\/h3><ul><li>① 처음에는 우리 사회가 늘 똑같다고 생각했는데, 지금은 저출산, 고령화, 지능정보화, 세계화로 우리 생활이 달라지고 있다고 생각해요.<\/li><li>② 처음에는 나와 다른 문화가 낯설고 이상하다고 생각했는데, 지금은 서로 다름을 인정하고 존중하면 함께 어울려 살 수 있다고 생각해요.<\/li><\/ul><h3>근거<\/h3><p>교사용 교과서 57쪽 예시 답 “사회 변화로 달라진 생활 모습, 우리 사회의 다양한 문화를 알게 됐다.”, 51쪽 “다양한 문화를 대할 때는 서로 다름을 인정하고 존중하는 태도가 필요합니다.” 예전 생각-지금 생각은 채점하지 않습니다.<\/p><h3>유의할 점<\/h3><p>저출산·고령화·1인 가구·이주민 이야기를 할 때 아이들 자신의 가족을 예로 들게 하지 않습니다. 예전 생각이 ‘틀렸다’고 말하지 않고 생각이 자란 과정을 칭찬하세요.<\/p>"}, {"k": "check", "t": "개념 확인", "min": 8, "hd": "1단원에서 배운 것을 확인해요", "items": [{"q": "태어나는 아이의 수가 줄어들어 출산율이 감소하는 현상은?", "o": ["저출산", "고령화", "세계화", "지능정보화"], "a": 0, "w": "교과서 59쪽 딩고 카드: 저출산이에요."}, {"q": "전체 사람 수에서 노인의 수가 차지하는 비율이 높아지는 현상은?", "o": ["고령화", "저출산", "세계화", "지능정보화"], "a": 0, "w": "교과서 59쪽 딩고 카드: 고령화예요."}, {"q": "인공지능을 활용한 다양한 기술이 사회 전반에 폭넓은 영향을 미치는 현상은?", "o": ["지능정보화", "세계화", "고령화", "저출산"], "a": 0, "w": "교과서 59쪽 딩고 카드: 지능정보화예요."}, {"q": "세계 여러 나라가 다양한 분야에서 교류하면서 전 세계가 하나로 연결되는 현상은?", "o": ["세계화", "지능정보화", "저출산", "고령화"], "a": 0, "w": "교과서 59쪽 딩고 카드: 세계화예요."}, {"q": "딩고 카드에서 ‘문화’ 주제의 해결 태도로 알맞은 것은?", "o": ["다양한 문화를 존중하는 태도", "다른 문화에 대한 편견과 차별", "사이버 범죄", "학생 수 감소"], "a": 0, "w": "교과서 59쪽 딩고 카드: 다양한 문화를 존중하는 태도예요."}], "note": "<h3>채점 원칙<\/h3><p>딩고 카드(교과서 59쪽)와 생각 그물(56~57쪽)의 뜻만 채점합니다. 아이들의 가족 형태·배경은 묻지 않습니다.<\/p><h3>단원의 주요 문장 (각 차시 꼭! 기억해요, 주제 2)<\/h3><ul><li>한 사회의 사람들이 지닌 공통의 생활 양식을 문화라고 합니다. (9차시)<\/li><li>오늘날 우리 사회는 외국인 이주민이 증가하고 반려동물과 함께 사는 사람이 많아지는 등 다양한 문화가 확산되고 있습니다. (10~11차시)<\/li><li>다양한 문화가 확산되면서 나와 다르고 익숙하지 않은 것에 대해 편견을 갖고 차별하는 문제가 발생하기도 합니다. (12~13차시)<\/li><li>다양한 문화를 대할 때는 서로 다름을 인정하고 존중하는 태도가 필요합니다. (14~15차시)<\/li><\/ul><h3>(선택) 단원 평가<\/h3><p>지도서 114쪽 「단원 평가 안내」.<\/p><h3>다음 차시<\/h3><p>1단원 ‘사회 변화와 다양한 문화’를 마칩니다. 다음 시간부터 2단원을 시작합니다.<\/p>"}], "topic": {"key": "s2u1t2", "name": "1단원 주제 2 · 다양한 문화에 대한 이해와 존중", "bq": "서로 다른 문화를 가진 사람들이 함께 잘 어울려 살려면 어떻게 해야 할까?", "map": [{"s": "S", "n": "9차시", "t": "문화가 무엇일까요", "f": "u1-l9.html"}, {"s": "O1", "n": "10~11차시", "t": "우리 사회의 다양한 문화", "f": "u1-l1011.html"}, {"s": "O1", "n": "12~13차시", "t": "다양한 문화가 퍼지면서", "f": "u1-l1213.html"}, {"s": "O2", "n": "14~15차시", "t": "문제를 해결하려는 노력", "f": "u1-l1415.html"}, {"s": "P", "n": "16차시", "t": "생각을 펼쳐요 · 확인해요", "f": "u1-l16.html"}, {"s": "P", "n": "17~18차시", "t": "생각 그물 · 교실 놀이", "f": "u1-l1718.html"}]}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PH=C.photos||{};
+const SOOP={S:['S','개념 찾기','var(--S)'],O1:['O','개념 구축하기','var(--O1)'],O2:['O','탐구 정리하기','var(--O2)'],P:['P','발표하기','var(--P)']};
+const ROUT={see:['🔍','보기-생각하기-궁금해하기'],sort:['🗂️','예와 예가 아닌 것 나누기'],define:['✍️','우리 반 뜻 만들기'],cards:['📑','자료 살펴보기'],csq:['🗣️','주장-근거-질문'],venn:['⚖️','같은 점·다른 점'],cse:['🔗','연결-확장-도전'],iuti:['🔄','예전 생각-지금 생각'],task:['🛠️','활동하기'],check:['✅','개념 확인하기'],talk:['💭','생각 나누기']};
+let SAVE=true;const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const LK='soop:'+C.lessonKey+':', QK='soopQ:'+C.topic.key;
+let step=0;
+const sc=SOOP[C.soop];document.documentElement.style.setProperty('--sc',sc[2]);
+/* 표지 */
+$('cBadge').innerHTML=`${sc[0]} · ${sc[1]}`;$('cBadge').style.setProperty('--sc',sc[2]);
+$('cTitle').textContent=C.title;$('cSub').textContent=C.sub;document.title=C.title;
+$('cBq').innerHTML=`<small>🌟 이 주제의 핵심 질문</small><b>${esc(C.topic.bq)}</b>`;
+$('cGoal').textContent='학습 문제: '+C.goal;
+$('cMap').innerHTML=['S','O1','O2','P'].map(k=>`<div class="mcol" style="--mc:${SOOP[k][2]}"><h3>${SOOP[k][0]} ${SOOP[k][1]}</h3>${C.topic.map.filter(m=>m.s===k).map(m=>m.f===C.file?`<span class="cur">${esc(m.n)} ${esc(m.t)}</span>`:`<a href="${m.f}">${esc(m.n)} ${esc(m.t)}</a>`).join('')}</div>`).join('');
+$('cPlan').innerHTML=C.steps.map((s,i)=>`<button class="st" data-i="${i}">${i+1}. ${esc(s.t)} ${s.min}분</button>`).join('');
+$('cPlan').querySelectorAll('.st').forEach(b=>b.onclick=()=>go(+b.dataset.i));
+const pk=Object.keys(PH);$('pcredit').innerHTML=pk.length?'사진 출처 · 위키미디어 공용: '+pk.map(k=>`${esc(PH[k].name)}(${esc(PH[k].title)} / ${esc(PH[k].artist||'작자 미상')} / ${esc(PH[k].lic)})`).join(' · '):'';
+$('go').onclick=()=>go(0);$('home').onclick=()=>{stopT();show('cover')};
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id))}
+function openO(id){$(id).classList.add('on')}
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).classList.remove('on'));
+document.querySelectorAll('[data-full]').forEach(b=>b.onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}});
+/* 교사 안내 */
+function tnote(i){const n=i<0?C.notes0:C.steps[i].note;$('tnT').textContent='👩‍🏫 '+(i<0?'수업 준비':`${i+1}. ${C.steps[i].t}`);$('tnB').innerHTML=n||'<p>이 단계의 안내는 수업 준비 안내를 보세요.</p>';openO('tnO')}
+$('tn0').onclick=()=>tnote(-1);$('tn').onclick=()=>tnote(step);
+/* 질문 판 */
+const STEMS=['왜 ~할까?','어떻게 ~할 수 있을까?','만약 ~라면 어떻게 될까?','~와 ~는 무엇이 다를까?','~는 모두 같을까?'];
+$('stems').innerHTML='<span class="ask">질문 만들기 도우미:</span>'+STEMS.map(s=>`<button>${s}</button>`).join('');
+$('stems').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('qText').value=b.textContent;$('qText').focus()});
+$('qbTopic').textContent=C.topic.name;
+function Q(){return LS.get(QK,[])}function setQ(v){LS.set(QK,v);qCount()}
+function qCount(){const q=Q();$('qn').textContent=q.filter(x=>x.s<2).length}
+function addQ(text,type){text=text.trim();if(!text)return;const q=Q();q.push({t:text,ty:type||'그 밖에',s:0,a:'',from:C.short,id:Date.now()+Math.random()});setQ(q);renderQ()}
+const STS=['❓ 궁금해요','🔎 찾는 중','✅ 답 찾음'];
+function renderQ(){const q=Q();$('qList').innerHTML=q.length?q.map((x,i)=>`<div class="qi s${x.s}"><div class="top"><span class="ty">${esc(x.ty)}</span><span class="q">${esc(x.t)}</span><span class="from">${esc(x.from)}</span><button class="stt" data-i="${i}">${STS[x.s]}</button><button class="stt" data-del="${i}" aria-label="지우기">✕</button></div>${x.s>0?`<input data-a="${i}" value="${esc(x.a)}" placeholder="찾은 답과 근거 (예: 자료 ②를 보니 …)">`:''}</div>`).join(''):'<p class="ask">아직 질문이 없어요. 첫 질문을 올려 보세요!</p>';
+ $('qList').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const q=Q();q[+b.dataset.i].s=(q[+b.dataset.i].s+1)%3;setQ(q);renderQ()});
+ $('qList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const q=Q();q.splice(+b.dataset.del,1);setQ(q);renderQ()});
+ $('qList').querySelectorAll('[data-a]').forEach(inp=>inp.onchange=()=>{const q=Q();q[+inp.dataset.a].a=inp.value;setQ(q)});}
+$('qAdd').onclick=()=>{addQ($('qText').value,$('qType').value);$('qText').value=''};
+$('qText').onkeydown=e=>{if(e.key==='Enter')$('qAdd').onclick()};
+$('qbBtn').onclick=$('qb0').onclick=()=>{renderQ();openO('qbO')};
+$('qPrint').onclick=()=>{const p=$('qbPanel');p.classList.add('printme');window.print();p.classList.remove('printme')};
+$('qClear').onclick=()=>{if(confirm('질문 판을 모두 비울까요? (이 주제의 모든 차시에서 지워져요)')){setQ([]);renderQ()}};
+(function(){const q=Q();if(!q.some(x=>x.t===C.topic.bq)){q.unshift({t:C.topic.bq,ty:'왜',s:0,a:'',from:'🌟 핵심 질문',id:1});setQ(q)}})();
+qCount();
+/* 발표자 뽑기 */
+let drawn=LS.get('soopPick',[]);
+function pkLeft(){const m=+$('pkMax').value||25;$('pkLeft').textContent=`아직 말하지 않은 친구 ${m-drawn.filter(n=>n<=m).length}명`}
+$('pickBtn').onclick=()=>{pkLeft();openO('pkO')};
+$('pkGo').onclick=()=>{const m=+$('pkMax').value||25;let pool=[];for(let i=1;i<=m;i++)if(!drawn.includes(i))pool.push(i);if(!pool.length){drawn=[];pool=[...Array(m)].map((_,i)=>i+1)}
+ const n=pool[Math.floor(Math.random()*pool.length)];drawn.push(n);LS.set('soopPick',drawn);let k=0;const t=setInterval(()=>{$('pkN').textContent=pool[Math.floor(Math.random()*pool.length)]+'번';if(++k>10){clearInterval(t);$('pkN').textContent=n+'번';pkLeft()}},60)};
+$('pkReset').onclick=()=>{drawn=[];LS.set('soopPick',drawn);$('pkN').textContent='?';pkLeft()};
+/* 타이머 */
+let T=null,left=0;function stopT(){clearInterval(T);T=null}
+function showT(){$('tm').textContent=`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`}
+$('timerBtn').onclick=()=>{if(T){stopT();return}left=left>0?left:C.steps[step].min*60;T=setInterval(()=>{left--;showT();if(left<=0){stopT();$('timerBtn').style.borderColor='var(--no)'}},1000);showT()};
+/* 사진 */
+function img(p,cls){const x=PH[p];return x?`<img src="${x.data}" alt="${esc(x.name)}" data-ph="${p}" ${cls?`class="${cls}"`:''}>`:''}
+function wireImgs(){document.querySelectorAll('#body img[data-ph]').forEach(im=>im.onclick=()=>{const p=PH[im.dataset.ph];$('bvI').src=p.data;$('bvM').textContent=`${p.name} — ${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on')})}
+$('bvX').onclick=()=>$('bv').classList.remove('on');
+/* 붙임쪽지 칸 */
+function col(id,title,color,frame,opts={}){return `<div class="col${opts.cmp?' cmp':''}" style="--cc:${color}"><h3>${title}</h3>${frame?`<p class="frame">${esc(frame)}</p>`:''}<div class="notes" id="n-${id}"></div><div class="add"><input id="i-${id}" placeholder="${esc(opts.ph||frame||'생각을 써요')}"><button data-add="${id}">붙이기</button></div></div>`}
+function drawNotes(id,toBoard){const arr=LS.get(LK+id,[]);const box=$('n-'+id);if(!box)return;
+ box.innerHTML=arr.map((t,i)=>`<div class="note"><span>${esc(t)}</span><span>${toBoard?`<button class="up" data-up="${i}">질문 판에 ↑</button>`:''}<button class="x" data-x="${i}" aria-label="지우기">✕</button></span></div>`).join('');
+ box.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{arr.splice(+b.dataset.x,1);LS.set(LK+id,arr);drawNotes(id,toBoard)});
+ box.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{addQ(arr[+b.dataset.up],'그 밖에');b.textContent='올렸어요 ✓';b.disabled=true});}
+function wireCols(ids,boardIds=[]){ids.forEach(id=>{const inp=$('i-'+id),btn=document.querySelector(`[data-add="${id}"]`);const f=()=>{const v=inp.value.trim();if(!v)return;const a=LS.get(LK+id,[]);a.push(v);LS.set(LK+id,a);inp.value='';drawNotes(id,boardIds.includes(id))};btn.onclick=f;inp.onkeydown=e=>{if(e.key==='Enter')f()};drawNotes(id,boardIds.includes(id))})}
+/* 단계 그리기 */
+function stepsBar(){$('steps').innerHTML=C.steps.map((s,i)=>`<button class="st ${i===step?'now':i<step?'done':''}" data-i="${i}">${i+1}. ${esc(s.t)}</button>`).join('');$('steps').querySelectorAll('.st').forEach(b=>b.onclick=()=>go(+b.dataset.i))}
+function go(i){step=i;stopT();left=0;$('tm').textContent='--:--';$('timerBtn').style.borderColor='';show('lesson');render()}
+$('prev').onclick=()=>step>0?go(step-1):show('cover');$('next').onclick=()=>step<C.steps.length-1?go(step+1):show('cover');
+function render(){const s=C.steps[step];stepsBar();const r=ROUT[s.k]||['•',''];$('rt').textContent=`${r[0]} ${s.routine||r[1]} · ${s.min}분`;$('hd').textContent=s.hd||s.t;$('ask').textContent=s.ask||'';
+ $('next').textContent=step<C.steps.length-1?'다음 →':'마치기 ✓';(R[s.k]||R.talk)(s,'s'+step);wireImgs();$('body').scrollTop=0}
+const R={};
+R.see=(s,id)=>{$('body').innerHTML=`<div class="split wrap"><div class="gal">${s.items.map(it=>`<div class="pic">${it.p?img(it.p):`<span class="e">${it.e}</span>`}<b>${esc(it.cap||'')}</b>${it.sub?`<small>${esc(it.sub)}</small>`:''}</div>`).join('')}</div>
+ <div class="cols" style="--n:3">${col(id+'a','👀 보여요','#2F74E0',s.f?.[0]||'무엇이 보이나요?')}${col(id+'b','💭 생각해요','#6A4FC9',s.f?.[1]||'무엇이라고 생각하나요?')}${col(id+'c','❓ 궁금해요','#E8961E',s.f?.[2]||'무엇이 궁금한가요?',{ph:'질문을 써요'})}</div></div>`;
+ wireCols([id+'a',id+'b',id+'c'],[id+'c'])};
+R.sort=(s,id)=>{let deck=[...s.items],i=0,done=[];const bins=s.bins;
+ const draw=()=>{if(i>=deck.length){$('body').innerHTML=`<div class="sorted" style="--n:${bins.length}">${bins.map(b=>`<div style="--cc:${b.c}"><b>${b.e} ${esc(b.n)}</b><br>${done.filter(d=>d.k===b.k).map(d=>'· '+esc(d.x)).join('<br>')}</div>`).join('')}</div>${s.after?`<div class="after">💬 ${esc(s.after)}</div>`:''}${s.col?`<div class="cols" style="--n:1;width:min(1000px,100%)">${col(id+'z',s.col,'#E8961E','',{ph:s.colph||'생각을 써요',cmp:1})}</div>`:''}`;if(s.col)wireCols([id+'z']);return}
+  const it=deck[i];$('body').innerHTML=`<div class="deck"><p class="ask">${i+1} / ${deck.length}</p><div class="card1">${it.p?img(it.p):`<span class="e">${it.e}</span>`}<span class="x">${esc(it.x)}</span></div>
+  <div class="bins" style="--n:${bins.length}">${bins.map(b=>`<button class="bin" data-k="${b.k}" style="--cc:${b.c}"><span class="e">${b.e}</span>${esc(b.n)}${b.c2?`<span class="c">${esc(b.c2)}</span>`:''}</button>`).join('')}</div><div class="fb" id="fb"></div></div>`;wireImgs();
+  document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>{const fb=$('fb');const open=it.k==='*';const ok=open||b.dataset.k===it.k;
+   fb.className='fb on '+(open?'open':ok?'ok':'no');fb.innerHTML=(open?'<b>생각이 다를 수 있어요.</b> ':ok?'<b>맞아요!</b> ':'<b>다시 생각해 봐요.</b> ')+esc(it.w||'')+(ok?` <button class="ghost" id="nx" style="margin-left:8px">다음 카드</button>`:'');
+   if(ok){done.push({k:open?b.dataset.k:it.k,x:it.x});document.querySelectorAll('.bin').forEach(x=>x.disabled=true);$('nx').onclick=()=>{i++;draw()};$('nx').focus()}})};draw()};
+R.define=(s,id)=>{const saved=LS.get(LK+id+'d','');$('body').innerHTML=`<div class="chips">${s.words.map(w=>`<button class="chip" aria-pressed="false">${esc(w)}</button>`).join('')}</div>
+ <div class="frameline">${esc(s.frame[0])} <input id="dIn" value="${esc(saved)}" placeholder="우리 반 생각"> ${esc(s.frame[1])}</div>
+ <button class="big-btn" id="dShow" style="font-size:clamp(19px,1.8vw,25px);padding:8px 24px">📖 ${esc(s.btn||'교과서 뜻과 비교하기')}</button>
+ <div class="book" id="book"><small>${esc(s.bookLabel||'교과서 뜻')} (${esc(s.src)})</small><br><b>${s.book}</b></div>
+ <div class="cols" style="--n:2">${col(id+'s','🤝 우리 뜻과 같은 점','#1F9E63','')}${col(id+'n','✨ 새로 알게 된 점','#2F74E0','')}</div>`;
+ document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{c.setAttribute('aria-pressed',c.getAttribute('aria-pressed')==='true'?'false':'true');const inp=$('dIn');if(c.getAttribute('aria-pressed')==='true'){inp.value=(inp.value?inp.value+' ':'')+c.textContent;LS.set(LK+id+'d',inp.value)}});
+ $('dIn').oninput=()=>LS.set(LK+id+'d',$('dIn').value);$('dShow').onclick=()=>{$('book').classList.add('on');$('book').scrollIntoView({block:'center',behavior:'smooth'})};wireCols([id+'s',id+'n'])};
+R.cards=(s,id)=>{$('body').innerHTML=`<div class="gal wrap">${s.cards.map((c,i)=>`<div class="pic" style="border-color:${c.c||'var(--line)'}"><span class="num">자료 ${i+1}</span>${c.p?img(c.p):`<span class="e">${c.e}</span>`}<b>${esc(c.t)}</b><span style="font-size:clamp(15px,1.45vw,19px)">${esc(c.d)}</span><small>${esc(c.s||'')}</small></div>`).join('')}</div>${s.qs?`<div class="after wrap">💬 ${s.qs.map(esc).join('<br>💬 ')}</div>`:''}`};
+R.csq=(s,id)=>{const q=Q().filter(x=>x.s<2);const store=LS.get(LK+id+'log',[]);const nC=(s.cards||[]).length;
+ $('body').innerHTML=`<div class="qpick"><b style="font-family:var(--display);font-weight:400">🎯 함께 답할 질문</b><select id="qSel">${[...new Set([...(s.qs||[]),...q.map(x=>x.t)])].map(x=>`<option>${esc(x)}</option>`).join('')}</select></div>
+ ${nC?`<div class="mini wrap">${s.cards.map((c,i)=>`<div class="m">${c.p?img(c.p):`<span class="e">${c.e}</span>`}<div><span class="num">자료 ${i+1}</span> <b style="display:inline">${esc(c.t)}</b><span class="d">${esc(c.d)}</span><small>${esc(c.s||'')}</small></div></div>`).join('')}</div>`:''}
+ <div class="csq">
+  <div class="col cmp" style="--cc:#2F74E0"><h3>🗣️ 주장</h3><p class="frame">나는 ~라고 생각해요.</p><textarea id="cl" rows="2" placeholder="나는 ~라고 생각해요." style="font-family:var(--body);font-size:clamp(17px,1.6vw,21px);border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:6px"></textarea></div>
+  <div class="col cmp" style="--cc:#1F9E63"><h3>📑 근거</h3><p class="frame">왜냐하면 자료 ○을 보면 ~이기 때문이에요.</p><div class="evi">${[...Array(nC)].map((_,i)=>`<button aria-pressed="false" data-e="${i+1}">자료 ${i+1}</button>`).join('')}</div><input id="ev" placeholder="왜냐하면 자료 ○을 보면 ~" style="font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:6px"></div>
+  <div class="col cmp" style="--cc:#E8961E"><h3>❓ 되묻기</h3><p class="frame">친구에게 더 묻고 싶은 것은?</p><input id="bq" placeholder="예: 그럼 ~는 어떨까?" style="font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:6px"><button class="big-btn" id="csqSave" style="font-size:clamp(18px,1.7vw,23px);padding:6px 20px;align-self:flex-end">✔ 기록하기</button></div>
+ </div>
+ <div class="log wrap" id="csqLog"></div>`;
+ const drawLog=()=>{$('csqLog').innerHTML=store.map(x=>`<div><b>질문:</b> ${esc(x.q)}<br>🗣️ ${esc(x.c)} · 📑 ${esc(x.e)}${x.b?` · ❓ ${esc(x.b)}`:''}</div>`).join('')};drawLog();
+ document.querySelectorAll('.evi button').forEach(b=>b.onclick=()=>b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true'));
+ $('csqSave').onclick=()=>{const c=$('cl').value.trim();if(!c)return;const ev=[...document.querySelectorAll('.evi button[aria-pressed="true"]')].map(b=>'자료 '+b.dataset.e).join(', ');
+  const rec={q:$('qSel').value,c,e:[ev,$('ev').value.trim()].filter(Boolean).join(' — ')||'(근거 없음 — 자료에서 찾아봐요)',b:$('bq').value.trim()};store.push(rec);LS.set(LK+id+'log',store);
+  const all=Q();const hit=all.find(x=>x.t===rec.q);if(hit&&rec.e&&!rec.e.startsWith('(')){hit.s=Math.max(hit.s,1);hit.a=(hit.a?hit.a+' / ':'')+rec.c+' ('+rec.e+')';setQ(all)}
+  if(rec.b)addQ(rec.b,'그 밖에');$('cl').value=$('ev').value=$('bq').value='';document.querySelectorAll('.evi button').forEach(b=>b.setAttribute('aria-pressed','false'));drawLog()}};
+R.venn=(s,id)=>{$('body').innerHTML=`<div class="cols wrap" style="--n:3">${col(id+'a',esc(s.a)+'만','#2F74E0',s.fa||'')}${col(id+'s','🤝 같은 점','#1F9E63',s.fs||'')}${col(id+'b',esc(s.b)+'만','#E0506B',s.fb||'')}</div>${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;wireCols([id+'a',id+'s',id+'b'])};
+R.cse=(s,id)=>{const f=s.f||[];$('body').innerHTML=`<div class="cols wrap" style="--n:3">${col(id+'a','🔗 연결','#2F74E0',f[0]||'이미 알던 것과 어떻게 이어지나요?')}${col(id+'b','🌱 확장','#1F9E63',f[1]||'새롭게 넓어진 생각은?')}${col(id+'c','🧗 도전','#E8961E',f[2]||'아직 궁금하거나 어려운 것은?',{ph:'질문을 써요'})}</div>`;wireCols([id+'a',id+'b',id+'c'],[id+'c'])};
+R.iuti=(s,id)=>{const f=s.f||[];$('body').innerHTML=`<div class="cols wrap" style="--n:2">${col(id+'a','🕰️ 예전 생각','#6A4FC9',f[0]||'처음에 나는 ~라고 생각했어요.')}${col(id+'b','💡 지금 생각','#1F9E63',f[1]||'지금은 ~라고 생각해요.')}</div>${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;wireCols([id+'a',id+'b'])};
+R.task=(s,id)=>{const st=LS.get(LK+id+'t',[]);$('body').innerHTML=`<div class="task">${s.list.map((t,i)=>`<label class="${st[i]?'done':''}"><input type="checkbox" data-t="${i}" ${st[i]?'checked':''}> ${esc(t)}</label>`).join('')}</div>${s.tip?`<div class="tip">💡 ${esc(s.tip)}</div>`:''}${s.col?`<div class="cols wrap" style="--n:1">${col(id+'z',s.col,'#E8961E','')}</div>`:''}`;
+ document.querySelectorAll('[data-t]').forEach(c=>c.onchange=()=>{st[+c.dataset.t]=c.checked;LS.set(LK+id+'t',st);c.parentElement.classList.toggle('done',c.checked)});if(s.col)wireCols([id+'z'])};
+R.check=(s,id)=>{let i=0,sc=0;const draw=()=>{if(i>=s.items.length){$('body').innerHTML=`<div class="qz"><div class="qt">🎉 ${s.items.length}문제 중 ${sc}문제를 맞혔어요!</div><button class="ghost" id="again">다시 풀기</button></div>`;$('again').onclick=()=>{i=0;sc=0;draw()};return}
+ const q=s.items[i],ord=q.o.map((_,k)=>k).sort(()=>Math.random()-.5);$('body').innerHTML=`<div class="qz"><p class="ask">${i+1} / ${s.items.length}</p><div class="qt">${esc(q.q)}</div><div class="opts">${ord.map((k,n)=>`<button class="opt" data-k="${k}">${n+1}. ${esc(q.o[k])}</button>`).join('')}</div><div class="fb" id="fb"></div></div>`;
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=+b.dataset.k===q.a;if(ok)sc++;document.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.k===q.a)x.classList.add('right')});if(!ok)b.classList.add('wrong');
+  $('fb').className='fb on '+(ok?'ok':'no');$('fb').innerHTML=`<b>${ok?'정답이에요!':'정답을 확인해 봐요.'}</b> ${esc(q.w)} <button class="ghost" id="nx">다음</button>`;$('nx').onclick=()=>{i++;draw()};$('nx').focus()})};draw()};
+R.talk=(s,id)=>{$('body').innerHTML=`${s.points?`<div class="after wrap">${s.points.map(p=>'💬 '+esc(p)).join('<br>')}</div>`:''}<div class="cols wrap" style="--n:${s.cols?s.cols.length:1}">${(s.cols||[s.col||'우리 반 생각']).map((c,i)=>col(id+'t'+i,esc(c),['#2F74E0','#1F9E63','#E0506B','#E8961E'][i%4],(s.frames||[])[i]||'')).join('')}</div>`;wireCols((s.cols||[0]).map((_,i)=>id+'t'+i),s.toBoard?(s.cols||[0]).map((_,i)=>id+'t'+i):[])};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.on,.bigview.on').forEach(o=>o.classList.remove('on'))});
+</script>
+<script>(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);if(ok)document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on')})})();</script>
+</body></html>
