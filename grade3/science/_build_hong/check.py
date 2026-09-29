@@ -5,7 +5,7 @@ JS 오류, 가로 넘침, 화면보다 긴 단계(스크롤 필요)를 보고합
 사용법: python3 check.py ../sem1-hong/u1-l2.html [다른 파일…] [--shots 폴더]"""
 import sys, os, asyncio
 from playwright.async_api import async_playwright
-V = [('크롬북', 1366, 680), ('갤럭시탭', 800, 1180)]
+V = [('크롬북', 1366, 680), ('갤럭시탭', 800, 1180), ('교실화면', 1920, 1080)]
 ST = """()=>{const se=document.scrollingElement,b=document.getElementById('body');
  const act=document.querySelector('.screen.on');
  return {h:se.scrollWidth>innerWidth+1, v:se.scrollHeight>innerHeight+2, sh:se.scrollHeight, ih:innerHeight,
@@ -26,7 +26,7 @@ async def one(pw, f, shots):
         st = await pg.evaluate(ST)
         if st['h']: out.append(f'[{name}] 표지 가로넘침')
         if shots:
-            os.makedirs(shots, exist_ok=True); await pg.screenshot(path=f'{shots}/{base}_{"cb" if w>h else "tab"}_00.png')
+            os.makedirs(shots, exist_ok=True); await pg.screenshot(path=f'{shots}/{base}_{ {1366:"cb",800:"tab",1920:"tv"}[w] }_00.png')
         n = await pg.evaluate('C.steps.length')
         await pg.click('#go'); await pg.wait_for_timeout(300)
         for i in range(n):
@@ -45,7 +45,7 @@ async def one(pw, f, shots):
             if st['v']: p.append(f"창 스크롤({st['sh']}>{st['ih']})")
             if st['bo']: p.append(f"본문 스크롤({st['bsh']}>{st['bch']})")
             if p: out.append(f'[{name}] 단계 {i+1}({k}): ' + ', '.join(p))
-            if shots: await pg.screenshot(path=f'{shots}/{base}_{"cb" if w>h else "tab"}_{i+1:02d}.png')
+            if shots: await pg.screenshot(path=f'{shots}/{base}_{ {1366:"cb",800:"tab",1920:"tv"}[w] }_{i+1:02d}.png')
             await pg.click('#next'); await pg.wait_for_timeout(250)
         for e in errs[:5]: out.append(f'[{name}] JS 오류: {e}')
         out.insert(0, f'[{name}] 단계 {n}개')

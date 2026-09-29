@@ -4,7 +4,7 @@ Object.assign(ROUT,{pred:['🔮','예상하기'],lab:['🧪','실험하고 기�
 /* 🔮 예상하기: 결과를 예상하고 까닭을 붙임쪽지로 써요. key가 같으면 뒤의 '예상과 결과 비교' 단계에서 불러와요. */
 R.pred=(s,id)=>{const k=s.key||'P1';const f=s.f||[];
  $('body').innerHTML=`${s.q?`<div class="after wrap" style="font-size:clamp(19px,1.9vw,25px)">🔮 ${esc(s.q)}</div>`:''}${s.opts?`<div class="chips">${s.opts.map(o=>`<button class="chip" aria-pressed="false" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div>`:''}
- <div class="cols wrap" style="--n:2">${col('pr'+k+'a','🔮 내 예상','#6A4FC9',f[0]||'나는 ~될 것이라고 예상해요.')}${col('pr'+k+'b','💡 그렇게 생각한 까닭','#2F74E0',f[1]||'왜냐하면 ~ 때문이에요.')}</div>${s.tip?`<div class="tip">💡 ${esc(s.tip)}</div>`:''}`;
+ <div class="cols wrap" style="--n:2">${col('pr'+k+'a','🔮 내 예상','#6A4FC9',f[0]||'~될 것 같아요.')}${col('pr'+k+'b','💡 그렇게 생각한 까닭','#2F74E0',f[1]||'왜냐하면 ~ 때문이에요.')}</div>${s.tip?`<div class="tip">💡 ${esc(s.tip)}</div>`:''}`;
  document.querySelectorAll('.chip[data-o]').forEach(c=>c.onclick=()=>{const inp=$('i-pr'+k+'a');inp.value=c.dataset.o;inp.focus()});
  wireCols(['pr'+k+'a','pr'+k+'b'])};
 /* 🧪 실험하고 기록하기: 실험 순서 점검 + 안전 약속 + 결과 기록표 + (선택) 가상 실험실 단추 */
@@ -18,5 +18,5 @@ R.lab=(s,id)=>{const st=LS.get(LK+id+'t',[]);const tb=LS.get(LK+id+'tb',{});cons
 /* ⚖️ 예상과 결과 비교: 앞에서 쓴 예상을 불러와 실제 결과와 견줘요 */
 R.pvr=(s,id)=>{const k=s.key||'P1';const pa=LS.get(LK+'pr'+k+'a',[]),pb=LS.get(LK+'pr'+k+'b',[]);const f=s.f||[];
  $('body').innerHTML=`<div class="prev wrap"><b>🔮 우리가 한 예상</b> ${pa.length?pa.map(x=>`<span class="pv">${esc(x)}</span>`).join(''):'<span class="ask" style="display:inline">(예상하기 단계에서 쓴 쪽지가 여기에 나와요)</span>'}${pb.length?`<br><b>💡 까닭</b> ${pb.map(x=>`<span class="pv">${esc(x)}</span>`).join('')}`:''}</div>
- <div class="cols wrap" style="--n:3">${col(id+'a','📋 실제 결과','#1F9E63',f[0]||'실험해 보니 ~했어요.')}${col(id+'b','⚖️ 예상과 같은 점·다른 점','#E8961E',f[1]||'예상과 ~이 같았어요/달랐어요.')}${col(id+'c','🤔 왜 그럴까?','#E0506B',f[2]||'그 까닭은 ~인 것 같아요.',{ph:'질문이 생기면 써요'})}</div>${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;
+ <div class="cols wrap" style="--n:3">${col(id+'a','📋 실제 결과','#1F9E63',f[0]||'실험해 보니 ~했어요.')}${col(id+'b','⚖️ 예상과 같은 점·다른 점','#E8961E',f[1]||'예상과 ~이 같았어요/달랐어요.')}${col(id+'c','🤔 왜 그럴까?','#E0506B',f[2]||'그 까닭은 ~인 것 같아요.')}</div>${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;
  wireCols([id+'a',id+'b',id+'c'],[id+'c'])};
