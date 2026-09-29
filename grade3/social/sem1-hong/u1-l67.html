@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>🎨 우리가 사는 곳에 있는 여러 장소를 표현해 볼까요</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF1F8;--paper:#FFFFFF;--ink:#1F2A44;--soft:#4F5B75;--line:#CAD6E4;
+  --ok:#1F9E63;--no:#D2453A;--acc:#2F74E0;--note:#FFF4C2;--note-ink:#3B3200;
+  --S:#E0506B;--O1:#2F74E0;--O2:#6A4FC9;--P:#1F9E63;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;--note:#4A4420;--note-ink:#FFF6CC}}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;--note:#4A4420;--note-ink:#FFF6CC}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:clamp(19px,1.9vw,24px);line-height:1.45;overflow:hidden}
+body,h1,h2,h3,p,li,span,div,button,a,small,b,label{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+h1,h2,h3,.hd,.ttl{text-wrap:balance} p,li,small{text-wrap:pretty}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:4px solid var(--acc);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(10px,1.6vw,24px)}
+.screen.on{display:flex}
+/* 표지 */
+#cover{overflow-y:auto;align-items:center;gap:14px}
+#cover .inner{width:min(1100px,100%);display:flex;flex-direction:column;gap:14px;align-items:center;margin:auto 0}
+.badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);color:#fff;border-radius:999px;padding:4px 16px;font-size:clamp(17px,1.6vw,22px);background:var(--sc)}
+.title{font-size:clamp(34px,4.6vw,64px);text-align:center;line-height:1.15}
+.lead{color:var(--soft);text-align:center;margin:0;font-size:clamp(18px,1.7vw,23px)}
+.bq{width:100%;background:var(--paper);border:4px solid var(--sc);border-radius:22px;padding:12px 20px;text-align:center}
+.bq small{display:block;color:var(--soft);font-size:clamp(15px,1.4vw,19px)}
+.bq b{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.6vw,36px)}
+.goalbox{background:#FFF4D6;color:#1F2A44;border:4px solid #E8961E;border-radius:18px;padding:8px 20px;font-family:var(--display);font-size:clamp(21px,2.1vw,30px);text-align:center}
+.map{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+.mcol{background:var(--paper);border-radius:16px;border-top:10px solid var(--mc);padding:8px 10px}
+.mcol h3{font-size:clamp(17px,1.6vw,21px);color:var(--mc)}
+.mcol a,.mcol span.cur{display:block;font-size:clamp(15px,1.35vw,18px);color:var(--ink);text-decoration:none;padding:3px 6px;border-radius:8px;margin-top:3px}
+.mcol a:hover{background:var(--bg)}
+.mcol .cur{background:var(--mc);color:#fff!important;font-family:var(--display)}
+.plan{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.big-btn{font-size:clamp(24px,2.4vw,34px);padding:10px 40px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 5px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.ghost{font-size:clamp(17px,1.6vw,22px);padding:8px 18px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+/* 수업 화면 */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.steps{display:flex;gap:5px;align-items:center;flex:1;min-width:0;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.st{flex:none;font-family:var(--display);font-size:clamp(14px,1.2vw,18px);padding:4px 10px;border-radius:999px;border:3px solid var(--line);background:var(--paper);color:var(--soft)}
+.st.now{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.st.done{border-color:var(--ok);color:var(--ok)}
+.tools{display:flex;gap:5px;align-items:center;flex:none}
+.tool{font-size:clamp(15px,1.3vw,19px);border:3px solid var(--line);background:var(--paper);border-radius:14px;padding:4px 9px;white-space:nowrap}
+.tool.qb{border-color:#E8961E}
+.tool .n{display:inline-block;min-width:1.5em;border-radius:999px;background:#E8961E;color:#fff;font-size:.8em;padding:0 5px;margin-left:4px}
+.sthead{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:6px 0 2px}
+.routine{font-family:var(--display);font-size:clamp(15px,1.35vw,19px);background:var(--sc);color:#fff;border-radius:999px;padding:3px 12px}
+.hd{font-family:var(--display);font-size:clamp(26px,2.8vw,40px);text-align:center;margin:0}
+.ask{color:var(--soft);text-align:center;margin:0;font-size:clamp(17px,1.6vw,22px)}
+.body{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:10px;padding:6px 2px}
+.wrap{width:min(1240px,100%)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:6px}
+.tnote{border:3px solid #6A4FC9;color:#6A4FC9;background:var(--paper);border-radius:14px;padding:6px 14px;font-size:clamp(16px,1.5vw,21px)}
+/* 붙임쪽지 칸 */
+.cols{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:10px;width:100%}
+.col{background:var(--paper);border-radius:18px;border-top:10px solid var(--cc);padding:8px 10px;display:flex;flex-direction:column;gap:6px;min-height:170px}
+.col h3{font-size:clamp(20px,2vw,27px);color:var(--cc);display:flex;align-items:center;gap:6px}
+.col .frame{font-size:clamp(14px,1.3vw,17px);color:var(--soft);margin:0}
+.notes{display:flex;flex-direction:column;gap:6px;max-height:34vh;overflow-y:auto;flex:1}
+.note{background:var(--note);color:var(--note-ink);border-radius:10px;padding:6px 10px;font-size:clamp(17px,1.6vw,22px);display:flex;gap:6px;align-items:flex-start;justify-content:space-between}
+.note .x{border:0;background:none;font-size:15px;opacity:.6;padding:0 2px}
+.note .up{border:0;background:#E8961E;color:#fff;border-radius:8px;font-size:13px;padding:2px 6px;white-space:nowrap}
+.add{display:flex;gap:6px}
+.add input{flex:1;min-width:0;font-family:var(--body);font-size:clamp(17px,1.6vw,21px);padding:6px 10px;border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.add button{border:0;border-radius:10px;background:var(--cc);color:#fff;font-size:clamp(16px,1.5vw,20px);padding:4px 12px}
+/* 보기 자료 */
+.gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:10px;width:100%}
+.pic{background:var(--paper);border:3px solid var(--line);border-radius:16px;padding:6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--body)}
+.pic img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px}
+.pic .e{font-size:clamp(46px,5vw,70px);line-height:1.2}
+.pic b{font-family:var(--display);font-weight:400;font-size:clamp(18px,1.7vw,23px)}
+.pic small{color:var(--soft);font-size:clamp(14px,1.3vw,17px)}
+.pic .num{font-family:var(--display);background:var(--ink);color:var(--bg);border-radius:999px;padding:0 10px;font-size:15px;align-self:flex-start}
+.split{display:flex;flex-direction:column;gap:10px;width:100%}
+.split .gal{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}
+.split .pic img{aspect-ratio:16/9;max-height:17vh}.split .pic .e{font-size:clamp(40px,4vw,56px)}
+.mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:8px;width:100%}
+.mini .m{display:flex;gap:10px;align-items:center;background:var(--paper);border:3px solid var(--line);border-radius:14px;padding:6px 10px;text-align:left}
+.mini .m img{width:96px;height:72px;object-fit:cover;border-radius:10px;flex:none;cursor:zoom-in}
+.mini .m .e{font-size:40px;flex:none;width:60px;text-align:center}
+.mini .m b{font-family:var(--display);font-weight:400;font-size:clamp(17px,1.6vw,21px);display:block}
+.mini .m span.d{font-size:clamp(14px,1.3vw,17px);display:block}
+.mini .m small{font-size:12px;color:var(--soft)}
+.mini .num{font-family:var(--display);background:var(--ink);color:var(--bg);border-radius:999px;padding:0 8px;font-size:14px}
+.col.cmp{min-height:0}.col.cmp .notes{max-height:14vh}
+/* 분류 */
+.deck{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.card1{width:min(900px,100%);background:var(--paper);border:4px solid var(--line);border-radius:22px;padding:12px 20px;display:flex;gap:16px;align-items:center;justify-content:center}
+.card1 .e{font-size:clamp(50px,5vw,80px);line-height:1}
+.card1 img{width:clamp(130px,16vw,220px);aspect-ratio:4/3;object-fit:cover;border-radius:12px}
+.card1 .x{font-family:var(--display);font-size:clamp(24px,2.6vw,38px)}
+.bins{display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:10px;width:min(1000px,100%)}
+.bin{border:0;background:var(--cc);color:#fff;border-radius:30px 30px 14px 14px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 6px 0 rgba(0,0,0,.2);font-size:clamp(21px,2.2vw,31px)}
+.bin .e{font-size:clamp(30px,3.2vw,46px)}
+.bin .c{font-family:var(--body);font-size:15px;opacity:.9}
+.fb{width:min(900px,100%);border-radius:16px;padding:8px 16px;font-size:clamp(18px,1.7vw,23px);display:none}
+.fb.on{display:block}.fb.ok{background:color-mix(in srgb,var(--ok) 18%,var(--paper));border:3px solid var(--ok)}
+.fb.no{background:color-mix(in srgb,var(--no) 12%,var(--paper));border:3px solid var(--no)}
+.fb.open{background:color-mix(in srgb,#E8961E 16%,var(--paper));border:3px solid #E8961E}
+.sorted{display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:10px;width:min(1000px,100%)}
+.sorted div{background:var(--paper);border-radius:14px;border-top:8px solid var(--cc);padding:6px 10px;font-size:clamp(15px,1.4vw,19px)}
+.after{background:#FFF4D6;color:#1F2A44;border:4px solid #E8961E;border-radius:18px;padding:8px 16px;width:min(1000px,100%);font-size:clamp(19px,1.8vw,25px)}
+/* 뜻 만들기 */
+.frameline{font-family:var(--display);font-size:clamp(24px,2.6vw,36px);text-align:center;background:var(--paper);border-radius:18px;padding:10px 16px;width:min(1100px,100%)}
+.frameline input{font-family:var(--display);font-size:inherit;width:min(26ch,70%);border:0;border-bottom:4px dashed var(--acc);background:transparent;color:var(--acc);text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.chip{font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 12px}
+.chip[aria-pressed="true"]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 16%,var(--paper))}
+.book{display:none;width:min(1100px,100%);border:4px solid var(--ok);border-radius:18px;background:var(--paper);padding:10px 16px;text-align:center}
+.book.on{display:block}
+.book b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.3vw,32px)}
+.book mark{background:color-mix(in srgb,var(--ok) 25%,transparent);color:inherit;border-radius:6px;padding:0 3px}
+/* 주장-근거-질문 */
+.csq{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%}
+.evi{display:flex;flex-wrap:wrap;gap:6px}
+.evi button{font-family:var(--display);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);background:var(--paper);border-radius:12px;padding:4px 10px}
+.evi button[aria-pressed="true"]{border-color:#1F9E63;background:color-mix(in srgb,#1F9E63 18%,var(--paper))}
+.qpick{width:min(1100px,100%);background:var(--paper);border:4px solid #E8961E;border-radius:18px;padding:4px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.qpick select{flex:1;min-width:220px;font-family:var(--body);font-size:clamp(17px,1.6vw,21px);padding:6px;border-radius:10px;border:3px solid var(--line);background:var(--bg);color:var(--ink)}
+.log{width:100%;display:grid;gap:6px}
+.log div{background:var(--paper);border-left:10px solid #1F9E63;border-radius:10px;padding:6px 12px;font-size:clamp(16px,1.5vw,20px)}
+/* 활동 안내 */
+.task{width:min(1100px,100%);display:grid;gap:8px}
+.task label{display:flex;gap:10px;align-items:center;background:var(--paper);border-radius:14px;padding:8px 14px;font-size:clamp(19px,1.8vw,25px);border:3px solid var(--line)}
+.task input{width:26px;height:26px;accent-color:var(--ok)}
+.task label.done{border-color:var(--ok);opacity:.8}
+.tip{background:#FFF4D6;color:#1F2A44;border-radius:14px;padding:8px 14px;width:min(1100px,100%);font-size:clamp(17px,1.6vw,21px)}
+/* 확인 */
+.qz{width:min(1000px,100%);display:flex;flex-direction:column;gap:8px;align-items:center}
+.qt{font-family:var(--display);font-size:clamp(23px,2.4vw,34px);text-align:center;background:var(--paper);border-radius:18px;padding:10px 16px;width:100%}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.opt{font-family:var(--body);font-size:clamp(19px,1.9vw,26px);border:4px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 12px}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.opt.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 12%,var(--paper))}
+/* 겹침 창 */
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:14px;z-index:20}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:24px;padding:clamp(14px,2vw,28px);width:min(1150px,96vw);max-height:92vh;overflow-y:auto;border-top:16px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(28px,3vw,42px);margin-bottom:6px}
+.tpanel h3{font-size:clamp(20px,1.9vw,26px);color:#6A4FC9;margin:12px 0 4px}
+.tpanel li,.tpanel p{font-size:clamp(17px,1.6vw,21px);line-height:1.55}
+.qadd{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.qadd select,.qadd input{font-family:var(--body);font-size:clamp(17px,1.6vw,21px);padding:6px 10px;border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.qadd input{flex:1;min-width:240px}
+.qadd button{border:0;border-radius:10px;background:#E8961E;color:#fff;font-size:clamp(17px,1.6vw,21px);padding:4px 14px}
+.stems{display:flex;flex-wrap:wrap;gap:6px}
+.stems button{font-family:var(--body);font-size:clamp(15px,1.4vw,18px);border:2px dashed #E8961E;background:transparent;border-radius:999px;padding:2px 10px}
+.qlist{display:grid;gap:8px;margin-top:10px}
+.qi{border:3px solid var(--line);border-radius:14px;padding:8px 12px;display:grid;gap:4px;background:var(--bg)}
+.qi.s1{border-color:#2F74E0}.qi.s2{border-color:var(--ok)}
+.qi .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qi .ty{font-family:var(--display);font-size:14px;background:#E8961E;color:#fff;border-radius:999px;padding:1px 9px}
+.qi .from{font-size:13px;color:var(--soft)}
+.qi .q{font-size:clamp(18px,1.7vw,23px);flex:1}
+.qi .stt{font-family:var(--display);font-size:15px;border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:2px 10px}
+.qi .ans{font-size:clamp(16px,1.5vw,20px);color:var(--ink)}
+.qi input{font-family:var(--body);font-size:16px;padding:4px 8px;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);width:100%}
+.picker{font-family:var(--display);font-size:clamp(90px,14vw,170px);text-align:center;line-height:1.1}
+.bigview{position:fixed;inset:0;background:rgba(8,12,22,.95);display:none;align-items:center;justify-content:center;z-index:30}
+.bigview.on{display:flex}.bigview img{max-width:96vw;max-height:84vh;border-radius:12px}
+.bigview .meta{position:fixed;left:0;right:0;bottom:0;padding:8px 14px;color:#fff;text-align:center;font-size:15px;background:linear-gradient(transparent,rgba(0,0,0,.8))}
+.bigview .close{position:fixed;top:12px;right:14px;width:56px;height:56px;border-radius:50%;border:0;font-size:26px;background:#fff;color:#1F2A44}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px;width:100%}
+.tolist{display:none;font-family:var(--display);font-size:clamp(17px,1.6vw,21px);text-decoration:none;color:inherit;border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 18px}
+.tolist.on{display:inline-flex}
+.hjfoot{display:block;width:100%;margin:14px 0 0;padding:10px 0 2px;border-top:3px solid var(--line);text-align:center;color:var(--soft);font-size:16px;line-height:1.7}
+.hjfoot p{margin:2px 0}
+.pcredit{font-size:13px;color:var(--soft);text-align:center;margin:0}
+@media (max-height:760px) and (min-width:900px){
+  .notes{max-height:24vh}.col{min-height:140px}.pic img{aspect-ratio:16/10}
+  .hd{font-size:clamp(24px,2.4vw,34px)}.sthead{margin:0}.ask{font-size:17px}.col .frame{display:none}
+}
+@media (max-width:900px){
+  .cols,.csq{grid-template-columns:1fr}.split{grid-template-columns:1fr}.map{grid-template-columns:1fr 1fr}
+  .opts{grid-template-columns:1fr}.notes{max-height:22vh}
+}
+@media print{
+  body{overflow:visible;background:#fff;color:#000}.screen{position:static;display:none}
+  .overlay{display:none!important}#qbPanel.printme{display:block!important;position:static;background:#fff}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body>
+
+<section id="cover" class="screen on">
+ <div class="inner">
+  <span class="lead" style="font-family:var(--display)">🧑‍🏫 홍지희 선생님 버전 · SOOP 탐구 수업</span>
+  <span class="badge" id="cBadge"></span>
+  <h1 class="title" id="cTitle"></h1>
+  <p class="lead" id="cSub"></p>
+  <div class="bq" id="cBq"></div>
+  <div class="goalbox" id="cGoal"></div>
+  <div class="map" id="cMap"></div>
+  <div class="plan" id="cPlan"></div>
+  <div class="row"><button class="big-btn" id="go">수업 시작</button><button class="tnote" id="tn0">👩‍🏫 교사 안내</button><button class="ghost" id="qb0">💬 우리 반 질문 판</button></div>
+  <p class="pcredit" id="pcredit"></p>
+  <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a>
+   <footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div>
+ </div>
+</section>
+
+<section id="lesson" class="screen">
+ <div class="topbar">
+  <div class="steps" id="steps"></div>
+  <div class="tools">
+   <button class="tool qb" id="qbBtn">💬 질문 판<span class="n" id="qn">0</span></button>
+   <button class="tool" id="pickBtn">🎲 발표자</button>
+   <button class="tool" id="timerBtn">⏱ <span id="tm">--:--</span></button>
+   <button class="tool" data-full>⛶</button>
+   <button class="tool" id="home">🏠</button>
+  </div>
+ </div>
+ <div class="sthead"><span class="routine" id="rt"></span></div>
+ <h2 class="hd" id="hd"></h2>
+ <p class="ask" id="ask"></p>
+ <div class="body" id="body"></div>
+ <div class="foot">
+  <button class="tnote" id="tn">👩‍🏫 교사 안내</button>
+  <div class="row"><button class="ghost" id="prev">← 이전</button><button class="big-btn" id="next" style="font-size:clamp(20px,2vw,28px);padding:8px 26px">다음 →</button></div>
+ </div>
+</section>
+
+<div class="overlay" id="tnO"><div class="panel tpanel" style="--pc:#6A4FC9"><h2 id="tnT"></h2><div id="tnB"></div><p style="text-align:center"><button class="big-btn" data-close="tnO">닫기</button></p></div></div>
+<div class="overlay" id="qbO"><div class="panel" id="qbPanel" style="--pc:#E8961E">
+ <h2>💬 우리 반 질문 판</h2>
+ <p class="ask" style="text-align:left">친구가 만든 질문에 자료를 근거로 답을 찾아요. 이 주제(<span id="qbTopic"></span>)의 모든 차시에서 같은 질문 판을 써요.</p>
+ <div class="stems" id="stems"></div>
+ <div class="qadd"><select id="qType"><option>왜</option><option>어떻게</option><option>만약에</option><option>무엇이 다를까</option><option>그 밖에</option></select><input id="qText" placeholder="질문을 써요 (예: 왜 같은 놀이터인데 느낌이 다를까?)"><button id="qAdd">올리기</button></div>
+ <div class="qlist" id="qList"></div>
+ <p class="row" style="margin-top:12px"><button class="ghost" id="qPrint">🖨️ 인쇄</button><button class="ghost" id="qClear">질문 판 비우기</button><button class="big-btn" data-close="qbO">닫기</button></p>
+</div></div>
+<div class="overlay" id="pkO"><div class="panel" style="--pc:#2F74E0;text-align:center"><h2>🎲 누가 말해 볼까요?</h2>
+ <div class="picker" id="pkN">?</div>
+ <p class="row"><label>우리 반 <input id="pkMax" type="number" min="2" max="40" value="25" style="width:4.5em;font-size:20px"> 명</label><button class="big-btn" id="pkGo">뽑기</button><button class="ghost" id="pkReset">처음부터</button><button class="ghost" data-close="pkO">닫기</button></p>
+ <p class="ask" id="pkLeft"></p></div></div>
+<div class="bigview" id="bv"><button class="close" id="bvX" aria-label="닫기">✕</button><img id="bvI" alt=""><div class="meta" id="bvM"></div></div>
+
+<script>
+const C={"file": "u1-l67.html", "topicKey": "u1t1", "lessonKey": "u1-l67", "short": "6~7차시", "soop": "O1", "title": "🎨 우리가 사는 곳에 있는 여러 장소를 표현해 볼까요", "sub": "3학년 1학기 사회 1단원 · 6~7차시 · 교과서 23~27쪽", "goal": "우리가 사는 곳에 있는 여러 장소를 표현해 봅시다.", "photos": {}, "notes0": "<h3>SOOP 탐구 흐름으로 다시 짠 까닭<\/h3><ul><li>이 차시는 주제 1의 <b>O(개념 구축하기)<\/b> 마지막 차시입니다. 교과서 활동(표현 계획 세우기 23쪽, 그림·책·신문으로 표현하기 24~26쪽, 별별 직업 속으로 27쪽)은 그대로 합니다.<\/li><li>그 앞뒤에 <b>세 방법 비교(분류)<\/b> → <b>내가 고른 표현 방법의 까닭을 근거로 말하기(주장-근거-질문)<\/b> → <b>친구 표현을 보고 질문 만들기(질문 판)<\/b>를 넣었습니다.<\/li><li>질문 판 연결: 4~5차시에 답을 찾은 “같은 장소라도 왜 사람마다 생각과 느낌이 다를까?”를 표현으로 확인합니다(같은 장소도 사람마다 다르게 표현함). 이 차시에 새로 만든 질문은 8~9차시 작품 소개·관람 때 답을 찾습니다.<\/li><li><b>채점하지 않는 것<\/b>: 학생이 고른 주제·장소·표현 방법과 작품 내용. 화면에서 채점하는 것은 교과서의 표현 순서, 그림 표현 유의점, 직업 설명뿐입니다.<\/li><li>흐름(80분): 세 방법 비교 7분 → 표현 계획 8분 → 방법을 고른 까닭 8분 → 표현하기 35분 → 친구 표현에 질문하기 10분 → 별별 직업 속으로 7분 → 개념 확인 5분<\/li><li>교과서 23~27쪽 · 지도서 47~55쪽<\/li><\/ul><h3>학습 목표<\/h3><p>우리가 사는 곳의 여러 장소를 표현할 수 있다. (지도서 47쪽)<\/p><h3>준비물·자료<\/h3><ul><li>도화지, 장소 사진, 풀, 색칠 도구 (지난 시간 안내)<\/li><li>활동지 「우리가 사는 곳의 여러 장소 표현 계획서 쓰기」 (지도서 54쪽, 풀이 55쪽)<\/li><li>(대체 활동) 장소 엽서 쓰기, 장소 카드로 카드 뉴스 만들기 (지도서 53쪽)<\/li><\/ul><h3>성취 기준<\/h3><p>[4사01-01] 주변 여러 장소에서의 경험과 느낌을 다양한 방식으로 표현하고, 장소감을 나누며 서로 존중하는 태도를 지닌다.<\/p><h3>성취 수준<\/h3><ul><li><b>A<\/b> 주변 여러 장소에서의 경험과 느낌을 다양한 방식으로 표현하며 주변 장소에 관심을 가지고, 다른 사람과 장소감을 비교하며 서로 다른 장소감을 존중하는 태도를 가진다.<\/li><li><b>B<\/b> 주변 여러 장소에서의 경험과 느낌을 다양한 방식으로 표현하고, 다른 사람의 장소감을 관찰하며 서로 다른 장소감을 존중하는 태도를 가진다.<\/li><li><b>C<\/b> 주변 여러 장소에서의 경험과 느낌을 표현하고, 다른 사람의 장소감을 관찰하며 서로 다른 장소감의 차이를 발견할 수 있다.<\/li><\/ul><h3>주제 「지도상의 유의점」 (지도서 25쪽)<\/h3><ul><li>우리가 사는 곳의 범위는 생활권을 기반으로 하되 여가, 쇼핑을 위한 이동 및 학생의 경험 등 일상생활이 이루어지는 공간 범위를 고려한다.<\/li><li>삶의 터전에 관심을 두고 학생의 생활과 관련이 깊은 주변의 장소를 탐색하는 데 중점을 둔다.<\/li><li>학생들의 생활과 관련이 있는 장소를 활용하여 학생들이 공감하며 활동에 참여할 수 있도록 한다.<\/li><li>사람마다 장소에 관한 생각과 느낌이 다를 수 있음을 이해하고, 이를 존중할 수 있도록 지도하는 데 중점을 둔다.<\/li><li>여러 장소에서의 경험을 공유하는 과정에서 장소감의 차이를 이해하고 서로 존중하며, 주변의 장소를 알아가면서 이에 관한 관심을 심화하도록 한다.<\/li><\/ul><h3>주제 평가 계획 중 관련 항목 (지도서 25쪽)<\/h3><ul><li>우리가 사는 곳의 여러 장소를 글, 그림 등 다양한 방법으로 표현할 수 있다. — 관찰 평가<\/li><\/ul><h3>과정 중심 평가 연계 (활동지, 지도서 55쪽)<\/h3><ul><li>평가 관점: 우리가 사는 곳의 여러 장소를 어떻게 표현할지 계획을 세울 수 있는가?<\/li><li>평가 방법: 관찰·서술 평가<\/li><\/ul><h3>지도서 대조 검증<\/h3><ul><li>개념 확인 1번 해설의 근거 ‘지도서 51쪽’ → ‘교과서 23쪽’ (“우리가 사는 곳에 있는 여러 장소를 표현하려면 먼저 어떤 장소를 표현할지 정하고, 어떤 방법으로 표현할지 계획을 세워야 합니다.”는 교과서 23쪽 본문, 지도서 47쪽 축소본)<\/li><li>개념 확인 3번 해설 근거에 ‘교과서 24쪽’ 말풍선(“장소의 모습을 있는 그대로 정확하게 그리지 않아도 됩니다.”)을 덧붙임<\/li><li>5단계 교사 안내의 발문 출처 ‘기존 차시 자료의 발문’ → 지도서 49쪽·52쪽 원문으로 근거를 밝힘<\/li><li>그 밖의 항목(차시명·학습 문제, 그림·책·신문 순서, 신문 이름·발행인, 꼭! 기억해요 ‘그림’, 촬영 장소 섭외자 원문, 과정 중심 평가 관점·방법)은 원문과 같음<\/li><\/ul>", "steps": [{"k": "sort", "t": "방법 비교", "min": 7, "routine": "방법 비교하기", "hd": "어떤 방법으로 표현할 때 하는 일일까요?", "ask": "교과서 24~26쪽을 보며 그림·책·신문으로 나누어요. 다 나누면 방법마다 좋은 점을 찾아요.", "bins": [{"k": "draw", "n": "그림", "e": "🖍️", "c": "#E0506B", "c2": "교과서 24쪽"}, {"k": "book", "n": "책", "e": "📖", "c": "#2F74E0", "c2": "교과서 25쪽"}, {"k": "news", "n": "신문", "e": "📰", "c": "#E8961E", "c2": "교과서 26쪽"}], "items": [{"k": "draw", "e": "🏠", "x": "우리 집을 가운데 그리고, 가고 싶은 장소들을 둘레에 그려요.", "w": "교과서 24쪽 첫 번째 그림처럼 그림으로 표현하는 방법이에요."}, {"k": "book", "e": "📄", "x": "도화지를 반으로 접고, 한 번 더 반으로 접어요.", "w": "책으로 표현하기의 첫 번째 순서예요. (교과서 25쪽)"}, {"k": "news", "e": "🏷️", "x": "꾸밀 내용을 계획하고 ‘우리가 사는 곳의 장소 신문’처럼 이름을 정해요.", "w": "신문으로 표현할 때는 먼저 신문 이름을 정해요. (교과서 26쪽, 지도서 50쪽)"}, {"k": "draw", "e": "🛣️", "x": "길을 따라 내가 소중하게 생각하는 장소들을 그려요.", "w": "교과서 24쪽 두 번째 그림처럼 그림으로 표현하는 방법이에요."}, {"k": "news", "e": "✏️", "x": "한두 장소를 정해 특징이 잘 드러나도록 기사를 써요.", "w": "기사를 쓰는 것은 신문으로 표현하는 방법이에요. (교과서 26쪽)"}, {"k": "book", "e": "4️⃣", "x": "펼친 네 칸에 장소를 하나씩 정해 사진을 붙이거나 그림을 그려요.", "w": "네 칸으로 된 책의 각 칸에 장소를 나타내요. (교과서 25쪽)"}, {"k": "news", "e": "📅", "x": "만든 날짜와 발행인 이름을 적어요.", "w": "교과서 26쪽 신문에는 만든 날짜와 발행인 이름이 있어요."}], "after": "그림·책·신문은 무엇이 다를까요? 방법마다 무엇을 잘 나타낼 수 있을까요?", "col": "🔎 방법마다 좋은 점", "note": "<h3>도입 (2분)<\/h3><ul><li>지난 시간에 무엇을 했나요? → 장소 카드를 만들었습니다. 장소 카드로 다섯 고개 놀이도 하고, 이야기 이어 만들기 놀이도 했습니다. (지도서 47쪽)<\/li><li>(교과서 23쪽을 보며) 그림의 친구들이 무슨 이야기를 나누고 있나요? → 장소들을 어떻게 표현할지 이야기하고 있습니다. 책, 그림, 신문 등으로 표현하려고 합니다. (지도서 47쪽)<\/li><li>학습 문제: 우리가 사는 곳에 있는 여러 장소를 표현해 봅시다.<\/li><\/ul><h3>재구성한 활동 (5분)<\/h3><p>교과서 24~26쪽의 세 방법을 한 가지씩 설명하기 전에, 만드는 일을 <b>방법별로 나누며 비교<\/b>합니다. 문장은 교과서 24~26쪽 설명과 지도서 50쪽 예상 반응(신문 이름)에서 가져왔습니다. 다 나누면 ‘방법마다 좋은 점’을 붙임쪽지로 모아 다음 단계(방법을 고른 까닭)의 근거로 씁니다.<\/p><h3>예상 반응 (방법마다 좋은 점)<\/h3><ul><li>그림: 여러 장소가 어디쯤 있는지 한눈에 보여요. / 책: 장소마다 경험과 느낌을 글로 자세히 쓸 수 있어요. / 신문: 장소의 특징을 기사로 알려 줄 수 있어요. (재구성한 예시 — 교과서 24~26쪽 설명과 지도서 49쪽 “그림으로만 표현하기보다 장소에 관한 학생들의 경험과 생각, 느낌이 구체적으로 글에 드러나도록 강조한다.”에 근거)<\/li><\/ul>", "colph": "방법마다 좋은 점을 써요"}, {"k": "task", "t": "계획", "min": 8, "hd": "어떤 장소를 어떻게 표현할까요?", "ask": "교과서 23쪽 계획표에 차례대로 써요.", "list": ["표현할 주제를 정해요. (예: 내가 자주 가는 장소들)", "표현할 장소들을 써요. (예: 학교, 편의점, 놀이터)", "표현 방법을 골라요. (그림, 책, 신문 …)", "필요한 준비물을 확인해요. (예: 도화지, 색칠 도구)"], "tip": "좋아하는 장소, 가 보고 싶은 장소, 맛있는 음식을 파는 식당처럼 주제는 자유롭게 정해요.", "note": "<h3>진행<\/h3><ul><li>교과서 23쪽 「스스로 활동」 1: 표현할 주제, 표현할 장소들, 표현 방법을 계획표에 씁니다. 예시 답안: 내가 자주 가는 장소들 / 학교, 편의점, 놀이터 / 그림 (지도서 47쪽)<\/li><li>활동지 「우리가 사는 곳의 여러 장소 표현 계획서 쓰기」(지도서 54~55쪽)로 장소마다 넣을 내용까지 계획할 수 있습니다.<\/li><\/ul><h3>발문과 예상 반응 (지도서 48쪽)<\/h3><ul><li>어떤 장소를 표현할까요? → 우리 집 주변에서 자주 가 본 장소들을 표현할 것입니다.<\/li><li>어떻게 표현할까요? → 그림으로 표현하려고 합니다. 책 또는 신문으로 만들어 보려고 합니다.<\/li><li>무엇이 필요할까요? → 도화지와 색칠 도구가 필요합니다.<\/li><\/ul><h3>유의할 점<\/h3><p>“그림, 책, 신문 외에도 다양한 방법으로 장소를 표현할 수 있음을 안내하고 학생들이 자유롭게 계획을 세우도록 지도한다.” (지도서 48쪽) · “맛있는 음식을 파는 식당, 좋아하는 장소 등 다양한 주제를 자유롭게 생각하여 구체적인 장소들을 표현하도록 안내한다.” (지도서 47쪽 「지도 꿀 Tip」)<\/p><h3>과정 중심 평가 연계 (활동지, 지도서 55쪽)<\/h3><p>평가 관점: 우리가 사는 곳의 여러 장소를 어떻게 표현할지 계획을 세울 수 있는가? · 평가 방법: 관찰·서술 평가<\/p>"}, {"k": "csq", "t": "고른 까닭", "min": 8, "hd": "나는 왜 이 방법으로 표현할까요?", "ask": "내가 고른 방법을 주장으로, 자료를 근거로 말하고 친구에게 되물어요.", "qs": ["나는 어떤 방법으로 표현하면 좋을까? 왜 그렇게 생각해?", "같은 장소라도 사람마다 다르게 표현할까?"], "cards": [{"e": "🖍️", "t": "그림", "d": "집을 가운데 그리거나, 길을 따라 소중한 장소를 그려요.", "s": "교과서 24쪽"}, {"e": "📖", "t": "책", "d": "네 칸 책에 장소마다 경험과 느낌을 써요.", "s": "교과서 25쪽"}, {"e": "📰", "t": "신문", "d": "한두 장소의 특징이 잘 드러나게 기사를 써요.", "s": "교과서 26쪽"}], "note": "<h3>진행<\/h3><ul><li>2~3명이 “나는 ○○으로 표현할 거예요.”(주장) → “왜냐하면 자료 ○을 보면 ~이기 때문이에요.”(근거) → 친구에게 되묻기 순서로 말합니다. 1단계에서 모은 ‘방법마다 좋은 점’ 쪽지도 근거로 쓸 수 있습니다.<\/li><li>어떤 방법을 골랐는지는 채점하지 않습니다. <b>까닭을 자료로 말하는지<\/b>만 봅니다.<\/li><\/ul><h3>예상 반응 (재구성한 예시)<\/h3><ul><li>주장: 책으로 표현할래요. 근거: 자료 2를 보면 장소마다 경험과 느낌을 쓸 수 있어서, 놀이터에서 있었던 일을 자세히 쓰고 싶어요.<\/li><li>주장: 그림으로 표현할래요. 근거: 자료 1처럼 길을 따라 그리면 학교 가는 길의 장소를 한꺼번에 보여 줄 수 있어요.<\/li><li>되묻기 예: 같은 놀이터를 그리면 친구와 내 그림이 같을까? 신문으로는 느낌도 쓸 수 있을까? → 질문 판에 올라갑니다.<\/li><\/ul><h3>지도서 근거<\/h3><p>지도서 48쪽 “어떻게 표현할까요? → 그림으로 표현하려고 합니다. 책 또는 신문으로 만들어 보려고 합니다.”를 까닭까지 말하도록 넓혔습니다. 두 번째 함께 답할 질문은 4~5차시 결론(같은 장소에 관한 생각이나 느낌이 같을 수도 있고 다를 수도 있음, 교과서 20쪽)을 표현으로 확인하기 위한 것입니다.<\/p>"}, {"k": "task", "t": "표현하기", "min": 35, "hd": "그림·책·신문으로 표현해요", "ask": "계획한 방법 하나를 골라 교과서 순서대로 만들어요.", "list": ["🖍️ 그림: 집을 가운데 두거나, 길을 따라 장소들을 그려요. (24쪽)", "📖 책: 두 번 접어 네 칸 → 칸마다 장소 사진·그림 → 경험과 느낌 쓰고 꾸미기 (25쪽)", "📰 신문: 이름 정하기 → 장소 그림 → 한두 장소 기사 → 사진·색칠로 꾸미기 (26쪽)", "다 만들면 같은 방법으로 만든 친구끼리 모여 견주어 보아요."], "tip": "실제 지도처럼 정확하게 그리지 않아도 돼요. 마음속 장소를 내가 정한 기준에 따라 나타내요.", "note": "<h3>진행<\/h3><ul><li>교과서 24~26쪽 선택 1(그림), 선택 2(책), 선택 3(신문) 중 계획한 방법으로 직접 표현합니다. 화면 목록은 교과서 순서를 짧게 줄인 것입니다.<\/li><\/ul><h3>선택 1 그림 (교과서 24쪽, 지도서 48~49쪽)<\/h3><ul><li>첫 번째 그림: 아파트, 백화점, 공원, 해수욕장, 영화관 — 살고 있는 집을 가운데 그리고, 가고 싶은 장소들을 주변에 그렸습니다.<\/li><li>두 번째 그림: 편의점, 학교, 피아노 학원, 문구점, 놀이터, 어린이 도서관, 집, 할머니 댁, 공원 — 길을 따라 소중하게 생각하는 장소들을 그렸습니다.<\/li><li>“학생들이 자유롭게 그림으로 표현하도록 지도한다. 그림을 그릴 때 심상지도로 표현하도록 유도하되, ‘심상지도’ 개념을 학습 요소로 다루지 않도록 한다. 실제 지도처럼 정확하게 그리지 않아도 된다는 것을 안내하고, 마음속의 장소들을 자신이 정한 기준에 따라 나타내도록 한다.” (지도서 49쪽)<\/li><\/ul><h3>선택 2 책 (교과서 25쪽)<\/h3><ul><li>① 도화지를 반으로 접고 한 번 더 반으로 접었다 펼쳐서 네 칸으로 된 책 모양을 만듭니다. ② 네 개의 각 칸에 표현할 장소를 정하고, 장소 사진을 붙이거나 장소의 특징이 드러나도록 그림을 그립니다. ③ 각 장소에 관한 경험과 느낌을 쓰고, 색칠하거나 꾸며서 책을 완성합니다.<\/li><li>“삼각 책, 극장 책, 계단 책 등 다양하므로 책 만들기 도안을 제시하거나 학생들이 직접 만들어 볼 수 있도록 지도한다. 그림으로만 표현하기보다 장소에 관한 학생들의 경험과 생각, 느낌이 구체적으로 글에 드러나도록 강조한다.” (지도서 49쪽)<\/li><\/ul><h3>선택 3 신문 (교과서 26쪽)<\/h3><ul><li>① 신문을 어떤 내용으로 꾸밀지 계획하고 신문 이름을 정합니다. ② 우리가 사는 곳에 있는 여러 장소를 떠올려 그림을 그립니다. ③ 한두 장소를 정해 장소의 특징이 잘 드러나도록 기사를 씁니다. ④ 사진을 붙이거나 색칠하여 신문을 꾸며 완성합니다.<\/li><\/ul><h3>마무리 (마지막 항목)<\/h3><p>“우리가 사는 곳에 있는 여러 장소를 그림, 책, 신문 등으로 만든 후에 같은 종류끼리 모아서 비교해 보는 시간을 가질 수 있다. 친구들이 만든 자료에 대해 상호 존중하는 태도를 가지도록 지도한다.” (지도서 50쪽)<\/p><h3>대체 활동<\/h3><p>장소 엽서 쓰기, 장소 카드로 카드 뉴스 만들기 (지도서 53쪽)<\/p>"}, {"k": "talk", "t": "질문하기", "min": 10, "hd": "친구의 표현을 보고 질문을 만들어요", "ask": "같은 방법으로 만든 친구의 작품을 보고 궁금한 점을 질문으로 써요. 질문 판에 올릴 수 있어요.", "points": ["친구와 내가 똑같이 표현한 장소는 어디인가요? 크게 그린 장소는 서로 같나요?", "같은 장소를 나와 다르게 표현한 친구에게 무엇을 묻고 싶나요?"], "col": "❓ 친구에게 묻고 싶은 질문", "frames": ["예: 왜 놀이터를 가장 크게 그렸어요?"], "toBoard": true, "note": "<h3>진행<\/h3><ul><li>지도서 50쪽 “같은 종류끼리 모아서 비교해 보는 시간”을 <b>질문 만들기<\/b>로 바꾸었습니다. 짝 또는 같은 방법으로 만든 모둠 안에서만 봅니다. 반 전체 전시·관람·붙임쪽지는 8~9차시 활동이므로 여기서는 하지 않습니다.<\/li><li>질문 쪽지 옆 <b>질문 판에 ↑<\/b>를 누르면 우리 반 질문 판에 올라갑니다. 작품을 만든 친구가 바로 답해도 좋고, 8~9차시 소개 때 답해도 좋습니다.<\/li><\/ul><h3>발문과 예상 반응<\/h3><ul><li>친구와 내 그림에서 똑같이 그린 장소는 어디인가요? 크게 그린 장소는 서로 같나요? — “그림을 완성한 다음 다른 친구들이 그린 그림을 보며 자기의 그림과 친구의 그림에 공통으로 있는 장소를 찾아보고 장소에 관한 경험을 공유할 수 있다.” (지도서 49쪽)를 발문으로 옮김. ‘크게 그린 장소’는 지도서 52쪽 교수 학습 자료 “어떤 학생은 문구점을 크게 그리는가 하면 어떤 학생은 운동장을 크게 그릴 수 있다.”에 근거<\/li><li>질문 예(재구성한 예시): 왜 이 장소를 가장 크게 그렸어요? 이 장소에서 어떤 일이 있었어요? 신문 이름은 왜 그렇게 정했어요?<\/li><li>기대하는 깨달음: 같은 장소도 사람마다 경험과 느낌이 달라 다르게 표현해요. → 질문 판 “같은 장소라도 사람마다 다르게 표현할까?”에 연결<\/li><\/ul><h3>유의할 점<\/h3><p>“친구들이 만든 자료에 대해 상호 존중하는 태도를 가지도록 지도한다.” (지도서 50쪽) 잘 그렸는지·못 그렸는지를 묻는 질문 대신 장소와 경험을 묻는 질문을 쓰게 합니다.<\/p><h3>예상 반응 (지도서 51쪽)<\/h3><p>여러 장소를 표현하면서 어떤 생각이 들었나요? → 제가 우리가 사는 곳에 있는 여러 장소를 얼마나 알고 있고, 어떻게 생각하고 있었는지 알게 됐습니다.<\/p>"}, {"k": "cards", "t": "별별 직업", "min": 7, "hd": "별별 직업 속으로 · 촬영 장소 섭외자", "ask": "교과서 27쪽을 읽고, 촬영 장소 섭외자가 하는 일을 알아보아요.", "cards": [{"e": "🎬", "t": "어떤 일을 할까요?", "d": "드라마나 영화 등을 만들 때 촬영할 장소나 건물을 미리 찾아가 섭외해요.", "s": "교과서 27쪽"}, {"e": "🙏", "t": "장소를 찾으면", "d": "알맞은 장소를 찾으면 촬영 허락을 받고, 장소에서의 안전과 진행을 책임져요.", "s": "교과서 27쪽"}, {"e": "🌟", "t": "필요한 자세", "d": "여러 장소에 관한 관심과 관찰 능력, 장소를 소중하고 특별하게 여기는 태도", "s": "지도서 51쪽"}], "qs": ["내가 촬영 장소 섭외자라면 우리가 사는 곳의 어떤 장소를 섭외하고 싶나요? 왜 그런가요?"], "note": "<h3>진행<\/h3><p>교과서 27쪽 「별별 직업 속으로」를 함께 읽고 화면 자료로 정리합니다. 교과서 사진은 경상북도 포항시 남구 구룡포입니다(화면에는 싣지 않음).<\/p><h3>교과서 원문 (교과서 27쪽)<\/h3><p>촬영 장소 섭외자는 드라마나 영화 등을 만들 때 촬영할 장소나 건물을 미리 찾아가 섭외하는 일을 합니다. 대본을 살펴본 후 작가의 의도를 파악해 촬영할 장소를 찾고, 알맞은 장소를 찾으면 촬영 허락을 받습니다. 또한 촬영하면서 생길 수 있는 문제에 대비하는 등 촬영 시작부터 끝까지 장소에서의 안전과 진행을 책임집니다.<\/p><h3>발문과 예상 반응 (지도서 51쪽)<\/h3><ul><li>교과서에서 제시된 직업은 무엇인가요? → 촬영 장소 섭외자입니다.<\/li><li>촬영 장소 섭외자가 되려면 어떤 자세나 능력이 필요할까요? → 우리가 사는 곳의 여러 장소에 관한 관심과 관찰 능력이 필요합니다. 우리 주변의 장소들을 소중하고 특별하게 여기는 태도가 필요합니다.<\/li><\/ul><h3>유의할 점<\/h3><p>“만약 촬영 장소 섭외자가 된다면 어떤 장소를 섭외하고 싶은지 생각하며 직업에 관한 이해를 높이고 흥미를 유발한다.” (지도서 51쪽) 섭외하고 싶은 장소는 사람마다 달라 정답이 없습니다.<\/p>"}, {"k": "check", "t": "확인", "min": 5, "hd": "오늘 알게 된 것을 확인해요", "items": [{"q": "우리가 사는 곳의 여러 장소를 표현하려면 먼저 무엇을 해야 할까요?", "o": ["어떤 장소를 표현할지 정하기", "신문을 꾸며 완성하기", "친구 작품 관람하기", "책에 색칠하기"], "a": 0, "w": "교과서 23쪽: 먼저 어떤 장소를 표현할지 정하고, 어떤 방법으로 표현할지 계획을 세워야 해요."}, {"q": "도화지를 반으로 접고 한 번 더 반으로 접어 네 칸을 만드는 표현 방법은?", "o": ["책으로 표현하기", "신문으로 표현하기", "그림으로 표현하기", "노래로 표현하기"], "a": 0, "w": "교과서 25쪽: 네 칸으로 된 책 모양을 만들어 장소를 표현해요."}, {"q": "그림으로 장소를 표현할 때 알맞은 것은 무엇일까요?", "o": ["실제 지도처럼 정확하게 그리지 않아도 돼요.", "실제 지도와 똑같이 그려야 해요.", "한 장소만 그려야 해요.", "글자로만 써야 해요."], "a": 0, "w": "교과서 24쪽·지도서 49쪽: 실제 지도처럼 정확하게 그리지 않아도 되고, 마음속의 장소들을 내가 정한 기준에 따라 나타내요."}, {"q": "드라마나 영화를 만들 때 촬영할 장소를 미리 찾아가 섭외하는 사람은?", "o": ["촬영 장소 섭외자", "기자", "소방관", "사서"], "a": 0, "w": "교과서 27쪽: 촬영 장소 섭외자가 하는 일이에요."}], "note": "<h3>꼭! 기억해요 (교과서 26쪽)<\/h3><p>1 우리가 사는 곳의 여러 장소를 <b>그림<\/b>, 책, 신문 등 다양한 방법으로 표현할 수 있습니다.<\/p><h3>차시별 주요 내용 정리 (지도서 51쪽)<\/h3><ul><li>1. 우리가 사는 곳의 여러 장소 중에서 표현할 장소 정하기: 좋아하는 장소, 자주 가는 장소, 소중하게 생각하는 장소, 가 보고 싶은 장소, 사람들에게 자랑할 만한 장소 등<\/li><li>2. 우리가 사는 곳의 여러 장소 표현하기: ① 그림으로 표현하기 ② 책으로 표현하기 ③ 신문으로 표현하기<\/li><\/ul><h3>질문 판 정리<\/h3><p>이 차시에 올린 질문(친구 작품에 대한 질문, “같은 장소라도 사람마다 다르게 표현할까?”)은 ‘❓ 궁금해요’ 또는 ‘🔎 찾는 중’으로 두고, 8~9차시 작품 소개·관람 때 답을 찾습니다.<\/p><h3>다음 차시<\/h3><p>8~9차시(O 탐구 정리하기): 우리가 사는 곳에 있는 여러 장소를 소개해 볼까요 (지도서에 따로 준비물 안내는 없으며, 이번 시간에 만든 작품으로 소개합니다)<\/p>"}], "topic": {"key": "u1t1", "name": "1단원 주제 1 · 우리가 사는 곳의 여러 장소", "bq": "같은 장소라도 왜 사람마다 생각과 느낌이 다를까?", "map": [{"s": "S", "n": "2차시", "t": "장소에 대해 알아볼까요", "f": "u1-l2.html"}, {"s": "O1", "n": "3차시", "t": "여러 장소 살펴보기", "f": "u1-l3.html"}, {"s": "O1", "n": "4~5차시", "t": "장소에서의 경험 이야기하기", "f": "u1-l45.html"}, {"s": "O1", "n": "6~7차시", "t": "여러 장소 표현하기", "f": "u1-l67.html"}, {"s": "O2", "n": "8~9차시", "t": "여러 장소 소개하기", "f": "u1-l89.html"}, {"s": "P", "n": "10차시", "t": "생각을 펼쳐요 · 확인해요", "f": "u1-l10.html"}]}};
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PH=C.photos||{};
+const SOOP={S:['S','개념 찾기','var(--S)'],O1:['O','개념 구축하기','var(--O1)'],O2:['O','탐구 정리하기','var(--O2)'],P:['P','발표하기','var(--P)']};
+const ROUT={see:['🔍','보기-생각하기-궁금해하기'],sort:['🗂️','예와 예가 아닌 것 나누기'],define:['✍️','우리 반 뜻 만들기'],cards:['📑','자료 살펴보기'],csq:['🗣️','주장-근거-질문'],venn:['⚖️','같은 점·다른 점'],cse:['🔗','연결-확장-도전'],iuti:['🔄','예전 생각-지금 생각'],task:['🛠️','활동하기'],check:['✅','개념 확인하기'],talk:['💭','생각 나누기']};
+let SAVE=true;const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const LK='soop:'+C.lessonKey+':', QK='soopQ:'+C.topic.key;
+let step=0;
+const sc=SOOP[C.soop];document.documentElement.style.setProperty('--sc',sc[2]);
+/* 표지 */
+$('cBadge').innerHTML=`${sc[0]} · ${sc[1]}`;$('cBadge').style.setProperty('--sc',sc[2]);
+$('cTitle').textContent=C.title;$('cSub').textContent=C.sub;document.title=C.title;
+$('cBq').innerHTML=`<small>🌟 이 주제의 핵심 질문</small><b>${esc(C.topic.bq)}</b>`;
+$('cGoal').textContent='학습 문제: '+C.goal;
+$('cMap').innerHTML=['S','O1','O2','P'].map(k=>`<div class="mcol" style="--mc:${SOOP[k][2]}"><h3>${SOOP[k][0]} ${SOOP[k][1]}</h3>${C.topic.map.filter(m=>m.s===k).map(m=>m.f===C.file?`<span class="cur">${esc(m.n)} ${esc(m.t)}</span>`:`<a href="${m.f}">${esc(m.n)} ${esc(m.t)}</a>`).join('')}</div>`).join('');
+$('cPlan').innerHTML=C.steps.map((s,i)=>`<button class="st" data-i="${i}">${i+1}. ${esc(s.t)} ${s.min}분</button>`).join('');
+$('cPlan').querySelectorAll('.st').forEach(b=>b.onclick=()=>go(+b.dataset.i));
+const pk=Object.keys(PH);$('pcredit').innerHTML=pk.length?'사진 출처 · 위키미디어 공용: '+pk.map(k=>`${esc(PH[k].name)}(${esc(PH[k].title)} / ${esc(PH[k].artist||'작자 미상')} / ${esc(PH[k].lic)})`).join(' · '):'';
+$('go').onclick=()=>go(0);$('home').onclick=()=>{stopT();show('cover')};
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id))}
+function openO(id){$(id).classList.add('on')}
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).classList.remove('on'));
+document.querySelectorAll('[data-full]').forEach(b=>b.onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}});
+/* 교사 안내 */
+function tnote(i){const n=i<0?C.notes0:C.steps[i].note;$('tnT').textContent='👩‍🏫 '+(i<0?'수업 준비':`${i+1}. ${C.steps[i].t}`);$('tnB').innerHTML=n||'<p>이 단계의 안내는 수업 준비 안내를 보세요.</p>';openO('tnO')}
+$('tn0').onclick=()=>tnote(-1);$('tn').onclick=()=>tnote(step);
+/* 질문 판 */
+const STEMS=['왜 ~할까?','어떻게 ~할 수 있을까?','만약 ~라면 어떻게 될까?','~와 ~는 무엇이 다를까?','~는 모두 같을까?'];
+$('stems').innerHTML='<span class="ask">질문 만들기 도우미:</span>'+STEMS.map(s=>`<button>${s}</button>`).join('');
+$('stems').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('qText').value=b.textContent;$('qText').focus()});
+$('qbTopic').textContent=C.topic.name;
+function Q(){return LS.get(QK,[])}function setQ(v){LS.set(QK,v);qCount()}
+function qCount(){const q=Q();$('qn').textContent=q.filter(x=>x.s<2).length}
+function addQ(text,type){text=text.trim();if(!text)return;const q=Q();q.push({t:text,ty:type||'그 밖에',s:0,a:'',from:C.short,id:Date.now()+Math.random()});setQ(q);renderQ()}
+const STS=['❓ 궁금해요','🔎 찾는 중','✅ 답 찾음'];
+function renderQ(){const q=Q();$('qList').innerHTML=q.length?q.map((x,i)=>`<div class="qi s${x.s}"><div class="top"><span class="ty">${esc(x.ty)}</span><span class="q">${esc(x.t)}</span><span class="from">${esc(x.from)}</span><button class="stt" data-i="${i}">${STS[x.s]}</button><button class="stt" data-del="${i}" aria-label="지우기">✕</button></div>${x.s>0?`<input data-a="${i}" value="${esc(x.a)}" placeholder="찾은 답과 근거 (예: 자료 ②를 보니 …)">`:''}</div>`).join(''):'<p class="ask">아직 질문이 없어요. 첫 질문을 올려 보세요!</p>';
+ $('qList').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const q=Q();q[+b.dataset.i].s=(q[+b.dataset.i].s+1)%3;setQ(q);renderQ()});
+ $('qList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const q=Q();q.splice(+b.dataset.del,1);setQ(q);renderQ()});
+ $('qList').querySelectorAll('[data-a]').forEach(inp=>inp.onchange=()=>{const q=Q();q[+inp.dataset.a].a=inp.value;setQ(q)});}
+$('qAdd').onclick=()=>{addQ($('qText').value,$('qType').value);$('qText').value=''};
+$('qText').onkeydown=e=>{if(e.key==='Enter')$('qAdd').onclick()};
+$('qbBtn').onclick=$('qb0').onclick=()=>{renderQ();openO('qbO')};
+$('qPrint').onclick=()=>{const p=$('qbPanel');p.classList.add('printme');window.print();p.classList.remove('printme')};
+$('qClear').onclick=()=>{if(confirm('질문 판을 모두 비울까요? (이 주제의 모든 차시에서 지워져요)')){setQ([]);renderQ()}};
+(function(){const q=Q();if(!q.some(x=>x.t===C.topic.bq)){q.unshift({t:C.topic.bq,ty:'왜',s:0,a:'',from:'🌟 핵심 질문',id:1});setQ(q)}})();
+qCount();
+/* 발표자 뽑기 */
+let drawn=LS.get('soopPick',[]);
+function pkLeft(){const m=+$('pkMax').value||25;$('pkLeft').textContent=`아직 말하지 않은 친구 ${m-drawn.filter(n=>n<=m).length}명`}
+$('pickBtn').onclick=()=>{pkLeft();openO('pkO')};
+$('pkGo').onclick=()=>{const m=+$('pkMax').value||25;let pool=[];for(let i=1;i<=m;i++)if(!drawn.includes(i))pool.push(i);if(!pool.length){drawn=[];pool=[...Array(m)].map((_,i)=>i+1)}
+ const n=pool[Math.floor(Math.random()*pool.length)];drawn.push(n);LS.set('soopPick',drawn);let k=0;const t=setInterval(()=>{$('pkN').textContent=pool[Math.floor(Math.random()*pool.length)]+'번';if(++k>10){clearInterval(t);$('pkN').textContent=n+'번';pkLeft()}},60)};
+$('pkReset').onclick=()=>{drawn=[];LS.set('soopPick',drawn);$('pkN').textContent='?';pkLeft()};
+/* 타이머 */
+let T=null,left=0;function stopT(){clearInterval(T);T=null}
+function showT(){$('tm').textContent=`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`}
+$('timerBtn').onclick=()=>{if(T){stopT();return}left=left>0?left:C.steps[step].min*60;T=setInterval(()=>{left--;showT();if(left<=0){stopT();$('timerBtn').style.borderColor='var(--no)'}},1000);showT()};
+/* 사진 */
+function img(p,cls){const x=PH[p];return x?`<img src="${x.data}" alt="${esc(x.name)}" data-ph="${p}" ${cls?`class="${cls}"`:''}>`:''}
+function wireImgs(){document.querySelectorAll('#body img[data-ph]').forEach(im=>im.onclick=()=>{const p=PH[im.dataset.ph];$('bvI').src=p.data;$('bvM').textContent=`${p.name} — ${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on')})}
+$('bvX').onclick=()=>$('bv').classList.remove('on');
+/* 붙임쪽지 칸 */
+function col(id,title,color,frame,opts={}){return `<div class="col${opts.cmp?' cmp':''}" style="--cc:${color}"><h3>${title}</h3>${frame?`<p class="frame">${esc(frame)}</p>`:''}<div class="notes" id="n-${id}"></div><div class="add"><input id="i-${id}" placeholder="${esc(opts.ph||frame||'생각을 써요')}"><button data-add="${id}">붙이기</button></div></div>`}
+function drawNotes(id,toBoard){const arr=LS.get(LK+id,[]);const box=$('n-'+id);if(!box)return;
+ box.innerHTML=arr.map((t,i)=>`<div class="note"><span>${esc(t)}</span><span>${toBoard?`<button class="up" data-up="${i}">질문 판에 ↑</button>`:''}<button class="x" data-x="${i}" aria-label="지우기">✕</button></span></div>`).join('');
+ box.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{arr.splice(+b.dataset.x,1);LS.set(LK+id,arr);drawNotes(id,toBoard)});
+ box.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{addQ(arr[+b.dataset.up],'그 밖에');b.textContent='올렸어요 ✓';b.disabled=true});}
+function wireCols(ids,boardIds=[]){ids.forEach(id=>{const inp=$('i-'+id),btn=document.querySelector(`[data-add="${id}"]`);const f=()=>{const v=inp.value.trim();if(!v)return;const a=LS.get(LK+id,[]);a.push(v);LS.set(LK+id,a);inp.value='';drawNotes(id,boardIds.includes(id))};btn.onclick=f;inp.onkeydown=e=>{if(e.key==='Enter')f()};drawNotes(id,boardIds.includes(id))})}
+/* 단계 그리기 */
+function stepsBar(){$('steps').innerHTML=C.steps.map((s,i)=>`<button class="st ${i===step?'now':i<step?'done':''}" data-i="${i}">${i+1}. ${esc(s.t)}</button>`).join('');$('steps').querySelectorAll('.st').forEach(b=>b.onclick=()=>go(+b.dataset.i))}
+function go(i){step=i;stopT();left=0;$('tm').textContent='--:--';$('timerBtn').style.borderColor='';show('lesson');render()}
+$('prev').onclick=()=>step>0?go(step-1):show('cover');$('next').onclick=()=>step<C.steps.length-1?go(step+1):show('cover');
+function render(){const s=C.steps[step];stepsBar();const r=ROUT[s.k]||['•',''];$('rt').textContent=`${r[0]} ${s.routine||r[1]} · ${s.min}분`;$('hd').textContent=s.hd||s.t;$('ask').textContent=s.ask||'';
+ $('next').textContent=step<C.steps.length-1?'다음 →':'마치기 ✓';(R[s.k]||R.talk)(s,'s'+step);wireImgs();$('body').scrollTop=0}
+const R={};
+R.see=(s,id)=>{$('body').innerHTML=`<div class="split wrap"><div class="gal">${s.items.map(it=>`<div class="pic">${it.p?img(it.p):`<span class="e">${it.e}</span>`}<b>${esc(it.cap||'')}</b>${it.sub?`<small>${esc(it.sub)}</small>`:''}</div>`).join('')}</div>
+ <div class="cols" style="--n:3">${col(id+'a','👀 보여요','#2F74E0',s.f?.[0]||'무엇이 보이나요?')}${col(id+'b','💭 생각해요','#6A4FC9',s.f?.[1]||'무엇이라고 생각하나요?')}${col(id+'c','❓ 궁금해요','#E8961E',s.f?.[2]||'무엇이 궁금한가요?',{ph:'질문을 써요'})}</div></div>`;
+ wireCols([id+'a',id+'b',id+'c'],[id+'c'])};
+R.sort=(s,id)=>{let deck=[...s.items],i=0,done=[];const bins=s.bins;
+ const draw=()=>{if(i>=deck.length){$('body').innerHTML=`<div class="sorted" style="--n:${bins.length}">${bins.map(b=>`<div style="--cc:${b.c}"><b>${b.e} ${esc(b.n)}</b><br>${done.filter(d=>d.k===b.k).map(d=>'· '+esc(d.x)).join('<br>')}</div>`).join('')}</div>${s.after?`<div class="after">💬 ${esc(s.after)}</div>`:''}${s.col?`<div class="cols" style="--n:1;width:min(1000px,100%)">${col(id+'z',s.col,'#E8961E','',{ph:s.colph||'생각을 써요',cmp:1})}</div>`:''}`;if(s.col)wireCols([id+'z']);return}
+  const it=deck[i];$('body').innerHTML=`<div class="deck"><p class="ask">${i+1} / ${deck.length}</p><div class="card1">${it.p?img(it.p):`<span class="e">${it.e}</span>`}<span class="x">${esc(it.x)}</span></div>
+  <div class="bins" style="--n:${bins.length}">${bins.map(b=>`<button class="bin" data-k="${b.k}" style="--cc:${b.c}"><span class="e">${b.e}</span>${esc(b.n)}${b.c2?`<span class="c">${esc(b.c2)}</span>`:''}</button>`).join('')}</div><div class="fb" id="fb"></div></div>`;wireImgs();
+  document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>{const fb=$('fb');const open=it.k==='*';const ok=open||b.dataset.k===it.k;
+   fb.className='fb on '+(open?'open':ok?'ok':'no');fb.innerHTML=(open?'<b>생각이 다를 수 있어요.</b> ':ok?'<b>맞아요!</b> ':'<b>다시 생각해 봐요.</b> ')+esc(it.w||'')+(ok?` <button class="ghost" id="nx" style="margin-left:8px">다음 카드</button>`:'');
+   if(ok){done.push({k:open?b.dataset.k:it.k,x:it.x});document.querySelectorAll('.bin').forEach(x=>x.disabled=true);$('nx').onclick=()=>{i++;draw()};$('nx').focus()}})};draw()};
+R.define=(s,id)=>{const saved=LS.get(LK+id+'d','');$('body').innerHTML=`<div class="chips">${s.words.map(w=>`<button class="chip" aria-pressed="false">${esc(w)}</button>`).join('')}</div>
+ <div class="frameline">${esc(s.frame[0])} <input id="dIn" value="${esc(saved)}" placeholder="우리 반 생각"> ${esc(s.frame[1])}</div>
+ <button class="big-btn" id="dShow" style="font-size:clamp(19px,1.8vw,25px);padding:8px 24px">📖 ${esc(s.btn||'교과서 뜻과 비교하기')}</button>
+ <div class="book" id="book"><small>${esc(s.bookLabel||'교과서 뜻')} (${esc(s.src)})</small><br><b>${s.book}</b></div>
+ <div class="cols" style="--n:2">${col(id+'s','🤝 우리 뜻과 같은 점','#1F9E63','')}${col(id+'n','✨ 새로 알게 된 점','#2F74E0','')}</div>`;
+ document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{c.setAttribute('aria-pressed',c.getAttribute('aria-pressed')==='true'?'false':'true');const inp=$('dIn');if(c.getAttribute('aria-pressed')==='true'){inp.value=(inp.value?inp.value+' ':'')+c.textContent;LS.set(LK+id+'d',inp.value)}});
+ $('dIn').oninput=()=>LS.set(LK+id+'d',$('dIn').value);$('dShow').onclick=()=>{$('book').classList.add('on');$('book').scrollIntoView({block:'center',behavior:'smooth'})};wireCols([id+'s',id+'n'])};
+R.cards=(s,id)=>{$('body').innerHTML=`<div class="gal wrap">${s.cards.map((c,i)=>`<div class="pic" style="border-color:${c.c||'var(--line)'}"><span class="num">자료 ${i+1}</span>${c.p?img(c.p):`<span class="e">${c.e}</span>`}<b>${esc(c.t)}</b><span style="font-size:clamp(15px,1.45vw,19px)">${esc(c.d)}</span><small>${esc(c.s||'')}</small></div>`).join('')}</div>${s.qs?`<div class="after wrap">💬 ${s.qs.map(esc).join('<br>💬 ')}</div>`:''}`};
+R.csq=(s,id)=>{const q=Q().filter(x=>x.s<2);const store=LS.get(LK+id+'log',[]);const nC=(s.cards||[]).length;
+ $('body').innerHTML=`<div class="qpick"><b style="font-family:var(--display);font-weight:400">🎯 함께 답할 질문</b><select id="qSel">${[...new Set([...(s.qs||[]),...q.map(x=>x.t)])].map(x=>`<option>${esc(x)}</option>`).join('')}</select></div>
+ ${nC?`<div class="mini wrap">${s.cards.map((c,i)=>`<div class="m">${c.p?img(c.p):`<span class="e">${c.e}</span>`}<div><span class="num">자료 ${i+1}</span> <b style="display:inline">${esc(c.t)}</b><span class="d">${esc(c.d)}</span><small>${esc(c.s||'')}</small></div></div>`).join('')}</div>`:''}
+ <div class="csq">
+  <div class="col cmp" style="--cc:#2F74E0"><h3>🗣️ 주장</h3><p class="frame">나는 ~라고 생각해요.</p><textarea id="cl" rows="2" placeholder="나는 ~라고 생각해요." style="font-family:var(--body);font-size:clamp(17px,1.6vw,21px);border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:6px"></textarea></div>
+  <div class="col cmp" style="--cc:#1F9E63"><h3>📑 근거</h3><p class="frame">왜냐하면 자료 ○을 보면 ~이기 때문이에요.</p><div class="evi">${[...Array(nC)].map((_,i)=>`<button aria-pressed="false" data-e="${i+1}">자료 ${i+1}</button>`).join('')}</div><input id="ev" placeholder="왜냐하면 자료 ○을 보면 ~" style="font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:6px"></div>
+  <div class="col cmp" style="--cc:#E8961E"><h3>❓ 되묻기</h3><p class="frame">친구에게 더 묻고 싶은 것은?</p><input id="bq" placeholder="예: 그럼 ~는 어떨까?" style="font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:6px"><button class="big-btn" id="csqSave" style="font-size:clamp(18px,1.7vw,23px);padding:6px 20px;align-self:flex-end">✔ 기록하기</button></div>
+ </div>
+ <div class="log wrap" id="csqLog"></div>`;
+ const drawLog=()=>{$('csqLog').innerHTML=store.map(x=>`<div><b>질문:</b> ${esc(x.q)}<br>🗣️ ${esc(x.c)} · 📑 ${esc(x.e)}${x.b?` · ❓ ${esc(x.b)}`:''}</div>`).join('')};drawLog();
+ document.querySelectorAll('.evi button').forEach(b=>b.onclick=()=>b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true'));
+ $('csqSave').onclick=()=>{const c=$('cl').value.trim();if(!c)return;const ev=[...document.querySelectorAll('.evi button[aria-pressed="true"]')].map(b=>'자료 '+b.dataset.e).join(', ');
+  const rec={q:$('qSel').value,c,e:[ev,$('ev').value.trim()].filter(Boolean).join(' — ')||'(근거 없음 — 자료에서 찾아봐요)',b:$('bq').value.trim()};store.push(rec);LS.set(LK+id+'log',store);
+  const all=Q();const hit=all.find(x=>x.t===rec.q);if(hit&&rec.e&&!rec.e.startsWith('(')){hit.s=Math.max(hit.s,1);hit.a=(hit.a?hit.a+' / ':'')+rec.c+' ('+rec.e+')';setQ(all)}
+  if(rec.b)addQ(rec.b,'그 밖에');$('cl').value=$('ev').value=$('bq').value='';document.querySelectorAll('.evi button').forEach(b=>b.setAttribute('aria-pressed','false'));drawLog()}};
+R.venn=(s,id)=>{$('body').innerHTML=`<div class="cols wrap" style="--n:3">${col(id+'a',esc(s.a)+'만','#2F74E0',s.fa||'')}${col(id+'s','🤝 같은 점','#1F9E63',s.fs||'')}${col(id+'b',esc(s.b)+'만','#E0506B',s.fb||'')}</div>${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;wireCols([id+'a',id+'s',id+'b'])};
+R.cse=(s,id)=>{const f=s.f||[];$('body').innerHTML=`<div class="cols wrap" style="--n:3">${col(id+'a','🔗 연결','#2F74E0',f[0]||'이미 알던 것과 어떻게 이어지나요?')}${col(id+'b','🌱 확장','#1F9E63',f[1]||'새롭게 넓어진 생각은?')}${col(id+'c','🧗 도전','#E8961E',f[2]||'아직 궁금하거나 어려운 것은?',{ph:'질문을 써요'})}</div>`;wireCols([id+'a',id+'b',id+'c'],[id+'c'])};
+R.iuti=(s,id)=>{const f=s.f||[];$('body').innerHTML=`<div class="cols wrap" style="--n:2">${col(id+'a','🕰️ 예전 생각','#6A4FC9',f[0]||'처음에 나는 ~라고 생각했어요.')}${col(id+'b','💡 지금 생각','#1F9E63',f[1]||'지금은 ~라고 생각해요.')}</div>${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;wireCols([id+'a',id+'b'])};
+R.task=(s,id)=>{const st=LS.get(LK+id+'t',[]);$('body').innerHTML=`<div class="task">${s.list.map((t,i)=>`<label class="${st[i]?'done':''}"><input type="checkbox" data-t="${i}" ${st[i]?'checked':''}> ${esc(t)}</label>`).join('')}</div>${s.tip?`<div class="tip">💡 ${esc(s.tip)}</div>`:''}${s.col?`<div class="cols wrap" style="--n:1">${col(id+'z',s.col,'#E8961E','')}</div>`:''}`;
+ document.querySelectorAll('[data-t]').forEach(c=>c.onchange=()=>{st[+c.dataset.t]=c.checked;LS.set(LK+id+'t',st);c.parentElement.classList.toggle('done',c.checked)});if(s.col)wireCols([id+'z'])};
+R.check=(s,id)=>{let i=0,sc=0;const draw=()=>{if(i>=s.items.length){$('body').innerHTML=`<div class="qz"><div class="qt">🎉 ${s.items.length}문제 중 ${sc}문제를 맞혔어요!</div><button class="ghost" id="again">다시 풀기</button></div>`;$('again').onclick=()=>{i=0;sc=0;draw()};return}
+ const q=s.items[i],ord=q.o.map((_,k)=>k).sort(()=>Math.random()-.5);$('body').innerHTML=`<div class="qz"><p class="ask">${i+1} / ${s.items.length}</p><div class="qt">${esc(q.q)}</div><div class="opts">${ord.map((k,n)=>`<button class="opt" data-k="${k}">${n+1}. ${esc(q.o[k])}</button>`).join('')}</div><div class="fb" id="fb"></div></div>`;
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=+b.dataset.k===q.a;if(ok)sc++;document.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.k===q.a)x.classList.add('right')});if(!ok)b.classList.add('wrong');
+  $('fb').className='fb on '+(ok?'ok':'no');$('fb').innerHTML=`<b>${ok?'정답이에요!':'정답을 확인해 봐요.'}</b> ${esc(q.w)} <button class="ghost" id="nx">다음</button>`;$('nx').onclick=()=>{i++;draw()};$('nx').focus()})};draw()};
+R.talk=(s,id)=>{$('body').innerHTML=`${s.points?`<div class="after wrap">${s.points.map(p=>'💬 '+esc(p)).join('<br>')}</div>`:''}<div class="cols wrap" style="--n:${s.cols?s.cols.length:1}">${(s.cols||[s.col||'우리 반 생각']).map((c,i)=>col(id+'t'+i,esc(c),['#2F74E0','#1F9E63','#E0506B','#E8961E'][i%4],(s.frames||[])[i]||'')).join('')}</div>`;wireCols((s.cols||[0]).map((_,i)=>id+'t'+i),s.toBoard?(s.cols||[0]).map((_,i)=>id+'t'+i):[])};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.on,.bigview.on').forEach(o=>o.classList.remove('on'))});
+</script>
+<script>(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);if(ok)document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on')})})();</script>
+</body></html>
