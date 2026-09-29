@@ -158,10 +158,28 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .wcheck li{font-size:clamp(19px,1.9vw,27px);line-height:1.5;margin-bottom:6px}
 .auto-ok{color:var(--ok)}.auto-no{color:var(--no)}
 .self{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;border-top:2px dashed var(--line);padding:8px 0}
-.self span{font-size:clamp(19px,1.9vw,27px);flex:1 1 16em}
+.self>span:first-child{font-size:clamp(19px,1.9vw,27px);flex:1 1 12em}
+.self>.seg{flex:none}
+.recgrid .self>span:first-child{font-size:clamp(17px,1.6vw,23px)}
+.recgrid .wcheck{padding:8px 14px}
+.recgrid .wcheck h3{font-size:clamp(19px,1.8vw,25px)}
 .self .seg button{font-size:clamp(16px,1.5vw,21px);padding:6px 10px;min-width:0}
 .ex-model{width:min(1150px,96vw);background:var(--warm);color:var(--ink);border:3px dashed var(--warmline);border-radius:16px;padding:10px 16px;font-size:clamp(19px,1.9vw,26px);text-align:left;display:none}
 .ex-model.on{display:block}
+/* record */
+.recgrid{width:min(1200px,96vw);display:grid;gap:12px;align-items:start}
+.recgrid>*{width:auto!important;min-width:0}
+@media (min-width:1000px){.recgrid{grid-template-columns:1.5fr 1fr}.recgrid.bm{grid-template-columns:1fr 1.25fr}}
+.recgrid .book{grid-template-columns:1fr}.recgrid .book .e{display:none}.recgrid .book ol{font-size:clamp(19px,1.9vw,26px)}
+.rec{width:min(1150px,96vw);background:var(--paper);border:4px solid var(--line);border-radius:22px;padding:clamp(12px,1.8vw,24px);text-align:left;font-size:clamp(22px,2.3vw,34px);line-height:1.7;font-family:var(--body)}
+.rec .p1,.rec .p2{color:var(--acc);font-family:var(--display);font-size:.8em;padding:0 .12em}
+.rec.nomark .p1,.rec.nomark .p2{display:none}
+.rec .src{display:block;font-size:14px;color:var(--soft);text-align:right}
+.recbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
+.recbar .tool{font-family:var(--display)}
+.recbar .on{background:var(--no);color:#fff;border-color:var(--no)}
+.recmsg{font-family:var(--display);font-size:clamp(17px,1.6vw,22px);color:var(--soft);text-align:center;min-height:1.3em}
+.recmsg.err{color:var(--no)}
 /* summary */
 .sum{display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:14px;width:min(1150px,95vw)}
 .sumbox{background:var(--paper);border-radius:22px;border-top:14px solid var(--cc);padding:14px 20px;text-align:left}
@@ -307,7 +325,7 @@ function tnote(n){$('tnT').textContent='👩‍🏫 '+n[0];$('tnB').innerHTML=n[
 $('tOpen0').onclick=()=>tnote(C.note0);$('tOpen').onclick=()=>tnote(C.stages[stage].note);$('tnClose').onclick=()=>closeO('tn');
 $('btnCover').onclick=()=>{stopSpeak();show('cover');};
 $('btnGo').onclick=()=>{teamInit();goStage(0,0);};
-function goStage(s,st){stopSpeak();stage=s;step=st;closeO('fb');show('stage');render();}
+function goStage(s,st){stopSpeak();stopRec();stage=s;step=st;closeO('fb');show('stage');render();}
 $('btnPrev').onclick=()=>{if(step>0)goStage(stage,step-1);else if(stage>0)goStage(stage-1,C.stages[stage-1].steps.length-1);else{stopSpeak();show('cover');}};
 $('btnNext').onclick=()=>next();
 function next(){const S=C.stages[stage];if(step+1<S.steps.length)goStage(stage,step+1);else if(stage+1<C.stages.length)goStage(stage+1,0);else{stopSpeak();show('cover');}}
@@ -315,10 +333,10 @@ function bar(){
   $('bar').innerHTML=C.stages.map((s,i)=>`<button class="st ${i===stage?'now':i<stage?'done':''} ${s.brk?'brk':''}" data-s="${i}" title="${esc(s.name)}">${CIRC[i]}<span class="nm"> ${esc(s.name)}</span></button>`).join('');
   $('bar').querySelectorAll('.st').forEach(b=>b.onclick=()=>goStage(+b.dataset.s,0));
 }
-const SCORED=['mc','sort','order','match','fill'];
+const SCORED=['mc','sort','order','match','fill'];const isScored=X=>SCORED.includes(X.t)&&!X.open;
 function render(){
   bar();const S=C.stages[stage],X=S.steps[step];
-  const t=SCORED.includes(X.t);$('turnLine').textContent=t?teamTurn():'';if(t)teamChips();else $('score').style.display='none';
+  const t=isScored(X);$('turnLine').textContent=t?teamTurn():'';if(t)teamChips();else $('score').style.display='none';
   $('stepNo').textContent=S.steps.length>1?`${CIRC[stage]} ${esc(S.name)} · ${step+1} / ${S.steps.length}`:'';
   const last=stage===C.stages.length-1&&step===S.steps.length-1;
   $('btnNext').textContent=last?'처음으로 🏠':(step+1<S.steps.length?'다음 →':'다음 단계 →');
@@ -397,7 +415,10 @@ R.sort=X=>{
   const draw=()=>{const it=deck[i];
     $('body').innerHTML=hd(X)+`<div class="card1"><span class="stepno" style="flex:none">${i+1}/${deck.length}</span><div class="e">${it.e||'🃏'}</div><div class="x">${it.x}</div></div>
      <div class="bins" style="--n:${X.bins.length}">${X.bins.map(b=>`<button class="bin" data-k="${b.k}" style="--cc:${b.c}"><span class="e">${b.e}</span><span class="n">${b.n}</span></button>`).join('')}</div>`;
-    document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>{const ok=b.dataset.k===it.k,bin=X.bins.find(z=>z.k===it.k);if(ok)teamAdd(1);
+    document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>{if(X.open){const mine=X.bins.find(z=>z.k===b.dataset.k),ex=X.bins.find(z=>z.k===it.k);
+        document.querySelectorAll('.bin').forEach(z=>{z.disabled=true;if(z===b)z.classList.add('lit');});
+        fb(null,`${mine.e} ${mine.n}`,`${it.w||''}<br><small style="color:var(--soft)">교과서·지도서 예시: ${ex.e} ${ex.n} · 다르게 느꼈다면 그 까닭을 말해 봐요.</small>`,()=>{teamNext();$('turnLine').textContent=teamTurn();if(i+1<deck.length){i++;draw();}else{$('body').innerHTML=hd(X)+`<div class="qbox">🎉 카드를 모두 살펴보았어요!</div>`+(X.after?`<div class="qbox" style="background:var(--paper);border-color:var(--line)">💬 ${X.after}</div>`:'');}},i+1<deck.length?'다음 카드':'다 했어요');return;}
+      const ok=b.dataset.k===it.k,bin=X.bins.find(z=>z.k===it.k);if(ok)teamAdd(1);
       document.querySelectorAll('.bin').forEach(z=>{z.disabled=true;if(z.dataset.k===it.k)z.classList.add('lit');});teamChips();
       fb(ok,ok?'맞아요! 🎉':`${bin.e} ${bin.n}`,it.w||'',()=>{teamNext();$('turnLine').textContent=teamTurn();teamChips();if(i+1<deck.length){i++;draw();}else{$('body').innerHTML=hd(X)+`<div class="qbox">🎉 카드를 모두 나누었어요!</div>`+(X.after?`<div class="qbox" style="background:var(--paper);border-color:var(--line)">💬 ${X.after}</div>`:'');}},i+1<deck.length?'다음 카드':'다 했어요');});
   };draw();
@@ -482,7 +503,37 @@ R.write=X=>{
     $('wBox').scrollIntoView({behavior:'smooth',block:'nearest'});
   };
 };
-R.sum=X=>{$('body').innerHTML=hd(X)+`<div class="sum" style="--n:${Math.min(X.boxes.length,2)}">${X.boxes.map(b=>`<div class="sumbox" style="--cc:${b.c}"><b>${b.t}</b><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}</div>`;};
+/* 녹음하고 다시 듣기 (지도서: 녹음해 들어 보며 스스로 점검) */
+let REC=null;
+function stopRec(){try{if(REC&&REC.state==='recording')REC.stop();}catch(e){}}
+R.record=X=>{
+  const key='hj-kor-'+C.id+'-'+X.id;const saved=store.get(key)||{};const sv=saved.self||{};
+  const txt=X.text?X.text.replace(/\/\//g,'\u0001').replace(/\//g,'\u0002').replace(/\u0001/g,'<span class="p2">∨∨</span>').replace(/\u0002/g,'<span class="p1">∨</span>'):'';
+  $('body').innerHTML=hd(X)+`<div class="recbar">${X.text?'<button class="tool" id="rModel">🔈 본보기 듣기</button><button class="tool" id="rMark">∨ 띄어 읽기 표시 끄기</button>':''}<button class="tool" id="rGo">🎙️ 녹음하기</button><button class="tool" id="rPlay" disabled>▶ 내 목소리 듣기</button></div>
+   <p class="recmsg" id="rMsg">🎙️를 누르고 소리 내어 읽은 뒤 ⏹로 멈춰요. 녹음은 이 화면을 떠나면 지워져요.</p><audio id="rAud" hidden></audio>
+   <div class="recgrid ${X.text?'':'bm'}">`+(X.text?`<div class="rec" id="recTxt">${txt}${X.src?`<span class="src">${X.src}</span>`:''}</div>`:`<div class="book"><div class="e">📖</div><div><div class="pg">${X.page||'교과서를 펴요'}</div>${X.do?`<ol>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`)
+   +`<div class="wcheck on" style="border-color:var(--acc)"><h3>🙋 스스로 점검 <small style="font-family:var(--body);font-size:.7em;color:var(--soft)">매우 잘함 ●●● · 잘함 ●● · 보통임 ●</small></h3>${X.check.map((c,i)=>`<div class="self"><span>${c}</span><span class="seg">${['●●●','●●','●'].map((d,k)=>`<button data-c="${i}" data-v="${k}" aria-pressed="${sv[i]===k}">${d}</button>`).join('')}</span></div>`).join('')}</div></div>`;
+  const msg=(t,e)=>{$('rMsg').textContent=t;$('rMsg').className='recmsg'+(e?' err':'');};
+  if(X.text){$('rModel').onclick=()=>speak(X.text.split('//').map(t=>({text:t.replace(/\//g,' ').trim()})).filter(p=>p.text));
+    $('rMark').onclick=()=>{const r=$('recTxt');r.classList.toggle('nomark');$('rMark').textContent=r.classList.contains('nomark')?'∨ 띄어 읽기 표시 켜기':'∨ 띄어 읽기 표시 끄기';};}
+  let url=null,t0=0,tick=null;
+  $('rGo').onclick=async()=>{
+    if(REC&&REC.state==='recording'){stopRec();return;}
+    stopSpeak();
+    if(!navigator.mediaDevices||!window.MediaRecorder){msg('이 기기에서는 녹음 기능을 쓸 수 없어요. 친구가 들어 주는 방법으로 점검해요.',1);return;}
+    try{const st=await navigator.mediaDevices.getUserMedia({audio:true});const ch=[];REC=new MediaRecorder(st);
+      REC.ondataavailable=e=>{if(e.data.size)ch.push(e.data);};
+      REC.onstop=()=>{st.getTracks().forEach(t=>t.stop());clearInterval(tick);if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(new Blob(ch,{type:REC.mimeType||'audio/webm'}));
+        $('rAud').src=url;$('rPlay').disabled=false;$('rGo').textContent='🎙️ 다시 녹음하기';$('rGo').classList.remove('on');msg('녹음했어요. ▶를 눌러 내 목소리를 들어 보고, 아래에서 스스로 점검해요.');beep('ok');};
+      REC.start();t0=Date.now();$('rGo').textContent='⏹ 멈추기';$('rGo').classList.add('on');$('rPlay').disabled=true;
+      tick=setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);msg(`🔴 녹음하는 중… ${s}초`);if(s>=120)stopRec();},250);
+    }catch(e){msg('마이크를 쓸 수 없어요. 마이크 사용을 허용했는지 선생님께 여쭤보세요.',1);}
+  };
+  $('rPlay').onclick=()=>{const a=$('rAud');a.currentTime=0;a.play().catch(()=>{});};
+  $('body').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{sv[+b.dataset.c]=+b.dataset.v;saved.self=sv;store.set(key,saved);
+    $('body').querySelectorAll(`[data-c="${b.dataset.c}"]`).forEach(z=>z.setAttribute('aria-pressed',z===b));});
+};
+R.sum=X=>{$('body').innerHTML=hd(X)+`<div class="sum" style="--n:${Math.min(X.boxes.length,3)}">${X.boxes.map(b=>`<div class="sumbox" style="--cc:${b.c}"><b>${b.t}</b><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}</div>`;};
 R.final=X=>{beep('win');$('body').innerHTML=hd(X)+`<div class="promise">${X.lines.map(t=>`<div>${t}</div>`).join('')}</div><div class="scores" style="justify-content:center">${teamPodium()}</div>`;};
 R.bingo=X=>{
   let left=shuffle(X.calls),said=[];

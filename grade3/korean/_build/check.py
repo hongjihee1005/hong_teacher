@@ -6,7 +6,7 @@ async def run():
     probs=[]
     async with async_playwright() as p:
         b=await p.chromium.launch()
-        for f in sorted(glob.glob(D+'/u1-*.html')):
+        for f in sorted(glob.glob(D+'/'+(sys.argv[1] if len(sys.argv)>1 else 'u*-l*')+'.html')):
             name=os.path.basename(f)
             for sk,(w,h) in SIZES.items():
                 pg=await b.new_page(viewport={'width':w,'height':h})
