@@ -338,16 +338,19 @@ function speakBtn(id){return `<button class="tool" id="${id}">🔈 읽어 주기
 let fitRAF=0;
 function fitNow(){const w=$('bodyWrap'),b=$('body');if(!w||!$('stage').classList.contains('on'))return;
   const isWrite=!!b.querySelector('.wr');const min=isWrite?0.86:0.78;
-  b.style.transform='';b.style.marginBottom='';b.style.width='';
-  const H=b.offsetHeight,A=w.clientHeight-8;
-  if(H<=A){if(isWrite||H>A*0.7)return;const Wc=Math.max(1,...[...b.children].map(c=>c.offsetWidth));
-    const g=Math.min(1.3,A*0.85/H,(w.clientWidth-8)/Wc);if(g>1.03){b.style.width=`${100/g}%`;b.style.marginLeft='auto';b.style.marginRight='auto';b.style.transform=`scale(${g})`;b.style.marginBottom=`${(g-1)*H}px`;}return;}
-  const z=Math.max(min,A/H);b.style.transform=`scale(${z})`;b.style.marginBottom=`${-(1-z)*H}px`;}
+  b.style.transform='';b.style.marginTop='0px';b.style.marginBottom='0px';b.style.width='';b.style.marginLeft='';b.style.marginRight='';
+  const H=b.offsetHeight,A=w.clientHeight-8;let g=1;
+  if(H>A)g=Math.max(min,A/H);
+  else if(!isWrite&&H<A*0.7){const Wc=Math.max(1,...[...b.children].map(c=>c.offsetWidth));g=Math.min(1.3,A*0.85/H,(w.clientWidth-8)/Wc);if(g<1.03)g=1;}
+  if(g!==1){b.style.transform=`scale(${g})`;if(g>1){b.style.width=`${100/g}%`;b.style.marginLeft='auto';b.style.marginRight='auto';}}
+  const V=H*g,free=Math.max(0,A-V);
+  b.style.marginTop=`${free*0.4}px`;b.style.marginBottom=`${V-H+free*0.6}px`;}
 function fit(){cancelAnimationFrame(fitRAF);fitRAF=requestAnimationFrame(fitNow);}
 new MutationObserver(fit).observe($('body'),{childList:true,subtree:true});
 addEventListener('resize',fit);
-function fitCover(){const c=$('cover');if(!c.classList.contains('on'))return;const k=c.querySelector('.cvin');k.style.transform='';k.style.marginBottom='';
-  const H=k.offsetHeight,A=c.clientHeight-40;if(H<=A)return;const z=Math.max(0.7,A/H);k.style.transformOrigin='top center';k.style.transform=`scale(${z})`;k.style.marginBottom=`${-(1-z)*H}px`;}
+function fitCover(){const c=$('cover');if(!c.classList.contains('on'))return;const k=c.querySelector('.cvin');k.style.transform='';k.style.marginTop='0px';k.style.marginBottom='0px';
+  const A=c.clientHeight-40,H=k.offsetHeight;const z=H>A?Math.max(0.7,A/H):1;if(z<1){k.style.transformOrigin='top center';k.style.transform=`scale(${z})`;}
+  const V=H*z,free=Math.max(0,A-V);k.style.marginTop=`${free*0.4}px`;k.style.marginBottom=`${V-H+free*0.6}px`;}
 addEventListener('resize',fitCover);
 /* ---------- 단계 종류 ---------- */
 const R={};
