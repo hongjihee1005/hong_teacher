@@ -318,7 +318,7 @@ function teamPodium(){if(noScore())return '';if(!usesTeams())return `<span class
 const CIRC='①②③④⑤⑥⑦';
 let stage=0,step=0;
 $('cvSub').textContent=C.sub;$('cvTitle').textContent=C.title;$('cvGoal').innerHTML='📌 학습 문제<br>'+esc(C.goal);document.title=C.title;
-$('plan').innerHTML=C.stages.map((s,i)=>`<button class="st ${s.brk?'brk':''}" data-s="${i}">${CIRC[i]} ${esc(s.name)} ${s.min}분</button>`).join('');
+$('plan').innerHTML=C.stages.map((s,i)=>`<button class="st ${s.brk?'brk':''}" data-s="${i}">${CIRC[i]} ${esc(s.name)} ${s.min?s.min+'분':'선택'}</button>`).join('');
 $('plan').querySelectorAll('.st').forEach(b=>b.onclick=()=>goStage(+b.dataset.s,0));
 teamSeg('segTeam');setTimeout(fitCover,50);if(document.fonts)document.fonts.ready.then(()=>{fitCover();fit();});
 function tnote(n){$('tnT').textContent='👩‍🏫 '+n[0];$('tnB').innerHTML=n[1];openO('tn');}
@@ -392,7 +392,7 @@ R.talk=X=>{
 };
 R.book=X=>{
   $('body').innerHTML=hd(X)+`<div class="book"><div class="e">${X.e||'📖'}</div><div><div class="pg">${X.page}</div>${X.do?`<ol>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`
-   +(X.ways?`<p class="lead">🎲 오늘은 어떤 방법으로 읽을까요?</p><div class="pickways" style="--n:${Math.min(X.ways.length,4)}">${X.ways.map((w,i)=>`<div class="pw" data-i="${i}"><span>${w[0]}</span>${w[1]}</div>`).join('')}</div><button class="mid-btn" id="roll">🎲 읽기 방법 뽑기</button>`:'')
+   +(X.ways?`<p class="lead">${X.wlead||'🎲 오늘은 어떤 방법으로 읽을까요?'}</p><div class="pickways" style="--n:${Math.min(X.ways.length,4)}">${X.ways.map((w,i)=>`<div class="pw" data-i="${i}"><span>${w[0]}</span>${w[1]}</div>`).join('')}</div><button class="mid-btn" id="roll">${X.wroll||'🎲 읽기 방법 뽑기'}</button>`:'')
    +(X.tip?`<div class="qbox" style="font-size:clamp(20px,2vw,28px);text-align:left">💡 ${X.tip}</div>`:'');
   if(X.ways)$('roll').onclick=()=>{const pw=[...document.querySelectorAll('.pw')];let n=0,k=0;const total=10+Math.floor(Math.random()*pw.length);
     const iv=setInterval(()=>{pw.forEach(p=>p.classList.remove('lit'));k=n%pw.length;pw[k].classList.add('lit');beep('tick');n++;if(n>total){clearInterval(iv);beep('win');}},120);};

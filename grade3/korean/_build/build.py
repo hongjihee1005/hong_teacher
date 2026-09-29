@@ -2,7 +2,8 @@ import json, os, sys
 sys.path.insert(0, os.path.dirname(__file__))
 from lessons import L as L1
 from lessons2 import L as L2
-L=L1+L2
+from lessons3 import L as L3
+L=L1+L2+L3
 eng = open(os.path.join(os.path.dirname(__file__), 'engine.html'), encoding='utf-8').read()
 out = sys.argv[1]
 os.makedirs(out, exist_ok=True)
