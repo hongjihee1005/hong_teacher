@@ -484,7 +484,7 @@ function sortGame(cardsBox,binsSel,items,fbEl,onDone,explain){
       if(sel===i)b.classList.add('sel'); b.onclick=()=>{sel=i;render();}; cardsBox.appendChild(b); });
     $$(binsSel).forEach(bin=>{ const inn=$('.in',bin); inn.innerHTML=''; placed.forEach((v,i)=>{ if(v===bin.dataset.b){ const s=document.createElement('span'); s.className='chip ok'; s.textContent=items[i][0]; inn.appendChild(s);} }); }); }
   $$(binsSel).forEach(bin=>bin.onclick=()=>{ if(sel===null){fb(fbEl,'먼저 카드를 골라요.','info');return;} const i=sel; sel=null;
-    if(items[i][1]===bin.dataset.b){ placed.set(i,bin.dataset.b); fb(fbEl,'✔ '+(explain?explain(items[i]):'맞아요!'),true); }
+    if(items[i][1].split('|').includes(bin.dataset.b)){ placed.set(i,bin.dataset.b); fb(fbEl,'✔ '+(explain?explain(items[i]):'맞아요!'),true); }
     else { fb(fbEl,'다시 생각해 봐요. '+(items[i][2]||''),false); }
     render(); if(placed.size===items.length){ onDone(); } });
   render();
@@ -495,8 +495,8 @@ function yay(){ beep(660,.12); setTimeout(()=>beep(880,.18),120); }
 
 /* 도입 */
 pickAll('#p1','#p1Fb','좋아요! 우리는 따뜻한 옷, 모자와 장갑으로 추위를 견뎌요. 그럼 극지방의 동물은 어떻게 견딜까요?','반바지만 입으면 너무 추워요!',()=>done('s1'));
-const ENV=[['눈과 빙하로 덮여 있어요','P'],['매우 추워요','P'],['낮과 밤의 온도 차이가 커요','D'],['비가 적게 내려 건조해요','D'],['모래 언덕이 많아요','D']];
-sortGame($('#envCards'),'#envBins .bin',shuffle(ENV),$('#envFb'),()=>{fb($('#envFb'),'🎉 극지방은 눈과 빙하로 덮여 있고 매우 추워요. 사막은 낮과 밤의 온도 차이가 크고 비가 적게 내려 건조해요.',true);done('s1');});
+const ENV=[['눈과 빙하로 덮여 있어요','P'],['매우 추워요','P|D','극지방은 매우 춥고, 사막도 밤에는 매우 추워요.'],['낮과 밤의 온도 차이가 커요','D'],['비가 적게 내려 건조해요','D'],['모래 언덕이 많아요','D']];
+sortGame($('#envCards'),'#envBins .bin',shuffle(ENV),$('#envFb'),()=>{fb($('#envFb'),'🎉 극지방은 눈과 빙하로 덮여 있고 매우 추워요. 사막은 낮과 밤의 온도 차이가 크고 비가 적게 내려 건조해요.',true);done('s1');},it=>it[2]||'맞아요!');
 
 /* 가상 실험실 */
 const NAMES=['준비','바셀린 넣기','작은 지퍼 백','얼음물에 담그기','느낌 비교','무엇을 뜻할까'];
@@ -939,4 +939,14 @@ body.ov #ovBar{margin-bottom:0}
 })();
 </script>
 
-</body></html>
+<style id="ovLow">
+/* 크롬북처럼 낮은 가로 화면: 위 메뉴·아래 단추 줄 여백만 줄여 한 화면에 맞춤 (글자 크기는 그대로) */
+@media (orientation:landscape) and (max-height:760px){
+ body.ov nav .wrap{padding-top:3px!important;padding-bottom:3px!important;gap:6px}
+ body.ov nav a{padding:3px 12px}
+ body.ov main{padding-top:2px}
+ body.ov main>section{margin:4px 0}
+ body.ov #ovBar{margin:4px auto 0;padding:4px 10px}
+ body.ov #ovBar button{min-height:2.15rem}
+}
+</style></body></html>

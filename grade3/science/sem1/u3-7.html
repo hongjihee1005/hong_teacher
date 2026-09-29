@@ -377,9 +377,9 @@ $('#makeCard').onclick=()=>{ const nm=$('#dName').value.trim(), ds=$('#dDesc').v
   if(!nm){ fb('#dFb','생활용품의 이름을 지어요.','info'); $('#dName').focus(); return; }
   if(ds.replace(/\s/g,'').length<10){ fb('#dFb','각 부분의 원리와 재료를 글로 자세히 써요.','info'); $('#dDesc').focus(); return; }
   const hit=[...plan.plants].filter(k=>PK[k].kw.test(ds));
-  if(!hit.length){ fb('#dFb',`설명에 이용한 식물의 특징이 잘 드러나게 써요. (예: ${PK[[...plan.plants][0]].n} — ${PK[[...plan.plants][0]].f})`,false); return; }
+  const hint=hit.length?'':` 💡 발표할 때 이용한 식물의 특징이 잘 드러나는지 한 번 더 살펴봐요. (예: ${PK[[...plan.plants][0]].n} — ${PK[[...plan.plants][0]].f})`;
   card={nm,ds,plants:[...plan.plants],prod:plan.prod,mat:$('#mat').value.trim(),shape:$('#shape').value.trim(),pic:cv.toDataURL('image/png')};
-  renderCard(); fb('#dFb','🖼️ 설계도 카드를 만들었어요! 아래 ‘설계도 카드’에서 확인해요.',true); tone(990,.3); done('s3'); };
+  renderCard(); fb('#dFb','🖼️ 설계도 카드를 만들었어요! 아래 ‘설계도 카드’에서 확인해요.'+hint,hint?'info':true); tone(990,.3); done('s3'); };
 function renderCard(){ const c=document.createElement('canvas'); c.width=1200; c.height=900; const g=c.getContext('2d');
   g.fillStyle='#fbfff8'; g.fillRect(0,0,1200,900); g.strokeStyle='#2e8a4b'; g.lineWidth=12; g.strokeRect(6,6,1188,888);
   g.fillStyle='#1f4a2c'; let fs=46; const tt='🌿 '+card.nm; do{ g.font=fs+'px Jua, sans-serif'; fs-=2; }while(g.measureText(tt).width>1120&&fs>24); g.fillText(tt,40,72);
@@ -710,4 +710,14 @@ body.ov #ovBar{margin-bottom:0}
 })();
 </script>
 
-</body></html>
+<style id="ovLow">
+/* 크롬북처럼 낮은 가로 화면: 위 메뉴·아래 단추 줄 여백만 줄여 한 화면에 맞춤 (글자 크기는 그대로) */
+@media (orientation:landscape) and (max-height:760px){
+ body.ov nav .wrap{padding-top:3px!important;padding-bottom:3px!important;gap:6px}
+ body.ov nav a{padding:3px 12px}
+ body.ov main{padding-top:2px}
+ body.ov main>section{margin:4px 0}
+ body.ov #ovBar{margin:4px auto 0;padding:4px 10px}
+ body.ov #ovBar button{min-height:2.15rem}
+}
+</style></body></html>

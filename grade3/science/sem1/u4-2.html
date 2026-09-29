@@ -540,7 +540,7 @@ function drawLar(){ const L=LEN[molt], n=Math.max(4,Math.round(L/18)), r=Math.ma
   let s=''; for(let i=0;i<n;i++){ s+=`<circle cx="${x0+i*(L/n)+r}" cy="${165-r}" r="${r}" fill="${COL[molt]}" stroke="rgba(0,0,0,.08)"/>`; }
   const hx=x0+(n-1)*(L/n)+r; s+=`<circle cx="${hx+r*.3}" cy="${165-r*1.2}" r="${Math.max(1.5,r*.18)}" fill="#1e3322"/>`;
   $('#lar').innerHTML=`<g style="animation:wiggle 1.4s ease-in-out infinite">${s}</g>`;
-  const mm=[2,'',10,18,30][molt]; $('#mTxt').textContent=molt===0?'알에서 갓 나온 애벌레: 약 2 mm':`허물을 ${molt}번 벗었어요`+(mm?` · 약 ${mm} mm`:'');
+  const mm=['2 mm~4 mm','4 mm~8 mm','8 mm~12 mm','12 mm~16 mm','16 mm~30 mm'][molt]; $('#mTxt').textContent=molt===0?'알에서 갓 나온 애벌레: 약 2 mm~4 mm':`허물을 ${molt}번 벗었어요 · 약 ${mm}`;
   $('#ticks').innerHTML=`<path d="M${300-L/2} 192 v16 M${300+L/2} 192 v16" stroke="#1f4a2c" stroke-width="3"/>`;
   $('#moltBtn').disabled=molt>=4; }
 function resetLar(){ molt=0; bites=0; $('#leafBite').innerHTML=''; attr('skin','opacity',0); drawLar(); }
@@ -653,7 +653,8 @@ multiQ('#q2',2,'어른벌레는 날개를 움직여 날아다니고, 몸이 머�
 $$('#q3 button').forEach(b=>b.onclick=()=>{ $$('#q3 button').forEach(x=>x.classList.remove('right','wrong'));
   if(b.dataset.a){ b.classList.add('right'); fb($('#q3Fb'),'맞아요! ㉠이 옳지 않아요. 아래에 옳게 고쳐 써 봐요.',true); beep(700);} else { b.classList.add('wrong'); fb($('#q3Fb'),'그 설명은 번데기에 맞는 설명이에요.',false); beep(220);} });
 $('#q3b').onclick=()=>{ const t=$('#q3t').value.replace(/\s/g,''); if(!t){fb($('#q3tFb'),'먼저 고쳐 써 보세요.',false);return;}
-  if(/(한곳|한군데|붙어|이동하지않|움직이지않)/.test(t)){ fb($('#q3tFb'),'훌륭해요! 번데기는 한곳에 붙어 있고 이동하지 않아요.',true); chkQ(); }
+  if(/(한곳|한군데|붙어|이동하지않)/.test(t)){ fb($('#q3tFb'),'훌륭해요! 번데기는 한곳에 붙어 있고 이동하지 않아요.',true); chkQ(); }
+  else if(/움직이지않|움직임이없/.test(t)) fb($('#q3tFb'),'거의 맞았어요! 번데기는 가끔 제자리에서 꿈틀거릴 수 있어요. “움직이지 않는다” 대신 “한곳에 붙어 있다” 또는 “이동하지 않는다”로 써 봐요.','info');
   else fb($('#q3tFb'),'번데기는 어디에 어떻게 있는지 떠올려 봐요. (힌트: 한곳에 ~)','info'); };
 
 /* 수행 평가 */

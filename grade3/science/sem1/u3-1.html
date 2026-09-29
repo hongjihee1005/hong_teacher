@@ -414,7 +414,7 @@ const LEAF=[
  {n:3,name:'강아지풀',kind:'grass',stalk:0,shape:'좁고 길쭉한 모양',saw:0,net:0},
  {n:4,name:'민들레',kind:'feather',stalk:0,shape:'새의 깃털 모양',saw:1,net:1},
  {n:5,name:'벚나무',kind:'ovate',stalk:1,shape:'달걀·타원 모양',saw:1,net:1},
- {n:6,name:'닭의장풀',kind:'lance',stalk:0,shape:'창 모양',saw:0,net:0}];
+ {n:6,name:'닭의장풀',kind:'lance',stalk:0,shape:'창 모양',alt:'달걀·타원 모양',saw:0,net:0}];
 const imgOf=n=>{const i=$('#L'+n); return i?(i.currentSrc||i.src):'';};
 
 /* ---------- 도입: 블록 ---------- */
@@ -465,7 +465,7 @@ function obsShow(){ const L=LEAF[cur]; obsDone[cur]=obsDone[cur]||new Set(); tab
   $('#obsSvg').innerHTML=leafSVG(L.kind,L.stalk)+`<text x="6" y="20" font-family="Jua" font-size="16" fill="#1d3320">${L.n}번</text>`;
   $('#obsQ').innerHTML=QS.map(([k,t,opts])=>`<div class="qrow"><b>${t}</b><div class="row">${opts.map(o=>`<button data-k="${k}" class="${obsDone[cur].has(k)&&o===ansOf(L,k)?'right':''}">${o}</button>`).join('')}</div></div>`).join('');
   $$('#obsQ button').forEach(b=>b.onclick=()=>{ const k=b.dataset.k; if(obsDone[cur].has(k)) return;
-    if(b.textContent===ansOf(L,k)){ b.classList.add('right'); obsDone[cur].add(k); beep(true);
+    if(b.textContent===ansOf(L,k)||(k==='shape'&&L.alt===b.textContent)){ if(b.textContent!==ansOf(L,k)) $$('#obsQ button').forEach(x=>{ if(x.dataset.k==='shape'&&x.textContent===ansOf(L,k)) x.classList.add('right'); }); b.classList.add('right'); obsDone[cur].add(k); beep(true);
       if(obsDone[cur].size===4){ const all=LEAF.every((_,i)=>obsDone[i]&&obsDone[i].size===4); tabs();
         fb($('#obsFb'),`✔ ${L.n}번 잎 관찰 완료! (이 잎은 ‘${L.name}’ 잎이었어요.) `+(all?'🎉 여섯 잎을 모두 관찰했어요. 잎마다 생김새가 다르지요?':'다른 번호의 잎도 관찰해 봐요.'),true); if(all) done('s2'); }
       else fb($('#obsFb'),'맞아요! 나머지 특징도 찾아봐요.','info'); }

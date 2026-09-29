@@ -539,12 +539,12 @@ function sortGame(cardsBox,binsSel,items,fbEl,onDone,explain){
       if(sel===i)b.classList.add('sel'); b.onclick=()=>{sel=i;render();}; cardsBox.appendChild(b); });
     $$(binsSel).forEach(bin=>{ const inn=$('.in',bin); inn.innerHTML=''; placed.forEach((v,i)=>{ if(v===bin.dataset.b){ const s=document.createElement('span'); s.className='chip ok'; s.textContent=items[i][0]; inn.appendChild(s);} }); }); }
   $$(binsSel).forEach(bin=>bin.onclick=()=>{ if(sel===null){fb(fbEl,'먼저 카드를 골라요.','info');return;} const i=sel; sel=null;
-    if(items[i][1]===bin.dataset.b){ placed.set(i,bin.dataset.b); fb(fbEl,'✔ '+(explain?explain(items[i]):'맞아요!'),true); }
+    if(items[i][1].split('|').includes(bin.dataset.b)){ placed.set(i,bin.dataset.b); fb(fbEl,'✔ '+(explain?explain(items[i]):'맞아요!'),true); }
     else { shake(bin); fb(fbEl,'다시 생각해 봐요. '+(items[i][2]||''),false); }
     render(); if(placed.size===items.length){ onDone(); } });
   render();
 }
-const MOVE=[['붕어','fin','붕어는 지느러미로 헤엄쳐요.'],['고등어','fin','고등어는 지느러미로 헤엄쳐요.'],['돌고래','fin','돌고래는 지느러미로 헤엄쳐요.'],['해마','fin','해마는 등에 있는 지느러미를 움직여 헤엄쳐요.'],['바다거북','fin','바다거북은 지느러미로 헤엄쳐요.'],['오징어','fin','오징어는 지느러미로 헤엄쳐요.'],
+const MOVE=[['붕어','fin','붕어는 지느러미로 헤엄쳐요.'],['고등어','fin','고등어는 지느러미로 헤엄쳐요.'],['돌고래','fin','돌고래는 지느러미로 헤엄쳐요.'],['해마','fin','해마는 등에 있는 지느러미를 움직여 헤엄쳐요.'],['바다거북','fin|web','바다거북은 물갈퀴가 달린, 지느러미 모양의 발로 헤엄쳐요. 두 상자 모두 맞아요.'],['오징어','fin','오징어는 지느러미로 헤엄쳐요.'],
   ['개구리','web','개구리는 물갈퀴가 있는 발로 헤엄쳐요.'],['수달','web','수달은 물갈퀴가 있는 발로 헤엄쳐요.'],['물방개','web','물방개는 다리로 헤엄쳐요.'],['꽃게','web','꽃게는 둥글넓적한 뒷다리로 헤엄쳐요.'],['갈매기','web','갈매기는 물갈퀴가 있어 헤엄을 잘 쳐요.'],
   ['다슬기','crawl','다슬기는 바닥이나 바위를 기어다녀요.'],['전복','crawl','전복은 바위를 기어다녀요.'],['조개','crawl','조개는 갯벌을 기어다녀요.'],['농게','crawl','농게는 다리로 갯벌 위를 걸어 다녀요.'],
   ['따개비','stay','따개비는 바위에 붙어서 살아요.'],['산호','stay','산호는 무리 지어 한곳에 붙어서 살아요.']];

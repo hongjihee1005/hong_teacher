@@ -570,7 +570,7 @@ function sortGame(cardsBox,binsSel,items,fbEl,onDone,explain){
       if(sel===i)b.classList.add('sel'); b.onclick=()=>{sel=i;render();}; cardsBox.appendChild(b); });
     $$(binsSel).forEach(bin=>{ const inn=$('.in',bin); inn.innerHTML=''; placed.forEach((v,i)=>{ if(v===bin.dataset.b){ const s=document.createElement('span'); s.className='chip ok'; s.textContent=items[i][0]; inn.appendChild(s);} }); }); }
   $$(binsSel).forEach(bin=>bin.onclick=()=>{ if(sel===null){fb(fbEl,'먼저 카드를 골라요.','info');return;} const i=sel; sel=null;
-    if(items[i][1]===bin.dataset.b){ placed.set(i,bin.dataset.b); fb(fbEl,'✔ '+(explain?explain(items[i]):'맞아요!'),true); }
+    if(items[i][1].split('|').includes(bin.dataset.b)){ placed.set(i,bin.dataset.b); fb(fbEl,'✔ '+(explain?explain(items[i]):'맞아요!'),true); }
     else { shake(bin); fb(fbEl,'다시 생각해 봐요. '+(items[i][2]||''),false); }
     render(); if(placed.size===items.length){ onDone(); } });
   render();
@@ -606,7 +606,7 @@ function soilOpen(k){ const s=SOIL[k]; soilSeen.add(k); $('#soilLab').hidden=tru
 $$('#soilSvg .hot').forEach(g=>{ g.onclick=()=>soilOpen(g.dataset.a); g.onkeydown=e=>{ if(e.key==='Enter'||e.key===' '){e.preventDefault();soilOpen(g.dataset.a);} }; });
 $$('#soilBtns button').forEach(b=>b.onclick=()=>soilOpen(b.dataset.a));
 $('#scBack').onclick=()=>{ $('#soilCard').hidden=true; $('#soilLab').hidden=false; };
-const DIG=[['두더지','spade','두더지는 삽처럼 넓적한 앞다리로 굴을 파요.'],['땅강아지','spade','땅강아지는 넓적한 앞다리로 땅을 파요.'],['개미','jaw','개미는 큰턱으로 땅을 파서 집을 지어요.'],['매미 애벌레','sharp','매미 애벌레는 뾰족한 앞다리로 땅을 파요.'],['지렁이','body','지렁이는 몸의 앞부분을 늘려 흙을 밀어 낸 다음, 뒷부분을 끌어당기며 이동해요.']];
+const DIG=[['두더지','spade|sharp','두더지는 앞발이 삽처럼 넓적하고, 발톱이 단단하고 뾰족해요. 이 앞다리로 굴을 파요.'],['땅강아지','spade','땅강아지는 넓적한 앞다리로 땅을 파요.'],['개미','jaw','개미는 큰턱으로 땅을 파서 집을 지어요.'],['매미 애벌레','sharp','매미 애벌레는 뾰족한 앞다리로 땅을 파요.'],['지렁이','body','지렁이는 몸의 앞부분을 늘려 흙을 밀어 낸 다음, 뒷부분을 끌어당기며 이동해요.']];
 sortGame($('#digCards'),'#digLab .bin',shuffle(DIG),$('#digFb'),()=>{fb($('#digFb'),'🎉 모두 찾았어요! 땅속에 사는 동물은 땅을 파기에 알맞은 생김새를 가지고 있어요.',true);},it=>it[2]);
 $$('#envPick button').forEach(b=>b.onclick=()=>{ $$('#envPick button').forEach(x=>x.classList.remove('right','wrong'));
   if(b.dataset.a==='1'){b.classList.add('right');$('#e1').textContent='땅';$('#e2').textContent='땅속';fb($('#envFb'),'맞아요! 땅속에 사는 동물은 땅속에서 살기에 알맞은 생김새와 생활 방식을 가지고 있어요.',true);done('s7');}
