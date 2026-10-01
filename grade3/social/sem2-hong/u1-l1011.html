@@ -368,6 +368,22 @@ html body #cMap .mcol h3{font-size:clamp(15px,1.3vw,17px);font-weight:800;color:
 html body #cMap .mcol a,html body #cMap .mcol .cur{font-size:clamp(14px,1.2vw,16px);line-height:1.45;padding:5px 8px;border-radius:8px}
 html body #cMap .mcol a{color:var(--soft)}html body #cMap .mcol a:hover{background:var(--bg);color:var(--ink)}
 html body #cMap .mcol .cur{background:color-mix(in srgb,var(--mc) 13%,var(--paper));color:color-mix(in srgb,var(--mc) 70%,var(--ink))!important;font-weight:700}
+/* 듣기 재생 막대 */
+#hj-player{position:fixed;left:50%;bottom:clamp(84px,11vh,110px);transform:translateX(-50%);z-index:9000;display:flex;align-items:center;gap:6px;flex-wrap:wrap;justify-content:center;
+ max-width:calc(100vw - 24px);background:var(--paper,#fff);color:var(--ink,#2A221C);border:1px solid var(--line,#EFE3D6);border-radius:999px;padding:6px 6px 6px 16px;
+ box-shadow:0 14px 34px -14px rgba(40,25,10,.4);font-family:'Gowun Dodum',sans-serif;word-break:keep-all}
+#hj-player[hidden]{display:none}
+#hj-player .hj-pl-l{display:inline-flex;align-items:center;gap:6px;font-size:15px;color:var(--soft,#5C5047);margin-right:4px}
+#hj-player .hj-pl-l b{font-weight:700}
+#hj-player .hj-i{width:18px;height:18px;flex:none}
+#hj-player button{display:inline-flex;align-items:center;gap:6px;font:700 16px/1.2 'Gowun Dodum',sans-serif;color:var(--ink,#2A221C);background:var(--bg,#FFFCF8);border:1px solid var(--line,#EFE3D6);border-radius:999px;padding:9px 14px;cursor:pointer;min-height:42px}
+#hj-player button:hover:not(:disabled){border-color:color-mix(in srgb,var(--ink,#2A221C) 30%,var(--line,#EFE3D6))}
+#hj-player button:disabled{opacity:.4;cursor:default}
+#hj-player [data-k=pp]{background:var(--ink,#2A221C);color:var(--paper,#fff);border-color:transparent}
+#hj-player .hj-pl-x{padding:9px;background:none;border-color:transparent}
+#hj-player[data-st=play] .hj-pl-l .hj-i{animation:hjpulse 1.2s ease-in-out infinite}
+@keyframes hjpulse{50%{opacity:.35}}
+@media print{#hj-player{display:none!important}}
 </style><meta name="hj-next" content="u1-l1213.html" data-t="다양한 문화의 확산이 우리 사회에 미친 영향을 알아볼까요" data-tag="O 개념 구축 · 12~13차시"><!--/hj-ctheme--></head><body>
 
 <section id="cover" class="screen on">
@@ -687,4 +703,37 @@ function done(){var old=document.getElementById('hj-done');if(old)old.remove();
 /* 교사 안내 인쇄 때 위에 차시 이름 */
 (function(){var B=document.getElementById('tnB');if(!B)return;var p=document.createElement('p');p.className='hj-pl';var t=document.querySelector('#cover .title'),l=document.querySelector('#cover .lead');
  p.textContent=(t?t.textContent.trim():document.title)+(l?' · '+l.textContent.trim():'');var h=document.getElementById('tnT');(h||B).before(p)})();
+/* 듣기 재생 막대: 읽어 주기·녹음 듣기 중에 일시정지 / 이어서 재생 / 정지 / 처음부터 */
+(function(){var ss=window.speechSynthesis,bar,st,q=[],media=null,hideT=0,tick=0;
+function svg(p){return '<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">'+p+'</svg>'}
+var IC={pause:svg('<path d="M9 5.5v13M15 5.5v13"/>'),play:svg('<path d="M7.5 5.2v13.6L18.5 12Z"/>'),stop:svg('<rect x="6.5" y="6.5" width="11" height="11" rx="2"/>'),again:svg('<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v3.7h3.7"/>'),vol:svg('<path d="M4.5 9.5h3l4.5-4v13l-4.5-4h-3Z"/><path d="M15.8 9a4.2 4.2 0 0 1 0 6"/>'),x:svg('<path d="M6 6l12 12M18 6 6 18"/>')};
+function mk(){if(bar)return;bar=document.createElement('div');bar.id='hj-player';bar.setAttribute('role','region');bar.setAttribute('aria-label','듣기 조절');bar.hidden=true;
+ bar.innerHTML='<span class="hj-pl-l">'+IC.vol+'<b>듣는 중</b></span><button type="button" data-k="pp"></button><button type="button" data-k="stop">'+IC.stop+'정지</button><button type="button" data-k="again">'+IC.again+'처음부터</button><button type="button" data-k="x" class="hj-pl-x" aria-label="닫기">'+IC.x+'</button>';
+ document.body.appendChild(bar);
+ bar.addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;var k=b.dataset.k;
+  if(k==='pp'){if(st==='play')pause();else resume()}
+  else if(k==='stop')stop();else if(k==='again')again();else if(k==='x'){stop();bar.hidden=true}})}
+function set(s){mk();st=s;clearTimeout(hideT);bar.hidden=false;bar.dataset.st=s;
+ var pp=bar.querySelector('[data-k=pp]');pp.innerHTML=s==='play'?IC.pause+'일시정지':IC.play+(s==='pause'?'이어서 재생':'재생');pp.disabled=(s==='idle'&&!q.length&&!media);
+ bar.querySelector('.hj-pl-l b').textContent=s==='play'?'듣는 중':s==='pause'?'잠깐 멈춤':'다 들었어요';
+ bar.querySelector('[data-k=stop]').disabled=s==='idle';
+ if(s==='idle')hideT=setTimeout(function(){if(st==='idle')bar.hidden=true},8000);
+ if(s!=='idle'&&!tick)tick=setInterval(watch,400)}
+function soon(){if(bar&&!bar.hidden){set('play');return}st='play';clearTimeout(soon.t);soon.t=setTimeout(function(){var sp=ss&&(ss.speaking||ss.pending)&&!ss.paused,mp=media&&!media.paused&&!media.ended;if(sp||mp)set('play');else st='idle'},700)}
+function watch(){var sp=ss&&(ss.speaking||ss.pending),mp=media&&!media.paused&&!media.ended;
+ if(st==='play'&&!sp&&!mp){set('idle');clearInterval(tick);tick=0}}
+function pause(){if(media&&!media.paused){media.pause()}else if(ss&&ss.speaking){ss.pause()}set('pause')}
+function resume(){if(st==='idle'){again();return}if(media&&media.paused&&!media.ended&&media.currentTime>0){media.play()}else if(ss&&ss.paused){ss.resume()}set('play')}
+function stop(){if(media){try{media.pause();media.currentTime=0}catch(_){}}if(ss)ss.cancel();set('idle')}
+function again(){if(media&&(!q.length||media._hjLast)){try{media.currentTime=0;media.play()}catch(_){}return}
+ if(ss&&q.length){var list=q.slice();ss.cancel();q=[];list.forEach(function(u){var n=new SpeechSynthesisUtterance(u.text);['lang','rate','pitch','volume','voice','onstart','onend','onboundary','onerror'].forEach(function(k){try{if(u[k]!=null)n[k]=u[k]}catch(_){}});speak.call(ss,n)})}}
+if(ss&&ss.speak){var speak=ss.speak,cancel=ss.cancel;
+ ss.speak=function(u){if(!(ss.speaking||ss.pending))q=[];q.push(u);if(media)media._hjLast=false;var r=speak.apply(ss,arguments);soon();return r};
+}
+var play=HTMLMediaElement.prototype.play;
+HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&!el.closest?.('.hj-noplayer')){media=el;el._hjLast=true;
+ if(!el._hjL){el._hjL=1;el.addEventListener('ended',function(){if(media===el)set('idle')});el.addEventListener('pause',function(){if(media===el&&st==='play'&&!el.ended)set(el.currentTime>0?'pause':'idle')})}
+ soon()}
+ return play.apply(this,arguments)};
+})();
 </script><!--/hj-cicons--></body></html>
