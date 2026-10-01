@@ -240,6 +240,29 @@ html body .hj-i{width:1.15em;height:1.15em;flex:none;display:inline-block;vertic
 html body .hj-ic{display:inline-flex;align-items:center;justify-content:center;gap:.4em}
 html body .hj-ionly{gap:0}
 html body .tool.hj-hometool{border-radius:999px;padding:6px 15px 6px 12px;font-weight:700;font-size:17px;gap:6px}
+/* 수업 세트 첫 화면 정리 */
+html body .hj-cv{gap:clamp(12px,2vh,22px)!important}
+html body .hj-cvtop{width:min(1100px,94vw);display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-start;min-height:0}
+html body .hj-cvtop .tolist{margin:0}
+html body .hj-cvpanel{width:min(1100px,94vw);background:var(--paper);border:1.5px solid var(--line);border-radius:24px;padding:clamp(16px,2vw,26px) clamp(18px,2.4vw,30px);
+ display:grid;gap:clamp(12px,1.6vh,18px);box-shadow:0 1px 2px rgba(80,55,30,.05),0 18px 40px -28px rgba(80,55,30,.45);text-align:left}
+html body .hj-cvpanel>.qbox,html body .hj-cvpanel>.goalbox,html body .hj-cvpanel>.bq,html body .hj-cvpanel>.map{width:auto!important;margin:0!important;box-shadow:none}
+html body .hj-cvpanel>.qbox{text-align:left}
+html body .hj-field{display:grid!important;grid-template-columns:110px minmax(0,1fr);align-items:center;gap:8px 14px;justify-content:stretch!important;margin:0;
+ padding-top:clamp(10px,1.4vh,16px);border-top:1.5px dashed var(--line)}
+html body .hj-field>.stagebar,html body .hj-field>.plan{justify-content:flex-start!important;margin:0}
+html body .hj-flabel{font-size:clamp(15px,1.35vw,18px)!important;font-weight:800;color:var(--soft);white-space:nowrap}
+html body .hj-field.row>:nth-child(n+3){grid-column:2;font-size:clamp(14px,1.25vw,17px);color:var(--soft)}
+html body .hj-field .seg{justify-self:start}
+html body .hj-cvacts{gap:14px}
+@media (max-width:720px){html body .hj-field{grid-template-columns:1fr}html body .hj-field.row>:nth-child(n+3){grid-column:1}}
+html body .hj-field>*:not(.hj-flabel){justify-self:start;text-align:left;margin-left:0}
+html body .hj-field>div>.seg{margin:0}
+html body .hj-cvtop,html body .hj-cvpanel,html body .hj-cvacts{flex:none}
+html body #cover{justify-content:safe center}
+html body .hj-field #segTeam{justify-content:flex-start!important;align-items:flex-start!important;flex-direction:column;gap:6px!important}
+html body .hj-field #segTeam-sub .row-label,html body .hj-field #segTeam~*{font-size:clamp(14px,1.25vw,17px)!important;font-weight:500;color:var(--soft)}
+html body .hj-field .seg{justify-content:flex-start;width:auto}
 </style><!--/hj-ctheme--></head>
 <body>
 <header><div class="wrap">
@@ -897,5 +920,15 @@ scan(document);
 var q=new Set(),raf=0;new MutationObserver(function(ms){ms.forEach(function(m){var n=m.target.nodeType===3?m.target.parentElement:m.target;if(!n)return;
  var c=n.closest&&n.closest('button,a.tolist,a.tool,a.btn');if(c)q.add(c);m.addedNodes&&m.addedNodes.forEach(function(a){if(a.nodeType===1)q.add(a)})});
  if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(scan)})}).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
+/* 수업 세트 첫 화면 정리: 자료 목록은 위로, 학습 문제·수업 흐름·활동 단위는 한 판에 */
+(function(){var cv=document.querySelector('#cover .cvin, #cover .inner')||(document.querySelector('#cover>.qbox')&&document.getElementById('cover'));if(!cv||cv.dataset.hj)return;cv.dataset.hj='1';cv.classList.add('hj-cv');
+ var tols=cv.querySelectorAll('.tolist');if(tols.length){var top=document.createElement('div');top.className='hj-cvtop';Array.prototype.slice.call(tols).reverse().forEach(function(t){top.appendChild(t)});cv.insertBefore(top,cv.firstChild)}
+ var parts=Array.prototype.filter.call(cv.children,function(e){return e.matches('.qbox,.bq,.goalbox,.map,.stagebar,.plan')||(e.classList.contains('row')&&e.querySelector('.row-label'))});
+ if(!parts.length)return;var panel=document.createElement('div');panel.className='hj-cvpanel';parts[0].parentNode.insertBefore(panel,parts[0]);
+ parts.forEach(function(p){if(p.matches('.stagebar,.plan')){var f=document.createElement('div');f.className='hj-field';f.innerHTML='<span class="hj-flabel">수업 흐름</span>';panel.appendChild(f);f.appendChild(p)}
+  else if(p.classList.contains('row')){p.classList.add('hj-field');var l=p.querySelector('.row-label');if(l)l.classList.add('hj-flabel');panel.appendChild(p)}
+  else panel.appendChild(p)});
+ var acts=Array.prototype.find.call(cv.children,function(e){return e.classList.contains('row')&&e.querySelector('.big-btn')});if(acts)acts.classList.add('hj-cvacts');
 })();
 </script><!--/hj-cicons--></body></html>

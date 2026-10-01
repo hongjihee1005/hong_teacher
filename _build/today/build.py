@@ -32,7 +32,7 @@ function L(n,h){var o='';for(var i=0;i<n;i++)o+='<div class="ws-line" style="hei
 function box(h,t){return '<div class="ws-box" style="height:'+h+'mm">'+(t?'<span>'+t+'</span>':'')+'</div>'}
 function Q(n,t,body){return '<div class="ws-q"><b>'+n+'. '+t+'</b>'+body+'</div>'}
 function sheet(k){var h='',head,
- name='<div class="ws-name">3학년 ____반 ____번 &nbsp; 이름: ______________ &nbsp;&nbsp; 날짜: '+(now.getMonth()+1)+'월 '+now.getDate()+'일</div>';
+ name='<div class="ws-name"><span>(<i style="width:9mm"></i>)학년</span><span>(<i style="width:9mm"></i>)반</span><span>(<i style="width:11mm"></i>)번</span><span>이름: (<i style="width:38mm"></i>)</span><span class="ws-date">'+(now.getMonth()+1)+'월 '+now.getDate()+'일</span></div>';
  if(k==='event'){var e=tdEvent(S.event).e,m=+e.d.slice(0,2),d=+e.d.slice(3);head='📅 역사 속 오늘 활동지';
   h='<div class="ws-card"><div class="ws-big">'+m+'월 '+d+'일 · '+esc(e.t)+(e.y?' ('+e.y+'년)':'')+'</div><p>'+esc(e.s)+'</p></div>'+
   Q(1,'이 날 있었던 일을 내 말로 짧게 정리해 보세요.',L(2))+Q(2,'이 일은 우리에게 왜 중요할까요?',L(2))+Q(3,'내가 그 자리에 있었다면 어떤 마음이었을까요? 그림이나 글로 나타내 보세요.',box(70))}
