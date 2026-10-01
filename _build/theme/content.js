@@ -245,12 +245,29 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  tidy();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;tidy()})}).observe(document.body,{childList:true,subtree:true})})();
 /* 과학 앱(한 화면 보기): 첫 화면에 학년·학기·단원·차시와 주제, 너무 크게 키우지 않기 */
 (function(){if(!document.getElementById('ovBar'))return;var hd=document.querySelector('header .wrap h1'),hp=document.querySelector('header .wrap p');
- var sec=document.querySelector('main section');if(sec&&hd&&!document.querySelector('.hj-lhead')){var d=document.createElement('div');d.className='hj-lhead';
-  d.innerHTML='<p class="hj-linfo"></p><h1 class="hj-ltitle"></h1>';d.querySelector('.hj-linfo').textContent=hp?hp.textContent.replace(/\s*·\s*만든 사람.*$/,''):'';d.querySelector('.hj-ltitle').textContent=hd.textContent.replace(/^\s*\d+\.\s*/,'');
-  var b=sec.querySelector(':scope>.fitbox')||sec;b.insertBefore(d,b.firstChild)}
  var CAP=1.12;function cap(b){var m=/scale\(([\d.]+)\)/.exec(b.style.transform||'');if(m&&+m[1]>CAP+0.001){b.style.transform='scale('+CAP+')';b.style.width=(100/CAP)+'%';b.style.marginLeft=((1-1/CAP)*50)+'%'}}
  new MutationObserver(function(ms){ms.forEach(function(r){if(r.target.classList&&r.target.classList.contains('fitbox'))cap(r.target)})}).observe(document.body,{attributes:true,attributeFilter:['style'],subtree:true})})();
 /* 아이콘만 있던 ⏹ 단추에 '멈추기' 이름 */
 (function(){var SV='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>';
  function fix(){document.querySelectorAll('button').forEach(function(b){if(b.dataset.hjs)return;var t=b.textContent.replace(/[️\s]/g,'');if(t==='⏹'||t==='■'||t==='◼'){b.dataset.hjs='1';b.innerHTML=SV+'멈추기';b.classList.add('hj-ic');b.setAttribute('aria-label','멈추기')}})}
  fix();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;fix()})}).observe(document.body,{childList:true,subtree:true})})();
+/* 과학 앱: 국어·사회처럼 첫 화면(학년·학기·단원·차시 → 주제 → 학습 목표 → 수업 흐름 → 수업 시작) */
+(function(){var bar=document.getElementById('ovBar');if(!bar||document.getElementById('hj-scover'))return;
+ var hd=document.querySelector('header .wrap h1'),hp=document.querySelector('header .wrap p'),goal=document.querySelector('main p.goal');
+ var tabs=[].slice.call(document.querySelectorAll('body>nav .wrap>a[href^="#s"]'));
+ var cv=document.createElement('div');cv.id='hj-scover';cv.setAttribute('aria-label','수업 첫 화면');
+ var gt=goal?goal.textContent.replace(/^\s*🎯?\s*학습 목표\s*/,'').trim():'';
+ cv.innerHTML='<div class="hj-sc-in"><p class="hj-sc-info"></p><h1 class="hj-sc-title"></h1><div class="hj-cvpanel"><div class="qbox hj-sc-goal"><span class="hj-qlab">학습 목표</span><span class="hj-qtxt"></span></div>'+
+  '<div class="hj-field"><span class="hj-flabel">수업 흐름</span><div class="plan" id="hjScPlan"></div></div></div>'+
+  '<div class="hj-goRow"><button type="button" class="big-btn hj-sc-go">수업 시작</button></div></div>';
+ cv.querySelector('.hj-sc-info').textContent=hp?hp.textContent.replace(/\s*·\s*만든 사람.*$/,''):'';
+ cv.querySelector('.hj-sc-title').textContent=hd?hd.textContent.replace(/^\s*\d+\.\s*/,''):document.title;
+ cv.querySelector('.hj-qtxt').textContent=gt;if(!gt)cv.querySelector('.hj-sc-goal').remove();
+ var pl=cv.querySelector('#hjScPlan');tabs.forEach(function(a,i){var b=document.createElement('button');b.type='button';b.className='st';b.innerHTML='<span class="hj-sn">'+(i+1)+'</span><span class="hj-st"></span>';b.querySelector('.hj-st').textContent=a.textContent.trim();b.onclick=function(){hide();a.click()};pl.appendChild(b)});
+ document.body.appendChild(cv);document.documentElement.classList.add('hj-sc-on');
+ function hide(){document.documentElement.classList.remove('hj-sc-on')}
+ function showC(){document.documentElement.classList.add('hj-sc-on');window.scrollTo(0,0)}
+ cv.querySelector('.hj-sc-go').onclick=function(){hide();var f=tabs[0];if(f)f.click()};
+ var hb=document.createElement('button');hb.type='button';hb.id='hjScHome';hb.className='hj-ic';hb.innerHTML='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7M5.5 9.2V20h13V9.2M10 20v-5.5h4V20"/></svg>첫 화면';hb.onclick=showC;bar.insertBefore(hb,bar.firstChild);
+})();
+(function(){var n=document.querySelector('body>nav');if(!n||!document.getElementById('ovBar'))return;function m(){document.documentElement.style.setProperty('--hj-navh',n.offsetHeight+'px')}m();addEventListener('resize',m)})();
