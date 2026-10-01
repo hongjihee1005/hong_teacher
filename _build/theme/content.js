@@ -110,23 +110,28 @@ bar.querySelector('.hj-mail').addEventListener('submit',function(e){e.preventDef
  say('메일 쓰기 화면을 열었어요. 내용을 확인하고 보내기를 눌러 주세요.')});
 })();
 /* 수업을 끝까지 마치면: 다음 차시 / 자료 목록 / 처음 화면 중에서 고르기 */
-(function(){var cv=document.getElementById('cover'),mt=document.querySelector('meta[name="hj-next"]');if(!cv||!mt)return;
+(function(){var cv=document.getElementById('cover'),mt=document.querySelector('meta[name="hj-next"]');if(!mt)return;
+/* 과학 앱(한 화면 보기): 마지막 단계에서 '다음'을 누르면 */
+function last(){var p=document.getElementById('ovPos'),m=p&&p.textContent.match(/(\d+)\s*\/\s*(\d+)/);return m&&m[1]===m[2]}
+document.addEventListener('click',function(e){if(e.target.closest('#ovNext')&&last())setTimeout(done,0)},true);
+document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'&&document.body.classList.contains('ov')&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&last())setTimeout(done,0)},true);
+if(!cv){window.__hjDone=function(){done()}}
 var act={t:0,next:false};
 document.addEventListener('click',function(e){var b=e.target.closest('button,a');if(!b)return;var id=b.id||'',tx=b.textContent||'';
  act={t:Date.now(),next:/^(btnNext\d*|next)$/i.test(id)||(/다음/.test(tx)&&!b.closest('#cover'))}},true);
 document.addEventListener('keydown',function(e){if(/^(ArrowRight|PageDown|Enter| )$/.test(e.key)&&!e.target.closest('input,textarea,select'))act={t:Date.now(),next:true}},true);
-var was=cv.classList.contains('on');
-new MutationObserver(function(){var on=cv.classList.contains('on');if(on&&!was&&act.next&&Date.now()-act.t<800)done();was=on}).observe(cv,{attributes:true,attributeFilter:['class']});
+if(cv){var was=cv.classList.contains('on');
+new MutationObserver(function(){var on=cv.classList.contains('on');if(on&&!was&&act.next&&Date.now()-act.t<800)done();was=on}).observe(cv,{attributes:true,attributeFilter:['class']});}
 var A='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
 var IC={next:A+'<path d="M5 12h14M13 6l6 6-6 6"/></svg>',list:A+'<rect x="5.2" y="5" width="13.6" height="15.2" rx="2"/><path d="M9 3.8h6v2.6H9ZM8.8 11.2h6.4M8.8 14.8h4.4"/></svg>',
  back:A+'<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v3.7h3.7"/></svg>',ok:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12.3 2.7 2.7L16 9.6"/></svg>'};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function done(){var old=document.getElementById('hj-done');if(old)old.remove();
- var nx=mt.getAttribute('content'),tl=document.querySelector('#cover .title'),lst=document.querySelector('a.tolist[href]');
+ var nx=mt.getAttribute('content'),tl=document.querySelector('#cover .title')||document.querySelector('header h1, main h1, h1'),lst=document.querySelector('a.tolist[href]');
  var d=document.createElement('div');d.id='hj-done';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','hjDoneT');
  d.innerHTML='<div class="hj-dp"><span class="hj-dok">'+IC.ok+'</span><h2 id="hjDoneT">수업을 마쳤어요</h2><p class="hj-dl">'+esc(tl?tl.textContent.trim():document.title)+'</p>'+
   (nx?'<a class="hj-dn" href="'+esc(nx)+'"><small>다음 차시'+(mt.dataset.tag?' · '+esc(mt.dataset.tag):'')+'</small><b>'+esc(mt.dataset.t||'다음 차시')+'</b>'+IC.next+'</a>':'<p class="hj-dlast">이 학기의 마지막 차시예요.</p>')+
-  '<div class="hj-drow"><a class="hj-db" href="'+esc(lst?lst.getAttribute('href'):'index.html')+'">'+IC.list+'자료 목록으로</a><button type="button" class="hj-db" data-x>'+IC.back+'이 차시 처음 화면</button></div></div>';
+  '<div class="hj-drow"><a class="hj-db" href="'+esc(lst?lst.getAttribute('href'):'index.html')+'">'+IC.list+'자료 목록으로</a><button type="button" class="hj-db" data-x>'+IC.back+(cv?'이 차시 처음 화면':'계속 보기')+'</button></div></div>';
  document.body.appendChild(d);d.querySelector('[data-x]').onclick=function(){d.remove()};
  d.addEventListener('click',function(e){if(e.target===d)d.remove()});
  document.addEventListener('keydown',function k(e){if(e.key==='Escape'){d.remove();document.removeEventListener('keydown',k)}});
@@ -168,3 +173,19 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  soon()}
  return play.apply(this,arguments)};
 })();
+/* 첫 화면: '수업 시작'만 가운데에 두고, 교사용 단추(교사 안내·자료 보기·질문 판)는 위쪽 오른편으로 */
+(function(){var cv=document.getElementById('cover');if(!cv)return;var go=cv.querySelector('#btnGo,#go');if(!go)return;
+ var row=go.parentElement;var others=[].filter.call(row.children,function(b){return b!==go&&b.matches('button,a')});if(!others.length)return;
+ var top=cv.querySelector('.hj-cvtop');if(!top){top=document.createElement('div');top.className='hj-cvtop';var host=cv.querySelector('.hj-cv')||cv.querySelector('.cvin,.inner')||cv;host.insertBefore(top,host.firstChild)}
+ var grp=document.createElement('div');grp.className='hj-cvtools';grp.setAttribute('aria-label','선생님 도구');others.forEach(function(b){b.classList.add('hj-tool2');grp.appendChild(b)});top.appendChild(grp);row.classList.add('hj-goRow')})();
+/* 수업 흐름 단추를 '번호 · 이름 · 시간' 세 줄로 나눠 한 줄 막대에 맞춤 */
+(function(){var host=document.querySelector('#cover #plan, #cover #cPlan');if(!host)return;
+ function fmt(){[].forEach.call(host.querySelectorAll('.st'),function(b){if(b.dataset.hjf)return;var t=b.textContent.trim(),m=t.match(/^([①-⑳]|\d+\.)\s*(.*?)\s*(\d+\s*분)?$/);if(!m)return;b.dataset.hjf='1';b.title=t;
+  b.innerHTML='<span class="hj-sn">'+m[1].replace('.','')+'</span><span class="hj-st"></span>'+(m[3]?'<small>'+m[3]+'</small>':'');b.querySelector('.hj-st').textContent=m[2]})}
+ fmt();new MutationObserver(fmt).observe(host,{childList:true})})();
+/* 과학 앱: 마지막 단계에서 '수업 마치기' 단추 */
+(function(){var nx=document.getElementById('ovNext'),pos=document.getElementById('ovPos');if(!nx||!pos||!window.__hjDone)return;
+ var b=document.createElement('button');b.id='hjEnd';b.type='button';b.innerHTML='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m8.4 12.2 2.4 2.4 4.8-4.9"/></svg>수업 마치기';
+ nx.after(b);b.onclick=function(){window.__hjDone()};
+ function upd(){var m=pos.textContent.match(/(\d+)\s*\/\s*(\d+)/);var l=!!(m&&m[1]===m[2]);b.classList.toggle('on',l);nx.style.display=l?'none':''}
+ upd();new MutationObserver(upd).observe(pos,{childList:true,characterData:true,subtree:true})})();

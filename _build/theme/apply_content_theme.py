@@ -22,7 +22,7 @@ def next_of(f):
         idx = d / 'index.html'; m = {}
         if idx.exists():
             t = idx.read_text(encoding='utf-8'); order = []
-            for h, body in re.findall(r'<a class="card[^"]*" href="(u\d+-l\d+\.html)"[^>]*>(.*?)</a>', t, re.S):
+            for h, body in re.findall(r'<a class="card[^"]*" href="(u\d+-l?\d+\.html)"[^>]*>(.*?)</a>', t, re.S):
                 if h in [o[0] for o in order] or not (d / h).exists(): continue
                 nm = re.search(r'<span class="nm">(.*?)</span>', body, re.S)
                 tg = re.search(r'<span class="tag"[^>]*>(.*?)</span>', body, re.S)

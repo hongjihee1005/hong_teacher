@@ -289,7 +289,39 @@ html body #cMap .mcol .cur{background:color-mix(in srgb,var(--mc) 13%,var(--pape
 #hj-player[data-st=play] .hj-pl-l .hj-i{animation:hjpulse 1.2s ease-in-out infinite}
 @keyframes hjpulse{50%{opacity:.35}}
 @media print{#hj-player{display:none!important}}
-</style><!--/hj-ctheme--></head>
+/* 첫 화면 단추 배치: 교사용 도구는 위 오른편, 수업 시작은 가운데 홀로 */
+html body .hj-cvtop{align-items:center}
+html body .hj-cvtools{margin-left:auto;display:flex;flex-wrap:wrap;gap:8px;justify-content:flex-end}
+html body .hj-cvtools .hj-tool2{font-size:clamp(15px,1.25vw,17px)!important;padding:8px 14px!important;min-height:40px;border-width:1.5px!important;border-radius:999px!important;margin:0!important;box-shadow:none!important}
+html body .hj-goRow{justify-content:center;margin-top:clamp(8px,1.5vh,18px)}
+@media (max-width:640px){html body .hj-cvtools{margin-left:0;justify-content:flex-start}}
+/* 첫 화면: 수업 흐름은 한 줄 이어진 막대, 활동 단위는 같은 폭의 막대로 */
+html body .hj-field>*:not(.hj-flabel){justify-self:stretch!important;width:100%}
+html body .hj-field>#plan,html body .hj-field>#cPlan,html body .hj-field>.stagebar,html body .hj-field>.plan{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:0!important;
+ border:1.5px solid var(--line);border-radius:16px;background:var(--paper);overflow:hidden;box-shadow:0 1px 2px rgba(80,55,30,.05)}
+html body .hj-field>#plan .st,html body .hj-field>#cPlan .st,html body .hj-field>.stagebar .st,html body .hj-field>.plan .st{
+ display:flex!important;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;min-height:62px;margin:0!important;
+ border:0!important;border-left:1px solid var(--line)!important;border-radius:0!important;background:none!important;box-shadow:none!important;padding:8px 6px!important;
+ color:var(--ink)!important;text-align:center;line-height:1.3;font-size:clamp(15px,1.3vw,17px)!important;font-weight:700;cursor:pointer}
+html body .hj-field>* .st:first-child{border-left:0!important}
+html body .hj-field>* .st.brk{border-left:2px dashed color-mix(in srgb,var(--ink) 30%,var(--line))!important}
+html body .hj-field>* .st:hover{background:var(--bg)!important}
+html body .hj-field .st .hj-sn{font-size:13px;font-weight:800;color:var(--soft);letter-spacing:0}
+html body .hj-field .st .hj-st{display:block;max-width:100%;word-break:keep-all;overflow-wrap:anywhere}
+html body .hj-field .st small{font-size:12.5px;font-weight:600;color:var(--soft)}
+html body .hj-field #segTeam{width:100%!important}
+html body .hj-field #segTeam>.seg{display:grid!important;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);width:100%!important;border-radius:16px;overflow:hidden;background:var(--paper)}
+html body .hj-field #segTeam>.seg button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;min-height:62px;min-width:0;padding:8px 4px!important;
+ font-size:clamp(15px,1.3vw,17px)!important;border-radius:0!important;border-left:1px solid var(--line)!important;line-height:1.2;white-space:nowrap}
+html body .hj-field #segTeam>.seg button:first-child{border-left:0!important}
+html body .hj-field #segTeam>.seg button .hj-em,html body .hj-field #segTeam>.seg button .hj-i{font-size:20px;width:20px;height:20px;line-height:1}
+@media (max-width:720px){
+ html body .hj-field>#plan,html body .hj-field>#cPlan,html body .hj-field>.stagebar,html body .hj-field>.plan,html body .hj-field #segTeam>.seg{grid-auto-flow:row;grid-template-columns:repeat(auto-fit,minmax(96px,1fr))}
+ html body .hj-field>* .st,html body .hj-field #segTeam>.seg button{border-top:1px solid var(--line)!important}}
+/* 과학 앱: 마지막 단계의 '수업 마치기' */
+html body #hjEnd{display:none}
+html body #hjEnd.on{display:inline-flex;align-items:center;gap:6px;background:var(--ink,#2A221C);color:var(--paper,#fff);border-color:transparent}
+</style><meta name="hj-next" content="u2-6.html" data-t="살아 숨 쉬는 자연의 보물 창고, 갯벌" data-tag="8~10차시"><!--/hj-ctheme--></head>
 <body>
 <header><div class="wrap">
   <svg viewBox="0 0 86 86" aria-hidden="true"><rect width="86" height="86" rx="20" fill="#0f2d52"/><circle cx="64" cy="22" r="10" fill="#fff6c9"/><circle cx="68" cy="19" r="9" fill="#0f2d52"/><path d="M0 52 q11-8 21 0 t22 0 t22 0 t21 0 V86 H0Z" fill="#2f86c6"/><path d="M0 64 q11-8 21 0 t22 0 t22 0 t21 0 V86 H0Z" fill="#1c6fa8"/><path d="M20 44 v-18 m-6 6 l6-6 l6 6" stroke="#ffc93c" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M36 26 v18 m-6 -6 l6 6 l6 -6" stroke="#bdf0cf" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
@@ -1091,23 +1123,28 @@ bar.querySelector('.hj-mail').addEventListener('submit',function(e){e.preventDef
  say('메일 쓰기 화면을 열었어요. 내용을 확인하고 보내기를 눌러 주세요.')});
 })();
 /* 수업을 끝까지 마치면: 다음 차시 / 자료 목록 / 처음 화면 중에서 고르기 */
-(function(){var cv=document.getElementById('cover'),mt=document.querySelector('meta[name="hj-next"]');if(!cv||!mt)return;
+(function(){var cv=document.getElementById('cover'),mt=document.querySelector('meta[name="hj-next"]');if(!mt)return;
+/* 과학 앱(한 화면 보기): 마지막 단계에서 '다음'을 누르면 */
+function last(){var p=document.getElementById('ovPos'),m=p&&p.textContent.match(/(\d+)\s*\/\s*(\d+)/);return m&&m[1]===m[2]}
+document.addEventListener('click',function(e){if(e.target.closest('#ovNext')&&last())setTimeout(done,0)},true);
+document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'&&document.body.classList.contains('ov')&&!/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)&&last())setTimeout(done,0)},true);
+if(!cv){window.__hjDone=function(){done()}}
 var act={t:0,next:false};
 document.addEventListener('click',function(e){var b=e.target.closest('button,a');if(!b)return;var id=b.id||'',tx=b.textContent||'';
  act={t:Date.now(),next:/^(btnNext\d*|next)$/i.test(id)||(/다음/.test(tx)&&!b.closest('#cover'))}},true);
 document.addEventListener('keydown',function(e){if(/^(ArrowRight|PageDown|Enter| )$/.test(e.key)&&!e.target.closest('input,textarea,select'))act={t:Date.now(),next:true}},true);
-var was=cv.classList.contains('on');
-new MutationObserver(function(){var on=cv.classList.contains('on');if(on&&!was&&act.next&&Date.now()-act.t<800)done();was=on}).observe(cv,{attributes:true,attributeFilter:['class']});
+if(cv){var was=cv.classList.contains('on');
+new MutationObserver(function(){var on=cv.classList.contains('on');if(on&&!was&&act.next&&Date.now()-act.t<800)done();was=on}).observe(cv,{attributes:true,attributeFilter:['class']});}
 var A='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
 var IC={next:A+'<path d="M5 12h14M13 6l6 6-6 6"/></svg>',list:A+'<rect x="5.2" y="5" width="13.6" height="15.2" rx="2"/><path d="M9 3.8h6v2.6H9ZM8.8 11.2h6.4M8.8 14.8h4.4"/></svg>',
  back:A+'<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v3.7h3.7"/></svg>',ok:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12.3 2.7 2.7L16 9.6"/></svg>'};
 function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function done(){var old=document.getElementById('hj-done');if(old)old.remove();
- var nx=mt.getAttribute('content'),tl=document.querySelector('#cover .title'),lst=document.querySelector('a.tolist[href]');
+ var nx=mt.getAttribute('content'),tl=document.querySelector('#cover .title')||document.querySelector('header h1, main h1, h1'),lst=document.querySelector('a.tolist[href]');
  var d=document.createElement('div');d.id='hj-done';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','hjDoneT');
  d.innerHTML='<div class="hj-dp"><span class="hj-dok">'+IC.ok+'</span><h2 id="hjDoneT">수업을 마쳤어요</h2><p class="hj-dl">'+esc(tl?tl.textContent.trim():document.title)+'</p>'+
   (nx?'<a class="hj-dn" href="'+esc(nx)+'"><small>다음 차시'+(mt.dataset.tag?' · '+esc(mt.dataset.tag):'')+'</small><b>'+esc(mt.dataset.t||'다음 차시')+'</b>'+IC.next+'</a>':'<p class="hj-dlast">이 학기의 마지막 차시예요.</p>')+
-  '<div class="hj-drow"><a class="hj-db" href="'+esc(lst?lst.getAttribute('href'):'index.html')+'">'+IC.list+'자료 목록으로</a><button type="button" class="hj-db" data-x>'+IC.back+'이 차시 처음 화면</button></div></div>';
+  '<div class="hj-drow"><a class="hj-db" href="'+esc(lst?lst.getAttribute('href'):'index.html')+'">'+IC.list+'자료 목록으로</a><button type="button" class="hj-db" data-x>'+IC.back+(cv?'이 차시 처음 화면':'계속 보기')+'</button></div></div>';
  document.body.appendChild(d);d.querySelector('[data-x]').onclick=function(){d.remove()};
  d.addEventListener('click',function(e){if(e.target===d)d.remove()});
  document.addEventListener('keydown',function k(e){if(e.key==='Escape'){d.remove();document.removeEventListener('keydown',k)}});
@@ -1149,5 +1186,21 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  soon()}
  return play.apply(this,arguments)};
 })();
+/* 첫 화면: '수업 시작'만 가운데에 두고, 교사용 단추(교사 안내·자료 보기·질문 판)는 위쪽 오른편으로 */
+(function(){var cv=document.getElementById('cover');if(!cv)return;var go=cv.querySelector('#btnGo,#go');if(!go)return;
+ var row=go.parentElement;var others=[].filter.call(row.children,function(b){return b!==go&&b.matches('button,a')});if(!others.length)return;
+ var top=cv.querySelector('.hj-cvtop');if(!top){top=document.createElement('div');top.className='hj-cvtop';var host=cv.querySelector('.hj-cv')||cv.querySelector('.cvin,.inner')||cv;host.insertBefore(top,host.firstChild)}
+ var grp=document.createElement('div');grp.className='hj-cvtools';grp.setAttribute('aria-label','선생님 도구');others.forEach(function(b){b.classList.add('hj-tool2');grp.appendChild(b)});top.appendChild(grp);row.classList.add('hj-goRow')})();
+/* 수업 흐름 단추를 '번호 · 이름 · 시간' 세 줄로 나눠 한 줄 막대에 맞춤 */
+(function(){var host=document.querySelector('#cover #plan, #cover #cPlan');if(!host)return;
+ function fmt(){[].forEach.call(host.querySelectorAll('.st'),function(b){if(b.dataset.hjf)return;var t=b.textContent.trim(),m=t.match(/^([①-⑳]|\d+\.)\s*(.*?)\s*(\d+\s*분)?$/);if(!m)return;b.dataset.hjf='1';b.title=t;
+  b.innerHTML='<span class="hj-sn">'+m[1].replace('.','')+'</span><span class="hj-st"></span>'+(m[3]?'<small>'+m[3]+'</small>':'');b.querySelector('.hj-st').textContent=m[2]})}
+ fmt();new MutationObserver(fmt).observe(host,{childList:true})})();
+/* 과학 앱: 마지막 단계에서 '수업 마치기' 단추 */
+(function(){var nx=document.getElementById('ovNext'),pos=document.getElementById('ovPos');if(!nx||!pos||!window.__hjDone)return;
+ var b=document.createElement('button');b.id='hjEnd';b.type='button';b.innerHTML='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m8.4 12.2 2.4 2.4 4.8-4.9"/></svg>수업 마치기';
+ nx.after(b);b.onclick=function(){window.__hjDone()};
+ function upd(){var m=pos.textContent.match(/(\d+)\s*\/\s*(\d+)/);var l=!!(m&&m[1]===m[2]);b.classList.toggle('on',l);nx.style.display=l?'none':''}
+ upd();new MutationObserver(upd).observe(pos,{childList:true,characterData:true,subtree:true})})();
 </script><!--/hj-cicons--></body>
 </html>

@@ -1,3 +1,10 @@
+(function(){/* 메뉴 칸마다 파스텔 색: 노랑·연두·초록·하늘·연보라·분홍·주황·파랑 */
+var PAL=['#E9B730','#98C54A','#4DB283','#55B2E0','#9F86E3','#E784AF','#F0985A','#5C8EE6'];
+document.querySelectorAll('main .grid').forEach(function(g){var i=0;[].forEach.call(g.children,function(c){var a=c.matches('a.card.room')?c:c.querySelector(':scope>a.card.room');if(!a)return;
+ var col=PAL[i++%PAL.length];a.style.setProperty('--acc',col);if(c!==a)c.style.setProperty('--acc',col);
+ var sub=c.querySelector('.r-sub');if(sub){var j=0;sub.querySelectorAll('.r-item').forEach(function(r){r.style.setProperty('--acc',PAL[j++%PAL.length])})}})});
+var ts=document.querySelector('.ts-main');if(ts){ts.style.setProperty('--acc',PAL[0]);['#55B2E0','#9F86E3','#E784AF','#4DB283'].forEach(function(c,k){var ch=document.querySelectorAll('.ts-chip')[k];if(ch)ch.style.setProperty('--acc',c)})}
+})();
 (function(){var q=function(s){return document.querySelectorAll(s)};
 q('.tag[style],.legend span[style]').forEach(function(e){var b=e.style.backgroundColor||e.style.background;if(b){e.style.setProperty('--acc',b);e.style.background='';e.style.color=''}});})();
 (function(){var tg=[].slice.call(document.querySelectorAll('.r-tg'));if(!tg.length)return;

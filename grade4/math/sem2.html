@@ -41,7 +41,7 @@ html[data-subj="social"]{--acc:#4E9BE0}
 html[data-subj="science"]{--acc:#3DB58A}
 @media (prefers-color-scheme:dark){html:root:not([data-theme="light"]){--bg:#221E1A;--bg2:#2C2621;--paper:#2B2621;--ink:#F2EBE3;--soft:#C2B5A9;--line:#3D352E;--line2:#4C4239;--focus:#F0B48F;color-scheme:dark}}
 html:root[data-theme="dark"]{--bg:#221E1A;--bg2:#2C2621;--paper:#2B2621;--ink:#F2EBE3;--soft:#C2B5A9;--line:#3D352E;--line2:#4C4239;--focus:#F0B48F;color-scheme:dark}
-html :is(:root,body,.card,.room,.tag,.legend span,.tab,.ubtn,.unit,.bqx,.h-ico,.info,.empty){
+html :is(:root,body,.card,.room,.tag,.legend span,.tab,.ubtn,.unit,.bqx,.h-ico,.info,.empty,.rw,.r-item,.ts-chip,.ts-main){
  --acc-mid:color-mix(in srgb,var(--acc) 52%,var(--paper));
  --acc-soft:color-mix(in srgb,var(--acc) 18%,var(--paper));
  --acc-ink:color-mix(in srgb,var(--acc) 72%,var(--ink))}
@@ -272,6 +272,17 @@ html .room.wait .ico,html .r-wait .r-ico{filter:none;opacity:1;color:color-mix(i
 html .hj-ii{display:inline-flex;vertical-align:-.15em;margin-right:.28em}
 html .hj-ii .hj-li{width:1.05em;height:1.05em}
 html .tag .hj-ii,html .tab .hj-ii{opacity:.9}
+
+/* 메뉴 칸마다 다른 파스텔 색(theme.js가 --acc를 돌려 가며 넣음) */
+html .room.wait{background:color-mix(in srgb,var(--acc) 4%,var(--bg2));box-shadow:inset 0 6px 0 color-mix(in srgb,var(--acc) 30%,var(--paper))}
+html .room.wait:hover{box-shadow:inset 0 6px 0 color-mix(in srgb,var(--acc) 30%,var(--paper))}
+html .room.wait .ico{background:color-mix(in srgb,var(--acc) 12%,var(--paper));color:color-mix(in srgb,var(--acc) 55%,var(--soft))}
+html .ts-main{background:linear-gradient(135deg,color-mix(in srgb,var(--acc) 22%,var(--paper)),color-mix(in srgb,#9CC94F 16%,var(--paper)));border-color:color-mix(in srgb,var(--acc) 30%,var(--line))}
+html .ts-lab{color:var(--acc-ink)}
+html .ts-chip>i{background:var(--acc-soft);color:var(--acc-ink)}
+html .ts-chip:hover{border-color:var(--acc-mid)}
+html a.room::after{background:color-mix(in srgb,var(--acc) 12%,var(--paper))}
+html a.room:hover::after{background:var(--acc-mid)}
 </style><!--/hj-theme--></head><body><main>
 <nav class="crumb" aria-label="현재 위치"><a class="c-link c-home" href="../../index.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../index.html">4학년</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="index.html">수학방</a></nav>
 <h1><span class="h-ico" aria-hidden="true">🔢</span>4학년 2학기 수학</h1>
@@ -361,6 +372,13 @@ function run(root){root=root||document.body;
 run();
 new MutationObserver(function(ms){ms.forEach(function(r){r.addedNodes.forEach(function(x){if(x.nodeType===1&&!x.closest('[data-li],svg'))run(x);
  else if(x.nodeType===3&&x.parentNode){RX.lastIndex=0;if(RX.test(x.nodeValue))run(x.parentNode)}})})}).observe(document.body,{childList:true,subtree:true});
+})();
+(function(){/* 메뉴 칸마다 파스텔 색: 노랑·연두·초록·하늘·연보라·분홍·주황·파랑 */
+var PAL=['#E9B730','#98C54A','#4DB283','#55B2E0','#9F86E3','#E784AF','#F0985A','#5C8EE6'];
+document.querySelectorAll('main .grid').forEach(function(g){var i=0;[].forEach.call(g.children,function(c){var a=c.matches('a.card.room')?c:c.querySelector(':scope>a.card.room');if(!a)return;
+ var col=PAL[i++%PAL.length];a.style.setProperty('--acc',col);if(c!==a)c.style.setProperty('--acc',col);
+ var sub=c.querySelector('.r-sub');if(sub){var j=0;sub.querySelectorAll('.r-item').forEach(function(r){r.style.setProperty('--acc',PAL[j++%PAL.length])})}})});
+var ts=document.querySelector('.ts-main');if(ts){ts.style.setProperty('--acc',PAL[0]);['#55B2E0','#9F86E3','#E784AF','#4DB283'].forEach(function(c,k){var ch=document.querySelectorAll('.ts-chip')[k];if(ch)ch.style.setProperty('--acc',c)})}
 })();
 (function(){var q=function(s){return document.querySelectorAll(s)};
 q('.tag[style],.legend span[style]').forEach(function(e){var b=e.style.backgroundColor||e.style.background;if(b){e.style.setProperty('--acc',b);e.style.background='';e.style.color=''}});})();
