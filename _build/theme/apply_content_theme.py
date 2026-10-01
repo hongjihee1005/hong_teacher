@@ -10,6 +10,8 @@ import pathlib, re, sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CSS = (pathlib.Path(__file__).with_name('content.css')).read_text(encoding='utf-8')
 BLOCK = f'<!--hj-ctheme--><style id="hj-ctheme">{CSS}</style><!--/hj-ctheme-->'
+JS = (pathlib.Path(__file__).with_name('content.js')).read_text(encoding='utf-8')
+JBLOCK = f'<!--hj-cicons--><script>{JS}</script><!--/hj-cicons-->'
 
 def target(f, s):
     rel = f.relative_to(ROOT).as_posix()
@@ -22,6 +24,9 @@ def apply(f):
     if not target(f, s): return False
     s = re.sub(r'<!--hj-ctheme-->.*?<!--/hj-ctheme-->', '', s, flags=re.S)
     i = s.find('</head>'); s = s[:i] + BLOCK + s[i:]
+    s = re.sub(r'<!--hj-cicons-->.*?<!--/hj-cicons-->', '', s, flags=re.S)
+    j = s.rfind('</body>')
+    if j > 0: s = s[:j] + JBLOCK + s[j:]
     if s != o: f.write_text(s, encoding='utf-8'); return True
     return False
 
