@@ -192,13 +192,14 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
 /* 이동 단추 통일: 모든 자료 화면 왼쪽 위에 [홈 · 자료 목록] (메뉴 페이지의 위치 표시줄과 같은 자리) */
 (function(){var fh=document.getElementById('hj-home');if(!fh||document.querySelector('.hj-nav'))return;
  var A='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
- var lst=[].filter.call(document.querySelectorAll('a.tolist[href]'),function(a){return /(^|\/)index\.html$/.test(a.getAttribute('href'))})[0];
+ var inClass=/\/class\/(index\.html)?$/.test(location.pathname);var lst=[].filter.call(document.querySelectorAll('a.tolist[href]'),function(a){return /(^|\/)index\.html$/.test(a.getAttribute('href'))})[0];
  var nav=document.createElement('nav');nav.className='hj-nav';nav.setAttribute('aria-label','이동');
  nav.innerHTML='<a class="hj-nh" href="'+fh.getAttribute('href')+'">'+A+'<path d="M3.5 10.5 12 3.8l8.5 6.7M5.5 9.2V20h13V9.2M10 20v-5.5h4V20"/></svg><span>홈</span></a>'+
-  '<a class="hj-nl" href="'+(lst?lst.getAttribute('href'):'index.html')+'">'+A+'<rect x="5.2" y="5" width="13.6" height="15.2" rx="2"/><path d="M9 3.8h6v2.6H9ZM8.8 11.2h6.4M8.8 14.8h4.4"/></svg><span>자료 목록</span></a>';
+  (inClass?'':'<a class="hj-nl" href="'+(lst?lst.getAttribute('href'):'index.html')+'">'+A+'<rect x="5.2" y="5" width="13.6" height="15.2" rx="2"/><path d="M9 3.8h6v2.6H9ZM8.8 11.2h6.4M8.8 14.8h4.4"/></svg><span>자료 목록</span></a>');
  var w=document.createElement('div');w.className='hj-navbar';
  function place(){var top=document.querySelector('#cover .hj-cvtop'),hdr=document.querySelector('header.top'),sn=document.querySelector('body>nav .wrap');
   if(top){if(nav.parentNode!==top){var dup=top.querySelector('a.tolist[href$="index.html"]');if(dup)dup.remove();top.insertBefore(nav,top.firstChild)}}
+  else if(document.querySelector('header#bar')){var hb=document.querySelector('header#bar');if(nav.parentNode!==hb)hb.insertBefore(nav,hb.firstChild);if(w.parentNode)w.remove()}
   else if(hdr){nav.classList.add('hj-dark');if(nav.parentNode!==hdr)hdr.insertBefore(nav,hdr.firstChild);if(w.parentNode)w.remove()}
   else if(sn){if(nav.parentNode!==sn)sn.insertBefore(nav,sn.firstChild)}
   else if(nav.parentNode!==w||!w.isConnected){w.appendChild(nav);var m=document.querySelector('main')||document.body;m.insertBefore(w,m.firstChild)}}
@@ -208,3 +209,27 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
 (function(){
  function fit(){if(!document.querySelector('header.top'))return;document.querySelectorAll('.opts:not([data-hjw])').forEach(function(o){var bs=o.querySelectorAll(':scope>.opt');if(!bs.length)return;var long=[].some.call(bs,function(b){return b.textContent.trim().length>24});o.dataset.hjw=long?'1':'0';if(long)o.classList.add('hj-wide')})}
  fit();new MutationObserver(fit).observe(document.body,{childList:true,subtree:true})})();
+/* 학습 문제: '학습 문제' 안내 글자는 작게, 문제 문구는 크게 */
+(function(){var q=document.querySelector('#cover .qbox');if(q&&!q.querySelector('.hj-qlab')){var br=q.querySelector('br');if(br&&br.parentNode===q){var s=document.createElement('span');s.className='hj-qlab';
+  while(q.firstChild&&q.firstChild!==br)s.appendChild(q.firstChild);q.insertBefore(s,br);br.remove();var r=document.createElement('span');r.className='hj-qtxt';while(s.nextSibling)r.appendChild(s.nextSibling);q.appendChild(r)}}
+ var g=document.getElementById('cGoal');if(g&&!g.querySelector('.hj-qlab')){var t=g.textContent,m=t.match(/^\s*학습 문제\s*[:：]\s*/);if(m){g.innerHTML='<span class="hj-qlab">학습 문제</span><span class="hj-qtxt"></span>';g.querySelector('.hj-qtxt').textContent=t.slice(m[0].length)}}})();
+/* 문제를 다 풀면: '다음'(주 단추)과 '다시 풀기'(보조 단추)를 함께 */
+(function(){var st=document.querySelector('#stage,#lesson');if(!st)return;
+ function nextBtn(){return document.querySelector('#btnNext,#btnNext2,#next')}
+ function fix(){[].forEach.call(st.querySelectorAll('button'),function(b){if(b.dataset.hjr||!/^\s*(다시 풀기|다시 하기|처음부터 다시)\s*$/.test(b.textContent))return;if(b.closest('.foot,.topbar,#hj-player'))return;var n=nextBtn();if(!n)return;b.dataset.hjr='1';
+  var g=document.createElement('button');g.type='button';g.className='hj-gonext';g.innerHTML='다음으로 <svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';
+  g.onclick=function(){var x=nextBtn();if(x)x.click()};b.classList.add('hj-retry');var w=document.createElement('div');w.className='hj-rrow';b.before(w);w.appendChild(b);w.appendChild(g)})}
+ fix();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;fix()})}).observe(st,{childList:true,subtree:true})})();
+/* 뒤집기 카드: 글이 길면 칸이 글에 맞춰 늘어나도록(글자가 칸 밖으로 나오지 않게) */
+(function(){if(!document.querySelector('style')||!/\.rc\s*\{/.test(document.head.innerHTML))return;
+ function fit(){var rows=new Map();document.querySelectorAll('.rc').forEach(function(rc){if(!rc.offsetParent)return;rc.style.minHeight='';var need=0;
+  rc.querySelectorAll('.f').forEach(function(f){var r=document.createRange();r.selectNodeContents(f);var cs=getComputedStyle(f);need=Math.max(need,r.getBoundingClientRect().height+parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom)+parseFloat(cs.borderTopWidth)*2+8)});
+  if(need>rc.clientHeight+2){rc.style.minHeight=need+'px'}
+  var p=rc.parentElement;rows.set(p,Math.max(rows.get(p)||0,parseFloat(rc.style.minHeight)||rc.clientHeight))});
+  rows.forEach(function(h,p){[].forEach.call(p.querySelectorAll(':scope>.rc'),function(rc){rc.style.minHeight=h+'px'})})}
+ var raf=0;function q(){if(!raf)raf=requestAnimationFrame(function(){raf=0;fit()})}
+ new MutationObserver(q).observe(document.body,{childList:true,subtree:true});addEventListener('resize',q);if(document.fonts)document.fonts.ready.then(q)})();
+/* 우리 반 교실: 메뉴 칸마다 메인 화면과 같은 파스텔 색을 돌려 가며 */
+(function(){if(!document.querySelector('header#bar'))return;var PAL=['#E9B730','#98C54A','#4DB283','#55B2E0','#9F86E3','#E784AF','#F0985A','#5C8EE6'];
+ function paint(){document.querySelectorAll('.icons').forEach(function(g){var i=0;[].forEach.call(g.querySelectorAll(':scope>.ic'),function(b){b.style.setProperty('--acc',PAL[i++%PAL.length])})})}
+ paint();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;paint()})}).observe(document.body,{childList:true,subtree:true})})();

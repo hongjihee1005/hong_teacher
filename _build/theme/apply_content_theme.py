@@ -35,7 +35,8 @@ def next_of(f):
 
 def target(f, s):
     rel = f.relative_to(ROOT).as_posix()
-    if rel.startswith(('_', 'class/', '.git')) or '/_' in rel: return False
+    if rel.startswith(('_', '.git')) or '/_' in rel: return False
+    if rel.startswith('class/') and rel != 'class/index.html': return False
     if 'http-equiv="refresh"' in s or 'id="hj-theme"' in s: return False   # 옛 주소 안내, 메뉴 페이지
     return '</head>' in s
 
