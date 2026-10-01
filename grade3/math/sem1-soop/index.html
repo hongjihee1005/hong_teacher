@@ -192,6 +192,20 @@ html .u-chip{display:inline-flex;align-items:center;gap:7px;font-size:clamp(16px
  background:var(--bg);border:1.5px solid var(--line);border-radius:999px;padding:4px 12px 4px 5px;line-height:1.4}
 html .u-chip b{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:50%;background:var(--acc-mid);color:var(--acc-ink);font-size:12px;font-weight:800}
 html .room small,html .card .de,html .sub,html .gsub,html .room.wide .sum{text-wrap:pretty}
+/* 단원 접기·펼치기 */
+html .u-toggle{display:flex;align-items:center;gap:12px;cursor:pointer;user-select:none;background:var(--paper);border:1.5px solid var(--line);
+ border-left:6px solid var(--acc-mid);border-radius:16px;padding:16px 18px 16px 20px;margin:12px 0 0;font-size:clamp(21px,2.2vw,26px);
+ box-shadow:0 1px 2px rgba(80,55,30,.04),0 8px 20px -16px rgba(80,55,30,.2);transition:background .15s,border-color .15s}
+html .u-toggle:hover{background:var(--acc-soft)}
+html .u-toggle:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+html .u-toggle[aria-expanded="true"]{background:var(--acc-soft);border-color:var(--acc-mid)}
+html .u-cnt{margin-left:auto;font-size:15px;font-weight:700;color:var(--acc-ink);background:var(--paper);border-radius:999px;padding:3px 11px;white-space:nowrap}
+html .u-chev{flex:none;display:grid;place-items:center;width:40px;height:40px;border-radius:50%;background:var(--bg2);color:var(--ink)}
+html .u-chev svg{width:20px;height:20px;transition:transform .2s}
+html .u-toggle[aria-expanded="true"] .u-chev{background:var(--ink);color:var(--paper)}
+html .u-toggle[aria-expanded="true"] .u-chev svg{transform:rotate(180deg)}
+html .u-toggle+*:not([hidden]){margin-top:14px}
+html [data-ub][hidden]{display:none!important}
 </style><!--/hj-theme--></head><body><main>
 
 <section id="lock" class="lock">
@@ -306,4 +320,20 @@ tg.forEach(function(b){b.addEventListener('click',function(e){e.preventDefault()
  b.setAttribute('aria-expanded',o?'false':'true');document.getElementById(b.getAttribute('aria-controls')).hidden=o;b.closest('.rw').classList.toggle('open',!o)})});
 document.addEventListener('click',function(e){if(!e.target.closest('.rw'))close()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();
+(function(){/* 단원 제목만 보이고, 누르면 그 단원 자료가 펼쳐짐 */
+var hs=[].slice.call(document.querySelectorAll('main h2, main h3.unit')).filter(function(h){return /^[^0-9가-힣A-Za-z]*\d+\s*단원/.test(h.textContent.trim())});
+var CH='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+hs.forEach(function(h,i){var items=[],n=h.nextElementSibling;
+ while(n&&!/^H[23]$/.test(n.tagName)&&!(n.classList&&(n.classList.contains('unit')||n.classList.contains('ugrp')||n.classList.contains('hjfoot')))){items.push(n);n=n.nextElementSibling}
+ var cnt=0;items.forEach(function(e){cnt+=e.querySelectorAll('a.card').length});if(!cnt)return;
+ var id='ub'+i;items.forEach(function(e){e.hidden=true;e.setAttribute('data-ub',id)});
+ h.classList.add('u-toggle');h.setAttribute('role','button');h.setAttribute('tabindex','0');h.setAttribute('aria-expanded','false');
+ var old=h.querySelector('small');if(old)old.remove();
+ h.insertAdjacentHTML('beforeend','<span class="u-cnt">'+cnt+'개</span><span class="u-chev">'+CH+'</span>');
+ function t(){var o=h.getAttribute('aria-expanded')==='true';h.setAttribute('aria-expanded',o?'false':'true');items.forEach(function(e){e.hidden=o})}
+ h.addEventListener('click',t);h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}});});
+})();
+(function(){/* 단원 단추로 한 단원만 고르면 그 단원을 바로 펼침 */
+document.querySelectorAll('.ubtn').forEach(function(b){b.addEventListener('click',function(){if(b.dataset.u==='0')return;
+ var pane=b.closest('.pane')||document;setTimeout(function(){pane.querySelectorAll('.ugrp[data-u="'+b.dataset.u+'"] .u-toggle[aria-expanded="false"]').forEach(function(t){t.click()})},0)})});})();
 </script><!--/hj-theme-js--></body></html>
