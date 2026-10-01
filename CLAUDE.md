@@ -68,6 +68,21 @@ grade1/ … grade6/
 - 다크 모드: `@media (prefers-color-scheme: dark)`와 `:root[data-theme="dark"]` 둘 다 정의합니다.
 - 가로 스크롤이 생기면 안 됩니다. `word-break: keep-all`을 씁니다.
 
+## 메뉴 페이지 디자인 (2026-10-01)
+
+첫 화면·학년·과목·학기 목록 같은 **메뉴 페이지**는 공통 디자인을 씁니다(은은한 웜 파스텔, Pretendard 글꼴, 집 모양 홈·화살표 아이콘).
+원본은 `_build/theme/theme.css`, `theme.js`이고, 페이지마다 그대로 복사해 넣습니다(한 파일 원칙 유지).
+
+```bash
+python3 _build/theme/apply_theme.py            # nav.crumb가 있는 모든 메뉴 페이지에 다시 적용
+python3 _build/theme/apply_theme.py 새/목록/index.html
+```
+
+- **새 메뉴 페이지를 만들었거나 메뉴 HTML을 고쳤으면 꼭 다시 실행하세요.** 여러 번 실행해도 안전합니다.
+- 위치 표시줄(`nav.crumb`)은 `<a class="back" href="…">🏠 초등교사 홍지희</a>`처럼 써 두면 스크립트가 홈 아이콘·꺾쇠 모양으로 바꿉니다.
+- 색은 `theme.css`의 과목별 `--acc`(국어 산호·수학 살구·사회 하늘·과학 민트)에서 자동으로 옅은 색을 만듭니다. 태그의 `style="background:#…"` 색도 스크립트가 파스텔로 바꿉니다.
+- 디자인을 바꾸려면 `theme.css`만 고치고 스크립트를 다시 돌립니다. 페이지마다 따로 고치지 마세요.
+
 ## 링크 점검 — 꼭 하세요
 
 `href="..."`만 검사하면 **놓칩니다.** 자료실 페이지들은 자바스크립트 설정값 안에
