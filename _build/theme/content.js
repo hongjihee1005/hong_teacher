@@ -61,3 +61,77 @@ var q=new Set(),raf=0;new MutationObserver(function(ms){ms.forEach(function(m){v
   else panel.appendChild(p)});
  var acts=Array.prototype.find.call(cv.children,function(e){return e.classList.contains('row')&&e.querySelector('.big-btn')});if(acts)acts.classList.add('hj-cvacts');
 })();
+/* 이모지를 단색 아이콘 글꼴(HJ Emoji)로: 컬러 입체 그림 대신 차분한 한 가지 모양 */
+(function(){var RX=/\p{Extended_Pictographic}(?:️|‍\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}])*️?|[\u{1F1E6}-\u{1F1FF}]{2}/gu;
+var SKIP='script,style,svg,textarea,select,option,title,canvas,.hj-em,.hj-contact,[contenteditable]';
+function wrap(root){if(!root)return;if(root.nodeType===3){root=root.parentNode;if(!root)return}
+ if(root.nodeType!==1||root.closest(SKIP))return;
+ var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(n){var p=n.parentNode;if(!p||p.closest(SKIP))return 2;RX.lastIndex=0;return RX.test(n.nodeValue)?1:2}}),a=[],n;
+ while(n=w.nextNode())a.push(n);
+ a.forEach(function(t){var v=t.nodeValue,f=document.createDocumentFragment(),last=0;RX.lastIndex=0;
+  v.replace(RX,function(e,i){if(i>last)f.appendChild(document.createTextNode(v.slice(last,i)));var s=document.createElement('span');s.className='hj-em';s.textContent=e.replace(/\uFE0F/g,'');f.appendChild(s);last=i+e.length;return e});
+  if(last<v.length)f.appendChild(document.createTextNode(v.slice(last)));if(t.parentNode)t.parentNode.replaceChild(f,t)})}
+wrap(document.body);
+var q=new Set(),raf=0;new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')q.add(m.target);else m.addedNodes.forEach(function(x){q.add(x)})});
+ if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)wrap(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true});
+})();
+/* 교사 안내 창: 인쇄·PDF 저장 / 구글 문서로 복사 / 선생님께 이메일 */
+(function(){var tn=document.getElementById('tn'),pn=tn&&tn.querySelector('.panel'),B=document.getElementById('tnB'),T=document.getElementById('tnT');if(!pn||!B||pn.querySelector('.hj-tbar'))return;
+var I={print:'<path d="M7 8.5V3.8h10v4.7"/><rect x="3.8" y="8.5" width="16.4" height="7.5" rx="2"/><path d="M7 13.5h10v6.7H7Z"/>',
+doc:'<path d="M14 3.8H7a1.8 1.8 0 0 0-1.8 1.8v12.8A1.8 1.8 0 0 0 7 20.2h10a1.8 1.8 0 0 0 1.8-1.8V8.6Z"/><path d="M14 3.8v4.8h4.8M9 13h6M9 16.4h4"/>',
+mail:'<rect x="3.6" y="5.5" width="16.8" height="13" rx="2"/><path d="m4 7 8 6 8-6"/>'};
+function ic(k){return '<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round">'+I[k]+'</svg>'}
+var bar=document.createElement('div');bar.className='hj-tbar';
+bar.innerHTML='<button type="button" data-a="print">'+ic('print')+'인쇄 · PDF 저장</button><button type="button" data-a="doc">'+ic('doc')+'구글 문서로</button><button type="button" data-a="mail" aria-expanded="false">'+ic('mail')+'이메일로 보내기</button>'+
+ '<form class="hj-mail" hidden><label for="hjMailTo">받는 선생님 이메일 <small>여러 명은 쉼표(,)로 나눠요</small></label><input id="hjMailTo" type="email" multiple autocomplete="email" placeholder="teacher@school.kr, ..." required>'+
+ '<div><button type="submit" data-s="gmail">Gmail로 쓰기</button><button type="submit" data-s="app">메일 앱으로 쓰기</button></div><p>보내기 전에 메일 쓰기 화면이 열려요. 적은 주소는 어디에도 저장하지 않아요.</p></form><p class="hj-toast" role="status" aria-live="polite"></p>';
+var cl=pn.querySelector('#tnClose');(cl&&cl.closest('p')||pn.lastChild).before(bar);
+var toast=bar.querySelector('.hj-toast');function say(t){toast.textContent=t;clearTimeout(say.t);say.t=setTimeout(function(){toast.textContent=''},6000)}
+function title(){return (T&&T.textContent.trim()||'교사 안내')}
+function lesson(){var t=document.querySelector('#cover .title');return t?t.textContent.trim():document.title}
+function sub(){var l=document.querySelector('#cover .lead');return l?l.textContent.trim():''}
+function url(){return /^https?:/.test(location.protocol)?location.href.split('#')[0]:''}
+function html(){var c=B.cloneNode(true);c.querySelectorAll('svg,button,script').forEach(function(x){x.remove()});
+ return '<h1>'+lesson()+'</h1><p>'+sub()+'</p><h2>'+title()+'</h2>'+c.innerHTML+(url()?'<p>자료 주소: <a href="'+url()+'">'+url()+'</a></p>':'')+'<p>만든 사람: 초등교사 홍지희</p>'}
+function text(){return lesson()+'\n'+sub()+'\n\n['+title()+']\n\n'+B.innerText.replace(/\n{3,}/g,'\n\n').trim()+(url()?'\n\n자료 주소: '+url():'')+'\n\n만든 사람: 초등교사 홍지희'}
+bar.addEventListener('click',function(e){var b=e.target.closest('button[data-a]');if(!b)return;var a=b.dataset.a;
+ if(a==='print'){document.body.classList.add('hj-tprint');window.print();setTimeout(function(){document.body.classList.remove('hj-tprint')},500)}
+ if(a==='doc'){var h=html(),t=text(),ok=function(){say('복사했어요. 새로 열린 구글 문서에서 Ctrl+V(맥은 ⌘+V)를 누르면 붙어요.')};
+  try{if(window.ClipboardItem&&navigator.clipboard&&navigator.clipboard.write){navigator.clipboard.write([new ClipboardItem({'text/html':new Blob([h],{type:'text/html'}),'text/plain':new Blob([t],{type:'text/plain'})})]).then(ok,fb)}else fb()}catch(_){fb()}
+  function fb(){var d=document.createElement('div');d.innerHTML=h;d.style.cssText='position:fixed;left:-9999px;top:0';document.body.appendChild(d);var r=document.createRange();r.selectNodeContents(d);var s=getSelection();s.removeAllRanges();s.addRange(r);
+   var c=false;try{c=document.execCommand('copy')}catch(_){}s.removeAllRanges();d.remove();c?ok():say('복사가 막혀 있어요. 내용을 끌어 선택해 복사해 주세요.')}
+  window.open('https://docs.new','_blank','noopener')}
+ if(a==='mail'){var f=bar.querySelector('.hj-mail'),o=f.hidden;f.hidden=!o;b.setAttribute('aria-expanded',o?'true':'false');if(o)f.querySelector('input').focus()}});
+bar.querySelector('.hj-mail').addEventListener('submit',function(e){e.preventDefault();var inp=this.querySelector('input');
+ var to=inp.value.split(/[,;\s]+/).filter(Boolean).join(',');if(!to||!inp.checkValidity()){inp.reportValidity();return}
+ var su='[교사 안내] '+lesson()+' · '+title(),bo=text(),via=(e.submitter&&e.submitter.dataset.s)||'gmail';
+ if(via==='gmail'){if(bo.length>6000)bo=bo.slice(0,6000)+'\n…(나머지는 자료 주소에서 보세요)';window.open('https://mail.google.com/mail/?view=cm&fs=1&to='+encodeURIComponent(to)+'&su='+encodeURIComponent(su)+'&body='+encodeURIComponent(bo),'_blank','noopener')}
+ else{if(bo.length>1500)bo=bo.slice(0,1500)+'\n…(나머지는 자료 주소에서 보세요)';location.href='mailto:'+encodeURIComponent(to).replace(/%2C/g,',')+'?subject='+encodeURIComponent(su)+'&body='+encodeURIComponent(bo)}
+ say('메일 쓰기 화면을 열었어요. 내용을 확인하고 보내기를 눌러 주세요.')});
+})();
+/* 수업을 끝까지 마치면: 다음 차시 / 자료 목록 / 처음 화면 중에서 고르기 */
+(function(){var cv=document.getElementById('cover'),mt=document.querySelector('meta[name="hj-next"]');if(!cv||!mt)return;
+var act={t:0,next:false};
+document.addEventListener('click',function(e){var b=e.target.closest('button,a');if(!b)return;var id=b.id||'',tx=b.textContent||'';
+ act={t:Date.now(),next:/^(btnNext\d*|next)$/i.test(id)||(/다음/.test(tx)&&!b.closest('#cover'))}},true);
+document.addEventListener('keydown',function(e){if(/^(ArrowRight|PageDown|Enter| )$/.test(e.key)&&!e.target.closest('input,textarea,select'))act={t:Date.now(),next:true}},true);
+var was=cv.classList.contains('on');
+new MutationObserver(function(){var on=cv.classList.contains('on');if(on&&!was&&act.next&&Date.now()-act.t<800)done();was=on}).observe(cv,{attributes:true,attributeFilter:['class']});
+var A='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
+var IC={next:A+'<path d="M5 12h14M13 6l6 6-6 6"/></svg>',list:A+'<rect x="5.2" y="5" width="13.6" height="15.2" rx="2"/><path d="M9 3.8h6v2.6H9ZM8.8 11.2h6.4M8.8 14.8h4.4"/></svg>',
+ back:A+'<path d="M4.5 12a7.5 7.5 0 1 0 2.2-5.3M4.5 4.5v3.7h3.7"/></svg>',ok:'<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="m8 12.3 2.7 2.7L16 9.6"/></svg>'};
+function esc(s){return String(s).replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+function done(){var old=document.getElementById('hj-done');if(old)old.remove();
+ var nx=mt.getAttribute('content'),tl=document.querySelector('#cover .title'),lst=document.querySelector('a.tolist[href]');
+ var d=document.createElement('div');d.id='hj-done';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.setAttribute('aria-labelledby','hjDoneT');
+ d.innerHTML='<div class="hj-dp"><span class="hj-dok">'+IC.ok+'</span><h2 id="hjDoneT">수업을 마쳤어요</h2><p class="hj-dl">'+esc(tl?tl.textContent.trim():document.title)+'</p>'+
+  (nx?'<a class="hj-dn" href="'+esc(nx)+'"><small>다음 차시'+(mt.dataset.tag?' · '+esc(mt.dataset.tag):'')+'</small><b>'+esc(mt.dataset.t||'다음 차시')+'</b>'+IC.next+'</a>':'<p class="hj-dlast">이 학기의 마지막 차시예요.</p>')+
+  '<div class="hj-drow"><a class="hj-db" href="'+esc(lst?lst.getAttribute('href'):'index.html')+'">'+IC.list+'자료 목록으로</a><button type="button" class="hj-db" data-x>'+IC.back+'이 차시 처음 화면</button></div></div>';
+ document.body.appendChild(d);d.querySelector('[data-x]').onclick=function(){d.remove()};
+ d.addEventListener('click',function(e){if(e.target===d)d.remove()});
+ document.addEventListener('keydown',function k(e){if(e.key==='Escape'){d.remove();document.removeEventListener('keydown',k)}});
+ setTimeout(function(){(d.querySelector('.hj-dn')||d.querySelector('.hj-db')).focus()},50)}
+})();
+/* 교사 안내 인쇄 때 위에 차시 이름 */
+(function(){var B=document.getElementById('tnB');if(!B)return;var p=document.createElement('p');p.className='hj-pl';var t=document.querySelector('#cover .title'),l=document.querySelector('#cover .lead');
+ p.textContent=(t?t.textContent.trim():document.title)+(l?' · '+l.textContent.trim():'');var h=document.getElementById('tnT');(h||B).before(p)})();
