@@ -59,7 +59,7 @@ footer{color:var(--soft);font-size:.8em;text-align:center;margin-top:28px}
 <p id="msg" role="status"></p>
 <p class="soft" style="font-size:.8em">이 페이지의 내용은 비밀번호로 암호화되어 있어, 비밀번호를 모르면 파일을 내려받아도 읽을 수 없어요.</p>
 </div>
-<footer><p>만든 사람: 초등교사 홍지희</p></footer>
+<footer><p>만든 사람: 초등교사 홍지희</p><p style="opacity:.6">잠금 화면 v3</p></footer>
 </main>
 <script>
 const SALT="__SALT__", IT=__IT__, BLOBS="__BLOB__", SK="hj-linkage-pw";
@@ -72,12 +72,13 @@ async function open_(pw){
   throw new Error('bad');
 }
 async function go(pw,quiet){
+  if(!(window.crypto&&crypto.subtle)){ const m=document.getElementById('msg'); m.style.color=''; m.textContent='이 화면에서는 잠금을 풀 수 없어요. 크롬 브라우저에서 https:// 주소로 열어 주세요.'; return; }
   const m=document.getElementById('msg'), b=document.getElementById('go');
   b.disabled=true; m.style.color='var(--soft)'; m.textContent='여는 중이에요…';
   try{ const h=await open_(pw); try{sessionStorage.setItem(SK,pw)}catch(e){}
        document.open(); document.write(h); document.close(); }
   catch(e){ try{sessionStorage.removeItem(SK)}catch(_){}
-       m.style.color=''; m.textContent=quiet?'':'비밀번호가 맞지 않아요.'; b.disabled=false; document.getElementById('pw').select(); }
+       m.style.color=''; m.textContent=quiet?'':'비밀번호가 맞지 않아요. (입력한 글자: '+pw.length+'글자) 👁 보기로 확인해 보세요.'; b.disabled=false; document.getElementById('pw').select(); }
 }
 document.getElementById('eye').onclick=()=>{ const i=document.getElementById('pw'); const on=i.classList.toggle('mask'); document.getElementById('eye').textContent=on?'👁 보기':'🙈 숨기기'; i.focus(); };\ndocument.getElementById('f').addEventListener('submit',e=>{e.preventDefault(); setTimeout(()=>{ const pw=document.getElementById('pw').value; if(pw) go(pw); },30);});
 let saved=null; try{saved=sessionStorage.getItem(SK)}catch(e){}
