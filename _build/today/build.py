@@ -21,9 +21,9 @@ function draw(k){var el=document.querySelector('[data-k="'+k+'"] .td-body'),h=''
   h='<div class="td-when">'+(S.event?'다른 날':(r.today?'오늘':'곧 다가오는 날'))+' · '+m+'월 '+d+'일'+(e.y?' ('+e.y+'년)':'')+'</div>'+
    '<div class="td-head"><span class="td-ico">'+e.i+'</span><b class="td-t">'+esc(e.t)+'</b></div><p class="td-s">'+esc(e.s)+'</p>'+
    '<a class="td-link" href="https://ko.wikipedia.org/wiki/'+m+'%EC%9B%94_'+d+'%EC%9D%BC" target="_blank" rel="noopener">위키백과에서 '+m+'월 '+d+'일의 역사 더 보기 ↗</a>'}
- else if(k==='quote'){var q=tdPick('quote',S.quote);h='<blockquote class="td-q">“'+esc(q.t)+'”</blockquote><div class="td-w">— '+esc(q.w)+'</div>'}
+ else if(k==='quote'){var q=tdPick('quote',S.quote);h='<blockquote class="td-q">“'+esc(q.t)+'”</blockquote><div class="td-w">— '+esc(q.w)+'</div>'+(q.x?'<dl class="td-why"><div><dt>이럴 때</dt><dd>'+esc(q.x)+'</dd></div></dl>':'')}
  else{var o=tdPick(k,S[k]),meta=o.a+(o.y?' · '+o.y:'');var clean=o.t.replace(/[「」\']/g,'');var link=k==='music'?Y+encodeURIComponent(o.a+' '+clean):k==='art'?G+encodeURIComponent(clean+' '+o.a):W+encodeURIComponent(clean+' 책');
-  h='<div class="td-head"><span class="td-ico">'+o.i+'</span><span><b class="td-t">'+esc(o.t)+'</b><span class="td-meta">'+esc(meta)+'</span></span></div><p class="td-s">'+esc(o.s)+'</p>'+
+  h='<div class="td-head"><span class="td-ico">'+o.i+'</span><span><b class="td-t">'+esc(o.t)+'</b><span class="td-meta">'+esc(meta)+'</span></span></div><p class="td-s">'+esc(o.s)+'</p>'+(o.r?'<dl class="td-why"><div><dt>추천 까닭</dt><dd>'+esc(o.r)+'</dd></div><div><dt>추천 학년</dt><dd>'+esc(o.g)+'</dd></div><div><dt>이럴 때</dt><dd>'+esc(o.w)+'</dd></div></dl>':'')+
    '<a class="td-link" href="'+link+'" target="_blank" rel="noopener">'+(k==='music'?'유튜브에서 들어 보기 ↗':k==='art'?'구글 아트 앤 컬처에서 보기 ↗':'책 더 알아보기 ↗')+'</a>'}
  el.innerHTML=h}
 Object.keys(S).forEach(draw);
@@ -78,6 +78,7 @@ page = f'''<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <div class="grid td-grid">
 {cards}
 </div>
+<p class="td-note">ℹ️ 추천 까닭·학년·어울리는 때는 작품의 특징을 보고 수업에 쓰기 좋게 정리한 <b>참고 의견</b>이에요. 교과서 수록이나 공식 권장 목록을 뜻하지는 않아요. 학급 상황에 맞게 골라 쓰세요.</p>
 {FOOT}
 </main><div id="ws" aria-hidden="true"></div><script>{DATA}{PAGE_JS}</script></body></html>'''
 (R/'today').mkdir(exist_ok=True); (R/'today/index.html').write_text(page, encoding='utf-8')
