@@ -288,3 +288,10 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
 (function(){var R=[['#btnLinks',/^\s*자료\s*$/,'자료 보기'],['#ovHome',/^\s*목록\s*$/,'단계 목록'],['#ovFull',/^\s*전체\s*$/,'전체 보기'],['#ovFull',/^\s*한 화면\s*$/,'한 화면 보기']];
  function fix(){R.forEach(function(r){var el=document.querySelector(r[0]);if(!el)return;[].forEach.call(el.childNodes,function(n){if(n.nodeType===3&&r[1].test(n.nodeValue))n.nodeValue=r[2]})})}
  fix();R.forEach(function(r){var el=document.querySelector(r[0]);if(el)new MutationObserver(fix).observe(el,{childList:true,characterData:true,subtree:true})})})();
+/* 과학 앱: 놀이·문제를 다 풀어 '다시 하기'가 나오면 옆에 '다음으로'도 함께 */
+(function(){var ov=document.getElementById('ovNext');if(!ov)return;var RX=/^\s*(🔄\s*)?다시\s*(하기|풀기)\s*$/;
+ function go(){var e=document.getElementById('hjEnd');if(e&&e.classList.contains('on'))e.click();else ov.click()}
+ function fix(){document.querySelectorAll('main section button').forEach(function(b){if(b.classList.contains('hj-gonext'))return;var m=RX.test(b.textContent),n=b.nextElementSibling,has=n&&n.classList.contains('hj-gonext');
+  if(m&&!has){var g=document.createElement('button');g.type='button';g.className='hj-gonext';g.innerHTML='다음으로 <svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';g.onclick=go;var w=b.parentElement.classList.contains('hj-rrow')?b.parentElement:null;if(!w){w=document.createElement('span');w.className='hj-rrow';b.before(w);w.appendChild(b)}w.appendChild(g);b.classList.add('hj-retry')}
+  else if(!m&&has){n.remove();b.classList.remove('hj-retry')}})}
+ fix();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;fix()})}).observe(document.querySelector('main')||document.body,{childList:true,subtree:true,characterData:true})})();
