@@ -366,7 +366,7 @@ app('weather','day','🌤️','날씨 · 미세먼지',b=>{
   if(WX.daily){const D=WX.daily;h+=`<div class="card"><div class="mid">앞으로 3일</div>${D.time.map((t,i)=>{const [e,n]=wxName(D.weather_code[i]);const d=new Date(t+'T00:00');
    return `<div class="row" style="justify-content:space-between;margin:.3rem 0"><span>${i?`${d.getMonth()+1}/${d.getDate()} (${DAYS[d.getDay()]})`:'오늘'}</span><span>${e} ${n}</span><span>${Math.round(D.temperature_2m_min[i])}°/${Math.round(D.temperature_2m_max[i])}° · ☂️${D.precipitation_probability_max[i]}%</span></div>`}).join('')}</div>`}
   h+='</div>';
-  h+=`<div class="note">📍 ${esc(DB.loc.name)} 기준. 날씨·미세먼지는 Open-Meteo 예보 모델 값이라 에어코리아 측정값과 다를 수 있어요. 등급: 미세먼지 좋음 0~30·보통 31~80·나쁨 81~150·매우 나쁨 151 이상, 초미세먼지 좋음 0~15·보통 16~35·나쁨 36~75·매우 나쁨 76 이상(㎍/㎥).</div>
+  h+=`<div class="note">📍 ${esc(DB.loc.name)} 기준.${isT()?' (선생님 설정 → 📍 날씨 위치에서 학교를 찾아 바꿀 수 있어요)':''} 날씨·미세먼지는 Open-Meteo 예보 모델 값이라 에어코리아 측정값과 다를 수 있어요. 등급: 미세먼지 좋음 0~30·보통 31~80·나쁨 81~150·매우 나쁨 151 이상, 초미세먼지 좋음 0~15·보통 16~35·나쁨 36~75·매우 나쁨 76 이상(㎍/㎥).</div>
   <div class="row"><button class="btn" id="r" type="button">🔄 새로 불러오기</button></div>`;
   b.innerHTML=h;$('#r',b).onclick=()=>{WX.t=0;draw();loadWx(true).then(draw)}};
  draw();loadWx().then(draw)});
@@ -802,6 +802,16 @@ app('wash','safe','🧼','손 씻기 타이머',b=>{
   <div style="width:min(700px,90%);height:1.4rem;background:var(--bg2);border-radius:999px;overflow:hidden"><div style="height:100%;width:${(i*5+5-left)/30*100}%;background:#5E95CB"></div></div></div>`};
  draw();return ()=>clearInterval(iv)});
 
+/* 학교 주소 → 위도·경도 (OpenStreetMap Nominatim, 인증키 없음) */
+async function geoSchool(r){const addr=(r.ORG_RDNMA||'').replace(/\s*\(.*?\)\s*/g,' ').trim(),parts=addr.split(/\s+/);
+ const qs=[addr,r.SCHUL_NM,parts.slice(0,3).join(' '),parts.slice(0,2).join(' ')].filter((v,i,a)=>v&&a.indexOf(v)===i);
+ for(const q of qs){try{const x=await fetch('https://nominatim.openstreetmap.org/search?format=json&limit=1&countrycodes=kr&accept-language=ko&q='+encodeURIComponent(q));
+  const j=await x.json();if(j&&j[0])return {lat:+(+j[0].lat).toFixed(4),lon:+(+j[0].lon).toFixed(4)}}catch(e){}}
+ return null}
+async function setWxSchool(r,done){const g=await geoSchool(r);if(!g){toast('학교 위치를 찾지 못했어요. 직접 적기를 써 주세요');return false}
+ DB.loc={name:r.SCHUL_NM,lat:g.lat,lon:g.lon};WX.t=0;save();loadWx(true);toast(r.SCHUL_NM+' 날씨로 바꿨어요');if(done)done();return true}
+function schoolList(rows,attr){return `<ul class="list">${rows.slice(0,10).map((r,i)=>`<li><span class="grow">${esc(r.SCHUL_NM)} <span class="small">${esc(r.ORG_RDNMA||'')}</span></span><button class="btn sm" ${attr}="${i}" type="button">고르기</button></li>`).join('')}</ul>`}
+
 /* --- 선생님 전용 --- */
 app('settings','teach','⚙️','선생님 설정',b=>{
  const n=DB.neis;
@@ -814,8 +824,12 @@ app('settings','teach','⚙️','선생님 설정',b=>{
  <div class="card"><h3 style="margin:0">🖥️ 화면 모드</h3><div class="row">${[['auto','자동'],['tv','교실 TV · 전자칠판 (크게)'],['dev','학생 크롬북 · 태블릿 (작게)']].map(([k,t])=>`<button class="btn ${DB.mode===k?'on':''}" data-md="${k}" type="button">${t}</button>`).join('')}</div></div>
  <div class="card"><h3 style="margin:0">🧩 메뉴 켜고 끄기</h3><div class="small">끈 메뉴는 학생 화면에서 보이지 않아요. (선생님 모드에서는 흐리게 보여요)</div>
   ${G.filter(g=>!g.t).map(g=>`<div style="margin-top:.5rem"><b class="disp">${g.nm}</b><div class="row">${ORDER.filter(id=>A[id].g===g.id).map(id=>`<label class="chip"><input type="checkbox" data-hd="${id}" ${DB.hidden[id]?'':'checked'}> ${A[id].ico} ${A[id].nm}</label>`).join('')}</div></div>`).join('')}</div>
- <div class="card"><h3 style="margin:0">📍 날씨 위치</h3><div class="row"><input class="inp" id="ln" value="${esc(DB.loc.name)}" style="width:10rem"><label class="row">위도 <input class="inp" id="la" value="${DB.loc.lat}" style="width:7rem"></label><label class="row">경도 <input class="inp" id="lo" value="${DB.loc.lon}" style="width:7rem"></label></div>
-  <div class="small">기본값은 부산 동구(위도 35.1295, 경도 129.0454)예요.</div></div>
+ <div class="card"><h3 style="margin:0">📍 날씨 위치</h3>
+  <div class="row"><span>지금 위치: <b>${esc(DB.loc.name)}</b></span>${n.school&&DB.loc.name!==n.schoolName?`<button class="btn sm" id="wn" type="button">🍚 나이스에 연결한 학교(${esc(n.schoolName)})로 맞추기</button>`:''}</div>
+  <div class="row"><input class="inp" id="wq" placeholder="학교 이름으로 찾기 (예: 동일중앙초)" style="width:16rem"><button class="btn" id="ws" type="button">🔍 학교 찾기</button></div><div id="wr"></div>
+  <details style="margin-top:.4rem"><summary class="small" style="cursor:pointer">직접 적기 (위도·경도)</summary>
+  <div class="row"><input class="inp" id="ln" value="${esc(DB.loc.name)}" style="width:10rem"><label class="row">위도 <input class="inp" id="la" value="${DB.loc.lat}" style="width:7rem"></label><label class="row">경도 <input class="inp" id="lo" value="${DB.loc.lon}" style="width:7rem"></label></div></details>
+  <div class="small">학교를 고르면 학교 주소로 위치를 찾아 그 동네 날씨·미세먼지를 보여 줘요. 처음 기본값은 부산 동구예요.</div></div>
  <div class="card"><h3 style="margin:0">🍚 나이스 연결 (급식·시간표·학사 일정)</h3>
   <div class="row"><input class="inp" id="sq" placeholder="학교 이름으로 찾기" style="width:14rem"><button class="btn" id="ss" type="button">🔍 찾기</button></div><div id="sr"></div>
   <div class="row"><span>선택한 학교: <b>${esc(n.schoolName||'없음')}</b> ${n.school?`(${esc(n.office)} / ${esc(n.school)})`:''}</span></div>
@@ -825,9 +839,16 @@ app('settings','teach','⚙️','선생님 설정',b=>{
   <div class="small">교실 TV에서 만든 설정을 내보내 다른 기기에서 가져오면 똑같이 쓸 수 있어요.</div></div>
  <div class="row"><button class="btn big pri" id="sv" type="button">💾 저장</button></div>`;
   $$('[data-md]',b).forEach(x=>x.onclick=()=>{DB.mode=x.dataset.md;save();applyMode();draw()});
+  $('#ws',b).onclick=async()=>{const q=$('#wq',b).value.trim();if(!q)return;$('#wr',b).textContent='찾는 중…';
+   try{const rows=await neis('schoolInfo',{SCHUL_NM:q});if(!rows.length)throw new Error('같은 이름의 학교가 없어요');$('#wr',b).innerHTML=schoolList(rows,'data-w');
+    $$('[data-w]',b).forEach(x=>x.onclick=async()=>{x.disabled=true;x.textContent='위치 찾는 중…';if(!(await setWxSchool(rows[x.dataset.w],draw))){x.disabled=false;x.textContent='고르기'}})}
+   catch(e){$('#wr',b).textContent='찾지 못했어요: '+e.message}};
+  $('#wq',b).onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)$('#ws',b).click()};
+  if($('#wn',b))$('#wn',b).onclick=async()=>{try{const rows=await neis('schoolInfo',{ATPT_OFCDC_SC_CODE:n.office,SD_SCHUL_CODE:n.school});if(rows[0])await setWxSchool(rows[0],draw)}catch(e){toast('학교 정보를 불러오지 못했어요')}};
+  $('#sq',b).onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)$('#ss',b).click()};
   $('#ss',b).onclick=async()=>{const q=$('#sq',b).value.trim();if(!q)return;$('#sr',b).textContent='찾는 중…';
    try{const rows=await neis('schoolInfo',{SCHUL_NM:q});$('#sr',b).innerHTML=`<ul class="list">${rows.slice(0,10).map((r,i)=>`<li><span class="grow">${esc(r.SCHUL_NM)} <span class="small">${esc(r.ORG_RDNMA||'')}</span></span><button class="btn sm" data-s="${i}" type="button">고르기</button></li>`).join('')}</ul>`;
-    $$('[data-s]',b).forEach(x=>x.onclick=()=>{const r=rows[x.dataset.s];Object.assign(DB.neis,{office:r.ATPT_OFCDC_SC_CODE,school:r.SD_SCHUL_CODE,schoolName:r.SCHUL_NM});DB.mealCache={};save();draw();toast('학교를 정했어요')})}
+    $$('[data-s]',b).forEach(x=>x.onclick=()=>{const r=rows[x.dataset.s];Object.assign(DB.neis,{office:r.ATPT_OFCDC_SC_CODE,school:r.SD_SCHUL_CODE,schoolName:r.SCHUL_NM});DB.mealCache={};save();draw();toast('학교를 정했어요');if(DB.loc.name==='부산 동구'||DB.loc.name==='우리 동네')setWxSchool(r,draw)})}
    catch(e){$('#sr',b).textContent='찾지 못했어요: '+e.message}};
   $('#ex',b).onclick=()=>{const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([JSON.stringify(DB,null,1)],{type:'application/json'}));a.download='우리반교실-'+ymd()+'.json';a.click()};
   $('#im',b).onchange=e=>{const f=e.target.files[0];if(!f)return;f.text().then(t=>{try{const o=JSON.parse(t);if(typeof o!=='object')throw 0;DB=Object.assign(JSON.parse(JSON.stringify(DEF)),o);save();toast('가져왔어요');applyMode();draw();refresh()}catch(err){toast('파일을 읽지 못했어요')}})};
