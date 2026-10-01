@@ -115,7 +115,7 @@ def apply(f):
     s = re.sub(r'<!--hj-theme-js-->.*?<!--/hj-theme-js-->', '', s, flags=re.S)
     i = s.rfind('</body>'); s = s[:i] + tail + s[i:]
     s = re.sub(r'<nav class="crumb"[^>]*>(.*?)</nav>', lambda m: crumb(m, rel), s, count=1, flags=re.S)
-    s = re.sub(r'<h1>([^\w\s가-힣<]+)\s*', lambda m: f'<h1><span class="h-ico" aria-hidden="true">{m.group(1)}</span>', s, count=1)
+    s = re.sub(r'<h1>([^\w\s가-힣<&]+)\s*', lambda m: f'<h1><span class="h-ico" aria-hidden="true">{m.group(1)}</span>', s, count=1)
     s = submenus(s, f)
     k = subj(rel)
     if k and not re.search(r'<html[^>]*data-subj=', s):

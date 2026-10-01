@@ -11,23 +11,50 @@ FCSS = re.search(r'<style id="hjfoot-css">.*?</style>', ref, re.S).group(0)
 
 PAGE_JS = r'''
 (function(){var $=function(s){return document.querySelector(s)};
-var W='https://ko.wikipedia.org/w/index.php?search=',Y='https://www.youtube.com/results?search_query=';
+var W='https://ko.wikipedia.org/w/index.php?search=',Y='https://www.youtube.com/results?search_query=',G='https://artsandculture.google.com/search?q=';
 var now=new Date(),DAYS=['일','월','화','수','목','금','토'];
 $('#tdDate').textContent=(now.getMonth()+1)+'월 '+now.getDate()+'일 '+DAYS[now.getDay()]+'요일';
 var S={event:0,quote:0,art:0,music:0,book:0};
 function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function draw(k){var el=document.querySelector('[data-k="'+k+'"] .td-body'),h='';
  if(k==='event'){var r=tdEvent(S.event),e=r.e,m=+e.d.slice(0,2),d=+e.d.slice(3);
-  h='<div class="td-when">'+(r.today&&!S.event?'오늘':'가까운 날')+' · '+m+'월 '+d+'일'+(e.y?' ('+e.y+'년)':'')+'</div>'+
+  h='<div class="td-when">'+(S.event?'다른 날':(r.today?'오늘':'곧 다가오는 날'))+' · '+m+'월 '+d+'일'+(e.y?' ('+e.y+'년)':'')+'</div>'+
    '<div class="td-head"><span class="td-ico">'+e.i+'</span><b class="td-t">'+esc(e.t)+'</b></div><p class="td-s">'+esc(e.s)+'</p>'+
    '<a class="td-link" href="https://ko.wikipedia.org/wiki/'+m+'%EC%9B%94_'+d+'%EC%9D%BC" target="_blank" rel="noopener">위키백과에서 '+m+'월 '+d+'일의 역사 더 보기 ↗</a>'}
  else if(k==='quote'){var q=tdPick('quote',S.quote);h='<blockquote class="td-q">“'+esc(q.t)+'”</blockquote><div class="td-w">— '+esc(q.w)+'</div>'}
- else{var o=tdPick(k,S[k]),meta=o.a+(o.y?' · '+o.y:'');var link=k==='music'?Y+encodeURIComponent(o.a+' '+o.t.replace(/[「」\']/g,'')):W+encodeURIComponent(o.t.replace(/[「」\']/g,'')+' '+(k==='book'?'':o.a));
+ else{var o=tdPick(k,S[k]),meta=o.a+(o.y?' · '+o.y:'');var clean=o.t.replace(/[「」\']/g,'');var link=k==='music'?Y+encodeURIComponent(o.a+' '+clean):k==='art'?G+encodeURIComponent(clean+' '+o.a):W+encodeURIComponent(clean+' 책');
   h='<div class="td-head"><span class="td-ico">'+o.i+'</span><span><b class="td-t">'+esc(o.t)+'</b><span class="td-meta">'+esc(meta)+'</span></span></div><p class="td-s">'+esc(o.s)+'</p>'+
-   '<a class="td-link" href="'+link+'" target="_blank" rel="noopener">'+(k==='music'?'유튜브에서 들어 보기 ↗':k==='art'?'그림 찾아보기 ↗':'책 더 알아보기 ↗')+'</a>'}
+   '<a class="td-link" href="'+link+'" target="_blank" rel="noopener">'+(k==='music'?'유튜브에서 들어 보기 ↗':k==='art'?'구글 아트 앤 컬처에서 보기 ↗':'책 더 알아보기 ↗')+'</a>'}
  el.innerHTML=h}
 Object.keys(S).forEach(draw);
-document.querySelectorAll('.td-more').forEach(function(b){b.addEventListener('click',function(){var k=b.closest('[data-k]').dataset.k;S[k]++;draw(k)})});
+document.querySelectorAll('.td-next').forEach(function(b){b.addEventListener('click',function(){var k=b.closest('[data-k]').dataset.k;S[k]++;draw(k)})});
+function L(n,h){var o='';for(var i=0;i<n;i++)o+='<div class="ws-line" style="height:'+(h||14)+'mm"></div>';return o}
+function box(h,t){return '<div class="ws-box" style="height:'+h+'mm">'+(t?'<span>'+t+'</span>':'')+'</div>'}
+function Q(n,t,body){return '<div class="ws-q"><b>'+n+'. '+t+'</b>'+body+'</div>'}
+function sheet(k){var h='',head,
+ name='<div class="ws-name">3학년 ____반 ____번 &nbsp; 이름: ______________ &nbsp;&nbsp; 날짜: '+(now.getMonth()+1)+'월 '+now.getDate()+'일</div>';
+ if(k==='event'){var e=tdEvent(S.event).e,m=+e.d.slice(0,2),d=+e.d.slice(3);head='📅 역사 속 오늘 활동지';
+  h='<div class="ws-card"><div class="ws-big">'+m+'월 '+d+'일 · '+esc(e.t)+(e.y?' ('+e.y+'년)':'')+'</div><p>'+esc(e.s)+'</p></div>'+
+  Q(1,'이 날 있었던 일을 내 말로 짧게 정리해 보세요.',L(2))+Q(2,'이 일은 우리에게 왜 중요할까요?',L(2))+Q(3,'내가 그 자리에 있었다면 어떤 마음이었을까요? 그림이나 글로 나타내 보세요.',box(70))}
+ else if(k==='quote'){var q=tdPick('quote',S.quote);head='💬 오늘의 명언 활동지';
+  h='<div class="ws-card"><div class="ws-big">“'+esc(q.t)+'”</div><p>— '+esc(q.w)+'</p></div>'+
+  Q(1,'명언을 바르게 따라 써 보세요.',L(3,16))+Q(2,'이 명언은 어떤 뜻일까요? 내 말로 바꾸어 써 보세요.',L(2))+Q(3,'이 명언과 어울리는 나의 경험을 써 보세요.',L(2))+Q(4,'오늘 내가 실천할 다짐 한 가지',L(1))}
+ else if(k==='art'){var a=tdPick('art',S.art);head='🖼️ 명화 감상 활동지';
+  h='<div class="ws-card"><div class="ws-big">「'+esc(a.t)+'」</div><p>'+esc(a.a)+' · '+esc(a.y)+'</p></div>'+
+  Q(1,'그림에서 무엇이 보이나요? 보이는 것을 세 가지 써 보세요.',L(2))+Q(2,'어떤 색이 가장 많이 보이나요? 그 색은 어떤 느낌을 주나요?',L(1))+
+  Q(3,'그림 속에 들어간다면 어떤 소리가 들리고, 어떤 냄새가 날까요?',L(1))+Q(4,'이 그림에 새 제목을 붙인다면?',L(1))+Q(5,'그림의 한 부분을 따라 그리거나, 이어서 그려 보세요.',box(48))}
+ else if(k==='music'){var mu=tdPick('music',S.music);head='🎵 명곡 감상 활동지';
+  h='<div class="ws-card"><div class="ws-big">'+esc(mu.t)+'</div><p>'+esc(mu.a)+'</p></div>'+
+  Q(1,'음악을 들으며 느낌에 어울리는 낱말에 ○ 해 보세요.','<div class="ws-words">신나는 &nbsp; 잔잔한 &nbsp; 웅장한 &nbsp; 슬픈 &nbsp; 밝은 &nbsp; 무서운 &nbsp; 신비로운 &nbsp; 빠른 &nbsp; 느린 &nbsp; 포근한</div>')+
+  Q(2,'어떤 악기 소리가 들렸나요?',L(1))+Q(3,'음악을 들으며 떠오른 장면을 그려 보세요.',box(78))+Q(4,'이 음악을 누구에게 들려주고 싶나요? 그 까닭은?',L(2))}
+ else{var b=tdPick('book',S.book);head='📚 책 읽기 활동지';
+  h='<div class="ws-card"><div class="ws-big">『'+esc(b.t)+'』</div><p>'+esc(b.a)+'</p></div>'+
+  Q(1,'책 표지나 제목을 보고 어떤 이야기일지 짐작해 보세요.',L(2))+Q(2,'가장 기억에 남는 장면을 그리고, 한 줄로 설명해 보세요.',box(46)+L(1))+
+  Q(3,'주인공에게 하고 싶은 말',L(2))+Q(4,'친구에게 추천하는 한 줄 · 별점','<div class="ws-stars">☆ ☆ ☆ ☆ ☆</div>'+L(1))}
+ var el=document.getElementById('ws');el.innerHTML='<div class="ws-page"><div class="ws-head"><h2>'+head+'</h2><span>오늘의 교실 산책</span></div>'+name+h+'<div class="ws-foot">초등교사 홍지희 · hongjihee1005.github.io/hong_teacher</div></div>';
+ document.body.classList.add('ws-printing');setTimeout(function(){window.print()},60)}
+window.addEventListener('afterprint',function(){document.body.classList.remove('ws-printing')});
+document.querySelectorAll('.td-print').forEach(function(b){b.addEventListener('click',function(){sheet(b.closest('[data-k]').dataset.k)})});
 })();'''
 
 CARDS = [('event','📅','오늘의 사건','역사 속 오늘, 무슨 일이 있었을까요?'),
@@ -36,7 +63,7 @@ CARDS = [('event','📅','오늘의 사건','역사 속 오늘, 무슨 일이 �
          ('music','🎵','오늘의 명곡','함께 들어 볼 음악'),
          ('book','📚','오늘의 책','함께 읽어 볼 책')]
 cards = '\n'.join(f'<section class="card td-card" id="{k}" data-k="{k}"><div class="td-top"><span class="tag">{i} {t}</span>'
-                  f'<button class="td-more" type="button" aria-label="{t} 다른 것 보기">↻ 다른 것</button></div>'
+                  f'<span class="td-btns"><button class="td-more td-print" type="button" aria-label="{t} 활동지 인쇄">🖨️ 활동지</button><button class="td-more td-next" type="button" aria-label="{t} 다른 것 보기">↻ 다른 것</button></span></div>'
                   f'<p class="td-hint">{h}</p><div class="td-body"><noscript>자바스크립트를 켜면 보여요.</noscript></div></section>' for k,i,t,h in CARDS)
 page = f'''<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -52,7 +79,7 @@ page = f'''<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 {cards}
 </div>
 {FOOT}
-</main><script>{DATA}{PAGE_JS}</script></body></html>'''
+</main><div id="ws" aria-hidden="true"></div><script>{DATA}{PAGE_JS}</script></body></html>'''
 (R/'today').mkdir(exist_ok=True); (R/'today/index.html').write_text(page, encoding='utf-8')
 
 # 첫 화면 띠
