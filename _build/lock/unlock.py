@@ -6,7 +6,7 @@ from cryptography.hazmat.primitives.kdf.pbkdf2 import PBKDF2HMAC
 from cryptography.hazmat.primitives import hashes
 s = open(sys.argv[1], encoding='utf-8').read()
 salt = base64.b64decode(re.search(r'SALT="([^"]+)"', s).group(1)); it = int(re.search(r'IT=(\d+)', s).group(1))
-buf = base64.b64decode(re.search(r'BLOB="([^"]+)"', s).group(1))
+buf = base64.b64decode(re.search(r'BLOBS?=\[?"([^"]+)"', s).group(1))
 pw = unicodedata.normalize('NFC', os.environ['LOCK_PW'].strip())
 key = PBKDF2HMAC(algorithm=hashes.SHA256(), length=32, salt=salt, iterations=it).derive(pw.encode('utf-8'))
 open(sys.argv[2], 'w', encoding='utf-8').write(AESGCM(key).decrypt(buf[:12], buf[12:], None).decode('utf-8'))
