@@ -107,7 +107,7 @@ def apply(f):
     if not is_menu(f, s): return False
     rel = f.relative_to(ROOT).as_posix()
     css = (HERE / 'theme.css').read_text(encoding='utf-8')
-    js = (HERE / 'theme.js').read_text(encoding='utf-8')
+    js = (HERE / 'icons.js').read_text(encoding='utf-8') + (HERE / 'theme.js').read_text(encoding='utf-8')
     head = f'<!--hj-theme-->{FONT}<style id="hj-theme">{css}</style><!--/hj-theme-->'
     s = re.sub(r'<!--hj-theme-->.*?<!--/hj-theme-->', '', s, flags=re.S)
     s = s.replace('</head>', head + '</head>', 1)
