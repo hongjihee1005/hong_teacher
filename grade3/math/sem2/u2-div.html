@@ -1556,9 +1556,11 @@ function simTarget(body, api, opt) {
 function figSegs(cfg) {
   const s = makeSvg(360, 300); const C = { x: 180, y: 150 }, R = 115;
   s.style.maxWidth = "22em"; s.append(svgEl("circle", { cx: C.x, cy: C.y, r: R, fill: "#fff", stroke: INK, "stroke-width": 4 }), svgEl("circle", { cx: C.x, cy: C.y, r: 6, fill: INK }), txt(C.x + 16, C.y + 20, "ㅇ", 22));
-  const P = {}; Object.entries(cfg.pts).forEach(([k, a]) => { const r = a * Math.PI / 180; P[k] = { x: C.x + R * Math.cos(r), y: C.y - R * Math.sin(r) }; s.append(svgEl("circle", { cx: P[k].x, cy: P[k].y, r: 4, fill: INK }), txt(C.x + (R + 22) * Math.cos(r), C.y - (R + 22) * Math.sin(r), k, 22)); });
+  const P = {}; Object.entries(cfg.pts || {}).forEach(([k, a]) => { const r = a * Math.PI / 180; P[k] = { x: C.x + R * Math.cos(r), y: C.y - R * Math.sin(r) }; s.append(svgEl("circle", { cx: P[k].x, cy: P[k].y, r: 4, fill: INK }), txt(C.x + (R + 22) * Math.cos(r), C.y - (R + 22) * Math.sin(r), k, 22)); });
   P["ㅇ"] = C;
-  cfg.segs.forEach(([a, b]) => s.append(svgEl("line", { x1: P[a].x, y1: P[a].y, x2: P[b].x, y2: P[b].y, stroke: INK, "stroke-width": 3.5 })));
+  /* dots: [이름, 각도, 반지름 배수] — 1보다 작으면 원 안, 1이면 원 위, 1보다 크면 원 밖 */
+  (cfg.dots || []).forEach(([k, a, f]) => { const r = a * Math.PI / 180, d = R * f; const x = C.x + d * Math.cos(r), y = C.y - d * Math.sin(r); s.append(svgEl("circle", { cx: x, cy: y, r: 6, fill: INK }), txt(x + 22, y - 18, k, 22)); });
+  (cfg.segs || []).forEach(([a, b]) => s.append(svgEl("line", { x1: P[a].x, y1: P[a].y, x2: P[b].x, y2: P[b].y, stroke: INK, "stroke-width": 3.5 })));
   (cfg.labels || []).forEach(([x, y, t]) => s.append(txt(x, y, t, 20)));
   return s;
 }
@@ -1694,15 +1696,16 @@ function simAreaModel(body, api, opt) {
 
 /* 어림하기 */
 function simEstimate(body, api, opt) {
+  const gap = (opt.max || 1000) / 5;   // 눈금 한 칸의 크기 (기본 200)
   const svg = makeSvg(700, 150);
   svg.append(svgEl("line", { x1: 40, y1: 90, x2: 660, y2: 90, stroke: INK, "stroke-width": 3 }));
-  for (let i = 0; i <= 5; i++) { const x = 40 + i * 124; svg.append(svgEl("line", { x1: x, y1: 78, x2: x, y2: 102, stroke: INK, "stroke-width": 3 }), txt(x, 124, String(i * 200), 20)); }
+  for (let i = 0; i <= 5; i++) { const x = 40 + i * 124; svg.append(svgEl("line", { x1: x, y1: 78, x2: x, y2: 102, stroke: INK, "stroke-width": 3 }), txt(x, 124, String(i * gap), 20)); }
   const mark = svgEl("polygon", { points: "0,-14 12,8 -12,8", fill: TENT, opacity: 0 }); svg.append(mark);
   const pick = h("div");
   body.append(h("div", { class: "stage" }, svg));
   quiz(pick, api, [{ q: opt.q, o: opt.o, a: opt.a }], { ok: opt.ok });
   body.append(pick);
-  pick.querySelectorAll(".opt").forEach((b, i) => b.addEventListener("click", () => { const v = opt.vals[i]; mark.setAttribute("transform", `translate(${40 + v / 200 * 124},76)`); mark.setAttribute("opacity", 1); }));
+  pick.querySelectorAll(".opt").forEach((b, i) => b.addEventListener("click", () => { const v = opt.vals[i]; mark.setAttribute("transform", `translate(${40 + v / gap * 124},76)`); mark.setAttribute("opacity", 1); }));
 }
 
 /* 숫자 카드로 가장 큰 곱 만들기 */
@@ -1899,10 +1902,12 @@ const LESSONS = [
     { inst: "생각을 써 보세요.", render: (b, a) => writeStep(b, a, [
       { q: "보기: 학교나 집에서 똑같이 나누어야 하는 일은 무엇이 있나요?", tag: "보기" },
       { q: "궁금해하기: 큰 수의 나눗셈에 대해 무엇이 궁금한가요?", tag: "궁금" }]) },
-    { name: "배운 내용 떠올리기", inst: "1학기에 배운 나눗셈을 떠올려요.", render: (b, a) => numbers(b, a, [
-      { q: "18 ÷ 3 =", a: 6 }, { q: "24 ÷ 4 =", a: 6 }, { q: "35 ÷ 7 =", a: 5 }],
-      { ok: "곱셈구구로 몫을 구하는 방법을 잘 기억하고 있어요." }) },
-    { inst: "남는 것이 있는 경우도 살펴봐요.", render: (b, a) => simShareOut(b, a, { n: 14, g: 4, tip: "14개를 4모둠에 나누어 보세요. 남는 것이 생기면 어떻게 될까요?", ok: "14 ÷ 4 = 3 … 2. 남은 2개를 나머지라고 해요." }) }
+    { inst: "약속: 나눗셈에는 두 가지 뜻이 있어요.", render: (b, a) => blanks(b, a, ["15 ÷ 5는 15개를 5모둠에 똑같이 나누면 한 모둠이 ", { o: ["3개", "5개"], a: 0 }, "라는 뜻도 되고, 15개를 5개씩 묶으면 ", { o: ["3묶음", "5묶음"], a: 0 }, "이라는 뜻도 돼요."]) },
+    { inst: "1학기에 배운 나눗셈을 떠올리고, 남는 것이 있는 경우도 살펴봐요.",
+      hints: ["곱셈구구를 떠올리면 몫을 빨리 찾을 수 있어요.", "남는 것이 더 나누어지지 않으면 그것이 나머지예요."],
+      easy: (b, a) => numbers(b, a, [{ q: "18 ÷ 3 =", a: 6 }, { q: "24 ÷ 4 =", a: 6 }, { q: "35 ÷ 7 =", a: 5 }],
+        { ok: "곱셈구구로 몫을 구하는 방법을 잘 기억하고 있어요." }),
+      render: (b, a) => simShareOut(b, a, { n: 14, g: 4, tip: "14개를 4모둠에 나누어 보세요. 남는 것이 생기면 어떻게 될까요?", ok: "14 ÷ 4 = 3 … 2. 남은 2개를 나머지라고 해요." }) }
   ],
   challenge: { inst: "환경 보호 문제예요.", render: (b, a) => numbers(b, a, [
     { q: "페트병 24개를 6모둠에 똑같이 나누면 한 모둠은 몇 개? ", a: 4, unit: "개" },
@@ -1920,8 +1925,8 @@ const LESSONS = [
     { inst: "규칙을 말로 정리해요.", render: (b, a) => blanks(b, a, ["(몇십) ÷ (몇)은 (몇) ÷ (몇)을 계산한 뒤 몫에 0을 ", { o: ["1개", "2개"], a: 0 }, " 붙여요. 십 모형을 나눈 것이기 때문이에요."]) },
     { inst: "세로셈으로도 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "90 ÷ 3 =", a: 30 }, { q: "80 ÷ 2 =", a: 40 }, { q: "60 ÷ 6 =", a: 10 }],
       { ok: "세로셈으로도 같은 답이 나와요." }) },
-    { name: "수 카드로 문제 만들기", inst: "수 카드 6, 0, 3으로 만든 나눗셈이에요.", render: (b, a) => numbers(b, a, [{ q: "60 ÷ 3 =", a: 20 }, { q: "30 ÷ 6 =", a: 5 }],
-      { ok: "카드의 자리를 바꾸면 다른 나눗셈이 돼요." }) }
+    { name: "수 카드로 문제 만들기", inst: "수 카드 6, 0, 3, 9 중 세 장으로 (몇십) ÷ (몇)을 만들었어요.", render: (b, a) => numbers(b, a, [{ q: "60 ÷ 3 =", a: 20 }, { q: "90 ÷ 3 =", a: 30 }],
+      { ok: "카드를 바꾸어 놓으면 새로운 나눗셈 문제를 만들 수 있어요." }) }
   ],
   challenge: { inst: "재활용 문제예요.", render: (b, a) => numbers(b, a, [
     { q: "우유갑 80개를 4모둠에 똑같이 나누면 한 모둠은 몇 개? ", a: 20, unit: "개" },
@@ -1974,10 +1979,11 @@ const LESSONS = [
   summary: "십 모형을 나누고 남은 것을 일 모형으로 바꾼 뒤, 원래 있던 일 모형과 함께 다시 나눠요.",
   steps: [
     { inst: "52장의 재활용 종이를 4모둠에 나누어요. 수 모형으로 52 ÷ 4를 해 보세요.", render: (b, a) => simBlocksDiv(b, a, { a: 52, b: 4, tip: "십 모형 5개 중 4개를 나누면 1개가 남아요. 남은 1개를 일 모형 10개로 바꿔 봐요.", ok: "한 묶음에 십 1개, 일 3개 → 13장!" }) },
-    { name: "자리별로 보기", inst: "계산 과정을 확인해요.", render: (b, a) => numbers(b, a, [
+    { name: "묶어 세기와 자리별로 보기", inst: "종이를 4장씩 묶어 세어 보고, 수 모형으로 나눈 결과와 비교해요.", render: (b, a) => numbers(b, a, [
+      { q: "종이 20장을 4장씩 묶으면 몇 묶음? ", a: 5, unit: "묶음" }, { q: "종이 52장을 4장씩 모두 묶으면 몇 묶음? ", a: 13, unit: "묶음" },
       { q: "십 모형 5개를 4묶음에 나누면 한 묶음에 몇 개?", a: 1 }, { q: "남은 십 모형 1개는 일 모형 몇 개?", a: 10 },
       { q: "일 모형은 모두 몇 개가 되나요?", a: 12 }, { q: "52 ÷ 4 =", a: 13 }],
-      { ok: "내려서 계산하는 방법을 이해했어요." }) },
+      { ok: "4장씩 묶어 세어도, 수 모형으로 나누어도 52 ÷ 4 = 13이에요." }) },
     { inst: "계산 방법을 말로 정리해요.", render: (b, a) => blanks(b, a, ["남은 십 모형을 일 모형으로 바꾸면 원래 있던 일 모형과 ", { o: ["합해서", "따로"], a: 0 }, " 나눠요. 이것을 세로셈에서는 ", { o: ["내려서 계산한다", "올려서 계산한다"], a: 0 }, "고 해요."]) },
     { inst: "세로셈으로 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "72 ÷ 3 =", a: 24 }, { q: "75 ÷ 5 =", a: 15 }, { q: "96 ÷ 6 =", a: 16 }], { ok: "내림이 있는 나눗셈도 잘 해냈어요." }) },
     { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [
@@ -1998,10 +2004,12 @@ const LESSONS = [
     { inst: "모은 건전지를 5개씩 묶어 보세요. 막대를 움직여 전체 수를 바꿔 볼 수 있어요.", render: (b, a) => simGroupRemainder(b, a, { per: 5, start: 17, min: 10, max: 30 }) },
     { name: "식으로 쓰기", inst: "묶어 센 결과를 식으로 나타내요.", render: (b, a) => numbers(b, a, [{ q: "17 ÷ 5 의 몫은?", a: 3 }, { q: "17 ÷ 5 의 나머지는?", a: 2 }, { q: "68 ÷ 3 의 몫은?", a: 22 }, { q: "68 ÷ 3 의 나머지는?", a: 2 }],
       { ok: "17 ÷ 5 = 3 … 2 라고 써요." }) },
+    { name: "몫 어림하기", inst: "51 ÷ 7의 몫을 어림해 보고, 어림한 까닭을 말해 보세요.", render: (b, a) => quiz(b, a, [
+      { q: "몫을 8로 어림하면 7 × 8 = 56이에요. 56은 51보다 어떤가요?", o: ["커요", "작아요"], a: 0 },
+      { q: "몫을 6으로 어림하면 7 × 6 = 42이고 남은 수는 9예요. 9는 나누는 수 7보다 어떤가요?", o: ["커요", "작아요"], a: 0 },
+      { q: "그래서 51 ÷ 7의 몫과 나머지는 얼마일까요?", o: ["7 … 2", "6 … 9", "8 … 5"], a: 0 }],
+      { ok: "몫을 어림하면 계산이 맞는지 빨리 알 수 있어요. 51 ÷ 7 = 7 … 2 예요.", bad: "7 × (어림한 몫)이 51보다 큰지 작은지, 남은 수가 7보다 작은지 다시 살펴봐요." }) },
     { inst: "나머지의 규칙을 정리해요.", render: (b, a) => blanks(b, a, ["나머지는 나누는 수보다 항상 ", { o: ["작아요", "커요"], a: 0 }, ". 나머지가 ", { o: ["0", "1"], a: 0 }, "일 때 나누어떨어진다고 해요."]) },
-    { inst: "나누어떨어지는 것을 찾아보세요.", render: (b, a) => quiz(b, a, [
-      { q: "나누어떨어지는 식을 모두 고르세요.", o: ["36 ÷ 6", "40 ÷ 7", "45 ÷ 9", "50 ÷ 4"], a: [0, 2] },
-      { q: "7로 나눌 때 나머지가 될 수 없는 수는?", o: ["0", "6", "7"], a: 2 }]) },
     { inst: "스스로 계산해 보세요. (십의 자리가 나누어떨어지는 경우)", render: (b, a) => numbers(b, a, [
       { q: "49 ÷ 4 의 몫은?", a: 12 }, { q: "49 ÷ 4 의 나머지는?", a: 1 },
       { q: "87 ÷ 4 의 몫은?", a: 21 }, { q: "87 ÷ 4 의 나머지는?", a: 3 }],
@@ -2026,10 +2034,14 @@ const LESSONS = [
       { q: "74 ÷ 5 의 몫은?", a: 14 }, { q: "74 ÷ 5 의 나머지는?", a: 4 },
       { q: "85 ÷ 6 의 몫은?", a: 14 }, { q: "85 ÷ 6 의 나머지는?", a: 1 }],
       { ok: "내림과 나머지가 함께 있어도 잘 해냈어요." }) },
-    { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [
-      { q: "62 ÷ 4 의 몫은?", a: 15 }, { q: "62 ÷ 4 의 나머지는?", a: 2 },
-      { q: "93 ÷ 7 의 몫은?", a: 13 }, { q: "93 ÷ 7 의 나머지는?", a: 2 }],
-      { ok: "아주 정확해요!" }) }
+    { name: "수 카드로 문제 만들기", inst: "수 카드 7, 5, 2를 모두 써서 (몇십몇) ÷ (몇)을 만들고 계산해 보세요.",
+      hints: ["두 장으로 (몇십몇)을, 남은 한 장으로 (몇)을 만들어요.", "75 ÷ 2, 72 ÷ 5 처럼 여러 가지로 만들 수 있어요."],
+      easy: (b, a) => numbers(b, a, [{ q: "25 ÷ 7 의 몫은?", a: 3 }, { q: "25 ÷ 7 의 나머지는?", a: 4 }],
+        { ok: "몫이 한 자리인 것부터 정확해졌어요!" }),
+      render: (b, a) => numbers(b, a, [
+        { q: "75 ÷ 2 의 몫은?", a: 37 }, { q: "75 ÷ 2 의 나머지는?", a: 1 },
+        { q: "72 ÷ 5 의 몫은?", a: 14 }, { q: "72 ÷ 5 의 나머지는?", a: 2 }],
+        { ok: "카드를 바꾸어 놓으면 새로운 나눗셈 문제를 만들 수 있어요." }) }
   ],
   challenge: { inst: "종이컵 문제예요.", render: (b, a) => numbers(b, a, [
     { q: "종이컵 95개를 6모둠에 나누면 한 모둠은 몇 개? ", a: 15, unit: "개" },
@@ -2049,7 +2061,9 @@ const LESSONS = [
     { inst: "친구의 계산이 맞는지 확인해 보세요.", render: (b, a) => quiz(b, a, [
       { q: "민호: 43 ÷ 6 = 7 … 2 라고 했어요. (6 × 7 + 2 = ?)", o: ["맞아요", "틀려요"], a: 1 },
       { q: "지아: 50 ÷ 8 = 6 … 2 라고 했어요.", o: ["맞아요", "틀려요"], a: 0 },
-      { q: "준서: 29 ÷ 4 = 6 … 5 라고 했어요. 무엇이 잘못됐나요?", o: ["나머지가 나누는 수보다 커요", "몫이 너무 커요", "잘못된 것이 없어요"], a: 0 }]) },
+      { q: "준서: 29 ÷ 4 = 6 … 5 라고 했어요. 무엇이 잘못됐나요?", o: ["나머지가 나누는 수보다 커요", "몫이 너무 커요", "잘못된 것이 없어요"], a: 0 },
+      { q: "세 사람 중 옳게 계산한 사람은 누구인가요?", o: ["민호", "지아", "준서"], a: 1 }],
+      { ok: "옳게 계산한 사람은 지아예요. 8 × 6 + 2 = 50이 되기 때문이에요.", bad: "확인식 (나누는 수) × (몫) + (나머지)의 값이 나누어지는 수와 같은지 살펴봐요." }) },
     { inst: "직접 계산하고 확인해 보세요.", render: (b, a) => numbers(b, a, [{ q: "68 ÷ 7 의 몫은?", a: 9 }, { q: "나머지는?", a: 5 }, { q: "확인: 7 × 9 + 5 =", a: 68 }],
       { ok: "계산하고 확인까지 완벽해요!" }) },
     { inst: "스스로 계산하고 확인해요.", render: (b, a) => numbers(b, a, [{ q: "85 ÷ 6 의 몫은?", a: 14 }, { q: "나머지는?", a: 1 }, { q: "확인: 6 × 14 + 1 =", a: 85 }],
@@ -2074,8 +2088,9 @@ const LESSONS = [
       { ok: "몫의 십의 자리는 6, 일의 자리는 2예요." }) },
     { inst: "계산 순서를 정리해요.", render: (b, a) => blanks(b, a, ["세 자리 수의 나눗셈도 ", { o: ["큰 자리부터", "작은 자리부터"], a: 0 }, " 나눠요. 나눌 수 없으면 ", { o: ["아래 자리로 바꾸어", "위 자리로 올려"], a: 0 }, " 계속 나눠요."]) },
     { inst: "세로셈으로 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "375 ÷ 3 =", a: 125 }, { q: "428 ÷ 4 =", a: 107 }], { ok: "가운데에 0이 오는 몫도 정확해요!" }) },
-    { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "268 ÷ 4 =", a: 67 }, { q: "525 ÷ 5 =", a: 105 }, { q: "672 ÷ 6 =", a: 112 }],
-      { ok: "세 자리 수 나눗셈을 잘 해냈어요!" }) }
+    { inst: "스스로 계산해 보세요. (0이 있는 수도 있어요)", render: (b, a) => numbers(b, a, [{ q: "268 ÷ 4 =", a: 67 }, { q: "525 ÷ 5 =", a: 105 }, { q: "672 ÷ 6 =", a: 112 },
+      { q: "804 ÷ 4 =", a: 201 }, { q: "240 ÷ 2 =", a: 120 }],
+      { ok: "나누어지는 수에 0이 있어도 큰 자리부터 차례로 나누면 돼요.", bad: "0이 있는 자리도 빠뜨리지 말고 차례로 나누어 봐요." }) }
   ],
   challenge: { inst: "나무 심기 문제예요.", render: (b, a) => numbers(b, a, [
     { q: "나무 144그루를 6개 반에 똑같이 나누면 한 반은 몇 그루? ", a: 24, unit: "그루" },
@@ -2090,8 +2105,9 @@ const LESSONS = [
     { name: "계산해 보기", inst: "스티커 157장을 5모둠에 나누어요.", render: (b, a) => numbers(b, a, [
       { q: "157 ÷ 5 의 몫은?", a: 31 }, { q: "157 ÷ 5 의 나머지는?", a: 2 }],
       { ok: "157 ÷ 5 = 31 … 2 예요." }) },
-    { name: "확인하기", inst: "곱셈으로 확인해 보세요.", render: (b, a) => numbers(b, a, [{ q: "5 × 31 =", a: 155 }, { q: "여기에 나머지 2를 더하면", a: 157 }],
-      { ok: "나누어지는 수가 다시 나왔어요!" }) },
+    { name: "몫 어림하기", inst: "157 ÷ 5의 몫이 어디쯤일지 먼저 어림해 보세요.", render: (b, a) => simEstimate(b, a, {
+      max: 50, q: "157 ÷ 5 의 몫은 어디쯤일까요?", o: ["10쯤", "30쯤", "50쯤"], vals: [10, 30, 50], a: 1,
+      ok: "5 × 30 = 150이니 몫은 30쯤이에요. 끝까지 나누면 157 ÷ 5 = 31 … 2 예요." }) },
     { inst: "주의할 점을 정리해요.", render: (b, a) => blanks(b, a, ["세 자리 수를 나눌 때도 나머지는 나누는 수보다 ", { o: ["작아야", "커야"], a: 0 }, " 해요. 나머지가 나누는 수보다 크면 몫을 ", { o: ["더 키울 수 있어요", "줄여야 해요"], a: 0 }, "."]) },
     { inst: "세로셈으로 계산해 보세요.", render: (b, a) => numbers(b, a, [
       { q: "284 ÷ 3 의 몫은?", a: 94 }, { q: "284 ÷ 3 의 나머지는?", a: 2 },
@@ -2179,7 +2195,7 @@ const LESSONS = [
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
 window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.student) openLesson(L.id); });
 </script>
-<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden>🏠 홈</a><style>#hj-home{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:4px;font:700 18px/1 "Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1F2A44;background:#fff;border:3px solid #1F2A44;border-radius:999px;padding:9px 16px;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.18);opacity:.92}#hj-home[hidden]{display:none}#hj-home:hover,#hj-home:focus-visible{opacity:1;outline:3px solid #2F74E0;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}}:root[data-theme="dark"] #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
 var I={play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',

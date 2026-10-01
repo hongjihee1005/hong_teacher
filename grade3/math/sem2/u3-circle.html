@@ -1556,9 +1556,11 @@ function simTarget(body, api, opt) {
 function figSegs(cfg) {
   const s = makeSvg(360, 300); const C = { x: 180, y: 150 }, R = 115;
   s.style.maxWidth = "22em"; s.append(svgEl("circle", { cx: C.x, cy: C.y, r: R, fill: "#fff", stroke: INK, "stroke-width": 4 }), svgEl("circle", { cx: C.x, cy: C.y, r: 6, fill: INK }), txt(C.x + 16, C.y + 20, "ㅇ", 22));
-  const P = {}; Object.entries(cfg.pts).forEach(([k, a]) => { const r = a * Math.PI / 180; P[k] = { x: C.x + R * Math.cos(r), y: C.y - R * Math.sin(r) }; s.append(svgEl("circle", { cx: P[k].x, cy: P[k].y, r: 4, fill: INK }), txt(C.x + (R + 22) * Math.cos(r), C.y - (R + 22) * Math.sin(r), k, 22)); });
+  const P = {}; Object.entries(cfg.pts || {}).forEach(([k, a]) => { const r = a * Math.PI / 180; P[k] = { x: C.x + R * Math.cos(r), y: C.y - R * Math.sin(r) }; s.append(svgEl("circle", { cx: P[k].x, cy: P[k].y, r: 4, fill: INK }), txt(C.x + (R + 22) * Math.cos(r), C.y - (R + 22) * Math.sin(r), k, 22)); });
   P["ㅇ"] = C;
-  cfg.segs.forEach(([a, b]) => s.append(svgEl("line", { x1: P[a].x, y1: P[a].y, x2: P[b].x, y2: P[b].y, stroke: INK, "stroke-width": 3.5 })));
+  /* dots: [이름, 각도, 반지름 배수] — 1보다 작으면 원 안, 1이면 원 위, 1보다 크면 원 밖 */
+  (cfg.dots || []).forEach(([k, a, f]) => { const r = a * Math.PI / 180, d = R * f; const x = C.x + d * Math.cos(r), y = C.y - d * Math.sin(r); s.append(svgEl("circle", { cx: x, cy: y, r: 6, fill: INK }), txt(x + 22, y - 18, k, 22)); });
+  (cfg.segs || []).forEach(([a, b]) => s.append(svgEl("line", { x1: P[a].x, y1: P[a].y, x2: P[b].x, y2: P[b].y, stroke: INK, "stroke-width": 3.5 })));
   (cfg.labels || []).forEach(([x, y, t]) => s.append(txt(x, y, t, 20)));
   return s;
 }
@@ -1576,10 +1578,10 @@ const LESSONS = [
   question: "동그란 모양은 모두 원이라고 할 수 있을까요?",
   summary: "원은 뾰족한 곳이나 곧은 선이 없고, 어느 쪽에서 보아도 똑같이 동그란 모양이에요. 동그랗게 보여도 찌그러지거나 길쭉하면 원이 아니에요. 그런데 손으로는 반듯한 원을 그리기 어려워요. 원을 정확하게 그리는 방법을 다음 시간부터 찾아봐요.",
   steps: [
-    { inst: "캠핑장에는 쥐불놀이, 팽이, 컬링 과녁처럼 동그란 것이 많아요. 아래 모양 중에서 원을 모두 골라 보세요.", render: simPickShapes },
+    { inst: "교실과 집에는 시계, 접시, 동전처럼 동그란 것이 많아요. 아래 모양 중에서 원을 모두 골라 보세요.", render: simPickShapes },
     { inst: "본뜰 물건 없이 손으로만 원을 그려 보세요. 내가 그린 동그라미는 얼마나 반듯할까요?", render: simFreehand },
     { inst: "보기-생각하기-궁금해하기로 오늘 본 원을 떠올려 써 보세요.", render: (b, a) => writeStep(b, a, [
-      { q: "보기: 캠핑장이나 교실에서 무엇이 동그랗게 보였나요?", tag: "보기" },
+      { q: "보기: 교실이나 집에서 무엇이 동그랗게 보였나요?", tag: "보기" },
       { q: "생각하기: 손으로 그린 동그라미를 보고 무엇을 생각했나요?", tag: "생각" },
       { q: "궁금해하기: 원에 대해 무엇이 궁금한가요?", tag: "궁금" }]) },
     { inst: "2학년 때 배운 원의 특징이에요. 맞는 것을 골라 보세요.", render: (b, a) => quiz(b, a, [
@@ -1619,9 +1621,12 @@ const LESSONS = [
     { inst: "선분을 위아래로 옮기며 길이가 어떻게 바뀌는지 살펴보세요.", render: simChordSlider },
     { inst: "알게 된 것을 말로 정리해요.", render: (b, a) => blanks(b, a, ["원의 중심을 지나는 선분은 원 위의 두 점을 이은 선분 중에서 길이가 ", { o: ["가장 길어요", "가장 짧아요"], a: 0 }, ". 이 선분은 원을 ", { o: ["똑같이 둘로", "셋으로"], a: 0 }, " 나눠요."]) },
     { inst: "약속: 원 위의 두 점을 이은 선분이 원의 중심을 지날 때 이 선분을 ‘원의 지름’이라고 해요. 이번에는 지름을 한 개 그어 보세요.", render: (b, a) => simChords(b, a, { need: 1, ok: "지름을 그었어요!", tip: "원의 중심 ㅇ을 꼭 지나게 그어요." }) },
-    { inst: "원의 지름을 찾아요.", render: (b, a) => quiz(b, a, [
+    { inst: "원 위의 점과 원의 지름을 찾고, 주변 물건에서도 찾아봐요.", render: (b, a) => quiz(b, a, [
+      { q: "점 ㄱ, ㄴ, ㄷ 중에서 ‘원 위의 점’은 어느 것인가요?", fig: () => figSegs({ dots: [["ㄱ", 40, 1.3], ["ㄴ", 335, 1], ["ㄷ", 160, 0.45]] }), o: ["점 ㄱ", "점 ㄴ", "점 ㄷ"], a: 1, why: { "0": "점 ㄱ은 원 밖에 있어요. 원 위의 점은 원을 그린 선 위에 있어요.", "2": "점 ㄷ은 원 안에 있어요. 원 위의 점은 원을 그린 선 위에 있어요." } },
       { q: "원의 지름을 모두 골라요.", fig: () => figSegs({ pts: { "ㄱ": 100, "ㄴ": 170, "ㄷ": 190, "ㄹ": 280, "ㅁ": 300, "ㅂ": 10, "ㅅ": 60 }, segs: [["ㄱ", "ㄹ"], ["ㄷ", "ㅂ"], ["ㅅ", "ㅁ"], ["ㄴ", "ㄱ"]] }), o: ["선분 ㄱㄹ", "선분 ㄷㅂ", "선분 ㅅㅁ", "선분 ㄴㄱ"], a: [0, 1] },
-      { q: "지름에 대한 설명으로 맞는 것은?", o: ["원의 중심을 지나지 않아도 돼요", "원 위의 두 점을 잇고 원의 중심을 지나요", "원의 중심과 원 위의 한 점을 이어요"], a: 1 }]) }
+      { q: "지름에 대한 설명으로 맞는 것은?", o: ["원의 중심을 지나지 않아도 돼요", "원 위의 두 점을 잇고 원의 중심을 지나요", "원의 중심과 원 위의 한 점을 이어요"], a: 1 },
+      { q: "시계, 바퀴, 과녁에서 원의 중심은 어디에 있나요?", fig: THINGS, o: ["가운데 한 곳", "테두리", "물건마다 여러 곳"], a: 0 },
+      { q: "바퀴의 바퀴살 한 개는 원의 무엇과 같나요?", fig: THINGS, o: ["반지름", "지름"], a: 0 }]) }
   ],
   challenge: { inst: "모눈 위의 원에서 원의 중심을 찾아 눌러 보세요. (모눈 꼭짓점을 누르면 표시돼요)", render: (b, a) => simGridTool(b, a, { w: 20, h: 14, pins: true, given: [{ x: 10, y: 7, r: 5 }], target: [{ x: 10, y: 7 }], tip: "원 위의 어느 곳까지나 거리가 같은 점을 찾아요.", ok: "원의 중심을 찾았어요!", bad: "원 위의 여러 곳까지의 거리를 세어 비교해 봐요. 한 곳만 표시해요." }) }
 },
@@ -1639,7 +1644,7 @@ const LESSONS = [
       render: (b, a) => quiz(b, a, [
       { q: "반지름이 5 cm인 원의 지름은?", o: ["5 cm", "10 cm", "15 cm"], a: 1, why: { "0": "지름은 반지름과 길이가 달라요. 반지름 2개를 이은 길이예요.", "2": "지름은 반지름의 3배가 아니라 2배예요." } },
       { q: "지름이 8 cm인 원의 반지름은?", o: ["4 cm", "8 cm", "16 cm"], a: 0 },
-      { q: "정원: “지름은 반지름의 3배야.” 정원이의 말은?", o: ["맞아요", "틀려요"], a: 1 },
+      { q: "민호: “지름은 반지름의 3배야.” 민호의 말은?", o: ["맞아요", "틀려요"], a: 1 },
       { q: "원 위의 두 점을 이은 선분 중에서 가장 긴 선분은?", o: ["반지름", "지름", "아무 선분"], a: 1 }]) }
   ],
   challenge: { inst: "원의 성질을 이용해 풀어요.", render: (b, a) => quiz(b, a, [
@@ -1652,14 +1657,17 @@ const LESSONS = [
   question: "크기가 같은 원을 여러 개 빠르고 정확하게 그리려면 어떻게 해야 할까요?",
   summary: "컴퍼스로 원을 그릴 때는 ① 원의 중심이 될 점을 정하고 ② 컴퍼스를 반지름만큼 벌린 뒤 ③ 침을 점에 꽂고 돌려요. 지름이 주어지면 반으로 나누어 반지름만큼 벌려요. 컴퍼스의 침은 뾰족하니 늘 조심해요.",
   steps: [
-    { inst: "컴퍼스로 원을 그리는 순서대로 눌러 보세요.", render: (b, a) => { b.append(h("p", { class: "safe" }, "안전 약속: 침 끝이 친구를 향하지 않게 해요. 다 쓰면 다리를 오므려 넣어요.")); sequence(b, a, ["가. 컴퍼스를 원의 반지름만큼 벌려요", "나. 원의 중심이 될 점을 정해요", "다. 침을 점에 꽂고 컴퍼스를 돌려요"], [1, 0, 2], { ok: "맞아요! 점 정하기 → 반지름만큼 벌리기 → 침 꽂고 돌리기" }); } },
-    { inst: "반지름이 2 cm인 원을 그려 보세요.", render: (b, a) => simCompass(b, a, { target: 2, start: 1, tip: "자에 대고 컴퍼스를 2 cm만큼 벌린 뒤, 점 ㅇ에 침을 꽂고 돌려요.", ok: "반지름이 2 cm인 원을 그렸어요!" }) },
+    { inst: "컴퍼스로 원을 그리는 순서대로 눌러 보세요.", render: (b, a) => { b.append(h("p", { class: "safe" }, "안전 약속: 침 끝이 친구를 향하지 않게 해요. 다 쓰면 다리를 오므려 넣어요."),
+      h("p", { class: "safe" }, "바르게 그리는 방법: ① 침 끝과 연필 끝의 높이를 같게 맞춰요. ② 벌어진 정도를 끝까지 그대로 두어요. ③ 침 쪽에 힘을 주고 멈추지 않고 한 번에 돌려요. ④ 침이 움직이면 종이가 찢어지니 꼭 고정해요. ⑤ 손이 꼬이면 종이를 돌려 가며 그려요."),
+      h("p", {}, "먼저 컴퍼스를 마음대로 벌려 원을 여러 개 그려 보며 익숙해져요. 그다음 순서를 맞춰 보세요.")); sequence(b, a, ["가. 컴퍼스를 원의 반지름만큼 벌려요", "나. 원의 중심이 될 점을 정해요", "다. 침을 점에 꽂고 컴퍼스를 돌려요"], [1, 0, 2], { ok: "맞아요! 점 정하기 → 반지름만큼 벌리기 → 침 꽂고 돌리기" }); } },
+    { inst: "반지름이 2 cm인 원을 그려 보세요.", render: (b, a) => simCompass(b, a, { target: 2, start: 1, tip: "먼저 마음대로 여러 번 벌려 그려 보며 익숙해져요. 그다음 자에 대고 컴퍼스를 2 cm만큼 벌린 뒤, 점 ㅇ에 침을 꽂고 돌려요.", ok: "반지름이 2 cm인 원을 그렸어요!" }) },
     { inst: "이번에는 지름이 6 cm인 원을 그려 보세요.", render: (b, a) => simCompass(b, a, { target: 3, start: 1, tip: "지름이 6 cm이면 반지름은 몇 cm일까요?", ok: "지름 6 cm → 반지름 3 cm! 정확해요.", wrong: o => o === 6 ? "컴퍼스를 6 cm 벌리면 반지름이 6 cm가 돼요. 지름이 6 cm이려면 반지름은 몇 cm일까요?" : `반지름이 ${o} cm인 원이에요. 지름이 6 cm가 되려면?` }) },
     { inst: "약속: 주어진 원과 크기가 같은 원은, 컴퍼스의 침을 원의 중심에 꽂고 연필 끝이 원에 닿게 벌린 뒤 그대로 옮겨 그려요. 왼쪽 원과 크기가 같은 원을 점 ㅇ에 그려 보세요.", render: (b, a) => simCompass(b, a, { target: 2.5, start: 1, center: { x: 520, y: 250 }, given: { x: 200, y: 250, r: 2.5 }, tip: "왼쪽 원의 반지름만큼 컴퍼스를 벌려 보세요. 모눈 한 칸은 0.5 cm예요.", ok: "크기가 같은 원을 그렸어요!", wrong: o => `반지름 ${o} cm인 원이에요. 왼쪽 원의 반지름과 같게 벌려 봐요.` }) },
     { inst: "컴퍼스 사용을 확인해요.", render: (b, a) => quiz(b, a, [
       { q: "지름이 10 cm인 원을 그리려면 컴퍼스를 몇 cm 벌려야 할까요?", o: ["5 cm", "10 cm", "20 cm"], a: 0 },
       { q: "반지름이 2 cm인 원과 지름이 2 cm인 원 중 더 큰 원은?", o: ["반지름이 2 cm인 원", "지름이 2 cm인 원", "크기가 같아요"], a: 0 },
-      { q: "컴퍼스를 안전하게 쓰는 방법으로 알맞지 않은 것은?", o: ["침 끝이 친구를 향하지 않게 해요", "컴퍼스를 들고 뛰어다녀요", "다 쓰면 다리를 오므려요"], a: 1 }]) }
+      { q: "컴퍼스를 안전하게 쓰는 방법으로 알맞지 않은 것은?", o: ["침 끝이 친구를 향하지 않게 해요", "컴퍼스를 들고 뛰어다녀요", "다 쓰면 다리를 오므려요"], a: 1 },
+      { q: "컴퍼스로 원을 바르게 그리는 방법은?", o: ["돌리는 동안 벌어진 정도를 그대로 두어요", "돌리는 동안 조금씩 더 벌려요", "침을 들었다 놓았다 하며 돌려요"], a: 0, why: { "1": "벌어진 정도가 바뀌면 반지름이 달라져서 원이 되지 않아요.", "2": "침이 움직이면 종이가 찢어지고 원이 찌그러져요. 침은 꼭 고정해요." } }]) }
   ],
   challenge: { inst: "지름이 7 cm인 원을 그려 보세요.", render: (b, a) => simCompass(b, a, { target: 3.5, start: 1, tip: "지름 7 cm의 반은 몇 cm일까요? 컴퍼스는 0.5 cm씩 벌릴 수 있어요.", ok: "지름 7 cm → 반지름 3.5 cm! 멋져요." }) }
 },
@@ -1668,8 +1676,8 @@ const LESSONS = [
   question: "원으로 된 모양을 똑같이 그리려면 무엇을 먼저 찾아야 할까요?",
   summary: "원으로 된 모양을 똑같이 그리려면 먼저 컴퍼스의 침을 꽂을 곳(원의 중심)을 찾고, 다음으로 컴퍼스를 벌릴 길이(반지름)를 찾아요. 원의 중심과 반지름에 규칙이 있으면 다음 원도 그릴 수 있어요.",
   steps: [
-    { inst: "컬링 과녁의 원들을 살펴보세요.", render: (b, a) => { const s = makeSvg(420, 300, 30); [4, 3, 2].forEach(r => s.append(svgEl("circle", { cx: 210, cy: 150, r: r * 30, fill: "none", stroke: INK, "stroke-width": 4 }))); s.append(svgEl("circle", { cx: 210, cy: 150, r: 4, fill: INK })); s.style.maxWidth = "24em"; b.append(s, h("p", {}, "모눈 칸을 세어 보세요. 반지름은 작은 원부터 2칸, 3칸, 4칸이에요.")); quiz(b, a, [{ q: "과녁의 세 원은 원의 중심이 어떤가요?", o: ["모두 같아요", "모두 달라요"], a: 0 }, { q: "세 원은 무엇이 서로 다른가요?", o: ["원의 중심", "반지름"], a: 1 }]); } },
-    { inst: "모눈 꼭짓점을 눌러 원의 중심을 정하고, 반지름을 맞춰 ‘원 그리기’를 눌러요. 점선 과녁과 똑같이 그려 보세요.", render: (b, a) => simGridTool(b, a, { w: 20, h: 14, r0: 2, ghost: [{ x: 10, y: 7, r: 2 }, { x: 10, y: 7, r: 4 }, { x: 10, y: 7, r: 6 }], target: [{ x: 10, y: 7, r: 2 }, { x: 10, y: 7, r: 4 }, { x: 10, y: 7, r: 6 }], tip: "원의 중심은 한 곳, 반지름은 2칸, 4칸, 6칸이에요.", ok: "과녁을 똑같이 그렸어요! 원의 중심은 같고 반지름만 달라요." }) },
+    { inst: "체육관 과녁의 원들을 살펴보세요.", render: (b, a) => { const s = makeSvg(420, 300, 30); [4, 3, 2].forEach(r => s.append(svgEl("circle", { cx: 210, cy: 150, r: r * 30, fill: "none", stroke: INK, "stroke-width": 4 }))); s.append(svgEl("circle", { cx: 210, cy: 150, r: 4, fill: INK })); s.style.maxWidth = "24em"; b.append(s, h("p", {}, "모눈 칸을 세어 보세요. 반지름은 작은 원부터 2칸, 3칸, 4칸이에요.")); quiz(b, a, [{ q: "과녁의 세 원은 원의 중심이 어떤가요?", o: ["모두 같아요", "모두 달라요"], a: 0 }, { q: "세 원은 무엇이 서로 다른가요?", o: ["원의 중심", "반지름"], a: 1 }]); } },
+    { inst: "모눈 꼭짓점을 눌러 원의 중심을 정하고, 반지름을 맞춰 ‘원 그리기’를 눌러요. 점선 과녁과 똑같이 그려 보세요.", render: (b, a) => simGridTool(b, a, { w: 20, h: 14, r0: 2, ghost: [{ x: 10, y: 7, r: 2 }, { x: 10, y: 7, r: 3 }, { x: 10, y: 7, r: 4 }], target: [{ x: 10, y: 7, r: 2 }, { x: 10, y: 7, r: 3 }, { x: 10, y: 7, r: 4 }], tip: "원의 중심은 한 곳, 반지름은 2칸, 3칸, 4칸이에요.", ok: "과녁을 똑같이 그렸어요! 원의 중심은 같고 반지름만 달라요." }) },
     { inst: "규칙을 찾아 다음에 이어질 원을 그려 보세요.", render: (b, a) => simGridTool(b, a, { w: 30, h: 10, r0: 3, given: [{ x: 4, y: 5, r: 3, dot: true }, { x: 10, y: 5, r: 3, dot: true }, { x: 16, y: 5, r: 3, dot: true }], target: [{ x: 22, y: 5, r: 3 }], tip: "원의 중심은 오른쪽으로 몇 칸씩 옮겨 가나요? 반지름은 몇 칸인가요?", ok: "규칙대로 그렸어요! 원의 중심은 6칸씩 옮겨 가고, 반지름은 3칸이에요.", bad: "마지막 원의 중심에서 오른쪽으로 몇 칸 가야 할지 세어 봐요." }) },
     { inst: "약속: 모양을 똑같이 그리려면 ① 원의 중심 ② 반지름을 차례로 찾아요. 한 점에서 만나는 세 원을 똑같이 그려 보세요.", render: (b, a) => simGridTool(b, a, { w: 24, h: 12, r0: 2, ghost: [{ x: 5, y: 6, r: 2 }, { x: 6, y: 6, r: 3 }, { x: 7, y: 6, r: 4 }], target: [{ x: 5, y: 6, r: 2 }, { x: 6, y: 6, r: 3 }, { x: 7, y: 6, r: 4 }], tip: "세 원은 왼쪽 한 점에서 만나요. 원의 중심은 1칸씩, 반지름도 1칸씩 늘어나요.", ok: "똑같이 그렸어요!" }) },
     { inst: "물결 모양을 그리려면 컴퍼스의 침을 어디에 꽂아야 할까요? 모두 눌러 표시하세요.", render: (b, a) => simGridTool(b, a, { w: 30, h: 8, pins: true, given: [{ arc: "M40 80 A60 60 0 0 1 160 80" }, { arc: "M160 80 A60 60 0 0 0 280 80" }, { arc: "M280 80 A60 60 0 0 1 400 80" }, { arc: "M400 80 A60 60 0 0 0 520 80" }], target: [{ x: 5, y: 4 }, { x: 11, y: 4 }, { x: 17, y: 4 }, { x: 23, y: 4 }], tip: "반원 하나하나의 원의 중심을 찾아요. 잘못 누르면 다시 눌러 지워요.", ok: "침을 꽂을 곳을 모두 찾았어요!", bad: "반원마다 원의 중심이 하나씩 있어요. 개수와 위치를 다시 살펴봐요." }) }
@@ -1681,9 +1689,9 @@ const LESSONS = [
   question: "원을 이용하면 ‘얼마나 가까운지’를 어떻게 알 수 있을까요?",
   summary: "한 장소를 원의 중심으로 하여 원을 그리면, 원 안에 있는 곳은 모두 반지름보다 가까운 곳이에요. 두 사람이 갈 수 있는 곳은 두 원이 겹치는 부분에서 찾을 수 있어요.",
   steps: [
-    { inst: "‘지유네 집’을 원의 중심으로 하는 원을 그려요. 막대로 반지름을 3 cm로 맞추고 원 안에 사는 친구를 골라 보세요. (원 안의 친구는 주황색으로 바뀌어요)", render: (b, a) => { simMap(b, a, MAP1(3)); quiz(b, a, [{ q: "지유네 집에서 3 cm보다 가까운 곳에 사는 친구를 모두 골라요.", o: ["서아", "도윤", "하린", "민준", "지호", "수아"], a: [0, 1] }]); } },
-    { inst: "반지름을 4 cm, 5 cm로 바꾸어 보세요.", render: (b, a) => { simMap(b, a, MAP1(4)); quiz(b, a, [{ q: "4 cm보다 가까운 친구는?", o: ["서아", "도윤", "하린", "민준", "지호", "수아"], a: [0, 1, 2] }, { q: "5 cm보다 가까운 친구는 몇 명인가요?", o: ["3명", "5명", "6명"], a: 2 }]); } },
-    { inst: "원 두 개를 비교해서 생각해요.", render: (b, a) => { simMap(b, a, MAP1(4.5)); blanks(b, a, ["지유네 집에서 4 cm보다 멀고 5 cm보다 가까운 곳에 사는 친구는 ", { o: ["서아, 도윤", "민준, 지호, 수아", "하린"], a: 1 }, "예요. 반지름이 ", { o: ["길수록", "짧을수록"], a: 0 }, " 원 안에 더 많은 친구가 들어와요."]); } },
+    { inst: "‘우리 집’을 원의 중심으로 하는 원을 그려요. 막대로 반지름을 3 cm로 맞추고 원 안에 사는 친구를 골라 보세요. (원 안의 친구는 주황색으로 바뀌어요)", render: (b, a) => { simMap(b, a, MAP1(3)); quiz(b, a, [{ q: "우리 집에서 3 cm보다 가까운 곳에 사는 친구를 모두 골라요.", o: ["윤서", "건우", "유나", "주안", "나래", "태호"], a: [0, 1] }]); } },
+    { inst: "반지름을 4 cm, 5 cm로 바꾸어 보세요.", render: (b, a) => { simMap(b, a, MAP1(4)); quiz(b, a, [{ q: "4 cm보다 가까운 친구는?", o: ["윤서", "건우", "유나", "주안", "나래", "태호"], a: [0, 1, 2] }, { q: "5 cm보다 가까운 친구는 몇 명인가요?", o: ["3명", "5명", "6명"], a: 2 }]); } },
+    { inst: "원 두 개를 비교해서 생각해요.", render: (b, a) => { simMap(b, a, MAP1(4.5)); blanks(b, a, ["우리 집에서 4 cm보다 멀고 5 cm보다 가까운 곳에 사는 친구는 ", { o: ["윤서, 건우", "주안, 나래, 태호", "유나"], a: 1 }, "예요. 반지름이 ", { o: ["길수록", "짧을수록"], a: 0 }, " 원 안에 더 많은 친구가 들어와요."]); } },
     { name: "약속 장소 정하기", inst: "준호는 자전거로 집에서 5 cm 안쪽까지, 다은이는 걸어서 집에서 3 cm 안쪽까지 갈 수 있어요. 두 원을 그리고 약속 장소를 정해 보세요. (두 원 안에 모두 있는 곳은 주황색)", render: (b, a) => { simMap(b, a, MAP2(5, 3)); quiz(b, a, [{ q: "두 사람이 모두 갈 수 있는 약속 장소는?", o: ["놀이터", "도서관", "빵집", "문구점"], a: 1 }]); } },
     { name: "정리하기", inst: "연결-확장: 오늘 배운 것을 정리해요.", render: (b, a) => writeStep(b, a, [
       { q: "연결하기: 오늘 원의 무엇(원의 중심, 반지름, 지름)을 사용했나요?", tag: "연결" },
@@ -1732,10 +1740,23 @@ const LESSONS = [
     { q: "원의 크기를 정하는 것과 원의 위치를 정하는 것을 바르게 짝지은 것은?", o: ["크기-반지름, 위치-원의 중심", "크기-원의 중심, 위치-반지름"], a: 0 }]) }
 }];
 
+/* 주변 물건에서 원의 중심·반지름 찾기 (시계·바퀴·과녁) */
+function THINGS() {
+  const s = makeSvg(600, 220); s.style.maxWidth = "32em";
+  const ring = (cx, r, w) => s.append(svgEl("circle", { cx, cy: 100, r, fill: "none", stroke: INK, "stroke-width": w }));
+  const spoke = (cx, deg, r0, r1, w) => { const a = deg * Math.PI / 180; s.append(svgEl("line", { x1: cx + r0 * Math.cos(a), y1: 100 - r0 * Math.sin(a), x2: cx + r1 * Math.cos(a), y2: 100 - r1 * Math.sin(a), stroke: INK, "stroke-width": w })); };
+  ring(110, 70, 4); for (let i = 0; i < 12; i++) spoke(110, 90 - 30 * i, 58, 66, 3);
+  s.append(svgEl("circle", { cx: 110, cy: 100, r: 5, fill: INK }), txt(110, 198, "시계", 22));
+  ring(300, 70, 4); ring(300, 56, 2); for (let d = 0; d < 360; d += 45) spoke(300, d, 12, 56, 2);
+  s.append(svgEl("circle", { cx: 300, cy: 100, r: 5, fill: INK }), txt(300, 198, "바퀴", 22));
+  [70, 48, 26].forEach(r => ring(490, r, 4));
+  s.append(svgEl("circle", { cx: 490, cy: 100, r: 5, fill: INK }), txt(490, 198, "과녁", 22));
+  return s;
+}
 function MAP1(r) {
   return { w: 14, h: 12, max: 6, roads: [[3, 0, 3, 12], [11, 0, 11, 12], [0, 3, 14, 3], [0, 9, 14, 9]],
-    homes: [{ name: "지유네 집", x: 7, y: 6, r, color: BLUE }],
-    places: [{ name: "서아", x: 7, y: 4 }, { name: "도윤", x: 9.5, y: 6 }, { name: "하린", x: 4.5, y: 8.5 }, { name: "민준", x: 10, y: 3 }, { name: "지호", x: 3, y: 3.5 }, { name: "수아", x: 8.5, y: 10.3 }],
+    homes: [{ name: "우리 집", x: 7, y: 6, r, color: BLUE }],
+    places: [{ name: "윤서", x: 7, y: 4 }, { name: "건우", x: 9.5, y: 6 }, { name: "유나", x: 4.5, y: 8.5 }, { name: "주안", x: 10, y: 3 }, { name: "나래", x: 3, y: 3.5 }, { name: "태호", x: 8.5, y: 10.3 }],
     tip: "막대로 반지름을 바꿀 수 있어요. 원 안에 들어온 친구는 주황색이 돼요." };
 }
 function MAP2(ra, rb) {
@@ -1748,7 +1769,7 @@ function MAP2(ra, rb) {
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
 window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.student) openLesson(L.id); });
 </script>
-<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden>🏠 홈</a><style>#hj-home{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:4px;font:700 18px/1 "Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1F2A44;background:#fff;border:3px solid #1F2A44;border-radius:999px;padding:9px 16px;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.18);opacity:.92}#hj-home[hidden]{display:none}#hj-home:hover,#hj-home:focus-visible{opacity:1;outline:3px solid #2F74E0;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}}:root[data-theme="dark"] #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
 var I={play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',

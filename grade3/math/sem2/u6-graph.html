@@ -1556,9 +1556,11 @@ function simTarget(body, api, opt) {
 function figSegs(cfg) {
   const s = makeSvg(360, 300); const C = { x: 180, y: 150 }, R = 115;
   s.style.maxWidth = "22em"; s.append(svgEl("circle", { cx: C.x, cy: C.y, r: R, fill: "#fff", stroke: INK, "stroke-width": 4 }), svgEl("circle", { cx: C.x, cy: C.y, r: 6, fill: INK }), txt(C.x + 16, C.y + 20, "ㅇ", 22));
-  const P = {}; Object.entries(cfg.pts).forEach(([k, a]) => { const r = a * Math.PI / 180; P[k] = { x: C.x + R * Math.cos(r), y: C.y - R * Math.sin(r) }; s.append(svgEl("circle", { cx: P[k].x, cy: P[k].y, r: 4, fill: INK }), txt(C.x + (R + 22) * Math.cos(r), C.y - (R + 22) * Math.sin(r), k, 22)); });
+  const P = {}; Object.entries(cfg.pts || {}).forEach(([k, a]) => { const r = a * Math.PI / 180; P[k] = { x: C.x + R * Math.cos(r), y: C.y - R * Math.sin(r) }; s.append(svgEl("circle", { cx: P[k].x, cy: P[k].y, r: 4, fill: INK }), txt(C.x + (R + 22) * Math.cos(r), C.y - (R + 22) * Math.sin(r), k, 22)); });
   P["ㅇ"] = C;
-  cfg.segs.forEach(([a, b]) => s.append(svgEl("line", { x1: P[a].x, y1: P[a].y, x2: P[b].x, y2: P[b].y, stroke: INK, "stroke-width": 3.5 })));
+  /* dots: [이름, 각도, 반지름 배수] — 1보다 작으면 원 안, 1이면 원 위, 1보다 크면 원 밖 */
+  (cfg.dots || []).forEach(([k, a, f]) => { const r = a * Math.PI / 180, d = R * f; const x = C.x + d * Math.cos(r), y = C.y - d * Math.sin(r); s.append(svgEl("circle", { cx: x, cy: y, r: 6, fill: INK }), txt(x + 22, y - 18, k, 22)); });
+  (cfg.segs || []).forEach(([a, b]) => s.append(svgEl("line", { x1: P[a].x, y1: P[a].y, x2: P[b].x, y2: P[b].y, stroke: INK, "stroke-width": 3.5 })));
   (cfg.labels || []).forEach(([x, y, t]) => s.append(txt(x, y, t, 20)));
   return s;
 }
@@ -1694,15 +1696,16 @@ function simAreaModel(body, api, opt) {
 
 /* 어림하기 */
 function simEstimate(body, api, opt) {
+  const gap = (opt.max || 1000) / 5;   // 눈금 한 칸의 크기 (기본 200)
   const svg = makeSvg(700, 150);
   svg.append(svgEl("line", { x1: 40, y1: 90, x2: 660, y2: 90, stroke: INK, "stroke-width": 3 }));
-  for (let i = 0; i <= 5; i++) { const x = 40 + i * 124; svg.append(svgEl("line", { x1: x, y1: 78, x2: x, y2: 102, stroke: INK, "stroke-width": 3 }), txt(x, 124, String(i * 200), 20)); }
+  for (let i = 0; i <= 5; i++) { const x = 40 + i * 124; svg.append(svgEl("line", { x1: x, y1: 78, x2: x, y2: 102, stroke: INK, "stroke-width": 3 }), txt(x, 124, String(i * gap), 20)); }
   const mark = svgEl("polygon", { points: "0,-14 12,8 -12,8", fill: TENT, opacity: 0 }); svg.append(mark);
   const pick = h("div");
   body.append(h("div", { class: "stage" }, svg));
   quiz(pick, api, [{ q: opt.q, o: opt.o, a: opt.a }], { ok: opt.ok });
   body.append(pick);
-  pick.querySelectorAll(".opt").forEach((b, i) => b.addEventListener("click", () => { const v = opt.vals[i]; mark.setAttribute("transform", `translate(${40 + v / 200 * 124},76)`); mark.setAttribute("opacity", 1); }));
+  pick.querySelectorAll(".opt").forEach((b, i) => b.addEventListener("click", () => { const v = opt.vals[i]; mark.setAttribute("transform", `translate(${40 + v / gap * 124},76)`); mark.setAttribute("opacity", 1); }));
 }
 
 /* 숫자 카드로 가장 큰 곱 만들기 */
@@ -1741,18 +1744,32 @@ function simCardMax(body, api, opt) {
 }
 
 /* ===== 자료의 정리(표와 그림그래프) 조작 부품 ===== */
-function svgPicto(x, y, w, rows, unit) {
-  const g = svgEl("g"), rh = 62;
+/* 단위는 큰 그림부터 내림차순으로 적어요. 2가지 [10,1] 또는 3가지 [100,10,1] */
+const PICTO_R = { 2: [20, 8], 3: [20, 13, 7] };
+const PICTO_W = { 2: [48, 24], 3: [48, 32, 20] };
+const PICTO_F = { 2: ["#9CC7EA", "#fff"], 3: ["#9CC7EA", "#CFE3F5", "#fff"] };
+const PICTO_SYM = { 2: ["●", "○"], 3: ["●", "◎", "○"] };
+const pictoUnits = opt => (opt.units ? opt.units.slice() : [opt.unit || 10, 1]);
+function splitUnits(v, units) { const out = []; let r = v; units.forEach(u => { out.push(Math.floor(r / u)); r %= u; }); return out; }
+function pictoLegend(units, vu) { const n = units.length; return units.map((u, i) => `${PICTO_SYM[n][i]} ${u}${vu}`).join("    "); }
+
+function svgPicto(x, y, w, rows, units, vlabel) {
+  const us = Array.isArray(units) ? units : [units || 10, 1], n = us.length, rh = 62;
+  const g = svgEl("g");
   g.append(svgEl("rect", { x, y, width: w, height: rh * (rows.length + 1), fill: "#fff", stroke: INK, "stroke-width": 3 }));
   g.append(svgEl("line", { x1: x, y1: y + rh, x2: x + w, y2: y + rh, stroke: INK, "stroke-width": 3 }),
     svgEl("line", { x1: x + 150, y1: y, x2: x + 150, y2: y + rh * (rows.length + 1), stroke: INK, "stroke-width": 2 }),
-    txt(x + 75, y + rh / 2, "항목", 24), txt(x + (w + 150) / 2, y + rh / 2, "학생 수", 24));
+    txt(x + 75, y + rh / 2, "항목", 24), txt(x + (w + 150) / 2, y + rh / 2, vlabel || "학생 수", 24));
   rows.forEach((r, i) => {
     const yy = y + rh * (i + 1);
     g.append(svgEl("line", { x1: x, y1: yy + rh, x2: x + w, y2: yy + rh, stroke: INK, "stroke-width": 1.5 }), txt(x + 75, yy + rh / 2, r.name, 24));
-    let cx = x + 178;
-    for (let k = 0; k < Math.floor(r.v / unit); k++) { g.append(svgEl("circle", { cx, cy: yy + rh / 2, r: 20, fill: "#9CC7EA", stroke: INK, "stroke-width": 2 })); cx += 48; }
-    for (let k = 0; k < r.v % unit; k++) { g.append(svgEl("circle", { cx: cx - 12, cy: yy + rh / 2, r: 8, fill: "#fff", stroke: INK, "stroke-width": 2 })); cx += 24; }
+    let cx = x + 168;
+    splitUnits(r.v, us).forEach((cnt, t) => {
+      for (let k = 0; k < cnt; k++) {
+        g.append(svgEl("circle", { cx: cx + PICTO_R[n][t], cy: yy + rh / 2, r: PICTO_R[n][t], fill: PICTO_F[n][t], stroke: INK, "stroke-width": 2 }));
+        cx += PICTO_W[n][t];
+      }
+    });
   });
   return g;
 }
@@ -1778,7 +1795,8 @@ function simDataCount(body, api, opt) {
   });
   upd();
   const ans = h("div");
-  numbers(ans, api, names.map(n => ({ q: `${n}는(은) 몇 명?`, a: data[n], unit: "명" })).concat([{ q: "합계는 몇 명?", a: items.length, unit: "명" }]),
+  const vu = opt.vunit || "명";
+  numbers(ans, api, names.map(n => ({ q: `${n}는(은) 몇 ${vu}?`, a: data[n], unit: vu })).concat([{ q: `합계는 몇 ${vu}?`, a: items.length, unit: vu }]),
     { ok: opt.ok || "자료를 빠짐없이 세어 표로 정리했어요!", bad: "한 번 센 자료는 색이 바뀌어요. 빠뜨리거나 두 번 세지 않았는지 확인해요." });
   body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg),
     h("div", { class: "side" }, h("p", {}, opt.tip || "자료를 하나씩 눌러 세어 보세요. 누른 자료는 색이 바뀌어요."), out, ans)));
@@ -1786,34 +1804,46 @@ function simDataCount(body, api, opt) {
 
 /* 그림그래프 읽기 */
 function simPictoRead(body, api, opt) {
-  const svg = makeSvg(860, 62 * (opt.rows.length + 1) + 60);
-  svg.append(svgPicto(20, 20, 820, opt.rows, opt.unit || 10), txt(300, 62 * (opt.rows.length + 1) + 46, `● 큰 그림 = ${opt.unit || 10}명    ○ 작은 그림 = 1명`, 22));
+  const units = pictoUnits(opt), vu = opt.vunit || "명", th = opt.title ? 40 : 0;
+  const svg = makeSvg(860, 62 * (opt.rows.length + 1) + 60 + th);
+  if (opt.title) svg.append(txt(430, 24, opt.title, 26));
+  svg.append(svgPicto(20, 20 + th, 820, opt.rows, units, opt.vlabel),
+    txt(300, 62 * (opt.rows.length + 1) + 46 + th, pictoLegend(units, vu), 22));
   const ans = h("div");
-  numbers(ans, api, opt.qs, { ok: opt.ok || "그림그래프를 정확히 읽었어요!", bad: "큰 그림은 10명, 작은 그림은 1명이에요. 다시 세어 봐요." });
-  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg), h("div", { class: "side" }, h("p", {}, opt.tip || "큰 그림과 작은 그림을 세어 수를 읽어 보세요."), ans)));
+  numbers(ans, api, opt.qs, { ok: opt.ok || "그림그래프를 정확히 읽었어요!", bad: `그림 하나하나가 얼마를 나타내는지 먼저 보세요. ${pictoLegend(units, vu)}` });
+  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg), h("div", { class: "side" }, h("p", {}, opt.tip || "그림이 각각 얼마를 나타내는지 보고 수를 읽어 보세요."), ans)));
 }
 
 /* 그림그래프 만들기 */
 function simPictoBuild(body, api, opt) {
-  const rows = opt.rows.map(r => ({ name: r.name, target: r.v, big: 0, small: 0 }));
-  const svg = makeSvg(860, 62 * (rows.length + 1) + 40);
-  const draw = () => { svg.innerHTML = ""; svg.append(svgPicto(20, 20, 820, rows.map(r => ({ name: r.name, v: r.big * 10 + r.small })), 10)); };
+  const units = pictoUnits(opt), n = units.length, vu = opt.vunit || "명", th = opt.title ? 40 : 0;
+  const rows = opt.rows.map(r => ({ name: r.name, target: r.v, cnt: units.map(() => 0) }));
+  const val = r => r.cnt.reduce((s, c, t) => s + c * units[t], 0);
+  const svg = makeSvg(860, 62 * (rows.length + 1) + 40 + th);
+  const draw = () => {
+    svg.innerHTML = "";
+    if (opt.title) svg.append(txt(430, 24, opt.title, 26));
+    svg.append(svgPicto(20, 20 + th, 820, rows.map(r => ({ name: r.name, v: val(r) })), units, opt.vlabel));
+  };
   draw();
-  const side = h("div", { class: "side" }, h("p", {}, opt.tip || "표의 수에 맞게 큰 그림과 작은 그림을 놓아 보세요."));
-  rows.forEach((r, i) => {
-    side.append(h("div", { class: "tools" }, h("span", { class: "jua" }, `${r.name} (${r.target}명)`),
-      h("button", { onclick: () => { r.big = Math.max(0, r.big - 1); draw(); } }, "●−"),
-      h("button", { onclick: () => { r.big++; draw(); } }, "●+"),
-      h("button", { onclick: () => { r.small = Math.max(0, r.small - 1); draw(); } }, "○−"),
-      h("button", { onclick: () => { r.small++; draw(); } }, "○+")));
+  const side = h("div", { class: "side" }, h("p", {}, opt.tip || `표의 수에 맞게 그림을 놓아 보세요. ${pictoLegend(units, vu)}`));
+  rows.forEach(r => {
+    const tools = h("div", { class: "tools" }, h("span", { class: "jua" }, `${r.name} (${r.target}${vu})`));
+    units.forEach((u, t) => {
+      tools.append(h("button", { onclick: () => { r.cnt[t] = Math.max(0, r.cnt[t] - 1); draw(); } }, `${PICTO_SYM[n][t]}−`),
+        h("button", { onclick: () => { r.cnt[t]++; draw(); } }, `${PICTO_SYM[n][t]}+`));
+    });
+    side.append(tools);
   });
   side.append(h("button", { class: "big", onclick: () => {
     api.tryOnce();
-    const bad = rows.find(r => r.big * 10 + r.small !== r.target);
-    const many = rows.find(r => r.small >= 10);
-    if (many) return api.fail(`${many.name}: 작은 그림이 10개가 되면 큰 그림 1개로 바꿔야 해요.`);
-    bad ? api.fail(`${bad.name}이(가) ${bad.big * 10 + bad.small}명으로 되어 있어요. ${bad.target}명이 되도록 고쳐 봐요.`)
-      : api.done(rows.map(r => `${r.name} ${r.big}·${r.small}`).join(" / "), opt.ok || "표의 수를 그림그래프로 바르게 나타냈어요!");
+    for (let t = 1; t < n; t++) {
+      const many = rows.find(r => r.cnt[t] >= units[t - 1] / units[t]);
+      if (many) return api.fail(`${many.name}: ${PICTO_SYM[n][t]} 그림이 ${units[t - 1] / units[t]}개가 되면 ${PICTO_SYM[n][t - 1]} 그림 1개로 바꿔야 해요.`);
+    }
+    const bad = rows.find(r => val(r) !== r.target);
+    bad ? api.fail(`${bad.name}이(가) ${val(bad)}${vu}으로 되어 있어요. ${bad.target}${vu}이 되도록 고쳐 봐요.`)
+      : api.done(rows.map(r => `${r.name} ${r.cnt.join("·")}`).join(" / "), opt.ok || "표의 수를 그림그래프로 바르게 나타냈어요!");
   } }, "확인하기"));
   body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg), side));
 }
@@ -1822,8 +1852,8 @@ const UNIT_STORY = { title: "자료를 모아 그림그래프로", lines: [
   "우리 반, 우리 학교에서 궁금한 것을 조사해요. 좋아하는 과일, 반려동물, 공 주고받기 횟수까지.",
   "모은 자료는 표로 정리하고 그림그래프로 나타내면 한눈에 볼 수 있어요.",
   "교과서 『수학 3-2』 6. 그림그래프의 차시 순서 그대로 만들었어요."],
-  one: "그림그래프 · 조사한 자료를 표와 그림그래프로 나타내고 해석해요." };
-const UNIT_KEYWORDS = ["자료", "표", "합계", "그림그래프", "큰 그림", "작은 그림", "단위 정하기", "항목", "조사"];
+  one: "그림그래프 · 조사한 자료를 표와 그림그래프로 나타내고 읽어요." };
+const UNIT_KEYWORDS = ["자료", "표", "합계", "그림그래프", "제목", "큰 그림", "작은 그림", "단위 정하기", "항목", "조사"];
 
 /* ===== 6. 그림그래프 — 교과서 차시 버전 (8차시) ===== */
 const LESSONS = [
@@ -1836,15 +1866,15 @@ const LESSONS = [
     { name: "표 읽기", inst: "정리한 표에서 알 수 있는 것을 찾아보세요.", render: (b, a) => quiz(b, a, [
       { q: "가장 많은 학생이 좋아하는 과일은?", o: ["사과", "포도", "딸기", "참외"], a: 0 },
       { q: "가장 적은 학생이 좋아하는 과일은?", o: ["사과", "포도", "딸기", "참외"], a: 3 },
-      { q: "표에서 ‘합계’가 나타내는 것은?", o: ["가장 큰 수", "조사한 학생 수 전체"], a: 1 }]) },
+      { q: "표에서 ‘합계’가 나타내는 것은?", o: ["가장 큰 수", "조사한 학생 수 전체"], a: 1, why: { "0": "합계는 가장 큰 수가 아니라 모두 더한 수예요." } }]) },
     { inst: "생각을 써 보세요.", render: (b, a) => writeStep(b, a, [
       { q: "보기: 자료를 세면서 어려웠던 점은 무엇인가요?", tag: "보기" },
       { q: "궁금해하기: 자료를 정리하는 것에 대해 무엇이 궁금한가요?", tag: "궁금" }]) },
-    { name: "배운 내용 떠올리기", inst: "2학년 때 배운 표를 떠올려요.", render: (b, a) => numbers(b, a, [
+    { inst: "정리하는 방법을 약속해요.", render: (b, a) => blanks(b, a, ["자료를 셀 때는 ", { o: ["표시를 하며", "눈으로만"], a: 0 }, " 세어야 빠뜨리지 않아요. 표에는 항목, 수, ", { o: ["합계", "이름"], a: 0 }, "를 써요."]) },
+    { inst: "확인해요. 2학년 때 배운 표를 떠올려요.", render: (b, a) => numbers(b, a, [
       { q: "사과 8명, 포도 7명, 딸기 6명, 참외 4명이면 합계는? ", a: 25, unit: "명" },
       { q: "사과는 참외보다 몇 명 더 많나요? ", a: 4, unit: "명" }],
-      { ok: "표를 읽으면 비교도 쉽게 할 수 있어요." }) },
-    { inst: "정리하는 방법을 약속해요.", render: (b, a) => blanks(b, a, ["자료를 셀 때는 ", { o: ["표시를 하며", "눈으로만"], a: 0 }, " 세어야 빠뜨리지 않아요. 표에는 항목, 수, ", { o: ["합계", "이름"], a: 0 }, "를 써요."]) }
+      { ok: "표를 읽으면 비교도 쉽게 할 수 있어요." }) }
   ],
   challenge: { inst: "표를 더 자세히 읽어 보세요.", render: (b, a) => numbers(b, a, [
     { q: "사과와 포도를 좋아하는 학생은 모두 몇 명? ", a: 15, unit: "명" },
@@ -1855,27 +1885,27 @@ const LESSONS = [
 {
   id: "y2", no: 2, title: "그림그래프를 알아볼까요", soop: "개념 구축하기(O)",
   question: "그림으로 나타내면 무엇이 좋을까요? 표와는 무엇이 같고 무엇이 다를까요?",
-  summary: "그림그래프는 수를 그림의 크기와 개수로 나타낸 그래프예요. 표와 그림그래프는 같은 자료를 나타내지만, 표는 수를 숫자로, 그림그래프는 수를 그림으로 나타내요. 그래서 그림그래프는 많고 적음을 한눈에 보기 좋아요.",
+  summary: "그림그래프는 수를 그림의 크기와 개수로 나타낸 그래프예요. 제목, 항목, 그림이 나타내는 수가 꼭 있어야 해요. 표는 수를 숫자로, 그림그래프는 수를 그림으로 나타내요.",
   steps: [
     { inst: "그림그래프를 읽어 보세요. 큰 그림은 10명, 작은 그림은 1명이에요.", render: (b, a) => simPictoRead(b, a, {
+      title: "좋아하는 과일별 학생 수",
       rows: [{ name: "사과", v: 24 }, { name: "포도", v: 31 }, { name: "딸기", v: 15 }, { name: "참외", v: 22 }],
       qs: [{ q: "사과를 좋아하는 학생은?", a: 24, unit: "명" }, { q: "포도를 좋아하는 학생은?", a: 31, unit: "명" }, { q: "딸기를 좋아하는 학생은?", a: 15, unit: "명" }] }) },
-    { name: "구성 요소 알기", inst: "그림그래프에 꼭 있어야 하는 것을 찾아보세요.", render: (b, a) => quiz(b, a, [
-      { q: "그림그래프에서 가장 먼저 확인할 것은?", o: ["그림의 색깔", "큰 그림과 작은 그림이 나타내는 수"], a: 1 },
-      { q: "그림그래프에 꼭 있어야 하는 것이 아닌 것은?", o: ["제목", "항목", "그린 사람의 나이"], a: 2 },
-      { q: "표와 그림그래프에 들어 있는 자료는?", o: ["서로 달라요", "같은 자료예요"], a: 1 }]) },
-    { inst: "그림의 뜻을 정리해요.", render: (b, a) => blanks(b, a, ["큰 그림 1개가 10명이면 큰 그림 2개와 작은 그림 4개는 ", { o: ["24", "6"], a: 0 }, "명이에요. 그림그래프는 ", { o: ["많고 적음을 한눈에", "정확한 합계를"], a: 0 }, " 보기에 좋아요."]) },
-    { inst: "그림의 개수로 수를 구해 보세요.", render: (b, a) => numbers(b, a, [
-      { q: "큰 그림 3개, 작은 그림 1개는 몇 명?", a: 31, why: { "4": "그림의 개수만 세었어요. 큰 그림 1개는 10명이에요." } },
-      { q: "큰 그림 1개, 작은 그림 5개는 몇 명?", a: 15 }, { q: "27명은 큰 그림 몇 개?", a: 2 }],
+    { name: "그림의 뜻 알기", inst: "그림의 개수로 수를 구해 보세요.",
+      hints: ["큰 그림 1개는 10명, 작은 그림 1개는 1명이에요.", "큰 그림 3개 = 30명, 여기에 작은 그림 수를 더해요."],
+      render: (b, a) => numbers(b, a, [
+      { q: "큰 그림 3개, 작은 그림 1개는 몇 명?", a: 31, why: { "4": "그림의 개수만 세었어요. 큰 그림 1개는 10명이에요.", "13": "큰 그림과 작은 그림을 바꾸어 세었어요." } },
+      { q: "큰 그림 1개, 작은 그림 5개는 몇 명?", a: 15, why: { "6": "그림의 개수만 세었어요. 큰 그림 1개는 10명이에요." } },
+      { q: "27명은 큰 그림 몇 개?", a: 2, why: { "27": "큰 그림의 개수를 묻는 문제예요. 십의 자리 수를 보세요." } }],
       { ok: "그림의 개수와 수를 자유롭게 바꿀 수 있어요." }) },
     { name: "표와 비교하기", inst: "같은 자료를 표로도 나타냈어요. 표와 그림그래프를 견주어 보세요.", render: (b, a) => quiz(b, a, [
+      { q: "그림그래프에 꼭 있어야 하는 것이 아닌 것은?", o: ["제목", "항목", "그림이 나타내는 수", "그린 사람의 나이"], a: 3 },
       { q: "표와 그림그래프가 나타낸 자료는?", o: ["서로 다른 자료예요", "같은 자료예요"], a: 1 },
       { q: "표와 그림그래프의 다른 점은?", o: ["수를 나타내는 방법이 달라요", "조사한 사람이 달라요"], a: 0 },
-      { q: "정확한 수와 합계를 알기에 더 좋은 것은?", o: ["표", "그림그래프"], a: 0 },
+      { q: "정확한 수와 합계를 알기에 더 좋은 것은?", o: ["표", "그림그래프"], a: 0, why: { "1": "그림그래프에는 합계 칸이 없어요. 합계는 표가 알기 쉬워요." } },
       { q: "많고 적음을 한눈에 보기에 더 좋은 것은?", o: ["표", "그림그래프"], a: 1 }]) },
     { inst: "같은 점과 다른 점을 정리해요.", render: (b, a) => blanks(b, a, ["표와 그림그래프는 ", { o: ["같은 자료", "다른 자료"], a: 0 }, "를 나타내요. 하지만 표는 수를 ", { o: ["숫자", "그림"], a: 0 }, "로, 그림그래프는 수를 ", { o: ["숫자", "그림"], a: 1 }, "으로 나타내요."]) },
-    { inst: "그림그래프로 나타내면 좋은 점을 써 보세요.", render: (b, a) => writeStep(b, a, [
+    { inst: "써 보세요.", render: (b, a) => writeStep(b, a, [
       { q: "표와 그림그래프의 같은 점을 써 보세요.", tag: "같은 점" },
       { q: "표와 그림그래프의 다른 점을 써 보세요.", tag: "다른 점" },
       { q: "조사한 자료를 그림그래프로 나타내면 좋은 점은 무엇인가요?", tag: "좋은 점" }]) }
@@ -1889,56 +1919,65 @@ const LESSONS = [
 {
   id: "y3", no: 3, title: "그림그래프의 내용을 알아볼까요", soop: "개념 구축하기(O)",
   question: "그림그래프에서 어떤 사실을 알아낼 수 있을까요?",
-  summary: "그림그래프를 보면 가장 많은 것과 적은 것, 차이, 합계, 그리고 자료의 전체 모습까지 알 수 있어요. 알아낸 사실로 문제를 만들어 주고받을 수도 있어요.",
+  summary: "그림그래프를 읽을 때는 그림 하나가 얼마를 나타내는지 먼저 봐요. 그림이 길다고 수가 가장 큰 것은 아니에요. 알아낸 사실로 문제를 만들어 주고받을 수도 있어요.",
   steps: [
-    { inst: "학년별로 모은 재활용품 수를 나타낸 그림그래프예요. 읽어 보세요.", render: (b, a) => simPictoRead(b, a, {
-      rows: [{ name: "3학년", v: 32 }, { name: "4학년", v: 25 }, { name: "5학년", v: 41 }, { name: "6학년", v: 17 }],
-      qs: [{ q: "5학년은 몇 개?", a: 41, unit: "개" }, { q: "6학년은 몇 개?", a: 17, unit: "개" }],
-      tip: "큰 그림은 10개, 작은 그림은 1개예요." }) },
-    { name: "사실 찾기", inst: "그래프에서 알 수 있는 사실을 찾아보세요.", render: (b, a) => quiz(b, a, [
-      { q: "가장 많이 모은 학년은?", o: ["3학년", "4학년", "5학년", "6학년"], a: 2 },
-      { q: "가장 적게 모은 학년은?", o: ["3학년", "4학년", "5학년", "6학년"], a: 3 },
-      { q: "이 그래프로 알 수 없는 것은?", o: ["학년별 개수", "학년별 차이", "왜 많이 모았는지"], a: 2 }]) },
-    { inst: "읽는 방법을 정리해요.", render: (b, a) => blanks(b, a, ["그림그래프에서는 그림의 ", { o: ["개수와 크기", "색깔"], a: 0 }, "를 보고 수를 알아내요. 그래프에 나타나지 않은 것은 ", { o: ["알 수 없어요", "짐작해서 말해요"], a: 0 }, "."]) },
-    { name: "계산해 보기", inst: "그래프의 수로 계산해 보세요.", render: (b, a) => numbers(b, a, [
-      { q: "5학년과 6학년의 차이는 몇 개? ", a: 24, unit: "개" },
-      { q: "네 학년이 모은 것은 모두 몇 개? (32, 25, 41, 17) ", a: 115, unit: "개" },
-      { q: "3학년이 5학년만큼 모으려면 몇 개 더 모아야 할까요? ", a: 9, unit: "개" }],
-      { ok: "그래프의 수로 합계와 차이를 구했어요." }) },
-    { name: "문제 만들기", inst: "그래프를 보고 알 수 있는 사실로 문제를 만들어 짝과 바꾸어 풀어 보세요.", render: (b, a) => writeStep(b, a, [
+    { inst: "붕어빵 가게의 그림그래프예요. 그림이 세 가지예요. 읽어 보세요.", render: (b, a) => simPictoRead(b, a, {
+      title: "종류별 팔린 붕어빵 수", vlabel: "붕어빵 수", vunit: "개", units: [100, 10, 1],
+      rows: [{ name: "고구마", v: 120 }, { name: "슈크림", v: 108 }, { name: "초코", v: 114 }, { name: "팥", v: 210 }],
+      qs: [{ q: "팥붕어빵은 몇 개 팔렸나요?", a: 210, unit: "개" }, { q: "슈크림붕어빵은 몇 개 팔렸나요?", a: 108, unit: "개" }],
+      tip: "● 1개는 100개, ◎ 1개는 10개, ○ 1개는 1개예요." }) },
+    { name: "사실 찾기", inst: "그래프를 보고 알 수 있는 사실을 찾아보세요.",
+      hints: ["그림의 개수를 세기 전에, 그림 하나가 얼마를 나타내는지 보세요."],
+      render: (b, a) => quiz(b, a, [
+      { q: "그림의 개수가 가장 많은 붕어빵은?", o: ["고구마", "슈크림", "초코", "팥"], a: 1 },
+      { q: "가장 많이 팔린 붕어빵은?", o: ["고구마", "슈크림", "초코", "팥"], a: 3, why: { "1": "슈크림은 그림이 가장 길지만 작은 그림(1개)이 많아요. 팥은 큰 그림(100개)이 2개예요." } },
+      { q: "그림이 가장 긴데도 가장 많이 팔리지 않은 까닭은?", o: ["그림마다 나타내는 수가 다르기 때문에", "그림을 잘못 그렸기 때문에"], a: 0 }]) },
+    { inst: "읽는 방법을 정리해요.", render: (b, a) => blanks(b, a, ["그림그래프는 그림의 ", { o: ["개수만 세면", "개수와 나타내는 수를 함께 보면"], a: 1 }, " 알 수 있어요. 그림이 길어도 수가 가장 ", { o: ["큰 것은 아니에요", "커요"], a: 0 }, "."]) },
+    { name: "다른 그래프 읽기", inst: "마을별 나무 수를 나타낸 그림그래프예요. 큰 그림은 100그루, 작은 그림은 10그루예요.", render: (b, a) => simPictoRead(b, a, {
+      title: "마을별 나무 수", vlabel: "나무 수", vunit: "그루", units: [100, 10],
+      rows: [{ name: "초롱", v: 320 }, { name: "나래", v: 240 }, { name: "새솔", v: 150 }, { name: "버들", v: 230 }],
+      qs: [{ q: "초롱 마을의 나무는?", a: 320, unit: "그루" }, { q: "새솔 마을의 나무는?", a: 150, unit: "그루" }, { q: "초롱은 새솔보다 몇 그루 더 많나요?", a: 170, unit: "그루" }] }) },
+    { name: "문제 만들기", inst: "그래프를 보고 문제를 만들어 짝과 바꾸어 풀어 보세요.", render: (b, a) => writeStep(b, a, [
       { q: "이 그래프를 보고 알 수 있는 사실을 두 가지 써 보세요.", tag: "알 수 있는 사실" },
-      { q: "그 사실로 문제를 하나 만들어 보세요. (예: 3학년과 4학년의 차이는?)", tag: "내가 만든 문제" },
+      { q: "그 사실로 문제를 하나 만들어 보세요. (예: 초롱과 버들의 차이는?)", tag: "내가 만든 문제" },
       { q: "짝이 낸 문제와 그 답을 써 보세요.", tag: "짝의 문제와 답" }]) }
   ],
   challenge: { inst: "빠진 수를 찾아보세요.", render: (b, a) => numbers(b, a, [
-    { q: "네 학년 합계가 115개이고 3학년 32개, 4학년 25개, 6학년 17개면 5학년은? ", a: 41, unit: "개" },
-    { q: "5학년은 4학년보다 몇 개 더 많나요? ", a: 16, unit: "개" }],
+    { q: "네 마을 합계가 940그루이고 초롱 320, 나래 240, 버들 230이면 새솔은? ", a: 150, unit: "그루" },
+    { q: "나래와 버들을 합하면 몇 그루? ", a: 470, unit: "그루" }],
     { ok: "합계를 이용해 빠진 수를 구했어요." }) }
 },
 {
   id: "y4", no: 4, title: "그림그래프로 나타내는 방법을 알아볼까요", soop: "개념 구축하기(O)",
   question: "표의 수를 그림으로 어떻게 옮길까요?",
-  summary: "먼저 그림이 나타낼 수를 정하고, 십의 자리는 큰 그림, 일의 자리는 작은 그림으로 나타내요. 작은 그림이 10개가 되면 큰 그림 1개로 바꿔요.",
+  summary: "① 어떤 그림으로 나타낼지 정해요. ② 단위를 몇 가지로 할지 정해요. ③ 그림을 그려요. ④ 알맞은 제목을 써요. 작은 그림이 10개가 되면 큰 그림 1개로 바꿔요.",
   steps: [
     { inst: "표의 수에 맞게 그림그래프를 만들어 보세요.", render: (b, a) => simPictoBuild(b, a, {
-      rows: [{ name: "떡볶이", v: 32 }, { name: "치킨", v: 25 }, { name: "김밥", v: 14 }, { name: "피자", v: 23 }] }) },
+      title: "종류별 팔린 과일 수", vlabel: "과일 수", vunit: "개",
+      rows: [{ name: "귤", v: 34 }, { name: "배", v: 21 }, { name: "감", v: 15 }, { name: "수박", v: 28 }] }) },
     { name: "개수 정하기", inst: "큰 그림과 작은 그림의 개수를 구해 보세요.", render: (b, a) => numbers(b, a, [
-      { q: "32명은 큰 그림 몇 개?", a: 3 }, { q: "32명은 작은 그림 몇 개?", a: 2 }, { q: "14명은 큰 그림 몇 개?", a: 1 }, { q: "14명은 작은 그림 몇 개?", a: 4 }],
+      { q: "34개는 큰 그림 몇 개?", a: 3 }, { q: "34개는 작은 그림 몇 개?", a: 4 }, { q: "15개는 큰 그림 몇 개?", a: 1 }, { q: "15개는 작은 그림 몇 개?", a: 5 }],
       { ok: "십의 자리는 큰 그림, 일의 자리는 작은 그림이 돼요." }) },
-    { inst: "그리는 방법을 정리해요.", render: (b, a) => blanks(b, a, ["표의 수에서 ", { o: ["십의 자리", "일의 자리"], a: 0 }, "는 큰 그림, ", { o: ["십의 자리", "일의 자리"], a: 1 }, "는 작은 그림으로 나타내요."]) },
-    { name: "단위 정하기", inst: "자료의 크기에 맞는 단위를 골라 보세요.", render: (b, a) => quiz(b, a, [
-      { q: "우리 반 25명 조사 → 큰 그림은?", o: ["10명", "100명"], a: 0 },
-      { q: "학교 전체 890명 조사 → 큰 그림은?", o: ["10명", "100명"], a: 1 },
-      { q: "320명을 큰 그림 10명으로 나타내면 그림이 32개예요. 어떤가요?", o: ["읽기 쉬워요", "너무 많아 읽기 어려워요"], a: 1 }]) },
-    { inst: "다른 자료로도 만들어 보세요.", render: (b, a) => simPictoBuild(b, a, {
-      rows: [{ name: "봄", v: 21 }, { name: "여름", v: 34 }, { name: "가을", v: 16 }, { name: "겨울", v: 29 }],
-      tip: "좋아하는 계절을 조사한 표예요." }) }
+    { name: "그리는 차례 정하기", inst: "그림그래프로 나타내는 차례를 생각해 보세요.", render: (b, a) => quiz(b, a, [
+      { q: "① 과일 수를 나타낼 그림으로 알맞은 것은?", o: ["자료와 어울리는 그림", "아무 그림이나"], a: 0 },
+      { q: "② 17컵, 26컵, 42컵, 102컵을 나타내려면 단위를 몇 가지로 할까요?", o: ["2가지(10컵, 1컵)", "3가지(100컵, 10컵, 1컵)"], a: 1, why: { "0": "102컵은 세 자리 수예요. 10컵짜리 그림만으로는 10개가 넘어요." } },
+      { q: "우리 반 25명을 나타낼 때 큰 그림은?", o: ["10명", "100명"], a: 0 },
+      { q: "학교 전체 890명을 나타낼 때 큰 그림은?", o: ["10명", "100명"], a: 1, why: { "0": "890을 10명짜리 그림으로 그리면 89개를 그려야 해요." } },
+      { q: "④ 그림을 다 그린 뒤에 꼭 써야 하는 것은?", o: ["알맞은 제목", "그린 날짜"], a: 0 }]) },
+    { name: "세 가지 단위로 나타내기", inst: "세 자리 수가 있어요. 단위를 세 가지로 하여 나타내 보세요.", render: (b, a) => simPictoBuild(b, a, {
+      title: "종류별 팔린 음료의 수", vlabel: "음료의 수", vunit: "컵", units: [100, 10, 1],
+      rows: [{ name: "아이스티", v: 17 }, { name: "사과주스", v: 26 }, { name: "유자차", v: 42 }, { name: "초코우유", v: 102 }],
+      tip: "● 1개는 100컵, ◎ 1개는 10컵, ○ 1개는 1컵이에요." }) },
+    { name: "제목 쓰고 비교하기", inst: "내 그림그래프를 완성하고 짝의 것과 견주어 보세요.", render: (b, a) => writeStep(b, a, [
+      { q: "내 그림그래프에 알맞은 제목을 써 보세요.", tag: "제목" },
+      { q: "짝의 그림그래프와 다른 점은 무엇인가요? (그림, 단위, 제목)", tag: "다른 점" },
+      { q: "같은 표인데 그림그래프가 서로 다를 수 있는 까닭은 무엇인가요?", tag: "까닭" }]) }
   ],
-  challenge: { inst: "단위를 바꾸어 나타내 보세요.", render: (b, a) => numbers(b, a, [
-    { q: "큰 그림 100권, 작은 그림 10권일 때 240권은 큰 그림 몇 개? ", a: 2 },
-    { q: "그때 작은 그림은 몇 개? ", a: 4 },
-    { q: "큰 그림 3개와 작은 그림 5개는 몇 권? ", a: 350, unit: "권" }],
-    { ok: "그림이 나타내는 수를 바꾸면 더 큰 수도 나타낼 수 있어요." }) }
+  challenge: { inst: "음료 그림그래프의 단위를 살펴보세요.", render: (b, a) => numbers(b, a, [
+    { q: "초코우유 102컵은 ● 몇 개? (● 1개는 100컵) ", a: 1 },
+    { q: "그때 ○은 몇 개? (○ 1개는 1컵) ", a: 2 },
+    { q: "● 1개, ◎ 3개, ○ 5개는 몇 컵? ", a: 135, unit: "컵" }],
+    { ok: "단위를 세 가지로 하면 큰 수도 짧게 나타낼 수 있어요." }) }
 },
 {
   id: "y5", no: 5, title: "자료를 조사하여 그림그래프로 나타내어 볼까요", soop: "개념 구축하기(O)",
@@ -1947,11 +1986,12 @@ const LESSONS = [
   steps: [
     { name: "계획 세우기", inst: "조사 순서를 알아봐요.", render: (b, a) => sequence(b, a, ["가. 자료를 모아요", "나. 무엇을 조사할지 정해요", "다. 표로 정리해요", "라. 그림그래프로 나타내요"], [1, 0, 2, 3], { ok: "조사할 것 정하기 → 자료 모으기 → 표 → 그림그래프 순서예요." }) },
     { name: "항목 정하기", inst: "조사 항목을 정할 때 생각할 점이에요.", render: (b, a) => quiz(b, a, [
-      { q: "‘좋아하는 색’을 조사할 때 항목으로 알맞은 것은?", o: ["빨강, 파랑, 노랑, 초록", "빨강, 빨간색, 붉은색"], a: 0 },
+      { q: "‘좋아하는 색’을 조사할 때 항목으로 알맞은 것은?", o: ["빨강, 파랑, 노랑, 초록", "빨강, 빨간색, 붉은색"], a: 0, why: { "1": "빨강·빨간색·붉은색은 모두 같은 색이에요. 항목은 겹치지 않아야 해요." } },
       { q: "항목이 너무 많으면 어떻게 될까요?", o: ["그래프가 복잡해져요", "더 정확해져요"], a: 0 },
       { q: "‘기타’ 항목은 왜 필요할까요?", o: ["보기에 좋아서", "정한 항목에 없는 답을 담기 위해서"], a: 1 }]) },
     { name: "자료 세기", inst: "모은 자료를 세어 표로 정리해 보세요.", render: (b, a) => simDataCount(b, a, { data: { "강아지": 8, "고양이": 6, "햄스터": 4, "물고기": 3 }, tip: "기르고 싶은 반려동물을 조사한 자료예요." }) },
     { name: "그래프로 나타내기", inst: "표의 수를 그림그래프로 나타내 보세요.", render: (b, a) => simPictoBuild(b, a, {
+      title: "기르고 싶은 반려동물별 학생 수",
       rows: [{ name: "강아지", v: 8 }, { name: "고양이", v: 6 }, { name: "햄스터", v: 4 }, { name: "물고기", v: 3 }],
       tip: "우리 반 조사라 수가 작아요. 작은 그림만으로 나타내도 괜찮아요." }) },
     { name: "발표하기", inst: "발표할 말을 써 보세요.", render: (b, a) => writeStep(b, a, [
@@ -1967,60 +2007,68 @@ const LESSONS = [
 {
   id: "y6", no: 6, title: "생각을 더하다 ― 반려동물을 위해 댓글을 달아 볼까요?", soop: "탐구 정리하기(O)",
   question: "그래프에 나타난 사실을 어떻게 설명하고 의견을 말할까요?",
-  summary: "그래프에서 읽은 사실을 근거로 삼아 의견을 말해요. 사실(그래프에 있는 것)과 의견(내 생각)을 구별해서 말하는 것이 중요해요.",
+  summary: "그래프에서 읽은 사실을 들어 의견을 말해요. 사실(그래프에 있는 것)과 의견(내 생각)을 구별해서 말하는 것이 중요해요.",
   steps: [
     { inst: "윤우가 올린 글에 붙은 그림그래프예요. 버려진 반려동물 수를 읽어 보세요.", render: (b, a) => simPictoRead(b, a, {
+      title: "해마다 버려진 반려동물 수", vlabel: "반려동물 수", vunit: "마리",
       rows: [{ name: "2021년", v: 32 }, { name: "2022년", v: 28 }, { name: "2023년", v: 24 }, { name: "2024년", v: 21 }],
       qs: [{ q: "2021년은 몇 마리?", a: 32, unit: "마리" }, { q: "2024년은 몇 마리?", a: 21, unit: "마리" }],
       tip: "큰 그림은 10마리, 작은 그림은 1마리예요. (수는 예시입니다)" }) },
     { name: "사실 찾기", inst: "그래프에서 읽을 수 있는 사실을 찾아보세요.", render: (b, a) => quiz(b, a, [
       { q: "해마다 수는 어떻게 되고 있나요?", o: ["늘어나고 있어요", "줄어들고 있어요"], a: 1 },
-      { q: "2021년과 2024년의 차이는?", o: ["11마리", "21마리"], a: 0 },
+      { q: "2021년과 2024년의 차이는?", o: ["11마리", "21마리"], a: 0, why: { "1": "32마리와 21마리의 차이를 구해요. 32−21=11이에요." } },
       { q: "그래프만 보고 알 수 있는 것은?", o: ["해마다 수가 어떻게 변했는지", "왜 그렇게 되었는지"], a: 0 }]) },
     { inst: "사실과 의견을 구별해요.", render: (b, a) => blanks(b, a, ["‘2024년은 21마리예요’는 ", { o: ["사실", "의견"], a: 0 }, "이고, ‘더 줄이려면 우리가 노력해야 해요’는 ", { o: ["사실", "의견"], a: 1 }, "이에요."]) },
-    { name: "댓글 쓰기", inst: "그래프를 근거로 댓글을 써 보세요.", render: (b, a) => writeStep(b, a, [
+    { name: "댓글 쓰기", inst: "그래프에서 읽은 사실을 들어 댓글을 써 보세요.", render: (b, a) => writeStep(b, a, [
       { q: "그래프에서 읽은 사실을 한 문장으로 써 보세요.", tag: "사실" },
-      { q: "그 사실을 근거로 내 의견을 써 보세요. (‘왜냐하면’을 넣어 보세요)", tag: "의견" }], { min: 8 }) },
+      { q: "그 사실을 들어 내 의견을 써 보세요. (‘왜냐하면’을 넣어 보세요)", tag: "의견" }], { min: 8 }) },
     { inst: "오늘 배운 것을 정리해요.", render: (b, a) => writeStep(b, a, [
       { q: "연결하기: 그림그래프를 어떻게 읽고 사용했나요?", tag: "연결" },
-      { q: "확장하기: 그래프를 근거로 말해야 하는 경우는 언제일까요?", tag: "확장" }]) }
+      { q: "확장하기: 그래프를 보고 말해야 하는 때는 언제일까요?", tag: "확장" }]) }
   ],
-  challenge: { inst: "자료를 비판적으로 읽어 보세요.", render: (b, a) => quiz(b, a, [
+  challenge: { inst: "자료를 꼼꼼히 따져 읽어 보세요.", render: (b, a) => quiz(b, a, [
     { q: "그림그래프에서 큰 그림의 크기를 마음대로 다르게 그리면?", o: ["보기에 예뻐요", "실제보다 많거나 적어 보여 오해할 수 있어요"], a: 1 },
     { q: "‘우리 학교 학생들은 모두 강아지를 좋아한다’고 말하려면?", o: ["우리 반 25명만 조사하면 돼요", "여러 학년에서 고르게 많은 학생을 조사해야 해요"], a: 1 }]) }
 },
 {
   id: "y7", no: 7, title: "놀이를 더하다 ― 공을 주고받아요", soop: "발표하기(P)",
   question: "놀이 결과를 표와 그래프로 어떻게 나타낼까요?",
-  summary: "놀이에서 나온 자료도 표로 정리하고 그림그래프로 나타내면 모둠별로 비교하기 쉬워요.",
+  summary: "굴리기, 한 번 튕기기, 바로 던지기로 2분 동안 공을 주고받아요. 놀이에서 나온 자료도 표로 정리하고 그림그래프로 나타내면 방법끼리 비교하기 쉬워요.",
   steps: [
-    { name: "놀이하기", inst: "모둠별로 1분 동안 공을 주고받은 횟수예요. 자료를 세어 표로 정리해 보세요.", render: (b, a) => simDataCount(b, a, { data: { "1모둠": 7, "2모둠": 9, "3모둠": 5, "4모둠": 6 }, tip: "카드 한 장이 공을 한 번 주고받은 것이에요." }) },
-    { name: "그래프로 나타내기", inst: "표의 수를 그림그래프로 나타내 보세요.", render: (b, a) => simPictoBuild(b, a, {
-      rows: [{ name: "1모둠", v: 7 }, { name: "2모둠", v: 9 }, { name: "3모둠", v: 5 }, { name: "4모둠", v: 6 }],
-      tip: "수가 작으니 작은 그림(1회)만으로 나타내요." }) },
+    { name: "놀이하기", inst: "세 가지 방법으로 2분 동안 공을 주고받았어요. 기록을 읽어 보세요.", render: (b, a) => simPictoRead(b, a, {
+      title: "방법별 공을 전달한 횟수", vlabel: "전달한 횟수", vunit: "회",
+      rows: [{ name: "굴리기", v: 24 }, { name: "튕기기", v: 15 }, { name: "던지기", v: 21 }],
+      qs: [{ q: "굴리기는 몇 회?", a: 24, unit: "회" }, { q: "한 번 튕기기는 몇 회?", a: 15, unit: "회" }],
+      tip: "큰 그림은 10회, 작은 그림은 1회예요." }) },
+    { name: "그래프로 나타내기", inst: "우리 모둠 기록을 그림그래프로 나타내 보세요.", render: (b, a) => simPictoBuild(b, a, {
+      title: "방법별 공을 전달한 횟수", vlabel: "전달한 횟수", vunit: "회",
+      rows: [{ name: "굴리기", v: 24 }, { name: "튕기기", v: 15 }, { name: "던지기", v: 21 }],
+      tip: "2분 동안의 기록이에요. 큰 그림은 10회, 작은 그림은 1회로 해요." }) },
     { name: "비교하기", inst: "결과를 비교해 보세요.", render: (b, a) => numbers(b, a, [
-      { q: "네 모둠이 주고받은 횟수는 모두 몇 번? ", a: 27, unit: "번" },
-      { q: "가장 많은 모둠과 가장 적은 모둠의 차이는? ", a: 4, unit: "번" }],
-      { ok: "표와 그래프로 모둠을 비교했어요." }) },
-    { name: "규칙 찾기", inst: "놀이 결과를 나타내는 방법을 정리해요.", render: (b, a) => blanks(b, a, ["수가 작을 때는 그림 1개를 ", { o: ["1회", "10회"], a: 0 }, "로 정하는 것이 좋아요. 수가 클 때는 그림 1개를 ", { o: ["더 크게", "더 작게"], a: 0 }, " 정해요."]) },
+      { q: "세 가지 방법으로 주고받은 횟수는 모두 몇 회? ", a: 60, unit: "회" },
+      { q: "가장 많은 방법과 가장 적은 방법의 차이는? ", a: 9, unit: "회" }],
+      { ok: "표와 그래프로 세 방법을 비교했어요." }) },
+    { name: "규칙 찾기", inst: "놀이 결과를 나타내는 방법을 정리해요.", render: (b, a) => blanks(b, a, ["횟수가 두 자리 수이니 큰 그림은 ", { o: ["10회", "100회"], a: 0 }, ", 작은 그림은 1회로 정해요. 그림그래프에는 알맞은 ", { o: ["제목", "날짜"], a: 0 }, "도 꼭 써요."]) },
     { name: "발표하기", inst: "놀이를 돌아봐요.", render: (b, a) => writeStep(b, a, [
-      { q: "우리 모둠의 결과를 그래프로 설명해 보세요.", tag: "결과" },
+      { q: "어떤 방법이 가장 잘되었는지 그래프로 설명해 보세요.", tag: "결과" },
       { q: "다음에 더 잘하려면 무엇을 바꾸면 좋을까요?", tag: "다음에는" }]) }
   ],
   challenge: { inst: "기록을 더 읽어 보세요.", render: (b, a) => numbers(b, a, [
-    { q: "2모둠이 2분 동안 같은 속도로 하면 몇 번? ", a: 18, unit: "번" },
-    { q: "네 모둠 합계가 27번이면 1모둠(6번)을 뺀 나머지 세 모둠은 몇 번? ", a: 21, unit: "번" }],
-    { ok: "그래프의 수를 곱셈·뺄셈에도 이용했어요." }) }
+    { q: "굴리기 24회는 2분 동안의 기록이에요. 1분에는 몇 회쯤 했을까요? ", a: 12, unit: "회" },
+    { q: "세 방법 합계가 60회이고 굴리기 24회, 던지기 21회면 튕기기는? ", a: 15, unit: "회" }],
+    { ok: "그래프의 수를 나눗셈·뺄셈에도 이용했어요." }) }
 },
 {
   id: "y8", no: 8, title: "공부한 내용을 확인해요", soop: "발표하기(P)",
   question: "그림그래프를 배우기 전과 후, 내 생각은 어떻게 달라졌나요?",
-  summary: "자료를 세어 표로 정리하고, 알맞은 단위를 정해 그림그래프로 나타내면 많고 적음을 한눈에 볼 수 있어요.",
+  summary: "자료를 세어 표로 정리하고, 알맞은 단위를 정해 그림그래프로 나타내면 많고 적음을 한눈에 볼 수 있어요. 제목과 그림이 나타내는 수를 꼭 써요.",
   steps: [
     { name: "확인 1", inst: "그림그래프 읽기", render: (b, a) => simPictoRead(b, a, {
+      title: "좋아하는 계절별 학생 수",
       rows: [{ name: "봄", v: 21 }, { name: "여름", v: 34 }, { name: "가을", v: 16 }, { name: "겨울", v: 29 }],
       qs: [{ q: "여름을 좋아하는 학생은?", a: 34, unit: "명" }, { q: "가을을 좋아하는 학생은?", a: 16, unit: "명" }, { q: "모두 몇 명?", a: 100, unit: "명" }] }) },
     { name: "확인 2", inst: "그림그래프 만들기", render: (b, a) => simPictoBuild(b, a, {
+      title: "좋아하는 취미별 학생 수",
       rows: [{ name: "독서", v: 26 }, { name: "운동", v: 31 }, { name: "게임", v: 18 }] }) },
     { name: "확인 3", inst: "단위와 계산", render: (b, a) => numbers(b, a, [
       { q: "큰 그림 100명, 작은 그림 10명일 때 큰 2개·작은 5개는 몇 명?", a: 250 },
@@ -2042,7 +2090,7 @@ const LESSONS = [
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
 window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.student) openLesson(L.id); });
 </script>
-<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden>🏠 홈</a><style>#hj-home{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:4px;font:700 18px/1 "Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1F2A44;background:#fff;border:3px solid #1F2A44;border-radius:999px;padding:9px 16px;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.18);opacity:.92}#hj-home[hidden]{display:none}#hj-home:hover,#hj-home:focus-visible{opacity:1;outline:3px solid #2F74E0;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}}:root[data-theme="dark"] #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
 var I={play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',

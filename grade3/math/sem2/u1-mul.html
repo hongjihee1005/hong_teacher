@@ -1556,9 +1556,11 @@ function simTarget(body, api, opt) {
 function figSegs(cfg) {
   const s = makeSvg(360, 300); const C = { x: 180, y: 150 }, R = 115;
   s.style.maxWidth = "22em"; s.append(svgEl("circle", { cx: C.x, cy: C.y, r: R, fill: "#fff", stroke: INK, "stroke-width": 4 }), svgEl("circle", { cx: C.x, cy: C.y, r: 6, fill: INK }), txt(C.x + 16, C.y + 20, "ㅇ", 22));
-  const P = {}; Object.entries(cfg.pts).forEach(([k, a]) => { const r = a * Math.PI / 180; P[k] = { x: C.x + R * Math.cos(r), y: C.y - R * Math.sin(r) }; s.append(svgEl("circle", { cx: P[k].x, cy: P[k].y, r: 4, fill: INK }), txt(C.x + (R + 22) * Math.cos(r), C.y - (R + 22) * Math.sin(r), k, 22)); });
+  const P = {}; Object.entries(cfg.pts || {}).forEach(([k, a]) => { const r = a * Math.PI / 180; P[k] = { x: C.x + R * Math.cos(r), y: C.y - R * Math.sin(r) }; s.append(svgEl("circle", { cx: P[k].x, cy: P[k].y, r: 4, fill: INK }), txt(C.x + (R + 22) * Math.cos(r), C.y - (R + 22) * Math.sin(r), k, 22)); });
   P["ㅇ"] = C;
-  cfg.segs.forEach(([a, b]) => s.append(svgEl("line", { x1: P[a].x, y1: P[a].y, x2: P[b].x, y2: P[b].y, stroke: INK, "stroke-width": 3.5 })));
+  /* dots: [이름, 각도, 반지름 배수] — 1보다 작으면 원 안, 1이면 원 위, 1보다 크면 원 밖 */
+  (cfg.dots || []).forEach(([k, a, f]) => { const r = a * Math.PI / 180, d = R * f; const x = C.x + d * Math.cos(r), y = C.y - d * Math.sin(r); s.append(svgEl("circle", { cx: x, cy: y, r: 6, fill: INK }), txt(x + 22, y - 18, k, 22)); });
+  (cfg.segs || []).forEach(([a, b]) => s.append(svgEl("line", { x1: P[a].x, y1: P[a].y, x2: P[b].x, y2: P[b].y, stroke: INK, "stroke-width": 3.5 })));
   (cfg.labels || []).forEach(([x, y, t]) => s.append(txt(x, y, t, 20)));
   return s;
 }
@@ -1694,15 +1696,16 @@ function simAreaModel(body, api, opt) {
 
 /* 어림하기 */
 function simEstimate(body, api, opt) {
+  const gap = (opt.max || 1000) / 5;   // 눈금 한 칸의 크기 (기본 200)
   const svg = makeSvg(700, 150);
   svg.append(svgEl("line", { x1: 40, y1: 90, x2: 660, y2: 90, stroke: INK, "stroke-width": 3 }));
-  for (let i = 0; i <= 5; i++) { const x = 40 + i * 124; svg.append(svgEl("line", { x1: x, y1: 78, x2: x, y2: 102, stroke: INK, "stroke-width": 3 }), txt(x, 124, String(i * 200), 20)); }
+  for (let i = 0; i <= 5; i++) { const x = 40 + i * 124; svg.append(svgEl("line", { x1: x, y1: 78, x2: x, y2: 102, stroke: INK, "stroke-width": 3 }), txt(x, 124, String(i * gap), 20)); }
   const mark = svgEl("polygon", { points: "0,-14 12,8 -12,8", fill: TENT, opacity: 0 }); svg.append(mark);
   const pick = h("div");
   body.append(h("div", { class: "stage" }, svg));
   quiz(pick, api, [{ q: opt.q, o: opt.o, a: opt.a }], { ok: opt.ok });
   body.append(pick);
-  pick.querySelectorAll(".opt").forEach((b, i) => b.addEventListener("click", () => { const v = opt.vals[i]; mark.setAttribute("transform", `translate(${40 + v / 200 * 124},76)`); mark.setAttribute("opacity", 1); }));
+  pick.querySelectorAll(".opt").forEach((b, i) => b.addEventListener("click", () => { const v = opt.vals[i]; mark.setAttribute("transform", `translate(${40 + v / gap * 124},76)`); mark.setAttribute("opacity", 1); }));
 }
 
 /* 숫자 카드로 가장 큰 곱 만들기 */
@@ -1866,83 +1869,97 @@ const LESSONS = [
     { inst: "세로셈으로 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 4, b: 23, rows: 3, tip: "첫 줄은 4 × 3, 둘째 줄은 4 × 20이에요." }) },
     { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "6 × 34 =", a: 204 }, { q: "8 × 26 =", a: 208 }, { q: "7 × 45 =", a: 315 }], { ok: "곱하는 수가 두 자리여도 나누어 계산하면 돼요!" }) }
   ],
-  challenge: { inst: "송판 체험 문제예요.", render: (b, a) => numbers(b, a, [
-    { q: "한 사람이 송판을 3장씩 쓰고 45명이 체험하면 몇 장? ", a: 135, unit: "장" },
-    { q: "송판이 100장씩 2상자 있어요. 몇 장이 남을까요? ", a: 65, unit: "장" }],
-    { ok: "곱셈과 뺄셈을 이어서 해결했어요!" }) }
+  challenge: { inst: "이번에는 내가 문제를 만들어요. (한 자리 수) × (몇십몇)이 필요한 문제예요.",
+    hints: ["축제에서 한 사람이 몇 개씩 쓰는 것을 떠올려 봐요.", "보기: 한 사람이 송판을 3장씩 쓰고 45명이 체험하면 몇 장? → 3 × 45 = 135"],
+    render: (b, a) => writeStep(b, a, [
+      { q: "(한 자리 수) × (몇십몇)이 필요한 문제를 하나 만들어 써 보세요.", tag: "내 문제" },
+      { q: "그 문제를 푸는 식을 써 보세요.", tag: "식" },
+      { q: "답을 써 보세요.", tag: "답" }],
+      { ok: "문제를 만들고 스스로 해결했어요! 친구와 바꾸어 풀어 봐요." }) }
 },
 {
   id: "t7", no: 7, title: "(두 자리 수) × (두 자리 수) ⑴ 올림이 한 번 있는 경우", soop: "개념 구축하기(O)",
   question: "두 자리 수끼리의 곱셈은 몇 조각으로 나누어야 할까요?",
   summary: "(몇십몇)×(몇십몇)은 네 조각으로 나누어 계산해요. 세로셈의 첫 줄은 일의 자리와 곱한 값, 둘째 줄은 십의 자리와 곱한 값이에요.",
   steps: [
-    { inst: "관람석이 한 줄에 12석씩 23줄이에요. 12 × 23을 네 조각으로 나누어 보세요.", render: (b, a) => simAreaModel(b, a, { a: 12, b: 23, tip: "세로 12를 10과 2로, 가로 23을 20과 3으로 나누었어요." }) },
-    { inst: "세로셈으로 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 12, b: 23, rows: 3, tip: "첫 줄은 12 × 3 = 36, 둘째 줄은 12 × 20 = 240이에요." }) },
-    { inst: "세로셈 두 줄의 뜻을 정리해요.", render: (b, a) => blanks(b, a, ["세로셈의 첫째 줄은 12 × ", { o: ["3", "30"], a: 0 }, ", 둘째 줄은 12 × ", { o: ["2", "20"], a: 1 }, "의 값이에요. 두 줄을 더하면 답이 돼요."]) },
+    { inst: "태권도 시범 경기에는 한 조에 12명씩 16개 조가 참가해요. 12 × 16을 네 조각으로 나누어 보세요.", render: (b, a) => simAreaModel(b, a, { a: 12, b: 16, tip: "세로 12를 10과 2로, 가로 16을 10과 6으로 나누었어요." }) },
+    { inst: "세로셈으로 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 12, b: 16, rows: 3, tip: "첫 줄은 12 × 6 = 72, 둘째 줄은 12 × 10 = 120이에요." }) },
+    { inst: "세로셈 두 줄의 뜻을 정리해요.", render: (b, a) => blanks(b, a, ["세로셈의 첫째 줄은 12 × ", { o: ["6", "60"], a: 0 }, ", 둘째 줄은 12 × ", { o: ["1", "10"], a: 1 }, "의 값이에요. 두 줄을 더하면 답이 돼요."]) },
     { inst: "21 × 14도 네 조각으로 나누어 계산해 보세요.", render: (b, a) => simAreaModel(b, a, { a: 21, b: 14, tip: "21을 20과 1로, 14를 10과 4로 나누어요." }) },
     { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [
       { q: "13 × 24 =", a: 312, why: { "78": "둘째 줄을 13 × 2로 계산했어요. 13 × 20이라서 260이 돼요." } },
       { q: "32 × 21 =", a: 672 }, { q: "41 × 12 =", a: 492 }],
       { ok: "올림이 한 번 있는 두 자리 수 곱셈을 해냈어요!" }) }
   ],
-  challenge: { inst: "관람석 문제예요.", render: (b, a) => numbers(b, a, [
-    { q: "한 줄에 12석씩 23줄이면 모두 몇 석? ", a: 276, unit: "석" },
-    { q: "관객이 250명이면 자리가 몇 석 남을까요? ", a: 26, unit: "석" }],
-    { ok: "곱셈으로 구한 수를 실제 상황과 비교했어요." }) }
+  challenge: { inst: "이번에는 내가 문제를 만들어요. 올림이 한 번 있는 (두 자리 수) × (두 자리 수) 문제예요.",
+    hints: ["축제에서 몇십몇씩 몇십몇 묶음으로 세는 것을 떠올려 봐요.", "보기: 시범 경기에 한 조에 12명씩 16개 조가 참가하면 모두 몇 명? → 12 × 16 = 192"],
+    render: (b, a) => writeStep(b, a, [
+      { q: "올림이 한 번 있는 (두 자리 수) × (두 자리 수) 문제를 하나 만들어 써 보세요.", tag: "내 문제" },
+      { q: "그 문제를 푸는 식을 써 보세요.", tag: "식" },
+      { q: "답을 써 보세요.", tag: "답" }],
+      { ok: "문제를 만들고 스스로 해결했어요! 친구와 바꾸어 풀어 봐요." }) }
 },
 {
   id: "t8", no: 8, title: "(두 자리 수) × (두 자리 수) ⑵ 올림이 여러 번 있는 경우", soop: "개념 구축하기(O)",
   question: "올림이 여러 번 생기는 두 자리 수 곱셈은 어떻게 할까요?",
   summary: "네 조각으로 나누어 계산하는 방법은 같아요. 각 줄을 계산할 때 올림을 잊지 않고 더하면 돼요.",
   steps: [
-    { inst: "기념품이 한 상자에 27개씩 18상자 있어요. 27 × 18을 네 조각으로 나누어 보세요.", render: (b, a) => simAreaModel(b, a, { a: 27, b: 18, tip: "27을 20과 7로, 18을 10과 8로 나누어요." }) },
-    { inst: "세로셈으로 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 27, b: 18, rows: 3, tip: "첫 줄은 27 × 8 = 216, 둘째 줄은 27 × 10 = 270이에요." }) },
+    { inst: "축제 참가자에게 줄 기념품이 한 상자에 53개씩 24상자 있어요. 53 × 24를 네 조각으로 나누어 보세요.", render: (b, a) => simAreaModel(b, a, { a: 53, b: 24, tip: "53을 50과 3으로, 24를 20과 4로 나누어요." }) },
+    { inst: "세로셈으로 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 53, b: 24, rows: 3, tip: "첫 줄은 53 × 4 = 212, 둘째 줄은 53 × 20 = 1060이에요." }) },
     { inst: "올림을 말로 정리해요.", render: (b, a) => blanks(b, a, ["줄마다 계산할 때 올림이 생기면 ", { o: ["윗자리 곱에 더해요", "그냥 둬요"], a: 0 }, ". 두 줄을 더할 때도 ", { o: ["받아올림", "받아내림"], a: 0 }, "을 살펴요."]) },
-    { inst: "45 × 36도 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 45, b: 36, rows: 3, tip: "첫 줄은 45 × 6, 둘째 줄은 45 × 30이에요." }) },
-    { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "38 × 24 =", a: 912 }, { q: "56 × 47 =", a: 2632 }, { q: "29 × 35 =", a: 1015 }],
+    { inst: "45 × 36도 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 45, b: 36, rows: 3, tip: "첫 줄은 45 × 6 = 270, 둘째 줄은 45 × 30 = 1350이에요." }) },
+    { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [
+      { q: "38 × 24 =", a: 912, why: { "812": "올림한 수를 윗자리 곱에 더하지 않고 그대로 적었어요. 8 × 4 = 32에서 올린 3을 3 × 4에 더해요.", "212": "둘째 줄(38 × 20 = 760)을 빠뜨렸어요." } },
+      { q: "56 × 47 =", a: 2632, why: { "632": "둘째 줄에서 올림한 수를 빠뜨렸어요. 56 × 40 = 2240이에요." } },
+      { q: "29 × 35 =", a: 1015 }],
       { ok: "올림이 여러 번 있어도 정확해요!" }) }
   ],
-  challenge: { inst: "기념품 문제예요.", render: (b, a) => numbers(b, a, [
-    { q: "27개씩 18상자면 모두 몇 개? ", a: 486, unit: "개" },
-    { q: "500개를 준비했다면 몇 개가 모자랄까요? ", a: 14, unit: "개" }],
-    { ok: "모자란 수까지 구했어요." }) }
+  challenge: { inst: "누가 책을 몇 쪽 더 많이 읽었는지 구해 보세요.",
+    hints: ["두 사람이 읽은 쪽수를 각각 곱셈으로 구하고, 그다음 두 값을 비교해요.", "주원: 38 × 25, 다은: 27 × 36"],
+    render: (b, a) => numbers(b, a, [
+      { q: "주원이는 하루에 38쪽씩 25일 읽었어요. 모두 몇 쪽? ", a: 950, unit: "쪽" },
+      { q: "다은이는 하루에 27쪽씩 36일 읽었어요. 모두 몇 쪽? ", a: 972, unit: "쪽" },
+      { q: "더 많이 읽은 사람은 몇 쪽 더 읽었나요? ", a: 22, unit: "쪽" }],
+      { ok: "다은이가 972쪽으로 22쪽 더 많이 읽었어요. 곱셈을 두 번 하고 뺄셈으로 비교했어요." }) }
 },
 {
   id: "t9", no: 9, title: "어림셈을 활용해 볼까요", soop: "개념 구축하기(O)",
   question: "계산하기 전에 어림을 하면 무엇이 좋을까요?",
-  summary: "어림셈은 수를 가까운 몇십, 몇백으로 바꾸어 대략의 값을 구하는 것이에요. 어림하면 계산 결과가 알맞은지 스스로 확인할 수 있어요.",
+  summary: "어림셈은 수를 가까운 몇십, 몇백으로 바꾸어 대략의 값을 구하는 것이에요. 곱해지는 수를 어림할 수도 있고, 곱하는 수를 어림할 수도 있어요.",
   steps: [
-    { inst: "기념품 25개씩 18상자는 몇 개쯤일까요? 먼저 어림해 보세요.", render: (b, a) => simEstimate(b, a, { q: "25 × 18은 얼마쯤일까요?", o: ["약 200", "약 400", "약 800"], vals: [200, 400, 800], a: 1, ok: "25를 20쯤, 18을 20쯤으로 보면 약 400이에요." }) },
-    { name: "정확히 계산하기", inst: "이제 정확하게 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "25 × 18 =", a: 450 }, { q: "어림한 값(약 400)과의 차이는?", a: 50 }],
+    { name: "곱해지는 수 어림하기", inst: "열쇠고리 한 개가 520원이에요. 4개를 사려면 얼마쯤 필요할까요? 곱해지는 수 520을 어림해 보세요.", render: (b, a) => simEstimate(b, a, { q: "520 × 4는 얼마쯤일까요?", o: ["약 1500원", "약 2000원", "약 2500원"], vals: [1500, 2000, 2500], a: 1, max: 2500, ok: "520을 500쯤으로 보면 500 × 4 = 약 2000원이에요." }) },
+    { name: "정확히 계산하기", inst: "이제 정확하게 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "520 × 4 =", a: 2080, unit: "원" }, { q: "어림한 값(약 2000원)과의 차이는?", a: 80 }],
       { ok: "어림값과 가까워요. 계산이 잘 되었다는 뜻이에요." }) },
     { inst: "어림하는 방법을 정리해요.", render: (b, a) => blanks(b, a, ["어림할 때는 수를 ", { o: ["가까운 몇십이나 몇백으로", "마음대로"], a: 0 }, " 바꾸어 계산해요. 어림하면 계산한 값이 ", { o: ["알맞은지 가늠할 수", "더 커질 수"], a: 0 }, " 있어요."]) },
-    { name: "어림으로 판단하기", inst: "친구의 계산이 알맞은지 어림으로 판단해 보세요.", render: (b, a) => quiz(b, a, [
-      { q: "48 × 21을 1008이라고 했어요. 어림으로 보면?", o: ["맞을 것 같아요(약 1000)", "너무 커요", "너무 작아요"], a: 0 },
-      { q: "32 × 19를 6080이라고 했어요. 어림으로 보면?", o: ["맞을 것 같아요", "너무 커요(약 600)"], a: 1 },
-      { q: "198 × 4를 792라고 했어요. 어림으로 보면?", o: ["맞을 것 같아요(약 800)", "너무 작아요"], a: 0 }]) },
+    { name: "곱하는 수 어림하기", inst: "기념품 25개씩 18상자는 몇 개쯤일까요? 이번에는 곱하는 수 18을 어림해 보세요.", render: (b, a) => numbers(b, a, [
+      { q: "18을 20쯤으로 보면 25 × 20 =", a: 500, unit: "개" },
+      { q: "정확하게 계산하면 25 × 18 =", a: 450, unit: "개" },
+      { q: "어림한 값과의 차이는?", a: 50 }],
+      { ok: "곱하는 수를 어림해도 대략의 값을 알 수 있어요. 18을 올려서 어림했으니 어림값이 조금 더 커요." }) },
     { inst: "어림셈으로 축제 문제를 해결해 보세요.", render: (b, a) => numbers(b, a, [
       { q: "관객 298명에게 물을 2병씩 주려면 몇 병쯤 준비할까요? (어림값) ", a: 600, unit: "병" },
       { q: "정확히 계산하면 몇 병? ", a: 596, unit: "병" }],
       { ok: "어림으로 넉넉히 준비하고, 정확한 수로 확인했어요." }) }
   ],
   challenge: { inst: "어림셈으로 판단해 보세요.", render: (b, a) => quiz(b, a, [
-    { q: "한 상자에 195개씩 4상자를 800개라고 어림했어요. 실제 값은 어떨까요?", o: ["800보다 조금 적어요", "800보다 훨씬 많아요"], a: 0 },
-    { q: "어림값보다 실제 값이 작을 때는 어떤 경우인가요?", o: ["수를 올려서 어림했을 때", "수를 내려서 어림했을 때"], a: 0 }]) }
+    { q: "48 × 21을 1008이라고 했어요. 어림으로 보면?", o: ["맞을 것 같아요(약 1000)", "너무 커요", "너무 작아요"], a: 0 },
+    { q: "32 × 19를 6080이라고 했어요. 어림으로 보면?", o: ["맞을 것 같아요", "너무 커요(약 600)"], a: 1 },
+    { q: "198 × 4를 792라고 했어요. 어림으로 보면?", o: ["맞을 것 같아요(약 800)", "너무 작아요"], a: 0 },
+    { q: "한 상자에 195개씩 4상자를 800개라고 어림했어요. 실제 값은 어떨까요?", o: ["800보다 조금 적어요(780개)", "800보다 훨씬 많아요"], a: 0 }]) }
 },
 {
   id: "t10", no: 10, title: "생각을 더하다 ― 카드에 마음을 담아요", soop: "탐구 정리하기(O)",
-  question: "고마운 마음을 전하는 카드를 만들려면 얼마가 필요할까요?",
-  summary: "곱셈은 물건의 수와 값을 구할 때 쓰여요. 상황을 읽고 무엇을 곱해야 하는지 찾는 것이 가장 중요해요.",
+  question: "카드 섹션을 하려면 카드가 모두 몇 장 필요할까요?",
+  summary: "카드 섹션처럼 똑같은 구역이 여러 개일 때는 곱셈을 두 번 이어서 써요. 한 구역에 필요한 수를 먼저 구하고, 거기에 구역의 수를 곱해요.",
   steps: [
-    { inst: "축제를 도와주신 분들께 감사 카드를 만들어요. 카드 한 장에 붙임딱지를 4장씩 붙입니다.", render: (b, a) => numbers(b, a, [
-      { q: "카드 23장에 필요한 붙임딱지는 몇 장? ", a: 92, unit: "장" },
-      { q: "붙임딱지가 100장 있으면 몇 장이 남을까요? ", a: 8, unit: "장" }],
-      { ok: "카드 수와 한 장에 쓰는 수를 곱했어요." }) },
-    { name: "값 구하기", inst: "카드 재료를 사려고 해요.", render: (b, a) => numbers(b, a, [
-      { q: "색종이 한 묶음이 350원이에요. 3묶음이면 얼마? ", a: 1050, unit: "원" },
-      { q: "붙임딱지 한 장이 50원이면 24장은 얼마? ", a: 1200, unit: "원" },
-      { q: "둘을 합하면 모두 얼마? ", a: 2250, unit: "원" }],
-      { ok: "물건값도 곱셈으로 구할 수 있어요." }) },
+    { inst: "하윤이는 ‘우리는 세계 시민’이라는 일곱 글자로 카드 섹션을 만들어요. 한 구역에 13칸씩 13줄로 카드를 놓습니다. 글자 칸과 배경 칸을 모두 세어요.", render: (b, a) => numbers(b, a, [
+      { q: "한 구역에 필요한 카드는 몇 장? (13 × 13) ", a: 169, unit: "장" },
+      { q: "일곱 글자이니 구역은 7개예요. 모두 몇 장? (169 × 7) ", a: 1183, unit: "장" }],
+      { ok: "한 구역의 수를 먼저 구하고 구역의 수를 곱했어요. 13 × 13 = 169, 169 × 7 = 1183장이에요.", bad: "한 구역의 카드 수부터 구해 봐요. 글자 칸만 세면 안 돼요." }) },
+    { name: "같은 방법으로 풀기", inst: "이번에는 ‘함께 실천’이라는 네 글자로 카드 섹션을 만들어요. 한 구역에 9칸씩 12줄입니다.", render: (b, a) => numbers(b, a, [
+      { q: "한 구역에 필요한 카드는 몇 장? (9 × 12) ", a: 108, unit: "장" },
+      { q: "네 글자이니 구역은 4개예요. 모두 몇 장? (108 × 4) ", a: 432, unit: "장" }],
+      { ok: "앞에서 쓴 방법을 그대로 썼어요. 9 × 12 = 108, 108 × 4 = 432장이에요." }) },
     { inst: "문제를 푸는 순서를 정리해요.", render: (b, a) => blanks(b, a, ["문제를 풀 때는 먼저 ", { o: ["무엇을 구해야 하는지", "답이 몇인지"], a: 0 }, " 찾고, ", { o: ["어떤 수를 곱해야 하는지", "아무 수나"], a: 0 }, " 정해요."]) },
     { name: "내가 문제 만들기", inst: "곱셈이 필요한 문제를 직접 만들어 보세요.", render: (b, a) => writeStep(b, a, [
       { q: "곱셈이 필요한 문제를 하나 만들어 써 보세요.", tag: "내 문제" },
@@ -1951,12 +1968,14 @@ const LESSONS = [
       { q: "연결하기: 오늘 어떤 곱셈 방법을 사용했나요?", tag: "연결" },
       { q: "확장하기: 생활에서 곱셈을 쓸 수 있는 곳은 어디일까요?", tag: "확장" }]) }
   ],
-  challenge: { inst: "카드 만들기 계획을 세워 보세요.", render: (b, a) => numbers(b, a, [
-    { q: "우리 반 25명이 카드를 2장씩 만들면 모두 몇 장? ", a: 50, unit: "장" },
-    { q: "카드 한 장에 붙임딱지 4장이면 모두 몇 장 필요할까요? ", a: 200, unit: "장" },
-    { q: "붙임딱지를 한 묶음에 30장씩 7묶음 사면 모두 몇 장? ", a: 210, unit: "장" },
-    { q: "필요한 200장보다 몇 장 더 많나요? ", a: 10, unit: "장" }],
-    { ok: "30 × 7 = 210. 200장이 필요하니 7묶음을 사면 10장이 남아요." }) }
+  challenge: { inst: "카드 섹션 준비 계획을 세워 보세요.",
+    hints: ["한 구역에 필요한 수를 먼저 구하고, 구역의 수를 곱해요."],
+    render: (b, a) => numbers(b, a, [
+      { q: "한 구역에 12칸씩 15줄로 놓으면 한 구역에 몇 장? ", a: 180, unit: "장" },
+      { q: "다섯 글자이니 구역은 5개예요. 모두 몇 장? ", a: 900, unit: "장" },
+      { q: "카드를 한 묶음에 50장씩 20묶음 준비했어요. 모두 몇 장? ", a: 1000, unit: "장" },
+      { q: "몇 장이 남을까요? ", a: 100, unit: "장" }],
+      { ok: "12 × 15 = 180, 180 × 5 = 900장이 필요해요. 1000장을 준비하면 100장이 남아요." }) }
 },
 {
   id: "t11", no: 11, title: "놀이를 더하다 ― 수학 천사는 누구?", soop: "발표하기(P)",
@@ -1973,7 +1992,7 @@ const LESSONS = [
   ],
   challenge: { inst: "이번에는 곱이 가장 작게 만들어 보세요. (카드 3, 5, 8 · 두 자리 × 한 자리)", render: (b, a) => numbers(b, a, [
     { q: "가장 작은 곱은 얼마일까요? ", a: 174 }, { q: "그때의 두 자리 수는? ", a: 58 }, { q: "한 자리 수는? ", a: 3 }],
-    { ok: "58 × 3 = 174가 가장 작아요. 작은 수를 큰 자리에 놓아야 했어요." }) }
+    { ok: "58 × 3 = 174가 가장 작아요. 가장 작은 수를 한 자리 수 자리에 놓아야 했어요." }) }
 },
 {
   id: "t12", no: 12, title: "공부한 내용을 확인해요", soop: "발표하기(P)",
@@ -2000,7 +2019,7 @@ const LESSONS = [
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
 window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.student) openLesson(L.id); });
 </script>
-<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden>🏠 홈</a><style>#hj-home{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:4px;font:700 18px/1 "Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1F2A44;background:#fff;border:3px solid #1F2A44;border-radius:999px;padding:9px 16px;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.18);opacity:.92}#hj-home[hidden]{display:none}#hj-home:hover,#hj-home:focus-visible{opacity:1;outline:3px solid #2F74E0;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}}:root[data-theme="dark"] #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
 var I={play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',

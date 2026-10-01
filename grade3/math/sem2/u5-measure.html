@@ -1556,9 +1556,11 @@ function simTarget(body, api, opt) {
 function figSegs(cfg) {
   const s = makeSvg(360, 300); const C = { x: 180, y: 150 }, R = 115;
   s.style.maxWidth = "22em"; s.append(svgEl("circle", { cx: C.x, cy: C.y, r: R, fill: "#fff", stroke: INK, "stroke-width": 4 }), svgEl("circle", { cx: C.x, cy: C.y, r: 6, fill: INK }), txt(C.x + 16, C.y + 20, "ㅇ", 22));
-  const P = {}; Object.entries(cfg.pts).forEach(([k, a]) => { const r = a * Math.PI / 180; P[k] = { x: C.x + R * Math.cos(r), y: C.y - R * Math.sin(r) }; s.append(svgEl("circle", { cx: P[k].x, cy: P[k].y, r: 4, fill: INK }), txt(C.x + (R + 22) * Math.cos(r), C.y - (R + 22) * Math.sin(r), k, 22)); });
+  const P = {}; Object.entries(cfg.pts || {}).forEach(([k, a]) => { const r = a * Math.PI / 180; P[k] = { x: C.x + R * Math.cos(r), y: C.y - R * Math.sin(r) }; s.append(svgEl("circle", { cx: P[k].x, cy: P[k].y, r: 4, fill: INK }), txt(C.x + (R + 22) * Math.cos(r), C.y - (R + 22) * Math.sin(r), k, 22)); });
   P["ㅇ"] = C;
-  cfg.segs.forEach(([a, b]) => s.append(svgEl("line", { x1: P[a].x, y1: P[a].y, x2: P[b].x, y2: P[b].y, stroke: INK, "stroke-width": 3.5 })));
+  /* dots: [이름, 각도, 반지름 배수] — 1보다 작으면 원 안, 1이면 원 위, 1보다 크면 원 밖 */
+  (cfg.dots || []).forEach(([k, a, f]) => { const r = a * Math.PI / 180, d = R * f; const x = C.x + d * Math.cos(r), y = C.y - d * Math.sin(r); s.append(svgEl("circle", { cx: x, cy: y, r: 6, fill: INK }), txt(x + 22, y - 18, k, 22)); });
+  (cfg.segs || []).forEach(([a, b]) => s.append(svgEl("line", { x1: P[a].x, y1: P[a].y, x2: P[b].x, y2: P[b].y, stroke: INK, "stroke-width": 3.5 })));
   (cfg.labels || []).forEach(([x, y, t]) => s.append(txt(x, y, t, 20)));
   return s;
 }
@@ -1694,15 +1696,16 @@ function simAreaModel(body, api, opt) {
 
 /* 어림하기 */
 function simEstimate(body, api, opt) {
+  const gap = (opt.max || 1000) / 5;   // 눈금 한 칸의 크기 (기본 200)
   const svg = makeSvg(700, 150);
   svg.append(svgEl("line", { x1: 40, y1: 90, x2: 660, y2: 90, stroke: INK, "stroke-width": 3 }));
-  for (let i = 0; i <= 5; i++) { const x = 40 + i * 124; svg.append(svgEl("line", { x1: x, y1: 78, x2: x, y2: 102, stroke: INK, "stroke-width": 3 }), txt(x, 124, String(i * 200), 20)); }
+  for (let i = 0; i <= 5; i++) { const x = 40 + i * 124; svg.append(svgEl("line", { x1: x, y1: 78, x2: x, y2: 102, stroke: INK, "stroke-width": 3 }), txt(x, 124, String(i * gap), 20)); }
   const mark = svgEl("polygon", { points: "0,-14 12,8 -12,8", fill: TENT, opacity: 0 }); svg.append(mark);
   const pick = h("div");
   body.append(h("div", { class: "stage" }, svg));
   quiz(pick, api, [{ q: opt.q, o: opt.o, a: opt.a }], { ok: opt.ok });
   body.append(pick);
-  pick.querySelectorAll(".opt").forEach((b, i) => b.addEventListener("click", () => { const v = opt.vals[i]; mark.setAttribute("transform", `translate(${40 + v / 200 * 124},76)`); mark.setAttribute("opacity", 1); }));
+  pick.querySelectorAll(".opt").forEach((b, i) => b.addEventListener("click", () => { const v = opt.vals[i]; mark.setAttribute("transform", `translate(${40 + v / gap * 124},76)`); mark.setAttribute("opacity", 1); }));
 }
 
 /* 숫자 카드로 가장 큰 곱 만들기 */
@@ -1805,7 +1808,7 @@ function simBeakerRead(body, api, opt) {
   });
   const ans = h("div");
   numbers(ans, api, opt.items.map((it, i) => ({ q: `${"가나다"[i]} 그릇의 들이는?`, a: it.v, unit: opt.unit || "mL" })),
-    { ok: opt.ok || "눈금을 정확히 읽었어요!", bad: "큰 눈금(500 mL)부터 세고, 작은 눈금 한 칸이 100 mL인 것을 기억해요." });
+    { ok: opt.ok || "눈금을 정확히 읽었어요!", bad: `큰 눈금부터 세고, 작은 눈금 한 칸이 ${opt.step || 100} mL인 것을 기억해요.` });
   body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg), h("div", { class: "side" }, h("p", {}, opt.tip || "물이 닿은 눈금을 읽어 보세요."), ans)));
 }
 
@@ -1872,7 +1875,7 @@ const UNIT_STORY = { title: "생활 속 들이와 무게", lines: [
   "마지막에는 택배 상자에 물건을 나누어 담아 기부도 해요.",
   "교과서 『수학 3-2』 5. 들이와 무게의 차시 순서 그대로 만들었어요."],
   one: "생활 속 들이와 무게 · 재고 어림하며 L·mL·kg·g·t을 배워요." };
-const UNIT_KEYWORDS = ["들이", "무게", "L", "mL", "kg", "g", "t", "1 L = 1000 mL", "1 kg = 1000 g", "임의 단위", "표준 단위", "같은 단위끼리", "어림"];
+const UNIT_KEYWORDS = ["들이", "무게", "L", "mL", "kg", "g", "t", "1 L = 1000 mL", "1 kg = 1000 g", "같은 물건으로 세기", "정해진 단위", "같은 단위끼리", "어림"];
 
 /* ===== 5. 들이와 무게 — 교과서 차시 버전 (12차시) ===== */
 const LESSONS = [
@@ -1881,7 +1884,9 @@ const LESSONS = [
   question: "들이와 무게는 생활에서 언제 필요할까요?",
   summary: "그릇에 담을 수 있는 양을 들이, 무거운 정도를 무게라고 해요. 두 가지 모두 생활 곳곳에서 재고 비교해요.",
   steps: [
-    { inst: "모양이 다른 두 그릇을 같은 컵으로 옮겨 비교해 보세요.", render: (b, a) => simCupCompare(b, a, { a: 7, b: 5 }) },
+    { inst: "생활 속에서 담는 그릇과 재는 도구를 찾아보세요.", render: (b, a) => quiz(b, a, [
+      { q: "물을 담을 수 있는 것을 모두 고르세요.", o: ["물병", "수조", "공책", "연필"], a: [0, 1] },
+      { q: "물건의 무게를 재는 도구는?", o: ["저울", "자"], a: 0 }]) },
     { name: "구별하기", inst: "들이와 무게를 구별해 보세요.", render: (b, a) => quiz(b, a, [
       { q: "물병에 물이 얼마나 들어가는지 알아보는 것은?", o: ["들이", "무게"], a: 0 },
       { q: "가방이 얼마나 무거운지 알아보는 것은?", o: ["들이", "무게"], a: 1 },
@@ -1889,15 +1894,14 @@ const LESSONS = [
     { inst: "생활 경험을 써 보세요.", render: (b, a) => writeStep(b, a, [
       { q: "보기: 집이나 학교에서 무엇을 재어 본 적이 있나요?", tag: "보기" },
       { q: "궁금해하기: 들이와 무게에 대해 무엇이 궁금한가요?", tag: "궁금" }]) },
-    { name: "배운 내용 떠올리기", inst: "2학년 때 배운 길이의 단위를 떠올려요.", render: (b, a) => numbers(b, a, [
+    { inst: "빈칸을 채워 약속을 완성해요.", render: (b, a) => blanks(b, a, ["그릇에 담을 수 있는 양을 ", { o: ["들이", "무게"], a: 0 }, "라 하고, 무거운 정도를 ", { o: ["들이", "무게"], a: 1 }, "라고 해요."]) },
+    { name: "확인하기 — 배운 내용 떠올리기", inst: "2학년 때 배운 길이의 단위를 떠올려요.", render: (b, a) => numbers(b, a, [
       { q: "1 m는 몇 cm?", a: 100 }, { q: "1 cm는 몇 mm?", a: 10 }],
-      { ok: "길이에 단위가 있듯이 들이와 무게에도 단위가 있어요." }) },
-    { inst: "약속을 확인해요.", render: (b, a) => blanks(b, a, ["그릇에 담을 수 있는 양을 ", { o: ["들이", "무게"], a: 0 }, "라 하고, 무거운 정도를 ", { o: ["들이", "무게"], a: 1 }, "라고 해요."]) }
+      { ok: "길이에 단위가 있듯이 들이와 무게에도 단위가 있어요." }) }
   ],
-  challenge: { inst: "컵 수로 생각해 보세요.", render: (b, a) => numbers(b, a, [
-    { q: "가 그릇은 8컵, 나 그릇은 5컵이에요. 몇 컵 더 많을까요? ", a: 3, unit: "컵" },
-    { q: "가 그릇의 물을 나 그릇에 가득 부으면 몇 컵이 남을까요? ", a: 3, unit: "컵" }],
-    { ok: "컵 수로 차이까지 구할 수 있어요." }) }
+  challenge: { inst: "생활을 떠올려 보세요.", render: (b, a) => writeStep(b, a, [
+    { q: "생활에서 들이를 재는 경우를 두 가지 써 보세요.", tag: "들이" },
+    { q: "생활에서 무게를 재는 경우를 두 가지 써 보세요.", tag: "무게" }]) }
 },
 {
   id: "w2", no: 2, title: "들이를 비교해 볼까요", soop: "개념 구축하기(O)",
@@ -1905,16 +1909,16 @@ const LESSONS = [
   summary: "직접 옮겨 담아 비교할 수도 있고, 같은 물건(컵)을 단위로 세어 비교할 수도 있어요. 사람마다 다른 단위를 쓰면 비교가 어려워서 정해진 단위가 필요해요.",
   steps: [
     { inst: "두 물병의 들이를 같은 컵으로 세어 비교해 보세요.", render: (b, a) => simCupCompare(b, a, { a: 6, b: 9, tip: "옮겨 담은 컵 수를 세면 정확히 비교할 수 있어요." }) },
-    { name: "여러 단위로 비교하기", inst: "단위를 무엇으로 하느냐에 따라 세는 수가 달라져요.", render: (b, a) => numbers(b, a, [
-      { q: "같은 물병을 종이컵으로 재니 8컵이었어요. 더 큰 컵(우유갑)으로 재면 세는 수는 더 클까요, 작을까요? (클 때 1, 작을 때 0) ", a: 0 },
-      { q: "요구르트병으로 재면 세는 수는 더 클까요, 작을까요? (클 때 1, 작을 때 0) ", a: 1 }],
-      { ok: "단위가 작을수록 세는 수는 커져요." }) },
-    { inst: "임의 단위의 불편한 점을 정리해요.", render: (b, a) => blanks(b, a, ["사람마다 다른 그릇으로 재면 ", { o: ["비교하기 어려워요", "더 정확해요"], a: 0 }, ". 그래서 누구나 똑같이 쓰는 ", { o: ["정해진 단위", "더 큰 그릇"], a: 0 }, "가 필요해요."]) },
-    { inst: "비교 방법을 골라 보세요.", render: (b, a) => quiz(b, a, [
+    { name: "여러 단위로 비교하기", inst: "단위를 무엇으로 하느냐에 따라 세는 수가 달라져요.", render: (b, a) => quiz(b, a, [
+      { q: "같은 물병을 종이컵으로 재니 8컵이었어요. 더 큰 우유갑으로 재면 세는 수는?", o: ["많아져요", "적어져요"], a: 1 },
+      { q: "더 작은 요구르트병으로 재면 세는 수는?", o: ["많아져요", "적어져요"], a: 0 },
+      { q: "단위가 작을수록 세는 수는 어떻게 될까요?", o: ["많아져요", "적어져요"], a: 0 }]) },
+    { inst: "다른 그릇으로 재면 어떤 점이 불편할까요?", render: (b, a) => blanks(b, a, ["사람마다 다른 그릇으로 재면 ", { o: ["비교하기 어려워요", "더 정확해요"], a: 0 }, ". 그래서 누구나 똑같이 쓰는 ", { o: ["정해진 단위", "더 큰 그릇"], a: 0 }, "가 필요해요."]) },
+    { inst: "약속: 들이는 똑같은 컵으로 세어 비교해요.", render: (b, a) => quiz(b, a, [
       { q: "모양이 다른 두 그릇의 들이를 비교하는 방법으로 알맞지 않은 것은?", o: ["한 그릇의 물을 다른 그릇에 부어 본다", "눈으로만 보고 정한다", "같은 컵으로 옮겨 세어 본다"], a: 1 },
       { q: "가 그릇은 종이컵 10컵, 나 그릇은 우유갑 6갑이에요. 어느 것이 더 클까요?", o: ["가", "나", "단위가 달라 알 수 없어요"], a: 2 }]) },
     { inst: "정리해요.", render: (b, a) => writeStep(b, a, [
-      { q: "임의 단위로 비교할 때 불편했던 점을 써 보세요.", tag: "불편한 점" },
+      { q: "다른 그릇으로 재었을 때 불편했던 점을 써 보세요.", tag: "불편한 점" },
       { q: "정해진 단위가 있으면 무엇이 좋을까요?", tag: "좋은 점" }]) }
   ],
   challenge: { inst: "단위를 바꾸어 생각해 보세요.", render: (b, a) => numbers(b, a, [
@@ -1933,7 +1937,7 @@ const LESSONS = [
       { q: "500 mL는 어떻게 읽을까요?", o: ["500 리터", "500 밀리리터"], a: 1 },
       { q: "1 L보다 500 mL 더 많은 들이를 바르게 쓴 것은?", o: ["1 L 500 mL", "1500 L"], a: 0 }]) },
     { inst: "단위 사이의 관계를 정리해요.", render: (b, a) => blanks(b, a, ["1 L는 ", { o: ["100 mL", "1000 mL"], a: 1 }, "와 같아요. 1 L보다 ", { o: ["적은", "많은"], a: 0 }, " 양은 mL로 나타내면 편해요."]) },
-    { name: "두 가지로 나타내기", inst: "‘몇 L 몇 mL’와 ‘몇 mL’로 바꾸어 보세요.", render: (b, a) => numbers(b, a, [
+    { name: "약속하기 — 두 가지로 나타내기", inst: "‘몇 L 몇 mL’와 ‘몇 mL’로 바꾸어 보세요.", render: (b, a) => numbers(b, a, [
       { q: "2 L = 몇 mL?", a: 2000 }, { q: "1 L 500 mL = 몇 mL?", a: 1500 }, { q: "3200 mL = 3 L 몇 mL?", a: 200 }],
       { ok: "L와 mL를 자유롭게 바꿀 수 있어요." }) },
     { inst: "알맞은 단위를 골라 보세요.", render: (b, a) => quiz(b, a, [
@@ -1954,7 +1958,7 @@ const LESSONS = [
     { inst: "비커에 담긴 물의 양을 읽어 보세요.", render: (b, a) => simBeakerRead(b, a, { items: [{ v: 400 }, { v: 700 }, { v: 200 }] }) },
     { name: "다른 눈금 읽기", inst: "이번에는 눈금 한 칸이 50 mL예요.", render: (b, a) => simBeakerRead(b, a, { items: [{ v: 350 }, { v: 450 }, { v: 150 }], max: 500, step: 50, tip: "큰 눈금은 250 mL마다 있고, 작은 눈금 한 칸은 50 mL예요." }) },
     { inst: "읽는 방법을 정리해요.", render: (b, a) => blanks(b, a, ["들이를 읽을 때는 ", { o: ["큰 눈금부터", "아무 눈금부터"], a: 0 }, " 세고, 작은 눈금 한 칸이 ", { o: ["몇 mL인지", "몇 개인지"], a: 0 }, " 확인해요."]) },
-    { inst: "잘 아는 물건을 기준으로 어림해 보세요.", render: (b, a) => quiz(b, a, [
+    { name: "약속하기 — 어림하고 재어 보기", inst: "잘 아는 물건을 기준으로 어림해 보세요.", render: (b, a) => quiz(b, a, [
       { q: "종이컵 한 컵의 들이는 어느 정도일까요?", o: ["약 200 mL", "약 2 L"], a: 0 },
       { q: "큰 생수병 하나의 들이는?", o: ["약 2 L", "약 20 L"], a: 0 },
       { q: "숟가락 하나에 담기는 물의 양은?", o: ["약 10 mL", "약 1 L"], a: 0 }]) },
@@ -1971,14 +1975,14 @@ const LESSONS = [
   question: "L와 mL가 섞여 있으면 어떻게 계산할까요?",
   summary: "L는 L끼리, mL는 mL끼리 계산해요. mL가 1000이거나 넘으면 1 L로 받아올리고, 모자라면 1 L를 1000 mL로 바꾸어 받아내려요.",
   steps: [
-    { name: "같은 단위끼리", inst: "L는 L끼리, mL는 mL끼리 더해 보세요.", render: (b, a) => numbers(b, a, [
+    { name: "같은 단위끼리", inst: "멸치 육수 1 L 300 mL와 다시마 육수 2 L 400 mL를 합해요. L는 L끼리, mL는 mL끼리 더해 보세요.", render: (b, a) => numbers(b, a, [
       { q: "1 L 300 mL + 2 L 400 mL = 몇 L?", a: 3 }, { q: "그때 mL는?", a: 700 }],
-      { ok: "3 L 700 mL예요." }) },
+      { ok: "육수는 모두 3 L 700 mL예요." }) },
     { name: "받아올림", inst: "mL가 1000을 넘으면 어떻게 할까요?", render: (b, a) => numbers(b, a, [
       { q: "1 L 800 mL + 1 L 500 mL 에서 mL끼리 더하면?", a: 1300 }, { q: "1000 mL를 1 L로 올리면 모두 몇 L?", a: 3 }, { q: "남은 mL는?", a: 300 }],
       { ok: "3 L 300 mL예요." }) },
     { inst: "계산 방법을 정리해요.", render: (b, a) => blanks(b, a, ["들이의 계산은 ", { o: ["같은 단위끼리", "아무렇게나"], a: 0 }, " 해요. mL가 1000이거나 넘으면 ", { o: ["1 L로 올려요", "그냥 둬요"], a: 0 }, "."]) },
-    { name: "받아내림", inst: "빼기도 해 보세요.", render: (b, a) => numbers(b, a, [
+    { name: "약속하기 — 받아내림", inst: "빼기도 해 보세요.", render: (b, a) => numbers(b, a, [
       { q: "3 L 200 mL − 1 L 500 mL 에서 1 L를 1000 mL로 바꾸면 mL는?", a: 1200 }, { q: "답은 몇 L?", a: 1 }, { q: "그때 mL는?", a: 700 }],
       { ok: "1 L 700 mL예요." }) },
     { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [
@@ -1987,35 +1991,35 @@ const LESSONS = [
       { ok: "들이의 덧셈과 뺄셈을 해냈어요!" }) }
   ],
   challenge: { inst: "생활 속 문제예요.", render: (b, a) => numbers(b, a, [
-    { q: "주스를 1 L 500 mL 만들고 800 mL를 마셨어요. 남은 양은 몇 mL? ", a: 700 },
-    { q: "물 2 L 300 mL와 1 L 900 mL를 합하면 몇 mL? ", a: 4200 }],
+    { q: "육수를 1 L 500 mL 끓여서 800 mL를 썼어요. 남은 양은 몇 mL? ", a: 700 },
+    { q: "주원이가 노란색 물감 2 L 300 mL와 파란색 물감 1 L 900 mL를 섞어 연두색 페인트를 만들었어요. 모두 몇 mL? ", a: 4200 }],
     { ok: "실제 상황에서도 잘 계산했어요." }) }
 },
 {
   id: "w6", no: 6, title: "무게를 비교해 볼까요", soop: "개념 구축하기(O)",
   question: "무게는 어떻게 비교할 수 있을까요?",
-  summary: "양팔저울로 두 물건의 무게를 비교할 수 있어요. 바둑돌처럼 같은 물건을 단위로 세면 얼마나 더 무거운지도 알 수 있어요.",
+  summary: "양팔저울로 당근과 양파의 무게를 바로 비교할 수 있어요. 바둑돌처럼 같은 물건을 단위로 세면 얼마나 더 무거운지도 알 수 있어요.",
   steps: [
-    { inst: "양팔저울에 물건을 올려 무게를 비교해 보세요.", render: (b, a) => simBalance(b, a, {
-      items: [{ name: "가위", w: 90 }, { name: "풀", w: 60 }, { name: "필통", w: 250 }],
-      items2: [{ q: "가장 무거운 물건은?", o: ["가위", "풀", "필통"], a: 2 }, { q: "가장 가벼운 물건은?", o: ["가위", "풀", "필통"], a: 1 }],
+    { inst: "양팔저울에 당근과 양파를 올려 무게를 비교해 보세요.", render: (b, a) => simBalance(b, a, {
+      items: [{ name: "당근", w: 150 }, { name: "양파", w: 200 }, { name: "감자", w: 120 }],
+      items2: [{ q: "가장 무거운 것은?", o: ["당근", "양파", "감자"], a: 1 }, { q: "가장 가벼운 것은?", o: ["당근", "양파", "감자"], a: 2 }],
       ok: "양팔저울에서 내려간 쪽이 더 무거워요." }) },
-    { name: "바둑돌로 재기", inst: "바둑돌을 단위로 세어 무게를 비교해요.", render: (b, a) => numbers(b, a, [
-      { q: "가위는 바둑돌 18개, 풀은 12개와 같아요. 가위는 풀보다 바둑돌 몇 개만큼 더 무거울까요? ", a: 6, unit: "개" },
-      { q: "필통이 바둑돌 50개와 같다면 가위보다 몇 개만큼 더 무거울까요? ", a: 32, unit: "개" }],
+    { name: "바둑돌로 재기", inst: "바둑돌을 단위로 세어 무게를 비교해요. 지우개는 바둑돌 6개, 풀은 12개, 가위는 18개와 같아요.", render: (b, a) => numbers(b, a, [
+      { q: "가위는 풀보다 바둑돌 몇 개만큼 더 무거울까요? ", a: 6, unit: "개" },
+      { q: "가위는 지우개보다 바둑돌 몇 개만큼 더 무거울까요? ", a: 12, unit: "개" }],
       { ok: "같은 물건을 단위로 세면 얼마나 더 무거운지 알 수 있어요." }) },
     { inst: "비교 방법을 정리해요.", render: (b, a) => blanks(b, a, ["양팔저울에서 ", { o: ["내려간", "올라간"], a: 0 }, " 쪽이 더 무거워요. 단위로 세는 물건은 ", { o: ["모두 같아야", "달라도 되어야"], a: 0 }, " 바르게 비교할 수 있어요."]) },
-    { inst: "임의 단위의 불편한 점을 찾아보세요.", render: (b, a) => quiz(b, a, [
+    { inst: "약속: 여러 물건은 같은 물건의 개수로 세어 비교해요.", render: (b, a) => quiz(b, a, [
       { q: "가위는 바둑돌 18개, 풀은 클립 30개예요. 어느 것이 더 무거울까요?", o: ["가위", "풀", "단위가 달라 알 수 없어요"], a: 2 },
       { q: "그래서 무엇이 필요할까요?", o: ["정해진 무게 단위", "더 큰 저울"], a: 0 }]) },
     { inst: "정리해요.", render: (b, a) => writeStep(b, a, [
       { q: "저울 없이 무게를 비교하는 방법을 써 보세요.", tag: "방법" },
       { q: "정해진 단위가 필요한 까닭을 써 보세요.", tag: "까닭" }]) }
   ],
-  challenge: { inst: "저울로 비교해 보세요.", render: (b, a) => numbers(b, a, [
-    { q: "지우개 1개가 바둑돌 4개와 같아요. 지우개 5개는 바둑돌 몇 개? ", a: 20, unit: "개" },
-    { q: "바둑돌 32개는 지우개 몇 개와 같을까요? ", a: 8, unit: "개" }],
-    { ok: "단위 사이의 관계로 서로 바꿀 수 있어요." }) }
+  challenge: { inst: "무게와 부피를 생각해 보세요.", render: (b, a) => quiz(b, a, [
+    { q: "솜 1 kg과 쇠 1 kg 중 더 무거운 것은?", o: ["솜", "쇠", "무게가 같아요"], a: 2 },
+    { q: "솜 1 kg과 쇠 1 kg 중 자리를 더 많이 차지하는 것은?", o: ["솜", "쇠"], a: 0 },
+    { q: "그래서 알 수 있는 것은?", o: ["클수록 반드시 무거워요", "커도 무겁지 않을 수 있어요"], a: 1 }]) }
 },
 {
   id: "w7", no: 7, title: "무게의 단위를 알아볼까요", soop: "개념 구축하기(O)",
@@ -2030,14 +2034,15 @@ const LESSONS = [
       { q: "3 kg = 몇 g?", a: 3000 }, { q: "2 kg 400 g = 몇 g?", a: 2400 }, { q: "1800 g = 1 kg 몇 g?", a: 800 }],
       { ok: "kg과 g을 자유롭게 바꿀 수 있어요." }) },
     { inst: "관계를 정리해요.", render: (b, a) => blanks(b, a, ["1 kg은 ", { o: ["1000 g", "100 g"], a: 0 }, "과 같아요. 아주 무거운 것은 ", { o: ["t(톤)", "mL"], a: 0 }, " 단위를 써요."]) },
-    { name: "t 알아보기", inst: "아주 무거운 것의 단위도 알아봐요.", render: (b, a) => quiz(b, a, [
+    { name: "약속하기 — t 알아보기", inst: "아주 무거운 것의 단위도 알아봐요.", render: (b, a) => quiz(b, a, [
       { q: "1 t(톤)은 몇 kg일까요?", o: ["100 kg", "1000 kg"], a: 1 },
       { q: "트럭이 실은 짐의 무게에 알맞은 단위는?", o: ["g", "t"], a: 1 },
       { q: "사과 한 개의 무게에 알맞은 것은?", o: ["약 300 g", "약 300 kg"], a: 0 }]) },
-    { inst: "알맞은 단위를 골라 보세요.", render: (b, a) => quiz(b, a, [
+    { inst: "알맞은 단위를 고르고, 점토로 생각해 보세요.", render: (b, a) => quiz(b, a, [
       { q: "지우개 한 개", o: ["10 g", "10 kg"], a: 0 },
       { q: "쌀 한 포대", o: ["10 g", "10 kg"], a: 1 },
-      { q: "코끼리 한 마리", o: ["4 t", "4 kg"], a: 0 }]) }
+      { q: "코끼리 한 마리", o: ["4 t", "4 kg"], a: 0 },
+      { q: "점토 200 g을 길게 늘이면 무게는 어떻게 될까요?", o: ["무거워져요", "가벼워져요", "그대로 200 g이에요"], a: 2 }]) }
   ],
   challenge: { inst: "단위를 바꾸어 비교해 보세요.", render: (b, a) => numbers(b, a, [
     { q: "2 kg 300 g과 2500 g 중 무거운 쪽의 g 수는? ", a: 2500 },
@@ -2051,9 +2056,9 @@ const LESSONS = [
   summary: "저울의 숫자가 쓰인 큰 눈금부터 읽고 작은 눈금 한 칸이 몇 g인지 확인해요. 잘 아는 물건을 기준으로 삼으면 어림을 잘할 수 있어요.",
   steps: [
     { inst: "저울의 바늘이 가리키는 무게를 읽어 보세요.", render: (b, a) => simScaleRead(b, a, { items: [{ v: 400 }, { v: 700 }, { v: 200 }] }) },
-    { name: "다른 저울 읽기", inst: "이번에는 2 kg까지 재는 저울이에요. 눈금 한 칸이 200 g이에요.", render: (b, a) => simScaleRead(b, a, { items: [{ v: 600 }, { v: 1400 }, { v: 1800 }], max: 2000, step: 200, tip: "숫자가 쓰인 눈금을 먼저 찾고 한 칸의 크기를 확인해요." }) },
+    { name: "다른 저울 읽기", inst: "이번에도 눈금 한 칸이 100 g이에요. 바늘을 잘 보고 읽어 보세요.", render: (b, a) => simScaleRead(b, a, { items: [{ v: 600 }, { v: 300 }, { v: 800 }], tip: "숫자가 쓰인 눈금을 먼저 찾고 한 칸의 크기를 확인해요." }) },
     { inst: "읽는 방법을 정리해요.", render: (b, a) => blanks(b, a, ["저울을 읽을 때는 ", { o: ["숫자가 쓰인 큰 눈금부터", "아무 눈금부터"], a: 0 }, " 세고, 작은 눈금 한 칸이 몇 g인지 ", { o: ["확인해요", "무시해요"], a: 0 }, "."]) },
-    { inst: "무게를 어림해 보세요.", render: (b, a) => quiz(b, a, [
+    { name: "약속하기 — 어림하고 재어 보기", inst: "무게를 어림해 보세요.", render: (b, a) => quiz(b, a, [
       { q: "지우개 한 개의 무게는?", o: ["약 10 g", "약 1 kg"], a: 0 },
       { q: "3학년 학생 한 명의 몸무게는?", o: ["약 3 kg", "약 30 kg"], a: 1 },
       { q: "수박 한 통의 무게는?", o: ["약 60 g", "약 6 kg"], a: 1 }]) },
@@ -2072,23 +2077,23 @@ const LESSONS = [
   question: "kg과 g이 섞여 있으면 어떻게 계산할까요?",
   summary: "kg은 kg끼리, g은 g끼리 계산해요. g이 1000이거나 넘으면 1 kg으로 받아올리고, 모자라면 1 kg을 1000 g으로 바꾸어 받아내려요.",
   steps: [
-    { name: "같은 단위끼리", inst: "kg은 kg끼리, g은 g끼리 더해요.", render: (b, a) => numbers(b, a, [
-      { q: "2 kg 300 g + 1 kg 400 g 은 몇 kg?", a: 3 }, { q: "그때 g은?", a: 700 }], { ok: "3 kg 700 g이에요." }) },
+    { name: "같은 단위끼리", inst: "어묵 2 kg 300 g과 1 kg 400 g을 합해요. kg은 kg끼리, g은 g끼리 더해요.", render: (b, a) => numbers(b, a, [
+      { q: "2 kg 300 g + 1 kg 400 g 은 몇 kg?", a: 3 }, { q: "그때 g은?", a: 700 }], { ok: "어묵은 모두 3 kg 700 g이에요." }) },
     { name: "받아올림", inst: "g이 1000을 넘을 때예요.", render: (b, a) => numbers(b, a, [
       { q: "1 kg 700 g + 2 kg 600 g 에서 g끼리 더하면?", a: 1300 }, { q: "1000 g을 1 kg으로 올리면 모두 몇 kg?", a: 4 }, { q: "남은 g은?", a: 300 }],
       { ok: "4 kg 300 g이에요." }) },
     { inst: "계산 방법을 정리해요.", render: (b, a) => blanks(b, a, ["무게의 계산도 ", { o: ["같은 단위끼리", "아무렇게나"], a: 0 }, " 해요. g이 1000이거나 넘으면 ", { o: ["1 kg으로 올려요", "그냥 둬요"], a: 0 }, "."]) },
-    { name: "받아내림", inst: "빼기도 해 보세요.", render: (b, a) => numbers(b, a, [
+    { name: "약속하기 — 받아내림", inst: "빼기도 해 보세요.", render: (b, a) => numbers(b, a, [
       { q: "4 kg 200 g − 1 kg 600 g 에서 1 kg을 1000 g으로 바꾸면 g은?", a: 1200 }, { q: "답은 몇 kg?", a: 2 }, { q: "그때 g은?", a: 600 }],
       { ok: "2 kg 600 g이에요." }) },
     { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [
       { q: "1 kg 500 g + 2 kg 800 g 은 모두 몇 g?", a: 4300 },
-      { q: "5 kg − 2 kg 400 g 은 모두 몇 g?", a: 2600 }],
+      { q: "다은이는 귤을 5 kg, 지후는 2 kg 400 g 땄어요. 다은이는 지후보다 몇 g 더 땄나요?", a: 2600 }],
       { ok: "무게의 덧셈과 뺄셈을 해냈어요!" }) }
   ],
   challenge: { inst: "생활 속 문제예요.", render: (b, a) => numbers(b, a, [
-    { q: "밀가루 2 kg 500 g에서 900 g을 쓰면 남는 양은 몇 g? ", a: 1600 },
-    { q: "600 g짜리 참외 3개의 무게는 모두 몇 g? ", a: 1800 }],
+    { q: "어묵 2 kg 500 g에서 900 g을 덜어 내면 남는 양은 몇 g? ", a: 1600 },
+    { q: "600 g짜리 귤 한 봉지 3개의 무게는 모두 몇 g? ", a: 1800 }],
     { ok: "무게 계산을 실제 상황에도 잘 썼어요." }) }
 },
 {
@@ -2097,7 +2102,7 @@ const LESSONS = [
   summary: "두 상자의 무게 차이를 구한 뒤, 그 차이의 반만큼을 옮기면 무게가 같아져요. 무게의 덧셈과 뺄셈을 이어서 쓰는 문제예요.",
   steps: [
     { name: "무게 구하기", inst: "기부할 물건을 두 상자에 담았어요. 각 상자의 무게를 구해 보세요.", render: (b, a) => numbers(b, a, [
-      { q: "다 상자: 책 1 kg 200 g + 옷 800 g → 모두 몇 g? ", a: 2000 },
+      { q: "다 상자: 책 800 g + 옷 800 g + 수건 400 g → 모두 몇 g? ", a: 2000 },
       { q: "라 상자: 인형 700 g + 학용품 500 g → 모두 몇 g? ", a: 1200 }],
       { ok: "다 상자 2 kg, 라 상자 1 kg 200 g이에요." }) },
     { name: "차이 구하기", inst: "두 상자의 무게 차이를 구해 보세요.", render: (b, a) => numbers(b, a, [
@@ -2105,8 +2110,8 @@ const LESSONS = [
       { q: "무게를 같게 하려면 몇 g을 옮겨야 할까요? (차이의 반) ", a: 400 }],
       { ok: "차이의 반만큼 옮기면 두 상자가 같아져요." }) },
     { inst: "방법을 정리해요.", render: (b, a) => blanks(b, a, ["무게를 같게 하려면 두 상자의 차이를 구한 뒤 ", { o: ["차이의 반", "차이 전부"], a: 0 }, "만큼 옮겨요. 옮긴 만큼 한쪽은 ", { o: ["가벼워지고 다른 쪽은 무거워져요", "둘 다 가벼워져요"], a: 0 }, "."]) },
-    { name: "옮길 물건 찾기", inst: "400 g을 옮기려면 어떤 물건을 옮겨야 할까요?", render: (b, a) => quiz(b, a, [
-      { q: "다 상자에는 책(1 kg 200 g), 옷(800 g), 수건(400 g)이 있어요. 옮길 물건은?", o: ["책", "옷", "수건"], a: 2 },
+    { name: "약속하기 — 옮길 물건 찾기", inst: "400 g을 옮기려면 어떤 물건을 옮겨야 할까요?", render: (b, a) => quiz(b, a, [
+      { q: "다 상자에는 책(800 g), 옷(800 g), 수건(400 g)이 있어요. 옮길 물건은?", o: ["책", "옷", "수건"], a: 2 },
       { q: "수건을 옮기면 다 상자는 몇 g이 될까요?", o: ["1600 g", "2400 g"], a: 0 },
       { q: "그때 라 상자는?", o: ["1600 g", "800 g"], a: 0 }]) },
     { inst: "오늘 배운 것을 정리해요.", render: (b, a) => writeStep(b, a, [
@@ -2175,7 +2180,7 @@ const LESSONS = [
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
 window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.student) openLesson(L.id); });
 </script>
-<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden>🏠 홈</a><style>#hj-home{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:4px;font:700 18px/1 "Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1F2A44;background:#fff;border:3px solid #1F2A44;border-radius:999px;padding:9px 16px;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.18);opacity:.92}#hj-home[hidden]{display:none}#hj-home:hover,#hj-home:focus-visible{opacity:1;outline:3px solid #2F74E0;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}}:root[data-theme="dark"] #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
 var I={play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
