@@ -283,6 +283,7 @@ html .ts-chip>i{background:var(--acc-soft);color:var(--acc-ink)}
 html .ts-chip:hover{border-color:var(--acc-mid)}
 html a.room::after{background:color-mix(in srgb,var(--acc) 12%,var(--paper))}
 html a.room:hover::after{background:var(--acc-mid)}
+@media (max-width:600px){html .td-top{flex-wrap:wrap;gap:8px}html .td-top .tag{white-space:nowrap;border-radius:999px}html .td-btns{flex-wrap:wrap;justify-content:flex-start}}
 </style><!--/hj-theme--></head><body><main>
 <nav class="crumb" aria-label="현재 위치"><a class="c-link c-home" href="../index.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a></nav>
 <h1><span class="h-ico" aria-hidden="true">🐣</span>1학년</h1>
@@ -409,4 +410,6 @@ hs.forEach(function(h,i){var items=[],n=h.nextElementSibling;
 (function(){/* 단원 단추로 한 단원만 고르면 그 단원을 바로 펼침 */
 document.querySelectorAll('.ubtn').forEach(function(b){b.addEventListener('click',function(){if(b.dataset.u==='0')return;
  var pane=b.closest('.pane')||document;setTimeout(function(){pane.querySelectorAll('.ugrp[data-u="'+b.dataset.u+'"] .u-toggle[aria-expanded="false"]').forEach(function(t){t.click()})},0)})});})();
+(function(){var WJ='⁠';var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){return n.parentElement&&!n.parentElement.closest('script,style,svg,input,textarea')?1:2}}),a=[],n;while(n=w.nextNode())a.push(n);
+a.forEach(function(n){var v=n.nodeValue;if(!/[·\-–\/()]/.test(v)||/^https?:|@/.test(v.trim()))return;var t=v.replace(/\S+/g,function(k){return k.length>7?k.replace(/(\S)([·‧])/g,'$1'+WJ+'$2'):k.replace(/(\S)([·‧–\/])(?=\S)/g,'$1'+WJ+'$2'+WJ)}).replace(/([가-힣A-Za-z0-9])-(?=[가-힣A-Za-z0-9])/g,'$1'+WJ+'-'+WJ).replace(/(\S)\((?=\S)/g,'$1'+WJ+'(').replace(/\)(?=[가-힣])/g,')'+WJ);if(t!==v)n.nodeValue=t})})();
 </script><!--/hj-theme-js--></body></html>

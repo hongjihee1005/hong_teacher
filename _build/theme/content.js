@@ -257,7 +257,7 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  var hd=document.querySelector('header .wrap h1'),hp=document.querySelector('header .wrap p'),goal=document.querySelector('main p.goal');
  var tabs=[].slice.call(document.querySelectorAll('body>nav .wrap>a[href^="#s"]'));
  var cv=document.createElement('div');cv.id='hj-scover';cv.setAttribute('aria-label','수업 첫 화면');
- var gt=goal?goal.textContent.replace(/^\s*🎯?\s*학습 목표\s*/,'').trim():'';
+ var gt=goal?(function(){var d=document.createElement('div');d.innerHTML=goal.innerHTML.replace(/<br\s*\/?>/gi,' ');return d.textContent})().replace(/\s+/g,' ').replace(/^\s*🎯?\s*학습 목표\s*/,'').trim():'';
  cv.innerHTML='<div class="hj-sc-in"><p class="hj-sc-info"></p><h1 class="hj-sc-title"></h1><div class="hj-cvpanel"><div class="qbox hj-sc-goal"><span class="hj-qlab">학습 목표</span><span class="hj-qtxt"></span></div>'+
   '<div class="hj-field"><span class="hj-flabel">수업 흐름</span><div class="plan" id="hjScPlan"></div></div></div>'+
   '<div class="hj-goRow"><button type="button" class="big-btn hj-sc-go">수업 시작</button></div></div>';
@@ -312,3 +312,21 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  document.querySelectorAll('main section').forEach(function(sec){var kids=[].slice.call(sec.querySelectorAll('figure.photo'));var done=new Set();
   kids.forEach(function(f){if(done.has(f)||f.parentElement.classList.contains('gallery')||f.parentElement.classList.contains('hj-pgrid'))return;var run=[f],n=f.nextElementSibling;while(n&&n.matches('figure.photo')){run.push(n);n=n.nextElementSibling}
    if(run.length<2)return;var g=document.createElement('div');g.className='hj-pgrid';f.before(g);run.forEach(function(x){done.add(x);g.appendChild(x)})})})})();
+/* 낱말이 줄 끝에서 끊기지 않게: '·', '-', '(', ')', '/'로 붙은 말 사이에 줄바꿈 금지 표시(보이지 않는 글자) */
+(function(){var WJ='⁠',SKIP='script,style,textarea,input,select,option,svg,code,pre,[contenteditable],.hj-em';
+ var RX=/([^\s⁠])([·‧\-–\/(])(?=[^\s⁠])|([^\s⁠(])([)])(?=[^\s⁠.,!?·])/g;
+ function fix(n){var v=n.nodeValue;if(!/[·‧\-–\/()]/.test(v))return;if(/^https?:|www\.|@/.test(v.trim()))return;
+  var t=v.replace(/\S+/g,function(k){return k.length>7?k.replace(/(\S)([·‧])/g,'$1'+WJ+'$2'):k.replace(/(\S)([·‧–\/])(?=\S)/g,'$1'+WJ+'$2'+WJ)}).replace(/([가-힣A-Za-z0-9])-(?=[가-힣A-Za-z0-9])/g,'$1'+WJ+'-'+WJ).replace(/(\S)\((?=\S)/g,'$1'+WJ+'(').replace(/\)(?=[가-힣])/g,')'+WJ);
+  if(t!==v)n.nodeValue=t}
+ function run(root){if(!root)return;if(root.nodeType===3){var p=root.parentElement;if(p&&!p.closest(SKIP))fix(root);return}if(root.nodeType!==1||root.closest(SKIP))return;
+  var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(n){return n.parentElement&&!n.parentElement.closest(SKIP)?1:2}}),a=[],n;while(n=w.nextNode())a.push(n);a.forEach(fix)}
+ run(document.body);var q=new Set(),raf=0;new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData'){q.add(m.target)}else m.addedNodes.forEach(function(x){q.add(x)})});if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)run(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
+/* 수업 흐름·활동 단위 막대: 칸이 좁아져 낱말이 끊기면 두세 줄로 고르게 나누기 */
+(function(){var SEL='#cover #plan,#cover #cPlan,#hjScPlan,#cover #segTeam>.seg';
+ function lay(){document.querySelectorAll(SEL).forEach(function(g){if(!g.offsetParent)return;var n=g.children.length;if(!n)return;g.style.gridAutoFlow='row';
+  var w=g.clientWidth,min=g.matches('.seg')?92:126,rows=1;while(rows<4&&w/Math.ceil(n/rows)<min)rows++;var c=Math.ceil(n/rows);
+  g.style.gridTemplateColumns='repeat('+c+',minmax(0,1fr))';g.classList.toggle('hj-multi',rows>1)})}
+ lay();addEventListener('resize',function(){clearTimeout(lay.t);lay.t=setTimeout(lay,80)});if(document.fonts)document.fonts.ready.then(lay);
+ new MutationObserver(function(){clearTimeout(lay.t);lay.t=setTimeout(lay,30)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']})})();
+(function(){function chk(){document.querySelectorAll('.screen .topbar>.steps,.screen .topbar>.stagebar').forEach(function(s){s.classList.toggle('hj-ovf',s.scrollWidth>s.clientWidth+4&&s.scrollLeft+s.clientWidth<s.scrollWidth-4)})}
+ chk();addEventListener('resize',chk);document.addEventListener('scroll',chk,true);new MutationObserver(function(){clearTimeout(chk.t);chk.t=setTimeout(chk,50)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']})})();
