@@ -404,6 +404,22 @@ html body .screen:not(#cover) .foot :is(.tnote,.ghost,.ghost-btn,#prev,#btnPrev)
 html body .screen:not(#cover) .foot :is(#next,#btnNext,#btnNext2,.mid-btn,.big-btn){font-size:clamp(16px,1.4vw,19px)!important;padding:8px 20px!important;min-height:42px;box-shadow:0 6px 16px -10px rgba(40,25,10,.5)!important}
 html body .screen:not(#cover) .foot .hj-i{width:17px;height:17px}
 html body .screen:not(#cover) .stepno{font-size:13px}
+/* 왼쪽 위 이동 단추 [홈 · 자료 목록] — 떠 있는 홈 단추 대신 */
+html.hj-hasnav #hj-home{display:none!important}
+html body .hj-nav{display:inline-flex;align-items:center;gap:6px;flex:none;margin:0}
+html body .hj-nav a{display:inline-flex;align-items:center;gap:6px;text-decoration:none;font:700 clamp(14px,1.1vw,16px)/1.2 'Gowun Dodum',sans-serif;color:var(--ink,#2A221C);
+ background:var(--paper,#fff);border:1.5px solid var(--line,#EFE3D6);border-radius:999px;padding:7px 14px 7px 11px;min-height:38px;white-space:nowrap}
+html body .hj-nav a:hover{background:var(--bg,#FFFCF8);border-color:color-mix(in srgb,var(--ink,#2A221C) 25%,var(--line,#EFE3D6))}
+html body .hj-nav .hj-i{width:17px;height:17px;flex:none}
+html body .hj-nav.hj-dark{margin-right:14px}
+html body .hj-nav.hj-dark a{background:rgba(255,255,255,.12);color:#fff;border-color:rgba(255,255,255,.25)}
+html body .hj-nav.hj-dark a:hover{background:rgba(255,255,255,.22)}
+html body .hj-navbar{display:flex;justify-content:flex-start;max-width:min(1200px,100%);margin:0 auto 10px;padding:10px 0 0}
+body>nav .wrap>.hj-nav{margin-right:10px}
+@media print{html body .hj-nav,html body .hj-navbar{display:none!important}}
+/* 수학 앱 긴 문장 카드 */
+html body .opts.hj-wide{display:grid!important;grid-template-columns:repeat(auto-fill,minmax(min(100%,520px),1fr));gap:12px}
+html body .opts.hj-wide>.opt{max-width:none!important;width:auto!important;word-break:keep-all;text-wrap:pretty}
 </style><meta name="hj-next" content="u2-l2.html" data-t="일상에서 시간을 나타내는 말을 살펴볼까요" data-tag="2단원 2차시"><!--/hj-ctheme--></head><body>
 
 <section id="cover" class="screen on center-col">
@@ -858,4 +874,23 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  nx.after(b);b.onclick=function(){window.__hjDone()};
  function upd(){var m=pos.textContent.match(/(\d+)\s*\/\s*(\d+)/);var l=!!(m&&m[1]===m[2]);b.classList.toggle('on',l);nx.style.display=l?'none':''}
  upd();new MutationObserver(upd).observe(pos,{childList:true,characterData:true,subtree:true})})();
+/* 이동 단추 통일: 모든 자료 화면 왼쪽 위에 [홈 · 자료 목록] (메뉴 페이지의 위치 표시줄과 같은 자리) */
+(function(){var fh=document.getElementById('hj-home');if(!fh||document.querySelector('.hj-nav'))return;
+ var A='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">';
+ var lst=[].filter.call(document.querySelectorAll('a.tolist[href]'),function(a){return /(^|\/)index\.html$/.test(a.getAttribute('href'))})[0];
+ var nav=document.createElement('nav');nav.className='hj-nav';nav.setAttribute('aria-label','이동');
+ nav.innerHTML='<a class="hj-nh" href="'+fh.getAttribute('href')+'">'+A+'<path d="M3.5 10.5 12 3.8l8.5 6.7M5.5 9.2V20h13V9.2M10 20v-5.5h4V20"/></svg><span>홈</span></a>'+
+  '<a class="hj-nl" href="'+(lst?lst.getAttribute('href'):'index.html')+'">'+A+'<rect x="5.2" y="5" width="13.6" height="15.2" rx="2"/><path d="M9 3.8h6v2.6H9ZM8.8 11.2h6.4M8.8 14.8h4.4"/></svg><span>자료 목록</span></a>';
+ var w=document.createElement('div');w.className='hj-navbar';
+ function place(){var top=document.querySelector('#cover .hj-cvtop'),hdr=document.querySelector('header.top'),sn=document.querySelector('body>nav .wrap');
+  if(top){if(nav.parentNode!==top){var dup=top.querySelector('a.tolist[href$="index.html"]');if(dup)dup.remove();top.insertBefore(nav,top.firstChild)}}
+  else if(hdr){nav.classList.add('hj-dark');if(nav.parentNode!==hdr)hdr.insertBefore(nav,hdr.firstChild);if(w.parentNode)w.remove()}
+  else if(sn){if(nav.parentNode!==sn)sn.insertBefore(nav,sn.firstChild)}
+  else if(nav.parentNode!==w||!w.isConnected){w.appendChild(nav);var m=document.querySelector('main')||document.body;m.insertBefore(w,m.firstChild)}}
+ place();document.documentElement.classList.add('hj-hasnav');
+ var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;place()})}).observe(document.body,{childList:true,subtree:true});})();
+/* 수학 앱: 긴 문장 카드는 넓은 화면에서 두 줄로 채워 배치 */
+(function(){
+ function fit(){if(!document.querySelector('header.top'))return;document.querySelectorAll('.opts:not([data-hjw])').forEach(function(o){var bs=o.querySelectorAll(':scope>.opt');if(!bs.length)return;var long=[].some.call(bs,function(b){return b.textContent.trim().length>24});o.dataset.hjw=long?'1':'0';if(long)o.classList.add('hj-wide')})}
+ fit();new MutationObserver(fit).observe(document.body,{childList:true,subtree:true})})();
 </script><!--/hj-cicons--></body></html>
