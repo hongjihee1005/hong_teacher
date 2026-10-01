@@ -143,7 +143,7 @@ img.ph{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:
     <g id="hand2"><rect x="352" y="186" width="90" height="34" rx="16" fill="#f3c79c" stroke="#c99a6b" stroke-width="2"/></g>
     <g id="vib" opacity="0" stroke="#6b3fa0" stroke-width="4" fill="none"><path d="M455 190 q10 12 0 24"/><path d="M468 184 q14 18 0 36"/><path d="M290 190 q-10 12 0 24"/></g>
     <g id="waves" opacity="0" stroke="#ffc93c" stroke-width="4" fill="none"><path d="M410 125 q10 10 0 20"/><path d="M425 115 q18 20 0 40"/><path d="M440 105 q26 30 0 60"/></g>
-    <text x="520" y="120" font-size="38" font-family="Jua" fill="#2e1a4a" id="neckT">손으로 목을 살짝 대요</text>
+    <text x="520" y="120" font-size="38" font-family="Jua" fill="#2e1a4a" id="neckT">목에 손을 살짝 대요</text>
     <text x="520" y="170" font-size="28" font-family="Gowun Dodum" fill="#566570" id="neckT2"></text>
   </svg></div>
   <div class="row" style="margin-top:8px"><button class="main" id="ahB">🗣️ “아~” 소리 내기 (누르고 있기)</button><button id="quietB">🤐 소리 내지 않기</button></div>
@@ -236,7 +236,7 @@ img.ph{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:
 </section>
 <p class="tip" style="text-align:center">『과학』 66~67쪽 · 『실험관찰』 38~39쪽 · 지도서 257~265쪽 바탕 · 앱의 소리는 컴퓨터로 만든 소리예요.</p>
 
-<details class="credits"><summary>📷 사진 출처 (위키미디어 공용 자유 이용 사진)</summary><ul><li>소리굽쇠 — Édouard Hue (User:EdouardHue), CC BY-SA 3.0, <a href="https://commons.wikimedia.org/wiki/File:Diapason_Wittner_%C3%A0_branches_carr%C3%A9es_%C3%A0_440_Hz.jpg" target="_blank" rel="noopener">Diapason Wittner à branches carrées à 440 Hz.jpg</a></li><li>기타 줄 — Elmschrat, CC BY-SA 4.0, <a href="https://commons.wikimedia.org/wiki/File:Aria_acoustic_guitar_type_aw_77_rsb_bridge.jpg" target="_blank" rel="noopener">Aria acoustic guitar type aw 77 rsb bridge.jpg</a></li><li>작은북 — Vladimir Morozov from Russia, CC BY 2.0, <a href="https://commons.wikimedia.org/wiki/File:Snare_drum_-_Vladimir_Morozov.jpg" target="_blank" rel="noopener">Snare drum - Vladimir Morozov.jpg</a></li></ul></details>
+<details class="credits"><summary>📷 사진 출처 (위키미디어 공용 자유 이용 사진)</summary><ul><li>소리굽쇠 — Édouard Hue (User:EdouardHue), CC BY-SA 3.0, <a href="https://commons.wikimedia.org/wiki/File:Diapason_Wittner_%C3%A0_branches_carr%C3%A9es_%C3%A0_440_Hz.jpg" target="_blank" rel="noopener">소리굽쇠 사진 (위키미디어 공용)</a></li><li>기타 줄 — Elmschrat, CC BY-SA 4.0, <a href="https://commons.wikimedia.org/wiki/File:Aria_acoustic_guitar_type_aw_77_rsb_bridge.jpg" target="_blank" rel="noopener">Aria acoustic guitar type aw 77 rsb bridge.jpg</a></li><li>작은북 — Vladimir Morozov from Russia, CC BY 2.0, <a href="https://commons.wikimedia.org/wiki/File:Snare_drum_-_Vladimir_Morozov.jpg" target="_blank" rel="noopener">Snare drum - Vladimir Morozov.jpg</a></li></ul></details>
 </main>
 <script>
 const PH={};
@@ -332,7 +332,7 @@ G.forEach((g,i)=>{ const d=document.createElement('div'); d.className='card2'; d
 let ahOn=false, ahT=0, ahDone=false, qDone=false;
 function neckAnim(){ if(!ahOn) return; ahT+=1; const j=Math.sin(ahT*1.9)*2.2; $('#throat').setAttribute('transform',`translate(${j} 0)`); $('#hand2').setAttribute('transform',`translate(${j*1.3} ${Math.cos(ahT*2.3)*1.5})`); requestAnimationFrame(neckAnim); }
 function ahStart(e){ if(e) e.preventDefault(); if(ahOn) return; ahOn=true; S.voice(true); $('#vib').setAttribute('opacity',1); $('#waves').setAttribute('opacity',1); $('#mouth').setAttribute('d','M366 128 q16 4 0 20 q-12 -10 0 -20'); $('#neckT').textContent='“아~~~”'; $('#neckT2').textContent='목이 떨리는 느낌이 들어요!'; neckAnim(); }
-function ahStop(){ if(!ahOn) return; ahOn=false; S.voice(false); $('#vib').setAttribute('opacity',0); $('#waves').setAttribute('opacity',0); $('#throat').setAttribute('transform',''); $('#hand2').setAttribute('transform',''); $('#mouth').setAttribute('d','M372 132 q10 4 0 10'); $('#neckT').textContent='손으로 목을 살짝 대요'; ahDone=true; neckC(); }
+function ahStop(){ if(!ahOn) return; ahOn=false; S.voice(false); $('#vib').setAttribute('opacity',0); $('#waves').setAttribute('opacity',0); $('#throat').setAttribute('transform',''); $('#hand2').setAttribute('transform',''); $('#mouth').setAttribute('d','M372 132 q10 4 0 10'); $('#neckT').textContent='목에 손을 살짝 대요'; ahDone=true; neckC(); }
 const ab=$('#ahB'); ab.addEventListener('pointerdown',ahStart); ['pointerup','pointerleave','pointercancel'].forEach(ev=>ab.addEventListener(ev,ahStop));
 $('#quietB').onclick=()=>{ $('#neckT2').textContent='소리를 내지 않으면 떨리지 않아요.'; qDone=true; neckC(); };
 let bandDone=false;

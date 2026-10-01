@@ -334,7 +334,7 @@ $$('#grab ~ .row [data-g], #s3 [data-g]').forEach(b=>b.onclick=()=>{ if(busy)ret
     $('#gCap').textContent='손을 넣어 물을 움켜쥐어요…';
     tween(1000,p=>hand(450,-40+210*p,0),()=>tween(500,p=>hand(450,170,p),()=>tween(1600,p=>{ hand(450,170-150*p,1);
       $('#wd').innerHTML=[0,1,2,3,4].map(i=>{ const t=(p*3+i*.2)%1; return `<ellipse cx="${430+i*10}" cy="${(170-150*p)+110+120*t}" rx="5" ry="8" fill="#5fb0e0" opacity="${1-t}"/>`; }).join(''); },()=>{ $('#wd').innerHTML=''; busy=false; gseen.add('l'); fin('💧 물은 눈으로 볼 수 있지만, 손가락 사이로 흘러내려서 손으로 잡을 수 없어요. → 액체'); }))); }
-  if(g==='g'){ $('#gT').textContent='🎈 공기를 잡아 보아요'; o.innerHTML=''; $('#gCap').textContent='손을 휘저어 공기를 움켜쥐어요… (👓 안경을 쓰면 공기를 점으로 보여 줘요)';
+  if(g==='g'){ $('#gT').textContent='🎈 공기를 잡아 보아요'; o.innerHTML=''; $('#gCap').textContent='손을 휘저어 공기를 움켜쥐어요… (👓 안경을 쓰면 공기가 있는 곳을 점으로 표시해 줘요. 실제 공기는 눈에 보이지 않아요.)';
     tween(2200,p=>{ hand(250+400*Math.sin(p*Math.PI),60+60*Math.sin(p*Math.PI*2),p>.7?1:0); drawDots(p*4); },()=>tween(700,p=>hand(650,60,1-p),()=>{ busy=false; gseen.add('g'); drawDots(0); fin('🎈 공기는 눈에 보이지 않고, 손으로 움켜쥐어도 잡히지 않아요. 하지만 우리 주변을 가득 채우고 있어요. → 기체'); })); }
 });
 function fin(m){ $('#gCap').textContent=m; if(gseen.size===3){ fb('#gFb','세 가지 모두 잡아 봤어요! 고체, 액체, 기체는 서로 다른 특징이 있어요.',true); done('s3'); } }

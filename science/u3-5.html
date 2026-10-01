@@ -172,7 +172,7 @@ img.ph{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:
 </section>
 
 <section id="s4">
-  <span class="stage">탐구 활동 3 · 『실험관찰』 47쪽</span>
+  <span class="stage">탐구 활동 3 · 『실험관찰』 47~48쪽</span>
   <h2>나무를 통해 연필 소리 전달하기</h2>
   <p>친구가 연필로 책상을 살짝 두드려요. 한쪽 귀를 책상에 대고 몇 번 두드렸는지 맞혀요.</p>
   <div class="tabs" id="dk"><button data-m="diff" class="on">① 다른 책상에 앉았을 때</button><button data-m="same">② 같은 책상에 앉았을 때</button></div>
@@ -226,7 +226,7 @@ img.ph{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:
   </table>
   <div class="fb" id="selfFb"></div>
 </section>
-<p class="tip" style="text-align:center">『과학』 74~77쪽 · 『실험관찰』 46~47쪽 · 지도서 298~311쪽 바탕</p>
+<p class="tip" style="text-align:center">『과학』 74~77쪽 · 『실험관찰』 46~48쪽 · 지도서 298~311쪽 바탕</p>
 
 <details class="credits"><summary>📷 사진 출처 (위키미디어 공용 자유 이용 사진)</summary><ul><li>캐스터네츠 — Rijksmuseum, CC0, <a href="https://commons.wikimedia.org/wiki/File:Castagnetten,_BK-NM-11430-78.jpg" target="_blank" rel="noopener">Castagnetten, BK-NM-11430-78.jpg</a></li><li>실 전화기 그림 — Benoît Bonnafoux, Public domain, <a href="https://commons.wikimedia.org/wiki/File:Fig_7_Le_Telephone_by_T_du_Moncel_Paris_1880_(Large).jpg" target="_blank" rel="noopener">Fig 7 Le Telephone by T du Moncel Paris 1880 (Large).jpg</a></li></ul></details>
 </main>
@@ -350,11 +350,11 @@ function drawDesk(){ const same=mode==='same'; let h='<rect width="900" height="
 drawDesk();
 $$('#dk button').forEach(b=>b.onclick=()=>{ mode=b.dataset.m; $$('#dk button').forEach(x=>x.classList.toggle('on',x===b)); drawDesk(); $('#cnt').innerHTML=''; fb('#dFb','',null); });
 $('#tap').onclick=()=>{ taps=2+Math.floor(Math.random()*3); const same=mode==='same'; const c=snd();
-  for(let i=0;i<taps;i++){ setTimeout(()=>{ if(same) S.click(.9,0,1200); else { S.click(.04,0,3000); } $('#pen').animate([{transform:'translate(220px,90px)'},{transform:'translate(220px,110px)'},{transform:'translate(220px,90px)'}],{duration:180});
+  for(let i=0;i<taps;i++){ setTimeout(()=>{ if(same) S.click(.9,0,1200); else { S.click(.006,0,3000); } $('#pen').animate([{transform:'translate(220px,90px)'},{transform:'translate(220px,110px)'},{transform:'translate(220px,90px)'}],{duration:180});
       const g=$('#dw'); if(same){ tween(700,p=>g.innerHTML=`<circle cx="${230+440*p}" cy="162" r="10" fill="#6b3fa0" opacity="${1-p*.5}"/>`,()=>g.innerHTML=''); } }, i*650); }
-  setTimeout(()=>{ $('#cnt').innerHTML=[2,3,4].map(n=>`<button data-n="${n}">${n}번</button>`).join(''); $$('#cnt button').forEach(b=>b.onclick=()=>{ const ok=+b.dataset.n===taps;
+  setTimeout(()=>{ $('#cnt').innerHTML=(same?[2,3,4]:[0,2,3,4]).map(n=>`<button data-n="${n}">${n?n+'번':'거의 안 들려요'}</button>`).join(''); $$('#cnt button').forEach(b=>b.onclick=()=>{ const ok=same? +b.dataset.n===taps : +b.dataset.n===0;
     dres[mode]=true; fb('#dFb', same? (ok?`정답! ${taps}번이에요. 같은 책상에서는 두드리는 소리가 또렷하게 들려요. 소리가 나무(고체)를 통해 전달되었어요.`:`실제로는 ${taps}번이었어요. 같은 책상에서는 소리가 또렷해요. 다시 들어 봐요!`)
-      : (ok?`맞혔어요! 하지만 다른 책상에서는 소리가 아주 작아서 듣기 어려웠지요?`:`실제로는 ${taps}번이었어요. 다른 책상에서는 소리가 잘 들리지 않아요.`), ok?true:'info');
+      : (ok?`맞아요! 다른 책상에서는 두드리는 소리가 거의 들리지 않아요. 맞힌 횟수는 0번이에요.`:`친구는 ${taps}번 두드렸지만, 다른 책상에서는 소리가 거의 들리지 않아요. 그래서 횟수를 알기 어려워요.`), ok?true:'info');
     if(dres.diff&&dres.same){ setTimeout(()=>{ fb('#dFb','같은 책상에서 더 잘 들렸어요. 소리는 나무(고체)를 통해 전달돼요!',true); done('s4'); },1600); } }); }, taps*650+200); };
 /* 실 전화기 */
 let taut=true; const tres=new Set();
@@ -371,7 +371,7 @@ $$('#ex button').forEach(b=>b.onclick=()=>{ const e=EX[+b.dataset.i]; if(b.datas
 let rv=false; $('#bRev').onclick=()=>{ $('#b1').textContent='물질'; fb('#revFb','소리는 고체, 액체, 기체 상태인 여러 가지 물질을 통해 전달돼요.',true); rv=true; if(eok.size===5) done('s6'); };
 let q7=false,w7=false;
 quiz('#quiz',[{q:'1. 소리의 전달에 대한 설명으로 옳은 것은?',o:['소리는 공기를 통해서만 전달된다','소리는 물을 통해 전달되지 않는다','소리는 나무와 같은 고체를 통해서도 전달된다','공기를 빼면 소리가 더 크게 들린다'],a:2,one:1,e:'소리는 고체, 액체, 기체를 통해 모두 전달돼요.'}],()=>{q7=true; if(w7)done('s7');});
-writeCheck('#wr','#wrB','#wrFb',[[/공기|목소리|종/,'공기(기체)'],[/물|수영|잠수/,'물(액체)'],[/철|책상|나무|실|벽|땅/,'고체']],1,'소리가 전달되는 예를 잘 썼어요.','예: ‘철봉에 귀를 대면 두드리는 소리가 들린다.’처럼 써 봐요.',()=>{w7=true; if(q7)done('s7');});
+writeCheck('#wr','#wrB','#wrFb',[[/공기|목소리|종/,'공기(기체)'],[/물속|물\s*속|물에서|물을\s*통|수영|잠수|액체/,'물(액체)'],[/철봉|철|책상|나무|실\s*전화|실을|실이|벽|땅|고체/,'고체']],1,'소리가 전달되는 예를 잘 썼어요.','예: ‘철봉에 귀를 대면 두드리는 소리가 들린다.’처럼 써 봐요.',()=>{w7=true; if(q7)done('s7');});
 selfEval('#selfFb','멋져요! 다음 시간에는 소음을 줄이는 방법을 알아봐요.','어려웠던 부분은 가상 실험을 다시 해 보며 확인해 봐요.','s8');
 
 </script>

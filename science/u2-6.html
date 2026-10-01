@@ -128,7 +128,7 @@ ul.lst li{margin:3px 0}
 </div></nav>
 
 <main class="wrap">
-<p class="goal">🎯 <b>학습 목표</b><br>갯벌이 무엇인지 알고, 갯벌에 사는 생물과 갯벌의 가치를 설명할 수 있어요.<br>갯벌을 보전해야 하는 까닭을 알리는 활동을 할 수 있어요.</p>
+<p class="goal">🎯 <b>학습 목표</b><br>갯벌이 무엇인지 알고, 우리나라의 대표적인 갯벌과 갯벌에 사는 생물, 갯벌의 가치를 설명할 수 있어요.<br>갯벌을 보전해야 하는 까닭을 알리는 활동을 할 수 있어요.</p>
 
 <!-- 도입 -->
 <section id="s1">
@@ -420,12 +420,12 @@ $$('#seaPick button').forEach(b=>b.onclick=()=>{ $$('#seaPick button').forEach(x
 
 /* 숨은 생물 + 도감 */
 const C={
- uca:['농게','한쪽 집게발이 아주 크고 붉어요. 갯벌에 구멍을 파고 살아요.',0],
+ uca:['농게','수컷은 한쪽 집게발이 아주 크고 붉어요. 갯벌에 구멍을 파고 살아요.',0],
  mudsk:['짱뚱어','갯벌 위를 뛰어다니는 물고기예요. 눈이 머리 위로 톡 튀어나와 있어요.',0],
  clam:['백합(조개)','갯벌 흙 속에 숨어 사는 조개예요.',0],
  worm:['갯지렁이','갯벌 흙 속에 살아요. 사진 속 동글동글한 흙 무더기는 갯지렁이가 만든 거예요.',0],
  sali:['퉁퉁마디','마디마디가 통통한 풀이에요. 짠 바닷물이 드나드는 곳에서도 자라요.',1],
- suaeda:['칠면초','가을이 되면 붉게 물들어 갯벌을 붉은색으로 꾸며요.',1],
+ suaeda:['칠면초','가을이 되면 붉게 물들어 갯벌을 붉은색으로 꾸며요. 나문재도 갯벌에서 자라는 비슷한 풀이에요.',1],
  oyster:['검은머리물떼새','빨간 부리로 조개를 까서 먹으러 찾아와요.',2],
  spoon:['저어새','주걱처럼 생긴 부리를 좌우로 저으며 먹이를 찾아요.',2]};
 const KIND=['동물','식물','찾아오는 새'], KEYS=Object.keys(C), found=new Set(), classed=new Set();
@@ -510,7 +510,7 @@ Q.forEach((it,k)=>{ const d=document.createElement('div'); d.innerHTML=`<p class
   it.o.forEach((t,i)=>{ const b=document.createElement('button'); b.textContent=t; b.onclick=()=>{ $$('button',d).forEach(x=>x.classList.remove('right','wrong'));
     if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);qd.add(k); if(qd.size===Q.length&&wrOk) done('s9');} else {b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요.',false);} }; $('.pick',d).appendChild(b); });
   $('#quiz').appendChild(d); });
-const WK=[[/생물|동물|식물|게|조개|집|살/,'생물이 사는 곳'],[/철새|새/,'철새의 쉼터'],[/오염|더러|깨끗|걸러|정화/,'더러운 물질 걸러 주기'],[/홍수|비|물을\s*머금|재해/,'홍수 피해 줄이기'],[/먹을|음식|조개를\s*얻/,'먹을거리'],[/세계|유네스코|유산/,'세계유산'],[/체험|배움|놀/,'체험과 배움']];
+const WK=[[/생물|동물|식물|게가|게와|게의|조개|생물의\s*집|살아|살고|사는/,'생물이 사는 곳'],[/철새|새들|새가|새의/,'철새의 쉼터'],[/오염|더러|깨끗|걸러|정화/,'더러운 물질 걸러 주기'],[/홍수|비가|빗물|물을\s*머금|재해/,'홍수 피해 줄이기'],[/먹을|음식|조개를\s*얻/,'먹을거리'],[/세계|유네스코|유산/,'세계유산'],[/체험|배움|놀/,'체험과 배움']];
 $('#wrChk').onclick=()=>{ const t=$('#wr').value.trim(); if(!t){fb($('#wrFb'),'먼저 답을 써 보세요.',false);return;}
   const h=WK.filter(([r])=>r.test(t)).map(x=>x[1]);
   if(h.length>=2){ wrOk=true; fb($('#wrFb'),`멋져요! 찾은 내용: ${h.join(', ')}. 갯벌을 보전해야 하는 까닭을 두 가지 이상 썼어요.`,true); if(qd.size===Q.length) done('s9'); }
