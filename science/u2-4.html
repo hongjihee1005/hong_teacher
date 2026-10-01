@@ -751,7 +751,7 @@ html body.ov .hj-pgrid .photo img{max-height:min(380px,44vh)!important;aspect-ra
 <section id="s4">
   <span class="stage">조사해요</span>
   <h2>나의 바닷가 지형 도감</h2>
-  <p>360° 탐험에서 찾은 지형이 <b>실제 사진</b>으로 여기에 모여요. 카드를 눌러 특징을 읽어 보세요.</p>
+  <p>바닷가 지형을 <b>실제 사진</b>으로 살펴봐요. 카드를 누르면 크게 보고 특징을 들을 수 있어요. 360° 탐험에서 찾은 지형에는 <b>✔ 찾았어요</b> 표시가 붙어요.</p>
   <div class="cards" id="dex"></div>
 </section>
 
@@ -908,9 +908,8 @@ $$('#panoSvg .miss').forEach(g=>g.addEventListener('click',()=>{ if(pmoved)retur
   fb($('#panoFb'), m==='갈매기'?'갈매기는 바닷가에 사는 새예요. 지형(땅의 생김새)이 아니에요.': `${m}은(는) 사람이 만든 것이에요. 지형(땅의 생김새)이 아니에요.`, false); }));
 
 /* 도감 */
-function renderDex(){ $('#dex').innerHTML=KEYS.map(k=> found.has(k)
-  ? `<button class="card dexc" data-k="${k}" aria-label="${G[k].n} 크게 보기">${photo(k)}<div class="nm">${G[k].n}</div><div class="ds">${G[k].d}</div><div class="pl">📍 ${G[k].p} · 📷 이 사진: ${PLACE[k]}</div></button>`
-  : `<div class="card locked"><svg viewBox="0 0 160 110" aria-hidden="true"><rect width="160" height="110" rx="10" fill="#d9cfbb"/><text x="80" y="66" text-anchor="middle" font-size="40" fill="#8c7f66">?</text></svg><div class="nm">???</div><div class="ds">360° 탐험에서 찾아보세요.</div></div>`).join('');
+function renderDex(){ $('#dex').innerHTML=KEYS.map(k=>
+  `<button class="card dexc${found.has(k)?' got':''}" data-k="${k}" aria-label="${G[k].n} 크게 보기">${found.has(k)?'<span class="gotb">✔ 찾았어요</span>':''}${photo(k)}<div class="nm">${G[k].n}</div><div class="ds">${G[k].d}</div><div class="pl">📍 ${G[k].p} · 📷 이 사진: ${PLACE[k]}</div></button>`).join('');
   $$('#dex .dexc').forEach(b=>b.onclick=()=>dexOpen(b.dataset.k)); }
 function dexOpen(k){ let m=$('#dexPop'); if(!m){ m=document.createElement('div'); m.id='dexPop'; m.setAttribute('role','dialog'); m.setAttribute('aria-modal','true');
     m.innerHTML='<div class="dp"><div class="dpImg"></div><div class="dpTx"><h3 class="dpN"></h3><p class="dpD"></p><p class="dpP"></p><div class="row" style="gap:8px;justify-content:center"><button class="dpS">🔊 읽어 주기</button><button class="main dpX">닫기</button></div></div></div>';
@@ -1234,6 +1233,9 @@ body.ov #ovMade{display:none}
 /* 도감 카드: 누를 수 있게, 사진 크게, 출처는 작게 */
 #dex.cards{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:10px}
 #dex .card{display:flex;flex-direction:column;align-items:stretch;justify-content:flex-start!important;padding:8px;cursor:pointer;text-align:center;font:inherit;color:inherit;margin:0;min-height:0}
+html body #dex .card{position:relative;justify-content:flex-start!important}
+#dex .card.got{border-color:var(--good)}
+#dex .gotb{position:absolute;top:14px;left:14px;z-index:1;background:var(--good,#2e9e5b);color:#fff;font-size:.8rem;font-weight:700;padding:2px 10px;border-radius:999px}
 #dex .card:hover{border-color:var(--sea);transform:translateY(-2px)}
 #dex .card .nm{font-size:1.1rem;margin-top:6px}
 #dex .card .ds{font-size:.95rem;line-height:1.45;margin-top:2px}
