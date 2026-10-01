@@ -50,6 +50,13 @@ grade1/ … grade6/
 - **`class/index.html`을 직접 고치지 마세요.** 원본은 `_build/class/`(`shell.html` 화면·CSS, `app.js` 기능, `qr.min.js` QR 라이브러리 MIT)이고 `python3 _build/class/build.py`로 다시 만듭니다.
 - 자료는 그 기기 브라우저(localStorage `hj-class-v1`)에만 저장됩니다. 기기끼리 공유하려면 Firebase 등이 필요합니다(아직 없음). 날씨·미세먼지는 Open-Meteo(인증키 없음), 급식·시간표·학사 일정은 나이스 개방 포털(설정에서 학교 검색).
 
+### 오늘의 교실 산책 (`today/`, 2026-10-01)
+
+- 첫 화면 제목 아래 '🌟 오늘의 한 줄' 띠와 `today/index.html`(오늘의 사건·명언·명화·명곡·책)은 `_build/today/`에서 만듭니다. **두 파일을 직접 고치지 마세요.**
+- 자료는 `_build/today/data.js`에 있습니다(날짜별 사건 `d:'MM-DD'`, 명언·명화·명곡·책 목록). 날마다 순서대로 바뀌고, 오늘 날짜의 사건이 없으면 가장 가까운 다음 날 사건을 보여 줍니다.
+- 고친 뒤: `python3 _build/today/build.py && python3 _build/theme/apply_theme.py`
+- 넣을 때는 날짜·인물·작품 정보를 꼭 확인하고, 어린이에게 알맞은 내용만 씁니다. 노래 가사·책 본문은 싣지 않습니다.
+
 ## 파일 이름
 
 영어 소문자와 하이픈만 씁니다. `grade3/social/sem2/` 기준:
