@@ -157,6 +157,33 @@ html .hj-contact a:hover{border-color:var(--line2);background:var(--bg2)}
  html .crumb{margin-bottom:18px}}
 @media (prefers-reduced-motion:reduce){html .card,html a.card:hover{transition:none;transform:none}}
 html .lock h1,html .lock .h-ico{justify-content:center;text-align:center}
+/* 펼침 메뉴 (카드 안의 하위 메뉴) */
+html .rw{position:relative;display:flex;flex-direction:column;min-width:0}
+html .rw>.card{flex:1}
+html .rw a.room::before,html .rw a.room::after{display:none}
+html .rw.open{z-index:30}
+html .r-tg{position:absolute;right:16px;top:22px;z-index:2;width:44px;height:44px;border-radius:50%;border:1.5px solid var(--line);
+ background:var(--paper);color:var(--ink);display:grid;place-items:center;cursor:pointer;padding:0;transition:background .15s,border-color .15s,transform .2s}
+html .r-tg svg{width:20px;height:20px;transition:transform .2s ease}
+html .r-tg:hover{background:var(--bg2);border-color:var(--line2)}
+html .r-tg[aria-expanded="true"]{background:var(--ink);border-color:var(--ink);color:var(--paper)}
+html .r-tg[aria-expanded="true"] svg{transform:rotate(180deg)}
+html .r-tg:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+html .r-sub{position:absolute;left:0;right:0;top:calc(100% + 8px);display:flex;flex-wrap:wrap;gap:8px;padding:14px;
+ background:var(--paper);border:1.5px solid var(--line);border-radius:18px;box-shadow:0 4px 8px rgba(80,55,30,.06),0 22px 40px -18px rgba(80,55,30,.35);
+ animation:hjdrop .16s ease-out}
+html .r-sub[hidden]{display:none}
+@keyframes hjdrop{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:none}}
+html .r-item{--acc-soft:color-mix(in srgb,var(--acc) 14%,var(--paper));--acc-ink:color-mix(in srgb,var(--acc) 62%,var(--ink));
+ display:inline-flex;align-items:center;gap:8px;min-height:46px;padding:8px 16px 8px 10px;border-radius:999px;text-decoration:none;
+ background:var(--acc-soft);color:var(--acc-ink);font-weight:700;font-size:clamp(16px,1.4vw,18px);border:1.5px solid transparent;transition:border-color .15s,transform .15s}
+html a.r-item:hover{border-color:color-mix(in srgb,var(--acc) 42%,var(--paper));transform:translateY(-1px)}
+html a.r-item:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+html .r-ico{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--paper);font-size:17px;line-height:1}
+html .r-wait{background:var(--bg2);color:color-mix(in srgb,var(--soft) 70%,var(--paper));font-weight:600}
+html .r-wait .r-ico{filter:grayscale(1);opacity:.6}
+html .r-wait small{font-size:13px;font-weight:600}
+@media (prefers-reduced-motion:reduce){html .r-sub{animation:none}html .r-tg svg{transition:none}}
 </style><!--/hj-theme--></head><body><main>
 <nav class="crumb" aria-label="현재 위치"><a class="c-link c-home" href="../../../index.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../../index.html">3학년</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../index.html">사회방</a></nav>
 <h1>3학년 2학기 사회 학습 자료</h1>
@@ -248,4 +275,10 @@ html .lock h1,html .lock .h-ico{justify-content:center;text-align:center}
 <script>(function(){document.querySelectorAll(".pane").forEach(function(pane){var bs=pane.querySelectorAll(".ubtn");if(!bs.length)return;bs.forEach(function(b){b.addEventListener("click",function(){var u=b.dataset.u;bs.forEach(function(x){x.setAttribute("aria-pressed",x===b?"true":"false")});pane.querySelectorAll(".ugrp").forEach(function(g){g.hidden=!(u==="0"||g.dataset.u===u)})})})})})();</script>
 <!--hj-theme-js--><script>(function(){var q=function(s){return document.querySelectorAll(s)};
 q('.tag[style],.legend span[style]').forEach(function(e){var b=e.style.backgroundColor||e.style.background;if(b){e.style.setProperty('--acc',b);e.style.background='';e.style.color=''}});})();
+(function(){var tg=[].slice.call(document.querySelectorAll('.r-tg'));if(!tg.length)return;
+function close(ex){tg.forEach(function(b){if(b!==ex&&b.getAttribute('aria-expanded')==='true'){b.setAttribute('aria-expanded','false');document.getElementById(b.getAttribute('aria-controls')).hidden=true;b.closest('.rw').classList.remove('open')}})}
+tg.forEach(function(b){b.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();var o=b.getAttribute('aria-expanded')==='true';close(b);
+ b.setAttribute('aria-expanded',o?'false':'true');document.getElementById(b.getAttribute('aria-controls')).hidden=o;b.closest('.rw').classList.toggle('open',!o)})});
+document.addEventListener('click',function(e){if(!e.target.closest('.rw'))close()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();
 </script><!--/hj-theme-js--></body></html>
