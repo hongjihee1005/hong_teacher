@@ -443,6 +443,53 @@ html:has(#ovBar) body .hj-gonext{margin-left:8px}
 html:has(#ovBar) body button.hj-retry{background:var(--paper)!important;color:var(--ink)!important}
 html:has(#ovBar) body span.hj-rrow{display:inline-flex;gap:8px;margin:0 0 0 auto}
 html:has(#ovBar) body span.hj-rrow .hj-gonext{margin-left:0}
+/* 이동 단추 묶음은 위치 표시일 뿐: 앱의 nav 꾸밈(밑줄·고정)을 받지 않게 */
+html body nav.hj-nav{border:0!important;position:static!important;background:none!important;box-shadow:none!important;padding:0!important;top:auto!important}
+/* ===== 화면 배치(모든 교과) ===== */
+/* 과학 한 화면 보기: 좌우 여백, 제목·질문은 가운데, 설명은 왼쪽 */
+html body.ov main.wrap{max-width:min(1280px,100%)!important;margin-left:auto!important;margin-right:auto!important}
+html body.ov section .fitbox>.stage{display:table;margin-left:auto;margin-right:auto}
+html body.ov section .fitbox>:is(h2,h3){text-align:center;text-wrap:balance}
+html body.ov section .fitbox>p:not(.fb){text-align:center;text-wrap:balance}
+html body.ov section :is(.row,.order,.two,.vs,.gauge){justify-content:center}
+html body.ov section .fb{text-align:left}
+html body.ov section .pick{max-width:1100px;margin-left:auto;margin-right:auto}
+/* 사진: 사진 왼쪽 크게, 설명 오른쪽 */
+html body.ov .photo{display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:center;max-width:1100px;margin-left:auto!important;margin-right:auto!important}
+html body.ov .photo img{width:100%!important;height:auto!important;max-height:min(340px,38vh)!important;aspect-ratio:auto!important;object-fit:cover}
+html body.ov .photo figcaption{padding:12px 18px!important;font-size:clamp(16px,1.3vw,20px)!important;line-height:1.55;text-align:left}
+html body.ov .photo .cr{font-size:clamp(12px,.9vw,14px)!important;margin-top:6px}
+html body.ov .gallery{grid-template-columns:1fr!important;max-width:1100px;margin-left:auto;margin-right:auto}
+html body.ov .gallery .photo img{max-height:min(220px,26vh)!important}
+html:has(#ovBar) body .gallery .photo{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}
+/* 국어·사회 진행 화면: 너무 넓게 퍼지지 않게 */
+html body #stage #body{width:min(1240px,94vw)!important}
+/* 홍지희 선생님 버전 진행 화면 */
+html body #lesson .body{width:min(1360px,94vw);max-width:none;margin-left:auto;margin-right:auto}
+/* 수학 앱: 가운데 정렬된 넓이 */
+html body main.lesson{max-width:min(1480px,100%)!important}
+html body.ov section :is(#quiz,#perf,.qz)>div>p.jua,html body.ov section p.jua{text-align:center;text-wrap:balance}
+html body.ov section .pick:has(>:nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))!important}
+html body.ov .photo img{max-height:min(260px,28vh)!important}
+html body.ov .gallery .photo img{max-height:min(190px,22vh)!important}
+html body.ov main.wrap{max-width:min(1120px,100%)!important}
+/* 모든 교과 같은 본문 폭: 눈이 좌우로 너무 오가지 않게 1240px 안팎 */
+html body.ov main.wrap{max-width:min(1240px,100%)!important}
+html body #lesson .body{width:min(1240px,94vw)!important}
+html body .hj-navbar{position:relative;z-index:60}
+html body .topbar>.hj-nav{margin-right:10px}
+/* 본문 폭 최종: 수학 앱의 활동 칸과 비슷한 1080~1120px. 눈이 좌우로 덜 움직이게 */
+html body.ov main.wrap{max-width:min(1080px,100%)!important}
+html body #stage #body{width:min(1120px,94vw)!important}
+html body #lesson .body{width:min(1120px,94vw)!important}
+/* 국어: 자체 확대(최대 약 1.3배)가 있으므로 바탕 폭을 좁혀, 확대 뒤에도 1150px 안팎 */
+html body #stage #bodyWrap>#body{width:min(880px,94vw)!important}
+html body.ov .hj-pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:1080px;margin:10px auto 0}
+html body.ov .hj-pgrid .photo{display:block!important;margin:0!important}
+html body.ov .hj-pgrid .photo img{width:100%!important;max-height:min(230px,26vh)!important;object-fit:cover}
+html body.ov .hj-pgrid .photo figcaption{font-size:clamp(14px,1.1vw,17px)!important}
+html body.ov .photo img{max-height:min(210px,22vh)!important}
+html body.ov .photo{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 </style><!--/hj-ctheme--></head><body>
 
 <section id="main" class="screen on">
@@ -480,7 +527,7 @@ function seg(id,opts,get,set){
   opts.forEach(([v,l])=>{const b=document.createElement('button');b.textContent=l;b.setAttribute('aria-pressed',get()===v);b.onclick=()=>{set(v);seg(id,opts,get,set);};s.appendChild(b);});
 }
 
-const CFG={"h": "🏡 여러 장소 자료실", "sub": "1단원 2~10차시 · 우리가 사는 부산 동구의 여러 장소를 살펴봐요.", "cards": [{"c": "#2F74E0", "big": "부산역", "t": "기차를 타는 장소, 부산역", "p": "부산역은 우리 동구 초량동에 있어요. 1969년에 지금 자리로 옮겨 와 기차 손님을 맞고 있어요. 여행을 떠나는 사람, 가족을 마중 나온 사람 등 많은 사람이 이용해요.", "q": "부산역에 가 본 적이 있나요? 그곳에서 어떤 일이 있었고, 어떤 느낌이 들었나요?", "s": "한국학중앙연구원 한국민족문화대백과사전 「부산역」", "u": "https://encykorea.aks.ac.kr/Article/E0068099"}, {"c": "#1F9E63", "big": "이바구", "t": "이야기가 있는 길, 초량 이바구길", "p": "'이바구'는 경상도 말로 '이야기'라는 뜻이에요. 옛 백제병원에서 출발해 168계단, 이바구공작소를 지나 유치환우체통 전망대까지 이어지는 길이에요.", "q": "길 이름에 '이야기'라는 말을 붙인 까닭은 무엇일까요?", "s": "비짓부산(부산광역시 공식 관광 누리집) 「초량이바구길」, 2026. 9. 확인", "u": "https://www.visitbusan.net/index.do?menuCd=DOM_000000202004001000&uc_seq=58&lang_cd=ko"}, {"c": "#E8961E", "big": "168개", "t": "초량 168계단", "p": "계단이 168개라서 붙은 이름이에요. 옛날 산동네 주민들은 계단 아래 우물에서 물을 길어 이 계단을 오르내렸어요. 2025년부터는 경사형 엘리베이터 '초량168계단 하늘길'도 다녀요.", "q": "옛날 주민에게 168계단은 어떤 장소였을까요? 지금 나에게는 어떤 장소인가요?", "s": "한국관광공사 대한민국 구석구석(옛 우물 이야기) · 국제신문 2025. 12. 4. 보도(하늘길)", "u": "https://www.kookje.co.kr/news2011/asp/newsbody.asp?code=0300&key=20251204.99099001827"}, {"c": "#6A4FC9", "big": "공원", "t": "옛 성터가 있는 자성대공원", "p": "자성대공원은 동구 범일동에 있는 공원이에요. 옛 성이 있던 자리로, 이 성터는 1972년에 부산시 기념물로 정해졌어요.", "q": "공원은 사람들에게 어떤 장소일까요? 사람마다 공원에 대한 느낌이 다른 까닭은 무엇일까요?", "s": "부산광역시 누리집 「조선시대 대일 항쟁 역사 유적 부산진성」, 2022. 10. 1.", "u": "https://www.busan.go.kr/news/storyreport/view?dataNo=67204&gugun=Next"}, {"c": "#E0506B", "t": "내 마음속 장소를 그림으로", "p": "우리가 사는 곳의 여러 장소를 그릴 때 실제 지도처럼 정확하게 그리지 않아도 돼요. 내가 좋아하는 곳, 자주 가는 곳을 내가 정한 기준에 따라 나타내면 돼요.", "q": "친구 그림과 내 그림에서 크게 그린 장소가 서로 다르다면, 그 까닭은 무엇일까요?", "s": "사회 3-1 교사용 지도서 49쪽(6~7차시)", "u": ""}], "links": [{"e": "🚶", "t": "비짓부산 · 초량이바구길", "d": "이바구길을 따라 만나는 장소들을 알아봐요.", "u": "https://www.visitbusan.net/index.do?menuCd=DOM_000000202004001000&uc_seq=58&lang_cd=ko"}, {"e": "🏙️", "t": "부산광역시 · 동구 행정구역", "d": "동구에 있는 동 이름을 확인해요.", "u": "https://www.busan.go.kr/bhdonggu"}, {"e": "📚", "t": "부산광역시 도서관포털", "d": "우리 가까이에 있는 도서관을 찾아봐요.", "u": "https://library.busan.go.kr/portal/index.do"}, {"e": "📍", "t": "카카오맵", "d": "우리가 사는 곳의 여러 장소를 지도에서 찾아봐요.", "u": "https://map.kakao.com/"}], "rel": [{"f": "u1-l2.html", "c": "#2F74E0", "e": "🗺️", "t": "2차시 장소에 대해 알아볼까요", "d": "장소의 뜻 알아보기"}, {"f": "u1-l3.html", "c": "#1F9E63", "e": "🔎", "t": "3차시 우리가 사는 곳의 여러 장소를 살펴볼까요", "d": "여러 장소를 기준을 정해 무리 짓기"}, {"f": "u1-l45.html", "c": "#E8961E", "e": "🃏", "t": "4~5차시 우리가 사는 곳에 있는 여러 장소에서의 경험을 이야기해 볼까요", "d": "장소 카드 만들고 놀이하기"}, {"f": "u1-l67.html", "c": "#E0506B", "e": "🎨", "t": "6~7차시 우리가 사는 곳에 있는 여러 장소를 표현해 볼까요", "d": "그림, 책, 신문 등으로 표현하기"}, {"f": "u1-l89.html", "c": "#6A4FC9", "e": "🖼️", "t": "8~9차시 우리가 사는 곳에 있는 여러 장소를 소개해 볼까요", "d": "작품 소개하고 생각과 느낌 비교하기"}, {"f": "u1-l10.html", "c": "#16A3B5", "e": "🎭", "t": "10차시 생각을 펼쳐요 · 재미있게 확인해요", "d": "주요 용어와 내용 정리하기"}], "notice": "<b>지도상의 유의점(주제 1)<\/b><br>사람마다 장소에 관한 생각과 느낌이 다를 수 있음을 이해하고 존중하도록 지도합니다. 카드의 질문은 정답이 없는 이야기 나누기용입니다.<br><br><b>6~7차시 그림 표현<\/b><br>지도서 49쪽: 그림을 그릴 때 심상지도로 표현하도록 유도하되, ‘심상지도’ 개념을 학습 요소로 다루지 않도록 합니다. 실제 지도처럼 정확하게 그리지 않아도 된다는 것을 안내합니다. 그래서 화면 카드에도 ‘심상지도’라는 말을 쓰지 않았습니다.<br><br><b>장소 사실<\/b><br>부산역·이바구길·168계단·자성대공원 내용은 2026년 9월에 공식 누리집에서 확인했습니다. 교과서에는 없는 우리 지역 예시이므로 교과서 사례를 먼저 다룬 뒤 보조로 써 주세요.<br><br>우리가 사는 곳의 범위는 생활권(여가, 쇼핑, 학생의 경험)을 기준으로 합니다. 동구 밖의 장소를 떠올린 학생도 인정해 주세요.<br><br><b>링크 확인(2026. 9. 28.)<\/b><br>모든 링크를 다시 열어 확인했습니다. 부산 동구 문화관광 누리집(bsdonggu.go.kr/tour)은 확인 때 접속되지 않아 학생 링크에서 뺐습니다. 168계단의 옛 모노레일(2016년 설치)은 2023년에 철거되었고, 2025년 3월 11일부터 경사형 엘리베이터 ‘초량168계단 하늘길’이 운행합니다(국제신문 2025. 12. 4., 코리아타임뉴스 2025. 2. 25. 보도). 한국관광공사 여행기사에는 아직 모노레일로 적혀 있으니 옛 자료를 보여 줄 때 유의해 주세요."};
+const CFG={"h": "🏡 여러 장소 자료실", "sub": "1단원 2~10차시 · 우리가 사는 부산 동구의 여러 장소를 살펴봐요.", "cards": [{"c": "#2F74E0", "big": "부산역", "t": "기차를 타는 장소, 부산역", "p": "부산역은 우리 동구 초량동에 있어요. 1969년에 지금 자리로 옮겨 와 기차 손님을 맞고 있어요. 여행을 떠나는 사람, 가족을 마중 나온 사람 등 많은 사람이 이용해요.", "q": "부산역에 가 본 적이 있나요? 그곳에서 어떤 일이 있었고, 어떤 느낌이 들었나요?", "s": "한국학중앙연구원 한국민족문화대백과사전 「부산역」", "u": "https://encykorea.aks.ac.kr/Article/E0068099"}, {"c": "#1F9E63", "big": "이바구", "t": "이야기가 있는 길, 초량 이바구길", "p": "'이바구'는 경상도 말로 '이야기'라는 뜻이에요. 옛 백제병원에서 출발해 168계단, 이바구공작소를 지나 유치환우체통 전망대까지 이어지는 길이에요.", "q": "길 이름에 '이야기'라는 말을 붙인 까닭은 무엇일까요?", "s": "비짓부산(부산광역시 공식 관광 누리집) 「초량이바구길」, 2026. 9. 확인", "u": "https://www.visitbusan.net/index.do?menuCd=DOM_000000202004001000&uc_seq=58&lang_cd=ko"}, {"c": "#E8961E", "big": "168개", "t": "초량 168계단", "p": "계단이 168개라서 붙은 이름이에요. 옛날 산동네 주민들은 계단 아래 우물에서 물을 길어 이 계단을 오르내렸어요. 2025년부터는 경사형 엘리베이터 '초량168계단 하늘길'도 다녀요.", "q": "옛날 주민에게 168계단은 어떤 장소였을까요? 지금 나에게는 어떤 장소인가요?", "s": "한국관광공사 대한민국 구석구석(옛 우물 이야기) · 국제신문 2025. 12. 4. 보도(하늘길)", "u": "https://www.kookje.co.kr/news2011/asp/newsbody.asp?code=0300&key=20251204.99099001827"}, {"c": "#6A4FC9", "big": "공원", "t": "옛 성터가 있는 자성대공원", "p": "자성대공원은 동구 범일동에 있는 공원이에요. 옛 성이 있던 자리로, 이 성터는 1972년에 부산시 기념물로 정해졌어요.", "q": "공원은 사람들에게 어떤 장소일까요? 사람마다 공원에 대한 느낌이 다른 까닭은 무엇일까요?", "s": "부산광역시 누리집 「조선시대 대일 항쟁 역사 유적 부산진성」, 2022. 10. 1.", "u": "https://www.busan.go.kr/news/storyreport/view?dataNo=67204&gugun=Next"}, {"c": "#E0506B", "t": "내 마음속 장소를 그림으로", "p": "우리가 사는 곳의 여러 장소를 그릴 때 실제 지도처럼 정확하게 그리지 않아도 돼요. 내가 좋아하는 곳, 자주 가는 곳을 내가 정한 기준에 따라 나타내면 돼요.", "q": "친구 그림과 내 그림에서 크게 그린 장소가 서로 다르다면, 그 까닭은 무엇일까요?", "s": "사회 3-1 교사용 지도서 49쪽(6~7차시)", "u": ""}], "links": [{"e": "🚶", "t": "비짓부산 · 초량이바구길", "d": "이바구길을 따라 만나는 장소들을 알아봐요.", "u": "https://www.visitbusan.net/index.do?menuCd=DOM_000000202004001000&uc_seq=58&lang_cd=ko"}, {"e": "🏙️", "t": "부산광역시 · 동구 행정구역", "d": "동구에 있는 동 이름을 확인해요.", "u": "https://www.busan.go.kr/bhdonggu"}, {"e": "📚", "t": "부산광역시 도서관포털", "d": "우리 가까이에 있는 도서관을 찾아봐요.", "u": "https://library.busan.go.kr/portal/index.do"}, {"e": "📍", "t": "카카오맵", "d": "우리가 사는 곳의 여러 장소를 지도에서 찾아봐요.", "u": "https://map.kakao.com/"}, {"e": "📍", "t": "네이버 지도", "d": "우리가 사는 곳의 여러 장소를 지도에서 찾아봐요.", "u": "https://map.naver.com/"}, {"e": "📍", "t": "구글 지도", "d": "우리가 사는 곳의 여러 장소를 지도에서 찾아봐요.", "u": "https://www.google.com/maps"}], "rel": [{"f": "u1-l2.html", "c": "#2F74E0", "e": "🗺️", "t": "2차시 장소에 대해 알아볼까요", "d": "장소의 뜻 알아보기"}, {"f": "u1-l3.html", "c": "#1F9E63", "e": "🔎", "t": "3차시 우리가 사는 곳의 여러 장소를 살펴볼까요", "d": "여러 장소를 기준을 정해 무리 짓기"}, {"f": "u1-l45.html", "c": "#E8961E", "e": "🃏", "t": "4~5차시 우리가 사는 곳에 있는 여러 장소에서의 경험을 이야기해 볼까요", "d": "장소 카드 만들고 놀이하기"}, {"f": "u1-l67.html", "c": "#E0506B", "e": "🎨", "t": "6~7차시 우리가 사는 곳에 있는 여러 장소를 표현해 볼까요", "d": "그림, 책, 신문 등으로 표현하기"}, {"f": "u1-l89.html", "c": "#6A4FC9", "e": "🖼️", "t": "8~9차시 우리가 사는 곳에 있는 여러 장소를 소개해 볼까요", "d": "작품 소개하고 생각과 느낌 비교하기"}, {"f": "u1-l10.html", "c": "#16A3B5", "e": "🎭", "t": "10차시 생각을 펼쳐요 · 재미있게 확인해요", "d": "주요 용어와 내용 정리하기"}], "notice": "<b>지도상의 유의점(주제 1)<\/b><br>사람마다 장소에 관한 생각과 느낌이 다를 수 있음을 이해하고 존중하도록 지도합니다. 카드의 질문은 정답이 없는 이야기 나누기용입니다.<br><br><b>6~7차시 그림 표현<\/b><br>지도서 49쪽: 그림을 그릴 때 심상지도로 표현하도록 유도하되, ‘심상지도’ 개념을 학습 요소로 다루지 않도록 합니다. 실제 지도처럼 정확하게 그리지 않아도 된다는 것을 안내합니다. 그래서 화면 카드에도 ‘심상지도’라는 말을 쓰지 않았습니다.<br><br><b>장소 사실<\/b><br>부산역·이바구길·168계단·자성대공원 내용은 2026년 9월에 공식 누리집에서 확인했습니다. 교과서에는 없는 우리 지역 예시이므로 교과서 사례를 먼저 다룬 뒤 보조로 써 주세요.<br><br>우리가 사는 곳의 범위는 생활권(여가, 쇼핑, 학생의 경험)을 기준으로 합니다. 동구 밖의 장소를 떠올린 학생도 인정해 주세요.<br><br><b>링크 확인(2026. 9. 28.)<\/b><br>모든 링크를 다시 열어 확인했습니다. 부산 동구 문화관광 누리집(bsdonggu.go.kr/tour)은 확인 때 접속되지 않아 학생 링크에서 뺐습니다. 168계단의 옛 모노레일(2016년 설치)은 2023년에 철거되었고, 2025년 3월 11일부터 경사형 엘리베이터 ‘초량168계단 하늘길’이 운행합니다(국제신문 2025. 12. 4., 코리아타임뉴스 2025. 2. 25. 보도). 한국관광공사 여행기사에는 아직 모노레일로 적혀 있으니 옛 자료를 보여 줄 때 유의해 주세요."};
 function card(d){return `<article class="dc" style="--cc:${d.c}">
   ${d.big?`<div class="big">${d.big}</div>`:''}<h3>${d.t}</h3>
   ${d.w?`<div class="bar2"><i style="--w:${d.w}"></i></div>`:''}
@@ -700,6 +747,7 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   else if(document.querySelector('header#bar')){var hb=document.querySelector('header#bar');if(nav.parentNode!==hb)hb.insertBefore(nav,hb.firstChild);if(w.parentNode)w.remove()}
   else if(hdr){nav.classList.add('hj-dark');if(nav.parentNode!==hdr)hdr.insertBefore(nav,hdr.firstChild);if(w.parentNode)w.remove()}
   else if(sn){if(nav.parentNode!==sn)sn.insertBefore(nav,sn.firstChild)}
+  else if(document.querySelector('section.screen.on .topbar')){var tb=document.querySelector('section.screen.on .topbar');if(nav.parentNode!==tb)tb.insertBefore(nav,tb.firstChild);if(w.parentNode)w.remove()}
   else if(nav.parentNode!==w||!w.isConnected){w.appendChild(nav);var m=document.querySelector('main')||document.body;m.insertBefore(w,m.firstChild)}}
  place();document.documentElement.classList.add('hj-hasnav');
  var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;place()})}).observe(document.body,{childList:true,subtree:true});})();
@@ -793,4 +841,20 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   if(m&&!has){var g=document.createElement('button');g.type='button';g.className='hj-gonext';g.innerHTML='다음으로 <svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';g.onclick=go;var w=b.parentElement.classList.contains('hj-rrow')?b.parentElement:null;if(!w){w=document.createElement('span');w.className='hj-rrow';b.before(w);w.appendChild(b)}w.appendChild(g);b.classList.add('hj-retry')}
   else if(!m&&has){n.remove();b.classList.remove('hj-retry')}})}
  fix();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;fix()})}).observe(document.querySelector('main')||document.body,{childList:true,subtree:true,characterData:true})})();
+/* 국어·사회 진행 화면: 내용이 적으면 화면에 맞춰 알맞게 키우기(최대 1.35배), 많으면 그대로 */
+(function(){var st=document.getElementById('stage'),bd=st&&st.querySelector('#body');if(!bd||!('zoom' in document.body.style))return;
+ function fit(){if(!st.classList.contains('on'))return;bd.style.zoom='';bd.style.width='';
+  var vw=window.innerWidth,target=Math.min(1120,vw*0.94),foot=st.querySelector('.foot'),top=bd.getBoundingClientRect().top;
+  var availH=window.innerHeight-top-(foot?foot.offsetHeight:60)-28;var ks=[].filter.call(bd.children,function(c){return c.offsetParent});if(!ks.length)return;var h=ks[ks.length-1].getBoundingClientRect().bottom-ks[0].getBoundingClientRect().top+16;if(h<40||availH<200)return;
+  var w=Math.max.apply(null,[].map.call(bd.children,function(c){return c.getBoundingClientRect().width}).concat([1]));
+  var k=Math.min(1.2,availH/h,(target*0.98)/w);if(k<1.04)return;k=Math.floor(k*100)/100;
+  bd.style.width=(target/k)+'px';bd.style.zoom=k;
+  var h2=(ks[ks.length-1].getBoundingClientRect().bottom-ks[0].getBoundingClientRect().top+16);if(h2>availH+4){k=Math.max(1,Math.floor(k*availH/h2*100)/100);bd.style.width=(target/k)+'px';bd.style.zoom=k}}
+ var raf=0;function q(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){setTimeout(fit,30)})}
+ new MutationObserver(q).observe(bd,{childList:true});new MutationObserver(q).observe(st,{attributes:true,attributeFilter:['class']});addEventListener('resize',q);if(document.fonts)document.fonts.ready.then(q)})();
+/* 과학 앱: 사진이 두 장 이상 이어지면 나란히(사진 위, 설명 아래) 놓아 한 화면에 들어오게 */
+(function(){if(!document.getElementById('ovBar'))return;
+ document.querySelectorAll('main section').forEach(function(sec){var kids=[].slice.call(sec.querySelectorAll('figure.photo'));var done=new Set();
+  kids.forEach(function(f){if(done.has(f)||f.parentElement.classList.contains('gallery')||f.parentElement.classList.contains('hj-pgrid'))return;var run=[f],n=f.nextElementSibling;while(n&&n.matches('figure.photo')){run.push(n);n=n.nextElementSibling}
+   if(run.length<2)return;var g=document.createElement('div');g.className='hj-pgrid';f.before(g);run.forEach(function(x){done.add(x);g.appendChild(x)})})})})();
 </script><!--/hj-cicons--></body></html>

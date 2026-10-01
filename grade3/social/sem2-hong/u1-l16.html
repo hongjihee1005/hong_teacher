@@ -556,6 +556,53 @@ html:has(#ovBar) body .hj-gonext{margin-left:8px}
 html:has(#ovBar) body button.hj-retry{background:var(--paper)!important;color:var(--ink)!important}
 html:has(#ovBar) body span.hj-rrow{display:inline-flex;gap:8px;margin:0 0 0 auto}
 html:has(#ovBar) body span.hj-rrow .hj-gonext{margin-left:0}
+/* 이동 단추 묶음은 위치 표시일 뿐: 앱의 nav 꾸밈(밑줄·고정)을 받지 않게 */
+html body nav.hj-nav{border:0!important;position:static!important;background:none!important;box-shadow:none!important;padding:0!important;top:auto!important}
+/* ===== 화면 배치(모든 교과) ===== */
+/* 과학 한 화면 보기: 좌우 여백, 제목·질문은 가운데, 설명은 왼쪽 */
+html body.ov main.wrap{max-width:min(1280px,100%)!important;margin-left:auto!important;margin-right:auto!important}
+html body.ov section .fitbox>.stage{display:table;margin-left:auto;margin-right:auto}
+html body.ov section .fitbox>:is(h2,h3){text-align:center;text-wrap:balance}
+html body.ov section .fitbox>p:not(.fb){text-align:center;text-wrap:balance}
+html body.ov section :is(.row,.order,.two,.vs,.gauge){justify-content:center}
+html body.ov section .fb{text-align:left}
+html body.ov section .pick{max-width:1100px;margin-left:auto;margin-right:auto}
+/* 사진: 사진 왼쪽 크게, 설명 오른쪽 */
+html body.ov .photo{display:grid!important;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);align-items:center;max-width:1100px;margin-left:auto!important;margin-right:auto!important}
+html body.ov .photo img{width:100%!important;height:auto!important;max-height:min(340px,38vh)!important;aspect-ratio:auto!important;object-fit:cover}
+html body.ov .photo figcaption{padding:12px 18px!important;font-size:clamp(16px,1.3vw,20px)!important;line-height:1.55;text-align:left}
+html body.ov .photo .cr{font-size:clamp(12px,.9vw,14px)!important;margin-top:6px}
+html body.ov .gallery{grid-template-columns:1fr!important;max-width:1100px;margin-left:auto;margin-right:auto}
+html body.ov .gallery .photo img{max-height:min(220px,26vh)!important}
+html:has(#ovBar) body .gallery .photo{grid-template-columns:minmax(0,1fr) minmax(0,1.2fr)}
+/* 국어·사회 진행 화면: 너무 넓게 퍼지지 않게 */
+html body #stage #body{width:min(1240px,94vw)!important}
+/* 홍지희 선생님 버전 진행 화면 */
+html body #lesson .body{width:min(1360px,94vw);max-width:none;margin-left:auto;margin-right:auto}
+/* 수학 앱: 가운데 정렬된 넓이 */
+html body main.lesson{max-width:min(1480px,100%)!important}
+html body.ov section :is(#quiz,#perf,.qz)>div>p.jua,html body.ov section p.jua{text-align:center;text-wrap:balance}
+html body.ov section .pick:has(>:nth-child(3):last-child){grid-template-columns:repeat(3,minmax(0,1fr))!important}
+html body.ov .photo img{max-height:min(260px,28vh)!important}
+html body.ov .gallery .photo img{max-height:min(190px,22vh)!important}
+html body.ov main.wrap{max-width:min(1120px,100%)!important}
+/* 모든 교과 같은 본문 폭: 눈이 좌우로 너무 오가지 않게 1240px 안팎 */
+html body.ov main.wrap{max-width:min(1240px,100%)!important}
+html body #lesson .body{width:min(1240px,94vw)!important}
+html body .hj-navbar{position:relative;z-index:60}
+html body .topbar>.hj-nav{margin-right:10px}
+/* 본문 폭 최종: 수학 앱의 활동 칸과 비슷한 1080~1120px. 눈이 좌우로 덜 움직이게 */
+html body.ov main.wrap{max-width:min(1080px,100%)!important}
+html body #stage #body{width:min(1120px,94vw)!important}
+html body #lesson .body{width:min(1120px,94vw)!important}
+/* 국어: 자체 확대(최대 약 1.3배)가 있으므로 바탕 폭을 좁혀, 확대 뒤에도 1150px 안팎 */
+html body #stage #bodyWrap>#body{width:min(880px,94vw)!important}
+html body.ov .hj-pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:1080px;margin:10px auto 0}
+html body.ov .hj-pgrid .photo{display:block!important;margin:0!important}
+html body.ov .hj-pgrid .photo img{width:100%!important;max-height:min(230px,26vh)!important;object-fit:cover}
+html body.ov .hj-pgrid .photo figcaption{font-size:clamp(14px,1.1vw,17px)!important}
+html body.ov .photo img{max-height:min(210px,22vh)!important}
+html body.ov .photo{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
 </style><meta name="hj-next" content="u1-l1718.html" data-t="생각 그물을 완성해요 / 교실 놀이를 함께해요" data-tag="P 발표 · 17~18차시"><!--/hj-ctheme--></head><body>
 
 <section id="cover" class="screen on">
@@ -942,6 +989,7 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   else if(document.querySelector('header#bar')){var hb=document.querySelector('header#bar');if(nav.parentNode!==hb)hb.insertBefore(nav,hb.firstChild);if(w.parentNode)w.remove()}
   else if(hdr){nav.classList.add('hj-dark');if(nav.parentNode!==hdr)hdr.insertBefore(nav,hdr.firstChild);if(w.parentNode)w.remove()}
   else if(sn){if(nav.parentNode!==sn)sn.insertBefore(nav,sn.firstChild)}
+  else if(document.querySelector('section.screen.on .topbar')){var tb=document.querySelector('section.screen.on .topbar');if(nav.parentNode!==tb)tb.insertBefore(nav,tb.firstChild);if(w.parentNode)w.remove()}
   else if(nav.parentNode!==w||!w.isConnected){w.appendChild(nav);var m=document.querySelector('main')||document.body;m.insertBefore(w,m.firstChild)}}
  place();document.documentElement.classList.add('hj-hasnav');
  var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;place()})}).observe(document.body,{childList:true,subtree:true});})();
@@ -1035,4 +1083,20 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   if(m&&!has){var g=document.createElement('button');g.type='button';g.className='hj-gonext';g.innerHTML='다음으로 <svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>';g.onclick=go;var w=b.parentElement.classList.contains('hj-rrow')?b.parentElement:null;if(!w){w=document.createElement('span');w.className='hj-rrow';b.before(w);w.appendChild(b)}w.appendChild(g);b.classList.add('hj-retry')}
   else if(!m&&has){n.remove();b.classList.remove('hj-retry')}})}
  fix();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;fix()})}).observe(document.querySelector('main')||document.body,{childList:true,subtree:true,characterData:true})})();
+/* 국어·사회 진행 화면: 내용이 적으면 화면에 맞춰 알맞게 키우기(최대 1.35배), 많으면 그대로 */
+(function(){var st=document.getElementById('stage'),bd=st&&st.querySelector('#body');if(!bd||!('zoom' in document.body.style))return;
+ function fit(){if(!st.classList.contains('on'))return;bd.style.zoom='';bd.style.width='';
+  var vw=window.innerWidth,target=Math.min(1120,vw*0.94),foot=st.querySelector('.foot'),top=bd.getBoundingClientRect().top;
+  var availH=window.innerHeight-top-(foot?foot.offsetHeight:60)-28;var ks=[].filter.call(bd.children,function(c){return c.offsetParent});if(!ks.length)return;var h=ks[ks.length-1].getBoundingClientRect().bottom-ks[0].getBoundingClientRect().top+16;if(h<40||availH<200)return;
+  var w=Math.max.apply(null,[].map.call(bd.children,function(c){return c.getBoundingClientRect().width}).concat([1]));
+  var k=Math.min(1.2,availH/h,(target*0.98)/w);if(k<1.04)return;k=Math.floor(k*100)/100;
+  bd.style.width=(target/k)+'px';bd.style.zoom=k;
+  var h2=(ks[ks.length-1].getBoundingClientRect().bottom-ks[0].getBoundingClientRect().top+16);if(h2>availH+4){k=Math.max(1,Math.floor(k*availH/h2*100)/100);bd.style.width=(target/k)+'px';bd.style.zoom=k}}
+ var raf=0;function q(){cancelAnimationFrame(raf);raf=requestAnimationFrame(function(){setTimeout(fit,30)})}
+ new MutationObserver(q).observe(bd,{childList:true});new MutationObserver(q).observe(st,{attributes:true,attributeFilter:['class']});addEventListener('resize',q);if(document.fonts)document.fonts.ready.then(q)})();
+/* 과학 앱: 사진이 두 장 이상 이어지면 나란히(사진 위, 설명 아래) 놓아 한 화면에 들어오게 */
+(function(){if(!document.getElementById('ovBar'))return;
+ document.querySelectorAll('main section').forEach(function(sec){var kids=[].slice.call(sec.querySelectorAll('figure.photo'));var done=new Set();
+  kids.forEach(function(f){if(done.has(f)||f.parentElement.classList.contains('gallery')||f.parentElement.classList.contains('hj-pgrid'))return;var run=[f],n=f.nextElementSibling;while(n&&n.matches('figure.photo')){run.push(n);n=n.nextElementSibling}
+   if(run.length<2)return;var g=document.createElement('div');g.className='hj-pgrid';f.before(g);run.forEach(function(x){done.add(x);g.appendChild(x)})})})})();
 </script><!--/hj-cicons--></body></html>
