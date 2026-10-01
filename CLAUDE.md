@@ -91,6 +91,17 @@ python3 _build/theme/apply_theme.py 새/목록/index.html
   스크립트가 하위 페이지를 읽어 자동으로 만들므로, **하위 페이지에 방이나 탭을 추가·변경했으면 스크립트를 다시 실행**해야 위쪽 메뉴에도 반영됩니다.
 - 디자인을 바꾸려면 `theme.css`만 고치고 스크립트를 다시 돌립니다. 페이지마다 따로 고치지 마세요.
 
+### 수업 자료 페이지 덮개 (2026-10-01)
+
+메뉴가 아닌 **수업 자료·앱 페이지**에는 `_build/theme/content.css` 덮개를 씌웁니다. `Jua`·`Gowun Dodum` 글꼴 이름에 Pretendard(굵게·보통)를 연결하고, `--bg`·`--paper`·`--ink`·`--soft`·`--muted`·`--line`(수학 앱은 `--night`·`--pine`)을 밝고 따뜻한 색으로 덮어씁니다. 기능 코드는 건드리지 않습니다.
+
+```bash
+python3 _build/theme/apply_content_theme.py          # 모든 자료 페이지(메뉴·옛 주소 안내·class 제외)
+```
+
+- **새 자료를 올렸으면 이 스크립트도 실행하세요.** 여러 번 실행해도 안전합니다.
+- 글꼴 주소는 `cdn.jsdelivr.net/npm/pretendard@1.3.9/…`(npm 경로)입니다.
+
 ## 링크 점검 — 꼭 하세요
 
 `href="..."`만 검사하면 **놓칩니다.** 자료실 페이지들은 자바스크립트 설정값 안에
