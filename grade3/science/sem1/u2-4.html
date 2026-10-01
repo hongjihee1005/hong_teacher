@@ -612,6 +612,40 @@ html body .screen:not(#cover) .topbar>:is(.steps,.stagebar).hj-ovf{-webkit-mask-
 html body .card2 .pick{grid-template-columns:repeat(auto-fill,minmax(124px,1fr))!important}
 html body .card2 .pick button{padding:.4em .5em!important}
 @media (max-width:600px){html body #lesson .cols{grid-template-columns:1fr!important}html body #lesson .col{min-height:0!important}}
+html body .wg>h2 .ed{margin-left:auto!important;white-space:nowrap}
+html body .wg>h2{min-width:0;overflow:hidden}
+/* ===== 메뉴 단추 크기 통일(모든 교과) ===== */
+/* 이동 단추 [홈·자료 목록] */
+html body .hj-nav a{min-height:36px!important;font-size:clamp(14.5px,1.05vw,16px)!important}
+/* 과학 아래 막대: 국어·사회 아래 단추와 같은 크기 */
+html:has(#ovBar) #ovBar button{font-size:clamp(15px,1.15vw,17px)!important;min-height:40px!important;padding:7px 15px!important}
+html:has(#ovBar) #ovBar .pos{font-size:clamp(15px,1.15vw,17px)!important}
+/* 홍지희 버전은 화면 전체를 키우므로(zoom) 단추만 원래 크기로 */
+html body #lesson .topbar .tool{font-size:calc(15.5px / var(--hjz,1))!important;min-height:calc(34px / var(--hjz,1))!important;padding:calc(5px / var(--hjz,1)) calc(10px / var(--hjz,1))!important}
+html body #lesson .foot :is(.tnote,.ghost,#prev){font-size:calc(16px / var(--hjz,1))!important;min-height:calc(38px / var(--hjz,1))!important;padding:calc(7px / var(--hjz,1)) calc(14px / var(--hjz,1))!important}
+html body #lesson .foot #next{font-size:calc(19px / var(--hjz,1))!important;min-height:calc(42px / var(--hjz,1))!important;padding:calc(8px / var(--hjz,1)) calc(20px / var(--hjz,1))!important}
+/* 수학 앱: 확인하기·다음 계단은 알맞은 크기로 */
+html body main.lesson .big{font-size:clamp(18px,1.35vw,22px)!important;padding:.5em 1.5em!important;width:auto!important;min-width:0!important;box-shadow:0 3px 0 rgba(0,0,0,.15)!important}
+html body main.lesson .side>.big{align-self:flex-end}
+html body main.lesson .stair{font-size:clamp(16px,1.2vw,19px)!important;min-height:48px;padding-top:6px!important;padding-bottom:6px!important}
+/* 우리 반 교실: '자세히'가 칸 밖으로 나가지 않게 */
+html body .wg>h2{font-size:clamp(.98rem,1.05vw,1.15rem)!important;gap:.3rem!important}
+html body .wg>h2 .ed{font-size:.82rem!important;padding:.15rem .5rem!important;min-height:1.75rem!important}
+/* hidden으로 숨긴 것은 정말 숨기기(돋보기 결과가 처음부터 보이던 문제) */
+html body [hidden]{display:none!important}
+html body #zoom:not([hidden]),html body .zoom:not([hidden]){animation:hjzoom .45s cubic-bezier(.2,.8,.3,1.2)}
+@keyframes hjzoom{from{opacity:0;transform:scale(.6)}to{opacity:1;transform:none}}
+/* 과학 한 화면 보기: 내용이 길면 칸이 늘어나고, 아래 막대가 내용을 가리지 않게 */
+html body.ov main section.cur{height:auto!important;overflow:visible!important}
+html body.ov{padding-bottom:calc(var(--hjbar,76px) + 28px)!important}
+html body.ov main.wrap{padding-bottom:calc(var(--hjbar,76px) + 12px)!important}
+/* 과학: 문제(질문)는 왼쪽 정렬 */
+html body.ov section :is(#quiz,#perf,.qz)>div>p.jua,html body.ov section p.jua,html body.ov section #clue,
+html body.ov section:has(#quiz,#perf,.qz) .fitbox>h3{text-align:left!important;text-wrap:pretty}
+/* 사진 두 장이 한 칸에만 몰리던 것: 줄 전체를 쓰고 사진을 크게 */
+html body .two>.hj-pgrid:only-child{grid-column:1/-1}
+html body.ov .hj-pgrid .photo img{max-height:min(380px,44vh)!important;aspect-ratio:4/3!important}
+@media (max-width:900px){html body.ov .hj-pgrid .photo img{max-height:none!important}}
 </style><meta name="hj-next" content="u2-5.html" data-t="동물의 특징을 이용한 생활용품을 찾아라!" data-tag="7차시"><!--/hj-ctheme--></head>
 <body>
 <header><div class="wrap">
@@ -1409,7 +1443,7 @@ body.ov #ovBar{margin-bottom:0}
 </style><a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
-var I={house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
+var I={play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
 guide:'<path d="M2.5 5h6a3.5 3.5 0 0 1 3.5 3.5V20a2.5 2.5 0 0 0-2.5-2.5h-7z"/><path d="M21.5 5h-6A3.5 3.5 0 0 0 12 8.5V20a2.5 2.5 0 0 1 2.5-2.5h7z"/>',
 vol:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>',
 vol1:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>',
@@ -1443,6 +1477,7 @@ var LBL={house:'수업 첫 화면',vol:'소리',vol1:'소리',mute:'소리 끔',
 function svg(n){var s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','hj-i');s.setAttribute('aria-hidden','true');
  s.setAttribute('fill','none');s.setAttribute('stroke','currentColor');s.setAttribute('stroke-width','2');s.setAttribute('stroke-linecap','round');s.setAttribute('stroke-linejoin','round');s.innerHTML=I[n];return s}
 function fix(el){if(!el||el.id==='hj-home'||el.closest('.hj-contact'))return;
+ var tt=el.textContent.trim();if(el.childNodes.length===1&&el.firstChild.nodeType===3&&/^(▶️?|⏸️?)$/.test(tt)){var pn=tt[0]==='▶'?'play':'pause';el.textContent='';el.appendChild(svg(pn));el.classList.add('hj-ic','hj-ionly');if(!el.getAttribute('aria-label'))el.setAttribute('aria-label',pn==='play'?'재생':'멈춤');return}
  var t=el.firstChild;while(t&&t.nodeType===3&&!t.nodeValue.trim())t=t.nextSibling;
  if(t&&t.nodeType===3){var v=t.nodeValue.replace(/^\s+/,'');
   for(var i=0;i<LEAD.length;i++){var e=LEAD[i][0];if(v.indexOf(e)===0){var n=LEAD[i][1],rest=v.slice(e.length).replace(/^[️‍\s]+/,'');
@@ -1739,4 +1774,41 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  new MutationObserver(function(){clearTimeout(lay.t);lay.t=setTimeout(lay,30)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']})})();
 (function(){function chk(){document.querySelectorAll('.screen .topbar>.steps,.screen .topbar>.stagebar').forEach(function(s){s.classList.toggle('hj-ovf',s.scrollWidth>s.clientWidth+4&&s.scrollLeft+s.clientWidth<s.scrollWidth-4)})}
  chk();addEventListener('resize',chk);document.addEventListener('scroll',chk,true);new MutationObserver(function(){clearTimeout(chk.t);chk.t=setTimeout(chk,50)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['class']})})();
+/* 홍지희 버전처럼 화면 전체를 키우는 자료: 키운 비율을 단추 크기 계산에 알려 주기 */
+(function(){function z(){var v=parseFloat(document.documentElement.style.zoom||getComputedStyle(document.documentElement).zoom)||1;document.documentElement.style.setProperty('--hjz',v)}z();addEventListener('resize',function(){setTimeout(z,60)});new MutationObserver(z).observe(document.documentElement,{attributes:true,attributeFilter:['style']})})();
+/* 『국어』 223쪽 3번 (2) 같은 쪽수 표시는 한 덩어리로(중간에서 줄이 바뀌지 않게) */
+(function(){var RX=/\(?『[^』]{1,12}』(?:\s*\d+(?:\s*[~∼-]\s*\d+)?쪽)?(?:\s*\d+번)?(?:\s*\(\d+\))?\)?|(?:교과서|지도서|실험관찰)\s*\d+(?:\s*[~∼-]\s*\d+)?쪽(?:\s*\d+번)?/g,SKIP='script,style,textarea,input,option,svg';
+ function fix(n){var v=n.nodeValue;if(v.indexOf('쪽')<0&&v.indexOf('『')<0)return;var t=v.replace(RX,function(m){return m.replace(/ /g,' ')});if(t!==v)n.nodeValue=t}
+ function run(r){if(!r)return;if(r.nodeType===3){if(r.parentElement&&!r.parentElement.closest(SKIP))fix(r);return}if(r.nodeType!==1||r.closest(SKIP))return;var w=document.createTreeWalker(r,4),n,a=[];while(n=w.nextNode())if(!n.parentElement.closest(SKIP))a.push(n);a.forEach(fix)}
+ run(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')run(m.target);else m.addedNodes.forEach(run)})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
+/* 돋보기 단추: 누르면 펼쳐지고, 다시 누르면 닫히게 */
+(function(){var b=document.getElementById('zoomBtn'),z=document.getElementById('zoom');if(!b||!z)return;
+ b.addEventListener('click',function(e){if(!z.hidden&&b.dataset.open){e.stopImmediatePropagation();z.hidden=true;b.dataset.open='';b.lastChild.nodeValue=' 돋보기로 보기';return}setTimeout(function(){if(!z.hidden){b.dataset.open='1';b.lastChild.nodeType===3&&(b.lastChild.nodeValue=' 돋보기 닫기');z.scrollIntoView({block:'nearest',behavior:'smooth'})}},0)},true)})();
+/* 그림(SVG) 속 글자 지키기: ① 말풍선·이름표보다 글이 길면 글자를 줄여 칸 안에 ② 다른 도형에 가려지면 글자를 맨 위로 */
+(function(){var NS='http://www.w3.org/2000/svg';
+ function paints(e){var s=getComputedStyle(e);if(s.visibility==='hidden'||+s.opacity===0)return false;var f=s.fill,st=s.stroke;var fo=+s.fillOpacity;var noFill=(!f||f==='none'||/rgba\(.*,\s*0\)$/.test(f)||f==='transparent'||fo===0);var noStroke=(!st||st==='none'||+s.strokeOpacity===0||parseFloat(s.strokeWidth)===0);return !(noFill&&noStroke)}
+ function fitBubble(t){if(t.dataset.hjFit)return;t.dataset.hjFit='1';var p=t.previousElementSibling,box=null;for(var i=0;i<3&&p;i++,p=p.previousElementSibling){if(p.tagName==='rect'){box=p;break}}if(!box)return;
+  try{var b=t.getBBox(),rx=+box.getAttribute('x')||0,rw=+box.getAttribute('width')||0,ry=+box.getAttribute('y')||0,rh=+box.getAttribute('height')||0;if(!rw||!rh)return;
+   var cy=b.y+b.height/2;if(cy<ry||cy>ry+rh||b.x<rx-4||b.x>rx+rw)return;var anchor=t.getAttribute('text-anchor')||'start';var room=anchor==='middle'?rw-12:(rx+rw-6)-b.x;if(b.width<=room+1)return;
+   var fs=parseFloat(getComputedStyle(t).fontSize)||16;var k=Math.max(.68,room/b.width);t.setAttribute('font-size',(fs*k).toFixed(1));t.style.fontSize=(fs*k).toFixed(1)+'px';
+   b=t.getBBox();if(b.width>room+1){box.setAttribute('width',(rw+(b.width-room)+8).toFixed(0))}}catch(e){}}
+ function run(){document.querySelectorAll('svg text').forEach(function(t){if(!t.getBoundingClientRect().width)return;fitBubble(t)});
+}
+ var tm=0;function q(){clearTimeout(tm);tm=setTimeout(run,250)}
+ if(document.fonts)document.fonts.ready.then(q);addEventListener('load',q);addEventListener('resize',q);addEventListener('scroll',q,true);
+ new MutationObserver(function(ms){if(ms.some(function(m){return !(m.target.closest&&m.target.closest('#hj-player'))}))q()}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class']});})();
+(function(){var bar=document.getElementById('ovBar');if(!bar)return;function m(){var r=bar.getBoundingClientRect();document.documentElement.style.setProperty('--hjbar',Math.round(window.innerHeight-r.top+8)+'px')}m();addEventListener('resize',m);new MutationObserver(m).observe(bar,{childList:true,subtree:true,attributes:true})})();
+/* 제목·질문 줄바꿈: 쉼표·마침표로 나뉜 말 덩어리는 한 줄에 두고, 덩어리 사이에서 줄을 바꾼다
+   (예: "…살펴보고, / 공부할 차례를 정해 봐요.") */
+(function(){var SEL='h1,h2,h3,h4,.hd,.ask,.title,.lead,.big,.sit,.qtext,.hj-sc-title,.hj-sc-goal,p.jua,.goal,.q,.clue,#clue',RX=/[^,.!?]+(?:[,.!?]+|$)/g;
+ function ok(el){if(el.closest('svg,button,a,textarea,[contenteditable],.hj-contact,nav'))return false;var c=el.childNodes;if(!c.length)return false;
+  for(var i=0;i<c.length;i++)if(c[i].nodeType!==3)return false;var v=el.textContent;return /[,.!?]\s+\S/.test(v.trim())&&v.length<160}
+ function fix(el){if(!ok(el))return;var v=el.textContent,parts=v.match(RX);if(!parts||parts.length<2)return;
+  var f=document.createDocumentFragment();parts.forEach(function(p){var m=p.match(/^(\s*)([\s\S]*?)(\s*)$/);if(m[1])f.appendChild(document.createTextNode(m[1]));
+   if(m[2]){var s=document.createElement('span');s.className='hj-cl';s.textContent=m[2];f.appendChild(s)}if(m[3])f.appendChild(document.createTextNode(m[3]))});
+  el.textContent='';el.appendChild(f)}
+ function run(r){if(!r||r.nodeType!==1)return;if(r.matches(SEL))fix(r);r.querySelectorAll(SEL).forEach(fix)}
+ var st=document.createElement('style');st.textContent='.hj-cl{display:inline-block;max-width:100%}';document.head.appendChild(st);
+ run(document.body);var q=new Set(),raf=0;new MutationObserver(function(ms){ms.forEach(function(m){var t=m.target.nodeType===3?m.target.parentElement:m.target;if(t)q.add(t.matches&&t.matches(SEL)?t:(t.closest?t.closest(SEL)||t:t))});
+  if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)run(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
 </script><!--/hj-cicons--></body></html>

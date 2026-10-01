@@ -79,7 +79,7 @@ CARDS = [('event','📅','오늘의 사건','역사 속 오늘, 무슨 일이 �
          ('music','🎵','오늘의 명곡','함께 들어 볼 음악'),
          ('book','📚','오늘의 책','함께 읽어 볼 책')]
 cards = '\n'.join(f'<section class="card td-card" id="{k}" data-k="{k}"><div class="td-top"><span class="tag">{i} {t}</span>'
-                  f'<span class="td-btns"><button class="td-more td-print" type="button" aria-label="{t} 활동지 인쇄">🖨️ 인쇄</button><button class="td-more td-doc" type="button" aria-label="{t} 활동지를 한글·워드 파일로 받기" title="한글·워드에서 고쳐 쓸 수 있는 파일(.doc)">📝 파일로 받기</button><button class="td-more td-next" type="button" aria-label="{t} 다른 것 보기">↻ 다른 것</button></span></div>'
+                  f'<span class="td-btns"><button class="td-more td-print" type="button" aria-label="{t} 활동지 인쇄">🖨️ 인쇄</button><button class="td-more td-next" type="button" aria-label="{t} 다른 것 보기">↻ 다른 것</button></span></div>'
                   f'<p class="td-hint">{h}</p><div class="td-body"><noscript>자바스크립트를 켜면 보여요.</noscript></div></section>' for k,i,t,h in CARDS)
 page = f'''<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
