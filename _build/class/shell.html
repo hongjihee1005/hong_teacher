@@ -31,6 +31,8 @@ h1,h2,h3,.disp{font-family:var(--display);font-weight:400;letter-spacing:-.01em}
 .chip{display:inline-flex;align-items:center;gap:.35rem;min-height:2.3rem;padding:.25rem .8rem;border-radius:999px;background:var(--paper);border:1.5px solid var(--line);font-size:.95rem;white-space:nowrap}
 button.chip:hover{border-color:var(--line2);background:var(--bg2)}
 .chip.now{background:color-mix(in srgb,#E39A4E 18%,var(--paper));border-color:color-mix(in srgb,#E39A4E 40%,var(--paper));font-family:var(--display);font-size:1.05rem}
+.chip.next{font-family:var(--display);font-size:1.05rem;color:var(--soft)}
+.chip.next b{color:var(--ink);font-weight:800}
 .chip.timer{background:#FDE7DA;border-color:#F0B48F;font-family:var(--display);font-variant-numeric:tabular-nums}
 .chip.timer.end{animation:blink .6s steps(2) infinite}
 @keyframes blink{50%{background:#F7C1A6}}
@@ -48,7 +50,7 @@ main{max-width:1500px;margin:0 auto;padding:clamp(12px,2vw,28px) clamp(12px,2vw,
 .widgets{display:grid;grid-template-columns:1.35fr 1fr 1fr 1fr;gap:.9rem;margin-bottom:1.6rem}
 .wg{background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:.9rem 1.1rem;min-width:0;display:flex;flex-direction:column;gap:.4rem;
  box-shadow:0 1px 2px rgba(80,55,30,.04),0 10px 24px -18px rgba(80,55,30,.25)}
-.wg h2{margin:0;font-size:1.2rem;display:flex;align-items:center;gap:.4rem}
+.wg h2{margin:0;font-size:1.2rem;display:flex;align-items:center;gap:.4rem;white-space:nowrap;min-width:0}
 .wg h2 .ed{margin-left:auto}
 .wg .body{font-size:1rem;white-space:pre-wrap}
 .wg.notice{background:linear-gradient(160deg,color-mix(in srgb,#E07A6E 12%,var(--paper)),var(--paper) 60%)}
@@ -179,7 +181,25 @@ canvas{touch-action:none;display:block}
 @media (max-width:1100px){.widgets{grid-template-columns:1fr 1fr}}
 @media (max-width:640px){.widgets{grid-template-columns:1fr}.bar .clock{font-size:1.7rem}.icons{grid-template-columns:repeat(auto-fill,minmax(6.2rem,1fr))}}
 @media (max-height:720px) and (min-width:900px){.bar{padding-top:.3rem;padding-bottom:.3rem}.bar .clock{font-size:1.8rem}.wg{padding:.7rem .9rem}}
-@media print{.bar,#hj-home{display:none!important}}
+@media print{.bar,#hj-home{display:none!important}body.hj-dprint>*:not(#dws){display:none!important}html:has(body.hj-dprint),body.hj-dprint{background:#fff!important;padding:0!important;margin:0!important}body.hj-dprint #dws{display:block!important}@page{size:A4;margin:0}}
+#dws{display:none}
+#dws .pg{width:210mm;min-height:297mm;box-sizing:border-box;padding:15mm 16mm 13mm;background:#fff;color:#111;font-family:var(--body);page-break-after:always;break-after:page}
+#dws .pg:last-child{page-break-after:auto;break-after:auto}
+#dws h2{margin:0;font-size:20pt;font-family:var(--display);display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5pt solid #111;padding-bottom:3mm}
+#dws h2 small{font-size:10pt;font-weight:600}
+#dws .nm{display:flex;justify-content:space-between;font-size:11.5pt;margin:4mm 0 6mm}
+#dws ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(10,auto);column-gap:12mm}
+#dws li{display:flex;align-items:center;gap:3mm;font-size:17pt;min-height:21mm;border-bottom:.6pt dashed #bbb;font-variant-numeric:tabular-nums}
+#dws li .n{font-size:10pt;color:#555;width:7mm}
+#dws li .bx{flex:1;border-bottom:1pt solid #333;height:9mm;max-width:32mm;margin-left:2mm}
+#dws .ans li{font-size:14pt;min-height:11mm}
+#dws .ans b{color:#c22}
+#dws .ft{margin-top:5mm;font-size:9pt;color:#666;text-align:right}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 .1em;font-size:.85em}.fr>span:first-child{border-bottom:.08em solid currentColor;padding:0 .15em}
+.dsp{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.4rem 1.2rem;width:min(1000px,100%);text-align:left}
+.dsp div{font-size:1.35rem;font-family:var(--display);padding:.45rem .6rem;border-bottom:1px dashed var(--line);display:flex;gap:.6rem;align-items:center}
+.dsp div small{color:var(--soft);font-size:.8rem;width:1.8rem}
+.dsp.show i{color:#c2453b;font-style:normal;font-weight:800}
 </style>
 <style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}@media print{.hj-contact a{border:0;padding:0}}</style>
 </head><body class="mix">
@@ -187,8 +207,7 @@ canvas{touch-action:none;display:block}
  <div class="clock" id="clk">--:--</div>
  <div class="date" id="dt"></div>
  <span class="chip now" id="nowc"></span>
- <button class="chip" id="wxc" type="button" data-open="weather">🌤️ 날씨</button>
- <button class="chip" id="dustc" type="button" data-open="weather">😷 미세먼지</button>
+ <span class="chip next" id="nextc" hidden></span>
  <button class="chip timer" id="tmc" type="button" data-open="timer" hidden></button>
  <span class="sp"></span>
  <button class="chip" id="fsb" type="button" aria-label="전체 화면">⛶ 전체 화면</button>

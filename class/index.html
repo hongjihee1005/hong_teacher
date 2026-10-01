@@ -31,6 +31,8 @@ h1,h2,h3,.disp{font-family:var(--display);font-weight:400;letter-spacing:-.01em}
 .chip{display:inline-flex;align-items:center;gap:.35rem;min-height:2.3rem;padding:.25rem .8rem;border-radius:999px;background:var(--paper);border:1.5px solid var(--line);font-size:.95rem;white-space:nowrap}
 button.chip:hover{border-color:var(--line2);background:var(--bg2)}
 .chip.now{background:color-mix(in srgb,#E39A4E 18%,var(--paper));border-color:color-mix(in srgb,#E39A4E 40%,var(--paper));font-family:var(--display);font-size:1.05rem}
+.chip.next{font-family:var(--display);font-size:1.05rem;color:var(--soft)}
+.chip.next b{color:var(--ink);font-weight:800}
 .chip.timer{background:#FDE7DA;border-color:#F0B48F;font-family:var(--display);font-variant-numeric:tabular-nums}
 .chip.timer.end{animation:blink .6s steps(2) infinite}
 @keyframes blink{50%{background:#F7C1A6}}
@@ -48,7 +50,7 @@ main{max-width:1500px;margin:0 auto;padding:clamp(12px,2vw,28px) clamp(12px,2vw,
 .widgets{display:grid;grid-template-columns:1.35fr 1fr 1fr 1fr;gap:.9rem;margin-bottom:1.6rem}
 .wg{background:var(--paper);border:1.5px solid var(--line);border-radius:20px;padding:.9rem 1.1rem;min-width:0;display:flex;flex-direction:column;gap:.4rem;
  box-shadow:0 1px 2px rgba(80,55,30,.04),0 10px 24px -18px rgba(80,55,30,.25)}
-.wg h2{margin:0;font-size:1.2rem;display:flex;align-items:center;gap:.4rem}
+.wg h2{margin:0;font-size:1.2rem;display:flex;align-items:center;gap:.4rem;white-space:nowrap;min-width:0}
 .wg h2 .ed{margin-left:auto}
 .wg .body{font-size:1rem;white-space:pre-wrap}
 .wg.notice{background:linear-gradient(160deg,color-mix(in srgb,#E07A6E 12%,var(--paper)),var(--paper) 60%)}
@@ -179,7 +181,25 @@ canvas{touch-action:none;display:block}
 @media (max-width:1100px){.widgets{grid-template-columns:1fr 1fr}}
 @media (max-width:640px){.widgets{grid-template-columns:1fr}.bar .clock{font-size:1.7rem}.icons{grid-template-columns:repeat(auto-fill,minmax(6.2rem,1fr))}}
 @media (max-height:720px) and (min-width:900px){.bar{padding-top:.3rem;padding-bottom:.3rem}.bar .clock{font-size:1.8rem}.wg{padding:.7rem .9rem}}
-@media print{.bar,#hj-home{display:none!important}}
+@media print{.bar,#hj-home{display:none!important}body.hj-dprint>*:not(#dws){display:none!important}html:has(body.hj-dprint),body.hj-dprint{background:#fff!important;padding:0!important;margin:0!important}body.hj-dprint #dws{display:block!important}@page{size:A4;margin:0}}
+#dws{display:none}
+#dws .pg{width:210mm;min-height:297mm;box-sizing:border-box;padding:15mm 16mm 13mm;background:#fff;color:#111;font-family:var(--body);page-break-after:always;break-after:page}
+#dws .pg:last-child{page-break-after:auto;break-after:auto}
+#dws h2{margin:0;font-size:20pt;font-family:var(--display);display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2.5pt solid #111;padding-bottom:3mm}
+#dws h2 small{font-size:10pt;font-weight:600}
+#dws .nm{display:flex;justify-content:space-between;font-size:11.5pt;margin:4mm 0 6mm}
+#dws ol{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;grid-auto-flow:column;grid-template-rows:repeat(10,auto);column-gap:12mm}
+#dws li{display:flex;align-items:center;gap:3mm;font-size:17pt;min-height:21mm;border-bottom:.6pt dashed #bbb;font-variant-numeric:tabular-nums}
+#dws li .n{font-size:10pt;color:#555;width:7mm}
+#dws li .bx{flex:1;border-bottom:1pt solid #333;height:9mm;max-width:32mm;margin-left:2mm}
+#dws .ans li{font-size:14pt;min-height:11mm}
+#dws .ans b{color:#c22}
+#dws .ft{margin-top:5mm;font-size:9pt;color:#666;text-align:right}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.05;margin:0 .1em;font-size:.85em}.fr>span:first-child{border-bottom:.08em solid currentColor;padding:0 .15em}
+.dsp{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:.4rem 1.2rem;width:min(1000px,100%);text-align:left}
+.dsp div{font-size:1.35rem;font-family:var(--display);padding:.45rem .6rem;border-bottom:1px dashed var(--line);display:flex;gap:.6rem;align-items:center}
+.dsp div small{color:var(--soft);font-size:.8rem;width:1.8rem}
+.dsp.show i{color:#c2453b;font-style:normal;font-weight:800}
 </style>
 <style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}@media print{.hj-contact a{border:0;padding:0}}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
@@ -301,7 +321,7 @@ html body .hj-toast{flex-basis:100%;margin:2px 0 0;min-height:1.3em;text-align:c
  body.hj-tprint #tn .panel{width:auto!important;max-height:none!important;overflow:visible!important;box-shadow:none!important;border:0!important;border-radius:0!important;padding:0!important;transform:none!important;animation:none!important}
  body.hj-tprint .hj-tbar,body.hj-tprint #tnClose{display:none!important}
  body.hj-tprint{background:#fff!important;color:#000}
- @page{margin:16mm 16mm}
+ body.hj-tprint #tn .panel{padding:16mm!important}
 }
 /* 수업을 마쳤을 때 고르는 창 */
 #hj-done{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:20px;background:rgba(42,34,28,.38);backdrop-filter:blur(3px);animation:hjfade .2s ease}
@@ -497,13 +517,14 @@ html:has(#ovBar) #ovBar{padding:5px 8px!important;gap:6px!important}
 html:has(#ovBar) #ovBar button{font-size:clamp(14px,1.1vw,16px)!important;padding:6px 13px!important;min-height:36px!important}
 html:has(#ovBar) #ovBar .pos{font-size:clamp(14px,1.1vw,16px)!important}
 html:has(#ovBar) #ovBar .hj-i{width:16px;height:16px}
+/* 과학 앱 한 화면 보기: 기본 글자 조금 작게 */
+html.hj-hasnav:has(#ovBar) body.ov main{font-size:.94em}
 </style><!--/hj-ctheme--></head><body class="mix">
 <header class="bar mix" id="bar">
  <div class="clock" id="clk">--:--</div>
  <div class="date" id="dt"></div>
  <span class="chip now" id="nowc"></span>
- <button class="chip" id="wxc" type="button" data-open="weather">🌤️ 날씨</button>
- <button class="chip" id="dustc" type="button" data-open="weather">😷 미세먼지</button>
+ <span class="chip next" id="nextc" hidden></span>
  <button class="chip timer" id="tmc" type="button" data-open="timer" hidden></button>
  <span class="sp"></span>
  <button class="chip" id="fsb" type="button" aria-label="전체 화면">⛶ 전체 화면</button>
@@ -631,7 +652,7 @@ async function loadWx(force){if(!force&&WX.t&&Date.now()-WX.t<20*60e3)return WX;
  try{const r=await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5&timezone=Asia%2FSeoul`);
   const j=await r.json();WX.air=j.current;WX.aerr=''}catch(e){WX.aerr='미세먼지를 불러오지 못했어요'}
  WX.t=Date.now();paintWxChips();return WX}
-function paintWxChips(){const a=$('#wxc'),b=$('#dustc');
+function paintWxChips(){const a=$('#wxc'),b=$('#dustc');if(!a||!b)return;
  if(WX.cur){const [e,n]=wxName(WX.cur.weather_code);a.innerHTML=`${e} ${Math.round(WX.cur.temperature_2m)}° ${n}`+(rainy()?' · ☂️':'')}else a.textContent=WX.err?'🌤️ 날씨 ?':'🌤️ 날씨';
  if(WX.air){const [l,n]=worstPm();b.innerHTML=`😷 미세먼지 <span class="lv lv${l}">${n}</span>`}else b.textContent='😷 미세먼지'}
 function rainy(){return WX.daily&&(WX.daily.precipitation_probability_max[0]>=50||(WX.cur&&WX.cur.weather_code>=51))}
@@ -919,8 +940,26 @@ app('drill','learn','🧮','기초 연습',b=>{
  const mkQ=()=>{if(mode==='g'){const d=dan||2+rnd(8),k=1+rnd(9);return {t:`${d} × ${k}`,a:d*k}}
   if(kind==='add'){const x=100+rnd(900),y=100+rnd(900);return {t:`${x} + ${y}`,a:x+y}}if(kind==='sub'){let x=100+rnd(900),y=100+rnd(900);if(x<y)[x,y]=[y,x];return {t:`${x} − ${y}`,a:x-y}}
   if(kind==='mul'){const x=10+rnd(90),y=2+rnd(8);return {t:`${x} × ${y}`,a:x*y}}const y=2+rnd(8),a=1+rnd(9);return {t:`${y*a} ÷ ${y}`,a}};
- const draw=()=>{b.innerHTML=`<div class="tabs">${[['g','✖️ 구구단'],['c','➕ 셈 연습'],['w','✏️ 받아쓰기']].map(([k,t])=>`<button class="btn ${mode===k?'on':''}" data-m="${k}" type="button">${t}</button>`).join('')}</div><div id="st" class="center"></div>`;
+ const draw=()=>{b.innerHTML=`<div class="tabs">${[['g','✖️ 구구단'],['c','➕ 셈 연습'],['p','🖨️ 연산 활동지'],['w','✏️ 받아쓰기']].map(([k,t])=>`<button class="btn ${mode===k?'on':''}" data-m="${k}" type="button">${t}</button>`).join('')}</div><div id="st" class="center"></div>`;
   $$('[data-m]',b).forEach(x=>x.onclick=()=>{mode=x.dataset.m;q=null;draw()});const st=$('#st',b);
+  if(mode==='p'){const K=[['add','덧셈','세 자리 수 + 세 자리 수'],['sub','뺄셈','세 자리 수 − 세 자리 수'],['mul','곱셈','두·세 자리 × 한 자리, 두 자리 × 두 자리'],['div','나눗셈','두·세 자리 ÷ 한 자리 (나머지 포함)'],['frac','분수','분모가 같은 분수의 덧셈·뺄셈'],['mix','섞어서','다섯 가지를 골고루']];
+   const fr=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+   const gen=k=>{if(k==='mix')k=['add','sub','mul','div','frac'][rnd(5)];
+    if(k==='add'){const x=100+rnd(900),y=100+rnd(900);return {q:`${x} + ${y} =`,a:''+(x+y)}}
+    if(k==='sub'){let x=100+rnd(900),y=100+rnd(900);if(x===y)y--;if(x<y)[x,y]=[y,x];return {q:`${x} − ${y} =`,a:''+(x-y)}}
+    if(k==='mul'){const t=rnd(3);if(t===0){const x=10+rnd(90),y=2+rnd(8);return {q:`${x} × ${y} =`,a:''+x*y}}if(t===1){const x=100+rnd(900),y=2+rnd(8);return {q:`${x} × ${y} =`,a:''+x*y}}const x=10+rnd(90),y=10+rnd(90);return {q:`${x} × ${y} =`,a:''+x*y}}
+    if(k==='div'){const y=2+rnd(8);if(rnd(2)){const a=rnd(2)?10+rnd(90):3+rnd(20);return {q:`${y*a} ÷ ${y} =`,a:''+a}}const a=2+rnd(30),r=1+rnd(y-1);return {q:`${y*a+r} ÷ ${y} =`,a:`${a} … ${r}`}}
+    const d=3+rnd(10);if(rnd(2)){const x=1+rnd(d-1),y=1+rnd(d-1);return {q:`${fr(x,d)} + ${fr(y,d)} =`,a:fr(x+y,d)}}let x=1+rnd(d-1),y=1+rnd(d-1);if(x===y)x=Math.min(d-1,x+1),y=Math.max(1,y-1);if(x<y)[x,y]=[y,x];if(x===y)return {q:`${fr(x,d)} − ${fr(1,d)} =`,a:fr(x-1,d)};return {q:`${fr(x,d)} − ${fr(y,d)} =`,a:fr(x-y,d)}};
+   const kd=b._pk||'add';if(!b._ps||b._pkk!==kd){b._ps=Array.from({length:20},()=>gen(kd));b._pkk=kd}const P=b._ps,show=!!b._pa,KN=K.find(x=>x[0]===kd);
+   st.innerHTML=`<div class="row c">${K.map(([k,t])=>`<button class="btn ${kd===k?'on':''}" data-pk="${k}" type="button">${t}</button>`).join('')}</div><div class="small">${KN[2]} · 20문제 · 새 문제를 누를 때마다 다른 문제가 나와요.</div>
+    <div class="dsp ${show?'show':''}">${P.map((x,i)=>`<div><small>${i+1}.</small>${x.q} ${show?`<i>${x.a}</i>`:''}</div>`).join('')}</div>
+    <div class="row c"><button class="btn big" id="pn" type="button">🔄 새 문제</button><button class="btn big" id="pa" type="button">${show?'🙈 답 숨기기':'👀 답 보기'}</button><button class="btn big pri" id="pp" type="button">🖨️ 인쇄 (뒤에 답지)</button></div>`;
+   $$('[data-pk]',st).forEach(x=>x.onclick=()=>{b._pk=x.dataset.pk;b._ps=null;draw()});$('#pn',st).onclick=()=>{b._ps=null;draw()};$('#pa',st).onclick=()=>{b._pa=!b._pa;draw()};
+   $('#pp',st).onclick=()=>{let w=document.getElementById('dws');if(!w){w=document.createElement('div');w.id='dws';document.body.appendChild(w)}const d=new Date(),dt=`${d.getMonth()+1}월 ${d.getDate()}일`;
+    const head=(t)=>`<h2>${t}<small>우리 반 교실 · 기초 연습</small></h2>`;
+    w.innerHTML=`<div class="pg">${head('연산 활동지 · '+KN[1])}<div class="nm"><span>(&nbsp;&nbsp;&nbsp;&nbsp;)학년 (&nbsp;&nbsp;&nbsp;&nbsp;)반 (&nbsp;&nbsp;&nbsp;&nbsp;)번 이름: (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</span><span>${dt} · 맞힌 개수 (&nbsp;&nbsp;&nbsp;&nbsp;) / 20</span></div><ol>${P.map((x,i)=>`<li><span class="n">${i+1}.</span>${x.q}<span class="bx"></span></li>`).join('')}</ol><div class="ft">초등교사 홍지희 · hongjihee1005.github.io/hong_teacher</div></div>
+     <div class="pg ans">${head('답지 · '+KN[1])}<div class="nm"><span>${KN[2]}</span><span>${dt}</span></div><ol>${P.map((x,i)=>`<li><span class="n">${i+1}.</span>${x.q} <b>${x.a}</b></li>`).join('')}</ol></div>`;
+    document.body.classList.add('hj-dprint');setTimeout(()=>{window.print();setTimeout(()=>document.body.classList.remove('hj-dprint'),400)},60)};return}
   if(mode==='w'){const L=lines(DB.dictation);st.innerHTML=`<div class="list" style="width:min(900px,100%)">${L.map((l,i)=>`<li><button class="btn" data-s="${i}" type="button">🔈 ${i+1}번 듣기</button><span class="grow mid cover hid" style="border:0;padding:.2rem .5rem;min-height:2.6rem;font-size:1.3rem">${esc(l.replace(/^\d+[.)]\s*/,''))}</span></li>`).join('')}</div>
    <div class="row c"><label class="row">빠르기 <input type="range" id="rt" min="0.5" max="1.2" step="0.05" value="${DB.rate||.8}"></label><button class="btn t-only" id="e" type="button">✏️ 받아쓰기 문장</button></div><div class="small">문장을 누르면 정답이 보여요.</div>`;
    $$('[data-s]',st).forEach(x=>x.onclick=()=>say(L[x.dataset.s].replace(/^\d+[.)]\s*/,''),DB.rate||.8));$$('.cover',st).forEach(c=>c.onclick=()=>c.classList.toggle('hid'));
@@ -1214,7 +1253,7 @@ function applyMode(){const h=document.documentElement;h.classList.toggle('m-tv',
 
 /* ===== 시계 ===== */
 function tick(){const d=new Date(),t=pad(d.getHours())+':'+pad(d.getMinutes());$('#clk').textContent=t;$('#wclk').textContent=t;
- $('#dt').innerHTML=`<b>${d.getMonth()+1}월 ${d.getDate()}일 ${DAYS[d.getDay()]}요일</b>${d.getFullYear()}년`;$('#nowc').textContent='🔔 '+nowInfo().txt;
+ $('#dt').innerHTML=`<b>${d.getMonth()+1}월 ${d.getDate()}일 ${DAYS[d.getDay()]}요일</b>${d.getFullYear()}년`;{const ni=nowInfo();$('#nowc').textContent='🔔 '+(ni.p?'지금 ':'')+ni.txt;const nc=$('#nextc');let nx=ni.next;if(!nx&&ni.cur){const B=bells();nx=B.slice(B.indexOf(B.find(x=>x.s===ni.cur.s))+1).find(x=>x.p)}const ns=nx&&nx.p?subj(nx.p):'';if(nc){if(nx&&nx.p&&!(ni.txt.indexOf('다음')>=0)){nc.innerHTML='다음 <b>'+nx.p+'교시'+(ns?' · '+esc(ns):'')+'</b> '+nx.st;nc.hidden=false}else nc.hidden=true}}
  const tc=$('#tmc');if(T.run||(T.left===0&&T.dur&&Date.now()-(T.endT||0)<20000)){const l=tLeft();tc.hidden=false;tc.textContent='⏱ '+fmt(l);tc.classList.toggle('end',l<=0);
   if(T.run&&l<=0){T.run=false;T.left=0}if(l<=0&&!T.beeped){T.beeped=true;T.endT=Date.now();beep([[880,.2],[0,.1],[880,.2],[0,.1],[880,.2],[0,.1],[1175,.6]],.3);toast('⏰ 시간이 다 됐어요!',3000)}}else tc.hidden=true}
 let lastMin=-1;setInterval(()=>{tick();const m=new Date().getMinutes();if(m!==lastMin){lastMin=m;if(!curApp)renderHome()}},1000);
@@ -1473,7 +1512,7 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  tidy();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;tidy()})}).observe(document.body,{childList:true,subtree:true})})();
 /* 과학 앱(한 화면 보기): 첫 화면에 학년·학기·단원·차시와 주제, 너무 크게 키우지 않기 */
 (function(){if(!document.getElementById('ovBar'))return;var hd=document.querySelector('header .wrap h1'),hp=document.querySelector('header .wrap p');
- var CAP=1.12;function cap(b){var m=/scale\(([\d.]+)\)/.exec(b.style.transform||'');if(m&&+m[1]>CAP+0.001){b.style.transform='scale('+CAP+')';b.style.width=(100/CAP)+'%';b.style.marginLeft=((1-1/CAP)*50)+'%'}}
+ var CAP=1.0;function cap(b){var m=/scale\(([\d.]+)\)/.exec(b.style.transform||'');if(m&&+m[1]>CAP+0.001){b.style.transform='scale('+CAP+')';b.style.width=(100/CAP)+'%';b.style.marginLeft=((1-1/CAP)*50)+'%'}}
  new MutationObserver(function(ms){ms.forEach(function(r){if(r.target.classList&&r.target.classList.contains('fitbox'))cap(r.target)})}).observe(document.body,{attributes:true,attributeFilter:['style'],subtree:true})})();
 /* 아이콘만 있던 ⏹ 단추에 '멈추기' 이름 */
 (function(){var SV='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>';

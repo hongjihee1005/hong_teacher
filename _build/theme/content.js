@@ -245,7 +245,7 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  tidy();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;tidy()})}).observe(document.body,{childList:true,subtree:true})})();
 /* 과학 앱(한 화면 보기): 첫 화면에 학년·학기·단원·차시와 주제, 너무 크게 키우지 않기 */
 (function(){if(!document.getElementById('ovBar'))return;var hd=document.querySelector('header .wrap h1'),hp=document.querySelector('header .wrap p');
- var CAP=1.12;function cap(b){var m=/scale\(([\d.]+)\)/.exec(b.style.transform||'');if(m&&+m[1]>CAP+0.001){b.style.transform='scale('+CAP+')';b.style.width=(100/CAP)+'%';b.style.marginLeft=((1-1/CAP)*50)+'%'}}
+ var CAP=1.0;function cap(b){var m=/scale\(([\d.]+)\)/.exec(b.style.transform||'');if(m&&+m[1]>CAP+0.001){b.style.transform='scale('+CAP+')';b.style.width=(100/CAP)+'%';b.style.marginLeft=((1-1/CAP)*50)+'%'}}
  new MutationObserver(function(ms){ms.forEach(function(r){if(r.target.classList&&r.target.classList.contains('fitbox'))cap(r.target)})}).observe(document.body,{attributes:true,attributeFilter:['style'],subtree:true})})();
 /* 아이콘만 있던 ⏹ 단추에 '멈추기' 이름 */
 (function(){var SV='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>';

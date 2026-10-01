@@ -235,7 +235,7 @@ html body .hj-toast{flex-basis:100%;margin:2px 0 0;min-height:1.3em;text-align:c
  body.hj-tprint #tn .panel{width:auto!important;max-height:none!important;overflow:visible!important;box-shadow:none!important;border:0!important;border-radius:0!important;padding:0!important;transform:none!important;animation:none!important}
  body.hj-tprint .hj-tbar,body.hj-tprint #tnClose{display:none!important}
  body.hj-tprint{background:#fff!important;color:#000}
- @page{margin:16mm 16mm}
+ body.hj-tprint #tn .panel{padding:16mm!important}
 }
 /* 수업을 마쳤을 때 고르는 창 */
 #hj-done{position:fixed;inset:0;z-index:9999;display:grid;place-items:center;padding:20px;background:rgba(42,34,28,.38);backdrop-filter:blur(3px);animation:hjfade .2s ease}
@@ -431,6 +431,8 @@ html:has(#ovBar) #ovBar{padding:5px 8px!important;gap:6px!important}
 html:has(#ovBar) #ovBar button{font-size:clamp(14px,1.1vw,16px)!important;padding:6px 13px!important;min-height:36px!important}
 html:has(#ovBar) #ovBar .pos{font-size:clamp(14px,1.1vw,16px)!important}
 html:has(#ovBar) #ovBar .hj-i{width:16px;height:16px}
+/* 과학 앱 한 화면 보기: 기본 글자 조금 작게 */
+html.hj-hasnav:has(#ovBar) body.ov main{font-size:.94em}
 </style><meta name="hj-next" content="u1-4.html" data-t="고체, 액체, 기체는 어떻게 다를까?" data-tag="5~6차시"><!--/hj-ctheme--></head>
 <body>
 <header><div class="wrap"><svg viewBox="0 0 86 86" aria-hidden="true"><rect width="86" height="86" rx="20" fill="#fbe0d0"/><rect x="10" y="40" width="20" height="30" rx="3" fill="#8a6a3a"/><path d="M36 50 h18 v20 h-18z" fill="#5fb0e0"/><circle cx="68" cy="30" r="10" fill="none" stroke="#9fd3f0" stroke-width="4"/><circle cx="62" cy="56" r="6" fill="none" stroke="#9fd3f0" stroke-width="3"/></svg><div><h1>3. 물질의 세 가지 상태를 알아볼까?</h1><p>3학년 2학기 과학 · 1단원 물체와 물질 · 4/11차시</p></div></div></header>
@@ -1259,7 +1261,7 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  tidy();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;tidy()})}).observe(document.body,{childList:true,subtree:true})})();
 /* 과학 앱(한 화면 보기): 첫 화면에 학년·학기·단원·차시와 주제, 너무 크게 키우지 않기 */
 (function(){if(!document.getElementById('ovBar'))return;var hd=document.querySelector('header .wrap h1'),hp=document.querySelector('header .wrap p');
- var CAP=1.12;function cap(b){var m=/scale\(([\d.]+)\)/.exec(b.style.transform||'');if(m&&+m[1]>CAP+0.001){b.style.transform='scale('+CAP+')';b.style.width=(100/CAP)+'%';b.style.marginLeft=((1-1/CAP)*50)+'%'}}
+ var CAP=1.0;function cap(b){var m=/scale\(([\d.]+)\)/.exec(b.style.transform||'');if(m&&+m[1]>CAP+0.001){b.style.transform='scale('+CAP+')';b.style.width=(100/CAP)+'%';b.style.marginLeft=((1-1/CAP)*50)+'%'}}
  new MutationObserver(function(ms){ms.forEach(function(r){if(r.target.classList&&r.target.classList.contains('fitbox'))cap(r.target)})}).observe(document.body,{attributes:true,attributeFilter:['style'],subtree:true})})();
 /* 아이콘만 있던 ⏹ 단추에 '멈추기' 이름 */
 (function(){var SV='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>';

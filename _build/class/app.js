@@ -97,7 +97,7 @@ async function loadWx(force){if(!force&&WX.t&&Date.now()-WX.t<20*60e3)return WX;
  try{const r=await fetch(`https://air-quality-api.open-meteo.com/v1/air-quality?latitude=${lat}&longitude=${lon}&current=pm10,pm2_5&timezone=Asia%2FSeoul`);
   const j=await r.json();WX.air=j.current;WX.aerr=''}catch(e){WX.aerr='미세먼지를 불러오지 못했어요'}
  WX.t=Date.now();paintWxChips();return WX}
-function paintWxChips(){const a=$('#wxc'),b=$('#dustc');
+function paintWxChips(){const a=$('#wxc'),b=$('#dustc');if(!a||!b)return;
  if(WX.cur){const [e,n]=wxName(WX.cur.weather_code);a.innerHTML=`${e} ${Math.round(WX.cur.temperature_2m)}° ${n}`+(rainy()?' · ☂️':'')}else a.textContent=WX.err?'🌤️ 날씨 ?':'🌤️ 날씨';
  if(WX.air){const [l,n]=worstPm();b.innerHTML=`😷 미세먼지 <span class="lv lv${l}">${n}</span>`}else b.textContent='😷 미세먼지'}
 function rainy(){return WX.daily&&(WX.daily.precipitation_probability_max[0]>=50||(WX.cur&&WX.cur.weather_code>=51))}
@@ -385,8 +385,26 @@ app('drill','learn','🧮','기초 연습',b=>{
  const mkQ=()=>{if(mode==='g'){const d=dan||2+rnd(8),k=1+rnd(9);return {t:`${d} × ${k}`,a:d*k}}
   if(kind==='add'){const x=100+rnd(900),y=100+rnd(900);return {t:`${x} + ${y}`,a:x+y}}if(kind==='sub'){let x=100+rnd(900),y=100+rnd(900);if(x<y)[x,y]=[y,x];return {t:`${x} − ${y}`,a:x-y}}
   if(kind==='mul'){const x=10+rnd(90),y=2+rnd(8);return {t:`${x} × ${y}`,a:x*y}}const y=2+rnd(8),a=1+rnd(9);return {t:`${y*a} ÷ ${y}`,a}};
- const draw=()=>{b.innerHTML=`<div class="tabs">${[['g','✖️ 구구단'],['c','➕ 셈 연습'],['w','✏️ 받아쓰기']].map(([k,t])=>`<button class="btn ${mode===k?'on':''}" data-m="${k}" type="button">${t}</button>`).join('')}</div><div id="st" class="center"></div>`;
+ const draw=()=>{b.innerHTML=`<div class="tabs">${[['g','✖️ 구구단'],['c','➕ 셈 연습'],['p','🖨️ 연산 활동지'],['w','✏️ 받아쓰기']].map(([k,t])=>`<button class="btn ${mode===k?'on':''}" data-m="${k}" type="button">${t}</button>`).join('')}</div><div id="st" class="center"></div>`;
   $$('[data-m]',b).forEach(x=>x.onclick=()=>{mode=x.dataset.m;q=null;draw()});const st=$('#st',b);
+  if(mode==='p'){const K=[['add','덧셈','세 자리 수 + 세 자리 수'],['sub','뺄셈','세 자리 수 − 세 자리 수'],['mul','곱셈','두·세 자리 × 한 자리, 두 자리 × 두 자리'],['div','나눗셈','두·세 자리 ÷ 한 자리 (나머지 포함)'],['frac','분수','분모가 같은 분수의 덧셈·뺄셈'],['mix','섞어서','다섯 가지를 골고루']];
+   const fr=(a,b)=>`<span class="fr"><span>${a}</span><span>${b}</span></span>`;
+   const gen=k=>{if(k==='mix')k=['add','sub','mul','div','frac'][rnd(5)];
+    if(k==='add'){const x=100+rnd(900),y=100+rnd(900);return {q:`${x} + ${y} =`,a:''+(x+y)}}
+    if(k==='sub'){let x=100+rnd(900),y=100+rnd(900);if(x===y)y--;if(x<y)[x,y]=[y,x];return {q:`${x} − ${y} =`,a:''+(x-y)}}
+    if(k==='mul'){const t=rnd(3);if(t===0){const x=10+rnd(90),y=2+rnd(8);return {q:`${x} × ${y} =`,a:''+x*y}}if(t===1){const x=100+rnd(900),y=2+rnd(8);return {q:`${x} × ${y} =`,a:''+x*y}}const x=10+rnd(90),y=10+rnd(90);return {q:`${x} × ${y} =`,a:''+x*y}}
+    if(k==='div'){const y=2+rnd(8);if(rnd(2)){const a=rnd(2)?10+rnd(90):3+rnd(20);return {q:`${y*a} ÷ ${y} =`,a:''+a}}const a=2+rnd(30),r=1+rnd(y-1);return {q:`${y*a+r} ÷ ${y} =`,a:`${a} … ${r}`}}
+    const d=3+rnd(10);if(rnd(2)){const x=1+rnd(d-1),y=1+rnd(d-1);return {q:`${fr(x,d)} + ${fr(y,d)} =`,a:fr(x+y,d)}}let x=1+rnd(d-1),y=1+rnd(d-1);if(x===y)x=Math.min(d-1,x+1),y=Math.max(1,y-1);if(x<y)[x,y]=[y,x];if(x===y)return {q:`${fr(x,d)} − ${fr(1,d)} =`,a:fr(x-1,d)};return {q:`${fr(x,d)} − ${fr(y,d)} =`,a:fr(x-y,d)}};
+   const kd=b._pk||'add';if(!b._ps||b._pkk!==kd){b._ps=Array.from({length:20},()=>gen(kd));b._pkk=kd}const P=b._ps,show=!!b._pa,KN=K.find(x=>x[0]===kd);
+   st.innerHTML=`<div class="row c">${K.map(([k,t])=>`<button class="btn ${kd===k?'on':''}" data-pk="${k}" type="button">${t}</button>`).join('')}</div><div class="small">${KN[2]} · 20문제 · 새 문제를 누를 때마다 다른 문제가 나와요.</div>
+    <div class="dsp ${show?'show':''}">${P.map((x,i)=>`<div><small>${i+1}.</small>${x.q} ${show?`<i>${x.a}</i>`:''}</div>`).join('')}</div>
+    <div class="row c"><button class="btn big" id="pn" type="button">🔄 새 문제</button><button class="btn big" id="pa" type="button">${show?'🙈 답 숨기기':'👀 답 보기'}</button><button class="btn big pri" id="pp" type="button">🖨️ 인쇄 (뒤에 답지)</button></div>`;
+   $$('[data-pk]',st).forEach(x=>x.onclick=()=>{b._pk=x.dataset.pk;b._ps=null;draw()});$('#pn',st).onclick=()=>{b._ps=null;draw()};$('#pa',st).onclick=()=>{b._pa=!b._pa;draw()};
+   $('#pp',st).onclick=()=>{let w=document.getElementById('dws');if(!w){w=document.createElement('div');w.id='dws';document.body.appendChild(w)}const d=new Date(),dt=`${d.getMonth()+1}월 ${d.getDate()}일`;
+    const head=(t)=>`<h2>${t}<small>우리 반 교실 · 기초 연습</small></h2>`;
+    w.innerHTML=`<div class="pg">${head('연산 활동지 · '+KN[1])}<div class="nm"><span>(&nbsp;&nbsp;&nbsp;&nbsp;)학년 (&nbsp;&nbsp;&nbsp;&nbsp;)반 (&nbsp;&nbsp;&nbsp;&nbsp;)번 이름: (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;)</span><span>${dt} · 맞힌 개수 (&nbsp;&nbsp;&nbsp;&nbsp;) / 20</span></div><ol>${P.map((x,i)=>`<li><span class="n">${i+1}.</span>${x.q}<span class="bx"></span></li>`).join('')}</ol><div class="ft">초등교사 홍지희 · hongjihee1005.github.io/hong_teacher</div></div>
+     <div class="pg ans">${head('답지 · '+KN[1])}<div class="nm"><span>${KN[2]}</span><span>${dt}</span></div><ol>${P.map((x,i)=>`<li><span class="n">${i+1}.</span>${x.q} <b>${x.a}</b></li>`).join('')}</ol></div>`;
+    document.body.classList.add('hj-dprint');setTimeout(()=>{window.print();setTimeout(()=>document.body.classList.remove('hj-dprint'),400)},60)};return}
   if(mode==='w'){const L=lines(DB.dictation);st.innerHTML=`<div class="list" style="width:min(900px,100%)">${L.map((l,i)=>`<li><button class="btn" data-s="${i}" type="button">🔈 ${i+1}번 듣기</button><span class="grow mid cover hid" style="border:0;padding:.2rem .5rem;min-height:2.6rem;font-size:1.3rem">${esc(l.replace(/^\d+[.)]\s*/,''))}</span></li>`).join('')}</div>
    <div class="row c"><label class="row">빠르기 <input type="range" id="rt" min="0.5" max="1.2" step="0.05" value="${DB.rate||.8}"></label><button class="btn t-only" id="e" type="button">✏️ 받아쓰기 문장</button></div><div class="small">문장을 누르면 정답이 보여요.</div>`;
    $$('[data-s]',st).forEach(x=>x.onclick=()=>say(L[x.dataset.s].replace(/^\d+[.)]\s*/,''),DB.rate||.8));$$('.cover',st).forEach(c=>c.onclick=()=>c.classList.toggle('hid'));
@@ -680,7 +698,7 @@ function applyMode(){const h=document.documentElement;h.classList.toggle('m-tv',
 
 /* ===== 시계 ===== */
 function tick(){const d=new Date(),t=pad(d.getHours())+':'+pad(d.getMinutes());$('#clk').textContent=t;$('#wclk').textContent=t;
- $('#dt').innerHTML=`<b>${d.getMonth()+1}월 ${d.getDate()}일 ${DAYS[d.getDay()]}요일</b>${d.getFullYear()}년`;$('#nowc').textContent='🔔 '+nowInfo().txt;
+ $('#dt').innerHTML=`<b>${d.getMonth()+1}월 ${d.getDate()}일 ${DAYS[d.getDay()]}요일</b>${d.getFullYear()}년`;{const ni=nowInfo();$('#nowc').textContent='🔔 '+(ni.p?'지금 ':'')+ni.txt;const nc=$('#nextc');let nx=ni.next;if(!nx&&ni.cur){const B=bells();nx=B.slice(B.indexOf(B.find(x=>x.s===ni.cur.s))+1).find(x=>x.p)}const ns=nx&&nx.p?subj(nx.p):'';if(nc){if(nx&&nx.p&&!(ni.txt.indexOf('다음')>=0)){nc.innerHTML='다음 <b>'+nx.p+'교시'+(ns?' · '+esc(ns):'')+'</b> '+nx.st;nc.hidden=false}else nc.hidden=true}}
  const tc=$('#tmc');if(T.run||(T.left===0&&T.dur&&Date.now()-(T.endT||0)<20000)){const l=tLeft();tc.hidden=false;tc.textContent='⏱ '+fmt(l);tc.classList.toggle('end',l<=0);
   if(T.run&&l<=0){T.run=false;T.left=0}if(l<=0&&!T.beeped){T.beeped=true;T.endT=Date.now();beep([[880,.2],[0,.1],[880,.2],[0,.1],[880,.2],[0,.1],[1175,.6]],.3);toast('⏰ 시간이 다 됐어요!',3000)}}else tc.hidden=true}
 let lastMin=-1;setInterval(()=>{tick();const m=new Date().getMinutes();if(m!==lastMin){lastMin=m;if(!curApp)renderHome()}},1000);
