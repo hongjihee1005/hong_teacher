@@ -730,4 +730,8 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   var b=sec.querySelector(':scope>.fitbox')||sec;b.insertBefore(d,b.firstChild)}
  var CAP=1.12;function cap(b){var m=/scale\(([\d.]+)\)/.exec(b.style.transform||'');if(m&&+m[1]>CAP+0.001){b.style.transform='scale('+CAP+')';b.style.width=(100/CAP)+'%';b.style.marginLeft=((1-1/CAP)*50)+'%'}}
  new MutationObserver(function(ms){ms.forEach(function(r){if(r.target.classList&&r.target.classList.contains('fitbox'))cap(r.target)})}).observe(document.body,{attributes:true,attributeFilter:['style'],subtree:true})})();
+/* 아이콘만 있던 ⏹ 단추에 '멈추기' 이름 */
+(function(){var SV='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6.5" y="6.5" width="11" height="11" rx="2"/></svg>';
+ function fix(){document.querySelectorAll('button').forEach(function(b){if(b.dataset.hjs)return;var t=b.textContent.replace(/[️\s]/g,'');if(t==='⏹'||t==='■'||t==='◼'){b.dataset.hjs='1';b.innerHTML=SV+'멈추기';b.classList.add('hj-ic');b.setAttribute('aria-label','멈추기')}})}
+ fix();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;fix()})}).observe(document.body,{childList:true,subtree:true})})();
 </script><!--/hj-cicons--></body></html>
