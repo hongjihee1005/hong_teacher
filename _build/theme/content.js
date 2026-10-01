@@ -233,3 +233,20 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
 (function(){if(!document.querySelector('header#bar'))return;var PAL=['#E9B730','#98C54A','#4DB283','#55B2E0','#9F86E3','#E784AF','#F0985A','#5C8EE6'];
  function paint(){document.querySelectorAll('.icons').forEach(function(g){var i=0;[].forEach.call(g.querySelectorAll(':scope>.ic'),function(b){b.style.setProperty('--acc',PAL[i++%PAL.length])})})}
  paint();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;paint()})}).observe(document.body,{childList:true,subtree:true})})();
+/* 첫 화면 순서 통일(국어처럼): 학년·학기·단원·차시 안내 → 학습 주제(제목) */
+(function(){var cv=document.getElementById('cover');if(!cv)return;var t=cv.querySelector('h1.title');if(!t)return;
+ var sub=document.getElementById('cSub');if(sub&&sub.compareDocumentPosition(t)&Node.DOCUMENT_POSITION_PRECEDING){t.before(sub);return}
+ var n=t.nextElementSibling;if(n&&n.matches('p.lead')&&!n.id){t.before(n)}})();
+/* 글쓰기 도구 막대: 듣기 · 점검 · 정리 세 묶음으로 */
+(function(){function tidy(){document.querySelectorAll('.wbar:not([data-hjt])').forEach(function(w){w.dataset.hjt='1';
+  function grp(ids){var g=document.createElement('div');g.className='hj-wg';ids.forEach(function(id){var b=document.getElementById(id);if(b)g.appendChild(b)});return g.children.length?g:null}
+  var c=document.getElementById('wCount');var gs=[grp(['wSpeak','wStop']),grp(['wCheck','wModel']),grp(['wCopy','wClear'])].filter(Boolean);
+  gs.forEach(function(g){w.insertBefore(g,c||null)});var st=document.getElementById('wStop');if(st&&!st.getAttribute('aria-label')){st.setAttribute('aria-label','듣기 멈추기');st.title='멈추기'}})}
+ tidy();var raf=0;new MutationObserver(function(){if(!raf)raf=requestAnimationFrame(function(){raf=0;tidy()})}).observe(document.body,{childList:true,subtree:true})})();
+/* 과학 앱(한 화면 보기): 첫 화면에 학년·학기·단원·차시와 주제, 너무 크게 키우지 않기 */
+(function(){if(!document.getElementById('ovBar'))return;var hd=document.querySelector('header .wrap h1'),hp=document.querySelector('header .wrap p');
+ var sec=document.querySelector('main section');if(sec&&hd&&!document.querySelector('.hj-lhead')){var d=document.createElement('div');d.className='hj-lhead';
+  d.innerHTML='<p class="hj-linfo"></p><h1 class="hj-ltitle"></h1>';d.querySelector('.hj-linfo').textContent=hp?hp.textContent.replace(/\s*·\s*만든 사람.*$/,''):'';d.querySelector('.hj-ltitle').textContent=hd.textContent.replace(/^\s*\d+\.\s*/,'');
+  var b=sec.querySelector(':scope>.fitbox')||sec;b.insertBefore(d,b.firstChild)}
+ var CAP=1.12;function cap(b){var m=/scale\(([\d.]+)\)/.exec(b.style.transform||'');if(m&&+m[1]>CAP+0.001){b.style.transform='scale('+CAP+')';b.style.width=(100/CAP)+'%';b.style.marginLeft=((1-1/CAP)*50)+'%'}}
+ new MutationObserver(function(ms){ms.forEach(function(r){if(r.target.classList&&r.target.classList.contains('fitbox'))cap(r.target)})}).observe(document.body,{attributes:true,attributeFilter:['style'],subtree:true})})();
