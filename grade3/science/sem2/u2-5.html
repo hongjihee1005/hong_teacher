@@ -108,6 +108,13 @@ img.ph{display:block;width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:
 .rec .nums{display:flex;flex-wrap:wrap;gap:4px}
 .rec .nums button{min-height:2.1rem;padding:0 .55em;font-size:.95rem;border-width:2px}
 .rec .go{min-height:2.1rem;padding:0 .6em;font-size:.9rem;border-width:2px;white-space:nowrap}
+.scwrap{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:start}
+.scwrap>.stick{margin:0}
+html body .scwrap .scene{width:100%!important;max-height:none!important;height:auto!important}
+.mside .mh{margin:0 0 2px;font-size:1.2rem!important;text-align:left!important}
+.mside .mhs{margin:0 0 8px;font-size:.88rem!important;color:var(--soft);text-align:left!important}
+.mside .missions li{font-size:.92rem;line-height:1.4;padding:7px 10px}
+@media (max-width:820px){.scwrap{grid-template-columns:1fr}}
 .missions{list-style:none;padding:0;margin:0;display:grid;gap:6px}
 .missions li{border:2px solid var(--line);border-radius:12px;padding:6px 10px}
 .missions li.ok{background:#dcf5e5;border-color:var(--good);color:#0d5a31}
@@ -689,6 +696,21 @@ html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body button.on.on:not(.right):
 html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body .stage.stage.stage{background:var(--hjs-soft)!important;color:var(--hjs)!important}
 html[data-hjsubj]:not(#hjz):not(#hjz) body :is(#cover .qbox,#cover .bq,#cover .goalbox,#hj-scover .hj-sc-goal){background:var(--hjs-soft)!important;border-left-color:var(--hjs)!important}
 html[data-hjsubj]:not(#hjz):not(#hjz) body main.lesson .big:not(:disabled){background:var(--hjs)!important;color:#fff!important;border-color:transparent!important}
+/* 자료 출처 한 줄 */
+html body .hj-src{font-size:13.5px!important;line-height:1.5;color:var(--muted);text-align:center;margin:10px auto 0;max-width:60em;word-break:keep-all}
+/* 과학 한 화면 보기: 글의 위계 — 이름표·제목 한 줄, 활동 제목 크게, 안내 글 작게, 할 일 문장은 크게 */
+html body.ov section .hj-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 12px;margin:0 0 6px}
+html body.ov section .hj-head>.stage{display:inline-block!important;margin:0!important}
+html body.ov section .hj-head>h2{margin:0!important}
+html body.ov section .fitbox:has(> h3:not(.ovhide)) .hj-head>h2{font-size:clamp(17px,1.35vw,20px)!important;color:var(--soft)!important;font-weight:700!important}
+html body.ov section .fitbox>h3{font-size:clamp(22px,1.9vw,28px)!important;font-weight:800!important;color:var(--ink)!important;margin:6px 0 4px!important}
+html body.ov section .fitbox>p.hj-guide{font-size:clamp(16px,1.25vw,19px)!important;line-height:1.6;color:var(--soft)!important;max-width:52em;margin:2px auto 6px!important}
+html body.ov section .fitbox>p.hj-guide b{color:var(--ink)}
+html body.ov section .fitbox>p.hj-task{font-size:clamp(19px,1.6vw,24px)!important;font-weight:700!important;line-height:1.5;color:var(--ink)!important;text-align:left!important;
+ background:var(--hjs-soft,#F3EEE6);border-left:6px solid var(--hjs,#8a7a66);border-radius:12px;padding:10px 16px!important;margin:6px 0 10px!important;text-wrap:pretty}
+html body.ov section .fitbox>p.hj-task b{color:var(--hjs,var(--ink))}
+/* 스스로 평가 표: 얼굴 칸은 좁게, 글 칸은 넓게 */
+html body.ov section table td:has(> button){width:1%;white-space:nowrap}
 </style><meta name="hj-next" content="u2-6.html" data-t="살아 숨 쉬는 자연의 보물 창고, 갯벌" data-tag="8~10차시"><!--/hj-ctheme--></head>
 <body>
 <header><div class="wrap">
@@ -727,6 +749,7 @@ html[data-hjsubj]:not(#hjz):not(#hjz) body main.lesson .big:not(:disabled){backg
   <span class="stage">전개 · 탐구 활동</span>
   <h2>하루 동안 같은 바닷가를 지켜봐요</h2>
   <p>시각 막대를 움직이거나 ▶ 단추를 눌러 하루를 흘려 보내요. 바닷물의 높이, 바닷길, 배, 눈금 기둥을 살펴보세요.</p>
+  <div class="scwrap">
   <div class="stick">
     <svg id="scene" class="scene" viewBox="0 0 900 420" role="img" aria-label="시각에 따라 바닷물의 높이가 달라지는 바닷가 그림">
       <defs>
@@ -776,6 +799,13 @@ html[data-hjsubj]:not(#hjz):not(#hjz) body main.lesson .big:not(:disabled){backg
       <span class="clock" id="clock">06:00</span>
     </div>
   </div>
+    <div class="mside">
+      <h3 class="mh">🎯 탐구 미션</h3>
+      <p class="mhs">시각 막대를 직접 움직여서 찾아요.</p>
+      <ul class="missions" id="missions"></ul>
+      <div class="fb" id="mFb"></div>
+    </div>
+  </div>
   <div class="status">
     <div><b>🌊 바닷물 높이</b><div class="lv"><i id="lvBar"></i></div><span id="lvTxt"></span></div>
     <div><b>🛣️ 섬으로 가는 바닷길</b><span id="stRoad"></span></div>
@@ -797,9 +827,6 @@ html[data-hjsubj]:not(#hjz):not(#hjz) body main.lesson .big:not(:disabled){backg
     <div class="fb" id="chartFb"></div>
   </div>
 
-  <h3>🎯 탐구 미션: 시각을 움직여 찾아요</h3>
-  <ul class="missions" id="missions"></ul>
-  <div class="fb" id="mFb"></div>
 </section>
 
 <!-- 분류 -->
@@ -834,7 +861,6 @@ html[data-hjsubj]:not(#hjz):not(#hjz) body main.lesson .big:not(:disabled){backg
   </div>
   <svg id="tl" class="tl" viewBox="0 0 640 110" style="margin-top:10px" aria-label="하루 중 바닷길이 드러나는 때"></svg>
   <div class="fb" id="tripFb"></div>
-  <div class="warn" style="margin-top:10px">⚠️ 바닷길이나 갯벌에 들어갈 때는 꼭 어른과 함께 가요. 알림판과 안내 방송을 확인하고, 정해진 시각보다 일찍 나와요. 밀물은 생각보다 빠르게 들어와요!</div>
 
   <h3>② 안내 방송이 들려요</h3>
   <p class="jua" style="font-size:1.1rem">갯벌에서 놀고 있는데 “갯벌 밖으로 나오세요!”라는 방송이 나와요. 왜일까요?</p>
@@ -854,6 +880,7 @@ html[data-hjsubj]:not(#hjz):not(#hjz) body main.lesson .big:not(:disabled){backg
     <button data-a="0">따개비는 물이 없는 곳을 좋아해서</button>
   </div>
   <div class="fb" id="barnFb"></div>
+  <div class="warn" style="margin-top:10px">⚠️ 바닷길이나 갯벌에 들어갈 때는 꼭 어른과 함께 가요. 알림판과 안내 방송을 확인하고, 정해진 시각보다 일찍 나와요. 밀물은 생각보다 빠르게 들어와요!</div>
 </section>
 
 <!-- 한눈에 쏙 -->
@@ -923,7 +950,7 @@ const M=[
 ];
 const got=M.map(()=>false);
 $('#missions').innerHTML=M.map((m,i)=>`<li id="m${i}">⬜ ${m.t}</li>`).join('');
-function draw(){
+function draw(user){
   const t=T, L=lvl(t), wy=wyAt(t), rising=Math.sin(2*Math.PI*(t-3)/12.4)<0;
   $('#water').setAttribute('y',wy);
   let d=''; for(let x=0;x<=900;x+=30){ d+=(x?'L':'M')+x+','+(wy+Math.sin(x/30+t*6)*2.5); } $('#wave').setAttribute('d',d);
@@ -942,10 +969,10 @@ function draw(){
   $('#stRoad').textContent=road?'드러났어요. 걸어서 갈 수 있어요.':'물에 잠겼어요. 걸어서 갈 수 없어요.';
   $('#stBoat').textContent=float?'물에 둥둥 떠 있어요.':'땅 위에 얹혀 있어요.';
   const st={wy,L,road,float,rising};
-  M.forEach((m,i)=>{ if(!got[i]&&m.f(st)){got[i]=true; const li=$('#m'+i); li.classList.add('ok'); li.textContent='✅ '+m.t+' → '+fmt(t);} });
-  if(got.every(Boolean)&&!$('#mFb').textContent){ fb($('#mFb'),'🎉 미션 성공! 같은 장소라도 하루 동안 바닷물의 높이가 높아졌다 낮아졌다 해요.',true); checkS2(); }
+  if(user) M.forEach((m,i)=>{ if(!got[i]&&m.f(st)){got[i]=true; const li=$('#m'+i); li.classList.add('ok'); li.textContent='✅ '+m.t+' → '+fmt(t);} });
+  if(user&&got.every(Boolean)&&!$('#mFb').textContent){ fb($('#mFb'),'🎉 미션 성공! 같은 장소라도 하루 동안 바닷물의 높이가 높아졌다 낮아졌다 해요.',true); checkS2(); }
 }
-$('#slider').oninput=e=>{T=+e.target.value; draw();};
+$('#slider').oninput=e=>{T=+e.target.value; draw(true);};
 function stop(){playing=false; cancelAnimationFrame(raf); $('#play').textContent='▶';}
 $('#play').onclick=()=>{ if(playing){stop();return;} playing=true; $('#play').textContent='⏸'; let last=performance.now();
   const step=now=>{ if(!playing)return; T+=(now-last)/1000*1.1; last=now; if(T>24)T-=24; draw(); raf=requestAnimationFrame(step); }; raf=requestAnimationFrame(step); };
@@ -1762,5 +1789,22 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)run(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
 /* 과목 색: 주소에서 과목을 읽어 html에 표시 */
 (function(){var m=location.pathname.match(/\/(korean|math|social|science)\//);if(m)document.documentElement.setAttribute('data-hjsubj',m[1])})();
+/* 과학 한 화면 보기: 글의 위계 정리
+   - '활동 이름표 + 큰 제목'을 한 줄로
+   - 안내 글(상황 설명)은 작게, 마지막 '~골라요/~써 봐요' 같은 할 일 문장은 크게 따로 */
+(function(){if(!document.body.classList.contains('ov')&&!document.getElementById('ovBar'))return;
+ var VERB=/(골라요|골라 봐요|고르세요|써요|써 봐요|써 보세요|적어요|적어 봐요|눌러요|눌러 봐요|눌러 보세요|찾아요|찾아 봐요|찾아보세요|세어 봐요|옮겨요|옮겨 봐요|답해요|넣어요|넣어 봐요|표시해요|말해 봐요|맞혀요|맞혀 봐요|이어요|이어 봐요|정해요|그려요|그려 봐요|만들어 봐요|비교해 봐요|분류해 봐요|나누어 봐요|살펴봐요|살펴보세요|관찰해요|관찰해 봐요|확인해요|확인해 봐요|예상해 봐요|생각해 봐요|정리해 봐요)[.!]?$/;
+ function copyState(from,to){for(var k in from.dataset)to.dataset[k]=from.dataset[k];if(from.classList.contains('ovhide'))to.classList.add('ovhide')}
+ function run(){document.querySelectorAll('main section').forEach(function(sec){var b=sec.querySelector(':scope > .fitbox')||sec;
+  var st=b.querySelector(':scope > .stage'),h2=b.querySelector(':scope > h2');
+  if(st&&h2&&st.nextElementSibling===h2&&!st.closest('.hj-head')){var hd=document.createElement('div');hd.className='hj-head';hd.dataset.always='1';st.before(hd);hd.appendChild(st);hd.appendChild(h2)}
+  b.querySelectorAll(':scope > p').forEach(function(p){if(p.dataset.hjp||p.matches('.fb,.tip,.jua,.goal,.hj-src')||p.id)return;p.dataset.hjp='1';
+   var h=p.innerHTML.trim(),txt=p.textContent.trim();if(txt.length<8)return;
+   var cut=-1,re=/[.!?]\s+(?=[^<>]*(?:<|$))/g,m;while(m=re.exec(h))cut=m.index+1;
+   if(cut>0){var last=h.slice(cut).trim(),tmp=document.createElement('div');tmp.innerHTML=last;
+    if(VERB.test(tmp.textContent.trim())){var g=document.createElement('p');g.className='hj-guide';g.innerHTML=h.slice(0,cut);copyState(p,g);g.dataset.hjp='1';p.before(g);p.innerHTML=last;p.classList.add('hj-task');return}
+    p.classList.add('hj-guide');return}
+   if(VERB.test(txt))p.classList.add('hj-task');else p.classList.add('hj-guide')})})}
+ run();setTimeout(run,400);if(document.fonts)document.fonts.ready.then(function(){setTimeout(run,100)})})();
 </script><!--/hj-cicons--></body>
 </html>

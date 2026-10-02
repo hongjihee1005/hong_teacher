@@ -370,3 +370,20 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)run(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
 /* 과목 색: 주소에서 과목을 읽어 html에 표시 */
 (function(){var m=location.pathname.match(/\/(korean|math|social|science)\//);if(m)document.documentElement.setAttribute('data-hjsubj',m[1])})();
+/* 과학 한 화면 보기: 글의 위계 정리
+   - '활동 이름표 + 큰 제목'을 한 줄로
+   - 안내 글(상황 설명)은 작게, 마지막 '~골라요/~써 봐요' 같은 할 일 문장은 크게 따로 */
+(function(){if(!document.body.classList.contains('ov')&&!document.getElementById('ovBar'))return;
+ var VERB=/(골라요|골라 봐요|고르세요|써요|써 봐요|써 보세요|적어요|적어 봐요|눌러요|눌러 봐요|눌러 보세요|찾아요|찾아 봐요|찾아보세요|세어 봐요|옮겨요|옮겨 봐요|답해요|넣어요|넣어 봐요|표시해요|말해 봐요|맞혀요|맞혀 봐요|이어요|이어 봐요|정해요|그려요|그려 봐요|만들어 봐요|비교해 봐요|분류해 봐요|나누어 봐요|살펴봐요|살펴보세요|관찰해요|관찰해 봐요|확인해요|확인해 봐요|예상해 봐요|생각해 봐요|정리해 봐요)[.!]?$/;
+ function copyState(from,to){for(var k in from.dataset)to.dataset[k]=from.dataset[k];if(from.classList.contains('ovhide'))to.classList.add('ovhide')}
+ function run(){document.querySelectorAll('main section').forEach(function(sec){var b=sec.querySelector(':scope > .fitbox')||sec;
+  var st=b.querySelector(':scope > .stage'),h2=b.querySelector(':scope > h2');
+  if(st&&h2&&st.nextElementSibling===h2&&!st.closest('.hj-head')){var hd=document.createElement('div');hd.className='hj-head';hd.dataset.always='1';st.before(hd);hd.appendChild(st);hd.appendChild(h2)}
+  b.querySelectorAll(':scope > p').forEach(function(p){if(p.dataset.hjp||p.matches('.fb,.tip,.jua,.goal,.hj-src')||p.id)return;p.dataset.hjp='1';
+   var h=p.innerHTML.trim(),txt=p.textContent.trim();if(txt.length<8)return;
+   var cut=-1,re=/[.!?]\s+(?=[^<>]*(?:<|$))/g,m;while(m=re.exec(h))cut=m.index+1;
+   if(cut>0){var last=h.slice(cut).trim(),tmp=document.createElement('div');tmp.innerHTML=last;
+    if(VERB.test(tmp.textContent.trim())){var g=document.createElement('p');g.className='hj-guide';g.innerHTML=h.slice(0,cut);copyState(p,g);g.dataset.hjp='1';p.before(g);p.innerHTML=last;p.classList.add('hj-task');return}
+    p.classList.add('hj-guide');return}
+   if(VERB.test(txt))p.classList.add('hj-task');else p.classList.add('hj-guide')})})}
+ run();setTimeout(run,400);if(document.fonts)document.fonts.ready.then(function(){setTimeout(run,100)})})();

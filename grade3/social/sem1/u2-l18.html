@@ -740,6 +740,21 @@ html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body button.on.on:not(.right):
 html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body .stage.stage.stage{background:var(--hjs-soft)!important;color:var(--hjs)!important}
 html[data-hjsubj]:not(#hjz):not(#hjz) body :is(#cover .qbox,#cover .bq,#cover .goalbox,#hj-scover .hj-sc-goal){background:var(--hjs-soft)!important;border-left-color:var(--hjs)!important}
 html[data-hjsubj]:not(#hjz):not(#hjz) body main.lesson .big:not(:disabled){background:var(--hjs)!important;color:#fff!important;border-color:transparent!important}
+/* 자료 출처 한 줄 */
+html body .hj-src{font-size:13.5px!important;line-height:1.5;color:var(--muted);text-align:center;margin:10px auto 0;max-width:60em;word-break:keep-all}
+/* 과학 한 화면 보기: 글의 위계 — 이름표·제목 한 줄, 활동 제목 크게, 안내 글 작게, 할 일 문장은 크게 */
+html body.ov section .hj-head{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 12px;margin:0 0 6px}
+html body.ov section .hj-head>.stage{display:inline-block!important;margin:0!important}
+html body.ov section .hj-head>h2{margin:0!important}
+html body.ov section .fitbox:has(> h3:not(.ovhide)) .hj-head>h2{font-size:clamp(17px,1.35vw,20px)!important;color:var(--soft)!important;font-weight:700!important}
+html body.ov section .fitbox>h3{font-size:clamp(22px,1.9vw,28px)!important;font-weight:800!important;color:var(--ink)!important;margin:6px 0 4px!important}
+html body.ov section .fitbox>p.hj-guide{font-size:clamp(16px,1.25vw,19px)!important;line-height:1.6;color:var(--soft)!important;max-width:52em;margin:2px auto 6px!important}
+html body.ov section .fitbox>p.hj-guide b{color:var(--ink)}
+html body.ov section .fitbox>p.hj-task{font-size:clamp(19px,1.6vw,24px)!important;font-weight:700!important;line-height:1.5;color:var(--ink)!important;text-align:left!important;
+ background:var(--hjs-soft,#F3EEE6);border-left:6px solid var(--hjs,#8a7a66);border-radius:12px;padding:10px 16px!important;margin:6px 0 10px!important;text-wrap:pretty}
+html body.ov section .fitbox>p.hj-task b{color:var(--hjs,var(--ink))}
+/* 스스로 평가 표: 얼굴 칸은 좁게, 글 칸은 넓게 */
+html body.ov section table td:has(> button){width:1%;white-space:nowrap}
 </style><meta name="hj-next" content="u2-l19.html" data-t="옛이야기로 지역 사람들의 생활 모습을 알아볼까요" data-tag="2단원 19차시"><!--/hj-ctheme--></head><body>
 
 <section id="cover" class="screen on center-col">
@@ -1375,4 +1390,21 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)run(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
 /* 과목 색: 주소에서 과목을 읽어 html에 표시 */
 (function(){var m=location.pathname.match(/\/(korean|math|social|science)\//);if(m)document.documentElement.setAttribute('data-hjsubj',m[1])})();
+/* 과학 한 화면 보기: 글의 위계 정리
+   - '활동 이름표 + 큰 제목'을 한 줄로
+   - 안내 글(상황 설명)은 작게, 마지막 '~골라요/~써 봐요' 같은 할 일 문장은 크게 따로 */
+(function(){if(!document.body.classList.contains('ov')&&!document.getElementById('ovBar'))return;
+ var VERB=/(골라요|골라 봐요|고르세요|써요|써 봐요|써 보세요|적어요|적어 봐요|눌러요|눌러 봐요|눌러 보세요|찾아요|찾아 봐요|찾아보세요|세어 봐요|옮겨요|옮겨 봐요|답해요|넣어요|넣어 봐요|표시해요|말해 봐요|맞혀요|맞혀 봐요|이어요|이어 봐요|정해요|그려요|그려 봐요|만들어 봐요|비교해 봐요|분류해 봐요|나누어 봐요|살펴봐요|살펴보세요|관찰해요|관찰해 봐요|확인해요|확인해 봐요|예상해 봐요|생각해 봐요|정리해 봐요)[.!]?$/;
+ function copyState(from,to){for(var k in from.dataset)to.dataset[k]=from.dataset[k];if(from.classList.contains('ovhide'))to.classList.add('ovhide')}
+ function run(){document.querySelectorAll('main section').forEach(function(sec){var b=sec.querySelector(':scope > .fitbox')||sec;
+  var st=b.querySelector(':scope > .stage'),h2=b.querySelector(':scope > h2');
+  if(st&&h2&&st.nextElementSibling===h2&&!st.closest('.hj-head')){var hd=document.createElement('div');hd.className='hj-head';hd.dataset.always='1';st.before(hd);hd.appendChild(st);hd.appendChild(h2)}
+  b.querySelectorAll(':scope > p').forEach(function(p){if(p.dataset.hjp||p.matches('.fb,.tip,.jua,.goal,.hj-src')||p.id)return;p.dataset.hjp='1';
+   var h=p.innerHTML.trim(),txt=p.textContent.trim();if(txt.length<8)return;
+   var cut=-1,re=/[.!?]\s+(?=[^<>]*(?:<|$))/g,m;while(m=re.exec(h))cut=m.index+1;
+   if(cut>0){var last=h.slice(cut).trim(),tmp=document.createElement('div');tmp.innerHTML=last;
+    if(VERB.test(tmp.textContent.trim())){var g=document.createElement('p');g.className='hj-guide';g.innerHTML=h.slice(0,cut);copyState(p,g);g.dataset.hjp='1';p.before(g);p.innerHTML=last;p.classList.add('hj-task');return}
+    p.classList.add('hj-guide');return}
+   if(VERB.test(txt))p.classList.add('hj-task');else p.classList.add('hj-guide')})})}
+ run();setTimeout(run,400);if(document.fonts)document.fonts.ready.then(function(){setTimeout(run,100)})})();
 </script><!--/hj-cicons--></body></html>
