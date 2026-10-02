@@ -1,0 +1,120 @@
+
+/* ===== 과학 탐구 단계 ===== */
+.labwrap{width:min(1180px,100%);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+.labwrap .task{width:100%}
+.labwrap .task{gap:5px}
+.labwrap .task label{font-size:clamp(16px,1.45vw,20px);padding:4px 10px;border-width:2px}
+.labwrap .task input{width:22px;height:22px;flex:none}
+.labr,.labl{display:grid;gap:8px}
+.labl2{margin:0;font-size:clamp(15px,1.3vw,18px);color:var(--soft)}
+.tnote2{margin:2px 0 0;font-size:clamp(15px,1.3vw,18px);color:var(--soft)}
+@media (max-width:900px),(orientation:portrait){.labwrap{grid-template-columns:minmax(0,1fr)}}
+.safe{background:#FDE7EA;color:#5A1320;border:3px solid #E0506B;border-radius:14px;padding:6px 12px;font-size:clamp(15px,1.35vw,19px)}
+.labgo{display:inline-block;text-decoration:none;font-size:clamp(16px,1.4vw,19px);padding:4px 14px}
+table.rec{width:100%;border-collapse:collapse;background:var(--paper);border-radius:14px;overflow:hidden}
+table.rec th,table.rec td{border:2px solid var(--line);padding:4px 6px;font-size:clamp(16px,1.5vw,20px);text-align:center;word-break:keep-all}
+table.rec thead th{background:var(--sc,#2F74E0);color:#fff;font-family:var(--display);font-weight:400}
+table.rec tbody th{background:var(--bg);font-family:var(--display);font-weight:400}
+table.rec input{width:100%;min-width:0;font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:2px dashed var(--line);border-radius:8px;background:transparent;color:var(--ink);padding:4px 6px;text-align:center}
+.prev{background:#EFEAFB;color:#1F2A44;border:3px solid #6A4FC9;border-radius:16px;padding:8px 14px;width:min(1100px,100%);font-size:clamp(17px,1.6vw,21px)}
+.prev .pv{display:inline-block;background:#fff;border-radius:10px;padding:2px 10px;margin:3px 4px;border:2px solid #CFC4F0}
+
+/* ===== 넓은 교실 화면 정렬 (2026.9.29 선생님 의견: 가운데 떠 있음·너비 제각각·사진 작음) ===== */
+/* 1) 내용은 위쪽부터 채우고, 모든 덩어리를 같은 너비로 맞춤 */
+#lesson .body{justify-content:flex-start;padding-top:clamp(6px,1.4vh,18px)}
+#lesson .body>*{width:min(1320px,100%)!important;max-width:100%}
+#lesson .hd,#lesson .ask{width:min(1320px,100%);margin-left:auto;margin-right:auto}
+#lesson .ask{font-size:clamp(17px,1.5vw,22px);color:var(--ink);opacity:.8}
+/* 2) 사진 보기: 왼쪽에 사진 2×2 크게, 오른쪽에 붙임쪽지 세 칸을 위아래로 */
+#lesson .split{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:stretch}
+#lesson .split .gal{grid-template-columns:repeat(2,minmax(0,1fr));align-content:start}
+#lesson .split .pic img{aspect-ratio:auto;width:100%;height:clamp(110px,21vh,320px);object-fit:cover;max-height:none;cursor:zoom-in}
+#lesson .split .pic .e{font-size:clamp(56px,7vh,110px);height:clamp(110px,21vh,320px);display:flex;align-items:center}
+#lesson .split .cols{grid-template-columns:1fr!important}
+#lesson .split .col{min-height:0}
+#lesson .split .notes{max-height:12vh}
+.zoomhint{font-size:clamp(14px,1.2vw,17px);color:var(--soft);text-align:center;grid-column:1/-1;margin:0}
+@media (max-width:900px),(orientation:portrait){#lesson .split{grid-template-columns:1fr}}
+/* 3) 자료 카드·분류 카드 사진도 조금 크게 */
+#lesson .gal:not(.split .gal) .pic img{aspect-ratio:auto;height:clamp(100px,19vh,300px);max-height:none;object-fit:cover}
+#lesson .card1 img{width:clamp(150px,20vw,360px)}
+/* 4) 결론 문장 칸 */
+#lesson .frameline input{width:min(30ch,80%)}
+#lesson .frameline input::placeholder{color:var(--soft);opacity:.7;font-size:.8em}
+#lesson .split .pic{padding:5px;gap:2px}
+#lesson .split .pic b{font-size:clamp(17px,1.5vw,22px)}
+#lesson .split .col{padding:6px 10px;gap:4px}
+@media (max-height:800px) and (orientation:landscape){
+ #lesson .split .pic img,#lesson .split .pic .e{height:clamp(90px,17vh,200px)}
+ #lesson .split .pic b{display:none}
+ #lesson .split .pic small{font-size:clamp(15px,1.3vw,18px);color:var(--ink)}
+ #lesson .split .col h3{font-size:clamp(18px,1.6vw,22px)}
+ #lesson .split .notes{max-height:9vh}
+}
+@media (orientation:portrait){
+ #lesson .split .pic img,#lesson .split .pic .e{height:clamp(110px,17vh,260px)}
+ #lesson .split .cols{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+
+/* ===== 2026.9.29 2차 다듬기: 사진 수에 맞춘 배치 · 큰 교실 화면 · 칸 너비 ===== */
+/* 사진 보기: 사진이 1~3장이면 빈칸 없이 채움 (1장·2장은 더 크게, 3장이면 마지막 사진을 가로로 길게) */
+#lesson .split .gal .pic:only-of-type{grid-column:1/-1}
+#lesson .split .pic img{object-fit:contain;background:color-mix(in srgb,var(--ink) 6%,var(--paper))}
+/* 사진 3장: 한 줄에 세 장, 길쭉한 사진도 잘리지 않게 */
+#lesson .split .gal:has(.pic:nth-of-type(3)):not(:has(.pic:nth-of-type(4))){grid-template-columns:repeat(3,minmax(0,1fr))}
+#lesson .split .gal:has(.pic:nth-of-type(3)):not(:has(.pic:nth-of-type(4))) .pic img{height:clamp(160px,36vh,480px)}
+#lesson .split .gal:not(:has(.pic:nth-of-type(3))) .pic img{height:clamp(150px,40vh,560px)}
+#lesson .split .gal:not(:has(.pic:nth-of-type(2))) .pic img{height:clamp(180px,48vh,640px)}
+@media (orientation:portrait){
+ #lesson .split .gal:not(:has(.pic:nth-of-type(3))) .pic img{height:clamp(150px,26vh,420px)}
+}
+/* 실험 단계: 기록표 쪽을 조금 넓게 */
+#lesson .labwrap{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+@media (max-width:900px),(orientation:portrait){#lesson .labwrap{grid-template-columns:minmax(0,1fr)}}
+#lesson table.rec input::placeholder{font-size:.85em}
+#lesson table.rec tbody th{font-size:clamp(15px,1.3vw,19px)}
+/* 분류 카드: 다른 덩어리와 같은 너비, 사진 크게 */
+#lesson .deck .card1,#lesson .deck .bins,#lesson .deck .fb,#lesson .sorted{width:100%}
+#lesson .card1 img{width:clamp(170px,24vw,440px)}
+#lesson .card1 .e{font-size:clamp(60px,7vw,120px)}
+/* 주장-근거-질문 자료 카드: 사진·그림을 크게 */
+#lesson .mini .m img{width:clamp(96px,9vw,190px);height:auto;aspect-ratio:4/3}
+#lesson .mini .m .e{font-size:clamp(40px,4vw,72px);width:clamp(60px,6vw,110px)}
+#lesson .mini .m small{font-size:clamp(12px,1vw,15px)}
+/* 붙임쪽지 칸 사이 간격과 칸 높이 맞춤 */
+#lesson .cols{align-items:stretch}
+/* 교실 화면(1920×1080 등 큰 화면): 본문 전체를 키워 멀리서도 보이게 */
+@media (min-width:1500px) and (min-height:900px){
+ #lesson .body{zoom:1.22}
+ #lesson .body>*{width:min(1320px,100%)!important}
+ #lesson .hd{font-size:clamp(34px,2.4vw,48px)}
+ #lesson .ask{font-size:clamp(22px,1.3vw,27px)}
+ #lesson .routine{font-size:20px}
+ #lesson .split .pic img{height:clamp(150px,19vh,300px)}
+ #lesson .split .gal:not(:has(.pic:nth-of-type(3))) .pic img{height:clamp(180px,40vh,560px)}
+ #lesson .split .gal:not(:has(.pic:nth-of-type(2))) .pic img{height:clamp(200px,46vh,620px)}
+ #lesson .col{min-height:200px}
+}
+@media (max-height:760px) and (orientation:landscape){#lesson .card1 img{width:clamp(150px,17vw,250px)}#lesson .card1 .e{font-size:clamp(50px,5vw,80px)}}
+/* 세로로 긴 태블릿(갤럭시탭 800×1180): 남는 높이를 써서 조금 키우고, 좁은 쪽지 칸은 입력칸을 한 줄 전체로 */
+@media (orientation:portrait) and (min-height:1000px) and (min-width:700px){
+ #lesson .body{zoom:1.1}
+ #lesson .split .pic img{height:clamp(150px,15vh,260px)}
+}
+@media (orientation:portrait){
+ #lesson .split .add{flex-wrap:wrap}
+ #lesson .split .add input{flex:1 1 100%}
+ #lesson .split .add button{flex:1 1 100%;padding:3px}
+}
+@media (orientation:portrait){#lesson .split:not(:has(.pic:nth-of-type(3))) .cols{grid-template-columns:1fr!important}}
+/* 주장-근거-질문 자료 카드: 넓은 화면에서는 그림을 위, 글을 아래로 */
+@media (min-width:1500px) and (min-height:900px){
+ #lesson .mini .m{flex-direction:column;text-align:center;justify-content:flex-start}
+ #lesson .mini .m img{width:100%;height:clamp(100px,13vh,170px);aspect-ratio:auto}
+ #lesson .mini .m .e{width:auto;line-height:1.1}
+}
+@media (min-width:1500px) and (min-height:900px){#lesson .body>.cols .col{min-height:clamp(200px,24vh,300px)}}
+@media (min-width:1500px) and (min-height:900px){#lesson .split .gal:has(.pic:nth-of-type(3)):not(:has(.pic:nth-of-type(4))) .pic img{height:clamp(180px,38vh,480px)}}
+@media (orientation:portrait){#lesson .split .gal:has(.pic:nth-of-type(3)):not(:has(.pic:nth-of-type(4))) .pic img{height:clamp(150px,22vh,340px)}}
+/* 사진 2장: 높이를 고정하지 않고 사진 비율(4:3)대로 */
+#lesson .split .gal:has(.pic:nth-of-type(2)):not(:has(.pic:nth-of-type(3))) .pic img{height:auto!important;aspect-ratio:4/3}
