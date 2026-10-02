@@ -747,6 +747,18 @@ html.hj-scmenu #ovBar #ovPos{grid-column:2;font-size:14px!important;color:var(--
 html.hj-scmenu #ovBar .hj-pn{grid-column:3;justify-self:end;display:flex;gap:8px}
 html.hj-scmenu #ovBar .hj-pn button{min-height:42px!important;font-size:clamp(15px,1.15vw,17px)!important;padding:8px 18px!important;border-radius:999px!important}
 @media (max-width:820px){html.hj-scmenu body>nav .hj-sctools{position:fixed;left:10px;bottom:14px;z-index:30;padding:0;gap:4px}html.hj-scmenu body>nav .hj-sctools button{font-size:0!important;padding:8px 10px!important;min-height:40px!important}html.hj-scmenu body>nav .hj-sctools button .hj-i{width:18px;height:18px;margin:0}}
+/* 번호 붙은 줄 내어쓰기 */
+html body .hj-hang{display:flex!important;align-items:flex-start;gap:.35em}
+html body .hj-hang>input{flex:none;margin-top:.15em}
+html body .hj-hang>.hj-cn{flex:none;font-weight:700}
+html body .hj-hang>.hj-ct{flex:1 1 auto;min-width:0}
+html body .hj-hang .hj-paren{display:block;font-size:.92em;color:var(--soft)}
+html body .hd>small.hj-sub2{display:block;margin-top:4px}
+/* 사이트 '홈': 채운 집 모양 + 과목 색으로 눈에 띄게 (차시 처음 단추와 구분) */
+html body .hj-nav a.hj-nh{background:var(--hjs,#2A221C)!important;color:#fff!important;border-color:transparent!important}
+html body .hj-nav a.hj-nh svg path{fill:currentColor;fill-opacity:.25}
+/* 홍지희 버전: 위 메뉴줄과 본문 사이 여유 */
+html body #lesson .topbar{margin-bottom:16px!important}
 </style><meta name="hj-next" content="u1-l7.html" data-t="세계화로 달라진 생활" data-tag="1단원 7차시"><!--/hj-ctheme--></head><body>
 
 <section id="cover" class="screen on center-col">
@@ -1426,4 +1438,42 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   ['ovPrev','ovNext','hjEnd'].forEach(function(id){var b=document.getElementById(id);if(b&&b.parentElement!==pn)pn.appendChild(b)});
   document.documentElement.classList.add('hj-scmenu')}
  lay();setTimeout(lay,300);setTimeout(lay,1200)})();
+/* 모르는 낱말 사전: 글자를 끌어 고르거나 두 번 누르면 '사전' 단추가 뜨고, 누르면 네이버 국어사전이 작은 창으로 열린다 */
+(function(){if(window.__hjDict)return;window.__hjDict=1;
+ var b=document.createElement('button');b.type='button';b.id='hj-dict';b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><circle cx="11" cy="10" r="3"/><path d="m13.2 12.2 2.3 2.3"/></svg><span>사전</span>';
+ b.setAttribute('aria-label','고른 낱말을 사전에서 찾기');b.hidden=true;document.body.appendChild(b);
+ var st=document.createElement('style');st.textContent='#hj-dict{position:fixed;z-index:9999;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;border:0;background:var(--hjs,#2A221C);color:#fff;font:700 15px/1 Pretendard,sans-serif;box-shadow:0 6px 18px -6px rgba(0,0,0,.45);cursor:pointer}#hj-dict[hidden]{display:none!important}#hj-dict::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:var(--hjs,#2A221C)}';document.head.appendChild(st);
+ var word='';
+ function clean(t){t=(t||'').replace(/[⁠⁣]/g,'').trim().replace(/^[^\w가-힣]+|[^\w가-힣]+$/g,'');return t}
+ function show(){var s=getSelection();if(!s||s.isCollapsed||!s.rangeCount){b.hidden=true;return}
+  var n=s.anchorNode&&(s.anchorNode.nodeType===3?s.anchorNode.parentElement:s.anchorNode);if(n&&n.closest('input,textarea,[contenteditable],#hj-dict')){b.hidden=true;return}
+  var t=clean(s.toString());if(!t||t.length>20||/\n/.test(t)||!/[가-힣A-Za-z]/.test(t)){b.hidden=true;return}
+  word=t;var r=s.getRangeAt(0).getBoundingClientRect();if(!r.width&&!r.height){b.hidden=true;return}
+  b.hidden=false;var w=b.offsetWidth,x=Math.min(innerWidth-w-8,Math.max(8,r.left+r.width/2-w/2)),y=r.top-b.offsetHeight-10;if(y<8)y=r.bottom+10;b.style.left=x+'px';b.style.top=y+'px'}
+ var t=0;document.addEventListener('selectionchange',function(){clearTimeout(t);t=setTimeout(show,250)});
+ addEventListener('scroll',function(){b.hidden=true},true);
+ b.addEventListener('mousedown',function(e){e.preventDefault()});
+ b.addEventListener('click',function(){if(!word)return;var u='https://ko.dict.naver.com/#/search?query='+encodeURIComponent(word);
+  var w=Math.min(520,screen.availWidth-40),h=Math.min(760,screen.availHeight-60);var win=window.open(u,'hjdict','width='+w+',height='+h+',left='+(screen.availWidth-w-20)+',top=40');if(!win)location.href=u;b.hidden=true})})();
+/* ①②③ 번호가 붙은 줄: 두 줄이 되면 번호 아래는 비우고 글 첫머리에 맞춰 정렬, 끝의 (괄호 설명)은 다음 줄로 */
+(function(){var RX=/^\s*([①-⑳])\s*/;
+ function fix(el){if(el.dataset.hjhang||el.closest('svg,textarea,[contenteditable],.hj-optg'))return;var n=el.firstChild;
+  while(n&&((n.nodeType===3&&!n.nodeValue.trim())||(n.nodeType===1&&n.tagName==='INPUT')))n=n.nextSibling;
+  if(!n||n.nodeType!==3||!RX.test(n.nodeValue))return;el.dataset.hjhang='1';
+  var m=n.nodeValue.match(RX);n.nodeValue=n.nodeValue.slice(m[0].length);
+  var num=document.createElement('span');num.className='hj-cn';num.textContent=m[1];
+  var tx=document.createElement('span');tx.className='hj-ct';var c=n;while(c){var nx=c.nextSibling;tx.appendChild(c);c=nx}
+  var last=tx.lastChild;if(last&&last.nodeType===3){var pm=last.nodeValue.match(/^([\s\S]*[.!?。])\s+(\([^()]+\))\s*$/);if(pm){last.nodeValue=pm[1];var ps=document.createElement('span');ps.className='hj-paren';ps.textContent=pm[2];tx.appendChild(ps)}}
+  el.appendChild(num);el.appendChild(tx);el.classList.add('hj-hang')}
+ function run(){document.querySelectorAll('label,li,p').forEach(fix)}
+ run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,40)}).observe(document.body,{childList:true,subtree:true})})();
+/* '(알맞은 것을 모두 고르세요)'는 통째로 다음 줄로, 질문에 이미 같은 말이 있으면 빼기 */
+(function(){function run(){document.querySelectorAll('.hd>small').forEach(function(s){if(!/모두 고르세요/.test(s.textContent))return;var p=s.parentElement,pre=p.textContent.replace(s.textContent,'');
+  if(/모두 고르세요/.test(pre)){s.remove();return}s.classList.add('hj-sub2')})}
+ run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,30)}).observe(document.body,{childList:true,subtree:true})})();
+/* '첫 화면'(이 차시의 처음) 단추는 '차시 처음'으로 이름과 모양을 바꿔, 사이트 '홈'과 헷갈리지 않게 */
+(function(){var IC='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5v14"/><path d="M19 6 9 12l10 6z"/></svg>';
+ function run(){document.querySelectorAll('button,a').forEach(function(b){if(b.dataset.hjfirst||b.closest('.hj-nav'))return;var t=b.textContent.replace(/\s+/g,'').trim();
+  if(t==='첫화면'){b.dataset.hjfirst='1';b.innerHTML=IC+'<span>차시 처음</span>';b.classList.add('hj-ic');b.title='이 차시의 첫 화면(학습 문제·수업 흐름)으로 돌아가요';b.setAttribute('aria-label','이 차시의 첫 화면으로')}})}
+ run();setTimeout(run,500);var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,60)}).observe(document.body,{childList:true,subtree:true})})();
 </script><!--/hj-cicons--></body></html>
