@@ -771,11 +771,14 @@ html body.ov section .fitbox>p.hj-task{font-size:clamp(19px,1.6vw,24px)!importan
 html body.ov section .fitbox>p.hj-task b{color:var(--hjs,var(--ink))}
 /* 스스로 평가 표: 얼굴 칸은 좁게, 글 칸은 넓게 */
 html body.ov section table td:has(> button){width:1%;white-space:nowrap}
-/* 문제 보기: 교과서처럼 ①②③④ 번호를 붙이고 왼쪽 정렬 (과학 형성 평가·수행 평가) */
+/* 문제 보기(모든 교과): ①②③④ 번호, 보기가 모두 짧으면 가운데 정렬 / 문장이면 왼쪽 정렬 (content.js가 hj-short·hj-long을 붙임) */
 @counter-style hjcirc{system:fixed;symbols:'①' '②' '③' '④' '⑤' '⑥' '⑦' '⑧' '⑨' '⑩';suffix:' '}
-html body.ov section :is(#quiz,#perf,.qz) .pick{counter-reset:hjo}
-html body.ov section :is(#quiz,#perf,.qz) .pick>button{counter-increment:hjo;text-align:left!important;justify-content:flex-start!important;display:flex!important;align-items:center;gap:.45em;padding-left:18px!important;padding-right:16px!important}
-html body.ov section :is(#quiz,#perf,.qz) .pick>button::before{content:counter(hjo,hjcirc);font-weight:700;color:var(--hjs,var(--ink));flex:none}
+html body .hj-optg{counter-reset:hjo}
+html body .hj-optg>button{counter-increment:hjo;display:flex!important;align-items:center;gap:.45em}
+html body .hj-optg>button::before{content:counter(hjo,hjcirc);font-weight:800;color:var(--hjs,var(--ink));flex:none}
+html body .hj-optg.hj-long>button{text-align:left!important;justify-content:flex-start!important;padding-left:18px!important;padding-right:16px!important}
+html body .hj-optg.hj-short>button{text-align:center!important;justify-content:center!important}
+
 /* 홍지희 버전: 활동 이름표 + 질문 제목 한 줄 */
 html body #lesson .hj-head2{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 14px;margin:0 auto}
 html body #lesson .hj-head2>.sthead{margin:0!important;flex:none}
@@ -785,7 +788,35 @@ html body .hj-maplab{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10
 html body .hj-maplab b{font-size:16.5px;color:var(--ink)}
 html body .hj-maplab em{font-style:normal;font-weight:800;color:var(--hjs,var(--ink))}
 html body #cMap .cur .hj-today{font-style:normal;display:inline-block;font-size:12.5px;font-weight:800;color:#fff;background:var(--hjs,#555);border-radius:999px;padding:1px 8px;margin-right:6px;vertical-align:1px}
-</style><!--/hj-ctheme--></head>
+/* 과학 앱 메뉴 자리 통일 (국어·사회와 같게) */
+html.hj-scmenu body>nav .wrap{max-width:none!important;display:flex!important;align-items:center;gap:8px;flex-wrap:nowrap}
+html.hj-scmenu body>nav .hj-sctools{margin-left:auto;display:flex;gap:6px;flex:none;padding-left:8px}
+html.hj-scmenu body>nav .hj-sctools button{font-size:clamp(13.5px,1vw,15px)!important;min-height:34px!important;padding:5px 11px!important;border-radius:999px!important;background:var(--paper)!important;color:var(--ink)!important;border:1px solid var(--line)!important;white-space:nowrap}
+html.hj-scmenu:has(#ovBar) #ovBar{position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:auto!important;max-width:none!important;margin:0!important;transform:none!important;
+ display:grid!important;grid-template-columns:1fr auto 1fr;align-items:center;padding:10px 22px 14px!important;background:linear-gradient(to top,var(--bg) 70%,transparent)!important;border:0!important;box-shadow:none!important;border-radius:0!important;pointer-events:none}
+html.hj-scmenu #ovBar>*{pointer-events:auto}
+html.hj-scmenu #ovBar #ovPos{grid-column:2;font-size:14px!important;color:var(--soft)}
+html.hj-scmenu #ovBar .hj-pn{grid-column:3;justify-self:end;display:flex;gap:8px}
+html.hj-scmenu #ovBar .hj-pn button{min-height:42px!important;font-size:clamp(15px,1.15vw,17px)!important;padding:8px 18px!important;border-radius:999px!important}
+@media (max-width:820px){html.hj-scmenu body>nav .hj-sctools{position:fixed;left:10px;bottom:14px;z-index:30;padding:0;gap:4px}html.hj-scmenu body>nav .hj-sctools button{font-size:0!important;padding:8px 10px!important;min-height:40px!important}html.hj-scmenu body>nav .hj-sctools button .hj-i{width:18px;height:18px;margin:0}}
+/* 번호 붙은 줄 내어쓰기 */
+html body .hj-hang{display:flex!important;align-items:flex-start;gap:.35em}
+html body .hj-hang>input{flex:none;margin-top:.15em}
+html body .hj-hang>.hj-cn{flex:none;font-weight:700}
+html body .hj-hang>.hj-ct{flex:1 1 auto;min-width:0}
+html body .hj-hang .hj-paren{display:block;font-size:.92em;color:var(--soft)}
+html body .hd>small.hj-sub2{display:block;margin-top:4px}
+/* 사이트 '홈': 채운 집 모양 + 과목 색으로 눈에 띄게 (차시 처음 단추와 구분) */
+html body .hj-nav a.hj-nh{background:var(--hjs,#2A221C)!important;color:#fff!important;border-color:transparent!important}
+html body .hj-nav a.hj-nh svg path{fill:currentColor;fill-opacity:.25}
+/* 홍지희 버전: 위 메뉴줄과 본문 사이 여유 */
+html body #lesson .topbar{margin-bottom:16px!important}
+/* 홍지희 버전: 활동 내용이 아래로 처지지 않게 위쪽(질문 바로 아래)에 붙이고, 남는 공간은 아래로 */
+html body #lesson .body{justify-content:flex-start!important}
+html body #lesson .body>:first-child{margin-top:clamp(8px,3vh,36px)!important}
+html body a.hj-homemini{display:inline-flex!important;align-items:center;gap:5px;text-decoration:none!important;background:var(--hjs,#2A221C)!important;color:#fff!important;border:0!important;border-radius:999px;padding:5px 12px!important;min-height:34px;font:700 clamp(13.5px,1vw,15px)/1 Pretendard,sans-serif!important;white-space:nowrap}
+html body a.hj-homemini .hj-i{width:16px;height:16px}
+</style><meta name="hj-list" content="[[&quot;u1-mul.html&quot;, &quot;가을 축제 준비단&quot;, &quot;웹앱&quot;], [&quot;u2-div.html&quot;, &quot;3학년 나눔 장터&quot;, &quot;웹앱&quot;], [&quot;u3-circle.html&quot;, &quot;원 탐험 캠프&quot;, &quot;웹앱&quot;], [&quot;u4-fraction.html&quot;, &quot;간식 나누기 부엌&quot;, &quot;웹앱&quot;], [&quot;u5-measure.html&quot;, &quot;학급 요리 교실&quot;, &quot;웹앱&quot;], [&quot;u6-graph.html&quot;, &quot;우리 반 조사단&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
 <script>
@@ -2290,7 +2321,7 @@ window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.stu
 <a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden>🏠 홈</a><style>#hj-home{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:4px;font:700 18px/1 "Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1F2A44;background:#fff;border:3px solid #1F2A44;border-radius:999px;padding:9px 16px;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.18);opacity:.92}#hj-home[hidden]{display:none}#hj-home:hover,#hj-home:focus-visible{opacity:1;outline:3px solid #2F74E0;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}}:root[data-theme="dark"] #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
-var I={play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
+var I={stop:'<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>',play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
 guide:'<path d="M2.5 5h6a3.5 3.5 0 0 1 3.5 3.5V20a2.5 2.5 0 0 0-2.5-2.5h-7z"/><path d="M21.5 5h-6A3.5 3.5 0 0 0 12 8.5V20a2.5 2.5 0 0 1 2.5-2.5h7z"/>',
 vol:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>',
 vol1:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>',
@@ -2319,7 +2350,7 @@ refresh:'<path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d=
 left:'<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',right:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>'};
 var LEAD=[['👩‍🏫','guide'],['🧑‍🏫','guide'],['👨‍🏫','guide'],['🏠','house'],['🔊','vol'],['🔈','vol1'],['🔉','vol1'],['🔇','mute'],['⛶','full'],['🐢','speed'],['🐇','speed'],['🐰','speed'],
  ['📋','clip'],['📰','file'],['📜','layers'],['💬','msg'],['🎲','dice'],['⏱','timer'],['💡','bulb'],['👀','eye'],['🙈','eyeoff'],['🖨','print'],['🧽','erase'],['🎙','mic'],
- ['✖','x'],['✕','x'],['⏮','rewind'],['✏','pencil'],['📖','book'],['🔄','refresh'],['↻','refresh'],['←','left'],['◀','left']];
+ ['✖','x'],['✕','x'],['⏮','rewind'],['✏','pencil'],['📖','book'],['🔄','refresh'],['↻','refresh'],['←','left'],['◀','left'],['⏹','stop']];
 var LBL={house:'수업 첫 화면',vol:'소리',vol1:'소리',mute:'소리 끔',full:'전체 화면',x:'닫기'};
 function svg(n){var s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','hj-i');s.setAttribute('aria-hidden','true');
  s.setAttribute('fill','none');s.setAttribute('stroke','currentColor');s.setAttribute('stroke-width','2');s.setAttribute('stroke-linecap','round');s.setAttribute('stroke-linejoin','round');s.innerHTML=I[n];return s}
@@ -2689,5 +2720,109 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   var h=document.createElement('div');h.className='hj-maplab';h.innerHTML='<b>주제 프로젝트 지도</b><span>'+a+'~'+b+'차시 동안 여러 날에 걸쳐 함께 해요'+(ct?' · 오늘은 <em>'+ct+'</em>':'')+'</span>';m.before(h)}
  if(cur&&!cur.querySelector('.hj-today')){var t=document.createElement('i');t.className='hj-today';t.textContent='오늘';cur.prepend(t)}
  document.querySelectorAll('#cover .hj-flabel').forEach(function(l){if(l.textContent.trim()==='수업 흐름')l.textContent='오늘 수업 흐름'})})();
+/* 문제 보기 통일: 앞의 '1. 2.' 글자는 지우고(①②③④는 CSS가 붙임), 길이에 따라 가운데·왼쪽 정렬 */
+(function(){var SEL='.opts2,.qz .opts,body.ov section #quiz .pick,body.ov section #perf .pick,body.ov section .qz .pick';
+ function lab(g){var bs=[].filter.call(g.children,function(c){return c.tagName==='BUTTON'});if(bs.length<2)return;
+  bs.forEach(function(b){var t=b.firstChild;while(t&&t.nodeType===3&&!t.nodeValue.trim())t=t.nextSibling;if(t&&t.nodeType===3&&/^\s*\d+\.\s/.test(t.nodeValue))t.nodeValue=t.nodeValue.replace(/^\s*\d+\.\s*/,'')});
+  var long=bs.some(function(b){return b.textContent.replace(/\s+/g,' ').trim().length>10});
+  g.classList.add('hj-optg');g.classList.toggle('hj-long',long);g.classList.toggle('hj-short',!long)}
+ function run(){document.querySelectorAll(SEL).forEach(lab)}
+ run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,30)}).observe(document.body,{childList:true,subtree:true})})();
+/* 과학 앱 메뉴 위치를 국어·사회와 같게: 위 오른쪽 = 도구(첫 화면·단계 목록·전체 보기), 아래 가운데 = 몇 번째, 아래 오른쪽 = 이전·다음 */
+(function(){var bar=document.getElementById('ovBar'),nav=document.querySelector('body>nav');if(!bar||!nav)return;
+ function lay(){var w=nav.querySelector('.wrap')||nav;var t=w.querySelector('.hj-sctools');if(!t){t=document.createElement('div');t.className='hj-sctools';w.appendChild(t)}
+  ['hjScHome','ovHome','ovFull'].forEach(function(id){var b=document.getElementById(id);if(b&&b.parentElement!==t)t.appendChild(b)});
+  var pn=bar.querySelector('.hj-pn');if(!pn){pn=document.createElement('div');pn.className='hj-pn';bar.appendChild(pn)}
+  ['ovPrev','ovNext','hjEnd'].forEach(function(id){var b=document.getElementById(id);if(b&&b.parentElement!==pn)pn.appendChild(b)});
+  document.documentElement.classList.add('hj-scmenu')}
+ lay();setTimeout(lay,300);setTimeout(lay,1200)})();
+/* 모르는 낱말 사전: 글자를 끌어 고르거나 두 번 누르면 '사전' 단추가 뜨고, 누르면 네이버 국어사전이 작은 창으로 열린다 */
+(function(){if(window.__hjDict)return;window.__hjDict=1;
+ var b=document.createElement('button');b.type='button';b.id='hj-dict';b.innerHTML='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" width="18" height="18"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5z"/><path d="M4 20.5A2.5 2.5 0 0 0 6.5 23H20v-5"/><circle cx="11" cy="10" r="3"/><path d="m13.2 12.2 2.3 2.3"/></svg><span>사전</span>';
+ b.setAttribute('aria-label','고른 낱말을 사전에서 찾기');b.hidden=true;document.body.appendChild(b);
+ var st=document.createElement('style');st.textContent='#hj-dict{position:fixed;z-index:9999;display:inline-flex;align-items:center;gap:5px;padding:7px 13px;border-radius:999px;border:0;background:var(--hjs,#2A221C);color:#fff;font:700 15px/1 Pretendard,sans-serif;box-shadow:0 6px 18px -6px rgba(0,0,0,.45);cursor:pointer}#hj-dict[hidden]{display:none!important}#hj-dict::after{content:"";position:absolute;left:50%;bottom:-6px;margin-left:-6px;border:6px solid transparent;border-bottom:0;border-top-color:var(--hjs,#2A221C)}';document.head.appendChild(st);
+ var word='';
+ function clean(t){t=(t||'').replace(/[⁠⁣]/g,'').trim().replace(/^[^\w가-힣]+|[^\w가-힣]+$/g,'');return t}
+ function show(){var s=getSelection();if(!s||s.isCollapsed||!s.rangeCount){b.hidden=true;return}
+  var n=s.anchorNode&&(s.anchorNode.nodeType===3?s.anchorNode.parentElement:s.anchorNode);if(n&&n.closest('input,textarea,[contenteditable],#hj-dict')){b.hidden=true;return}
+  var t=clean(s.toString());if(!t||t.length>20||/\n/.test(t)||!/[가-힣A-Za-z]/.test(t)){b.hidden=true;return}
+  word=t;var r=s.getRangeAt(0).getBoundingClientRect();if(!r.width&&!r.height){b.hidden=true;return}
+  b.hidden=false;var w=b.offsetWidth,x=Math.min(innerWidth-w-8,Math.max(8,r.left+r.width/2-w/2)),y=r.top-b.offsetHeight-10;if(y<8)y=r.bottom+10;b.style.left=x+'px';b.style.top=y+'px'}
+ var t=0;document.addEventListener('selectionchange',function(){clearTimeout(t);t=setTimeout(show,250)});
+ addEventListener('scroll',function(){b.hidden=true},true);
+ b.addEventListener('mousedown',function(e){e.preventDefault()});
+ b.addEventListener('click',function(){if(!word)return;var u='https://ko.dict.naver.com/#/search?query='+encodeURIComponent(word);
+  var w=Math.min(520,screen.availWidth-40),h=Math.min(760,screen.availHeight-60);var win=window.open(u,'hjdict','width='+w+',height='+h+',left='+(screen.availWidth-w-20)+',top=40');if(!win)location.href=u;b.hidden=true})})();
+/* ①②③ 번호가 붙은 줄: 두 줄이 되면 번호 아래는 비우고 글 첫머리에 맞춰 정렬, 끝의 (괄호 설명)은 다음 줄로 */
+(function(){var RX=/^\s*([①-⑳])\s*/;
+ function fix(el){if(el.dataset.hjhang||el.closest('svg,textarea,[contenteditable],.hj-optg'))return;var n=el.firstChild;
+  while(n&&((n.nodeType===3&&!n.nodeValue.trim())||(n.nodeType===1&&n.tagName==='INPUT')))n=n.nextSibling;
+  if(!n||n.nodeType!==3||!RX.test(n.nodeValue))return;el.dataset.hjhang='1';
+  var m=n.nodeValue.match(RX);n.nodeValue=n.nodeValue.slice(m[0].length);
+  var num=document.createElement('span');num.className='hj-cn';num.textContent=m[1];
+  var tx=document.createElement('span');tx.className='hj-ct';var c=n;while(c){var nx=c.nextSibling;tx.appendChild(c);c=nx}
+  var last=tx.lastChild;if(last&&last.nodeType===3){var pm=last.nodeValue.match(/^([\s\S]*[.!?。])\s+(\([^()]+\))\s*$/);if(pm){last.nodeValue=pm[1];var ps=document.createElement('span');ps.className='hj-paren';ps.textContent=pm[2];tx.appendChild(ps)}}
+  el.appendChild(num);el.appendChild(tx);el.classList.add('hj-hang')}
+ function run(){document.querySelectorAll('label,li,p').forEach(fix)}
+ run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,40)}).observe(document.body,{childList:true,subtree:true})})();
+/* '(알맞은 것을 모두 고르세요)'는 통째로 다음 줄로, 질문에 이미 같은 말이 있으면 빼기 */
+(function(){function run(){document.querySelectorAll('.hd>small').forEach(function(s){if(!/모두 고르세요/.test(s.textContent))return;var p=s.parentElement,pre=p.textContent.replace(s.textContent,'');
+  if(/모두 고르세요/.test(pre)){s.remove();return}s.classList.add('hj-sub2')})}
+ run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,30)}).observe(document.body,{childList:true,subtree:true})})();
+/* '첫 화면'(이 차시의 처음) 단추는 '차시 처음'으로 이름과 모양을 바꿔, 사이트 '홈'과 헷갈리지 않게 */
+(function(){var IC='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 5v14"/><path d="M19 6 9 12l10 6z"/></svg>';
+ function run(){document.querySelectorAll('button,a').forEach(function(b){if(b.dataset.hjfirst||b.closest('.hj-nav'))return;var t=b.textContent.replace(/\s+/g,'').trim();
+  if(t==='첫화면'){b.dataset.hjfirst='1';b.innerHTML=IC+'<span>차시 처음</span>';b.classList.add('hj-ic');b.title='이 차시의 첫 화면(학습 문제·수업 흐름)으로 돌아가요';b.setAttribute('aria-label','이 차시의 첫 화면으로')}})}
+ run();setTimeout(run,500);var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,60)}).observe(document.body,{childList:true,subtree:true})})();
+/* 검정 교과서 과목(수학·사회·과학)은 학교마다 교과서가 달라서 교과서 쪽수를 보이지 않게 (국어는 국정이라 그대로) */
+(function(){var sj=document.documentElement.getAttribute('data-hjsubj');if(!sj||sj==='korean')return;
+ var B='(?:교과서|『(?:과학|사회|수학|실험관찰|수학 익힘|사회과 부도)』)',P='[\\s\\u2060]*\\d+(?:[\\s\\u2060]*[~∼\\-–][\\s\\u2060]*\\d+)?쪽(?:[\\s\\u2060]*\\d+번)?(?:[\\s\\u2060]*\\(\\d+\\))?',S='[\\s\\u2060]*[·•][\\s\\u2060]*';
+ var R=[[new RegExp('\\s*\\('+B+P+'(?:[^()]{0,24})\\)','g'),''],
+        [new RegExp(S+B+P+'(?:[\\s\\u2060]*\\([^()]{0,24}\\))?','g'),''],
+        [new RegExp(B+P+'(?:[\\s\\u2060]*\\([^()]{0,24}\\))?'+S,'g'),''],
+        [new RegExp('『(실험관찰|수학 익힘)』'+P+'(에|의|을|를)','g'),'$1$2'],
+        [new RegExp(B+P+'(?:의|에서|에)?[\\s\\u2060]*','g'),'']];
+ var SKIP='script,style,textarea,input,svg';
+ function fix(n){var v=n.nodeValue;if(!/쪽/.test(v)||!/교과서|』/.test(v))return;var t=v;R.forEach(function(r){t=t.replace(r[0],r[1])});t=t.replace(/^[\s⁠]*[·•][\s⁠]*/,'').replace(/[\s⁠]*[·•][\s⁠]*$/,'');if(t!==v)n.nodeValue=t}
+ function run(r){if(!r)return;if(r.nodeType===3){if(r.parentElement&&!r.parentElement.closest(SKIP))fix(r);return}if(r.nodeType!==1||r.closest(SKIP))return;var w=document.createTreeWalker(r,4),n,a=[];while(n=w.nextNode())if(!n.parentElement.closest(SKIP))a.push(n);a.forEach(fix);
+  r.querySelectorAll&&r.querySelectorAll('.tip,.stage,.src,small,span').forEach(function(e){if(!e.textContent.trim()&&!e.children.length&&e.className!=='hj-cl')e.style.display='none'})}
+ run(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')run(m.target);else m.addedNodes.forEach(run)})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
+/* '차시 처음' 옆에 사이트 '홈' 단추도 바로 두기 (두 번 거치지 않게) — 과학 앱은 위 왼쪽에 홈이 늘 보여서 제외 */
+(function(){var H='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7" /><path d="M5.5 9.2V20h13V9.2" fill="currentColor" fill-opacity=".25"/><path d="M10 20v-5.5h4V20"/></svg>';
+ function href(){var a=document.getElementById('hj-home')||document.querySelector('.hj-nav a.hj-nh');return a?a.getAttribute('href'):null}
+ function run(){if(document.documentElement.classList.contains('hj-scmenu'))return;var h=href();if(!h)return;
+  document.querySelectorAll('[data-hjfirst]').forEach(function(b){var n=b.nextElementSibling;if(n&&n.classList.contains('hj-homemini'))return;
+   var a=document.createElement('a');a.className='hj-homemini hj-ic '+(b.className||'').replace(/hj-hometool|hj-ic/g,'');a.href=h;a.innerHTML=H+'<span>홈</span>';a.title='사이트 홈(첫 화면)으로 가요';b.after(a)})}
+ run();setTimeout(run,700);var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,80)}).observe(document.body,{childList:true,subtree:true})})();
+/* 자료 목록 펼침 메뉴: '자료 목록 ⌄'을 누르면 같은 학기 자료가 그 자리에서 펼쳐짐 ('차시 처음' 단추 대신) */
+(function(){var mt=document.querySelector('meta[name="hj-list"]');if(!mt)return;var L;try{L=JSON.parse(mt.content)}catch(e){return}if(!L||!L.length)return;
+ var me=location.pathname.split('/').pop()||'index.html';
+ var IC='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="5.2" y="5" width="13.6" height="15.2" rx="2"/><path d="M9 3.8h6v2.6H9ZM8.6 11h6.8M8.6 14.6h6.8"/></svg>',CH='<svg class="hj-i hj-chev" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
+ var esc=function(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})};
+ var pan=document.createElement('div');pan.id='hj-lpan';pan.hidden=true;pan.setAttribute('role','menu');
+ pan.innerHTML='<div class="hj-lph">같은 학기 자료</div><div class="hj-lpl">'+L.map(function(o){var cur=o[0]===me;return '<a role="menuitem" href="'+esc(o[0])+'" class="'+(cur?'cur':'')+'">'+(o[2]?'<small>'+esc(o[2])+'</small>':'')+'<span>'+esc(o[1])+'</span>'+(cur?'<em>지금</em>':'')+'</a>'}).join('')+'</div><a class="hj-lpall" href="index.html">자료 목록 전체 보기 →</a>';
+ document.body.appendChild(pan);
+ var st=document.createElement('style');st.textContent='#hj-lpan{position:fixed;z-index:9998;width:min(420px,92vw);max-height:min(70vh,560px);display:flex;flex-direction:column;background:var(--paper,#fff);border:1px solid var(--line,#EFE3D6);border-radius:18px;box-shadow:0 24px 48px -20px rgba(40,25,10,.45);overflow:hidden;font-family:Pretendard,sans-serif}#hj-lpan[hidden]{display:none!important}.hj-lph{padding:12px 16px 6px;font:700 14px/1.3 Pretendard,sans-serif;color:var(--soft,#5C5047)}.hj-lpl{overflow:auto;padding:0 8px 6px}.hj-lpl a{display:flex;align-items:baseline;gap:8px;padding:9px 10px;border-radius:12px;text-decoration:none;color:var(--ink,#2A221C);font-size:15.5px;line-height:1.35}.hj-lpl a:hover{background:var(--bg,#FFFCF8)}.hj-lpl a small{flex:none;font-size:12.5px;color:var(--soft,#5C5047);min-width:4.2em}.hj-lpl a span{flex:1}.hj-lpl a.cur{background:var(--hjs-soft,#F3EEE6);font-weight:700}.hj-lpl a em{flex:none;font-style:normal;font-size:12px;font-weight:800;color:#fff;background:var(--hjs,#555);border-radius:999px;padding:1px 8px}.hj-lpall{display:block;padding:11px 16px;border-top:1px solid var(--line,#EFE3D6);text-decoration:none;font:700 14.5px/1 Pretendard,sans-serif;color:var(--hjs,var(--ink))}.hj-lbtn .hj-chev{width:14px;height:14px;margin-left:2px;transition:transform .15s}.hj-lbtn[aria-expanded="true"] .hj-chev{transform:rotate(180deg)}';document.head.appendChild(st);
+ var cur=null;function close(){pan.hidden=true;if(cur)cur.setAttribute('aria-expanded','false');cur=null}
+ function open(b){if(cur===b){close();return}close();cur=b;b.setAttribute('aria-expanded','true');pan.hidden=false;var r=b.getBoundingClientRect(),w=pan.offsetWidth,h=pan.offsetHeight;
+  var x=Math.min(innerWidth-w-10,Math.max(10,r.right-w));if(r.left<innerWidth/2)x=Math.max(10,Math.min(innerWidth-w-10,r.left));var y=r.bottom+8;if(y+h>innerHeight-10)y=Math.max(10,r.top-h-8);pan.style.left=x+'px';pan.style.top=y+'px';var c=pan.querySelector('a.cur');if(c)c.scrollIntoView({block:'nearest'})}
+ document.addEventListener('click',function(e){if(!cur)return;if(pan.contains(e.target)||cur.contains(e.target))return;close()});
+ document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});addEventListener('resize',close);
+ function hook(el){if(el.dataset.hjlist)return;var nb=el.cloneNode(false);nb.dataset.hjlist='1';nb.classList.add('hj-lbtn','hj-ic');nb.innerHTML=IC+'<span>자료 목록</span>'+CH;nb.setAttribute('aria-haspopup','menu');nb.setAttribute('aria-expanded','false');nb.removeAttribute('onclick');nb.title='같은 학기 자료를 펼쳐 봐요';nb.setAttribute('aria-label','자료 목록 펼치기');
+  if(nb.tagName==='A')nb.removeAttribute('href');nb.addEventListener('click',function(e){e.preventDefault();e.stopPropagation();open(nb)});el.replaceWith(nb)}
+ function run(){document.querySelectorAll('.hj-nav a.hj-nl,[data-hjfirst]').forEach(function(el){if(el.dataset.hjlist)return;
+  var nav=el.closest('.hj-nav');if(!nav&&document.querySelector('.hj-nav a.hj-nl:not([data-hjlist]),.hj-nav [data-hjlist]')&&el.closest('.hj-sctools')){el.style.display='none';el.dataset.hjlist='x';return}hook(el)})}
+ run();setTimeout(run,600);setTimeout(run,1500);var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,80)}).observe(document.body,{childList:true,subtree:true})})();
+/* 겹낫표 『 』는 홑낫표 「 」로 (기호가 두 번 겹쳐 보이지 않게) */
+(function(){var SKIP='script,style,textarea,input';function fix(n){var v=n.nodeValue;if(v.indexOf('『')<0&&v.indexOf('』')<0)return;n.nodeValue=v.replace(/『/g,'「').replace(/』/g,'」')}
+ function run(r){if(!r)return;if(r.nodeType===3){if(r.parentElement&&!r.parentElement.closest(SKIP))fix(r);return}if(r.nodeType!==1||r.closest(SKIP))return;var w=document.createTreeWalker(r,4),n,a=[];while(n=w.nextNode())if(!n.parentElement.closest(SKIP))a.push(n);a.forEach(fix)}
+ run(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')run(m.target);else m.addedNodes.forEach(run)})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
+/* 뒤집기 카드 뒷면: "할머니: … / 강토: …"처럼 사람이 바뀌는 곳에서 줄 바꾸기 */
+(function(){var RX=/\s+\/\s+(?=[가-힣A-Za-z]{1,8}\s*:)/;
+ function fix(el){if(el.dataset.hjsp)return;var w=document.createTreeWalker(el,4),n,a=[];while(n=w.nextNode())a.push(n);
+  a.forEach(function(t){var v=t.nodeValue;if(!RX.test(v))return;var parts=v.split(/\s+\/\s+(?=[가-힣A-Za-z]{1,8}\s*:)/);var f=document.createDocumentFragment();
+   parts.forEach(function(p,i){if(i){f.appendChild(document.createTextNode(' /'));f.appendChild(document.createElement('br'))}f.appendChild(document.createTextNode(p))});t.parentNode.replaceChild(f,t)});el.dataset.hjsp='1'}
+ function run(){document.querySelectorAll('.back2,.f.back,.rc .back,.flip .back').forEach(fix)}
+ run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,50)}).observe(document.body,{childList:true,subtree:true})})();
 </script><!--/hj-cicons--></body>
 </html>

@@ -169,6 +169,10 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .recgrid .wcheck{padding:8px 14px}
 .recgrid .wcheck h3{font-size:clamp(19px,1.8vw,25px)}
 .sclegend{display:flex;flex-wrap:nowrap;gap:.2em .9em;white-space:nowrap;font-size:clamp(13.5px,1.2vw,17px);color:var(--soft);margin:0 0 6px}
+.self>.seg{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;border:0!important;background:none!important;overflow:visible!important;width:100%;flex:1 1 100%}
+.self .seg button{display:flex!important;flex-direction:column;align-items:center;gap:2px;border:2px solid var(--line)!important;border-radius:12px!important;background:var(--paper);line-height:1.1}
+.self .seg button b{font-size:1em;letter-spacing:1px}.self .seg button small{font-size:13.5px;font-weight:700;color:var(--soft)}
+.self .seg button[aria-pressed="true"] small{color:#fff}
 .self .seg button{font-size:clamp(16px,1.5vw,21px);padding:6px 10px;min-width:0}
 .ex-model{width:min(1150px,96vw);background:var(--warm);color:var(--ink);border:3px dashed var(--warmline);border-radius:16px;padding:10px 16px;font-size:clamp(19px,1.9vw,26px);text-align:left;display:none}
 .ex-model.on{display:block}
@@ -1127,7 +1131,7 @@ R.write=X=>{
       auto.push(miss.length?[0,`문장 끝에 마침표(.)나 물음표(?)가 없는 줄이 ${miss.length}개 있어요: “${esc(miss[0].slice(-12))}”`]:[1,'문장 끝에 문장 부호를 잘 썼어요.']);}
     const sv=saved.self||{};
     $('wBox').innerHTML=`<h3>🤖 자동 점검</h3><ul>${auto.map(a=>`<li class="${a[0]?'auto-ok':'auto-no'}">${a[0]?'✅':'✏️'} ${a[1]}</li>`).join('')}</ul>
-      <h3>🙋 스스로 점검</h3><div class="sclegend"><span>매우 잘함 ●●●</span><span>잘함 ●●</span><span>보통 ●</span><span>노력 요함 ○</span></div>${X.check.map((c,i)=>`<div class="self"><span>${c}</span><span class="seg">${['●●●','●●','●','○'].map((d,k)=>`<button data-c="${i}" data-v="${k}" aria-pressed="${sv[i]===k}" aria-label="${['매우 잘함','잘함','보통','노력 요함'][k]}">${d}</button>`).join('')}</span></div>`).join('')}`;
+      <h3>🙋 스스로 점검</h3><div class="sclegend">알맞은 칸을 하나 골라 눌러요.</div>${X.check.map((c,i)=>`<div class="self"><span>${c}</span><span class="seg">${['●●●','●●','●','○'].map((d,k)=>`<button data-c="${i}" data-v="${k}" aria-pressed="${sv[i]===k}"><b>${d}</b><small>${['매우 잘함','잘함','보통','노력 요함'][k]}</small></button>`).join('')}</span></div>`).join('')}`;
     $('wBox').classList.add('on');beep('tick');
     $('wBox').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{sv[+b.dataset.c]=+b.dataset.v;saved.self=sv;store.set(key,saved);
       $('wBox').querySelectorAll(`[data-c="${b.dataset.c}"]`).forEach(z=>z.setAttribute('aria-pressed',z===b));});
@@ -1141,9 +1145,9 @@ R.record=X=>{
   const key='hj-kor-'+C.id+'-'+X.id;const saved=store.get(key)||{};const sv=saved.self||{};
   const txt=X.text?X.text.replace(/\/\//g,'\u0001').replace(/\//g,'\u0002').replace(/\u0001/g,'<span class="p2" aria-label="길게 띄어 읽기"><i>∨</i><i>∨</i></span>').replace(/\u0002/g,'<span class="p1">∨</span>'):'';
   $('body').innerHTML=hd(X)+`<div class="recbar">${X.text?'<button class="tool" id="rModel">🔈 본보기 듣기</button><button class="tool" id="rMark">∨ 띄어 읽기 표시 끄기</button>':''}<button class="tool" id="rGo">🎙️ 녹음하기</button><button class="tool" id="rPlay" disabled>▶ 내 목소리 듣기</button></div>
-   <p class="recmsg" id="rMsg">🎙️를 누르고 소리 내어 읽은 뒤 ⏹로 멈춰요. 녹음은 이 화면을 떠나면 지워져요.</p><audio id="rAud" hidden></audio>
+   <p class="recmsg" id="rMsg">‘녹음하기’를 누르고 소리 내어 읽은 뒤 ‘멈추기’를 눌러요. 녹음은 이 화면을 떠나면 지워져요.</p><audio id="rAud" hidden></audio>
    <div class="recgrid ${X.text?'':'bm'}">`+(X.text?`<div class="rec" id="recTxt">${txt}${X.src?`<span class="src">${X.src}</span>`:''}</div>`:`<div class="book"><div class="e">📖</div><div><div class="pg">${X.page||'교과서를 펴요'}</div>${X.do?`<ol>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`)
-   +`<div class="wcheck on" style="border-color:var(--acc)"><h3>🙋 스스로 점검</h3><div class="sclegend"><span>매우 잘함 ●●●</span><span>잘함 ●●</span><span>보통 ●</span><span>노력 요함 ○</span></div>${X.check.map((c,i)=>`<div class="self"><span>${c}</span><span class="seg">${['●●●','●●','●','○'].map((d,k)=>`<button data-c="${i}" data-v="${k}" aria-pressed="${sv[i]===k}" aria-label="${['매우 잘함','잘함','보통','노력 요함'][k]}">${d}</button>`).join('')}</span></div>`).join('')}</div></div>`;
+   +`<div class="wcheck on" style="border-color:var(--acc)"><h3>🙋 스스로 점검</h3><div class="sclegend">알맞은 칸을 하나 골라 눌러요.</div>${X.check.map((c,i)=>`<div class="self"><span>${c}</span><span class="seg">${['●●●','●●','●','○'].map((d,k)=>`<button data-c="${i}" data-v="${k}" aria-pressed="${sv[i]===k}"><b>${d}</b><small>${['매우 잘함','잘함','보통','노력 요함'][k]}</small></button>`).join('')}</span></div>`).join('')}</div></div>`;
   const msg=(t,e)=>{$('rMsg').textContent=t;$('rMsg').className='recmsg'+(e?' err':'');};
   if(X.text){$('rModel').onclick=()=>speak(X.text.split('//').map(t=>({text:t.replace(/\//g,' ').trim()})).filter(p=>p.text));
     $('rMark').onclick=()=>{const r=$('recTxt');r.classList.toggle('nomark');$('rMark').textContent=r.classList.contains('nomark')?'∨ 띄어 읽기 표시 켜기':'∨ 띄어 읽기 표시 끄기';};}
@@ -1181,7 +1185,7 @@ document.addEventListener('keydown',e=>{if(e.target.matches('textarea,input'))re
 </script><a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
-var I={play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
+var I={stop:'<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>',play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
 guide:'<path d="M2.5 5h6a3.5 3.5 0 0 1 3.5 3.5V20a2.5 2.5 0 0 0-2.5-2.5h-7z"/><path d="M21.5 5h-6A3.5 3.5 0 0 0 12 8.5V20a2.5 2.5 0 0 1 2.5-2.5h7z"/>',
 vol:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18.5 5.5a9 9 0 0 1 0 13"/>',
 vol1:'<path d="M11 5 6 9H3v6h3l5 4z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/>',
@@ -1210,7 +1214,7 @@ refresh:'<path d="M3 12a9 9 0 0 1 15.5-6.3L21 8"/><path d="M21 3v5h-5"/><path d=
 left:'<path d="M19 12H5"/><path d="m12 19-7-7 7-7"/>',right:'<path d="M5 12h14"/><path d="m12 5 7 7-7 7"/>'};
 var LEAD=[['👩‍🏫','guide'],['🧑‍🏫','guide'],['👨‍🏫','guide'],['🏠','house'],['🔊','vol'],['🔈','vol1'],['🔉','vol1'],['🔇','mute'],['⛶','full'],['🐢','speed'],['🐇','speed'],['🐰','speed'],
  ['📋','clip'],['📰','file'],['📜','layers'],['💬','msg'],['🎲','dice'],['⏱','timer'],['💡','bulb'],['👀','eye'],['🙈','eyeoff'],['🖨','print'],['🧽','erase'],['🎙','mic'],
- ['✖','x'],['✕','x'],['⏮','rewind'],['✏','pencil'],['📖','book'],['🔄','refresh'],['↻','refresh'],['←','left'],['◀','left']];
+ ['✖','x'],['✕','x'],['⏮','rewind'],['✏','pencil'],['📖','book'],['🔄','refresh'],['↻','refresh'],['←','left'],['◀','left'],['⏹','stop']];
 var LBL={house:'수업 첫 화면',vol:'소리',vol1:'소리',mute:'소리 끔',full:'전체 화면',x:'닫기'};
 function svg(n){var s=document.createElementNS('http://www.w3.org/2000/svg','svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','hj-i');s.setAttribute('aria-hidden','true');
  s.setAttribute('fill','none');s.setAttribute('stroke','currentColor');s.setAttribute('stroke-width','2');s.setAttribute('stroke-linecap','round');s.setAttribute('stroke-linejoin','round');s.innerHTML=I[n];return s}
@@ -1677,4 +1681,11 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
 (function(){var SKIP='script,style,textarea,input';function fix(n){var v=n.nodeValue;if(v.indexOf('『')<0&&v.indexOf('』')<0)return;n.nodeValue=v.replace(/『/g,'「').replace(/』/g,'」')}
  function run(r){if(!r)return;if(r.nodeType===3){if(r.parentElement&&!r.parentElement.closest(SKIP))fix(r);return}if(r.nodeType!==1||r.closest(SKIP))return;var w=document.createTreeWalker(r,4),n,a=[];while(n=w.nextNode())if(!n.parentElement.closest(SKIP))a.push(n);a.forEach(fix)}
  run(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')run(m.target);else m.addedNodes.forEach(run)})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
+/* 뒤집기 카드 뒷면: "할머니: … / 강토: …"처럼 사람이 바뀌는 곳에서 줄 바꾸기 */
+(function(){var RX=/\s+\/\s+(?=[가-힣A-Za-z]{1,8}\s*:)/;
+ function fix(el){if(el.dataset.hjsp)return;var w=document.createTreeWalker(el,4),n,a=[];while(n=w.nextNode())a.push(n);
+  a.forEach(function(t){var v=t.nodeValue;if(!RX.test(v))return;var parts=v.split(/\s+\/\s+(?=[가-힣A-Za-z]{1,8}\s*:)/);var f=document.createDocumentFragment();
+   parts.forEach(function(p,i){if(i){f.appendChild(document.createTextNode(' /'));f.appendChild(document.createElement('br'))}f.appendChild(document.createTextNode(p))});t.parentNode.replaceChild(f,t)});el.dataset.hjsp='1'}
+ function run(){document.querySelectorAll('.back2,.f.back,.rc .back,.flip .back').forEach(fix)}
+ run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,50)}).observe(document.body,{childList:true,subtree:true})})();
 </script><!--/hj-cicons--></body></html>

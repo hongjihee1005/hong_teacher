@@ -169,6 +169,10 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .recgrid .wcheck{padding:8px 14px}
 .recgrid .wcheck h3{font-size:clamp(19px,1.8vw,25px)}
 .sclegend{display:flex;flex-wrap:nowrap;gap:.2em .9em;white-space:nowrap;font-size:clamp(13.5px,1.2vw,17px);color:var(--soft);margin:0 0 6px}
+.self>.seg{display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px;border:0!important;background:none!important;overflow:visible!important;width:100%;flex:1 1 100%}
+.self .seg button{display:flex!important;flex-direction:column;align-items:center;gap:2px;border:2px solid var(--line)!important;border-radius:12px!important;background:var(--paper);line-height:1.1}
+.self .seg button b{font-size:1em;letter-spacing:1px}.self .seg button small{font-size:13.5px;font-weight:700;color:var(--soft)}
+.self .seg button[aria-pressed="true"] small{color:#fff}
 .self .seg button{font-size:clamp(16px,1.5vw,21px);padding:6px 10px;min-width:0}
 .ex-model{width:min(1150px,96vw);background:var(--warm);color:var(--ink);border:3px dashed var(--warmline);border-radius:16px;padding:10px 16px;font-size:clamp(19px,1.9vw,26px);text-align:left;display:none}
 .ex-model.on{display:block}
@@ -508,7 +512,7 @@ R.write=X=>{
       auto.push(miss.length?[0,`문장 끝에 마침표(.)나 물음표(?)가 없는 줄이 ${miss.length}개 있어요: “${esc(miss[0].slice(-12))}”`]:[1,'문장 끝에 문장 부호를 잘 썼어요.']);}
     const sv=saved.self||{};
     $('wBox').innerHTML=`<h3>🤖 자동 점검</h3><ul>${auto.map(a=>`<li class="${a[0]?'auto-ok':'auto-no'}">${a[0]?'✅':'✏️'} ${a[1]}</li>`).join('')}</ul>
-      <h3>🙋 스스로 점검</h3><div class="sclegend"><span>매우 잘함 ●●●</span><span>잘함 ●●</span><span>보통 ●</span><span>노력 요함 ○</span></div>${X.check.map((c,i)=>`<div class="self"><span>${c}</span><span class="seg">${['●●●','●●','●','○'].map((d,k)=>`<button data-c="${i}" data-v="${k}" aria-pressed="${sv[i]===k}" aria-label="${['매우 잘함','잘함','보통','노력 요함'][k]}">${d}</button>`).join('')}</span></div>`).join('')}`;
+      <h3>🙋 스스로 점검</h3><div class="sclegend">알맞은 칸을 하나 골라 눌러요.</div>${X.check.map((c,i)=>`<div class="self"><span>${c}</span><span class="seg">${['●●●','●●','●','○'].map((d,k)=>`<button data-c="${i}" data-v="${k}" aria-pressed="${sv[i]===k}"><b>${d}</b><small>${['매우 잘함','잘함','보통','노력 요함'][k]}</small></button>`).join('')}</span></div>`).join('')}`;
     $('wBox').classList.add('on');beep('tick');
     $('wBox').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{sv[+b.dataset.c]=+b.dataset.v;saved.self=sv;store.set(key,saved);
       $('wBox').querySelectorAll(`[data-c="${b.dataset.c}"]`).forEach(z=>z.setAttribute('aria-pressed',z===b));});
@@ -522,9 +526,9 @@ R.record=X=>{
   const key='hj-kor-'+C.id+'-'+X.id;const saved=store.get(key)||{};const sv=saved.self||{};
   const txt=X.text?X.text.replace(/\/\//g,'\u0001').replace(/\//g,'\u0002').replace(/\u0001/g,'<span class="p2" aria-label="길게 띄어 읽기"><i>∨</i><i>∨</i></span>').replace(/\u0002/g,'<span class="p1">∨</span>'):'';
   $('body').innerHTML=hd(X)+`<div class="recbar">${X.text?'<button class="tool" id="rModel">🔈 본보기 듣기</button><button class="tool" id="rMark">∨ 띄어 읽기 표시 끄기</button>':''}<button class="tool" id="rGo">🎙️ 녹음하기</button><button class="tool" id="rPlay" disabled>▶ 내 목소리 듣기</button></div>
-   <p class="recmsg" id="rMsg">🎙️를 누르고 소리 내어 읽은 뒤 ⏹로 멈춰요. 녹음은 이 화면을 떠나면 지워져요.</p><audio id="rAud" hidden></audio>
+   <p class="recmsg" id="rMsg">‘녹음하기’를 누르고 소리 내어 읽은 뒤 ‘멈추기’를 눌러요. 녹음은 이 화면을 떠나면 지워져요.</p><audio id="rAud" hidden></audio>
    <div class="recgrid ${X.text?'':'bm'}">`+(X.text?`<div class="rec" id="recTxt">${txt}${X.src?`<span class="src">${X.src}</span>`:''}</div>`:`<div class="book"><div class="e">📖</div><div><div class="pg">${X.page||'교과서를 펴요'}</div>${X.do?`<ol>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`)
-   +`<div class="wcheck on" style="border-color:var(--acc)"><h3>🙋 스스로 점검</h3><div class="sclegend"><span>매우 잘함 ●●●</span><span>잘함 ●●</span><span>보통 ●</span><span>노력 요함 ○</span></div>${X.check.map((c,i)=>`<div class="self"><span>${c}</span><span class="seg">${['●●●','●●','●','○'].map((d,k)=>`<button data-c="${i}" data-v="${k}" aria-pressed="${sv[i]===k}" aria-label="${['매우 잘함','잘함','보통','노력 요함'][k]}">${d}</button>`).join('')}</span></div>`).join('')}</div></div>`;
+   +`<div class="wcheck on" style="border-color:var(--acc)"><h3>🙋 스스로 점검</h3><div class="sclegend">알맞은 칸을 하나 골라 눌러요.</div>${X.check.map((c,i)=>`<div class="self"><span>${c}</span><span class="seg">${['●●●','●●','●','○'].map((d,k)=>`<button data-c="${i}" data-v="${k}" aria-pressed="${sv[i]===k}"><b>${d}</b><small>${['매우 잘함','잘함','보통','노력 요함'][k]}</small></button>`).join('')}</span></div>`).join('')}</div></div>`;
   const msg=(t,e)=>{$('rMsg').textContent=t;$('rMsg').className='recmsg'+(e?' err':'');};
   if(X.text){$('rModel').onclick=()=>speak(X.text.split('//').map(t=>({text:t.replace(/\//g,' ').trim()})).filter(p=>p.text));
     $('rMark').onclick=()=>{const r=$('recTxt');r.classList.toggle('nomark');$('rMark').textContent=r.classList.contains('nomark')?'∨ 띄어 읽기 표시 켜기':'∨ 띄어 읽기 표시 끄기';};}
