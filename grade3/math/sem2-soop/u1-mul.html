@@ -2795,5 +2795,11 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   if(getComputedStyle(el).display.indexOf('flex')>=0&&el.childNodes.length>1){var w2=document.createElement('span');w2.className='hj-bk';while(el.firstChild)w2.appendChild(el.firstChild);el.appendChild(w2)}}
  function run(){document.querySelectorAll('.back2,.f.back,.rc .back,.flip .back').forEach(fix)}
  run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,50)}).observe(document.body,{childList:true,subtree:true})})();
+/* 학생 화면의 '(지도서 ○쪽)' 표시는 빼기(교사 안내 창 안은 그대로) */
+(function(){var SKIP='script,style,textarea,input,svg,#tn,#tnB,.tnote-body,[id^="tn"],.overlay .note';
+ var RX=/\s*\(지도서[^()]*(?:\([^()]*\)[^()]*)*\)/g;
+ function fix(n){var v=n.nodeValue;if(v.indexOf('지도서')<0)return;var t=v.replace(RX,'');if(t!==v)n.nodeValue=t}
+ function run(r){if(!r)return;if(r.nodeType===3){if(r.parentElement&&!r.parentElement.closest(SKIP))fix(r);return}if(r.nodeType!==1||r.closest(SKIP))return;var w=document.createTreeWalker(r,4),n,a=[];while(n=w.nextNode())if(!n.parentElement.closest(SKIP))a.push(n);a.forEach(fix)}
+ run(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')run(m.target);else m.addedNodes.forEach(run)})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
 </script><!--/hj-cicons--></body>
 </html>

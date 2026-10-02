@@ -86,7 +86,14 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .talk{width:min(1150px,95vw);display:grid;gap:10px}
 .talk .q{background:var(--paper);border-radius:18px;border-left:14px solid var(--cc,var(--acc));padding:12px 20px;font-size:clamp(23px,2.4vw,34px);line-height:1.45;text-align:left}
 .talk .q small{display:block;color:var(--soft);font-size:.7em;margin-top:4px}
-.exs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;width:min(1150px,95vw)}
+.exs{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(1150px,95vw)}
+.exbox{width:100%;background:var(--warm,#FFF8EC);border:3px dashed var(--warmline,#EBD9B0);border-radius:18px;padding:12px 18px;text-align:left}
+.exbox[hidden]{display:none}
+.exh{font-size:clamp(15px,1.3vw,18px);font-weight:800;color:var(--soft);margin-bottom:6px}
+.exbox ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:8px}
+.exbox li{background:var(--paper);border-radius:12px;padding:8px 12px;font-size:clamp(18px,1.8vw,24px);line-height:1.4;display:flex;gap:.4em}
+.exbox li::before{content:'•';color:var(--acc);font-weight:800}
+@media (max-width:820px){.exbox ul{grid-template-columns:1fr}}
 .hd .pgref{display:block;font-size:.66em;font-weight:500;color:var(--soft);margin-top:6px;letter-spacing:0}
 .ex{background:var(--paper);border:3px dashed var(--line);border-radius:999px;padding:6px 18px;font-size:clamp(19px,1.9vw,26px)}
 .timer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
@@ -1027,7 +1034,7 @@ function wireTimer(){document.querySelectorAll('[data-sec]').forEach(b=>b.onclic
   TMR=setInterval(()=>{s--;draw();if(s<=0){clearInterval(TMR);t.textContent='끝!';beep('win');}},1000);});}
 R.talk=X=>{
   $('body').innerHTML=hd(X)+`<div class="talk ${(X.qs||[]).length>3?'two':''}">${(X.qs||[]).map((q,i)=>{const o=typeof q==='string'?{q}:q;return `<div class="q" style="--cc:${['#D64C5A','#2F74E0','#1F9E63','#E8961E','#6A4FC9'][i%5]}">💬 ${o.q}${o.s?`<small>${o.s}</small>`:''}</div>`;}).join('')}</div>`
-   +(X.ex?`<div class="exs"><button class="tool exbtn" onclick="const h=this.parentNode.querySelector('.ex').hidden;this.parentNode.querySelectorAll('.ex').forEach(e=>e.hidden=!h);this.textContent=h?'🙈 예시 숨기기':'💡 예시 보기'">💡 예시 보기</button>${X.ex.map(e=>`<span class="ex" hidden>${e}</span>`).join('')}</div>`:'')
+   +(X.ex?`<div class="exs"><button class="tool exbtn" onclick="const b=this.parentNode.querySelector('.exbox');b.hidden=!b.hidden;this.textContent=b.hidden?'💡 예시 보기':'🙈 예시 숨기기'">💡 예시 보기</button><div class="exbox" hidden><div class="exh">예시</div><ul style="--n:${Math.min(X.ex.length,3)}">${X.ex.map(e=>`<li>${e}</li>`).join('')}</ul></div></div>`:'')
    +(X.method?`<p class="lead" style="font-size:clamp(18px,1.8vw,24px)">🤔 ${X.method}</p>`:'')+timerHTML();
   wireTimer();
 };
@@ -1701,4 +1708,10 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   if(getComputedStyle(el).display.indexOf('flex')>=0&&el.childNodes.length>1){var w2=document.createElement('span');w2.className='hj-bk';while(el.firstChild)w2.appendChild(el.firstChild);el.appendChild(w2)}}
  function run(){document.querySelectorAll('.back2,.f.back,.rc .back,.flip .back').forEach(fix)}
  run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,50)}).observe(document.body,{childList:true,subtree:true})})();
+/* 학생 화면의 '(지도서 ○쪽)' 표시는 빼기(교사 안내 창 안은 그대로) */
+(function(){var SKIP='script,style,textarea,input,svg,#tn,#tnB,.tnote-body,[id^="tn"],.overlay .note';
+ var RX=/\s*\(지도서[^()]*(?:\([^()]*\)[^()]*)*\)/g;
+ function fix(n){var v=n.nodeValue;if(v.indexOf('지도서')<0)return;var t=v.replace(RX,'');if(t!==v)n.nodeValue=t}
+ function run(r){if(!r)return;if(r.nodeType===3){if(r.parentElement&&!r.parentElement.closest(SKIP))fix(r);return}if(r.nodeType!==1||r.closest(SKIP))return;var w=document.createTreeWalker(r,4),n,a=[];while(n=w.nextNode())if(!n.parentElement.closest(SKIP))a.push(n);a.forEach(fix)}
+ run(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')run(m.target);else m.addedNodes.forEach(run)})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
 </script><!--/hj-cicons--></body></html>
