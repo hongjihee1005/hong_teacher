@@ -15,6 +15,22 @@ JBLOCK = f'<!--hj-cicons--><script>{JS}</script><!--/hj-cicons-->'
 
 EMO = re.compile(r'[\U0001F000-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF\u2300-\u23FF\uFE0F\u200D]+')
 _NEXT = {}
+_LIST = {}
+import html as _html, json as _json
+def list_of(f):
+    d = f.parent
+    if d not in _LIST:
+        idx = d / 'index.html'; out = []
+        if idx.exists():
+            t = idx.read_text(encoding='utf-8')
+            clean = lambda x: EMO.sub('', re.sub(r'<[^>]+>', '', x)).strip()
+            for h, body in re.findall(r'<a class="card[^"]*" href="([\w\-]+\.html)"[^>]*>(.*?)</a>', t, re.S):
+                if h in [o[0] for o in out] or not (d / h).exists(): continue
+                nm = re.search(r'<span class="nm">(.*?)</span>', body, re.S)
+                tg = re.search(r'<span class="tag"[^>]*>(.*?)</span>', body, re.S)
+                out.append([h, clean(nm.group(1)) if nm else h, clean(tg.group(1)) if tg else ''])
+        _LIST[d] = out
+    return _LIST[d]
 def next_of(f):
     """같은 폴더 자료 목록(index.html)의 차시 순서에서 다음 차시(주소, 제목)."""
     d = f.parent
@@ -49,6 +65,8 @@ def apply(f):
     nx = next_of(f); meta = ''
     if nx: meta = f'<meta name="hj-next" content="{nx[0]}" data-t="{nx[1]}" data-tag="{nx[2]}">'
     elif nx is None: meta = '<meta name="hj-next" content="">'
+    lst = list_of(f)
+    if lst: meta += '<meta name="hj-list" content="' + _html.escape(_json.dumps(lst, ensure_ascii=False), quote=True) + '">'
     blk = BLOCK.replace('<!--/hj-ctheme-->', meta + '<!--/hj-ctheme-->')
     i = s.find('</head>'); s = s[:i] + blk + s[i:]
     s = re.sub(r'<!--hj-cicons-->.*?<!--/hj-cicons-->', '', s, flags=re.S)
