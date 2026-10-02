@@ -8,7 +8,9 @@ SRC = os.path.join(B, '..', '..', 'social', 'sem1-hong', 'index.html')
 s = open(SRC, encoding='utf-8').read()
 head = s[:s.find('<body')]
 head = re.sub(r'<title>.*?</title>', '<title>3학년 2학기 과학 · 홍지희 선생님 버전</title>', head, flags=re.S)
-scripts = ''.join(re.findall(r'<script>.*?</script>', s[s.find('</main>'):], re.S))
+_tail = s[s.find('</main>'):]
+_tail = _tail.split('<!--hj-theme-js-->')[0]  # 메뉴 덮개 스크립트는 apply_theme.py가 따로 넣으므로 빼야 두 번 들어가지 않음
+scripts = ''.join(re.findall(r'<script>.*?</script>', _tail, re.S))
 SO = {'S': ('S 개념 찾기', '#E0506B'), 'O1': ('O 개념 구축', '#2F74E0'), 'O2': ('O 탐구 정리', '#6A4FC9'), 'P': ('P 발표', '#1F9E63')}
 RN = {'see': '보기-생각-궁금', 'sort': '분류', 'define': '우리 반 결론', 'cards': '자료 살펴보기', 'csq': '주장-근거-질문', 'venn': '같은 점·다른 점',
       'cse': '연결-확장-도전', 'iuti': '예전-지금 생각', 'task': '활동', 'check': '개념 확인', 'talk': '생각 나누기',
