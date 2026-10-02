@@ -36,6 +36,10 @@ grade1/ … grade6/
 - `grade3/science/sem2/linkage.html`(3-2 과학 교과연계 수업 계획, 선생님용)은 **비밀번호 잠금 페이지**입니다. 내용이 AES-GCM으로 암호화되어 파일 안에 들어 있어
   직접 고치면 안 됩니다. `_build/lock/unlock.py`로 평문을 꺼내 고친 뒤 `_build/lock/lock.py`로 다시 잠급니다(비밀번호는 저장소에 적지 않음, 평문은 올리지 않음).
 
+### 3-2 과학 홍지희 선생님 버전 (`grade3/science/sem2-hong/`, 2026-10-02)
+
+- 실험·탐구 중심 26차시. **HTML을 직접 고치지 마세요.** 원본은 `grade3/science/_build_hong2/lessons_uN.py`이고 `python3 build.py [sci32-uN-lM…]` → `python3 index_build.py` → 루트에서 `apply_content_theme.py`·`apply_theme.py`로 다시 만듭니다. 규칙은 `_build_hong2/README.md`, `BRIEF_WRITER.md`.
+
 ### 수학 (`grade3/math/`)
 
 - `sem1/`, `sem2/` — 교과서 차시 버전(공개). 단원 앱 `u단원-주제.html`(예: `u1-addsub.html`), 활동지 `sheets/*.hwpx`.
