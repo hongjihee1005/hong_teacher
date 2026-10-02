@@ -135,6 +135,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .bogi .bl{flex:none;background:var(--acc);color:#fff;border-radius:999px;padding:2px 14px;font-weight:800;font-size:.85em}
 .bogi .bw{border:2px solid var(--line);background:color-mix(in srgb,var(--acc) 8%,var(--paper));border-radius:12px;padding:2px 14px;font-weight:700;white-space:nowrap}
 .bogi .bt{text-align:left;flex:1 1 300px}
+.tipnote{width:min(1100px,94vw);margin-top:12px;padding:10px 18px;border-radius:14px;background:color-mix(in srgb,var(--acc) 5%,var(--paper));border:1px dashed color-mix(in srgb,var(--acc) 30%,var(--line));font-family:var(--body);font-weight:400;font-size:clamp(17px,1.6vw,22px);line-height:1.5;color:var(--soft);text-align:left;text-wrap:pretty}
 /* match */
 .mgrid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr);gap:10px 18px;width:min(1150px,96vw);align-items:stretch}
 .mgrid>.mw,.mgrid>.mm{min-height:100%;display:flex;align-items:center}
@@ -1065,7 +1066,7 @@ R.talk=X=>{
 R.book=X=>{
   $('body').innerHTML=hd(X)+`<div class="book"><div class="e">${X.e||'📖'}</div><div><div class="pg">${String(X.page).replace(/「([^」]+)」/g,'「$1」')}</div>${X.do?`<ol${X.do.every(d=>/^\s*(\(\d+\)|[\u2460-\u2473])/.test(d))?' style="list-style:none;padding-left:0"':''}>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`
    +(X.ways?`<p class="lead">${X.wlead||'🎲 오늘은 어떤 방법으로 읽을까요?'}</p><div class="pickways" style="--n:${Math.min(X.ways.length,4)}">${X.ways.map((w,i)=>`<div class="pw" data-i="${i}"><span>${w[0]}</span>${w[1]}</div>`).join('')}</div><button class="mid-btn" id="roll">${X.wroll||'🎲 읽기 방법 뽑기'}</button>`:'')
-   +(X.tip?`<div class="qbox" style="font-size:clamp(20px,2vw,28px);text-align:left;text-wrap:pretty">💡 ${X.tip}</div>`:'');
+   +(X.tip?`<div class="tipnote">💡 ${X.tip}</div>`:'');
   if(X.ways)$('roll').onclick=()=>{const pw=[...document.querySelectorAll('.pw')];let n=0,k=0;const total=10+Math.floor(Math.random()*pw.length);
     const iv=setInterval(()=>{pw.forEach(p=>p.classList.remove('lit'));k=n%pw.length;pw[k].classList.add('lit');beep('tick');n++;if(n>total){clearInterval(iv);beep('win');}},120);};
 };
