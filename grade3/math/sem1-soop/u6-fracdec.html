@@ -179,6 +179,27 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .tolist.on{display:inline-flex}
 .hjfoot{display:block;width:100%;margin:6px 0 0;padding:14px 0 4px;border-top:3px solid var(--line);text-align:center;color:var(--muted);font-size:clamp(14px,1.2vw,17px);line-height:1.7;word-break:keep-all}
 .hjfoot p{margin:2px 0}
+/* 사고 전략 칸 (Project Zero 사고 루틴) */
+.panes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15em),1fr));gap:.7em;margin:.5em 0}
+.pane{border:3px solid var(--line);border-radius:.7em;padding:.6em .7em;background:#fff;display:flex;flex-direction:column;min-height:9em}
+.pane h3{margin:0 0 .3em;font-family:"Jua";font-size:var(--fs-l);font-weight:400;display:flex;align-items:center;gap:.3em;
+  border-bottom:3px solid currentColor;padding-bottom:.25em}
+.pane .pe{font-size:1.1em}
+.pane0{border-color:#2B7BD6}.pane0 h3{color:#2B7BD6}
+.pane1{border-color:#6A4FC9}.pane1 h3{color:#6A4FC9}
+.pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
+.pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
+.phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
+.chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
+  font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
+.chip:hover{background:#FBEDE3;text-decoration:line-through}
+.prow{display:flex;gap:.4em;align-items:center;margin-top:auto}
+.prow input{flex:1;min-width:4em;font:inherit;padding:.3em .5em;border:2px solid var(--line);border-radius:.45em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane{background:#1E2A28}
+  :root:not([data-theme="light"]) .chip{background:#2A3A36}}
+:root[data-theme="dark"] .pane{background:#1E2A28}
+:root[data-theme="dark"] .chip{background:#2A3A36}
 </style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1275,6 +1296,77 @@ function writeStep(body, api, prompts, opts = {}) {
     api.done(prompts.map((p, i) => `${p.tag || p.q}: ${vals[i]}`).join(" | "), opts.ok || "생각을 잘 적었어요!");
   } }, "다 썼어요")));
 }
+/* ── 사고 전략 칸 (하버드 Project Zero 사고 루틴) ───────────────────────────
+   여러 칸에 생각을 쪽지로 붙여 모은다.
+   보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
+   같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
+   panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+function panes(body, api, list, opts = {}) {
+  const need = opts.min || 1;
+  const notes = list.map(() => []);
+  const wrap = h("div", { class: "panes" });
+
+  list.forEach((p, pi) => {
+    const chips = h("div", { class: "chips" });
+    const inp = h("input", { type: "text", placeholder: p.ph || "여기에 써요", maxlength: 60 });
+    const add = () => {
+      const v = inp.value.trim();
+      if (v.length < 2) { api.hint("조금 더 자세히 써 볼까요?"); return; }
+      notes[pi].push(v);
+      const chip = h("button", { class: "chip", title: "누르면 지워요", onclick: () => {
+        const k = notes[pi].indexOf(v); if (k >= 0) notes[pi].splice(k, 1); chip.remove();
+      } }, v);
+      chips.append(chip); inp.value = ""; inp.focus();
+    };
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    wrap.append(h("section", { class: "pane pane" + pi },
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      p.hint ? h("p", { class: "phint" }, p.hint) : "",
+      chips,
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+  });
+
+  body.append(wrap);
+  body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    const thin = list.filter((_, i) => notes[i].length < need);
+    if (thin.length) return api.fail(
+      `${thin.map(p => "‘" + p.t + "’").join(", ")} 칸에 ${need}개 이상 붙여 주세요.`,
+      notes.map(n => n.join(", ")).join(" | "));
+    api.done(list.map((p, i) => `${p.t}: ${notes[i].join(", ")}`).join(" | "),
+      opts.ok || "생각을 잘 모았어요! 친구들 쪽지와 견주어 봐요.");
+  } }, opts.btn || "다 붙였어요")));
+}
+
+/* ── 예상하기 → 확인하기 ──────────────────────────────────────────────────
+   먼저 어림해 보고, 그다음 실제로 계산해 예상과 견준다.
+   opts: { ask, o:[보기], a:정답 보기 번호, then, real, unit, why }        */
+function predictCheck(body, api, opts) {
+  let guess = null;
+  const box = h("div", { class: "qitem" }, h("div", { class: "jua" }, opts.ask));
+  const row = h("div", { class: "opts" });
+  opts.o.forEach((o, oi) => row.append(h("button", { class: "opt", onclick: (e) => {
+    guess = oi; [...row.children].forEach(b => b.classList.remove("on"));
+    e.currentTarget.classList.add("on"); second.classList.remove("hidden");
+    api.hint("예상했어요. 이제 실제로 계산해서 확인해 봐요.");
+  } }, o)));
+  box.append(row);
+
+  const inp = h("input", { type: "number", inputmode: "numeric", placeholder: "실제 값" });
+  const second = h("div", { class: "qitem hidden" },
+    h("div", { class: "jua" }, opts.then || "이제 실제로 계산해 보세요."),
+    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : "",
+      h("button", { class: "opt", onclick: () => {
+        api.tryOnce();
+        if (Number(inp.value) !== opts.real) return api.fail("실제 값을 다시 계산해 봐요.", inp.value);
+        const hit = guess === opts.a;
+        api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
+          (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
+          (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
+      } }, "확인하기")));
+
+  body.append(box, second);
+}
+
 /* 순서 맞추기 */
 function sequence(body, api, cards, order, opts = {}) {
   const picked = [];
@@ -2282,11 +2374,13 @@ const LESSONS = [
       render: (b, a) => u6EqualPick(b, a, { shapes: S6_CRAFT, perRow: 4, cw: 215, box: 165, ok: "색종이와 점토판은 조각의 크기가 모두 같아요. 똑같이 나누었어요." }) },
     { inst: "둥근 점토판을 모둠 친구 4명이 똑같이 나누어 쓰려고 해요. 똑같이 4조각으로 나누어 보세요.", hints: ["둘레의 점을 누르면 가운데 점과 이어져요.", "반으로 나눈 것을 또 반으로 나누어 봐요."],
       render: (b, a) => u6CircleCut(b, a, { dots: 8, target: 4, color: "#E9D8F0", tip: "둥근 점토판을 똑같이 4조각으로 나누어 보세요. 둘레의 점을 누르면 가운데 점과 이어져요.", ok: "조각 4개의 크기가 모두 같아요. 4명이 똑같이 나누어 쓸 수 있어요." }) },
-    { inst: "작업실을 둘러보고 생각을 써 보세요.", hints: ["색종이, 점토, 색 테이프를 나누어 쓴 일을 떠올려 봐요."],
-      render: (b, a) => writeStep(b, a, [
-        { q: "보기: 작업실에서 똑같이 나누어 쓰는 재료는 무엇인가요?", tag: "보기" },
-        { q: "생각하기: 친구와 무엇을 똑같이 나누어 본 적이 있나요?", tag: "생각" },
-        { q: "궁금해하기: 분수와 소수에 대해 무엇이 궁금한가요?", tag: "궁금" }]) },
+    { name: "말해 보기 — 보기·생각하기·궁금해하기",
+      inst: "작업실을 둘러봐요. 세 칸에 한 가지씩 써서 붙여요.", hints: ["색종이, 점토, 색 테이프를 나누어 쓴 일을 떠올려 봐요.", "조각의 크기가 모두 같은지 살펴봐요."],
+      render: (b, a) => panes(b, a, [
+        { t: "보여요", e: "👀", ph: "작업실에 ~이 보여요", hint: "색종이, 점토판처럼 본 것을 써요" },
+        { t: "생각해요", e: "💭", ph: "~은 똑같이 나눈 것 같아요", hint: "조각의 모양과 크기가 같을까요?" },
+        { t: "궁금해요", e: "❓", ph: "왜 ~일까?", hint: "분수와 소수에 대해 궁금한 것" }],
+        { ok: "생각을 잘 모았어요! 조각의 모양과 크기가 모두 같아야 똑같이 나눈 거예요." }) },
     { name: "떠올리기", inst: "3단원 나눗셈에서 똑같이 나누었던 것을 떠올려 보세요.", hints: ["똑같이 나누면 한 모둠에 몇씩인지 나눗셈으로 구할 수 있어요.", "12 ÷ 3은 3단 곱셈구구를 떠올려요."],
       render: (b, a) => quiz(b, a, [
         { q: "색종이 12장을 3모둠에 똑같이 나누어 주면 한 모둠에 몇 장씩인가요?", o: ["3장", "4장", "6장"], a: 1 },
@@ -2308,8 +2402,12 @@ const LESSONS = [
       render: (b, a) => u6FoldPaper(b, a, { target: 2, tip: "색종이를 똑같이 둘로 나누어 보세요. 테두리 점 두 개를 차례로 누르거나 버튼을 눌러 선을 그어요.", ok: "똑같이 둘로 나누었어요. 두 조각을 겹치면 꼭 맞아요." }) },
     { inst: "정사각형 모둠 게시판을 모둠 친구 4명이 똑같이 나누어 꾸미려고 해요. 게시판을 똑같이 넷으로 나누어 보세요.", hints: ["반으로 나눈 것을 또 반으로 나누어 봐요.", "마주 보는 꼭짓점끼리 잇는 선 두 개를 그어도 똑같은 네 조각이 돼요."],
       render: (b, a) => u6FoldPaper(b, a, { target: 4, color: "#DCEAFB", tip: "게시판을 똑같이 넷으로 나누어 보세요. 나누는 방법은 여러 가지예요.", ok: "똑같이 넷으로 나누었어요. 나누는 방법은 여러 가지예요." }) },
-    { inst: "똑같이 나누었는지 확인하는 방법을 말해 보세요.", hints: ["나눈 조각을 오려서 포개어 보면 어떻게 될까요?"],
-      render: (b, a) => blanks(b, a, ["똑같이 나누었는지 알아보려면 조각을 오려서 ", { o: ["겹쳐", "세어"], a: 0 }, " 보아요. 조각이 꼭 ", { o: ["맞으면", "많으면"], a: 0 }, " 똑같이 나눈 거예요. 똑같이 나눈 조각은 모양과 ", { o: ["크기", "색깔"], a: 0 }, "가 같아요."]) },
+    { name: "말해 보기 — 왜 그렇게 생각했나요",
+      inst: "내가 나눈 게시판을 다시 봐요. 똑같이 나누었는지 두 칸에 써서 붙여요.", hints: ["나눈 조각을 오려서 포개어 보면 어떻게 될까요?", "조각의 모양과 크기가 모두 같은지 봐요."],
+      render: (b, a) => panes(b, a, [
+        { t: "무엇이 보이나요", e: "👀", ph: "게시판이 똑같이 ~조각으로 나뉘었어요", hint: "똑같이 나누었는지 말해 봐요" },
+        { t: "무엇을 보고 그렇게 말했나요", e: "🔎", ph: "~을 보고 그렇게 말했어요", hint: "조각을 오려 겹치면 꼭 맞을까요?" }],
+        { ok: "까닭까지 말했어요! 조각을 오려 겹쳐서 꼭 맞으면 똑같이 나눈 거예요. 똑같이 나눈 조각은 모양과 크기가 같아요." }) },
     { inst: "약속: 나누어진 조각의 모양과 크기가 같으면 똑같이 나눈 것이에요. 작업실의 모양 틀 중에서 똑같이 나누어진 것을 모두 찾아보세요.", hints: ["원을 나눈 선이 원의 가운데 점을 지나는지 봐요.", "조각 하나하나의 크기를 견주어 봐요."],
       render: (b, a) => u6EqualPick(b, a, { shapes: S6_L2, box: 160, cw: 230, ok: "가, 다, 마는 조각의 모양과 크기가 모두 같아요." }) },
     { inst: "몇 조각으로 똑같이 나누었는지 알아보세요.", hints: ["조각의 수를 세고, 크기가 모두 같은지 확인해요."],
@@ -2395,8 +2493,13 @@ const LESSONS = [
     { inst: "같은 크기의 둥근 점토판 3개를 2조각, 4조각, 8조각으로 똑같이 나누었어요. 점토판마다 한 조각씩 색칠하고 크기를 비교해 보세요.", hints: ["각 점토판에서 한 조각만 색칠해요.", "조각 수가 많을수록 한 조각은 어떻게 되나요?"],
       render: (b, a) => u6ShadeShape(b, a, { shapes: [{ kind: "circle", n: 2, target: 1, cap: "1/2", size: 190 }, { kind: "circle", n: 4, target: 1, cap: "1/4", size: 190 }, { kind: "circle", n: 8, target: 1, cap: "1/8", size: 190 }], readout: "none", tip: "점토판마다 한 조각씩 눌러 색칠해요.",
         ask: [{ q: "가장 큰 조각은?", o: ["1/2", "1/4", "1/8"], a: 0, why: { "1/8": "8이 가장 큰 수이지만, 조각은 가장 작아요. 색칠한 조각을 견주어 봐요." } }, { q: "가장 작은 조각은?", o: ["1/2", "1/4", "1/8"], a: 2 }], ok: "1/2 > 1/4 > 1/8이에요. 많이 나눌수록 한 조각이 작아져요." }) },
-    { inst: "어떻게 비교했는지 말해 보세요.", hints: ["분모가 같을 때와 분자가 1일 때를 나누어 생각해요."],
-      render: (b, a) => blanks(b, a, ["5/8과 3/8은 분모가 같아서 한 조각의 크기가 ", { o: ["같아요", "달라요"], a: 0 }, ". 그래서 조각이 더 ", { o: ["많은", "적은"], a: 0 }, " 5/8이 더 커요. 1/2, 1/4, 1/8은 더 많은 조각으로 나눌수록 한 조각의 크기가 ", { o: ["작아져요", "커져요"], a: 0 }, "."]) },
+    { name: "말해 보기 — 같은 점·다른 점·분류하기",
+      inst: "5/8과 3/8 비교, 1/2·1/4·1/8 비교를 견주어 봐요. 세 칸에 써서 붙여요.", hints: ["분모가 같을 때와 분자가 1일 때를 나누어 생각해요.", "5/8과 3/8은 한 조각의 크기가 같아요."],
+      render: (b, a) => panes(b, a, [
+        { t: "같은 점", e: "🟰", ph: "두 비교 모두 ~", hint: "둘 다 같은 크기의 점토판이에요" },
+        { t: "다른 점", e: "↔️", ph: "단위분수는 ~", hint: "분자를 보나요, 분모를 보나요?" },
+        { t: "어떻게 묶을까요", e: "🗂", ph: "~인 분수끼리 묶어요", hint: "분모가 같은 분수, 분자가 1인 분수" }],
+        { ok: "잘 견주었어요! 분모가 같으면 한 조각의 크기가 같아서, 조각이 많은 5/8이 더 커요. 단위분수는 많이 나눌수록 한 조각이 작아져요." }) },
     { inst: "분수의 크기 비교를 약속으로 정리해요.", hints: ["분모가 같을 때 달라지는 수는 무엇인가요?", "단위분수는 분자가 모두 1이에요. 무엇이 다른가요?"],
       render: (b, a) => blanks(b, a, ["분모가 같은 분수는 ", { o: ["분자", "분모"], a: 0 }, "가 클수록 더 커요. 단위분수는 ", { o: ["분모", "분자"], a: 0 }, "가 ", { o: ["작을수록", "클수록"], a: 0 }, " 더 커요."]) },
     { inst: "두 분수의 크기를 비교해 보세요.", hints: ["분모가 같으면 분자를 비교해요.", "단위분수는 분모가 작은 쪽이 더 커요."],
@@ -2449,8 +2552,13 @@ const LESSONS = [
     { inst: "게시판 테두리에 붙일 색 테이프가 1.6 m와 2.3 m 있어요. 각각 색칠하고 크기를 비교해 보세요.", hints: ["1.6은 0.1이 16개, 2.3은 0.1이 몇 개일까요?", "0.1의 개수가 많은 쪽이 더 커요."],
       render: (b, a) => u6DecStrip(b, a, { max: 3, rows: [{ target: 1.6, name: "1.6" }, { target: 2.3, name: "2.3" }], unitLabel: "0.1", readout: "count", tip: "칸을 누르면 0부터 그 칸까지 색칠돼요.",
         ask: [{ q: "1.6은 0.1이", a: 16, after: "개" }, { q: "2.3은 0.1이", a: 23, after: "개" }, { q: "더 큰 소수는?", o: ["1.6", "2.3"], a: 1, why: { "1.6": "6이 3보다 크다고 1.6이 더 큰 것은 아니에요. 0.1의 개수를 비교해 봐요." } }], ok: "0.1의 개수가 더 많은 2.3이 더 커요." }) },
-    { inst: "소수점 왼쪽의 수로 비교하는 방법을 말해 보세요.", hints: ["1.6은 1과 0.6, 2.3은 2와 0.3이에요."],
-      render: (b, a) => blanks(b, a, ["1.6은 1과 ", { o: ["0.6", "6"], a: 0 }, "만큼인 수이고, 2.3은 2와 ", { o: ["0.3", "3"], a: 0 }, "만큼인 수예요. 소수점 왼쪽의 수가 더 큰 ", { o: ["2.3", "1.6"], a: 0 }, "이 더 커요."]) },
+    { name: "말해 보기 — 주장·근거·질문",
+      inst: "1.6 m와 2.3 m 중 어느 테이프가 더 길까요? 세 칸에 써서 붙여요.", hints: ["1.6은 1과 0.6, 2.3은 2와 0.3이에요.", "소수점 왼쪽의 수를 먼저 견주어 봐요."],
+      render: (b, a) => panes(b, a, [
+        { t: "주장", e: "✋", ph: "나는 ~이 더 크다고 생각해요" },
+        { t: "근거", e: "🔎", ph: "왜냐하면 ~", hint: "소수점 왼쪽의 수로 까닭을 말해요" },
+        { t: "질문", e: "❓", ph: "아직 궁금한 것은 ~", hint: "아직 모르겠는 것을 물어봐요" }],
+        { ok: "까닭까지 말했어요! 1.6은 1과 0.6, 2.3은 2와 0.3만큼인 수예요. 소수점 왼쪽의 수가 더 큰 2.3이 더 커요." }) },
     { inst: "소수의 크기를 비교하는 방법을 약속으로 정리해요.", hints: ["소수점 왼쪽의 수를 먼저 비교해요."],
       render: (b, a) => blanks(b, a, ["0.1의 개수가 ", { o: ["많을수록", "적을수록"], a: 0 }, " 더 큰 소수예요. 소수점 왼쪽의 수가 같으면 소수점 ", { o: ["오른쪽", "왼쪽"], a: 0 }, "의 수가 클수록 더 커요."]) },
     { inst: "소수의 크기를 비교해 보세요.", hints: ["소수점 왼쪽의 수부터 비교해요.", "왼쪽 수가 같으면 오른쪽 수를 비교해요."],
@@ -2540,22 +2648,20 @@ const LESSONS = [
         { figEl: () => u6LineFig({ max: 1, top: { 0: "0", 4: "□", 10: "1" }, bottom: { 0: "0", 1: "0.1", 6: "□", 9: "□", 10: "1" } }), q: "위쪽 □ 안의 분수", f: [4, 10] },
         { q: "아래쪽 왼쪽 □ 안의 소수", a: 0.6 }, { q: "아래쪽 오른쪽 □ 안의 소수", a: 0.9 },
         { q: "색 테이프 6 cm 4 mm =", a: 6.4, after: "cm" }, { q: "0.1이 27개인 수", a: 2.7 }], { ok: "분수와 소수로 잘 나타냈어요." }) },
-    { name: "예전 생각, 지금 생각", inst: "생각이 어떻게 달라졌는지 써 보세요.", hints: ["단원을 배우기 전에 분수와 소수를 어떻게 생각했는지 떠올려 봐요."],
-      render: (b, a) => writeStep(b, a, [
-        { q: "예전에는 분수와 소수를 ……라고 생각했어요.", tag: "예전" }, { q: "지금은 ……라고 생각해요.", tag: "지금" }]) }
+    { name: "예전 생각, 지금 생각 — 예전엔·지금은", inst: "생각이 어떻게 달라졌는지 세 칸에 써서 붙여요.", hints: ["단원을 배우기 전에 분수와 소수를 어떻게 생각했는지 떠올려 봐요.", "어떤 활동을 하고 생각이 바뀌었나요?"],
+      render: (b, a) => panes(b, a, [
+        { t: "예전 생각", e: "⏮", ph: "예전에는 분수와 소수를 ~라고 생각했어요", hint: "단원을 배우기 전을 떠올려요" },
+        { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요", hint: "똑같이 나누기, 분모와 분자, 소수점" },
+        { t: "왜 바뀌었나", e: "🔄", ph: "~을 해 보고 생각이 바뀌었어요", hint: "색종이·점토판·색 테이프 활동을 떠올려요" }],
+        { ok: "생각이 자란 모습을 잘 모았어요! 똑같이 나눈 것을 분수와 소수로 나타낼 수 있어요." }) }
   ],
-  challenge: { inst: "퍼즐로 마무리해요. 분수와 소수에 대해 옳게 설명한 번호를 찾아 색칠해 보세요. 어떤 모양이 보이나요?", hints: ["3.6은 ‘삼 점 육’이라고 읽어요.", "5/9는 1/9이 몇 개인지 분자를 봐요."],
-    render: (b, a) => u6Puzzle(b, a, { shape: "하트", items: [
-      { t: "1/3, 1/7, 1/10은 단위분수입니다.", ok: true }, { t: "5/9는 1/9이 4개입니다.", ok: false },
-      { t: "2/6은 5/6보다 더 작습니다.", ok: true }, { t: "1/4은 1/8보다 더 큽니다.", ok: true },
-      { t: "3.6은 삼십육이라고 읽습니다.", ok: false }, { t: "1 mm는 0.1 cm입니다.", ok: true }],
-      pic: [
-        [2, 1, 3, 5, 2, 4, 6, 5],
-        [4, 6, 1, 3, 6, 1, 3, 4],
-        [3, 1, 4, 6, 4, 3, 6, 1],
-        [5, 6, 3, 1, 4, 6, 1, 2],
-        [2, 5, 4, 6, 3, 1, 5, 2],
-        [5, 2, 2, 1, 6, 5, 2, 5]] }) }
+  challenge: { inst: "예전엔·지금은 + 마인드맵 — 분수와 소수로 마인드맵을 만들어요. 네 칸에 써서 붙여요.", hints: ["똑같이 나누기, 분모, 분자, 단위분수, 소수점, 0.1처럼요.", "10분의 1과 0.1처럼 이어지는 낱말을 찾아봐요.", "1 mm는 0.1 cm예요. 이런 예를 덧붙여요."],
+    render: (b, a) => panes(b, a, [
+      { t: "떠오르는 말", e: "🧠", ph: "분수와 소수 하면 ~", hint: "생각나는 낱말을 모아요" },
+      { t: "묶어 보기", e: "🗂", ph: "~, ~는 같은 무리예요", hint: "분수 낱말, 소수 낱말끼리 묶어요" },
+      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "10분의 1과 0.1처럼 이어 봐요" },
+      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "작업실 재료로 예를 들어요" }],
+      { min: 1, ok: "미술 작업실을 모두 마쳤어요! 분수와 소수는 똑같이 나눈 것을 나타내요. 10분의 1은 0.1이에요." }) }
 }];
 
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });

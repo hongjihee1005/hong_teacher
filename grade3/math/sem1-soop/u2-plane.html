@@ -179,6 +179,27 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .tolist.on{display:inline-flex}
 .hjfoot{display:block;width:100%;margin:6px 0 0;padding:14px 0 4px;border-top:3px solid var(--line);text-align:center;color:var(--muted);font-size:clamp(14px,1.2vw,17px);line-height:1.7;word-break:keep-all}
 .hjfoot p{margin:2px 0}
+/* 사고 전략 칸 (Project Zero 사고 루틴) */
+.panes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15em),1fr));gap:.7em;margin:.5em 0}
+.pane{border:3px solid var(--line);border-radius:.7em;padding:.6em .7em;background:#fff;display:flex;flex-direction:column;min-height:9em}
+.pane h3{margin:0 0 .3em;font-family:"Jua";font-size:var(--fs-l);font-weight:400;display:flex;align-items:center;gap:.3em;
+  border-bottom:3px solid currentColor;padding-bottom:.25em}
+.pane .pe{font-size:1.1em}
+.pane0{border-color:#2B7BD6}.pane0 h3{color:#2B7BD6}
+.pane1{border-color:#6A4FC9}.pane1 h3{color:#6A4FC9}
+.pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
+.pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
+.phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
+.chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
+  font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
+.chip:hover{background:#FBEDE3;text-decoration:line-through}
+.prow{display:flex;gap:.4em;align-items:center;margin-top:auto}
+.prow input{flex:1;min-width:4em;font:inherit;padding:.3em .5em;border:2px solid var(--line);border-radius:.45em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane{background:#1E2A28}
+  :root:not([data-theme="light"]) .chip{background:#2A3A36}}
+:root[data-theme="dark"] .pane{background:#1E2A28}
+:root[data-theme="dark"] .chip{background:#2A3A36}
 </style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1275,6 +1296,77 @@ function writeStep(body, api, prompts, opts = {}) {
     api.done(prompts.map((p, i) => `${p.tag || p.q}: ${vals[i]}`).join(" | "), opts.ok || "생각을 잘 적었어요!");
   } }, "다 썼어요")));
 }
+/* ── 사고 전략 칸 (하버드 Project Zero 사고 루틴) ───────────────────────────
+   여러 칸에 생각을 쪽지로 붙여 모은다.
+   보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
+   같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
+   panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+function panes(body, api, list, opts = {}) {
+  const need = opts.min || 1;
+  const notes = list.map(() => []);
+  const wrap = h("div", { class: "panes" });
+
+  list.forEach((p, pi) => {
+    const chips = h("div", { class: "chips" });
+    const inp = h("input", { type: "text", placeholder: p.ph || "여기에 써요", maxlength: 60 });
+    const add = () => {
+      const v = inp.value.trim();
+      if (v.length < 2) { api.hint("조금 더 자세히 써 볼까요?"); return; }
+      notes[pi].push(v);
+      const chip = h("button", { class: "chip", title: "누르면 지워요", onclick: () => {
+        const k = notes[pi].indexOf(v); if (k >= 0) notes[pi].splice(k, 1); chip.remove();
+      } }, v);
+      chips.append(chip); inp.value = ""; inp.focus();
+    };
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    wrap.append(h("section", { class: "pane pane" + pi },
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      p.hint ? h("p", { class: "phint" }, p.hint) : "",
+      chips,
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+  });
+
+  body.append(wrap);
+  body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    const thin = list.filter((_, i) => notes[i].length < need);
+    if (thin.length) return api.fail(
+      `${thin.map(p => "‘" + p.t + "’").join(", ")} 칸에 ${need}개 이상 붙여 주세요.`,
+      notes.map(n => n.join(", ")).join(" | "));
+    api.done(list.map((p, i) => `${p.t}: ${notes[i].join(", ")}`).join(" | "),
+      opts.ok || "생각을 잘 모았어요! 친구들 쪽지와 견주어 봐요.");
+  } }, opts.btn || "다 붙였어요")));
+}
+
+/* ── 예상하기 → 확인하기 ──────────────────────────────────────────────────
+   먼저 어림해 보고, 그다음 실제로 계산해 예상과 견준다.
+   opts: { ask, o:[보기], a:정답 보기 번호, then, real, unit, why }        */
+function predictCheck(body, api, opts) {
+  let guess = null;
+  const box = h("div", { class: "qitem" }, h("div", { class: "jua" }, opts.ask));
+  const row = h("div", { class: "opts" });
+  opts.o.forEach((o, oi) => row.append(h("button", { class: "opt", onclick: (e) => {
+    guess = oi; [...row.children].forEach(b => b.classList.remove("on"));
+    e.currentTarget.classList.add("on"); second.classList.remove("hidden");
+    api.hint("예상했어요. 이제 실제로 계산해서 확인해 봐요.");
+  } }, o)));
+  box.append(row);
+
+  const inp = h("input", { type: "number", inputmode: "numeric", placeholder: "실제 값" });
+  const second = h("div", { class: "qitem hidden" },
+    h("div", { class: "jua" }, opts.then || "이제 실제로 계산해 보세요."),
+    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : "",
+      h("button", { class: "opt", onclick: () => {
+        api.tryOnce();
+        if (Number(inp.value) !== opts.real) return api.fail("실제 값을 다시 계산해 봐요.", inp.value);
+        const hit = guess === opts.a;
+        api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
+          (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
+          (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
+      } }, "확인하기")));
+
+  body.append(box, second);
+}
+
 /* 순서 맞추기 */
 function sequence(body, api, cards, order, opts = {}) {
   const picked = [];
@@ -2246,10 +2338,13 @@ const LESSONS = [
           { name: "문", sh: [{ rect: [19.5, 6.5, 2.5, 4.5], fill: "#DDEDE5" }], ok: true }] }) },
     { inst: "교실 꾸미기 설계도를 그려요. 2학년 때 배운 도형을 떠올리며 모눈의 점을 눌러 삼각형과 사각형을 하나씩 그려 보세요.", hints: ["삼각형은 꼭짓점 3개, 사각형은 꼭짓점 4개를 차례대로 찍어요.", "사각형은 점을 둘레를 따라 차례대로 찍어야 변이 엇갈리지 않아요."],
       render: (b, a) => u2GridShape(b, a, { w: 16, h: 9, U: 48, tasks: [{ kind: "tri", label: "깃발 모양 삼각형 그리기" }, { kind: "quad", label: "게시판 모양 사각형 그리기" }], ok: "삼각형과 사각형을 그렸어요! 모두 곧은 선으로 둘러싸여 있어요." }) },
-    { inst: "보기-생각하기-궁금해하기로 우리 교실을 둘러보고 써 보세요.", render: (b, a) => writeStep(b, a, [
-      { q: "보기: 우리 교실에서 어떤 모양이 보이나요?", tag: "보기" },
-      { q: "생각하기: 곧은 선과 굽은 선은 교실 어디에 있나요?", tag: "생각" },
-      { q: "궁금해하기: 교실을 꾸미면서 도형에 대해 무엇이 궁금한가요?", tag: "궁금" }]) },
+    { name: "말해 보기 — 보기·생각하기·궁금해하기",
+      inst: "우리 교실을 둘러봐요. 세 칸에 한 가지씩 써서 붙여요.",
+      render: (b, a) => panes(b, a, [
+        { t: "보여요", e: "👀", ph: "교실에 ~ 모양이 보여요", hint: "칠판, 창문, 시계처럼 보이는 것을 써요" },
+        { t: "생각해요", e: "💭", ph: "~는 곧은 선(굽은 선) 같아요", hint: "곧은 선과 굽은 선은 어디에 있을까요?" },
+        { t: "궁금해요", e: "❓", ph: "왜 ~일까?", hint: "교실을 꾸미며 도형에 대해 궁금한 것" }],
+        { ok: "생각을 잘 모았어요! 교실에는 곧은 선과 굽은 선, 삼각형과 사각형이 있어요." }) },
     { name: "떠올리기", inst: "2학년 때 배운 약속이에요. 도형에서 곧은 선을 ‘변’, 두 변이 만나는 점을 ‘꼭짓점’이라고 해요. 깃발(삼각형)과 게시판(사각형)의 변과 꼭짓점의 수를 써 보세요.", hints: ["곧은 선을 하나씩 손가락으로 짚으며 세어요.", "뾰족한 점(꼭짓점)도 하나씩 세어요."],
       render: (b, a) => { b.append(u2Cards([{ label: "깃발", sh: [{ poly: [[.6, .5], [3.4, .5], [2, 2.7]] }] }, { label: "게시판", sh: [{ poly: [[.4, .6], [3.6, .6], [3.6, 2.6], [.4, 2.6]] }] }], { maxW: "18em" }));
         numbers(b, a, [{ q: "깃발(삼각형)의 변은 몇 개인가요?", a: 3, unit: "개" }, { q: "깃발(삼각형)의 꼭짓점은 몇 개인가요?", a: 3, unit: "개" }, { q: "게시판(사각형)의 변은 몇 개인가요?", a: 4, unit: "개" }, { q: "게시판(사각형)의 꼭짓점은 몇 개인가요?", a: 4, unit: "개" }], { ok: "삼각형은 변과 꼭짓점이 3개씩, 사각형은 4개씩이에요." }); } },
@@ -2278,8 +2373,13 @@ const LESSONS = [
         targets: [{ k: "seg", a: "ㄱ", b: "ㄴ" }, { k: "seg", a: "ㄴ", b: "ㄷ" }, { k: "seg", a: "ㄷ", b: "ㄹ" }, { k: "seg", a: "ㄹ", b: "ㄱ" }], ok: "게시판 테두리를 반듯하게 붙였어요! 두 점을 곧게 이은 선 4개로 둘러쌌어요." }) },
     { inst: "창문으로 햇살이 한 곳에서 시작해 쭉 뻗어 들어와요. 시우가 창문 틀의 선 ㄱㄴ을 햇살처럼 늘여 보기로 했어요. 주황 동그라미를 바깥쪽으로 끌거나 버튼을 눌러 차례대로 세 가지 선을 만들어요.", hints: ["점 ㄴ에서 시작해 점 ㄱ을 지나 뻗으려면 어느 쪽 끝을 늘여야 할까요?", "양쪽 끝을 모두 늘이면 어떤 선이 될까요?"],
       render: (b, a) => u2Extend(b, a, { A: [3, 2.5], B: [9, 2.5], names: ["ㄱ", "ㄴ"], w: 12, h: 5, U: 60, tasks: [{ k: "ray", a: "ㄴ", b: "ㄱ", ask: "점 ㄴ에서 시작해 점 ㄱ을 지나 왼쪽으로 끝없이 뻗은 선" }, { k: "ray", a: "ㄱ", b: "ㄴ", ask: "점 ㄱ에서 시작해 점 ㄴ을 지나 오른쪽으로 끝없이 뻗은 선" }, { k: "line", a: "ㄱ", b: "ㄴ", ask: "점 ㄱ과 점 ㄴ을 지나 양쪽으로 끝없이 뻗은 선" }], ok: "세 가지 선을 만들었어요! 늘인 방향에 따라 이름이 달라요." }) },
-    { inst: "게시판 테이프와 햇살처럼 늘인 선들을 비교하여 말해 보세요.", hints: ["세 선 모두 반듯하게 뻗어 있어요.", "끝이 있는지, 끝없이 뻗는 쪽이 몇 쪽인지 비교해요."],
-      render: (b, a) => blanks(b, a, ["세 선은 모두 ", { o: ["곧은 선", "굽은 선"], a: 0 }, "이에요. 게시판 테이프처럼 두 점을 곧게 이은 선은 양쪽 끝이 ", { o: ["있고", "없고"], a: 0 }, ", 햇살처럼 늘인 선은 ", { o: ["한쪽 또는 양쪽으로", "어느 쪽으로도"], a: 0 }, " 끝없이 뻗어요."]) },
+    { name: "말해 보기 — 같은 점·다른 점·분류하기",
+      inst: "게시판 테이프와 햇살처럼 늘인 선들을 견주어 세 칸에 써서 붙여요.", hints: ["세 선 모두 반듯하게 뻗어 있어요.", "끝이 있는지, 끝없이 뻗는 쪽이 몇 쪽인지 비교해요."],
+      render: (b, a) => panes(b, a, [
+        { t: "같은 점", e: "🟰", ph: "세 선은 모두 ~", hint: "세 선 모두 반듯하게 뻗었나요?" },
+        { t: "다른 점", e: "↔️", ph: "테이프 선은 ~, 햇살 선은 ~", hint: "끝이 있나요? 몇 쪽으로 뻗나요?" },
+        { t: "어떻게 묶을까요", e: "🗂", ph: "끝이 ~인 선끼리 묶어요", hint: "끝이 있는 선, 끝없이 뻗는 선으로 나눠 봐요" }],
+        { ok: "세 선은 모두 곧은 선이에요. 테이프 선은 양쪽 끝이 있어요. 햇살 선은 끝없이 뻗어요." }) },
     { inst: "약속: 두 점을 곧게 이은 선을 ‘선분’, 한 점에서 시작하여 한쪽으로 끝없이 뻗은 곧은 선을 ‘반직선’, 양쪽으로 끝없이 뻗은 곧은 선을 ‘직선’이라고 해요. 창문 장식 선으로 반직선 ㄷㄱ, 직선 ㄴㄹ, 선분 ㅁㅂ을 그어 보세요. 반직선은 끝없이 늘일 방향을 골라요.", hints: ["반직선 ㄷㄱ은 점 ㄷ에서 시작해서 점 ㄱ 쪽으로 뻗어요.", "도구를 먼저 고른 다음 두 점을 눌러요."],
       render: (b, a) => u2DotLines(b, a, { w: 12, h: 6.5, U: 60, pts: [{ n: "ㄱ", p: [2, 1.5] }, { n: "ㄴ", p: [5.5, 1.2] }, { n: "ㄷ", p: [4, 5], o: [-.45, .1] }, { n: "ㄹ", p: [10, 2.2] }, { n: "ㅁ", p: [7, 5.4], o: [-.45, 0] }, { n: "ㅂ", p: [10.5, 4.6], o: [.45, .1] }],
         targets: [{ k: "ray", a: "ㄷ", b: "ㄱ" }, { k: "line", a: "ㄴ", b: "ㄹ" }, { k: "seg", a: "ㅁ", b: "ㅂ" }], ok: "세 가지 선을 모두 알맞게 그었어요!" }) },
@@ -2334,8 +2434,12 @@ const LESSONS = [
     { inst: "모눈 위 사물함 문의 검은 선분을 이용해 직각을 그려 보세요. 주황 점(선분의 끝)에서 시작하는 선분을 그어요.", hints: ["모눈의 가로줄과 세로줄은 서로 직각으로 만나요.", "비스듬한 선분은 ‘오른쪽으로 1칸, 위로 1칸’ 방향이에요. 직각이 되려면 ‘오른쪽으로 1칸, 아래로 1칸’ 방향으로 그어 봐요."],
       render: (b, a) => u2DotLines(b, a, { w: 12, h: 7, U: 56, grid: true, paper: "grid", tools: ["seg"], given: [{ k: "seg", a: "2,2", b: "2,5" }, { k: "seg", a: "6,5", b: "9,2" }], deco: [{ dot: [2, 5], stroke: TENT, r: 12 }, { dot: [9, 2], stroke: TENT, r: 12 }],
         targets: [{ k: "rightAt", v: "2,5", g: 0 }, { k: "rightAt", v: "9,2", g: 1 }], tip: "선분 도구로 주황 점과 다른 점을 이어요.", ok: "두 곳에 직각을 그렸어요! 비스듬한 직각도 직각이에요." }) },
-    { inst: "직각 본을 만든 방법을 말해 보세요.", hints: ["종이를 몇 번 접었는지 떠올려요."],
-      render: (b, a) => blanks(b, a, ["종이를 반듯하게 ", { o: ["두 번", "한 번"], a: 0 }, " 접었을 때 생기는 각을 ", { o: ["직각", "꼭짓점"], a: 0 }, "이라고 해요. 직각은 꼭짓점에 ", { o: ["└ 표시", "○ 표시"], a: 0 }, "를 해요."]) },
+    { name: "말해 보기 — 왜 그렇게 생각했나요",
+      inst: "교실 물건에서 직각 본과 꼭 맞는 모서리를 찾아요. 두 칸에 써서 붙여요.", hints: ["종이를 반듯하게 두 번 접어 만든 직각 본을 떠올려요.", "사물함 문, 창문 틀, 책 모서리에 대 본다고 생각해요."],
+      render: (b, a) => panes(b, a, [
+        { t: "무엇이 보이나요", e: "👀", ph: "~의 모서리가 직각이에요", hint: "교실에서 직각을 찾아 써요" },
+        { t: "무엇을 보고 그렇게 말했나요", e: "🔎", ph: "왜냐하면 ~", hint: "직각 본을 대니 꼭 맞았나요?" }],
+        { ok: "잘 찾았어요! 종이를 반듯하게 두 번 접어 생긴 각이 직각이에요. 꼭짓점에 └ 표시를 해요." }) },
     { inst: "약속: 종이를 반듯하게 두 번 접었을 때 생기는 각을 ‘직각’이라 하고, 꼭짓점에 └ 표시를 해요. 삼각자를 대어 교실 물건 모양에서 직각을 모두 찾아 표시해 보세요. (① 창문 틀 모서리, ② 깃발, ③ 게시물 종이)", hints: ["삼각자를 끌어 꼭짓점에 가까이 놓으면 붙어요. ‘다음 꼭짓점에 대 보기’ 버튼을 써도 돼요.", "도형이 기울어져 있어도 삼각자와 꼭 맞으면 직각이에요.", "①에 1개, ②에 1개, ③에 2개가 있어요."],
       render: (b, a) => u2SetSquare(b, a, { w: 20, h: 8.5, U: 46, paper: "grid", start: [1, 8.1], figs: [{ pts: [[1, 1.5], [1, 4.5], [5, 4.5]], open: true, label: "①", lab: [.6, 1] }, { pts: [[7, 4.5], [10.5, 4.5], [7, 1.5]], label: "②", lab: [6.6, 1] }, { pts: [[12.5, 1.5], [16, 1.5], [16, 4.5], [13.5, 4.5]], label: "③", lab: [12.1, 1] }], ok: "① 1개, ② 1개, ③ 2개예요!" }) },
     { inst: "직각을 확인해요.", hints: ["시계에서 긴바늘이 12를 가리킬 때 짧은바늘의 위치를 떠올려요."],
@@ -2423,8 +2527,13 @@ const LESSONS = [
         marks: [{ sym: "○", label: "네 각이 모두 직각", ans: [0, 1], why: "○ 표시를 다시 살펴봐요. 네 각이 모두 직각인 사각형은 2개예요." }, { sym: "△", label: "네 변의 길이가 모두 같음", ans: [1, 2], why: "△ 표시를 다시 살펴봐요. 네 변의 길이가 모두 같은 사각형은 2개예요." }], ok: "○는 가, 나 / △는 나, 다예요. 두 가지를 모두 가진 사각형은 나예요!" }) },
     { inst: "모눈의 검은 선을 이용하여 정사각형 타일을 완성해 보세요.", hints: ["네 변의 길이가 모두 같도록 칸을 세어요.", "②는 기울어진 정사각형이에요. 다른 변처럼 비스듬하게 2칸씩 가요."],
       render: (b, a) => u2GridShape(b, a, { w: 16, h: 8, U: 48, tasks: [{ kind: "sq", given: [[3, 2], [7, 2], [7, 6]], label: "① 두 변이 주어진 정사각형 완성" }, { kind: "sq", given: [[8, 4], [10, 2], [12, 4]], label: "② 기울어진 정사각형 완성" }, { kind: "sq", given: [[10, 6], [13, 6]], label: "③ 한 변이 주어진 정사각형 완성" }], ok: "세 가지 정사각형 타일을 모두 완성했어요!" }) },
-    { inst: "○와 △를 모두 받은 사각형에 대해 말해 보세요.", hints: ["나는 ○와 △를 모두 받았어요."],
-      render: (b, a) => blanks(b, a, ["사각형 나는 네 각이 모두 ", { o: ["직각", "직각이 아니고"], a: 0 }, "이고 네 변의 길이가 모두 ", { o: ["같아요", "달라요"], a: 0 }, ". 사각형 가는 네 각이 모두 직각이지만 네 변의 길이가 ", { o: ["모두 같지는 않아요", "모두 같아요"], a: 0 }, "."]) },
+    { name: "말해 보기 — 주장·근거·질문",
+      inst: "○와 △를 모두 받은 사각형 나를 타일로 골라요. 왜 그런지 세 칸에 써요.", hints: ["나는 ○와 △를 모두 받았어요.", "가는 ○만 받았어요. 무엇이 다를까요?"],
+      render: (b, a) => panes(b, a, [
+        { t: "주장", e: "✋", ph: "바닥 타일 나는 ~이에요", hint: "나는 어떤 사각형인지 말해요" },
+        { t: "근거", e: "🔎", ph: "왜냐하면 네 각이 ~, 네 변이 ~", hint: "네 각과 네 변을 살펴봐요" },
+        { t: "질문", e: "❓", ph: "아직 궁금한 것은 ~", hint: "정사각형 타일에 대해 더 알고 싶은 것" }],
+        { ok: "나는 네 각이 모두 직각이고 네 변의 길이가 모두 같아요. 가는 네 각이 모두 직각이지만 네 변의 길이가 모두 같지는 않아요." }) },
     { inst: "약속: 네 각이 모두 직각이고 네 변의 길이가 모두 같은 사각형을 ‘정사각형’이라고 해요. 직사각형 모양의 색지로 정사각형 타일을 만들어 보세요.", hints: ["짧은 변을 긴 변에 맞추어 접으면 네 변의 길이를 같게 만들 수 있어요."],
       render: (b, a) => u2PaperSquare(b, a, { pw: 6, ph: 4, U: 60, ok: "네 각이 모두 직각이고 네 변의 길이가 모두 같으니 정사각형 타일이에요!" }) },
     { inst: "문구점에서 파는 타일 스티커예요. 정사각형을 모두 찾아 눌러 보세요.", hints: ["네 각이 모두 직각인지, 네 변의 길이가 모두 같은지 두 가지를 확인해요.", "기울어져 있어도 두 가지를 모두 가지면 정사각형이에요."],
@@ -2516,16 +2625,22 @@ const LESSONS = [
       render: (b, a) => u2SetSquare(b, a, { w: 18.5, h: 8.5, U: 48, paper: "grid", start: [.5, 8.1], figs: [{ pts: [[1, 5.5], [1, 3], [2.5, 1.5], [4, 3], [4, 5.5]], label: "①", lab: [.6, 1.2] }, { pts: [[6, 2], [10, 2], [10, 5.5], [6, 5.5]], label: "②", lab: [5.6, 1.4] }, { pts: [[12, 2], [16, 2], [17.5, 4], [16, 6], [12, 6]], label: "③", lab: [11.6, 1.4] }], ok: "① 3개, ② 4개, ③ 2개예요!" }) },
     { name: "확인 4", inst: "도윤이와 서윤이가 말한 타일 모양을 점 종이에 각각 그려 보세요.", hints: ["도윤: 네 각이 모두 직각인 사각형이에요.", "서윤: 네 각이 모두 직각이고 네 변의 길이가 모두 같은 사각형이에요."],
       render: (b, a) => u2GridShape(b, a, { w: 10, h: 7, U: 60, paper: "dots", tasks: [{ kind: "rect", label: "도윤: “네 각이 모두 직각인 사각형.”" }, { kind: "sq", label: "서윤: “네 각이 모두 직각이고 네 변의 길이가 모두 같은 사각형.”" }], ok: "도윤이는 직사각형, 서윤이는 정사각형을 말했어요!" }) },
-    { name: "예전 생각, 지금 생각", inst: "예전 생각, 지금 생각을 써 보세요.", render: (b, a) => writeStep(b, a, [
-      { q: "예전에는 교실의 선과 모양을 ……라고 생각했어요.", tag: "예전" }, { q: "지금은 교실의 선과 모양을 ……라고 생각해요.", tag: "지금" }]) }
+    { name: "예전 생각, 지금 생각 — 예전엔·지금은", inst: "교실의 선과 모양을 보는 생각이 어떻게 달라졌나요? 세 칸에 써서 붙여요.",
+      hints: ["‘예전 생각’에는 배우기 전에 어떻게 생각했는지 써요.", "선분·직각·정사각형 같은 말을 써 봐요."],
+      render: (b, a) => panes(b, a, [
+        { t: "예전 생각", e: "⏮", ph: "예전에는 교실의 선과 모양을 ~라고 생각했어요", hint: "배우기 전 내 생각" },
+        { t: "지금 생각", e: "⏭", ph: "지금은 교실의 선과 모양을 ~라고 생각해요", hint: "배운 뒤 내 생각" },
+        { t: "왜 바뀌었나", e: "🔄", ph: "~을 배워서 바뀌었어요", hint: "어느 차시에 무엇을 배웠는지 떠올려요" }],
+        { ok: "생각이 자란 모습을 잘 모았어요! 교실 곳곳에서 선분과 직각이 있는 도형이 보여요." }) }
   ],
-  challenge: { inst: "교실 꾸미기 마무리 퀴즈예요. 3학년 144명과 전교생 약 890명이 볼 ‘교실 꾸미기 자랑 게시판’에 붙일 문장이 맞는지 골라 보세요.", hints: ["뜻을 하나씩 떠올려요: 직선, 직각, 직사각형, 정사각형.", "크고 작은 직사각형은 한 칸짜리, 두 칸짜리, 세 칸짜리로 나누어 세어요."],
-    render: (b, a) => quiz(b, a, [
-      { q: "① “양쪽으로 끝없이 뻗은 곧은 선은 선분이에요.”", o: ["맞아요", "틀려요"], a: 1, why: { "0": "양쪽으로 끝없이 뻗은 곧은 선은 직선이에요." } },
-      { q: "② “종이를 반듯하게 두 번 접으면 직각이 생겨요.”", o: ["맞아요", "틀려요"], a: 0 },
-      { q: "③ “직사각형은 네 변의 길이가 모두 같아야 해요.”", o: ["맞아요", "틀려요"], a: 1, why: { "0": "직사각형은 네 각이 모두 직각인 사각형이에요. 네 변의 길이가 모두 같아야 한다는 약속은 없어요." } },
-      { q: "④ “정사각형은 네 각이 모두 직각이에요.”", o: ["맞아요", "틀려요"], a: 0 },
-      { q: "창문 모양에서 크고 작은 직사각형은 모두 몇 개인가요?", fig: () => u2Fig([{ rect: [1, .6, 6, 3] }, { line: [[3, .6], [3, 3.6]], dots: false }, { line: [[5, .6], [5, 3.6]], dots: false }], { w: 8, h: 4.2, U: 40, maxW: "14em" }), o: ["3개", "5개", "6개"], a: 2, why: { "0": "한 칸짜리만 셌어요. 두 칸짜리 2개와 세 칸짜리 1개도 있어요.", "1": "세 칸을 모두 합친 큰 직사각형도 세어요." } }], { ok: "①은 직선, ③은 틀린 말이에요. 창문에는 직사각형이 6개 있어요. 우리 반 교실 꾸미기 완성!" }) }
+  challenge: { inst: "예전엔·지금은 + 마인드맵 — 평면도형 마인드맵을 만들어요. 네 칸에 써서 붙여요.",
+    hints: ["‘떠오르는 말’은 낱말만 써도 돼요.", "예: 선분, 반직선, 직선, 각, 직각, 직각삼각형, 직사각형, 정사각형", "‘이어지는 말’은 낱말 둘을 이어 써요. 예: 직각과 직사각형은 이어져요."],
+    render: (b, a) => panes(b, a, [
+      { t: "떠오르는 말", e: "🧠", ph: "떠오르는 낱말", hint: "선분, 직선, 각, 직각…" },
+      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 같은 묶음이에요", hint: "선끼리, 도형끼리 비슷한 것을 묶어요" },
+      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "왜 이어지는지도 써 봐요" },
+      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 교실의 ~", hint: "교실 물건으로 예를 들어요" }],
+      { min: 1, ok: "평면도형 마인드맵을 완성했어요! 우리 반 교실 꾸미기 완성!" }) }
 }];
 
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });

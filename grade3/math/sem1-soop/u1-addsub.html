@@ -179,6 +179,27 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .tolist.on{display:inline-flex}
 .hjfoot{display:block;width:100%;margin:6px 0 0;padding:14px 0 4px;border-top:3px solid var(--line);text-align:center;color:var(--muted);font-size:clamp(14px,1.2vw,17px);line-height:1.7;word-break:keep-all}
 .hjfoot p{margin:2px 0}
+/* 사고 전략 칸 (Project Zero 사고 루틴) */
+.panes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15em),1fr));gap:.7em;margin:.5em 0}
+.pane{border:3px solid var(--line);border-radius:.7em;padding:.6em .7em;background:#fff;display:flex;flex-direction:column;min-height:9em}
+.pane h3{margin:0 0 .3em;font-family:"Jua";font-size:var(--fs-l);font-weight:400;display:flex;align-items:center;gap:.3em;
+  border-bottom:3px solid currentColor;padding-bottom:.25em}
+.pane .pe{font-size:1.1em}
+.pane0{border-color:#2B7BD6}.pane0 h3{color:#2B7BD6}
+.pane1{border-color:#6A4FC9}.pane1 h3{color:#6A4FC9}
+.pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
+.pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
+.phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
+.chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
+  font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
+.chip:hover{background:#FBEDE3;text-decoration:line-through}
+.prow{display:flex;gap:.4em;align-items:center;margin-top:auto}
+.prow input{flex:1;min-width:4em;font:inherit;padding:.3em .5em;border:2px solid var(--line);border-radius:.45em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane{background:#1E2A28}
+  :root:not([data-theme="light"]) .chip{background:#2A3A36}}
+:root[data-theme="dark"] .pane{background:#1E2A28}
+:root[data-theme="dark"] .chip{background:#2A3A36}
 </style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1275,6 +1296,77 @@ function writeStep(body, api, prompts, opts = {}) {
     api.done(prompts.map((p, i) => `${p.tag || p.q}: ${vals[i]}`).join(" | "), opts.ok || "생각을 잘 적었어요!");
   } }, "다 썼어요")));
 }
+/* ── 사고 전략 칸 (하버드 Project Zero 사고 루틴) ───────────────────────────
+   여러 칸에 생각을 쪽지로 붙여 모은다.
+   보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
+   같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
+   panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+function panes(body, api, list, opts = {}) {
+  const need = opts.min || 1;
+  const notes = list.map(() => []);
+  const wrap = h("div", { class: "panes" });
+
+  list.forEach((p, pi) => {
+    const chips = h("div", { class: "chips" });
+    const inp = h("input", { type: "text", placeholder: p.ph || "여기에 써요", maxlength: 60 });
+    const add = () => {
+      const v = inp.value.trim();
+      if (v.length < 2) { api.hint("조금 더 자세히 써 볼까요?"); return; }
+      notes[pi].push(v);
+      const chip = h("button", { class: "chip", title: "누르면 지워요", onclick: () => {
+        const k = notes[pi].indexOf(v); if (k >= 0) notes[pi].splice(k, 1); chip.remove();
+      } }, v);
+      chips.append(chip); inp.value = ""; inp.focus();
+    };
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    wrap.append(h("section", { class: "pane pane" + pi },
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      p.hint ? h("p", { class: "phint" }, p.hint) : "",
+      chips,
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+  });
+
+  body.append(wrap);
+  body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    const thin = list.filter((_, i) => notes[i].length < need);
+    if (thin.length) return api.fail(
+      `${thin.map(p => "‘" + p.t + "’").join(", ")} 칸에 ${need}개 이상 붙여 주세요.`,
+      notes.map(n => n.join(", ")).join(" | "));
+    api.done(list.map((p, i) => `${p.t}: ${notes[i].join(", ")}`).join(" | "),
+      opts.ok || "생각을 잘 모았어요! 친구들 쪽지와 견주어 봐요.");
+  } }, opts.btn || "다 붙였어요")));
+}
+
+/* ── 예상하기 → 확인하기 ──────────────────────────────────────────────────
+   먼저 어림해 보고, 그다음 실제로 계산해 예상과 견준다.
+   opts: { ask, o:[보기], a:정답 보기 번호, then, real, unit, why }        */
+function predictCheck(body, api, opts) {
+  let guess = null;
+  const box = h("div", { class: "qitem" }, h("div", { class: "jua" }, opts.ask));
+  const row = h("div", { class: "opts" });
+  opts.o.forEach((o, oi) => row.append(h("button", { class: "opt", onclick: (e) => {
+    guess = oi; [...row.children].forEach(b => b.classList.remove("on"));
+    e.currentTarget.classList.add("on"); second.classList.remove("hidden");
+    api.hint("예상했어요. 이제 실제로 계산해서 확인해 봐요.");
+  } }, o)));
+  box.append(row);
+
+  const inp = h("input", { type: "number", inputmode: "numeric", placeholder: "실제 값" });
+  const second = h("div", { class: "qitem hidden" },
+    h("div", { class: "jua" }, opts.then || "이제 실제로 계산해 보세요."),
+    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : "",
+      h("button", { class: "opt", onclick: () => {
+        api.tryOnce();
+        if (Number(inp.value) !== opts.real) return api.fail("실제 값을 다시 계산해 봐요.", inp.value);
+        const hit = guess === opts.a;
+        api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
+          (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
+          (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
+      } }, "확인하기")));
+
+  body.append(box, second);
+}
+
 /* 순서 맞추기 */
 function sequence(body, api, cards, order, opts = {}) {
   const picked = [];
@@ -1562,10 +1654,14 @@ const LESSONS = [
         { q: "38 + 25 =", a: 63, unit: "개", why: { "53": "받아올림한 1을 십의 자리에 더하지 않았어요." } },
         { q: "52 − 17 =", a: 35, unit: "개", why: { "45": "일의 자리에서 7 − 2를 했어요. 받아내림이 필요해요." } }],
       { ok: "두 자리 수의 계산을 잘 기억하고 있어요. 세 자리 수도 같은 방법으로 해요!" }) },
-    { inst: "점수판 도우미가 되어 떠오른 생각을 써 보세요.", render: (b, a) => writeStep(b, a, [
-      { q: "보기: 운동회에서 더하거나 빼야 하는 수는 무엇일까요?", tag: "보기" },
-      { q: "생각하기: 245 + 132는 어떻게 계산할 수 있을까요?", tag: "생각" },
-      { q: "궁금해하기: 세 자리 수의 덧셈과 뺄셈에서 무엇이 궁금한가요?", tag: "궁금" }]) },
+    { name: "말해 보기 — 보기·생각하기·궁금해하기",
+      inst: "점수판에 청팀 245점, 백팀 213점이 보여요. 세 칸에 한 가지씩 써서 붙여요.",
+      hints: ["보여요: 점수판에 있는 수를 그대로 써요.", "생각해요: 245 + 132처럼 더하거나 빼는 식을 떠올려요.", "궁금해요: 세 자리 수 계산에서 궁금한 것을 써요."],
+      render: (b, a) => panes(b, a, [
+        { t: "보여요", e: "👀", ph: "~이 보여요", hint: "운동회에서 더하거나 빼야 하는 수를 써요" },
+        { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "245 + 132는 어떻게 계산할지 생각해요" },
+        { t: "궁금해요", e: "❓", ph: "왜 ~일까?", hint: "세 자리 수의 덧셈과 뺄셈에서 궁금한 것" }],
+        { ok: "생각을 잘 모았어요! 점수를 모으면 덧셈, 차이를 구하면 뺄셈이에요." }) },
     { inst: "약속: 세 자리 수도 두 자리 수처럼 계산해요. 알맞은 말을 고르세요.", render: (b, a) => blanks(b, a, ["세 자리 수의 덧셈과 뺄셈은 ", { o: ["같은 자리 수끼리", "아무 자리끼리"], a: 0 }, " 계산해요. 세로셈으로 쓸 때는 ", { o: ["백의 자리", "일의 자리"], a: 1 }, "부터 차례로 계산해요."]) },
     { inst: "덧셈과 뺄셈 중 어느 것이 필요한지 골라 보세요.", render: (b, a) => quiz(b, a, [
       { q: "청팀 245점에 이번 경기 점수 132점이 더해져요. 청팀 점수를 구하려면?", o: ["덧셈", "뺄셈"], a: 0 },
@@ -1609,7 +1705,13 @@ const LESSONS = [
     { inst: "계산하기 전에 어림해 보세요. 수직선에서 더 가까운 몇백을 찾아요.", render: (b, a) => quiz(b, a, [asNearItem(368), asNearItem(225),
       { q: "그러면 368 + 225는 약 얼마일까요?", o: ["약 500", "약 600", "약 700"], a: 1 }],
       { ok: "368은 약 400, 225는 약 200이라서 합은 약 600이에요. 실제 합 593과 가까워요!" }) },
-    { inst: "받아올림을 말로 정리해요.", render: (b, a) => blanks(b, a, ["같은 자리 수끼리 더한 값이 10이거나 10보다 크면 ", { o: ["바로 윗자리로 1을 받아올림해요", "두 자리 수를 그대로 써요"], a: 0 }, ". 받아올림한 1은 ", { o: ["윗자리 수와 함께 더해요", "버려요"], a: 0 }, "."]) },
+    { name: "말해 보기 — 설명 놀이",
+      inst: "368 + 225를 계산할 때 무엇을 알아차렸나요? 알아차린 것과 그 까닭을 써서 붙여요.",
+      hints: ["일의 자리 8 + 5 = 13이에요. 10이 넘었어요.", "13에서 10은 십 모형 1개로 바꿀 수 있어요.", "받아올림한 1은 십의 자리 수와 함께 더해요."],
+      render: (b, a) => panes(b, a, [
+        { t: "알아차렸어요", e: "🔍", ph: "~을 알아차렸어요", hint: "일의 자리 8 + 5는 얼마인가요?" },
+        { t: "왜 그럴까요", e: "💭", ph: "왜냐하면 ~", hint: "일 모형 10개는 십 모형 몇 개와 같나요?" }],
+        { ok: "잘 설명했어요! 더한 값이 10이거나 10보다 크면 윗자리로 1을 받아올림해요. 받아올림한 1은 윗자리 수와 함께 더해요." }) },
     { inst: "세로셈으로 계산해 보세요. 받아올림한 1은 메모 칸에 적어요.", render: (b, a) => simColumn(b, a, { a: 457, b: 281, op: "+", tip: "십의 자리: 5 + 8 = 13 → 3을 쓰고 1을 백의 자리로 받아올림해요." }) },
     { inst: "스스로 계산해 보세요.",
       hints: ["어느 자리에서 10이 넘는지 먼저 찾아요.", "245 + 136 → 일의 자리 5 + 6 = 11 (1을 쓰고 1을 받아올림) → 십의 자리 4 + 3 + 1 = 8 → 백의 자리 2 + 1 = 3"],
@@ -1635,8 +1737,15 @@ const LESSONS = [
     { inst: "청팀이 오전에 487점, 오후에 356점을 얻었어요. 수 모형을 모으고 10개씩 윗자리 모형으로 바꿔 보세요.",
       hints: ["일 모형 13개 → 10개를 십 모형 1개로 바꿔요.", "십 모형도 10개가 넘으면 백 모형 1개로 바꿔요."],
       render: (b, a) => simBlocksAdd(b, a, { a: 487, b: 356, tip: "일의 자리와 십의 자리 모두 10개가 넘어요." }) },
-    { inst: "다른 방법: 백의 자리부터 자리별로 더한 뒤 모두 더해 보세요.", render: (b, a) => numbers(b, a, [{ q: "400 + 300 =", a: 700 }, { q: "80 + 50 =", a: 130 }, { q: "7 + 6 =", a: 13 }, { q: "700 + 130 + 13 =", a: 843 }],
-      { ok: "어느 방법으로 계산해도 487 + 356 = 843이에요." }) },
+    { name: "그려 보기 — 예상하고 확인하기",
+      inst: "응원 수술을 오전에 438개, 오후에 395개 만들었어요. 먼저 몇백으로 어림해 예상하고, 그다음 실제로 계산해요.",
+      hints: ["438은 약 400, 395도 약 400이에요. 어림하면 약 800이에요.", "자리별로 더해 봐요. 400 + 300 = 700, 30 + 90 = 120. 일의 자리는 8 + 5 = 13", "700 + 120 + 13 = 833"],
+      render: (b, a) => predictCheck(b, a, {
+        ask: "438 + 395는 800보다 클까요, 작을까요?",
+        o: ["800보다 작아요", "800보다 커요"], a: 1,
+        then: "이제 실제로 계산해 보세요. 438 + 395 =",
+        real: 833, unit: "개",
+        why: "438은 400보다 38 크고, 395는 400보다 5 작아요. 그래서 합이 800보다 조금 커요." }) },
     { inst: "받아올림이 여러 번 있을 때를 정리해요.", render: (b, a) => blanks(b, a, ["받아올림이 두 번 있으면 받아올림한 1을 ", { o: ["두 번 모두", "한 번만"], a: 0 }, " 윗자리에 더해요. 백의 자리 수끼리 더한 값이 10이거나 10보다 크면 ", { o: ["천의 자리", "일의 자리"], a: 0 }, "에 1을 써요."]) },
     { inst: "백팀은 오전 685점, 오후 548점이에요. 세로셈으로 더해 보세요.", render: (b, a) => simColumn(b, a, { a: 685, b: 548, op: "+", tip: "받아올림이 세 번 있어요. 백의 자리에서 받아올림한 1은 천의 자리에 써요." }) },
     { inst: "스스로 계산해 보세요.",
@@ -1686,7 +1795,13 @@ const LESSONS = [
     { inst: "계산하기 전에 어림해 보세요.", render: (b, a) => quiz(b, a, [asNearItem(526), asNearItem(144),
       { q: "그러면 526 − 144는 약 얼마일까요?", o: ["약 300", "약 400", "약 500"], a: 1 }],
       { ok: "약 500 − 약 100 = 약 400. 실제 차 382와 가까워요!" }) },
-    { inst: "받아내림을 말로 정리해요.", render: (b, a) => blanks(b, a, ["같은 자리 수끼리 뺄 수 없으면 ", { o: ["바로 윗자리에서 10을 받아내림해요", "큰 수에서 작은 수를 빼요"], a: 0 }, ". 받아내림한 윗자리 수는 ", { o: ["1 작아져요", "1 커져요"], a: 0 }, "."]) },
+    { name: "말해 보기 — 빨간불·노란불",
+      inst: "친구 두 명이 526 − 144를 풀었어요. 가 친구는 422, 나 친구는 482라고 했어요. 틀린 곳과 이상한 곳을 찾아 붙여요.",
+      hints: ["가 친구: 십의 자리에서 4 − 2를 했어요. 2에서 4를 뺄 수 있나요?", "나 친구: 받아내림한 백의 자리 5는 몇이 되어야 하나요?", "어림하면 약 400이에요. 482는 약 400과 가까운가요?"],
+      render: (b, a) => panes(b, a, [
+        { t: "빨간불 — 이건 틀렸어요", e: "🔴", ph: "~이 틀렸어요", hint: "가 친구 422: 십의 자리 2에서 4를 어떻게 뺐나요?" },
+        { t: "노란불 — 이건 좀 이상해요", e: "🟡", ph: "~이 좀 이상해요", hint: "나 친구 482: 어림한 약 400과 견주어 봐요" }],
+        { ok: "잘 찾았어요! 뺄 수 없으면 윗자리에서 10을 받아내림해요. 받아내림한 윗자리 수는 1 작아져요. 526 − 144 = 382예요." }) },
     { inst: "세로셈으로 계산해 보세요. 받아내림한 뒤의 수를 메모 칸에 적어요.", render: (b, a) => simColumn(b, a, { a: 643, b: 218, op: "-", tip: "일의 자리 3에서 8을 뺄 수 없어요. 십의 자리에서 10을 받아내림하면 13 − 8 = 5." }) },
     { inst: "스스로 계산해 보세요.",
       hints: ["어느 자리에서 뺄 수 없는지 먼저 찾아요.", "371 − 126 → 11 − 6 = 5 → 십의 자리 7이 6이 되어 6 − 2 = 4 → 3 − 1 = 2"],
@@ -1801,16 +1916,22 @@ const LESSONS = [
     { name: "확인 4", inst: "운동회 문제", render: (b, a) => numbers(b, a, [
       { q: "3학년 144명과 응원 온 가족 268명은 모두 몇 명일까요?", a: 412, unit: "명" },
       { q: "풍선 500개 중 3학년 144명에게 1개씩 주면 남는 풍선은?", a: 356, unit: "개" }], { ok: "상황에 맞게 덧셈과 뺄셈을 골랐어요!" }) },
-    { name: "예전 생각, 지금 생각", inst: "생각이 어떻게 달라졌는지 써 보세요.", render: (b, a) => writeStep(b, a, [
-      { q: "예전에는 세 자리 수의 덧셈과 뺄셈을 ……라고 생각했어요.", tag: "예전" }, { q: "지금은 ……라고 생각해요.", tag: "지금" }]) }
+    { name: "예전 생각, 지금 생각 — 예전엔·지금은", inst: "생각이 어떻게 달라졌는지 세 칸에 써서 붙여요.",
+      hints: ["예전엔: 세 자리 수 계산이 어렵다고 생각했나요?", "지금은: 받아올림, 받아내림, 어림을 떠올려요.", "왜 바뀌었나: 수 모형이나 세로셈으로 해 본 것을 써요."],
+      render: (b, a) => panes(b, a, [
+        { t: "예전 생각", e: "⏮", ph: "예전에는 ~라고 생각했어요", hint: "세 자리 수의 덧셈과 뺄셈을 어떻게 생각했나요?" },
+        { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요" },
+        { t: "왜 바뀌었나", e: "🔄", ph: "~을 해 보고 바뀌었어요", hint: "수 모형, 세로셈, 어림 중 무엇이 도움이 되었나요?" }],
+        { ok: "생각이 자랐어요! 같은 자리끼리 일의 자리부터 계산하고, 어림으로 확인해요." }) }
   ],
-  challenge: { inst: "단원 도전 문제예요.",
-    hints: ["□ + 358 = 720이면 □ = 720 − 358이에요."],
-    render: (b, a) => numbers(b, a, [
-      { q: "전교생을 890명이라고 할 때, 청팀이 446명이면 백팀은 몇 명일까요?", a: 444, unit: "명" },
-      { q: "□ + 358 = 720일 때 □ =", a: 362 },
-      { q: "우리 반 25명이 응원 도구를 만들었어요. 깃발 185개와 수술 276개를 만들었다면 모두 몇 개일까요?", a: 461, unit: "개" }],
-    { ok: "덧셈과 뺄셈 단원을 모두 해냈어요! 점수판 도우미 임무 완료!" }) }
+  challenge: { inst: "예전엔·지금은 + 마인드맵 — 덧셈과 뺄셈 낱말을 모아 이어요. 네 칸에 써서 붙여요.",
+    hints: ["떠오르는 말: 받아올림, 받아내림, 어림, 몇백, 세로셈…", "묶어 보기: 덧셈에 쓰는 말과 뺄셈에 쓰는 말로 나누어 봐요.", "이어지는 말: 예) 어림과 계산은 이어져요. 답이 맞는지 알 수 있어요."],
+    render: (b, a) => panes(b, a, [
+      { t: "떠오르는 말", e: "🧠", ph: "덧셈과 뺄셈 하면 떠오르는 말", hint: "받아올림, 받아내림, 어림, 몇백…" },
+      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "비슷한 것끼리 묶어요" },
+      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "예) 덧셈과 뺄셈은 이어져요" },
+      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "예) 890 − 446 = 444처럼 식을 써도 돼요" }],
+      { min: 1, ok: "덧셈과 뺄셈 마인드맵을 만들었어요! 점수판 도우미 임무 완료!" }) }
 }];
 
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });

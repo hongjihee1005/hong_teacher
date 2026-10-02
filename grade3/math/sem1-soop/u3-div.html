@@ -179,6 +179,27 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .tolist.on{display:inline-flex}
 .hjfoot{display:block;width:100%;margin:6px 0 0;padding:14px 0 4px;border-top:3px solid var(--line);text-align:center;color:var(--muted);font-size:clamp(14px,1.2vw,17px);line-height:1.7;word-break:keep-all}
 .hjfoot p{margin:2px 0}
+/* 사고 전략 칸 (Project Zero 사고 루틴) */
+.panes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15em),1fr));gap:.7em;margin:.5em 0}
+.pane{border:3px solid var(--line);border-radius:.7em;padding:.6em .7em;background:#fff;display:flex;flex-direction:column;min-height:9em}
+.pane h3{margin:0 0 .3em;font-family:"Jua";font-size:var(--fs-l);font-weight:400;display:flex;align-items:center;gap:.3em;
+  border-bottom:3px solid currentColor;padding-bottom:.25em}
+.pane .pe{font-size:1.1em}
+.pane0{border-color:#2B7BD6}.pane0 h3{color:#2B7BD6}
+.pane1{border-color:#6A4FC9}.pane1 h3{color:#6A4FC9}
+.pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
+.pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
+.phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
+.chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
+  font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
+.chip:hover{background:#FBEDE3;text-decoration:line-through}
+.prow{display:flex;gap:.4em;align-items:center;margin-top:auto}
+.prow input{flex:1;min-width:4em;font:inherit;padding:.3em .5em;border:2px solid var(--line);border-radius:.45em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane{background:#1E2A28}
+  :root:not([data-theme="light"]) .chip{background:#2A3A36}}
+:root[data-theme="dark"] .pane{background:#1E2A28}
+:root[data-theme="dark"] .chip{background:#2A3A36}
 </style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1274,6 +1295,77 @@ function writeStep(body, api, prompts, opts = {}) {
     api.done(prompts.map((p, i) => `${p.tag || p.q}: ${vals[i]}`).join(" | "), opts.ok || "생각을 잘 적었어요!");
   } }, "다 썼어요")));
 }
+/* ── 사고 전략 칸 (하버드 Project Zero 사고 루틴) ───────────────────────────
+   여러 칸에 생각을 쪽지로 붙여 모은다.
+   보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
+   같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
+   panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+function panes(body, api, list, opts = {}) {
+  const need = opts.min || 1;
+  const notes = list.map(() => []);
+  const wrap = h("div", { class: "panes" });
+
+  list.forEach((p, pi) => {
+    const chips = h("div", { class: "chips" });
+    const inp = h("input", { type: "text", placeholder: p.ph || "여기에 써요", maxlength: 60 });
+    const add = () => {
+      const v = inp.value.trim();
+      if (v.length < 2) { api.hint("조금 더 자세히 써 볼까요?"); return; }
+      notes[pi].push(v);
+      const chip = h("button", { class: "chip", title: "누르면 지워요", onclick: () => {
+        const k = notes[pi].indexOf(v); if (k >= 0) notes[pi].splice(k, 1); chip.remove();
+      } }, v);
+      chips.append(chip); inp.value = ""; inp.focus();
+    };
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    wrap.append(h("section", { class: "pane pane" + pi },
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      p.hint ? h("p", { class: "phint" }, p.hint) : "",
+      chips,
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+  });
+
+  body.append(wrap);
+  body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    const thin = list.filter((_, i) => notes[i].length < need);
+    if (thin.length) return api.fail(
+      `${thin.map(p => "‘" + p.t + "’").join(", ")} 칸에 ${need}개 이상 붙여 주세요.`,
+      notes.map(n => n.join(", ")).join(" | "));
+    api.done(list.map((p, i) => `${p.t}: ${notes[i].join(", ")}`).join(" | "),
+      opts.ok || "생각을 잘 모았어요! 친구들 쪽지와 견주어 봐요.");
+  } }, opts.btn || "다 붙였어요")));
+}
+
+/* ── 예상하기 → 확인하기 ──────────────────────────────────────────────────
+   먼저 어림해 보고, 그다음 실제로 계산해 예상과 견준다.
+   opts: { ask, o:[보기], a:정답 보기 번호, then, real, unit, why }        */
+function predictCheck(body, api, opts) {
+  let guess = null;
+  const box = h("div", { class: "qitem" }, h("div", { class: "jua" }, opts.ask));
+  const row = h("div", { class: "opts" });
+  opts.o.forEach((o, oi) => row.append(h("button", { class: "opt", onclick: (e) => {
+    guess = oi; [...row.children].forEach(b => b.classList.remove("on"));
+    e.currentTarget.classList.add("on"); second.classList.remove("hidden");
+    api.hint("예상했어요. 이제 실제로 계산해서 확인해 봐요.");
+  } }, o)));
+  box.append(row);
+
+  const inp = h("input", { type: "number", inputmode: "numeric", placeholder: "실제 값" });
+  const second = h("div", { class: "qitem hidden" },
+    h("div", { class: "jua" }, opts.then || "이제 실제로 계산해 보세요."),
+    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : "",
+      h("button", { class: "opt", onclick: () => {
+        api.tryOnce();
+        if (Number(inp.value) !== opts.real) return api.fail("실제 값을 다시 계산해 봐요.", inp.value);
+        const hit = guess === opts.a;
+        api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
+          (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
+          (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
+      } }, "확인하기")));
+
+  body.append(box, second);
+}
+
 /* 순서 맞추기 */
 function sequence(body, api, cards, order, opts = {}) {
   const picked = [];
@@ -2201,12 +2293,14 @@ const LESSONS = [
       render: (b, a) => quiz(b, a, [
         { q: "나누는 일을 모두 고르세요.", o: ["색종이를 모둠마다 똑같이 나누어 주기", "풀을 한 모둠에 3개씩 나누어 주기", "모둠 활동 시작 시각을 시계로 확인하기", "자를 모둠 바구니에 똑같이 나누어 담기"], a: [0, 1, 3] }],
         { ok: "모둠 활동 준비에는 나누는 일이 아주 많아요!", bad: "물건이나 사람을 나누는 일인지 다시 살펴봐요." }) },
-    { inst: "생각을 써 보세요.",
+    { name: "말해 보기 — 보기·생각하기·궁금해하기",
+      inst: "준비단이 25명을 5모둠으로 나누었어요. 세 칸에 한 가지씩 써서 붙여요.",
       hints: ["짝과 색종이나 간식을 나누었던 때를 떠올려 봐요.", "‘어떻게 하면 똑같이 나눌 수 있을까?’처럼 궁금한 것을 써도 좋아요."],
-      render: (b, a) => writeStep(b, a, [
-        { q: "보기: 친구와 물건을 똑같이 나누어 가졌던 경험을 써 보세요.", tag: "보기" },
-        { q: "생각하기: 똑같이 나누려면 어떻게 하면 좋을까요?", tag: "생각" },
-        { q: "궁금해하기: 준비물을 나눌 때 궁금한 것은 무엇인가요?", tag: "궁금" }]) },
+      render: (b, a) => panes(b, a, [
+        { t: "보여요", e: "👀", ph: "~이 보여요", hint: "모둠마다 몇 명인지, 준비물은 무엇인지 써요" },
+        { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "똑같이 나누려면 어떻게 하면 좋을까요?" },
+        { t: "궁금해요", e: "❓", ph: "왜 ~일까?", hint: "준비물을 나눌 때 궁금한 것을 써요" }],
+        { ok: "생각을 잘 모았어요! 똑같이 나누면 모두 같은 수만큼 가져요." }) },
     { name: "배운 내용 떠올리기", inst: "나눗셈을 배우려면 곱셈구구가 필요해요. 2학년 때 배운 곱셈구구를 떠올려 보세요.",
       hints: ["5 × 5는 5를 5번 더한 것과 같아요.", "곱셈표에서 두 수가 만나는 칸을 찾아도 돼요."],
       render: (b, a) => numbers(b, a, [{ q: "5 × 5 =", a: 25 }, { q: "4 × 6 =", a: 24 }, { q: "3 × 8 =", a: 24 }, { q: "6 × 7 =", a: 42 }],
@@ -2237,9 +2331,14 @@ const LESSONS = [
       render: (b, a) => u3ShareOut(b, a, { n: 30, g: 5, item: "색종이", unit: "장", kind: "paper", box: "모둠", labels: M5, size: 36, eq: true,
         ask: [{ q: "한 모둠은 몇 장?", a: 6, unit: "장", why: { "5": "5는 모둠의 수예요. 한 모둠이 받은 색종이를 세어 봐요." } }],
         ok: "30 ÷ 5 = 6. 한 모둠에 색종이 6장씩이에요!" }) },
-    { inst: "몫이 무엇을 나타내는지 말해 보세요.",
+    { name: "말해 보기 — 생각·수수께끼·탐구",
+      inst: "색종이 30장을 5모둠에 똑같이 나누었어요. 세 칸에 써서 붙여요.",
       hints: ["30 ÷ 5 = 6에서 6은 한 모둠이 받은 색종이의 수예요.", "하나씩 번갈아 가며 나누어 주었던 방법을 떠올려 봐요."],
-      render: (b, a) => blanks(b, a, ["30 ÷ 5 = 6에서 몫 6은 ", { o: ["한 모둠이 받는 색종이 수", "모둠의 수"], a: 0 }, "예요. 색종이를 ", { o: ["한 장씩 번갈아 가며", "한 모둠에 모두"], a: 0 }, " 나누어 주면 똑같이 나눌 수 있어요."]) },
+      render: (b, a) => panes(b, a, [
+        { t: "안다고 생각해요", e: "💡", ph: "똑같이 나누기는 ~예요", hint: "30 ÷ 5 = 6에서 6은 무엇일까요?" },
+        { t: "궁금해요", e: "🧩", ph: "~은 왜 그럴까?", hint: "똑같이 나눌 때 궁금한 것을 써요" },
+        { t: "이렇게 알아볼래요", e: "🔭", ph: "~해서 알아볼래요", hint: "한 장씩 번갈아 나누어 보기처럼 써요" }],
+        { ok: "잘 모았어요! 30 ÷ 5 = 6에서 몫 6은 한 모둠이 받는 색종이 수예요. 한 장씩 번갈아 주면 똑같이 나눌 수 있어요." }) },
     { inst: "약속: 나눗셈식의 이름과 읽는 방법을 알아보아요.",
       hints: ["나누기 전 전체의 수가 나누어지는 수, 몇으로 나누는지가 나누는 수, 나눈 결과가 몫이에요.", "÷는 ‘나누기’, =는 ‘~과(와) 같습니다’라고 읽어요."],
       words: ["나누어지는 수", "나누는 수", "몫", "나누기", "같습니다"],
@@ -2316,9 +2415,13 @@ const LESSONS = [
       render: (b, a) => u3MulDiv(b, a, { rows: 5, cols: 7, item: "도화지", unit: "장", kind: "paper",
         eqs: [{ t: "5 × 7 =", a: 35, show: "col" }, { t: "35 ÷ 5 =", a: 7, show: "col" }, { t: "35 ÷ 7 =", a: 5, show: "row" }],
         ok: "5 × 7 = 35 → 35 ÷ 5 = 7, 35 ÷ 7 = 5예요!" }) },
-    { inst: "곱셈식과 나눗셈식의 관계를 말해 보세요.",
-      hints: ["곱셈식의 곱이 나눗셈식에서는 맨 앞(나누어지는 수)으로 가요.", "5 × 7 = 35로 35 ÷ 5 = 7과 35 ÷ 7 = 5를 만들었어요."],
-      render: (b, a) => blanks(b, a, ["곱셈식 5 × 7 = 35의 곱 35는 나눗셈식에서 ", { o: ["나누어지는 수", "몫"], a: 0 }, "가 돼요. 곱셈식 1개로 나눗셈식을 ", { o: ["2개", "1개"], a: 0 }, " 만들 수 있어요."]) },
+    { name: "말해 보기 — 설명 놀이",
+      inst: "5 × 7 = 35로 나눗셈식 두 개를 만들었어요. 두 칸에 써서 붙여요.",
+      hints: ["곱셈식의 곱이 나눗셈식에서는 맨 앞(나누어지는 수)으로 가요.", "5 × 7 = 35 하나로 나눗셈식 두 개를 만들었어요. 35 ÷ 5 = 7, 35 ÷ 7 = 5"],
+      render: (b, a) => panes(b, a, [
+        { t: "알아차렸어요", e: "🔍", ph: "~을 알아차렸어요", hint: "35 ÷ 5 = 7, 35 ÷ 7 = 5에서 35는 어디에 있나요?" },
+        { t: "왜 그럴까요", e: "💭", ph: "왜냐하면 ~", hint: "도화지를 세로로 묶을 때와 가로로 묶을 때를 떠올려 봐요" }],
+        { ok: "잘 모았어요! 곱 35는 나눗셈식에서 나누어지는 수가 돼요. 곱셈식 1개로 나눗셈식 2개를 만들어요." }) },
     { inst: "약속: 관계 나무를 완성해요. 곱셈식은 나눗셈식 2개로, 나눗셈식은 곱셈식 2개로 나타내요.",
       hints: ["6 × 7 = 42 → 42 ÷ 6 = 7, 42 ÷ 7 = 6", "45 ÷ 9 = 5 → 9 × 5 = 45, 5 × 9 = 45"],
       render: (b, a) => u3RelTree(b, a, { trees: [{ from: "mul", a: 6, b: 7 }, { from: "div", n: 45, d: 9 }] }) },
@@ -2380,9 +2483,15 @@ const LESSONS = [
     { inst: "모둠 활동에 쓸 붙임쪽지 42장을 한 명에게 7장씩 주려고 해요. 곱셈표에서 42 ÷ 7의 몫을 찾아보세요.",
       hints: ["나누는 수가 7이니까 7단 줄을 먼저 눌러요.", "7단 줄에서 42를 찾아 누르고, 그 칸 맨 위의 수를 읽어요."],
       render: (b, a) => u3TableFind(b, a, { a: 42, b: 7, qUnit: "명", ok: "7 × 6 = 42이므로 42 ÷ 7 = 6. 6명에게 줄 수 있어요!" }) },
-    { inst: "곱셈표로 몫을 차례로 찾아보세요.",
-      hints: ["48 ÷ 6은 6단, 63 ÷ 9는 9단, 40 ÷ 5는 5단을 봐요."],
-      render: (b, a) => u3TableFind(b, a, { probs: [[48, 6], [63, 9], [40, 5]], ok: "48 ÷ 6 = 8, 63 ÷ 9 = 7, 40 ÷ 5 = 8. 곱셈표로 몫을 모두 찾았어요!" }) },
+    { name: "그려 보기 — 예상하고 확인하기",
+      inst: "보드게임 카드 48장을 한 명에게 6장씩 줘요. 먼저 몫을 어림하고, 곱셈구구로 구해요.",
+      hints: ["6 × 5 = 30이에요. 48은 30보다 큰가요, 작은가요?", "6단 곱셈구구에서 곱이 48인 것을 찾아요. 6 × 8 = 48"],
+      render: (b, a) => predictCheck(b, a, {
+        ask: "48 ÷ 6의 몫은 5보다 클까요, 작을까요?",
+        o: ["5보다 작아요", "5보다 커요"], a: 1,
+        then: "이제 6단 곱셈구구로 몫을 구해 보세요. 48 ÷ 6 =",
+        real: 8, unit: "",
+        why: "6 × 5 = 30인데 48은 30보다 커요. 6 × 8 = 48이라서 몫은 8이에요." }) },
     { inst: "곱셈구구로 몫을 구하는 방법을 말해 보세요.",
       hints: ["나누는 수 6의 단을 떠올려요. 6 × □ = 54"],
       render: (b, a) => quiz(b, a, [
@@ -2543,15 +2652,22 @@ const LESSONS = [
         { q: "우리 반 25명이 5명씩 모둠을 만들 때 알맞은 식은?", o: ["25 ÷ 5 = 5", "25 - 5 = 20", "25 + 5 = 30"], a: 0 },
         { q: "‘72 나누기 9는 8과 같습니다’를 식으로 쓰면?", o: ["72 ÷ 9 = 8", "72 - 9 = 8", "9 ÷ 72 = 8"], a: 0 }],
         { ok: "나눗셈의 뜻을 정확히 알고 있어요." }) },
-    { name: "예전 생각, 지금 생각", inst: "생각이 어떻게 달라졌는지 써 보세요.",
-      hints: ["‘예전에는 똑같이 나누는 것이 …’처럼 시작해 봐요."],
-      render: (b, a) => writeStep(b, a, [
-        { q: "예전에는 나눗셈을 ……라고 생각했어요.", tag: "예전" },
-        { q: "지금은 ……라고 생각해요.", tag: "지금" }]) }
+    { name: "예전 생각, 지금 생각 — 예전엔·지금은", inst: "나눗셈 생각이 어떻게 달라졌는지 세 칸에 써서 붙여요.",
+      hints: ["‘예전에는 똑같이 나누는 것이 …’처럼 시작해 봐요.", "‘몫’, ‘곱셈구구’처럼 새로 배운 낱말을 넣어 봐요."],
+      render: (b, a) => panes(b, a, [
+        { t: "예전 생각", e: "⏮", ph: "예전에는 나눗셈을 ~라고 생각했어요", hint: "배우기 전 내 생각을 떠올려요" },
+        { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요", hint: "똑같이 나누기, 몇씩 덜어 내기를 떠올려요" },
+        { t: "왜 바뀌었나", e: "🔄", ph: "~을 해 보고 바뀌었어요", hint: "어떤 활동을 하고 생각이 바뀌었나요?" }],
+        { ok: "생각이 자랐어요! 나눗셈은 똑같이 나누거나 몇씩 덜어 내는 계산이에요." }) }
   ],
-  challenge: { inst: "다람쥐가 나무까지 가도록 갈림길마다 몫이 적힌 길을 골라요.",
-    render: (b, a) => u3QuotientPath(b, a, { forks: [{ e: "18 ÷ 3", o: [6, 5] }, { e: "28 ÷ 7", o: [3, 4] }, { e: "45 ÷ 5", o: [9, 8] }, { e: "32 ÷ 8", o: [4, 6] }, { e: "25 ÷ 5", o: [4, 5] }],
-      ok: "모든 갈림길에서 몫을 정확히 골랐어요. 모둠 활동 준비단 임무 완료!" }) }
+  challenge: { inst: "예전엔·지금은 + 마인드맵 — 나눗셈 낱말로 마인드맵을 만들어요. 네 칸에 써서 붙여요.",
+    hints: ["‘떠오르는 말’은 낱말만 써도 돼요. 예: 똑같이 나누기, 몫, 곱셈구구", "‘이어지는 말’은 ‘곱셈식과 나눗셈식은 이어져요’처럼 써요."],
+    render: (b, a) => panes(b, a, [
+      { t: "떠오르는 말", e: "🧠", ph: "나눗셈 하면 떠오르는 말", hint: "똑같이 나누기, 덜어 내기, 몫, 곱셈구구…" },
+      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "비슷한 낱말끼리 묶어 봐요" },
+      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "곱셈식과 나눗셈식처럼 이어 봐요" },
+      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "25 ÷ 5 = 5처럼 예를 들어요" }],
+      { min: 1, ok: "나눗셈 마인드맵을 완성했어요. 모둠 활동 준비단 임무 완료!" }) }
 }];
 
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
