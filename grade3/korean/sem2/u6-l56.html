@@ -1215,7 +1215,7 @@ R.record=X=>{
   $('body').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{sv[+b.dataset.c]=+b.dataset.v;saved.self=sv;store.set(key,saved);
     $('body').querySelectorAll(`[data-c="${b.dataset.c}"]`).forEach(z=>z.setAttribute('aria-pressed',z===b));});
 };
-R.sum=X=>{$('body').innerHTML=hd(X)+`<div class="sum" style="--n:${Math.min(X.boxes.length,3)}">${X.boxes.map(b=>`<div class="sumbox" style="--cc:${b.c}"><b>${b.t}</b><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}</div>`;};
+R.sum=X=>{$('body').innerHTML=hd(X)+`<div class="sum" style="--n:${Math.min(X.boxes.length,3)}">${X.boxes.map(b=>`<div class="sumbox" style="--cc:${b.c}"><b style="display:flex;gap:.35em;align-items:flex-start">${(m=>m?`<span style="flex:none">${m[1]}</span><span>${b.t.slice(m[0].length)}</span>`:b.t)(b.t.match(/^([^\s\w\uAC00-\uD7A3]+)\s*/))}</b><ul>${b.items.map(i=>`<li>${i}</li>`).join('')}</ul></div>`).join('')}</div>`;};
 R.final=X=>{beep('win');$('body').innerHTML=hd(X)+`<div class="promise">${X.lines.map(t=>`<div>${t}</div>`).join('')}</div><div class="scores" style="justify-content:center">${teamPodium()}</div>`;};
 R.bingo=X=>{
   let left=shuffle(X.calls),said=[];
