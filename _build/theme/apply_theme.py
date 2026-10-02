@@ -37,7 +37,7 @@ def crumb(m, rel):
     root_rel = os.path.relpath('index.html', os.path.dirname(rel) or '.').replace('\\', '/')
     out = []
     for href, lab in links:
-        if href == root_rel or '홍지희' in lab:
+        if href == root_rel or '초등교사 홍지희' in lab:
             out.append(f'<a class="c-link c-home" href="{href}">{HOME_SVG}<span>홈</span></a>')
         else:
             out.append(f'<a class="c-link" href="{href}">{clean(lab)}</a>')
