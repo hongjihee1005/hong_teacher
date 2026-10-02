@@ -405,12 +405,12 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   var h=document.createElement('div');h.className='hj-maplab';h.innerHTML='<b>주제 프로젝트 지도</b><span>'+a+'~'+b+'차시 동안 여러 날에 걸쳐 함께 해요'+(ct?' · 오늘은 <em>'+ct+'</em>':'')+'</span>';m.before(h)}
  if(cur&&!cur.querySelector('.hj-today')){var t=document.createElement('i');t.className='hj-today';t.textContent='오늘';cur.prepend(t)}
  document.querySelectorAll('#cover .hj-flabel').forEach(function(l){if(l.textContent.trim()==='수업 흐름')l.textContent='오늘 수업 흐름'})})();
-/* 문제 보기 통일: 앞의 '1. 2.' 글자는 지우고(①②③④는 CSS가 붙임), 길이에 따라 가운데·왼쪽 정렬 */
+/* 문제 보기 통일: 앞의 '1. 2.' 글자는 지우고(①②③④는 CSS가 붙임), 모두 왼쪽 정렬 */
 (function(){var SEL='.opts2,.qz .opts,body.ov section #quiz .pick,body.ov section #perf .pick,body.ov section .qz .pick';
  function lab(g){var bs=[].filter.call(g.children,function(c){return c.tagName==='BUTTON'});if(bs.length<2)return;
   bs.forEach(function(b){var t=b.firstChild;while(t&&t.nodeType===3&&!t.nodeValue.trim())t=t.nextSibling;if(t&&t.nodeType===3&&/^\s*\d+\.\s/.test(t.nodeValue))t.nodeValue=t.nodeValue.replace(/^\s*\d+\.\s*/,'')});
   var lens=bs.map(function(b){return b.textContent.replace(/\s+/g,' ').trim().length}),long=lens.some(function(n){return n>10});g.classList.toggle('hj-xlong',lens.some(function(n){return n>16}));
-  var cols=(getComputedStyle(g).gridTemplateColumns||'').split(' ').filter(Boolean).length;if(long&&cols>=2)long=false;
+  long=true;/* 2026-10-02 선생님 요청: 보기는 길이와 상관없이 모두 왼쪽 정렬 */
   g.classList.add('hj-optg');g.classList.toggle('hj-long',long);g.classList.toggle('hj-short',!long)}
  function run(){document.querySelectorAll(SEL).forEach(lab)}
  run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,30)}).observe(document.body,{childList:true,subtree:true})})();
