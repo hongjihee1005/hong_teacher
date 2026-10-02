@@ -519,3 +519,12 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
  function fix(n){var v=n.nodeValue;if(v.indexOf('지도서')<0)return;var t=v.replace(RX,'');if(t!==v)n.nodeValue=t}
  function run(r){if(!r)return;if(r.nodeType===3){if(r.parentElement&&!r.parentElement.closest(SKIP))fix(r);return}if(r.nodeType!==1||r.closest(SKIP))return;var w=document.createTreeWalker(r,4),n,a=[];while(n=w.nextNode())if(!n.parentElement.closest(SKIP))a.push(n);a.forEach(fix)}
  run(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')run(m.target);else m.addedNodes.forEach(run)})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
+/* 홍지희 버전 자료 카드(.mini .m): 위 제목 칸(자료 번호+제목, 한 줄) → 가운데 큰 사진 → 설명 → 출처(작게) */
+(function(){function fix(){document.querySelectorAll('.mini .m:not(.mb):not([data-hjv])').forEach(function(m){
+  var media=m.querySelector(':scope>img,:scope>.e'),box=m.querySelector(':scope>div');if(!box)return;
+  var num=box.querySelector('.num'),b=box.querySelector('b'),d=box.querySelector('.d'),sm=box.querySelector('small');if(!b)return;
+  m.dataset.hjv='1';m.classList.add('hj-v');
+  var h=document.createElement('div');h.className='hj-mh';if(num)h.appendChild(num);h.appendChild(document.createTextNode(' '));h.appendChild(b);
+  var p=document.createElement('div');p.className='hj-mp';if(media)p.appendChild(media);
+  m.innerHTML='';m.appendChild(h);m.appendChild(p);if(d)m.appendChild(d);if(sm){sm.classList.add('hj-msrc');m.appendChild(sm)}})}
+ fix();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(fix,20)}).observe(document.body,{childList:true,subtree:true})})();
