@@ -86,6 +86,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .talk{width:min(1150px,95vw);display:grid;gap:10px}
 .talk .q{background:var(--paper);border-radius:18px;border-left:14px solid var(--cc,var(--acc));padding:12px 20px;font-size:clamp(23px,2.4vw,34px);line-height:1.45;text-align:left}
 .hq{display:flex!important;gap:.4em;align-items:flex-start}.hq>.qm{flex:none}.hq>.qt{flex:1 1 auto;min-width:0}
+.talk .q.lq{padding:0;overflow:hidden;align-items:stretch!important;gap:0!important}.lq>.ql{flex:none;width:9.6em;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:10px 12px;font-weight:700;background:color-mix(in srgb,var(--cc) 9%,var(--paper));border-right:2px solid color-mix(in srgb,var(--cc) 25%,var(--paper))}.lq>.ql small{white-space:nowrap;margin-top:2px!important;font-weight:400;font-size:.62em!important;line-height:1.3}.lq>.qt{display:flex;align-items:center;padding:12px 20px;white-space:nowrap}
 .talk .q small{display:block;color:var(--soft);font-size:.7em;margin-top:4px}
 .exs{display:flex;flex-direction:column;align-items:center;gap:10px;width:min(1150px,95vw)}
 .exbox{width:100%;background:var(--warm,#FFF8EC);border:3px dashed var(--warmline,#EBD9B0);border-radius:18px;padding:12px 18px;text-align:left}
@@ -1059,7 +1060,7 @@ function wireTimer(){document.querySelectorAll('[data-sec]').forEach(b=>b.onclic
   TMR=setInterval(()=>{s--;draw();if(s<=0){clearInterval(TMR);t.textContent='끝!';beep('win');}},1000);});}
 R.talk=X=>{
   const CN=/^[\u2460-\u2473]/,QS=(X.qs||[]).map(q=>typeof q==='string'?{q}:q),hasN=QS.some(o=>CN.test(o.q)),steps=hasN?QS.filter(o=>CN.test(o.q)):QS,rest=hasN?QS.filter(o=>!CN.test(o.q)):[];
-  $('body').innerHTML=hd(X)+`<div class="talk ${!hasN&&steps.length>3?'two':''}">${steps.map((o,i)=>`<div class="q hq" style="--cc:${['#D64C5A','#2F74E0','#1F9E63','#E8961E','#6A4FC9'][i%5]}"><span class="qm">${CN.test(o.q)?o.q.trim()[0]:'💬'}</span><div class="qt">${CN.test(o.q)?o.q.trim().slice(1).trim():o.q}${o.s?`<small>${o.s}</small>`:''}</div></div>`).join('')}</div>`
+  $('body').innerHTML=hd(X)+`<div class="talk ${!hasN&&steps.length>3?'two':''}">${steps.map((o,i)=>`${o.lab?`<div class="q hq lq" style="--cc:${['#D64C5A','#2F74E0','#1F9E63','#E8961E','#6A4FC9'][i%5]}"><div class="ql">${o.lab}${o.sub?`<small>(${o.sub})</small>`:''}</div><div class="qt">${o.q}</div></div>`:`<div class="q hq" style="--cc:${['#D64C5A','#2F74E0','#1F9E63','#E8961E','#6A4FC9'][i%5]}"><span class="qm">${CN.test(o.q)?o.q.trim()[0]:'💬'}</span><div class="qt">${CN.test(o.q)?o.q.trim().slice(1).trim():o.q}${o.s?`<small>${o.s}</small>`:''}</div></div>`}`).join('')}</div>`
    +rest.map(o=>`<div class="qbox" style="margin-top:clamp(14px,2.2vh,26px)">💭 ${o.q}${o.s?`<br><small>${o.s}</small>`:''}</div>`).join('')
    +(X.rule?`<p class="lead talkrule" style="font-size:clamp(20px,2vw,28px);font-weight:700">🏆 ${X.rule}</p>`:'')
    +(X.ex?`<div class="exs"><button class="tool exbtn" onclick="const b=this.parentNode.querySelector('.exbox');b.hidden=!b.hidden;this.textContent=b.hidden?'💡 예시 보기':'🙈 예시 숨기기'">💡 예시 보기</button><div class="exbox" hidden><div class="exh">예시</div><ul style="--n:${Math.min(X.ex.length,3)}">${X.ex.map(e=>`<li>${e}</li>`).join('')}</ul></div></div>`:'')
