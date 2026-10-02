@@ -139,6 +139,9 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .bogi .bt{text-align:left;flex:1 1 300px}
 .tipnote{width:min(1100px,94vw);margin-top:12px;padding:10px 18px;border-radius:14px;background:color-mix(in srgb,var(--acc) 5%,var(--paper));border:1px dashed color-mix(in srgb,var(--acc) 30%,var(--line));font-family:var(--body);font-weight:400;font-size:clamp(17px,1.6vw,22px);line-height:1.5;color:var(--soft);text-align:left;text-wrap:pretty}
 .hk{display:inline-flex;gap:.3em;vertical-align:top;max-width:100%}.hkl{flex:none}.hkt{flex:1 1 auto;min-width:0}
+.kw{font-weight:900;color:var(--acc);text-decoration:underline;text-decoration-thickness:.1em;text-underline-offset:.2em}
+.exl{display:block;margin-top:.5em;font-size:.72em;line-height:1.45;color:var(--soft)}
+.ye{display:inline-flex;align-items:center;justify-content:center;width:1.55em;height:1.55em;border-radius:50%;border:2px solid currentColor;font-size:.82em;font-weight:700;margin-right:.35em;vertical-align:.08em}
 /* match */
 .mgrid{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.6fr);gap:10px 18px;width:min(1150px,96vw);align-items:stretch}
 .mgrid>.mw,.mgrid>.mm{min-height:100%;display:flex;align-items:center}
@@ -1148,7 +1151,7 @@ R.match=X=>{
 function chosung(s){const C0='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';return [...s].map(ch=>{const c=ch.charCodeAt(0)-44032;return c>=0&&c<11172?C0[Math.floor(c/588)]:ch;}).join('');}
 R.fill=X=>{
   let tries={};
-  $('body').innerHTML=hd(X)+`<div class="fillbox">${X.lines.map((l,li)=>`<div class="fl" style="--cc:${['#D64C5A','#2F74E0','#1F9E63','#E8961E','#6A4FC9'][li%5]}">${l.replace(/\[([^\]]+)\]/g,(m,a)=>{const ans=a.split('|');return `<input data-a="${esc(a)}" style="--w:${ans[0].length}" placeholder="${chosung(ans[0])}" aria-label="빈칸">`;})}</div>`).join('')}</div>
+  $('body').innerHTML=hd(X)+`<div class="fillbox">${X.lines.map((l,li)=>`<div class="fl" style="--cc:${['#D64C5A','#2F74E0','#1F9E63','#E8961E','#6A4FC9'][li%5]}">${l.replace(/([(‘“]?)\[([^\]]+)\]([)’”.,!?]*)/g,(m,pre,a,post)=>{const ans=a.split('|');return `<span style="white-space:nowrap">${pre}<input data-a="${esc(a)}" style="--w:${ans[0].length}" placeholder="${chosung(ans[0])}" aria-label="빈칸">${post}</span>`;})}</div>`).join('')}</div>
    <div class="row"><button class="mid-btn" id="fChk">✅ 확인하기</button><button class="ghost-btn" id="fShow" style="display:none">👀 정답 보기</button></div>`;
   const inputs=[...document.querySelectorAll('.fl input')];
   $('fChk').onclick=()=>{let all=true;inputs.forEach((inp,k)=>{const ans=inp.dataset.a.split('|').map(a=>a.replace(/\s/g,''));const v=inp.value.replace(/\s/g,'');
