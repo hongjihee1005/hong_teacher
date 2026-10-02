@@ -754,11 +754,14 @@ html body.ov section .fitbox>p.hj-task{font-size:clamp(19px,1.6vw,24px)!importan
 html body.ov section .fitbox>p.hj-task b{color:var(--hjs,var(--ink))}
 /* 스스로 평가 표: 얼굴 칸은 좁게, 글 칸은 넓게 */
 html body.ov section table td:has(> button){width:1%;white-space:nowrap}
-/* 문제 보기: 교과서처럼 ①②③④ 번호를 붙이고 왼쪽 정렬 (과학 형성 평가·수행 평가) */
+/* 문제 보기(모든 교과): ①②③④ 번호, 보기가 모두 짧으면 가운데 정렬 / 문장이면 왼쪽 정렬 (content.js가 hj-short·hj-long을 붙임) */
 @counter-style hjcirc{system:fixed;symbols:'①' '②' '③' '④' '⑤' '⑥' '⑦' '⑧' '⑨' '⑩';suffix:' '}
-html body.ov section :is(#quiz,#perf,.qz) .pick{counter-reset:hjo}
-html body.ov section :is(#quiz,#perf,.qz) .pick>button{counter-increment:hjo;text-align:left!important;justify-content:flex-start!important;display:flex!important;align-items:center;gap:.45em;padding-left:18px!important;padding-right:16px!important}
-html body.ov section :is(#quiz,#perf,.qz) .pick>button::before{content:counter(hjo,hjcirc);font-weight:700;color:var(--hjs,var(--ink));flex:none}
+html body .hj-optg{counter-reset:hjo}
+html body .hj-optg>button{counter-increment:hjo;display:flex!important;align-items:center;gap:.45em}
+html body .hj-optg>button::before{content:counter(hjo,hjcirc);font-weight:800;color:var(--hjs,var(--ink));flex:none}
+html body .hj-optg.hj-long>button{text-align:left!important;justify-content:flex-start!important;padding-left:18px!important;padding-right:16px!important}
+html body .hj-optg.hj-short>button{text-align:center!important;justify-content:center!important}
+
 /* 홍지희 버전: 활동 이름표 + 질문 제목 한 줄 */
 html body #lesson .hj-head2{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 14px;margin:0 auto}
 html body #lesson .hj-head2>.sthead{margin:0!important;flex:none}
@@ -768,6 +771,17 @@ html body .hj-maplab{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10
 html body .hj-maplab b{font-size:16.5px;color:var(--ink)}
 html body .hj-maplab em{font-style:normal;font-weight:800;color:var(--hjs,var(--ink))}
 html body #cMap .cur .hj-today{font-style:normal;display:inline-block;font-size:12.5px;font-weight:800;color:#fff;background:var(--hjs,#555);border-radius:999px;padding:1px 8px;margin-right:6px;vertical-align:1px}
+/* 과학 앱 메뉴 자리 통일 (국어·사회와 같게) */
+html.hj-scmenu body>nav .wrap{max-width:none!important;display:flex!important;align-items:center;gap:8px;flex-wrap:nowrap}
+html.hj-scmenu body>nav .hj-sctools{margin-left:auto;display:flex;gap:6px;flex:none;padding-left:8px}
+html.hj-scmenu body>nav .hj-sctools button{font-size:clamp(13.5px,1vw,15px)!important;min-height:34px!important;padding:5px 11px!important;border-radius:999px!important;background:var(--paper)!important;color:var(--ink)!important;border:1px solid var(--line)!important;white-space:nowrap}
+html.hj-scmenu:has(#ovBar) #ovBar{position:fixed!important;left:0!important;right:0!important;bottom:0!important;width:auto!important;max-width:none!important;margin:0!important;transform:none!important;
+ display:grid!important;grid-template-columns:1fr auto 1fr;align-items:center;padding:10px 22px 14px!important;background:linear-gradient(to top,var(--bg) 70%,transparent)!important;border:0!important;box-shadow:none!important;border-radius:0!important;pointer-events:none}
+html.hj-scmenu #ovBar>*{pointer-events:auto}
+html.hj-scmenu #ovBar #ovPos{grid-column:2;font-size:14px!important;color:var(--soft)}
+html.hj-scmenu #ovBar .hj-pn{grid-column:3;justify-self:end;display:flex;gap:8px}
+html.hj-scmenu #ovBar .hj-pn button{min-height:42px!important;font-size:clamp(15px,1.15vw,17px)!important;padding:8px 18px!important;border-radius:999px!important}
+@media (max-width:820px){html.hj-scmenu body>nav .hj-sctools{position:fixed;left:10px;bottom:14px;z-index:30;padding:0;gap:4px}html.hj-scmenu body>nav .hj-sctools button{font-size:0!important;padding:8px 10px!important;min-height:40px!important}html.hj-scmenu body>nav .hj-sctools button .hj-i{width:18px;height:18px;margin:0}}
 </style><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
@@ -2678,6 +2692,22 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   var h=document.createElement('div');h.className='hj-maplab';h.innerHTML='<b>주제 프로젝트 지도</b><span>'+a+'~'+b+'차시 동안 여러 날에 걸쳐 함께 해요'+(ct?' · 오늘은 <em>'+ct+'</em>':'')+'</span>';m.before(h)}
  if(cur&&!cur.querySelector('.hj-today')){var t=document.createElement('i');t.className='hj-today';t.textContent='오늘';cur.prepend(t)}
  document.querySelectorAll('#cover .hj-flabel').forEach(function(l){if(l.textContent.trim()==='수업 흐름')l.textContent='오늘 수업 흐름'})})();
+/* 문제 보기 통일: 앞의 '1. 2.' 글자는 지우고(①②③④는 CSS가 붙임), 길이에 따라 가운데·왼쪽 정렬 */
+(function(){var SEL='.opts2,.qz .opts,body.ov section #quiz .pick,body.ov section #perf .pick,body.ov section .qz .pick';
+ function lab(g){var bs=[].filter.call(g.children,function(c){return c.tagName==='BUTTON'});if(bs.length<2)return;
+  bs.forEach(function(b){var t=b.firstChild;while(t&&t.nodeType===3&&!t.nodeValue.trim())t=t.nextSibling;if(t&&t.nodeType===3&&/^\s*\d+\.\s/.test(t.nodeValue))t.nodeValue=t.nodeValue.replace(/^\s*\d+\.\s*/,'')});
+  var long=bs.some(function(b){return b.textContent.replace(/\s+/g,' ').trim().length>10});
+  g.classList.add('hj-optg');g.classList.toggle('hj-long',long);g.classList.toggle('hj-short',!long)}
+ function run(){document.querySelectorAll(SEL).forEach(lab)}
+ run();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,30)}).observe(document.body,{childList:true,subtree:true})})();
+/* 과학 앱 메뉴 위치를 국어·사회와 같게: 위 오른쪽 = 도구(첫 화면·단계 목록·전체 보기), 아래 가운데 = 몇 번째, 아래 오른쪽 = 이전·다음 */
+(function(){var bar=document.getElementById('ovBar'),nav=document.querySelector('body>nav');if(!bar||!nav)return;
+ function lay(){var w=nav.querySelector('.wrap')||nav;var t=w.querySelector('.hj-sctools');if(!t){t=document.createElement('div');t.className='hj-sctools';w.appendChild(t)}
+  ['hjScHome','ovHome','ovFull'].forEach(function(id){var b=document.getElementById(id);if(b&&b.parentElement!==t)t.appendChild(b)});
+  var pn=bar.querySelector('.hj-pn');if(!pn){pn=document.createElement('div');pn.className='hj-pn';bar.appendChild(pn)}
+  ['ovPrev','ovNext','hjEnd'].forEach(function(id){var b=document.getElementById(id);if(b&&b.parentElement!==pn)pn.appendChild(b)});
+  document.documentElement.classList.add('hj-scmenu')}
+ lay();setTimeout(lay,300);setTimeout(lay,1200)})();
 </script><!--/hj-cicons--></body>
 </html>
 
