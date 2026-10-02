@@ -530,8 +530,15 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
  fix();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(fix,20)}).observe(document.body,{childList:true,subtree:true})})();
 /* 수학 개념 계단: '다음 계단'은 '확인하기'와 같은 줄 오른쪽, 그 앞에 '이전 계단' 단추 */
 (function(){if(!/\/math\//.test(location.pathname))return;
- function fix(){var acts=document.querySelectorAll('main .actions');acts.forEach(function(a){var nx=[].find.call(a.querySelectorAll('button'),function(b){return /다음 계단/.test(b.textContent)});if(!nx)return;nx.classList.add('hj-nextst');
+ function fix(){var acts=document.querySelectorAll('main .actions');acts.forEach(function(a){var nx=[].find.call(a.querySelectorAll('button'),function(b){return /다음 계단/.test(b.textContent)});if(!nx)return;if(!nx.classList.contains('hj-nextst'))nx.classList.add('hj-nextst');
    var st=[].slice.call(document.querySelectorAll('nav.stairs .stair')),ci=st.findIndex(function(s){return s.classList.contains('cur')});
    var pv=a.querySelector('.hj-prevst');if(!pv){pv=document.createElement('button');pv.type='button';pv.className='big hj-prevst';pv.textContent='이전 계단';[['background','#fff'],['color','#3A2E25'],['border','2px solid #e8dccb'],['box-shadow','none']].forEach(function(k){pv.style.setProperty(k[0],k[1],'important')});pv.onclick=function(){var s=[].slice.call(document.querySelectorAll('nav.stairs .stair')),i=s.findIndex(function(x){return x.classList.contains('cur')});if(i>0)s[i-1].click()};a.insertBefore(pv,nx)}
-   pv.style.visibility=ci>0?'':'hidden'})}
+   var vv=ci>0?'':'hidden';if(pv.style.visibility!==vv)pv.style.visibility=vv})}
  fix();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(fix,30)}).observe(document.body,{childList:true,subtree:true})})();
+/* 단계 표시 통일: 동그라미 번호 + 지금 단계만 이름 (국어 방식) — 사회·과학·홍지희 버전 위 단계 줄 */
+(function(){var C='①②③④⑤⑥⑦⑧⑨⑩⑪⑫⑬⑭⑮⑯⑰⑱⑲⑳';
+ function put(el,n,name){el.dataset.hjst='1';if(name)el.title=name;el.innerHTML='<span class="hj-stn">'+n+'</span>'+(name?'<span class="hj-stt">'+name.replace(/[&<>]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;'}[c]})+'</span>':'')}
+ function fix(){document.querySelectorAll('.screen:not(#cover) .topbar :is(.steps,.stagebar)>.st:not([data-hjst])').forEach(function(b){if(b.children.length>1)return;var t=b.textContent.trim(),m=t.match(/^(\d+)\.\s*(.+)$/);if(m){put(b,C[+m[1]-1]||m[1],m[2]);return}m=t.match(/^([①-⑳])\s*(.+)$/);if(m)put(b,m[1],m[2])});
+  var navs=document.querySelectorAll('nav>.wrap');navs.forEach(function(w){var as=[].filter.call(w.children,function(a){return a.tagName==='A'&&/^#/.test(a.getAttribute('href')||'')});if(as.length<3)return;if(!w.classList.contains('hj-sttabs'))w.classList.add('hj-sttabs');
+   as.forEach(function(a,i){if(!a.dataset.hjst)put(a,C[i]||String(i+1),a.textContent.trim());var cur=/outline/.test(a.getAttribute('style')||'')||a.classList.contains('on')||a.getAttribute('aria-current')==='true'||a.classList.contains('hj-cur')&&!/outline/.test(a.getAttribute('style')||'')&&false;if(a.classList.contains('hj-cur')!==cur)a.classList.toggle('hj-cur',cur);[['background',cur?'var(--hjs,#1F8060)':''],['color',cur?'#fff':''],['border-color',cur?'transparent':'']].forEach(function(k){var v=a.style.getPropertyValue(k[0]);if(k[1]){if(v!==k[1])a.style.setProperty(k[0],k[1],'important')}else if(v)a.style.removeProperty(k[0])})})})}
+ fix();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(fix,25)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class']})})();
