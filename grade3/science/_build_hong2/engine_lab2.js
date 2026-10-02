@@ -17,13 +17,16 @@ function tally(key,G){const d=boardData(key);const out={};let ng=0;for(let g=1;g
   out[ri+'_'+ci]={o,x,maj:o>x?'o':x>o?'x':(o||x?'tie':''),split:o>0&&x>0}}));return {cells:out,ng}}
 /* 🧭 실험 설계: 질문마다 카드를 고르고 '생각 확인하기'로 까닭을 봐요 */
 R.design=(s,id)=>{const sel=LS.get(LK+id+'sel',{});
- $('body').innerHTML=s.parts.map((p,pi)=>`<div class="dpart"><div class="dq">${esc(p.q)}</div><div class="dcards">${p.items.map((it,ii)=>{const k=pi+'_'+ii;return `<button class="dc" aria-pressed="${sel[k]?'true':'false'}" data-k="${k}">${it.svg?`<span class="dsv">${it.svg}</span>`:''}${esc(it.x)}</button>`}).join('')}</div><div class="dfb" id="dfb${pi}"></div></div>`).join('')
+ $('body').innerHTML=s.parts.map((p,pi)=>`<div class="dpart"><div class="dq">${esc(p.q)}</div><div class="dcards">${p.items.map((it,ii)=>{const k=pi+'_'+ii;return `<button class="dc" aria-pressed="${sel[k]?'true':'false'}" data-k="${k}">${it.svg?`<span class="dsv">${it.svg}</span>`:''}${esc(it.x)}</button>`}).join('')}</div><div class="dfb" id="dfb${pi}"></div></div>`).join('')+`<p class="dwhy" id="dwhy"></p>`
  +`<div class="row-c"><button class="big-btn" id="dChk" style="font-size:clamp(18px,1.7vw,23px);padding:6px 22px">🔎 ${esc(s.btn||'생각 확인하기')}</button></div>${s.col?`<div class="cols wrap" style="--n:1">${col(id+'z',s.col,'#2F74E0','',{ph:s.colph||'생각을 써요'})}</div>`:''}`;
- document.querySelectorAll('.dc').forEach(b=>b.onclick=()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);sel[b.dataset.k]=on;LS.set(LK+id+'sel',sel)});
- $('dChk').onclick=()=>{s.parts.forEach((p,pi)=>{const msgs=[];p.items.forEach((it,ii)=>{const on=!!sel[pi+'_'+ii];const b=document.querySelector(`.dc[data-k="${pi}_${ii}"]`);b.classList.remove('good','bad','miss');
+ let checked=false;const strip=w=>(w||'').replace(/\s*\([^()]*쪽\)\s*$/,'');
+ document.querySelectorAll('.dc').forEach(b=>b.onclick=()=>{const [pi,ii]=b.dataset.k.split('_').map(Number);
+  if(checked){const it=s.parts[pi].items[ii];$('dwhy').innerHTML=`💬 <b>${esc(it.x)}</b> — ${esc(strip(it.w))}`;$('dwhy').classList.add('on');return}
+  const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);sel[b.dataset.k]=on;LS.set(LK+id+'sel',sel)});
+ $('dChk').onclick=()=>{checked=true;$('dChk').textContent='🔁 다시 고르기';$('dChk').onclick=()=>R.design(s,id);s.parts.forEach((p,pi)=>{const msgs=[];p.items.forEach((it,ii)=>{const on=!!sel[pi+'_'+ii];const b=document.querySelector(`.dc[data-k="${pi}_${ii}"]`);b.classList.remove('good','bad','miss');
    if(on&&it.ok===true)b.classList.add('good');if(on&&it.ok===false)b.classList.add('bad');if(!on&&it.ok===true&&!p.free)b.classList.add('miss');
-   if((on||it.ok===true&&!p.free)&&it.w)msgs.push(`<li class="${on?(it.ok===false?'bad':'good'):'miss'}">${on?(it.ok===false?'🤔':'👍'):'➕'} <b>${esc(it.x)}</b> — ${esc(it.w)}</li>`)});
-  $('dfb'+pi).innerHTML=msgs.length?`<ul>${msgs.join('')}</ul>`:'';$('dfb'+pi).classList.add('on')})};
+   if(((on&&it.ok!==true)||(!on&&it.ok===true&&!p.free))&&it.w)msgs.push(`<li class="${on?(it.ok===false?'bad':'good'):'miss'}">${on?(it.ok===false?'🤔':'👍'):'➕'} <b>${esc(it.x)}</b> — ${esc(strip(it.w))}</li>`)});
+  $('dfb'+pi).innerHTML=msgs.length?`<ul>${msgs.join('')}</ul>`:'<ul><li class="good">👍 잘 골랐어요!</li></ul>';$('dfb'+pi).classList.add('on')});$('dwhy').innerHTML='💬 카드를 누르면 그 까닭이 여기에 나와요.';$('dwhy').classList.add('on')};
  if(s.col)wireCols([id+'z'])};
 /* 🔮 예상 표: 칸을 눌러 예상을 골라요(누를 때마다 바뀜). 까닭은 붙임쪽지로 */
 R.pgrid=(s,id)=>{const G=GDEF[s.g];const v=LS.get(LK+'pg'+s.g,{});

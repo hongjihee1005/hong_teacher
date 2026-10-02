@@ -376,6 +376,13 @@ table.cmp td span{display:inline}
 table.cmp th,table.cmp td{padding:3px 6px}
 table.cmp .rsv svg,table.sum .rsv svg{width:clamp(56px,5vw,90px)}
 @media (max-height:760px) and (orientation:landscape){#lesson .cols .col{min-height:0}#lesson .gcmpcols .notes{max-height:8vh}}
+
+.dfb{font-size:clamp(14px,1.25vw,18px);line-height:1.4}
+#lesson .dpart{gap:4px}
+.dwhy{display:none;margin:0;background:#E3F5EC;border-radius:10px;padding:4px 10px;font-size:clamp(15px,1.35vw,19px)}
+.dwhy.on{display:block}
+.dtip{margin:2px 0 0;color:var(--soft);font-size:clamp(13px,1.15vw,16px)}
+@media (max-height:760px) and (orientation:landscape){.dc{padding:3px 12px;font-size:clamp(15px,1.35vw,19px)}.dq{font-size:clamp(17px,1.6vw,22px)}#lesson .dpart{gap:3px}}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
  src:url(https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2-subset/Pretendard-Bold.subset.woff2) format('woff2')}
@@ -1135,13 +1142,16 @@ function tally(key,G){const d=boardData(key);const out={};let ng=0;for(let g=1;g
   out[ri+'_'+ci]={o,x,maj:o>x?'o':x>o?'x':(o||x?'tie':''),split:o>0&&x>0}}));return {cells:out,ng}}
 /* 🧭 실험 설계: 질문마다 카드를 고르고 '생각 확인하기'로 까닭을 봐요 */
 R.design=(s,id)=>{const sel=LS.get(LK+id+'sel',{});
- $('body').innerHTML=s.parts.map((p,pi)=>`<div class="dpart"><div class="dq">${esc(p.q)}</div><div class="dcards">${p.items.map((it,ii)=>{const k=pi+'_'+ii;return `<button class="dc" aria-pressed="${sel[k]?'true':'false'}" data-k="${k}">${it.svg?`<span class="dsv">${it.svg}</span>`:''}${esc(it.x)}</button>`}).join('')}</div><div class="dfb" id="dfb${pi}"></div></div>`).join('')
+ $('body').innerHTML=s.parts.map((p,pi)=>`<div class="dpart"><div class="dq">${esc(p.q)}</div><div class="dcards">${p.items.map((it,ii)=>{const k=pi+'_'+ii;return `<button class="dc" aria-pressed="${sel[k]?'true':'false'}" data-k="${k}">${it.svg?`<span class="dsv">${it.svg}</span>`:''}${esc(it.x)}</button>`}).join('')}</div><div class="dfb" id="dfb${pi}"></div></div>`).join('')+`<p class="dwhy" id="dwhy"></p>`
  +`<div class="row-c"><button class="big-btn" id="dChk" style="font-size:clamp(18px,1.7vw,23px);padding:6px 22px">🔎 ${esc(s.btn||'생각 확인하기')}</button></div>${s.col?`<div class="cols wrap" style="--n:1">${col(id+'z',s.col,'#2F74E0','',{ph:s.colph||'생각을 써요'})}</div>`:''}`;
- document.querySelectorAll('.dc').forEach(b=>b.onclick=()=>{const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);sel[b.dataset.k]=on;LS.set(LK+id+'sel',sel)});
- $('dChk').onclick=()=>{s.parts.forEach((p,pi)=>{const msgs=[];p.items.forEach((it,ii)=>{const on=!!sel[pi+'_'+ii];const b=document.querySelector(`.dc[data-k="${pi}_${ii}"]`);b.classList.remove('good','bad','miss');
+ let checked=false;const strip=w=>(w||'').replace(/\s*\([^()]*쪽\)\s*$/,'');
+ document.querySelectorAll('.dc').forEach(b=>b.onclick=()=>{const [pi,ii]=b.dataset.k.split('_').map(Number);
+  if(checked){const it=s.parts[pi].items[ii];$('dwhy').innerHTML=`💬 <b>${esc(it.x)}</b> — ${esc(strip(it.w))}`;$('dwhy').classList.add('on');return}
+  const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);sel[b.dataset.k]=on;LS.set(LK+id+'sel',sel)});
+ $('dChk').onclick=()=>{checked=true;$('dChk').textContent='🔁 다시 고르기';$('dChk').onclick=()=>R.design(s,id);s.parts.forEach((p,pi)=>{const msgs=[];p.items.forEach((it,ii)=>{const on=!!sel[pi+'_'+ii];const b=document.querySelector(`.dc[data-k="${pi}_${ii}"]`);b.classList.remove('good','bad','miss');
    if(on&&it.ok===true)b.classList.add('good');if(on&&it.ok===false)b.classList.add('bad');if(!on&&it.ok===true&&!p.free)b.classList.add('miss');
-   if((on||it.ok===true&&!p.free)&&it.w)msgs.push(`<li class="${on?(it.ok===false?'bad':'good'):'miss'}">${on?(it.ok===false?'🤔':'👍'):'➕'} <b>${esc(it.x)}</b> — ${esc(it.w)}</li>`)});
-  $('dfb'+pi).innerHTML=msgs.length?`<ul>${msgs.join('')}</ul>`:'';$('dfb'+pi).classList.add('on')})};
+   if(((on&&it.ok!==true)||(!on&&it.ok===true&&!p.free))&&it.w)msgs.push(`<li class="${on?(it.ok===false?'bad':'good'):'miss'}">${on?(it.ok===false?'🤔':'👍'):'➕'} <b>${esc(it.x)}</b> — ${esc(strip(it.w))}</li>`)});
+  $('dfb'+pi).innerHTML=msgs.length?`<ul>${msgs.join('')}</ul>`:'<ul><li class="good">👍 잘 골랐어요!</li></ul>';$('dfb'+pi).classList.add('on')});$('dwhy').innerHTML='💬 카드를 누르면 그 까닭이 여기에 나와요.';$('dwhy').classList.add('on')};
  if(s.col)wireCols([id+'z'])};
 /* 🔮 예상 표: 칸을 눌러 예상을 골라요(누를 때마다 바뀜). 까닭은 붙임쪽지로 */
 R.pgrid=(s,id)=>{const G=GDEF[s.g];const v=LS.get(LK+'pg'+s.g,{});
