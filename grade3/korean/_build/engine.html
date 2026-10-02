@@ -428,7 +428,7 @@ const R={};
 R.cards=X=>{
   $('body').innerHTML=hd(X)+`<div class="recall ${X.cards.length===4?'q4':''}" style="--n:${X.cards.length===4?2:Math.min(X.cards.length,4)}">${X.cards.map(r=>`<button class="rc" style="--cc:${r.c}"><span class="in">
     <span class="f front"><span>${r.e}</span>${r.t}<small style="font-size:.5em;opacity:.85">눌러서 확인</small></span>
-    <span class="f back2">${r.d}</span></span></button>`).join('')}</div>`+(X.q?`<div class="qbox">💭 ${X.q}</div>`:'');
+    <span class="f back2">${r.d}</span></span></button>`).join('')}</div>`+(X.q?`<div class="qbox">💭 ${/<br>|hj-cl/.test(X.q)?X.q:X.q.replace(/([.?!])\s+(?=[\uAC00-\uD7A3‘“])/g,'$1<br>')}</div>`:'');
   document.querySelectorAll('.rc').forEach(c=>c.onclick=()=>{c.classList.toggle('open');beep('tick');});
 };
 function timerHTML(){return `<div class="timer"><span class="row-label">⏱️</span><button class="tool" data-sec="30">30초</button><button class="tool" data-sec="60">1분</button><button class="tool" data-sec="180">3분</button><span class="t" id="tmr">–</span></div>`;}
