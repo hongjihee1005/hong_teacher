@@ -100,6 +100,7 @@ grade1/ … grade6/
 - **HTML 파일 하나로 끝납니다.** CSS·JS·사진(base64)이 전부 안에 들어 있어야 합니다. 외부 파일을 참조하지 마세요. (글꼴 CDN만 예외)
 - 맨 아래에 `만든 사람: 초등교사 홍지희`, 바로 밑에 **연락처 줄**(`<p class="hj-contact">` — ✉️ 이메일 hongjihee1005@gmail.com, ▶ 유튜브 @hongjihee1005).
   기존 페이지의 `<p class="hj-contact">`와 `<style id="hj-contact-css">` 조각을 그대로 복사해 쓰세요.
+  (2026-10-03) 화면에서는 **메뉴 페이지(첫 화면~학기 목록)와 우리 반 교실에서만** 보이고, 수업 앱(첫 화면·진행 화면)에서는 `content.css`가 숨깁니다. HTML에는 그대로 넣어 두세요.
 - 맨 아래 **`📋 자료 목록으로`** 단추 (`<a class="tolist" href="index.html">`).
   이 단추는 `file://`·`github.io`·`localhost`에서만 보이도록 스크립트로 제어합니다.
 - 왼쪽 아래 **`🏠 홈`** 떠 있는 단추(`<a id="hj-home" href="../../../index.html">`, 첫 화면으로 가는 상대 경로).

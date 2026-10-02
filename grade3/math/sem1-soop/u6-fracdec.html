@@ -880,7 +880,9 @@ html body .hj-sttabs>a[data-hjst]{min-width:30px;text-align:center}
 html body .hj-sttabs>a[data-hjst].hj-cur{background:var(--hjs,#1F8060)!important;color:#fff!important;outline:0!important;border-color:transparent!important;font-weight:700}
 /* 수업 진행 화면에서는 이메일·유튜브 줄을 숨김(첫 화면에만) — 과학 앱 한 화면 보기 */
 html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!important}
-html body #hj-scover .hj-contact.hj-cvc{display:flex!important;justify-content:center;margin-top:18px}
+
+/* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
+html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
 </style><meta name="hj-list" content="[[&quot;u1-addsub.html&quot;, &quot;봄 운동회 점수판&quot;, &quot;웹앱&quot;], [&quot;u2-plane.html&quot;, &quot;우리 반 교실 꾸미기&quot;, &quot;웹앱&quot;], [&quot;u3-div.html&quot;, &quot;모둠 활동 준비단&quot;, &quot;웹앱&quot;], [&quot;u4-mul.html&quot;, &quot;학교 텃밭 가꾸기&quot;, &quot;웹앱&quot;], [&quot;u5-lentime.html&quot;, &quot;봄 소풍 탐험대&quot;, &quot;웹앱&quot;], [&quot;u6-fracdec.html&quot;, &quot;교실 미술 작업실&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
@@ -3403,9 +3405,7 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
   var navs=document.querySelectorAll('nav>.wrap');navs.forEach(function(w){var as=[].filter.call(w.children,function(a){return a.tagName==='A'&&/^#/.test(a.getAttribute('href')||'')});if(as.length<3)return;if(!w.classList.contains('hj-sttabs'))w.classList.add('hj-sttabs');
    as.forEach(function(a,i){if(!a.dataset.hjst)put(a,C[i]||String(i+1),a.textContent.trim());var cur=/outline/.test(a.getAttribute('style')||'')||a.classList.contains('on')||a.getAttribute('aria-current')==='true'||a.classList.contains('hj-cur')&&!/outline/.test(a.getAttribute('style')||'')&&false;if(a.classList.contains('hj-cur')!==cur)a.classList.toggle('hj-cur',cur);[['background',cur?'var(--hjs,#1F8060)':''],['color',cur?'#fff':''],['border-color',cur?'transparent':'']].forEach(function(k){var v=a.style.getPropertyValue(k[0]);if(k[1]){if(v!==k[1])a.style.setProperty(k[0],k[1],'important')}else if(v)a.style.removeProperty(k[0])})})})}
  fix();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(fix,25)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class']})})();
-/* 과학 앱: 이메일·유튜브 줄은 첫 화면(#hj-scover)에만 */
-(function(){function fix(){var cv=document.querySelector('#hj-scover .hj-sc-in');if(!cv||cv.querySelector('.hj-contact'))return;var c=document.querySelector('body>.hj-contact');if(!c)return;var k=c.cloneNode(true);k.classList.add('hj-cvc');cv.appendChild(k)}
- fix();setTimeout(fix,300);setTimeout(fix,1200)})();
+
 </script><!--/hj-cicons--></body>
 </html>
 
