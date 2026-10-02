@@ -49,7 +49,7 @@ function sheet(k){var h='',head,
   Q(1,'음악을 들으며 느낌에 어울리는 낱말에 ○ 해 보세요.','<div class="ws-words">신나는 &nbsp; 잔잔한 &nbsp; 웅장한 &nbsp; 슬픈 &nbsp; 밝은 &nbsp; 무서운 &nbsp; 신비로운 &nbsp; 빠른 &nbsp; 느린 &nbsp; 포근한</div>')+
   Q(2,'어떤 악기 소리가 들렸나요?',L(1))+Q(3,'음악을 들으며 떠오른 장면을 그려 보세요.',box(78))+Q(4,'이 음악을 누구에게 들려주고 싶나요? 그 까닭은?',L(2))}
  else{var b=tdPick('book',S.book);head='📚 책 읽기 활동지';
-  h='<div class="ws-card"><div class="ws-big">『'+esc(b.t)+'』</div><p>'+esc(b.a)+'</p></div>'+
+  h='<div class="ws-card"><div class="ws-big">「'+esc(b.t)+'」</div><p>'+esc(b.a)+'</p></div>'+
   Q(1,'책 표지나 제목을 보고 어떤 이야기일지 짐작해 보세요.',L(2))+Q(2,'가장 기억에 남는 장면을 그리고, 한 줄로 설명해 보세요.',box(46)+L(1))+
   Q(3,'주인공에게 하고 싶은 말',L(2))+Q(4,'친구에게 추천하는 한 줄 · 별점','<div class="ws-stars">☆ ☆ ☆ ☆ ☆</div>'+L(1))}
  if(DOC){h=h.replace('<div class="ws-card">','<table width="100%" cellpadding="12" cellspacing="0" style="border:1.5pt solid #333;border-collapse:collapse;margin:6px 0 14px"><tr><td>').replace('<div class="ws-big">','<p style="margin:0;font-size:16pt;font-weight:bold">').replace('</div><p>','</p><p style="margin:4px 0 0">').replace('</p></div>','</p></td></tr></table>');return {head:head,name:name,h:h}}

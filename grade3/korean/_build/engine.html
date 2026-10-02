@@ -102,6 +102,8 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .pw.lit{border-color:var(--acc);box-shadow:inset 0 0 0 4px var(--acc);background:color-mix(in srgb,var(--acc) 10%,var(--paper))}
 /* multiple choice */
 .opts2{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(1100px,95vw)}
+.card1:has(>.stepno){flex-wrap:wrap}.card1>.stepno{flex:1 1 100%!important;text-align:center;margin-bottom:-6px}
+
 .opt2{border:4px solid var(--line);background:var(--paper);border-radius:18px;padding:12px 18px;font-family:var(--body);font-size:clamp(22px,2.3vw,32px);line-height:1.4;text-align:left}
 .opt2.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
 .opt2.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 14%,var(--paper))}
@@ -157,6 +159,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .wbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
 .wbar .tool{font-family:var(--display)}
 .wcount{font-family:var(--display);font-size:clamp(18px,1.7vw,24px);color:var(--soft)}
+.wf label .lsub{display:block;font-size:.78em;font-weight:500;color:var(--soft);margin-top:2px}
 .wcheck{width:min(1150px,96vw);background:var(--paper);border-radius:18px;border:4px solid var(--ok);padding:12px 18px;text-align:left;display:none}
 .wcheck.on{display:block}
 .wcheck h3{font-size:clamp(22px,2.2vw,30px);margin-bottom:6px}
@@ -361,7 +364,7 @@ function fb(ok,title,why,then,label){
   $('fbT').textContent=title;$('fbW').innerHTML=why||'';$('fbNext').textContent=label||'계속하기';
   $('fbNext').onclick=()=>{closeO('fb');then&&then();};openO('fb');$('fbNext').focus();
 }
-function hd(X){return X.hd?`<p class="hd${/\u2063/.test(X.hd)?' mk':''}">${X.hd.replace(/\s*\((『[^』]+』[^()]*(?:\([^()]*\)[^()]*)*)\)\s*$/,' <span class="pgref">($1)</span>')}</p>`:'';}
+function hd(X){return X.hd?`<p class="hd${/\u2063/.test(X.hd)?' mk':''}">${X.hd.replace(/\s*\((「[^」]+」[^()]*(?:\([^()]*\)[^()]*)*)\)\s*$/,' <span class="pgref">($1)</span>')}</p>`:'';}
 function speakBtn(id){return `<button class="tool" id="${id}">🔈 읽어 주기</button>`;}
 
 /* ---------- 화면 맞춤: 넘치면 조금씩 줄이기 ---------- */
@@ -408,9 +411,9 @@ R.talk=X=>{
   wireTimer();
 };
 R.book=X=>{
-  $('body').innerHTML=hd(X)+`<div class="book"><div class="e">${X.e||'📖'}</div><div><div class="pg">${String(X.page).replace(/『([^』]+)』/g,'「$1」')}</div>${X.do?`<ol>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`
+  $('body').innerHTML=hd(X)+`<div class="book"><div class="e">${X.e||'📖'}</div><div><div class="pg">${String(X.page).replace(/「([^」]+)」/g,'「$1」')}</div>${X.do?`<ol>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`
    +(X.ways?`<p class="lead">${X.wlead||'🎲 오늘은 어떤 방법으로 읽을까요?'}</p><div class="pickways" style="--n:${Math.min(X.ways.length,4)}">${X.ways.map((w,i)=>`<div class="pw" data-i="${i}"><span>${w[0]}</span>${w[1]}</div>`).join('')}</div><button class="mid-btn" id="roll">${X.wroll||'🎲 읽기 방법 뽑기'}</button>`:'')
-   +(X.tip?`<div class="qbox" style="font-size:clamp(20px,2vw,28px);text-align:left">💡 ${X.tip}</div>`:'');
+   +(X.tip?`<div class="qbox" style="font-size:clamp(20px,2vw,28px);text-align:left;text-wrap:pretty">💡 ${X.tip}</div>`:'');
   if(X.ways)$('roll').onclick=()=>{const pw=[...document.querySelectorAll('.pw')];let n=0,k=0;const total=10+Math.floor(Math.random()*pw.length);
     const iv=setInterval(()=>{pw.forEach(p=>p.classList.remove('lit'));k=n%pw.length;pw[k].classList.add('lit');beep('tick');n++;if(n>total){clearInterval(iv);beep('win');}},120);};
 };
@@ -488,7 +491,7 @@ R.listen=X=>{
 /* 글쓰기: 🔈 내 글 듣기, 스스로 점검, 저장 */
 R.write=X=>{
   const key='hj-kor-'+C.id+'-'+X.id;const saved=store.get(key)||{};
-  $('body').innerHTML=hd(X)+`<div class="wbar"><button class="tool" id="wSpeak">🔈 내 글 듣기</button><button class="tool" id="wStop">⏹</button><button class="tool" id="wCheck">✅ 점검하기</button>${X.model?'<button class="tool" id="wModel">💡 예시 보기</button>':''}<button class="tool" id="wCopy">📋 복사하기</button><button class="tool" id="wClear">🧽 지우기</button><span class="wcount" id="wCount"></span></div><p class="ttsmsg"></p><div class="wr">${X.fields.map((f,i)=>`<div class="wf ${(f.rows||0)>=4||X.fields.length<3?'full':''}"><label for="w${i}">${f.l}${f.s?` <small>${f.s}</small>`:''}</label>${f.one?`<input id="w${i}" type="text" placeholder="${esc(f.ph||'')}">`:`<textarea id="w${i}" rows="${f.rows||3}" placeholder="${esc(f.ph||'')}"></textarea>`}</div>`).join('')}</div>
+  $('body').innerHTML=hd(X)+`<div class="wbar"><button class="tool" id="wSpeak">🔈 내 글 듣기</button><button class="tool" id="wStop">⏹</button><button class="tool" id="wCheck">✅ 점검하기</button>${X.model?'<button class="tool" id="wModel">💡 예시 보기</button>':''}<button class="tool" id="wCopy">📋 복사하기</button><button class="tool" id="wClear">🧽 지우기</button><span class="wcount" id="wCount"></span></div><p class="ttsmsg"></p><div class="wr">${X.fields.map((f,i)=>`<div class="wf ${(f.rows||0)>=4||X.fields.length<3?'full':''}"><label for="w${i}">${f.l.replace(/\s+(\([^()]+\))\s*$/,'<small class="lsub">$1</small>')}${f.s?` <small>${f.s}</small>`:''}</label>${f.one?`<input id="w${i}" type="text" placeholder="${esc(f.ph||'')}">`:`<textarea id="w${i}" rows="${f.rows||3}" placeholder="${esc(f.ph||'')}"></textarea>`}</div>`).join('')}</div>
    
    ${X.model?`<div class="ex-model" id="exModel"><b>💡 예시</b> — 그대로 베끼지 말고 내 경험으로 바꾸어 써요.<br>${X.model}</div>`:''}
    <div class="wcheck" id="wBox"></div>`;
