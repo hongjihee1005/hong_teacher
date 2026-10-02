@@ -36,7 +36,7 @@ for n, name in UNITS:
     groups.append(f'<div class="ugrp" data-u="{n}"><h3 class="unit">{e(name)} <small>{len(cards)}개</small></h3><p class="bqx"><small>🌟 핵심 질문</small>{e(M.TOPIC["bq"])}</p><div class="grid">\n' + '\n'.join(cards) + '\n</div></div>')
 
 body = f'''<body><main>
-<nav class="crumb"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a><a class="back" href="../../index.html">🚀 3학년</a><a class="back" href="../index.html">🔬 과학방</a><a class="back" href="../sem1/index.html">🌸 1학기 교과서 버전</a></nav>
+<nav class="crumb"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a><a class="back" href="../../index.html">🚀 3학년</a><a class="back" href="../index.html">🔬 과학방</a><a class="back" href="index.html">🧑‍🏫 1학기 · 홍지희 선생님 버전</a></nav>
 <h1>🧑‍🏫 홍지희 선생님 버전</h1>
 <p class="sub"><b>3학년 1학기 과학</b> · 지도서 차시를 S.O.O.P. 탐구 단계로 다시 짠 수업이에요. 결과를 먼저 알려 주지 않고, 아이들이 예상하고, 실험하고, 결과를 근거로 우리 반 결론을 만든 뒤 교과서 문장과 비교해요.</p>
 <nav class="tabs" role="tablist" aria-label="자료 종류"><a class="tab" role="tab" href="#lesson" data-pane="lesson">📖 차시별 탐구 수업<span class="cnt">{total}</span></a><a class="tab" role="tab" href="#how" data-pane="how">💡 쓰는 방법</a></nav>
