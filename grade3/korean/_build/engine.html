@@ -109,7 +109,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .pw.lit{border-color:var(--acc);box-shadow:inset 0 0 0 4px var(--acc);background:color-mix(in srgb,var(--acc) 10%,var(--paper))}
 /* multiple choice */
 .opts2{display:grid;grid-template-columns:1fr 1fr;gap:12px;width:min(1100px,95vw)}
-.card1:has(>.stepno){flex-wrap:wrap}.card1>.stepno{flex:1 1 100%!important;text-align:center;margin-bottom:-6px}
+.card1:has(>.stepno){flex-wrap:wrap}.card1:has(>.stepno)>.x{flex:1 1 100%;text-align:center;text-wrap:pretty}.card1 .x.lx{font-size:clamp(22px,2.3vw,34px)}.card1>.stepno{flex:1 1 100%!important;text-align:center;margin-bottom:-6px}
 
 .opt2{border:4px solid var(--line);background:var(--paper);border-radius:18px;padding:12px 18px;font-family:var(--body);font-size:clamp(22px,2.3vw,32px);line-height:1.4;text-align:left}
 .opt2.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
@@ -147,10 +147,12 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .mw.done,.mm.done{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 14%,var(--paper));opacity:.8}
 .mm.shake{animation:sh .35s}
 /* match: 점 잇기 모드(dots=True) */
-.mgrid.dots{position:relative;user-select:none;-webkit-user-select:none;column-gap:clamp(84px,8vw,120px);grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.mgrid.dots{position:relative;user-select:none;-webkit-user-select:none;column-gap:clamp(84px,8vw,120px);grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr)}
+.mgrid.dots>.mm{padding:10px 12px}
 .mgrid.dots>.mw,.mgrid.dots>.mm{position:relative;overflow:visible;touch-action:none}
 .mgrid.dots .dot{position:absolute;top:50%;width:22px;height:22px;margin-top:-11px;border-radius:50%;background:var(--paper);border:5px solid var(--ink);box-sizing:border-box;z-index:2;cursor:pointer}
 .mgrid.dots .dot::before{content:'';position:absolute;inset:-14px;border-radius:50%}
+.mgrid.dots>.mm{justify-content:center;text-align:center}
 .mgrid.dots .mw .dot{right:-30px}.mgrid.dots .mm .dot{left:-30px}
 .mgrid.dots .sel .dot{background:var(--acc);border-color:var(--acc);transform:scale(1.25)}
 .mgrid.dots .done .dot{background:var(--ok);border-color:var(--ok)}
@@ -460,7 +462,7 @@ R.mc=X=>{
 R.sort=X=>{
   const deck=shuffle(X.items);let i=0;
   const draw=()=>{const it=deck[i];
-    $('body').innerHTML=hd(X)+`<div class="card1">${deck.length>1?`<span class="stepno" style="flex:none;font-size:clamp(17px,1.6vw,22px);font-weight:800;color:var(--acc)">${i+1} / ${deck.length}</span>`:''}<div class="e">${it.e||'🃏'}</div><div class="x">${it.x}</div></div>
+    $('body').innerHTML=hd(X)+`<div class="card1">${deck.length>1?`<span class="stepno" style="flex:none;font-size:clamp(17px,1.6vw,22px);font-weight:800;color:var(--acc)">${i+1} / ${deck.length}</span>`:''}<div class="e">${it.e||'🃏'}</div><div class="x${it.x.replace(/<[^>]+>/g,'').length>24?' lx':''}">${it.x}</div></div>
      <div class="bins" style="--n:${X.bins.length}">${X.bins.map(b=>`<button class="bin" data-k="${b.k}" style="--cc:${b.c}"><span class="e">${b.e}</span><span class="n">${b.n}</span></button>`).join('')}</div>`;
     document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>{if(X.open){const mine=X.bins.find(z=>z.k===b.dataset.k),ex=X.bins.find(z=>z.k===it.k);
         document.querySelectorAll('.bin').forEach(z=>{z.disabled=true;if(z===b)z.classList.add('lit');});
@@ -497,7 +499,7 @@ R.match=X=>{
         if(done.size===X.pairs.length){draw();fb(true,'모두 짝지었어요! 🎉',X.pairs.map(p=>`<b>${p[0]}</b> — ${p[1]}`).join('<br>'),()=>{teamNext();$('turnLine').textContent=teamTurn();teamChips();draw();});}else draw();}
       else{beep('no');b.classList.add('shake');setTimeout(()=>b.classList.remove('shake'),400);teamNext();$('turnLine').textContent=teamTurn();teamChips();if(D){lines();}}};
   const draw=()=>{
-    $('body').innerHTML=hd(X)+`<p class="lead" style="font-size:clamp(18px,1.8vw,24px)">${X.help||(D?'왼쪽 점에서 오른쪽 점까지 선을 그어 이어요. (눌러서 골라도 돼요)':'왼쪽 낱말을 누른 뒤, 알맞은 뜻을 눌러요.')}</p><div class="mgrid ${D?'dots':''} ${!D&&X.pairs.some(p=>p[0].length>10)?'wide':''}">${words.map((w,i)=>{const m=means[i];return `<button class="mw ${done.has(w.k)?'done':''} ${sel===w.k?'sel':''}" data-k="${w.k}" ${done.has(w.k)?'disabled':''}><span class="mt">${w.w}</span>${dot}</button><button class="mm ${done.has(m.k)?'done':''}" data-k="${m.k}" ${done.has(m.k)?'disabled':''}>${dot}<span class="mt">${m.m}</span></button>`;}).join('')}${D?'<svg aria-hidden="true"></svg>':''}</div>`;
+    $('body').innerHTML=hd(X)+`<p class="lead" style="font-size:clamp(18px,1.8vw,24px)">${X.help||(D?'알맞은 것끼리 점과 점을 선으로 이어요.':'왼쪽 낱말을 누른 뒤, 알맞은 뜻을 눌러요.')}</p><div class="mgrid ${D?'dots':''} ${!D&&X.pairs.some(p=>p[0].length>10)?'wide':''}">${words.map((w,i)=>{const m=means[i];return `<button class="mw ${done.has(w.k)?'done':''} ${sel===w.k?'sel':''}" data-k="${w.k}" ${done.has(w.k)?'disabled':''}><span class="mt">${w.w}</span>${dot}</button><button class="mm ${done.has(m.k)?'done':''}" data-k="${m.k}" ${done.has(m.k)?'disabled':''}>${dot}<span class="mt">${m.m}</span></button>`;}).join('')}${D?'<svg aria-hidden="true"></svg>':''}</div>`;
     document.querySelectorAll('.mw').forEach(b=>b.onclick=()=>{if(b.dataset.drag){delete b.dataset.drag;return;}sel=+b.dataset.k;beep('tick');draw();});
     document.querySelectorAll('.mm').forEach(b=>b.onclick=()=>pick(b));
     if(D){const g=document.querySelector('.mgrid');
