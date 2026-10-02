@@ -528,7 +528,7 @@ html body.ov main.wrap{max-width:min(1080px,100%)!important}
 html body #stage #body{width:min(1120px,94vw)!important}
 html body #lesson .body{width:min(1120px,94vw)!important}
 /* 국어: 자체 확대(최대 약 1.3배)가 있으므로 바탕 폭을 좁혀, 확대 뒤에도 1150px 안팎 */
-html body #stage #bodyWrap>#body{width:min(880px,94vw)!important}
+html body #stage #bodyWrap>#body{width:min(1000px,94vw)!important}
 html body.ov .hj-pgrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;max-width:1080px;margin:10px auto 0}
 html body.ov .hj-pgrid .photo{display:block!important;margin:0!important}
 html body.ov .hj-pgrid .photo img{width:100%!important;max-height:min(230px,26vh)!important;object-fit:cover}
@@ -894,8 +894,8 @@ html body #cMap .cur .hj-today{font-style:normal;display:inline-block;font-size:
       <rect x="300" y="118" width="300" height="36" rx="12" fill="#fff" opacity=".95"/><text x="450" y="143" text-anchor="middle" font-size="19" font-family="Jua" fill="#1f6fb0">갯벌이 빗물을 머금어요</text>
     </g>
     <g id="floodFx" opacity="0">
-      <rect id="flood2" x="0" y="360" width="620" height="0" fill="#4f9fd6" opacity=".72"/>
-      <g id="floodLab"><rect x="300" y="118" width="300" height="36" rx="12" fill="#fff" opacity=".95"/><text x="450" y="143" text-anchor="middle" font-size="19" font-family="Jua" fill="#c0392b">물이 넘쳐 땅이 잠겨요!</text></g>
+      <rect id="flood2" x="0" y="360" width="620" height="0" fill="#4f9fd6" opacity=".72"/><path id="floodTop" d="" stroke="#e8f6ff" stroke-width="3" fill="none" opacity=".9"/>
+      <g id="floodLab"><rect x="300" y="62" width="300" height="36" rx="12" fill="#fff" opacity=".95"/><text x="450" y="87" text-anchor="middle" font-size="19" font-family="Jua" fill="#c0392b">물이 넘쳐 마을이 잠겨요!</text></g>
     </g>
     <g id="birdAway" opacity="0" font-size="28"><text x="700" y="60">🐦</text><text x="760" y="40">🐦</text><text x="820" y="70">🐦</text></g>
     <rect x="12" y="12" width="420" height="40" rx="12" fill="#fff" opacity=".9"/><text id="swT" x="24" y="40" font-size="20" font-family="Jua" fill="#2a2a24">지금: 갯벌이 있어요</text>
@@ -1074,7 +1074,7 @@ V.forEach((v,i)=>{ const b=document.createElement('button'); b.className='val'; 
 let on=true, raining=false, fh=0, fRaf=0;
 (function(){ let d=''; for(let i=0;i<70;i++){ const x=(i*131)%900, y=(i*67)%300+50; d+=`<line x1="${x}" y1="${y}" x2="${x-6}" y2="${y+18}"/>`; } $('#drops').innerHTML=d+`<animateTransform attributeName="transform" type="translate" from="0 -40" to="-10 40" dur="0.5s" repeatCount="indefinite"/>`; })();
 function floodTo(t){ cancelAnimationFrame(fRaf); const st=fh, t0=performance.now();
-  const step=n=>{ const k=Math.min(1,(n-t0)/1400); fh=st+(t-st)*k; $('#flood2').setAttribute('y',360-fh); $('#flood2').setAttribute('height',fh); if(k<1) fRaf=requestAnimationFrame(step); }; fRaf=requestAnimationFrame(step); }
+  const step=n=>{ const k=Math.min(1,(n-t0)/1400); fh=st+(t-st)*k; $('#flood2').setAttribute('y',360-fh); $('#flood2').setAttribute('height',fh); const y=360-fh; let d=''; if(fh>4){ for(let x=0;x<=620;x+=20) d+=(x?'L':'M')+x+','+(y+Math.sin(x/22)*3).toFixed(1); } $('#floodTop').setAttribute('d',d); if(k<1) fRaf=requestAnimationFrame(step); }; fRaf=requestAnimationFrame(step); }
 const ONL=['🦀 게, 조개, 짱뚱어가 갯벌에서 살아요.','🐦 철새가 갯벌에서 먹이를 먹고 쉬어 가요.','🧹 강물에 섞여 온 더러운 물질을 갯벌이 걸러 줘요.','🦪 조개 같은 먹을거리를 얻어요.','👣 갯벌 체험을 할 수 있어요.'];
 const OFFL=['🥀 갯벌 생물들이 살 곳을 잃어요.','🐦 철새가 쉬어 갈 곳이 없어 떠나요.','🟤 더러운 물질이 걸러지지 않고 바다로 흘러가요.','🦪 갯벌에서 얻던 먹을거리가 사라져요.','🚫 갯벌 체험을 할 수 없어요.'];
 function swRender(){ $('#flatOn').setAttribute('opacity',on?1:0); $('#flatOff').setAttribute('opacity',on?0:1); $('#birdAway').setAttribute('opacity',on?0:1);
@@ -1082,7 +1082,7 @@ function swRender(){ $('#flatOn').setAttribute('opacity',on?1:0); $('#flatOff').
   $('#rainG').setAttribute('opacity',0); $('#flood').setAttribute('opacity',0);
   $('#rainFx').setAttribute('opacity',raining?1:0); $('#soak').setAttribute('opacity',(raining&&on)?1:0); $('#floodFx').setAttribute('opacity',(raining&&!on)?1:0);
   $('#riverA').setAttribute('stroke-width',raining?30:18); $('#riverB').setAttribute('stroke-width',raining?26:16); $('#flatMud').setAttribute('fill',raining?'#6f5338':'#8a6848');
-  floodTo((raining&&!on)?132:0);
+  floodTo((raining&&!on)?222:0);
   $('#swT').textContent=(raining?'비가 많이 와요 · ':'지금: ')+(on?'갯벌이 있어요':'갯벌을 메웠어요 (상상)');
   $('#swBtn').textContent=on?'🚧 갯벌 메워 보기 (상상)':'🌱 갯벌 되돌려 놓기';
   const extra = raining ? (on?['🌧️ 비가 많이 와도 갯벌이 물을 머금어 피해를 줄여요.']:['🌊 비가 많이 오면 물이 넘쳐 피해가 커질 수 있어요.']) : [];
@@ -1878,9 +1878,9 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
 /* 낱말이 줄 끝에서 끊기지 않게: '·', '-', '(', ')', '/'로 붙은 말 사이에 줄바꿈 금지 표시(보이지 않는 글자) */
 (function(){var WJ='⁠',SKIP='script,style,textarea,input,select,option,svg,code,pre,[contenteditable],.hj-em';
  var RX=/([^\s⁠])([·‧\-–\/(])(?=[^\s⁠])|([^\s⁠(])([)])(?=[^\s⁠.,!?·])/g;
- function fix(n){var v=n.nodeValue;if(!/[·‧\-–\/()]/.test(v))return;if(/^https?:|www\.|@/.test(v.trim()))return;
+ function fix(n){var v0=n.nodeValue;if(!/[·‧\-–\/()]/.test(v0))return;if(/^https?:|www\.|@/.test(v0.trim()))return;var v=v0.replace(/\u2060/g,'');
   var t=v.replace(/\S+/g,function(k){return k.length>7?k.replace(/(\S)([·‧])/g,'$1'+WJ+'$2'):k.replace(/(\S)([·‧–\/])(?=\S)/g,'$1'+WJ+'$2'+WJ)}).replace(/([가-힣A-Za-z0-9])-(?=[가-힣A-Za-z0-9])/g,'$1'+WJ+'-'+WJ).replace(/(\S)\((?=\S)/g,'$1'+WJ+'(').replace(/\)(?=[가-힣])/g,')'+WJ);
-  if(t!==v)n.nodeValue=t}
+  if(t!==v0)n.nodeValue=t}
  function run(root){if(!root)return;if(root.nodeType===3){var p=root.parentElement;if(p&&!p.closest(SKIP))fix(root);return}if(root.nodeType!==1||root.closest(SKIP))return;
   var w=document.createTreeWalker(root,NodeFilter.SHOW_TEXT,{acceptNode:function(n){return n.parentElement&&!n.parentElement.closest(SKIP)?1:2}}),a=[],n;while(n=w.nextNode())a.push(n);a.forEach(fix)}
  run(document.body);var q=new Set(),raf=0;new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData'){q.add(m.target)}else m.addedNodes.forEach(function(x){q.add(x)})});if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)run(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
