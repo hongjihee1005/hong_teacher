@@ -1941,5 +1941,9 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  function run(){document.querySelectorAll('.hj-nav a.hj-nl,[data-hjfirst]').forEach(function(el){if(el.dataset.hjlist)return;
   var nav=el.closest('.hj-nav');if(!nav&&document.querySelector('.hj-nav a.hj-nl:not([data-hjlist]),.hj-nav [data-hjlist]')&&el.closest('.hj-sctools')){el.style.display='none';el.dataset.hjlist='x';return}hook(el)})}
  run();setTimeout(run,600);setTimeout(run,1500);var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,80)}).observe(document.body,{childList:true,subtree:true})})();
+/* 겹낫표 『 』는 홑낫표 「 」로 (기호가 두 번 겹쳐 보이지 않게) */
+(function(){var SKIP='script,style,textarea,input';function fix(n){var v=n.nodeValue;if(v.indexOf('『')<0&&v.indexOf('』')<0)return;n.nodeValue=v.replace(/『/g,'「').replace(/』/g,'」')}
+ function run(r){if(!r)return;if(r.nodeType===3){if(r.parentElement&&!r.parentElement.closest(SKIP))fix(r);return}if(r.nodeType!==1||r.closest(SKIP))return;var w=document.createTreeWalker(r,4),n,a=[];while(n=w.nextNode())if(!n.parentElement.closest(SKIP))a.push(n);a.forEach(fix)}
+ run(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')run(m.target);else m.addedNodes.forEach(run)})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
 </script><!--/hj-cicons--></body>
 </html>

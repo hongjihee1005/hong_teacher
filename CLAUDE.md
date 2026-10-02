@@ -40,6 +40,11 @@ grade1/ … grade6/
 
 - 실험·탐구 중심 26차시. **HTML을 직접 고치지 마세요.** 원본은 `grade3/science/_build_hong2/lessons_uN.py`이고 `python3 build.py [sci32-uN-lM…]` → `python3 index_build.py` → 루트에서 `apply_content_theme.py`·`apply_theme.py`로 다시 만듭니다. 규칙은 `_build_hong2/README.md`, `BRIEF_WRITER.md`.
 
+### 3-1 사회 홍지희 버전 프로젝트 판 (2026-10-02)
+
+- `grade3/social/sem1-hong/u1-l11 ~ u1-l2021`(주제 2) 8쪽에 '우리 동네를 더 살기 좋은 곳으로' 프로젝트 판이 들어 있습니다. 첫 화면 카드와 진행 화면 '프로젝트 판' 단추로 열고, 차시마다 한 칸(①~⑧)을 채웁니다. 저장은 그 기기 localStorage(`hj-soc31-proj-v1`).
+- 원본은 `_build/project/soc31.js`. 고친 뒤 `python3 _build/project/apply.py && python3 _build/theme/apply_content_theme.py`.
+
 ### 수학 (`grade3/math/`)
 
 - `sem1/`, `sem2/` — 교과서 차시 버전(공개). 단원 앱 `u단원-주제.html`(예: `u1-addsub.html`), 활동지 `sheets/*.hwpx`.
