@@ -174,6 +174,28 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
   .who{gap:.3em} .chip{padding:.2em .6em}
 }
 @media (prefers-reduced-motion: reduce){*{transition:none!important;animation:none!important}}
+
+/* 사고 전략 칸 (Project Zero 사고 루틴) */
+.panes{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15em),1fr));gap:.7em;margin:.5em 0}
+.pane{border:3px solid var(--line);border-radius:.7em;padding:.6em .7em;background:#fff;display:flex;flex-direction:column;min-height:9em}
+.pane h3{margin:0 0 .3em;font-family:"Jua";font-size:var(--fs-l);font-weight:400;display:flex;align-items:center;gap:.3em;
+  border-bottom:3px solid currentColor;padding-bottom:.25em}
+.pane .pe{font-size:1.1em}
+.pane0{border-color:#2B7BD6}.pane0 h3{color:#2B7BD6}
+.pane1{border-color:#6A4FC9}.pane1 h3{color:#6A4FC9}
+.pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
+.pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
+.phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
+.chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
+  font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
+.chip:hover{background:#FBEDE3;text-decoration:line-through}
+.prow{display:flex;gap:.4em;align-items:center;margin-top:auto}
+.prow input{flex:1;min-width:4em;font:inherit;padding:.3em .5em;border:2px solid var(--line);border-radius:.45em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane{background:#1E2A28}
+  :root:not([data-theme="light"]) .chip{background:#2A3A36}}
+:root[data-theme="dark"] .pane{background:#1E2A28}
+:root[data-theme="dark"] .chip{background:#2A3A36}
 </style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1234,6 +1256,77 @@ function writeStep(body, api, prompts, opts = {}) {
     if (vals.some(v => v.length < (opts.min || 4))) return api.fail("모든 칸에 내 생각을 조금 더 자세히 써 봐요.", vals.join(" | "));
     api.done(prompts.map((p, i) => `${p.tag || p.q}: ${vals[i]}`).join(" | "), opts.ok || "생각을 잘 적었어요!");
   } }, "다 썼어요")));
+}
+
+/* ── 사고 전략 칸 (하버드 Project Zero 사고 루틴) ───────────────────────────
+   여러 칸에 생각을 쪽지로 붙여 모은다.
+   보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
+   같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
+   panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+function panes(body, api, list, opts = {}) {
+  const need = opts.min || 1;
+  const notes = list.map(() => []);
+  const wrap = h("div", { class: "panes" });
+
+  list.forEach((p, pi) => {
+    const chips = h("div", { class: "chips" });
+    const inp = h("input", { type: "text", placeholder: p.ph || "여기에 써요", maxlength: 60 });
+    const add = () => {
+      const v = inp.value.trim();
+      if (v.length < 2) { api.hint("조금 더 자세히 써 볼까요?"); return; }
+      notes[pi].push(v);
+      const chip = h("button", { class: "chip", title: "누르면 지워요", onclick: () => {
+        const k = notes[pi].indexOf(v); if (k >= 0) notes[pi].splice(k, 1); chip.remove();
+      } }, v);
+      chips.append(chip); inp.value = ""; inp.focus();
+    };
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    wrap.append(h("section", { class: "pane pane" + pi },
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      p.hint ? h("p", { class: "phint" }, p.hint) : "",
+      chips,
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+  });
+
+  body.append(wrap);
+  body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    const thin = list.filter((_, i) => notes[i].length < need);
+    if (thin.length) return api.fail(
+      `${thin.map(p => "‘" + p.t + "’").join(", ")} 칸에 ${need}개 이상 붙여 주세요.`,
+      notes.map(n => n.join(", ")).join(" | "));
+    api.done(list.map((p, i) => `${p.t}: ${notes[i].join(", ")}`).join(" | "),
+      opts.ok || "생각을 잘 모았어요! 친구들 쪽지와 견주어 봐요.");
+  } }, opts.btn || "다 붙였어요")));
+}
+
+/* ── 예상하기 → 확인하기 ──────────────────────────────────────────────────
+   먼저 어림해 보고, 그다음 실제로 계산해 예상과 견준다.
+   opts: { ask, o:[보기], a:정답 보기 번호, then, real, unit, why }        */
+function predictCheck(body, api, opts) {
+  let guess = null;
+  const box = h("div", { class: "qitem" }, h("div", { class: "jua" }, opts.ask));
+  const row = h("div", { class: "opts" });
+  opts.o.forEach((o, oi) => row.append(h("button", { class: "opt", onclick: (e) => {
+    guess = oi; [...row.children].forEach(b => b.classList.remove("on"));
+    e.currentTarget.classList.add("on"); second.classList.remove("hidden");
+    api.hint("예상했어요. 이제 실제로 계산해서 확인해 봐요.");
+  } }, o)));
+  box.append(row);
+
+  const inp = h("input", { type: "number", inputmode: "numeric", placeholder: "실제 값" });
+  const second = h("div", { class: "qitem hidden" },
+    h("div", { class: "jua" }, opts.then || "이제 실제로 계산해 보세요."),
+    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : "",
+      h("button", { class: "opt", onclick: () => {
+        api.tryOnce();
+        if (Number(inp.value) !== opts.real) return api.fail("실제 값을 다시 계산해 봐요.", inp.value);
+        const hit = guess === opts.a;
+        api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
+          (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
+          (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
+      } }, "확인하기")));
+
+  body.append(box, second);
 }
 /* 순서 맞추기 */
 function sequence(body, api, cards, order, opts = {}) {
