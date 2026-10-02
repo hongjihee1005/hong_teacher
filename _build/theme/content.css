@@ -572,3 +572,17 @@ html body.ov section .fitbox>p.hj-task{font-size:clamp(19px,1.6vw,24px)!importan
 html body.ov section .fitbox>p.hj-task b{color:var(--hjs,var(--ink))}
 /* 스스로 평가 표: 얼굴 칸은 좁게, 글 칸은 넓게 */
 html body.ov section table td:has(> button){width:1%;white-space:nowrap}
+/* 문제 보기: 교과서처럼 ①②③④ 번호를 붙이고 왼쪽 정렬 (과학 형성 평가·수행 평가) */
+@counter-style hjcirc{system:fixed;symbols:'①' '②' '③' '④' '⑤' '⑥' '⑦' '⑧' '⑨' '⑩';suffix:' '}
+html body.ov section :is(#quiz,#perf,.qz) .pick{counter-reset:hjo}
+html body.ov section :is(#quiz,#perf,.qz) .pick>button{counter-increment:hjo;text-align:left!important;justify-content:flex-start!important;display:flex!important;align-items:center;gap:.45em;padding-left:18px!important;padding-right:16px!important}
+html body.ov section :is(#quiz,#perf,.qz) .pick>button::before{content:counter(hjo,hjcirc);font-weight:700;color:var(--hjs,var(--ink));flex:none}
+/* 홍지희 버전: 활동 이름표 + 질문 제목 한 줄 */
+html body #lesson .hj-head2{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:4px 14px;margin:0 auto}
+html body #lesson .hj-head2>.sthead{margin:0!important;flex:none}
+html body #lesson .hj-head2>#hd{margin:0!important}
+/* 홍지희 버전 첫 화면: 주제 프로젝트 지도 이름표, 오늘 표시 */
+html body .hj-maplab{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 10px;margin:12px 0 6px;font-size:15px;color:var(--soft)}
+html body .hj-maplab b{font-size:16.5px;color:var(--ink)}
+html body .hj-maplab em{font-style:normal;font-weight:800;color:var(--hjs,var(--ink))}
+html body #cMap .cur .hj-today{font-style:normal;display:inline-block;font-size:12.5px;font-weight:800;color:#fff;background:var(--hjs,#555);border-radius:999px;padding:1px 8px;margin-right:6px;vertical-align:1px}

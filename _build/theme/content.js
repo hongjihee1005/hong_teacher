@@ -356,14 +356,14 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  new MutationObserver(function(ms){if(ms.some(function(m){return !(m.target.closest&&m.target.closest('#hj-player'))}))q()}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['hidden','class']});})();
 (function(){var bar=document.getElementById('ovBar');if(!bar)return;function m(){var r=bar.getBoundingClientRect();document.documentElement.style.setProperty('--hjbar',Math.round(window.innerHeight-r.top+8)+'px')}m();addEventListener('resize',m);new MutationObserver(m).observe(bar,{childList:true,subtree:true,attributes:true})})();
 /* 제목·질문 줄바꿈: 쉼표·마침표로 나뉜 말 덩어리는 한 줄에 두고, 덩어리 사이에서 줄을 바꾼다
-   (예: "…살펴보고, / 공부할 차례를 정해 봐요.") */
-(function(){var SEL='h1,h2,h3,h4,.hd,.ask,.title,.lead,.big,.sit,.qtext,.hj-sc-title,.hj-sc-goal,p.jua,.goal,.q,.clue,#clue',RX=/[^,.!?]+(?:[,.!?]+|$)/g;
- function ok(el){if(el.closest('svg,button,a,textarea,[contenteditable],.hj-contact,nav'))return false;var c=el.childNodes;if(!c.length)return false;
-  for(var i=0;i<c.length;i++)if(c[i].nodeType!==3)return false;var v=el.textContent;return /[,.!?]\s+\S/.test(v.trim())&&v.length<160}
- function fix(el){if(!ok(el))return;var v=el.textContent,parts=v.match(RX);if(!parts||parts.length<2)return;
-  var f=document.createDocumentFragment();parts.forEach(function(p){var m=p.match(/^(\s*)([\s\S]*?)(\s*)$/);if(m[1])f.appendChild(document.createTextNode(m[1]));
-   if(m[2]){var s=document.createElement('span');s.className='hj-cl';s.textContent=m[2];f.appendChild(s)}if(m[3])f.appendChild(document.createTextNode(m[3]))});
-  el.textContent='';el.appendChild(f)}
+   (예: "…살펴보고, / 공부할 차례를 정해 봐요.")  U+2063(보이지 않는 구분 기호)을 넣으면 그 자리도 덩어리 경계가 된다 */
+(function(){var SEL='h1,h2,h3,h4,.hd,.ask,.title,.lead,.big,.sit,.qtext,.hj-sc-title,.hj-sc-goal,p.jua,.goal,.q,.clue,#clue,.qbox,.bq,.goalbox',RX=/[^,.!?⁣]+(?:[,.!?]+|⁣|$)/g;
+ function bad(el){return el.closest('svg,button,a,textarea,[contenteditable],.hj-contact,nav,.hj-cl')}
+ function splitText(t){var v=t.nodeValue;if(v.length>200||!/([,.!?]\s+\S|⁣)/.test(v.trim()))return;var parts=v.match(RX);if(!parts||parts.length<2)return;
+  var f=document.createDocumentFragment();parts.forEach(function(p,k){var mk=/⁣/.test(p);p=p.replace(/⁣/g,'');var m=p.match(/^(\s*)([\s\S]*?)(\s*)$/);if(m[1])f.appendChild(document.createTextNode(m[1]));
+   if(m[2]){var s=document.createElement('span');s.className='hj-cl';s.textContent=m[2];f.appendChild(s)}if(m[3])f.appendChild(document.createTextNode(m[3]));else if(mk&&k<parts.length-1)f.appendChild(document.createTextNode(' '))});
+  t.parentNode.replaceChild(f,t)}
+ function fix(el){if(bad(el))return;var c=[].slice.call(el.childNodes);c.forEach(function(n){if(n.nodeType===3)splitText(n)})}
  function run(r){if(!r||r.nodeType!==1)return;if(r.matches(SEL))fix(r);r.querySelectorAll(SEL).forEach(fix)}
  var st=document.createElement('style');st.textContent='.hj-cl{display:inline-block;max-width:100%}';document.head.appendChild(st);
  run(document.body);var q=new Set(),raf=0;new MutationObserver(function(ms){ms.forEach(function(m){var t=m.target.nodeType===3?m.target.parentElement:m.target;if(t)q.add(t.matches&&t.matches(SEL)?t:(t.closest?t.closest(SEL)||t:t))});
@@ -387,3 +387,15 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
     p.classList.add('hj-guide');return}
    if(VERB.test(txt))p.classList.add('hj-task');else p.classList.add('hj-guide')})})}
  run();setTimeout(run,400);if(document.fonts)document.fonts.ready.then(function(){setTimeout(run,100)})})();
+/* 홍지희 버전 진행 화면: 활동 이름표(.sthead)와 질문 제목(#hd)을 과학처럼 한 줄로 */
+(function(){var L=document.getElementById('lesson');if(!L)return;function w(){var st=L.querySelector('.sthead'),hd=L.querySelector('#hd');
+ if(!st||!hd||st.parentElement.classList.contains('hj-head2'))return;if(st.nextElementSibling!==hd)return;var d=document.createElement('div');d.className='hj-head2';st.before(d);d.appendChild(st);d.appendChild(hd)}
+ w();new MutationObserver(w).observe(L,{childList:true})})();
+/* 홍지희 버전 첫 화면: 여러 차시에 걸친 '주제 프로젝트 지도'와 '오늘 수업'을 구분해서 보여 주기 */
+(function(){var m=document.getElementById('cMap');if(!m||m.dataset.hjlab)return;m.dataset.hjlab='1';
+ var ns=[].map.call(m.querySelectorAll('a,.cur'),function(e){var x=e.textContent.match(/(\d+)(?:~(\d+))?차시/);return x?[+x[1],+(x[2]||x[1])]:null}).filter(Boolean);
+ var cur=m.querySelector('.cur'),ct=cur?(cur.textContent.match(/^\s*([\d~]+차시)/)||[])[1]:'';
+ if(ns.length){var a=Math.min.apply(0,ns.map(function(n){return n[0]})),b=Math.max.apply(0,ns.map(function(n){return n[1]}));
+  var h=document.createElement('div');h.className='hj-maplab';h.innerHTML='<b>주제 프로젝트 지도</b><span>'+a+'~'+b+'차시 동안 여러 날에 걸쳐 함께 해요'+(ct?' · 오늘은 <em>'+ct+'</em>':'')+'</span>';m.before(h)}
+ if(cur&&!cur.querySelector('.hj-today')){var t=document.createElement('i');t.className='hj-today';t.textContent='오늘';cur.prepend(t)}
+ document.querySelectorAll('#cover .hj-flabel').forEach(function(l){if(l.textContent.trim()==='수업 흐름')l.textContent='오늘 수업 흐름'})})();
