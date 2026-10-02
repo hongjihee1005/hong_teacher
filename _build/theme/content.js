@@ -368,3 +368,5 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  var st=document.createElement('style');st.textContent='.hj-cl{display:inline-block;max-width:100%}';document.head.appendChild(st);
  run(document.body);var q=new Set(),raf=0;new MutationObserver(function(ms){ms.forEach(function(m){var t=m.target.nodeType===3?m.target.parentElement:m.target;if(t)q.add(t.matches&&t.matches(SEL)?t:(t.closest?t.closest(SEL)||t:t))});
   if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)run(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
+/* 과목 색: 주소에서 과목을 읽어 html에 표시 */
+(function(){var m=location.pathname.match(/\/(korean|math|social|science)\//);if(m)document.documentElement.setAttribute('data-hjsubj',m[1])})();

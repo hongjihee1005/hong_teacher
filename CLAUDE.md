@@ -119,6 +119,7 @@ python3 _build/theme/apply_content_theme.py          # 모든 자료 페이지(�
 - **새 자료를 올렸으면 이 스크립트도 실행하세요.** 여러 번 실행해도 안전합니다.
 - 같은 스크립트가 하는 일(2026-10-01 추가): 진짜 Jua·Gowun Dodum 구글 글꼴 `<link>`를 빼서 Pretendard로 통일 / 이모지를 `.hj-em`으로 감싸 단색 Noto Emoji(`@fontsource/noto-emoji`, jsDelivr)로 표시 / 교사 안내 창(`#tnB`)에 인쇄·PDF, 구글 문서로(복사 후 docs.new), 이메일(Gmail·메일 앱 쓰기 화면) / 마지막 단계에서 '다음'을 누르면 다음 차시·자료 목록 고르기(`<meta name="hj-next">`, 폴더 index.html의 차시 카드 순서로 계산) / 읽어 주기·녹음 듣기 재생 막대(`#hj-player`) / 왼쪽 위 이동 단추 `[홈 · 자료 목록]`(`.hj-nav`: 수업 첫 화면 위줄, 수학 앱 머리줄, 과학 앱 위 탭줄, 그 밖은 본문 맨 위) — 이때 떠 있는 `#hj-home`은 숨김(HTML에는 그대로 두세요).
 - 글꼴 주소는 `cdn.jsdelivr.net/npm/pretendard@1.3.9/…`(npm 경로)입니다.
+- **과목 색(2026-10-02):** `content.js`가 주소의 `/korean/ /math/ /social/ /science/`를 읽어 `<html data-hjsubj>`를 붙이고, `content.css` 맨 아래 '과목 색' 묶음이 '다음'·'수업 시작'·`button.main`, 지금 단계(`.st.now`, 과학 위 탭), 고른 것(`.on/.sel`, 활동 단위), 과학 활동 이름표(`.stage`), 학습 문제 상자를 진한 과목 색(`--hjs`: 국어 #C9463B, 수학 #B4610F, 사회 #2B6FB8, 과학 #1F8060)으로 칠합니다. 색을 바꾸려면 그 네 줄만 고치세요.
 - 같은 스크립트가 `_build/theme/content.js`도 넣습니다. 단추 앞의 이모지(👩‍🏫 교사 안내, 🏠, 🔊, ⛶, 📋, 💬 등)와 ←/→ 화살표를 선 아이콘으로 바꿉니다. 진행 화면 오른쪽 위 🏠는 '⌂ 홈'(수업 첫 화면으로) 단추가 됩니다. 새 이모지 단추는 `content.js`의 `LEAD` 목록에 추가하세요.
 
 ## 링크 점검 — 꼭 하세요
