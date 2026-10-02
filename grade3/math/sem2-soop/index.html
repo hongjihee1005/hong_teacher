@@ -297,6 +297,9 @@ html .ts-chip:hover{border-color:var(--acc-mid)}
 html a.room::after{background:color-mix(in srgb,var(--acc) 12%,var(--paper))}
 html a.room:hover::after{background:var(--acc-mid)}
 @media (max-width:600px){html .td-top{flex-wrap:wrap;gap:8px}html .td-top .tag{white-space:nowrap;border-radius:999px}html .td-btns{flex-wrap:wrap;justify-content:flex-start}}
+/* 위치 표시줄: 지금 있는 곳(학기)은 진하게, 누르지 않는 글자 */
+html .crumb .c-cur{color:var(--ink);font-weight:700;cursor:default}
+html .crumb .c-cur:hover{background:none}
 </style><!--/hj-theme--></head><body><main>
 
 <section id="lock" class="lock">
@@ -309,7 +312,7 @@ html a.room:hover::after{background:var(--acc-mid)}
 </section>
 
 <section id="room" class="hide">
-<nav class="crumb" aria-label="현재 위치"><a class="c-link c-home" href="../../../index.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../../index.html">128640; 3학년</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../index.html">128290; 수학방</a></nav>
+<nav class="crumb" aria-label="현재 위치"><a class="c-link c-home" href="../../../index.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../../index.html">128640; 3학년</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../index.html">128290; 수학방</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><span class="c-link c-cur" aria-current="page">2학기 · 홍지희 버전</span></nav>
 <h1><span class="h-ico" aria-hidden="true">🧑‍🏫</span>3학년 2학기 수학 · 홍지희 선생님 버전</h1>
 <p class="sub">우리 학교·학급 상황으로 새로 구성한 자료입니다. 교과서 차시와 순서·소재가 달라 복습, 방과 후, 동아리, 학급 프로젝트에 씁니다.<br>
 개념 계단 다섯 칸과 도움 3단계, S.O.O.P. 탐구 단계는 교과서 버전과 같습니다.</p>
@@ -330,14 +333,14 @@ let KEY=null, MAN=null;
 const b64=s=>Uint8Array.from(atob(s),c=>c.charCodeAt(0));
 
 async function deriveKey(pw){
-  const parts = (await (await fetch('d/salt.txt')).text()).trim().split('\n');
+  const parts = (await (await fetch('d/salt.txt',{cache:'no-store'})).text()).trim().split('\n');
   const base = await crypto.subtle.importKey('raw', new TextEncoder().encode(pw), 'PBKDF2', false, ['deriveKey']);
   return crypto.subtle.deriveKey(
     { name:'PBKDF2', salt:b64(parts[0].trim()), iterations:parseInt(parts[1],10), hash:'SHA-256' },
     base, { name:'AES-GCM', length:256 }, false, ['decrypt']);
 }
 async function grab(id){
-  const res = await fetch('d/'+id);
+  const res = await fetch('d/'+id,{cache:'no-store'});
   if(!res.ok) throw new Error('not found');
   const buf = new Uint8Array(await res.arrayBuffer());
   const plain = await crypto.subtle.decrypt({ name:'AES-GCM', iv: buf.slice(0,12) }, KEY, buf.slice(12));
@@ -354,7 +357,7 @@ async function unlock(){
     render();
   }catch(e){
     KEY=null; sessionStorage.removeItem('soop-pw');
-    $('#msg').style.color=''; $('#msg').textContent='비밀번호가 맞지 않아요.';
+    $('#msg').style.color=''; $('#msg').textContent=(e&&e.message==='bad'||e&&e.name==='OperationError')?'비밀번호가 맞지 않아요.':'자료를 불러오지 못했어요. 인터넷 연결을 확인하고 다시 눌러 주세요.';
     $('#go').disabled=false; $('#pw').select();
   }
 }

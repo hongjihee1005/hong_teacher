@@ -85,6 +85,7 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .talk .q{background:var(--paper);border-radius:18px;border-left:14px solid var(--cc,var(--acc));padding:12px 20px;font-size:clamp(23px,2.4vw,34px);line-height:1.45;text-align:left}
 .talk .q small{display:block;color:var(--soft);font-size:.7em;margin-top:4px}
 .exs{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;width:min(1150px,95vw)}
+.hd .pgref{display:block;font-size:.66em;font-weight:500;color:var(--soft);margin-top:6px;letter-spacing:0}
 .ex{background:var(--paper);border:3px dashed var(--line);border-radius:999px;padding:6px 18px;font-size:clamp(19px,1.9vw,26px)}
 .timer{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:center}
 .timer .t{font-family:var(--display);font-size:clamp(30px,3vw,44px);min-width:3.2em;text-align:center}
@@ -173,6 +174,8 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .recgrid .book{grid-template-columns:1fr}.recgrid .book .e{display:none}.recgrid .book ol{font-size:clamp(19px,1.9vw,26px)}
 .rec{width:min(1150px,96vw);background:var(--paper);border:4px solid var(--line);border-radius:22px;padding:clamp(12px,1.8vw,24px);text-align:left;font-size:clamp(22px,2.3vw,34px);line-height:1.7;font-family:var(--body)}
 .rec .p1,.rec .p2{color:var(--acc);font-family:var(--display);font-size:.8em;padding:0 .12em}
+.rec .p2{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;vertical-align:middle;line-height:.55;margin:0 .1em}
+.rec .p2 i{font-style:normal;display:block}
 .rec.nomark .p1,.rec.nomark .p2{display:none}
 .rec .src{display:block;font-size:14px;color:var(--soft);text-align:right}
 .recbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:center}
@@ -937,7 +940,7 @@ function fb(ok,title,why,then,label){
   $('fbT').textContent=title;$('fbW').innerHTML=why||'';$('fbNext').textContent=label||'계속하기';
   $('fbNext').onclick=()=>{closeO('fb');then&&then();};openO('fb');$('fbNext').focus();
 }
-function hd(X){return X.hd?`<p class="hd">${X.hd}</p>`:'';}
+function hd(X){return X.hd?`<p class="hd">${X.hd.replace(/\s*\((『[^』]+』[^()]*(?:\([^()]*\)[^()]*)*)\)\s*$/,' <span class="pgref">($1)</span>')}</p>`:'';}
 function speakBtn(id){return `<button class="tool" id="${id}">🔈 읽어 주기</button>`;}
 
 /* ---------- 화면 맞춤: 넘치면 조금씩 줄이기 ---------- */
@@ -974,12 +977,12 @@ function wireTimer(){document.querySelectorAll('[data-sec]').forEach(b=>b.onclic
   TMR=setInterval(()=>{s--;draw();if(s<=0){clearInterval(TMR);t.textContent='끝!';beep('win');}},1000);});}
 R.talk=X=>{
   $('body').innerHTML=hd(X)+`<div class="talk ${(X.qs||[]).length>3?'two':''}">${(X.qs||[]).map((q,i)=>{const o=typeof q==='string'?{q}:q;return `<div class="q" style="--cc:${['#D64C5A','#2F74E0','#1F9E63','#E8961E','#6A4FC9'][i%5]}">💬 ${o.q}${o.s?`<small>${o.s}</small>`:''}</div>`;}).join('')}</div>`
-   +(X.ex?`<div class="exs">${X.ex.map(e=>`<span class="ex">${e}</span>`).join('')}</div>`:'')
+   +(X.ex?`<div class="exs"><button class="tool exbtn" onclick="const h=this.parentNode.querySelector('.ex').hidden;this.parentNode.querySelectorAll('.ex').forEach(e=>e.hidden=!h);this.textContent=h?'🙈 예시 숨기기':'💡 예시 보기'">💡 예시 보기</button>${X.ex.map(e=>`<span class="ex" hidden>${e}</span>`).join('')}</div>`:'')
    +(X.method?`<p class="lead" style="font-size:clamp(18px,1.8vw,24px)">🤔 ${X.method}</p>`:'')+timerHTML();
   wireTimer();
 };
 R.book=X=>{
-  $('body').innerHTML=hd(X)+`<div class="book"><div class="e">${X.e||'📖'}</div><div><div class="pg">${X.page}</div>${X.do?`<ol>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`
+  $('body').innerHTML=hd(X)+`<div class="book"><div class="e">${X.e||'📖'}</div><div><div class="pg">${String(X.page).replace(/『([^』]+)』/g,'「$1」')}</div>${X.do?`<ol>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`
    +(X.ways?`<p class="lead">${X.wlead||'🎲 오늘은 어떤 방법으로 읽을까요?'}</p><div class="pickways" style="--n:${Math.min(X.ways.length,4)}">${X.ways.map((w,i)=>`<div class="pw" data-i="${i}"><span>${w[0]}</span>${w[1]}</div>`).join('')}</div><button class="mid-btn" id="roll">${X.wroll||'🎲 읽기 방법 뽑기'}</button>`:'')
    +(X.tip?`<div class="qbox" style="font-size:clamp(20px,2vw,28px);text-align:left">💡 ${X.tip}</div>`:'');
   if(X.ways)$('roll').onclick=()=>{const pw=[...document.querySelectorAll('.pw')];let n=0,k=0;const total=10+Math.floor(Math.random()*pw.length);
@@ -1096,7 +1099,7 @@ let REC=null;
 function stopRec(){try{if(REC&&REC.state==='recording')REC.stop();}catch(e){}}
 R.record=X=>{
   const key='hj-kor-'+C.id+'-'+X.id;const saved=store.get(key)||{};const sv=saved.self||{};
-  const txt=X.text?X.text.replace(/\/\//g,'\u0001').replace(/\//g,'\u0002').replace(/\u0001/g,'<span class="p2">∨∨</span>').replace(/\u0002/g,'<span class="p1">∨</span>'):'';
+  const txt=X.text?X.text.replace(/\/\//g,'\u0001').replace(/\//g,'\u0002').replace(/\u0001/g,'<span class="p2" aria-label="길게 띄어 읽기"><i>∨</i><i>∨</i></span>').replace(/\u0002/g,'<span class="p1">∨</span>'):'';
   $('body').innerHTML=hd(X)+`<div class="recbar">${X.text?'<button class="tool" id="rModel">🔈 본보기 듣기</button><button class="tool" id="rMark">∨ 띄어 읽기 표시 끄기</button>':''}<button class="tool" id="rGo">🎙️ 녹음하기</button><button class="tool" id="rPlay" disabled>▶ 내 목소리 듣기</button></div>
    <p class="recmsg" id="rMsg">🎙️를 누르고 소리 내어 읽은 뒤 ⏹로 멈춰요. 녹음은 이 화면을 떠나면 지워져요.</p><audio id="rAud" hidden></audio>
    <div class="recgrid ${X.text?'':'bm'}">`+(X.text?`<div class="rec" id="recTxt">${txt}${X.src?`<span class="src">${X.src}</span>`:''}</div>`:`<div class="book"><div class="e">📖</div><div><div class="pg">${X.page||'교과서를 펴요'}</div>${X.do?`<ol>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`)

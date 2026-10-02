@@ -41,6 +41,10 @@ def crumb(m, rel):
             out.append(f'<a class="c-link c-home" href="{href}">{HOME_SVG}<span>홈</span></a>')
         else:
             out.append(f'<a class="c-link" href="{href}">{clean(lab)}</a>')
+    mm = re.match(r'grade\d/\w+/sem(\d)(?:-(\w+))?/index\.html$', rel.replace('\\', '/'))
+    if mm and out:
+        suf = {'hong': ' · 홍지희 버전', 'soop': ' · 홍지희 버전', 'inquiry': ' · 탐구 버전'}.get(mm.group(2) or '', '')
+        out.append(f'<span class="c-link c-cur" aria-current="page">{mm.group(1)}학기{suf}</span>')
     return '<nav class="crumb" aria-label="현재 위치">' + SEP_SVG.join(out) + '</nav>'
 
 CHEV = ('<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
