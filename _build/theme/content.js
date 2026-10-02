@@ -528,3 +528,10 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
   var p=document.createElement('div');p.className='hj-mp';if(media)p.appendChild(media);
   m.innerHTML='';m.appendChild(h);m.appendChild(p);if(d)m.appendChild(d);if(sm){sm.classList.add('hj-msrc');m.appendChild(sm)}})}
  fix();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(fix,20)}).observe(document.body,{childList:true,subtree:true})})();
+/* 수학 개념 계단: '다음 계단'은 '확인하기'와 같은 줄 오른쪽, 그 앞에 '이전 계단' 단추 */
+(function(){if(!/\/math\//.test(location.pathname))return;
+ function fix(){var acts=document.querySelectorAll('main .actions');acts.forEach(function(a){var nx=[].find.call(a.querySelectorAll('button'),function(b){return /다음 계단/.test(b.textContent)});if(!nx)return;nx.classList.add('hj-nextst');
+   var st=[].slice.call(document.querySelectorAll('nav.stairs .stair')),ci=st.findIndex(function(s){return s.classList.contains('cur')});
+   var pv=a.querySelector('.hj-prevst');if(!pv){pv=document.createElement('button');pv.type='button';pv.className='big hj-prevst';pv.textContent='이전 계단';[['background','#fff'],['color','#3A2E25'],['border','2px solid #e8dccb'],['box-shadow','none']].forEach(function(k){pv.style.setProperty(k[0],k[1],'important')});pv.onclick=function(){var s=[].slice.call(document.querySelectorAll('nav.stairs .stair')),i=s.findIndex(function(x){return x.classList.contains('cur')});if(i>0)s[i-1].click()};a.insertBefore(pv,nx)}
+   pv.style.visibility=ci>0?'':'hidden'})}
+ fix();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(fix,30)}).observe(document.body,{childList:true,subtree:true})})();

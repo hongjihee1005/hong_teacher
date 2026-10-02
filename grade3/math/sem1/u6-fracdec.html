@@ -829,6 +829,19 @@ html body .fb.on.no{border-left-color:var(--no,#D64C5A)!important}
 html body .fb.on.open{border-left-color:#C9862A!important}
 html body .fb.on b{color:var(--ok,#1F9E63)}html body .fb.on.no b{color:var(--no,#D64C5A)}html body .fb.on.open b{color:#B07020}
 html body .fb.on #nx,html body .fb.on button{margin-left:auto!important;background:var(--hjs,#555)!important;color:#fff!important;border:0!important;border-radius:999px!important;padding:8px 20px!important;font-weight:800!important;font-size:clamp(16px,1.5vw,20px)!important;box-shadow:0 3px 0 color-mix(in srgb,var(--hjs,#555) 60%,#000)!important;white-space:nowrap}
+/* ===== 수학: 머리줄을 밝게(오른쪽 위 글자가 보이게), 계단 이동 단추 한 줄 (2026-10-03) ===== */
+html[data-hjsubj="math"] body header.top{background:color-mix(in srgb,#B4610F 7%,#FFFBF4)!important;color:#3A2E25!important;border-bottom:2px solid color-mix(in srgb,#B4610F 22%,#FFFBF4)!important;box-shadow:none!important}
+html[data-hjsubj="math"] body header.top .brand,html[data-hjsubj="math"] body header.top .who{color:#3A2E25!important}
+html[data-hjsubj="math"] body header.top .chip{background:#fff!important;color:#3A2E25!important;border:1.5px solid color-mix(in srgb,#B4610F 25%,#e8dccb)!important;font-weight:700}
+html[data-hjsubj="math"] body header.top .chip.btn:hover{background:color-mix(in srgb,#B4610F 8%,#fff)!important}
+html[data-hjsubj="math"] body header.top .hj-nav .hj-lbtn{color:#3A2E25!important;background:#fff!important;border-color:color-mix(in srgb,#B4610F 25%,#e8dccb)!important}
+html body main .actions:has(.hj-nextst){display:flex!important;flex-wrap:wrap;align-items:center;gap:.6em}
+html body main .actions:has(.hj-nextst)>*{order:5}
+html body main .actions:has(.hj-nextst)>button.big:not(.hj-prevst):not(.hj-nextst){order:1}
+html body main.lesson .actions:has(.hj-nextst)>button.big.hj-prevst,html body main .actions:has(.hj-nextst)>.hj-prevst{order:2;margin-left:auto!important;background:#fff!important;color:#3A2E25!important;border:2px solid var(--line,#e8dccb)!important;box-shadow:none!important}
+html body main .actions:has(.hj-nextst)>.hj-nextst{order:3}
+html body main .actions:has(.hj-nextst)>.hj-prevst::before{content:'← ';}
+html body main .actions:has(.hj-nextst)>.hj-nextst::after{content:' →';}
 </style><meta name="hj-list" content="[[&quot;u1-addsub.html&quot;, &quot;덧셈과 뺄셈&quot;, &quot;웹앱&quot;], [&quot;u2-plane.html&quot;, &quot;평면도형&quot;, &quot;웹앱&quot;], [&quot;u3-div.html&quot;, &quot;나눗셈&quot;, &quot;웹앱&quot;], [&quot;u4-mul.html&quot;, &quot;곱셈&quot;, &quot;웹앱&quot;], [&quot;u5-lentime.html&quot;, &quot;길이와 시간&quot;, &quot;웹앱&quot;], [&quot;u6-fracdec.html&quot;, &quot;분수와 소수&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
@@ -2863,6 +2876,13 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
   var p=document.createElement('div');p.className='hj-mp';if(media)p.appendChild(media);
   m.innerHTML='';m.appendChild(h);m.appendChild(p);if(d)m.appendChild(d);if(sm){sm.classList.add('hj-msrc');m.appendChild(sm)}})}
  fix();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(fix,20)}).observe(document.body,{childList:true,subtree:true})})();
+/* 수학 개념 계단: '다음 계단'은 '확인하기'와 같은 줄 오른쪽, 그 앞에 '이전 계단' 단추 */
+(function(){if(!/\/math\//.test(location.pathname))return;
+ function fix(){var acts=document.querySelectorAll('main .actions');acts.forEach(function(a){var nx=[].find.call(a.querySelectorAll('button'),function(b){return /다음 계단/.test(b.textContent)});if(!nx)return;nx.classList.add('hj-nextst');
+   var st=[].slice.call(document.querySelectorAll('nav.stairs .stair')),ci=st.findIndex(function(s){return s.classList.contains('cur')});
+   var pv=a.querySelector('.hj-prevst');if(!pv){pv=document.createElement('button');pv.type='button';pv.className='big hj-prevst';pv.textContent='이전 계단';[['background','#fff'],['color','#3A2E25'],['border','2px solid #e8dccb'],['box-shadow','none']].forEach(function(k){pv.style.setProperty(k[0],k[1],'important')});pv.onclick=function(){var s=[].slice.call(document.querySelectorAll('nav.stairs .stair')),i=s.findIndex(function(x){return x.classList.contains('cur')});if(i>0)s[i-1].click()};a.insertBefore(pv,nx)}
+   pv.style.visibility=ci>0?'':'hidden'})}
+ fix();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(fix,30)}).observe(document.body,{childList:true,subtree:true})})();
 </script><!--/hj-cicons--></body>
 </html>
 
