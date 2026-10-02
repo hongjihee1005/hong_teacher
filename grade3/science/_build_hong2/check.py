@@ -20,6 +20,13 @@ async def one(pw, f, shots):
         errs = []
         pg.on('pageerror', lambda e: errs.append(str(e)))
         await pg.route('**/fonts.g*/**', lambda r: r.abort())
+        if os.environ.get('NPMF'):  # 글꼴 CDN 대신 내려받아 둔 npm 꾸러미 폴더(예: npm pack pretendard@1.3.9 를 풀어 둔 곳)
+            async def jd(route):
+                p_ = os.path.join(os.environ['NPMF'], route.request.url.split('cdn.jsdelivr.net/npm/', 1)[1].split('?')[0])
+                await (route.fulfill(path=p_) if os.path.exists(p_) else route.abort())
+            await pg.route('**/cdn.jsdelivr.net/**', jd)
+        else:
+            await pg.route('**/cdn.jsdelivr.net/**', lambda r: r.abort())
         await pg.goto('file://' + os.path.abspath(f)); await pg.wait_for_timeout(400)
         await pg.evaluate('localStorage.clear()')
         base = os.path.splitext(os.path.basename(f))[0]

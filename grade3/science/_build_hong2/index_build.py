@@ -38,7 +38,7 @@ for n, name in UNITS:
 body = f'''<body><main>
 <nav class="crumb"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a><a class="back" href="../../index.html">🚀 3학년</a><a class="back" href="../index.html">🔬 과학방</a><a class="back" href="../sem2/index.html">🍂 2학기 교과서 버전</a></nav>
 <h1>🧑‍🏫 홍지희 선생님 버전</h1>
-<p class="sub"><b>3학년 2학기 과학</b> · 실험·탐구 중심으로 다시 짠 수업이에요. 아이들이 실험 방법과 같게 할 것을 먼저 정하고, 예상하고, 실험한 결과를 우리 반 자료판에 모아 그 자료를 근거로 결론을 쓴 뒤 교과서 문장과 비교해요. (지금은 견본 1차시만 있어요)</p>
+<p class="sub"><b>3학년 2학기 과학</b> · 실험·탐구 중심으로 다시 짠 수업이에요. 아이들이 실험 방법과 같게 할 것을 먼저 정하고, 예상하고, 실험한 결과를 우리 반 자료판에 모아 그 자료를 근거로 결론을 쓴 뒤 교과서 문장과 비교해요.</p>
 <nav class="tabs" role="tablist" aria-label="자료 종류"><a class="tab" role="tab" href="#lesson" data-pane="lesson">📖 차시별 탐구 수업<span class="cnt">{total}</span></a><a class="tab" role="tab" href="#how" data-pane="how">💡 쓰는 방법</a></nav>
 <section class="pane" id="lesson" role="tabpanel">
 <h2>📖 차시별 탐구 수업</h2><p class="gsub">단원마다 핵심 질문 하나를 붙잡고 S → O → O → P 순서로 탐구해요. 카드 아래에 그 차시의 탐구 단계와 사고전략이 적혀 있어요. (단원 도입 ‘열려라 과학’과 ‘과학이 톡톡’은 넣지 않았어요)</p><div class="legend"><span style="background:#E0506B">S 개념 찾기</span><span style="background:#2F74E0">O 개념 구축</span><span style="background:#6A4FC9">O 탐구 정리</span><span style="background:#1F9E63">P 발표</span></div><div class="subtabs" role="group" aria-label="단원 고르기">{''.join(btns)}</div>{''.join(groups)}

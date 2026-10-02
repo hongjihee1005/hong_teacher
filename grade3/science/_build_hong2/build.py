@@ -49,7 +49,10 @@ def build(L, topic):
 
 if __name__ == '__main__':
     only = sys.argv[1:]
+    units = {k.split('-')[1][1:] for k in only if k.startswith('sci32-u')}  # 고른 차시의 단원 파일만 읽음(다른 작업자 파일이 고치는 중이어도 안전)
     for mod in sorted(glob.glob(os.path.join(B, 'lessons_u*.py'))):
+        if units and os.path.basename(mod)[len('lessons_u'):-3] not in units:
+            continue
         M = importlib.import_module(os.path.basename(mod)[:-3])
         topic = M.TOPIC
         topic['map'] = [{'s': L['soop'], 'f': L['file'], 'n': L['short'], 't': L['title'].split(' ', 1)[-1]} for L in M.LESSONS]
