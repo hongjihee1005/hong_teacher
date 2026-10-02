@@ -412,7 +412,7 @@ function wireTimer(){document.querySelectorAll('[data-sec]').forEach(b=>b.onclic
   const draw=()=>{t.textContent=`${Math.floor(s/60)}:${String(s%60).padStart(2,'0')}`;};draw();
   TMR=setInterval(()=>{s--;draw();if(s<=0){clearInterval(TMR);t.textContent='끝!';beep('win');}},1000);});}
 R.talk=X=>{
-  $('body').innerHTML=hd(X)+`<div class="talk ${(X.qs||[]).length>3?'two':''}">${(X.qs||[]).map((q,i)=>{const o=typeof q==='string'?{q}:q;return `<div class="q" style="--cc:${['#D64C5A','#2F74E0','#1F9E63','#E8961E','#6A4FC9'][i%5]}">💬 ${o.q}${o.s?`<small>${o.s}</small>`:''}</div>`;}).join('')}</div>`
+  $('body').innerHTML=hd(X)+`<div class="talk ${(X.qs||[]).length>3?'two':''}">${(X.qs||[]).map((q,i)=>{const o=typeof q==='string'?{q}:q;return `<div class="q" style="--cc:${['#D64C5A','#2F74E0','#1F9E63','#E8961E','#6A4FC9'][i%5]}">${/^[\u2460-\u2473]/.test(o.q)?'':'💬 '}${o.q}${o.s?`<small>${o.s}</small>`:''}</div>`;}).join('')}</div>`
    +(X.ex?`<div class="exs"><button class="tool exbtn" onclick="const b=this.parentNode.querySelector('.exbox');b.hidden=!b.hidden;this.textContent=b.hidden?'💡 예시 보기':'🙈 예시 숨기기'">💡 예시 보기</button><div class="exbox" hidden><div class="exh">예시</div><ul style="--n:${Math.min(X.ex.length,3)}">${X.ex.map(e=>`<li>${e}</li>`).join('')}</ul></div></div>`:'')
    +(X.method?`<p class="lead" style="font-size:clamp(18px,1.8vw,24px)">🤔 ${X.method}</p>`:'')+timerHTML();
   wireTimer();
