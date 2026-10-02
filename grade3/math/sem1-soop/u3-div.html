@@ -36,10 +36,11 @@ svg{touch-action:none;user-select:none;-webkit-user-select:none}
 .chip.btn:hover{background:rgba(255,255,255,.22)}
 
 /* 시작 화면 */
-.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);background:
- radial-gradient(circle at 80% 18%, rgba(244,197,66,.25) 0 6%, transparent 6.5%),
- linear-gradient(180deg,var(--night) 0,var(--night2) 55%,var(--pine) 55.2%,var(--pine) 100%)}
-.gate-card{background:#fff;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 18px 40px rgba(0,0,0,.25)}
+/* 시작 화면: 다른 교과와 같은 밝고 따뜻한 바탕 (2026-10-03) */
+.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);
+ background:linear-gradient(180deg,#FFFCF8 0,#FCF3E9 100%)}
+.gate-card{background:#fff;border:3px solid #F0E5D9;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 10px 28px rgba(140,110,80,.10)}
+.gate-card h1{color:var(--ink)}
 .gate-card h1{font-size:var(--fs-xl);margin:0 0 .2em;color:var(--night)}
 .nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(3.1em,1fr));gap:.45em;margin:.6em 0 1em}
 .nums button{padding:.5em 0;border-radius:.6em;border:2px solid var(--line);background:#fff;font-family:"Jua";font-size:var(--fs)}
@@ -951,7 +952,7 @@ function topbar() {
   return h("header", { class: "top" },
     h("div", { class: "brand" }, ringLogo(), h("span", {}, APP.title), h("span", { class: "long" }, " · " + APP.unit)),
     h("div", { class: "who" },
-      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번 ${st.name || ""}`) : null,
+      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번${st.name ? " " + st.name : ""}`) : null,
       st ? h("button", { class: "chip btn", onclick: () => { S.student = null; store.save(S); showGate(); } }, "바꾸기") : null,
       h("button", { class: "chip btn", onclick: showTeacher }, "선생님")));
 }
@@ -966,18 +967,27 @@ function mount(...els) { const r = root(); r.innerHTML = ""; r.append(topbar(), 
 
 /* 시작: 번호 고르기 */
 function showGate() {
-  let ban = (S.student && S.student.ban) || "2", no = null;
+  const last = S.last || {};
+  let ban = (S.student && S.student.ban) || last.ban || "2";
+  let no = last.no || null;
   const nums = h("div", { class: "nums" });
-  for (let i = 1; i <= 40; i++) nums.append(h("button", { onclick: (e) => { no = i; [...nums.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); go.disabled = false; } }, String(i)));
+  for (let i = 1; i <= 40; i++) {
+    const on = (i === no);
+    nums.append(h("button", { class: on ? "on" : "", onclick: (e) => {
+      no = i; [...nums.children].forEach(b => b.classList.remove("on"));
+      e.currentTarget.classList.add("on"); go.disabled = false;
+    } }, String(i)));
+  }
   const banIn = h("input", { type: "number", min: 1, max: 15, value: ban, style: "width:4.5em", "aria-label": "반" });
-  const nameIn = h("input", { type: "text", placeholder: "이름 (선택)", maxlength: 10, style: "width:9em" });
-  const go = h("button", { class: "big", disabled: true, onclick: () => {
-    S.student = { ban: String(banIn.value || "2"), no, name: nameIn.value.trim() }; store.save(S); flushQueue(); showMap();
-  } }, "입장하기");
+  const go = h("button", { class: "big", disabled: !no, onclick: () => {
+    S.student = { ban: String(banIn.value || "2"), no, name: "" };
+    S.last = { ban: S.student.ban, no };
+    store.save(S); flushQueue(); showMap();
+  } }, "들어가기");
   mount(h("main", { class: "gate" }, h("section", { class: "gate-card" },
     h("h1", {}, APP.welcome),
     h("p", { class: "inst" }, APP.intro + " 내 번호를 눌러 주세요."),
-    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반"), nameIn),
+    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반")),
     nums, go)));
 }
 
@@ -1275,6 +1285,23 @@ function makeSvg(w, hgt, grid) {
 function txt(x, y, t, size = 22, attrs = {}) { const e = svgEl("text", Object.assign({ x, y, "font-size": size, "text-anchor": "middle", "dominant-baseline": "middle", "font-family": "Jua, sans-serif", fill: "#1D2A2A" }, attrs)); e.textContent = t; return e; }
 
 /* 선택형 문제 여러 개 (mcq/ox) */
+/* ── 자동 확인 ────────────────────────────────────────────────────────────
+   '확인하기' 단추 없이, 칸을 다 채우거나 보기를 다 고르면 스스로 확인한다.
+   · ready()가 참일 때만 확인한다(빈 칸이 있으면 기다린다).
+   · 같은 답으로는 다시 세지 않는다(숫자를 고쳐 쓰는 동안 '틀림'이 쌓이지 않게).
+   · 숫자 입력은 다 쓸 때까지 잠깐 기다렸다가 본다.                        */
+function autoRun(ready, sign, run, wait) {
+  let last = null, timer = null, done = false;
+  const fire = () => {
+    if (done || !ready()) return;
+    const sg = sign();
+    if (sg === last) return;
+    last = sg;
+    if (run() === true) done = true;
+  };
+  return () => { clearTimeout(timer); timer = setTimeout(fire, wait || 0); };
+}
+
 function quiz(body, api, items, opts = {}) {
   const state = items.map(() => (null));
   const wrap = h("div");
@@ -1295,7 +1322,7 @@ function quiz(body, api, items, opts = {}) {
     words: items.flatMap(it => (Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i])),
     answers: items.map((it, qi) => `${items.length > 1 ? (qi + 1) + ") " : ""}${(Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i]).join(", ")}`)
   });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
     let allOk = true; const ans = [];
     items.forEach((it, qi) => {
@@ -1313,8 +1340,12 @@ function quiz(body, api, items, opts = {}) {
       const custom = w && w.why && w.why[String(state[wrongIdx])];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
-  } }, "확인하기");
-  body.append(wrap, h("div", { class: "actions" }, check));
+    return allOk;
+  };
+  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+                       () => JSON.stringify(state), judge, 260);
+  wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
+  body.append(wrap);
 }
 /* 빈칸 문장 */
 function blanks(body, api, parts, opts = {}) {
@@ -1333,7 +1364,7 @@ function blanks(body, api, parts, opts = {}) {
     words: parts.filter(p => typeof p !== "string").flatMap(p => p.o),
     answers: [parts.map(p => typeof p === "string" ? p : p.o[p.a]).join("")]
   });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true; const ans = [];
     [...sent.querySelectorAll(".slot")].forEach((slot, k) => {
       const a = +slot.dataset.a; const btn = slot.children[sel[k]];
@@ -1341,8 +1372,11 @@ function blanks(body, api, parts, opts = {}) {
       ans.push(btn ? btn.textContent : "-");
     });
     ok ? api.done(ans.join(" / "), opts.ok) : api.fail(opts.bad || "빨간 낱말을 다시 골라 봐요.", ans.join(" / "));
-  } }, "확인하기");
-  body.append(sent, h("div", { class: "actions" }, check));
+    return ok;
+  };
+  const auto = autoRun(() => sel.every(v => v != null), () => sel.join(","), judge, 260);
+  sent.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
+  body.append(sent);
 }
 /* 글쓰기(자기 생각) */
 function writeStep(body, api, prompts, opts = {}) {
@@ -1411,15 +1445,19 @@ function predictCheck(body, api, opts) {
   const inp = h("input", { type: "number", inputmode: "numeric", placeholder: "실제 값" });
   const second = h("div", { class: "qitem hidden" },
     h("div", { class: "jua" }, opts.then || "이제 실제로 계산해 보세요."),
-    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : "",
-      h("button", { class: "opt", onclick: () => {
-        api.tryOnce();
-        if (Number(inp.value) !== opts.real) return api.fail("실제 값을 다시 계산해 봐요.", inp.value);
-        const hit = guess === opts.a;
-        api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
-          (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
-          (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
-      } }, "확인하기")));
+    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : ""));
+  const judge = () => {
+    api.tryOnce();
+    if (Number(inp.value) !== opts.real) { api.fail("실제 값을 다시 계산해 봐요.", inp.value); return false; }
+    const hit = guess === opts.a;
+    api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
+      (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
+      (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
+    return true;
+  };
+  const autoP = autoRun(() => String(inp.value).trim() !== "", () => inp.value, judge, 900);
+  inp.addEventListener("input", autoP); inp.addEventListener("change", autoP);
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
 
   body.append(box, second);
 }
@@ -1502,16 +1540,22 @@ function numbers(body, api, items, opts = {}) {
     words: opts.words || [],
     answers: items.map(it => `${it.q} ${it.a}${it.unit ? " " + it.unit : ""}`)
   });
-  body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true;
     ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
     const given = ins.map(x => x.inp.value).join(", ");
-    if (ok) return api.done(given, opts.ok);
+    if (ok) { api.done(given, opts.ok); return true; }
     const bad = ins.find(({ inp, a }) => Number(inp.value) !== a);
     const item = items[ins.indexOf(bad)];
     const why = item && item.why && item.why[String(Number(bad.inp.value))];
     api.fail(why || opts.bad || "빨간 칸을 다시 계산해 봐요.", given);
-  } }, "확인하기")));
+    return false;
+  };
+  const auto = autoRun(() => ins.every(x => String(x.inp.value).trim() !== ""),
+                       () => ins.map(x => x.inp.value).join("\u0001"), judge, 900);
+  ins.forEach(({ inp }) => { inp.addEventListener("input", auto); inp.addEventListener("change", auto);
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } }); });
+  body.append(wrap);
 }
 
 /* ===== 3-1 수학 3. 나눗셈 — 단원 조작 부품 (접두어 u3) =====
@@ -1622,6 +1666,10 @@ function u3AskRows(items) {
   });
   return {
     wrap, rows,
+    filled: () => rows.every(r => String(r.inp.value).trim() !== ""),
+    sign: () => rows.map(r => r.inp.value).join("\u0001"),
+    wire(fn) { rows.forEach(r => { r.inp.addEventListener("input", fn); r.inp.addEventListener("change", fn);
+      r.inp.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); r.inp.blur(); } }); }); },
     values: () => rows.map(r => r.inp.value).join(", "),
     check() {   // 틀린 첫 문항 또는 null
       let bad = null;
@@ -1640,6 +1688,7 @@ function u3AskRows(items) {
    조작: 물건을 끌어 원하는 곳에 놓기 / 누르면 차례대로 한 곳씩 / 버튼 '하나씩 번갈아 주기'·'한 바퀴 나누어 주기'
 --------------------------------------------------------------- */
 function u3ShareOut(body, api, opt) {
+  let autoShare = () => {};
   const n = opt.n, g = opt.g, q = n / g, item = opt.item || "물건", unit = opt.unit || "개", kind = opt.kind || "dot";
   const box = opt.box || "명";
   const labels = opt.labels || Array.from({ length: g }, (_, k) => box === "명" ? `${k + 1}번 친구` : `${box} ${k + 1}`);
@@ -1672,6 +1721,7 @@ function u3ShareOut(body, api, opt) {
     for (let i = 0; i < n; i++) { const p = posOf(i); const e = u3Icon(kind, p.x, p.y, s); e.dataset.i = i; layer.append(e); }
     const left = loc.filter(v => v < 0).length;
     out.innerHTML = `남은 ${item} <span class="pill">${left}${unit}</span>`;
+    autoShare();
   };
   const moveTo = (i, k) => {
     if (loc[i] >= 0) boxes[loc[i]].splice(boxes[loc[i]].indexOf(i), 1);
@@ -1714,16 +1764,20 @@ function u3ShareOut(body, api, opt) {
     .concat(opt.eq ? [{ q: `${n} ÷ ${g} =`, a: q }] : []);
   const ask = u3AskRows(askItems);
   api.provide({ words: ["똑같이", "하나씩 번갈아", "나눗셈", "몫"].concat(opt.words || []), answers: ask.answers() });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     const counts = boxes.map(b => b.length), left = loc.filter(v => v < 0).length;
     const ans = `나눔 [${counts.join(",")}] / 답 ${ask.values()}`;
     api.tryOnce();
-    if (left > 0) return api.fail(`아직 나누어 주지 않은 ${u3J(item, "이", "가")} ${left}${unit} 있어요. 남김없이 나누어 주세요.`, ans);
-    if (counts.some(c => c !== counts[0])) return api.fail(`${labels.join(", ")}에 있는 ${item} 수가 서로 달라요. 똑같이 나누어 보세요.`, ans);
+    if (counts.some(c => c !== counts[0])) { api.fail(`${labels.join(", ")}에 있는 ${item} 수가 서로 달라요. 똑같이 나누어 보세요.`, ans); return false; }
     const bad = ask.check();
-    if (bad) return api.fail(ask.whyOf(bad) || opt.bad || "빨간 칸을 다시 살펴봐요. 한 곳에 있는 수를 세어 봐요.", ans);
+    if (bad) { api.fail(ask.whyOf(bad) || opt.bad || "빨간 칸을 다시 살펴봐요. 한 곳에 있는 수를 세어 봐요.", ans); return false; }
     api.done(ans, opt.ok || `${n} ÷ ${g} = ${q}. 똑같이 나누었어요!`);
-  } }, "확인하기");
+    return true;
+  };
+  const auto = autoRun(() => loc.every(v => v >= 0) && ask.filled(),
+                       () => loc.join(",") + "|" + ask.sign(), judge, 1200);
+  ask.wire(auto);
+  autoShare = auto;
   draw();
   body.append(stageWrap(svg, h("div", { class: "side" },
     h("p", {}, opt.tip || `${u3J(item, "을", "를")} 끌어서 옮기거나, 눌러서 차례대로 하나씩 나누어 주세요.`),
@@ -1731,7 +1785,7 @@ function u3ShareOut(body, api, opt) {
       h("button", { class: "ghost", onclick: giveNext }, "하나씩 번갈아 주기"),
       h("button", { class: "ghost", onclick: giveRound }, `한 바퀴 (${g}${unit})`),
       h("button", { class: "ghost", onclick: () => { for (let i = 0; i < n; i++) moveTo(i, -1); turn = 0; draw(); } }, "처음부터")),
-    out, ask.wrap, h("div", { class: "actions" }, check))));
+    out, ask.wrap)));
 }
 
 /* ---------------------------------------------------------------
@@ -1741,6 +1795,7 @@ function u3ShareOut(body, api, opt) {
    조작: 물건을 누르거나 아래로 끌면 지금 만드는 묶음에 들어가요 / 버튼 'per개씩 덜어 내기' / '하나 되돌리기'
 --------------------------------------------------------------- */
 function u3TakeAway(body, api, opt) {
+  let autoTake = () => {};
   const n = opt.n, per = opt.per, cnt = n / per, item = opt.item || "물건", unit = opt.unit || "개", kind = opt.kind || "dot";
   const mode = opt.mode || "sub", verb = mode === "sub" ? "덜어 내기" : "묶기";
   const W = 880, H = 470, s = opt.size || 42, step = s + 10;
@@ -1777,6 +1832,7 @@ function u3TakeAway(body, api, opt) {
     if (mode === "sub") {
       out.innerHTML = full ? `뺄셈식<br><span style="font-size:.9em">${n}${" - " + per}${(" - " + per).repeat(full - 1)} = ${n - full * per}</span>` : `남은 ${item} <span class="pill">${left}${unit}</span>`;
     } else out.innerHTML = `남은 ${item} <span class="pill">${left}${unit}</span>`;
+    autoTake();
   };
   const takeOne = i => { if (taken.includes(i)) return; taken.push(i); };
   const takeGroup = () => {
@@ -1807,15 +1863,19 @@ function u3TakeAway(body, api, opt) {
     .concat(opt.eq ? [{ q: `${n} ÷ ${per} =`, a: cnt }] : []);
   const ask = u3AskRows(askItems);
   api.provide({ words: (mode === "sub" ? ["덜어 내기", "뺄셈식", "뺀 횟수", "몫"] : ["묶음", "묶음 수", "몫"]).concat(opt.words || []), answers: ask.answers() });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     const left = n - taken.length, full = Math.floor(taken.length / per);
     const ans = `${verb} ${full}번(남은 ${left}) / 답 ${ask.values()}`;
     api.tryOnce();
-    if (left > 0) return api.fail(`아직 남은 ${u3J(item, "이", "가")} ${left}${unit} 있어요. 0이 될 때까지 ${per}${unit}씩 ${verb === "묶기" ? "묶어" : "덜어 내"} 보세요.`, ans);
     const bad = ask.check();
-    if (bad) return api.fail(ask.whyOf(bad) || opt.bad || (mode === "sub" ? "뺄셈식에서 빼는 수가 몇 번 나오는지 세어 봐요." : "묶음이 몇 개인지 다시 세어 봐요."), ans);
+    if (bad) { api.fail(ask.whyOf(bad) || opt.bad || (mode === "sub" ? "뺄셈식에서 빼는 수가 몇 번 나오는지 세어 봐요." : "묶음이 몇 개인지 다시 세어 봐요."), ans); return false; }
     api.done(ans, opt.ok || `${n} ÷ ${per} = ${cnt}. ${per}${unit}씩 ${cnt}번이에요!`);
-  } }, "확인하기");
+    return true;
+  };
+  const auto = autoRun(() => taken.length >= n && ask.filled(),
+                       () => taken.length + "|" + ask.sign(), judge, 1200);
+  ask.wire(auto);
+  autoTake = auto;
   draw();
   body.append(stageWrap(svg, h("div", { class: "side" },
     h("p", {}, opt.tip || `${u3J(item, "을", "를")} 누르거나 아래로 끌어 ${per}${unit}씩 ${verb === "묶기" ? "묶어" : "덜어 내어"} 보세요.`),
@@ -1823,7 +1883,7 @@ function u3TakeAway(body, api, opt) {
       h("button", { class: "ghost", onclick: takeGroup }, `${per}${unit}씩 ${verb}`),
       h("button", { class: "ghost", onclick: () => { taken.pop(); draw(); } }, "하나 되돌리기"),
       h("button", { class: "ghost", onclick: () => { taken.length = 0; draw(); } }, "처음부터")),
-    out, ask.wrap, h("div", { class: "actions" }, check))));
+    out, ask.wrap)));
 }
 
 /* ---------------------------------------------------------------
@@ -1859,22 +1919,25 @@ function u3MulDiv(body, api, opt) {
   const ask = u3AskRows(opt.eqs.map(e => ({ q: e.t, a: e.a, why: e.why })));
   ask.rows.forEach((r, k) => r.inp.addEventListener("focus", () => { if (opt.eqs[k].show) show(opt.eqs[k].show); }));
   api.provide({ words: ["곱셈식", "나눗셈식", "묶음", "곱셈식 1개 → 나눗셈식 2개"], answers: ask.answers() });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
     const bad = ask.check(), ans = ask.values();
     if (bad) {
       const e = opt.eqs[ask.rows.indexOf(bad)]; if (e.show) show(e.show);
-      return api.fail(ask.whyOf(bad) || opt.bad || "빨간 칸의 식에 맞게 그림을 묶어 보고 다시 세어 봐요.", ans);
+      api.fail(ask.whyOf(bad) || opt.bad || "빨간 칸의 식에 맞게 그림을 묶어 보고 다시 세어 봐요.", ans);
+      return false;
     }
     api.done(ans, opt.ok || "곱셈식 하나로 나눗셈식 두 개를 만들 수 있어요!");
-  } }, "확인하기");
+    return true;
+  };
+  ask.wire(autoRun(() => ask.filled(), () => ask.sign(), judge, 900));
   body.append(stageWrap(svg, h("div", { class: "side" },
     h("p", {}, opt.tip || "버튼을 눌러 묶어 보고, 식의 빈칸을 채워요. 칸을 누르면 알맞은 묶음이 보여요."),
     h("div", { class: "row" },
       h("button", { class: "ghost", onclick: () => show("col") }, `세로로 ${R}${unit}씩 묶기`),
       h("button", { class: "ghost", onclick: () => show("row") }, `가로로 ${C}${unit}씩 묶기`),
       h("button", { class: "ghost", onclick: () => show(null) }, "묶음 지우기")),
-    ask.wrap, h("div", { class: "actions" }, check))));
+    ask.wrap)));
 }
 
 /* ---------------------------------------------------------------
@@ -1914,7 +1977,7 @@ function u3RelTree(body, api, opt) {
   const need = r => r.t.from === "mul" ? [[r.t.a, r.t.b], [r.t.b, r.t.a]] : [[r.t.d, r.n / r.t.d], [r.n / r.t.d, r.t.d]];
   api.provide({ words: ["곱셈식 1개 → 나눗셈식 2개", "나눗셈식 1개 → 곱셈식 2개", "나누어지는 수", "몫"],
     answers: rows.map(r => r.t.from === "mul" ? `${r.n} ÷ ${r.t.a} = ${r.t.b}, ${r.n} ÷ ${r.t.b} = ${r.t.a}` : `${need(r)[0][0]} × ${need(r)[0][1]} = ${r.n}, ${need(r)[1][0]} × ${need(r)[1][1]} = ${r.n}`) });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
     const vals = rows.map(r => r.pair.map(p => p.map(i => i.value)));
     const ans = vals.map(v => v.map(p => p.join("·")).join(" / ")).join(" | ");
@@ -1928,10 +1991,16 @@ function u3RelTree(body, api, opt) {
       if (!msg && !(okEach[0] && okEach[1])) msg = r.t.from === "mul" ? `${r.t.a} × ${r.t.b} = ${r.n}에서 ${u3J(r.n, "은", "는")} 나누어지는 수가 돼요. ${u3J(r.n, "을", "를")} ${u3Ro(r.t.a)} 나누면? ${u3Ro(r.t.b)} 나누면?` : `${r.t.n} ÷ ${r.t.d} = ${r.n / r.t.d}에서 곱하는 두 수는 나누는 수와 몫이에요.`;
       if (!msg && !distinct) msg = "두 식이 똑같아요. 두 수의 자리를 바꾸어 다른 식을 만들어 봐요.";
     });
-    if (msg) return api.fail(msg, ans);
+    if (msg) { api.fail(msg, ans); return false; }
     api.done(ans, opt.ok || "곱셈식과 나눗셈식을 서로 바꾸어 나타낼 수 있어요!");
-  } }, "확인하기");
-  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "위의 식을 보고 아래 두 식의 빈칸을 채워요."), wrap, h("div", { class: "actions" }, check))));
+    return true;
+  };
+  const all = rows.flatMap(r => r.pair.flat());
+  const auto = autoRun(() => all.every(i => String(i.value).trim() !== ""),
+                       () => all.map(i => i.value).join("\u0001"), judge, 900);
+  all.forEach(i => { i.addEventListener("input", auto); i.addEventListener("change", auto);
+    i.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); i.blur(); } }); });
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "위의 식을 보고 아래 두 식의 빈칸을 채워요."), wrap)));
 }
 
 /* ---------------------------------------------------------------
@@ -1941,6 +2010,7 @@ function u3RelTree(body, api, opt) {
    조작: − / + 버튼 또는 그림을 옆으로 끌어 □를 바꿔요
 --------------------------------------------------------------- */
 function u3FindByMul(body, api, opt) {
+  let autoFind = () => {};
   const a = opt.a, b = opt.b, q = a / b, item = opt.item || "물건", unit = opt.unit || "개", kind = opt.kind || "dot";
   const by = opt.groupBy || "col", MAX = 9;
   const W = 860, H = 470, cell = Math.min(62, (H - 110) / b), s = cell * .7;
@@ -1963,22 +2033,27 @@ function u3FindByMul(body, api, opt) {
     layer.append(svgEl("rect", { x: hx, y: Y0 + b * cell / 2 - 30, width: 26, height: 60, rx: 10, fill: BLUE }), txt(hx + 13, Y0 + b * cell / 2, "↔", 20, { fill: "#fff" }));
     const prod = b * m;
     out.innerHTML = `${b} × <span class="pill">${m}</span> = ${prod}<br><small>${item} 모두 ${prod}${unit} · 나누어지는 수는 ${a}</small>`;
+    autoFind();
   };
   dragOn(svg, p => { if (p.y < Y0 - 20 || p.y > Y0 + b * cell + 30) return false; },
     p => { const k = Math.round((p.x - X0) / cell); const v = Math.max(1, Math.min(MAX, k)); if (v !== m) { m = v; draw(); } });
   const ask = u3AskRows([{ q: opt.qText || `${a} ÷ ${b}의 몫 □는?`, a: q, unit: opt.qUnit, why: opt.why }]);
   api.provide({ words: ["곱셈식", `${b}과(와) 곱해서 ${a}`, "몫"], answers: [`${b} × ${q} = ${a} → ${a} ÷ ${b} = ${q}`] });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
     const bad = ask.check(), ans = `그림 ${b}×${m} / 답 ${ask.values()}`;
-    if (bad) return api.fail(ask.whyOf(bad) || `${b} × □ = ${a}이 되는 □를 찾아요. 그림을 늘리거나 줄여서 ${u3J(item, "이", "가")} 모두 ${u3J(a + unit, "이", "가")} 되게 해 봐요.`, ans);
+    if (bad) { api.fail(ask.whyOf(bad) || `${b} × □ = ${a}이 되는 □를 찾아요. 그림을 늘리거나 줄여서 ${u3J(item, "이", "가")} 모두 ${u3J(a + unit, "이", "가")} 되게 해 봐요.`, ans); return false; }
     api.done(ans, opt.ok || `${b} × ${q} = ${a}이므로 ${a} ÷ ${b} = ${q}이에요!`);
-  } }, "확인하기");
+    return true;
+  };
+  const auto = autoRun(() => ask.filled(), () => m + "|" + ask.sign(), judge, 1200);
+  ask.wire(auto);
+  autoFind = auto;
   draw();
   body.append(stageWrap(svg, h("div", { class: "side" },
     h("p", {}, opt.tip || `− / + 버튼이나 파란 손잡이를 옆으로 끌어 □를 바꿔요. ${u3J(item, "이", "가")} 모두 ${u3J(a + unit, "이", "가")} 되는 때를 찾아요.`),
     h("div", { class: "row" }, h("button", { class: "ghost", onclick: () => { if (m > 1) { m--; draw(); } } }, "− 1"), h("button", { class: "ghost", onclick: () => { if (m < MAX) { m++; draw(); } } }, "+ 1")),
-    out, ask.wrap, h("div", { class: "actions" }, check))));
+    out, ask.wrap)));
 }
 
 /* ---------------------------------------------------------------
@@ -1986,6 +2061,7 @@ function u3FindByMul(body, api, opt) {
    opt: probs([[a,b],…]) 또는 a,b / rows(보여 줄 단, 기본 1~9) / qUnit / ok
 --------------------------------------------------------------- */
 function u3TableFind(body, api, opt) {
+  let autoTable = () => {};
   const probs = opt.probs || [[opt.a, opt.b]];
   const rowsList = opt.rows || [1, 2, 3, 4, 5, 6, 7, 8, 9];
   const cw = 66, ch = Math.min(44, 400 / (rowsList.length + 1)), X0 = 40, Y0 = 20;
@@ -2019,6 +2095,7 @@ function u3TableFind(body, api, opt) {
         svgEl("circle", { cx: x, cy: y, r: ch * .45, fill: "none", stroke: TENT, "stroke-width": 3.5 }));
     }
     out.innerHTML = selRow == null ? "① 왼쪽에서 몇 단 곱셈구구를 쓸지 눌러요." : selCol == null ? `② ${selRow}단 줄에서 나누어지는 수를 찾아 눌러요.` : `${selRow} × ${selCol} = ${selRow * selCol}`;
+    autoTable();
   };
   const hit = p => {
     const c = Math.floor((p.x - X0) / cw) - 1, r = Math.floor((p.y - Y0) / ch) - 1;
@@ -2034,24 +2111,30 @@ function u3TableFind(body, api, opt) {
   });
   const ask = u3AskRows([{ q: "몫 =", a: probs[0][0] / probs[0][1], unit: opt.qUnit }]);
   api.provide({ words: ["나누는 수의 단", "곱셈표", "곱이 나누어지는 수", "몫"], answers: probs.map(([a, b]) => `${b}단에서 ${b} × ${a / b} = ${a} → ${a} ÷ ${b} = ${a / b}`) });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     const [a, b] = probs[pi], qv = a / b;
     ask.rows[0].it.a = qv;
     api.tryOnce();
     const ans = `${a}÷${b}: ${selRow ?? "-"}단, ${selRow && selCol ? selRow * selCol : "-"} 선택, 몫 ${ask.values()}`;
-    if (selRow !== b) return api.fail(selRow == null ? "먼저 몇 단 곱셈구구를 쓸지 왼쪽에서 골라요." : `${selRow}단이 아니에요. ${a} ÷ ${b}에서 나누는 수는 무엇인가요? 나누는 수의 단을 찾아요.`, ans);
-    if (selCol == null || selRow * selCol !== a) return api.fail(`${b}단 줄에서 곱이 ${u3J(a, "이", "가")} 되는 칸을 찾아 눌러요.`, ans);
+    if (selRow !== b) { api.fail(`${selRow}단이 아니에요. ${a} ÷ ${b}에서 나누는 수는 무엇인가요? 나누는 수의 단을 찾아요.`, ans); return false; }
+    if (selRow * selCol !== a) { api.fail(`${b}단 줄에서 곱이 ${u3J(a, "이", "가")} 되는 칸을 찾아 눌러요.`, ans); return false; }
     const bad = ask.check();
-    if (bad) return api.fail(`${b} × ${selCol} = ${a}. 이 칸 맨 위의 수가 몫이에요.`, ans);
+    if (bad) { api.fail(`${b} × ${selCol} = ${a}. 이 칸 맨 위의 수가 몫이에요.`, ans); return false; }
     solved.push(ans);
     if (pi < probs.length - 1) {
       pi++; selRow = null; selCol = null; ask.rows[0].inp.value = ""; ask.rows[0].inp.style.borderColor = ""; draw();
-      return api.hint(`○ ${a} ÷ ${b} = ${qv}. 다음 문제도 곱셈표에서 찾아요.`);
+      api.hint(`○ ${a} ÷ ${b} = ${qv}. 다음 문제도 곱셈표에서 찾아요.`);
+      return false;
     }
     api.done(solved.join(" / "), opt.ok || `${b}단 곱셈구구에서 ${b} × ${qv} = ${a}, 그래서 ${a} ÷ ${b} = ${qv}이에요!`);
-  } }, "확인하기");
+    return true;
+  };
+  const auto = autoRun(() => selRow != null && selCol != null && ask.filled(),
+                       () => `${pi}|${selRow}|${selCol}|` + ask.sign(), judge, 1200);
+  ask.wire(auto);
+  autoTable = auto;
   draw();
-  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "곱셈표에서 나누는 수의 단을 찾은 다음, 그 줄에서 나누어지는 수를 찾아요."), head, out, ask.wrap, h("div", { class: "actions" }, check))));
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "곱셈표에서 나누는 수의 단을 찾은 다음, 그 줄에서 나누어지는 수를 찾아요."), head, out, ask.wrap)));
 }
 
 /* ---------------------------------------------------------------
@@ -2091,19 +2174,24 @@ function u3ShareCompare(body, api, opt) {
   const trendOpts = ["적어져요", "많아져요", "그대로예요"]; let tsel = null;
   trendOpts.forEach((t, i) => trend.append(h("button", { class: "opt", onclick: e => { [...trend.children].forEach(b => b.classList.remove("on", "good", "bad")); e.currentTarget.classList.add("on"); tsel = i; } }, t)));
   api.provide({ words: ["나누어지는 수", "나누는 수", "몫", "적어져요"], answers: ask.answers().concat([`사람이 많아지면 한 명이 옮기는 ${u3J(item, "은", "는")} 적어져요`]) });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
     const ans = `${ask.values()} / ${tsel == null ? "-" : trendOpts[tsel]}`;
-    if (seen.size < gs.length) return api.fail(`${gs.filter(v => !seen.has(v)).join(", ")}${who}이 옮기는 것도 눌러서 살펴봐요.`, ans);
     const bad = ask.check();
-    if (bad) return api.fail(ask.whyOf(bad) || "그 사람 수를 눌러 한 명이 옮기는 수를 다시 세어 봐요.", ans);
+    if (bad) { api.fail(ask.whyOf(bad) || "그 사람 수를 눌러 한 명이 옮기는 수를 다시 세어 봐요.", ans); return false; }
     [...trend.children].forEach((b, i) => b.classList.toggle(tsel === 0 ? "good" : "bad", i === tsel));
-    if (tsel !== 0) return api.fail(`옮기는 사람이 많아질 때 한 ${who}이 옮기는 ${item} 수를 차례로 비교해 봐요.`, ans);
+    if (tsel !== 0) { api.fail(`옮기는 사람이 많아질 때 한 ${who}이 옮기는 ${item} 수를 차례로 비교해 봐요.`, ans); return false; }
     api.done(ans, opt.ok || "옮기는 사람이 많아질수록 한 명이 옮기는 수는 적어져요!");
-  } }, "확인하기");
+    return true;
+  };
+  const auto = autoRun(() => seen.size >= gs.length && ask.filled() && tsel != null,
+                       () => `${[...seen].sort().join(",")}|${tsel}|` + ask.sign(), judge, 1200);
+  ask.wire(auto);
+  trend.addEventListener("click", e => { if (e.target.closest(".opt")) auto(); });
+  pick.addEventListener("click", e => { if (e.target.closest("button")) auto(); });
   draw();
   body.append(stageWrap(svg, h("div", { class: "side" }, h("p", {}, opt.tip || "사람 수를 바꾸어 가며 똑같이 나누어 보세요."), pick, ask.wrap,
-    h("div", { class: "jua" }, `옮기는 사람이 많아지면 한 ${u3J(who, "이", "가")} 옮기는 ${u3J(item, "은", "는")}`), trend, h("div", { class: "actions" }, check))));
+    h("div", { class: "jua" }, `옮기는 사람이 많아지면 한 ${u3J(who, "이", "가")} 옮기는 ${u3J(item, "은", "는")}`), trend)));
 }
 
 /* ---------------------------------------------------------------
@@ -2575,7 +2663,7 @@ const LESSONS = [
     { inst: "모둠 활동에 쓸 붙임쪽지 42장을 한 명에게 7장씩 주려고 해요. 곱셈표에서 42 ÷ 7의 몫을 찾아보세요.",
       hints: ["나누는 수가 7이니까 7단 줄을 먼저 눌러요.", "7단 줄에서 42를 찾아 누르고, 그 칸 맨 위의 수를 읽어요."],
       render: (b, a) => u3TableFind(b, a, { a: 42, b: 7, qUnit: "명", ok: "7 × 6 = 42이므로 42 ÷ 7 = 6. 6명에게 줄 수 있어요!" }) },
-    { name: "그려 보기 — 예상하고 확인하기",
+    { name: "어림해 보기 — 예상하고 확인하기",
       inst: "보드게임 카드 48장을 한 명에게 6장씩 줘요. 먼저 몫을 어림하고, 곱셈구구로 구해요.",
       hints: ["6 × 5 = 30이에요. 48은 30보다 큰가요, 작은가요?", "6단 곱셈구구에서 곱이 48인 것을 찾아요. 6 × 8 = 48"],
       render: (b, a) => predictCheck(b, a, {

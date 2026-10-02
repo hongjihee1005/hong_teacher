@@ -36,10 +36,11 @@ svg{touch-action:none;user-select:none;-webkit-user-select:none}
 .chip.btn:hover{background:rgba(255,255,255,.22)}
 
 /* 시작 화면 */
-.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);background:
- radial-gradient(circle at 80% 18%, rgba(244,197,66,.25) 0 6%, transparent 6.5%),
- linear-gradient(180deg,var(--night) 0,var(--night2) 55%,var(--pine) 55.2%,var(--pine) 100%)}
-.gate-card{background:#fff;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 18px 40px rgba(0,0,0,.25)}
+/* 시작 화면: 다른 교과와 같은 밝고 따뜻한 바탕 (2026-10-03) */
+.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);
+ background:linear-gradient(180deg,#FFFCF8 0,#FCF3E9 100%)}
+.gate-card{background:#fff;border:3px solid #F0E5D9;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 10px 28px rgba(140,110,80,.10)}
+.gate-card h1{color:var(--ink)}
 .gate-card h1{font-size:var(--fs-xl);margin:0 0 .2em;color:var(--night)}
 .nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(3.1em,1fr));gap:.45em;margin:.6em 0 1em}
 .nums button{padding:.5em 0;border-radius:.6em;border:2px solid var(--line);background:#fff;font-family:"Jua";font-size:var(--fs)}
@@ -948,7 +949,7 @@ function topbar() {
   return h("header", { class: "top" },
     h("div", { class: "brand" }, ringLogo(), h("span", {}, APP.title), h("span", { class: "long" }, " · " + APP.unit)),
     h("div", { class: "who" },
-      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번 ${st.name || ""}`) : null,
+      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번${st.name ? " " + st.name : ""}`) : null,
       st ? h("button", { class: "chip btn", onclick: () => { S.student = null; store.save(S); showGate(); } }, "바꾸기") : null,
       h("button", { class: "chip btn", onclick: showTeacher }, "선생님")));
 }
@@ -963,18 +964,27 @@ function mount(...els) { const r = root(); r.innerHTML = ""; r.append(topbar(), 
 
 /* 시작: 번호 고르기 */
 function showGate() {
-  let ban = (S.student && S.student.ban) || "2", no = null;
+  const last = S.last || {};
+  let ban = (S.student && S.student.ban) || last.ban || "2";
+  let no = last.no || null;
   const nums = h("div", { class: "nums" });
-  for (let i = 1; i <= 40; i++) nums.append(h("button", { onclick: (e) => { no = i; [...nums.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); go.disabled = false; } }, String(i)));
+  for (let i = 1; i <= 40; i++) {
+    const on = (i === no);
+    nums.append(h("button", { class: on ? "on" : "", onclick: (e) => {
+      no = i; [...nums.children].forEach(b => b.classList.remove("on"));
+      e.currentTarget.classList.add("on"); go.disabled = false;
+    } }, String(i)));
+  }
   const banIn = h("input", { type: "number", min: 1, max: 15, value: ban, style: "width:4.5em", "aria-label": "반" });
-  const nameIn = h("input", { type: "text", placeholder: "이름 (선택)", maxlength: 10, style: "width:9em" });
-  const go = h("button", { class: "big", disabled: true, onclick: () => {
-    S.student = { ban: String(banIn.value || "2"), no, name: nameIn.value.trim() }; store.save(S); flushQueue(); showMap();
-  } }, "캠프 입장");
+  const go = h("button", { class: "big", disabled: !no, onclick: () => {
+    S.student = { ban: String(banIn.value || "2"), no, name: "" };
+    S.last = { ban: S.student.ban, no };
+    store.save(S); flushQueue(); showMap();
+  } }, "들어가기");
   mount(h("main", { class: "gate" }, h("section", { class: "gate-card" },
     h("h1", {}, APP.welcome),
     h("p", { class: "inst" }, APP.intro + " 내 번호를 눌러 주세요."),
-    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반"), nameIn),
+    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반")),
     nums, go)));
 }
 
@@ -1272,6 +1282,23 @@ function makeSvg(w, hgt, grid) {
 function txt(x, y, t, size = 22, attrs = {}) { const e = svgEl("text", Object.assign({ x, y, "font-size": size, "text-anchor": "middle", "dominant-baseline": "middle", "font-family": "Jua, sans-serif", fill: "#1D2A2A" }, attrs)); e.textContent = t; return e; }
 
 /* 선택형 문제 여러 개 (mcq/ox) */
+/* ── 자동 확인 ────────────────────────────────────────────────────────────
+   '확인하기' 단추 없이, 칸을 다 채우거나 보기를 다 고르면 스스로 확인한다.
+   · ready()가 참일 때만 확인한다(빈 칸이 있으면 기다린다).
+   · 같은 답으로는 다시 세지 않는다(숫자를 고쳐 쓰는 동안 '틀림'이 쌓이지 않게).
+   · 숫자 입력은 다 쓸 때까지 잠깐 기다렸다가 본다.                        */
+function autoRun(ready, sign, run, wait) {
+  let last = null, timer = null, done = false;
+  const fire = () => {
+    if (done || !ready()) return;
+    const sg = sign();
+    if (sg === last) return;
+    last = sg;
+    if (run() === true) done = true;
+  };
+  return () => { clearTimeout(timer); timer = setTimeout(fire, wait || 0); };
+}
+
 function quiz(body, api, items, opts = {}) {
   const state = items.map(() => (null));
   const wrap = h("div");
@@ -1292,7 +1319,7 @@ function quiz(body, api, items, opts = {}) {
     words: items.flatMap(it => (Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i])),
     answers: items.map((it, qi) => `${items.length > 1 ? (qi + 1) + ") " : ""}${(Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i]).join(", ")}`)
   });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
     let allOk = true; const ans = [];
     items.forEach((it, qi) => {
@@ -1310,8 +1337,12 @@ function quiz(body, api, items, opts = {}) {
       const custom = w && w.why && w.why[String(state[wrongIdx])];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
-  } }, "확인하기");
-  body.append(wrap, h("div", { class: "actions" }, check));
+    return allOk;
+  };
+  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+                       () => JSON.stringify(state), judge, 260);
+  wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
+  body.append(wrap);
 }
 /* 빈칸 문장 */
 function blanks(body, api, parts, opts = {}) {
@@ -1330,7 +1361,7 @@ function blanks(body, api, parts, opts = {}) {
     words: parts.filter(p => typeof p !== "string").flatMap(p => p.o),
     answers: [parts.map(p => typeof p === "string" ? p : p.o[p.a]).join("")]
   });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true; const ans = [];
     [...sent.querySelectorAll(".slot")].forEach((slot, k) => {
       const a = +slot.dataset.a; const btn = slot.children[sel[k]];
@@ -1338,8 +1369,11 @@ function blanks(body, api, parts, opts = {}) {
       ans.push(btn ? btn.textContent : "-");
     });
     ok ? api.done(ans.join(" / "), opts.ok) : api.fail(opts.bad || "빨간 낱말을 다시 골라 봐요.", ans.join(" / "));
-  } }, "확인하기");
-  body.append(sent, h("div", { class: "actions" }, check));
+    return ok;
+  };
+  const auto = autoRun(() => sel.every(v => v != null), () => sel.join(","), judge, 260);
+  sent.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
+  body.append(sent);
 }
 /* ── 선택 문제 (★도전 계단 아래, 본 활동을 통과하면 열림) ──────────────────
    render: withOptional((b, a) => panes(...), (b, a) => numbers(b, a, [...]), { title, inst })
@@ -1443,15 +1477,19 @@ function predictCheck(body, api, opts) {
   const inp = h("input", { type: "number", inputmode: "numeric", placeholder: "실제 값" });
   const second = h("div", { class: "qitem hidden" },
     h("div", { class: "jua" }, opts.then || "이제 실제로 계산해 보세요."),
-    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : "",
-      h("button", { class: "opt", onclick: () => {
-        api.tryOnce();
-        if (Number(inp.value) !== opts.real) return api.fail("실제 값을 다시 계산해 봐요.", inp.value);
-        const hit = guess === opts.a;
-        api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
-          (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
-          (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
-      } }, "확인하기")));
+    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : ""));
+  const judge = () => {
+    api.tryOnce();
+    if (Number(inp.value) !== opts.real) { api.fail("실제 값을 다시 계산해 봐요.", inp.value); return false; }
+    const hit = guess === opts.a;
+    api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
+      (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
+      (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
+    return true;
+  };
+  const autoP = autoRun(() => String(inp.value).trim() !== "", () => inp.value, judge, 900);
+  inp.addEventListener("input", autoP); inp.addEventListener("change", autoP);
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
 
   body.append(box, second);
 }
@@ -1507,13 +1545,16 @@ function simPickShapes(body, api) {
     g.addEventListener("click", () => { sel.has(i) ? sel.delete(i) : sel.add(i); el.setAttribute("fill", sel.has(i) ? "#DCEAFB" : "#fff"); el.setAttribute("stroke", sel.has(i) ? BLUE : INK); });
     svg.append(g);
   });
-  const side = h("div", { class: "side" }, h("div", { class: "readout" }, "원을 모두 눌러 골라요"), h("p", {}, "고른 모양은 파랗게 바뀌어요. 다시 누르면 취소돼요."),
-    h("button", { class: "big", onclick: () => {
-      api.tryOnce(); const good = shapes.map((s, i) => s.circle ? i : -1).filter(i => i >= 0);
-      const ok = good.length === sel.size && good.every(i => sel.has(i));
-      ok ? api.done([...sel].map(i => labels[i]).join(","), "맞아요! 가, 라, 바는 원이에요. 동그랗게 보여도 찌그러지거나 길쭉하면 원이 아니에요.")
-         : api.fail("다시 살펴봐요. 길쭉하거나 찌그러진 모양, 모서리가 둥근 사각형은 원일까요?");
-    } }, "확인하기"));
+  const side = h("div", { class: "side" }, h("div", { class: "readout" }, "원을 모두 눌러 골라요"), h("p", {}, "고른 모양은 파랗게 바뀌어요. 다시 누르면 취소돼요."));
+  const judge = () => {
+    api.tryOnce(); const good = shapes.map((s, i) => s.circle ? i : -1).filter(i => i >= 0);
+    const ok = good.length === sel.size && good.every(i => sel.has(i));
+    if (ok) { api.done([...sel].map(i => labels[i]).join(","), "맞아요! 가, 라, 바는 원이에요. 동그랗게 보여도 찌그러지거나 길쭉하면 원이 아니에요."); return true; }
+    api.fail("다시 살펴봐요. 길쭉하거나 찌그러진 모양, 모서리가 둥근 사각형은 원일까요?");
+    return false;
+  };
+  const auto = autoRun(() => sel.size > 0, () => [...sel].sort((x, y) => x - y).join(","), judge, 1200);
+  svg.addEventListener("click", auto);
   body.append(stageWrap(svg, side));
 }
 
@@ -1798,22 +1839,27 @@ function simGridTool(body, api, opt) {
   const upd = () => { out.innerHTML = opt.pins ? `표시한 곳 <span class="pill">${pins.length}개</span>` : `원의 중심 ${cen ? `(${cen.x}칸, ${cen.y}칸)` : "고르기 전"}<br>반지름 <span class="pill">${r}칸</span>`; if (cen && !opt.pins) { prev.setAttribute("cx", cen.x * U); prev.setAttribute("cy", cen.y * U); prev.setAttribute("r", r * U); prev.setAttribute("opacity", 1); } };
   svg.addEventListener("click", e => {
     const p = svgPt(svg, e), gx = Math.round(p.x / U), gy = Math.round(p.y / U);
-    if (opt.pins) { const i = pins.findIndex(q => q.x === gx && q.y === gy); if (i >= 0) { pins.splice(i, 1); } else pins.push({ x: gx, y: gy }); marks.innerHTML = ""; pins.forEach(q => marks.append(svgEl("circle", { cx: q.x * U, cy: q.y * U, r: 7, fill: TENT }))); upd(); return; }
+    if (opt.pins) { const i = pins.findIndex(q => q.x === gx && q.y === gy); if (i >= 0) { pins.splice(i, 1); } else pins.push({ x: gx, y: gy }); marks.innerHTML = ""; pins.forEach(q => marks.append(svgEl("circle", { cx: q.x * U, cy: q.y * U, r: 7, fill: TENT }))); upd(); auto(); return; }
     cen = { x: gx, y: gy }; cm.setAttribute("cx", gx * U); cm.setAttribute("cy", gy * U); cm.setAttribute("opacity", 1); upd();
   });
   const side = h("div", { class: "side" }, h("p", {}, opt.tip), out);
   if (!opt.pins) {
     side.append(h("div", { class: "tools" }, h("span", {}, "반지름"), h("button", { onclick: () => { r = Math.max(1, r - 1); upd(); } }, "−1칸"), h("button", { onclick: () => { r = Math.min(10, r + 1); upd(); } }, "+1칸")),
-      h("div", { class: "tools" }, h("button", { class: "on", onclick: () => { if (!cen) return api.hint("먼저 모눈의 꼭짓점을 눌러 원의 중심을 정해요."); circles.push({ x: cen.x, y: cen.y, r }); mine.append(svgEl("circle", { cx: cen.x * U, cy: cen.y * U, r: r * U, fill: "none", stroke: BLUE, "stroke-width": 4 }), svgEl("circle", { cx: cen.x * U, cy: cen.y * U, r: 3, fill: BLUE })); } }, "원 그리기"),
-        h("button", { onclick: () => { circles.pop(); mine.lastChild && mine.lastChild.remove(); mine.lastChild && mine.lastChild.remove(); } }, "하나 지우기")));
+      h("div", { class: "tools" }, h("button", { class: "on", onclick: () => { if (!cen) return api.hint("먼저 모눈의 꼭짓점을 눌러 원의 중심을 정해요."); circles.push({ x: cen.x, y: cen.y, r }); mine.append(svgEl("circle", { cx: cen.x * U, cy: cen.y * U, r: r * U, fill: "none", stroke: BLUE, "stroke-width": 4 }), svgEl("circle", { cx: cen.x * U, cy: cen.y * U, r: 3, fill: BLUE })); auto(); } }, "원 그리기"),
+        h("button", { onclick: () => { circles.pop(); mine.lastChild && mine.lastChild.remove(); mine.lastChild && mine.lastChild.remove(); auto(); } }, "하나 지우기")));
   }
-  side.append(h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
-    if (opt.free) { if (circles.length >= opt.free) return api.done(`원 ${circles.length}개: ` + circles.map(c => `(${c.x},${c.y}) r${c.r}`).join(" "), opt.ok); return api.fail(`원을 ${opt.free}개 이상 그려 봐요.`); }
+    if (opt.free) { if (circles.length >= opt.free) { api.done(`원 ${circles.length}개: ` + circles.map(c => `(${c.x},${c.y}) r${c.r}`).join(" "), opt.ok); return true; } api.fail(`원을 ${opt.free}개 이상 그려 봐요.`); return false; }
     const have = opt.pins ? pins : circles; const need = opt.target;
     const ok = need.every(t => have.some(c => c.x === t.x && c.y === t.y && (opt.pins || c.r === t.r))) && (!opt.pins || have.length === need.length) && (opt.pins || have.length <= need.length + 2);
-    ok ? api.done(opt.pins ? pins.map(q => `(${q.x},${q.y})`).join(" ") : circles.map(c => `(${c.x},${c.y}) r${c.r}`).join(" "), opt.ok) : api.fail(opt.bad || "원의 중심과 반지름을 다시 살펴봐요.");
-  } }, "확인하기"));
+    if (ok) { api.done(opt.pins ? pins.map(q => `(${q.x},${q.y})`).join(" ") : circles.map(c => `(${c.x},${c.y}) r${c.r}`).join(" "), opt.ok); return true; }
+    api.fail(opt.bad || "원의 중심과 반지름을 다시 살펴봐요.");
+    return false;
+  };
+  const needN = opt.free ? opt.free : (opt.target ? opt.target.length : 1);
+  const auto = autoRun(() => (opt.pins ? pins.length : circles.length) >= needN,
+    () => (opt.pins ? pins : circles).map(c => `${c.x},${c.y},${c.r == null ? "" : c.r}`).join("|"), judge, 1200);
   body.append(stageWrap(svg, side)); upd();
 }
 
@@ -1895,16 +1941,22 @@ function numbers(body, api, items, opts = {}) {
     words: opts.words || [],
     answers: items.map(it => `${it.q} ${it.a}${it.unit ? " " + it.unit : ""}`)
   });
-  body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true;
     ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
     const given = ins.map(x => x.inp.value).join(", ");
-    if (ok) return api.done(given, opts.ok);
+    if (ok) { api.done(given, opts.ok); return true; }
     const bad = ins.find(({ inp, a }) => Number(inp.value) !== a);
     const item = items[ins.indexOf(bad)];
     const why = item && item.why && item.why[String(Number(bad.inp.value))];
     api.fail(why || opts.bad || "빨간 칸을 다시 계산해 봐요.", given);
-  } }, "확인하기")));
+    return false;
+  };
+  const auto = autoRun(() => ins.every(x => String(x.inp.value).trim() !== ""),
+                       () => ins.map(x => x.inp.value).join("\u0001"), judge, 900);
+  ins.forEach(({ inp }) => { inp.addEventListener("input", auto); inp.addEventListener("change", auto);
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } }); });
+  body.append(wrap);
 }
 
 /* 묶어 세기 */
@@ -1963,11 +2015,19 @@ function simVertical(body, api, opt) {
     const o = b % 10, t = Math.floor(b / 10) * 10;
     wrap.append(h("div", {}, mk(`${a} × ${o}`, a * o)), h("div", {}, mk(`${a} × ${t}`, a * t)), h("hr"), h("div", {}, mk("합", a * b)));
   }
-  body.append(wrap, h("p", {}, opt.tip || ""), h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true;
     ins.forEach(({ i, v }) => { const good = Number(i.value) === v; i.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
-    ok ? api.done(ins.map(x => x.i.value).join(" / "), opt.ok || `${a} × ${b} = ${a * b}. 정확해요!`) : api.fail(opt.bad || "빨간 칸을 다시 계산해 봐요. 자리마다 나누어 곱해요.");
-  } }, "확인하기")));
+    if (ok) { api.done(ins.map(x => x.i.value).join(" / "), opt.ok || `${a} × ${b} = ${a * b}. 정확해요!`); return true; }
+    api.fail(opt.bad || "빨간 칸을 다시 계산해 봐요. 자리마다 나누어 곱해요.");
+    return false;
+  };
+  const auto = autoRun(() => ins.every(x => String(x.i.value).trim() !== ""), () => ins.map(x => x.i.value).join("|"), judge, 900);
+  ins.forEach(({ i }) => {
+    i.addEventListener("input", auto); i.addEventListener("change", auto);
+    i.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); i.blur(); } });
+  });
+  body.append(wrap, h("p", {}, opt.tip || ""));
 }
 
 /* 배열로 (몇십)×(몇십) 규칙 찾기 */
@@ -2058,6 +2118,89 @@ function simCardMax(body, api, opt) {
   } }, "가장 큰 곱인지 확인하기");
   body.append(h("p", {}, opt.tip), row, slotRow, out, h("div", { class: "actions" }, check, reset));
   draw();
+}
+
+/* ===== 계단 설명 그림 — 정답 입력칸 위에 붙는 그림(조작 없음) ===== */
+
+/* svg 폭 제한 (가로 스크롤 방지) */
+function picFit(svg, W) { svg.style.maxWidth = Math.min(42, Math.max(16, Math.round(W / 20))) + "em"; return svg; }
+
+/* 묶음마다 백·십·일 모형을 보여 주는 그림 — a가 b묶음 */
+function picBlockGroups(body, opt) {
+  const a = opt.a, b = opt.b;
+  const U = 7, BIG = U * 10;
+  const rows = [
+    { lab: "백 모형", n: Math.floor(a / 100), w: BIG, hh: BIG, step: BIG + 10 },
+    { lab: "십 모형", n: Math.floor(a / 10) % 10, w: U, hh: BIG, step: U + 7 },
+    { lab: "일 모형", n: a % 10, w: U, hh: U, step: U + 6 }
+  ];
+  const inner = Math.max(76, ...rows.map(r => r.n * r.step));
+  const padX = 18, LAB = 104, gapG = 18, yTop = 64;
+  const ys = [yTop, yTop + BIG + 24, yTop + BIG + 24 + BIG + 24];
+  const boxTop = yTop - 16, boxBot = ys[2] + U + 16;
+  const gw = inner + padX * 2;
+  const W = LAB + b * (gw + gapG) + 12;
+  const svg = makeSvg(W, boxBot + 48);
+  svg.append(txt(W / 2, 28, `${a}이 ${b}묶음 → ${a} × ${b}`, 27));
+  rows.forEach((r, i) => { if (r.n) svg.append(txt(LAB / 2 - 4, ys[i] + r.hh / 2, r.lab, 23, { "text-anchor": "middle" })); });
+  for (let k = 0; k < b; k++) {
+    const x0 = LAB + k * (gw + gapG);
+    svg.append(svgEl("rect", { x: x0, y: boxTop, width: gw, height: boxBot - boxTop, rx: 12, fill: "#fff", stroke: TENT, "stroke-width": 3, "stroke-dasharray": "9 7" }));
+    rows.forEach((r, i) => {
+      for (let n = 0; n < r.n; n++) {
+        const x = x0 + padX + n * r.step, y = ys[i];
+        svg.append(svgEl("rect", { x, y, width: r.w, height: r.hh, fill: "#DCEAFB", stroke: INK, "stroke-width": 2 }));
+        if (r.w > U) for (let t = 1; t < 10; t++) svg.append(svgEl("line", { x1: x + t * U, y1: y, x2: x + t * U, y2: y + r.hh, stroke: "#9BB6D6" }));
+        if (r.hh > U) for (let t = 1; t < 10; t++) svg.append(svgEl("line", { x1: x, y1: y + t * U, x2: x + r.w, y2: y + t * U, stroke: "#9BB6D6" }));
+      }
+    });
+    svg.append(txt(x0 + gw / 2, boxBot + 26, `${k + 1}묶음`, 23));
+  }
+  body.append(h("div", { class: "stage" }, picFit(svg, W)));
+}
+
+/* 한 묶음에 per개씩 — 묶음 수를 몇십(t)과 몇(o)으로 나눈 그림 */
+function picRowSplit(body, opt) {
+  const per = opt.per, t = opt.tens, o = opt.ones, R = 8, P = 22;
+  const yTop = 62, bh = (per - 1) * P + 38;
+  const bw = n => (n - 1) * P + 38;
+  const x1 = 18, x2 = x1 + bw(t) + 30;
+  const W = x2 + bw(o) + 22, Hh = yTop + bh + 76;
+  const svg = makeSvg(W, Hh);
+  const G = opt.group || "묶음", D = opt.dot || "개";
+  svg.append(txt(W / 2, 26, `${G} ${t + o}개에 ${D} ${per}개씩 → ${per} × ${t + o}`, 27));
+  [[x1, t, `${per} × ${t}`, "#DCEAFB", BLUE], [x2, o, `${per} × ${o}`, "#FBE4D1", TENT]].forEach(([bx, n, lab, fl, col]) => {
+    svg.append(svgEl("rect", { x: bx, y: yTop, width: bw(n), height: bh, rx: 12, fill: fl, stroke: col, "stroke-width": 3 }));
+    for (let j = 0; j < n; j++) for (let i = 0; i < per; i++)
+      svg.append(svgEl("circle", { cx: bx + 19 + j * P, cy: yTop + 19 + i * P, r: R, fill: "#fff", stroke: INK, "stroke-width": 2.5 }));
+    svg.append(txt(bx + bw(n) / 2, yTop + bh + 28, `${G} ${n}개`, 23),
+      txt(bx + bw(n) / 2, yTop + bh + 58, lab, 26, { fill: col }));
+  });
+  body.append(h("div", { class: "stage" }, picFit(svg, W)));
+}
+
+/* 세로셈 틀 그림 — 첫 줄·둘째 줄이 무엇인지 색과 화살표로 보여 줌 */
+function picVerticalFrame(body, opt) {
+  const a = opt.a, b = opt.b, bt = Math.floor(b / 10) * 10, bo = b % 10;
+  const W = 480, svg = makeSvg(W, 368);
+  const dx = [200, 246];                      // 십의 자리 · 일의 자리 칸 중심
+  svg.append(txt(W / 2, 26, `${a} × ${b} 세로셈`, 27));
+  String(a).split("").forEach((d, i) => svg.append(txt(dx[i], 72, d, 30)));
+  svg.append(txt(146, 118, "×", 30));
+  svg.append(txt(dx[0], 118, String(Math.floor(b / 10)), 30, { fill: TENT }), txt(dx[1], 118, String(bo), 30, { fill: BLUE }));
+  svg.append(svgEl("line", { x1: 118, y1: 146, x2: 274, y2: 146, stroke: INK, "stroke-width": 4 }));
+  svg.append(svgEl("line", { x1: 118, y1: 276, x2: 274, y2: 276, stroke: INK, "stroke-width": 4 }));
+  const band = (y, lab, fl, col, note) => {
+    svg.append(svgEl("rect", { x: 118, y, width: 156, height: 46, rx: 10, fill: fl, stroke: col, "stroke-width": 3 }),
+      txt(196, y + 23, lab, 26, { fill: col }),
+      svgEl("line", { x1: 298, y1: y + 23, x2: 284, y2: y + 23, stroke: col, "stroke-width": 3 }),
+      svgEl("polygon", { points: `276,${y + 23} 288,${y + 16} 288,${y + 30}`, fill: col }),
+      txt(306, y + 23, note, 25, { "text-anchor": "start", fill: col }));
+  };
+  band(158, "첫 줄", "#DCEAFB", BLUE, `${a} × ${bo}`);
+  band(214, "둘째 줄", "#FBE4D1", TENT, `${a} × ${bt}`);
+  band(288, "합", "#DCEFE6", PINE, "두 줄을 더해요");
+  body.append(h("div", { class: "stage" }, picFit(svg, W)));
 }
 
 /* ===== 나눗셈 단원 조작 부품 ===== */
@@ -2438,7 +2581,7 @@ const LESSONS = [
     { name: "계산해 보기", inst: "장터 스티커 157장을 5모둠에 나누어요.", render: (b, a) => numbers(b, a, [
       { q: "157 ÷ 5 의 몫은?", a: 31 }, { q: "157 ÷ 5 의 나머지는?", a: 2 }],
       { ok: "157 ÷ 5 = 31 … 2 예요." }) },
-    { name: "그려 보기 — 예상하고 확인하기", inst: "157 ÷ 5 의 몫이 얼마쯤일지 먼저 어림해 보고, 그다음 실제로 끝까지 나누어 확인해요.", render: (b, a) => predictCheck(b, a, {
+    { name: "어림해 보기 — 예상하고 확인하기", inst: "157 ÷ 5 의 몫이 얼마쯤일지 먼저 어림해 보고, 그다음 실제로 끝까지 나누어 확인해요.", render: (b, a) => predictCheck(b, a, {
       ask: "157 ÷ 5 의 몫은 얼마쯤일까요?",
       o: ["10쯤", "30쯤", "50쯤"], a: 1,
       then: "이제 끝까지 나누어 보세요. 157 ÷ 5 의 몫은?",

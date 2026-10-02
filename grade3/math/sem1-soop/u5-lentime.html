@@ -36,10 +36,11 @@ svg{touch-action:none;user-select:none;-webkit-user-select:none}
 .chip.btn:hover{background:rgba(255,255,255,.22)}
 
 /* 시작 화면 */
-.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);background:
- radial-gradient(circle at 80% 18%, rgba(244,197,66,.25) 0 6%, transparent 6.5%),
- linear-gradient(180deg,var(--night) 0,var(--night2) 55%,var(--pine) 55.2%,var(--pine) 100%)}
-.gate-card{background:#fff;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 18px 40px rgba(0,0,0,.25)}
+/* 시작 화면: 다른 교과와 같은 밝고 따뜻한 바탕 (2026-10-03) */
+.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);
+ background:linear-gradient(180deg,#FFFCF8 0,#FCF3E9 100%)}
+.gate-card{background:#fff;border:3px solid #F0E5D9;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 10px 28px rgba(140,110,80,.10)}
+.gate-card h1{color:var(--ink)}
 .gate-card h1{font-size:var(--fs-xl);margin:0 0 .2em;color:var(--night)}
 .nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(3.1em,1fr));gap:.45em;margin:.6em 0 1em}
 .nums button{padding:.5em 0;border-radius:.6em;border:2px solid var(--line);background:#fff;font-family:"Jua";font-size:var(--fs)}
@@ -952,7 +953,7 @@ function topbar() {
   return h("header", { class: "top" },
     h("div", { class: "brand" }, ringLogo(), h("span", {}, APP.title), h("span", { class: "long" }, " · " + APP.unit)),
     h("div", { class: "who" },
-      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번 ${st.name || ""}`) : null,
+      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번${st.name ? " " + st.name : ""}`) : null,
       st ? h("button", { class: "chip btn", onclick: () => { S.student = null; store.save(S); showGate(); } }, "바꾸기") : null,
       h("button", { class: "chip btn", onclick: showTeacher }, "선생님")));
 }
@@ -967,18 +968,27 @@ function mount(...els) { const r = root(); r.innerHTML = ""; r.append(topbar(), 
 
 /* 시작: 번호 고르기 */
 function showGate() {
-  let ban = (S.student && S.student.ban) || "2", no = null;
+  const last = S.last || {};
+  let ban = (S.student && S.student.ban) || last.ban || "2";
+  let no = last.no || null;
   const nums = h("div", { class: "nums" });
-  for (let i = 1; i <= 40; i++) nums.append(h("button", { onclick: (e) => { no = i; [...nums.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); go.disabled = false; } }, String(i)));
+  for (let i = 1; i <= 40; i++) {
+    const on = (i === no);
+    nums.append(h("button", { class: on ? "on" : "", onclick: (e) => {
+      no = i; [...nums.children].forEach(b => b.classList.remove("on"));
+      e.currentTarget.classList.add("on"); go.disabled = false;
+    } }, String(i)));
+  }
   const banIn = h("input", { type: "number", min: 1, max: 15, value: ban, style: "width:4.5em", "aria-label": "반" });
-  const nameIn = h("input", { type: "text", placeholder: "이름 (선택)", maxlength: 10, style: "width:9em" });
-  const go = h("button", { class: "big", disabled: true, onclick: () => {
-    S.student = { ban: String(banIn.value || "2"), no, name: nameIn.value.trim() }; store.save(S); flushQueue(); showMap();
-  } }, "입장하기");
+  const go = h("button", { class: "big", disabled: !no, onclick: () => {
+    S.student = { ban: String(banIn.value || "2"), no, name: "" };
+    S.last = { ban: S.student.ban, no };
+    store.save(S); flushQueue(); showMap();
+  } }, "들어가기");
   mount(h("main", { class: "gate" }, h("section", { class: "gate-card" },
     h("h1", {}, APP.welcome),
     h("p", { class: "inst" }, APP.intro + " 내 번호를 눌러 주세요."),
-    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반"), nameIn),
+    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반")),
     nums, go)));
 }
 
@@ -1276,6 +1286,23 @@ function makeSvg(w, hgt, grid) {
 function txt(x, y, t, size = 22, attrs = {}) { const e = svgEl("text", Object.assign({ x, y, "font-size": size, "text-anchor": "middle", "dominant-baseline": "middle", "font-family": "Jua, sans-serif", fill: "#1D2A2A" }, attrs)); e.textContent = t; return e; }
 
 /* 선택형 문제 여러 개 (mcq/ox) */
+/* ── 자동 확인 ────────────────────────────────────────────────────────────
+   '확인하기' 단추 없이, 칸을 다 채우거나 보기를 다 고르면 스스로 확인한다.
+   · ready()가 참일 때만 확인한다(빈 칸이 있으면 기다린다).
+   · 같은 답으로는 다시 세지 않는다(숫자를 고쳐 쓰는 동안 '틀림'이 쌓이지 않게).
+   · 숫자 입력은 다 쓸 때까지 잠깐 기다렸다가 본다.                        */
+function autoRun(ready, sign, run, wait) {
+  let last = null, timer = null, done = false;
+  const fire = () => {
+    if (done || !ready()) return;
+    const sg = sign();
+    if (sg === last) return;
+    last = sg;
+    if (run() === true) done = true;
+  };
+  return () => { clearTimeout(timer); timer = setTimeout(fire, wait || 0); };
+}
+
 function quiz(body, api, items, opts = {}) {
   const state = items.map(() => (null));
   const wrap = h("div");
@@ -1296,7 +1323,7 @@ function quiz(body, api, items, opts = {}) {
     words: items.flatMap(it => (Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i])),
     answers: items.map((it, qi) => `${items.length > 1 ? (qi + 1) + ") " : ""}${(Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i]).join(", ")}`)
   });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
     let allOk = true; const ans = [];
     items.forEach((it, qi) => {
@@ -1314,8 +1341,12 @@ function quiz(body, api, items, opts = {}) {
       const custom = w && w.why && w.why[String(state[wrongIdx])];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
-  } }, "확인하기");
-  body.append(wrap, h("div", { class: "actions" }, check));
+    return allOk;
+  };
+  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+                       () => JSON.stringify(state), judge, 260);
+  wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
+  body.append(wrap);
 }
 /* 빈칸 문장 */
 function blanks(body, api, parts, opts = {}) {
@@ -1334,7 +1365,7 @@ function blanks(body, api, parts, opts = {}) {
     words: parts.filter(p => typeof p !== "string").flatMap(p => p.o),
     answers: [parts.map(p => typeof p === "string" ? p : p.o[p.a]).join("")]
   });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true; const ans = [];
     [...sent.querySelectorAll(".slot")].forEach((slot, k) => {
       const a = +slot.dataset.a; const btn = slot.children[sel[k]];
@@ -1342,8 +1373,11 @@ function blanks(body, api, parts, opts = {}) {
       ans.push(btn ? btn.textContent : "-");
     });
     ok ? api.done(ans.join(" / "), opts.ok) : api.fail(opts.bad || "빨간 낱말을 다시 골라 봐요.", ans.join(" / "));
-  } }, "확인하기");
-  body.append(sent, h("div", { class: "actions" }, check));
+    return ok;
+  };
+  const auto = autoRun(() => sel.every(v => v != null), () => sel.join(","), judge, 260);
+  sent.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
+  body.append(sent);
 }
 /* 글쓰기(자기 생각) */
 function writeStep(body, api, prompts, opts = {}) {
@@ -1412,15 +1446,19 @@ function predictCheck(body, api, opts) {
   const inp = h("input", { type: "number", inputmode: "numeric", placeholder: "실제 값" });
   const second = h("div", { class: "qitem hidden" },
     h("div", { class: "jua" }, opts.then || "이제 실제로 계산해 보세요."),
-    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : "",
-      h("button", { class: "opt", onclick: () => {
-        api.tryOnce();
-        if (Number(inp.value) !== opts.real) return api.fail("실제 값을 다시 계산해 봐요.", inp.value);
-        const hit = guess === opts.a;
-        api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
-          (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
-          (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
-      } }, "확인하기")));
+    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : ""));
+  const judge = () => {
+    api.tryOnce();
+    if (Number(inp.value) !== opts.real) { api.fail("실제 값을 다시 계산해 봐요.", inp.value); return false; }
+    const hit = guess === opts.a;
+    api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
+      (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
+      (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
+    return true;
+  };
+  const autoP = autoRun(() => String(inp.value).trim() !== "", () => inp.value, judge, 900);
+  inp.addEventListener("input", autoP); inp.addEventListener("change", autoP);
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
 
   body.append(box, second);
 }
@@ -1503,16 +1541,22 @@ function numbers(body, api, items, opts = {}) {
     words: opts.words || [],
     answers: items.map(it => `${it.q} ${it.a}${it.unit ? " " + it.unit : ""}`)
   });
-  body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true;
     ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
     const given = ins.map(x => x.inp.value).join(", ");
-    if (ok) return api.done(given, opts.ok);
+    if (ok) { api.done(given, opts.ok); return true; }
     const bad = ins.find(({ inp, a }) => Number(inp.value) !== a);
     const item = items[ins.indexOf(bad)];
     const why = item && item.why && item.why[String(Number(bad.inp.value))];
     api.fail(why || opts.bad || "빨간 칸을 다시 계산해 봐요.", given);
-  } }, "확인하기")));
+    return false;
+  };
+  const auto = autoRun(() => ins.every(x => String(x.inp.value).trim() !== ""),
+                       () => ins.map(x => x.inp.value).join("\u0001"), judge, 900);
+  ins.forEach(({ inp }) => { inp.addEventListener("input", auto); inp.addEventListener("change", auto);
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } }); });
+  body.append(wrap);
 }
 
 /* ===== 3-1 수학 5. 길이와 시간 — 단원 조작 부품 (접두어 u5) =====
@@ -1567,6 +1611,7 @@ function u5Fmt(v, how) {
    opts: {fig, pre:()=>"아직이면 알려 줄 말"|null, ok, bad, words, btn} */
 function u5Ask(body, api, rows, opts = {}) {
   const wrap = h("div");
+  let auto = () => {};
   if (opts.fig) wrap.append(typeof opts.fig === "function" ? opts.fig() : opts.fig);
   const num = rows.length > 1 && !opts.noNum;
   const ctl = rows.map((r, ri) => {
@@ -1576,7 +1621,8 @@ function u5Ask(body, api, rows, opts = {}) {
       const row = h("div", { class: "opts" }); let v = null;
       r.o.forEach((o, oi) => row.append(h("button", { class: "opt", onclick: e => { [...row.children].forEach(b => b.classList.remove("on", "good", "bad")); e.currentTarget.classList.add("on"); v = oi; } }, o)));
       box.append(row); wrap.append(box);
-      return { r, good: () => v === r.a, key: () => String(v), text: () => (v == null ? "-" : r.o[v]),
+      row.addEventListener("click", e => { if (e.target.closest(".opt")) auto(); });
+      return { r, filled: () => v != null, good: () => v === r.a, key: () => String(v), text: () => (v == null ? "-" : r.o[v]),
         show: ok => { [...row.children].forEach(b => b.classList.remove("good", "bad")); if (v != null) row.children[v].classList.add(ok ? "good" : "bad"); } };
     }
     const ins = (r.parts || []).map(p => {
@@ -1586,7 +1632,9 @@ function u5Ask(body, api, rows, opts = {}) {
     if (r.after) box.append(h("span", {}, " " + r.after));
     wrap.append(box);
     const okAt = (i, k) => i.value.trim() !== "" && Number(i.value) === r.parts[k].a;
-    return { r, good: () => ins.every(okAt), key: () => ins.map(i => (i.value.trim() === "" ? "" : Number(i.value))).join(","),
+    ins.forEach(i => { i.addEventListener("input", () => auto()); i.addEventListener("change", () => auto());
+      i.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); i.blur(); } }); });
+    return { r, filled: () => ins.every(i => i.value.trim() !== ""), good: () => ins.every(okAt), key: () => ins.map(i => (i.value.trim() === "" ? "" : Number(i.value))).join(","),
       text: () => ins.map((i, k) => (i.value.trim() || "□") + (r.parts[k].u ? " " + r.parts[k].u : "")).join(" "),
       show: () => ins.forEach((i, k) => { i.style.borderColor = okAt(i, k) ? "var(--ok)" : "var(--no)"; }) };
   });
@@ -1594,17 +1642,23 @@ function u5Ask(body, api, rows, opts = {}) {
     words: opts.words || [],
     answers: rows.map(r => r.o ? `${r.q ? r.q + " " : ""}${r.o[r.a]}` : `${r.q ? r.q + " " : ""}${(r.parts || []).map(p => p.a + (p.u ? " " + p.u : "")).join(" ")}${r.after ? " " + r.after : ""}`)
   });
-  const check = h("button", { class: "big", onclick: () => {
-    if (opts.pre) { const m = opts.pre(); if (m) return api.fail(m, "(활동을 끝내기 전)"); }
+  const judge = () => {
     api.tryOnce();
     let ok = true; ctl.forEach(c => { const g = c.good(); c.show(g); if (!g) ok = false; });
     const given = ctl.map(c => c.text()).join(" / ");
-    if (ok) return api.done(given, opts.ok);
+    if (ok) { api.done(given, opts.ok); return true; }
     const bad = ctl.find(c => !c.good());
     const why = bad.r.why && bad.r.why[bad.key()];
     api.fail(why || bad.r.bad || opts.bad || "빨간 칸을 다시 살펴봐요. 단위를 잘 보고 생각해요.", given);
-  } }, opts.btn || "확인하기");
-  body.append(wrap, h("div", { class: "actions" }, check));
+    return false;
+  };
+  const wait = rows.some(r => !r.o) ? 900 : 260;
+  auto = autoRun(() => (!opts.pre || !opts.pre()) && ctl.every(c => c.filled()),
+                 () => ctl.map(c => c.key()).join("\u0001"), judge, opts.pre ? 1200 : wait);
+  body.append(wrap);
+  // 조작이 끝나야 답을 볼 수 있는 화면은, 조작을 마친 뒤에도 다시 살펴본다
+  if (opts.pre) ["pointerup", "click", "input", "change"].forEach(t =>
+    document.addEventListener(t, () => { if (wrap.isConnected) auto(); }, true));
 }
 
 /* 조작이 끝난 뒤에 나오는 물음(blanks 또는 u5Ask) */
@@ -1632,6 +1686,7 @@ function u5Tail(host, api, opt, pre) {
    opt: {maxCm:10, objs:[{name, len(mm), start(mm), kind:"pencil"|"bar"|"button"|"clip"|"line"}],
          align:true(물건을 끌어 0에 맞추기), draw:{target(mm)} (선분 긋기), ask/quiz/blanks, tip, ok} */
 function u5Ruler(body, api, opt = {}) {
+  let drawAuto = () => {};
   const maxCm = opt.maxCm || 10, W = 940, x0 = 50, s = (W - 2 * x0) / (maxCm * 10);
   const maxMm = maxCm * 10;
   const objs = (opt.objs || []).map(o => Object.assign({ kind: "bar" }, o, { pos: o.start || 0 }));
@@ -1710,17 +1765,19 @@ function u5Ruler(body, api, opt = {}) {
   }
   if (drawMode) {
     const T = opt.draw.target;
-    dragOn(svg, p => { pen = Math.max(0, Math.min(maxMm, Math.round((p.x - x0) / s))); draw(); return true; },
-      p => { pen = Math.max(0, Math.min(maxMm, Math.round((p.x - x0) / s))); draw(); });
-    const mv = d => { pen = Math.max(0, Math.min(maxMm, pen + d)); draw(); };
+    dragOn(svg, p => { pen = Math.max(0, Math.min(maxMm, Math.round((p.x - x0) / s))); draw(); drawAuto(); return true; },
+      p => { pen = Math.max(0, Math.min(maxMm, Math.round((p.x - x0) / s))); draw(); drawAuto(); });
+    const mv = d => { pen = Math.max(0, Math.min(maxMm, pen + d)); draw(); drawAuto(); };
     tools.append(h("button", { class: "ghost", onclick: () => mv(-1) }, "◀ 1 mm"), h("button", { class: "ghost", onclick: () => mv(1) }, "1 mm ▶"),
       h("button", { class: "ghost", onclick: () => mv(10) }, "1 cm ▶"), h("button", { class: "ghost", onclick: () => { pen = 0; draw(); } }, "지우기"));
     api.provide && api.provide({ words: ["0에서 시작", "작은 눈금 한 칸 = 1 mm"], answers: [`${u5Len(T)} 선분`] });
-    side.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+    const judge = () => {
       api.tryOnce();
-      if (pen === T) return api.done(`${u5Len(pen)} 선분`, opt.ok || `${u5Len(T)}인 선분을 바르게 그었어요!`);
-      api.fail(pen === 0 ? "주황 점을 끌어 선분을 그어 보세요." : pen > T ? `선분이 조금 길어요. 0부터 작은 눈금을 세어 봐요.` : `선분이 조금 짧아요. 0부터 작은 눈금을 세어 봐요.`, `${u5Len(pen)} 선분`);
-    } }, "확인하기")));
+      if (pen === T) { api.done(`${u5Len(pen)} 선분`, opt.ok || `${u5Len(T)}인 선분을 바르게 그었어요!`); return true; }
+      api.fail(pen > T ? `선분이 조금 길어요. 0부터 작은 눈금을 세어 봐요.` : `선분이 조금 짧아요. 0부터 작은 눈금을 세어 봐요.`, `${u5Len(pen)} 선분`);
+      return false;
+    };
+    drawAuto = autoRun(() => pen > 0, () => String(pen), judge, 1200);
   }
   body.append(h("div", { class: "stage" }, svg));
   const ctl = h("div", { class: "side" }, opt.tip ? h("p", {}, opt.tip) : null, tools.children.length ? tools : null, opt.align ? out : null);
@@ -1814,14 +1871,19 @@ function u5NumLine(body, api, opt = {}) {
     const drawMk = () => { mk.innerHTML = ""; const x = X(v); mk.append(svgEl("polygon", { points: `${x},${y - 20} ${x - 14},${y - 50} ${x + 14},${y - 50}`, fill: TENT, stroke: INK, "stroke-width": 2 })); };
     drawMk();
     const snap = p => Math.max(from, Math.min(to, from + Math.round(((p.x - x0) / (x1 - x0) * (to - from)) / step) * step));
-    dragOn(svg, p => { v = snap(p); drawMk(); return true; }, p => { v = snap(p); drawMk(); });
-    const tools = h("div", { class: "u5tools" }, h("button", { class: "ghost", onclick: () => { v = Math.max(from, v - step); drawMk(); } }, "◀ 한 칸"), h("button", { class: "ghost", onclick: () => { v = Math.min(to, v + step); drawMk(); } }, "한 칸 ▶"));
+    let moved = false;
+    const judge = () => {
+      api.tryOnce();
+      if (v === opt.target) { api.done(u5Fmt(v, opt.fmt), opt.ok); return true; }
+      api.fail("작은 눈금 한 칸이 얼마인지 먼저 알아보고 다시 옮겨 봐요.", u5Fmt(v, opt.fmt));
+      return false;
+    };
+    const auto = autoRun(() => moved, () => String(v), judge, 1200);
+    const put = nv => { v = nv; moved = true; drawMk(); auto(); };
+    dragOn(svg, p => { put(snap(p)); return true; }, p => { put(snap(p)); });
+    const tools = h("div", { class: "u5tools" }, h("button", { class: "ghost", onclick: () => put(Math.max(from, v - step)) }, "◀ 한 칸"), h("button", { class: "ghost", onclick: () => put(Math.min(to, v + step)) }, "한 칸 ▶"));
     api.provide && api.provide({ words: [], answers: [u5Fmt(opt.target, opt.fmt)] });
-    u5Put(body, h("div", { class: "stage" }, svg), tools, opt.tip ? h("p", {}, opt.tip) : null,
-      h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
-        api.tryOnce();
-        v === opt.target ? api.done(u5Fmt(v, opt.fmt), opt.ok) : api.fail("작은 눈금 한 칸이 얼마인지 먼저 알아보고 다시 옮겨 봐요.", u5Fmt(v, opt.fmt));
-      } }, "확인하기")));
+    u5Put(body, h("div", { class: "stage" }, svg), tools, opt.tip ? h("p", {}, opt.tip) : null);
     return;
   }
   u5Put(body, h("div", { class: "stage" }, svg), opt.tip ? h("p", {}, opt.tip) : null);
@@ -2211,6 +2273,36 @@ function u5TimeBlocks(body, api, opt = {}) {
   show = u5Later(later, api, opt, op === "+" ? "두 시간을 이어 붙이고, 10초 6개를 1분으로 묶으면 물음이 나와요." : "막대를 풀고 빼면 물음이 나와요.");
 }
 
+/* ── 세로셈 틀 그림(그림만, 판정 없음) ──────────────────────────────────────
+   시·분·초처럼 자리를 나눈 세로셈의 '틀'을 보여 준다.
+   opt: {cols:["시","분","초"], rows:[["11시","15분","40초"], …], op:"−", note:"…"} */
+function picVerticalFrame(opt) {
+  const cols = opt.cols, rows = opt.rows, op = opt.op || "−";
+  const cw = 190, lx = 86, rh = 62;
+  const W = lx + cols.length * cw + 20;
+  const H = 54 + rows.length * rh + 18 + 72 + (opt.note ? 26 : 0);
+  const svg = makeSvg(W, H);
+  cols.forEach((c, i) => {
+    const x = lx + i * cw;
+    svg.append(svgEl("rect", { x, y: 10, width: cw - 10, height: H - 20 - (opt.note ? 26 : 0), rx: 12, fill: i % 2 ? "#F1F7FB" : "#FFF7E6", stroke: "#C9D6D0", "stroke-width": 2 }));
+    svg.append(txt(x + (cw - 10) / 2, 32, `${c}의 자리`, 22, { fill: "#6B7B76" }));
+  });
+  rows.forEach((r, k) => {
+    const y = 54 + k * rh + rh / 2;
+    if (k) svg.append(txt(lx - 40, y, op, 36, { fill: TENT }));
+    r.forEach((v, i) => svg.append(txt(lx + i * cw + (cw - 10) / 2, y, String(v), 30)));
+  });
+  const ly = 54 + rows.length * rh + 8;
+  svg.append(svgEl("line", { x1: lx - 62, y1: ly, x2: W - 16, y2: ly, stroke: INK, "stroke-width": 4 }));
+  cols.forEach((c, i) => {
+    const x = lx + i * cw + (cw - 10) / 2;
+    svg.append(svgEl("rect", { x: x - 54, y: ly + 14, width: 108, height: 46, rx: 10, fill: "#fff", stroke: TENT, "stroke-width": 3, "stroke-dasharray": "9 7" }),
+      txt(x, ly + 37, `? ${c}`, 26, { fill: TENT }));
+  });
+  if (opt.note) svg.append(txt(W / 2, H - 10, opt.note, 20, { fill: "#6B7B76" }));
+  return h("div", { class: "stage" }, svg);
+}
+
 /* ---------- 13. 시간의 덧셈·뺄셈 세로셈 칸 ----------
    opt: {a:[h,m,s], b:[h,m,s], op:"+"|"-", aKind:"시각"|"시간", bKind, use:[0,1,2](보일 칸), mid:true(바꾸는 줄), ok} */
 function u5TimeCalc(body, api, opt = {}) {
@@ -2244,13 +2336,13 @@ function u5TimeCalc(body, api, opt = {}) {
   const resText = show(res);
   api.provide && api.provide({ words: ["같은 단위끼리", op === "+" ? "60초 = 1분" : "1분 = 60초", op === "+" ? "60분 = 1시간" : "1시간 = 60분"],
     answers: [`${fmtA} ${op === "+" ? "+" : "−"} ${fmtB} = ${resText}`] });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
     let ok = true;
     ins.forEach(x => { const good = x.inp.value.trim() !== "" && Number(x.inp.value) === x.want; x.inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
     const got = k => use.map((i, j) => ins.filter(x => x.key === k)[j].inp.value || "□");
     const given = (wantMid ? "바꾼 줄 " + got("mid").join(",") + " / " : "") + use.map((i, j) => got("res")[j] + U(rK)[i]).join(" ");
-    if (ok) return api.done(given, opt.ok || `${resText}. 같은 단위끼리 정확하게 계산했어요!`);
+    if (ok) { api.done(given, opt.ok || `${resText}. 같은 단위끼리 정확하게 계산했어요!`); return true; }
     const r = got("res").map(Number), ui = use.indexOf(2), um = use.indexOf(1);
     let msg = op === "+" ? "시는 시끼리, 분은 분끼리, 초는 초끼리 더해요." : "시는 시끼리, 분은 분끼리, 초는 초끼리 빼요.";
     if (op === "+" && ui >= 0 && r[ui] >= 60) msg = "초가 60초이거나 60초보다 크면 60초를 1분으로 바꾸어요.";
@@ -2259,8 +2351,15 @@ function u5TimeCalc(body, api, opt = {}) {
     else if (op === "-" && um >= 0 && a[1] < b[1] && r[um] === a[1] + 100 - b[1]) msg = "1시간은 100분이 아니라 60분이에요.";
     else if (op === "-" && ui >= 0 && a[2] < b[2] && r[ui] === b[2] - a[2]) msg = "작은 수에서 큰 수를 거꾸로 빼면 안 돼요. 1분을 60초로 바꾸어 계산해요.";
     api.fail(msg, given);
-  } }, "확인하기");
-  u5Put(body, opt.tip ? h("p", {}, opt.tip) : null, opt.fig ? (typeof opt.fig === "function" ? opt.fig() : opt.fig) : null, h("div", { class: "card", style: "display:inline-block" }, tbl), h("div", { class: "actions" }, check));
+    return false;
+  };
+  const auto = autoRun(() => ins.every(x => x.inp.value.trim() !== ""),
+                       () => ins.map(x => x.inp.value).join("\u0001"), judge, 900);
+  ins.forEach(({ inp }) => {
+    inp.addEventListener("input", auto); inp.addEventListener("change", auto);
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
+  });
+  u5Put(body, opt.tip ? h("p", {}, opt.tip) : null, opt.fig ? (typeof opt.fig === "function" ? opt.fig() : opt.fig) : null, h("div", { class: "card", style: "display:inline-block" }, tbl));
 }
 
 /* ---------- 14. 길이 어림왕 놀이판 ----------
@@ -2609,7 +2708,7 @@ const LESSONS = [
   steps: [
     { inst: "탐험대가 연못을 10시 20분 10초에 출발해서 3분 40초 동안 걸어 온실에 도착했어요. 시간띠에 1분과 10초를 채워 도착한 시각을 구해 보세요.", hints: ["먼저 1분을 3번 지나고, 10초를 4번 지나요.", "3분이 지나면 10시 23분 10초예요."],
       render: (b, a) => u5TimeBand(b, a, { start: [10, 20, 10], amount: [0, 3, 40], dir: 1, startLabel: "출발 시각", askQ: "온실에 도착한 시각은?", ok: "온실에 도착한 시각은 10시 23분 50초예요." }) },
-    { name: "그려 보기 — 예상하고 확인하기", inst: "온실을 35분 구경하고, 전망대까지 28분 걸었어요. 먼저 어림하고, 실제로 계산해요.", hints: ["28분은 25분보다 길어요. 35분 + 25분은 60분이에요.", "분은 분끼리 더해요. 35 + 28을 계산해요."],
+    { name: "어림해 보기 — 예상하고 확인하기", inst: "온실을 35분 구경하고, 전망대까지 28분 걸었어요. 먼저 어림하고, 실제로 계산해요.", hints: ["28분은 25분보다 길어요. 35분 + 25분은 60분이에요.", "분은 분끼리 더해요. 35 + 28을 계산해요."],
       render: (b, a) => predictCheck(b, a, {
         ask: "35분 + 28분은 1시간(60분)을 넘을까요?",
         o: ["1시간보다 짧아요", "1시간을 넘어요"], a: 1,
@@ -2642,7 +2741,8 @@ const LESSONS = [
     { inst: "탐험대가 4분 30초 동안 걸어서 11시 15분 40초에 전망대에 도착했어요. 시간띠를 거꾸로 채워 출발한 시각을 구해 보세요.", hints: ["도착 시각에서 거꾸로 1분씩 4번, 10초씩 3번 가요.", "4분 전은 11시 11분 40초예요."],
       render: (b, a) => u5TimeBand(b, a, { start: [11, 15, 40], amount: [0, 4, 30], dir: -1, startLabel: "도착 시각", askQ: "출발한 시각은?", ok: "출발한 시각은 11시 11분 10초예요." }) },
     { inst: "세로셈으로 계산해 보세요.", hints: ["분은 분끼리 15 − 4, 초는 초끼리 40 − 30을 계산해요."],
-      render: (b, a) => u5TimeCalc(b, a, { a: [11, 15, 40], b: [0, 4, 30], op: "-", aKind: "시각", bKind: "시간", tip: "시는 시끼리, 분은 분끼리, 초는 초끼리 빼요." }) },
+      render: (b, a) => u5TimeCalc(b, a, { a: [11, 15, 40], b: [0, 4, 30], op: "-", aKind: "시각", bKind: "시간", tip: "시는 시끼리, 분은 분끼리, 초는 초끼리 빼요.",
+        fig: () => picVerticalFrame({ cols: ["시", "분", "초"], rows: [["11시", "15분", "40초"], ["0시간", "4분", "30초"]], op: "−", note: "자리를 맞추어 쓰고 같은 자리끼리 빼요." }) }) },
     { name: "받아내림 말해 보기", inst: "소풍 영상을 찍었어요. 나비 정원 영상은 4분 20초, 연못 영상은 1분 50초예요. 나비 정원 영상이 얼마나 더 길까요? 1분을 10초 6개로 풀고 빼 보세요.", hints: ["10초 막대가 5개 필요한데 2개뿐이에요.", "1분 막대 하나를 10초 막대 6개로 풀어요."],
       render: (b, a) => u5TimeBlocks(b, a, { a: [0, 4, 20], b: [0, 1, 50], op: "-", names: ["나비 정원 영상", "연못 영상"],
         blanks: ["20초에서 50초를 뺄 수 없어서 1분을 ", { o: ["60초", "100초"], a: 0 }, "로 바꾸었어요. 4분 20초는 ", { o: ["3분 80초", "3분 120초"], a: 0 }, "와 같으므로 나비 정원 영상이 ", { o: ["2분 30초", "3분 30초"], a: 0 }, " 더 길어요."] }) },

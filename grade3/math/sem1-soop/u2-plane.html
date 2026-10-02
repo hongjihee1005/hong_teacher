@@ -36,10 +36,11 @@ svg{touch-action:none;user-select:none;-webkit-user-select:none}
 .chip.btn:hover{background:rgba(255,255,255,.22)}
 
 /* 시작 화면 */
-.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);background:
- radial-gradient(circle at 80% 18%, rgba(244,197,66,.25) 0 6%, transparent 6.5%),
- linear-gradient(180deg,var(--night) 0,var(--night2) 55%,var(--pine) 55.2%,var(--pine) 100%)}
-.gate-card{background:#fff;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 18px 40px rgba(0,0,0,.25)}
+/* 시작 화면: 다른 교과와 같은 밝고 따뜻한 바탕 (2026-10-03) */
+.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);
+ background:linear-gradient(180deg,#FFFCF8 0,#FCF3E9 100%)}
+.gate-card{background:#fff;border:3px solid #F0E5D9;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 10px 28px rgba(140,110,80,.10)}
+.gate-card h1{color:var(--ink)}
 .gate-card h1{font-size:var(--fs-xl);margin:0 0 .2em;color:var(--night)}
 .nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(3.1em,1fr));gap:.45em;margin:.6em 0 1em}
 .nums button{padding:.5em 0;border-radius:.6em;border:2px solid var(--line);background:#fff;font-family:"Jua";font-size:var(--fs)}
@@ -952,7 +953,7 @@ function topbar() {
   return h("header", { class: "top" },
     h("div", { class: "brand" }, ringLogo(), h("span", {}, APP.title), h("span", { class: "long" }, " · " + APP.unit)),
     h("div", { class: "who" },
-      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번 ${st.name || ""}`) : null,
+      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번${st.name ? " " + st.name : ""}`) : null,
       st ? h("button", { class: "chip btn", onclick: () => { S.student = null; store.save(S); showGate(); } }, "바꾸기") : null,
       h("button", { class: "chip btn", onclick: showTeacher }, "선생님")));
 }
@@ -967,18 +968,27 @@ function mount(...els) { const r = root(); r.innerHTML = ""; r.append(topbar(), 
 
 /* 시작: 번호 고르기 */
 function showGate() {
-  let ban = (S.student && S.student.ban) || "2", no = null;
+  const last = S.last || {};
+  let ban = (S.student && S.student.ban) || last.ban || "2";
+  let no = last.no || null;
   const nums = h("div", { class: "nums" });
-  for (let i = 1; i <= 40; i++) nums.append(h("button", { onclick: (e) => { no = i; [...nums.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); go.disabled = false; } }, String(i)));
+  for (let i = 1; i <= 40; i++) {
+    const on = (i === no);
+    nums.append(h("button", { class: on ? "on" : "", onclick: (e) => {
+      no = i; [...nums.children].forEach(b => b.classList.remove("on"));
+      e.currentTarget.classList.add("on"); go.disabled = false;
+    } }, String(i)));
+  }
   const banIn = h("input", { type: "number", min: 1, max: 15, value: ban, style: "width:4.5em", "aria-label": "반" });
-  const nameIn = h("input", { type: "text", placeholder: "이름 (선택)", maxlength: 10, style: "width:9em" });
-  const go = h("button", { class: "big", disabled: true, onclick: () => {
-    S.student = { ban: String(banIn.value || "2"), no, name: nameIn.value.trim() }; store.save(S); flushQueue(); showMap();
-  } }, "입장하기");
+  const go = h("button", { class: "big", disabled: !no, onclick: () => {
+    S.student = { ban: String(banIn.value || "2"), no, name: "" };
+    S.last = { ban: S.student.ban, no };
+    store.save(S); flushQueue(); showMap();
+  } }, "들어가기");
   mount(h("main", { class: "gate" }, h("section", { class: "gate-card" },
     h("h1", {}, APP.welcome),
     h("p", { class: "inst" }, APP.intro + " 내 번호를 눌러 주세요."),
-    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반"), nameIn),
+    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반")),
     nums, go)));
 }
 
@@ -1276,6 +1286,23 @@ function makeSvg(w, hgt, grid) {
 function txt(x, y, t, size = 22, attrs = {}) { const e = svgEl("text", Object.assign({ x, y, "font-size": size, "text-anchor": "middle", "dominant-baseline": "middle", "font-family": "Jua, sans-serif", fill: "#1D2A2A" }, attrs)); e.textContent = t; return e; }
 
 /* 선택형 문제 여러 개 (mcq/ox) */
+/* ── 자동 확인 ────────────────────────────────────────────────────────────
+   '확인하기' 단추 없이, 칸을 다 채우거나 보기를 다 고르면 스스로 확인한다.
+   · ready()가 참일 때만 확인한다(빈 칸이 있으면 기다린다).
+   · 같은 답으로는 다시 세지 않는다(숫자를 고쳐 쓰는 동안 '틀림'이 쌓이지 않게).
+   · 숫자 입력은 다 쓸 때까지 잠깐 기다렸다가 본다.                        */
+function autoRun(ready, sign, run, wait) {
+  let last = null, timer = null, done = false;
+  const fire = () => {
+    if (done || !ready()) return;
+    const sg = sign();
+    if (sg === last) return;
+    last = sg;
+    if (run() === true) done = true;
+  };
+  return () => { clearTimeout(timer); timer = setTimeout(fire, wait || 0); };
+}
+
 function quiz(body, api, items, opts = {}) {
   const state = items.map(() => (null));
   const wrap = h("div");
@@ -1296,7 +1323,7 @@ function quiz(body, api, items, opts = {}) {
     words: items.flatMap(it => (Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i])),
     answers: items.map((it, qi) => `${items.length > 1 ? (qi + 1) + ") " : ""}${(Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i]).join(", ")}`)
   });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
     let allOk = true; const ans = [];
     items.forEach((it, qi) => {
@@ -1314,8 +1341,12 @@ function quiz(body, api, items, opts = {}) {
       const custom = w && w.why && w.why[String(state[wrongIdx])];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
-  } }, "확인하기");
-  body.append(wrap, h("div", { class: "actions" }, check));
+    return allOk;
+  };
+  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+                       () => JSON.stringify(state), judge, 260);
+  wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
+  body.append(wrap);
 }
 /* 빈칸 문장 */
 function blanks(body, api, parts, opts = {}) {
@@ -1334,7 +1365,7 @@ function blanks(body, api, parts, opts = {}) {
     words: parts.filter(p => typeof p !== "string").flatMap(p => p.o),
     answers: [parts.map(p => typeof p === "string" ? p : p.o[p.a]).join("")]
   });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true; const ans = [];
     [...sent.querySelectorAll(".slot")].forEach((slot, k) => {
       const a = +slot.dataset.a; const btn = slot.children[sel[k]];
@@ -1342,8 +1373,11 @@ function blanks(body, api, parts, opts = {}) {
       ans.push(btn ? btn.textContent : "-");
     });
     ok ? api.done(ans.join(" / "), opts.ok) : api.fail(opts.bad || "빨간 낱말을 다시 골라 봐요.", ans.join(" / "));
-  } }, "확인하기");
-  body.append(sent, h("div", { class: "actions" }, check));
+    return ok;
+  };
+  const auto = autoRun(() => sel.every(v => v != null), () => sel.join(","), judge, 260);
+  sent.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
+  body.append(sent);
 }
 /* 글쓰기(자기 생각) */
 function writeStep(body, api, prompts, opts = {}) {
@@ -1412,15 +1446,19 @@ function predictCheck(body, api, opts) {
   const inp = h("input", { type: "number", inputmode: "numeric", placeholder: "실제 값" });
   const second = h("div", { class: "qitem hidden" },
     h("div", { class: "jua" }, opts.then || "이제 실제로 계산해 보세요."),
-    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : "",
-      h("button", { class: "opt", onclick: () => {
-        api.tryOnce();
-        if (Number(inp.value) !== opts.real) return api.fail("실제 값을 다시 계산해 봐요.", inp.value);
-        const hit = guess === opts.a;
-        api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
-          (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
-          (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
-      } }, "확인하기")));
+    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : ""));
+  const judge = () => {
+    api.tryOnce();
+    if (Number(inp.value) !== opts.real) { api.fail("실제 값을 다시 계산해 봐요.", inp.value); return false; }
+    const hit = guess === opts.a;
+    api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
+      (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
+      (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
+    return true;
+  };
+  const autoP = autoRun(() => String(inp.value).trim() !== "", () => inp.value, judge, 900);
+  inp.addEventListener("input", autoP); inp.addEventListener("change", autoP);
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
 
   body.append(box, second);
 }
@@ -1503,16 +1541,22 @@ function numbers(body, api, items, opts = {}) {
     words: opts.words || [],
     answers: items.map(it => `${it.q} ${it.a}${it.unit ? " " + it.unit : ""}`)
   });
-  body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true;
     ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
     const given = ins.map(x => x.inp.value).join(", ");
-    if (ok) return api.done(given, opts.ok);
+    if (ok) { api.done(given, opts.ok); return true; }
     const bad = ins.find(({ inp, a }) => Number(inp.value) !== a);
     const item = items[ins.indexOf(bad)];
     const why = item && item.why && item.why[String(Number(bad.inp.value))];
     api.fail(why || opts.bad || "빨간 칸을 다시 계산해 봐요.", given);
-  } }, "확인하기")));
+    return false;
+  };
+  const auto = autoRun(() => ins.every(x => String(x.inp.value).trim() !== ""),
+                       () => ins.map(x => x.inp.value).join("\u0001"), judge, 900);
+  ins.forEach(({ inp }) => { inp.addEventListener("input", auto); inp.addEventListener("change", auto);
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } }); });
+  body.append(wrap);
 }
 
 /* ===== 3-1 수학 2. 평면도형 — 단원 조작 부품 (접두어 u2) =====
@@ -1681,6 +1725,7 @@ function u2Side(...kids) { return h("div", { class: "side" }, ...kids); }
    opt: {cats:["곧은 선","굽은 선"], items:[{sh:[…], cat:0, why:"…"}], box:[4,3], ok, bad, tip}
    ========================================================= */
 function u2Sort(body, api, opt) {
+  let auto = () => {};
   const items = opt.items, cats = opt.cats, n = items.length;
   const bw = opt.box ? opt.box[0] : 4, bh = opt.box ? opt.box[1] : 3;
   const CW = 112, CH = 96, cu = Math.min((CW - 16) / bw, (CH - 30) / bh);
@@ -1715,6 +1760,7 @@ function u2Sort(body, api, opt) {
       cards[i].frame.setAttribute("stroke", sel === i ? BLUE : U2_LINE); cards[i].frame.setAttribute("stroke-width", sel === i ? 5 : 3);
     });
     out.textContent = cats.map((c, j) => `${c}: ${items.map((it, i) => where[i] === j ? (it.label || U2_KO[i]) : null).filter(Boolean).join(", ") || "-"}`).join("  /  ");
+    auto();
   };
   const out = h("div", { class: "readout", style: "font-size:var(--fs)" });
   const assign = (i, j) => { where[i] = j; sel = null; layout(); };
@@ -1738,16 +1784,17 @@ function u2Sort(body, api, opt) {
   api.provide({ words: cats, answers: cats.map((c, j) => `${c}: ${items.map((it, i) => it.cat === j ? lab(i) : null).filter(Boolean).join(", ")}`) });
   const tools = h("div", { class: "tools" }, h("span", {}, "고른 카드를 →"), cats.map((c, j) => h("button", { onclick: () => sel == null ? api.hint("먼저 위의 카드를 하나 눌러 골라요.") : assign(sel, j) }, c)),
     h("button", { onclick: () => { where.fill(-1); sel = null; layout(); } }, "처음으로"));
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     const ans = out.textContent;
-    if (where.some(w => w < 0)) { api.fail("아직 상자에 넣지 않은 카드가 있어요. 모든 카드를 상자에 넣어 봐요.", "-"); return; }
     api.tryOnce();
     const bad = items.map((it, i) => where[i] !== it.cat ? i : -1).filter(i => i >= 0);
     cards.forEach((c, i) => c.frame.setAttribute("stroke", bad.includes(i) ? U2_NO : U2_OK));
-    if (!bad.length) return api.done(ans, opt.ok || "모두 알맞게 분류했어요!");
+    if (!bad.length) { api.done(ans, opt.ok || "모두 알맞게 분류했어요!"); return true; }
     api.fail((items[bad[0]].why) || opt.bad || `${bad.map(lab).join(", ")} 카드를 다시 살펴봐요.`, ans);
-  } }, "확인하기");
-  body.append(...[h("div", { class: "stage" }, svg), opt.tip ? h("p", { class: "inst", style: "margin:.4em 0" }, opt.tip) : null, tools, out, h("div", { class: "actions" }, check)].filter(Boolean));
+    return false;
+  };
+  auto = autoRun(() => where.every(w => w >= 0), () => where.join(","), judge, 1200);
+  body.append(...[h("div", { class: "stage" }, svg), opt.tip ? h("p", { class: "inst", style: "margin:.4em 0" }, opt.tip) : null, tools, out].filter(Boolean));
   layout();
 }
 
@@ -1756,6 +1803,7 @@ function u2Sort(body, api, opt) {
    opt: {w,h,U, paper, items:[{sh:[…], at:[x,y], box:[bw,bh], ok:true, why, label, name}], labels, tip, ok, bad, miss, deco:[…]}
    ========================================================= */
 function u2Pick(body, api, opt) {
+  let auto = () => {};
   const U = opt.U || 30, W = opt.w * U, H = opt.h * U, svg = makeSvg(W, H);
   if (opt.paper) u2Paper(svg, opt.w, opt.h, U, opt.paper);
   (opt.deco || []).forEach(sh => svg.append(u2Draw(sh, U, W, H)));
@@ -1776,16 +1824,20 @@ function u2Pick(body, api, opt) {
   const paint = () => {
     hits.forEach((r, i) => { const on = sel.has(i); r.setAttribute("fill", on ? "rgba(43,123,214,.16)" : "rgba(255,255,255,0)"); r.setAttribute("stroke", on ? BLUE : (opt.items[i].box ? U2_LINE : "none")); r.setAttribute("stroke-width", on ? 4 : 2); r.setAttribute("stroke-dasharray", on ? "8 5" : ""); });
     out.textContent = "고른 것: " + ([...sel].sort((a, b) => a - b).map(i => labOf(opt.items[i], i)).join(", ") || "없음");
+    auto();
   };
   const good = opt.items.map((it, i) => it.ok ? i : -1).filter(i => i >= 0);
   api.provide({ words: opt.words || [], answers: [good.map(i => labOf(opt.items[i], i)).join(", ")] });
-  const side = u2Side(out, h("p", {}, opt.tip || "알맞은 것을 모두 눌러 골라요. 다시 누르면 취소돼요."), h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); const ans = [...sel].sort((a, b) => a - b).map(i => labOf(opt.items[i], i)).join(",") || "-";
     const extra = [...sel].filter(i => !opt.items[i].ok), miss = good.filter(i => !sel.has(i));
-    if (!extra.length && !miss.length) return api.done(ans, opt.ok);
-    if (extra.length) return api.fail(opt.items[extra[0]].why || opt.bad || `${labOf(opt.items[extra[0]], extra[0])}을(를) 다시 살펴봐요.`, ans);
+    if (!extra.length && !miss.length) { api.done(ans, opt.ok); return true; }
+    if (extra.length) { api.fail(opt.items[extra[0]].why || opt.bad || `${labOf(opt.items[extra[0]], extra[0])}을(를) 다시 살펴봐요.`, ans); return false; }
     api.fail(opt.miss || "아직 찾지 못한 것이 있어요. 하나씩 다시 살펴봐요.", ans);
-  } }, "확인하기"));
+    return false;
+  };
+  auto = autoRun(() => sel.size > 0, () => [...sel].sort((a, b) => a - b).join(","), judge, 1200);
+  const side = u2Side(out, h("p", {}, opt.tip || "알맞은 것을 모두 눌러 골라요. 다시 누르면 취소돼요."));
   body.append(stageWrap(svg, side)); paint();
 }
 
@@ -1796,6 +1848,7 @@ function u2Pick(body, api, opt) {
          strict:true, deco:[…], tip, ok}
    ========================================================= */
 function u2DotLines(body, api, opt) {
+  let auto = () => {};
   const U = opt.U || 60, W = opt.w * U, H = opt.h * U, svg = u2Wide(makeSvg(W, H), W, H);
   if (opt.paper) u2Paper(svg, opt.w, opt.h, U, opt.paper);
   (opt.deco || []).forEach(sh => svg.append(u2Draw(sh, U, W, H)));
@@ -1823,6 +1876,7 @@ function u2DotLines(body, api, opt) {
     Object.entries(dotEls).forEach(([id, c]) => { c.setAttribute("fill", id === first ? TENT : (P[id].n ? INK : "#6F7E8A")); c.setAttribute("r", id === first ? 11 : (P[id].n ? 8 : 6)); });
     const named = Object.values(P).some(q => q.n);
     out.textContent = lines.length ? (named ? "그은 선: " + lines.map(lname).join(", ") : `그은 선 ${lines.length}개`) : "아직 그은 선이 없어요.";
+    auto();
   };
   const sameL = (l, t) => l.k === t.k && (t.k === "ray" ? (l.a === t.a && l.b === t.b) : ((l.a === t.a && l.b === t.b) || (l.a === t.b && l.b === t.a)));
   const add = l => {
@@ -1881,14 +1935,16 @@ function u2DotLines(body, api, opt) {
     if (t.k === "rightAt") return "주어진 선분의 끝점에서 시작해 직각이 되도록 그어 봐요. 모눈 칸을 세어 반듯하게 그어요.";
     return `${tName(t)}을 아직 긋지 않았어요.`;
   };
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); const ans = lines.map(lname).join(", ") || "-";
-    const miss = T.find(t => !met(t)); if (miss) return api.fail(why(miss), ans);
-    if (strict) { const extra = lines.find(l => !needed(l)); if (extra) return api.fail(`필요 없는 선이 있어요: ${lname(extra)}. ‘하나 지우기’로 지워 봐요.`, ans); }
+    const miss = T.find(t => !met(t)); if (miss) { api.fail(why(miss), ans); return false; }
+    if (strict) { const extra = lines.find(l => !needed(l)); if (extra) { api.fail(`필요 없는 선이 있어요: ${lname(extra)}. ‘하나 지우기’로 지워 봐요.`, ans); return false; } }
     api.done(ans, opt.ok || "알맞게 그었어요!");
-  } }, "확인하기");
+    return true;
+  };
+  auto = autoRun(() => lines.length > 0, () => lines.map(lname).join("|"), judge, 1200);
   const sideEl = u2Side(h("p", {}, opt.tip || "도구를 고르고, 점 두 개를 차례로 누르거나 한 점에서 다른 점까지 끌어요."), tb, dirBox, out,
-    h("div", { class: "tools" }, h("button", { onclick: () => { lines.pop(); first = null; redraw(); } }, "하나 지우기"), h("button", { onclick: () => { lines.length = 0; first = null; redraw(); } }, "모두 지우기")), check);
+    h("div", { class: "tools" }, h("button", { onclick: () => { lines.pop(); first = null; redraw(); } }, "하나 지우기"), h("button", { onclick: () => { lines.length = 0; first = null; redraw(); } }, "모두 지우기")));
   body.append(stageWrap(svg, sideEl)); redraw();
 }
 
@@ -2029,6 +2085,7 @@ function u2Fold(body, api, opt = {}) {
    opt: {w,h,U, paper:"grid", figs:[{pts:[[x,y]…], open:false, label:"가", lab:[x,y], names:[…]}], tip, ok, countAsk:false}
    ========================================================= */
 function u2SetSquare(body, api, opt) {
+  let auto = () => {};
   const U = opt.U || 40, W = opt.w * U, H = opt.h * U, svg = makeSvg(W, H);
   if (opt.paper) u2Paper(svg, opt.w, opt.h, U, opt.paper);
   const figs = opt.figs, verts = [];
@@ -2046,7 +2103,7 @@ function u2SetSquare(body, api, opt) {
   let pos = opt.start ? [opt.start[0] * U, opt.start[1] * U] : [W - L1 - 20, H - 20], th = 0, snapped = -1, ci = -1;
   const place = () => sq.setAttribute("transform", `translate(${u2F(pos[0])},${u2F(pos[1])}) rotate(${u2F(th * 180 / Math.PI)})`);
   const marks = new Set();
-  const paintMarks = () => { markG.innerHTML = ""; marks.forEach(k => { const v = verts[k]; markG.append(u2RightMark(v.V, v.P, v.Q, Math.min(18, U * .45), { stroke: TENT, "stroke-width": 4 })); }); cnt.textContent = `표시한 직각 ${marks.size}개`; };
+  const paintMarks = () => { markG.innerHTML = ""; marks.forEach(k => { const v = verts[k]; markG.append(u2RightMark(v.V, v.P, v.Q, Math.min(18, U * .45), { stroke: TENT, "stroke-width": 4 })); }); cnt.textContent = `표시한 직각 ${marks.size}개`; auto(); };
   const out = h("div", { class: "readout", style: "font-size:var(--fs)" }, "삼각자를 끌어 도형의 꼭짓점에 대 보세요."), cnt = h("div", { class: "jua" });
   const snap = k => {
     const v = verts[k]; snapped = k; pos = v.V.slice();
@@ -2068,17 +2125,19 @@ function u2SetSquare(body, api, opt) {
   const rights = verts.map((v, k) => v.right ? k : -1).filter(k => k >= 0);
   api.provide({ words: ["직각", "삼각자", "꼭 맞아요"], answers: [figs.map((f, fi) => `${f.label || ""} 직각 ${verts.filter(v => v.fi === fi && v.right).length}개`).join(", ")] });
   const summary = () => figs.map((f, fi) => `${f.label || fi + 1}:${[...marks].filter(k => verts[k].fi === fi).length}`).join(" ");
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); const ans = `표시 ${summary()}`;
     const extra = [...marks].filter(k => !verts[k].right), miss = rights.filter(k => !marks.has(k));
-    if (!extra.length && !miss.length) return api.done(ans, opt.ok || `직각을 모두 찾았어요! ${figs.map((f, fi) => `${f.label || ""} ${verts.filter(v => v.fi === fi && v.right).length}개`).join(", ")}`);
-    if (extra.length) return api.fail("직각이 아닌 곳에 표시한 것이 있어요. 그 꼭짓점에 삼각자를 대 보세요.", ans);
+    if (!extra.length && !miss.length) { api.done(ans, opt.ok || `직각을 모두 찾았어요! ${figs.map((f, fi) => `${f.label || ""} ${verts.filter(v => v.fi === fi && v.right).length}개`).join(", ")}`); return true; }
+    if (extra.length) { api.fail("직각이 아닌 곳에 표시한 것이 있어요. 그 꼭짓점에 삼각자를 대 보세요.", ans); return false; }
     api.fail(`아직 표시하지 않은 직각이 ${miss.length}개 있어요. ${figs.length > 1 ? "도형마다 " : ""}꼭짓점에 삼각자를 하나씩 대 보세요.`, ans);
-  } }, "확인하기");
+    return false;
+  };
+  auto = autoRun(() => marks.size > 0, () => [...marks].sort((a, b) => a - b).join(","), judge, 1200);
   body.append(stageWrap(svg, u2Side(h("p", {}, opt.tip || "삼각자를 끌어 꼭짓점에 대 보고, 직각인 꼭짓점을 눌러 └ 표시를 해요. 다시 누르면 지워져요."), out,
     h("div", { class: "tools" }, h("button", { onclick: () => { ci = (ci + 1) % verts.length; snap(ci); } }, "다음 꼭짓점에 대 보기"), h("button", { onclick: () => { th += Math.PI / 4; snapped = -1; place(); } }, "↻ 돌리기"),
       h("button", { onclick: () => { if (snapped >= 0) { marks.add(snapped); paintMarks(); } else api.hint("먼저 삼각자를 꼭짓점에 대 보세요."); } }, "여기에 └ 표시"), h("button", { onclick: () => { marks.clear(); paintMarks(); } }, "표시 지우기")),
-    cnt, check)));
+    cnt)));
   place(); paintMarks();
 }
 
@@ -2151,6 +2210,7 @@ function u2GridShape(body, api, opt) {
    opt: {w,h,U, paper:"grid", items:[{pts:[[x,y]…], label}], marks:[{sym:"○", label:"네 각이 모두 직각", ans:[0,1]}], tip, ok}
    ========================================================= */
 function u2MarkFigs(body, api, opt) {
+  let auto = () => {};
   const U = opt.U || 36, W = opt.w * U, H = opt.h * U, svg = makeSvg(W, H);
   if (opt.paper) u2Paper(svg, opt.w, opt.h, U, opt.paper);
   let cur = 0; const on = opt.marks.map(() => new Set()), symG = [];
@@ -2162,17 +2222,19 @@ function u2MarkFigs(body, api, opt) {
     g.addEventListener("click", () => { on[cur].has(i) ? on[cur].delete(i) : on[cur].add(i); paint(); });
     svg.append(g);
   });
-  const paint = () => symG.forEach(({ sg, b }, i) => { sg.innerHTML = ""; opt.marks.forEach((m, k) => { if (on[k].has(i)) sg.append(txt(b[0] * U + 40 + k * 34, (b[1] - .5) * U, m.sym, 28, { fill: k ? TENT : BLUE })); }); });
+  const paint = () => { symG.forEach(({ sg, b }, i) => { sg.innerHTML = ""; opt.marks.forEach((m, k) => { if (on[k].has(i)) sg.append(txt(b[0] * U + 40 + k * 34, (b[1] - .5) * U, m.sym, 28, { fill: k ? TENT : BLUE })); }); }); auto(); };
   const tb = h("div", { class: "tools" });
   opt.marks.forEach((m, k) => tb.append(h("button", { class: k === 0 ? "on" : "", onclick: e => { cur = k; [...tb.children].forEach(b => b.classList.toggle("on", b === e.currentTarget)); } }, `${m.sym} ${m.label}`)));
   const lab = i => opt.items[i].label || U2_KO[i];
   api.provide({ words: opt.marks.map(m => m.label), answers: opt.marks.map(m => `${m.sym}: ${m.ans.map(lab).join(", ")}`) });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); const ans = opt.marks.map((m, k) => `${m.sym}:${[...on[k]].sort().map(lab).join(",")}`).join(" ");
-    for (let k = 0; k < opt.marks.length; k++) { const m = opt.marks[k], s = on[k]; if (s.size !== m.ans.length || !m.ans.every(i => s.has(i))) return api.fail(m.why || `${m.sym} 표시를 다시 살펴봐요. ‘${m.label}’인 도형에만 ${m.sym}를 해요.`, ans); }
+    for (let k = 0; k < opt.marks.length; k++) { const m = opt.marks[k], s = on[k]; if (s.size !== m.ans.length || !m.ans.every(i => s.has(i))) { api.fail(m.why || `${m.sym} 표시를 다시 살펴봐요. ‘${m.label}’인 도형에만 ${m.sym}를 해요.`, ans); return false; } }
     api.done(ans, opt.ok);
-  } }, "확인하기");
-  body.append(stageWrap(svg, u2Side(h("p", {}, opt.tip || "표시를 고른 다음 도형을 눌러요. 다시 누르면 지워져요."), tb, check)));
+    return true;
+  };
+  auto = autoRun(() => on.some(s2 => s2.size > 0), () => on.map(s2 => [...s2].sort((a, b) => a - b).join(",")).join("|"), judge, 1200);
+  body.append(stageWrap(svg, u2Side(h("p", {}, opt.tip || "표시를 고른 다음 도형을 눌러요. 다시 누르면 지워져요."), tb)));
 }
 
 /* =========================================================
@@ -2208,6 +2270,7 @@ function u2PaperSquare(body, api, opt = {}) {
    opt: {w,h,U, pieces:[{pts:[[x,y]…], kind:"rt"|"rect"|"sq"|"tri"}], kinds:["rt","rect","sq"], kindNames:{tri:"직각이 없는 삼각형"}, title, tip, ok}
    ========================================================= */
 function u2Pieces(body, api, opt) {
+  let auto = () => {};
   const U = opt.U || 34, W = opt.w * U, H = opt.h * U, svg = makeSvg(W, H);
   u2Paper(svg, opt.w, opt.h, U, "grid");
   const kinds = opt.kinds || ["rt", "rect", "sq"], kname = k => (opt.kindNames && opt.kindNames[k]) || U2_KIND[k];
@@ -2224,21 +2287,23 @@ function u2Pieces(body, api, opt) {
   const paint = () => {
     els.forEach((e, i) => { const k = got[i]; e.poly.setAttribute("fill", k ? U2_KFILL[k] : "#fff"); e.poly.setAttribute("stroke", sel === i ? TENT : (k ? U2_KSTROKE[k] : INK)); e.poly.setAttribute("stroke-width", sel === i ? 6 : 3.5); });
     out.textContent = kinds.map(k => `${kname(k)} ${got.filter(x => x === k).length}개`).join(" · ");
+    auto();
   };
   const cutBtn = h("button", { class: "ghost", onclick: () => { cut = !cut; els.forEach(e => e.g.setAttribute("transform", cut ? `translate(${u2F(e.d[0] * U * (opt.gap || .7))},${u2F(e.d[1] * U * (opt.gap || .7))})` : "")); cutBtn.textContent = cut ? "다시 붙이기" : "잘라서 떼어 보기"; } }, "잘라서 떼어 보기");
   const tb = h("div", { class: "tools" }, h("span", {}, "고른 조각은 →"), kinds.map(k => h("button", { style: `border-color:${U2_KSTROKE[k]};background:${U2_KFILL[k]}`, onclick: () => { if (sel == null) return api.hint(cut ? "먼저 조각을 하나 눌러 골라요." : "먼저 ‘잘라서 떼어 보기’를 눌러요."); got[sel] = k; sel = null; paint(); } }, kname(k))));
   const count = k => opt.pieces.filter(p => p.kind === k).length;
   api.provide({ words: kinds.map(kname), answers: [kinds.map(k => `${kname(k)} ${count(k)}개`).join(", ")] });
-  const check = h("button", { class: "big", onclick: () => {
-    if (got.some(x => !x)) { api.fail("아직 이름을 붙이지 않은 조각이 있어요. 모든 조각에 이름을 붙여요.", "-"); return; }
+  const judge = () => {
     api.tryOnce(); const ans = out.textContent;
     const bad = opt.pieces.map((p, i) => got[i] !== p.kind ? i : -1).filter(i => i >= 0);
-    if (!bad.length) return api.done(ans, opt.ok || `알맞게 나누었어요! ${ans}`);
+    if (!bad.length) { api.done(ans, opt.ok || `알맞게 나누었어요! ${ans}`); return true; }
     els.forEach((e, i) => { if (bad.includes(i)) e.poly.setAttribute("stroke", U2_NO); });
     const p = opt.pieces[bad[0]], gk = got[bad[0]];
     api.fail(gk === "rect" && p.kind === "sq" ? "빨간 조각의 네 변의 길이를 모눈 칸으로 세어 봐요." : gk === "sq" && p.kind === "rect" ? "빨간 조각은 네 변의 길이가 모두 같은가요? 칸을 세어 봐요." : (p.kind === "tri" || gk === "tri") ? "빨간 조각에 직각이 있는지 다시 살펴봐요." : "빨간 테두리 조각을 다시 살펴봐요. 삼각형인지 사각형인지, 직각이 몇 개인지 봐요.", ans);
-  } }, "확인하기");
-  body.append(stageWrap(svg, u2Side(h("p", {}, opt.tip || "그림을 잘라 떼어 보고, 조각을 하나씩 눌러 어떤 도형인지 골라요."), cutBtn, tb, out, check)));
+    return false;
+  };
+  auto = autoRun(() => got.every(x => !!x), () => got.join(","), judge, 1200);
+  body.append(stageWrap(svg, u2Side(h("p", {}, opt.tip || "그림을 잘라 떼어 보고, 조각을 하나씩 눌러 어떤 도형인지 골라요."), cutBtn, tb, out)));
   paint();
 }
 

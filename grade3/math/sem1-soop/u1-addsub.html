@@ -36,10 +36,11 @@ svg{touch-action:none;user-select:none;-webkit-user-select:none}
 .chip.btn:hover{background:rgba(255,255,255,.22)}
 
 /* 시작 화면 */
-.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);background:
- radial-gradient(circle at 80% 18%, rgba(244,197,66,.25) 0 6%, transparent 6.5%),
- linear-gradient(180deg,var(--night) 0,var(--night2) 55%,var(--pine) 55.2%,var(--pine) 100%)}
-.gate-card{background:#fff;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 18px 40px rgba(0,0,0,.25)}
+/* 시작 화면: 다른 교과와 같은 밝고 따뜻한 바탕 (2026-10-03) */
+.gate{min-height:calc(100% - 4em);display:grid;place-items:center;padding:var(--pad);
+ background:linear-gradient(180deg,#FFFCF8 0,#FCF3E9 100%)}
+.gate-card{background:#fff;border:3px solid #F0E5D9;border-radius:calc(var(--r)*1.6);padding:calc(var(--pad)*1.4);width:min(920px,100%);box-shadow:0 10px 28px rgba(140,110,80,.10)}
+.gate-card h1{color:var(--ink)}
 .gate-card h1{font-size:var(--fs-xl);margin:0 0 .2em;color:var(--night)}
 .nums{display:grid;grid-template-columns:repeat(auto-fill,minmax(3.1em,1fr));gap:.45em;margin:.6em 0 1em}
 .nums button{padding:.5em 0;border-radius:.6em;border:2px solid var(--line);background:#fff;font-family:"Jua";font-size:var(--fs)}
@@ -952,7 +953,7 @@ function topbar() {
   return h("header", { class: "top" },
     h("div", { class: "brand" }, ringLogo(), h("span", {}, APP.title), h("span", { class: "long" }, " · " + APP.unit)),
     h("div", { class: "who" },
-      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번 ${st.name || ""}`) : null,
+      st ? h("span", { class: "chip" }, `${st.ban}반 ${st.no}번${st.name ? " " + st.name : ""}`) : null,
       st ? h("button", { class: "chip btn", onclick: () => { S.student = null; store.save(S); showGate(); } }, "바꾸기") : null,
       h("button", { class: "chip btn", onclick: showTeacher }, "선생님")));
 }
@@ -967,18 +968,27 @@ function mount(...els) { const r = root(); r.innerHTML = ""; r.append(topbar(), 
 
 /* 시작: 번호 고르기 */
 function showGate() {
-  let ban = (S.student && S.student.ban) || "2", no = null;
+  const last = S.last || {};
+  let ban = (S.student && S.student.ban) || last.ban || "2";
+  let no = last.no || null;
   const nums = h("div", { class: "nums" });
-  for (let i = 1; i <= 40; i++) nums.append(h("button", { onclick: (e) => { no = i; [...nums.children].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); go.disabled = false; } }, String(i)));
+  for (let i = 1; i <= 40; i++) {
+    const on = (i === no);
+    nums.append(h("button", { class: on ? "on" : "", onclick: (e) => {
+      no = i; [...nums.children].forEach(b => b.classList.remove("on"));
+      e.currentTarget.classList.add("on"); go.disabled = false;
+    } }, String(i)));
+  }
   const banIn = h("input", { type: "number", min: 1, max: 15, value: ban, style: "width:4.5em", "aria-label": "반" });
-  const nameIn = h("input", { type: "text", placeholder: "이름 (선택)", maxlength: 10, style: "width:9em" });
-  const go = h("button", { class: "big", disabled: true, onclick: () => {
-    S.student = { ban: String(banIn.value || "2"), no, name: nameIn.value.trim() }; store.save(S); flushQueue(); showMap();
-  } }, "입장하기");
+  const go = h("button", { class: "big", disabled: !no, onclick: () => {
+    S.student = { ban: String(banIn.value || "2"), no, name: "" };
+    S.last = { ban: S.student.ban, no };
+    store.save(S); flushQueue(); showMap();
+  } }, "들어가기");
   mount(h("main", { class: "gate" }, h("section", { class: "gate-card" },
     h("h1", {}, APP.welcome),
     h("p", { class: "inst" }, APP.intro + " 내 번호를 눌러 주세요."),
-    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반"), nameIn),
+    h("div", { class: "row" }, h("span", { class: "jua" }, "3학년"), banIn, h("span", { class: "jua" }, "반")),
     nums, go)));
 }
 
@@ -1276,6 +1286,23 @@ function makeSvg(w, hgt, grid) {
 function txt(x, y, t, size = 22, attrs = {}) { const e = svgEl("text", Object.assign({ x, y, "font-size": size, "text-anchor": "middle", "dominant-baseline": "middle", "font-family": "Jua, sans-serif", fill: "#1D2A2A" }, attrs)); e.textContent = t; return e; }
 
 /* 선택형 문제 여러 개 (mcq/ox) */
+/* ── 자동 확인 ────────────────────────────────────────────────────────────
+   '확인하기' 단추 없이, 칸을 다 채우거나 보기를 다 고르면 스스로 확인한다.
+   · ready()가 참일 때만 확인한다(빈 칸이 있으면 기다린다).
+   · 같은 답으로는 다시 세지 않는다(숫자를 고쳐 쓰는 동안 '틀림'이 쌓이지 않게).
+   · 숫자 입력은 다 쓸 때까지 잠깐 기다렸다가 본다.                        */
+function autoRun(ready, sign, run, wait) {
+  let last = null, timer = null, done = false;
+  const fire = () => {
+    if (done || !ready()) return;
+    const sg = sign();
+    if (sg === last) return;
+    last = sg;
+    if (run() === true) done = true;
+  };
+  return () => { clearTimeout(timer); timer = setTimeout(fire, wait || 0); };
+}
+
 function quiz(body, api, items, opts = {}) {
   const state = items.map(() => (null));
   const wrap = h("div");
@@ -1296,7 +1323,7 @@ function quiz(body, api, items, opts = {}) {
     words: items.flatMap(it => (Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i])),
     answers: items.map((it, qi) => `${items.length > 1 ? (qi + 1) + ") " : ""}${(Array.isArray(it.a) ? it.a : [it.a]).map(i => it.o[i]).join(", ")}`)
   });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce();
     let allOk = true; const ans = [];
     items.forEach((it, qi) => {
@@ -1314,8 +1341,12 @@ function quiz(body, api, items, opts = {}) {
       const custom = w && w.why && w.why[String(state[wrongIdx])];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
-  } }, "확인하기");
-  body.append(wrap, h("div", { class: "actions" }, check));
+    return allOk;
+  };
+  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+                       () => JSON.stringify(state), judge, 260);
+  wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
+  body.append(wrap);
 }
 /* 빈칸 문장 */
 function blanks(body, api, parts, opts = {}) {
@@ -1334,7 +1365,7 @@ function blanks(body, api, parts, opts = {}) {
     words: parts.filter(p => typeof p !== "string").flatMap(p => p.o),
     answers: [parts.map(p => typeof p === "string" ? p : p.o[p.a]).join("")]
   });
-  const check = h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true; const ans = [];
     [...sent.querySelectorAll(".slot")].forEach((slot, k) => {
       const a = +slot.dataset.a; const btn = slot.children[sel[k]];
@@ -1342,8 +1373,11 @@ function blanks(body, api, parts, opts = {}) {
       ans.push(btn ? btn.textContent : "-");
     });
     ok ? api.done(ans.join(" / "), opts.ok) : api.fail(opts.bad || "빨간 낱말을 다시 골라 봐요.", ans.join(" / "));
-  } }, "확인하기");
-  body.append(sent, h("div", { class: "actions" }, check));
+    return ok;
+  };
+  const auto = autoRun(() => sel.every(v => v != null), () => sel.join(","), judge, 260);
+  sent.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
+  body.append(sent);
 }
 /* 글쓰기(자기 생각) */
 function writeStep(body, api, prompts, opts = {}) {
@@ -1412,15 +1446,19 @@ function predictCheck(body, api, opts) {
   const inp = h("input", { type: "number", inputmode: "numeric", placeholder: "실제 값" });
   const second = h("div", { class: "qitem hidden" },
     h("div", { class: "jua" }, opts.then || "이제 실제로 계산해 보세요."),
-    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : "",
-      h("button", { class: "opt", onclick: () => {
-        api.tryOnce();
-        if (Number(inp.value) !== opts.real) return api.fail("실제 값을 다시 계산해 봐요.", inp.value);
-        const hit = guess === opts.a;
-        api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
-          (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
-          (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
-      } }, "확인하기")));
+    h("div", { class: "prow" }, inp, opts.unit ? h("span", { class: "jua" }, opts.unit) : ""));
+  const judge = () => {
+    api.tryOnce();
+    if (Number(inp.value) !== opts.real) { api.fail("실제 값을 다시 계산해 봐요.", inp.value); return false; }
+    const hit = guess === opts.a;
+    api.done(`예상 ${opts.o[guess]} / 실제 ${opts.real}`,
+      (hit ? "예상이 맞았어요! " : "예상과 달랐네요. 그래서 어림이 재미있어요. ") +
+      (opts.why || "어림해 두면 계산이 크게 틀렸는지 바로 알 수 있어요."));
+    return true;
+  };
+  const autoP = autoRun(() => String(inp.value).trim() !== "", () => inp.value, judge, 900);
+  inp.addEventListener("input", autoP); inp.addEventListener("change", autoP);
+  inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
 
   body.append(box, second);
 }
@@ -1503,16 +1541,22 @@ function numbers(body, api, items, opts = {}) {
     words: opts.words || [],
     answers: items.map(it => `${it.q} ${it.a}${it.unit ? " " + it.unit : ""}`)
   });
-  body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+  const judge = () => {
     api.tryOnce(); let ok = true;
     ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
     const given = ins.map(x => x.inp.value).join(", ");
-    if (ok) return api.done(given, opts.ok);
+    if (ok) { api.done(given, opts.ok); return true; }
     const bad = ins.find(({ inp, a }) => Number(inp.value) !== a);
     const item = items[ins.indexOf(bad)];
     const why = item && item.why && item.why[String(Number(bad.inp.value))];
     api.fail(why || opts.bad || "빨간 칸을 다시 계산해 봐요.", given);
-  } }, "확인하기")));
+    return false;
+  };
+  const auto = autoRun(() => ins.every(x => String(x.inp.value).trim() !== ""),
+                       () => ins.map(x => x.inp.value).join("\u0001"), judge, 900);
+  ins.forEach(({ inp }) => { inp.addEventListener("input", auto); inp.addEventListener("change", auto);
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } }); });
+  body.append(wrap);
 }
 
 /* ===== 1. 덧셈과 뺄셈 단원 부품 (봄 운동회 점수판) ===== */
@@ -1640,20 +1684,83 @@ function simColumn(body, api, opt) {
   tbl.append(h("tr", {}, cell(""), ...names.map(nm => { const i = h("input", { type: "text", inputmode: "numeric", maxlength: 1, "aria-label": `답 ${nm}의 자리`, style: "width:1.4em;font-size:.8em;text-align:center;padding:.05em" }); outs.push(i); return cell(i); })));
   api.provide && api.provide({ words: op === "+" ? ["일의 자리부터", "받아올림", "같은 자리끼리"] : ["일의 자리부터", "받아내림", "10을 받아내림"], answers: [`${a} ${op === "+" ? "+" : "−"} ${b} = ${res}`] });
   const wrong = op === "+" ? asNoCarry(a, b) : asNoBorrow(a, b);
-  body.append(h("div", { class: "card", style: "display:inline-block" }, tbl), h("p", {}, opt.tip || ""),
-    h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
-      api.tryOnce();
-      const v = outs.map(i => i.value.trim());
-      const first = v.findIndex(x => x !== "");
-      const okShape = first >= 0 && v.slice(first).every(x => /^\d$/.test(x));
-      const got = okShape ? Number(v.slice(first).join("")) : NaN;
-      const want = pad(res);
-      outs.forEach((inp, k) => { const good = (want[k].trim() || "") === v[k]; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; });
-      if (got === res) return api.done(`${a} ${op === "+" ? "+" : "−"} ${b} = ${got}`, opt.ok || `${a} ${op === "+" ? "+" : "−"} ${b} = ${res}. 정확해요!`);
-      if (!okShape) return api.fail("답 칸을 빈칸 없이 채워 봐요. 한 칸에 숫자 하나씩 써요.", v.join(""));
-      if (got === wrong) return api.fail(op === "+" ? "받아올림한 1을 윗자리에 더하지 않았어요. 메모 칸에 1을 적고 함께 더해요." : "자리마다 큰 수에서 작은 수를 뺐어요. 뺄 수 없으면 윗자리에서 10을 받아내림해요.", String(got));
-      api.fail(opt.bad || "빨간 칸을 다시 계산해 봐요. 일의 자리부터 차례로 해요.", String(got));
-    } }, "확인하기")));
+  body.append(h("div", { class: "card", style: "display:inline-block" }, tbl), h("p", {}, opt.tip || ""));
+  const judge = () => {
+    api.tryOnce();
+    const v = outs.map(i => i.value.trim());
+    const first = v.findIndex(x => x !== "");
+    const okShape = first >= 0 && v.slice(first).every(x => /^\d$/.test(x));
+    const got = okShape ? Number(v.slice(first).join("")) : NaN;
+    const want = pad(res);
+    outs.forEach((inp, k) => { const good = (want[k].trim() || "") === v[k]; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; });
+    if (got === res) { api.done(`${a} ${op === "+" ? "+" : "−"} ${b} = ${got}`, opt.ok || `${a} ${op === "+" ? "+" : "−"} ${b} = ${res}. 정확해요!`); return true; }
+    if (!okShape) { api.fail("답 칸을 빈칸 없이 채워 봐요. 한 칸에 숫자 하나씩 써요.", v.join("")); return false; }
+    if (got === wrong) { api.fail(op === "+" ? "받아올림한 1을 윗자리에 더하지 않았어요. 메모 칸에 1을 적고 함께 더해요." : "자리마다 큰 수에서 작은 수를 뺐어요. 뺄 수 없으면 윗자리에서 10을 받아내림해요.", String(got)); return false; }
+    api.fail(opt.bad || "빨간 칸을 다시 계산해 봐요. 일의 자리부터 차례로 해요.", String(got));
+    return false;
+  };
+  const ready = () => {   // 오른쪽에 붙여 빈칸 없이 썼고, 답의 자리 수만큼 채웠을 때
+    const v = outs.map(i => i.value.trim());
+    const f = v.findIndex(x => x !== ""); if (f < 0) return false;
+    let l = -1; v.forEach((x, k) => { if (x !== "") l = k; });
+    return v.slice(f, l + 1).every(x => x !== "") && (l - f + 1) >= String(res).length;
+  };
+  const auto = autoRun(ready, () => outs.map(i => i.value).join("\u0001"), judge, 900);
+  outs.forEach(inp => {
+    inp.addEventListener("input", auto); inp.addEventListener("change", auto);
+    inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); inp.blur(); } });
+  });
+}
+
+/* ── 수 모형 그림(그림만, 판정 없음) ───────────────────────────────────────
+   2학기 u1-mul.html의 수 모형 그리는 방식(백은 큰 네모, 십은 긴 막대, 일은 작은
+   네모, 10칸 눈금)을 그대로 가져왔다. '그려 보기' 계단 맨 위에 그림으로만 쓴다.
+   items: [{ n:나타낼 수, cap:칸 아래 글, cut:／표로 덜어 낼 수 }]
+   opt  : { sep:"+"|"−" (칸 사이 기호), note:그림 아래 한 줄 }               */
+function picBlockGroups(items, opt = {}) {
+  const B = 78, TW = 10, UW = 10, gap = 6, pad = 16, mid = 14;
+  const FILL = "#DCEAFB", GRID = "#9BB6D6", NAMES = ["백", "십", "일"];
+  const part = n => [Math.floor(n / 100), Math.floor(n / 10) % 10, n % 10];
+  const SZ = [[B, B], [TW, B], [UW, UW]];
+  const sepW = opt.sep ? 48 : 20;
+  const wOf = n => {
+    let w = 0, cnt = 0;
+    part(n).forEach((c, k) => { if (c) { w += c * (SZ[k][0] + gap) - gap; cnt++; } });
+    return Math.max(76, w + mid * Math.max(0, cnt - 1) + pad * 2);
+  };
+  const ws = items.map(it => wOf(it.n));
+  const inner = ws.reduce((s, v) => s + v, 0) + sepW * (items.length - 1) + 20;
+  const W = Math.max(inner, opt.note ? String(opt.note).length * 20 + 44 : 0);
+  const H = B + 88 + (opt.note ? 26 : 0);
+  const svg = makeSvg(W, H);
+  const base = 24 + B;
+  let x = (W - inner) / 2 + 10;
+  items.forEach((it, i) => {
+    if (i) { if (opt.sep) svg.append(txt(x + sepW / 2, base - B / 2, opt.sep, 40, { fill: TENT })); x += sepW; }
+    const w = ws[i], pv = part(it.n), cut = part(it.cut || 0);
+    svg.append(svgEl("rect", { x, y: 12, width: w, height: B + 24, rx: 12, fill: "#fff", stroke: "#C9D6D0", "stroke-width": 2 }));
+    let cx = x + pad;
+    pv.forEach((cnt, k) => {
+      if (!cnt) return;
+      const [bw, bh] = SZ[k], x0 = cx;
+      for (let j = 0; j < cnt; j++) {
+        const y = base - bh;
+        svg.append(svgEl("rect", { x: cx, y, width: bw, height: bh, fill: FILL, stroke: INK, "stroke-width": 2 }));
+        if (bw > 20) for (let m = 1; m < 10; m++) svg.append(svgEl("line", { x1: cx, y1: y + m * bh / 10, x2: cx + bw, y2: y + m * bh / 10, stroke: GRID }), svgEl("line", { x1: cx + m * bw / 10, y1: y, x2: cx + m * bw / 10, y2: y + bh, stroke: GRID }));
+        else if (bh > 20) for (let m = 1; m < 10; m++) svg.append(svgEl("line", { x1: cx, y1: y + m * bh / 10, x2: cx + bw, y2: y + m * bh / 10, stroke: GRID }));
+        if (j >= cnt - cut[k]) svg.append(svgEl("line", { x1: cx - 3, y1: base + 3, x2: cx + bw + 3, y2: y - 3, stroke: "#C0392B", "stroke-width": 4 }));
+        cx += bw + gap;
+      }
+      cx -= gap;
+      svg.append(txt((x0 + cx) / 2, base + 22, `${NAMES[k]} ${cnt}`, 19, { fill: "#6B7B76" }));
+      cx += mid;
+    });
+    const cap = it.cap != null ? it.cap : String(it.n);
+    svg.append(txt(x + w / 2, base + 52, cap, Math.min(26, Math.max(13, (w - 8) / Math.max(1, cap.length)))));
+    x += w;
+  });
+  if (opt.note) svg.append(txt(W / 2, H - 10, opt.note, 20, { fill: "#6B7B76" }));
+  return h("div", { class: "stage" }, svg);
 }
 
 /* 수직선 — 어느 몇백에 더 가까운지 보기(어림) */
@@ -1742,10 +1849,13 @@ const LESSONS = [
     { inst: "청팀 점수판에 245점이 적혀 있어요. 수 모형으로 나타내면 모형이 몇 개씩일까요?", render: (b, a) => simShowNum(b, a, { n: 245, q: "청팀 점수", unit: "점", tip: "큰 네모는 백, 긴 막대는 십, 작은 네모는 일이에요." }) },
     { inst: "2학년 때 배운 계산을 떠올려요. 응원 깃발 38개와 25개를 모으고, 응원 수술 52개 중 17개를 나누어 주었어요.",
       hints: ["일의 자리 수끼리 더한 값이 10이 넘으면 십의 자리로 받아올림했어요.", "2에서 7을 뺄 수 없으면 십의 자리에서 10을 받아내림했어요."],
-      render: (b, a) => numbers(b, a, [
+      render: (b, a) => {
+        b.append(picBlockGroups([{ n: 38, cap: "깃발 38개" }, { n: 25, cap: "깃발 25개" }], { sep: "+", note: "십 모형과 일 모형을 같은 자리끼리 모아요." }));
+        b.append(picBlockGroups([{ n: 52, cap: "수술 52개" }, { n: 17, cap: "나누어 준 17개" }], { sep: "−", note: "일 모형 2개에서 7개를 뺄 수 없어요. 십 모형 1개를 풀어요." }));
+        numbers(b, a, [
         { q: "38 + 25 =", a: 63, unit: "개", why: { "53": "받아올림한 1을 십의 자리에 더하지 않았어요." } },
         { q: "52 − 17 =", a: 35, unit: "개", why: { "45": "일의 자리에서 7 − 2를 했어요. 받아내림이 필요해요." } }],
-      { ok: "두 자리 수의 계산을 잘 기억하고 있어요. 세 자리 수도 같은 방법으로 해요!" }) },
+      { ok: "두 자리 수의 계산을 잘 기억하고 있어요. 세 자리 수도 같은 방법으로 해요!" }); } },
     { name: "말해 보기 — 보기·생각하기·궁금해하기",
       inst: "점수판에 청팀 245점, 백팀 213점이 보여요. 세 칸에 한 가지씩 써서 붙여요.",
       hints: ["보여요: 점수판에 있는 수를 그대로 써요.", "생각해요: 245 + 132처럼 더하거나 빼는 식을 떠올려요.", "궁금해요: 세 자리 수 계산에서 궁금한 것을 써요."],
@@ -1772,8 +1882,10 @@ const LESSONS = [
   summary: "받아올림이 없는 덧셈은 백은 백끼리, 십은 십끼리, 일은 일끼리 더해요. 세로셈에서는 자리를 맞추어 쓰고 일의 자리부터 더해요.",
   steps: [
     { inst: "청팀이 공 굴리기에서 213점, 줄다리기에서 152점을 얻었어요. 수 모형을 모아 청팀 점수를 구해 보세요.", render: (b, a) => simBlocksAdd(b, a, { a: 213, b: 152, tip: "파란 모형과 주황 모형을 같은 자리끼리 세어요." }) },
-    { inst: "같은 자리 수끼리 더해 보세요.", render: (b, a) => numbers(b, a, [{ q: "200 + 100 =", a: 300 }, { q: "10 + 50 =", a: 60 }, { q: "3 + 2 =", a: 5 }, { q: "모두 더하면 213 + 152 =", a: 365 }],
-      { ok: "300 + 60 + 5 = 365. 청팀은 365점이에요." }) },
+    { inst: "같은 자리 수끼리 더해 보세요.", render: (b, a) => {
+      b.append(picBlockGroups([{ n: 213, cap: "공 굴리기 213점" }, { n: 152, cap: "줄다리기 152점" }], { sep: "+", note: "백은 백끼리, 십은 십끼리, 일은 일끼리 모아요." }));
+      numbers(b, a, [{ q: "200 + 100 =", a: 300 }, { q: "10 + 50 =", a: 60 }, { q: "3 + 2 =", a: 5 }, { q: "모두 더하면 213 + 152 =", a: 365 }],
+      { ok: "300 + 60 + 5 = 365. 청팀은 365점이에요." }); } },
     { inst: "계산 방법을 말로 정리해요.", render: (b, a) => blanks(b, a, ["세 자리 수의 덧셈은 ", { o: ["같은 자리 수끼리", "앞의 수끼리만"], a: 0 }, " 더해요. 213 + 152에서 십의 자리 계산은 ", { o: ["1 + 5 = 6", "2 + 1 = 3"], a: 0 }, "이에요."]) },
     { inst: "백팀 점수 324점과 143점을 세로셈으로 더해 보세요.", render: (b, a) => simColumn(b, a, { a: 324, b: 143, op: "+", tip: "자리를 맞추어 쓰고 일의 자리부터 더해요." }) },
     { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "431 + 256 =", a: 687 }, { q: "502 + 374 =", a: 876 }, { q: "615 + 263 =", a: 878 }],
@@ -1829,7 +1941,7 @@ const LESSONS = [
     { inst: "청팀이 오전에 487점, 오후에 356점을 얻었어요. 수 모형을 모으고 10개씩 윗자리 모형으로 바꿔 보세요.",
       hints: ["일 모형 13개 → 10개를 십 모형 1개로 바꿔요.", "십 모형도 10개가 넘으면 백 모형 1개로 바꿔요."],
       render: (b, a) => simBlocksAdd(b, a, { a: 487, b: 356, tip: "일의 자리와 십의 자리 모두 10개가 넘어요." }) },
-    { name: "그려 보기 — 예상하고 확인하기",
+    { name: "어림해 보기 — 예상하고 확인하기",
       inst: "응원 수술을 오전에 438개, 오후에 395개 만들었어요. 먼저 몇백으로 어림해 예상하고, 그다음 실제로 계산해요.",
       hints: ["438은 약 400, 395도 약 400이에요. 어림하면 약 800이에요.", "자리별로 더해 봐요. 400 + 300 = 700, 30 + 90 = 120. 일의 자리는 8 + 5 = 13", "700 + 120 + 13 = 833"],
       render: (b, a) => predictCheck(b, a, {
@@ -1862,8 +1974,10 @@ const LESSONS = [
   summary: "받아내림이 없는 뺄셈은 백은 백끼리, 십은 십끼리, 일은 일끼리 빼요. 세로셈에서는 자리를 맞추어 쓰고 일의 자리부터 빼요.",
   steps: [
     { inst: "풍선 터뜨리기 경기에 풍선 587개를 준비했어요. 243개를 터뜨렸어요. 빼는 수만큼 모형을 지워 남은 풍선을 구해 보세요.", render: (b, a) => simBlocksSub(b, a, { a: 587, b: 243, tip: "일 모형 3개, 십 모형 4개, 백 모형 2개를 지워요." }) },
-    { inst: "같은 자리 수끼리 빼 보세요.", render: (b, a) => numbers(b, a, [{ q: "500 − 200 =", a: 300 }, { q: "80 − 40 =", a: 40 }, { q: "7 − 3 =", a: 4 }, { q: "300, 40, 4를 모두 더하면 587 − 243 =", a: 344 }],
-      { ok: "300 + 40 + 4 = 344. 풍선이 344개 남았어요." }) },
+    { inst: "같은 자리 수끼리 빼 보세요.", render: (b, a) => {
+      b.append(picBlockGroups([{ n: 587, cap: "풍선 587개 (빨간 ／ 는 터뜨린 243개)", cut: 243 }], { note: "백 2개, 십 4개, 일 3개를 덜어 내고 남은 모형을 세어요." }));
+      numbers(b, a, [{ q: "500 − 200 =", a: 300 }, { q: "80 − 40 =", a: 40 }, { q: "7 − 3 =", a: 4 }, { q: "300, 40, 4를 모두 더하면 587 − 243 =", a: 344 }],
+      { ok: "300 + 40 + 4 = 344. 풍선이 344개 남았어요." }); } },
     { inst: "계산 방법을 말로 정리해요.", render: (b, a) => blanks(b, a, ["세 자리 수의 뺄셈은 ", { o: ["같은 자리 수끼리", "큰 자리에서만"], a: 0 }, " 빼요. 587 − 243에서 십의 자리 계산은 ", { o: ["8 − 4 = 4", "7 − 3 = 4"], a: 0 }, "이에요."]) },
     { inst: "응원 막대 695개 중 352개를 나누어 주었어요. 세로셈으로 남은 개수를 구해 보세요.", render: (b, a) => simColumn(b, a, { a: 695, b: 352, op: "-", tip: "자리를 맞추어 쓰고 일의 자리부터 빼요." }) },
     { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "768 − 524 =", a: 244 }, { q: "859 − 316 =", a: 543 }, { q: "947 − 605 =", a: 342 }],
