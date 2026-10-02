@@ -1032,7 +1032,7 @@ R.book=X=>{
 R.mc=X=>{
   const items=X.items;let i=0,got=0;
   const draw=()=>{const q=items[i],ord=shuffle(q.o.map((_,k)=>k));
-    $('body').innerHTML=hd(X)+`<div class="card1"><span class="stepno" style="flex:none">${i+1}/${items.length}</span><div class="x" style="text-align:center">${q.q}</div></div>
+    $('body').innerHTML=hd(X)+`<div class="card1">${items.length>1?`<span class="stepno" style="flex:none;font-size:clamp(17px,1.6vw,22px);font-weight:800;color:var(--acc)">${i+1} / ${items.length}</span>`:''}<div class="x" style="text-align:center">${q.q}</div></div>
      <div class="opts2">${ord.map((o,n)=>`<button class="opt2" data-o="${o}">${n+1}. ${q.o[o]}</button>`).join('')}</div>`;
     document.querySelectorAll('.opt2').forEach(b=>b.onclick=()=>{const ok=+b.dataset.o===q.a;if(ok){got++;teamAdd(1);}
       document.querySelectorAll('.opt2').forEach(x=>{x.disabled=true;if(+x.dataset.o===q.a)x.classList.add('right');});if(!ok)b.classList.add('wrong');
@@ -1045,7 +1045,7 @@ R.mc=X=>{
 R.sort=X=>{
   const deck=shuffle(X.items);let i=0;
   const draw=()=>{const it=deck[i];
-    $('body').innerHTML=hd(X)+`<div class="card1"><span class="stepno" style="flex:none">${i+1}/${deck.length}</span><div class="e">${it.e||'🃏'}</div><div class="x">${it.x}</div></div>
+    $('body').innerHTML=hd(X)+`<div class="card1">${deck.length>1?`<span class="stepno" style="flex:none;font-size:clamp(17px,1.6vw,22px);font-weight:800;color:var(--acc)">${i+1} / ${deck.length}</span>`:''}<div class="e">${it.e||'🃏'}</div><div class="x">${it.x}</div></div>
      <div class="bins" style="--n:${X.bins.length}">${X.bins.map(b=>`<button class="bin" data-k="${b.k}" style="--cc:${b.c}"><span class="e">${b.e}</span><span class="n">${b.n}</span></button>`).join('')}</div>`;
     document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>{if(X.open){const mine=X.bins.find(z=>z.k===b.dataset.k),ex=X.bins.find(z=>z.k===it.k);
         document.querySelectorAll('.bin').forEach(z=>{z.disabled=true;if(z===b)z.classList.add('lit');});
