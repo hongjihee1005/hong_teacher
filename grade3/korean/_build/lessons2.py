@@ -295,7 +295,7 @@ L.append(dict(
   dict(name='문제 발견하기', min=10, steps=[
     dict(t='cards', hd='같은 일기 예보를 글과 그림으로 나타냈어요. 어떤 점이 다른가요?', cards=[
       dict(e='📝', c='#2F74E0', t='글로만', d='이번 주말은 맑겠습니다. 토요일은 아침 최저 기온 8도, 낮 최고 기온 21도, 일요일은 최저 9도, 최고 20도로 예상됩니다.'),
-      dict(e='🖼️', c='#E8961E', t='그림으로', d='<span style="display:flex;justify-content:center;gap:.4em;white-space:nowrap"><span style="display:inline-block;padding:0 .5em">토<br>☀️<br>8° / 21°</span><span style="display:inline-block;margin:0 .6em;padding-left:1.2em;border-left:2px dashed #d9cbb8">일<br>☀️<br>9° / 20°</span></span>'),
+      dict(e='🖼️', c='#E8961E', t='그림으로', d='<span style="display:flex;justify-content:center;align-items:center;gap:.3em;white-space:nowrap;font-size:.85em;max-width:100%"><span style="padding:0 .35em">토<br>☀️<br>8°/21°</span><span style="padding:0 .35em 0 .6em;border-left:2px dashed #d9cbb8">일<br>☀️<br>9°/20°</span></span>'),
       dict(e='🤝', c='#1F9E63', t='글과 그림 함께', d='그림으로 주말 날씨를 한눈에 보고, 글로 자세한 내용을 알 수 있어요.')],
       q='글만 읽었을 때, 그림만 보았을 때 어떤 생각이 들었나요? 글과 그림을 함께 쓰면 무엇이 좋을까요?'),
     dict(t='book', hd='오늘부터 무엇을 공부할지 살펴보고, 공부할 차례를 정해 봐요.', page='「국어」 94~99쪽 훑어보기', e='🗂️', do=['발표 주제를 정하고 자료 준비하기', '글과 그림을 활용해 발표 자료 만들기', '친구들에게 발표하기', '잘 발표했는지 점검하기']),
