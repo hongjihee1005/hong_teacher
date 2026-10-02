@@ -311,7 +311,7 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
 /* 과학 앱: 사진이 두 장 이상 이어지면 나란히(사진 위, 설명 아래) 놓아 한 화면에 들어오게 */
 (function(){if(!document.getElementById('ovBar'))return;
  document.querySelectorAll('main section').forEach(function(sec){var kids=[].slice.call(sec.querySelectorAll('figure.photo'));var done=new Set();
-  kids.forEach(function(f){if(done.has(f)||f.parentElement.classList.contains('gallery')||f.parentElement.classList.contains('hj-pgrid'))return;var run=[f],n=f.nextElementSibling;while(n&&n.matches('figure.photo')){run.push(n);n=n.nextElementSibling}
+  kids.forEach(function(f){if(done.has(f)||f.parentElement.classList.contains('gallery')||f.parentElement.classList.contains('gal')||f.parentElement.classList.contains('hj-pgrid'))return;var run=[f],n=f.nextElementSibling;while(n&&n.matches('figure.photo')){run.push(n);n=n.nextElementSibling}
    if(run.length<2)return;var g=document.createElement('div');g.className='hj-pgrid';f.before(g);run.forEach(function(x){done.add(x);g.appendChild(x)})})})})();
 /* 낱말이 줄 끝에서 끊기지 않게: '·', '-', '(', ')', '/'로 붙은 말 사이에 줄바꿈 금지 표시(보이지 않는 글자) */
 (function(){var WJ='⁠',SKIP='script,style,textarea,input,select,option,svg,code,pre,[contenteditable],.hj-em';

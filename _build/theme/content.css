@@ -499,3 +499,22 @@ html body.ov section:has(#quiz,#perf,.qz) .fitbox>h3{text-align:left!important;t
 html body .two>.hj-pgrid:only-child{grid-column:1/-1}
 html body.ov .hj-pgrid .photo img{max-height:min(380px,44vh)!important;aspect-ratio:4/3!important}
 @media (max-width:900px){html body.ov .hj-pgrid .photo img{max-height:none!important}}
+
+/* 과학 '한 화면 보기' 앱: 크롬북처럼 낮은 가로 화면에서 여백만 줄여 한 화면에 더 담기 (글자 크기는 그대로, 2026-10-02) */
+@media (orientation:landscape) and (max-height:760px){
+ html:has(#ovBar) body.ov main{padding-top:0!important}
+ html:has(#ovBar) body.ov main>section.cur{margin-top:4px!important;padding-top:8px!important;padding-bottom:8px!important}
+ html:has(#ovBar) body.ov section.cur .stage{margin-bottom:2px!important;padding-top:1px!important;padding-bottom:1px!important}
+ html:has(#ovBar) body.ov section.cur h2{margin-top:2px!important;margin-bottom:6px!important}
+ html:has(#ovBar) body.ov section.cur h3{margin-top:8px!important;margin-bottom:6px!important}
+ html:has(#ovBar) body.ov section.cur .fitbox>p{margin-top:4px!important;margin-bottom:8px!important}
+ html:has(#ovBar) body.ov section.cur .lab{margin-top:8px!important;margin-bottom:8px!important}
+ html:has(#ovBar) body.ov section.cur .tip,html:has(#ovBar) body.ov section.cur .fb{margin-top:6px!important}
+ html:has(#ovBar) body.ov #ovBar{margin-top:4px!important;padding-top:4px!important;padding-bottom:4px!important}
+}
+/* 과학 앱 사진 모음(3장 이상): 낮은 가로 화면에서는 세 칸 카드로 */
+@media (orientation:landscape) and (max-height:760px) and (min-width:1000px){
+ html:has(#ovBar) body.ov .gallery:has(>.photo:nth-child(3)){grid-template-columns:repeat(3,minmax(0,1fr))!important}
+ html:has(#ovBar) body.ov .gallery:has(>.photo:nth-child(3))>.photo{grid-template-columns:1fr!important;align-items:start;margin:0!important}
+ html:has(#ovBar) body.ov .gallery:has(>.photo:nth-child(3))>.photo img{height:auto;max-height:min(150px,21vh)!important;aspect-ratio:3/2!important}
+}
