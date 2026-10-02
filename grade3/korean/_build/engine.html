@@ -535,7 +535,7 @@ function stopRec(){try{if(REC&&REC.state==='recording')REC.stop();}catch(e){}}
 R.record=X=>{
   const key='hj-kor-'+C.id+'-'+X.id;const saved=store.get(key)||{};const sv=saved.self||{};
   const txt=X.text?X.text.replace(/\/\//g,'\u0001').replace(/\//g,'\u0002').replace(/\u0001/g,'<span class="p2" aria-label="길게 띄어 읽기"><i>∨</i><i>∨</i></span>').replace(/\u0002/g,'<span class="p1">∨</span>'):'';
-  $('body').innerHTML=hd(X)+`<div class="recbar">${X.text?'<button class="tool" id="rModel">🔈 본보기 듣기</button><button class="tool" id="rMark">∨ 띄어 읽기 표시 끄기</button>':''}<button class="tool" id="rGo">🎙️ 녹음하기</button><button class="tool" id="rPlay" disabled>▶ 내 목소리 듣기</button></div>
+  $('body').innerHTML=hd(X)+`<div class="recbar">${X.text?'<button class="tool" id="rModel">🔈 본보기 듣기</button><button class="tool" id="rMark">∨ 띄어 읽기 표시 끄기</button>':''}<button class="tool" id="rGo">🎙️ 녹음하기</button><button class="tool" id="rStop" disabled>⏹ 멈추기</button><button class="tool" id="rPlay" disabled>▶ 내 목소리 듣기</button></div>
    <p class="recmsg" id="rMsg">‘녹음하기’를 누르고 소리 내어 읽은 뒤 ‘멈추기’를 눌러요. 녹음은 이 화면을 떠나면 지워져요.</p><audio id="rAud" hidden></audio>
    <div class="recgrid ${X.text?'':'bm'}">`+(X.text?`<div class="rec" id="recTxt">${txt}${X.src?`<span class="src">${X.src}</span>`:''}</div>`:`<div class="book"><div class="e">📖</div><div><div class="pg">${X.page||'교과서를 펴요'}</div>${X.do?`<ol>${X.do.map(d=>`<li>${d}</li>`).join('')}</ol>`:''}</div></div>`)
    +`<div class="wcheck on" style="border-color:var(--acc)"><h3>🙋 스스로 점검</h3><div class="sclegend">알맞은 칸을 하나 골라 눌러요.</div>${X.check.map((c,i)=>`<div class="self"><span>${c}</span><span class="seg">${['●●●','●●','●','○'].map((d,k)=>`<button data-c="${i}" data-v="${k}" aria-pressed="${sv[i]===k}"><b>${d}</b><small>${['매우 잘함','잘함','보통','노력 요함'][k]}</small></button>`).join('')}</span></div>`).join('')}</div></div>`;
@@ -543,6 +543,7 @@ R.record=X=>{
   if(X.text){$('rModel').onclick=()=>speak(X.text.split('//').map(t=>({text:t.replace(/\//g,' ').trim()})).filter(p=>p.text));
     $('rMark').onclick=()=>{const r=$('recTxt');r.classList.toggle('nomark');$('rMark').textContent=r.classList.contains('nomark')?'∨ 띄어 읽기 표시 켜기':'∨ 띄어 읽기 표시 끄기';};}
   let url=null,t0=0,tick=null;
+  $('rStop').onclick=()=>{if(REC&&REC.state==='recording')stopRec();};
   $('rGo').onclick=async()=>{
     if(REC&&REC.state==='recording'){stopRec();return;}
     stopSpeak();
@@ -550,8 +551,8 @@ R.record=X=>{
     try{const st=await navigator.mediaDevices.getUserMedia({audio:true});const ch=[];REC=new MediaRecorder(st);
       REC.ondataavailable=e=>{if(e.data.size)ch.push(e.data);};
       REC.onstop=()=>{st.getTracks().forEach(t=>t.stop());clearInterval(tick);if(url)URL.revokeObjectURL(url);url=URL.createObjectURL(new Blob(ch,{type:REC.mimeType||'audio/webm'}));
-        $('rAud').src=url;$('rPlay').disabled=false;$('rGo').textContent='🎙️ 다시 녹음하기';$('rGo').classList.remove('on');msg('녹음했어요. ▶를 눌러 내 목소리를 들어 보고, 아래에서 스스로 점검해요.');beep('ok');};
-      REC.start();t0=Date.now();$('rGo').textContent='⏹ 멈추기';$('rGo').classList.add('on');$('rPlay').disabled=true;
+        $('rAud').src=url;$('rPlay').disabled=false;$('rGo').textContent='🎙️ 다시 녹음하기';$('rGo').disabled=false;$('rStop').disabled=true;$('rStop').classList.remove('on');msg('녹음했어요. ▶를 눌러 내 목소리를 들어 보고, 아래에서 스스로 점검해요.');beep('ok');};
+      REC.start();t0=Date.now();$('rGo').disabled=true;$('rStop').disabled=false;$('rStop').classList.add('on');$('rPlay').disabled=true;
       tick=setInterval(()=>{const s=Math.floor((Date.now()-t0)/1000);msg(`🔴 녹음하는 중… ${s}초`);if(s>=120)stopRec();},250);
     }catch(e){msg('마이크를 쓸 수 없어요. 마이크 사용을 허용했는지 선생님께 여쭤보세요.',1);}
   };
