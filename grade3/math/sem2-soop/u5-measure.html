@@ -196,6 +196,15 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
   :root:not([data-theme="light"]) .chip{background:#2A3A36}}
 :root[data-theme="dark"] .pane{background:#1E2A28}
 :root[data-theme="dark"] .chip{background:#2A3A36}
+/* 선택 문제 상자 */
+.optbox{margin-top:1em;border:3px dashed var(--line);border-radius:.7em;padding:.5em .8em;background:#fff}
+.optbox.hidden{display:none}
+.optbox>summary{cursor:pointer;font-family:"Jua";font-size:var(--fs-l);color:var(--night,#1F2F4A);list-style:none}
+.optbox>summary::-webkit-details-marker{display:none}
+.optbox[open]>summary{margin-bottom:.4em;border-bottom:2px solid var(--line);padding-bottom:.3em}
+.optbox .inst{margin:.2em 0 .4em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .optbox{background:#1E2A28}}
+:root[data-theme="dark"] .optbox{background:#1E2A28}
 </style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1281,6 +1290,40 @@ function blanks(body, api, parts, opts = {}) {
   } }, "확인하기");
   body.append(sent, h("div", { class: "actions" }, check));
 }
+/* ── 선택 문제 (★도전 계단 아래, 본 활동을 통과하면 열림) ──────────────────
+   render: withOptional((b, a) => panes(...), (b, a) => numbers(b, a, [...]), { title, inst })
+   · 본 활동(main)만 해도 계단은 통과합니다. 선택 문제는 통과 여부와 상관없어요.
+   · 선택 문제에서 쓴 답은 선생님 기록에 '선택'(6. 선택 문제)으로 남아요.          */
+function withOptional(main, extra, opts = {}) {
+  return (body, api) => {
+    const L = CUR && CUR.L;
+    const box = h("details", { class: "optbox hidden" },
+      h("summary", {}, "➕ " + (opts.title || "더 해 보고 싶다면 — 선택 문제")));
+    const inner = h("div", { class: "optin" });
+    const ofb = h("div", { class: "fb", role: "status", "aria-live": "polite" });
+    let tries = 0, solved = false;
+    const sub = {
+      tryOnce() { tries++; },
+      provide() {},
+      hint(m) { ofb.className = "fb"; ofb.textContent = m; },
+      fail(m, ans) { tries++; ofb.className = "fb bad"; ofb.textContent = "\u00d7 " + (m || "다시 생각해 봐요.");
+        if (L) record(L, 6, "선택 문제", false, tries, ans, "선택"); },
+      done(ans, m) { if (solved) return; solved = true; tries = Math.max(tries, 1);
+        ofb.className = "fb good"; ofb.textContent = "\u25cb " + (m || "선택 문제까지 해냈어요!");
+        if (L) record(L, 6, "선택 문제", true, tries, ans, "선택"); }
+    };
+    let built = false;
+    box.addEventListener("toggle", () => { if (box.open && !built) { built = true; extra(inner, sub); } });
+    if (opts.inst) box.append(h("p", { class: "inst" }, opts.inst));
+    box.append(inner, ofb);
+    const open = () => box.classList.remove("hidden");
+    const wrapped = Object.assign({}, api, { done: (a1, a2, a3) => { api.done(a1, a2, a3); open(); } });
+    main(body, wrapped);
+    body.append(box);
+    if (L) { const p = myProg(L.id); if (p.chal && p.chal.ok) open(); }
+  };
+}
+
 /* 글쓰기(자기 생각) */
 function writeStep(body, api, prompts, opts = {}) {
   const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); body.append(h("div", { class: "jua", style: "margin-top:.6em" }, p.q), t); return t; });
@@ -2418,12 +2461,19 @@ const LESSONS = [
   ],
   challenge: { name: "도전 계단 — 예전 생각·지금 생각과 마인드맵",
     inst: "예전 생각과 지금 생각을 쓰고, ‘들이와 무게’ 하면 떠오르는 말을 모아요. 칸마다 두 개 이상 붙여요.",
-    render: (b, a) => panes(b, a, [
+    render: withOptional(
+      (b, a) => panes(b, a, [
       { t: "예전 생각", e: "⏮", ph: "예전에는 ~라고 생각했어요", hint: "배우기 전에 한 생각" },
       { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요", hint: "배운 뒤에 바뀐 생각" },
       { t: "떠오르는 말", e: "🧠", ph: "들이와 무게 → ~", hint: "L, mL, kg, g, 저울, 비커…" },
       { t: "이어지는 말", e: "🔗", ph: "~과 ~은 이어져요", hint: "서로 이어지는 두 낱말을 써요" }],
-      { min: 2, ok: "생각이 자란 것을 잘 보여 주었어요! 친구들 쪽지와 견주어 봐요." }) }
+      { min: 2, ok: "생각이 자란 것을 잘 보여 주었어요! 친구들 쪽지와 견주어 봐요." }),
+      (b, a) => numbers(b, a, [
+        { q: "만든 주스 800 mL를 4모둠이 똑같이 나누면 한 모둠은 몇 mL? ", a: 200 },
+        { q: "500 g짜리 설탕 4봉지의 무게는 모두 몇 kg? ", a: 2, unit: "kg" },
+        { q: "물 5 L로 국을 1 L 700 mL씩 두 번 끓이면 남는 물은 몇 mL? ", a: 1600 }],
+        { ok: "들이와 무게 단원을 모두 해냈어요!" }),
+      { title: "더 해 보고 싶다면 — 선택 문제", inst: "단원 도전 문제예요." })}
 }];
 
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });

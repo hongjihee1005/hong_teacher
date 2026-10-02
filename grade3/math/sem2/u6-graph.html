@@ -196,6 +196,15 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
   :root:not([data-theme="light"]) .chip{background:#2A3A36}}
 :root[data-theme="dark"] .pane{background:#1E2A28}
 :root[data-theme="dark"] .chip{background:#2A3A36}
+/* 선택 문제 상자 */
+.optbox{margin-top:1em;border:3px dashed var(--line);border-radius:.7em;padding:.5em .8em;background:#fff}
+.optbox.hidden{display:none}
+.optbox>summary{cursor:pointer;font-family:"Jua";font-size:var(--fs-l);color:var(--night,#1F2F4A);list-style:none}
+.optbox>summary::-webkit-details-marker{display:none}
+.optbox[open]>summary{margin-bottom:.4em;border-bottom:2px solid var(--line);padding-bottom:.3em}
+.optbox .inst{margin:.2em 0 .4em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .optbox{background:#1E2A28}}
+:root[data-theme="dark"] .optbox{background:#1E2A28}
 </style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1281,6 +1290,40 @@ function blanks(body, api, parts, opts = {}) {
   } }, "확인하기");
   body.append(sent, h("div", { class: "actions" }, check));
 }
+/* ── 선택 문제 (★도전 계단 아래, 본 활동을 통과하면 열림) ──────────────────
+   render: withOptional((b, a) => panes(...), (b, a) => numbers(b, a, [...]), { title, inst })
+   · 본 활동(main)만 해도 계단은 통과합니다. 선택 문제는 통과 여부와 상관없어요.
+   · 선택 문제에서 쓴 답은 선생님 기록에 '선택'(6. 선택 문제)으로 남아요.          */
+function withOptional(main, extra, opts = {}) {
+  return (body, api) => {
+    const L = CUR && CUR.L;
+    const box = h("details", { class: "optbox hidden" },
+      h("summary", {}, "➕ " + (opts.title || "더 해 보고 싶다면 — 선택 문제")));
+    const inner = h("div", { class: "optin" });
+    const ofb = h("div", { class: "fb", role: "status", "aria-live": "polite" });
+    let tries = 0, solved = false;
+    const sub = {
+      tryOnce() { tries++; },
+      provide() {},
+      hint(m) { ofb.className = "fb"; ofb.textContent = m; },
+      fail(m, ans) { tries++; ofb.className = "fb bad"; ofb.textContent = "\u00d7 " + (m || "다시 생각해 봐요.");
+        if (L) record(L, 6, "선택 문제", false, tries, ans, "선택"); },
+      done(ans, m) { if (solved) return; solved = true; tries = Math.max(tries, 1);
+        ofb.className = "fb good"; ofb.textContent = "\u25cb " + (m || "선택 문제까지 해냈어요!");
+        if (L) record(L, 6, "선택 문제", true, tries, ans, "선택"); }
+    };
+    let built = false;
+    box.addEventListener("toggle", () => { if (box.open && !built) { built = true; extra(inner, sub); } });
+    if (opts.inst) box.append(h("p", { class: "inst" }, opts.inst));
+    box.append(inner, ofb);
+    const open = () => box.classList.remove("hidden");
+    const wrapped = Object.assign({}, api, { done: (a1, a2, a3) => { api.done(a1, a2, a3); open(); } });
+    main(body, wrapped);
+    body.append(box);
+    if (L) { const p = myProg(L.id); if (p.chal && p.chal.ok) open(); }
+  };
+}
+
 /* 글쓰기(자기 생각) */
 function writeStep(body, api, prompts, opts = {}) {
   const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); body.append(h("div", { class: "jua", style: "margin-top:.6em" }, p.q), t); return t; });
@@ -2074,7 +2117,7 @@ function simPictoBuild(body, api, opt) {
 const UNIT_STORY = { title: "자료를 모아 그림그래프로", lines: [
   "우리 반, 우리 학교에서 궁금한 것을 조사해요. 좋아하는 과일, 반려동물, 공 주고받기 횟수까지.",
   "모은 자료는 표로 정리하고 그림그래프로 나타내면 한눈에 볼 수 있어요.",
-  "교과서 「수학 3-2」 6. 그림그래프의 차시 순서 그대로 만들었어요."],
+  "교과서 『수학 3-2』 6. 그림그래프의 차시 순서 그대로 만들었어요."],
   one: "그림그래프 · 조사한 자료를 표와 그림그래프로 나타내고 읽어요." };
 const UNIT_KEYWORDS = ["자료", "표", "합계", "그림그래프", "제목", "큰 그림", "작은 그림", "단위 정하기", "항목", "조사"];
 
