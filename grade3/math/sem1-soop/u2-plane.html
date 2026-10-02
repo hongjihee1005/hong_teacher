@@ -200,6 +200,13 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
   :root:not([data-theme="light"]) .chip{background:#2A3A36}}
 :root[data-theme="dark"] .pane{background:#1E2A28}
 :root[data-theme="dark"] .chip{background:#2A3A36}
+/* 선택 문제 상자 */
+.optbox{margin-top:1em;border:3px dashed var(--line);border-radius:.7em;padding:.5em .8em;background:#fff}
+.optbox>summary{cursor:pointer;font-family:"Jua";font-size:var(--fs-l);color:var(--night,#1F2F4A);list-style:none}
+.optbox>summary::-webkit-details-marker{display:none}
+.optbox[open]>summary{margin-bottom:.4em;border-bottom:2px solid var(--line);padding-bottom:.3em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .optbox{background:#1E2A28}}
+:root[data-theme="dark"] .optbox{background:#1E2A28}
 </style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1365,6 +1372,40 @@ function predictCheck(body, api, opts) {
       } }, "확인하기")));
 
   body.append(box, second);
+}
+
+/* ── 선택 문제 (★도전 계단 아래, 마인드맵을 다 붙이면 열림) ──────────────────
+   render: withOptional((b, a) => panes(...), (b, a) => numbers(b, a, [...]), { title, inst })
+   · 본 활동(main)만 해도 계단은 통과합니다. 선택 문제는 통과 여부와 상관없어요.
+   · 선택 문제에서 쓴 답은 선생님 기록에 '선택'(6. 선택 문제)으로 남아요.          */
+function withOptional(main, extra, opts = {}) {
+  return (body, api) => {
+    const L = CUR && CUR.L;
+    const box = h("details", { class: "optbox hidden" },
+      h("summary", {}, "➕ " + (opts.title || "더 해 보고 싶다면 — 선택 문제")));
+    const inner = h("div", { class: "optin" });
+    const ofb = h("div", { class: "fb", role: "status", "aria-live": "polite" });
+    let tries = 0, solved = false;
+    const sub = {
+      tryOnce() { tries++; },
+      provide() {},
+      hint(m) { ofb.className = "fb"; ofb.textContent = m; },
+      fail(m, ans) { tries++; ofb.className = "fb bad"; ofb.textContent = "× " + (m || "다시 생각해 봐요.");
+        if (L) record(L, 6, "선택 문제", false, tries, ans, "선택"); },
+      done(ans, m) { if (solved) return; solved = true; tries = Math.max(tries, 1);
+        ofb.className = "fb good"; ofb.textContent = "○ " + (m || "선택 문제까지 해냈어요!");
+        if (L) record(L, 6, "선택 문제", true, tries, ans, "선택"); }
+    };
+    let built = false;
+    box.addEventListener("toggle", () => { if (box.open && !built) { built = true; extra(inner, sub); } });
+    if (opts.inst) box.append(h("p", { class: "inst" }, opts.inst));
+    box.append(inner, ofb);
+    const open = () => box.classList.remove("hidden");
+    const wrapped = Object.assign({}, api, { done: (a1, a2, a3) => { api.done(a1, a2, a3); open(); } });
+    main(body, wrapped);
+    body.append(box);
+    if (L) { const p = myProg(L.id); if (p.chal && p.chal.ok) open(); }
+  };
 }
 
 /* 순서 맞추기 */
@@ -2634,13 +2675,21 @@ const LESSONS = [
         { ok: "생각이 자란 모습을 잘 모았어요! 교실 곳곳에서 선분과 직각이 있는 도형이 보여요." }) }
   ],
   challenge: { inst: "예전엔·지금은 + 마인드맵 — 평면도형 마인드맵을 만들어요. 네 칸에 써서 붙여요.",
-    hints: ["‘떠오르는 말’은 낱말만 써도 돼요.", "예: 선분, 반직선, 직선, 각, 직각, 직각삼각형, 직사각형, 정사각형", "‘이어지는 말’은 낱말 둘을 이어 써요. 예: 직각과 직사각형은 이어져요."],
-    render: (b, a) => panes(b, a, [
-      { t: "떠오르는 말", e: "🧠", ph: "떠오르는 낱말", hint: "선분, 직선, 각, 직각…" },
-      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 같은 묶음이에요", hint: "선끼리, 도형끼리 비슷한 것을 묶어요" },
-      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "왜 이어지는지도 써 봐요" },
-      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 교실의 ~", hint: "교실 물건으로 예를 들어요" }],
-      { min: 1, ok: "평면도형 마인드맵을 완성했어요! 우리 반 교실 꾸미기 완성!" }) }
+    hints: ["‘떠오르는 말’은 낱말만 써도 돼요.", "예: 선분, 반직선, 직선, 각, 직각, 직각삼각형, 직사각형, 정사각형", "‘이어지는 말’은 낱말 둘을 이어 써요. 예: 직각과 직사각형은 이어져요.", "(선택 문제) 뜻을 하나씩 떠올려요: 직선, 직각, 직사각형, 정사각형.", "(선택 문제) 직사각형을 크기별로 나누어 세어요. 한 칸, 두 칸, 세 칸짜리예요."],
+    render: withOptional(
+      (b, a) => panes(b, a, [
+        { t: "떠오르는 말", e: "🧠", ph: "떠오르는 낱말", hint: "선분, 직선, 각, 직각…" },
+        { t: "묶어 보기", e: "🗂", ph: "~와 ~는 같은 묶음이에요", hint: "선끼리, 도형끼리 비슷한 것을 묶어요" },
+        { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "왜 이어지는지도 써 봐요" },
+        { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 교실의 ~", hint: "교실 물건으로 예를 들어요" }],
+        { min: 1, ok: "평면도형 마인드맵을 완성했어요! 우리 반 교실 꾸미기 완성!" }),
+      (b, a) => quiz(b, a, [
+        { q: "① “양쪽으로 끝없이 뻗은 곧은 선은 선분이에요.”", o: ["맞아요", "틀려요"], a: 1, why: { "0": "양쪽으로 끝없이 뻗은 곧은 선은 직선이에요." } },
+        { q: "② “종이를 반듯하게 두 번 접으면 직각이 생겨요.”", o: ["맞아요", "틀려요"], a: 0 },
+        { q: "③ “직사각형은 네 변의 길이가 모두 같아야 해요.”", o: ["맞아요", "틀려요"], a: 1, why: { "0": "직사각형은 네 각이 모두 직각인 사각형이에요. 네 변의 길이가 모두 같아야 한다는 약속은 없어요." } },
+        { q: "④ “정사각형은 네 각이 모두 직각이에요.”", o: ["맞아요", "틀려요"], a: 0 },
+        { q: "창문 모양에서 크고 작은 직사각형은 모두 몇 개인가요?", fig: () => u2Fig([{ rect: [1, .6, 6, 3] }, { line: [[3, .6], [3, 3.6]], dots: false }, { line: [[5, .6], [5, 3.6]], dots: false }], { w: 8, h: 4.2, U: 40, maxW: "14em" }), o: ["3개", "5개", "6개"], a: 2, why: { "0": "한 칸짜리만 셌어요. 두 칸짜리 2개와 세 칸짜리 1개도 있어요.", "1": "세 칸을 모두 합친 큰 직사각형도 세어요." } }], { ok: "①은 직선, ③은 틀린 말이에요. 창문에는 직사각형이 6개 있어요. 우리 반 교실 꾸미기 완성!" }),
+      { title: "더 해 보고 싶다면 — 선택 문제", inst: "교실 꾸미기 마무리 퀴즈예요. 3학년 144명과 전교생 약 890명이 볼 자랑 게시판이에요. 붙일 문장이 맞는지 골라 보세요." }) }
 }];
 
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
@@ -2965,6 +3014,8 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   kids.forEach(function(f){if(done.has(f)||f.parentElement.classList.contains('gallery')||/(^|\s)gal\w*(\s|$)/.test(f.parentElement.className)||f.parentElement.classList.contains('hj-pgrid'))return;var run=[f],n=f.nextElementSibling;while(n&&n.matches('figure.photo')){run.push(n);n=n.nextElementSibling}
    if(run.length<2)return;var g=document.createElement('div');g.className='hj-pgrid';f.before(g);run.forEach(function(x){done.add(x);g.appendChild(x)})})})})();
 /* 낱말이 줄 끝에서 끊기지 않게: '·', '-', '(', ')', '/'로 붙은 말 사이에 줄바꿈 금지 표시(보이지 않는 글자) */
+/* hj-copy-clean · 줄 끊김 방지 글자(U+2060)는 화면에만: 복사·붙여 넣기 때는 빼서, 보이는 글과 똑같이 붙여 넣어지게 */
+document.addEventListener('copy',function(e){try{var t=String(getSelection());if(!/[\u2060\u2063]/.test(t)||!e.clipboardData)return;e.clipboardData.setData('text/plain',t.replace(/[\u2060\u2063]/g,''));e.preventDefault()}catch(_){}});
 (function(){var WJ='⁠',SKIP='script,style,textarea,input,select,option,svg,code,pre,[contenteditable],.hj-em';
  var RX=/([^\s⁠])([·‧\-–\/(])(?=[^\s⁠])|([^\s⁠(])([)])(?=[^\s⁠.,!?·])/g;
  function fix(n){var v0=n.nodeValue;if(!/[·‧\-–\/()]/.test(v0))return;if(/^https?:|www\.|@/.test(v0.trim()))return;var v=v0.replace(/\u2060/g,'');

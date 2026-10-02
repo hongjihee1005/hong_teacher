@@ -1166,6 +1166,8 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   kids.forEach(function(f){if(done.has(f)||f.parentElement.classList.contains('gallery')||/(^|\s)gal\w*(\s|$)/.test(f.parentElement.className)||f.parentElement.classList.contains('hj-pgrid'))return;var run=[f],n=f.nextElementSibling;while(n&&n.matches('figure.photo')){run.push(n);n=n.nextElementSibling}
    if(run.length<2)return;var g=document.createElement('div');g.className='hj-pgrid';f.before(g);run.forEach(function(x){done.add(x);g.appendChild(x)})})})})();
 /* 낱말이 줄 끝에서 끊기지 않게: '·', '-', '(', ')', '/'로 붙은 말 사이에 줄바꿈 금지 표시(보이지 않는 글자) */
+/* hj-copy-clean · 줄 끊김 방지 글자(U+2060)는 화면에만: 복사·붙여 넣기 때는 빼서, 보이는 글과 똑같이 붙여 넣어지게 */
+document.addEventListener('copy',function(e){try{var t=String(getSelection());if(!/[\u2060\u2063]/.test(t)||!e.clipboardData)return;e.clipboardData.setData('text/plain',t.replace(/[\u2060\u2063]/g,''));e.preventDefault()}catch(_){}});
 (function(){var WJ='⁠',SKIP='script,style,textarea,input,select,option,svg,code,pre,[contenteditable],.hj-em';
  var RX=/([^\s⁠])([·‧\-–\/(])(?=[^\s⁠])|([^\s⁠(])([)])(?=[^\s⁠.,!?·])/g;
  function fix(n){var v0=n.nodeValue;if(!/[·‧\-–\/()]/.test(v0))return;if(/^https?:|www\.|@/.test(v0.trim()))return;var v=v0.replace(/\u2060/g,'');

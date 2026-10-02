@@ -200,6 +200,13 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
   :root:not([data-theme="light"]) .chip{background:#2A3A36}}
 :root[data-theme="dark"] .pane{background:#1E2A28}
 :root[data-theme="dark"] .chip{background:#2A3A36}
+/* 선택 문제 상자 */
+.optbox{margin-top:1em;border:3px dashed var(--line);border-radius:.7em;padding:.5em .8em;background:#fff}
+.optbox>summary{cursor:pointer;font-family:"Jua";font-size:var(--fs-l);color:var(--night,#1F2F4A);list-style:none}
+.optbox>summary::-webkit-details-marker{display:none}
+.optbox[open]>summary{margin-bottom:.4em;border-bottom:2px solid var(--line);padding-bottom:.3em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .optbox{background:#1E2A28}}
+:root[data-theme="dark"] .optbox{background:#1E2A28}
 </style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1365,6 +1372,40 @@ function predictCheck(body, api, opts) {
       } }, "확인하기")));
 
   body.append(box, second);
+}
+
+/* ── 선택 문제 (★도전 계단 아래, 마인드맵을 다 붙이면 열림) ──────────────────
+   render: withOptional((b, a) => panes(...), (b, a) => numbers(b, a, [...]), { title, inst })
+   · 본 활동(main)만 해도 계단은 통과합니다. 선택 문제는 통과 여부와 상관없어요.
+   · 선택 문제에서 쓴 답은 선생님 기록에 '선택'(6. 선택 문제)으로 남아요.          */
+function withOptional(main, extra, opts = {}) {
+  return (body, api) => {
+    const L = CUR && CUR.L;
+    const box = h("details", { class: "optbox hidden" },
+      h("summary", {}, "➕ " + (opts.title || "더 해 보고 싶다면 — 선택 문제")));
+    const inner = h("div", { class: "optin" });
+    const ofb = h("div", { class: "fb", role: "status", "aria-live": "polite" });
+    let tries = 0, solved = false;
+    const sub = {
+      tryOnce() { tries++; },
+      provide() {},
+      hint(m) { ofb.className = "fb"; ofb.textContent = m; },
+      fail(m, ans) { tries++; ofb.className = "fb bad"; ofb.textContent = "× " + (m || "다시 생각해 봐요.");
+        if (L) record(L, 6, "선택 문제", false, tries, ans, "선택"); },
+      done(ans, m) { if (solved) return; solved = true; tries = Math.max(tries, 1);
+        ofb.className = "fb good"; ofb.textContent = "○ " + (m || "선택 문제까지 해냈어요!");
+        if (L) record(L, 6, "선택 문제", true, tries, ans, "선택"); }
+    };
+    let built = false;
+    box.addEventListener("toggle", () => { if (box.open && !built) { built = true; extra(inner, sub); } });
+    if (opts.inst) box.append(h("p", { class: "inst" }, opts.inst));
+    box.append(inner, ofb);
+    const open = () => box.classList.remove("hidden");
+    const wrapped = Object.assign({}, api, { done: (a1, a2, a3) => { api.done(a1, a2, a3); open(); } });
+    main(body, wrapped);
+    body.append(box);
+    if (L) { const p = myProg(L.id); if (p.chal && p.chal.ok) open(); }
+  };
 }
 
 /* 순서 맞추기 */
@@ -2650,12 +2691,21 @@ const LESSONS = [
         { ok: "생각이 자란 것을 잘 보여 주었어요! 친구들 쪽지와 견주어 봐요." }) }
   ],
   challenge: { inst: "예전엔·지금은 + 마인드맵 — ‘길이와 시간’을 정리해요. 떠오르는 말을 모으고, 묶고, 이어 보세요.", hints: ["mm, cm, m, km, 초, 분, 시간, 어림, 받아올림, 받아내림", "1 cm = 10 mm, 1 km = 1000 m, 1분 = 60초", "3 km 40 m = 3040 m. 4분 20초 − 1분 40초 = 2분 40초"],
-    render: (b, a) => panes(b, a, [
+    render: withOptional(
+      (b, a) => panes(b, a, [
       { t: "떠오르는 말", e: "🧠", ph: "길이와 시간 → ~", hint: "mm, km, 초, 어림, 받아올림…" },
       { t: "묶어 보기", e: "🗂", ph: "길이 단위: ~", hint: "비슷한 것끼리 묶어요" },
       { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "예: 60초와 1분은 이어져요" },
       { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "예를 들거나 더 설명해요" }],
-      { min: 1, ok: "길이와 시간을 한눈에 정리했어요. 봄 소풍 탐험 완료!" }) }
+      { min: 1, ok: "길이와 시간을 한눈에 정리했어요. 봄 소풍 탐험 완료!" }),
+      (b, a) => u5OXPath(b, a, { end: "학교", items: [
+        { s: "70 mm = 7 cm", a: true, yes: "연못", no: "매점" },
+        { s: "3 km 40 m = 3400 m", a: false, yes: "온실", no: "전망대", why: "3 km 40 m는 3000 m와 40 m예요. 몇 m인지 다시 계산해 봐요." },
+        { s: "2분 = 120초", a: true, yes: "꽃동산", no: "쉼터" },
+        { s: "11시 50분 + 15분 = 12시 5분", a: true, yes: "나비 정원", no: "주차장" },
+        { s: "4분 20초 − 1분 40초 = 3분 40초", a: false, yes: "놀이터", no: "버스", why: "20초에서 40초를 뺄 수 없어요. 1분을 60초로 바꾸어 다시 계산해 봐요." }],
+        ok: "길이와 시간 퍼즐을 풀고 학교에 도착했어요. 봄 소풍 탐험 완료!" }),
+      { title: "더 해 보고 싶다면 — 선택 문제", inst: "소풍 도장 퍼즐로 마무리해요. 설명이 맞으면 ○ 길, 틀리면 × 길로 가요. 수목원 곳곳을 지나 학교에 도착해 보세요." }) }
 }];
 
 window.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });
@@ -2980,6 +3030,8 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
   kids.forEach(function(f){if(done.has(f)||f.parentElement.classList.contains('gallery')||/(^|\s)gal\w*(\s|$)/.test(f.parentElement.className)||f.parentElement.classList.contains('hj-pgrid'))return;var run=[f],n=f.nextElementSibling;while(n&&n.matches('figure.photo')){run.push(n);n=n.nextElementSibling}
    if(run.length<2)return;var g=document.createElement('div');g.className='hj-pgrid';f.before(g);run.forEach(function(x){done.add(x);g.appendChild(x)})})})})();
 /* 낱말이 줄 끝에서 끊기지 않게: '·', '-', '(', ')', '/'로 붙은 말 사이에 줄바꿈 금지 표시(보이지 않는 글자) */
+/* hj-copy-clean · 줄 끊김 방지 글자(U+2060)는 화면에만: 복사·붙여 넣기 때는 빼서, 보이는 글과 똑같이 붙여 넣어지게 */
+document.addEventListener('copy',function(e){try{var t=String(getSelection());if(!/[\u2060\u2063]/.test(t)||!e.clipboardData)return;e.clipboardData.setData('text/plain',t.replace(/[\u2060\u2063]/g,''));e.preventDefault()}catch(_){}});
 (function(){var WJ='⁠',SKIP='script,style,textarea,input,select,option,svg,code,pre,[contenteditable],.hj-em';
  var RX=/([^\s⁠])([·‧\-–\/(])(?=[^\s⁠])|([^\s⁠(])([)])(?=[^\s⁠.,!?·])/g;
  function fix(n){var v0=n.nodeValue;if(!/[·‧\-–\/()]/.test(v0))return;if(/^https?:|www\.|@/.test(v0.trim()))return;var v=v0.replace(/\u2060/g,'');
