@@ -761,6 +761,11 @@ html body .hj-nav a.hj-nh{background:var(--hjs,#2A221C)!important;color:#fff!imp
 html body .hj-nav a.hj-nh svg path{fill:currentColor;fill-opacity:.25}
 /* 홍지희 버전: 위 메뉴줄과 본문 사이 여유 */
 html body #lesson .topbar{margin-bottom:16px!important}
+/* 홍지희 버전: 활동 내용이 아래로 처지지 않게 위쪽(질문 바로 아래)에 붙이고, 남는 공간은 아래로 */
+html body #lesson .body{justify-content:flex-start!important}
+html body #lesson .body>:first-child{margin-top:clamp(8px,3vh,36px)!important}
+html body a.hj-homemini{display:inline-flex!important;align-items:center;gap:5px;text-decoration:none!important;background:var(--hjs,#2A221C)!important;color:#fff!important;border:0!important;border-radius:999px;padding:5px 12px!important;min-height:34px;font:700 clamp(13.5px,1vw,15px)/1 Pretendard,sans-serif!important;white-space:nowrap}
+html body a.hj-homemini .hj-i{width:16px;height:16px}
 </style><meta name="hj-next" content="u3-3.html" data-t="물에는 어떤 식물이 살까?" data-tag="4차시"><!--/hj-ctheme--></head>
 
 <body>
@@ -1835,5 +1840,25 @@ HTMLMediaElement.prototype.play=function(){var el=this;if(el.tagName!=='VIDEO'&&
  function run(){document.querySelectorAll('button,a').forEach(function(b){if(b.dataset.hjfirst||b.closest('.hj-nav'))return;var t=b.textContent.replace(/\s+/g,'').trim();
   if(t==='첫화면'){b.dataset.hjfirst='1';b.innerHTML=IC+'<span>차시 처음</span>';b.classList.add('hj-ic');b.title='이 차시의 첫 화면(학습 문제·수업 흐름)으로 돌아가요';b.setAttribute('aria-label','이 차시의 첫 화면으로')}})}
  run();setTimeout(run,500);var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,60)}).observe(document.body,{childList:true,subtree:true})})();
+/* 검정 교과서 과목(수학·사회·과학)은 학교마다 교과서가 달라서 교과서 쪽수를 보이지 않게 (국어는 국정이라 그대로) */
+(function(){var sj=document.documentElement.getAttribute('data-hjsubj');if(!sj||sj==='korean')return;
+ var B='(?:교과서|『(?:과학|사회|수학|실험관찰|수학 익힘|사회과 부도)』)',P='[\\s\\u2060]*\\d+(?:[\\s\\u2060]*[~∼\\-–][\\s\\u2060]*\\d+)?쪽(?:[\\s\\u2060]*\\d+번)?(?:[\\s\\u2060]*\\(\\d+\\))?',S='[\\s\\u2060]*[·•][\\s\\u2060]*';
+ var R=[[new RegExp('\\s*\\('+B+P+'(?:[^()]{0,24})\\)','g'),''],
+        [new RegExp(S+B+P+'(?:[\\s\\u2060]*\\([^()]{0,24}\\))?','g'),''],
+        [new RegExp(B+P+'(?:[\\s\\u2060]*\\([^()]{0,24}\\))?'+S,'g'),''],
+        [new RegExp('『(실험관찰|수학 익힘)』'+P+'(에|의|을|를)','g'),'$1$2'],
+        [new RegExp(B+P+'(?:의|에서|에)?[\\s\\u2060]*','g'),'']];
+ var SKIP='script,style,textarea,input,svg';
+ function fix(n){var v=n.nodeValue;if(!/쪽/.test(v)||!/교과서|』/.test(v))return;var t=v;R.forEach(function(r){t=t.replace(r[0],r[1])});t=t.replace(/^[\s⁠]*[·•][\s⁠]*/,'').replace(/[\s⁠]*[·•][\s⁠]*$/,'');if(t!==v)n.nodeValue=t}
+ function run(r){if(!r)return;if(r.nodeType===3){if(r.parentElement&&!r.parentElement.closest(SKIP))fix(r);return}if(r.nodeType!==1||r.closest(SKIP))return;var w=document.createTreeWalker(r,4),n,a=[];while(n=w.nextNode())if(!n.parentElement.closest(SKIP))a.push(n);a.forEach(fix);
+  r.querySelectorAll&&r.querySelectorAll('.tip,.stage,.src,small,span').forEach(function(e){if(!e.textContent.trim()&&!e.children.length&&e.className!=='hj-cl')e.style.display='none'})}
+ run(document.body);new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')run(m.target);else m.addedNodes.forEach(run)})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
+/* '차시 처음' 옆에 사이트 '홈' 단추도 바로 두기 (두 번 거치지 않게) — 과학 앱은 위 왼쪽에 홈이 늘 보여서 제외 */
+(function(){var H='<svg class="hj-i" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7" /><path d="M5.5 9.2V20h13V9.2" fill="currentColor" fill-opacity=".25"/><path d="M10 20v-5.5h4V20"/></svg>';
+ function href(){var a=document.getElementById('hj-home')||document.querySelector('.hj-nav a.hj-nh');return a?a.getAttribute('href'):null}
+ function run(){if(document.documentElement.classList.contains('hj-scmenu'))return;var h=href();if(!h)return;
+  document.querySelectorAll('[data-hjfirst]').forEach(function(b){var n=b.nextElementSibling;if(n&&n.classList.contains('hj-homemini'))return;
+   var a=document.createElement('a');a.className='hj-homemini hj-ic '+(b.className||'').replace(/hj-hometool|hj-ic/g,'');a.href=h;a.innerHTML=H+'<span>홈</span>';a.title='사이트 홈(첫 화면)으로 가요';b.after(a)})}
+ run();setTimeout(run,700);var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(run,80)}).observe(document.body,{childList:true,subtree:true})})();
 </script><!--/hj-cicons--></body>
 </html>
