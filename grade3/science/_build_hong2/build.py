@@ -15,8 +15,8 @@ import wm  # noqa
 
 head = open(os.path.join(B, 'shell_head.html'), encoding='utf-8').read()
 tail = open(os.path.join(B, 'shell_tail.html'), encoding='utf-8').read()
-eng = open(os.path.join(B, 'engine_social.js'), encoding='utf-8').read() + open(os.path.join(B, 'engine_science.js'), encoding='utf-8').read() + open(os.path.join(B, 'engine_lab2.js'), encoding='utf-8').read()
-css = open(os.path.join(B, 'science.css'), encoding='utf-8').read() + open(os.path.join(B, 'lab2.css'), encoding='utf-8').read()
+eng = open(os.path.join(B, 'engine_social.js'), encoding='utf-8').read() + open(os.path.join(B, 'engine_science.js'), encoding='utf-8').read() + open(os.path.join(B, 'engine_lab2.js'), encoding='utf-8').read() + open(os.path.join(B, 'engine_ex.js'), encoding='utf-8').read()
+css = open(os.path.join(B, 'science.css'), encoding='utf-8').read() + open(os.path.join(B, 'lab2.css'), encoding='utf-8').read() + open(os.path.join(B, 'ex.css'), encoding='utf-8').read()
 
 
 def photo(key, spec):
@@ -55,6 +55,15 @@ if __name__ == '__main__':
             continue
         M = importlib.import_module(os.path.basename(mod)[:-3])
         topic = M.TOPIC
+        ex_mod = 'examples_u' + os.path.basename(mod)[len('lessons_u'):-3]
+        EX = importlib.import_module(ex_mod).EX if os.path.exists(os.path.join(B, ex_mod + '.py')) else {}
+        HINT = importlib.import_module(ex_mod).HINT if os.path.exists(os.path.join(B, ex_mod + '.py')) else {}
+        for L in M.LESSONS:  # 사고전략 예시 문장(engine_ex.js) — 단계 이름으로 찾아 ex(예시 보기)·hints(칸별 힌트)로 넣음
+            for key, D in (('ex', EX), ('hints', HINT)):
+                for t, v in D.get(L['lessonKey'], {}).items():
+                    hit = [s for s in L['steps'] if s['t'] == t]
+                    assert len(hit) == 1, (L['lessonKey'], t, len(hit))
+                    hit[0][key] = v
         topic['map'] = [{'s': L['soop'], 'f': L['file'], 'n': L['short'], 't': L['title'].split(' ', 1)[-1]} for L in M.LESSONS]
         for L in M.LESSONS:
             if not only or L['lessonKey'] in only:

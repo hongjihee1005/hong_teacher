@@ -11,6 +11,15 @@
 - `claim` ✍️ 근거로 결론: 자료판에서 근거 단추를 만들어 '근거 / 결론' 칸에 쓰고, 그다음 교과서 문장과 비교.
 - 기존 `lab`에 `routine`으로 배지 이름을 바꿀 수 있습니다(예: '자유롭게 관찰하기').
 
+## 사고전략 예시 문장 (2026-10-03)
+- 단계에 `ex: [[이름표, 문장], …]`(3개)가 있으면 사고전략 배지 옆에 `💡 예시 보기` 단추가 생기고, 누르면 안내 줄 아래에 예시가 펼쳐집니다(`engine_ex.js`, `ex.css`).
+- 예시는 `lessons_uN.py`를 건드리지 않고 `examples_uN.py`의 `EX[lessonKey][단계 이름 t]`에 씁니다. `build.py`가 단계 이름으로 찾아 넣고, 이름이 없거나 겹치면 멈춥니다(단계 이름을 바꾸면 여기도 함께 바꾸세요).
+- **사진 보기(보기-생각-궁금)는 칸별 예시**를 씁니다: `examples_uN.py`의 `HINT[lessonKey]['사진 보기'] = [[보여요 2개], [생각해요 2개], [궁금해요 2개]]` → 칸 제목 옆 `💡 예시` 단추, 누르면 팝업(입력칸 아래, 공간이 모자라면 칸 위). 이 단계에는 `EX`를 두지 않습니다. `hints`는 본문 `.cols .col` 순서대로 붙으므로 다른 칸 단계(talk 등)에도 쓸 수 있습니다.
+- 넣는 단계(EX): 실험 설계·예상 표·자료판·예상과 결과 비교·근거로 결론·자료 살펴보기. 실험·기록(lab)·활동(task)·생각 나누기(talk)·개념 확인(check)은 넣지 않습니다.
+- 예시는 한 칸·한 막대만 보여 주고 결론 전체를 미리 알려 주지 않습니다. 사진 보기 예시는 실제 사진에 보이는 것만 씁니다.
+- 1단원 완료. 2~4단원은 `examples_u2.py`… 를 만들면 됩니다.
+- 빌드할 때 사진은 캐시(`~/.cache/wm_imgcache`)가 없으면 위키미디어에서 다시 받습니다. 새 컨테이너에서는 이미 만든 `../sem2-hong/*.html` 안의 사진으로 캐시를 채우면 빠르고 결과도 같습니다.
+
 ## 만들기·점검
 - `python3 build.py sci32-u1-l2` → `../sem2-hong/u1-l2.html` (사이트 공통 연락처 줄·홈 단추는 `site_snippets.html`에서 넣음)
 - `python3 index_build.py` → 목록. 그다음 저장소 루트에서 `python3 _build/theme/apply_theme.py grade3/science/sem2-hong/index.html`, `python3 _build/theme/apply_content_theme.py grade3/science/sem2-hong/u*.html`
