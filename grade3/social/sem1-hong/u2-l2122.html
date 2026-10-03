@@ -207,7 +207,21 @@ html.zlow .notes{max-height:calc(var(--vh,1vh)*24)}html.zlow .col{min-height:140
   .overlay{display:none!important}#qbPanel.printme{display:block!important;position:static;background:#fff}
 }
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
-</style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
+</style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hj-ex">/* 사고전략 칸별 예시 팝업 (engine_ex.js) */
+#lesson .body .col,#lesson .claim label{position:relative}
+.hintbtn{margin-left:auto;flex:none;font-family:var(--display);font-size:clamp(13px,1.1vw,16px);padding:2px 10px;border-radius:999px;border:2px solid var(--cc);background:var(--paper);color:var(--cc);cursor:pointer;white-space:nowrap}
+.hintbtn[aria-expanded="true"]{background:var(--cc);color:#fff}
+.hintpop{display:none;position:absolute;text-align:left;font-family:var(--body);z-index:30;left:6px;right:6px;background:var(--paper);border:3px solid var(--cc);border-radius:14px;padding:8px 34px 8px 14px;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all}
+.hintpop.on{display:block}
+.hintpop .hph{margin:0 0 2px;font-family:var(--display);color:var(--cc);font-size:clamp(15px,1.25vw,18px)}
+.hintpop ul{margin:0;padding-left:1.2em;font-size:clamp(15px,1.35vw,19px);line-height:1.5;color:var(--ink)}
+.hintpop .hpf{margin:2px 0 0;font-size:clamp(12px,1vw,14px);color:var(--soft)}
+.hintpop .hpx{position:absolute;top:4px;right:6px;border:0;background:transparent;color:var(--soft);font-size:18px;cursor:pointer;padding:2px 6px}
+#lesson .claim label>span{display:flex;align-items:center;gap:6px}
+#lesson .claim label{--cc:#1F9E63}#lesson .claim label+label{--cc:#6A4FC9}
+.hintt{min-width:0}
+#lesson .frameline{position:relative;--cc:#6A4FC9}#lesson .frameline .hintbtn{margin-left:.4em;align-self:center}
+</style><!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
  src:url(https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2-subset/Pretendard-Bold.subset.woff2) format('woff2')}
 @font-face{font-family:'Gowun Dodum';font-style:normal;font-weight:100 550;font-display:swap;
@@ -1061,7 +1075,28 @@ R.check=(s,id)=>{let i=0,sc=0;const draw=()=>{if(i>=s.items.length){$('body').in
   $('fb').className='fb on '+(ok?'ok':'no');$('fb').innerHTML=`<b>${ok?'정답이에요!':'정답을 확인해 봐요.'}</b> ${esc(q.w)} <button class="ghost" id="nx">다음</button>`;$('nx').onclick=()=>{i++;draw()};$('nx').focus()})};draw()};
 R.talk=(s,id)=>{$('body').innerHTML=`${s.points?`<div class="after wrap">${s.points.map(p=>'💬 '+esc(p)).join('<br>')}</div>`:''}<div class="cols wrap" style="--n:${s.cols?s.cols.length:1}">${(s.cols||[s.col||'우리 반 생각']).map((c,i)=>col(id+'t'+i,esc(c),['#2F74E0','#1F9E63','#E0506B','#E8961E'][i%4],(s.frames||[])[i]||'')).join('')}</div>`;wireCols((s.cols||[0]).map((_,i)=>id+'t'+i),s.toBoard?(s.cols||[0]).map((_,i)=>id+'t'+i):[])};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.on,.bigview.on').forEach(o=>o.classList.remove('on'))});
-</script>
+/*hj-ex*/
+/* 사고전략 칸별 예시 — 단계에 hints: [[첫째 칸 예시 2개], [둘째 칸 2개], …]를 두면
+   본문의 쓰는 칸(뜻 만들기 빈칸 .frameline, .col, 근거로 결론의 .claim label)에 화면 순서대로 '💡 예시' 단추가 생기고,
+   누르면 예시가 팝업으로 뜹니다(입력칸은 가리지 않음). 빈 목록([])인 칸은 건너뜁니다. */
+(function(){const close=()=>document.querySelectorAll('.hintpop.on').forEach(p=>{p.classList.remove('on');const b=p.parentElement.querySelector('.hintbtn');if(b)b.setAttribute('aria-expanded','false')});
+ document.addEventListener('click',e=>{if(!e.target.closest('.hintpop,.hintbtn'))close()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+ const r1=render;render=function(){r1();const s=C.steps[step];if(!s.hints)return;
+  document.querySelectorAll('#body .frameline, #body .col, #body .claim label').forEach((c,i)=>{const h=s.hints[i];const fl=c.classList.contains('frameline');const hd=fl?c:c.querySelector(':scope>h3, :scope>span');if(!h||!h.length||!hd)return;
+   const inp=c.querySelector(':scope>.add')||[...c.querySelectorAll('textarea,input')].pop()||hd;
+   if(!fl){const w=document.createElement('span');w.className='hintt';while(hd.firstChild)w.append(hd.firstChild);hd.append(w)} /* 제목 글자를 한 덩어리로 묶어 줄바꿈이 흩어지지 않게(덮개 content.js가 나중에 글자를 조각내도 그 안에서만) */
+   const b=document.createElement('button');b.type='button';b.className='hintbtn';b.textContent='💡 예시';b.setAttribute('aria-expanded','false');hd.append(b);
+   const p=document.createElement('div');p.className='hintpop';p.setAttribute('role','dialog');p.setAttribute('aria-label',hd.textContent.replace('💡 예시','').trim()+' 예시');
+   p.innerHTML=`<button type="button" class="hpx" aria-label="닫기">✕</button><p class="hph">이렇게 써 볼 수 있어요</p><ul>${h.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><p class="hpf">내가 보고 생각한 것으로 바꿔 써요.</p>`;c.append(p);
+   b.onclick=e=>{e.preventDefault();const on=!p.classList.contains('on');close();if(!on)return;p.classList.add('on');b.setAttribute('aria-expanded','true');
+    /* 입력칸 아래에 띄우고, 본문 아래가 모자라면 칸 제목 위로, 위도 모자라면 아래에 두고 그 자리로 굴림 */
+    const top=c.getBoundingClientRect().top,ib=inp.getBoundingClientRect(),hb=hd.getBoundingClientRect(),body=$('body').getBoundingClientRect();
+    p.style.bottom='auto';p.style.top=(ib.bottom-top+6)+'px';
+    if(p.getBoundingClientRect().bottom>Math.min(body.bottom,innerHeight)){p.style.top='auto';p.style.bottom=(c.getBoundingClientRect().bottom-hb.top+6)+'px';
+     if(p.getBoundingClientRect().top<body.top){p.style.bottom='auto';p.style.top=(ib.bottom-top+6)+'px';p.scrollIntoView({block:'nearest'})}}};
+   p.querySelector('.hpx').onclick=close})}})();
+/*/hj-ex*/</script>
 <script>(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);if(ok)document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on')})})();</script>
 <a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */

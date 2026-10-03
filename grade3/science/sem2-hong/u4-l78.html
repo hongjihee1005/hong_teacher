@@ -395,7 +395,7 @@ table.sum .cnt b{white-space:nowrap}
 #lesson .body .col,#lesson .claim label{position:relative}
 .hintbtn{margin-left:auto;flex:none;font-family:var(--display);font-size:clamp(13px,1.1vw,16px);padding:2px 10px;border-radius:999px;border:2px solid var(--cc);background:var(--paper);color:var(--cc);cursor:pointer;white-space:nowrap}
 .hintbtn[aria-expanded="true"]{background:var(--cc);color:#fff}
-.hintpop{display:none;position:absolute;z-index:30;left:6px;right:6px;background:var(--paper);border:3px solid var(--cc);border-radius:14px;padding:8px 34px 8px 14px;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all}
+.hintpop{display:none;position:absolute;text-align:left;font-family:var(--body);z-index:30;left:6px;right:6px;background:var(--paper);border:3px solid var(--cc);border-radius:14px;padding:8px 34px 8px 14px;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all}
 .hintpop.on{display:block}
 .hintpop .hph{margin:0 0 2px;font-family:var(--display);color:var(--cc);font-size:clamp(15px,1.25vw,18px)}
 .hintpop ul{margin:0;padding-left:1.2em;font-size:clamp(15px,1.35vw,19px);line-height:1.5;color:var(--ink)}
@@ -404,6 +404,7 @@ table.sum .cnt b{white-space:nowrap}
 #lesson .claim label>span{display:flex;align-items:center;gap:6px}
 #lesson .claim label{--cc:#1F9E63}#lesson .claim label+label{--cc:#6A4FC9}
 .hintt{min-width:0}
+#lesson .frameline{position:relative;--cc:#6A4FC9}#lesson .frameline .hintbtn{margin-left:.4em;align-self:center}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
  src:url(https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2-subset/Pretendard-Bold.subset.woff2) format('woff2')}
@@ -1371,15 +1372,15 @@ R.claim=(s,id)=>{const ev=[];
  $('dShow').onclick=()=>{const eb=document.querySelector('.evbox');if(eb)eb.style.display='none';$('book').classList.add('on');$('abk').classList.add('on');$('dShow').style.display='none'};wireCols([id+'s',id+'n'])};
 
 /* 사고전략 칸별 예시 — 단계에 hints: [[첫째 칸 예시 2개], [둘째 칸 2개], …]를 두면
-   본문의 쓰는 칸(.col, 근거로 결론의 .claim label)에 화면 순서대로 '💡 예시' 단추가 생기고,
+   본문의 쓰는 칸(뜻 만들기 빈칸 .frameline, .col, 근거로 결론의 .claim label)에 화면 순서대로 '💡 예시' 단추가 생기고,
    누르면 예시가 팝업으로 뜹니다(입력칸은 가리지 않음). 빈 목록([])인 칸은 건너뜁니다. */
 (function(){const close=()=>document.querySelectorAll('.hintpop.on').forEach(p=>{p.classList.remove('on');const b=p.parentElement.querySelector('.hintbtn');if(b)b.setAttribute('aria-expanded','false')});
  document.addEventListener('click',e=>{if(!e.target.closest('.hintpop,.hintbtn'))close()});
  document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
  const r1=render;render=function(){r1();const s=C.steps[step];if(!s.hints)return;
-  document.querySelectorAll('#body .col, #body .claim label').forEach((c,i)=>{const h=s.hints[i];const hd=c.querySelector(':scope>h3, :scope>span');if(!h||!h.length||!hd)return;
+  document.querySelectorAll('#body .frameline, #body .col, #body .claim label').forEach((c,i)=>{const h=s.hints[i];const fl=c.classList.contains('frameline');const hd=fl?c:c.querySelector(':scope>h3, :scope>span');if(!h||!h.length||!hd)return;
    const inp=c.querySelector(':scope>.add')||[...c.querySelectorAll('textarea,input')].pop()||hd;
-   {const w=document.createElement('span');w.className='hintt';while(hd.firstChild)w.append(hd.firstChild);hd.append(w)} /* 제목 글자를 한 덩어리로 묶어 줄바꿈이 흩어지지 않게(덮개 content.js가 나중에 글자를 조각내도 그 안에서만) */
+   if(!fl){const w=document.createElement('span');w.className='hintt';while(hd.firstChild)w.append(hd.firstChild);hd.append(w)} /* 제목 글자를 한 덩어리로 묶어 줄바꿈이 흩어지지 않게(덮개 content.js가 나중에 글자를 조각내도 그 안에서만) */
    const b=document.createElement('button');b.type='button';b.className='hintbtn';b.textContent='💡 예시';b.setAttribute('aria-expanded','false');hd.append(b);
    const p=document.createElement('div');p.className='hintpop';p.setAttribute('role','dialog');p.setAttribute('aria-label',hd.textContent.replace('💡 예시','').trim()+' 예시');
    p.innerHTML=`<button type="button" class="hpx" aria-label="닫기">✕</button><p class="hph">이렇게 써 볼 수 있어요</p><ul>${h.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><p class="hpf">내가 보고 생각한 것으로 바꿔 써요.</p>`;c.append(p);

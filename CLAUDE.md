@@ -46,6 +46,12 @@ grade1/ … grade6/
 - `grade3/social/sem1-hong/u1-l11 ~ u1-l2021`(주제 2) 8쪽에 '우리 동네를 더 살기 좋은 곳으로' 프로젝트 판이 들어 있습니다. 첫 화면 카드와 진행 화면 '프로젝트 판' 단추로 열고, 차시마다 한 칸(①~⑧)을 채웁니다. 저장은 그 기기 localStorage(`hj-soc31-proj-v1`).
 - 원본은 `_build/project/soc31.js`. 고친 뒤 `python3 _build/project/apply.py && python3 _build/theme/apply_content_theme.py`.
 
+### 사고전략 칸별 예시 — 과학 3-1·사회 (2026-10-03)
+
+- 과학 3-1 홍지희 버전도 3-2와 같은 방식입니다: 문장 `grade3/science/_build_hong/examples_uN.py`, 점검 `cd grade3/science/_build_hong && python3 ../_build_hong2/ex_check.py N`, `python3 build.py`로 다시 만듭니다(빌드가 연락처 줄·홈 단추도 넣음).
+- 사회 홍지희 버전(`sem1-hong`, `sem2-hong`)은 빌드 원본이 없어서 `grade3/social/_ex/apply.py`가 HTML의 수업 데이터(`const C`)에 예시를 넣고 화면 기능(`engine_ex.js`·`ex.css`, 표시 `hj-ex`)을 붙입니다. 문장은 `grade3/social/_ex/ex_sem1_u1.py` …, 점검 `python3 apply.py check`. 여러 번 실행해도 안전합니다.
+  **사회 앱 HTML을 다른 데서 만든 파일로 덮었으면 `apply.py`를 다시 돌리세요.**
+
 ### 수학 (`grade3/math/`)
 
 - `sem1/`, `sem2/` — 교과서 차시 버전(공개). 단원 앱 `u단원-주제.html`(예: `u1-addsub.html`), 활동지 `sheets/*.hwpx`.
