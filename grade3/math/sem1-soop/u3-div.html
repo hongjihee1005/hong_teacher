@@ -1465,6 +1465,103 @@ function predictCheck(body, api, opts) {
   body.append(box, second);
 }
 
+/* ── 탐구 도우미 (2026-10-03) ─────────────────────────────────────────────
+   thenWhy(main, {q, ph})  : 고르기를 다 맞히면 아래에 "왜 그럴까요?" 한 줄 칸이 열려요.
+                             한 줄(4글자 이상)을 써야 계단을 통과해요.
+   ruleFirst(main, {q, ph}): 먼저 '내 규칙 예상'을 한 줄 쓰면 그다음 활동이 열리고,
+                             활동을 마치면 "내 예상이 맞았나요?"를 골라요(고쳐야 하면 고친 규칙 한 줄).
+                             예상은 그 차시 기록(p.rule)과 선생님 기록('예상')에 남아요.
+   wonderRecall(main, {write}) : 1차시 '궁금해요' 쪽지를 위에 다시 보여 줘요.
+                             write가 있으면 글쓰기 칸 하나를 더해요(writeStep 계단에서만).   */
+(function () {
+  if (document.getElementById("hj-inq-css")) return;
+  const st = document.createElement("style"); st.id = "hj-inq-css";
+  st.textContent = ".inqbox{margin-top:.8em;padding:.7em .9em;border:2px dashed var(--line);border-radius:.8em;background:var(--paper)}" +
+    ".inqbox .jua{margin-bottom:.35em}.inqbox textarea{min-height:2.6em}.inqbox .inqrow{display:flex;gap:.5em;flex-wrap:wrap;margin-top:.5em}" +
+    ".inqmemo{margin:.2em 0 .7em;padding:.55em .8em;border-left:5px solid var(--line);border-radius:.4em;background:var(--paper);word-break:keep-all}" +
+    ".inqmemo ul{margin:.3em 0 0 1.1em;padding:0}.inqmemo li{margin:.15em 0}";
+  document.head.appendChild(st);
+})();
+function inqWrite(q, ph, btnText, onOk, api) {
+  const t = h("textarea", { placeholder: ph || "왜냐하면 ~" });
+  const btn = h("button", { class: "big", onclick: () => {
+    const v = t.value.trim();
+    if (v.length < 4) { api.hint("내 생각을 조금 더 써 봐요. (4글자 이상)"); t.focus(); return; }
+    onOk(v, btn, t);
+  } }, btnText || "다 썼어요");
+  return h("div", { class: "inqbox" }, h("div", { class: "jua" }, q), t, h("div", { class: "inqrow" }, btn));
+}
+function thenWhy(main, why) {
+  return (body, api) => {
+    let first = "", firstMsg = "", opened = false;
+    const slot = h("div", {});
+    const wrapped = Object.assign({}, api, { done: (ans, msg) => {
+      first = ans || ""; firstMsg = msg || "";
+      if (opened) return; opened = true;
+      api.hint("맞았어요! 이제 왜 그런지 한 줄로 써 봐요.");
+      slot.append(inqWrite("💬 " + (why.q || "왜 그럴까요? 한 줄로 써 봐요."), why.ph, "다 썼어요", (v, btn, t) => {
+        btn.disabled = true; t.readOnly = true;
+        api.done(first + " | 왜: " + v, firstMsg || "까닭까지 말했어요!");
+      }, api));
+    } });
+    main(body, wrapped);
+    body.append(slot);
+  };
+}
+function ruleFirst(main, opts) {
+  return (body, api) => {
+    const L = CUR && CUR.L, p = L ? myProg(L.id) : null;
+    const stepNo = typeof CUR.idx === "number" ? CUR.idx + 1 : 0;
+    const inner = h("div", {}), slot = h("div", {});
+    let built = false, opened = false, first = "", firstMsg = "";
+    const finish = (tag) => api.done(first + " | 예상: " + tag, firstMsg);
+    const wrapped = Object.assign({}, api, { done: (ans, msg) => {
+      first = ans || ""; firstMsg = msg || "";
+      if (opened) return; opened = true;
+      api.hint("다 했어요! 처음에 쓴 예상과 견주어 봐요.");
+      const row = h("div", { class: "inqrow" });
+      const box = h("div", { class: "inqbox" }, h("div", { class: "jua" }, "🔎 내 예상이 맞았나요?"),
+        p && p.rule ? h("div", { class: "inqmemo" }, h("b", {}, "✏️ 내 예상: "), p.rule) : "", row);
+      [["맞았어요", 0], ["조금 고쳐야 해요", 1], ["많이 고쳐야 해요", 2]].forEach(([t, k]) => row.append(h("button", { class: "opt", onclick: (e) => {
+        [...row.children].forEach(b => { b.classList.remove("on"); b.disabled = true; }); e.currentTarget.classList.add("on");
+        if (k === 0) return finish("맞았어요");
+        box.append(inqWrite("✏️ 고친 규칙을 한 줄로 써 봐요.", "고친 규칙: ~", "다 썼어요", (v, btn, ta) => {
+          btn.disabled = true; ta.readOnly = true; if (p) { p.rule2 = v; store.save(S); } finish(t + " → " + v);
+        }, api));
+      } }, t)));
+      slot.append(box);
+    } });
+    const show = () => { if (built) return; built = true; main(inner, wrapped); };
+    const box = inqWrite("✏️ 먼저 예상해요 — " + opts.q, opts.ph || "내 규칙: ~", "예상 다 썼어요", (v, btn) => {
+      if (p) { p.rule = v; store.save(S); if (L) record(L, stepNo, "내 규칙 예상", true, 1, v, "예상"); }
+      btn.textContent = "예상 고치기";
+      api.hint("예상을 적었어요. 이제 직접 해 보며 확인해요.");
+      show();
+    }, api);
+    if (p && p.rule) { box.querySelector("textarea").value = p.rule; box.querySelector("button").textContent = "예상 고치기"; }
+    body.append(box, inner, slot);
+    if (p && p.rule) show();
+  };
+}
+function wonderNotes() {
+  const L1 = LESSONS[0]; if (!L1 || typeof sid !== "function" || !S.prog[sid()]) return [];
+  const p = myProg(L1.id), out = [];
+  Object.values(p.steps || {}).forEach(r => {
+    const m = r && r.ans && String(r.ans).match(/궁금해요:\s*([^|]*)/);
+    if (m && m[1].trim()) m[1].split(/,\s*/).forEach(x => { x = x.trim(); if (x && out.indexOf(x) < 0) out.push(x); });
+  });
+  return out;
+}
+function wonderRecall(main, opts = {}) {
+  return (body, api) => {
+    const notes = wonderNotes();
+    body.append(h("div", { class: "inqmemo" }, h("b", {}, "❓ 1차시에 내가 궁금했던 것"),
+      notes.length ? h("ul", {}, ...notes.map(n => h("li", {}, n)))
+                   : h("div", {}, "아직 붙인 쪽지가 없어요. 이 단원에서 궁금했던 것을 떠올려 봐요.")));
+    main(body, api);
+  };
+}
+
 /* ── 선택 문제 (★도전 계단 아래, 마인드맵을 다 붙이면 열림) ──────────────────
    render: withOptional((b, a) => panes(...), (b, a) => numbers(b, a, [...]), { title, inst })
    · 본 활동(main)만 해도 계단은 통과합니다. 선택 문제는 통과 여부와 상관없어요.
@@ -2466,24 +2563,24 @@ const LESSONS = [
   question: "우리 반 25명을 5모둠으로 똑같이 나누려면 어떻게 해야 할까요?",
   summary: "똑같이 나누면 모두 같은 수만큼 가져요. 하나씩 번갈아 가며 나누어 주면 똑같이 나눌 수 있어요.",
   steps: [
-    { inst: "선생님이 말씀하셨어요. “다음 주 모둠 활동은 5모둠으로 해요. 우리 반 25명을 5모둠으로 똑같이 나누어 볼까요?” 친구들을 모둠에 나누어 보세요.",
-      hints: ["친구를 한 명씩 번갈아 가며 1모둠, 2모둠, 3모둠 … 차례로 보내 보세요.", "‘한 바퀴’ 버튼을 누르면 모둠마다 한 명씩 한꺼번에 가요."],
-      render: (b, a) => u3ShareOut(b, a, { n: 25, g: 5, item: "친구", unit: "명", kind: "kid", box: "모둠", labels: M5, size: 40,
-        ask: [{ q: "한 모둠은 몇 명인가요?", a: 5, unit: "명", why: { "25": "25명은 우리 반 전체예요. 한 모둠에 있는 친구를 세어 봐요." } }],
-        ok: "한 모둠에 5명씩, 5모둠이 되었어요. 똑같이 나누었어요!" }) },
-    { name: "장면 찾기", inst: "준비단이 할 일 목록이에요. 물건이나 사람을 똑같이 나누거나 몇 개씩 나누는 일을 모두 골라 보세요.",
-      hints: ["‘똑같이 나누어’, ‘몇 개씩’이라는 말이 있는지 살펴봐요.", "시계를 보는 일은 나누는 일이 아니에요."],
-      render: (b, a) => quiz(b, a, [
-        { q: "나누는 일을 모두 고르세요.", o: ["색종이를 모둠마다 똑같이 나누어 주기", "풀을 한 모둠에 3개씩 나누어 주기", "모둠 활동 시작 시각을 시계로 확인하기", "자를 모둠 바구니에 똑같이 나누어 담기"], a: [0, 1, 3] }],
-        { ok: "모둠 활동 준비에는 나누는 일이 아주 많아요!", bad: "물건이나 사람을 나누는 일인지 다시 살펴봐요." }) },
-    { name: "말해 보기 — 보기·생각하기·궁금해하기",
-      inst: "준비단이 25명을 5모둠으로 나누었어요. 세 칸에 한 가지씩 써서 붙여요.",
+    { name: "만져 보기 — 보기·생각하기·궁금해하기",
+      inst: "선생님이 우리 반 25명을 5모둠으로 나누자고 하셨어요. 세 칸에 한 가지씩 써서 붙여요.",
       hints: ["짝과 색종이나 간식을 나누었던 때를 떠올려 봐요.", "‘어떻게 하면 똑같이 나눌 수 있을까?’처럼 궁금한 것을 써도 좋아요."],
       render: (b, a) => panes(b, a, [
         { t: "보여요", e: "👀", ph: "~이 보여요", hint: "모둠마다 몇 명인지, 준비물은 무엇인지 써요" },
         { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "똑같이 나누려면 어떻게 하면 좋을까요?" },
         { t: "궁금해요", e: "❓", ph: "왜 ~일까?", hint: "준비물을 나눌 때 궁금한 것을 써요" }],
         { ok: "생각을 잘 모았어요! 똑같이 나누면 모두 같은 수만큼 가져요." }) },
+    { name: "그려 보기 — 모둠에 나누어 보기", inst: "선생님이 말씀하셨어요. “다음 주 모둠 활동은 5모둠으로 해요. 우리 반 25명을 5모둠으로 똑같이 나누어 볼까요?” 친구들을 모둠에 나누어 보세요.",
+      hints: ["친구를 한 명씩 번갈아 가며 1모둠, 2모둠, 3모둠 … 차례로 보내 보세요.", "‘한 바퀴’ 버튼을 누르면 모둠마다 한 명씩 한꺼번에 가요."],
+      render: (b, a) => u3ShareOut(b, a, { n: 25, g: 5, item: "친구", unit: "명", kind: "kid", box: "모둠", labels: M5, size: 40,
+        ask: [{ q: "한 모둠은 몇 명인가요?", a: 5, unit: "명", why: { "25": "25명은 우리 반 전체예요. 한 모둠에 있는 친구를 세어 봐요." } }],
+        ok: "한 모둠에 5명씩, 5모둠이 되었어요. 똑같이 나누었어요!" }) },
+    { name: "말해 보기 — 나누는 장면 찾기", inst: "준비단이 할 일 목록이에요. 물건이나 사람을 똑같이 나누거나 몇 개씩 나누는 일을 모두 골라 보세요.",
+      hints: ["‘똑같이 나누어’, ‘몇 개씩’이라는 말이 있는지 살펴봐요.", "시계를 보는 일은 나누는 일이 아니에요."],
+      render: thenWhy((b, a) => quiz(b, a, [
+        { q: "나누는 일을 모두 고르세요.", o: ["색종이를 모둠마다 똑같이 나누어 주기", "풀을 한 모둠에 3개씩 나누어 주기", "모둠 활동 시작 시각을 시계로 확인하기", "자를 모둠 바구니에 똑같이 나누어 담기"], a: [0, 1, 3] }],
+        { ok: "모둠 활동 준비에는 나누는 일이 아주 많아요!", bad: "물건이나 사람을 나누는 일인지 다시 살펴봐요." }), { q: "고른 일들은 어떤 점이 같을까요?", ph: "모두 ~하는 일이에요" }) },
     { name: "배운 내용 떠올리기", inst: "나눗셈을 배우려면 곱셈구구가 필요해요. 2학년 때 배운 곱셈구구를 떠올려 보세요.",
       hints: ["5 × 5는 5를 5번 더한 것과 같아요.", "곱셈표에서 두 수가 만나는 칸을 찾아도 돼요."],
       render: (b, a) => numbers(b, a, [{ q: "5 × 5 =", a: 25 }, { q: "4 × 6 =", a: 24 }, { q: "3 × 8 =", a: 24 }, { q: "6 × 7 =", a: 42 }],
@@ -2562,10 +2659,10 @@ const LESSONS = [
         ok: "24 ÷ 4 = 6. 4명씩 6모둠이 되었어요!" }) },
     { inst: "누가 바르게 말했을까요? 풀 20개를 한 모둠에 5개씩 나누어 주는 상황이에요.",
       hints: ["20에서 5를 몇 번 빼면 0이 되는지 세어 봐요.", "빼는 수 5가 몫이 아니라, 뺀 횟수가 몫이에요."],
-      render: (b, a) => quiz(b, a, [
-        { q: "지호: “20 - 5 - 5 - 5 - 5 = 0이니까 20 ÷ 5 = 4예요.”  하린: “20 - 5 - 5 - 5 - 5 = 0이니까 20 ÷ 5 = 5예요.”  바르게 말한 친구는?", o: ["지호", "하린"], a: 0 },
-        { q: "하린이는 무엇을 잘못 생각했을까요?", o: ["뺀 횟수 대신 빼는 수 5를 몫으로 썼어요", "뺄셈을 잘못 계산했어요"], a: 0 }],
-        { ok: "5를 4번 빼면 0이 되니까 몫은 4예요!", bad: "5를 몇 번 뺐는지 다시 세어 봐요." }) },
+      render: thenWhy((b, a) => quiz(b, a, [
+        { q: "지호: “20 - 5 - 5 - 5 - 5 = 0이니까 20 ÷ 5 = 4예요.”  하린: “20 - 5 - 5 - 5 - 5 = 0이니까 20 ÷ 5 = 5예요.”  바르게 말한 친구는?", o: ["지호", "하린", "둘 다 맞아요", "둘 다 틀렸어요"], a: 0 },
+        { q: "하린이는 무엇을 잘못 생각했을까요?", o: ["뺄셈을 잘못 계산했어요", "뺀 횟수 대신 빼는 수 5를 몫으로 썼어요", "20을 몫으로 썼어요"], a: 1 }],
+        { ok: "5를 4번 빼면 0이 되니까 몫은 4예요!", bad: "5를 몇 번 뺐는지 다시 세어 봐요." }), { q: "20 ÷ 5의 몫이 왜 5를 뺀 횟수일까요?", ph: "왜냐하면 ~" }) },
     { inst: "약속: 뺄셈식과 나눗셈식을 이어 보아요.",
       hints: ["15 - 3 - 3 - 3 - 3 - 3 = 0에서 빼는 수 3이 몇 번 나오는지 세어 봐요."],
       render: (b, a) => blanks(b, a, ["15 - 3 - 3 - 3 - 3 - 3 = 0에서 3을 ", { o: ["5번", "3번"], a: 0 }, " 뺐어요. 이것을 나눗셈식으로 15 ÷ 3 = ", { o: ["5", "3"], a: 0 }, "라고 써요. 뺀 횟수가 ", { o: ["몫", "나누는 수"], a: 0 }, "이에요."]) },
@@ -2636,10 +2733,10 @@ const LESSONS = [
         qText: "한 모둠에 몇 장씩 주나요?", qUnit: "장", ok: "5 × 6 = 30이므로 30 ÷ 5 = 6. 한 모둠에 6장씩이에요!" }) },
     { inst: "곱셈식으로 몫을 구하는 방법을 말해 보세요.",
       hints: ["28 ÷ 7의 몫은 7에 무엇을 곱하면 28이 되는지 생각해요."],
-      render: (b, a) => quiz(b, a, [
-        { q: "28 ÷ 7의 몫을 구할 때 쓰는 곱셈식은?", o: ["7 × 4 = 28", "7 + 4 = 11", "28 + 7 = 35"], a: 0 },
-        { q: "7 × 4 = 28이면 28 ÷ 7의 몫은?", o: ["4", "7", "28"], a: 0 }],
-        { ok: "나누는 수에 몫을 곱하면 나누어지는 수가 돼요!" }) },
+      render: thenWhy((b, a) => quiz(b, a, [
+        { q: "28 ÷ 7의 몫을 구할 때 쓰는 곱셈식은?", o: ["28 + 7 = 35", "7 + 4 = 11", "7 × 4 = 28"], a: 2 },
+        { q: "7 × 4 = 28이면 28 ÷ 7의 몫은?", o: ["7", "4", "28"], a: 1 }],
+        { ok: "나누는 수에 몫을 곱하면 나누어지는 수가 돼요!" }), { q: "왜 곱셈식으로 나눗셈의 몫을 구할 수 있을까요?", ph: "왜냐하면 ~" }) },
     { inst: "약속: 곱셈식으로 몫을 구하는 방법을 정리해요.",
       hints: ["32 ÷ 4 → 4 × □ = 32 → □ = 8"],
       render: (b, a) => blanks(b, a, ["▲ ÷ ■의 몫은 ", { o: ["■ × □ = ▲", "▲ × ■ = □"], a: 0 }, "에서 □를 찾으면 돼요. 나누는 수에 곱해서 나누어지는 수가 되는 수가 ", { o: ["몫", "나누는 수"], a: 0 }, "이에요."]) },
@@ -2677,10 +2774,10 @@ const LESSONS = [
         why: "6 × 5 = 30인데 48은 30보다 커요. 6 × 8 = 48이라서 몫은 8이에요." }) },
     { inst: "곱셈구구로 몫을 구하는 방법을 말해 보세요.",
       hints: ["나누는 수 6의 단을 떠올려요. 6 × □ = 54"],
-      render: (b, a) => quiz(b, a, [
-        { q: "54 ÷ 6의 몫을 구하려면 몇 단 곱셈구구를 보나요?", o: ["6단", "5단", "4단"], a: 0 },
-        { q: "6 × 9 = 54이므로 54 ÷ 6의 몫은?", o: ["9", "6", "54"], a: 0 }],
-        { ok: "나누는 수의 단을 떠올리면 몫을 빨리 찾을 수 있어요!" }) },
+      render: thenWhy((b, a) => quiz(b, a, [
+        { q: "54 ÷ 6의 몫을 구하려면 몇 단 곱셈구구를 보나요?", o: ["5단", "4단", "6단", "9단"], a: 2 },
+        { q: "6 × 9 = 54이므로 54 ÷ 6의 몫은?", o: ["6", "54", "9"], a: 2 }],
+        { ok: "나누는 수의 단을 떠올리면 몫을 빨리 찾을 수 있어요!" }), { q: "54 ÷ 6을 풀 때 왜 6단을 볼까요?", ph: "왜냐하면 ~" }) },
     { inst: "약속: 곱셈구구로 몫을 구하는 방법을 정리해요.",
       hints: ["42 ÷ 7 → 7단에서 7 × 6 = 42를 찾으면 몫은 6이에요."],
       render: (b, a) => blanks(b, a, ["나눗셈의 몫은 ", { o: ["나누는 수의 단", "몫의 단"], a: 0 }, " 곱셈구구에서 곱이 ", { o: ["나누어지는 수", "나누는 수"], a: 0 }, "가 되는 곱셈을 찾아 구해요."]) },
@@ -2715,11 +2812,11 @@ const LESSONS = [
         ask: [{ q: "몇 모둠에 줄 수 있나요?", a: 4, unit: "모둠" }], ok: "20 ÷ 5 = 4. 4모둠에 줄 수 있어요!" }) },
     { inst: "두 이야기를 비교해 보세요.",
       hints: ["두 이야기 모두 20을 5로 나누었어요.", "첫째는 한 모둠이 받는 수, 둘째는 받을 수 있는 모둠 수를 구했어요."],
-      render: (b, a) => quiz(b, a, [
-        { q: "두 이야기를 나타내는 나눗셈식은?", o: ["20 ÷ 5 = 4", "5 ÷ 20 = 4", "20 - 5 = 15"], a: 0 },
-        { q: "첫째 이야기에서 몫 4는?", o: ["한 모둠이 받는 색연필 수", "색연필을 받는 모둠 수"], a: 0 },
-        { q: "둘째 이야기에서 몫 4는?", o: ["한 모둠이 받는 색연필 수", "색연필을 받는 모둠 수"], a: 1 }],
-        { ok: "같은 나눗셈식이라도 몫이 나타내는 것은 이야기마다 달라요!" }) },
+      render: thenWhy((b, a) => quiz(b, a, [
+        { q: "두 이야기를 나타내는 나눗셈식은?", o: ["5 ÷ 20 = 4", "20 - 5 = 15", "20 ÷ 5 = 4"], a: 2 },
+        { q: "첫째 이야기에서 몫 4는?", o: ["색연필을 받는 모둠 수", "색연필 전체 수", "한 모둠이 받는 색연필 수"], a: 2 },
+        { q: "둘째 이야기에서 몫 4는?", o: ["색연필을 받는 모둠 수", "색연필 전체 수", "한 모둠이 받는 색연필 수"], a: 0 }],
+        { ok: "같은 나눗셈식이라도 몫이 나타내는 것은 이야기마다 달라요!" }), { q: "같은 20 ÷ 5인데 몫 4의 뜻이 왜 다를까요?", ph: "왜냐하면 ~" }) },
     { name: "이야기 만들기", inst: "18 ÷ 3 = 6이 되는 모둠 활동 이야기를 만들어 보세요.",
       hints: ["예) 풀 18개를 3모둠에 똑같이 나누면 한 모둠에 몇 개일까요?", "예) 공 18개를 한 바구니에 3개씩 담으면 몇 바구니일까요?"],
       render: (b, a) => writeStep(b, a, [
@@ -2745,15 +2842,15 @@ const LESSONS = [
   steps: [
     { inst: "모둠 활동이 끝나고 보드게임 상자 24개를 정리해요. 3명, 4명, 6명이 똑같이 나누어 옮기면 한 명이 몇 개씩 옮길까요?",
       hints: ["3명, 4명, 6명 버튼을 모두 눌러 봐요.", "사람이 많아질 때 한 명이 옮기는 상자를 차례로 비교해요."],
-      render: (b, a) => u3ShareCompare(b, a, { n: 24, gs: [3, 4, 6], item: "상자", kind: "box", who: "명", person: "친구",
-        ok: "24 ÷ 3 = 8, 24 ÷ 4 = 6, 24 ÷ 6 = 4. 함께 옮기는 사람이 많을수록 한 명이 옮기는 상자는 적어져요!" }) },
+      render: wonderRecall((b, a) => u3ShareCompare(b, a, { n: 24, gs: [3, 4, 6], item: "상자", kind: "box", who: "명", person: "친구",
+        ok: "24 ÷ 3 = 8, 24 ÷ 4 = 6, 24 ÷ 6 = 4. 함께 옮기는 사람이 많을수록 한 명이 옮기는 상자는 적어져요!" })) },
     { name: "식으로 나타내기", inst: "옮기는 사람 수에 따라 나눗셈식으로 나타내 보세요.",
       hints: ["24 ÷ 3은 3단, 24 ÷ 4는 4단, 24 ÷ 6은 6단, 24 ÷ 8은 8단에서 곱이 24인 곱셈을 찾아요."],
       render: (b, a) => numbers(b, a, [{ q: "24 ÷ 3 =", a: 8 }, { q: "24 ÷ 4 =", a: 6 }, { q: "24 ÷ 6 =", a: 4 }, { q: "24 ÷ 8 =", a: 3 }],
         { ok: "나누는 수가 3, 4, 6, 8로 커질수록 몫은 8, 6, 4, 3으로 작아져요." }) },
     { inst: "찾은 사실을 말해 보세요.",
       hints: ["24 ÷ 3 = 8, 24 ÷ 8 = 3을 비교해 봐요."],
-      render: (b, a) => blanks(b, a, ["나누어지는 수가 같을 때 나누는 수가 커지면 몫은 ", { o: ["작아져요", "커져요"], a: 0 }, ". 그래서 여럿이 함께 옮기면 한 명이 옮기는 상자가 ", { o: ["줄어요", "늘어요"], a: 0 }, "."]) },
+      render: thenWhy((b, a) => blanks(b, a, ["나누어지는 수가 같을 때 나누는 수가 커지면 몫은 ", { o: ["커져요", "작아져요", "그대로예요"], a: 1 }, ". 그래서 여럿이 함께 옮기면 한 명이 옮기는 상자가 ", { o: ["늘어요", "그대로예요", "줄어요"], a: 2 }, "."]), { q: "나누는 수가 커지면 왜 몫이 작아질까요?", ph: "왜냐하면 ~" }) },
     { name: "모둠 짜기 탐구", inst: "보드게임 시간에 사회를 맡은 1명을 뺀 24명이 모둠을 만들어요. 한 모둠의 사람 수에 따라 몇 모둠이 될까요?",
       hints: ["24 ÷ 3 = □처럼 나눗셈식으로 생각해요.", "한 모둠의 사람이 많아질수록 모둠 수는 적어져요."],
       render: (b, a) => numbers(b, a, [
@@ -2762,9 +2859,11 @@ const LESSONS = [
         { ok: "한 모둠의 사람 수가 커질수록 모둠 수는 작아져요!" }) },
     { name: "정리하기", inst: "오늘 알게 된 것을 정리해요.",
       hints: ["‘나누는 수가 커지면 몫은 …’으로 시작해도 좋아요.", "모둠이 너무 크거나 작으면 어떤 점이 좋고 어떤 점이 불편할지 생각해 봐요."],
-      render: (b, a) => writeStep(b, a, [
+      render: wonderRecall((b, a) => writeStep(b, a, [
         { q: "연결하기: 오늘 나눗셈을 어떻게 사용했나요?", tag: "연결" },
-        { q: "확장하기: 모둠 활동을 할 때 몇 명씩 모둠을 만들면 좋을지 까닭과 함께 써 보세요.", tag: "확장" }]) }
+        { q: "확장하기: 모둠 활동을 할 때 몇 명씩 모둠을 만들면 좋을지 까닭과 함께 써 보세요.", tag: "확장" },
+        { q: "도전하기: 아직 헷갈리거나 어려운 것은 무엇인가요?", tag: "도전" },
+        { q: "1차시에 궁금했던 것 중 풀린 것은 무엇인가요?", tag: "풀린 궁금증" }])) }
   ],
   challenge: { inst: "공 36개를 똑같이 나누어 정리해요.", render: (b, a) => numbers(b, a, [
     { q: "4명이 정리하면 한 명은?", a: 9, unit: "개" },

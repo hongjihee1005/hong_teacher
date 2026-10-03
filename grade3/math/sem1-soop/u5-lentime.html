@@ -1466,6 +1466,103 @@ function predictCheck(body, api, opts) {
   body.append(box, second);
 }
 
+/* ── 탐구 도우미 (2026-10-03) ─────────────────────────────────────────────
+   thenWhy(main, {q, ph})  : 고르기를 다 맞히면 아래에 "왜 그럴까요?" 한 줄 칸이 열려요.
+                             한 줄(4글자 이상)을 써야 계단을 통과해요.
+   ruleFirst(main, {q, ph}): 먼저 '내 규칙 예상'을 한 줄 쓰면 그다음 활동이 열리고,
+                             활동을 마치면 "내 예상이 맞았나요?"를 골라요(고쳐야 하면 고친 규칙 한 줄).
+                             예상은 그 차시 기록(p.rule)과 선생님 기록('예상')에 남아요.
+   wonderRecall(main, {write}) : 1차시 '궁금해요' 쪽지를 위에 다시 보여 줘요.
+                             write가 있으면 글쓰기 칸 하나를 더해요(writeStep 계단에서만).   */
+(function () {
+  if (document.getElementById("hj-inq-css")) return;
+  const st = document.createElement("style"); st.id = "hj-inq-css";
+  st.textContent = ".inqbox{margin-top:.8em;padding:.7em .9em;border:2px dashed var(--line);border-radius:.8em;background:var(--paper)}" +
+    ".inqbox .jua{margin-bottom:.35em}.inqbox textarea{min-height:2.6em}.inqbox .inqrow{display:flex;gap:.5em;flex-wrap:wrap;margin-top:.5em}" +
+    ".inqmemo{margin:.2em 0 .7em;padding:.55em .8em;border-left:5px solid var(--line);border-radius:.4em;background:var(--paper);word-break:keep-all}" +
+    ".inqmemo ul{margin:.3em 0 0 1.1em;padding:0}.inqmemo li{margin:.15em 0}";
+  document.head.appendChild(st);
+})();
+function inqWrite(q, ph, btnText, onOk, api) {
+  const t = h("textarea", { placeholder: ph || "왜냐하면 ~" });
+  const btn = h("button", { class: "big", onclick: () => {
+    const v = t.value.trim();
+    if (v.length < 4) { api.hint("내 생각을 조금 더 써 봐요. (4글자 이상)"); t.focus(); return; }
+    onOk(v, btn, t);
+  } }, btnText || "다 썼어요");
+  return h("div", { class: "inqbox" }, h("div", { class: "jua" }, q), t, h("div", { class: "inqrow" }, btn));
+}
+function thenWhy(main, why) {
+  return (body, api) => {
+    let first = "", firstMsg = "", opened = false;
+    const slot = h("div", {});
+    const wrapped = Object.assign({}, api, { done: (ans, msg) => {
+      first = ans || ""; firstMsg = msg || "";
+      if (opened) return; opened = true;
+      api.hint("맞았어요! 이제 왜 그런지 한 줄로 써 봐요.");
+      slot.append(inqWrite("💬 " + (why.q || "왜 그럴까요? 한 줄로 써 봐요."), why.ph, "다 썼어요", (v, btn, t) => {
+        btn.disabled = true; t.readOnly = true;
+        api.done(first + " | 왜: " + v, firstMsg || "까닭까지 말했어요!");
+      }, api));
+    } });
+    main(body, wrapped);
+    body.append(slot);
+  };
+}
+function ruleFirst(main, opts) {
+  return (body, api) => {
+    const L = CUR && CUR.L, p = L ? myProg(L.id) : null;
+    const stepNo = typeof CUR.idx === "number" ? CUR.idx + 1 : 0;
+    const inner = h("div", {}), slot = h("div", {});
+    let built = false, opened = false, first = "", firstMsg = "";
+    const finish = (tag) => api.done(first + " | 예상: " + tag, firstMsg);
+    const wrapped = Object.assign({}, api, { done: (ans, msg) => {
+      first = ans || ""; firstMsg = msg || "";
+      if (opened) return; opened = true;
+      api.hint("다 했어요! 처음에 쓴 예상과 견주어 봐요.");
+      const row = h("div", { class: "inqrow" });
+      const box = h("div", { class: "inqbox" }, h("div", { class: "jua" }, "🔎 내 예상이 맞았나요?"),
+        p && p.rule ? h("div", { class: "inqmemo" }, h("b", {}, "✏️ 내 예상: "), p.rule) : "", row);
+      [["맞았어요", 0], ["조금 고쳐야 해요", 1], ["많이 고쳐야 해요", 2]].forEach(([t, k]) => row.append(h("button", { class: "opt", onclick: (e) => {
+        [...row.children].forEach(b => { b.classList.remove("on"); b.disabled = true; }); e.currentTarget.classList.add("on");
+        if (k === 0) return finish("맞았어요");
+        box.append(inqWrite("✏️ 고친 규칙을 한 줄로 써 봐요.", "고친 규칙: ~", "다 썼어요", (v, btn, ta) => {
+          btn.disabled = true; ta.readOnly = true; if (p) { p.rule2 = v; store.save(S); } finish(t + " → " + v);
+        }, api));
+      } }, t)));
+      slot.append(box);
+    } });
+    const show = () => { if (built) return; built = true; main(inner, wrapped); };
+    const box = inqWrite("✏️ 먼저 예상해요 — " + opts.q, opts.ph || "내 규칙: ~", "예상 다 썼어요", (v, btn) => {
+      if (p) { p.rule = v; store.save(S); if (L) record(L, stepNo, "내 규칙 예상", true, 1, v, "예상"); }
+      btn.textContent = "예상 고치기";
+      api.hint("예상을 적었어요. 이제 직접 해 보며 확인해요.");
+      show();
+    }, api);
+    if (p && p.rule) { box.querySelector("textarea").value = p.rule; box.querySelector("button").textContent = "예상 고치기"; }
+    body.append(box, inner, slot);
+    if (p && p.rule) show();
+  };
+}
+function wonderNotes() {
+  const L1 = LESSONS[0]; if (!L1 || typeof sid !== "function" || !S.prog[sid()]) return [];
+  const p = myProg(L1.id), out = [];
+  Object.values(p.steps || {}).forEach(r => {
+    const m = r && r.ans && String(r.ans).match(/궁금해요:\s*([^|]*)/);
+    if (m && m[1].trim()) m[1].split(/,\s*/).forEach(x => { x = x.trim(); if (x && out.indexOf(x) < 0) out.push(x); });
+  });
+  return out;
+}
+function wonderRecall(main, opts = {}) {
+  return (body, api) => {
+    const notes = wonderNotes();
+    body.append(h("div", { class: "inqmemo" }, h("b", {}, "❓ 1차시에 내가 궁금했던 것"),
+      notes.length ? h("ul", {}, ...notes.map(n => h("li", {}, n)))
+                   : h("div", {}, "아직 붙인 쪽지가 없어요. 이 단원에서 궁금했던 것을 떠올려 봐요.")));
+    main(body, api);
+  };
+}
+
 /* ── 선택 문제 (★도전 계단 아래, 마인드맵을 다 붙이면 열림) ──────────────────
    render: withOptional((b, a) => panes(...), (b, a) => numbers(b, a, [...]), { title, inst })
    · 본 활동(main)만 해도 계단은 통과합니다. 선택 문제는 통과 여부와 상관없어요.
@@ -2522,23 +2619,23 @@ const LESSONS = [
   question: "봄 소풍에서 길이와 시간은 어디에 쓰일까요?",
   summary: "cm와 m만으로는 아주 짧은 길이나 아주 먼 거리를 나타내기 어려워요. 1분보다 짧은 시간을 나타낼 단위도 필요해요.",
   steps: [
-    { inst: "소풍 가방에 달린 무당벌레 배지를 자 위에 놓았어요. 배지의 길이를 살펴보세요.", hints: ["배지의 오른쪽 끝이 자의 어느 숫자와 어느 숫자 사이에 있는지 보세요."],
-      render: (b, a) => u5Ruler(b, a, { maxCm: 3, objs: [{ name: "무당벌레 배지", len: 17, kind: "button" }],
-        quiz: [{ q: "배지의 오른쪽 끝은 자의 어느 숫자 사이에 있나요?", o: ["0 cm와 1 cm 사이", "1 cm와 2 cm 사이", "2 cm보다 더 가요"], a: 1 },
-          { q: "배지의 길이를 ‘몇 cm’로만 딱 맞게 말할 수 있나요?", o: ["네, 딱 맞게 말할 수 있어요", "아니요, cm보다 더 작은 단위가 필요해요"], a: 1 }],
-        ok: "맞아요. 1 cm보다 작은 부분까지 나타내려면 새로운 단위가 필요해요." }) },
-    { name: "배운 내용 떠올리기", inst: "소풍을 떠나기 전에 2학년 때 배운 길이와 시간을 떠올려요.", hints: ["1 m는 100 cm예요.", "1시간은 60분이에요."],
-      render: (b, a) => u5Ask(b, a, [
-        { q: "1 m =", parts: [{ a: 100, u: "cm" }] },
-        { q: "1 m 30 cm =", parts: [{ a: 130, u: "cm" }], why: { "31": "1 m는 1 cm가 아니라 100 cm예요. 100 cm와 30 cm를 더해요." } },
-        { q: "250 cm =", parts: [{ a: 2, u: "m" }, { a: 50, u: "cm" }] },
-        { q: "1시간 =", parts: [{ a: 60, u: "분" }] }], { ok: "길이와 시간의 단위를 잘 기억하고 있어요." }) },
-    { name: "말해 보기 — 보기·생각하기·궁금해하기", inst: "봄 소풍에서 재어 볼 것을 떠올려요. 세 칸에 써서 붙여요.", hints: ["수목원에서 만날 곤충, 나뭇잎, 산책길, 보물찾기를 떠올려요.", "개미는 1 cm보다 짧고, 산책길은 아주 길어요."],
+    { name: "만져 보기 — 보기·생각하기·궁금해하기", inst: "봄 소풍에서 재어 볼 것을 떠올려요. 세 칸에 써서 붙여요.", hints: ["수목원에서 만날 곤충, 나뭇잎, 산책길, 보물찾기를 떠올려요.", "개미는 1 cm보다 짧고, 산책길은 아주 길어요."],
       render: (b, a) => panes(b, a, [
         { t: "보여요", e: "👀", ph: "소풍에서 ~을 재어 볼래요", hint: "길이나 시간을 재야 할 것" },
         { t: "생각해요", e: "💭", ph: "~은 cm로 재기 어려울 것 같아요", hint: "소풍이나 나들이를 갔던 경험" },
         { t: "궁금해요", e: "❓", ph: "~은 어떻게 나타낼까?", hint: "길이와 시간에 대해 궁금한 것" }],
         { ok: "아주 짧은 길이와 아주 먼 거리를 나타낼 단위가 필요해요. 1분보다 짧은 시간도요." }) },
+    { name: "그려 보기 — 자로 재어 보기", inst: "소풍 가방에 달린 무당벌레 배지를 자 위에 놓았어요. 배지의 길이를 살펴보세요.", hints: ["배지의 오른쪽 끝이 자의 어느 숫자와 어느 숫자 사이에 있는지 보세요."],
+      render: (b, a) => u5Ruler(b, a, { maxCm: 3, objs: [{ name: "무당벌레 배지", len: 17, kind: "button" }],
+        quiz: [{ q: "배지의 오른쪽 끝은 자의 어느 숫자 사이에 있나요?", o: ["0 cm와 1 cm 사이", "1 cm와 2 cm 사이", "2 cm보다 더 가요"], a: 1 },
+          { q: "배지의 길이를 ‘몇 cm’로만 딱 맞게 말할 수 있나요?", o: ["네, 딱 맞게 말할 수 있어요", "아니요, cm보다 더 작은 단위가 필요해요"], a: 1 }],
+        ok: "맞아요. 1 cm보다 작은 부분까지 나타내려면 새로운 단위가 필요해요." }) },
+    { name: "말해 보기 — 배운 내용 떠올리기", inst: "소풍을 떠나기 전에 2학년 때 배운 길이와 시간을 떠올려요.", hints: ["1 m는 100 cm예요.", "1시간은 60분이에요."],
+      render: thenWhy((b, a) => u5Ask(b, a, [
+        { q: "1 m =", parts: [{ a: 100, u: "cm" }] },
+        { q: "1 m 30 cm =", parts: [{ a: 130, u: "cm" }], why: { "31": "1 m는 1 cm가 아니라 100 cm예요. 100 cm와 30 cm를 더해요." } },
+        { q: "250 cm =", parts: [{ a: 2, u: "m" }, { a: 50, u: "cm" }] },
+        { q: "1시간 =", parts: [{ a: 60, u: "분" }] }], { ok: "길이와 시간의 단위를 잘 기억하고 있어요." }), { q: "1 m 30 cm는 왜 130 cm일까요?", ph: "왜냐하면 ~" }) },
     { name: "무엇을 배울까요", inst: "탐험대가 알아야 할 것을 골라 보세요.", hints: ["개미는 1 cm보다 짧아요.", "수목원 산책길은 아주 길어요.", "보물찾기는 1분도 안 걸릴 때가 있어요."],
       render: (b, a) => quiz(b, a, [
         { q: "풀밭의 개미처럼 1 cm보다 짧은 길이를 정확하게 나타내려면?", o: ["cm보다 더 작은 단위가 필요해요", "m로 나타내면 돼요"], a: 0 },
@@ -2570,7 +2667,7 @@ const LESSONS = [
         ask: [{ q: "솔방울은 6 cm보다 몇 mm 더 긴가요?", parts: [{ a: 4, u: "mm" }] },
           { q: "솔방울의 길이 =", parts: [{ a: 6, u: "cm" }, { a: 4, u: "mm" }] }], ok: "솔방울의 길이는 6 cm 4 mm예요." }) },
     { inst: "mm에 대해 말해 보세요.", hints: ["자의 0과 1 사이 작은 눈금은 10칸이에요.", "6 cm는 10 mm가 6번이에요."],
-      render: (b, a) => blanks(b, a, ["1 cm를 ", { o: ["10칸", "100칸"], a: 0 }, "으로 똑같이 나누었을 때 작은 눈금 한 칸의 길이를 ", { o: ["1 mm", "1 cm"], a: 0 }, "라고 해요. 6 cm는 ", { o: ["60 mm", "6 mm"], a: 0 }, "와 같으므로 6 cm 4 mm는 ", { o: ["64 mm", "10 mm"], a: 0 }, "예요."]) },
+      render: thenWhy((b, a) => blanks(b, a, ["1 cm를 ", { o: ["100칸", "10칸", "5칸"], a: 1 }, "으로 똑같이 나누었을 때 작은 눈금 한 칸의 길이를 ", { o: ["1 cm", "1 m", "1 mm"], a: 2 }, "라고 해요. 6 cm는 ", { o: ["6 mm", "60 mm", "600 mm"], a: 1 }, "와 같으므로 6 cm 4 mm는 ", { o: ["10 mm", "64 mm", "604 mm"], a: 1 }, "예요."]), { q: "6 cm 4 mm는 왜 64 mm일까요?", ph: "왜냐하면 ~" }) },
     { inst: "약속을 확인해요. 바르게 쓰고 읽은 것을 골라 보세요.", hints: ["mm는 ‘밀리미터’라고 읽어요.", "3 cm는 30 mm예요."],
       render: (b, a) => quiz(b, a, [
         { q: "3 cm 8 mm를 바르게 읽은 것은?", o: ["3 센티미터 8 밀리미터", "3 센티미터 8 미터", "3 밀리미터 8 센티미터"], a: 0 },
@@ -2646,7 +2743,7 @@ const LESSONS = [
         { thing: "하린이의 키", num: 128, o: ["mm", "cm", "m"], a: 1, why: { "2": "128 m는 아주 높은 건물만큼 높아요." } },
         { thing: "수목원 소나무의 높이", num: 8, o: ["cm", "m", "km"], a: 1 }], ok: "길이에 알맞은 단위를 잘 골랐어요." }) },
     { inst: "어림한 방법을 말해 보세요.", hints: ["한 뼘이 가방 긴 쪽에 3번 들어갔어요."],
-      render: (b, a) => blanks(b, a, ["잘 아는 길이(한 뼘)를 떠올리고, 그 길이가 전체에 ", { o: ["몇 번", "몇 cm"], a: 0 }, " 들어가는지 세어 어림했어요. 어림한 길이는 ", { o: ["약 36 cm", "딱 36 cm"], a: 0 }, "처럼 ‘약’을 붙여 말해요."]) },
+      render: thenWhy((b, a) => blanks(b, a, ["잘 아는 길이(한 뼘)를 떠올리고, 그 길이가 전체에 ", { o: ["몇 cm", "몇 번", "몇 m"], a: 1 }, " 들어가는지 세어 어림했어요. 어림한 길이는 ", { o: ["딱 36 cm", "약 36 cm", "약 36 m"], a: 1 }, "처럼 ‘약’을 붙여 말해요."]), { q: "어림한 길이에는 왜 ‘약’을 붙일까요?", ph: "왜냐하면 ~" }) },
     { name: "거리 어림하기", inst: "입구에서 연못까지는 약 500 m예요. 안내도에서 입구를 출발해 여러 곳을 눌러 보고, 500 m 눈금으로 거리를 어림해 보세요. 다른 곳을 보려면 ‘처음부터’를 눌러요.", hints: ["장소를 누르면 길 위에 500 m마다 눈금이 생겨요.", "온실까지는 500 m 눈금이 몇 번 들어가나요?"],
       render: (b, a) => u5Route(b, a, { unit: "m", mode: "view", start: "gate", H: 440, unitBar: { px: 130, label: "약 500 m" },
         nodes: [{ id: "gate", name: "입구", x: 150, y: 220 }, { id: "pond", name: "연못", x: 280, y: 220 },
@@ -2755,10 +2852,18 @@ const LESSONS = [
       render: (b, a) => u5TimeCalc(b, a, { a: [12, 10, 0], b: [10, 25, 0], op: "-", aKind: "시각", bKind: "시각", use: [0, 1], mid: true,
         fig: () => u5Table(["반", "수목원 도착", "점심 시작", "둘러본 곳"], [["3학년 2반", "10시 25분", "12시 10분", "연못, 온실, 전망대"]], "봄 소풍 기록표"), ok: "12시 10분 − 10시 25분 = 1시간 45분 동안 둘러보았어요." }) }
   ],
-  challenge: { inst: "소풍 일정 속 시간의 뺄셈을 해 보세요.", render: (b, a) => u5Ask(b, a, [
+  challenge: { inst: "이야기 만들기 — 45분이 걸린 소풍 이야기 문제를 만들어요.",
+    hints: ["10시 50분은 시작한 시각, 11시 35분은 끝난 시각이에요.", "예) 10시 50분에 산책을 시작해 11시 35분에 끝났어요. 몇 분 걸렸을까요?"],
+    render: withOptional(
+      (b, a) => writeStep(b, a, [
+        { q: "11시 35분 − 10시 50분 = 45분이 되는 이야기 문제", tag: "이야기", ph: "예) 소풍에서 ~을 10시 50분에 …" },
+        { q: "내 이야기에서 45분은 무엇을 나타내나요?", tag: "답의 뜻" }],
+        { ok: "이야기 문제를 만들었어요! 짝과 바꾸어 풀어 봐요." }),
+      (b, a) => u5Ask(b, a, [
     { q: "2시간 15분 20초 − 50분 35초 =", parts: [{ a: 1, u: "시간" }, { a: 24, u: "분" }, { a: 45, u: "초" }], why: { "2,35,15": "작은 수에서 큰 수를 거꾸로 빼면 안 돼요. 1분을 60초로, 1시간을 60분으로 바꾸어 계산해요." } },
     { q: "2분 25초 동안 한 비눗방울 공연이 11시 3분 10초에 끝났어요. 시작한 시각은?", parts: [{ a: 11, u: "시" }, { a: 0, u: "분" }, { a: 45, u: "초" }], why: { "11,1,45": "3분 10초를 2분 70초로 바꾸면 2분이 남아요. 2분에서 2분을 빼요.", "11,0,85": "10초에서 25초를 뺄 때 1분을 100초가 아니라 60초로 바꾸어요." } },
-    { q: "보물찾기 기록: 하준 1분 52초, 서윤 2분 8초, 도윤 115초. 가장 빠른 친구와 가장 느린 친구의 기록 차는?", parts: [{ a: 16, u: "초" }], why: { "56": "단위를 초로 맞추어 비교해요. 하준 112초, 도윤 115초, 서윤 128초예요." } }], { ok: "받아내림이 있는 시간의 뺄셈도 해냈어요!" }) }
+    { q: "보물찾기 기록: 하준 1분 52초, 서윤 2분 8초, 도윤 115초. 가장 빠른 친구와 가장 느린 친구의 기록 차는?", parts: [{ a: 16, u: "초" }], why: { "56": "단위를 초로 맞추어 비교해요. 하준 112초, 도윤 115초, 서윤 128초예요." } }], { ok: "받아내림이 있는 시간의 뺄셈도 해냈어요!" }),
+      { title: "더 해 보고 싶다면 — 선택 문제", inst: "소풍 일정 속 시간의 뺄셈을 해 보세요. 1분은 60초, 1시간은 60분으로 바꾸어 받아내림해요." }) }
 },
 {
   id: "p8", no: 8, title: "생각을 더하다 ― 수목원 탐험 계획", soop: "탐구 정리하기(O)",
@@ -2766,20 +2871,22 @@ const LESSONS = [
   summary: "걷는 시간과 머무는 시간을 모두 더하면 걸리는 시간을 알 수 있어요. 출발한 10시 30분에 걸리는 시간을 더하면 돌아올 시각이고, 12시 30분이거나 그보다 이르면 알맞은 계획이에요.",
   steps: [
     { name: "길 따라가기", inst: "선생님: “10시 30분에 입구를 출발해요. 점심을 먹으러 12시 30분까지 입구로 돌아와야 해요.” 하린이네 모둠은 연못 → 온실 → 전망대 → 꽃동산을 들르고 입구로 돌아와요. 안내도에서 길을 따라가 보세요.", hints: ["입구에서 연못을 먼저 눌러요.", "마지막에는 꽃동산에서 입구로 돌아와요."],
-      render: (b, a) => u5Route(b, a, Object.assign({}, P5_PARK, { unit: "time", mode: "follow", start: "gate", route: ["gate", "pond", "green", "view", "flower", "gate"], H: 450,
-        ok: "하린이네 모둠의 길을 끝까지 따라갔어요. 걸어서 이동하는 것은 모두 5번이에요." })) },
+      render: wonderRecall((b, a) => u5Route(b, a, Object.assign({}, P5_PARK, { unit: "time", mode: "follow", start: "gate", route: ["gate", "pond", "green", "view", "flower", "gate"], H: 450,
+        ok: "하린이네 모둠의 길을 끝까지 따라갔어요. 걸어서 이동하는 것은 모두 5번이에요." }))) },
     { name: "시간 모으기", inst: "하린이네 모둠이 쓰는 시간을 모아 보세요. 안내도에서 길 위의 시간은 걷는 시간, 장소 아래 시간은 머무는 시간이에요.", hints: ["걷는 시간: 6분 + 7분 + 12분 + 10분 + 9분", "머무는 시간: 20분 30초 + 15분 30초 = 36분이에요. 여기에 15분과 10분을 더해요."],
       render: (b, a) => u5Ask(b, a, [
         { q: "걷는 시간 모두: 6분 + 7분 + 12분 + 10분 + 9분 =", parts: [{ a: 44, u: "분" }] },
         { q: "머무는 시간 모두: 15분 + 20분 30초 + 10분 + 15분 30초 =", parts: [{ a: 61, u: "분" }], why: { "60": "30초 + 30초 = 60초 = 1분이에요. 1분을 더 더해요." } },
         { q: "걷는 시간과 머무는 시간을 모두 더하면", parts: [{ a: 105, u: "분" }] }], { ok: "모두 105분이 걸려요." }) },
-    { name: "말해 보기 — 나침반", inst: "하린이네 계획은 모두 105분이 걸려요. 네 방향으로 살펴보고 한 칸에 한 가지씩 붙여요.", hints: ["105분은 60분과 45분이므로 1시간 45분이에요.", "2시간보다 짧으면 12시 30분까지 돌아올 수 있어요."],
+    { name: "말해 보기 — 두 계획 견주기(주장·근거·질문)",
+      inst: "두 모둠의 탐험 계획이에요. 하린이네는 4곳을 들러 105분이 걸려요. 지호네는 연못과 나비 정원만 들러 65분이 걸려요. 더 나은 계획은 무엇일까요?",
+      hints: ["105분은 60분과 45분이에요. 몇 시간 몇 분일까요?", "65분은 1시간 5분이에요. 지호네는 11시 35분에 돌아와요.", "두 계획 모두 12시 30분 전에 돌아와요. 무엇을 더 중요하게 생각하나요?"],
       render: (b, a) => panes(b, a, [
-        { t: "좋아요", e: "☀️", ph: "~라서 좋아요", hint: "105분은 몇 시간 몇 분일까요?" },
-        { t: "걱정돼요", e: "⚠️", ph: "~일까 걱정돼요", hint: "걷다가 늦어지면 어떻게 될까요?" },
-        { t: "더 알고 싶어요", e: "🔭", ph: "~을 넣으면 몇 분일까?", hint: "나비 정원도 들를 수 있을까요?" },
-        { t: "그래서 이렇게", e: "🧭", ph: "나라면 ~ 계획을 세울래요", hint: "2시간 안에 돌아오게 정해요" }],
-        { ok: "105분 = 60분 + 45분 = 1시간 45분이에요. 2시간보다 짧아요." }) },
+        { t: "주장", e: "✋", ph: "나는 ~네 계획이 더 좋아요", hint: "하린이네, 지호네 중에서 골라요" },
+        { t: "근거", e: "🔎", ph: "왜냐하면 ~", hint: "걸리는 시간, 볼 수 있는 곳, 남는 시간을 견주어요" },
+        { t: "걱정되는 점", e: "⚠️", ph: "그래도 ~이 걱정돼요", hint: "걷다가 늦어지면 어떻게 될까요?" },
+        { t: "질문", e: "❓", ph: "아직 궁금한 것은 ~" }],
+        { ok: "까닭을 들어 견주었어요! 105분 = 1시간 45분, 65분 = 1시간 5분이에요. 두 계획 모두 2시간보다 짧아요." }) },
     { inst: "하린이네 모둠이 입구로 돌아올 시각을 세로셈으로 구해 보세요.", hints: ["10시 30분에 1시간 45분을 더해요.", "30분 + 45분 = 75분 = 1시간 15분이에요."],
       render: (b, a) => u5TimeCalc(b, a, { a: [10, 30, 0], b: [1, 45, 0], op: "+", aKind: "시각", bKind: "시간", use: [0, 1], mid: true, ok: "하린이네 모둠은 12시 15분에 돌아와요. 12시 30분보다 15분 일러요!" }) },
     { name: "나만의 계획 세우기", inst: "이번에는 우리 모둠의 탐험 계획을 세워 보세요. 입구에서 출발해 가고 싶은 곳을 적어도 2곳 들르고 입구로 돌아와요. 오른쪽에 걸리는 시간과 돌아올 시각이 나와요.", hints: ["모두 2시간보다 짧거나 같아야 12시 30분까지 돌아올 수 있어요.", "머무는 시간이 긴 곳(나비 정원)을 넣으면 다른 곳을 줄여요."],
