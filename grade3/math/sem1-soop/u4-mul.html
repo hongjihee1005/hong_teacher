@@ -191,6 +191,7 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
 .pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
 .phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+/*hj-ex*/.pane{position:relative}.pane h3 .pt{flex:1;min-width:0}.pane .exb{flex:none;font-family:inherit;font-size:.62em;padding:.15em .6em;border-radius:999px;border:2px solid currentColor;background:#fff;color:inherit;cursor:pointer;white-space:nowrap}.pane .exb[aria-expanded="true"]{color:#fff!important}.pane0 .exb[aria-expanded="true"]{background:#2B7BD6}.pane1 .exb[aria-expanded="true"]{background:#6A4FC9}.pane2 .exb[aria-expanded="true"]{background:#D9731A}.pane3 .exb[aria-expanded="true"]{background:#2F6B57}.pane .expop{display:none;position:absolute;z-index:30;left:.4em;right:.4em;background:#fff;border:3px solid;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44)}.pane .expop.on{display:block}.pane .expop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em}.pane .expop ul{margin:0;padding-left:1.1em;line-height:1.5}.pane .expop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.pane .expop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}.pane0 .expop{border-color:#2B7BD6}.pane0 .exh{color:#2B7BD6}.pane1 .expop{border-color:#6A4FC9}.pane1 .exh{color:#6A4FC9}.pane2 .expop{border-color:#D9731A}.pane2 .exh{color:#D9731A}.pane3 .expop{border-color:#2F6B57}.pane3 .exh{color:#2F6B57}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane .expop,:root:not([data-theme="light"]) .pane .exb{background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .pane .expop,:root[data-theme="dark"] .pane .exb{background:#1E2A28;color:#EEF3F1}/*/hj-ex*/
 .chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
 .chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
   font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
@@ -1396,6 +1397,26 @@ function writeStep(body, api, prompts, opts = {}) {
    보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
    같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
    panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+/*hj-ex*/ /* 사고 전략 칸별 예시: 칸 설정의 ex:["…","…"] → 제목 옆 '💡 예시' 단추, 누르면 팝업(입력칸 아래, 입력칸은 가리지 않음) */
+function paneEx(p) {
+  if (!p.ex || !p.ex.length) return ["", ""];
+  const pop = h("div", { class: "expop", role: "dialog", "aria-label": p.t + " 예시" },
+    h("button", { class: "exx", type: "button", "aria-label": "닫기", onclick: () => paneExClose() }, "✕"),
+    h("p", { class: "exh" }, "이렇게 써 볼 수 있어요"), h("ul", {}, ...p.ex.map(x => h("li", {}, x))),
+    h("p", { class: "exf" }, "내가 생각한 것으로 바꿔 써요."));
+  const btn = h("button", { class: "exb", type: "button", "aria-expanded": "false", onclick: () => {
+    const on = !pop.classList.contains("on"); paneExClose(); if (!on) return;
+    const sec = btn.closest(".pane"), row = sec.querySelector(".prow");
+    pop.style.top = (row.offsetTop + row.offsetHeight + 6) + "px"; pop.classList.add("on"); btn.setAttribute("aria-expanded", "true");
+    pop.scrollIntoView({ block: "nearest" });
+  } }, "💡 예시");
+  return [btn, pop];
+}
+function paneExClose() { document.querySelectorAll(".expop.on").forEach(p => { p.classList.remove("on"); const b = p.parentElement.querySelector(".exb"); if (b) b.setAttribute("aria-expanded", "false"); }); }
+if (!window.__paneEx) { window.__paneEx = 1;
+  document.addEventListener("click", e => { if (!e.target.closest(".expop,.exb")) paneExClose(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") paneExClose(); }); }
+/*/hj-ex*/
 function panes(body, api, list, opts = {}) {
   const need = opts.min || 1;
   const notes = list.map(() => []);
@@ -1414,11 +1435,12 @@ function panes(body, api, list, opts = {}) {
       chips.append(chip); inp.value = ""; inp.focus();
     };
     inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    const pex = paneEx(p); /*hj-ex*/
     wrap.append(h("section", { class: "pane pane" + pi },
-      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), h("span", { class: "pt" }, " " + p.t), pex[0]), /*hj-ex*/
       p.hint ? h("p", { class: "phint" }, p.hint) : "",
       chips,
-      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기")), pex[1])); /*hj-ex*/
   });
 
   body.append(wrap);

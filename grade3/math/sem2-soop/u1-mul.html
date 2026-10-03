@@ -187,6 +187,7 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
 .pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
 .phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+/*hj-ex*/.pane{position:relative}.pane h3 .pt{flex:1;min-width:0}.pane .exb{flex:none;font-family:inherit;font-size:.62em;padding:.15em .6em;border-radius:999px;border:2px solid currentColor;background:#fff;color:inherit;cursor:pointer;white-space:nowrap}.pane .exb[aria-expanded="true"]{color:#fff!important}.pane0 .exb[aria-expanded="true"]{background:#2B7BD6}.pane1 .exb[aria-expanded="true"]{background:#6A4FC9}.pane2 .exb[aria-expanded="true"]{background:#D9731A}.pane3 .exb[aria-expanded="true"]{background:#2F6B57}.pane .expop{display:none;position:absolute;z-index:30;left:.4em;right:.4em;background:#fff;border:3px solid;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44)}.pane .expop.on{display:block}.pane .expop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em}.pane .expop ul{margin:0;padding-left:1.1em;line-height:1.5}.pane .expop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.pane .expop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}.pane0 .expop{border-color:#2B7BD6}.pane0 .exh{color:#2B7BD6}.pane1 .expop{border-color:#6A4FC9}.pane1 .exh{color:#6A4FC9}.pane2 .expop{border-color:#D9731A}.pane2 .exh{color:#D9731A}.pane3 .expop{border-color:#2F6B57}.pane3 .exh{color:#2F6B57}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane .expop,:root:not([data-theme="light"]) .pane .exb{background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .pane .expop,:root[data-theme="dark"] .pane .exb{background:#1E2A28;color:#EEF3F1}/*/hj-ex*/
 .chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
 .chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
   font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
@@ -1427,6 +1428,26 @@ function writeStep(body, api, prompts, opts = {}) {
    보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
    같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
    panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+/*hj-ex*/ /* 사고 전략 칸별 예시: 칸 설정의 ex:["…","…"] → 제목 옆 '💡 예시' 단추, 누르면 팝업(입력칸 아래, 입력칸은 가리지 않음) */
+function paneEx(p) {
+  if (!p.ex || !p.ex.length) return ["", ""];
+  const pop = h("div", { class: "expop", role: "dialog", "aria-label": p.t + " 예시" },
+    h("button", { class: "exx", type: "button", "aria-label": "닫기", onclick: () => paneExClose() }, "✕"),
+    h("p", { class: "exh" }, "이렇게 써 볼 수 있어요"), h("ul", {}, ...p.ex.map(x => h("li", {}, x))),
+    h("p", { class: "exf" }, "내가 생각한 것으로 바꿔 써요."));
+  const btn = h("button", { class: "exb", type: "button", "aria-expanded": "false", onclick: () => {
+    const on = !pop.classList.contains("on"); paneExClose(); if (!on) return;
+    const sec = btn.closest(".pane"), row = sec.querySelector(".prow");
+    pop.style.top = (row.offsetTop + row.offsetHeight + 6) + "px"; pop.classList.add("on"); btn.setAttribute("aria-expanded", "true");
+    pop.scrollIntoView({ block: "nearest" });
+  } }, "💡 예시");
+  return [btn, pop];
+}
+function paneExClose() { document.querySelectorAll(".expop.on").forEach(p => { p.classList.remove("on"); const b = p.parentElement.querySelector(".exb"); if (b) b.setAttribute("aria-expanded", "false"); }); }
+if (!window.__paneEx) { window.__paneEx = 1;
+  document.addEventListener("click", e => { if (!e.target.closest(".expop,.exb")) paneExClose(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") paneExClose(); }); }
+/*/hj-ex*/
 function panes(body, api, list, opts = {}) {
   const need = opts.min || 1;
   const notes = list.map(() => []);
@@ -1445,11 +1466,12 @@ function panes(body, api, list, opts = {}) {
       chips.append(chip); inp.value = ""; inp.focus();
     };
     inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    const pex = paneEx(p); /*hj-ex*/
     wrap.append(h("section", { class: "pane pane" + pi },
-      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), h("span", { class: "pt" }, " " + p.t), pex[0]), /*hj-ex*/
       p.hint ? h("p", { class: "phint" }, p.hint) : "",
       chips,
-      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기")), pex[1])); /*hj-ex*/
   });
 
   body.append(wrap);
@@ -2218,9 +2240,9 @@ const LESSONS = [
     { name: "만져 보기 — 보기·생각하기·궁금해하기",
       inst: "가을 축제에 3학년 144명이 와요. 간식·의자·팔찌·체험표를 준비해야 해요. 세 칸에 한 가지씩 써서 붙여요.",
       render: (b, a) => panes(b, a, [
-        { t: "보여요", e: "👀", ph: "~이 보여요", hint: "준비물과 수를 그대로 써요" },
-        { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "어떻게 세면 빠를지 생각해 봐요" },
-        { t: "궁금해요", e: "❓", ph: "왜 ~일까?" }],
+        { t: "보여요", e: "👀", ph: "~이 보여요", hint: "준비물과 수를 그대로 써요", ex: ["3학년 144명이 가을 축제에 와요.", "간식, 의자, 팔찌, 체험표를 준비해야 해요."] },
+        { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "어떻게 세면 빠를지 생각해 봐요", ex: ["한 반에 24명씩 6개 반이니까 곱셈으로 세면 빠를 것 같아요.", "한 명에게 간식을 2개씩 주면 144의 2배가 필요할 것 같아요."] },
+        { t: "궁금해요", e: "❓", ph: "왜 ~일까?", ex: ["144명에게 팔찌를 3개씩 주면 모두 몇 개일까?", "144 × 2처럼 큰 수의 곱셈은 어떻게 할까?"] }],
         { ok: "생각을 잘 모았어요! 친구들 쪽지와 견주어 봐요." }) },
     { name: "그려 보기 — 묶어 세기", inst: "축제에서 나누어 줄 간식이 묶음으로 들어왔어요. 모두 몇 개인지 세어 보세요.", render: (b, a) => simGroups(b, a, { g: 6, n: 8 }) },
     { name: "말해 보기 — 식으로 쓰기", inst: "같은 상황을 덧셈식과 곱셈식으로 나타내 보세요.", render: (b, a) => quiz(b, a, [
@@ -2308,8 +2330,8 @@ const LESSONS = [
     { name: "말해 보기 — 설명 놀이",
       inst: "247 × 4를 계산할 때 무엇을 알아차렸나요? 두 칸에 써서 붙여요.",
       render: (b, a) => panes(b, a, [
-        { t: "알아차렸어요", e: "🔍", ph: "~을 알아차렸어요", hint: "247 × 4를 할 때 일의 자리에서 28이 나와요. 그다음 무엇을 했나요?" },
-        { t: "왜 그럴까요", e: "💭", ph: "왜냐하면 ~", hint: "올림한 수를 왜 윗자리 곱에 더할까요? 일 10개가 십 1개인 것을 떠올려 봐요." }],
+        { t: "알아차렸어요", e: "🔍", ph: "~을 알아차렸어요", hint: "247 × 4를 할 때 일의 자리에서 28이 나와요. 그다음 무엇을 했나요?", ex: ["일의 자리 7 × 4 = 28에서 20을 십의 자리로 올림했어요.", "십의 자리 40 × 4 = 160에 올림한 20을 더했어요."] },
+        { t: "왜 그럴까요", e: "💭", ph: "왜냐하면 ~", hint: "올림한 수를 왜 윗자리 곱에 더할까요? 일 10개가 십 1개인 것을 떠올려 봐요.", ex: ["왜냐하면 일 모형 10개는 십 모형 1개로 바꿀 수 있기 때문이에요.", "왜냐하면 올림한 수를 더하지 않으면 답이 작아지기 때문이에요."] }],
         { ok: "알아차린 것과 까닭을 잘 모았어요! 일의 자리부터 차례로 곱하고, 올림한 수는 윗자리 곱에 더해요." }) },
     { inst: "세로셈으로 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 158, b: 6, tip: "8 × 6 = 48 → 8을 쓰고 4를 올려요." }) },
     { inst: "스스로 계산해 보세요.",
@@ -2415,9 +2437,9 @@ const LESSONS = [
     { name: "말해 보기 — 방법 비교",
       inst: "네 조각으로 나누어 곱하기와 세로셈 중 실수가 적은 방법은 무엇일까요? 하나를 골라 세 칸에 써서 붙여요. 어느 쪽을 골라도 괜찮아요. 까닭이 중요해요.",
       render: (b, a) => panes(b, a, [
-        { t: "고른 방법", e: "✋", ph: "세로셈이 실수가 적어요", hint: "'네 조각으로 나누어 곱하기'와 '세로셈' 가운데 하나를 골라 써요" },
-        { t: "까닭", e: "🔎", ph: "왜냐하면 ~", hint: "어디에서 실수가 적은지 말해 봐요. 네 조각은 52와 260이 다 보이고, 세로셈은 두 줄로 짧아요" },
-        { t: "다른 방법의 좋은 점", e: "🤝", ph: "다른 방법은 ~이 좋아요", hint: "고르지 않은 방법도 좋은 점이 있어요" }],
+        { t: "고른 방법", e: "✋", ph: "세로셈이 실수가 적어요", hint: "'네 조각으로 나누어 곱하기'와 '세로셈' 가운데 하나를 골라 써요", ex: ["세로셈이 실수가 적어요.", "네 조각으로 나누어 곱하기가 실수가 적어요."] },
+        { t: "까닭", e: "🔎", ph: "왜냐하면 ~", hint: "어디에서 실수가 적은지 말해 봐요. 네 조각은 52와 260이 다 보이고, 세로셈은 두 줄로 짧아요", ex: ["왜냐하면 세로셈은 두 줄만 쓰면 돼서 짧고 빠르기 때문이에요.", "왜냐하면 네 조각으로 나누면 200, 40, 60, 12가 다 보여서 빠뜨리지 않기 때문이에요."] },
+        { t: "다른 방법의 좋은 점", e: "🤝", ph: "다른 방법은 ~이 좋아요", hint: "고르지 않은 방법도 좋은 점이 있어요", ex: ["네 조각 방법은 어느 자리끼리 곱했는지 눈으로 보여서 좋아요.", "세로셈은 줄이 적어서 빨리 계산할 수 있어서 좋아요."] }],
         { ok: "두 방법을 견주고 까닭까지 말했어요! 네 조각을 두 줄로 묶어 적은 것이 세로셈이에요." }) },
     { inst: "26 × 13도 네 조각으로 나누어 계산해 보세요.", render: (b, a) => simAreaModel(b, a, { a: 26, b: 13, tip: "26을 20과 6으로, 13을 10과 3으로 나누어요." }) },
     { inst: "스스로 계산해 보세요.",
@@ -2525,9 +2547,9 @@ const LESSONS = [
       { q: "그 문제의 식과 답을 써 보세요.", tag: "식과 답" }]) },
     { name: "확인하기 — 연결·확장·도전", inst: "오늘 배운 것을 세 칸에 써서 붙여요.",
       render: (b, a) => panes(b, a, [
-        { t: "연결하기", e: "🔗", ph: "오늘은 ~ 방법을 썼어요", hint: "오늘 어떤 곱셈 방법을 썼나요? 자리별로 나누기, 두 번 곱하기…" },
-        { t: "확장하기", e: "🌱", ph: "생활에서는 ~에 쓸 수 있어요", hint: "가게, 급식, 버스 자리처럼 곱셈이 쓰이는 곳을 떠올려요" },
-        { t: "도전하기", e: "🧗", ph: "아직 ~이 헷갈려요", hint: "아직 헷갈리거나 더 해 보고 싶은 것은?" }],
+        { t: "연결하기", e: "🔗", ph: "오늘은 ~ 방법을 썼어요", hint: "오늘 어떤 곱셈 방법을 썼나요? 자리별로 나누기, 두 번 곱하기…", ex: ["오늘은 자리별로 나누어 곱하는 방법을 썼어요.", "오늘은 두 번 곱해서 모두 몇 개인지 구하는 방법을 썼어요."] },
+        { t: "확장하기", e: "🌱", ph: "생활에서는 ~에 쓸 수 있어요", hint: "가게, 급식, 버스 자리처럼 곱셈이 쓰이는 곳을 떠올려요", ex: ["생활에서는 급식 우유가 몇 개 필요한지 구할 때 쓸 수 있어요.", "생활에서는 버스 여러 대에 모두 몇 명이 탈 수 있는지 구할 때 쓸 수 있어요."] },
+        { t: "도전하기", e: "🧗", ph: "아직 ~이 헷갈려요", hint: "아직 헷갈리거나 더 해 보고 싶은 것은?", ex: ["아직 올림이 두 번 있을 때 더하는 것이 헷갈려요.", "세 수를 곱하는 문제도 더 해 보고 싶어요."] }],
         { ok: "오늘 쓴 방법과 쓰임, 더 해 볼 것까지 잘 모았어요!" }) }
   ],
   challenge: { inst: "체험표 계획을 세워 보세요.", render: (b, a) => numbers(b, a, [
@@ -2572,19 +2594,19 @@ const LESSONS = [
     { name: "예전 생각, 지금 생각 — 예전엔·지금은", inst: "생각이 어떻게 달라졌는지 세 칸에 써서 붙여요.",
       hints: ["‘예전 생각’에는 곱셈을 배우기 전에 어떻게 생각했는지 써요. 예: 큰 수의 곱셈은 어려울 것 같았어요.", "‘왜 바뀌었나’에는 자리별로 나누기, 부분곱, 올림, 어림 같은 낱말을 써 봐요."],
       render: (b, a) => panes(b, a, [
-        { t: "예전 생각", e: "⏮", ph: "예전에는 ~라고 생각했어요", hint: "큰 수의 곱셈을 어떻게 생각했나요?" },
-        { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요" },
-        { t: "왜 바뀌었나", e: "🔄", ph: "~을 배워서 바뀌었어요", hint: "자리별로 나누기, 부분곱, 올림, 어림을 떠올려요" }],
+        { t: "예전 생각", e: "⏮", ph: "예전에는 ~라고 생각했어요", hint: "큰 수의 곱셈을 어떻게 생각했나요?", ex: ["예전에는 큰 수의 곱셈은 너무 어렵다고 생각했어요.", "예전에는 같은 수를 여러 번 더해야만 한다고 생각했어요."] },
+        { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요", ex: ["지금은 자리별로 나누면 큰 수의 곱셈도 할 수 있다고 생각해요.", "지금은 먼저 어림하면 계산 실수를 찾을 수 있다고 생각해요."] },
+        { t: "왜 바뀌었나", e: "🔄", ph: "~을 배워서 바뀌었어요", hint: "자리별로 나누기, 부분곱, 올림, 어림을 떠올려요", ex: ["부분곱을 모두 더하는 방법을 배워서 바뀌었어요.", "올림한 수를 윗자리에 더하는 까닭을 알게 되어 바뀌었어요."] }],
         { ok: "생각이 자란 모습을 잘 모았어요! 큰 수의 곱셈도 자리별로 나누어 곱하고 더하면 돼요." }) }
   ],
   challenge: { inst: "마인드맵 만들기 — 곱셈 낱말로 마인드맵을 만들어요. 네 칸에 써서 붙여요.",
     hints: ["‘떠오르는 말’은 낱말만 써도 돼요. 예: 자리, 부분곱, 올림, 세로셈, 어림", "‘묶어 보기’는 비슷한 것끼리 모아요.", "‘이어지는 말’은 ‘~와 ~는 이어져요’처럼 써요."],
     render: withOptional(
       (b, a) => panes(b, a, [
-      { t: "떠오르는 말", e: "🧠", ph: "곱셈 하면 떠오르는 말", hint: "자리, 부분곱, 올림, 세로셈, 어림…" },
-      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "비슷한 것끼리 모아요" },
-      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "떠오른 낱말 둘을 이어서 써요" },
-      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "13 × 24처럼 식을 예로 들어요" }],
+      { t: "떠오르는 말", e: "🧠", ph: "곱셈 하면 떠오르는 말", hint: "자리, 부분곱, 올림, 세로셈, 어림…", ex: ["곱셈 하면 부분곱, 올림, 세로셈이 떠올라요.", "곱셈 하면 어림, 자리별로 나누기가 떠올라요."] },
+      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "비슷한 것끼리 모아요", ex: ["부분곱과 자리별로 나누기는 비슷해요.", "세로셈과 올림은 비슷해요. 둘 다 자리를 맞춰 계산할 때 나와요."] },
+      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "떠오른 낱말 둘을 이어서 써요", ex: ["어림과 세로셈은 이어져요. 어림한 값으로 세로셈 답을 확인해요.", "부분곱과 올림은 이어져요. 부분곱을 더할 때 올림이 생겨요."] },
+      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "13 × 24처럼 식을 예로 들어요", ex: ["예를 들면 13 × 24는 52와 260을 더해서 312예요.", "예를 들면 247 × 4는 250 × 4 = 1000쯤으로 어림할 수 있어요."] }],
       { min: 1, ok: "곱셈 마인드맵 완성!" }),
       (b, a) => numbers(b, a, [
         { q: "한 상자에 145개씩 든 구슬 6상자는 모두 몇 개? ", a: 870, unit: "개" },
