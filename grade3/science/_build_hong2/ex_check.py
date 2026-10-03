@@ -9,7 +9,7 @@ COLS = {  # 쓰는 칸(화면 순서). 고르기만 하는 단계(lab·design·b
     'gcmp': ['예상과 달랐던 칸, 왜 그랬을까?', '모둠마다 결과가 달랐던 칸, 왜 그랬을까?'],
     'claim': ['근거', '결론'], 'pred': ['내 예상', '그렇게 생각한 까닭'],
     'pvr': ['실제 결과', '예상과 같은 점·다른 점', '왜 그럴까?'], 'csq': ['내 생각', '근거', '친구에게 묻기'],
-    'iuti': ['예전 생각', '지금 생각'], 'venn': ['A만', '같은 점', 'B만'], 'cse': ['이어지는 것', '더 찾은 것', '아직 궁금한 것']}
+    'iuti': ['예전 생각', '지금 생각'], 'define': ['뜻 문장 빈칸'], 'venn': ['A만', '같은 점', 'B만'], 'cse': ['이어지는 것', '더 찾은 것', '아직 궁금한 것']}
 u = sys.argv[1]
 M = importlib.import_module('lessons_u' + u)
 EX = importlib.import_module('examples_u' + u).EX if os.path.exists(f'examples_u{u}.py') else None
