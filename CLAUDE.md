@@ -83,6 +83,12 @@ grade1/ … grade6/
 - 고친 뒤: `python3 _build/today/build.py && python3 _build/theme/apply_theme.py`
 - 넣을 때는 날짜·인물·작품 정보를 꼭 확인하고, 어린이에게 알맞은 내용만 씁니다. 노래 가사·책 본문은 싣지 않습니다.
 
+### 사고전략 (`thinking/`, 2026-10-03)
+
+- 첫 화면 '우리 반 교실' 아래 넓은 카드 '💡 사고전략'. 하버드 Project Zero 사고 루틴 23개를 탐구 5단계(`stage/`)·교과 10개(`subject/`)·전체 목록(`routines/`)으로 정리했습니다. 모든 자료는 교사용 안내·학생용 안내·활동지 세 탭입니다.
+- **`thinking/` 안의 HTML을 직접 고치지 마세요.** 원본은 `_build/thinking/`(`data_routines.py`, `data_more.py`, `build.py`)이고 `python3 _build/thinking/build.py && python3 _build/theme/apply_theme.py && python3 _build/theme/apply_content_theme.py`로 다시 만듭니다. 자세한 것은 `_build/thinking/README.md`.
+- PZ 원문은 CC BY-NC-ND 4.0이라 번역해 싣지 않고 새로 쓴 안내 + 원문 링크만 둡니다.
+
 ## 파일 이름
 
 영어 소문자와 하이픈만 씁니다. `grade3/social/sem2/` 기준:
