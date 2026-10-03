@@ -8,6 +8,7 @@
   그다음 저장소 루트에서 python3 _build/theme/apply_content_theme.py grade3/social/sem1-hong/u*.html grade3/social/sem2-hong/u*.html
 
 - 화면 기능은 과학과 같은 grade3/science/_build_hong2/engine_ex.js·ex.css를 그대로 넣습니다(표시 hj-ex).
+- 단추 이름을 바꾸려면 값 대신 {'label': '힌트', 'v': [...]}로 씁니다(예: 낱말 뜻 빈칸은 답을 알려 주지 않는 '힌트').
 - 예시 원본: ex_sem1_u1.py … ex_sem2_u2.py 의 EX[lessonKey][단계 이름 t] = [[첫 칸 2개], [둘째 칸 2개], …]
   → 수업 데이터 C의 그 단계에 hints로 들어갑니다. 빈 칸(["", ""])만 있는 단계는 건너뜁니다.
 """
@@ -74,6 +75,7 @@ def check(room, EX):
         C = loadC(open(p, encoding='utf-8').read()); D = EX.get(C['lessonKey'], {})
         ts = [s['t'] for s in C['steps']]
         for t, v in D.items():
+            if isinstance(v, dict): v = v['v']
             hit = [s for s in C['steps'] if s['t'] == t]
             if len(hit) != 1: print(C['lessonKey'], t, '단계 이름이 없거나 겹침'); bad += 1; continue
             s = hit[0]
@@ -91,7 +93,9 @@ def inject(p, D):
     C = loadC(s)
     for st in C['steps']:
         st.pop('hints', None)
+        st.pop('hintLabel', None)
         v = D.get(st['t'])
+        if isinstance(v, dict): st['hintLabel'] = v['label']; v = v['v']  # {'label': '힌트', 'v': [...]} → 단추 이름을 '💡 힌트'로
         if v and not all(x == '' for c in v for x in c): st['hints'] = v
     m = CRE.search(s)
     s = s[:m.start(1)] + dumpC(C) + s[m.end(1):]
