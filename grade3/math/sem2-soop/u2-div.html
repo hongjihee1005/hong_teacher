@@ -187,6 +187,7 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
 .pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
 .phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+/*hj-ex*/.pane{position:relative}.pane h3 .pt{flex:1;min-width:0}.pane .exb{flex:none;font-family:inherit;font-size:.62em;padding:.15em .6em;border-radius:999px;border:2px solid currentColor;background:#fff;color:inherit;cursor:pointer;white-space:nowrap}.pane .exb[aria-expanded="true"]{color:#fff!important}.pane0 .exb[aria-expanded="true"]{background:#2B7BD6}.pane1 .exb[aria-expanded="true"]{background:#6A4FC9}.pane2 .exb[aria-expanded="true"]{background:#D9731A}.pane3 .exb[aria-expanded="true"]{background:#2F6B57}.pane .expop{display:none;position:absolute;z-index:30;left:.4em;right:.4em;background:#fff;border:3px solid;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44)}.pane .expop.on{display:block}.pane .expop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em}.pane .expop ul{margin:0;padding-left:1.1em;line-height:1.5}.pane .expop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.pane .expop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}.pane0 .expop{border-color:#2B7BD6}.pane0 .exh{color:#2B7BD6}.pane1 .expop{border-color:#6A4FC9}.pane1 .exh{color:#6A4FC9}.pane2 .expop{border-color:#D9731A}.pane2 .exh{color:#D9731A}.pane3 .expop{border-color:#2F6B57}.pane3 .exh{color:#2F6B57}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane .expop,:root:not([data-theme="light"]) .pane .exb{background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .pane .expop,:root[data-theme="dark"] .pane .exb{background:#1E2A28;color:#EEF3F1}/*/hj-ex*/
 .chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
 .chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
   font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
@@ -1427,6 +1428,26 @@ function writeStep(body, api, prompts, opts = {}) {
    보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
    같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
    panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+/*hj-ex*/ /* 사고 전략 칸별 예시: 칸 설정의 ex:["…","…"] → 제목 옆 '💡 예시' 단추, 누르면 팝업(입력칸 아래, 입력칸은 가리지 않음) */
+function paneEx(p) {
+  if (!p.ex || !p.ex.length) return ["", ""];
+  const pop = h("div", { class: "expop", role: "dialog", "aria-label": p.t + " 예시" },
+    h("button", { class: "exx", type: "button", "aria-label": "닫기", onclick: () => paneExClose() }, "✕"),
+    h("p", { class: "exh" }, "이렇게 써 볼 수 있어요"), h("ul", {}, ...p.ex.map(x => h("li", {}, x))),
+    h("p", { class: "exf" }, "내가 생각한 것으로 바꿔 써요."));
+  const btn = h("button", { class: "exb", type: "button", "aria-expanded": "false", onclick: () => {
+    const on = !pop.classList.contains("on"); paneExClose(); if (!on) return;
+    const sec = btn.closest(".pane"), row = sec.querySelector(".prow");
+    pop.style.top = (row.offsetTop + row.offsetHeight + 6) + "px"; pop.classList.add("on"); btn.setAttribute("aria-expanded", "true");
+    pop.scrollIntoView({ block: "nearest" });
+  } }, "💡 예시");
+  return [btn, pop];
+}
+function paneExClose() { document.querySelectorAll(".expop.on").forEach(p => { p.classList.remove("on"); const b = p.parentElement.querySelector(".exb"); if (b) b.setAttribute("aria-expanded", "false"); }); }
+if (!window.__paneEx) { window.__paneEx = 1;
+  document.addEventListener("click", e => { if (!e.target.closest(".expop,.exb")) paneExClose(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") paneExClose(); }); }
+/*/hj-ex*/
 function panes(body, api, list, opts = {}) {
   const need = opts.min || 1;
   const notes = list.map(() => []);
@@ -1445,11 +1466,12 @@ function panes(body, api, list, opts = {}) {
       chips.append(chip); inp.value = ""; inp.focus();
     };
     inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    const pex = paneEx(p); /*hj-ex*/
     wrap.append(h("section", { class: "pane pane" + pi },
-      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), h("span", { class: "pt" }, " " + p.t), pex[0]), /*hj-ex*/
       p.hint ? h("p", { class: "phint" }, p.hint) : "",
       chips,
-      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기")), pex[1])); /*hj-ex*/
   });
 
   body.append(wrap);
@@ -2353,9 +2375,9 @@ const LESSONS = [
   summary: "나눗셈은 똑같이 나누어 한 몫이 몇 개인지 구할 때, 또는 몇 개씩 묶으면 몇 묶음이 되는지 구할 때 써요.",
   steps: [
     { name: "만져 보기 — 보기·생각하기·궁금해하기", inst: "3학년 나눔 장터에 물건이 잔뜩 모였어요. 모둠과 상자에 나누어 담아야 해요. 세 칸에 한 가지씩 써서 붙여요.", render: (b, a) => panes(b, a, [
-      { t: "보여요", e: "👀", ph: "~이 보여요", hint: "본 것만 써요. 물건 수와 모둠 수를 그대로 써 봐요" },
-      { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "어떻게 나누면 좋을지 생각해 봐요" },
-      { t: "궁금해요", e: "❓", ph: "왜 ~일까?" }],
+      { t: "보여요", e: "👀", ph: "~이 보여요", hint: "본 것만 써요. 물건 수와 모둠 수를 그대로 써 봐요", ex: ["나눔 장터에 모은 물건 12개와 3모둠이 보여요.", "물건을 나누어 담을 빈 상자들이 보여요."] },
+      { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "어떻게 나누면 좋을지 생각해 봐요", ex: ["12개를 3모둠에 하나씩 차례로 나누어 주면 똑같아질 것 같아요.", "물건을 4개씩 묶어 상자에 담으면 빠를 것 같아요."] },
+      { t: "궁금해요", e: "❓", ph: "왜 ~일까?", ex: ["왜 모둠마다 똑같이 나누어야 할까?", "왜 어떤 때는 똑같이 나누고 물건이 남을까?"] }],
       { ok: "생각을 잘 모았어요! 친구들 쪽지와 견주어 봐요." }) },
     { name: "그려 보기 — 하나씩 나누어 주기", inst: "나눔 장터에서 모은 물건 12개를 3모둠에 똑같이 나누어 주세요.", render: (b, a) => simShareOut(b, a, { n: 12, g: 3, ok: "12 ÷ 3 = 4. 한 모둠이 4개씩 가져요." }) },
     { name: "말해 보기 — 식으로 쓰기", inst: "상황에 알맞은 나눗셈식을 골라 보세요.", render: (b, a) => quiz(b, a, [
@@ -2454,8 +2476,8 @@ const LESSONS = [
       { q: "일 모형은 모두 몇 개가 되나요?", a: 12 }, { q: "52 ÷ 4 =", a: 13 }],
       { ok: "4개씩 묶어 세어도, 수 모형으로 나누어도 52 ÷ 4 = 13이에요." }) },
     { name: "말해 보기 — 무슨 일이 일어나요?·무엇을 보고 그렇게 말했나요?", inst: "52 ÷ 4를 나눌 때, 십 모형 5개 중 1개가 남아 일 모형 10개로 바뀌었어요. 두 칸에 써서 붙여요.", render: (b, a) => panes(b, a, [
-      { t: "무슨 일이 일어나요", e: "👀", ph: "~이 일어나요", hint: "남은 십 모형 1개가 어떻게 되었는지 말해 봐요" },
-      { t: "무엇을 보고 그렇게 말했나요", e: "🔎", ph: "~을 보고 그렇게 말했어요", hint: "십 모형 1개가 일 모형 10개와 같은 것을 떠올려 봐요" }],
+      { t: "무슨 일이 일어나요", e: "👀", ph: "~이 일어나요", hint: "남은 십 모형 1개가 어떻게 되었는지 말해 봐요", ex: ["남은 십 모형 1개가 일 모형 10개로 바뀌는 일이 일어나요.", "일 모형이 12개가 되어 4묶음에 3개씩 나누어지는 일이 일어나요."] },
+      { t: "무엇을 보고 그렇게 말했나요", e: "🔎", ph: "~을 보고 그렇게 말했어요", hint: "십 모형 1개가 일 모형 10개와 같은 것을 떠올려 봐요", ex: ["십 모형 1개와 일 모형 10개의 크기가 같은 것을 보고 그렇게 말했어요.", "한 묶음에 십 모형 1개, 일 모형 3개가 놓인 것을 보고 그렇게 말했어요."] }],
       { ok: "잘 모았어요! 남은 십 모형 1개를 일 모형 10개로 바꾸어 다시 나눠요. 그래서 52 ÷ 4 = 13이에요." }) },
     { name: "약속하기 — 내림을 세로셈으로", inst: "남은 십 모형을 일 모형으로 바꾸어(내려서) 세로셈으로 계산해 보세요.", render: (b, a) => numbers(b, a, [{ q: "72 ÷ 3 =", a: 24 }, { q: "75 ÷ 5 =", a: 15 }, { q: "96 ÷ 6 =", a: 16 }], { ok: "내림이 있는 나눗셈도 잘 해냈어요. 남은 십 모형은 일 모형 10개로 바꾸어 다시 나눠요." }) },
     { inst: "스스로 계산해 보세요.",
@@ -2544,8 +2566,8 @@ const LESSONS = [
     { name: "살펴보기 — 빨간불·노란불 찾기", inst: "친구 넷의 계산이에요. 준서 29 ÷ 4 = 6 … 5, 민호 43 ÷ 6 = 7 … 2, 지아 50 ÷ 8 = 6 … 2, 하늘 95 ÷ 8 = 10 … 15. 이상한 점을 직접 찾아 두 칸에 써서 붙여요.",
       hints: ["나머지를 나누는 수와 견주어 봐요. 나머지가 더 크면 바로 틀린 것이에요.", "겉보기에 괜찮은 계산은 (나누는 수) × (몫) + (나머지)를 세워 봐야 알 수 있어요."],
       render: (b, a) => panes(b, a, [
-      { t: "빨간불 — 이건 틀렸어요", e: "🔴", ph: "준서는 ~라서 틀렸어요", hint: "나머지가 나누는 수보다 큰 계산을 찾아 써요" },
-      { t: "노란불 — 이건 좀 이상해요", e: "🟡", ph: "민호는 ~라서 이상해요", hint: "확인식을 세워 봐야 알 수 있는 계산을 찾아 써요" }],
+      { t: "빨간불 — 이건 틀렸어요", e: "🔴", ph: "준서는 ~라서 틀렸어요", hint: "나머지가 나누는 수보다 큰 계산을 찾아 써요", ex: ["준서는 나머지 5가 나누는 수 4보다 커서 틀렸어요.", "하늘은 나머지 15가 나누는 수 8보다 커서 틀렸어요."] },
+      { t: "노란불 — 이건 좀 이상해요", e: "🟡", ph: "민호는 ~라서 이상해요", hint: "확인식을 세워 봐야 알 수 있는 계산을 찾아 써요", ex: ["민호는 6 × 7 + 2 = 44가 되어 43이 아니라서 이상해요.", "민호는 나머지가 6보다 작아 맞아 보여도 확인식이 43이 안 나와서 이상해요."] }],
       { ok: "잘 찾았어요! 나머지가 나누는 수보다 크면 바로 빨간불, 겉보기에는 괜찮지만 (나누는 수) × (몫) + (나머지)를 세워 봐야 하면 노란불이에요." }) },
     { name: "말해 보기 — 계산하고 확인식으로 말하기", inst: "직접 계산하고, 확인식의 값이 나누어지는 수와 같은지 말해 보세요.", render: (b, a) => numbers(b, a, [
       { q: "68 ÷ 7 의 몫은?", a: 9 }, { q: "68 ÷ 7 의 나머지는?", a: 5 }, { q: "확인: 7 × 9 + 5 =", a: 68, why: { "21": "7 + 9 + 5를 더한 것 같아요. 확인식은 7 × 9를 먼저 하고 나머지를 더해요." } },
@@ -2662,9 +2684,9 @@ const LESSONS = [
         { min: 2, ok: "어느 쪽을 골라도 괜찮아요. 까닭을 잘 말한 것이 더 중요해요!" });
     } },
     { name: "말해 보기 — 연결·확장·도전", inst: "오늘 배운 것을 세 칸에 써서 붙여요.", render: (b, a) => panes(b, a, [
-      { t: "연결하기", e: "🔗", ph: "오늘은 ~ 방법을 썼어요", hint: "나눗셈의 어떤 방법을 썼나요?" },
-      { t: "확장하기", e: "🌱", ph: "생활에서는 ~에 쓸 수 있어요", hint: "생활에서 나머지를 생각해야 하는 때는?" },
-      { t: "도전하기", e: "🧗", ph: "아직 ~이 헷갈려요", hint: "아직 헷갈리거나 어려운 것은?" }],
+      { t: "연결하기", e: "🔗", ph: "오늘은 ~ 방법을 썼어요", hint: "나눗셈의 어떤 방법을 썼나요?", ex: ["오늘은 나머지를 보고 상자를 하나 더 준비하는 방법을 썼어요.", "오늘은 154 ÷ 8 = 19 … 2를 구해 상자 수를 정하는 방법을 썼어요."] },
+      { t: "확장하기", e: "🌱", ph: "생활에서는 ~에 쓸 수 있어요", hint: "생활에서 나머지를 생각해야 하는 때는?", ex: ["생활에서는 버스가 몇 대 필요한지 정할 때 쓸 수 있어요.", "생활에서는 사탕을 똑같이 나누고 남은 것을 정할 때 쓸 수 있어요."] },
+      { t: "도전하기", e: "🧗", ph: "아직 ~이 헷갈려요", hint: "아직 헷갈리거나 어려운 것은?", ex: ["아직 언제 하나를 더 준비해야 하는지가 헷갈려요.", "아직 남은 물건 4개를 어떻게 해야 공정한지가 헷갈려요."] }],
       { ok: "오늘 배운 것을 잘 모았어요! 나머지는 상황을 보고 다르게 다루어요." }) }
   ],
   challenge: { inst: "나머지를 생각해 판단해 보세요.", render: (b, a) => quiz(b, a, [
@@ -2710,19 +2732,19 @@ const LESSONS = [
     { name: "예전 생각, 지금 생각 — 예전엔·지금은", inst: "나눗셈에 대한 생각이 어떻게 달라졌는지 세 칸에 써서 붙여요.",
       hints: ["예전에는 ‘남는 것이 생기면 틀린 것’이라고 생각했을 수도 있어요.", "지금은 큰 자리부터 나누기, 내림, 나머지, 곱셈으로 확인하기를 알아요."],
       render: (b, a) => panes(b, a, [
-      { t: "예전 생각", e: "⏮", ph: "예전에는 나눗셈을 ~라고 생각했어요", hint: "나눗셈과 남는 수를 어떻게 생각했나요?" },
-      { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요" },
-      { t: "왜 바뀌었나", e: "🔄", ph: "~을 배워서 바뀌었어요", hint: "큰 자리부터, 내림, 나머지, 검산을 떠올려요" }],
+      { t: "예전 생각", e: "⏮", ph: "예전에는 나눗셈을 ~라고 생각했어요", hint: "나눗셈과 남는 수를 어떻게 생각했나요?", ex: ["예전에는 나눗셈을 남는 것이 생기면 틀린 것이라고 생각했어요.", "예전에는 나눗셈을 일의 자리부터 나누는 것이라고 생각했어요."] },
+      { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요", ex: ["지금은 나머지가 나누는 수보다 작으면 남아도 된다고 생각해요.", "지금은 큰 자리부터 나누고 남으면 아래 자리로 바꾼다고 생각해요."] },
+      { t: "왜 바뀌었나", e: "🔄", ph: "~을 배워서 바뀌었어요", hint: "큰 자리부터, 내림, 나머지, 검산을 떠올려요", ex: ["나머지는 나누는 수보다 작다는 것을 배워서 바뀌었어요.", "곱셈으로 확인하는 검산을 배워서 바뀌었어요."] }],
       { ok: "생각이 자란 모습을 잘 모았어요! 나눗셈은 큰 자리부터 나누고, 남으면 아래 자리로 바꾸고, 나머지는 나누는 수보다 작아요." }) }
   ],
   challenge: { inst: "예전엔·지금은 + 마인드맵 — 나눗셈 낱말로 마인드맵을 만들어요. 네 칸에 써서 붙여요.",
     hints: ["‘떠오르는 말’은 낱말만 써도 돼요. 예: 나머지, 내림, 검산, 몫 어림하기", "‘묶어 보기’는 비슷한 것끼리 모아요.", "‘이어지는 말’은 ‘~와 ~는 이어져요’처럼 써요."],
     render: withOptional(
       (b, a) => panes(b, a, [
-    { t: "떠오르는 말", e: "🧠", ph: "나눗셈 하면 떠오르는 말", hint: "나머지, 내림, 검산, 큰 자리부터" },
-    { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "비슷한 것끼리 모아요" },
-    { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "떠오른 낱말 둘을 이어서 써요" },
-    { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "47 ÷ 5 = 9 … 2 처럼 예를 들어요" }],
+    { t: "떠오르는 말", e: "🧠", ph: "나눗셈 하면 떠오르는 말", hint: "나머지, 내림, 검산, 큰 자리부터", ex: ["나눗셈 하면 몫, 나머지, 검산이 떠올라요.", "나눗셈 하면 큰 자리부터, 내림이 떠올라요."] },
+    { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "비슷한 것끼리 모아요", ex: ["몫과 나머지는 비슷해요. 둘 다 나눗셈을 하고 나오는 수예요.", "내림과 큰 자리부터는 비슷해요. 둘 다 나누는 순서와 관계있어요."] },
+    { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "떠오른 낱말 둘을 이어서 써요", ex: ["나머지와 검산은 이어져요. 확인식에서 나머지를 더해요.", "곱셈과 나눗셈은 이어져요. 곱셈으로 나눗셈을 확인해요."] },
+    { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "47 ÷ 5 = 9 … 2 처럼 예를 들어요", ex: ["예를 들면 47 ÷ 5 = 9 … 2는 5 × 9 + 2 = 47로 확인해요.", "예를 들면 52 ÷ 4는 남은 십 모형을 내려서 13이 돼요."] }],
     { min: 1, ok: "나눗셈 마인드맵 완성! 친구들 쪽지와 이어 보면 우리 반 마인드맵이 돼요." }),
       (b, a) => numbers(b, a, [
       { q: "어떤 수를 6으로 나누었더니 몫이 14, 나머지가 5였어요. 어떤 수는? ", a: 89 },

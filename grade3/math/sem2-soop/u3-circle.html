@@ -187,6 +187,7 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
 .pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
 .phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+/*hj-ex*/.pane{position:relative}.pane h3 .pt{flex:1;min-width:0}.pane .exb{flex:none;font-family:inherit;font-size:.62em;padding:.15em .6em;border-radius:999px;border:2px solid currentColor;background:#fff;color:inherit;cursor:pointer;white-space:nowrap}.pane .exb[aria-expanded="true"]{color:#fff!important}.pane0 .exb[aria-expanded="true"]{background:#2B7BD6}.pane1 .exb[aria-expanded="true"]{background:#6A4FC9}.pane2 .exb[aria-expanded="true"]{background:#D9731A}.pane3 .exb[aria-expanded="true"]{background:#2F6B57}.pane .expop{display:none;position:absolute;z-index:30;left:.4em;right:.4em;background:#fff;border:3px solid;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44)}.pane .expop.on{display:block}.pane .expop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em}.pane .expop ul{margin:0;padding-left:1.1em;line-height:1.5}.pane .expop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.pane .expop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}.pane0 .expop{border-color:#2B7BD6}.pane0 .exh{color:#2B7BD6}.pane1 .expop{border-color:#6A4FC9}.pane1 .exh{color:#6A4FC9}.pane2 .expop{border-color:#D9731A}.pane2 .exh{color:#D9731A}.pane3 .expop{border-color:#2F6B57}.pane3 .exh{color:#2F6B57}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane .expop,:root:not([data-theme="light"]) .pane .exb{background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .pane .expop,:root[data-theme="dark"] .pane .exb{background:#1E2A28;color:#EEF3F1}/*/hj-ex*/
 .chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
 .chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
   font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
@@ -1427,6 +1428,26 @@ function writeStep(body, api, prompts, opts = {}) {
    보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
    같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
    panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+/*hj-ex*/ /* 사고 전략 칸별 예시: 칸 설정의 ex:["…","…"] → 제목 옆 '💡 예시' 단추, 누르면 팝업(입력칸 아래, 입력칸은 가리지 않음) */
+function paneEx(p) {
+  if (!p.ex || !p.ex.length) return ["", ""];
+  const pop = h("div", { class: "expop", role: "dialog", "aria-label": p.t + " 예시" },
+    h("button", { class: "exx", type: "button", "aria-label": "닫기", onclick: () => paneExClose() }, "✕"),
+    h("p", { class: "exh" }, "이렇게 써 볼 수 있어요"), h("ul", {}, ...p.ex.map(x => h("li", {}, x))),
+    h("p", { class: "exf" }, "내가 생각한 것으로 바꿔 써요."));
+  const btn = h("button", { class: "exb", type: "button", "aria-expanded": "false", onclick: () => {
+    const on = !pop.classList.contains("on"); paneExClose(); if (!on) return;
+    const sec = btn.closest(".pane"), row = sec.querySelector(".prow");
+    pop.style.top = (row.offsetTop + row.offsetHeight + 6) + "px"; pop.classList.add("on"); btn.setAttribute("aria-expanded", "true");
+    pop.scrollIntoView({ block: "nearest" });
+  } }, "💡 예시");
+  return [btn, pop];
+}
+function paneExClose() { document.querySelectorAll(".expop.on").forEach(p => { p.classList.remove("on"); const b = p.parentElement.querySelector(".exb"); if (b) b.setAttribute("aria-expanded", "false"); }); }
+if (!window.__paneEx) { window.__paneEx = 1;
+  document.addEventListener("click", e => { if (!e.target.closest(".expop,.exb")) paneExClose(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") paneExClose(); }); }
+/*/hj-ex*/
 function panes(body, api, list, opts = {}) {
   const need = opts.min || 1;
   const notes = list.map(() => []);
@@ -1445,11 +1466,12 @@ function panes(body, api, list, opts = {}) {
       chips.append(chip); inp.value = ""; inp.focus();
     };
     inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    const pex = paneEx(p); /*hj-ex*/
     wrap.append(h("section", { class: "pane pane" + pi },
-      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), h("span", { class: "pt" }, " " + p.t), pex[0]), /*hj-ex*/
       p.hint ? h("p", { class: "phint" }, p.hint) : "",
       chips,
-      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기")), pex[1])); /*hj-ex*/
   });
 
   body.append(wrap);
@@ -1943,9 +1965,9 @@ const LESSONS = [
     { name: "만져 보기 — 보기·생각하기·궁금해하기",
       inst: "하준이와 채은이가 캠핑장을 둘러봐요. 종이 접시, 캠프파이어 자리, 수레바퀴, 컬링 과녁, 쥐불놀이 불빛까지 둥근 것이 많아요. 보이는 것, 떠오른 생각, 궁금한 것을 세 칸에 한 가지씩 써서 붙여요.",
       render: (b, a) => panes(b, a, [
-        { t: "보여요", e: "👀", ph: "~이 둥글게 보여요", hint: "본 것만 써요" },
-        { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "왜 둥글게 만들었을까요?" },
-        { t: "궁금해요", e: "❓", ph: "왜 ~일까?", hint: "더 알고 싶은 것을 써요" }],
+        { t: "보여요", e: "👀", ph: "~이 둥글게 보여요", hint: "본 것만 써요", ex: ["종이 접시와 수레바퀴가 둥글게 보여요.", "컬링 과녁과 쥐불놀이 불빛이 둥글게 보여요."] },
+        { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "왜 둥글게 만들었을까요?", ex: ["수레바퀴는 잘 굴러가라고 둥글게 만든 것 같아요.", "캠프파이어 자리는 둘러앉기 좋게 둥글게 만든 것 같아요."] },
+        { t: "궁금해요", e: "❓", ph: "왜 ~일까?", hint: "더 알고 싶은 것을 써요", ex: ["왜 동그란 모양이라도 원이 아닌 것이 있을까?", "왜 손으로 그린 동그라미는 반듯하지 않을까?"] }],
         { ok: "캠핑장의 둥근 것을 잘 찾았어요! 친구들 쪽지와 견주어 봐요." }) },
     { inst: "하준이가 땅에 막대로 동그라미를 그려 보았어요. 본뜰 물건 없이 손으로만 원을 그려 보세요. 내가 그린 동그라미는 얼마나 반듯할까요?", render: simFreehand },
     { name: "말해 보기 — 원 고르고 까닭 말하기",
@@ -1971,8 +1993,8 @@ const LESSONS = [
     { name: "말해 보기 — 설명 놀이",
       inst: "솔방울을 돌리고 띠 종이로 원을 그려 봤어요. 무엇을 알아차렸나요? 왜 그럴까요? 두 칸에 한 가지씩 써서 붙여요.",
       render: (b, a) => panes(b, a, [
-        { t: "알아차렸어요", e: "🔍", ph: "~은 그대로였어요", hint: "원을 그리는 동안 그대로였던 것을 써요" },
-        { t: "왜 그럴까요", e: "💭", ph: "왜냐하면 ~", hint: "가운데 점이 움직이면 어떤 모양이 될까요?" }],
+        { t: "알아차렸어요", e: "🔍", ph: "~은 그대로였어요", hint: "원을 그리는 동안 그대로였던 것을 써요", ex: ["솔방울을 돌려도 끈의 길이는 그대로였어요.", "띠 종이로 그릴 때 누름 못을 꽂은 가운데 점은 그대로였어요."] },
+        { t: "왜 그럴까요", e: "💭", ph: "왜냐하면 ~", hint: "가운데 점이 움직이면 어떤 모양이 될까요?", ex: ["왜냐하면 가운데 점이 움직이면 찌그러진 모양이 되기 때문이에요.", "왜냐하면 가운데 점에서 연필까지 거리가 늘 같아야 원이 되기 때문이에요."] }],
         { ok: "잘 알아차렸어요! 가운데 점은 움직이지 않고, 가운데 점에서 연필까지의 거리도 변하지 않아요. 그래서 반듯한 원이 돼요." }) },
     { inst: "약속: 원을 그릴 때 누름 못을 꽂았던 점을 ‘원의 중심’, 원의 중심과 원 위의 한 점을 이은 선분을 ‘원의 반지름’이라고 해요. 원의 중심을 누르고 반지름을 그어 보세요.", render: simCenterRadius },
     { inst: "원의 반지름을 찾아요.", render: (b, a) => quiz(b, a, [
@@ -2015,9 +2037,9 @@ const LESSONS = [
     { name: "말해 보기 — 주장·근거·질문",
       inst: "왜 지름이 가장 긴 선분일까요? 내 생각과 까닭, 아직 궁금한 것을 세 칸에 써서 붙여요.",
       render: (b, a) => panes(b, a, [
-        { t: "주장", e: "✋", ph: "나는 ~라고 생각해요", hint: "지름이 가장 긴 까닭을 한 문장으로" },
-        { t: "근거", e: "🔎", ph: "왜냐하면 ~", hint: "접어 본 것, 반지름을 여러 개 그어 본 것을 떠올려요" },
-        { t: "질문", e: "❓", ph: "아직 궁금한 것은 ~", hint: "아직 설명되지 않은 것을 물어요" }],
+        { t: "주장", e: "✋", ph: "나는 ~라고 생각해요", hint: "지름이 가장 긴 까닭을 한 문장으로", ex: ["나는 지름이 원의 중심을 지나서 가장 길다고 생각해요.", "나는 지름이 반지름 2개를 이은 것이라서 가장 길다고 생각해요."] },
+        { t: "근거", e: "🔎", ph: "왜냐하면 ~", hint: "접어 본 것, 반지름을 여러 개 그어 본 것을 떠올려요", ex: ["왜냐하면 종이 접시를 반으로 접은 선이 가장 길었기 때문이에요.", "왜냐하면 반지름은 모두 길이가 같고 지름은 반지름 2개만큼이기 때문이에요."] },
+        { t: "질문", e: "❓", ph: "아직 궁금한 것은 ~", hint: "아직 설명되지 않은 것을 물어요", ex: ["아직 궁금한 것은 한 원에 지름을 몇 개나 그을 수 있는지예요.", "아직 궁금한 것은 원의 중심을 지나지 않으면 왜 더 짧은지예요."] }],
         { ok: "생각과 까닭을 잘 모았어요! 지름은 반지름 2개를 이은 길이라서 가장 길어요. 한 원에서 반지름은 셀 수 없이 많고 길이는 모두 같아요." }) },
     { inst: "반지름과 지름 사이의 관계를 찾아요.", render: simRadiusDiameter },
     { inst: "원의 성질을 확인해요.",
@@ -2083,9 +2105,9 @@ const LESSONS = [
     { name: "약속 장소 정하기", inst: "하준이는 자전거로 텐트에서 5 cm 안쪽까지, 채은이는 걸어서 텐트에서 3 cm 안쪽까지 갈 수 있어요. 두 원을 그리고 만날 곳을 정해 보세요. (두 원 안에 모두 있는 곳은 주황색)", render: (b, a) => { simMap(b, a, MAP2(5, 3)); quiz(b, a, [{ q: "두 사람이 모두 갈 수 있는 약속 장소는?", o: ["물놀이터", "매점", "샤워장", "관리실"], a: 1 }]); } },
     { name: "말해 보기 — 연결·확장·도전", inst: "오늘 배운 것을 세 칸에 써서 붙여요.",
       render: (b, a) => panes(b, a, [
-        { t: "연결하기", e: "🔗", ph: "오늘은 ~을 썼어요", hint: "원의 중심·반지름·지름 가운데 무엇을 썼나요?" },
-        { t: "확장하기", e: "🌱", ph: "생활에서는 ~에 쓸 수 있어요", hint: "캠프 말고 어디에 쓸 수 있을까요?" },
-        { t: "도전하기", e: "🧗", ph: "아직 ~이 헷갈려요", hint: "아직 헷갈리거나 어려운 것은?" }],
+        { t: "연결하기", e: "🔗", ph: "오늘은 ~을 썼어요", hint: "원의 중심·반지름·지름 가운데 무엇을 썼나요?", ex: ["오늘은 우리 텐트를 원의 중심으로 하는 원을 썼어요.", "오늘은 반지름을 3 cm, 4 cm, 5 cm로 바꾼 원을 썼어요."] },
+        { t: "확장하기", e: "🌱", ph: "생활에서는 ~에 쓸 수 있어요", hint: "캠프 말고 어디에 쓸 수 있을까요?", ex: ["생활에서는 우리 집에서 걸어갈 수 있는 곳을 찾을 때 쓸 수 있어요.", "생활에서는 학교에서 가까운 놀이터를 찾을 때 쓸 수 있어요."] },
+        { t: "도전하기", e: "🧗", ph: "아직 ~이 헷갈려요", hint: "아직 헷갈리거나 어려운 것은?", ex: ["아직 두 원이 겹치는 곳을 찾는 것이 헷갈려요.", "아직 원의 선 위에 걸친 곳이 원 안인지 밖인지 헷갈려요."] }],
         { ok: "오늘 배운 것을 잘 모았어요! 한 곳을 원의 중심으로 원을 그리면 원 안은 모두 반지름보다 가까운 곳이에요." }) }
   ],
   challenge: { inst: "채은이도 자전거를 타서 텐트에서 5 cm 안쪽까지 갈 수 있게 되었어요.", render: (b, a) => { simMap(b, a, MAP2(5, 5)); quiz(b, a, [{ q: "이제 두 사람이 모두 갈 수 있는 곳을 모두 골라요.", o: ["물놀이터", "매점", "샤워장", "주차장", "장작 창고"], a: [1, 2] }]); b.append(h("div", { class: "jua", style: "margin-top:1em" }, "생각해 봐요: 지도 앱이 거리를 알려 주는데도 원을 그려 보는 방법을 알아야 할까요? 친구와 이야기해 보세요.")); } }
@@ -2127,19 +2149,19 @@ const LESSONS = [
     { name: "예전 생각, 지금 생각 — 예전엔·지금은", inst: "원을 보는 생각이 어떻게 달라졌는지 세 칸에 써서 붙여요.",
       hints: ["원의 중심은 한 곳, 반지름은 원의 중심에서 원까지, 지름은 반지름의 2배예요.", "컴퍼스를 벌린 길이가 반지름이에요. 지름을 알면 반으로 나눠요."],
       render: (b, a) => panes(b, a, [
-        { t: "예전 생각", e: "⏮", ph: "예전에는 원을 ~라고 생각했어요", hint: "둥근 모양과 원을 어떻게 생각했나요?" },
-        { t: "지금 생각", e: "⏭", ph: "지금은 원을 ~라고 생각해요" },
-        { t: "왜 바뀌었나", e: "🔄", ph: "~을 배워서 바뀌었어요", hint: "원의 중심·반지름·지름·컴퍼스를 떠올려요" }],
+        { t: "예전 생각", e: "⏮", ph: "예전에는 원을 ~라고 생각했어요", hint: "둥근 모양과 원을 어떻게 생각했나요?", ex: ["예전에는 원을 동그랗기만 하면 모두 원이라고 생각했어요.", "예전에는 원을 손으로도 반듯하게 그릴 수 있다고 생각했어요."] },
+        { t: "지금 생각", e: "⏭", ph: "지금은 원을 ~라고 생각해요", ex: ["지금은 원을 원의 중심에서 거리가 모두 같은 모양이라고 생각해요.", "지금은 원을 반지름만 알면 컴퍼스로 똑같이 그릴 수 있다고 생각해요."] },
+        { t: "왜 바뀌었나", e: "🔄", ph: "~을 배워서 바뀌었어요", hint: "원의 중심·반지름·지름·컴퍼스를 떠올려요", ex: ["원의 중심과 반지름을 배워서 바뀌었어요.", "컴퍼스로 원을 그리는 방법을 배워서 바뀌었어요."] }],
         { ok: "생각이 자란 모습을 잘 모았어요! 원은 원의 중심에서 거리가 모두 같은 점으로 된 모양이에요." }) }
   ],
   challenge: { inst: "예전엔·지금은 + 마인드맵 — ‘원’ 낱말로 마인드맵을 만들어요. 네 칸에 써서 붙여요.",
     hints: ["‘떠오르는 말’은 낱말만 써도 돼요. 예: 원의 중심, 반지름, 지름, 컴퍼스", "‘묶어 보기’는 비슷한 것끼리 모아요.", "‘이어지는 말’은 ‘~와 ~는 이어져요’처럼 써요."],
     render: withOptional(
       (b, a) => panes(b, a, [
-      { t: "떠오르는 말", e: "🧠", ph: "원 하면 떠오르는 말", hint: "원의 중심, 반지름, 지름, 컴퍼스, 원 위의 점" },
-      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "비슷한 것끼리 모아요" },
-      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "떠오른 낱말 둘을 이어서 써요" },
-      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "‘반지름 4 cm → 지름 8 cm’처럼 예를 들어요" }],
+      { t: "떠오르는 말", e: "🧠", ph: "원 하면 떠오르는 말", hint: "원의 중심, 반지름, 지름, 컴퍼스, 원 위의 점", ex: ["원 하면 원의 중심, 반지름, 지름이 떠올라요.", "원 하면 컴퍼스, 원 위의 점, 과녁이 떠올라요."] },
+      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "비슷한 것끼리 모아요", ex: ["반지름과 지름은 비슷해요. 둘 다 원의 중심과 관계있는 선분이에요.", "컴퍼스의 침과 누름 못은 비슷해요. 둘 다 원의 중심에 꽂아요."] },
+      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "떠오른 낱말 둘을 이어서 써요", ex: ["반지름과 지름은 이어져요. 지름은 반지름의 2배예요.", "컴퍼스와 반지름은 이어져요. 컴퍼스를 벌린 길이가 반지름이에요."] },
+      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "‘반지름 4 cm → 지름 8 cm’처럼 예를 들어요", ex: ["예를 들면 반지름이 6 cm인 원의 지름은 12 cm예요.", "예를 들면 지름이 10 cm인 원은 컴퍼스를 5 cm 벌려 그려요."] }],
       { min: 1, ok: "원 마인드맵 완성! 모은 말로 친구에게 설명해 봐요." }),
       (b, a) => quiz(b, a, [
         { q: "반지름이 6 cm인 원 3개를 한 줄로 맞닿게 놓았어요. 전체 길이는?", o: ["18 cm", "24 cm", "36 cm"], a: 2, why: { "0": "반지름 6 cm를 3번 더했어요. 원 하나가 차지하는 길이는 지름 12 cm예요.", "1": "지름 2개만 더했어요. 원이 3개인 것을 세어 봐요." } },

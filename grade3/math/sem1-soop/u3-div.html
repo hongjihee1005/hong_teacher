@@ -191,6 +191,7 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
 .pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
 .phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+/*hj-ex*/.pane{position:relative}.pane h3 .pt{flex:1;min-width:0}.pane .exb{flex:none;font-family:inherit;font-size:.62em;padding:.15em .6em;border-radius:999px;border:2px solid currentColor;background:#fff;color:inherit;cursor:pointer;white-space:nowrap}.pane .exb[aria-expanded="true"]{color:#fff!important}.pane0 .exb[aria-expanded="true"]{background:#2B7BD6}.pane1 .exb[aria-expanded="true"]{background:#6A4FC9}.pane2 .exb[aria-expanded="true"]{background:#D9731A}.pane3 .exb[aria-expanded="true"]{background:#2F6B57}.pane .expop{display:none;position:absolute;z-index:30;left:.4em;right:.4em;background:#fff;border:3px solid;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44)}.pane .expop.on{display:block}.pane .expop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em}.pane .expop ul{margin:0;padding-left:1.1em;line-height:1.5}.pane .expop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.pane .expop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}.pane0 .expop{border-color:#2B7BD6}.pane0 .exh{color:#2B7BD6}.pane1 .expop{border-color:#6A4FC9}.pane1 .exh{color:#6A4FC9}.pane2 .expop{border-color:#D9731A}.pane2 .exh{color:#D9731A}.pane3 .expop{border-color:#2F6B57}.pane3 .exh{color:#2F6B57}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane .expop,:root:not([data-theme="light"]) .pane .exb{background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .pane .expop,:root[data-theme="dark"] .pane .exb{background:#1E2A28;color:#EEF3F1}/*/hj-ex*/
 .chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
 .chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
   font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
@@ -1395,6 +1396,26 @@ function writeStep(body, api, prompts, opts = {}) {
    보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
    같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
    panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+/*hj-ex*/ /* 사고 전략 칸별 예시: 칸 설정의 ex:["…","…"] → 제목 옆 '💡 예시' 단추, 누르면 팝업(입력칸 아래, 입력칸은 가리지 않음) */
+function paneEx(p) {
+  if (!p.ex || !p.ex.length) return ["", ""];
+  const pop = h("div", { class: "expop", role: "dialog", "aria-label": p.t + " 예시" },
+    h("button", { class: "exx", type: "button", "aria-label": "닫기", onclick: () => paneExClose() }, "✕"),
+    h("p", { class: "exh" }, "이렇게 써 볼 수 있어요"), h("ul", {}, ...p.ex.map(x => h("li", {}, x))),
+    h("p", { class: "exf" }, "내가 생각한 것으로 바꿔 써요."));
+  const btn = h("button", { class: "exb", type: "button", "aria-expanded": "false", onclick: () => {
+    const on = !pop.classList.contains("on"); paneExClose(); if (!on) return;
+    const sec = btn.closest(".pane"), row = sec.querySelector(".prow");
+    pop.style.top = (row.offsetTop + row.offsetHeight + 6) + "px"; pop.classList.add("on"); btn.setAttribute("aria-expanded", "true");
+    pop.scrollIntoView({ block: "nearest" });
+  } }, "💡 예시");
+  return [btn, pop];
+}
+function paneExClose() { document.querySelectorAll(".expop.on").forEach(p => { p.classList.remove("on"); const b = p.parentElement.querySelector(".exb"); if (b) b.setAttribute("aria-expanded", "false"); }); }
+if (!window.__paneEx) { window.__paneEx = 1;
+  document.addEventListener("click", e => { if (!e.target.closest(".expop,.exb")) paneExClose(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") paneExClose(); }); }
+/*/hj-ex*/
 function panes(body, api, list, opts = {}) {
   const need = opts.min || 1;
   const notes = list.map(() => []);
@@ -1413,11 +1434,12 @@ function panes(body, api, list, opts = {}) {
       chips.append(chip); inp.value = ""; inp.focus();
     };
     inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    const pex = paneEx(p); /*hj-ex*/
     wrap.append(h("section", { class: "pane pane" + pi },
-      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), h("span", { class: "pt" }, " " + p.t), pex[0]), /*hj-ex*/
       p.hint ? h("p", { class: "phint" }, p.hint) : "",
       chips,
-      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기")), pex[1])); /*hj-ex*/
   });
 
   body.append(wrap);
@@ -2567,9 +2589,9 @@ const LESSONS = [
       inst: "선생님이 우리 반 25명을 5모둠으로 나누자고 하셨어요. 세 칸에 한 가지씩 써서 붙여요.",
       hints: ["짝과 색종이나 간식을 나누었던 때를 떠올려 봐요.", "‘어떻게 하면 똑같이 나눌 수 있을까?’처럼 궁금한 것을 써도 좋아요."],
       render: (b, a) => panes(b, a, [
-        { t: "보여요", e: "👀", ph: "~이 보여요", hint: "모둠마다 몇 명인지, 준비물은 무엇인지 써요" },
-        { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "똑같이 나누려면 어떻게 하면 좋을까요?" },
-        { t: "궁금해요", e: "❓", ph: "왜 ~일까?", hint: "준비물을 나눌 때 궁금한 것을 써요" }],
+        { t: "보여요", e: "👀", ph: "~이 보여요", hint: "모둠마다 몇 명인지, 준비물은 무엇인지 써요", ex: ["우리 반 25명과 모둠 5개가 보여요.", "모둠마다 나누어 줄 색종이와 풀이 보여요."] },
+        { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "똑같이 나누려면 어떻게 하면 좋을까요?", ex: ["한 명씩 번갈아 모둠에 보내면 똑같이 나눌 수 있을 것 같아요.", "모둠마다 사람 수가 같아야 공평한 것 같아요."] },
+        { t: "궁금해요", e: "❓", ph: "왜 ~일까?", hint: "준비물을 나눌 때 궁금한 것을 써요", ex: ["왜 한 개씩 번갈아 나누면 똑같아질까?", "왜 모둠마다 받는 준비물 수가 같아야 할까?"] }],
         { ok: "생각을 잘 모았어요! 똑같이 나누면 모두 같은 수만큼 가져요." }) },
     { name: "그려 보기 — 모둠에 나누어 보기", inst: "선생님이 말씀하셨어요. “다음 주 모둠 활동은 5모둠으로 해요. 우리 반 25명을 5모둠으로 똑같이 나누어 볼까요?” 친구들을 모둠에 나누어 보세요.",
       hints: ["친구를 한 명씩 번갈아 가며 1모둠, 2모둠, 3모둠 … 차례로 보내 보세요.", "‘한 바퀴’ 버튼을 누르면 모둠마다 한 명씩 한꺼번에 가요."],
@@ -2615,9 +2637,9 @@ const LESSONS = [
       inst: "색종이 30장을 5모둠에 똑같이 나누었어요. 세 칸에 써서 붙여요.",
       hints: ["30 ÷ 5 = 6에서 6은 한 모둠이 받은 색종이의 수예요.", "하나씩 번갈아 가며 나누어 주었던 방법을 떠올려 봐요."],
       render: (b, a) => panes(b, a, [
-        { t: "안다고 생각해요", e: "💡", ph: "똑같이 나누기는 ~예요", hint: "30 ÷ 5 = 6에서 6은 무엇일까요?" },
-        { t: "궁금해요", e: "🧩", ph: "~은 왜 그럴까?", hint: "똑같이 나눌 때 궁금한 것을 써요" },
-        { t: "이렇게 알아볼래요", e: "🔭", ph: "~해서 알아볼래요", hint: "한 장씩 번갈아 나누어 보기처럼 써요" }],
+        { t: "안다고 생각해요", e: "💡", ph: "똑같이 나누기는 ~예요", hint: "30 ÷ 5 = 6에서 6은 무엇일까요?", ex: ["똑같이 나누기는 모든 모둠이 같은 수만큼 받는 거예요.", "똑같이 나누기는 나누고 나서 남는 것이 없는 거예요."] },
+        { t: "궁금해요", e: "🧩", ph: "~은 왜 그럴까?", hint: "똑같이 나눌 때 궁금한 것을 써요", ex: ["한 장씩 번갈아 주면 똑같아지는 것은 왜 그럴까?", "모둠이 많아지면 한 모둠이 받는 수가 줄어드는 것은 왜 그럴까?"] },
+        { t: "이렇게 알아볼래요", e: "🔭", ph: "~해서 알아볼래요", hint: "한 장씩 번갈아 나누어 보기처럼 써요", ex: ["색종이를 한 장씩 번갈아 나누어 주어서 알아볼래요.", "5모둠에 한 바퀴씩 몇 번 돌았는지 세어서 알아볼래요."] }],
         { ok: "잘 모았어요! 30 ÷ 5 = 6에서 몫 6은 한 모둠이 받는 색종이 수예요. 한 장씩 번갈아 주면 똑같이 나눌 수 있어요." }) },
     { inst: "약속: 나눗셈식의 이름과 읽는 방법을 알아보아요.",
       hints: ["나누기 전 전체의 수가 나누어지는 수, 몇으로 나누는지가 나누는 수, 나눈 결과가 몫이에요.", "÷는 ‘나누기’, =는 ‘~과(와) 같습니다’라고 읽어요."],
@@ -2699,8 +2721,8 @@ const LESSONS = [
       inst: "5 × 7 = 35로 나눗셈식 두 개를 만들었어요. 두 칸에 써서 붙여요.",
       hints: ["곱셈식의 곱이 나눗셈식에서는 맨 앞(나누어지는 수)으로 가요.", "5 × 7 = 35 하나로 나눗셈식 두 개를 만들었어요. 35 ÷ 5 = 7, 35 ÷ 7 = 5"],
       render: (b, a) => panes(b, a, [
-        { t: "알아차렸어요", e: "🔍", ph: "~을 알아차렸어요", hint: "35 ÷ 5 = 7, 35 ÷ 7 = 5에서 35는 어디에 있나요?" },
-        { t: "왜 그럴까요", e: "💭", ph: "왜냐하면 ~", hint: "도화지를 세로로 묶을 때와 가로로 묶을 때를 떠올려 봐요" }],
+        { t: "알아차렸어요", e: "🔍", ph: "~을 알아차렸어요", hint: "35 ÷ 5 = 7, 35 ÷ 7 = 5에서 35는 어디에 있나요?", ex: ["곱 35가 나눗셈식에서는 맨 앞에 오는 것을 알아차렸어요.", "5와 7이 번갈아 나누는 수와 몫이 되는 것을 알아차렸어요."] },
+        { t: "왜 그럴까요", e: "💭", ph: "왜냐하면 ~", hint: "도화지를 세로로 묶을 때와 가로로 묶을 때를 떠올려 봐요", ex: ["왜냐하면 세로로 5장씩 묶으면 7묶음이 되기 때문이에요.", "왜냐하면 가로로 7장씩 묶으면 5묶음이 되기 때문이에요."] }],
         { ok: "잘 모았어요! 곱 35는 나눗셈식에서 나누어지는 수가 돼요. 곱셈식 1개로 나눗셈식 2개를 만들어요." }) },
     { inst: "약속: 관계 나무를 완성해요. 곱셈식은 나눗셈식 2개로, 나눗셈식은 곱셈식 2개로 나타내요.",
       hints: ["6 × 7 = 42 → 42 ÷ 6 = 7, 42 ÷ 7 = 6", "45 ÷ 9 = 5 → 9 × 5 = 45, 5 × 9 = 45"],
@@ -2937,18 +2959,18 @@ const LESSONS = [
     { name: "예전 생각, 지금 생각 — 예전엔·지금은", inst: "나눗셈 생각이 어떻게 달라졌는지 세 칸에 써서 붙여요.",
       hints: ["‘예전에는 똑같이 나누는 것이 …’처럼 시작해 봐요.", "‘몫’, ‘곱셈구구’처럼 새로 배운 낱말을 넣어 봐요."],
       render: (b, a) => panes(b, a, [
-        { t: "예전 생각", e: "⏮", ph: "예전에는 나눗셈을 ~라고 생각했어요", hint: "배우기 전 내 생각을 떠올려요" },
-        { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요", hint: "똑같이 나누기, 몇씩 덜어 내기를 떠올려요" },
-        { t: "왜 바뀌었나", e: "🔄", ph: "~을 해 보고 바뀌었어요", hint: "어떤 활동을 하고 생각이 바뀌었나요?" }],
+        { t: "예전 생각", e: "⏮", ph: "예전에는 나눗셈을 ~라고 생각했어요", hint: "배우기 전 내 생각을 떠올려요", ex: ["예전에는 나눗셈을 아주 어려운 계산이라고 생각했어요.", "예전에는 나눗셈을 곱셈과 상관없는 계산이라고 생각했어요."] },
+        { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요", hint: "똑같이 나누기, 몇씩 덜어 내기를 떠올려요", ex: ["지금은 나눗셈이 똑같이 나누는 계산이라고 생각해요.", "지금은 몇씩 덜어 낸 횟수가 몫이라고 생각해요."] },
+        { t: "왜 바뀌었나", e: "🔄", ph: "~을 해 보고 바뀌었어요", hint: "어떤 활동을 하고 생각이 바뀌었나요?", ex: ["풀 15개를 3개씩 덜어 내 보고 바뀌었어요.", "게시판 자석을 가로와 세로로 묶어 보고 바뀌었어요."] }],
         { ok: "생각이 자랐어요! 나눗셈은 똑같이 나누거나 몇씩 덜어 내는 계산이에요." }) }
   ],
   challenge: { inst: "예전엔·지금은 + 마인드맵 — 나눗셈 낱말로 마인드맵을 만들어요. 네 칸에 써서 붙여요.",
     hints: ["‘떠오르는 말’은 낱말만 써도 돼요. 예: 똑같이 나누기, 몫, 곱셈구구", "‘이어지는 말’은 ‘곱셈식과 나눗셈식은 이어져요’처럼 써요."],
     render: withOptional((b, a) => panes(b, a, [
-      { t: "떠오르는 말", e: "🧠", ph: "나눗셈 하면 떠오르는 말", hint: "똑같이 나누기, 덜어 내기, 몫, 곱셈구구…" },
-      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "비슷한 낱말끼리 묶어 봐요" },
-      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "곱셈식과 나눗셈식처럼 이어 봐요" },
-      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "25 ÷ 5 = 5처럼 예를 들어요" }],
+      { t: "떠오르는 말", e: "🧠", ph: "나눗셈 하면 떠오르는 말", hint: "똑같이 나누기, 덜어 내기, 몫, 곱셈구구…", ex: ["나눗셈 하면 똑같이 나누기, 몫이 떠올라요.", "나눗셈 하면 덜어 내기, 곱셈구구가 떠올라요."] },
+      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "비슷한 낱말끼리 묶어 봐요", ex: ["똑같이 나누기와 덜어 내기는 비슷해요. 둘 다 몫을 구해요.", "곱셈구구와 곱셈표는 비슷해요. 둘 다 몫을 찾을 때 써요."] },
+      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "곱셈식과 나눗셈식처럼 이어 봐요", ex: ["곱셈식과 나눗셈식은 이어져요. 3 × 8 = 24로 24 ÷ 3 = 8을 만들어요.", "뺄셈과 나눗셈은 이어져요. 0이 될 때까지 뺀 횟수가 몫이에요."] },
+      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "25 ÷ 5 = 5처럼 예를 들어요", ex: ["예를 들면 25 ÷ 5 = 5는 25명을 5모둠으로 나눈 거예요.", "예를 들면 15 - 3 - 3 - 3 - 3 - 3 = 0은 15 ÷ 3 = 5예요."] }],
       { min: 1, ok: "나눗셈 마인드맵을 완성했어요. 모둠 활동 준비단 임무 완료!" }),
       (b, a) => u3QuotientPath(b, a, { forks: [{ e: "18 ÷ 3", o: [6, 5] }, { e: "28 ÷ 7", o: [3, 4] }, { e: "45 ÷ 5", o: [9, 8] }, { e: "32 ÷ 8", o: [4, 6] }, { e: "25 ÷ 5", o: [4, 5] }],
         ok: "모든 갈림길에서 몫을 정확히 골랐어요. 모둠 활동 준비단 임무 완료!" }),

@@ -187,6 +187,7 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
 .pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
 .phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+/*hj-ex*/.pane{position:relative}.pane h3 .pt{flex:1;min-width:0}.pane .exb{flex:none;font-family:inherit;font-size:.62em;padding:.15em .6em;border-radius:999px;border:2px solid currentColor;background:#fff;color:inherit;cursor:pointer;white-space:nowrap}.pane .exb[aria-expanded="true"]{color:#fff!important}.pane0 .exb[aria-expanded="true"]{background:#2B7BD6}.pane1 .exb[aria-expanded="true"]{background:#6A4FC9}.pane2 .exb[aria-expanded="true"]{background:#D9731A}.pane3 .exb[aria-expanded="true"]{background:#2F6B57}.pane .expop{display:none;position:absolute;z-index:30;left:.4em;right:.4em;background:#fff;border:3px solid;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44)}.pane .expop.on{display:block}.pane .expop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em}.pane .expop ul{margin:0;padding-left:1.1em;line-height:1.5}.pane .expop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.pane .expop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}.pane0 .expop{border-color:#2B7BD6}.pane0 .exh{color:#2B7BD6}.pane1 .expop{border-color:#6A4FC9}.pane1 .exh{color:#6A4FC9}.pane2 .expop{border-color:#D9731A}.pane2 .exh{color:#D9731A}.pane3 .expop{border-color:#2F6B57}.pane3 .exh{color:#2F6B57}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane .expop,:root:not([data-theme="light"]) .pane .exb{background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .pane .expop,:root[data-theme="dark"] .pane .exb{background:#1E2A28;color:#EEF3F1}/*/hj-ex*/
 .chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
 .chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
   font-family:inherit;font-size:.95em;color:inherit;cursor:pointer;text-align:left;max-width:100%;word-break:keep-all}
@@ -1427,6 +1428,26 @@ function writeStep(body, api, prompts, opts = {}) {
    보기-생각하기-궁금해하기, 주장-근거-질문, 예전 생각-지금 생각,
    같은 점·다른 점, 생각-수수께끼-탐구 들을 모두 이 한 가지로 그린다.
    panes: [{ t: "보여요", e: "👀", ph: "~은 ~예요" }, ...]            */
+/*hj-ex*/ /* 사고 전략 칸별 예시: 칸 설정의 ex:["…","…"] → 제목 옆 '💡 예시' 단추, 누르면 팝업(입력칸 아래, 입력칸은 가리지 않음) */
+function paneEx(p) {
+  if (!p.ex || !p.ex.length) return ["", ""];
+  const pop = h("div", { class: "expop", role: "dialog", "aria-label": p.t + " 예시" },
+    h("button", { class: "exx", type: "button", "aria-label": "닫기", onclick: () => paneExClose() }, "✕"),
+    h("p", { class: "exh" }, "이렇게 써 볼 수 있어요"), h("ul", {}, ...p.ex.map(x => h("li", {}, x))),
+    h("p", { class: "exf" }, "내가 생각한 것으로 바꿔 써요."));
+  const btn = h("button", { class: "exb", type: "button", "aria-expanded": "false", onclick: () => {
+    const on = !pop.classList.contains("on"); paneExClose(); if (!on) return;
+    const sec = btn.closest(".pane"), row = sec.querySelector(".prow");
+    pop.style.top = (row.offsetTop + row.offsetHeight + 6) + "px"; pop.classList.add("on"); btn.setAttribute("aria-expanded", "true");
+    pop.scrollIntoView({ block: "nearest" });
+  } }, "💡 예시");
+  return [btn, pop];
+}
+function paneExClose() { document.querySelectorAll(".expop.on").forEach(p => { p.classList.remove("on"); const b = p.parentElement.querySelector(".exb"); if (b) b.setAttribute("aria-expanded", "false"); }); }
+if (!window.__paneEx) { window.__paneEx = 1;
+  document.addEventListener("click", e => { if (!e.target.closest(".expop,.exb")) paneExClose(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") paneExClose(); }); }
+/*/hj-ex*/
 function panes(body, api, list, opts = {}) {
   const need = opts.min || 1;
   const notes = list.map(() => []);
@@ -1445,11 +1466,12 @@ function panes(body, api, list, opts = {}) {
       chips.append(chip); inp.value = ""; inp.focus();
     };
     inp.addEventListener("keydown", (e) => { if (e.key === "Enter") { e.preventDefault(); add(); } });
+    const pex = paneEx(p); /*hj-ex*/
     wrap.append(h("section", { class: "pane pane" + pi },
-      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), " " + p.t),
+      h("h3", {}, h("span", { class: "pe" }, p.e || "•"), h("span", { class: "pt" }, " " + p.t), pex[0]), /*hj-ex*/
       p.hint ? h("p", { class: "phint" }, p.hint) : "",
       chips,
-      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기"))));
+      h("div", { class: "prow" }, inp, h("button", { class: "opt", onclick: add }, "붙이기")), pex[1])); /*hj-ex*/
   });
 
   body.append(wrap);
@@ -2407,9 +2429,9 @@ const LESSONS = [
     { name: "만져 보기 — 보기·생각하기·궁금해하기",
       inst: "요리 교실에 계량컵, 냄비, 저울, 밀가루 봉지가 있어요. 세 칸에 한 가지씩 써서 붙여요.",
       render: (b, a) => panes(b, a, [
-        { t: "보여요", e: "👀", ph: "~이 보여요", hint: "눈에 보이는 것만 써요" },
-        { t: "생각해요", e: "💭", ph: "~을 재는 것 같아요", hint: "무엇에 쓰는 도구일까요?" },
-        { t: "궁금해요", e: "❓", ph: "왜 ~일까?" }],
+        { t: "보여요", e: "👀", ph: "~이 보여요", hint: "눈에 보이는 것만 써요", ex: ["계량컵과 냄비가 보여요.", "저울과 밀가루 봉지가 보여요."] },
+        { t: "생각해요", e: "💭", ph: "~을 재는 것 같아요", hint: "무엇에 쓰는 도구일까요?", ex: ["계량컵은 우유나 물의 양을 재는 것 같아요.", "저울은 밀가루가 얼마나 무거운지 재는 것 같아요."] },
+        { t: "궁금해요", e: "❓", ph: "왜 ~일까?", ex: ["왜 요리할 때 재료의 양을 재어야 할까?", "왜 냄비와 계량컵에 담기는 물의 양이 다를까?"] }],
         { ok: "생각을 잘 모았어요! 친구들 쪽지와 견주어 봐요." }) },
     { name: "그려 보기 — 들이와 무게 구별하기", inst: "담는 그릇과 재는 도구를 찾고, 들이와 무게를 구별해 보세요.", render: (b, a) => { picKitchenTools(b, ["계량컵", "냄비", "도마", "뒤집개", "저울", "국자"]); quiz(b, a, [
       { q: "물이나 우유를 담을 수 있는 것을 모두 고르세요.", o: ["계량컵", "냄비", "도마", "뒤집개"], a: [0, 1] },
@@ -2438,9 +2460,9 @@ const LESSONS = [
     { name: "만져 보기 — 생각·수수께끼·탐구",
       inst: "모양이 다른 가 그릇과 나 그릇이 있어요. 어느 그릇에 더 많이 담길까요?",
       render: (b, a) => panes(b, a, [
-        { t: "안다고 생각해요", e: "💡", ph: "~은 알아요", hint: "그릇의 들이에 대해 아는 것" },
-        { t: "수수께끼예요", e: "❓", ph: "~이 궁금해요", hint: "아직 모르는 것, 헷갈리는 것" },
-        { t: "알아볼 방법", e: "🔎", ph: "~해 보면 알 수 있어요", hint: "직접 해 볼 수 있는 방법을 써요" }],
+        { t: "안다고 생각해요", e: "💡", ph: "~은 알아요", hint: "그릇의 들이에 대해 아는 것", ex: ["그릇마다 담을 수 있는 양이 다르다는 것은 알아요.", "가 그릇과 나 그릇의 모양이 서로 다르다는 것은 알아요."] },
+        { t: "수수께끼예요", e: "❓", ph: "~이 궁금해요", hint: "아직 모르는 것, 헷갈리는 것", ex: ["모양이 다르면 눈으로만 보고 비교할 수 있을지 궁금해요.", "가 그릇과 나 그릇에 물이 몇 컵씩 들어갈지 궁금해요."] },
+        { t: "알아볼 방법", e: "🔎", ph: "~해 보면 알 수 있어요", hint: "직접 해 볼 수 있는 방법을 써요", ex: ["두 그릇의 물을 같은 컵으로 옮겨 세어 보면 알 수 있어요.", "가 그릇에 물을 가득 채워 나 그릇에 부어 보면 알 수 있어요."] }],
         { ok: "수수께끼를 풀 방법을 찾았어요! 이제 직접 해 봐요." }) },
     { name: "그려 보기 — 같은 컵으로 옮겨 세기", inst: "모양이 다른 두 그릇을 같은 컵으로 옮겨 비교해 보세요.", render: (b, a) => simCupCompare(b, a, { a: 7, b: 5 }) },
     { name: "말해 보기 — 방법 말하기", inst: "들이를 비교하는 방법을 말해 봐요.", render: (b, a) => quiz(b, a, [
@@ -2569,9 +2591,9 @@ const LESSONS = [
     { name: "말해 보기 — 주장·근거·질문",
       inst: "왜 정해진 단위가 필요할까요? 세 칸에 내 생각과 까닭을 써서 붙여요.",
       render: (b, a) => panes(b, a, [
-        { t: "주장", e: "✋", ph: "나는 ~라고 생각해요", hint: "내 생각을 한 문장으로 써요" },
-        { t: "근거", e: "🔎", ph: "왜냐하면 ~", hint: "바둑돌로 잰 것과 클립으로 잰 것을 견줄 수 있을까요?" },
-        { t: "질문", e: "❓", ph: "아직 궁금한 것은 ~" }],
+        { t: "주장", e: "✋", ph: "나는 ~라고 생각해요", hint: "내 생각을 한 문장으로 써요", ex: ["나는 무게를 잴 때 정해진 단위가 꼭 필요하다고 생각해요.", "나는 모두가 같은 물건으로 재어야 한다고 생각해요."] },
+        { t: "근거", e: "🔎", ph: "왜냐하면 ~", hint: "바둑돌로 잰 것과 클립으로 잰 것을 견줄 수 있을까요?", ex: ["왜냐하면 당근은 바둑돌 30개, 양파는 클립 50개면 견줄 수 없기 때문이에요.", "왜냐하면 바둑돌과 클립은 한 개의 무게가 서로 다르기 때문이에요."] },
+        { t: "질문", e: "❓", ph: "아직 궁금한 것은 ~", ex: ["아직 궁금한 것은 모두가 함께 쓰는 무게 단위가 무엇인지예요.", "아직 궁금한 것은 아주 무거운 물건은 어떤 단위로 재는지예요."] }],
         { ok: "생각과 까닭을 잘 모았어요! 친구들 쪽지와 견주어 봐요." }) },
     { inst: "약속: 여러 재료는 같은 물건의 개수로 세어 비교해요.", render: (b, a) => quiz(b, a, [
       { q: "당근은 바둑돌 30개, 양파는 클립 50개예요. 어느 것이 더 무거울까요?", o: ["당근", "양파", "단위가 달라 알 수 없어요"], a: 2, why: { "1": "50이 30보다 크지만 클립과 바둑돌의 무게가 같은지 생각해 봐요.", "0": "바둑돌이 더 무거울지 가벼울지 알 수 없어요. 센 물건이 서로 달라요." } },
@@ -2715,9 +2737,9 @@ const LESSONS = [
       { q: "300 g짜리 버터는 어떨까요?", o: ["담을 수 있어요", "담을 수 없어요"], a: 0 }]) },
     { name: "확인하기 — 연결·확장·도전", inst: "오늘 배운 것을 세 칸에 써서 붙여요.",
       render: (b, a) => panes(b, a, [
-        { t: "연결하기", e: "🔗", ph: "오늘은 ~ 방법을 썼어요", hint: "무게를 더하고 빼는 방법을 어떻게 썼나요?" },
-        { t: "확장하기", e: "🌱", ph: "생활에서는 ~에 쓸 수 있어요", hint: "요리나 장보기에서 무게를 재면 무엇이 좋을까요?" },
-        { t: "도전하기", e: "🧗", ph: "아직 ~이 헷갈려요", hint: "아직 헷갈리거나 어려운 것은?" }],
+        { t: "연결하기", e: "🔗", ph: "오늘은 ~ 방법을 썼어요", hint: "무게를 더하고 빼는 방법을 어떻게 썼나요?", ex: ["오늘은 1 kg 500 g을 1500 g으로 바꾸어 800 g을 더하는 방법을 썼어요.", "오늘은 3 kg에서 2 kg 600 g을 빼서 더 담을 양을 구하는 방법을 썼어요."] },
+        { t: "확장하기", e: "🌱", ph: "생활에서는 ~에 쓸 수 있어요", hint: "요리나 장보기에서 무게를 재면 무엇이 좋을까요?", ex: ["생활에서는 장바구니에 담은 물건의 무게를 구할 때 쓸 수 있어요.", "생활에서는 빵을 만들고 남은 밀가루 양을 알아볼 때 쓸 수 있어요."] },
+        { t: "도전하기", e: "🧗", ph: "아직 ~이 헷갈려요", hint: "아직 헷갈리거나 어려운 것은?", ex: ["아직 g이 모자랄 때 1 kg을 1000 g으로 바꾸는 것이 헷갈려요.", "아직 kg과 g이 섞인 무게를 g으로만 바꾸는 것이 헷갈려요."] }],
         { ok: "오늘 배운 것을 잘 모았어요! 친구들 쪽지와 견주어 봐요." }) }
   ],
   challenge: { inst: "두 모둠의 재료를 비교해 보세요.", render: (b, a) => numbers(b, a, [
@@ -2774,19 +2796,19 @@ const LESSONS = [
     { name: "예전 생각, 지금 생각 — 예전엔·지금은", inst: "생각이 어떻게 달라졌는지 세 칸에 써서 붙여요.",
       hints: ["1 L = 1000 mL, 1 kg = 1000 g, 1 t = 1000 kg이에요.", "단위를 같게 맞추면 비교도 계산도 할 수 있어요."],
       render: (b, a) => panes(b, a, [
-        { t: "예전 생각", e: "⏮", ph: "예전에는 ~라고 생각했어요", hint: "들이와 무게를 재는 일을 어떻게 생각했나요?" },
-        { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요" },
-        { t: "왜 바뀌었나", e: "🔄", ph: "~을 배워서 바뀌었어요", hint: "L, mL, kg, g, t, 어림, 같은 단위끼리를 떠올려요" }],
+        { t: "예전 생각", e: "⏮", ph: "예전에는 ~라고 생각했어요", hint: "들이와 무게를 재는 일을 어떻게 생각했나요?", ex: ["예전에는 큰 그릇에 언제나 더 많이 담긴다고 생각했어요.", "예전에는 크기가 크면 무조건 더 무겁다고 생각했어요."] },
+        { t: "지금 생각", e: "⏭", ph: "지금은 ~라고 생각해요", ex: ["지금은 들이를 L와 mL로 재어 비교해야 한다고 생각해요.", "지금은 솜 1 kg과 쇠 1 kg처럼 크기가 달라도 무게가 같을 수 있다고 생각해요."] },
+        { t: "왜 바뀌었나", e: "🔄", ph: "~을 배워서 바뀌었어요", hint: "L, mL, kg, g, t, 어림, 같은 단위끼리를 떠올려요", ex: ["1 L = 1000 mL처럼 정해진 단위를 배워서 바뀌었어요.", "같은 단위끼리 더하고 빼는 방법을 배워서 바뀌었어요."] }],
         { ok: "생각이 자란 모습을 잘 모았어요! 들이는 L·mL, 무게는 kg·g·t로 나타내요." }) }
   ],
   challenge: { inst: "예전엔·지금은 + 마인드맵 — ‘들이와 무게’ 낱말로 마인드맵을 만들어요. 네 칸에 써서 붙여요.",
     hints: ["‘떠오르는 말’은 낱말만 써도 돼요. 예: L, mL, kg, g, t, 비커, 저울, 어림", "‘묶어 보기’는 비슷한 것끼리 모아요.", "‘이어지는 말’은 ‘~와 ~는 이어져요’처럼 써요."],
     render: withOptional(
       (b, a) => panes(b, a, [
-      { t: "떠오르는 말", e: "🧠", ph: "들이와 무게 하면 떠오르는 말", hint: "L, mL, kg, g, t, 비커, 저울, 어림" },
-      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "들이끼리, 무게끼리 모아요" },
-      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "떠오른 낱말 둘을 이어서 써요" },
-      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "1 L 800 mL + 2 L 400 mL = 4 L 200 mL처럼 예를 들어요" }],
+      { t: "떠오르는 말", e: "🧠", ph: "들이와 무게 하면 떠오르는 말", hint: "L, mL, kg, g, t, 비커, 저울, 어림", ex: ["들이와 무게 하면 L, mL, 비커가 떠올라요.", "들이와 무게 하면 kg, g, t, 저울이 떠올라요."] },
+      { t: "묶어 보기", e: "🗂", ph: "~와 ~는 비슷해요", hint: "들이끼리, 무게끼리 모아요", ex: ["L와 mL는 비슷해요. 둘 다 들이의 단위예요.", "kg과 g은 비슷해요. 둘 다 무게의 단위예요."] },
+      { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "떠오른 낱말 둘을 이어서 써요", ex: ["어림과 저울은 이어져요. 어림한 다음 저울로 재어 확인해요.", "mL와 L는 이어져요. 1000 mL가 모이면 1 L가 돼요."] },
+      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "1 L 800 mL + 2 L 400 mL = 4 L 200 mL처럼 예를 들어요", ex: ["예를 들면 2 L 600 mL는 2600 mL예요.", "예를 들면 4 kg 100 g − 1 kg 500 g = 2 kg 600 g이에요."] }],
       { min: 1, ok: "들이와 무게 마인드맵 완성!" }),
       (b, a) => numbers(b, a, [
         { q: "만든 주스 800 mL를 4모둠이 똑같이 나누면 한 모둠은 몇 mL? ", a: 200 },
