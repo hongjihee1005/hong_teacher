@@ -39,6 +39,7 @@ grade1/ … grade6/
 ### 3-2 과학 홍지희 선생님 버전 (`grade3/science/sem2-hong/`, 2026-10-02)
 
 - 실험·탐구 중심 26차시. **HTML을 직접 고치지 마세요.** 원본은 `grade3/science/_build_hong2/lessons_uN.py`이고 `python3 build.py [sci32-uN-lM…]` → `python3 index_build.py` → 루트에서 `apply_content_theme.py`·`apply_theme.py`로 다시 만듭니다. 규칙은 `_build_hong2/README.md`, `BRIEF_WRITER.md`.
+- **사고전략 예시 문장(2026-10-03):** 단계마다 `💡 예시 보기` 단추로 예시 3개가 펼쳐집니다. 문장은 `_build_hong2/examples_uN.py`(단계 이름으로 연결)에 씁니다. 1단원 완료, 2~4단원·다른 방은 진행 예정.
 
 ### 3-1 사회 홍지희 버전 프로젝트 판 (2026-10-02)
 
