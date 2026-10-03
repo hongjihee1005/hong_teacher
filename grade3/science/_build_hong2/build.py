@@ -57,13 +57,12 @@ if __name__ == '__main__':
         topic = M.TOPIC
         ex_mod = 'examples_u' + os.path.basename(mod)[len('lessons_u'):-3]
         EX = importlib.import_module(ex_mod).EX if os.path.exists(os.path.join(B, ex_mod + '.py')) else {}
-        HINT = importlib.import_module(ex_mod).HINT if os.path.exists(os.path.join(B, ex_mod + '.py')) else {}
-        for L in M.LESSONS:  # 사고전략 예시 문장(engine_ex.js) — 단계 이름으로 찾아 ex(예시 보기)·hints(칸별 힌트)로 넣음
-            for key, D in (('ex', EX), ('hints', HINT)):
-                for t, v in D.get(L['lessonKey'], {}).items():
-                    hit = [s for s in L['steps'] if s['t'] == t]
-                    assert len(hit) == 1, (L['lessonKey'], t, len(hit))
-                    hit[0][key] = v
+        for L in M.LESSONS:  # 사고전략 칸별 예시(engine_ex.js) — 단계 이름으로 찾아 hints로 넣음
+            for t, v in EX.get(L['lessonKey'], {}).items():
+                hit = [s for s in L['steps'] if s['t'] == t]
+                assert len(hit) == 1, (L['lessonKey'], t, len(hit))
+                assert all(len(c) in (0, 2) for c in v), (L['lessonKey'], t, '칸마다 예시 2개')
+                hit[0]['hints'] = v
         topic['map'] = [{'s': L['soop'], 'f': L['file'], 'n': L['short'], 't': L['title'].split(' ', 1)[-1]} for L in M.LESSONS]
         for L in M.LESSONS:
             if not only or L['lessonKey'] in only:
