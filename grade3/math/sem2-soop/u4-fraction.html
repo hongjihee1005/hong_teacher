@@ -881,6 +881,7 @@ html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!imp
 
 /* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
 html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
+html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
 </style><meta name="hj-list" content="[[&quot;u1-mul.html&quot;, &quot;가을 축제 준비단&quot;, &quot;웹앱&quot;], [&quot;u2-div.html&quot;, &quot;3학년 나눔 장터&quot;, &quot;웹앱&quot;], [&quot;u3-circle.html&quot;, &quot;원 탐험 캠프&quot;, &quot;웹앱&quot;], [&quot;u4-fraction.html&quot;, &quot;간식 나누기 부엌&quot;, &quot;웹앱&quot;], [&quot;u5-measure.html&quot;, &quot;학급 요리 교실&quot;, &quot;웹앱&quot;], [&quot;u6-graph.html&quot;, &quot;우리 반 조사단&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
@@ -3248,5 +3249,11 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
    as.forEach(function(a,i){if(!a.dataset.hjst)put(a,C[i]||String(i+1),a.textContent.trim());var cur=/outline/.test(a.getAttribute('style')||'')||a.classList.contains('on')||a.getAttribute('aria-current')==='true'||a.classList.contains('hj-cur')&&!/outline/.test(a.getAttribute('style')||'')&&false;if(a.classList.contains('hj-cur')!==cur)a.classList.toggle('hj-cur',cur);[['background',cur?'var(--hjs,#1F8060)':''],['color',cur?'#fff':''],['border-color',cur?'transparent':'']].forEach(function(k){var v=a.style.getPropertyValue(k[0]);if(k[1]){if(v!==k[1])a.style.setProperty(k[0],k[1],'important')}else if(v)a.style.removeProperty(k[0])})})})}
  fix();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(fix,25)}).observe(document.body,{childList:true,subtree:true,attributes:true,attributeFilter:['style','class']})})();
 
+/* 뜻 만들기 빈칸(.frameline input): 글이 길어지면 칸이 늘어나고, 줄이 모자라면 뒤 말이 다음 줄로 */
+(function(){var cv=document.createElement('canvas').getContext('2d');
+ function size(i){var cs=getComputedStyle(i);cv.font=cs.fontWeight+' '+cs.fontSize+' '+cs.fontFamily;var t=i.value||i.placeholder||'';var w=Math.ceil(cv.measureText(t).width)+parseFloat(cs.fontSize)*1.2;var max=i.parentElement.clientWidth-8;i.style.setProperty('width',Math.max(parseFloat(cs.fontSize)*7,Math.min(w,max))+'px','important')}
+ function wire(){document.querySelectorAll('.frameline input:not([data-hjsz])').forEach(function(i){i.dataset.hjsz='1';i.addEventListener('input',function(){size(i)});size(i)})}
+ document.addEventListener('click',function(e){if(e.target.closest('.chips,.chip,button'))setTimeout(function(){document.querySelectorAll('.frameline input').forEach(size)},30)},true);
+ wire();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(wire,30)}).observe(document.body,{childList:true,subtree:true});addEventListener('resize',function(){document.querySelectorAll('.frameline input').forEach(size)})})();
 </script><!--/hj-cicons--></body>
 </html>
