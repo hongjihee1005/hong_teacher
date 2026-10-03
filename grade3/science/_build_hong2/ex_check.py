@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
-"""사고전략 칸별 예시 점검: python3 ex_check.py 2   (2단원)
+"""사고전략 칸별 예시 점검: python3 ex_check.py 2   (2단원, 지금 폴더의 lessons_u2.py)
+   3-1 과학: cd ../_build_hong && python3 ../_build_hong2/ex_check.py 2
 - 예시를 넣을 단계와 칸 이름을 보여 주고, examples_uN.py가 있으면 빠진 것·칸 수·문장 수를 검사합니다."""
 import sys, importlib, os
-sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, os.getcwd())
 COLS = {  # 쓰는 칸(화면 순서). 고르기만 하는 단계(lab·design·board·check·talk·task·cards·sort)는 넣지 않음
     'see': ['보여요', '생각해요', '궁금해요'], 'pgrid': ['그렇게 예상한 까닭'],
     'gcmp': ['예상과 달랐던 칸, 왜 그랬을까?', '모둠마다 결과가 달랐던 칸, 왜 그랬을까?'],
