@@ -19,6 +19,8 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 MATH = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
 from help import scan, sites, ctx, HRE  # 같은 칸 찾기
+from sig import align, wyr
+TODO = []  # 짝이 없는 새 칸(내용이 필요함)
 
 CSS = ('/*hj-ans*/.ansbg{position:fixed;inset:0;z-index:90;background:rgba(30,25,20,.38);display:flex;align-items:center;justify-content:center;padding:16px}'
        '.ansbox{position:relative;width:min(640px,100%);max-height:86vh;overflow:auto;background:#fff;border:3px solid #1F9E63;border-radius:16px;padding:16px 46px 14px 20px;box-shadow:0 14px 40px rgba(0,0,0,.25);word-break:keep-all;text-align:left;color:var(--ink,#1F2A44)}'
@@ -80,12 +82,12 @@ def patch(path, M):
         k = s.index('.phint{'); k = s.index('\n', k) + 1; s = s[:k] + CSS + s[k:]
     s = ARE.sub('', s)
     W, Y, R = sites(s)
-    assert [len(x) for x in W] == [len(x) for x in M.W] and len(Y) == len(M.Y) and len(R) == len(M.R), (path, '칸 수가 앱과 다름')
+    MW, MY, MR = align(s, W, Y, R, M, '', TODO, '답')  # 칸 이름표로 짝 찾기(sig.py)
     edits = []
-    for objs, v in zip(W, M.W):
+    for objs, v in zip(W, MW):
         for (a, k), t in zip(objs, v):
             if t: edits.append((k, t))
-    for (a, k), t in list(zip(Y, M.Y)) + list(zip(R, M.R)):
+    for (a, k), t in list(zip(Y, MY)) + list(zip(R, MR)):
         if t: edits.append((k, t))
     for k, t in sorted(edits, reverse=True):
         k2 = k

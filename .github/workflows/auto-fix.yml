@@ -1,0 +1,47 @@
+# 자동 보완 — main에 올라올 때마다(어느 대화·어느 기기에서 올렸든) 사이트를 '지금 상태'로 맞춥니다.
+# 하는 일은 _build/auto/run_all.py 맨 위 설명을 보세요. 바뀐 것이 있으면 '자동 보완' 커밋을 main에 올립니다.
+name: 자동 보완
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: auto-fix
+  cancel-in-progress: false
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: 준비
+        run: pip install pillow
+      - name: 모두 다시 적용
+        id: run
+        continue-on-error: true
+        run: python3 _build/auto/run_all.py --since "${{ github.event.before }}"
+      - name: 바뀐 것 올리기
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then echo "바뀐 것 없음 — 이미 맞습니다."; exit 0; fi
+          git diff --cached --stat | tail -20
+          git commit -q -m "자동 보완: 예시·도움·답·그림·홈 단추·덮개 다시 적용"
+          for i in 1 2 3 4 5; do
+            git push origin HEAD:main && exit 0
+            git pull --rebase origin main || exit 1
+            sleep $((i * 4))
+          done
+          exit 1
+      - name: 문제가 있으면 알림(실패 메일)
+        if: steps.run.outcome == 'failure'
+        run: |
+          echo "자동 점검에서 문제가 나왔습니다. 위 '모두 다시 적용' 단계의 [문제] 줄을 보세요."
+          exit 1
