@@ -2,7 +2,7 @@
 var MZ = require('./maze.js'), bad = 0, seen = {}, dup = 0, t0 = Date.now(), stat = [];
 for (var g = 1; g <= 6; g++) {
   var S = MZ.specs(g), cells = [];
-  if (S.length !== 90) { console.log(g + '학년 개수', S.length); bad++ }
+  if (S.length !== 300) { console.log(g + '학년 개수', S.length); bad++ }
   S.forEach(function (s, i) {
     var m;
     try { m = MZ.make(s) } catch (e) { console.log(g + '학년 ' + (i + 1) + '번 오류', e.message); bad++; return }
@@ -20,5 +20,5 @@ for (var g = 1; g <= 6; g++) {
   stat.push(g + '학년: 칸/정답길이 ' + cells[0] + ' … ' + cells[29] + ' | ' + cells[30] + ' … ' + cells[59] + ' | ' + cells[60] + ' … ' + cells[89]);
 }
 console.log(stat.join('\n'));
-console.log('미로 점검: 540개, 문제 ' + bad + '개, 중복 ' + dup + '개, ' + (Date.now() - t0) + 'ms');
+console.log('미로 점검: 1800개, 문제 ' + bad + '개, 중복 ' + dup + '개, ' + (Date.now() - t0) + 'ms');
 process.exit(bad || dup ? 1 : 0);

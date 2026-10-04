@@ -39,5 +39,5 @@ def build(g):
 if __name__ == '__main__':
     if shutil.which('node'):
         r = subprocess.run(['node', str(HERE / 'check.js')], capture_output=True, text=True)
-        if r.returncode: print(r.stdout[-1500:]); sys.exit('숨은 그림 점검 실패')
+        if r.returncode: print(r.stdout[-1500:]); sys.exit('틀린 그림 점검 실패')
     print(f'틀린 그림 찾기 {sum(build(g) for g in GRADES)}개 페이지 다시 만듦')

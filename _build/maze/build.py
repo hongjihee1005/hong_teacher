@@ -3,7 +3,7 @@
 
     python3 _build/maze/build.py        # break/maze/g1.html ~ g6.html (+ node가 있으면 check.js로 540개 점검)
 
-미로: maze.js(생성기 — 학년 설정 GR, 조건 RULES, 모양 MASKS, 학년별 90개 specs). 페이지 안에서 미로를 만들어 그립니다.
+미로: maze.js(생성기 — 학년 설정 GR, 조건 RULES, 모양 MASKS, 학년별 300개 specs). 페이지 안에서 미로를 만들어 그립니다.
 화면: page.html + page.css + app.js. 아래쪽 '만든 사람'·홈 단추 조각은 _build/origami/의 것을 같이 씁니다.
 고친 뒤 루트에서 python3 _build/theme/apply_content_theme.py (자동 보완 run_all.py에도 들어 있음). 여러 번 실행해도 안전합니다.
 """
@@ -13,7 +13,7 @@ ROOT = HERE.parents[1]
 OG = ROOT / '_build' / 'origami'
 
 GRADES = {
-  1: dict(ico='🐣', acc='#D94F72', intro='작은 네모 미로부터 하트·별 모양 미로, 짝수·과일·동물만 따라가는 조건 미로까지 90개예요.'),
+  1: dict(ico='🐣', acc='#D94F72', intro='작은 네모 미로부터 하트·별 모양 미로, 짝수·과일·동물만 따라가는 조건 미로까지 300개예요.'),
   2: dict(ico='🌱', acc='#3A8F3A', intro='조금 더 큰 미로와 뛰어 세기·덧셈 조건 미로가 기다려요.'),
   3: dict(ico='🚀', acc='#2F6FD6', intro='원형 미로와 벌집 미로, 곱셈구구 순서 미로에 도전해요.'),
   4: dict(ico='🌈', acc='#8150C8', intro='큰 수·소수·배수 조건 미로와 여러 모양의 큰 미로예요.'),
