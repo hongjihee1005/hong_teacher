@@ -115,7 +115,7 @@ grade1/ … grade6/
 
 ### 쉬는 시간 › 종이접기 (`break/`, 2026-10-04)
 
-- 첫 화면에서 '🍎 우리 반 교실'과 '🧸 쉬는 시간' 카드가 한 줄에 반씩 나란히 있습니다(`index.html`의 `<div class="duo">`, 좁은 화면에서는 위아래). 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠'·'컬러링'·'미로찾기'·'틀린 그림 찾기' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
+- 첫 화면은 두 묶음입니다(2026-10-04): 제목줄 `<h2 class="sec-h">학년 공통</h2>` 아래 '🍎 우리 반 교실' · '🎒 학년 공통' · '🧸 쉬는 시간' 세 카드, `<h2 class="sec-h">학년별</h2>` 아래 1~6학년 카드(3개씩 두 줄). 둘 다 `<div class="grid g3 three">`. 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠'·'컬러링'·'미로찾기'·'틀린 그림 찾기' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
 - 학년 페이지는 작품 카드(완성 그림·난이도·단계 수·준비물) → 한 단계씩 보기(큰 그림, 이전/다음, ←/→ 키, `#작품id`로 바로 열기) → '한눈에 보기'·'인쇄'(전체 단계를 3칸씩). 작품 15가지:
   1학년 우리 집·강아지 얼굴·고양이 얼굴 / 2학년 튤립·컵·매미 / 3학년 종이비행기·투구·동서남북 / 4학년 팔랑개비·하트 / 5학년 상자·점프 개구리 / 6학년 날개 퍼덕이는 새·종이학.
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/origami/`입니다: 작품 `models_gN.py`(설명 문장과 그림 좌표 — 접는 선에 대해 점을 뒤집는 `geo.py` 도구로 계산), 그림 엔진 `engine.js`, 화면 `page.html`·`page.css`·`svg.css`·`app.js`, 학년별 머리말·약속은 `build.py`의 `GRADES`.
@@ -163,6 +163,19 @@ grade1/ … grade6/
   - 조작: 두 그림 중 아무 쪽이나 누르면 판정(양쪽에 동그라미, 찾은 곳 목록에 '무엇이 어떻게 달라졌는지' 표시), 힌트, 처음부터, 정답 보기(확인 창), 인쇄(두 그림 + 이름 칸). 기록은 그 기기 localStorage(`hj-spot-v1`).
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/spot/`: 생성기 `spot.js`(사물 `OBJ`, 새로 생기는 그림 `EXTRA`, 장면 `THEMES`, 학년·단계 설정 `specs`), 화면 `page.html`·`page.css`·`app.js`, 학년별 머리말은 `build.py`의 `GRADES`.
   `node _build/spot/check.js`가 540개 모두 다른 곳 개수·실제로 바뀌었는지·정답 아닌 곳이 똑같은지·겹침·누르기 판정·중복을 점검합니다(`build.py`가 먼저 돌림). 고친 뒤 `python3 _build/spot/build.py && python3 _build/theme/apply_content_theme.py`.
+
+### 학년 공통 › 한자 급수 (`common/hanja/`, 2026-10-04)
+
+- 첫 화면 '🎒 학년 공통' → `common/index.html`(방: '한자 급수') → `common/hanja/index.html`(13개 급 방) → `common/hanja/lv8.html, lv7-2.html, lv7.html, lv6-2.html, lv6.html, lv5-2.html, lv5.html, lv4-2.html, lv4.html, lv3-2.html, lv3.html, lv2.html, lv1.html`(Ⅱ급은 `-2`).
+- **한국어문회** 한자능력검정시험 기준. 배정한자는 `_build/hanja/data/hanja.csv`(한국어문회 홈페이지 엑셀을 rycont/hanja-grade-dataset이 CSV로 옮긴 것, 저작권 한국어문회) — 8급 50자 … 1급까지 누적 3,500자, 훈음·부수·총획.
+- 급 페이지: ① 한자 익히기(이 급의 새 한자 카드 → 큰 글자·훈음·부수·총획·그 한자가 든 낱말, 찾기) ② 쓰기 연습지(한 쪽 10자: 보고 쓰기 1·덧쓰기 3·빈칸 5, 이 쪽/모든 쪽 인쇄, `#sheet-3`)
+  ③ 모의 시험 20회(`#exam-5`): 문항 수·합격 기준은 한국어문회 안내(8급 50/35, 7급Ⅱ 60/42, 7급 70/49, 6급Ⅱ 80/56, 6급 90/63, 5급Ⅱ~4급 100/70, 3급Ⅱ~2급 150/105, 1급 200/160).
+  유형(독음·훈음·한자 쓰기(6급Ⅱ부터)·반대/상대·한자어 완성·부수(4급Ⅱ부터)·동음이의어·약자(5급Ⅱ부터))과 유형별 문항 수는 **연습용으로 정한 것**이라 실제 시험과 다를 수 있습니다(`gen.py`의 `LEVELS`).
+  화면에서 풀고 '채점하기'(독음·훈음은 글자로 비교, 한자 쓰기는 정답을 보고 ⭕/❌), 정답 보기, 시험지 인쇄(2단), 정답 인쇄. 최고 점수는 그 기기 localStorage(`hj-hanja-v1`).
+- 한자 글꼴: Google Fonts `Noto Serif KR` → 없는 글자(배정한자 33자·약자)는 같은 디자인의 `Noto Serif JP`·`Noto Serif TC`로 채움(`display=block`, 중국식 고딕으로 잠깐 보이지 않게).
+- **`lv*.html`을 직접 고치지 마세요.** 원본은 `_build/hanja/`: 시험지 생성 `gen.py`(같은 자료면 언제나 같은 시험지, `python3 gen.py check` 점검, `python3 gen.py show 8 1`로 글 보기),
+  손 자료 `extra.py`(반대·상대 한자 짝 `PAIRS`, 약자 `YAK`, 부수 이름표), 한자어 `data/words.tsv`(libhangul BSD-3에서 `words.py`가 고름: 많이 쓰는 낱말만, 어린이에게 알맞지 않은 낱말 `NGW` 제외), 화면 `page.html`·`page.css`·`app.js`.
+  고친 뒤 `python3 _build/hanja/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음).
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
