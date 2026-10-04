@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
 """모두 다시 적용 — 어디서 고치거나 덮어써도 사이트를 '지금 상태'로 맞춥니다 (2026-10-04)
 
-  python3 _build/auto/run_all.py                 # 모든 빌드 + 모든 넣기 + 덮개 + 점검
-  python3 _build/auto/run_all.py --since <커밋>   # 그 커밋 뒤에 원본이 바뀐 곳만 다시 빌드(넣기·덮개·점검은 언제나 전부)
+  python3 _build/auto/run_all.py                 # 아직 올리지 않은 변경을 기준으로 전부 맞춤
+  python3 _build/auto/run_all.py --since <커밋>   # 그 커밋 뒤에 올라온 변경을 기준으로(GitHub에서 씀)
 
 GitHub에서는 main에 올라올 때마다 .github/workflows/auto-fix.yml이 이것을 돌리고, 바뀐 것이 있으면 '자동 보완' 커밋을 올립니다.
 여러 번 돌려도 안전합니다(이미 맞으면 아무것도 바뀌지 않음).
 
 하는 일(차례대로)
- 1. 원본에서 다시 빌드: 과학 3-1·3-2 홍지희 버전, 국어 3-2, 우리 반 교실, 오늘의 교실 산책, 3-1 사회 프로젝트 판
- 2. 수학 단원 앱에 홈 단추 조각(#hj-home)이 없으면 다시 넣기
+ 1. 수학 단원 앱에 홈 단추 조각(#hj-home)이 없으면 다시 넣기
  3. 수학 이야기 버전: 사고 전략 예시(apply.py) → 글쓰기 도움(help.py) → 답(ans.py) → 나눗셈 그림(pics.py)
  4. 사회 홍지희 버전 예시·힌트(grade3/social/_ex/apply.py)
- 5. 메뉴 디자인(apply_theme.py) → 수업 자료 덮개(apply_content_theme.py)
- 6. 점검: 링크(href와 "f": 둘 다) / 내용이 아직 없는 새 칸 → _build/auto/todo.md
-문제가 있으면(스크립트 오류·깨진 링크) 끝 코드가 1이 되어 GitHub가 실패 메일을 보냅니다.
+ 5. 3-1 사회 프로젝트 판 → 메뉴 디자인(apply_theme.py) → 수업 자료 덮개(apply_content_theme.py)
+ 6. 안전장치: 원본에서 만드는 HTML(과학 3-1·3-2 홍지희 버전, 국어 3-2, 우리 반 교실, 오늘의 교실 산책)을 원본으로 다시 빌드해
+    지금 HTML과 견줌. 원본만 바뀌었으면 새로 만든 것으로 바꾸고, HTML에만 고친 내용이 있으면 HTML을 지키고 '원본에 반영 필요'로 알림
+ 7. 점검: 링크(href와 "f": 둘 다) / 할 일(내용이 필요한 새 칸, 원본에 반영 필요) → _build/auto/todo.md
+문제가 있으면(스크립트 오류·깨진 링크·이번에 올라온 HTML 수정이 원본에 없음) 끝 코드가 1이 되어 GitHub가 실패 메일을 보냅니다.
 """
 import os, re, sys, glob, subprocess, traceback
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -33,20 +34,34 @@ def run(cwd, *args):
     return r
 
 
-BUILDS = [  # (원본 폴더, [(작업 폴더, 명령)…])
-    ('grade3/science/_build_hong2/', [('grade3/science/_build_hong2', ['build.py']), ('grade3/science/_build_hong2', ['index_build.py'])]),
-    ('grade3/science/_build_hong/', [('grade3/science/_build_hong', ['build.py'])]),  # 3-1 목록은 손본 HTML이라 index_build.py는 돌리지 않음
-    ('grade3/korean/_build/', [('grade3/korean/_build', ['build.py', '../sem2'])]),
-    ('_build/class/', [('.', ['_build/class/build.py'])]),
-    ('_build/today/', [('.', ['_build/today/build.py'])]),
-    ('_build/project/', [('.', ['_build/project/apply.py'])]),
+BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 곳), [(작업 폴더, 명령)…])
+    ('과학 3-2 홍지희 버전', 'grade3/science/_build_hong2/', ['grade3/science/sem2-hong/*.html'],
+     [('grade3/science/_build_hong2', ['build.py']), ('grade3/science/_build_hong2', ['index_build.py'])]),
+    ('과학 3-1 홍지희 버전', 'grade3/science/_build_hong/', ['grade3/science/sem1-hong/u*.html'],
+     [('grade3/science/_build_hong', ['build.py'])]),  # 3-1 목록(index.html)은 손본 HTML이라 index_build.py는 돌리지 않음
+    ('국어 3-2', 'grade3/korean/_build/', ['grade3/korean/sem2/u*.html'], [('grade3/korean/_build', ['build.py', '../sem2'])]),
+    ('우리 반 교실', '_build/class/', ['class/index.html'], [('.', ['_build/class/build.py'])]),
+    ('오늘의 교실 산책', '_build/today/', ['today/index.html', 'index.html'], [('.', ['_build/today/build.py'])]),
 ]
 
 
 def changed(since):
-    if not since or set(since) == {'0'}: return None
-    r = subprocess.run(['git', 'diff', '--name-only', since, 'HEAD'], cwd=ROOT, capture_output=True, text=True)
-    return None if r.returncode else r.stdout.split()
+    """올라온(또는 아직 올리지 않은) 변경 파일 목록. 알 수 없으면 None"""
+    if since and set(since) != {'0'}:
+        r = subprocess.run(['git', 'diff', '--name-only', since, 'HEAD'], cwd=ROOT, capture_output=True, text=True)
+        return None if r.returncode else r.stdout.split()
+    r = subprocess.run(['git', 'status', '--porcelain', '--untracked-files=all'], cwd=ROOT, capture_output=True, text=True)
+    return None if r.returncode else [l[3:].split(' -> ')[-1].strip('"') for l in r.stdout.splitlines()]
+
+
+def files_of(globs):
+    return sorted({os.path.relpath(p, ROOT) for g in globs for p in glob.glob(os.path.join(ROOT, g))})
+
+
+def sha(rel):
+    import hashlib
+    p = os.path.join(ROOT, rel)
+    return hashlib.sha1(open(p, 'rb').read()).hexdigest() if os.path.exists(p) else None
 
 
 def home_fragment():
@@ -109,26 +124,52 @@ def links():
 def main():
     a = sys.argv[1:]
     since = a[a.index('--since') + 1] if '--since' in a else None
-    ch = changed(since)
-    # 1. 원본에서 다시 빌드
-    for src, cmds in BUILDS:
-        if ch is not None and not any(c.startswith(src) for c in ch): continue
-        for cwd, args in cmds: run(cwd, *args)
-    # 2~4. 넣기
-    home_fragment()
+    ch = changed(since) or []
     todo = []
-    run('grade3/math/_ex', 'sigmake.py')  # 새 데이터 파일(SIG 없음)에 칸 이름표 적기
-    math_inject(todo)
-    run('grade3/social/_ex', 'apply.py')
-    # 5. 덮개
-    run('.', '_build/theme/apply_theme.py')          # 메뉴 먼저(오늘의 교실 산책처럼 새로 빌드한 메뉴에 표시가 붙어야 덮개가 건너뜀)
-    run('.', '_build/theme/apply_content_theme.py')
+
+    def inject():  # 넣기·덮개(여러 번 돌려도 같은 결과)
+        home_fragment()
+        run('grade3/math/_ex', 'sigmake.py')  # 새 데이터 파일(SIG 없음)에 칸 이름표 적기
+        del todo[:]; math_inject(todo)
+        run('grade3/social/_ex', 'apply.py')
+        run('.', '_build/project/apply.py')    # 3-1 사회 프로젝트 판
+        run('.', '_build/theme/apply_theme.py')          # 메뉴 먼저(오늘의 교실 산책처럼 새로 빌드한 메뉴에 표시가 붙어야 덮개가 건너뜀)
+        run('.', '_build/theme/apply_content_theme.py')
+
+    # A. 올라온 HTML 그대로 넣기·덮개 → 이것이 '지금 HTML'
+    inject()
+    # B. 원본에서 다시 빌드해 보고, '지금 HTML'과 견줌 (안전장치)
+    #    원본만 바뀌었으면 → 새로 만든 것으로 바꿈(원래 뜻)
+    #    HTML에 손댄 흔적이 있는데 원본으로 만든 것과 다르면 → HTML을 그대로 두고 '원본에 반영 필요'로 알림(고친 내용이 사라지지 않게)
+    import shutil, tempfile
+    keep = tempfile.mkdtemp(); before = {}; plan = []
+    for name, src, outs, cmds in BUILDS:
+        fs = files_of(outs)
+        for f in fs:
+            before[f] = sha(f); os.makedirs(os.path.dirname(os.path.join(keep, f)) or keep, exist_ok=True); shutil.copy2(os.path.join(ROOT, f), os.path.join(keep, f))
+        plan.append((name, src, fs, any(c.startswith(src) for c in ch)))
+        for cwd, args in cmds: run(cwd, *args)
+    inject()
+    restored, src_todo = [], []
+    for name, src, fs, src_changed in plan:
+        for f in fs:
+            if sha(f) == before[f]: continue
+            if src_changed and f not in ch: continue  # 원본을 고친 결과 — 그대로 받아들임
+            shutil.copy2(os.path.join(keep, f), os.path.join(ROOT, f)); restored.append(f)
+            msg = f'원본에 반영 필요 — {name}: {f} (HTML에 원본에 없는 내용이 있어 HTML을 그대로 두었습니다. 원본 {src}에 같은 수정을 넣어 주세요)'
+            src_todo.append(msg)
+            if f in ch: ERR.append(msg)  # 이번에 올라온 수정이면 실패 메일로 알림(예전 것은 todo.md에만)
+    shutil.rmtree(keep, ignore_errors=True)
+    if restored: inject()  # 되돌린 HTML 기준으로 메뉴·덮개를 다시 맞춤
+    todo += src_todo
     # 6. 점검
     for b in links(): ERR.append('깨진 링크: ' + b)
     r = run('grade3/social/_ex', 'apply.py', 'check')
     if re.search(r'문제 [1-9]', r.stdout): todo.append('사회 예시: ' + ' / '.join(l for l in r.stdout.splitlines() if '문제 0' not in l)[:400])
-    head = ('# 내용이 필요한 새 칸 (자동 점검, 손으로 고치지 마세요)\n\n'
-            '앱이 바뀌어 예시·도움·답이 아직 없는 칸입니다. Claude에게 "todo.md 채워 줘"라고 하면 채웁니다.\n'
+    head = ('# 할 일 (자동 점검, 손으로 고치지 마세요)\n\n'
+            '- 내용이 필요한 새 칸: 앱이 바뀌어 예시·도움·답이 아직 없는 칸입니다.\n'
+            '- 원본에 반영 필요: 원본에서 만드는 HTML만 고쳐져 있는 곳입니다(그대로 두면 다음 빌드 때 사라질 수 있음).\n'
+            'Claude에게 "todo.md 채워 줘"라고 하면 처리합니다.\n'
             '(채운 뒤 grade3/math/_ex/sigmake.py 그 파일.py 로 이름표를 새로 적습니다.)\n\n')
     body = ''.join(f'- {t}\n' for t in sorted(set(todo))) or '- 없음\n'
     tp = os.path.join(ROOT, '_build/auto/todo.md')
