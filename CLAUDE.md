@@ -115,7 +115,7 @@ grade1/ … grade6/
 
 ### 쉬는 시간 › 종이접기 (`break/`, 2026-10-04)
 
-- 첫 화면에서 '🍎 우리 반 교실'과 '🧸 쉬는 시간' 카드가 한 줄에 반씩 나란히 있습니다(`index.html`의 `<div class="duo">`, 좁은 화면에서는 위아래). 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
+- 첫 화면에서 '🍎 우리 반 교실'과 '🧸 쉬는 시간' 카드가 한 줄에 반씩 나란히 있습니다(`index.html`의 `<div class="duo">`, 좁은 화면에서는 위아래). 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠'·'컬러링' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
 - 학년 페이지는 작품 카드(완성 그림·난이도·단계 수·준비물) → 한 단계씩 보기(큰 그림, 이전/다음, ←/→ 키, `#작품id`로 바로 열기) → '한눈에 보기'·'인쇄'(전체 단계를 3칸씩). 작품 15가지:
   1학년 우리 집·강아지 얼굴·고양이 얼굴 / 2학년 튤립·컵·매미 / 3학년 종이비행기·투구·동서남북 / 4학년 팔랑개비·하트 / 5학년 상자·점프 개구리 / 6학년 날개 퍼덕이는 새·종이학.
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/origami/`입니다: 작품 `models_gN.py`(설명 문장과 그림 좌표 — 접는 선에 대해 점을 뒤집는 `geo.py` 도구로 계산), 그림 엔진 `engine.js`, 화면 `page.html`·`page.css`·`svg.css`·`app.js`, 학년별 머리말·약속은 `build.py`의 `GRADES`.
@@ -132,6 +132,14 @@ grade1/ … grade6/
   진행 상황(이어서 풀기·다 푼 문제 ✓)은 그 기기 localStorage(`hj-sudoku-v1`)에만 저장됩니다. `g6.html#7`처럼 번호를 붙이면 그 문제가 바로 열립니다.
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/sudoku/`: 문제 `puzzles.json`(`gen.py`가 만듦 — 다시 돌려도 같은 문제), 화면 `page.html`·`page.css`·`app.js`, 학년별 머리말은 `build.py`의 `GRADES`.
   고친 뒤 `python3 _build/sudoku/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음).
+
+### 쉬는 시간 › 컬러링 (`break/coloring/`, 2026-10-04)
+
+- `break/index.html`의 세 번째 방 '🎨 컬러링' → `break/coloring/index.html`(1~6학년 방) → `break/coloring/g1.html ~ g6.html`(학년마다 50개, 모두 300개, 서로 겹치는 도안 없음).
+  1학년 큰 칸 사물 31가지·큰 도형 / 2학년 무늬·테두리를 더한 사물·쉬운 무늬 / 3학년 반복 무늬(물결 타일·벌집·소용돌이·비늘·바구니)·쉬운 만다라 / 4학년 촘촘한 무늬·만다라 / 5학년 여러 겹 만다라 / 6학년 정교한 만다라. 학년 안에서는 칸 수가 적은 것부터 놓입니다(화면에서 계산).
+- 화면: 색 23가지+지우개, 칸을 누르면 칠하기, 되돌리기(Ctrl+Z), 처음부터, 그림 저장(PNG), 도안 인쇄(선만, 이름 칸), 이전/다음 도안, `g5.html#10`처럼 번호로 바로 열기. 칠한 것은 그 기기 localStorage(`hj-color-v1`)에만 저장됩니다.
+- **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/coloring/`: 도안 설정 `specs.py`(학년별 50개), 그림 생성기 `designs.js`(설정이 같으면 언제나 같은 그림 — 사물 `OBJ`, 무늬 `PAT`, 만다라 `mandala`), 화면 `page.html`·`page.css`·`app.js`, 학년별 머리말·선 굵기는 `build.py`의 `GRADES`.
+  고친 뒤 `python3 _build/coloring/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 도안은 '뒤에 그린 칸이 앞의 칸을 가리는' 방식이라, 보이는 부분이 곧 한 칸입니다.
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
