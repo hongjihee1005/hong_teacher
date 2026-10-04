@@ -8,6 +8,18 @@
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] }) }
   function hn(t, c) { return '<span class="han' + (c ? ' ' + c : '') + '">' + esc(t) + '</span>' }
   function hun(x) { return x[1].map(function (m) { return m[0].join('·') + ' ' + m[1].join('·') }).join(', ') }
+  /* 훈음 표시: 훈(뜻)은 조금 작고 진한 회색, 음(소리)은 굵게, 사이를 조금 띄움 */
+  function he(h, e) { return '<span class="hu">' + esc(h) + '</span><span class="eu">' + esc(e) + '</span>' }
+  function heStr(t) { t = String(t); var k = t.lastIndexOf(' '); return k < 0 ? esc(t) : he(t.slice(0, k), t.slice(k + 1)) }
+  function heAll(x) { return x[1].map(function (m) { return he(m[0].join('·'), m[1].join('·')) }).join('<span class="sep">, </span>') }
+  /* 획순 그림: 1~upto획(upto번째 획은 강조색). nums면 획 번호 */
+  function strokeSvg(P, upto, cls, nums) {
+    var s = '<path class="hz-gd" d="M54.5 2V107M2 54.5H107"/>';
+    P.forEach(function (d, i) { if (i < upto) s += '<path class="' + (i === upto - 1 ? 'hz-now' : 'hz-done') + '" d="' + d + '"/>' });
+    if (nums) P.forEach(function (d, i) { var m = /^M(-?[\d.]+),(-?[\d.]+)/.exec(d); if (m) s += '<text x="' + (+m[1] - 5) + '" y="' + (+m[2] - 2) + '">' + (i + 1) + '</text>' });
+    return '<svg class="' + cls + '" viewBox="0 0 109 109" aria-hidden="true">' + s + '</svg>';
+  }
+  function steps(P, cls) { var h = ''; for (var k = 1; k <= P.length; k++) h += '<span class="' + cls + '">' + strokeSvg(P, k, 'hzst') + '<i>' + k + '</i></span>'; return h }
   var CIR = '①②③④';
 
   /* ── 탭 ── */
@@ -21,18 +33,37 @@
 
   /* ── 한자 익히기 ── */
   function cards(list) {
-    $('hzGrid').innerHTML = list.map(function (i) { var x = L[i]; return '<button type="button" class="hz-card" data-i="' + i + '"><span class="h han">' + esc(x[0]) + '</span><span class="m">' + esc(x[1][0][0][0] + ' ' + x[1][0][1][0]) + '</span></button>' }).join('');
+    $('hzGrid').innerHTML = list.map(function (i) { var x = L[i]; return '<button type="button" class="hz-card" data-i="' + i + '"><span class="h han">' + esc(x[0]) + '</span><span class="m">' + he(x[1][0][0][0], x[1][0][1][0]) + '</span></button>' }).join('');
     $('hzCount').textContent = list.length === L.length ? '이 급에서 새로 나오는 한자 ' + L.length + '자' : list.length + '자 찾음';
   }
   function detail(i) {
     var x = L[i];
-    $('hzDet').innerHTML = '<div class="hz-big">' + hn(x[0]) + '</div><div class="hz-info"><h3>' + esc(hun(x)) + '</h3><dl><dt>부수</dt><dd>' + hn(x[2]) + '</dd><dt>총획</dt><dd>' + x[3] + '획</dd><dt>급수</dt><dd>' + esc(D.name) + '</dd></dl>' +
+    $('hzDet').innerHTML = '<div class="hz-big">' + hn(x[0]) + '</div><div class="hz-info"><h3>' + heAll(x) + '</h3><dl><dt>부수</dt><dd>' + hn(x[2]) + '</dd><dt>총획</dt><dd>' + x[3] + '획</dd><dt>급수</dt><dd>' + esc(D.name) + '</dd></dl>' +
       (x[4].length ? '<div>이 한자가 든 낱말</div><div class="hz-words">' + x[4].map(function (w) { return '<span>' + hn(w[0]) + ' ' + esc(w[1]) + '</span>' }).join('') + '</div>' : '') +
       '<div class="hz-bar" style="margin-top:10px"><button type="button" class="hz-btn" data-go="' + ((i + L.length - 1) % L.length) + '">← 앞 글자</button><button type="button" class="hz-btn" data-go="' + ((i + 1) % L.length) + '">다음 글자 →</button></div></div>';
+    $('hzDet').insertAdjacentHTML('beforeend', '<div class="hz-order"><h4>획순 <small>' + x[3] + '획</small></h4>' + (x[5] ?
+      '<div class="ho-wrap"><div class="ho-anim">' + strokeSvg(x[5], x[5].length, 'hzan', true) + '<button type="button" class="hz-btn" id="hoPlay">▶ 획순 다시 보기</button></div><div class="ho-steps">' + steps(x[5], 'ho-s') + '</div></div>'
+      : '<p class="hz-note">이 글자는 한국 획수와 맞는 획순 자료가 없어 싣지 않았어요. 교재의 획순을 참고해 주세요.</p>') + '</div>');
+    if (x[5]) { $('hoPlay').onclick = function () { play($('hzDet').querySelector('svg.hzan')) }; play($('hzDet').querySelector('svg.hzan')) }
     $('hzDet').hidden = false;
     document.querySelectorAll('.hz-card.on').forEach(function (c) { c.classList.remove('on') });
     var c = document.querySelector('.hz-card[data-i="' + i + '"]'); if (c) c.classList.add('on');
     $('hzDet').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  var timer = null;
+  function play(svg) {
+    clearTimeout(timer); if (!svg) return;
+    var ps = [].slice.call(svg.querySelectorAll('path:not(.hz-gd)')), ts = [].slice.call(svg.querySelectorAll('text')), k = 0;
+    ps.forEach(function (p) { var n = p.getTotalLength(); p.style.transition = 'none'; p.style.strokeDasharray = n + ' ' + n; p.style.strokeDashoffset = n; p.setAttribute('class', 'hz-done') });
+    ts.forEach(function (t) { t.style.opacity = 0 });
+    (function next() {
+      if (k >= ps.length) { ps.forEach(function (q) { q.setAttribute('class', 'hz-done') }); return; }
+      var p = ps[k], n = p.getTotalLength(), sec = Math.max(.3, n / 120);
+      ps.forEach(function (q, j) { q.setAttribute('class', j === k ? 'hz-now' : 'hz-done') });
+      if (ts[k]) ts[k].style.opacity = 1;
+      p.getBoundingClientRect(); p.style.transition = 'stroke-dashoffset ' + sec + 's linear'; p.style.strokeDashoffset = 0;
+      k++; timer = setTimeout(next, sec * 1000 + 260);
+    })();
   }
   cards(L.map(function (x, i) { return i }));
   $('hzGrid').onclick = function (e) { var c = e.target.closest('.hz-card'); if (c) detail(+c.dataset.i) };
@@ -43,13 +74,13 @@
   };
 
   /* ── 쓰기 연습지 ── */
-  var PER = 10, NP = Math.ceil(L.length / PER), sp = 0;
+  var PER = 8, NP = Math.ceil(L.length / PER), sp = 0;
   function sheet(p) {
     var rows = L.slice(p * PER, p * PER + PER).map(function (x) {
       var b = '<div class="hz-box k">' + hn(x[0]) + '</div>';
       for (var k = 0; k < 3; k++) b += '<div class="hz-box">' + hn(x[0]) + '</div>';
       for (k = 0; k < 5; k++) b += '<div class="hz-box"></div>';
-      return '<div class="hz-row"><div class="lab">' + hn(x[0]) + '<small>' + esc(x[1][0][0][0] + ' ' + x[1][0][1][0]) + '</small><i>' + hn(x[2]) + '부 · ' + x[3] + '획</i></div><div class="hz-boxes">' + b + '</div></div>';
+      return '<div class="hz-row"><div class="lab">' + hn(x[0]) + '<small>' + he(x[1][0][0][0], x[1][0][1][0]) + '</small><i>' + hn(x[2]) + '부 · ' + x[3] + '획</i></div><div class="hz-rt">' + (x[5] ? '<div class="sh-steps">' + steps(x[5], 'sh-s') + '</div>' : '<div class="sh-steps none">획순: 교재 참고</div>') + '<div class="hz-boxes">' + b + '</div></div></div>';
     }).join('');
     return '<div class="hz-sheet"><div class="sh-top"><span>' + esc(D.name) + ' 한자 쓰기 ' + (p + 1) + '쪽 / ' + NP + '쪽</span><span>이름: ____________</span></div>' + rows + '</div>';
   }
@@ -86,7 +117,7 @@
   }
   function ansText(t, x) {
     if (t === 'R') return esc(x.a);
-    if (t === 'H') return esc(x.a[0]);
+    if (t === 'H') return heStr(x.a[0]);
     if (t === 'W') return hn(x.a);
     if (t === 'C') return CIR[x.a] + ' ' + hn(x.o[x.a]) + ' (' + hn(x.w) + ' ' + esc(x.r) + ')';
     if (t === 'S') return CIR[x.a] + ' ' + hn(x.o[x.a]) + ' (' + esc(x.r) + ')';
@@ -94,7 +125,7 @@
   }
   function qhtml(t, x, n, pr) {
     var q;
-    if (t === 'W') q = '<span class="q t">' + esc(x.q) + '</span>';
+    if (t === 'W') q = '<span class="q t">' + heStr(x.q) + '</span>';
     else if (t === 'C') q = '<span class="q han">' + esc(x.q) + '</span><span class="rd">[' + esc(x.r) + ']</span>';
     else q = '<span class="q han">' + esc(x.q) + '</span>';
     var h = '<div class="ex-it" data-n="' + n + '"><span class="no">' + (n + 1) + '.</span>' + q;
@@ -184,7 +215,7 @@
   if ((m = /^sheet(?:-(\d+))?$/.exec(h))) { tab('sheet', true); if (m[1]) showSheet(Math.max(0, Math.min(NP - 1, m[1] - 1))) }
   else if ((m = /^exam(?:-(\d+))?$/.exec(h))) { tab('exam', true); if (m[1]) openExam(Math.max(0, Math.min(E.length - 1, m[1] - 1))) }
   /* 이 급의 한자를 미리 불러와 글꼴이 바뀌어 보이지 않게 */
-  if (document.fonts && document.fonts.load) document.fonts.load('500 40px "Noto Serif KR"', L.map(function (x) { return x[0] }).join(''));
+  if (document.fonts && document.fonts.load) document.fonts.load('500 40px "Noto Serif KR"', L.map(function (x) { return x[0] }).join('')).catch(function () { });
 })();
 (function () {
   var h = location.hostname, ok = location.protocol === 'file:' || /github\.io$/.test(h) || /^localhost$/.test(h) || h === '127.0.0.1';
