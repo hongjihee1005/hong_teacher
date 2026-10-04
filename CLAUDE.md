@@ -166,7 +166,7 @@ grade1/ … grade6/
 
 ### 공통 › 한자 급수 (`common/hanja/`, 2026-10-04)
 
-- 첫 화면 '학년 공통' 묶음의 '🎒 공통' 카드 → `common/index.html`(방: '한자 급수') → `common/hanja/index.html`(13개 급 방) → `common/hanja/lv8.html, lv7-2.html, lv7.html, lv6-2.html, lv6.html, lv5-2.html, lv5.html, lv4-2.html, lv4.html, lv3-2.html, lv3.html, lv2.html, lv1.html`(Ⅱ급은 `-2`).
+- 첫 화면 '학년 공통' 묶음의 '🎒 공통' 카드 → `common/index.html`(방: '한자 급수' · '음악이론') → `common/hanja/index.html`(13개 급 방) → `common/hanja/lv8.html, lv7-2.html, lv7.html, lv6-2.html, lv6.html, lv5-2.html, lv5.html, lv4-2.html, lv4.html, lv3-2.html, lv3.html, lv2.html, lv1.html`(Ⅱ급은 `-2`).
 - **한국어문회** 한자능력검정시험 기준. 배정한자는 `_build/hanja/data/hanja.csv`(한국어문회 홈페이지 엑셀을 rycont/hanja-grade-dataset이 CSV로 옮긴 것, 저작권 한국어문회) — 8급 50자 … 1급까지 누적 3,500자, 훈음·부수·총획.
 - 급 페이지: ① 한자 익히기(이 급의 새 한자 카드 → 큰 글자·훈음·부수·총획·그 한자가 든 낱말·**획순**(한 획씩 그려 보이는 애니메이션 + 단계 그림), 찾기) ② 쓰기 연습지(한 쪽 8자: 위에 획순 단계 칸, 보고 쓰기 1·덧쓰기 3·빈칸 5, 이 쪽/모든 쪽 인쇄, `#sheet-3`)
   ③ 모의 시험 20회(`#exam-5`): 문항 수·합격 기준은 한국어문회 안내(8급 50/35, 7급Ⅱ 60/42, 7급 70/49, 6급Ⅱ 80/56, 6급 90/63, 5급Ⅱ~4급 100/70, 3급Ⅱ~2급 150/105, 1급 200/160).
@@ -180,6 +180,19 @@ grade1/ … grade6/
 - **`lv*.html`을 직접 고치지 마세요.** 원본은 `_build/hanja/`: 시험지 생성 `gen.py`(같은 자료면 언제나 같은 시험지, `python3 gen.py check` 점검, `python3 gen.py show 8 1`로 글 보기),
   손 자료 `extra.py`(반대·상대 한자 짝 `PAIRS`, 약자 `YAK`, 부수 이름표), 한자어 `data/words.tsv`(libhangul BSD-3에서 `words.py`가 고름: 많이 쓰는 낱말만, 어린이에게 알맞지 않은 낱말 `NGW` 제외), 화면 `page.html`·`page.css`·`app.js`.
   고친 뒤 `python3 _build/hanja/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음).
+
+### 공통 › 음악이론 (`common/music/`, 2026-10-04)
+
+- '🎒 공통' → `common/index.html`(방: 한자 급수 · 음악이론) → `common/music/index.html`(영역 5개로 묶은 22개 주제) → `common/music/t01-staff.html … t22-form.html`.
+  영역: 악보 읽기(01 오선과 음자리표 ~ 07 도돌이표) · 빠르기와 셈여림(08~10) · 음계와 화음(11~14) · 국악(15 장단 ~ 18 판소리와 민요) · 악기와 합주(19 서양 악기 ~ 22 음악의 짜임). 번호 차례가 기초 → 심화.
+- 주제 페이지: 📖 배우기 · 🎧 들어 보고 해 보기 · ✏️ 연습 문제(바로 채점) · 🎵 추천 음악(유튜브 **검색** 링크 — 특정 영상 주소는 넣지 않음) · 📌 핵심 정리 · 이전/다음 주제,
+  위 단추: 🖥️ 슬라이드로 보기(같은 내용을 한 장씩, ←/→, 전체 화면, `#slides`로 바로 열기) · 📄 활동지 미리 보기 · 🖨️ 활동지 인쇄 · 🖨️ 활동지 정답 인쇄.
+- 악보는 그림 파일이 아니라 `engine.js`가 악보 문자열(예: `c4/4 d4/4 | e4/2.`, 빔 `( )`, 붙임줄 `~`, 이음줄 `{ }`, 스타카토 `*`, 테누토 `_`, 악센트 `>`, 늘임표 `^`, 화음 `[c4 e4 g4]/1`, 줄바꿈 `//`, `|: :| $1 $2 $fine $dc`)로 SVG를 그리고, Web Audio로 소리를 냅니다(컴퓨터로 흉내 낸 소리).
+  음자리표·쉼표·올림표 등 기호 모양은 `glyphs.json`(Noto Music 글꼴, SIL OFL 1.1에서 뽑음)이라 글꼴을 내려받지 않아도 깨지지 않습니다. 계이름은 이동도법(조표에 따라 '도' 자리가 바뀜, 단조는 '라'로).
+  위젯: `staff`(악보·듣기·계이름 보기) `keys`(건반) `namegame`(계이름 맞히기) `tempo`(빠르기/셈여림 비교, `dyn:True`) `meter`(박자 셈여림) `jang`(장단·장구 소리) `compare` `cards` `table` `html`.
+- 가락은 저작권이 끝난 전래·고전 가락만 씁니다(작은 별, 비행기, 나비야, 환희의 송가, 자크 형제). 노랫말은 싣지 않습니다. 장단 구음(세마치·굿거리)은 학교에서 많이 쓰는 기본형이라고 화면에 적어 두었습니다.
+- **`t*.html`을 직접 고치지 마세요.** 원본은 `_build/music/`: 내용 `topics_a.py`(01~07)·`topics_b.py`(08~14)·`topics_c.py`(15~22), 화면 `page.html`·`page.css`·`app.js`, 엔진 `engine.js`.
+  고친 뒤 `python3 _build/music/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py`가 정답 번호 등을 먼저 점검). 주제를 더하면 `common/music/index.html`(메뉴)에도 카드를 더하고 `apply_theme.py`.
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
