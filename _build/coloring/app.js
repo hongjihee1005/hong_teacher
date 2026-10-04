@@ -5,7 +5,7 @@
     ['하늘', '#4FC3F7'], ['파랑', '#1E88E5'], ['남색', '#3949AB'], ['보라', '#8E24AA'], ['분홍', '#F48FB1'], ['자홍', '#D81B60'],
     ['살구', '#FFCC80'], ['갈색', '#8D6E63'], ['고동', '#5D4037'], ['연분홍', '#FCE4EC'], ['연노랑', '#FFF9C4'], ['연하늘', '#E1F5FE'],
     ['연보라', '#E1BEE7'], ['민트', '#B2DFDB'], ['회색', '#9E9E9E'], ['검정', '#212121'], ['살색', '#FFE0C2']];
-  var KEY = 'hj-color-v1', st = {};
+  var KEY = 'hj-color-v2', st = {};
   try { st = JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) { st = {} }
   st[G] = st[G] || {};
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)) } catch (e) { say('저장 공간이 부족해 칠한 내용을 저장하지 못했어요.') } }
@@ -16,10 +16,13 @@
 
   function list() {
     var done = 0;
-    $('clList').innerHTML = L.map(function (x, k) {
+    var LV = [['쉬움', '칸이 적고 큼직한 도안'], ['보통', '칸이 조금 많아진 도안'], ['도전', '칸이 가장 많고 정교한 도안']], h = '';
+    L.forEach(function (x, k) {
+      if (k % 30 === 0) { var b = k / 30; h += (k ? '</div>' : '') + '<h3 class="cl-lv">' + LV[b][0] + ' <small>' + (k + 1) + '~' + (k + 30) + '번 · ' + LV[b][1] + '</small></h3><div class="cl-list">' }
       var f = st[G][x.id], c = f ? Object.keys(f).length : 0; if (c) done++;
-      return '<button type="button" class="cl-d' + (c ? ' go' : '') + '" data-k="' + k + '"><span class="cl-th" data-t="' + k + '"></span><b>' + x.no + '. ' + CD.title(x.s) + '</b><small>' + (c ? '색칠 중 · ' : '') + '칸 ' + x.n + '개</small></button>';
-    }).join('');
+      h += '<button type="button" class="cl-d' + (c ? ' go' : '') + '" data-k="' + k + '"><span class="cl-th" data-t="' + k + '"></span><b>' + x.no + '. ' + CD.title(x.s) + '</b><small>' + (c ? '색칠 중 · ' : '') + '칸 ' + x.n + '개</small></button>';
+    });
+    $('clList').innerHTML = h + '</div>';
     $('clProg').textContent = '색칠한 도안 ' + done + ' / ' + L.length;
     var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting) { thumb(e.target); io.unobserve(e.target) } })
@@ -38,7 +41,7 @@
 
   function open(k) {
     cur = k; var x = L[k]; fills = Object.assign({}, st[G][x.id] || {}); hist = [];
-    $('clTitle').textContent = G + '학년 · ' + x.no + '. ' + CD.title(x.s);
+    $('clTitle').textContent = G + '학년 · ' + x.no + '. ' + CD.title(x.s) + ' (' + ['쉬움', '보통', '도전'][Math.floor(k / 30)] + ')';
     $('clArt').innerHTML = CD.svg(x.s, fills, SW).html;
     $('clPrev').disabled = k === 0; $('clNext').disabled = k === L.length - 1;
     $('clPick').hidden = true; $('clPlay').hidden = false; say('');

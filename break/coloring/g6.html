@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>6학년 컬러링 · 쉬는 시간 · 초등교사 홍지희</title>
-<meta name="description" content="6학년 쉬는 시간 컬러링 도안 50개">
+<meta name="description" content="6학년 쉬는 시간 컬러링 도안 90개(쉬움·보통·도전)">
 <style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#1C8C7A;--board:#FFFFFF;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37}}
@@ -16,6 +16,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .cl-rules{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;padding:0;list-style:none}
 .cl-rules li{background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-size:clamp(15px,1.5vw,18px)}
 .cl-prog{font-family:var(--display);color:var(--acc);margin:0 0 10px;font-size:clamp(18px,1.8vw,22px)}
+.cl-lv{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.4vw,28px);margin:18px 0 8px}.cl-lv small{font-family:var(--body);font-size:15px;color:var(--soft);margin-left:8px}
 .cl-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .cl-d{display:flex;flex-direction:column;gap:4px;background:var(--paper);border:3px solid var(--line);border-radius:18px;padding:8px;text-align:left}
 .cl-d:hover,.cl-d:focus-visible{border-color:var(--acc);outline:0}
@@ -741,7 +742,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 <p class="sub">칸이 아주 많은 정교한 만다라예요. 마음을 차분히 하고 천천히 완성해 봐요.</p>
 <ul class="cl-rules"><li>🎨 색을 고르고 칸을 누르면 색이 칠해져요</li><li>↩️ 잘못 칠하면 되돌리기</li><li>🖨️ 종이에 인쇄해서 색연필로 칠해도 좋아요</li></ul>
 <p class="cl-prog" id="clProg"></p>
-<div class="cl-list" id="clList"></div>
+<div id="clList"></div>
 </section>
 <section id="clPlay" hidden>
 <div class="cl-bar"><button type="button" class="cl-btn" id="clBack">← 도안 고르기</button><h2 id="clTitle"></h2>
@@ -1063,21 +1064,33 @@ var CD = (function () {
   function make(spec) {
     var o = [], r = rng(spec.seed || 1);
     if (spec.k === 'obj') { var lv = spec.lv || 1; if (lv > 1 && spec.fr) frame(o, 26); OBJ[spec.o][1](o, lv) }
+    else if (spec.k === 'pair' || spec.k === 'quad') {   // 사물 2개(나란히)·4개(2×2)를 작게 한 장에
+      o.push(rect(8, 8, 384, 384, 16));
+      var pos = spec.k === 'pair' ? [[0, 70, .5], [200, 70, .5]] : [[6, 6, .47], [206, 6, .47], [6, 206, .47], [206, 206, .47]];
+      if (spec.k === 'pair') o.push(rect(8, 300, 384, 92, 0));
+      spec.os.forEach(function (name, j) {
+        var t = [], p = pos[j]; OBJ[name][1](t, spec.lv || 1);
+        t.forEach(function (e) { var x = typeof e === 'string' ? { d: e } : e; x.tf = 'translate(' + p[0] + ' ' + p[1] + ') scale(' + p[2] + ')'; o.push(x) });
+      });
+    }
     else if (spec.k === 'man') mandala(o, r, spec);
     else PAT[spec.k](o, r, spec);
     return { els: o.map(function (e) { return typeof e === 'string' ? { d: e } : e }), clip: !!o.clip };
   }
   function title(spec) {
     if (spec.k === 'obj') return OBJ[spec.o][0];
+    if (spec.k === 'pair') { var a = OBJ[spec.os[0]][0], c = a.charCodeAt(a.length - 1) - 0xAC00; return a + ((c >= 0 && c % 28) ? '과 ' : '와 ') + OBJ[spec.os[1]][0] }
+    if (spec.k === 'quad') return spec.os.map(function (n) { return OBJ[n][0] }).join('·');
     if (spec.k === 'big') return ['동그라미', '큰 별', '큰 하트', '육각형', '네모', '세모'][spec.v % 6] + (spec.layers > 1 ? ' 겹무늬' : '');
-    return { big: '큰 도형', grid: '바둑판 무늬', flowerbig: '큰 꽃', truchet: '물결 타일', hexgrid: '벌집 무늬', twist: '빙글빙글 도형', stars: '밤하늘', scales: '비늘 무늬', weave: '바구니 무늬', man: '만다라' }[spec.k];
+    return { pair: '사물 둘', quad: '사물 넷', big: '큰 도형', grid: '바둑판 무늬', flowerbig: '큰 꽃', truchet: '물결 타일', hexgrid: '벌집 무늬', twist: '빙글빙글 도형', stars: '밤하늘', scales: '비늘 무늬', weave: '바구니 무늬', man: '만다라' }[spec.k];
   }
   /* SVG 만들기: fills = {칸 번호: 색}, sw = 선 굵기 */
   function svg(spec, fills, sw, cls) {
     var m = make(spec), s = '', k = 0;
     m.els.forEach(function (e) {
-      if (e.line) s += '<path class="cl-ln" d="' + e.d + '" fill="none" stroke="#2A221C" stroke-width="' + sw + '" stroke-linecap="round"/>';
-      else { s += '<path class="cl-r" data-k="' + k + '" d="' + e.d + '" fill="' + ((fills && fills[k]) || '#fff') + '" stroke="#2A221C" stroke-width="' + sw + '" stroke-linejoin="round"/>'; k++ }
+      var tf = e.tf ? ' transform="' + e.tf + '" vector-effect="non-scaling-stroke"' : '';
+      if (e.line) s += '<path class="cl-ln" d="' + e.d + '"' + tf + ' fill="none" stroke="#2A221C" stroke-width="' + sw + '" stroke-linecap="round"/>';
+      else { s += '<path class="cl-r" data-k="' + k + '" d="' + e.d + '"' + tf + ' fill="' + ((fills && fills[k]) || '#fff') + '" stroke="#2A221C" stroke-width="' + sw + '" stroke-linejoin="round"/>'; k++ }
     });
     var clip = m.clip ? '<defs><clipPath id="clc"><rect x="10" y="10" width="380" height="380"/></clipPath></defs><g clip-path="url(#clc)">' + s + '</g><rect x="10" y="10" width="380" height="380" fill="none" stroke="#2A221C" stroke-width="' + sw * 1.4 + '"/>' : s;
     return { html: '<svg class="' + (cls || 'cl-svg') + '" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">' + clip + '</svg>', n: k };
@@ -1086,7 +1099,7 @@ var CD = (function () {
 })();
 if (typeof module !== 'undefined') module.exports = CD;
 
-window.CL={"g":6,"sw":1.1,"s":[{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":600,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":601,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":602,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":603,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":604,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":605,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":606,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":607,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":608,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":609,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":610,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":611,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":612,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":613,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":614,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":615,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":616,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":617,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":618,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":619,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":620,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":621,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":622,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":623,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":624,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":625,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":626,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":627,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":628,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":629,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":630,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":631,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":632,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":633,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":634,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":635,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":636,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":637,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":638,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":639,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":640,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":641,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":642,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":643,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":644,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":645,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":646,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":647,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":648,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":649,"frame":1}]};
+window.CL={"g":6,"sw":1.1,"s":[{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":600,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":601,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":602,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":603,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":604,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":605,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":606,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":607,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":608,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":609,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":610,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":611,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":612,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":613,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":614,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":615,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":616,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":617,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":618,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":619,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":620,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":621,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":622,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":623,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":624,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":625,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":626,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":627,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":628,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":629,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":630,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":631,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":632,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":633,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":634,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":635,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":636,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":637,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":638,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":639,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":640,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":641,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":642,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":643,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":644,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":645,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":646,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":647,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":648,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":649,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":650,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":651,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":652,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":653,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":654,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":655,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":656,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":657,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":658,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":659,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":660,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":661,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":662,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":663,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":664,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":665,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":666,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":667,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":668,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":669,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":670,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":671,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":672,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":673,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":674,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":675,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":676,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":677,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":678,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":679,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":680,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":681,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":682,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":683,"frame":1},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":684,"frame":0},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":685,"frame":1},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":686,"frame":0},{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":0.7,"seed":687,"frame":1},{"k":"man","layers":10,"nmin":10,"nmax":24,"nest":0.7,"seed":688,"frame":0},{"k":"man","layers":11,"nmin":10,"nmax":24,"nest":0.7,"seed":689,"frame":1}]};
 /* 컬러링: 도안 고르기 → 색 고르고 칸 눌러 칠하기 · 칠한 것은 이 기기(localStorage)에만 저장 */
 (function () {
   var D = CL, G = D.g, SW = D.sw, $ = function (i) { return document.getElementById(i) };
@@ -1094,7 +1107,7 @@ window.CL={"g":6,"sw":1.1,"s":[{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":
     ['하늘', '#4FC3F7'], ['파랑', '#1E88E5'], ['남색', '#3949AB'], ['보라', '#8E24AA'], ['분홍', '#F48FB1'], ['자홍', '#D81B60'],
     ['살구', '#FFCC80'], ['갈색', '#8D6E63'], ['고동', '#5D4037'], ['연분홍', '#FCE4EC'], ['연노랑', '#FFF9C4'], ['연하늘', '#E1F5FE'],
     ['연보라', '#E1BEE7'], ['민트', '#B2DFDB'], ['회색', '#9E9E9E'], ['검정', '#212121'], ['살색', '#FFE0C2']];
-  var KEY = 'hj-color-v1', st = {};
+  var KEY = 'hj-color-v2', st = {};
   try { st = JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) { st = {} }
   st[G] = st[G] || {};
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)) } catch (e) { say('저장 공간이 부족해 칠한 내용을 저장하지 못했어요.') } }
@@ -1105,10 +1118,13 @@ window.CL={"g":6,"sw":1.1,"s":[{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":
 
   function list() {
     var done = 0;
-    $('clList').innerHTML = L.map(function (x, k) {
+    var LV = [['쉬움', '칸이 적고 큼직한 도안'], ['보통', '칸이 조금 많아진 도안'], ['도전', '칸이 가장 많고 정교한 도안']], h = '';
+    L.forEach(function (x, k) {
+      if (k % 30 === 0) { var b = k / 30; h += (k ? '</div>' : '') + '<h3 class="cl-lv">' + LV[b][0] + ' <small>' + (k + 1) + '~' + (k + 30) + '번 · ' + LV[b][1] + '</small></h3><div class="cl-list">' }
       var f = st[G][x.id], c = f ? Object.keys(f).length : 0; if (c) done++;
-      return '<button type="button" class="cl-d' + (c ? ' go' : '') + '" data-k="' + k + '"><span class="cl-th" data-t="' + k + '"></span><b>' + x.no + '. ' + CD.title(x.s) + '</b><small>' + (c ? '색칠 중 · ' : '') + '칸 ' + x.n + '개</small></button>';
-    }).join('');
+      h += '<button type="button" class="cl-d' + (c ? ' go' : '') + '" data-k="' + k + '"><span class="cl-th" data-t="' + k + '"></span><b>' + x.no + '. ' + CD.title(x.s) + '</b><small>' + (c ? '색칠 중 · ' : '') + '칸 ' + x.n + '개</small></button>';
+    });
+    $('clList').innerHTML = h + '</div>';
     $('clProg').textContent = '색칠한 도안 ' + done + ' / ' + L.length;
     var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting) { thumb(e.target); io.unobserve(e.target) } })
@@ -1127,7 +1143,7 @@ window.CL={"g":6,"sw":1.1,"s":[{"k":"man","layers":9,"nmin":10,"nmax":24,"nest":
 
   function open(k) {
     cur = k; var x = L[k]; fills = Object.assign({}, st[G][x.id] || {}); hist = [];
-    $('clTitle').textContent = G + '학년 · ' + x.no + '. ' + CD.title(x.s);
+    $('clTitle').textContent = G + '학년 · ' + x.no + '. ' + CD.title(x.s) + ' (' + ['쉬움', '보통', '도전'][Math.floor(k / 30)] + ')';
     $('clArt').innerHTML = CD.svg(x.s, fills, SW).html;
     $('clPrev').disabled = k === 0; $('clNext').disabled = k === L.length - 1;
     $('clPick').hidden = true; $('clPlay').hidden = false; say('');

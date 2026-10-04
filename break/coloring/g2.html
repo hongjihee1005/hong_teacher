@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>2학년 컬러링 · 쉬는 시간 · 초등교사 홍지희</title>
-<meta name="description" content="2학년 쉬는 시간 컬러링 도안 50개">
+<meta name="description" content="2학년 쉬는 시간 컬러링 도안 90개(쉬움·보통·도전)">
 <style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#3A8F3A;--board:#FFFFFF;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37}}
@@ -16,6 +16,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .cl-rules{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 14px;padding:0;list-style:none}
 .cl-rules li{background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:6px 14px;font-size:clamp(15px,1.5vw,18px)}
 .cl-prog{font-family:var(--display);color:var(--acc);margin:0 0 10px;font-size:clamp(18px,1.8vw,22px)}
+.cl-lv{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.4vw,28px);margin:18px 0 8px}.cl-lv small{font-family:var(--body);font-size:15px;color:var(--soft);margin-left:8px}
 .cl-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px}
 .cl-d{display:flex;flex-direction:column;gap:4px;background:var(--paper);border:3px solid var(--line);border-radius:18px;padding:8px;text-align:left}
 .cl-d:hover,.cl-d:focus-visible{border-color:var(--acc);outline:0}
@@ -741,7 +742,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 <p class="sub">그림 속에 작은 무늬가 생겼어요. 칸마다 다른 색을 골라 봐요.</p>
 <ul class="cl-rules"><li>🎨 색을 고르고 칸을 누르면 색이 칠해져요</li><li>↩️ 잘못 칠하면 되돌리기</li><li>🖨️ 종이에 인쇄해서 색연필로 칠해도 좋아요</li></ul>
 <p class="cl-prog" id="clProg"></p>
-<div class="cl-list" id="clList"></div>
+<div id="clList"></div>
 </section>
 <section id="clPlay" hidden>
 <div class="cl-bar"><button type="button" class="cl-btn" id="clBack">← 도안 고르기</button><h2 id="clTitle"></h2>
@@ -1063,21 +1064,33 @@ var CD = (function () {
   function make(spec) {
     var o = [], r = rng(spec.seed || 1);
     if (spec.k === 'obj') { var lv = spec.lv || 1; if (lv > 1 && spec.fr) frame(o, 26); OBJ[spec.o][1](o, lv) }
+    else if (spec.k === 'pair' || spec.k === 'quad') {   // 사물 2개(나란히)·4개(2×2)를 작게 한 장에
+      o.push(rect(8, 8, 384, 384, 16));
+      var pos = spec.k === 'pair' ? [[0, 70, .5], [200, 70, .5]] : [[6, 6, .47], [206, 6, .47], [6, 206, .47], [206, 206, .47]];
+      if (spec.k === 'pair') o.push(rect(8, 300, 384, 92, 0));
+      spec.os.forEach(function (name, j) {
+        var t = [], p = pos[j]; OBJ[name][1](t, spec.lv || 1);
+        t.forEach(function (e) { var x = typeof e === 'string' ? { d: e } : e; x.tf = 'translate(' + p[0] + ' ' + p[1] + ') scale(' + p[2] + ')'; o.push(x) });
+      });
+    }
     else if (spec.k === 'man') mandala(o, r, spec);
     else PAT[spec.k](o, r, spec);
     return { els: o.map(function (e) { return typeof e === 'string' ? { d: e } : e }), clip: !!o.clip };
   }
   function title(spec) {
     if (spec.k === 'obj') return OBJ[spec.o][0];
+    if (spec.k === 'pair') { var a = OBJ[spec.os[0]][0], c = a.charCodeAt(a.length - 1) - 0xAC00; return a + ((c >= 0 && c % 28) ? '과 ' : '와 ') + OBJ[spec.os[1]][0] }
+    if (spec.k === 'quad') return spec.os.map(function (n) { return OBJ[n][0] }).join('·');
     if (spec.k === 'big') return ['동그라미', '큰 별', '큰 하트', '육각형', '네모', '세모'][spec.v % 6] + (spec.layers > 1 ? ' 겹무늬' : '');
-    return { big: '큰 도형', grid: '바둑판 무늬', flowerbig: '큰 꽃', truchet: '물결 타일', hexgrid: '벌집 무늬', twist: '빙글빙글 도형', stars: '밤하늘', scales: '비늘 무늬', weave: '바구니 무늬', man: '만다라' }[spec.k];
+    return { pair: '사물 둘', quad: '사물 넷', big: '큰 도형', grid: '바둑판 무늬', flowerbig: '큰 꽃', truchet: '물결 타일', hexgrid: '벌집 무늬', twist: '빙글빙글 도형', stars: '밤하늘', scales: '비늘 무늬', weave: '바구니 무늬', man: '만다라' }[spec.k];
   }
   /* SVG 만들기: fills = {칸 번호: 색}, sw = 선 굵기 */
   function svg(spec, fills, sw, cls) {
     var m = make(spec), s = '', k = 0;
     m.els.forEach(function (e) {
-      if (e.line) s += '<path class="cl-ln" d="' + e.d + '" fill="none" stroke="#2A221C" stroke-width="' + sw + '" stroke-linecap="round"/>';
-      else { s += '<path class="cl-r" data-k="' + k + '" d="' + e.d + '" fill="' + ((fills && fills[k]) || '#fff') + '" stroke="#2A221C" stroke-width="' + sw + '" stroke-linejoin="round"/>'; k++ }
+      var tf = e.tf ? ' transform="' + e.tf + '" vector-effect="non-scaling-stroke"' : '';
+      if (e.line) s += '<path class="cl-ln" d="' + e.d + '"' + tf + ' fill="none" stroke="#2A221C" stroke-width="' + sw + '" stroke-linecap="round"/>';
+      else { s += '<path class="cl-r" data-k="' + k + '" d="' + e.d + '"' + tf + ' fill="' + ((fills && fills[k]) || '#fff') + '" stroke="#2A221C" stroke-width="' + sw + '" stroke-linejoin="round"/>'; k++ }
     });
     var clip = m.clip ? '<defs><clipPath id="clc"><rect x="10" y="10" width="380" height="380"/></clipPath></defs><g clip-path="url(#clc)">' + s + '</g><rect x="10" y="10" width="380" height="380" fill="none" stroke="#2A221C" stroke-width="' + sw * 1.4 + '"/>' : s;
     return { html: '<svg class="' + (cls || 'cl-svg') + '" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">' + clip + '</svg>', n: k };
@@ -1086,7 +1099,7 @@ var CD = (function () {
 })();
 if (typeof module !== 'undefined') module.exports = CD;
 
-window.CL={"g":2,"sw":2.6,"s":[{"k":"obj","o":"sun","lv":2,"fr":0},{"k":"obj","o":"flower","lv":2,"fr":1},{"k":"obj","o":"tree","lv":2,"fr":0},{"k":"obj","o":"house","lv":2,"fr":1},{"k":"obj","o":"fish","lv":2,"fr":0},{"k":"obj","o":"cat","lv":2,"fr":1},{"k":"obj","o":"heart","lv":2,"fr":0},{"k":"obj","o":"star","lv":2,"fr":1},{"k":"obj","o":"apple","lv":2,"fr":0},{"k":"obj","o":"balloon","lv":2,"fr":1},{"k":"obj","o":"car","lv":2,"fr":0},{"k":"obj","o":"boat","lv":2,"fr":1},{"k":"obj","o":"butterfly","lv":2,"fr":0},{"k":"obj","o":"rocket","lv":2,"fr":1},{"k":"obj","o":"icecream","lv":2,"fr":0},{"k":"obj","o":"cupcake","lv":2,"fr":1},{"k":"obj","o":"rainbow","lv":2,"fr":0},{"k":"obj","o":"umbrella","lv":2,"fr":1},{"k":"obj","o":"snail","lv":2,"fr":0},{"k":"obj","o":"owl","lv":2,"fr":1},{"k":"obj","o":"turtle","lv":2,"fr":0},{"k":"obj","o":"mushroom","lv":2,"fr":1},{"k":"obj","o":"moon","lv":2,"fr":0},{"k":"obj","o":"leaf","lv":2,"fr":1},{"k":"obj","o":"train","lv":2,"fr":0},{"k":"obj","o":"bear","lv":2,"fr":1},{"k":"obj","o":"penguin","lv":2,"fr":0},{"k":"obj","o":"gift","lv":2,"fr":1},{"k":"obj","o":"cake","lv":2,"fr":0},{"k":"obj","o":"dog","lv":2,"fr":1},{"k":"obj","o":"rabbit","lv":2,"fr":0},{"k":"grid","n":4,"shape":"mix","inner":1,"seed":1},{"k":"grid","n":4,"shape":"mix","inner":1,"seed":2},{"k":"grid","n":4,"shape":"mix","inner":1,"seed":3},{"k":"grid","n":4,"shape":"mix","inner":1,"seed":4},{"k":"stars","n":9,"max":26,"seed":5},{"k":"stars","n":11,"max":26,"seed":6},{"k":"stars","n":13,"max":26,"seed":7},{"k":"flowerbig","n":8,"layers":2},{"k":"flowerbig","n":10,"layers":2},{"k":"big","v":0,"layers":3},{"k":"big","v":1,"layers":3},{"k":"big","v":2,"layers":3},{"k":"big","v":3,"layers":3},{"k":"big","v":4,"layers":3},{"k":"big","v":5,"layers":3},{"k":"twist","sides":4,"n":6,"t":0.2},{"k":"twist","sides":6,"n":6,"t":0.2},{"k":"man","layers":2,"nmin":6,"nmax":8,"nest":0,"seed":21,"frame":0},{"k":"man","layers":2,"nmin":6,"nmax":8,"nest":0,"seed":22,"frame":0}]};
+window.CL={"g":2,"sw":2.6,"s":[{"k":"obj","o":"sun","lv":2,"fr":0},{"k":"obj","o":"flower","lv":2,"fr":1},{"k":"obj","o":"tree","lv":2,"fr":0},{"k":"obj","o":"house","lv":2,"fr":1},{"k":"obj","o":"fish","lv":2,"fr":0},{"k":"obj","o":"cat","lv":2,"fr":1},{"k":"obj","o":"heart","lv":2,"fr":0},{"k":"obj","o":"star","lv":2,"fr":1},{"k":"obj","o":"apple","lv":2,"fr":0},{"k":"obj","o":"balloon","lv":2,"fr":1},{"k":"obj","o":"car","lv":2,"fr":0},{"k":"obj","o":"boat","lv":2,"fr":1},{"k":"obj","o":"butterfly","lv":2,"fr":0},{"k":"obj","o":"rocket","lv":2,"fr":1},{"k":"obj","o":"icecream","lv":2,"fr":0},{"k":"obj","o":"cupcake","lv":2,"fr":1},{"k":"obj","o":"rainbow","lv":2,"fr":0},{"k":"obj","o":"umbrella","lv":2,"fr":1},{"k":"obj","o":"snail","lv":2,"fr":0},{"k":"obj","o":"owl","lv":2,"fr":1},{"k":"obj","o":"turtle","lv":2,"fr":0},{"k":"obj","o":"mushroom","lv":2,"fr":1},{"k":"obj","o":"moon","lv":2,"fr":0},{"k":"obj","o":"leaf","lv":2,"fr":1},{"k":"obj","o":"train","lv":2,"fr":0},{"k":"obj","o":"bear","lv":2,"fr":1},{"k":"obj","o":"penguin","lv":2,"fr":0},{"k":"obj","o":"gift","lv":2,"fr":1},{"k":"obj","o":"cake","lv":2,"fr":0},{"k":"obj","o":"dog","lv":2,"fr":1},{"k":"obj","o":"rabbit","lv":2,"fr":0},{"k":"quad","os":["flower","butterfly","leaf","house"],"lv":1},{"k":"quad","os":["heart","umbrella","cake","apple"],"lv":1},{"k":"quad","os":["boat","moon","tree","rocket"],"lv":1},{"k":"quad","os":["rainbow","gift","star","snail"],"lv":1},{"k":"quad","os":["mushroom","flower","butterfly","leaf"],"lv":1},{"k":"quad","os":["penguin","heart","umbrella","cake"],"lv":1},{"k":"quad","os":["sun","boat","moon","tree"],"lv":1},{"k":"quad","os":["cat","rainbow","gift","star"],"lv":1},{"k":"quad","os":["car","mushroom","flower","butterfly"],"lv":1},{"k":"quad","os":["cupcake","penguin","heart","umbrella"],"lv":1},{"k":"quad","os":["turtle","sun","boat","moon"],"lv":1},{"k":"quad","os":["bear","cat","rainbow","gift"],"lv":1},{"k":"quad","os":["rabbit","car","mushroom","flower"],"lv":1},{"k":"quad","os":["fish","cupcake","penguin","heart"],"lv":1},{"k":"quad","os":["balloon","turtle","sun","boat"],"lv":1},{"k":"quad","os":["icecream","bear","cat","rainbow"],"lv":1},{"k":"quad","os":["owl","rabbit","car","mushroom"],"lv":1},{"k":"quad","os":["train","fish","cupcake","penguin"],"lv":1},{"k":"quad","os":["dog","balloon","turtle","sun"],"lv":1},{"k":"quad","os":["house","icecream","bear","cat"],"lv":1},{"k":"grid","n":4,"shape":"mix","inner":1,"seed":1},{"k":"grid","n":4,"shape":"mix","inner":1,"seed":2},{"k":"grid","n":4,"shape":"mix","inner":1,"seed":3},{"k":"grid","n":4,"shape":"mix","inner":1,"seed":4},{"k":"grid","n":4,"shape":"mix","inner":1,"seed":5},{"k":"grid","n":4,"shape":"mix","inner":1,"seed":6},{"k":"stars","n":9,"max":26,"seed":5},{"k":"stars","n":11,"max":26,"seed":6},{"k":"stars","n":13,"max":26,"seed":7},{"k":"stars","n":10,"max":26,"seed":8},{"k":"stars","n":12,"max":26,"seed":9},{"k":"flowerbig","n":8,"layers":2},{"k":"flowerbig","n":10,"layers":2},{"k":"flowerbig","n":12,"layers":2},{"k":"big","v":0,"layers":3},{"k":"big","v":1,"layers":3},{"k":"big","v":2,"layers":3},{"k":"big","v":3,"layers":3},{"k":"big","v":4,"layers":3},{"k":"big","v":5,"layers":3},{"k":"twist","sides":4,"n":6,"t":0.2},{"k":"twist","sides":6,"n":6,"t":0.2},{"k":"twist","sides":5,"n":6,"t":0.2},{"k":"twist","sides":3,"n":6,"t":0.2},{"k":"man","layers":2,"nmin":6,"nmax":8,"nest":0,"seed":21,"frame":0},{"k":"man","layers":2,"nmin":6,"nmax":8,"nest":0,"seed":22,"frame":0},{"k":"man","layers":2,"nmin":6,"nmax":8,"nest":0,"seed":23,"frame":0},{"k":"man","layers":2,"nmin":6,"nmax":8,"nest":0,"seed":24,"frame":0},{"k":"man","layers":2,"nmin":6,"nmax":8,"nest":0,"seed":25,"frame":0},{"k":"man","layers":2,"nmin":6,"nmax":8,"nest":0,"seed":26,"frame":0},{"k":"man","layers":2,"nmin":6,"nmax":8,"nest":0,"seed":27,"frame":0},{"k":"man","layers":2,"nmin":6,"nmax":8,"nest":0,"seed":28,"frame":0},{"k":"pair","os":["tree","rocket"],"lv":2},{"k":"pair","os":["balloon","turtle"],"lv":2},{"k":"pair","os":["rainbow","gift"],"lv":2},{"k":"pair","os":["leaf","house"],"lv":2},{"k":"pair","os":["rabbit","car"],"lv":2},{"k":"pair","os":["heart","umbrella"],"lv":2},{"k":"pair","os":["rocket","train"],"lv":2}]};
 /* 컬러링: 도안 고르기 → 색 고르고 칸 눌러 칠하기 · 칠한 것은 이 기기(localStorage)에만 저장 */
 (function () {
   var D = CL, G = D.g, SW = D.sw, $ = function (i) { return document.getElementById(i) };
@@ -1094,7 +1107,7 @@ window.CL={"g":2,"sw":2.6,"s":[{"k":"obj","o":"sun","lv":2,"fr":0},{"k":"obj","o
     ['하늘', '#4FC3F7'], ['파랑', '#1E88E5'], ['남색', '#3949AB'], ['보라', '#8E24AA'], ['분홍', '#F48FB1'], ['자홍', '#D81B60'],
     ['살구', '#FFCC80'], ['갈색', '#8D6E63'], ['고동', '#5D4037'], ['연분홍', '#FCE4EC'], ['연노랑', '#FFF9C4'], ['연하늘', '#E1F5FE'],
     ['연보라', '#E1BEE7'], ['민트', '#B2DFDB'], ['회색', '#9E9E9E'], ['검정', '#212121'], ['살색', '#FFE0C2']];
-  var KEY = 'hj-color-v1', st = {};
+  var KEY = 'hj-color-v2', st = {};
   try { st = JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) { st = {} }
   st[G] = st[G] || {};
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)) } catch (e) { say('저장 공간이 부족해 칠한 내용을 저장하지 못했어요.') } }
@@ -1105,10 +1118,13 @@ window.CL={"g":2,"sw":2.6,"s":[{"k":"obj","o":"sun","lv":2,"fr":0},{"k":"obj","o
 
   function list() {
     var done = 0;
-    $('clList').innerHTML = L.map(function (x, k) {
+    var LV = [['쉬움', '칸이 적고 큼직한 도안'], ['보통', '칸이 조금 많아진 도안'], ['도전', '칸이 가장 많고 정교한 도안']], h = '';
+    L.forEach(function (x, k) {
+      if (k % 30 === 0) { var b = k / 30; h += (k ? '</div>' : '') + '<h3 class="cl-lv">' + LV[b][0] + ' <small>' + (k + 1) + '~' + (k + 30) + '번 · ' + LV[b][1] + '</small></h3><div class="cl-list">' }
       var f = st[G][x.id], c = f ? Object.keys(f).length : 0; if (c) done++;
-      return '<button type="button" class="cl-d' + (c ? ' go' : '') + '" data-k="' + k + '"><span class="cl-th" data-t="' + k + '"></span><b>' + x.no + '. ' + CD.title(x.s) + '</b><small>' + (c ? '색칠 중 · ' : '') + '칸 ' + x.n + '개</small></button>';
-    }).join('');
+      h += '<button type="button" class="cl-d' + (c ? ' go' : '') + '" data-k="' + k + '"><span class="cl-th" data-t="' + k + '"></span><b>' + x.no + '. ' + CD.title(x.s) + '</b><small>' + (c ? '색칠 중 · ' : '') + '칸 ' + x.n + '개</small></button>';
+    });
+    $('clList').innerHTML = h + '</div>';
     $('clProg').textContent = '색칠한 도안 ' + done + ' / ' + L.length;
     var io = 'IntersectionObserver' in window ? new IntersectionObserver(function (es) {
       es.forEach(function (e) { if (e.isIntersecting) { thumb(e.target); io.unobserve(e.target) } })
@@ -1127,7 +1143,7 @@ window.CL={"g":2,"sw":2.6,"s":[{"k":"obj","o":"sun","lv":2,"fr":0},{"k":"obj","o
 
   function open(k) {
     cur = k; var x = L[k]; fills = Object.assign({}, st[G][x.id] || {}); hist = [];
-    $('clTitle').textContent = G + '학년 · ' + x.no + '. ' + CD.title(x.s);
+    $('clTitle').textContent = G + '학년 · ' + x.no + '. ' + CD.title(x.s) + ' (' + ['쉬움', '보통', '도전'][Math.floor(k / 30)] + ')';
     $('clArt').innerHTML = CD.svg(x.s, fills, SW).html;
     $('clPrev').disabled = k === 0; $('clNext').disabled = k === L.length - 1;
     $('clPick').hidden = true; $('clPlay').hidden = false; say('');
