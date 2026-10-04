@@ -154,6 +154,9 @@ body.sl-on{overflow:hidden}
 .mu-staff .mk.it{font-style:italic}
 .mu-staff .nt.on .hd{fill:#E0663A;stroke:#E0663A}
 .mu-staff .nt.on path,.mu-staff .nt.on line{fill:#E0663A;stroke:#E0663A}
+.mu-staff .nt.on2 .hd{fill:#2F74E0;stroke:#2F74E0}
+.mu-staff .nt.on2 path,.mu-staff .nt.on2 line{fill:#2F74E0;stroke:#2F74E0}
+.mu-staff .nt.on.on2 .hd{fill:#8A4FD0;stroke:#8A4FD0}
 /* 정간보 */
 .jgb{display:flex;flex-direction:row;gap:0;margin:8px 0;width:max-content;border:2px solid #6B5D52;background:#fff;color:#2A221C}
 .jcol{display:flex;flex-direction:column;border-left:1.5px solid #6B5D52}
@@ -167,6 +170,8 @@ body.sl-on{overflow:hidden}
 .orch .o4{width:96%;background:#F6D6CF}.orch .o3{width:84%;background:#F6E7B8}.orch .o2{width:70%;background:#D3EBDD}.orch .o1{width:56%;background:#EAD9C4}
 .orch .o0{width:auto;border-radius:999px;background:#E6DDF5}
 .jc.long{font-size:clamp(10px,1.2vw,14px);letter-spacing:-.04em;white-space:nowrap}
+.rlg{display:flex;flex-wrap:wrap;gap:12px;font-size:15px;font-weight:700;margin:4px 0}.rlg i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.mu-b.r1{border-color:#E0663A}.mu-b.r2{border-color:#2F74E0}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1028,10 +1033,10 @@ var MU = (function () {
   var AC = null, master = null, playing = [];
   function ctx() { if (!AC) { var C = window.AudioContext || window.webkitAudioContext; if (!C) return null; AC = new C(); master = AC.createGain(); master.gain.value = .8; master.connect(AC.destination); } if (AC.state === 'suspended') AC.resume(); return AC }
   function hz(m) { return 440 * Math.pow(2, (m - 69) / 12) }
-  function tone(m, t, dur, vol) {
+  function tone(m, t, dur, vol, wave) {
     var a = ctx(); if (!a) return;
     var g = a.createGain(), o1 = a.createOscillator(), o2 = a.createOscillator(), g2 = a.createGain();
-    o1.type = 'triangle'; o2.type = 'sine'; o1.frequency.value = hz(m); o2.frequency.value = hz(m) * 2; g2.gain.value = .25;
+    o1.type = wave || 'triangle'; o2.type = 'sine'; o1.frequency.value = hz(m); o2.frequency.value = hz(m) * 2; g2.gain.value = .25;
     o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(master);
     var v = .32 * (vol == null ? 1 : vol), end = t + Math.max(.12, dur);
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .012); g.gain.exponentialRampToValueAtTime(v * .35, t + Math.min(.5, dur * .6)); g.gain.exponentialRampToValueAtTime(.0005, end + .25);
@@ -1064,13 +1069,13 @@ var MU = (function () {
   function click(t, strong) { var a = ctx(); if (!a) return; drum(t, strong ? 1500 : 1000, strong ? 1200 : 800, .05, strong ? .5 : .3) }
   function stop() { playing.forEach(function (o) { try { o.stop() } catch (e) { } }); playing = []; clearTimers() }
   var timers = [];
-  function clearTimers() { timers.forEach(clearTimeout); timers = []; document.querySelectorAll('.mu-staff .nt.on').forEach(function (e) { e.classList.remove('on') }) }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; document.querySelectorAll('.mu-staff .nt.on, .mu-staff .nt.on2').forEach(function (e) { e.classList.remove('on', 'on2') }) }
   function later(fn, ms) { timers.push(setTimeout(fn, ms)) }
   /* 악보 문자열 연주. o: {n, key, bpm, vol, el(악보 svg, 지금 음 표시), done} */
   function play(o) {
-    stop(); var a = ctx(); if (!a) return;
-    var T = tokens(o.n || '').filter(function (t) { return t.k === 'note' || t.k === 'rest' }), bpm = o.bpm || 96, beat = 60 / bpm, t0 = a.currentTime + .08, t = t0, i = 0;
-    var vol = o.vol, svg = o.el;
+    if (!o.keep) stop(); var a = ctx(); if (!a) return;
+    var T = tokens(o.n || '').filter(function (t) { return t.k === 'note' || t.k === 'rest' }), bpm = o.bpm || 96, beat = 60 / bpm, t0 = o.start || a.currentTime + .08, t = t0, i = 0;
+    var vol = o.vol, svg = o.el, cls = o.cls || 'on';
     if (typeof vol === 'string') { var va = vol.split('-').map(Number); vol = function (k, n) { return va[0] + (va[1] - va[0]) * k / Math.max(1, n - 1) } }
     T.forEach(function (tk, k) {
       if (o.bpmTo) beat = 60 / (bpm + (o.bpmTo - bpm) * k / Math.max(1, T.length - 1));
@@ -1079,16 +1084,24 @@ var MU = (function () {
         var hold = dur; for (var j = k; T[j] && T[j].tie && T[j + 1]; j++) hold += T[j + 1].beats * beat;
         var prevTie = k > 0 && T[k - 1].tie;
         var vv = (typeof vol === 'function' ? vol(k, T.length) : vol == null ? 1 : vol) * (tk.accent ? 1.7 : 1);
-        if (!prevTie) tk.ps.forEach(function (p) { tone(midi(p, o.key), t, hold * (tk.stac ? .3 : tk.ten ? 1 : .92) * (tk.ferm ? 1.6 : 1), vv) });
+        if (!prevTie) tk.ps.forEach(function (p) { tone(midi(p, o.key), t, hold * (tk.stac ? .3 : tk.ten ? 1 : .92) * (tk.ferm ? 1.6 : 1), vv, o.wave) });
       }
-      if (svg) (function (kk, tt) { later(function () { svg.querySelectorAll('.nt.on').forEach(function (e) { e.classList.remove('on') }); var e = svg.querySelector('.nt[data-i="' + kk + '"]'); if (e) e.classList.add('on') }, (tt - a.currentTime) * 1000) })(k, t);
+      if (svg) (function (kk, tt) { later(function () { svg.querySelectorAll('.nt.' + cls).forEach(function (e) { e.classList.remove(cls) }); var e = svg.querySelector('.nt[data-i="' + kk + '"]'); if (e) e.classList.add(cls) }, (tt - a.currentTime) * 1000) })(k, t);
       t += dur * (tk.ferm ? 1.6 : 1);
     });
-    later(function () { if (svg) svg.querySelectorAll('.nt.on').forEach(function (e) { e.classList.remove('on') }); if (o.done) o.done() }, (t - a.currentTime) * 1000 + 100);
+    later(function () { if (svg) svg.querySelectorAll('.nt.' + cls).forEach(function (e) { e.classList.remove(cls) }); if (o.done) o.done() }, (t - a.currentTime) * 1000 + 100);
     return t - t0;
   }
+  /* 돌림노래: mode 1 = 처음 모둠만, 2 = 두 번째 모둠만(들어가기 전 박을 똑딱으로), 'all' = 함께. o: {n, key, bpm, delay(박), beats(한 마디 박 수), el} */
+  function round(o, mode) {
+    stop(); var a = ctx(); if (!a) return;
+    var beat = 60 / (o.bpm || 100), st = a.currentTime + .12, d = (o.delay || 8) * beat, per = o.beats || 4;
+    if (mode === 1 || mode === 'all') play({ n: o.n, key: o.key, bpm: o.bpm, el: o.el, keep: true, start: st, cls: 'on' });
+    if (mode === 2) for (var k = 0; k < (o.delay || 8); k++) click(st + k * beat, k % per === 0);
+    if (mode === 2 || mode === 'all') play({ n: o.n, key: o.key, bpm: o.bpm, el: o.el, keep: true, start: st + d, cls: 'on2', wave: mode === 'all' ? 'sine' : null, vol: mode === 'all' ? .85 : 1 });
+  }
   function playMidi(m, dur) { var a = ctx(); if (a) tone(m, a.currentTime + .02, dur || .6) }
-  return { staff: staff, play: play, stop: stop, playMidi: playMidi, janggu: janggu, click: click, ctx: ctx, tokens: tokens, parsePitch: parsePitch, midi: midi, gyeName: gyeName, eumName: eumName, GYE: GYE, EUM: EUM, EN: EN, esc: esc, later: later };
+  return { staff: staff, play: play, round: round, stop: stop, playMidi: playMidi, janggu: janggu, click: click, ctx: ctx, tokens: tokens, parsePitch: parsePitch, midi: midi, gyeName: gyeName, eumName: eumName, GYE: GYE, EUM: EUM, EN: EN, esc: esc, later: later };
 })();
 
 window.MT={"no":"17","slug":"korean-instruments","area":"국악","ico":"🪕","title":"우리나라 악기","goal":"소리 내는 방법에 따라 국악기를 나누고, 사물놀이 악기를 알아봐요.","learn":[{"h":"줄을 퉁기거나 문지르는 악기(현악기)","w":{"w":"cards","items":[{"t":"가야금","sub":"줄 12개(정악·산조 가야금)","d":"오동나무 통에 명주실 줄을 걸고 손가락으로 뜯거나 퉁겨요. 맑고 부드러운 소리.","q":"국립국악원 가야금 연주","c":"#B07A3B"},{"t":"거문고","sub":"줄 6개","d":"술대(대나무 막대)로 줄을 내려치거나 뜯어요. 굵고 깊은 소리.","q":"국립국악원 거문고 연주","c":"#B07A3B"},{"t":"해금","sub":"줄 2개","d":"두 줄 사이에 낀 활대로 문질러 소리 내요. 사람 목소리처럼 애절한 소리.","q":"국립국악원 해금 연주","c":"#B07A3B"},{"t":"아쟁","sub":"활로 문지르는 악기","d":"개나리 나무 활대 등으로 줄을 문질러요. 낮고 굵은 소리.","q":"국립국악원 아쟁 연주","c":"#B07A3B"}]}},{"h":"입으로 부는 악기(관악기)","w":{"w":"cards","items":[{"t":"대금","sub":"가로로 부는 대나무 피리","d":"청공에 붙인 얇은 갈대 막(청)이 떨려 맑고 시원한 소리가 나요.","q":"국립국악원 대금 청성곡","c":"#3E8E6B"},{"t":"소금","sub":"작은 대금","d":"대금보다 작아서 높고 맑은 소리가 나요.","q":"국립국악원 소금 연주","c":"#3E8E6B"},{"t":"단소","sub":"세로로 부는 짧은 피리","d":"학교에서 많이 배우는 국악기예요. 맑고 청아한 소리.","q":"단소 연주","c":"#3E8E6B"},{"t":"피리","sub":"세로로 부는, 겹서가 있는 악기","d":"대나무 관에 겹서(서)를 꽂아 불어요. 크고 힘찬 소리로 가락을 이끌어요.","q":"국립국악원 피리 연주","c":"#3E8E6B"},{"t":"태평소","sub":"‘날라리’라고도 해요","d":"소리가 아주 크고 화려해서 농악·행진 음악에 써요.","q":"태평소 연주","c":"#3E8E6B"}]}},{"h":"두드리는 악기(타악기)","w":{"w":"cards","items":[{"t":"장구","sub":"북편 + 채편","d":"장단을 이끄는 대표 타악기. ‘덩 쿵 덕’","q":"장구 장단","c":"#C0503A"},{"t":"북","sub":"판소리의 고수","d":"판소리에서 고수가 북으로 장단을 맞춰요. 사물놀이에서도 써요.","q":"판소리 고수 북","c":"#C0503A"},{"t":"꽹과리","sub":"사물놀이를 이끄는 악기","d":"작은 놋쇠 악기로 날카롭고 큰 소리. 상쇠가 연주를 이끌어요.","q":"꽹과리 연주","c":"#C0503A"},{"t":"징","sub":"울림이 긴 악기","d":"큰 놋쇠 악기로 ‘징~’ 하고 길게 울려 장단의 큰 마디를 알려 줘요.","q":"징 소리","c":"#C0503A"}]}}],"act":[{"h":"사물놀이","p":"<p><b>사물놀이<\/b>는 <b>꽹과리·징·장구·북<\/b> 네 가지 타악기로 연주하는 음악이에요. 1978년에 처음 무대에서 연주했어요. 각 악기를 자연에 빗대어 <b>꽹과리는 천둥, 징은 바람, 장구는 비, 북은 구름<\/b>이라고 말하기도 해요.<\/p>","w":{"w":"cards","items":[{"t":"꽹과리","sub":"천둥","d":"날카롭고 빠른 소리로 이끌어요."},{"t":"징","sub":"바람","d":"길게 울려 감싸요."},{"t":"장구","sub":"비","d":"장단을 촘촘히 채워요."},{"t":"북","sub":"구름","d":"묵직하게 받쳐 줘요."}]}},{"h":"만드는 재료로 나누기(팔음)","p":"<p>옛날에는 악기를 만드는 재료에 따라 <b>금(쇠)·석(돌)·사(실)·죽(대나무)·포(박)·토(흙)·혁(가죽)·목(나무)<\/b> 여덟 가지로 나누기도 했어요. 예) 가야금 = 사(실), 대금 = 죽(대나무), 장구 = 혁(가죽).<\/p>"}],"quiz":[{"q":"활대로 줄을 문질러 소리 내는 국악기는?","o":["가야금","해금","거문고","장구"],"a":1},{"q":"술대로 줄을 내려치거나 뜯는 6줄 악기는?","o":["거문고","가야금","아쟁","해금"],"a":0},{"q":"가로로 부는 국악기는?","o":["단소","피리","대금","태평소"],"a":2},{"q":"사물놀이 악기가 아닌 것은?","o":["꽹과리","징","가야금","북"],"a":2},{"q":"사물놀이에서 연주를 이끄는 악기는?","o":["꽹과리","징","북","장구"],"a":0}],"music":[{"t":"「청성곡」","by":"대금 독주","why":"대금의 맑고 높은 소리를 느낄 수 있는 대표 독주곡이에요.","q":"대금 청성곡"},{"t":"「가야금 산조」","by":"가야금 독주","why":"느린 장단에서 빠른 장단으로 점점 빨라지며 가야금의 여러 소리를 들려줘요.","q":"가야금 산조"},{"t":"사물놀이","by":"꽹과리·징·장구·북","why":"네 악기가 주고받으며 점점 빨라지는 신나는 연주를 들어 보세요.","q":"사물놀이 연주"}],"sheet":[{"k":"write","q":"국악기를 소리 내는 방법에 따라 나눠 보세요: 가야금, 대금, 장구, 해금, 단소, 징","lines":3,"a":"줄(현악기): 가야금·해금 / 부는(관악기): 대금·단소 / 두드리는(타악기): 장구·징"},{"k":"match","q":"사물놀이 악기와 빗댄 자연을 이어 보세요.","l":["꽹과리","징","장구","북"],"r":["구름","비","천둥","바람"],"a":"꽹과리-천둥, 징-바람, 장구-비, 북-구름"},{"k":"choice","q":"줄이 2개이고 활대로 문지르는 악기는?","o":["해금","가야금","거문고"],"a":0},{"k":"write","q":"가장 마음에 드는 국악기와 그 까닭을 써 보세요.","lines":2}],"sum":["줄 악기: <b>가야금<\/b>(12줄, 뜯기) · <b>거문고<\/b>(6줄, 술대) · <b>해금<\/b>(2줄, 활) · 아쟁","부는 악기: <b>대금<\/b>(가로) · 소금 · <b>단소<\/b> · <b>피리<\/b> · 태평소","두드리는 악기: 장구 · 북 · 꽹과리 · 징","<b>사물놀이<\/b> = 꽹과리·징·장구·북"]};
@@ -1146,6 +1159,13 @@ window.MT={"no":"17","slug":"korean-instruments","area":"국악","ico":"🪕","t
         return '<div class="mu-card"' + (it.c ? ' style="--cc:' + it.c + '"' : '') + '><b>' + it.t + '</b>' + (it.sub ? '<span class="sub2">' + it.sub + '</span>' : '') + '<p>' + it.d + '</p>' + (it.q ? '<a class="mu-yt" href="' + yt(it.q) + '" target="_blank" rel="noopener">🔎 소리 찾아 듣기</a>' : '') + '</div>';
       }).join('') + '</div>';
     },
+    round: function (o) {
+      var k = wid(o);
+      return '<div class="mu-w mu-stf" data-wid="' + k + '">' + (o.cap ? '<p class="cap">' + o.cap + '</p>' : '') + '<div class="svgw">' + MU.staff(o) + '</div>' +
+        '<p class="rlg"><span><i style="background:#E0663A"></i>처음 모둠이 부르는 음</span><span><i style="background:#2F74E0"></i>두 번째 모둠이 부르는 음</span></p>' +
+        '<div class="mu-ctl"><button type="button" class="mu-b r1" data-act="r1">▶ 처음 모둠</button><button type="button" class="mu-b r2" data-act="r2">▶ 두 번째 모둠</button><button type="button" class="mu-b go" data-act="rall">▶ 함께(돌림노래)</button><button type="button" class="mu-b" data-act="stop">■ 멈춤</button>' + (o.toggle ? '<button type="button" class="mu-b" data-act="names" aria-pressed="false">계이름 보기</button>' : '') + '</div>' +
+        '<p class="cap">‘두 번째 모둠’은 ' + (o.delay / (o.beats || 4)) + '마디 동안 똑딱 소리로 박을 세다가 들어가요. ‘함께’는 두 모둠이 겹쳐 부르는 소리예요(두 번째 모둠은 조금 다른 소리로).</p></div>';
+    },
     table: function (o) { return '<div class="mu-w mu-tbw"><table class="mu-tb"><thead><tr>' + o.head.map(function (h) { return '<th>' + h + '</th>' }).join('') + '</tr></thead><tbody>' + o.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>' }).join('') + '</tr>' }).join('') + '</tbody></table></div>' }
   };
   function widget(o) { return o ? (W[o.w] || W.html)(o) : '' }
@@ -1163,6 +1183,7 @@ window.MT={"no":"17","slug":"korean-instruments","area":"국악","ico":"🪕","t
     var b = e.target.closest('[data-act]'); if (!b) return;
     var box = b.closest('[data-wid]'), o = box ? WS[+box.dataset.wid] : null, act = b.dataset.act;
     if (act === 'stop') { MU.stop(); return; }
+    if (act === 'r1' || act === 'r2' || act === 'rall') { MU.round(Object.assign({}, o, { el: box.querySelector('svg') }), act === 'r1' ? 1 : act === 'r2' ? 2 : 'all'); return; }
     if (act === 'play') { MU.play({ n: o.n, key: o.key, bpm: o.bpm, el: box.querySelector('svg') }); return; }
     if (act === 'names') {
       var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on ? 'true' : 'false');

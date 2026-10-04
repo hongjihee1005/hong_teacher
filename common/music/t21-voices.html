@@ -154,6 +154,9 @@ body.sl-on{overflow:hidden}
 .mu-staff .mk.it{font-style:italic}
 .mu-staff .nt.on .hd{fill:#E0663A;stroke:#E0663A}
 .mu-staff .nt.on path,.mu-staff .nt.on line{fill:#E0663A;stroke:#E0663A}
+.mu-staff .nt.on2 .hd{fill:#2F74E0;stroke:#2F74E0}
+.mu-staff .nt.on2 path,.mu-staff .nt.on2 line{fill:#2F74E0;stroke:#2F74E0}
+.mu-staff .nt.on.on2 .hd{fill:#8A4FD0;stroke:#8A4FD0}
 /* 정간보 */
 .jgb{display:flex;flex-direction:row;gap:0;margin:8px 0;width:max-content;border:2px solid #6B5D52;background:#fff;color:#2A221C}
 .jcol{display:flex;flex-direction:column;border-left:1.5px solid #6B5D52}
@@ -167,6 +170,8 @@ body.sl-on{overflow:hidden}
 .orch .o4{width:96%;background:#F6D6CF}.orch .o3{width:84%;background:#F6E7B8}.orch .o2{width:70%;background:#D3EBDD}.orch .o1{width:56%;background:#EAD9C4}
 .orch .o0{width:auto;border-radius:999px;background:#E6DDF5}
 .jc.long{font-size:clamp(10px,1.2vw,14px);letter-spacing:-.04em;white-space:nowrap}
+.rlg{display:flex;flex-wrap:wrap;gap:12px;font-size:15px;font-weight:700;margin:4px 0}.rlg i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.mu-b.r1{border-color:#E0663A}.mu-b.r2{border-color:#2F74E0}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1028,10 +1033,10 @@ var MU = (function () {
   var AC = null, master = null, playing = [];
   function ctx() { if (!AC) { var C = window.AudioContext || window.webkitAudioContext; if (!C) return null; AC = new C(); master = AC.createGain(); master.gain.value = .8; master.connect(AC.destination); } if (AC.state === 'suspended') AC.resume(); return AC }
   function hz(m) { return 440 * Math.pow(2, (m - 69) / 12) }
-  function tone(m, t, dur, vol) {
+  function tone(m, t, dur, vol, wave) {
     var a = ctx(); if (!a) return;
     var g = a.createGain(), o1 = a.createOscillator(), o2 = a.createOscillator(), g2 = a.createGain();
-    o1.type = 'triangle'; o2.type = 'sine'; o1.frequency.value = hz(m); o2.frequency.value = hz(m) * 2; g2.gain.value = .25;
+    o1.type = wave || 'triangle'; o2.type = 'sine'; o1.frequency.value = hz(m); o2.frequency.value = hz(m) * 2; g2.gain.value = .25;
     o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(master);
     var v = .32 * (vol == null ? 1 : vol), end = t + Math.max(.12, dur);
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .012); g.gain.exponentialRampToValueAtTime(v * .35, t + Math.min(.5, dur * .6)); g.gain.exponentialRampToValueAtTime(.0005, end + .25);
@@ -1064,13 +1069,13 @@ var MU = (function () {
   function click(t, strong) { var a = ctx(); if (!a) return; drum(t, strong ? 1500 : 1000, strong ? 1200 : 800, .05, strong ? .5 : .3) }
   function stop() { playing.forEach(function (o) { try { o.stop() } catch (e) { } }); playing = []; clearTimers() }
   var timers = [];
-  function clearTimers() { timers.forEach(clearTimeout); timers = []; document.querySelectorAll('.mu-staff .nt.on').forEach(function (e) { e.classList.remove('on') }) }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; document.querySelectorAll('.mu-staff .nt.on, .mu-staff .nt.on2').forEach(function (e) { e.classList.remove('on', 'on2') }) }
   function later(fn, ms) { timers.push(setTimeout(fn, ms)) }
   /* 악보 문자열 연주. o: {n, key, bpm, vol, el(악보 svg, 지금 음 표시), done} */
   function play(o) {
-    stop(); var a = ctx(); if (!a) return;
-    var T = tokens(o.n || '').filter(function (t) { return t.k === 'note' || t.k === 'rest' }), bpm = o.bpm || 96, beat = 60 / bpm, t0 = a.currentTime + .08, t = t0, i = 0;
-    var vol = o.vol, svg = o.el;
+    if (!o.keep) stop(); var a = ctx(); if (!a) return;
+    var T = tokens(o.n || '').filter(function (t) { return t.k === 'note' || t.k === 'rest' }), bpm = o.bpm || 96, beat = 60 / bpm, t0 = o.start || a.currentTime + .08, t = t0, i = 0;
+    var vol = o.vol, svg = o.el, cls = o.cls || 'on';
     if (typeof vol === 'string') { var va = vol.split('-').map(Number); vol = function (k, n) { return va[0] + (va[1] - va[0]) * k / Math.max(1, n - 1) } }
     T.forEach(function (tk, k) {
       if (o.bpmTo) beat = 60 / (bpm + (o.bpmTo - bpm) * k / Math.max(1, T.length - 1));
@@ -1079,19 +1084,27 @@ var MU = (function () {
         var hold = dur; for (var j = k; T[j] && T[j].tie && T[j + 1]; j++) hold += T[j + 1].beats * beat;
         var prevTie = k > 0 && T[k - 1].tie;
         var vv = (typeof vol === 'function' ? vol(k, T.length) : vol == null ? 1 : vol) * (tk.accent ? 1.7 : 1);
-        if (!prevTie) tk.ps.forEach(function (p) { tone(midi(p, o.key), t, hold * (tk.stac ? .3 : tk.ten ? 1 : .92) * (tk.ferm ? 1.6 : 1), vv) });
+        if (!prevTie) tk.ps.forEach(function (p) { tone(midi(p, o.key), t, hold * (tk.stac ? .3 : tk.ten ? 1 : .92) * (tk.ferm ? 1.6 : 1), vv, o.wave) });
       }
-      if (svg) (function (kk, tt) { later(function () { svg.querySelectorAll('.nt.on').forEach(function (e) { e.classList.remove('on') }); var e = svg.querySelector('.nt[data-i="' + kk + '"]'); if (e) e.classList.add('on') }, (tt - a.currentTime) * 1000) })(k, t);
+      if (svg) (function (kk, tt) { later(function () { svg.querySelectorAll('.nt.' + cls).forEach(function (e) { e.classList.remove(cls) }); var e = svg.querySelector('.nt[data-i="' + kk + '"]'); if (e) e.classList.add(cls) }, (tt - a.currentTime) * 1000) })(k, t);
       t += dur * (tk.ferm ? 1.6 : 1);
     });
-    later(function () { if (svg) svg.querySelectorAll('.nt.on').forEach(function (e) { e.classList.remove('on') }); if (o.done) o.done() }, (t - a.currentTime) * 1000 + 100);
+    later(function () { if (svg) svg.querySelectorAll('.nt.' + cls).forEach(function (e) { e.classList.remove(cls) }); if (o.done) o.done() }, (t - a.currentTime) * 1000 + 100);
     return t - t0;
   }
+  /* 돌림노래: mode 1 = 처음 모둠만, 2 = 두 번째 모둠만(들어가기 전 박을 똑딱으로), 'all' = 함께. o: {n, key, bpm, delay(박), beats(한 마디 박 수), el} */
+  function round(o, mode) {
+    stop(); var a = ctx(); if (!a) return;
+    var beat = 60 / (o.bpm || 100), st = a.currentTime + .12, d = (o.delay || 8) * beat, per = o.beats || 4;
+    if (mode === 1 || mode === 'all') play({ n: o.n, key: o.key, bpm: o.bpm, el: o.el, keep: true, start: st, cls: 'on' });
+    if (mode === 2) for (var k = 0; k < (o.delay || 8); k++) click(st + k * beat, k % per === 0);
+    if (mode === 2 || mode === 'all') play({ n: o.n, key: o.key, bpm: o.bpm, el: o.el, keep: true, start: st + d, cls: 'on2', wave: mode === 'all' ? 'sine' : null, vol: mode === 'all' ? .85 : 1 });
+  }
   function playMidi(m, dur) { var a = ctx(); if (a) tone(m, a.currentTime + .02, dur || .6) }
-  return { staff: staff, play: play, stop: stop, playMidi: playMidi, janggu: janggu, click: click, ctx: ctx, tokens: tokens, parsePitch: parsePitch, midi: midi, gyeName: gyeName, eumName: eumName, GYE: GYE, EUM: EUM, EN: EN, esc: esc, later: later };
+  return { staff: staff, play: play, round: round, stop: stop, playMidi: playMidi, janggu: janggu, click: click, ctx: ctx, tokens: tokens, parsePitch: parsePitch, midi: midi, gyeName: gyeName, eumName: eumName, GYE: GYE, EUM: EUM, EN: EN, esc: esc, later: later };
 })();
 
-window.MT={"no":"21","slug":"voices","area":"악기와 합주","ico":"🧑‍🤝‍🧑","title":"목소리와 노래 부르는 방법","goal":"목소리의 높낮이에 따른 이름과 독창·제창·중창·합창·돌림노래를 알아봐요.","learn":[{"h":"목소리의 종류","w":{"w":"table","head":["","높은 목소리","가운데","낮은 목소리"],"rows":[["여자 목소리","소프라노","메조소프라노","알토"],["남자 목소리","테너","바리톤","베이스"]]}},{"h":"노래 부르는 방법","w":{"w":"table","head":["이름","뜻"],"rows":[["독창","한 사람이 부름"],["제창","여러 사람이 같은 가락을 함께 부름"],["중창","두 성부 이상을 성부마다 한 사람(또는 적은 수)씩 부름(2중창·3중창…)"],["합창","여러 성부를 성부마다 여러 사람이 함께 부름"],["돌림노래","같은 가락을 시간 차이를 두고 차례로 따라 부름"]]}},{"h":"돌림노래","p":"<p>먼저 시작한 모둠이 두 마디를 부르면 다음 모둠이 처음부터 따라 들어가요. 서로 다른 부분이 겹치며 화음처럼 어울려요.<\/p>","w":{"time":"4/4","cap":"「자크 형제」(프랑스 전래 동요) — 두 마디 늦게 따라 들어가요.","w":"staff","n":"c4/4 d4/4 e4/4 c4/4 | c4/4 d4/4 e4/4 c4/4 | e4/4 f4/4 g4/2 | e4/4 f4/4 g4/2 // (g4/8 a4/8 g4/8 f4/8) e4/4 c4/4 | (g4/8 a4/8 g4/8 f4/8) e4/4 c4/4 | c4/4 g3/4 c4/2 | c4/4 g3/4 c4/2 |]"}}],"act":[{"h":"돌림노래 해 보기","p":"<p>반을 두 모둠으로 나누어요. 1모둠이 ▶와 함께 시작하고, 둘째 마디가 끝나면 2모둠이 처음부터 시작해요. 끝까지 박을 지켜요!<\/p>","w":{"time":"4/4","bpm":100,"toggle":true,"w":"staff","n":"c4/4 d4/4 e4/4 c4/4 | c4/4 d4/4 e4/4 c4/4 | e4/4 f4/4 g4/2 | e4/4 f4/4 g4/2 // (g4/8 a4/8 g4/8 f4/8) e4/4 c4/4 | (g4/8 a4/8 g4/8 f4/8) e4/4 c4/4 | c4/4 g3/4 c4/2 | c4/4 g3/4 c4/2 |]"}}],"quiz":[{"q":"여자 목소리 중 가장 높은 목소리는?","o":["알토","소프라노","테너","베이스"],"a":1},{"q":"남자 목소리 중 가장 낮은 목소리는?","o":["테너","바리톤","베이스","알토"],"a":2},{"q":"여러 사람이 같은 가락을 함께 부르는 것은?","o":["독창","제창","중창","돌림노래"],"a":1},{"q":"같은 가락을 시간 차이를 두고 따라 부르는 것은?","o":["합창","독창","돌림노래","제창"],"a":2},{"q":"여러 성부를 성부마다 여러 사람이 부르는 것은?","o":["합창","독창","제창","중창"],"a":0}],"music":[{"t":"「메시아」 중 ‘할렐루야’","by":"헨델","why":"소프라노·알토·테너·베이스 네 성부가 함께하는 웅장한 합창이에요.","q":"헨델 할렐루야 합창"},{"t":"「마술피리」 중 ‘밤의 여왕’ 아리아","by":"모차르트","why":"소프라노가 아주 높은 음까지 올라가는 독창곡이에요.","q":"밤의 여왕 아리아"},{"t":"「자크 형제」 돌림노래","by":"프랑스 전래 동요","why":"여러 모둠이 차례로 들어가는 돌림노래의 대표곡이에요.","q":"Frère Jacques round"}],"sheet":[{"k":"write","q":"여자 목소리와 남자 목소리를 높은 것부터 써 보세요.","lines":2,"a":"여자: 소프라노-메조소프라노-알토 / 남자: 테너-바리톤-베이스"},{"k":"match","q":"알맞게 이어 보세요.","l":["독창","제창","합창","돌림노래"],"r":["같은 가락을 시간 차를 두고","한 사람","여러 성부를 여럿이","같은 가락을 함께"],"a":"독창-한 사람, 제창-같은 가락 함께, 합창-여러 성부, 돌림노래-시간 차"},{"k":"write","q":"돌림노래를 해 보고 잘한 점과 어려웠던 점을 써 보세요.","lines":2}],"sum":["여자: <b>소프라노<\/b>(높음) · 메조소프라노 · <b>알토<\/b>(낮음)","남자: <b>테너<\/b>(높음) · 바리톤 · <b>베이스<\/b>(낮음)","독창 · 제창 · 중창 · 합창 · <b>돌림노래<\/b>"]};
+window.MT={"no":"21","slug":"voices","area":"악기와 합주","ico":"🧑‍🤝‍🧑","title":"목소리와 노래 부르는 방법","goal":"목소리의 높낮이에 따른 이름과 독창·제창·중창·합창·돌림노래를 알아봐요.","learn":[{"h":"목소리의 종류","w":{"w":"table","head":["","높은 목소리","가운데","낮은 목소리"],"rows":[["여자 목소리","소프라노","메조소프라노","알토"],["남자 목소리","테너","바리톤","베이스"]]}},{"h":"노래 부르는 방법","w":{"w":"table","head":["이름","뜻"],"rows":[["독창","한 사람이 부름"],["제창","여러 사람이 같은 가락을 함께 부름"],["중창","두 성부 이상을 성부마다 한 사람(또는 적은 수)씩 부름(2중창·3중창…)"],["합창","여러 성부를 성부마다 여러 사람이 함께 부름"],["돌림노래","같은 가락을 시간 차이를 두고 차례로 따라 부름"]]}},{"h":"돌림노래","p":"<p>먼저 시작한 모둠이 두 마디를 부르면 다음 모둠이 처음부터 따라 들어가요. 서로 다른 부분이 겹치며 화음처럼 어울려요.<\/p>","w":{"w":"round","n":"c4/4 d4/4 e4/4 c4/4 | c4/4 d4/4 e4/4 c4/4 | e4/4 f4/4 g4/2 | e4/4 f4/4 g4/2 // (g4/8 a4/8 g4/8 f4/8) e4/4 c4/4 | (g4/8 a4/8 g4/8 f4/8) e4/4 c4/4 | c4/4 g3/4 c4/2 | c4/4 g3/4 c4/2 |]","time":"4/4","bpm":100,"delay":8,"beats":4,"cap":"「자크 형제」(프랑스 전래 동요) — 두 번째 모둠은 두 마디 늦게 처음부터 따라 들어가요."}}],"act":[{"h":"돌림노래 해 보기","p":"<p>반을 두 모둠으로 나누어요. 먼저 ‘처음 모둠’, ‘두 번째 모둠’ 단추로 각자 부를 부분을 익히고, ‘함께’로 겹쳐 들어 보세요. 그다음 1모둠이 시작하고 둘째 마디가 끝나면 2모둠이 처음부터 들어가요. 끝까지 박을 지켜요!<\/p>","w":{"w":"round","n":"c4/4 d4/4 e4/4 c4/4 | c4/4 d4/4 e4/4 c4/4 | e4/4 f4/4 g4/2 | e4/4 f4/4 g4/2 // (g4/8 a4/8 g4/8 f4/8) e4/4 c4/4 | (g4/8 a4/8 g4/8 f4/8) e4/4 c4/4 | c4/4 g3/4 c4/2 | c4/4 g3/4 c4/2 |]","time":"4/4","bpm":92,"delay":8,"beats":4,"toggle":true}}],"quiz":[{"q":"여자 목소리 중 가장 높은 목소리는?","o":["알토","소프라노","테너","베이스"],"a":1},{"q":"남자 목소리 중 가장 낮은 목소리는?","o":["테너","바리톤","베이스","알토"],"a":2},{"q":"여러 사람이 같은 가락을 함께 부르는 것은?","o":["독창","제창","중창","돌림노래"],"a":1},{"q":"같은 가락을 시간 차이를 두고 따라 부르는 것은?","o":["합창","독창","돌림노래","제창"],"a":2},{"q":"여러 성부를 성부마다 여러 사람이 부르는 것은?","o":["합창","독창","제창","중창"],"a":0}],"music":[{"t":"「메시아」 중 ‘할렐루야’","by":"헨델","why":"소프라노·알토·테너·베이스 네 성부가 함께하는 웅장한 합창이에요.","q":"헨델 할렐루야 합창"},{"t":"「마술피리」 중 ‘밤의 여왕’ 아리아","by":"모차르트","why":"소프라노가 아주 높은 음까지 올라가는 독창곡이에요.","q":"밤의 여왕 아리아"},{"t":"「자크 형제」 돌림노래","by":"프랑스 전래 동요","why":"여러 모둠이 차례로 들어가는 돌림노래의 대표곡이에요.","q":"Frère Jacques round"}],"sheet":[{"k":"write","q":"여자 목소리와 남자 목소리를 높은 것부터 써 보세요.","lines":2,"a":"여자: 소프라노-메조소프라노-알토 / 남자: 테너-바리톤-베이스"},{"k":"match","q":"알맞게 이어 보세요.","l":["독창","제창","합창","돌림노래"],"r":["같은 가락을 시간 차를 두고","한 사람","여러 성부를 여럿이","같은 가락을 함께"],"a":"독창-한 사람, 제창-같은 가락 함께, 합창-여러 성부, 돌림노래-시간 차"},{"k":"write","q":"돌림노래를 해 보고 잘한 점과 어려웠던 점을 써 보세요.","lines":2}],"sum":["여자: <b>소프라노<\/b>(높음) · 메조소프라노 · <b>알토<\/b>(낮음)","남자: <b>테너<\/b>(높음) · 바리톤 · <b>베이스<\/b>(낮음)","독창 · 제창 · 중창 · 합창 · <b>돌림노래<\/b>"]};
 /* 음악이론 주제 페이지: 배우기 · 해 보기 · 연습 문제 · 추천 음악 · 활동지(인쇄) · 슬라이드 (자료 window.MT — topics.py) */
 (function () {
   var D = window.MT, $ = function (id) { return document.getElementById(id) }, esc = MU.esc, WS = [];
@@ -1146,6 +1159,13 @@ window.MT={"no":"21","slug":"voices","area":"악기와 합주","ico":"🧑‍�
         return '<div class="mu-card"' + (it.c ? ' style="--cc:' + it.c + '"' : '') + '><b>' + it.t + '</b>' + (it.sub ? '<span class="sub2">' + it.sub + '</span>' : '') + '<p>' + it.d + '</p>' + (it.q ? '<a class="mu-yt" href="' + yt(it.q) + '" target="_blank" rel="noopener">🔎 소리 찾아 듣기</a>' : '') + '</div>';
       }).join('') + '</div>';
     },
+    round: function (o) {
+      var k = wid(o);
+      return '<div class="mu-w mu-stf" data-wid="' + k + '">' + (o.cap ? '<p class="cap">' + o.cap + '</p>' : '') + '<div class="svgw">' + MU.staff(o) + '</div>' +
+        '<p class="rlg"><span><i style="background:#E0663A"></i>처음 모둠이 부르는 음</span><span><i style="background:#2F74E0"></i>두 번째 모둠이 부르는 음</span></p>' +
+        '<div class="mu-ctl"><button type="button" class="mu-b r1" data-act="r1">▶ 처음 모둠</button><button type="button" class="mu-b r2" data-act="r2">▶ 두 번째 모둠</button><button type="button" class="mu-b go" data-act="rall">▶ 함께(돌림노래)</button><button type="button" class="mu-b" data-act="stop">■ 멈춤</button>' + (o.toggle ? '<button type="button" class="mu-b" data-act="names" aria-pressed="false">계이름 보기</button>' : '') + '</div>' +
+        '<p class="cap">‘두 번째 모둠’은 ' + (o.delay / (o.beats || 4)) + '마디 동안 똑딱 소리로 박을 세다가 들어가요. ‘함께’는 두 모둠이 겹쳐 부르는 소리예요(두 번째 모둠은 조금 다른 소리로).</p></div>';
+    },
     table: function (o) { return '<div class="mu-w mu-tbw"><table class="mu-tb"><thead><tr>' + o.head.map(function (h) { return '<th>' + h + '</th>' }).join('') + '</tr></thead><tbody>' + o.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>' }).join('') + '</tr>' }).join('') + '</tbody></table></div>' }
   };
   function widget(o) { return o ? (W[o.w] || W.html)(o) : '' }
@@ -1163,6 +1183,7 @@ window.MT={"no":"21","slug":"voices","area":"악기와 합주","ico":"🧑‍�
     var b = e.target.closest('[data-act]'); if (!b) return;
     var box = b.closest('[data-wid]'), o = box ? WS[+box.dataset.wid] : null, act = b.dataset.act;
     if (act === 'stop') { MU.stop(); return; }
+    if (act === 'r1' || act === 'r2' || act === 'rall') { MU.round(Object.assign({}, o, { el: box.querySelector('svg') }), act === 'r1' ? 1 : act === 'r2' ? 2 : 'all'); return; }
     if (act === 'play') { MU.play({ n: o.n, key: o.key, bpm: o.bpm, el: box.querySelector('svg') }); return; }
     if (act === 'names') {
       var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on ? 'true' : 'false');
