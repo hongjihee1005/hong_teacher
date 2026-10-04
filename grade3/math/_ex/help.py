@@ -18,6 +18,8 @@ import re, sys, os, glob, json, importlib
 HERE = os.path.dirname(os.path.abspath(__file__))
 MATH = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
+from sig import align, wyr
+TODO = []  # 짝이 없는 새 칸(내용이 필요함)
 
 CSS = ('/*hj-help*/.hlpwrap{position:relative}.hlpq{display:flex;align-items:center;gap:.4em;flex-wrap:wrap}.hlpq .hlpt{flex:1;min-width:0}'
        '.hlpb{flex:none;margin-left:auto;font-family:inherit;font-size:.72em;padding:.15em .7em;border-radius:999px;border:2px solid #B4610F;background:#fff;color:#B4610F;cursor:pointer;white-space:nowrap}'
@@ -130,12 +132,12 @@ def patch(path, M):
         k = s.index('.phint{'); k = s.index('\n', k) + 1; s = s[:k] + CSS + s[k:]
     s = HRE.sub('', s)
     W, Y, R = sites(s)
-    assert [len(x) for x in W] == [len(x) for x in M.W] and len(Y) == len(M.Y) and len(R) == len(M.R), (path, '칸 수가 앱과 다름')
+    MW, MY, MR = align(s, W, Y, R, M, ['', ''], TODO, '도움')  # 칸 이름표로 짝 찾기(sig.py)
     edits = []
-    for objs, v in zip(W, M.W):
+    for objs, v in zip(W, MW):
         for (a, k), lines in zip(objs, v):
             if all(lines): edits.append((k, lines))
-    for (a, k), lines in list(zip(Y, M.Y)) + list(zip(R, M.R)):
+    for (a, k), lines in list(zip(Y, MY)) + list(zip(R, MR)):
         if all(lines): edits.append((k, lines))
     for k, lines in sorted(edits, reverse=True):
         k2 = k

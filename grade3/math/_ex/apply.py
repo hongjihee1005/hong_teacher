@@ -15,6 +15,8 @@ import re, sys, os, glob, json, importlib
 HERE = os.path.dirname(os.path.abspath(__file__))
 MATH = os.path.dirname(HERE)
 sys.path.insert(0, HERE)
+from sig import ctx, remap
+TODO = []  # 짝이 없는 새 칸(내용이 필요함)
 
 CSS = ('/*hj-ex*/.pane{position:relative}.pane h3 .pt{flex:1;min-width:0}'
        '.pane .exb{flex:none;font-family:inherit;font-size:.62em;padding:.15em .6em;border-radius:999px;border:2px solid currentColor;background:#fff;color:inherit;cursor:pointer;white-space:nowrap}'
@@ -102,7 +104,12 @@ def context(s, pos):
 EXRE = re.compile(r', ex: \[(?:"(?:[^"\\]|\\.)*"(?:, )?)*\]')
 
 
-def patch(path, EX, T):
+def sigs(s, cs):
+    """panes 묶음마다 이름표 [차시 번호, 단계 안내, 칸 제목들]"""
+    return [ctx(s, i) + [[t for _, _, t in items]] for i, _, items in cs]
+
+
+def patch(path, EX, T, SIG=None):
     s = open(path, encoding='utf-8').read()
     if '/*hj-ex*/' not in s:
         assert s.count(H3_OLD) == 1 and s.count(SEC_OLD) == 1 and s.count(ROW_OLD) == 1, path
@@ -111,9 +118,16 @@ def patch(path, EX, T):
         k = s.index('.phint{'); k = s.index('\n', k) + 1; s = s[:k] + CSS + s[k:]
     s = EXRE.sub('', s)
     cs = calls(s)
-    assert len(cs) == len(T), (path, '칸 묶음 수', len(cs), len(T))
-    for n, (_, _, items) in enumerate(cs):
-        assert [t for _, _, t in items] == T[n], (path, n, [t for _, _, t in items], T[n])
+    if SIG is None:
+        assert len(cs) == len(T), (path, '칸 묶음 수', len(cs), len(T))
+        for n, (_, _, items) in enumerate(cs):
+            assert [t for _, _, t in items] == T[n], (path, n, [t for _, _, t in items], T[n])
+    else:  # 칸 이름표로 짝 찾기(sig.py) — 앱의 차시·칸 차례가 바뀌어도 원래 칸을 찾아감
+        cur = sigs(s, cs); mp = remap(SIG, cur); EX2 = {}
+        for j, g in enumerate(cur):
+            if j in mp and mp[j] in EX: EX2[j] = EX[mp[j]]
+            else: TODO.append(f'예시 {os.path.relpath(path, MATH)} 차시 {g[0]} | {g[1][:60]} | {" / ".join(g[2])}'[:300])
+        EX = EX2
     edits = []
     for n, v in EX.items():
         if all(x == '' for c in v for x in c): continue  # 아직 안 쓴 묶음은 건너뜀
@@ -162,5 +176,5 @@ if __name__ == '__main__':
     tot = 0
     for mod in sorted(glob.glob(os.path.join(HERE, 'ex_*.py'))):
         M = importlib.import_module(os.path.basename(mod)[:-3])
-        tot += patch(os.path.join(MATH, M.FILE), M.EX, M.T); print('넣음', M.FILE)
+        tot += patch(os.path.join(MATH, M.FILE), M.EX, M.T, getattr(M, 'SIG', None)); print('넣음', M.FILE)
     print('칸', tot)

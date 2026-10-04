@@ -12,6 +12,7 @@ import os, sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from help import scan  # 괄호 짝 찾기(문자열·주석 건너뜀)
+TODO = []
 
 FILE = os.path.join(os.path.dirname(HERE), 'sem2-soop', 'u2-div.html')
 TARGETS = [  # 앞 계단에서 수 모형으로 나눈 결과를 다음 계단에서 확인하는 곳
@@ -40,6 +41,7 @@ NEW_END = ('  if (rw) { const x0 = LAB + b * (gw + gapG); /*hj-pic*/ /* 똑같�
 
 
 def main():
+    if not os.path.exists(FILE): return
     s = open(FILE, encoding='utf-8').read()
     if '/*hj-pic*/' not in s:
         a = s.index('function picBlockGroups(body, opt) {'); e = s.index(OLD_END, a)
@@ -49,7 +51,7 @@ def main():
         s = s[:a] + seg + s[e + len(OLD_END):]
     n = 0
     for key, x, y in TARGETS:
-        assert s.count(key) == 1, ('계단을 찾지 못했어요', key)
+        if s.count(key) != 1: TODO.append(f'그림 sem2-soop/u2-div.html 계단을 찾지 못함: {key}'); continue  # 앱이 바뀌면 todo로 알림
         k = s.index(key); r = s.index('render: (b, a) =>', k)
         head = s[r:r + 200]
         if head.startswith(f'render: (b, a) => (picDivResult(b, {x}, {y}),'): n += 1; continue  # 이미 넣음
