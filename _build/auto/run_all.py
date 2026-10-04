@@ -12,7 +12,7 @@ GitHub에서는 main에 올라올 때마다 .github/workflows/auto-fix.yml이 �
  3. 수학 이야기 버전: 사고 전략 예시(apply.py) → 글쓰기 도움(help.py) → 답(ans.py) → 나눗셈 그림(pics.py)
  4. 사회 홍지희 버전 예시·힌트(grade3/social/_ex/apply.py)
  5. 3-1 사회 프로젝트 판 → 메뉴 디자인(apply_theme.py) → 수업 자료 덮개(apply_content_theme.py)
- 6. 안전장치: 원본에서 만드는 HTML(과학 3-1·3-2 홍지희 버전, 국어 3-2, 우리 반 교실, 오늘의 교실 산책, 쉬는 시간 종이접기·스도쿠·컬러링)을 원본으로 다시 빌드해
+ 6. 안전장치: 원본에서 만드는 HTML(과학 3-1·3-2 홍지희 버전, 국어 3-2, 우리 반 교실, 오늘의 교실 산책, 쉬는 시간 종이접기·스도쿠·컬러링·미로찾기)을 원본으로 다시 빌드해
     지금 HTML과 견줌. 원본만 바뀌었으면 새로 만든 것으로 바꾸고, HTML에만 고친 내용이 있으면 HTML을 지키고 '원본에 반영 필요'로 알림
  7. 점검: 링크(href와 "f": 둘 다) / 할 일(내용이 필요한 새 칸, 원본에 반영 필요) → _build/auto/todo.md
 문제가 있으면(스크립트 오류·깨진 링크·이번에 올라온 HTML 수정이 원본에 없음) 끝 코드가 1이 되어 GitHub가 실패 메일을 보냅니다.
@@ -45,6 +45,7 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
     ('쉬는 시간 종이접기', '_build/origami/', ['break/origami/g*.html'], [('.', ['_build/origami/build.py'])]),
     ('쉬는 시간 스도쿠', '_build/sudoku/', ['break/sudoku/g*.html'], [('.', ['_build/sudoku/build.py'])]),
     ('쉬는 시간 컬러링', '_build/coloring/', ['break/coloring/g*.html'], [('.', ['_build/coloring/build.py'])]),
+    ('쉬는 시간 미로찾기', '_build/maze/', ['break/maze/g*.html'], [('.', ['_build/maze/build.py'])]),
 ]
 
 
