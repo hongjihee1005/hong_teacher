@@ -113,6 +113,16 @@ grade1/ … grade6/
 - **`class/index.html`을 직접 고치지 마세요.** 원본은 `_build/class/`(`shell.html` 화면·CSS, `app.js` 기능, `qr.min.js` QR 라이브러리 MIT)이고 `python3 _build/class/build.py`로 다시 만듭니다.
 - 자료는 그 기기 브라우저(localStorage `hj-class-v1`)에만 저장됩니다. 기기끼리 공유하려면 Firebase 등이 필요합니다(아직 없음). 날씨·미세먼지는 Open-Meteo(인증키 없음), 급식·시간표·학사 일정은 나이스 개방 포털(설정에서 학교 검색).
 
+### 쉬는 시간 › 종이접기 (`break/`, 2026-10-04)
+
+- 첫 화면 '우리 반 교실' 아래 넓은 카드 '🧸 쉬는 시간' → `break/index.html`(메뉴, 지금은 '종이접기' 방 1개) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
+- 학년 페이지는 작품 카드(완성 그림·난이도·단계 수·준비물) → 한 단계씩 보기(큰 그림, 이전/다음, ←/→ 키, `#작품id`로 바로 열기) → '한눈에 보기'·'인쇄'(전체 단계를 3칸씩). 작품 15가지:
+  1학년 우리 집·강아지 얼굴·고양이 얼굴 / 2학년 튤립·컵·매미 / 3학년 종이비행기·투구·동서남북 / 4학년 팔랑개비·하트 / 5학년 상자·점프 개구리 / 6학년 날개 퍼덕이는 새·종이학.
+- **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/origami/`입니다: 작품 `models_gN.py`(설명 문장과 그림 좌표 — 접는 선에 대해 점을 뒤집는 `geo.py` 도구로 계산), 그림 엔진 `engine.js`, 화면 `page.html`·`page.css`·`svg.css`·`app.js`, 학년별 머리말·약속은 `build.py`의 `GRADES`.
+  고친 뒤 `python3 _build/origami/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 그림만 확인하려면 `cd _build/origami && python3 preview.py g1,g2 /tmp/보기.html`.
+- 그림 요소: 면 `P`(색 'c'·'c2' 겉, 'w'·'w2' 흰 면), 골짜기 접기 `V`(파란 점선), 산 접기 `M`(빨간 점·선), 화살표 `A`/뒤로 `B`/접었다 펴기 `U`, 자르기 `C`, 뒤집기 `FLIP`. 단계에 `fit=True`면 그림을 화면에 맞게 키웁니다(학처럼 모양이 길어지는 작품).
+- 메뉴 아이콘 🧸(teddy)·🦢(origami)는 `_build/theme/icons.js`에 추가했습니다.
+
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
 - 첫 화면 제목 아래 '🌟 오늘의 한 줄' 띠와 `today/index.html`(오늘의 사건·명언·명화·명곡·책)은 `_build/today/`에서 만듭니다. **두 파일을 직접 고치지 마세요.**
