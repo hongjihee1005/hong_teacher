@@ -3,7 +3,7 @@
 
     python3 _build/coloring/build.py        # break/coloring/g1.html ~ g6.html
 
-도안: specs.py(학년별 50개 설정) → designs.js(설정으로 그림을 그리는 생성기, 페이지 안에서 그림)
+도안: specs.py(학년별 90개 설정 — 화면에서 칸 수 순서로 쉬움·보통·도전 30개씩) → designs.js(설정으로 그림을 그리는 생성기, 페이지 안에서 그림)
 화면: page.html + page.css + app.js. 아래쪽 '만든 사람'·홈 단추 조각은 _build/origami/의 것을 같이 씁니다.
 고친 뒤 루트에서 python3 _build/theme/apply_content_theme.py (자동 보완 run_all.py에도 들어 있음). 여러 번 실행해도 안전합니다.
 """

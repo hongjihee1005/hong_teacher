@@ -297,21 +297,33 @@ var CD = (function () {
   function make(spec) {
     var o = [], r = rng(spec.seed || 1);
     if (spec.k === 'obj') { var lv = spec.lv || 1; if (lv > 1 && spec.fr) frame(o, 26); OBJ[spec.o][1](o, lv) }
+    else if (spec.k === 'pair' || spec.k === 'quad') {   // 사물 2개(나란히)·4개(2×2)를 작게 한 장에
+      o.push(rect(8, 8, 384, 384, 16));
+      var pos = spec.k === 'pair' ? [[0, 70, .5], [200, 70, .5]] : [[6, 6, .47], [206, 6, .47], [6, 206, .47], [206, 206, .47]];
+      if (spec.k === 'pair') o.push(rect(8, 300, 384, 92, 0));
+      spec.os.forEach(function (name, j) {
+        var t = [], p = pos[j]; OBJ[name][1](t, spec.lv || 1);
+        t.forEach(function (e) { var x = typeof e === 'string' ? { d: e } : e; x.tf = 'translate(' + p[0] + ' ' + p[1] + ') scale(' + p[2] + ')'; o.push(x) });
+      });
+    }
     else if (spec.k === 'man') mandala(o, r, spec);
     else PAT[spec.k](o, r, spec);
     return { els: o.map(function (e) { return typeof e === 'string' ? { d: e } : e }), clip: !!o.clip };
   }
   function title(spec) {
     if (spec.k === 'obj') return OBJ[spec.o][0];
+    if (spec.k === 'pair') { var a = OBJ[spec.os[0]][0], c = a.charCodeAt(a.length - 1) - 0xAC00; return a + ((c >= 0 && c % 28) ? '과 ' : '와 ') + OBJ[spec.os[1]][0] }
+    if (spec.k === 'quad') return spec.os.map(function (n) { return OBJ[n][0] }).join('·');
     if (spec.k === 'big') return ['동그라미', '큰 별', '큰 하트', '육각형', '네모', '세모'][spec.v % 6] + (spec.layers > 1 ? ' 겹무늬' : '');
-    return { big: '큰 도형', grid: '바둑판 무늬', flowerbig: '큰 꽃', truchet: '물결 타일', hexgrid: '벌집 무늬', twist: '빙글빙글 도형', stars: '밤하늘', scales: '비늘 무늬', weave: '바구니 무늬', man: '만다라' }[spec.k];
+    return { pair: '사물 둘', quad: '사물 넷', big: '큰 도형', grid: '바둑판 무늬', flowerbig: '큰 꽃', truchet: '물결 타일', hexgrid: '벌집 무늬', twist: '빙글빙글 도형', stars: '밤하늘', scales: '비늘 무늬', weave: '바구니 무늬', man: '만다라' }[spec.k];
   }
   /* SVG 만들기: fills = {칸 번호: 색}, sw = 선 굵기 */
   function svg(spec, fills, sw, cls) {
     var m = make(spec), s = '', k = 0;
     m.els.forEach(function (e) {
-      if (e.line) s += '<path class="cl-ln" d="' + e.d + '" fill="none" stroke="#2A221C" stroke-width="' + sw + '" stroke-linecap="round"/>';
-      else { s += '<path class="cl-r" data-k="' + k + '" d="' + e.d + '" fill="' + ((fills && fills[k]) || '#fff') + '" stroke="#2A221C" stroke-width="' + sw + '" stroke-linejoin="round"/>'; k++ }
+      var tf = e.tf ? ' transform="' + e.tf + '" vector-effect="non-scaling-stroke"' : '';
+      if (e.line) s += '<path class="cl-ln" d="' + e.d + '"' + tf + ' fill="none" stroke="#2A221C" stroke-width="' + sw + '" stroke-linecap="round"/>';
+      else { s += '<path class="cl-r" data-k="' + k + '" d="' + e.d + '"' + tf + ' fill="' + ((fills && fills[k]) || '#fff') + '" stroke="#2A221C" stroke-width="' + sw + '" stroke-linejoin="round"/>'; k++ }
     });
     var clip = m.clip ? '<defs><clipPath id="clc"><rect x="10" y="10" width="380" height="380"/></clipPath></defs><g clip-path="url(#clc)">' + s + '</g><rect x="10" y="10" width="380" height="380" fill="none" stroke="#2A221C" stroke-width="' + sw * 1.4 + '"/>' : s;
     return { html: '<svg class="' + (cls || 'cl-svg') + '" viewBox="0 0 400 400" xmlns="http://www.w3.org/2000/svg">' + clip + '</svg>', n: k };

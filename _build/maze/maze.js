@@ -300,20 +300,19 @@ var MZ = (function () {
   };
   function specs(g) {
     var C = GR[g], S = [], r = rng(g * 7919), lerp = function (a, b, t) { return Math.round(a + (b - a) * t) };
-    // 기본 30: 네모 → 모양 → (세모·원·벌집)
-    var geos = [];
-    for (var i = 0; i < 10; i++) geos.push({ geo: 'sq', n: lerp(C.sq[0], C.sq[1], i / 9) });
-    for (i = 0; i < 12; i++) geos.push({ geo: 'sq', n: C.msq, mask: SHAPES[(i + g * 3) % SHAPES.length] });
-    for (i = 0; i < 8; i++) {
-      var opt = [{ geo: 'circ', n: lerp(C.circ[0], C.circ[1], i / 7) }];
+    // 쉬움·보통·도전 30개씩. 단계마다 벽 미로 15 + 조건 미로 15를 번갈아 놓고, 단계가 오를수록 크고 어렵게.
+    var W = [[], [], []], R = [[], [], []], i;
+    var midSq = lerp(C.sq[0], C.sq[1], .5), smallMask = Math.max(8, C.msq - (g > 1 ? 3 : 1));
+    for (i = 0; i < 10; i++) W[0].push({ geo: 'sq', n: lerp(C.sq[0], midSq, i / 9) });
+    for (i = 0; i < 5; i++) W[0].push({ geo: 'sq', n: smallMask, mask: SHAPES[(i + g * 3) % SHAPES.length] });
+    for (i = 0; i < 4; i++) W[1].push({ geo: 'sq', n: lerp(midSq + 1, C.sq[1], i / 3) });
+    for (i = 0; i < 6; i++) W[1].push({ geo: 'sq', n: C.msq, mask: SHAPES[(i + 5 + g * 3) % SHAPES.length] });
+    for (i = 0; i < 5; i++) {
+      var opt = [{ geo: 'circ', n: lerp(C.circ[0], C.circ[1], i / 4) }];
       if (C.tri) opt.push({ geo: 'tri', n: C.tri }); if (C.hex) opt.push({ geo: 'hex', n: C.hex });
-      if (g === 1) opt.push({ geo: 'sq', n: 8, mask: SHAPES[(i + 5) % SHAPES.length] });
-      geos.push(opt[i % opt.length]);
+      if (g === 1) opt.push({ geo: 'sq', n: 9, mask: SHAPES[(i + 11) % SHAPES.length] });
+      W[1].push(opt[i % opt.length]);
     }
-    geos.forEach(function (x, k) { x.k = 'wall'; x.style = k % 3 === 2 ? .35 : 0; S.push(x) });
-    // 보통 30: 조건 미로 10가지 × 3
-    for (i = 0; i < 30; i++) S.push({ k: 'rule', rule: C.rules[i % 10], geo: 'sq', n: C.rg[i < 15 ? 0 : 1], fill: .4 });
-    // 심화 30: 큰 벽 미로 15 + 어려운 조건 미로 15
     for (i = 0; i < 15; i++) {
       var t = i % 5, h;
       if (t === 0) h = { geo: 'sq', n: lerp(C.hsq[0], C.hsq[1], i / 14) };
@@ -321,10 +320,14 @@ var MZ = (function () {
       else if (t === 2) h = { geo: g >= 3 ? 'hex' : 'sq', n: g >= 3 ? C.hex + 2 : C.msq + 2, mask: SHAPES[(i + g) % SHAPES.length] };
       else if (t === 3) h = { geo: g >= 2 ? 'tri' : 'sq', n: g >= 2 ? C.tri + 4 : C.msq + 2, mask: SHAPES[(i * 3 + g) % SHAPES.length] };
       else h = { geo: 'sq', n: C.msq + 4, mask: SHAPES[(i * 5 + g) % SHAPES.length] };
-      h.k = 'wall'; h.style = i % 2 ? .5 : 0; S.push(h);
+      W[2].push(h);
     }
-    for (i = 0; i < 15; i++) S.push({ k: 'rule', rule: C.hard[i % 5], geo: g >= 4 && i % 3 === 2 ? 'hex' : 'sq', n: g >= 4 && i % 3 === 2 ? C.rg[1] - 1 : C.rg[1] + 1, fill: .45, branch: .5 });
-    S.forEach(function (x, k) { x.seed = g * 1000 + k + 1; x.th = THEME[(k * 5 + g) % THEME.length]; x.lv = k < 30 ? '기본' : k < 60 ? '보통' : '심화' });
+    W.forEach(function (L, b) { L.forEach(function (x, k) { x.k = 'wall'; x.style = (k + b) % 3 === 2 ? .35 + b * .1 : 0 }) });
+    for (i = 0; i < 15; i++) R[0].push({ k: 'rule', rule: C.rules[i % 10], geo: 'sq', n: C.rg[0], fill: .38 });
+    for (i = 0; i < 15; i++) R[1].push({ k: 'rule', rule: C.rules[(i + 5) % 10], geo: 'sq', n: C.rg[1], fill: .45 });
+    for (i = 0; i < 15; i++) R[2].push({ k: 'rule', rule: C.hard[i % 5], geo: g >= 4 && i % 3 === 2 ? 'hex' : 'sq', n: g >= 4 && i % 3 === 2 ? C.rg[1] - 1 : C.rg[1] + 1, fill: .45, branch: .5 });
+    for (var b2 = 0; b2 < 3; b2++) for (i = 0; i < 15; i++) { S.push(W[b2][i]); S.push(R[b2][i]) }
+    S.forEach(function (x, k) { x.seed = g * 1000 + k + 1; x.th = THEME[(k * 5 + g) % THEME.length]; x.lv = k < 30 ? '쉬움' : k < 60 ? '보통' : '도전' });
     return S;
   }
   var GEO = { sq: '네모', tri: '세모 칸', hex: '벌집', circ: '원형' };
