@@ -115,7 +115,7 @@ grade1/ … grade6/
 
 ### 쉬는 시간 › 종이접기 (`break/`, 2026-10-04)
 
-- 첫 화면에서 '🍎 우리 반 교실'과 '🧸 쉬는 시간' 카드가 한 줄에 반씩 나란히 있습니다(`index.html`의 `<div class="duo">`, 좁은 화면에서는 위아래). 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠'·'컬러링' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
+- 첫 화면에서 '🍎 우리 반 교실'과 '🧸 쉬는 시간' 카드가 한 줄에 반씩 나란히 있습니다(`index.html`의 `<div class="duo">`, 좁은 화면에서는 위아래). 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠'·'컬러링'·'미로찾기' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
 - 학년 페이지는 작품 카드(완성 그림·난이도·단계 수·준비물) → 한 단계씩 보기(큰 그림, 이전/다음, ←/→ 키, `#작품id`로 바로 열기) → '한눈에 보기'·'인쇄'(전체 단계를 3칸씩). 작품 15가지:
   1학년 우리 집·강아지 얼굴·고양이 얼굴 / 2학년 튤립·컵·매미 / 3학년 종이비행기·투구·동서남북 / 4학년 팔랑개비·하트 / 5학년 상자·점프 개구리 / 6학년 날개 퍼덕이는 새·종이학.
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/origami/`입니다: 작품 `models_gN.py`(설명 문장과 그림 좌표 — 접는 선에 대해 점을 뒤집는 `geo.py` 도구로 계산), 그림 엔진 `engine.js`, 화면 `page.html`·`page.css`·`svg.css`·`app.js`, 학년별 머리말·약속은 `build.py`의 `GRADES`.
@@ -140,6 +140,15 @@ grade1/ … grade6/
 - 화면: 색 23가지+지우개, 칸을 누르면 칠하기, 되돌리기(Ctrl+Z), 처음부터, 그림 저장(PNG), 도안 인쇄(선만, 이름 칸), 이전/다음 도안, `g5.html#10`처럼 번호로 바로 열기. 칠한 것은 그 기기 localStorage(`hj-color-v1`)에만 저장됩니다.
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/coloring/`: 도안 설정 `specs.py`(학년별 50개), 그림 생성기 `designs.js`(설정이 같으면 언제나 같은 그림 — 사물 `OBJ`, 무늬 `PAT`, 만다라 `mandala`), 화면 `page.html`·`page.css`·`app.js`, 학년별 머리말·선 굵기는 `build.py`의 `GRADES`.
   고친 뒤 `python3 _build/coloring/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 도안은 '뒤에 그린 칸이 앞의 칸을 가리는' 방식이라, 보이는 부분이 곧 한 칸입니다.
+
+### 쉬는 시간 › 미로찾기 (`break/maze/`, 2026-10-04)
+
+- `break/index.html`의 네 번째 방 '🧭 미로찾기' → `break/maze/index.html`(1~6학년 방) → `break/maze/g1.html ~ g6.html`(학년마다 90개: 기본 1~30 · 보통 31~60 · 심화 61~90, 모두 540개).
+  - 기본: 벽 미로(네모 → 하트·별·집·물고기·로켓·나비 등 모양 미로 → 원형·세모 칸·벌집). 보통: 조건 미로 10가지×3(짝수·홀수·과일·동물·순서·반복 규칙 … 학년별로 뛰어 세기, 곱셈구구, 약수·배수, 분수, 소수(素數)·비율까지). 심화: 큰 벽 미로 15 + 조건에 맞는 막다른 갈래가 섞인 조건 미로 15(4학년부터 벌집 칸 포함).
+  - 조작: 출발 칸에서 끌어서 길 그리기·칸 누르기·방향키, 지나온 칸을 누르면 거기까지 되돌아감, 한 칸 되돌리기, 처음부터, 정답 보기(확인 창), 인쇄(이름 칸). 조건에 안 맞는 칸은 막고 '실수' 수를 셈. `g3.html#45`처럼 번호로 바로 열기. 기록은 그 기기 localStorage(`hj-maze-v1`).
+- **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/maze/`: 생성기 `maze.js`(학년 설정 `GR`, 조건 `RULES`, 모양 `MASKS`, 학년별 90개 `specs`; 같은 번호면 언제나 같은 미로), 화면 `page.html`·`page.css`·`app.js`, 학년별 머리말은 `build.py`의 `GRADES`.
+  `node _build/maze/check.js`가 540개 모두 ① 만들어지는지 ② 규칙대로 출발→도착이 되는지 ③ 정답 길이 화면 규칙과 맞는지 ④ 중복이 없는지 점검합니다(`build.py`가 먼저 돌리고, 실패하면 빌드를 멈춤).
+  고친 뒤 `python3 _build/maze/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음).
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
