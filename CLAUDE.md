@@ -115,13 +115,23 @@ grade1/ … grade6/
 
 ### 쉬는 시간 › 종이접기 (`break/`, 2026-10-04)
 
-- 첫 화면에서 '🍎 우리 반 교실'과 '🧸 쉬는 시간' 카드가 한 줄에 반씩 나란히 있습니다(`index.html`의 `<div class="duo">`, 좁은 화면에서는 위아래). 쉬는 시간 → `break/index.html`(메뉴, 지금은 '종이접기' 방 1개) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
+- 첫 화면에서 '🍎 우리 반 교실'과 '🧸 쉬는 시간' 카드가 한 줄에 반씩 나란히 있습니다(`index.html`의 `<div class="duo">`, 좁은 화면에서는 위아래). 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
 - 학년 페이지는 작품 카드(완성 그림·난이도·단계 수·준비물) → 한 단계씩 보기(큰 그림, 이전/다음, ←/→ 키, `#작품id`로 바로 열기) → '한눈에 보기'·'인쇄'(전체 단계를 3칸씩). 작품 15가지:
   1학년 우리 집·강아지 얼굴·고양이 얼굴 / 2학년 튤립·컵·매미 / 3학년 종이비행기·투구·동서남북 / 4학년 팔랑개비·하트 / 5학년 상자·점프 개구리 / 6학년 날개 퍼덕이는 새·종이학.
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/origami/`입니다: 작품 `models_gN.py`(설명 문장과 그림 좌표 — 접는 선에 대해 점을 뒤집는 `geo.py` 도구로 계산), 그림 엔진 `engine.js`, 화면 `page.html`·`page.css`·`svg.css`·`app.js`, 학년별 머리말·약속은 `build.py`의 `GRADES`.
   고친 뒤 `python3 _build/origami/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 그림만 확인하려면 `cd _build/origami && python3 preview.py g1,g2 /tmp/보기.html`.
 - 그림 요소: 면 `P`(색 'c'·'c2' 겉, 'w'·'w2' 흰 면), 골짜기 접기 `V`(파란 점선), 산 접기 `M`(빨간 점·선), 화살표 `A`/뒤로 `B`/접었다 펴기 `U`, 자르기 `C`, 뒤집기 `FLIP`. 단계에 `fit=True`면 그림을 화면에 맞게 키웁니다(학처럼 모양이 길어지는 작품).
 - 메뉴 아이콘 🧸(teddy)·🦢(origami)는 `_build/theme/icons.js`에 추가했습니다.
+
+### 쉬는 시간 › 스도쿠 (`break/sudoku/`, 2026-10-04)
+
+- `break/index.html`의 두 번째 방 '🧩 스도쿠' → `break/sudoku/index.html`(1~6학년 방) → `break/sudoku/g1.html ~ g6.html`(학년마다 30문제).
+  1·2학년 4×4, 3·4학년 6×6(굵은 칸 2×3), 5·6학년 9×9. 짝수 학년이 빈칸이 더 많고, 학년 안에서는 1~10번 쉬움 · 11~20번 보통 · 21~30번 도전 순서입니다.
+- 모든 문제는 **답이 하나뿐**이고 **찍지 않고 논리(남는 수가 하나뿐인 칸·들어갈 자리가 하나뿐인 수)만으로** 풀립니다. `python3 _build/sudoku/gen.py check`로 검증합니다.
+- 화면: 번호판·지우개, 메모(6×6·9×9), 되돌리기, 힌트(한 칸), 처음부터, 인쇄(문제만), 정답 보기(확인 창). 같은 줄·칸에 같은 수를 넣으면 빨간 동그라미(규칙 위반만 표시, 정답 여부는 알려 주지 않음). 다 채우면 완성 창·걸린 시간.
+  진행 상황(이어서 풀기·다 푼 문제 ✓)은 그 기기 localStorage(`hj-sudoku-v1`)에만 저장됩니다. `g6.html#7`처럼 번호를 붙이면 그 문제가 바로 열립니다.
+- **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/sudoku/`: 문제 `puzzles.json`(`gen.py`가 만듦 — 다시 돌려도 같은 문제), 화면 `page.html`·`page.css`·`app.js`, 학년별 머리말은 `build.py`의 `GRADES`.
+  고친 뒤 `python3 _build/sudoku/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음).
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
