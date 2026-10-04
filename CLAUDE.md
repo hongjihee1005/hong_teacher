@@ -52,6 +52,11 @@ grade1/ … grade6/
 - 사회 홍지희 버전(`sem1-hong`, `sem2-hong`)은 빌드 원본이 없어서 `grade3/social/_ex/apply.py`가 HTML의 수업 데이터(`const C`)에 예시를 넣고 화면 기능(`engine_ex.js`·`ex.css`, 표시 `hj-ex`)을 붙입니다. 문장은 `grade3/social/_ex/ex_sem1_u1.py` …, 점검 `python3 apply.py check`. 여러 번 실행해도 안전합니다.
   **사회 앱 HTML을 다른 데서 만든 파일로 덮었으면 `apply.py`를 다시 돌리세요.**
 
+### 국어 (`grade3/korean/sem2/`) 글쓰기 칸 '💡 도움' (2026-10-04)
+
+- 39개 차시는 `grade3/korean/_build/`에서 만듭니다(`python3 build.py ../sem2` → 루트에서 `apply_content_theme.py`). 여러 줄을 쓰는 칸 135개에 `💡 도움`(쓰는 차례·문장 틀 2줄)이 있고, 단계 전체 교과서 예시 답안은 원래 있던 '💡 예시 보기'로 따로 봅니다.
+- 도움 문장은 `_build/help_uN.py`(차시 id → 글쓰기 단계 id → 칸 이름), 빈 틀 `python3 help_skel.py N`, 점검 `python3 help_skel.py check N`.
+
 ### 수학 (`grade3/math/`)
 
 - `sem1/`, `sem2/` — 교과서 차시 버전(공개). 단원 앱 `u단원-주제.html`(예: `u1-addsub.html`), 활동지 `sheets/*.hwpx`.
@@ -76,6 +81,8 @@ grade1/ … grade6/
 - **사고 전략 칸별 예시(2026-10-03):** 이야기 버전(`sem1-soop/`, `sem2-soop/`) 12개 앱의 `panes()` 칸마다 제목 옆 `💡 예시` 단추가 있고, 누르면 예시 문장 2개가 팝업으로 뜹니다.
   문장 원본은 `grade3/math/_ex/ex_<학기>_<단원>.py`이고 `python3 grade3/math/_ex/apply.py`가 HTML의 `panes()`를 고치고 칸마다 `ex: [...]`를 넣습니다(여러 번 실행해도 안전).
   **밖에서 새로 빌드한 앱으로 덮었으면 `apply.py`를 다시 돌리세요.** 그다음 `apply_content_theme.py`.
+- **글쓰기 칸 '💡 도움'(2026-10-04):** 이야기 버전 12개 앱의 글쓰기 칸(`writeStep`)과 1학기 `thenWhy`('왜 그럴까요?')·`ruleFirst`('먼저 예상해요') 칸에 도움 단추가 있습니다(쓰는 차례·문장 틀 2줄, 답은 알려 주지 않음).
+  문장 원본은 `grade3/math/_ex/help_<학기>_<단원>.py`(W·Y·R 차례), 넣기는 `python3 grade3/math/_ex/help.py`(여러 번 실행해도 안전), 빈 틀은 `help.py skel`. **앱을 새로 덮었으면 `apply.py`와 `help.py`를 둘 다 다시 돌리세요.**
 - **수학 단원 앱은 이 저장소 밖에서 빌드해 들여옵니다**(차시 내용 `lessons*.js` + 공통 틀 `head.html`·`engine.js`를 합쳐 HTML 한 장으로). 그래서 새로 빌드한 파일로 덮으면
   손으로 넣어 둔 `<a id="hj-home">` 단추가 사라집니다. 덮은 뒤에는 **그 조각을 다시 넣고** `python3 _build/theme/apply_content_theme.py`를 돌리세요.
   (덮개 스크립트가 `#hj-home`을 읽어 왼쪽 위 `[홈 · 자료 목록]` 단추로 바꾸므로, 조각이 없으면 이동 단추가 통째로 사라집니다. 2026-10-01에 실제로 한 번 지워졌습니다.)

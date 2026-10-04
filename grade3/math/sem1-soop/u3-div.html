@@ -191,6 +191,7 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
 .pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
 .phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+/*hj-help*/.hlpwrap{position:relative}.hlpq{display:flex;align-items:center;gap:.4em;flex-wrap:wrap}.hlpq .hlpt{flex:1;min-width:0}.hlpb{flex:none;margin-left:auto;font-family:inherit;font-size:.72em;padding:.15em .7em;border-radius:999px;border:2px solid #B4610F;background:#fff;color:#B4610F;cursor:pointer;white-space:nowrap}.hlpb[aria-expanded="true"]{background:#B4610F;color:#fff}.hlpop{display:none;position:absolute;z-index:30;left:.3em;right:.3em;background:#fff;border:3px solid #B4610F;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44);text-align:left}.hlpop.on{display:block}.hlpop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em;color:#B4610F}.hlpop ul{margin:0;padding-left:1.1em;line-height:1.5}.hlpop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.hlpop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hlpop,:root:not([data-theme="light"]) .hlpb:not([aria-expanded="true"]){background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .hlpop,:root[data-theme="dark"] .hlpb:not([aria-expanded="true"]){background:#1E2A28;color:#EEF3F1}/*/hj-help*/
 /*hj-ex*/.pane{position:relative}.pane h3 .pt{flex:1;min-width:0}.pane .exb{flex:none;font-family:inherit;font-size:.62em;padding:.15em .6em;border-radius:999px;border:2px solid currentColor;background:#fff;color:inherit;cursor:pointer;white-space:nowrap}.pane .exb[aria-expanded="true"]{color:#fff!important}.pane0 .exb[aria-expanded="true"]{background:#2B7BD6}.pane1 .exb[aria-expanded="true"]{background:#6A4FC9}.pane2 .exb[aria-expanded="true"]{background:#D9731A}.pane3 .exb[aria-expanded="true"]{background:#2F6B57}.pane .expop{display:none;position:absolute;z-index:30;left:.4em;right:.4em;background:#fff;border:3px solid;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44)}.pane .expop.on{display:block}.pane .expop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em}.pane .expop ul{margin:0;padding-left:1.1em;line-height:1.5}.pane .expop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.pane .expop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}.pane0 .expop{border-color:#2B7BD6}.pane0 .exh{color:#2B7BD6}.pane1 .expop{border-color:#6A4FC9}.pane1 .exh{color:#6A4FC9}.pane2 .expop{border-color:#D9731A}.pane2 .exh{color:#D9731A}.pane3 .expop{border-color:#2F6B57}.pane3 .exh{color:#2F6B57}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane .expop,:root:not([data-theme="light"]) .pane .exb{background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .pane .expop,:root[data-theme="dark"] .pane .exb{background:#1E2A28;color:#EEF3F1}/*/hj-ex*/
 .chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
 .chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
@@ -1383,8 +1384,27 @@ function blanks(body, api, parts, opts = {}) {
   body.append(sent);
 }
 /* 글쓰기(자기 생각) */
+/*hj-help*/ /* 글쓰기 칸 '💡 도움': help:["…","…"] → 질문 옆 단추, 누르면 입력칸 아래 팝업(쓰는 차례·넣을 것) */
+function helpPop(lines, ta) {
+  if (!lines || !lines.length) return ["", ""];
+  const pop = h("div", { class: "hlpop", role: "dialog", "aria-label": "도움" },
+    h("button", { class: "exx", type: "button", "aria-label": "닫기", onclick: () => helpClose() }, "✕"),
+    h("p", { class: "exh" }, "이렇게 써 보면 좋아요"), h("ul", {}, ...lines.map(x => h("li", {}, x))),
+    h("p", { class: "exf" }, "차례대로 생각하며 내 말로 써요."));
+  const btn = h("button", { class: "hlpb", type: "button", "aria-expanded": "false", onclick: () => {
+    const on = !pop.classList.contains("on"); helpClose(); if (!on) return;
+    pop.style.top = (ta.offsetTop + ta.offsetHeight + 6) + "px"; pop.classList.add("on"); btn.setAttribute("aria-expanded", "true");
+    pop.scrollIntoView({ block: "nearest" });
+  } }, "💡 도움");
+  return [btn, pop];
+}
+function helpClose() { document.querySelectorAll(".hlpop.on").forEach(p => { p.classList.remove("on"); const b = p.parentElement.querySelector(".hlpb"); if (b) b.setAttribute("aria-expanded", "false"); }); }
+if (!window.__helpPop) { window.__helpPop = 1;
+  document.addEventListener("click", e => { if (!e.target.closest(".hlpop,.hlpb")) helpClose(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") helpClose(); }); }
+/*/hj-help*/
 function writeStep(body, api, prompts, opts = {}) {
-  const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); body.append(h("div", { class: "jua", style: "margin-top:.6em" }, p.q), t); return t; });
+  const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); const hp = helpPop(p.help, t); /*hj-help*/ body.append(h("div", { class: "hlpwrap" }, h("div", { class: "jua hlpq", style: "margin-top:.6em" }, h("span", { class: "hlpt" }, p.q), hp[0]), t, hp[1])); return t; });
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     const vals = areas.map(t => t.value.trim());
     if (vals.some(v => v.length < (opts.min || 4))) return api.fail("모든 칸에 내 생각을 조금 더 자세히 써 봐요.", vals.join(" | "));
@@ -1504,14 +1524,14 @@ function predictCheck(body, api, opts) {
     ".inqmemo ul{margin:.3em 0 0 1.1em;padding:0}.inqmemo li{margin:.15em 0}";
   document.head.appendChild(st);
 })();
-function inqWrite(q, ph, btnText, onOk, api) {
+function inqWrite(q, ph, btnText, onOk, api, help) { /*hj-help*/
   const t = h("textarea", { placeholder: ph || "왜냐하면 ~" });
   const btn = h("button", { class: "big", onclick: () => {
     const v = t.value.trim();
     if (v.length < 4) { api.hint("내 생각을 조금 더 써 봐요. (4글자 이상)"); t.focus(); return; }
     onOk(v, btn, t);
   } }, btnText || "다 썼어요");
-  return h("div", { class: "inqbox" }, h("div", { class: "jua" }, q), t, h("div", { class: "inqrow" }, btn));
+  const hp = helpPop(help, t); /*hj-help*/ return h("div", { class: "inqbox hlpwrap" }, h("div", { class: "jua hlpq" }, h("span", { class: "hlpt" }, q), hp[0]), t, hp[1], h("div", { class: "inqrow" }, btn));
 }
 function thenWhy(main, why) {
   return (body, api) => {
@@ -1524,7 +1544,7 @@ function thenWhy(main, why) {
       slot.append(inqWrite("💬 " + (why.q || "왜 그럴까요? 한 줄로 써 봐요."), why.ph, "다 썼어요", (v, btn, t) => {
         btn.disabled = true; t.readOnly = true;
         api.done(first + " | 왜: " + v, firstMsg || "까닭까지 말했어요!");
-      }, api));
+      }, api, why.help /*hj-help*/));
     } });
     main(body, wrapped);
     body.append(slot);
@@ -1559,7 +1579,7 @@ function ruleFirst(main, opts) {
       btn.textContent = "예상 고치기";
       api.hint("예상을 적었어요. 이제 직접 해 보며 확인해요.");
       show();
-    }, api);
+    }, api, opts.help /*hj-help*/);
     if (p && p.rule) { box.querySelector("textarea").value = p.rule; box.querySelector("button").textContent = "예상 고치기"; }
     body.append(box, inner, slot);
     if (p && p.rule) show();
@@ -2602,7 +2622,7 @@ const LESSONS = [
       hints: ["‘똑같이 나누어’, ‘몇 개씩’이라는 말이 있는지 살펴봐요.", "시계를 보는 일은 나누는 일이 아니에요."],
       render: thenWhy((b, a) => quiz(b, a, [
         { q: "나누는 일을 모두 고르세요.", o: ["색종이를 모둠마다 똑같이 나누어 주기", "풀을 한 모둠에 3개씩 나누어 주기", "모둠 활동 시작 시각을 시계로 확인하기", "자를 모둠 바구니에 똑같이 나누어 담기"], a: [0, 1, 3] }],
-        { ok: "모둠 활동 준비에는 나누는 일이 아주 많아요!", bad: "물건이나 사람을 나누는 일인지 다시 살펴봐요." }), { q: "고른 일들은 어떤 점이 같을까요?", ph: "모두 ~하는 일이에요" }) },
+        { ok: "모둠 활동 준비에는 나누는 일이 아주 많아요!", bad: "물건이나 사람을 나누는 일인지 다시 살펴봐요." }), { q: "고른 일들은 어떤 점이 같을까요?", ph: "모두 ~하는 일이에요", help: ["① 고른 일에서 ‘똑같이’, ‘몇 개씩’이라는 말을 찾아요. → ② 고르지 않은 일과 견주어요.", "‘모두 ~을 ~ 나누는 일이에요.’ 꼴로 써요."] }) },
     { name: "배운 내용 떠올리기", inst: "나눗셈을 배우려면 곱셈구구가 필요해요. 2학년 때 배운 곱셈구구를 떠올려 보세요.",
       hints: ["5 × 5는 5를 5번 더한 것과 같아요.", "곱셈표에서 두 수가 만나는 칸을 찾아도 돼요."],
       render: (b, a) => numbers(b, a, [{ q: "5 × 5 =", a: 25 }, { q: "4 × 6 =", a: 24 }, { q: "3 × 8 =", a: 24 }, { q: "6 × 7 =", a: 42 }],
@@ -2684,7 +2704,7 @@ const LESSONS = [
       render: thenWhy((b, a) => quiz(b, a, [
         { q: "지호: “20 - 5 - 5 - 5 - 5 = 0이니까 20 ÷ 5 = 4예요.”  하린: “20 - 5 - 5 - 5 - 5 = 0이니까 20 ÷ 5 = 5예요.”  바르게 말한 친구는?", o: ["지호", "하린", "둘 다 맞아요", "둘 다 틀렸어요"], a: 0 },
         { q: "하린이는 무엇을 잘못 생각했을까요?", o: ["뺄셈을 잘못 계산했어요", "뺀 횟수 대신 빼는 수 5를 몫으로 썼어요", "20을 몫으로 썼어요"], a: 1 }],
-        { ok: "5를 4번 빼면 0이 되니까 몫은 4예요!", bad: "5를 몇 번 뺐는지 다시 세어 봐요." }), { q: "20 ÷ 5의 몫이 왜 5를 뺀 횟수일까요?", ph: "왜냐하면 ~" }) },
+        { ok: "5를 4번 빼면 0이 되니까 몫은 4예요!", bad: "5를 몇 번 뺐는지 다시 세어 봐요." }), { q: "20 ÷ 5의 몫이 왜 5를 뺀 횟수일까요?", ph: "왜냐하면 ~", help: ["① 20에서 5를 한 번 뺄 때마다 무엇을 한 것인지 봐요. → ② 0이 될 때까지 세어요.", "‘왜냐하면 5를 한 번 뺄 때마다 ~에 나누어 준 것이기 때문이에요.’ 꼴로 써요."] }) },
     { inst: "약속: 뺄셈식과 나눗셈식을 이어 보아요.",
       hints: ["15 - 3 - 3 - 3 - 3 - 3 = 0에서 빼는 수 3이 몇 번 나오는지 세어 봐요."],
       render: (b, a) => blanks(b, a, ["15 - 3 - 3 - 3 - 3 - 3 = 0에서 3을 ", { o: ["5번", "3번"], a: 0 }, " 뺐어요. 이것을 나눗셈식으로 15 ÷ 3 = ", { o: ["5", "3"], a: 0 }, "라고 써요. 뺀 횟수가 ", { o: ["몫", "나누는 수"], a: 0 }, "이에요."]) },
@@ -2758,7 +2778,7 @@ const LESSONS = [
       render: thenWhy((b, a) => quiz(b, a, [
         { q: "28 ÷ 7의 몫을 구할 때 쓰는 곱셈식은?", o: ["28 + 7 = 35", "7 + 4 = 11", "7 × 4 = 28"], a: 2 },
         { q: "7 × 4 = 28이면 28 ÷ 7의 몫은?", o: ["7", "4", "28"], a: 1 }],
-        { ok: "나누는 수에 몫을 곱하면 나누어지는 수가 돼요!" }), { q: "왜 곱셈식으로 나눗셈의 몫을 구할 수 있을까요?", ph: "왜냐하면 ~" }) },
+        { ok: "나누는 수에 몫을 곱하면 나누어지는 수가 돼요!" }), { q: "왜 곱셈식으로 나눗셈의 몫을 구할 수 있을까요?", ph: "왜냐하면 ~", help: ["① 15 ÷ 3처럼 3에 어떤 수를 곱하면 15가 되는지 생각해요. → ② 두 식을 견주어요.", "‘왜냐하면 나누는 수에 ~을 곱하면 ~이 되기 때문이에요.’ 꼴로 써요."] }) },
     { inst: "약속: 곱셈식으로 몫을 구하는 방법을 정리해요.",
       hints: ["32 ÷ 4 → 4 × □ = 32 → □ = 8"],
       render: (b, a) => blanks(b, a, ["▲ ÷ ■의 몫은 ", { o: ["■ × □ = ▲", "▲ × ■ = □"], a: 0 }, "에서 □를 찾으면 돼요. 나누는 수에 곱해서 나누어지는 수가 되는 수가 ", { o: ["몫", "나누는 수"], a: 0 }, "이에요."]) },
@@ -2799,7 +2819,7 @@ const LESSONS = [
       render: thenWhy((b, a) => quiz(b, a, [
         { q: "54 ÷ 6의 몫을 구하려면 몇 단 곱셈구구를 보나요?", o: ["5단", "4단", "6단", "9단"], a: 2 },
         { q: "6 × 9 = 54이므로 54 ÷ 6의 몫은?", o: ["6", "54", "9"], a: 2 }],
-        { ok: "나누는 수의 단을 떠올리면 몫을 빨리 찾을 수 있어요!" }), { q: "54 ÷ 6을 풀 때 왜 6단을 볼까요?", ph: "왜냐하면 ~" }) },
+        { ok: "나누는 수의 단을 떠올리면 몫을 빨리 찾을 수 있어요!" }), { q: "54 ÷ 6을 풀 때 왜 6단을 볼까요?", ph: "왜냐하면 ~", help: ["① 54 ÷ 6 = □를 6 × □ = 54로 바꾸어 봐요. → ② 그 곱셈식이 몇 단인지 봐요.", "‘왜냐하면 6 × □ = ~이 되는 □를 찾아야 하기 때문이에요.’ 꼴로 써요."] }) },
     { inst: "약속: 곱셈구구로 몫을 구하는 방법을 정리해요.",
       hints: ["42 ÷ 7 → 7단에서 7 × 6 = 42를 찾으면 몫은 6이에요."],
       render: (b, a) => blanks(b, a, ["나눗셈의 몫은 ", { o: ["나누는 수의 단", "몫의 단"], a: 0 }, " 곱셈구구에서 곱이 ", { o: ["나누어지는 수", "나누는 수"], a: 0 }, "가 되는 곱셈을 찾아 구해요."]) },
@@ -2838,12 +2858,12 @@ const LESSONS = [
         { q: "두 이야기를 나타내는 나눗셈식은?", o: ["5 ÷ 20 = 4", "20 - 5 = 15", "20 ÷ 5 = 4"], a: 2 },
         { q: "첫째 이야기에서 몫 4는?", o: ["색연필을 받는 모둠 수", "색연필 전체 수", "한 모둠이 받는 색연필 수"], a: 2 },
         { q: "둘째 이야기에서 몫 4는?", o: ["색연필을 받는 모둠 수", "색연필 전체 수", "한 모둠이 받는 색연필 수"], a: 0 }],
-        { ok: "같은 나눗셈식이라도 몫이 나타내는 것은 이야기마다 달라요!" }), { q: "같은 20 ÷ 5인데 몫 4의 뜻이 왜 다를까요?", ph: "왜냐하면 ~" }) },
+        { ok: "같은 나눗셈식이라도 몫이 나타내는 것은 이야기마다 달라요!" }), { q: "같은 20 ÷ 5인데 몫 4의 뜻이 왜 다를까요?", ph: "왜냐하면 ~", help: ["① 두 이야기가 각각 무엇을 물었는지 봐요. → ② 두 이야기에서 5가 무엇인지 견주어요.", "‘왜냐하면 첫째는 ~을, 둘째는 ~을 구했기 때문이에요.’ 꼴로 써요."] }) },
     { name: "이야기 만들기", inst: "18 ÷ 3 = 6이 되는 모둠 활동 이야기를 만들어 보세요.",
       hints: ["예) 풀 18개를 3모둠에 똑같이 나누면 한 모둠에 몇 개일까요?", "예) 공 18개를 한 바구니에 3개씩 담으면 몇 바구니일까요?"],
       render: (b, a) => writeStep(b, a, [
-        { q: "18 ÷ 3 = 6이 되는 이야기 문제", tag: "이야기", ph: "예) ○○ 18개를 …" },
-        { q: "내 이야기에서 몫 6은 무엇을 나타내나요?", tag: "몫의 뜻" }]) },
+        { q: "18 ÷ 3 = 6이 되는 이야기 문제", tag: "이야기", ph: "예) ○○ 18개를 …", help: ["① 모둠 활동에서 18개쯤 쓸 물건을 정해요. → ② 3모둠에 나눌지, 3개씩 나눌지 정해요.", "‘○○ 18개를 ~ 나누어 주면 ~ 몇 개일까요?’ 꼴로 써요."] },
+        { q: "내 이야기에서 몫 6은 무엇을 나타내나요?", tag: "몫의 뜻", help: ["① 내 이야기가 ‘똑같이 나누기’인지 ‘몇 개씩 나누기’인지 봐요. → ② 묻는 것을 찾아요.", "‘몫 6은 내 이야기에서 ~의 수예요.’ 꼴로 써요."] }]) },
     { inst: "이야기에 알맞은 나눗셈식을 골라 보세요.",
       hints: ["전체 수를 먼저 쓰고, 나누는 수를 그다음에 써요."],
       render: (b, a) => quiz(b, a, [
@@ -2872,7 +2892,7 @@ const LESSONS = [
         { ok: "나누는 수가 3, 4, 6, 8로 커질수록 몫은 8, 6, 4, 3으로 작아져요." }) },
     { inst: "찾은 사실을 말해 보세요.",
       hints: ["24 ÷ 3 = 8, 24 ÷ 8 = 3을 비교해 봐요."],
-      render: thenWhy((b, a) => blanks(b, a, ["나누어지는 수가 같을 때 나누는 수가 커지면 몫은 ", { o: ["커져요", "작아져요", "그대로예요"], a: 1 }, ". 그래서 여럿이 함께 옮기면 한 명이 옮기는 상자가 ", { o: ["늘어요", "그대로예요", "줄어요"], a: 2 }, "."]), { q: "나누는 수가 커지면 왜 몫이 작아질까요?", ph: "왜냐하면 ~" }) },
+      render: thenWhy((b, a) => blanks(b, a, ["나누어지는 수가 같을 때 나누는 수가 커지면 몫은 ", { o: ["커져요", "작아져요", "그대로예요"], a: 1 }, ". 그래서 여럿이 함께 옮기면 한 명이 옮기는 상자가 ", { o: ["늘어요", "그대로예요", "줄어요"], a: 2 }, "."]), { q: "나누는 수가 커지면 왜 몫이 작아질까요?", ph: "왜냐하면 ~", help: ["① 24 ÷ 3과 24 ÷ 8을 견주어 봐요. → ② 나누어 갖는 사람이 많아지면 어떨지 생각해요.", "‘왜냐하면 같은 수를 ~ 사람이 나누면 한 사람 몫이 ~이기 때문이에요.’ 꼴로 써요."] }) },
     { name: "모둠 짜기 탐구", inst: "보드게임 시간에 사회를 맡은 1명을 뺀 24명이 모둠을 만들어요. 한 모둠의 사람 수에 따라 몇 모둠이 될까요?",
       hints: ["24 ÷ 3 = □처럼 나눗셈식으로 생각해요.", "한 모둠의 사람이 많아질수록 모둠 수는 적어져요."],
       render: (b, a) => numbers(b, a, [
@@ -2882,10 +2902,10 @@ const LESSONS = [
     { name: "정리하기", inst: "오늘 알게 된 것을 정리해요.",
       hints: ["‘나누는 수가 커지면 몫은 …’으로 시작해도 좋아요.", "모둠이 너무 크거나 작으면 어떤 점이 좋고 어떤 점이 불편할지 생각해 봐요."],
       render: wonderRecall((b, a) => writeStep(b, a, [
-        { q: "연결하기: 오늘 나눗셈을 어떻게 사용했나요?", tag: "연결" },
-        { q: "확장하기: 모둠 활동을 할 때 몇 명씩 모둠을 만들면 좋을지 까닭과 함께 써 보세요.", tag: "확장" },
-        { q: "도전하기: 아직 헷갈리거나 어려운 것은 무엇인가요?", tag: "도전" },
-        { q: "1차시에 궁금했던 것 중 풀린 것은 무엇인가요?", tag: "풀린 궁금증" }])) }
+        { q: "연결하기: 오늘 나눗셈을 어떻게 사용했나요?", tag: "연결", help: ["① 상자 옮기기와 모둠 짜기에서 쓴 나눗셈식을 떠올려요. → ② 식으로 무엇을 구했는지 봐요.", "‘~을 구할 때 ~ ÷ ~ 나눗셈식을 썼어요.’ 꼴로 써요."] },
+        { q: "확장하기: 모둠 활동을 할 때 몇 명씩 모둠을 만들면 좋을지 까닭과 함께 써 보세요.", tag: "확장", help: ["① 24명을 몇 명씩 나누면 몇 모둠인지 떠올려요. → ② 모둠이 크고 작을 때를 견주어요.", "‘~명씩 모둠을 만들면 좋겠어요. 왜냐하면 ~이기 때문이에요.’ 꼴로 써요."] },
+        { q: "도전하기: 아직 헷갈리거나 어려운 것은 무엇인가요?", tag: "도전", help: ["① 오늘 푼 문제 중 오래 걸린 곳을 떠올려요. → ② 무엇이 헷갈렸는지 찾아요.", "‘나는 ~할 때 ~이 아직 헷갈려요.’ 꼴로 써요."] },
+        { q: "1차시에 궁금했던 것 중 풀린 것은 무엇인가요?", tag: "풀린 궁금증", help: ["① 1차시 ‘궁금해요’ 쪽지를 다시 읽어요. → ② 오늘 나눗셈으로 알게 된 것과 이어요.", "‘나는 ~이 궁금했는데, 이제 ~하면 된다는 것을 알았어요.’ 꼴로 써요."] }])) }
   ],
   challenge: { inst: "공 36개를 똑같이 나누어 정리해요.", render: (b, a) => numbers(b, a, [
     { q: "4명이 정리하면 한 명은?", a: 9, unit: "개" },
@@ -2921,8 +2941,8 @@ const LESSONS = [
     { name: "발표하기", inst: "모둠 친구들에게 발표할 내용을 써 보세요.",
       hints: ["‘나는 나누는 수의 단 곱셈구구로 몫을 구했어요’처럼 써 봐요."],
       render: (b, a) => writeStep(b, a, [
-        { q: "몫을 빨리 구한 나만의 방법을 설명해 보세요.", tag: "방법" },
-        { q: "놀이를 하면서 알게 된 점이나 느낀 점은?", tag: "알게 된 점" }]) }
+        { q: "몫을 빨리 구한 나만의 방법을 설명해 보세요.", tag: "방법", help: ["① 카드에서 나누는 수를 먼저 봐요. → ② 몫을 찾을 때 떠올린 곱셈구구를 생각해요.", "‘나는 나누는 수가 ~이면 ~단 곱셈구구로 몫을 구했어요.’ 꼴로 써요."] },
+        { q: "놀이를 하면서 알게 된 점이나 느낀 점은?", tag: "알게 된 점", help: ["① 바둑돌을 옮길 때 잘된 판과 아쉬운 판을 떠올려요. → ② 그때 무엇을 생각했는지 봐요.", "‘놀이를 하면서 ~을 알게 되었어요. ~해서 ~했어요.’ 꼴로 써요."] }]) }
   ],
   challenge: { inst: "몫이 6인 나눗셈 카드를 만들어요.", render: (b, a) => numbers(b, a, [
     { q: "42 ÷ □ = 6 일 때 □ =", a: 7 },
