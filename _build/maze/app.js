@@ -1,7 +1,7 @@
 /* 미로찾기: 고르기 → 출발 칸에서 길 그리기(끌기·누르기·방향키) → 도착 · 기록은 이 기기(localStorage)에만 */
 (function () {
   var G = MZG, S = MZ.specs(G), $ = function (i) { return document.getElementById(i) };
-  var KEY = 'hj-maze-v2', st = {};
+  var KEY = 'hj-maze-v3', st = {};
   try { st = JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) { st = {} }
   st[G] = st[G] || {};
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)) } catch (e) { } }
@@ -14,8 +14,8 @@
   function list() {
     var h = '', done = 0, LV = [['쉬움', '작은 벽 미로 · 쉬운 조건 미로'], ['보통', '모양·원형 미로 · 조금 큰 조건 미로'], ['도전', '큰 미로 · 헷갈리는 갈래가 있는 조건 미로']];
     for (var b = 0; b < 3; b++) {
-      h += '<h3>' + LV[b][0] + ' <small>' + (b * 30 + 1) + '~' + (b * 30 + 30) + '번 · ' + LV[b][1] + '</small></h3><div class="mz-grid">';
-      for (var i = b * 30; i < b * 30 + 30; i++) { var d = st[G][i]; if (d) done++; h += '<button type="button" class="mz-q' + (d ? ' done' : '') + '" data-q="' + i + '"><b>' + (i + 1) + '</b><span>' + MZ.title(S[i]) + (d ? ' · ' + fmt(d.t) : '') + '</span></button>' }
+      h += '<h3>' + LV[b][0] + ' <small>' + (b * 100 + 1) + '~' + (b * 100 + 100) + '번 · ' + LV[b][1] + '</small></h3><div class="mz-grid">';
+      for (var i = b * 100; i < b * 100 + 100; i++) { var d = st[G][i]; if (d) done++; h += '<button type="button" class="mz-q' + (d ? ' done' : '') + '" data-q="' + i + '"><b>' + (i + 1) + '</b><span>' + MZ.title(S[i]) + (d ? ' · ' + fmt(d.t) : '') + '</span></button>' }
       h += '</div>';
     }
     $('mzList').innerHTML = h; $('mzProg').textContent = '도착한 미로 ' + done + ' / ' + S.length;

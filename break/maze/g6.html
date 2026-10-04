@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>6학년 미로찾기 · 쉬는 시간 · 초등교사 홍지희</title>
-<meta name="description" content="6학년 쉬는 시간 미로찾기 90개(쉬움·보통·도전)">
+<meta name="description" content="6학년 쉬는 시간 미로찾기 300개(쉬움·보통·도전 100개씩)">
 <style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#1C8C7A;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37}}
@@ -1068,34 +1068,37 @@ var MZ = (function () {
   };
   function specs(g) {
     var C = GR[g], S = [], r = rng(g * 7919), lerp = function (a, b, t) { return Math.round(a + (b - a) * t) };
-    // 쉬움·보통·도전 30개씩. 단계마다 벽 미로 15 + 조건 미로 15를 번갈아 놓고, 단계가 오를수록 크고 어렵게.
-    var W = [[], [], []], R = [[], [], []], i;
+    // 쉬움·보통·도전 100개씩. 단계마다 벽 미로 50 + 조건 미로 50을 번갈아 놓고, 단계가 오를수록 크고 어렵게.
+    var W = [[], [], []], R = [[], [], []], i, N = 50, SL = SHAPES.length;
     var midSq = lerp(C.sq[0], C.sq[1], .5), smallMask = Math.max(8, C.msq - (g > 1 ? 3 : 1));
-    for (i = 0; i < 10; i++) W[0].push({ geo: 'sq', n: lerp(C.sq[0], midSq, i / 9) });
-    for (i = 0; i < 5; i++) W[0].push({ geo: 'sq', n: smallMask, mask: SHAPES[(i + g * 3) % SHAPES.length] });
-    for (i = 0; i < 4; i++) W[1].push({ geo: 'sq', n: lerp(midSq + 1, C.sq[1], i / 3) });
-    for (i = 0; i < 6; i++) W[1].push({ geo: 'sq', n: C.msq, mask: SHAPES[(i + 5 + g * 3) % SHAPES.length] });
-    for (i = 0; i < 5; i++) {
-      var opt = [{ geo: 'circ', n: lerp(C.circ[0], C.circ[1], i / 4) }];
-      if (C.tri) opt.push({ geo: 'tri', n: C.tri }); if (C.hex) opt.push({ geo: 'hex', n: C.hex });
-      if (g === 1) opt.push({ geo: 'sq', n: 9, mask: SHAPES[(i + 11) % SHAPES.length] });
+    for (i = 0; i < 30; i++) W[0].push({ geo: 'sq', n: lerp(C.sq[0], midSq, (i % 10) / 9) });
+    for (i = 0; i < 20; i++) W[0].push({ geo: 'sq', n: smallMask - (i >= SL ? 1 : 0), mask: SHAPES[(i + g * 3) % SL] });
+    for (i = 0; i < 14; i++) W[1].push({ geo: 'sq', n: lerp(midSq + 1, C.sq[1], (i % 7) / 6) });
+    for (i = 0; i < 20; i++) W[1].push({ geo: 'sq', n: C.msq + (i >= SL ? 1 : 0), mask: SHAPES[(i + 5 + g * 3) % SL] });
+    for (i = 0; i < 16; i++) {
+      var opt = [{ geo: 'circ', n: lerp(C.circ[0], C.circ[1], (i % 4) / 3) }];
+      if (C.tri) opt.push({ geo: 'tri', n: C.tri + (i % 3) - 1 }); if (C.hex) opt.push({ geo: 'hex', n: C.hex + (i % 2) });
+      if (g === 1) opt.push({ geo: 'sq', n: 9, mask: SHAPES[(i + 11) % SL] });
       W[1].push(opt[i % opt.length]);
     }
-    for (i = 0; i < 15; i++) {
-      var t = i % 5, h;
-      if (t === 0) h = { geo: 'sq', n: lerp(C.hsq[0], C.hsq[1], i / 14) };
-      else if (t === 1) h = { geo: 'circ', n: C.circ[1] + 1 + (g > 3 ? 1 : 0) };
-      else if (t === 2) h = { geo: g >= 3 ? 'hex' : 'sq', n: g >= 3 ? C.hex + 2 : C.msq + 2, mask: SHAPES[(i + g) % SHAPES.length] };
-      else if (t === 3) h = { geo: g >= 2 ? 'tri' : 'sq', n: g >= 2 ? C.tri + 4 : C.msq + 2, mask: SHAPES[(i * 3 + g) % SHAPES.length] };
-      else h = { geo: 'sq', n: C.msq + 4, mask: SHAPES[(i * 5 + g) % SHAPES.length] };
+    for (i = 0; i < N; i++) {
+      var t = i % 5, h, up = Math.floor(i / 25);   // 뒤쪽 25개는 한 단계 더 크게
+      if (t === 0) h = { geo: 'sq', n: lerp(C.hsq[0], C.hsq[1], (i % 25) / 24) };
+      else if (t === 1) h = { geo: 'circ', n: C.circ[1] + 1 + (g > 3 ? 1 : 0) + up };
+      else if (t === 2) h = { geo: g >= 3 ? 'hex' : 'sq', n: (g >= 3 ? C.hex + 2 : C.msq + 2) + up, mask: SHAPES[(i + g) % SL] };
+      else if (t === 3) h = { geo: g >= 2 ? 'tri' : 'sq', n: (g >= 2 ? C.tri + 4 : C.msq + 2) + up, mask: SHAPES[(i * 3 + g) % SL] };
+      else h = { geo: 'sq', n: C.msq + 4 + up, mask: SHAPES[(i * 5 + g) % SL] };
       W[2].push(h);
     }
     W.forEach(function (L, b) { L.forEach(function (x, k) { x.k = 'wall'; x.style = (k + b) % 3 === 2 ? .35 + b * .1 : 0 }) });
-    for (i = 0; i < 15; i++) R[0].push({ k: 'rule', rule: C.rules[i % 10], geo: 'sq', n: C.rg[0], fill: .38 });
-    for (i = 0; i < 15; i++) R[1].push({ k: 'rule', rule: C.rules[(i + 5) % 10], geo: 'sq', n: C.rg[1], fill: .45 });
-    for (i = 0; i < 15; i++) R[2].push({ k: 'rule', rule: C.hard[i % 5], geo: g >= 4 && i % 3 === 2 ? 'hex' : 'sq', n: g >= 4 && i % 3 === 2 ? C.rg[1] - 1 : C.rg[1] + 1, fill: .45, branch: .5 });
-    for (var b2 = 0; b2 < 3; b2++) for (i = 0; i < 15; i++) { S.push(W[b2][i]); S.push(R[b2][i]) }
-    S.forEach(function (x, k) { x.seed = g * 1000 + k + 1; x.th = THEME[(k * 5 + g) % THEME.length]; x.lv = k < 30 ? '쉬움' : k < 60 ? '보통' : '도전' });
+    for (i = 0; i < N; i++) R[0].push({ k: 'rule', rule: C.rules[i % 10], geo: 'sq', n: C.rg[0], fill: .38 });
+    for (i = 0; i < N; i++) R[1].push({ k: 'rule', rule: C.rules[(i + 5) % 10], geo: 'sq', n: C.rg[1], fill: .45 });
+    for (i = 0; i < N; i++) {
+      var hx = g >= 4 && i % 3 === 2;
+      R[2].push({ k: 'rule', rule: i % 4 === 3 ? C.rules[(i * 7) % 10] : C.hard[i % 5], geo: hx ? 'hex' : 'sq', n: hx ? C.rg[1] - 1 : C.rg[1] + 1, fill: .45, branch: .5 });
+    }
+    for (var b2 = 0; b2 < 3; b2++) for (i = 0; i < N; i++) { S.push(W[b2][i]); S.push(R[b2][i]) }
+    S.forEach(function (x, k) { x.seed = g * 1000 + k + 1; x.th = THEME[(k * 5 + g) % THEME.length]; x.lv = k < 100 ? '쉬움' : k < 200 ? '보통' : '도전' });
     return S;
   }
   var GEO = { sq: '네모', tri: '세모 칸', hex: '벌집', circ: '원형' };
@@ -1124,6 +1127,34 @@ var MZ = (function () {
 
   /* 그리기: 칸(누를 자리) + 벽/칸 테두리 + 글자 + 출발·도착 + 길 그리는 층 */
   function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] }) }
+  /* 글자 너비(글꼴 크기 1 기준) 어림: 이모지 1.2, 한글 1, 숫자·기호 0.6, 점 0.32 */
+  function emW(t) {
+    var w = 0; Array.from(String(t)).forEach(function (ch) {
+      var k = ch.codePointAt(0);
+      if (k === 0xFE0F || k === 0x200D) return;
+      w += k >= 0x1F000 || (k >= 0x2600 && k <= 0x27BF) ? 1.2 : k >= 0x1100 ? 1 : /[.,:]/.test(ch) ? .32 : /[\/ ]/.test(ch) ? .42 : /[A-Za-z]/.test(ch) ? .64 : .6;
+    });
+    return Math.max(w, .6) * 1.06;   // 굵은 글씨
+  }
+  /* 칸 다각형에서 가운데를 지나는 가로줄의 남는 너비(가운데 기준 반쪽) */
+  function room(P, cx, y) {
+    var L = -1e9, R = 1e9;
+    for (var i = 0, j = P.length - 1; i < P.length; j = i++) {
+      var a = P[i], b = P[j]; if ((a[1] > y) === (b[1] > y)) continue;
+      var x = a[0] + (b[0] - a[0]) * (y - a[1]) / (b[1] - a[1]); if (x <= cx) L = Math.max(L, x); else R = Math.min(R, x);
+    }
+    return Math.max(0, Math.min(cx - L, R - cx));
+  }
+  /* 칸 안에 들어가는 글꼴 크기: 가장 크게는 mx, 글자 높이(≈0.72em) 위아래 줄 모두에서 너비가 남도록 */
+  function fitFs(c, t, mx) {
+    var w = emW(t), fs = mx;
+    if (!c.p) return Math.min(mx, mx * 2.6 / w);
+    for (var k = 0; k < 4; k++) {
+      var h = fs * .38, half = Math.min(room(c.p, c.c[0], c.c[1] - h), room(c.p, c.c[0], c.c[1] + h));
+      fs = Math.min(mx, half * 2 * .86 / w);
+    }
+    return fs;
+  }
   function svg(m, o) {
     o = o || {}; var C = m.G.cells, cs = Math.sqrt(368 * 368 * (m.G.circ ? .78 : 1) / C.length), sw = Math.max(1.6, Math.min(5, cs / 8)), s = '';
     s += '<rect x="0" y="0" width="400" height="400" fill="#fff"/>';
@@ -1140,7 +1171,7 @@ var MZ = (function () {
       [[m.s, m.spec.th[0]], [m.g, m.spec.th[1]]].forEach(function (p) { var c = C[p[0]].c; s += '<text x="' + f(c[0]) + '" y="' + f(c[1]) + '" font-size="' + es + '" text-anchor="middle" dominant-baseline="central" pointer-events="none">' + p[1] + '</text>' });
     } else {
       C.forEach(function (c, i) {
-        var t = m.lab[i], emo = /[\u2600-\u27BF\uD83C-\uDBFF]/.test(t), L = emo ? 1.6 : String(t).length, fs = Math.min(cs * (emo ? .5 : .42), cs * 1.45 / Math.max(L, 1) * (emo ? 1 : 1.2));
+        var t = m.lab[i], emo = /[\u2600-\u27BF\uD83C-\uDBFF]/.test(t), fs = fitFs(c, t, cs * (emo ? .5 : .42));
         s += '<text x="' + f(c.c[0]) + '" y="' + f(c.c[1]) + '" font-size="' + f(fs) + '" text-anchor="middle" dominant-baseline="central" font-weight="700" fill="#2A221C" pointer-events="none">' + esc(t) + '</text>';
       });
     }
@@ -1154,7 +1185,7 @@ window.MZG=6;
 /* 미로찾기: 고르기 → 출발 칸에서 길 그리기(끌기·누르기·방향키) → 도착 · 기록은 이 기기(localStorage)에만 */
 (function () {
   var G = MZG, S = MZ.specs(G), $ = function (i) { return document.getElementById(i) };
-  var KEY = 'hj-maze-v2', st = {};
+  var KEY = 'hj-maze-v3', st = {};
   try { st = JSON.parse(localStorage.getItem(KEY) || '{}') } catch (e) { st = {} }
   st[G] = st[G] || {};
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)) } catch (e) { } }
@@ -1167,8 +1198,8 @@ window.MZG=6;
   function list() {
     var h = '', done = 0, LV = [['쉬움', '작은 벽 미로 · 쉬운 조건 미로'], ['보통', '모양·원형 미로 · 조금 큰 조건 미로'], ['도전', '큰 미로 · 헷갈리는 갈래가 있는 조건 미로']];
     for (var b = 0; b < 3; b++) {
-      h += '<h3>' + LV[b][0] + ' <small>' + (b * 30 + 1) + '~' + (b * 30 + 30) + '번 · ' + LV[b][1] + '</small></h3><div class="mz-grid">';
-      for (var i = b * 30; i < b * 30 + 30; i++) { var d = st[G][i]; if (d) done++; h += '<button type="button" class="mz-q' + (d ? ' done' : '') + '" data-q="' + i + '"><b>' + (i + 1) + '</b><span>' + MZ.title(S[i]) + (d ? ' · ' + fmt(d.t) : '') + '</span></button>' }
+      h += '<h3>' + LV[b][0] + ' <small>' + (b * 100 + 1) + '~' + (b * 100 + 100) + '번 · ' + LV[b][1] + '</small></h3><div class="mz-grid">';
+      for (var i = b * 100; i < b * 100 + 100; i++) { var d = st[G][i]; if (d) done++; h += '<button type="button" class="mz-q' + (d ? ' done' : '') + '" data-q="' + i + '"><b>' + (i + 1) + '</b><span>' + MZ.title(S[i]) + (d ? ' · ' + fmt(d.t) : '') + '</span></button>' }
       h += '</div>';
     }
     $('mzList').innerHTML = h; $('mzProg').textContent = '도착한 미로 ' + done + ' / ' + S.length;
