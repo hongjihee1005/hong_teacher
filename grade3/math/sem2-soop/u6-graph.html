@@ -187,6 +187,7 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
 .pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
 .phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+/*hj-help*/.hlpwrap{position:relative}.hlpq{display:flex;align-items:center;gap:.4em;flex-wrap:wrap}.hlpq .hlpt{flex:1;min-width:0}.hlpb{flex:none;margin-left:auto;font-family:inherit;font-size:.72em;padding:.15em .7em;border-radius:999px;border:2px solid #B4610F;background:#fff;color:#B4610F;cursor:pointer;white-space:nowrap}.hlpb[aria-expanded="true"]{background:#B4610F;color:#fff}.hlpop{display:none;position:absolute;z-index:30;left:.3em;right:.3em;background:#fff;border:3px solid #B4610F;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44);text-align:left}.hlpop.on{display:block}.hlpop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em;color:#B4610F}.hlpop ul{margin:0;padding-left:1.1em;line-height:1.5}.hlpop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.hlpop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hlpop,:root:not([data-theme="light"]) .hlpb:not([aria-expanded="true"]){background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .hlpop,:root[data-theme="dark"] .hlpb:not([aria-expanded="true"]){background:#1E2A28;color:#EEF3F1}/*/hj-help*/
 /*hj-ex*/.pane{position:relative}.pane h3 .pt{flex:1;min-width:0}.pane .exb{flex:none;font-family:inherit;font-size:.62em;padding:.15em .6em;border-radius:999px;border:2px solid currentColor;background:#fff;color:inherit;cursor:pointer;white-space:nowrap}.pane .exb[aria-expanded="true"]{color:#fff!important}.pane0 .exb[aria-expanded="true"]{background:#2B7BD6}.pane1 .exb[aria-expanded="true"]{background:#6A4FC9}.pane2 .exb[aria-expanded="true"]{background:#D9731A}.pane3 .exb[aria-expanded="true"]{background:#2F6B57}.pane .expop{display:none;position:absolute;z-index:30;left:.4em;right:.4em;background:#fff;border:3px solid;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44)}.pane .expop.on{display:block}.pane .expop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em}.pane .expop ul{margin:0;padding-left:1.1em;line-height:1.5}.pane .expop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.pane .expop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}.pane0 .expop{border-color:#2B7BD6}.pane0 .exh{color:#2B7BD6}.pane1 .expop{border-color:#6A4FC9}.pane1 .exh{color:#6A4FC9}.pane2 .expop{border-color:#D9731A}.pane2 .exh{color:#D9731A}.pane3 .expop{border-color:#2F6B57}.pane3 .exh{color:#2F6B57}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane .expop,:root:not([data-theme="light"]) .pane .exb{background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .pane .expop,:root[data-theme="dark"] .pane .exb{background:#1E2A28;color:#EEF3F1}/*/hj-ex*/
 .chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
 .chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
@@ -1414,8 +1415,27 @@ function withOptional(main, extra, opts = {}) {
 }
 
 /* 글쓰기(자기 생각) */
+/*hj-help*/ /* 글쓰기 칸 '💡 도움': help:["…","…"] → 질문 옆 단추, 누르면 입력칸 아래 팝업(쓰는 차례·넣을 것) */
+function helpPop(lines, ta) {
+  if (!lines || !lines.length) return ["", ""];
+  const pop = h("div", { class: "hlpop", role: "dialog", "aria-label": "도움" },
+    h("button", { class: "exx", type: "button", "aria-label": "닫기", onclick: () => helpClose() }, "✕"),
+    h("p", { class: "exh" }, "이렇게 써 보면 좋아요"), h("ul", {}, ...lines.map(x => h("li", {}, x))),
+    h("p", { class: "exf" }, "차례대로 생각하며 내 말로 써요."));
+  const btn = h("button", { class: "hlpb", type: "button", "aria-expanded": "false", onclick: () => {
+    const on = !pop.classList.contains("on"); helpClose(); if (!on) return;
+    pop.style.top = (ta.offsetTop + ta.offsetHeight + 6) + "px"; pop.classList.add("on"); btn.setAttribute("aria-expanded", "true");
+    pop.scrollIntoView({ block: "nearest" });
+  } }, "💡 도움");
+  return [btn, pop];
+}
+function helpClose() { document.querySelectorAll(".hlpop.on").forEach(p => { p.classList.remove("on"); const b = p.parentElement.querySelector(".hlpb"); if (b) b.setAttribute("aria-expanded", "false"); }); }
+if (!window.__helpPop) { window.__helpPop = 1;
+  document.addEventListener("click", e => { if (!e.target.closest(".hlpop,.hlpb")) helpClose(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") helpClose(); }); }
+/*/hj-help*/
 function writeStep(body, api, prompts, opts = {}) {
-  const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); body.append(h("div", { class: "jua", style: "margin-top:.6em" }, p.q), t); return t; });
+  const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); const hp = helpPop(p.help, t); /*hj-help*/ body.append(h("div", { class: "hlpwrap" }, h("div", { class: "jua hlpq", style: "margin-top:.6em" }, h("span", { class: "hlpt" }, p.q), hp[0]), t, hp[1])); return t; });
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     const vals = areas.map(t => t.value.trim());
     if (vals.some(v => v.length < (opts.min || 4))) return api.fail("모든 칸에 내 생각을 조금 더 자세히 써 봐요.", vals.join(" | "));
@@ -2423,7 +2443,7 @@ const LESSONS = [
       render: (b, a) => {
         blanks(b, a, ["그림그래프는 그림의 ", { o: ["개수만 세면", "개수와 나타내는 수를 함께 보면", "줄이 긴 쪽만 보면"], a: 1 }, " 알 수 있어요. 그림이 길어도 수가 가장 ", { o: ["큰 것은 아니에요", "커요", "작아요"], a: 0 }, "."],
           { ok: "그림 하나가 얼마를 나타내는지 함께 봐야 해요." });
-        writeStep(b, a, [{ q: "왜 그럴까요? 고른 까닭을 한 줄로 써 보세요.", ph: "~이기 때문이에요" }]);
+        writeStep(b, a, [{ q: "왜 그럴까요? 고른 까닭을 한 줄로 써 보세요.", ph: "~이기 때문이에요", help: ["① 그림이 가장 긴 학년과 가장 많이 모은 학년을 찾아요. → ② ●, ◎, ○가 몇 개인지 봐요.", "‘그림의 개수가 많아도 ~이기 때문이에요.’ 꼴로 이어 써요."] }]);
       } },
     { name: "다른 그래프 읽기", inst: "우리 학년 반별로 빌린 책 수예요. 읽고 계산해 보세요.", render: (b, a) => simPictoRead(b, a, {
       title: "반별 빌린 책 수", vlabel: "책 수", vunit: "권",
@@ -2431,9 +2451,9 @@ const LESSONS = [
       qs: [{ q: "2반은 몇 권?", a: 25, unit: "권" }, { q: "3반은 몇 권?", a: 18, unit: "권" }, { q: "네 반은 모두 몇 권?", a: 88, unit: "권" }],
       tip: "큰 그림은 10권, 작은 그림은 1권이에요." }) },
     { name: "문제 만들기", inst: "그래프를 보고 문제를 만들어 짝과 바꾸어 풀어 보세요.", render: (b, a) => writeStep(b, a, [
-      { q: "이 그래프를 보고 알 수 있는 사실을 두 가지 써 보세요.", tag: "알 수 있는 사실" },
-      { q: "그 사실로 문제를 하나 만들어 보세요. (예: 2반과 3반의 차이는?)", tag: "내가 만든 문제" },
-      { q: "짝이 낸 문제와 그 답을 써 보세요.", tag: "짝의 문제와 답" }]) }
+      { q: "이 그래프를 보고 알 수 있는 사실을 두 가지 써 보세요.", tag: "알 수 있는 사실", help: ["① 큰 그림과 작은 그림이 몇 권인지 확인해요. → ② 가장 많은 반, 적은 반을 찾아요.", "‘~반은 ~권으로 가장 ~요.’처럼 반 이름과 수를 넣어 두 가지 써요."] },
+      { q: "그 사실로 문제를 하나 만들어 보세요. (예: 2반과 3반의 차이는?)", tag: "내가 만든 문제", help: ["① 내가 쓴 사실 하나를 골라요. → ② 합, 차이, 가장 많은 것 중 무엇을 물을지 정해요.", "‘~반과 ~반은 모두(차이가) 몇 권일까요?’ 꼴로 써요."] },
+      { q: "짝이 낸 문제와 그 답을 써 보세요.", tag: "짝의 문제와 답", help: ["① 짝의 문제를 그대로 옮겨 써요. → ② 그래프에서 수를 읽어 식을 세워 풀어요.", "‘문제: ~ / 식: ~ / 답: ~권’ 차례로 써요."] }]) }
   ],
   challenge: { inst: "빠진 수를 찾아보세요.", render: (b, a) => numbers(b, a, [
     { q: "1반 21권, 2반 25권, 3반 18권이고 네 반 합계가 88권이면 4반은? ", a: 24, unit: "권", why: { "64": "세 반의 합을 썼어요. 합계 88에서 그 합을 빼요.", "88": "합계를 그대로 썼어요. 88에서 21 + 25 + 18을 빼 봐요." } },
@@ -2493,8 +2513,8 @@ const LESSONS = [
       rows: [{ name: "보드게임", v: 9 }, { name: "영화 보기", v: 7 }, { name: "체육 대회", v: 4 }, { name: "요리하기", v: 3 }],
       tip: "우리 반 조사라서 수가 작아요. 작은 그림만으로 나타내도 괜찮아요." }) },
     { name: "발표하기", inst: "발표할 말을 써 보세요.", render: (b, a) => writeStep(b, a, [
-      { q: "무엇을 조사했고, 어떤 결과가 나왔나요?", tag: "조사 결과" },
-      { q: "그림그래프로 나타내니 무엇이 좋았나요?", tag: "좋은 점" }]) }
+      { q: "무엇을 조사했고, 어떤 결과가 나왔나요?", tag: "조사 결과", help: ["① 무엇을 조사했는지 → ② 표에서 가장 많은 항목과 적은 항목을 찾아요.", "‘우리 반은 ~을 조사했고, ~이 ~명으로 가장 많았어요.’ 꼴로 써요."] },
+      { q: "그림그래프로 나타내니 무엇이 좋았나요?", tag: "좋은 점", help: ["표로 볼 때와 그림그래프로 볼 때 무엇이 다르게 보였는지 떠올려요.", "‘그림그래프로 나타내니 ~을 한눈에 ~할 수 있어서 좋았어요.’ 꼴로 써요."] }]) }
   ],
   challenge: { inst: "조사 결과를 더 깊이 읽어 보세요.", render: (b, a) => numbers(b, a, [
     { q: "보드게임 9명, 영화 7명, 체육 대회 4명, 요리 3명이면 조사한 학생은 모두 몇 명? ", a: 23, unit: "명", why: { "20": "한 항목을 빠뜨렸어요. 네 수를 모두 더해요.", "9": "가장 큰 수를 썼어요. 합계는 모두 더한 수예요." } },
@@ -2549,8 +2569,8 @@ const LESSONS = [
       { ok: "그래프의 수로 합계와 차이를 구했어요." }) },
     { name: "규칙 찾기", inst: "그래프를 잘 읽는 방법을 정리해요.", render: (b, a) => blanks(b, a, ["그래프를 읽을 때는 먼저 ", { o: ["그림이 나타내는 수", "그림의 색"], a: 0 }, "를 보고, 그다음 ", { o: ["그림의 개수", "표의 제목"], a: 0 }, "를 세요."]) },
     { name: "발표하기", inst: "내가 만든 문제를 써 보세요.", render: (b, a) => writeStep(b, a, [
-      { q: "그림그래프로 만든 나의 문제를 써 보세요.", tag: "문제" },
-      { q: "그 문제의 답과 푸는 방법을 써 보세요.", tag: "답" }]) }
+      { q: "그림그래프로 만든 나의 문제를 써 보세요.", tag: "문제", help: ["① 칭찬 스티커 그래프에서 모둠을 골라요. → ② 합, 차이, 가장 많은 것 중 물을 것을 정해요.", "‘~모둠과 ~모둠의 스티커는 모두(차이가) 몇 장일까요?’ 꼴로 써요."] },
+      { q: "그 문제의 답과 푸는 방법을 써 보세요.", tag: "답", help: ["① 그림이 나타내는 수를 보고 모둠의 수를 읽어요. → ② 더할지 뺄지 정해 식을 써요.", "‘~모둠은 ~장, ~모둠은 ~장이니 식은 ~, 답은 ~장이에요.’ 꼴로 써요."] }]) }
   ],
   challenge: { inst: "그래프에서 빠진 수를 찾아보세요.", render: (b, a) => numbers(b, a, [
     { q: "1모둠 24장, 2모둠 32장, 3모둠 18장이고 네 모둠 합계가 100장이면 4모둠은? ", a: 26, unit: "장", why: { "74": "세 모둠의 합을 썼어요. 합계 100에서 그 합을 빼요." } },

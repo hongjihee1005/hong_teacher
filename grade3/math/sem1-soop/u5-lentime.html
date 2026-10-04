@@ -191,6 +191,7 @@ td.c-full{background:#DFF2E6} td.c-part{background:#FFF4D1} td.c-none{color:#aaa
 .pane2{border-color:#D9731A}.pane2 h3{color:#D9731A}
 .pane3{border-color:#2F6B57}.pane3 h3{color:#2F6B57}
 .phint{margin:.1em 0 .3em;font-size:.88em;color:var(--muted)}
+/*hj-help*/.hlpwrap{position:relative}.hlpq{display:flex;align-items:center;gap:.4em;flex-wrap:wrap}.hlpq .hlpt{flex:1;min-width:0}.hlpb{flex:none;margin-left:auto;font-family:inherit;font-size:.72em;padding:.15em .7em;border-radius:999px;border:2px solid #B4610F;background:#fff;color:#B4610F;cursor:pointer;white-space:nowrap}.hlpb[aria-expanded="true"]{background:#B4610F;color:#fff}.hlpop{display:none;position:absolute;z-index:30;left:.3em;right:.3em;background:#fff;border:3px solid #B4610F;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44);text-align:left}.hlpop.on{display:block}.hlpop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em;color:#B4610F}.hlpop ul{margin:0;padding-left:1.1em;line-height:1.5}.hlpop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.hlpop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hlpop,:root:not([data-theme="light"]) .hlpb:not([aria-expanded="true"]){background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .hlpop,:root[data-theme="dark"] .hlpb:not([aria-expanded="true"]){background:#1E2A28;color:#EEF3F1}/*/hj-help*/
 /*hj-ex*/.pane{position:relative}.pane h3 .pt{flex:1;min-width:0}.pane .exb{flex:none;font-family:inherit;font-size:.62em;padding:.15em .6em;border-radius:999px;border:2px solid currentColor;background:#fff;color:inherit;cursor:pointer;white-space:nowrap}.pane .exb[aria-expanded="true"]{color:#fff!important}.pane0 .exb[aria-expanded="true"]{background:#2B7BD6}.pane1 .exb[aria-expanded="true"]{background:#6A4FC9}.pane2 .exb[aria-expanded="true"]{background:#D9731A}.pane3 .exb[aria-expanded="true"]{background:#2F6B57}.pane .expop{display:none;position:absolute;z-index:30;left:.4em;right:.4em;background:#fff;border:3px solid;border-radius:.7em;padding:.5em 2em .5em .8em;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all;color:var(--ink,#1F2A44)}.pane .expop.on{display:block}.pane .expop .exh{margin:0 0 .15em;font-family:"Jua";font-size:.95em}.pane .expop ul{margin:0;padding-left:1.1em;line-height:1.5}.pane .expop .exf{margin:.15em 0 0;font-size:.8em;color:var(--muted,#667)}.pane .expop .exx{position:absolute;top:.2em;right:.3em;border:0;background:transparent;font-size:1.1em;cursor:pointer;color:var(--muted,#667)}.pane0 .expop{border-color:#2B7BD6}.pane0 .exh{color:#2B7BD6}.pane1 .expop{border-color:#6A4FC9}.pane1 .exh{color:#6A4FC9}.pane2 .expop{border-color:#D9731A}.pane2 .exh{color:#D9731A}.pane3 .expop{border-color:#2F6B57}.pane3 .exh{color:#2F6B57}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pane .expop,:root:not([data-theme="light"]) .pane .exb{background:#1E2A28;color:#EEF3F1}}:root[data-theme="dark"] .pane .expop,:root[data-theme="dark"] .pane .exb{background:#1E2A28;color:#EEF3F1}/*/hj-ex*/
 .chips{display:flex;flex-wrap:wrap;gap:.35em;margin-bottom:.4em;flex:1;align-content:flex-start}
 .chip{background:var(--pine-soft,#DDEDE5);border:2px solid var(--line);border-radius:.5em;padding:.15em .6em;
@@ -1384,8 +1385,27 @@ function blanks(body, api, parts, opts = {}) {
   body.append(sent);
 }
 /* 글쓰기(자기 생각) */
+/*hj-help*/ /* 글쓰기 칸 '💡 도움': help:["…","…"] → 질문 옆 단추, 누르면 입력칸 아래 팝업(쓰는 차례·넣을 것) */
+function helpPop(lines, ta) {
+  if (!lines || !lines.length) return ["", ""];
+  const pop = h("div", { class: "hlpop", role: "dialog", "aria-label": "도움" },
+    h("button", { class: "exx", type: "button", "aria-label": "닫기", onclick: () => helpClose() }, "✕"),
+    h("p", { class: "exh" }, "이렇게 써 보면 좋아요"), h("ul", {}, ...lines.map(x => h("li", {}, x))),
+    h("p", { class: "exf" }, "차례대로 생각하며 내 말로 써요."));
+  const btn = h("button", { class: "hlpb", type: "button", "aria-expanded": "false", onclick: () => {
+    const on = !pop.classList.contains("on"); helpClose(); if (!on) return;
+    pop.style.top = (ta.offsetTop + ta.offsetHeight + 6) + "px"; pop.classList.add("on"); btn.setAttribute("aria-expanded", "true");
+    pop.scrollIntoView({ block: "nearest" });
+  } }, "💡 도움");
+  return [btn, pop];
+}
+function helpClose() { document.querySelectorAll(".hlpop.on").forEach(p => { p.classList.remove("on"); const b = p.parentElement.querySelector(".hlpb"); if (b) b.setAttribute("aria-expanded", "false"); }); }
+if (!window.__helpPop) { window.__helpPop = 1;
+  document.addEventListener("click", e => { if (!e.target.closest(".hlpop,.hlpb")) helpClose(); });
+  document.addEventListener("keydown", e => { if (e.key === "Escape") helpClose(); }); }
+/*/hj-help*/
 function writeStep(body, api, prompts, opts = {}) {
-  const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); body.append(h("div", { class: "jua", style: "margin-top:.6em" }, p.q), t); return t; });
+  const areas = prompts.map(p => { const t = h("textarea", { placeholder: p.ph || "여기에 써요" }); const hp = helpPop(p.help, t); /*hj-help*/ body.append(h("div", { class: "hlpwrap" }, h("div", { class: "jua hlpq", style: "margin-top:.6em" }, h("span", { class: "hlpt" }, p.q), hp[0]), t, hp[1])); return t; });
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     const vals = areas.map(t => t.value.trim());
     if (vals.some(v => v.length < (opts.min || 4))) return api.fail("모든 칸에 내 생각을 조금 더 자세히 써 봐요.", vals.join(" | "));
@@ -1505,14 +1525,14 @@ function predictCheck(body, api, opts) {
     ".inqmemo ul{margin:.3em 0 0 1.1em;padding:0}.inqmemo li{margin:.15em 0}";
   document.head.appendChild(st);
 })();
-function inqWrite(q, ph, btnText, onOk, api) {
+function inqWrite(q, ph, btnText, onOk, api, help) { /*hj-help*/
   const t = h("textarea", { placeholder: ph || "왜냐하면 ~" });
   const btn = h("button", { class: "big", onclick: () => {
     const v = t.value.trim();
     if (v.length < 4) { api.hint("내 생각을 조금 더 써 봐요. (4글자 이상)"); t.focus(); return; }
     onOk(v, btn, t);
   } }, btnText || "다 썼어요");
-  return h("div", { class: "inqbox" }, h("div", { class: "jua" }, q), t, h("div", { class: "inqrow" }, btn));
+  const hp = helpPop(help, t); /*hj-help*/ return h("div", { class: "inqbox hlpwrap" }, h("div", { class: "jua hlpq" }, h("span", { class: "hlpt" }, q), hp[0]), t, hp[1], h("div", { class: "inqrow" }, btn));
 }
 function thenWhy(main, why) {
   return (body, api) => {
@@ -1525,7 +1545,7 @@ function thenWhy(main, why) {
       slot.append(inqWrite("💬 " + (why.q || "왜 그럴까요? 한 줄로 써 봐요."), why.ph, "다 썼어요", (v, btn, t) => {
         btn.disabled = true; t.readOnly = true;
         api.done(first + " | 왜: " + v, firstMsg || "까닭까지 말했어요!");
-      }, api));
+      }, api, why.help /*hj-help*/));
     } });
     main(body, wrapped);
     body.append(slot);
@@ -1560,7 +1580,7 @@ function ruleFirst(main, opts) {
       btn.textContent = "예상 고치기";
       api.hint("예상을 적었어요. 이제 직접 해 보며 확인해요.");
       show();
-    }, api);
+    }, api, opts.help /*hj-help*/);
     if (p && p.rule) { box.querySelector("textarea").value = p.rule; box.querySelector("button").textContent = "예상 고치기"; }
     body.append(box, inner, slot);
     if (p && p.rule) show();
@@ -2657,7 +2677,7 @@ const LESSONS = [
         { q: "1 m =", parts: [{ a: 100, u: "cm" }] },
         { q: "1 m 30 cm =", parts: [{ a: 130, u: "cm" }], why: { "31": "1 m는 1 cm가 아니라 100 cm예요. 100 cm와 30 cm를 더해요." } },
         { q: "250 cm =", parts: [{ a: 2, u: "m" }, { a: 50, u: "cm" }] },
-        { q: "1시간 =", parts: [{ a: 60, u: "분" }] }], { ok: "길이와 시간의 단위를 잘 기억하고 있어요." }), { q: "1 m 30 cm는 왜 130 cm일까요?", ph: "왜냐하면 ~" }) },
+        { q: "1시간 =", parts: [{ a: 60, u: "분" }] }], { ok: "길이와 시간의 단위를 잘 기억하고 있어요." }), { q: "1 m 30 cm는 왜 130 cm일까요?", ph: "왜냐하면 ~", help: ["① 1 m가 몇 cm인지 먼저 떠올려요. → ② 거기에 30 cm를 더해 봐요.", "‘왜냐하면 1 m는 ~ cm이고, 거기에 ~ cm를 더하기 때문이에요.’ 꼴로 써요."] }) },
     { name: "무엇을 배울까요", inst: "탐험대가 알아야 할 것을 골라 보세요.", hints: ["개미는 1 cm보다 짧아요.", "수목원 산책길은 아주 길어요.", "보물찾기는 1분도 안 걸릴 때가 있어요."],
       render: (b, a) => quiz(b, a, [
         { q: "풀밭의 개미처럼 1 cm보다 짧은 길이를 정확하게 나타내려면?", o: ["cm보다 더 작은 단위가 필요해요", "m로 나타내면 돼요"], a: 0 },
@@ -2689,7 +2709,7 @@ const LESSONS = [
         ask: [{ q: "솔방울은 6 cm보다 몇 mm 더 긴가요?", parts: [{ a: 4, u: "mm" }] },
           { q: "솔방울의 길이 =", parts: [{ a: 6, u: "cm" }, { a: 4, u: "mm" }] }], ok: "솔방울의 길이는 6 cm 4 mm예요." }) },
     { inst: "mm에 대해 말해 보세요.", hints: ["자의 0과 1 사이 작은 눈금은 10칸이에요.", "6 cm는 10 mm가 6번이에요."],
-      render: thenWhy((b, a) => blanks(b, a, ["1 cm를 ", { o: ["100칸", "10칸", "5칸"], a: 1 }, "으로 똑같이 나누었을 때 작은 눈금 한 칸의 길이를 ", { o: ["1 cm", "1 m", "1 mm"], a: 2 }, "라고 해요. 6 cm는 ", { o: ["6 mm", "60 mm", "600 mm"], a: 1 }, "와 같으므로 6 cm 4 mm는 ", { o: ["10 mm", "64 mm", "604 mm"], a: 1 }, "예요."]), { q: "6 cm 4 mm는 왜 64 mm일까요?", ph: "왜냐하면 ~" }) },
+      render: thenWhy((b, a) => blanks(b, a, ["1 cm를 ", { o: ["100칸", "10칸", "5칸"], a: 1 }, "으로 똑같이 나누었을 때 작은 눈금 한 칸의 길이를 ", { o: ["1 cm", "1 m", "1 mm"], a: 2 }, "라고 해요. 6 cm는 ", { o: ["6 mm", "60 mm", "600 mm"], a: 1 }, "와 같으므로 6 cm 4 mm는 ", { o: ["10 mm", "64 mm", "604 mm"], a: 1 }, "예요."]), { q: "6 cm 4 mm는 왜 64 mm일까요?", ph: "왜냐하면 ~", help: ["① 1 cm가 몇 mm인지 떠올려요. → ② 6 cm가 몇 mm인지 구한 뒤 4 mm를 더해요.", "‘왜냐하면 6 cm는 ~ mm이고, ~ mm를 더하면 되기 때문이에요.’ 꼴로 써요."] }) },
     { inst: "약속을 확인해요. 바르게 쓰고 읽은 것을 골라 보세요.", hints: ["mm는 ‘밀리미터’라고 읽어요.", "3 cm는 30 mm예요."],
       render: (b, a) => quiz(b, a, [
         { q: "3 cm 8 mm를 바르게 읽은 것은?", o: ["3 센티미터 8 밀리미터", "3 센티미터 8 미터", "3 밀리미터 8 센티미터"], a: 0 },
@@ -2765,7 +2785,7 @@ const LESSONS = [
         { thing: "하린이의 키", num: 128, o: ["mm", "cm", "m"], a: 1, why: { "2": "128 m는 아주 높은 건물만큼 높아요." } },
         { thing: "수목원 소나무의 높이", num: 8, o: ["cm", "m", "km"], a: 1 }], ok: "길이에 알맞은 단위를 잘 골랐어요." }) },
     { inst: "어림한 방법을 말해 보세요.", hints: ["한 뼘이 가방 긴 쪽에 3번 들어갔어요."],
-      render: thenWhy((b, a) => blanks(b, a, ["잘 아는 길이(한 뼘)를 떠올리고, 그 길이가 전체에 ", { o: ["몇 cm", "몇 번", "몇 m"], a: 1 }, " 들어가는지 세어 어림했어요. 어림한 길이는 ", { o: ["딱 36 cm", "약 36 cm", "약 36 m"], a: 1 }, "처럼 ‘약’을 붙여 말해요."]), { q: "어림한 길이에는 왜 ‘약’을 붙일까요?", ph: "왜냐하면 ~" }) },
+      render: thenWhy((b, a) => blanks(b, a, ["잘 아는 길이(한 뼘)를 떠올리고, 그 길이가 전체에 ", { o: ["몇 cm", "몇 번", "몇 m"], a: 1 }, " 들어가는지 세어 어림했어요. 어림한 길이는 ", { o: ["딱 36 cm", "약 36 cm", "약 36 m"], a: 1 }, "처럼 ‘약’을 붙여 말해요."]), { q: "어림한 길이에는 왜 ‘약’을 붙일까요?", ph: "왜냐하면 ~", help: ["① 한 뼘이 가방에 딱 맞게 들어갔는지 떠올려요. → ② 자로 잰 길이와 견주어요.", "‘왜냐하면 어림한 길이는 실제 길이와 ~ 다를 수 있기 때문이에요.’ 꼴로 써요."] }) },
     { name: "거리 어림하기", inst: "입구에서 연못까지는 약 500 m예요. 안내도에서 입구를 출발해 여러 곳을 눌러 보고, 500 m 눈금으로 거리를 어림해 보세요. 다른 곳을 보려면 ‘처음부터’를 눌러요.", hints: ["장소를 누르면 길 위에 500 m마다 눈금이 생겨요.", "온실까지는 500 m 눈금이 몇 번 들어가나요?"],
       render: (b, a) => u5Route(b, a, { unit: "m", mode: "view", start: "gate", H: 440, unitBar: { px: 130, label: "약 500 m" },
         nodes: [{ id: "gate", name: "입구", x: 150, y: 220 }, { id: "pond", name: "연못", x: 280, y: 220 },
@@ -2878,8 +2898,8 @@ const LESSONS = [
     hints: ["10시 50분은 시작한 시각, 11시 35분은 끝난 시각이에요.", "예) 10시 50분에 산책을 시작해 11시 35분에 끝났어요. 몇 분 걸렸을까요?"],
     render: withOptional(
       (b, a) => writeStep(b, a, [
-        { q: "11시 35분 − 10시 50분 = 45분이 되는 이야기 문제", tag: "이야기", ph: "예) 소풍에서 ~을 10시 50분에 …" },
-        { q: "내 이야기에서 45분은 무엇을 나타내나요?", tag: "답의 뜻" }],
+        { q: "11시 35분 − 10시 50분 = 45분이 되는 이야기 문제", tag: "이야기", ph: "예) 소풍에서 ~을 10시 50분에 …", help: ["① 소풍에서 10시 50분에 시작한 일을 정해요. → ② 11시 35분에 끝났다고 정해요.", "‘~을 10시 50분에 시작해 11시 35분에 마쳤어요. 걸린 시간은?’ 꼴로 써요."] },
+        { q: "내 이야기에서 45분은 무엇을 나타내나요?", tag: "답의 뜻", help: ["① 내 이야기에서 시작한 시각과 끝난 시각을 찾아요. → ② 그 사이가 무엇인지 생각해요.", "‘45분은 ~하는 데 걸린 시간이에요.’ 꼴로 써요."] }],
         { ok: "이야기 문제를 만들었어요! 짝과 바꾸어 풀어 봐요." }),
       (b, a) => u5Ask(b, a, [
     { q: "2시간 15분 20초 − 50분 35초 =", parts: [{ a: 1, u: "시간" }, { a: 24, u: "분" }, { a: 45, u: "초" }], why: { "2,35,15": "작은 수에서 큰 수를 거꾸로 빼면 안 돼요. 1분을 60초로, 1시간을 60분으로 바꾸어 계산해요." } },
@@ -2935,8 +2955,8 @@ const LESSONS = [
       render: (b, a) => blanks(b, a, ["점 2개를 고를 때는 선분 위에 다른 점이 ", { o: ["없도록", "있도록"], a: 0 }, " 골라요. 선분은 ", { o: ["눈금 없는 자", "눈금 있는 자"], a: 0 }, "로 긋고, 어림한 길이를 말할 때는 ", { o: ["‘약’", "‘딱’"], a: 0 }, "을 붙여요."]) },
     { name: "발표하기", inst: "놀이를 돌아보며 발표해 보세요.", hints: ["어떤 길이를 기준으로 삼았는지 떠올려요."],
       render: (b, a) => writeStep(b, a, [
-        { q: "나는 어떻게 어림했나요?", tag: "방법" },
-        { q: "어림을 더 잘하려면 어떻게 하면 좋을까요?", tag: "더 잘하려면" }]) }
+        { q: "나는 어떻게 어림했나요?", tag: "방법", help: ["① ‘화면 속 1 cm’처럼 기준으로 삼은 길이를 떠올려요. → ② 몇 번 들어가는지 세었나 봐요.", "‘나는 ~을 기준으로 삼아 선분에 ~번쯤 들어간다고 생각했어요.’ 꼴로 써요."] },
+        { q: "어림을 더 잘하려면 어떻게 하면 좋을까요?", tag: "더 잘하려면", help: ["① 어림과 잰 길이가 많이 달랐던 때를 떠올려요. → ② 그때 무엇을 놓쳤는지 생각해요.", "‘어림을 더 잘하려면 ~을 기준으로 삼고 ~하면 좋겠어요.’ 꼴로 써요."] }]) }
   ],
   challenge: { inst: "또 다른 놀이: 시간 어림왕. 목표 시간이 되었다고 생각하면 버튼을 눌러요. 목표와 2초 안으로 차이 나면 10점!", render: (b, a) => u5Stopwatch(b, a, { targets: [15, 30, 45], tol: 2, ok: "시간 어림 놀이를 끝까지 했어요!" }) }
 },
