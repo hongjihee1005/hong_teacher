@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""학년 공통 › 한자 급수(한국어문회) 급수 페이지 만들기 (2026-10-04)
+"""공통 › 한자 급수(한국어문회) 급수 페이지 만들기 (2026-10-04)
 
     python3 _build/hanja/build.py      # common/hanja/lv8.html … lv1.html (13개 급). 먼저 gen.py check로 점검합니다.
 
@@ -15,6 +15,7 @@ sys.path.insert(0, str(HERE))
 import gen
 
 ACC = '#B23A3A'
+STROKES = json.loads((HERE / 'data' / 'strokes.json').read_text(encoding='utf-8'))   # 획순(strokes.py가 만듦)
 def fname(lid): return 'lv' + lid + '.html'
 
 def intro(d):
@@ -25,6 +26,7 @@ def intro(d):
 
 def build(i):
     d = gen.level(i); rd = lambda p: p.read_text(encoding='utf-8')
+    for x in d['learn']: x.append(STROKES.get(x[0], 0))
     data = json.dumps(d, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
     rep = {'{NAME}': d['name'], '{INTRO}': intro(d), '{CSS}': rd(HERE / 'page.css').replace('{ACC}', ACC),
            '{HEADSNIP}': rd(OG / 'head_snip.html'), '{FOOT}': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '한국어문회 한자능력검정시험 급수별 배정한자로 만든 연습 자료입니다.'),
