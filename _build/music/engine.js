@@ -157,10 +157,10 @@ var MU = (function () {
   var AC = null, master = null, playing = [];
   function ctx() { if (!AC) { var C = window.AudioContext || window.webkitAudioContext; if (!C) return null; AC = new C(); master = AC.createGain(); master.gain.value = .8; master.connect(AC.destination); } if (AC.state === 'suspended') AC.resume(); return AC }
   function hz(m) { return 440 * Math.pow(2, (m - 69) / 12) }
-  function tone(m, t, dur, vol) {
+  function tone(m, t, dur, vol, wave) {
     var a = ctx(); if (!a) return;
     var g = a.createGain(), o1 = a.createOscillator(), o2 = a.createOscillator(), g2 = a.createGain();
-    o1.type = 'triangle'; o2.type = 'sine'; o1.frequency.value = hz(m); o2.frequency.value = hz(m) * 2; g2.gain.value = .25;
+    o1.type = wave || 'triangle'; o2.type = 'sine'; o1.frequency.value = hz(m); o2.frequency.value = hz(m) * 2; g2.gain.value = .25;
     o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(master);
     var v = .32 * (vol == null ? 1 : vol), end = t + Math.max(.12, dur);
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .012); g.gain.exponentialRampToValueAtTime(v * .35, t + Math.min(.5, dur * .6)); g.gain.exponentialRampToValueAtTime(.0005, end + .25);
@@ -193,13 +193,13 @@ var MU = (function () {
   function click(t, strong) { var a = ctx(); if (!a) return; drum(t, strong ? 1500 : 1000, strong ? 1200 : 800, .05, strong ? .5 : .3) }
   function stop() { playing.forEach(function (o) { try { o.stop() } catch (e) { } }); playing = []; clearTimers() }
   var timers = [];
-  function clearTimers() { timers.forEach(clearTimeout); timers = []; document.querySelectorAll('.mu-staff .nt.on').forEach(function (e) { e.classList.remove('on') }) }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; document.querySelectorAll('.mu-staff .nt.on, .mu-staff .nt.on2').forEach(function (e) { e.classList.remove('on', 'on2') }) }
   function later(fn, ms) { timers.push(setTimeout(fn, ms)) }
   /* 악보 문자열 연주. o: {n, key, bpm, vol, el(악보 svg, 지금 음 표시), done} */
   function play(o) {
-    stop(); var a = ctx(); if (!a) return;
-    var T = tokens(o.n || '').filter(function (t) { return t.k === 'note' || t.k === 'rest' }), bpm = o.bpm || 96, beat = 60 / bpm, t0 = a.currentTime + .08, t = t0, i = 0;
-    var vol = o.vol, svg = o.el;
+    if (!o.keep) stop(); var a = ctx(); if (!a) return;
+    var T = tokens(o.n || '').filter(function (t) { return t.k === 'note' || t.k === 'rest' }), bpm = o.bpm || 96, beat = 60 / bpm, t0 = o.start || a.currentTime + .08, t = t0, i = 0;
+    var vol = o.vol, svg = o.el, cls = o.cls || 'on';
     if (typeof vol === 'string') { var va = vol.split('-').map(Number); vol = function (k, n) { return va[0] + (va[1] - va[0]) * k / Math.max(1, n - 1) } }
     T.forEach(function (tk, k) {
       if (o.bpmTo) beat = 60 / (bpm + (o.bpmTo - bpm) * k / Math.max(1, T.length - 1));
@@ -208,14 +208,22 @@ var MU = (function () {
         var hold = dur; for (var j = k; T[j] && T[j].tie && T[j + 1]; j++) hold += T[j + 1].beats * beat;
         var prevTie = k > 0 && T[k - 1].tie;
         var vv = (typeof vol === 'function' ? vol(k, T.length) : vol == null ? 1 : vol) * (tk.accent ? 1.7 : 1);
-        if (!prevTie) tk.ps.forEach(function (p) { tone(midi(p, o.key), t, hold * (tk.stac ? .3 : tk.ten ? 1 : .92) * (tk.ferm ? 1.6 : 1), vv) });
+        if (!prevTie) tk.ps.forEach(function (p) { tone(midi(p, o.key), t, hold * (tk.stac ? .3 : tk.ten ? 1 : .92) * (tk.ferm ? 1.6 : 1), vv, o.wave) });
       }
-      if (svg) (function (kk, tt) { later(function () { svg.querySelectorAll('.nt.on').forEach(function (e) { e.classList.remove('on') }); var e = svg.querySelector('.nt[data-i="' + kk + '"]'); if (e) e.classList.add('on') }, (tt - a.currentTime) * 1000) })(k, t);
+      if (svg) (function (kk, tt) { later(function () { svg.querySelectorAll('.nt.' + cls).forEach(function (e) { e.classList.remove(cls) }); var e = svg.querySelector('.nt[data-i="' + kk + '"]'); if (e) e.classList.add(cls) }, (tt - a.currentTime) * 1000) })(k, t);
       t += dur * (tk.ferm ? 1.6 : 1);
     });
-    later(function () { if (svg) svg.querySelectorAll('.nt.on').forEach(function (e) { e.classList.remove('on') }); if (o.done) o.done() }, (t - a.currentTime) * 1000 + 100);
+    later(function () { if (svg) svg.querySelectorAll('.nt.' + cls).forEach(function (e) { e.classList.remove(cls) }); if (o.done) o.done() }, (t - a.currentTime) * 1000 + 100);
     return t - t0;
   }
+  /* 돌림노래: mode 1 = 처음 모둠만, 2 = 두 번째 모둠만(들어가기 전 박을 똑딱으로), 'all' = 함께. o: {n, key, bpm, delay(박), beats(한 마디 박 수), el} */
+  function round(o, mode) {
+    stop(); var a = ctx(); if (!a) return;
+    var beat = 60 / (o.bpm || 100), st = a.currentTime + .12, d = (o.delay || 8) * beat, per = o.beats || 4;
+    if (mode === 1 || mode === 'all') play({ n: o.n, key: o.key, bpm: o.bpm, el: o.el, keep: true, start: st, cls: 'on' });
+    if (mode === 2) for (var k = 0; k < (o.delay || 8); k++) click(st + k * beat, k % per === 0);
+    if (mode === 2 || mode === 'all') play({ n: o.n, key: o.key, bpm: o.bpm, el: o.el, keep: true, start: st + d, cls: 'on2', wave: mode === 'all' ? 'sine' : null, vol: mode === 'all' ? .85 : 1 });
+  }
   function playMidi(m, dur) { var a = ctx(); if (a) tone(m, a.currentTime + .02, dur || .6) }
-  return { staff: staff, play: play, stop: stop, playMidi: playMidi, janggu: janggu, click: click, ctx: ctx, tokens: tokens, parsePitch: parsePitch, midi: midi, gyeName: gyeName, eumName: eumName, GYE: GYE, EUM: EUM, EN: EN, esc: esc, later: later };
+  return { staff: staff, play: play, round: round, stop: stop, playMidi: playMidi, janggu: janggu, click: click, ctx: ctx, tokens: tokens, parsePitch: parsePitch, midi: midi, gyeName: gyeName, eumName: eumName, GYE: GYE, EUM: EUM, EN: EN, esc: esc, later: later };
 })();

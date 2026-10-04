@@ -154,6 +154,9 @@ body.sl-on{overflow:hidden}
 .mu-staff .mk.it{font-style:italic}
 .mu-staff .nt.on .hd{fill:#E0663A;stroke:#E0663A}
 .mu-staff .nt.on path,.mu-staff .nt.on line{fill:#E0663A;stroke:#E0663A}
+.mu-staff .nt.on2 .hd{fill:#2F74E0;stroke:#2F74E0}
+.mu-staff .nt.on2 path,.mu-staff .nt.on2 line{fill:#2F74E0;stroke:#2F74E0}
+.mu-staff .nt.on.on2 .hd{fill:#8A4FD0;stroke:#8A4FD0}
 /* 정간보 */
 .jgb{display:flex;flex-direction:row;gap:0;margin:8px 0;width:max-content;border:2px solid #6B5D52;background:#fff;color:#2A221C}
 .jcol{display:flex;flex-direction:column;border-left:1.5px solid #6B5D52}
@@ -167,6 +170,8 @@ body.sl-on{overflow:hidden}
 .orch .o4{width:96%;background:#F6D6CF}.orch .o3{width:84%;background:#F6E7B8}.orch .o2{width:70%;background:#D3EBDD}.orch .o1{width:56%;background:#EAD9C4}
 .orch .o0{width:auto;border-radius:999px;background:#E6DDF5}
 .jc.long{font-size:clamp(10px,1.2vw,14px);letter-spacing:-.04em;white-space:nowrap}
+.rlg{display:flex;flex-wrap:wrap;gap:12px;font-size:15px;font-weight:700;margin:4px 0}.rlg i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.mu-b.r1{border-color:#E0663A}.mu-b.r2{border-color:#2F74E0}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1028,10 +1033,10 @@ var MU = (function () {
   var AC = null, master = null, playing = [];
   function ctx() { if (!AC) { var C = window.AudioContext || window.webkitAudioContext; if (!C) return null; AC = new C(); master = AC.createGain(); master.gain.value = .8; master.connect(AC.destination); } if (AC.state === 'suspended') AC.resume(); return AC }
   function hz(m) { return 440 * Math.pow(2, (m - 69) / 12) }
-  function tone(m, t, dur, vol) {
+  function tone(m, t, dur, vol, wave) {
     var a = ctx(); if (!a) return;
     var g = a.createGain(), o1 = a.createOscillator(), o2 = a.createOscillator(), g2 = a.createGain();
-    o1.type = 'triangle'; o2.type = 'sine'; o1.frequency.value = hz(m); o2.frequency.value = hz(m) * 2; g2.gain.value = .25;
+    o1.type = wave || 'triangle'; o2.type = 'sine'; o1.frequency.value = hz(m); o2.frequency.value = hz(m) * 2; g2.gain.value = .25;
     o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(master);
     var v = .32 * (vol == null ? 1 : vol), end = t + Math.max(.12, dur);
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .012); g.gain.exponentialRampToValueAtTime(v * .35, t + Math.min(.5, dur * .6)); g.gain.exponentialRampToValueAtTime(.0005, end + .25);
@@ -1064,13 +1069,13 @@ var MU = (function () {
   function click(t, strong) { var a = ctx(); if (!a) return; drum(t, strong ? 1500 : 1000, strong ? 1200 : 800, .05, strong ? .5 : .3) }
   function stop() { playing.forEach(function (o) { try { o.stop() } catch (e) { } }); playing = []; clearTimers() }
   var timers = [];
-  function clearTimers() { timers.forEach(clearTimeout); timers = []; document.querySelectorAll('.mu-staff .nt.on').forEach(function (e) { e.classList.remove('on') }) }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; document.querySelectorAll('.mu-staff .nt.on, .mu-staff .nt.on2').forEach(function (e) { e.classList.remove('on', 'on2') }) }
   function later(fn, ms) { timers.push(setTimeout(fn, ms)) }
   /* 악보 문자열 연주. o: {n, key, bpm, vol, el(악보 svg, 지금 음 표시), done} */
   function play(o) {
-    stop(); var a = ctx(); if (!a) return;
-    var T = tokens(o.n || '').filter(function (t) { return t.k === 'note' || t.k === 'rest' }), bpm = o.bpm || 96, beat = 60 / bpm, t0 = a.currentTime + .08, t = t0, i = 0;
-    var vol = o.vol, svg = o.el;
+    if (!o.keep) stop(); var a = ctx(); if (!a) return;
+    var T = tokens(o.n || '').filter(function (t) { return t.k === 'note' || t.k === 'rest' }), bpm = o.bpm || 96, beat = 60 / bpm, t0 = o.start || a.currentTime + .08, t = t0, i = 0;
+    var vol = o.vol, svg = o.el, cls = o.cls || 'on';
     if (typeof vol === 'string') { var va = vol.split('-').map(Number); vol = function (k, n) { return va[0] + (va[1] - va[0]) * k / Math.max(1, n - 1) } }
     T.forEach(function (tk, k) {
       if (o.bpmTo) beat = 60 / (bpm + (o.bpmTo - bpm) * k / Math.max(1, T.length - 1));
@@ -1079,16 +1084,24 @@ var MU = (function () {
         var hold = dur; for (var j = k; T[j] && T[j].tie && T[j + 1]; j++) hold += T[j + 1].beats * beat;
         var prevTie = k > 0 && T[k - 1].tie;
         var vv = (typeof vol === 'function' ? vol(k, T.length) : vol == null ? 1 : vol) * (tk.accent ? 1.7 : 1);
-        if (!prevTie) tk.ps.forEach(function (p) { tone(midi(p, o.key), t, hold * (tk.stac ? .3 : tk.ten ? 1 : .92) * (tk.ferm ? 1.6 : 1), vv) });
+        if (!prevTie) tk.ps.forEach(function (p) { tone(midi(p, o.key), t, hold * (tk.stac ? .3 : tk.ten ? 1 : .92) * (tk.ferm ? 1.6 : 1), vv, o.wave) });
       }
-      if (svg) (function (kk, tt) { later(function () { svg.querySelectorAll('.nt.on').forEach(function (e) { e.classList.remove('on') }); var e = svg.querySelector('.nt[data-i="' + kk + '"]'); if (e) e.classList.add('on') }, (tt - a.currentTime) * 1000) })(k, t);
+      if (svg) (function (kk, tt) { later(function () { svg.querySelectorAll('.nt.' + cls).forEach(function (e) { e.classList.remove(cls) }); var e = svg.querySelector('.nt[data-i="' + kk + '"]'); if (e) e.classList.add(cls) }, (tt - a.currentTime) * 1000) })(k, t);
       t += dur * (tk.ferm ? 1.6 : 1);
     });
-    later(function () { if (svg) svg.querySelectorAll('.nt.on').forEach(function (e) { e.classList.remove('on') }); if (o.done) o.done() }, (t - a.currentTime) * 1000 + 100);
+    later(function () { if (svg) svg.querySelectorAll('.nt.' + cls).forEach(function (e) { e.classList.remove(cls) }); if (o.done) o.done() }, (t - a.currentTime) * 1000 + 100);
     return t - t0;
   }
+  /* 돌림노래: mode 1 = 처음 모둠만, 2 = 두 번째 모둠만(들어가기 전 박을 똑딱으로), 'all' = 함께. o: {n, key, bpm, delay(박), beats(한 마디 박 수), el} */
+  function round(o, mode) {
+    stop(); var a = ctx(); if (!a) return;
+    var beat = 60 / (o.bpm || 100), st = a.currentTime + .12, d = (o.delay || 8) * beat, per = o.beats || 4;
+    if (mode === 1 || mode === 'all') play({ n: o.n, key: o.key, bpm: o.bpm, el: o.el, keep: true, start: st, cls: 'on' });
+    if (mode === 2) for (var k = 0; k < (o.delay || 8); k++) click(st + k * beat, k % per === 0);
+    if (mode === 2 || mode === 'all') play({ n: o.n, key: o.key, bpm: o.bpm, el: o.el, keep: true, start: st + d, cls: 'on2', wave: mode === 'all' ? 'sine' : null, vol: mode === 'all' ? .85 : 1 });
+  }
   function playMidi(m, dur) { var a = ctx(); if (a) tone(m, a.currentTime + .02, dur || .6) }
-  return { staff: staff, play: play, stop: stop, playMidi: playMidi, janggu: janggu, click: click, ctx: ctx, tokens: tokens, parsePitch: parsePitch, midi: midi, gyeName: gyeName, eumName: eumName, GYE: GYE, EUM: EUM, EN: EN, esc: esc, later: later };
+  return { staff: staff, play: play, round: round, stop: stop, playMidi: playMidi, janggu: janggu, click: click, ctx: ctx, tokens: tokens, parsePitch: parsePitch, midi: midi, gyeName: gyeName, eumName: eumName, GYE: GYE, EUM: EUM, EN: EN, esc: esc, later: later };
 })();
 
 window.MT={"no":"20","slug":"orchestra","area":"악기와 합주","ico":"🎼","title":"오케스트라와 합주","goal":"오케스트라의 악기 자리와 지휘자의 역할을 알고, 교향곡·협주곡 같은 합주 음악을 알아봐요.","learn":[{"h":"오케스트라(관현악단)","p":"<p>현악기·목관악기·금관악기·타악기가 함께 연주하는 큰 합주단이에요. 보통 <b>지휘자 앞쪽에 현악기<\/b>, 그 뒤에 <b>목관악기<\/b>, 그 뒤에 <b>금관악기<\/b>, 맨 뒤에 <b>타악기<\/b>가 앉아요. 소리가 큰 악기일수록 뒤에 앉는 셈이에요.<\/p>","w":{"w":"html","h":"<div class=\"orch\"><div class=\"o4\">타악기 (팀파니·큰북·심벌즈)<\/div><div class=\"o3\">금관악기 (호른·트럼펫·트롬본·튜바)<\/div><div class=\"o2\">목관악기 (플루트·오보에·클라리넷·바순)<\/div><div class=\"o1\">현악기 (바이올린·비올라·첼로·콘트라베이스)<\/div><div class=\"o0\">지휘자 🎼<\/div><\/div><p class=\"cap\">오케스트라 자리 예(악단마다 조금씩 달라요)<\/p>"}},{"h":"지휘자","p":"<p>지휘자는 손이나 <b>지휘봉<\/b>으로 <b>빠르기·셈여림·시작과 끝<\/b>을 알려 주고, 여러 악기의 소리가 잘 어울리도록 이끌어요.<\/p>","w":{"w":"table","head":["박자","지휘 모양"],"rows":[["2박자","아래 → 위 (▼▲)"],["3박자","아래 → 오른쪽 → 위 (삼각형)"],["4박자","아래 → 왼쪽 → 오른쪽 → 위"]]}},{"h":"합주 음악의 종류","w":{"w":"table","head":["이름","뜻"],"rows":[["교향곡","오케스트라가 연주하는, 여러 악장으로 된 큰 곡"],["협주곡","독주 악기(피아노·바이올린 등)와 오케스트라가 함께 연주하는 곡"],["실내악","적은 수의 연주자(2~9명쯤)가 연주하는 합주(예: 현악 4중주)"],["관현악 / 관악합주","관현악은 오케스트라, 관악 합주는 관악기·타악기 중심의 합주"]]}}],"act":[{"h":"지휘해 보기","p":"<p>박자에 맞춰 손으로 지휘해 보세요. 단추를 누르면 센박이 높은 소리로 울려요.<\/p>","w":{"w":"meter","items":[["2박자",["강","약"],"아래–위",90],["3박자",["강","약","약"],"아래–오른쪽–위",90],["4박자",["강","약","중강","약"],"아래–왼쪽–오른쪽–위",90]]}}],"quiz":[{"q":"오케스트라에서 보통 지휘자 바로 앞에 앉는 악기 무리는?","o":["현악기","금관악기","타악기","목관악기"],"a":0},{"q":"보통 맨 뒤에 앉는 악기 무리는?","o":["현악기","목관악기","타악기","하프"],"a":2},{"q":"독주 악기와 오케스트라가 함께 연주하는 곡은?","o":["교향곡","협주곡","민요","돌림노래"],"a":1},{"q":"지휘자가 하는 일이 아닌 것은?","o":["빠르기 알려 주기","셈여림 알려 주기","모든 악기를 혼자 연주하기","시작과 끝 알려 주기"],"a":2},{"q":"3박자 지휘 모양은?","o":["아래–위","삼각형(아래–오른쪽–위)","아래–왼쪽–오른쪽–위","동그라미"],"a":1}],"music":[{"t":"「청소년을 위한 관현악 입문」","by":"브리튼","why":"악기 무리별로 차례로 소리를 들려준 뒤 모두 함께 연주해요. 오케스트라 공부에 딱이에요.","q":"브리튼 청소년을 위한 관현악 입문"},{"t":"교향곡 5번 1악장","by":"베토벤","why":"‘빠바바밤!’ 짧은 동기가 오케스트라 전체로 퍼져 나가요.","q":"베토벤 교향곡 5번 1악장"},{"t":"피아노 협주곡 1번 1악장","by":"차이콥스키","why":"피아노 독주와 오케스트라가 힘차게 주고받아요.","q":"차이콥스키 피아노 협주곡 1번"}],"sheet":[{"k":"write","q":"오케스트라 자리를 앞에서부터 차례로 써 보세요.","lines":1,"a":"(지휘자) 현악기 → 목관악기 → 금관악기 → 타악기"},{"k":"match","q":"낱말과 뜻을 이어 보세요.","l":["교향곡","협주곡","실내악"],"r":["적은 사람이 하는 합주","독주 악기 + 오케스트라","오케스트라의 여러 악장 큰 곡"],"a":"교향곡-오케스트라 큰 곡, 협주곡-독주+오케스트라, 실내악-적은 사람 합주"},{"k":"write","q":"우리 반이 오케스트라라면 나는 어떤 악기를 맡고 싶나요? 까닭도 써 보세요.","lines":2}],"sum":["<b>오케스트라<\/b>: 현악기(앞) → 목관 → 금관 → 타악기(뒤)","<b>지휘자<\/b>: 빠르기·셈여림·시작과 끝을 이끌어요.","<b>교향곡<\/b>(오케스트라) · <b>협주곡<\/b>(독주+오케스트라) · <b>실내악<\/b>(적은 인원)"]};
@@ -1146,6 +1159,13 @@ window.MT={"no":"20","slug":"orchestra","area":"악기와 합주","ico":"🎼","
         return '<div class="mu-card"' + (it.c ? ' style="--cc:' + it.c + '"' : '') + '><b>' + it.t + '</b>' + (it.sub ? '<span class="sub2">' + it.sub + '</span>' : '') + '<p>' + it.d + '</p>' + (it.q ? '<a class="mu-yt" href="' + yt(it.q) + '" target="_blank" rel="noopener">🔎 소리 찾아 듣기</a>' : '') + '</div>';
       }).join('') + '</div>';
     },
+    round: function (o) {
+      var k = wid(o);
+      return '<div class="mu-w mu-stf" data-wid="' + k + '">' + (o.cap ? '<p class="cap">' + o.cap + '</p>' : '') + '<div class="svgw">' + MU.staff(o) + '</div>' +
+        '<p class="rlg"><span><i style="background:#E0663A"></i>처음 모둠이 부르는 음</span><span><i style="background:#2F74E0"></i>두 번째 모둠이 부르는 음</span></p>' +
+        '<div class="mu-ctl"><button type="button" class="mu-b r1" data-act="r1">▶ 처음 모둠</button><button type="button" class="mu-b r2" data-act="r2">▶ 두 번째 모둠</button><button type="button" class="mu-b go" data-act="rall">▶ 함께(돌림노래)</button><button type="button" class="mu-b" data-act="stop">■ 멈춤</button>' + (o.toggle ? '<button type="button" class="mu-b" data-act="names" aria-pressed="false">계이름 보기</button>' : '') + '</div>' +
+        '<p class="cap">‘두 번째 모둠’은 ' + (o.delay / (o.beats || 4)) + '마디 동안 똑딱 소리로 박을 세다가 들어가요. ‘함께’는 두 모둠이 겹쳐 부르는 소리예요(두 번째 모둠은 조금 다른 소리로).</p></div>';
+    },
     table: function (o) { return '<div class="mu-w mu-tbw"><table class="mu-tb"><thead><tr>' + o.head.map(function (h) { return '<th>' + h + '</th>' }).join('') + '</tr></thead><tbody>' + o.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>' }).join('') + '</tr>' }).join('') + '</tbody></table></div>' }
   };
   function widget(o) { return o ? (W[o.w] || W.html)(o) : '' }
@@ -1163,6 +1183,7 @@ window.MT={"no":"20","slug":"orchestra","area":"악기와 합주","ico":"🎼","
     var b = e.target.closest('[data-act]'); if (!b) return;
     var box = b.closest('[data-wid]'), o = box ? WS[+box.dataset.wid] : null, act = b.dataset.act;
     if (act === 'stop') { MU.stop(); return; }
+    if (act === 'r1' || act === 'r2' || act === 'rall') { MU.round(Object.assign({}, o, { el: box.querySelector('svg') }), act === 'r1' ? 1 : act === 'r2' ? 2 : 'all'); return; }
     if (act === 'play') { MU.play({ n: o.n, key: o.key, bpm: o.bpm, el: box.querySelector('svg') }); return; }
     if (act === 'names') {
       var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on ? 'true' : 'false');

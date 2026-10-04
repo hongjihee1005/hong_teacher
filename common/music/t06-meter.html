@@ -154,6 +154,9 @@ body.sl-on{overflow:hidden}
 .mu-staff .mk.it{font-style:italic}
 .mu-staff .nt.on .hd{fill:#E0663A;stroke:#E0663A}
 .mu-staff .nt.on path,.mu-staff .nt.on line{fill:#E0663A;stroke:#E0663A}
+.mu-staff .nt.on2 .hd{fill:#2F74E0;stroke:#2F74E0}
+.mu-staff .nt.on2 path,.mu-staff .nt.on2 line{fill:#2F74E0;stroke:#2F74E0}
+.mu-staff .nt.on.on2 .hd{fill:#8A4FD0;stroke:#8A4FD0}
 /* 정간보 */
 .jgb{display:flex;flex-direction:row;gap:0;margin:8px 0;width:max-content;border:2px solid #6B5D52;background:#fff;color:#2A221C}
 .jcol{display:flex;flex-direction:column;border-left:1.5px solid #6B5D52}
@@ -167,6 +170,8 @@ body.sl-on{overflow:hidden}
 .orch .o4{width:96%;background:#F6D6CF}.orch .o3{width:84%;background:#F6E7B8}.orch .o2{width:70%;background:#D3EBDD}.orch .o1{width:56%;background:#EAD9C4}
 .orch .o0{width:auto;border-radius:999px;background:#E6DDF5}
 .jc.long{font-size:clamp(10px,1.2vw,14px);letter-spacing:-.04em;white-space:nowrap}
+.rlg{display:flex;flex-wrap:wrap;gap:12px;font-size:15px;font-weight:700;margin:4px 0}.rlg i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
+.mu-b.r1{border-color:#E0663A}.mu-b.r2{border-color:#2F74E0}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1028,10 +1033,10 @@ var MU = (function () {
   var AC = null, master = null, playing = [];
   function ctx() { if (!AC) { var C = window.AudioContext || window.webkitAudioContext; if (!C) return null; AC = new C(); master = AC.createGain(); master.gain.value = .8; master.connect(AC.destination); } if (AC.state === 'suspended') AC.resume(); return AC }
   function hz(m) { return 440 * Math.pow(2, (m - 69) / 12) }
-  function tone(m, t, dur, vol) {
+  function tone(m, t, dur, vol, wave) {
     var a = ctx(); if (!a) return;
     var g = a.createGain(), o1 = a.createOscillator(), o2 = a.createOscillator(), g2 = a.createGain();
-    o1.type = 'triangle'; o2.type = 'sine'; o1.frequency.value = hz(m); o2.frequency.value = hz(m) * 2; g2.gain.value = .25;
+    o1.type = wave || 'triangle'; o2.type = 'sine'; o1.frequency.value = hz(m); o2.frequency.value = hz(m) * 2; g2.gain.value = .25;
     o1.connect(g); o2.connect(g2); g2.connect(g); g.connect(master);
     var v = .32 * (vol == null ? 1 : vol), end = t + Math.max(.12, dur);
     g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v, t + .012); g.gain.exponentialRampToValueAtTime(v * .35, t + Math.min(.5, dur * .6)); g.gain.exponentialRampToValueAtTime(.0005, end + .25);
@@ -1064,13 +1069,13 @@ var MU = (function () {
   function click(t, strong) { var a = ctx(); if (!a) return; drum(t, strong ? 1500 : 1000, strong ? 1200 : 800, .05, strong ? .5 : .3) }
   function stop() { playing.forEach(function (o) { try { o.stop() } catch (e) { } }); playing = []; clearTimers() }
   var timers = [];
-  function clearTimers() { timers.forEach(clearTimeout); timers = []; document.querySelectorAll('.mu-staff .nt.on').forEach(function (e) { e.classList.remove('on') }) }
+  function clearTimers() { timers.forEach(clearTimeout); timers = []; document.querySelectorAll('.mu-staff .nt.on, .mu-staff .nt.on2').forEach(function (e) { e.classList.remove('on', 'on2') }) }
   function later(fn, ms) { timers.push(setTimeout(fn, ms)) }
   /* 악보 문자열 연주. o: {n, key, bpm, vol, el(악보 svg, 지금 음 표시), done} */
   function play(o) {
-    stop(); var a = ctx(); if (!a) return;
-    var T = tokens(o.n || '').filter(function (t) { return t.k === 'note' || t.k === 'rest' }), bpm = o.bpm || 96, beat = 60 / bpm, t0 = a.currentTime + .08, t = t0, i = 0;
-    var vol = o.vol, svg = o.el;
+    if (!o.keep) stop(); var a = ctx(); if (!a) return;
+    var T = tokens(o.n || '').filter(function (t) { return t.k === 'note' || t.k === 'rest' }), bpm = o.bpm || 96, beat = 60 / bpm, t0 = o.start || a.currentTime + .08, t = t0, i = 0;
+    var vol = o.vol, svg = o.el, cls = o.cls || 'on';
     if (typeof vol === 'string') { var va = vol.split('-').map(Number); vol = function (k, n) { return va[0] + (va[1] - va[0]) * k / Math.max(1, n - 1) } }
     T.forEach(function (tk, k) {
       if (o.bpmTo) beat = 60 / (bpm + (o.bpmTo - bpm) * k / Math.max(1, T.length - 1));
@@ -1079,16 +1084,24 @@ var MU = (function () {
         var hold = dur; for (var j = k; T[j] && T[j].tie && T[j + 1]; j++) hold += T[j + 1].beats * beat;
         var prevTie = k > 0 && T[k - 1].tie;
         var vv = (typeof vol === 'function' ? vol(k, T.length) : vol == null ? 1 : vol) * (tk.accent ? 1.7 : 1);
-        if (!prevTie) tk.ps.forEach(function (p) { tone(midi(p, o.key), t, hold * (tk.stac ? .3 : tk.ten ? 1 : .92) * (tk.ferm ? 1.6 : 1), vv) });
+        if (!prevTie) tk.ps.forEach(function (p) { tone(midi(p, o.key), t, hold * (tk.stac ? .3 : tk.ten ? 1 : .92) * (tk.ferm ? 1.6 : 1), vv, o.wave) });
       }
-      if (svg) (function (kk, tt) { later(function () { svg.querySelectorAll('.nt.on').forEach(function (e) { e.classList.remove('on') }); var e = svg.querySelector('.nt[data-i="' + kk + '"]'); if (e) e.classList.add('on') }, (tt - a.currentTime) * 1000) })(k, t);
+      if (svg) (function (kk, tt) { later(function () { svg.querySelectorAll('.nt.' + cls).forEach(function (e) { e.classList.remove(cls) }); var e = svg.querySelector('.nt[data-i="' + kk + '"]'); if (e) e.classList.add(cls) }, (tt - a.currentTime) * 1000) })(k, t);
       t += dur * (tk.ferm ? 1.6 : 1);
     });
-    later(function () { if (svg) svg.querySelectorAll('.nt.on').forEach(function (e) { e.classList.remove('on') }); if (o.done) o.done() }, (t - a.currentTime) * 1000 + 100);
+    later(function () { if (svg) svg.querySelectorAll('.nt.' + cls).forEach(function (e) { e.classList.remove(cls) }); if (o.done) o.done() }, (t - a.currentTime) * 1000 + 100);
     return t - t0;
   }
+  /* 돌림노래: mode 1 = 처음 모둠만, 2 = 두 번째 모둠만(들어가기 전 박을 똑딱으로), 'all' = 함께. o: {n, key, bpm, delay(박), beats(한 마디 박 수), el} */
+  function round(o, mode) {
+    stop(); var a = ctx(); if (!a) return;
+    var beat = 60 / (o.bpm || 100), st = a.currentTime + .12, d = (o.delay || 8) * beat, per = o.beats || 4;
+    if (mode === 1 || mode === 'all') play({ n: o.n, key: o.key, bpm: o.bpm, el: o.el, keep: true, start: st, cls: 'on' });
+    if (mode === 2) for (var k = 0; k < (o.delay || 8); k++) click(st + k * beat, k % per === 0);
+    if (mode === 2 || mode === 'all') play({ n: o.n, key: o.key, bpm: o.bpm, el: o.el, keep: true, start: st + d, cls: 'on2', wave: mode === 'all' ? 'sine' : null, vol: mode === 'all' ? .85 : 1 });
+  }
   function playMidi(m, dur) { var a = ctx(); if (a) tone(m, a.currentTime + .02, dur || .6) }
-  return { staff: staff, play: play, stop: stop, playMidi: playMidi, janggu: janggu, click: click, ctx: ctx, tokens: tokens, parsePitch: parsePitch, midi: midi, gyeName: gyeName, eumName: eumName, GYE: GYE, EUM: EUM, EN: EN, esc: esc, later: later };
+  return { staff: staff, play: play, round: round, stop: stop, playMidi: playMidi, janggu: janggu, click: click, ctx: ctx, tokens: tokens, parsePitch: parsePitch, midi: midi, gyeName: gyeName, eumName: eumName, GYE: GYE, EUM: EUM, EN: EN, esc: esc, later: later };
 })();
 
 window.MT={"no":"06","slug":"meter","area":"악보 읽기","ico":"🥁","title":"박자와 박자표","goal":"박자표의 숫자 뜻을 알고, 2·3·4박자와 8분의 6박자의 셈여림(센박·여린박)을 느껴요.","learn":[{"h":"박자표 읽기","p":"<p>악보 맨 앞의 숫자 두 개가 박자표예요. <b>아래 숫자<\/b>는 한 박의 기준 음표(4 → 4분음표, 8 → 8분음표), <b>위 숫자<\/b>는 한 마디에 그 음표가 몇 개 들어가는지를 나타내요.<\/p><p>예) 4분의 3박자(3/4) = 4분음표가 한 마디에 3개<\/p>","w":{"time":"3/4","w":"staff","n":"c5/4 e5/4 g5/4 | e5/2. |]"}},{"h":"박자마다 다른 센박·여린박","w":{"w":"table","head":["박자","셈여림","어울리는 느낌"],"rows":[["4분의 2박자","강 약","행진, 씩씩하게"],["4분의 3박자","강 약 약","왈츠, 빙글빙글"],["4분의 4박자","강 약 중강 약","여러 노래에 두루"],["8분의 6박자","강 약 약 중강 약 약","배·그네처럼 흔들흔들"]]}},{"h":"마디와 세로줄","p":"<p>박자에 맞게 나눈 한 칸을 <b>마디<\/b>, 마디를 나누는 줄을 <b>세로줄<\/b>이라고 해요. 곡이 끝나면 굵은 <b>끝세로줄(마침줄)<\/b>, 단락이 바뀌는 곳은 가는 두 줄 <b>겹세로줄<\/b>을 써요.<\/p>","w":{"time":"2/4","cap":"세로줄 · 겹세로줄 · 끝세로줄","w":"staff","n":"c5/4 c5/4 | e5/4 e5/4 || g5/4 g5/4 | c6/2 |]"}}],"act":[{"h":"박자 느끼기","p":"<p>단추를 누르면 센박은 높은 ‘딱’, 여린박은 낮은 ‘똑’ 소리로 두 마디를 들려줘요. 센박에 손뼉, 여린박에 무릎을 쳐 보세요.<\/p>","w":{"w":"meter","items":[["2/4",["강","약"],"강 약 — 행진",100],["3/4",["강","약","약"],"강 약 약 — 왈츠",110],["4/4",["강","약","중강","약"],"강 약 중강 약",100],["6/8",["강","약","약","중강","약","약"],"강 약 약 중강 약 약",150]]}},{"h":"박자 다른 노래 비교","w":{"w":"compare","items":[{"label":"4분의 2박자: 나비야","n":"g4/4 e4/4 | e4/2 | f4/4 d4/4 | d4/2 | c4/4 d4/4 | e4/4 f4/4 | g4/4 g4/4 | g4/2 |]","time":"2/4"},{"label":"4분의 4박자: 작은 별","n":"c4/4 c4/4 g4/4 g4/4 | a4/4 a4/4 g4/2 | f4/4 f4/4 e4/4 e4/4 | d4/4 d4/4 c4/2 |]","time":"4/4"}]}}],"quiz":[{"q":"4분의 3박자에서 한 마디에 4분음표는 몇 개 들어갈까요?","staff":{"n":"r/2. |]","time":"3/4"},"o":["2개","3개","4개","6개"],"a":1},{"q":"4분의 3박자의 셈여림은?","o":["강 약","강 약 약","강 약 중강 약","약 강"],"a":1},{"q":"박자표의 아래 숫자 4가 뜻하는 것은?","o":["한 마디가 4개","4분음표를 한 박으로","4번 반복","4박 쉬기"],"a":1},{"q":"왈츠에 어울리는 박자는?","o":["4분의 2박자","4분의 3박자","4분의 4박자","8분의 6박자"],"a":1},{"q":"마디와 마디를 나누는 줄은?","o":["세로줄","덧줄","붙임줄","오선"],"a":0},{"q":"소리 듣고 맞히기: 이 가락은 몇 박자일까요?","play":{"n":"c5/4 e5/4 e5/4 | d5/4 f5/4 f5/4 | e5/4 g5/4 g5/4 | c5/2. |]","bpm":120},"o":["2박자","3박자","4박자","6박자"],"a":1,"e":"‘쿵 짝 짝’ 세 박씩 묶여요."}],"music":[{"t":"「라데츠키 행진곡」","by":"요한 슈트라우스 1세","why":"4분의 2박자 행진곡. 청중이 박에 맞춰 손뼉을 치는 것으로 유명해요."},{"t":"「아름답고 푸른 도나우」","by":"요한 슈트라우스 2세","why":"4분의 3박자 왈츠. ‘쿵 짝 짝’ 느낌을 찾아보세요."},{"t":"「뱃노래」(「호프만 이야기」 중)","by":"오펜바흐","why":"8분의 6박자로 물 위에서 흔들리는 느낌이에요.","q":"오펜바흐 뱃노래"}],"sheet":[{"k":"match","q":"박자와 셈여림을 이어 보세요.","l":["4분의 2박자","4분의 3박자","4분의 4박자"],"r":["강 약 중강 약","강 약","강 약 약"],"a":"2박자-강 약, 3박자-강 약 약, 4박자-강 약 중강 약"},{"k":"write","q":"4분의 3박자 박자표의 위 숫자와 아래 숫자는 각각 무엇을 뜻하나요?","lines":2,"a":"위 3: 한 마디에 3박 / 아래 4: 4분음표를 한 박으로"},{"k":"staff","q":"세로줄이 빠졌어요. 4분의 2박자에 맞게 세로줄을 그어 보세요.","n":"c5/4 c5/4 e5/4 e5/4 g5/4 g5/4 c6/2 |]","time":"2/4","play":false,"a":"2박마다 세로줄: 도도 | 미미 | 솔솔 | 도(2분음표)"},{"k":"choice","q":"8분의 6박자의 셈여림은?","o":["강 약 약 중강 약 약","강 약","강 약 약"],"a":0},{"k":"draw","q":"4분의 3박자로 두 마디를 자유롭게 지어 보세요.","clef":"g","time":"3/4"}],"sum":["박자표: <b>아래 숫자 = 한 박의 음표<\/b>, <b>위 숫자 = 한 마디의 박 수<\/b>","2박자 강약 · 3박자 강약약 · 4박자 강약중강약 · 8분의 6박자 강약약중강약약","<b>마디<\/b>를 나누는 줄은 세로줄, 끝은 끝세로줄"]};
@@ -1146,6 +1159,13 @@ window.MT={"no":"06","slug":"meter","area":"악보 읽기","ico":"🥁","title":
         return '<div class="mu-card"' + (it.c ? ' style="--cc:' + it.c + '"' : '') + '><b>' + it.t + '</b>' + (it.sub ? '<span class="sub2">' + it.sub + '</span>' : '') + '<p>' + it.d + '</p>' + (it.q ? '<a class="mu-yt" href="' + yt(it.q) + '" target="_blank" rel="noopener">🔎 소리 찾아 듣기</a>' : '') + '</div>';
       }).join('') + '</div>';
     },
+    round: function (o) {
+      var k = wid(o);
+      return '<div class="mu-w mu-stf" data-wid="' + k + '">' + (o.cap ? '<p class="cap">' + o.cap + '</p>' : '') + '<div class="svgw">' + MU.staff(o) + '</div>' +
+        '<p class="rlg"><span><i style="background:#E0663A"></i>처음 모둠이 부르는 음</span><span><i style="background:#2F74E0"></i>두 번째 모둠이 부르는 음</span></p>' +
+        '<div class="mu-ctl"><button type="button" class="mu-b r1" data-act="r1">▶ 처음 모둠</button><button type="button" class="mu-b r2" data-act="r2">▶ 두 번째 모둠</button><button type="button" class="mu-b go" data-act="rall">▶ 함께(돌림노래)</button><button type="button" class="mu-b" data-act="stop">■ 멈춤</button>' + (o.toggle ? '<button type="button" class="mu-b" data-act="names" aria-pressed="false">계이름 보기</button>' : '') + '</div>' +
+        '<p class="cap">‘두 번째 모둠’은 ' + (o.delay / (o.beats || 4)) + '마디 동안 똑딱 소리로 박을 세다가 들어가요. ‘함께’는 두 모둠이 겹쳐 부르는 소리예요(두 번째 모둠은 조금 다른 소리로).</p></div>';
+    },
     table: function (o) { return '<div class="mu-w mu-tbw"><table class="mu-tb"><thead><tr>' + o.head.map(function (h) { return '<th>' + h + '</th>' }).join('') + '</tr></thead><tbody>' + o.rows.map(function (r) { return '<tr>' + r.map(function (c) { return '<td>' + c + '</td>' }).join('') + '</tr>' }).join('') + '</tbody></table></div>' }
   };
   function widget(o) { return o ? (W[o.w] || W.html)(o) : '' }
@@ -1163,6 +1183,7 @@ window.MT={"no":"06","slug":"meter","area":"악보 읽기","ico":"🥁","title":
     var b = e.target.closest('[data-act]'); if (!b) return;
     var box = b.closest('[data-wid]'), o = box ? WS[+box.dataset.wid] : null, act = b.dataset.act;
     if (act === 'stop') { MU.stop(); return; }
+    if (act === 'r1' || act === 'r2' || act === 'rall') { MU.round(Object.assign({}, o, { el: box.querySelector('svg') }), act === 'r1' ? 1 : act === 'r2' ? 2 : 'all'); return; }
     if (act === 'play') { MU.play({ n: o.n, key: o.key, bpm: o.bpm, el: box.querySelector('svg') }); return; }
     if (act === 'names') {
       var on = b.getAttribute('aria-pressed') !== 'true'; b.setAttribute('aria-pressed', on ? 'true' : 'false');

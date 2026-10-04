@@ -189,7 +189,7 @@ grade1/ … grade6/
   위 단추: 🖥️ 슬라이드로 보기(같은 내용을 한 장씩, ←/→, 전체 화면, `#slides`로 바로 열기) · 📄 활동지 미리 보기 · 🖨️ 활동지 인쇄 · 🖨️ 활동지 정답 인쇄.
 - 악보는 그림 파일이 아니라 `engine.js`가 악보 문자열(예: `c4/4 d4/4 | e4/2.`, 빔 `( )`, 붙임줄 `~`, 이음줄 `{ }`, 스타카토 `*`, 테누토 `_`, 악센트 `>`, 늘임표 `^`, 화음 `[c4 e4 g4]/1`, 줄바꿈 `//`, `|: :| $1 $2 $fine $dc`)로 SVG를 그리고, Web Audio로 소리를 냅니다(컴퓨터로 흉내 낸 소리).
   음자리표·쉼표·올림표 등 기호 모양은 `glyphs.json`(Noto Music 글꼴, SIL OFL 1.1에서 뽑음)이라 글꼴을 내려받지 않아도 깨지지 않습니다. 계이름은 이동도법(조표에 따라 '도' 자리가 바뀜, 단조는 '라'로).
-  위젯: `staff`(악보·듣기·계이름 보기) `keys`(건반) `namegame`(계이름 맞히기) `tempo`(빠르기/셈여림 비교, `dyn:True`) `meter`(박자 셈여림) `jang`(장단·장구 소리) `compare` `cards` `table` `html`.
+  위젯: `staff`(악보·듣기·계이름 보기) `keys`(건반) `namegame`(계이름 맞히기) `tempo`(빠르기/셈여림 비교, `dyn:True`) `meter`(박자 셈여림) `jang`(장단·장구 소리) `round`(돌림노래: 처음 모둠·두 번째 모둠·함께, `delay`박 늦게 겹침, 두 모둠 음을 주황·파랑으로 표시) `compare` `cards` `table` `html`.
 - 가락은 저작권이 끝난 전래·고전 가락만 씁니다(작은 별, 비행기, 나비야, 환희의 송가, 자크 형제). 노랫말은 싣지 않습니다. 장단 구음(세마치·굿거리)은 학교에서 많이 쓰는 기본형이라고 화면에 적어 두었습니다.
 - **`t*.html`을 직접 고치지 마세요.** 원본은 `_build/music/`: 내용 `topics_a.py`(01~07)·`topics_b.py`(08~14)·`topics_c.py`(15~22), 화면 `page.html`·`page.css`·`app.js`, 엔진 `engine.js`.
   고친 뒤 `python3 _build/music/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py`가 정답 번호 등을 먼저 점검). 주제를 더하면 `common/music/index.html`(메뉴)에도 카드를 더하고 `apply_theme.py`.
