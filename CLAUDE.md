@@ -115,7 +115,7 @@ grade1/ … grade6/
 
 ### 쉬는 시간 › 종이접기 (`break/`, 2026-10-04)
 
-- 첫 화면에서 '🍎 우리 반 교실'과 '🧸 쉬는 시간' 카드가 한 줄에 반씩 나란히 있습니다(`index.html`의 `<div class="duo">`, 좁은 화면에서는 위아래). 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠'·'컬러링'·'미로찾기'·'숨은 그림 찾기' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
+- 첫 화면에서 '🍎 우리 반 교실'과 '🧸 쉬는 시간' 카드가 한 줄에 반씩 나란히 있습니다(`index.html`의 `<div class="duo">`, 좁은 화면에서는 위아래). 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠'·'컬러링'·'미로찾기'·'숨은 그림 찾기'·'틀린 그림 찾기' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
 - 학년 페이지는 작품 카드(완성 그림·난이도·단계 수·준비물) → 한 단계씩 보기(큰 그림, 이전/다음, ←/→ 키, `#작품id`로 바로 열기) → '한눈에 보기'·'인쇄'(전체 단계를 3칸씩). 작품 15가지:
   1학년 우리 집·강아지 얼굴·고양이 얼굴 / 2학년 튤립·컵·매미 / 3학년 종이비행기·투구·동서남북 / 4학년 팔랑개비·하트 / 5학년 상자·점프 개구리 / 6학년 날개 퍼덕이는 새·종이학.
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/origami/`입니다: 작품 `models_gN.py`(설명 문장과 그림 좌표 — 접는 선에 대해 점을 뒤집는 `geo.py` 도구로 계산), 그림 엔진 `engine.js`, 화면 `page.html`·`page.css`·`svg.css`·`app.js`, 학년별 머리말·약속은 `build.py`의 `GRADES`.
@@ -157,6 +157,15 @@ grade1/ … grade6/
   - 조작: 그림을 누르면 판정(맞으면 동그라미·목록에 ✓, 틀리면 ✕ 표시와 '헛짚은 곳' 수), 힌트(물건이 있는 언저리를 노란 원으로 잠깐), 처음부터, 정답 보기(확인 창), 인쇄(그림 + 찾을 물건 목록 + 이름 칸). 기록은 그 기기 localStorage(`hj-hidden-v1`).
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/hidden/`: 생성기 `hidden.js`(물건 `ICONS`, 장면 `SCENES`·꾸밈 그림 `C`, 학년·단계 설정 `specs`), 화면 `page.html`·`page.css`·`app.js`, 학년별 머리말은 `build.py`의 `GRADES`.
   `node _build/hidden/check.js`가 540개 모두 물건 개수·겹침·화면 안·누르기 판정·중복을 점검합니다(`build.py`가 먼저 돌림). 고친 뒤 `python3 _build/hidden/build.py && python3 _build/theme/apply_content_theme.py`.
+
+### 쉬는 시간 › 틀린 그림 찾기 (`break/spot/`, 2026-10-04)
+
+- `break/index.html`의 여섯 번째 방 '🖼️ 틀린 그림 찾기' → `break/spot/index.html`(1~6학년 방) → `break/spot/g1.html ~ g6.html`(학년마다 쉬움 30 · 보통 30 · 도전 30, 모두 540개).
+  - 장면 8가지(봄 동산·여름 바닷가·가을 들판·겨울 마을·식물 베란다·동물 친구들·거실 가전·부엌 가전), 색칠된 사물 50가지(벚꽃나무·병아리·수박·파라솔·단풍잎·허수아비·눈사람·트리·선인장·해바라기·고양이·거북이·냉장고·텔레비전·세탁기·선풍기·전자레인지·전기밥솥 등). 땅 사물은 땅에, 해·구름·새는 하늘 쪽에 놓입니다.
+  - 다른 곳 종류: 쉬움 사라짐·색·새로 생김 / 보통 + 크기·자리·부분 없어짐 / 도전 + 좌우 뒤집힘(작은 사물이 많음). 다른 곳 수는 1·2학년 3~8, 3·4학년 4~9, 5·6학년 5~10군데.
+  - 조작: 두 그림 중 아무 쪽이나 누르면 판정(양쪽에 동그라미, 찾은 곳 목록에 '무엇이 어떻게 달라졌는지' 표시), 힌트, 처음부터, 정답 보기(확인 창), 인쇄(두 그림 + 이름 칸). 기록은 그 기기 localStorage(`hj-spot-v1`).
+- **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/spot/`: 생성기 `spot.js`(사물 `OBJ`, 새로 생기는 그림 `EXTRA`, 장면 `THEMES`, 학년·단계 설정 `specs`), 화면 `page.html`·`page.css`·`app.js`, 학년별 머리말은 `build.py`의 `GRADES`.
+  `node _build/spot/check.js`가 540개 모두 다른 곳 개수·실제로 바뀌었는지·정답 아닌 곳이 똑같은지·겹침·누르기 판정·중복을 점검합니다(`build.py`가 먼저 돌림). 고친 뒤 `python3 _build/spot/build.py && python3 _build/theme/apply_content_theme.py`.
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
