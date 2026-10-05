@@ -71,7 +71,7 @@
   var mode = 'screen', items = [], k2 = 0, ok = 0, wrong = [], tries = 0, punct = true;
   try { mode = localStorage.getItem(KEY + '-m') || 'screen'; punct = localStorage.getItem(KEY + '-p') !== '0' } catch (e) {}
   function norm(s, pk) {
-    if (pk) return String(s || '').replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'").replace(/\u2026+|\.{3,}/g, '\u2026').replace(/(\S)\s*-\s*(?=\S)/g, '$1~').replace(/\s+/g, ' ').trim();   // 문장 부호 급(물결표 자리의 붙임표 '-'도 허용): 부호 모두 채점(줄임표 꼴은 하나로)
+    if (pk) return String(s || '').replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'").replace(/\u2026+|\.{3,}/g, '\u2026').replace(/(\S)\s*-\s*(?=\S)/g, '$1~').replace(/\.(?=["'])/g, '').replace(/\s+/g, ' ').trim();   // 문장 부호 급(물결표 자리의 붙임표 '-', 따옴표 안 마침표 생략도 허용): 부호 모두 채점(줄임표 꼴은 하나로)
     // 다른 급: 소리로 안 들리는 따옴표·줄임표는 채점하지 않음
     s = String(s || '').replace(/[\u2026]+|\.{2,}/g, '').replace(/[.?!,]+(?=["'\u201D\u2019])/g, '').replace(/["'\u201C\u201D\u2018\u2019]/g, '').replace(/\s+/g, ' ').replace(/ ([.?!,])/g, '$1').trim();
     if (!punct) s = s.replace(/[.?!,]/g, '').replace(/\s+/g, ' ').trim(); return s }
@@ -113,7 +113,7 @@
     if (!$('dcNext').hidden) { dNext(); return }
     var pk = LV[lv].kind === PK, it = items[k2], v = norm($('dcIn').value, pk), ans = norm(it[0], pk), m = $('dcMsg');
     if (!v) { m.textContent = '들은 말을 써 주세요.'; return }
-    if (v !== ans && /!$/.test(ans) && v === ans.replace(/!$/, '.')) v = ans;   // 느낌표 자리의 마침표는 허용(문장 부호 규정)
+    if (v !== ans && /[!?]$/.test(ans) && v === ans.replace(/[!?]$/, '.')) v = ans;   // 느낌표·물음표 자리의 마침표는 허용(문장 부호 규정)
     if (v === ans) {
       if (tries === 0) ok++; $('dcOk').textContent = '⭕ ' + ok;
       m.innerHTML = '⭕ 맞았어요! <span class="pt">💡 ' + pt(it[1]) + '</span>'; m.className = 'dt-msg ok';

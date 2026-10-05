@@ -46,8 +46,9 @@ def load(g):
         if len(p) not in (3, 4): bad.append(f'g{g}:{n} | 개수'); continue
         if len(p) == 4 and (sec != '낱말' or not p[3].strip()): bad.append(f'g{g}:{n} 예문은 낱말에만'); continue
         it = [x.strip() for x in p]
-        # 느낌표 자리는 마침표도 허용되므로('감탄의 정도가 약하면 마침표', 문장 부호 규정) '!'↔'.'만 다른 틀린 꼴은 고르기 문제에서 뺌
-        if it[0].endswith('!') and it[2] == it[0][:-1] + '.': it[2] = ''
+        # 문장 부호 규정에서 둘 다 허용하는 차이(느낌표·물음표 자리의 마침표, 따옴표 안 마침표)만 있는 틀린 꼴은 고르기 문제에서 뺌
+        if it[0][-1:] in '!?' and it[2] == it[0][:-1] + '.': it[2] = ''   # 물음표 자리도 같음(물음의 정도가 약하면 마침표)
+        if it[2] and re.sub(r'\.(?=["\'])', '', it[2]) == re.sub(r'\.(?=["\'])', '', it[0]): it[2] = ''   # 따옴표 안 마침표는 써도 되고 안 써도 됨
         out[sec].append(it)
     return out, bad
 
