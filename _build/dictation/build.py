@@ -4,10 +4,11 @@
     python3 _build/dictation/build.py          # common/dictation/g1.html … g6.html (먼저 자료를 점검)
     python3 _build/dictation/build.py check    # 자료 점검만
 
-자료: data/gN.txt — '# 낱말' · '# 어절' · '# 문장' 아래 50줄씩, 한 줄에 '바른 글|맞춤법 포인트|틀리기 쉬운 꼴'.
+자료: data/gN.txt — '# 낱말' · '# 어절' · '# 문장' 아래 100줄씩, '# 문장 부호' 아래 50줄, 한 줄에 '바른 글|맞춤법 포인트|틀리기 쉬운 꼴'.
 낱말은 소리가 같은 다른 말이 있으면 넷째 칸에 불러 줄 때 덧붙이는 예문(예: 닫히다|…|다치다|문이 닫히다).
 학년끼리 같은 글, 숫자가 든 글은 점검에서 걸러요.
-학년마다 15급(10개씩): 1~5급 낱말, 6~10급 어절, 11~15급 문장(파일의 차례 그대로).
+학년마다 35급(10개씩): 1~10급 낱말, 11~20급 어절, 21~30급 문장, 31~35급 문장 부호(파일의 차례 그대로).
+문장 부호 급은 화면에 부호를 뺀 글(strip)을 보여 주고 부호를 넣어 다시 쓰게 함 — 틀린 꼴은 부호만 달라야 함.
 화면은 page.html + page.css + app.js. 아래쪽 '만든 사람'·홈 단추 조각은 _build/origami/의 것을 같이 씁니다.
 목록 common/dictation/index.html은 메뉴 페이지(손으로 고치고 apply_theme.py).
 고친 뒤 루트에서 python3 _build/theme/apply_content_theme.py (자동 보완 run_all.py에도 들어 있음).
@@ -16,7 +17,12 @@ import re, sys, json, pathlib
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 OG = ROOT / '_build' / 'origami'
-KINDS = ['낱말', '어절', '문장']
+KINDS = ['낱말', '어절', '문장', '문장 부호']
+COUNT = {'낱말': 100, '어절': 100, '문장': 100, '문장 부호': 50}
+PUN = re.compile(r'[.,?!"\'\u201C\u201D\u2018\u2019\u2026:·()~]')
+def strip(t):
+    """문장 부호를 뺀 글(문장 부호 급에서 화면에 보여 줌) — app.js의 strip과 같게"""
+    return re.sub(r' +', ' ', re.sub(r'[\u2026.,?!"\'\u201C\u201D\u2018\u2019:)]', '', re.sub(r'[·~(]', ' ', t))).strip()
 INTRO = {
     1: "모음(ㅐ·ㅔ·ㅚ·ㅟ…)과 받침, 소리 나는 대로 쓰지 않는 말, 겹받침 기초, 문장 부호를 익혀요.",
     2: "겹받침, 소리와 다르게 쓰는 말(같이·굳이…), 헷갈리는 말(낫다·낮다·낳다…), 흉내 내는 말과 기본 띄어쓰기를 익혀요.",
@@ -47,7 +53,7 @@ def check(g, d):
     seen = set()
     for k in KINDS:
         L = d[k]
-        if len(L) != 50: bad.append(f'{g}학년 {k} {len(L)}개(50개여야 함)')
+        if len(L) != COUNT[k]: bad.append(f'{g}학년 {k} {len(L)}개({COUNT[k]}개여야 함)')
         for t, p, w, *ex in L:
             if not t or not p: bad.append(f'{g}학년 {k} 빈 칸: {t}')
             if t in seen: bad.append(f'{g}학년 겹침: {t}')
@@ -57,6 +63,11 @@ def check(g, d):
             if k == '낱말' and ' ' in t: bad.append(f'{g}학년 낱말에 띄어쓰기: {t}')
             if k == '어절' and (' ' not in t or re.search(r'[.?!]$', t)): bad.append(f'{g}학년 어절 모양: {t}')
             if k == '문장' and not re.search(r'[.?!]$', t): bad.append(f'{g}학년 문장 부호 없음: {t}')
+            if k == '문장 부호':
+                if not re.search(r'[.?!]["\']?$', t): bad.append(f'{g}학년 문장 부호 문장 끝: {t}')
+                if w and strip(w) != strip(t): bad.append(f'{g}학년 문장 부호: 틀린 꼴이 부호 말고 글자도 다름: {t} / {w}')
+                if re.search(r'[\u201C\u201D\u2018\u2019]|\.\.\.', t + w): bad.append(f'{g}학년 곧은 따옴표·줄임표(……)만 쓰기: {t}')
+                if re.search(r'[^가-힣ㄱ-ㅎㅏ-ㅣ \.,?!"\'…:·()~]', t): bad.append(f'{g}학년 쓸 수 없는 부호: {t}')
             if re.search(r'[A-Za-z|]', t): bad.append(f'{g}학년 이상한 글자: {t}')
             if p.count("'") % 2: bad.append(f'{g}학년 따옴표 짝: {p}')
     return bad
@@ -75,8 +86,8 @@ def cross(D):
 def build(g, d):
     rd = lambda p: p.read_text(encoding='utf-8')
     nav = ''.join(f'<a href="g{i}.html"' + (' aria-current="page"' if i == g else '') + f'>{i}학년</a>' for i in range(1, 7))
-    data = json.dumps({'g': g, 'name': f'{g}학년', 'items': [d[k] for k in KINDS]}, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
-    rep = {'NAME': f'{g}학년', 'INTRO': INTRO[g] + ' 낱말 50 · 어절 50 · 문장 50개를 10개씩 15급으로 나누었어요.', 'GRNAV': nav,
+    data = json.dumps({'g': g, 'name': f'{g}학년', 'kinds': KINDS, 'items': [d[k] for k in KINDS]}, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
+    rep = {'NAME': f'{g}학년', 'INTRO': INTRO[g] + ' 낱말 100 · 어절 100 · 문장 100 · 문장 부호 50개를 10개씩 35급으로 나누었어요.', 'GRNAV': nav,
            'CSS': rd(HERE / 'page.css'), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '학년별 받아쓰기·맞춤법 급수 자료입니다.'),
            'DATA': data, 'APP': rd(HERE / 'app.js'), 'HOMEFRAG': rd(OG / 'home.html').replace('{HOME}', '../../index.html')}
@@ -94,6 +105,6 @@ if __name__ == '__main__':
         d, b = load(g); D[g] = d; allbad += b + check(g, d)
     allbad += cross(D)
     if allbad: print('\n'.join(allbad[:60])); sys.exit('받아쓰기 자료 점검 실패')
-    print('받아쓰기 자료 점검 통과 — 6개 학년 × 150개')
+    print(f'받아쓰기 자료 점검 통과 — 6개 학년 × {sum(COUNT.values())}개')
     if sys.argv[1:] == ['check']: sys.exit(0)
     print(f'받아쓰기 {sum(build(g, D[g]) for g in range(1, 7))}개 페이지 다시 만듦')

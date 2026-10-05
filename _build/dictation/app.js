@@ -1,18 +1,19 @@
 /* 공통 › 받아쓰기·맞춤법 급수 화면 (2026-10-05)
-   학년마다 15급(10개씩): 1~5급 낱말 · 6~10급 어절 · 11~15급 문장
+   학년마다 35급(10개씩): 낱말 → 어절 → 문장 → 문장 부호
    📖 익히기 · 🎧 받아쓰기(화면에 쓰기 / 공책에 쓰기) · ✅ 맞춤법 고르기 · 🖨️ 인쇄(시험지·정답·급수표)
    읽어 주기는 브라우저의 한국어 음성(speechSynthesis), 기록은 그 기기 localStorage('hj-dict-v1')에만. */
 (function () {
   'use strict';
   var D = window.DT, $ = function (id) { return document.getElementById(id) };
-  var KEY = 'hj-dict-v1', st = {};
+  var KEY = 'hj-dict-v2', st = {};
   try { st = JSON.parse(localStorage.getItem(KEY) || '{}') || {} } catch (e) {}
   if (!st[D.g]) st[D.g] = {};
   function save() { try { localStorage.setItem(KEY, JSON.stringify(st)) } catch (e) {} }
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] }) }
   function pt(s) { return esc(s).replace(/'([^']+)'/g, '<b>$1</b>').replace(/\[([^\]]+)\]/g, '<span class="dt-snd">[$1]</span>') }
-  var KIND = ['낱말', '어절', '문장'], LV = [];
-  for (var k = 0; k < 3; k++) for (var j = 0; j < 5; j++) LV.push({ no: k * 5 + j + 1, kind: KIND[k], items: D.items[k].slice(j * 10, j * 10 + 10) });
+  var KIND = D.kinds, LV = [], PK = '문장 부호';   // 종류마다 10개씩 급으로: 낱말 → 어절 → 문장 → 문장 부호
+  for (var k = 0; k < KIND.length; k++) for (var j = 0; j * 10 < D.items[k].length; j++) LV.push({ no: LV.length + 1, kind: KIND[k], first: j === 0, items: D.items[k].slice(j * 10, j * 10 + 10) });
+  function strip(t) { return String(t).replace(/[·~(]/g, ' ').replace(/[\u2026.,?!"'\u201C\u201D\u2018\u2019:)]/g, '').replace(/ +/g, ' ').trim() }   // build.py의 strip과 같게
   var lv = 0, tab = 'learn';
 
   /* ── 읽어 주기 ── */
@@ -31,7 +32,7 @@
   function lvBar() {
     var h = '';
     LV.forEach(function (L, i) {
-      if (i % 5 === 0) h += '<span class="dt-lk">' + L.kind + '</span>';
+      if (L.first) h += '<span class="dt-lk">' + L.kind + '</span>';
       var r = st[D.g][L.no];
       h += '<button type="button" data-l="' + i + '" aria-pressed="' + (i === lv ? 'true' : 'false') + '"' + (r === 10 ? ' class="full"' : '') + '>' + L.no + '급' + (r != null ? '<i>' + r + '</i>' : '') + '</button>';
     });
@@ -69,7 +70,9 @@
   /* ── 🎧 받아쓰기 ── */
   var mode = 'screen', items = [], k2 = 0, ok = 0, wrong = [], tries = 0, punct = true;
   try { mode = localStorage.getItem(KEY + '-m') || 'screen'; punct = localStorage.getItem(KEY + '-p') !== '0' } catch (e) {}
-  function norm(s) {   // 소리로 안 들리는 따옴표·줄임표는 채점하지 않음
+  function norm(s, pk) {
+    if (pk) return String(s || '').replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'").replace(/\u2026+|\.{3,}/g, '\u2026').replace(/\s+/g, ' ').trim();   // 문장 부호 급: 부호 모두 채점(줄임표 꼴은 하나로)
+    // 다른 급: 소리로 안 들리는 따옴표·줄임표는 채점하지 않음
     s = String(s || '').replace(/[\u2026]+|\.{2,}/g, '').replace(/[.?!,]+(?=["'\u201D\u2019])/g, '').replace(/["'\u201C\u201D\u2018\u2019]/g, '').replace(/\s+/g, ' ').replace(/ ([.?!,])/g, '$1').trim();
     if (!punct) s = s.replace(/[.?!,]/g, '').replace(/\s+/g, ' ').trim(); return s }
   function dictSetup() {
@@ -82,7 +85,8 @@
   $('dcMode').onclick = function (e) { var b = e.target.closest('[data-m]'); if (!b) return; mode = b.dataset.m; try { localStorage.setItem(KEY + '-m', mode) } catch (er) {} dictSetup() };
   $('dcPunct').onchange = function () { punct = this.checked; try { localStorage.setItem(KEY + '-p', punct ? '1' : '0') } catch (er) {} };
   function dShow() {
-    tries = 0; var it = items[k2];
+    tries = 0; var it = items[k2], pk = LV[lv].kind === PK;
+    $('dcHint').hidden = !pk; if (pk) $('dcHint').innerHTML = '문장 부호를 넣어 바르게 써요<b>' + esc(strip(it[0])) + '</b>';
     $('dcCnt').textContent = (k2 + 1) + ' / 10'; $('dcOk').textContent = '⭕ ' + ok;
     $('dcBar').style.width = (k2 * 10) + '%';
     $('dcIn').value = ''; $('dcIn').disabled = false; $('dcMsg').innerHTML = ''; $('dcMsg').className = 'dt-msg';
@@ -107,7 +111,7 @@
   }
   function dCheck() {
     if (!$('dcNext').hidden) { dNext(); return }
-    var it = items[k2], v = norm($('dcIn').value), ans = norm(it[0]), m = $('dcMsg');
+    var pk = LV[lv].kind === PK, it = items[k2], v = norm($('dcIn').value, pk), ans = norm(it[0], pk), m = $('dcMsg');
     if (!v) { m.textContent = '들은 말을 써 주세요.'; return }
     if (v === ans) {
       if (tries === 0) ok++; $('dcOk').textContent = '⭕ ' + ok;
@@ -115,9 +119,9 @@
       $('dcIn').disabled = true; $('dcGo').hidden = true; $('dcNext').hidden = false; $('dcNext').focus({ preventScroll: true }); return;
     }
     tries++;
-    var d = diff(ans, v), sp = ans.replace(/ /g, '') === v.replace(/ /g, '');
+    var d = diff(ans, v), sp = ans.replace(/ /g, '') === v.replace(/ /g, ''), sp2 = strip(ans) === strip(v);
     if (tries === 1) {
-      m.innerHTML = '❌ ' + (sp ? '글자는 맞았어요. <b>띄어쓰기</b>를 다시 살펴보세요.' : '다시 한 번 들어 보고 고쳐 써 볼까요?') + '<p class="dt-df">내가 쓴 글: ' + d[1] + '</p>';
+      m.innerHTML = '❌ ' + (sp ? '글자는 맞았어요. <b>띄어쓰기</b>를 다시 살펴보세요.' : sp2 ? '글자는 맞았어요. <b>문장 부호</b>를 다시 살펴보세요.' : '다시 한 번 들어 보고 고쳐 써 볼까요?') + '<p class="dt-df">내가 쓴 글: ' + d[1] + '</p>';
       m.className = 'dt-msg no'; $('dcIn').focus({ preventScroll: true }); return;
     }
     wrong.push([it, $('dcIn').value]);
@@ -141,7 +145,8 @@
     $('ntNo').textContent = (k2 + 1) + '번'; $('ntCnt').textContent = (k2 + 1) + ' / 10';
     $('ntPrev').disabled = k2 === 0; $('ntNext').textContent = k2 === 9 ? '✅ 정답 보기' : '다음 →';
     $('ntAns').hidden = true; $('ntShow').hidden = false;
-    var it = items[k2]; $('ntSay').dataset.say = rd(it); $('ntSlow').dataset.say = rd(it);
+    var it = items[k2], pk = LV[lv].kind === PK; $('ntHint').hidden = !pk; if (pk) $('ntHint').innerHTML = '문장 부호를 넣어 공책에 써요<b>' + esc(strip(it[0])) + '</b>';
+    $('ntSay').dataset.say = rd(it); $('ntSlow').dataset.say = rd(it);
     setTimeout(function () { say(rd(it)) }, 250);
   }
   $('ntPrev').onclick = function () { if (k2 > 0) { k2--; nShow() } };
@@ -187,15 +192,18 @@
     var per = L.kind === '낱말' ? 10 : 20, rows = Math.ceil((max + 1) / per);
     var h = '<div class="dt-sheet"><div class="sh-hd"><div><b>' + esc(D.name) + ' 받아쓰기 ' + L.no + '급</b><span>' + L.kind + ' 10개' + (kind === 'key' ? ' · 정답' : '') + '</span></div>' +
       (kind === 'key' ? '' : '<div class="sh-nm">이름: <i></i> 점수: <i class="s"></i> / 100</div>') + '</div><ol class="sh-list ' + kind + '">';
+    var pk = L.kind === PK;
     L.items.forEach(function (it) {
-      if (kind === 'key') h += '<li><b>' + esc(it[0]) + '</b><small>' + pt(it[1]) + '</small></li>';
+      if (pk && kind !== 'key') h += '<li><span class="sh-q">' + esc(strip(it[0])) + '</span><span class="dt-ln"></span></li>';
+      else if (kind === 'key') h += '<li><b>' + esc(it[0]) + '</b><small>' + pt(it[1]) + '</small></li>';
       else if (paper === 'cell') { h += '<li>'; for (var r = 0; r < rows; r++) h += cells(per); h += '</li>' }
       else h += '<li><span class="dt-ln"></span>' + (L.kind === '문장' && max > 24 ? '<span class="dt-ln"></span>' : '') + '</li>';
     });
     return h + '</ol><p class="sh-ft">받아쓰기·맞춤법 급수 · 초등교사 홍지희</p></div>';
   }
   function home() {   // 가정 학습용 급수표: 15급 전체
-    var h = '<div class="dt-sheet home"><div class="sh-hd"><div><b>' + esc(D.name) + ' 받아쓰기 급수표</b><span>집에서 미리 읽고 써 보세요 · 1~5급 낱말 · 6~10급 어절 · 11~15급 문장</span></div></div><div class="hm-grid">';
+    var rg = KIND.map(function (k) { var a = LV.filter(function (L) { return L.kind === k }); return a[0].no + '~' + a[a.length - 1].no + '급 ' + k }).join(' · ');
+    var h = '<div class="dt-sheet home"><div class="sh-hd"><div><b>' + esc(D.name) + ' 받아쓰기 급수표</b><span>집에서 미리 읽고 써 보세요 · ' + rg + '</span></div></div><div class="hm-grid">';
     LV.forEach(function (L) { h += '<section><h4>' + L.no + '급 <small>' + L.kind + '</small></h4><ol>'; L.items.forEach(function (it) { h += '<li>' + esc(it[0]) + '</li>' }); h += '</ol></section>' });
     return h + '</div><p class="sh-ft">받아쓰기·맞춤법 급수 · 초등교사 홍지희</p></div>';
   }
@@ -208,7 +216,7 @@
 
   $('dtRate').onchange = function () { rate = +this.value };
   var m = /^#(\d+)(?:-(\w+))?$/.exec(location.hash);
-  if (m && +m[1] >= 1 && +m[1] <= 15) { lv = +m[1] - 1; if (m[2] && /^(dict|pick|print)$/.test(m[2])) tab = m[2] }
+  if (m && +m[1] >= 1 && +m[1] <= LV.length) { lv = +m[1] - 1; if (m[2] && /^(dict|pick|print)$/.test(m[2])) tab = m[2] }
   show();
   var hh = location.hostname, okHost = location.protocol === 'file:' || /github\.io$/.test(hh) || hh === 'localhost' || hh === '127.0.0.1';
   if (okHost) document.querySelectorAll('.tolist').forEach(function (e) { e.classList.add('on') });
