@@ -14,7 +14,7 @@
 목록 common/words/index.html은 메뉴 페이지(손으로 고치고 apply_theme.py).
 고친 뒤 루트에서 python3 _build/theme/apply_content_theme.py (자동 보완 run_all.py에도 들어 있음).
 """
-import re, sys, csv, json, pathlib
+import re, sys, csv, json, pathlib, unicodedata
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 OG = ROOT / '_build' / 'origami'
@@ -30,7 +30,7 @@ HZ_FONT = '<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wg
 def hanja_levels():
     m = {}
     with open(ROOT / '_build/hanja/data/hanja.csv', encoding='utf-8') as f:
-        for r in csv.DictReader(f): m.setdefault(r['hanja'], r['level'])
+        for r in csv.DictReader(f): m.setdefault(unicodedata.normalize('NFC', r['hanja']), (r['level'], r['hanja']))
     return m
 
 def lv_file(lv):   # '7급Ⅱ' → lv7-2.html
@@ -56,7 +56,7 @@ def items(area, rows, HL):
             parts = [x.strip() for x in c.split('·')]
             cs = []
             for k, ch in enumerate(h):
-                lv = HL.get(ch, '')
+                lv = HL.get(ch, ('', ''))[0]
                 cs.append([ch, parts[k] if k < len(parts) else '', lv, lv_file(lv)])
             out.append({'t': t, 'h': h, 'a': t[:2], 'b': t[2:], 'm': m, 'e': e, 'c': cs})
         else:
@@ -64,6 +64,15 @@ def items(area, rows, HL):
             a, b = raw.split('/', 1)
             out.append({'t': a.strip() + ' ' + b.strip(), 'a': a.strip(), 'b': b.strip(), 'm': m, 'e': e, 'r': r})
     return out
+
+def dueum(c):   # 두음 법칙: 로→노, 량→양, 녀→여 (글자 풀이는 본음, 낱말은 두음 법칙 적용 소리도 맞음)
+    n = ord(c) - 0xAC00
+    if not 0 <= n < 11172: return c
+    cho, jung, jong = n // 588, n // 28 % 21, n % 28
+    y = jung in (2, 6, 7, 12, 17, 20)   # ㅑ ㅕ ㅖ ㅛ ㅠ ㅣ
+    if cho == 5: cho = 11 if y else 2    # ㄹ → ㅇ/ㄴ
+    elif cho == 2 and y: cho = 11        # ㄴ → ㅇ
+    return chr(0xAC00 + cho * 588 + jung * 28 + jong)
 
 def check(area, rows, its):
     bad = []
@@ -81,7 +90,7 @@ def check(area, rows, its):
             if len(it['h']) != 4 or re.search(r'[가-힣A-Za-z]', it['h']): bad.append(f'{area} 한자 네 글자 아님: {it["h"]}')
             if len(p[4].split('·')) != 4: bad.append(f'{area} 글자 풀이 네 개 아님: {t}')
             for (ch, hm, *_), hg in zip(it['c'], t):
-                if hm and not hm.endswith(hg): bad.append(f'{area} 글자 풀이 음이 한글과 다름: {t} {ch} {hm}')
+                if hm and not (hm.endswith(hg) or dueum(hm[-1]) == hg): bad.append(f'{area} 글자 풀이 음이 한글과 다름: {t} {ch} {hm}')
             if t not in it['e']: bad.append(f'{area} 예문에 말이 없음: {t}')
         else:
             if p[0].count('/') != 1: bad.append(f'{area} "/"가 한 개가 아님: {p[0]}')
