@@ -1,0 +1,57 @@
+<!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>{NAME} 받아쓰기·맞춤법 급수 · 공통 · 초등교사 홍지희</title>
+<meta name="description" content="{NAME} 받아쓰기·맞춤법 급수: 낱말 50 · 어절 50 · 문장 50, 듣고 쓰기, 맞춤법 고르기, 시험지·급수표 인쇄">
+<style>{CSS}</style>{HEADSNIP}
+</head><body>
+<main>
+<nav class="dt-gr" aria-label="학년">{GRNAV}</nav>
+<h1>✏️ {NAME} 받아쓰기·맞춤법</h1>
+<p class="sub">{INTRO}</p>
+<p class="dt-warn" id="dtVoice" hidden>🔈 이 기기에는 한국어 읽기 목소리가 없어 '듣기'가 소리 나지 않을 수 있어요. 선생님이 불러 주거나 '익히기'의 글을 보고 연습하세요.</p>
+<div class="dt-lv" id="dtLv" aria-label="급 고르기"></div>
+<div class="dt-tabs" id="dtTabs" role="tablist">
+<button type="button" role="tab" data-t="learn">📖 익히기</button><button type="button" role="tab" data-t="dict">🎧 받아쓰기</button><button type="button" role="tab" data-t="pick">✅ 맞춤법 고르기</button><button type="button" role="tab" data-t="print">🖨️ 인쇄</button>
+</div>
+<div class="dt-bar"><h2 class="dt-h" id="dtTitle"></h2><span class="dt-sp"></span><label class="dt-lab">읽는 빠르기 <select id="dtRate"><option value="0.8">느리게</option><option value="1" selected>보통</option><option value="1.15">빠르게</option></select></label></div>
+<section id="t-learn">
+<div class="dt-bar"><button type="button" class="dt-b go" id="lnAll">🔊 10개 모두 듣기</button></div>
+<ol class="dt-learn" id="lnList"></ol>
+</section>
+<section id="t-dict" hidden>
+<div class="dt-bar"><span class="dt-lab">쓰는 곳</span><span class="dt-grp" id="dcMode"><button type="button" class="dt-b" data-m="screen">⌨️ 화면에 쓰기</button><button type="button" class="dt-b" data-m="note">📒 공책에 쓰기</button></span><span class="dt-sp"></span><label class="dt-lab" id="dcPunctW"><input type="checkbox" id="dcPunct"> 문장 부호(. ? ! ,)도 채점</label></div>
+<div id="dcScreen" class="dt-play">
+<div class="dt-prog"><i id="dcBar"></i></div>
+<div class="dt-stat"><span id="dcCnt"></span><span id="dcOk"></span></div>
+<div class="dt-bar ctr"><button type="button" class="dt-b go big" id="dcSay" data-say="">🔊 듣기</button><button type="button" class="dt-b big" id="dcSlow" data-say="" data-slow="1">🐢 천천히</button></div>
+<input type="text" class="dt-in" id="dcIn" autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" aria-label="들은 말 쓰기" placeholder="들은 말을 여기에 써요">
+<div class="dt-msg" id="dcMsg" aria-live="polite"></div>
+<div class="dt-bar ctr"><button type="button" class="dt-b go" id="dcGo">확인 ✔</button><button type="button" class="dt-b go" id="dcNext" hidden>다음 →</button></div>
+</div>
+<div id="dcNote" class="dt-play" hidden>
+<div id="ntShow"><p class="dt-stat"><span id="ntCnt"></span></p><p class="dt-ntno" id="ntNo"></p>
+<div class="dt-bar ctr"><button type="button" class="dt-b go big" id="ntSay" data-say="">🔊 듣기</button><button type="button" class="dt-b big" id="ntSlow" data-say="" data-slow="1">🐢 천천히</button></div>
+<p class="dt-note">공책에 번호를 쓰고 들은 말을 받아써요. 다 쓰면 '다음'을 눌러요.</p>
+<div class="dt-bar ctr"><button type="button" class="dt-b" id="ntPrev">← 이전</button><button type="button" class="dt-b go" id="ntNext">다음 →</button></div></div>
+<div id="ntAns" hidden></div>
+</div>
+<div id="dcEnd" class="dt-res" hidden><div id="dcRes"></div><div class="dt-bar ctr"><button type="button" class="dt-b go" id="dcAgain">🔄 다시 하기</button><button type="button" class="dt-b" id="dcNextLv">다음 급 →</button></div></div>
+</section>
+<section id="t-pick" hidden>
+<p class="dt-note">두 가지 중에서 바르게 쓴 것을 골라요. 고르면 맞춤법 포인트가 나와요.</p>
+<ol class="dt-pick" id="pkList"></ol>
+<div class="dt-bar ctr"><span class="dt-lab" id="pkScore"></span><button type="button" class="dt-b" id="pkAgain">🔄 다시 풀기</button></div>
+</section>
+<section id="t-print" hidden>
+<div class="dt-bar"><span class="dt-lab">시험지 모양</span><span class="dt-grp" id="prPaper"><button type="button" class="dt-b" data-p="cell">▦ 칸 공책</button><button type="button" class="dt-b" data-p="line">☰ 줄 공책</button></span></div>
+<div class="dt-bar"><button type="button" class="dt-b go" id="prTest">🖨️ 이 급 시험지</button><button type="button" class="dt-b" id="prKey">🖨️ 이 급 정답</button><button type="button" class="dt-b" id="prBoth">🖨️ 시험지 + 정답</button><button type="button" class="dt-b" id="prAll">🖨️ 15급 시험지 모두</button><button type="button" class="dt-b" id="prAllKey">🖨️ 15급 정답 모두</button><button type="button" class="dt-b" id="prHome">🖨️ 가정 학습용 급수표</button></div>
+<div class="dt-view" id="prView"></div>
+</section>
+<p class="dt-note dt-credit">맞춤법 기준: 국립국어원 「한글 맞춤법」·「표준어 규정」·「외래어 표기법」. 낱말·문장은 이 자료를 위해 새로 지은 것이에요. 읽어 주기는 기기에 들어 있는 컴퓨터 목소리예요.</p>
+<div id="dtOut" aria-hidden="true"></div>
+<div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a>{FOOT}</div>
+</main>
+<script>window.DT={DATA};
+{APP}</script>
+{HOMEFRAG}
+</body></html>

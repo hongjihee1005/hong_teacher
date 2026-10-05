@@ -166,7 +166,7 @@ grade1/ … grade6/
 
 ### 공통 › 한자 급수 (`common/hanja/`, 2026-10-04)
 
-- 첫 화면 '학년 공통' 묶음의 '🎒 공통' 카드 → `common/index.html`(방: '한자 급수' · '음악이론' · '기초연산') → `common/hanja/index.html`(13개 급 방) → `common/hanja/lv8.html, lv7-2.html, lv7.html, lv6-2.html, lv6.html, lv5-2.html, lv5.html, lv4-2.html, lv4.html, lv3-2.html, lv3.html, lv2.html, lv1.html`(Ⅱ급은 `-2`).
+- 첫 화면 '학년 공통' 묶음의 '🎒 공통' 카드 → `common/index.html`(방: '한자 급수' · '음악이론' · '기초연산' · '받아쓰기·맞춤법 급수') → `common/hanja/index.html`(13개 급 방) → `common/hanja/lv8.html, lv7-2.html, lv7.html, lv6-2.html, lv6.html, lv5-2.html, lv5.html, lv4-2.html, lv4.html, lv3-2.html, lv3.html, lv2.html, lv1.html`(Ⅱ급은 `-2`).
 - **한국어문회** 한자능력검정시험 기준. 배정한자는 `_build/hanja/data/hanja.csv`(한국어문회 홈페이지 엑셀을 rycont/hanja-grade-dataset이 CSV로 옮긴 것, 저작권 한국어문회) — 8급 50자 … 1급까지 누적 3,500자, 훈음·부수·총획.
 - 급 페이지: ① 한자 익히기(이 급의 새 한자 카드 → 큰 글자·훈음·부수·총획·그 한자가 든 낱말·**획순**(한 획씩 그려 보이는 애니메이션 + 단계 그림), 찾기) ② 쓰기 연습지(한 쪽 8자: 위에 획순 단계 칸, 보고 쓰기 1·덧쓰기 3·빈칸 5, 이 쪽/모든 쪽 인쇄, `#sheet-3`)
   ③ 모의 시험 20회(`#exam-5`): 문항 수·합격 기준은 한국어문회 안내(8급 50/35, 7급Ⅱ 60/42, 7급 70/49, 6급Ⅱ 80/56, 6급 90/63, 5급Ⅱ~4급 100/70, 3급Ⅱ~2급 150/105, 1급 200/160).
@@ -183,7 +183,7 @@ grade1/ … grade6/
 
 ### 공통 › 음악이론 (`common/music/`, 2026-10-04)
 
-- '🎒 공통' → `common/index.html`(방: 한자 급수 · 음악이론 · 기초연산) → `common/music/index.html`(영역 5개로 묶은 22개 주제) → `common/music/t01-staff.html … t22-form.html`.
+- '🎒 공통' → `common/index.html`(방: 한자 급수 · 음악이론 · 기초연산 · 받아쓰기·맞춤법 급수) → `common/music/index.html`(영역 5개로 묶은 22개 주제) → `common/music/t01-staff.html … t22-form.html`.
   영역: 악보 읽기(01 오선과 음자리표 ~ 07 도돌이표) · 빠르기와 셈여림(08~10) · 음계와 화음(11~14) · 국악(15 장단 ~ 18 판소리와 민요) · 악기와 합주(19 서양 악기 ~ 22 음악의 짜임). 번호 차례가 기초 → 심화.
 - 주제 페이지: 📖 배우기 · 🎧 들어 보고 해 보기 · ✏️ 연습 문제(바로 채점) · 🎵 추천 음악(유튜브 **검색** 링크 — 특정 영상 주소는 넣지 않음) · 📌 핵심 정리 · 이전/다음 주제,
   위 단추: 🖥️ 슬라이드로 보기(같은 내용을 한 장씩, ←/→, 전체 화면, `#slides`로 바로 열기) · 📄 활동지 미리 보기 · 🖨️ 활동지 인쇄 · 🖨️ 활동지 정답 인쇄.
@@ -208,6 +208,18 @@ grade1/ … grade6/
   고친 뒤 `python3 _build/arith/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 단계를 더하면 `index.html`(메뉴)의 단계 수 글도 고치고 `apply_theme.py`.
 - 클래스 이름은 `ar-` 앞글자를 씁니다(공통 덮개 content.css의 `.ex`·`.ln`·`.rc`·`.fb`·`.st`·`.an` 등과 겹치지 않게).
 - 메뉴 아이콘 ➖(math)·🍕(pie)·🏆🏅(trophy)는 `_build/theme/icons.js`에 추가했습니다.
+
+### 공통 › 받아쓰기·맞춤법 급수 (`common/dictation/`, 2026-10-05)
+
+- '🎒 공통' → `common/index.html` → `common/dictation/index.html`(1~6학년 방) → `common/dictation/g1.html ~ g6.html`.
+  학년마다 낱말 50 · 어절 50 · 문장 50 = 150개(모두 900개)를 10개씩 15급으로: 1~5급 낱말, 6~10급 어절, 11~15급 문장(자료 파일 차례 그대로).
+- 급 페이지: 📖 익히기(글·💡 맞춤법 포인트·틀리기 쉬운 꼴, 🔊 듣기/🐢 천천히, 10개 모두 듣기) · 🎧 받아쓰기(⌨️ 화면에 쓰기: 읽어 주면 쓰고 '확인', 처음 틀리면 내가 쓴 글에서 틀린 곳 표시 후 다시, 두 번째엔 정답·포인트, 끝나면 점수와 다시 볼 것 / 📒 공책에 쓰기: 번호대로 불러 주고 마지막에 정답 공개; 문장은 '문장 부호도 채점' 선택) ·
+  ✅ 맞춤법 고르기(바른 글과 틀리기 쉬운 꼴 중 고르기) · 🖨️ 인쇄(이 급 시험지·정답·둘 다, 15급 시험지·정답 모두, 가정 학습용 급수표; 시험지는 ▦ 칸 공책(1·2학년 기본, 띄어쓰기는 빈칸)/☰ 줄 공책).
+  `g3.html#12`(12급 익히기), `#12-dict`·`#12-pick`·`#12-print`로 바로 열기. 급별 최고 점수는 그 기기 localStorage(`hj-dict-v1`).
+- 읽어 주기는 브라우저의 한국어 음성(`speechSynthesis`, ko-KR)이라 기기마다 목소리가 다르고, 한국어 목소리가 없으면 안내가 뜹니다. 공통 덮개의 '듣는 중' 막대(`#hj-player`)는 이 페이지에서 숨깁니다.
+- **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/dictation/`: 자료 `data/gN.txt`(`# 낱말`·`# 어절`·`# 문장` 아래 50줄씩, 한 줄에 `바른 글|맞춤법 포인트|틀리기 쉬운 꼴` — 포인트의 '작은따옴표'는 굵게, [대괄호]는 소리로 표시), 화면 `page.html`·`page.css`·`app.js`, 학년 소개는 `build.py`의 `INTRO`.
+  `python3 _build/dictation/build.py check`가 개수(50)·겹침·틀린 꼴≠바른 글·낱말 띄어쓰기 없음·어절 띄어쓰기 있음·문장 부호를 점검합니다(`build.py`가 먼저 돌림). 고친 뒤 `python3 _build/dictation/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음).
+- 1학년은 대화에서 직접 썼고, 2~6학년은 학년별 맞춤법 중점(겹받침·사이시옷·두음 법칙·외래어 표기 등)을 주고 나누어 쓴 뒤 검토했습니다. 기준은 국립국어원 「한글 맞춤법」·「표준어 규정」·「외래어 표기법」. 고칠 곳이 보이면 `data/gN.txt`만 고치면 됩니다.
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
