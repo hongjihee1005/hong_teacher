@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """공통 › 세계시민교육 주제 페이지 만들기 (2026-10-05)
 
-    python3 _build/gced/build.py      # common/global/tNN-slug.html (20개 주제)
+    python3 _build/gced/build.py      # project/global/tNN-slug.html (20개 주제)
 
 틀: 유네스코 「세계시민교육: 주제와 학습 목표」(UNESCO, Global Citizenship Education: Topics and Learning Objectives, 2015)
     — 세 학습 영역(인지 · 사회정서 · 행동)과 9개 주제. 주제마다 un=[주제 번호], dom=[영역]으로 연결해 화면에 표시.
 내용: topics_a.py(01~08 세계시민·정체성·다양성·인권) · topics_b.py(09~13 지구촌 문제·평화) · topics_c.py(14~20 지속가능발전·참여와 실천)
 화면: page.html + page.css + app.js (음악이론 틀을 고쳐 씀, 악보·소리 엔진 없음)
-목록 common/global/index.html은 메뉴 페이지(손으로 고치고 apply_theme.py). 주제를 더하면 목록에도 카드를 더하세요.
+목록 project/global/index.html은 메뉴 페이지(손으로 고치고 apply_theme.py). 주제를 더하면 목록에도 카드를 더하세요.
 고친 뒤 루트에서 python3 _build/theme/apply_content_theme.py (자동 보완 run_all.py에도 들어 있음).
 """
 import re, sys, json, pathlib
@@ -62,7 +62,7 @@ def build(i):
     for k in ('{CSS}', '{HEADSNIP}', '{FOOT}', '{APP}', '{HOMEFRAG}', '{PREV}', '{NEXT}', '{NO}', '{TITLE}', '{GOAL}', '{AREA}', '{ICO}'):
         s = s.replace(k, rep[k])
     s = s.replace('{DATA}', data)
-    out = ROOT / 'common' / 'global' / fname(t)
+    out = ROOT / 'project' / 'global' / fname(t)
     out.parent.mkdir(parents=True, exist_ok=True)
     old = out.read_text(encoding='utf-8') if out.exists() else ''
     strip = lambda x: re.sub(r'<!--hj-c(?:theme|icons)-->.*?<!--/hj-c(?:theme|icons)-->', '', x, flags=re.S)

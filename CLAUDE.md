@@ -115,7 +115,7 @@ grade1/ … grade6/
 
 ### 쉬는 시간 › 종이접기 (`break/`, 2026-10-04)
 
-- 첫 화면은 두 묶음입니다(2026-10-04): 제목줄 `<h2 class="sec-h">학년 공통</h2>` 아래 '🍎 우리 반 교실' · '🎒 공통' · '🧸 쉬는 시간' 세 카드, `<h2 class="sec-h">학년별</h2>` 아래 1~6학년 카드(3개씩 두 줄). 둘 다 `<div class="grid g3 three">`. 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠'·'컬러링'·'미로찾기'·'틀린 그림 찾기' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
+- 첫 화면은 세 묶음입니다(2026-10-04, '프로젝트'는 2026-10-05에 더함): 제목줄 `<h2 class="sec-h">학년 공통</h2>` 아래 '🍎 우리 반 교실' · '🎒 공통' · '🧸 쉬는 시간' 세 카드, `<h2 class="sec-h">학년별</h2>` 아래 1~6학년 카드(3개씩 두 줄). 둘 다 `<div class="grid g3 three">`. 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠'·'컬러링'·'미로찾기'·'틀린 그림 찾기' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
 - 학년 페이지는 작품 카드(완성 그림·난이도·단계 수·준비물) → 한 단계씩 보기(큰 그림, 이전/다음, ←/→ 키, `#작품id`로 바로 열기) → '한눈에 보기'·'인쇄'(전체 단계를 3칸씩). 작품 15가지:
   1학년 우리 집·강아지 얼굴·고양이 얼굴 / 2학년 튤립·컵·매미 / 3학년 종이비행기·투구·동서남북 / 4학년 팔랑개비·하트 / 5학년 상자·점프 개구리 / 6학년 날개 퍼덕이는 새·종이학.
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/origami/`입니다: 작품 `models_gN.py`(설명 문장과 그림 좌표 — 접는 선에 대해 점을 뒤집는 `geo.py` 도구로 계산), 그림 엔진 `engine.js`, 화면 `page.html`·`page.css`·`svg.css`·`app.js`, 학년별 머리말·약속은 `build.py`의 `GRADES`.
@@ -166,7 +166,7 @@ grade1/ … grade6/
 
 ### 공통 › 한자 급수 (`common/hanja/`, 2026-10-04)
 
-- 첫 화면 '학년 공통' 묶음의 '🎒 공통' 카드 → `common/index.html`(방: '한자 급수' · '음악이론' · '기초연산' · '받아쓰기·맞춤법 급수' · '세계시민교육') → `common/hanja/index.html`(13개 급 방) → `common/hanja/lv8.html, lv7-2.html, lv7.html, lv6-2.html, lv6.html, lv5-2.html, lv5.html, lv4-2.html, lv4.html, lv3-2.html, lv3.html, lv2.html, lv1.html`(Ⅱ급은 `-2`).
+- 첫 화면 '학년 공통' 묶음의 '🎒 공통' 카드 → `common/index.html`(방: '한자 급수' · '음악이론' · '기초연산' · '받아쓰기·맞춤법 급수') → `common/hanja/index.html`(13개 급 방) → `common/hanja/lv8.html, lv7-2.html, lv7.html, lv6-2.html, lv6.html, lv5-2.html, lv5.html, lv4-2.html, lv4.html, lv3-2.html, lv3.html, lv2.html, lv1.html`(Ⅱ급은 `-2`).
 - **한국어문회** 한자능력검정시험 기준. 배정한자는 `_build/hanja/data/hanja.csv`(한국어문회 홈페이지 엑셀을 rycont/hanja-grade-dataset이 CSV로 옮긴 것, 저작권 한국어문회) — 8급 50자 … 1급까지 누적 3,500자, 훈음·부수·총획.
 - 급 페이지: ① 한자 익히기(이 급의 새 한자 카드 → 큰 글자·훈음·부수·총획·그 한자가 든 낱말·**획순**(한 획씩 그려 보이는 애니메이션 + 단계 그림), 찾기) ② 쓰기 연습지(한 쪽 8자: 위에 획순 단계 칸, 보고 쓰기 1·덧쓰기 3·빈칸 5, 이 쪽/모든 쪽 인쇄, `#sheet-3`)
   ③ 모의 시험 20회(`#exam-5`): 문항 수·합격 기준은 한국어문회 안내(8급 50/35, 7급Ⅱ 60/42, 7급 70/49, 6급Ⅱ 80/56, 6급 90/63, 5급Ⅱ~4급 100/70, 3급Ⅱ~2급 150/105, 1급 200/160).
@@ -183,7 +183,7 @@ grade1/ … grade6/
 
 ### 공통 › 음악이론 (`common/music/`, 2026-10-04)
 
-- '🎒 공통' → `common/index.html`(방: 한자 급수 · 음악이론 · 기초연산 · 받아쓰기·맞춤법 급수 · 세계시민교육) → `common/music/index.html`(영역 5개로 묶은 22개 주제) → `common/music/t01-staff.html … t22-form.html`.
+- '🎒 공통' → `common/index.html`(방: 한자 급수 · 음악이론 · 기초연산 · 받아쓰기·맞춤법 급수) → `common/music/index.html`(영역 5개로 묶은 22개 주제) → `common/music/t01-staff.html … t22-form.html`.
   영역: 악보 읽기(01 오선과 음자리표 ~ 07 도돌이표) · 빠르기와 셈여림(08~10) · 음계와 화음(11~14) · 국악(15 장단 ~ 18 판소리와 민요) · 악기와 합주(19 서양 악기 ~ 22 음악의 짜임). 번호 차례가 기초 → 심화.
 - 주제 페이지: 📖 배우기 · 🎧 들어 보고 해 보기 · ✏️ 연습 문제(바로 채점) · 🎵 추천 음악(유튜브 **검색** 링크 — 특정 영상 주소는 넣지 않음) · 📌 핵심 정리 · 이전/다음 주제,
   위 단추: 🖥️ 슬라이드로 보기(같은 내용을 한 장씩, ←/→, 전체 화면, `#slides`로 바로 열기) · 📄 활동지 미리 보기 · 🖨️ 활동지 인쇄 · 🖨️ 활동지 정답 인쇄.
@@ -222,9 +222,11 @@ grade1/ … grade6/
   `python3 _build/dictation/build.py check`가 개수(100·100·100·50)·겹침·학년끼리 같은 글·숫자(소리로 구별 안 됨)·틀린 꼴≠바른 글·낱말 띄어쓰기 없음·어절 띄어쓰기 있음·문장 부호(문장 부호 급은 틀린 꼴이 부호만 다른지, 쓸 수 있는 부호인지)를 점검합니다(`build.py`가 먼저 돌림). 고친 뒤 `python3 _build/dictation/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음).
 - 1학년은 대화에서 직접 썼고, 2~6학년은 학년별 맞춤법 중점(겹받침·사이시옷·두음 법칙·외래어 표기 등)을 주고 나누어 쓴 뒤 검토했습니다. 기준은 국립국어원 「한글 맞춤법」·「표준어 규정」·「외래어 표기법」. 고칠 곳이 보이면 `data/gN.txt`만 고치면 됩니다.
 
-### 공통 › 세계시민교육 (`common/global/`, 2026-10-05)
+### 프로젝트 › 세계시민교육 (`project/global/`, 2026-10-05)
 
-- '🎒 공통' → `common/index.html` → `common/global/index.html`(영역 5개로 묶은 20개 주제) → `common/global/t01-global-citizen.html … t20-action-plan.html`.
+- 첫 화면 세 번째 묶음 `<h2 class="sec-h">프로젝트</h2>`(학년 공통 · 학년별 다음)의 '🌏 세계시민교육' 카드 → `project/global/index.html`(영역 5개로 묶은 20개 주제) → `project/global/t01-global-citizen.html … t20-action-plan.html`.
+  프로젝트 메뉴 페이지 `project/index.html`(💡, 위치 표시줄의 '프로젝트')에도 카드가 있습니다. 새 프로젝트는 두 곳에 카드를 더하고 `apply_theme.py`.
+  처음엔 `common/global/`(공통)에 두었다가 같은 날 옮겼습니다. `common/global/*.html` 21개는 새 주소로 넘기는 안내 페이지입니다. 지우지 마세요.
   영역: 세계시민교육 첫걸음(01 세계시민이란 · 02 서로 이어진 지구촌) · 정체성·다양성·인권(03~08: 여러 겹의 나, 문화 존중, 편견과 고정관념, 차별·성평등, 세계인권선언, 유엔아동권리협약) ·
   지구촌 문제와 평화(09~12: 빈곤과 불평등, 난민, 갈등과 평화, 국제기구와 NGO) · 지속가능발전(13~17: SDGs 17가지, 기후 변화, 물과 위생, 책임 있는 소비·공정무역, 생물 다양성) · 참여와 실천(18~20: 디지털 세계시민, 목소리 내기·캠페인, 실천 계획). 3~6학년 눈높이.
 - 틀은 유네스코 「세계시민교육: 주제와 학습 목표」(UNESCO, *Global Citizenship Education: Topics and Learning Objectives*, 2015): 세 영역(인지·사회정서·행동)과 9가지 주제. 주제마다 `un=[주제 번호]`·`dom=[영역]`을 적어 제목 아래 이름표로 보여 줍니다(9가지 주제 우리말 이름은 `app.js`의 `UNT`, 쉽게 옮긴 것).
@@ -232,7 +234,7 @@ grade1/ … grade6/
   위젯: `cards` `table` `html` `sdg`(17개 목표 칸, 누르면 쉬운 설명 — 목표 이름은 쉽게 줄인 것) `pick`(상황 고르기, 고른 것마다 풀이) `sort`(알맞은 쪽 고르기) `think`(생각 쓰는 칸, 그 기기 localStorage `hj-gced-v1`에 저장) `circles`(여러 겹의 나 동심원).
 - 통계·날짜는 출처와 기준 해를 화면에 적었습니다(세계인권선언 1948·30조, 유엔아동권리협약 1989·54조·우리나라 비준 1991, 유엔 1945·193개국·우리나라 가입 1991, 강제 이주민 1억 명 넘음(UNHCR 2024), 안전한 식수 못 쓰는 사람 약 22억 명(WHO·유니세프 2022), 파리 협정 2015 등). 숫자를 바꿀 때는 기준 해도 같이 고치세요.
 - **`t*.html`을 직접 고치지 마세요.** 원본은 `_build/gced/`: 내용 `topics_a.py`(01~08)·`topics_b.py`(09~12)·`topics_c.py`(13~20), 화면 `page.html`·`page.css`·`app.js`.
-  고친 뒤 `python3 _build/gced/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py`가 정답 번호·잇기 개수·유네스코 주제 번호·생각 칸 id 등을 먼저 점검, `build.py check`는 점검만). 주제를 더하면 `common/global/index.html`(메뉴)에도 카드를 더하고 `apply_theme.py`.
+  고친 뒤 `python3 _build/gced/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py`가 정답 번호·잇기 개수·유네스코 주제 번호·생각 칸 id 등을 먼저 점검, `build.py check`는 점검만). 주제를 더하면 `project/global/index.html`(메뉴)에도 카드를 더하고 `apply_theme.py`.
 - 메뉴 아이콘 🕊(dove)·🙌✋🙋(hand)는 `_build/theme/icons.js`에 추가했습니다.
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
