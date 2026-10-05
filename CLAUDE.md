@@ -225,7 +225,7 @@ grade1/ … grade6/
 ### 프로젝트 › 세계시민교육 (`project/global/`, 2026-10-05)
 
 - 첫 화면 세 번째 묶음 `<h2 class="sec-h">프로젝트</h2>`(학년 공통 · 학년별 다음)의 '💡 프로젝트' 카드 → `project/index.html`(프로젝트 메뉴, 방: '🌏 세계시민교육') → `project/global/index.html`(영역 5개로 묶은 20개 주제) → `project/global/t01-global-citizen.html … t20-action-plan.html`.
-  새 프로젝트는 `project/index.html`에 카드를 더하고 `apply_theme.py`(프로젝트가 2개 이상이 되면 첫 화면 카드에 ⌄ 펼침 메뉴가 저절로 생김).
+  새 프로젝트는 `project/index.html`에 카드를 더하고 `apply_theme.py`(프로젝트가 2개 이상이면 첫 화면 카드에 ⌄ 펼침 메뉴가 저절로 생김 — 2026-10-05 독서교육을 더해 생김).
   처음엔 `common/global/`(공통)에 두었다가 같은 날 옮겼습니다. `common/global/*.html` 21개는 새 주소로 넘기는 안내 페이지입니다. 지우지 마세요.
   영역: 세계시민교육 첫걸음(01 세계시민이란 · 02 서로 이어진 지구촌) · 정체성·다양성·인권(03~08: 여러 겹의 나, 문화 존중, 편견과 고정관념, 차별·성평등, 세계인권선언, 유엔아동권리협약) ·
   지구촌 문제와 평화(09~12: 빈곤과 불평등, 난민, 갈등과 평화, 국제기구와 NGO) · 지속가능발전(13~17: SDGs 17가지, 기후 변화, 물과 위생, 책임 있는 소비·공정무역, 생물 다양성) · 참여와 실천(18~20: 디지털 세계시민, 목소리 내기·캠페인, 실천 계획). 3~6학년 눈높이.
@@ -236,6 +236,17 @@ grade1/ … grade6/
 - **`t*.html`을 직접 고치지 마세요.** 원본은 `_build/gced/`: 내용 `topics_a.py`(01~08)·`topics_b.py`(09~12)·`topics_c.py`(13~20), 화면 `page.html`·`page.css`·`app.js`.
   고친 뒤 `python3 _build/gced/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py`가 정답 번호·잇기 개수·유네스코 주제 번호·생각 칸 id 등을 먼저 점검, `build.py check`는 점검만). 주제를 더하면 `project/global/index.html`(메뉴)에도 카드를 더하고 `apply_theme.py`.
 - 메뉴 아이콘 🕊(dove)·🙌✋🙋(hand)는 `_build/theme/icons.js`에 추가했습니다.
+
+### 프로젝트 › 독서교육 추천도서 (`project/reading/`, 2026-10-05)
+
+- '💡 프로젝트' → `project/index.html`(방: 세계시민교육 · 📚 독서교육) → `project/reading/index.html`(메뉴: 학년별 1~6학년 · 교과별 국어·수학·사회·과학 · 도덕·음악·미술은 '곧 열려요' · 추천 기관) → `g1~g6.html`, `s-korean.html`·`s-math.html`·`s-social.html`·`s-science.html`, `orgs.html`(추천 기관과 출처).
+- **원칙: 출처가 확인된 추천만 적고, 확인된 추천 기관 수가 많은 책부터.** 책마다 추천 기관·목록 이름·확인한 출처 주소(`url`)가 있고, 화면에서 기관 이름을 누르면 그 주소가 열립니다. 상은 기관 수에 세지 않습니다. 기억이나 블로그만으로는 넣지 않습니다(블로그뿐이던 책은 뺐음).
+  출처는 기관 목록·교육청 PDF(대전학생교육문화원 「초등○학년을 위한 추천도서 100」 2016 등)·출판사·서점의 '○○ 추천' 표시·위키백과의 기관 추천 기록입니다. 2026-10-05 조사는 이 환경에서 기관 사이트를 직접 열 수 없어 **웹 검색 결과로 확인**했습니다.
+- 화면: 묶음(세 곳 이상/두 곳/한 곳) · 찾기 · 추천 기관 고르기 · 갈래(교과 페이지는 학년 묶음) 고르기 · '읽었어요'(그 기기 localStorage `hj-reading-v1`) · 아직 안 읽은 책만 · 🖨️ 독서 기록표 인쇄(번호·책·추천한 곳·읽은 날·한 줄 느낌).
+- **`project/reading/`의 index 말고는 직접 고치지 마세요.** 원본은 `_build/reading/`: 책 `data/grades.json`(학년별)·`data/subjects.json`(교과별), 기관 소개 `orgs.py`(recs의 org 이름과 같아야 함, `ASOF` 기준 달), 화면 `page.html`·`page.css`·`app.js`, 페이지 목록·설명은 `build.py`의 `PAGES`.
+  같은 제목은 하나로 보고 추천 기관을 합쳐 셉니다. 학년별 페이지에는 교과 자료의 같은 학년 책도, 국어 페이지에는 '교과서 수록(국어)'이 확인된 학년 자료 책도 저절로 들어갑니다.
+  고친 뒤 `python3 _build/reading/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py check`는 점검만: 빈 칸·갈래·학년 묶음·모르는 기관·출처 주소·같은 기관 두 번). 메뉴 `index.html`의 권수 글은 손으로 고치고 `apply_theme.py`.
+- **아직 모자란 것은 `_build/reading/todo.md`**(도덕·음악·미술, 2·3·4학년 권수, 내용 확인 못 한 책, 다시 확인할 출처). 도덕·음악·미술 페이지를 열 때는 `build.py`의 `PAGES` 주석을 풀고 메뉴의 '곧 열려요' 카드를 링크로 바꿉니다.
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 

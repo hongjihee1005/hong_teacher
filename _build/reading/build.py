@@ -33,9 +33,10 @@ PAGES = [  # (파일, 제목, 영역, 고르는 법, 설명, 앞 사이 칩)
     ('s-math.html', '수학 추천도서', '교과별', ('subj', '수학'), '수와 셈, 도형, 규칙을 이야기로 만나는 수학 동화와 수학 지식책이에요.', None),
     ('s-social.html', '사회 추천도서', '교과별', ('subj', '사회'), '우리 고장, 지도, 경제, 민주주의, 역사, 세계 여러 나라와 이어지는 책이에요.', None),
     ('s-science.html', '과학 추천도서', '교과별', ('subj', '과학'), '생물, 우리 몸, 지구와 우주, 물질과 에너지, 환경과 이어지는 책이에요.', None),
-    ('s-moral.html', '도덕 추천도서', '교과별', ('subj', '도덕'), '정직, 배려, 생명 존중, 평화, 나눔처럼 도덕 시간에 생각해 볼 주제와 이어지는 책이에요.', None),
-    ('s-art.html', '음악·미술 추천도서', '교과별', ('subj', '음악', '미술'), '화가와 그림, 음악가와 악기, 우리 음악을 만나는 책이에요.', ['음악', '미술']),
 ]
+# 도덕·음악·미술은 아직 출처를 확인한 책이 모자라 메뉴에 '준비 중'으로만 둠(2026-10-05). 책을 채우면 여기에 페이지를 더하세요:
+#   ('s-moral.html', '도덕 추천도서', '교과별', ('subj', '도덕'), '…', None)
+#   ('s-art.html', '음악·미술 추천도서', '교과별', ('subj', '음악', '미술'), '…', ['음악', '미술'])
 
 
 def norm(t): return re.sub(r'[\s\W_]+', '', t)
@@ -85,14 +86,35 @@ def check():
     M = merged()
     for p in PAGES:
         n = len(pick(p, M))
-        if n < 5: say(p[0], '책이 너무 적음', n)
+        if n < 4: say(p[0], '책이 너무 적음', n)
     return bad
 
 
+def kor_tb(b):
+    """교과서 수록(국어)이 확인된 책 → 국어 페이지에 함께 싣고, 수록 정보를 '이어지는 공부'로"""
+    for r in b['recs']:
+        if r['org'] == '교과서 수록' and '국어' in r['detail']: return r['detail']
+    return ''
+
+
 def pick(p, M):
-    how = p[3]
-    if how[0] == 'grade': L = [b for b in GRADES if b['grade'] == how[1]]
-    else: L = [b for b in SUBJECTS if set(b['subjects']) & set(how[1:])]
+    how = p[3]; L = []; seen = set()
+    def add(b, **over):
+        k = norm(b['title'])
+        if k in seen: return
+        seen.add(k); L.append({**b, **over})
+    if how[0] == 'grade':
+        for b in GRADES:
+            if b['grade'] == how[1]: add(b)
+        gt = {norm(b['title']) for b in GRADES}   # 학년별 자료에 있는 책은 그 학년을 따름
+        for b in SUBJECTS:
+            if b.get('grade') == how[1] and norm(b['title']) not in gt: add(b, link='')
+    else:
+        for b in SUBJECTS:
+            if set(b['subjects']) & set(how[1:]): add(b)
+        if '국어' in how[1:]:
+            for b in GRADES:
+                if kor_tb(b): add(b, subjects=['국어'], link=kor_tb(b).replace(' 교과서', ''))
     out = []
     for b in L:
         m = M[norm(b['title'])]
