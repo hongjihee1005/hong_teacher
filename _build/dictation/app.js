@@ -71,13 +71,15 @@
   var mode = 'screen', items = [], k2 = 0, ok = 0, wrong = [], tries = 0, punct = true;
   try { mode = localStorage.getItem(KEY + '-m') || 'screen'; punct = localStorage.getItem(KEY + '-p') !== '0' } catch (e) {}
   function norm(s, pk) {
-    if (pk) return String(s || '').replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'").replace(/\u2026+|\.{3,}/g, '\u2026').replace(/(\S)\s*-\s*(?=\S)/g, '$1~').replace(/\.(?=["'])/g, '').replace(/\s+/g, ' ').trim();   // 문장 부호 급(물결표 자리의 붙임표 '-', 따옴표 안 마침표 생략도 허용): 부호 모두 채점(줄임표 꼴은 하나로)
+    if (pk) return String(s || '').replace(/[\u201C\u201D]/g, '"').replace(/[\u2018\u2019]/g, "'").replace(/\u2026+|\.{3,}/g, '\u2026').replace(/\u2026\./g, '\u2026').replace(/(\S)\s*-\s*(?=\S)/g, '$1~').replace(/\.(?=["'])/g, '').replace(/\s+/g, ' ').trim();   // 문장 부호 급(물결표 자리의 붙임표 '-', 따옴표 안 마침표 생략도 허용): 부호 모두 채점(줄임표 꼴은 하나로)
     // 다른 급: 소리로 안 들리는 따옴표·줄임표는 채점하지 않음
     s = String(s || '').replace(/[\u2026]+|\.{2,}/g, '').replace(/[.?!,]+(?=["'\u201D\u2019])/g, '').replace(/["'\u201C\u201D\u2018\u2019]/g, '').replace(/\s+/g, ' ').replace(/ ([.?!,])/g, '$1').trim();
     if (!punct) s = s.replace(/[.?!,]/g, '').replace(/\s+/g, ' ').trim(); return s }
   function dictSetup() {
     document.querySelectorAll('#dcMode [data-m]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.m === mode ? 'true' : 'false') });
     $('dcPunct').checked = punct; $('dcPunctW').hidden = LV[lv].kind !== '문장';
+    if (!$('dcRule').dataset.t) $('dcRule').dataset.t = $('dcRule').textContent;
+    $('dcRule').textContent = LV[lv].kind === PK ? '화면의 글에 문장 부호를 넣어 써요. 따옴표·줄임표까지 모두 채점해요(줄임표는 …… · … · ... 모두 돼요).' : $('dcRule').dataset.t;
     items = LV[lv].items.slice(); k2 = 0; ok = 0; wrong = []; $('dcEnd').hidden = true;
     if (mode === 'screen') { $('dcScreen').hidden = false; $('dcNote').hidden = true; dShow() }
     else { $('dcScreen').hidden = true; $('dcNote').hidden = false; nShow() }
