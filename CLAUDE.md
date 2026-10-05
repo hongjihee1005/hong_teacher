@@ -224,8 +224,8 @@ grade1/ … grade6/
 
 ### 프로젝트 › 세계시민교육 (`project/global/`, 2026-10-05)
 
-- 첫 화면 세 번째 묶음 `<h2 class="sec-h">프로젝트</h2>`(학년 공통 · 학년별 다음)의 '🌏 세계시민교육' 카드 → `project/global/index.html`(영역 5개로 묶은 20개 주제) → `project/global/t01-global-citizen.html … t20-action-plan.html`.
-  프로젝트 메뉴 페이지 `project/index.html`(💡, 위치 표시줄의 '프로젝트')에도 카드가 있습니다. 새 프로젝트는 두 곳에 카드를 더하고 `apply_theme.py`.
+- 첫 화면 세 번째 묶음 `<h2 class="sec-h">프로젝트</h2>`(학년 공통 · 학년별 다음)의 '💡 프로젝트' 카드 → `project/index.html`(프로젝트 메뉴, 방: '🌏 세계시민교육') → `project/global/index.html`(영역 5개로 묶은 20개 주제) → `project/global/t01-global-citizen.html … t20-action-plan.html`.
+  새 프로젝트는 `project/index.html`에 카드를 더하고 `apply_theme.py`(프로젝트가 2개 이상이 되면 첫 화면 카드에 ⌄ 펼침 메뉴가 저절로 생김).
   처음엔 `common/global/`(공통)에 두었다가 같은 날 옮겼습니다. `common/global/*.html` 21개는 새 주소로 넘기는 안내 페이지입니다. 지우지 마세요.
   영역: 세계시민교육 첫걸음(01 세계시민이란 · 02 서로 이어진 지구촌) · 정체성·다양성·인권(03~08: 여러 겹의 나, 문화 존중, 편견과 고정관념, 차별·성평등, 세계인권선언, 유엔아동권리협약) ·
   지구촌 문제와 평화(09~12: 빈곤과 불평등, 난민, 갈등과 평화, 국제기구와 NGO) · 지속가능발전(13~17: SDGs 17가지, 기후 변화, 물과 위생, 책임 있는 소비·공정무역, 생물 다양성) · 참여와 실천(18~20: 디지털 세계시민, 목소리 내기·캠페인, 실천 계획). 3~6학년 눈높이.
