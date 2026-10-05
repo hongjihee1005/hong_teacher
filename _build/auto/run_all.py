@@ -51,6 +51,7 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
     ('공통 음악이론', '_build/music/', ['common/music/t*.html'], [('.', ['_build/music/build.py'])]),
     ('공통 기초연산', '_build/arith/', ['common/arith/[!i]*.html'], [('.', ['_build/arith/build.py'])]),
     ('공통 받아쓰기·맞춤법', '_build/dictation/', ['common/dictation/g*.html'], [('.', ['_build/dictation/build.py'])]),
+    ('공통 세계시민교육', '_build/gced/', ['common/global/t*.html'], [('.', ['_build/gced/build.py'])]),
 ]
 
 
