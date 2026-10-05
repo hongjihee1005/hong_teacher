@@ -19,6 +19,7 @@
   var SS = window.speechSynthesis, voice = null, rate = 1;
   function pickVoice() { if (!SS) return; var vs = SS.getVoices(); voice = vs.filter(function (v) { return /^ko/i.test(v.lang) })[0] || null; $('dtVoice').hidden = !!voice || !vs.length }
   if (SS) { pickVoice(); SS.onvoiceschanged = pickVoice } else $('dtVoice').hidden = false;
+  function rd(it) { return it[3] ? it[0] + '. ' + it[3] + '.' : it[0] }   // 소리가 같은 말이 있는 낱말은 예문을 덧붙여 읽음
   function say(t, slow) {
     if (!SS) return; SS.cancel();
     var u = new SpeechSynthesisUtterance(t.replace(/[.?!]$/, '')); u.lang = 'ko-KR'; if (voice) u.voice = voice;
@@ -55,20 +56,22 @@
     var h = '';
     LV[lv].items.forEach(function (it, i) {
       h += '<li><span class="no">' + (i + 1) + '</span><div class="tx"><p class="w">' + esc(it[0]) + '</p><p class="pt">💡 ' + pt(it[1]) + '</p>' +
-        (it[2] ? '<p class="bad">틀리기 쉬워요: <s>' + esc(it[2]) + '</s></p>' : '') + '</div>' +
-        '<span class="sb"><button type="button" class="dt-b" data-say="' + esc(it[0]) + '" aria-label="듣기">🔊</button><button type="button" class="dt-b" data-say="' + esc(it[0]) + '" data-slow="1" aria-label="천천히 듣기">🐢</button></span></li>';
+        (it[2] ? '<p class="bad">틀리기 쉬워요: <s>' + esc(it[2]) + '</s></p>' : '') + (it[3] ? '<p class="bad">불러 줄 때: ' + esc(it[3]) + '</p>' : '') + '</div>' +
+        '<span class="sb"><button type="button" class="dt-b" data-say="' + esc(rd(it)) + '" aria-label="듣기">🔊</button><button type="button" class="dt-b" data-say="' + esc(rd(it)) + '" data-slow="1" aria-label="천천히 듣기">🐢</button></span></li>';
     });
     $('lnList').innerHTML = h;
   }
   $('lnAll').onclick = function () {
     if (!SS) return; SS.cancel(); var it = LV[lv].items;
-    it.forEach(function (x) { var u = new SpeechSynthesisUtterance(x[0].replace(/[.?!]$/, '')); u.lang = 'ko-KR'; if (voice) u.voice = voice; u.rate = .85 * rate; SS.speak(u) });
+    it.forEach(function (x) { var u = new SpeechSynthesisUtterance(rd(x).replace(/[.?!]$/, '')); u.lang = 'ko-KR'; if (voice) u.voice = voice; u.rate = .85 * rate; SS.speak(u) });
   };
 
   /* ── 🎧 받아쓰기 ── */
   var mode = 'screen', items = [], k2 = 0, ok = 0, wrong = [], tries = 0, punct = true;
   try { mode = localStorage.getItem(KEY + '-m') || 'screen'; punct = localStorage.getItem(KEY + '-p') !== '0' } catch (e) {}
-  function norm(s) { s = String(s || '').replace(/\s+/g, ' ').trim(); if (!punct) s = s.replace(/[.?!,]/g, '').replace(/\s+/g, ' ').trim(); return s }
+  function norm(s) {   // 소리로 안 들리는 따옴표·줄임표는 채점하지 않음
+    s = String(s || '').replace(/[\u2026]+|\.{2,}/g, '').replace(/[.?!,]+(?=["'\u201D\u2019])/g, '').replace(/["'\u201C\u201D\u2018\u2019]/g, '').replace(/\s+/g, ' ').replace(/ ([.?!,])/g, '$1').trim();
+    if (!punct) s = s.replace(/[.?!,]/g, '').replace(/\s+/g, ' ').trim(); return s }
   function dictSetup() {
     document.querySelectorAll('#dcMode [data-m]').forEach(function (b) { b.setAttribute('aria-pressed', b.dataset.m === mode ? 'true' : 'false') });
     $('dcPunct').checked = punct; $('dcPunctW').hidden = LV[lv].kind !== '문장';
@@ -84,8 +87,8 @@
     $('dcBar').style.width = (k2 * 10) + '%';
     $('dcIn').value = ''; $('dcIn').disabled = false; $('dcMsg').innerHTML = ''; $('dcMsg').className = 'dt-msg';
     $('dcGo').hidden = false; $('dcNext').hidden = true;
-    $('dcSay').dataset.say = it[0]; $('dcSlow').dataset.say = it[0];
-    setTimeout(function () { say(it[0]) }, 250);
+    $('dcSay').dataset.say = rd(it); $('dcSlow').dataset.say = rd(it);
+    setTimeout(function () { say(rd(it)) }, 250);
     $('dcIn').focus({ preventScroll: true });
   }
   /* 글자 비교(LCS): 정답 기준으로 맞은 글자·빠진 글자, 쓴 글 기준으로 더 쓴 글자 */
@@ -128,7 +131,7 @@
     $('dcBar').style.width = '100%'; $('dcScreen').hidden = true; $('dcEnd').hidden = false;
     var L = LV[lv], best = st[D.g][L.no], nb = best == null || ok > best; if (nb) { st[D.g][L.no] = ok; save(); lvBar() }
     var h = '<p class="big">' + (ok === 10 ? '🌟 100점! ' + L.no + '급 통과!' : ok >= 8 ? '⭐ 잘했어요!' : '💪 틀린 것을 다시 익혀 봐요.') + '</p><p>10개 중 <b>' + ok + '개</b>를 한 번에 맞혔어요' + (nb && ok ? ' · 🏅 새 기록' : '') + '</p>';
-    if (wrong.length) { h += '<h3>다시 볼 것</h3><ol class="dt-wr">'; wrong.forEach(function (w) { h += '<li><b>' + esc(w[0][0]) + '</b> <button type="button" class="dt-b" data-say="' + esc(w[0][0]) + '" aria-label="듣기">🔊</button><span class="pt">💡 ' + pt(w[0][1]) + '</span></li>' }); h += '</ol>' }
+    if (wrong.length) { h += '<h3>다시 볼 것</h3><ol class="dt-wr">'; wrong.forEach(function (w) { h += '<li><b>' + esc(w[0][0]) + '</b> <button type="button" class="dt-b" data-say="' + esc(rd(w[0])) + '" aria-label="듣기">🔊</button><span class="pt">💡 ' + pt(w[0][1]) + '</span></li>' }); h += '</ol>' }
     $('dcRes').innerHTML = h; $('dcNextLv').hidden = lv === LV.length - 1;
   }
   $('dcAgain').onclick = dictSetup;
@@ -138,8 +141,8 @@
     $('ntNo').textContent = (k2 + 1) + '번'; $('ntCnt').textContent = (k2 + 1) + ' / 10';
     $('ntPrev').disabled = k2 === 0; $('ntNext').textContent = k2 === 9 ? '✅ 정답 보기' : '다음 →';
     $('ntAns').hidden = true; $('ntShow').hidden = false;
-    var it = items[k2]; $('ntSay').dataset.say = it[0]; $('ntSlow').dataset.say = it[0];
-    setTimeout(function () { say(it[0]) }, 250);
+    var it = items[k2]; $('ntSay').dataset.say = rd(it); $('ntSlow').dataset.say = rd(it);
+    setTimeout(function () { say(rd(it)) }, 250);
   }
   $('ntPrev').onclick = function () { if (k2 > 0) { k2--; nShow() } };
   $('ntNext').onclick = function () {

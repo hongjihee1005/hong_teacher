@@ -5,6 +5,8 @@
     python3 _build/dictation/build.py check    # 자료 점검만
 
 자료: data/gN.txt — '# 낱말' · '# 어절' · '# 문장' 아래 50줄씩, 한 줄에 '바른 글|맞춤법 포인트|틀리기 쉬운 꼴'.
+낱말은 소리가 같은 다른 말이 있으면 넷째 칸에 불러 줄 때 덧붙이는 예문(예: 닫히다|…|다치다|문이 닫히다).
+학년끼리 같은 글, 숫자가 든 글은 점검에서 걸러요.
 학년마다 15급(10개씩): 1~5급 낱말, 6~10급 어절, 11~15급 문장(파일의 차례 그대로).
 화면은 page.html + page.css + app.js. 아래쪽 '만든 사람'·홈 단추 조각은 _build/origami/의 것을 같이 씁니다.
 목록 common/dictation/index.html은 메뉴 페이지(손으로 고치고 apply_theme.py).
@@ -35,7 +37,8 @@ def load(g):
             continue
         if sec is None: bad.append(f'g{g}:{n} 구역 밖'); continue
         p = s.split('|')
-        if len(p) != 3: bad.append(f'g{g}:{n} | 개수'); continue
+        if len(p) not in (3, 4): bad.append(f'g{g}:{n} | 개수'); continue
+        if len(p) == 4 and (sec != '낱말' or not p[3].strip()): bad.append(f'g{g}:{n} 예문은 낱말에만'); continue
         out[sec].append([x.strip() for x in p])
     return out, bad
 
@@ -45,7 +48,7 @@ def check(g, d):
     for k in KINDS:
         L = d[k]
         if len(L) != 50: bad.append(f'{g}학년 {k} {len(L)}개(50개여야 함)')
-        for t, p, w in L:
+        for t, p, w, *ex in L:
             if not t or not p: bad.append(f'{g}학년 {k} 빈 칸: {t}')
             if t in seen: bad.append(f'{g}학년 겹침: {t}')
             seen.add(t)
@@ -56,6 +59,17 @@ def check(g, d):
             if k == '문장' and not re.search(r'[.?!]$', t): bad.append(f'{g}학년 문장 부호 없음: {t}')
             if re.search(r'[A-Za-z|]', t): bad.append(f'{g}학년 이상한 글자: {t}')
             if p.count("'") % 2: bad.append(f'{g}학년 따옴표 짝: {p}')
+    return bad
+
+def cross(D):
+    """학년끼리 같은 글이 없는지"""
+    seen, bad = {}, []
+    for g, d in D.items():
+        for k in KINDS:
+            for it in d[k]:
+                if it[0] in seen and seen[it[0]] != g: bad.append(f'{seen[it[0]]}학년과 {g}학년에 같은 글: {it[0]}')
+                seen.setdefault(it[0], g)
+                if re.search(r'\d', it[0]): bad.append(f'{g}학년 숫자가 든 글(소리로 구별 안 됨): {it[0]}')
     return bad
 
 def build(g, d):
@@ -78,6 +92,7 @@ if __name__ == '__main__':
     allbad, D = [], {}
     for g in range(1, 7):
         d, b = load(g); D[g] = d; allbad += b + check(g, d)
+    allbad += cross(D)
     if allbad: print('\n'.join(allbad[:60])); sys.exit('받아쓰기 자료 점검 실패')
     print('받아쓰기 자료 점검 통과 — 6개 학년 × 150개')
     if sys.argv[1:] == ['check']: sys.exit(0)
