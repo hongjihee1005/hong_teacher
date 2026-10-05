@@ -5,6 +5,7 @@
     python3 _build/words/build.py check    # 자료 점검만
 
 자료(쉬운 것부터, 10줄씩 1~15급):
+  data/same.txt     뜻이 같아 서로 보기로 나오면 안 되는 묶음 `영역|말|말|…`(문제 보기에서 뺌)
   data/proverb.txt  속담    `앞부분/뒷부분|뜻|예문|비슷한 속담`
   data/idiom.txt    관용어  `앞부분/뒷부분|뜻|예문|반대·비슷한 관용어`
   data/saja.txt     사자성어 `한글|한자|뜻|예문|글자 풀이(훈음·훈음·…)`
@@ -74,6 +75,42 @@ def dueum(c):   # 두음 법칙: 로→노, 량→양, 녀→여 (글자 풀이�
     elif cho == 2 and y: cho = 11        # ㄴ → ㅇ
     return chr(0xAC00 + cho * 588 + jung * 28 + jong)
 
+def core(m): return re.sub(r'^.*?뜻으로,\s*', '', m)
+def bigr(m): t = re.sub(r'[^가-힣]', '', core(m)); return {t[i:i + 2] for i in range(len(t) - 1)}
+
+def same_groups():
+    """data/same.txt: '영역|말|말|…' — 뜻이 같거나 아주 비슷해서 서로 보기로 나오면 답이 둘이 되는 묶음"""
+    g = {}
+    f = HERE / 'data' / 'same.txt'
+    if f.exists():
+        for line in f.read_text(encoding='utf-8').splitlines():
+            if line.strip() and not line.startswith('#'):
+                a, *ws = [x.strip() for x in line.split('|')]
+                g.setdefault(a, []).append(ws)
+    return g
+
+def avoid(area, its, groups):
+    """문제마다 보기에서 뺄 항목 번호(x): 같은 묶음 · '비슷:'에 적힌 말 · 뜻 글자가 많이 겹치는 말"""
+    idx, bad = {it['t']: i for i, it in enumerate(its)}, []
+    X = [set() for _ in its]
+    def link(i, j):
+        if i != j: X[i].add(j); X[j].add(i)
+    for ws in groups.get(area, []):
+        miss = [w for w in ws if w not in idx]
+        if miss: bad.append(f'same.txt {area}: 자료에 없는 말 {miss}')
+        ns = [idx[w] for w in ws if w in idx]
+        for i in ns:
+            for j in ns: link(i, j)
+    for i, it in enumerate(its):
+        for w in re.findall(r'비슷:\s*([^|]+)', it.get('r', '')):
+            for v in re.split(r'\s*[,/·]\s*', w):
+                if v in idx: link(i, idx[v])
+        for j in range(i + 1, len(its)):
+            A, B = bigr(it['m']), bigr(its[j]['m'])
+            if len(A & B) / max(1, len(A | B)) >= .4: link(i, j)
+    for it, x in zip(its, X): it['x'] = sorted(x)
+    return bad
+
 def check(area, rows, its):
     bad = []
     if len(rows) != N: bad.append(f'{area} {len(rows)}개({N}개여야 함)')
@@ -116,10 +153,10 @@ def build(area, its):
     out.write_text(s, encoding='utf-8'); return True
 
 if __name__ == '__main__':
-    HL, allbad, D = hanja_levels(), [], {}
+    HL, allbad, D, SG = hanja_levels(), [], {}, same_groups()
     for area, *_ in AREAS:
         rows, b = load(area); its = items(area, rows, HL); D[area] = its
-        allbad += b + check(area, rows, its)
+        allbad += b + check(area, rows, its) + avoid(area, its, SG)
     if allbad: print('\n'.join(allbad[:60])); sys.exit('속담·관용어·사자성어 자료 점검 실패')
     print(f'속담·관용어·사자성어 자료 점검 통과 — {len(AREAS)}개 영역 × {N}개')
     if sys.argv[1:] == ['check']: sys.exit(0)

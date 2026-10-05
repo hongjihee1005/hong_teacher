@@ -27,6 +27,8 @@
       var gi = L.from + k, pool = [];
       for (var d = 1; pool.length < 40 && d < IT.length; d++) [gi - d, gi + d].forEach(function (j) { if (j >= 0 && j < IT.length) pool.push(IT[j]) });
       var ans = field(it, m), seen = {}, ops = [ans]; seen[ans] = 1;
+      var no = {}; (it.x || []).forEach(function (j) { no[j] = 1 });   // 뜻이 같은 말은 보기에서 뺌(답이 둘이 되지 않게)
+      pool = pool.filter(function (x) { return !no[IT.indexOf(x)] && !(m === 'pair' && x.a === it.a) });
       shuffle(pool.slice(0, 24), r).forEach(function (x) { var v = field(x, m); if (ops.length < 4 && !seen[v]) { seen[v] = 1; ops.push(v) } });
       ops = shuffle(ops, r);
       var q = m === 'mean' ? show(it) : m === 'expr' ? it.m : it.a + ' (     )';
