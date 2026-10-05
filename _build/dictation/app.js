@@ -113,6 +113,7 @@
     if (!$('dcNext').hidden) { dNext(); return }
     var pk = LV[lv].kind === PK, it = items[k2], v = norm($('dcIn').value, pk), ans = norm(it[0], pk), m = $('dcMsg');
     if (!v) { m.textContent = '들은 말을 써 주세요.'; return }
+    if (v !== ans && /!$/.test(ans) && v === ans.replace(/!$/, '.')) v = ans;   // 느낌표 자리의 마침표는 허용(문장 부호 규정)
     if (v === ans) {
       if (tries === 0) ok++; $('dcOk').textContent = '⭕ ' + ok;
       m.innerHTML = '⭕ 맞았어요! <span class="pt">💡 ' + pt(it[1]) + '</span>'; m.className = 'dt-msg ok';

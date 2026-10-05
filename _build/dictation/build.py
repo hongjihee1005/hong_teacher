@@ -45,7 +45,10 @@ def load(g):
         p = s.split('|')
         if len(p) not in (3, 4): bad.append(f'g{g}:{n} | 개수'); continue
         if len(p) == 4 and (sec != '낱말' or not p[3].strip()): bad.append(f'g{g}:{n} 예문은 낱말에만'); continue
-        out[sec].append([x.strip() for x in p])
+        it = [x.strip() for x in p]
+        # 느낌표 자리는 마침표도 허용되므로('감탄의 정도가 약하면 마침표', 문장 부호 규정) '!'↔'.'만 다른 틀린 꼴은 고르기 문제에서 뺌
+        if it[0].endswith('!') and it[2] == it[0][:-1] + '.': it[2] = ''
+        out[sec].append(it)
     return out, bad
 
 def check(g, d):
