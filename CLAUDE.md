@@ -238,7 +238,7 @@ grade1/ … grade6/
 
 - 첫 화면 세 번째 묶음 `<h2 class="sec-h">프로젝트</h2>`(학년 공통 · 학년별 다음)에 프로젝트마다 카드가 바로 놓입니다(2026-10-06: '💡 프로젝트' 카드 한 장 → '🌏 세계시민교육'·'📚 독서교육' 두 장으로 바꿈, 프로젝트 안에 또 프로젝트가 있어 보이지 않게). '🌏 세계시민교육' → `project/global/index.html`(영역 5개로 묶은 20개 주제) → `project/global/t01-global-citizen.html … t20-action-plan.html`.
   `project/index.html`(프로젝트 모음 페이지)은 하위 페이지 위치 표시줄(홈 › 프로젝트)과 옛 링크용으로 남겨 둡니다. 지우지 마세요.
-  새 프로젝트는 첫 화면 프로젝트 묶음과 `project/index.html` 둘 다에 카드를 더하고 `apply_theme.py`.
+  새 프로젝트는 첫 화면 프로젝트 묶음과 `project/index.html` 둘 다에 카드를 더하고 `apply_theme.py`. (2026-10-06 '📖 도서활용세계시민교육' `project/gced-books/` 추가 — 아래 따로 적음.)
   처음엔 `common/global/`(공통)에 두었다가 같은 날 옮겼습니다. `common/global/*.html` 21개는 새 주소로 넘기는 안내 페이지입니다. 지우지 마세요.
   영역: 세계시민교육 첫걸음(01 세계시민이란 · 02 서로 이어진 지구촌) · 정체성·다양성·인권(03~08: 여러 겹의 나, 문화 존중, 편견과 고정관념, 차별·성평등, 세계인권선언, 유엔아동권리협약) ·
   지구촌 문제와 평화(09~12: 빈곤과 불평등, 난민, 갈등과 평화, 국제기구와 NGO) · 지속가능발전(13~17: SDGs 17가지, 기후 변화, 물과 위생, 책임 있는 소비·공정무역, 생물 다양성) · 참여와 실천(18~20: 디지털 세계시민, 목소리 내기·캠페인, 실천 계획). 3~6학년 눈높이.
@@ -260,6 +260,17 @@ grade1/ … grade6/
   같은 제목은 하나로 보고 추천 기관을 합쳐 셉니다. 학년별 페이지에는 교과 자료의 같은 학년 책도, 국어 페이지에는 '교과서 수록(국어)'이 확인된 학년 자료 책도 저절로 들어갑니다.
   고친 뒤 `python3 _build/reading/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py check`는 점검만: 빈 칸·갈래·학년 묶음·모르는 기관·출처 주소·같은 기관 두 번). 메뉴 `index.html`의 권수 글은 손으로 고치고 `apply_theme.py`.
 - **아직 모자란 것은 `_build/reading/todo.md`**(도덕·음악·미술, 2·3·4학년 권수, 내용 확인 못 한 책, 다시 확인할 출처). 도덕·음악·미술 페이지를 열 때는 `build.py`의 `PAGES` 주석을 풀고 메뉴의 '곧 열려요' 카드를 링크로 바꿉니다.
+
+### 프로젝트 › 도서활용세계시민교육 (`project/gced-books/`, 2026-10-06)
+
+- '💡 프로젝트' → `project/index.html`(방: 세계시민교육 · 독서교육 · 📖 도서활용세계시민교육) → `project/gced-books/index.html`(세계시민교육 20개 주제를 영역 5개로) → 주제 메뉴 `tNN-slug/index.html`(저학년 1·2 · 중학년 3·4 · 고학년 5·6 세 방) → 책 목록 `tNN-slug/low.html`·`mid.html`·`high.html`.
+  주제 번호·이름·폴더 이름은 세계시민교육(`_build/gced/topics_*.py`)을 그대로 읽어 씁니다. 주제 메뉴에서 같은 주제의 수업 자료(`project/global/tNN-slug.html`)로 이어집니다.
+- **원칙: 국내 초판이 2015년 이후인 책만**(개정판·새 출판사판 제외, 번역서는 원서 연도도 적음). 제목·지은이·출판사·연도는 서점·출판사·도서관 정보로, 추천 근거(`recs`)는 기관 자료로 **검색해 확인한 것만**. 한 책은 한 칸에만.
+  상·교과서 수록·베스트셀러 등 **널리 알려진 책은 `famous`에 까닭을 적어 🏅로 표시**합니다(선생님 요청: 유명한 책은 알려 주고 목록에는 넣기). 2026-10-06 조사는 이 환경에서 서점 사이트를 열 수 없어 웹 검색 결과로 확인했습니다.
+- 책 카드: 갈래·나온 해·🏅·추천 수 / 어린이용 소개(`desc`) / 주제와 이어지는 점(`fit`, 교사용) / 💬 함께 이야기해요(`ask`) / 확인한 출처 링크 / '읽었어요'(그 기기 localStorage `hj-gcedbooks-v1`). 🖨️ 독서 기록표(질문 칸 포함). 차례: 추천 근거 수 → 🏅 → 새 책.
+- **`project/gced-books/` 아래는 메뉴까지 모두 직접 고치지 마세요.** 원본은 `_build/gced-books/`: 책 `data/books.json`, 화면 `page.html`·`page.css`·`app.js`, 메뉴 틀 `menu.html`(소개 글은 `build.py`의 `INTRO`). `build.py`가 메뉴 21쪽을 만들고 바로 `apply_theme`을 입힙니다.
+  고친 뒤 `python3 _build/gced-books/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py check`는 점검만: 빈 칸·2015년 이전·갈래·출처 주소·두 칸에 든 책). 비어 있는 칸은 메뉴에 '곧 열려요'로 나옵니다.
+- 모자란 칸과 확인 못 한 것은 `_build/gced-books/todo.md`.
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
