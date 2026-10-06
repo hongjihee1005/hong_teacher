@@ -263,7 +263,7 @@ grade1/ … grade6/
 
 ### 프로젝트 › 도서활용세계시민교육 (`project/gced-books/`, 2026-10-06)
 
-- '💡 프로젝트' → `project/index.html`(방: 세계시민교육 · 독서교육 · 📖 도서활용세계시민교육) → `project/gced-books/index.html`(세계시민교육 20개 주제를 영역 5개로) → 주제 메뉴 `tNN-slug/index.html`(저학년 1·2 · 중학년 3·4 · 고학년 5·6 세 방) → 책 목록 `tNN-slug/low.html`·`mid.html`·`high.html`.
+- 첫 화면 프로젝트 묶음의 '📖 도서활용세계시민교육' 카드(`project/index.html`에도 같은 카드) → `project/gced-books/index.html`(세계시민교육 20개 주제를 영역 5개로) → 주제 메뉴 `tNN-slug/index.html`(저학년 1·2 · 중학년 3·4 · 고학년 5·6 세 방) → 책 목록 `tNN-slug/low.html`·`mid.html`·`high.html`.
   주제 번호·이름·폴더 이름은 세계시민교육(`_build/gced/topics_*.py`)을 그대로 읽어 씁니다. 주제 메뉴에서 같은 주제의 수업 자료(`project/global/tNN-slug.html`)로 이어집니다.
 - **원칙: 국내 초판이 2015년 이후인 책만**(개정판·새 출판사판 제외, 번역서는 원서 연도도 적음). 제목·지은이·출판사·연도는 서점·출판사·도서관 정보로, 추천 근거(`recs`)는 기관 자료로 **검색해 확인한 것만**. 한 책은 한 칸에만.
   상·교과서 수록·베스트셀러 등 **널리 알려진 책은 `famous`에 까닭을 적어 🏅로 표시**합니다(선생님 요청: 유명한 책은 알려 주고 목록에는 넣기). 2026-10-06 조사는 이 환경에서 서점 사이트를 열 수 없어 웹 검색 결과로 확인했습니다.
