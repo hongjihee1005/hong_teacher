@@ -7,7 +7,7 @@
 주제: 세계시민교육(_build/gced/topics_*.py)의 20개 주제를 그대로 씀 → 주제마다 저학년(1·2) · 중학년(3·4) · 고학년(5·6)
 자료: data/books.json — 책 하나 {topic:'t10', band:'low|mid|high', title, author, publisher, year, month?, orig_year?, kind,
       desc(어린이용 소개), fit(주제와 이어지는 점), ask(함께 이야기할 질문), src{detail,url}(책 정보를 확인한 곳),
-      recs[{org,detail,url}](추천 근거), famous(널리 알려진 까닭: 상·교과서 수록 등, 없으면 '')}
+      recs[{org,detail,url}](추천 근거), made[{org,detail,url}](책을 함께 만든 기관 — 추천 수에 넣지 않음), famous(널리 알려진 까닭: 상·교과서 수록 등, 없으면 '')}
 원칙: 국내 초판이 2015년 이후인 책만(MIN_YEAR). 책 정보와 추천 근거는 검색으로 확인한 것만. 한 책은 한 칸에만.
 만드는 것: project/gced-books/index.html(주제 메뉴) · tNN-slug/index.html(학년 묶음 메뉴) · tNN-slug/low|mid|high.html(책 목록)
           메뉴는 이 스크립트가 만들고 바로 apply_theme.py를 입힘(손으로 고치지 마세요 — 소개 글은 아래 AREA_NOTE·INTRO).
@@ -55,7 +55,7 @@ def check():
         if b.get('kind') not in KINDS: say(t, '갈래', b.get('kind'))
         if not isinstance(b.get('year'), int) or not MIN_YEAR <= b['year'] <= 2026: say(t, f'{MIN_YEAR}년 이후가 아님', b.get('year'))
         if b.get('month') and not 1 <= b['month'] <= 12: say(t, '달', b['month'])
-        for r in [b.get('src') or {}] + b.get('recs', []):
+        for r in [b.get('src') or {}] + b.get('recs', []) + b.get('made', []):
             if not re.match(r'https?://', r.get('url', '')): say(t, '출처 주소', r)
             if not r.get('detail'): say(t, '출처 설명 없음', r)
         for r in b.get('recs', []):
@@ -69,7 +69,7 @@ def check():
 
 def cell(t, band):
     L = [dict(b, id=norm(b['title'])) for b in BOOKS if b['topic'] == tid(t) and b['band'] == band]
-    for b in L: b.setdefault('recs', []); b.setdefault('famous', '')
+    for b in L: b.setdefault('recs', []); b.setdefault('famous', ''); b.setdefault('made', [])
     L.sort(key=lambda b: (-len(b['recs']), not b['famous'], -b['year'], -(b.get('month') or 0), b['title']))
     return L
 

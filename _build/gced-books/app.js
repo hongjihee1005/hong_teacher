@@ -53,7 +53,7 @@
       (b.fit ? '<p class="gb-fit"><b>주제와 이어지는 점</b> · ' + esc(b.fit) + '</p>' : '') +
       (b.ask ? '<p class="gb-ask"><b>💬 함께 이야기해요</b> ' + esc(b.ask) + '</p>' : '') +
       (b.famous ? '<p class="gb-fm"><b>🏅</b> ' + esc(b.famous) + '</p>' : '') +
-      '<div class="rd-recs"><span class="h">확인한 출처 (누르면 열려요)</span>' + b.recs.concat([b.src]).map(function (x) {
+      '<div class="rd-recs"><span class="h">확인한 출처 (누르면 열려요)</span>' + b.recs.concat((b.made || []).map(function (x) { return { org: '🤝 ' + x.org, detail: '함께 만든 곳 · ' + x.detail, url: x.url } }), [b.src]).map(function (x) {
         var o = x.org || '책 정보';
         return x.url ? '<a href="' + esc(x.url) + '" target="_blank" rel="noopener"><b>' + esc(o) + '</b> <i>' + esc(x.detail) + '</i></a>' : '<span class="o"><b>' + esc(o) + '</b> <i>' + esc(x.detail) + '</i></span>';
       }).join('') + '</div>' +
