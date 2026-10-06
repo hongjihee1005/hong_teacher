@@ -140,7 +140,7 @@ def build():
         nxt = lk(i + 1, 1) if i + 1 < len(seq) else '<a href="../index.html">도서 활용 세계시민교육 →</a>'
         bands = [{'name': f'{x[1]}({x[2]})', 'ico': x[3], 'href': f'{x[0]}.html', 'n': len(counts[(tid(t), x[0])]), 'cur': x[0] == bd[0]} for x in BANDS]
         data = {'books': L, 'how': HOW, 'asof': ASOF, 'goal': t['goal'], 'lesson': f"../../global/{tdir(t)}.html",
-                'topic': f"{t['no']:02d}. {t['title']}", 'band': f'{bd[1]}({bd[2]})', 'bands': bands}
+                'topic': f"{t['no']:02d}. {t['title']}", 'band': f'{bd[1]}({bd[2]})', 'bandKey': bd[0], 'bands': bands}
         n += write(f'{tdir(t)}/{bd[0]}.html', fill(f"{t['no']:02d}. {t['title']} · {bd[1]}", f"{t['area']} · {bd[1]}({bd[2]})",
                                                   f"{bd[2]} 어린이와 함께 읽고 이야기 나눌 책이에요.", data, prev, nxt))
     # 주제 메뉴: 학년 묶음 세 칸

@@ -21,7 +21,7 @@
     '<details class="rd-how"><summary>💡 이 목록은 이렇게 골랐어요</summary>' + D.how + '</details>' +
     '<div class="rd-stat"><span>모두 ' + B.length + '권</span>' + (fm ? '<span class="g">🏅 널리 알려진 책 ' + fm + '권</span>' : '') + '<span id="rdDone"></span></div>' +
     '<div class="rd-ctl"><input type="search" id="rdQ" placeholder="🔍 책 제목·지은이·내용으로 찾기" aria-label="책 찾기">' +
-    '<button type="button" class="rd-b" id="rdPrint">🖨️ 독서 기록표 인쇄</button></div>' +
+    '<button type="button" class="rd-b go" id="rdSheet">📝 활동지 인쇄</button><button type="button" class="rd-b" id="rdPrint">🖨️ 독서 기록표 인쇄</button></div>' +
     '<div class="rd-kinds" id="rdChips"></div>' +
     '<p class="rd-cnt" id="rdCnt" aria-live="polite"></p><div id="rdList"></div>';
 
@@ -86,6 +86,7 @@
   });
   $('rdPrint').addEventListener('click', function () {
     var L = shown(), n = 0;
+    $('rdOut').className = '';
     $('rdOut').innerHTML = '<h2>🌏 ' + esc(D.topic) + ' — ' + esc(D.band) + ' 독서 기록표</h2><p class="meta">이름: ________________ &nbsp; ' + (L.length < B.length ? '(고른 책 ' + L.length + '권)' : '(모두 ' + L.length + '권)') + '</p>' +
       '<table><thead><tr><th>번호</th><th>책 제목 · 지은이 · 출판사</th><th style="width:30%">함께 이야기할 질문</th><th style="width:12%">읽은 날</th><th style="width:24%">내 생각 한 줄</th></tr></thead><tbody>' +
       L.map(function (b) {
@@ -93,6 +94,41 @@
       }).join('') + '</tbody></table><p class="src">국내 초판이 2015년 이후인 책만 골랐고, 책 정보와 추천 근거는 ' + esc(D.asof) + ' 기준 검색으로 확인했어요. · 만든 사람: 초등교사 홍지희</p>';
     window.print();
   });
+
+  /* 활동지(학년 묶음마다 1종, 이 묶음의 어떤 책에도 씀) */
+  function ln(n) { var h = ''; for (var i = 0; i < n; i++) h += '<div class="wl"></div>'; return h }
+  function q(no, t, body) { return '<section class="wq"><h3><b class="wno">' + no + '</b>' + t + '</h3>' + body + '</section>' }
+  function sheet() {
+    var k = D.bandKey, T = esc(D.topic.replace(/^\d+\.\s*/, ''));
+    var pick = '<p class="wpick' + (B.length > 3 ? ' many' : '') + '"><b>읽은 책에 ○ 하세요</b> ' + B.map(function (b) { return '<span>' + esc(b.title) + '</span>' }).join('') + '<span>다른 책: ____________</span></p>';
+    var head = '<div class="wh"><p class="wt">📖 책으로 만나는 세계시민 <small>' + esc(D.band) + '</small></p><p class="wtp">주제 · ' + esc(D.topic) + '</p>' +
+      '<p class="wn">' + (k === 'low' ? '' : '____학년 ____반 ____번 ') + '이름 ______________ &nbsp; 날짜 ____월 ____일</p></div>' + pick;
+    var body;
+    if (k === 'low') body =
+      q(1, '내가 읽은 책의 제목을 써요.', ln(1)) +
+      q(2, '가장 기억에 남는 장면을 그려요.', '<div class="wb" style="height:52mm"></div><p class="wf">이 장면에서 ' + ln(1).replace('wl', 'wl in') + '</p>') +
+      q(3, '주인공의 마음은 어땠을까요? 알맞은 곳에 ○ 해요.', '<p class="wch"><span>😊 기뻐요</span><span>😢 슬퍼요</span><span>😠 화나요</span><span>😲 놀라요</span><span>😟 걱정돼요</span></p><p class="wf">왜냐하면</p>' + ln(1)) +
+      q(4, '내가 주인공이라면 어떻게 했을까요?', ln(2)) +
+      q(5, '세계시민 약속', '<p class="wf big">나는 ____________________________________ 할게요.</p><p class="wf">이 책은 몇 개의 별을 줄까요? <span class="stars">☆ ☆ ☆ ☆ ☆</span></p>');
+    else if (k === 'mid') body =
+      q(1, '책 정보', '<p class="wf">제목 ______________________________ &nbsp; 지은이 __________________</p>') +
+      q(2, '줄거리를 세 칸으로 정리해요.', '<div class="w3"><div><b>처음</b></div><div><b>가운데</b></div><div><b>끝</b></div></div>') +
+      q(3, '이 책은 이번 주제(' + T + ')와 어떻게 이어질까요?', ln(3)) +
+      q(4, '읽고 나서 궁금한 점을 질문으로 만들어요.', '<p class="wtip">질문 시작말: 왜 … ? · 만약 … 라면? · 어떻게 하면 … ?</p><p class="wf">질문 ①</p>' + ln(1) + '<p class="wf">질문 ②</p>' + ln(1)) +
+      q(5, '친구의 생각을 들어요.', '<table class="wtb"><tr><th style="width:22%">친구 이름</th><th>친구 생각</th><th style="width:28%">나와 같은 점·다른 점</th></tr><tr><td></td><td></td><td></td></tr><tr><td></td><td></td><td></td></tr></table>') +
+      q(6, '나의 실천 다짐', '<p class="wf">나는 이번 주에 ______________________________________ 을/를 실천할게요.</p><table class="wtb wk"><tr><th>월</th><th>화</th><th>수</th><th>목</th><th>금</th></tr><tr><td></td><td></td><td></td><td></td><td></td></tr></table>');
+    else body =
+      q(1, '책 정보', '<p class="wf">제목 ________________________ 지은이 ______________ 출판사 ____________ 갈래 ________</p>') +
+      q(2, '책 속 문제를 살펴봐요.', '<table class="wtb tall"><tr><th style="width:24%">어떤 문제가 있나요?</th><td></td></tr><tr><th>왜 생겼을까요? (원인)</th><td></td></tr><tr><th>누구에게 어떤 영향을 주나요?</th><td></td></tr></table>') +
+      q(3, '서로 다른 처지에서 생각해요.', '<table class="wtb tall"><tr><th style="width:18%"></th><th>인물 ① ____________</th><th>인물 ② ____________</th></tr><tr><th>처지</th><td></td><td></td></tr><tr><th>생각·마음</th><td></td><td></td></tr><tr><th>바라는 것</th><td></td><td></td></tr></table>') +
+      q(4, '세계시민의 세 눈으로 이번 주제(' + T + ')를 봐요.', '<table class="wtb tall"><tr><th style="width:24%">🧠 알게 된 것<br><small>(인지)</small></th><td></td></tr><tr><th>💗 느낀 것<br><small>(사회정서)</small></th><td></td></tr><tr><th>✋ 할 수 있는 행동<br><small>(행동)</small></th><td></td></tr></table>') +
+      q(5, '나의 실천 계획', '<table class="wtb"><tr><th>무엇을</th><th>언제</th><th>누구와</th><th>어떻게</th></tr><tr class="tall"><td></td><td></td><td></td><td></td></tr></table><p class="wf">실천해 보니 ______________________________________________________________</p>') +
+      q(6, '친구에게 이 책을 추천하는 한 줄', ln(1));
+    $('rdOut').className = 'ws ws-' + k;
+    $('rdOut').innerHTML = head + body + '<p class="src">이 활동지는 이 주제·학년 묶음의 어떤 책에도 쓸 수 있어요. · 도서활용세계시민교육 · 만든 사람: 초등교사 홍지희</p>';
+    window.print();
+  }
+  $('rdSheet').addEventListener('click', sheet);
 })();
 (function () {
   var h = location.hostname, ok = location.protocol === 'file:' || /github\.io$/.test(h) || /^localhost$/.test(h) || h === '127.0.0.1';
