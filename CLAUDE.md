@@ -343,7 +343,13 @@ grade1/ … grade6/
 - 화면: 탈출 시작(시간 제한 없음/15/20/30분) → 숫자판(키보드 숫자·Enter) 🔓 열기, 틀리면 흔들림·횟수, 💡 힌트, 🔑 정답 보기(선생님, 확인 창), 탈출 성공 화면(걸린 시간·힌트·틀린 수). 🖨️ 종이로 하기: 문제지 1쪽(답 칸·계산 칸) + 선생님용 정답지 1쪽.
 - **`project/escape/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/escape/`: 방 `rooms.py`(L(이야기, 문제, 답, 힌트 2개, 풀이, chk)), 화면 `page.html`·`escape.js`·`escape.css`. `build.py`가 자물쇠 답을 `chk`로 다시 계산하고 마지막 문 답을 만듦.
   고친 뒤 `python3 _build/escape/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 방을 더하면 메뉴 카드도. 클래스 앞글자 `es-`(인쇄 `ep-`).
-- 2026-10-07 선생님 요청으로 수학게임 방을 더 추천해 이어서 만드는 중: 수학 방탈출(열림) → 🎨 수학 미술 → 📏 어림 왕 → 🛒 생활 속 수학 → 🏆 수학 퀴즈쇼(메뉴에 '곧 열려요').
+- 2026-10-07 선생님 요청으로 수학게임 방을 더 추천해 이어서 만드는 중: 수학 방탈출(열림) → 🎨 수학 미술(열림) → 📏 어림 왕 → 🛒 생활 속 수학 → 🏆 수학 퀴즈쇼(메뉴에 '곧 열려요').
+
+### 기타 › 수학게임 › 수학 미술 (`project/mathart/`, 2026-10-07)
+
+- 메뉴 `project/mathart/index.html`(손으로 고치는 메뉴) → `mirror`(대칭 그림: 좌우·상하·만화경 8조각) · `mandala`(각도 만다라: 2~16조각, 360°÷n, 거울) · `tile`(무늬 만들기/테셀레이션: 타일 한 칸 → 밀기·뒤집기·돌리기, 가장자리를 넘으면 반대쪽에서 이어짐) · `string`(실 그림: 각 안에 실 걸기 / 곱셈 원 k → k×m).
+- 공통: 색 10가지·굵기·되돌리기·처음부터·💾 그림 저장(PNG)·🖨️ 인쇄(그림 + 이름 칸, A4). 기록은 남기지 않음.
+- **`project/mathart/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/mathart/`: 활동 목록 `build.py`의 `TOOLS`, 공통 `art.js`·`art.css`, 활동 `tools/<id>.js`. 고친 뒤 `python3 _build/mathart/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 클래스 앞글자 `ar-`·`ma-`·`tt-`·`st-`(인쇄 `ap-`).
 
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
 
