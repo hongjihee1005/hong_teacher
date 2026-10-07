@@ -6,10 +6,9 @@
 - '기타' 메뉴(project/index.html)의 방 가운데 이름에 '수학'이 들어간 방을 모두 찾아(선생님 요청 2026-10-07),
   그 방 폴더(project/<폴더>/)를 하위 폴더까지 통째로 복사합니다. 새 수학 방을 기타에 만들면 저절로 들어갑니다.
   방이 다른 방들을 모은 메뉴(2026-10-07 '수학게임' project/math/ → creative·mathgame)이면 그 안의 방들로 펼칩니다('곧 열려요' 카드는 빠짐).
-- 첫 화면은 방마다 한 묶음: 묶음 제목은 방 이름(창의수학게임 → '창의 수학', 교과수학게임 → '교과수학'),
-  묶음 안 카드는 그 방 메뉴(project/<폴더>/index.html)의 카드를 그대로 가져옵니다. 방 메뉴 페이지 자체는 없고 첫 화면으로 넘깁니다.
-  더 깊은 하위 메뉴(방 폴더 안의 폴더 index.html)는 그대로 둡니다.
-- 쉬는 시간 스도쿠(break/sudoku/)는 창의 수학 카드가 가리키므로 sudoku/로 함께 복사합니다(EXTRA).
+- 첫 화면은 원래 자료실 '기타 › 수학게임' 메뉴와 같은 카드(창의수학게임·교과수학게임·사고력 수학·수학자 이야기, '곧 열려요' 포함)입니다
+  (선생님 요청 2026-10-07: 게임이 많아져서 방 메뉴로 정리). 방을 누르면 그 방 메뉴(<방>/index.html)가 열리고, 더 깊은 하위 메뉴도 그대로 둡니다.
+- 쉬는 시간 스도쿠(break/sudoku/)는 창의수학게임 카드가 가리키므로 sudoku/로 함께 복사합니다(EXTRA).
 - 링크는 원래 위치에서 가리키던 곳을 따져 새 사이트 주소로 바꿉니다. 새 사이트에 없는 곳을 가리키면 원래 자료실 주소로 두고 [알림]을 찍습니다.
 - math-game 저장소의 Actions가 한 시간마다 이 스크립트를 돌려, 바뀐 것이 있으면 올립니다(원본은 늘 이 저장소). 여러 번 실행해도 같은 결과.
 """
@@ -30,7 +29,6 @@ HEAD = ('<meta name="google-site-verification" content="gkDyhzWKxyJcx07mGzqlgNcS
         '"description":"' + DESC + '","author":{"@type":"Person","name":"홍지희","jobTitle":"초등교사",'
         '"url":"https://www.youtube.com/@hongjihee1005"}}</script>\n')  # 검색 사이트가 읽는 사이트 이름·만든 사람
 KEY = '수학'                                   # 기타 메뉴의 방 이름에 이 글자가 있으면 넣음
-LABEL = {'creative': '창의 수학', 'mathgame': '교과수학'}   # 첫 화면 묶음 제목(없으면 방 이름 그대로)
 EXTRA = {'break/sudoku': 'sudoku'}             # 방이 아니지만 함께 넣는 폴더(원본 → 새 사이트 폴더), 메뉴 index는 그대로 둠
 REDIRECT = ('<!doctype html><html lang="ko"><head><meta charset="utf-8">'
             '<meta http-equiv="refresh" content="0; url={home}"><title>' + NAME + '</title></head>'
@@ -45,6 +43,7 @@ def _cards(path):
         if h and n: out.append((h.group(1), re.sub(r'<[^>]+>', '', n.group(1)).strip()))
     return out
 
+TOPS = []      # 기타 메뉴에서 찾은 수학 메뉴(첫 화면에 나오는 것)
 COLLECT = []   # 다른 방들을 모아 둔 메뉴(예: project/math/ '수학게임') — 새 사이트에서는 첫 화면이 대신함
 
 def rooms():
@@ -66,7 +65,7 @@ def rooms():
         if KEY not in nm: continue
         mm = re.fullmatch(r'([\w-]+)/index\.html', h)
         if not mm: WARN.append(f'기타 메뉴의 수학 방 "{nm}"이 폴더가 아니어서 넣지 못했습니다({h})'); continue
-        add(mm.group(1), nm)
+        TOPS.append(mm.group(1)); add(mm.group(1), nm)
     assert out, '기타 메뉴에서 수학 방을 찾지 못했습니다'
     names = [posixpath.basename(d) for d, _ in out]
     assert len(set(names)) == len(names), f'새 사이트 폴더 이름이 겹칩니다: {names}'
@@ -79,8 +78,7 @@ def newpath(o):
     if o in ('index.html', 'project/index.html') or o in [f'project/{c}/index.html' for c in COLLECT]: return 'index.html'
     for d, _ in sorted(ROOMS, key=lambda r: -len(r[0])):   # 깊은 폴더 먼저(math/thinking이 math보다 앞)
         p = f'project/{d}/'
-        if o == p + 'index.html': return 'index.html'
-        if o.startswith(p): return posixpath.basename(d) + '/' + o[len(p):]   # 새 사이트에서는 방 폴더 이름만
+        if o.startswith(p): return posixpath.basename(d) + '/' + o[len(p):]   # 새 사이트에서는 방 폴더 이름만(방 메뉴 index도 그대로 둠)
     for src, dst in EXTRA.items():
         if o.startswith(src + '/'): return dst + '/' + o[len(src) + 1:]
     return None
@@ -117,31 +115,38 @@ def crumb(s, o):
     return s[:m.start(1)] + inner + s[m.end(1):]
 
 def fix_text(s):
-    s = s.replace(' · 기타 · 초등교사 홍지희', ' · ' + NAME).replace(' · 쉬는 시간 · 초등교사 홍지희', ' · 창의 수학 · ' + NAME)
-    s = s.replace('학년 교과수학게임 · ', '학년 · 교과수학 · ').replace('학년 교과수학게임', '학년')                        # '3학년 교과수학게임' → '3학년'
+    s = s.replace(' · 수학게임 · 기타 · 초등교사 홍지희', ' · ' + NAME).replace(' · 기타 · 초등교사 홍지희', ' · ' + NAME)
+    s = s.replace(' · 쉬는 시간 · 초등교사 홍지희', ' · 창의수학게임 · ' + NAME)
+    s = s.replace('쉬는 시간 › 스도쿠 방으로 가요', '학년마다 30문제')   # 창의수학게임 메뉴의 스도쿠 카드 설명
+    s = s.replace('학년 교과수학게임 · ', '학년 · 교과수학게임 · ').replace('학년 교과수학게임', '학년')                        # '3학년 교과수학게임' → '3학년'
     s = s.replace('<p>쉬는 시간에 친구와 함께 즐기는 놀이 자료입니다.</p>', '').replace('학년 쉬는 시간 스도쿠', '학년 스도쿠')  # 스도쿠 꼬리말 소개 줄 빼기(선생님 요청)
-    s = re.sub(r'<title>[^<]*</title>', lambda m: m.group(0).replace('창의수학게임', '창의 수학').replace('교과수학게임', '교과수학'), s, count=1)
     return s
 
-def cards(d):
-    """방 메뉴의 카드 묶음(<div class="grid …"> 안쪽)을 꺼내 새 첫 화면 기준 주소로 고칩니다."""
-    o = f'project/{d}/index.html'
+def grid(o):
+    """메뉴 페이지 o의 카드 묶음 → (grid 클래스, 새 첫 화면 기준으로 주소를 고친 카드들)."""
     s = (ROOT / o).read_text(encoding='utf-8')
-    a = s.index('<div class="grid'); a = s.index('>', a) + 1
+    a = s.index('<div class="grid'); cls = re.match(r'<div class="([^"]*)"', s[a:]).group(1); a = s.index('>', a) + 1
     b = s.index('<footer', a); b = s.rindex('</div>', a, b)
-    g = relink(s[a:b].strip(), o, 'index.html').replace('쉬는 시간 › 스도쿠 방으로 가요', '학년마다 30문제')
+    g = relink(s[a:b].strip(), o, 'index.html')
     if 'class="card room' not in g: WARN.append(f'{o}: 카드를 찾지 못했습니다')
-    return g
+    return cls, g
 
 def home():
-    s = (ROOT / 'project/creative/index.html').read_text(encoding='utf-8')   # 메뉴 디자인이 입혀진 틀
+    """첫 화면 = 원래 자료실 '기타 › 수학게임' 메뉴와 같은 카드(선생님 요청 2026-10-07, 게임이 많아져서 방 메뉴로 정리).
+    모음 메뉴면 그 메뉴의 카드(곧 열려요 카드·펼침 메뉴 포함)를, 모음이 아닌 수학 방이면 기타 메뉴의 그 방 카드를 놓습니다."""
+    s = (ROOT / 'project/math/index.html' if (ROOT / 'project/math/index.html').exists() else ROOT / 'project/creative/index.html').read_text(encoding='utf-8')   # 메뉴 디자인이 입혀진 틀
     a = s.index('<nav class="crumb"'); b = s.index('<footer', a)
-    secs = ''.join(f'<h2 class="sec-h">{LABEL.get(d, nm)}</h2>\n<div class="grid g3 three">\n{cards(d)}\n</div>\n' for d, nm in ROOMS)
-    top = (f'<style>.sec-h{{margin:30px 0 12px;font-size:clamp(22px,2.4vw,28px);font-weight:800;letter-spacing:-.01em;display:flex;align-items:center;gap:10px}}'
-           '.sec-h::after{content:"";flex:1;height:2px;background:var(--line)}</style>\n'
-           f'<h1><span class="h-ico" aria-hidden="true">🎮</span>{NAME}</h1>\n'
-           '<p class="sub">생각하는 힘을 기르는 퍼즐과, 학년별 계산을 게임으로 익히는 자료예요. 골라 열어 보세요.</p>\n'
-           + secs +
+    parts, cls = [], 'grid g3 two'
+    for t in TOPS:
+        if t in COLLECT:
+            cls, g = grid(f'project/{t}/index.html'); parts.append(g)
+        else:
+            _, g = grid('project/index.html')
+            blk = re.search(r'(<div class="rw" data-hj="1">)?<a class="card room[^"]*"[^>]*href="' + re.escape(t) + r'/index\.html".*?</a>(?(1)<button.*?</button><div class="r-sub".*?</div></div>)', g, re.S)
+            if blk: parts.append(blk.group(0))
+    top = (f'<h1><span class="h-ico" aria-hidden="true">🎮</span>{NAME}</h1>\n'
+           '<p class="sub">생각하는 힘을 기르는 퍼즐, 학년별 계산 게임, 오래 생각하는 사고력 문제가 있어요. 방을 골라 열어 보세요.</p>\n'
+           f'<div class="{cls}">\n' + '\n'.join(parts) + '\n</div>\n'
            '<p class="sub" style="margin-top:28px">더 많은 수업 자료는 초등교사 홍지희의 자료실에 있어요.</p>\n')
     s = s[:a] + top + s[b:]
     s = re.sub(r'<meta name="description"[^>]*>\n?', '', s)
