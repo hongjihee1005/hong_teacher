@@ -1,8 +1,8 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>성냥개비 식 고치기 · 창의수학게임 · 기타 · 초등교사 홍지희</title>
-<meta name="description" content="틀린 성냥개비 식에서 성냥개비를 1~2개 옮겨 맞는 식으로 고치는 퍼즐">
-<style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#C9463B;--ok:#2E9E5B;--bad:#D0453B;--cell:#FFFDF9;
+<title>쌓기나무 · 창의수학게임 · 기타 · 초등교사 홍지희</title>
+<meta name="description" content="입체 그림이나 위·앞·옆에서 본 모양을 보고 3×3 판에 쌓기나무를 똑같이 쌓기 — 공간 감각과 논리">
+<style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#7B4FB0;--ok:#2E9E5B;--bad:#D0453B;--cell:#FFFDF9;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37;--cell:#2F2925}}
 :root[data-theme="dark"]{--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37;--cell:#2F2925}
@@ -55,26 +55,46 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes cr-pop{50%{transform:scale(1.08)}}
 @media (max-width:640px){.cr-levels{grid-template-columns:1fr}.cr-lv{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 8px}.cr-lv small{width:100%}}
 @media print{.cr-gnav,.cr-levels,.cr-nums,.cr-bar button,.cr-how,.creditbar,.hj-nav,.hj-navbar,#hj-home{display:none!important}}
-/* 성냥개비 식 고치기 */
-.mt-goal{margin:0;text-align:center;color:var(--soft)}
-.mt-goal b{color:var(--acc);font-size:1.15em}
-.mt-board{width:100%;max-width:720px;padding:14px 10px;border-radius:20px;background:#2F3B46}
-.mt-svg{display:block;width:100%;height:auto;max-height:42vh}
-.mt-wood{stroke:#F2D49B;stroke-width:7;stroke-linecap:round}
-.mt-head{fill:#E0503F}
-.mt-hit{stroke:transparent;stroke-width:18;stroke-linecap:round;cursor:pointer}
-.mt-slot{stroke:#6E7E8C;stroke-width:5;stroke-linecap:round;stroke-dasharray:4 5;opacity:.75}
-.mt-on.fixed .mt-wood{stroke:#C9B48C}.mt-on.fixed .mt-head{fill:#A8584E}.mt-on.fixed .mt-hit{cursor:default}
-.mt-on.held{transform:translateY(-5px)}.mt-on.held .mt-wood{stroke:#FFE9A6;filter:drop-shadow(0 0 4px #FFD24D)}
-.mt-on.hfrom .mt-wood{animation:mt-blink 1s infinite}
-.mt-off:hover .mt-slot{stroke:#B9C7D3;opacity:1}
-.mt-off.hto .mt-slot{stroke:#4BD48A;opacity:1;animation:mt-blink 1s infinite}
-@keyframes mt-blink{50%{opacity:.35}}
-.mt-board.win{background:#24533E}
-.mt-bar{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;font-size:18px;color:var(--soft)}
-.mt-bar b{font-family:var(--display);font-weight:400;font-size:1.3em;color:var(--ink)}
-.mt-bar .ok{color:var(--ok);font-weight:800}.mt-bar .no{color:var(--bad);font-weight:800}
-.mt-tip{margin:0;font-size:15px;color:var(--soft);text-align:center}
+/* 쌓기나무 */
+.bk-goal{margin:0;text-align:center;color:var(--soft)}
+.bk-goal b{color:var(--acc)}
+.bk-wrap{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.25fr);gap:16px;width:100%;max-width:900px;align-items:start}
+.bk-pane{display:flex;flex-direction:column;align-items:center;gap:10px;padding:12px;border:3px solid var(--line);border-radius:18px;background:var(--paper);min-width:0}
+.bk-pane h3{margin:0;font-family:var(--display);font-weight:400;font-size:20px;color:var(--soft)}
+.bk-cnt{color:var(--acc)}
+.bk-iso{width:100%;max-width:280px;height:auto}
+.bk-prev .bk-iso{max-width:220px}
+.bk-floor{fill:color-mix(in srgb,var(--line) 35%,var(--bg));stroke:var(--line);stroke-width:1}
+.bk-t,.bk-f,.bk-r{stroke:#5a4a3c;stroke-width:1.3;stroke-linejoin:round}
+.bk-t{fill:color-mix(in srgb,var(--acc) 30%,#fff)}
+.bk-f{fill:color-mix(in srgb,var(--acc) 70%,#fff)}
+.bk-r{fill:color-mix(in srgb,var(--acc) 85%,#000)}
+.bk-lab{font-size:15px;font-weight:700;fill:var(--soft)}
+.bk-build{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:12px}
+.bk-boardwrap{display:flex;flex-direction:column;align-items:center;gap:4px}
+.bk-side{font-size:15px;font-weight:700;color:var(--soft)}
+.bk-board{display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(3,58px);gap:5px}
+.bk-cell{border:3px solid var(--line);border-radius:12px;background:var(--bg);font-family:var(--display);font-size:28px;color:var(--ink);padding:0}
+.bk-cell.bk-h1{background:color-mix(in srgb,var(--acc) 22%,var(--paper))}
+.bk-cell.bk-h2{background:color-mix(in srgb,var(--acc) 45%,var(--paper))}
+.bk-cell.bk-h3{background:color-mix(in srgb,var(--acc) 70%,var(--paper));color:#fff}
+.bk-cell.bk-cur{border-color:var(--acc);box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 25%,transparent)}
+.bk-cell.bk-solved{border-color:var(--ok)}
+.bk-modes{display:flex;gap:8px}
+.bk-mode{min-height:46px;padding:0 16px;border:3px solid var(--line);border-radius:14px;background:var(--paper);font-size:17px;font-weight:700;color:var(--ink)}
+.bk-mode.bk-act{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,var(--paper))}
+.bk-views{display:flex;flex-wrap:wrap;justify-content:center;gap:10px}
+.bk-view{margin:0;display:flex;flex-direction:column;align-items:center;gap:3px;padding:6px 8px;border:2px solid transparent;border-radius:12px}
+.bk-view svg{width:76px;height:auto}
+.bk-myviews .bk-view svg{width:58px}
+.bk-view figcaption{font-size:15px;font-weight:700;color:var(--soft)}
+.bk-view.ok{border-color:var(--ok)}.bk-view.ok figcaption{color:var(--ok)}
+.bk-view.no{border-color:color-mix(in srgb,var(--line) 70%,transparent)}
+.bk-von{fill:color-mix(in srgb,var(--acc) 60%,var(--paper));stroke:#5a4a3c;stroke-width:1.2}
+.bk-voff{fill:none;stroke:color-mix(in srgb,var(--line) 70%,transparent);stroke-width:.8;stroke-dasharray:2 2}
+.bk-ground{stroke:var(--soft);stroke-width:2}
+.bk-tip{margin:0;font-size:15px;color:var(--soft);text-align:center}
+@media (max-width:700px){.bk-wrap{grid-template-columns:1fr}.bk-board{grid-template-columns:repeat(3,52px);grid-template-rows:repeat(3,52px)}}
 
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
@@ -754,10 +774,10 @@ html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:n
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
 </style><!--/hj-ctheme--></head><body>
 <main>
-<nav class="cr-gnav" aria-label="다른 창의수학게임"><a href="magic.html">마방진</a><a href="tangram.html">칠교놀이</a><a href="kenken.html">계산 스도쿠</a><a href="hanoi.html">하노이 탑</a><a href="nonogram.html">네모 로직</a><a href="make.html">목표 수 만들기</a><a href="balance.html">저울 퍼즐</a><a href="match.html" aria-current="page">성냥개비 식 고치기</a><a href="pento.html">펜토미노 채우기</a><a href="nim.html">님 게임</a><a href="blocks.html">쌓기나무</a></nav>
-<h1>🔥 성냥개비 식 고치기</h1>
-<p class="sub">성냥개비로 만든 식이 틀렸어요! 성냥개비를 딱 정해진 개수만큼 옮겨서 맞는 식으로 고쳐 보세요. 숫자 모양을 바꾸는 생각이 필요해요.</p>
-<details class="cr-how"><summary>이렇게 해요</summary><ul><li>성냥개비를 <b>누르면 들리고</b>, 점선으로 된 <b>빈 자리</b>를 누르면 그리로 옮겨져요. 들린 성냥개비를 다시 누르면 내려놓아요.</li><li>숫자는 디지털시계 숫자 모양이에요. 성냥개비 하나로 6이 0이나 9가 되기도 하고, + 가 − 가 되기도 해요. <b>=</b> 는 움직이지 않아요.</li><li>정해진 개수만큼 옮겨서 맞는 식이 되면 성공! 아래에 ‘지금 식’이 나와요.</li><li>💡 실마리: 성냥개비 한 개를 빼면 다른 숫자가 되는 숫자(8→0·6·9, 9→3·5, 7→1 …)와 한 개를 더하면 되는 숫자를 떠올려 보세요. 모든 문제는 답이 딱 하나예요.</li></ul></details>
+<nav class="cr-gnav" aria-label="다른 창의수학게임"><a href="magic.html">마방진</a><a href="tangram.html">칠교놀이</a><a href="kenken.html">계산 스도쿠</a><a href="hanoi.html">하노이 탑</a><a href="nonogram.html">네모 로직</a><a href="make.html">목표 수 만들기</a><a href="balance.html">저울 퍼즐</a><a href="match.html">성냥개비 식 고치기</a><a href="pento.html">펜토미노 채우기</a><a href="nim.html">님 게임</a><a href="blocks.html" aria-current="page">쌓기나무</a></nav>
+<h1>🧊 쌓기나무</h1>
+<p class="sub">쌓기나무를 판에 쌓아요. 입체 그림, 또는 위·앞·옆에서 본 모양만 보고 어떻게 쌓았는지 알아낼 수 있을까요?</p>
+<details class="cr-how"><summary>이렇게 해요</summary><ul><li>오른쪽 <b>판</b>은 쌓기나무를 위에서 내려다본 모양이에요(아래쪽이 앞). 칸을 누르면 한 개씩 쌓이고, <b>➖ 빼기</b>를 고르면 한 개씩 빠져요. 한 칸에 3개까지.</li><li>판 옆에 내가 쌓은 모습이 입체 그림으로 보여요. 쌓기나무는 바닥부터 빈틈없이 쌓아요.</li><li><b>앞에서 본 모양</b>은 세로줄마다, <b>옆(오른쪽)에서 본 모양</b>은 가로줄마다 가장 높이 쌓은 개수만큼 보여요. 옆 모양은 왼쪽이 앞줄이에요.</li><li>보통·도전에서는 내가 쌓은 것의 세 모양도 함께 보이고, 보기와 같으면 ✓가 붙어요.</li><li>💡 실마리: 위에서 본 모양으로 쌓을 칸을 먼저 정하고, 앞과 옆 모양이 겹치는 칸부터 높이를 정해 보세요.</li></ul></details>
 <div class="cr-levels" id="crLevels" role="tablist" aria-label="단계"></div>
 <div class="cr-nums" id="crNums" aria-label="문제 번호"></div>
 <section class="cr-play" id="crPlay" aria-live="polite">
@@ -769,92 +789,138 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 </section>
 <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>생각하는 힘을 기르는 창의수학게임 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
 </main>
-<script>window.CR={"game":"match","levels":[{"id":"easy","nm":"쉬움","rec":"3~4학년","de":"한 자리 수 식, 성냥개비 1개 옮기기."},{"id":"normal","nm":"보통","rec":"4~5학년","de":"답이 두 자리 수일 수 있는 식, 성냥개비 1개 옮기기."},{"id":"hard","nm":"도전","rec":"5~6학년","de":"성냥개비 2개를 옮겨야 해요!"}],"data":{"easy":[{"q":"5+8=9","a":"9+0=9","k":1},{"q":"3+5=6","a":"3+3=6","k":1},{"q":"2-9=2","a":"2-0=2","k":1},{"q":"1-1=9","a":"1-1=0","k":1},{"q":"4-3=2","a":"4-2=2","k":1},{"q":"6-8=1","a":"9-8=1","k":1},{"q":"8-5=2","a":"8-5=3","k":1},{"q":"6+2=9","a":"6+3=9","k":1},{"q":"9-6=5","a":"9-6=3","k":1},{"q":"5-1=6","a":"6-1=5","k":1},{"q":"0-5=4","a":"9-5=4","k":1},{"q":"6-4=3","a":"6-4=2","k":1},{"q":"9+2=8","a":"6+2=8","k":1},{"q":"9+0=8","a":"8-0=8","k":1},{"q":"4-5=8","a":"4+5=9","k":1},{"q":"1-5=8","a":"1+5=6","k":1},{"q":"8-9=9","a":"0+9=9","k":1},{"q":"5+4=2","a":"6-4=2","k":1},{"q":"5+6=0","a":"6-6=0","k":1},{"q":"9-1=4","a":"3+1=4","k":1}],"normal":[{"q":"6-9=19","a":"6+9=15","k":1},{"q":"5+6=3","a":"9-6=3","k":1},{"q":"2-6=7","a":"2+5=7","k":1},{"q":"1-9=1","a":"1-0=1","k":1},{"q":"2+6=1","a":"2+5=7","k":1},{"q":"4+9=1","a":"4+3=7","k":1},{"q":"1+5=72","a":"7+5=12","k":1},{"q":"0+2=6","a":"8-2=6","k":1},{"q":"8-2=18","a":"8+2=10","k":1},{"q":"2+8=6","a":"2+6=8","k":1},{"q":"8+3=15","a":"6+9=15","k":1},{"q":"1-9=18","a":"1+9=10","k":1},{"q":"9+8=71","a":"9+8=17","k":1},{"q":"6+2=6","a":"8-2=6","k":1},{"q":"10-2=76","a":"18-2=16","k":1},{"q":"7+1=74","a":"7+7=14","k":1},{"q":"8-1=10","a":"9+1=10","k":1},{"q":"6+3=3","a":"0+3=3","k":1},{"q":"10-9=4","a":"10-6=4","k":1},{"q":"2+8=19","a":"2+8=10","k":1}],"hard":[{"q":"8-4=8","a":"9-9=0","k":2},{"q":"7+0=8","a":"3+0=3","k":2},{"q":"1+5=19","a":"7+5=12","k":2},{"q":"7-3=6","a":"1+5=6","k":2},{"q":"6-2=78","a":"8+2=10","k":2},{"q":"2+8=72","a":"2+8=10","k":2},{"q":"6+9=17","a":"5+9=14","k":2},{"q":"8-1=5","a":"5+1=6","k":2},{"q":"10+0=8","a":"16-8=8","k":2},{"q":"9-9=46","a":"9+9=18","k":2},{"q":"0+5=78","a":"9+9=18","k":2},{"q":"6-1=9","a":"5+1=6","k":2},{"q":"8+6=45","a":"8+8=16","k":2},{"q":"0-8=78","a":"8+8=16","k":2},{"q":"3+4=3","a":"9-4=5","k":2},{"q":"75-4=3","a":"13-4=9","k":2},{"q":"3-6=17","a":"5+6=11","k":2},{"q":"3+9=40","a":"9+9=18","k":2},{"q":"73-2=6","a":"13-8=5","k":2},{"q":"7+6=5","a":"7+2=9","k":2}]}};
-/* 창의수학게임 › 성냥개비 식 고치기: 성냥개비를 정해진 개수만큼 옮겨 맞는 식 만들기
-   성냥개비를 누르면 들리고, 빈 자리(점선)를 누르면 그리로 옮겨짐. = 는 움직이지 않음 */
+<script>window.CR={"game":"blocks","levels":[{"id":"easy","nm":"쉬움","rec":"3~4학년","de":"입체 그림을 보고 똑같이 쌓기(가려진 쌓기나무 없음). 모두 몇 개일까요?"},{"id":"normal","nm":"보통","rec":"4~5학년","de":"위·앞·옆에서 본 모양만 보고 쌓기 — 쌓는 방법이 딱 하나인 문제"},{"id":"hard","nm":"도전","rec":"5~6학년","de":"세 모양에 맞게 쌓기나무를 가장 적게 또는 가장 많이 쌓기"}],"data":{"easy":[{"h":[[2,2,1],[0,0,0],[0,0,0]]},{"h":[[2,1,1],[2,1,0],[1,0,0]]},{"h":[[3,1,0],[3,0,0],[1,0,0]]},{"h":[[3,1,0],[1,1,0],[1,1,0]]},{"h":[[3,2,1],[1,0,0],[1,0,0]]},{"h":[[3,3,1],[1,0,0],[1,0,0]]},{"h":[[3,2,1],[2,1,0],[0,0,0]]},{"h":[[3,3,1],[1,1,1],[0,0,0]]},{"h":[[3,3,1],[3,0,0],[0,0,0]]},{"h":[[3,2,0],[3,0,0],[2,0,0]]},{"h":[[3,3,1],[2,1,0],[0,0,0]]},{"h":[[2,2,0],[2,1,0],[2,1,0]]},{"h":[[3,2,0],[3,1,0],[2,0,0]]},{"h":[[2,2,1],[1,1,1],[1,1,1]]},{"h":[[3,1,1],[3,1,0],[1,1,0]]},{"h":[[3,2,2],[1,1,0],[1,1,0]]},{"h":[[3,2,2],[2,1,0],[2,0,0]]},{"h":[[3,3,3],[2,0,0],[1,0,0]]},{"h":[[3,2,2],[2,1,0],[1,1,0]]},{"h":[[3,3,3],[3,0,0],[0,0,0]]}],"normal":[{"h":[[1,1,1],[2,0,0],[1,0,0]]},{"h":[[0,1,0],[1,1,1],[1,0,1]]},{"h":[[3,0,0],[1,1,0],[0,1,0]]},{"h":[[0,0,0],[1,3,0],[1,2,0]]},{"h":[[0,1,2],[0,1,2],[0,0,2]]},{"h":[[0,0,0],[3,2,0],[3,0,0]]},{"h":[[1,2,1],[1,1,1],[0,0,1]]},{"h":[[1,1,1],[0,1,3],[0,0,1]]},{"h":[[0,1,0],[0,1,0],[2,3,1]]},{"h":[[1,3,1],[1,0,0],[1,1,1]]},{"h":[[1,1,0],[1,0,1],[1,2,2]]},{"h":[[0,0,1],[0,1,3],[1,1,2]]},{"h":[[2,3,0],[0,2,0],[0,2,1]]},{"h":[[2,3,1],[1,0,1],[0,1,1]]},{"h":[[0,3,0],[0,1,1],[2,3,1]]},{"h":[[1,0,2],[1,1,3],[1,1,1]]},{"h":[[0,2,0],[0,2,1],[3,3,0]]},{"h":[[0,3,0],[0,3,0],[2,3,2]]},{"h":[[1,1,1],[3,2,3],[0,0,2]]},{"h":[[1,1,1],[1,1,1],[2,3,3]]}],"hard":[{"v":[[[1,1,0],[0,1,0],[1,1,1]],[2,2,2],[2,1,2]],"want":"max","n":11,"h":[[2,2,0],[0,1,0],[2,2,2]]},{"v":[[[1,1,1],[1,0,1],[0,0,1]],[1,3,3],[1,3,3]],"want":"max","n":12,"h":[[1,3,3],[1,0,3],[0,0,1]]},{"v":[[[0,0,0],[1,1,1],[1,0,0]],[3,3,3],[3,3,0]],"want":"max","n":12,"h":[[0,0,0],[3,3,3],[3,0,0]]},{"v":[[[0,1,0],[1,1,1],[1,0,1]],[3,3,2],[2,3,1]],"want":"max","n":13,"h":[[0,1,0],[3,3,2],[2,0,2]]},{"v":[[[0,0,0],[0,1,1],[1,1,1]],[3,3,2],[3,3,0]],"want":"max","n":13,"h":[[0,0,0],[0,3,2],[3,3,2]]},{"v":[[[0,1,1],[1,1,1],[1,1,1]],[1,2,3],[1,2,3]],"want":"max","n":13,"h":[[0,2,3],[1,2,2],[1,1,1]]},{"v":[[[1,1,1],[1,0,1],[1,0,1]],[1,3,3],[2,3,3]],"want":"max","n":14,"h":[[1,3,3],[1,0,3],[1,0,2]]},{"v":[[[1,0,0],[1,1,0],[1,1,1]],[3,3,3],[3,1,3]],"want":"max","n":14,"h":[[3,0,0],[1,1,0],[3,3,3]]},{"v":[[[0,1,1],[0,1,1],[1,1,1]],[3,3,2],[3,3,3]],"want":"max","n":18,"h":[[0,3,2],[0,3,2],[3,3,2]]},{"v":[[[1,1,1],[0,1,1],[1,1,0]],[3,3,3],[3,2,3]],"want":"max","n":19,"h":[[3,3,3],[0,2,2],[3,3,0]]},{"v":[[[0,0,0],[0,1,0],[1,1,1]],[1,3,3],[3,3,0]],"want":"min","n":8,"h":[[0,0,0],[0,3,0],[1,1,3]]},{"v":[[[1,1,0],[1,1,0],[1,1,1]],[3,2,1],[1,2,3]],"want":"min","n":10,"h":[[3,1,0],[1,2,0],[1,1,1]]},{"v":[[[0,0,1],[1,0,1],[1,1,1]],[2,2,3],[2,2,3]],"want":"min","n":10,"h":[[0,0,3],[2,0,1],[1,2,1]]},{"v":[[[0,0,1],[1,1,1],[0,1,0]],[3,3,2],[3,3,1]],"want":"min","n":10,"h":[[0,0,1],[3,1,2],[0,3,0]]},{"v":[[[0,1,0],[1,1,1],[1,1,0]],[3,2,3],[3,3,2]],"want":"min","n":11,"h":[[0,2,0],[1,1,3],[3,1,0]]},{"v":[[[0,1,1],[1,1,1],[0,1,1]],[3,2,3],[3,3,1]],"want":"min","n":12,"h":[[0,1,1],[3,1,1],[0,2,3]]},{"v":[[[1,1,1],[1,1,1],[1,1,0]],[3,2,1],[2,3,2]],"want":"min","n":12,"h":[[1,2,1],[3,1,1],[1,2,0]]},{"v":[[[0,0,1],[1,1,1],[1,1,1]],[3,2,3],[3,3,2]],"want":"min","n":13,"h":[[0,0,2],[1,1,3],[3,2,1]]},{"v":[[[1,1,1],[1,1,0],[0,1,1]],[3,2,3],[3,3,3]],"want":"min","n":14,"h":[[1,1,3],[3,1,0],[0,2,3]]},{"v":[[[1,1,1],[1,1,1],[1,0,0]],[3,3,3],[3,3,2]],"want":"min","n":14,"h":[[1,1,2],[1,3,3],[3,0,0]]}]}};
+/* 창의수학게임 › 쌓기나무: 입체 그림이나 위·앞·옆에서 본 모양을 보고 3×3 판에 똑같이 쌓기 */
 (function () {
   'use strict';
-  var SEG = { '0': 'abcdef', '1': 'bc', '2': 'abdeg', '3': 'abcdg', '4': 'bcfg', '5': 'acdfg', '6': 'acdefg', '7': 'abc', '8': 'abcdefg', '9': 'abcdfg' }, OPS = { '+': 'hv', '-': 'h' };
-  var X0 = 8, X1 = 52, Y0 = 10, YM = 58, Y1 = 106, DW = 60, OW = 50, GAP = 8;
-  var DC = { a: [X0, Y0, X1, Y0], b: [X1, Y0, X1, YM], c: [X1, YM, X1, Y1], d: [X0, Y1, X1, Y1], e: [X0, YM, X0, Y1], f: [X0, Y0, X0, YM], g: [X0, YM, X1, YM] };
-  var OC = { h: [7, 58, 43, 58], v: [25, 40, 25, 76] };
-  var P, ctx, host, sl, start, sol, on, held, solved, hintPair = null;
-  function parse(eq) { return eq.split('').map(function (ch) { return { t: /\d/.test(ch) ? 'd' : ch === '=' ? 'e' : 'o', ch: ch } }) }
-  function setOf(eq) { var s = {}; parse(eq).forEach(function (x, i) { if (x.t === 'e') return; (x.t === 'd' ? SEG[x.ch] : OPS[x.ch]).split('').forEach(function (c) { s[i + ':' + c] = 1 }) }); return s }
-  function read() {
-    var out = '';
-    for (var i = 0; i < sl.length; i++) {
-      if (sl[i].t === 'e') { out += '='; continue }
-      var cs = (sl[i].t === 'd' ? 'abcdefg' : 'hv').split('').filter(function (c) { return on[i + ':' + c] }).join(''), hit = null, tb = sl[i].t === 'd' ? SEG : OPS;
-      Object.keys(tb).forEach(function (k) { if (tb[k] === cs) hit = k }); if (hit === null) return null; out += hit;
+  var N = 3, MAX = 3;
+  var P, ctx, host, cur, mode, sel, solved, want;   // want: 정답 높이(쉬움·보통은 하나뿐, 도전은 예시 하나)
+  function views(h) {
+    var top = [], front = [], side = [], x, y;
+    for (y = 0; y < N; y++) { top.push([]); for (x = 0; x < N; x++) top[y].push(h[y][x] ? 1 : 0) }
+    for (x = 0; x < N; x++) { var m = 0; for (y = 0; y < N; y++) m = Math.max(m, h[y][x]); front.push(m) }
+    for (y = N - 1; y >= 0; y--) side.push(Math.max.apply(null, h[y]));   // 왼쪽이 앞줄
+    return [top, front, side];
+  }
+  function same(a, b) { return JSON.stringify(a) === JSON.stringify(b) }
+  function total(h) { return h.reduce(function (s, r) { return s + r.reduce(function (t, v) { return t + v }, 0) }, 0) }
+
+  // 입체 그림(앞·오른쪽 위에서 본 모습). x 오른쪽, y 앞쪽, z 위
+  var W = 26, H = 15, V = 30;
+  function pt(x, y, z) { return ((x - y) * W).toFixed(1) + ',' + ((x + y) * H - z * V).toFixed(1) }
+  function poly(ps, cls) { return '<polygon class="' + cls + '" points="' + ps.join(' ') + '"/>' }
+  function iso(h, label) {
+    var b = '', x, y, z, k;
+    for (y = 0; y < N; y++) for (x = 0; x < N; x++) b += poly([pt(x, y, 0), pt(x + 1, y, 0), pt(x + 1, y + 1, 0), pt(x, y + 1, 0)], 'bk-floor');
+    for (k = 0; k <= 2 * (N - 1); k++) for (x = 0; x < N; x++) {
+      y = k - x; if (y < 0 || y >= N) continue;
+      for (z = 0; z < h[y][x]; z++) {
+        b += poly([pt(x, y + 1, z), pt(x + 1, y + 1, z), pt(x + 1, y + 1, z + 1), pt(x, y + 1, z + 1)], 'bk-f')
+          + poly([pt(x + 1, y, z), pt(x + 1, y + 1, z), pt(x + 1, y + 1, z + 1), pt(x + 1, y, z + 1)], 'bk-r')
+          + poly([pt(x, y, z + 1), pt(x + 1, y, z + 1), pt(x + 1, y + 1, z + 1), pt(x, y + 1, z + 1)], 'bk-t');
+      }
     }
-    return out;
+    var lx = ((-N / 2 - .3) * W - 14).toFixed(1), ly = ((N * 1.5 + .3) * H + 12).toFixed(1);
+    b += '<text class="bk-lab" x="' + lx + '" y="' + ly + '" text-anchor="middle">앞</text>';
+    var x0 = -N * W - 22, y0 = -MAX * V - 8, w = 2 * N * W + 44, hh = 2 * N * H + MAX * V + 30;
+    return '<svg class="bk-iso" viewBox="' + x0 + ' ' + y0 + ' ' + w + ' ' + hh + '" role="img" aria-label="' + label + '">' + b + '</svg>';
   }
-  function isTrue(s) {
-    if (!s) return false; var lr = s.split('='), l = lr[0], r = lr[1], parts = l.split(/[+-]/).concat([r]);
-    if (parts.some(function (x) { return x.length > 1 && x[0] === '0' })) return false;
-    var a = parseInt(parts[0], 10), b = parseInt(parts[1], 10), c = parseInt(r, 10);
-    return l.indexOf('+') >= 0 ? a + b === c : a - b === c;
+  // 위·앞·옆에서 본 모양(칸 그림)
+  function view(kind, v, mark) {
+    var s = 22, p = 3, cells = '', i, j, rows = kind === 'top' ? N : MAX;
+    for (i = 0; i < N; i++) for (j = 0; j < rows; j++) {
+      var on = kind === 'top' ? v[j][i] : v[i] > rows - 1 - j;
+      cells += '<rect x="' + (p + i * s) + '" y="' + (p + j * s) + '" width="' + s + '" height="' + s + '" class="' + (on ? 'bk-von' : 'bk-voff') + '"/>';
+    }
+    var name = { top: '위', front: '앞', side: '옆' }[kind];
+    return '<figure class="bk-view' + (mark === true ? ' ok' : mark === false ? ' no' : '') + '"><svg viewBox="0 0 ' + (N * s + 2 * p) + ' ' + (rows * s + 2 * p) + '" role="img" aria-label="' + name + '에서 본 모양">' + cells
+      + (kind === 'top' ? '' : '<line x1="0" x2="' + (N * s + 2 * p) + '" y1="' + (rows * s + p) + '" y2="' + (rows * s + p) + '" class="bk-ground"/>') + '</svg>'
+      + '<figcaption>' + name + (kind === 'side' ? '(오른쪽)' : '') + (mark === true ? ' ✓' : '') + '</figcaption></figure>';
   }
-  function moved() { var n = 0; Object.keys(start).forEach(function (k) { if (!on[k]) n++ }); return n }
-  function layout() { var x = 0; sl.forEach(function (s) { s.x = x; x += (s.t === 'd' ? DW : OW) + GAP }); return x - GAP }
-  function stick(k, x1, y1, x2, y2, cls) {
-    var dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, a = [x1 + ux * 4, y1 + uy * 4], b = [x2 - ux * 4, y2 - uy * 4];
-    var line = 'x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '"';
-    if (cls === 'off') return '<g class="mt-off" data-k="' + k + '"><line ' + line + ' class="mt-slot"/><line ' + line + ' class="mt-hit"/></g>';
-    return '<g class="mt-on' + (cls ? ' ' + cls : '') + '" data-k="' + k + '"><line ' + line + ' class="mt-wood"/><circle cx="' + a[0] + '" cy="' + a[1] + '" r="5.2" class="mt-head"/><line ' + line + ' class="mt-hit"/></g>';
+  function viewsRow(v, marks) {
+    return view('top', v[0], marks && marks[0]) + view('front', v[1], marks && marks[1]) + view('side', v[2], marks && marks[2]);
+  }
+  function goalText() {
+    var lv = ctx.level.id;
+    if (lv === 'easy') return '그림과 <b>똑같이</b> 쌓아 보세요. 쌓기나무는 몇 개일까요?';
+    if (lv === 'normal') return '위·앞·옆에서 본 모양이 <b>똑같이</b> 되도록 쌓아 보세요.';
+    return '세 모양이 똑같이 되도록, 쌓기나무를 <b>' + (P.want === 'min' ? '가장 적게' : '가장 많이') + '</b> 쌓아 보세요.';
   }
   function draw() {
-    var W = layout(), h = '<svg class="mt-svg" viewBox="-6 0 ' + (W + 12) + ' 116" role="application" aria-label="성냥개비 식">';
-    sl.forEach(function (s, i) {
-      if (s.t === 'e') { h += stick('', s.x + 7, 48, s.x + 43, 48, 'fixed') + stick('', s.x + 7, 68, s.x + 43, 68, 'fixed'); return }
-      var C = s.t === 'd' ? DC : OC;
-      Object.keys(C).forEach(function (c) {
-        var k = i + ':' + c, q = C[c], cls = on[k] ? (held === k ? 'held' : '') + (hintPair && hintPair[0] === k ? ' hfrom' : '') : 'off';
-        if (cls === 'off' && hintPair && hintPair[1] === k) cls = 'off';
-        h += stick(k, s.x + q[0], q[1], s.x + q[2], q[3], cls);
-      });
+    var lv = ctx.level.id, tv = lv === 'easy' ? null : (P.v || views(P.h));
+    var h = '<p class="bk-goal">' + goalText() + '</p><div class="bk-wrap"><section class="bk-pane bk-target"><h3>보기</h3>'
+      + (lv === 'easy' ? iso(P.h, '쌓기나무 입체 그림') : '<div class="bk-views">' + viewsRow(tv) + '</div>')
+      + '</section><section class="bk-pane bk-mine"><h3>내가 쌓은 것 <span class="bk-cnt"></span></h3><div class="bk-build">'
+      + '<div class="bk-boardwrap"><span class="bk-side">뒤</span><div class="bk-board" role="grid" aria-label="위에서 본 판(아래쪽이 앞)">';
+    for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) h += '<button type="button" class="bk-cell" data-x="' + x + '" data-y="' + y + '" aria-label="' + (y + 1) + '째 줄 ' + (x + 1) + '째 칸"></button>';
+    h += '</div><span class="bk-side">앞</span></div><div class="bk-prev"></div></div>'
+      + '<div class="bk-modes"><button type="button" class="bk-mode" data-m="add">➕ 쌓기</button><button type="button" class="bk-mode" data-m="sub">➖ 빼기</button></div>'
+      + (lv === 'easy' ? '' : '<div class="bk-views bk-myviews"></div>') + '</section></div>'
+      + '<p class="bk-tip">판(위에서 본 모양, 아래쪽이 앞)의 칸을 누르면 한 개씩 쌓아요(한 칸에 ' + MAX + '개까지). 키보드: 방향키로 칸 옮기기, 0~3 높이, +/− 쌓기·빼기.</p>';
+    host.innerHTML = h; paint();
+  }
+  function paint() {
+    host.querySelectorAll('.bk-cell').forEach(function (el) {
+      var x = +el.dataset.x, y = +el.dataset.y, v = cur[y][x];
+      el.textContent = v || ''; el.className = 'bk-cell bk-h' + v + (x === sel[0] && y === sel[1] ? ' bk-cur' : '') + (solved ? ' bk-solved' : '');
     });
-    host.querySelector('.mt-board').innerHTML = h + '</svg>';
-    if (hintPair) { var t = host.querySelector('.mt-off[data-k="' + hintPair[1] + '"]'); if (t) t.classList.add('hto') }
-    var r = read(), m = moved();
-    host.querySelector('#mtCnt').innerHTML = '옮긴 성냥개비 <b>' + m + '</b> / ' + P.k + '개';
-    host.querySelector('#mtNow').innerHTML = '지금 식: <b>' + (r ? r.replace(/-/g, '−') : '?') + '</b>' + (r ? (isTrue(r) ? ' <span class="ok">맞음</span>' : ' <span class="no">틀림</span>') : ' <span class="no">숫자가 아닌 모양이 있어요</span>');
+    host.querySelectorAll('.bk-mode').forEach(function (el) { el.classList.toggle('bk-act', el.dataset.m === mode) });
+    host.querySelector('.bk-cnt').textContent = '· ' + total(cur) + '개';
+    host.querySelector('.bk-prev').innerHTML = iso(cur, '내가 쌓은 쌓기나무');
+    var mv = host.querySelector('.bk-myviews');
+    if (mv) { var a = views(cur), t = P.v || views(P.h); mv.innerHTML = viewsRow(a, a.map(function (v, i) { return same(v, t[i]) })) }
   }
-  function after() {
-    var r = read(), m = moved();
-    if (m === P.k && isTrue(r)) { solved = true; held = null; draw(); host.querySelector('.mt-board').classList.add('win'); ctx.done('성냥개비 ' + P.k + '개를 옮겨 <b>' + r.replace(/-/g, '−') + '</b> 식을 만들었어요!'); return }
-    if (m > P.k) ctx.msg('성냥개비는 ' + P.k + '개만 옮길 수 있어요. 옮긴 성냥개비를 제자리로 돌려 보세요.', 'bad');
-    else if (m === P.k) ctx.msg('아직 맞는 식이 아니에요. 다른 성냥개비를 옮겨 보세요.', 'bad');
-    else ctx.msg('');
+  function judge(quiet) {
+    var lv = ctx.level.id, n = total(cur);
+    if (lv === 'easy') {
+      if (same(cur, P.h)) { solved = true; paint(); ctx.done('그림과 똑같이 쌓았어요! 쌓기나무는 모두 ' + n + '개예요.'); return }
+      if (!quiet) ctx.msg(''); return;
+    }
+    var t = P.v || views(P.h), ok = same(views(cur), t);
+    if (ok && (lv === 'normal' || n === P.n)) {
+      solved = true; paint();
+      ctx.done(lv === 'normal' ? '세 모양이 모두 똑같아요! 쌓기나무는 ' + n + '개예요.' : '세 모양이 같고 ' + (P.want === 'min' ? '가장 적은' : '가장 많은') + ' ' + n + '개로 쌓았어요!');
+      return;
+    }
+    if (ok) ctx.msg('세 모양은 맞아요! 그런데 지금 ' + n + '개예요. ' + (P.want === 'min' ? '더 적게' : '더 많이') + ' 쌓을 수 있어요.', 'bad');
+    else if (!quiet) ctx.msg('');
   }
-  function tap(k, isOn) {
-    if (solved) return; hintPair = null;
-    if (isOn) { held = held === k ? null : k; draw(); return }
-    if (!held) { ctx.msg('먼저 옮길 성냥개비를 눌러요.', 'bad'); return }
-    delete on[held]; on[k] = 1; held = null; draw(); after();
+  function setCell(x, y, v) {
+    if (solved) return;
+    sel = [x, y]; cur[y][x] = Math.max(0, Math.min(MAX, v)); paint(); judge();
   }
+  document.addEventListener('keydown', function (e) {
+    if (!host || !document.body.contains(host) || !host.querySelector('.bk-board') || solved) return;
+    if (/INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName || '')) return;
+    var x = sel[0], y = sel[1], d = { ArrowLeft: [-1, 0], ArrowRight: [1, 0], ArrowUp: [0, -1], ArrowDown: [0, 1] }[e.key];
+    if (d) { e.preventDefault(); sel = [(x + d[0] + N) % N, (y + d[1] + N) % N]; paint() }
+    else if (/^[0-3]$/.test(e.key)) setCell(x, y, +e.key);
+    else if (e.key === '+' || e.key === '=') setCell(x, y, cur[y][x] + 1);
+    else if (e.key === '-' || e.key === 'Backspace') setCell(x, y, cur[y][x] - 1);
+  });
   window.CRG = {
     render: function (h, p, c) {
-      host = h; P = p; ctx = c; sl = parse(p.q); start = setOf(p.q); sol = setOf(p.a); on = Object.assign({}, start); held = null; solved = false; hintPair = null;
-      host.innerHTML = '<p class="mt-goal">성냥개비를 <b>' + p.k + '개</b> 옮겨서 맞는 식을 만들어요</p><div class="mt-board"></div>'
-        + '<div class="mt-bar"><span id="mtCnt"></span><span id="mtNow"></span></div>'
-        + '<p class="mt-tip">성냥개비를 누르면 들려요. 점선으로 된 빈 자리를 누르면 그리로 옮겨요. <b>=</b> 는 움직이지 않아요.</p>';
-      draw();
-      host.querySelector('.mt-board').onclick = function (e) {
-        var g = e.target.closest('[data-k]'); if (!g || !g.dataset.k) return;
-        tap(g.dataset.k, g.classList.contains('mt-on'));
+      host = h; P = p; ctx = c; solved = false; mode = 'add'; sel = [0, N - 1];
+      cur = [[0, 0, 0], [0, 0, 0], [0, 0, 0]]; want = p.h; draw();
+      host.onclick = function (e) {
+        var cell = e.target.closest('.bk-cell'), m = e.target.closest('.bk-mode');
+        if (m) { mode = m.dataset.m; paint() }
+        else if (cell) { var x = +cell.dataset.x, y = +cell.dataset.y; setCell(x, y, cur[y][x] + (mode === 'add' ? 1 : -1)) }
       };
     },
-    hint: function () {   // 옮길 성냥개비 하나와 놓을 자리를 빛냄(엉뚱하게 옮긴 것이 있으면 처음으로)
+    hint: function () {   // 다른 칸 하나를 정답 높이로
       if (solved) return false;
-      var extra = Object.keys(on).filter(function (k) { return !sol[k] }), need = Object.keys(sol).filter(function (k) { return !on[k] }), note = '';
-      if (extra.some(function (k) { return !start[k] }) || moved() > P.k) { on = Object.assign({}, start); note = '처음 모양으로 돌렸어요. '; extra = Object.keys(on).filter(function (k) { return !sol[k] }); need = Object.keys(sol).filter(function (k) { return !on[k] }) }
-      if (!extra.length || !need.length) return false;
-      held = null; hintPair = [extra[0], need[0]]; draw();
-      ctx.msg('💡 ' + note + '반짝이는 성냥개비를 초록 점선 자리로 옮겨 보세요.'); return true;
+      var lv = ctx.level.id, t = P.v || views(P.h);
+      // 도전에서 세 모양이 이미 맞고 다른 방법으로 쌓는 중이면 예시 답으로 이끎
+      for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) if (cur[y][x] !== want[y][x]) {
+        sel = [x, y]; cur[y][x] = want[y][x]; paint(); judge(true);
+        if (!solved) ctx.msg('💡 ' + (N - y) + '째 줄(앞에서부터) ' + (x + 1) + '째 칸에는 ' + want[y][x] + '개를 쌓아요.'
+          + (lv === 'easy' ? '' : ' 앞에서 본 모양은 세로줄마다, 옆에서 본 모양은 가로줄마다 가장 높은 것만 보여요.'));
+        return true;
+      }
+      return false;
     },
-    reveal: function () { on = Object.assign({}, sol); held = null; hintPair = null; draw(); after() }
+    reveal: function () { cur = want.map(function (r) { return r.slice() }); paint(); judge() }
   };
 })();
 
