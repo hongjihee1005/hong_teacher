@@ -14,6 +14,10 @@ import pathlib, re, shutil, sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MAIN = 'https://hongjihee1005.github.io/hong_teacher/'
 NAME = '초등 수학 게임'
+SITE = 'https://hongjihee1005.github.io/math-game/'
+DESC = '초등 1~6학년 수학 게임 — 마방진·칠교놀이·계산 스도쿠·하노이 탑·네모 로직·스도쿠로 생각하는 힘을 기르고, 학년별 계산을 게임으로 익혀요.'
+HEAD = ('<meta name="google-site-verification" content="gkDyhzWKxyJcx07mGzqlgNcSb6hh2qFh4VKAtkQgIUE">\n'  # 구글 Search Console 소유 확인(지우지 마세요)
+        f'<meta name="description" content="{DESC}">\n<link rel="canonical" href="{SITE}">\n')
 DIRS = {'creative': 'project/creative', 'mathgame': 'project/mathgame', 'sudoku': 'break/sudoku'}  # 새 사이트 폴더: 원본 폴더
 MENU = {'sudoku'}  # 메뉴 페이지(index.html)를 그대로 두는 폴더(나머지는 첫 화면으로 넘김)
 SEP = re.compile(r'<svg class="c-sep".*?</svg><a class="c-link" href="\.\./index\.html">[^<]*</a>', re.S)
@@ -57,7 +61,8 @@ def home():
            f'<h2 class="sec-h">교과수학</h2>\n<div class="grid g3 three">\n{cards("project/mathgame/index.html")}\n</div>\n'
            '<p class="sub" style="margin-top:28px">더 많은 수업 자료는 초등교사 홍지희의 자료실에 있어요.</p>\n')
     s = s[:a] + top + s[b:]
-    s = re.sub(r'<title>[^<]*</title>', f'<title>{NAME}</title>', s)
+    s = re.sub(r'<meta name="description"[^>]*>\n?', '', s)
+    s = re.sub(r'<title>[^<]*</title>', lambda m: f'<title>{NAME}</title>\n' + HEAD, s, count=1)
     s = re.sub(r'<footer class="hjfoot"><p>[^<]*</p>(<p>만든 사람)', r'<footer class="hjfoot">\1', s)
     return s
 
@@ -75,6 +80,10 @@ def main(out):
             (dst / f.name).write_text(t, encoding='utf-8')
     (out / 'index.html').write_text(home(), encoding='utf-8')
     (out / '.nojekyll').write_text('', encoding='utf-8')
+    # 검색 사이트에 낼 사이트맵(첫 화면으로 넘기기만 하는 안내 페이지는 뺌)
+    urls = [SITE] + [SITE + f.relative_to(out).as_posix() for f in sorted(out.glob('*/*.html')) if 'http-equiv="refresh"' not in f.read_text(encoding='utf-8')]
+    (out / 'sitemap.xml').write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + ''.join(f'<url><loc>{u}</loc></url>\n' for u in urls) + '</urlset>\n', encoding='utf-8')
     # 남은 링크 점검(href와 "f": 둘 다)
     bad = []
     for f in out.rglob('*.html'):
