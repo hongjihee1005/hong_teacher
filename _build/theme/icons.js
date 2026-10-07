@@ -43,6 +43,10 @@ bridge:'<path d="M2.5 15h19M2.5 9.5h19"/><path d="M4 15v-2a8 5 0 0 1 16 0v2"/><p
 mail:'<rect x="3" y="5.5" width="18" height="13" rx="2"/><path d="m3.5 7 8.5 6.5L20.5 7"/>',
 car:'<path d="M4 16.5V12l2-5h12l2 5v4.5Z"/><path d="M4 12h16M7 16.5V19M17 16.5V19"/><circle cx="7.5" cy="14.3" r=".6"/><circle cx="16.5" cy="14.3" r=".6"/>',
 ball:'<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="3.6"/><path d="M11.2 10.8h1.6v2.4"/>',
+toolbox:'<rect x="3" y="8" width="18" height="12" rx="2"/><path d="M9 8V5.5A1.5 1.5 0 0 1 10.5 4h3A1.5 1.5 0 0 1 15 5.5V8M3 13h18M10 13v2h4v-2"/>',
+pin:'<path d="M12 21v-6"/><path d="M8 4h8l-1 6 3 3H6l3-3Z"/>',
+diamond:'<path d="M12 3 21 12 12 21 3 12Z"/>',
+hat:'<path d="M7 16V7a1 1 0 0 1 1-1h8a1 1 0 0 1 1 1v9"/><path d="M3 16h18v2H3ZM7 12h10"/>',
 pento:'<path d="M4 9h5V4h5v5h5v5h-5v6H9v-6H4Z"/><path d="M9 9h5v5H9Z" stroke-width="1.4"/>',
 gamepad:'<path d="M7.2 7.5h9.6a4.3 4.3 0 0 1 4.2 3.4l1 4.9a2.6 2.6 0 0 1-4.5 2.2L15.6 16H8.4l-1.9 2a2.6 2.6 0 0 1-4.5-2.2l1-4.9a4.3 4.3 0 0 1 4.2-3.4Z"/><path d="M8 10.3v3.4M6.3 12h3.4"/><path d="M15.4 11h.01M17.4 13h.01" stroke-width="2.6"/>',
 dice:'<rect x="4" y="4" width="16" height="16" rx="3.4"/><path d="M8.6 8.6h.01M15.4 8.6h.01M12 12h.01M8.6 15.4h.01M15.4 15.4h.01" stroke-width="2.7"/>',
@@ -86,7 +90,7 @@ m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('clock','🚧 ⏰ 🕰');m(
 m('image','🖼 🎨');m('music','🎵 🎶 🎼');m('books','📚');m('chart','📊 📈');m('dice','🎲 🃏');m('house','🏠 🏡 🏘');m('bulb','💡');m('laptop','💻');m('monitor','🖥');
 m('printer','🖨');m('file','📄 📃 📝');m('layers','📑');m('lock','🔒 🔐');m('check','✅ ☑ ✔');m('help','❓ ❔');m('timer','⏱ ⏲');m('hourglass','⏳ ⌛');m('msg','💬 🗨');
 m('search','🔎 🔍');m('pencil','✏ ✍ 🖊 🖍');m('mic','🎙 🎤');m('vol','🔈 🔉 🔊 📢');m('scale','⚖');m('ruler','📏 📐');m('puzzle','🧩');m('users','🤝 👥 🧑‍🤝‍🧑');
-m('phone','📱 📞');m('refresh','🔄 🔁 ↻');m('globe','🌏 🌍 🌎');m('clipboard','📋');m('news','📰');m('camera','📷 📸');m('landmark','🏛');m('box','📦');m('teddy','🧸');m('gamepad','🎮 🕹');m('brain','🧠');m('target','🎯');m('fire','🔥');m('pento','🟩');m('sun','☀');m('circlepi','🔵');m('rabbit','🐰 🐇');m('turtle','🐢');m('bridge','🌉');m('mail','✉');m('car','🚕 🚗');m('ball','🎱');m('cubes','🧊');m('magicsq','✳');m('tangram','🔺');m('tower','🗼');m('pixel','🔳');m('dove','🕊');m('hand','🙌 ✋ 🙋');m('bag','🎒');m('brush','🖌');m('drum','🥁 🪘');m('piano','🎹');m('violin','🎻 🪕');m('origami','🦢');m('compass','🧭');m('info','ℹ');
+m('phone','📱 📞');m('refresh','🔄 🔁 ↻');m('globe','🌏 🌍 🌎');m('clipboard','📋');m('news','📰');m('camera','📷 📸');m('landmark','🏛');m('box','📦');m('teddy','🧸');m('gamepad','🎮 🕹');m('brain','🧠');m('target','🎯');m('fire','🔥');m('pento','🟩');m('pin','📌 📍');m('toolbox','🧰');m('diamond','🔷 🔶');m('hat','🎩');m('sun','☀');m('circlepi','🔵');m('rabbit','🐰 🐇');m('turtle','🐢');m('bridge','🌉');m('mail','✉');m('car','🚕 🚗');m('ball','🎱');m('cubes','🧊');m('magicsq','✳');m('tangram','🔺');m('tower','🗼');m('pixel','🔳');m('dove','🕊');m('hand','🙌 ✋ 🙋');m('bag','🎒');m('brush','🖌');m('drum','🥁 🪘');m('piano','🎹');m('violin','🎻 🪕');m('origami','🦢');m('compass','🧭');m('info','ℹ');
 var RX=/(?:\p{Extended_Pictographic}|[★➕➗✖ℹ↻])(?:️|‍\p{Extended_Pictographic}|[\u{1F3FB}-\u{1F3FF}])*️?/gu;
 function key(e){return e.replace(/[️\u{1F3FB}-\u{1F3FF}]/gu,'')}
 function svg(k,c){return '<svg class="'+(c||'hj-li')+'" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+P[k]+'</svg>'}

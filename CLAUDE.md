@@ -276,7 +276,7 @@ grade1/ … grade6/
 
 ### 기타 › 수학게임 (`project/math/index.html`, 2026-10-07)
 
-- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림). 두 이름은 추천한 이름이라 선생님이 바꿀 수 있음.
+- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림) · 🧰 수학 교구실(`../mathtools/`, 2026-10-07 열림) · 📊 우리 반 그래프 · 🎩 수학 마술 · 📘 그림 수학 사전 · 🎲 교실 수학 놀이(뒤의 넷은 이 차례로 만드는 중, 열릴 때까지 '곧 열려요'). 방 이름은 추천한 이름을 선생님이 고름(2026-10-07).
   창의수학게임·교과수학게임 메뉴의 위치 표시줄은 '홈 › 기타 › 수학게임'.
 
 ### 기타 › 수학게임 › 사고력 수학 (`project/thinking/`, 2026-10-07)
@@ -297,6 +297,14 @@ grade1/ … grade6/
 - **확실하지 않은 일화는 ‘전해지는 이야기’라고 적습니다**(탈레스 피라미드·아르키메데스 유레카·가우스 1~100 등). 사실은 웹 검색으로 확인(이 환경에서 출처 사이트를 직접 열 수 없었음). 살아 있는 인물(허준이)은 공개 보도된 사실만.
 - **`project/mathpeople/`의 index 말고는 직접 고치지 마세요.** 원본은 `_build/mathpeople/`: 인물 `people.py`(ERAS·PEOPLE), 화면 `page.html`·`page.css`·`app.js`. `build.py check`가 빈 칸·위젯 있음·문제 보기 4개와 정답 번호·출처 https·그림자 답·피보나치 수·제르맹 소수를 점검합니다.
   고친 뒤 `python3 _build/mathpeople/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 인물을 더하면 메뉴 카드도 더하고 `apply_theme.py`. 클래스 앞글자 `mp-`. 메뉴 아이콘 ☀(sun)·🔵(circlepi)·🐰(rabbit)·🐢(turtle)·🌉(bridge)·✉(mail)·🚕(car)·🎱(ball)은 `icons.js`에 추가.
+
+### 기타 › 수학게임 › 수학 교구실 (`project/mathtools/`, 2026-10-07)
+
+- 메뉴 `project/mathtools/index.html`(손으로 고치는 메뉴, 영역 3묶음: 수와 연산 · 도형과 측정 · 자료와 가능성) → 교구 8쪽: `base10`(수 모형: 백·십·일, 모으기·풀기) · `fracbar`(분수 막대: 1~12칸, 색칠, 기약분수) · `numline`(수직선: 0~10/20/100/1000·소수 한/두 자리·분수, 점 찍기, 뛰어 세기 화살표와 식) · `geoboard`(지오보드 5~11칸, 고무줄 도형, 넓이·둘레) · `pattern`(패턴 블록 6조각, 끌기·30° 돌리기·꼭짓점 붙기, 육각형=1 분수) · `angle`(각도기: 끌어 각 만들기, 예각·직각·둔각, 각 만들기 문제) · `clock`(시계: 바늘 끌기, ±분·시간, 시각 맞추기 문제) · `dice`(주사위 1·2개, 동전 1·2개, 1~1000번 던지기 → 표·막대그래프·설명).
+- 교구 쪽: 교구 판(⛶ 크게 보기 = 전체 화면, 전자칠판용) · 쓰는 법 · 💡 수업 아이디어 · 어울리는 학년과 2022 개정 교육과정 영역(대강 맞춘 것). 기록은 남기지 않음.
+- **`project/mathtools/`의 index 말고는 직접 고치지 마세요.** 원본은 `_build/mathtools/`: 교구 목록 `tools.py`, 공통 틀 `page.html`·`page.css`·`shell.js`, 교구 `tools/<id>.js`(`window.TOOL = function (host, api)`, `api.bar(글)`)·`tools/<id>.css`.
+  고친 뒤 `python3 _build/mathtools/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 교구를 더하면 `tools.py`·메뉴 카드·`run_all.py` 출력 목록을 고치고 `apply_theme.py`.
+  클래스 앞글자: 공통 `tl-`, 교구마다 `bt-` `fr-` `nl-` `gb-` `pb-` `ag-` `ck-` `dc-`. 한 쪽에 svg가 여럿이면 `host.querySelector('svg')` 말고 클래스로 찾을 것(패턴 블록에서 조각 그림 svg를 잘못 잡은 적 있음). 메뉴 아이콘 🧰(toolbox)·📌(pin)·🔷(diamond)·🎩(hat)는 `icons.js`에 추가.
 
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
 
