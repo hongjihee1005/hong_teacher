@@ -334,7 +334,7 @@ grade1/ … grade6/
 
 - 창의 수학·교과수학만 모은 따로 사이트(주소 `https://hongjihee1005.github.io/math-game/`). **원본은 이 저장소**이고, math-game 저장소는 복사본입니다. math-game의 파일을 직접 고치지 마세요.
 - 첫 화면(선생님 요청 2026-10-07): 제목 '초등 수학 게임' → 묶음 '창의 수학'(게임 카드 5개 바로 게임으로 + 스도쿠 카드 → 새 사이트 안 `sudoku/`(쉬는 시간 스도쿠 7쪽을 복사, 1~6학년 메뉴 `sudoku/index.html`은 남김)) → 묶음 '교과수학'(1~6학년 카드 → `mathgame/gN.html`) → '더 많은 수업 자료는 초등교사 홍지희의 자료실에 있어요.'(링크 없음). 하위 메뉴 페이지는 없고 `creative/index.html`·`mathgame/index.html`은 첫 화면으로 넘기는 안내 페이지입니다.
-- `_build/mathsite/export.py 출력폴더`가 만듭니다: 카드는 `project/creative/index.html`·`project/mathgame/index.html`의 카드 묶음을 그대로 가져오고(카드를 고치면 따라감), 게임 페이지는 복사하며 홈·'자료 목록' 링크를 새 첫 화면으로, 제목 끝을 '· 창의 수학 · 초등 수학 게임'처럼, 교과수학 학년 페이지 제목 'N학년 교과수학게임'을 'N학년'으로, 스도쿠 링크를 새 사이트 `sudoku/`로 바꿉니다. 새 사이트는 원래 자료실로 가는 링크가 없습니다(선생님 요청).
+- `_build/mathsite/export.py 출력폴더`가 만듭니다: 카드는 `project/creative/index.html`·`project/mathgame/index.html`의 카드 묶음을 그대로 가져오고(카드를 고치면 따라감), 게임 페이지는 복사하며 홈·'자료 목록' 링크를 새 첫 화면으로, 제목 끝을 '· 창의 수학 · 초등 수학 게임'처럼, 교과수학 학년 페이지 제목 'N학년 교과수학게임'을 'N학년'으로, 스도쿠 링크를 새 사이트 `sudoku/`로 바꾸고, 스도쿠 꼬리말의 '쉬는 시간에 친구와 함께 즐기는 놀이 자료입니다.' 줄을 뺍니다. 새 사이트는 원래 자료실로 가는 링크가 없습니다(선생님 요청).
 - math-game의 Actions('원본에서 가져오기', 원본 `_build/mathsite/repo/.github/workflows/sync.yml`)가 한 시간마다 이 저장소 main을 받아 `export.py`를 돌리고 바뀐 것만 올립니다(Pages는 main 브랜치 / root). 바로 맞추려면 math-game Actions에서 Run workflow. 그 저장소에 넣는 파일(워크플로·README)의 원본은 `_build/mathsite/repo/`.
 - 자동 보완 `run_all.py`가 `export.py`를 임시 폴더로 돌려 보고, 실패하면(카드를 못 찾음·깨진 링크) 실패 메일을 보냅니다. 두 사이트는 주소가 같은 `hongjihee1005.github.io`라 기록(localStorage)도 함께 씁니다.
 

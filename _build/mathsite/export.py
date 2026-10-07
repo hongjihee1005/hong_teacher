@@ -24,6 +24,7 @@ REDIRECT = ('<!doctype html><html lang="ko"><head><meta charset="utf-8">'
 def fix_page(s):
     s = s.replace(' · 기타 · 초등교사 홍지희', ' · ' + NAME).replace(' · 쉬는 시간 · 초등교사 홍지희', ' · 창의 수학 · ' + NAME)
     s = s.replace('학년 교과수학게임 · ', '학년 · 교과수학 · ').replace('학년 교과수학게임', '학년')                        # '3학년 교과수학게임' → '3학년'
+    s = s.replace('<p>쉬는 시간에 친구와 함께 즐기는 놀이 자료입니다.</p>', '').replace('학년 쉬는 시간 스도쿠', '학년 스도쿠')  # 스도쿠 꼬리말 소개 줄 빼기(선생님 요청)
     s = SEP.sub('', s)                                                 # 위치 표시줄에서 '› 쉬는 시간' 빼기
     s = s.replace('href="../../break/sudoku/', 'href="../sudoku/')    # 스도쿠도 새 사이트 안으로
     s = re.sub(r'<title>[^<]*</title>', lambda m: m.group(0).replace('창의수학게임', '창의 수학').replace('교과수학게임', '교과수학'), s, count=1)
