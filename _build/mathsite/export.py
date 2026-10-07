@@ -45,15 +45,21 @@ def _cards(path):
         if h and n: out.append((h.group(1), re.sub(r'<[^>]+>', '', n.group(1)).strip()))
     return out
 
+COLLECT = []   # 다른 방들을 모아 둔 메뉴(예: project/math/ '수학게임') — 새 사이트에서는 첫 화면이 대신함
+
 def rooms():
-    """기타 메뉴에서 이름에 '수학'이 든 방: [(폴더, 방 이름)] — 메뉴에 놓인 차례대로.
-    방이 다른 방들을 모아 둔 메뉴(2026-10-07 '수학게임' 메뉴 project/math/ → ../creative/·../mathgame/)이면
-    그 안의 방들로 펼칩니다(모음 메뉴 자체는 넣지 않음). 모음 안의 방은 이름에 '수학'이 없어도 넣습니다."""
+    """기타 메뉴에서 이름에 '수학'이 든 방: [(폴더, 방 이름)] — 메뉴에 놓인 차례대로. 폴더는 project/ 기준(예: 'creative', 'math/thinking').
+    방 메뉴의 카드가 모두 다른 폴더 메뉴(../X/index.html 또는 X/index.html)를 가리키면 '모음 메뉴'로 보고
+    그 안의 방들로 펼칩니다(2026-10-07 '수학게임' project/math/ → ../creative/·../mathgame/, 앞으로 math/ 안에 새 방을 만들어도 됨).
+    모음 안의 방은 이름에 '수학'이 없어도 넣고, '곧 열려요'(링크 없는 카드)는 열릴 때 저절로 들어갑니다."""
     out = []
     def add(folder, nm, depth=0):
-        sub = [(re.fullmatch(r'\.\./([\w-]+)/index\.html', h), n) for h, n in _cards(f'project/{folder}/index.html')]
-        sub = [(m.group(1), n) for m, n in sub if m]
-        if sub and depth < 3:
+        sub = []
+        for h, n in _cards(f'project/{folder}/index.html'):
+            r = posixpath.normpath(posixpath.join(folder, h))
+            sub.append((r[:-len('/index.html')] if r.endswith('/index.html') and not r.startswith('..') else None, n))
+        if sub and all(f for f, _ in sub) and depth < 3:
+            COLLECT.append(folder)
             for f, n in sub: add(f, n, depth + 1)
         elif folder not in [d for d, _ in out]: out.append((folder, nm))
     for h, nm in _cards('project/index.html'):
@@ -62,17 +68,19 @@ def rooms():
         if not mm: WARN.append(f'기타 메뉴의 수학 방 "{nm}"이 폴더가 아니어서 넣지 못했습니다({h})'); continue
         add(mm.group(1), nm)
     assert out, '기타 메뉴에서 수학 방을 찾지 못했습니다'
+    names = [posixpath.basename(d) for d, _ in out]
+    assert len(set(names)) == len(names), f'새 사이트 폴더 이름이 겹칩니다: {names}'
     return out
 
 ROOMS = rooms()
 
 def newpath(o):
     """원래 저장소 경로 → 새 사이트 경로(없으면 None). 방 메뉴 페이지와 기타 메뉴·자료실 첫 화면은 새 첫 화면으로."""
-    if o in ('index.html', 'project/index.html'): return 'index.html'
-    for d, _ in ROOMS:
+    if o in ('index.html', 'project/index.html') or o in [f'project/{c}/index.html' for c in COLLECT]: return 'index.html'
+    for d, _ in sorted(ROOMS, key=lambda r: -len(r[0])):   # 깊은 폴더 먼저(math/thinking이 math보다 앞)
         p = f'project/{d}/'
         if o == p + 'index.html': return 'index.html'
-        if o.startswith(p): return d + '/' + o[len(p):]
+        if o.startswith(p): return posixpath.basename(d) + '/' + o[len(p):]   # 새 사이트에서는 방 폴더 이름만
     for src, dst in EXTRA.items():
         if o.startswith(src + '/'): return dst + '/' + o[len(src) + 1:]
     return None
