@@ -54,6 +54,7 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
     ('공통 속담·관용어·사자성어', '_build/words/', ['common/words/[!i]*.html'], [('.', ['_build/words/build.py'])]),
     ('프로젝트 세계시민교육', '_build/gced/', ['project/global/t*.html'], [('.', ['_build/gced/build.py'])]),
     ('프로젝트 독서교육', '_build/reading/', ['project/reading/[!i]*.html'], [('.', ['_build/reading/build.py'])]),
+    ('프로젝트 수학게임', ('_build/mathgame/', '_build/arith/skills.js'), ['project/mathgame/g*.html'], [('.', ['_build/mathgame/build.py'])]),
     ('프로젝트 도서 활용 세계시민교육', '_build/gced-books/', ['project/gced-books/*.html', 'project/gced-books/*/*.html'], [('.', ['_build/gced-books/build.py'])]),
 ]
 
