@@ -1,8 +1,8 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>펜토미노 채우기 · 창의수학게임 · 기타 · 초등교사 홍지희</title>
-<meta name="description" content="정사각형 5개짜리 조각(펜토미노)을 돌리고 뒤집어 판을 빈틈없이 채우는 퍼즐">
-<style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#3A8F3A;--ok:#2E9E5B;--bad:#D0453B;--cell:#FFFDF9;
+<title>님 게임 · 창의수학게임 · 기타 · 초등교사 홍지희</title>
+<meta name="description" content="돌 무더기에서 번갈아 가져가며 마지막 돌을 가져가면 이기는 님 게임 — 컴퓨터나 친구와 대결하며 이기는 규칙 찾기">
+<style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#2B6FB8;--ok:#2E9E5B;--bad:#D0453B;--cell:#FFFDF9;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37;--cell:#2F2925}}
 :root[data-theme="dark"]{--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37;--cell:#2F2925}
@@ -55,27 +55,31 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes cr-pop{50%{transform:scale(1.08)}}
 @media (max-width:640px){.cr-levels{grid-template-columns:1fr}.cr-lv{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 8px}.cr-lv small{width:100%}}
 @media print{.cr-gnav,.cr-levels,.cr-nums,.cr-bar button,.cr-how,.creditbar,.hj-nav,.hj-navbar,#hj-home{display:none!important}}
-/* 펜토미노 채우기 */
-.pt-goal{margin:0;text-align:center;color:var(--soft)}
-.pt-goal b{color:var(--acc);font-size:1.15em}
-.pt-board{width:100%;max-width:860px}
-.pt-svg{display:block;width:100%;height:auto;max-height:78vh;touch-action:none;user-select:none;-webkit-user-select:none}
-.pt-cell{fill:var(--cell);stroke:#D9CEC2;stroke-width:.03}
-.pt-frame{fill:none;stroke:var(--ink);stroke-width:.08}
-.pt-tray{fill:color-mix(in srgb,var(--acc) 6%,var(--bg));stroke:var(--line);stroke-width:.04;stroke-dasharray:.15 .12}
-.pt-pc{cursor:grab}.pt-pc rect{stroke:rgba(0,0,0,.18);stroke-width:.04}
-.pt-pc.pt-sel rect{stroke:#2A221C;stroke-width:.08}
-.pt-pc:not(.pt-on){opacity:.92}
-.pt-pc.pt-hint{animation:tg-blink .9s}
-@keyframes tg-blink{30%,70%{opacity:.35}}
-.pt-board.win .pt-pc rect{stroke:#fff;stroke-width:.05}
-.pt-tools{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px}
-#ptCnt{min-width:7.5em;text-align:center;color:var(--soft)}#ptCnt b{font-family:var(--display);font-weight:400;font-size:1.3em;color:var(--ink)}
-.pt-btn{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 14px;font-size:16px}
-.pt-btn:disabled{opacity:.45;cursor:default}
-.pt-tip{margin:0;font-size:15px;color:var(--soft);text-align:center}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pt-pc.pt-sel rect{stroke:#fff}}
-:root[data-theme="dark"] .pt-pc.pt-sel rect{stroke:#fff}
+/* 님 게임 */
+.nm-modes{display:flex;gap:8px;justify-content:center}
+.nm-mode{border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 18px;font-family:var(--display);font-size:18px}
+.nm-mode[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.nm-rule{margin:0;text-align:center;color:var(--soft)}
+.nm-turn{min-height:36px;padding:4px 18px;border-radius:999px;font-size:19px;background:color-mix(in srgb,#3B82D6 12%,var(--paper));color:var(--ink)}
+.nm-turn.p1{background:color-mix(in srgb,#E5534B 12%,var(--paper))}
+.nm-turn b{font-family:var(--display);font-weight:400;font-size:1.25em}
+.nm-turn:empty{display:none}
+.nm-piles{display:flex;flex-direction:column;gap:12px;width:100%;max-width:820px}
+.nm-row{display:flex;align-items:center;gap:10px;padding:8px 12px;border-radius:18px;background:color-mix(in srgb,var(--line) 20%,var(--bg))}
+.nm-lab{display:flex;flex-direction:column;align-items:center;min-width:3.2em;font-family:var(--display);font-size:18px}
+.nm-lab small{font-family:var(--body);font-size:14px;color:var(--soft)}
+.nm-stones{display:flex;flex-wrap:wrap;gap:6px}
+.nm-st{width:clamp(30px,6vw,44px);height:clamp(30px,6vw,44px);border-radius:50%;border:0;padding:0;background:radial-gradient(circle at 35% 30%,#9C9590,#5E5650 70%);box-shadow:0 3px 0 rgba(0,0,0,.25);cursor:pointer;transition:transform .12s}
+.nm-st:hover{transform:translateY(-2px)}
+.nm-st.pick{background:radial-gradient(circle at 35% 30%,#FFD27A,#E0A21A 70%);transform:translateY(-4px)}
+.nm-bar{display:flex;gap:10px;justify-content:center}
+.nm-take,.nm-again{height:50px;padding:0 24px;border:0;border-radius:999px;background:var(--acc);color:#fff;font-family:var(--display);font-size:20px}
+.nm-take:disabled{opacity:.4;cursor:default}
+.nm-again{background:var(--ink)}
+.nm-how{max-width:760px;padding:12px 16px;border-radius:16px;background:color-mix(in srgb,#F2B92C 14%,var(--paper));border:2px dashed color-mix(in srgb,#F2B92C 55%,var(--line));line-height:1.7}
+.nm-log{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 12px;font-size:15px;color:var(--soft)}
+.nm-log li.p0{color:#2F6FB8}.nm-log li.p1{color:#C0392B}
+.nm-tip{margin:0;font-size:15px;color:var(--soft);text-align:center}
 
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
@@ -755,10 +759,10 @@ html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:n
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
 </style><!--/hj-ctheme--></head><body>
 <main>
-<nav class="cr-gnav" aria-label="다른 창의수학게임"><a href="magic.html">마방진</a><a href="tangram.html">칠교놀이</a><a href="kenken.html">계산 스도쿠</a><a href="hanoi.html">하노이 탑</a><a href="nonogram.html">네모 로직</a><a href="make.html">목표 수 만들기</a><a href="balance.html">저울 퍼즐</a><a href="match.html">성냥개비 식 고치기</a><a href="pento.html" aria-current="page">펜토미노 채우기</a><a href="nim.html">님 게임</a></nav>
-<h1>🟩 펜토미노 채우기</h1>
-<p class="sub">정사각형 다섯 개를 이어 붙인 조각을 펜토미노라고 해요. 모양이 12가지나 돼요! 주어진 조각을 모두 써서 판을 빈틈도 겹침도 없이 채워 보세요.</p>
-<details class="cr-how"><summary>이렇게 해요</summary><ul><li>조각을 <b>끌어서</b> 판에 놓으면 칸에 착 붙어요. 판 밖으로 나가거나 겹치면 붙지 않아요.</li><li>조각을 <b>살짝 누르면</b> 90° 돌아가요. 아래 단추로 반대로 돌리거나 <b>뒤집을</b> 수 있어요(평면도형의 밀기·돌리기·뒤집기!).</li><li>조각을 모두 놓아 판이 꽉 차면 성공. 채우는 방법이 여러 가지일 수 있고, 어떤 방법이든 맞아요.</li><li>💡 실마리: 판의 모서리와 가장자리부터 채워요. I(일자)처럼 길거나 X(십자)처럼 들어갈 곳이 적은 조각을 먼저 놓으면 쉬워져요.</li></ul></details>
+<nav class="cr-gnav" aria-label="다른 창의수학게임"><a href="magic.html">마방진</a><a href="tangram.html">칠교놀이</a><a href="kenken.html">계산 스도쿠</a><a href="hanoi.html">하노이 탑</a><a href="nonogram.html">네모 로직</a><a href="make.html">목표 수 만들기</a><a href="balance.html">저울 퍼즐</a><a href="match.html">성냥개비 식 고치기</a><a href="pento.html">펜토미노 채우기</a><a href="nim.html" aria-current="page">님 게임</a></nav>
+<h1>🤝 님 게임</h1>
+<p class="sub">돌을 번갈아 가져가요. 마지막 돌을 가져가는 사람이 이겨요! 컴퓨터나 친구와 겨루면서, 언제나 이기는 비밀 규칙을 찾아보세요.</p>
+<details class="cr-how"><summary>이렇게 해요</summary><ul><li><b>🤖 컴퓨터와</b> 또는 <b>👫 친구와 둘이</b>를 골라요. 처음은 언제나 먼저 하는 사람(나 또는 ‘파랑’) 차례예요.</li><li>가져갈 돌을 누르면 그 돌부터 줄 끝까지 골라져요. <b>가져가기</b>를 누르면 차례가 넘어가요.</li><li>쉬움·보통은 한 줄에서 정해진 개수까지, 도전은 여러 줄 중 한 줄을 골라 몇 개든 가져가요.</li><li>모든 판은 먼저 하는 사람이 <b>규칙대로 하면 반드시 이기는</b> 판이에요. 컴퓨터를 이기면 성공! (도전의 컴퓨터는 실수하지 않아요)</li><li>💡 실마리: 돌이 조금 남았을 때부터 거꾸로 생각해 보세요. “내가 상대에게 몇 개를 남기면 상대가 꼭 지게 될까?”</li></ul></details>
 <div class="cr-levels" id="crLevels" role="tablist" aria-label="단계"></div>
 <div class="cr-nums" id="crNums" aria-label="문제 번호"></div>
 <section class="cr-play" id="crPlay" aria-live="polite">
@@ -770,117 +774,113 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 </section>
 <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>생각하는 힘을 기르는 창의수학게임 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
 </main>
-<script>window.CR={"game":"pento","levels":[{"id":"easy","nm":"쉬움","rec":"3~4학년","de":"5×3 판에 3조각, 5×4 판에 4조각."},{"id":"normal","nm":"보통","rec":"4~5학년","de":"5×5 판에 5조각, 6×5 판에 6조각."},{"id":"hard","nm":"도전","rec":"5~6학년","de":"7×5·8×5 판에 7~8조각, 마지막은 12조각 모두로 10×6!"}],"data":{"easy":[{"w":5,"h":3,"p":["P","U","Y"],"s":[["P",0,0,0,0],["U",2,0,2,0],["Y",1,0,1,1]]},{"w":5,"h":3,"p":["N","P","U"],"s":[["N",1,1,0,0],["U",3,0,3,0],["P",3,0,0,1]]},{"w":5,"h":3,"p":["L","T","Y"],"s":[["L",1,0,0,0],["T",1,0,2,0],["Y",3,1,0,1]]},{"w":5,"h":3,"p":["P","U","V"],"s":[["U",1,0,0,0],["P",1,1,1,0],["V",3,0,2,0]]},{"w":5,"h":3,"p":["F","P","U"],"s":[["P",0,0,0,0],["F",2,0,1,0],["U",3,0,3,0]]},{"w":5,"h":3,"p":["L","P","V"],"s":[["L",3,1,0,0],["V",3,0,2,0],["P",3,1,0,1]]},{"w":5,"h":3,"p":["L","N","V"],"s":[["L",1,0,0,0],["V",3,0,2,0],["N",3,0,0,1]]},{"w":5,"h":4,"p":["L","N","V","Z"],"s":[["L",0,0,0,0],["N",2,0,1,0],["V",2,0,2,0],["Z",0,0,2,1]]},{"w":5,"h":4,"p":["N","P","U","Y"],"s":[["N",1,1,0,0],["U",3,0,3,0],["P",0,0,0,1],["Y",3,1,1,2]]},{"w":5,"h":4,"p":["P","U","V","Z"],"s":[["P",0,1,0,0],["V",2,0,2,0],["Z",0,0,2,1],["U",0,0,0,2]]},{"w":5,"h":4,"p":["I","N","P","U"],"s":[["I",1,0,0,0],["N",1,1,0,1],["U",3,0,3,1],["P",3,0,0,2]]},{"w":5,"h":4,"p":["L","P","T","V"],"s":[["L",0,0,0,0],["P",2,1,1,0],["T",0,0,2,0],["V",3,0,2,1]]},{"w":5,"h":4,"p":["P","T","V","W"],"s":[["P",0,0,0,0],["T",0,0,2,0],["W",3,0,0,1],["V",3,0,2,1]]},{"w":5,"h":4,"p":["L","P","V","Z"],"s":[["L",0,0,0,0],["P",0,0,1,0],["Z",0,1,2,0],["V",3,0,2,1]]},{"w":5,"h":4,"p":["I","P","U","V"],"s":[["I",1,0,0,0],["U",1,0,0,1],["P",1,1,1,1],["V",3,0,2,1]]},{"w":5,"h":4,"p":["I","L","P","V"],"s":[["I",1,0,0,0],["L",3,1,0,1],["V",3,0,2,1],["P",3,1,0,2]]},{"w":5,"h":4,"p":["L","N","P","U"],"s":[["L",0,0,0,0],["N",2,0,1,0],["U",2,0,2,0],["P",2,1,3,1]]},{"w":5,"h":4,"p":["N","T","V","Y"],"s":[["N",3,1,0,0],["V",2,0,2,0],["T",3,0,0,1],["Y",1,0,1,2]]},{"w":5,"h":4,"p":["I","P","U","Y"],"s":[["I",1,0,0,0],["P",0,0,0,1],["U",2,0,2,1],["Y",1,0,1,2]]},{"w":5,"h":4,"p":["L","P","W","Y"],"s":[["L",0,0,0,0],["P",1,0,1,0],["Y",2,1,3,0],["W",0,0,1,1]]}],"normal":[{"w":5,"h":5,"p":["F","N","T","V","Y"],"s":[["F",3,0,0,0],["Y",1,1,1,0],["T",1,0,2,1],["V",0,0,0,2],["N",1,1,1,3]]},{"w":5,"h":5,"p":["I","P","T","V","W"],"s":[["I",0,0,0,0],["P",3,1,1,0],["W",3,0,2,0],["T",3,0,1,2],["V",3,0,2,2]]},{"w":5,"h":5,"p":["I","N","T","V","Y"],"s":[["I",0,0,0,0],["N",0,0,1,0],["T",0,0,2,0],["Y",2,1,3,1],["V",0,0,1,2]]},{"w":5,"h":5,"p":["F","L","U","Y","Z"],"s":[["L",1,0,0,0],["Y",0,0,3,0],["F",0,0,0,1],["Z",0,0,2,2],["U",0,0,0,3]]},{"w":5,"h":5,"p":["L","N","P","W","Y"],"s":[["L",1,0,0,0],["Y",2,1,3,0],["N",3,0,0,1],["W",0,0,2,2],["P",3,0,0,3]]},{"w":5,"h":5,"p":["L","N","U","V","Z"],"s":[["L",0,0,0,0],["V",1,0,1,0],["Z",1,0,2,0],["U",3,0,3,2],["N",1,0,0,3]]},{"w":5,"h":5,"p":["L","P","V","Y","Z"],"s":[["L",0,0,0,0],["V",1,0,1,0],["Z",1,0,2,0],["P",0,1,3,2],["Y",1,0,0,3]]},{"w":5,"h":5,"p":["I","L","P","T","V"],"s":[["I",0,0,0,0],["L",1,0,1,0],["P",3,1,2,1],["T",3,0,1,2],["V",3,0,2,2]]},{"w":5,"h":5,"p":["I","L","P","U","Y"],"s":[["I",0,0,0,0],["L",2,1,1,0],["P",1,1,2,0],["U",2,0,2,2],["Y",1,0,1,3]]},{"w":5,"h":5,"p":["F","I","L","P","U"],"s":[["F",3,0,0,0],["L",3,1,1,0],["P",2,1,3,1],["U",0,0,0,2],["I",1,0,0,4]]},{"w":6,"h":5,"p":["I","P","T","V","Y","Z"],"s":[["I",1,0,0,0],["Y",0,0,4,0],["Z",0,0,0,1],["P",0,1,2,1],["V",0,0,0,2],["T",2,0,3,2]]},{"w":6,"h":5,"p":["F","L","P","V","W","Y"],"s":[["F",3,0,0,0],["L",3,1,1,0],["Y",2,1,4,0],["W",3,0,1,1],["V",0,0,0,2],["P",3,0,3,3]]},{"w":6,"h":5,"p":["L","P","V","W","Y","Z"],"s":[["L",1,0,0,0],["P",1,1,3,0],["W",1,0,0,1],["Z",1,1,2,2],["V",2,0,3,2],["Y",3,1,0,3]]},{"w":6,"h":5,"p":["F","P","U","V","Y","Z"],"s":[["P",0,0,0,0],["Y",3,0,2,0],["F",3,1,1,1],["Z",0,1,3,1],["V",3,0,3,2],["U",0,0,0,3]]},{"w":6,"h":5,"p":["L","N","P","T","U","Y"],"s":[["L",2,1,0,0],["N",3,0,1,0],["T",1,0,3,0],["U",2,0,1,2],["P",2,1,4,2],["Y",1,0,0,3]]},{"w":6,"h":5,"p":["L","N","P","V","Y","Z"],"s":[["L",0,0,0,0],["N",3,1,1,0],["V",2,0,3,0],["Z",1,1,1,1],["P",2,1,4,2],["Y",1,0,0,3]]},{"w":6,"h":5,"p":["F","I","P","T","U","V"],"s":[["F",3,0,0,0],["V",2,0,1,0],["P",0,0,4,0],["U",0,0,0,2],["T",1,0,3,2],["I",1,0,0,4]]},{"w":6,"h":5,"p":["L","P","T","U","Y","Z"],"s":[["L",2,1,0,0],["Y",1,1,2,0],["Z",0,0,1,1],["U",0,0,3,1],["T",2,0,0,2],["P",1,1,3,3]]},{"w":6,"h":5,"p":["I","N","T","U","V","W"],"s":[["I",1,0,0,0],["N",2,1,4,0],["T",0,0,0,1],["W",1,0,2,1],["V",0,0,0,2],["U",0,0,3,3]]},{"w":6,"h":5,"p":["I","L","P","T","V","W"],"s":[["I",1,0,0,0],["W",3,0,3,0],["L",1,0,0,1],["P",2,0,0,2],["T",3,0,2,2],["V",3,0,3,2]]}],"hard":[{"w":7,"h":5,"p":["I","L","N","P","T","U","V"],"s":[["L",1,1,0,0],["I",1,0,1,0],["N",0,1,5,0],["T",1,0,2,1],["U",1,0,0,2],["V",3,0,4,2],["P",1,0,1,3]]},{"w":7,"h":5,"p":["I","N","P","T","V","W","Y"],"s":[["V",0,0,0,0],["I",1,0,1,0],["W",3,0,4,0],["Y",1,1,1,1],["T",1,0,4,2],["P",3,0,0,3],["N",3,1,2,3]]},{"w":7,"h":5,"p":["I","L","N","P","U","V","Y"],"s":[["V",0,0,0,0],["L",1,1,1,0],["I",1,0,2,0],["U",3,0,5,1],["N",3,0,2,2],["P",3,0,0,3],["Y",3,1,3,3]]},{"w":7,"h":5,"p":["F","I","L","P","U","X","Y"],"s":[["F",0,1,0,0],["Y",1,1,2,0],["I",0,0,6,0],["L",0,0,0,1],["U",0,0,3,1],["X",0,0,1,2],["P",1,1,3,3]]},{"w":7,"h":5,"p":["F","L","N","P","U","Y","Z"],"s":[["Z",1,1,0,0],["Y",1,1,1,0],["F",0,0,4,0],["L",0,1,5,1],["U",1,0,0,2],["P",3,0,3,2],["N",3,1,1,3]]},{"w":7,"h":5,"p":["I","L","P","T","U","V","W"],"s":[["W",0,0,0,0],["P",1,0,1,0],["V",1,0,4,0],["L",2,0,5,1],["T",3,0,0,2],["U",0,0,3,2],["I",1,0,1,4]]},{"w":7,"h":5,"p":["F","I","L","N","P","U","W"],"s":[["U",2,0,0,0],["W",2,0,3,0],["L",2,0,5,0],["P",2,0,0,1],["F",3,1,2,1],["N",1,1,3,3],["I",1,0,0,4]]},{"w":7,"h":5,"p":["L","N","P","T","V","W","Y"],"s":[["W",0,0,0,0],["N",3,1,1,0],["Y",1,1,3,0],["L",0,1,5,1],["V",0,0,0,2],["T",1,0,1,2],["P",0,0,4,2]]},{"w":7,"h":5,"p":["I","L","N","P","U","X","Y"],"s":[["N",3,1,0,0],["L",3,1,2,0],["I",0,0,6,0],["Y",0,1,0,1],["X",0,0,3,1],["P",2,0,1,2],["U",0,0,3,3]]},{"w":7,"h":5,"p":["I","L","P","T","U","V","Y"],"s":[["T",0,0,0,0],["V",1,0,3,0],["I",0,0,6,0],["L",0,0,0,1],["Y",2,1,1,1],["P",0,0,4,1],["U",0,0,3,3]]},{"w":8,"h":5,"p":["F","I","L","N","P","T","V","Y"],"s":[["L",1,1,0,0],["I",1,0,1,0],["N",1,0,4,0],["T",1,0,5,1],["V",0,0,0,2],["P",3,1,1,2],["F",3,1,3,2],["Y",1,0,4,3]]},{"w":8,"h":5,"p":["F","I","L","N","T","U","V","Z"],"s":[["U",2,0,0,0],["T",2,0,2,0],["V",2,0,4,0],["I",0,0,7,0],["F",2,1,0,1],["Z",0,0,4,1],["L",1,1,0,3],["N",3,1,3,3]]},{"w":8,"h":5,"p":["F","I","L","N","P","U","W","Y"],"s":[["I",1,0,0,0],["U",2,0,5,0],["L",0,0,0,1],["P",3,1,1,1],["W",0,0,4,1],["N",0,0,6,1],["F",1,1,1,2],["Y",3,1,3,3]]},{"w":8,"h":5,"p":["I","L","P","U","V","W","Y","Z"],"s":[["W",0,0,0,0],["Y",3,0,1,0],["V",1,0,5,0],["Z",0,1,2,1],["L",2,0,6,1],["P",2,1,0,2],["U",0,0,4,2],["I",1,0,2,4]]},{"w":8,"h":5,"p":["L","N","P","T","U","V","W","X"],"s":[["U",2,0,0,0],["W",2,0,3,0],["T",0,0,5,0],["N",0,1,0,1],["X",0,0,2,1],["V",3,0,5,1],["P",3,0,1,3],["L",1,1,4,3]]},{"w":8,"h":5,"p":["F","L","N","P","U","V","W","Z"],"s":[["N",0,0,0,0],["Z",0,0,1,0],["W",0,0,3,0],["L",3,1,4,0],["F",0,1,5,1],["V",0,0,0,2],["P",1,0,2,3],["U",0,0,5,3]]},{"w":8,"h":5,"p":["F","L","P","T","U","V","W","Y"],"s":[["W",0,0,0,0],["Y",3,0,1,0],["T",0,0,5,0],["V",1,0,3,1],["L",0,1,6,1],["P",2,1,0,2],["F",0,1,4,2],["U",0,0,2,3]]},{"w":8,"h":5,"p":["F","L","N","P","T","U","Y","Z"],"s":[["L",2,1,0,0],["Z",1,1,2,0],["N",1,1,3,0],["U",3,0,6,0],["T",3,0,1,1],["F",1,1,3,2],["Y",1,0,0,3],["P",1,1,5,3]]},{"w":8,"h":5,"p":["F","I","L","N","P","U","X","Y"],"s":[["I",0,0,0,0],["U",1,0,1,0],["X",0,0,2,0],["Y",1,1,4,0],["F",3,1,4,1],["L",0,1,6,1],["P",3,1,1,3],["N",1,0,3,3]]},{"w":10,"h":6,"p":["F","I","L","N","P","T","U","V","W","X","Y","Z"],"s":[["W",2,0,0,0],["I",1,0,2,0],["N",3,0,6,0],["Y",0,1,0,1],["V",1,0,3,1],["F",0,0,7,1],["U",2,0,4,2],["L",0,1,8,2],["Z",0,1,0,3],["T",2,0,4,3],["X",0,0,6,3],["P",3,1,2,4]]}]}};
-/* 창의수학게임 › 펜토미노 채우기: 조각을 끌어 판에 놓고(칸에 착 붙음), 누르면 90° 돌리기, 단추로 뒤집기 — 판을 빈틈·겹침 없이 채우기 */
+<script>window.CR={"game":"nim","levels":[{"id":"easy","nm":"쉬움","rec":"2~3학년","de":"돌 한 줄, 한 번에 1~2개. 컴퓨터가 가끔 실수해요."},{"id":"normal","nm":"보통","rec":"4~5학년","de":"돌 한 줄, 한 번에 1~3개. 컴퓨터는 실수하지 않아요 — 4의 비밀을 찾아요!"},{"id":"hard","nm":"도전","rec":"5~6학년","de":"돌 3~4줄, 한 줄에서 몇 개든. 2진법과 이어지는 ‘님 합’의 비밀!"}],"data":{"easy":[{"p":[5],"k":2},{"p":[7],"k":2},{"p":[8],"k":2},{"p":[10],"k":2},{"p":[11],"k":2},{"p":[13],"k":2},{"p":[14],"k":2},{"p":[16],"k":2},{"p":[19],"k":2},{"p":[20],"k":2}],"normal":[{"p":[13],"k":3},{"p":[14],"k":3},{"p":[15],"k":3},{"p":[17],"k":3},{"p":[18],"k":3},{"p":[19],"k":3},{"p":[21],"k":3},{"p":[23],"k":3},{"p":[26],"k":3},{"p":[27],"k":3}],"hard":[{"p":[1,4,4],"k":0},{"p":[2,4,4],"k":0},{"p":[1,3,3,4],"k":0},{"p":[1,2,3,5],"k":0},{"p":[3,3,6],"k":0},{"p":[1,2,5,5],"k":0},{"p":[1,1,4,7],"k":0},{"p":[3,3,7],"k":0},{"p":[4,5,5],"k":0},{"p":[3,5,7],"k":0}]}};
+/* 창의수학게임 › 님 게임: 돌 줄에서 번갈아 가져가고 마지막 돌을 가져가면 이김 — 컴퓨터와 / 친구와 둘이 */
 (function () {
   'use strict';
-  var BASE = { F: [[1, 0], [2, 0], [0, 1], [1, 1], [1, 2]], I: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], L: [[0, 0], [0, 1], [0, 2], [0, 3], [1, 3]], N: [[0, 0], [0, 1], [1, 1], [1, 2], [1, 3]],
-    P: [[0, 0], [1, 0], [0, 1], [1, 1], [0, 2]], T: [[0, 0], [1, 0], [2, 0], [1, 1], [1, 2]], U: [[0, 0], [2, 0], [0, 1], [1, 1], [2, 1]], V: [[0, 0], [0, 1], [0, 2], [1, 2], [2, 2]],
-    W: [[0, 0], [0, 1], [1, 1], [1, 2], [2, 2]], X: [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]], Y: [[1, 0], [0, 1], [1, 1], [1, 2], [1, 3]], Z: [[0, 0], [1, 0], [1, 1], [1, 2], [2, 2]] };
-  var COL = { F: '#E5534B', I: '#3B82D6', L: '#2EAA6A', N: '#F2B92C', P: '#9B59D0', T: '#F08A24', U: '#20A5A5', V: '#D94F8A', W: '#7A9A2E', X: '#5B6BD6', Y: '#C98A2E', Z: '#2E8F9A' };
-  var NS = 'http://www.w3.org/2000/svg', P, ctx, host, svg, L, pcs, sel = -1, drag = null, solved;
-  function norm(cs) { var mx = Infinity, my = Infinity; cs.forEach(function (c) { mx = Math.min(mx, c[0]); my = Math.min(my, c[1]) }); return cs.map(function (c) { return [c[0] - mx, c[1] - my] }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1] }) }
-  function cellsOf(o) { var cs = BASE[o.p].map(function (c) { return [o.f ? -c[0] : c[0], c[1]] }); for (var i = 0; i < o.r; i++) cs = cs.map(function (c) { return [-c[1], c[0]] }); return norm(cs) }
-  function size(cs) { var w = 0, h = 0; cs.forEach(function (c) { w = Math.max(w, c[0] + 1); h = Math.max(h, c[1] + 1) }); return [w, h] }
-  function layout() {
-    var wide = host.clientWidth >= 640, cols = Math.min(P.p.length, wide ? 4 : 2), slotW = 6, slotH = 4.2, n = P.p.length, rows = Math.ceil(n / cols);
-    var W = Math.max(P.w + 1, cols * slotW), bx = (W - P.w) / 2, by = .5, ty = P.h + 1.3;
-    return { W: W, H: ty + rows * slotH + .2, bx: bx, by: by, ty: ty, cols: cols, slotW: slotW, slotH: slotH, tx: (W - cols * slotW) / 2 };
+  var P, ctx, host, piles, turn, sel, mode = 'cpu', over, busy, timer = null, hist, autoT = null;
+  function maxTake(i) { return P.k ? Math.min(P.k, piles[i]) : piles[i] }
+  function best(ps) {   // 이기는 수 [줄, 개수] (없으면 null)
+    if (ps.length === 1 && P.k) { var r = ps[0] % (P.k + 1); return r ? [0, r] : null }
+    var x = 0; ps.forEach(function (n) { x ^= n }); if (!x) return null;
+    for (var i = 0; i < ps.length; i++) { var t = ps[i] ^ x; if (t < ps[i]) return [i, ps[i] - t] }
+    return null;
   }
-  function toTray(o, i) {   // 트레이 칸에, 높이가 낮은 방향으로
-    var best = null; for (var f = 0; f < 2; f++) for (var r = 0; r < 4; r++) { var s = size(cellsOf({ p: o.p, r: r, f: f })); if (s[0] <= 5 && (!best || s[1] < best.h || (s[1] === best.h && s[0] > best.w))) best = { r: r, f: f, w: s[0], h: s[1] } }
-    if (o.r === undefined || o.home) { o.r = best.r; o.f = best.f }
-    var s2 = size(cellsOf(o)), cx = L.tx + (i % L.cols + .5) * L.slotW, cy = L.ty + (Math.floor(i / L.cols) + .5) * L.slotH;
-    o.x = cx - s2[0] / 2; o.y = cy - s2[1] / 2; o.on = false; o.home = false;
-  }
-  function occupied(skip) { var m = {}; pcs.forEach(function (o, k) { if (o.on && k !== skip) cellsOf(o).forEach(function (c) { m[(o.gx + c[0]) + ',' + (o.gy + c[1])] = k }) }); return m }
-  function tryPlace(o, k, gx, gy) {
-    var m = occupied(k), ok = cellsOf(o).every(function (c) { var x = gx + c[0], y = gy + c[1]; return x >= 0 && y >= 0 && x < P.w && y < P.h && m[x + ',' + y] === undefined });
-    if (ok) { o.on = true; o.gx = gx; o.gy = gy; o.x = L.bx + gx; o.y = L.by + gy } return ok;
-  }
+  function anyMove(ps) { var i = 0; ps.forEach(function (n, j) { if (n > ps[i]) i = j }); return [i, 1 + Math.floor(Math.random() * (P.k ? Math.min(P.k, ps[i]) : Math.min(ps[i], 3)))] }
+  function who(t) { return mode === 'cpu' ? (t === 0 ? '나' : '컴퓨터') : (t === 0 ? '파랑' : '빨강') }
+  function rule() { return P.k ? '한 줄에서 한 번에 <b>1~' + P.k + '개</b>씩 가져가요' : '한 줄을 골라 그 줄에서 <b>몇 개든</b>(1개 이상) 가져가요' }
   function draw() {
-    svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'pt-svg'); svg.setAttribute('viewBox', '0 0 ' + L.W + ' ' + L.H.toFixed(2));
-    var h = '<rect class="pt-tray" x="' + (L.tx - .1) + '" y="' + (L.ty - .15) + '" width="' + (L.cols * L.slotW + .2) + '" height="' + (L.H - L.ty) + '" rx=".4"/>';
-    for (var y = 0; y < P.h; y++) for (var x = 0; x < P.w; x++) h += '<rect class="pt-cell" x="' + (L.bx + x) + '" y="' + (L.by + y) + '" width="1" height="1"/>';
-    h += '<rect class="pt-frame" x="' + L.bx + '" y="' + L.by + '" width="' + P.w + '" height="' + P.h + '"/><g class="pt-pcs"></g>';
-    svg.innerHTML = h; var g = svg.lastChild;
-    pcs.forEach(function (o, k) { var e = document.createElementNS(NS, 'g'); e.setAttribute('class', 'pt-pc'); e.dataset.k = k; o.el = e; g.appendChild(e); paint(o) });
-    var b = host.querySelector('.pt-board'); b.innerHTML = ''; b.appendChild(svg); bind(); select(sel);
+    host.innerHTML = '<div class="nm-modes" role="group" aria-label="누구와 할까요"><button type="button" class="nm-mode" data-m="cpu">🤖 컴퓨터와</button><button type="button" class="nm-mode" data-m="two">👫 친구와 둘이</button></div>'
+      + '<p class="nm-rule">' + rule() + ' · <b>마지막 돌을 가져가는 사람이 이겨요</b></p>'
+      + '<div class="nm-turn" id="nmTurn"></div><div class="nm-piles" id="nmPiles"></div>'
+      + '<div class="nm-bar"><button type="button" class="nm-take" id="nmTake" disabled>가져가기</button><button type="button" class="nm-again" id="nmAgain" hidden>한 판 더</button></div>'
+      + '<div class="nm-how" id="nmHow" hidden></div><ol class="nm-log" id="nmLog"></ol>'
+      + '<p class="nm-tip">가져갈 돌을 누르면 그 돌부터 줄 끝까지 골라져요. ‘가져가기’를 눌러 차례를 넘겨요. 처음은 언제나 ' + (mode === 'cpu' ? '내' : '‘파랑’') + ' 차례예요.</p>';
+    host.querySelectorAll('.nm-mode').forEach(function (b) { b.setAttribute('aria-pressed', String(b.dataset.m === mode)) });
+    paint();
   }
-  function paint(o) {
-    o.el.setAttribute('transform', 'translate(' + o.x.toFixed(3) + ' ' + o.y.toFixed(3) + ')');
-    o.el.innerHTML = cellsOf(o).map(function (c) { return '<rect x="' + (c[0] + .04) + '" y="' + (c[1] + .04) + '" width=".92" height=".92" rx=".12" fill="' + COL[o.p] + '"/>' }).join('');
-    o.el.classList.toggle('pt-on', !!o.on);
-  }
-  function select(k) { sel = k; pcs.forEach(function (o, j) { o.el.classList.toggle('pt-sel', j === k) }); if (k >= 0) o_front(k); host.querySelectorAll('.pt-tool').forEach(function (b) { b.disabled = k < 0 }) }
-  function o_front(k) { pcs[k].el.parentNode.appendChild(pcs[k].el) }
-  function world(e) { var p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()) }
-  function bind() {
-    svg.addEventListener('pointerdown', function (e) {
-      var t = e.target.closest && e.target.closest('.pt-pc'); if (!t || solved) { if (!t) select(-1); return }
-      e.preventDefault(); var k = +t.dataset.k, w = world(e); select(k);
-      drag = { k: k, sx: w.x, sy: w.y, x: pcs[k].x, y: pcs[k].y, moved: false, id: e.pointerId };
-      try { svg.setPointerCapture(e.pointerId) } catch (er) {}
+  function paint() {
+    var h = '';
+    piles.forEach(function (n, i) {
+      h += '<div class="nm-row"><span class="nm-lab">' + (piles.length > 1 ? (i + 1) + '줄' : '') + '<small>' + n + '개</small></span><div class="nm-stones">';
+      for (var j = 0; j < n; j++) h += '<button type="button" class="nm-st' + (sel && sel[0] === i && j >= sel[1] ? ' pick' : '') + '" data-i="' + i + '" data-j="' + j + '" aria-label="' + (i + 1) + '줄 ' + (j + 1) + '번째 돌"></button>';
+      h += '</div></div>';
     });
-    svg.addEventListener('pointermove', function (e) {
-      if (!drag || e.pointerId !== drag.id) return; var w = world(e), dx = w.x - drag.sx, dy = w.y - drag.sy;
-      if (!drag.moved && dx * dx + dy * dy < .04) return;
-      var o = pcs[drag.k]; if (!drag.moved) { drag.moved = true; o.on = false } o.x = drag.x + dx; o.y = drag.y + dy; paint(o);
-    });
-    function up(e) {
-      if (!drag || e.pointerId !== drag.id) return; var d = drag; drag = null; var o = pcs[d.k];
-      if (!d.moved) { turn(1); return }
-      var gx = Math.round(o.x - L.bx), gy = Math.round(o.y - L.by);
-      if (!tryPlace(o, d.k, gx, gy)) {
-        var s = size(cellsOf(o)), cx = o.x + s[0] / 2, cy = o.y + s[1] / 2;
-        if (cx > L.bx - .5 && cx < L.bx + P.w + .5 && cy < L.by + P.h + .5) ctx.msg('판 밖으로 나가거나 다른 조각과 겹쳐요. 돌리거나 다른 자리를 찾아보세요.', 'bad');
-        o.x = Math.max(0, Math.min(L.W - s[0], o.x)); o.y = Math.max(0, Math.min(L.H - s[1], o.y));
-      } else ctx.msg('');
-      paint(o); after();
-    }
-    svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
+    host.querySelector('#nmPiles').innerHTML = h;
+    var t = host.querySelector('#nmTurn');
+    t.className = 'nm-turn p' + turn; t.innerHTML = over ? '' : (mode === 'cpu' && turn === 1 ? '🤖 컴퓨터가 생각하고 있어요…' : '<b>' + who(turn) + '</b> 차례' + (mode === 'cpu' ? '예요' : ''));
+    var c = sel ? piles[sel[0]] - sel[1] : 0, b = host.querySelector('#nmTake');
+    b.disabled = !c || over || busy || (mode === 'cpu' && turn === 1); b.textContent = c ? c + '개 가져가기' : '가져가기';
+    host.querySelector('#nmLog').innerHTML = hist.map(function (x) { return '<li class="p' + x[0] + '">' + who(x[0]) + ': ' + (piles.length > 1 ? (x[1] + 1) + '줄에서 ' : '') + x[2] + '개</li>' }).join('');
   }
-  function reshape(fn) {
-    if (sel < 0 || solved) return; var o = pcs[sel], s0 = size(cellsOf(o)), cx = o.x + s0[0] / 2, cy = o.y + s0[1] / 2, wasOn = o.on;
-    fn(o); var s1 = size(cellsOf(o));
-    o.on = false; o.x = cx - s1[0] / 2; o.y = cy - s1[1] / 2;   // 제자리에서 돌기(밀려나지 않게)
-    if (wasOn) tryPlace(o, sel, Math.round(o.x - L.bx), Math.round(o.y - L.by));   // 판 위에 있던 조각은 될 수 있으면 다시 칸에 붙임
-    paint(o); after();
+  function pick(i, j) {
+    if (over || busy || (mode === 'cpu' && turn === 1)) return;
+    var n = piles[i], from = Math.max(j, n - maxTake(i));
+    if (j < n - maxTake(i)) ctx.msg('한 번에 ' + P.k + '개까지만 가져갈 수 있어요.', 'bad'); else ctx.msg('');
+    sel = sel && sel[0] === i && sel[1] === from ? null : [i, from]; paint();
   }
-  function turn(d) { reshape(function (o) { o.r = (o.r + d + 4) % 4 }) }
-  function flip() { reshape(function (o) { o.f = 1 - o.f }) }
-  function after() {
-    var n = pcs.filter(function (o) { return o.on }).length;
-    host.querySelector('#ptCnt').innerHTML = '놓은 조각 <b>' + n + '</b> / ' + pcs.length;
-    if (n === pcs.length) { solved = true; select(-1); host.querySelector('.pt-board').classList.add('win'); ctx.done('조각 ' + pcs.length + '개로 판을 빈틈없이 채웠어요!') }
+  function take(i, c) {
+    piles[i] -= c; hist.push([turn, i, c]); sel = null;
+    if (piles.every(function (n) { return !n })) { end(turn); return }
+    turn = 1 - turn; paint();
+    if (mode === 'cpu' && turn === 1 && !autoT) cpu();
   }
-  function onResize() { if (!svg || !document.body.contains(svg)) return; var w = host.clientWidth >= 640, want = Math.min(P.p.length, w ? 4 : 2); if (L.cols === want) return; L = layout(); pcs.forEach(function (o, i) { if (o.on) { o.x = L.bx + o.gx; o.y = L.by + o.gy } else toTray(o, i) }); draw() }
-  window.addEventListener('resize', onResize);
-  document.addEventListener('keydown', function (e) {
-    if (!svg || !document.body.contains(svg) || sel < 0 || solved || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
-    if (e.key === 'r' || e.key === 'R') turn(1); else if (e.key === 'e' || e.key === 'E') turn(-1); else if (e.key === 'f' || e.key === 'F') flip();
-  });
-  function putSolution(k, s) { var o = pcs[k]; o.r = s[1]; o.f = s[2]; var m = occupied(k); cellsOf(o).forEach(function (c) { var j = m[(s[3] + c[0]) + ',' + (s[4] + c[1])]; if (j !== undefined) { pcs[j].home = true; toTray(pcs[j], j); paint(pcs[j]) } }); tryPlace(o, k, s[3], s[4]); paint(o) }
+  function cpu() {
+    busy = true; paint();
+    timer = setTimeout(function () {
+      timer = null; busy = false; if (over || !document.body.contains(host)) return;
+      var m = best(piles); if (!m || (P.k === 2 && Math.random() < .35)) m = anyMove(piles);   // 쉬움 단계 컴퓨터는 가끔 실수
+      sel = [m[0], piles[m[0]] - m[1]]; paint();
+      setTimeout(function () { if (!over && document.body.contains(host)) take(m[0], m[1]) }, 450);
+    }, 700);
+  }
+  function end(t) {
+    over = true; paint(); host.querySelector('#nmAgain').hidden = false;
+    if (mode === 'cpu') {
+      if (t === 0) ctx.done('마지막 돌을 가져갔어요 — 컴퓨터를 이겼어요! 이기는 규칙을 찾았나요?');
+      else ctx.msg('컴퓨터가 마지막 돌을 가져갔어요. ‘한 판 더’로 다시 도전! 💡 힌트로 이기는 방법을 살짝 볼 수 있어요.', 'bad');
+    } else ctx.msg('🎉 <b>' + who(t) + '</b>이 마지막 돌을 가져가서 이겼어요!', 'ok');
+  }
+  function reset() {
+    if (timer) { clearTimeout(timer); timer = null } if (autoT) { clearInterval(autoT); autoT = null }
+    piles = P.p.slice(); turn = 0; sel = null; over = false; busy = false; hist = []; draw(); ctx.msg('');
+  }
+  function howText() {
+    return P.k ? '🔑 <b>이기는 규칙</b>: 상대에게 늘 <b>' + (P.k + 1) + '의 배수</b>만큼 남겨요. 상대가 □개를 가져가면 나는 ' + (P.k + 1) + '−□개를 가져가서, 둘이 한 번씩 할 때마다 꼭 ' + (P.k + 1) + '개씩 줄게 해요. 그러면 마지막 돌은 언제나 내 차지!'
+      : '🔑 <b>이기는 규칙(님 합)</b>: 줄마다 돌 수를 <b>4개 묶음·2개 묶음·1개 묶음</b>으로 나누어 보세요(예: 7 = 4 + 2 + 1, 5 = 4 + 1). 모든 줄을 합쳐 4개 묶음, 2개 묶음, 1개 묶음이 <b>각각 짝수 개</b>가 되게 남기면 이겨요. 상대가 어떻게 가져가도 짝이 깨지고, 나는 다시 짝을 맞출 수 있어요.';
+  }
   window.CRG = {
     render: function (h, p, c) {
-      host = h; P = p; ctx = c; solved = false; sel = -1; drag = null;
-      host.innerHTML = '<p class="pt-goal">조각 <b>' + p.p.length + '개</b>를 모두 써서 ' + p.w + '×' + p.h + ' 판을 빈틈없이 채워요</p><div class="pt-board"></div>'
-        + '<div class="pt-tools"><span id="ptCnt"></span><button type="button" class="pt-btn pt-tool" data-a="l" disabled>↶ 왼쪽으로</button><button type="button" class="pt-btn pt-tool" data-a="r" disabled>↷ 오른쪽으로</button><button type="button" class="pt-btn pt-tool" data-a="f" disabled>⇄ 뒤집기</button></div>'
-        + '<p class="pt-tip">조각을 <b>끌어서</b> 판에 놓으면 칸에 착 붙어요. <b>살짝 누르면</b> 90° 돌아가요. 키보드: R/E 돌리기 · F 뒤집기</p>';
-      host.querySelector('.pt-tools').onclick = function (e) { var b = e.target.closest('[data-a]'); if (!b) return; ({ l: function () { turn(-1) }, r: function () { turn(1) }, f: flip })[b.dataset.a]() };
-      L = layout(); pcs = p.p.map(function (q, i) { var o = { p: q, home: true }; toTray(o, i); return o }); draw(); after();
+      host = h; P = p; ctx = c; reset();
+      host.onclick = function (e) {
+        var st = e.target.closest('.nm-st'), md = e.target.closest('.nm-mode');
+        if (st) return pick(+st.dataset.i, +st.dataset.j);
+        if (md) { mode = md.dataset.m; reset(); return }
+        if (e.target.closest('#nmTake') && sel) return take(sel[0], piles[sel[0]] - sel[1]);
+        if (e.target.closest('#nmAgain')) reset();
+      };
     },
-    hint: function () {   // 제자리에 없는 조각 하나를 풀이 자리에 놓아 줌(그 자리를 막은 조각은 트레이로)
-      if (solved) return false;
-      for (var i = 0; i < P.s.length; i++) {
-        var s = P.s[i], k = P.p.indexOf(s[0]), o = pcs[k], want = cellsOf({ p: s[0], r: s[1], f: s[2] }).map(function (c) { return (s[3] + c[0]) + ',' + (s[4] + c[1]) }).sort().join(' ');
-        var now = o.on ? cellsOf(o).map(function (c) { return (o.gx + c[0]) + ',' + (o.gy + c[1]) }).sort().join(' ') : '';
-        if (now === want) continue;
-        putSolution(k, s); select(k); o.el.classList.add('pt-hint'); after(); if (!solved) ctx.msg('💡 ' + s[0] + ' 조각을 제자리에 놓았어요.'); return true;
-      }
-      return false;
+    hint: function () {
+      if (over || busy || autoT) return false;
+      if (mode === 'cpu' && turn === 1) return false;
+      var m = best(piles);
+      if (!m) { ctx.msg('💡 지금은 어떻게 가져가도 불리한 자리예요. 1개만 가져가고 상대의 실수를 기다려 보세요. 다음 판에는 처음부터 규칙을 지켜 봐요!'); return true }
+      sel = [m[0], piles[m[0]] - m[1]]; paint();
+      ctx.msg('💡 ' + (piles.length > 1 ? (m[0] + 1) + '줄에서 ' : '') + m[1] + '개를 가져가 보세요(골라 두었어요). ' + (P.k ? '남은 돌이 ' + (P.k + 1) + '의 배수가 돼요.' : '그러면 상대가 불리해져요.'));
+      return true;
     },
-    reveal: function () { P.s.forEach(function (s) { putSolution(P.p.indexOf(s[0]), s) }); after() }
+    reveal: function () {   // 이기는 규칙을 보여 주고, 처음부터 양쪽 모두 잘하면 어떻게 되는지 저절로 보여 줌
+      if (autoT) return;
+      var md = mode; mode = 'cpu'; reset(); mode = md;
+      var hw = host.querySelector('#nmHow'); hw.hidden = false; hw.innerHTML = howText();
+      autoT = setInterval(function () {
+        if (!document.body.contains(host)) { clearInterval(autoT); autoT = null; return }
+        var m = best(piles) || anyMove(piles); var t = turn;
+        piles[m[0]] -= m[1]; hist.push([t, m[0], m[1]]); sel = null;
+        if (piles.every(function (n) { return !n })) { clearInterval(autoT); autoT = null; over = true; paint(); host.querySelector('#nmHow').hidden = false; ctx.done('규칙대로 하면 먼저 하는 사람이 이겨요. ' + (P.k ? (P.k + 1) + '의 배수를 남기는 것' : '님 합을 0으로 남기는 것') + '을 기억하세요!'); return }
+        turn = 1 - turn; paint();
+      }, 650);
+    }
   };
 })();
 
