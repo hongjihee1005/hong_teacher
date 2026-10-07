@@ -18,7 +18,9 @@
   var GAMES = [
     { id: 'balloon', nm: '풍선 터뜨리기', de: '정답이 적힌 풍선을 하늘로 날아가기 전에 톡! 하트 3개로 오래 버텨요.', stars: [5, 12, 20] },
     { id: 'mole', nm: '두더지 잡기', de: '정답 팻말을 든 두더지를 뿅망치로 콩! 숨기 전에 빨리 잡아요.', stars: [5, 12, 20] },
+    { id: 'tower', nm: '탑 쌓기', de: '맞힐 때마다 블록이 한 층씩! 틀리거나 시간이 지나면 맨 위 블록이 떨어져요.', stars: [5, 12, 20] },
     { id: 'rocket', nm: '60초 우주 도전', de: '60초 동안 몇 문제를 맞힐까요? 맞힐수록 로켓이 높이 올라가요.', stars: [8, 15, 22] },
+    { id: 'invader', nm: '우주 침공 막기', de: '식을 들고 내려오는 외계인을 정답 레이저로 맞혀요. 땅에 닿기 전에!', stars: [5, 12, 20] },
     { id: 'tug', nm: '줄다리기 (2명)', de: '두 사람이 화면 양쪽에서 동시에 풀어요. 먼저 5번 당기는 팀이 이겨요.', two: true }
   ];
   var GBY = {}; GAMES.forEach(function (x) { GBY[x.id] = x });
@@ -53,11 +55,21 @@
       '<path d="M18 32h20l6 30H14Z" fill="' + c + '"/><path d="M38 38l26 10" stroke="#FFD9B8" stroke-width="7" stroke-linecap="round"/><path d="M36 46l28 6" stroke="#FFD9B8" stroke-width="7" stroke-linecap="round"/>' +
       '<path d="M20 62 8 92M34 62l14 30" stroke="#3B4A6B" stroke-width="8" stroke-linecap="round"/></svg>';
   }
+  var ALIEN = '<svg class="mg-asvg" viewBox="0 0 120 90" aria-hidden="true"><ellipse cx="60" cy="62" rx="56" ry="18" fill="#7C83FD"/><ellipse cx="60" cy="58" rx="56" ry="14" fill="#A5A9FF"/>' +
+    '<path d="M28 52q32-62 64 0Z" fill="#6BCB77"/><circle cx="48" cy="36" r="8" fill="#fff"/><circle cx="72" cy="36" r="8" fill="#fff"/><circle cx="49" cy="37" r="4" fill="#1B1F4B"/><circle cx="73" cy="37" r="4" fill="#1B1F4B"/>' +
+    '<path d="M44 14 36 2M76 14l8-12" stroke="#6BCB77" stroke-width="4" stroke-linecap="round"/><circle cx="36" cy="2" r="4" fill="#FFD93D"/><circle cx="84" cy="2" r="4" fill="#FFD93D"/>' +
+    '<circle cx="24" cy="62" r="4" fill="#FFD93D"/><circle cx="44" cy="68" r="4" fill="#FFD93D"/><circle cx="76" cy="68" r="4" fill="#FFD93D"/><circle cx="96" cy="62" r="4" fill="#FFD93D"/></svg>';
+  var CANNON = '<svg viewBox="0 0 100 70" aria-hidden="true"><rect x="42" y="0" width="16" height="40" rx="6" fill="#C9D3E8"/><rect x="40" y="0" width="20" height="10" rx="4" fill="#FF6B6B"/><path d="M8 70q4-36 42-36t42 36Z" fill="#4DA3FF"/><circle cx="50" cy="52" r="8" fill="#FFD93D"/></svg>';
   var THUMB = {
     balloon: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#BFE6FF"/><circle cx="132" cy="22" r="12" fill="#FFE07A"/><path d="M0 84q40-16 80 0t80 0v16H0Z" fill="#9BD37C"/>' +
       '<g transform="translate(26 14) scale(.42)">' + balloonSvg('#FF6B6B').replace(/<\/?svg[^>]*>/g, '') + '</g><g transform="translate(66 26) scale(.42)">' + balloonSvg('#4DA3FF').replace(/<\/?svg[^>]*>/g, '') + '</g><g transform="translate(104 10) scale(.42)">' + balloonSvg('#FFB238').replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
     mole: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#A8DA7E"/><ellipse cx="80" cy="84" rx="44" ry="11" fill="#5B3A22"/><g transform="translate(50 26) scale(.5)">' + MOLE.replace(/<\/?svg[^>]*>/g, '') + '</g>' +
       '<path d="M36 90q44 12 88 0v10H36Z" fill="#7BBF52"/><g transform="translate(104 4) rotate(25) scale(.55)">' + HAMMER.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
+    tower: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#FFD6A5"/><circle cx="128" cy="30" r="14" fill="#FF9F68"/><path d="M0 70h20V50h18v20h14V44h20v56H0Zm110 30V56h16v-14h18v58Z" fill="#C79BC6" opacity=".7"/><rect y="88" width="160" height="12" fill="#8CCB62"/>' +
+      '<rect x="56" y="74" width="48" height="14" rx="3" fill="#FF6B6B"/><rect x="58" y="60" width="44" height="14" rx="3" fill="#FFB238"/><rect x="55" y="46" width="48" height="14" rx="3" fill="#6BCB77"/><rect x="57" y="32" width="45" height="14" rx="3" fill="#4DA3FF"/>' +
+      '<path d="M80 4v12" stroke="#5C5047" stroke-width="2"/><rect x="64" y="14" width="34" height="12" rx="3" fill="#B07CFF"/><path d="M20 6h120" stroke="#5C5047" stroke-width="3"/></svg>',
+    invader: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#1B1F4B"/><circle cx="20" cy="18" r="1.5" fill="#fff"/><circle cx="140" cy="26" r="1.5" fill="#fff"/><circle cx="110" cy="10" r="1.2" fill="#fff"/>' +
+      '<g transform="translate(52 10) scale(.46)">' + ALIEN.replace(/<\/?svg[^>]*>/g, '') + '</g><path d="M80 82 82 44" stroke="#FF6B6B" stroke-width="3"/><path d="M0 100V84h20V74h16v10h20V70h18v30Zm100 0V78h18V66h16v12h26v22Z" fill="#2E2A73"/><g transform="translate(64 74) scale(.32)">' + CANNON.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
     rocket: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#1B1F4B"/><circle cx="28" cy="20" r="1.6" fill="#fff"/><circle cx="60" cy="70" r="1.3" fill="#fff"/><circle cx="140" cy="16" r="1.8" fill="#fff"/><circle cx="118" cy="60" r="1.2" fill="#fff"/><circle cx="20" cy="80" r="1.4" fill="#fff"/>' +
       '<circle cx="130" cy="78" r="18" fill="#B07CFF"/><ellipse cx="130" cy="78" rx="28" ry="5" fill="none" stroke="#E0C9FF" stroke-width="2.5"/><g transform="translate(66 10) rotate(18) scale(.72)">' + ROCKET.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
     tug: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#CDEBFF"/><rect y="62" width="160" height="38" fill="#E8C98F"/><path d="M80 52v40" stroke="#fff" stroke-width="3" stroke-dasharray="5 4"/>' +
@@ -492,6 +504,125 @@
       if (L <= 0) { end('시간이 다 됐어요'); return }
       if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
       this.q.t += dt;
+    },
+    key: function (i) { if (this.q && i < this.q.c.opts.length) this.hit(i) }
+  };
+
+  /* ── 아래쪽 보기 단추(탑 쌓기·우주 침공 막기) ── */
+  function bottomOpts(q, fn) {
+    var box = $('mgOpts'); box.className = 'mg-opts mg-bopts n' + q.c.opts.length;
+    box.innerHTML = q.c.opts.map(function (o, i) { return '<button type="button" class="mg-opt" data-i="' + i + '" aria-label="' + (i + 1) + '번 ' + esc(plain(o)) + '"><span class="mg-key">' + (i + 1) + '</span><span class="mg-lab ' + szCls(o) + '">' + aH(o) + '</span></button>' }).join('');
+    [].forEach.call(box.children, function (b) { tap(b, function () { fn(+b.dataset.i) }) });
+  }
+  var BLK = ['#FF6B6B', '#FFB238', '#FFD93D', '#6BCB77', '#4DA3FF', '#B07CFF', '#FF7EB6', '#2EC4B6'];
+
+  /* ── 탑 쌓기 ── */
+  GM.tower = {
+    init: function () {
+      $('mgPlay').innerHTML = '<div class="mg-dusk"><i class="mg-sun2"></i><i class="mg-cloud c0"></i><i class="mg-cloud c1"></i>' +
+        '<svg class="mg-sky2" viewBox="0 0 1200 200" preserveAspectRatio="none" aria-hidden="true"><path d="M0 200V120h60V80h50v40h40V60h70v60h30V100h60v100Zm400 0V110h50V70h60v50h40V90h70v110Zm300 0V100h40V50h80v70h30V90h60v110Zm300 0V120h50V70h60v60h50v70Z" fill="#B98CB8" opacity=".55"/></svg>' +
+        '<div class="mg-gnd"></div></div>' +
+        '<div class="mg-qbox" id="mgQ"></div>' +
+        '<div class="mg-tw" id="mgTw"><div class="mg-crane"><i class="mg-hook"></i><i class="mg-hang" id="mgHang"></i></div><div class="mg-twin" id="mgTwin"><div class="mg-base"></div></div><p class="mg-fl" id="mgFl">0층</p></div>' +
+        '<div id="mgOpts"></div>';
+      this.n = 0;
+    },
+    go: function () { this.next() },
+    next: function () {
+      var q = this.q = makeP(), self = this; q.t = 0; q.done = false; $('mgQ').innerHTML = qbox(q) + '<span class="mg-qt"><i id="mgQt"></i></span>';
+      this.dur = speedOf(10, .6, 5); this.col = BLK[this.n % BLK.length];
+      $('mgHang').style.background = this.col;
+      bottomOpts(q, function (i) { self.hit(i) });
+    },
+    floors: function () {
+      var tw = $('mgTwin'), bh = tw.querySelector('.mg-blk') ? tw.querySelector('.mg-blk').offsetHeight : 34, vis = Math.max(4, Math.floor(($('mgTw').clientHeight - 120) / bh));
+      tw.style.transform = 'translateY(' + Math.max(0, this.n - vis) * bh + 'px)';
+      $('mgFl').textContent = this.n + '층';
+    },
+    hit: function (i) {
+      var q = this.q; if (!S || S.paused || S.over || q.done) return;
+      var bs = $('mgOpts').children; q.done = true;
+      if (i === q.c.ok) {
+        bs[i].classList.add('right'); sfx('ok');
+        var b = document.createElement('div'); b.className = 'mg-blk drop'; b.style.background = this.col; b.style.marginLeft = (Math.random() * 16 - 8).toFixed(1) + 'px';
+        b.style.width = (82 + Math.random() * 14).toFixed(1) + '%';
+        $('mgTwin').appendChild(b); this.n++; this.floors();
+        gain(1 - q.t / this.dur, b); S.wait = .55;
+        if (this.n % 10 === 0) setTimeout(function () { if (S && !S.over) banner(GM.tower.n + '층 돌파!', 'lv') }, 700);
+      } else {
+        bs[i].classList.add('wrong'); bs[q.c.ok].classList.add('right'); sfx('bad'); wrongRec(q, q.c.opts[i]); this.drop(); S.wait = 1.2;
+      }
+    },
+    drop: function () {   // 틀리거나 시간이 지나면 맨 위 블록이 떨어짐
+      var tw = $('mgTwin'), all = tw.querySelectorAll('.mg-blk:not(.fall)'), top = all[all.length - 1];
+      $('mgTw').classList.remove('wob'); void $('mgTw').offsetWidth; $('mgTw').classList.add('wob');
+      if (top) { top.classList.add('fall'); this.n--; var self = this; setTimeout(function () { top.remove(); if (S) self.floors() }, 650) }
+      loseLife();
+    },
+    tick: function (dt) {
+      if (S.ending) return;
+      if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
+      var q = this.q; q.t += dt; var L = Math.max(0, 1 - q.t / this.dur);
+      $('mgQt').style.width = (L * 100) + '%'; $('mgQt').classList.toggle('low', L < .3);
+      if (!q.done && q.t >= this.dur) {
+        q.done = true; wrongRec(q, null); sfx('bad'); $('mgOpts').children[q.c.ok].classList.add('right');
+        banner('시간이 지났어요<small>정답은 ' + plain(q.c.opts[q.c.ok]) + '</small>', 'ans'); this.drop(); S.wait = 1.4;
+      }
+    },
+    key: function (i) { if (this.q && i < this.q.c.opts.length) this.hit(i) }
+  };
+
+  /* ── 우주 침공 막기 ── */
+  GM.invader = {
+    init: function () {
+      var st = ''; for (var i = 0; i < 60; i++) st += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;animation-delay:' + (Math.random() * 3).toFixed(2) + 's;--s:' + (1 + Math.random() * 2).toFixed(1) + 'px"></i>';
+      $('mgPlay').innerHTML = '<div class="mg-space mg-night"><div class="mg-starf">' + st + '</div></div>' +
+        '<div class="mg-ifield" id="mgField"><svg class="mg-town" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 120V70h50V40h40v30h50V20h60v50h40V50h60v70Zm300 0V60h60V30h50v40h40V45h70v75Zm320 0V55h50V25h60v45h40V60h60v60Zm280 0V65h60V35h60v40h40V50h60v70Z" fill="#2E2A73"/>' +
+        Array.apply(null, Array(30)).map(function (_, i) { return '<rect x="' + (i * 40 + 18) + '" y="' + (78 + (i % 3) * 12) + '" width="8" height="8" fill="#FFD93D" opacity=".8"/>' }).join('') + '</svg>' +
+        '<div class="mg-cannon" id="mgCannon">' + CANNON + '</div></div><div id="mgOpts"></div>';
+    },
+    go: function () { this.next() },
+    next: function () {
+      var q = this.q = makeP(), self = this, f = $('mgField'); q.t = 0; q.done = false;
+      var old = f.querySelector('.mg-alien'); if (old) old.remove();
+      var a = document.createElement('div'); a.className = 'mg-alien'; a.innerHTML = ALIEN + '<div class="mg-asign">' + qbox(q) + '</div>';
+      a.style.left = (22 + Math.random() * 56).toFixed(1) + '%'; f.appendChild(a);
+      this.a = a; this.y = 0; this.dur = speedOf(11, .7, 5); this.ph = Math.random() * 6;
+      bottomOpts(q, function (i) { self.hit(i) });
+    },
+    laser: function (hitIt) {
+      var f = $('mgField'), fr = f.getBoundingClientRect(), c = $('mgCannon').getBoundingClientRect(), a = this.a.querySelector('.mg-asvg').getBoundingClientRect();
+      var x1 = c.left + c.width / 2 - fr.left, y1 = c.top - fr.top, x2 = a.left + a.width / 2 - fr.left, y2 = a.top + a.height * .7 - fr.top;
+      if (!hitIt) { x2 = x1 + (Math.random() < .5 ? -1 : 1) * (120 + Math.random() * 120); y2 = 0 }
+      var L = document.createElement('i'), len = Math.hypot(x2 - x1, y2 - y1), ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+      L.className = 'mg-laser' + (hitIt ? '' : ' miss'); L.style.left = x1 + 'px'; L.style.top = y1 + 'px'; L.style.width = len + 'px'; L.style.transform = 'rotate(' + ang + 'deg)';
+      f.appendChild(L); setTimeout(function () { L.remove() }, 350);
+      var cn = $('mgCannon'); cn.style.transform = 'translateX(-50%) rotate(' + (ang + 90).toFixed(1) + 'deg)';
+    },
+    hit: function (i) {
+      var q = this.q; if (!S || S.paused || S.over || q.done) return;
+      var bs = $('mgOpts').children;
+      if (i === q.c.ok) {
+        q.done = true; bs[i].classList.add('right'); this.laser(true); sfx('pop'); sfx('ok');
+        var c = center(this.a.querySelector('.mg-asvg')); burst(c[0], c[1], '#FFD93D'); this.a.classList.add('boom');
+        gain(1 - this.y, this.a.querySelector('.mg-asvg')); S.wait = .6;
+      } else {
+        if (bs[i].classList.contains('wrong')) return;
+        bs[i].classList.add('wrong'); this.laser(false); sfx('bad'); wrongRec(q, q.c.opts[i]);
+        this.y = Math.min(.95, this.y + .12); loseLife();   // 틀리면 외계인이 한 걸음 더 내려옴
+      }
+    },
+    tick: function (dt) {
+      if (S.ending) return;
+      if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
+      var q = this.q, f = $('mgField'), H = f.clientHeight - 110, a = this.a; q.t += dt;
+      this.y += dt / this.dur;
+      var sw = Math.sin(q.t * 1.4 + this.ph) * 30;
+      a.style.transform = 'translate(calc(-50% + ' + sw.toFixed(1) + 'px),' + (this.y * Math.max(0, H - a.offsetHeight)).toFixed(1) + 'px)';
+      if (!q.done && this.y >= 1) {
+        q.done = true; wrongRec(q, null); sfx('bonk'); a.classList.add('land'); $('mgOpts').children[q.c.ok].classList.add('right');
+        banner('외계인이 내려왔어요<small>정답은 ' + plain(q.c.opts[q.c.ok]) + '</small>', 'ans'); loseLife(); S.wait = 1.5;
+      }
     },
     key: function (i) { if (this.q && i < this.q.c.opts.length) this.hit(i) }
   };

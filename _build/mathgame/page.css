@@ -76,7 +76,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mg-fs{display:inline-flex;flex-direction:column;align-items:center;font-size:.78em;line-height:1.08}
 .mg-fs>span{padding:0 .12em}
 .mg-fs>span:first-child{border-bottom:.08em solid currentColor}
-.mg-blank{display:inline-grid;place-items:center;min-width:1.4em;padding:0 .18em;border:.08em dashed #E08A2E;border-radius:.25em;color:#E08A2E;line-height:1.2}
+.mg-blank{display:inline-flex;align-items:center;justify-content:center;min-width:1.4em;padding:0 .18em;border:.08em dashed #E08A2E;border-radius:.25em;color:#E08A2E;line-height:1.2}
 .mg-blank.ok{border-style:solid;border-color:#2E9E5B;color:#1F7A44}
 .mg-circ{color:#E08A2E;font-size:1.05em}
 .mg-hint{display:inline-block;font-size:clamp(14px,1.5vw,18px);line-height:1.4;font-weight:700;color:#8A4E0C;background:#FFEFD6;border-radius:999px;padding:1px 12px}
@@ -231,7 +231,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mg-opt.right{background:#5FD38D;color:#fff;animation:mg-pulse1 .3s}
 .mg-opt.wrong{background:#FF7A7A;color:#fff;animation:mg-shk .35s}
 .mg-opt.right .mg-op,.mg-opt.wrong .mg-op{color:inherit}
-.mg-g-rocket .mg-opt{background:linear-gradient(#fff,#EEF0FF)}
+.mg-g-rocket .mg-opt:not(.right):not(.wrong){background:linear-gradient(#fff,#EEF0FF)}
 
 /* ── 줄다리기 ── */
 .mg-ground{position:absolute;inset:0;background:linear-gradient(#8ED1FF 0,#D4EEFF 22%,#9ED67A 22.1%,#86C766 30%,#E8C98F 30.1%,#E0BE7E 100%);overflow:hidden}
@@ -278,3 +278,52 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes mg-lean{40%{transform:rotate(-10deg) translateX(-6px)}}
 @media (prefers-reduced-motion:reduce){.mg-cloud,.mg-starf i,.mg-planet,.mg-flame{animation:none}}
 @media print{.mg-stage,.mg-gobar,.creditbar,.hj-nav,.hj-navbar,#hj-home{display:none!important}}
+
+/* ── 아래쪽 보기 단추(탑 쌓기·우주 침공 막기) ── */
+.mg-bopts{position:absolute;z-index:8;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));height:clamp(92px,19vh,160px);grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr}
+.mg-bopts.n3{grid-template-columns:repeat(3,1fr)}
+@media (max-width:640px){.mg-bopts{height:30vh;grid-template-columns:1fr 1fr}.mg-bopts.n3{grid-template-columns:repeat(3,1fr);height:16vh}}
+
+/* ── 탑 쌓기 ── */
+.mg-dusk{position:absolute;inset:0;background:linear-gradient(#FFB8A3 0,#FFD6A5 40%,#FFF1C9 75%);overflow:hidden}
+.mg-sun2{position:absolute;right:9%;top:22%;width:110px;height:110px;border-radius:50%;background:#FF9F68;box-shadow:0 0 0 22px rgba(255,159,104,.25)}
+.mg-sky2{position:absolute;left:0;right:0;bottom:calc(clamp(92px,19vh,160px) + 34px);width:100%;height:22%}
+.mg-gnd{position:absolute;left:0;right:0;bottom:0;height:calc(clamp(92px,19vh,160px) + 36px);background:linear-gradient(#8CCB62,#6FB54A)}
+.mg-qt{display:block;align-self:stretch;height:9px;margin:4px 0 0;border-radius:999px;background:#EFE6DB;overflow:hidden}
+.mg-qt i{display:block;height:100%;width:100%;background:#6BCB77;border-radius:999px}
+.mg-qt i.low{background:#FF6B6B}
+.mg-tw{position:absolute;z-index:5;left:50%;transform:translateX(-50%);width:clamp(150px,22vw,260px);top:calc(max(10px,env(safe-area-inset-top)) + 62px + clamp(54px,8vw,90px) + 40px);bottom:calc(clamp(92px,19vh,160px) + 28px);overflow:hidden}
+.mg-tw.wob .mg-twin{animation:mg-wob .6s ease-in-out}
+.mg-crane{position:absolute;left:0;right:0;top:0;height:70px;z-index:2}
+.mg-crane::before{content:"";position:absolute;left:-40%;right:-40%;top:0;height:6px;background:#5C5047;border-radius:3px}
+.mg-hook{position:absolute;left:50%;top:6px;width:3px;height:24px;margin-left:-1.5px;background:#5C5047;transform-origin:50% 0;animation:mg-swing 2.4s ease-in-out infinite alternate}
+.mg-hang{position:absolute;left:50%;top:30px;width:52%;height:clamp(26px,3.6vh,38px);margin-left:-26%;border-radius:6px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.15);transform-origin:50% -24px;animation:mg-swing 2.4s ease-in-out infinite alternate}
+.mg-twin{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column-reverse;align-items:center;transition:transform .45s ease}
+.mg-base{width:100%;height:14px;background:#8C6A4A;border-radius:4px}
+.mg-blk{flex:none;height:clamp(26px,3.6vh,38px);border-radius:6px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.15),inset 0 3px 0 rgba(255,255,255,.35)}
+.mg-blk.drop{animation:mg-dropb .4s cubic-bezier(.5,0,.7,1.4)}
+.mg-blk.fall{animation:mg-fallb .65s ease-in forwards}
+.mg-fl{position:absolute;right:-2px;top:78px;margin:0;z-index:3;background:rgba(255,255,255,.9);border-radius:999px;padding:2px 12px;font-size:clamp(18px,2vw,24px)}
+
+/* ── 우주 침공 막기 ── */
+.mg-night{background:radial-gradient(ellipse at 50% 130%,#5B3B9A 0,transparent 60%),linear-gradient(#070A24,#1B1F4B 70%,#2E2A73)}
+.mg-ifield{position:absolute;z-index:4;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 60px);bottom:calc(clamp(92px,19vh,160px) + 22px);overflow:hidden}
+@media (max-width:640px){.mg-ifield{bottom:calc(30vh + 22px)}.mg-tw{bottom:calc(30vh + 28px)}.mg-gnd{height:calc(30vh + 36px)}.mg-sky2{bottom:calc(30vh + 34px)}}
+.mg-town{position:absolute;left:0;right:0;bottom:0;width:100%;height:90px}
+.mg-cannon{position:absolute;left:50%;bottom:0;width:90px;transform:translateX(-50%);transform-origin:50% 80%;transition:transform .15s;z-index:3}
+.mg-cannon svg{display:block;width:100%;height:auto}
+.mg-alien{position:absolute;top:0;display:flex;flex-direction:column;align-items:center;gap:4px;will-change:transform}
+.mg-asvg{width:clamp(90px,11vw,140px);height:auto;filter:drop-shadow(0 0 12px rgba(165,169,255,.6))}
+.mg-asign{display:flex;flex-direction:column;align-items:center;gap:2px;background:rgba(255,255,255,.96);border-radius:20px;padding:6px 18px 8px;font-size:clamp(26px,4vw,50px);box-shadow:0 5px 0 rgba(0,0,0,.25);white-space:nowrap;max-width:94vw}
+.mg-alien.boom .mg-asvg{animation:mg-popb .3s ease-out forwards}
+.mg-alien.boom .mg-asign{opacity:0;transition:opacity .2s}
+.mg-alien.land .mg-asvg{filter:drop-shadow(0 0 16px #FF6B6B)}
+.mg-laser{position:absolute;z-index:6;height:6px;margin-top:-3px;border-radius:3px;background:linear-gradient(90deg,#FFF,#FF6B6B);box-shadow:0 0 12px #FF6B6B;transform-origin:0 50%;animation:mg-las .35s ease-out forwards;pointer-events:none}
+.mg-laser.miss{background:linear-gradient(90deg,#fff,#9AA3B1);box-shadow:none}
+.mg-g-invader .mg-opt:not(.right):not(.wrong){background:linear-gradient(#fff,#EEF0FF)}
+@keyframes mg-swing{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+@keyframes mg-dropb{from{transform:translateY(-260px)}}
+@keyframes mg-fallb{to{transform:translate(160px,260px) rotate(70deg);opacity:0}}
+@keyframes mg-wob{20%{transform:rotate(-3deg)}50%{transform:rotate(2.5deg)}80%{transform:rotate(-1deg)}}
+@keyframes mg-las{from{opacity:1}to{opacity:0}}
+@media (prefers-reduced-motion:reduce){.mg-hook,.mg-hang{animation:none}}

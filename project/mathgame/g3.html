@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>3학년 수학게임 · 프로젝트 · 초등교사 홍지희</title>
-<meta name="description" content="3학년 수학게임 — 단원별 계산을 풍선 터뜨리기·두더지 잡기·60초 우주 도전·줄다리기로 반복 연습해요. 할 때마다 새 문제가 나와요.">
+<meta name="description" content="3학년 수학게임 — 단원별 계산을 풍선 터뜨리기·두더지 잡기·탑 쌓기·60초 우주 도전·우주 침공 막기·줄다리기로 반복 연습해요. 할 때마다 새 문제가 나와요.">
 <style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#2F6FD6;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37}}
@@ -80,7 +80,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mg-fs{display:inline-flex;flex-direction:column;align-items:center;font-size:.78em;line-height:1.08}
 .mg-fs>span{padding:0 .12em}
 .mg-fs>span:first-child{border-bottom:.08em solid currentColor}
-.mg-blank{display:inline-grid;place-items:center;min-width:1.4em;padding:0 .18em;border:.08em dashed #E08A2E;border-radius:.25em;color:#E08A2E;line-height:1.2}
+.mg-blank{display:inline-flex;align-items:center;justify-content:center;min-width:1.4em;padding:0 .18em;border:.08em dashed #E08A2E;border-radius:.25em;color:#E08A2E;line-height:1.2}
 .mg-blank.ok{border-style:solid;border-color:#2E9E5B;color:#1F7A44}
 .mg-circ{color:#E08A2E;font-size:1.05em}
 .mg-hint{display:inline-block;font-size:clamp(14px,1.5vw,18px);line-height:1.4;font-weight:700;color:#8A4E0C;background:#FFEFD6;border-radius:999px;padding:1px 12px}
@@ -235,7 +235,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mg-opt.right{background:#5FD38D;color:#fff;animation:mg-pulse1 .3s}
 .mg-opt.wrong{background:#FF7A7A;color:#fff;animation:mg-shk .35s}
 .mg-opt.right .mg-op,.mg-opt.wrong .mg-op{color:inherit}
-.mg-g-rocket .mg-opt{background:linear-gradient(#fff,#EEF0FF)}
+.mg-g-rocket .mg-opt:not(.right):not(.wrong){background:linear-gradient(#fff,#EEF0FF)}
 
 /* ── 줄다리기 ── */
 .mg-ground{position:absolute;inset:0;background:linear-gradient(#8ED1FF 0,#D4EEFF 22%,#9ED67A 22.1%,#86C766 30%,#E8C98F 30.1%,#E0BE7E 100%);overflow:hidden}
@@ -282,6 +282,55 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes mg-lean{40%{transform:rotate(-10deg) translateX(-6px)}}
 @media (prefers-reduced-motion:reduce){.mg-cloud,.mg-starf i,.mg-planet,.mg-flame{animation:none}}
 @media print{.mg-stage,.mg-gobar,.creditbar,.hj-nav,.hj-navbar,#hj-home{display:none!important}}
+
+/* ── 아래쪽 보기 단추(탑 쌓기·우주 침공 막기) ── */
+.mg-bopts{position:absolute;z-index:8;left:max(12px,env(safe-area-inset-left));right:max(12px,env(safe-area-inset-right));bottom:max(12px,env(safe-area-inset-bottom));height:clamp(92px,19vh,160px);grid-template-columns:repeat(4,1fr);grid-auto-rows:1fr}
+.mg-bopts.n3{grid-template-columns:repeat(3,1fr)}
+@media (max-width:640px){.mg-bopts{height:30vh;grid-template-columns:1fr 1fr}.mg-bopts.n3{grid-template-columns:repeat(3,1fr);height:16vh}}
+
+/* ── 탑 쌓기 ── */
+.mg-dusk{position:absolute;inset:0;background:linear-gradient(#FFB8A3 0,#FFD6A5 40%,#FFF1C9 75%);overflow:hidden}
+.mg-sun2{position:absolute;right:9%;top:22%;width:110px;height:110px;border-radius:50%;background:#FF9F68;box-shadow:0 0 0 22px rgba(255,159,104,.25)}
+.mg-sky2{position:absolute;left:0;right:0;bottom:calc(clamp(92px,19vh,160px) + 34px);width:100%;height:22%}
+.mg-gnd{position:absolute;left:0;right:0;bottom:0;height:calc(clamp(92px,19vh,160px) + 36px);background:linear-gradient(#8CCB62,#6FB54A)}
+.mg-qt{display:block;align-self:stretch;height:9px;margin:4px 0 0;border-radius:999px;background:#EFE6DB;overflow:hidden}
+.mg-qt i{display:block;height:100%;width:100%;background:#6BCB77;border-radius:999px}
+.mg-qt i.low{background:#FF6B6B}
+.mg-tw{position:absolute;z-index:5;left:50%;transform:translateX(-50%);width:clamp(150px,22vw,260px);top:calc(max(10px,env(safe-area-inset-top)) + 62px + clamp(54px,8vw,90px) + 40px);bottom:calc(clamp(92px,19vh,160px) + 28px);overflow:hidden}
+.mg-tw.wob .mg-twin{animation:mg-wob .6s ease-in-out}
+.mg-crane{position:absolute;left:0;right:0;top:0;height:70px;z-index:2}
+.mg-crane::before{content:"";position:absolute;left:-40%;right:-40%;top:0;height:6px;background:#5C5047;border-radius:3px}
+.mg-hook{position:absolute;left:50%;top:6px;width:3px;height:24px;margin-left:-1.5px;background:#5C5047;transform-origin:50% 0;animation:mg-swing 2.4s ease-in-out infinite alternate}
+.mg-hang{position:absolute;left:50%;top:30px;width:52%;height:clamp(26px,3.6vh,38px);margin-left:-26%;border-radius:6px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.15);transform-origin:50% -24px;animation:mg-swing 2.4s ease-in-out infinite alternate}
+.mg-twin{position:absolute;left:0;right:0;bottom:0;display:flex;flex-direction:column-reverse;align-items:center;transition:transform .45s ease}
+.mg-base{width:100%;height:14px;background:#8C6A4A;border-radius:4px}
+.mg-blk{flex:none;height:clamp(26px,3.6vh,38px);border-radius:6px;box-shadow:inset 0 -6px 0 rgba(0,0,0,.15),inset 0 3px 0 rgba(255,255,255,.35)}
+.mg-blk.drop{animation:mg-dropb .4s cubic-bezier(.5,0,.7,1.4)}
+.mg-blk.fall{animation:mg-fallb .65s ease-in forwards}
+.mg-fl{position:absolute;right:-2px;top:78px;margin:0;z-index:3;background:rgba(255,255,255,.9);border-radius:999px;padding:2px 12px;font-size:clamp(18px,2vw,24px)}
+
+/* ── 우주 침공 막기 ── */
+.mg-night{background:radial-gradient(ellipse at 50% 130%,#5B3B9A 0,transparent 60%),linear-gradient(#070A24,#1B1F4B 70%,#2E2A73)}
+.mg-ifield{position:absolute;z-index:4;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 60px);bottom:calc(clamp(92px,19vh,160px) + 22px);overflow:hidden}
+@media (max-width:640px){.mg-ifield{bottom:calc(30vh + 22px)}.mg-tw{bottom:calc(30vh + 28px)}.mg-gnd{height:calc(30vh + 36px)}.mg-sky2{bottom:calc(30vh + 34px)}}
+.mg-town{position:absolute;left:0;right:0;bottom:0;width:100%;height:90px}
+.mg-cannon{position:absolute;left:50%;bottom:0;width:90px;transform:translateX(-50%);transform-origin:50% 80%;transition:transform .15s;z-index:3}
+.mg-cannon svg{display:block;width:100%;height:auto}
+.mg-alien{position:absolute;top:0;display:flex;flex-direction:column;align-items:center;gap:4px;will-change:transform}
+.mg-asvg{width:clamp(90px,11vw,140px);height:auto;filter:drop-shadow(0 0 12px rgba(165,169,255,.6))}
+.mg-asign{display:flex;flex-direction:column;align-items:center;gap:2px;background:rgba(255,255,255,.96);border-radius:20px;padding:6px 18px 8px;font-size:clamp(26px,4vw,50px);box-shadow:0 5px 0 rgba(0,0,0,.25);white-space:nowrap;max-width:94vw}
+.mg-alien.boom .mg-asvg{animation:mg-popb .3s ease-out forwards}
+.mg-alien.boom .mg-asign{opacity:0;transition:opacity .2s}
+.mg-alien.land .mg-asvg{filter:drop-shadow(0 0 16px #FF6B6B)}
+.mg-laser{position:absolute;z-index:6;height:6px;margin-top:-3px;border-radius:3px;background:linear-gradient(90deg,#FFF,#FF6B6B);box-shadow:0 0 12px #FF6B6B;transform-origin:0 50%;animation:mg-las .35s ease-out forwards;pointer-events:none}
+.mg-laser.miss{background:linear-gradient(90deg,#fff,#9AA3B1);box-shadow:none}
+.mg-g-invader .mg-opt:not(.right):not(.wrong){background:linear-gradient(#fff,#EEF0FF)}
+@keyframes mg-swing{from{transform:rotate(-7deg)}to{transform:rotate(7deg)}}
+@keyframes mg-dropb{from{transform:translateY(-260px)}}
+@keyframes mg-fallb{to{transform:translate(160px,260px) rotate(70deg);opacity:0}}
+@keyframes mg-wob{20%{transform:rotate(-3deg)}50%{transform:rotate(2.5deg)}80%{transform:rotate(-1deg)}}
+@keyframes mg-las{from{opacity:1}to{opacity:0}}
+@media (prefers-reduced-motion:reduce){.mg-hook,.mg-hang{animation:none}}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -977,7 +1026,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 <ul>
 <li>정답 하나에 <b>10점</b>, 빨리 맞힐수록 <b>빠르기 점수</b>가 최대 10점 더 붙어요.</li>
 <li>연달아 맞히면 <b>연속 점수</b>가 붙어요(2연속 +2점, 3연속 +4점 … 최대 +20점). 틀리면 연속이 0으로 돌아가요.</li>
-<li>5문제를 맞힐 때마다 <b>레벨</b>이 올라가고, 풍선과 두더지가 조금씩 빨라져요.</li>
+<li>5문제를 맞힐 때마다 <b>레벨</b>이 올라가고, 풍선·두더지·외계인이 조금씩 빨라지고 탑 쌓기의 시간도 줄어들어요.</li>
 <li>문제는 게임을 시작할 때마다 새로 만들어져요. 같은 단원도 할 때마다 숫자가 달라요.</li>
 <li>최고 기록은 이 기기에만 저장되고, 이름은 저장하지 않아요.</li>
 </ul></details>
@@ -1455,7 +1504,9 @@ window.MG={"g":3,"units":[{"id":"u1","sem":"1학기 1단원","nm":"덧셈과 뺄
   var GAMES = [
     { id: 'balloon', nm: '풍선 터뜨리기', de: '정답이 적힌 풍선을 하늘로 날아가기 전에 톡! 하트 3개로 오래 버텨요.', stars: [5, 12, 20] },
     { id: 'mole', nm: '두더지 잡기', de: '정답 팻말을 든 두더지를 뿅망치로 콩! 숨기 전에 빨리 잡아요.', stars: [5, 12, 20] },
+    { id: 'tower', nm: '탑 쌓기', de: '맞힐 때마다 블록이 한 층씩! 틀리거나 시간이 지나면 맨 위 블록이 떨어져요.', stars: [5, 12, 20] },
     { id: 'rocket', nm: '60초 우주 도전', de: '60초 동안 몇 문제를 맞힐까요? 맞힐수록 로켓이 높이 올라가요.', stars: [8, 15, 22] },
+    { id: 'invader', nm: '우주 침공 막기', de: '식을 들고 내려오는 외계인을 정답 레이저로 맞혀요. 땅에 닿기 전에!', stars: [5, 12, 20] },
     { id: 'tug', nm: '줄다리기 (2명)', de: '두 사람이 화면 양쪽에서 동시에 풀어요. 먼저 5번 당기는 팀이 이겨요.', two: true }
   ];
   var GBY = {}; GAMES.forEach(function (x) { GBY[x.id] = x });
@@ -1490,11 +1541,21 @@ window.MG={"g":3,"units":[{"id":"u1","sem":"1학기 1단원","nm":"덧셈과 뺄
       '<path d="M18 32h20l6 30H14Z" fill="' + c + '"/><path d="M38 38l26 10" stroke="#FFD9B8" stroke-width="7" stroke-linecap="round"/><path d="M36 46l28 6" stroke="#FFD9B8" stroke-width="7" stroke-linecap="round"/>' +
       '<path d="M20 62 8 92M34 62l14 30" stroke="#3B4A6B" stroke-width="8" stroke-linecap="round"/></svg>';
   }
+  var ALIEN = '<svg class="mg-asvg" viewBox="0 0 120 90" aria-hidden="true"><ellipse cx="60" cy="62" rx="56" ry="18" fill="#7C83FD"/><ellipse cx="60" cy="58" rx="56" ry="14" fill="#A5A9FF"/>' +
+    '<path d="M28 52q32-62 64 0Z" fill="#6BCB77"/><circle cx="48" cy="36" r="8" fill="#fff"/><circle cx="72" cy="36" r="8" fill="#fff"/><circle cx="49" cy="37" r="4" fill="#1B1F4B"/><circle cx="73" cy="37" r="4" fill="#1B1F4B"/>' +
+    '<path d="M44 14 36 2M76 14l8-12" stroke="#6BCB77" stroke-width="4" stroke-linecap="round"/><circle cx="36" cy="2" r="4" fill="#FFD93D"/><circle cx="84" cy="2" r="4" fill="#FFD93D"/>' +
+    '<circle cx="24" cy="62" r="4" fill="#FFD93D"/><circle cx="44" cy="68" r="4" fill="#FFD93D"/><circle cx="76" cy="68" r="4" fill="#FFD93D"/><circle cx="96" cy="62" r="4" fill="#FFD93D"/></svg>';
+  var CANNON = '<svg viewBox="0 0 100 70" aria-hidden="true"><rect x="42" y="0" width="16" height="40" rx="6" fill="#C9D3E8"/><rect x="40" y="0" width="20" height="10" rx="4" fill="#FF6B6B"/><path d="M8 70q4-36 42-36t42 36Z" fill="#4DA3FF"/><circle cx="50" cy="52" r="8" fill="#FFD93D"/></svg>';
   var THUMB = {
     balloon: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#BFE6FF"/><circle cx="132" cy="22" r="12" fill="#FFE07A"/><path d="M0 84q40-16 80 0t80 0v16H0Z" fill="#9BD37C"/>' +
       '<g transform="translate(26 14) scale(.42)">' + balloonSvg('#FF6B6B').replace(/<\/?svg[^>]*>/g, '') + '</g><g transform="translate(66 26) scale(.42)">' + balloonSvg('#4DA3FF').replace(/<\/?svg[^>]*>/g, '') + '</g><g transform="translate(104 10) scale(.42)">' + balloonSvg('#FFB238').replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
     mole: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#A8DA7E"/><ellipse cx="80" cy="84" rx="44" ry="11" fill="#5B3A22"/><g transform="translate(50 26) scale(.5)">' + MOLE.replace(/<\/?svg[^>]*>/g, '') + '</g>' +
       '<path d="M36 90q44 12 88 0v10H36Z" fill="#7BBF52"/><g transform="translate(104 4) rotate(25) scale(.55)">' + HAMMER.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
+    tower: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#FFD6A5"/><circle cx="128" cy="30" r="14" fill="#FF9F68"/><path d="M0 70h20V50h18v20h14V44h20v56H0Zm110 30V56h16v-14h18v58Z" fill="#C79BC6" opacity=".7"/><rect y="88" width="160" height="12" fill="#8CCB62"/>' +
+      '<rect x="56" y="74" width="48" height="14" rx="3" fill="#FF6B6B"/><rect x="58" y="60" width="44" height="14" rx="3" fill="#FFB238"/><rect x="55" y="46" width="48" height="14" rx="3" fill="#6BCB77"/><rect x="57" y="32" width="45" height="14" rx="3" fill="#4DA3FF"/>' +
+      '<path d="M80 4v12" stroke="#5C5047" stroke-width="2"/><rect x="64" y="14" width="34" height="12" rx="3" fill="#B07CFF"/><path d="M20 6h120" stroke="#5C5047" stroke-width="3"/></svg>',
+    invader: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#1B1F4B"/><circle cx="20" cy="18" r="1.5" fill="#fff"/><circle cx="140" cy="26" r="1.5" fill="#fff"/><circle cx="110" cy="10" r="1.2" fill="#fff"/>' +
+      '<g transform="translate(52 10) scale(.46)">' + ALIEN.replace(/<\/?svg[^>]*>/g, '') + '</g><path d="M80 82 82 44" stroke="#FF6B6B" stroke-width="3"/><path d="M0 100V84h20V74h16v10h20V70h18v30Zm100 0V78h18V66h16v12h26v22Z" fill="#2E2A73"/><g transform="translate(64 74) scale(.32)">' + CANNON.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
     rocket: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#1B1F4B"/><circle cx="28" cy="20" r="1.6" fill="#fff"/><circle cx="60" cy="70" r="1.3" fill="#fff"/><circle cx="140" cy="16" r="1.8" fill="#fff"/><circle cx="118" cy="60" r="1.2" fill="#fff"/><circle cx="20" cy="80" r="1.4" fill="#fff"/>' +
       '<circle cx="130" cy="78" r="18" fill="#B07CFF"/><ellipse cx="130" cy="78" rx="28" ry="5" fill="none" stroke="#E0C9FF" stroke-width="2.5"/><g transform="translate(66 10) rotate(18) scale(.72)">' + ROCKET.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
     tug: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#CDEBFF"/><rect y="62" width="160" height="38" fill="#E8C98F"/><path d="M80 52v40" stroke="#fff" stroke-width="3" stroke-dasharray="5 4"/>' +
@@ -1929,6 +1990,125 @@ window.MG={"g":3,"units":[{"id":"u1","sem":"1학기 1단원","nm":"덧셈과 뺄
       if (L <= 0) { end('시간이 다 됐어요'); return }
       if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
       this.q.t += dt;
+    },
+    key: function (i) { if (this.q && i < this.q.c.opts.length) this.hit(i) }
+  };
+
+  /* ── 아래쪽 보기 단추(탑 쌓기·우주 침공 막기) ── */
+  function bottomOpts(q, fn) {
+    var box = $('mgOpts'); box.className = 'mg-opts mg-bopts n' + q.c.opts.length;
+    box.innerHTML = q.c.opts.map(function (o, i) { return '<button type="button" class="mg-opt" data-i="' + i + '" aria-label="' + (i + 1) + '번 ' + esc(plain(o)) + '"><span class="mg-key">' + (i + 1) + '</span><span class="mg-lab ' + szCls(o) + '">' + aH(o) + '</span></button>' }).join('');
+    [].forEach.call(box.children, function (b) { tap(b, function () { fn(+b.dataset.i) }) });
+  }
+  var BLK = ['#FF6B6B', '#FFB238', '#FFD93D', '#6BCB77', '#4DA3FF', '#B07CFF', '#FF7EB6', '#2EC4B6'];
+
+  /* ── 탑 쌓기 ── */
+  GM.tower = {
+    init: function () {
+      $('mgPlay').innerHTML = '<div class="mg-dusk"><i class="mg-sun2"></i><i class="mg-cloud c0"></i><i class="mg-cloud c1"></i>' +
+        '<svg class="mg-sky2" viewBox="0 0 1200 200" preserveAspectRatio="none" aria-hidden="true"><path d="M0 200V120h60V80h50v40h40V60h70v60h30V100h60v100Zm400 0V110h50V70h60v50h40V90h70v110Zm300 0V100h40V50h80v70h30V90h60v110Zm300 0V120h50V70h60v60h50v70Z" fill="#B98CB8" opacity=".55"/></svg>' +
+        '<div class="mg-gnd"></div></div>' +
+        '<div class="mg-qbox" id="mgQ"></div>' +
+        '<div class="mg-tw" id="mgTw"><div class="mg-crane"><i class="mg-hook"></i><i class="mg-hang" id="mgHang"></i></div><div class="mg-twin" id="mgTwin"><div class="mg-base"></div></div><p class="mg-fl" id="mgFl">0층</p></div>' +
+        '<div id="mgOpts"></div>';
+      this.n = 0;
+    },
+    go: function () { this.next() },
+    next: function () {
+      var q = this.q = makeP(), self = this; q.t = 0; q.done = false; $('mgQ').innerHTML = qbox(q) + '<span class="mg-qt"><i id="mgQt"></i></span>';
+      this.dur = speedOf(10, .6, 5); this.col = BLK[this.n % BLK.length];
+      $('mgHang').style.background = this.col;
+      bottomOpts(q, function (i) { self.hit(i) });
+    },
+    floors: function () {
+      var tw = $('mgTwin'), bh = tw.querySelector('.mg-blk') ? tw.querySelector('.mg-blk').offsetHeight : 34, vis = Math.max(4, Math.floor(($('mgTw').clientHeight - 120) / bh));
+      tw.style.transform = 'translateY(' + Math.max(0, this.n - vis) * bh + 'px)';
+      $('mgFl').textContent = this.n + '층';
+    },
+    hit: function (i) {
+      var q = this.q; if (!S || S.paused || S.over || q.done) return;
+      var bs = $('mgOpts').children; q.done = true;
+      if (i === q.c.ok) {
+        bs[i].classList.add('right'); sfx('ok');
+        var b = document.createElement('div'); b.className = 'mg-blk drop'; b.style.background = this.col; b.style.marginLeft = (Math.random() * 16 - 8).toFixed(1) + 'px';
+        b.style.width = (82 + Math.random() * 14).toFixed(1) + '%';
+        $('mgTwin').appendChild(b); this.n++; this.floors();
+        gain(1 - q.t / this.dur, b); S.wait = .55;
+        if (this.n % 10 === 0) setTimeout(function () { if (S && !S.over) banner(GM.tower.n + '층 돌파!', 'lv') }, 700);
+      } else {
+        bs[i].classList.add('wrong'); bs[q.c.ok].classList.add('right'); sfx('bad'); wrongRec(q, q.c.opts[i]); this.drop(); S.wait = 1.2;
+      }
+    },
+    drop: function () {   // 틀리거나 시간이 지나면 맨 위 블록이 떨어짐
+      var tw = $('mgTwin'), all = tw.querySelectorAll('.mg-blk:not(.fall)'), top = all[all.length - 1];
+      $('mgTw').classList.remove('wob'); void $('mgTw').offsetWidth; $('mgTw').classList.add('wob');
+      if (top) { top.classList.add('fall'); this.n--; var self = this; setTimeout(function () { top.remove(); if (S) self.floors() }, 650) }
+      loseLife();
+    },
+    tick: function (dt) {
+      if (S.ending) return;
+      if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
+      var q = this.q; q.t += dt; var L = Math.max(0, 1 - q.t / this.dur);
+      $('mgQt').style.width = (L * 100) + '%'; $('mgQt').classList.toggle('low', L < .3);
+      if (!q.done && q.t >= this.dur) {
+        q.done = true; wrongRec(q, null); sfx('bad'); $('mgOpts').children[q.c.ok].classList.add('right');
+        banner('시간이 지났어요<small>정답은 ' + plain(q.c.opts[q.c.ok]) + '</small>', 'ans'); this.drop(); S.wait = 1.4;
+      }
+    },
+    key: function (i) { if (this.q && i < this.q.c.opts.length) this.hit(i) }
+  };
+
+  /* ── 우주 침공 막기 ── */
+  GM.invader = {
+    init: function () {
+      var st = ''; for (var i = 0; i < 60; i++) st += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;top:' + (Math.random() * 100).toFixed(1) + '%;animation-delay:' + (Math.random() * 3).toFixed(2) + 's;--s:' + (1 + Math.random() * 2).toFixed(1) + 'px"></i>';
+      $('mgPlay').innerHTML = '<div class="mg-space mg-night"><div class="mg-starf">' + st + '</div></div>' +
+        '<div class="mg-ifield" id="mgField"><svg class="mg-town" viewBox="0 0 1200 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 120V70h50V40h40v30h50V20h60v50h40V50h60v70Zm300 0V60h60V30h50v40h40V45h70v75Zm320 0V55h50V25h60v45h40V60h60v60Zm280 0V65h60V35h60v40h40V50h60v70Z" fill="#2E2A73"/>' +
+        Array.apply(null, Array(30)).map(function (_, i) { return '<rect x="' + (i * 40 + 18) + '" y="' + (78 + (i % 3) * 12) + '" width="8" height="8" fill="#FFD93D" opacity=".8"/>' }).join('') + '</svg>' +
+        '<div class="mg-cannon" id="mgCannon">' + CANNON + '</div></div><div id="mgOpts"></div>';
+    },
+    go: function () { this.next() },
+    next: function () {
+      var q = this.q = makeP(), self = this, f = $('mgField'); q.t = 0; q.done = false;
+      var old = f.querySelector('.mg-alien'); if (old) old.remove();
+      var a = document.createElement('div'); a.className = 'mg-alien'; a.innerHTML = ALIEN + '<div class="mg-asign">' + qbox(q) + '</div>';
+      a.style.left = (22 + Math.random() * 56).toFixed(1) + '%'; f.appendChild(a);
+      this.a = a; this.y = 0; this.dur = speedOf(11, .7, 5); this.ph = Math.random() * 6;
+      bottomOpts(q, function (i) { self.hit(i) });
+    },
+    laser: function (hitIt) {
+      var f = $('mgField'), fr = f.getBoundingClientRect(), c = $('mgCannon').getBoundingClientRect(), a = this.a.querySelector('.mg-asvg').getBoundingClientRect();
+      var x1 = c.left + c.width / 2 - fr.left, y1 = c.top - fr.top, x2 = a.left + a.width / 2 - fr.left, y2 = a.top + a.height * .7 - fr.top;
+      if (!hitIt) { x2 = x1 + (Math.random() < .5 ? -1 : 1) * (120 + Math.random() * 120); y2 = 0 }
+      var L = document.createElement('i'), len = Math.hypot(x2 - x1, y2 - y1), ang = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+      L.className = 'mg-laser' + (hitIt ? '' : ' miss'); L.style.left = x1 + 'px'; L.style.top = y1 + 'px'; L.style.width = len + 'px'; L.style.transform = 'rotate(' + ang + 'deg)';
+      f.appendChild(L); setTimeout(function () { L.remove() }, 350);
+      var cn = $('mgCannon'); cn.style.transform = 'translateX(-50%) rotate(' + (ang + 90).toFixed(1) + 'deg)';
+    },
+    hit: function (i) {
+      var q = this.q; if (!S || S.paused || S.over || q.done) return;
+      var bs = $('mgOpts').children;
+      if (i === q.c.ok) {
+        q.done = true; bs[i].classList.add('right'); this.laser(true); sfx('pop'); sfx('ok');
+        var c = center(this.a.querySelector('.mg-asvg')); burst(c[0], c[1], '#FFD93D'); this.a.classList.add('boom');
+        gain(1 - this.y, this.a.querySelector('.mg-asvg')); S.wait = .6;
+      } else {
+        if (bs[i].classList.contains('wrong')) return;
+        bs[i].classList.add('wrong'); this.laser(false); sfx('bad'); wrongRec(q, q.c.opts[i]);
+        this.y = Math.min(.95, this.y + .12); loseLife();   // 틀리면 외계인이 한 걸음 더 내려옴
+      }
+    },
+    tick: function (dt) {
+      if (S.ending) return;
+      if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
+      var q = this.q, f = $('mgField'), H = f.clientHeight - 110, a = this.a; q.t += dt;
+      this.y += dt / this.dur;
+      var sw = Math.sin(q.t * 1.4 + this.ph) * 30;
+      a.style.transform = 'translate(calc(-50% + ' + sw.toFixed(1) + 'px),' + (this.y * Math.max(0, H - a.offsetHeight)).toFixed(1) + 'px)';
+      if (!q.done && this.y >= 1) {
+        q.done = true; wrongRec(q, null); sfx('bonk'); a.classList.add('land'); $('mgOpts').children[q.c.ok].classList.add('right');
+        banner('외계인이 내려왔어요<small>정답은 ' + plain(q.c.opts[q.c.ok]) + '</small>', 'ans'); loseLife(); S.wait = 1.5;
+      }
     },
     key: function (i) { if (this.q && i < this.q.c.opts.length) this.hit(i) }
   };
