@@ -330,11 +330,12 @@ grade1/ … grade6/
   고친 뒤 `python3 _build/creative/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py`가 `gen_*.py check`를 먼저 돌림). 게임을 더하면 `GAMES`에 넣고, `run_all.py`의 출력 목록과 메뉴 `index.html` 카드도 고친 뒤 `apply_theme.py`.
   클래스 이름은 `cr-`(공통)·게임마다 앞글자(마방진 `mg3-`·칠교 `tg-`·계산 스도쿠 `kk-`·하노이 탑 `hn-`·네모 로직 `ng-`). 메뉴 아이콘 🧠(brain)·✳(magicsq)·🔺(tangram)·🗼(tower)·🔳(pixel)은 `_build/theme/icons.js`에 추가했습니다.
 
-### 따로 사이트 '초등교사 홍지희의 초등 수학 게임' (저장소 `hongjihee1005/math-game`, 2026-10-07)
+### 따로 사이트 '초등 수학 게임' (저장소 `hongjihee1005/math-game`, 2026-10-07)
 
-- 창의수학게임·교과수학게임만 모은 따로 사이트(주소 `https://hongjihee1005.github.io/math-game/`). **원본은 이 저장소**이고, math-game 저장소는 복사본입니다. math-game의 파일을 직접 고치지 마세요.
-- `_build/mathsite/export.py 출력폴더`가 `project/creative/`·`project/mathgame/`을 복사하며 홈 링크(`../../index.html` → 새 첫 화면), 제목('· 기타 · 초등교사 홍지희' → '· 초등교사 홍지희의 초등 수학 게임'), 위치 표시줄의 '› 기타', 스도쿠 링크(→ 이 사이트 `break/sudoku/` 절대 주소)를 바꾸고, 첫 화면은 `project/index.html`(기타 메뉴)에서 두 카드만 남겨 만듭니다. 그래서 **기타 메뉴의 두 카드 `href="creative/index.html"`·`"mathgame/index.html"`은 그대로 두세요.**
-- math-game의 Actions('원본에서 가져오기', 원본 `_build/mathsite/repo/.github/workflows/sync.yml`)가 한 시간마다 이 저장소 main을 받아 `export.py`를 돌리고 바뀐 것만 올립니다. 그 저장소에 넣는 파일(워크플로·README)의 원본은 `_build/mathsite/repo/`.
+- 창의 수학·교과수학만 모은 따로 사이트(주소 `https://hongjihee1005.github.io/math-game/`). **원본은 이 저장소**이고, math-game 저장소는 복사본입니다. math-game의 파일을 직접 고치지 마세요.
+- 첫 화면(선생님 요청 2026-10-07): 제목 '초등 수학 게임' → 묶음 '창의 수학'(게임 카드 5개 + 스도쿠, 바로 게임으로) → 묶음 '교과수학'(1~6학년 카드 → `mathgame/gN.html`) → '더 많은 수업 자료는 초등교사 홍지희의 자료실에 있어요.'(링크 없음). 하위 메뉴 페이지는 없고 `creative/index.html`·`mathgame/index.html`은 첫 화면으로 넘기는 안내 페이지입니다.
+- `_build/mathsite/export.py 출력폴더`가 만듭니다: 카드는 `project/creative/index.html`·`project/mathgame/index.html`의 카드 묶음을 그대로 가져오고(카드를 고치면 따라감), 게임 페이지는 복사하며 홈·'자료 목록' 링크를 새 첫 화면으로, 제목 끝을 '· 창의 수학 · 초등 수학 게임'처럼, 스도쿠 링크를 이 사이트 절대 주소로 바꿉니다.
+- math-game의 Actions('원본에서 가져오기', 원본 `_build/mathsite/repo/.github/workflows/sync.yml`)가 한 시간마다 이 저장소 main을 받아 `export.py`를 돌리고 바뀐 것만 올립니다(Pages는 main 브랜치 / root). 바로 맞추려면 math-game Actions에서 Run workflow. 그 저장소에 넣는 파일(워크플로·README)의 원본은 `_build/mathsite/repo/`.
 - 자동 보완 `run_all.py`가 `export.py`를 임시 폴더로 돌려 보고, 실패하면(카드를 못 찾음·깨진 링크) 실패 메일을 보냅니다. 두 사이트는 주소가 같은 `hongjihee1005.github.io`라 기록(localStorage)도 함께 씁니다.
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
