@@ -14,18 +14,24 @@ import pathlib, re, shutil, sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 MAIN = 'https://hongjihee1005.github.io/hong_teacher/'
 NAME = '초등 수학 게임'
-DIRS = ('creative', 'mathgame')
+DIRS = {'creative': 'project/creative', 'mathgame': 'project/mathgame', 'sudoku': 'break/sudoku'}  # 새 사이트 폴더: 원본 폴더
+MENU = {'sudoku'}  # 메뉴 페이지(index.html)를 그대로 두는 폴더(나머지는 첫 화면으로 넘김)
+SEP = re.compile(r'<svg class="c-sep".*?</svg><a class="c-link" href="\.\./index\.html">[^<]*</a>', re.S)
 REDIRECT = ('<!doctype html><html lang="ko"><head><meta charset="utf-8">'
             '<meta http-equiv="refresh" content="0; url=../index.html"><title>' + NAME + '</title></head>'
             '<body><p><a href="../index.html">' + NAME + ' 첫 화면으로 가기</a></p></body></html>\n')
 
 def fix_page(s):
-    s = s.replace(' · 기타 · 초등교사 홍지희', ' · ' + NAME)
+    s = s.replace(' · 기타 · 초등교사 홍지희', ' · ' + NAME).replace(' · 쉬는 시간 · 초등교사 홍지희', ' · 창의 수학 · ' + NAME)
+    s = s.replace('학년 교과수학게임 · ', '학년 · 교과수학 · ').replace('학년 교과수학게임', '학년')                        # '3학년 교과수학게임' → '3학년'
+    s = SEP.sub('', s)                                                 # 위치 표시줄에서 '› 쉬는 시간' 빼기
+    s = s.replace('href="../../break/sudoku/', 'href="../sudoku/')    # 스도쿠도 새 사이트 안으로
     s = re.sub(r'<title>[^<]*</title>', lambda m: m.group(0).replace('창의수학게임', '창의 수학').replace('교과수학게임', '교과수학'), s, count=1)
     s = s.replace('href="../../index.html"', 'href="../index.html"')   # 홈 → 새 사이트 첫 화면
-    s = s.replace('class="tolist" href="index.html"', 'class="tolist" href="../index.html"')  # 목록 페이지가 없으므로 첫 화면으로
-    s = s.replace('href="../../break/', f'href="{MAIN}break/')
     return s
+
+def fix_game(s):  # 목록 페이지가 없는 폴더: '자료 목록으로'도 첫 화면으로
+    return fix_page(s).replace('class="tolist" href="index.html"', 'class="tolist" href="../index.html"')
 
 def cards(rel):
     """원래 메뉴 페이지의 카드 묶음(<div class="grid …"> 안쪽)을 꺼내 첫 화면 기준 주소로 고칩니다."""
@@ -34,8 +40,8 @@ def cards(rel):
     b = s.index('<footer', a); b = s.rindex('</div>', a, b)
     d = rel.split('/')[1]
     g = s[a:b].strip()
-    g = re.sub(r'href="(\.\./\.\./)', f'href="{MAIN}', g)
     g = re.sub(r'href="(?!https?:|mailto:|#)([^"]+)"', lambda m: f'href="{d}/{m.group(1)}"', g)
+    g = g.replace(f'href="{d}/../../break/sudoku/', 'href="sudoku/').replace('쉬는 시간 › 스도쿠 방으로 가요', '학년마다 30문제')  # 스도쿠도 새 사이트 안으로
     assert g.count('class="card room') >= 6, rel + ': 카드를 찾지 못했습니다'
     return g
 
@@ -56,12 +62,15 @@ def home():
 
 def main(out):
     out = pathlib.Path(out)
-    for d in DIRS:
+    for d, src in DIRS.items():
         dst = out / d
         if dst.exists(): shutil.rmtree(dst)
         dst.mkdir(parents=True)
-        for f in sorted((ROOT / 'project' / d).glob('*.html')):
-            t = REDIRECT if f.name == 'index.html' else fix_page(f.read_text(encoding='utf-8'))  # 하위 메뉴 없음 → 옛 주소는 첫 화면으로
+        for f in sorted((ROOT / src).glob('*.html')):
+            t = f.read_text(encoding='utf-8')
+            if d in MENU: t = fix_page(t)
+            elif f.name == 'index.html': t = REDIRECT  # 하위 메뉴 없음 → 옛 주소는 첫 화면으로
+            else: t = fix_game(t)
             (dst / f.name).write_text(t, encoding='utf-8')
     (out / 'index.html').write_text(home(), encoding='utf-8')
     (out / '.nojekyll').write_text('', encoding='utf-8')
