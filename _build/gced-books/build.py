@@ -144,7 +144,7 @@ def build():
         n += write(f'{tdir(t)}/{bd[0]}.html', fill(f"{t['no']:02d}. {t['title']} · {bd[1]}", f"{t['area']} · {bd[1]}({bd[2]})",
                                                   f"{bd[2]} 어린이와 함께 읽고 이야기 나눌 책이에요.", data, prev, nxt))
     # 주제 메뉴: 학년 묶음 세 칸
-    crumb = '<nav class="crumb" aria-label="현재 위치"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a><a href="../../index.html">프로젝트</a><a href="../index.html">도서 활용 세계시민교육</a></nav>'
+    crumb = '<nav class="crumb" aria-label="현재 위치"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a><a href="../../index.html">기타</a><a href="../index.html">도서 활용 세계시민교육</a></nav>'
     note = '세계시민교육 주제마다 학년 묶음별로 함께 읽을 책을 모은 자료입니다.'
     for t in TOPICS:
         cards = []
@@ -173,7 +173,7 @@ def build():
         parts.append(f'<a class="card room" style="--acc:{AREA_ACC.get(area, "#1F7A8C")}" href="{tdir(t)}/index.html"><span class="ico">{t["ico"]}</span>'
                      f'<span class="nm">{t["no"]:02d}. {esc(t["title"])}</span><small>저학년 {c[0]} · 중학년 {c[1]} · 고학년 {c[2]}권</small></a>')
     parts.append('</div>')
-    body = ('<nav class="crumb" aria-label="현재 위치"><a class="back" href="../../index.html">🏠 초등교사 홍지희</a><a href="../index.html">프로젝트</a></nav>\n'
+    body = ('<nav class="crumb" aria-label="현재 위치"><a class="back" href="../../index.html">🏠 초등교사 홍지희</a><a href="../index.html">기타</a></nav>\n'
             '<h1>📖 도서 활용 세계시민교육</h1>\n'
             f'<p class="sub">{INTRO} 지금 {tot}권(🏅 {fm}권)이 있어요.</p>\n' + '\n'.join(parts) + '\n'
             f'<p class="verify">고르는 기준: 국내 초판 {MIN_YEAR}년 이후 · 책 정보(제목·지은이·출판사·나온 해)와 추천 근거는 서점·출판사·도서관·기관 자료를 {ASOF} 기준 검색으로 확인한 것만 적었어요. '
