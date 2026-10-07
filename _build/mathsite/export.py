@@ -15,9 +15,16 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 MAIN = 'https://hongjihee1005.github.io/hong_teacher/'
 NAME = '초등 수학 게임'
 SITE = 'https://hongjihee1005.github.io/math-game/'
-DESC = '초등 1~6학년 수학 게임 — 마방진·칠교놀이·계산 스도쿠·하노이 탑·네모 로직·스도쿠로 생각하는 힘을 기르고, 학년별 계산을 게임으로 익혀요.'
+BY = '초등교사 홍지희'
+TAIL = ' | ' + BY   # 브라우저 탭·검색 결과 제목 끝(화면 제목에는 넣지 않음, 선생님 요청 2026-10-07)
+DESC = ('초등교사 홍지희가 만든 초등수학게임 — 마방진·칠교놀이·계산 스도쿠·하노이 탑·네모 로직·스도쿠로 생각하는 힘을 기르고, '
+        '1~6학년 교과 계산을 풍선·두더지·골든벨 같은 게임으로 익혀요.')
 HEAD = ('<meta name="google-site-verification" content="gkDyhzWKxyJcx07mGzqlgNcSb6hh2qFh4VKAtkQgIUE">\n'  # 구글 Search Console 소유 확인(지우지 마세요)
-        f'<meta name="description" content="{DESC}">\n<link rel="canonical" href="{SITE}">\n')
+        f'<meta name="description" content="{DESC}">\n<meta name="author" content="{BY}">\n<link rel="canonical" href="{SITE}">\n'
+        '<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebSite","name":"초등 수학 게임",'
+        '"alternateName":["초등수학게임","초등교사 홍지희의 초등 수학 게임"],"url":"' + SITE + '","inLanguage":"ko",'
+        '"description":"' + DESC + '","author":{"@type":"Person","name":"홍지희","jobTitle":"초등교사",'
+        '"url":"https://www.youtube.com/@hongjihee1005"}}</script>\n')  # 검색 사이트가 읽는 사이트 이름·만든 사람
 DIRS = {'creative': 'project/creative', 'mathgame': 'project/mathgame', 'sudoku': 'break/sudoku'}  # 새 사이트 폴더: 원본 폴더
 MENU = {'sudoku'}  # 메뉴 페이지(index.html)를 그대로 두는 폴더(나머지는 첫 화면으로 넘김)
 SEP = re.compile(r'<svg class="c-sep".*?</svg><a class="c-link" href="\.\./index\.html">[^<]*</a>', re.S)
@@ -66,6 +73,24 @@ def home():
     s = re.sub(r'<footer class="hjfoot"><p>[^<]*</p>(<p>만든 사람)', r'<footer class="hjfoot">\1', s)
     return s
 
+def esc(t):
+    return t.replace('&', '&amp;').replace('"', '&quot;').replace('<', '&lt;')
+
+def share(s, url):
+    """탭 제목 끝에 ' | 초등교사 홍지희'를 붙이고, 카카오톡·밴드 미리보기(Open Graph) 정보를 넣습니다."""
+    m = re.search(r'<title>([^<]*)</title>', s)
+    title = m.group(1) if m.group(1).endswith(TAIL) else m.group(1) + TAIL
+    s = s[:m.start()] + f'<title>{title}</title>' + s[m.end():]
+    d = re.search(r'<meta name="description" content="([^"]*)"', s)
+    desc = d.group(1) if d else DESC
+    og = (f'\n<meta property="og:type" content="website"><meta property="og:site_name" content="{NAME}">'
+          f'<meta property="og:locale" content="ko_KR"><meta property="og:url" content="{url}">'
+          f'<meta property="og:title" content="{esc(title)}"><meta property="og:description" content="{desc}">'
+          f'<meta property="og:image" content="{SITE}og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">'
+          f'<meta name="twitter:card" content="summary_large_image">')
+    i = s.index('</title>') + len('</title>')
+    return s[:i] + og + s[i:]
+
 def main(out):
     out = pathlib.Path(out)
     for d, src in DIRS.items():
@@ -77,8 +102,10 @@ def main(out):
             if d in MENU: t = fix_page(t)
             elif f.name == 'index.html': t = REDIRECT  # 하위 메뉴 없음 → 옛 주소는 첫 화면으로
             else: t = fix_game(t)
+            if t is not REDIRECT: t = share(t, SITE + f'{d}/{f.name}')
             (dst / f.name).write_text(t, encoding='utf-8')
-    (out / 'index.html').write_text(home(), encoding='utf-8')
+    (out / 'index.html').write_text(share(home(), SITE), encoding='utf-8')
+    shutil.copy2(pathlib.Path(__file__).with_name('og.png'), out / 'og.png')  # 미리보기 그림(원본 og.html을 1200×630으로 찍은 것)
     (out / '.nojekyll').write_text('', encoding='utf-8')
     # 검색 사이트에 낼 사이트맵(첫 화면으로 넘기기만 하는 안내 페이지는 뺌)
     urls = [SITE] + [SITE + f.relative_to(out).as_posix() for f in sorted(out.glob('*/*.html')) if 'http-equiv="refresh"' not in f.read_text(encoding='utf-8')]
