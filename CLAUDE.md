@@ -276,7 +276,7 @@ grade1/ … grade6/
 
 ### 기타 › 수학게임 (`project/math/index.html`, 2026-10-07)
 
-- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림) · 🧰 수학 교구실(`../mathtools/`, 2026-10-07 열림) · 📊 우리 반 그래프(`../classgraph/`, 열림) · 🎩 수학 마술(`../magic/`, 열림) · 📘 그림 수학 사전(`../mathdict/`, 열림) · 🎲 교실 수학 놀이(열림 표시가 없는 것은 이 차례로 만드는 중, 열릴 때까지 '곧 열려요'). 방 이름은 추천한 이름을 선생님이 고름(2026-10-07).
+- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림) · 🧰 수학 교구실(`../mathtools/`, 2026-10-07 열림) · 📊 우리 반 그래프(`../classgraph/`, 열림) · 🎩 수학 마술(`../magic/`, 열림) · 📘 그림 수학 사전(`../mathdict/`, 열림) · 🎲 교실 수학 놀이(`../mathplay/`, 열림). 방 이름은 추천한 이름을 선생님이 고름(2026-10-07).
   창의수학게임·교과수학게임 메뉴의 위치 표시줄은 '홈 › 기타 › 수학게임'.
 
 ### 기타 › 수학게임 › 사고력 수학 (`project/thinking/`, 2026-10-07)
@@ -329,6 +329,13 @@ grade1/ … grade6/
   그림 퀴즈는 답 낱말이 그림 속 글자에 있으면 그 글자를 가림(`hideW`), 보기에는 뜻이 가까운 낱말(관련 낱말)을 넣지 않음.
 - **`project/mathdict/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/mathdict/`: 낱말 `terms.py`(T(낱말, 영역, 학년, 뜻, 예, 그림 키, 헷갈리기 쉬운 점, 관련 낱말)), 그림 `figs.js`(FIG[키], 200×140 SVG), 화면 `dict.js`·`dict.css`, 쪽 목록 `build.py`의 `PAGES`.
   `build.py check`가 겹침·영역·학년·뜻 끝·그림 키가 있는지 점검. 고친 뒤 `python3 _build/mathdict/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 클래스 앞글자 `md-`·`mq-`·`mdp-`·그림 `fd-`.
+
+### 기타 › 수학게임 › 교실 수학 놀이 (`project/mathplay/`, 2026-10-07)
+
+- 메뉴 `project/mathplay/index.html`(손으로 고치는 메뉴) → 놀이 7쪽: `bingo`(학생마다 다른 빙고판 3×3~5×5, 덧셈·뺄셈·곱셈구구·나눗셈, 한 쪽 2판, 문제 목록 인쇄, 화면 문제 뽑기) · `race`(주사위 경주판 30칸, 합·곱·차, 화면 주사위) · `pairs`(짝 맞추기 카드: 곱셈·10 만들기·분수·시계·소수↔분수, 모둠 수만큼) · `domino`(도형·입체도형·각·곱셈 도미노 12장, 한 바퀴로 이어짐) · `fracwar`(분수 카드 대결 24장, 막대 그림 넣기/빼기, 화면 연습) · `bignum`(가장 큰/작은 수 만들기 놀이판 5판, 0~9 숫자 카드 뽑기) · `area`(넓이 땅따먹기 모눈 + 규칙·기록표).
+- 인쇄물마다 규칙이 함께 들어가고, 쪽 수가 정확히 맞는지(빙고 n판 → n/2쪽 등) Playwright로 확인함. 인쇄할 때마다 문제가 새로 섞임(기록은 남기지 않음).
+- **`project/mathplay/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/mathplay/`: 놀이 목록·설명 `build.py`의 `GAMES`, 공통 `cp.js`(섞기·주사위·쪽·인쇄), 놀이 `games/<id>.js`(`window.GAME`), 모양 `play.css`, 그림은 그림 수학 사전의 `figs.js`·`dict.css`(.fd-)를 같이 씀.
+  고친 뒤 `python3 _build/mathplay/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 클래스 앞글자 `cp-`·놀이마다 `bg-` `rc-` `pr-` `dm-` `fw-` `bn-` `ar-`.
 
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
 
