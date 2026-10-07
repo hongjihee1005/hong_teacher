@@ -339,6 +339,11 @@ grade1/ … grade6/
 - math-game의 Actions('원본에서 가져오기', 원본 `_build/mathsite/repo/.github/workflows/sync.yml`)가 한 시간마다 이 저장소 main을 받아 `export.py`를 돌리고 바뀐 것만 올립니다(Pages는 main 브랜치 / root). 바로 맞추려면 math-game Actions에서 Run workflow. 그 저장소에 넣는 파일(워크플로·README)의 원본은 `_build/mathsite/repo/`.
 - 자동 보완 `run_all.py`가 `export.py`를 임시 폴더로 돌려 보고, 실패하면(카드를 못 찾음·깨진 링크) 실패 메일을 보냅니다. 두 사이트는 주소가 같은 `hongjihee1005.github.io`라 기록(localStorage)도 함께 씁니다.
 
+### 주소 맨 앞 첫 화면 `https://hongjihee1005.github.io/` (저장소 `hongjihee1005/hongjihee1005.github.io`, 2026-10-07)
+
+- 네이버 서치어드바이저가 사이트를 호스트 단위로만 받아서 만든 첫 화면입니다. '초등교사 홍지희 자료실'(`hong_teacher/`)·'초등 수학 게임'(`math-game/`) 카드 두 장과 네이버 소유 확인 태그(`naver-site-verification`, **지우지 마세요**), `robots.txt`(math-game 사이트맵 알림).
+- 원본 `_build/rootsite/build.py 출력폴더`. 그 저장소에 `hong_teacher/`·`math-game/` 같은 이름의 폴더를 만들면 그 사이트가 가려지니 만들지 마세요.
+
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
 - 첫 화면 제목 아래 '🌟 오늘의 한 줄' 띠와 `today/index.html`(오늘의 사건·명언·명화·명곡·책)은 `_build/today/`에서 만듭니다. **두 파일을 직접 고치지 마세요.**
