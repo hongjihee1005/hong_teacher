@@ -5,6 +5,7 @@
 
 - '기타' 메뉴(project/index.html)의 방 가운데 이름에 '수학'이 들어간 방을 모두 찾아(선생님 요청 2026-10-07),
   그 방 폴더(project/<폴더>/)를 하위 폴더까지 통째로 복사합니다. 새 수학 방을 기타에 만들면 저절로 들어갑니다.
+  방이 다른 방들을 모은 메뉴(2026-10-07 '수학게임' project/math/ → creative·mathgame)이면 그 안의 방들로 펼칩니다('곧 열려요' 카드는 빠짐).
 - 첫 화면은 방마다 한 묶음: 묶음 제목은 방 이름(창의수학게임 → '창의 수학', 교과수학게임 → '교과수학'),
   묶음 안 카드는 그 방 메뉴(project/<폴더>/index.html)의 카드를 그대로 가져옵니다. 방 메뉴 페이지 자체는 없고 첫 화면으로 넘깁니다.
   더 깊은 하위 메뉴(방 폴더 안의 폴더 index.html)는 그대로 둡니다.
@@ -36,18 +37,30 @@ REDIRECT = ('<!doctype html><html lang="ko"><head><meta charset="utf-8">'
             '<body><p><a href="{home}">' + NAME + ' 첫 화면으로 가기</a></p></body></html>\n')
 WARN = []
 
-def rooms():
-    """기타 메뉴에서 이름에 '수학'이 든 방: [(폴더, 방 이름)] — 메뉴에 놓인 차례대로."""
-    s = (ROOT / 'project/index.html').read_text(encoding='utf-8')
-    out = []
+def _cards(path):
+    """메뉴 페이지의 방 카드: [(href, 이름)] — 놓인 차례대로('곧 열려요' div 카드는 링크가 없어 빠짐)"""
+    s = (ROOT / path).read_text(encoding='utf-8'); out = []
     for m in re.finditer(r'<a class="card room[^"]*"([^>]*)>(.*?)</a>', s, re.S):
         h = re.search(r'href="([^"]+)"', m.group(1)); n = re.search(r'<span class="nm">(.*?)</span>', m.group(2), re.S)
-        if not (h and n): continue
-        nm = re.sub(r'<[^>]+>', '', n.group(1)).strip()
+        if h and n: out.append((h.group(1), re.sub(r'<[^>]+>', '', n.group(1)).strip()))
+    return out
+
+def rooms():
+    """기타 메뉴에서 이름에 '수학'이 든 방: [(폴더, 방 이름)] — 메뉴에 놓인 차례대로.
+    방이 다른 방들을 모아 둔 메뉴(2026-10-07 '수학게임' 메뉴 project/math/ → ../creative/·../mathgame/)이면
+    그 안의 방들로 펼칩니다(모음 메뉴 자체는 넣지 않음). 모음 안의 방은 이름에 '수학'이 없어도 넣습니다."""
+    out = []
+    def add(folder, nm, depth=0):
+        sub = [(re.fullmatch(r'\.\./([\w-]+)/index\.html', h), n) for h, n in _cards(f'project/{folder}/index.html')]
+        sub = [(m.group(1), n) for m, n in sub if m]
+        if sub and depth < 3:
+            for f, n in sub: add(f, n, depth + 1)
+        elif folder not in [d for d, _ in out]: out.append((folder, nm))
+    for h, nm in _cards('project/index.html'):
         if KEY not in nm: continue
-        mm = re.fullmatch(r'([\w-]+)/index\.html', h.group(1))
-        if not mm: WARN.append(f'기타 메뉴의 수학 방 "{nm}"이 폴더가 아니어서 넣지 못했습니다({h.group(1)})'); continue
-        out.append((mm.group(1), nm))
+        mm = re.fullmatch(r'([\w-]+)/index\.html', h)
+        if not mm: WARN.append(f'기타 메뉴의 수학 방 "{nm}"이 폴더가 아니어서 넣지 못했습니다({h})'); continue
+        add(mm.group(1), nm)
     assert out, '기타 메뉴에서 수학 방을 찾지 못했습니다'
     return out
 
