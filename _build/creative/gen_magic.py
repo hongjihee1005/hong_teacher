@@ -24,28 +24,14 @@ def all3():
         out.add(tuple(sum(g, []))); out.add(tuple(sum([r[::-1] for r in g], [])))
     return sorted(out)
 
+_S4 = None
 def all4():
-    """1~16, 합 34인 4×4 마방진 모두(7,040가지)"""
-    S, res, g, used = 34, [], [0] * 16, [False] * 17
-    def ok_row(r): return sum(g[r * 4:r * 4 + 4]) == S
-    def rec(i):
-        if i == 16:
-            if all(sum(g[j] for j in l) == S for l in lines(4)): res.append(tuple(g))
-            return
-        r, c = divmod(i, 4)
-        for v in range(1, 17):
-            if used[v]: continue
-            g[i] = v
-            if c == 3 and not ok_row(r): continue
-            if c < 3 and sum(g[r * 4:i + 1]) + (3 - c) > S: continue   # 남은 칸이 1 이상
-            if r == 3:
-                if sum(g[k] for k in range(c, 16, 4)) != S: continue
-                if c == 0 and g[3] + g[6] + g[9] + g[12] != S: continue
-                if c == 3 and g[0] + g[5] + g[10] + g[15] != S: continue
-            used[v] = True; rec(i + 1); used[v] = False
-        g[i] = 0
-    rec(0)
-    return res
+    """1~16, 합 34인 4×4 마방진 모두(7,040가지) — 빨리 구하려고 node enum4.js에 맡김"""
+    global _S4
+    if _S4 is None:
+        import subprocess
+        _S4 = [tuple(x) for x in json.loads(subprocess.run(['node', str(HERE / 'enum4.js')], capture_output=True, text=True, check=True).stdout)]
+    return _S4
 
 def matches(sol, giv): return all(v == 0 or v == s for v, s in zip(giv, sol))
 

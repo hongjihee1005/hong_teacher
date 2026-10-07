@@ -115,7 +115,7 @@ grade1/ … grade6/
 
 ### 쉬는 시간 › 종이접기 (`break/`, 2026-10-04)
 
-- **첫 화면 차례(2026-10-07 선생님 요청으로 바꿈):** 오늘의 한 줄 → '학년 공통'(우리 반 교실·공통·쉬는 시간, 설명 있음) → '학년별'(1~6학년 **한 줄** `<div class="grid six">`, 설명 없이 이름만, 3학년 말고는 '(준비 중)') → **'기타'**(옛 '프로젝트' 묶음: 수학게임·독서교육·세계시민교육 한 줄, 설명 없음). 도서활용세계시민교육은 첫 화면에서 빼고 **세계시민교육 메뉴와 독서교육 메뉴 아래에 카드로** 넣었습니다(`project/global/index.html`·`project/reading/index.html`). `project/index.html` 제목과 하위 메뉴 위치 표시줄도 '기타'로 바꿈(폴더 이름 `project/`는 그대로).
+- **첫 화면 차례(2026-10-07 선생님 요청으로 바꿈):** 오늘의 한 줄 → '학년 공통'(우리 반 교실·공통·쉬는 시간, 설명 있음) → '학년별'(1~6학년 **한 줄** `<div class="grid six">`, 설명 없이 이름만, 3학년 말고는 '(준비 중)') → **'기타'**(옛 '프로젝트' 묶음: **창의수학게임·교과수학게임·독서교육·세계시민교육** 이 차례로 한 줄 `<div class="grid g3 four">`(좁으면 2칸), 설명 없음 — 2026-10-07 창의수학게임을 맨 앞에 더하고 '수학게임'을 '교과수학게임'으로 이름 바꿈). 도서활용세계시민교육은 첫 화면에서 빼고 **세계시민교육 메뉴와 독서교육 메뉴 아래에 카드로** 넣었습니다(`project/global/index.html`·`project/reading/index.html`). `project/index.html` 제목과 하위 메뉴 위치 표시줄도 '기타'로 바꿈(폴더 이름 `project/`는 그대로).
 - (아래는 그 전 기록) 첫 화면은 세 묶음입니다(2026-10-04, '프로젝트'는 2026-10-05에 더함): 제목줄 `<h2 class="sec-h">학년 공통</h2>` 아래 '🍎 우리 반 교실' · '🎒 공통' · '🧸 쉬는 시간' 세 카드, `<h2 class="sec-h">학년별</h2>` 아래 1~6학년 카드(3개씩 두 줄). 둘 다 `<div class="grid g3 three">`. 쉬는 시간 → `break/index.html`(메뉴: '종이접기'·'스도쿠'·'컬러링'·'미로찾기'·'틀린 그림 찾기' 방) → `break/origami/index.html`(1~6학년 방) → `break/origami/g1.html ~ g6.html`.
 - 학년 페이지는 작품 카드(완성 그림·난이도·단계 수·준비물) → 한 단계씩 보기(큰 그림, 이전/다음, ←/→ 키, `#작품id`로 바로 열기) → '한눈에 보기'·'인쇄'(전체 단계를 3칸씩). 작품 15가지:
   1학년 우리 집·강아지 얼굴·고양이 얼굴 / 2학년 튤립·컵·매미 / 3학년 종이비행기·투구·동서남북 / 4학년 팔랑개비·하트 / 5학년 상자·점프 개구리 / 6학년 날개 퍼덕이는 새·종이학.
@@ -274,7 +274,9 @@ grade1/ … grade6/
   고친 뒤 `python3 _build/gced-books/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py check`는 점검만: 빈 칸·2015년 이전·갈래·출처 주소·두 칸에 든 책). 비어 있는 칸은 메뉴에 '곧 열려요'로 나옵니다.
 - 모자란 칸과 확인 못 한 것은 `_build/gced-books/todo.md`.
 
-### 프로젝트 › 수학게임 (`project/mathgame/`, 2026-10-07)
+### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
+
+- 처음 이름은 '수학게임'이었고, 창의수학게임이 생기면서 화면에 보이는 이름을 모두 '교과수학게임'으로 바꿨습니다(첫 화면·`project/index.html`·메뉴·학년 수학방 카드·학년 페이지 제목). 폴더·파일 이름과 localStorage 키(`hj-mgame-v1`)는 그대로입니다.
 
 - 들어가는 곳 두 군데: 첫 화면 프로젝트 묶음의 '🎮 수학게임' 카드(`project/index.html`에도 같은 카드) → `project/mathgame/index.html`(1~6학년 방) → `g1.html ~ g6.html`,
   그리고 학년별 수학방 `gradeN/math/index.html`의 '🎮 수학게임' 카드 → 바로 `../../project/mathgame/gN.html`. (1·2·4·5·6학년 수학방과 학년 카드는 이 때문에 '준비 중' 회색을 풀고 '수학게임 열림'으로 적었습니다.)
@@ -301,6 +303,21 @@ grade1/ … grade6/
   `node _build/mathgame/check.js`가 ① 98단계가 단원에 빠짐없이 한 번씩 ② 모든 단계에서 무작위 문제 600개씩 보기 수·값이 서로 다른지·정답이 하나뿐인지(기초연산 `judge`로 채점)를 점검합니다(`build.py`가 먼저 돌림).
   고친 뒤 `python3 _build/mathgame/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 기초연산 `skills.js`를 고치면 게임에도 들어갑니다(자동 보완이 `_build/mathgame/`과 `_build/arith/skills.js` 둘 다를 원본으로 봄).
   메뉴 `index.html`은 손으로 고치고 `apply_theme.py`. 메뉴 아이콘 🎮(gamepad)는 `_build/theme/icons.js`에 추가했습니다.
+
+### 기타 › 창의수학게임 (`project/creative/`, 2026-10-07)
+
+- 첫 화면 '기타' 묶음 맨 앞 '🧠 창의수학게임'(`project/index.html`에도 같은 카드) → `project/creative/index.html`(게임 카드 + 쉬는 시간 스도쿠로 가는 카드) → 게임 페이지 `magic.html` …
+  계산 연습이 아니라 생각하는 힘을 기르는 퍼즐입니다. **학년으로 나누지 않고** 게임마다 쉬움 · 보통 · 도전 세 단계(단계마다 문제 20개)와 **추천 학년**을 적습니다. 모든 문제는 답이 하나뿐입니다.
+- 만드는 차례(선생님이 고름): ① 마방진(열림) → ② 칠교놀이 → ③ 계산 스도쿠(켄켄) → ④ 하노이 탑 → ⑤ 네모 로직. 아직 없는 게임은 메뉴에 '곧 열려요' 회색 카드(`div.card.room.wait`)로 둡니다.
+  예정한 추천 학년: 칠교 1~2/3~4/5~6, 계산 스도쿠 3~4/4~5/5~6, 하노이 탑 2~3/4~5/5~6, 네모 로직 2~3/4~5/5~6.
+- 마방진: 쉬움 1~9 3×3(합 15, 4칸·3칸 주어짐) 추천 2~3학년 / 보통 다른 수 묶음(2~10, 홀수, 10·20…90 등 '처음 수+간격') 3×3 추천 3~4학년 / 도전 1~16 4×4(합 34, 9칸·8칸 주어짐) 추천 5~6학년.
+  수 카드를 고르고 빈칸을 누름(빈칸 먼저도 됨, 넣은 수를 누르면 빠짐). 줄 끝(오른쪽·아래, 대각선은 ↘·↙)에 합을 보이고, 줄이 다 차면 초록/빨강.
+  `gen_magic.py`가 3×3 8가지·4×4 7,040가지(`enum4.js`, node로 약 9초)를 모두 구해, 주어진 수와 맞는 마방진이 정확히 하나일 때만 문제로 씀(`python3 gen_magic.py check`).
+- 공통 화면(`shell.js`): 단계 탭(추천 학년·해결 수) · 문제 번호(✓) · 💡 힌트(한 칸) · 🔄 처음부터 · 🔑 정답 보기(확인 창, 기록 안 남음) · 다 풀면 '이어서 풀기'. `magic.html#hard-5`처럼 바로 열기.
+  기록은 그 기기 localStorage(`hj-creative-v1`, 마지막 연 문제 `-last`)에만. 게임은 `window.CRG = {render, hint, reveal}`만 만들면 됩니다.
+- **`project/creative/`의 index 말고는 직접 고치지 마세요.** 원본은 `_build/creative/`: 공통 틀 `page.html`·`page.css`·`shell.js`, 게임 `games/<게임>.js`·`games/<게임>.css`, 문제 `gen_<게임>.py` → `data/<게임>.json`, 게임 목록·소개·단계는 `build.py`의 `GAMES`.
+  고친 뒤 `python3 _build/creative/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py`가 `gen_*.py check`를 먼저 돌림). 게임을 더하면 `GAMES`에 넣고, `run_all.py`의 출력 목록과 메뉴 `index.html` 카드도 고친 뒤 `apply_theme.py`.
+  클래스 이름은 `cr-`(공통)·게임마다 앞글자(마방진 `mg3-`). 메뉴 아이콘 🧠(brain)·✳(magicsq)·🔺(tangram)·🗼(tower)·🔳(pixel)은 `_build/theme/icons.js`에 추가했습니다.
 
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
