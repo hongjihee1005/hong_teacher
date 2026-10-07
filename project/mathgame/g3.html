@@ -26,7 +26,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mg-sec{margin:22px 0 0}
 .mg-h{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:400;font-size:clamp(23px,2.6vw,30px);margin:0 0 12px}
 .mg-no{display:inline-grid;place-items:center;width:1.5em;height:1.5em;border-radius:50%;background:var(--acc);color:#fff;font-size:.8em}
-.mg-units{display:flex;flex-wrap:nowrap;gap:6px;overflow-x:auto;padding:4px 2px 8px;margin:0 -2px;scrollbar-width:thin;-webkit-overflow-scrolling:touch}
+.mg-units{display:flex;flex-wrap:wrap;gap:6px;padding:4px 0 8px}
 .mg-unit{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;background:var(--paper);border:2.5px solid var(--line);border-radius:999px;padding:6px 12px 6px 9px;transition:transform .12s,border-color .12s}
 .mg-unit:hover{transform:translateY(-1px);border-color:color-mix(in srgb,var(--acc) 55%,var(--line))}
 .mg-unit[aria-pressed="true"]{border-color:var(--acc);background:var(--acc);color:#fff;box-shadow:0 6px 14px -8px var(--acc)}
@@ -39,7 +39,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mg-sk-h{margin:0 0 8px;font-weight:400;font-size:17px;color:var(--soft)}
 .mg-sk-h b{color:var(--ink)}
 .mg-sk-h small{font-weight:400;color:var(--soft);font-size:15px}
-.mg-chips{display:flex;flex-wrap:nowrap;gap:5px;overflow-x:auto;padding-bottom:4px;scrollbar-width:thin}
+.mg-chips{display:flex;flex-wrap:wrap;gap:5px;padding-bottom:2px}
 .mg-chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:6px;white-space:nowrap;border:2px solid var(--line);background:var(--bg);border-radius:999px;padding:4px 9px 4px 6px;font-size:14.5px;letter-spacing:-.02em;text-align:left}
 .mg-chip[aria-pressed="true"]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 10%,var(--paper))}
 .mg-chip[aria-pressed="false"]{opacity:.55}
@@ -1023,12 +1023,12 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 <h1>🚀 3학년 수학게임</h1>
 <p class="sub">세 자리 수의 덧셈과 뺄셈, 곱셈, 나눗셈, 분수와 소수를 교과서 단원별로 골라 게임으로 연습해요.</p>
 <section class="mg-sec" aria-labelledby="mgH1">
-<h2 class="mg-h" id="mgH1"><span class="mg-no">1</span>단원 고르기</h2>
+<h2 class="mg-h" id="mgH1"><span class="mg-no">1</span>내용 선택</h2>
 <div class="mg-units" id="mgUnits"></div>
 <div class="mg-skills" id="mgSkills" aria-label="이 단원의 계산 단계"></div>
 </section>
 <section class="mg-sec" aria-labelledby="mgH2">
-<h2 class="mg-h" id="mgH2"><span class="mg-no">2</span>게임 고르기</h2>
+<h2 class="mg-h" id="mgH2"><span class="mg-no">2</span>게임 선택</h2>
 <div class="mg-gwrap" id="mgGames"></div>
 </section>
 <div class="mg-gobar"><p class="mg-sel" id="mgSel" aria-live="polite"></p><button type="button" class="mg-start" id="mgStart">게임 시작</button></div>
@@ -1670,7 +1670,6 @@ window.MG={"g":3,"units":[{"id":"u1","sem":"1학기 1단원","nm":"덧셈과 뺄
       var egt = (eg.txt || eg.q).map(function (t) { return typeof t === 'string' ? t : t.k === 'n' ? t.v : t.k === 'd' ? AR.dstr(t.v, t.p) : t.k === 'f' ? (t.w ? t.w + ' ' : '') + t.n + '/' + t.d : '□' }).join(' ');
       return '<button type="button" class="mg-chip" data-k="' + k + '" aria-pressed="' + !!kOn[k] + '" title="' + esc(s.de + ' · 예: ' + egt) + '"><span class="mg-ck" aria-hidden="true"></span><span>' + esc(s.nm) + '</span></button>';
     }).join('') + '</div>';
-    var cur = $('mgUnits').querySelector('[aria-pressed="true"]'); if (cur && cur.scrollIntoView) { var box = $('mgUnits'); box.scrollLeft = Math.max(0, cur.offsetLeft - box.offsetLeft - 40) }
   }
   function pl(x) { return x.pl[0] === x.pl[1] ? x.pl[0] + '명' : x.pl[0] + '~' + x.pl[1] + '명' }
   var PICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2" fill="currentColor"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6Z" fill="currentColor"/><circle cx="17" cy="9" r="2.6" fill="currentColor" opacity=".55"/><path d="M15.5 14.3c3 .2 5.5 2.4 5.5 5.7h-4.4" fill="currentColor" opacity=".55"/></svg>';

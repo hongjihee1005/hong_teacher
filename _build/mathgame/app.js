@@ -174,7 +174,6 @@
       var egt = (eg.txt || eg.q).map(function (t) { return typeof t === 'string' ? t : t.k === 'n' ? t.v : t.k === 'd' ? AR.dstr(t.v, t.p) : t.k === 'f' ? (t.w ? t.w + ' ' : '') + t.n + '/' + t.d : '□' }).join(' ');
       return '<button type="button" class="mg-chip" data-k="' + k + '" aria-pressed="' + !!kOn[k] + '" title="' + esc(s.de + ' · 예: ' + egt) + '"><span class="mg-ck" aria-hidden="true"></span><span>' + esc(s.nm) + '</span></button>';
     }).join('') + '</div>';
-    var cur = $('mgUnits').querySelector('[aria-pressed="true"]'); if (cur && cur.scrollIntoView) { var box = $('mgUnits'); box.scrollLeft = Math.max(0, cur.offsetLeft - box.offsetLeft - 40) }
   }
   function pl(x) { return x.pl[0] === x.pl[1] ? x.pl[0] + '명' : x.pl[0] + '~' + x.pl[1] + '명' }
   var PICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2" fill="currentColor"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6Z" fill="currentColor"/><circle cx="17" cy="9" r="2.6" fill="currentColor" opacity=".55"/><path d="M15.5 14.3c3 .2 5.5 2.4 5.5 5.7h-4.4" fill="currentColor" opacity=".55"/></svg>';
