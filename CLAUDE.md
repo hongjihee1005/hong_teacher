@@ -276,7 +276,7 @@ grade1/ … grade6/
 
 ### 기타 › 수학게임 (`project/math/index.html`, 2026-10-07)
 
-- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림) · 🧰 수학 교구실(`../mathtools/`, 2026-10-07 열림) · 📊 우리 반 그래프(`../classgraph/`, 열림) · 🎩 수학 마술 · 📘 그림 수학 사전 · 🎲 교실 수학 놀이(열림 표시가 없는 것은 이 차례로 만드는 중, 열릴 때까지 '곧 열려요'). 방 이름은 추천한 이름을 선생님이 고름(2026-10-07).
+- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림) · 🧰 수학 교구실(`../mathtools/`, 2026-10-07 열림) · 📊 우리 반 그래프(`../classgraph/`, 열림) · 🎩 수학 마술(`../magic/`, 열림) · 📘 그림 수학 사전 · 🎲 교실 수학 놀이(열림 표시가 없는 것은 이 차례로 만드는 중, 열릴 때까지 '곧 열려요'). 방 이름은 추천한 이름을 선생님이 고름(2026-10-07).
   창의수학게임·교과수학게임 메뉴의 위치 표시줄은 '홈 › 기타 › 수학게임'.
 
 ### 기타 › 수학게임 › 사고력 수학 (`project/thinking/`, 2026-10-07)
@@ -313,6 +313,13 @@ grade1/ … grade6/
 - 자료는 그 기기 localStorage(`hj-cgraph-v1` 그래프 자료, `hj-cgraph-survey` 설문)에만.
 - **`project/classgraph/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/classgraph/`: 쪽 목록·설명 `build.py`의 `PAGES`, 틀 `page.html`(수학 교구실의 `page.css`·`shell.js`를 같이 씀), 공통 `common.js`(저장·예시), 쪽마다 `survey|graph|sheet.js`·`.css`.
   고친 뒤 `python3 _build/classgraph/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 클래스 앞글자 `cg-`(그래프)·`sv-`(설문)·`sh-`(활동지). 인쇄는 `display:none`으로 나머지를 숨김(`visibility`로 숨기면 빈 쪽이 생김).
+
+### 기타 › 수학게임 › 수학 마술 (`project/magic/`, 2026-10-07)
+
+- 메뉴 `project/magic/index.html`(손으로 고치는 메뉴) → 마술 8쪽: `n1089`(마법의 수 1089) · `cards`(생각한 수 맞히기 카드 1~31, 2진법) · `three`(언제나 3) · `calendar`(3×3 묶음 합 = 가운데 × 9) · `nine`(사라진 숫자, 9의 배수) · `dicetower`(21 − 맨 위) · `eleven`(ab × 11 = a(a+b)b) · `predict`(덧셈표로 만든 예언의 마방진).
+- 마술 쪽: 🎩 해 보기(마술을 끝내면 '비밀을 생각해 봐요'에 빛) · 🤔 비밀을 생각해 봐요(질문 3개) · 🔑 비밀 풀이(접혀 있음) · 🎭 친구에게 해 보기 · 🖨️ 마술 카드 인쇄(차례·질문·‘내가 찾은 비밀’ 쓰는 칸, 수 맞히기는 자르는 카드 다섯 장 한 쪽 더) · 이전/다음 마술.
+- **`project/magic/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/magic/`: 마술 목록·비밀 풀이 `tricks.py`, 틀 `page.html`·`magic.css`(수학 교구실 `page.css`·`shell.js`를 같이 씀), 마술 `tricks/<id>.js`(`window.TRICK(host, api)`, 끝나면 `api.done()`).
+  `build.py check`가 1089(세 자리 모든 경우)·수 카드(1~31)·9의 마술(네 자리 모든 경우)·11 곱하기(두 자리 모든 경우)를 계산해 확인합니다. 고친 뒤 `python3 _build/magic/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 클래스 앞글자 `mj-`(인쇄 `mc-`). 메뉴 아이콘 ⚡(bolt)·🔮(orb) 추가.
 
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
 
