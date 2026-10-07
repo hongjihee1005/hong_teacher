@@ -65,7 +65,7 @@ window.TOOL = function (host, api) {
       if (b.dataset.o != null && !done) {
         done = true; var c = Q[k], ok = c.o[+b.dataset.o] === c.t; if (ok) right++;
         box.querySelectorAll('.mq-o').forEach(function (x, i) { x.classList.toggle('mq-ok', c.o[i] === c.t); if (i === +b.dataset.o && !ok) x.classList.add('mq-no') });
-        var m = box.querySelector('.tl-msg'); m.innerHTML = (ok ? '⭕ 맞아요! ' : '❌ 정답은 <b>' + esc(c.t.w) + '</b>. ') + (mode === 'f' ? frac(c.t.d) : '') + ' <button type="button" class="tl-btn tl-go" data-a="next">다음 ▶</button>';
+        var m = box.querySelector('.tl-msg'); m.innerHTML = (ok ? '⭕ 맞아요! ' : '❌ 정답은 <b>' + esc(c.t.w) + '</b>. ') + (mode === 'f' ? frac(c.t.d) : '') + ' <button type="button" class="tl-btn tl-go" data-a="next">이어서 ▶</button>';
       }
       if (b.dataset.a === 'next') { k++; one() }
     });
