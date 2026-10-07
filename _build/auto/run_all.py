@@ -179,6 +179,7 @@ def main():
     todo += src_todo
     # 6. 점검
     for b in links(): ERR.append('깨진 링크: ' + b)
+    mt = tempfile.mkdtemp(); run('.', '_build/mathsite/export.py', mt); shutil.rmtree(mt, ignore_errors=True)  # 따로 사이트 '초등 수학 게임'이 만들어지는지
     r = run('grade3/social/_ex', 'apply.py', 'check')
     if re.search(r'문제 [1-9]', r.stdout): todo.append('사회 예시: ' + ' / '.join(l for l in r.stdout.splitlines() if '문제 0' not in l)[:400])
     head = ('# 할 일 (자동 점검, 손으로 고치지 마세요)\n\n'
