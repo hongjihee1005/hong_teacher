@@ -124,3 +124,15 @@ body.sl-on{overflow:hidden}
 .gc-circles div{display:flex;flex-direction:column;align-items:center;justify-content:flex-start;aspect-ratio:1;border-radius:50%;border:3px solid var(--c);background:color-mix(in srgb,var(--c) 12%,var(--paper));padding:6px 0 0;font-weight:800;font-size:clamp(12px,1.6vw,17px);color:var(--ink)}
 .gc-circles div>span{line-height:1.5;margin-bottom:auto}
 .gc-circles div>div{margin-bottom:6%}
+
+/* 활동지 인쇄: 한 장을 꽉 채움 — 남는 높이는 쓰는 칸(줄)이 나눠 갖고, 쓰는 칸이 없으면 문제 사이를 넓힘(2026-10-07) */
+@media print{
+ .ws{display:flex;flex-direction:column;min-height:270mm;font-size:12pt;line-height:1.55}
+ .ws-foot{margin-top:auto}
+ .ws.ws-key{min-height:0}.ws.ws-key .ws-it{flex:none!important}.ws-key .ws-wr .ws-lines{flex:none;height:var(--wl,20mm)}
+ .ws:not(:has(.ws-wr)) .ws-it{margin-bottom:0;padding-bottom:6mm;flex:1 1 auto}
+ .ws-it.ws-wr{flex:1 1 auto;display:flex;flex-direction:column}
+ .ws-wr .ws-lines{flex:1 1 auto;min-height:var(--wl,20mm);margin-left:5mm;background:repeating-linear-gradient(to bottom,transparent 0,transparent 9.4mm,#999 9.4mm,#999 10mm);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .ws-wr .ws-lines span{display:none}
+ .ws-wr .ws-a{margin-top:2mm}
+}

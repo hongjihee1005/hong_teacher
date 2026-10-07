@@ -93,7 +93,12 @@
   $('shPages').innerHTML = pg;
   $('shPages').onclick = function (e) { var b = e.target.closest('button'); if (b) { showSheet(+b.dataset.p); history.replaceState(null, '', '#sheet-' + (+b.dataset.p + 1)) } };
   showSheet(0);
-  function out(html) { $('hzOut').innerHTML = html; setTimeout(function () { window.print() }, 350) }
+  function out(html) {   // 한자 글꼴(글자마다 나눠 받음)이 다 받아진 뒤 인쇄 — 안 그러면 처음 쓰는 글자가 빈칸으로 찍힘(2026-10-07)
+    $('hzOut').innerHTML = html;
+    var go = function () { setTimeout(function () { window.print() }, 150) }, t = setTimeout(go, 5000);
+    var txt = $('hzOut').textContent, fl = document.fonts && document.fonts.load ? Promise.all(['Noto Serif KR', 'Noto Serif JP', 'Noto Serif TC'].map(function (f) { return document.fonts.load('500 40px "' + f + '"', txt).catch(function () { }) })) : Promise.resolve();
+    fl.then(function () { return document.fonts.ready }).then(function () { clearTimeout(t); go() }, function () { clearTimeout(t); go() });
+  }
   $('shPrint').onclick = function () { out(sheet(sp)) };
   $('shAll').onclick = function () {
     if (NP > 20 && !confirm('모두 ' + NP + '쪽이에요. 한꺼번에 인쇄할까요?')) return;

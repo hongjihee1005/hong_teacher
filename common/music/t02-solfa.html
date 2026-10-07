@@ -172,6 +172,18 @@ body.sl-on{overflow:hidden}
 .jc.long{font-size:clamp(10px,1.2vw,14px);letter-spacing:-.04em;white-space:nowrap}
 .rlg{display:flex;flex-wrap:wrap;gap:12px;font-size:15px;font-weight:700;margin:4px 0}.rlg i{display:inline-block;width:12px;height:12px;border-radius:50%;margin-right:5px;vertical-align:-1px}
 .mu-b.r1{border-color:#E0663A}.mu-b.r2{border-color:#2F74E0}
+
+/* 활동지 인쇄: 한 장을 꽉 채움 — 남는 높이는 쓰는 칸(줄)이 나눠 갖고, 쓰는 칸이 없으면 문제 사이를 넓힘(2026-10-07) */
+@media print{
+ .ws{display:flex;flex-direction:column;min-height:270mm;font-size:12pt;line-height:1.55}
+ .ws-foot{margin-top:auto}
+ .ws.ws-key{min-height:0}.ws.ws-key .ws-it{flex:none!important}.ws-key .ws-wr .ws-lines{flex:none;height:var(--wl,20mm)}
+ .ws:not(:has(.ws-wr)) .ws-it{margin-bottom:0;padding-bottom:6mm;flex:1 1 auto}
+ .ws-it.ws-wr{flex:1 1 auto;display:flex;flex-direction:column}
+ .ws-wr .ws-lines{flex:1 1 auto;min-height:var(--wl,20mm);margin-left:5mm;background:repeating-linear-gradient(to bottom,transparent 0,transparent 9.4mm,#999 9.4mm,#999 10mm);-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ .ws-wr .ws-lines span{display:none}
+ .ws-wr .ws-a{margin-top:2mm}
+}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1246,16 +1258,16 @@ window.MT={"no":"02","slug":"solfa","area":"악보 읽기","ico":"🎹","title":
 
   /* ── 활동지(인쇄) ── */
   function sheet(key) {
-    var n = 0, h = '<div class="ws"><div class="ws-top"><b>음악이론 ' + D.no + '. ' + D.title + ' — 활동지' + (key ? ' (정답)' : '') + '</b><span>' + D.area + '</span></div><p class="ws-name">학년 ___ 반 ___ 번 이름: ______________</p>';
+    var n = 0, h = '<div class="ws' + (key ? ' ws-key' : '') + '"><div class="ws-top"><b>음악이론 ' + D.no + '. ' + D.title + ' — 활동지' + (key ? ' (정답)' : '') + '</b><span>' + D.area + '</span></div><p class="ws-name">학년 ___ 반 ___ 번 이름: ______________</p>';
     h += '<div class="ws-sum"><b>핵심 정리</b><ul>' + D.sum.map(function (s) { return '<li>' + s + '</li>' }).join('') + '</ul></div>';
     D.sheet.forEach(function (it) {
-      n++; h += '<div class="ws-it"><p class="ws-q"><b>' + n + '.</b> ' + it.q + '</p>';
+      n++; h += '<div class="ws-it' + (it.k === 'write' ? ' ws-wr' : '') + '"><p class="ws-q"><b>' + n + '.</b> ' + it.q + '</p>';
       if (it.k === 'names') h += '<div class="svgw">' + MU.staff(Object.assign({}, it, { names: key ? 'gye' : 'blank' })) + '</div>';
       else if (it.k === 'staff') h += '<div class="svgw">' + MU.staff(it) + '</div>';
       else if (it.k === 'choice') h += '<p class="ws-o">' + it.o.map(function (o, k) { return '<span' + (key && k === it.a ? ' class="key"' : '') + '>' + '①②③④⑤'[k] + ' ' + o + '</span>' }).join('') + '</p>';
       else if (it.k === 'match') h += '<div class="ws-match"><div>' + it.l.map(function (x, i) { return '<p>' + x + ' ●</p>' }).join('') + '</div><div>' + it.r.map(function (x) { return '<p>● ' + x + '</p>' }).join('') + '</div></div>';
       else if (it.k === 'draw') h += '<div class="ws-draw">' + MU.staff({ n: it.n || '', clef: it.clef || 'g', minW: 560, time: it.time }) + '</div>';
-      else if (it.k === 'write') h += '<div class="ws-lines">' + new Array((it.lines || 2) + 1).join('<span></span>') + '</div>';
+      else if (it.k === 'write') h += '<div class="ws-lines" style="--wl:' + ((it.lines || 2) * 10) + 'mm">' + new Array((it.lines || 2) + 1).join('<span></span>') + '</div>';
       if (key && it.a != null && it.k !== 'choice') h += '<p class="ws-a">정답: ' + (Array.isArray(it.a) ? it.a.join(', ') : it.a) + '</p>';
       h += '</div>';
     });

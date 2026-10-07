@@ -189,20 +189,24 @@
     $('prView').innerHTML = sheet(lv, 'test');
   }
   $('prPaper').onclick = function (e) { var b = e.target.closest('[data-p]'); if (b) { paper = b.dataset.p; printSetup() } };
-  function cells(n) { var h = ''; for (var i = 0; i < n; i++) h += '<i></i>'; return '<span class="cells">' + h + '</span>' }
+  function cells(n) { var h = ''; for (var i = 0; i < n; i++) h += '<i></i>'; return '<span class="cells" style="--cs:' + Math.min(14, Math.floor(1800 / n) / 10) + 'mm">' + h + '</span>' }
   function sheet(i, kind) {
     var L = LV[i], max = 0; L.items.forEach(function (x) { max = Math.max(max, x[0].length) });
-    var per = L.kind === '낱말' ? 10 : 20, rows = Math.ceil((max + 1) / per);
-    var h = '<div class="dt-sheet"><div class="sh-hd"><div><b>' + esc(D.name) + ' 받아쓰기 ' + L.no + '급</b><span>' + L.kind + ' 10개' + (kind === 'key' ? ' · 정답' : '') + '</span></div>' +
-      (kind === 'key' ? '' : '<div class="sh-nm">이름: <i></i> 점수: <i class="s"></i> / 100</div>') + '</div><ol class="sh-list ' + kind + '">';
-    var pk = L.kind === PK;
-    L.items.forEach(function (it) {
-      if (pk && kind !== 'key') h += '<li><span class="sh-q">' + esc(strip(it[0])) + '</span><span class="dt-ln"></span></li>';
-      else if (kind === 'key') h += '<li><b>' + esc(it[0]) + '</b><small>' + pt(it[1]) + '</small></li>';
-      else if (paper === 'cell') { h += '<li>'; for (var r = 0; r < rows; r++) h += cells(per); h += '</li>' }
-      else h += '<li><span class="dt-ln"></span>' + (L.kind === '문장' && max > 24 ? '<span class="dt-ln"></span>' : '') + '</li>';
-    });
-    return h + '</ol><p class="sh-ft">받아쓰기·맞춤법 급수 · 초등교사 홍지희</p></div>';
+    var per = L.kind === '낱말' ? 10 : 14, rows = Math.ceil((max + 1) / per), pk = L.kind === PK, two = L.kind === '문장' && max > 24;
+    // 시험지가 한 장에 넉넉히 들어가지 않으면(문제 하나 높이를 mm로 어림) 5개씩 두 장으로 나눔 — 장마다 꽉 채워 씀
+    var one = pk ? 26 : paper === 'cell' ? rows * Math.min(14, Math.floor(1800 / per) / 10) + 7 : (two ? 30 : 18);
+    var parts = kind === 'test' && one * 10 > 228 ? [L.items.slice(0, 5), L.items.slice(5)] : [L.items];
+    return parts.map(function (items, pi) {
+      var h = '<div class="dt-sheet"><div class="sh-hd"><div><b>' + esc(D.name) + ' 받아쓰기 ' + L.no + '급' + (parts.length > 1 ? ' (' + (pi + 1) + '/' + parts.length + ')' : '') + '</b><span>' + L.kind + ' 10개' + (kind === 'key' ? ' · 정답' : '') + '</span></div>' +
+        (kind === 'key' || pi ? '' : '<div class="sh-nm">이름: <i></i> 점수: <i class="s"></i> / 100</div>') + '</div><ol class="sh-list ' + kind + (kind === 'test' ? ' ' + paper : '') + '" start="' + (pi * 5 + 1) + '">';
+      items.forEach(function (it) {
+        if (pk && kind !== 'key') h += '<li><span class="sh-q">' + esc(strip(it[0])) + '</span><span class="dt-ln"></span></li>';
+        else if (kind === 'key') h += '<li><b>' + esc(it[0]) + '</b><small>' + pt(it[1]) + '</small></li>';
+        else if (paper === 'cell') { h += '<li>'; for (var r = 0; r < rows; r++) h += cells(per); h += '</li>' }
+        else h += '<li><span class="dt-ln"></span>' + (two ? '<span class="dt-ln"></span>' : '') + '</li>';
+      });
+      return h + '</ol><p class="sh-ft">받아쓰기·맞춤법 급수 · 초등교사 홍지희</p></div>';
+    }).join('');
   }
   function home() {   // 가정 학습용 급수표: 15급 전체
     var rg = KIND.map(function (k) { var a = LV.filter(function (L) { return L.kind === k }); return a[0].no + '~' + a[a.length - 1].no + '급 ' + k }).join(' · ');

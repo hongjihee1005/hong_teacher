@@ -139,16 +139,16 @@
 
   /* ── 활동지(인쇄) ── */
   function sheet(key) {
-    var n = 0, h = '<div class="ws"><div class="ws-top"><b>음악이론 ' + D.no + '. ' + D.title + ' — 활동지' + (key ? ' (정답)' : '') + '</b><span>' + D.area + '</span></div><p class="ws-name">학년 ___ 반 ___ 번 이름: ______________</p>';
+    var n = 0, h = '<div class="ws' + (key ? ' ws-key' : '') + '"><div class="ws-top"><b>음악이론 ' + D.no + '. ' + D.title + ' — 활동지' + (key ? ' (정답)' : '') + '</b><span>' + D.area + '</span></div><p class="ws-name">학년 ___ 반 ___ 번 이름: ______________</p>';
     h += '<div class="ws-sum"><b>핵심 정리</b><ul>' + D.sum.map(function (s) { return '<li>' + s + '</li>' }).join('') + '</ul></div>';
     D.sheet.forEach(function (it) {
-      n++; h += '<div class="ws-it"><p class="ws-q"><b>' + n + '.</b> ' + it.q + '</p>';
+      n++; h += '<div class="ws-it' + (it.k === 'write' ? ' ws-wr' : '') + '"><p class="ws-q"><b>' + n + '.</b> ' + it.q + '</p>';
       if (it.k === 'names') h += '<div class="svgw">' + MU.staff(Object.assign({}, it, { names: key ? 'gye' : 'blank' })) + '</div>';
       else if (it.k === 'staff') h += '<div class="svgw">' + MU.staff(it) + '</div>';
       else if (it.k === 'choice') h += '<p class="ws-o">' + it.o.map(function (o, k) { return '<span' + (key && k === it.a ? ' class="key"' : '') + '>' + '①②③④⑤'[k] + ' ' + o + '</span>' }).join('') + '</p>';
       else if (it.k === 'match') h += '<div class="ws-match"><div>' + it.l.map(function (x, i) { return '<p>' + x + ' ●</p>' }).join('') + '</div><div>' + it.r.map(function (x) { return '<p>● ' + x + '</p>' }).join('') + '</div></div>';
       else if (it.k === 'draw') h += '<div class="ws-draw">' + MU.staff({ n: it.n || '', clef: it.clef || 'g', minW: 560, time: it.time }) + '</div>';
-      else if (it.k === 'write') h += '<div class="ws-lines">' + new Array((it.lines || 2) + 1).join('<span></span>') + '</div>';
+      else if (it.k === 'write') h += '<div class="ws-lines" style="--wl:' + ((it.lines || 2) * 10) + 'mm">' + new Array((it.lines || 2) + 1).join('<span></span>') + '</div>';
       if (key && it.a != null && it.k !== 'choice') h += '<p class="ws-a">정답: ' + (Array.isArray(it.a) ? it.a.join(', ') : it.a) + '</p>';
       h += '</div>';
     });

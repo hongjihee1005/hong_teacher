@@ -387,6 +387,15 @@ grade1/ … grade6/
 - 고친 뒤: `python3 _build/today/build.py && python3 _build/theme/apply_theme.py`
 - 넣을 때는 날짜·인물·작품 정보를 꼭 확인하고, 어린이에게 알맞은 내용만 씁니다. 노래 가사·책 본문은 싣지 않습니다.
 
+## 인쇄물 여백과 쓰는 칸 (2026-10-07 선생님 요청)
+
+- **모든 인쇄에는 `@page{size:A4;margin:…}`을 꼭 적습니다**(12~16mm). 브라우저 기본값에 맡기면 여백이 없이 찍히는 일이 있습니다(사고력 수학 학습지에서 실제로 생김).
+  여백 0이 필요한 쪽(안에 padding을 둔 활동지)은 이름 붙은 쪽(`@page ws{…}`·`@page dws{…}` + `.pg{page:dws}`)으로만 씁니다 — 그냥 `@page{margin:0}`은 같은 페이지의 다른 인쇄까지 여백을 없앱니다.
+- **학생이 쓰는 학습지는 한 장을 꽉 채웁니다**: 시트를 `display:flex;flex-direction:column;min-height:268~270mm`로 두고 쓰는 칸(줄·계산 자리)이 남는 높이를 나눠 갖게 합니다(기초연산·받아쓰기·음악이론·세계시민교육·사고력 수학). 정답지는 늘리지 않습니다.
+  한 장에 넉넉히 안 들어가면 두 장으로 나눕니다(받아쓰기 긴 문장·문장 부호 급은 5개씩, 사고력 수학은 실제 높이를 재어 쪽마다 묶고 '생각한 과정' 칸 55mm 이상).
+- 한자처럼 글자마다 나눠 받는 글꼴은 `document.fonts.load(…)`·`fonts.ready`를 기다린 뒤 `print()`합니다(안 그러면 처음 쓰는 글자가 빈칸으로 찍힘).
+- 인쇄를 고치면 Playwright로 `print()`를 막고 단추를 누른 뒤 `emulateMedia('print')` → `pdf({preferCSSPageSize:true})`로 쪽 수와 모양을 확인하세요.
+
 ## 파일 이름
 
 영어 소문자와 하이픈만 씁니다. `grade3/social/sem2/` 기준:
