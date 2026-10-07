@@ -276,7 +276,7 @@ grade1/ … grade6/
 
 ### 기타 › 수학게임 (`project/math/index.html`, 2026-10-07)
 
-- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(곧 열려요). 두 '곧 열려요' 이름은 추천한 이름이라 선생님이 바꿀 수 있음.
+- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림). 두 이름은 추천한 이름이라 선생님이 바꿀 수 있음.
   창의수학게임·교과수학게임 메뉴의 위치 표시줄은 '홈 › 기타 › 수학게임'.
 
 ### 기타 › 수학게임 › 사고력 수학 (`project/thinking/`, 2026-10-07)
@@ -288,6 +288,15 @@ grade1/ … grade6/
 - **`project/thinking/`의 index 말고는 직접 고치지 마세요.** 원본은 `_build/thinking/`: 문제 `areas.py`(Q(단계, 문제, 답, 생각 열쇠 3개, 풀이, fig, chk, tag)), 그림 `figs.py`(격자·바둑판 길·시계·삼각형 격자 등), 빈칸 셈·복면산 풀이기 `blanks.py`, 화면 `think.js`·`think.css`.
   **105문제 모두 `chk`(답을 따로 계산하는 코드)로 확인**하고, 빈칸 셈·복면산은 답이 하나뿐인지도 풀이기로 셉니다. 고친 뒤 `python3 _build/thinking/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py check`는 점검만). 클래스 앞글자 `th-`.
  따로 사이트 '초등 수학 게임'(`_build/mathsite/export.py`)은 기타의 '수학게임' 모음 메뉴를 펼쳐 그 안의 방(창의수학게임·교과수학게임)을 가져갑니다. 사고력 수학·수학자 이야기가 열리면(링크 카드가 되면) 그 사이트에도 저절로 들어갑니다. 방을 더하면 여기에 카드를 넣고 `apply_theme.py`(첫 화면 펼침 메뉴도 저절로 바뀜).
+
+### 기타 › 수학게임 › 수학자 이야기 (`project/mathpeople/`, 2026-10-07)
+
+- 메뉴 `project/mathpeople/index.html`(손으로 고치는 메뉴, 시대 4묶음: 옛 그리스 · 중세·조선 · 17~19세기 · 20~21세기) → 인물 13쪽: `thales` · `archimedes` · `eratosthenes` · `fibonacci` · `choi`(최석정) · `pascal` · `euler` · `germain` · `gauss` · `lovelace` · `ramanujan` · `mirzakhani` · `huh`(허준이).
+- 인물 쪽: 머리(사신 때·곳·한 줄 소개) · 📖 삶 이야기 · 💡 발견 · 🧩 해 보기(인물마다 위젯 하나) · ✏️ 확인 문제 3개(바로 채점) · 📌 기억해요 · 🔗 출처(MacTutor 수학사·위키백과·논문·언론) · 이전/다음 인물. 🖨️ 읽기 자료 인쇄(A4 두 쪽: 이야기+‘가장 놀라운 점’ 쓰기 / 확인 문제+‘묻고 싶은 질문’ 쓰기, 맨 아래 선생님용 정답 한 줄).
+  해 보기 위젯(`app.js`의 `W.이름`): `shadow`(그림자로 높이) `polygon`(정다각형으로 원주율) `sieve`(에라토스테네스의 체) `seq`(토끼 수열) `pascal`(삼각형 빈칸) `latin`(3×3 라틴 방진 → 직교 겹치기) `euler`(한붓그리기 5그림, 쾨니히스베르크 포함) `multi`(제르맹 소수 고르기) `gauss`(짝지어 더하기) `robot`(명령 차례 3단계) `cubes`(1729 두 짝) `billiard`(당구공 구멍 맞히기) `color`(이웃 다른 색 칠하기 12가지).
+- **확실하지 않은 일화는 ‘전해지는 이야기’라고 적습니다**(탈레스 피라미드·아르키메데스 유레카·가우스 1~100 등). 사실은 웹 검색으로 확인(이 환경에서 출처 사이트를 직접 열 수 없었음). 살아 있는 인물(허준이)은 공개 보도된 사실만.
+- **`project/mathpeople/`의 index 말고는 직접 고치지 마세요.** 원본은 `_build/mathpeople/`: 인물 `people.py`(ERAS·PEOPLE), 화면 `page.html`·`page.css`·`app.js`. `build.py check`가 빈 칸·위젯 있음·문제 보기 4개와 정답 번호·출처 https·그림자 답·피보나치 수·제르맹 소수를 점검합니다.
+  고친 뒤 `python3 _build/mathpeople/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 인물을 더하면 메뉴 카드도 더하고 `apply_theme.py`. 클래스 앞글자 `mp-`. 메뉴 아이콘 ☀(sun)·🔵(circlepi)·🐰(rabbit)·🐢(turtle)·🌉(bridge)·✉(mail)·🚕(car)·🎱(ball)은 `icons.js`에 추가.
 
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
 
