@@ -51,7 +51,7 @@
   }
   function after() {
     var r = read(), m = moved();
-    if (m === P.k && isTrue(r)) { solved = true; held = null; draw(); host.querySelector('.mt-board').classList.add('win'); ctx.done('성냥개비 ' + P.k + '개를 옮겨 <b>' + r.replace(/-/g, '−') + '</b>를 만들었어요!'); return }
+    if (m === P.k && isTrue(r)) { solved = true; held = null; draw(); host.querySelector('.mt-board').classList.add('win'); ctx.done('성냥개비 ' + P.k + '개를 옮겨 <b>' + r.replace(/-/g, '−') + '</b> 식을 만들었어요!'); return }
     if (m > P.k) ctx.msg('성냥개비는 ' + P.k + '개만 옮길 수 있어요. 옮긴 성냥개비를 제자리로 돌려 보세요.', 'bad');
     else if (m === P.k) ctx.msg('아직 맞는 식이 아니에요. 다른 성냥개비를 옮겨 보세요.', 'bad');
     else ctx.msg('');

@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>네모 로직 · 창의수학게임 · 기타 · 초등교사 홍지희</title>
-<meta name="description" content="줄 끝의 수를 보고 칸을 칠해 숨은 그림을 찾는 네모 로직(노노그램) 퍼즐">
+<title>성냥개비 식 고치기 · 창의수학게임 · 기타 · 초등교사 홍지희</title>
+<meta name="description" content="틀린 성냥개비 식에서 성냥개비를 1~2개 옮겨 맞는 식으로 고치는 퍼즐">
 <style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#C9463B;--ok:#2E9E5B;--bad:#D0453B;--cell:#FFFDF9;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37;--cell:#2F2925}}
@@ -55,29 +55,26 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes cr-pop{50%{transform:scale(1.08)}}
 @media (max-width:640px){.cr-levels{grid-template-columns:1fr}.cr-lv{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 8px}.cr-lv small{width:100%}}
 @media print{.cr-gnav,.cr-levels,.cr-nums,.cr-bar button,.cr-how,.creditbar,.hj-nav,.hj-navbar,#hj-home{display:none!important}}
-/* 네모 로직 */
-.ng-goal{margin:0;text-align:center;color:var(--soft)}
-.ng-goal b{color:var(--acc)}
-.ng-modes{display:flex;gap:8px;justify-content:center}
-.ng-mode{border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 18px;font-family:var(--display);font-size:19px}
-.ng-mode[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
-.ng-wrap{width:100%;display:flex;justify-content:center;overflow:hidden}
-.ng-board{--c:30px;flex:none;display:grid;grid-template-columns:auto repeat(var(--w),var(--c));grid-template-rows:auto repeat(var(--h),var(--c));user-select:none;-webkit-user-select:none;touch-action:none}
-.ng-corner{border-right:2px solid var(--ink);border-bottom:2px solid var(--ink)}
-.ng-cc{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:2px 0 3px;border-bottom:2px solid var(--ink);border-right:1px solid var(--line);font-weight:800;font-size:calc(var(--c)*.5);line-height:1.15;color:var(--ink);background:color-mix(in srgb,var(--acc) 6%,var(--bg))}
-.ng-rc{display:flex;justify-content:flex-end;align-items:center;gap:calc(var(--c)*.28);padding:0 6px 0 4px;border-right:2px solid var(--ink);border-bottom:1px solid var(--line);font-weight:800;font-size:calc(var(--c)*.5);color:var(--ink);background:color-mix(in srgb,var(--acc) 6%,var(--bg));white-space:nowrap}
-.ng-cc.done,.ng-rc.done{color:#B5A99D;background:transparent}
-.ng-cc.b5{border-right:2px solid var(--ink)}.ng-rc.b5{border-bottom:2px solid var(--ink)}
-.ng-cell{position:relative;border-right:1px solid #D9CEC2;border-bottom:1px solid #D9CEC2;background:var(--cell);cursor:pointer}
-.ng-cell.br5{border-right:2px solid var(--ink)}.ng-cell.bb5{border-bottom:2px solid var(--ink)}
-.ng-cell.on{background:#2F2722}
-.ng-cell.x::before,.ng-cell.x::after{content:"";position:absolute;left:22%;right:22%;top:50%;height:2px;margin-top:-1px;background:#B9AA9C;transform:rotate(45deg)}
-.ng-cell.x::after{transform:rotate(-45deg)}
-.ng-cell.hint{animation:cr-pop .5s}
-.ng-board.win .ng-cell{border-color:transparent}.ng-board.win .ng-cell.on{background:var(--acc)}.ng-board.win .ng-cell.x::before,.ng-board.win .ng-cell.x::after{display:none}
-.ng-tip{margin:0;font-size:15px;color:var(--soft);text-align:center}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ng-cell.on{background:#F1E6DA}:root:not([data-theme="light"]) .ng-cell{border-color:#4A3F37}}
-:root[data-theme="dark"] .ng-cell.on{background:#F1E6DA}:root[data-theme="dark"] .ng-cell{border-color:#4A3F37}
+/* 성냥개비 식 고치기 */
+.mt-goal{margin:0;text-align:center;color:var(--soft)}
+.mt-goal b{color:var(--acc);font-size:1.15em}
+.mt-board{width:100%;max-width:720px;padding:14px 10px;border-radius:20px;background:#2F3B46}
+.mt-svg{display:block;width:100%;height:auto;max-height:42vh}
+.mt-wood{stroke:#F2D49B;stroke-width:7;stroke-linecap:round}
+.mt-head{fill:#E0503F}
+.mt-hit{stroke:transparent;stroke-width:18;stroke-linecap:round;cursor:pointer}
+.mt-slot{stroke:#6E7E8C;stroke-width:5;stroke-linecap:round;stroke-dasharray:4 5;opacity:.75}
+.mt-on.fixed .mt-wood{stroke:#C9B48C}.mt-on.fixed .mt-head{fill:#A8584E}.mt-on.fixed .mt-hit{cursor:default}
+.mt-on.held{transform:translateY(-5px)}.mt-on.held .mt-wood{stroke:#FFE9A6;filter:drop-shadow(0 0 4px #FFD24D)}
+.mt-on.hfrom .mt-wood{animation:mt-blink 1s infinite}
+.mt-off:hover .mt-slot{stroke:#B9C7D3;opacity:1}
+.mt-off.hto .mt-slot{stroke:#4BD48A;opacity:1;animation:mt-blink 1s infinite}
+@keyframes mt-blink{50%{opacity:.35}}
+.mt-board.win{background:#24533E}
+.mt-bar{display:flex;flex-wrap:wrap;justify-content:center;gap:6px 22px;font-size:18px;color:var(--soft)}
+.mt-bar b{font-family:var(--display);font-weight:400;font-size:1.3em;color:var(--ink)}
+.mt-bar .ok{color:var(--ok);font-weight:800}.mt-bar .no{color:var(--bad);font-weight:800}
+.mt-tip{margin:0;font-size:15px;color:var(--soft);text-align:center}
 
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
@@ -757,10 +754,10 @@ html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:n
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
 </style><!--/hj-ctheme--></head><body>
 <main>
-<nav class="cr-gnav" aria-label="다른 창의수학게임"><a href="magic.html">마방진</a><a href="tangram.html">칠교놀이</a><a href="kenken.html">계산 스도쿠</a><a href="hanoi.html">하노이 탑</a><a href="nonogram.html" aria-current="page">네모 로직</a><a href="make.html">목표 수 만들기</a><a href="balance.html">저울 퍼즐</a><a href="match.html">성냥개비 식 고치기</a></nav>
-<h1>🔳 네모 로직</h1>
-<p class="sub">줄 끝에 적힌 수만큼 칸을 이어서 칠하다 보면 숨은 그림이 나타나요! 수를 잘 따져서 어떤 칸을 칠하고 어떤 칸을 비울지 찾아보세요.</p>
-<details class="cr-how"><summary>이렇게 해요</summary><ul><li>가로줄 왼쪽, 세로줄 위의 수는 그 줄에서 <b>이어서 칠한 칸 묶음의 길이</b>예요. 수가 여러 개면 그 차례대로 묶음이 있고, 묶음 사이에는 빈칸이 한 칸 이상 있어요. 예: <b>3 1</b> → ■■■□■</li><li><b>■ 칠하기</b>로 칸을 칠하고, 칠하지 않을 게 확실한 칸은 <b>✕ X 표시</b>를 해 두면 생각하기 쉬워요. 눌러서 끌면 여러 칸이 한 번에 바뀌어요.</li><li>줄이 수와 맞으면 그 수가 흐려져요. 모든 칸을 맞게 칠하면 그림 이름이 나와요.</li><li>💡 실마리: 5칸 줄의 <b>5</b>나 10칸 줄의 <b>10</b>처럼 줄을 꽉 채우는 수부터 칠하세요. <b>4</b>(5칸 줄)처럼 큰 수는 왼쪽 끝에 붙여도, 오른쪽 끝에 붙여도 겹치는 칸이 있어요. 모든 문제는 찍지 않고 풀려요.</li></ul></details>
+<nav class="cr-gnav" aria-label="다른 창의수학게임"><a href="magic.html">마방진</a><a href="tangram.html">칠교놀이</a><a href="kenken.html">계산 스도쿠</a><a href="hanoi.html">하노이 탑</a><a href="nonogram.html">네모 로직</a><a href="make.html">목표 수 만들기</a><a href="balance.html">저울 퍼즐</a><a href="match.html" aria-current="page">성냥개비 식 고치기</a></nav>
+<h1>🔥 성냥개비 식 고치기</h1>
+<p class="sub">성냥개비로 만든 식이 틀렸어요! 성냥개비를 딱 정해진 개수만큼 옮겨서 맞는 식으로 고쳐 보세요. 숫자 모양을 바꾸는 생각이 필요해요.</p>
+<details class="cr-how"><summary>이렇게 해요</summary><ul><li>성냥개비를 <b>누르면 들리고</b>, 점선으로 된 <b>빈 자리</b>를 누르면 그리로 옮겨져요. 들린 성냥개비를 다시 누르면 내려놓아요.</li><li>숫자는 디지털시계 숫자 모양이에요. 성냥개비 하나로 6이 0이나 9가 되기도 하고, + 가 − 가 되기도 해요. <b>=</b> 는 움직이지 않아요.</li><li>정해진 개수만큼 옮겨서 맞는 식이 되면 성공! 아래에 ‘지금 식’이 나와요.</li><li>💡 실마리: 성냥개비 한 개를 빼면 다른 숫자가 되는 숫자(8→0·6·9, 9→3·5, 7→1 …)와 한 개를 더하면 되는 숫자를 떠올려 보세요. 모든 문제는 답이 딱 하나예요.</li></ul></details>
 <div class="cr-levels" id="crLevels" role="tablist" aria-label="단계"></div>
 <div class="cr-nums" id="crNums" aria-label="문제 번호"></div>
 <section class="cr-play" id="crPlay" aria-live="polite">
@@ -772,67 +769,92 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 </section>
 <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>생각하는 힘을 기르는 창의수학게임 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
 </main>
-<script>window.CR={"game":"nonogram","levels":[{"id":"easy","nm":"쉬움","rec":"2~3학년","de":"5×5 칸. 하트·집·나무 같은 쉬운 그림이 숨어 있어요."},{"id":"normal","nm":"보통","rec":"4~5학년","de":"10×10 칸. 굵은 선으로 5칸씩 나뉘어 있어요."},{"id":"hard","nm":"도전","rec":"5~6학년","de":"15×15 칸. 동물·탈것·건물이 숨어 있어요."}],"data":{"easy":[{"nm":"나무","w":5,"h":5,"rc":[[1],[3],[5],[1],[3]],"cc":[[1],[2,1],[5],[2,1],[1]],"s":["00100","01110","11111","00100","01110"],"k":2},{"nm":"로켓","w":5,"h":5,"rc":[[1],[3],[3],[3],[2,2]],"cc":[[1],[4],[4],[4],[1]],"s":["00100","01110","01110","01110","11011"],"k":2},{"nm":"버섯","w":5,"h":5,"rc":[[3],[5],[1,1,1],[3],[3]],"cc":[[2],[2,2],[5],[2,2],[2]],"s":["01110","11111","10101","01110","01110"],"k":2},{"nm":"화살표","w":5,"h":5,"rc":[[1],[3],[1,1,1],[1],[1]],"cc":[[1],[1],[5],[1],[1]],"s":["00100","01110","10101","00100","00100"],"k":3},{"nm":"배","w":5,"h":5,"rc":[[1],[2],[1],[5],[3]],"cc":[[1],[2],[5],[1,2],[1]],"s":["00100","00110","00100","11111","01110"],"k":3},{"nm":"우산","w":5,"h":5,"rc":[[3],[5],[1],[1],[2]],"cc":[[1],[2,1],[5],[2],[1]],"s":["01110","11111","00100","00100","01100"],"k":3},{"nm":"꽃","w":5,"h":5,"rc":[[1,1],[5],[3],[1],[2]],"cc":[[1],[3,1],[4],[3],[1]],"s":["01010","11111","01110","00100","01100"],"k":3},{"nm":"집","w":5,"h":5,"rc":[[1],[3],[5],[1,1],[3]],"cc":[[1],[4],[3,1],[4],[1]],"s":["00100","01110","11111","01010","01110"],"k":3},{"nm":"하트","w":5,"h":5,"rc":[[1,1],[5],[5],[3],[1]],"cc":[[2],[4],[4],[4],[2]],"s":["01010","11111","11111","01110","00100"],"k":3},{"nm":"고양이","w":5,"h":5,"rc":[[1,1],[5],[1,1,1],[5],[3]],"cc":[[4],[1,2],[4],[1,2],[4]],"s":["10001","11111","10101","11111","01110"],"k":3},{"nm":"음표","w":5,"h":5,"rc":[[2],[1,1],[1],[3],[3]],"cc":[[2],[2],[5],[1],[1]],"s":["00110","00101","00100","11100","11100"],"k":4},{"nm":"별","w":5,"h":5,"rc":[[1],[5],[3],[1,1],[1,1]],"cc":[[1,1],[3],[3],[3],[1,1]],"s":["00100","11111","01110","01010","10001"],"k":4}],"normal":[{"nm":"버섯","w":10,"h":10,"rc":[[4],[2,2,2],[10],[1,4,1],[10],[1,1],[1,1],[4],[],[]],"cc":[[3],[2,1],[2,1],[1,6],[5,1],[5,1],[1,6],[2,1],[2,1],[3]],"s":["0001111000","0110110110","1111111111","1001111001","1111111111","0001001000","0001001000","0001111000","0000000000","0000000000"],"k":3},{"nm":"우산","w":10,"h":10,"rc":[[2],[6],[8],[10],[1,1,2,1,1],[2],[2],[2],[1,2],[4]],"cc":[[2],[2,2],[4,1],[3,1],[10],[9],[3],[4],[2],[2]],"s":["0000110000","0011111100","0111111110","1111111111","1010110101","0000110000","0000110000","0000110000","0100110000","0111100000"],"k":3},{"nm":"음표","w":10,"h":10,"rc":[[6],[6],[1,1],[1,1],[1,1],[1,1],[3,3],[4,4],[4,4],[2,2]],"cc":[[],[2],[4],[4],[9],[2],[2,2],[2,4],[2,4],[9]],"s":["0000111111","0000111111","0000100001","0000100001","0000100001","0000100001","0011100111","0111101111","0111101111","0011000110"],"k":3},{"nm":"게","w":10,"h":10,"rc":[[1,1],[2,2],[1,1,1,1],[6],[8],[10],[8],[1,1,1,1],[1,1,1,1],[]],"cc":[[1,1,2],[3,3],[5],[5,1],[4],[4],[5,1],[5],[3,3],[1,1,2]],"s":["0100000010","1100000011","0101001010","0011111100","0111111110","1111111111","0111111110","1010000101","1001001001","0000000000"],"k":3},{"nm":"물고기","w":10,"h":10,"rc":[[],[4],[7],[1,2,5],[10],[10],[1,7],[6],[3],[]],"cc":[[4],[2],[6],[6],[2,5],[8],[8],[7],[5],[3]],"s":["0000000000","0000111100","0011111110","1011011111","1111111111","1111111111","1011111110","0011111100","0000111000","0000000000"],"k":3},{"nm":"집","w":10,"h":10,"rc":[[2],[4,1],[6],[8],[10],[1,1],[1,2,1,1],[1,2,1],[1,2,1,1],[10]],"cc":[[1,1],[7],[3,1],[4,4],[5,4],[5,1],[4,1,2],[3,1],[1,7],[1,1]],"s":["0000110000","0001111010","0011111100","0111111110","1111111111","0100000010","0101101010","0101100010","0101101010","1111111111"],"k":3},{"nm":"고양이","w":10,"h":10,"rc":[[1,1],[2,2],[8],[1,4,1],[8],[6],[4],[6,1],[8,1],[8,1]],"cc":[[5,2],[2,2,3],[8],[8],[8],[8],[2,2,3],[5,2],[],[3]],"s":["1000000100","1100001100","1111111100","1011110100","1111111100","0111111000","0011110000","0111111001","1111111101","1111111101"],"k":3},{"nm":"나비","w":10,"h":10,"rc":[[2,2],[4,4],[5,4],[10],[3,3],[3,3],[10],[4,4],[2,2],[]],"cc":[[3,2],[9],[9],[7],[2,1],[1,1],[7],[9],[9],[3,2]],"s":["0110000110","1111001111","1111101111","1111111111","0111001110","0111001110","1111111111","1111001111","0110000110","0000000000"],"k":3},{"nm":"오리","w":10,"h":10,"rc":[[3],[5],[2,2],[3,4],[4],[6,1],[9],[8],[6],[4]],"cc":[[1],[4,2],[9],[2,6],[10],[3,5],[1,5],[1,4],[2],[2]],"s":["0011100000","0111110000","0110110000","1110111100","0111100000","0011111101","0111111111","0111111110","0011111100","0001111000"],"k":4},{"nm":"하트","w":10,"h":10,"rc":[[2,2],[4,4],[10],[10],[10],[8],[6],[4],[2],[]],"cc":[[4],[6],[7],[7],[7],[7],[7],[7],[6],[4]],"s":["0110000110","1111001111","1111111111","1111111111","1111111111","0111111110","0011111100","0001111000","0000110000","0000000000"],"k":4},{"nm":"사과","w":10,"h":10,"rc":[[1],[1,2],[2,3],[8],[10],[10],[10],[8],[8],[2,2]],"cc":[[3],[6],[8],[8],[1,6],[1,7],[9],[9],[6],[3]],"s":["0000010000","0000101100","0011011100","0111111110","1111111111","1111111111","1111111111","0111111110","0111111110","0011001100"],"k":4},{"nm":"자동차","w":10,"h":10,"rc":[[],[4],[1,2,1],[1,2,1],[10],[10],[10],[2,2],[2,2],[]],"cc":[[3],[6],[1,5],[1,3],[6],[6],[1,3],[1,5],[6],[3]],"s":["0000000000","0001111000","0010110100","0100110010","1111111111","1111111111","1111111111","0110000110","0110000110","0000000000"],"k":5}],"hard":[{"nm":"로봇","w":15,"h":15,"rc":[[1],[3],[9],[1,1],[1,2,2,1],[1,2,2,1],[1,1],[1,3,1],[9],[1],[13],[2,1,1,2],[2,1,1,1,1,1,2],[9],[3,3]],"cc":[[2],[3],[1],[7,5],[1,1,1,2],[1,2,1,1,3],[2,2,2,1,1],[3,4,2],[2,2,2,1,1],[1,2,1,1,3],[1,1,1,2],[7,5],[1],[3],[2]],"s":["000000010000000","000000111000000","000111111111000","000100000001000","000101101101000","000101101101000","000100000001000","000100111001000","000111111111000","000000010000000","011111111111110","110100000001011","110101010101011","000111111111000","000111000111000"],"k":3},{"nm":"배","w":15,"h":15,"rc":[[1],[2],[3],[4],[5],[6],[1,7],[2,1],[3,1],[4,1],[15],[13],[11],[9],[1,1,1,1,1,1,1,1]],"cc":[[2,1],[4],[6,1],[8],[5],[4],[5],[14],[6,5],[5,4],[4,5],[3,4],[2,3,1],[1,2],[1,1]],"s":["000000010000000","000000011000000","000000011100000","000000011110000","000000011111000","000000011111100","000100011111110","001100010000000","011100010000000","111100010000000","111111111111111","011111111111110","001111111111100","000111111111000","101010101010101"],"k":3},{"nm":"집","w":15,"h":15,"rc":[[1,2],[3,2],[5,2],[7,2],[11],[13],[13],[15],[1,1],[1,3,3,1],[1,1,1,1,1,1],[1,3,1,3,1],[1,1,1],[1,1,1],[15]],"cc":[[1,1],[9],[3,1],[4,3,1],[5,1,1,1],[6,3,1],[7,1],[8,4],[7,1],[6,3,1],[5,1,1,1],[4,3,1],[8,1],[15],[1,1,1]],"s":["000000010000110","000000111000110","000001111100110","000011111110110","000111111111110","001111111111111","011111111111110","111111111111111","010000000000010","010111000111010","010101000101010","010111010111010","010000010000010","010000010000010","111111111111111"],"k":3},{"nm":"고래","w":15,"h":15,"rc":[[1,1],[1],[3],[7],[9,1],[11,2],[4,8,1],[14],[14],[15],[13],[9],[],[1,1,1,1,1],[1,1,2,1,2,1]],"cc":[[4],[6,1],[8,1],[9,1],[3,5,1],[9,1],[9,1],[9,1],[9,1],[1,10,1],[2,8,1],[1,1,6,1],[5,1],[1,4,1],[3,1]],"s":["000000000101000","000000000010000","000000000111000","000111111100000","001111111110001","011111111111011","111101111111101","111111111111110","111111111111110","111111111111111","011111111111110","001111111110000","000000000000000","001010010100100","010101101011010"],"k":3},{"nm":"부엉이","w":15,"h":15,"rc":[[1,1],[2,2],[13],[2,5,2],[1,3,3,3,1],[1,1,1,3,1,1,1],[1,3,3,3,1],[2,2,2,2],[6,6],[13],[2,1,3,1,2],[3,1,1,1,3],[2,1,3,1,2],[11],[2,2]],"cc":[[5],[4,6],[2,3,6],[1,1,1,2,1,2],[1,3,3,3],[2,3,1,1],[9,2],[5,5],[9,2],[2,3,1,1],[1,3,3,3],[1,1,1,2,1,2],[2,3,6],[4,6],[5]],"s":["010000000000010","011000000000110","011111111111110","110001111100011","101110111011101","101010111010101","101110111011101","110001101100011","011111101111110","011111111111110","011010111010110","011101010101110","011010111010110","001111111111100","000110000011000"],"k":3},{"nm":"찻잔","w":15,"h":15,"rc":[[1,1,1],[1,1,1],[1,1,1],[],[11],[12],[11,1],[11,1],[11,1],[12],[11],[9],[7],[15],[13]],"cc":[[1],[7,2],[8,2],[1,1,11],[1,11],[11],[1,1,11],[1,11],[11],[1,1,11],[1,8,2],[7,2],[1,1,2],[3,2],[1]],"s":["000100100100000","000010010010000","000100100100000","000000000000000","011111111111000","011111111111100","011111111111010","011111111111010","011111111111010","011111111111100","011111111111000","001111111110000","000111111100000","111111111111111","011111111111110"],"k":3},{"nm":"거북","w":15,"h":15,"rc":[[],[5],[2,1,1,2],[1,7,1],[3,1,1,1,3],[1,9,1],[14],[14],[13],[2,2],[3,3],[],[],[],[]],"cc":[[2],[5,1],[2,5],[1,7],[2,4],[1,6],[3,4],[1,6],[3,4],[1,6],[2,4],[1,7],[2,5],[5,1],[]],"s":["000000000000000","000001111100000","000110101011000","001011111110100","011101010101110","010111111111010","111111111111110","111111111111110","011111111111110","001100000001100","011100000001110","000000000000000","000000000000000","000000000000000","000000000000000"],"k":4},{"nm":"토끼","w":15,"h":15,"rc":[[2,2],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,2,2,1],[11],[2,5,2],[11],[5,5],[9],[7],[9,2],[11,2],[11],[4,4]],"cc":[[],[4,2],[9,4],[1,1,8],[1,11],[14],[3,5],[14],[1,11],[1,1,8],[9,4],[4,2],[],[2],[2]],"s":["000110001100000","001001010010000","001001010010000","001001010010000","001011011010000","011111111111000","011011111011000","011111111111000","011111011111000","001111111110000","000111111100000","001111111110011","011111111111011","011111111111000","001111011110000"],"k":4},{"nm":"코끼리","w":15,"h":15,"rc":[[],[6],[10],[12],[3,9],[14],[14],[5,8],[3,9],[2,9],[1,2,3,2],[2,3,2],[2,3,2],[],[]],"cc":[[6],[7],[7],[6],[3,3],[6,5],[12],[9],[12],[12],[11],[8],[10],[9],[]],"s":["000000000000000","000011111100000","001111111111000","011111111111100","011101111111110","111111111111110","111111111111110","111110111111110","111001111111110","110001111111110","100001101110110","000001101110110","000001101110110","000000000000000","000000000000000"],"k":4},{"nm":"성","w":15,"h":15,"rc":[[1,1,1,1,1,1],[5,5],[3,1,3],[3,3,3],[3,5,3],[13],[13],[2,3,3,2],[2,3,3,2],[13],[5,5],[4,4],[4,4],[4,4],[15]],"cc":[[2,1],[14],[15],[6,6],[2,10],[7,1],[7,1],[5,1,1],[7,1],[7,1],[2,10],[6,6],[15],[14],[2,1]],"s":["101010000010101","111110000011111","011100010001110","011100111001110","011101111101110","011111111111110","011111111111110","011011101110110","011011101110110","011111111111110","011111000111110","011110000011110","011110000011110","011110000011110","111111111111111"],"k":4},{"nm":"나무","w":15,"h":15,"rc":[[3],[7],[9],[3,5,1],[11],[13],[4,4,3],[11],[9],[5],[3],[3],[3],[5],[9]],"cc":[[],[2],[5],[7,1],[8,1],[2,2,3,2],[15],[15],[15],[9,2],[5,2,1],[1,5,1],[5],[2],[]],"s":["000000111000000","000011111110000","000111111111000","001110111110100","001111111111100","011111111111110","011110111101110","001111111111100","000111111111000","000001111100000","000000111000000","000000111000000","000000111000000","000001111100000","000111111111000"],"k":5},{"nm":"기린","w":15,"h":15,"rc":[[1,1],[3],[4],[5],[2],[2],[1,1],[2],[3],[4,1,1],[12],[9,2],[2,1],[2,2],[2,2]],"cc":[[1],[2],[11],[5,8],[4,1,7],[3],[2],[3],[2],[2],[3],[2,2],[1,3],[2],[1]],"s":["001010000000000","001110000000000","011110000000000","111110000000000","001100000000000","001100000000000","001010000000000","001100000000000","001110000000000","001111010010000","001111111111110","000111111111011","000110000000100","000110000001100","000110000001100"],"k":6}]}};
-/* 창의수학게임 › 네모 로직: 줄 끝의 수(이어서 칠한 칸 묶음의 길이)를 보고 칸을 칠해 숨은 그림 찾기
-   '칠하기'·'X 표시' 모드, 눌러서 끌면 여러 칸을 한 번에. 줄이 수와 맞으면 그 수가 흐려짐 */
+<script>window.CR={"game":"match","levels":[{"id":"easy","nm":"쉬움","rec":"3~4학년","de":"한 자리 수 식, 성냥개비 1개 옮기기."},{"id":"normal","nm":"보통","rec":"4~5학년","de":"답이 두 자리 수일 수 있는 식, 성냥개비 1개 옮기기."},{"id":"hard","nm":"도전","rec":"5~6학년","de":"성냥개비 2개를 옮겨야 해요!"}],"data":{"easy":[{"q":"5+8=9","a":"9+0=9","k":1},{"q":"3+5=6","a":"3+3=6","k":1},{"q":"2-9=2","a":"2-0=2","k":1},{"q":"1-1=9","a":"1-1=0","k":1},{"q":"4-3=2","a":"4-2=2","k":1},{"q":"6-8=1","a":"9-8=1","k":1},{"q":"8-5=2","a":"8-5=3","k":1},{"q":"6+2=9","a":"6+3=9","k":1},{"q":"9-6=5","a":"9-6=3","k":1},{"q":"5-1=6","a":"6-1=5","k":1},{"q":"0-5=4","a":"9-5=4","k":1},{"q":"6-4=3","a":"6-4=2","k":1},{"q":"9+2=8","a":"6+2=8","k":1},{"q":"9+0=8","a":"8-0=8","k":1},{"q":"4-5=8","a":"4+5=9","k":1},{"q":"1-5=8","a":"1+5=6","k":1},{"q":"8-9=9","a":"0+9=9","k":1},{"q":"5+4=2","a":"6-4=2","k":1},{"q":"5+6=0","a":"6-6=0","k":1},{"q":"9-1=4","a":"3+1=4","k":1}],"normal":[{"q":"6-9=19","a":"6+9=15","k":1},{"q":"5+6=3","a":"9-6=3","k":1},{"q":"2-6=7","a":"2+5=7","k":1},{"q":"1-9=1","a":"1-0=1","k":1},{"q":"2+6=1","a":"2+5=7","k":1},{"q":"4+9=1","a":"4+3=7","k":1},{"q":"1+5=72","a":"7+5=12","k":1},{"q":"0+2=6","a":"8-2=6","k":1},{"q":"8-2=18","a":"8+2=10","k":1},{"q":"2+8=6","a":"2+6=8","k":1},{"q":"8+3=15","a":"6+9=15","k":1},{"q":"1-9=18","a":"1+9=10","k":1},{"q":"9+8=71","a":"9+8=17","k":1},{"q":"6+2=6","a":"8-2=6","k":1},{"q":"10-2=76","a":"18-2=16","k":1},{"q":"7+1=74","a":"7+7=14","k":1},{"q":"8-1=10","a":"9+1=10","k":1},{"q":"6+3=3","a":"0+3=3","k":1},{"q":"10-9=4","a":"10-6=4","k":1},{"q":"2+8=19","a":"2+8=10","k":1}],"hard":[{"q":"8-4=8","a":"9-9=0","k":2},{"q":"7+0=8","a":"3+0=3","k":2},{"q":"1+5=19","a":"7+5=12","k":2},{"q":"7-3=6","a":"1+5=6","k":2},{"q":"6-2=78","a":"8+2=10","k":2},{"q":"2+8=72","a":"2+8=10","k":2},{"q":"6+9=17","a":"5+9=14","k":2},{"q":"8-1=5","a":"5+1=6","k":2},{"q":"10+0=8","a":"16-8=8","k":2},{"q":"9-9=46","a":"9+9=18","k":2},{"q":"0+5=78","a":"9+9=18","k":2},{"q":"6-1=9","a":"5+1=6","k":2},{"q":"8+6=45","a":"8+8=16","k":2},{"q":"0-8=78","a":"8+8=16","k":2},{"q":"3+4=3","a":"9-4=5","k":2},{"q":"75-4=3","a":"13-4=9","k":2},{"q":"3-6=17","a":"5+6=11","k":2},{"q":"3+9=40","a":"9+9=18","k":2},{"q":"73-2=6","a":"13-8=5","k":2},{"q":"7+6=5","a":"7+2=9","k":2}]}};
+/* 창의수학게임 › 성냥개비 식 고치기: 성냥개비를 정해진 개수만큼 옮겨 맞는 식 만들기
+   성냥개비를 누르면 들리고, 빈 자리(점선)를 누르면 그리로 옮겨짐. = 는 움직이지 않음 */
 (function () {
   'use strict';
-  var P, ctx, host, W, H, st, mode = 1, solved, drag = null;   // st: 0 빈칸 · 1 칠함 · 2 X
-  function runs(a) { var o = [], r = 0; a.forEach(function (v) { if (v === 1) r++; else if (r) { o.push(r); r = 0 } }); if (r) o.push(r); return o }
-  function same(a, b) { return a.length === b.length && a.every(function (v, i) { return v === b[i] }) }
+  var SEG = { '0': 'abcdef', '1': 'bc', '2': 'abdeg', '3': 'abcdg', '4': 'bcfg', '5': 'acdfg', '6': 'acdefg', '7': 'abc', '8': 'abcdefg', '9': 'abcdfg' }, OPS = { '+': 'hv', '-': 'h' };
+  var X0 = 8, X1 = 52, Y0 = 10, YM = 58, Y1 = 106, DW = 60, OW = 50, GAP = 8;
+  var DC = { a: [X0, Y0, X1, Y0], b: [X1, Y0, X1, YM], c: [X1, YM, X1, Y1], d: [X0, Y1, X1, Y1], e: [X0, YM, X0, Y1], f: [X0, Y0, X0, YM], g: [X0, YM, X1, YM] };
+  var OC = { h: [7, 58, 43, 58], v: [25, 40, 25, 76] };
+  var P, ctx, host, sl, start, sol, on, held, solved, hintPair = null;
+  function parse(eq) { return eq.split('').map(function (ch) { return { t: /\d/.test(ch) ? 'd' : ch === '=' ? 'e' : 'o', ch: ch } }) }
+  function setOf(eq) { var s = {}; parse(eq).forEach(function (x, i) { if (x.t === 'e') return; (x.t === 'd' ? SEG[x.ch] : OPS[x.ch]).split('').forEach(function (c) { s[i + ':' + c] = 1 }) }); return s }
+  function read() {
+    var out = '';
+    for (var i = 0; i < sl.length; i++) {
+      if (sl[i].t === 'e') { out += '='; continue }
+      var cs = (sl[i].t === 'd' ? 'abcdefg' : 'hv').split('').filter(function (c) { return on[i + ':' + c] }).join(''), hit = null, tb = sl[i].t === 'd' ? SEG : OPS;
+      Object.keys(tb).forEach(function (k) { if (tb[k] === cs) hit = k }); if (hit === null) return null; out += hit;
+    }
+    return out;
+  }
+  function isTrue(s) {
+    if (!s) return false; var lr = s.split('='), l = lr[0], r = lr[1], parts = l.split(/[+-]/).concat([r]);
+    if (parts.some(function (x) { return x.length > 1 && x[0] === '0' })) return false;
+    var a = parseInt(parts[0], 10), b = parseInt(parts[1], 10), c = parseInt(r, 10);
+    return l.indexOf('+') >= 0 ? a + b === c : a - b === c;
+  }
+  function moved() { var n = 0; Object.keys(start).forEach(function (k) { if (!on[k]) n++ }); return n }
+  function layout() { var x = 0; sl.forEach(function (s) { s.x = x; x += (s.t === 'd' ? DW : OW) + GAP }); return x - GAP }
+  function stick(k, x1, y1, x2, y2, cls) {
+    var dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, a = [x1 + ux * 4, y1 + uy * 4], b = [x2 - ux * 4, y2 - uy * 4];
+    var line = 'x1="' + a[0] + '" y1="' + a[1] + '" x2="' + b[0] + '" y2="' + b[1] + '"';
+    if (cls === 'off') return '<g class="mt-off" data-k="' + k + '"><line ' + line + ' class="mt-slot"/><line ' + line + ' class="mt-hit"/></g>';
+    return '<g class="mt-on' + (cls ? ' ' + cls : '') + '" data-k="' + k + '"><line ' + line + ' class="mt-wood"/><circle cx="' + a[0] + '" cy="' + a[1] + '" r="5.2" class="mt-head"/><line ' + line + ' class="mt-hit"/></g>';
+  }
   function draw() {
-    var mx = Math.max.apply(null, P.rc.map(function (r) { return r.length })), my = Math.max.apply(null, P.cc.map(function (c) { return c.length }));
-    var h = '<p class="ng-goal">줄 끝의 수만큼 이어서 칠해요. 다 칠하면 숨은 그림이 나타나요! <b>무엇이 나올까요?</b></p>'
-      + '<div class="ng-modes" role="group" aria-label="칠하는 방법"><button type="button" class="ng-mode" data-m="1">■ 칠하기</button><button type="button" class="ng-mode" data-m="2">✕ X 표시</button></div>'
-      + '<div class="ng-wrap"><div class="ng-board w' + W + '" style="--w:' + W + ';--h:' + H + ';--mx:' + mx + ';--my:' + my + '"><div class="ng-corner"></div>';
-    for (var c = 0; c < W; c++) h += '<div class="ng-cc' + (c % 5 === 4 && c < W - 1 ? ' b5' : '') + '" data-c="' + c + '">' + (P.cc[c].length ? P.cc[c] : [0]).map(function (v) { return '<span>' + v + '</span>' }).join('') + '</div>';
-    for (var r = 0; r < H; r++) {
-      h += '<div class="ng-rc' + (r % 5 === 4 && r < H - 1 ? ' b5' : '') + '" data-r="' + r + '">' + (P.rc[r].length ? P.rc[r] : [0]).map(function (v) { return '<span>' + v + '</span>' }).join('') + '</div>';
-      for (c = 0; c < W; c++) h += '<div class="ng-cell' + (c % 5 === 4 && c < W - 1 ? ' br5' : '') + (r % 5 === 4 && r < H - 1 ? ' bb5' : '') + '" data-i="' + (r * W + c) + '"></div>';
-    }
-    h += '</div></div><p class="ng-tip">칸을 누르거나 눌러서 끌면 여러 칸이 한 번에 바뀌어요. 칠하지 않을 칸에는 X를 해 두면 생각하기 쉬워요.</p>';
-    host.innerHTML = h; setMode(mode); fit(); paint();
+    var W = layout(), h = '<svg class="mt-svg" viewBox="-6 0 ' + (W + 12) + ' 116" role="application" aria-label="성냥개비 식">';
+    sl.forEach(function (s, i) {
+      if (s.t === 'e') { h += stick('', s.x + 7, 48, s.x + 43, 48, 'fixed') + stick('', s.x + 7, 68, s.x + 43, 68, 'fixed'); return }
+      var C = s.t === 'd' ? DC : OC;
+      Object.keys(C).forEach(function (c) {
+        var k = i + ':' + c, q = C[c], cls = on[k] ? (held === k ? 'held' : '') + (hintPair && hintPair[0] === k ? ' hfrom' : '') : 'off';
+        if (cls === 'off' && hintPair && hintPair[1] === k) cls = 'off';
+        h += stick(k, s.x + q[0], q[1], s.x + q[2], q[3], cls);
+      });
+    });
+    host.querySelector('.mt-board').innerHTML = h + '</svg>';
+    if (hintPair) { var t = host.querySelector('.mt-off[data-k="' + hintPair[1] + '"]'); if (t) t.classList.add('hto') }
+    var r = read(), m = moved();
+    host.querySelector('#mtCnt').innerHTML = '옮긴 성냥개비 <b>' + m + '</b> / ' + P.k + '개';
+    host.querySelector('#mtNow').innerHTML = '지금 식: <b>' + (r ? r.replace(/-/g, '−') : '?') + '</b>' + (r ? (isTrue(r) ? ' <span class="ok">맞음</span>' : ' <span class="no">틀림</span>') : ' <span class="no">숫자가 아닌 모양이 있어요</span>');
   }
-  function fit() {   // 판이 남은 너비·화면 높이에 들어가도록 칸 크기를 맞춤(잘려서 못 누르는 칸이 없게)
-    var bd = host.querySelector('.ng-board'), wrap = host.querySelector('.ng-wrap'); if (!bd) return;
-    var c = 46, maxH = Math.max(260, window.innerHeight * .68);
-    do { bd.style.setProperty('--c', c + 'px'); c-- } while (c >= 14 && (bd.offsetWidth > wrap.clientWidth || bd.offsetHeight > maxH));
+  function after() {
+    var r = read(), m = moved();
+    if (m === P.k && isTrue(r)) { solved = true; held = null; draw(); host.querySelector('.mt-board').classList.add('win'); ctx.done('성냥개비 ' + P.k + '개를 옮겨 <b>' + r.replace(/-/g, '−') + '</b> 식을 만들었어요!'); return }
+    if (m > P.k) ctx.msg('성냥개비는 ' + P.k + '개만 옮길 수 있어요. 옮긴 성냥개비를 제자리로 돌려 보세요.', 'bad');
+    else if (m === P.k) ctx.msg('아직 맞는 식이 아니에요. 다른 성냥개비를 옮겨 보세요.', 'bad');
+    else ctx.msg('');
   }
-  function setMode(m) { mode = m; host.querySelectorAll('.ng-mode').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.m === m)) }) }
-  function paint() {
-    host.querySelectorAll('.ng-cell').forEach(function (el, i) { el.className = el.className.replace(/ (on|x)\b/g, '') + (st[i] === 1 ? ' on' : st[i] === 2 ? ' x' : '') });
-    for (var r = 0; r < H; r++) host.querySelector('.ng-rc[data-r="' + r + '"]').classList.toggle('done', same(runs(st.slice(r * W, r * W + W)), P.rc[r]));
-    for (var c = 0; c < W; c++) { var col = []; for (r = 0; r < H; r++) col.push(st[r * W + c]); host.querySelector('.ng-cc[data-c="' + c + '"]').classList.toggle('done', same(runs(col), P.cc[c])) }
-    if (!solved && st.every(function (v, i) { return (v === 1) === (P.s[Math.floor(i / W)][i % W] === '1') })) {
-      solved = true; host.querySelector('.ng-board').classList.add('win'); ctx.done('그림 완성! 숨은 그림은 ‘' + P.nm + '’이었어요.');
-    }
+  function tap(k, isOn) {
+    if (solved) return; hintPair = null;
+    if (isOn) { held = held === k ? null : k; draw(); return }
+    if (!held) { ctx.msg('먼저 옮길 성냥개비를 눌러요.', 'bad'); return }
+    delete on[held]; on[k] = 1; held = null; draw(); after();
   }
-  function cellAt(x, y) { var e = document.elementFromPoint(x, y); return e && e.closest && e.closest('.ng-cell') }
-  function apply(el) { var i = +el.dataset.i; if (drag.done[i]) return; drag.done[i] = 1; st[i] = drag.to; paint() }
-  window.addEventListener('resize', function () { if (host && document.body.contains(host) && host.querySelector('.ng-board')) fit() });
   window.CRG = {
     render: function (h, p, c) {
-      host = h; P = p; ctx = c; W = p.w; H = p.h; st = new Array(W * H).fill(0); solved = false; drag = null; draw();
-      host.onclick = function (e) { var b = e.target.closest('.ng-mode'); if (b) setMode(+b.dataset.m) };
-      var bd = host.querySelector('.ng-board');
-      bd.addEventListener('pointerdown', function (e) {
-        var el = e.target.closest('.ng-cell'); if (!el || solved) return; e.preventDefault();
-        var i = +el.dataset.i; drag = { id: e.pointerId, to: st[i] === mode ? 0 : mode, done: {} }; apply(el);
-        try { bd.setPointerCapture(e.pointerId) } catch (er) {}
-      });
-      bd.addEventListener('pointermove', function (e) { if (!drag || e.pointerId !== drag.id) return; var el = cellAt(e.clientX, e.clientY); if (el) apply(el) });
-      function end(e) { if (drag && e.pointerId === drag.id) drag = null }
-      bd.addEventListener('pointerup', end); bd.addEventListener('pointercancel', end);
+      host = h; P = p; ctx = c; sl = parse(p.q); start = setOf(p.q); sol = setOf(p.a); on = Object.assign({}, start); held = null; solved = false; hintPair = null;
+      host.innerHTML = '<p class="mt-goal">성냥개비를 <b>' + p.k + '개</b> 옮겨서 맞는 식을 만들어요</p><div class="mt-board"></div>'
+        + '<div class="mt-bar"><span id="mtCnt"></span><span id="mtNow"></span></div>'
+        + '<p class="mt-tip">성냥개비를 누르면 들려요. 점선으로 된 빈 자리를 누르면 그리로 옮겨요. <b>=</b> 는 움직이지 않아요.</p>';
+      draw();
+      host.querySelector('.mt-board').onclick = function (e) {
+        var g = e.target.closest('[data-k]'); if (!g || !g.dataset.k) return;
+        tap(g.dataset.k, g.classList.contains('mt-on'));
+      };
     },
-    hint: function () {   // 잘못 칠한 칸이 있으면 하나 지우고, 없으면 칠해야 할 칸 하나를 칠함
+    hint: function () {   // 옮길 성냥개비 하나와 놓을 자리를 빛냄(엉뚱하게 옮긴 것이 있으면 처음으로)
       if (solved) return false;
-      var want = function (i) { return P.s[Math.floor(i / W)][i % W] === '1' }, i = st.findIndex(function (v, j) { return v === 1 && !want(j) }), msg;
-      if (i >= 0) { st[i] = 2; msg = '💡 잘못 칠한 칸 하나를 X로 바꿨어요.' }
-      else { i = st.findIndex(function (v, j) { return v !== 1 && want(j) }); if (i < 0) return false; st[i] = 1; msg = '💡 칠해야 할 칸 하나를 칠했어요.' }
-      paint(); var el = host.querySelector('.ng-cell[data-i="' + i + '"]'); if (el) el.classList.add('hint');
-      if (!solved) ctx.msg(msg); return true;
+      var extra = Object.keys(on).filter(function (k) { return !sol[k] }), need = Object.keys(sol).filter(function (k) { return !on[k] }), note = '';
+      if (extra.some(function (k) { return !start[k] }) || moved() > P.k) { on = Object.assign({}, start); note = '처음 모양으로 돌렸어요. '; extra = Object.keys(on).filter(function (k) { return !sol[k] }); need = Object.keys(sol).filter(function (k) { return !on[k] }) }
+      if (!extra.length || !need.length) return false;
+      held = null; hintPair = [extra[0], need[0]]; draw();
+      ctx.msg('💡 ' + note + '반짝이는 성냥개비를 초록 점선 자리로 옮겨 보세요.'); return true;
     },
-    reveal: function () { st = st.map(function (v, i) { return P.s[Math.floor(i / W)][i % W] === '1' ? 1 : 0 }); paint() }
+    reveal: function () { on = Object.assign({}, sol); held = null; hintPair = null; draw(); after() }
   };
 })();
 
