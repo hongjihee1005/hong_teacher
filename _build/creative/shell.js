@@ -50,7 +50,7 @@
   $('crLevels').addEventListener('click', function (e) { var b = e.target.closest('[data-lv]'); if (b) open(b.dataset.lv, 1) });
   $('crNums').addEventListener('click', function (e) { var b = e.target.closest('[data-no]'); if (b) open(cur.lv, +b.dataset.no) });
   $('crReset').addEventListener('click', function () { open(cur.lv, cur.no) });
-  $('crHint').addEventListener('click', function () { if (solved) return; if (window.CRG.hint() !== false) used.hint++ });
+  $('crHint').addEventListener('click', function () { if (solved) return; used.hint++; if (window.CRG.hint() === false) used.hint-- });
   $('crAns').addEventListener('click', function () { if (solved || !confirm('정답을 볼까요? 정답을 보면 이 문제는 해결 기록이 남지 않아요.')) return; used.ans = true; window.CRG.reveal() });
   $('crNext').addEventListener('click', function () {
     if (cur.no < list().length) open(cur.lv, cur.no + 1);
