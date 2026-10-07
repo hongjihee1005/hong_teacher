@@ -107,7 +107,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mg-heart.gone svg{fill:#D9D2CB;transform:scale(.8)}
 .mg-qbox{position:absolute;z-index:10;top:calc(max(10px,env(safe-area-inset-top)) + 62px);left:50%;transform:translateX(-50%);max-width:calc(100% - 28px);min-width:min(320px,calc(100% - 28px));
  display:flex;flex-direction:column;align-items:center;gap:4px;background:rgba(255,255,255,.96);border-radius:24px;padding:8px 26px 10px;box-shadow:0 6px 0 rgba(0,0,0,.12),0 18px 30px -18px rgba(0,0,0,.45);font-size:clamp(30px,5.2vw,62px);text-align:center}
-@media (max-width:640px){.mg-hud .mg-pill small{display:none}.mg-hb{width:40px;height:40px}.mg-heart svg{width:22px;height:22px}.mg-hud{gap:5px}}
+@media (max-width:640px){.mg-hud .mg-pill small{display:none}.mg-hb{width:38px;height:38px}.mg-hb svg{width:21px;height:21px}.mg-heart svg{width:20px;height:20px}.mg-hud{gap:4px}.mg-pill{padding:4px 9px}.mg-hud [data-a="full"]{display:none}.mg-hearts{padding:5px 7px}}
+@media (max-width:640px){.mg-hud .mg-pill:not(.mg-score):not(.mg-time):not(:has(.mg-hud-t)){display:none}.mg-hud .mg-score small,.mg-hud .mg-time small{display:inline;font-size:12px}}
 
 /* 뜨는 것들 */
 .mg-float{position:absolute;z-index:40;transform:translate(-50%,-50%);pointer-events:none;font-size:clamp(28px,3.6vw,44px);color:#FF7A00;text-shadow:0 3px 0 #fff,0 -2px 0 #fff,2px 0 0 #fff,-2px 0 0 #fff;animation:mg-up 1s ease-out forwards;text-align:center;line-height:1.1;white-space:nowrap}
@@ -229,7 +230,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mg-opt{position:relative;display:grid;place-items:center;min-height:0;border:0;border-radius:22px;background:#fff;color:#2A221C;padding:6px 10px;font-family:var(--display);box-shadow:0 6px 0 rgba(0,0,0,.22);transition:transform .08s,background .15s;-webkit-tap-highlight-color:transparent}
 .mg-opt:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.22)}
 .mg-opt .mg-lab{line-height:1.1;text-align:center}
-.mg-opt .s1{font-size:clamp(30px,5.4vw,66px)}.mg-opt .s2{font-size:clamp(26px,4.4vw,54px)}.mg-opt .s3{font-size:clamp(20px,3.2vw,40px)}.mg-opt .s4{font-size:clamp(16px,2.3vw,28px)}.mg-opt .s5{font-size:clamp(14px,1.8vw,22px)}
+.mg-opt .s1{font-size:clamp(30px,max(5.4vw,5vh),66px)}.mg-opt .s2{font-size:clamp(26px,max(4.4vw,4vh),54px)}.mg-opt .s3{font-size:clamp(20px,3.2vw,40px)}.mg-opt .s4{font-size:clamp(16px,2.3vw,28px)}.mg-opt .s5{font-size:clamp(14px,1.8vw,22px)}
 .mg-key{position:absolute;left:10px;top:8px;width:26px;height:26px;border-radius:50%;background:#EFE6DB;color:#7A6A5D;font-size:16px;display:grid;place-items:center}
 .mg-opt.right{background:#5FD38D;color:#fff;animation:mg-pulse1 .3s}
 .mg-opt.wrong{background:#FF7A7A;color:#fff;animation:mg-shk .35s}
@@ -240,7 +241,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 .mg-ground{position:absolute;inset:0;background:linear-gradient(#8ED1FF 0,#D4EEFF 22%,#9ED67A 22.1%,#86C766 30%,#E8C98F 30.1%,#E0BE7E 100%);overflow:hidden}
 .mg-rope{position:absolute;z-index:5;left:0;right:0;top:calc(max(10px,env(safe-area-inset-top)) + 56px);height:clamp(96px,20vh,170px);overflow:hidden}
 .mg-lines{position:absolute;inset:0;width:100%;height:100%}
-.mg-ropeg{--pos:0;position:absolute;inset:0;transform:translateX(calc(var(--pos) * 6.4%));transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
+.mg-ropeg{--pos:0;position:absolute;inset:0;transform:translateX(calc(var(--pos) * 4.6%));transition:transform .35s cubic-bezier(.3,1.5,.5,1)}
 .mg-line{position:absolute;left:14%;right:14%;top:58%;height:8px;margin-top:-4px;border-radius:4px;background:repeating-linear-gradient(135deg,#C68A4A 0 10px,#A9703A 10px 20px)}
 .mg-flag{position:absolute;left:50%;top:-4px;width:0;height:0;border-left:16px solid transparent;border-right:16px solid transparent;border-top:30px solid #E9524A;transform:translate(-50%,-100%)}
 .mg-flag::after{content:"";position:absolute;left:-2px;top:-30px;width:4px;height:44px;background:#7A5230}
@@ -1509,7 +1510,7 @@ window.MG={"g":1,"units":[{"id":"u1","nm":"10까지의 덧셈과 뺄셈","k":["a
   function tokH(t) {
     if (typeof t === 'string') {
       if (t === '○') return '<span class="mg-circ" aria-label="빈 동그라미">○</span>';
-      return /^[+−×÷=()]$/.test(t) ? '<span class="mg-op">' + t + '</span>' : '<span class="mg-tx">' + esc(t) + '</span>';
+      return /^[+−×÷=()]$/.test(t) ? '<span class="mg-op">' + t + '</span>' : '<span class="mg-tx">' + esc(t.replace(/쓰세요\./, '고르세요.')) + '</span>';   // 게임은 보기에서 고름
     }
     if (t.k === 'n') return '<span class="mg-n">' + t.v + '</span>';
     if (t.k === 'd') return '<span class="mg-n">' + AR.dstr(t.v, t.p) + '</span>';
@@ -1939,7 +1940,7 @@ window.MG={"g":1,"units":[{"id":"u1","nm":"10까지의 덧셈과 뺄셈","k":["a
       S.lives = S.maxLives = 0;
       function side(k, nm) { return '<div class="mg-side ' + k + '" id="mgSide' + k + '"><p class="mg-team">' + nm + ' <b id="mgPts' + k + '">0</b></p><div class="mg-qbox" id="mgQ' + k + '"></div><div class="mg-opts n4" id="mgOpts' + k + '"></div><div class="mg-freeze">앗! 잠깐 쉬어요</div></div>' }
       $('mgPlay').innerHTML = '<div class="mg-ground"><i class="mg-cloud c0"></i></div>' +
-        '<div class="mg-rope"><svg class="mg-lines" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true"><path d="M500 0v120" stroke="#fff" stroke-width="5" stroke-dasharray="12 9"/><path d="M180 0v120M820 0v120" stroke="#fff" stroke-width="4" opacity=".7"/></svg>' +
+        '<div class="mg-rope"><svg class="mg-lines" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true"><path d="M500 0v120" stroke="#fff" stroke-width="5" stroke-dasharray="12 9"/><path d="M270 0v120M730 0v120" stroke="#fff" stroke-width="4" opacity=".7"/></svg>' +
         '<div class="mg-ropeg" id="mgRopeG"><div class="mg-kids L">' + kidSvg('#4DA3FF') + kidSvg('#4DA3FF') + '</div><div class="mg-line"><i class="mg-flag"></i></div><div class="mg-kids R">' + kidSvg('#FF6B6B', 1) + kidSvg('#FF6B6B', 1) + '</div></div></div>' +
         '<div class="mg-sides">' + side('L', '파랑 팀') + side('R', '빨강 팀') + '</div>';
       this.pos = 0; this.left = this.T; this.pts = { L: 0, R: 0 }; this.q = {}; this.fz = { L: 0, R: 0 }; this.wait = { L: 0, R: 0 }; this.lastSec = -1;

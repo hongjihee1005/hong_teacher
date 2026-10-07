@@ -73,7 +73,7 @@
   function tokH(t) {
     if (typeof t === 'string') {
       if (t === '○') return '<span class="mg-circ" aria-label="빈 동그라미">○</span>';
-      return /^[+−×÷=()]$/.test(t) ? '<span class="mg-op">' + t + '</span>' : '<span class="mg-tx">' + esc(t) + '</span>';
+      return /^[+−×÷=()]$/.test(t) ? '<span class="mg-op">' + t + '</span>' : '<span class="mg-tx">' + esc(t.replace(/쓰세요\./, '고르세요.')) + '</span>';   // 게임은 보기에서 고름
     }
     if (t.k === 'n') return '<span class="mg-n">' + t.v + '</span>';
     if (t.k === 'd') return '<span class="mg-n">' + AR.dstr(t.v, t.p) + '</span>';
@@ -503,7 +503,7 @@
       S.lives = S.maxLives = 0;
       function side(k, nm) { return '<div class="mg-side ' + k + '" id="mgSide' + k + '"><p class="mg-team">' + nm + ' <b id="mgPts' + k + '">0</b></p><div class="mg-qbox" id="mgQ' + k + '"></div><div class="mg-opts n4" id="mgOpts' + k + '"></div><div class="mg-freeze">앗! 잠깐 쉬어요</div></div>' }
       $('mgPlay').innerHTML = '<div class="mg-ground"><i class="mg-cloud c0"></i></div>' +
-        '<div class="mg-rope"><svg class="mg-lines" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true"><path d="M500 0v120" stroke="#fff" stroke-width="5" stroke-dasharray="12 9"/><path d="M180 0v120M820 0v120" stroke="#fff" stroke-width="4" opacity=".7"/></svg>' +
+        '<div class="mg-rope"><svg class="mg-lines" viewBox="0 0 1000 120" preserveAspectRatio="none" aria-hidden="true"><path d="M500 0v120" stroke="#fff" stroke-width="5" stroke-dasharray="12 9"/><path d="M270 0v120M730 0v120" stroke="#fff" stroke-width="4" opacity=".7"/></svg>' +
         '<div class="mg-ropeg" id="mgRopeG"><div class="mg-kids L">' + kidSvg('#4DA3FF') + kidSvg('#4DA3FF') + '</div><div class="mg-line"><i class="mg-flag"></i></div><div class="mg-kids R">' + kidSvg('#FF6B6B', 1) + kidSvg('#FF6B6B', 1) + '</div></div></div>' +
         '<div class="mg-sides">' + side('L', '파랑 팀') + side('R', '빨강 팀') + '</div>';
       this.pos = 0; this.left = this.T; this.pts = { L: 0, R: 0 }; this.q = {}; this.fz = { L: 0, R: 0 }; this.wait = { L: 0, R: 0 }; this.lastSec = -1;
