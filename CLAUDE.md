@@ -276,7 +276,7 @@ grade1/ … grade6/
 
 ### 기타 › 수학게임 (`project/math/index.html`, 2026-10-07)
 
-- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림) · 🧰 수학 교구실(`../mathtools/`, 2026-10-07 열림) · 📊 우리 반 그래프 · 🎩 수학 마술 · 📘 그림 수학 사전 · 🎲 교실 수학 놀이(뒤의 넷은 이 차례로 만드는 중, 열릴 때까지 '곧 열려요'). 방 이름은 추천한 이름을 선생님이 고름(2026-10-07).
+- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림) · 🧰 수학 교구실(`../mathtools/`, 2026-10-07 열림) · 📊 우리 반 그래프(`../classgraph/`, 열림) · 🎩 수학 마술 · 📘 그림 수학 사전 · 🎲 교실 수학 놀이(열림 표시가 없는 것은 이 차례로 만드는 중, 열릴 때까지 '곧 열려요'). 방 이름은 추천한 이름을 선생님이 고름(2026-10-07).
   창의수학게임·교과수학게임 메뉴의 위치 표시줄은 '홈 › 기타 › 수학게임'.
 
 ### 기타 › 수학게임 › 사고력 수학 (`project/thinking/`, 2026-10-07)
@@ -305,6 +305,14 @@ grade1/ … grade6/
 - **`project/mathtools/`의 index 말고는 직접 고치지 마세요.** 원본은 `_build/mathtools/`: 교구 목록 `tools.py`, 공통 틀 `page.html`·`page.css`·`shell.js`, 교구 `tools/<id>.js`(`window.TOOL = function (host, api)`, `api.bar(글)`)·`tools/<id>.css`.
   고친 뒤 `python3 _build/mathtools/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 교구를 더하면 `tools.py`·메뉴 카드·`run_all.py` 출력 목록을 고치고 `apply_theme.py`.
   클래스 앞글자: 공통 `tl-`, 교구마다 `bt-` `fr-` `nl-` `gb-` `pb-` `ag-` `ck-` `dc-`. 한 쪽에 svg가 여럿이면 `host.querySelector('svg')` 말고 클래스로 찾을 것(패턴 블록에서 조각 그림 svg를 잘못 잡은 적 있음). 메뉴 아이콘 🧰(toolbox)·📌(pin)·🔷(diamond)·🎩(hat)는 `icons.js`에 추가.
+
+### 기타 › 수학게임 › 우리 반 그래프 (`project/classgraph/`, 2026-10-07)
+
+- 메뉴 `project/classgraph/index.html`(손으로 고치는 메뉴) → `survey.html`(🗳️ 우리 반 설문하기: 질문·보기 2~8개, 학생이 큰 단추를 한 번씩 눌러 투표, 한 표 되돌리기, 결과 숨기기, '그래프로 보내기') · `graph.html`(📊 그래프 만들기: 표 12항목까지 → 표·그림그래프(그림 하나 10/5/2)·막대·가로 막대·꺾은선·띠·원그래프, 합계·가장 많은/적은 것·평균, 그래프만 인쇄, 예시 자료 5가지) · `sheet.html`(📄 빈 그래프 활동지: 막대·꺾은선·그림·띠+원 칸, 항목 수·세로 눈금 칸 수, 우리 반 자료 미리 넣기, A4 한 장 꽉 채움).
+- 띠·원그래프 백분율은 반올림해도 합이 100%가 되게 나머지가 큰 항목부터 1씩 더함(`pct`). 교과서 학년 표시는 참고용.
+- 자료는 그 기기 localStorage(`hj-cgraph-v1` 그래프 자료, `hj-cgraph-survey` 설문)에만.
+- **`project/classgraph/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/classgraph/`: 쪽 목록·설명 `build.py`의 `PAGES`, 틀 `page.html`(수학 교구실의 `page.css`·`shell.js`를 같이 씀), 공통 `common.js`(저장·예시), 쪽마다 `survey|graph|sheet.js`·`.css`.
+  고친 뒤 `python3 _build/classgraph/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 클래스 앞글자 `cg-`(그래프)·`sv-`(설문)·`sh-`(활동지). 인쇄는 `display:none`으로 나머지를 숨김(`visibility`로 숨기면 빈 쪽이 생김).
 
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
 
