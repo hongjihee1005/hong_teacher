@@ -1,8 +1,8 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>마방진 · 창의수학게임 · 기타 · 초등교사 홍지희</title>
-<meta name="description" content="가로·세로·대각선의 합이 모두 같아지도록 빈칸에 수를 넣는 마방진 퍼즐">
-<style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#C2571A;--ok:#2E9E5B;--bad:#D0453B;--cell:#FFFDF9;
+<title>네모 로직 · 창의수학게임 · 기타 · 초등교사 홍지희</title>
+<meta name="description" content="줄 끝의 수를 보고 칸을 칠해 숨은 그림을 찾는 네모 로직(노노그램) 퍼즐">
+<style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#C9463B;--ok:#2E9E5B;--bad:#D0453B;--cell:#FFFDF9;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37;--cell:#2F2925}}
 :root[data-theme="dark"]{--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37;--cell:#2F2925}
@@ -55,27 +55,29 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes cr-pop{50%{transform:scale(1.08)}}
 @media (max-width:640px){.cr-levels{grid-template-columns:1fr}.cr-lv{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 8px}.cr-lv small{width:100%}}
 @media print{.cr-gnav,.cr-levels,.cr-nums,.cr-bar button,.cr-how,.creditbar,.hj-nav,.hj-navbar,#hj-home{display:none!important}}
-/* 마방진 */
-.mg3-goal{margin:0;text-align:center;color:var(--soft)}
-.mg3-goal b{font-family:var(--display);font-weight:400;font-size:1.3em;color:var(--acc)}
-.mg3-wrap{display:grid;gap:6px;align-items:center;justify-items:center;--c:clamp(54px,14vw,88px)}
-.mg3-wrap.n3{grid-template-columns:44px repeat(3,var(--c)) 44px}
-.mg3-wrap.n4{--c:clamp(48px,12.5vw,78px);grid-template-columns:40px repeat(4,var(--c)) 40px}
-.mg3-gap{width:1px;height:1px}
-.mg3-cell{width:var(--c);height:var(--c);border:3px solid var(--line);background:var(--cell);border-radius:14px;font-family:var(--display);font-size:calc(var(--c)*.42);display:grid;place-items:center;padding:0;transition:transform .12s}
-.mg3-cell:not(.giv):hover{border-color:var(--acc)}
-.mg3-cell.giv{background:color-mix(in srgb,var(--acc) 12%,var(--paper));border-color:color-mix(in srgb,var(--acc) 35%,var(--line));color:var(--ink);cursor:default;opacity:1}
-.mg3-cell.sel{border-color:var(--acc);box-shadow:0 0 0 4px color-mix(in srgb,var(--acc) 25%,transparent)}
-.mg3-cell.hint{animation:cr-pop .5s;border-color:var(--ok)}
-.mg3-sum{min-width:36px;min-height:30px;display:grid;place-items:center;font-size:16px;font-weight:700;color:var(--soft);border-radius:10px;padding:0 4px}
-.mg3-sum.d{font-size:14px;gap:1px;grid-auto-flow:column}.mg3-sum.d::before{font-size:12px;opacity:.75}.mg3-sum.d1::before{content:'\2198'}.mg3-sum.d2::before{content:'\2199'}
-.mg3-sum.ok{color:#fff;background:var(--ok)}
-.mg3-sum.no{color:#fff;background:var(--bad)}
-.mg3-ph{margin:4px 0 0;font-size:15px;color:var(--soft);text-align:center}
-.mg3-pool{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;max-width:640px}
-.mg3-tile{min-width:56px;height:56px;padding:0 8px;border:3px solid var(--line);background:var(--paper);border-radius:14px;font-family:var(--display);font-size:24px;box-shadow:0 4px 0 var(--line)}
-.mg3-tile.sel{border-color:var(--acc);background:var(--acc);color:#fff;transform:translateY(-3px)}
-@media (max-width:420px){.mg3-wrap.n3{grid-template-columns:34px repeat(3,var(--c)) 34px}.mg3-wrap.n4{grid-template-columns:30px repeat(4,var(--c)) 30px;--c:clamp(44px,15vw,70px)}.mg3-sum{min-width:28px;font-size:14px}}
+/* 네모 로직 */
+.ng-goal{margin:0;text-align:center;color:var(--soft)}
+.ng-goal b{color:var(--acc)}
+.ng-modes{display:flex;gap:8px;justify-content:center}
+.ng-mode{border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 18px;font-family:var(--display);font-size:19px}
+.ng-mode[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.ng-wrap{width:100%;display:flex;justify-content:center;overflow:hidden}
+.ng-board{--c:30px;flex:none;display:grid;grid-template-columns:auto repeat(var(--w),var(--c));grid-template-rows:auto repeat(var(--h),var(--c));user-select:none;-webkit-user-select:none;touch-action:none}
+.ng-corner{border-right:2px solid var(--ink);border-bottom:2px solid var(--ink)}
+.ng-cc{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;padding:2px 0 3px;border-bottom:2px solid var(--ink);border-right:1px solid var(--line);font-weight:800;font-size:calc(var(--c)*.5);line-height:1.15;color:var(--ink);background:color-mix(in srgb,var(--acc) 6%,var(--bg))}
+.ng-rc{display:flex;justify-content:flex-end;align-items:center;gap:calc(var(--c)*.28);padding:0 6px 0 4px;border-right:2px solid var(--ink);border-bottom:1px solid var(--line);font-weight:800;font-size:calc(var(--c)*.5);color:var(--ink);background:color-mix(in srgb,var(--acc) 6%,var(--bg));white-space:nowrap}
+.ng-cc.done,.ng-rc.done{color:#B5A99D;background:transparent}
+.ng-cc.b5{border-right:2px solid var(--ink)}.ng-rc.b5{border-bottom:2px solid var(--ink)}
+.ng-cell{position:relative;border-right:1px solid #D9CEC2;border-bottom:1px solid #D9CEC2;background:var(--cell);cursor:pointer}
+.ng-cell.br5{border-right:2px solid var(--ink)}.ng-cell.bb5{border-bottom:2px solid var(--ink)}
+.ng-cell.on{background:#2F2722}
+.ng-cell.x::before,.ng-cell.x::after{content:"";position:absolute;left:22%;right:22%;top:50%;height:2px;margin-top:-1px;background:#B9AA9C;transform:rotate(45deg)}
+.ng-cell.x::after{transform:rotate(-45deg)}
+.ng-cell.hint{animation:cr-pop .5s}
+.ng-board.win .ng-cell{border-color:transparent}.ng-board.win .ng-cell.on{background:var(--acc)}.ng-board.win .ng-cell.x::before,.ng-board.win .ng-cell.x::after{display:none}
+.ng-tip{margin:0;font-size:15px;color:var(--soft);text-align:center}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .ng-cell.on{background:#F1E6DA}:root:not([data-theme="light"]) .ng-cell{border-color:#4A3F37}}
+:root[data-theme="dark"] .ng-cell.on{background:#F1E6DA}:root[data-theme="dark"] .ng-cell{border-color:#4A3F37}
 
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
@@ -755,10 +757,10 @@ html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:n
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
 </style><!--/hj-ctheme--></head><body>
 <main>
-<nav class="cr-gnav" aria-label="다른 창의수학게임"><a href="magic.html" aria-current="page">마방진</a><a href="tangram.html">칠교놀이</a><a href="kenken.html">계산 스도쿠</a><a href="hanoi.html">하노이 탑</a><a href="nonogram.html">네모 로직</a></nav>
-<h1>✳️ 마방진</h1>
-<p class="sub">가로, 세로, 대각선에 있는 수를 더하면 모두 같은 수가 되는 신기한 네모, 마방진! 남은 수 카드를 빈칸에 알맞게 넣어 마방진을 완성해 보세요.</p>
-<details class="cr-how"><summary>이렇게 해요</summary><ul><li>아래 <b>수 카드</b>를 하나 고르고 <b>빈칸</b>을 누르면 들어가요. 빈칸을 먼저 눌러도 돼요.</li><li>넣은 수를 다시 누르면 카드로 돌아가요.</li><li>오른쪽·아래의 작은 수는 그 줄의 합이에요(↘·↙는 대각선). 줄이 다 차면 <b style="color:var(--ok)">초록</b>(맞음)이나 <b style="color:var(--bad)">빨강</b>(다시 생각)으로 바뀌어요.</li><li>💡 실마리: 3×3 마방진은 가운데 수가 아주 중요해요. 가운데를 지나는 줄이 4개나 되거든요!</li></ul></details>
+<nav class="cr-gnav" aria-label="다른 창의수학게임"><a href="magic.html">마방진</a><a href="tangram.html">칠교놀이</a><a href="kenken.html">계산 스도쿠</a><a href="hanoi.html">하노이 탑</a><a href="nonogram.html" aria-current="page">네모 로직</a></nav>
+<h1>🔳 네모 로직</h1>
+<p class="sub">줄 끝에 적힌 수만큼 칸을 이어서 칠하다 보면 숨은 그림이 나타나요! 수를 잘 따져서 어떤 칸을 칠하고 어떤 칸을 비울지 찾아보세요.</p>
+<details class="cr-how"><summary>이렇게 해요</summary><ul><li>가로줄 왼쪽, 세로줄 위의 수는 그 줄에서 <b>이어서 칠한 칸 묶음의 길이</b>예요. 수가 여러 개면 그 차례대로 묶음이 있고, 묶음 사이에는 빈칸이 한 칸 이상 있어요. 예: <b>3 1</b> → ■■■□■</li><li><b>■ 칠하기</b>로 칸을 칠하고, 칠하지 않을 게 확실한 칸은 <b>✕ X 표시</b>를 해 두면 생각하기 쉬워요. 눌러서 끌면 여러 칸이 한 번에 바뀌어요.</li><li>줄이 수와 맞으면 그 수가 흐려져요. 모든 칸을 맞게 칠하면 그림 이름이 나와요.</li><li>💡 실마리: 5칸 줄의 <b>5</b>나 10칸 줄의 <b>10</b>처럼 줄을 꽉 채우는 수부터 칠하세요. <b>4</b>(5칸 줄)처럼 큰 수는 왼쪽 끝에 붙여도, 오른쪽 끝에 붙여도 겹치는 칸이 있어요. 모든 문제는 찍지 않고 풀려요.</li></ul></details>
 <div class="cr-levels" id="crLevels" role="tablist" aria-label="단계"></div>
 <div class="cr-nums" id="crNums" aria-label="문제 번호"></div>
 <section class="cr-play" id="crPlay" aria-live="polite">
@@ -770,66 +772,67 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 </section>
 <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>생각하는 힘을 기르는 창의수학게임 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
 </main>
-<script>window.CR={"game":"magic","levels":[{"id":"easy","nm":"쉬움","rec":"2~3학년","de":"1~9로 만드는 3×3 마방진(합 15). 몇 칸은 미리 채워져 있어요."},{"id":"normal","nm":"보통","rec":"3~4학년","de":"2~10, 홀수, 10·20…90처럼 다른 수 묶음으로 만드는 3×3 마방진."},{"id":"hard","nm":"도전","rec":"5~6학년","de":"1~16으로 만드는 4×4 마방진(합 34). 줄이 10개나 돼요!"}],"data":{"easy":[{"n":3,"g":[0,9,2,0,5,7,0,0,0],"s":[4,9,2,3,5,7,8,1,6],"sum":15,"a":1,"d":1},{"n":3,"g":[0,0,4,0,5,0,6,0,8],"s":[2,9,4,7,5,3,6,1,8],"sum":15,"a":1,"d":1},{"n":3,"g":[2,9,0,0,0,3,0,1,0],"s":[2,9,4,7,5,3,6,1,8],"sum":15,"a":1,"d":1},{"n":3,"g":[4,9,2,0,0,0,0,0,6],"s":[4,9,2,3,5,7,8,1,6],"sum":15,"a":1,"d":1},{"n":3,"g":[0,0,0,1,5,9,0,0,4],"s":[6,7,2,1,5,9,8,3,4],"sum":15,"a":1,"d":1},{"n":3,"g":[4,0,2,0,0,7,0,1,0],"s":[4,9,2,3,5,7,8,1,6],"sum":15,"a":1,"d":1},{"n":3,"g":[2,0,0,9,0,1,0,3,0],"s":[2,7,6,9,5,1,4,3,8],"sum":15,"a":1,"d":1},{"n":3,"g":[2,0,0,0,5,0,0,1,8],"s":[2,9,4,7,5,3,6,1,8],"sum":15,"a":1,"d":1},{"n":3,"g":[0,7,6,0,0,1,0,3,0],"s":[2,7,6,9,5,1,4,3,8],"sum":15,"a":1,"d":1},{"n":3,"g":[2,0,0,0,0,1,0,3,8],"s":[2,7,6,9,5,1,4,3,8],"sum":15,"a":1,"d":1},{"n":3,"g":[0,0,0,1,5,0,6,0,0],"s":[8,3,4,1,5,9,6,7,2],"sum":15,"a":1,"d":1},{"n":3,"g":[0,0,6,3,5,0,0,0,0],"s":[8,1,6,3,5,7,4,9,2],"sum":15,"a":1,"d":1},{"n":3,"g":[0,1,6,0,5,0,0,0,0],"s":[8,1,6,3,5,7,4,9,2],"sum":15,"a":1,"d":1},{"n":3,"g":[6,0,2,0,0,0,0,3,0],"s":[6,7,2,1,5,9,8,3,4],"sum":15,"a":1,"d":1},{"n":3,"g":[6,0,0,0,0,0,8,3,0],"s":[6,7,2,1,5,9,8,3,4],"sum":15,"a":1,"d":1},{"n":3,"g":[0,0,0,0,0,7,0,9,2],"s":[8,1,6,3,5,7,4,9,2],"sum":15,"a":1,"d":1},{"n":3,"g":[0,9,0,0,0,0,0,1,6],"s":[4,9,2,3,5,7,8,1,6],"sum":15,"a":1,"d":1},{"n":3,"g":[6,0,0,0,0,0,2,0,4],"s":[6,1,8,7,5,3,2,9,4],"sum":15,"a":1,"d":1},{"n":3,"g":[8,0,0,0,0,7,0,0,2],"s":[8,1,6,3,5,7,4,9,2],"sum":15,"a":1,"d":1},{"n":3,"g":[0,3,0,9,0,1,0,0,0],"s":[4,3,8,9,5,1,2,7,6],"sum":15,"a":1,"d":1}],"normal":[{"n":3,"g":[0,8,7,10,0,0,0,0,0],"s":[3,8,7,10,6,2,5,4,9],"sum":18,"a":2,"d":1},{"n":3,"g":[0,8,3,0,0,0,0,0,0],"s":[7,8,3,2,6,10,9,4,5],"sum":18,"a":2,"d":1},{"n":3,"g":[0,0,8,0,0,0,6,0,10],"s":[4,9,8,11,7,3,6,5,10],"sum":21,"a":3,"d":1},{"n":3,"g":[0,0,0,0,0,0,10,0,6],"s":[8,9,4,3,7,11,10,5,6],"sum":21,"a":3,"d":1},{"n":3,"g":[11,0,3,0,0,0,0,0,7],"s":[11,13,3,1,9,17,15,5,7],"sum":27,"a":1,"d":2},{"n":3,"g":[7,0,0,0,0,0,3,0,0],"s":[7,5,15,17,9,1,3,13,11],"sum":27,"a":1,"d":2},{"n":3,"g":[0,14,12,0,10,0,0,0,0],"s":[4,14,12,18,10,2,8,6,16],"sum":30,"a":2,"d":2},{"n":3,"g":[0,18,0,0,0,0,12,0,0],"s":[4,18,8,14,10,6,12,2,16],"sum":30,"a":2,"d":2},{"n":3,"g":[0,0,0,45,25,0,0,35,0],"s":[20,15,40,45,25,5,10,35,30],"sum":75,"a":5,"d":5},{"n":3,"g":[20,0,0,45,0,0,0,0,0],"s":[20,15,40,45,25,5,10,35,30],"sum":75,"a":5,"d":5},{"n":3,"g":[0,70,60,0,0,10,0,0,0],"s":[20,70,60,90,50,10,40,30,80],"sum":150,"a":10,"d":10},{"n":3,"g":[0,0,60,0,0,0,0,90,0],"s":[80,10,60,30,50,70,40,90,20],"sum":150,"a":10,"d":10},{"n":3,"g":[0,10,0,0,16,0,7,0,0],"s":[13,10,25,28,16,4,7,22,19],"sum":48,"a":4,"d":3},{"n":3,"g":[19,0,0,0,0,0,0,28,0],"s":[19,4,25,22,16,10,7,28,13],"sum":48,"a":4,"d":3},{"n":3,"g":[1,8,0,6,0,0,0,0,0],"s":[1,8,3,6,4,2,5,0,7],"sum":12,"a":0,"d":1},{"n":3,"g":[0,0,0,0,0,0,1,0,3],"s":[5,0,7,6,4,2,1,8,3],"sum":12,"a":0,"d":1},{"n":3,"g":[0,0,0,17,0,13,0,19,0],"s":[16,11,18,17,15,13,12,19,14],"sum":45,"a":11,"d":1},{"n":3,"g":[0,0,0,0,0,0,0,13,14],"s":[16,17,12,11,15,19,18,13,14],"sum":45,"a":11,"d":1},{"n":3,"g":[0,0,15,0,0,11,0,3,0],"s":[7,35,15,27,19,11,23,3,31],"sum":57,"a":3,"d":4},{"n":3,"g":[0,0,7,0,0,0,0,3,0],"s":[15,35,7,11,19,27,31,3,23],"sum":57,"a":3,"d":4}],"hard":[{"n":4,"g":[16,1,12,0,7,0,0,10,2,14,0,0,9,0,0,4],"s":[16,1,12,5,7,11,6,10,2,14,3,15,9,8,13,4],"sum":34,"a":1,"d":1},{"n":4,"g":[15,0,3,6,4,0,0,9,0,0,2,7,1,0,0,12],"s":[15,10,3,6,4,5,16,9,14,11,2,7,1,8,13,12],"sum":34,"a":1,"d":1},{"n":4,"g":[0,0,13,1,9,5,0,12,0,0,10,6,14,0,0,15],"s":[4,16,13,1,9,5,8,12,7,11,10,6,14,2,3,15],"sum":34,"a":1,"d":1},{"n":4,"g":[13,8,11,2,0,0,0,14,4,9,0,0,16,0,10,0],"s":[13,8,11,2,1,12,7,14,4,9,6,15,16,5,10,3],"sum":34,"a":1,"d":1},{"n":4,"g":[0,7,0,9,10,11,0,0,3,2,13,16,0,0,0,4],"s":[6,7,12,9,10,11,8,5,3,2,13,16,15,14,1,4],"sum":34,"a":1,"d":1},{"n":4,"g":[12,0,0,1,7,0,4,14,0,0,0,11,13,0,10,8],"s":[12,6,15,1,7,9,4,14,2,16,5,11,13,3,10,8],"sum":34,"a":1,"d":1},{"n":4,"g":[3,15,0,14,10,0,0,7,16,0,0,1,0,9,8,0],"s":[3,15,2,14,10,6,11,7,16,4,13,1,5,9,8,12],"sum":34,"a":1,"d":1},{"n":4,"g":[0,0,2,3,0,0,16,6,4,10,0,13,0,8,0,12],"s":[14,15,2,3,11,1,16,6,4,10,7,13,5,8,9,12],"sum":34,"a":1,"d":1},{"n":4,"g":[0,0,0,16,10,0,4,13,8,0,14,0,0,12,15,2],"s":[11,6,1,16,10,7,4,13,8,9,14,3,5,12,15,2],"sum":34,"a":1,"d":1},{"n":4,"g":[0,0,0,0,0,2,0,7,10,8,15,1,5,11,4,0],"s":[3,13,6,12,16,2,9,7,10,8,15,1,5,11,4,14],"sum":34,"a":1,"d":1},{"n":4,"g":[16,0,11,2,0,0,8,0,6,0,1,12,0,0,14,0],"s":[16,5,11,2,3,10,8,13,6,15,1,12,9,4,14,7],"sum":34,"a":1,"d":1},{"n":4,"g":[5,0,10,0,9,0,4,6,0,0,0,0,12,14,0,1],"s":[5,3,10,16,9,15,4,6,8,2,13,11,12,14,7,1],"sum":34,"a":1,"d":1},{"n":4,"g":[0,2,15,9,10,0,4,0,11,0,0,6,0,0,0,12],"s":[8,2,15,9,10,13,4,7,11,16,1,6,5,3,14,12],"sum":34,"a":1,"d":1},{"n":4,"g":[0,3,0,10,16,2,0,0,1,15,12,6,0,0,0,0],"s":[13,3,8,10,16,2,5,11,1,15,12,6,4,14,9,7],"sum":34,"a":1,"d":1},{"n":4,"g":[9,0,2,0,0,0,0,13,5,3,0,12,0,6,0,1],"s":[9,15,2,8,4,10,7,13,5,3,14,12,16,6,11,1],"sum":34,"a":1,"d":1},{"n":4,"g":[7,11,0,0,0,2,3,0,0,0,13,0,9,5,8,0],"s":[7,11,10,6,14,2,3,15,4,16,13,1,9,5,8,12],"sum":34,"a":1,"d":1},{"n":4,"g":[0,11,0,2,3,10,0,0,0,7,1,0,0,6,4,0],"s":[8,11,13,2,3,10,16,5,14,7,1,12,9,6,4,15],"sum":34,"a":1,"d":1},{"n":4,"g":[11,0,0,6,10,7,14,0,0,0,0,13,0,16,1,0],"s":[11,2,15,6,10,7,14,3,8,9,4,13,5,16,1,12],"sum":34,"a":1,"d":1},{"n":4,"g":[0,16,0,5,0,10,8,0,6,0,0,12,14,0,15,0],"s":[11,16,2,5,3,10,8,13,6,7,9,12,14,1,15,4],"sum":34,"a":1,"d":1},{"n":4,"g":[2,0,0,0,0,11,0,14,0,6,0,3,0,10,1,8],"s":[2,7,16,9,5,11,4,14,12,6,13,3,15,10,1,8],"sum":34,"a":1,"d":1}]}};
-/* 창의수학게임 › 마방진: 빈칸에 수 카드를 넣어 가로·세로·대각선의 합이 모두 같게 */
+<script>window.CR={"game":"nonogram","levels":[{"id":"easy","nm":"쉬움","rec":"2~3학년","de":"5×5 칸. 하트·집·나무 같은 쉬운 그림이 숨어 있어요."},{"id":"normal","nm":"보통","rec":"4~5학년","de":"10×10 칸. 굵은 선으로 5칸씩 나뉘어 있어요."},{"id":"hard","nm":"도전","rec":"5~6학년","de":"15×15 칸. 동물·탈것·건물이 숨어 있어요."}],"data":{"easy":[{"nm":"나무","w":5,"h":5,"rc":[[1],[3],[5],[1],[3]],"cc":[[1],[2,1],[5],[2,1],[1]],"s":["00100","01110","11111","00100","01110"],"k":2},{"nm":"로켓","w":5,"h":5,"rc":[[1],[3],[3],[3],[2,2]],"cc":[[1],[4],[4],[4],[1]],"s":["00100","01110","01110","01110","11011"],"k":2},{"nm":"버섯","w":5,"h":5,"rc":[[3],[5],[1,1,1],[3],[3]],"cc":[[2],[2,2],[5],[2,2],[2]],"s":["01110","11111","10101","01110","01110"],"k":2},{"nm":"화살표","w":5,"h":5,"rc":[[1],[3],[1,1,1],[1],[1]],"cc":[[1],[1],[5],[1],[1]],"s":["00100","01110","10101","00100","00100"],"k":3},{"nm":"배","w":5,"h":5,"rc":[[1],[2],[1],[5],[3]],"cc":[[1],[2],[5],[1,2],[1]],"s":["00100","00110","00100","11111","01110"],"k":3},{"nm":"우산","w":5,"h":5,"rc":[[3],[5],[1],[1],[2]],"cc":[[1],[2,1],[5],[2],[1]],"s":["01110","11111","00100","00100","01100"],"k":3},{"nm":"꽃","w":5,"h":5,"rc":[[1,1],[5],[3],[1],[2]],"cc":[[1],[3,1],[4],[3],[1]],"s":["01010","11111","01110","00100","01100"],"k":3},{"nm":"집","w":5,"h":5,"rc":[[1],[3],[5],[1,1],[3]],"cc":[[1],[4],[3,1],[4],[1]],"s":["00100","01110","11111","01010","01110"],"k":3},{"nm":"하트","w":5,"h":5,"rc":[[1,1],[5],[5],[3],[1]],"cc":[[2],[4],[4],[4],[2]],"s":["01010","11111","11111","01110","00100"],"k":3},{"nm":"고양이","w":5,"h":5,"rc":[[1,1],[5],[1,1,1],[5],[3]],"cc":[[4],[1,2],[4],[1,2],[4]],"s":["10001","11111","10101","11111","01110"],"k":3},{"nm":"음표","w":5,"h":5,"rc":[[2],[1,1],[1],[3],[3]],"cc":[[2],[2],[5],[1],[1]],"s":["00110","00101","00100","11100","11100"],"k":4},{"nm":"별","w":5,"h":5,"rc":[[1],[5],[3],[1,1],[1,1]],"cc":[[1,1],[3],[3],[3],[1,1]],"s":["00100","11111","01110","01010","10001"],"k":4}],"normal":[{"nm":"버섯","w":10,"h":10,"rc":[[4],[2,2,2],[10],[1,4,1],[10],[1,1],[1,1],[4],[],[]],"cc":[[3],[2,1],[2,1],[1,6],[5,1],[5,1],[1,6],[2,1],[2,1],[3]],"s":["0001111000","0110110110","1111111111","1001111001","1111111111","0001001000","0001001000","0001111000","0000000000","0000000000"],"k":3},{"nm":"우산","w":10,"h":10,"rc":[[2],[6],[8],[10],[1,1,2,1,1],[2],[2],[2],[1,2],[4]],"cc":[[2],[2,2],[4,1],[3,1],[10],[9],[3],[4],[2],[2]],"s":["0000110000","0011111100","0111111110","1111111111","1010110101","0000110000","0000110000","0000110000","0100110000","0111100000"],"k":3},{"nm":"음표","w":10,"h":10,"rc":[[6],[6],[1,1],[1,1],[1,1],[1,1],[3,3],[4,4],[4,4],[2,2]],"cc":[[],[2],[4],[4],[9],[2],[2,2],[2,4],[2,4],[9]],"s":["0000111111","0000111111","0000100001","0000100001","0000100001","0000100001","0011100111","0111101111","0111101111","0011000110"],"k":3},{"nm":"게","w":10,"h":10,"rc":[[1,1],[2,2],[1,1,1,1],[6],[8],[10],[8],[1,1,1,1],[1,1,1,1],[]],"cc":[[1,1,2],[3,3],[5],[5,1],[4],[4],[5,1],[5],[3,3],[1,1,2]],"s":["0100000010","1100000011","0101001010","0011111100","0111111110","1111111111","0111111110","1010000101","1001001001","0000000000"],"k":3},{"nm":"물고기","w":10,"h":10,"rc":[[],[4],[7],[1,2,5],[10],[10],[1,7],[6],[3],[]],"cc":[[4],[2],[6],[6],[2,5],[8],[8],[7],[5],[3]],"s":["0000000000","0000111100","0011111110","1011011111","1111111111","1111111111","1011111110","0011111100","0000111000","0000000000"],"k":3},{"nm":"집","w":10,"h":10,"rc":[[2],[4,1],[6],[8],[10],[1,1],[1,2,1,1],[1,2,1],[1,2,1,1],[10]],"cc":[[1,1],[7],[3,1],[4,4],[5,4],[5,1],[4,1,2],[3,1],[1,7],[1,1]],"s":["0000110000","0001111010","0011111100","0111111110","1111111111","0100000010","0101101010","0101100010","0101101010","1111111111"],"k":3},{"nm":"고양이","w":10,"h":10,"rc":[[1,1],[2,2],[8],[1,4,1],[8],[6],[4],[6,1],[8,1],[8,1]],"cc":[[5,2],[2,2,3],[8],[8],[8],[8],[2,2,3],[5,2],[],[3]],"s":["1000000100","1100001100","1111111100","1011110100","1111111100","0111111000","0011110000","0111111001","1111111101","1111111101"],"k":3},{"nm":"나비","w":10,"h":10,"rc":[[2,2],[4,4],[5,4],[10],[3,3],[3,3],[10],[4,4],[2,2],[]],"cc":[[3,2],[9],[9],[7],[2,1],[1,1],[7],[9],[9],[3,2]],"s":["0110000110","1111001111","1111101111","1111111111","0111001110","0111001110","1111111111","1111001111","0110000110","0000000000"],"k":3},{"nm":"오리","w":10,"h":10,"rc":[[3],[5],[2,2],[3,4],[4],[6,1],[9],[8],[6],[4]],"cc":[[1],[4,2],[9],[2,6],[10],[3,5],[1,5],[1,4],[2],[2]],"s":["0011100000","0111110000","0110110000","1110111100","0111100000","0011111101","0111111111","0111111110","0011111100","0001111000"],"k":4},{"nm":"하트","w":10,"h":10,"rc":[[2,2],[4,4],[10],[10],[10],[8],[6],[4],[2],[]],"cc":[[4],[6],[7],[7],[7],[7],[7],[7],[6],[4]],"s":["0110000110","1111001111","1111111111","1111111111","1111111111","0111111110","0011111100","0001111000","0000110000","0000000000"],"k":4},{"nm":"사과","w":10,"h":10,"rc":[[1],[1,2],[2,3],[8],[10],[10],[10],[8],[8],[2,2]],"cc":[[3],[6],[8],[8],[1,6],[1,7],[9],[9],[6],[3]],"s":["0000010000","0000101100","0011011100","0111111110","1111111111","1111111111","1111111111","0111111110","0111111110","0011001100"],"k":4},{"nm":"자동차","w":10,"h":10,"rc":[[],[4],[1,2,1],[1,2,1],[10],[10],[10],[2,2],[2,2],[]],"cc":[[3],[6],[1,5],[1,3],[6],[6],[1,3],[1,5],[6],[3]],"s":["0000000000","0001111000","0010110100","0100110010","1111111111","1111111111","1111111111","0110000110","0110000110","0000000000"],"k":5}],"hard":[{"nm":"로봇","w":15,"h":15,"rc":[[1],[3],[9],[1,1],[1,2,2,1],[1,2,2,1],[1,1],[1,3,1],[9],[1],[13],[2,1,1,2],[2,1,1,1,1,1,2],[9],[3,3]],"cc":[[2],[3],[1],[7,5],[1,1,1,2],[1,2,1,1,3],[2,2,2,1,1],[3,4,2],[2,2,2,1,1],[1,2,1,1,3],[1,1,1,2],[7,5],[1],[3],[2]],"s":["000000010000000","000000111000000","000111111111000","000100000001000","000101101101000","000101101101000","000100000001000","000100111001000","000111111111000","000000010000000","011111111111110","110100000001011","110101010101011","000111111111000","000111000111000"],"k":3},{"nm":"배","w":15,"h":15,"rc":[[1],[2],[3],[4],[5],[6],[1,7],[2,1],[3,1],[4,1],[15],[13],[11],[9],[1,1,1,1,1,1,1,1]],"cc":[[2,1],[4],[6,1],[8],[5],[4],[5],[14],[6,5],[5,4],[4,5],[3,4],[2,3,1],[1,2],[1,1]],"s":["000000010000000","000000011000000","000000011100000","000000011110000","000000011111000","000000011111100","000100011111110","001100010000000","011100010000000","111100010000000","111111111111111","011111111111110","001111111111100","000111111111000","101010101010101"],"k":3},{"nm":"집","w":15,"h":15,"rc":[[1,2],[3,2],[5,2],[7,2],[11],[13],[13],[15],[1,1],[1,3,3,1],[1,1,1,1,1,1],[1,3,1,3,1],[1,1,1],[1,1,1],[15]],"cc":[[1,1],[9],[3,1],[4,3,1],[5,1,1,1],[6,3,1],[7,1],[8,4],[7,1],[6,3,1],[5,1,1,1],[4,3,1],[8,1],[15],[1,1,1]],"s":["000000010000110","000000111000110","000001111100110","000011111110110","000111111111110","001111111111111","011111111111110","111111111111111","010000000000010","010111000111010","010101000101010","010111010111010","010000010000010","010000010000010","111111111111111"],"k":3},{"nm":"고래","w":15,"h":15,"rc":[[1,1],[1],[3],[7],[9,1],[11,2],[4,8,1],[14],[14],[15],[13],[9],[],[1,1,1,1,1],[1,1,2,1,2,1]],"cc":[[4],[6,1],[8,1],[9,1],[3,5,1],[9,1],[9,1],[9,1],[9,1],[1,10,1],[2,8,1],[1,1,6,1],[5,1],[1,4,1],[3,1]],"s":["000000000101000","000000000010000","000000000111000","000111111100000","001111111110001","011111111111011","111101111111101","111111111111110","111111111111110","111111111111111","011111111111110","001111111110000","000000000000000","001010010100100","010101101011010"],"k":3},{"nm":"부엉이","w":15,"h":15,"rc":[[1,1],[2,2],[13],[2,5,2],[1,3,3,3,1],[1,1,1,3,1,1,1],[1,3,3,3,1],[2,2,2,2],[6,6],[13],[2,1,3,1,2],[3,1,1,1,3],[2,1,3,1,2],[11],[2,2]],"cc":[[5],[4,6],[2,3,6],[1,1,1,2,1,2],[1,3,3,3],[2,3,1,1],[9,2],[5,5],[9,2],[2,3,1,1],[1,3,3,3],[1,1,1,2,1,2],[2,3,6],[4,6],[5]],"s":["010000000000010","011000000000110","011111111111110","110001111100011","101110111011101","101010111010101","101110111011101","110001101100011","011111101111110","011111111111110","011010111010110","011101010101110","011010111010110","001111111111100","000110000011000"],"k":3},{"nm":"찻잔","w":15,"h":15,"rc":[[1,1,1],[1,1,1],[1,1,1],[],[11],[12],[11,1],[11,1],[11,1],[12],[11],[9],[7],[15],[13]],"cc":[[1],[7,2],[8,2],[1,1,11],[1,11],[11],[1,1,11],[1,11],[11],[1,1,11],[1,8,2],[7,2],[1,1,2],[3,2],[1]],"s":["000100100100000","000010010010000","000100100100000","000000000000000","011111111111000","011111111111100","011111111111010","011111111111010","011111111111010","011111111111100","011111111111000","001111111110000","000111111100000","111111111111111","011111111111110"],"k":3},{"nm":"거북","w":15,"h":15,"rc":[[],[5],[2,1,1,2],[1,7,1],[3,1,1,1,3],[1,9,1],[14],[14],[13],[2,2],[3,3],[],[],[],[]],"cc":[[2],[5,1],[2,5],[1,7],[2,4],[1,6],[3,4],[1,6],[3,4],[1,6],[2,4],[1,7],[2,5],[5,1],[]],"s":["000000000000000","000001111100000","000110101011000","001011111110100","011101010101110","010111111111010","111111111111110","111111111111110","011111111111110","001100000001100","011100000001110","000000000000000","000000000000000","000000000000000","000000000000000"],"k":4},{"nm":"토끼","w":15,"h":15,"rc":[[2,2],[1,1,1,1],[1,1,1,1],[1,1,1,1],[1,2,2,1],[11],[2,5,2],[11],[5,5],[9],[7],[9,2],[11,2],[11],[4,4]],"cc":[[],[4,2],[9,4],[1,1,8],[1,11],[14],[3,5],[14],[1,11],[1,1,8],[9,4],[4,2],[],[2],[2]],"s":["000110001100000","001001010010000","001001010010000","001001010010000","001011011010000","011111111111000","011011111011000","011111111111000","011111011111000","001111111110000","000111111100000","001111111110011","011111111111011","011111111111000","001111011110000"],"k":4},{"nm":"코끼리","w":15,"h":15,"rc":[[],[6],[10],[12],[3,9],[14],[14],[5,8],[3,9],[2,9],[1,2,3,2],[2,3,2],[2,3,2],[],[]],"cc":[[6],[7],[7],[6],[3,3],[6,5],[12],[9],[12],[12],[11],[8],[10],[9],[]],"s":["000000000000000","000011111100000","001111111111000","011111111111100","011101111111110","111111111111110","111111111111110","111110111111110","111001111111110","110001111111110","100001101110110","000001101110110","000001101110110","000000000000000","000000000000000"],"k":4},{"nm":"성","w":15,"h":15,"rc":[[1,1,1,1,1,1],[5,5],[3,1,3],[3,3,3],[3,5,3],[13],[13],[2,3,3,2],[2,3,3,2],[13],[5,5],[4,4],[4,4],[4,4],[15]],"cc":[[2,1],[14],[15],[6,6],[2,10],[7,1],[7,1],[5,1,1],[7,1],[7,1],[2,10],[6,6],[15],[14],[2,1]],"s":["101010000010101","111110000011111","011100010001110","011100111001110","011101111101110","011111111111110","011111111111110","011011101110110","011011101110110","011111111111110","011111000111110","011110000011110","011110000011110","011110000011110","111111111111111"],"k":4},{"nm":"나무","w":15,"h":15,"rc":[[3],[7],[9],[3,5,1],[11],[13],[4,4,3],[11],[9],[5],[3],[3],[3],[5],[9]],"cc":[[],[2],[5],[7,1],[8,1],[2,2,3,2],[15],[15],[15],[9,2],[5,2,1],[1,5,1],[5],[2],[]],"s":["000000111000000","000011111110000","000111111111000","001110111110100","001111111111100","011111111111110","011110111101110","001111111111100","000111111111000","000001111100000","000000111000000","000000111000000","000000111000000","000001111100000","000111111111000"],"k":5},{"nm":"기린","w":15,"h":15,"rc":[[1,1],[3],[4],[5],[2],[2],[1,1],[2],[3],[4,1,1],[12],[9,2],[2,1],[2,2],[2,2]],"cc":[[1],[2],[11],[5,8],[4,1,7],[3],[2],[3],[2],[2],[3],[2,2],[1,3],[2],[1]],"s":["001010000000000","001110000000000","011110000000000","111110000000000","001100000000000","001100000000000","001010000000000","001100000000000","001110000000000","001111010010000","001111111111110","000111111111011","000110000000100","000110000001100","000110000001100"],"k":6}]}};
+/* 창의수학게임 › 네모 로직: 줄 끝의 수(이어서 칠한 칸 묶음의 길이)를 보고 칸을 칠해 숨은 그림 찾기
+   '칠하기'·'X 표시' 모드, 눌러서 끌면 여러 칸을 한 번에. 줄이 수와 맞으면 그 수가 흐려짐 */
 (function () {
   'use strict';
-  var P, ctx, host, cells, pool, sel = -1, selCell = -1;
-  function lines(n) {
-    var L = [], r, c, i;
-    for (r = 0; r < n; r++) { var a = []; for (c = 0; c < n; c++) a.push(r * n + c); L.push({ k: 'r' + r, c: a }) }
-    for (c = 0; c < n; c++) { var b = []; for (r = 0; r < n; r++) b.push(r * n + c); L.push({ k: 'c' + c, c: b }) }
-    var d1 = [], d2 = []; for (i = 0; i < n; i++) { d1.push(i * n + i); d2.push(i * n + n - 1 - i) }
-    L.push({ k: 'd1', c: d1 }, { k: 'd2', c: d2 }); return L;
-  }
+  var P, ctx, host, W, H, st, mode = 1, solved, drag = null;   // st: 0 빈칸 · 1 칠함 · 2 X
+  function runs(a) { var o = [], r = 0; a.forEach(function (v) { if (v === 1) r++; else if (r) { o.push(r); r = 0 } }); if (r) o.push(r); return o }
+  function same(a, b) { return a.length === b.length && a.every(function (v, i) { return v === b[i] }) }
   function draw() {
-    var n = P.n, L = lines(n), h = '<p class="mg3-goal">가로·세로·대각선에 있는 수의 합이 모두 <b>' + P.sum + '</b>이 되게 만들어요</p>';
-    h += '<div class="mg3-wrap n' + n + '">';
-    for (var r = 0; r < n; r++) {
-      h += '<span class="mg3-gap"></span>';
-      for (var c = 0; c < n; c++) { var i = r * n + c, g = P.g[i]; h += '<button type="button" class="mg3-cell' + (g ? ' giv' : '') + (selCell === i ? ' sel' : '') + '" data-i="' + i + '"' + (g ? ' disabled' : '') + '>' + (cells[i] || '') + '</button>' }
-      h += '<span class="mg3-sum" data-k="r' + r + '" title="가로줄의 합"></span>';
+    var mx = Math.max.apply(null, P.rc.map(function (r) { return r.length })), my = Math.max.apply(null, P.cc.map(function (c) { return c.length }));
+    var h = '<p class="ng-goal">줄 끝의 수만큼 이어서 칠해요. 다 칠하면 숨은 그림이 나타나요! <b>무엇이 나올까요?</b></p>'
+      + '<div class="ng-modes" role="group" aria-label="칠하는 방법"><button type="button" class="ng-mode" data-m="1">■ 칠하기</button><button type="button" class="ng-mode" data-m="2">✕ X 표시</button></div>'
+      + '<div class="ng-wrap"><div class="ng-board w' + W + '" style="--w:' + W + ';--h:' + H + ';--mx:' + mx + ';--my:' + my + '"><div class="ng-corner"></div>';
+    for (var c = 0; c < W; c++) h += '<div class="ng-cc' + (c % 5 === 4 && c < W - 1 ? ' b5' : '') + '" data-c="' + c + '">' + (P.cc[c].length ? P.cc[c] : [0]).map(function (v) { return '<span>' + v + '</span>' }).join('') + '</div>';
+    for (var r = 0; r < H; r++) {
+      h += '<div class="ng-rc' + (r % 5 === 4 && r < H - 1 ? ' b5' : '') + '" data-r="' + r + '">' + (P.rc[r].length ? P.rc[r] : [0]).map(function (v) { return '<span>' + v + '</span>' }).join('') + '</div>';
+      for (c = 0; c < W; c++) h += '<div class="ng-cell' + (c % 5 === 4 && c < W - 1 ? ' br5' : '') + (r % 5 === 4 && r < H - 1 ? ' bb5' : '') + '" data-i="' + (r * W + c) + '"></div>';
     }
-    h += '<span class="mg3-sum d d2" data-k="d2" title="↙ 대각선의 합"></span>'; for (c = 0; c < n; c++) h += '<span class="mg3-sum" data-k="c' + c + '" title="세로줄의 합"></span>'; h += '<span class="mg3-sum d d1" data-k="d1" title="↘ 대각선의 합"></span></div>';
-    h += '<p class="mg3-ph">남은 수 카드 — 카드를 고르고 빈칸을 눌러요 (넣은 수를 다시 누르면 빠져요)</p><div class="mg3-pool">' + pool.map(function (v, k) { return '<button type="button" class="mg3-tile' + (sel === k ? ' sel' : '') + '" data-k="' + k + '">' + v + '</button>' }).join('') + '</div>';
-    host.innerHTML = h; sums(L);
+    h += '</div></div><p class="ng-tip">칸을 누르거나 눌러서 끌면 여러 칸이 한 번에 바뀌어요. 칠하지 않을 칸에는 X를 해 두면 생각하기 쉬워요.</p>';
+    host.innerHTML = h; setMode(mode); fit(); paint();
   }
-  function sums(L) {
-    var full = cells.every(function (v) { return v }), allOk = true;
-    L.forEach(function (l) {
-      var s = 0, f = true; l.c.forEach(function (i) { if (cells[i]) s += cells[i]; else f = false });
-      var el = host.querySelector('[data-k="' + l.k + '"]'); el.textContent = s || '';
-      el.className = el.className.replace(/ (ok|no)/g, '') + (f ? (s === P.sum ? ' ok' : ' no') : '');
-      if (!f || s !== P.sum) allOk = false;
-    });
-    if (full) { if (allOk) ctx.done('마방진 완성! 모든 줄의 합이 ' + P.sum + '이에요.'); else ctx.msg('빈칸을 다 채웠지만 합이 ' + P.sum + '이 아닌 줄이 있어요(빨간 수). 바꿔 보세요.', 'bad') }
-    else ctx.msg('');
+  function fit() {   // 판이 남은 너비·화면 높이에 들어가도록 칸 크기를 맞춤(잘려서 못 누르는 칸이 없게)
+    var bd = host.querySelector('.ng-board'), wrap = host.querySelector('.ng-wrap'); if (!bd) return;
+    var c = 46, maxH = Math.max(260, window.innerHeight * .68);
+    do { bd.style.setProperty('--c', c + 'px'); c-- } while (c >= 14 && (bd.offsetWidth > wrap.clientWidth || bd.offsetHeight > maxH));
   }
-  function put(i, k) { cells[i] = pool[k]; pool.splice(k, 1); sel = -1; selCell = -1; draw() }
-  function take(i) { pool.push(cells[i]); pool.sort(function (a, b) { return a - b }); cells[i] = 0; draw() }
+  function setMode(m) { mode = m; host.querySelectorAll('.ng-mode').forEach(function (b) { b.setAttribute('aria-pressed', String(+b.dataset.m === m)) }) }
+  function paint() {
+    host.querySelectorAll('.ng-cell').forEach(function (el, i) { el.className = el.className.replace(/ (on|x)\b/g, '') + (st[i] === 1 ? ' on' : st[i] === 2 ? ' x' : '') });
+    for (var r = 0; r < H; r++) host.querySelector('.ng-rc[data-r="' + r + '"]').classList.toggle('done', same(runs(st.slice(r * W, r * W + W)), P.rc[r]));
+    for (var c = 0; c < W; c++) { var col = []; for (r = 0; r < H; r++) col.push(st[r * W + c]); host.querySelector('.ng-cc[data-c="' + c + '"]').classList.toggle('done', same(runs(col), P.cc[c])) }
+    if (!solved && st.every(function (v, i) { return (v === 1) === (P.s[Math.floor(i / W)][i % W] === '1') })) {
+      solved = true; host.querySelector('.ng-board').classList.add('win'); ctx.done('그림 완성! 숨은 그림은 ‘' + P.nm + '’이었어요.');
+    }
+  }
+  function cellAt(x, y) { var e = document.elementFromPoint(x, y); return e && e.closest && e.closest('.ng-cell') }
+  function apply(el) { var i = +el.dataset.i; if (drag.done[i]) return; drag.done[i] = 1; st[i] = drag.to; paint() }
+  window.addEventListener('resize', function () { if (host && document.body.contains(host) && host.querySelector('.ng-board')) fit() });
   window.CRG = {
     render: function (h, p, c) {
-      host = h; P = p; ctx = c; cells = p.g.slice(); sel = -1; selCell = -1;
-      pool = p.s.filter(function (v, i) { return !p.g[i] }).sort(function (a, b) { return a - b });
-      draw();
-      host.onclick = function (e) {
-        var t = e.target.closest('.mg3-tile'), ce = e.target.closest('.mg3-cell');
-        if (t) { var k = +t.dataset.k; if (selCell >= 0 && !cells[selCell]) return put(selCell, k); sel = sel === k ? -1 : k; draw() }
-        else if (ce && !ce.disabled) { var i = +ce.dataset.i; if (cells[i]) return take(i); if (sel >= 0) return put(i, sel); selCell = selCell === i ? -1 : i; draw() }
-      };
+      host = h; P = p; ctx = c; W = p.w; H = p.h; st = new Array(W * H).fill(0); solved = false; drag = null; draw();
+      host.onclick = function (e) { var b = e.target.closest('.ng-mode'); if (b) setMode(+b.dataset.m) };
+      var bd = host.querySelector('.ng-board');
+      bd.addEventListener('pointerdown', function (e) {
+        var el = e.target.closest('.ng-cell'); if (!el || solved) return; e.preventDefault();
+        var i = +el.dataset.i; drag = { id: e.pointerId, to: st[i] === mode ? 0 : mode, done: {} }; apply(el);
+        try { bd.setPointerCapture(e.pointerId) } catch (er) {}
+      });
+      bd.addEventListener('pointermove', function (e) { if (!drag || e.pointerId !== drag.id) return; var el = cellAt(e.clientX, e.clientY); if (el) apply(el) });
+      function end(e) { if (drag && e.pointerId === drag.id) drag = null }
+      bd.addEventListener('pointerup', end); bd.addEventListener('pointercancel', end);
     },
-    hint: function () {   // 비었거나 틀린 칸 하나에 맞는 수를 넣어 줌
-      for (var i = 0; i < cells.length; i++) {
-        if (P.g[i] || cells[i] === P.s[i]) continue;
-        if (cells[i]) { pool.push(cells[i]); cells[i] = 0 }
-        var v = P.s[i], k = pool.indexOf(v);
-        if (k < 0) { for (var j = 0; j < cells.length; j++) if (!P.g[j] && cells[j] === v) { cells[j] = 0; k = pool.push(v) - 1; break } }
-        pool.sort(function (a, b) { return a - b }); k = pool.indexOf(v); cells[i] = v; pool.splice(k, 1);
-        draw(); var el = host.querySelector('[data-i="' + i + '"]'); if (el) el.classList.add('hint'); return true;
-      }
-      return false;
+    hint: function () {   // 잘못 칠한 칸이 있으면 하나 지우고, 없으면 칠해야 할 칸 하나를 칠함
+      if (solved) return false;
+      var want = function (i) { return P.s[Math.floor(i / W)][i % W] === '1' }, i = st.findIndex(function (v, j) { return v === 1 && !want(j) }), msg;
+      if (i >= 0) { st[i] = 2; msg = '💡 잘못 칠한 칸 하나를 X로 바꿨어요.' }
+      else { i = st.findIndex(function (v, j) { return v !== 1 && want(j) }); if (i < 0) return false; st[i] = 1; msg = '💡 칠해야 할 칸 하나를 칠했어요.' }
+      paint(); var el = host.querySelector('.ng-cell[data-i="' + i + '"]'); if (el) el.classList.add('hint');
+      if (!solved) ctx.msg(msg); return true;
     },
-    reveal: function () { cells = P.s.slice(); pool = []; draw() }
+    reveal: function () { st = st.map(function (v, i) { return P.s[Math.floor(i / W)][i % W] === '1' ? 1 : 0 }); paint() }
   };
 })();
 

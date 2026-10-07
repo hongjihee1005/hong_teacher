@@ -55,7 +55,7 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
     ('프로젝트 세계시민교육', '_build/gced/', ['project/global/t*.html'], [('.', ['_build/gced/build.py'])]),
     ('프로젝트 독서교육', '_build/reading/', ['project/reading/[!i]*.html'], [('.', ['_build/reading/build.py'])]),
     ('기타 교과수학게임', ('_build/mathgame/', '_build/arith/skills.js'), ['project/mathgame/g*.html'], [('.', ['_build/mathgame/build.py'])]),
-    ('기타 창의수학게임', ('_build/creative/', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['project/creative/magic.html', 'project/creative/tangram.html', 'project/creative/kenken.html', 'project/creative/hanoi.html'], [('.', ['_build/creative/build.py'])]),
+    ('기타 창의수학게임', ('_build/creative/', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['project/creative/magic.html', 'project/creative/tangram.html', 'project/creative/kenken.html', 'project/creative/hanoi.html', 'project/creative/nonogram.html'], [('.', ['_build/creative/build.py'])]),
     ('프로젝트 도서 활용 세계시민교육', '_build/gced-books/', ['project/gced-books/*.html', 'project/gced-books/*/*.html'], [('.', ['_build/gced-books/build.py'])]),
 ]
 
