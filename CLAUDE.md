@@ -337,6 +337,14 @@ grade1/ … grade6/
 - **`project/mathplay/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/mathplay/`: 놀이 목록·설명 `build.py`의 `GAMES`, 공통 `cp.js`(섞기·주사위·쪽·인쇄), 놀이 `games/<id>.js`(`window.GAME`), 모양 `play.css`, 그림은 그림 수학 사전의 `figs.js`·`dict.css`(.fd-)를 같이 씀.
   고친 뒤 `python3 _build/mathplay/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 클래스 앞글자 `cp-`·놀이마다 `bg-` `rc-` `pr-` `dm-` `fw-` `bn-` `ar-`.
 
+### 기타 › 수학게임 › 수학 방탈출 (`project/escape/`, 2026-10-07)
+
+- 메뉴 `project/escape/index.html`(손으로 고치는 메뉴) → 방 3쪽: `toy`(장난감 공장 1~2학년) · `space`(우주선 3~4학년) · `museum`(수학 박물관 5~6학년). 방마다 자물쇠 5개(이야기·문제·힌트 2개·풀이) + 마지막 문(앞 답으로 계산하는 비밀번호: 29 · 216 · 100).
+- 화면: 탈출 시작(시간 제한 없음/15/20/30분) → 숫자판(키보드 숫자·Enter) 🔓 열기, 틀리면 흔들림·횟수, 💡 힌트, 🔑 정답 보기(선생님, 확인 창), 탈출 성공 화면(걸린 시간·힌트·틀린 수). 🖨️ 종이로 하기: 문제지 1쪽(답 칸·계산 칸) + 선생님용 정답지 1쪽.
+- **`project/escape/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/escape/`: 방 `rooms.py`(L(이야기, 문제, 답, 힌트 2개, 풀이, chk)), 화면 `page.html`·`escape.js`·`escape.css`. `build.py`가 자물쇠 답을 `chk`로 다시 계산하고 마지막 문 답을 만듦.
+  고친 뒤 `python3 _build/escape/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 방을 더하면 메뉴 카드도. 클래스 앞글자 `es-`(인쇄 `ep-`).
+- 2026-10-07 선생님 요청으로 수학게임 방을 더 추천해 이어서 만드는 중: 수학 방탈출(열림) → 🎨 수학 미술 → 📏 어림 왕 → 🛒 생활 속 수학 → 🏆 수학 퀴즈쇼(메뉴에 '곧 열려요').
+
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
 
 - 처음 이름은 '수학게임'이었고, 창의수학게임이 생기면서 화면에 보이는 이름을 모두 '교과수학게임'으로 바꿨습니다(첫 화면·`project/index.html`·메뉴·학년 수학방 카드·학년 페이지 제목). 폴더·파일 이름과 localStorage 키(`hj-mgame-v1`)는 그대로입니다.
