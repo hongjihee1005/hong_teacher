@@ -19,9 +19,12 @@
     { id: 'balloon', pl: [1, 1], nm: '풍선 터뜨리기', de: '정답이 적힌 풍선을 하늘로 날아가기 전에 톡! 하트 3개로 오래 버텨요.', stars: [5, 12, 20] },
     { id: 'mole', pl: [1, 1], nm: '두더지 잡기', de: '정답 팻말을 든 두더지를 뿅망치로 콩! 숨기 전에 빨리 잡아요.', stars: [5, 12, 20] },
     { id: 'tower', pl: [1, 1], nm: '탑 쌓기', de: '맞힐 때마다 블록이 한 층씩! 틀리거나 시간이 지나면 맨 위 블록이 떨어져요.', stars: [5, 12, 20] },
-    { id: 'rocket', pl: [1, 1], nm: '60초 우주 도전', de: '60초 동안 몇 문제를 맞힐까요? 맞힐수록 로켓이 높이 올라가요.', stars: [8, 15, 22] },
+    { id: 'rocket', pl: [1, 1], timer: true, nm: '60초 우주 도전', de: '60초 동안 몇 문제를 맞힐까요? 맞힐수록 로켓이 높이 올라가요.', stars: [8, 15, 22] },
     { id: 'invader', pl: [1, 1], nm: '우주 침공 막기', de: '식을 들고 내려오는 외계인을 정답 레이저로 맞혀요. 땅에 닿기 전에!', stars: [5, 12, 20] },
-    { id: 'tug', pl: [2, 2], nm: '줄다리기', de: '두 사람(두 팀)이 화면 양쪽에서 동시에 풀어요. 먼저 5번 당기는 쪽이 이겨요.', two: true, how: '파랑 팀 · 빨강 팀, 한 사람씩 또는 모둠 대표로' }
+    { id: 'race', pl: [2, 4], timer: true, nm: '달리기 경주', de: '2~4명이 화면을 나눠 각자 문제를 풀어요. 맞힐 때마다 한 칸씩, 먼저 결승선(10칸)에 닿으면 이겨요.', two: true, how: '인원을 고르면 화면이 2~4칸으로 나뉘어요' },
+    { id: 'buzz', pl: [4, 4], nm: '골든벨 버저', de: '같은 문제를 보고 네 귀퉁이 버저를 먼저 눌러 답해요. 틀리면 다른 사람에게 기회! 먼저 10점이면 이겨요.', two: true, how: '버저는 먼저 누른 한 사람만 받아요 · 모둠 대표 4명도 좋아요' },
+    { id: 'land', pl: [2, 2], nm: '땅따먹기', de: '차례대로 칸을 골라 그 칸의 식을 풀어요. 맞히면 내 땅! 판이 다 차면 땅이 많은 쪽이 이겨요.', two: true, how: '한 번에 한 사람씩 · 빠르기보다 차례대로' },
+    { id: 'tug', pl: [2, 2], timer: true, nm: '줄다리기', de: '두 사람(두 팀)이 화면 양쪽에서 동시에 풀어요. 먼저 5번 당기는 쪽이 이겨요.', two: true, how: '파랑 팀 · 빨강 팀, 한 사람씩 또는 모둠 대표로' }
   ];
   var GBY = {}; GAMES.forEach(function (x) { GBY[x.id] = x });
 
@@ -70,6 +73,12 @@
       '<path d="M80 4v12" stroke="#5C5047" stroke-width="2"/><rect x="64" y="14" width="34" height="12" rx="3" fill="#B07CFF"/><path d="M20 6h120" stroke="#5C5047" stroke-width="3"/></svg>',
     invader: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#1B1F4B"/><circle cx="20" cy="18" r="1.5" fill="#fff"/><circle cx="140" cy="26" r="1.5" fill="#fff"/><circle cx="110" cy="10" r="1.2" fill="#fff"/>' +
       '<g transform="translate(52 10) scale(.46)">' + ALIEN.replace(/<\/?svg[^>]*>/g, '') + '</g><path d="M80 82 82 44" stroke="#FF6B6B" stroke-width="3"/><path d="M0 100V84h20V74h16v10h20V70h18v30Zm100 0V78h18V66h16v12h26v22Z" fill="#2E2A73"/><g transform="translate(64 74) scale(.32)">' + CANNON.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
+    race: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#BFE6FF"/><rect y="40" width="160" height="60" fill="#D9644A"/><path d="M0 55h160M0 70h160M0 85h160" stroke="#fff" stroke-width="1.5" opacity=".8"/>' +
+      '<path d="M138 40v60" stroke="#fff" stroke-width="6" stroke-dasharray="5 5"/><circle cx="40" cy="48" r="6" fill="#4DA3FF"/><circle cx="70" cy="63" r="6" fill="#FF6B6B"/><circle cx="56" cy="78" r="6" fill="#3DBE6B"/><circle cx="92" cy="93" r="5" fill="#F5B82E"/><path d="M128 10v26l18-8Z" fill="#FFD93D"/><path d="M128 8v30" stroke="#5C5047" stroke-width="2"/></svg>',
+    buzz: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#2B1E66"/><circle cx="80" cy="44" r="40" fill="#FFD93D" opacity=".18"/><path d="M80 18c-11 0-18 8-18 19v12l-6 8h48l-6-8V37c0-11-7-19-18-19Z" fill="#FFC530"/><circle cx="80" cy="64" r="5" fill="#FFC530"/>' +
+      '<circle cx="18" cy="22" r="11" fill="#4DA3FF"/><circle cx="142" cy="22" r="11" fill="#FF6B6B"/><circle cx="18" cy="80" r="11" fill="#3DBE6B"/><circle cx="142" cy="80" r="11" fill="#F5B82E"/></svg>',
+    land: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#A8DA7E"/><g transform="translate(46 8)">' +
+      [0, 1, 2, 3].map(function (r) { return [0, 1, 2, 3].map(function (c) { var k = (r * 4 + c) % 5; return '<rect x="' + c * 17 + '" y="' + r * 21 + '" width="15" height="19" rx="3" fill="' + (k === 1 ? '#4DA3FF' : k === 3 ? '#FF6B6B' : '#FFFDF7') + '"/>' }).join('') }).join('') + '</g></svg>',
     rocket: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#1B1F4B"/><circle cx="28" cy="20" r="1.6" fill="#fff"/><circle cx="60" cy="70" r="1.3" fill="#fff"/><circle cx="140" cy="16" r="1.8" fill="#fff"/><circle cx="118" cy="60" r="1.2" fill="#fff"/><circle cx="20" cy="80" r="1.4" fill="#fff"/>' +
       '<circle cx="130" cy="78" r="18" fill="#B07CFF"/><ellipse cx="130" cy="78" rx="28" ry="5" fill="none" stroke="#E0C9FF" stroke-width="2.5"/><g transform="translate(66 10) rotate(18) scale(.72)">' + ROCKET.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
     tug: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#CDEBFF"/><rect y="62" width="160" height="38" fill="#E8C98F"/><path d="M80 52v40" stroke="#fff" stroke-width="3" stroke-dasharray="5 4"/>' +
@@ -157,7 +166,7 @@
   var ALL = { id: 'all', nm: '모두 섞기', k: [] }; D.units.forEach(function (u) { ALL.k = ALL.k.concat(u.k) });
   var units = D.units.concat([ALL]);
   var uSel = units.filter(function (u) { return u.id === mine.u })[0] || units[0];
-  var kOn = {}, gSel = GBY[mine.game] ? mine.game : 'balloon';
+  var kOn = {}, gSel = GBY[mine.game] ? mine.game : 'balloon', nPl = mine.np || 2;
   function resetK() { kOn = {}; uSel.k.forEach(function (k) { kOn[k] = 1 }) }
   resetK(); if (mine.u === uSel.id && mine.k && mine.k.length) { var kk = mine.k.filter(function (k) { return uSel.k.indexOf(k) >= 0 }); if (kk.length) { kOn = {}; kk.forEach(function (k) { kOn[k] = 1 }) } }
   function kList() { return uSel.k.filter(function (k) { return kOn[k] }) }
@@ -188,9 +197,12 @@
     $('mgGames').innerHTML =
       '<h3 class="mg-gh"><span class="mg-ghi">' + PICO.replace('opacity=".55"', 'opacity="0"').replace('opacity=".55"', 'opacity="0"') + '</span>혼자서 <small>내 점수와 최고 기록에 도전해요 · 1명</small></h3><div class="mg-games">' + solo.map(gameCard).join('') + '</div>' +
       '<h3 class="mg-gh"><span class="mg-ghi">' + PICO + '</span>함께 <small>한 화면에서 여럿이 겨뤄요 · 전자칠판·태블릿</small></h3><div class="mg-games">' + team.map(gameCard).join('') + '</div>';
-    $('mgSel').innerHTML = '<b>' + esc(uSel.sh || uSel.nm) + '</b> · ' + esc(GBY[gSel].nm) + ' <span class="mg-selpl">' + pl(GBY[gSel]) + '</span>';
+    var G = GBY[gSel], np = '';
+    if (G.pl[0] < G.pl[1]) { np = '<span class="mg-npl">몇 명?</span>'; for (var k = G.pl[0]; k <= G.pl[1]; k++) np += '<button type="button" data-np="' + k + '" aria-pressed="' + (k === Math.min(G.pl[1], Math.max(G.pl[0], nPl))) + '">' + k + '명</button>' }
+    $('mgNp').innerHTML = np; $('mgNp').hidden = !np;
+    $('mgSel').innerHTML = '<b>' + esc(uSel.sh || uSel.nm) + '</b> · ' + esc(G.nm) + (np ? '' : ' <span class="mg-selpl">' + pl(G) + '</span>');
   }
-  function remember() { last[D.g] = { u: uSel.id, k: kList().length < uSel.k.length ? kList() : [], game: gSel }; save(KEY + '-last', last) }
+  function remember() { last[D.g] = { u: uSel.id, k: kList().length < uSel.k.length ? kList() : [], game: gSel, np: nPl }; save(KEY + '-last', last) }
   $('mgUnits').addEventListener('click', function (e) {
     var b = e.target.closest('.mg-unit'); if (!b) return;
     uSel = units.filter(function (u) { return u.id === b.dataset.u })[0]; resetK(); drawUnits(); drawGames(); remember();
@@ -204,6 +216,7 @@
     var b = e.target.closest('.mg-game'); if (!b) return; gSel = b.dataset.game; drawGames(); remember();
   });
   $('mgStart').addEventListener('click', function () { start(gSel) });
+  $('mgNp').addEventListener('click', function (e) { var b = e.target.closest('[data-np]'); if (!b) return; nPl = +b.dataset.np; drawGames(); remember() });
   function fromHash() {
     var m = /^#(u\d+|all)(?:-(\w+))?$/.exec(location.hash); if (!m) return;
     var u = units.filter(function (x) { return x.id === m[1] })[0]; if (u) { uSel = u; resetK() }
@@ -230,9 +243,9 @@
     return '<div class="mg-hud">' +
       '<button type="button" class="mg-hb" data-a="quit" aria-label="그만하기">' + ICO.x + '</button>' +
       '<button type="button" class="mg-hb" data-a="pause" aria-label="잠깐 멈추기">' + ICO.pause + '</button>' +
-      (one ? '<span class="mg-pill mg-score"><small>점수</small><b id="mgScore">0</b></span><span class="mg-pill mg-combo" id="mgComboP"><small>연속</small><b id="mgCombo">0</b></span><span class="mg-pill"><small>레벨</small><b id="mgLv">1</b></span>' : '<span class="mg-pill"><b class="mg-hud-t">줄다리기</b></span>') +
+      (one ? '<span class="mg-pill mg-score"><small>점수</small><b id="mgScore">0</b></span><span class="mg-pill mg-combo" id="mgComboP"><small>연속</small><b id="mgCombo">0</b></span><span class="mg-pill"><small>레벨</small><b id="mgLv">1</b></span>' : '<span class="mg-pill"><b class="mg-hud-t">' + esc(GBY[game].nm) + '</b></span>') +
       '<span class="mg-sp"></span>' +
-      (game === 'rocket' || game === 'tug' ? '<span class="mg-pill mg-time"><small>남은 시간</small><b id="mgTime"></b></span>' : '<span class="mg-hearts" id="mgHearts" aria-label="하트"></span>') +
+      (GBY[game].timer ? '<span class="mg-pill mg-time"><small>남은 시간</small><b id="mgTime"></b></span>' : one ? '<span class="mg-hearts" id="mgHearts" aria-label="하트"></span>' : '') +
       '<button type="button" class="mg-hb" data-a="full" aria-label="전체 화면">' + ICO.full + '</button>' +
       '<button type="button" class="mg-hb" data-a="mute" aria-label="소리 켜기·끄기" aria-pressed="' + muted + '">' + (muted ? ICO.mute : ICO.vol) + '</button></div>';
   }
@@ -277,7 +290,8 @@
 
   function start(game) {
     var two = !!GBY[game].two;
-    S = { game: game, two: two, score: 0, combo: 0, bestCombo: 0, right: 0, wrong: 0, level: 1, lives: 3, maxLives: 3, list: [], over: false, paused: true, wait: 0, t: 0 };
+    var P = GBY[game].pl;
+    S = { game: game, two: two, np: P[0] === P[1] ? P[0] : Math.min(P[1], Math.max(P[0], nPl)), score: 0, combo: 0, bestCombo: 0, right: 0, wrong: 0, level: 1, lives: 3, maxLives: 3, list: [], over: false, paused: true, wait: 0, t: 0 };
     stage.className = 'mg-stage mg-g-' + game; stage.hidden = false; document.body.classList.add('mg-playing');
     stage.innerHTML = hud(game) + '<div class="mg-play" id="mgPlay"></div>';
     GM[game].init(); setHud();
@@ -327,6 +341,7 @@
   document.addEventListener('keydown', function (e) {
     if (!S) return;
     if (e.key === 'Escape') { if (S.over) close(); else pause(!S.paused) }
+    else if (S.started && !S.paused && !S.over && GM[S.game].keyAny && GM[S.game].keyAny(e.key.toLowerCase())) {}
     else if (/^[1-4]$/.test(e.key) && S.started && !S.paused && !S.over && GM[S.game].key) GM[S.game].key(+e.key - 1);
   });
   document.addEventListener('visibilitychange', function () { if (document.hidden && S && !S.over && !S.paused) pause(true) });
@@ -335,7 +350,7 @@
   function end(why) {
     if (!S || S.over) return; S.over = true; GM[S.game].stop && GM[S.game].stop();
     var o = document.createElement('div'); o.className = 'mg-over';
-    if (S.two) { o.innerHTML = GM.tug.result(why); stage.appendChild(o); sfx('end'); return }
+    if (S.two) { o.innerHTML = GM[S.game].result(why); stage.appendChild(o); sfx('end'); return }
     var key = recKey(S.game), old = rec[key] || 0, best = S.score > old;
     if (best) { rec[key] = S.score; save(KEY, rec) }
     var st = stars(S.right, GBY[S.game].stars), sh = '';
@@ -631,6 +646,182 @@
       }
     },
     key: function (i) { if (this.q && i < this.q.c.opts.length) this.hit(i) }
+  };
+
+  /* ── 함께 하는 게임 공통: 팀 색·보기 단추·결과 ── */
+  var TEAM = [{ nm: '파랑', c: '#4DA3FF', d: '#1F6FC4' }, { nm: '빨강', c: '#FF6B6B', d: '#C93C3C' }, { nm: '초록', c: '#3DBE6B', d: '#1F8A47' }, { nm: '노랑', c: '#F5B82E', d: '#9A6A00' }];
+  function tv(i) { return '--pc:' + TEAM[i].c + ';--pd:' + TEAM[i].d }
+  function optBtns(box, q, fn, keys) {
+    box.className = 'mg-opts n' + q.c.opts.length;
+    box.innerHTML = q.c.opts.map(function (o, i) { return '<button type="button" class="mg-opt" data-i="' + i + '" aria-label="' + (keys ? (i + 1) + '번 ' : '') + esc(plain(o)) + '">' + (keys ? '<span class="mg-key">' + (i + 1) + '</span>' : '') + '<span class="mg-lab ' + szCls(o) + '">' + aH(o) + '</span></button>' }).join('');
+    [].forEach.call(box.children, function (b) { tap(b, function () { fn(+b.dataset.i) }) });
+  }
+  function teamRes(why, sc, unit, msg) {   // sc: 팀마다 점수, 가장 높은 팀(들)이 이김
+    var mx = Math.max.apply(null, sc), win = mx > 0 ? sc.map(function (v, i) { return v === mx ? i : -1 }).filter(function (i) { return i >= 0 }) : [];
+    var h = win.length === 1 ? TEAM[win[0]].nm + ' 승리!' : win.length ? win.map(function (i) { return TEAM[i].nm }).join('·') + ' 공동 1등!' : '비겼어요!';
+    var col = win.length === 1 ? TEAM[win[0]] : null;
+    return '<div class="mg-card mg-res">' + (why ? '<p class="mg-why">' + esc(why) + '</p>' : '') + '<h2>' + h + '</h2>' +
+      '<div class="mg-stars">' + [0, 1, 2].map(function (i) { return '<span class="mg-st on" style="animation-delay:' + (.25 + i * .25) + 's' + (col ? ';--sc:' + col.c + ';--sd:' + col.d : '') + '">' + ICO.star + '</span>' }).join('') + '</div>' +
+      '<div class="mg-stats">' + sc.map(function (v, i) { return '<span style="background:color-mix(in srgb,' + TEAM[i].c + ' 22%,#fff)">' + TEAM[i].nm + ' <b>' + v + '</b>' + unit + '</span>' }).join('') + '</div>' +
+      '<p class="mg-old">' + (msg || (win.length === 1 ? '모두 수고했어요! 한 판 더 겨뤄 볼까요?' : '실력이 비슷하네요! 한 판 더 겨뤄 봐요.')) + '</p>' +
+      '<div class="mg-btns"><button type="button" class="mg-btn go" data-a="again">한 판 더</button><button type="button" class="mg-btn" data-a="menu">게임 고르기로</button></div></div>';
+  }
+
+  /* ── 달리기 경주 (2~4명) ── */
+  GM.race = {
+    T: 180, GOAL: 10,
+    init: function () {
+      var n = this.n = S.np, i, lanes = '', pp = '';
+      for (i = 0; i < n; i++) {
+        lanes += '<div class="mg-lane" style="' + tv(i) + '"><span class="mg-ln">' + TEAM[i].nm + '</span><div class="mg-lrun"><i class="mg-finish"></i><div class="mg-runner" id="mgRun' + i + '">' + kidSvg(TEAM[i].c) + '</div></div></div>';
+        pp += '<div class="mg-pp" id="mgPP' + i + '" style="' + tv(i) + '"><p class="mg-team">' + TEAM[i].nm + ' <b id="mgPts' + i + '">0</b><small> / ' + this.GOAL + '칸</small></p><div class="mg-qbox" id="mgQ' + i + '"></div><div class="mg-opts" id="mgOpts' + i + '"></div><div class="mg-freeze">앗! 잠깐 쉬어요</div></div>';
+      }
+      $('mgPlay').innerHTML = '<div class="mg-stadium"><i class="mg-cloud c0"></i></div><div class="mg-track2 n' + n + '">' + lanes + '</div><div class="mg-pps n' + n + '">' + pp + '</div>';
+      this.pos = []; this.q = []; this.fz = []; this.wait = []; for (i = 0; i < n; i++) { this.pos.push(0); this.fz.push(0); this.wait.push(0) }
+      this.left = this.T; this.lastSec = -1;
+    },
+    go: function () { for (var i = 0; i < this.n; i++) this.next(i) },
+    next: function (i) {
+      var q = this.q[i] = makeP(), self = this; q.done = false; $('mgQ' + i).innerHTML = qbox(q);
+      optBtns($('mgOpts' + i), q, function (j) { self.hit(i, j) });
+    },
+    hit: function (i, j) {
+      var q = this.q[i]; if (!S || S.paused || S.over || S.ending || q.done || this.fz[i] > 0) return;
+      var bs = $('mgOpts' + i).children; q.done = true;
+      if (j === q.c.ok) {
+        bs[j].classList.add('right'); sfx('pull'); S.right++; this.pos[i]++; $('mgPts' + i).textContent = this.pos[i];
+        var r = $('mgRun' + i); r.style.left = 'calc(' + (this.pos[i] / this.GOAL) + ' * (100% - 56px))'; r.classList.remove('hop'); void r.offsetWidth; r.classList.add('hop');
+        this.wait[i] = .35;
+        if (this.pos[i] >= this.GOAL) { S.ending = 1; sfx('up'); setTimeout(function () { end('') }, 700) }
+      } else {
+        bs[j].classList.add('wrong'); bs[q.c.ok].classList.add('right'); sfx('bad'); S.wrong++;
+        this.fz[i] = 1.5; $('mgPP' + i).classList.add('frozen'); this.wait[i] = 1.5;
+      }
+    },
+    tick: function (dt) {
+      this.left -= dt; var L = Math.max(0, this.left), s = Math.ceil(L);
+      $('mgTime').textContent = s + '초'; if (s !== this.lastSec && s <= 5 && s > 0) sfx('tick'); this.lastSec = s;
+      if (L <= 0 && !S.ending) { end('시간이 다 됐어요'); return }
+      if (S.ending) return;
+      for (var i = 0; i < this.n; i++) {
+        if (this.fz[i] > 0) { this.fz[i] -= dt; if (this.fz[i] <= 0) $('mgPP' + i).classList.remove('frozen') }
+        if (this.wait[i] > 0) { this.wait[i] -= dt; if (this.wait[i] <= 0) this.next(i) }
+      }
+    },
+    result: function (why) { return teamRes(why, this.pos, '칸') }
+  };
+
+  /* ── 골든벨 버저 (4명) ── */
+  GM.buzz = {
+    GOAL: 10, ANS: 7, IDLE: 25, KEYS: ['q', 'p', 'z', 'm'],
+    init: function () {
+      var h = '', self = this;
+      for (var i = 0; i < 4; i++) h += '<button type="button" class="mg-buzz b' + i + '" id="mgBz' + i + '" style="' + tv(i) + '" aria-label="' + TEAM[i].nm + ' 버저"><span class="mg-bn">' + TEAM[i].nm + '</span><b id="mgBs' + i + '">0</b><span class="mg-bk">점 · 키 ' + this.KEYS[i].toUpperCase() + '</span></button>';
+      $('mgPlay').innerHTML = '<div class="mg-gold"><i class="mg-spot"></i></div>' + h +
+        '<div class="mg-bcenter"><p class="mg-bmsg" id="mgBmsg"></p><div class="mg-qbox" id="mgQ"></div><div class="mg-opts" id="mgOpts"></div><span class="mg-qt"><i id="mgQt"></i></span></div>';
+      this.pts = [0, 0, 0, 0];
+      for (i = 0; i < 4; i++) (function (k) { tap($('mgBz' + k), function () { self.buzz(k) }) })(i);
+    },
+    go: function () { this.next() },
+    msg: function (t, i) { var m = $('mgBmsg'); m.innerHTML = t; m.style.color = i >= 0 ? TEAM[i].c : '' },
+    next: function () {
+      var q = this.q = makeP(), self = this; q.out = {}; q.done = false; this.who = -1; this.idle = 0;
+      $('mgQ').innerHTML = qbox(q); optBtns($('mgOpts'), q, function (j) { self.hit(j) }, true);
+      $('mgOpts').classList.add('mg-off');
+      for (var i = 0; i < 4; i++) $('mgBz' + i).classList.remove('on', 'out');
+      this.msg('버저를 먼저 누르세요!');
+    },
+    buzz: function (i) {
+      var q = this.q; if (!S || S.paused || S.over || S.ending || !q || q.done || this.who >= 0 || q.out[i]) return;
+      this.who = i; this.ta = 0; sfx('go');
+      $('mgBz' + i).classList.add('on'); $('mgOpts').classList.remove('mg-off');
+      this.msg(TEAM[i].nm + ' 차례! ' + this.ANS + '초 안에 골라요', i);
+    },
+    hit: function (j) {
+      var q = this.q, w = this.who; if (!S || S.paused || S.over || q.done || w < 0) return;
+      var bs = $('mgOpts').children;
+      if (j === q.c.ok) {
+        q.done = true; bs[j].classList.add('right'); sfx('ok'); S.right++; this.pts[w]++; $('mgBs' + w).textContent = this.pts[w];
+        var c = center($('mgBz' + w)); burst(c[0], c[1], TEAM[w].c); this.msg(TEAM[w].nm + ' 정답! +1점', w); S.wait = 1.3;
+        if (this.pts[w] >= this.GOAL) { S.ending = 1; setTimeout(function () { end('') }, 900) }
+      } else this.miss(j);
+    },
+    miss: function (j) {   // 틀리거나 시간 안에 못 고름 → 이 문제에서 빠지고 다른 사람에게 기회
+      var q = this.q, w = this.who, bs = $('mgOpts').children; sfx('bad'); S.wrong++;
+      if (j >= 0) bs[j].classList.add('wrong', 'mg-dead');
+      q.out[w] = 1; $('mgBz' + w).classList.remove('on'); $('mgBz' + w).classList.add('out'); this.who = -1; this.idle = 0;
+      $('mgOpts').classList.add('mg-off');
+      if (Object.keys(q.out).length >= 4) this.reveal('모두 기회를 썼어요'); else this.msg((j >= 0 ? '땡! ' : '시간 끝! ') + '다른 사람이 버저를 눌러요');
+    },
+    reveal: function (t) { var q = this.q; q.done = true; $('mgOpts').classList.remove('mg-off'); $('mgOpts').children[q.c.ok].classList.add('right'); this.msg(t + ' · 정답은 ' + plain(q.c.opts[q.c.ok])); S.wait = 2 },
+    tick: function (dt) {
+      if (S.ending) return;
+      if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
+      var q = this.q, bar = $('mgQt');
+      if (this.who >= 0) { this.ta += dt; bar.style.width = Math.max(0, 1 - this.ta / this.ANS) * 100 + '%'; bar.classList.toggle('low', this.ta > this.ANS * .6); if (this.ta >= this.ANS) this.miss(-1) }
+      else if (!q.done) { this.idle += dt; bar.style.width = Math.max(0, 1 - this.idle / this.IDLE) * 100 + '%'; bar.classList.remove('low'); if (this.idle >= this.IDLE) { sfx('bad'); this.reveal('아무도 누르지 않았어요') } }
+    },
+    key: function (i) { this.hit(i) },
+    keyAny: function (k) { var i = this.KEYS.indexOf(k); if (i < 0) return false; this.buzz(i); return true },
+    result: function (why) { return teamRes(why, this.pts, '점') }
+  };
+
+  /* ── 땅따먹기 (2명, 차례대로) ── */
+  GM.land = {
+    N: 4, ANS: 20,
+    init: function () {
+      var h = '', n = this.N * this.N;
+      for (var i = 0; i < n; i++) h += '<button type="button" class="mg-cell" id="mgCell' + i + '" data-i="' + i + '"></button>';
+      function side(k) { return '<div class="mg-lside s' + k + '" id="mgLs' + k + '" style="' + tv(k) + '"><span class="mg-ltn">' + TEAM[k].nm + '</span><b id="mgLc' + k + '">0</b><span>칸</span><em class="mg-lturn">내 차례!</em></div>' }
+      $('mgPlay').innerHTML = '<div class="mg-meadow2"></div>' + side(0) + '<div class="mg-board" id="mgBoard">' + h + '</div>' + side(1) +
+        '<div class="mg-lpop" id="mgPop" hidden><div class="mg-lcard" id="mgLcard"><p class="mg-lwho" id="mgLwho"></p><div class="mg-qbox" id="mgQ"></div><div class="mg-opts" id="mgOpts"></div><span class="mg-qt"><i id="mgQt"></i></span></div></div>';
+      this.cells = []; this.cnt = [0, 0]; this.turn = 0; this.open = -1;
+      var self = this;
+      for (i = 0; i < n; i++) { this.cells.push({ p: null, own: -1 }); (function (k) { tap($('mgCell' + k), function () { self.pick(k) }) })(i) }
+    },
+    go: function () { for (var i = 0; i < this.cells.length; i++) this.fill(i); this.setTurn(0) },
+    fill: function (i) {   // 칸에 새 문제
+      var c = this.cells[i]; c.q = makeP(); var el = $('mgCell' + i), n = (c.q.p.txt || c.q.p.q).length;
+      el.className = 'mg-cell' + (c.q.p.txt || n > 5 ? ' long' : '');
+      el.innerHTML = qH(c.q.p).replace('<span class="mg-op">=</span><span class="mg-blank">?</span>', '').replace(/<span class="mg-blank">\?<\/span>$/, '');   // 칸에는 '= ?'를 빼고 식만
+      el.setAttribute('aria-label', (i + 1) + '번 칸');
+    },
+    setTurn: function (t) {
+      this.turn = t; for (var k = 0; k < 2; k++) $('mgLs' + k).classList.toggle('turn', k === t);
+      $('mgBoard').style.setProperty('--pc', TEAM[t].c);
+    },
+    pick: function (i) {
+      if (!S || S.paused || S.over || S.ending || this.open >= 0 || S.wait > 0 || this.cells[i].own >= 0) return;
+      var q = this.cells[i].q, self = this; q.done = false; this.open = i; this.ta = 0;
+      $('mgLwho').textContent = TEAM[this.turn].nm + ' 차례 · ' + this.ANS + '초 안에 골라요'; $('mgLcard').setAttribute('style', tv(this.turn));
+      $('mgQ').innerHTML = qbox(q); optBtns($('mgOpts'), q, function (j) { self.hit(j) }, true);
+      $('mgPop').hidden = false; sfx('go');
+    },
+    hit: function (j) {
+      var i = this.open; if (!S || S.paused || S.over || i < 0) return; var q = this.cells[i].q; if (q.done) return; q.done = true;
+      var bs = $('mgOpts').children, t = this.turn, self = this;
+      if (j === q.c.ok) {
+        bs[j].classList.add('right'); sfx('ok'); S.right++;
+        this.cells[i].own = t; this.cnt[t]++; $('mgLc' + t).textContent = this.cnt[t];
+        var el = $('mgCell' + i); el.classList.add('own'); el.setAttribute('style', tv(t));
+      } else {
+        if (j >= 0) bs[j].classList.add('wrong'); bs[q.c.ok].classList.add('right'); sfx('bad'); S.wrong++;
+      }
+      setTimeout(function () {
+        if (!S || S.over) return;
+        $('mgPop').hidden = true; self.open = -1;
+        if (j !== q.c.ok) self.fill(i);   // 틀린 칸은 새 문제로 바뀜
+        if (self.cnt[0] + self.cnt[1] >= self.cells.length) { S.ending = 1; end(''); return }
+        self.setTurn(1 - t);
+      }, j === q.c.ok ? 800 : 1500);
+    },
+    tick: function (dt) {
+      if (S.ending || this.open < 0 || this.cells[this.open].q.done) return;
+      this.ta += dt; var bar = $('mgQt'); bar.style.width = Math.max(0, 1 - this.ta / this.ANS) * 100 + '%'; bar.classList.toggle('low', this.ta > this.ANS * .7);
+      if (this.ta >= this.ANS) this.hit(-1);
+    },
+    key: function (i) { if (this.open >= 0) this.hit(i) },
+    result: function (why) { return teamRes(why, this.cnt, '칸') }
   };
 
   /* ── 줄다리기 (2명) ── */

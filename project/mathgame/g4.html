@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>4학년 수학게임 · 프로젝트 · 초등교사 홍지희</title>
-<meta name="description" content="4학년 수학게임 — 단원별 계산을 풍선 터뜨리기·두더지 잡기·탑 쌓기·60초 우주 도전·우주 침공 막기·줄다리기로 반복 연습해요. 할 때마다 새 문제가 나와요.">
+<meta name="description" content="4학년 수학게임 — 단원별 계산을 풍선 터뜨리기·두더지 잡기·탑 쌓기·60초 우주 도전·우주 침공 막기·달리기 경주·골든벨 버저·땅따먹기·줄다리기로 반복 연습해요. 할 때마다 새 문제가 나와요.">
 <style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#8150C8;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37}}
@@ -341,6 +341,84 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes mg-wob{20%{transform:rotate(-3deg)}50%{transform:rotate(2.5deg)}80%{transform:rotate(-1deg)}}
 @keyframes mg-las{from{opacity:1}to{opacity:0}}
 @media (prefers-reduced-motion:reduce){.mg-hook,.mg-hang{animation:none}}
+
+/* ── 인원 고르기(게임 시작 막대) ── */
+.mg-np{display:inline-flex;align-items:center;gap:4px;margin-right:4px}
+.mg-np[hidden]{display:none}
+.mg-npl{font-size:15px;color:var(--soft);margin-right:2px}
+.mg-np button{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:4px 12px;font-family:var(--display);font-size:17px}
+.mg-np button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);color:#fff}
+.mg-st.on svg{fill:var(--sc,#FFC530);filter:drop-shadow(0 3px 0 var(--sd,#E19A00))}
+
+/* ── 함께 게임 공통 판 ── */
+.mg-pp{position:relative;display:flex;flex-direction:column;gap:8px;min-height:0;min-width:0;background:rgba(255,255,255,.78);border:5px solid var(--pc);border-radius:22px;padding:8px}
+.mg-pp .mg-team{color:var(--pd)}
+.mg-pp .mg-team b{background:var(--pc)}
+.mg-pp .mg-team small{font-family:var(--body);font-size:14px;color:#7A6A5D}
+.mg-pp .mg-qbox{position:static;transform:none;align-self:center;max-width:100%;min-width:0;font-size:clamp(20px,2.8vw,42px);padding:6px 14px}
+.mg-pp.frozen .mg-freeze{display:grid}
+.mg-pps{position:absolute;z-index:6;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));bottom:10px;display:grid;gap:10px}
+.mg-pps.n2{grid-template-columns:1fr 1fr}.mg-pps.n3{grid-template-columns:repeat(3,1fr)}.mg-pps.n4{grid-template-columns:repeat(4,1fr)}
+.mg-pps.n3 .mg-opt .s1,.mg-pps.n4 .mg-opt .s1{font-size:clamp(22px,3vw,44px)}.mg-pps.n3 .mg-opt .s2,.mg-pps.n4 .mg-opt .s2{font-size:clamp(18px,2.4vw,36px)}
+.mg-pps.n3 .mg-opt .s3,.mg-pps.n4 .mg-opt .s3{font-size:clamp(14px,1.8vw,26px)}.mg-pps.n3 .mg-opt .s4,.mg-pps.n4 .mg-opt .s4{font-size:clamp(12px,1.3vw,19px)}.mg-pps.n3 .mg-opt .s5,.mg-pps.n4 .mg-opt .s5{font-size:clamp(11px,1.1vw,16px)}
+.mg-pps.n4 .mg-pp .mg-qbox{font-size:clamp(17px,2.2vw,34px)}
+
+/* ── 달리기 경주 ── */
+.mg-stadium{position:absolute;inset:0;background:linear-gradient(#8ED1FF 0,#D4EEFF 18%,#86C766 18.1%,#6FB54A 100%);overflow:hidden}
+.mg-track2{position:absolute;z-index:5;left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));top:calc(max(10px,env(safe-area-inset-top)) + 58px);height:clamp(120px,26vh,230px);display:flex;flex-direction:column;border-radius:16px;overflow:hidden;background:#D9644A;box-shadow:0 6px 0 rgba(0,0,0,.15)}
+.mg-pps{top:calc(max(10px,env(safe-area-inset-top)) + 58px + clamp(120px,26vh,230px) + 10px)}
+.mg-lane{position:relative;flex:1;display:flex;align-items:stretch;border-bottom:2px solid rgba(255,255,255,.75)}
+.mg-lane:last-child{border-bottom:0}
+.mg-ln{flex:none;width:clamp(48px,6vw,70px);display:grid;place-items:center;background:var(--pc);color:#fff;font-size:clamp(15px,1.6vw,20px)}
+.mg-lrun{position:relative;flex:1;margin:0 12px}
+.mg-finish{position:absolute;right:0;top:0;bottom:0;width:14px;background:repeating-linear-gradient(0deg,#fff 0 8px,#2A221C 8px 16px)}
+.mg-runner{position:absolute;left:0;bottom:2px;height:96%;width:56px;display:flex;align-items:flex-end;justify-content:center;transition:left .4s cubic-bezier(.3,1.3,.5,1)}
+.mg-runner svg{height:100%;width:auto;max-width:56px}
+.mg-runner.hop svg{animation:mg-hop .4s ease-out}
+@keyframes mg-hop{40%{transform:translateY(-14%)}}
+
+/* ── 골든벨 버저 ── */
+.mg-gold{position:absolute;inset:0;background:radial-gradient(ellipse at 50% 0,#5B3FC4 0,transparent 55%),linear-gradient(#24175C,#3A2A7A 60%,#24175C);overflow:hidden}
+.mg-spot{position:absolute;left:50%;top:-10%;width:70%;height:90%;transform:translateX(-50%);background:radial-gradient(ellipse at 50% 0,rgba(255,217,61,.22),transparent 70%)}
+.mg-buzz{position:absolute;z-index:8;width:clamp(120px,16vw,210px);aspect-ratio:1;border-radius:50%;border:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0;background:radial-gradient(circle at 35% 30%,color-mix(in srgb,var(--pc) 55%,#fff),var(--pc) 60%,var(--pd));color:#fff;box-shadow:0 10px 0 var(--pd),0 18px 30px -10px rgba(0,0,0,.6);font-family:var(--display);-webkit-tap-highlight-color:transparent;transition:transform .08s,box-shadow .08s,filter .2s}
+.mg-buzz:active{transform:translateY(6px);box-shadow:0 4px 0 var(--pd)}
+.mg-buzz.b0{left:max(14px,2vw);top:calc(max(10px,env(safe-area-inset-top)) + 70px)}.mg-buzz.b1{right:max(14px,2vw);top:calc(max(10px,env(safe-area-inset-top)) + 70px)}
+.mg-buzz.b2{left:max(14px,2vw);bottom:24px}.mg-buzz.b3{right:max(14px,2vw);bottom:24px}
+.mg-bn{font-size:clamp(17px,1.9vw,24px)}
+.mg-buzz b{font-weight:400;font-size:clamp(40px,5.4vw,70px);line-height:1}
+.mg-bk{font-family:var(--body);font-weight:700;font-size:clamp(11px,1.1vw,14px);opacity:.85}
+.mg-buzz.on{box-shadow:0 10px 0 var(--pd),0 0 0 8px #fff,0 0 40px 14px var(--pc);animation:mg-pulse .45s ease-in-out infinite alternate}
+.mg-buzz.out{filter:grayscale(1) brightness(.75)}
+.mg-bcenter{position:absolute;z-index:6;left:calc(clamp(120px,16vw,210px) + 40px);right:calc(clamp(120px,16vw,210px) + 40px);top:calc(max(10px,env(safe-area-inset-top)) + 60px);bottom:18px;display:flex;flex-direction:column;align-items:stretch;gap:12px}
+.mg-bcenter .mg-qbox{position:static;transform:none;align-self:center;max-width:100%}
+.mg-bmsg{margin:0;text-align:center;color:#FFE08A;font-size:clamp(20px,2.4vw,32px);min-height:1.3em;text-shadow:0 2px 0 rgba(0,0,0,.35)}
+.mg-bcenter .mg-qt{background:rgba(255,255,255,.25)}
+.mg-opts.mg-off .mg-opt{opacity:.45;pointer-events:none}
+.mg-opt.mg-dead{pointer-events:none;opacity:.6}
+.mg-g-buzz .mg-opt:not(.right):not(.wrong){background:linear-gradient(#fff,#F1EDFF)}
+
+/* ── 땅따먹기 ── */
+.mg-meadow2{position:absolute;inset:0;background:radial-gradient(circle at 50% 50%,#B8E58F,#7BBF52);overflow:hidden}
+.mg-board{position:absolute;z-index:5;top:calc(max(10px,env(safe-area-inset-top)) + 64px);bottom:16px;left:50%;transform:translateX(-50%);aspect-ratio:1;max-width:calc(100% - 2 * clamp(110px,15vw,200px) - 60px);display:grid;grid-template-columns:repeat(4,1fr);grid-template-rows:repeat(4,1fr);gap:clamp(5px,.9vw,10px);padding:clamp(6px,1vw,12px);background:rgba(90,60,30,.35);border-radius:20px;box-shadow:0 0 0 5px var(--pc,#fff);transition:box-shadow .3s}
+.mg-cell{min-width:0;min-height:0;display:grid;place-items:center;border:0;border-radius:14px;background:#FFFDF7;color:#2A221C;font-family:var(--display);font-size:clamp(15px,2vw,30px);padding:4px;box-shadow:0 4px 0 rgba(0,0,0,.18);overflow:hidden;-webkit-tap-highlight-color:transparent;transition:transform .1s,background .3s}
+.mg-cell:hover:not(.own){transform:translateY(-2px)}
+.mg-cell .mg-q{gap:.12em}
+.mg-cell.long{font-size:clamp(12px,1.35vw,20px)}
+.mg-cell.own{background:var(--pc);color:#fff;pointer-events:none;box-shadow:inset 0 -6px 0 rgba(0,0,0,.18)}
+.mg-cell.own .mg-op{color:#fff}
+.mg-lside{position:absolute;z-index:5;top:50%;transform:translateY(-50%);width:clamp(110px,15vw,200px);display:flex;flex-direction:column;align-items:center;gap:2px;background:rgba(255,255,255,.9);border:5px solid var(--pc);border-radius:24px;padding:14px 8px;color:var(--pd);font-size:18px;transition:transform .2s,box-shadow .2s}
+.mg-lside.s0{left:max(14px,2vw)}.mg-lside.s1{right:max(14px,2vw)}
+.mg-ltn{font-size:clamp(20px,2.2vw,28px)}
+.mg-lside b{font-weight:400;font-size:clamp(46px,6vw,80px);line-height:1}
+.mg-lturn{visibility:hidden;font-style:normal;white-space:nowrap;margin-top:6px;background:var(--pc);color:#fff;border-radius:999px;padding:2px 12px;font-size:16px}
+.mg-lside.turn{transform:translateY(-50%) scale(1.06);box-shadow:0 0 0 6px #fff,0 0 30px 6px var(--pc)}
+.mg-lside.turn .mg-lturn{visibility:visible;animation:mg-pulse .5s ease-in-out infinite alternate}
+.mg-lpop{position:absolute;inset:0;z-index:30;display:grid;place-items:center;padding:16px;background:rgba(30,20,10,.45)}
+.mg-lpop[hidden]{display:none}
+.mg-lcard{width:min(760px,100%);height:min(560px,calc(100dvh - 90px));display:flex;flex-direction:column;gap:12px;background:#FFFCF7;border:6px solid var(--pc);border-radius:28px;padding:14px;animation:mg-in .25s ease-out}
+.mg-lwho{margin:0;text-align:center;color:var(--pd);font-size:clamp(20px,2.2vw,28px)}
+.mg-lcard .mg-qbox{position:static;transform:none;align-self:center;max-width:100%;box-shadow:none;border:2px solid #EFE6DB}
+@media (max-width:640px){.mg-buzz{width:92px}.mg-bcenter{left:12px;right:12px;top:calc(max(10px,env(safe-area-inset-top)) + 170px);bottom:130px}.mg-lside{top:auto;bottom:10px;transform:none;width:44%;flex-direction:row;justify-content:center;gap:8px;padding:6px}.mg-lside.turn{transform:scale(1.03)}.mg-lside b{font-size:34px}.mg-board{max-width:calc(100% - 20px);bottom:110px}}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1031,7 +1109,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 <h2 class="mg-h" id="mgH2"><span class="mg-no">2</span>게임 선택</h2>
 <div class="mg-gwrap" id="mgGames"></div>
 </section>
-<div class="mg-gobar"><p class="mg-sel" id="mgSel" aria-live="polite"></p><button type="button" class="mg-start" id="mgStart">게임 시작</button></div>
+<div class="mg-gobar"><p class="mg-sel" id="mgSel" aria-live="polite"></p><span class="mg-np" id="mgNp" hidden></span><button type="button" class="mg-start" id="mgStart">게임 시작</button></div>
 <details class="mg-how"><summary>점수는 이렇게 매겨요</summary>
 <ul>
 <li>정답 하나에 <b>10점</b>, 빨리 맞힐수록 <b>빠르기 점수</b>가 최대 10점 더 붙어요.</li>
@@ -1515,9 +1593,12 @@ window.MG={"g":4,"units":[{"id":"u1","nm":"큰 수의 곱셈","k":["mul14","mul1
     { id: 'balloon', pl: [1, 1], nm: '풍선 터뜨리기', de: '정답이 적힌 풍선을 하늘로 날아가기 전에 톡! 하트 3개로 오래 버텨요.', stars: [5, 12, 20] },
     { id: 'mole', pl: [1, 1], nm: '두더지 잡기', de: '정답 팻말을 든 두더지를 뿅망치로 콩! 숨기 전에 빨리 잡아요.', stars: [5, 12, 20] },
     { id: 'tower', pl: [1, 1], nm: '탑 쌓기', de: '맞힐 때마다 블록이 한 층씩! 틀리거나 시간이 지나면 맨 위 블록이 떨어져요.', stars: [5, 12, 20] },
-    { id: 'rocket', pl: [1, 1], nm: '60초 우주 도전', de: '60초 동안 몇 문제를 맞힐까요? 맞힐수록 로켓이 높이 올라가요.', stars: [8, 15, 22] },
+    { id: 'rocket', pl: [1, 1], timer: true, nm: '60초 우주 도전', de: '60초 동안 몇 문제를 맞힐까요? 맞힐수록 로켓이 높이 올라가요.', stars: [8, 15, 22] },
     { id: 'invader', pl: [1, 1], nm: '우주 침공 막기', de: '식을 들고 내려오는 외계인을 정답 레이저로 맞혀요. 땅에 닿기 전에!', stars: [5, 12, 20] },
-    { id: 'tug', pl: [2, 2], nm: '줄다리기', de: '두 사람(두 팀)이 화면 양쪽에서 동시에 풀어요. 먼저 5번 당기는 쪽이 이겨요.', two: true, how: '파랑 팀 · 빨강 팀, 한 사람씩 또는 모둠 대표로' }
+    { id: 'race', pl: [2, 4], timer: true, nm: '달리기 경주', de: '2~4명이 화면을 나눠 각자 문제를 풀어요. 맞힐 때마다 한 칸씩, 먼저 결승선(10칸)에 닿으면 이겨요.', two: true, how: '인원을 고르면 화면이 2~4칸으로 나뉘어요' },
+    { id: 'buzz', pl: [4, 4], nm: '골든벨 버저', de: '같은 문제를 보고 네 귀퉁이 버저를 먼저 눌러 답해요. 틀리면 다른 사람에게 기회! 먼저 10점이면 이겨요.', two: true, how: '버저는 먼저 누른 한 사람만 받아요 · 모둠 대표 4명도 좋아요' },
+    { id: 'land', pl: [2, 2], nm: '땅따먹기', de: '차례대로 칸을 골라 그 칸의 식을 풀어요. 맞히면 내 땅! 판이 다 차면 땅이 많은 쪽이 이겨요.', two: true, how: '한 번에 한 사람씩 · 빠르기보다 차례대로' },
+    { id: 'tug', pl: [2, 2], timer: true, nm: '줄다리기', de: '두 사람(두 팀)이 화면 양쪽에서 동시에 풀어요. 먼저 5번 당기는 쪽이 이겨요.', two: true, how: '파랑 팀 · 빨강 팀, 한 사람씩 또는 모둠 대표로' }
   ];
   var GBY = {}; GAMES.forEach(function (x) { GBY[x.id] = x });
 
@@ -1566,6 +1647,12 @@ window.MG={"g":4,"units":[{"id":"u1","nm":"큰 수의 곱셈","k":["mul14","mul1
       '<path d="M80 4v12" stroke="#5C5047" stroke-width="2"/><rect x="64" y="14" width="34" height="12" rx="3" fill="#B07CFF"/><path d="M20 6h120" stroke="#5C5047" stroke-width="3"/></svg>',
     invader: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#1B1F4B"/><circle cx="20" cy="18" r="1.5" fill="#fff"/><circle cx="140" cy="26" r="1.5" fill="#fff"/><circle cx="110" cy="10" r="1.2" fill="#fff"/>' +
       '<g transform="translate(52 10) scale(.46)">' + ALIEN.replace(/<\/?svg[^>]*>/g, '') + '</g><path d="M80 82 82 44" stroke="#FF6B6B" stroke-width="3"/><path d="M0 100V84h20V74h16v10h20V70h18v30Zm100 0V78h18V66h16v12h26v22Z" fill="#2E2A73"/><g transform="translate(64 74) scale(.32)">' + CANNON.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
+    race: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#BFE6FF"/><rect y="40" width="160" height="60" fill="#D9644A"/><path d="M0 55h160M0 70h160M0 85h160" stroke="#fff" stroke-width="1.5" opacity=".8"/>' +
+      '<path d="M138 40v60" stroke="#fff" stroke-width="6" stroke-dasharray="5 5"/><circle cx="40" cy="48" r="6" fill="#4DA3FF"/><circle cx="70" cy="63" r="6" fill="#FF6B6B"/><circle cx="56" cy="78" r="6" fill="#3DBE6B"/><circle cx="92" cy="93" r="5" fill="#F5B82E"/><path d="M128 10v26l18-8Z" fill="#FFD93D"/><path d="M128 8v30" stroke="#5C5047" stroke-width="2"/></svg>',
+    buzz: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#2B1E66"/><circle cx="80" cy="44" r="40" fill="#FFD93D" opacity=".18"/><path d="M80 18c-11 0-18 8-18 19v12l-6 8h48l-6-8V37c0-11-7-19-18-19Z" fill="#FFC530"/><circle cx="80" cy="64" r="5" fill="#FFC530"/>' +
+      '<circle cx="18" cy="22" r="11" fill="#4DA3FF"/><circle cx="142" cy="22" r="11" fill="#FF6B6B"/><circle cx="18" cy="80" r="11" fill="#3DBE6B"/><circle cx="142" cy="80" r="11" fill="#F5B82E"/></svg>',
+    land: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#A8DA7E"/><g transform="translate(46 8)">' +
+      [0, 1, 2, 3].map(function (r) { return [0, 1, 2, 3].map(function (c) { var k = (r * 4 + c) % 5; return '<rect x="' + c * 17 + '" y="' + r * 21 + '" width="15" height="19" rx="3" fill="' + (k === 1 ? '#4DA3FF' : k === 3 ? '#FF6B6B' : '#FFFDF7') + '"/>' }).join('') }).join('') + '</g></svg>',
     rocket: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#1B1F4B"/><circle cx="28" cy="20" r="1.6" fill="#fff"/><circle cx="60" cy="70" r="1.3" fill="#fff"/><circle cx="140" cy="16" r="1.8" fill="#fff"/><circle cx="118" cy="60" r="1.2" fill="#fff"/><circle cx="20" cy="80" r="1.4" fill="#fff"/>' +
       '<circle cx="130" cy="78" r="18" fill="#B07CFF"/><ellipse cx="130" cy="78" rx="28" ry="5" fill="none" stroke="#E0C9FF" stroke-width="2.5"/><g transform="translate(66 10) rotate(18) scale(.72)">' + ROCKET.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
     tug: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#CDEBFF"/><rect y="62" width="160" height="38" fill="#E8C98F"/><path d="M80 52v40" stroke="#fff" stroke-width="3" stroke-dasharray="5 4"/>' +
@@ -1653,7 +1740,7 @@ window.MG={"g":4,"units":[{"id":"u1","nm":"큰 수의 곱셈","k":["mul14","mul1
   var ALL = { id: 'all', nm: '모두 섞기', k: [] }; D.units.forEach(function (u) { ALL.k = ALL.k.concat(u.k) });
   var units = D.units.concat([ALL]);
   var uSel = units.filter(function (u) { return u.id === mine.u })[0] || units[0];
-  var kOn = {}, gSel = GBY[mine.game] ? mine.game : 'balloon';
+  var kOn = {}, gSel = GBY[mine.game] ? mine.game : 'balloon', nPl = mine.np || 2;
   function resetK() { kOn = {}; uSel.k.forEach(function (k) { kOn[k] = 1 }) }
   resetK(); if (mine.u === uSel.id && mine.k && mine.k.length) { var kk = mine.k.filter(function (k) { return uSel.k.indexOf(k) >= 0 }); if (kk.length) { kOn = {}; kk.forEach(function (k) { kOn[k] = 1 }) } }
   function kList() { return uSel.k.filter(function (k) { return kOn[k] }) }
@@ -1684,9 +1771,12 @@ window.MG={"g":4,"units":[{"id":"u1","nm":"큰 수의 곱셈","k":["mul14","mul1
     $('mgGames').innerHTML =
       '<h3 class="mg-gh"><span class="mg-ghi">' + PICO.replace('opacity=".55"', 'opacity="0"').replace('opacity=".55"', 'opacity="0"') + '</span>혼자서 <small>내 점수와 최고 기록에 도전해요 · 1명</small></h3><div class="mg-games">' + solo.map(gameCard).join('') + '</div>' +
       '<h3 class="mg-gh"><span class="mg-ghi">' + PICO + '</span>함께 <small>한 화면에서 여럿이 겨뤄요 · 전자칠판·태블릿</small></h3><div class="mg-games">' + team.map(gameCard).join('') + '</div>';
-    $('mgSel').innerHTML = '<b>' + esc(uSel.sh || uSel.nm) + '</b> · ' + esc(GBY[gSel].nm) + ' <span class="mg-selpl">' + pl(GBY[gSel]) + '</span>';
+    var G = GBY[gSel], np = '';
+    if (G.pl[0] < G.pl[1]) { np = '<span class="mg-npl">몇 명?</span>'; for (var k = G.pl[0]; k <= G.pl[1]; k++) np += '<button type="button" data-np="' + k + '" aria-pressed="' + (k === Math.min(G.pl[1], Math.max(G.pl[0], nPl))) + '">' + k + '명</button>' }
+    $('mgNp').innerHTML = np; $('mgNp').hidden = !np;
+    $('mgSel').innerHTML = '<b>' + esc(uSel.sh || uSel.nm) + '</b> · ' + esc(G.nm) + (np ? '' : ' <span class="mg-selpl">' + pl(G) + '</span>');
   }
-  function remember() { last[D.g] = { u: uSel.id, k: kList().length < uSel.k.length ? kList() : [], game: gSel }; save(KEY + '-last', last) }
+  function remember() { last[D.g] = { u: uSel.id, k: kList().length < uSel.k.length ? kList() : [], game: gSel, np: nPl }; save(KEY + '-last', last) }
   $('mgUnits').addEventListener('click', function (e) {
     var b = e.target.closest('.mg-unit'); if (!b) return;
     uSel = units.filter(function (u) { return u.id === b.dataset.u })[0]; resetK(); drawUnits(); drawGames(); remember();
@@ -1700,6 +1790,7 @@ window.MG={"g":4,"units":[{"id":"u1","nm":"큰 수의 곱셈","k":["mul14","mul1
     var b = e.target.closest('.mg-game'); if (!b) return; gSel = b.dataset.game; drawGames(); remember();
   });
   $('mgStart').addEventListener('click', function () { start(gSel) });
+  $('mgNp').addEventListener('click', function (e) { var b = e.target.closest('[data-np]'); if (!b) return; nPl = +b.dataset.np; drawGames(); remember() });
   function fromHash() {
     var m = /^#(u\d+|all)(?:-(\w+))?$/.exec(location.hash); if (!m) return;
     var u = units.filter(function (x) { return x.id === m[1] })[0]; if (u) { uSel = u; resetK() }
@@ -1726,9 +1817,9 @@ window.MG={"g":4,"units":[{"id":"u1","nm":"큰 수의 곱셈","k":["mul14","mul1
     return '<div class="mg-hud">' +
       '<button type="button" class="mg-hb" data-a="quit" aria-label="그만하기">' + ICO.x + '</button>' +
       '<button type="button" class="mg-hb" data-a="pause" aria-label="잠깐 멈추기">' + ICO.pause + '</button>' +
-      (one ? '<span class="mg-pill mg-score"><small>점수</small><b id="mgScore">0</b></span><span class="mg-pill mg-combo" id="mgComboP"><small>연속</small><b id="mgCombo">0</b></span><span class="mg-pill"><small>레벨</small><b id="mgLv">1</b></span>' : '<span class="mg-pill"><b class="mg-hud-t">줄다리기</b></span>') +
+      (one ? '<span class="mg-pill mg-score"><small>점수</small><b id="mgScore">0</b></span><span class="mg-pill mg-combo" id="mgComboP"><small>연속</small><b id="mgCombo">0</b></span><span class="mg-pill"><small>레벨</small><b id="mgLv">1</b></span>' : '<span class="mg-pill"><b class="mg-hud-t">' + esc(GBY[game].nm) + '</b></span>') +
       '<span class="mg-sp"></span>' +
-      (game === 'rocket' || game === 'tug' ? '<span class="mg-pill mg-time"><small>남은 시간</small><b id="mgTime"></b></span>' : '<span class="mg-hearts" id="mgHearts" aria-label="하트"></span>') +
+      (GBY[game].timer ? '<span class="mg-pill mg-time"><small>남은 시간</small><b id="mgTime"></b></span>' : one ? '<span class="mg-hearts" id="mgHearts" aria-label="하트"></span>' : '') +
       '<button type="button" class="mg-hb" data-a="full" aria-label="전체 화면">' + ICO.full + '</button>' +
       '<button type="button" class="mg-hb" data-a="mute" aria-label="소리 켜기·끄기" aria-pressed="' + muted + '">' + (muted ? ICO.mute : ICO.vol) + '</button></div>';
   }
@@ -1773,7 +1864,8 @@ window.MG={"g":4,"units":[{"id":"u1","nm":"큰 수의 곱셈","k":["mul14","mul1
 
   function start(game) {
     var two = !!GBY[game].two;
-    S = { game: game, two: two, score: 0, combo: 0, bestCombo: 0, right: 0, wrong: 0, level: 1, lives: 3, maxLives: 3, list: [], over: false, paused: true, wait: 0, t: 0 };
+    var P = GBY[game].pl;
+    S = { game: game, two: two, np: P[0] === P[1] ? P[0] : Math.min(P[1], Math.max(P[0], nPl)), score: 0, combo: 0, bestCombo: 0, right: 0, wrong: 0, level: 1, lives: 3, maxLives: 3, list: [], over: false, paused: true, wait: 0, t: 0 };
     stage.className = 'mg-stage mg-g-' + game; stage.hidden = false; document.body.classList.add('mg-playing');
     stage.innerHTML = hud(game) + '<div class="mg-play" id="mgPlay"></div>';
     GM[game].init(); setHud();
@@ -1823,6 +1915,7 @@ window.MG={"g":4,"units":[{"id":"u1","nm":"큰 수의 곱셈","k":["mul14","mul1
   document.addEventListener('keydown', function (e) {
     if (!S) return;
     if (e.key === 'Escape') { if (S.over) close(); else pause(!S.paused) }
+    else if (S.started && !S.paused && !S.over && GM[S.game].keyAny && GM[S.game].keyAny(e.key.toLowerCase())) {}
     else if (/^[1-4]$/.test(e.key) && S.started && !S.paused && !S.over && GM[S.game].key) GM[S.game].key(+e.key - 1);
   });
   document.addEventListener('visibilitychange', function () { if (document.hidden && S && !S.over && !S.paused) pause(true) });
@@ -1831,7 +1924,7 @@ window.MG={"g":4,"units":[{"id":"u1","nm":"큰 수의 곱셈","k":["mul14","mul1
   function end(why) {
     if (!S || S.over) return; S.over = true; GM[S.game].stop && GM[S.game].stop();
     var o = document.createElement('div'); o.className = 'mg-over';
-    if (S.two) { o.innerHTML = GM.tug.result(why); stage.appendChild(o); sfx('end'); return }
+    if (S.two) { o.innerHTML = GM[S.game].result(why); stage.appendChild(o); sfx('end'); return }
     var key = recKey(S.game), old = rec[key] || 0, best = S.score > old;
     if (best) { rec[key] = S.score; save(KEY, rec) }
     var st = stars(S.right, GBY[S.game].stars), sh = '';
@@ -2127,6 +2220,182 @@ window.MG={"g":4,"units":[{"id":"u1","nm":"큰 수의 곱셈","k":["mul14","mul1
       }
     },
     key: function (i) { if (this.q && i < this.q.c.opts.length) this.hit(i) }
+  };
+
+  /* ── 함께 하는 게임 공통: 팀 색·보기 단추·결과 ── */
+  var TEAM = [{ nm: '파랑', c: '#4DA3FF', d: '#1F6FC4' }, { nm: '빨강', c: '#FF6B6B', d: '#C93C3C' }, { nm: '초록', c: '#3DBE6B', d: '#1F8A47' }, { nm: '노랑', c: '#F5B82E', d: '#9A6A00' }];
+  function tv(i) { return '--pc:' + TEAM[i].c + ';--pd:' + TEAM[i].d }
+  function optBtns(box, q, fn, keys) {
+    box.className = 'mg-opts n' + q.c.opts.length;
+    box.innerHTML = q.c.opts.map(function (o, i) { return '<button type="button" class="mg-opt" data-i="' + i + '" aria-label="' + (keys ? (i + 1) + '번 ' : '') + esc(plain(o)) + '">' + (keys ? '<span class="mg-key">' + (i + 1) + '</span>' : '') + '<span class="mg-lab ' + szCls(o) + '">' + aH(o) + '</span></button>' }).join('');
+    [].forEach.call(box.children, function (b) { tap(b, function () { fn(+b.dataset.i) }) });
+  }
+  function teamRes(why, sc, unit, msg) {   // sc: 팀마다 점수, 가장 높은 팀(들)이 이김
+    var mx = Math.max.apply(null, sc), win = mx > 0 ? sc.map(function (v, i) { return v === mx ? i : -1 }).filter(function (i) { return i >= 0 }) : [];
+    var h = win.length === 1 ? TEAM[win[0]].nm + ' 승리!' : win.length ? win.map(function (i) { return TEAM[i].nm }).join('·') + ' 공동 1등!' : '비겼어요!';
+    var col = win.length === 1 ? TEAM[win[0]] : null;
+    return '<div class="mg-card mg-res">' + (why ? '<p class="mg-why">' + esc(why) + '</p>' : '') + '<h2>' + h + '</h2>' +
+      '<div class="mg-stars">' + [0, 1, 2].map(function (i) { return '<span class="mg-st on" style="animation-delay:' + (.25 + i * .25) + 's' + (col ? ';--sc:' + col.c + ';--sd:' + col.d : '') + '">' + ICO.star + '</span>' }).join('') + '</div>' +
+      '<div class="mg-stats">' + sc.map(function (v, i) { return '<span style="background:color-mix(in srgb,' + TEAM[i].c + ' 22%,#fff)">' + TEAM[i].nm + ' <b>' + v + '</b>' + unit + '</span>' }).join('') + '</div>' +
+      '<p class="mg-old">' + (msg || (win.length === 1 ? '모두 수고했어요! 한 판 더 겨뤄 볼까요?' : '실력이 비슷하네요! 한 판 더 겨뤄 봐요.')) + '</p>' +
+      '<div class="mg-btns"><button type="button" class="mg-btn go" data-a="again">한 판 더</button><button type="button" class="mg-btn" data-a="menu">게임 고르기로</button></div></div>';
+  }
+
+  /* ── 달리기 경주 (2~4명) ── */
+  GM.race = {
+    T: 180, GOAL: 10,
+    init: function () {
+      var n = this.n = S.np, i, lanes = '', pp = '';
+      for (i = 0; i < n; i++) {
+        lanes += '<div class="mg-lane" style="' + tv(i) + '"><span class="mg-ln">' + TEAM[i].nm + '</span><div class="mg-lrun"><i class="mg-finish"></i><div class="mg-runner" id="mgRun' + i + '">' + kidSvg(TEAM[i].c) + '</div></div></div>';
+        pp += '<div class="mg-pp" id="mgPP' + i + '" style="' + tv(i) + '"><p class="mg-team">' + TEAM[i].nm + ' <b id="mgPts' + i + '">0</b><small> / ' + this.GOAL + '칸</small></p><div class="mg-qbox" id="mgQ' + i + '"></div><div class="mg-opts" id="mgOpts' + i + '"></div><div class="mg-freeze">앗! 잠깐 쉬어요</div></div>';
+      }
+      $('mgPlay').innerHTML = '<div class="mg-stadium"><i class="mg-cloud c0"></i></div><div class="mg-track2 n' + n + '">' + lanes + '</div><div class="mg-pps n' + n + '">' + pp + '</div>';
+      this.pos = []; this.q = []; this.fz = []; this.wait = []; for (i = 0; i < n; i++) { this.pos.push(0); this.fz.push(0); this.wait.push(0) }
+      this.left = this.T; this.lastSec = -1;
+    },
+    go: function () { for (var i = 0; i < this.n; i++) this.next(i) },
+    next: function (i) {
+      var q = this.q[i] = makeP(), self = this; q.done = false; $('mgQ' + i).innerHTML = qbox(q);
+      optBtns($('mgOpts' + i), q, function (j) { self.hit(i, j) });
+    },
+    hit: function (i, j) {
+      var q = this.q[i]; if (!S || S.paused || S.over || S.ending || q.done || this.fz[i] > 0) return;
+      var bs = $('mgOpts' + i).children; q.done = true;
+      if (j === q.c.ok) {
+        bs[j].classList.add('right'); sfx('pull'); S.right++; this.pos[i]++; $('mgPts' + i).textContent = this.pos[i];
+        var r = $('mgRun' + i); r.style.left = 'calc(' + (this.pos[i] / this.GOAL) + ' * (100% - 56px))'; r.classList.remove('hop'); void r.offsetWidth; r.classList.add('hop');
+        this.wait[i] = .35;
+        if (this.pos[i] >= this.GOAL) { S.ending = 1; sfx('up'); setTimeout(function () { end('') }, 700) }
+      } else {
+        bs[j].classList.add('wrong'); bs[q.c.ok].classList.add('right'); sfx('bad'); S.wrong++;
+        this.fz[i] = 1.5; $('mgPP' + i).classList.add('frozen'); this.wait[i] = 1.5;
+      }
+    },
+    tick: function (dt) {
+      this.left -= dt; var L = Math.max(0, this.left), s = Math.ceil(L);
+      $('mgTime').textContent = s + '초'; if (s !== this.lastSec && s <= 5 && s > 0) sfx('tick'); this.lastSec = s;
+      if (L <= 0 && !S.ending) { end('시간이 다 됐어요'); return }
+      if (S.ending) return;
+      for (var i = 0; i < this.n; i++) {
+        if (this.fz[i] > 0) { this.fz[i] -= dt; if (this.fz[i] <= 0) $('mgPP' + i).classList.remove('frozen') }
+        if (this.wait[i] > 0) { this.wait[i] -= dt; if (this.wait[i] <= 0) this.next(i) }
+      }
+    },
+    result: function (why) { return teamRes(why, this.pos, '칸') }
+  };
+
+  /* ── 골든벨 버저 (4명) ── */
+  GM.buzz = {
+    GOAL: 10, ANS: 7, IDLE: 25, KEYS: ['q', 'p', 'z', 'm'],
+    init: function () {
+      var h = '', self = this;
+      for (var i = 0; i < 4; i++) h += '<button type="button" class="mg-buzz b' + i + '" id="mgBz' + i + '" style="' + tv(i) + '" aria-label="' + TEAM[i].nm + ' 버저"><span class="mg-bn">' + TEAM[i].nm + '</span><b id="mgBs' + i + '">0</b><span class="mg-bk">점 · 키 ' + this.KEYS[i].toUpperCase() + '</span></button>';
+      $('mgPlay').innerHTML = '<div class="mg-gold"><i class="mg-spot"></i></div>' + h +
+        '<div class="mg-bcenter"><p class="mg-bmsg" id="mgBmsg"></p><div class="mg-qbox" id="mgQ"></div><div class="mg-opts" id="mgOpts"></div><span class="mg-qt"><i id="mgQt"></i></span></div>';
+      this.pts = [0, 0, 0, 0];
+      for (i = 0; i < 4; i++) (function (k) { tap($('mgBz' + k), function () { self.buzz(k) }) })(i);
+    },
+    go: function () { this.next() },
+    msg: function (t, i) { var m = $('mgBmsg'); m.innerHTML = t; m.style.color = i >= 0 ? TEAM[i].c : '' },
+    next: function () {
+      var q = this.q = makeP(), self = this; q.out = {}; q.done = false; this.who = -1; this.idle = 0;
+      $('mgQ').innerHTML = qbox(q); optBtns($('mgOpts'), q, function (j) { self.hit(j) }, true);
+      $('mgOpts').classList.add('mg-off');
+      for (var i = 0; i < 4; i++) $('mgBz' + i).classList.remove('on', 'out');
+      this.msg('버저를 먼저 누르세요!');
+    },
+    buzz: function (i) {
+      var q = this.q; if (!S || S.paused || S.over || S.ending || !q || q.done || this.who >= 0 || q.out[i]) return;
+      this.who = i; this.ta = 0; sfx('go');
+      $('mgBz' + i).classList.add('on'); $('mgOpts').classList.remove('mg-off');
+      this.msg(TEAM[i].nm + ' 차례! ' + this.ANS + '초 안에 골라요', i);
+    },
+    hit: function (j) {
+      var q = this.q, w = this.who; if (!S || S.paused || S.over || q.done || w < 0) return;
+      var bs = $('mgOpts').children;
+      if (j === q.c.ok) {
+        q.done = true; bs[j].classList.add('right'); sfx('ok'); S.right++; this.pts[w]++; $('mgBs' + w).textContent = this.pts[w];
+        var c = center($('mgBz' + w)); burst(c[0], c[1], TEAM[w].c); this.msg(TEAM[w].nm + ' 정답! +1점', w); S.wait = 1.3;
+        if (this.pts[w] >= this.GOAL) { S.ending = 1; setTimeout(function () { end('') }, 900) }
+      } else this.miss(j);
+    },
+    miss: function (j) {   // 틀리거나 시간 안에 못 고름 → 이 문제에서 빠지고 다른 사람에게 기회
+      var q = this.q, w = this.who, bs = $('mgOpts').children; sfx('bad'); S.wrong++;
+      if (j >= 0) bs[j].classList.add('wrong', 'mg-dead');
+      q.out[w] = 1; $('mgBz' + w).classList.remove('on'); $('mgBz' + w).classList.add('out'); this.who = -1; this.idle = 0;
+      $('mgOpts').classList.add('mg-off');
+      if (Object.keys(q.out).length >= 4) this.reveal('모두 기회를 썼어요'); else this.msg((j >= 0 ? '땡! ' : '시간 끝! ') + '다른 사람이 버저를 눌러요');
+    },
+    reveal: function (t) { var q = this.q; q.done = true; $('mgOpts').classList.remove('mg-off'); $('mgOpts').children[q.c.ok].classList.add('right'); this.msg(t + ' · 정답은 ' + plain(q.c.opts[q.c.ok])); S.wait = 2 },
+    tick: function (dt) {
+      if (S.ending) return;
+      if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
+      var q = this.q, bar = $('mgQt');
+      if (this.who >= 0) { this.ta += dt; bar.style.width = Math.max(0, 1 - this.ta / this.ANS) * 100 + '%'; bar.classList.toggle('low', this.ta > this.ANS * .6); if (this.ta >= this.ANS) this.miss(-1) }
+      else if (!q.done) { this.idle += dt; bar.style.width = Math.max(0, 1 - this.idle / this.IDLE) * 100 + '%'; bar.classList.remove('low'); if (this.idle >= this.IDLE) { sfx('bad'); this.reveal('아무도 누르지 않았어요') } }
+    },
+    key: function (i) { this.hit(i) },
+    keyAny: function (k) { var i = this.KEYS.indexOf(k); if (i < 0) return false; this.buzz(i); return true },
+    result: function (why) { return teamRes(why, this.pts, '점') }
+  };
+
+  /* ── 땅따먹기 (2명, 차례대로) ── */
+  GM.land = {
+    N: 4, ANS: 20,
+    init: function () {
+      var h = '', n = this.N * this.N;
+      for (var i = 0; i < n; i++) h += '<button type="button" class="mg-cell" id="mgCell' + i + '" data-i="' + i + '"></button>';
+      function side(k) { return '<div class="mg-lside s' + k + '" id="mgLs' + k + '" style="' + tv(k) + '"><span class="mg-ltn">' + TEAM[k].nm + '</span><b id="mgLc' + k + '">0</b><span>칸</span><em class="mg-lturn">내 차례!</em></div>' }
+      $('mgPlay').innerHTML = '<div class="mg-meadow2"></div>' + side(0) + '<div class="mg-board" id="mgBoard">' + h + '</div>' + side(1) +
+        '<div class="mg-lpop" id="mgPop" hidden><div class="mg-lcard" id="mgLcard"><p class="mg-lwho" id="mgLwho"></p><div class="mg-qbox" id="mgQ"></div><div class="mg-opts" id="mgOpts"></div><span class="mg-qt"><i id="mgQt"></i></span></div></div>';
+      this.cells = []; this.cnt = [0, 0]; this.turn = 0; this.open = -1;
+      var self = this;
+      for (i = 0; i < n; i++) { this.cells.push({ p: null, own: -1 }); (function (k) { tap($('mgCell' + k), function () { self.pick(k) }) })(i) }
+    },
+    go: function () { for (var i = 0; i < this.cells.length; i++) this.fill(i); this.setTurn(0) },
+    fill: function (i) {   // 칸에 새 문제
+      var c = this.cells[i]; c.q = makeP(); var el = $('mgCell' + i), n = (c.q.p.txt || c.q.p.q).length;
+      el.className = 'mg-cell' + (c.q.p.txt || n > 5 ? ' long' : '');
+      el.innerHTML = qH(c.q.p).replace('<span class="mg-op">=</span><span class="mg-blank">?</span>', '').replace(/<span class="mg-blank">\?<\/span>$/, '');   // 칸에는 '= ?'를 빼고 식만
+      el.setAttribute('aria-label', (i + 1) + '번 칸');
+    },
+    setTurn: function (t) {
+      this.turn = t; for (var k = 0; k < 2; k++) $('mgLs' + k).classList.toggle('turn', k === t);
+      $('mgBoard').style.setProperty('--pc', TEAM[t].c);
+    },
+    pick: function (i) {
+      if (!S || S.paused || S.over || S.ending || this.open >= 0 || S.wait > 0 || this.cells[i].own >= 0) return;
+      var q = this.cells[i].q, self = this; q.done = false; this.open = i; this.ta = 0;
+      $('mgLwho').textContent = TEAM[this.turn].nm + ' 차례 · ' + this.ANS + '초 안에 골라요'; $('mgLcard').setAttribute('style', tv(this.turn));
+      $('mgQ').innerHTML = qbox(q); optBtns($('mgOpts'), q, function (j) { self.hit(j) }, true);
+      $('mgPop').hidden = false; sfx('go');
+    },
+    hit: function (j) {
+      var i = this.open; if (!S || S.paused || S.over || i < 0) return; var q = this.cells[i].q; if (q.done) return; q.done = true;
+      var bs = $('mgOpts').children, t = this.turn, self = this;
+      if (j === q.c.ok) {
+        bs[j].classList.add('right'); sfx('ok'); S.right++;
+        this.cells[i].own = t; this.cnt[t]++; $('mgLc' + t).textContent = this.cnt[t];
+        var el = $('mgCell' + i); el.classList.add('own'); el.setAttribute('style', tv(t));
+      } else {
+        if (j >= 0) bs[j].classList.add('wrong'); bs[q.c.ok].classList.add('right'); sfx('bad'); S.wrong++;
+      }
+      setTimeout(function () {
+        if (!S || S.over) return;
+        $('mgPop').hidden = true; self.open = -1;
+        if (j !== q.c.ok) self.fill(i);   // 틀린 칸은 새 문제로 바뀜
+        if (self.cnt[0] + self.cnt[1] >= self.cells.length) { S.ending = 1; end(''); return }
+        self.setTurn(1 - t);
+      }, j === q.c.ok ? 800 : 1500);
+    },
+    tick: function (dt) {
+      if (S.ending || this.open < 0 || this.cells[this.open].q.done) return;
+      this.ta += dt; var bar = $('mgQt'); bar.style.width = Math.max(0, 1 - this.ta / this.ANS) * 100 + '%'; bar.classList.toggle('low', this.ta > this.ANS * .7);
+      if (this.ta >= this.ANS) this.hit(-1);
+    },
+    key: function (i) { if (this.open >= 0) this.hit(i) },
+    result: function (why) { return teamRes(why, this.cnt, '칸') }
   };
 
   /* ── 줄다리기 (2명) ── */
