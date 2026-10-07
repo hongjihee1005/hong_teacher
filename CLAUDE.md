@@ -276,7 +276,7 @@ grade1/ … grade6/
 
 ### 기타 › 수학게임 (`project/math/index.html`, 2026-10-07)
 
-- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림) · 🧰 수학 교구실(`../mathtools/`, 2026-10-07 열림) · 📊 우리 반 그래프(`../classgraph/`, 열림) · 🎩 수학 마술(`../magic/`, 열림) · 📘 그림 수학 사전(`../mathdict/`, 열림) · 🎲 교실 수학 놀이(`../mathplay/`, 열림). 방 이름은 추천한 이름을 선생님이 고름(2026-10-07).
+- 첫 화면·`project/index.html`의 '🧮 수학게임' 카드 → 이 메뉴(손으로 고치는 메뉴 페이지, `apply_theme.py`). 안의 방: 🧠 창의수학게임(`../creative/`) · 🎮 교과수학게임(`../mathgame/`) · 💡 사고력 수학(`../thinking/`, 2026-10-07 열림) · 🏛️ 수학자 이야기(`../mathpeople/`, 2026-10-07 열림) · 🧰 수학 교구실(`../mathtools/`, 2026-10-07 열림) · 📊 우리 반 그래프(`../classgraph/`, 열림) · 🎩 수학 마술(`../magic/`, 열림) · 📘 그림 수학 사전(`../mathdict/`, 열림) · 🎲 교실 수학 놀이(`../mathplay/`, 열림) · 🔐 수학 방탈출(`../escape/`) · 🎨 수학 미술(`../mathart/`) · 📏 어림 왕(`../estimate/`) · 🛒 생활 속 수학(`../lifemath/`) · 🏆 수학 퀴즈쇼(`../quizshow/`) — 모두 열림. 방 이름은 추천한 이름을 선생님이 고름(2026-10-07).
   창의수학게임·교과수학게임 메뉴의 위치 표시줄은 '홈 › 기타 › 수학게임'.
 
 ### 기타 › 수학게임 › 사고력 수학 (`project/thinking/`, 2026-10-07)
@@ -343,7 +343,7 @@ grade1/ … grade6/
 - 화면: 탈출 시작(시간 제한 없음/15/20/30분) → 숫자판(키보드 숫자·Enter) 🔓 열기, 틀리면 흔들림·횟수, 💡 힌트, 🔑 정답 보기(선생님, 확인 창), 탈출 성공 화면(걸린 시간·힌트·틀린 수). 🖨️ 종이로 하기: 문제지 1쪽(답 칸·계산 칸) + 선생님용 정답지 1쪽.
 - **`project/escape/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/escape/`: 방 `rooms.py`(L(이야기, 문제, 답, 힌트 2개, 풀이, chk)), 화면 `page.html`·`escape.js`·`escape.css`. `build.py`가 자물쇠 답을 `chk`로 다시 계산하고 마지막 문 답을 만듦.
   고친 뒤 `python3 _build/escape/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 방을 더하면 메뉴 카드도. 클래스 앞글자 `es-`(인쇄 `ep-`).
-- 2026-10-07 선생님 요청으로 수학게임 방을 더 추천해 이어서 만드는 중: 수학 방탈출(열림) → 🎨 수학 미술(열림) → 📏 어림 왕(열림) → 🛒 생활 속 수학(열림) → 🏆 수학 퀴즈쇼(메뉴에 '곧 열려요').
+- 2026-10-07 선생님 요청으로 수학게임 방을 더 추천해 이어서 만드는 중: 수학 방탈출(열림) → 🎨 수학 미술(열림) → 📏 어림 왕(열림) → 🛒 생활 속 수학(열림) → 🏆 수학 퀴즈쇼(열림).
 
 ### 기타 › 수학게임 › 수학 미술 (`project/mathart/`, 2026-10-07)
 
@@ -362,6 +362,14 @@ grade1/ … grade6/
 - 메뉴 `project/lifemath/index.html`(손으로 고치는 메뉴) → `shop`(장바구니 합계·거스름돈) · `change`(동전·지폐를 눌러 거스름돈 만들기, 풀이에 가장 적은 개수) · `allow`(용돈 기입장 빈칸의 남은 돈, 🖨️ 빈 용돈 기입장 A4 한 장 인쇄) · `recipe`(인분 바꾸기, 비례식) · `time`(끝나는 시각·걸린 시간, 오전/오후 표시, 오후는 2시·14시 모두 맞음).
   활동마다 10문제(할 때마다 새로), 처음에 맞히면 점수, 한 번 틀리면 실마리, 두 번 틀리면 풀이. 기록은 남기지 않음. 새 단추 글은 ‘이어서 ▶’(초점 0.4초 늦게).
 - **`project/lifemath/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/lifemath/`: 활동 목록 `build.py`의 `TOOLS`, 공통 `life.js`(10문제 진행·돈 그림 `LF.money`)·`life.css`(인쇄 `#lfSheet`), 활동 `tools/<id>.js`(문제 `make()` → `{html, inputs, ok(값)→[맞음, 풀이, 실마리]}`), 틀 `page.html`. 고친 뒤 `python3 _build/lifemath/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 클래스 앞글자 `lf-`(인쇄 `lp-`).
+
+### 기타 › 수학게임 › 수학 퀴즈쇼 (`project/quizshow/`, 2026-10-07)
+
+- 메뉴 `project/quizshow/index.html`(손으로 고치는 메뉴) → `low`(1~2학년) · `mid`(3~4학년) · `high`(5~6학년) 판(분야 5 × 100~500점 = 25문제씩, 모두 75문제) · `my`(빈 판, 선생님이 직접 씀).
+- 선생님이 진행하는 모둠 대항 점수판: 준비(모둠 2~6·이름, 틀리면 점수 빼기, 🎁 행운 칸 1개 두 배, 생각할 시간 없음/20/30/60초) → 점수판(칸을 누르면 문제 창: 시간 재기 · 정답 보기 · 맞힌 모둠 누르기(감점 켜면 한 번 더 = 틀림) · 점수 주고 판으로) → 다 하면 순위.
+  점수 칸 −100/+100, ‘마지막 점수 되돌리기’. 진행 상황은 그 기기 localStorage(`hj-quiz-v1-<판>`), ✏️ 문제 바꾸기 내용은 `hj-quiz-v1-edit-<판>`(‘처음 문제로 되돌리기’).
+  🖨️ 문제와 정답(선생님용, A4 한 장) · 모둠 답판(모둠마다 A4 한 장, 25칸에 답·계산 쓰기 — 바꾼 문제·모둠 이름이 그대로 들어감).
+- **`project/quizshow/`의 index 말고는 직접 고치지 마세요.** 원본 `_build/quizshow/`: 문제 `boards.py`(`Q(문제, 답, 값, chk)` — 값이 있으면 `build.py`가 chk로 다시 계산하고 답 글에 값이 있는지 점검), 화면 `quiz.js`·`quiz.css`, 틀 `page.html`, 빈 판·쓰는 법은 `build.py`. 고친 뒤 `python3 _build/quizshow/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py check`는 점검만). 클래스 앞글자 `qs-`(인쇄 `qp-`).
 
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
 
