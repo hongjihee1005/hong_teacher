@@ -21,6 +21,9 @@
     { id: 'tower', pl: [1, 1], nm: '탑 쌓기', de: '맞힐 때마다 블록이 한 층씩! 틀리거나 시간이 지나면 맨 위 블록이 떨어져요.', stars: [5, 12, 20] },
     { id: 'rocket', pl: [1, 1], timer: true, nm: '60초 우주 도전', de: '60초 동안 몇 문제를 맞힐까요? 맞힐수록 로켓이 높이 올라가요.', stars: [8, 15, 22] },
     { id: 'invader', pl: [1, 1], nm: '우주 침공 막기', de: '식을 들고 내려오는 외계인을 정답 레이저로 맞혀요. 땅에 닿기 전에!', stars: [5, 12, 20] },
+    { id: 'memory', pl: [1, 1], pill: '뒤집은 횟수', nm: '짝 맞추기 카드', de: '카드 16장을 두 장씩 뒤집어 식과 답을 짝지어요. 시간 제한 없이 천천히! 적게 틀릴수록 별이 많아요.', noTxt: '크기 비교·여러 수 쓰기 문제는 카드로 만들지 않아요.' },
+    { id: 'vault', pl: [1, 1], nm: '금고 열기', de: '보기 없이 답을 숫자판으로 직접 써요. 맞힐 때마다 자물쇠가 하나씩, 5개를 열면 금고가 열려요.', stars: [5, 12, 20] },
+    { id: 'sort', pl: [1, 1], nm: '크기 순서로 줄 세우기', de: '식 카드 4장을 계산한 값이 작은(또는 큰) 것부터 차례로 눌러요. 어림하는 힘이 쑥쑥!', stars: [3, 7, 12], noTxt: '줄 세우기는 값이 나오는 계산(자연수·소수·분수)에서만 해요.' },
     { id: 'race', pl: [2, 4], timer: true, nm: '달리기 경주', de: '2~4명이 화면을 나눠 각자 문제를 풀어요. 맞힐 때마다 한 칸씩, 먼저 결승선(10칸)에 닿으면 이겨요.', two: true, how: '인원을 고르면 화면이 2~4칸으로 나뉘어요' },
     { id: 'buzz', pl: [4, 4], nm: '골든벨 버저', de: '같은 문제를 보고 네 귀퉁이 버저를 먼저 눌러 답해요. 틀리면 다른 사람에게 기회! 먼저 10점이면 이겨요.', two: true, how: '버저는 먼저 누른 한 사람만 받아요 · 모둠 대표 4명도 좋아요' },
     { id: 'land', pl: [2, 2], nm: '땅따먹기', de: '차례대로 칸을 골라 그 칸의 식을 풀어요. 맞히면 내 땅! 판이 다 차면 땅이 많은 쪽이 이겨요.', two: true, how: '한 번에 한 사람씩 · 빠르기보다 차례대로' },
@@ -71,6 +74,12 @@
     tower: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#FFD6A5"/><circle cx="128" cy="30" r="14" fill="#FF9F68"/><path d="M0 70h20V50h18v20h14V44h20v56H0Zm110 30V56h16v-14h18v58Z" fill="#C79BC6" opacity=".7"/><rect y="88" width="160" height="12" fill="#8CCB62"/>' +
       '<rect x="56" y="74" width="48" height="14" rx="3" fill="#FF6B6B"/><rect x="58" y="60" width="44" height="14" rx="3" fill="#FFB238"/><rect x="55" y="46" width="48" height="14" rx="3" fill="#6BCB77"/><rect x="57" y="32" width="45" height="14" rx="3" fill="#4DA3FF"/>' +
       '<path d="M80 4v12" stroke="#5C5047" stroke-width="2"/><rect x="64" y="14" width="34" height="12" rx="3" fill="#B07CFF"/><path d="M20 6h120" stroke="#5C5047" stroke-width="3"/></svg>',
+    memory: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#2E7D5B"/>' +
+      [0, 1, 2, 3].map(function (c) { return [0, 1].map(function (r) { var up = (c + r) % 3 === 0; return '<rect x="' + (14 + c * 35) + '" y="' + (12 + r * 42) + '" width="29" height="36" rx="5" fill="' + (up ? '#FFFDF7' : '#FF8C6B') + '"/>' + (up ? '<text x="' + (28.5 + c * 35) + '" y="' + (35 + r * 42) + '" font-size="12" text-anchor="middle" fill="#2A221C">' + (r ? '12' : '3×4') + '</text>' : '<circle cx="' + (28.5 + c * 35) + '" cy="' + (30 + r * 42) + '" r="7" fill="none" stroke="#FFD6C9" stroke-width="2"/>') }).join('') }).join('') + '</svg>',
+    vault: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#E7EDF5"/><rect x="34" y="10" width="92" height="80" rx="10" fill="#7C8BA3"/><rect x="42" y="18" width="76" height="64" rx="6" fill="#9AA8BF"/>' +
+      '<circle cx="66" cy="50" r="16" fill="#C9D3E2" stroke="#5E6C84" stroke-width="3"/><path d="M66 38v24M54 50h24" stroke="#5E6C84" stroke-width="3"/>' + [0, 1, 2, 3, 4].map(function (i) { return '<circle cx="104" cy="' + (26 + i * 12) + '" r="4" fill="' + (i < 2 ? '#6BCB77' : '#3E4A60') + '"/>' }).join('') + '</svg>',
+    sort: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#FFF1D6"/><rect y="78" width="160" height="22" fill="#C68A4A"/>' +
+      [0, 1, 2, 3].map(function (i) { var h = 18 + i * 14; return '<rect x="' + (18 + i * 34) + '" y="' + (76 - h) + '" width="26" height="' + h + '" rx="5" fill="' + ['#4DA3FF', '#6BCB77', '#FFB238', '#FF6B6B'][i] + '"/><text x="' + (31 + i * 34) + '" y="94" font-size="12" text-anchor="middle" fill="#fff">' + (i + 1) + '</text>' }).join('') + '</svg>',
     invader: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#1B1F4B"/><circle cx="20" cy="18" r="1.5" fill="#fff"/><circle cx="140" cy="26" r="1.5" fill="#fff"/><circle cx="110" cy="10" r="1.2" fill="#fff"/>' +
       '<g transform="translate(52 10) scale(.46)">' + ALIEN.replace(/<\/?svg[^>]*>/g, '') + '</g><path d="M80 82 82 44" stroke="#FF6B6B" stroke-width="3"/><path d="M0 100V84h20V74h16v10h20V70h18v30Zm100 0V78h18V66h16v12h26v22Z" fill="#2E2A73"/><g transform="translate(64 74) scale(.32)">' + CANNON.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
     race: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#BFE6FF"/><rect y="40" width="160" height="60" fill="#D9644A"/><path d="M0 55h160M0 70h160M0 85h160" stroke="#fff" stroke-width="1.5" opacity=".8"/>' +
@@ -187,10 +196,10 @@
   function pl(x) { return x.pl[0] === x.pl[1] ? x.pl[0] + '명' : x.pl[0] + '~' + x.pl[1] + '명' }
   var PICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2" fill="currentColor"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6Z" fill="currentColor"/><circle cx="17" cy="9" r="2.6" fill="currentColor" opacity=".55"/><path d="M15.5 14.3c3 .2 5.5 2.4 5.5 5.7h-4.4" fill="currentColor" opacity=".55"/></svg>';
   function gameCard(x) {
-    var b = rec[recKey(x.id)];
-    return '<button type="button" class="mg-game" data-game="' + x.id + '" aria-pressed="' + (x.id === gSel) + '"><span class="mg-thumb">' + THUMB[x.id] + '<span class="mg-pl">' + PICO + pl(x) + '</span></span>' +
+    var b = rec[recKey(x.id)], no = !ksFor(x.id).length;
+    return '<button type="button" class="mg-game' + (no ? ' no' : '') + '" data-game="' + x.id + '" aria-pressed="' + (x.id === gSel) + '"><span class="mg-thumb">' + THUMB[x.id] + '<span class="mg-pl">' + PICO + pl(x) + '</span></span>' +
       '<span class="mg-gn">' + esc(x.nm) + '</span><span class="mg-gd">' + esc(x.de) + '</span>' +
-      (x.two ? '<span class="mg-best">' + esc(x.how) + '</span>' : '<span class="mg-best">' + (b ? '최고 기록 ' + b + '점' : '아직 기록이 없어요') + '</span>') + '</button>';
+      (no ? '<span class="mg-best">' + esc(x.noTxt || '이 내용에서는 할 수 없어요') + '</span>' : x.two ? '<span class="mg-best">' + esc(x.how) + '</span>' : '<span class="mg-best">' + (b ? '최고 기록 ' + b + '점' : '아직 기록이 없어요') + '</span>') + '</button>';
   }
   function drawGames() {
     var solo = GAMES.filter(function (x) { return !x.two }), team = GAMES.filter(function (x) { return x.two });
@@ -215,7 +224,10 @@
   $('mgGames').addEventListener('click', function (e) {
     var b = e.target.closest('.mg-game'); if (!b) return; gSel = b.dataset.game; drawGames(); remember();
   });
-  $('mgStart').addEventListener('click', function () { start(gSel) });
+  $('mgStart').addEventListener('click', function () {
+    if (!ksFor(gSel).length) { var m = $('mgSel'); m.innerHTML = '<b class="mg-warn">' + esc(GBY[gSel].nm) + '</b> 게임은 이 내용에서 할 수 없어요. ' + esc(GBY[gSel].noTxt || '') + ' 다른 게임이나 내용을 골라 주세요.'; return }
+    start(gSel);
+  });
   $('mgNp').addEventListener('click', function (e) { var b = e.target.closest('[data-np]'); if (!b) return; nPl = +b.dataset.np; drawGames(); remember() });
   function fromHash() {
     var m = /^#(u\d+|all)(?:-(\w+))?$/.exec(location.hash); if (!m) return;
@@ -228,8 +240,11 @@
   /* ── 게임 공통 ── */
   var S = null, raf = 0, lastT = 0, stage = $('mgStage');
   var RECENT = [];
+  var PROBE = {};   // 단계마다 답의 꼴(게임마다 쓸 수 있는 계산 고르기)
+  function probe(k) { return PROBE[k] || (PROBE[k] = AR.gen(k, 'mg-probe-' + k).a) }
+  function ksFor(game) { var g = typeof GM === 'object' && GM[game]; return kList().filter(function (k) { return !g || !g.can || g.can(AR.BY[k], probe(k)) }) }
   function makeP() {
-    var ks = kList(), p, k;
+    var ks = S && S.ks && S.ks.length ? S.ks : kList(), p, k;
     for (var i = 0; i < 30; i++) { p = AR.gen(ks[Math.floor(Math.random() * ks.length)], rnd32()); k = JSON.stringify(p.q || p.txt); if (RECENT.indexOf(k) < 0) break }
     RECENT.push(k); if (RECENT.length > 15) RECENT.shift();
     return { p: p, c: MGC.choices(p, AR.rng(rnd32())) };
@@ -245,7 +260,7 @@
       '<button type="button" class="mg-hb" data-a="pause" aria-label="잠깐 멈추기">' + ICO.pause + '</button>' +
       (one ? '<span class="mg-pill mg-score"><small>점수</small><b id="mgScore">0</b></span><span class="mg-pill mg-combo" id="mgComboP"><small>연속</small><b id="mgCombo">0</b></span><span class="mg-pill"><small>레벨</small><b id="mgLv">1</b></span>' : '<span class="mg-pill"><b class="mg-hud-t">' + esc(GBY[game].nm) + '</b></span>') +
       '<span class="mg-sp"></span>' +
-      (GBY[game].timer ? '<span class="mg-pill mg-time"><small>남은 시간</small><b id="mgTime"></b></span>' : one ? '<span class="mg-hearts" id="mgHearts" aria-label="하트"></span>' : '') +
+      (GBY[game].timer ? '<span class="mg-pill mg-time"><small>남은 시간</small><b id="mgTime"></b></span>' : GBY[game].pill ? '<span class="mg-pill mg-time"><small>' + GBY[game].pill + '</small><b id="mgPill">0</b></span>' : one ? '<span class="mg-hearts" id="mgHearts" aria-label="하트"></span>' : '') +
       '<button type="button" class="mg-hb" data-a="full" aria-label="전체 화면">' + ICO.full + '</button>' +
       '<button type="button" class="mg-hb" data-a="mute" aria-label="소리 켜기·끄기" aria-pressed="' + muted + '">' + (muted ? ICO.mute : ICO.vol) + '</button></div>';
   }
@@ -291,7 +306,7 @@
   function start(game) {
     var two = !!GBY[game].two;
     var P = GBY[game].pl;
-    S = { game: game, two: two, np: P[0] === P[1] ? P[0] : Math.min(P[1], Math.max(P[0], nPl)), score: 0, combo: 0, bestCombo: 0, right: 0, wrong: 0, level: 1, lives: 3, maxLives: 3, list: [], over: false, paused: true, wait: 0, t: 0 };
+    S = { ks: ksFor(game), game: game, two: two, np: P[0] === P[1] ? P[0] : Math.min(P[1], Math.max(P[0], nPl)), score: 0, combo: 0, bestCombo: 0, right: 0, wrong: 0, level: 1, lives: 3, maxLives: 3, list: [], over: false, paused: true, wait: 0, t: 0 };
     stage.className = 'mg-stage mg-g-' + game; stage.hidden = false; document.body.classList.add('mg-playing');
     stage.innerHTML = hud(game) + '<div class="mg-play" id="mgPlay"></div>';
     GM[game].init(); setHud();
@@ -353,7 +368,7 @@
     if (S.two) { o.innerHTML = GM[S.game].result(why); stage.appendChild(o); sfx('end'); return }
     var key = recKey(S.game), old = rec[key] || 0, best = S.score > old;
     if (best) { rec[key] = S.score; save(KEY, rec) }
-    var st = stars(S.right, GBY[S.game].stars), sh = '';
+    var st = GM[S.game].stars ? GM[S.game].stars() : stars(S.right, GBY[S.game].stars), sh = '';
     for (var i = 0; i < 3; i++) sh += '<span class="mg-st' + (i < st ? ' on' : '') + '" style="animation-delay:' + (.25 + i * .25) + 's">' + ICO.star + '</span>';
     var wl = S.list.slice(-12).map(function (w) {
       return '<li><span class="mg-wq">' + qH(w.p).replace('<span class="mg-blank">?</span>', '<span class="mg-blank ok">' + aH(w.a) + '</span>') + '</span>' +
@@ -361,8 +376,9 @@
     }).join('');
     o.innerHTML = '<div class="mg-card mg-res"><p class="mg-why">' + esc(why) + '</p><h2>게임 끝!</h2><div class="mg-stars">' + sh + '</div>' +
       '<p class="mg-big"><b>' + S.score + '</b>점</p>' + (best && S.score ? '<p class="mg-new">새 최고 기록!</p>' : old ? '<p class="mg-old">최고 기록 ' + old + '점</p>' : '') +
-      '<div class="mg-stats"><span>맞힌 문제 <b>' + S.right + '</b></span><span>틀리거나 놓친 문제 <b>' + S.wrong + '</b></span><span>최고 연속 <b>' + S.bestCombo + '</b></span></div>' +
-      (wl ? '<details class="mg-wl"' + (S.wrong <= 4 ? ' open' : '') + '><summary>틀린 문제 다시 보기 (' + S.list.length + ')</summary><ul>' + wl + '</ul></details>' : S.right ? '<p class="mg-perfect">하나도 안 틀렸어요! 정말 멋져요.</p>' : '') +
+      (GM[S.game].endText ? '<p class="mg-old">' + esc(GM[S.game].endText()) + '</p>' : '') +
+      (GM[S.game].endText ? '' : '<div class="mg-stats"><span>맞힌 문제 <b>' + S.right + '</b></span><span>틀리거나 놓친 문제 <b>' + S.wrong + '</b></span><span>최고 연속 <b>' + S.bestCombo + '</b></span></div>') +
+      (wl ? '<details class="mg-wl"' + (S.wrong <= 4 ? ' open' : '') + '><summary>틀린 문제 다시 보기 (' + S.list.length + ')</summary><ul>' + wl + '</ul></details>' : S.right && !GM[S.game].endText ? '<p class="mg-perfect">하나도 안 틀렸어요! 정말 멋져요.</p>' : '') +
       '<div class="mg-btns"><button type="button" class="mg-btn go" data-a="again">한 판 더</button><button type="button" class="mg-btn" data-a="menu">게임 고르기로</button></div></div>';
     stage.appendChild(o); sfx('end');
   }
@@ -648,6 +664,169 @@
     key: function (i) { if (this.q && i < this.q.c.opts.length) this.hit(i) }
   };
 
+  /* ── 혼자서 3가지(2026-10-07): 짝 맞추기·금고 열기·줄 세우기 — 빠르기보다 기억·정확·어림 ── */
+  function qOnly(p) { return qH(p).replace('<span class="mg-op">=</span><span class="mg-blank">?</span>', '') }   // 식만('= ?' 뺌)
+  function aVal(a) { return a.t === 'n' ? a.v : a.t === 'd' ? a.v / AR.P10[a.p] : a.t === 'f' ? a.n / a.d : NaN }
+
+  /* 짝 맞추기 카드: 식 카드와 답 카드 짝짓기 */
+  GM.memory = {
+    can: function (s, a) { return a.t !== 'cmp' && a.t !== 'list' },
+    init: function () {
+      $('mgPlay').innerHTML = '<div class="mg-felt"></div><p class="mg-mhelp" id="mgMh">카드 두 장을 뒤집어 <b>식</b>과 그 <b>답</b>을 짝지어요</p><div class="mg-cards" id="mgCards"></div>';
+      this.flips = 0; this.miss = 0; this.round = 0;
+    },
+    go: function () { this.deal() },
+    deal: function () {
+      var pairs = [], seenA = {}, seenQ = {};
+      for (var t = 0; t < 300 && pairs.length < 8; t++) {
+        var q = makeP(), ka = MGC.vkey(q.p.a), kq = JSON.stringify(q.p.q || q.p.txt);
+        if (seenA[ka] || seenQ[kq]) continue; seenA[ka] = seenQ[kq] = 1; pairs.push(q);
+      }
+      var cards = [];
+      pairs.forEach(function (q, i) { cards.push({ i: i, kind: 'q', h: qOnly(q.p), q: q }); cards.push({ i: i, kind: 'a', h: aH(q.p.a), q: q }) });
+      shuf(cards); this.cards = cards; this.open = []; this.left = pairs.length; this.lock = false; this.round++;
+      var box = $('mgCards'), self = this; box.className = 'mg-cards n' + cards.length;
+      box.innerHTML = cards.map(function (c, k) {
+        return '<button type="button" class="mg-card2" data-k="' + k + '" aria-label="' + (k + 1) + '번 카드"><span class="mg-cin"><span class="mg-cback"><i></i></span><span class="mg-cface ' + c.kind + '">' +
+          (c.kind === 'q' ? '<small>식</small>' : '<small>답</small>') + '<span class="mg-ctx">' + c.h + '</span></span></span></button>';
+      }).join('');
+      [].forEach.call(box.children, function (b) { tap(b, function () { self.flip(+b.dataset.k) }) });
+    },
+    flip: function (k) {
+      if (!S || S.paused || S.over || this.lock) return;
+      var c = this.cards[k], el = $('mgCards').children[k]; if (c.done || this.open.indexOf(k) >= 0) return;
+      el.classList.add('up'); this.open.push(k); this.flips++; $('mgPill').textContent = this.flips; sfx('tick');
+      if (this.open.length < 2) return;
+      var a = this.cards[this.open[0]], b = c, e0 = $('mgCards').children[this.open[0]], self = this;
+      if (a.i === b.i && a.kind !== b.kind) {
+        a.done = b.done = true; this.open = []; this.left--;
+        setTimeout(function () { e0.classList.add('done'); el.classList.add('done'); sfx('ok') }, 250);
+        gain(this.miss ? .3 : 1, el); this.lastMiss = false;
+        if (!this.left) { this.lock = true; S.ending = 1; setTimeout(function () { if (S && !S.over) { sfx('up'); end('모두 짝지었어요!') } }, 900) }
+      } else {
+        this.lock = true; this.miss++; S.combo = 0; S.wrong++; setHud();
+        setTimeout(function () { e0.classList.add('nope'); el.classList.add('nope'); sfx('bad') }, 300);
+        setTimeout(function () { e0.classList.remove('up', 'nope'); el.classList.remove('up', 'nope'); self.open = []; self.lock = false }, 1100);
+      }
+    },
+    tick: function () {},
+    stars: function () { return this.left ? 0 : this.miss <= 4 ? 3 : this.miss <= 9 ? 2 : 1 },
+    endText: function () { return '뒤집은 횟수 ' + this.flips + '번 · 짝이 아니었던 때 ' + this.miss + '번' }
+  };
+
+  /* 금고 열기: 보기 없이 답을 직접 써요 */
+  GM.vault = {
+    LOCKS: 5,
+    init: function () {
+      var lk = ''; for (var i = 0; i < this.LOCKS; i++) lk += '<i class="mg-lk" id="mgLk' + i + '"></i>';
+      $('mgPlay').innerHTML = '<div class="mg-bank"></div>' +
+        '<div class="mg-vault"><div class="mg-safe" id="mgSafe"><div class="mg-door"><div class="mg-dial"><i></i></div><div class="mg-locks">' + lk + '</div></div><div class="mg-gold2" aria-hidden="true"><i></i><i></i><i></i></div></div><p class="mg-vno" id="mgVno"></p></div>' +
+        '<div class="mg-vmain"><div class="mg-qbox" id="mgQ"></div><div class="mg-ans" id="mgAns"></div><p class="mg-vmsg" id="mgVmsg" aria-live="polite"></p>' +
+        '<div class="mg-kp" id="mgKp">' + ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.', '⌫'].map(function (k) { return '<button type="button" data-k="' + k + '">' + k + '</button>' }).join('') +
+        '<button type="button" data-k="," class="mg-kc">,</button><button type="button" data-k="tab" class="mg-kw">다음 칸</button><button type="button" data-k="ok" class="mg-kok">열기</button></div></div>';
+      this.opened = 0; this.vaults = 0; var self = this;
+      [].forEach.call($('mgKp').children, function (b) { b.addEventListener('mousedown', function (e) { e.preventDefault() }); tap(b, function () { self.kp(b.dataset.k) }) });
+    },
+    go: function () { this.newVault() },
+    newVault: function () {
+      this.opened = 0; this.vaults++; $('mgVno').textContent = this.vaults + '번째 금고';
+      $('mgSafe').classList.remove('open'); for (var i = 0; i < this.LOCKS; i++) $('mgLk' + i).classList.remove('on');
+      this.next();
+    },
+    next: function () {
+      var q = this.q = makeP(), a = q.p.a; q.t = 0; q.tries = 0; q.done = false; $('mgQ').innerHTML = qbox(q); $('mgVmsg').textContent = '';
+      var h = '', inp = function (id, ph, w) { return '<input class="mg-in' + (w ? ' ' + w : '') + '" id="' + id + '" inputmode="none" autocomplete="off" aria-label="' + ph + '" placeholder="' + ph + '">' };
+      if (a.t === 'cmp') h = '<div class="mg-cmp">' + ['>', '=', '<'].map(function (v) { return '<button type="button" data-v="' + v + '">' + v + '</button>' }).join('') + '</div>';
+      else if (a.t === 'qr') h = '<span class="mg-row">몫 ' + inp('mgI0', '몫') + ' <span class="mg-qr2">…</span> 나머지 ' + inp('mgI1', '나머지') + '</span>';
+      else if (a.t === 'f') h = '<span class="mg-row">' + inp('mgI0', '자연수', 'w') + '<span class="mg-fin">' + inp('mgI1', '분자', 's') + '<i></i>' + inp('mgI2', '분모', 's') + '</span><small class="mg-fh">자연수 칸은 비워도 돼요</small></span>';
+      else h = '<span class="mg-row">' + inp('mgI0', a.t === 'list' ? '쉼표로 나누어 써요' : '답', a.t === 'list' ? 'l' : '') + '</span>';
+      $('mgAns').innerHTML = h; $('mgKp').classList.toggle('hide', a.t === 'cmp'); $('mgKp').classList.toggle('list', a.t === 'list');
+      var self = this;
+      $('mgAns').querySelectorAll('.mg-cmp button').forEach(function (b) { tap(b, function () { self.submit(b.dataset.v) }) });
+      var ins = $('mgAns').querySelectorAll('.mg-in');
+      ins.forEach(function (x, i) { x.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); self.submit() } else if (e.key === 'Tab') { e.preventDefault(); (ins[i + 1] || ins[0]).focus() } }) });
+      if (ins.length) ins[a.t === 'f' ? 1 : 0].focus();
+    },
+    field: function () { var a = document.activeElement; return a && a.classList && a.classList.contains('mg-in') ? a : $('mgAns').querySelector('.mg-in') },
+    kp: function (k) {
+      if (!S || S.paused || S.over || this.q.done) return;
+      if (k === 'ok') return this.submit();
+      var f = this.field(); if (!f) return; var ins = [].slice.call($('mgAns').querySelectorAll('.mg-in'));
+      if (k === 'tab') { (ins[ins.indexOf(f) + 1] || ins[0]).focus(); return }
+      if (k === '⌫') f.value = f.value.slice(0, -1); else f.value += k;
+      f.focus();
+    },
+    input: function () {
+      var a = this.q.p.a, g = function (i) { var x = $('mgI' + i); return x ? x.value : '' };
+      return a.t === 'qr' ? [g(0), g(1)] : a.t === 'f' ? [g(0), g(1), g(2)] : g(0);
+    },
+    submit: function (cmpV) {
+      var q = this.q; if (!S || S.paused || S.over || q.done) return;
+      var a = q.p.a, r = AR.judge(a, cmpV !== undefined ? cmpV : this.input()), msg = $('mgVmsg');
+      if (r.empty) { msg.textContent = '답을 써 주세요.'; msg.className = 'mg-vmsg'; return }
+      if (r.near && !r.ok) { msg.textContent = '💡 ' + r.near; msg.className = 'mg-vmsg near'; return }
+      if (r.ok) {
+        q.done = true; sfx('ok'); msg.textContent = '딸깍! 자물쇠가 풀렸어요'; msg.className = 'mg-vmsg ok';
+        gain(1 - q.t / 20, $('mgLk' + this.opened)); $('mgLk' + this.opened).classList.add('on'); this.opened++;
+        var self = this;
+        if (this.opened >= this.LOCKS) { S.wait = 1e9; setTimeout(function () { if (!S || S.over) return; $('mgSafe').classList.add('open'); sfx('up'); banner('금고가 열렸어요!<small>보물을 찾았어요</small>', 'lv'); setTimeout(function () { if (S && !S.over) { S.wait = 0; self.newVault() } }, 1800) }, 500) }
+        else S.wait = .8;
+        return;
+      }
+      q.tries++; sfx('bad');
+      $('mgAns').classList.remove('mg-shk'); void $('mgAns').offsetWidth; $('mgAns').classList.add('mg-shk');
+      if (q.tries < 2) { msg.textContent = '다시 한 번 해 봐요!'; msg.className = 'mg-vmsg bad'; S.combo = 0; setHud(); return }
+      q.done = true; wrongRec(q, null); msg.innerHTML = '정답은 <b>' + aH(a) + '</b>'; msg.className = 'mg-vmsg bad'; loseLife(); S.wait = 2;
+    },
+    tick: function (dt) {
+      if (S.ending) return;
+      if (S.wait > 0 && S.wait < 1e8) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
+      if (this.q) this.q.t += dt;
+    }
+  };
+
+  /* 크기 순서로 줄 세우기 */
+  GM.sort = {
+    can: function (s, a) { return (a.t === 'n' || a.t === 'd' || a.t === 'f') && s.ask !== 'blank' },
+    T: 30,
+    init: function () {
+      $('mgPlay').innerHTML = '<div class="mg-shelf"></div><div class="mg-sorthd" id="mgSh"></div><div class="mg-qt mg-sqt"><i id="mgQt"></i></div><div class="mg-sorts" id="mgSorts"></div><div class="mg-slots" id="mgSlots"></div>';
+    },
+    go: function () { this.next() },
+    next: function () {
+      var ps = [], seen = {};
+      for (var t = 0; t < 200 && ps.length < 4; t++) { var q = makeP(), v = aVal(q.p.a), k = v.toFixed(6); if (seen[k] || !isFinite(v)) continue; seen[k] = 1; q.v = v; ps.push(q) }
+      this.up = Math.random() < .65; this.ps = ps; this.order = ps.slice().sort(function (x, y) { return this.up ? x.v - y.v : y.v - x.v }.bind(this)); this.k = 0; this.t = 0; this.done = false;
+      $('mgSh').innerHTML = '계산한 값이 <b>' + (this.up ? '작은' : '큰') + '</b> 것부터 차례로 눌러요';
+      var self = this, box = $('mgSorts');
+      box.innerHTML = ps.map(function (q, i) { return '<button type="button" class="mg-sc" data-i="' + i + '"><span class="mg-sq">' + qOnly(q.p) + '</span><span class="mg-sv">= ' + aH(q.p.a) + '</span><b class="mg-sn"></b></button>' }).join('');
+      $('mgSlots').innerHTML = ps.map(function (_, i) { return '<span>' + (i + 1) + '<small>' + (i === 0 ? (self.up ? '가장 작음' : '가장 큼') : i === ps.length - 1 ? (self.up ? '가장 큼' : '가장 작음') : '') + '</small></span>' }).join('<i>' + (this.up ? '&lt;' : '&gt;') + '</i>');
+      [].forEach.call(box.children, function (b) { tap(b, function () { self.hit(+b.dataset.i, b) }) });
+    },
+    hit: function (i, b) {
+      if (!S || S.paused || S.over || this.done || b.classList.contains('ok')) return;
+      if (this.order[this.k] === this.ps[i]) {
+        b.classList.add('ok'); b.querySelector('.mg-sn').textContent = ++this.k; sfx('tick');
+        if (this.k >= this.ps.length) { this.done = true; sfx('ok'); this.reveal(); gain(1 - this.t / this.T, $('mgSorts')); S.wait = 1.8 }
+      } else {
+        sfx('bad'); b.classList.remove('bad'); void b.offsetWidth; b.classList.add('bad');
+        wrongRec(this.ps[i], null); loseLife();
+        if (S.lives > 0) { $('mgSh').innerHTML = '앗! 그 식은 아직이에요. 다시 계산해 봐요'; }
+      }
+    },
+    reveal: function () { [].forEach.call($('mgSorts').children, function (b) { b.classList.add('show') }) },
+    tick: function (dt) {
+      if (S.ending) return;
+      if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
+      this.t += dt; var L = Math.max(0, 1 - this.t / this.T), bar = $('mgQt'); bar.style.width = L * 100 + '%'; bar.classList.toggle('low', L < .3);
+      if (!this.done && this.t >= this.T) {
+        this.done = true; sfx('bad'); this.reveal(); var self = this;
+        this.order.forEach(function (q, n) { var b = $('mgSorts').children[self.ps.indexOf(q)]; b.querySelector('.mg-sn').textContent = n + 1 });
+        banner('시간이 지났어요<small>값을 보고 차례를 확인해요</small>', 'ans'); loseLife(); S.wait = 2.6;
+      }
+    }
+  };
+
   /* ── 함께 하는 게임 공통: 팀 색·보기 단추·결과 ── */
   var TEAM = [{ nm: '파랑', c: '#4DA3FF', d: '#1F6FC4' }, { nm: '빨강', c: '#FF6B6B', d: '#C93C3C' }, { nm: '초록', c: '#3DBE6B', d: '#1F8A47' }, { nm: '노랑', c: '#F5B82E', d: '#9A6A00' }];
   function tv(i) { return '--pc:' + TEAM[i].c + ';--pd:' + TEAM[i].d }
@@ -877,6 +1056,7 @@
         '<div class="mg-btns"><button type="button" class="mg-btn go" data-a="again">한 판 더</button><button type="button" class="mg-btn" data-a="menu">게임 고르기로</button></div></div>';
     }
   };
+  drawGames();   // 게임 정의(GM.*.can)가 다 읽힌 뒤 한 번 더 그림
 })();
 (function () {
   var h = location.hostname, ok = location.protocol === 'file:' || /github\.io$/.test(h) || /^localhost$/.test(h) || h === '127.0.0.1';

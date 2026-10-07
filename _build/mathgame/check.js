@@ -52,5 +52,28 @@ AR.S.forEach(function (s) {
   }
 });
 
+/* ③ 새 혼자서 게임(2026-10-07): 단계마다 답의 꼴이 한 가지인지(게임이 첫 문제로 판단함),
+      짝 맞추기는 한 판에 서로 다른 답 8개(최소 6개), 줄 세우기는 서로 다른 값 4개를 모을 수 있는지 */
+var MEM = function (a) { return a.t !== 'cmp' && a.t !== 'list' }, SORT = function (s, a) { return (a.t === 'n' || a.t === 'd' || a.t === 'f') && s.ask !== 'blank' };
+function val(a) { return a.t === 'n' ? a.v : a.t === 'd' ? a.v / AR.P10[a.p] : a.n / a.d }
+AR.S.forEach(function (s) {
+  var t0 = AR.gen(s.id, 'mg-probe-' + s.id).a.t, r = AR.rng('mg-t-' + s.id);
+  for (var i = 0; i < 300; i++) { var t = AR.gen(s.id, Math.floor(r() * 4294967296)).a.t; if (t !== t0) { bad.push(s.id + ': 답의 꼴이 섞임 ' + t0 + '/' + t); break } }
+});
+Object.keys(U).forEach(function (g) {
+  U[g].concat([{ id: 'all', k: [].concat.apply([], U[g].map(function (u) { return u.k })) }]).forEach(function (u) {
+    var r = AR.rng('mg-u-' + g + u.id);
+    var mk = u.k.filter(function (k) { return MEM(AR.gen(k, 'mg-probe-' + k).a) }), sk = u.k.filter(function (k) { return SORT(AR.BY[k], AR.gen(k, 'mg-probe-' + k).a) });
+    for (var rep = 0; rep < 30 && mk.length; rep++) {
+      var seen = {}, n = 0; for (var t = 0; t < 300 && n < 8; t++) { var p = AR.gen(mk[Math.floor(r() * mk.length)], Math.floor(r() * 4294967296)), k = MGC.vkey(p.a); if (!seen[k]) { seen[k] = 1; n++ } }
+      if (n < 6) { bad.push(g + '학년 ' + u.id + ': 짝 맞추기 카드 짝이 ' + n + '쌍뿐'); break }
+    }
+    for (rep = 0; rep < 30 && sk.length; rep++) {
+      var sv = {}, m = 0; for (t = 0; t < 200 && m < 4; t++) { var v = val(AR.gen(sk[Math.floor(r() * sk.length)], Math.floor(r() * 4294967296)).a).toFixed(6); if (!sv[v]) { sv[v] = 1; m++ } }
+      if (m < 4) { bad.push(g + '학년 ' + u.id + ': 줄 세우기 값이 ' + m + '개뿐'); break }
+    }
+  });
+});
+
 if (bad.length) { console.log(bad.slice(0, 40).join('\n')); console.log('수학게임 점검 실패: ' + bad.length + '곳'); process.exit(1) }
 console.log('수학게임 점검 통과: 단원 ' + Object.keys(U).reduce(function (a, g) { return a + U[g].length }, 0) + '개 · 단계 ' + AR.S.length + '개 · 보기 ' + total + '묶음');
