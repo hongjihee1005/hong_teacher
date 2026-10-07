@@ -43,15 +43,29 @@
   function keysHtml() {
     var h = ''; for (var i = 0; i < opened; i++) h += '<li><b>🔑 생각 열쇠 ' + (i + 1) + '</b> ' + P.k[i] + '</li>'; return h;
   }
-  function printSheet(withAns) {
+  function printSheet(withAns) {   // A4 · 여백 15mm(@page) · 학습지는 한 쪽에 2문제쯤(생각 칸이 넉넉하도록 쪽이 늘어남)
     var D = window.CR, lv = ctx.level, list = D.data[lv.id] || [], old = document.getElementById('thPrint'); if (old) old.remove();
-    var h = '<div id="thPrint"><h1>사고력 수학 · ' + esc(document.querySelector('h1').textContent.replace(/^\S+\s/, '')) + ' — ' + esc(lv.nm) + (withAns ? ' 정답과 풀이' : ' 학습지') + '</h1>'
-      + (withAns ? '' : '<p class="th-pname">____학년 ____반 ____번 이름 ______________</p>');
-    list.forEach(function (p, i) {
-      h += '<section class="th-pq"><h2>' + (i + 1) + '.</h2><div class="th-pb"><div class="th-q">' + p.q + '</div>' + (p.fig || '')
+    var area = esc(document.querySelector('h1').textContent.replace(/^\S+\s/, ''));
+    var h = '<div id="thPrint"><header class="th-phead"><h1>사고력 수학 · ' + area + ' — ' + esc(lv.nm) + (withAns ? ' 정답과 풀이' : ' 학습지') + '</h1>'
+      + (withAns ? '' : '<p class="th-pname"><span>학년</span><span>반</span><span>번</span><span class="th-pnm">이름</span></p>') + '</header>';
+    var secs = list.map(function (p, i) {
+      return '<section class="th-pq' + (withAns ? ' th-pqa' : '') + '"><div class="th-pqh"><b>' + (i + 1) + '번</b></div><div class="th-q">' + p.q + '</div>' + (p.fig ? '<div class="th-pfig">' + p.fig + '</div>' : '')
         + (p.a.t === 'pick' ? '<p class="th-popts">' + p.a.o.map(function (o, j) { return '①②③④⑤⑥⑦'[j] + ' ' + esc(o) }).join('　') + '</p>' : '')
-        + (withAns ? solHtml(p) : '<div class="th-pspace">생각한 과정:</div><p class="th-pa">답: ______________</p>') + '</div></section>';
+        + (withAns ? solHtml(p) : '<div class="th-pspace"><span>생각한 과정 (그림·식·표로 써도 좋아요)</span></div><div class="th-pa"><span>답</span><i></i></div>') + '</section>';
     });
+    if (withAns) h += secs.join('');
+    else {   // 한 쪽(쓸 수 있는 높이 약 262mm)에 들어갈 만큼 묶고, 남는 높이는 '생각한 과정' 칸이 나눠 가짐 — 칸마다 적어도 55mm
+      // 실제 높이를 잼: 인쇄 폭(178mm)으로 화면 밖에 그려 보고, 쓰는 칸은 가장 작은 55mm로 둔 높이
+      var mm = 96 / 25.4, box = document.createElement('div'); box.id = 'thPrint'; box.className = 'th-measure';
+      box.innerHTML = secs.join(''); document.body.appendChild(box);
+      var est = [].map.call(box.querySelectorAll('.th-pq'), function (el) { return el.getBoundingClientRect().height / mm + 5 });
+      box.remove();
+      var head = h.slice(h.indexOf('<header')); h = h.slice(0, h.indexOf('<header'));
+      var pages = [], cur = [], used = 24;   // 첫 쪽은 머리말 자리
+      est.forEach(function (e, i) { if (cur.length && used + e > 266) { pages.push(cur); cur = []; used = 0 } cur.push(i); used += e });
+      pages.push(cur);
+      h += pages.map(function (pg, k) { return '<div class="th-ppage">' + (k ? '' : head) + pg.map(function (i) { return secs[i] }).join('') + '</div>' }).join('');
+    }
     document.body.insertAdjacentHTML('beforeend', h + '</div>');
     document.documentElement.classList.add('th-printing');
     setTimeout(function () { window.print(); setTimeout(function () { document.documentElement.classList.remove('th-printing') }, 500) }, 60);
