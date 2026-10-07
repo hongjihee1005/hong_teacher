@@ -266,6 +266,16 @@
     return out.sort(function (a, b) { return BY[a.s].i - BY[b.s].i });
   }
 
+  /* 일일수학(2026-10-07): 학년 g의 두 급(LV) 단계에서 날짜마다 10문제. 같은 학년·같은 날이면 언제나 같은 문제 */
+  var DAILY = { n: 10 };
+  function dailyKinds(g) { var ks = []; LV.forEach(function (L) { if (L.lv.indexOf(g + '학년') === 0) L.k.forEach(function (k) { if (ks.indexOf(k) < 0) ks.push(k) }) }); return ks }
+  function daily(g, ymd) {
+    var r = rng('daily' + g + '#' + ymd), out = [], seen = {}, ks = dailyKinds(g);
+    for (var i = ks.length - 1; i > 0; i--) { var j = Math.floor(r() * (i + 1)), t = ks[i]; ks[i] = ks[j]; ks[j] = t }
+    for (var i = 0; out.length < DAILY.n && i < 2000; i++) { var p = gen(ks[out.length % ks.length], Math.floor(r() * 4294967296)), k = key(p); if (seen[k]) continue; seen[k] = 1; out.push(p) }
+    return out.sort(function (a, b) { return BY[a.s].i - BY[b.s].i });
+  }
+
   /* ── 답 확인 ── */
   function pInt(s) { s = String(s == null ? '' : s).replace(/[\s,]/g, ''); return /^\d+$/.test(s) ? parseInt(s, 10) : null }
   function pDec(s) {  // '1.25' → {v:125,p:2}
@@ -312,6 +322,6 @@
   }
   function dstr(v, p) { var s = String(v); if (!p) return s; while (s.length <= p) s = '0' + s; return s.slice(0, s.length - p) + '.' + s.slice(s.length - p) }
 
-  var AR = { AREAS: AREAS, S: S, BY: BY, LV: LV, EXAM: EXAM, ASK: ASK, gen: gen, set: set, sheet: sheet, exam: exam, wsCount: wsCount, judge: judge, canon: canon, dstr: dstr, rng: rng, gcd: gcd, lcm: lcm, evalTok: evalTok, fl: fl, P10: P10 };
+  var AR = { AREAS: AREAS, S: S, BY: BY, LV: LV, EXAM: EXAM, ASK: ASK, gen: gen, set: set, sheet: sheet, exam: exam, DAILY: DAILY, daily: daily, dailyKinds: dailyKinds, wsCount: wsCount, judge: judge, canon: canon, dstr: dstr, rng: rng, gcd: gcd, lcm: lcm, evalTok: evalTok, fl: fl, P10: P10 };
   if (typeof module !== 'undefined' && module.exports) module.exports = AR; else window.AR = AR;
 })();

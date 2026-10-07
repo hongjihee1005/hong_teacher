@@ -377,14 +377,98 @@
     if (m && lvOf(+m[1])) { level(+m[1]); if (m[2]) exam(Math.min(E.rounds, Math.max(1, +m[2]))) }
   }
 
+  /* ── 일일수학(2026-10-07): 학년마다 날짜별 10문제 ── */
+  function dailyPage() {
+    var G = PG.daily, N = AR.DAILY.n, ps = [], ymd = '', t0 = 0, tick = null, graded = false, WD = '일월화수목금토';
+    st.d = st.d || {}; var D = st.d[G] = st.d[G] || {};
+    function p2(n) { return (n < 10 ? '0' : '') + n }
+    function fmt(d) { return d.getFullYear() + '-' + p2(d.getMonth() + 1) + '-' + p2(d.getDate()) }
+    function parse(s) { var m = /^(\d{4})-(\d\d)-(\d\d)$/.exec(s || ''); return m ? new Date(+m[1], +m[2] - 1, +m[3]) : null }
+    function today() { return fmt(new Date()) }
+    function kr(s) { var d = parse(s); return (d.getMonth() + 1) + '월 ' + d.getDate() + '일 (' + WD[d.getDay()] + ')' }
+    function shift(s, k) { var d = parse(s); d.setDate(d.getDate() + k); return fmt(d) }
+    function stop() { if (tick) { clearInterval(tick); tick = null } }
+    function load(s) {
+      ymd = s; ps = AR.daily(G, ymd); graded = false; stop();
+      $('dyDate').value = ymd; $('dyRes').hidden = true; $('dyKey').setAttribute('aria-pressed', 'false');
+      $('dyTitle').textContent = G + '학년 일일수학 · ' + kr(ymd) + (ymd === today() ? ' · 오늘' : '');
+      $('dyInfo').textContent = '같은 날 같은 학년이면 누구나 같은 10문제예요. 다 풀고 채점해요.' + (D[ymd] != null ? ' (이 날 최고 ' + D[ymd] + '/' + N + ')' : '');
+      var h = '<ol class="ex-ps">';
+      ps.forEach(function (p, i) { h += '<li data-i="' + i + '"><span class="ex-mk"></span>' + hintH(p) + qH(p, 'live') + '</li>' });
+      $('dyPaper').innerHTML = h + '</ol>';
+      $('dyPaper').querySelectorAll('li').forEach(function (li) {
+        li.querySelectorAll('.ar-cb').forEach(function (b) { b.onclick = function () { if (graded) return; var c = li.querySelector('.ar-circ'); c.dataset.v = b.dataset.v; c.textContent = b.dataset.v; li.querySelectorAll('.ar-cb').forEach(function (x) { x.setAttribute('aria-pressed', x === b ? 'true' : 'false') }) } });
+        li.querySelectorAll('.ar-in').forEach(function (x) { x.onkeydown = function (e) { if (e.key === 'Enter') { e.preventDefault(); var all = [].slice.call($('dyPaper').querySelectorAll('.ar-in')), j = all.indexOf(x); if (all[j + 1]) all[j + 1].focus() } } });
+      });
+      t0 = Date.now(); $('dyTime').textContent = '⏱️ 0초';
+      tick = setInterval(function () { $('dyTime').textContent = '⏱️ ' + tm((Date.now() - t0) / 1000) }, 1000);
+      kpApply(); window.ARok = grade; cal();
+      history.replaceState(null, '', '#' + ymd);
+    }
+    function grade() {
+      if (graded) return; var sc = 0, empty = 0;
+      $('dyPaper').querySelectorAll('li').forEach(function (li) { var p = ps[+li.dataset.i]; if (AR.judge(p.a, readSlot(li, p.a)).empty) empty++ });
+      if (empty && !confirm('아직 안 푼 문제가 ' + empty + '개 있어요. 채점할까요?')) return;
+      graded = true; stop(); var t = (Date.now() - t0) / 1000;
+      $('dyPaper').querySelectorAll('li').forEach(function (li) {
+        var p = ps[+li.dataset.i], j = AR.judge(p.a, readSlot(li, p.a)), mk = li.querySelector('.ex-mk');
+        if (j.ok) sc++;
+        li.classList.add(j.ok ? 'ok' : 'no'); mk.textContent = j.ok ? '⭕' : '❌';
+        if (!j.ok) { var d = document.createElement('div'); d.className = 'ex-ans'; d.innerHTML = (j.near ? '💡 ' + esc(j.near) + ' ' : '') + '정답: <b class="ar-key">' + ansH(p.a) + '</b>'; li.appendChild(d) }
+        li.querySelectorAll('.ar-in').forEach(function (x) { x.disabled = true });
+      });
+      var best = D[ymd] == null || sc > D[ymd]; if (best) { D[ymd] = sc; save() }
+      var streak = 0, d = ymd; while (D[d] != null) { streak++; d = shift(d, -1) }
+      $('dyRes').hidden = false; $('dyRes').className = 'ar-res ' + (sc === N ? 'pass' : sc >= N * .7 ? 'pass' : 'fail');
+      $('dyRes').innerHTML = '<p class="big">' + (sc === N ? '⭐ 모두 맞혔어요!' : sc >= N * .7 ? '👍 잘했어요!' : '💪 틀린 문제를 다시 살펴봐요!') + '</p><p>' + N + '문제 중 <b>' + sc + '문제</b> 맞힘 · 걸린 시간 <b>' + tm(t) + '</b>' + (streak > 1 ? ' · 🔥 ' + streak + '일 이어서 풀었어요' : '') + '</p>';
+      $('dyRes').scrollIntoView({ behavior: 'smooth', block: 'center' });
+      window.ARok = null; cal();
+    }
+    function cal() {
+      var d0 = parse(ymd), y = d0.getFullYear(), m = d0.getMonth(), first = new Date(y, m, 1), days = new Date(y, m + 1, 0).getDate(), td = today(), h = '';
+      $('dyCalT').textContent = '📅 ' + y + '년 ' + (m + 1) + '월 도장';
+      for (var i = 0; i < 7; i++) h += '<span class="dy-wd">' + WD[i] + '</span>';
+      for (i = 0; i < first.getDay(); i++) h += '<span></span>';
+      for (var dd = 1; dd <= days; dd++) { var s = y + '-' + p2(m + 1) + '-' + p2(dd), v = D[s]; h += '<button type="button" class="dy-day' + (s === ymd ? ' dy-cur' : '') + (s === td ? ' dy-td' : '') + (v === N ? ' dy-star' : v != null ? ' dy-done' : '') + '" data-d="' + s + '"><b>' + dd + '</b><small>' + (v === N ? '⭐' : v != null ? '✔ ' + v : '') + '</small></button>' }
+      $('dyCal').innerHTML = h;
+    }
+    $('dyCal').onclick = function (e) { var b = e.target.closest('[data-d]'); if (b) { load(b.dataset.d); scrollTo(0, 0) } };
+    $('dyPrev').onclick = function () { load(shift(ymd, -1)) };
+    $('dyNext').onclick = function () { load(shift(ymd, 1)) };
+    $('dyToday').onclick = function () { load(today()) };
+    $('dyDate').onchange = function () { if (parse(this.value)) load(this.value) };
+    $('dyGrade').onclick = grade; $('dyGrade2').onclick = grade;
+    $('dyReset').onclick = function () { load(ymd) };
+    $('dyKey').onclick = function () {
+      var on = this.getAttribute('aria-pressed') !== 'true'; this.setAttribute('aria-pressed', on ? 'true' : 'false');
+      $('dyPaper').querySelectorAll('li').forEach(function (li) { var old = li.querySelector('.ex-k'); if (old) old.remove(); if (on) { var d = document.createElement('div'); d.className = 'ex-k'; d.innerHTML = '정답: <b class="ar-key">' + ansH(ps[+li.dataset.i].a) + '</b>'; li.appendChild(d) } });
+    };
+    function paper(s, mode) {
+      var q = AR.daily(G, s), h = '<div class="ar-sheet' + (mode === 'key' ? ' key' : '') + '"><div class="sh-hd"><div><b>' + G + '학년 일일수학 · ' + kr(s) + '</b><span>' + N + '문제' + (mode === 'key' ? ' · 정답' : ' · 계산은 문제 아래 빈 곳에') + '</span></div>' +
+        (mode === 'key' ? '' : '<div class="sh-nm">이름: <i></i> 맞은 개수: <i class="s"></i> / ' + N + '</div>') + '</div><ol class="sh-ps c2 exm">';
+      q.forEach(function (p) { h += '<li>' + hintH(p) + qH(p, mode) + '</li>' });
+      return h + '</ol><p class="sh-ft">일일수학 · 초등교사 홍지희</p></div>';
+    }
+    function week() { var d = parse(ymd), k = (d.getDay() + 6) % 7, mon = shift(ymd, -k), o = []; for (var i = 0; i < 5; i++) o.push(shift(mon, i)); return o }
+    $('dyPrint').onclick = function () { out(paper(ymd, 'print')) };
+    $('dyPrintKey').onclick = function () { out(paper(ymd, 'key')) };
+    $('dyWeek').onclick = function () { out(week().map(function (s) { return paper(s, 'print') }).join('')) };
+    $('dyWeekKey').onclick = function () { out(week().map(function (s) { return paper(s, 'key') }).join('')) };
+    var m = /^#(\d{4}-\d\d-\d\d)$/.exec(location.hash);
+    load(m && parse(m[1]) ? m[1] : today());
+  }
+
   /* ── 공통 ── */
   var nav = '';
+  if (PG.daily) { for (var gi = 1; gi <= 6; gi++) nav += '<a href="g' + gi + '.html"' + (PG.daily === gi ? ' aria-current="page"' : '') + '>' + gi + '학년</a>' }
+  else {
   AR.AREAS.forEach(function (a) { nav += '<a href="' + a.file + '"' + (PG.area === a.id ? ' aria-current="page"' : '') + '>' + a.ico + ' ' + a.name + '</a>' });
-  nav += '<a href="rank.html" class="rk"' + (PG.rank ? ' aria-current="page"' : '') + '>🏆 급수 시험</a>';
+  var RK = 'rank.html'; nav += '<a href="' + RK + '" class="rk"' + (PG.rank ? ' aria-current="page"' : '') + '>🏆 급수 시험</a>';
+  }
   $('arNav').innerHTML = nav;
   kpBuild();
   document.querySelectorAll('.ar-kpt').forEach(function (b) { b.onclick = kpToggle });
-  if (PG.rank) rankPage(); else areaPage();
+  if (PG.daily) dailyPage(); else if (PG.rank) rankPage(); else areaPage();
   kpApply();
   var h = location.hostname, okHost = location.protocol === 'file:' || /github\.io$/.test(h) || h === 'localhost' || h === '127.0.0.1';
   if (okHost) document.querySelectorAll('.tolist').forEach(function (e) { e.classList.add('on') });

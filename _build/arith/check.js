@@ -134,4 +134,15 @@ for (const L of A.LV) {
 const ids = A.S.map(s => s.id); if (new Set(ids).size !== ids.length) err('단계 id 겹침');
 for (const ar of A.AREAS) if (!A.S.some(s => s.ar === ar.id)) err(`${ar.name} 영역에 단계 없음`);
 console.log(bad ? `기초연산 점검 실패 ${bad}건` : `기초연산 점검 통과 — ${A.S.length}단계, 문제 ${total.toLocaleString()}개`);
+/* 일일수학: 학년마다 400일 — 날마다 10문제, 겹침 없음, 같은 날이면 같은 문제 */
+{
+  let dbad = 0;
+  for (let g = 1; g <= 6; g++) for (let k = 0; k < 400; k++) {
+    const d = new Date(2026, 0, 1 + k), s = d.toISOString().slice(0, 10), ps = A.daily(g, s);
+    if (ps.length !== A.DAILY.n || new Set(ps.map(p => JSON.stringify(p.q || p.txt))).size !== ps.length) dbad++;
+    if (k < 5 && JSON.stringify(A.daily(g, s)) !== JSON.stringify(ps)) dbad++;
+  }
+  if (dbad) { console.log('일일수학 점검 실패 ' + dbad); bad++ } else console.log('일일수학 점검 통과 — 6개 학년 × 400일')
+}
 process.exit(bad ? 1 : 0);
+
