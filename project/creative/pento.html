@@ -1,8 +1,8 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>목표 수 만들기 · 창의수학게임 · 기타 · 초등교사 홍지희</title>
-<meta name="description" content="수 카드를 모두 한 번씩 쓰고 사칙연산으로 목표 수를 만드는 수 만들기 퍼즐(24 게임)">
-<style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#D9731A;--ok:#2E9E5B;--bad:#D0453B;--cell:#FFFDF9;
+<title>펜토미노 채우기 · 창의수학게임 · 기타 · 초등교사 홍지희</title>
+<meta name="description" content="정사각형 5개짜리 조각(펜토미노)을 돌리고 뒤집어 판을 빈틈없이 채우는 퍼즐">
+<style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#3A8F3A;--ok:#2E9E5B;--bad:#D0453B;--cell:#FFFDF9;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37;--cell:#2F2925}}
 :root[data-theme="dark"]{--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37;--cell:#2F2925}
@@ -55,25 +55,27 @@ button{font:inherit;color:inherit;cursor:pointer}
 @keyframes cr-pop{50%{transform:scale(1.08)}}
 @media (max-width:640px){.cr-levels{grid-template-columns:1fr}.cr-lv{flex-direction:row;flex-wrap:wrap;align-items:center;gap:4px 8px}.cr-lv small{width:100%}}
 @media print{.cr-gnav,.cr-levels,.cr-nums,.cr-bar button,.cr-how,.creditbar,.hj-nav,.hj-navbar,#hj-home{display:none!important}}
-/* 목표 수 만들기 */
-.mk-goal{margin:0;text-align:center;color:var(--soft);font-size:clamp(18px,2.2vw,22px)}
-.mk-t{display:inline-block;margin:0 4px;padding:2px 18px;border-radius:16px;background:var(--acc);color:#fff;font-family:var(--display);font-size:clamp(34px,5vw,48px);line-height:1.2;vertical-align:middle}
-.mk-cards{display:flex;flex-wrap:wrap;justify-content:center;gap:clamp(8px,1.6vw,16px);min-height:118px;align-items:center}
-.mk-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:clamp(78px,15vw,110px);height:clamp(96px,18vw,124px);padding:4px 10px;border:3px solid var(--line);border-radius:18px;background:var(--paper);box-shadow:0 5px 0 var(--line);transition:transform .12s}
-.mk-card b{font-family:var(--display);font-weight:400;font-size:clamp(38px,6vw,54px);line-height:1;color:var(--ink)}
-.mk-card small{font-size:13px;color:var(--soft);white-space:nowrap}
-.mk-card.made{background:color-mix(in srgb,var(--acc) 8%,var(--paper))}
-.mk-card.sel{border-color:var(--acc);transform:translateY(-6px);box-shadow:0 10px 0 color-mix(in srgb,var(--acc) 45%,var(--line))}
-.mk-card.new{animation:cr-pop .45s}
-.mk-ops{display:flex;justify-content:center;gap:10px}
-.mk-op{width:clamp(56px,10vw,70px);height:clamp(56px,10vw,70px);border:3px solid var(--line);border-radius:50%;background:var(--bg);font-family:var(--display);font-size:clamp(30px,4.5vw,40px);line-height:1}
-.mk-op.sel{background:var(--acc);border-color:var(--acc);color:#fff}
-.mk-bar{display:flex;justify-content:center}
-.mk-btn{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 14px;font-size:16px}
-.mk-btn:disabled{opacity:.45;cursor:default}
-.mk-hist{margin:0;padding:0;list-style:none;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 14px;font-size:17px;color:var(--soft)}
-.mk-hist li{counter-increment:mk}.mk-hist li::before{content:counter(mk) ". ";font-weight:700}
-.mk-tip{margin:0;font-size:15px;color:var(--soft);text-align:center}
+/* 펜토미노 채우기 */
+.pt-goal{margin:0;text-align:center;color:var(--soft)}
+.pt-goal b{color:var(--acc);font-size:1.15em}
+.pt-board{width:100%;max-width:860px}
+.pt-svg{display:block;width:100%;height:auto;max-height:78vh;touch-action:none;user-select:none;-webkit-user-select:none}
+.pt-cell{fill:var(--cell);stroke:#D9CEC2;stroke-width:.03}
+.pt-frame{fill:none;stroke:var(--ink);stroke-width:.08}
+.pt-tray{fill:color-mix(in srgb,var(--acc) 6%,var(--bg));stroke:var(--line);stroke-width:.04;stroke-dasharray:.15 .12}
+.pt-pc{cursor:grab}.pt-pc rect{stroke:rgba(0,0,0,.18);stroke-width:.04}
+.pt-pc.pt-sel rect{stroke:#2A221C;stroke-width:.08}
+.pt-pc:not(.pt-on){opacity:.92}
+.pt-pc.pt-hint{animation:tg-blink .9s}
+@keyframes tg-blink{30%,70%{opacity:.35}}
+.pt-board.win .pt-pc rect{stroke:#fff;stroke-width:.05}
+.pt-tools{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:8px}
+#ptCnt{min-width:7.5em;text-align:center;color:var(--soft)}#ptCnt b{font-family:var(--display);font-weight:400;font-size:1.3em;color:var(--ink)}
+.pt-btn{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 14px;font-size:16px}
+.pt-btn:disabled{opacity:.45;cursor:default}
+.pt-tip{margin:0;font-size:15px;color:var(--soft);text-align:center}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .pt-pc.pt-sel rect{stroke:#fff}}
+:root[data-theme="dark"] .pt-pc.pt-sel rect{stroke:#fff}
 
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
@@ -753,10 +755,10 @@ html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:n
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
 </style><!--/hj-ctheme--></head><body>
 <main>
-<nav class="cr-gnav" aria-label="다른 창의수학게임"><a href="magic.html">마방진</a><a href="tangram.html">칠교놀이</a><a href="kenken.html">계산 스도쿠</a><a href="hanoi.html">하노이 탑</a><a href="nonogram.html">네모 로직</a><a href="make.html" aria-current="page">목표 수 만들기</a><a href="balance.html">저울 퍼즐</a><a href="match.html">성냥개비 식 고치기</a><a href="pento.html">펜토미노 채우기</a></nav>
-<h1>🎯 목표 수 만들기</h1>
-<p class="sub">수 카드와 + − × ÷ 를 이리저리 짜 맞춰 목표 수를 만들어요. 방법은 하나가 아닐 수도 있어요. 나만의 방법을 찾아보세요!</p>
-<details class="cr-how"><summary>이렇게 해요</summary><ul><li><b>카드 하나 → 셈 → 다른 카드</b>를 차례로 누르면 두 카드가 계산 결과 한 장으로 합쳐져요.</li><li>이렇게 합치다가 마지막에 남은 한 장이 <b>목표 수</b>면 성공! 카드는 <b>모두 한 번씩</b> 써야 해요.</li><li>뺄셈은 큰 수에서 작은 수를 빼고, 나눗셈은 나누어떨어질 때만 할 수 있어요. 잘못 합쳤으면 ‘한 단계 되돌리기’.</li><li>성공하면 내가 만든 방법을 괄호가 든 식 하나로 보여 줘요. 예: 8 × (5 − 2) = 24</li><li>💡 실마리: 목표 수에 가까운 곱셈을 먼저 떠올려 보세요. 24라면 3×8, 4×6, 2×12 … 남은 카드로 그 수를 만들 수 있을까요?</li></ul></details>
+<nav class="cr-gnav" aria-label="다른 창의수학게임"><a href="magic.html">마방진</a><a href="tangram.html">칠교놀이</a><a href="kenken.html">계산 스도쿠</a><a href="hanoi.html">하노이 탑</a><a href="nonogram.html">네모 로직</a><a href="make.html">목표 수 만들기</a><a href="balance.html">저울 퍼즐</a><a href="match.html">성냥개비 식 고치기</a><a href="pento.html" aria-current="page">펜토미노 채우기</a></nav>
+<h1>🟩 펜토미노 채우기</h1>
+<p class="sub">정사각형 다섯 개를 이어 붙인 조각을 펜토미노라고 해요. 모양이 12가지나 돼요! 주어진 조각을 모두 써서 판을 빈틈도 겹침도 없이 채워 보세요.</p>
+<details class="cr-how"><summary>이렇게 해요</summary><ul><li>조각을 <b>끌어서</b> 판에 놓으면 칸에 착 붙어요. 판 밖으로 나가거나 겹치면 붙지 않아요.</li><li>조각을 <b>살짝 누르면</b> 90° 돌아가요. 아래 단추로 반대로 돌리거나 <b>뒤집을</b> 수 있어요(평면도형의 밀기·돌리기·뒤집기!).</li><li>조각을 모두 놓아 판이 꽉 차면 성공. 채우는 방법이 여러 가지일 수 있고, 어떤 방법이든 맞아요.</li><li>💡 실마리: 판의 모서리와 가장자리부터 채워요. I(일자)처럼 길거나 X(십자)처럼 들어갈 곳이 적은 조각을 먼저 놓으면 쉬워져요.</li></ul></details>
 <div class="cr-levels" id="crLevels" role="tablist" aria-label="단계"></div>
 <div class="cr-nums" id="crNums" aria-label="문제 번호"></div>
 <section class="cr-play" id="crPlay" aria-live="polite">
@@ -768,103 +770,117 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 </section>
 <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>생각하는 힘을 기르는 창의수학게임 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
 </main>
-<script>window.CR={"game":"make","levels":[{"id":"easy","nm":"쉬움","rec":"2~3학년","de":"카드 3장, 덧셈과 뺄셈으로 목표 수 만들기."},{"id":"normal","nm":"보통","rec":"3~4학년","de":"카드 4장, + − × 로. 곱셈을 꼭 써야 만들 수 있어요."},{"id":"hard","nm":"도전","rec":"5~6학년","de":"카드 4장, + − × ÷ 모두. 24 만들기와 방법이 아주 적은 어려운 문제!"}],"data":{"easy":[{"c":[7,7,8],"t":8,"n":8,"s":[[7,"-",7],[8,"+",0]],"ops":"+-"},{"c":[3,5,7],"t":5,"n":3,"s":[[3,"+",7],[10,"-",5]],"ops":"+-"},{"c":[1,2,8],"t":5,"n":3,"s":[[1,"+",2],[8,"-",3]],"ops":"+-"},{"c":[1,3,4],"t":6,"n":3,"s":[[3,"-",1],[4,"+",2]],"ops":"+-"},{"c":[1,2,5],"t":6,"n":3,"s":[[2,"-",1],[5,"+",1]],"ops":"+-"},{"c":[1,1,9],"t":7,"n":3,"s":[[1,"+",1],[9,"-",2]],"ops":"+-"},{"c":[6,8,9],"t":7,"n":3,"s":[[6,"+",9],[15,"-",8]],"ops":"+-"},{"c":[1,2,8],"t":9,"n":3,"s":[[2,"-",1],[8,"+",1]],"ops":"+-"},{"c":[1,1,7],"t":9,"n":3,"s":[[1,"+",1],[7,"+",2]],"ops":"+-"},{"c":[2,3,9],"t":10,"n":3,"s":[[3,"-",2],[9,"+",1]],"ops":"+-"},{"c":[8,9,9],"t":10,"n":3,"s":[[9,"-",8],[9,"+",1]],"ops":"+-"},{"c":[1,2,8],"t":11,"n":3,"s":[[1,"+",2],[8,"+",3]],"ops":"+-"},{"c":[5,7,9],"t":11,"n":3,"s":[[7,"-",5],[9,"+",2]],"ops":"+-"},{"c":[2,6,8],"t":12,"n":3,"s":[[6,"-",2],[8,"+",4]],"ops":"+-"},{"c":[1,3,9],"t":13,"n":3,"s":[[1,"+",3],[9,"+",4]],"ops":"+-"},{"c":[1,5,8],"t":14,"n":3,"s":[[1,"+",5],[8,"+",6]],"ops":"+-"},{"c":[1,7,8],"t":14,"n":3,"s":[[7,"-",1],[8,"+",6]],"ops":"+-"},{"c":[1,7,8],"t":16,"n":3,"s":[[1,"+",7],[8,"+",8]],"ops":"+-"},{"c":[1,8,9],"t":16,"n":3,"s":[[8,"-",1],[9,"+",7]],"ops":"+-"},{"c":[5,7,8],"t":20,"n":3,"s":[[5,"+",7],[8,"+",12]],"ops":"+-"}],"normal":[{"c":[1,3,6,9],"t":30,"n":12,"s":[[1,"+",3],[9,"-",4],[6,"x",5]],"ops":"+-x"},{"c":[2,2,3,6],"t":48,"n":10,"s":[[2,"x",3],[2,"+",6],[6,"x",8]],"ops":"+-x"},{"c":[2,3,4,8],"t":12,"n":8,"s":[[2,"+",3],[4,"x",5],[20,"-",8]],"ops":"+-x"},{"c":[2,3,6,8],"t":42,"n":8,"s":[[2,"x",3],[6,"x",8],[48,"-",6]],"ops":"+-x"},{"c":[2,3,6,7],"t":16,"n":6,"s":[[2,"x",6],[7,"-",3],[12,"+",4]],"ops":"+-x"},{"c":[4,6,8,9],"t":18,"n":6,"s":[[4,"+",6],[10,"-",8],[9,"x",2]],"ops":"+-x"},{"c":[1,3,4,7],"t":36,"n":6,"s":[[1,"+",4],[7,"+",5],[3,"x",12]],"ops":"+-x"},{"c":[1,4,6,8],"t":25,"n":5,"s":[[1,"+",6],[4,"x",8],[32,"-",7]],"ops":"+-x"},{"c":[3,4,5,9],"t":27,"n":4,"s":[[3,"x",9],[5,"-",4],[27,"x",1]],"ops":"+-x"},{"c":[2,2,9,9],"t":36,"n":4,"s":[[2,"x",9],[2,"x",9],[18,"+",18]],"ops":"+-x"},{"c":[1,4,6,8],"t":39,"n":4,"s":[[1,"+",6],[4,"x",8],[7,"+",32]],"ops":"+-x"},{"c":[6,8,9,9],"t":51,"n":4,"s":[[8,"+",9],[9,"-",6],[17,"x",3]],"ops":"+-x"},{"c":[3,4,5,7],"t":56,"n":4,"s":[[4,"x",7],[5,"-",3],[28,"x",2]],"ops":"+-x"},{"c":[2,7,7,9],"t":60,"n":4,"s":[[2,"+",9],[7,"x",7],[11,"+",49]],"ops":"+-x"},{"c":[1,3,4,9],"t":54,"n":3,"s":[[3,"-",1],[4,"+",2],[9,"x",6]],"ops":"+-x"},{"c":[2,5,7,8],"t":23,"n":2,"s":[[8,"-",2],[5,"x",6],[30,"-",7]],"ops":"+-x"},{"c":[1,2,3,9],"t":34,"n":2,"s":[[1,"+",3],[9,"x",4],[36,"-",2]],"ops":"+-x"},{"c":[3,3,7,8],"t":39,"n":2,"s":[[3,"x",7],[21,"-",8],[3,"x",13]],"ops":"+-x"},{"c":[2,3,7,9],"t":52,"n":2,"s":[[2,"+",3],[9,"x",5],[7,"+",45]],"ops":"+-x"},{"c":[2,5,8,9],"t":43,"n":1,"s":[[9,"-",2],[5,"x",7],[8,"+",35]],"ops":"+-x"}],"hard":[{"c":[5,6,7,8],"t":24,"n":9,"s":[[5,"+",7],[8,"-",6],[12,"x",2]],"ops":"+-x/"},{"c":[3,5,7,8],"t":24,"n":9,"s":[[3,"x",7],[8,"-",5],[21,"+",3]],"ops":"+-x/"},{"c":[6,6,7,9],"t":24,"n":8,"s":[[6,"+",6],[9,"-",7],[12,"x",2]],"ops":"+-x/"},{"c":[3,3,8,9],"t":24,"n":7,"s":[[3,"+",3],[9,"-",6],[8,"x",3]],"ops":"+-x/"},{"c":[2,2,8,9],"t":22,"n":6,"s":[[2,"x",9],[8,"/",2],[18,"+",4]],"ops":"+-x/"},{"c":[2,4,5,9],"t":24,"n":6,"s":[[2,"+",4],[9,"-",5],[6,"x",4]],"ops":"+-x/"},{"c":[4,5,6,9],"t":23,"n":5,"s":[[4,"x",5],[9,"-",6],[20,"+",3]],"ops":"+-x/"},{"c":[2,3,6,7],"t":24,"n":5,"s":[[2,"x",7],[14,"-",6],[3,"x",8]],"ops":"+-x/"},{"c":[2,3,5,8],"t":24,"n":5,"s":[[2,"x",8],[3,"+",5],[16,"+",8]],"ops":"+-x/"},{"c":[2,2,5,7],"t":24,"n":4,"s":[[2,"x",5],[2,"x",7],[10,"+",14]],"ops":"+-x/"},{"c":[2,4,5,5],"t":33,"n":4,"s":[[2,"x",4],[5,"x",5],[8,"+",25]],"ops":"+-x/"},{"c":[3,5,5,6],"t":24,"n":3,"s":[[5,"+",5],[3,"x",10],[30,"-",6]],"ops":"+-x/"},{"c":[2,4,5,7],"t":32,"n":3,"s":[[4,"+",5],[7,"+",9],[2,"x",16]],"ops":"+-x/"},{"c":[1,4,5,7],"t":36,"n":3,"s":[[1,"+",7],[5,"x",8],[40,"-",4]],"ops":"+-x/"},{"c":[1,2,4,9],"t":40,"n":3,"s":[[2,"-",1],[9,"+",1],[4,"x",10]],"ops":"+-x/"},{"c":[2,4,9,9],"t":44,"n":3,"s":[[4,"+",9],[9,"+",13],[2,"x",22]],"ops":"+-x/"},{"c":[1,1,4,7],"t":34,"n":2,"s":[[1,"+",4],[7,"x",5],[35,"-",1]],"ops":"+-x/"},{"c":[2,2,3,9],"t":43,"n":2,"s":[[2,"+",3],[9,"x",5],[45,"-",2]],"ops":"+-x/"},{"c":[2,5,7,8],"t":46,"n":2,"s":[[2,"x",5],[7,"x",8],[56,"-",10]],"ops":"+-x/"},{"c":[5,6,7,9],"t":24,"n":1,"s":[[7,"-",5],[9,"x",2],[6,"+",18]],"ops":"+-x/"}]}};
-/* 창의수학게임 › 목표 수 만들기: 카드 두 장과 셈을 골라 한 장으로 합치기를 되풀이해 마지막 한 장을 목표 수로
-   뺄셈은 큰 수에서 작은 수를(0은 됨), 나눗셈은 나누어떨어질 때만. 완성하면 괄호가 든 식으로 보여 줌 */
+<script>window.CR={"game":"pento","levels":[{"id":"easy","nm":"쉬움","rec":"3~4학년","de":"5×3 판에 3조각, 5×4 판에 4조각."},{"id":"normal","nm":"보통","rec":"4~5학년","de":"5×5 판에 5조각, 6×5 판에 6조각."},{"id":"hard","nm":"도전","rec":"5~6학년","de":"7×5·8×5 판에 7~8조각, 마지막은 12조각 모두로 10×6!"}],"data":{"easy":[{"w":5,"h":3,"p":["P","U","Y"],"s":[["P",0,0,0,0],["U",2,0,2,0],["Y",1,0,1,1]]},{"w":5,"h":3,"p":["N","P","U"],"s":[["N",1,1,0,0],["U",3,0,3,0],["P",3,0,0,1]]},{"w":5,"h":3,"p":["L","T","Y"],"s":[["L",1,0,0,0],["T",1,0,2,0],["Y",3,1,0,1]]},{"w":5,"h":3,"p":["P","U","V"],"s":[["U",1,0,0,0],["P",1,1,1,0],["V",3,0,2,0]]},{"w":5,"h":3,"p":["F","P","U"],"s":[["P",0,0,0,0],["F",2,0,1,0],["U",3,0,3,0]]},{"w":5,"h":3,"p":["L","P","V"],"s":[["L",3,1,0,0],["V",3,0,2,0],["P",3,1,0,1]]},{"w":5,"h":3,"p":["L","N","V"],"s":[["L",1,0,0,0],["V",3,0,2,0],["N",3,0,0,1]]},{"w":5,"h":4,"p":["L","N","V","Z"],"s":[["L",0,0,0,0],["N",2,0,1,0],["V",2,0,2,0],["Z",0,0,2,1]]},{"w":5,"h":4,"p":["N","P","U","Y"],"s":[["N",1,1,0,0],["U",3,0,3,0],["P",0,0,0,1],["Y",3,1,1,2]]},{"w":5,"h":4,"p":["P","U","V","Z"],"s":[["P",0,1,0,0],["V",2,0,2,0],["Z",0,0,2,1],["U",0,0,0,2]]},{"w":5,"h":4,"p":["I","N","P","U"],"s":[["I",1,0,0,0],["N",1,1,0,1],["U",3,0,3,1],["P",3,0,0,2]]},{"w":5,"h":4,"p":["L","P","T","V"],"s":[["L",0,0,0,0],["P",2,1,1,0],["T",0,0,2,0],["V",3,0,2,1]]},{"w":5,"h":4,"p":["P","T","V","W"],"s":[["P",0,0,0,0],["T",0,0,2,0],["W",3,0,0,1],["V",3,0,2,1]]},{"w":5,"h":4,"p":["L","P","V","Z"],"s":[["L",0,0,0,0],["P",0,0,1,0],["Z",0,1,2,0],["V",3,0,2,1]]},{"w":5,"h":4,"p":["I","P","U","V"],"s":[["I",1,0,0,0],["U",1,0,0,1],["P",1,1,1,1],["V",3,0,2,1]]},{"w":5,"h":4,"p":["I","L","P","V"],"s":[["I",1,0,0,0],["L",3,1,0,1],["V",3,0,2,1],["P",3,1,0,2]]},{"w":5,"h":4,"p":["L","N","P","U"],"s":[["L",0,0,0,0],["N",2,0,1,0],["U",2,0,2,0],["P",2,1,3,1]]},{"w":5,"h":4,"p":["N","T","V","Y"],"s":[["N",3,1,0,0],["V",2,0,2,0],["T",3,0,0,1],["Y",1,0,1,2]]},{"w":5,"h":4,"p":["I","P","U","Y"],"s":[["I",1,0,0,0],["P",0,0,0,1],["U",2,0,2,1],["Y",1,0,1,2]]},{"w":5,"h":4,"p":["L","P","W","Y"],"s":[["L",0,0,0,0],["P",1,0,1,0],["Y",2,1,3,0],["W",0,0,1,1]]}],"normal":[{"w":5,"h":5,"p":["F","N","T","V","Y"],"s":[["F",3,0,0,0],["Y",1,1,1,0],["T",1,0,2,1],["V",0,0,0,2],["N",1,1,1,3]]},{"w":5,"h":5,"p":["I","P","T","V","W"],"s":[["I",0,0,0,0],["P",3,1,1,0],["W",3,0,2,0],["T",3,0,1,2],["V",3,0,2,2]]},{"w":5,"h":5,"p":["I","N","T","V","Y"],"s":[["I",0,0,0,0],["N",0,0,1,0],["T",0,0,2,0],["Y",2,1,3,1],["V",0,0,1,2]]},{"w":5,"h":5,"p":["F","L","U","Y","Z"],"s":[["L",1,0,0,0],["Y",0,0,3,0],["F",0,0,0,1],["Z",0,0,2,2],["U",0,0,0,3]]},{"w":5,"h":5,"p":["L","N","P","W","Y"],"s":[["L",1,0,0,0],["Y",2,1,3,0],["N",3,0,0,1],["W",0,0,2,2],["P",3,0,0,3]]},{"w":5,"h":5,"p":["L","N","U","V","Z"],"s":[["L",0,0,0,0],["V",1,0,1,0],["Z",1,0,2,0],["U",3,0,3,2],["N",1,0,0,3]]},{"w":5,"h":5,"p":["L","P","V","Y","Z"],"s":[["L",0,0,0,0],["V",1,0,1,0],["Z",1,0,2,0],["P",0,1,3,2],["Y",1,0,0,3]]},{"w":5,"h":5,"p":["I","L","P","T","V"],"s":[["I",0,0,0,0],["L",1,0,1,0],["P",3,1,2,1],["T",3,0,1,2],["V",3,0,2,2]]},{"w":5,"h":5,"p":["I","L","P","U","Y"],"s":[["I",0,0,0,0],["L",2,1,1,0],["P",1,1,2,0],["U",2,0,2,2],["Y",1,0,1,3]]},{"w":5,"h":5,"p":["F","I","L","P","U"],"s":[["F",3,0,0,0],["L",3,1,1,0],["P",2,1,3,1],["U",0,0,0,2],["I",1,0,0,4]]},{"w":6,"h":5,"p":["I","P","T","V","Y","Z"],"s":[["I",1,0,0,0],["Y",0,0,4,0],["Z",0,0,0,1],["P",0,1,2,1],["V",0,0,0,2],["T",2,0,3,2]]},{"w":6,"h":5,"p":["F","L","P","V","W","Y"],"s":[["F",3,0,0,0],["L",3,1,1,0],["Y",2,1,4,0],["W",3,0,1,1],["V",0,0,0,2],["P",3,0,3,3]]},{"w":6,"h":5,"p":["L","P","V","W","Y","Z"],"s":[["L",1,0,0,0],["P",1,1,3,0],["W",1,0,0,1],["Z",1,1,2,2],["V",2,0,3,2],["Y",3,1,0,3]]},{"w":6,"h":5,"p":["F","P","U","V","Y","Z"],"s":[["P",0,0,0,0],["Y",3,0,2,0],["F",3,1,1,1],["Z",0,1,3,1],["V",3,0,3,2],["U",0,0,0,3]]},{"w":6,"h":5,"p":["L","N","P","T","U","Y"],"s":[["L",2,1,0,0],["N",3,0,1,0],["T",1,0,3,0],["U",2,0,1,2],["P",2,1,4,2],["Y",1,0,0,3]]},{"w":6,"h":5,"p":["L","N","P","V","Y","Z"],"s":[["L",0,0,0,0],["N",3,1,1,0],["V",2,0,3,0],["Z",1,1,1,1],["P",2,1,4,2],["Y",1,0,0,3]]},{"w":6,"h":5,"p":["F","I","P","T","U","V"],"s":[["F",3,0,0,0],["V",2,0,1,0],["P",0,0,4,0],["U",0,0,0,2],["T",1,0,3,2],["I",1,0,0,4]]},{"w":6,"h":5,"p":["L","P","T","U","Y","Z"],"s":[["L",2,1,0,0],["Y",1,1,2,0],["Z",0,0,1,1],["U",0,0,3,1],["T",2,0,0,2],["P",1,1,3,3]]},{"w":6,"h":5,"p":["I","N","T","U","V","W"],"s":[["I",1,0,0,0],["N",2,1,4,0],["T",0,0,0,1],["W",1,0,2,1],["V",0,0,0,2],["U",0,0,3,3]]},{"w":6,"h":5,"p":["I","L","P","T","V","W"],"s":[["I",1,0,0,0],["W",3,0,3,0],["L",1,0,0,1],["P",2,0,0,2],["T",3,0,2,2],["V",3,0,3,2]]}],"hard":[{"w":7,"h":5,"p":["I","L","N","P","T","U","V"],"s":[["L",1,1,0,0],["I",1,0,1,0],["N",0,1,5,0],["T",1,0,2,1],["U",1,0,0,2],["V",3,0,4,2],["P",1,0,1,3]]},{"w":7,"h":5,"p":["I","N","P","T","V","W","Y"],"s":[["V",0,0,0,0],["I",1,0,1,0],["W",3,0,4,0],["Y",1,1,1,1],["T",1,0,4,2],["P",3,0,0,3],["N",3,1,2,3]]},{"w":7,"h":5,"p":["I","L","N","P","U","V","Y"],"s":[["V",0,0,0,0],["L",1,1,1,0],["I",1,0,2,0],["U",3,0,5,1],["N",3,0,2,2],["P",3,0,0,3],["Y",3,1,3,3]]},{"w":7,"h":5,"p":["F","I","L","P","U","X","Y"],"s":[["F",0,1,0,0],["Y",1,1,2,0],["I",0,0,6,0],["L",0,0,0,1],["U",0,0,3,1],["X",0,0,1,2],["P",1,1,3,3]]},{"w":7,"h":5,"p":["F","L","N","P","U","Y","Z"],"s":[["Z",1,1,0,0],["Y",1,1,1,0],["F",0,0,4,0],["L",0,1,5,1],["U",1,0,0,2],["P",3,0,3,2],["N",3,1,1,3]]},{"w":7,"h":5,"p":["I","L","P","T","U","V","W"],"s":[["W",0,0,0,0],["P",1,0,1,0],["V",1,0,4,0],["L",2,0,5,1],["T",3,0,0,2],["U",0,0,3,2],["I",1,0,1,4]]},{"w":7,"h":5,"p":["F","I","L","N","P","U","W"],"s":[["U",2,0,0,0],["W",2,0,3,0],["L",2,0,5,0],["P",2,0,0,1],["F",3,1,2,1],["N",1,1,3,3],["I",1,0,0,4]]},{"w":7,"h":5,"p":["L","N","P","T","V","W","Y"],"s":[["W",0,0,0,0],["N",3,1,1,0],["Y",1,1,3,0],["L",0,1,5,1],["V",0,0,0,2],["T",1,0,1,2],["P",0,0,4,2]]},{"w":7,"h":5,"p":["I","L","N","P","U","X","Y"],"s":[["N",3,1,0,0],["L",3,1,2,0],["I",0,0,6,0],["Y",0,1,0,1],["X",0,0,3,1],["P",2,0,1,2],["U",0,0,3,3]]},{"w":7,"h":5,"p":["I","L","P","T","U","V","Y"],"s":[["T",0,0,0,0],["V",1,0,3,0],["I",0,0,6,0],["L",0,0,0,1],["Y",2,1,1,1],["P",0,0,4,1],["U",0,0,3,3]]},{"w":8,"h":5,"p":["F","I","L","N","P","T","V","Y"],"s":[["L",1,1,0,0],["I",1,0,1,0],["N",1,0,4,0],["T",1,0,5,1],["V",0,0,0,2],["P",3,1,1,2],["F",3,1,3,2],["Y",1,0,4,3]]},{"w":8,"h":5,"p":["F","I","L","N","T","U","V","Z"],"s":[["U",2,0,0,0],["T",2,0,2,0],["V",2,0,4,0],["I",0,0,7,0],["F",2,1,0,1],["Z",0,0,4,1],["L",1,1,0,3],["N",3,1,3,3]]},{"w":8,"h":5,"p":["F","I","L","N","P","U","W","Y"],"s":[["I",1,0,0,0],["U",2,0,5,0],["L",0,0,0,1],["P",3,1,1,1],["W",0,0,4,1],["N",0,0,6,1],["F",1,1,1,2],["Y",3,1,3,3]]},{"w":8,"h":5,"p":["I","L","P","U","V","W","Y","Z"],"s":[["W",0,0,0,0],["Y",3,0,1,0],["V",1,0,5,0],["Z",0,1,2,1],["L",2,0,6,1],["P",2,1,0,2],["U",0,0,4,2],["I",1,0,2,4]]},{"w":8,"h":5,"p":["L","N","P","T","U","V","W","X"],"s":[["U",2,0,0,0],["W",2,0,3,0],["T",0,0,5,0],["N",0,1,0,1],["X",0,0,2,1],["V",3,0,5,1],["P",3,0,1,3],["L",1,1,4,3]]},{"w":8,"h":5,"p":["F","L","N","P","U","V","W","Z"],"s":[["N",0,0,0,0],["Z",0,0,1,0],["W",0,0,3,0],["L",3,1,4,0],["F",0,1,5,1],["V",0,0,0,2],["P",1,0,2,3],["U",0,0,5,3]]},{"w":8,"h":5,"p":["F","L","P","T","U","V","W","Y"],"s":[["W",0,0,0,0],["Y",3,0,1,0],["T",0,0,5,0],["V",1,0,3,1],["L",0,1,6,1],["P",2,1,0,2],["F",0,1,4,2],["U",0,0,2,3]]},{"w":8,"h":5,"p":["F","L","N","P","T","U","Y","Z"],"s":[["L",2,1,0,0],["Z",1,1,2,0],["N",1,1,3,0],["U",3,0,6,0],["T",3,0,1,1],["F",1,1,3,2],["Y",1,0,0,3],["P",1,1,5,3]]},{"w":8,"h":5,"p":["F","I","L","N","P","U","X","Y"],"s":[["I",0,0,0,0],["U",1,0,1,0],["X",0,0,2,0],["Y",1,1,4,0],["F",3,1,4,1],["L",0,1,6,1],["P",3,1,1,3],["N",1,0,3,3]]},{"w":10,"h":6,"p":["F","I","L","N","P","T","U","V","W","X","Y","Z"],"s":[["W",2,0,0,0],["I",1,0,2,0],["N",3,0,6,0],["Y",0,1,0,1],["V",1,0,3,1],["F",0,0,7,1],["U",2,0,4,2],["L",0,1,8,2],["Z",0,1,0,3],["T",2,0,4,3],["X",0,0,6,3],["P",3,1,2,4]]}]}};
+/* 창의수학게임 › 펜토미노 채우기: 조각을 끌어 판에 놓고(칸에 착 붙음), 누르면 90° 돌리기, 단추로 뒤집기 — 판을 빈틈·겹침 없이 채우기 */
 (function () {
   'use strict';
-  var SYM = { '+': '+', '-': '−', 'x': '×', '/': '÷' }, PR = { '+': 1, '-': 1, 'x': 2, '/': 2 };
-  var P, ctx, host, cards, hist, selA, selOp, solved, timer = null, seq = 0;
-  function calc(a, op, b) { if (op === '+') return a + b; if (op === '-') return a >= b ? a - b : null; if (op === 'x') return a * b; return b && a % b === 0 ? a / b : null }
-  function wrap(c, need) { return c.p && c.p < need ? '(' + c.e + ')' : c.e }
-  function joinExpr(A, op, B) {   // 괄호가 꼭 필요한 곳에만
-    var p = PR[op], l = wrap(A, p), r = (op === '-' || op === '/') ? (B.p && B.p <= p ? '(' + B.e + ')' : B.e) : wrap(B, p);
-    return { e: l + ' ' + SYM[op] + ' ' + r, p: p };
+  var BASE = { F: [[1, 0], [2, 0], [0, 1], [1, 1], [1, 2]], I: [[0, 0], [0, 1], [0, 2], [0, 3], [0, 4]], L: [[0, 0], [0, 1], [0, 2], [0, 3], [1, 3]], N: [[0, 0], [0, 1], [1, 1], [1, 2], [1, 3]],
+    P: [[0, 0], [1, 0], [0, 1], [1, 1], [0, 2]], T: [[0, 0], [1, 0], [2, 0], [1, 1], [1, 2]], U: [[0, 0], [2, 0], [0, 1], [1, 1], [2, 1]], V: [[0, 0], [0, 1], [0, 2], [1, 2], [2, 2]],
+    W: [[0, 0], [0, 1], [1, 1], [1, 2], [2, 2]], X: [[1, 0], [0, 1], [1, 1], [2, 1], [1, 2]], Y: [[1, 0], [0, 1], [1, 1], [1, 2], [1, 3]], Z: [[0, 0], [1, 0], [1, 1], [1, 2], [2, 2]] };
+  var COL = { F: '#E5534B', I: '#3B82D6', L: '#2EAA6A', N: '#F2B92C', P: '#9B59D0', T: '#F08A24', U: '#20A5A5', V: '#D94F8A', W: '#7A9A2E', X: '#5B6BD6', Y: '#C98A2E', Z: '#2E8F9A' };
+  var NS = 'http://www.w3.org/2000/svg', P, ctx, host, svg, L, pcs, sel = -1, drag = null, solved;
+  function norm(cs) { var mx = Infinity, my = Infinity; cs.forEach(function (c) { mx = Math.min(mx, c[0]); my = Math.min(my, c[1]) }); return cs.map(function (c) { return [c[0] - mx, c[1] - my] }).sort(function (a, b) { return a[0] - b[0] || a[1] - b[1] }) }
+  function cellsOf(o) { var cs = BASE[o.p].map(function (c) { return [o.f ? -c[0] : c[0], c[1]] }); for (var i = 0; i < o.r; i++) cs = cs.map(function (c) { return [-c[1], c[0]] }); return norm(cs) }
+  function size(cs) { var w = 0, h = 0; cs.forEach(function (c) { w = Math.max(w, c[0] + 1); h = Math.max(h, c[1] + 1) }); return [w, h] }
+  function layout() {
+    var wide = host.clientWidth >= 640, cols = Math.min(P.p.length, wide ? 4 : 2), slotW = 6, slotH = 4.2, n = P.p.length, rows = Math.ceil(n / cols);
+    var W = Math.max(P.w + 1, cols * slotW), bx = (W - P.w) / 2, by = .5, ty = P.h + 1.3;
+    return { W: W, H: ty + rows * slotH + .2, bx: bx, by: by, ty: ty, cols: cols, slotW: slotW, slotH: slotH, tx: (W - cols * slotW) / 2 };
   }
-  function start() { seq = 0; cards = P.c.map(function (v) { return { v: v, e: String(v), p: 0, id: ++seq } }); hist = []; selA = null; selOp = null }
-  function solve(vs) {   // 지금 카드들로 목표 수를 만드는 첫 계산(없으면 null)
-    if (vs.length === 1) return vs[0] === P.t ? [] : null;
-    for (var i = 0; i < vs.length; i++) for (var j = 0; j < vs.length; j++) {
-      if (i === j) continue;
-      for (var k = 0; k < P.ops.length; k++) {
-        var op = P.ops[k], r = calc(vs[i], op, vs[j]); if (r === null) continue;
-        var rest = vs.filter(function (_, x) { return x !== i && x !== j }).concat([r]), s = solve(rest);
-        if (s) return [[i, op, j]].concat(s);
-      }
-    }
-    return null;
+  function toTray(o, i) {   // 트레이 칸에, 높이가 낮은 방향으로
+    var best = null; for (var f = 0; f < 2; f++) for (var r = 0; r < 4; r++) { var s = size(cellsOf({ p: o.p, r: r, f: f })); if (s[0] <= 5 && (!best || s[1] < best.h || (s[1] === best.h && s[0] > best.w))) best = { r: r, f: f, w: s[0], h: s[1] } }
+    if (o.r === undefined || o.home) { o.r = best.r; o.f = best.f }
+    var s2 = size(cellsOf(o)), cx = L.tx + (i % L.cols + .5) * L.slotW, cy = L.ty + (Math.floor(i / L.cols) + .5) * L.slotH;
+    o.x = cx - s2[0] / 2; o.y = cy - s2[1] / 2; o.on = false; o.home = false;
+  }
+  function occupied(skip) { var m = {}; pcs.forEach(function (o, k) { if (o.on && k !== skip) cellsOf(o).forEach(function (c) { m[(o.gx + c[0]) + ',' + (o.gy + c[1])] = k }) }); return m }
+  function tryPlace(o, k, gx, gy) {
+    var m = occupied(k), ok = cellsOf(o).every(function (c) { var x = gx + c[0], y = gy + c[1]; return x >= 0 && y >= 0 && x < P.w && y < P.h && m[x + ',' + y] === undefined });
+    if (ok) { o.on = true; o.gx = gx; o.gy = gy; o.x = L.bx + gx; o.y = L.by + gy } return ok;
   }
   function draw() {
-    var h = '<p class="mk-goal">카드를 <b>모두 한 번씩</b> 써서 <span class="mk-t">' + P.t + '</span> 만들기</p>'
-      + '<div class="mk-cards" id="mkCards"></div>'
-      + '<div class="mk-ops">' + P.ops.split('').map(function (o) { return '<button type="button" class="mk-op" data-o="' + o + '">' + SYM[o] + '</button>' }).join('') + '</div>'
-      + '<div class="mk-bar"><button type="button" class="mk-btn" id="mkUndo">한 단계 되돌리기</button></div>'
-      + '<ol class="mk-hist" id="mkHist"></ol>'
-      + '<p class="mk-tip">① 카드 하나 → ② 셈 → ③ 다른 카드를 누르면 두 카드가 계산 결과 한 장이 돼요.</p>';
-    host.innerHTML = h; paint();
+    svg = document.createElementNS(NS, 'svg'); svg.setAttribute('class', 'pt-svg'); svg.setAttribute('viewBox', '0 0 ' + L.W + ' ' + L.H.toFixed(2));
+    var h = '<rect class="pt-tray" x="' + (L.tx - .1) + '" y="' + (L.ty - .15) + '" width="' + (L.cols * L.slotW + .2) + '" height="' + (L.H - L.ty) + '" rx=".4"/>';
+    for (var y = 0; y < P.h; y++) for (var x = 0; x < P.w; x++) h += '<rect class="pt-cell" x="' + (L.bx + x) + '" y="' + (L.by + y) + '" width="1" height="1"/>';
+    h += '<rect class="pt-frame" x="' + L.bx + '" y="' + L.by + '" width="' + P.w + '" height="' + P.h + '"/><g class="pt-pcs"></g>';
+    svg.innerHTML = h; var g = svg.lastChild;
+    pcs.forEach(function (o, k) { var e = document.createElementNS(NS, 'g'); e.setAttribute('class', 'pt-pc'); e.dataset.k = k; o.el = e; g.appendChild(e); paint(o) });
+    var b = host.querySelector('.pt-board'); b.innerHTML = ''; b.appendChild(svg); bind(); select(sel);
   }
-  function paint(newId) {
-    host.querySelector('#mkCards').innerHTML = cards.map(function (c) {
-      return '<button type="button" class="mk-card' + (selA === c.id ? ' sel' : '') + (c.id === newId ? ' new' : '') + (c.p ? ' made' : '') + '" data-id="' + c.id + '"><b>' + c.v + '</b>' + (c.p ? '<small>' + c.e + '</small>' : '') + '</button>';
-    }).join('');
-    host.querySelectorAll('.mk-op').forEach(function (b) { b.classList.toggle('sel', b.dataset.o === selOp) });
-    host.querySelector('#mkHist').innerHTML = hist.map(function (s) { return '<li>' + s.txt + '</li>' }).join('');
-    host.querySelector('#mkUndo').disabled = !hist.length || solved || !!timer;
+  function paint(o) {
+    o.el.setAttribute('transform', 'translate(' + o.x.toFixed(3) + ' ' + o.y.toFixed(3) + ')');
+    o.el.innerHTML = cellsOf(o).map(function (c) { return '<rect x="' + (c[0] + .04) + '" y="' + (c[1] + .04) + '" width=".92" height=".92" rx=".12" fill="' + COL[o.p] + '"/>' }).join('');
+    o.el.classList.toggle('pt-on', !!o.on);
   }
-  function pick(id) {
-    if (solved || timer) return;
-    if (selA === null || selOp === null) { selA = selA === id ? null : id; selOp = null; ctx.msg(''); paint(); return }
-    if (id === selA) { selA = null; selOp = null; paint(); return }
-    combine(selA, selOp, id);
-  }
-  function combine(aId, op, bId) {
-    var A = cards.filter(function (c) { return c.id === aId })[0], B = cards.filter(function (c) { return c.id === bId })[0], r = calc(A.v, op, B.v);
-    if (r === null) {
-      ctx.msg(op === '-' ? '뺄셈은 큰 수에서 작은 수를 빼요. 카드 차례를 바꿔 보세요.' : '나누어떨어지지 않아요. 다른 카드를 골라 보세요.', 'bad');
-      selOp = null; paint(); return false;
+  function select(k) { sel = k; pcs.forEach(function (o, j) { o.el.classList.toggle('pt-sel', j === k) }); if (k >= 0) o_front(k); host.querySelectorAll('.pt-tool').forEach(function (b) { b.disabled = k < 0 }) }
+  function o_front(k) { pcs[k].el.parentNode.appendChild(pcs[k].el) }
+  function world(e) { var p = svg.createSVGPoint(); p.x = e.clientX; p.y = e.clientY; return p.matrixTransform(svg.getScreenCTM().inverse()) }
+  function bind() {
+    svg.addEventListener('pointerdown', function (e) {
+      var t = e.target.closest && e.target.closest('.pt-pc'); if (!t || solved) { if (!t) select(-1); return }
+      e.preventDefault(); var k = +t.dataset.k, w = world(e); select(k);
+      drag = { k: k, sx: w.x, sy: w.y, x: pcs[k].x, y: pcs[k].y, moved: false, id: e.pointerId };
+      try { svg.setPointerCapture(e.pointerId) } catch (er) {}
+    });
+    svg.addEventListener('pointermove', function (e) {
+      if (!drag || e.pointerId !== drag.id) return; var w = world(e), dx = w.x - drag.sx, dy = w.y - drag.sy;
+      if (!drag.moved && dx * dx + dy * dy < .04) return;
+      var o = pcs[drag.k]; if (!drag.moved) { drag.moved = true; o.on = false } o.x = drag.x + dx; o.y = drag.y + dy; paint(o);
+    });
+    function up(e) {
+      if (!drag || e.pointerId !== drag.id) return; var d = drag; drag = null; var o = pcs[d.k];
+      if (!d.moved) { turn(1); return }
+      var gx = Math.round(o.x - L.bx), gy = Math.round(o.y - L.by);
+      if (!tryPlace(o, d.k, gx, gy)) {
+        var s = size(cellsOf(o)), cx = o.x + s[0] / 2, cy = o.y + s[1] / 2;
+        if (cx > L.bx - .5 && cx < L.bx + P.w + .5 && cy < L.by + P.h + .5) ctx.msg('판 밖으로 나가거나 다른 조각과 겹쳐요. 돌리거나 다른 자리를 찾아보세요.', 'bad');
+        o.x = Math.max(0, Math.min(L.W - s[0], o.x)); o.y = Math.max(0, Math.min(L.H - s[1], o.y));
+      } else ctx.msg('');
+      paint(o); after();
     }
-    var ex = joinExpr(A, op, B), C = { v: r, e: ex.e, p: ex.p, id: ++seq };
-    hist.push({ before: cards.slice(), txt: A.v + ' ' + SYM[op] + ' ' + B.v + ' = ' + r });
-    var at = cards.indexOf(A); cards = cards.filter(function (c) { return c !== A && c !== B }); cards.splice(Math.min(at, cards.length), 0, C);
-    selA = null; selOp = null; ctx.msg(''); paint(C.id);
-    if (cards.length === 1) {
-      if (r === P.t) { solved = true; paint(C.id); ctx.done('<b>' + C.e + ' = ' + P.t + '</b> — 목표 수를 만들었어요!') }
-      else ctx.msg(r + '이(가) 되었어요. 목표는 ' + P.t + '! ‘한 단계 되돌리기’로 다른 방법을 찾아보세요.', 'bad');
-    }
-    return true;
+    svg.addEventListener('pointerup', up); svg.addEventListener('pointercancel', up);
   }
+  function reshape(fn) {
+    if (sel < 0 || solved) return; var o = pcs[sel], s0 = size(cellsOf(o)), cx = o.x + s0[0] / 2, cy = o.y + s0[1] / 2, wasOn = o.on;
+    fn(o); var s1 = size(cellsOf(o));
+    o.on = false; o.x = cx - s1[0] / 2; o.y = cy - s1[1] / 2;   // 제자리에서 돌기(밀려나지 않게)
+    if (wasOn) tryPlace(o, sel, Math.round(o.x - L.bx), Math.round(o.y - L.by));   // 판 위에 있던 조각은 될 수 있으면 다시 칸에 붙임
+    paint(o); after();
+  }
+  function turn(d) { reshape(function (o) { o.r = (o.r + d + 4) % 4 }) }
+  function flip() { reshape(function (o) { o.f = 1 - o.f }) }
+  function after() {
+    var n = pcs.filter(function (o) { return o.on }).length;
+    host.querySelector('#ptCnt').innerHTML = '놓은 조각 <b>' + n + '</b> / ' + pcs.length;
+    if (n === pcs.length) { solved = true; select(-1); host.querySelector('.pt-board').classList.add('win'); ctx.done('조각 ' + pcs.length + '개로 판을 빈틈없이 채웠어요!') }
+  }
+  function onResize() { if (!svg || !document.body.contains(svg)) return; var w = host.clientWidth >= 640, want = Math.min(P.p.length, w ? 4 : 2); if (L.cols === want) return; L = layout(); pcs.forEach(function (o, i) { if (o.on) { o.x = L.bx + o.gx; o.y = L.by + o.gy } else toTray(o, i) }); draw() }
+  window.addEventListener('resize', onResize);
+  document.addEventListener('keydown', function (e) {
+    if (!svg || !document.body.contains(svg) || sel < 0 || solved || /INPUT|TEXTAREA/.test((e.target || {}).tagName || '')) return;
+    if (e.key === 'r' || e.key === 'R') turn(1); else if (e.key === 'e' || e.key === 'E') turn(-1); else if (e.key === 'f' || e.key === 'F') flip();
+  });
+  function putSolution(k, s) { var o = pcs[k]; o.r = s[1]; o.f = s[2]; var m = occupied(k); cellsOf(o).forEach(function (c) { var j = m[(s[3] + c[0]) + ',' + (s[4] + c[1])]; if (j !== undefined) { pcs[j].home = true; toTray(pcs[j], j); paint(pcs[j]) } }); tryPlace(o, k, s[3], s[4]); paint(o) }
   window.CRG = {
     render: function (h, p, c) {
-      if (timer) { clearInterval(timer); timer = null }
-      host = h; P = p; ctx = c; solved = false; start(); draw();
-      host.onclick = function (e) {
-        var cd = e.target.closest('.mk-card'), o = e.target.closest('.mk-op');
-        if (cd) return pick(+cd.dataset.id);
-        if (o && !solved && !timer) { if (selA === null) { ctx.msg('먼저 카드를 하나 골라요.', 'bad'); return } selOp = o.dataset.o; paint(); return }
-        if (e.target.closest('#mkUndo') && hist.length && !solved && !timer) { cards = hist.pop().before; selA = null; selOp = null; ctx.msg(''); paint() }
-      };
+      host = h; P = p; ctx = c; solved = false; sel = -1; drag = null;
+      host.innerHTML = '<p class="pt-goal">조각 <b>' + p.p.length + '개</b>를 모두 써서 ' + p.w + '×' + p.h + ' 판을 빈틈없이 채워요</p><div class="pt-board"></div>'
+        + '<div class="pt-tools"><span id="ptCnt"></span><button type="button" class="pt-btn pt-tool" data-a="l" disabled>↶ 왼쪽으로</button><button type="button" class="pt-btn pt-tool" data-a="r" disabled>↷ 오른쪽으로</button><button type="button" class="pt-btn pt-tool" data-a="f" disabled>⇄ 뒤집기</button></div>'
+        + '<p class="pt-tip">조각을 <b>끌어서</b> 판에 놓으면 칸에 착 붙어요. <b>살짝 누르면</b> 90° 돌아가요. 키보드: R/E 돌리기 · F 뒤집기</p>';
+      host.querySelector('.pt-tools').onclick = function (e) { var b = e.target.closest('[data-a]'); if (!b) return; ({ l: function () { turn(-1) }, r: function () { turn(1) }, f: flip })[b.dataset.a]() };
+      L = layout(); pcs = p.p.map(function (q, i) { var o = { p: q, home: true }; toTray(o, i); return o }); draw(); after();
     },
-    hint: function () {   // 지금 카드로 만들 수 있으면 다음 계산을, 아니면 처음부터 첫 계산을 알려 줌
-      if (solved || timer) return false;
-      var s = solve(cards.map(function (c) { return c.v })), note = '';
-      if (!s) { start(); s = solve(cards.map(function (c) { return c.v })); note = '지금 카드로는 만들 수 없어서 처음으로 돌렸어요. ' }
-      if (!s || !s.length) return false;
-      var a = cards[s[0][0]], b = cards[s[0][2]];
-      selA = a.id; selOp = null; paint();
-      ctx.msg('💡 ' + note + a.v + ' ' + SYM[s[0][1]] + ' ' + b.v + ' 부터 계산해 보세요.');
-      return true;
+    hint: function () {   // 제자리에 없는 조각 하나를 풀이 자리에 놓아 줌(그 자리를 막은 조각은 트레이로)
+      if (solved) return false;
+      for (var i = 0; i < P.s.length; i++) {
+        var s = P.s[i], k = P.p.indexOf(s[0]), o = pcs[k], want = cellsOf({ p: s[0], r: s[1], f: s[2] }).map(function (c) { return (s[3] + c[0]) + ',' + (s[4] + c[1]) }).sort().join(' ');
+        var now = o.on ? cellsOf(o).map(function (c) { return (o.gx + c[0]) + ',' + (o.gy + c[1]) }).sort().join(' ') : '';
+        if (now === want) continue;
+        putSolution(k, s); select(k); o.el.classList.add('pt-hint'); after(); if (!solved) ctx.msg('💡 ' + s[0] + ' 조각을 제자리에 놓았어요.'); return true;
+      }
+      return false;
     },
-    reveal: function () {   // 처음부터 저장한 방법대로 한 단계씩 보여 줌
-      if (solved || timer) return;
-      start(); paint(); var i = 0;
-      timer = setInterval(function () {
-        if (!document.body.contains(host)) { clearInterval(timer); timer = null; return }
-        var st = P.s[i++]; if (!st) { clearInterval(timer); timer = null; return }
-        var A = cards.filter(function (c) { return c.v === st[0] })[0], B = cards.filter(function (c) { return c !== A && c.v === st[2] })[0];
-        var last = i === P.s.length; if (last) { clearInterval(timer); timer = null }
-        combine(A.id, st[1], B.id);
-      }, 700);
-    }
+    reveal: function () { P.s.forEach(function (s) { putSolution(P.p.indexOf(s[0]), s) }); after() }
   };
 })();
 
