@@ -16,12 +16,12 @@
   function shuf(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t } return a }
 
   var GAMES = [
-    { id: 'balloon', nm: '풍선 터뜨리기', de: '정답이 적힌 풍선을 하늘로 날아가기 전에 톡! 하트 3개로 오래 버텨요.', stars: [5, 12, 20] },
-    { id: 'mole', nm: '두더지 잡기', de: '정답 팻말을 든 두더지를 뿅망치로 콩! 숨기 전에 빨리 잡아요.', stars: [5, 12, 20] },
-    { id: 'tower', nm: '탑 쌓기', de: '맞힐 때마다 블록이 한 층씩! 틀리거나 시간이 지나면 맨 위 블록이 떨어져요.', stars: [5, 12, 20] },
-    { id: 'rocket', nm: '60초 우주 도전', de: '60초 동안 몇 문제를 맞힐까요? 맞힐수록 로켓이 높이 올라가요.', stars: [8, 15, 22] },
-    { id: 'invader', nm: '우주 침공 막기', de: '식을 들고 내려오는 외계인을 정답 레이저로 맞혀요. 땅에 닿기 전에!', stars: [5, 12, 20] },
-    { id: 'tug', nm: '줄다리기 (2명)', de: '두 사람이 화면 양쪽에서 동시에 풀어요. 먼저 5번 당기는 팀이 이겨요.', two: true }
+    { id: 'balloon', pl: [1, 1], nm: '풍선 터뜨리기', de: '정답이 적힌 풍선을 하늘로 날아가기 전에 톡! 하트 3개로 오래 버텨요.', stars: [5, 12, 20] },
+    { id: 'mole', pl: [1, 1], nm: '두더지 잡기', de: '정답 팻말을 든 두더지를 뿅망치로 콩! 숨기 전에 빨리 잡아요.', stars: [5, 12, 20] },
+    { id: 'tower', pl: [1, 1], nm: '탑 쌓기', de: '맞힐 때마다 블록이 한 층씩! 틀리거나 시간이 지나면 맨 위 블록이 떨어져요.', stars: [5, 12, 20] },
+    { id: 'rocket', pl: [1, 1], nm: '60초 우주 도전', de: '60초 동안 몇 문제를 맞힐까요? 맞힐수록 로켓이 높이 올라가요.', stars: [8, 15, 22] },
+    { id: 'invader', pl: [1, 1], nm: '우주 침공 막기', de: '식을 들고 내려오는 외계인을 정답 레이저로 맞혀요. 땅에 닿기 전에!', stars: [5, 12, 20] },
+    { id: 'tug', pl: [2, 2], nm: '줄다리기', de: '두 사람(두 팀)이 화면 양쪽에서 동시에 풀어요. 먼저 5번 당기는 쪽이 이겨요.', two: true, how: '파랑 팀 · 빨강 팀, 한 사람씩 또는 모둠 대표로' }
   ];
   var GBY = {}; GAMES.forEach(function (x) { GBY[x.id] = x });
 
@@ -163,26 +163,33 @@
   function kList() { return uSel.k.filter(function (k) { return kOn[k] }) }
   function recKey(game) { var ks = kList(); return D.g + '|' + uSel.id + (ks.length < uSel.k.length ? ':' + ks.join(',') : '') + '|' + game }
 
-  function drawUnits() {
+  function drawUnits() {   // 단원은 한 줄 알약(짧은 이름), 고른 단원의 온이름은 아래 칸 제목에
     $('mgUnits').innerHTML = units.map(function (u) {
-      var on = u === uSel, nk = u.k.length;
-      return '<button type="button" class="mg-unit' + (u.id === 'all' ? ' all' : '') + '" data-u="' + u.id + '" aria-pressed="' + on + '">' +
-        (u.sem ? '<span class="mg-sem">' + esc(u.sem) + '</span>' : u.id === 'all' ? '<span class="mg-sem">' + D.g + '학년 전체</span>' : '') +
-        '<span class="mg-un">' + esc(u.nm) + '</span><span class="mg-uk">계산 ' + nk + '가지</span></button>';
+      var on = u === uSel, tag = u.ss || (u.sem && u.sem.indexOf('학기') < 0 ? u.sem : '');
+      return '<button type="button" class="mg-unit' + (u.id === 'all' ? ' all' : '') + '" data-u="' + u.id + '" aria-pressed="' + on + '" title="' + esc((u.sem ? u.sem + ' · ' : '') + u.nm + ' (계산 ' + u.k.length + '가지)') + '">' +
+        (tag ? '<span class="mg-sem">' + esc(tag) + '</span>' : '') + '<span class="mg-un">' + esc(u.sh || u.nm) + '</span></button>';
     }).join('');
-    $('mgSkills').innerHTML = '<p class="mg-sk-h">이 단원에서 나오는 계산 <small>(누르면 빼거나 넣을 수 있어요)</small></p><div class="mg-chips">' + uSel.k.map(function (k) {
+    $('mgSkills').innerHTML = '<p class="mg-sk-h"><b>' + esc((uSel.sem ? uSel.sem + ' ' : uSel.id === 'all' ? D.g + '학년 ' : '') + uSel.nm) + '</b> · 나오는 계산 ' + uSel.k.length + '가지 <small>(누르면 빼거나 넣을 수 있어요)</small></p><div class="mg-chips">' + uSel.k.map(function (k) {
       var s = AR.BY[k], eg = AR.gen(k, 'mg-eg-' + k);
-      return '<button type="button" class="mg-chip" data-k="' + k + '" aria-pressed="' + !!kOn[k] + '" title="' + esc(s.de) + '"><span class="mg-ck" aria-hidden="true"></span><span>' + esc(s.nm) + '</span><span class="mg-eg">' + qH(eg) + '</span></button>';
+      var egt = (eg.txt || eg.q).map(function (t) { return typeof t === 'string' ? t : t.k === 'n' ? t.v : t.k === 'd' ? AR.dstr(t.v, t.p) : t.k === 'f' ? (t.w ? t.w + ' ' : '') + t.n + '/' + t.d : '□' }).join(' ');
+      return '<button type="button" class="mg-chip" data-k="' + k + '" aria-pressed="' + !!kOn[k] + '" title="' + esc(s.de + ' · 예: ' + egt) + '"><span class="mg-ck" aria-hidden="true"></span><span>' + esc(s.nm) + '</span></button>';
     }).join('') + '</div>';
+    var cur = $('mgUnits').querySelector('[aria-pressed="true"]'); if (cur && cur.scrollIntoView) { var box = $('mgUnits'); box.scrollLeft = Math.max(0, cur.offsetLeft - box.offsetLeft - 40) }
+  }
+  function pl(x) { return x.pl[0] === x.pl[1] ? x.pl[0] + '명' : x.pl[0] + '~' + x.pl[1] + '명' }
+  var PICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2" fill="currentColor"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6Z" fill="currentColor"/><circle cx="17" cy="9" r="2.6" fill="currentColor" opacity=".55"/><path d="M15.5 14.3c3 .2 5.5 2.4 5.5 5.7h-4.4" fill="currentColor" opacity=".55"/></svg>';
+  function gameCard(x) {
+    var b = rec[recKey(x.id)];
+    return '<button type="button" class="mg-game" data-game="' + x.id + '" aria-pressed="' + (x.id === gSel) + '"><span class="mg-thumb">' + THUMB[x.id] + '<span class="mg-pl">' + PICO + pl(x) + '</span></span>' +
+      '<span class="mg-gn">' + esc(x.nm) + '</span><span class="mg-gd">' + esc(x.de) + '</span>' +
+      (x.two ? '<span class="mg-best">' + esc(x.how) + '</span>' : '<span class="mg-best">' + (b ? '최고 기록 ' + b + '점' : '아직 기록이 없어요') + '</span>') + '</button>';
   }
   function drawGames() {
-    $('mgGames').innerHTML = GAMES.map(function (x) {
-      var b = rec[recKey(x.id)];
-      return '<button type="button" class="mg-game" data-game="' + x.id + '" aria-pressed="' + (x.id === gSel) + '"><span class="mg-thumb">' + THUMB[x.id] + '</span>' +
-        '<span class="mg-gn">' + esc(x.nm) + '</span><span class="mg-gd">' + esc(x.de) + '</span>' +
-        (x.two ? '<span class="mg-best">전자칠판·태블릿에서 둘이 함께</span>' : '<span class="mg-best">' + (b ? '최고 기록 ' + b + '점' : '아직 기록이 없어요') + '</span>') + '</button>';
-    }).join('');
-    $('mgSel').innerHTML = '<b>' + esc(uSel.nm) + '</b> · ' + esc(GBY[gSel].nm);
+    var solo = GAMES.filter(function (x) { return !x.two }), team = GAMES.filter(function (x) { return x.two });
+    $('mgGames').innerHTML =
+      '<h3 class="mg-gh"><span class="mg-ghi">' + PICO.replace('opacity=".55"', 'opacity="0"').replace('opacity=".55"', 'opacity="0"') + '</span>혼자서 <small>내 점수와 최고 기록에 도전해요 · 1명</small></h3><div class="mg-games">' + solo.map(gameCard).join('') + '</div>' +
+      '<h3 class="mg-gh"><span class="mg-ghi">' + PICO + '</span>함께 <small>한 화면에서 여럿이 겨뤄요 · 전자칠판·태블릿</small></h3><div class="mg-games">' + team.map(gameCard).join('') + '</div>';
+    $('mgSel').innerHTML = '<b>' + esc(uSel.sh || uSel.nm) + '</b> · ' + esc(GBY[gSel].nm) + ' <span class="mg-selpl">' + pl(GBY[gSel]) + '</span>';
   }
   function remember() { last[D.g] = { u: uSel.id, k: kList().length < uSel.k.length ? kList() : [], game: gSel }; save(KEY + '-last', last) }
   $('mgUnits').addEventListener('click', function (e) {
