@@ -68,7 +68,7 @@ function makeProduct() {
     });
   }
   /* 단계: 1 아무 데나 · 2 이기는 칸만 봄 · 3~10 상대가 이기는 칸을 막고, 몇 수 앞까지 읽기(높은 단계는 시간 안에서) */
-  var LV = [null, { d: 0 }, { d: 1, noise: 5, err: .3 }, { d: 2, noise: 4, err: .25 }, { d: 2, noise: 1, err: .12 }, { d: 3, err: .1 }, { d: 4, err: .06 }, { d: 5, ms: 3000, err: .04 }, { d: 6, ms: 3500, err: .02 }, { d: 7, ms: 4000, err: .01 }, { d: 9, ms: 4500 }];
+  var LV = [null, { d: 0 }, { d: 1, noise: 5, err: .3 }, { d: 2, noise: 4, err: .25 }, { d: 2, noise: 1, err: .12 }, { d: 3, err: .1 }, { d: 4, err: .06 }, { d: 5, ms: 3000, err: .06 }, { d: 6, ms: 3500, err: .04 }, { d: 7, ms: 4000, err: .02 }, { d: 9, ms: 4500 }];
   function pick(L, noise, err) {
     var S = L.map(function (o) { return { c: o.c, v: o.v + (noise ? Math.random() * noise : 0), w: o.v } }).sort(function (a, b) { return b.v - a.v });
     if (err && S.length > 1 && S[0].w < BIG - 50 && Math.random() < err) { var k = Math.min(3, S.length) - 1; return S[1 + ((Math.random() * k) | 0)].c }   // 가끔 2~3번째 수
