@@ -1062,18 +1062,20 @@ window.TOOL = function (host, api) {
     if (mode === 'ai') {
       api.bar('인공지능과 · 단계 고르기');
       setup.innerHTML = '<p class="bd-intro">나는 <b>' + SIDE[0] + '(먼저)</b>, 인공지능은 <b>' + SIDE[1] + '</b>이에요. 한 수씩 번갈아 두고, 내 차례에는 <b>시간 제한</b>이 있어요(시간이 다 되면 그 판은 져요). 이기면 다음 단계가 열려요.</p>' +
-        '<div class="bd-lvs">' + LVS.map(function (L, i) { var n = i + 1, lock = n > R.clear + 1, done = n <= R.clear; return '<button type="button" class="bd-lv' + (done ? ' bd-done' : '') + '" data-l="' + n + '"' + (lock ? ' disabled' : '') + '><b>' + (lock ? '🔒 ' : done ? '⭐ ' : '') + n + '단계</b><span>' + L.name + '</span><small>' + L.info + ' · 한 수 ' + L.t + '초</small></button>' }).join('') + '</div>' +
+        '<div class="bd-lvs">' + LVS.map(function (L, i) { var n = i + 1, lock = n > R.clear + 1, done = n <= R.clear; return '<button type="button" class="bd-lv' + (done ? ' bd-done' : '') + '" data-l="' + n + '"' + (lock ? ' disabled' : '') + '><b>' + (lock ? '🔒 ' : done ? '⭐ ' : '') + n + '단계</b><span>' + L.name + '</span><small>' + L.info + ' · 한 수 ' + L.t + '초' + (L.drawOk ? ' · 비겨도 통과' : '') + '</small></button>' }).join('') + '</div>' +
         '<p class="bd-rec">이긴 판 ' + R.win + ' · 진 판 ' + R.lose + ' · 깬 단계 ' + R.clear + '/10 <button type="button" class="tl-btn bd-unlock">🔓 선생님: 모든 단계 열기</button></p>';
       setup.querySelectorAll('.bd-lv').forEach(function (b) { b.onclick = function () { start({ mode: 'ai', level: +b.dataset.l }) } });
       setup.querySelector('.bd-unlock').onclick = function () { if (confirm('모든 단계를 열까요? (이 기기의 기록이 바뀌어요)')) { R.clear = Math.max(R.clear, 9); sv(rec); showSetup() } };
     } else {
       api.bar('친구와 둘이 · 준비');
       setup.innerHTML = '<p class="bd-intro">한 화면에서 둘이 번갈아 둬요. <b>' + SIDE[0] + '</b>이 먼저 둬요.</p>' +
+        (V.opts || []).map(function (o) { return '<p class="tl-row"><b>' + o.label + '</b>' + o.choices.map(function (c, i) { return '<label class="bd-opt"><input type="radio" name="bdO' + o.id + '" value="' + c[0] + '"' + (i === (o.def || 0) ? ' checked' : '') + '> ' + c[1] + '</label>' }).join('') + '</p>' }).join('') +
         '<p class="tl-row"><b>한 수 시간</b>' + V.twoT.map(function (s, i) { return '<label class="bd-opt"><input type="radio" name="bdT" value="' + s + '"' + (i === 2 ? ' checked' : '') + '> ' + (s ? s + '초' : '없음') + '</label>' }).join('') + '</p>' +
         '<p class="tl-row"><label class="bd-opt">' + SIDE[0] + ' <input class="bd-nm" id="bdN1" value="친구 1" maxlength="10"></label><label class="bd-opt">' + SIDE[1] + ' <input class="bd-nm" id="bdN2" value="친구 2" maxlength="10"></label></p>' +
         '<p class="tl-row"><button type="button" class="tl-btn tl-go bd-go2">▶ 시작</button></p>';
       setup.querySelector('.bd-go2').onclick = function () {
-        start({ mode: 'two', t: +setup.querySelector('input[name="bdT"]:checked').value, names: [setup.querySelector('#bdN1').value || SIDE[0], setup.querySelector('#bdN2').value || SIDE[1]] });
+        var opt = {}; (V.opts || []).forEach(function (o) { opt[o.id] = +setup.querySelector('input[name="bdO' + o.id + '"]:checked').value });
+        start({ mode: 'two', opt: opt, t: +setup.querySelector('input[name="bdT"]:checked').value, names: [setup.querySelector('#bdN1').value || SIDE[0], setup.querySelector('#bdN2').value || SIDE[1]] });
       };
     }
   }
@@ -1084,7 +1086,7 @@ window.TOOL = function (host, api) {
     var z = V.size(); svg.setAttribute('viewBox', '0 0 ' + z[0] + ' ' + z[1]); svg.innerHTML = V.draw(G.st, ui, E);
   }
   function pt(e) { var r = svg.getBoundingClientRect(), z = V.size(); return [(e.clientX - r.left) * z[0] / r.width, (e.clientY - r.top) * z[1] / r.height] }
-  svg.addEventListener('pointermove', function (e) { if (!G || !V.hover || e.pointerType !== 'mouse') return; var h = humanTurn() ? V.hover(G.st, pt(e)) : null; if (h !== G.hov) { G.hov = h; draw() } });
+  svg.addEventListener('pointermove', function (e) { if (!G || !V.hover || e.pointerType !== 'mouse') return; var h = humanTurn() ? V.hover(G.st, pt(e), E) : null; if (h !== G.hov) { G.hov = h; draw() } });
   svg.addEventListener('pointerleave', function () { if (G && G.hov != null) { G.hov = null; draw() } });
   svg.addEventListener('click', function (e) {
     if (!G || !humanTurn()) return;
@@ -1102,7 +1104,7 @@ window.TOOL = function (host, api) {
   function start(cfg) {
     stopAll(); setup.hidden = true; play.hidden = false; tabs();
     var L = cfg.mode === 'ai' ? LVS[cfg.level - 1] : null;
-    G = { cfg: cfg, L: L, st: E.init(), hist: [], sel: null, hov: null, res: null };
+    G = { cfg: cfg, L: L, st: E.init(L ? L.opt : cfg.opt), hist: [], sel: null, hov: null, res: null };
     G.tsec = L ? L.t : cfg.t;
     api.bar(cfg.mode === 'ai' ? cfg.level + '단계 · ' + L.name : '친구와 둘이');
     ctl(); turnStart();
@@ -1139,7 +1141,7 @@ window.TOOL = function (host, api) {
     var bar = host.querySelector('.bd-tbar i'), clk = host.querySelector('.bd-clock'), extra = V.note ? V.note(G.st, E) : '';
     var pre = (note ? note + ' ' : '') + (extra ? extra + ' ' : '');
     if (G.cfg.mode === 'ai' && G.st.turn === 2) { bar.style.width = '0'; clk.textContent = ''; return aiMove(pre) }
-    msg(pre + (G.cfg.mode === 'ai' ? '내 차례예요. ' + V.how : names()[G.st.turn - 1] + '(' + SIDE[G.st.turn - 1] + ') 차례예요.'), extra ? 'bd-bad' : '');
+    msg(pre + (G.cfg.mode === 'ai' ? '내 차례예요. ' + V.how : names()[G.st.turn - 1] + '(' + SIDE[G.st.turn - 1] + ') 차례예요.'), /⚠️/.test(extra) ? 'bd-bad' : '');
     if (!G.tsec) { bar.style.width = '0'; clk.textContent = ''; return }
     var left = G.tsec, t0 = Date.now();
     bar.style.width = '100%'; bar.className = ''; clk.textContent = '⏱️ ' + left + '초';
@@ -1159,7 +1161,7 @@ window.TOOL = function (host, api) {
     G.hist.push(G.st); G.st = E.play(G.st, mv); snd(520, .05); turnStart();
   }
   function aiMove(pre) {
-    G.busy = true; msg(pre + '🤖 인공지능이 생각하고 있어요…', pre ? 'bd-bad' : ''); var t0 = Date.now(), want = G;
+    G.busy = true; msg(pre + '🤖 인공지능이 생각하고 있어요…', /⚠️/.test(pre) ? 'bd-bad' : ''); var t0 = Date.now(), want = G;
     ask({ st: G.st, level: G.cfg.level }, function (r) {
       setTimeout(function () { if (G !== want || G.res) return; G.busy = false; G.st = E.play(G.st, G.legal.indexOf(r.mv) >= 0 ? r.mv : G.legal[0]); snd(400, .05); turnStart() }, Math.max(0, 500 - (Date.now() - t0)));
     });
@@ -1169,12 +1171,14 @@ window.TOOL = function (host, api) {
     var nm = names(), w = o.w, t;
     if (G.cfg.mode === 'ai') {
       if (w === 1) { R.win++; var lv = G.cfg.level, newly = lv > R.clear; if (newly) R.clear = lv; t = '🏆 이겼어요! ' + o.why + (newly && lv < 10 ? ' — ' + (lv + 1) + '단계가 열렸어요!' : lv === 10 ? ' — 10단계까지 모두 깼어요! 🎉' : ''); snd(660, .15); setTimeout(function () { snd(880, .3) }, 160) }
-      else if (w === 2) { R.lose++; t = '😢 졌어요. ' + o.why + ' 다시 도전해 봐요!'; snd(260, .4) } else t = '🤝 비겼어요. ' + o.why;
+      else if (w === 2) { R.lose++; t = '😢 졌어요. ' + o.why + ' 다시 도전해 봐요!'; snd(260, .4) }
+      else if (G.L.drawOk) { var lv2 = G.cfg.level, nw = lv2 > R.clear; if (nw) R.clear = lv2; t = '🤝 비겼어요. ' + o.why + ' 이 단계는 비기기만 해도 통과예요!' + (nw && lv2 < 10 ? ' — ' + (lv2 + 1) + '단계가 열렸어요!' : lv2 === 10 ? ' — 10단계까지 모두 깼어요! 🎉' : ''); w = -1 }
+      else t = '🤝 비겼어요. ' + o.why;
       sv(rec);
     } else t = w ? '🏆 ' + nm[w - 1] + '(' + SIDE[w - 1] + ') 승리! ' + o.why : '🤝 비겼어요. ' + o.why;
-    msg(t, w === 1 || G.cfg.mode === 'two' ? 'bd-ok' : 'bd-bad');
+    msg(t, w === 1 || w === -1 || G.cfg.mode === 'two' ? 'bd-ok' : 'bd-bad');
     var c = host.querySelector('.bd-ctl'), lvl = G.cfg.level;
-    c.innerHTML = '<button type="button" class="tl-btn tl-go bd-again">🔁 한 판 더</button>' + (G.cfg.mode === 'ai' && w === 1 && lvl < 10 ? '<button type="button" class="tl-btn tl-go bd-up">⬆ ' + (lvl + 1) + '단계 도전</button>' : '') + '<button type="button" class="tl-btn bd-home">↩ 처음 화면</button>';
+    c.innerHTML = '<button type="button" class="tl-btn tl-go bd-again">🔁 한 판 더</button>' + (G.cfg.mode === 'ai' && (w === 1 || w === -1) && lvl < 10 ? '<button type="button" class="tl-btn tl-go bd-up">⬆ ' + (lvl + 1) + '단계 도전</button>' : '') + '<button type="button" class="tl-btn bd-home">↩ 처음 화면</button>';
     c.querySelector('.bd-again').onclick = function () { start(G.cfg) };
     var up = c.querySelector('.bd-up'); if (up) up.onclick = function () { start({ mode: 'ai', level: lvl + 1 }) };
     c.querySelector('.bd-home').onclick = function () { stopAll(); showSetup() };
