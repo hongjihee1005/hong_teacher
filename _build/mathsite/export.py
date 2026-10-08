@@ -117,7 +117,7 @@ def crumb(s, o):
     return s[:m.start(1)] + inner + s[m.end(1):]
 
 def fix_text(s):
-    s = s.replace(' · 수학게임 · 기타 · 초등교사 홍지희', ' · ' + NAME).replace(' · 기타 · 초등교사 홍지희', ' · ' + NAME)
+    s = s.replace(' · 수학게임 · 기타 · 초등교사 홍지희', ' · ' + NAME).replace(' · 기타 · 초등교사 홍지희', ' · ' + NAME).replace(' · 수학게임 · 초등교사 홍지희', ' · ' + NAME)
     s = re.sub(r'(오목·바둑|오목|바둑) · 쉬는 시간 · 초등교사 홍지희', lambda m: m.group(1) + ' · ' + NAME, s)   # 오목·바둑(EXTRA)
     s = s.replace(' · 쉬는 시간 · 초등교사 홍지희', ' · 창의수학게임 · ' + NAME)
     s = s.replace('쉬는 시간 › 스도쿠 방으로 가요', '학년마다 30문제')   # 창의수학게임 메뉴의 스도쿠 카드 설명
