@@ -8,7 +8,7 @@
   방이 다른 방들을 모은 메뉴(2026-10-07 '수학게임' project/math/ → creative·mathgame)이면 그 안의 방들로 펼칩니다('곧 열려요' 카드는 빠짐).
 - 첫 화면은 원래 자료실 '기타 › 수학게임' 메뉴와 같은 카드(창의수학게임·교과수학게임·사고력 수학·수학자 이야기, '곧 열려요' 포함)입니다
   (선생님 요청 2026-10-07: 게임이 많아져서 방 메뉴로 정리). 방을 누르면 그 방 메뉴(<방>/index.html)가 열리고, 더 깊은 하위 메뉴도 그대로 둡니다.
-- 쉬는 시간 스도쿠(break/sudoku/)는 창의수학게임 카드가, 오목·바둑(break/board/)은 수학게임 메뉴 카드가 가리키므로 sudoku/·board/로 함께 복사합니다(EXTRA).
+- 쉬는 시간 스도쿠(break/sudoku/)는 창의수학게임 카드가, 판 놀이(break/board/, 오목·바둑·사목·오셀로·장기)는 수학게임 메뉴 카드가 가리키므로 sudoku/·board/로 함께 복사합니다(EXTRA).
 - 링크는 원래 위치에서 가리키던 곳을 따져 새 사이트 주소로 바꿉니다. 새 사이트에 없는 곳을 가리키면 원래 자료실 주소로 두고 [알림]을 찍습니다.
 - math-game 저장소의 Actions가 한 시간마다 이 스크립트를 돌려, 바뀐 것이 있으면 올립니다(원본은 늘 이 저장소). 여러 번 실행해도 같은 결과.
 """
@@ -56,7 +56,7 @@ def rooms():
         sub = []
         for h, n in _cards(f'project/{folder}/index.html'):
             r = posixpath.normpath(posixpath.join(folder, h)); full = posixpath.normpath(posixpath.join('project', r))
-            if full.endswith('/index.html') and full[:-len('/index.html')] in EXTRA: sub.append(('', n)); continue   # 함께 넣는 폴더(예: 쉬는 시간 오목·바둑)를 가리키는 카드
+            if full.endswith('/index.html') and full[:-len('/index.html')] in EXTRA: sub.append(('', n)); continue   # 함께 넣는 폴더(예: 쉬는 시간 판 놀이)를 가리키는 카드
             sub.append((r[:-len('/index.html')] if r.endswith('/index.html') and not r.startswith('..') else None, n))
         if sub and all(f is not None for f, _ in sub) and any(sub_f for sub_f, _ in sub) and depth < 3:
             COLLECT.append(folder)
@@ -118,7 +118,7 @@ def crumb(s, o):
 
 def fix_text(s):
     s = s.replace(' · 수학게임 · 기타 · 초등교사 홍지희', ' · ' + NAME).replace(' · 기타 · 초등교사 홍지희', ' · ' + NAME).replace(' · 수학게임 · 초등교사 홍지희', ' · ' + NAME)
-    s = re.sub(r'(오목·바둑|오목|바둑) · 쉬는 시간 · 초등교사 홍지희', lambda m: m.group(1) + ' · ' + NAME, s)   # 오목·바둑(EXTRA)
+    s = re.sub(r'(판 놀이|오목|바둑|사목|오셀로|장기) · 쉬는 시간 · 초등교사 홍지희', lambda m: m.group(1) + ' · ' + NAME, s)   # 판 놀이(EXTRA)
     s = s.replace(' · 쉬는 시간 · 초등교사 홍지희', ' · 창의수학게임 · ' + NAME)
     s = s.replace('쉬는 시간 › 스도쿠 방으로 가요', '학년마다 30문제')   # 창의수학게임 메뉴의 스도쿠 카드 설명
     s = s.replace('학년 교과수학게임 · ', '학년 · 교과수학게임 · ').replace('학년 교과수학게임', '학년')                        # '3학년 교과수학게임' → '3학년'
