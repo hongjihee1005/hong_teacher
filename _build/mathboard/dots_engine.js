@@ -44,7 +44,7 @@ function makeDots() {
     memo.set(key, best); return best;
   }
   /* 단계: 1 아무 선 · 2 상자는 꼭 가져감 · 3~4 상대에게 상자를 주지 않는 선 · 5~6 줄 수밖에 없으면 가장 적게 · 7~10 끝이 가까우면 끝까지 따져 보기 */
-  var LV = [null, { take: .5 }, { take: 1 }, { take: 1, safe: .4 }, { take: 1, safe: .8 }, { take: 1, safe: 1, sac: 1 }, { take: 1, safe: 1, sac: 1, K: 9 }, { take: 1, safe: 1, sac: 1, K: 12 }, { take: 1, safe: 1, sac: 1, K: 16, ms: 3000 }, { take: 1, safe: 1, sac: 1, K: 20, ms: 4000 }, { take: 1, safe: 1, sac: 1, K: 24, ms: 4500 }];
+  var LV = [null, { take: .5 }, { take: 1 }, { take: 1, safe: .4 }, { take: 1, safe: .8 }, { take: 1, safe: 1, sac: 1 }, { take: 1, safe: 1, sac: 1, K: 8 }, { take: 1, safe: 1, sac: 1, K: 11 }, { take: 1, safe: 1, sac: 1, K: 14, ms: 3500 }, { take: 1, safe: 1, sac: 1, K: 16, ms: 4000 }, { take: 1, safe: 1, sac: 1, K: 18, ms: 4500 }];
   function ai(st, level) {
     var C = LV[level], ms = moves(st), g = geo(st.N), e = st.e.map(function (x) { return x ? 1 : 0 }), r = function (a) { return a[(Math.random() * a.length) | 0] };
     if (!ms.length) return -1;
