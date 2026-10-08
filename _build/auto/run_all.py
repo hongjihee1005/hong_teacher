@@ -148,6 +148,7 @@ def links():
         refs |= set(re.findall(r'url=([^"\'>:]+\.html)', s))
         for r in refs:
             if not os.path.exists(os.path.normpath(os.path.join(d, r))): bad.append(f'{rel} → {r}')
+        if '종이접기 자료입니다' in s and not rel.startswith('break/origami/'): bad.append(f'{rel} → 꼬리말이 "종이접기 자료"로 되어 있음(다른 자료에서 복사한 꼬리말)')
     return bad
 
 

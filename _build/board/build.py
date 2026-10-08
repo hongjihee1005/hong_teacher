@@ -57,7 +57,7 @@ def build(t):
            'ENGINE': eng, 'ENGSRC': json.dumps(eng, ensure_ascii=False).replace('</', '<\\/'),
            'TOOL': rd(HERE / 'board.js'), 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', t['acc']).replace('{TOOLCSS}', rd(HERE / 'board.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
-           'FOOT': rd(OG / 'foot.html'),
+           'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '쉬는 시간에 인공지능이나 친구와 함께 즐기는 오목·바둑 자료입니다.'),
            'HOMEFRAG': rd(OG / 'home.html').replace('{HOME}', '../../index.html')}
     s = re.sub(r'\{([A-Z]+)\}', lambda m: rep.get(m.group(1), m.group(0)), rd(HERE / 'page.html'))
     out = OUT / f"{t['id']}.html"; out.parent.mkdir(parents=True, exist_ok=True)
