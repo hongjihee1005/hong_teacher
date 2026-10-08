@@ -140,12 +140,13 @@ function makeJanggi() {
     });
   }
   /* 단계: 1 아무 수나(잡을 수 있으면 반쯤 잡음) · 2~4 한두 수 앞을 보되 흔들림 · 5~10 잡고 잡히는 것까지 따지며 더 멀리 */
-  var LV = [null, { rnd: 1 }, { d: 1, noise: 250 }, { d: 1, q: 1, noise: 80 }, { d: 2, q: 1, noise: 60 }, { d: 2, q: 1, noise: 20 }, { d: 3, q: 1, noise: 60, ms: 2500 }, { d: 3, q: 1, ms: 2500 }, { d: 4, q: 1, ms: 3500 }, { d: 5, q: 1, ms: 4500 }, { d: 6, q: 1, ms: 4500 }];
-  function pick(L, noise) {
-    var best = -Infinity, bs = [];
-    L.forEach(function (o) { var v = o.v + (noise ? Math.random() * noise : 0); if (v > best + 1e-9) { best = v; bs = [o.c] } else if (Math.abs(v - best) < 1e-9) bs.push(o.c) });
-    return bs[(Math.random() * bs.length) | 0];
+  var LV = [null, { rnd: 1 }, { d: 1, noise: 250 }, { d: 1, q: 1, noise: 80 }, { d: 2, q: 1, noise: 60, err: .2 }, { d: 2, q: 1, noise: 20, err: .1 }, { d: 3, q: 1, noise: 30, ms: 2500, err: .1 }, { d: 3, q: 1, ms: 2500, err: .03 }, { d: 4, q: 1, ms: 3500, err: .03 }, { d: 5, q: 1, ms: 4500 }, { d: 6, q: 1, ms: 4500 }];
+  function pick(L, noise, err) {
+    var S = L.map(function (o) { return { c: o.c, v: o.v + (noise ? Math.random() * noise : 0), w: o.v } }).sort(function (a, b) { return b.v - a.v });
+    if (err && S.length > 1 && S[0].w < WIN - 50 && Math.random() < err) { var k = Math.min(3, S.length) - 1; return S[1 + ((Math.random() * k) | 0)].c }   // 가끔 2~3번째 수
+    var bs = S.filter(function (o) { return Math.abs(o.v - S[0].v) < 1e-9 }); return bs[(Math.random() * bs.length) | 0].c;
   }
+
   function ai(st, level) {
     var Cf = LV[level], ms = moves(st);
     if (!ms.length) return -1;
@@ -154,7 +155,7 @@ function makeJanggi() {
     try { for (var d = Cf.ms ? 1 : Cf.d; d <= Cf.d; d++) { best = rootScores(st, d, Cf.q); if (best.some(function (o) { return o.v >= WIN - 50 })) break } } catch (e) { if (e !== 'time') throw e }
     stop = 0;
     if (!best) best = ms.map(function (m) { return { c: m, v: 0 } });
-    return pick(best, Cf.noise ? Cf.noise : 3);
+    return pick(best, Cf.noise ? Cf.noise : 3, Cf.err);
   }
   return { init: init, moves: moves, play: play, over: over, ai: ai, inCheck: inCheck, points: points, kd: kd, sd: sd, pdiag: pdiag, LIMIT: LIMIT, SETUP: SETUP, LV: LV, gen: gen };
 }

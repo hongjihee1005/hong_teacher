@@ -69,12 +69,13 @@ function makeOthello() {
     });
   }
   /* 단계: 1 아무 데나(가끔 많이 뒤집기) · 2 가장 많이 뒤집기 · 3~10 자리 값을 보며 더 멀리 읽기, 끝이 가까우면 끝까지 정확히 */
-  var LV = [null, { rnd: 1 }, { d: 1, noise: 120 }, { d: 1, noise: 30 }, { d: 2, noise: 10 }, { d: 3, ex: 6 }, { d: 4, ex: 8 }, { d: 6, ex: 12, ms: 3000 }, { d: 7, ex: 14, ms: 3500 }, { d: 8, ex: 16, ms: 4000 }, { d: 10, ex: 18, ms: 4500 }];
-  function pick(L, noise) {
-    var best = -Infinity, bs = [];
-    L.forEach(function (o) { var v = o.v + (noise ? Math.random() * noise : 0); if (v > best + 1e-9) { best = v; bs = [o.c] } else if (Math.abs(v - best) < 1e-9) bs.push(o.c) });
-    return bs[(Math.random() * bs.length) | 0];
+  var LV = [null, { rnd: 1 }, { d: 1, noise: 120 }, { d: 1, noise: 30 }, { d: 2, noise: 10, err: .15 }, { d: 3, ex: 6, err: .12 }, { d: 4, ex: 8, err: .08 }, { d: 6, ex: 12, ms: 3000, err: .05 }, { d: 7, ex: 14, ms: 3500, err: .03 }, { d: 8, ex: 16, ms: 4000, err: .01 }, { d: 10, ex: 18, ms: 4500 }];
+  function pick(L, noise, err) {
+    var S = L.map(function (o) { return { c: o.c, v: o.v + (noise ? Math.random() * noise : 0), w: o.v } }).sort(function (a, b) { return b.v - a.v });
+    if (err && S.length > 1 && S[0].w < 40000 && Math.random() < err) { var k = Math.min(3, S.length) - 1; return S[1 + ((Math.random() * k) | 0)].c }   // 가끔 2~3번째 수
+    var bs = S.filter(function (o) { return Math.abs(o.v - S[0].v) < 1e-9 }); return bs[(Math.random() * bs.length) | 0].c;
   }
+
   function ai(st, level) {
     var C = LV[level], ms = moves(st);
     if (!ms.length) return -1;
@@ -90,7 +91,7 @@ function makeOthello() {
     } catch (e) { if (e !== 'time') throw e }
     stop = 0;
     if (!best) best = rootScores(st, 1, false);
-    return pick(best, C.noise);
+    return pick(best, C.noise, C.err);
   }
   return { init: init, moves: moves, play: play, over: over, ai: ai, count: count, flips: flips, LV: LV };
 }

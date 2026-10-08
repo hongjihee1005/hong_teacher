@@ -21,7 +21,7 @@ function makeFifteen() {
   function scores(st) { var o = st.o.slice(); return moves(st).map(function (v) { o[v] = st.turn; var w = winner(o), s = w ? 10 - st.n : st.n + 1 >= 9 ? 0 : -solve(o, 3 - st.turn, st.n + 1); o[v] = 0; return { c: v, v: s } }) }
   function winNow(st, who) { var o = st.o.slice(), r = []; for (var v = 1; v <= 9; v++) if (!o[v]) { o[v] = who; if (winner(o)) r.push(v); o[v] = 0 } return r }
   /* 단계: 1 아무 카드 · 2 이기는 카드는 꼭 · 3 막기도 반쯤 · 4 이기기·막기 · 5~10 끝까지 따지되 실수가 줄어듦(7단계부터는 비겨도 통과) */
-  var LV = [null, { rnd: 1 }, { win: 1 }, { win: 1, block: .5 }, { win: 1, block: 1 }, { err: .3 }, { err: .2 }, { err: .12 }, { err: .07 }, { err: .03 }, { err: 0 }];
+  var LV = [null, { rnd: 1 }, { win: 1 }, { win: 1, block: .5 }, { win: 1, block: 1 }, { err: .6 }, { err: .4 }, { err: .25 }, { err: .12 }, { err: .05 }, { err: 0 }];
   function ai(st, level) {
     var C = LV[level], ms = moves(st), r = function (a) { return a[(Math.random() * a.length) | 0] };
     if (!ms.length) return -1;
@@ -33,7 +33,7 @@ function makeFifteen() {
     }
     var sc = scores(st), best = Math.max.apply(null, sc.map(function (o) { return o.v }));
     if (best > 0 && sc.some(function (o) { return o.v === best && best >= 10 - st.n })) return r(sc.filter(function (o) { return o.v === best }).map(function (o) { return o.c }));   // 바로 이기는 수는 놓치지 않음
-    if (Math.random() < C.err) return r(ms);
+    if (Math.random() < C.err) { var ok = ms.filter(function (v) { var o = st.o.slice(); o[v] = st.turn; return !winNow({ o: o }, 3 - st.turn).length }); return r(ok.length ? ok : ms) }   // 실수: 바로 지지는 않는 아무 카드
     return r(sc.filter(function (o) { return o.v === best }).map(function (o) { return o.c }));
   }
   return { T: T, init: init, moves: moves, play: play, over: over, ai: ai, LV: LV, SQ: [2, 7, 6, 9, 5, 1, 4, 3, 8] };

@@ -68,12 +68,13 @@ function makeProduct() {
     });
   }
   /* 단계: 1 아무 데나 · 2 이기는 칸만 봄 · 3~10 상대가 이기는 칸을 막고, 몇 수 앞까지 읽기(높은 단계는 시간 안에서) */
-  var LV = [null, { d: 0 }, { d: 1, noise: 5 }, { d: 2, noise: 4 }, { d: 2, noise: 1 }, { d: 3 }, { d: 4 }, { d: 5, ms: 3000 }, { d: 6, ms: 3500 }, { d: 7, ms: 4000 }, { d: 9, ms: 4500 }];
-  function pick(L, noise) {
-    var best = -Infinity, bs = [];
-    L.forEach(function (o) { var v = o.v + (noise ? Math.random() * noise : 0); if (v > best + 1e-9) { best = v; bs = [o.c] } else if (Math.abs(v - best) < 1e-9) bs.push(o.c) });
-    return bs[(Math.random() * bs.length) | 0];
+  var LV = [null, { d: 0 }, { d: 1, noise: 5, err: .3 }, { d: 2, noise: 4, err: .25 }, { d: 2, noise: 1, err: .12 }, { d: 3, err: .1 }, { d: 4, err: .06 }, { d: 5, ms: 3000, err: .04 }, { d: 6, ms: 3500, err: .02 }, { d: 7, ms: 4000, err: .01 }, { d: 9, ms: 4500 }];
+  function pick(L, noise, err) {
+    var S = L.map(function (o) { return { c: o.c, v: o.v + (noise ? Math.random() * noise : 0), w: o.v } }).sort(function (a, b) { return b.v - a.v });
+    if (err && S.length > 1 && S[0].w < BIG - 50 && Math.random() < err) { var k = Math.min(3, S.length) - 1; return S[1 + ((Math.random() * k) | 0)].c }   // 가끔 2~3번째 수
+    var bs = S.filter(function (o) { return Math.abs(o.v - S[0].v) < 1e-9 }); return bs[(Math.random() * bs.length) | 0].c;
   }
+
   function ai(st, level) {
     var C = LV[level], ms = moves(st);
     if (!ms.length) return -1;
@@ -81,7 +82,7 @@ function makeProduct() {
     stop = C.ms ? Date.now() + C.ms : 0; nodes = 0; var best = null;
     try { for (var d = C.ms ? 1 : C.d; d <= C.d; d++) { best = rootScores(st, d); if (best.some(function (o) { return o.v >= BIG - 50 })) break } } catch (e) { if (e !== 'time') throw e }
     stop = 0; if (!best) best = rootScores(st, 1);
-    return pick(best, C.noise);
+    return pick(best, C.noise, C.err);
   }
   return { P: P, IDX: IDX, init: init, moves: moves, play: play, over: over, ai: ai, cellOf: cellOf, LV: LV };
 }
