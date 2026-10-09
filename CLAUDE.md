@@ -440,6 +440,13 @@ grade1/ … grade6/
   기록은 기초연산과 같은 localStorage `hj-arith-v1`의 `d[학년][날짜]`.
 - **`project/daily/g*.html`을 직접 고치지 마세요.** 원본은 기초연산 `_build/arith/`(`skills.js`의 `daily`, `app.js`의 `dailyPage`, 본문 `daily.html`, `page.css` '일일수학 달력')와 `_build/daily/build.py`. `node _build/arith/check.js`가 6개 학년 × 400일 문제 수·겹침·같은 날 같은 문제를 점검. 고친 뒤 `python3 _build/daily/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음 — 기초연산 원본이 바뀌어도 다시 만듦).
 
+### 기타 › 도장 만들기 (`project/stamp/index.html`, 2026-10-09)
+
+- 첫 화면 '기타' 묶음 네 번째 카드 '🔖 도장 만들기'(`project/index.html`에도 같은 카드, 두 곳 모두 기타 줄을 `grid g3 four`로 바꿈) → 이름 도장·캘리그라피 문구 도장·캐릭터 칭찬 도장을 하나씩 고르면 ChatGPT·Gemini에 붙여 넣을 요청문을 만들어 주는 도구(선생님이 다른 대화에서 만든 파일).
+- 빌드 원본이 없는 HTML 한 장이 원본입니다(직접 고침, 고친 뒤 `apply_content_theme.py`). 입력은 저장·전송하지 않음. 메뉴 아이콘 🔖(stamp)는 `icons.js`에 추가.
+- 따로 저장소 `hongjihee1005/stamp-maker`에도 같은 도구가 있습니다(자료실 단추·덮개 없는 판). 한쪽을 고치면 다른 쪽도 같이 고치세요.
+- 2026-10-09 고침: ① 이름 도장 '두 줄 전통 배치'에서 줄 바꿈을 정하지 않으면 요청문에 '두 줄'과 '한 줄로 배치'가 함께 들어가던 것 → 앞 절반을 오른쪽 줄로 나눠 적음(두 글자 이름도 두 줄 미리보기) ② 이름에 넣은 `/`가 미리보기에 글자로 그려지던 것.
+
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
 
 - 처음 이름은 '수학게임'이었고, 창의수학게임이 생기면서 화면에 보이는 이름을 모두 '교과수학게임'으로 바꿨습니다(첫 화면·`project/index.html`·메뉴·학년 수학방 카드·학년 페이지 제목). 폴더·파일 이름과 localStorage 키(`hj-mgame-v1`)는 그대로입니다.
