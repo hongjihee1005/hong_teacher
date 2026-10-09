@@ -39,6 +39,7 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
      [('grade3/science/_build_hong2', ['build.py']), ('grade3/science/_build_hong2', ['index_build.py'])]),
     ('과학 3-1 홍지희 버전', 'grade3/science/_build_hong/', ['grade3/science/sem1-hong/u*.html'],
      [('grade3/science/_build_hong', ['build.py'])]),  # 3-1 목록(index.html)은 손본 HTML이라 index_build.py는 돌리지 않음
+    ('과학 실험 준비 길잡이', ('_build/labguide/', 'grade3/science/_build_hong/', 'grade3/science/_build_hong2/', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['grade3/science/labs.html'], [('.', ['_build/labguide/build.py'])]),
     ('국어 3-2', 'grade3/korean/_build/', ['grade3/korean/sem2/u*.html'], [('grade3/korean/_build', ['build.py', '../sem2'])]),
     ('우리 반 교실', '_build/class/', ['class/index.html'], [('.', ['_build/class/build.py'])]),
     ('오늘의 교실 산책', '_build/today/', ['today/index.html', 'index.html'], [('.', ['_build/today/build.py'])]),

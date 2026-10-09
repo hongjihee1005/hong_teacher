@@ -59,6 +59,14 @@ grade1/ … grade6/
 - 실험·탐구 중심 26차시. **HTML을 직접 고치지 마세요.** 원본은 `grade3/science/_build_hong2/lessons_uN.py`이고 `python3 build.py [sci32-uN-lM…]` → `python3 index_build.py` → 루트에서 `apply_content_theme.py`·`apply_theme.py`로 다시 만듭니다. 규칙은 `_build_hong2/README.md`, `BRIEF_WRITER.md`.
 - **사고전략 칸별 예시(2026-10-03):** 쓰는 칸마다 제목 옆 `💡 예시` 단추를 누르면 그 칸의 예시 문장 2개가 팝업으로 뜹니다(차시 핵심 질문과 이어지게). 문장은 `_build_hong2/examples_uN.py`(단계 이름으로 연결), 점검은 `python3 ex_check.py N`. 고르기만 하는 단계에는 넣지 않습니다.
 
+### 3학년 과학 실험 준비 길잡이 (`grade3/science/labs.html`, 2026-10-09)
+
+- 과학방(`grade3/science/index.html`) 맨 아래 '🧪 실험 준비 길잡이 · 선생님용' 카드. 1·2학기 홍지희 버전 54개 차시마다 학습 목표·성취기준·대표 실험·목표와 이어지는 점·⏰ 미리 할 일·준비물(체크 칸)·안전·실험 순서, 위에 학기별 '미리 할 일'(학기 전·단원 전·일주일 전·며칠 전·수업 뒤) 모음.
+  거르기(학기·단원·손으로 하는 탐구만), '준비 끝' 표시(localStorage `hj-labguide-v1`), 🖨️ 보이는 차시 인쇄(카드 한 쪽에 하나쯤) · 🧺 준비물만 인쇄(한 학기 3쪽쯤), `labs.html#sci32-u2-l5`로 바로 열기.
+- **`labs.html`을 직접 고치지 마세요.** 학습 목표·준비물·실험 순서·안전·성취기준은 두 학기 원본 `lessons_uN.py`(교사 안내 `notes0`, 실험 단계 `lab`의 `list`·`safe`)에서 저절로 읽고, 차시마다 실험 종류·목표와 이어지는 점·미리 할 일·대신 쓸 것은 `_build/labguide/prep.py`에 손으로 씁니다(지도서에 없는 내용은 '(이 자료)').
+  **과학 홍지희 버전에 차시를 더하면 `prep.py`에도 한 줄 넣으세요**(없으면 빌드가 멈춤). 고친 뒤 `python3 _build/labguide/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음 — 과학 원본이 바뀌어도 다시 만듦, `build.py check`는 점검만).
+- 과학은 검정 교과서라 공통 덮개가 화면에서 교과서 쪽수를 숨깁니다(그래서 성취기준을 함께 보여 줌). 클래스 앞글자 `lg-`.
+
 ### 3-1 사회 홍지희 버전 프로젝트 판 (2026-10-02)
 
 - `grade3/social/sem1-hong/u1-l11 ~ u1-l2021`(주제 2) 8쪽에 '우리 동네를 더 살기 좋은 곳으로' 프로젝트 판이 들어 있습니다. 첫 화면 카드와 진행 화면 '프로젝트 판' 단추로 열고, 차시마다 한 칸(①~⑧)을 채웁니다. 저장은 그 기기 localStorage(`hj-soc31-proj-v1`).
