@@ -1,0 +1,36 @@
+# 원본(hongjihee1005/hong_teacher)의 도장 만들기 따로 쓰는 판을 가져와 이 사이트의 index.html을 맞춥니다.
+# 한 시간마다 저절로 돌고, Actions 탭 → '원본에서 가져오기' → Run workflow로 바로 돌릴 수도 있습니다.
+# 이 저장소의 index.html을 직접 고치지 마세요. 원본에서 고치면 여기로 따라옵니다(원본: hong_teacher의 _build/stamp/stamp.html → build.py).
+name: 원본에서 가져오기
+on:
+  schedule:
+    - cron: '23 * * * *'
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 원본 받기
+        run: git clone --depth 1 https://github.com/hongjihee1005/hong_teacher "$RUNNER_TEMP/src"
+      - name: 따로 쓰는 판 넣기
+        run: cp "$RUNNER_TEMP/src/_build/stamp/standalone/index.html" index.html
+      - name: 바뀐 것 올리기
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          SRC=$(git -C "$RUNNER_TEMP/src" rev-parse --short HEAD)
+          git add -A
+          if git diff --cached --quiet; then
+            # 바뀐 것이 오래 없으면 GitHub가 예약 실행을 멈추므로(60일), 50일마다 기록 한 줄을 올립니다.
+            last=$(git log -1 --format=%ct); now=$(date +%s)
+            if [ $(( (now - last) / 86400 )) -lt 50 ]; then echo "바뀐 것 없음 — 이미 맞습니다."; exit 0; fi
+            date -u +"%Y-%m-%d 확인 (원본 $SRC)" > last-sync.txt; git add last-sync.txt
+          fi
+          git commit -q -m "원본에서 가져오기 (hong_teacher $SRC)"
+          git push origin HEAD:main
