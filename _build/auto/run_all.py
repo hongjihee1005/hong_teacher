@@ -74,6 +74,7 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
     ('기타 일일수학', ('_build/daily/', '_build/arith/', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['project/daily/g1.html', 'project/daily/g2.html', 'project/daily/g3.html', 'project/daily/g4.html', 'project/daily/g5.html', 'project/daily/g6.html'], [('.', ['_build/daily/build.py'])]),
     ('기타 창의수학게임', ('_build/creative/', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['project/creative/magic.html', 'project/creative/tangram.html', 'project/creative/kenken.html', 'project/creative/hanoi.html', 'project/creative/nonogram.html', 'project/creative/make.html', 'project/creative/balance.html', 'project/creative/match.html', 'project/creative/pento.html', 'project/creative/nim.html', 'project/creative/blocks.html'], [('.', ['_build/creative/build.py'])]),
     ('프로젝트 도서 활용 세계시민교육', '_build/gced-books/', ['project/gced-books/*.html', 'project/gced-books/*/*.html'], [('.', ['_build/gced-books/build.py'])]),
+    ('기타 도장 만들기', ('_build/stamp/stamp.html', '_build/stamp/build.py', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['project/stamp/index.html'], [('.', ['_build/stamp/build.py'])]),
 ]
 
 

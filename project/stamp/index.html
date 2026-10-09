@@ -4,22 +4,26 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>도장 프롬프트 만들기</title>
-<meta name="description" content="하나씩 고르면 ChatGPT·Gemini에 붙여 넣을 도장 그림 요청문(이름 도장·캘리그라피 문구 도장·캐릭터 칭찬 도장)을 만들어 주는 도구">
+<meta name="description" content="하나씩 고르면 ChatGPT·Gemini에 붙여 넣을 도장 그림 요청문을 만들어 주는 도구 — 이름 도장·캘리그라피 문구 도장·캐릭터 칭찬 도장·학급 도장·확인 도장, 실제 도장 제작용 원고와 미리보기 그림 받기">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Dokdo&family=East+Sea+Dokdo&family=Gowun+Batang:wght@700&family=Gowun+Dodum&family=Jua&family=Nanum+Brush+Script&family=Nanum+Myeongjo:wght@800&family=Nanum+Pen+Script&family=Song+Myung&display=swap" rel="stylesheet">
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style><style id="stamp-credit">.creditbar{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:28px}.tolist{display:none;align-items:center;gap:8px;font-weight:700;font-size:16px;text-decoration:none;color:var(--ink);border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:9px 18px}.tolist.on{display:inline-flex}</style>
 <style>
 :root{
-  --paper:#f7f1e6; --card:#fffdf8; --ink:#2b2622; --muted:#7a6f64; --line:#e6dccb;
-  --red:#c63b2c; --red-dark:#a52d20; --red-soft:#fbe9e5;
+  color-scheme:light;
+  --paper:#f7f1e6; --card:#fffdf8; --ink:#2b2622; --muted:#7a6f64; --line:#e6dccb; --field:#fff;
+  --red:#c63b2c; --red-dark:#a52d20; --red-soft:#fbe9e5; --tip:#eef5ee; --tip-line:#b9d6bb;
   --shadow:0 1px 2px rgba(60,40,20,.06),0 8px 24px rgba(60,40,20,.08);
+  --f-body:'hjs-Gowun Dodum','Gowun Dodum',system-ui,sans-serif; --f-logo:'hjs-Song Myung','Song Myung',serif;
 }
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--paper:#1f1b18;--card:#2a2521;--ink:#f2ebe3;--muted:#b3a698;--line:#4a4038;--field:#332d28;--red:#e0604f;--red-dark:#c84b3b;--red-soft:#3a2420;--tip:#22301f;--tip-line:#3f5a3c}}
+:root[data-theme="dark"]{color-scheme:dark;--paper:#1f1b18;--card:#2a2521;--ink:#f2ebe3;--muted:#b3a698;--line:#4a4038;--field:#332d28;--red:#e0604f;--red-dark:#c84b3b;--red-soft:#3a2420;--tip:#22301f;--tip-line:#3f5a3c}
 *{box-sizing:border-box}
 html,body{margin:0}
-body{background:var(--paper);color:var(--ink);font-family:'Gowun Dodum',system-ui,sans-serif;line-height:1.55;-webkit-font-smoothing:antialiased}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-body);line-height:1.55;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-wrap:anywhere}
 .wrap{max-width:1040px;margin:0 auto;padding:24px 16px 48px}
 header{display:flex;align-items:center;gap:14px;margin-bottom:20px}
-.logo{width:46px;height:46px;border:3px solid var(--red);border-radius:10px;color:var(--red);display:grid;place-items:center;font-family:'Song Myung',serif;font-size:24px;transform:rotate(-4deg);flex:none}
+.logo{width:46px;height:46px;border:3px solid var(--red);border-radius:10px;color:var(--red);display:grid;place-items:center;font-family:var(--f-logo);font-size:24px;transform:rotate(-4deg);flex:none}
 h1{font-size:22px;margin:0;letter-spacing:-.02em}
 header p{margin:2px 0 0;color:var(--muted);font-size:14px}
 .layout{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:20px;align-items:start}
@@ -32,8 +36,9 @@ header p{margin:2px 0 0;color:var(--muted);font-size:14px}
 .steplabel{font-size:13px;color:var(--red);font-weight:700;margin-bottom:2px}
 h2{font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
 .help{color:var(--muted);font-size:14px;margin:0 0 16px}
+.privacy{display:block;margin-top:6px;color:var(--ink);background:var(--red-soft);border-radius:8px;padding:6px 10px;font-size:13px}
 .opts{display:grid;grid-template-columns:repeat(auto-fill,minmax(148px,1fr));gap:10px}
-.opt{font:inherit;color:inherit;text-align:left;cursor:pointer;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:#fff;display:flex;flex-direction:column;gap:2px;transition:border-color .15s,background .15s}
+.opt{font:inherit;color:inherit;text-align:left;cursor:pointer;border:1.5px solid var(--line);border-radius:12px;padding:12px 14px;background:var(--field);display:flex;flex-direction:column;gap:2px;transition:border-color .15s,background .15s}
 .opt:hover{border-color:#dcb7a6}
 .opt:focus-visible{outline:3px solid #f1b8ad;outline-offset:2px}
 .opt.sel{border-color:var(--red);background:var(--red-soft)}
@@ -48,40 +53,50 @@ h2{font-size:20px;margin:0 0 4px;letter-spacing:-.01em}
 .type-opts .opt.sel .num{background:var(--red);color:#fff}
 .type-opts .t{font-size:16.5px}
 .type-opts .d{font-size:13.5px}
-input[type=text]{font:inherit;font-size:17px;width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink)}
+input[type=text]{font:inherit;font-size:17px;width:100%;padding:12px 14px;border:1.5px solid var(--line);border-radius:12px;background:var(--field);color:var(--ink)}
 input[type=text]:focus{outline:none;border-color:var(--red)}
 .custom{margin-top:12px}
 .err{color:var(--red);font-size:13.5px;margin-top:8px;min-height:1em}
 .nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
-.btn{font:inherit;font-weight:700;font-size:15px;cursor:pointer;border-radius:12px;padding:11px 18px;border:1.5px solid var(--line);background:#fff;color:var(--ink);display:inline-flex;align-items:center;gap:6px;text-decoration:none}
+.btn{font:inherit;font-weight:700;font-size:15px;cursor:pointer;border-radius:12px;padding:11px 18px;border:1.5px solid var(--line);background:var(--field);color:var(--ink);display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 .btn:hover{border-color:#cdbfa9}
 .btn.primary{background:var(--red);border-color:var(--red);color:#fff}
 .btn.primary:hover{background:var(--red-dark);border-color:var(--red-dark)}
 .btn[disabled]{visibility:hidden}
+.btn.busy{opacity:.6;pointer-events:none}
 .side .card{padding:18px}
 .side h3{margin:0 0 10px;font-size:15px}
-#preview{display:block;width:100%;max-width:240px;margin:0 auto;aspect-ratio:1}
+#preview{display:block;width:100%;max-width:240px;margin:0 auto;aspect-ratio:1;background:#fffdf8;border-radius:12px}
 .cap{font-size:12px;color:var(--muted);text-align:center;margin:8px 0 0}
 .cap.warn{background:#fff4d6;border:1.5px solid #f0c54f;color:#6b4e00;border-radius:10px;padding:10px 12px;font-size:13px;text-align:left;line-height:1.5}
 .cap.warn b{font-size:14.5px;color:#5a3f00}
 .summary{margin:14px 0 0;padding:12px 0 0;border-top:1px dashed var(--line);font-size:13px;display:grid;grid-template-columns:auto 1fr;gap:4px 10px}
 .summary dt{color:var(--muted)}
 .summary dd{margin:0;font-weight:700;word-break:keep-all}
-textarea{width:100%;min-height:300px;font:inherit;font-size:14.5px;line-height:1.6;padding:14px;border:1.5px solid var(--line);border-radius:12px;background:#fff;color:var(--ink);resize:vertical}
+textarea{width:100%;min-height:300px;font:inherit;font-size:14.5px;line-height:1.6;padding:14px;border:1.5px solid var(--line);border-radius:12px;background:var(--field);color:var(--ink);resize:vertical}
 textarea:focus{outline:none;border-color:var(--red)}
-.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;align-items:center}
 .howto{background:var(--paper);border-radius:12px;padding:12px 14px;font-size:13.5px;margin:0 0 14px}
 .howto ol{margin:4px 0 0;padding-left:20px}
+.tipbox{background:var(--tip);border:1.5px solid var(--tip-line);border-radius:12px;padding:12px 14px;font-size:13.5px;margin:14px 0 0}
+.tipbox b.h{display:block;font-size:14.5px;margin-bottom:4px}
+.tipbox ol,.tipbox ul{margin:4px 0 0;padding-left:20px}
+.tipbox .warn{color:var(--red);font-weight:700}
 .sub{font-size:16px;margin:24px 0 4px}
 .chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
-.chip{font:inherit;font-size:13.5px;cursor:pointer;border:1.5px solid var(--line);background:#fff;border-radius:999px;padding:7px 13px;color:var(--ink)}
+.chip{font:inherit;font-size:13.5px;cursor:pointer;border:1.5px solid var(--line);background:var(--field);border-radius:999px;padding:7px 13px;color:var(--ink)}
 .chip:hover{border-color:var(--red);color:var(--red)}
-.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:#fff;padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.2s}
+.checks{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:14px;margin-top:6px}
+.checks label{display:inline-flex;align-items:center;gap:6px;cursor:pointer}
+.checks input{width:18px;height:18px;accent-color:var(--red)}
+.filebox{display:inline-flex;align-items:center;gap:8px;cursor:pointer}
+.filebox input{position:absolute;width:1px;height:1px;opacity:0}
+.toast{position:fixed;left:50%;bottom:24px;transform:translateX(-50%) translateY(20px);background:var(--ink);color:var(--paper);padding:10px 18px;border-radius:999px;font-size:14px;opacity:0;pointer-events:none;transition:.2s;max-width:calc(100% - 32px);text-align:center}
 .toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 .breaks{margin-top:16px}
 .bk-title{font-weight:700;font-size:14px;margin-bottom:8px}
 .bk-title span{font-weight:400;color:var(--muted);font-size:13px;margin-left:6px}
-.bk-row{display:flex;flex-wrap:wrap;align-items:center;background:#fff;border:1.5px solid var(--line);border-radius:12px;padding:8px 12px}
+.bk-row{display:flex;flex-wrap:wrap;align-items:center;background:var(--field);border:1.5px solid var(--line);border-radius:12px;padding:8px 12px}
 .bk-row .ch{font-size:24px;line-height:1.4}
 .gap{width:20px;height:40px;border:0;background:transparent;cursor:pointer;position:relative;padding:0}
 .gap::after{content:'';position:absolute;left:9px;top:8px;bottom:8px;width:2px;border-radius:1px;background:var(--line)}
@@ -90,21 +105,22 @@ textarea:focus{outline:none;border-color:var(--red)}
 .bk-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:8px;flex-wrap:wrap}
 .bk-result{font-size:14px;color:var(--muted)}
 .bk-result b{color:var(--red)}
-footer.note{margin-top:24px;font-size:12.5px;color:var(--muted);text-align:center;word-break:keep-all}
-:root{color-scheme:light}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--paper:#1f1b18;--card:#2a2521;--ink:#f2ebe3;--muted:#b3a698;--line:#4a4038;--red:#e0604f;--red-dark:#c84b3b;--red-soft:#3a2420}
-:root:not([data-theme="light"]) .opt,:root:not([data-theme="light"]) .btn,:root:not([data-theme="light"]) .chip,:root:not([data-theme="light"]) input[type=text],:root:not([data-theme="light"]) textarea,:root:not([data-theme="light"]) .bk-row{background:#332d28;color:var(--ink)}
-:root:not([data-theme="light"]) #preview{background:#fffdf8;border-radius:12px}}
-:root[data-theme="dark"]{color-scheme:dark;--paper:#1f1b18;--card:#2a2521;--ink:#f2ebe3;--muted:#b3a698;--line:#4a4038;--red:#e0604f;--red-dark:#c84b3b;--red-soft:#3a2420}
-:root[data-theme="dark"] .opt,:root[data-theme="dark"] .btn,:root[data-theme="dark"] .chip,:root[data-theme="dark"] input[type=text],:root[data-theme="dark"] textarea,:root[data-theme="dark"] .bk-row{background:#332d28;color:var(--ink)}
-:root[data-theme="dark"] #preview{background:#fffdf8;border-radius:12px}
-.creditbar{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:28px}
-.tolist{display:none;align-items:center;gap:8px;font-weight:700;font-size:16px;text-decoration:none;color:var(--ink);border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:9px 18px}
-.tolist.on{display:inline-flex}
-.hjfoot{word-break:keep-all}
-@media print{#hj-home,.tolist{display:none!important}@page{size:A4;margin:14mm}}
+footer.note{margin-top:24px;font-size:12.5px;color:var(--muted);text-align:center}
+#xsvg{position:absolute;left:-9999px;top:0;width:240px;height:240px}
+#printSheet{display:none}
+@media print{
+  @page{size:A4;margin:14mm}
+  body{background:#fff}
+  body>*:not(#printSheet){display:none!important}
+  #printSheet{display:block!important;color:#000;font-family:var(--f-body)}
+  #printSheet h2{font-size:18px;margin:0 0 4px}
+  #printSheet p{font-size:12px;margin:0 0 10px;color:#333}
+  #printSheet .ps-grid{display:flex;flex-wrap:wrap;gap:8mm;align-items:flex-end;margin-top:6mm}
+  #printSheet figure{margin:0;text-align:center;font-size:11px}
+  #printSheet figure svg{display:block;margin:0 auto 2mm}
+  #printSheet .ruler{margin-top:10mm}
+}
 </style>
-<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
  src:url(https://cdn.jsdelivr.net/npm/pretendard@1.3.9/dist/web/static/woff2-subset/Pretendard-Bold.subset.woff2) format('woff2')}
@@ -806,17 +822,31 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
     </aside>
   </div>
 
-  <footer class="note">이 페이지는 요청문만 만들어요. 입력한 이름과 문구는 어디에도 저장되거나 전송되지 않아요.</footer>
-  <div class="creditbar"><a class="tolist" href="../index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>ChatGPT·Gemini로 도장 그림을 만들 때 쓰는 요청문 도구입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
+  <footer class="note">이 페이지는 요청문만 만들어요. 입력한 이름과 문구는 이 페이지에 저장되거나 어디로 전송되지 않아요.<br>(요청문을 ChatGPT·Gemini에 붙여 넣으면 그 내용은 그 서비스로 전달돼요.)</footer>
+<div class="creditbar"><a class="tolist" href="../index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>ChatGPT·Gemini로 도장 그림을 만들 때 쓰는 요청문 도구입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
 </div>
-<a id="hj-home" href="../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a>
+<a id="hj-home" href="../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script><script>(function(){var h=location.hostname,t=document.querySelector(".tolist");if(t&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))t.classList.add("on")})();</script>
+<svg id="xsvg" viewBox="0 0 240 240" aria-hidden="true"></svg>
+<div id="printSheet"></div>
 <div class="toast" id="toast"></div>
-<script>(function(){var h=location.hostname,ok=location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1";var a=document.getElementById("hj-home");if(a&&ok)a.hidden=false;var t=document.querySelector(".tolist");if(t&&ok)t.classList.add("on")})();</script>
 
 <script>
+/* ---------- 글꼴: 구글 글꼴을 'hjs-' 이름으로 받아 씀(덮개가 같은 이름을 다른 글꼴로 바꿔도 미리보기는 그대로) ---------- */
+const GFAM = ['Black Han Sans','Dokdo','East Sea Dokdo','Gowun Batang:wght@700','Gowun Dodum','Jua','Nanum Brush Script','Nanum Myeongjo:wght@800','Nanum Pen Script','Song Myung'];
+const GF_URL = 'https://fonts.googleapis.com/css2?' + GFAM.map(f => 'family=' + f.replace(/ /g, '+')).join('&') + '&display=swap';
+const WGT = {'Gowun Batang':'700', 'Nanum Myeongjo':'800'};
+const F = name => `'hjs-${name}', '${name}'`;
+(function loadFonts(){
+  const add = css => { const st = document.createElement('style'); st.id = 'hjs-fonts'; st.textContent = css; document.head.appendChild(st); };
+  fetch(GF_URL).then(r => { if (!r.ok) throw 0; return r.text(); })
+    .then(css => { add(css.replace(/font-family:\s*'([^']+)'/g, (m, n) => `font-family: 'hjs-${n}'`)); if (document.fonts) document.fonts.ready.then(() => typeof renderPreview === 'function' && renderPreview()); })
+    .catch(() => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = GF_URL; document.head.appendChild(l); });
+})();
+
 /* ---------- 선택지 데이터 ---------- */
 const PHRASES = ['참 잘했어요','최고예요!','정말 멋져요','훌륭해요','노력이 빛나요','오늘도 한 뼘 성장!','확인했어요'];
 const phraseOpts = () => [...PHRASES.map(t => ({v:t, label:t, p:t})), {v:'custom', label:'직접 입력', custom:true}];
+const PRIVACY = '학생 이름을 넣으면, 요청문을 붙여 넣는 AI 서비스(ChatGPT·Gemini)로 이름이 전달돼요. 학교의 개인정보 안내에 맞게 써 주세요.';
 
 const COLORS = {
   vermilion:{label:'전통 인주 주홍', hex:'#d8452f', p:'전통 인주 같은 주홍색'},
@@ -849,6 +879,11 @@ const TEXTURE = [
   {v:'bleed', label:'살짝 번진 인주', d:'실제로 찍은 느낌', p:'실제 인주를 묻혀 찍은 듯 가장자리가 살짝 번지고 잉크 농도가 자연스럽게 고르지 않은'},
   {v:'worn', label:'오래된 낙관', d:'군데군데 빠진 거친 느낌', p:'오래된 낙관처럼 군데군데 잉크가 빠지고 거친'}
 ];
+const BORDERS = [
+  {v:'single', label:'한 줄', p:'가는 한 줄 테두리'},
+  {v:'double', label:'이중선', p:'바깥 굵은 선과 안쪽 가는 선의 이중 테두리'},
+  {v:'thick', label:'굵은 테두리', p:'굵고 힘 있는 테두리'}
+];
 
 const SIZE_OPTS = [
   {v:'small', label:'작게', d:'도장의 약 60%', f:.60, ck:1, p:'단정한 크기로, 글자 전체가 도장 폭의 약 60%를 차지하고 여백을 넉넉히 두어'},
@@ -863,23 +898,25 @@ const TYPE_STEP = {
   options:[
     {v:'name', label:'이름 도장', d:'인주로 찍는 전통 도장처럼, 이름만 들어가요'},
     {v:'calli', label:'캘리그라피 문구 도장', d:'멋진 글씨체의 문구가 주인공이에요'},
-    {v:'char', label:'캐릭터 + 칭찬 문구 도장', d:'AI가 캐릭터를 그리고, 고른 칭찬 문구를 넣어요'}
+    {v:'char', label:'캐릭터 + 칭찬 문구 도장', d:'AI가 캐릭터를 그리고, 고른 칭찬 문구를 넣어요'},
+    {v:'class', label:'학급 도장', d:'둘레에 학교·반 이름, 가운데에 그림이나 글자가 들어가요'},
+    {v:'check', label:'확인·날짜 도장', d:'‘검사했어요’ 같은 글과 날짜·사인 칸 — 공책·학습지 검사용이에요'}
   ]
 };
 
 const FLOWS = {
   name:{ label:'이름 도장', steps:[
-    {id:'name', kind:'text', title:'도장에 넣을 이름을 적어 주세요', help:'한자 이름도 좋아요. 적은 뒤 아래에서 글자 사이를 누르면 줄을 바꿀 수 있어요. (/ 를 넣어도 돼요. 예: 이/현서)', placeholder:'예: 김하늘', max:8, sum:'이름'},
+    {id:'name', kind:'text', title:'도장에 넣을 이름을 적어 주세요', help:'한자 이름도 좋아요. 적은 뒤 아래에서 글자 사이를 누르면 줄을 바꿀 수 있어요. (/ 를 넣어도 돼요. 예: 이/현서)', privacy:true, placeholder:'예: 김하늘', max:8, sum:'이름'},
     {id:'carve', kind:'choice', title:'새김 방식을 골라 주세요', help:'전통 도장은 두 가지 방식이 있어요.', sum:'새김', options:[
       {v:'yang', label:'양각 (주문)', d:'글자가 붉게 찍혀요', p:'글자 부분이 색으로 찍히는 양각(주문) 방식'},
       {v:'eum', label:'음각 (백문)', d:'색 바탕에 글자가 하얗게', p:'도장 면 전체가 색으로 찍히고 글자만 하얗게 비어 보이는 음각(백문) 방식'}
     ]},
     {id:'shape', kind:'choice', title:'도장 모양은요?', sum:'모양', options:shapeOpts(['circle','square','roundsq','oval'])},
     {id:'font', kind:'choice', title:'글씨체 느낌을 골라 주세요', help:'카드의 글씨는 분위기를 보여 주는 예시예요.', sum:'글씨', fontPreview:true, options:[
-      {v:'jeonseo', label:'전서체', d:'옛 도장처럼 고풍스러운', font:"'Song Myung', serif", p:'옛 도장에 쓰이는 고풍스러운 전서체(篆書體) 느낌의 글씨 (단, 글자는 누구나 읽을 수 있게 정확한 모양 유지)'},
-      {v:'haeseo', label:'해서체', d:'또박또박 단정한 붓글씨', font:"'Nanum Myeongjo', serif", p:'또박또박 단정한 해서체 붓글씨'},
-      {v:'yeseo', label:'예서체', d:'납작하고 우아한', font:"'Gowun Batang', serif", p:'가로로 살짝 납작하고 우아한 예서체 느낌의 글씨'},
-      {v:'gothic', label:'현대 고딕', d:'깔끔하고 굵은', font:"'Black Han Sans', sans-serif", p:'깔끔하고 굵은 현대적인 고딕체'}
+      {v:'jeonseo', label:'전서체', d:'옛 도장처럼 고풍스러운', font:F('Song Myung') + ", serif", p:'옛 도장에 쓰이는 고풍스러운 전서체(篆書體) 느낌의 글씨 (단, 글자는 누구나 읽을 수 있게 정확한 모양 유지)'},
+      {v:'haeseo', label:'해서체', d:'또박또박 단정한 붓글씨', font:F('Nanum Myeongjo') + ", serif", p:'또박또박 단정한 해서체 붓글씨'},
+      {v:'yeseo', label:'예서체', d:'납작하고 우아한', font:F('Gowun Batang') + ", serif", p:'가로로 살짝 납작하고 우아한 예서체 느낌의 글씨'},
+      {v:'gothic', label:'현대 고딕', d:'깔끔하고 굵은', font:F('Black Han Sans') + ", sans-serif", p:'깔끔하고 굵은 현대적인 고딕체'}
     ]},
     sizeStep('도장 안에서 이름 글자가 차지하는 크기예요. 오른쪽 미리보기로 확인해 보세요.'),
     {id:'layout', kind:'choice', title:'글자는 어떻게 놓을까요?', sum:'배치', options:[
@@ -887,12 +924,7 @@ const FLOWS = {
       {v:'horizontal', label:'가로 한 줄', d:'왼쪽에서 오른쪽으로', p:'왼쪽에서 오른쪽으로 가로 한 줄'},
       {v:'grid', label:'두 줄 전통 배치', d:'오른쪽 줄부터 세로로 읽기', p:'두 줄로 나누어, 오른쪽 줄을 위에서 아래로 먼저 읽고 이어서 왼쪽 줄을 읽는 전통 도장 배치'}
     ]},
-    {id:'border', kind:'choice', title:'테두리는요?', sum:'테두리', options:[
-      {v:'single', label:'한 줄', p:'가는 한 줄 테두리'},
-      {v:'double', label:'이중선', p:'바깥 굵은 선과 안쪽 가는 선의 이중 테두리'},
-      {v:'thick', label:'굵은 테두리', p:'굵고 힘 있는 테두리'},
-      {v:'none', label:'테두리 없음', p:'테두리 없음'}
-    ]},
+    {id:'border', kind:'choice', title:'테두리는요?', sum:'테두리', options:[...BORDERS, {v:'none', label:'테두리 없음', p:'테두리 없음'}]},
     {id:'color', kind:'choice', title:'인주 색을 골라 주세요', sum:'색상', options:colorOpts(['vermilion','red','navy','ink'])},
     {id:'texture', kind:'choice', title:'찍힌 느낌은요?', sum:'질감', options:TEXTURE}
   ]},
@@ -900,12 +932,12 @@ const FLOWS = {
   calli:{ label:'캘리그라피 문구 도장', steps:[
     {id:'phrase', kind:'choice', title:'어떤 문구를 넣을까요?', help:'직접 입력도 할 수 있어요. 고른 뒤 아래에서 글자 사이를 누르면 줄을 바꿀 수 있어요.', sum:'문구', options:phraseOpts(), placeholder:'예: 오늘도 반짝반짝'},
     {id:'style', kind:'choice', title:'글씨 스타일을 골라 주세요', help:'카드의 글씨는 분위기를 보여 주는 예시예요.', sum:'글씨', fontPreview:true, options:[
-      {v:'brush', label:'힘찬 붓 캘리', d:'굵고 시원한 붓 터치', font:"'East Sea Dokdo', cursive", p:'굵고 힘찬 붓 캘리그라피, 획의 강약과 붓 끝이 갈라지는 느낌(비백)이 살아 있는'},
-      {v:'soft', label:'감성 손글씨', d:'부드럽게 흐르는', font:"'Nanum Pen Script', cursive", p:'부드럽게 흐르는 감성 손글씨 캘리그라피'},
-      {v:'cute', label:'동글동글 귀여운', d:'통통하고 둥근 글씨', font:"'Jua', sans-serif", p:'동글동글하고 통통한 귀여운 손글씨'},
-      {v:'trad', label:'전통 붓글씨', d:'흘려 쓴 행서 느낌', font:"'Nanum Brush Script', cursive", p:'먹으로 흘려 쓴 전통 행서 붓글씨'},
-      {v:'letter', label:'브러시 레터링', d:'장식적인 곡선이 멋진', font:"'Dokdo', cursive", p:'획 끝에 장식적인 곡선이 들어간 세련된 브러시 레터링'},
-      {v:'vintage', label:'빈티지 스탬프', d:'굵은 블록 글씨', font:"'Black Han Sans', sans-serif", p:'굵고 묵직한 블록 글씨의 빈티지 스탬프 레터링'}
+      {v:'brush', label:'힘찬 붓 캘리', d:'굵고 시원한 붓 터치', font:F('East Sea Dokdo') + ", cursive", p:'굵고 힘찬 붓 캘리그라피, 획의 강약과 붓 끝이 갈라지는 느낌(비백)이 살아 있는'},
+      {v:'soft', label:'감성 손글씨', d:'부드럽게 흐르는', font:F('Nanum Pen Script') + ", cursive", p:'부드럽게 흐르는 감성 손글씨 캘리그라피'},
+      {v:'cute', label:'동글동글 귀여운', d:'통통하고 둥근 글씨', font:F('Jua') + ", sans-serif", p:'동글동글하고 통통한 귀여운 손글씨'},
+      {v:'trad', label:'전통 붓글씨', d:'흘려 쓴 행서 느낌', font:F('Nanum Brush Script') + ", cursive", p:'먹으로 흘려 쓴 전통 행서 붓글씨'},
+      {v:'letter', label:'브러시 레터링', d:'장식적인 곡선이 멋진', font:F('Dokdo') + ", cursive", p:'획 끝에 장식적인 곡선이 들어간 세련된 브러시 레터링'},
+      {v:'vintage', label:'빈티지 스탬프', d:'굵은 블록 글씨', font:F('Black Han Sans') + ", sans-serif", p:'굵고 묵직한 블록 글씨의 빈티지 스탬프 레터링'}
     ]},
     sizeStep('도장 안에서 문구가 차지하는 크기예요. 오른쪽 미리보기로 확인해 보세요.'),
     {id:'shape', kind:'choice', title:'도장 모양은요?', sum:'모양', options:shapeOpts(['circle','square','ribbon','cloud','flower','star','heart'])},
@@ -958,9 +990,68 @@ const FLOWS = {
     ]},
     {id:'shape', kind:'choice', title:'도장 모양은요?', sum:'모양', options:shapeOpts(['circle','square','star','heart','cloud'])},
     {id:'color', kind:'choice', title:'대표 색상을 골라 주세요', help:'단색 도장 스타일이면 이 색 한 가지로만 그려요.', sum:'색상', options:colorOpts(['red','blue','green','purple','orange','pink'])}
+  ]},
+
+  class:{ label:'학급 도장', steps:[
+    {id:'top', kind:'text', title:'둘레 위쪽에 넣을 글을 적어 주세요', help:'도장 둘레를 따라 둥글게 들어가요. 18자 안쪽이 보기 좋아요.', privacy:true, placeholder:'예: 햇살초등학교 3학년 1반', max:18, sum:'둘레 위'},
+    {id:'bottom', kind:'choice', title:'둘레 아래쪽에는 무엇을 넣을까요?', help:'아래쪽 글자도 거꾸로 되지 않고 바로 읽히게 넣어요.', sum:'둘레 아래', placeholder:'예: 2026 우리 반', options:[
+      {v:'none', label:'별 장식만', d:'글자 없이 ★', p:''},
+      {v:'참 잘했어요', label:'참 잘했어요', p:'참 잘했어요'},
+      {v:'최고예요!', label:'최고예요!', p:'최고예요!'},
+      {v:'확인했어요', label:'확인했어요', p:'확인했어요'},
+      {v:'custom', label:'직접 입력', custom:true}
+    ]},
+    {id:'center', kind:'choice', title:'가운데에는 무엇을 넣을까요?', sum:'가운데', placeholder:'1~3글자 예: 3-1, 꿈', max:3, options:[
+      {v:'star', label:'별', em:'⭐', p:'통통한 별 하나'},
+      {v:'heart', label:'하트', em:'❤️', p:'하트 하나'},
+      {v:'apple', label:'사과', em:'🍎', p:'잎이 달린 사과 하나'},
+      {v:'flower', label:'꽃', em:'🌷', p:'튤립 꽃 한 송이'},
+      {v:'pencil', label:'연필', em:'✏️', p:'연필 한 자루'},
+      {v:'book', label:'책', em:'📖', p:'펼친 책'},
+      {v:'sun', label:'해', em:'☀️', p:'웃는 해'},
+      {v:'custom', label:'글자 직접(1~3자)', em:'🔤', custom:true}
+    ]},
+    {id:'border', kind:'choice', title:'바깥 테두리는요?', sum:'테두리', options:BORDERS},
+    {id:'color', kind:'choice', title:'잉크 색을 골라 주세요', sum:'색상', options:colorOpts(['red','vermilion','blue','navy','green','purple','ink'])},
+    {id:'texture', kind:'choice', title:'찍힌 느낌은요?', sum:'질감', options:TEXTURE}
+  ]},
+
+  check:{ label:'확인·날짜 도장', steps:[
+    {id:'word', kind:'choice', title:'도장에 넣을 말은요?', sum:'글', placeholder:'예: 숙제 끝!', max:8, options:[
+      {v:'검사했어요', label:'검사했어요', p:'검사했어요'},
+      {v:'확인', label:'확인', p:'확인'},
+      {v:'참 잘했어요', label:'참 잘했어요', p:'참 잘했어요'},
+      {v:'다 했어요', label:'다 했어요', p:'다 했어요'},
+      {v:'다시 해 봐요', label:'다시 해 봐요', p:'다시 해 봐요'},
+      {v:'custom', label:'직접 입력', custom:true}
+    ]},
+    {id:'fields', kind:'choice', title:'어떤 칸을 넣을까요?', help:'칸은 비워 두고, 찍은 뒤 손으로 써넣어요.', sum:'칸', options:[
+      {v:'date', label:'날짜 칸', d:'＿월 ＿일', p:'그 아래에 날짜를 손으로 써넣을 칸 「＿＿월 ＿＿일」 (밑줄 빈칸 + 「월」「일」 글자만, 숫자는 넣지 말 것)'},
+      {v:'datesign', label:'날짜 + 사인 칸', d:'날짜 아래 선생님 사인', p:'그 아래에 날짜를 손으로 써넣을 칸 「＿＿월 ＿＿일」, 맨 아래에 「선생님」 글자와 사인할 빈칸 (숫자·사인은 넣지 말 것)'},
+      {v:'grade', label:'날짜 + 별 세 개', d:'칠할 수 있는 ☆☆☆', p:'그 아래에 날짜를 손으로 써넣을 칸 「＿＿월 ＿＿일」, 맨 아래에 칠할 수 있는 속이 빈 별 세 개 ☆☆☆ (숫자는 넣지 말 것)'},
+      {v:'none', label:'칸 없이 글만', d:'글자만 크게', p:'다른 칸 없이 글자만 크게'}
+    ]},
+    {id:'shape', kind:'choice', title:'도장 모양은요?', sum:'모양', options:shapeOpts(['roundsq','square','circle','oval'])},
+    {id:'border', kind:'choice', title:'테두리는요?', sum:'테두리', options:BORDERS},
+    {id:'color', kind:'choice', title:'잉크 색을 골라 주세요', sum:'색상', options:colorOpts(['red','blue','navy','green','purple','ink'])},
+    {id:'texture', kind:'choice', title:'찍힌 느낌은요?', sum:'질감', options:TEXTURE}
   ]}
 };
 
+const USE_STEP = {id:'use', kind:'choice', title:'만든 그림을 어디에 쓸까요?', help:'실제 도장으로 만들면 아주 작게 찍혀서, 그에 맞게 요청문이 바뀌어요.', sum:'쓰임', options:[
+  {v:'screen', label:'화면·학습지 그림', d:'파일로 붙여 써요', em:'🖼️'},
+  {v:'order', label:'도장 가게에 주문', d:'고무·만년 도장으로 맡겨요', em:'🏪'},
+  {v:'diy', label:'직접 만들기', d:'고무 새기기·3D 프린터·레이저', em:'🛠️'}
+]};
+const MM_STEP = {id:'mm', kind:'choice', title:'실제 도장 크기는요?', help:'도장의 가장 긴 쪽(지름) 길이예요. 주문할 가게의 크기표도 함께 확인해 주세요.', sum:'실제 크기', def:'24', options:[
+  {v:'12', label:'12mm', d:'아주 작게'},
+  {v:'15', label:'15mm', d:'작게'},
+  {v:'18', label:'18mm', d:'10원 동전쯤'},
+  {v:'24', label:'24mm', d:'100원 동전쯤'},
+  {v:'30', label:'30mm', d:'조금 크게'},
+  {v:'40', label:'40mm', d:'크게'},
+  {v:'50', label:'50mm', d:'아주 크게'}
+]};
 const BG_STEP = {id:'bg', kind:'choice', title:'배경은 어떻게 할까요?', help:'투명 배경으로 받으면 학습지나 슬라이드에 올리기 좋아요.', sum:'배경', options:[
   {v:'white', label:'흰 종이 배경', p:'배경은 깨끗한 흰색'},
   {v:'trans', label:'투명 배경', d:'PNG로 받기', p:'배경은 투명하게 해서 PNG로'}
@@ -970,14 +1061,18 @@ const BG_STEP = {id:'bg', kind:'choice', title:'배경은 어떻게 할까요?',
 const state = {type:null, i:0, done:false, ans:{}};
 const $ = s => document.querySelector(s);
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const prod = () => !!state.type && !!state.ans.use && state.ans.use !== 'screen';
 
-function steps(){ return state.type ? [TYPE_STEP, ...FLOWS[state.type].steps, BG_STEP] : [TYPE_STEP]; }
+function steps(){
+  if (!state.type) return [TYPE_STEP];
+  return [TYPE_STEP, ...FLOWS[state.type].steps, USE_STEP, ...(prod() ? [MM_STEP] : []), BG_STEP];
+}
 function stepById(id){ return steps().find(s => s.id === id); }
 function chosen(id){ const s = stepById(id); return s && s.options ? s.options.find(o => o.v === state.ans[id]) : null; }
 
 function setType(t){
   state.type = t; state.ans = {type:t};
-  steps().forEach(s => { if (s.kind === 'choice') state.ans[s.id] = s.def ?? s.options[0].v; if (s.kind === 'text') state.ans[s.id] = ''; });
+  [...FLOWS[t].steps, USE_STEP, MM_STEP, BG_STEP].forEach(s => { if (s.kind === 'choice') state.ans[s.id] = s.def ?? s.options[0].v; if (s.kind === 'text') state.ans[s.id] = ''; });
 }
 
 // 프롬프트에 들어갈 값
@@ -1020,8 +1115,20 @@ function lineRule(L = phraseLines()){
   const ord = ['첫째','둘째','셋째','넷째'];
   return `- 줄 바꿈: ${L.length}줄로 나누어 배치 (${L.map((l, i) => `${ord[i]} 줄 「${l}」`).join(', ')})`;
 }
-// 도장 글자(이름 또는 문구)
-function stampText(){ return state.type === 'name' ? nameFull() : phraseFull(); }
+// 도장 글자(그대로 써야 하는 글)
+function stampText(){
+  if (state.type === 'name') return nameFull();
+  if (state.type === 'class'){ const b = val('bottom'); return val('top') + (b ? ` / ${b}` : '') + (chosen('center')?.custom ? ` / ${val('center')}` : ''); }
+  if (state.type === 'check') return val('word');
+  return phraseFull();
+}
+function fixWrongText(){
+  if (state.type === 'class'){
+    const b = val('bottom'), c = chosen('center')?.custom ? val('center') : '';
+    return `둘레 위쪽은 「${val('top')}」${b ? `, 둘레 아래쪽은 「${b}」` : ''}${c ? `, 가운데는 「${c}」` : ''}`;
+  }
+  return `「${stampText()}」`;
+}
 
 /* ---------- 조사 ---------- */
 function hasBatchim(w){
@@ -1030,17 +1137,36 @@ function hasBatchim(w){
   return (c - 0xAC00) % 28 !== 0;
 }
 
+/* ---------- 실제 도장용(제작용)일 때 바꾸는 값 ---------- */
+const colorP = () => prod() ? '검정' : val('color');
+const textureP = () => prod() ? '번짐 없이 깔끔하고 선명한' : val('texture');
+function prodBlock(){
+  if (!prod()) return '';
+  const mm = state.ans.mm;
+  return `
+[실제 도장으로 만들 원고]
+- 실제 크기 약 ${mm}mm(가장 긴 쪽)로 줄여서 만들 도장이에요. 그 크기에서도 뭉개지지 않게 선과 글자를 굵고 또렷하게, 아주 가는 선·작은 점·작은 장식은 빼 주세요.
+- 검정 한 가지 색으로만, 회색·그러데이션·그림자·번짐 효과 없이 흑백으로 (인주 색은 찍을 때 정해요)
+- 글자와 그림은 바르게(좌우를 뒤집지 않은 모양으로) 그려 주세요
+`;
+}
+function viewBlock(extra){
+  return `[화면 구성]
+- 위에서 똑바로 내려다본 정면 시점으로, 도장 자국 하나만 화면 가운데에 크게
+- 도장 몸체나 손, 그림자${extra || ''}는 넣지 마세요
+- 정사각형(1:1) 비율, ${val('bg')}`;
+}
+
 /* ---------- 프롬프트 만들기 ---------- */
 function buildPrompt(){
-  const bg = val('bg');
   if (state.type === 'name'){
     const name = nameFull(), NL = nameLines();
     const n = [...name.replace(/\s/g, '')].length;
     // 두 줄 전통 배치인데 줄 바꿈을 따로 정하지 않았으면, 미리보기와 같게 앞 절반을 오른쪽 줄로 나눔
     const chars = [...name.replace(/\s/g, '')];
     const gridAuto = NL.length < 2 && state.ans.layout === 'grid' && chars.length >= 2;
-    const per = Math.ceil(chars.length / 2);
-    const splitLine = gridAuto ? `- 줄 나눔: 오른쪽 줄 「${chars.slice(0, per).join('')}」${hasBatchim(chars.slice(0, per).join('')) ? '을' : '를'} 위에서 아래로 먼저, 이어서 왼쪽 줄 「${chars.slice(per).join('')}」 (두 줄로만 나누고 한 줄로 쓰지 마세요)` : lineRule(NL);
+    const per = Math.ceil(chars.length / 2), right = chars.slice(0, per).join('');
+    const splitLine = gridAuto ? `- 줄 나눔: 오른쪽 줄 「${right}」${hasBatchim(right) ? '을' : '를'} 위에서 아래로 먼저, 이어서 왼쪽 줄 「${chars.slice(per).join('')}」 (두 줄로만 나누고 한 줄로 쓰지 마세요)` : lineRule(NL);
     const layoutLine = NL.length < 2 ? (state.ans.layout === 'grid' && chars.length < 2 ? '- 글자 배치: 가운데에 한 글자' : `- 글자 배치: ${val('layout')}`)
       : (state.ans.layout === 'horizontal'
           ? '- 글자 배치: 줄마다 왼쪽에서 오른쪽으로 쓰고, 줄은 위에서 아래로 쌓기'
@@ -1059,13 +1185,10 @@ function buildPrompt(){
 ${layoutLine}
 ${splitLine}
 - 테두리: ${val('border')}
-- 색상: ${val('color')} 한 가지 색만 사용
-- 질감: ${val('texture')} 느낌
-
-[화면 구성]
-- 위에서 똑바로 내려다본 정면 시점으로, 도장 자국 하나만 화면 가운데에 크게
-- 도장 몸체나 손, 그림자, 다른 글자·서명·낙관은 넣지 마세요
-- 정사각형(1:1) 비율, ${bg}`;
+- 색상: ${colorP()} 한 가지 색만 사용
+- 질감: ${textureP()} 느낌
+${prodBlock()}
+${viewBlock(', 다른 글자·서명·낙관')}`;
   }
   if (state.type === 'calli'){
     return `멋진 캘리그라피 문구가 들어간 도장(스탬프) 이미지를 만들어 주세요.
@@ -1079,20 +1202,56 @@ ${lineRule()}
 - 글씨 스타일: ${val('style')} 글씨
 - 도장 모양: ${val('shape')} 모양 테두리 안에 문구가 들어가도록
 - 장식: ${val('deco')}
-- 색상: ${val('color')} 한 가지 잉크 색만 사용
-- 질감: 종이에 찍은 듯 ${val('texture')} 느낌
+- 색상: ${colorP()} 한 가지 잉크 색만 사용
+- 질감: 종이에 찍은 듯 ${textureP()} 느낌
 - 글자 크기: ${val('tsize')} (글씨가 도장의 주인공이 되도록)
+${prodBlock()}
+${viewBlock('')}`;
+  }
+  if (state.type === 'class'){
+    const bottom = val('bottom'), c = chosen('center');
+    const center = c && c.custom ? `큰 글자 「${val('center')}」 (이 글자를 정확하게)` : val('center');
+    return `학급에서 쓰는 둥근 도장(스탬프) 이미지를 만들어 주세요.
 
-[화면 구성]
-- 정면에서 본 도장 자국 하나만 가운데에 크게 (도장 몸체·손·그림자 없음)
-- 정사각형(1:1) 비율, ${bg}`;
+[가장 중요] 글자
+- 둘레 위쪽을 따라 둥글게: 「${val('top')}」
+${bottom ? `- 둘레 아래쪽을 따라 둥글게: 「${bottom}」 (아래쪽 글자도 거꾸로 되지 않고 왼쪽에서 오른쪽으로 바로 읽히게)` : '- 둘레 아래쪽에는 글자를 넣지 말고 작은 별 장식만'}
+- 위아래 글 사이 양옆(왼쪽·오른쪽)에 작은 별 하나씩
+- 이 글자를 한 글자도 바꾸거나, 빼거나, 더하지 말고 정확하게 써 주세요.
+
+[도장 디자인]
+- 모양: 동그란 원형, 바깥은 ${val('border')}
+- 둘레 글자 띠와 가운데 사이를 가는 원으로 나누기
+- 가운데: ${center}
+- 색상: ${colorP()} 한 가지 색만 사용
+- 질감: ${textureP()} 느낌
+${prodBlock()}
+${viewBlock(', 다른 글자')}`;
+  }
+  if (state.type === 'check'){
+    return `공책·학습지 검사에 찍는 확인 도장(스탬프) 이미지를 만들어 주세요.
+
+[가장 중요] 글자
+- 도장 위쪽에 크게: 「${val('word')}」
+- ${val('fields')}
+- 이 글자를 한 글자도 바꾸거나, 빼거나, 더하지 말고 정확하게 써 주세요.
+
+[도장 디자인]
+- 모양: ${val('shape')}
+- 테두리: ${val('border')}
+- 글과 칸 사이를 가는 선으로 나누기
+- 손으로 써넣을 칸은 펜으로 쓰기 좋게 넉넉히 비워 두기
+- 색상: ${colorP()} 한 가지 색만 사용
+- 질감: ${textureP()} 느낌
+${prodBlock()}
+${viewBlock(', 다른 글자')}`;
   }
   const ch = val('character');
   return `아이들 칭찬용 캐릭터 도장(스탬프) 이미지를 만들어 주세요.
 
 [캐릭터]
 - ${ch}${hasBatchim(ch) ? '이' : '가'} ${val('action')} 모습
-- 그림 스타일: ${val('art')} 그림
+- 그림 스타일: ${prod() ? '한 가지 색 선과 면으로만 단순하게 표현한 실제 도장(스탬프)용' : val('art')} 그림
 - 기존 만화·애니메이션·브랜드 캐릭터를 닮지 않은 새로운 창작 캐릭터로
 
 [가장 중요] 칭찬 문구
@@ -1104,25 +1263,25 @@ ${lineRule()}
 
 [디자인]
 - 도장 모양: ${val('shape')}
-- 대표 색상: ${val('color')} (단색 스타일이면 이 색 한 가지로만)
+- 대표 색상: ${prod() ? '검정 한 가지 색' : `${val('color')} (단색 스타일이면 이 색 한 가지로만)`}
 - 캐릭터와 문구가 한눈에 들어오는 단순하고 깔끔한 구성
-
-[화면 구성]
-- 정면에서 본 도장 하나만 가운데에 크게 (손·그림자·배경 소품 없음)
-- 정사각형(1:1) 비율, ${bg}`;
+${prodBlock()}
+${viewBlock(', 배경 소품')}`;
 }
 
 function fixLines(){
-  const t = stampText();
   const list = [
-    {label:'글자가 틀렸어요', text:`글자가 정확하지 않아요. 그림과 디자인은 그대로 두고, 글자만 「${t}」로 한 글자도 틀리지 않게 다시 써 주세요.`},
+    {label:'글자가 틀렸어요', text:`글자가 정확하지 않아요. 그림과 디자인은 그대로 두고, 글자만 ${fixWrongText()}로 한 글자도 틀리지 않게 다시 써 주세요.`},
     {label:'글자를 더 크게', text:'디자인은 그대로 두고 글자를 더 크고 선명하게 해 주세요.'},
     {label:'글자를 더 작게', text:'디자인은 그대로 두고 글자를 조금 더 작게 해서 여백을 넉넉히 주세요.'},
+    {label:'선 더 굵게(작은 도장용)', text:'디자인은 그대로 두고, 작게 찍어도 뭉개지지 않도록 선과 글자를 더 굵고 단순하게 해 주세요. 아주 작은 장식과 가는 선은 빼 주세요.'},
+    {label:'흑백 원고로', text:'도장 제작용 원고로 쓰려고 해요. 디자인은 그대로 두고 검정 한 가지 색, 흰 배경으로, 회색·그러데이션·그림자·번짐 없이 다시 만들어 주세요.'},
     {label:'더 자연스러운 인주 느낌', text:'실제로 종이에 꾹 눌러 찍은 것처럼 잉크 농도가 자연스럽게 고르지 않고 가장자리가 살짝 번지게 해 주세요.'},
     {label:'더 깔끔하게', text:'번짐과 거친 질감을 줄이고 선을 더 깔끔하고 또렷하게 해 주세요.'},
     {label:'배경 투명하게', text:'도장 부분은 그대로 두고, 배경만 투명하게 바꿔서 PNG로 다시 만들어 주세요.'}
   ];
   if (state.type === 'char') list.push({label:'캐릭터 더 귀엽게', text:'문구와 구성은 그대로 두고 캐릭터를 더 귀엽고 단순하게 다듬어 주세요.'});
+  if (state.type === 'class' || state.type === 'check') list.push({label:'칸·띠 더 넓게', text:'디자인은 그대로 두고, 글자 띠와 손으로 써넣을 칸을 조금 더 넓고 여유 있게 해 주세요.'});
   list.push({label:'글자 없이 그림만', text:'글자는 모두 빼고, 같은 디자인의 도장 그림만 만들어 주세요. 글자가 들어갈 자리는 비워 두세요.'});
   return list;
 }
@@ -1157,15 +1316,6 @@ function shapeEl(shape, attrs){
     default: return `<circle cx="120" cy="120" r="100" ${attrs}/>`;
   }
 }
-function wrapText(t){
-  const chars = [...t];
-  if (chars.length <= 6) return [t];
-  const mid = chars.length / 2;
-  let best = -1, bd = 99;
-  chars.forEach((c, i) => { if (c === ' ' && Math.abs(i - mid) < bd){ bd = Math.abs(i - mid); best = i; } });
-  if (best > 0) return [chars.slice(0, best).join(''), chars.slice(best + 1).join('')];
-  const m = Math.ceil(mid); return [chars.slice(0, m).join(''), chars.slice(m).join('')];
-}
 function textLines(lines, cy, maxW, maxFs, font, fill, k = 1){
   const longest = Math.max(...lines.map(l => [...l].length), 1);
   const fs = Math.min(maxFs, maxW / longest * 1.05) * k;
@@ -1183,23 +1333,24 @@ const SHAPE_BOX = {
 };
 const fitG = inner => `<g class="fit">${inner}</g>`;
 // 글자 묶음을 도장 크기의 f 비율에 맞게 확대·축소해 가운데에 놓기
-function fitAll(){
-  const svg = $('#preview'); if (!svg || !state.type) return;
-  const f = sizeOpt().f;
+function fitAll(svg){
+  if (!svg || !state.type) return;
+  const f = state.type === 'check' ? .8 : sizeOpt().f;
   svg.querySelectorAll('g.fit').forEach(g => {
+    g.removeAttribute('transform');
     let bb; try { bb = g.getBBox(); } catch(e){ return; }
     if (!bb.width || !bb.height) return;
     const b = {...(SHAPE_BOX[state.ans.shape] || SHAPE_BOX.circle)};
     let shrink = 1;
-    if (state.type === 'name'){ if (state.ans.border === 'double') shrink = .84; else if (state.ans.border === 'thick') shrink = .95; }
+    if (state.type === 'name' || state.type === 'check'){ if (state.ans.border === 'double') shrink = .84; else if (state.ans.border === 'thick') shrink = .95; }
     if (state.type === 'calli' && state.ans.deco && state.ans.deco !== 'none' && !['ribbon','star','heart'].includes(state.ans.shape)){ if (b.round) b.ry *= .68; else b.h *= .68; }
     let sc;
     if (b.round){
       // 전체 폭·높이는 f 비율까지, 각 줄의 모서리는 원(타원) 안쪽에 들어오도록
       sc = f * shrink * Math.min(2*b.rx/bb.width, 2*b.ry/bb.height);
       const lim = Math.min(1.01, f + .12) * shrink, cx0 = bb.x + bb.width/2, cy0 = bb.y + bb.height/2;
-      g.querySelectorAll('text').forEach(t => {
-        const k = t.getBBox(), pad = k.height * .16;
+      g.querySelectorAll('text,line').forEach(t => {
+        const k = t.getBBox(), pad = t.tagName === 'text' ? k.height * .16 : 0;
         const hw = Math.max(Math.abs(k.x - cx0), Math.abs(k.x + k.width - cx0));
         const vy = Math.max(Math.abs(k.y + pad - cy0), Math.abs(k.y + k.height - pad - cy0));
         const need = Math.hypot(hw/b.rx, vy/b.ry);
@@ -1209,24 +1360,14 @@ function fitAll(){
     g.setAttribute('transform', `translate(${b.cx} ${b.cy}) scale(${sc.toFixed(4)}) translate(${(-(bb.x + bb.width/2)).toFixed(2)} ${(-(bb.y + bb.height/2)).toFixed(2)})`);
   });
 }
-function renderPreview(){
-  const svg = $('#preview');
-  const cap = $('#cap');
-  if (cap){
-    if (state.type === 'char'){ cap.className = 'cap warn'; cap.innerHTML = '<b>⚠ 미리보기는 참고만 하세요.</b><br>캐릭터와 그림 스타일은 AI가 새로 그려요. 여기서는 모양·색·문구 위치만 확인해 주세요.'; }
-    else { cap.className = 'cap'; cap.textContent = '대략적인 모양이에요. 실제 그림은 AI가 그려요.'; }
-  }
-  if (!state.type){
-    svg.innerHTML = `<circle cx="120" cy="120" r="96" fill="none" stroke="#e0d5c3" stroke-width="5" stroke-dasharray="10 9"/><text x="120" y="128" text-anchor="middle" font-size="18" fill="#a99c8b" font-family="Gowun Dodum">용도를 골라 주세요</text>`;
-    return;
-  }
-  const col = (chosen('color') || {hex:'#c63b2c'}).hex;
+
+// 미리보기 그림(SVG 안쪽 글) — col: 색, 다른 곳(내려받기)에서도 같은 그림을 씀
+function previewMarkup(col){
   const shape = state.ans.shape;
-  const tex = state.ans.texture || (state.type === 'char' && state.ans.art === 'mono' ? 'bleed' : 'clean');
+  const tex = prod() ? 'clean' : (state.ans.texture || (state.type === 'char' && state.ans.art === 'mono' ? 'bleed' : 'clean'));
   const defs = `<defs>
     <filter id="bleed" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="4" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="3.2"/></filter>
     <filter id="worn" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="7" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -3 2.05" result="m"/><feComposite in="SourceGraphic" in2="m" operator="in" result="c"/><feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="1" seed="2" result="n2"/><feDisplacementMap in="c" in2="n2" scale="3.5"/></filter>
-    <filter id="mono"><feFlood flood-color="${col}" result="f"/><feComposite in="f" in2="SourceAlpha" operator="in"/></filter>
   </defs>`;
   const fAttr = tex === 'clean' ? '' : `filter="url(#${tex})"`;
   let body = '';
@@ -1242,8 +1383,7 @@ function renderPreview(){
     const chars = [...(nameFull() || '이름').replace(/\s/g, '')];
     const fill = eum ? '#fffdf8' : col;
     const n = chars.length;
-    const K = 1;
-    const t = (c, x, y, fs0) => { const fs = fs0 * K; return `<text x="${x.toFixed(1)}" y="${(y + fs*0.36).toFixed(1)}" text-anchor="middle" font-family="${esc(font)}" font-size="${fs.toFixed(1)}" fill="${fill}">${esc(c)}</text>`; };
+    const t = (c, x, y, fs) => `<text x="${x.toFixed(1)}" y="${(y + fs*0.36).toFixed(1)}" text-anchor="middle" font-family="${esc(font)}" font-size="${fs.toFixed(1)}" fill="${fill}">${esc(c)}</text>`;
     let layout = state.ans.layout;
     const NL = nameLines().map(l => [...l.replace(/\s/g, '')]);
     if (NL.length > 1){
@@ -1251,7 +1391,7 @@ function renderPreview(){
       if (layout === 'horizontal'){
         NL.forEach((row, r) => row.forEach((c, k) => body += t(c, 120 + (k - (row.length-1)/2) * st, 120 + (r - (m-1)/2) * st, fs)));
       } else {
-        NL.forEach((col, r) => col.forEach((c, k) => body += t(c, 120 + ((m-1)/2 - r) * st, 120 + (k - (col.length-1)/2) * st, fs)));
+        NL.forEach((col2, r) => col2.forEach((c, k) => body += t(c, 120 + ((m-1)/2 - r) * st, 120 + (k - (col2.length-1)/2) * st, fs)));
       }
       layout = 'done';
     }
@@ -1259,15 +1399,15 @@ function renderPreview(){
     const room = shape === 'oval' ? 120 : 150;
     if (layout === 'horizontal'){
       const fs = Math.min(84, room / n);
-      chars.forEach((c, k) => body += t(c, 120 + (k - (n-1)/2) * fs * K * 1.02, 120, fs));
+      chars.forEach((c, k) => body += t(c, 120 + (k - (n-1)/2) * fs * 1.02, 120, fs));
     } else if (layout === 'vertical'){
       const fs = Math.min(84, 165 / n);
-      chars.forEach((c, k) => body += t(c, 120, 120 + (k - (n-1)/2) * fs * K * 1.02, fs));
+      chars.forEach((c, k) => body += t(c, 120, 120 + (k - (n-1)/2) * fs * 1.02, fs));
     } else if (layout === 'grid'){
       const per = Math.ceil(n / 2), fs = Math.min(62, Math.min(140 / per, room / 2.5));
       const right = chars.slice(0, per), left = chars.slice(per);
-      right.forEach((c, k) => body += t(c, 120 + fs*K*0.56, 120 + (k - (per-1)/2) * fs * K * 1.02, fs));
-      left.forEach((c, k) => body += t(c, 120 - fs*K*0.56, 120 + (k - (per-1)/2) * fs * K * 1.02, fs));
+      right.forEach((c, k) => body += t(c, 120 + fs*0.56, 120 + (k - (per-1)/2) * fs * 1.02, fs));
+      left.forEach((c, k) => body += t(c, 120 - fs*0.56, 120 + (k - (per-1)/2) * fs * 1.02, fs));
     }
     body = `<g ${fAttr} opacity=".93">${shapePart}${fitG(body)}</g>`;
   }
@@ -1286,6 +1426,53 @@ function renderPreview(){
     body = `<g ${fAttr} opacity=".93">${body}</g>`;
   }
 
+  if (state.type === 'class'){
+    const pf = F('Jua') + ', sans-serif';
+    const sw = {single:5, double:6, thick:10}[state.ans.border] || 5;
+    body += `<circle cx="120" cy="120" r="108" fill="none" stroke="${col}" stroke-width="${sw}"/>`;
+    if (state.ans.border === 'double') body += `<circle cx="120" cy="120" r="100" fill="none" stroke="${col}" stroke-width="2"/>`;
+    body += `<circle cx="120" cy="120" r="64" fill="none" stroke="${col}" stroke-width="2.4"/>`;
+    const top = val('top') || '○○초등학교 ○학년 ○반', bottom = val('bottom');
+    const tfs = Math.min(22, 225 / Math.max([...top].length, 1));
+    body += `<path id="arcT" d="M 38 120 A 82 82 0 0 1 202 120" fill="none"/><text font-family="${esc(pf)}" font-size="${tfs.toFixed(1)}" fill="${col}"><textPath href="#arcT" startOffset="50%" text-anchor="middle">${esc(top)}</textPath></text>`;
+    if (bottom){
+      const bfs = Math.min(20, 150 / Math.max([...bottom].length, 1));
+      body += `<path id="arcB" d="M 24 120 A 96 96 0 0 0 216 120" fill="none"/><text font-family="${esc(pf)}" font-size="${bfs.toFixed(1)}" fill="${col}"><textPath href="#arcB" startOffset="50%" text-anchor="middle">${esc(bottom)}</textPath></text>`;
+    } else body += `<text x="120" y="196" text-anchor="middle" font-size="16" fill="${col}">★ ★ ★</text>`;
+    body += `<text x="30" y="126" text-anchor="middle" font-size="13" fill="${col}">★</text><text x="210" y="126" text-anchor="middle" font-size="13" fill="${col}">★</text>`;
+    const c = chosen('center');
+    if (c && c.custom){
+      const w = val('center') || '꿈', n = [...w].length;
+      body += `<text x="120" y="${120 + (n > 2 ? 15 : 20)}" text-anchor="middle" font-family="${esc(pf)}" font-size="${n > 2 ? 40 : n > 1 ? 52 : 62}" fill="${col}">${esc(w)}</text>`;
+    } else if (c){
+      // 그림은 실제 도장처럼 한 색으로 칠해 보여 줌
+      body += `<text x="120" y="141" text-anchor="middle" font-size="60" filter="url(#mono)">${c.em}</text>`;
+    }
+    body = `<defs><filter id="mono"><feFlood flood-color="${col}" result="f"/><feComposite in="f" in2="SourceAlpha" operator="in"/></filter></defs><g ${fAttr} opacity=".93">${body}</g>`;
+  }
+
+  if (state.type === 'check'){
+    const pf = F('Jua') + ', sans-serif';
+    const sw = {single:5, double:6, thick:11}[state.ans.border] || 5;
+    body += shapeEl(shape, `fill="none" stroke="${col}" stroke-width="${sw}"`);
+    if (state.ans.border === 'double') body += `<g transform="translate(120 120) scale(.88) translate(-120 -120)">${shapeEl(shape, `fill="none" stroke="${col}" stroke-width="2.4" vector-effect="non-scaling-stroke"`)}</g>`;
+    const word = val('word') || '검사했어요', fld = state.ans.fields;
+    let inner = '';
+    const T = (x, y, fs, s) => `<text x="${x}" y="${y}" text-anchor="middle" font-family="${esc(pf)}" font-size="${fs}" fill="${col}">${esc(s)}</text>`;
+    const wfs = Math.min(fld === 'none' ? 60 : 44, 190 / Math.max([...word].length, 1));
+    if (fld === 'none') inner += T(120, 120 + wfs * .35, wfs.toFixed(1), word);
+    else {
+      inner += T(120, 30 + wfs * .7, wfs.toFixed(1), word);
+      inner += `<line x1="20" y1="${(46 + wfs * .7).toFixed(1)}" x2="220" y2="${(46 + wfs * .7).toFixed(1)}" stroke="${col}" stroke-width="2.5"/>`;
+      const dy = 98 + wfs * .7;
+      inner += `<line x1="34" y1="${dy}" x2="82" y2="${dy}" stroke="${col}" stroke-width="2" stroke-dasharray="4 4"/>` + T(98, dy - 2, 26, '월') + `<line x1="122" y1="${dy}" x2="170" y2="${dy}" stroke="${col}" stroke-width="2" stroke-dasharray="4 4"/>` + T(186, dy - 2, 26, '일');
+      if (fld === 'datesign'){ const sy = dy + 50; inner += T(70, sy - 2, 24, '선생님') + `<line x1="112" y1="${sy}" x2="206" y2="${sy}" stroke="${col}" stroke-width="2" stroke-dasharray="4 4"/>`; }
+      if (fld === 'grade'){ const sy = dy + 52; inner += T(120, sy, 34, '☆ ☆ ☆'); }
+    }
+    body += fitG(inner);
+    body = `<g ${fAttr} opacity=".93">${body}</g>`;
+  }
+
   if (state.type === 'char'){
     const mono = state.ans.art === 'mono';
     const ch = chosen('character'), act = chosen('action');
@@ -1296,9 +1483,9 @@ function renderPreview(){
     body += shapeEl(shape, `fill="${mono ? 'none' : '#fff'}" stroke="${col}" stroke-width="6"`);
     let ey = 118, es = 84;
     let txt = '';
-    const pf = "'Jua', sans-serif";
+    const pf = F('Jua') + ', sans-serif';
     if (pos === 'ring' && (shape === 'circle' || shape === 'square')){
-      txt = `<path id="arc" d="M 48 126 A 72 72 0 0 1 192 126" fill="none"/><text font-family="${pf}" font-size="${Math.min(24 * k, 200 / [...phrase].length).toFixed(1)}" fill="${col}"><textPath href="#arc" startOffset="50%" text-anchor="middle">${esc(phrase)}</textPath></text>`;
+      txt = `<path id="arc" d="M 48 126 A 72 72 0 0 1 192 126" fill="none"/><text font-family="${esc(pf)}" font-size="${Math.min(24 * k, 200 / [...phrase].length).toFixed(1)}" fill="${col}"><textPath href="#arc" startOffset="50%" text-anchor="middle">${esc(phrase)}</textPath></text>`;
       ey = 150; es = 72;
     } else if (pos === 'ribbon'){
       const h = 32 + (nl - 1) * 22, y = 194 - h;
@@ -1313,15 +1500,28 @@ function renderPreview(){
       ey = (shape === 'heart' ? 100 : 108) - (nl - 1) * 14; es = 74;
     }
     if (shape === 'star' && pos !== 'bubble'){ ey = 128; es = 54; }
-    const emo = `<text x="120" y="${ey + es*0.35}" text-anchor="middle" font-size="${es}">${em}</text><text x="${120 + es*0.55}" y="${ey + es*0.5}" text-anchor="middle" font-size="${es*0.4}">${act ? act.em : ''}</text>`;
-    body += emo;
+    // 단색 도장·제작용이면 이모지도 한 색으로 칠해 보여 줌
+    const mf = mono || prod() ? ' filter="url(#monoC)"' : '';
+    body += `<g${mf}><text x="120" y="${ey + es*0.35}" text-anchor="middle" font-size="${es}">${em}</text><text x="${120 + es*0.55}" y="${ey + es*0.5}" text-anchor="middle" font-size="${es*0.4}">${act ? act.em : ''}</text></g>`;
     body += txt;
-    body = `<g>${body}</g>`;
+    body = `<defs><filter id="monoC"><feFlood flood-color="${col}" result="f"/><feComposite in="f" in2="SourceAlpha" operator="in"/></filter></defs><g>${body}</g>`;
   }
+  return defs + body;
+}
 
-  svg.innerHTML = defs + body;
-  fitAll();
-  if (document.fonts) document.fonts.ready.then(fitAll);
+function renderPreview(){
+  const svg = $('#preview');
+  const cap = $('#cap');
+  if (cap){
+    if (state.type === 'char'){ cap.className = 'cap warn'; cap.innerHTML = '<b>⚠ 미리보기는 참고만 하세요.</b><br>캐릭터와 그림 스타일은 AI가 새로 그려요. 여기서는 모양·색·문구 위치만 확인해 주세요.'; }
+    else { cap.className = 'cap'; cap.textContent = '대략적인 모양이에요. 실제 그림은 AI가 그려요.' + (prod() && state.ans.mm ? ` (실제 크기 약 ${state.ans.mm}mm)` : ''); }
+  }
+  if (!state.type){
+    svg.innerHTML = `<circle cx="120" cy="120" r="96" fill="none" stroke="#e0d5c3" stroke-width="5" stroke-dasharray="10 9"/><text x="120" y="128" text-anchor="middle" font-size="18" fill="#a99c8b" font-family="${esc(F('Gowun Dodum'))}">용도를 골라 주세요</text>`;
+    return;
+  }
+  svg.innerHTML = previewMarkup((chosen('color') || {hex:'#c63b2c'}).hex);
+  fitAll(svg);
 }
 
 function renderSummary(){
@@ -1332,6 +1532,96 @@ function renderSummary(){
   dl.innerHTML = h;
 }
 
+/* ---------- 미리보기 그림 받기(PNG·SVG)·실제 크기 인쇄 ---------- */
+const b64 = buf => { let s = ''; const a = new Uint8Array(buf); for (let i = 0; i < a.length; i += 0x8000) s += String.fromCharCode.apply(null, a.subarray(i, i + 0x8000)); return btoa(s); };
+// 그림에 쓴 글자만 담은 글꼴을 받아 SVG 안에 넣음(다른 컴퓨터·그림 파일에서도 같은 글씨로 보이게)
+async function fontCss(svgEl){
+  const fams = new Set([...svgEl.innerHTML.matchAll(/hjs-([A-Za-z ]+?)(?:'|&#39;)/g)].map(m => m[1]));
+  const chars = [...new Set([...svgEl.textContent.replace(/\s/g, '')])].join('');
+  let css = '', failed = false;
+  for (const fam of fams){
+    try {
+      const w = WGT[fam];
+      const r = await fetch(`https://fonts.googleapis.com/css2?family=${fam.replace(/ /g, '+')}${w ? ':wght@' + w : ''}&text=${encodeURIComponent(chars)}`);
+      const c = await r.text();
+      const m = c.match(/url\((https:[^)]+)\)\s*format\('([^']+)'\)/);
+      if (!m) throw 0;
+      const buf = await (await fetch(m[1])).arrayBuffer();
+      const mime = m[2] === 'woff2' ? 'font/woff2' : m[2] === 'woff' ? 'font/woff' : 'font/ttf';
+      css += `@font-face{font-family:'hjs-${fam}';src:url(data:${mime};base64,${b64(buf)}) format('${m[2]}');}`;
+    } catch(e){ failed = true; }
+  }
+  return {css, failed};
+}
+function opt(id){ const el = document.getElementById(id); return !!(el && el.checked); }
+async function exportSvg(){
+  const flip = opt('xFlip'), black = opt('xBlack'), trans = opt('xTrans');
+  const x = $('#xsvg');
+  x.innerHTML = previewMarkup(black ? '#111111' : (chosen('color') || {hex:'#c63b2c'}).hex);
+  fitAll(x);
+  const {css, failed} = await fontCss(x);
+  const inner = x.innerHTML;
+  const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" width="1200" height="1200">${css ? `<style>${css}</style>` : ''}${trans ? '' : '<rect width="240" height="240" fill="#ffffff"/>'}<g${flip ? ' transform="translate(240 0) scale(-1 1)"' : ''}>${inner}</g></svg>`;
+  if (failed) toast('글꼴을 받지 못해 기본 글씨로 저장했어요(인터넷 연결 확인)');
+  return svg;
+}
+// 파일 이름은 영어로(한글 이름은 브라우저에 따라 'download'로 바뀌는 일이 있음)
+const stamp8 = () => { const d = new Date(), z = n => String(n).padStart(2, '0'); return `${d.getFullYear()}${z(d.getMonth() + 1)}${z(d.getDate())}-${z(d.getHours())}${z(d.getMinutes())}`; };
+function fileBase(){ return `stamp-${state.type}${opt('xBlack') ? '-black' : ''}${opt('xFlip') ? '-mirror' : ''}-${stamp8()}`; }
+function save(blob, name){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = name;
+  document.body.appendChild(a); a.click(); a.remove(); setTimeout(() => URL.revokeObjectURL(a.href), 4000);
+}
+async function busy(btn, fn){ btn.classList.add('busy'); try { await fn(); } catch(e){ toast('그림을 만들지 못했어요. 다시 눌러 주세요.'); } btn.classList.remove('busy'); }
+async function downloadSvg(){ const s = await exportSvg(); save(new Blob([s], {type:'image/svg+xml'}), fileBase() + '.svg'); toast('SVG 그림을 저장했어요'); }
+async function downloadPng(){
+  const s = await exportSvg();
+  const img = new Image();
+  await new Promise((ok, no) => { img.onload = ok; img.onerror = no; img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(s); });
+  await new Promise(r => setTimeout(r, 120));
+  const c = document.createElement('canvas'); c.width = c.height = 1200;
+  c.getContext('2d').drawImage(img, 0, 0, 1200, 1200);
+  await new Promise(ok => c.toBlob(b => { save(b, fileBase() + '.png'); ok(); }, 'image/png'));
+  toast('PNG 그림(1200×1200)을 저장했어요');
+}
+function printReal(){
+  const mm = +state.ans.mm || 24;
+  const x = $('#xsvg');
+  x.innerHTML = previewMarkup((chosen('color') || {hex:'#c63b2c'}).hex); fitAll(x);
+  // 그림마다 id를 따로 붙임(같은 id면 인쇄 때 숨은 미리보기의 필터·글자 길을 가리켜 빠짐)
+  let k = 0;
+  const one = w => { k++; const m = x.innerHTML.replace(/id="([\w-]+)"/g, `id="$1-p${k}"`).replace(/(url\(#|href="#)([\w-]+)/g, `$1$2-p${k}`); return `<svg viewBox="0 0 240 240" style="width:${w}mm;height:${w}mm">${m}</svg>`; };
+  const sizes = [...new Set([Math.max(8, mm - 6), mm, mm + 6])];
+  let ticks = ''; for (let i = 0; i <= 50; i += 5) ticks += `<line x1="${i}" y1="0" x2="${i}" y2="${i % 10 ? 2 : 3.5}" stroke="#000" stroke-width=".2"/>` + (i % 10 ? '' : `<text x="${i}" y="6.5" font-size="2.6" text-anchor="middle">${i / 10}</text>`);
+  $('#printSheet').innerHTML = `<h2>도장 실제 크기 확인</h2><p>${esc(FLOWS[state.type].label)} · 가운데가 고른 크기(${mm}mm)예요. 인쇄 설정에서 배율을 ‘실제 크기(100%)’로 하고, 아래 자로 길이가 맞는지 확인하세요. 미리보기는 대략적인 모양이에요.</p>
+    <div class="ps-grid">${sizes.map(w => `<figure>${one(w)}<figcaption>${w}mm${w === mm ? ' (고른 크기)' : ''}</figcaption></figure>`).join('')}</div>
+    <div class="ps-grid">${[1,2,3,4,5,6].map(() => `<figure>${one(mm)}</figure>`).join('')}</div>
+    <div class="ruler"><svg viewBox="-2 -1 54 9" style="width:54mm;height:9mm"><line x1="0" y1="0" x2="50" y2="0" stroke="#000" stroke-width=".3"/>${ticks}</svg><p>자 50mm (숫자는 cm)</p></div>`;
+  const go = () => { window.print(); };
+  if (document.fonts) document.fonts.ready.then(go); else go();
+}
+// AI가 만든 그림 파일을 좌우로 뒤집거나 흑백으로 정리(이 컴퓨터 안에서만 처리, 어디로도 보내지 않음)
+function flipFile(file){
+  if (!file) return;
+  const url = URL.createObjectURL(file), img = new Image();
+  img.onload = () => {
+    const c = document.createElement('canvas'); c.width = img.naturalWidth; c.height = img.naturalHeight;
+    const g = c.getContext('2d');
+    if (opt('fBw')){ g.fillStyle = '#fff'; g.fillRect(0, 0, c.width, c.height); }
+    if (opt('fFlip')){ g.translate(c.width, 0); g.scale(-1, 1); }
+    g.drawImage(img, 0, 0);
+    if (opt('fBw')){
+      const d = g.getImageData(0, 0, c.width, c.height), p = d.data;
+      for (let i = 0; i < p.length; i += 4){ const v = (p[i]*.299 + p[i+1]*.587 + p[i+2]*.114) < 170 ? 0 : 255; p[i] = p[i+1] = p[i+2] = v; p[i+3] = 255; }
+      g.putImageData(d, 0, 0);
+    }
+    URL.revokeObjectURL(url);
+    c.toBlob(b => { save(b, `stamp-edit${opt('fFlip') ? '-mirror' : ''}${opt('fBw') ? '-bw' : ''}-${stamp8()}.png`); toast('바꾼 그림을 저장했어요'); }, 'image/png');
+  };
+  img.onerror = () => { URL.revokeObjectURL(url); toast('그림 파일을 열지 못했어요'); };
+  img.src = url;
+}
+
 /* ---------- 화면 그리기 ---------- */
 function render(){
   const main = $('#main');
@@ -1340,7 +1630,7 @@ function render(){
   let h = state.type
     ? `<div class="progress">${all.map((_, k) => `<span class="${k <= state.i ? 'on' : ''}"></span>`).join('')}</div><div class="steplabel">${state.i + 1} / ${total}단계</div>`
     : `<div class="steplabel">시작하기</div>`;
-  h += `<h2>${esc(s.title)}</h2>${s.help ? `<p class="help">${esc(s.help)}</p>` : '<div style="height:12px"></div>'}`;
+  h += `<h2>${esc(s.title)}</h2>${s.help || s.privacy ? `<p class="help">${esc(s.help || '')}${s.privacy ? `<span class="privacy">🔒 ${esc(PRIVACY)}</span>` : ''}</p>` : '<div style="height:12px"></div>'}`;
 
   if (s.kind === 'type'){
     h += `<div class="opts type-opts">${s.options.map((o, k) => `<button class="opt ${state.type === o.v ? 'sel' : ''}" data-v="${o.v}"><span class="num">${k + 1}</span><span><span class="t">${esc(o.label)}</span><span class="d">${esc(o.d)}</span></span></button>`).join('')}</div>`;
@@ -1355,7 +1645,8 @@ function render(){
     }).join('')}</div>`;
     const o = chosen(s.id);
     if (o && o.custom && s.id === 'phrase') h += `<p class="help" style="margin:12px 0 0">직접 입력할 때 <b>/</b> 를 넣으면 그 자리에서 줄이 바뀌어요. (예: 확인/했어요)</p>`;
-    if (o && o.custom) h += `<div class="custom"><input type="text" id="txt" maxlength="20" placeholder="${esc(s.placeholder || '직접 입력해 주세요')}" value="${esc(state.ans[s.id + '__c'] || '')}" autocomplete="off"></div>`;
+    if (o && o.custom) h += `<div class="custom"><input type="text" id="txt" maxlength="${s.max || 20}" placeholder="${esc(s.placeholder || '직접 입력해 주세요')}" value="${esc(state.ans[s.id + '__c'] || '')}" autocomplete="off"></div>`;
+    if (s.id === 'mm' && +state.ans.mm <= 15 && ['char','class','check','calli'].includes(state.type)) h += `<p class="help" style="margin:12px 0 0;color:var(--red)">⚠ ${state.ans.mm}mm는 아주 작아요. 그림·둘레 글자·칸이 뭉개질 수 있어요. 이름 도장이 아니면 더 큰 크기를 권해요.</p>`;
   }
   if (s.id === 'phrase' || s.id === 'name') h += `<div id="breaks" class="breaks" data-id="${s.id}"></div>`;
   h += `<div class="err" id="err"></div>`;
@@ -1410,16 +1701,31 @@ function renderBreaks(){
 function next(){
   const all = steps(), s = all[state.i];
   if (s.kind === 'type' && !state.type){ $('#err').textContent = '먼저 도장 용도를 골라 주세요.'; return; }
-  if (s.kind === 'text' && !val(s.id)){ $('#err').textContent = '이름을 적어 주세요.'; $('#txt')?.focus(); return; }
+  if (s.kind === 'text' && !val(s.id)){ $('#err').textContent = s.id === 'name' ? '이름을 적어 주세요.' : '글을 적어 주세요.'; $('#txt')?.focus(); return; }
   if (s.kind === 'choice'){ const o = chosen(s.id); if (o && o.custom && !val(s.id)){ $('#err').textContent = '직접 입력 칸을 채워 주세요.'; $('#txt')?.focus(); return; } }
   if (state.i < all.length - 1){ state.i++; render(); }
   else { state.done = true; render(); }
   window.scrollTo({top:0, behavior:'smooth'});
 }
 
+function useTips(){
+  const use = state.ans.use, mm = state.ans.mm;
+  if (use === 'order') return `<div class="tipbox"><b class="h">🏪 도장 가게에 주문할 때</b><ol>
+      <li>ChatGPT·Gemini에서 받은 그림(바른 모양, 흑백)을 그대로 보내세요. 그림이 흐리면 아래 ‘그림 정리’의 흑백으로 바꾸기를 써 보세요.</li>
+      <li>실제 크기 <b>${mm}mm</b>와 인주(잉크) 색을 함께 알려 주세요.</li>
+      <li>좌우 반전을 가게에서 해 주는지 꼭 물어보세요. 가게마다 원고를 받는 방식(파일 종류·해상도)이 달라요.</li></ol></div>`;
+  if (use === 'diy') return `<div class="tipbox"><b class="h">🛠️ 직접 만들 때 (고무 새기기·3D 프린터·레이저)</b><ul>
+      <li>도장 면에는 <b>좌우를 뒤집은 그림</b>이 들어가야 찍었을 때 바르게 나와요.</li>
+      <li class="warn">AI에게 뒤집어 달라고 하면 글자가 틀리기 쉬워요. 바른 모양으로 받은 뒤, 아래 ‘그림 정리’에서 좌우로 뒤집으세요.</li>
+      <li>실제 크기 <b>${mm}mm</b>에 맞게 줄여서 쓰세요. 아래 ‘실제 크기로 인쇄해 보기’로 크기를 먼저 확인할 수 있어요.</li></ul></div>`;
+  return '';
+}
+
 function renderResult(){
   const main = $('#main');
   const prompt = buildPrompt();
+  const named = state.type === 'name' || state.type === 'class';
+  const isProd = prod(), diy = state.ans.use === 'diy';
   main.innerHTML = `
     <div class="progress">${steps().map(() => '<span class="on"></span>').join('')}</div>
     <div class="steplabel">완성!</div>
@@ -1427,7 +1733,8 @@ function renderResult(){
     <div class="howto"><b>이렇게 쓰세요</b>
       <ol><li>아래 <b>요청문 복사</b>를 누르세요.</li>
       <li>ChatGPT나 Gemini를 열어 <b>새 대화</b>에 붙여 넣으세요.</li>
-      <li>결과가 아쉬우면 새로 만들지 말고, <b>같은 대화창</b>에 아래 ‘고쳐 달라는 문장’을 붙여 넣으세요. 무료 횟수를 아낄 수 있어요.</li></ol>
+      <li>결과가 아쉬우면 새로 만들지 말고, <b>같은 대화창</b>에 아래 ‘고쳐 달라는 문장’을 붙여 넣으세요. 무료 횟수를 아낄 수 있어요.</li>
+      ${named ? `<li>🔒 ${esc(PRIVACY)}</li>` : ''}</ol>
     </div>
     <textarea id="prompt" aria-label="생성된 요청문">${esc(prompt)}</textarea>
     <div class="row">
@@ -1435,15 +1742,42 @@ function renderResult(){
       <a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT 열기 ↗</a>
       <a class="btn" href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini 열기 ↗</a>
     </div>
+    ${useTips()}
     <h3 class="sub">고쳐 달라는 문장</h3>
     <p class="help">누르면 바로 복사돼요. 결과 그림이 나온 같은 대화창에 붙여 넣으세요.</p>
     <div class="chips">${fixLines().map((f, k) => `<button class="chip" data-k="${k}">${esc(f.label)}</button>`).join('')}</div>
+
+    <h3 class="sub">미리보기 그림 받기</h3>
+    <p class="help">${state.type === 'char' ? '캐릭터는 이모지로 대신 그린 참고 그림이에요. 진짜 그림은 AI에게 받으세요.' : 'AI 없이 오른쪽 미리보기 그림을 바로 파일로 받아요. 이름·문구 도장은 이것만으로도 쓸 수 있어요.'}</p>
+    <div class="checks">
+      <label><input type="checkbox" id="xTrans" ${state.ans.bg === 'trans' ? 'checked' : ''}> 투명 배경</label>
+      <label><input type="checkbox" id="xBlack" ${isProd ? 'checked' : ''}> 검정으로 (제작용)</label>
+      <label><input type="checkbox" id="xFlip" ${diy ? 'checked' : ''}> 좌우 뒤집기 (직접 새길 때)</label>
+    </div>
+    <div class="row">
+      <button class="btn" id="dlPng">🖼️ PNG 받기</button>
+      <button class="btn" id="dlSvg">📐 SVG 받기</button>
+      ${isProd ? '<button class="btn" id="prReal">🖨️ 실제 크기로 인쇄해 보기</button>' : ''}
+    </div>
+
+    ${isProd ? `<h3 class="sub">그림 정리 (AI가 만든 그림)</h3>
+    <p class="help">ChatGPT·Gemini에서 저장한 그림 파일을 고르면, 이 컴퓨터 안에서 바꿔 새 파일로 저장해요. 그림은 어디로도 보내지 않아요.</p>
+    <div class="checks">
+      <label><input type="checkbox" id="fFlip" ${diy ? 'checked' : ''}> 좌우 뒤집기</label>
+      <label><input type="checkbox" id="fBw" checked> 흑백(검정·흰색 두 가지)으로</label>
+    </div>
+    <div class="row"><label class="btn filebox">📂 그림 파일 고르기<input type="file" id="fIn" accept="image/*"></label></div>` : ''}
+
     <div class="nav">
       <button class="btn" id="back">← 선택 바꾸기</button>
       <button class="btn" id="restart">처음부터 다시</button>
     </div>`;
   $('#copy').addEventListener('click', () => copy($('#prompt').value, '요청문을 복사했어요'));
   main.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => copy(fixLines()[+b.dataset.k].text, `‘${b.textContent}’ 문장을 복사했어요`)));
+  $('#dlPng').addEventListener('click', e => busy(e.currentTarget, downloadPng));
+  $('#dlSvg').addEventListener('click', e => busy(e.currentTarget, downloadSvg));
+  $('#prReal')?.addEventListener('click', printReal);
+  $('#fIn')?.addEventListener('change', e => { flipFile(e.target.files[0]); e.target.value = ''; });
   $('#back').addEventListener('click', () => { state.done = false; state.i = steps().length - 1; render(); });
   $('#restart').addEventListener('click', () => { state.type = null; state.ans = {}; state.i = 0; state.done = false; render(); });
 }
@@ -1462,10 +1796,9 @@ function fallback(text, done){
   ta.remove();
 }
 let tt;
-function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 1800); }
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2200); }
 
 render();
-if (document.fonts) document.fonts.ready.then(renderPreview);
 </script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
