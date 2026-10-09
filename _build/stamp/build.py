@@ -36,7 +36,7 @@ alone = (SRC.replace('<!--HJ-HEAD-->', rd(OG / 'head_snip.html') + CREDIT_CSS)
             .replace('<!--HJ-HOME-->\n', ''))
 # --- 따로 쓰는 판: 검색(구글·네이버)·공유(카카오톡·밴드) 정보 (2026-10-09)
 SITE = 'https://hongjihee1005.github.io/stamp-maker/'
-GOOGLE = ''   # 구글 Search Console 'HTML 태그' 소유 확인 값(content="…" 안쪽). 넣은 뒤에는 지우지 마세요(지우면 확인이 풀림)
+GOOGLE = 'gkDyhzWKxyJcx07mGzqlgNcSb6hh2qFh4VKAtkQgIUE'   # 구글 Search Console 'HTML 태그' 소유 확인 값(content="…" 안쪽). 넣은 뒤에는 지우지 마세요(지우면 확인이 풀림)
 TITLE = '도장 프롬프트 만들기 | 초등교사 홍지희'
 DESC = ('초등교사 홍지희가 만든 도장 만들기 도구 — 이름 도장·칭찬 도장·학급 도장·확인 도장·사진으로 도장을 고르기만 하면 '
         'ChatGPT·Gemini에 넣을 프롬프트와 PNG·SVG 도장 이미지 파일을 만들어요.')
