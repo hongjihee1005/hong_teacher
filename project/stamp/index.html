@@ -1,8 +1,9 @@
 <!doctype html>
-<html lang="ko">
+<html lang="ko" translate="no">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="google" content="notranslate">
 <title>도장 프롬프트 만들기</title>
 <meta name="description" content="하나씩 고르면 ChatGPT·Gemini에 붙여 넣을 도장 그림 요청문을 만들어 주는 도구 — 이름 도장·캘리그라피 문구 도장·캐릭터 칭찬 도장·학급 도장·확인 도장, 실제 도장 제작용 원고와 미리보기 그림 받기">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -106,6 +107,9 @@ textarea:focus{outline:none;border-color:var(--red)}
 .bk-result{font-size:14px;color:var(--muted)}
 .bk-result b{color:var(--red)}
 footer.note{margin-top:24px;font-size:12.5px;color:var(--muted);text-align:center}
+.ph-pick{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.ph-name{font-size:13.5px;color:var(--muted)}
+.ph-thumb{display:block;max-width:220px;max-height:160px;margin-top:12px;border-radius:10px;border:1.5px solid var(--line)}
 #xsvg{position:absolute;left:-9999px;top:0;width:240px;height:240px}
 #printSheet{display:none}
 @media print{
@@ -803,7 +807,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 <body>
 <div class="wrap">
   <header>
-    <div class="logo">印</div>
+    <div class="logo" translate="no" lang="zh-Hant">印</div>
     <div>
       <h1>도장 프롬프트 만들기</h1>
       <p>하나씩 고르면 ChatGPT·Gemini에 붙여 넣을 도장 그림 요청문을 만들어 드려요.</p>
@@ -846,6 +850,7 @@ const F = name => `'hjs-${name}', '${name}'`;
 /* ---------- 선택지 데이터 ---------- */
 const PHRASES = ['참 잘했어요','최고예요!','정말 멋져요','훌륭해요','노력이 빛나요','오늘도 한 뼘 성장!','확인했어요'];
 const phraseOpts = () => [...PHRASES.map(t => ({v:t, label:t, p:t})), {v:'custom', label:'직접 입력', custom:true}];
+const PRIVACY_PHOTO = '사진은 이 페이지(이 기기) 안에서만 바뀌고 어디로도 보내지 않아요. 단, ChatGPT·Gemini에 사진을 올리면 그 서비스로 전달되니 학생 얼굴이 나온 사진은 올리지 말아 주세요.';
 const PRIVACY = '학생 이름을 넣으면, 요청문을 붙여 넣는 AI 서비스(ChatGPT·Gemini)로 이름이 전달돼요. 학교의 개인정보 안내에 맞게 써 주세요.';
 
 const COLORS = {
@@ -900,7 +905,8 @@ const TYPE_STEP = {
     {v:'calli', label:'캘리그라피 문구 도장', d:'멋진 글씨체의 문구가 주인공이에요'},
     {v:'char', label:'캐릭터 + 칭찬 문구 도장', d:'AI가 캐릭터를 그리고, 고른 칭찬 문구를 넣어요'},
     {v:'class', label:'학급 도장', d:'둘레에 학교·반 이름, 가운데에 그림이나 글자가 들어가요'},
-    {v:'check', label:'확인·날짜 도장', d:'‘검사했어요’ 같은 글과 날짜·사인 칸 — 공책·학습지 검사용이에요'}
+    {v:'check', label:'확인·날짜 도장', d:'‘검사했어요’ 같은 글과 날짜·사인 칸 — 공책·학습지 검사용이에요'},
+    {v:'photo', label:'사진으로 도장', d:'아이 그림·동물·물건 사진을 올리면 이 페이지에서 도장 모양으로 바꿔요'}
   ]
 };
 
@@ -1038,6 +1044,34 @@ const FLOWS = {
   ]}
 };
 
+FLOWS.photo = { label:'사진으로 도장', steps:[
+  {id:'photo', kind:'photo', title:'도장으로 만들 사진을 골라 주세요', help:'아이가 그린 그림, 동물·물건 사진처럼 모양이 또렷한 사진이 잘 돼요. 휴대폰에서는 바로 찍을 수도 있어요.', sum:'사진'},
+  {id:'pfit', kind:'choice', title:'사진을 어떻게 담을까요?', sum:'담기', options:[
+    {v:'cover', label:'가운데를 꽉 차게', d:'가장자리는 잘려요'},
+    {v:'contain', label:'사진 전체가 보이게', d:'남는 곳은 비워요'}
+  ]},
+  {id:'pstyle', kind:'choice', title:'어떤 도장으로 바꿀까요?', help:'오른쪽 미리보기를 보며 골라 보세요.', sum:'바꾸기', options:[
+    {v:'print', label:'판화', d:'밝고 어두운 곳을 두 가지로', em:'🖨️', p:'판화처럼 밝은 곳과 어두운 곳 두 가지로만 나눈'},
+    {v:'line', label:'선 그림', d:'모양의 테두리 선만', em:'✏️', p:'모양의 테두리를 굵은 선으로만 따라 그린 선 그림'},
+    {v:'silhouette', label:'실루엣', d:'배경을 빼고 꽉 찬 모양', em:'👤', p:'배경을 빼고 모양 전체를 한 색으로 꽉 채운 실루엣'}
+  ]},
+  {id:'level', kind:'choice', title:'얼마나 진하게 할까요?', help:'찍히는 부분이 너무 많거나 적으면 바꿔 보세요.', sum:'진하기', def:'normal', options:[
+    {v:'light', label:'연하게', d:'찍히는 곳이 적게'},
+    {v:'normal', label:'보통'},
+    {v:'dark', label:'진하게', d:'찍히는 곳이 많게'}
+  ]},
+  {id:'shape', kind:'choice', title:'도장 모양은요?', sum:'모양', options:shapeOpts(['circle','roundsq','square','oval'])},
+  {id:'ptext', kind:'choice', title:'아래에 글을 넣을까요?', sum:'글', placeholder:'예: 우리 반 하늘이', max:10, options:[
+    {v:'none', label:'글 없이', p:''},
+    {v:'참 잘했어요', label:'참 잘했어요', p:'참 잘했어요'},
+    {v:'최고예요!', label:'최고예요!', p:'최고예요!'},
+    {v:'custom', label:'직접 입력', custom:true}
+  ]},
+  {id:'border', kind:'choice', title:'테두리는요?', sum:'테두리', options:BORDERS},
+  {id:'color', kind:'choice', title:'잉크 색을 골라 주세요', sum:'색상', options:colorOpts(['red','vermilion','blue','navy','green','purple','orange','ink'])},
+  {id:'texture', kind:'choice', title:'찍힌 느낌은요?', sum:'질감', options:TEXTURE}
+]};
+
 const USE_STEP = {id:'use', kind:'choice', title:'만든 그림을 어디에 쓸까요?', help:'실제 도장으로 만들면 아주 작게 찍혀서, 그에 맞게 요청문이 바뀌어요.', sum:'쓰임', options:[
   {v:'screen', label:'화면·학습지 그림', d:'파일로 붙여 써요', em:'🖼️'},
   {v:'order', label:'도장 가게에 주문', d:'고무·만년 도장으로 맡겨요', em:'🏪'},
@@ -1071,7 +1105,7 @@ function stepById(id){ return steps().find(s => s.id === id); }
 function chosen(id){ const s = stepById(id); return s && s.options ? s.options.find(o => o.v === state.ans[id]) : null; }
 
 function setType(t){
-  state.type = t; state.ans = {type:t};
+  state.type = t; state.ans = {type:t}; state.photo = null; PH.key = '';
   [...FLOWS[t].steps, USE_STEP, MM_STEP, BG_STEP].forEach(s => { if (s.kind === 'choice') state.ans[s.id] = s.def ?? s.options[0].v; if (s.kind === 'text') state.ans[s.id] = ''; });
 }
 
@@ -1087,6 +1121,7 @@ function val(id){
 function shown(id){
   const s = stepById(id); if (!s) return '';
   if (s.kind === 'text') return (state.ans[id] || '').trim();
+  if (s.kind === 'photo') return state.photo ? state.photo.name : '';
   if (id === 'name' || id === 'phrase'){ const L = linesOf(id); return L.length ? L.join(' / ') : '(직접 입력)'; }
   const o = chosen(id); if (!o) return '';
   return o.custom ? ((state.ans[id + '__c'] || '').trim() || '(직접 입력)') : o.label;
@@ -1120,6 +1155,7 @@ function stampText(){
   if (state.type === 'name') return nameFull();
   if (state.type === 'class'){ const b = val('bottom'); return val('top') + (b ? ` / ${b}` : '') + (chosen('center')?.custom ? ` / ${val('center')}` : ''); }
   if (state.type === 'check') return val('word');
+  if (state.type === 'photo') return val('ptext');
   return phraseFull();
 }
 function fixWrongText(){
@@ -1246,6 +1282,27 @@ ${viewBlock(', 다른 글자')}`;
 ${prodBlock()}
 ${viewBlock(', 다른 글자')}`;
   }
+  if (state.type === 'photo'){
+    const t = val('ptext');
+    return `첨부한 사진(그림)을 종이에 찍은 도장(스탬프) 이미지로 바꿔 주세요.
+
+[가장 중요] 사진 살리기
+- 사진 속 주인공의 모양과 특징은 그대로 살리되, 도장으로 찍기 좋게 단순하게
+- 바꾸는 방법: ${val('pstyle')} 모양
+- 사진 속 배경과 자잘한 무늬는 빼기
+${t ? `
+[글]
+- 그림 아래에: 「${t}」
+- 이 글자를 한 글자도 바꾸거나, 빼거나, 더하지 말고 정확하게 써 주세요.
+` : ''}
+[도장 디자인]
+- 모양: ${val('shape')} 안에 그림이 들어가도록
+- 테두리: ${val('border')}
+- 색상: ${colorP()} 한 가지 색만 사용
+- 질감: ${textureP()} 느낌
+${prodBlock()}
+${viewBlock(', 다른 글자')}`;
+  }
   const ch = val('character');
   return `아이들 칭찬용 캐릭터 도장(스탬프) 이미지를 만들어 주세요.
 
@@ -1281,6 +1338,10 @@ function fixLines(){
     {label:'배경 투명하게', text:'도장 부분은 그대로 두고, 배경만 투명하게 바꿔서 PNG로 다시 만들어 주세요.'}
   ];
   if (state.type === 'char') list.push({label:'캐릭터 더 귀엽게', text:'문구와 구성은 그대로 두고 캐릭터를 더 귀엽고 단순하게 다듬어 주세요.'});
+  if (state.type === 'photo'){
+    if (!val('ptext')) list.shift();
+    list.unshift({label:'사진과 더 닮게', text:'도장 느낌은 그대로 두고, 첨부한 사진 속 모양과 특징을 더 닮게 다시 그려 주세요.'});
+  }
   if (state.type === 'class' || state.type === 'check') list.push({label:'칸·띠 더 넓게', text:'디자인은 그대로 두고, 글자 띠와 손으로 써넣을 칸을 조금 더 넓고 여유 있게 해 주세요.'});
   list.push({label:'글자 없이 그림만', text:'글자는 모두 빼고, 같은 디자인의 도장 그림만 만들어 주세요. 글자가 들어갈 자리는 비워 두세요.'});
   return list;
@@ -1473,6 +1534,19 @@ function previewMarkup(col){
     body = `<g ${fAttr} opacity=".93">${body}</g>`;
   }
 
+  if (state.type === 'photo'){
+    const sw = {single:5, double:6, thick:11}[state.ans.border] || 5;
+    const t = val('ptext'), url = photoMask();
+    const box = t ? {x:50, y:30, s:140} : {x:30, y:30, s:180};
+    let inner = '';
+    if (url) inner = `<clipPath id="phClip">${shapeEl(shape, 'transform="translate(120 120) scale(.86) translate(-120 -120)"')}</clipPath><image href="${url}" x="${box.x}" y="${box.y}" width="${box.s}" height="${box.s}" clip-path="url(#phClip)" filter="url(#phMono)"/>`;
+    else inner = `<text x="120" y="${box.y + box.s/2 + 6}" text-anchor="middle" font-size="16" fill="${col}" font-family="${esc(F('Gowun Dodum'))}">사진을 골라 주세요</text>`;
+    let b = shapeEl(shape, `fill="none" stroke="${col}" stroke-width="${sw}"`);
+    if (state.ans.border === 'double') b += `<g transform="translate(120 120) scale(.9) translate(-120 -120)">${shapeEl(shape, `fill="none" stroke="${col}" stroke-width="2.4" vector-effect="non-scaling-stroke"`)}</g>`;
+    if (t){ const fs = Math.min(24, 118 / Math.max([...t].length, 1)); inner += `<text x="120" y="${(196 - (24 - fs) * .3).toFixed(1)}" text-anchor="middle" font-family="${esc(F('Jua') + ', sans-serif')}" font-size="${fs.toFixed(1)}" fill="${col}">${esc(t)}</text>`; }
+    body = `<defs><filter id="phMono"><feFlood flood-color="${col}" result="f"/><feComposite in="f" in2="SourceAlpha" operator="in"/></filter></defs><g ${fAttr} opacity=".95">${b}${inner}</g>`;
+  }
+
   if (state.type === 'char'){
     const mono = state.ans.art === 'mono';
     const ch = chosen('character'), act = chosen('action');
@@ -1514,6 +1588,7 @@ function renderPreview(){
   const cap = $('#cap');
   if (cap){
     if (state.type === 'char'){ cap.className = 'cap warn'; cap.innerHTML = '<b>⚠ 미리보기는 참고만 하세요.</b><br>캐릭터와 그림 스타일은 AI가 새로 그려요. 여기서는 모양·색·문구 위치만 확인해 주세요.'; }
+    else if (state.type === 'photo'){ cap.className = 'cap'; cap.textContent = '이 기기 안에서 사진을 바꾼 도장이에요. 결과 화면에서 바로 저장할 수 있어요.' + (prod() && state.ans.mm ? ` (실제 크기 약 ${state.ans.mm}mm)` : ''); }
     else { cap.className = 'cap'; cap.textContent = '대략적인 모양이에요. 실제 그림은 AI가 그려요.' + (prod() && state.ans.mm ? ` (실제 크기 약 ${state.ans.mm}mm)` : ''); }
   }
   if (!state.type){
@@ -1530,6 +1605,79 @@ function renderSummary(){
   let h = `<dt>용도</dt><dd>${esc(FLOWS[state.type].label)}</dd>`;
   steps().slice(1).forEach(s => { const v = shown(s.id); if (v) h += `<dt>${esc(s.sum)}</dt><dd>${esc(v)}</dd>`; });
   dl.innerHTML = h;
+}
+
+/* ---------- 사진 → 도장 모양(이 기기 안에서만 처리) ---------- */
+const PH = {key:'', url:''};
+function loadPhoto(file){
+  if (!file) return;
+  const url = URL.createObjectURL(file), img = new Image();
+  img.onload = () => { state.photo = {img, name:file.name || '사진'}; PH.key = ''; render(); };
+  img.onerror = () => { URL.revokeObjectURL(url); toast('사진을 열지 못했어요. 다른 사진을 골라 주세요.'); };
+  img.src = url;
+}
+function otsu(g){
+  const h = new Array(256).fill(0); g.forEach(v => h[v]++);
+  let sum = 0; for (let i = 0; i < 256; i++) sum += i * h[i];
+  let sB = 0, wB = 0, best = 0, T = 128; const n = g.length;
+  for (let t = 0; t < 256; t++){ wB += h[t]; if (!wB) continue; const wF = n - wB; if (!wF) break; sB += t * h[t];
+    const mB = sB / wB, mF = (sum - sB) / wF, v = wB * wF * (mB - mF) ** 2; if (v > best){ best = v; T = t; } }
+  return T;
+}
+function blur(g, N){
+  const o = new Uint8ClampedArray(g.length);
+  for (let y = 0; y < N; y++) for (let x = 0; x < N; x++){
+    let s = 0, c = 0;
+    for (let dy = -1; dy <= 1; dy++) for (let dx = -1; dx <= 1; dx++){ const X = x + dx, Y = y + dy; if (X >= 0 && Y >= 0 && X < N && Y < N){ s += g[Y*N + X]; c++; } }
+    o[y*N + x] = s / c;
+  }
+  return o;
+}
+// 검정 잉크 + 투명 바탕 PNG(data URL). 색은 그릴 때 필터로 입힘
+function photoMask(){
+  if (!state.photo) return '';
+  const st = state.ans.pstyle, lv = state.ans.level, fit = state.ans.pfit, key = `${st}|${lv}|${fit}`;
+  if (PH.key === key) return PH.url;
+  const N = 400, img = state.photo.img, w = img.naturalWidth, h = img.naturalHeight;
+  const c = document.createElement('canvas'); c.width = c.height = N;
+  const g2 = c.getContext('2d', {willReadFrequently:true});
+  g2.fillStyle = '#fff'; g2.fillRect(0, 0, N, N);
+  if (fit === 'contain'){ const k = Math.min(N / w, N / h); g2.drawImage(img, (N - w*k) / 2, (N - h*k) / 2, w*k, h*k); }
+  else { const m = Math.min(w, h); g2.drawImage(img, (w - m) / 2, (h - m) / 2, m, m, 0, 0, N, N); }
+  const d = g2.getImageData(0, 0, N, N), p = d.data;
+  let gray = new Uint8ClampedArray(N*N);
+  for (let i = 0; i < N*N; i++) gray[i] = p[i*4]*.299 + p[i*4+1]*.587 + p[i*4+2]*.114;
+  let ink = new Uint8Array(N*N);
+  if (st === 'silhouette'){
+    // 가장자리 색을 배경으로 보고, 배경과 많이 다른 곳을 모양으로
+    let r = 0, gg = 0, b = 0, n = 0;
+    for (let i = 0; i < N; i++) for (const j of [i, (N-1)*N + i, i*N, i*N + N - 1]){ r += p[j*4]; gg += p[j*4+1]; b += p[j*4+2]; n++; }
+    r /= n; gg /= n; b /= n;
+    const D = {light:70, normal:48, dark:30}[lv] || 48;
+    for (let i = 0; i < N*N; i++) ink[i] = Math.hypot(p[i*4] - r, p[i*4+1] - gg, p[i*4+2] - b) > D ? 1 : 0;
+  } else if (st === 'line'){
+    gray = blur(blur(gray, N), N);
+    const mag = new Float32Array(N*N), vals = [];
+    for (let y = 1; y < N - 1; y++) for (let x = 1; x < N - 1; x++){
+      const G = (X, Y) => gray[Y*N + X];
+      const gx = -G(x-1,y-1) - 2*G(x-1,y) - G(x-1,y+1) + G(x+1,y-1) + 2*G(x+1,y) + G(x+1,y+1);
+      const gy = -G(x-1,y-1) - 2*G(x,y-1) - G(x+1,y-1) + G(x-1,y+1) + 2*G(x,y+1) + G(x+1,y+1);
+      const m = Math.hypot(gx, gy); mag[y*N + x] = m; if (y % 3 === 0 && x % 3 === 0) vals.push(m);
+    }
+    vals.sort((a, b) => a - b);
+    const q = {light:.93, normal:.89, dark:.84}[lv] || .89;
+    const T = Math.max(40, vals[Math.floor(vals.length * q)] || 40);
+    for (let i = 0; i < N*N; i++) ink[i] = mag[i] > T ? 1 : 0;
+    if (lv !== 'light'){ const o = new Uint8Array(N*N); for (let y = 1; y < N - 1; y++) for (let x = 1; x < N - 1; x++){ const i = y*N + x; o[i] = ink[i] | ink[i-1] | ink[i+1] | ink[i-N] | ink[i+N]; } ink = o; }
+  } else {
+    gray = blur(gray, N);
+    const T = otsu(gray) + ({light:-28, normal:0, dark:28}[lv] || 0);
+    for (let i = 0; i < N*N; i++) ink[i] = gray[i] < T ? 1 : 0;
+  }
+  for (let i = 0; i < N*N; i++){ p[i*4] = p[i*4+1] = p[i*4+2] = 0; p[i*4+3] = ink[i] ? 255 : 0; }
+  g2.clearRect(0, 0, N, N); g2.putImageData(d, 0, 0);
+  PH.key = key; PH.url = c.toDataURL('image/png');
+  return PH.url;
 }
 
 /* ---------- 미리보기 그림 받기(PNG·SVG)·실제 크기 인쇄 ---------- */
@@ -1634,6 +1782,10 @@ function render(){
 
   if (s.kind === 'type'){
     h += `<div class="opts type-opts">${s.options.map((o, k) => `<button class="opt ${state.type === o.v ? 'sel' : ''}" data-v="${o.v}"><span class="num">${k + 1}</span><span><span class="t">${esc(o.label)}</span><span class="d">${esc(o.d)}</span></span></button>`).join('')}</div>`;
+  } else if (s.kind === 'photo'){
+    h += `<div class="ph-pick"><label class="btn primary filebox">📷 사진 고르기<input type="file" id="phIn" accept="image/*"></label><span class="ph-name">${state.photo ? esc(state.photo.name) : '아직 고른 사진이 없어요'}</span></div>`;
+    if (state.photo) h += `<img class="ph-thumb" src="${esc(state.photo.img.src)}" alt="고른 사진">`;
+    h += `<p class="help" style="margin:12px 0 0"><span class="privacy">🔒 ${esc(PRIVACY_PHOTO)}</span></p>`;
   } else if (s.kind === 'text'){
     h += `<input type="text" id="txt" maxlength="${s.max || 20}" placeholder="${esc(s.placeholder || '')}" value="${esc(state.ans[s.id] || '')}" autocomplete="off">`;
   } else {
@@ -1659,6 +1811,7 @@ function render(){
     render();
     const o = chosen(s.id); if (o && o.custom) $('#txt')?.focus();
   }));
+  $('#phIn')?.addEventListener('change', e => { loadPhoto(e.target.files[0]); e.target.value = ''; });
   const txt = $('#txt');
   if (txt){
     txt.addEventListener('input', () => {
@@ -1701,6 +1854,7 @@ function renderBreaks(){
 function next(){
   const all = steps(), s = all[state.i];
   if (s.kind === 'type' && !state.type){ $('#err').textContent = '먼저 도장 용도를 골라 주세요.'; return; }
+  if (s.kind === 'photo' && !state.photo){ $('#err').textContent = '사진을 골라 주세요.'; return; }
   if (s.kind === 'text' && !val(s.id)){ $('#err').textContent = s.id === 'name' ? '이름을 적어 주세요.' : '글을 적어 주세요.'; $('#txt')?.focus(); return; }
   if (s.kind === 'choice'){ const o = chosen(s.id); if (o && o.custom && !val(s.id)){ $('#err').textContent = '직접 입력 칸을 채워 주세요.'; $('#txt')?.focus(); return; } }
   if (state.i < all.length - 1){ state.i++; render(); }
@@ -1724,7 +1878,7 @@ function useTips(){
 function renderResult(){
   const main = $('#main');
   const prompt = buildPrompt();
-  const named = state.type === 'name' || state.type === 'class';
+  const named = state.type === 'name' || state.type === 'class', photo = state.type === 'photo';
   const isProd = prod(), diy = state.ans.use === 'diy';
   main.innerHTML = `
     <div class="progress">${steps().map(() => '<span class="on"></span>').join('')}</div>
@@ -1732,9 +1886,9 @@ function renderResult(){
     <h2>요청문이 만들어졌어요</h2>
     <div class="howto"><b>이렇게 쓰세요</b>
       <ol><li>아래 <b>요청문 복사</b>를 누르세요.</li>
-      <li>ChatGPT나 Gemini를 열어 <b>새 대화</b>에 붙여 넣으세요.</li>
+      ${photo ? '<li>AI로 더 다듬고 싶으면 ChatGPT나 Gemini의 <b>새 대화</b>에 사진을 먼저 올리고(📎 단추) 요청문을 붙여 넣으세요. 이 페이지에서 바꾼 도장은 아래 ‘도장 그림 받기’로 바로 저장할 수 있어요.</li>' : '<li>ChatGPT나 Gemini를 열어 <b>새 대화</b>에 붙여 넣으세요.</li>'}
       <li>결과가 아쉬우면 새로 만들지 말고, <b>같은 대화창</b>에 아래 ‘고쳐 달라는 문장’을 붙여 넣으세요. 무료 횟수를 아낄 수 있어요.</li>
-      ${named ? `<li>🔒 ${esc(PRIVACY)}</li>` : ''}</ol>
+      ${named ? `<li>🔒 ${esc(PRIVACY)}</li>` : ''}${photo ? `<li>🔒 ${esc(PRIVACY_PHOTO)}</li>` : ''}</ol>
     </div>
     <textarea id="prompt" aria-label="생성된 요청문">${esc(prompt)}</textarea>
     <div class="row">
@@ -1747,8 +1901,8 @@ function renderResult(){
     <p class="help">누르면 바로 복사돼요. 결과 그림이 나온 같은 대화창에 붙여 넣으세요.</p>
     <div class="chips">${fixLines().map((f, k) => `<button class="chip" data-k="${k}">${esc(f.label)}</button>`).join('')}</div>
 
-    <h3 class="sub">미리보기 그림 받기</h3>
-    <p class="help">${state.type === 'char' ? '캐릭터는 이모지로 대신 그린 참고 그림이에요. 진짜 그림은 AI에게 받으세요.' : 'AI 없이 오른쪽 미리보기 그림을 바로 파일로 받아요. 이름·문구 도장은 이것만으로도 쓸 수 있어요.'}</p>
+    <h3 class="sub">${photo ? '도장 그림 받기' : '미리보기 그림 받기'}</h3>
+    <p class="help">${photo ? '이 기기 안에서 사진을 바꾼 도장을 그대로 파일로 저장해요.' : state.type === 'char' ? '캐릭터는 이모지로 대신 그린 참고 그림이에요. 진짜 그림은 AI에게 받으세요.' : 'AI 없이 오른쪽 미리보기 그림을 바로 파일로 받아요. 이름·문구 도장은 이것만으로도 쓸 수 있어요.'}</p>
     <div class="checks">
       <label><input type="checkbox" id="xTrans" ${state.ans.bg === 'trans' ? 'checked' : ''}> 투명 배경</label>
       <label><input type="checkbox" id="xBlack" ${isProd ? 'checked' : ''}> 검정으로 (제작용)</label>
