@@ -3,8 +3,8 @@
 
     python3 _build/stamp/build.py          # project/stamp/index.html (자료실 판) + _build/stamp/standalone/index.html (따로 쓰는 판)
 
-원본은 stamp.html 한 장(요청문 도구 전체). 자료실 판에는 연락처 줄·자료 목록·홈 단추를 넣고,
-따로 쓰는 판(저장소 hongjihee1005/stamp-maker의 index.html)에는 '만든 사람' 한 줄만 넣습니다.
+원본은 stamp.html 한 장(프롬프트·이미지 파일 도구 전체). 자료실 판에는 연락처 줄·자료 목록·홈 단추를 넣고,
+따로 쓰는 판(저장소 hongjihee1005/stamp-maker의 index.html)에는 꼬리말(설명·만든 사람·이메일·유튜브)만 넣습니다.
 고친 뒤 루트에서 python3 _build/theme/apply_content_theme.py (자동 보완 run_all.py에도 들어 있음).
 """
 import pathlib
@@ -23,13 +23,15 @@ CREDIT_CSS = ('<style id="stamp-credit">.creditbar{display:flex;flex-direction:c
               '.tolist{display:none;align-items:center;gap:8px;font-weight:700;font-size:16px;text-decoration:none;color:var(--ink);'
               'border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:9px 18px}.tolist.on{display:inline-flex}</style>')
 
+FOOT = rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.',
+                                   '도장 그림을 만들 때 쓰는 프롬프트 + 이미지 파일 제작 도구입니다.')
+# 수업 자료 덮개는 보통 연락처 줄을 숨기지만, 이 도구는 보이게(선생님 요청 2026-10-09)
+SHOW_CONTACT = '<style id="stamp-contact">html body:not(.mix) .creditbar .hj-contact{display:flex!important}</style>'
 hong = (SRC.replace('<!--HJ-HEAD-->', rd(OG / 'head_snip.html') + CREDIT_CSS)
-           .replace('<!--HJ-FOOT-->', '<div class="creditbar"><a class="tolist" href="../index.html">📋 자료 목록으로</a>'
-                    + rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.',
-                                                  'ChatGPT·Gemini로 도장 그림을 만들 때 쓰는 요청문 도구입니다.') + '</div>')
+           .replace('<!--HJ-FOOT-->', '<div class="creditbar"><a class="tolist" href="../index.html">📋 자료 목록으로</a>' + FOOT + '</div>' + SHOW_CONTACT)
            .replace('<!--HJ-HOME-->', rd(OG / 'home.html').replace('{HOME}', '../../index.html') + TOLIST))
-alone = (SRC.replace('<!--HJ-HEAD-->\n', '')
-            .replace('<!--HJ-FOOT-->', '<footer class="note">만든 사람: 초등교사 홍지희</footer>')
+alone = (SRC.replace('<!--HJ-HEAD-->', rd(OG / 'head_snip.html') + CREDIT_CSS)
+            .replace('<!--HJ-FOOT-->', '<div class="creditbar">' + FOOT + '</div>')
             .replace('<!--HJ-HOME-->\n', ''))
 assert '종이접기' not in hong and '<!--HJ-' not in hong + alone
 

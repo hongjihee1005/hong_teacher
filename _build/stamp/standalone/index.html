@@ -5,9 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="google" content="notranslate">
 <title>도장 프롬프트 만들기</title>
-<meta name="description" content="하나씩 고르면 ChatGPT·Gemini에 붙여 넣을 도장 그림 요청문을 만들어 주는 도구 — 이름 도장·캘리그라피 문구 도장·캐릭터 칭찬 도장·학급 도장·확인 도장, 실제 도장 제작용 원고와 미리보기 그림 받기">
+<meta name="description" content="하나씩 고르면 ChatGPT·Gemini에 붙여 넣을 도장 그림 프롬프트를 만들어 주는 도구 — 이름 도장·캘리그라피 문구 도장·캐릭터 칭찬 도장·학급 도장·확인 도장, 실제 도장 제작용 원고와 미리보기 그림 받기">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style><style id="stamp-credit">.creditbar{display:flex;flex-direction:column;align-items:center;gap:6px;margin-top:28px}.tolist{display:none;align-items:center;gap:8px;font-weight:700;font-size:16px;text-decoration:none;color:var(--ink);border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:9px 18px}.tolist.on{display:inline-flex}</style>
 <style>
 :root{
   color-scheme:light;
@@ -57,7 +58,8 @@ input[type=text]{font:inherit;font-size:17px;width:100%;padding:12px 14px;border
 input[type=text]:focus{outline:none;border-color:var(--red)}
 .custom{margin-top:12px}
 .err{color:var(--red);font-size:13.5px;margin-top:8px;min-height:1em}
-.nav{display:flex;justify-content:space-between;gap:10px;margin-top:22px}
+.nav{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-top:22px;flex-wrap:wrap}
+.nav-r{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:10px;margin-left:auto}
 .btn{font:inherit;font-weight:700;font-size:15px;cursor:pointer;border-radius:12px;padding:11px 18px;border:1.5px solid var(--line);background:var(--field);color:var(--ink);display:inline-flex;align-items:center;gap:6px;text-decoration:none}
 .btn:hover{border-color:#cdbfa9}
 .btn.primary{background:var(--red);border-color:var(--red);color:#fff}
@@ -106,6 +108,11 @@ textarea:focus{outline:none;border-color:var(--red)}
 .bk-result{font-size:14px;color:var(--muted)}
 .bk-result b{color:var(--red)}
 footer.note{margin-top:24px;font-size:12.5px;color:var(--muted);text-align:center}
+.sz-row{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
+.sz-in{display:inline-flex;align-items:center;gap:8px;font-weight:700}
+.sz-in input{font:inherit;font-size:20px;width:110px;padding:10px 12px;border:1.5px solid var(--line);border-radius:12px;background:var(--field);color:var(--ink);text-align:right}
+.sz-in input:focus{outline:none;border-color:var(--red)}
+.sz-x{font-size:20px;color:var(--muted)}
 .ph-pick{display:flex;flex-wrap:wrap;align-items:center;gap:10px}
 .ph-name{font-size:13.5px;color:var(--muted)}
 .ph-thumb{display:block;max-width:220px;max-height:160px;margin-top:12px;border-radius:10px;border:1.5px solid var(--line)}
@@ -131,7 +138,7 @@ footer.note{margin-top:24px;font-size:12.5px;color:var(--muted);text-align:cente
     <div class="logo" translate="no" lang="zh-Hant">印</div>
     <div>
       <h1>도장 프롬프트 만들기</h1>
-      <p>하나씩 고르면 ChatGPT·Gemini에 붙여 넣을 도장 그림 요청문을 만들어 드려요.</p>
+      <p>하나씩 고르면 ChatGPT·Gemini에 붙여 넣을 도장 그림 프롬프트를 만들어 드려요.</p>
     </div>
   </header>
 
@@ -147,8 +154,7 @@ footer.note{margin-top:24px;font-size:12.5px;color:var(--muted);text-align:cente
     </aside>
   </div>
 
-  <footer class="note">이 페이지는 요청문만 만들어요. 입력한 이름과 문구는 이 페이지에 저장되거나 어디로 전송되지 않아요.<br>(요청문을 ChatGPT·Gemini에 붙여 넣으면 그 내용은 그 서비스로 전달돼요.)</footer>
-<footer class="note">만든 사람: 초등교사 홍지희</footer>
+<div class="creditbar"><footer class="hjfoot"><p>도장 그림을 만들 때 쓰는 프롬프트 + 이미지 파일 제작 도구입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
 </div>
 <svg id="xsvg" viewBox="0 0 240 240" aria-hidden="true"></svg>
 <div id="printSheet"></div>
@@ -171,7 +177,7 @@ const F = name => `'hjs-${name}', '${name}'`;
 const PHRASES = ['참 잘했어요','최고예요!','정말 멋져요','훌륭해요','노력이 빛나요','오늘도 한 뼘 성장!','확인했어요'];
 const phraseOpts = () => [...PHRASES.map(t => ({v:t, label:t, p:t})), {v:'custom', label:'직접 입력', custom:true}];
 const PRIVACY_PHOTO = '사진은 이 페이지(이 기기) 안에서만 바뀌고 어디로도 보내지 않아요. 단, ChatGPT·Gemini에 사진을 올리면 그 서비스로 전달되니 학생 얼굴이 나온 사진은 올리지 말아 주세요.';
-const PRIVACY = '학생 이름을 넣으면, 요청문을 붙여 넣는 AI 서비스(ChatGPT·Gemini)로 이름이 전달돼요. 학교의 개인정보 안내에 맞게 써 주세요.';
+const PRIVACY = '학생 이름을 넣으면, 프롬프트를 붙여 넣는 AI 서비스(ChatGPT·Gemini)로 이름이 전달돼요. 학교의 개인정보 안내에 맞게 써 주세요.';
 
 const COLORS = {
   vermilion:{label:'전통 인주 주홍', hex:'#d8452f', p:'전통 인주 같은 주홍색'},
@@ -357,6 +363,7 @@ const FLOWS = {
       {v:'grade', label:'날짜 + 별 세 개', d:'칠할 수 있는 ☆☆☆', p:'그 아래에 날짜를 손으로 써넣을 칸 「＿＿월 ＿＿일」, 맨 아래에 칠할 수 있는 속이 빈 별 세 개 ☆☆☆ (숫자는 넣지 말 것)'},
       {v:'none', label:'칸 없이 글만', d:'글자만 크게', p:'다른 칸 없이 글자만 크게'}
     ]},
+    {id:'tname', kind:'text', optional:true, title:'선생님 이름을 넣을까요?', help:'예: 홍지희 → 도장에 ‘홍지희 선생님’으로 들어가요. 비워 두면 넣지 않아요(사인 칸을 고르셨다면 사인 칸으로 둬요).', placeholder:'예: 홍지희 (비워도 돼요)', max:8, sum:'선생님'},
     {id:'shape', kind:'choice', title:'도장 모양은요?', sum:'모양', options:shapeOpts(['roundsq','square','circle','oval'])},
     {id:'border', kind:'choice', title:'테두리는요?', sum:'테두리', options:BORDERS},
     {id:'color', kind:'choice', title:'잉크 색을 골라 주세요', sum:'색상', options:colorOpts(['red','blue','navy','green','purple','ink'])},
@@ -392,20 +399,40 @@ FLOWS.photo = { label:'사진으로 도장', steps:[
   {id:'texture', kind:'choice', title:'찍힌 느낌은요?', sum:'질감', options:TEXTURE}
 ]};
 
-const USE_STEP = {id:'use', kind:'choice', title:'만든 그림을 어디에 쓸까요?', help:'실제 도장으로 만들면 아주 작게 찍혀서, 그에 맞게 요청문이 바뀌어요.', sum:'쓰임', options:[
+const USE_STEP = {id:'use', kind:'choice', title:'만든 그림을 어디에 쓸까요?', help:'실제 도장으로 만들면 아주 작게 찍혀서, 그에 맞게 프롬프트가 바뀌어요.', sum:'쓰임', options:[
   {v:'screen', label:'화면·학습지 그림', d:'파일로 붙여 써요', em:'🖼️'},
   {v:'order', label:'도장 가게에 주문', d:'고무·만년 도장으로 맡겨요', em:'🏪'},
   {v:'diy', label:'직접 만들기', d:'고무 새기기·3D 프린터·레이저', em:'🛠️'}
 ]};
-const MM_STEP = {id:'mm', kind:'choice', title:'실제 도장 크기는요?', help:'도장의 가장 긴 쪽(지름) 길이예요. 주문할 가게의 크기표도 함께 확인해 주세요.', sum:'실제 크기', def:'24', options:[
-  {v:'12', label:'12mm', d:'아주 작게'},
-  {v:'15', label:'15mm', d:'작게'},
-  {v:'18', label:'18mm', d:'10원 동전쯤'},
-  {v:'24', label:'24mm', d:'100원 동전쯤'},
-  {v:'30', label:'30mm', d:'조금 크게'},
-  {v:'40', label:'40mm', d:'크게'},
-  {v:'50', label:'50mm', d:'아주 크게'}
-]};
+const MM_STEP = {id:'mm', kind:'size', title:'실제 도장 크기는요?', sum:'실제 크기'};
+const MM_PRESET = [[12,'아주 작게'],[15,'작게'],[18,'10원 동전쯤'],[24,'100원 동전쯤'],[30,'조금 크게'],[40,'크게'],[50,'아주 크게']];
+// 도장 모양에 따라 재는 곳: 사각형은 가로·세로, 타원은 긴 쪽, 원은 지름(그 밖의 모양은 가장 긴 쪽)
+function sizeKind(){
+  const sh = state.type === 'class' ? 'circle' : state.ans.shape;
+  if (['square','roundsq','ribbon'].includes(sh)) return 'rect';
+  if (sh === 'oval') return 'long';
+  return sh === 'circle' ? 'dia' : 'max';
+}
+const mmNum = v => { const n = parseFloat(v); return isFinite(n) ? Math.round(n * 10) / 10 : NaN; };
+const mmW = () => mmNum(state.ans.mmW), mmH = () => mmNum(state.ans.mmH), mmOne = () => mmNum(state.ans.mm);
+const mmLong = () => sizeKind() === 'rect' ? Math.max(mmW() || 0, mmH() || 0) : (mmOne() || 0);
+function sizeText(){
+  const k = sizeKind();
+  if (k === 'rect') return `가로 ${mmW()}mm × 세로 ${mmH()}mm`;
+  if (k === 'long') return `긴 쪽 ${mmOne()}mm`;
+  return k === 'dia' ? `지름 ${mmOne()}mm` : `가장 긴 쪽 ${mmOne()}mm`;
+}
+function sizeOk(){ const ok = v => v >= 5 && v <= 100; return sizeKind() === 'rect' ? ok(mmW()) && ok(mmH()) : ok(mmOne()); }
+// 사각형인데 가로·세로가 다르면 직사각형으로 그리고 요청함
+function rectRatio(){
+  if (!prod() || !['square','roundsq'].includes(state.ans.shape) || state.type === 'class') return 1;
+  const w = mmW(), h = mmH(); return w > 0 && h > 0 ? w / h : 1;
+}
+function shapeP(){
+  const r = rectRatio();
+  if (r !== 1) return `${state.ans.shape === 'roundsq' ? '모서리가 둥근 ' : ''}직사각형(가로 : 세로 = ${mmW()} : ${mmH()})`;
+  return val('shape');
+}
 const BG_STEP = {id:'bg', kind:'choice', title:'배경은 어떻게 할까요?', help:'투명 배경으로 받으면 학습지나 슬라이드에 올리기 좋아요.', sum:'배경', options:[
   {v:'white', label:'흰 종이 배경', p:'배경은 깨끗한 흰색'},
   {v:'trans', label:'투명 배경', d:'PNG로 받기', p:'배경은 투명하게 해서 PNG로'}
@@ -427,6 +454,7 @@ function chosen(id){ const s = stepById(id); return s && s.options ? s.options.f
 function setType(t){
   state.type = t; state.ans = {type:t}; state.photo = null; PH.key = '';
   [...FLOWS[t].steps, USE_STEP, MM_STEP, BG_STEP].forEach(s => { if (s.kind === 'choice') state.ans[s.id] = s.def ?? s.options[0].v; if (s.kind === 'text') state.ans[s.id] = ''; });
+  state.ans.mm = '24'; state.ans.mmW = '24'; state.ans.mmH = '24';
 }
 
 // 프롬프트에 들어갈 값
@@ -442,6 +470,8 @@ function shown(id){
   const s = stepById(id); if (!s) return '';
   if (s.kind === 'text') return (state.ans[id] || '').trim();
   if (s.kind === 'photo') return state.photo ? state.photo.name : '';
+  if (s.kind === 'size') return sizeText();
+  if (id === 'shape' && rectRatio() !== 1) return state.ans.shape === 'roundsq' ? '둥근 직사각형' : '직사각형';
   if (id === 'name' || id === 'phrase'){ const L = linesOf(id); return L.length ? L.join(' / ') : '(직접 입력)'; }
   const o = chosen(id); if (!o) return '';
   return o.custom ? ((state.ans[id + '__c'] || '').trim() || '(직접 입력)') : o.label;
@@ -474,7 +504,7 @@ function lineRule(L = phraseLines()){
 function stampText(){
   if (state.type === 'name') return nameFull();
   if (state.type === 'class'){ const b = val('bottom'); return val('top') + (b ? ` / ${b}` : '') + (chosen('center')?.custom ? ` / ${val('center')}` : ''); }
-  if (state.type === 'check') return val('word');
+  if (state.type === 'check') return val('word') + (val('tname') ? ` / ${val('tname')} 선생님` : '');
   if (state.type === 'photo') return val('ptext');
   return phraseFull();
 }
@@ -498,10 +528,9 @@ const colorP = () => prod() ? '검정' : val('color');
 const textureP = () => prod() ? '번짐 없이 깔끔하고 선명한' : val('texture');
 function prodBlock(){
   if (!prod()) return '';
-  const mm = state.ans.mm;
   return `
 [실제 도장으로 만들 원고]
-- 실제 크기 약 ${mm}mm(가장 긴 쪽)로 줄여서 만들 도장이에요. 그 크기에서도 뭉개지지 않게 선과 글자를 굵고 또렷하게, 아주 가는 선·작은 점·작은 장식은 빼 주세요.
+- 실제 크기 ${sizeText()}로 줄여서 만들 도장이에요. 그 크기에서도 뭉개지지 않게 선과 글자를 굵고 또렷하게, 아주 가는 선·작은 점·작은 장식은 빼 주세요.
 - 검정 한 가지 색으로만, 회색·그러데이션·그림자·번짐 효과 없이 흑백으로 (인주 색은 찍을 때 정해요)
 - 글자와 그림은 바르게(좌우를 뒤집지 않은 모양으로) 그려 주세요
 `;
@@ -514,6 +543,13 @@ function viewBlock(extra){
 }
 
 /* ---------- 프롬프트 만들기 ---------- */
+function checkFieldsP(){
+  const t = val('tname'), f = state.ans.fields, tn = `「${t} 선생님」`;
+  if (!t) return val('fields');
+  if (f === 'datesign') return `그 아래에 날짜를 손으로 써넣을 칸 「＿＿월 ＿＿일」, 맨 아래에 ${tn} 글자와 짧은 사인 칸 (숫자·사인은 넣지 말 것)`;
+  if (f === 'none') return `그 아래에 작게 ${tn}`;
+  return `${val('fields')}, 맨 아래에 작게 ${tn}`;
+}
 function buildPrompt(){
   if (state.type === 'name'){
     const name = nameFull(), NL = nameLines();
@@ -535,7 +571,7 @@ function buildPrompt(){
 
 [도장 디자인]
 - 새김 방식: ${val('carve')}
-- 모양: ${val('shape')}
+- 모양: ${shapeP()}
 - 글씨체: ${val('font')}
 - 글자 크기: ${val('tsize')}
 ${layoutLine}
@@ -556,7 +592,7 @@ ${lineRule()}
 
 [디자인]
 - 글씨 스타일: ${val('style')} 글씨
-- 도장 모양: ${val('shape')} 모양 테두리 안에 문구가 들어가도록
+- 도장 모양: ${shapeP()} 모양 테두리 안에 문구가 들어가도록
 - 장식: ${val('deco')}
 - 색상: ${colorP()} 한 가지 잉크 색만 사용
 - 질감: 종이에 찍은 듯 ${textureP()} 느낌
@@ -589,11 +625,11 @@ ${viewBlock(', 다른 글자')}`;
 
 [가장 중요] 글자
 - 도장 위쪽에 크게: 「${val('word')}」
-- ${val('fields')}
+- ${checkFieldsP()}
 - 이 글자를 한 글자도 바꾸거나, 빼거나, 더하지 말고 정확하게 써 주세요.
 
 [도장 디자인]
-- 모양: ${val('shape')}
+- 모양: ${shapeP()}
 - 테두리: ${val('border')}
 - 글과 칸 사이를 가는 선으로 나누기
 - 손으로 써넣을 칸은 펜으로 쓰기 좋게 넉넉히 비워 두기
@@ -616,7 +652,7 @@ ${t ? `
 - 이 글자를 한 글자도 바꾸거나, 빼거나, 더하지 말고 정확하게 써 주세요.
 ` : ''}
 [도장 디자인]
-- 모양: ${val('shape')} 안에 그림이 들어가도록
+- 모양: ${shapeP()} 안에 그림이 들어가도록
 - 테두리: ${val('border')}
 - 색상: ${colorP()} 한 가지 색만 사용
 - 질감: ${textureP()} 느낌
@@ -639,7 +675,7 @@ ${lineRule()}
 - 이 문구를 맞춤법 그대로, 한 글자도 바꾸지 말고 읽기 쉽게 정확하게 써 주세요.
 
 [디자인]
-- 도장 모양: ${val('shape')}
+- 도장 모양: ${shapeP()}
 - 대표 색상: ${prod() ? '검정 한 가지 색' : `${val('color')} (단색 스타일이면 이 색 한 가지로만)`}
 - 캐릭터와 문구가 한눈에 들어오는 단순하고 깔끔한 구성
 ${prodBlock()}
@@ -686,8 +722,10 @@ function starPts(cx, cy, R, r, n){
 }
 function shapeEl(shape, attrs){
   switch (shape){
-    case 'square': return `<rect x="22" y="22" width="196" height="196" ${attrs}/>`;
-    case 'roundsq': return `<rect x="22" y="22" width="196" height="196" rx="32" ${attrs}/>`;
+    case 'square': case 'roundsq': {
+      const r = rectRatio(), w = r >= 1 ? 196 : 196 * r, h = r >= 1 ? 196 / r : 196;
+      return `<rect x="${(120 - w/2).toFixed(1)}" y="${(120 - h/2).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}"${shape === 'roundsq' ? ' rx="32"' : ''} ${attrs}/>`;
+    }
     case 'oval': return `<ellipse cx="120" cy="120" rx="80" ry="104" ${attrs}/>`;
     case 'ribbon': return `<polygon points="8,72 232,72 210,120 232,168 8,168 30,120" stroke-linejoin="round" ${attrs}/>`;
     case 'cloud': return `<path d="${scallop(120,124,92,70,8)}" ${attrs}/>`;
@@ -722,6 +760,7 @@ function fitAll(svg){
     let bb; try { bb = g.getBBox(); } catch(e){ return; }
     if (!bb.width || !bb.height) return;
     const b = {...(SHAPE_BOX[state.ans.shape] || SHAPE_BOX.circle)};
+    if (!b.round && state.ans.shape !== 'ribbon'){ const r = rectRatio(); if (r > 1) b.h /= r; else if (r < 1) b.w *= r; }
     let shrink = 1;
     if (state.type === 'name' || state.type === 'check'){ if (state.ans.border === 'double') shrink = .84; else if (state.ans.border === 'thick') shrink = .95; }
     if (state.type === 'calli' && state.ans.deco && state.ans.deco !== 'none' && !['ribbon','star','heart'].includes(state.ans.shape)){ if (b.round) b.ry *= .68; else b.h *= .68; }
@@ -837,18 +876,23 @@ function previewMarkup(col){
     const sw = {single:5, double:6, thick:11}[state.ans.border] || 5;
     body += shapeEl(shape, `fill="none" stroke="${col}" stroke-width="${sw}"`);
     if (state.ans.border === 'double') body += `<g transform="translate(120 120) scale(.88) translate(-120 -120)">${shapeEl(shape, `fill="none" stroke="${col}" stroke-width="2.4" vector-effect="non-scaling-stroke"`)}</g>`;
-    const word = val('word') || '검사했어요', fld = state.ans.fields;
+    const word = val('word') || '검사했어요', fld = state.ans.fields, tname = val('tname');
     let inner = '';
     const T = (x, y, fs, s) => `<text x="${x}" y="${y}" text-anchor="middle" font-family="${esc(pf)}" font-size="${fs}" fill="${col}">${esc(s)}</text>`;
     const wfs = Math.min(fld === 'none' ? 60 : 44, 190 / Math.max([...word].length, 1));
-    if (fld === 'none') inner += T(120, 120 + wfs * .35, wfs.toFixed(1), word);
+    if (fld === 'none'){ inner += T(120, 120 + wfs * .35, wfs.toFixed(1), word); if (tname) inner += T(120, 120 + wfs * .35 + 34, 20, `${tname} 선생님`); }
     else {
       inner += T(120, 30 + wfs * .7, wfs.toFixed(1), word);
       inner += `<line x1="20" y1="${(46 + wfs * .7).toFixed(1)}" x2="220" y2="${(46 + wfs * .7).toFixed(1)}" stroke="${col}" stroke-width="2.5"/>`;
       const dy = 98 + wfs * .7;
       inner += `<line x1="34" y1="${dy}" x2="82" y2="${dy}" stroke="${col}" stroke-width="2" stroke-dasharray="4 4"/>` + T(98, dy - 2, 26, '월') + `<line x1="122" y1="${dy}" x2="170" y2="${dy}" stroke="${col}" stroke-width="2" stroke-dasharray="4 4"/>` + T(186, dy - 2, 26, '일');
-      if (fld === 'datesign'){ const sy = dy + 50; inner += T(70, sy - 2, 24, '선생님') + `<line x1="112" y1="${sy}" x2="206" y2="${sy}" stroke="${col}" stroke-width="2" stroke-dasharray="4 4"/>`; }
+      if (fld === 'datesign'){
+        const sy = dy + 50;
+        if (tname){ const lab = `${tname} 선생님`, fs = Math.min(24, 130 / [...lab].length); inner += T(96, sy - 2, fs.toFixed(1), lab) + `<line x1="${(96 + [...lab].length * fs * .52).toFixed(1)}" y1="${sy}" x2="214" y2="${sy}" stroke="${col}" stroke-width="2" stroke-dasharray="4 4"/>`; }
+        else inner += T(70, sy - 2, 24, '선생님') + `<line x1="112" y1="${sy}" x2="206" y2="${sy}" stroke="${col}" stroke-width="2" stroke-dasharray="4 4"/>`;
+      }
       if (fld === 'grade'){ const sy = dy + 52; inner += T(120, sy, 34, '☆ ☆ ☆'); }
+      if (tname && fld !== 'datesign') inner += T(120, dy + (fld === 'grade' ? 96 : 48), 20, `${tname} 선생님`);
     }
     body += fitG(inner);
     body = `<g ${fAttr} opacity=".93">${body}</g>`;
@@ -908,8 +952,8 @@ function renderPreview(){
   const cap = $('#cap');
   if (cap){
     if (state.type === 'char'){ cap.className = 'cap warn'; cap.innerHTML = '<b>⚠ 미리보기는 참고만 하세요.</b><br>캐릭터와 그림 스타일은 AI가 새로 그려요. 여기서는 모양·색·문구 위치만 확인해 주세요.'; }
-    else if (state.type === 'photo'){ cap.className = 'cap'; cap.textContent = '이 기기 안에서 사진을 바꾼 도장이에요. 결과 화면에서 바로 저장할 수 있어요.' + (prod() && state.ans.mm ? ` (실제 크기 약 ${state.ans.mm}mm)` : ''); }
-    else { cap.className = 'cap'; cap.textContent = '대략적인 모양이에요. 실제 그림은 AI가 그려요.' + (prod() && state.ans.mm ? ` (실제 크기 약 ${state.ans.mm}mm)` : ''); }
+    else if (state.type === 'photo'){ cap.className = 'cap'; cap.textContent = '이 기기 안에서 사진을 바꾼 도장이에요. 결과 화면에서 바로 저장할 수 있어요.' + (prod() ? ` (실제 크기 ${sizeText()})` : ''); }
+    else { cap.className = 'cap'; cap.textContent = '대략적인 모양이에요. 실제 그림은 AI가 그려요.' + (prod() ? ` (실제 크기 ${sizeText()})` : ''); }
   }
   if (!state.type){
     svg.innerHTML = `<circle cx="120" cy="120" r="96" fill="none" stroke="#e0d5c3" stroke-width="5" stroke-dasharray="10 9"/><text x="120" y="128" text-anchor="middle" font-size="18" fill="#a99c8b" font-family="${esc(F('Gowun Dodum'))}">용도를 골라 주세요</text>`;
@@ -1053,16 +1097,20 @@ async function downloadPng(){
   toast('PNG 그림(1200×1200)을 저장했어요');
 }
 function printReal(){
-  const mm = +state.ans.mm || 24;
+  const mm = mmLong() || 24;
   const x = $('#xsvg');
   x.innerHTML = previewMarkup((chosen('color') || {hex:'#c63b2c'}).hex); fitAll(x);
+  // 그림의 바깥 테두리(가장 긴 쪽)가 고른 mm가 되게 그림 범위를 잘라 씀
+  let bb; try { bb = x.getBBox(); } catch(e){ bb = {x:0, y:0, width:240, height:240}; }
+  if (!bb.width || !bb.height) bb = {x:0, y:0, width:240, height:240};
+  const big = Math.max(bb.width, bb.height), vb = `${bb.x.toFixed(1)} ${bb.y.toFixed(1)} ${bb.width.toFixed(1)} ${bb.height.toFixed(1)}`;
   // 그림마다 id를 따로 붙임(같은 id면 인쇄 때 숨은 미리보기의 필터·글자 길을 가리켜 빠짐)
   let k = 0;
-  const one = w => { k++; const m = x.innerHTML.replace(/id="([\w-]+)"/g, `id="$1-p${k}"`).replace(/(url\(#|href="#)([\w-]+)/g, `$1$2-p${k}`); return `<svg viewBox="0 0 240 240" style="width:${w}mm;height:${w}mm">${m}</svg>`; };
+  const one = w => { k++; const m = x.innerHTML.replace(/id="([\w-]+)"/g, `id="$1-p${k}"`).replace(/(url\(#|href="#)([\w-]+)/g, `$1$2-p${k}`); return `<svg viewBox="${vb}" style="width:${(w * bb.width / big).toFixed(2)}mm;height:${(w * bb.height / big).toFixed(2)}mm;overflow:visible">${m}</svg>`; };
   const sizes = [...new Set([Math.max(8, mm - 6), mm, mm + 6])];
   let ticks = ''; for (let i = 0; i <= 50; i += 5) ticks += `<line x1="${i}" y1="0" x2="${i}" y2="${i % 10 ? 2 : 3.5}" stroke="#000" stroke-width=".2"/>` + (i % 10 ? '' : `<text x="${i}" y="6.5" font-size="2.6" text-anchor="middle">${i / 10}</text>`);
-  $('#printSheet').innerHTML = `<h2>도장 실제 크기 확인</h2><p>${esc(FLOWS[state.type].label)} · 가운데가 고른 크기(${mm}mm)예요. 인쇄 설정에서 배율을 ‘실제 크기(100%)’로 하고, 아래 자로 길이가 맞는지 확인하세요. 미리보기는 대략적인 모양이에요.</p>
-    <div class="ps-grid">${sizes.map(w => `<figure>${one(w)}<figcaption>${w}mm${w === mm ? ' (고른 크기)' : ''}</figcaption></figure>`).join('')}</div>
+  $('#printSheet').innerHTML = `<h2>도장 실제 크기 확인</h2><p>${esc(FLOWS[state.type].label)} · 가운데가 고른 크기(${esc(sizeText())})예요. 바깥 테두리 선의 두께만큼은 조금 차이 날 수 있어요. 인쇄 설정에서 배율을 ‘실제 크기(100%)’로 하고, 아래 자로 길이가 맞는지 확인하세요. 미리보기는 대략적인 모양이에요.</p>
+    <div class="ps-grid">${sizes.map(w => `<figure>${one(w)}<figcaption>${sizeKind() === 'rect' ? `${Math.round(w * mmW() / mm)}×${Math.round(w * mmH() / mm)}mm` : `${w}mm`}${w === mm ? ' (고른 크기)' : ''}</figcaption></figure>`).join('')}</div>
     <div class="ps-grid">${[1,2,3,4,5,6].map(() => `<figure>${one(mm)}</figure>`).join('')}</div>
     <div class="ruler"><svg viewBox="-2 -1 54 9" style="width:54mm;height:9mm"><line x1="0" y1="0" x2="50" y2="0" stroke="#000" stroke-width=".3"/>${ticks}</svg><p>자 50mm (숫자는 cm)</p></div>`;
   const go = () => { window.print(); };
@@ -1102,6 +1150,13 @@ function render(){
 
   if (s.kind === 'type'){
     h += `<div class="opts type-opts">${s.options.map((o, k) => `<button class="opt ${state.type === o.v ? 'sel' : ''}" data-v="${o.v}"><span class="num">${k + 1}</span><span><span class="t">${esc(o.label)}</span><span class="d">${esc(o.d)}</span></span></button>`).join('')}</div>`;
+  } else if (s.kind === 'size'){
+    const k = sizeKind(), num = (id, lab) => `<label class="sz-in"><span>${lab}</span><input type="number" inputmode="decimal" min="5" max="100" step="0.5" id="${id}" value="${esc(state.ans[id] || '')}"><b>mm</b></label>`;
+    h = h.replace(/<p class="help">[\s\S]*?<\/p>|<div style="height:12px"><\/div>/, '');
+    h += `<p class="help">${k === 'rect' ? '사각형 도장이에요. 찍히는 면의 <b>가로</b>와 <b>세로</b> 길이를 적어 주세요.' : k === 'long' ? '타원 도장이에요. <b>길쭉한 쪽</b>(긴 지름)의 길이를 적어 주세요.' : k === 'dia' ? '원 도장이에요. <b>지름</b>(가장자리에서 가운데를 지나 맞은편까지) 길이를 적어 주세요.' : '찍히는 모양의 <b>가장 긴 쪽</b> 길이를 적어 주세요.'} 주문할 가게의 크기표도 함께 확인해 주세요.</p>`;
+    h += `<div class="sz-row">${k === 'rect' ? num('mmW', '가로') + '<span class="sz-x">×</span>' + num('mmH', '세로') : num('mm', k === 'long' ? '긴 쪽' : k === 'dia' ? '지름' : '가장 긴 쪽')}</div>`;
+    h += `<div class="chips" style="margin-top:12px">${MM_PRESET.map(([v, d]) => `<button type="button" class="chip" data-mm="${v}">${v}mm · ${d}</button>`).join('')}${k === 'rect' ? '<button type="button" class="chip" data-sq="1">정사각형으로 맞추기</button>' : ''}</div>`;
+    if (mmLong() && mmLong() <= 15 && ['char','class','check','calli','photo'].includes(state.type)) h += `<p class="help" style="margin:12px 0 0;color:var(--red)">⚠ ${mmLong()}mm는 아주 작아요. 그림·둘레 글자·칸이 뭉개질 수 있어요. 이름 도장이 아니면 더 큰 크기를 권해요.</p>`;
   } else if (s.kind === 'photo'){
     h += `<div class="ph-pick"><label class="btn primary filebox">📷 사진 고르기<input type="file" id="phIn" accept="image/*"></label><span class="ph-name">${state.photo ? esc(state.photo.name) : '아직 고른 사진이 없어요'}</span></div>`;
     if (state.photo) h += `<img class="ph-thumb" src="${esc(state.photo.img.src)}" alt="고른 사진">`;
@@ -1118,11 +1173,12 @@ function render(){
     const o = chosen(s.id);
     if (o && o.custom && s.id === 'phrase') h += `<p class="help" style="margin:12px 0 0">직접 입력할 때 <b>/</b> 를 넣으면 그 자리에서 줄이 바뀌어요. (예: 확인/했어요)</p>`;
     if (o && o.custom) h += `<div class="custom"><input type="text" id="txt" maxlength="${s.max || 20}" placeholder="${esc(s.placeholder || '직접 입력해 주세요')}" value="${esc(state.ans[s.id + '__c'] || '')}" autocomplete="off"></div>`;
-    if (s.id === 'mm' && +state.ans.mm <= 15 && ['char','class','check','calli'].includes(state.type)) h += `<p class="help" style="margin:12px 0 0;color:var(--red)">⚠ ${state.ans.mm}mm는 아주 작아요. 그림·둘레 글자·칸이 뭉개질 수 있어요. 이름 도장이 아니면 더 큰 크기를 권해요.</p>`;
+    if (false && ['char','class','check','calli'].includes(state.type)) h += `<p class="help" style="margin:12px 0 0;color:var(--red)">⚠ ${state.ans.mm}mm는 아주 작아요. 그림·둘레 글자·칸이 뭉개질 수 있어요. 이름 도장이 아니면 더 큰 크기를 권해요.</p>`;
   }
   if (s.id === 'phrase' || s.id === 'name') h += `<div id="breaks" class="breaks" data-id="${s.id}"></div>`;
   h += `<div class="err" id="err"></div>`;
-  h += `<div class="nav"><button class="btn" id="prev" ${state.i === 0 ? 'disabled' : ''}>← 이전</button><button class="btn primary" id="next">${state.type && state.i === total - 1 ? '요청문 만들기 ✓' : '다음 →'}</button></div>`;
+  const last = state.type && state.i === total - 1;
+  h += `<div class="nav"><button class="btn" id="prev" ${state.i === 0 ? 'disabled' : ''}>← 이전</button><div class="nav-r">${last ? '<button class="btn" id="toImg">🖼️ 이미지 파일 만들기</button>' : ''}<button class="btn primary" id="next">${last ? '프롬프트 만들기 ✓' : '다음 →'}</button></div></div>`;
   main.innerHTML = h;
 
   main.querySelectorAll('.opt').forEach(b => b.addEventListener('click', () => {
@@ -1131,6 +1187,9 @@ function render(){
     render();
     const o = chosen(s.id); if (o && o.custom) $('#txt')?.focus();
   }));
+  main.querySelectorAll('.sz-in input').forEach(inp => inp.addEventListener('input', () => { state.ans[inp.id] = inp.value; $('#err').textContent = ''; renderPreview(); renderSummary(); }));
+  main.querySelectorAll('[data-mm]').forEach(b => b.addEventListener('click', () => { const v = b.dataset.mm; if (sizeKind() === 'rect'){ state.ans.mmW = v; state.ans.mmH = v; } else state.ans.mm = v; render(); }));
+  main.querySelector('[data-sq]')?.addEventListener('click', () => { state.ans.mmH = state.ans.mmW; render(); });
   $('#phIn')?.addEventListener('change', e => { loadPhoto(e.target.files[0]); e.target.value = ''; });
   const txt = $('#txt');
   if (txt){
@@ -1143,7 +1202,8 @@ function render(){
     if (s.kind === 'text') txt.focus();
   }
   $('#prev').addEventListener('click', () => { state.i = Math.max(0, state.i - 1); render(); });
-  $('#next').addEventListener('click', next);
+  $('#next').addEventListener('click', () => { state.view = 'prompt'; next(); });
+  $('#toImg')?.addEventListener('click', () => { state.view = 'image'; next(); });
   renderBreaks(); renderPreview(); renderSummary();
 }
 
@@ -1174,8 +1234,9 @@ function renderBreaks(){
 function next(){
   const all = steps(), s = all[state.i];
   if (s.kind === 'type' && !state.type){ $('#err').textContent = '먼저 도장 용도를 골라 주세요.'; return; }
+  if (s.kind === 'size' && !sizeOk()){ $('#err').textContent = '5~100mm 사이의 길이를 숫자로 적어 주세요.'; return; }
   if (s.kind === 'photo' && !state.photo){ $('#err').textContent = '사진을 골라 주세요.'; return; }
-  if (s.kind === 'text' && !val(s.id)){ $('#err').textContent = s.id === 'name' ? '이름을 적어 주세요.' : '글을 적어 주세요.'; $('#txt')?.focus(); return; }
+  if (s.kind === 'text' && !s.optional && !val(s.id)){ $('#err').textContent = s.id === 'name' ? '이름을 적어 주세요.' : '글을 적어 주세요.'; $('#txt')?.focus(); return; }
   if (s.kind === 'choice'){ const o = chosen(s.id); if (o && o.custom && !val(s.id)){ $('#err').textContent = '직접 입력 칸을 채워 주세요.'; $('#txt')?.focus(); return; } }
   if (state.i < all.length - 1){ state.i++; render(); }
   else { state.done = true; render(); }
@@ -1183,19 +1244,57 @@ function next(){
 }
 
 function useTips(){
-  const use = state.ans.use, mm = state.ans.mm;
+  const use = state.ans.use, mm = sizeText();
   if (use === 'order') return `<div class="tipbox"><b class="h">🏪 도장 가게에 주문할 때</b><ol>
       <li>ChatGPT·Gemini에서 받은 그림(바른 모양, 흑백)을 그대로 보내세요. 그림이 흐리면 아래 ‘그림 정리’의 흑백으로 바꾸기를 써 보세요.</li>
-      <li>실제 크기 <b>${mm}mm</b>와 인주(잉크) 색을 함께 알려 주세요.</li>
+      <li>실제 크기 <b>${mm}</b>와 인주(잉크) 색을 함께 알려 주세요.</li>
       <li>좌우 반전을 가게에서 해 주는지 꼭 물어보세요. 가게마다 원고를 받는 방식(파일 종류·해상도)이 달라요.</li></ol></div>`;
   if (use === 'diy') return `<div class="tipbox"><b class="h">🛠️ 직접 만들 때 (고무 새기기·3D 프린터·레이저)</b><ul>
       <li>도장 면에는 <b>좌우를 뒤집은 그림</b>이 들어가야 찍었을 때 바르게 나와요.</li>
       <li class="warn">AI에게 뒤집어 달라고 하면 글자가 틀리기 쉬워요. 바른 모양으로 받은 뒤, 아래 ‘그림 정리’에서 좌우로 뒤집으세요.</li>
-      <li>실제 크기 <b>${mm}mm</b>에 맞게 줄여서 쓰세요. 아래 ‘실제 크기로 인쇄해 보기’로 크기를 먼저 확인할 수 있어요.</li></ul></div>`;
+      <li>실제 크기 <b>${mm}</b>에 맞게 줄여서 쓰세요. 아래 ‘실제 크기로 인쇄해 보기’로 크기를 먼저 확인할 수 있어요.</li></ul></div>`;
   return '';
 }
 
+function imgBlock(photo, isProd, diy, title){
+  return `<h3 class="sub">${title}</h3>
+    <p class="help">${photo ? '이 기기 안에서 사진을 바꾼 도장을 그대로 파일로 저장해요.' : state.type === 'char' ? '캐릭터는 이모지로 대신 그린 참고 그림이에요. 진짜 그림은 AI에게 받으세요.' : 'AI 없이 오른쪽 미리보기 그림을 바로 파일로 받아요. 이름·문구 도장은 이것만으로도 쓸 수 있어요.'}</p>
+    <div class="checks">
+      <label><input type="checkbox" id="xTrans" ${state.ans.bg === 'trans' ? 'checked' : ''}> 투명 배경</label>
+      <label><input type="checkbox" id="xBlack" ${isProd ? 'checked' : ''}> 검정으로 (제작용)</label>
+      <label><input type="checkbox" id="xFlip" ${diy ? 'checked' : ''}> 좌우 뒤집기 (직접 새길 때)</label>
+    </div>
+    <div class="row">
+      <button class="btn primary" id="dlPng">🖼️ PNG 받기</button>
+      <button class="btn" id="dlSvg">📐 SVG 받기</button>
+      ${isProd ? '<button class="btn" id="prReal">🖨️ 실제 크기로 인쇄해 보기</button>' : ''}
+    </div>`;
+}
+function bindImg(){
+  $('#dlPng').addEventListener('click', e => busy(e.currentTarget, downloadPng));
+  $('#dlSvg').addEventListener('click', e => busy(e.currentTarget, downloadSvg));
+  $('#prReal')?.addEventListener('click', printReal);
+  $('#back').addEventListener('click', () => { state.done = false; state.i = steps().length - 1; render(); });
+  $('#restart').addEventListener('click', () => { state.type = null; state.ans = {}; state.i = 0; state.done = false; render(); });
+}
+function renderImage(){
+  const photo = state.type === 'photo', isProd = prod(), diy = state.ans.use === 'diy';
+  $('#main').innerHTML = `
+    <div class="progress">${steps().map(() => '<span class="on"></span>').join('')}</div>
+    <div class="steplabel">완성!</div>
+    <h2>이미지 파일 만들기</h2>
+    <p class="help">오른쪽 미리보기 그림을 PNG(1200×1200) 또는 SVG 파일로 저장해요. 학습지·슬라이드에 넣거나 도장 원고로 쓸 수 있어요.</p>
+    ${imgBlock(photo, isProd, diy, '저장할 모양 고르기')}
+    ${useTips()}
+    <div class="nav">
+      <button class="btn" id="back">← 선택 바꾸기</button>
+      <div class="nav-r"><button class="btn" id="toPrompt">프롬프트도 만들기 →</button><button class="btn" id="restart">처음부터 다시</button></div>
+    </div>`;
+  bindImg();
+  $('#toPrompt').addEventListener('click', () => { state.view = 'prompt'; render(); window.scrollTo({top:0, behavior:'smooth'}); });
+}
 function renderResult(){
+  if (state.view === 'image') return renderImage();
   const main = $('#main');
   const prompt = buildPrompt();
   const named = state.type === 'name' || state.type === 'class', photo = state.type === 'photo';
@@ -1203,16 +1302,16 @@ function renderResult(){
   main.innerHTML = `
     <div class="progress">${steps().map(() => '<span class="on"></span>').join('')}</div>
     <div class="steplabel">완성!</div>
-    <h2>요청문이 만들어졌어요</h2>
+    <h2>프롬프트가 만들어졌어요</h2>
     <div class="howto"><b>이렇게 쓰세요</b>
-      <ol><li>아래 <b>요청문 복사</b>를 누르세요.</li>
-      ${photo ? '<li>AI로 더 다듬고 싶으면 ChatGPT나 Gemini의 <b>새 대화</b>에 사진을 먼저 올리고(📎 단추) 요청문을 붙여 넣으세요. 이 페이지에서 바꾼 도장은 아래 ‘도장 그림 받기’로 바로 저장할 수 있어요.</li>' : '<li>ChatGPT나 Gemini를 열어 <b>새 대화</b>에 붙여 넣으세요.</li>'}
+      <ol><li>아래 <b>프롬프트 복사</b>를 누르세요.</li>
+      ${photo ? '<li>AI로 더 다듬고 싶으면 ChatGPT나 Gemini의 <b>새 대화</b>에 사진을 먼저 올리고(📎 단추) 프롬프트를 붙여 넣으세요. 이 페이지에서 바꾼 도장은 아래 ‘도장 그림 받기’로 바로 저장할 수 있어요.</li>' : '<li>ChatGPT나 Gemini를 열어 <b>새 대화</b>에 붙여 넣으세요.</li>'}
       <li>결과가 아쉬우면 새로 만들지 말고, <b>같은 대화창</b>에 아래 ‘고쳐 달라는 문장’을 붙여 넣으세요. 무료 횟수를 아낄 수 있어요.</li>
       ${named ? `<li>🔒 ${esc(PRIVACY)}</li>` : ''}${photo ? `<li>🔒 ${esc(PRIVACY_PHOTO)}</li>` : ''}</ol>
     </div>
-    <textarea id="prompt" aria-label="생성된 요청문">${esc(prompt)}</textarea>
+    <textarea id="prompt" aria-label="생성된 프롬프트">${esc(prompt)}</textarea>
     <div class="row">
-      <button class="btn primary" id="copy">📋 요청문 복사</button>
+      <button class="btn primary" id="copy">📋 프롬프트 복사</button>
       <a class="btn" href="https://chatgpt.com/" target="_blank" rel="noopener">ChatGPT 열기 ↗</a>
       <a class="btn" href="https://gemini.google.com/" target="_blank" rel="noopener">Gemini 열기 ↗</a>
     </div>
@@ -1221,18 +1320,7 @@ function renderResult(){
     <p class="help">누르면 바로 복사돼요. 결과 그림이 나온 같은 대화창에 붙여 넣으세요.</p>
     <div class="chips">${fixLines().map((f, k) => `<button class="chip" data-k="${k}">${esc(f.label)}</button>`).join('')}</div>
 
-    <h3 class="sub">${photo ? '도장 그림 받기' : '미리보기 그림 받기'}</h3>
-    <p class="help">${photo ? '이 기기 안에서 사진을 바꾼 도장을 그대로 파일로 저장해요.' : state.type === 'char' ? '캐릭터는 이모지로 대신 그린 참고 그림이에요. 진짜 그림은 AI에게 받으세요.' : 'AI 없이 오른쪽 미리보기 그림을 바로 파일로 받아요. 이름·문구 도장은 이것만으로도 쓸 수 있어요.'}</p>
-    <div class="checks">
-      <label><input type="checkbox" id="xTrans" ${state.ans.bg === 'trans' ? 'checked' : ''}> 투명 배경</label>
-      <label><input type="checkbox" id="xBlack" ${isProd ? 'checked' : ''}> 검정으로 (제작용)</label>
-      <label><input type="checkbox" id="xFlip" ${diy ? 'checked' : ''}> 좌우 뒤집기 (직접 새길 때)</label>
-    </div>
-    <div class="row">
-      <button class="btn" id="dlPng">🖼️ PNG 받기</button>
-      <button class="btn" id="dlSvg">📐 SVG 받기</button>
-      ${isProd ? '<button class="btn" id="prReal">🖨️ 실제 크기로 인쇄해 보기</button>' : ''}
-    </div>
+    ${imgBlock(photo, isProd, diy, photo ? '도장 그림 받기' : '이미지 파일 만들기')}
 
     ${isProd ? `<h3 class="sub">그림 정리 (AI가 만든 그림)</h3>
     <p class="help">ChatGPT·Gemini에서 저장한 그림 파일을 고르면, 이 컴퓨터 안에서 바꿔 새 파일로 저장해요. 그림은 어디로도 보내지 않아요.</p>
@@ -1246,14 +1334,10 @@ function renderResult(){
       <button class="btn" id="back">← 선택 바꾸기</button>
       <button class="btn" id="restart">처음부터 다시</button>
     </div>`;
-  $('#copy').addEventListener('click', () => copy($('#prompt').value, '요청문을 복사했어요'));
+  $('#copy').addEventListener('click', () => copy($('#prompt').value, '프롬프트를 복사했어요'));
   main.querySelectorAll('.chip').forEach(b => b.addEventListener('click', () => copy(fixLines()[+b.dataset.k].text, `‘${b.textContent}’ 문장을 복사했어요`)));
-  $('#dlPng').addEventListener('click', e => busy(e.currentTarget, downloadPng));
-  $('#dlSvg').addEventListener('click', e => busy(e.currentTarget, downloadSvg));
-  $('#prReal')?.addEventListener('click', printReal);
   $('#fIn')?.addEventListener('change', e => { flipFile(e.target.files[0]); e.target.value = ''; });
-  $('#back').addEventListener('click', () => { state.done = false; state.i = steps().length - 1; render(); });
-  $('#restart').addEventListener('click', () => { state.type = null; state.ans = {}; state.i = 0; state.done = false; render(); });
+  bindImg();
 }
 
 function copy(text, msg){
