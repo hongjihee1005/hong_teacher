@@ -754,6 +754,8 @@ html body .card1,html body .bins{width:min(1100px,94vw)!important;box-sizing:bor
 html body .deck>.ask{margin:0;text-align:center}
 /* 분류 단추: 원색을 톤 다운, 모서리·그림자 통일 */
 html body .bin{background:color-mix(in srgb,var(--cc,#888) 72%,#6d655d)!important;color:#fff!important;border:0!important;border-radius:18px!important;box-shadow:0 4px 0 color-mix(in srgb,var(--cc,#888) 55%,#3d3631)!important}
+/* 분류 단추 이름은 가로·세로 모두 가운데 (2026-10-09, bin 가운데) */
+html body .bin{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;text-align:center!important}
 html body .bin:hover:not(:disabled){filter:brightness(1.05)}
 html body .bin:disabled{opacity:.55;box-shadow:none!important;transform:translateY(3px)}
 html body .bin.lit{opacity:1!important;outline:4px solid color-mix(in srgb,var(--cc,#888) 40%,#fff);outline-offset:2px}
@@ -1078,12 +1080,14 @@ body.ov #ovMade{display:none}
     secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
       /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
       const units=[]; let i=0;
-      const isStart=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
       while(i<kids.length){ const el=kids[i];
         if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
         const u=[el]; i++;
         while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
         units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
       /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
       box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
       for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
@@ -1112,13 +1116,13 @@ body.ov #ovMade{display:none}
     const top=sec.getBoundingClientRect().top;
     const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
     const avail=window.innerHeight - top - barH - 26;
-    let h=b.offsetHeight; if(h<20||avail<160) return;
-    let k=Math.min(1.5, Math.max(0.85, avail/h));
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
     for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
       b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
       const vis=b.offsetHeight*k;
       if(vis<=avail) break;
-      k=Math.max(0.85, k*avail/vis); if(k<1&&vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
     }
     if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
     else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
