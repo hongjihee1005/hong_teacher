@@ -11,6 +11,8 @@
 고친 뒤 루트에서 python3 _build/theme/apply_content_theme.py (자동 보완 run_all.py에도 들어 있음).
 """
 import re, sys, html, pathlib, importlib.util
+NUM_RE = re.compile(r'^[①-⑳]\s*')  # f-string 안 백슬래시는 Python 3.11에서 문법 오류라 밖으로 뺌
+LEAD_RE = re.compile(r'^\W+')
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 OG = ROOT / '_build' / 'origami'
@@ -114,7 +116,7 @@ def card(L):
     steps = ''
     for st in L['labs']:
         steps += f'<h4>{esc(st.get("hd") or st["t"])}' + (f' <small>{st.get("min")}분</small>' if st.get('min') else '') + '</h4>'
-        steps += '<ol>' + ''.join(f'<li>{esc(re.sub(r"^[①-⑳]\s*", "", x))}</li>' for x in st.get('list', [])) + '</ol>'
+        steps += '<ol>' + ''.join('<li>' + esc(NUM_RE.sub('', x)) + '</li>' for x in st.get('list', [])) + '</ol>'
     lead = ''.join(f'<li><span class="lg-when lg-w{WHEN.index(w)}">{esc(w)}</span>{esc(t)}</li>' for w, t in P.get('lead', []))
     parts = [f'<div class="lg-why"><b>목표와 이어지는 점</b> {esc(P["why"])}</div>']
     if lead: parts.append(f'<div class="lg-box lg-lead"><h3>⏰ 미리 할 일</h3><ul>{lead}</ul></div>')
@@ -146,7 +148,7 @@ def timeline(LS, s):
         items = [(L, t) for L in LS if L['s'] == s for ww, t in L['P'].get('lead', []) if ww == w]
         if not items: continue
         rows.append(f'<div class="lg-tl-row"><h3><span class="lg-when lg-w{wi}">{w}</span></h3><ul>' + ''.join(
-            f'<li><a href="#{L["key"]}">{L["u"]}단원 {esc(L["cha"])} · {esc(re.sub(r"^\W+", "", L["title"]))}</a> — {esc(t)}</li>' for L, t in items) + '</ul></div>')
+            f'<li><a href="#{L["key"]}">{L["u"]}단원 {esc(L["cha"])} · {esc(LEAD_RE.sub("", L["title"]))}</a> — {esc(t)}</li>' for L, t in items) + '</ul></div>')
     return ''.join(rows)
 
 def build(LS):
