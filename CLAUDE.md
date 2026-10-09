@@ -457,6 +457,7 @@ grade1/ … grade6/
 - 글꼴은 구글 글꼴 CSS를 받아 이름 앞에 `hjs-`를 붙여 넣습니다(공통 덮개가 'Jua'·'Gowun Dodum' 이름을 Pretendard로 바꾸기 때문). 글꼴 목록 `GFAM`·굵기 `WGT`.
 - **`project/stamp/index.html`을 직접 고치지 마세요.** 원본은 `_build/stamp/stamp.html` 한 장, `python3 _build/stamp/build.py`가 자료실 판(연락처 줄·자료 목록·홈 단추)과 따로 쓰는 판 `_build/stamp/standalone/index.html`('만든 사람' 한 줄만)을 함께 만듭니다. 고친 뒤 `python3 _build/stamp/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음).
 - **따로 쓰는 판은 저장소 `hongjihee1005/stamp-maker`**(주소 https://hongjihee1005.github.io/stamp-maker/, 2026-10-09 선생님이 만듦). 그 저장소의 `.github/workflows/sync.yml`('원본에서 가져오기', 원본은 이 저장소 `_build/stamp/repo/.github/workflows/sync.yml`)이 한 시간마다 이 저장소 main의 `_build/stamp/standalone/index.html`을 가져가 바뀐 것만 올립니다 — **stamp-maker의 `index.html`은 직접 고치지 말고, 이 저장소 원본을 고쳐 main에 올리세요.** 바로 맞추려면 stamp-maker Actions에서 Run workflow. GitHub Actions라 Claude 사용량과는 상관없음.
+  **검색 등록 준비(2026-10-09):** 따로 쓰는 판에만 탭 제목 끝 ' | 초등교사 홍지희'·설명·canonical·카카오톡·밴드 미리보기(Open Graph, `og.png` = `_build/stamp/og.html`을 Playwright로 1200×630으로 찍은 것)·JSON-LD(WebApplication)를 넣고 `sitemap.xml`을 만듦(`build.py`의 `SITE`·`TITLE`·`DESC`·`SEO`). 구글 Search Console 'HTML 태그' 확인 값은 `build.py`의 `GOOGLE`에 넣음(넣은 뒤 지우지 마세요). sync.yml은 `standalone/` 폴더를 통째로 가져감.
 - 2026-10-09 고침: ① 이름 도장 '두 줄 전통 배치'에서 줄 바꿈을 정하지 않으면 프롬프트에 '두 줄'과 '한 줄로 배치'가 함께 들어가던 것 → 앞 절반을 오른쪽 줄로 나눠 적음(두 글자 이름도 두 줄 미리보기) ② 이름에 넣은 `/`가 미리보기에 글자로 그려지던 것.
 
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
