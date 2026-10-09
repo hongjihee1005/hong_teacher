@@ -1148,6 +1148,7 @@ function renderLesson() {
   const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
   if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
   const api = {
+    get __root() { return api; }, /*hj-multi*/
     tryOnce() { tries++; },
     provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
     fail(msg, answer) {
@@ -1193,7 +1194,8 @@ function renderLesson() {
   mount(h("main", { class: "lesson" }, stairs, work));
   const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
   markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
-  step.render(body, api);
+  STEP_CTX = { api, open: true, depth: 0, need: 0, got: new Set(), ans: [] }; /*hj-multi*/
+  try { step.render(body, api); } finally { STEP_CTX.open = false; }
 }
 function showFinish(L, chal) {
   const p = myProg(L.id);
@@ -1344,12 +1346,12 @@ function quiz(body, api, items, opts = {}) {
     else {
       const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
       const w = items[wrongIdx];
-      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      const sv = state[wrongIdx], custom = w && w.why && w.why[String(Array.isArray(sv) ? [...sv].sort((x, y) => x - y) : sv)];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
     return allOk;
   };
-  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+  const auto = autoRun(() => state.every((v, qi) => v != null && !(Array.isArray(v) && v.length < items[qi].a.length)), /*hj-multi: 여러 개 고르기는 정답 수만큼 고른 뒤 확인*/
                        () => JSON.stringify(state), judge, 260);
   wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
   body.append(wrap);
@@ -2467,11 +2469,11 @@ function u2Pieces(body, api, opt) {
     if (!bad.length) { api.done(ans, opt.ok || `알맞게 나누었어요! ${ans}`); return true; }
     els.forEach((e, i) => { if (bad.includes(i)) e.poly.setAttribute("stroke", U2_NO); });
     const p = opt.pieces[bad[0]], gk = got[bad[0]];
-    api.fail(gk === "rect" && p.kind === "sq" ? "빨간 조각의 네 변의 길이를 모눈 칸으로 세어 봐요." : gk === "sq" && p.kind === "rect" ? "빨간 조각은 네 변의 길이가 모두 같은가요? 칸을 세어 봐요." : (p.kind === "tri" || gk === "tri") ? "빨간 조각에 직각이 있는지 다시 살펴봐요." : "빨간 테두리 조각을 다시 살펴봐요. 삼각형인지 사각형인지, 직각이 몇 개인지 봐요.", ans);
+    api.fail(gk === "rect" && p.kind === "sq" ? "빨간 조각의 네 변의 길이를 모눈 칸으로 세어 봐요. 네 변의 길이가 모두 같으면 가장 알맞은 이름은 정사각형이에요(정사각형도 직사각형이라고 할 수 있어요)." : gk === "sq" && p.kind === "rect" ? "빨간 조각은 네 변의 길이가 모두 같은가요? 칸을 세어 봐요." : (p.kind === "tri" || gk === "tri") ? "빨간 조각에 직각이 있는지 다시 살펴봐요." : "빨간 테두리 조각을 다시 살펴봐요. 삼각형인지 사각형인지, 직각이 몇 개인지 봐요.", ans);
     return false;
   };
   auto = autoRun(() => got.every(x => !!x), () => got.join(","), judge, 1200);
-  body.append(stageWrap(svg, u2Side(h("p", {}, opt.tip || "그림을 잘라 떼어 보고, 조각을 하나씩 눌러 어떤 도형인지 골라요."), cutBtn, tb, out)));
+  body.append(stageWrap(svg, u2Side(h("p", {}, opt.tip || "그림을 잘라 떼어 보고, 조각을 하나씩 눌러 가장 알맞은 도형 이름을 골라요."), cutBtn, tb, out)));
   paint();
 }
 
@@ -2642,6 +2644,28 @@ const UNIT_STORY = { title: "우리 반 교실 꾸미기", lines: [
   one: "우리 반 교실 꾸미기 · 게시판·창문·바닥 타일·사물함 속 선과 도형을 찾아요." };
 const UNIT_KEYWORDS = ["곧은 선", "굽은 선", "선분", "반직선", "직선", "시작하는 점", "각", "꼭짓점", "변", "직각", "└ 표시", "직각삼각형", "직사각형", "정사각형"];
 
+/*hj-multi*/ /* 한 계단에 끝내야 하는 활동이 둘 이상이면(예: 빈칸 고르기 + 까닭 쓰기) 모두 끝내야 계단을 통과한다 (2026-10-09).
+   계단의 api(또는 thenWhy처럼 그것을 복사한 api)를 받은, done(을 부르는 활동 함수만 센다. 활동 안에서 부르는 활동은 세지 않는다. */
+let STEP_CTX = null;
+function stepCount(fn) {
+  return function (body, api, ...rest) {
+    const c = STEP_CTX;
+    if (!c || !c.open || c.depth > 0 || !api || api.__root !== c.api) return fn.call(this, body, api, ...rest);
+    const k = c.need++;
+    const sub = Object.assign({}, api, { done: (ans, msg, lv) => {
+      if (c.got.has(k)) return; c.got.add(k); c.ans[k] = ans || "";
+      if (c.got.size >= c.need) api.done(c.ans.filter(Boolean).join(" | "), msg, lv);
+      else api.hint("○ 좋아요! 아래에 남은 활동도 마저 해요.");
+    } });
+    c.depth++; try { return fn.call(this, body, sub, ...rest); } finally { c.depth--; }
+  };
+}
+Object.keys(window).forEach(n => { const f = window[n];
+  if (typeof f !== "function" || f.__hjMulti) return;
+  const src = Function.prototype.toString.call(f);
+  if (!/^function\s+\w+\s*\(\s*body\s*,\s*api\b/.test(src) || !/done\(/.test(src)) return;
+  const w = stepCount(f); w.__hjMulti = 1; window[n] = w; });
+/*/hj-multi*/
 const LESSONS = [
 /* ---------------- 1차시 ---------------- */
 {
@@ -2817,7 +2841,7 @@ const LESSONS = [
   summary: "네 각이 모두 직각인 사각형을 직사각형이라고 해요. 한 각이나 두 각만 직각인 사각형은 직사각형이 아니에요. ‘직각사각형’이 아니라 ‘직사각형’이라고 불러요.",
   steps: [
     { inst: "도윤이가 우리 반 사진을 넣을 액자 틀로 쓸 사각형 종이 네 장을 골라 왔어요. 삼각자를 대어 직각을 모두 찾아 표시해 보세요.", hints: ["사각형마다 꼭짓점 네 곳에 삼각자를 대 보세요.", "다는 기울어져 있지만 네 꼭짓점을 모두 대 봐요. 나는 오른쪽 두 꼭짓점만 직각이에요."],
-      render: (b, a) => u2SetSquare(b, a, { w: 21.5, h: 8.5, U: 42, paper: "grid", start: [1, 8.1], figs: [{ pts: [[1, 1.5], [5, 1.5], [5, 4.5], [1, 4.5]], label: "가", lab: [.6, 1] }, { pts: [[6.5, 1.5], [10, 1.5], [10, 5], [7.5, 5]], label: "나", lab: [6.1, 1] }, { pts: [[11.5, 2.5], [15.5, .5], [16.5, 2.5], [12.5, 4.5]], label: "다", lab: [11.1, 1.8] }, { pts: [[17.5, 1.5], [20.5, 1.5], [20, 5], [16.8, 4.6]], label: "라", lab: [17.1, 1] }], ok: "가와 다는 직각이 4개, 나는 2개, 라는 0개예요." }) },
+      render: (b, a) => u2SetSquare(b, a, { w: 21.5, h: 8.5, U: 42, paper: "grid", start: [1, 8.1], figs: [{ pts: [[1, 1.5], [5, 1.5], [5, 4.5], [1, 4.5]], label: "가", lab: [.6, 1] }, { pts: [[6.5, 1.5], [10, 1.5], [10, 5], [7.5, 5]], label: "나", lab: [6.1, 1] }, { pts: [[11.5, 2.5], [15.5, .5], [16.5, 2.5], [12.5, 4.5]], label: "다", lab: [11.1, 1.8] }, { pts: [[17.5, 1.5], [20.5, 1.5], [21.2, 5], [16.6, 4.6]], label: "라", lab: [17.1, 1] }], ok: "가와 다는 직각이 4개, 나는 2개, 라는 0개예요." }) },
     { inst: "모눈의 검은 선을 이용하여 직사각형 액자를 완성해 보세요.", hints: ["네 각이 모두 직각이 되도록 마지막 꼭짓점을 찍어요.", "②는 기울어진 직사각형이에요. 오른쪽으로 4칸·아래로 2칸, 왼쪽으로 1칸·아래로 2칸처럼 칸을 세어요."],
       render: (b, a) => u2GridShape(b, a, { w: 16, h: 8, U: 48, tasks: [{ kind: "rect", given: [[3, 2], [3, 6], [9, 6]], label: "① 두 변이 주어진 직사각형 완성" }, { kind: "rect", given: [[9, 1], [13, 3], [12, 5]], label: "② 기울어진 직사각형 완성" }, { kind: "rect", given: [[4, 6], [4, 3]], label: "③ 한 변이 주어진 직사각형 완성" }, { kind: "rect", given: [[10, 2], [10, 5], [15, 5], [15, 2]], label: "④ 남은 한 변을 이어 완성(처음 꼭짓점을 눌러요)" }], ok: "네 가지 직사각형 액자를 모두 완성했어요!" }) },
     { inst: "사각형 가~라를 나눈 결과를 말해 보세요.", hints: ["삼각자로 찾은 직각의 수를 떠올려요."],
@@ -2835,14 +2859,14 @@ const LESSONS = [
         { at: [.4, 4], box: [4, 3], sh: [{ poly: [[.8, .6], [3.2, .6], [3.2, 2.6], [1.6, 2.6]] }], why: "마는 두 각만 직각이에요. 직사각형은 네 각이 모두 직각이어야 해요." },
         { at: [4.8, 4], box: [4, 3], sh: [{ poly: [[1, 1.6], [2.4, .6], [3.2, 1.72], [1.8, 2.72]] }], ok: true },
         { at: [9.2, 4], box: [4, 3], sh: [{ poly: [[2, .3], [3.4, 1.5], [2, 2.7], [.6, 1.5]] }], why: "사에는 직각이 없어요." },
-        { at: [13.6, 4], box: [4, 3], sh: [{ poly: [[.8, .8], [3.2, .5], [3.3, 2.5], [.7, 2.4]] }], why: "아는 네 각이 모두 직각이 아니에요." }] }) }
+        { at: [13.6, 4], box: [4, 3], sh: [{ poly: [[.5, .6], [3.5, .9], [2.9, 2.6], [.9, 2.4]] }], why: "아는 네 각이 모두 직각이 아니에요." }] }) }
   ],
   challenge: { inst: "이야기 만들기 — ‘나는 누구일까요?’ 도형 수수께끼를 만들어요.",
-    hints: ["직각삼각형, 직사각형, 정사각형 중에서 하나를 골라요.", "예) 나는 곧은 선 4개로 둘러싸여 있어요. 네 각이 모두 직각이에요. 나는 누구일까요?"],
+    hints: ["직각삼각형, 직사각형, 정사각형 중에서 하나를 골라요.", "예) 나는 곧은 선 4개로 둘러싸여 있어요. 네 각이 모두 직각이에요. 네 변의 길이가 모두 같지는 않아요. 나는 누구일까요?"],
     render: withOptional(
       (b, a) => writeStep(b, a, [
-        { q: "내 도형 수수께끼", tag: "수수께끼", ph: "나는 ~이에요. 나는 ~예요. 나는 누구일까요?", help: ["① 고를 도형의 변·꼭짓점·직각 수를 세어요. → ② 쉬운 힌트를 뒤에 놓아요.", "‘나는 변이 ~개예요. 나는 직각이 ~개예요. 나는 누구일까요?’ 꼴로 써요."], ans: "나는 곧은 선 4개로 둘러싸여 있어요. 나는 꼭짓점이 4개예요. 나는 네 각이 모두 직각이에요. 나는 누구일까요?" },
-        { q: "답과 그 까닭", tag: "답과 까닭", ph: "답: ~. 왜냐하면 ~", help: ["① 수수께끼 힌트를 하나씩 다시 읽어요. → ② 힌트에 모두 맞는 도형 이름을 찾아요.", "‘답: ~. 왜냐하면 ~이 ~개이고 ~이기 때문이에요.’ 꼴로 써요."], ans: "답: 직사각형. 왜냐하면 변과 꼭짓점이 4개인 사각형이고 네 각이 모두 직각이기 때문이에요." }],
+        { q: "내 도형 수수께끼", tag: "수수께끼", ph: "나는 ~이에요. 나는 ~예요. 나는 누구일까요?", help: ["① 고를 도형의 변·꼭짓점·직각 수를 세어요. → ② 쉬운 힌트를 뒤에 놓아요.", "‘나는 변이 ~개예요. 나는 직각이 ~개예요. 나는 누구일까요?’ 꼴로 써요."], ans: "나는 곧은 선 4개로 둘러싸여 있어요. 나는 꼭짓점이 4개예요. 나는 네 각이 모두 직각이에요. 나는 네 변의 길이가 모두 같지는 않아요. 나는 누구일까요?" },
+        { q: "답과 그 까닭", tag: "답과 까닭", ph: "답: ~. 왜냐하면 ~", help: ["① 수수께끼 힌트를 하나씩 다시 읽어요. → ② 힌트에 모두 맞는 도형 이름을 찾아요.", "‘답: ~. 왜냐하면 ~이 ~개이고 ~이기 때문이에요.’ 꼴로 써요."], ans: "답: 직사각형. 왜냐하면 변과 꼭짓점이 4개인 사각형이고 네 각이 모두 직각이지만 네 변의 길이가 모두 같지는 않기 때문이에요." }],
         { ok: "수수께끼를 만들었어요! 짝과 바꾸어 맞혀 봐요." }),
       (b, a) => { b.append(u2Fig([{ rect: [1, 1, 8, 3] }, { line: [[5, 1], [5, 4]], dots: false }, { line: [[1, 2.5], [9, 2.5]], dots: false }, { text: [.6, .5, "가", 22] }, { rect: [11, 1.75, 8, 1.5] }, { line: [[13, 1.75], [13, 3.25]], dots: false }, { line: [[15, 1.75], [15, 3.25]], dots: false }, { line: [[17, 1.75], [17, 3.25]], dots: false }, { text: [10.6, 1.25, "나", 22] }], { w: 19.6, h: 4.6, U: 40, maxW: "34em" }));
       numbers(b, a, [{ q: "가에서 크고 작은 직사각형은 모두 몇 개인가요?", a: 9, unit: "개", why: { "4": "한 칸짜리 4개만 셌어요. 두 칸짜리와 네 칸짜리도 직사각형이에요.", "5": "한 칸짜리 4개와 전체 1개 말고 두 칸짜리 4개도 있어요.", "8": "하나를 빠뜨렸어요. 한 칸 4개, 두 칸 4개, 네 칸 1개예요." } }, { q: "나에서 크고 작은 직사각형은 모두 몇 개인가요?", a: 10, unit: "개", why: { "4": "한 칸짜리 4개만 셌어요. 두 칸, 세 칸, 네 칸짜리도 직사각형이에요.", "7": "두 칸짜리는 3개, 세 칸짜리는 2개, 네 칸짜리는 1개예요." } }], { ok: "가는 9개, 나는 10개예요. 칸 수별로 나누어 세면 빠뜨리지 않아요." }); },
@@ -2852,7 +2876,7 @@ const LESSONS = [
 {
   id: "a7", no: 7, title: "꿈 바닥 타일 ― 정사각형", soop: "개념 구축하기(O)",
   question: "교실 바닥에 깔 타일은 무엇이 같아야 할까요?",
-  summary: "네 각이 모두 직각이고 네 변의 길이가 모두 같은 사각형을 정사각형이라고 해요. 정사각형인지 알아보려면 삼각자로 네 각이 직각인지, 자로 네 변의 길이가 같은지 확인해요.",
+  summary: "네 각이 모두 직각이고 네 변의 길이가 모두 같은 사각형을 정사각형이라고 해요. 정사각형인지 알아보려면 삼각자로 네 각이 직각인지, 자로 네 변의 길이가 같은지 확인해요. 정사각형은 네 각이 모두 직각이므로 직사각형이라고 할 수 있어요.",
   steps: [
     { inst: "시우와 하린이가 교실 뒤쪽 ‘꿈 바닥’에 깔 타일 후보를 모았어요. 네 각이 모두 직각인 사각형에 ○, 네 변의 길이가 모두 같은 사각형에 △를 해 보세요.", hints: ["기준이 두 가지예요. ○ 기준부터 모두 한 다음 △ 기준을 해요.", "모눈 칸을 세어 변의 길이를 비교해요. 비스듬한 변은 몇 칸 옆, 몇 칸 위로 가는지 봐요."],
       render: (b, a) => u2MarkFigs(b, a, { w: 22, h: 9, U: 40, paper: "grid", items: [{ pts: [[1, 3], [7, 3], [7, 6], [1, 6]] }, { pts: [[9, 2], [12, 2], [12, 5], [9, 5]] }, { pts: [[15, 1.5], [16.5, 4.5], [15, 7.5], [13.5, 4.5]] }, { pts: [[18, 3], [21, 3], [21.5, 6.5], [17.5, 6]] }],
@@ -2864,10 +2888,10 @@ const LESSONS = [
       hints: ["가는 네 각이 모두 직각이에요. 네 변의 길이도 모두 같을까요?", "네 변의 길이가 같아도 직각이 아닌 사각형이 있을까요?", "정사각형은 네 각이 모두 직각이고, 네 변의 길이가 모두 같아요."],
       render: (b, a) => panes(b, a, [
         { t: "주장", e: "✋", ph: "나는 ~ 방법이 좋다고 생각해요", hint: "지호(각 재기), 하린(변 재기), 둘 다 중에서 골라요", ex: ["나는 지호와 하린이 방법을 둘 다 쓰는 것이 좋다고 생각해요.", "나는 각과 변을 모두 재는 방법이 좋다고 생각해요."] },
-        { t: "근거", e: "🔎", ph: "왜냐하면 ~", hint: "사각형 가와 나를 떠올려 봐요", ex: ["왜냐하면 가는 네 각이 직각이어도 네 변의 길이가 달랐기 때문이에요.", "왜냐하면 네 변의 길이가 같아도 직각이 없는 사각형이 있기 때문이에요."] },
+        { t: "근거", e: "🔎", ph: "왜냐하면 ~", hint: "사각형 가와 다를 떠올려 봐요", ex: ["왜냐하면 가는 네 각이 직각이어도 네 변의 길이가 달랐기 때문이에요.", "왜냐하면 네 변의 길이가 같아도 직각이 없는 사각형이 있기 때문이에요."] },
         { t: "다른 방법이 좋을 때", e: "🤝", ph: "~할 때는 다른 방법도 좋아요", hint: "직사각형인지 알아볼 때는 어떤 방법이면 될까요?", ex: ["직사각형인지 알아볼 때는 지호처럼 네 각만 재도 좋아요.", "네 각이 직각인 줄 이미 알 때는 하린이처럼 변만 재도 좋아요."] },
         { t: "질문", e: "❓", ph: "아직 궁금한 것은 ~", ex: ["아직 궁금한 것은 정사각형도 직사각형이라고 할 수 있는지예요.", "아직 궁금한 것은 기울어진 타일도 정사각형인지예요."] }],
-        { ok: "두 방법을 함께 써야 해요! 정사각형은 네 각이 모두 직각이고 네 변의 길이가 모두 같아요. 가는 각만 직각이라 직사각형이에요." }) },
+        { ok: "두 방법을 함께 써야 해요! 정사각형은 네 각이 모두 직각이고 네 변의 길이가 모두 같아요. 가는 각만 직각이라 직사각형이에요. 정사각형도 네 각이 모두 직각이니 직사각형이라고 할 수 있어요." }) },
     { inst: "약속: 네 각이 모두 직각이고 네 변의 길이가 모두 같은 사각형을 ‘정사각형’이라고 해요. 직사각형 모양의 색지로 정사각형 타일을 만들어 보세요.", hints: ["짧은 변을 긴 변에 맞추어 접으면 네 변의 길이를 같게 만들 수 있어요."],
       render: (b, a) => u2PaperSquare(b, a, { pw: 6, ph: 4, U: 60, ok: "네 각이 모두 직각이고 네 변의 길이가 모두 같으니 정사각형 타일이에요!" }) },
     { inst: "문구점에서 파는 타일 스티커예요. 정사각형을 모두 찾아 눌러 보세요.", hints: ["네 각이 모두 직각인지, 네 변의 길이가 모두 같은지 두 가지를 확인해요.", "기울어져 있어도 두 가지를 모두 가지면 정사각형이에요."],
@@ -2892,7 +2916,7 @@ const LESSONS = [
   question: "직각이 있는 도형 조각을 이어 붙여 교실 장식을 어떻게 만들 수 있을까요?",
   summary: "만들고 싶은 장식을 여러 부분으로 나누고, 나눈 부분을 어떤 도형으로 만들지 정한 다음 이어 붙이고 색칠해요. 직각삼각형, 직사각형, 정사각형 조각을 이어 붙이면 여러 가지 모양을 만들 수 있어요.",
   steps: [
-    { name: "잘라 보기", inst: "하린이가 조각을 이어 붙여 만든 ‘우리 반 집’ 게시물이에요. ‘잘라서 떼어 보기’를 누른 다음, 조각마다 어떤 도형인지 골라 보세요.", hints: ["조각을 하나 누르고 오른쪽에서 도형 이름을 눌러요.", "모눈 칸을 세어 네 변의 길이가 같은지 봐요."],
+    { name: "잘라 보기", inst: "하린이가 조각을 이어 붙여 만든 ‘우리 반 집’ 게시물이에요. ‘잘라서 떼어 보기’를 누른 다음, 조각마다 가장 알맞은 도형 이름을 골라 보세요.", hints: ["조각을 하나 누르고 오른쪽에서 도형 이름을 눌러요.", "모눈 칸을 세어 네 변의 길이가 같은지 봐요."],
       render: wonderRecall((b, a) => u2Pieces(b, a, { w: 16, h: 9, U: 50, pieces: U2S_HOUSE, ok: "지붕은 직각삼각형 2개, 왼쪽 벽은 정사각형 1개, 오른쪽 벽은 직사각형 2개예요!" })) },
     { inst: "점선을 따라 도형 도장을 찍어 연필 장식을 만들어 보세요. 직각삼각형, 직사각형, 정사각형을 모두 써 봐요.", hints: ["연필 끝은 직각삼각형 도장 2개, 몸통은 긴 직사각형 도장을 써요.", "‘↻ 직각 위치’로 직각삼각형의 방향을 바꿀 수 있어요."],
       render: (b, a) => u2Stamp(b, a, { w: 18, h: 10, U: 44, ghost: U2S_PENCIL, need: { rt: 2, rect: 1, sq: 1 }, ok: "직각이 있는 도형으로 연필 장식을 만들었어요!" }) },
@@ -2903,7 +2927,7 @@ const LESSONS = [
     { name: "나만의 장식", inst: "교실에 붙일 나만의 장식 이름을 쓰고, 직각이 있는 도형 도장을 5개 이상 찍어 만들어 보세요. 두 가지 이상의 도형을 써요.", hints: ["집이나 연필처럼 만들고 싶은 것을 부분으로 나누어 생각해요.", "예: 로켓(몸통은 직사각형, 날개는 직각삼각형), 책(정사각형·직사각형), 물고기"],
       render: (b, a) => u2Stamp(b, a, { w: 20, h: 12, U: 38, total: 5, kinds: 2, nameAsk: true, ok: "나만의 교실 장식을 직각이 있는 도형으로 만들었어요! 친구에게 어떤 도형을 썼는지 설명해 보세요." }) }
   ],
-  challenge: { inst: "도윤이가 만든 나무 모양 장식이에요. 잘라서 떼어 보고 조각마다 이름을 골라 보세요. 직각이 없는 조각도 있어요!", hints: ["삼각형 조각마다 직각이 있는지 확인해요.", "나무 꼭대기의 뾰족한 삼각형에 직각이 있나요?"],
+  challenge: { inst: "도윤이가 만든 나무 모양 장식이에요. 잘라서 떼어 보고 조각마다 가장 알맞은 이름을 골라 보세요. 직각이 없는 조각도 있어요!", hints: ["삼각형 조각마다 직각이 있는지 확인해요.", "나무 꼭대기의 뾰족한 삼각형에 직각이 있나요?"],
     render: (b, a) => u2Pieces(b, a, { w: 14, h: 9, U: 50, pieces: U2S_TREE, kinds: ["rt", "rect", "sq", "tri"], kindNames: { tri: "직각이 없는 삼각형" }, ok: "나무 꼭대기는 직각이 없는 삼각형이에요. 줄기는 직사각형, 화분은 정사각형, 양옆 풀은 직각삼각형이에요!" }) }
 },
 /* ---------------- 9차시 ---------------- */

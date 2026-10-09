@@ -1542,7 +1542,7 @@ function u1Blocks(body, api, opt) {
   if (opt.tip) side.append(h("p", {}, opt.tip));
   const btns = h("div", { class: "tools" });
   if (op === "+") {
-    const mb = h("button", { class: merged ? "hidden" : "", onclick: () => { merged = true; C = A.map((v, k) => v + B[k]); mb.classList.add("hidden"); draw(); api.hint("같은 모형끼리 모았어요. 10개가 넘는 모형이 있는지 살펴봐요."); } }, "같은 모형끼리 모으기");
+    const mb = h("button", { class: merged ? "hidden" : "", onclick: () => { merged = true; C = A.map((v, k) => v + B[k]); mb.classList.add("hidden"); draw(); api.hint("같은 모형끼리 모았어요. 10개이거나 10개보다 많은 모형이 있는지 살펴봐요."); } }, "같은 모형끼리 모으기");
     btns.append(mb);
     for (let k = 0; k < nCol - 1; k++) btns.append(h("button", { onclick: () => up(k) }, `${U1_NAMES[k]} 모형 10개 → ${U1_NAMES[k + 1]} 모형 1개`));
   } else {
@@ -1564,7 +1564,7 @@ function u1Blocks(body, api, opt) {
     if (op === "+") {
       if (!merged) return api.fail("먼저 ‘같은 모형끼리 모으기’를 눌러 두 수의 모형을 모아 보세요.", ans);
       const over = C.findIndex((c, k) => k < nCol - 1 && c >= 10);
-      if (over >= 0) return api.fail(`${U1_NAMES[over]} 모형이 ${C[over]}개로 10개가 넘어요. ${U1_NAMES[over]} 모형 10개를 ${U1_NAMES[over + 1]} 모형 1개로 바꾸어 보세요.`, ans);
+      if (over >= 0) return api.fail(`${U1_NAMES[over]} 모형이 ${C[over]}개예요. ${U1_NAMES[over]} 모형 10개를 ${U1_NAMES[over + 1]} 모형 1개로 바꾸어 보세요.`, ans);
     } else {
       const need = u1Dig(b);
       if (X.every(x => x === 0)) return api.fail("빼는 수만큼 모형을 눌러 × 표시로 덜어 내 보세요.", ans);

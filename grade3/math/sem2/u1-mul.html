@@ -1900,10 +1900,10 @@ function numbers(body, api, items, opts = {}) {
   });
   body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     api.tryOnce(); let ok = true;
-    ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
+    ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = String(inp.value).trim() !== "" && v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
     const given = ins.map(x => x.inp.value).join(", ");
     if (ok) return api.done(given, opts.ok);
-    const bad = ins.find(({ inp, a }) => Number(inp.value) !== a);
+    const bad = ins.find(({ inp, a }) => String(inp.value).trim() === "" || Number(inp.value) !== a);
     const item = items[ins.indexOf(bad)];
     const why = item && item.why && item.why[String(Number(bad.inp.value))];
     api.fail(why || opts.bad || "빨간 칸을 다시 계산해 봐요.", given);
@@ -1992,7 +1992,7 @@ function simTensArray(body, api) {
   };
   rng1.oninput = up; rng2.oninput = up; up();
   const ans = h("div");
-  numbers(ans, api, [{ q: "30 × 20 = ", a: 600 }, { q: "40 × 30 = ", a: 1200 }, { q: "15 × 20 = ", a: 300 }],
+  numbers(ans, api, [{ q: "30 × 20 = ", a: 600 }, { q: "40 × 30 = ", a: 1200 }, { q: "20 × 40 = ", a: 800 }],
     { ok: "(몇십)×(몇십)은 (몇)×(몇)을 계산하고 0을 2개 붙이면 돼요.", bad: "0을 몇 개 붙여야 할지 큰 칸 수를 세어 봐요." });
   body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg), h("div", { class: "side" }, h("p", {}, "막대를 움직여 큰 칸(100칸짜리) 수를 바꿔 봐요."), rng1, rng2, out, ans)));
 }
@@ -2000,18 +2000,21 @@ function simTensArray(body, api) {
 /* 넓이 모델로 부분곱 찾기 */
 function simAreaModel(body, api, opt) {
   const a = opt.a, b = opt.b, at = Math.floor(a / 10) * 10, ao = a % 10, bt = Math.floor(b / 10) * 10, bo = b % 10;
-  const sc = 9, x0 = 70, y0 = 30, W = (bt + bo) * sc, Hh = (at + ao) * sc;
+  const rows = [at, ao].filter(v => v > 0), cols = [bt, bo].filter(v => v > 0);   // 한 자리 수는 한 줄(조각 둘)
+  const sc = a < 10 ? 18 : 9, x0 = 70, y0 = 30, W = b * sc, Hh = a * sc;
   const svg = makeSvg(x0 + W + 40, y0 + Hh + 60);
-  const parts = [[at, bt], [at, bo], [ao, bt], [ao, bo]];
-  const pos = [[x0, y0, bt * sc, at * sc], [x0 + bt * sc, y0, bo * sc, at * sc], [x0, y0 + at * sc, bt * sc, ao * sc], [x0 + bt * sc, y0 + at * sc, bo * sc, ao * sc]];
   const marks = ["①", "②", "③", "④"];
+  const parts = [], pos = [];
+  let yy = y0;
+  rows.forEach(r => { let xx = x0; cols.forEach(c => { parts.push([r, c]); pos.push([xx, yy, c * sc, r * sc]); xx += c * sc; }); yy += r * sc; });
+  const nm = ["한", "두", "세", "네"][parts.length - 1];
   pos.forEach((p, i) => { svg.append(svgEl("rect", { x: p[0], y: p[1], width: p[2], height: p[3], fill: i % 3 === 0 ? "#DCEAFB" : "#F2F7FC", stroke: INK, "stroke-width": 3 })); svg.append(txt(p[0] + p[2] / 2, p[1] + p[3] / 2, marks[i], 26)); });
-  svg.append(txt(x0 + bt * sc / 2, y0 - 12, String(bt), 22), txt(x0 + bt * sc + bo * sc / 2, y0 - 12, String(bo), 22),
-    txt(x0 - 26, y0 + at * sc / 2, String(at), 22), txt(x0 - 26, y0 + at * sc + ao * sc / 2, String(ao), 22));
+  let xx = x0; cols.forEach(c => { svg.append(txt(xx + c * sc / 2, y0 - 12, String(c), 22)); xx += c * sc; });
+  yy = y0; rows.forEach(r => { svg.append(txt(x0 - 26, yy + r * sc / 2, String(r), 22)); yy += r * sc; });
   const ans = h("div");
-  numbers(ans, api, parts.map((p, i) => ({ q: `${marks[i]} ${p[0]} × ${p[1]} = `, a: p[0] * p[1] })).concat([{ q: `네 칸을 모두 더하면 ${a} × ${b} = `, a: a * b }]),
-    { ok: `${a} × ${b} = ${a * b}. 네 조각으로 나누어 계산했어요!`, bad: "칸마다 가로와 세로의 수를 다시 보고 곱해 봐요." });
-  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg), h("div", { class: "side" }, h("p", {}, opt.tip || "직사각형을 네 조각으로 나누어 부분곱을 구해요."), ans)));
+  numbers(ans, api, parts.map((p, i) => ({ q: `${marks[i]} ${p[0]} × ${p[1]} = `, a: p[0] * p[1] })).concat([{ q: `${nm} 칸을 모두 더하면 ${a} × ${b} = `, a: a * b }]),
+    { ok: `${a} × ${b} = ${a * b}. ${nm} 조각으로 나누어 계산했어요!`, bad: "칸마다 가로와 세로의 수를 다시 보고 곱해 봐요." });
+  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg), h("div", { class: "side" }, h("p", {}, opt.tip || `직사각형을 ${nm} 조각으로 나누어 부분곱을 구해요.`), ans)));
 }
 
 /* 어림하기 */
@@ -2092,7 +2095,7 @@ const LESSONS = [
       { q: "212 × 3은 얼마쯤일까요?", o: ["약 600", "약 900"], a: 0 },
       { q: "398 × 2는 얼마쯤일까요?", o: ["약 800", "약 400"], a: 0 }]) }
   ],
-  challenge: { inst: "축제장의 수를 어림해 보세요.", render: (b, a) => numbers(b, a, [
+  challenge: { inst: "축제장의 의자 수를 계산해 보세요.", render: (b, a) => numbers(b, a, [
     { q: "한 줄에 8개씩 6줄이면 의자는 모두 몇 개? ", a: 48, unit: "개" },
     { q: "의자가 이런 자리로 3곳 있으면 모두 몇 개? ", a: 144, unit: "개" }],
     { ok: "곱셈을 두 번 이어서 쓸 수도 있어요." }) }
@@ -2107,7 +2110,7 @@ const LESSONS = [
       { ok: "부분곱을 더하면 답이 나와요." }) },
     { inst: "계산 방법을 말로 정리해요.", render: (b, a) => blanks(b, a, ["(세 자리 수) × (한 자리 수)는 ", { o: ["백·십·일 자리를 따로", "백의 자리만"], a: 0 }, " 곱한 뒤 ", { o: ["더해요", "빼요"], a: 0 }, "."]) },
     { inst: "세로셈으로 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 213, b: 3, tip: "일의 자리부터 차례로 곱해요." }) },
-    { inst: "공장에서 3일 동안 만든 도자기 수를 구해 보세요.", render: (b, a) => numbers(b, a, [{ q: "132 × 3 =", a: 396 }, { q: "321 × 2 =", a: 642 }, { q: "423 × 2 =", a: 846 }],
+    { inst: "도자기 공장에서 하루에 132개씩 3일, 321개씩 2일, 423개씩 2일 만들었어요. 만든 도자기 수를 각각 구해 보세요.", render: (b, a) => numbers(b, a, [{ q: "132 × 3 =", a: 396, unit: "개" }, { q: "321 × 2 =", a: 642, unit: "개" }, { q: "423 × 2 =", a: 846, unit: "개" }],
       { ok: "올림이 없는 세 자리 수 곱셈을 잘 해냈어요!" }) }
   ],
   challenge: { inst: "□에 알맞은 수를 찾아보세요.", render: (b, a) => numbers(b, a, [
@@ -2124,7 +2127,7 @@ const LESSONS = [
       { ok: "부분곱을 더하면 올림이 저절로 정리돼요." }) },
     { inst: "올림을 말로 정리해요.", render: (b, a) => blanks(b, a, ["일의 자리 곱이 10이거나 크면 ", { o: ["십의 자리로 올려요", "그냥 적어요"], a: 0 }, ". 올린 수는 윗자리 곱에 ", { o: ["더해요", "곱해요"], a: 0 }, "."]) },
     { inst: "세로셈으로 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 214, b: 3, tip: "4 × 3 = 12 → 2를 쓰고 1을 올려요." }) },
-    { inst: "지후가 오늘 아침에 달린 거리를 구해 보세요.", render: (b, a) => numbers(b, a, [{ q: "126 × 3 =", a: 378 }, { q: "217 × 4 =", a: 868 }, { q: "315 × 3 =", a: 945 }],
+    { inst: "지후가 달리기 연습을 해요. 한 바퀴가 126 m인 길을 3바퀴, 217 m인 길을 4바퀴, 315 m인 길을 3바퀴 달렸어요. 길마다 달린 거리를 구해 보세요.", render: (b, a) => numbers(b, a, [{ q: "126 × 3 =", a: 378, unit: "m" }, { q: "217 × 4 =", a: 868, unit: "m" }, { q: "315 × 3 =", a: 945, unit: "m" }],
       { ok: "올림이 한 번 있는 곱셈을 잘 해냈어요!" }) }
   ],
   challenge: { inst: "올림을 생각하며 풀어 보세요.", render: (b, a) => numbers(b, a, [
@@ -2143,12 +2146,12 @@ const LESSONS = [
     { inst: "계산 순서를 말로 정리해요.", render: (b, a) => blanks(b, a, ["올림이 여러 번 있을 때는 ", { o: ["일의 자리부터", "백의 자리부터"], a: 0 }, " 차례로 곱하고, 올림이 생길 때마다 ", { o: ["윗자리로 올려요", "버려요"], a: 0 }, "."]) },
     { inst: "세로셈으로 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 158, b: 6, tip: "8 × 6 = 48 → 8을 쓰고 4를 올려요." }) },
     { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [
-      { q: "365 × 3 =", a: 1095, why: { "965": "십의 자리와 백의 자리에서 올림한 수를 빠뜨렸어요." } },
+      { q: "365 × 3 =", a: 1095, why: { "985": "올림한 수를 십의 자리와 백의 자리에 더하지 않았어요. 5 × 3 = 15에서 올린 1, 6 × 3 = 18에 1을 더한 19에서 올린 1을 더해요." } },
       { q: "128 × 7 =", a: 896 }, { q: "476 × 5 =", a: 2380 }],
       { ok: "올림이 여러 번 있어도 잘 해냈어요!" }) }
   ],
   challenge: { inst: "□에 알맞은 수를 찾아보세요.", render: (b, a) => numbers(b, a, [
-    { q: "2□6 × 4 = 1024 일 때 □ = ", a: 5 }, { q: "3 4 7 × 6 = ", a: 2082 }],
+    { q: "2□6 × 4 = 1024 일 때 □ = ", a: 5 }, { q: "347 × 6 = ", a: 2082 }],
     { ok: "올림이 여러 번 있는 곱셈도 거꾸로 생각할 수 있어요!" }) }
 },
 {
@@ -2229,7 +2232,7 @@ const LESSONS = [
     { inst: "올림을 말로 정리해요.", render: (b, a) => blanks(b, a, ["줄마다 계산할 때 올림이 생기면 ", { o: ["윗자리 곱에 더해요", "그냥 둬요"], a: 0 }, ". 두 줄을 더할 때도 ", { o: ["받아올림", "받아내림"], a: 0 }, "을 살펴요."]) },
     { inst: "45 × 36도 계산해 보세요.", render: (b, a) => simVertical(b, a, { a: 45, b: 36, rows: 3, tip: "첫 줄은 45 × 6 = 270, 둘째 줄은 45 × 30 = 1350이에요." }) },
     { inst: "스스로 계산해 보세요.", render: (b, a) => numbers(b, a, [
-      { q: "38 × 24 =", a: 912, why: { "812": "올림한 수를 윗자리 곱에 더하지 않고 그대로 적었어요. 8 × 4 = 32에서 올린 3을 3 × 4에 더해요.", "212": "둘째 줄(38 × 20 = 760)을 빠뜨렸어요." } },
+      { q: "38 × 24 =", a: 912, why: { "882": "올림한 수를 윗자리 곱에 더하지 않았어요. 8 × 4 = 32에서 올린 3을 3 × 4 = 12에 더해 15로 써요.", "152": "둘째 줄(38 × 20 = 760)을 빠뜨렸어요." } },
       { q: "56 × 47 =", a: 2632, why: { "632": "둘째 줄에서 올림한 수를 빠뜨렸어요. 56 × 40 = 2240이에요." } },
       { q: "29 × 35 =", a: 1015 }],
       { ok: "올림이 여러 번 있어도 정확해요!" }) }

@@ -1144,6 +1144,7 @@ function renderLesson() {
   const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
   if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
   const api = {
+    get __root() { return api; }, /*hj-multi*/
     tryOnce() { tries++; },
     provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
     fail(msg, answer) {
@@ -1189,7 +1190,8 @@ function renderLesson() {
   mount(h("main", { class: "lesson" }, stairs, work));
   const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
   markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
-  step.render(body, api);
+  STEP_CTX = { api, open: true, depth: 0, need: 0, got: new Set(), ans: [] }; /*hj-multi*/
+  try { step.render(body, api); } finally { STEP_CTX.open = false; }
 }
 function showFinish(L, chal) {
   const p = myProg(L.id);
@@ -1340,12 +1342,12 @@ function quiz(body, api, items, opts = {}) {
     else {
       const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
       const w = items[wrongIdx];
-      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      const sv = state[wrongIdx], custom = w && w.why && w.why[String(Array.isArray(sv) ? [...sv].sort((x, y) => x - y) : sv)];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
     return allOk;
   };
-  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+  const auto = autoRun(() => state.every((v, qi) => v != null && !(Array.isArray(v) && v.length < items[qi].a.length)), /*hj-multi: 여러 개 고르기는 정답 수만큼 고른 뒤 확인*/
                        () => JSON.stringify(state), judge, 260);
   wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
   body.append(wrap);
@@ -2398,7 +2400,8 @@ function simUnitFraction(body, api, opt) {
   const out = h("div", { class: "readout" });
   const upd = () => {
     const k = on.size, w = Math.floor(k / den), r = k % den;
-    out.innerHTML = `색칠한 조각 <b>${k}</b>개<br>가분수로 ${frac(k, den)} · 대분수로 ${w > 0 ? `${w}과(와) ${frac(r, den)}` : frac(r, den)}`;
+    const say = k === 0 ? "아직 색칠하지 않았어요" : k < den ? `진분수 ${frac(k, den)}` : r === 0 ? `가분수로 ${frac(k, den)} · 자연수로 ${w}` : `가분수로 ${frac(k, den)} · 대분수로 ${w}과(와) ${frac(r, den)}`;
+    out.innerHTML = `색칠한 조각 <b>${k}</b>개<br>${say}`;
   };
   sets.forEach((cells, w) => cells.forEach((c, i) => { const id = w * den + i; c.style.cursor = "pointer"; c.addEventListener("click", () => { on.has(id) ? on.delete(id) : on.add(id); c.setAttribute("fill", on.has(id) ? "#8FBFE8" : "#fff"); upd(); auto(); }); }));
   upd();
@@ -2408,7 +2411,7 @@ function simUnitFraction(body, api, opt) {
     api.fail(`지금은 조각 ${on.size}개예요. ${opt.hint || "조각 수를 다시 맞춰 봐요."}`);
     return false;
   };
-  const auto = autoRun(() => on.size > 0, () => [...on].sort((x, y) => x - y).join(","), judge, 1200);
+  const auto = autoRun(() => on.size >= opt.target, () => [...on].sort((x, y) => x - y).join(","), judge, 1200); /* 목표 수에 이르기 전에는 색칠하는 중으로 보고 판정하지 않음 */
   body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg),
     h("div", { class: "side" }, h("p", {}, opt.tip), out)));
 }
@@ -2482,7 +2485,7 @@ function simFracCards(body, api, opt) {
     if (num == null) num = c; else if (den == null) den = c; else return;
     used.add(i); draw(); auto();
   } }, String(c))));
-  const reset = h("button", { class: "ghost", onclick: () => { num = den = null; used.clear(); draw(); } }, "다시 놓기");
+  const reset = h("button", { class: "ghost", onclick: () => { num = den = null; used.clear(); draw(); auto = mkAuto(); } }, "다시 놓기");
   const judge = () => {
     if (num == null || den == null) { api.fail("분자와 분모 카드를 모두 놓아 주세요."); return false; }
     api.tryOnce();
@@ -2491,7 +2494,8 @@ function simFracCards(body, api, opt) {
     api.fail(opt.bad);
     return false;
   };
-  const auto = autoRun(() => num != null && den != null, () => `${num}/${den}`, judge, 260);
+  const mkAuto = () => autoRun(() => num != null && den != null, () => `${num}/${den}`, judge, 260);
+  let auto = mkAuto(); /* 다시 놓기 하면 새로 만들어 같은 조합도 다시 확인함 */
   body.append(h("p", {}, opt.tip), row, h("p", { class: "inst" }, "먼저 누른 카드가 분자, 그다음 카드가 분모가 돼요."), show, h("div", { class: "actions" }, reset));
   draw();
 }
@@ -2499,6 +2503,28 @@ function simFracCards(body, api, opt) {
 const UNIT_STORY = { title: '간식 나누기 부엌', lines: ['우리 반 부엌에서 간식을 친구들과 나누어 먹어요.', '핫케이크 한 장, 김밥 한 줄, 쿠키 굽는 시간을 똑같이 나눌 때 분수가 필요해요.', '똑같이 나누지 않으면 분수로 말할 수 없다는 것부터 알아봐요.'], one: '간식 나누기 부엌 · 핫케이크·김밥·굽는 시간을 똑같이 나누며 분수를 알아봐요.' };
 const UNIT_KEYWORDS = ["똑같이 나누기", "분모", "분자", "진분수", "가분수", "대분수", "전체 ÷ 분모", "분자만큼 세기"];
 /* ===== 4. 분수 — 차시별 개념 계단 (간식 나누기 부엌 이야기) ===== */
+/*hj-multi*/ /* 한 계단에 끝내야 하는 활동이 둘 이상이면(예: 빈칸 고르기 + 까닭 쓰기) 모두 끝내야 계단을 통과한다 (2026-10-09).
+   계단의 api(또는 thenWhy처럼 그것을 복사한 api)를 받은, done(을 부르는 활동 함수만 센다. 활동 안에서 부르는 활동은 세지 않는다. */
+let STEP_CTX = null;
+function stepCount(fn) {
+  return function (body, api, ...rest) {
+    const c = STEP_CTX;
+    if (!c || !c.open || c.depth > 0 || !api || api.__root !== c.api) return fn.call(this, body, api, ...rest);
+    const k = c.need++;
+    const sub = Object.assign({}, api, { done: (ans, msg, lv) => {
+      if (c.got.has(k)) return; c.got.add(k); c.ans[k] = ans || "";
+      if (c.got.size >= c.need) api.done(c.ans.filter(Boolean).join(" | "), msg, lv);
+      else api.hint("○ 좋아요! 아래에 남은 활동도 마저 해요.");
+    } });
+    c.depth++; try { return fn.call(this, body, sub, ...rest); } finally { c.depth--; }
+  };
+}
+Object.keys(window).forEach(n => { const f = window[n];
+  if (typeof f !== "function" || f.__hjMulti) return;
+  const src = Function.prototype.toString.call(f);
+  if (!/^function\s+\w+\s*\(\s*body\s*,\s*api\b/.test(src) || !/done\(/.test(src)) return;
+  const w = stepCount(f); w.__hjMulti = 1; window[n] = w; });
+/*/hj-multi*/
 const LESSONS = [
 {
   id: "f1", no: 1, title: "핫케이크를 똑같이 나누어요", soop: "개념 찾기(S)",
@@ -2720,7 +2746,7 @@ const LESSONS = [
     } },
     { name: "부엌 문제 해결하기", inst: "부엌에서 만나는 분수 문제를 풀어요.", render: (b, a) => numbers(b, a, [
       { q: "쿠키 굽는 1시간의 4분의 1은 몇 분? ", a: 15, unit: "분", why: { "4": "분모를 그대로 썼어요. 1시간은 60분이에요. 60 ÷ 4를 해 봐요.", "30": "반으로 나누었어요. 분모가 4이니 4도막으로 나눠요." } },
-      { q: "포장 끈 40 cm의 5분의 3은 몇 cm? ", a: 24, unit: "cm", why: { "8": "40 ÷ 5 = 8까지 구했어요. 8 cm를 3번 세어야 해요.", "15": "분모와 분자를 바꿔 세었어요. 먼저 5도막으로 나눠 봐요." } },
+      { q: "포장 끈 40 cm의 5분의 3은 몇 cm? ", a: 24, unit: "cm", why: { "8": "40 ÷ 5 = 8까지 구했어요. 8 cm를 3번 세어야 해요.", "15": "분모와 분자를 곱했어요. 먼저 40 ÷ 5를 구해요." } },
       { q: "포장 끈 1 m를 4명이 똑같이 나누면 한 사람은 □분의 1 m예요. □는? ", a: 4 }],
       { ok: "굽는 시간과 끈 길이에도 분수를 써요." }) },
     { name: "말해 보기 — 연결·확장·도전", inst: "오늘 배운 것을 세 칸에 써서 붙여요.",
@@ -2741,16 +2767,16 @@ const LESSONS = [
   steps: [
     { name: "놀이하기", inst: "쿠폰 카드 2, 3, 5 중 두 장으로 진분수를 만들어요.", render: (b, a) => simFracCards(b, a, { cards: [2, 3, 5], test: (n, d) => n < d, tip: "분자가 분모보다 작으면 진분수가 돼요.", ok: "진분수 쿠폰을 만들었어요!", bad: "지금은 가분수예요. 위에 더 작은 수를 놓아 봐요." }) },
     { name: "가분수 만들기", inst: "이번에는 가분수 쿠폰을 만들어요.", render: (b, a) => simFracCards(b, a, { cards: [2, 3, 5], test: (n, d) => n >= d, tip: "분자가 분모와 같거나 크면 가분수가 돼요.", ok: "가분수 쿠폰을 만들었어요!", bad: "지금은 진분수예요. 위에 더 큰 수를 놓아 봐요." }) },
-    { name: "가장 큰 분수", inst: "쿠폰 2, 3, 5로 간식을 가장 많이 받는 분수를 만들어요.", render: (b, a) => simFracCards(b, a, { cards: [2, 3, 5], test: (n, d) => n === 5 && d === 2, tip: "분자는 크고 분모는 작아야 큰 분수가 돼요.", ok: "2분의 5가 가장 커요! (2와 2분의 1)", bad: "더 큰 분수를 만들 수 있어요. 위와 아래에 어떤 수를 놓을까요?" }) },
-    { name: "규칙 찾기", inst: "찾은 규칙을 정리해요.", render: (b, a) => blanks(b, a, ["간식을 많이 받으려면 분자에 ", { o: ["큰 수", "작은 수"], a: 0 }, ", 분모에 ", { o: ["큰 수", "작은 수"], a: 1 }, "를 놓아야 해요."]) },
+    { name: "가장 큰 분수", inst: "쿠폰 2, 3, 5로 간식을 가장 많이 받는 분수를 만들어요.", render: (b, a) => simFracCards(b, a, { cards: [2, 3, 5], test: (n, d) => n === 5 && d === 2, tip: "만든 가분수를 대분수로 바꾸어 자연수 부분을 견주어 보세요.", ok: "2분의 5가 가장 커요! (2와 2분의 1)", bad: "더 큰 분수를 만들 수 있어요. 위와 아래에 어떤 수를 놓을까요?" }) },
+    { name: "규칙 찾기", inst: "찾은 규칙을 정리해요.", render: (b, a) => blanks(b, a, ["가분수를 대분수로 바꾸면 크기를 견주기 쉬워요. 분자에 ", { o: ["큰 수", "작은 수"], a: 0 }, ", 분모에 ", { o: ["큰 수", "작은 수"], a: 1 }, "를 놓았더니 2분의 5(2와 2분의 1)처럼 자연수 부분이 가장 큰 분수가 되었어요."]) },
     { name: "발표하기", inst: "모둠 친구에게 설명할 말을 써 보세요.", render: (b, a) => writeStep(b, a, [
-      { q: "가장 큰 분수 쿠폰을 만든 방법을 설명해 보세요.", tag: "방법", help: ["① 분자 자리에 놓은 수 → ② 분모 자리에 놓은 수를 차례로 써요.", "‘분자에는 ~을, 분모에는 ~을 놓았어요. 왜냐하면 ~’ 꼴로 써요."], ans: "분자에는 가장 큰 수 5를, 분모에는 가장 작은 수 2를 놓아 2분의 5를 만들었어요. 왜냐하면 분자가 클수록, 분모가 작을수록 분수가 커지기 때문이에요." },
-      { q: "쿠폰 놀이로 알게 된 점은?", tag: "알게 된 점", help: ["진분수·가분수를 만들 때와 큰 분수를 만들 때 무엇을 보았는지 떠올려요.", "‘분자가 분모보다 ~하면 ~가 돼요.’처럼 알게 된 규칙을 하나 써요."], ans: "분자가 분모보다 작으면 진분수, 분자가 분모와 같거나 크면 가분수가 돼요. 분자에 큰 수, 분모에 작은 수를 놓으면 큰 분수가 된다는 것도 알았어요." }]) }
+      { q: "가장 큰 분수 쿠폰을 만든 방법을 설명해 보세요.", tag: "방법", help: ["① 분자 자리에 놓은 수 → ② 분모 자리에 놓은 수를 차례로 써요.", "‘분자에는 ~을, 분모에는 ~을 놓았어요. 왜냐하면 ~’ 꼴로 써요."], ans: "분자에는 가장 큰 수 5를, 분모에는 가장 작은 수 2를 놓아 2분의 5를 만들었어요. 왜냐하면 대분수로 바꾸면 2와 2분의 1이 되어, 3분의 5(1과 3분의 2)나 2분의 3(1과 2분의 1)보다 자연수 부분이 크기 때문이에요." },
+      { q: "쿠폰 놀이로 알게 된 점은?", tag: "알게 된 점", help: ["진분수·가분수를 만들 때와 큰 분수를 만들 때 무엇을 보았는지 떠올려요.", "‘분자가 분모보다 ~하면 ~가 돼요.’처럼 알게 된 규칙을 하나 써요."], ans: "분자가 분모보다 작으면 진분수, 분자가 분모와 같거나 크면 가분수가 돼요. 가분수를 대분수로 바꾸어 자연수 부분을 견주면 어느 쿠폰이 더 큰지 알 수 있다는 것도 알았어요." }]) }
   ],
   challenge: { inst: "쿠폰 2, 4, 7로 만들어 보세요.", render: (b, a) => numbers(b, a, [
     { q: "만들 수 있는 가장 큰 분수의 분자는? ", a: 7 }, { q: "그 분수의 분모는? ", a: 2 },
     { q: "만들 수 있는 가장 작은 분수의 분모는? ", a: 7 }],
-    { ok: "2분의 7이 가장 크고, 7분의 2가 가장 작아요." }) }
+    { ok: "2분의 7(3과 2분의 1)이 가장 커요. 7분의 2는 분모가 같은 7분의 4보다 작고, 분자가 같은 4분의 2보다도 작아요(분자가 같으면 분모가 클수록 한 조각이 작아요). 그래서 7분의 2가 가장 작아요." }) }
 },
 {
   id: "f10", no: 10, title: "부엌에서 배운 것을 확인해요", soop: "발표하기(P)",

@@ -2184,7 +2184,8 @@ function simUnitFraction(body, api, opt) {
   const out = h("div", { class: "readout" });
   const upd = () => {
     const k = on.size, w = Math.floor(k / den), r = k % den;
-    out.innerHTML = `색칠한 조각 <b>${k}</b>개<br>가분수로 ${frac(k, den)} · 대분수로 ${w > 0 ? `${w}과(와) ${frac(r, den)}` : frac(r, den)}`;
+    const say = k === 0 ? "아직 색칠하지 않았어요" : k < den ? `진분수 ${frac(k, den)}` : r === 0 ? `가분수로 ${frac(k, den)} · 자연수로 ${w}` : `가분수로 ${frac(k, den)} · 대분수로 ${w}과(와) ${frac(r, den)}`;
+    out.innerHTML = `색칠한 조각 <b>${k}</b>개<br>${say}`;
   };
   sets.forEach((cells, w) => cells.forEach((c, i) => { const id = w * den + i; c.style.cursor = "pointer"; c.addEventListener("click", () => { on.has(id) ? on.delete(id) : on.add(id); c.setAttribute("fill", on.has(id) ? "#8FBFE8" : "#fff"); upd(); }); }));
   upd();
@@ -2455,7 +2456,7 @@ const LESSONS = [
     { name: "보석과 음식 고르기", inst: "힘을 꼭 맞게 쓰는 방법을 찾아보세요.", render: (b, a) => quiz(b, a, [
       { q: "힘이 8분의 6만큼 있어요. 보석을 캐는 데 드는 힘은 가 8분의 1, 나 8분의 2, 다 8분의 3, 라 8분의 4예요. 힘을 남김없이 써서 캘 수 있는 보석 3가지는?", o: ["가, 나, 다", "가, 나, 라", "나, 다, 라"], a: 0 },
       { q: "이번에는 힘이 8분의 3만큼 남았어요. 힘을 가득(8분의 8) 채우려면 8분의 1이 몇 개 더 있어야 할까요?", o: ["3개", "5개", "8개"], a: 1 },
-      { q: "음식이 주는 힘은 가 8분의 1, 나 8분의 2, 다 8분의 4, 라 8분의 5예요. 힘을 꼭 맞게 모두 채울 수 있는 음식 2가지는?", o: ["가와 나", "가와 다", "나와 다"], a: 1 }],
+      { q: "힘이 8분의 3일 때, 음식이 주는 힘은 가 8분의 1, 나 8분의 2, 다 8분의 4, 라 8분의 5예요. 힘을 꼭 맞게 모두 채울 수 있는 음식 2가지는?", o: ["가와 나", "가와 다", "나와 다"], a: 1 }],
       { ok: "8분의 1이 몇 개인지 세면 꼭 맞는 짝을 찾을 수 있어요." }) },
     { inst: "비교 방법을 정리해요.", render: (b, a) => blanks(b, a, ["분모가 같으면 ", { o: ["분자", "분모"], a: 0 }, "가 클수록 큰 분수예요. 가분수는 ", { o: ["대분수로 바꾸면", "그대로 두면"], a: 0 }, " 크기를 알아보기 쉬워요."]) },
     { name: "전체가 다르면", inst: "같은 분수라도 전체가 다르면 어떻게 될까요?", render: (b, a) => numbers(b, a, [

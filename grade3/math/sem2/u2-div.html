@@ -1900,10 +1900,10 @@ function numbers(body, api, items, opts = {}) {
   });
   body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     api.tryOnce(); let ok = true;
-    ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
+    ins.forEach(({ inp, a }) => { const v = Number(inp.value); const good = String(inp.value).trim() !== "" && v === a; inp.style.borderColor = good ? "var(--ok)" : "var(--no)"; if (!good) ok = false; });
     const given = ins.map(x => x.inp.value).join(", ");
     if (ok) return api.done(given, opts.ok);
-    const bad = ins.find(({ inp, a }) => Number(inp.value) !== a);
+    const bad = ins.find(({ inp, a }) => String(inp.value).trim() === "" || Number(inp.value) !== a);
     const item = items[ins.indexOf(bad)];
     const why = item && item.why && item.why[String(Number(bad.inp.value))];
     api.fail(why || opts.bad || "빨간 칸을 다시 계산해 봐요.", given);
@@ -2232,7 +2232,7 @@ const LESSONS = [
   challenge: { inst: "환경 보호 문제예요.", render: (b, a) => numbers(b, a, [
     { q: "페트병 24개를 6모둠에 똑같이 나누면 한 모둠은 몇 개? ", a: 4, unit: "개" },
     { q: "페트병 24개를 한 사람에게 3개씩 주면 몇 명에게 줄 수 있나요? ", a: 8, unit: "명" }],
-    { ok: "같은 24 ÷ 6, 24 ÷ 3이 서로 다른 뜻을 담고 있어요." }) }
+    { ok: "24 ÷ 6은 6모둠에 똑같이 나누기, 24 ÷ 3은 3개씩 묶어 세기를 나타내요. 나눗셈에는 두 가지 뜻이 있어요." }) }
 },
 {
   id: "u2", no: 2, title: "(몇십) ÷ (몇) ⑴ 내림이 없는 경우", soop: "개념 구축하기(O)",

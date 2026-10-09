@@ -1144,6 +1144,7 @@ function renderLesson() {
   const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
   if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
   const api = {
+    get __root() { return api; }, /*hj-multi*/
     tryOnce() { tries++; },
     provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
     fail(msg, answer) {
@@ -1189,7 +1190,8 @@ function renderLesson() {
   mount(h("main", { class: "lesson" }, stairs, work));
   const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
   markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
-  step.render(body, api);
+  STEP_CTX = { api, open: true, depth: 0, need: 0, got: new Set(), ans: [] }; /*hj-multi*/
+  try { step.render(body, api); } finally { STEP_CTX.open = false; }
 }
 function showFinish(L, chal) {
   const p = myProg(L.id);
@@ -1340,12 +1342,12 @@ function quiz(body, api, items, opts = {}) {
     else {
       const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
       const w = items[wrongIdx];
-      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      const sv = state[wrongIdx], custom = w && w.why && w.why[String(Array.isArray(sv) ? [...sv].sort((x, y) => x - y) : sv)];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
     return allOk;
   };
-  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+  const auto = autoRun(() => state.every((v, qi) => v != null && !(Array.isArray(v) && v.length < items[qi].a.length)), /*hj-multi: 여러 개 고르기는 정답 수만큼 고른 뒤 확인*/
                        () => JSON.stringify(state), judge, 260);
   wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
   body.append(wrap);
@@ -2000,6 +2002,28 @@ function figSegs(cfg) {
 const UNIT_STORY = { title: '원 탐험 캠프', lines: ['하준이와 채은이네 반이 캠핑을 갔어요.', '과녁 놀이, 쥐불놀이, 컬링 과녁, 지도 보고 약속 장소 정하기까지 곳곳에 원이 숨어 있어요.', '원을 정확하게 그리고 읽는 방법을 캠프에서 찾아봐요.'], one: '원 탐험 캠프 · 캠핑장 곳곳에 숨은 원을 찾고 정확하게 그려요.' };
 const UNIT_KEYWORDS = ["원의 중심", "반지름", "지름", "지름은 반지름의 2배", "컴퍼스", "가장 긴 선분"];
 /* ===== 3. 원 — 차시별 개념 계단 ===== */
+/*hj-multi*/ /* 한 계단에 끝내야 하는 활동이 둘 이상이면(예: 빈칸 고르기 + 까닭 쓰기) 모두 끝내야 계단을 통과한다 (2026-10-09).
+   계단의 api(또는 thenWhy처럼 그것을 복사한 api)를 받은, done(을 부르는 활동 함수만 센다. 활동 안에서 부르는 활동은 세지 않는다. */
+let STEP_CTX = null;
+function stepCount(fn) {
+  return function (body, api, ...rest) {
+    const c = STEP_CTX;
+    if (!c || !c.open || c.depth > 0 || !api || api.__root !== c.api) return fn.call(this, body, api, ...rest);
+    const k = c.need++;
+    const sub = Object.assign({}, api, { done: (ans, msg, lv) => {
+      if (c.got.has(k)) return; c.got.add(k); c.ans[k] = ans || "";
+      if (c.got.size >= c.need) api.done(c.ans.filter(Boolean).join(" | "), msg, lv);
+      else api.hint("○ 좋아요! 아래에 남은 활동도 마저 해요.");
+    } });
+    c.depth++; try { return fn.call(this, body, sub, ...rest); } finally { c.depth--; }
+  };
+}
+Object.keys(window).forEach(n => { const f = window[n];
+  if (typeof f !== "function" || f.__hjMulti) return;
+  const src = Function.prototype.toString.call(f);
+  if (!/^function\s+\w+\s*\(\s*body\s*,\s*api\b/.test(src) || !/done\(/.test(src)) return;
+  const w = stepCount(f); w.__hjMulti = 1; window[n] = w; });
+/*/hj-multi*/
 const LESSONS = [
 {
   id: "c1", no: 1, title: "우리 주변의 원 찾기", soop: "개념 찾기(S)",
@@ -2095,7 +2119,7 @@ const LESSONS = [
       { q: "원 위의 두 점을 이은 선분 중에서 가장 긴 선분은?", o: ["반지름", "지름", "아무 선분"], a: 1, why: { "0": "반지름은 원의 중심에서 원까지예요. 반지름 2개를 이은 선분을 떠올려 봐요." } }]) }
   ],
   challenge: { inst: "원의 성질을 이용해 풀어요.", render: (b, a) => quiz(b, a, [
-    { q: "큰 원 안에 반지름이 2 cm인 작은 원 2개를 위아래로 맞닿게 넣었어요. 큰 원의 지름은?", o: ["4 cm", "6 cm", "8 cm"], a: 2, why: { "0": "작은 원 하나의 지름만 세었어요. 작은 원이 2개 있어요.", "1": "반지름과 지름을 섞어 세었어요. 작은 원 2개의 지름을 더해 봐요." } },
+    { q: "큰 원 안에 반지름이 2 cm인 작은 원 2개를 위아래로 맞닿게 넣었더니 큰 원에 꼭 맞았어요. 큰 원의 지름은?", o: ["4 cm", "6 cm", "8 cm"], a: 2, why: { "0": "작은 원 하나의 지름만 세었어요. 작은 원이 2개 있어요.", "1": "반지름과 지름을 섞어 세었어요. 작은 원 2개의 지름을 더해 봐요." } },
     { q: "반지름이 7 cm인 원 2개를 옆으로 맞닿게 놓으면 전체 길이는?", o: ["14 cm", "21 cm", "28 cm"], a: 2, why: { "0": "반지름 2개만 더했어요. 원 하나가 차지하는 길이는 지름 14 cm예요.", "1": "지름 1개와 반지름 1개를 더했어요. 원이 2개이니 지름 2개를 더해 봐요." } },
     { q: "원을 똑같이 4조각으로 나누려면 지름을 몇 개 그으면 될까요?", o: ["1개", "2개", "4개"], a: 1, why: { "0": "지름 1개는 원을 똑같이 둘로만 나눠요. 종이 접시를 한 번 더 접어 봐요.", "2": "지름 4개를 그으면 8조각이 돼요. 접은 자리를 세어 봐요." } }]) }
 },
@@ -2180,10 +2204,10 @@ const LESSONS = [
   summary: "원의 중심, 반지름, 지름의 뜻과 원의 성질, 컴퍼스로 원을 그리는 방법을 모두 확인했어요. 생활 속에서 원을 보면 원의 중심과 반지름을 찾아보세요.",
   steps: [
     { name: "확인 1", inst: "원의 중심과 반지름을 확인해요.", render: (b, a) => quiz(b, a, [
-      { q: "이 원의 반지름은 어느 것인가요?", fig: () => figSegs({ pts: { "ㄱ": 90, "ㄴ": 210, "ㄷ": 330 }, segs: [["ㄱ", "ㅇ"], ["ㄴ", "ㄷ"]] }), o: ["선분 ㄱㅇ", "선분 ㄴㄷ"], a: 0, why: { "1": "선분 ㄴㄷ은 원의 중심을 지나 양쪽 끝까지 이은 지름이에요. 반지름은 한쪽 끝이 원의 중심이에요." } },
+      { q: "이 원의 반지름은 어느 것인가요?", fig: () => figSegs({ pts: { "ㄱ": 90, "ㄴ": 210, "ㄷ": 330 }, segs: [["ㄱ", "ㅇ"], ["ㄴ", "ㄷ"]] }), o: ["선분 ㄱㅇ", "선분 ㄴㄷ"], a: 0, why: { "1": "선분 ㄴㄷ은 원 위의 두 점을 이었지만 원의 중심을 지나지 않아요. 반지름은 원의 중심과 원 위의 한 점을 이은 선분이에요." } },
       { q: "원을 그릴 때 누름 못을 꽂았던 점을 무엇이라고 하나요?", o: ["원의 중심", "지름", "반지름"], a: 0, why: { "1": "지름과 반지름은 점이 아니라 선분이에요. 움직이지 않았던 점의 이름을 떠올려요.", "2": "반지름은 선분의 이름이에요. 누름 못을 꽂은 점의 이름은 무엇일까요?" } }]) },
     { name: "확인 2", inst: "지름과 반지름을 구해요.", render: (b, a) => quiz(b, a, [
-      { q: "원의 중심을 지나는 선분의 길이가 12 cm예요. 이 원의 반지름은?", fig: () => figSegs({ pts: { "ㄱ": 200, "ㄴ": 20, "ㄷ": 120 }, segs: [["ㄱ", "ㄴ"], ["ㄱ", "ㄷ"], ["ㄷ", "ㄴ"]], labels: [[200, 175, "12 cm"], [95, 90, "7 cm"], [255, 95, "10 cm"]] }), o: ["6 cm", "7 cm", "12 cm"], a: 0, why: { "1": "그림에 있는 다른 길이를 그대로 썼어요. 원의 중심을 지나는 선분만 보고 반으로 나눠요.", "2": "12 cm는 원의 중심을 지나는 선분, 곧 지름이에요. 반지름은 그 반이에요." } }]) },
+      { q: "원의 중심을 지나는 선분의 길이가 12 cm예요. 이 원의 반지름은?", fig: () => figSegs({ pts: { "ㄱ": 200, "ㄴ": 20, "ㄷ": 120 }, segs: [["ㄱ", "ㄴ"], ["ㄱ", "ㄷ"], ["ㄷ", "ㄴ"]], labels: [[200, 175, "12 cm"]] }), o: ["6 cm", "12 cm", "24 cm"], a: 0, why: { "1": "12 cm는 원의 중심을 지나는 선분, 곧 지름이에요. 반지름은 그 반이에요.", "2": "지름을 2배로 늘렸어요. 반지름은 지름의 반이에요." } }]) },
     { name: "확인 3", inst: "원의 성질을 확인해요.", render: (b, a) => quiz(b, a, [
       { q: "한 원에서 반지름은 2개만 그을 수 있어요.", o: ["○", "×"], a: 1, why: { "0": "원 위의 점은 셀 수 없이 많아요. 반지름을 여러 개 그어 본 것을 떠올려요." } },
       { q: "지름은 원을 똑같이 둘로 나눠요.", o: ["○", "×"], a: 0, why: { "1": "종이 접시를 지름대로 접어 본 것을 떠올려요. 두 쪽이 꼭 맞았어요." } },

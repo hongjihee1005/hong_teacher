@@ -1144,6 +1144,7 @@ function renderLesson() {
   const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
   if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
   const api = {
+    get __root() { return api; }, /*hj-multi*/
     tryOnce() { tries++; },
     provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
     fail(msg, answer) {
@@ -1189,7 +1190,8 @@ function renderLesson() {
   mount(h("main", { class: "lesson" }, stairs, work));
   const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
   markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
-  step.render(body, api);
+  STEP_CTX = { api, open: true, depth: 0, need: 0, got: new Set(), ans: [] }; /*hj-multi*/
+  try { step.render(body, api); } finally { STEP_CTX.open = false; }
 }
 function showFinish(L, chal) {
   const p = myProg(L.id);
@@ -1340,12 +1342,12 @@ function quiz(body, api, items, opts = {}) {
     else {
       const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
       const w = items[wrongIdx];
-      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      const sv = state[wrongIdx], custom = w && w.why && w.why[String(Array.isArray(sv) ? [...sv].sort((x, y) => x - y) : sv)];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
     return allOk;
   };
-  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+  const auto = autoRun(() => state.every((v, qi) => v != null && !(Array.isArray(v) && v.length < items[qi].a.length)), /*hj-multi: 여러 개 고르기는 정답 수만큼 고른 뒤 확인*/
                        () => JSON.stringify(state), judge, 260);
   wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
   body.append(wrap);
@@ -2118,7 +2120,7 @@ function simTensArray(body, api) {
   };
   rng1.oninput = up; rng2.oninput = up; up();
   const ans = h("div");
-  numbers(ans, api, [{ q: "30 × 20 = ", a: 600 }, { q: "40 × 30 = ", a: 1200 }, { q: "15 × 20 = ", a: 300 }],
+  numbers(ans, api, [{ q: "30 × 20 = ", a: 600 }, { q: "40 × 30 = ", a: 1200 }, { q: "20 × 40 = ", a: 800 }],
     { ok: "(몇십)×(몇십)은 (몇)×(몇)을 계산하고 0을 2개 붙이면 돼요.", bad: "0을 몇 개 붙여야 할지 큰 칸 수를 세어 봐요." });
   body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg), h("div", { class: "side" }, h("p", {}, "막대를 움직여 큰 칸(100칸짜리) 수를 바꿔 봐요."), rng1, rng2, out, ans)));
 }
@@ -2126,18 +2128,21 @@ function simTensArray(body, api) {
 /* 넓이 모델로 부분곱 찾기 */
 function simAreaModel(body, api, opt) {
   const a = opt.a, b = opt.b, at = Math.floor(a / 10) * 10, ao = a % 10, bt = Math.floor(b / 10) * 10, bo = b % 10;
-  const sc = 9, x0 = 70, y0 = 30, W = (bt + bo) * sc, Hh = (at + ao) * sc;
+  const rows = [at, ao].filter(v => v > 0), cols = [bt, bo].filter(v => v > 0);   // 한 자리 수는 한 줄(조각 둘)
+  const sc = a < 10 ? 18 : 9, x0 = 70, y0 = 30, W = b * sc, Hh = a * sc;
   const svg = makeSvg(x0 + W + 40, y0 + Hh + 60);
-  const parts = [[at, bt], [at, bo], [ao, bt], [ao, bo]];
-  const pos = [[x0, y0, bt * sc, at * sc], [x0 + bt * sc, y0, bo * sc, at * sc], [x0, y0 + at * sc, bt * sc, ao * sc], [x0 + bt * sc, y0 + at * sc, bo * sc, ao * sc]];
   const marks = ["①", "②", "③", "④"];
+  const parts = [], pos = [];
+  let yy = y0;
+  rows.forEach(r => { let xx = x0; cols.forEach(c => { parts.push([r, c]); pos.push([xx, yy, c * sc, r * sc]); xx += c * sc; }); yy += r * sc; });
+  const nm = ["한", "두", "세", "네"][parts.length - 1];
   pos.forEach((p, i) => { svg.append(svgEl("rect", { x: p[0], y: p[1], width: p[2], height: p[3], fill: i % 3 === 0 ? "#DCEAFB" : "#F2F7FC", stroke: INK, "stroke-width": 3 })); svg.append(txt(p[0] + p[2] / 2, p[1] + p[3] / 2, marks[i], 26)); });
-  svg.append(txt(x0 + bt * sc / 2, y0 - 12, String(bt), 22), txt(x0 + bt * sc + bo * sc / 2, y0 - 12, String(bo), 22),
-    txt(x0 - 26, y0 + at * sc / 2, String(at), 22), txt(x0 - 26, y0 + at * sc + ao * sc / 2, String(ao), 22));
+  let xx = x0; cols.forEach(c => { svg.append(txt(xx + c * sc / 2, y0 - 12, String(c), 22)); xx += c * sc; });
+  yy = y0; rows.forEach(r => { svg.append(txt(x0 - 26, yy + r * sc / 2, String(r), 22)); yy += r * sc; });
   const ans = h("div");
-  numbers(ans, api, parts.map((p, i) => ({ q: `${marks[i]} ${p[0]} × ${p[1]} = `, a: p[0] * p[1] })).concat([{ q: `네 칸을 모두 더하면 ${a} × ${b} = `, a: a * b }]),
-    { ok: `${a} × ${b} = ${a * b}. 네 조각으로 나누어 계산했어요!`, bad: "칸마다 가로와 세로의 수를 다시 보고 곱해 봐요." });
-  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg), h("div", { class: "side" }, h("p", {}, opt.tip || "직사각형을 네 조각으로 나누어 부분곱을 구해요."), ans)));
+  numbers(ans, api, parts.map((p, i) => ({ q: `${marks[i]} ${p[0]} × ${p[1]} = `, a: p[0] * p[1] })).concat([{ q: `${nm} 칸을 모두 더하면 ${a} × ${b} = `, a: a * b }]),
+    { ok: `${a} × ${b} = ${a * b}. ${nm} 조각으로 나누어 계산했어요!`, bad: "칸마다 가로와 세로의 수를 다시 보고 곱해 봐요." });
+  body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg), h("div", { class: "side" }, h("p", {}, opt.tip || `직사각형을 ${nm} 조각으로 나누어 부분곱을 구해요.`), ans)));
 }
 
 /* 어림하기 */
@@ -2275,6 +2280,28 @@ function picVerticalFrame(body, opt) {
 const UNIT_STORY = { title: '가을 축제 준비단', lines: ['우리 학교 가을 축제가 다가왔어요. 3학년 6개 반, 모두 144명이 축제를 준비합니다.', '우리 반이 맡은 일은 간식 나누기, 의자 놓기, 팔찌 만들기, 체험 부스 운영이에요.', '체험표는 부스에서 체험할 때 내는 표예요. 몇 개가 필요한지 곱셈으로 세어 봐요.'], one: '가을 축제 준비 · 3학년 144명이 쓸 간식·의자·팔찌·체험표의 수를 구해요.' };
 const UNIT_KEYWORDS = ["곱셈", "자리별로 나누기", "백의 자리", "십의 자리", "일의 자리", "부분곱", "올림", "세로셈", "어림"];
 /* ===== 1. 곱셈 — 차시별 개념 계단 (가을 축제 준비 이야기) · 지도서 12차시 ===== */
+/*hj-multi*/ /* 한 계단에 끝내야 하는 활동이 둘 이상이면(예: 빈칸 고르기 + 까닭 쓰기) 모두 끝내야 계단을 통과한다 (2026-10-09).
+   계단의 api(또는 thenWhy처럼 그것을 복사한 api)를 받은, done(을 부르는 활동 함수만 센다. 활동 안에서 부르는 활동은 세지 않는다. */
+let STEP_CTX = null;
+function stepCount(fn) {
+  return function (body, api, ...rest) {
+    const c = STEP_CTX;
+    if (!c || !c.open || c.depth > 0 || !api || api.__root !== c.api) return fn.call(this, body, api, ...rest);
+    const k = c.need++;
+    const sub = Object.assign({}, api, { done: (ans, msg, lv) => {
+      if (c.got.has(k)) return; c.got.add(k); c.ans[k] = ans || "";
+      if (c.got.size >= c.need) api.done(c.ans.filter(Boolean).join(" | "), msg, lv);
+      else api.hint("○ 좋아요! 아래에 남은 활동도 마저 해요.");
+    } });
+    c.depth++; try { return fn.call(this, body, sub, ...rest); } finally { c.depth--; }
+  };
+}
+Object.keys(window).forEach(n => { const f = window[n];
+  if (typeof f !== "function" || f.__hjMulti) return;
+  const src = Function.prototype.toString.call(f);
+  if (!/^function\s+\w+\s*\(\s*body\s*,\s*api\b/.test(src) || !/done\(/.test(src)) return;
+  const w = stepCount(f); w.__hjMulti = 1; window[n] = w; });
+/*/hj-multi*/
 const LESSONS = [
 {
   id: "m1", no: 1, title: "얼마나 필요할까? 곱셈으로 세기", soop: "개념 찾기(S)",
@@ -2383,7 +2410,7 @@ const LESSONS = [
       easy: (b, a) => numbers(b, a, [{ q: "136 × 4 =", a: 544 }, { q: "156 × 4 =", a: 624 }], { ok: "작은 수로 올림을 익혔어요. 같은 방법으로 큰 수도 돼요!" }),
       render: (b, a) => numbers(b, a, [
         { q: "247 × 4 =", a: 988, why: { "868": "올림한 수를 윗자리 곱에 더하지 않았어요.", "8168": "올림한 수를 그대로 옆에 쓴 것 같아요. 윗자리 곱에 더해야 해요." } },
-        { q: "365 × 3 =", a: 1095, why: { "965": "십의 자리와 백의 자리에서 올림한 수를 빠뜨렸어요." } },
+        { q: "365 × 3 =", a: 1095, why: { "985": "올림한 수를 십의 자리와 백의 자리에 더하지 않았어요. 5 × 3 = 15에서 올린 1, 6 × 3 = 18에 1을 더한 19에서 올린 1을 더해요." } },
         { q: "128 × 7 =", a: 896, why: { "846": "8 × 7 = 56에서 올린 5를 십의 자리 곱에 더하지 않았어요." } }],
       { ok: "올림이 여러 번 있어도 잘 해냈어요!" }) }
   ],
@@ -2439,9 +2466,9 @@ const LESSONS = [
   ],
   challenge: { inst: "축제 의자 놓기 문제예요.", render: (b, a) => numbers(b, a, [
     { q: "의자를 한 줄에 20개씩 30줄 놓으면 모두 몇 개? ", a: 600, unit: "개" },
-    { q: "전교생이 약 890명이면 의자는 몇 개쯤 모자랄까요? ", a: 290, unit: "개" },
+    { q: "전교생이 890명이면 의자는 몇 개 모자랄까요? ", a: 290, unit: "개" },
     { q: "□ × 30 = 1200 일 때 □ = ", a: 40 }],
-    { ok: "어림과 곱셈으로 준비할 수를 가늠할 수 있어요." }) }
+    { ok: "곱셈과 뺄셈으로 준비할 의자 수를 알 수 있어요." }) }
 },
 {
   id: "m6", no: 6, title: "(한 자리 수) × (몇십몇)", soop: "개념 구축하기(O)",
@@ -2482,7 +2509,7 @@ const LESSONS = [
       inst: "네 조각으로 나누어 곱하기와 세로셈 중 실수가 적은 방법은 무엇일까요? 하나를 골라 세 칸에 써서 붙여요. 어느 쪽을 골라도 괜찮아요. 까닭이 중요해요.",
       render: (b, a) => panes(b, a, [
         { t: "고른 방법", e: "✋", ph: "세로셈이 실수가 적어요", hint: "'네 조각으로 나누어 곱하기'와 '세로셈' 가운데 하나를 골라 써요", ex: ["세로셈이 실수가 적어요.", "네 조각으로 나누어 곱하기가 실수가 적어요."] },
-        { t: "까닭", e: "🔎", ph: "왜냐하면 ~", hint: "어디에서 실수가 적은지 말해 봐요. 네 조각은 52와 260이 다 보이고, 세로셈은 두 줄로 짧아요", ex: ["왜냐하면 세로셈은 두 줄만 쓰면 돼서 짧고 빠르기 때문이에요.", "왜냐하면 네 조각으로 나누면 200, 40, 60, 12가 다 보여서 빠뜨리지 않기 때문이에요."] },
+        { t: "까닭", e: "🔎", ph: "왜냐하면 ~", hint: "어디에서 실수가 적은지 말해 봐요. 네 조각은 200, 40, 60, 12가 다 보이고, 세로셈은 52와 260 두 줄로 짧아요", ex: ["왜냐하면 세로셈은 두 줄만 쓰면 돼서 짧고 빠르기 때문이에요.", "왜냐하면 네 조각으로 나누면 200, 40, 60, 12가 다 보여서 빠뜨리지 않기 때문이에요."] },
         { t: "다른 방법의 좋은 점", e: "🤝", ph: "다른 방법은 ~이 좋아요", hint: "고르지 않은 방법도 좋은 점이 있어요", ex: ["네 조각 방법은 어느 자리끼리 곱했는지 눈으로 보여서 좋아요.", "세로셈은 줄이 적어서 빨리 계산할 수 있어서 좋아요."] }],
         { ok: "두 방법을 견주고 까닭까지 말했어요! 네 조각을 두 줄로 묶어 적은 것이 세로셈이에요." }) },
     { inst: "26 × 13도 네 조각으로 나누어 계산해 보세요.", render: (b, a) => simAreaModel(b, a, { a: 26, b: 13, tip: "26을 20과 6으로, 13을 10과 3으로 나누어요." }) },
@@ -2522,7 +2549,7 @@ const LESSONS = [
       easy: (b, a) => numbers(b, a, [{ q: "25 × 16 =", a: 400 }, { q: "23 × 18 =", a: 414 }], { ok: "작은 수로 방법을 익혔어요. 같은 방법으로 큰 수도 돼요!" }),
       render: (b, a) => numbers(b, a, [
         { q: "27 × 18 =", a: 486, why: { "216": "둘째 줄(27 × 10 = 270)을 빠뜨렸어요.", "270": "첫째 줄(27 × 8 = 216)을 빠뜨렸어요." } },
-        { q: "38 × 24 =", a: 912, why: { "812": "올림한 수를 윗자리 곱에 더하지 않고 그대로 적었어요. 8×4=32에서 올린 3을 3×4에 더해요.", "228": "둘째 줄을 한 칸 밀어 쓰지 않았어요. 둘째 줄은 38 × 20 = 760이에요." } },
+        { q: "38 × 24 =", a: 912, why: { "882": "올림한 수를 윗자리 곱에 더하지 않았어요. 8×4=32에서 올린 3을 3×4=12에 더해 15로 써요.", "228": "둘째 줄을 한 칸 밀어 쓰지 않았어요. 둘째 줄은 38 × 20 = 760이에요." } },
         { q: "56 × 47 =", a: 2632 }], { ok: "올림이 여러 번 있어도 정확해요!" }) }
   ],
   challenge: { inst: "체험표 문제예요.", render: (b, a) => numbers(b, a, [
@@ -2557,7 +2584,7 @@ const LESSONS = [
       { ok: "곱하는 수를 어림해도 대략의 값을 알 수 있어요. 18을 올려서 어림했으니 어림값이 조금 더 커요." }) },
     { name: "어림으로 판단하기", inst: "친구의 계산이 알맞은지 어림으로 판단해 보세요.", render: (b, a) => quiz(b, a, [
       { q: "48 × 21을 1008이라고 했어요. 어림으로 보면?", o: ["맞을 것 같아요(약 1000)", "너무 커요", "너무 작아요"], a: 0 },
-      { q: "32 × 19를 6080이라고 했어요. 어림으로 보면?", o: ["맞을 것 같아요", "너무 커요(약 600)"], a: 1, why: { "0": "19를 20쯤으로 보면 32 × 20 = 640쯤이에요. 6080은 열 배나 커요." } },
+      { q: "32 × 19를 6080이라고 했어요. 어림으로 보면?", o: ["맞을 것 같아요", "너무 커요(약 640)"], a: 1, why: { "0": "19를 20쯤으로 보면 32 × 20 = 640쯤이에요. 6080은 열 배나 커요." } },
       { q: "198 × 4를 792라고 했어요. 어림으로 보면?", o: ["맞을 것 같아요(약 800)", "너무 작아요"], a: 0 }]) }
   ],
   challenge: { inst: "어림셈으로 축제 준비물을 가늠해 보세요.", render: (b, a) => numbers(b, a, [

@@ -1148,6 +1148,7 @@ function renderLesson() {
   const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
   if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
   const api = {
+    get __root() { return api; }, /*hj-multi*/
     tryOnce() { tries++; },
     provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
     fail(msg, answer) {
@@ -1193,7 +1194,8 @@ function renderLesson() {
   mount(h("main", { class: "lesson" }, stairs, work));
   const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
   markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
-  step.render(body, api);
+  STEP_CTX = { api, open: true, depth: 0, need: 0, got: new Set(), ans: [] }; /*hj-multi*/
+  try { step.render(body, api); } finally { STEP_CTX.open = false; }
 }
 function showFinish(L, chal) {
   const p = myProg(L.id);
@@ -1344,12 +1346,12 @@ function quiz(body, api, items, opts = {}) {
     else {
       const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
       const w = items[wrongIdx];
-      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      const sv = state[wrongIdx], custom = w && w.why && w.why[String(Array.isArray(sv) ? [...sv].sort((x, y) => x - y) : sv)];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
     return allOk;
   };
-  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+  const auto = autoRun(() => state.every((v, qi) => v != null && !(Array.isArray(v) && v.length < items[qi].a.length)), /*hj-multi: 여러 개 고르기는 정답 수만큼 고른 뒤 확인*/
                        () => JSON.stringify(state), judge, 260);
   wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
   body.append(wrap);
@@ -2506,7 +2508,7 @@ function u6CardLine(body, api, opt) {
     if (card != null) {
       cardG.append(svgEl("rect", { x: x0 + n * cw / 2 - 70, y: 20, width: 140, height: 90, rx: 14, fill: "#DCEAFB", stroke: INK, "stroke-width": 4 }), txt(x0 + n * cw / 2, 66, fmt(card), 40), txt(x0 + n * cw / 2 - 150, 66, `카드 ${turn + 1}`, 22));
     }
-    out.innerHTML = full ? `놀이판을 다 채웠어요. 연속으로 커지는 칸: <b>${run.best}</b>칸` : `뽑은 카드 <b>${fmt(card)}</b>를 적을 칸을 눌러요. (한 번 적으면 바꿀 수 없어요)`;
+    out.innerHTML = full ? `놀이판을 다 채웠어요. 연속으로 커지는 칸: <b>${run.best}</b>칸` : `뽑은 카드 <b>${fmt(card)}</b>${/[013678]$/.test(fmt(card)) ? "을" : "를"} 적을 칸을 눌러요. (한 번 적으면 바꿀 수 없어요)`;
   }
   function place(i) {
     if (card == null || board[i] != null) return;
@@ -2708,6 +2710,28 @@ const S6_L4X = []; S6_L4.forEach(([a, b]) => [0, 1].forEach(x => [0, 1].forEach(
 const S6_DECK = [0.2, 0.5, 0.9, 1.3, 1.8, 2.4, 2.7, 3.1, 3.6, 4.2, 4.5, 5.3, 5.9, 6.1, 6.6, 7.4, 7.8, 8.2, 8.7, 9.5];
 const S6_CMP = [">", "=", "<"];
 
+/*hj-multi*/ /* 한 계단에 끝내야 하는 활동이 둘 이상이면(예: 빈칸 고르기 + 까닭 쓰기) 모두 끝내야 계단을 통과한다 (2026-10-09).
+   계단의 api(또는 thenWhy처럼 그것을 복사한 api)를 받은, done(을 부르는 활동 함수만 센다. 활동 안에서 부르는 활동은 세지 않는다. */
+let STEP_CTX = null;
+function stepCount(fn) {
+  return function (body, api, ...rest) {
+    const c = STEP_CTX;
+    if (!c || !c.open || c.depth > 0 || !api || api.__root !== c.api) return fn.call(this, body, api, ...rest);
+    const k = c.need++;
+    const sub = Object.assign({}, api, { done: (ans, msg, lv) => {
+      if (c.got.has(k)) return; c.got.add(k); c.ans[k] = ans || "";
+      if (c.got.size >= c.need) api.done(c.ans.filter(Boolean).join(" | "), msg, lv);
+      else api.hint("○ 좋아요! 아래에 남은 활동도 마저 해요.");
+    } });
+    c.depth++; try { return fn.call(this, body, sub, ...rest); } finally { c.depth--; }
+  };
+}
+Object.keys(window).forEach(n => { const f = window[n];
+  if (typeof f !== "function" || f.__hjMulti) return;
+  const src = Function.prototype.toString.call(f);
+  if (!/^function\s+\w+\s*\(\s*body\s*,\s*api\b/.test(src) || !/done\(/.test(src)) return;
+  const w = stepCount(f); w.__hjMulti = 1; window[n] = w; });
+/*/hj-multi*/
 const LESSONS = [
 {
   id: "a1", no: 1, title: "미술 작업실 문을 열어요", soop: "개념 찾기(S)",
@@ -2761,7 +2785,7 @@ const LESSONS = [
         { fig: { kind: "free", outline: [[5, 5], [95, 5], [95, 95], [5, 95]], cuts: [[50, 5, 50, 95], [5, 50, 50, 50]] }, figw: 200, q: "도윤이가 색종이를 이렇게 3조각으로 나누었어요. 똑같이 나누었나요?", o: ["똑같이 나누었어요", "똑같이 나누지 않았어요"], a: 1, why: { "똑같이 나누었어요": "오른쪽 조각과 왼쪽 위 조각의 크기를 견주어 봐요." } }],
         { ok: "조각의 모양과 크기가 모두 같은지 확인하는 것이 중요해요." }) }
   ],
-  challenge: { inst: "3학년 6개 반이 정사각형 복도 게시판을 똑같이 나누어 반마다 한 칸씩 꾸미려고 해요. 게시판을 똑같이 여섯으로 나누어 보세요.", hints: ["세로로 똑같이 셋(3분의 1, 3분의 2 자리의 점)으로 나누고, 가로로 반을 나누어 봐요.", "조각 수와 조각의 크기를 모두 확인해요."],
+  challenge: { inst: "3학년 6개 반이 정사각형 복도 게시판을 똑같이 나누어 반마다 한 칸씩 꾸미려고 해요. 게시판을 똑같이 여섯으로 나누어 보세요.", hints: ["한 변을 세 칸으로 똑같이 나누는 점을 이어 세로로 똑같이 셋으로 나누고, 가로로 반을 나누어 봐요.", "조각 수와 조각의 크기를 모두 확인해요."],
     render: (b, a) => u6FoldPaper(b, a, { target: 6, color: "#DDEDE5", tip: "복도 게시판을 똑같이 여섯으로 나누어 보세요. 테두리 점 두 개를 누르거나 버튼으로 선을 그어요.", ok: "똑같이 여섯으로 나누었어요! 6개 반이 똑같은 크기로 꾸밀 수 있어요." }) }
 },
 {
@@ -2833,17 +2857,17 @@ const LESSONS = [
   steps: [
     { inst: "같은 크기의 둥근 점토판을 똑같이 8조각으로 나누었어요. 서윤이는 8분의 5만큼, 시우는 8분의 3만큼 꽃 장식을 붙였어요. 장식한 만큼 색칠해 보세요.", hints: ["서윤이 점토판은 5조각, 시우 점토판은 3조각을 색칠해요.", "한 조각의 크기가 같으니 조각 수를 비교해요."],
       render: (b, a) => u6ShadeShape(b, a, { shapes: [{ kind: "circle", n: 8, target: 5, cap: "서윤", size: 220, color: "#E9B8C9" }, { kind: "circle", n: 8, target: 3, cap: "시우", size: 220, color: "#E9B8C9" }], readout: "unit", tip: "조각을 눌러 색칠해요.",
-        ask: [{ q: "더 큰 분수는?", o: ["5/8", "3/8"], a: 0 }, { q: "장식을 더 많이 붙인 사람은?", o: ["서윤", "시우"], a: 0 }], ok: "1/8이 5개인 5/8이 3/8보다 커요." }) },
+        ask: [{ q: "더 큰 분수는?", o: ["5/8", "3/8"], a: 0 }, { q: "장식을 더 많이 붙인 사람은?", o: ["서윤", "시우"], a: 0 }], ok: "1/8이 5개인 5/8가 3/8보다 커요." }) },
     { inst: "같은 크기의 둥근 점토판 3개를 2조각, 4조각, 8조각으로 똑같이 나누었어요. 점토판마다 한 조각씩 색칠하고 크기를 비교해 보세요.", hints: ["각 점토판에서 한 조각만 색칠해요.", "조각 수가 많을수록 한 조각은 어떻게 되나요?"],
       render: (b, a) => u6ShadeShape(b, a, { shapes: [{ kind: "circle", n: 2, target: 1, cap: "1/2", size: 190 }, { kind: "circle", n: 4, target: 1, cap: "1/4", size: 190 }, { kind: "circle", n: 8, target: 1, cap: "1/8", size: 190 }], readout: "none", tip: "점토판마다 한 조각씩 눌러 색칠해요.",
         ask: [{ q: "가장 큰 조각은?", o: ["1/2", "1/4", "1/8"], a: 0, why: { "1/8": "8이 가장 큰 수이지만, 조각은 가장 작아요. 색칠한 조각을 견주어 봐요." } }, { q: "가장 작은 조각은?", o: ["1/2", "1/4", "1/8"], a: 2 }], ok: "1/2 > 1/4 > 1/8이에요. 많이 나눌수록 한 조각이 작아져요." }) },
     { name: "말해 보기 — 같은 점·다른 점·분류하기",
-      inst: "5/8과 3/8 비교, 1/2·1/4·1/8 비교를 견주어 봐요. 세 칸에 써서 붙여요.", hints: ["분모가 같을 때와 분자가 1일 때를 나누어 생각해요.", "5/8과 3/8은 한 조각의 크기가 같아요."],
+      inst: "5/8와 3/8 비교, 1/2·1/4·1/8 비교를 견주어 봐요. 세 칸에 써서 붙여요.", hints: ["분모가 같을 때와 분자가 1일 때를 나누어 생각해요.", "5/8와 3/8은 한 조각의 크기가 같아요."],
       render: (b, a) => panes(b, a, [
         { t: "같은 점", e: "🟰", ph: "두 비교 모두 ~", hint: "둘 다 같은 크기의 점토판이에요", ex: ["두 비교 모두 같은 크기의 점토판을 나누어 견주었어요.", "두 비교 모두 색칠한 부분이 넓을수록 더 큰 분수예요."] },
-        { t: "다른 점", e: "↔️", ph: "단위분수는 ~", hint: "분자를 보나요, 분모를 보나요?", ex: ["단위분수는 분모를 보고, 5/8과 3/8은 분자를 보고 비교해요.", "단위분수는 분모가 작을수록 커서 1/2이 1/8보다 커요."] },
+        { t: "다른 점", e: "↔️", ph: "단위분수는 ~", hint: "분자를 보나요, 분모를 보나요?", ex: ["단위분수는 분모를 보고, 5/8와 3/8은 분자를 보고 비교해요.", "단위분수는 분모가 작을수록 커서 1/2이 1/8보다 커요."] },
         { t: "어떻게 묶을까요", e: "🗂", ph: "~인 분수끼리 묶어요", hint: "분모가 같은 분수, 분자가 1인 분수", ex: ["5/8, 3/8처럼 분모가 같은 분수끼리 묶어요.", "1/2, 1/4, 1/8처럼 분자가 1인 분수끼리 묶어요."] }],
-        { ok: "잘 견주었어요! 분모가 같으면 한 조각의 크기가 같아서, 조각이 많은 5/8이 더 커요. 단위분수는 많이 나눌수록 한 조각이 작아져요." }) },
+        { ok: "잘 견주었어요! 분모가 같으면 한 조각의 크기가 같아서, 조각이 많은 5/8가 더 커요. 단위분수는 많이 나눌수록 한 조각이 작아져요." }) },
     { inst: "분수의 크기 비교를 약속으로 정리해요.", hints: ["분모가 같을 때 달라지는 수는 무엇인가요?", "단위분수는 분자가 모두 1이에요. 무엇이 다른가요?"],
       render: (b, a) => blanks(b, a, ["분모가 같은 분수는 ", { o: ["분자", "분모"], a: 0 }, "가 클수록 더 커요. 단위분수는 ", { o: ["분모", "분자"], a: 0 }, "가 ", { o: ["작을수록", "클수록"], a: 0 }, " 더 커요."]) },
     { inst: "두 분수의 크기를 비교해 보세요.", hints: ["분모가 같으면 분자를 비교해요.", "단위분수는 분모가 작은 쪽이 더 커요."],
@@ -2862,7 +2886,7 @@ const LESSONS = [
         { ok: "이야기 문제를 만들었어요! 짝과 바꾸어 풀어 봐요." }),
       (b, a) => quiz(b, a, [
       { q: "1/8보다 크고 1/4보다 작은 단위분수를 모두 고르세요.", o: ["1/3", "1/5", "1/6", "1/7", "1/9"], a: [1, 2, 3] },
-      { q: "□/7 < 4/7에서 □ 안에 들어갈 수 있는 수(1부터 6까지)는 모두 몇 개인가요?", o: ["2개", "3개", "4개"], a: 1, why: { "2": "4는 들어갈 수 없어요. 4/7 < 4/7은 아니에요." } }], { ok: "□에는 1, 2, 3이 들어가요. 분수의 크기를 거꾸로도 생각했어요!" }),
+      { q: "□/7 < 4/7에서 □ 안에 들어갈 수 있는 수(1부터 6까지)는 모두 몇 개인가요?", o: ["2개", "3개", "4개"], a: 1, why: { "2": "4는 들어갈 수 없어요. 4/7 < 4/7는 아니에요." } }], { ok: "□에는 1, 2, 3이 들어가요. 분수의 크기를 거꾸로도 생각했어요!" }),
       { title: "더 해 보고 싶다면 — 선택 문제", inst: "조건에 맞는 분수를 찾아보세요. 1/8보다 크려면 분모가 8보다 작아야 해요." }) }
 },
 {
@@ -3015,11 +3039,11 @@ const LESSONS = [
       { t: "떠오르는 말", e: "🧠", ph: "분수와 소수 하면 ~", hint: "생각나는 낱말을 모아요", ex: ["분수와 소수 하면 분모, 분자, 단위분수가 떠올라요.", "분수와 소수 하면 소수점, 0.1, 색 테이프가 떠올라요."] },
       { t: "묶어 보기", e: "🗂", ph: "~, ~는 같은 무리예요", hint: "분수 낱말, 소수 낱말끼리 묶어요", ex: ["분모, 분자, 단위분수는 같은 무리예요.", "소수점, 0.1, 1 mm = 0.1 cm는 같은 무리예요."] },
       { t: "이어지는 말", e: "🔗", ph: "~와 ~는 이어져요", hint: "10분의 1과 0.1처럼 이어 봐요", ex: ["10분의 1과 0.1은 이어져요.", "1 mm와 0.1 cm는 이어져요."] },
-      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "작업실 재료로 예를 들어요", ex: ["예를 들면 색 테이프 4 cm 7 mm는 4.7 cm예요.", "예를 들면 점토판 8조각 중 5조각에 장식하면 5/8이에요."] }],
+      { t: "덧붙이는 말", e: "✏️", ph: "예를 들면 ~", hint: "작업실 재료로 예를 들어요", ex: ["예를 들면 색 테이프 4 cm 7 mm는 4.7 cm예요.", "예를 들면 점토판 8조각 중 5조각에 장식하면 5/8예요."] }],
       { min: 1, ok: "미술 작업실을 모두 마쳤어요! 분수와 소수는 똑같이 나눈 것을 나타내요. 10분의 1은 0.1이에요." }),
       (b, a) => u6Puzzle(b, a, { shape: "하트", items: [
         { t: "1/3, 1/7, 1/10은 단위분수입니다.", ok: true }, { t: "5/9는 1/9이 4개입니다.", ok: false },
-        { t: "2/6은 5/6보다 더 작습니다.", ok: true }, { t: "1/4은 1/8보다 더 큽니다.", ok: true },
+        { t: "2/6는 5/6보다 더 작습니다.", ok: true }, { t: "1/4은 1/8보다 더 큽니다.", ok: true },
         { t: "3.6은 삼십육이라고 읽습니다.", ok: false }, { t: "1 mm는 0.1 cm입니다.", ok: true }],
         pic: [
           [2, 1, 3, 5, 2, 4, 6, 5],

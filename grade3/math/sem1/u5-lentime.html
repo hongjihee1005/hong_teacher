@@ -2101,7 +2101,9 @@ function u5TimeCalc(body, api, opt = {}) {
   const wantMid = opt.mid && hasChange;
   const tbl = h("table", { class: "u5calc" });
   const ins = [];
-  const numRow = (lab, vals, units, cls) => h("tr", { class: cls || "" }, h("td", { class: lab === "+" || lab === "−" ? "" : "lab" }, lab), use.map(i => h("td", {}, vals[i] == null ? "" : String(vals[i]), h("span", { class: "u" }, units[i]))));
+  // 0시간은 교과서처럼 비워 둠(시간 칸이 맨 앞이고 뒤에 분·초가 있을 때)
+  const no0 = (vals, units, i) => vals[i] == null || (i === 0 && vals[0] === 0 && units[0] === "시간" && use.length > 1);
+  const numRow = (lab, vals, units, cls) => h("tr", { class: cls || "" }, h("td", { class: lab === "+" || lab === "−" ? "" : "lab" }, lab), use.map(i => no0(vals, units, i) ? h("td", {}) : h("td", {}, String(vals[i]), h("span", { class: "u" }, units[i]))));
   const inRow = (lab, key, want, units, cls) => h("tr", { class: cls || "" }, h("td", { class: "lab" }, lab), use.map(i => {
     const inp = h("input", { type: "number", inputmode: "numeric", "aria-label": `${lab} ${units[i]}` }); ins.push({ inp, key, want: want[i] });
     return h("td", {}, inp, h("span", { class: "u" }, units[i]));
@@ -2111,7 +2113,7 @@ function u5TimeCalc(body, api, opt = {}) {
   if (op === "+" && wantMid) { tbl.append(inRow("같은 단위끼리", "mid", mid, U(rK), "line")); tbl.append(inRow("바꾸면", "res", res, U(rK))); }
   else tbl.append(inRow("", "res", res, U(rK), "line"));
   const show = arr => use.map(i => `${arr[i]}${U(rK)[i]}`).join(" ");
-  const fmtA = use.map(i => `${a[i]}${U(aK)[i]}`).join(" "), fmtB = use.map(i => `${b[i]}${U(bK)[i]}`).join(" ");
+  const fmtA = use.filter(i => !no0(a, U(aK), i)).map(i => `${a[i]}${U(aK)[i]}`).join(" "), fmtB = use.filter(i => !no0(b, U(bK), i)).map(i => `${b[i]}${U(bK)[i]}`).join(" ");
   const resText = show(res);
   api.provide && api.provide({ words: ["같은 단위끼리", op === "+" ? "60초 = 1분" : "1분 = 60초", op === "+" ? "60분 = 1시간" : "1시간 = 60분"],
     answers: [`${fmtA} ${op === "+" ? "+" : "−"} ${fmtB} = ${resText}`] });
@@ -2418,7 +2420,7 @@ const LESSONS = [
         { q: "내 발 길이 약 220 (   )", o: ["mm", "cm", "m"], a: 0, why: { "1": "220 cm는 어른 키보다 커요." } },
         { q: "4층짜리 건물의 높이 약 12 (   )", o: ["cm", "m", "km"], a: 1 },
         { q: "5 km보다 긴 것은?", o: ["서울에서 부산까지의 거리", "교실에서 학교 앞 문방구까지의 거리", "교과서 긴 쪽의 길이"], a: 0 },
-        { q: "길이가 약 5 mm인 것은?", o: ["연필심의 굵기", "책의 긴 쪽", "교실 문의 높이"], a: 0 }], { ok: "양감이 좋아요!" }) }
+        { q: "길이가 약 5 mm인 것은?", o: ["쌀 한 톨의 길이", "책의 긴 쪽", "교실 문의 높이"], a: 0 }], { ok: "양감이 좋아요!" }) }
   ],
   challenge: { inst: "집, 병원, 우체국, 소방서는 같은 간격으로 있어요. 병원에서 우체국까지는 1 km예요. 집에서 출발해 소방서까지 가 보세요.", render: (b, a) => u5Route(b, a, { unit: "m", mode: "follow", start: "home", route: ["home", "hos", "post", "fire"], H: 250, unitBar: { px: 230, label: "1 km" },
     nodes: [{ id: "home", name: "집", x: 120, y: 110 }, { id: "hos", name: "병원", x: 350, y: 110 }, { id: "post", name: "우체국", x: 580, y: 110 }, { id: "fire", name: "소방서", x: 810, y: 110 }],

@@ -1148,6 +1148,7 @@ function renderLesson() {
   const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
   if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
   const api = {
+    get __root() { return api; }, /*hj-multi*/
     tryOnce() { tries++; },
     provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
     fail(msg, answer) {
@@ -1193,7 +1194,8 @@ function renderLesson() {
   mount(h("main", { class: "lesson" }, stairs, work));
   const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
   markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
-  step.render(body, api);
+  STEP_CTX = { api, open: true, depth: 0, need: 0, got: new Set(), ans: [] }; /*hj-multi*/
+  try { step.render(body, api); } finally { STEP_CTX.open = false; }
 }
 function showFinish(L, chal) {
   const p = myProg(L.id);
@@ -1344,12 +1346,12 @@ function quiz(body, api, items, opts = {}) {
     else {
       const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
       const w = items[wrongIdx];
-      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      const sv = state[wrongIdx], custom = w && w.why && w.why[String(Array.isArray(sv) ? [...sv].sort((x, y) => x - y) : sv)];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
     return allOk;
   };
-  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+  const auto = autoRun(() => state.every((v, qi) => v != null && !(Array.isArray(v) && v.length < items[qi].a.length)), /*hj-multi: 여러 개 고르기는 정답 수만큼 고른 뒤 확인*/
                        () => JSON.stringify(state), judge, 260);
   wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
   body.append(wrap);
@@ -2490,7 +2492,9 @@ function u5TimeCalc(body, api, opt = {}) {
   const wantMid = opt.mid && hasChange;
   const tbl = h("table", { class: "u5calc" });
   const ins = [];
-  const numRow = (lab, vals, units, cls) => h("tr", { class: cls || "" }, h("td", { class: lab === "+" || lab === "−" ? "" : "lab" }, lab), use.map(i => h("td", {}, vals[i] == null ? "" : String(vals[i]), h("span", { class: "u" }, units[i]))));
+  // 0시간은 교과서처럼 비워 둠(시간 칸이 맨 앞이고 뒤에 분·초가 있을 때)
+  const no0 = (vals, units, i) => vals[i] == null || (i === 0 && vals[0] === 0 && units[0] === "시간" && use.length > 1);
+  const numRow = (lab, vals, units, cls) => h("tr", { class: cls || "" }, h("td", { class: lab === "+" || lab === "−" ? "" : "lab" }, lab), use.map(i => no0(vals, units, i) ? h("td", {}) : h("td", {}, String(vals[i]), h("span", { class: "u" }, units[i]))));
   const inRow = (lab, key, want, units, cls) => h("tr", { class: cls || "" }, h("td", { class: "lab" }, lab), use.map(i => {
     const inp = h("input", { type: "number", inputmode: "numeric", "aria-label": `${lab} ${units[i]}` }); ins.push({ inp, key, want: want[i] });
     return h("td", {}, inp, h("span", { class: "u" }, units[i]));
@@ -2500,7 +2504,7 @@ function u5TimeCalc(body, api, opt = {}) {
   if (op === "+" && wantMid) { tbl.append(inRow("같은 단위끼리", "mid", mid, U(rK), "line")); tbl.append(inRow("바꾸면", "res", res, U(rK))); }
   else tbl.append(inRow("", "res", res, U(rK), "line"));
   const show = arr => use.map(i => `${arr[i]}${U(rK)[i]}`).join(" ");
-  const fmtA = use.map(i => `${a[i]}${U(aK)[i]}`).join(" "), fmtB = use.map(i => `${b[i]}${U(bK)[i]}`).join(" ");
+  const fmtA = use.filter(i => !no0(a, U(aK), i)).map(i => `${a[i]}${U(aK)[i]}`).join(" "), fmtB = use.filter(i => !no0(b, U(bK), i)).map(i => `${b[i]}${U(bK)[i]}`).join(" ");
   const resText = show(res);
   api.provide && api.provide({ words: ["같은 단위끼리", op === "+" ? "60초 = 1분" : "1분 = 60초", op === "+" ? "60분 = 1시간" : "1시간 = 60분"],
     answers: [`${fmtA} ${op === "+" ? "+" : "−"} ${fmtB} = ${resText}`] });
@@ -2681,6 +2685,28 @@ const P5_PARK = {
 /* 입구에서 각도·거리(px)로 장소 놓기(어림 지도용) */
 const p5At = (x0, y0, deg, r) => ({ x: Math.round(x0 + r * Math.cos(deg * Math.PI / 180)), y: Math.round(y0 + r * Math.sin(deg * Math.PI / 180)) });
 
+/*hj-multi*/ /* 한 계단에 끝내야 하는 활동이 둘 이상이면(예: 빈칸 고르기 + 까닭 쓰기) 모두 끝내야 계단을 통과한다 (2026-10-09).
+   계단의 api(또는 thenWhy처럼 그것을 복사한 api)를 받은, done(을 부르는 활동 함수만 센다. 활동 안에서 부르는 활동은 세지 않는다. */
+let STEP_CTX = null;
+function stepCount(fn) {
+  return function (body, api, ...rest) {
+    const c = STEP_CTX;
+    if (!c || !c.open || c.depth > 0 || !api || api.__root !== c.api) return fn.call(this, body, api, ...rest);
+    const k = c.need++;
+    const sub = Object.assign({}, api, { done: (ans, msg, lv) => {
+      if (c.got.has(k)) return; c.got.add(k); c.ans[k] = ans || "";
+      if (c.got.size >= c.need) api.done(c.ans.filter(Boolean).join(" | "), msg, lv);
+      else api.hint("○ 좋아요! 아래에 남은 활동도 마저 해요.");
+    } });
+    c.depth++; try { return fn.call(this, body, sub, ...rest); } finally { c.depth--; }
+  };
+}
+Object.keys(window).forEach(n => { const f = window[n];
+  if (typeof f !== "function" || f.__hjMulti) return;
+  const src = Function.prototype.toString.call(f);
+  if (!/^function\s+\w+\s*\(\s*body\s*,\s*api\b/.test(src) || !/done\(/.test(src)) return;
+  const w = stepCount(f); w.__hjMulti = 1; window[n] = w; });
+/*/hj-multi*/
 const LESSONS = [
 {
   id: "p1", no: 1, title: "봄 소풍을 떠나요", soop: "개념 찾기(S)",
@@ -2792,7 +2818,7 @@ const LESSONS = [
   challenge: { inst: "잘못된 곳을 찾고, 거리를 비교해 보세요.", render: (b, a) => u5Ask(b, a, [
     { q: "잘못 말한 것은? ㉠ 1 km 70 m는 1070 m예요. ㉡ 3200 m는 3 km 20 m예요. ㉢ 2 km는 2000 m예요.", o: ["㉠", "㉡", "㉢"], a: 1 },
     { q: "㉡을 바르게 고치면 3200 m =", parts: [{ a: 3, u: "km" }, { a: 200, u: "m" }] },
-    { q: "입구에서 온실은 1 km 90 m, 전망대는 1900 m, 매점은 1 km 9 m예요. 가장 먼 곳은?", o: ["온실", "전망대", "매점"], a: 1, why: { "0": "1 km 90 m는 1900 m가 아니라 1090 m예요." } },
+    { q: "입구에서 온실은 1 km 90 m, 놀이터는 1900 m, 매점은 1 km 9 m예요. 가장 먼 곳은?", o: ["온실", "놀이터", "매점"], a: 1, why: { "0": "1 km 90 m는 1900 m가 아니라 1090 m예요." } },
     { q: "한 사람이 양팔을 벌린 길이를 약 1 m라고 해요. 전교생 약 890명이 손을 잡고 한 줄로 서면 약 890 m예요. 1 km와 비교하면?", o: ["1 km보다 길어요", "1 km보다 짧아요"], a: 1, why: { "0": "1 km는 1000 m예요. 890 m와 1000 m를 비교해요." } }], { ok: "단위를 같게 맞추면 거리를 바르게 비교할 수 있어요. 전교생이 손을 잡아도 1 km가 안 되니 1 km는 정말 길어요!" }) }
 },
 {
@@ -2812,16 +2838,16 @@ const LESSONS = [
         { thing: "수목원 소나무의 높이", num: 8, o: ["cm", "m", "km"], a: 1 }], ok: "길이에 알맞은 단위를 잘 골랐어요." }) },
     { inst: "어림한 방법을 말해 보세요.", hints: ["한 뼘이 가방 긴 쪽에 3번 들어갔어요."],
       render: thenWhy((b, a) => blanks(b, a, ["잘 아는 길이(한 뼘)를 떠올리고, 그 길이가 전체에 ", { o: ["몇 cm", "몇 번", "몇 m"], a: 1 }, " 들어가는지 세어 어림했어요. 어림한 길이는 ", { o: ["딱 36 cm", "약 36 cm", "약 36 m"], a: 1 }, "처럼 ‘약’을 붙여 말해요."]), { q: "어림한 길이에는 왜 ‘약’을 붙일까요?", ph: "왜냐하면 ~", help: ["① 한 뼘이 가방에 딱 맞게 들어갔는지 떠올려요. → ② 자로 잰 길이와 견주어요.", "‘왜냐하면 어림한 길이는 실제 길이와 ~ 다를 수 있기 때문이에요.’ 꼴로 써요."], ans: "왜냐하면 어림한 길이는 실제 길이와 조금 다를 수 있기 때문이에요." }) },
-    { name: "거리 어림하기", inst: "입구에서 연못까지는 약 500 m예요. 안내도에서 입구를 출발해 여러 곳을 눌러 보고, 500 m 눈금으로 거리를 어림해 보세요. 다른 곳을 보려면 ‘처음부터’를 눌러요.", hints: ["장소를 누르면 길 위에 500 m마다 눈금이 생겨요.", "온실까지는 500 m 눈금이 몇 번 들어가나요?"],
+    { name: "거리 어림하기", inst: "입구에서 쉼터까지는 약 500 m예요. 안내도에서 입구를 출발해 여러 곳을 눌러 보고, 500 m 눈금으로 거리를 어림해 보세요. 다른 곳을 보려면 ‘처음부터’를 눌러요.", hints: ["장소를 누르면 길 위에 500 m마다 눈금이 생겨요.", "온실까지는 500 m 눈금이 몇 번 들어가나요?"],
       render: (b, a) => u5Route(b, a, { unit: "m", mode: "view", start: "gate", H: 440, unitBar: { px: 130, label: "약 500 m" },
-        nodes: [{ id: "gate", name: "입구", x: 150, y: 220 }, { id: "pond", name: "연못", x: 280, y: 220 },
+        nodes: [{ id: "gate", name: "입구", x: 150, y: 220 }, { id: "pond", name: "쉼터", x: 280, y: 220 },
           Object.assign({ id: "green", name: "온실" }, p5At(150, 220, 35, 260)), Object.assign({ id: "view", name: "전망대" }, p5At(150, 220, -15, 520)),
-          Object.assign({ id: "butter", name: "나비 정원" }, p5At(150, 220, 20, 390))],
+          Object.assign({ id: "butter", name: "꽃동산" }, p5At(150, 220, 20, 390))],
         edges: [{ a: "gate", b: "pond", d: 500, label: "" }, { a: "gate", b: "green", d: 0, label: "" }, { a: "gate", b: "view", d: 0, label: "" }, { a: "gate", b: "butter", d: 0, label: "" }],
         ask: [{ q: "입구에서 온실까지는 약 얼마인가요?", o: ["약 500 m", "약 1 km", "약 2 km"], a: 1 },
-          { q: "입구에서 약 2 km 떨어진 곳은?", o: ["온실", "나비 정원", "전망대"], a: 2, why: { "1": "나비 정원까지는 500 m 눈금이 몇 번인지 다시 세어 봐요." } },
-          { q: "입구에서 나비 정원까지는 약", parts: [{ a: 1, u: "km" }, { a: 500, u: "m" }], why: { "1,0": "500 m 눈금이 3번이에요. 1 km보다 500 m 더 멀어요." } }],
-        ok: "입구~연못 거리를 기준으로 몇 번 들어가는지 생각해서 어림했어요." }) },
+          { q: "입구에서 약 2 km 떨어진 곳은?", o: ["온실", "꽃동산", "전망대"], a: 2, why: { "1": "꽃동산까지는 500 m 눈금이 몇 번인지 다시 세어 봐요." } },
+          { q: "입구에서 꽃동산까지는 약", parts: [{ a: 1, u: "km" }, { a: 500, u: "m" }], why: { "1,0": "500 m 눈금이 3번이에요. 1 km보다 500 m 더 멀어요." } }],
+        ok: "입구~쉼터 거리를 기준으로 몇 번 들어가는지 생각해서 어림했어요." }) },
     { inst: "길이에 알맞게 어림해 보세요.", hints: ["엄지손가락 너비는 약 1 cm예요.", "내 발은 20 cm쯤이에요. 200이라면 어떤 단위일까요?"],
       render: (b, a) => u5Ask(b, a, [
         { q: "꽃잎에 엄지손가락 너비(약 1 cm)가 7번쯤 들어가요. 꽃잎의 길이는 약", parts: [{ a: 7, u: "cm" }] },
@@ -2874,9 +2900,9 @@ const LESSONS = [
   question: "출발한 시각과 걸린 시간을 알면 도착 시각은 어떻게 구할까요?",
   summary: "시는 시끼리, 분은 분끼리, 초는 초끼리 더해요. 초끼리의 합이 60초이거나 60초보다 크면 60초를 1분으로, 분끼리의 합이 60분이거나 60분보다 크면 60분을 1시간으로 바꾸어요.",
   steps: [
-    { inst: "탐험대가 연못을 10시 20분 10초에 출발해서 3분 40초 동안 걸어 온실에 도착했어요. 시간띠에 1분과 10초를 채워 도착한 시각을 구해 보세요.", hints: ["먼저 1분을 3번 지나고, 10초를 4번 지나요.", "3분이 지나면 10시 23분 10초예요."],
-      render: (b, a) => u5TimeBand(b, a, { start: [10, 20, 10], amount: [0, 3, 40], dir: 1, startLabel: "출발 시각", askQ: "온실에 도착한 시각은?", ok: "온실에 도착한 시각은 10시 23분 50초예요." }) },
-    { name: "어림해 보기 — 예상하고 확인하기", inst: "온실을 35분 구경하고, 전망대까지 28분 걸었어요. 먼저 어림하고, 실제로 계산해요.", hints: ["28분은 25분보다 길어요. 35분 + 25분은 60분이에요.", "분은 분끼리 더해요. 35 + 28을 계산해요."],
+    { inst: "탐험대가 연못을 10시 20분 10초에 출발해서 3분 40초 동안 걸어 매점에 도착했어요. 시간띠에 1분과 10초를 채워 도착한 시각을 구해 보세요.", hints: ["먼저 1분을 3번 지나고, 10초를 4번 지나요.", "3분이 지나면 10시 23분 10초예요."],
+      render: (b, a) => u5TimeBand(b, a, { start: [10, 20, 10], amount: [0, 3, 40], dir: 1, startLabel: "출발 시각", askQ: "매점에 도착한 시각은?", ok: "매점에 도착한 시각은 10시 23분 50초예요." }) },
+    { name: "어림해 보기 — 예상하고 확인하기", inst: "숲 체험장에서 35분 놀고, 대나무 숲까지 28분 걸었어요. 먼저 어림하고, 실제로 계산해요.", hints: ["28분은 25분보다 길어요. 35분 + 25분은 60분이에요.", "분은 분끼리 더해요. 35 + 28을 계산해요."],
       render: (b, a) => predictCheck(b, a, {
         ask: "35분 + 28분은 1시간(60분)을 넘을까요?",
         o: ["1시간보다 짧아요", "1시간을 넘어요"], a: 1,
@@ -2906,11 +2932,11 @@ const LESSONS = [
   question: "출발한 시각이나 걸린 시간은 어떻게 구할까요?",
   summary: "시는 시끼리, 분은 분끼리, 초는 초끼리 빼요. 초끼리 뺄 수 없으면 1분을 60초로, 분끼리 뺄 수 없으면 1시간을 60분으로 바꾸어 계산해요.",
   steps: [
-    { inst: "탐험대가 4분 30초 동안 걸어서 11시 15분 40초에 전망대에 도착했어요. 시간띠를 거꾸로 채워 출발한 시각을 구해 보세요.", hints: ["도착 시각에서 거꾸로 1분씩 4번, 10초씩 3번 가요.", "4분 전은 11시 11분 40초예요."],
+    { inst: "탐험대가 4분 30초 동안 걸어서 11시 15분 40초에 쉼터에 도착했어요. 시간띠를 거꾸로 채워 출발한 시각을 구해 보세요.", hints: ["도착 시각에서 거꾸로 1분씩 4번, 10초씩 3번 가요.", "4분 전은 11시 11분 40초예요."],
       render: (b, a) => u5TimeBand(b, a, { start: [11, 15, 40], amount: [0, 4, 30], dir: -1, startLabel: "도착 시각", askQ: "출발한 시각은?", ok: "출발한 시각은 11시 11분 10초예요." }) },
     { inst: "세로셈으로 계산해 보세요.", hints: ["분은 분끼리 15 − 4, 초는 초끼리 40 − 30을 계산해요."],
       render: (b, a) => u5TimeCalc(b, a, { a: [11, 15, 40], b: [0, 4, 30], op: "-", aKind: "시각", bKind: "시간", tip: "시는 시끼리, 분은 분끼리, 초는 초끼리 빼요.",
-        fig: () => picVerticalFrame({ cols: ["시", "분", "초"], rows: [["11시", "15분", "40초"], ["0시간", "4분", "30초"]], op: "−", note: "자리를 맞추어 쓰고 같은 자리끼리 빼요." }) }) },
+        fig: () => picVerticalFrame({ cols: ["시", "분", "초"], rows: [["11시", "15분", "40초"], ["", "4분", "30초"]], op: "−", note: "자리를 맞추어 쓰고 같은 자리끼리 빼요." }) }) },
     { name: "받아내림 말해 보기", inst: "소풍 영상을 찍었어요. 나비 정원 영상은 4분 20초, 연못 영상은 1분 50초예요. 나비 정원 영상이 얼마나 더 길까요? 1분을 10초 6개로 풀고 빼 보세요.", hints: ["10초 막대가 5개 필요한데 2개뿐이에요.", "1분 막대 하나를 10초 막대 6개로 풀어요."],
       render: (b, a) => u5TimeBlocks(b, a, { a: [0, 4, 20], b: [0, 1, 50], op: "-", names: ["나비 정원 영상", "연못 영상"],
         blanks: ["20초에서 50초를 뺄 수 없어서 1분을 ", { o: ["60초", "100초"], a: 0 }, "로 바꾸었어요. 4분 20초는 ", { o: ["3분 80초", "3분 120초"], a: 0 }, "와 같으므로 나비 정원 영상이 ", { o: ["2분 30초", "3분 30초"], a: 0 }, " 더 길어요."] }) },

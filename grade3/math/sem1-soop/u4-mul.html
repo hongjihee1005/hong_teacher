@@ -1148,6 +1148,7 @@ function renderLesson() {
   const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
   if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
   const api = {
+    get __root() { return api; }, /*hj-multi*/
     tryOnce() { tries++; },
     provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
     fail(msg, answer) {
@@ -1193,7 +1194,8 @@ function renderLesson() {
   mount(h("main", { class: "lesson" }, stairs, work));
   const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
   markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
-  step.render(body, api);
+  STEP_CTX = { api, open: true, depth: 0, need: 0, got: new Set(), ans: [] }; /*hj-multi*/
+  try { step.render(body, api); } finally { STEP_CTX.open = false; }
 }
 function showFinish(L, chal) {
   const p = myProg(L.id);
@@ -1344,12 +1346,12 @@ function quiz(body, api, items, opts = {}) {
     else {
       const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
       const w = items[wrongIdx];
-      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      const sv = state[wrongIdx], custom = w && w.why && w.why[String(Array.isArray(sv) ? [...sv].sort((x, y) => x - y) : sv)];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
     return allOk;
   };
-  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+  const auto = autoRun(() => state.every((v, qi) => v != null && !(Array.isArray(v) && v.length < items[qi].a.length)), /*hj-multi: 여러 개 고르기는 정답 수만큼 고른 뒤 확인*/
                        () => JSON.stringify(state), judge, 260);
   wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
   body.append(wrap);
@@ -1751,6 +1753,13 @@ function simTrays(body, api, opt) {
     { ok: `${n} × ${g} = ${n * g}. 같은 수를 여러 번 더할 때는 곱셈이 빨라요.`, bad: "빨간 칸을 다시 세어 봐요. 한 판씩 손가락으로 짚어 가며 세요." });
 }
 
+/* 받침에 따라 조사 붙이기: u4J(20,"이","가") → "20이", u4J(24,"을","를") → "24를" (끝자리 0·1·3·6·7·8은 받침) */
+function u4J(w, a, b) {
+  const s = String(w), c = s.charCodeAt(s.length - 1);
+  const has = (c >= 0xAC00 && c <= 0xD7A3) ? (c - 0xAC00) % 28 !== 0 : /[013678]$/.test(s);
+  return s + (has ? a : b);
+}
+
 /* 수 모형으로 (두 자리 수) × (한 자리 수) — 묶음으로 보기 → 모으기 → 10개씩 바꾸기 (모두 버튼) */
 function simBlocks2(body, api, opt) {
   const a = opt.a, b = opt.b, TD = Math.floor(a / 10), OD = a % 10;
@@ -1775,7 +1784,7 @@ function simBlocks2(body, api, opt) {
         for (let i = 0; i < OD; i++) { svg.append(cube(x, y + s * 9, s)); x += s + 6; }
         svg.append(txt(cx + 270, y + s * 5, `${a}`, 24, { fill: PINE }));
       }
-      out.innerHTML = `${a}가 ${b}묶음 있어요.<br><small>‘모두 모으기’를 눌러 십 모형과 일 모형을 모아 봐요.</small>`;
+      out.innerHTML = `${u4J(a, "이", "가")} ${b}묶음 있어요.<br><small>‘모두 모으기’를 눌러 십 모형과 일 모형을 모아 봐요.</small>`;
     } else {
       const s = 9, rowH = s * 10 + 24; let x = 14, y = 14, maxY = 14;
       const place = (w) => { if (x + w > 606) { x = 14; y += rowH; } const p = [x, y]; x += w; maxY = y; return p; };
@@ -1975,7 +1984,7 @@ function simBoard(body, api, opt) {
   const judge = () => {
     api.tryOnce();
     const want = cells[pos] * die, v = Number(inp.value);
-    if (inp.value === "" || v !== want) { inp.style.borderColor = "var(--no)"; api.fail(`${cells[pos]}을 십의 자리와 일의 자리로 나누어 ${die}씩 곱한 뒤 더해 봐요.`, inp.value); return false; }
+    if (inp.value === "" || v !== want) { inp.style.borderColor = "var(--no)"; api.fail(`${u4J(cells[pos], "을", "를")} 십의 자리와 일의 자리로 나누어 ${die}씩 곱한 뒤 더해 봐요.`, inp.value); return false; }
     inp.style.borderColor = "var(--ok)"; done++; score += want; die = 0; draw();
     if (done >= rounds) { api.done(`점수 ${score}점`, `놀이 끝! 모두 ${score}점을 모았어요.`); return true; }
     api.hint(`○ 맞았어요! ${want}점을 얻었어요. 다시 주사위를 굴려요.`);
@@ -2028,6 +2037,28 @@ const UNIT_STORY = { title: "학교 텃밭 가꾸기", lines: ["봄이 되어 �
 const UNIT_KEYWORDS = ["곱셈", "몇 묶음", "10배", "십의 자리", "일의 자리", "나누어 곱하기", "올림", "세로셈", "어림"];
 
 /* ===== 4. 곱셈 — 차시별 개념 계단 (학교 텃밭 가꾸기 이야기) ===== */
+/*hj-multi*/ /* 한 계단에 끝내야 하는 활동이 둘 이상이면(예: 빈칸 고르기 + 까닭 쓰기) 모두 끝내야 계단을 통과한다 (2026-10-09).
+   계단의 api(또는 thenWhy처럼 그것을 복사한 api)를 받은, done(을 부르는 활동 함수만 센다. 활동 안에서 부르는 활동은 세지 않는다. */
+let STEP_CTX = null;
+function stepCount(fn) {
+  return function (body, api, ...rest) {
+    const c = STEP_CTX;
+    if (!c || !c.open || c.depth > 0 || !api || api.__root !== c.api) return fn.call(this, body, api, ...rest);
+    const k = c.need++;
+    const sub = Object.assign({}, api, { done: (ans, msg, lv) => {
+      if (c.got.has(k)) return; c.got.add(k); c.ans[k] = ans || "";
+      if (c.got.size >= c.need) api.done(c.ans.filter(Boolean).join(" | "), msg, lv);
+      else api.hint("○ 좋아요! 아래에 남은 활동도 마저 해요.");
+    } });
+    c.depth++; try { return fn.call(this, body, sub, ...rest); } finally { c.depth--; }
+  };
+}
+Object.keys(window).forEach(n => { const f = window[n];
+  if (typeof f !== "function" || f.__hjMulti) return;
+  const src = Function.prototype.toString.call(f);
+  if (!/^function\s+\w+\s*\(\s*body\s*,\s*api\b/.test(src) || !/done\(/.test(src)) return;
+  const w = stepCount(f); w.__hjMulti = 1; window[n] = w; });
+/*/hj-multi*/
 const LESSONS = [
 {
   id: "m1", no: 1, title: "텃밭에 얼마나 필요할까? 곱셈으로 세기", soop: "개념 찾기(S)",
@@ -2042,7 +2073,7 @@ const LESSONS = [
         { t: "생각해요", e: "💭", ph: "~인 것 같아요", hint: "24개씩 6판을 어떻게 세면 빠를까요?", ex: ["24를 6번 더하는 것보다 24 × 6으로 세면 빠를 것 같아요.", "20개씩 6판과 4개씩 6판으로 나누어 세면 쉬울 것 같아요."] },
         { t: "궁금해요", e: "❓", ph: "왜 ~일까?", hint: "두 자리 수의 곱셈에서 궁금한 것을 써요", ex: ["왜 24 × 6을 십의 자리와 일의 자리로 나누어 셀까?", "왜 두 자리 수를 곱하면 답이 세 자리 수가 될 때가 있을까?"] }],
         { ok: "생각을 잘 모았어요! 24개씩 6판은 24 × 6으로 나타낼 수 있어요." }) },
-    { name: "그려 보기 — 모종 세기", inst: "상추 모종이 모종판에 담겨 왔어요. 모두 몇 개인지 세어 보세요.", render: (b, a) => simTrays(b, a, { g: 4, n: 6 }) },
+    { name: "그려 보기 — 모종 세기", inst: "상추 모종이 모종판에 담겨 왔어요. 모두 몇 개인지 세어 보세요.", render: (b, a) => simTrays(b, a, { g: 3, n: 5 }) },
     { name: "말해 보기 — 식으로 쓰고 까닭 말하기", inst: "텃밭 상황을 덧셈식과 곱셈식으로 나타내 보세요.", render: thenWhy((b, a) => quiz(b, a, [
       { q: "12 + 12 + 12 를 곱셈식으로 나타내면?", o: ["12 + 3", "3 × 3", "12 × 3"], a: 2 },
       { q: "화분을 한 줄에 5개씩 7줄 놓았어요. 모두 몇 개인지 구하는 식은?", o: ["5 + 7", "5 × 7", "7 × 7"], a: 1 },
@@ -2121,10 +2152,10 @@ const LESSONS = [
 },
 {
   id: "m4", no: 4, title: "(몇십몇) × (몇) ― 십의 자리에서 올림이 있을 때", soop: "개념 구축하기(O)",
-  question: "십의 자리의 곱이 100이거나 100보다 크면 어떻게 나타낼까요?",
+  question: "십의 자리 곱이 10이거나 10보다 크면 어떻게 나타낼까요?",
   summary: "십의 자리 곱이 10이거나 10보다 크면 십 모형 10개를 백 모형 1개로 바꾸어 백의 자리에 써요. 42 × 3 = 120 + 6 = 126이에요.",
   steps: [
-    { name: "만져 보기 — 예상하고 확인하기", inst: "상추 씨앗이 한 봉지에 42개씩 3봉지 있어요. 수 모형으로 알아보세요.", render: ruleFirst((b, a) => simBlocks2(b, a, { a: 42, b: 3, tip: "모은 다음 살펴봐요. 십 모형이 10개가 넘으면 어떻게 할 수 있을까요?", ok: "백 1개, 십 2개, 일 6개 → 126개!", why: { "1206": "십 모형 12개는 120이에요. 120과 6을 더하면 얼마일까요?" } }), { q: "42 × 3에서 십 모형이 12개가 되면 어떻게 할까요?", ph: "내 규칙: ~", help: ["① 십 모형 10개를 묶으면 무엇이 될지 생각해요. → ② 묶고 남는 십 모형을 세어요.", "‘내 규칙: 십 모형이 10개 넘으면 ~으로 바꾸면 될 것 같아요.’ 꼴로 써요."], ans: "십 모형이 10개 넘으면 십 모형 10개를 백 모형 1개로 바꾸어요. 그래서 42 × 3 = 126이에요." }) },
+    { name: "만져 보기 — 예상하고 확인하기", inst: "상추 씨앗이 한 봉지에 42개씩 3봉지 있어요. 수 모형으로 알아보세요.", render: ruleFirst((b, a) => simBlocks2(b, a, { a: 42, b: 3, tip: "모은 다음 살펴봐요. 십 모형이 10개가 넘으면 어떻게 할 수 있을까요?", ok: "백 1개, 십 2개, 일 6개 → 126개!", why: { "1206": "십 모형 12개는 120이에요. 120과 6을 더하면 얼마일까요?" } }), { q: "42 × 3에서 십 모형이 12개가 되면 어떻게 할까요?", ph: "내 규칙: ~", help: ["① 십 모형 10개를 묶으면 무엇이 될지 생각해요. → ② 묶고 남는 십 모형을 세어요.", "‘내 규칙: 십 모형이 10개이거나 10개보다 많으면 ~으로 바꾸면 될 것 같아요.’ 꼴로 써요."], ans: "십 모형이 10개이거나 10개보다 많으면 십 모형 10개를 백 모형 1개로 바꾸어요. 그래서 42 × 3 = 126이에요." }) },
     { inst: "자리별로 나누어 계산해 보세요.", render: (b, a) => {
       b.append(picBlockGroups([1, 2, 3].map(k => ({ n: 42, cap: `${k}묶음` })), { note: "십 모형 4개와 일 모형 2개가 3묶음이에요." }));
       numbers(b, a, [{ q: "40 × 3 =", a: 120, why: { "12": "4 × 3 = 12예요. 40 × 3은 그 10배예요." } }, { q: "2 × 3 =", a: 6 }, { q: "더하면 42 × 3 =", a: 126 }],
@@ -2138,7 +2169,7 @@ const LESSONS = [
         { t: "다른 방법이 좋을 때", e: "🤝", ph: "~할 때는 다른 방법이 좋아요", hint: "수가 커지면 어느 쪽이 편할까요?", ex: ["71 × 6처럼 수가 커서 모형이 너무 많을 때는 나 방법이 좋아요.", "백 모형으로 왜 바꾸는지 알고 싶을 때는 가 방법이 좋아요."] },
         { t: "질문", e: "❓", ph: "아직 궁금한 것은 ~", ex: ["아직 궁금한 것은 일의 자리에서도 올림이 생기면 어떻게 하는지예요.", "아직 궁금한 것은 42 × 3을 세로셈으로 어떻게 쓰는지예요."] }],
         { ok: "두 방법 모두 42 × 3 = 126이에요. 십 모형 10개는 백 모형 1개예요. 나누어 곱하는 방법은 세로셈으로 이어져요." }) },
-    { inst: "약속: 십의 자리 곱이 10을 넘으면 백의 자리에 1을 써요. 53 × 3을 세로셈으로 계산해 보세요.", render: (b, a) => simColumn(b, a, { a: 53, b: 3, mode: "parts", tip: "첫째 줄은 3 × 3, 둘째 줄은 50 × 3이에요." }) },
+    { inst: "약속: 십의 자리 곱이 10이거나 10보다 크면, 그 곱의 십의 자리 수를 백의 자리에 써요. 53 × 3을 세로셈으로 계산해 보세요.", render: (b, a) => simColumn(b, a, { a: 53, b: 3, mode: "parts", tip: "첫째 줄은 3 × 3, 둘째 줄은 50 × 3이에요." }) },
     { inst: "스스로 계산해 보세요.",
       hints: ["62 × 4 → 일의 자리 2 × 4 = 8, 십의 자리 60 × 4 = 240", "240과 8을 더하면 248이에요."],
       render: (b, a) => numbers(b, a, [
@@ -2155,7 +2186,7 @@ const LESSONS = [
 },
 {
   id: "m5", no: 5, title: "(몇십몇) × (몇) ― 일의 자리에서 올림이 있을 때", soop: "개념 구축하기(O)",
-  question: "일의 자리 곱이 10을 넘으면 어떻게 할까요?",
+  question: "일의 자리 곱이 10이거나 10보다 크면 어떻게 할까요?",
   summary: "일의 자리 곱이 10이거나 10보다 크면 일 모형 10개를 십 모형 1개로 바꾸어 십의 자리로 올려요. 세로셈에서는 올림한 수를 작게 쓰고 십의 자리 곱에 더해요.",
   steps: [
     { name: "만져 보기 — 예상하고 확인하기", inst: "물뿌리개 한 통으로 모종 16개에 물을 줄 수 있어요. 4통이면 모종 몇 개에 물을 줄까요?", render: ruleFirst((b, a) => simBlocks2(b, a, { a: 16, b: 4, tip: "모은 다음 살펴봐요. 일 모형이 10개가 넘으면 어떻게 할 수 있을까요?", ok: "십 6개, 일 4개 → 64개!", why: { "424": "일 모형 24개는 십 모형 2개와 일 모형 4개예요. 40과 24를 더해요." } }), { q: "16 × 4에서 일 모형이 24개가 되면 어떻게 할까요?", ph: "내 규칙: ~", help: ["① 일 모형 24개를 10개씩 묶으면 몇 묶음인지 봐요. → ② 그 묶음이 무엇이 될지 생각해요.", "‘내 규칙: 일 모형 10개를 ~로 바꾸어 ~에 더하면 될 것 같아요.’ 꼴로 써요."], ans: "일 모형 10개를 십 모형 1개로 바꾸어 십의 자리에 더해요. 일 모형 24개는 십 모형 2개와 일 모형 4개가 되어 16 × 4 = 64예요." }) },
@@ -2168,7 +2199,7 @@ const LESSONS = [
       hints: ["7 × 3 = 21 → 1을 쓰고 2를 십의 자리 위에 작게 써요.", "2 × 3 = 6에 올림한 2를 더하면 8이에요."],
       render: (b, a) => simColumn(b, a, { a: 27, b: 3, mode: "short", tip: "7 × 3 = 21 → 일의 자리에 1을 쓰고 2를 올려요." }) },
     { inst: "스스로 계산해 보세요.",
-      hints: ["일의 자리부터 곱하고, 10이 넘으면 올림한 수를 십의 자리 곱에 더해요.", "18 × 5 → 8 × 5 = 40 (0 쓰고 4 올림) → 1 × 5 = 5, 5 + 4 = 9"],
+      hints: ["일의 자리부터 곱하고, 10이거나 10보다 크면 올림한 수를 십의 자리 곱에 더해요.", "18 × 5 → 8 × 5 = 40 (0 쓰고 4 올림) → 1 × 5 = 5, 5 + 4 = 9"],
       easy: (b, a) => numbers(b, a, [{ q: "15 × 2 =", a: 30 }, { q: "12 × 5 =", a: 60 }], { ok: "작은 수로 올림을 익혔어요!" }),
       render: (b, a) => numbers(b, a, [
         { q: "18 × 5 =", a: 90, why: { "50": "일의 자리에서 올림한 4를 더하지 않았어요.", "540": "올림한 수를 옆에 쓰지 말고 십의 자리 곱에 더해요." } },
@@ -2186,15 +2217,15 @@ const LESSONS = [
 {
   id: "m6", no: 6, title: "(몇십몇) × (몇) ― 올림이 두 번 있을 때", soop: "개념 구축하기(O)",
   question: "올림이 두 번 있는 곱셈은 어떻게 계산할까요?",
-  summary: "일의 자리에서 올림한 수는 십의 자리 곱에 더하고, 십의 자리 곱이 10을 넘으면 백의 자리에 써요. 24 × 6 = 144처럼 곱이 세 자리 수가 될 수 있어요.",
+  summary: "일의 자리에서 올림한 수는 십의 자리 곱에 더하고, 십의 자리 곱이 10이거나 10보다 크면 백의 자리에 써요. 24 × 6 = 144처럼 곱이 세 자리 수가 될 수 있어요.",
   steps: [
-    { name: "만져 보기 — 예상하고 확인하기", inst: "모종이 한 판에 24개씩 6판 있어요. 3학년 144명이 한 개씩 심을 수 있을까요? 수 모형으로 알아보세요.", render: ruleFirst((b, a) => simBlocks2(b, a, { a: 24, b: 6, tip: "10개가 넘는 모형이 몇 군데 있나요? 어떻게 바꾸면 될까요?", ok: "144개! 3학년 모두 한 개씩 심을 수 있어요." }), { q: "일 모형도 십 모형도 10개가 넘으면 어떻게 할까요?", ph: "내 규칙: ~", help: ["① 일 모형을 먼저 10개씩 묶어 봐요. → ② 그다음 십 모형도 10개를 넘는지 봐요.", "‘내 규칙: 일의 자리부터 10개씩 ~하고, 십의 자리도 ~하면 될 것 같아요.’"], ans: "일의 자리부터 10개씩 묶어 윗자리로 올리고, 십의 자리도 10개가 넘으면 백 모형으로 올려요. 그래서 24 × 6 = 144예요." }) },
+    { name: "만져 보기 — 예상하고 확인하기", inst: "모종이 한 판에 24개씩 6판 있어요. 3학년 144명이 한 개씩 심을 수 있을까요? 수 모형으로 알아보세요.", render: ruleFirst((b, a) => simBlocks2(b, a, { a: 24, b: 6, tip: "10개가 넘는 모형이 몇 군데 있나요? 어떻게 바꾸면 될까요?", ok: "144개! 3학년 모두 한 개씩 심을 수 있어요." }), { q: "일 모형도 십 모형도 10개가 넘으면 어떻게 할까요?", ph: "내 규칙: ~", help: ["① 일 모형을 먼저 10개씩 묶어 봐요. → ② 그다음 십 모형도 10개를 넘는지 봐요.", "‘내 규칙: 일의 자리부터 10개씩 ~하고, 십의 자리도 ~하면 될 것 같아요.’"], ans: "일의 자리부터 10개씩 묶어 윗자리로 올리고, 십의 자리도 10개이거나 10개보다 많으면 백 모형으로 올려요. 그래서 24 × 6 = 144예요." }) },
     { inst: "자리별로 나누어 계산해 보세요.", render: (b, a) => {
       b.append(picBlockGroups([1, 2, 3, 4, 5, 6].map(k => ({ n: 24, cap: `${k}묶음` })), { note: "십 모형 2개와 일 모형 4개가 6묶음이에요." }));
       numbers(b, a, [{ q: "4 × 6 =", a: 24 }, { q: "20 × 6 =", a: 120 }, { q: "더하면 24 × 6 =", a: 144 }],
       { ok: "24 + 120 = 144예요." }); } },
     { inst: "올림이 몇 번 있었는지 말로 정리해요.", render: thenWhy((b, a) => blanks(b, a, ["24 × 6에서는 일 모형 10개를 십 모형으로, 십 모형 10개를 백 모형으로 ", { o: ["한 번만 바꿔요", "두 번 바꿔요", "세 번 바꿔요", "바꾸지 않아요"], a: 1 }, ". 그래서 올림이 ", { o: ["한 번", "세 번", "두 번"], a: 2 }, " 있어요."]), { q: "24 × 6에서 왜 올림이 두 번 생길까요?", ph: "왜냐하면 ~", help: ["① 4 × 6이 10을 넘는지 봐요. → ② 십의 자리 곱에 올림한 수를 더하면 10을 넘는지 봐요.", "‘왜냐하면 일의 자리 곱도, 십의 자리 곱도 ~을 넘기 때문이에요.’ 꼴로 써요."], ans: "왜냐하면 일의 자리 곱 4 × 6 = 24도 10을 넘고, 십의 자리 곱 2 × 6 = 12에 올림한 2를 더한 14도 10을 넘기 때문이에요." }) },
-    { inst: "약속: 일의 자리에서 올림한 수를 더한 십의 자리 곱이 10을 넘으면 백의 자리에 써요. 57 × 6을 계산해 보세요.",
+    { inst: "약속: 일의 자리에서 올림한 수를 더한 십의 자리 곱이 10이거나 10보다 크면 백의 자리에 써요. 57 × 6을 계산해 보세요.",
       hints: ["7 × 6 = 42 → 2를 쓰고 4를 작게 써요.", "5 × 6 = 30에 올림한 4를 더하면 34 → 십의 자리에 4, 백의 자리에 3을 써요."],
       render: (b, a) => simColumn(b, a, { a: 57, b: 6, mode: "short", tip: "7 × 6 = 42 → 2를 쓰고 4를 올려요." }) },
     { inst: "스스로 계산해 보세요.",
@@ -2278,7 +2309,7 @@ const LESSONS = [
 {
   id: "m9", no: 9, title: "공부한 내용을 확인해요", soop: "발표하기(P)",
   question: "곱셈을 배우기 전과 후, 내 생각은 어떻게 달라졌나요?",
-  summary: "(두 자리 수)×(한 자리 수)는 십의 자리와 일의 자리로 나누어 곱하고 더해요. (몇십)×(몇)은 (몇)×(몇)의 10배이고, 10이 넘으면 윗자리로 올림해요.",
+  summary: "(두 자리 수)×(한 자리 수)는 십의 자리와 일의 자리로 나누어 곱하고 더해요. (몇십)×(몇)은 (몇)×(몇)의 10배이고, 10이거나 10보다 크면 윗자리로 올림해요.",
   steps: [
     { name: "확인 1", inst: "(몇십) × (몇)", render: (b, a) => numbers(b, a, [{ q: "60 × 4 =", a: 240, why: { "24": "6 × 4 = 24의 10배예요." } }, { q: "30 × 7 =", a: 210 }], { ok: "10배 규칙을 잘 썼어요." }) },
     { name: "확인 2", inst: "(몇십몇) × (몇)", render: (b, a) => numbers(b, a, [{ q: "43 × 2 =", a: 86 }, { q: "17 × 5 =", a: 85, why: { "55": "일의 자리에서 올림한 3을 더하지 않았어요." } }, { q: "52 × 4 =", a: 208 }], { ok: "정확해요!" }) },

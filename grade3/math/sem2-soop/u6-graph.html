@@ -1144,6 +1144,7 @@ function renderLesson() {
   const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
   if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
   const api = {
+    get __root() { return api; }, /*hj-multi*/
     tryOnce() { tries++; },
     provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
     fail(msg, answer) {
@@ -1189,7 +1190,8 @@ function renderLesson() {
   mount(h("main", { class: "lesson" }, stairs, work));
   const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
   markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
-  step.render(body, api);
+  STEP_CTX = { api, open: true, depth: 0, need: 0, got: new Set(), ans: [] }; /*hj-multi*/
+  try { step.render(body, api); } finally { STEP_CTX.open = false; }
 }
 function showFinish(L, chal) {
   const p = myProg(L.id);
@@ -1340,12 +1342,12 @@ function quiz(body, api, items, opts = {}) {
     else {
       const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
       const w = items[wrongIdx];
-      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      const sv = state[wrongIdx], custom = w && w.why && w.why[String(Array.isArray(sv) ? [...sv].sort((x, y) => x - y) : sv)];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
     return allOk;
   };
-  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+  const auto = autoRun(() => state.every((v, qi) => v != null && !(Array.isArray(v) && v.length < items[qi].a.length)), /*hj-multi: 여러 개 고르기는 정답 수만큼 고른 뒤 확인*/
                        () => JSON.stringify(state), judge, 260);
   wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
   body.append(wrap);
@@ -2325,7 +2327,7 @@ function simDataCount(body, api, opt) {
   upd();
   const ans = h("div");
   const vu = opt.vunit || "명";
-  numbers(ans, api, names.map(n => ({ q: `${n}는(은) 몇 ${vu}?`, a: data[n], unit: vu })).concat([{ q: `합계는 몇 ${vu}?`, a: items.length, unit: vu }]),
+  numbers(ans, api, names.map(n => ({ q: `${n}${((c) => c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 ? "은" : "는")(n.charCodeAt(n.length - 1))} 몇 ${vu}?`, a: data[n], unit: vu })).concat([{ q: `합계는 몇 ${vu}?`, a: items.length, unit: vu }]),
     { ok: opt.ok || "자료를 빠짐없이 세어 표로 정리했어요!", bad: "한 번 센 자료는 색이 바뀌어요. 빠뜨리거나 두 번 세지 않았는지 확인해요." });
   body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg),
     h("div", { class: "side" }, h("p", {}, opt.tip || "자료를 하나씩 눌러 세어 보세요. 누른 자료는 색이 바뀌어요."), out, ans)));
@@ -2382,6 +2384,28 @@ function simPictoBuild(body, api, opt) {
 const UNIT_STORY = { title: '우리 반 조사단', lines: ['궁금한 것을 정해 우리 반, 우리 학년 친구들의 생각을 조사해요.', '조사한 자료를 표로 정리하고 그림그래프로 나타내면 한눈에 보여요.', '마지막에는 자료에서 찾은 사실을 들어 무엇을 준비할지 정합니다.'], one: '우리 반 조사단 · 친구들의 생각을 조사해 표와 그림그래프로 정리해요.' };
 const UNIT_KEYWORDS = ["자료", "표", "합계", "그림그래프", "제목", "큰 그림", "작은 그림", "단위 정하기", "항목"];
 /* ===== 6. 그림그래프 — 차시별 개념 계단 (우리 반 조사 이야기, 지도서 8차시 전개) ===== */
+/*hj-multi*/ /* 한 계단에 끝내야 하는 활동이 둘 이상이면(예: 빈칸 고르기 + 까닭 쓰기) 모두 끝내야 계단을 통과한다 (2026-10-09).
+   계단의 api(또는 thenWhy처럼 그것을 복사한 api)를 받은, done(을 부르는 활동 함수만 센다. 활동 안에서 부르는 활동은 세지 않는다. */
+let STEP_CTX = null;
+function stepCount(fn) {
+  return function (body, api, ...rest) {
+    const c = STEP_CTX;
+    if (!c || !c.open || c.depth > 0 || !api || api.__root !== c.api) return fn.call(this, body, api, ...rest);
+    const k = c.need++;
+    const sub = Object.assign({}, api, { done: (ans, msg, lv) => {
+      if (c.got.has(k)) return; c.got.add(k); c.ans[k] = ans || "";
+      if (c.got.size >= c.need) api.done(c.ans.filter(Boolean).join(" | "), msg, lv);
+      else api.hint("○ 좋아요! 아래에 남은 활동도 마저 해요.");
+    } });
+    c.depth++; try { return fn.call(this, body, sub, ...rest); } finally { c.depth--; }
+  };
+}
+Object.keys(window).forEach(n => { const f = window[n];
+  if (typeof f !== "function" || f.__hjMulti) return;
+  const src = Function.prototype.toString.call(f);
+  if (!/^function\s+\w+\s*\(\s*body\s*,\s*api\b/.test(src) || !/done\(/.test(src)) return;
+  const w = stepCount(f); w.__hjMulti = 1; window[n] = w; });
+/*/hj-multi*/
 const LESSONS = [
 {
   id: "g1", no: 1, title: "자료를 표로 정리해요", soop: "개념 찾기(S)",
@@ -2498,11 +2522,11 @@ const LESSONS = [
       { q: "14권은 큰 그림 몇 개?", a: 1 },
       { q: "14권은 작은 그림 몇 개?", a: 4, why: { "1": "큰 그림의 개수를 썼어요. 작은 그림은 일의 자리 수예요." } }],
       { ok: "십의 자리는 큰 그림, 일의 자리는 작은 그림이 돼요." }) },
-    { name: "말해 보기 — 나침반", inst: "그림 하나를 10명으로 할까요, 1명으로 할까요? 단위를 정하는 일을 네 칸에서 살펴봐요. 한 칸에 한 가지씩 써서 붙여요.", render: (b, a) => panes(b, a, [
-      { t: "좋아요", e: "🧭", ph: "~라서 좋아요", hint: "그림 하나를 10명으로 하면 무엇이 좋을까요?", ex: ["그림 하나를 10명으로 하면 그림을 적게 그려도 돼서 좋아요.", "32명도 큰 그림 3개, 작은 그림 2개로 짧게 그릴 수 있어서 좋아요."] },
-      { t: "걱정돼요", e: "⚠️", ph: "~일까 걱정돼요", hint: "1명으로 하면 그림을 몇 개나 그려야 할까요?", ex: ["그림 하나를 1명으로 하면 32개나 그려야 해서 힘들까 걱정돼요.", "10명짜리 그림만 쓰면 25명의 5명을 나타낼 수 없을까 걱정돼요."] },
-      { t: "더 알고 싶어요", e: "❓", ph: "~은 어떻게 할까?", ex: ["학교 전체 890명처럼 큰 수는 어떻게 할까?", "124명처럼 세 자리 수는 그림을 몇 가지로 나타내야 할까?"] },
-      { t: "그래서 이렇게", e: "🧩", ph: "나는 그림 하나를 ~로 할래요", hint: "같은 표인데 친구와 그래프가 달라질 수 있어요", ex: ["나는 그림 하나를 10명으로 하고 작은 그림은 1명으로 할래요.", "나는 수가 작은 우리 반 조사라면 그림 하나를 1명으로 할래요."] }],
+    { name: "말해 보기 — 나침반", inst: "그림 하나를 10권으로 할까요, 1권으로 할까요? 단위를 정하는 일을 네 칸에서 살펴봐요. 한 칸에 한 가지씩 써서 붙여요.", render: (b, a) => panes(b, a, [
+      { t: "좋아요", e: "🧭", ph: "~라서 좋아요", hint: "그림 하나를 10권으로 하면 무엇이 좋을까요?", ex: ["그림 하나를 10권으로 하면 그림을 적게 그려도 돼서 좋아요.", "32권도 큰 그림 3개, 작은 그림 2개로 짧게 그릴 수 있어서 좋아요."] },
+      { t: "걱정돼요", e: "⚠️", ph: "~일까 걱정돼요", hint: "1권으로 하면 그림을 몇 개나 그려야 할까요?", ex: ["그림 하나를 1권으로 하면 32개나 그려야 해서 힘들까 걱정돼요.", "10권짜리 그림만 쓰면 25권의 5권을 나타낼 수 없을까 걱정돼요."] },
+      { t: "더 알고 싶어요", e: "❓", ph: "~은 어떻게 할까?", ex: ["학교 도서관 책 890권처럼 큰 수는 어떻게 할까?", "124권처럼 세 자리 수는 그림을 몇 가지로 나타내야 할까?"] },
+      { t: "그래서 이렇게", e: "🧩", ph: "나는 그림 하나를 ~로 할래요", hint: "같은 표인데 친구와 그래프가 달라질 수 있어요", ex: ["나는 큰 그림 하나를 10권으로 하고 작은 그림은 1권으로 할래요.", "나는 수가 작은 자료라면 그림 하나를 1권으로 할래요."] }],
       { ok: "단위를 정하는 까닭까지 잘 말했어요! 친구들 쪽지와 견주어 봐요." }) },
     { name: "세 가지 단위로 나타내기", inst: "세 자리 수가 있어요. 단위를 세 가지로 하여 나타내 보세요.", render: (b, a) => simPictoBuild(b, a, {
       title: "종류별 학급 문고 수", vlabel: "책 수", vunit: "권", units: [100, 10, 1],
@@ -2512,7 +2536,7 @@ const LESSONS = [
       { q: "① 책 수를 나타낼 그림으로 알맞은 것은?", o: ["자료와 어울리는 그림", "아무 그림이나"], a: 0 },
       { q: "② 우리 반 25명을 나타낼 때 큰 그림은?", o: ["10명", "100명"], a: 0 },
       { q: "② 학교 전체 890명을 나타낼 때 큰 그림은?", o: ["10명", "100명"], a: 1, why: { "0": "890을 10명짜리 그림으로 그리면 89개를 그려야 해요." } },
-      { q: "② 도서관 책 2400권을 나타내려면 단위를 몇 가지로 할까요?", o: ["1가지(1000권)", "3가지(1000권, 100권, 10권)"], a: 1, why: { "0": "1000권짜리 그림만으로는 2400권의 400권을 나타낼 수 없어요." } },
+      { q: "② 도서관 책 2400권을 나타내려면 단위를 몇 가지로 할까요?", o: ["1가지(1000권)", "2가지(1000권, 100권)"], a: 1, why: { "0": "1000권짜리 그림만으로는 2400권의 400권을 나타낼 수 없어요. 2400권은 1000권 그림 2개와 100권 그림 4개예요." } },
       { q: "④ 그림을 다 그린 뒤에 꼭 써야 하는 것은?", o: ["알맞은 제목", "그린 날짜"], a: 0 }]) }
   ],
   challenge: { inst: "단위를 바꾸어 나타내 보세요.", render: (b, a) => numbers(b, a, [
@@ -2555,7 +2579,7 @@ const LESSONS = [
       title: "3학년이 고른 간식별 학생 수",
       rows: [{ name: "떡볶이", v: 32 }, { name: "치킨", v: 25 }, { name: "김밥", v: 14 }, { name: "과일", v: 23 }],
       qs: [{ q: "가장 많은 학생이 고른 간식은 몇 명?", a: 32, unit: "명" }, { q: "조사한 학생은 모두 몇 명?", a: 94, unit: "명" }],
-      tip: "3학년 여섯 반 친구들에게 물어본 자료예요." }) },
+      tip: "3학년 네 반 친구들에게 물어본 자료예요." }) },
     { name: "까닭 찾기", inst: "왜 그렇게 정했는지 까닭을 찾아보세요.", render: (b, a) => quiz(b, a, [
       { q: "자료만 보면 어떤 간식을 준비하는 것이 좋을까요?", o: ["떡볶이", "김밥"], a: 0 },
       { q: "‘떡볶이를 준비하자’고 말할 때 알맞은 까닭은?", o: ["내가 좋아해서", "가장 많은 32명이 골랐기 때문에"], a: 1, why: { "0": "내 생각은 의견이에요. 까닭은 그래프에 있는 사실이어야 해요." } }]) },
@@ -2574,8 +2598,8 @@ const LESSONS = [
     { q: "그림그래프에서 큰 그림의 크기를 마음대로 다르게 그리면 어떻게 될까요?", o: ["보기에 예뻐요", "실제보다 많거나 적어 보여 오해할 수 있어요"], a: 1 }]) }
 },
 {
-  id: "g7", no: 7, title: "놀이를 더하다 ― 그래프 맞히기 놀이", soop: "발표하기(P)",
-  question: "그래프만 보고 어떤 자료인지 알아맞힐 수 있을까요?",
+  id: "g7", no: 7, title: "놀이를 더하다 ― 그래프 문제 내기 놀이", soop: "발표하기(P)",
+  question: "그림그래프를 읽고 서로 문제를 내어 맞힐 수 있을까요?",
   summary: "그림그래프를 읽으면 항목의 수와 차이, 합계까지 알 수 있어요. 문제를 만들어 서로 맞히면 읽는 힘이 늘어요.",
   steps: [
     { name: "놀이하기", inst: "모둠별로 모은 칭찬 스티커 수예요. 그래프를 보고 문제를 풀어 보세요.", render: (b, a) => simPictoRead(b, a, {
@@ -2619,7 +2643,7 @@ const LESSONS = [
     { name: "확인 4", inst: "표와 그래프의 좋은 점", render: (b, a) => quiz(b, a, [
       { q: "정확한 합계를 알기 좋은 것은?", o: ["표", "그림그래프"], a: 0 },
       { q: "많고 적음을 한눈에 보기 좋은 것은?", o: ["표", "그림그래프"], a: 1 },
-      { q: "그림그래프를 그릴 때 가장 먼저 정할 것은?", o: ["그림이 나타내는 수", "그림의 모양"], a: 0 }]) },
+      { q: "그림그래프를 읽을 때 가장 먼저 확인할 것은?", o: ["그림 하나가 나타내는 수", "그림의 색깔"], a: 0 }]) },
     { name: "예전 생각, 지금 생각 — 예전엔·지금은", inst: "생각이 어떻게 달라졌는지 칸마다 써서 붙여요.",
       hints: ["그림그래프는 그림 하나가 얼마를 나타내는지 먼저 정해서 그려요.", "표는 정확한 수와 합계, 그림그래프는 많고 적음을 보기 좋아요."],
       render: (b, a) => panes(b, a, [

@@ -1148,6 +1148,7 @@ function renderLesson() {
   const prevOk = idx === "chal" ? (p.chal && p.chal.ok) : (p.steps[idx] && p.steps[idx].ok);
   if (prevOk) { nextBtn.disabled = false; fb.className = "fb good"; fb.textContent = "이미 해결한 계단이에요. 다시 해 볼 수도 있어요."; }
   const api = {
+    get __root() { return api; }, /*hj-multi*/
     tryOnce() { tries++; },
     provide(info) { given = { words: (info && info.words) || [], answers: (info && info.answers) || [] }; },
     fail(msg, answer) {
@@ -1193,7 +1194,8 @@ function renderLesson() {
   mount(h("main", { class: "lesson" }, stairs, work));
   const markStuck = () => { const r = acts.getBoundingClientRect(); acts.classList.toggle("stuck", r.bottom >= window.innerHeight - 2); };
   markStuck(); window.addEventListener("scroll", markStuck, { passive: true }); window.addEventListener("resize", markStuck);
-  step.render(body, api);
+  STEP_CTX = { api, open: true, depth: 0, need: 0, got: new Set(), ans: [] }; /*hj-multi*/
+  try { step.render(body, api); } finally { STEP_CTX.open = false; }
 }
 function showFinish(L, chal) {
   const p = myProg(L.id);
@@ -1344,12 +1346,12 @@ function quiz(body, api, items, opts = {}) {
     else {
       const wrongIdx = items.findIndex((it, qi) => !(Array.isArray(it.a) ? (Array.isArray(state[qi]) && state[qi].length === it.a.length && it.a.every(x => state[qi].includes(x))) : state[qi] === it.a));
       const w = items[wrongIdx];
-      const custom = w && w.why && w.why[String(state[wrongIdx])];
+      const sv = state[wrongIdx], custom = w && w.why && w.why[String(Array.isArray(sv) ? [...sv].sort((x, y) => x - y) : sv)];
       api.fail(custom || opts.bad || "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요.", ans.join(" / "));
     }
     return allOk;
   };
-  const auto = autoRun(() => state.every(v => v != null && !(Array.isArray(v) && !v.length)),
+  const auto = autoRun(() => state.every((v, qi) => v != null && !(Array.isArray(v) && v.length < items[qi].a.length)), /*hj-multi: 여러 개 고르기는 정답 수만큼 고른 뒤 확인*/
                        () => JSON.stringify(state), judge, 260);
   wrap.addEventListener("click", (e) => { if (e.target.closest(".opt")) auto(); });
   body.append(wrap);
@@ -1784,13 +1786,13 @@ function simBlocksAdd(body, api, opt) {
   const draw = () => {
     asMat(svg, st);
     const over = st.o.length >= 10 ? "일 모형" : st.t.length >= 10 ? "십 모형" : "";
-    out.innerHTML = over ? `${over}이 10개가 넘어요.<br><small>10개를 윗자리 모형 1개로 바꿔 봐요.</small>` : `모든 자리가 10개보다 적어요.<br><small>이제 모형을 세어 합을 써요.</small>`;
+    out.innerHTML = over ? `${over}이 ${over === "일 모형" ? st.o.length : st.t.length}개예요.<br><small>10개를 윗자리 모형 1개로 바꿔 봐요.</small>` : `모든 자리가 10개보다 적어요.<br><small>이제 모형을 세어 합을 써요.</small>`;
   };
   const bO = h("button", { class: "ghost", onclick: () => { if (st.o.length < 10) return api.hint("일 모형이 10개보다 적어서 바꿀 수 없어요."); st.o.splice(0, 10); st.t.push({ f: AS_MINT }); draw(); } }, "일 모형 10개 → 십 모형 1개");
   const bT = h("button", { class: "ghost", onclick: () => { if (st.t.length < 10) return api.hint("십 모형이 10개보다 적어서 바꿀 수 없어요."); st.t.splice(0, 10); st.h.push({ f: AS_MINT }); draw(); } }, "십 모형 10개 → 백 모형 1개");
   const ans = h("div");
   numbers(ans, api, [{ q: `${a} + ${b} =`, a: a + b, why: { [String(asNoCarry(a, b))]: "받아올림한 모형을 빠뜨렸어요. 10개를 바꾼 윗자리 모형도 함께 세어요." } }],
-    { ok: opt.ok || `${a} + ${b} = ${a + b}. 수 모형과 계산이 같아요!`, bad: "자리마다 모형을 다시 세어 봐요. 10개가 넘으면 윗자리로 바꿔요.", words: ["백의 자리", "십의 자리", "일의 자리", "받아올림"] });
+    { ok: opt.ok || `${a} + ${b} = ${a + b}. 수 모형과 계산이 같아요!`, bad: "자리마다 모형을 다시 세어 봐요. 10개이거나 10개보다 많으면 윗자리로 바꿔요.", words: ["백의 자리", "십의 자리", "일의 자리", "받아올림"] });
   draw();
   body.append(h("div", { class: "panel" }, h("div", { class: "stage" }, svg),
     h("div", { class: "side" }, h("p", {}, h("span", { class: "pill", style: "background:#2B7BD6" }, `파랑 ${a}`), " ", h("span", { class: "pill", style: "background:#E47A38" }, `주황 ${b}`), " ", h("span", { class: "pill", style: "background:#2F6B57" }, "초록 바꾼 모형")),
@@ -2008,6 +2010,28 @@ const UNIT_STORY = { title: "봄 운동회 점수판", lines: ["우리 학교 �
 const UNIT_KEYWORDS = ["덧셈", "뺄셈", "같은 자리끼리", "일의 자리부터", "받아올림", "받아내림", "세로셈", "어림", "몇백"];
 
 /* ===== 1. 덧셈과 뺄셈 — 차시별 개념 계단 (봄 운동회 점수판 이야기) ===== */
+/*hj-multi*/ /* 한 계단에 끝내야 하는 활동이 둘 이상이면(예: 빈칸 고르기 + 까닭 쓰기) 모두 끝내야 계단을 통과한다 (2026-10-09).
+   계단의 api(또는 thenWhy처럼 그것을 복사한 api)를 받은, done(을 부르는 활동 함수만 센다. 활동 안에서 부르는 활동은 세지 않는다. */
+let STEP_CTX = null;
+function stepCount(fn) {
+  return function (body, api, ...rest) {
+    const c = STEP_CTX;
+    if (!c || !c.open || c.depth > 0 || !api || api.__root !== c.api) return fn.call(this, body, api, ...rest);
+    const k = c.need++;
+    const sub = Object.assign({}, api, { done: (ans, msg, lv) => {
+      if (c.got.has(k)) return; c.got.add(k); c.ans[k] = ans || "";
+      if (c.got.size >= c.need) api.done(c.ans.filter(Boolean).join(" | "), msg, lv);
+      else api.hint("○ 좋아요! 아래에 남은 활동도 마저 해요.");
+    } });
+    c.depth++; try { return fn.call(this, body, sub, ...rest); } finally { c.depth--; }
+  };
+}
+Object.keys(window).forEach(n => { const f = window[n];
+  if (typeof f !== "function" || f.__hjMulti) return;
+  const src = Function.prototype.toString.call(f);
+  if (!/^function\s+\w+\s*\(\s*body\s*,\s*api\b/.test(src) || !/done\(/.test(src)) return;
+  const w = stepCount(f); w.__hjMulti = 1; window[n] = w; });
+/*/hj-multi*/
 const LESSONS = [
 {
   id: "a1", no: 1, title: "운동회 점수판 도우미가 되었어요", soop: "개념 찾기(S)",
@@ -2024,7 +2048,7 @@ const LESSONS = [
         { ok: "생각을 잘 모았어요! 점수를 모으면 덧셈, 차이를 구하면 뺄셈이에요." }) },
     { name: "그려 보기 — 수 모형으로 나타내기", inst: "청팀 점수판에 245점이 적혀 있어요. 수 모형으로 나타내면 모형이 몇 개씩일까요?", render: (b, a) => simShowNum(b, a, { n: 245, q: "청팀 점수", unit: "점", tip: "큰 네모는 백, 긴 막대는 십, 작은 네모는 일이에요." }) },
     { name: "말해 보기 — 떠올리고 까닭 말하기", inst: "2학년 때 배운 계산을 떠올려요. 응원 깃발 38개와 25개를 모으고, 응원 수술 52개 중 17개를 나누어 주었어요.",
-      hints: ["일의 자리 수끼리 더한 값이 10이 넘으면 십의 자리로 받아올림했어요.", "2에서 7을 뺄 수 없으면 십의 자리에서 10을 받아내림했어요."],
+      hints: ["일의 자리 수끼리 더한 값이 10이거나 10보다 크면 십의 자리로 받아올림했어요.", "2에서 7을 뺄 수 없으면 십의 자리에서 10을 받아내림했어요."],
       render: thenWhy((b, a) => {
         b.append(picBlockGroups([{ n: 38, cap: "깃발 38개" }, { n: 25, cap: "깃발 25개" }], { sep: "+", note: "십 모형과 일 모형을 같은 자리끼리 모아요." }));
         b.append(picBlockGroups([{ n: 52, cap: "수술 52개" }, { n: 17, cap: "나누어 준 17개" }], { sep: "−", note: "일 모형 2개에서 7개를 뺄 수 없어요. 십 모형 1개를 풀어요." }));
@@ -2071,9 +2095,9 @@ const LESSONS = [
   question: "같은 자리 수끼리 더한 값이 10이거나 10보다 크면 어떻게 할까요?",
   summary: "같은 자리 수끼리 더한 값이 10이거나 10보다 크면 바로 윗자리로 1을 받아올림해요. 받아올림한 1은 윗자리 수와 함께 더해요. 계산하기 전에 몇백으로 어림하면 답이 알맞은지 알 수 있어요.",
   steps: [
-    { name: "만져 보기 — 예상하고 확인하기", inst: "청팀 응원 수술이 368개, 백팀 응원 수술이 225개예요. 수 모형을 모아 보세요. 10개가 넘는 자리는 어떻게 할까요?",
+    { name: "만져 보기 — 예상하고 확인하기", inst: "청팀 응원 수술이 368개, 백팀 응원 수술이 225개예요. 수 모형을 모아 보세요. 10개이거나 10개보다 많은 자리는 어떻게 할까요?",
       hints: ["일 모형은 모두 몇 개인가요? 8 + 5를 세어 봐요.", "일 모형 10개는 어떤 모형 1개와 같을까요?"],
-      render: ruleFirst((b, a) => simBlocksAdd(b, a, { a: 368, b: 225, tip: "일 모형이 10개가 넘으면 어떻게 바꿀 수 있을까요?" }), { q: "일 모형이 8개와 5개예요. 10개가 넘으면 어떻게 할까요?", ph: "내 규칙: ~", help: ["① 일 모형 8개와 5개를 모으면 몇 개인지 세어요. → ② 10개를 묶으면 무엇이 될지 생각해요.", "‘내 규칙: 일 모형이 10개가 되면 ~로 바꾸면 될 것 같아요.’ 꼴로 써요."], ans: "일 모형이 10개가 되면 십 모형 1개로 바꾸어 십의 자리에 더해요. 그래서 368 + 225 = 593이에요." }) },
+      render: ruleFirst((b, a) => simBlocksAdd(b, a, { a: 368, b: 225, tip: "일 모형이 10개이거나 10개보다 많으면 어떻게 바꿀 수 있을까요?" }), { q: "일 모형이 8개와 5개예요. 10개가 넘으면 어떻게 할까요?", ph: "내 규칙: ~", help: ["① 일 모형 8개와 5개를 모으면 몇 개인지 세어요. → ② 10개를 묶으면 무엇이 될지 생각해요.", "‘내 규칙: 일 모형이 10개가 되면 ~로 바꾸면 될 것 같아요.’ 꼴로 써요."], ans: "일 모형이 10개가 되면 십 모형 1개로 바꾸어 십의 자리에 더해요. 그래서 368 + 225 = 593이에요." }) },
     { inst: "계산하기 전에 어림해 보세요. 수직선에서 더 가까운 몇백을 찾아요.", render: (b, a) => quiz(b, a, [asNearItem(368), asNearItem(225),
       { q: "그러면 368 + 225는 약 얼마일까요?", o: ["약 500", "약 600", "약 700"], a: 1 }],
       { ok: "368은 약 400, 225는 약 200이라서 합은 약 600이에요. 실제 합 593과 가까워요!" }) },
@@ -2086,7 +2110,7 @@ const LESSONS = [
         { ok: "잘 설명했어요! 더한 값이 10이거나 10보다 크면 윗자리로 1을 받아올림해요. 받아올림한 1은 윗자리 수와 함께 더해요." }) },
     { inst: "세로셈으로 계산해 보세요. 받아올림한 1은 메모 칸에 적어요.", render: (b, a) => simColumn(b, a, { a: 457, b: 281, op: "+", tip: "십의 자리: 5 + 8 = 13 → 3을 쓰고 1을 백의 자리로 받아올림해요." }) },
     { inst: "스스로 계산해 보세요.",
-      hints: ["어느 자리에서 10이 넘는지 먼저 찾아요.", "245 + 136 → 일의 자리 5 + 6 = 11 (1을 쓰고 1을 받아올림) → 십의 자리 4 + 3 + 1 = 8 → 백의 자리 2 + 1 = 3"],
+      hints: ["어느 자리에서 10이거나 10보다 커지는지 먼저 찾아요.", "245 + 136 → 일의 자리 5 + 6 = 11 (1을 쓰고 1을 받아올림) → 십의 자리 4 + 3 + 1 = 8 → 백의 자리 2 + 1 = 3"],
       easy: (b, a) => numbers(b, a, [{ q: "126 + 135 =", a: 261 }, { q: "213 + 148 =", a: 361 }], { ok: "받아올림 한 번을 정확히 했어요!" }),
       render: (b, a) => numbers(b, a, [
         { q: "245 + 136 =", a: 381, why: { "371": "받아올림한 1을 십의 자리에 더하지 않았어요." } },
@@ -2106,9 +2130,9 @@ const LESSONS = [
   question: "받아올림이 여러 번 있는 덧셈은 어떻게 계산할까요?",
   summary: "받아올림이 여러 번 있어도 일의 자리부터 차례로 더하고, 받아올림한 1을 윗자리에 꼭 더해요. 백의 자리에서 받아올림하면 천의 자리에 1을 써서 네 자리 수가 돼요.",
   steps: [
-    { name: "만져 보기 — 예상하고 확인하기", inst: "청팀이 오전에 487점, 오후에 356점을 얻었어요. 수 모형을 모아 보세요. 10개가 넘는 자리는 어떻게 할까요?",
-      hints: ["일 모형은 7 + 6 = 13개예요. 10개는 무엇으로 바꿀까요?", "십 모형도 10개가 넘나요? 그러면 어떻게 할까요?"],
-      render: ruleFirst((b, a) => simBlocksAdd(b, a, { a: 487, b: 356, tip: "일 모형과 십 모형은 각각 몇 개일까요? 10개가 넘는 자리가 있나요?" }), { q: "일 모형도 십 모형도 10개가 넘으면 어떻게 할까요?", ph: "내 규칙: ~", help: ["① 일 모형 7 + 6, 십 모형 8 + 5를 차례로 세어 봐요. → ② 10개씩 묶어 봐요.", "‘내 규칙: 어느 자리든 10개가 넘으면 ~하면 될 것 같아요.’ 꼴로 써요."], ans: "어느 자리든 10개가 넘으면 10개를 바로 윗자리 모형 1개로 바꾸어 올려요. 그래서 487 + 356 = 843이에요." }) },
+    { name: "만져 보기 — 예상하고 확인하기", inst: "청팀이 오전에 487점, 오후에 356점을 얻었어요. 수 모형을 모아 보세요. 10개이거나 10개보다 많은 자리는 어떻게 할까요?",
+      hints: ["일 모형은 7 + 6 = 13개예요. 10개는 무엇으로 바꿀까요?", "십 모형도 10개이거나 10개보다 많나요? 그러면 어떻게 할까요?"],
+      render: ruleFirst((b, a) => simBlocksAdd(b, a, { a: 487, b: 356, tip: "일 모형과 십 모형은 각각 몇 개일까요? 10개이거나 10개보다 많은 자리가 있나요?" }), { q: "일 모형도 십 모형도 10개가 넘으면 어떻게 할까요?", ph: "내 규칙: ~", help: ["① 일 모형 7 + 6, 십 모형 8 + 5를 차례로 세어 봐요. → ② 10개씩 묶어 봐요.", "‘내 규칙: 어느 자리든 10개이거나 10개보다 많으면 ~하면 될 것 같아요.’ 꼴로 써요."], ans: "어느 자리든 10개이거나 10개보다 많으면 10개를 바로 윗자리 모형 1개로 바꾸어 올려요. 그래서 487 + 356 = 843이에요." }) },
     { name: "어림해 보기 — 예상하고 확인하기",
       inst: "응원 수술을 오전에 438개, 오후에 395개 만들었어요. 먼저 몇백으로 어림해 예상하고, 그다음 실제로 계산해요.",
       hints: ["438은 약 400, 395도 약 400이에요. 어림하면 약 800이에요.", "자리별로 더해 봐요. 400 + 300 = 700, 30 + 90 = 120. 일의 자리는 8 + 5 = 13", "700 + 120 + 13 = 833"],
@@ -2125,7 +2149,7 @@ const LESSONS = [
       easy: (b, a) => numbers(b, a, [{ q: "159 + 267 =", a: 426 }, { q: "275 + 148 =", a: 423 }], { ok: "받아올림 두 번을 정확히 했어요!" }),
       render: (b, a) => numbers(b, a, [
         { q: "386 + 547 =", a: 933, why: { "823": "받아올림한 1을 윗자리에 더하지 않았어요." } },
-        { q: "758 + 469 =", a: 1227, why: { "117": "받아올림한 1을 모두 빠뜨렸어요.", "1127": "십의 자리에서 받아올림한 1을 백의 자리에 더하지 않았어요." } },
+        { q: "758 + 469 =", a: 1227, why: { "1117": "받아올림한 1을 모두 빠뜨렸어요.", "1127": "십의 자리에서 받아올림한 1을 백의 자리에 더하지 않았어요." } },
         { q: "294 + 839 =", a: 1133 }],
       { ok: "받아올림이 여러 번 있어도 해냈어요!" }) }
   ],
@@ -2191,12 +2215,12 @@ const LESSONS = [
     render: (b, a) => numbers(b, a, [
       { q: "백팀 563점, 청팀 427점이에요. 몇백 점쯤 차이인지 어림하면 약", a: 200, unit: "점" },
       { q: "정확하게 계산하면 백팀이 몇 점 앞서나요?", a: 136, unit: "점" }],
-    { ok: "563 − 427 = 136. 어림한 약 200점보다 조금 작아요. 어림은 대강의 크기를 알려 줘요." }) }
+    { ok: "563 − 427 = 136. 어림한 약 200점과 차이가 있지만, 어림하면 몇백 점쯤인지 대강 미리 알 수 있어요." }) }
 },
 {
   id: "a7", no: 7, title: "음료수가 남았어요 ― 받아내림이 두 번 있는 뺄셈", soop: "개념 구축하기(O)",
   question: "받아내림이 두 번 있는 뺄셈은 어떻게 계산할까요?",
-  summary: "받아내림이 두 번 있으면 일의 자리와 십의 자리에서 모두 윗자리에서 10을 받아내림해요. 십의 자리가 0이면 백의 자리에서 먼저 받아내림한 뒤 다시 일의 자리로 받아내림해요.",
+  summary: "받아내림이 두 번 있으면 일의 자리와 십의 자리 모두 바로 윗자리에서 10을 받아내림해요. 십의 자리가 0이면 백의 자리에서 먼저 받아내림한 뒤 다시 일의 자리로 받아내림해요.",
   steps: [
     { name: "만져 보기 — 예상하고 확인하기", inst: "운동회 음료수 615병 중 287병을 나누어 주었어요. 모형을 지워 남은 음료수를 구해 보세요.",
       hints: ["일 모형 5개에서 7개를 지울 수 있나요? 어떻게 하면 될까요?", "십 모형도 모자라면 어느 모형을 풀면 될까요?"],
@@ -2204,7 +2228,7 @@ const LESSONS = [
     { inst: "계산하기 전에 어림해 보세요.", render: (b, a) => quiz(b, a, [asNearItem(615), asNearItem(287),
       { q: "그러면 615 − 287은 약 얼마일까요?", o: ["약 200", "약 300", "약 400"], a: 1 }],
       { ok: "약 600 − 약 300 = 약 300. 실제 차 328과 가까워요!" }) },
-    { inst: "받아내림이 두 번 있을 때를 정리해요.", render: thenWhy((b, a) => blanks(b, a, ["받아내림이 두 번 있으면 ", { o: ["한 자리에서만", "십의 자리와 백의 자리에서", "일의 자리에서만"], a: 1 }, " 10을 받아내림해요. 십의 자리 수가 0이면 ", { o: ["0을 그대로 빼요", "백의 자리에서 먼저 받아내림해요", "답을 0으로 써요"], a: 1 }, "."]), { q: "십의 자리가 0이면 왜 백의 자리에서 먼저 받아내림할까요?", ph: "왜냐하면 ~", help: ["① 600 − 287처럼 십의 자리가 0인 수를 떠올려요. → ② 십 모형을 어디서 가져올지 봐요.", "‘왜냐하면 십의 자리에 ~이 없어서 ~에서 가져와야 하기 때문이에요.’ 꼴로 써요."], ans: "왜냐하면 십의 자리에 십 모형이 없어서 백의 자리에서 백 모형 1개를 십 모형 10개로 바꾸어 가져와야 하기 때문이에요." }) },
+    { inst: "받아내림이 두 번 있을 때를 정리해요.", render: thenWhy((b, a) => blanks(b, a, ["받아내림이 두 번 있으면 ", { o: ["일의 자리에서만", "일의 자리와 십의 자리 모두", "십의 자리에서만"], a: 1 }, " 바로 윗자리에서 10을 받아내림해요. 십의 자리 수가 0이면 ", { o: ["0을 그대로 빼요", "백의 자리에서 먼저 받아내림해요", "답을 0으로 써요"], a: 1 }, "."]), { q: "십의 자리가 0이면 왜 백의 자리에서 먼저 받아내림할까요?", ph: "왜냐하면 ~", help: ["① 600 − 287처럼 십의 자리가 0인 수를 떠올려요. → ② 십 모형을 어디서 가져올지 봐요.", "‘왜냐하면 십의 자리에 ~이 없어서 ~에서 가져와야 하기 때문이에요.’ 꼴로 써요."], ans: "왜냐하면 십의 자리에 십 모형이 없어서 백의 자리에서 백 모형 1개를 십 모형 10개로 바꾸어 가져와야 하기 때문이에요." }) },
     { inst: "우승하려면 800점이 필요해요. 청팀은 564점이에요. 몇 점이 더 필요한지 세로셈으로 구해 보세요.", render: (b, a) => simColumn(b, a, { a: 800, b: 564, op: "-", tip: "십의 자리가 0이에요. 백의 자리 8 → 7, 십의 자리 10 → 9, 일의 자리는 10이 돼요." }) },
     { inst: "스스로 계산해 보세요.",
       hints: ["일의 자리부터 뺄 수 있는지 보고, 뺄 수 없으면 받아내림해요.", "603 − 245 → 백의 자리에서 받아내림: 6 → 5, 십의 자리 0 → 9, 일의 자리 13 → 13 − 5 = 8, 9 − 4 = 5, 5 − 2 = 3"],
@@ -2287,7 +2311,7 @@ const LESSONS = [
 {
   id: "a10", no: 10, title: "공부한 내용을 확인해요", soop: "발표하기(P)",
   question: "덧셈과 뺄셈을 배우기 전과 후, 내 생각은 어떻게 달라졌나요?",
-  summary: "세 자리 수의 덧셈과 뺄셈은 같은 자리 수끼리 일의 자리부터 계산해요. 10이 넘으면 받아올림, 뺄 수 없으면 받아내림을 해요. 어림으로 답이 알맞은지 확인해요.",
+  summary: "세 자리 수의 덧셈과 뺄셈은 같은 자리 수끼리 일의 자리부터 계산해요. 10이거나 10보다 크면 받아올림, 뺄 수 없으면 받아내림을 해요. 어림으로 답이 알맞은지 확인해요.",
   steps: [
     { name: "확인 1", inst: "세 자리 수의 덧셈", render: (b, a) => numbers(b, a, [{ q: "356 + 278 =", a: 634 }, { q: "695 + 487 =", a: 1182 }], { ok: "받아올림을 정확히 했어요!" }) },
     { name: "확인 2", inst: "세 자리 수의 뺄셈", render: (b, a) => numbers(b, a, [{ q: "724 − 356 =", a: 368 }, { q: "900 − 437 =", a: 463 }], { ok: "받아내림을 정확히 했어요!" }) },
