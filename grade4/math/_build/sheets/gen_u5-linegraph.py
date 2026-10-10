@@ -1167,7 +1167,7 @@ def st_l3(w, D):
               segname(vb, 'inc'), segname(vb, 'min'), U(vb['vals'][4], 'cm')))
     if D:
         jv = ji['vals']
-        w.step("⑥ 도전하기", "지우 강낭콩의 키와 덩굴 강낭콩(다시 잰 기록)")
+        w.step("⑥ 도전하기", "지우 강낭콩의 키와 덩굴 강낭콩")
         w.pic(graph_svg(ji), 100)
         w.ask("3주의 지우 강낭콩의 키는 몇 cm인가요?")
         w.ask("5주에는 4주보다 몇 cm 더 자랐나요?")
