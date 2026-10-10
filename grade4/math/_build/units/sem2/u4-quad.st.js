@@ -1047,7 +1047,7 @@ function q4Tower(body, api, opt) {
       const Mp = [(A[0] + B[0]) / 2 + (tg.dx || 0), (A[1] + B[1]) / 2 + (tg.dy || 0)];
       gg.append(svgEl("rect", { x: q4F(Mp[0] - 34), y: q4F(Mp[1] - 14), width: 68, height: 28, rx: 8, fill: on.has(i) ? "#FBE7E2" : "#fff", stroke: col, "stroke-width": 2 }), txt(Mp[0], Mp[1], tg.t, 17, { fill: col }));
       gg.append(q4Ln(A, B, { stroke: "rgba(0,0,0,0)", "stroke-width": 22 }));
-      gg.addEventListener("click", () => { on.has(i) ? on.delete(i) : on.add(i); draw(); });
+      gg.addEventListener("click", () => { on.has(i) ? on.delete(i) : on.add(i); draw(); auto(); });
       g.append(gg);
     });
     out.textContent = on.size ? "고른 길이: " + [...on].sort((a, b) => a - b).map(i => opt.tags[i].t).join(", ") : "고른 길이가 없어요.";
@@ -1061,7 +1061,8 @@ function q4Tower(body, api, opt) {
     if (extra == null && miss == null) return !api.done(want.map(i => opt.tags[i].t).join(" + "), opt.ok);
     api.fail(extra != null ? (opt.tags[extra].why || `${opt.tags[extra].t}는 필요하지 않아요.`) : "아직 고르지 않은 길이가 있어요. 바닥에서 바닥까지 수직인 길이를 모두 골라요.", ans);
   };
-  body.append(h("p", { class: "jua", style: "margin:.2em 0" }, opt.ask || ""), h("div", { class: "q4fig", style: "max-width:36em" }, svg), h("p", { class: "inst", style: "margin:.2em 0" }, "길이 표시를 누르면 골라져요. 다시 누르면 취소돼요."), out);
+  const auto = autoRun(() => on.size >= want.length, () => [...on].sort().join(","), judge, 900);
+  body.append(h("p", { class: "jua", style: "margin:.2em 0" }, opt.ask || ""), h("div", { class: "q4fig", style: "max-width:36em" }, svg), h("p", { class: "inst", style: "margin:.2em 0" }, `길이 표시를 누르면 골라져요. 다시 누르면 취소돼요. 필요한 길이를 ${want.length}개 고르면 저절로 확인해요.`), out);
   draw();
 }
 
@@ -1194,8 +1195,8 @@ function q4Path(body, api, opt) {
   const list = h("div");
   opt.items.forEach((it, k) => {
     const row = h("div", { class: "q4stmt" }), bO = h("button", {}, "옳아요"), bX = h("button", {}, "옳지 않아요");
-    bO.onclick = () => { ans[k] = true; bO.classList.add("q4on"); bX.classList.remove("q4on"); row.classList.remove("q4good", "q4bad"); draw(); };
-    bX.onclick = () => { ans[k] = false; bX.classList.add("q4on"); bO.classList.remove("q4on"); row.classList.remove("q4good", "q4bad"); draw(); };
+    bO.onclick = () => { ans[k] = true; bO.classList.add("q4on"); bX.classList.remove("q4on"); row.classList.remove("q4good", "q4bad"); draw(); auto(); };
+    bX.onclick = () => { ans[k] = false; bX.classList.add("q4on"); bO.classList.remove("q4on"); row.classList.remove("q4good", "q4bad"); draw(); auto(); };
     row.append(h("span", {}, `${k + 1}. ${it.t}`), bO, bX); list.append(row);
   });
   api.provide({ words: ["옳아요", "옳지 않아요"], answers: [opt.items.map((it, k) => `${k + 1} ${it.a ? "옳음" : "틀림"}`).join(", ") + ` → ${opt.goal}`] });
@@ -1208,7 +1209,8 @@ function q4Path(body, api, opt) {
     if (bad < 0) return !api.done(`도착: ${end}`, opt.ok);
     api.fail(`${bad + 1}번 설명을 다시 살펴봐요. ${opt.items[bad].why || ""}`, `도착: ${end}`);
   };
-  body.append(h("div", { class: "q4row" }, h("div", { style: "flex:1 1 18em;min-width:0" }, list), h("div", { class: "q4fig", style: "flex:1 1 16em;max-width:26em" }, svg)));
+  const auto = autoRun(() => ans.every(a => a != null), () => ans.join(","), judge, 260);
+  body.append(h("p", { class: "inst", style: "margin:.2em 0" }, "설명마다 ‘옳아요’나 ‘옳지 않아요’를 모두 고르면 저절로 확인해요."), h("div", { class: "q4row" }, h("div", { style: "flex:1 1 18em;min-width:0" }, list), h("div", { class: "q4fig", style: "flex:1 1 16em;max-width:26em" }, svg)));
   draw();
 }
 
@@ -1236,7 +1238,7 @@ function q4Overlap(body, api, opt) {
   const angEl = h("span", { class: "jua" });
   const slider = h("input", { type: "range", min: 30, max: 80, step: 5, value: ang, "aria-label": "겹친 각", oninput: e => { ang = +e.target.value; draw(); } });
   const NAMES = ["사다리꼴", "평행사변형", "마름모", "직사각형"];
-  const nb = NAMES.map(n => { const b = h("button", { onclick: () => { name = n; draw(); } }, n); b.dataset.n = n; return b; });
+  const nb = NAMES.map(n => { const b = h("button", { onclick: () => { name = n; draw(); auto(); } }, n); b.dataset.n = n; return b; });
   api.provide({ words: ["마주 보는 두 쌍의 변", "평행"], answers: ["평행사변형"] });
   const judge = () => {
     api.tryOnce();
@@ -1245,7 +1247,8 @@ function q4Overlap(body, api, opt) {
     if (name === "사다리꼴") return !api.done(name, "맞아요. 평행한 변이 있으니 사다리꼴이에요. 그런데 마주 보는 두 쌍의 변이 모두 평행하니까 평행사변형이라고 할 수도 있어요.");
     api.fail(name === "마름모" ? "두 종이의 폭이 달라서 네 변의 길이가 모두 같지는 않아요." : "겹친 각을 바꿔 보면 네 각이 직각이 아니에요.", name);
   };
-  body.append(stageWrap(svg, h("div", { class: "side" }, h("div", { class: "q4slider" }, angEl, slider), h("p", { class: "inst", style: "margin:.2em 0" }, "막대를 움직여 두 종이를 겹친 각을 바꿔 봐요. 빨간 부분의 모양은 어떻게 될까요?"), h("p", { class: "jua", style: "margin:.2em 0" }, "겹쳐진 부분의 이름"), h("div", { class: "q4names" }, nb))));
+  const auto = autoRun(() => !!name, () => name, judge, 260);
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("div", { class: "q4slider" }, angEl, slider), h("p", { class: "inst", style: "margin:.2em 0" }, "막대를 움직여 두 종이를 겹친 각을 바꿔 봐요. 빨간 부분의 모양은 어떻게 될까요?"), h("p", { class: "jua", style: "margin:.2em 0" }, "겹쳐진 부분의 이름(고르면 저절로 확인해요)"), h("div", { class: "q4names" }, nb))));
   draw();
 }
 const Q4_ASK = [

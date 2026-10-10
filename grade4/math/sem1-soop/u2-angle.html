@@ -2005,7 +2005,7 @@ function a2Dice(body, api, opt) {
     if (len === 0) return;
     if (len > 3 + 1e-9) { out.textContent = `새 변이 ${Math.round(len * 10) / 10} cm쯤이에요. 3 cm와 같거나 짧게 그려요.`; return; }
     const kd = kindOf(P, Q, N);
-    if (kd !== need) { api.tryOnce(); out.textContent = `그 점을 이으면 ${kd === "직각" ? "직각" : kd === "0°" || kd === "180°" ? "각이 생기지 않아요" : kd + "(약 " + angOf(P, Q, N) + "°)"}이에요. ${need}${a2J(need, "을", "를")} 그려야 해요.`; return; }
+    if (kd !== need) { api.tryOnce(); out.textContent = `그 점을 이으면 ${kd === "직각" ? "직각이에요" : kd === "180°" ? "두 변이 일직선이 되어 예각도 둔각도 아니에요" : kd === "0°" ? "앞의 변과 겹쳐서 각이 생기지 않아요" : kd + "(약 " + angOf(P, Q, N) + "°)이에요"}. ${need}${a2J(need, "을", "를")} 그려야 해요.`; return; }
     path.push(N); turns++; out.textContent = `${need}(약 ${angOf(P, Q, N)}°)을 그렸어요.`; draw();
     if (opt.seq) { k++; if (k >= opt.seq.length) { done = true; return api.done(opt.seq.join("→"), opt.ok || "예각과 둔각을 알맞게 그렸어요!"); } setNeed(); return; }
     if (hitFin(P, N)) { done = true; out.textContent = `도착 변에 닿았어요! ${turns}번 만에 도착했어요.`; return api.done(`${turns}번 만에 도착`, `도착 변에 닿았어요! ${turns}번 만에 도착했어요.`); }
@@ -2830,7 +2830,7 @@ const LESSONS = [
         { label: "다 · 미끄럼틀 위", d1: 200, a: 130, cat: 2, why: "다는 삼각자의 직각보다 더 벌어져 있어요." },
         { label: "라 · 그네 기둥", d1: 245, a: 50, L2r: 1.2, cat: 0, why: "라(그네 기둥 사이)는 직각보다 덜 벌어져 있어요." },
         { label: "마 · 흔들의자", d1: 10, a: 110, L2r: .6, cat: 2, why: "마는 직각보다 더 벌어져 있어요. 변이 짧아도 각의 크기는 그대로예요." }], ok: "직각보다 작은 각: 나, 라 / 직각: 가 / 직각보다 큰 각: 다, 마" }) },
-    { name: "그려 보기 — 예각·둔각 만들기", inst: "주어진 선분을 한 변으로 하여 직각보다 작은 각과 직각보다 큰 각을 차례로 만들어 보세요. 주황 동그라미를 끌어요.", hints: ["파란 점선이 직각이에요. 직각보다 작게, 또는 크게 벌려요.", "두 변이 일직선이 되면 각이 아니에요."],
+    { name: "그려 보기 — 예각·둔각 만들기", inst: "주어진 선분을 한 변으로 하여 직각보다 작은 각과 직각보다 큰 각을 차례로 만들어 보세요. 주황 동그라미를 끌어요.", hints: ["파란 점선이 직각이에요. 직각보다 작게, 또는 크게 벌려요.", "두 변이 일직선이 되면 둔각이 아니에요."],
       render: (b, a) => a2sMaker(b, a, { W: 720, H: 420, V: [360, 360], d1: 0, L: 260, snap: 5, show: true, guide90: true, start: 90, items: [{ kind: "예각", ask: "직각보다 작은 각을 만들어 보세요." }, { kind: "둔각", ask: "직각보다 크고 일직선보다 작은 각을 만들어 보세요." }], ok: "직각보다 작은 각과 큰 각을 만들었어요. 친구가 만든 각과 모양이 달라도 괜찮아요." }) },
     { name: "말해 보기 — 직각에 아주 가까워도", inst: "각도를 직각과 비교해 알맞은 것을 모두 골라요. 그리고 까닭을 써 보세요.", hints: ["직각은 90°예요.", "1°만 달라도 직각보다 작거나 큰 각이에요."],
       render: thenWhy((b, a) => quiz(b, a, [

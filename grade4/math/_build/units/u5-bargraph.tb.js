@@ -55,6 +55,7 @@ function b5Jong(w) {
 function b5J(w, pair) { const [a, b] = pair.split("/"); return w + (b5Jong(w) ? a : b); }
 function b5Ro(w) { const c = String(w).charCodeAt(String(w).length - 1), j = c >= 0xAC00 && c <= 0xD7A3 ? (c - 0xAC00) % 28 : 0; return w + (j === 0 || j === 8 ? "로" : "으로"); }
 function b5U(v, unit) { if (!unit) return String(v); if (/^[A-Za-z]/.test(unit)) return `${v} ${unit}`; return `${v}${unit}`; }
+function b5Ord(i) { return ["첫째", "둘째", "셋째", "넷째", "다섯째", "여섯째", "일곱째", "여덟째"][i] || `${i + 1}번째`; }
 function b5Num(inp) { const s = String(inp.value).replace(/[\s,]/g, ""); return s === "" ? NaN : Number(s); }
 function b5Lines(s, max = 5) {
   s = String(s); if (s.length <= max || !s.includes(" ")) return [s];
@@ -374,7 +375,7 @@ function b5Build(body, api, opt) {
   }
   if (opt.stepChoices) side.append(pickRow(`${g.horiz ? "가로" : "세로"} 눈금 한 칸:`, opt.stepChoices, v => b5U(v, U), () => st.step, v => st.step = v));
   if (opt.cellChoices) side.append(pickRow("눈금 칸 수:", opt.cellChoices, v => `${v}칸`, () => st.cells, v => { st.cells = v; st.h = st.h.map(x => Math.min(x, v)); }));
-  blankN.forEach(i => side.append(selectRow(`${g.horiz ? "위" : "왼쪽"}에서 ${i + 1}째 막대 이름:`, opt.nameOptions || g.cats, v => st.names[i] = v)));
+  blankN.forEach(i => side.append(selectRow(`${g.horiz ? "위" : "왼쪽"}에서 ${b5Ord(i)} 막대 이름:`, opt.nameOptions || g.cats, v => st.names[i] = v)));
   if (opt.titleChoices) side.append(selectRow("제목:", opt.titleChoices, v => st.title = v));
   side.append(info, h("div", { class: "tools" },
     h("button", { onclick: () => { if (st.sel == null || lock.has(st.sel)) return api.hint("먼저 고칠 막대를 눌러요."); st.h[st.sel] = Math.min(st.cells, Math.floor(st.h[st.sel]) + 1); draw(); } }, "▲ 한 칸"),
@@ -392,7 +393,7 @@ function b5Build(body, api, opt) {
     if (st.step * st.cells < max) return api.fail(`눈금 한 칸이 ${b5U(st.step, U)}이고 ${st.cells}칸이면 ${b5U(st.step * st.cells, U)}까지만 나타낼 수 있어요. 가장 큰 수 ${b5U(max, U)}까지 나타낼 수 있게 골라요.`, given);
     const nd = vals.findIndex(v => v % st.step);
     if (nd >= 0) return api.fail(`눈금 한 칸이 ${b5U(st.step, U)}이면 ${g.cats[nd]} ${b5J(b5U(vals[nd], U), "은/는")} 막대 끝이 눈금 칸 가운데에 걸려서 정확하게 나타내기 어려워요. 모든 수가 칸에 꼭 맞는 크기를 골라요.`, given);
-    for (const i of blankN) if (st.names[i] !== g.cats[i]) return api.fail(st.names[i] == null ? "비어 있는 막대 이름을 골라요." : `${g.horiz ? "위" : "왼쪽"}에서 ${i + 1}째 막대의 이름을 다시 생각해 봐요. ${opt.nameWhy || "막대의 길이가 몇 칸인지 세어 표와 견주어 봐요."}`, given);
+    for (const i of blankN) if (st.names[i] !== g.cats[i]) return api.fail(st.names[i] == null ? "비어 있는 막대 이름을 골라요." : `${g.horiz ? "위" : "왼쪽"}에서 ${b5Ord(i)} 막대의 이름을 다시 생각해 봐요. ${opt.nameWhy || "막대의 길이가 몇 칸인지 세어 표와 견주어 봐요."}`, given);
     for (let i = 0; i < n; i++) {
       if (lock.has(i)) continue;
       const want = vals[i] / st.step;
@@ -974,7 +975,7 @@ const LESSONS = [
     { name: "막대그래프로 나타내기", inst: "선호네 지역의 장소별 수를 막대그래프로 나타내고 알맞은 제목을 골라 보세요.", hints: ["세로 눈금 한 칸은 1개예요.", "학교는 12칸만큼 세워요."],
       render: (b, a) => b5Build(b, a, { g: B5G.place1, titleChoices: ["선호네 반 학생 수", "장소별 수", "좋아하는 장소"], ok: "선호네 지역의 장소별 수를 막대그래프로 나타냈어요. 학교가 가장 많아요!" }) },
     { name: "소개 글 완성하기", inst: "막대그래프를 보고 선호네 지역을 소개하는 글을 완성해 보세요.", hints: ["막대가 가장 긴 장소와 두 번째로 긴 장소를 찾아요.", "산은 3개, 폭포는 2개예요."],
-      render: (b, a) => { b.append(b5Fig(B5G.place1)); blanks(b, a, ["친구들아, 안녕? 내가 살고 있는 지역을 소개할게. 우리 지역에는 학생들이 많아서 ", { o: ["학교", "경찰서", "산"], a: 0 }, "이/가 가장 많고, 두 번째로는 ", { o: ["경찰서", "도서관", "폭포"], a: 1 }, "이/가 많아. 그리고 산 ", { o: ["2", "3", "6"], a: 1 }, "개가 지역을 둘러싸고 있어서 경관이 아름다워. ", { o: ["폭포", "학교", "도서관"], a: 0 }, "도 2개가 있어서 시원한 모습을 보기 위해 사람들이 많이 찾아와. 우리 지역에 한번 놀러 와."], { ok: "막대그래프에서 찾은 사실로 지역 소개 글을 완성했어요." }); } },
+      render: (b, a) => { b.append(b5Fig(B5G.place1)); blanks(b, a, ["친구들아, 안녕? 내가 살고 있는 지역을 소개할게. 우리 지역에는 학생들이 많아서 가장 많은 곳은 ", { o: ["학교", "경찰서", "산"], a: 0 }, "이고, 두 번째로 많은 곳은 ", { o: ["경찰서", "도서관", "폭포"], a: 1 }, "이지. 그리고 산 ", { o: ["2", "3", "6"], a: 1 }, "개가 지역을 둘러싸고 있어서 경관이 아름다워. ", { o: ["폭포", "학교", "도서관"], a: 0 }, "도 2개가 있어서 시원한 모습을 보기 위해 사람들이 많이 찾아와. 우리 지역에 한번 놀러 와."], { ok: "막대그래프에서 찾은 사실로 지역 소개 글을 완성했어요." }); } },
     { name: "은진이네 지역 세기", inst: "은진이가 살고 있는 지역의 지도예요. 장소를 나타내는 기호의 수를 세어 표로 나타내 보세요.", hints: ["센 기호를 누르면 표시가 생겨 빠뜨리지 않아요.", "모두 30개예요."],
       render: (b, a) => b5Map(b, a, { seed: 29, kinds: [{ kind: "school", name: "학교", n: 11 }, { kind: "hospital", name: "병원", n: 8 }, { kind: "beach", name: "해수욕장", n: 5 }, { kind: "spa", name: "온천", n: 2 }, { kind: "mountain", name: "산", n: 4 }], ok: "학교 11개, 병원 8개, 해수욕장 5개, 온천 2개, 산 4개, 모두 30개예요." }) },
     { name: "은진이네 막대그래프", inst: "은진이네 지역의 장소별 수를 막대그래프로 나타내요. 눈금 한 칸의 크기를 정하고 막대를 그려 보세요.", hints: ["가장 큰 수는 11이고 눈금은 12칸이에요.", "한 칸이 2개이면 11개, 5개는 칸에 꼭 맞지 않아요."],

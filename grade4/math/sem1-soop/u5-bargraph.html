@@ -1787,6 +1787,7 @@ function b5Jong(w) {
 function b5J(w, pair) { const [a, b] = pair.split("/"); return w + (b5Jong(w) ? a : b); }
 function b5Ro(w) { const c = String(w).charCodeAt(String(w).length - 1), j = c >= 0xAC00 && c <= 0xD7A3 ? (c - 0xAC00) % 28 : 0; return w + (j === 0 || j === 8 ? "로" : "으로"); }
 function b5U(v, unit) { if (!unit) return String(v); if (/^[A-Za-z]/.test(unit)) return `${v} ${unit}`; return `${v}${unit}`; }
+function b5Ord(i) { return ["첫째", "둘째", "셋째", "넷째", "다섯째", "여섯째", "일곱째", "여덟째"][i] || `${i + 1}번째`; }
 function b5Num(inp) { const s = String(inp.value).replace(/[\s,]/g, ""); return s === "" ? NaN : Number(s); }
 function b5Lines(s, max = 5) {
   s = String(s); if (s.length <= max || !s.includes(" ")) return [s];
@@ -2123,7 +2124,7 @@ function b5Build(body, api, opt) {
   }
   if (opt.stepChoices) side.append(pickRow(`${g.horiz ? "가로" : "세로"} 눈금 한 칸:`, opt.stepChoices, v => b5U(v, U), () => st.step, v => st.step = v));
   if (opt.cellChoices) side.append(pickRow("눈금 칸 수:", opt.cellChoices, v => `${v}칸`, () => st.cells, v => { st.cells = v; st.h = st.h.map(x => Math.min(x, v)); }));
-  blankN.forEach(i => side.append(selectRow(`${g.horiz ? "위" : "왼쪽"}에서 ${i + 1}째 막대 이름:`, opt.nameOptions || g.cats, v => st.names[i] = v)));
+  blankN.forEach(i => side.append(selectRow(`${g.horiz ? "위" : "왼쪽"}에서 ${b5Ord(i)} 막대 이름:`, opt.nameOptions || g.cats, v => st.names[i] = v)));
   if (opt.titleChoices) side.append(selectRow("제목:", opt.titleChoices, v => st.title = v));
   side.append(info, h("div", { class: "tools" },
     h("button", { onclick: () => { if (st.sel == null || lock.has(st.sel)) return api.hint("먼저 고칠 막대를 눌러요."); st.h[st.sel] = Math.min(st.cells, Math.floor(st.h[st.sel]) + 1); draw(); } }, "▲ 한 칸"),
@@ -2141,7 +2142,7 @@ function b5Build(body, api, opt) {
     if (st.step * st.cells < max) return no(`눈금 한 칸이 ${b5U(st.step, U)}이고 ${st.cells}칸이면 ${b5U(st.step * st.cells, U)}까지만 나타낼 수 있어요. 가장 큰 수 ${b5U(max, U)}까지 나타낼 수 있게 골라요.`);
     const nd = vals.findIndex(v => v % st.step);
     if (nd >= 0) return no(`눈금 한 칸이 ${b5U(st.step, U)}이면 ${g.cats[nd]} ${b5J(b5U(vals[nd], U), "은/는")} 막대 끝이 눈금 칸 가운데에 걸려서 정확하게 나타내기 어려워요. 모든 수가 칸에 꼭 맞는 크기를 골라요.`);
-    for (const i of blankN) if (st.names[i] !== g.cats[i]) return no(`${g.horiz ? "위" : "왼쪽"}에서 ${i + 1}째 막대의 이름을 다시 생각해 봐요. ${opt.nameWhy || "막대의 길이가 몇 칸인지 세어 표와 견주어 봐요."}`);
+    for (const i of blankN) if (st.names[i] !== g.cats[i]) return no(`${g.horiz ? "위" : "왼쪽"}에서 ${b5Ord(i)} 막대의 이름을 다시 생각해 봐요. ${opt.nameWhy || "막대의 길이가 몇 칸인지 세어 표와 견주어 봐요."}`);
     for (let i = 0; i < n; i++) {
       if (lock.has(i)) continue;
       const want = vals[i] / st.step;

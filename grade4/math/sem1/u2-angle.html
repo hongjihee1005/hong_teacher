@@ -2246,7 +2246,7 @@ function a2Dice(body, api, opt) {
     if (len === 0) return;
     if (len > 3 + 1e-9) { out.textContent = `새 변이 ${Math.round(len * 10) / 10} cm쯤이에요. 3 cm와 같거나 짧게 그려요.`; return; }
     const kd = kindOf(P, Q, N);
-    if (kd !== need) { api.tryOnce(); out.textContent = `그 점을 이으면 ${kd === "직각" ? "직각" : kd === "0°" || kd === "180°" ? "각이 생기지 않아요" : kd + "(약 " + angOf(P, Q, N) + "°)"}이에요. ${need}${a2J(need, "을", "를")} 그려야 해요.`; return; }
+    if (kd !== need) { api.tryOnce(); out.textContent = `그 점을 이으면 ${kd === "직각" ? "직각이에요" : kd === "180°" ? "두 변이 일직선이 되어 예각도 둔각도 아니에요" : kd === "0°" ? "앞의 변과 겹쳐서 각이 생기지 않아요" : kd + "(약 " + angOf(P, Q, N) + "°)이에요"}. ${need}${a2J(need, "을", "를")} 그려야 해요.`; return; }
     path.push(N); turns++; out.textContent = `${need}(약 ${angOf(P, Q, N)}°)을 그렸어요.`; draw();
     if (opt.seq) { k++; if (k >= opt.seq.length) { done = true; return api.done(opt.seq.join("→"), opt.ok || "예각과 둔각을 알맞게 그렸어요!"); } setNeed(); return; }
     if (hitFin(P, N)) { done = true; out.textContent = `도착 변에 닿았어요! ${turns}번 만에 도착했어요.`; return api.done(`${turns}번 만에 도착`, `도착 변에 닿았어요! ${turns}번 만에 도착했어요.`); }

@@ -1813,6 +1813,7 @@ const R6LAY = ["#F6C85F", "#7FB8E6", "#9ED39A", "#F2A0A0", "#C5A5E8", "#F7B27A",
 
 /* 받침 있는 말 뒤 조사: r6J("36", "이/가") → "36이" */
 function r6Jong(w) {
+  if (/[\u3260-\u326D\u3131-\u314E★]$/.test(String(w))) return true;   // ㉠(기역)·ㄱ·★(별)
   const s = String(w).replace(/[^가-힣A-Za-z0-9]+$/, "");
   const c = s.charCodeAt(s.length - 1);
   if (c >= 0xAC00 && c <= 0xD7A3) return (c - 0xAC00) % 28 !== 0;
@@ -2143,11 +2144,11 @@ function r6EqWrite(body, api, opt) {
     const m = s.match(/^(\d+)([+\-×÷])(\d+)=(\d+)$/);
     if (!m) return "‘15+1=16’처럼 (수)(기호)(수)=(수)의 꼴로 써요.";
     const a = +m[1], op = m[2], b = +m[3], c = +m[4], val = r6Eval(`${a}${op}${b}`);
-    if (val !== c) return Number.isInteger(val) ? `계산이 맞지 않아요. ${a}${r6Show(op)}${b}는 ${r6J(String(val), "이에요/예요")}.` : `${a}÷${b}는 나누어떨어지지 않아요. 계산을 다시 해 봐요.`;
+    if (val !== c) return Number.isInteger(val) ? `계산이 맞지 않아요. ${r6J(`${a}${r6Show(op)}${b}`, "은/는")} ${r6J(String(val), "이에요/예요")}.` : `${r6J(`${a}÷${b}`, "은/는")} 나누어떨어지지 않아요. 계산을 다시 해 봐요.`;
     const fit = g.pairs.find(p => p.op === op && p.k === b && p.a === a && p.c === c) || (op === "×" && g.pairs.find(p => p.op === "×" && p.k === a && p.a === b && p.c === c));
     if (fit) return null;
     const p0 = g.pairs.find(p => p.a === a && p.c === c) || (op === "×" && g.pairs.find(p => p.a === b && p.c === c));
-    if (p0) return `계산은 맞지만 이 방향의 규칙이 드러나지 않아요. ${R6KIND[{ "+": "up", "-": "down", "×": "times", "÷": "part" }[p0.op]](p0.k)}는 규칙이니 ${R6OPNAME[p0.op]}으로 나타내요.`;
+    if (p0) return `계산은 맞지만 이 방향의 규칙이 드러나지 않아요. ${{ "+": `${p0.k}씩 커지는`, "-": `${p0.k}씩 작아지는`, "×": `${p0.k}배가 되는`, "÷": `1/${p0.k}만큼이 되는` }[p0.op]} 규칙이니 ${R6OPNAME[p0.op]}으로 나타내요.`;
     if (g.pairs.find(p => p.a === c && p.c === a)) return "방향을 거꾸로 썼어요. 정한 방향으로 앞에 있는 수에서 시작해 다음 수가 되는 식을 써요.";
     return "계산은 맞지만 물음에서 말한 방향으로 이웃한 두 수가 아니에요. 그 방향으로 이웃한 두 수로 식을 써요.";
   }
@@ -2563,7 +2564,7 @@ function r6Plate(body, api, opt) {
   const stage = h("div", { class: "stage r6stage" }), eq = h("div", { class: "readout" }), list = h("div", { class: "r6list" });
   const red = () => col.filter(c => c === 0).length;
   const draw = () => { stage.innerHTML = ""; stage.append(r6PlateSvg(col, i => { col[i] = 1 - col[i]; draw(); })); eq.textContent = `${opt.r}+${opt.b} = ${red()}+${col.length - red()}`; };
-  const side = h("div", { class: "side r6side" }, h("div", { class: "r6task" }, `${r6J(nm[0], "을/를")} 누르면 ${nm[1]}(으)로, ${r6J(nm[1], "을/를")} 누르면 ${nm[0]}(으)로 바뀌어요.`), eq,
+  const side = h("div", { class: "side r6side" }, h("div", { class: "r6task" }, `${r6J(nm[0], "을/를")} 누르면 ${r6J(nm[1], "으로/로")}, ${r6J(nm[1], "을/를")} 누르면 ${r6J(nm[0], "으로/로")} 바뀌어요.`), eq,
     h("button", { class: "r6btn", onclick: () => {
       const r = red(), s = `${opt.r}+${opt.b}=${r}+${col.length - r}`;
       if (r === opt.r) return api.hint(`처음과 같은 식이에요. ${nm[0]}의 수를 바꿔 봐요.`);
@@ -2636,7 +2637,7 @@ function r6Match(body, api, opt) {
       }
       return;
     }
-    if (opt.faceUp) { up = []; render(); api.fail(opt.bad || `${r6Show(A.t)}와(과) ${r6Show(B.t)}는 크기가 달라요. 한쪽 수가 커지거나 작아진 만큼 다른 수가 어떻게 바뀌었는지 살펴봐요.`, `${A.t} / ${B.t}`); return; }
+    if (opt.faceUp) { up = []; render(); api.fail(opt.bad || `${r6J(r6Show(A.t), "과/와")} ${r6J(r6Show(B.t), "은/는")} 크기가 달라요. 한쪽 수가 커지거나 작아진 만큼 다른 수가 어떻게 바뀌었는지 살펴봐요.`, `${A.t} / ${B.t}`); return; }
     lock = true;
     setTimeout(() => { up = []; lock = false; if (players === 2) turn = 1 - turn; render(); }, 1100);
   }
@@ -2667,8 +2668,8 @@ function r6EqFill(body, api, opt) {
       if (a === "" || b === "") return bad("빈칸을 모두 채워요.");
       if (!/^\d+$/.test(a) || !/^\d+$/.test(b) || +a > 99 || +b > 99) return bad("0부터 99까지의 수로 만들어요.");
       if (r.it.op === "×" && (+a === 0 || +b === 0)) return bad("곱셈에서는 0이 아닌 수로 만들어요.");
-      if (r6Eval(`${a}${r.it.op}${b}`) !== r6Eval(r.it.l)) return bad(`${r6Show(r.it.l)}=${a}${r6Show(r.it.op)}${b}는 등호 양쪽의 크기가 달라요. ${tip[r.it.op]}`);
-      if (r6Norm(`${a}${r.it.op}${b}`) === r6Norm(r.it.l)) return bad(`${r6Show(r.it.l)}와 똑같은 식이에요. 다른 두 수로 만들어요.`);
+      if (r6Eval(`${a}${r.it.op}${b}`) !== r6Eval(r.it.l)) return bad(`${r6J(`${r6Show(r.it.l)}=${a}${r6Show(r.it.op)}${b}`, "은/는")} 등호 양쪽의 크기가 달라요. ${tip[r.it.op]}`);
+      if (r6Norm(`${a}${r.it.op}${b}`) === r6Norm(r.it.l)) return bad(`${r6J(r6Show(r.it.l), "과/와")} 똑같은 식이에요. 다른 두 수로 만들어요.`);
       r.x.style.borderColor = r.y.style.borderColor = "var(--ok)";
     }
     api.done(given, opt.ok); return true;
@@ -2768,7 +2769,7 @@ function r6Sort(body, api, opt) {
     api.tryOnce();
     const given = opt.cards.map((c, i) => `${c.t}→${where[i] < 0 ? "-" : opt.bins[where[i]]}`).join(", ");
     const bad = opt.cards.findIndex((c, i) => where[i] !== c.b);
-    if (bad >= 0) { bins.querySelectorAll(".r6chip").forEach(b => { const i = opt.cards.findIndex(c => c.t === b.textContent); b.classList.add(where[i] === opt.cards[i].b ? "r6good" : "r6bad"); }); api.fail(opt.cards[bad].why || `‘${opt.cards[bad].t}’는 어느 상자에 어울리는지 다시 생각해 봐요.`, given); return false; }
+    if (bad >= 0) { bins.querySelectorAll(".r6chip").forEach(b => { const i = opt.cards.findIndex(c => c.t === b.textContent); b.classList.add(where[i] === opt.cards[i].b ? "r6good" : "r6bad"); }); api.fail(opt.cards[bad].why || `${r6J(`‘${opt.cards[bad].t}’`, "은/는")} 어느 상자에 어울리는지 다시 생각해 봐요.`, given); return false; }
     api.done(given, opt.ok); return true;
   };
   auto = autoRun(() => where.every(w => w >= 0) && sel == null, () => where.join(","), run, 1200);
@@ -2874,7 +2875,7 @@ const LESSONS = [
     { name: "말해 보기 — 곱셈표 떠올리기", inst: "다온이가 2학년 때 배운 곱셈표의 일부를 칠판에 붙였어요. 2부터 가로(→) 방향으로 수를 차례로 눌러 규칙을 찾고, 빈칸을 채워 보세요.", hints: ["2 → 4 → 6 → 8을 차례로 누르고 ‘씩 커져요’를 골라요.", "셋째 줄은 4단이에요. 4, 8, ㉠, 16은 4씩 커져요."],
       render: thenWhy((b, a) => r6Grid(b, a, { rows: [[2, 4, 6, 8], [3, 6, 9, 12], [4, 8, { a: 12, lab: "㉠" }, 16], [5, 10, 15, { a: 20, lab: "㉡" }]],
         traces: [{ start: [0, 0], dir: "→", say: "2부터 가로(→) 방향으로 수를 차례로 눌러요." }],
-        fillWhy: { "㉠": "4, 8, ㉠, 16은 가로(→) 방향으로 4씩 커져요.", "㉡": "5, 10, 15, ㉡는 가로(→) 방향으로 5씩 커져요." },
+        fillWhy: { "㉠": "4, 8, ㉠, 16은 가로(→) 방향으로 4씩 커져요.", "㉡": "5, 10, 15, ㉡은 가로(→) 방향으로 5씩 커져요." },
         ok: "곱셈표에서도 방향을 정하면 규칙이 보여요. ㉠은 12, ㉡은 20이에요." }),
         { q: "곱셈표에서 ㉠이 12인 까닭을 규칙으로 설명해 볼까요?", ph: "㉠은 ~부터 ~ 방향으로 ~씩 커지는 줄에 있어서 ~", help: ["① ㉠이 있는 줄을 찾아요. → ② 그 줄이 어느 방향으로 몇씩 커지는지 말해요.", "‘㉠은 4부터 가로(→) 방향으로 ~씩 커지는 줄에 있으므로 8 다음 수 ~이에요.’ 꼴로 써요."], ans: "㉠은 4부터 가로(→) 방향으로 4씩 커지는 줄에 있으므로 8보다 4만큼 큰 12예요." }) },
     { name: "약속하기 — 무엇을 배울까요", inst: "이 단원에서 배울 것을 골라 보세요.", hints: ["수와 도형, 계산식에서 규칙을 찾아요.", "크기가 같은 두 양은 등호(=)로 나타내요."],

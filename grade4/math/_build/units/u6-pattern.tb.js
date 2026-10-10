@@ -81,6 +81,7 @@ const R6LAY = ["#F6C85F", "#7FB8E6", "#9ED39A", "#F2A0A0", "#C5A5E8", "#F7B27A",
 
 /* 받침 있는 말 뒤 조사: r6J("36", "이/가") → "36이" */
 function r6Jong(w) {
+  if (/[\u3260-\u326D\u3131-\u314E★]$/.test(String(w))) return true;   // ㉠(기역)·ㄱ·★(별)
   const s = String(w).replace(/[^가-힣A-Za-z0-9]+$/, "");
   const c = s.charCodeAt(s.length - 1);
   if (c >= 0xAC00 && c <= 0xD7A3) return (c - 0xAC00) % 28 !== 0;
@@ -402,11 +403,11 @@ function r6EqWrite(body, api, opt) {
     const m = s.match(/^(\d+)([+\-×÷])(\d+)=(\d+)$/);
     if (!m) return "‘45+2=47’처럼 (수)(기호)(수)=(수)의 꼴로 써요.";
     const a = +m[1], op = m[2], b = +m[3], c = +m[4], val = r6Eval(`${a}${op}${b}`);
-    if (val !== c) return Number.isInteger(val) ? `계산이 맞지 않아요. ${a}${r6Show(op)}${b}는 ${r6J(String(val), "이에요/예요")}.` : `${a}÷${b}는 나누어떨어지지 않아요. 계산을 다시 해 봐요.`;
+    if (val !== c) return Number.isInteger(val) ? `계산이 맞지 않아요. ${r6J(`${a}${r6Show(op)}${b}`, "은/는")} ${r6J(String(val), "이에요/예요")}.` : `${r6J(`${a}÷${b}`, "은/는")} 나누어떨어지지 않아요. 계산을 다시 해 봐요.`;
     const fit = g.pairs.find(p => p.op === op && p.k === b && p.a === a && p.c === c) || (op === "×" && g.pairs.find(p => p.op === "×" && p.k === a && p.a === b && p.c === c));
     if (fit) return null;
     const p0 = g.pairs.find(p => p.a === a && p.c === c) || (op === "×" && g.pairs.find(p => p.a === b && p.c === c));
-    if (p0) return `계산은 맞지만 이 방향의 규칙이 드러나지 않아요. ${R6KIND[{ "+": "up", "-": "down", "×": "times", "÷": "part" }[p0.op]](p0.k)}는 규칙이니 ${R6OPNAME[p0.op]}으로 나타내요.`;
+    if (p0) return `계산은 맞지만 이 방향의 규칙이 드러나지 않아요. ${{ "+": `${p0.k}씩 커지는`, "-": `${p0.k}씩 작아지는`, "×": `${p0.k}배가 되는`, "÷": `1/${p0.k}만큼이 되는` }[p0.op]} 규칙이니 ${R6OPNAME[p0.op]}으로 나타내요.`;
     if (g.pairs.find(p => p.a === c && p.c === a)) return "방향을 거꾸로 썼어요. 정한 방향으로 앞에 있는 수에서 시작해 다음 수가 되는 식을 써요.";
     return "계산은 맞지만 배열에서 이웃한 두 수가 아니에요. 한 방향을 정하고 이웃한 두 수로 식을 써요.";
   }
@@ -853,7 +854,7 @@ function r6Match(body, api, opt) {
       }
       return;
     }
-    if (opt.faceUp) { up = []; render(); api.fail(opt.bad || `${r6Show(A.t)}와(과) ${r6Show(B.t)}는 크기가 달라요. 한쪽 수가 커지거나 작아진 만큼 다른 수가 어떻게 바뀌었는지 살펴봐요.`, `${A.t} / ${B.t}`); return; }
+    if (opt.faceUp) { up = []; render(); api.fail(opt.bad || `${r6J(r6Show(A.t), "과/와")} ${r6J(r6Show(B.t), "은/는")} 크기가 달라요. 한쪽 수가 커지거나 작아진 만큼 다른 수가 어떻게 바뀌었는지 살펴봐요.`, `${A.t} / ${B.t}`); return; }
     lock = true;
     setTimeout(() => { up = []; lock = false; if (players === 2) turn = 1 - turn; render(); }, 1100);
   }
@@ -884,8 +885,8 @@ function r6EqFill(body, api, opt) {
       if (a === "" || b === "") return bad("빈칸을 모두 채워요.");
       if (!/^\d+$/.test(a) || !/^\d+$/.test(b) || +a > 99 || +b > 99) return bad("0부터 99까지의 수로 만들어요.");
       if (r.it.op === "×" && (+a === 0 || +b === 0)) return bad("곱셈에서는 0이 아닌 수로 만들어요.");
-      if (r6Eval(`${a}${r.it.op}${b}`) !== r6Eval(r.it.l)) return bad(`${r6Show(r.it.l)}=${a}${r6Show(r.it.op)}${b}는 등호 양쪽의 크기가 달라요. ${tip[r.it.op]}`);
-      if (r6Norm(`${a}${r.it.op}${b}`) === r6Norm(r.it.l)) return bad(`${r6Show(r.it.l)}와 똑같은 식이에요. 다른 두 수로 만들어요.`);
+      if (r6Eval(`${a}${r.it.op}${b}`) !== r6Eval(r.it.l)) return bad(`${r6J(`${r6Show(r.it.l)}=${a}${r6Show(r.it.op)}${b}`, "은/는")} 등호 양쪽의 크기가 달라요. ${tip[r.it.op]}`);
+      if (r6Norm(`${a}${r.it.op}${b}`) === r6Norm(r.it.l)) return bad(`${r6J(r6Show(r.it.l), "과/와")} 똑같은 식이에요. 다른 두 수로 만들어요.`);
       r.x.style.borderColor = r.y.style.borderColor = "var(--ok)";
     }
     api.done(given, opt.ok);
@@ -976,7 +977,7 @@ function r6Sort(body, api, opt) {
     const given = opt.cards.map((c, i) => `${c.t}→${where[i] < 0 ? "-" : opt.bins[where[i]]}`).join(", ");
     if (where.some(w => w < 0)) return api.fail("카드를 모두 섬 상자에 넣어요.", given);
     const bad = opt.cards.findIndex((c, i) => where[i] !== c.b);
-    if (bad >= 0) { draw(); bins.querySelectorAll(".r6chip").forEach(b => { const i = opt.cards.findIndex(c => c.t === b.textContent); b.classList.add(where[i] === opt.cards[i].b ? "r6good" : "r6bad"); }); return api.fail(`‘${opt.cards[bad].t}’는 어느 섬에서 볼 수 있는지 다시 생각해 봐요.`, given); }
+    if (bad >= 0) { draw(); bins.querySelectorAll(".r6chip").forEach(b => { const i = opt.cards.findIndex(c => c.t === b.textContent); b.classList.add(where[i] === opt.cards[i].b ? "r6good" : "r6bad"); }); return api.fail(`${r6J(`‘${opt.cards[bad].t}’`, "은/는")} 어느 섬에서 볼 수 있는지 다시 생각해 봐요.`, given); }
     api.done(given, opt.ok);
   } }, "확인하기")));
 }
@@ -1254,7 +1255,7 @@ const LESSONS = [
   ],
   challenge: { inst: "익힘책 문제예요. 규칙을 찾아 빈칸에 알맞은 식을 쓰고, 잘못 설명한 사람을 찾아보세요.", hints: ["105×6, 1005×6: 곱해지는 수의 1과 5 사이에 0이 1개씩 늘어나요.", "721÷7, 7021÷7: 나누어지는 수의 7과 2 사이 0이 1개 늘어나면 몫의 1과 3 사이 0도 1개 늘어나요."],
     render: (b, a) => r6Seq(b, a, { calc: true, lists: [
-      { title: "나눗셈식의 배열", heads: ["나누어지는 수", "나누는 수", "몫"], rows: [{ e: "200÷2=100" }, { e: "300÷3=100" }, { e: "400÷4=100" }, { e: "500÷5=100" }, { lab: "㉡", e: "□÷□=□", a: [600, 6, 100] }] },
+      { title: "나눗셈식의 배열", heads: ["나누어지는 수", "나누는 수", "몫"], rows: [{ e: "200÷2=100" }, { e: "300÷3=100" }, { e: "400÷4=100" }, { e: "500÷5=100" }, { lab: "다섯째", e: "□÷□=□", a: [600, 6, 100] }] },
       { title: "곱셈식의 배열", heads: ["곱해지는 수", "곱하는 수", "곱"], rows: [{ lab: "첫째", e: "105×6=630" }, { lab: "둘째", e: "1005×6=6030" }, { lab: "셋째", e: "10005×6=60030" }, { lab: "넷째", e: "□×□=□", a: [100005, 6, 600030] }] },
       { title: "나눗셈식의 배열", heads: ["나누어지는 수", "나누는 수", "몫"], rows: [{ lab: "첫째", e: "721÷7=103" }, { lab: "둘째", e: "7021÷7=1003" }, { lab: "셋째", e: "70021÷7=10003" }, { lab: "넷째", e: "700021÷7=100003" }] }],
       choose: [{ q: "지혜: “나누어지는 수는 7과 2 사이에 0이 1개씩 늘어나고 몫은 1과 3 사이에 0이 1개씩 늘어나.” 은솔: “다섯째에 알맞은 나눗셈식은 7000021÷7=100003이야.” 잘못 설명한 사람은?", o: ["지혜", "은솔"], a: 1, why: { "0": "지혜의 말은 맞아요. 은솔이가 말한 몫의 0의 개수를 세어 봐요." } }],

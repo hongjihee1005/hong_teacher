@@ -1,0 +1,902 @@
+//@@APP
+const APP={title:"우리 반 운동회 기록원", unit:"4-2 수학 3. 소수의 덧셈과 뺄셈", key:"s42-decimal-v1", welcome:"우리 반 운동회 기록원 교실에 온 것을 환영해요", intro:"4학년 2반 기록원 모둠과 함께 멀리뛰기·이어달리기·공 던지기 기록과 마신 물의 양을 소수로 쓰고, 비교하고, 더하고 빼 봐요."};
+//@@UNIT
+/* 이야기 버전: 교과서 버전(sem2/u3-decimal.tb.js)의 c3 부품을 복사해 쓰고, '확인하기' 단추 없이 autoRun으로 저절로 확인해요.
+   (입력칸 0.9초 · 고르기 0.26초 · 칠하기·끌기·카드 놓기 1.2초) 이 파일에서 새로 만든 부품·그림은 앞글자 c3s. */
+/* ===== 3. 소수의 덧셈과 뺄셈 단원 조작 부품 (앞글자 c3) =====
+   수는 모두 1000배 한 정수(0.001이 몇 개인지)로 계산해서 소수 계산 오차가 없어요.
+   글 속 분수 표기: [17/100], [1 76/100] → 화면에서 위아래로 쌓은 분수로 보여 줘요. */
+
+/*c3-core*/
+const C3D = "영일이삼사오육칠팔구";
+function c3Norm(s) { return String(s == null ? "" : s).replace(/[\s,]/g, "").replace(/[．。·]/g, ".").replace(/^\+/, ""); }
+/* "0.5"·".5"·"5."·"1.20" → 0.001이 몇 개인지(정수), 수가 아니면 null */
+function c3P(s) {
+  s = c3Norm(s);
+  if (!/^\d*\.?\d*$/.test(s) || !/\d/.test(s)) return null;
+  const [i, d = ""] = s.split(".");
+  if (d.length > 3 && /[1-9]/.test(d.slice(3))) return null;
+  return (+(i || "0")) * 1000 + +((d + "000").slice(0, 3));
+}
+/* 0.001의 개수 → 가장 짧은 소수 글 */
+function c3F(n) { const i = Math.floor(n / 1000), f = n % 1000; return f ? i + "." + String(f).padStart(3, "0").replace(/0+$/, "") : String(i); }
+/* 소수 d자리로 맞춘 글(끝자리 0 포함) */
+function c3Fd(n, d) { const i = Math.floor(n / 1000), f = String(n % 1000).padStart(3, "0").slice(0, d); return d ? i + "." + f : String(i); }
+function c3Dn(s) { const m = c3Norm(s).match(/\.(\d+)/); return m ? m[1].length : 0; }
+/* 식 계산: "1.82+0.5", "0.5+0.5+0.8−1.5" (덧셈·뺄셈만) */
+function c3E(e) {
+  const t = String(e).replace(/−/g, "-").replace(/\s/g, ""), tk = t.match(/[+-]|[\d.]+/g);
+  if (!tk || tk.join("") !== t) return null;
+  let acc = c3P(tk[0]); if (acc == null) return null;
+  for (let k = 1; k < tk.length; k += 2) { const v = c3P(tk[k + 1]); if (v == null) return null; acc = tk[k] === "+" ? acc + v : acc - v; }
+  return acc;
+}
+/* 받침에 맞는 조사: 수는 마지막 숫자 읽기로(0은 영·십·백·천 모두 받침) */
+function c3J(s, pair) {
+  const str = String(s), c = str[str.length - 1];
+  let has = false, rieul = false;
+  if (/[0-9]/.test(c)) { has = "013678".includes(c); rieul = "178".includes(c); }
+  else { const code = c.charCodeAt(0) - 0xAC00; if (code >= 0 && code <= 11171) { const j = code % 28; has = j > 0; rieul = j === 8; } }
+  const M = { "이가": ["이", "가"], "을를": ["을", "를"], "은는": ["은", "는"], "과와": ["과", "와"], "으로": ["으로", "로"], "이에요": ["이에요", "예요"], "이라": ["이라", "라"] };
+  const [a, b] = M[pair];
+  if (pair === "으로") return str + (has && !rieul ? a : b);
+  return str + (has ? a : b);
+}
+/* 수 읽기: 8848 → 팔천팔백사십팔, "1.76" → 일 점 칠육, "0.17" → 영 점 일칠 */
+function c3Int4(n) { const u = ["천", "백", "십", ""]; let s = ""; String(n).padStart(4, "0").split("").forEach((c, i) => { const d = +c; if (d) s += (d === 1 && i < 3 ? "" : C3D[d]) + u[i]; }); return s; }
+function c3Int(n) { if (!n) return "영"; const man = Math.floor(n / 10000), r = n % 10000; return (man ? (man === 1 ? "" : c3Int4(man)) + "만" : "") + (r ? c3Int4(r) : ""); }
+function c3Read(str) { const s = c3Norm(str), [i, d] = s.split("."); return c3Int(+(i || 0)) + (d ? " 점 " + d.split("").map(c => C3D[+c]).join("") : ""); }
+/* 흔한 실수 찾기 (두 수의 덧셈·뺄셈) */
+function c3Digits(s, D) { const [i, d = ""] = c3Norm(s).split("."); return (i || "0") + d.padEnd(D, "0"); }
+function c3Diag(e, v) {
+  if (!e || v == null) return null;
+  const m = String(e).replace(/−/g, "-").replace(/\s/g, "").match(/^([\d.]+)([+-])([\d.]+)$/); if (!m) return null;
+  const A = m[1], B = m[3], op = m[2], ok = c3E(e), da = c3Dn(A), db = c3Dn(B), D = Math.max(da, db);
+  if (v === ok) return null;
+  if (da !== db) { // 오른쪽 끝을 맞춘 계산
+    const ia = +c3Norm(A).replace(".", ""), ib = +c3Norm(B).replace(".", ""), r = op === "+" ? ia + ib : ia - ib;
+    if (r >= 0 && v === r * Math.pow(10, 3 - D)) return "소수점의 위치를 맞추지 않고 오른쪽 끝을 맞추어 계산했어요. 소수점끼리 세로로 나란히 맞추어 써야 해요.";
+  }
+  for (let k = 1; k <= 3; k++) { const p = Math.pow(10, k); if (v === ok * p || v * p === ok) return "숫자는 맞는데 소수점 자리가 달라요. 소수점을 그대로 내려 찍어요."; }
+  const a = c3Digits(A, D), b = c3Digits(B, D), L = Math.max(a.length, b.length), pa = a.padStart(L, "0"), pb = b.padStart(L, "0");
+  if (op === "+") {
+    const nc = pa.split("").map((c, i) => (+c + +pb[i]) % 10).join("");
+    if (v === +nc * Math.pow(10, 3 - D)) return "같은 자리 수끼리의 합이 10이거나 10보다 크면 바로 윗자리로 1을 받아올림해요.";
+  } else {
+    const nb = pa.split("").map((c, i) => Math.abs(+c - +pb[i])).join("");
+    if (v === +nb * Math.pow(10, 3 - D)) return "작은 수에서 큰 수를 뺄 수 없을 때는 큰 수에서 작은 수를 빼면 안 돼요. 바로 윗자리에서 받아내림해요.";
+  }
+  return null;
+}
+/* 분수 표기 */
+const C3FR = "\\[(?:(\\d+) )?(\\d+)\\/(\\d+)\\]";
+const c3Re = () => new RegExp(C3FR, "g");
+function c3Plain(s) { return String(s == null ? "" : s).replace(c3Re(), (m, w, n, d) => `${w ? c3J(w, "과와") + " " : ""}${d}분의 ${n}`); }
+/*c3-core-end*/
+
+function c3Style() {
+  if (document.getElementById("c3-style")) return;
+  const s = document.createElement("style"); s.id = "c3-style";
+  s.textContent = `
+.c3fr{display:inline-flex;align-items:center;vertical-align:middle;margin:0 .12em;line-height:1.05;font-family:Jua,sans-serif;white-space:nowrap}
+.c3fw{margin-right:.1em}
+.c3q{display:inline-flex;flex-direction:column;align-items:stretch;text-align:center;font-size:.8em}
+.c3q>.c3n{border-bottom:.11em solid currentColor;padding:0 .14em .05em}
+.c3q>.c3d{padding:.05em .14em 0}
+.c3row{display:flex;flex-wrap:wrap;align-items:center;gap:.3em .4em;font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.08);margin:.4em 0;line-height:1.8}
+.c3row .c3lead{color:var(--pine)}
+input.c3in{box-sizing:border-box;width:4.8em;height:1.7em;padding:0 .2em;margin:0;text-align:center;font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.05);border:2px solid var(--line);border-radius:.35em;background:#fff;color:var(--ink)}
+input.c3in.c3w{width:8.5em}
+.c3chs{display:inline-flex;gap:.25em;flex-wrap:wrap;background:#F2F5F4;border-radius:.6em;padding:.1em .25em}
+.c3chs .opt{padding:.05em .55em}
+.opt.c3on{border-color:var(--ring);background:var(--ring-soft)}
+.c3q2{font-family:Jua,sans-serif;margin-top:.55em}
+.c3grp{border:2px solid var(--line);border-radius:.8em;padding:.35em .7em;margin:.45em 0}
+.c3gt{font-family:Jua,sans-serif;color:var(--night)}
+.c3ask{margin-top:.5em;border-top:2px dashed var(--line);padding-top:.3em}
+.c3stage svg{width:100%;height:auto;max-height:60vh;display:block;background:#FBFCFB;border:2px solid var(--line);border-radius:var(--r);touch-action:none}
+.c3stage.c3sm svg{max-height:40vh}
+.c3figs{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,13em),1fr));gap:.6em;margin:.3em 0}
+.c3figs>div{min-width:0;text-align:center;font-family:Jua,sans-serif}
+.c3figs svg{width:100%;height:auto;display:block;max-height:46vh;background:#FBFCFB;border:2px solid var(--line);border-radius:var(--r)}
+.c3fig svg{width:100%;height:auto;display:block;max-height:44vh;background:#FBFCFB;border:2px solid var(--line);border-radius:var(--r)}
+.c3tools{display:flex;flex-wrap:wrap;gap:.4em;align-items:center;margin:.4em 0}
+.c3tools button{border:2px solid var(--line);background:#fff;border-radius:.6em;padding:.25em .75em;font-family:Jua,sans-serif}
+.c3tools button:disabled{opacity:.45}
+.c3say{font-family:Jua,sans-serif;color:var(--night);font-size:calc(var(--fs)*1.08);margin:.3em 0}
+.c3say b{color:var(--ring);font-weight:400}
+.c3pnl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15em),1fr));gap:.6em}
+.c3pnl>div{min-width:0}
+.c3cap{font-family:Jua,sans-serif;color:var(--night);margin:.15em 0}
+.c3vt{border-collapse:collapse;font-family:Jua,sans-serif;font-size:calc(var(--fs)*2);margin:.3em 0}
+.c3vt td{width:1.45em;height:1.55em;text-align:center;padding:0;line-height:1}
+.c3vt td.c3dc{width:.7em}
+.c3vt tr.c3sum td{border-top:3px solid var(--ink);padding-top:.12em}
+.c3vt input{box-sizing:border-box;width:1.3em;height:1.4em;font-size:.85em;text-align:center;font-family:Jua,sans-serif;border:2px solid var(--line);border-radius:.3em;padding:0;background:#fff;color:var(--ink)}
+.c3vt tr.c3cy input{width:1.15em;height:1.1em;font-size:.5em;border-style:dashed;color:var(--no)}
+.c3vt .c3pad{color:#AEBBB5}
+.c3vt button.c3db{width:.75em;height:1.4em;border:2px dashed var(--ring);border-radius:.3em;background:#fff;font-size:.9em;padding:0;line-height:1;color:var(--ink)}
+.c3vt button.c3db.c3dn{border-style:solid;border-color:var(--pine)}
+.c3pv{border-collapse:collapse;font-family:Jua,sans-serif;margin:.3em 0;max-width:100%}
+.c3pv th,.c3pv td{border:2px solid var(--line);padding:.2em .45em;text-align:center}
+.c3pv th{background:var(--pine-soft);font-weight:400;font-size:.8em}
+.c3pv th button{font-family:Jua,sans-serif;border:2px solid var(--line);background:#fff;border-radius:.5em;padding:.1em .4em;font-size:1em}
+.c3pv th button.c3nx{border-color:var(--ring);background:var(--ring-soft)}
+.c3pv td{font-size:calc(var(--fs)*1.3);min-width:2em}
+.c3pv td.c3same{background:#E6F3EC}
+.c3pv td.c3diff{background:#FFE9C7}
+.c3pv td.c3ghost{color:#AEBBB5}
+.c3pv tr.c3res td{font-size:var(--fs-s);color:var(--pine)}
+.c3cards{display:flex;gap:.5em;flex-wrap:wrap;margin:.3em 0}
+.c3cards .opt{font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.4);min-width:2em;text-align:center}
+.c3cards .opt:disabled{opacity:.3}
+.c3slots{display:flex;gap:.35em;margin:.4em 0;flex-wrap:wrap}
+.c3slot{min-width:1.9em;height:2.1em;border:2px dashed var(--ring);border-radius:.4em;background:#fff;font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.4);padding:0 .2em;color:var(--ink)}
+.c3menu{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,9.5em),1fr));gap:.45em;margin:.3em 0}
+.c3menu .opt{text-align:center;font-family:Jua,sans-serif}
+.c3menu .opt small{display:block;color:var(--muted);font-family:"Gowun Dodum",sans-serif;font-size:.8em}
+.c3talk{border-left:5px solid var(--pine);background:#F4FAF6;border-radius:.5em;padding:.35em .8em;margin:.35em 0}
+.c3talk p{margin:.2em 0}
+.c3talk b{color:var(--pine);font-family:Jua,sans-serif;font-weight:400}
+.c3plate{border:3px dashed var(--line);border-radius:1.5em;min-height:3em;padding:.4em .7em;display:flex;flex-wrap:wrap;gap:.35em;align-items:center;font-family:Jua,sans-serif}
+.c3plate span.c3fd{background:#FFF1D6;border-radius:.6em;padding:.1em .6em}
+.c3teams{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,10.5em),1fr));gap:.5em;margin:.4em 0}
+.c3teams .opt{text-align:center;font-family:Jua,sans-serif}
+.c3teams .opt small{display:block;font-family:"Gowun Dodum",sans-serif;font-size:.78em;color:var(--muted)}
+.c3cond{display:inline-block;border:3px solid var(--night);border-radius:.6em;background:#fff;padding:.2em .8em;font-family:Jua,sans-serif;color:var(--night)}
+.c3big{font-family:Jua,sans-serif;font-size:calc(var(--fs)*2);letter-spacing:.06em;color:var(--night)}
+.c3pair{display:flex;flex-wrap:wrap;gap:.8em;margin:.4em 0}
+.c3pair .opt{font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.6);min-width:4.5em;text-align:center}
+.c3fx{display:inline-block;background:var(--pine-soft);color:var(--pine);border-radius:.5em;padding:0 .5em;font-size:.85em}
+`;
+  document.head.append(s);
+}
+/* 분수 모양 요소와 글 속 분수 바꾸기 */
+function c3FracEl(w, n, d) {
+  return h("span", { class: "c3fr" }, w ? h("span", { class: "c3fw" }, String(w)) : null,
+    h("span", { class: "c3q" }, h("span", { class: "c3n" }, String(n)), h("span", { class: "c3d" }, String(d))));
+}
+function c3RenderText(node) {
+  const s = node.nodeValue; if (!s || s.indexOf("/") < 0 || s.indexOf("[") < 0) return;
+  const p = node.parentNode; if (!p || !p.closest || p.closest("svg,textarea,script,style,.copyrow,input")) return;
+  const re = c3Re(); let m, last = 0, any = false; const frag = document.createDocumentFragment();
+  while ((m = re.exec(s))) { any = true; if (m.index > last) frag.append(s.slice(last, m.index)); frag.append(c3FracEl(m[1], m[2], m[3])); last = m.index + m[0].length; }
+  if (!any) return;
+  if (last < s.length) frag.append(s.slice(last));
+  p.replaceChild(frag, node);
+}
+function c3RenderNode(n) {
+  if (!n) return;
+  if (n.nodeType === 3) return c3RenderText(n);
+  if (n.nodeType !== 1 && n.nodeType !== 11) return;
+  const tw = document.createTreeWalker(n, NodeFilter.SHOW_TEXT); const list = [];
+  while (tw.nextNode()) list.push(tw.currentNode);
+  list.forEach(c3RenderText);
+}
+(function c3Boot() {
+  c3Style();
+  try {
+    new MutationObserver(ms => { for (const m of ms) { if (m.type === "characterData") c3RenderText(m.target); else m.addedNodes.forEach(c3RenderNode); } })
+      .observe(document.body, { childList: true, subtree: true, characterData: true });
+  } catch (e) { /* 관찰자를 못 쓰면 글로 보여요 */ }
+  const U = window.SpeechSynthesisUtterance;
+  if (U) { const W = function (t) { return new U(c3Plain(t)); }; W.prototype = U.prototype; window.SpeechSynthesisUtterance = W; }
+})();
+function c3A(a) { return Object.assign({}, a, { provide: info => a.provide({ words: (info && info.words) || [], answers: ((info && info.answers) || []).map(c3Plain) }) }); }
+const c3Quiz0 = quiz, c3Blanks0 = blanks;
+/* 엔진의 hj-multi(한 계단 두 활동)가 셀 수 있게 'function 이름(body, api' 꼴로 감싸요. 안에서 엔진 부품이 api.done(을 불러요. */
+quiz = function quiz(body, api, items, o) { /* 엔진 quiz가 api.done( 을 불러요 */ return c3Quiz0(body, c3A(api), items, o); };
+blanks = function blanks(body, api, parts, o) { /* 엔진 blanks가 api.done( 을 불러요 */ return c3Blanks0(body, c3A(api), parts, o); };
+
+const C3C = { one: "#8FB8E8", t: "#F4A7B9", h: "#A9D8A2", k: "#F6C08A", add: "#9CC6EC", line: "#C9D4CF", dark: "#7A8C86" };
+/* SVG 쌓은 분수 */
+function c3SvgFr(x, y, n, d, size = 20, fill = INK) {
+  const g = svgEl("g", { "pointer-events": "none" }), w = Math.max(String(n).length, String(d).length) * size * .6 + 6;
+  g.append(txt(x, y - size * .62, String(n), size, { fill }), svgEl("line", { x1: x - w / 2, y1: y, x2: x + w / 2, y2: y, stroke: fill, "stroke-width": 2 }), txt(x, y + size * .66, String(d), size, { fill }));
+  return g;
+}
+
+/* ===== 묻는 칸 만들기 (모든 부품이 함께 씀) =====
+   줄(parts): "글" | {n:"0.17", e:"식", why:{"틀린 값":"까닭"}, show} 수 칸 | {t:["영 점 일칠"], why} 글 칸 | {o:[…], a, why:{번호:"까닭"}} 고르기 | {m:[…], a:[번호…]} 여러 개 고르기 | {el: () => 요소} */
+function c3Reg() { return { items: [], plain: [] }; }
+function c3Parts(parts, reg) {
+  const row = h("div", { class: "c3row" }); const plain = [];
+  parts.forEach(pt => {
+    if (pt == null) return;
+    if (typeof pt === "string" || typeof pt === "number") { row.append(h("span", {}, String(pt))); plain.push(c3Plain(String(pt))); return; }
+    if (pt.el) { row.append(pt.el()); return; }
+    if (pt.n != null) {
+      const want = c3P(pt.n); if (want == null) throw new Error("답 형식 오류: " + pt.n);
+      if (pt.e) { const v = c3E(pt.e); if (v !== want) throw new Error(`답 확인 필요: ${pt.e} = ${pt.n} (계산 ${v == null ? "?" : c3F(v)})`); }
+      const inp = h("input", { type: "text", inputmode: "decimal", autocomplete: "off", class: "c3in" + (pt.w ? " c3w" : ""), "aria-label": "빈칸" });
+      row.append(inp); reg.items.push({ k: "n", pt, inp, want }); plain.push(pt.show || String(pt.n)); return;
+    }
+    if (pt.t) {
+      const inp = h("input", { type: "text", autocomplete: "off", class: "c3in c3w", "aria-label": "빈칸" });
+      row.append(inp); reg.items.push({ k: "t", pt, inp }); plain.push(pt.t[0]); return;
+    }
+    if (pt.o || pt.m) {
+      const multi = !!pt.m, list = pt.o || pt.m, sel = new Set(), box = h("span", { class: "c3chs" });
+      list.forEach((o, i) => box.append(h("button", { class: "opt", onclick: ev => {
+        if (multi) { sel.has(i) ? sel.delete(i) : sel.add(i); ev.currentTarget.classList.toggle("c3on"); }
+        else { sel.clear(); sel.add(i); [...box.children].forEach(b => b.classList.remove("c3on")); ev.currentTarget.classList.add("c3on"); }
+        [...box.children].forEach(b => b.classList.remove("good", "bad"));
+      } }, o)));
+      row.append(box); reg.items.push({ k: multi ? "m" : "o", pt, box, sel });
+      plain.push(multi ? pt.a.map(i => list[i]).join(", ") : list[pt.a]); return;
+    }
+  });
+  reg.plain.push(plain.join(" "));
+  return row;
+}
+/* 줄 묶음: rows = [parts | {q:"물음", p:parts} | {fig: () => 요소, q?, p?} | {g:"제목", rows:[…]}] */
+function c3Rows(rows, reg) {
+  const wrap = h("div");
+  rows.forEach(r => {
+    if (Array.isArray(r)) return wrap.append(c3Parts(r, reg));
+    if (r.g) { const g = h("div", { class: "c3grp" }, h("div", { class: "c3gt" }, r.g)); g.append(c3Rows(r.rows, reg)); wrap.append(g); return; }
+    if (r.fig) wrap.append(r.fig());
+    if (r.q) wrap.append(h("div", { class: "c3q2" }, r.q));
+    if (r.p) wrap.append(c3Parts(r.p, reg));
+  });
+  return wrap;
+}
+/* 채점: 처음 틀린 곳의 까닭을 돌려줘요 */
+function c3Judge(reg, opt = {}) {
+  let bad = null; const given = [];
+  reg.items.forEach(it => {
+    const pt = it.pt;
+    if (it.k === "n") {
+      const raw = it.inp.value.trim(), v = c3P(raw), ok = v != null && v === it.want;
+      it.inp.style.borderColor = ok ? "var(--ok)" : "var(--no)"; given.push(raw || "-");
+      if (!ok && !bad) bad = raw === "" ? "빈칸에 답을 써요." : v == null ? "칸에는 수만 써요. 소수는 0.5처럼 써요." :
+        (pt.why && pt.why[c3F(v)]) || c3Diag(pt.e, v) || pt.bad || opt.bad || "빨간 칸을 다시 생각해 봐요.";
+      return;
+    }
+    if (it.k === "t") {
+      const raw = it.inp.value.trim(), n = raw.replace(/\s/g, ""), ok = pt.t.some(x => x.replace(/\s/g, "") === n);
+      it.inp.style.borderColor = ok ? "var(--ok)" : "var(--no)"; given.push(raw || "-");
+      if (!ok && !bad) bad = raw === "" ? "빈칸에 답을 써요." : (pt.why && pt.why[n]) || pt.bad || "읽는 말을 다시 살펴봐요. 소수점 아래는 숫자를 하나씩 읽어요.";
+      return;
+    }
+    const list = pt.o || pt.m, picked = [...it.sel];
+    const ok = it.k === "m" ? picked.length === pt.a.length && pt.a.every(i => it.sel.has(i)) : picked[0] === pt.a;
+    [...it.box.children].forEach((b, i) => { b.classList.remove("good", "bad"); if (it.sel.has(i)) b.classList.add(ok ? "good" : "bad"); });
+    given.push(picked.length ? picked.map(i => list[i]).join("·") : "-");
+    if (!ok && !bad) bad = !picked.length ? "고르지 않은 칸이 있어요." : (it.k === "o" && pt.why && pt.why[picked[0]]) || pt.bad ||
+      (it.k === "m" ? "알맞은 것을 모두 골라요. 빠진 것이나 더 고른 것이 있어요." : "고른 것을 다시 살펴봐요.");
+  });
+  return { bad, given: given.join(" / ") };
+}
+/* ===== 저절로 확인하기 (이야기 버전) =====
+   ready(): 다 했는지(아직 쓰거나 고르는 중이면 false) · sig(): 지금 상태 글 · judge(): 채점해서 맞으면 true.
+   입력칸 0.9초, 고르기 0.26초, 칠하기·끌기·카드·단추 1.2초 기다렸다가 확인해요. 같은 상태로는 다시 세지 않아요. */
+function c3sAuto(root, ready, sig, judge) {
+  let last = null, fin = false;
+  const run = () => { if (fin) return true; const s = sig(); if (s === last) return false; last = s; if (judge() === true) fin = true; return fin; };
+  const A = {}; [260, 900, 1200].forEach(w => { A[w] = autoRun(ready, sig, run, w); });
+  const kick = w => A[w || 900]();
+  root.addEventListener("input", () => kick(900));
+  root.addEventListener("change", () => kick(900));
+  root.addEventListener("focusout", e => { if (e.target.matches && e.target.matches("input")) setTimeout(() => kick(900), 0); });
+  root.addEventListener("keydown", e => { if (e.key === "Enter" && e.target.matches && e.target.matches("input")) { e.preventDefault(); e.target.blur(); } });
+  root.addEventListener("click", e => { const b = e.target.closest && e.target.closest("button"); if (b) kick(b.classList.contains("opt") ? 260 : 1200); });
+  root.addEventListener("pointerup", e => { if (e.target.closest && e.target.closest("svg")) kick(1200); });
+  return kick;
+}
+/* 묻는 칸이 다 찼나요? 읽는 말(글 칸)은 칸을 떠나야(Enter·다른 곳 누르기) 다 쓴 것으로 봐요 — 한글을 쓰는 중에 확인하지 않게 */
+function c3sFilled(reg) {
+  return reg.items.every(it => it.k === "n" ? it.inp.value.trim() !== "" : it.k === "t" ? it.inp.value.trim() !== "" && document.activeElement !== it.inp :
+    it.k === "m" ? it.sel.size >= it.pt.a.length : it.sel.size > 0);
+}
+function c3sSig(reg) { return reg.items.map(it => it.inp ? it.inp.value.trim() : [...it.sel].sort().join(",")).join("§"); }
+
+/* ① 빈칸 줄 문제 */
+function c3Sent(body, api, rows, opt = {}) {
+  c3Style();
+  const reg = c3Reg(), box = h("div");
+  if (opt.fig) box.append(opt.fig());
+  box.append(c3Rows(rows, reg));
+  body.append(box);
+  api.provide({ words: opt.words || [], answers: reg.plain.filter(Boolean) });
+  c3sAuto(box, () => c3sFilled(reg), () => c3sSig(reg), () => {
+    const r = c3Judge(reg, opt);
+    if (r.bad) { api.fail(r.bad, r.given); return false; }
+    api.tryOnce(); api.done(r.given, opt.ok); return true;
+  });
+}
+
+/* ===== 모눈종이·막대 그림 =====
+   모눈 하나는 1, 세로 한 줄(0.1)씩 왼쪽부터, 한 줄 안에서는 위 칸(0.01)부터, 칸 안은 위 가는 줄(0.001)부터 칠해요. */
+function c3GridDraw(g, x0, y0, S, v, opt = {}) {
+  const c = S / 10, div = opt.div || 100, sl = c / 10;
+  g.append(svgEl("rect", { x: x0, y: y0, width: S, height: S, fill: "#fff" }));
+  const cols = Math.floor(v / 100), cells = Math.floor((v % 100) / 10), sls = v % 10;
+  const ct = opt.mono || C3C.t, ch = opt.mono || C3C.h, ck = opt.mono || C3C.k;
+  if (v >= 1000) g.append(svgEl("rect", { x: x0, y: y0, width: S, height: S, fill: opt.full || opt.mono || C3C.t }));
+  else {
+    if (cols) g.append(svgEl("rect", { x: x0, y: y0, width: cols * c, height: S, fill: ct }));
+    if (cells) g.append(svgEl("rect", { x: x0 + cols * c, y: y0, width: c, height: cells * c, fill: ch }));
+    if (sls) g.append(svgEl("rect", { x: x0 + cols * c, y: y0 + cells * c, width: c, height: sls * sl, fill: ck }));
+  }
+  if (div >= 1000) for (let k = 1; k < 100; k++) if (k % 10) g.append(svgEl("line", { x1: x0, y1: y0 + k * sl, x2: x0 + S, y2: y0 + k * sl, stroke: "#E6ECE9", "stroke-width": .6 }));
+  for (let k = 1; k < 10; k++) {
+    if (div >= 10) g.append(svgEl("line", { x1: x0 + k * c, y1: y0, x2: x0 + k * c, y2: y0 + S, stroke: C3C.dark, "stroke-width": 1.2 }));
+    if (div >= 100) g.append(svgEl("line", { x1: x0, y1: y0 + k * c, x2: x0 + S, y2: y0 + k * c, stroke: "#9AABA4", "stroke-width": .9 }));
+  }
+  g.append(svgEl("rect", { x: x0, y: y0, width: S, height: S, fill: "none", stroke: INK, "stroke-width": 2.5 }));
+}
+/* 모눈 그림(여러 장 + 확대) : v는 0.001의 개수 */
+function c3GridSvg(v, opt = {}) {
+  const S = 300, gap = 26, n = Math.max(1, Math.ceil(v / 1000)), zoom = opt.div === 1000 && v % 10 && opt.zoom !== false;
+  const W = 20 + n * (S + gap) - gap + (zoom ? 170 : 0) + 20, H = S + (opt.cap ? 64 : 40);
+  const svg = makeSvg(W, H), g = svgEl("g"); svg.append(g);
+  for (let k = 0; k < n; k++) {
+    const part = Math.min(1000, v - k * 1000), x0 = 20 + k * (S + gap);
+    c3GridDraw(g, x0, 20, S, Math.max(0, part), opt);
+    if (opt.cap) g.append(txt(x0 + S / 2, S + 46, typeof opt.cap === "function" ? opt.cap(k) : opt.cap, 22, { fill: INK }));
+  }
+  if (zoom) {
+    const last = v % 1000, cols = Math.floor(last / 100), cells = Math.floor((last % 100) / 10), sls = last % 10;
+    const xk = 20 + (n - 1) * (S + gap) + cols * 30, yk = 20 + cells * 30, zx = W - 170, zy = 60, Z = 130;
+    g.append(svgEl("rect", { x: xk - 1, y: yk - 1, width: 32, height: 32, fill: "none", stroke: C3C.dark, "stroke-width": 2.5, "stroke-dasharray": "4 3" }),
+      svgEl("line", { x1: xk + 31, y1: yk, x2: zx, y2: zy, stroke: C3C.dark, "stroke-dasharray": "4 3" }), svgEl("line", { x1: xk + 31, y1: yk + 31, x2: zx, y2: zy + Z, stroke: C3C.dark, "stroke-dasharray": "4 3" }),
+      svgEl("rect", { x: zx, y: zy, width: Z, height: Z, fill: "#fff" }), svgEl("rect", { x: zx, y: zy, width: Z, height: sls * Z / 10, fill: opt.mono || C3C.k }));
+    for (let k = 1; k < 10; k++) g.append(svgEl("line", { x1: zx, y1: zy + k * Z / 10, x2: zx + Z, y2: zy + k * Z / 10, stroke: "#9AABA4" }));
+    g.append(svgEl("rect", { x: zx, y: zy, width: Z, height: Z, fill: "none", stroke: INK, "stroke-width": 2 }), txt(zx + Z / 2, zy - 22, "0.01 한 칸 확대", 18, { fill: C3C.dark }));
+  }
+  if (opt.label) svg.setAttribute("aria-label", opt.label);
+  return svg;
+}
+function c3Fig(svg, cls) { return h("div", { class: cls || "c3fig" }, svg); }
+/* 모눈 여러 장 나란히: list = [{v, cap, div, mono}] */
+function c3GridFigs(list) { return h("div", { class: "c3figs" }, list.map(it => h("div", {}, c3GridSvg(it.v, it), it.t ? h("div", {}, it.t) : null))); }
+/* 색 안내 */
+function c3Legend(keys) {
+  const L = { one: ["1", C3C.one], t: ["0.1", C3C.t], h: ["0.01", C3C.h], k: ["0.001", C3C.k] };
+  return h("div", { class: "c3row", style: "font-size:var(--fs-s)" }, keys.map(k => h("span", {}, h("span", { style: `display:inline-block;width:1em;height:1em;border-radius:.2em;vertical-align:middle;margin-right:.25em;background:${L[k][1]}` }, "​"), L[k][0])));
+}
+
+/* ===== ② 칠하기 (막대·모눈) =====
+   opt.panels = [{kind:"bar"|"grid"|"col", pre, target, label, end:"1 L", color}], opt.asks = 줄 묶음 */
+function c3Fill(body, api, opt) {
+  c3Style();
+  if (opt.fig) body.append(opt.fig());
+  const P = opt.panels.map(p => Object.assign({ pre: 0 }, p, { n: p.pre || 0 }));
+  const wrap = h("div", { class: "c3pnl" });
+  P.forEach(p => {
+    const bar = p.kind === "bar", M = bar ? 10 : 100, unit = p.kind === "col" ? 10 : 1;
+    const W = bar ? 660 : 340, H = bar ? 130 : 340, svg = makeSvg(W, H), g = svgEl("g"); svg.append(g);
+    const say = h("div", { class: "c3cap" }, "​");
+    const paint = () => {
+      g.innerHTML = "";
+      if (bar) {
+        const c = 60;
+        for (let k = 0; k < 10; k++) g.append(svgEl("rect", { x: 30 + k * c, y: 30, width: c, height: 54, fill: k < p.pre ? (p.preColor || C3C.t) : k < p.n ? (p.color || C3C.add) : "#fff", stroke: C3C.dark, "stroke-width": 1.5 }));
+        g.append(svgEl("rect", { x: 30, y: 30, width: 600, height: 54, fill: "none", stroke: INK, "stroke-width": 2.5 }), txt(30, 108, "0", 20), txt(630, 108, p.end || "1", 20));
+      } else {
+        const c = 30, x0 = 20, y0 = 20;
+        g.append(svgEl("rect", { x: x0, y: y0, width: 300, height: 300, fill: "#fff" }));
+        for (let k = 0; k < 100; k++) {
+          if (k >= p.n) break;
+          const col = Math.floor(k / 10), row = k % 10;
+          g.append(svgEl("rect", { x: x0 + col * c, y: y0 + row * c, width: c, height: c, fill: k < p.pre ? (p.preColor || C3C.h) : (p.color || C3C.add) }));
+        }
+        for (let k = 1; k < 10; k++) g.append(svgEl("line", { x1: x0 + k * c, y1: y0, x2: x0 + k * c, y2: y0 + 300, stroke: C3C.dark, "stroke-width": 1.2 }), svgEl("line", { x1: x0, y1: y0 + k * c, x2: x0 + 300, y2: y0 + k * c, stroke: "#9AABA4" }));
+        g.append(svgEl("rect", { x: x0, y: y0, width: 300, height: 300, fill: "none", stroke: INK, "stroke-width": 2.5 }));
+      }
+      say.textContent = `${p.label ? p.label + " · " : ""}${p.pre ? `더 칠한 칸 ${p.n - p.pre}칸 (모두 ${p.n}칸)` : `칠한 칸 ${p.n / unit}${p.kind === "col" ? "줄" : "칸"}`}`;
+    };
+    const idxAt = pt => {
+      if (bar) { const k = Math.floor((pt.x - 30) / 60); return pt.y < 20 || pt.y > 95 || k < 0 || k > 9 ? null : k; }
+      const col = Math.floor((pt.x - 20) / 30), row = Math.floor((pt.y - 20) / 30);
+      if (col < 0 || col > 9 || row < 0 || row > 9) return null;
+      return p.kind === "col" ? col * 10 + 9 : col * 10 + row;
+    };
+    let downK = null;
+    dragOn(svg, pt => {
+      const k = idxAt(pt); if (k == null) return false;
+      downK = k; let nn = k + 1; if (nn === p.n) nn = p.kind === "col" ? k - 9 : k;
+      p.n = Math.max(p.pre, Math.min(M, nn)); paint();
+    }, pt => { const k = idxAt(pt); if (k == null || k === downK) return; downK = k; const nn = Math.max(p.pre, k + 1); if (nn !== p.n) { p.n = nn; paint(); } });
+    paint();
+    wrap.append(h("div", {}, p.title ? h("div", { class: "c3cap" }, p.title) : null, h("div", { class: "c3stage c3sm" }, svg), say));
+  });
+  const reg = c3Reg();
+  const asks = opt.asks ? h("div", { class: "c3ask" }, c3Rows(opt.asks, reg)) : null;
+  body.append(h("div", { class: "c3say" }, opt.tip || "칸을 누르거나 끌어서 칠해요. 칠한 마지막 칸을 다시 누르면 한 칸 지워져요."), wrap, asks);
+  api.provide({ words: opt.words || [], answers: P.map(p => `${p.label || ""} ${p.target}칸`).concat(reg.plain) });
+  c3sAuto(body, () => P.every(p => p.n !== p.pre) && c3sFilled(reg), () => P.map(p => p.n).join(",") + "#" + c3sSig(reg), () => {
+    const wrong = P.find(p => p.n !== p.target);
+    const got = P.map(p => p.n).join(",");
+    if (wrong) { api.fail(wrong.why || `${wrong.label ? wrong.label + ": " : ""}${wrong.n > wrong.target ? "너무 많이 칠했어요." : "덜 칠했어요."} 한 칸이 얼마를 나타내는지 생각해 봐요.`, "칠한 칸 " + got); return false; }
+    const r = c3Judge(reg, opt);
+    if (r.bad) { api.fail(r.bad, "칠한 칸 " + got + " / " + r.given); return false; }
+    api.tryOnce(); api.done("칠한 칸 " + got + (r.given ? " / " + r.given : ""), opt.ok); return true;
+  });
+}
+
+/* ===== 수직선 그림 ===== */
+function c3LineDraw(g, o) {
+  const X = v => o.x0 + (v - o.from) / (o.to - o.from) * o.len, y = o.y;
+  g.append(svgEl("line", { x1: X(o.from) - 8, y1: y, x2: X(o.to) + 18, y2: y, stroke: INK, "stroke-width": 2.5 }),
+    svgEl("path", { d: `M${X(o.to) + 26} ${y} l-10 -6 v12 z`, fill: INK }));
+  for (let v = o.from; v <= o.to; v += o.minor) {
+    const maj = (v - (o.base || 0)) % o.major === 0, mid = o.mid && (v - (o.base || 0)) % o.mid === 0;
+    const L = maj ? 18 : mid ? 12 : 8;
+    g.append(svgEl("line", { x1: X(v), y1: y - L, x2: X(v), y2: y + L, stroke: INK, "stroke-width": maj ? 2.2 : 1.3 }));
+    if (maj && (!o.labels || o.labels.includes(v))) g.append(txt(X(v), y + 38, c3F(v) + (v === o.to && o.unit ? " " + o.unit : ""), o.fs || 20, { fill: INK }));
+    if (o.fracs && maj && v > o.from && v < o.to) g.append(c3SvgFr(X(v), y - 46, Math.round((v - o.from) / o.major), Math.round((o.to - o.from) / o.major), 16, C3C.dark));
+  }
+  return X;
+}
+/* 확대 수직선 그림: 위 줄(from~to)과 그 첫 칸을 다시 10칸으로 나눈 아래 줄 */
+function c3ZoomSvg(o) {
+  const svg = makeSvg(1000, 300), g = svgEl("g"); svg.append(g);
+  const X1 = c3LineDraw(g, { x0: 60, len: 860, y: 90, from: o.from, to: o.to, minor: o.step, major: o.step, fracs: o.fracs, unit: o.unit });
+  const z0 = o.from, z1 = o.from + o.step;
+  g.append(svgEl("rect", { x: X1(z0), y: 70, width: X1(z1) - X1(z0), height: 40, fill: "#FFE9C7", opacity: .7 }));
+  const X2 = c3LineDraw(g, { x0: 60, len: 860, y: 225, from: z0, to: z1, minor: o.step / 10, major: o.step, unit: o.unit });
+  g.append(svgEl("line", { x1: X1(z0), y1: 110, x2: X2(z0), y2: 205, stroke: C3C.dark, "stroke-dasharray": "5 4" }), svgEl("line", { x1: X1(z1), y1: 110, x2: X2(z1), y2: 205, stroke: C3C.dark, "stroke-dasharray": "5 4" }));
+  const a = X2(z0), b = X2(z0 + o.step / 10);
+  g.append(svgEl("path", { d: `M${a} 196 Q${(a + b) / 2} 176 ${b} 196`, fill: "none", stroke: C3C.no || "#C8472E", "stroke-width": 2.5 }), txt((a + b) / 2 + 40, 172, "한 칸 = ?", 20, { fill: "#C8472E" }));
+  return svg;
+}
+
+/* ===== ③ 수직선에서 화살표 옮기기 =====
+   opt: {from, to, minor, major, mid, labels, start, target, unit, deco:{kind:"barley"|"walk", at}, asks, fracs} (수는 0.001의 개수) */
+function c3Line(body, api, opt) {
+  c3Style();
+  if (opt.fig) body.append(opt.fig());
+  const svg = makeSvg(1000, 210), g = svgEl("g"), top = svgEl("g"); svg.append(g, top);
+  const o = Object.assign({ x0: 60, len: 860, y: 140 }, opt);
+  const X = c3LineDraw(g, o);
+  if (opt.deco && opt.deco.kind === "barley") {
+    const x1 = X(opt.deco.at), x0 = X(0);
+    g.append(svgEl("path", { d: `M${x0} 66 L${x1 - 26} 66`, stroke: "#6BA35A", "stroke-width": 5, fill: "none" }));
+    [0.25, 0.5, 0.75].forEach((f, i) => { const xx = x0 + (x1 - 26 - x0) * f; g.append(svgEl("path", { d: `M${xx} 66 q 22 ${i % 2 ? 18 : -18} 46 ${i % 2 ? 6 : -6}`, stroke: "#6BA35A", "stroke-width": 4, fill: "none" })); });
+    g.append(svgEl("ellipse", { cx: x1 - 13, cy: 66, rx: 14, ry: 7, fill: "#D9B85C" }), svgEl("line", { x1: x1 - 1, y1: 66, x2: x1, y2: 66, stroke: "#B08A2E", "stroke-width": 2 }),
+      svgEl("line", { x1: x1, y1: 58, x2: x1, y2: 126, stroke: "#B08A2E", "stroke-width": 1.5, "stroke-dasharray": "3 3" }), txt((x0 + x1) / 2, 36, "보리", 20, { fill: "#4E7F40" }));
+  }
+  if (opt.deco && opt.deco.kind === "walk") {
+    const x1 = X(opt.deco.at);
+    g.append(svgEl("circle", { cx: x1, cy: 66, r: 11, fill: "#F2C9A0", stroke: INK, "stroke-width": 1.5 }), svgEl("path", { d: `M${x1} 77 v24 M${x1} 86 l-12 8 M${x1} 86 l12 6 M${x1} 101 l-10 16 M${x1} 101 l10 16`, stroke: INK, "stroke-width": 3, fill: "none" }),
+      txt(x1 + 52, 60, opt.deco.name || "", 18, { fill: C3C.dark }));
+  }
+  let pos = opt.start != null ? opt.start : opt.from;
+  const base = opt.start != null ? opt.start : opt.from;
+  const say = h("div", { class: "c3say" }, "​");
+  const draw = () => {
+    top.innerHTML = "";
+    const xs = X(base), xp = X(pos), yy = o.y - 34;
+    if (pos !== base) {
+      const dir = pos > base ? 1 : -1;
+      top.append(svgEl("line", { x1: xs, y1: yy, x2: xp - dir * 12, y2: yy, stroke: "#C8472E", "stroke-width": 4 }), svgEl("path", { d: `M${xp} ${yy} l${-dir * 14} -8 v16 z`, fill: "#C8472E" }));
+    }
+    if (opt.start != null) top.append(svgEl("circle", { cx: xs, cy: o.y, r: 7, fill: "#2B7BD6" }));
+    top.append(svgEl("path", { d: `M${xp} ${o.y - 4} l-13 -22 h26 z`, fill: "#2B7BD6", stroke: "#fff", "stroke-width": 2 }));
+    const n = Math.round(Math.abs(pos - base) / opt.minor);
+    say.innerHTML = "";
+    say.append(opt.start != null ? `${c3F(base)}에서 ${pos >= base ? "오른쪽" : "왼쪽"}으로 작은 눈금 ` : `${c3F(base)}에서 오른쪽으로 작은 눈금 `, h("b", {}, String(n)), "칸");
+  };
+  const snap = v => Math.max(opt.from, Math.min(opt.to, opt.from + Math.round((v - opt.from) / opt.minor) * opt.minor));
+  const inv = x => opt.from + (x - o.x0) / o.len * (opt.to - opt.from);
+  dragOn(svg, pt => { pos = snap(inv(pt.x)); draw(); }, pt => { pos = snap(inv(pt.x)); draw(); });
+  const tools = h("div", { class: "c3tools" },
+    h("button", { onclick: () => { pos = snap(pos - opt.minor); draw(); } }, "◀ 한 칸"), h("button", { onclick: () => { pos = snap(pos + opt.minor); draw(); } }, "한 칸 ▶"),
+    h("button", { onclick: () => { pos = base; draw(); } }, "처음으로"));
+  draw();
+  const reg = c3Reg();
+  const asks = opt.asks ? h("div", { class: "c3ask" }, c3Rows(opt.asks, reg)) : null;
+  body.append(h("div", { class: "c3say" }, opt.tip || "파란 표시를 끌거나 수직선을 눌러 옮겨요. ◀ ▶ 단추로 한 칸씩 옮길 수도 있어요."), h("div", { class: "c3stage" }, svg), say, tools, asks);
+  api.provide({ words: opt.words || [], answers: [`화살표를 ${c3F(opt.target)}에`].concat(reg.plain) });
+  c3sAuto(body, () => pos !== base && c3sFilled(reg), () => pos + "#" + c3sSig(reg), () => {
+    if (pos !== opt.target) { api.fail(opt.why || `작은 눈금 한 칸이 ${c3F(opt.minor)}예요. 몇 칸 옮겨야 하는지 다시 세어 봐요.`, "화살표 " + c3F(pos)); return false; }
+    const r = c3Judge(reg, opt);
+    if (r.bad) { api.fail(r.bad, "화살표 " + c3F(pos) + " / " + r.given); return false; }
+    api.tryOnce(); api.done("화살표 " + c3F(pos) + (r.given ? " / " + r.given : ""), opt.ok); return true;
+  });
+}
+
+/* ===== ④ 모눈에 수 만들기 (1·0.1·0.01·0.001 단추) ===== opt: {target:"1.76", units:[1000,100,10,1], div, asks} */
+function c3Build(body, api, opt) {
+  c3Style();
+  if (opt.fig) body.append(opt.fig());
+  const target = c3P(opt.target), units = opt.units || [1000, 100, 10], max = opt.max || 2999;
+  let v = 0;
+  const figBox = h("div", { class: "c3stage c3sm" }), say = h("div", { class: "c3say" }, "​");
+  const NM = { 1000: "1", 100: "0.1", 10: "0.01", 1: "0.001" };
+  const draw = () => {
+    figBox.innerHTML = ""; figBox.append(c3GridSvg(Math.max(v, 0), { div: opt.div || 100, full: C3C.one }));
+    const a = Math.floor(v / 1000), b = Math.floor(v % 1000 / 100), c = Math.floor(v % 100 / 10), d = v % 10;
+    say.innerHTML = ""; say.append(...[[1000, a], [100, b], [10, c], [1, d]].filter(([u]) => units.includes(u)).map(([u, n], i) => h("span", {}, (i ? ", " : "") + NM[u] + "이 ", h("b", {}, String(n)), "개")));
+  };
+  const tools = h("div", { class: "c3tools" }, units.map(u => [h("button", { onclick: () => { if (v + u <= max) { v += u; draw(); } } }, `+ ${NM[u]}`), h("button", { onclick: () => { if (v - u >= 0) { v -= u; draw(); } } }, `− ${NM[u]}`)]).flat(),
+    h("button", { onclick: () => { v = 0; draw(); } }, "처음으로"));
+  draw();
+  const reg = c3Reg();
+  const asks = opt.asks ? h("div", { class: "c3ask" }, c3Rows(opt.asks, reg)) : null;
+  body.append(h("div", { class: "c3say" }, opt.tip || "단추를 눌러 모눈을 칠해요. 모눈 한 장 전체가 1이에요."), opt.legend ? c3Legend(opt.legend) : null, tools, figBox, say, asks);
+  api.provide({ words: opt.words || [], answers: [`모눈에 ${opt.target}만큼`].concat(reg.plain) });
+  c3sAuto(body, () => v !== 0 && c3sFilled(reg), () => v + "#" + c3sSig(reg), () => {
+    if (v !== target) { api.fail(opt.why || (v > target ? "모눈에 칠한 수가 더 커요. 덜어 내 봐요." : "모눈에 칠한 수가 더 작아요. 더 칠해 봐요."), "모눈 " + c3F(v)); return false; }
+    const r = c3Judge(reg, opt);
+    if (r.bad) { api.fail(r.bad, "모눈 " + c3F(v) + " / " + r.given); return false; }
+    api.tryOnce(); api.done("모눈 " + c3F(v) + (r.given ? " / " + r.given : ""), opt.ok); return true;
+  });
+}
+
+/* ===== ⑤ 자리마다 차례대로 비교하기 ===== opt: {a:"2.136", b:"2.135", la, lb} */
+function c3Cmp(body, api, opt) {
+  c3Style();
+  const A = c3Norm(opt.a), B = c3Norm(opt.b), va = c3P(A), vb = c3P(B), D = Math.max(c3Dn(A), c3Dn(B), 1);
+  const sign = va > vb ? ">" : va < vb ? "<" : "=";
+  const NAMES = ["자연수 부분", "소수 첫째 자리", "소수 둘째 자리", "소수 셋째 자리"].slice(0, D + 1);
+  const part = (s, k) => { const [i, d = ""] = s.split("."); return k === 0 ? i : d[k - 1]; };
+  let next = 0, found = null, pick = null;
+  const ths = NAMES.map((nm, k) => h("button", { onclick: () => click(k) }, nm));
+  const rowA = NAMES.map((_, k) => h("td", {}, part(A, k) == null ? "​" : (k === 0 ? part(A, k) + "." : part(A, k))));
+  const rowB = NAMES.map((_, k) => h("td", {}, part(B, k) == null ? "​" : (k === 0 ? part(B, k) + "." : part(B, k))));
+  const rowR = NAMES.map(() => h("td", {}, "​"));
+  const tbl = h("table", { class: "c3pv" }, h("tr", {}, h("th", {}, "​"), ths.map(b => h("th", {}, b))),
+    h("tr", {}, h("th", {}, opt.la || "㉮"), rowA), h("tr", {}, h("th", {}, opt.lb || "㉯"), rowB), h("tr", { class: "c3res" }, h("th", {}, "비교"), rowR));
+  const say = h("div", { class: "c3say" }, "​");
+  const signBox = h("div", { class: "c3row hidden" }, h("span", {}, `${A} `), h("span", { class: "c3chs" }, [">", "=", "<"].map(s => h("button", { class: "opt", onclick: ev => { pick = s; [...ev.currentTarget.parentNode.children].forEach(b => b.classList.remove("c3on", "good", "bad")); ev.currentTarget.classList.add("c3on"); } }, s))), h("span", {}, ` ${B}`));
+  const mark = () => ths.forEach((b, k) => b.classList.toggle("c3nx", k === next && found == null));
+  function click(k) {
+    if (found != null) return;
+    if (k !== next) { api.hint(`높은 자리부터 차례대로 비교해요. 지금은 ‘${NAMES[next]}’를 누를 차례예요.`); return; }
+    const x = part(A, k), y = part(B, k), xs = x == null ? "0" : x, ys = y == null ? "0" : y;
+    if (x == null) { rowA[k].textContent = "0"; rowA[k].classList.add("c3ghost"); }
+    if (y == null) { rowB[k].textContent = "0"; rowB[k].classList.add("c3ghost"); }
+    const cx = +xs, cy = +ys;
+    [rowA[k], rowB[k]].forEach(td => td.classList.add(cx === cy ? "c3same" : "c3diff"));
+    rowR[k].textContent = cx === cy ? "같아요" : `${xs} ${cx > cy ? ">" : "<"} ${ys}`;
+    if (cx !== cy || k === NAMES.length - 1) { found = k; signBox.classList.remove("hidden"); say.textContent = cx !== cy ? `${NAMES[k]}에서 크기가 정해졌어요. 알맞은 기호를 골라요.` : "모든 자리가 같아요. 알맞은 기호를 골라요."; }
+    else { next = k + 1; say.textContent = `${NAMES[k]}가 같아요. 다음 자리를 눌러요.`; }
+    mark();
+  }
+  mark();
+  body.append(h("div", { class: "c3say" }, "자릿값 표의 이름 단추를 높은 자리부터 차례대로 눌러 두 수를 비교해요."), h("div", { style: "overflow-x:auto" }, tbl), say, signBox);
+  api.provide({ words: ["자연수 부분", "소수 첫째 자리", "소수 둘째 자리", "소수 셋째 자리"], answers: [`${A} ${sign} ${B}`] });
+  c3sAuto(body, () => found != null && pick != null, () => String(pick), () => {
+    const btn = [...signBox.querySelectorAll(".opt")].find(b => b.textContent === pick);
+    if (pick !== sign) { btn.classList.add("bad"); api.fail(opt.why || "크기가 정해진 자리의 숫자를 다시 견주어 봐요. 그 자리 숫자가 큰 수가 더 커요.", `${A} ${pick} ${B}`); return false; }
+    btn.classList.add("good"); api.tryOnce(); api.done(`${A} ${pick} ${B}`, opt.ok || `${c3J(`${A} ${sign} ${B}`, "이에요")}. 높은 자리부터 차례대로 비교했어요!`); return true;
+  });
+}
+
+/* ===== ⑥ 10배·1/10 판: 소수점은 그대로, 숫자가 움직여요 ===== opt: {starts:["0.716","3.5"], need:["7.16",…], asks} */
+function c3Shift(body, api, opt) {
+  c3Style();
+  const PL = [3, 2, 1, 0, -1, -2, -3], NM = ["천", "백", "십", "일", "소수\n첫째", "소수\n둘째", "소수\n셋째"];
+  const cw = 92, dotW = 34, X = p => { const i = 3 - p; return 30 + i * cw + (p < 0 ? dotW : 0) + cw / 2; };
+  const W = 30 + 7 * cw + dotW + 30, svg = makeSvg(W, 220), bg = svgEl("g"), fg = svgEl("g"), grp = svgEl("g"); svg.append(bg, fg, grp);
+  PL.forEach((p, i) => {
+    const x = X(p) - cw / 2;
+    bg.append(svgEl("rect", { x, y: 70, width: cw, height: 110, fill: p >= 0 ? "#F4F7F5" : "#FFF7EA", stroke: C3C.line, "stroke-width": 2 }));
+    NM[i].split("\n").forEach((t, j, arr) => bg.append(txt(X(p), 30 + j * 22 - (arr.length - 1) * 8 + 8, t, 18, { fill: C3C.dark })));
+  });
+  bg.append(svgEl("circle", { cx: X(0) + cw / 2 + dotW / 2, cy: 160, r: 8, fill: "#C8472E" }));
+  let v = 0, hist = [];
+  const sig = val => { // 0.001의 개수 → 자리별 숫자(0이 아닌 가장 높은 자리 ~ 가장 낮은 자리)
+    const s = String(val); const out = []; // val = 수×1000
+    for (let k = 0; k < s.length; k++) out.push({ d: s[k], p: s.length - 1 - k - 3 });
+    let lo = out.length - 1; while (lo > 0 && out[lo].d === "0") lo--;
+    return out.slice(0, lo + 1);
+  };
+  const say = h("div", { class: "c3say" }, "​"), histBox = h("div", { class: "c3row" }, "​");
+  const show = () => {
+    const ds = sig(v); grp.innerHTML = ""; fg.innerHTML = "";
+    ds.forEach(o => grp.append(txt(X(o.p), 130, o.d, 52, { fill: INK })));
+    const hi = ds[0].p, lo = ds[ds.length - 1].p;
+    for (let p = 0; p > hi; p--) fg.append(txt(X(p), 130, "0", 52, { fill: "#AEBBB5" }));
+    for (let p = lo - 1; p >= 0; p--) fg.append(txt(X(p), 130, "0", 52, { fill: "#AEBBB5" }));
+    say.innerHTML = ""; say.append("지금 수: ", h("b", {}, c3F(v)));
+    histBox.textContent = hist.length > 1 ? hist.join(" ") : "​";
+  };
+  let timer = 0;
+  const move = (old, dir) => { // 숫자마다 제자리에서 한 자리 옮겨 가는 모습
+    clearTimeout(timer); grp.innerHTML = ""; fg.innerHTML = "";
+    const els = sig(old).map(o => { const t = txt(X(o.p), 130, o.d, 52, { fill: INK }); t.style.transition = "transform .45s ease"; grp.append(t); return { t, dx: X(o.p + dir) - X(o.p) }; });
+    void svg.getBoundingClientRect();
+    requestAnimationFrame(() => els.forEach(e => { e.t.style.transform = `translate(${e.dx}px,0px)`; }));
+    timer = setTimeout(show, 500);
+    say.innerHTML = ""; say.append("지금 수: ", h("b", {}, c3F(v)));
+    histBox.textContent = hist.join(" ");
+  };
+  const canUp = () => sig(v)[0].p < 3;
+  const canDn = () => { const ds = sig(v); return ds[ds.length - 1].p > -3; };
+  const done = new Set();
+  const start = s => { v = c3P(s); hist = [c3F(v)]; show(); };
+  const tools = h("div", { class: "c3tools" },
+    ...(opt.starts.length > 1 ? opt.starts.map(s => h("button", { onclick: () => start(s) }, `${s}에서 시작`)) : []),
+    h("button", { onclick: () => { if (!canUp()) return api.hint("천의 자리보다 높은 자리는 이 판에 없어요."); const old = v; v = old * 10; hist.push("→(10배)", c3F(v)); done.add(c3F(v)); move(old, 1); } }, "10배"),
+    h("button", { onclick: () => { if (!canDn()) return api.hint("소수 셋째 자리보다 낮은 자리는 이 판에 없어요."); const old = v; v = old / 10; hist.push("→([1/10])", c3F(v)); done.add(c3F(v)); move(old, -1); } }, "[1/10]"),
+    h("button", { onclick: () => start(hist[0]) }, "처음 수로"));
+  start(opt.starts[0]);
+  const reg = c3Reg();
+  const asks = opt.asks ? h("div", { class: "c3ask" }, c3Rows(opt.asks, reg)) : null;
+  body.append(h("div", { class: "c3say" }, opt.tip || "‘10배’, ‘[1/10]’ 단추를 눌러 보세요. 빨간 소수점은 그대로 있고 숫자들이 움직여요."), tools, h("div", { class: "c3stage c3sm" }, svg), say, histBox, asks);
+  api.provide({ words: ["왼쪽으로 한 자리", "오른쪽으로 한 자리", "10배", "[1/10]"], answers: reg.plain });
+  let warned = "";
+  c3sAuto(body, () => {
+    if (!c3sFilled(reg)) return false;
+    const miss = (opt.need || []).find(s => !done.has(c3F(c3P(s))));
+    if (miss) { const sg = c3sSig(reg); if (warned !== sg) { warned = sg; api.hint("판에서 ‘10배’, ‘[1/10]’ 단추를 눌러 직접 만들어 보고 써요. 아직 판에서 만들어 보지 않은 수가 있어요."); } return false; }
+    return true;
+  }, () => c3sSig(reg), () => {
+    const r = c3Judge(reg, opt);
+    if (r.bad) { api.fail(r.bad, r.given); return false; }
+    api.tryOnce(); api.done(r.given, opt.ok); return true;
+  });
+}
+
+/* ===== ⑦ 세로셈: (자리 맞추기) → 같은 자리끼리 계산 → 소수점 내려 찍기 =====
+   opt: {a:"1.82", b:"0.5", op:"+", align:true, pad:true, reason:{q, o, a, why}} */
+function c3Vert(body, api, opt) {
+  c3Style();
+  if (opt.fig) body.append(opt.fig());
+  const A = c3Norm(opt.a), B = c3Norm(opt.b), op = opt.op || "+", R = c3E(`${A}${op}${B}`);
+  const D = Math.max(c3Dn(A), c3Dn(B)), res = c3Fd(R, D), rI = res.split(".")[0], rD = res.split(".")[1] || "";
+  const iLen = s => s.split(".")[0].length, I = Math.max(iLen(A), iLen(B), rI.length);
+  const OPS = op === "+" ? "+" : "−", word = op === "+" ? "받아올림" : "받아내림";
+  const stage = h("div");
+  const reg = c3Reg(); let reasonRow = null;
+  if (opt.reason) reasonRow = c3Parts([opt.reason.q, { o: opt.reason.o, a: opt.reason.a, why: opt.reason.why }], reg);
+  let aligned = !opt.align, phase = "";
+  /* 1단계: 소수점 맞추기(끌어서 옮기기) */
+  function alignPhase() {
+    stage.innerHTML = "";
+    const cw = 60, cols = I + 1 + D + 4, W = 40 + cols * cw + 40, svg = makeSvg(W, 260), g = svgEl("g"), gb = svgEl("g"); svg.append(g, gb);
+    const ca = 2 + (I - iLen(A)); // 0번 칸은 기호 자리
+    const colX = c => 40 + c * cw + cw / 2;
+    [...A].forEach((ch, k) => g.append(txt(colX(ca + k), 70, ch, 50, { fill: INK })));
+    g.append(txt(colX(0), 150, OPS, 46, { fill: INK }), svgEl("line", { x1: 30, y1: 196, x2: W - 30, y2: 196, stroke: INK, "stroke-width": 3 }));
+    const aDot = ca + (A.indexOf(".") < 0 ? A.length : A.indexOf(".")), bDotK = B.indexOf(".") < 0 ? B.length : B.indexOf(".");
+    const okOff = aDot - bDotK;            // B의 첫 글자가 놓일 칸(맞을 때)
+    let off = ca + A.length - B.length;    // 처음엔 오른쪽 끝을 맞춘 자리
+    if (off === okOff) off = okOff + 1;
+    const lo = 1, hi = cols - B.length;
+    off = Math.max(lo, Math.min(hi, off));
+    const off0 = off; let moved = false; phase = "align";
+    const say = h("div", { class: "c3say" }, "​");
+    const draw = (dx = 0) => {
+      gb.innerHTML = "";
+      gb.append(svgEl("rect", { x: 40 + off * cw + dx - 4, y: 108, width: B.length * cw + 8, height: 76, rx: 12, fill: "#DCEAFB", stroke: "#2B7BD6", "stroke-width": 2 }));
+      [...B].forEach((ch, k) => gb.append(txt(colX(off + k) + dx, 150, ch, 50, { fill: INK })));
+      if (off !== off0) moved = true;
+      say.textContent = off === okOff ? "소수점끼리 세로로 나란해졌어요." : "파란 수 카드를 끌어 옮겨 보세요.";
+    };
+    g.append(svgEl("line", { x1: colX(aDot), y1: 20, x2: colX(aDot), y2: 240, stroke: "#C8472E", "stroke-width": 1.5, "stroke-dasharray": "6 5" }));
+    let sx = null, base = 0;
+    dragOn(svg, pt => { if (pt.y < 100 || pt.y > 195) return false; sx = pt.x; base = off; }, pt => { const k = Math.round((pt.x - sx) / cw), no = Math.max(lo, Math.min(hi, base + k)); if (no !== off) { off = no; draw(); } });
+    draw();
+    const tools = h("div", { class: "c3tools" }, h("button", { onclick: () => { off = Math.max(lo, off - 1); draw(); } }, "◀ 왼쪽으로"), h("button", { onclick: () => { off = Math.min(hi, off + 1); draw(); } }, "오른쪽으로 ▶"));
+    const pane = h("div");
+    pane.append(h("div", { class: "c3say" }, "① 소수점의 위치를 맞추어 써요. 아래 수(파란 카드)를 끌거나 단추로 옮겨 소수점끼리 맞추어 보세요. 맞추면 저절로 다음 단계로 넘어가요."), reasonRow || "", h("div", { class: "c3stage c3sm" }, svg), say, tools);
+    stage.append(pane);
+    c3sAuto(pane, () => phase === "align" && (moved || off !== off0) && (!reasonRow || c3sFilled(reg)), () => off + "#" + c3sSig(reg), () => {
+      if (reasonRow) { const r = c3Judge(reg); if (r.bad) { api.fail(r.bad, r.given); return false; } }
+      if (off !== okOff) { api.fail(off === ca + A.length - B.length ? "오른쪽 끝을 맞추면 안 돼요. 소수점끼리 세로로 나란히 맞추어요." : "빨간 점선이 지나는 소수점 자리에 아래 수의 소수점도 오게 옮겨요.", "자리 맞추기"); return false; }
+      aligned = true; api.hint("○ 소수점끼리 맞추었어요! 이제 같은 자리 수끼리 계산해요."); calcPhase(); return true;
+    });
+  }
+  /* 2단계: 같은 자리 수끼리 계산 → 소수점 내려 찍기 */
+  function calcPhase() {
+    stage.innerHTML = ""; phase = "calc";
+    const cell = (ch, cls) => h("td", cls ? { class: cls } : {}, ch == null || ch === "" ? "​" : ch);
+    const digitsOf = s => { const [i, d = ""] = s.split("."); return { i: i.padStart(I, " "), d }; };
+    const da = digitsOf(A), db = digitsOf(B);
+    const padCells = [];
+    const mkRow = (sign, x, hasDot) => h("tr", {}, cell(sign), [...x.i].map(c => cell(c.trim())), cell(hasDot ? "." : "", "c3dc"),
+      Array.from({ length: D }, (_, k) => { if (x.d[k] != null) return cell(x.d[k]); const td = cell("", "c3pad"); padCells.push(td); return td; }));
+    const cy = h("tr", { class: "c3cy" }, cell(""), Array.from({ length: I }, () => h("td", {}, h("input", { type: "text", inputmode: "numeric", maxlength: 2, "aria-label": word + " 메모" }))), cell("", "c3dc"),
+      Array.from({ length: D }, () => h("td", {}, h("input", { type: "text", inputmode: "numeric", maxlength: 2, "aria-label": word + " 메모" }))));
+    const ins = [];
+    const mk = () => { const i = h("input", { type: "text", inputmode: "numeric", maxlength: 1, "aria-label": "답 숫자" }); i.addEventListener("input", () => { i.value = i.value.replace(/[^0-9]/g, "").slice(-1); }); ins.push(i); return h("td", {}, i); };
+    let dotOn = false;
+    const dotBtn = h("button", { class: "c3db", "aria-label": "소수점 찍기", onclick: () => { dotOn = !dotOn; dotBtn.textContent = dotOn ? "." : "​"; dotBtn.classList.toggle("c3dn", dotOn); } }, "​");
+    const resRow = h("tr", { class: "c3sum" }, cell(""), Array.from({ length: I }, mk), h("td", { class: "c3dc" }, dotBtn), Array.from({ length: D }, mk));
+    const tbl = h("table", { class: "c3vt" }, cy, mkRow("", da, A.includes(".")), mkRow(OPS, db, B.includes(".")), resRow);
+    const tools = h("div", { class: "c3tools" });
+    if (opt.pad && padCells.length) {
+      let on = false;
+      tools.append(h("button", { onclick: ev => { on = !on; padCells.forEach(td => { td.textContent = on ? "0" : "​"; }); ev.currentTarget.textContent = on ? "붙인 0 지우기" : "끝자리에 0 붙여 보기"; } }, "끝자리에 0 붙여 보기"));
+    }
+    stage.append(h("div", { class: "c3say" }, `② 자연수의 ${op === "+" ? "덧셈" : "뺄셈"}과 같이 같은 자리 수끼리 계산해 아래 칸에 써요(${word}한 수는 맨 위 작은 칸에 적어도 돼요). ③ 가운데 점선 칸을 눌러 소수점을 그대로 내려 찍어요.`), h("div", { style: "overflow-x:auto" }, tbl), tools);
+    const out = h("div", { class: "c3say hidden" }, "​");
+    stage.append(out);
+    const exI = rI.padStart(I, " ");
+    /* 꼭 써야 하는 칸: 일의 자리 위쪽의 빈 자리와 끝자리 0은 비워도 돼요 */
+    const need = ins.map((x, k) => k < I ? exI[k].trim() !== "" : !rD.slice(k - I).split("").every(c => c === "0"));
+    let dotWarn = "";
+    c3sAuto(stage, () => phase === "calc" && ins.every((x, k) => !need[k] || x.value !== ""), () => ins.map(x => x.value).join(",") + (dotOn ? "." : ""), () => {
+      const iv = ins.slice(0, I).map(x => x.value), dv = ins.slice(I).map(x => x.value);
+      const given = iv.join("") + (dotOn ? "." : "") + dv.join("");
+      let wrong = false;
+      iv.forEach((v, k) => { const e = exI[k].trim(), ok = v === e || (e === "" && v === "0"); ins[k].style.borderColor = ok ? "var(--ok)" : "var(--no)"; if (!ok) wrong = true; });
+      dv.forEach((v, k) => { const e = rD[k], trail = rD.slice(k).split("").every(c => c === "0") && dv.slice(k).every(x => x === "" || x === "0"); const ok = v === e || (v === "" && trail); ins[I + k].style.borderColor = ok ? "var(--ok)" : "var(--no)"; if (!ok) wrong = true; });
+      if (wrong) {
+        const gv = c3P(given.replace(/\.$/, ""));
+        api.fail((gv != null && c3Diag(`${A}${op}${B}`, dotOn ? gv : null)) || `같은 자리 수끼리 계산했는지, ${word}을 했는지 살펴봐요. 빨간 칸을 다시 계산해요.`, given || "-"); return false;
+      }
+      if (!dotOn) { if (dotWarn !== given) { dotWarn = given; api.hint("숫자는 모두 맞아요! ③ 가운데 점선 칸을 눌러 소수점을 그대로 내려 찍어요."); } return false; }
+      out.textContent = `${A} ${OPS} ${B} = ${c3F(R)}`; out.classList.remove("hidden");
+      api.tryOnce(); api.done(`${A}${OPS}${B}=${given}`, opt.ok || `${A} ${OPS} ${B} = ${c3J(c3F(R), "이에요")}. 소수점을 맞추어 쓰고, 같은 자리끼리 계산하고, 소수점을 내려 찍었어요!`); return true;
+    });
+  }
+  api.provide({ words: ["소수점의 위치를 맞추어", "같은 자리 수끼리", word, "소수점을 그대로 내려 찍어요"], answers: reg.plain.concat([`${A} ${OPS} ${B} = ${res}`]) });
+  body.append(stage);
+  aligned ? calcPhase() : alignPhase();
+}
+
+/* ===== ⑧ 수 카드로 소수 만들기 ===== opt: {cards:["2","4","7","."], n:4, check:s => null|"까닭", after:s => 줄 묶음, need} */
+function c3Cards(body, api, opt) {
+  c3Style();
+  const slots = Array(opt.n).fill(null);
+  const pool = h("div", { class: "c3cards" }), row = h("div", { class: "c3slots" }), say = h("div", { class: "c3say" }, "​"), more = h("div", { class: "c3ask hidden" });
+  let reg = c3Reg(), made = null;
+  const cardBtns = opt.cards.map((c, i) => h("button", { class: "opt", onclick: () => { const k = slots.indexOf(null); if (k < 0) return; slots[k] = i; paint(); } }, c));
+  pool.append(...cardBtns);
+  const slotBtns = slots.map((_, k) => h("button", { class: "c3slot", "aria-label": `${k + 1}번째 칸`, onclick: () => { slots[k] = null; paint(); } }, "​"));
+  row.append(...slotBtns);
+  function paint() {
+    cardBtns.forEach((b, i) => { b.disabled = slots.includes(i); });
+    slotBtns.forEach((b, k) => { b.textContent = slots[k] == null ? "​" : opt.cards[slots[k]]; });
+    const s = slots.every(x => x != null) ? slots.map(i => opt.cards[i]).join("") : null;
+    if (s === made) return;
+    made = null; more.innerHTML = ""; more.classList.add("hidden"); reg = c3Reg();
+    if (!s) { say.textContent = "카드를 누르면 빈칸에 차례대로 놓여요. 놓인 카드를 누르면 돌아가요."; return; }
+    const why = opt.check(s);
+    if (why) { say.textContent = "× " + why; return; }
+    made = s; say.textContent = `만든 수: ${s}`;
+    more.append(c3Rows(opt.after(s), reg)); more.classList.remove("hidden");
+  }
+  paint();
+  body.append(h("div", { class: "c3say" }, opt.tip || "수 카드를 골라 빈칸에 놓아 보세요."), pool, row, say, more);
+  api.provide({ words: opt.words || [], answers: [opt.need ? `만든 수 ${opt.need}` : "알맞은 소수를 만들어요"] });
+  c3sAuto(body, () => !!made && c3sFilled(reg), () => made + "#" + c3sSig(reg), () => {
+    const r = c3Judge(reg, opt);
+    if (r.bad) { api.fail(r.bad, made + " / " + r.given); return false; }
+    api.tryOnce(); api.done(made + " / " + r.given, typeof opt.ok === "function" ? opt.ok(made) : opt.ok); return true;
+  });
+
+/* ===== 그림: 사람 ===== */
+function c3Person(g, x, y, c, s = 1, hair = "#4A3A2E") {
+  g.append(svgEl("rect", { x: x - 14 * s, y: y + 14 * s, width: 28 * s, height: 38 * s, rx: 10 * s, fill: c }),
+    svgEl("circle", { cx: x, cy: y, r: 14 * s, fill: "#F5D0A9", stroke: INK, "stroke-width": 1.2 }),
+    svgEl("path", { d: `M${x - 14 * s} ${y - 2 * s} a${14 * s} ${14 * s} 0 0 1 ${28 * s} 0 q-${14 * s} -${6 * s} -${28 * s} 0z`, fill: hair }),
+    svgEl("rect", { x: x - 11 * s, y: y + 50 * s, width: 8 * s, height: 18 * s, fill: "#5C6B7A" }), svgEl("rect", { x: x + 3 * s, y: y + 50 * s, width: 8 * s, height: 18 * s, fill: "#5C6B7A" }));
+}
+function c3Talk(lines) { return h("div", { class: "c3talk" }, lines.map(([who, t]) => h("p", {}, h("b", {}, who + " "), t))); }
+/* 1, 0.1, 0.01, 0.001 관계 그림 */
+function c3RelSvg() {
+  const svg = makeSvg(900, 250), g = svgEl("g"); svg.append(g);
+  const V = ["1", "0.1", "0.01", "0.001"], X = k => 110 + k * 225;
+  V.forEach((v, k) => g.append(svgEl("rect", { x: X(k) - 70, y: 95, width: 140, height: 62, rx: 12, fill: ["#DCEAFB", "#FBD9E1", "#DFF1DA", "#FDE6CC"][k], stroke: INK, "stroke-width": 2 }), txt(X(k), 127, v, 32)));
+  for (let k = 0; k < 3; k++) {
+    const a = X(k) + 40, b = X(k + 1) - 40;
+    g.append(svgEl("path", { d: `M${a} 90 Q${(a + b) / 2} 30 ${b} 90`, fill: "none", stroke: "#2B7BD6", "stroke-width": 3 }), svgEl("path", { d: `M${b} 90 l-3 -15 l-10 9z`, fill: "#2B7BD6" }));
+    g.append(c3SvgFr((a + b) / 2, 34, 1, 10, 18, "#2B7BD6"));
+    g.append(svgEl("path", { d: `M${b} 162 Q${(a + b) / 2} 222 ${a} 162`, fill: "none", stroke: "#C8472E", "stroke-width": 3 }), svgEl("path", { d: `M${a} 162 l3 15 l10 -9z`, fill: "#C8472E" }), txt((a + b) / 2, 222, "10배", 20, { fill: "#C8472E" }));
+  }
+  return c3Fig(svg);
+}
+
+/* ⑫ 색칠하기(꼭꼭! 확인하고 정리해요) ===== opt: {items:[{e:"1.2+0.5", c:"#…", name}]} */
+function c3Color(body, api, opt) {
+  c3Style();
+  const IT = opt.items.map(it => Object.assign({}, it, { v: c3E(it.e) }));
+  const R = [ // 그림 칸: 해·풀·토끼(귀 둘·얼굴·몸)·당근
+    { id: "sun", d: "M40 80 a50 50 0 1 0 100 0 a50 50 0 1 0 -100 0z", lx: 90, ly: 80 },
+    { id: "earL", d: "M330 150 C290 60 305 10 345 20 C372 30 366 100 360 150 Z", lx: 338, ly: 85 },
+    { id: "earR", d: "M450 150 C490 60 475 10 435 20 C408 30 414 100 420 150 Z", lx: 442, ly: 85 },
+    { id: "head", d: "M270 215 a120 85 0 1 0 240 0 a120 85 0 1 0 -240 0z", lx: 390, ly: 245 },
+    { id: "body", d: "M280 445 q-10 -115 110 -145 q120 30 110 145 z", lx: 390, ly: 385 },
+    { id: "carrot", d: "M540 270 h90 l-45 175 z", lx: 585, ly: 305 },
+    { id: "grass", d: "M45 445 q30 -90 55 0 q25 -90 55 0 q25 -90 55 0 z", lx: 128, ly: 425 }];
+  const labels = opt.labels; // 칸 id → 수 글
+  const fills = {}; let cur = 0;
+  const svg = makeSvg(700, 460), g = svgEl("g"); svg.append(g);
+  const els = {};
+  R.forEach(r => {
+    const p = svgEl("path", { d: r.d, fill: "#fff", stroke: INK, "stroke-width": 2.5, style: "cursor:pointer" });
+    p.addEventListener("click", () => { fills[r.id] = fills[r.id] === cur ? null : cur; paint(); });
+    els[r.id] = p; g.append(p);
+  });
+  R.forEach(r => g.append(txt(r.lx, r.ly, labels[r.id], 26, { "pointer-events": "none" })));
+  g.append(svgEl("circle", { cx: 350, cy: 200, r: 6, fill: INK, "pointer-events": "none" }), svgEl("circle", { cx: 430, cy: 200, r: 6, fill: INK, "pointer-events": "none" }));
+  const pal = h("div", { class: "c3tools" });
+  const pbtn = IT.map((it, k) => h("button", { style: `border-color:${it.c}`, onclick: () => { cur = k; paintPal(); } }, h("span", { style: `display:inline-block;width:1em;height:1em;border-radius:50%;vertical-align:middle;margin-right:.3em;background:${it.c}` }, "​"), it.e.replace("-", "−")));
+  pal.append(...pbtn);
+  const paintPal = () => pbtn.forEach((b, k) => { b.style.background = k === cur ? "var(--ring-soft)" : "#fff"; b.style.borderWidth = k === cur ? "3px" : "2px"; });
+  const paint = () => R.forEach(r => els[r.id].setAttribute("fill", fills[r.id] == null ? "#fff" : IT[fills[r.id]].c));
+  paintPal(); paint();
+  body.append(h("div", { class: "c3say" }, "식을 하나 골라 계산하고, 그 합이나 차가 적힌 칸을 눌러 그 색으로 칠해요. 다시 누르면 지워져요."), pal, h("div", { class: "c3stage" }, svg));
+  api.provide({ words: IT.map(it => `${it.e}=${c3F(it.v)}`), answers: IT.map(it => `${it.e.replace("-", "−")} = ${c3F(it.v)}`) });
+  const isAns = r => IT.some(it => it.v === c3P(labels[r.id]));
+  c3sAuto(body, () => R.every(r => !isAns(r) || fills[r.id] != null), () => R.map(r => fills[r.id]).join(","), () => {
+    const given = Object.entries(fills).filter(([, v]) => v != null).map(([k, v]) => `${labels[k]}:${IT[v].e}`).join(" ");
+    for (const r of R) {
+      const lv = c3P(labels[r.id]), want = IT.findIndex(it => it.v === lv), f = fills[r.id];
+      if (want < 0 && f != null) { api.fail(`${labels[r.id]}${c3J(labels[r.id], "은는").slice(labels[r.id].length)} 어느 식의 답도 아니에요. 계산을 다시 살펴봐요.`, given); return false; }
+      if (want >= 0 && f !== want) { api.fail(`${labels[r.id]} 칸의 색이 맞지 않아요. 그 칸에 알맞은 식을 다시 찾아요.`, given); return false; }
+    }
+    api.tryOnce(); api.done(given, opt.ok); return true;
+  });
+}
+
+/* ===== 이야기 버전에서 새로 만든 것 (앞글자 c3s) ===== */
+const c3Rand = n => Math.floor(Math.random() * n);
+/* 운동회 기록판 그림: rows = [[종목, 이름, 기록], …] */
+function c3sBoard(title, rows) {
+  c3sStyle();
+  return h("div", { class: "c3sbd" }, h("div", { class: "c3sbt" }, "📋 " + title),
+    h("table", {}, h("tr", {}, ["종목", "이름", "기록"].map(t => h("th", {}, t))), rows.map(r => h("tr", {}, r.map(c => h("td", {}, c))))));
+}
+function c3sStyle() {
+  if (document.getElementById("c3s-style")) return;
+  const st = document.createElement("style"); st.id = "c3s-style";
+  st.textContent = `
+.c3sbd{border:3px solid #C9A36B;border-radius:1em;background:#FFFBF2;padding:.4em .8em .6em;margin:.3em 0 .6em;max-width:36em}
+.c3sbt{font-family:Jua,sans-serif;color:#8A5A2B;font-size:calc(var(--fs)*1.08);margin-bottom:.2em}
+.c3sbd table{border-collapse:collapse;width:100%;font-family:Jua,sans-serif}
+.c3sbd th,.c3sbd td{border-bottom:2px dashed #E6D3B3;padding:.2em .4em;text-align:center}
+.c3sbd th{color:var(--muted);font-weight:400;font-size:.85em}
+.c3sdl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,11em),1fr));gap:.7em;margin:.4em 0}
+.c3sdl .opt{font-family:Jua,sans-serif;text-align:center;font-size:calc(var(--fs)*1.25)}
+.c3sdl .opt small{display:block;font-size:.65em;color:var(--muted)}
+.c3sev{display:inline-block;background:#FFF1D6;border-radius:.6em;padding:.05em .7em;font-family:Jua,sans-serif;color:#8A5A2B}
+`;
+  document.head.append(st);
+}
+/* 기록 대결 놀이: 두 친구의 기록을 보고 이긴 친구를 고르기 (opt.n 판).
+   멀리뛰기·공 던지기·물 마시기는 큰 수가, 달리기는 작은 수(걸린 시간이 짧은 기록)가 이겨요. 잘못 고르면 그 판을 다시 골라요. */
+const C3S_EV = [
+  { ev: "멀리뛰기", unit: "m", big: true, I: [1, 1], d: [1, 2] },
+  { ev: "50 m 달리기", unit: "초", big: false, I: [8, 10], d: [1, 2] },
+  { ev: "공 던지기", unit: "m", big: true, I: [14, 19], d: [1, 2] },
+  { ev: "물 마시기", unit: "L", big: true, I: [0, 0], d: [2, 3] }];
+const C3S_NM = ["윤서", "민재", "하린", "도현", "수아", "준호", "서연", "지우"];
+function c3sDuel(body, api, opt = {}) {
+  c3Style(); c3sStyle();
+  const N = opt.n || 8; let k = 0, wrong = 0, cur = null, locked = false; const t0 = Date.now();
+  const head = h("div", { class: "c3cap" }, "​"), box = h("div", { class: "c3sdl" }), say = h("div", { class: "c3say" }, "​");
+  const frac = d => d === 1 ? (1 + c3Rand(9)) * 100 : d === 2 ? (1 + c3Rand(99)) * 10 : 1 + c3Rand(999);
+  const make = () => {
+    const E = C3S_EV[k % C3S_EV.length], I = E.I[0] + c3Rand(E.I[1] - E.I[0] + 1);
+    let a, b;
+    do {
+      const Ib = c3Rand(4) ? I : Math.max(E.I[0], Math.min(E.I[1], I + (c3Rand(2) ? 1 : -1)));
+      a = I * 1000 + frac(E.d[c3Rand(2)]); b = Ib * 1000 + frac(E.d[c3Rand(2)]);
+    } while (a === b || Math.abs(a - b) > 900);
+    const ns = [...C3S_NM].sort(() => Math.random() - .5).slice(0, 2);
+    cur = { E, v: [a, b], ns, win: (E.big ? a > b : a < b) ? 0 : 1 };
+    locked = false; box.innerHTML = "";
+    head.innerHTML = ""; head.append(`${k + 1} / ${N}판 · `, h("span", { class: "c3sev" }, E.ev), E.big ? " 기록이 큰 친구가 이겨요." : " 걸린 시간이 짧은(기록이 작은) 친구가 이겨요.");
+    cur.v.forEach((v, i) => box.append(h("button", { class: "opt", onclick: ev => pick(i, ev.currentTarget) }, h("small", {}, ns[i]), `${c3F(v)} ${E.unit}`)));
+  };
+  function pick(i, btn) {
+    if (locked) return;
+    const { E, v, ns, win } = cur, said = `${E.ev} ${c3F(v[0])}, ${c3F(v[1])} → ${ns[i]}`;
+    if (i !== win) { wrong++; btn.classList.add("bad"); return api.fail(E.big ? "자연수 부분부터, 그다음 소수 첫째 자리, 소수 둘째 자리 차례로 견주어 큰 기록을 찾아요. 소수점 아래 숫자가 많다고 큰 수가 아니에요." : "달리기는 걸린 시간이 짧을수록 빨라요. 두 기록 중 더 작은 수를 찾아요.", said); }
+    locked = true; btn.classList.add("good"); k++;
+    if (k >= N) { const sec = Math.round((Date.now() - t0) / 1000); say.textContent = `${N}판을 ${sec}초 만에 끝냈어요! 잘못 고른 횟수 ${wrong}번.`; api.tryOnce(); return api.done(`${N}판 · ${sec}초 · 잘못 고름 ${wrong}`, opt.ok); }
+    say.textContent = `맞아요! ${ns[win]}의 승리예요. 다음 판이에요.`; setTimeout(make, 700);
+  }
+  make();
+  body.append(h("div", { class: "c3say" }, opt.tip || "두 친구의 기록을 보고 이긴 친구의 기록 카드를 눌러요."), head, box, say);
+  api.provide({ words: ["자연수 부분", "소수 첫째 자리", "소수 둘째 자리"], answers: ["이긴 친구의 기록을 골라요"] });
+}
+/* 작은 도우미: 수직선 그림(화살표), 식 칸, 잘못된 세로셈 그림 */
+function c3LineFig(o, at, lab = "□") {
+  const svg = makeSvg(1000, 170), g = svgEl("g"); svg.append(g);
+  const X = c3LineDraw(g, Object.assign({ x0: 60, len: 860, y: 110 }, o));
+  g.append(svgEl("path", { d: `M${X(at)} 102 l-12 -24 h24 z`, fill: "#2B7BD6" }), txt(X(at), 58, lab, 26, { fill: "#2B7BD6" }));
+  return c3Fig(svg);
+}
+function c3Q(e, a, x) { return [String(e).replace(/-/g, "−") + " =", Object.assign({ n: a, e }, x || {})]; }
+function c3CharTable(rows, cls) {
+  return h("div", { style: "overflow-x:auto" }, h("table", { class: "c3vt", style: "margin:.2em 0" }, rows.map((r, i) => h("tr", i === rows.length - 1 ? { class: "c3sum" } : {}, r.map(c => h("td", c === "." ? { class: "c3dc" } : {}, c || "​"))))));
+}
