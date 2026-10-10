@@ -586,13 +586,13 @@ function l5Tool(body, api, opt) {
 
 /* ---------- 폭염일 찾기: 온도계를 눌러 33 ℃보다 높거나 같은 날 고르기 ---------- */
 function l5Hot(body, api, opt) {
-  const days = opt.days, n = days.length, on = days.map(() => false), CW = 64, W = 30 + n * CW, H = 360;
+  const days = opt.days, n = days.length, on = days.map(() => false), CW = 64, W = 30 + n * CW + 56, H = 360;
   const lo = 28, hi = 38, top = 70, bot = 280, Y = t => bot - (t - lo) / (hi - lo) * (bot - top);
   const svg = makeSvg(W, H);
   const draw = () => {
     svg.innerHTML = "";
     svg.append(txt(W / 2, 24, opt.title, 20));
-    svg.append(svgEl("line", { x1: 10, y1: Y(33), x2: W - 10, y2: Y(33), stroke: L5_SEL, "stroke-width": 2, "stroke-dasharray": "7 5" }), txt(W - 12, Y(33) - 12, "33 ℃", 15, { "text-anchor": "end", fill: L5_SEL }));
+    svg.append(svgEl("line", { x1: 10, y1: Y(33), x2: W - 10, y2: Y(33), stroke: L5_SEL, "stroke-width": 2, "stroke-dasharray": "7 5" }), txt(W - 6, Y(33) - 12, "33 ℃", 15, { "text-anchor": "end", fill: L5_SEL }));
     days.forEach((d, i) => {
       const cx = 15 + CW * (i + .5), g = svgEl("g", { style: "cursor:pointer" });
       if (on[i]) g.append(svgEl("rect", { x: cx - CW / 2 + 3, y: 40, width: CW - 6, height: 312, rx: 10, fill: "#FFE6DC", stroke: L5_SEL, "stroke-width": 2.5 }));

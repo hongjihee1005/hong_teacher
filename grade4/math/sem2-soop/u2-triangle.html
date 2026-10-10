@@ -1944,6 +1944,7 @@ function t2Measurable(g, p, P, opt = {}) {
   [0, 1, 2].forEach(i => {
     const ln = t2Line(P[i], P[(i + 1) % 3], { stroke: "rgba(0,0,0,0)", "stroke-width": 20, style: "cursor:pointer" });
     ln.addEventListener("click", e => { e.stopPropagation(); shown.s.has(i) ? shown.s.delete(i) : shown.s.add(i); paint(); opt.onChange && opt.onChange(); }); hits.append(ln);
+    if (opt.noA) return; /* 변 길이만 재는 곳: 각도는 보이지 않게(반올림한 각도의 합이 180°가 아니게 보이는 일을 막음) */
     const { V, b } = t2Corner(P, i), hc = svgEl("circle", { cx: t2F(V[0] + b[0] * rr * 1.1), cy: t2F(V[1] + b[1] * rr * 1.1), r: t2F(rr * 1.05), fill: "rgba(0,0,0,0)", style: "cursor:pointer" });
     hc.addEventListener("click", e => { e.stopPropagation(); shown.a.has(i) ? shown.a.delete(i) : shown.a.add(i); paint(); opt.onChange && opt.onChange(); }); hits.append(hc);
   });
@@ -2299,7 +2300,7 @@ function t2Bins(body, api, opt) {
     if (it.p) {
       const s = makeSvg(200, 160), m = t2Map(it.p, [0, 6, 200, 154, it.pad || 30], opt.k);
       s.append(t2TriG(it.p, m.P, Object.assign({ fs: 17, sw: 3.5 }, opt.o || {}, it.o || {})));
-      if (opt.measure) t2Measurable(s, it.p, m.P, { fs: 17 });
+      if (opt.measure) t2Measurable(s, it.p, m.P, { fs: 17, noA: opt.measure === "sides" });
       c.append(h("div", { class: "t2cl" }, lab(i)), s);
     } else c.append(it.text);
     c.addEventListener("click", e => { if (justDragged) return; e.stopPropagation(); sel = sel === i ? null : i; paint(); });
@@ -2854,7 +2855,7 @@ const LESSONS = [
     { name: "만져 보기 — 깃발 세 변 재기", inst: "모둠마다 가랜드에 걸 깃발을 하나씩 만들었어요(가~마). 자로 세 변의 길이를 재고, 길이가 같은 변을 초록색으로 그려 보세요.", hints: ["‘📏 자로 재기’를 누르고 변을 누르면 길이가 나타나요.", "‘🟩 같은 변 초록색’을 누른 다음 길이가 같은 변을 눌러요. 같은 변이 없으면 재기만 해요."],
       render: (b, a) => t2Mark(b, a, { k: 60, modes: [0, 2], items: T2S_FLAGS.map((p, i) => ({ p, want: "sides", ask: `깃발 ${T2_KO[i]}의 세 변을 재어 길이가 같은 변을 초록색으로 그려요.` })), ok: `길이가 같은 변의 수: ${T2S_FLAGTXT}예요.` }) },
     { name: "말해 보기 — 변의 길이로 나누기", inst: "재어 본 깃발을 변의 길이에 따라 나누어 보세요. 카드를 끌어 알맞은 칸에 넣어요. (카드의 변을 누르면 길이가 보여요.)", hints: ["길이가 같은 변이 없는 깃발, 두 변의 길이만 같은 깃발, 세 변의 길이가 같은 깃발로 나누어요.", "카드를 누른 다음 칸을 눌러도 넣을 수 있어요."],
-      render: thenWhy((b, a) => t2Bins(b, a, { cats: ["세 변의 길이가 모두 다른 삼각형", "두 변의 길이만 같은 삼각형", "세 변의 길이가 같은 삼각형"], k: 22, measure: true, items: T2S_FLAGS.map(p => ({ p, cat: { 부등변: 0, 이등변: 1, 정: 2 }[t2Info(p).side] })), whyOf: t2WhyOf("side"), ok: "두 변의 길이만 같은 깃발은 가, 라이고, 세 변의 길이가 같은 깃발은 나, 마예요. 다는 세 변의 길이가 모두 달라요." }),
+      render: thenWhy((b, a) => t2Bins(b, a, { cats: ["세 변의 길이가 모두 다른 삼각형", "두 변의 길이만 같은 삼각형", "세 변의 길이가 같은 삼각형"], k: 22, measure: "sides", items: T2S_FLAGS.map(p => ({ p, cat: { 부등변: 0, 이등변: 1, 정: 2 }[t2Info(p).side] })), whyOf: t2WhyOf("side"), ok: "두 변의 길이만 같은 깃발은 가, 라이고, 세 변의 길이가 같은 깃발은 나, 마예요. 다는 세 변의 길이가 모두 달라요." }),
         { q: "깃발 다를 다른 깃발과 따로 나눈 까닭은 무엇일까요?", ph: "왜냐하면 ~", help: ["① 다의 세 변 길이를 떠올려요. → ② 길이가 같은 변이 있는지 살펴봐요.", "‘왜냐하면 다는 세 변의 길이가 ~이기 때문이에요.’ 꼴로 써요."], ans: "왜냐하면 다는 세 변의 길이가 2 cm 5 mm, 3 cm 5 mm, 4 cm로 모두 달라서 길이가 같은 변이 없기 때문이에요." }) },
     { name: "약속하기 — 이등변삼각형과 정삼각형", inst: "약속: 변의 길이에 따라 삼각형의 이름을 알아봐요. 알맞은 말을 골라 약속을 완성해요.", hints: ["‘이등변’은 길이가 같은 변이 둘, ‘정’은 바르고 똑같다는 뜻이에요."],
       render: (b, a) => blanks(b, a, ["두 변의 길이가 같은 삼각형을 ", { o: ["이등변삼각형", "정삼각형", "직각삼각형"], a: 0 }, "이라고 해요. 세 변의 길이가 같은 삼각형을 ", { o: ["정삼각형", "이등변삼각형", "직각삼각형"], a: 0 }, "이라고 해요."]) },

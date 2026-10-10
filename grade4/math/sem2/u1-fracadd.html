@@ -1474,7 +1474,7 @@ function f1Diag(e, r) {
   if (!A || !B || !d) return null;
   if (op === "+" && r.hasF && A.hasF && B.hasF && A.d === B.d && r.d === A.d + B.d) return "분모끼리 더하면 안 돼요. 분모는 그대로 쓰고 분자끼리만 더해요.";
   if (op === "-" && r.hasF && A.hasF && B.hasF && A.d === B.d && r.d === 0) return "분모는 그대로 쓰고 분자끼리만 빼요.";
-  if (op === "+" && A.hasF && B.hasF && A.n + B.n >= d && (A.w || B.w)) { const fc = f1R((A.w + B.w) * d + (A.n + B.n - d), d); if (f1Eq(r, fc)) return `분수 부분끼리 더한 ${f1J(`[${A.n + B.n}/${d}]`, "은는")} 1과 [${A.n + B.n - d}/${d}]예요. 그 1을 자연수 부분에 더해야 해요.`; }
+  if (op === "+" && A.hasF && B.hasF && A.n + B.n >= d && (A.w || B.w)) { const fc = f1R((A.w + B.w) * d + (A.n + B.n - d), d); if (f1Eq(r, fc)) return `분수 부분끼리 더한 ${f1J(`[${A.n + B.n}/${d}]`, "은는")} 1과 ${f1J(`[${A.n + B.n - d}/${d}]`, "이에요")}. 그 1을 자연수 부분에 더해야 해요.`; }
   if (op === "-" && A.hasF && B.hasF && A.n < B.n) {
     const sw = f1R((A.w - B.w) * d + (B.n - A.n), d); if (A.w > B.w && f1Eq(r, sw)) return `분수 부분끼리 뺄 수 없는데 큰 분자에서 작은 분자를 뺐어요. 자연수에서 1만큼을 ${f1J(one, "으로")} 바꾸어 빼요.`;
     const nb = f1R((A.w - B.w) * d + (A.n + d - B.n), d); if (f1Eq(r, nb)) return `1만큼을 ${f1J(one, "으로")} 바꾸었으면 자연수 부분은 1 작아져요.`;
@@ -2000,7 +2000,7 @@ function f1Take(body, api, opt) {
   draw();
   const ask = h("div", { class: "f1ask" });
   if (opt.est) body.append(f1EstBox(api, opt.est, () => { estOk = true; }));
-  body.append(h("p", { class: "inst", style: "font-size:var(--fs-s);margin:.1em 0" }, pie ? "통째로 누르면 1에 ×표, ‘자르기’ 단추를 누르면 조각으로 나뉘어 한 조각씩 ×표 할 수 있어요." : `막대(1)를 누르면 통째로 ×표, ‘쪼개기’를 누르면 1이 [${d}/${d}]로 나뉘어 한 칸씩 ×표 할 수 있어요.`),
+  body.append(h("p", { class: "inst", style: "font-size:var(--fs-s);margin:.1em 0" }, pie ? "통째로 누르면 1에 ×표, ‘자르기’ 단추를 누르면 조각으로 나뉘어 한 조각씩 ×표 할 수 있어요." : `막대(1)를 누르면 통째로 ×표, ‘쪼개기’를 누르면 1이 ${f1J(`[${d}/${d}]`, "으로")} 나뉘어 한 칸씩 ×표 할 수 있어요.`),
     readout, h("div", { class: "f1stage" }, svg),
     h("div", { class: "f1tools" }, h("button", { onclick: () => { units.forEach(u => { u.whole = false; u.cells.fill(false); if (!u.rest) u.split = false; }); draw(); } }, "처음부터")), ask);
   f1Ask(ask, api, () => crossed() === sN && estOk, () => !estOk ? "먼저 어림해요." : `${f1Tk(opt.s)}${opt.unit ? " " + opt.unit : ""}만큼 ×표 해요. 지금은 [1/${d}]이 ${crossed()}개예요. 남은 칸이 모자라면 1을 쪼개 보세요.`, opt);
@@ -2253,7 +2253,7 @@ function f1Game(body, api, opt) {
       info.textContent = `${G.round + 1}회: 주머니에서 말을 꺼내요. (남은 말 ${G.bag.length}개)`;
       ctrl.append(h("button", { class: "f1on", onclick: () => { const me = G.bag.pop(), bot = G.bag.pop(); G.pos = [{ p: me, y: NEAR - R - 4, fell: false }, { p: bot, y: NEAR - R - 4, fell: false }]; G.phase = "flick"; render(); } }, "주머니에서 말 꺼내기"));
     } else if (G.phase === "flick") {
-      info.textContent = `내 말은 ${f1Tk(G.pos[0].p)}, 로봇의 말은 ${f1Tk(G.pos[1].p)}예요. 내 말을 아래로 당겼다 놓거나, 힘을 골라 ‘튕기기’를 눌러요.`;
+      info.textContent = `내 말은 ${f1Tk(G.pos[0].p)}, 로봇의 말은 ${f1J(f1Tk(G.pos[1].p), "이에요")}. 내 말을 아래로 당겼다 놓거나, 힘을 골라 ‘튕기기’를 눌러요.`;
       const rng = h("input", { type: "range", min: 1, max: 10, step: 1, value: 6, "aria-label": "튕기는 힘", style: "width:12em" });
       ctrl.append(h("span", {}, "힘"), rng, h("button", { class: "f1on", onclick: () => launch(+rng.value * 15) }, "튕기기"));
     } else if (G.phase === "calc") {
@@ -2267,7 +2267,7 @@ function f1Game(body, api, opt) {
         G.log.push([`${exprOf(0)} = ${U(want)}`, ""]); G.vals[0] = want;
         const bw = G.vals[1] + G.op[1] * pieceU(G.pos[1].p); G.botWant = bw;
         G.botSay = Math.random() < .35 ? (bw > 1 && Math.random() < .5 ? bw - 1 : bw + 1) : bw;
-        G.phase = "bot"; api.hint(`맞았어요! 내 값은 ${U(want)}예요.`); render();
+        G.phase = "bot"; api.hint(`맞았어요! 내 값은 ${f1J(U(want), "이에요")}.`); render();
       } }, "계산 확인"));
     } else if (G.phase === "bot") {
       info.textContent = `로봇: “${exprOf(1)} = ${U(G.botSay)}” 로봇의 계산이 맞는지 확인해 주세요.`;
@@ -2275,7 +2275,7 @@ function f1Game(body, api, opt) {
         const right = G.botSay === G.botWant;
         if (sayRight !== right) return api.fail(right ? "로봇의 계산은 맞았어요. 다시 계산해 봐요." : "로봇의 계산을 다시 해 봐요. 로봇이 틀렸어요.", `로봇 ${U(G.botSay)} 판단 ${sayRight ? "맞아요" : "틀렸어요"}`);
         G.log[G.log.length - 1][1] = `${exprOf(1)} = ${U(G.botWant)}`; G.vals[1] = G.botWant;
-        api.hint(right ? "로봇의 계산이 맞았어요." : `잘 찾았어요! 바른 값은 ${U(G.botWant)}예요. 로봇이 고쳤어요.`);
+        api.hint(right ? "로봇의 계산이 맞았어요." : `잘 찾았어요! 바른 값은 ${f1J(U(G.botWant), "이에요")}. 로봇이 고쳤어요.`);
         G.round++; G.pos = null; G.phase = G.round >= 3 ? "final" : "draw"; render();
       };
       ctrl.append(h("button", { onclick: () => judge(true) }, "맞아요"), h("button", { onclick: () => judge(false) }, "틀렸어요"));
