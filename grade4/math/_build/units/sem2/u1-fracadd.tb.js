@@ -473,7 +473,6 @@ function f1Line(body, api, opt) {
     if (hops[0]) svg.append(arc(0, aT, tok(opt.a), F1_S[1]));
     if (hops[1]) svg.append(arc(aT, eT, tok(opt.b), F1_S[0]));
     hops.forEach((t, k) => svg.append(svgEl("circle", { cx: X(t), cy: Y, r: 9, fill: F1_S[k ? 0 : 1], stroke: "#fff", "stroke-width": 2 })));
-    tip.textContent = hops.length === 0 ? `① 0에서 ${f1J(tok(opt.a), "만큼") || ""}` : "";
     tip.textContent = hops.length === 0 ? `① 0에서 ${tok(opt.a)}만큼 간 곳을 눌러요. 작은 눈금 한 칸은 [1/${d}]이에요.`
       : hops.length === 1 ? `② 거기에서 ${tok(opt.b)}만큼 ${sg > 0 ? "더 간" : "되돌아온"} 곳을 눌러요.`
       : `수직선에서 ${tok(opt.a)} ${sg > 0 ? "+" : "−"} ${tok(opt.b)}의 결과를 찾았어요.`;
