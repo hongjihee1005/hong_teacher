@@ -38,7 +38,7 @@ FILLS = ['#F6C08A', '#9CC6EC', '#A9D8A2', '#D7B5E6']
 PX_MM = 0.155          # 그림 1px(글자 34px 기준) ≈ 0.155mm → 글자 높이가 본문(14pt)과 비슷
 
 # ================================================================ 분수 계산
-FR_RE = re.compile(r'\[(?:(\S+) )?([^\]/ ]+)/([^\]]+)\]')
+FR_RE = re.compile(r'\[(?:(\d+) )?([^\[\]/ ]+)/([^\[\]]+)\]')
 
 
 def F(s):
@@ -47,6 +47,10 @@ def F(s):
     m = re.fullmatch(r'(?:(\d+) )?(\d+)/(\d+)', s)
     if m:
         return int(m.group(1) or 0) + Fraction(int(m.group(2)), int(m.group(3)))
+    m = re.fullmatch(r'(?:([\d+\-−×]+) )?([\d+\-−×]+)/([\d+\-−×]+)', s)
+    if m:   # 분자·분모 안의 식: [{3}+{5}/7]
+        iv = lambda t: int(eval(t.replace('−', '-').replace('×', '*'))) if t else 0
+        return iv(m.group(1)) + Fraction(iv(m.group(2)), iv(m.group(3)))
     assert re.fullmatch(r'\d+', s), s
     return Fraction(int(s))
 
@@ -93,21 +97,50 @@ def book(x, d):
     return '%s (=%d/%d)' % (m, n, d) if n > d else m
 
 
+PART = r'(이에요|예요|이므로|므로|으로|은|는|을|를|과|와|이|가|로)?'
+PAIRS = {'이에요': 0, '예요': 0, '이므로': 1, '므로': 1, '은': 2, '는': 2, '을': 3, '를': 3, '과': 4, '와': 4, '이': 5, '가': 5}
+FORMS = [('이에요', '예요'), ('이므로', '므로'), ('은', '는'), ('을', '를'), ('과', '와'), ('이', '가')]
+
+
+def jong(num):
+    """읽는 말 끝 글자의 받침: None(없음) · 'ㄹ' · 'o'(그 밖)"""
+    n = int(re.findall(r'\d+', num)[-1])
+    if n == 0:
+        return 'o'
+    if n % 10:
+        return {1: 'ㄹ', 3: 'o', 6: 'o', 7: 'ㄹ', 8: 'ㄹ'}.get(n % 10)
+    return 'o'      # 십·백·천
+
+
 def rd(t):
-    """글 속 [분수] → 읽는 말"""
+    """글 속 [분수] → 읽는 말(뒤 조사도 읽는 말에 맞춤)"""
     def rep(m):
-        w, n, d = m.group(1), m.group(2), m.group(3)
+        w, n, d, pt = m.group(1), m.group(2), m.group(3), m.group(4) or ''
         if w:
-            gwa = '과' if w[-1] in '013678' else '와'
-            return '%s%s %s분의 %s' % (w, gwa, d, n)
-        return '%s분의 %s' % (d, n)
-    return FR_RE.sub(rep, t)
+            gwa = '과' if jong(w) else '와'
+            r = '%s%s %s분의 %s' % (w, gwa, d, n)
+        else:
+            r = '%s분의 %s' % (d, n)
+        j = jong(n)
+        if pt in PAIRS:
+            pt = FORMS[PAIRS[pt]][0 if j else 1]
+        elif pt in ('으로', '로'):
+            pt = '으로' if j == 'o' else '로'
+        return r + pt
+    return re.sub(FR_RE.pattern + PART, rep, t)
 
 
 def flat(t):
     """[2 1/4] → 2 1/4 (정답 쪽 표기), 빈칸 {x} → x"""
     t = re.sub(r'\{([^}]*)\}', r'\1', t)
     t = t.replace('▢', '')
+
+    def one(m):
+        w, n, d = m.group(1), m.group(2), m.group(3)
+        if re.search(r'[+−\-]', n):
+            n = '(%s)' % n
+        return ('%s ' % w if w else '') + '%s/%s' % (n, d)
+    t = re.sub(r'\[(?:(\d+) )?([^\[\]/ ]+)/([^\[\]]+)\]', one, t)
     return re.sub(r'\[([^\]]+)\]', r'\1', t)
 
 
@@ -577,7 +610,7 @@ def blanks(s, lv, parts):
             txt += rd(p)
         else:
             opts, a = p
-            ans.append(rd(opts[a]))
+            ans.append(flat(opts[a]))
             words += [rd(o) for o in opts]
             txt += opt_text(opts) if lv == '기본형' else '(              )'
     if lv == '도전형':
@@ -654,7 +687,7 @@ def chain(s, rows, check_rows=True):
     """앱 f1Chain: 줄마다 빈칸 {답}. 한글 없는 '=' 줄은 값이 같은지 확인. 정답(채운 식) 글."""
     for r in rows:
         e = r[1] if isinstance(r, tuple) else r
-        full = flat(e)
+        full = re.sub(r'\{([^}]*)\}', r'\1', e).replace('▢', '')
         if check_rows and '=' in full and not re.search(r'[가-힣]', full):
             vals = [ev(p.replace('(', '').replace(')', '')) if '(' not in p else _paren(p) for p in full.split('=') if p.strip()]
             assert all(v == vals[0] for v in vals), ('식 확인 필요', full)
@@ -765,7 +798,7 @@ def L_add_proper(s, lv, P):
         a6 = calc(s, P['ch'])
         s.ask('□ 안에 들어갈 수 있는 자연수를 모두 써 보세요. 왜 그 수만 되는지 까닭도 써요.', blank=False)
         s.lines(2)
-        ans += '  ⑥ %s (□ = %s, 분자의 합이 %d보다 작아야 해요)' % (', '.join(a6), ', '.join(map(str, P['ch_box'])), P['ch_box_den'])
+        ans += '  ⑥ %s, %d개 (□ = %s, 분자의 합이 %d보다 작아야 해요)' % (', '.join(a6), len(P['ch_box']), ', '.join(map(str, P['ch_box'])), P['ch_box_den'])
     return ans
 
 

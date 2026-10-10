@@ -530,7 +530,7 @@ function n1sZoom(body, api, opt) {
     if (lv === L.length - 1) { fin = true; api.done("1000, 100, 10, 1", opt.ok); return true; }
     solved = true; draw(); api.hint("○ 맞아요! 주황 칸을 눌러 수직선을 크게 봐요."); return false;
   };
-  const kick = n1sKick(() => !!inp.value.trim() && !solved && !fin, () => lv + ":" + inp.value.trim(), judge);
+  const kick = n1sKick(() => !!inp.value.trim() && !solved && !fin && (st.commit || (n1Parse(inp.value) || "").length >= String(L[lv].step).length), () => lv + ":" + inp.value.trim(), judge);
   n1sWatch(inp, kick, st);
   draw();
   api.provide({ words: ["1000", "100", "10", "1"], answers: ["1000, 100, 10, 1"] });
