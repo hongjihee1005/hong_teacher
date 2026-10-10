@@ -464,8 +464,13 @@ def nlines(t, per):
 class W:
     def __init__(self, s):
         self.s, self.y, self.buf = s, 0.0, []
+        self.after_pic = False      # 단계의 첫 그림 뒤로는 문항마다 따로 넘길 수 있음
 
     def _q(self, h, fn, *a, **k):
+        if self.after_pic and self.buf:
+            # 그림 바로 앞의 안내 글·표는 그림과 함께 둠
+            if not (fn == self.s.picture and self.buf[-1][1] in (self.s.text, self.s.table, self.s.fill, self.s.choices)):
+                self.flush()
         self.buf.append((h, fn, a, k))
 
     def flush(self):
@@ -483,6 +488,7 @@ class W:
     # 차시 머리
     def lesson(self, no, soop, title, question, scene):
         self.flush()
+        self.after_pic = False
         self.s.lesson(no=no, soop=soop, title=title, question=question)
         self.y = 46 + 4 * (len(question) > 34)
         self._q(sum(nlines(t, 37) * 7.4 for t in ([scene] if isinstance(scene, str) else scene)) + 6,
@@ -491,6 +497,7 @@ class W:
 
     def step(self, label, sub=None):
         self.flush()
+        self.after_pic = False
         self._q(11.5, self.s.step, label, sub)
 
     def cut(self):
@@ -515,6 +522,7 @@ class W:
             maxh = {'read': 70, 'draw': 84}.get(svgt[3] if len(svgt) > 3 else '', 80)
         mm = min(mm, 178, maxh * Wd / Hd)
         self._q(mm * Hd / Wd + 2.5, self.s.picture, png(svgt), mm, align)
+        self.after_pic = True
 
     def choices(self, pairs):
         h = sum(max(12.0, nlines(q, 22) * 6.6 + 3, nlines(a, 13) * 6.6 + 3) for q, a in pairs)
