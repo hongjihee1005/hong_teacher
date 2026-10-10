@@ -272,7 +272,7 @@ def bar_svg(g, bars='vals', title=True, ticks='num', names=None, axes=True, lock
                 ls = lines_of(names[i])
                 for j, l in enumerate(ls):
                     out.append(T(L - 12, y + SH / 2 + (j - (len(ls) - 1) / 2) * (fs + 4), l, fs, anchor='end'))
-    return wrap(''.join(out), W, H)
+    return wrap(''.join(out), W, H) + ('read' if (bars == 'vals' and lock is None) else 'draw',)
 
 
 def pair_svg(parts, gap=36):
@@ -281,7 +281,7 @@ def pair_svg(parts, gap=36):
     W = sum(p[1][1] for p in parts) + gap * (len(parts) - 1)
     H = max(p[1][2] for p in parts) + lead_h
     x, out = 0, []
-    for lead, (svg, w, h) in parts:
+    for lead, (svg, w, h, *_) in parts:
         if lead:
             out.append(T(x + w / 2, 16, lead, 21, weight='bold', fill='#2B6FB8'))
         inner = svg.split('>', 1)[1].rsplit('</svg>', 1)[0]
@@ -509,8 +509,10 @@ class W:
         self.ask('왜 그럴까요? ' + q, blank=False)
         self.lines(n)
 
-    def pic(self, svgt, mm=150, align='center', maxh=88):
-        _, Wd, Hd = svgt
+    def pic(self, svgt, mm=150, align='center', maxh=None):
+        Wd, Hd = svgt[1], svgt[2]
+        if maxh is None:
+            maxh = {'read': 70, 'draw': 84}.get(svgt[3] if len(svgt) > 3 else '', 80)
         mm = min(mm, 178, maxh * Wd / Hd)
         self._q(mm * Hd / Wd + 2.5, self.s.picture, png(svgt), mm, align)
 
