@@ -408,7 +408,7 @@ function n1Money(body, api, opt) {
       if (opt.fewest) { need = {}; let r = v; D.forEach(d => { need[d] = Number(r / BigInt(d)); r %= BigInt(d); }); }
       if (need) {
         const wrong = D.find(d => (need[d] || 0) !== cnt[d]);
-        if (wrong != null) return api.fail(t.needMsg || (opt.fewest ? `모두 ${tt}원이 맞아요! 이번에는 높은 돈부터 써서 지폐와 동전의 수가 가장 적게 만들어 봐요.` : `${n1J(n1MoneyName(wrong), "을/를")} ${need[wrong] || 0}${n1MoneyUnit(wrong)} 써서 만들어요.`), ans);
+        if (wrong != null) return api.fail(t.needMsg || (opt.fewest ? `모두 ${tt}원이 맞아요! 이번에는 큰 돈부터 써서 지폐와 동전의 수가 가장 적게 만들어 봐요.` : `${n1J(n1MoneyName(wrong), "을/를")} ${need[wrong] || 0}${n1MoneyUnit(wrong)} 써서 만들어요.`), ans);
       }
       if (ti < opt.targets.length - 1) {
         ti++; if (opt.resetEach) D.forEach(d => cnt[d] = 0); setT(); draw();
