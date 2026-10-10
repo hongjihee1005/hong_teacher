@@ -22,6 +22,7 @@ def make(kind, path):
     h = '\n'.join(head)
     h = re.sub(r'<title>.*?</title>', '<title>{{TITLE}}</title>', h, count=1)
     h = re.sub(r'<meta name="hj-(list|next)"[^>]*>', '', h)
+    engine = [x.replace('{ class: "jua" }, "3학년")', '{ class: "jua" }, "4학년")') for x in engine]
     out = h + '\n/*@@APP@@*/\n' + '\n'.join(engine) + '\n/*@@UNIT@@*/\n' + '\n'.join(multi) + '\n/*@@LESSONS@@*/\n' + '\n'.join(tail)
     (HERE / f'tpl_{kind}.html').write_text(out, encoding='utf-8')
     print(kind, path.name, 'engine lines', len(engine), 'tail', len(tail))
