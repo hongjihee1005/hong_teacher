@@ -890,7 +890,7 @@ html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!imp
 /* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
 html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
-</style><meta name="hj-list" content="[[&quot;u1-bignum.html&quot;, &quot;우주 탐험대 큰 수 일지&quot;, &quot;웹앱&quot;], [&quot;u2-angle.html&quot;, &quot;우리 반 놀이터 설계단&quot;, &quot;웹앱&quot;], [&quot;u3-muldiv.html&quot;, &quot;과학 축제 준비 위원회&quot;, &quot;웹앱&quot;], [&quot;u4-move.html&quot;, &quot;우리 반 게임 제작소&quot;, &quot;웹앱&quot;], [&quot;u5-bargraph.html&quot;, &quot;우리 반 조사 기자단&quot;, &quot;웹앱&quot;], [&quot;u6-pattern.html&quot;, &quot;우리 반 나눔 저금통 프로젝트&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
+</style><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
 <div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div>
@@ -2137,7 +2137,7 @@ function b5Build(body, api, opt) {
     const given = (st.step == null ? "?" : b5U(st.step, U)) + ` ${st.cells}칸: ` + g.cats.map((c, i) => `${st.names[i] || "?"} ${st.h[i]}칸`).join(", ");
     const no = (m) => { api.fail(m, given); return false; };
     if (T) { const bad = b5CheckTable(T, tSpec, tBlanks); if (bad) return no(bad); }
-    if (opt.axisPick && st.catAxis !== g.catAxis) return no(`막대의 길이로 나타내는 것은 ‘${g.valAxis}’예요. 막대가 놓이는 쪽 축에는 ${b5J("‘" + g.catAxis + "’", "을/를")} 나타내요.`);
+    if (opt.axisPick && st.catAxis !== g.catAxis) return no(`막대의 길이로 나타내는 것은 ${b5J("‘" + g.valAxis + "’", "이에요/예요")}. 막대가 놓이는 쪽 축에는 ${b5J("‘" + g.catAxis + "’", "을/를")} 나타내요.`);
     if (st.step * st.cells < max) return no(`눈금 한 칸이 ${b5U(st.step, U)}이고 ${st.cells}칸이면 ${b5U(st.step * st.cells, U)}까지만 나타낼 수 있어요. 가장 큰 수 ${b5U(max, U)}까지 나타낼 수 있게 골라요.`);
     const nd = vals.findIndex(v => v % st.step);
     if (nd >= 0) return no(`눈금 한 칸이 ${b5U(st.step, U)}이면 ${g.cats[nd]} ${b5J(b5U(vals[nd], U), "은/는")} 막대 끝이 눈금 칸 가운데에 걸려서 정확하게 나타내기 어려워요. 모든 수가 칸에 꼭 맞는 크기를 골라요.`);
@@ -2241,7 +2241,7 @@ function b5Tally(body, api, opt) {
   const showNow = () => { now.textContent = pos < seq.length ? `${pos + 1}번째 친구 ${names[pos]} → ‘${cats[seq[pos]]}’` : "모든 친구가 스티커를 붙였어요!"; };
   cats.forEach((c, i) => binRow.append(h("button", { onclick: () => {
     if (pos >= seq.length) return;
-    if (seq[pos] !== i) return api.hint(`${names[pos]}${b5Jong(names[pos]) ? "이가" : "가"} 고른 ${b5J(what, "은/는")} ‘${cats[seq[pos]]}’예요. 그 칸에 붙여요.`);
+    if (seq[pos] !== i) return api.hint(`${names[pos]}${b5Jong(names[pos]) ? "이가" : "가"} 고른 ${b5J(what, "은/는")} ${b5J("‘" + cats[seq[pos]] + "’", "이에요/예요")}. 그 칸에 붙여요.`);
     got[i]++; pos++; draw(); showNow();
     if (pos === seq.length) finish();
   } }, c)));
@@ -2689,7 +2689,7 @@ const LESSONS = [
     { name: "말해 보기 — 막대를 가로로", inst: "처음 그린 막대그래프의 가로와 세로를 바꾸어 막대를 가로로 나타내 보세요.", hints: ["이번에는 세로에 장소, 가로에 자전거 수가 있어요.", "가로 눈금 한 칸은 1대예요."],
       render: (b, a) => b5Build(b, a, { g: B5V(B5S.bike, { horiz: true }), ok: "막대를 가로로 나타냈어요. 표와 다시 견주어 잘 나타냈는지 확인해 봐요." }) },
     { name: "약속하기 — 막대그래프로 나타내는 방법", inst: "막대그래프로 나타내는 방법을 정리해요.", hints: ["가장 큰 수가 그래프 안에 들어가야 해요.", "제목은 먼저 써도 돼요."],
-      render: (b, a) => blanks(b, a, ["① 표를 보고 가로와 세로에 무엇을 나타낼지 정해요. ② ", { o: ["가장 큰 수", "가장 작은 수"], a: 0 }, "까지 나타낼 수 있도록 ", { o: ["눈금 한 칸의 크기", "막대의 굵기"], a: 0 }, "를 정해요. ③ 조사한 자료의 수에 맞게 ", { o: ["막대", "그림"], a: 0 }, " 모양으로 나타내요. ④ 막대그래프에 알맞은 ", { o: ["제목", "숫자"], a: 0 }, "을 써요. (제목은 먼저 써도 돼요.)"]) },
+      render: (b, a) => blanks(b, a, ["① 표를 보고 가로와 세로에 무엇을 나타낼지 정해요. ② ", { o: ["가장 큰 수", "가장 작은 수"], a: 0 }, "까지 나타낼 수 있도록 ", { o: ["눈금 한 칸의 크기", "막대의 굵기"], a: 0 }, "를 정해요. ③ 조사한 자료의 수에 맞게 ", { o: ["막대", "그림"], a: 0 }, " 모양으로 나타내요. ④ 막대그래프에 알맞은 ", { o: ["제목", "눈금"], a: 0 }, "을 써요. (제목은 먼저 써도 돼요.)"]) },
     { name: "확인하기 — 스스로 정하기", inst: "도현이가 한 주 동안 날마다 아침에 학교 앞 보관대의 자전거를 세었어요. 눈금 칸 수와 눈금 한 칸의 크기를 스스로 정해 막대그래프로 나타내 보세요.", hints: ["가장 큰 수는 30이에요. (칸 수) × (한 칸의 크기)가 30보다 작으면 안 돼요.", "모든 수가 눈금 칸에 꼭 맞으려면 한 칸의 크기로 15, 20, 10, 25, 30을 모두 나눌 수 있어야 해요."],
       render: (b, a) => b5Build(b, a, { g: B5S.bikeDay, stepChoices: [2, 5, 1], cellChoices: [5, 6, 10, 30], ok: "같은 자료라도 눈금 한 칸의 크기에 따라 막대의 칸 수가 달라져요. 하지만 나타내는 수는 같아요." }) }
   ],

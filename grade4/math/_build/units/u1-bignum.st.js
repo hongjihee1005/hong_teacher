@@ -271,7 +271,7 @@ function n1sAskIn(el, ap, items, opts = {}) {
       row.val = () => ins.map(x => x.inp.value.trim() || "-").join(", ");
       row.key = () => ins.map(x => n1Parse(x.inp.value) || "").join(",");
       row.sig = () => ins.map(x => x.inp.value.replace(/\s/g, "")).join(",");
-      row.msg = () => { const b = ins.find(x => !good(x)); if (!b) return null; if (n1Parse(b.inp.value) === null) return "수를 숫자로 써요. ‘30만’처럼 만·억·조를 섞어 써도 돼요."; return null; };
+      row.msg = () => { const b = ins.find(x => !good(x)); if (!b) return null; if (n1Parse(b.inp.value) === null) return "수를 숫자로 써요. ‘30만’처럼 만·억·조를 섞어 써도 돼요."; const g = n1Parse(b.inp.value), w = n1S(b.p.a); if (g.replace(/0+$/, "") === w.replace(/0+$/, "")) return "숫자는 맞게 썼는데 0의 개수가 달라요. 일의 자리부터 네 자리씩 끊어 다시 세어 봐요."; return null; };
     } else {
       const s = it.show || n1S(it.a), st = { commit: false };
       const inp = n1Inp(`${Math.max(5, Math.min(17, s.length + 2))}em`, n1T(it.q || "답"), it.kb || (/[만억조]/.test(s) ? "text" : "numeric"));
@@ -289,6 +289,7 @@ function n1sAskIn(el, ap, items, opts = {}) {
           if (/[일이삼사오육칠팔구십백천]/.test(inp.value)) return "읽는 말이 아니라 숫자로 써요.";
           return "수를 숫자로 써요. 쉼표나 띄어쓰기는 써도 괜찮아요.";
         }
+        if (pv().replace(/0+$/, "") === n1S(it.a).replace(/0+$/, "")) return "숫자는 맞게 썼는데 0의 개수가 달라요. 일의 자리부터 네 자리씩 끊어 다시 세어 봐요.";
         return null;
       };
     }

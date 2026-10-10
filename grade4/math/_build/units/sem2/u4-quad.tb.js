@@ -863,7 +863,7 @@ function q4Corners(body, api, opt) {
 function q4FoldRh(body, api, opt) {
   const W = 760, H = 460, svg = makeSvg(W, H), g = svgEl("g"); svg.append(g);
   /* 마름모: 반대각선 a(ㄱㄷ), b(ㄴㄹ) (cm), 돌림 */
-  const a = opt.a || 2.4, b = opt.b || 1.6, rot = opt.rot || 18, U = opt.U || 60;
+  const a = opt.a || 2.4, b = opt.b || 1.6, rot = opt.rot || 18, U = opt.U || 78;
   const C = [W * .42, H / 2], ra = q4Rad(rot);
   const e1 = [Math.sin(ra), -Math.cos(ra)], e2 = [Math.cos(ra), Math.sin(ra)];   /* e1: ㅁ→ㄱ, e2: ㅁ→ㄹ */
   const Pt = (x, y) => [C[0] + e2[0] * x * U + e1[0] * y * U, C[1] + e2[1] * x * U + e1[1] * y * U];
@@ -885,7 +885,7 @@ function q4FoldRh(body, api, opt) {
         ["ㄱ", "ㄴ", "ㄷ", "ㄹ"].forEach(nm => { const P = K[nm], hit = q4Ln(C, P, { stroke: "rgba(0,0,0,0)", "stroke-width": 24, style: "cursor:pointer" });
           hit.addEventListener("click", () => { meas.has(nm) ? meas.delete(nm) : meas.add(nm); draw(); }); g.append(hit);
           if (meas.has(nm)) { const M = [(C[0] + P[0]) / 2, (C[1] + P[1]) / 2], L = (nm === "ㄱ" || nm === "ㄷ") ? a : b, t = q4Cm(L), d = q4Unit(q4Sub(P, C)), nn = [-d[1] * 26, d[0] * 26];
-            g.append(svgEl("rect", { x: q4F(M[0] + nn[0] - 34), y: q4F(M[1] + nn[1] - 13), width: 68, height: 26, rx: 7, fill: "#fff", stroke: "#1D4E80", "stroke-width": 1.2 }), txt(M[0] + nn[0], M[1] + nn[1], t, 16, { fill: "#1D4E80" })); } });
+            g.append(svgEl("rect", { x: q4F(M[0] + nn[0] * 1.6 - 50), y: q4F(M[1] + nn[1] * 1.6 - 14), width: 100, height: 28, rx: 7, fill: "#fff", stroke: "#1D4E80", "stroke-width": 1.2 }), txt(M[0] + nn[0] * 1.6, M[1] + nn[1] * 1.6, t, 17, { fill: "#1D4E80" })); } });
         const hc = svgEl("circle", { cx: C[0], cy: C[1], r: 18, fill: "rgba(0,0,0,0)", style: "cursor:pointer" }); hc.addEventListener("click", () => { meas.has("ang") ? meas.delete("ang") : meas.add("ang"); draw(); }); g.append(hc);
         if (meas.has("ang")) g.append(txt(C[0] + 34, C[1] - 30, "90°", 18, { fill: Q4_RED }));
         lab(C, "ㅁ", -20, 22);
@@ -1063,7 +1063,7 @@ function q4Game(body, api, opt) {
   const match = (a, b) => a.t !== b.t && (a.t === "s" ? fits(a, b) : fits(b, a));
   let seed = opt.seed || 7; const rnd = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
   const shuffle = arr => { for (let i = arr.length - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; } return arr; };
-  let deck, pile, hands, turn, over, busy, log;
+  let deck, pile, hands, turn, over, busy, log, only;
   const names = ["나", "하율", "친구"];
   const cardEl = (c, extra = {}) => {
     const el = h("button", Object.assign({ class: "q4gc" + (c.t === "d" ? " q4desc" : "") }, extra));
@@ -1072,19 +1072,24 @@ function q4Game(body, api, opt) {
   };
   const cName = c => c.t === "s" ? SH[c.i].n : `‘${DS[c.i][0]}’`;
   const reset = () => {
-    deck = []; SH.forEach((_, i) => { deck.push({ t: "s", i }, { t: "s", i }); }); DS.forEach((_, i) => { deck.push({ t: "d", i }, { t: "d", i }); });
+    deck = [];
+    /* 짝이 하나뿐인 카드(평행한 변이 없는 사각형)는 1장씩만: 그 둘만 번갈아 놓이며 놀이가 멈추지 않게 */
+    only = (t, i) => (t === "s" ? DS.filter(d => d[1](q4Info(SH[i].p))) : SH.filter(sh => DS[i][1](q4Info(sh.p)))).length <= 1;
+    SH.forEach((_, i) => { for (let k = only("s", i) ? 1 : 3; k > 0; k--) deck.push({ t: "s", i }); }); DS.forEach((_, i) => { for (let k = only("d", i) ? 1 : 3; k > 0; k--) deck.push({ t: "d", i }); });
     shuffle(deck); hands = [deck.splice(0, 7), deck.splice(0, 7), deck.splice(0, 7)]; pile = [deck.pop()]; turn = 0; over = null; busy = false; log = "가운데 카드에 알맞은 카드를 내 손에서 골라 내려놓아요.";
     draw();
   };
   const draw1 = () => {
     if (!deck.length && pile.length > 1) { const topC = pile.pop(); deck = shuffle(pile); pile = [topC]; }
-    return deck.pop() || null;
+    if (deck.length) return deck.pop();
+    /* 쌓아 둔 카드가 없으면 가운데에 새 카드를 한 장 놓아요 */
+    for (;;) { const c = rnd() < .5 ? { t: "s", i: Math.floor(rnd() * SH.length) } : { t: "d", i: Math.floor(rnd() * DS.length) }; if (!only(c.t, c.i)) { pile.push(c); return null; } }
   };
   const ai = who => {
     const topC = pile[pile.length - 1], hand = hands[who];
     const k = hand.findIndex(c => match(c, topC));
     if (k >= 0) { const c = hand.splice(k, 1)[0]; pile.push(c); log = `${names[who]}: ${cName(c)} 카드를 내려놓았어요.`; }
-    else { const c = draw1(); if (c) hand.push(c); log = `${names[who]}: 내려놓을 카드가 없어서 한 장 가져갔어요.`; }
+    else { const c = draw1(); if (c) { hand.push(c); log = `${names[who]}: 내려놓을 카드가 없어서 한 장 가져갔어요.`; } else log = "쌓아 둔 카드가 없어서 가운데에 새 카드를 한 장 놓았어요."; }
     if (!hand.length) over = who;
   };
   const next = () => {
@@ -1115,7 +1120,7 @@ function q4Game(body, api, opt) {
     wrap.append(h("div", { class: "inst" }, `내 카드 ${hands[0].length}장`), hand);
     wrap.append(h("div", { class: "actions" }, h("button", { class: "ghost", disabled: busy || over != null, onclick: () => {
       if (hands[0].some(c => match(c, topC))) return api.hint("내려놓을 수 있는 카드가 있어요. 내 카드를 다시 살펴봐요.");
-      const c = draw1(); if (c) hands[0].push(c); log = "나: 내려놓을 카드가 없으니까 한 장 가져갔어요."; next();
+      const c = draw1(); if (c) { hands[0].push(c); log = "나: 내려놓을 카드가 없으니까 한 장 가져갔어요."; } else log = "쌓아 둔 카드가 없어서 가운데에 새 카드를 한 장 놓았어요."; next();
     } }, "한 장 가져오기"), h("button", { class: "ghost", onclick: () => { seed = Math.floor(Math.random() * 1000) + 1; reset(); } }, "새 판")));
   };
   api.provide({ words: ["도형 카드", "설명 카드", "성질"], answers: ["카드를 모두 내려놓아요"] });
@@ -1360,11 +1365,11 @@ const q4SqDraw = () => q4Fig(620, 230, s => {
 const q4Labeled = (p, o, maxW = "20em", W = 380, H = 250) => q4Fig(W, H, s => { const m = q4Map(p, [0, 0, W, H, 60], 70); s.append(q4PolyG(m.P, Object.assign({ fs: 19 }, o))); }, maxW);
 /* 마름모와 마주 보는 꼭짓점끼리 이은 선분 (7차시 □ 문제) */
 const q4RhDiag = (a, b, labs, maxW = "18em") => q4Fig(320, 280, s => {
-  const C = [160, 140], k = 28, P = [[C[0], C[1] - a * k], [C[0] - b * k, C[1]], [C[0], C[1] + a * k], [C[0] + b * k, C[1]]];
+  const C = [160, 140], k = 22, P = [[C[0], C[1] - a * k], [C[0] - b * k, C[1]], [C[0], C[1] + a * k], [C[0] + b * k, C[1]]];
   s.append(q4PolyG(P, { fs: 18, names: true, rights: false }));
   s.append(q4Ln(P[0], P[2], { stroke: Q4_SKY, "stroke-width": 3 }), q4Ln(P[1], P[3], { stroke: Q4_SKY, "stroke-width": 3 }));
   s.append(txt(C[0] + 16, C[1] + 18, "ㅁ", 17));
-  s.append(txt(C[0] + 34, (C[1] + P[0][1]) / 2, labs[0], 17, { fill: "#1D4E80" }), txt(C[0] + 34, (C[1] + P[2][1]) / 2, labs[1], 17, { fill: "#1D4E80" }));
+  s.append(txt(C[0] + 30, (C[1] + P[0][1]) / 2, labs[0], 16, { fill: "#1D4E80" }), txt(C[0] + 30, (C[1] + P[2][1]) / 2, labs[1], 16, { fill: "#1D4E80" }));
   s.append(svgEl("path", { d: q4Arc(C, [0, -1], [-1, 0], 18), fill: "none", stroke: TENT, "stroke-width": 2.5 }), txt(C[0] - 34, C[1] - 30, labs[2], 17, { fill: "#B4530F" }));
 }, maxW);
 
@@ -1597,7 +1602,7 @@ const LESSONS = [
         { fixed: [], need: "rhom", ask: "앞과 다른 모양의 마름모를 그려요.", ok: "다른 모양의 마름모도 그렸어요." }], ok: "네 변의 길이가 모두 같으면 기울어진 모양도 모두 마름모예요." }) },
     { name: "확인하기", inst: "마름모의 성질을 이용하여 문제를 풀어 보세요.", hints: ["마주 보는 두 각의 크기가 같고, 네 변의 길이가 모두 같아요.", "마주 보는 꼭짓점끼리 이은 두 선분은 수직으로 만나요."],
       render: (b, a) => q4Chain(b, a, [
-        (bx, ax) => q4Nums(bx, ax, h("div", { class: "q4row" }, q4Labeled(q4RH(7, 70), { lens: ["7 cm", "㉡ cm", null, null], angs: [null, "110°", null, "㉠°"] }, "17em", 360, 250), q4RhDiag(3, 2.2, ["4 cm", "㉢ cm", "㉣°"])), [
+        (bx, ax) => q4Nums(bx, ax, h("div", { class: "q4row" }, q4Labeled(q4RH(7, 70), { lens: ["7 cm", "㉡ cm", null, null], angs: [null, "110°", null, "㉠°"] }, "17em", 360, 250), q4RhDiag(4, 6, ["4 cm", "㉢ cm", "㉣°"])), [
           { q: "㉠", a: 110, unit: "°", why: { "70": "㉠은 110°인 각과 마주 보는 각이에요." } }, { q: "㉡", a: 7, unit: "cm" }, { q: "㉢", a: 4, unit: "cm" }, { q: "㉣", a: 90, unit: "°" }], { ok: "마주 보는 각 110°, 네 변 7 cm, 마주 보는 꼭짓점끼리 이은 선분은 서로를 똑같이 나누므로 4 cm, 수직으로 만나므로 90°예요." }),
         (bx, ax) => quiz(bx, ax, [{ q: "마름모를 모두 골라요.", fig: () => q4Cards(Q4_C7E, { per: 3, k: 26, maxW: "34em" }), o: Q4_KO.slice(0, 6), a: q4Ans(Q4_C7E, p => q4Info(p).allEq, [2, 4]) }], { ok: "다와 마는 네 변의 길이가 모두 같아서 마름모예요.", bad: "점 종이의 칸을 세어 네 변의 길이가 모두 같은지 살펴봐요. 기울어진 모양도 있어요." }),
         (bx, ax) => quiz(bx, ax, [{ q: "마름모에 대한 설명으로 잘못된 것을 골라요.", o: ["㉠ 마주 보는 두 변의 길이가 다릅니다.", "㉡ 마주 보는 꼭짓점끼리 이은 두 선분은 서로 수직으로 만납니다.", "㉢ 네 변의 길이가 모두 같습니다."], a: 0 }], { ok: "㉠이 잘못되었어요. 마름모는 네 변의 길이가 모두 같으니 마주 보는 두 변의 길이도 같아요." })]) }

@@ -858,7 +858,7 @@ html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!imp
 /* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
 html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
-</style><meta name="hj-list" content="[[&quot;u1-bignum.html&quot;, &quot;큰 수&quot;, &quot;웹앱&quot;], [&quot;u2-angle.html&quot;, &quot;각도&quot;, &quot;웹앱&quot;], [&quot;u3-muldiv.html&quot;, &quot;곱셈과 나눗셈&quot;, &quot;웹앱&quot;], [&quot;u4-move.html&quot;, &quot;평면도형의 이동&quot;, &quot;웹앱&quot;], [&quot;u5-bargraph.html&quot;, &quot;막대그래프&quot;, &quot;웹앱&quot;], [&quot;u6-pattern.html&quot;, &quot;규칙과 관계&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
+</style><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
 <div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
@@ -1773,7 +1773,7 @@ function b5Build(body, api, opt) {
     if (T) { const bad = b5CheckTable(T, tSpec, tBlanks); if (bad) return api.fail(bad, given); }
     if (opt.axisPick) {
       if (st.catAxis == null || st.valAxis == null) return api.fail("가로와 세로에 무엇을 나타낼지 먼저 골라요.", given);
-      if (st.catAxis !== g.catAxis) return api.fail(`막대의 길이로 나타내는 것은 ‘${g.valAxis}’예요. 막대가 놓이는 쪽 축에는 ${b5J("‘" + g.catAxis + "’", "을/를")} 나타내요.`, given);
+      if (st.catAxis !== g.catAxis) return api.fail(`막대의 길이로 나타내는 것은 ${b5J("‘" + g.valAxis + "’", "이에요/예요")}. 막대가 놓이는 쪽 축에는 ${b5J("‘" + g.catAxis + "’", "을/를")} 나타내요.`, given);
     }
     if (st.step == null) return api.fail("눈금 한 칸의 크기를 먼저 골라요.", given);
     if (st.step * st.cells < max) return api.fail(`눈금 한 칸이 ${b5U(st.step, U)}이고 ${st.cells}칸이면 ${b5U(st.step * st.cells, U)}까지만 나타낼 수 있어요. 가장 큰 수 ${b5U(max, U)}까지 나타낼 수 있게 골라요.`, given);
@@ -1875,7 +1875,7 @@ function b5Tally(body, api, opt) {
   const showNow = () => { now.textContent = pos < seq.length ? `${pos + 1}번째 친구 ${names[pos]} → ‘${cats[seq[pos]]}’` : "모든 친구가 스티커를 붙였어요!"; };
   cats.forEach((c, i) => binRow.append(h("button", { onclick: () => {
     if (pos >= seq.length) return;
-    if (seq[pos] !== i) return api.hint(`${names[pos]}${b5Jong(names[pos]) ? "이가" : "가"} 고른 활동은 ‘${cats[seq[pos]]}’예요. 그 칸에 붙여요.`);
+    if (seq[pos] !== i) return api.hint(`${names[pos]}${b5Jong(names[pos]) ? "이가" : "가"} 고른 활동은 ${b5J("‘" + cats[seq[pos]] + "’", "이에요/예요")}. 그 칸에 붙여요.`);
     got[i]++; pos++; draw(); showNow();
     if (pos === seq.length) finish();
   } }, c)));
@@ -2248,7 +2248,7 @@ const LESSONS = [
         { q: "오이를 기르고 싶어 하는 학생은 호박보다 몇 명 더 많나요?", t: "num", a: 30, unit: "명", why: { "3": "막대 길이가 3칸 차이 나요. 한 칸이 10명이면 몇 명일까요?", "130": "두 수를 더하지 말고 차이를 구해요." } }],
         { ok: "가로 눈금 한 칸은 10명이에요. 가지는 70명, 오이는 호박보다 30명 더 많아요." }) },
     { inst: "막대그래프를 읽는 약속을 완성해요.", hints: ["막대의 길이가 수량을 나타내요."],
-      render: (b, a) => blanks(b, a, ["막대그래프에서 막대의 길이가 길수록 수량이 ", { o: ["많아요", "적어요"], a: 0 }, ". 가장 많은 것은 막대가 가장 ", { o: ["긴", "짧은"], a: 0 }, " 것이에요. 수량을 알려면 먼저 눈금 한 칸의 ", { o: ["크기", "색깔"], a: 0 }, "를 확인해요."]) },
+      render: (b, a) => blanks(b, a, ["막대그래프에서 막대의 길이가 길수록 수량이 ", { o: ["많아요", "적어요"], a: 0 }, ". 가장 많은 것은 막대가 가장 ", { o: ["긴", "짧은"], a: 0 }, " 것이에요. 수량을 알려면 먼저 눈금 한 칸의 ", { o: ["크기", "색깔"], a: 0 }, "부터 확인해요."]) },
     { inst: "많은 학생이 기르고 싶어 하는 채소부터 차례대로 눌러 보세요.", hints: ["가장 긴 막대부터 차례로 눌러요.", "방울토마토 막대가 가장 길어요."],
       render: (b, a) => { b.append(b5Fig(B5G.veg)); sequence(b, a, ["오이", "상추", "가지", "방울토마토", "호박"], [3, 1, 0, 2, 4], { ok: "방울토마토, 상추, 오이, 가지, 호박 순서예요. 막대의 길이로 한눈에 알 수 있어요." }); } }
   ],
@@ -2274,7 +2274,7 @@ const LESSONS = [
     { inst: "처음 그린 막대그래프의 가로와 세로를 바꾸어 막대를 가로로 나타내 보세요.", hints: ["이번에는 세로에 종류, 가로에 일회용품 수가 있어요.", "가로 눈금 한 칸은 1개예요."],
       render: (b, a) => b5Build(b, a, { g: B5V(B5G.cup, { horiz: true }), ok: "막대를 가로로 나타냈어요. 막대그래프로 잘 나타냈는지 표와 다시 견주어 봐요." }) },
     { inst: "막대그래프로 나타내는 방법을 정리해요.", hints: ["가장 큰 수가 그래프 안에 들어가야 해요.", "제목은 먼저 써도 돼요."],
-      render: (b, a) => blanks(b, a, ["① 표를 보고 가로와 세로에 무엇을 나타낼지 정해요. ② ", { o: ["가장 큰 수", "가장 작은 수"], a: 0 }, "까지 나타낼 수 있도록 ", { o: ["눈금 한 칸의 크기", "막대의 폭"], a: 0 }, "를 정해요. ③ 조사한 자료의 수에 맞게 ", { o: ["막대", "그림"], a: 0 }, "로 나타내요. ④ 막대그래프에 알맞은 ", { o: ["제목", "합계"], a: 0 }, "을 써요. (제목은 먼저 써도 돼요.)"]) },
+      render: (b, a) => blanks(b, a, ["① 표를 보고 가로와 세로에 무엇을 나타낼지 정해요. ② ", { o: ["가장 큰 수", "가장 작은 수"], a: 0 }, "까지 나타낼 수 있도록 ", { o: ["눈금 한 칸의 크기", "막대의 굵기"], a: 0 }, "를 정해요. ③ 조사한 자료의 수에 맞게 ", { o: ["막대", "그림"], a: 0 }, " 모양으로 나타내요. ④ 막대그래프에 알맞은 ", { o: ["제목", "눈금"], a: 0 }, "을 써요. (제목은 먼저 써도 돼요.)"]) },
     { inst: "좋아하는 색깔별 학생 수를 막대그래프로 나타내요. 눈금 칸 수와 눈금 한 칸의 크기를 스스로 정해 보세요.", hints: ["가장 큰 수는 12예요. (칸 수) × (한 칸의 크기)가 12보다 작으면 안 돼요.", "모든 수가 눈금 칸에 꼭 맞으려면 한 칸의 크기로 6, 4, 12, 8을 모두 나눌 수 있어야 해요."],
       render: (b, a) => b5Build(b, a, { g: B5G.color, stepChoices: [5, 1, 2], cellChoices: [5, 6, 10, 12], ok: "같은 자료라도 눈금 한 칸의 크기에 따라 막대의 칸 수가 달라져요. 하지만 나타내는 수는 같아요." }) }
   ],
