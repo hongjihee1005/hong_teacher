@@ -5,7 +5,7 @@ const { chromium } = require(require('child_process').execSync('npm root -g').to
 const ROOT = path.resolve(__dirname, '..');
 const want = process.argv.slice(2);
 const files = [];
-for (const d of ['sem1', 'sem1-soop']) {
+for (const d of ['sem1', 'sem1-soop', 'sem2', 'sem2-soop']) {
   const dir = path.join(ROOT, d); if (!fs.existsSync(dir)) continue;
   for (const f of fs.readdirSync(dir)) if (/^u\d.*\.html$/.test(f) && (!want.length || want.some(w => f.startsWith(w)))) files.push(path.join(dir, f));
 }

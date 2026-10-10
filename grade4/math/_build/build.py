@@ -12,6 +12,7 @@
 import re, sys, json, pathlib, subprocess
 HERE = pathlib.Path(__file__).resolve().parent
 OUT = {'tb': HERE.parent / 'sem1', 'st': HERE.parent / 'sem1-soop'}
+OUT2 = {'tb': HERE.parent / 'sem2', 'st': HERE.parent / 'sem2-soop'}   # units/sem2/ → 2학기
 
 def parts(src):
     m = re.split(r'^//@@(APP|UNIT|LESSONS)\s*$', src, flags=re.M)
@@ -32,7 +33,7 @@ def build(path):
     a = 'return LESSONS.find(L => String(L.no) === key || L.id === key) || null;'
     b = 'return LESSONS.find(L => String(L.no) === key || L.id === key) || LESSONS.find(L => { const m = String(L.no).match(/^(\\d+)~(\\d+)$/); return m && +key >= +m[1] && +key <= +m[2]; }) || null;'
     assert html.count(a) == 1; html = html.replace(a, b)
-    out = OUT[kind] / f'{slug}.html'
+    out = (OUT2 if path.parent.name == 'sem2' else OUT)[kind] / f'{slug}.html'
     out.parent.mkdir(parents=True, exist_ok=True)
     # 이미 덮개가 입혀진 옛 파일이 있으면 덮개 조각만 지우고 다시 씀(덮개는 apply_content_theme.py가 다시 입힘)
     out.write_text(html, encoding='utf-8')
@@ -44,6 +45,7 @@ def build(path):
     print('만듦', out.relative_to(HERE.parents[2]))
 
 want = sys.argv[1:]
-files = sorted((HERE / 'units').glob('*.*.js'))
+files = sorted((HERE / 'units').glob('*.*.js')) + sorted((HERE / 'units' / 'sem2').glob('*.*.js'))
+# 2학기 단원만: python3 build.py sem2   (1학기·2학기 이름이 겹치면 둘 다 만듦)
 for f in files:
-    if not want or f.name.split('.')[0] in want: build(f)
+    if not want or f.name.split('.')[0] in want or f.parent.name in want: build(f)
