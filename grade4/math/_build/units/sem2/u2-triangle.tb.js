@@ -213,6 +213,7 @@ function t2Measurable(g, p, P, opt = {}) {
   [0, 1, 2].forEach(i => {
     const ln = t2Line(P[i], P[(i + 1) % 3], { stroke: "rgba(0,0,0,0)", "stroke-width": 20, style: "cursor:pointer" });
     ln.addEventListener("click", e => { e.stopPropagation(); shown.s.has(i) ? shown.s.delete(i) : shown.s.add(i); paint(); opt.onChange && opt.onChange(); }); hits.append(ln);
+    if (opt.noA) return; /* 변 길이만 재는 곳: 각도는 보이지 않게(반올림한 각도의 합이 180°가 아니게 보이는 일을 막음) */
     const { V, b } = t2Corner(P, i), hc = svgEl("circle", { cx: t2F(V[0] + b[0] * rr * 1.1), cy: t2F(V[1] + b[1] * rr * 1.1), r: t2F(rr * 1.05), fill: "rgba(0,0,0,0)", style: "cursor:pointer" });
     hc.addEventListener("click", e => { e.stopPropagation(); shown.a.has(i) ? shown.a.delete(i) : shown.a.add(i); paint(); opt.onChange && opt.onChange(); }); hits.append(hc);
   });
@@ -553,7 +554,7 @@ function t2Bins(body, api, opt) {
     if (it.p) {
       const s = makeSvg(200, 160), m = t2Map(it.p, [0, 6, 200, 154, it.pad || 30], opt.k);
       s.append(t2TriG(it.p, m.P, Object.assign({ fs: 17, sw: 3.5 }, opt.o || {}, it.o || {})));
-      if (opt.measure) t2Measurable(s, it.p, m.P, { fs: 17 });
+      if (opt.measure) t2Measurable(s, it.p, m.P, { fs: 17, noA: opt.measure === "sides" });
       c.append(h("div", { class: "t2cl" }, lab(i)), s);
     } else c.append(it.text);
     c.addEventListener("click", e => { if (justDragged) return; e.stopPropagation(); sel = sel === i ? null : i; paint(); });
@@ -1074,7 +1075,7 @@ const LESSONS = [
     { name: "나누어 보기", inst: "재어 본 삼각형을 변의 길이에 따라 나누어 보세요. 카드를 끌어 알맞은 칸에 넣어요. (카드의 변을 누르면 길이가 보여요.)", hints: ["길이가 같은 변이 없는 삼각형, 두 변의 길이만 같은 삼각형, 세 변의 길이가 같은 삼각형으로 나누어요.", "카드를 누른 다음 칸을 눌러도 넣을 수 있어요."],
       render: (b, a) => t2Chain(b, a, [
         (bx, ax) => quiz(bx, ax, [{ q: "길이가 같은 변이 있는 삼각형을 모두 골라요.", fig: () => t2Cards(T2_ROOF.map(p => ({ p })), { k: 26, per: 5, cw: 170, ch: 170, o: { lens: true, fs: 15 }, maxW: "46em" }), o: T2_KO.slice(0, 5), a: [0, 1, 3, 4], why: {} }], { ok: "가, 나, 라, 마에 길이가 같은 변이 있어요.", bad: "변의 길이를 다시 비교해 봐요. 다는 세 변의 길이가 모두 달라요." }),
-        (bx, ax) => t2Bins(bx, ax, { cats: ["세 변의 길이가 모두 다른 삼각형", "두 변의 길이만 같은 삼각형", "세 변의 길이가 같은 삼각형"], k: 22, measure: true, items: T2_ROOF.map((p, i) => ({ p, cat: { 부등변: 0, 이등변: 1, 정: 2 }[t2Info(p).side] })), whyOf: t2WhyOf("side"), ok: "두 변의 길이만 같은 삼각형은 나, 마이고, 세 변의 길이가 같은 삼각형은 가, 라예요." })]) },
+        (bx, ax) => t2Bins(bx, ax, { cats: ["세 변의 길이가 모두 다른 삼각형", "두 변의 길이만 같은 삼각형", "세 변의 길이가 같은 삼각형"], k: 22, measure: "sides", items: T2_ROOF.map((p, i) => ({ p, cat: { 부등변: 0, 이등변: 1, 정: 2 }[t2Info(p).side] })), whyOf: t2WhyOf("side"), ok: "두 변의 길이만 같은 삼각형은 나, 마이고, 세 변의 길이가 같은 삼각형은 가, 라예요." })]) },
     { name: "약속하기", inst: "약속: 변의 길이에 따라 삼각형의 이름을 알아봐요. 알맞은 말을 골라 약속을 완성해요.", hints: ["‘이등변’은 길이가 같은 변이 둘, ‘정’은 바르고 똑같다는 뜻이에요."],
       render: (b, a) => blanks(b, a, ["두 변의 길이가 같은 삼각형을 ", { o: ["이등변삼각형", "정삼각형", "직각삼각형"], a: 0 }, "이라고 해요. 세 변의 길이가 같은 삼각형을 ", { o: ["정삼각형", "이등변삼각형", "직각삼각형"], a: 0 }, "이라고 해요."]) },
     { name: "그려 보기", inst: "꼭짓점을 끌어 모눈종이에 이등변삼각형을, 삼각 모눈종이에 정삼각형을 그려 보세요.", hints: ["이등변삼각형: 한 꼭짓점에서 두 변이 똑같은 칸 수만큼 가게 해요. 예를 들어 오른쪽으로 2칸 위로 4칸, 왼쪽으로 2칸 위로 4칸.", "정삼각형: 삼각 모눈의 선을 따라 세 변이 모두 같은 칸 수가 되게 해요."],
