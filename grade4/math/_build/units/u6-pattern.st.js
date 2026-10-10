@@ -1059,7 +1059,7 @@ function r6Letters(body, api, opt) {
     const extra = [...pick].find(n => !opt.ans.includes(n));
     if (extra != null) { api.fail(`${r6J(String(extra), "은/는")} □ 안에 알맞은 수가 아니에요. 규칙을 다시 찾아 봐요.`, given); return false; }
     if (opt.ans.some(n => !pick.has(n))) { api.fail("아직 색칠하지 않은 답이 있어요. □가 모두 몇 개인지 세어 봐요.", given); return false; }
-    api.done(given, `색칠한 글자를 차례로 읽으면 ‘${opt.word}’예요! ${opt.ok || ""}`); return true;
+    api.done(given, `색칠한 글자를 차례로 읽으면 ${r6J(`‘${opt.word}’`, "이에요/예요")}! ${opt.ok || ""}`); return true;
   };
   auto = autoRun(() => pick.size >= opt.ans.length, () => [...pick].sort((a, b) => a - b).join(","), run, 1200);
 }
@@ -1351,7 +1351,7 @@ const LESSONS = [
       render: (b, a) => r6Balance(b, a, { tasks: [
         { L: 11, R: 14, pre: { L: 3 }, eq: "11-3=14-□", say: "가에서 3권을 덜어 냈어요. 저울이 수평을 이루도록 나에서 덜어 내고 식을 완성해요." },
         { L: 11, R: 14, pre: { R: 8 }, eq: "11-□=14-8", say: "이번에는 나에서 8권을 덜어 냈어요. 가에서 덜어 내 수평을 만들고 식을 완성해요." }],
-        ok: "11−3=14−6, 11−5=14−8이에요. 가가 나보다 3권 적으니 나에서 3권 더 많이 덜어 내야 수평이 돼요." }) },
+        ok: "11−3=14−6, 11−5=14−8이에요. 가 쪽이 나 쪽보다 3권 적으니, 나에서 가보다 3권 더 많이 덜어 내야 수평이 돼요." }) },
     { name: "말해 보기 — 나눔 꾸러미", inst: "나눔 꾸러미에는 간식을 15개씩 담아요. 위 그림처럼 사탕의 수가 변하면 젤리의 수는 어떻게 변하는지 살펴보고, 아래 꾸러미로 6+9=□+□의 식을 2개 만들어 보세요.", hints: ["사탕이 1개 줄면 젤리는 1개 늘어나요. 6+9=5+10", "사탕이 3개 늘면 젤리는 3개 줄어요. 6+9=9+6"],
       render: (b, a) => r6Plate(b, a, { r: 6, b: 9, need: 2, names: ["사탕", "젤리"], examples: [[2, 13, 3, 12], [9, 6, 11, 4]],
         choose: [{ q: "사탕의 수가 늘어나면 젤리의 수는 어떻게 되나요?", o: ["늘어난 만큼 줄어들어요", "똑같이 늘어나요", "변하지 않아요"], a: 0, why: { "1": "꾸러미에 담는 간식은 15개로 같아요.", "2": "사탕이 늘어나면 15개를 맞추려고 젤리가 바뀌어요." } }],

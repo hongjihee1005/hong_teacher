@@ -169,13 +169,13 @@ function p6ShapeG(S, W, H, o = {}) {
   if (P && o.nums) P.forEach((_, i) => { const [mid, nv] = p6Out(P, i); const c = [mid[0] + nv[0] * 15, mid[1] + nv[1] * 15]; g.append(svgEl("circle", { cx: p6R(c[0]), cy: p6R(c[1]), r: 11, fill: "#FFF1C7", stroke: "#B08A1E", "stroke-width": 1.5 }), txt(p6R(c[0]), p6R(c[1]) + 1, String(i + 1), 14, { fill: "#6B4E00" })); });
   if (P && o.measure) {
     const L = p6Sides(S.pts), A = p6Angles(S.pts), fs = o.fs || 14;
-    P.forEach((_, i) => { const [mid, nv] = p6Out(P, i); g.append(txt(p6R(mid[0] + nv[0] * 15), p6R(mid[1] + nv[1] * 15), (o.unit ? p6Fmt(L[i]) + " " + o.unit : p6Fmt(L[i])), fs, { fill: "#2B5FA8" })); });
+    P.forEach((_, i) => { const [mid, nv] = p6Out(P, i), od = (fs > 15 ? 15 : 12) + Math.abs(nv[0]) * fs * 1.5; g.append(txt(p6R(mid[0] + nv[0] * od), p6R(mid[1] + nv[1] * od), (o.unit ? p6Fmt(L[i]) + " " + o.unit : p6Fmt(L[i])), fs, { fill: "#2B5FA8" })); });
     P.forEach((b, i) => {
       const a = P[(i - 1 + P.length) % P.length], c = P[(i + 1) % P.length], u1 = [a[0] - b[0], a[1] - b[1]], u2 = [c[0] - b[0], c[1] - b[1]];
       const l1 = Math.hypot(...u1), l2 = Math.hypot(...u2); let v = [u1[0] / l1 + u2[0] / l2, u1[1] / l1 + u2[1] / l2]; let lv = Math.hypot(...v);
       if (lv < 1e-6) v = [-u1[1] / l1, u1[0] / l1], lv = 1;
       v = [v[0] / lv, v[1] / lv]; if (A[i] > 180) v = [-v[0], -v[1]];
-      const off = A[i] < 70 ? 30 : 22;
+      const off = (A[i] < 70 ? 30 : 22) * (fs > 15 ? 1.3 : 1);
       g.append(txt(p6R(b[0] + v[0] * off), p6R(b[1] + v[1] * off), Math.round(A[i]) + "°", fs - 1, { fill: "#B4610F" }));
     });
   }
@@ -282,16 +282,16 @@ function p6Chain(body, api, parts) {
    opt: {cats, items:[{S, cat, why, label}], nums, measure, unit:"cm", ok, tip}
    ========================================================= */
 function p6Sort(body, api, opt) {
-  const cats = opt.cats, items = opt.items, where = items.map(() => -1), CW = 260, CH = 210;
+  const cats = opt.cats, items = opt.items, where = items.map(() => -1), CW = opt.measure ? 340 : 260, CH = opt.measure ? 300 : 210;
   let sel = null, tnum = false, tmea = false;
-  const grid = h("div", { class: "p6grid" });
+  const grid = h("div", { class: "p6grid", style: opt.measure ? "grid-template-columns:repeat(auto-fill,minmax(12.5em,1fr))" : null });
   const cards = items.map((it, i) => {
     const s = makeSvg(CW, CH), holder = svgEl("g"); s.append(holder);
     const tag = h("div", { class: "p6tag" }, "-");
     const btn = h("button", { class: "opt p6card", onclick: () => { sel = sel === i ? null : i; paint(); } }, h("div", { class: "jua" }, it.label || P6_KO[i]), s, tag);
     grid.append(btn); return { btn, tag, holder };
   });
-  const drawCards = () => cards.forEach((c, i) => { c.holder.innerHTML = ""; c.holder.append(p6ShapeG(items[i].S, CW, CH, { pad: tmea ? 40 : (tnum ? 32 : 24), nums: tnum, measure: tmea, unit: opt.unit, dots: !!items[i].S.pts })); });
+  const drawCards = () => cards.forEach((c, i) => { c.holder.innerHTML = ""; c.holder.append(p6ShapeG(items[i].S, CW, CH, { pad: tmea ? 58 : (tnum ? 32 : 24), nums: tnum, measure: tmea, fs: 20, unit: opt.unit, dots: !!items[i].S.pts })); });
   const paint = () => cards.forEach((c, i) => { c.btn.classList.toggle("on", sel === i); c.tag.textContent = where[i] < 0 ? "-" : cats[where[i]]; c.btn.classList.remove("good", "bad"); });
   const lab = i => items[i].label || P6_KO[i];
   const toolBtns = [];
@@ -880,7 +880,7 @@ const P6_RABBIT = [
   { pts: [[215, 252], [258, 205], [342, 205], [385, 252], [395, 312], [352, 360], [248, 360], [205, 312]] },   // 머리 8
   { pts: [[250, 258], [276, 250], [282, 276], [256, 284]], inner: true },     // 눈 4
   { pts: [[350, 258], [324, 250], [318, 276], [344, 284]], inner: true },
-  { pts: [[286, 298], [314, 298], [300, 316]], inner: true },                 // 코 3
+  { pts: [[282, 294], [318, 294], [300, 322]], inner: true },                 // 코 3
   { pts: [[240, 360], [360, 360], [402, 410], [412, 478], [372, 540], [228, 540], [188, 478], [198, 410]] },   // 몸 8
   { pts: [[300, 384], [266, 368], [266, 402]], inner: true },                 // 나비넥타이 3
   { pts: [[300, 384], [334, 368], [334, 402]], inner: true },
@@ -958,10 +958,10 @@ function p6Words(body, api, opt) {
     const okDir = (dr === 0 && dc === 1) || (dr === 1 && dc === 0) || (dr === 1 && dc === 1) || (dr === 1 && dc === -1);
     if (!okDir || (dr && dc && Math.abs(r - r0) !== Math.abs(c - c0)) || len < 2) { api.tryOnce(); return api.hint("낱말은 → ↓ ↘ ↙ 방향으로 놓여 있어요. 첫 글자를 누르고 마지막 글자를 눌러요."); }
     let w = ""; const cells = []; for (let k = 0; k < len; k++) { w += P6_WS[r0 + dr * k][c0 + dc * k]; cells.push([r0 + dr * k, c0 + dc * k]); }
-    if (!words.includes(w) || found.has(w)) { api.tryOnce(); return api.hint(found.has(w) ? "이미 찾은 낱말이에요." : `‘${w}’는 찾는 낱말이 아니에요. 빈칸에 들어갈 낱말을 생각해 봐요.`); }
+    if (!words.includes(w) || found.has(w)) { api.tryOnce(); return api.hint(found.has(w) ? "이미 찾은 낱말이에요." : `‘${w}’${p6Jo(w, "은/는").slice(-1)} 찾는 낱말이 아니에요. 빈칸에 들어갈 낱말을 생각해 봐요.`); }
     found.add(w); cells.forEach(([y, x]) => { fixed.add(y * 7 + x); cell(y, x).classList.add("p6-f"); }); paintS();
     if (found.size === words.length) p6Finish(body, api, opt, words.join(", "), "낱말 4개를 모두 찾았어요!");
-    else api.hint(`○ ‘${w}’를 찾았어요.`);
+    else api.hint(`○ ‘${w}’${p6Jo(w, "을/를").slice(-1)} 찾았어요.`);
   }
   api.provide({ words, answers: [words.join(", ")] });
   paintS(); body.append(sents, h("p", { class: "p6small" }, "빈칸에 알맞은 낱말을 글자판에서 찾아요. 첫 글자를 누르고, 마지막 글자를 눌러요."), grid);
@@ -1218,7 +1218,7 @@ const LESSONS = [
         parts: [{ o: ["변의 길이가 모두 같고, 각의 크기가 모두 같은", "변의 길이만 모두 같은", "각의 크기만 모두 같은"], a: 0 }, " 다각형을 정다각형이라고 합니다. 위의 정다각형은 차례로 정삼각형, ", { o: ["정사각형", "직사각형"], a: 0 }, ", ", { o: ["정오각형", "오각형"], a: 0 }, ", 정육각형이에요."] }], { ok: "변의 길이가 모두 같고, 각의 크기가 모두 같은 다각형을 정다각형이라고 해요." }) },
     { name: "찾아 보기", inst: "정다각형을 찾아봅시다. 도형 가~마의 변의 길이와 각의 크기를 보고 답해 보세요.", hints: ["비스듬히 놓여 있어도 변의 길이와 각의 크기가 모두 같으면 정다각형이에요.", "변의 길이와 각의 크기를 모두 살펴봐요."],
       render: (b, a) => quiz(b, a, [
-        { q: "정다각형을 모두 골라요.", fig: () => p6Cards(P6_REGQ, { per: 3, cw: 240, ch: 210, maxW: "40em", shape: { measure: true, unit: "cm", fs: 13, pad: 42 } }), o: P6_KO.slice(0, 5), a: [0, 2, 4], why: {} },
+        { q: "정다각형을 모두 골라요.", fig: () => p6Cards(P6_REGQ, { per: 2, cw: 380, ch: 320, maxW: "36em", shape: { measure: true, unit: "cm", fs: 19, pad: 60 } }), o: P6_KO.slice(0, 5), a: [0, 2, 4], why: {} },
         { q: "나가 정다각형이 아닌 까닭은?", o: ["각의 크기는 모두 같지만 변의 길이가 모두 같지 않아서", "변의 길이는 모두 같지만 각의 크기가 모두 같지 않아서", "비스듬히 놓여 있어서"], a: 0 },
         { q: "라가 정다각형이 아닌 까닭은?", o: ["변의 길이와 각의 크기가 모두 같지 않아서", "변이 6개라서", "굽은 선이 있어서"], a: 0 }], { bad: "변의 길이와 각의 크기를 함께 살펴봐요. 비스듬히 놓인 도형도 다시 봐요.", ok: "가, 다, 마가 정다각형이에요. 나는 각의 크기만 같고, 라는 변의 길이와 각의 크기가 모두 같지 않아요." }) },
     { name: "구하기", inst: "정육각형을 보고 □ 안에 알맞은 수를 써넣어 보세요.", hints: ["정다각형은 변의 길이가 모두 같아요.", "정다각형은 각의 크기가 모두 같아요."],
