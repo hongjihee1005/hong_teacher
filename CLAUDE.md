@@ -132,6 +132,14 @@ grade1/ … grade6/
   손으로 넣어 둔 `<a id="hj-home">` 단추가 사라집니다. 덮은 뒤에는 **그 조각을 다시 넣고** `python3 _build/theme/apply_content_theme.py`를 돌리세요.
   (덮개 스크립트가 `#hj-home`을 읽어 왼쪽 위 `[홈 · 자료 목록]` 단추로 바꾸므로, 조각이 없으면 이동 단추가 통째로 사라집니다. 2026-10-01에 실제로 한 번 지워졌습니다.)
 
+### 4학년 수학 (`grade4/math/`, 2026-10-10)
+
+- 3학년과 같은 두 버전: `sem1/`(교과서 차시 버전) · `sem1-soop/`(이야기 버전, 홍지희 선생님 버전), 단원 앱 `u단원-주제.html` 6개씩, 활동지 `sheets/*_활동지_기본형·도전형.hwpx`. 2학기(`sem2/`, `sem2-soop/`)는 만드는 중.
+- **4학년은 HTML이 아니라 `grade4/math/_build/units/[sem2/]<slug>.tb.js`·`.st.js`가 원본입니다.** 단원 HTML을 직접 고치지 말고 원본을 고친 뒤 `cd grade4/math/_build && python3 build.py <slug> && node check.js <slug>`, 루트에서 `apply_content_theme.py`. 짜임·부품은 `grade4/math/_build/README.md`.
+- 틀은 3학년 엔진에서 뗀 `tpl_tb.html`·`tpl_st.html`(`make_templates.py`). 이야기 엔진은 한 계단의 활동을 `done(`이 든 함수만 세므로, 부품을 감쌀 때 주의(`_build/mathplan/BRIEF_AUDIT.md` 'STORY-ENGINE TRAP').
+- 활동지는 `_build/sheets/gen_<slug>.py`(3학년 hwpx 양식을 그대로 쓰는 `hwpxgen.py`), 목록·README·전체 안내·Code.gs는 `_build/gen_lists.py`가 만듭니다.
+- 지도서와 다르게 정한 곳·선생님 확인 거리는 `_build/mathplan/PLAN.md`의 '선생님 확인 필요'.
+
 ### 우리 반 교실 (`class/`, 2026-10-01)
 
 - 첫 화면 맨 앞(1학년 앞) 넓은 카드 '🍎 우리 반 교실'이 가리키는 담임용 교실 바탕화면입니다. 8개 묶음 41개 메뉴.
