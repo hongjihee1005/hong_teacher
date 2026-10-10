@@ -314,7 +314,7 @@ function q4RightMark(body, api, opt) {
     api.fail(extra != null ? `${Q4_KO[extra]}의 두 직선은 직각으로 만나지 않아요. 삼각자를 대 보면 한 직선이 삼각자의 변과 맞지 않아요.` : "직각인 곳을 더 찾아봐요. 직선이 기울어져 있어도 만나는 각이 직각이면 돼요.", ans);
   };
   const auto = autoRun(() => on.size >= want.length, () => [...on].sort().join(","), judge, 900);
-  lay.forEach((_, i) => svg.children[i * 2].addEventListener("click", () => auto()));
+  svg.addEventListener("click", () => auto());
   body.append(h("div", { class: "stage" }, svg), h("p", { class: "inst" }, `두 직선이 만나는 그림을 누르면 직각 표시(└)를 해요. 다시 누르면 지워져요. 직각인 곳을 모두 표시하면 저절로 확인해요.`), h("div", { class: "tools" }, sqBtn));
   paint();
 }
@@ -376,7 +376,7 @@ function q4Lines(body, api, opt) {
     if (sel === i) { sel = null; info.textContent = ""; draw(); return; }
     const k = key(sel, i), at = pairs.indexOf(k);
     if (at >= 0) pairs.splice(at, 1); else pairs.push(k);
-    last = k; sel = null;
+    last = k; sel = null; setTimeout(() => auto(), 0);
     const [a1, b1] = k.split("-").map(Number), X = cross(a1, b1);
     info.textContent = prot ? (X ? `${nmJ(a1)} ${nm(b1)}${q4J(nm(b1), "이", "가")} 만나서 이루는 각: ${q4Deg(angBetween(a1, b1))}` : `${nmJ(a1)} ${nm(b1)}${q4J(nm(b1), "은", "는")} 아무리 늘여도 만나지 않아요.`) : (at >= 0 ? "짝을 지웠어요." : "짝을 만들었어요. 같은 두 직선을 다시 누르면 짝이 지워져요.");
     draw();
@@ -384,7 +384,7 @@ function q4Lines(body, api, opt) {
   const tools = h("div", { class: "tools" },
     opt.ext ? h("button", { onclick: e => { ext = !ext; e.currentTarget.classList.toggle("on", ext); draw(); } }, "↔ 직선 늘여 보기") : null,
     opt.prot ? h("button", { onclick: e => { prot = !prot; e.currentTarget.classList.toggle("on", prot); info.textContent = prot ? "두 직선으로 짝을 만들면 만나는 각을 재어 보여 줘요." : ""; draw(); } }, "📐 각 재어 보기") : null,
-    h("button", { onclick: () => { pairs.length = 0; sel = null; last = null; info.textContent = ""; draw(); } }, "처음으로"));
+    h("button", { onclick: () => { pairs.length = 0; sel = null; last = null; info.textContent = ""; draw(); auto(); } }, "처음으로"));
   api.provide({ words: opt.mode === "perp" ? ["수직", "직각", "삼각자"] : ["평행", "만나지 않는 두 직선", "늘여 보기"], answers: [want.map(p => { const [i, j] = p.split("-").map(Number); return `${nmJ(i)} ${nm(j)}`; }).join(", ")] });
   const judge = () => {
     api.tryOnce(); const ans = out.textContent;
@@ -394,7 +394,8 @@ function q4Lines(body, api, opt) {
       return api.fail(opt.mode === "perp" ? `${nmJ(i)} ${nm(j)}${q4J(nm(j), "이", "가")} 만나서 이루는 각은 ${q4Deg(angBetween(i, j))}예요. 직각이 아니에요.` : `${nmJ(i)} ${nm(j)}${q4J(nm(j), "은", "는")} 늘이면 만나요. ‘직선 늘여 보기’로 확인해 봐요.`, ans); }
     api.fail(opt.miss || (opt.mode === "perp" ? "서로 수직인 짝을 더 찾아봐요. 기울어진 직선도 살펴봐요." : "서로 만나지 않는 짝을 더 찾아봐요. 기울어진 직선끼리도 평행할 수 있어요."), ans);
   };
-  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", { class: "jua", style: "margin:.2em 0" }, opt.ask || ""), h("p", { class: "inst", style: "margin:.2em 0" }, opt.tip || "직선을 하나 누르고, 짝이 될 직선을 하나 더 눌러요."), tools, info, out)));
+  const auto = autoRun(() => pairs.length >= want.length, () => [...pairs].sort().join(","), judge, 1200);
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", { class: "jua", style: "margin:.2em 0" }, opt.ask || ""), h("p", { class: "inst", style: "margin:.2em 0" }, (opt.tip || "직선을 하나 누르고, 짝이 될 직선을 하나 더 눌러요.") + ` 짝을 ${want.length}개 만들면 저절로 확인해요.`), tools, info, out)));
   draw();
 }
 
@@ -460,7 +461,7 @@ function q4Square(body, api, opt) {
   const tools = h("div", { class: "tools" },
     opt.mode === "perp" ? h("button", { onclick: () => { side = -side; paint(); } }, "↕ 삼각자 뒤집기") : null,
     opt.mode === "perp" ? h("button", { onclick: () => { flip = -flip; paint(); } }, "↔ 방향 바꾸기") : null,
-    h("button", { onclick: () => { const v = t; if (!drawn.some(x => Math.abs(x - v) < 1e-9)) drawn.push(v); paint(); api.hint(opt.mode === "perp" ? "삼각자의 직각을 낀 다른 한 변을 따라 직선을 그었어요." : "움직인 삼각자의 변을 따라 직선을 그었어요."); } }, "✏️ 변을 따라 선 긋기"),
+    h("button", { onclick: () => { const v = t; if (!drawn.some(x => Math.abs(x - v) < 1e-9)) drawn.push(v); paint(); api.hint(opt.mode === "perp" ? "삼각자의 직각을 낀 다른 한 변을 따라 직선을 그었어요." : "움직인 삼각자의 변을 따라 직선을 그었어요."); auto(); } }, "✏️ 변을 따라 선 긋기"),
     h("button", { onclick: () => { drawn.length = 0; paint(); } }, "지우기"));
   api.provide({ words: opt.mode === "perp" ? ["삼각자의 직각", "직각을 낀 한 변", "수선"] : ["삼각자 2개", "고정", "평행선"], answers: [opt.ans || (opt.mode === "perp" ? "수선을 그어요" : "평행선을 그어요")] });
   const judge = () => {
@@ -478,7 +479,8 @@ function q4Square(body, api, opt) {
       return api.fail(`평행선 사이의 거리가 ${opt.dist} cm가 아니에요. 고정한 삼각자의 눈금을 보고 ${opt.dist} cm만큼 떨어진 곳에서 그어요.`, drawn.map(v => Math.abs(v) + " cm").join(", ")); }
     return !api.done(`평행선 ${drawn.length}개`, opt.ok);
   };
-  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", { class: "jua", style: "margin:.2em 0" }, opt.ask || ""), h("p", { class: "inst", style: "margin:.2em 0" }, opt.tip || (opt.mode === "perp" ? "파란 삼각자를 끌어 직선을 따라 옮겨요. 직각을 낀 한 변은 늘 주어진 직선에 맞추어져 있어요." : "회색 삼각자는 고정되어 있어요. 파란 삼각자를 끌어 고정한 삼각자를 따라 위아래로 밀어요.")), tools, readout)));
+  const auto = autoRun(() => drawn.length > 0, () => drawn.slice().sort((x, y) => x - y).join(","), judge, 900);
+  body.append(stageWrap(svg, h("div", { class: "side" }, h("p", { class: "jua", style: "margin:.2em 0" }, opt.ask || ""), h("p", { class: "inst", style: "margin:.2em 0" }, opt.tip || (opt.mode === "perp" ? "파란 삼각자를 끌어 직선을 따라 옮겨요. 직각을 낀 한 변은 늘 주어진 직선에 맞추어져 있어요." : "회색 삼각자는 고정되어 있어요. 파란 삼각자를 끌어 고정한 삼각자를 따라 위아래로 밀어요.")), h("p", { class: "inst", style: "margin:.2em 0" }, "‘변을 따라 선 긋기’를 누르면 저절로 확인해요."), tools, readout)));
   paint();
 }
 
