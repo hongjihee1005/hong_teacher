@@ -495,13 +495,13 @@ def turnfig(came_from, a, d_new, label_from):
     """회전한 각 확대 그림: came_from(지나온 길이 놓인 방향), 늘인 보조선, 새 길(d_new)."""
     c = C()
     V = (0, 0)
-    c.line(pt(V, came_from, 230), V, RED, 5)
-    q = pt(V, came_from, 150)
+    c.line(pt(V, came_from, 170), V, RED, 5)
+    q = pt(V, came_from, 110)
     c.text(q[0], q[1] - 26, label_from, 18, RED)
     ext = ndeg(came_from + 180)
     d_new = ndeg(d_new)
-    c.line(V, pt(V, ext, 230), GRAY, 3, '12 8')
-    c.line(V, pt(V, d_new, 230), RED, 5)
+    c.line(V, pt(V, ext, 170), GRAY, 3, '12 8')
+    c.line(V, pt(V, d_new, 170), RED, 5)
     lo, hi = min(ext, d_new), max(ext, d_new)
     if hi - lo > 180:
         lo, hi = hi, lo + 360
@@ -942,7 +942,7 @@ def mm_for(c, k, pad=12, cap=178):
 
 def figk(s, c, k=.16, pad=12, cap=178):
     """k: 1 그림 단위가 몇 mm인지(같은 k면 같은 크기)."""
-    s.picture(png(c, pad), width_mm=mm_for(c, k, pad, cap))
+    s.picture(png(c, pad), width_mm=mm_for(c, k * .85, pad, cap))
 
 
 def cm_fig(s, c, U, pad=12):
@@ -1033,7 +1033,7 @@ def tb2(s, ch):
     pa.text(pa.x0, pa.y1 + 36, '가 코끼리 모양 의자', 22, RED, anchor='start', bold=True)
     angle(pb, (0, 0), -12, 92, 290, 250, arc=40)
     pb.text(pb.x0, pb.y1 + 36, '나 기린 모양 의자', 22, RED, anchor='start', bold=True)
-    figk(s, row([pa, pb], 70), .19)
+    figk(s, row([pa, pb], 70), .15)
     if ch:
         s.ask('각의 크기가 더 큰 것은 어느 것인가요?')
         s.ask('나의 변이 더 긴데도 나가 더 크지 않은 까닭을 써 보세요.', blank=False)
@@ -1042,7 +1042,7 @@ def tb2(s, ch):
         s.text('꼭짓점과 한 변을 맞추어 겹친 다음, 나머지 한 변이 더 많이 벌어진 쪽을 찾아요.')
         s.choices([('각의 크기가 더 큰 것은?', CH('가', '나')), ('변이 더 길면 각도 더 클까요?', CH('예', '아니요'))])
     s.step('② 그려 보기', '눈금으로 재기 — 두 변 사이의 칸 수 세기')
-    figk(s, units_fig([(45, '가'), (90, '나')], [('도하의 눈금', 4), ('유주의 눈금', 6)]), .135)
+    figk(s, units_fig([(45, '가'), (90, '나')], [('도하의 눈금', 4), ('유주의 눈금', 6)]), .11)
     s.table([['', '가', '나'], ['도하의 눈금', '(    )칸', '(    )칸'], ['유주의 눈금', '(    )칸', '(    )칸']])
     s.page_break()
     s.step('③ 말해 보기', '센 칸 수로 비교하기')
@@ -1633,7 +1633,7 @@ def st2(s, ch):
     pa.text(pa.x0, pa.y0 - 20, '가 하린이 모둠', 22, RED, anchor='start', bold=True)
     angle(pb, (0, 0), 0, 36, 330, arc=46, col='#6FA8DC')
     pb.text(pb.x0, pb.y0 - 20, '나 도윤이 모둠', 22, RED, anchor='start', bold=True)
-    figk(s, row([pa, pb], 60), .2)
+    figk(s, row([pa, pb], 60), .15)
     s.text('가를 투명 종이에 본떠 꼭짓점과 바닥 쪽 변을 맞추어 나에 겹쳐 보세요.')
     if ch:
         s.ask('바닥과 이루는 각이 더 큰 것은? 예상이 맞았는지도 써 보세요.')
@@ -1641,7 +1641,7 @@ def st2(s, ch):
     else:
         s.choices([('바닥과 이루는 각이 더 큰 것은?', CH('가', '나')), ('예상이 맞았나요?', CH('맞았어요', '달랐어요'))])
     s.step('② 그려 보기 — 눈금으로 재기')
-    figk(s, units_fig([(60, '가'), (90, '나')], [('서준이의 눈금', 3), ('수아의 눈금', 9)]), .135)
+    figk(s, units_fig([(60, '가'), (90, '나')], [('서준이의 눈금', 3), ('수아의 눈금', 9)]), .11)
     s.table([['', '가', '나'], ['서준이의 눈금', '(    )칸', '(    )칸'], ['수아의 눈금', '(    )칸', '(    )칸']])
     s.page_break()
     s.step('③ 말해 보기 — 눈금이 다르면?')

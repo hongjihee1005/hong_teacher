@@ -1813,10 +1813,10 @@ function c3Line(body, api, opt) {
   const X = c3LineDraw(g, o);
   if (opt.deco && opt.deco.kind === "barley") {
     const x1 = X(opt.deco.at), x0 = X(0);
-    g.append(svgEl("path", { d: `M${x0} 104 L${x1 - 26} 104`, stroke: "#6BA35A", "stroke-width": 5, fill: "none" }));
-    [0.25, 0.5, 0.75].forEach((f, i) => { const xx = x0 + (x1 - 26 - x0) * f; g.append(svgEl("path", { d: `M${xx} 104 q 22 ${i % 2 ? 18 : -18} 46 ${i % 2 ? 6 : -6}`, stroke: "#6BA35A", "stroke-width": 4, fill: "none" })); });
-    g.append(svgEl("ellipse", { cx: x1 - 13, cy: 104, rx: 14, ry: 7, fill: "#D9B85C" }), svgEl("line", { x1: x1 - 1, y1: 104, x2: x1, y2: 104, stroke: "#B08A2E", "stroke-width": 2 }),
-      svgEl("line", { x1: x1, y1: 96, x2: x1, y2: 128, stroke: "#B08A2E", "stroke-width": 1.5, "stroke-dasharray": "3 3" }), txt((x0 + x1) / 2, 76, "보리", 20, { fill: "#4E7F40" }));
+    g.append(svgEl("path", { d: `M${x0} 66 L${x1 - 26} 66`, stroke: "#6BA35A", "stroke-width": 5, fill: "none" }));
+    [0.25, 0.5, 0.75].forEach((f, i) => { const xx = x0 + (x1 - 26 - x0) * f; g.append(svgEl("path", { d: `M${xx} 66 q 22 ${i % 2 ? 18 : -18} 46 ${i % 2 ? 6 : -6}`, stroke: "#6BA35A", "stroke-width": 4, fill: "none" })); });
+    g.append(svgEl("ellipse", { cx: x1 - 13, cy: 66, rx: 14, ry: 7, fill: "#D9B85C" }), svgEl("line", { x1: x1 - 1, y1: 66, x2: x1, y2: 66, stroke: "#B08A2E", "stroke-width": 2 }),
+      svgEl("line", { x1: x1, y1: 58, x2: x1, y2: 126, stroke: "#B08A2E", "stroke-width": 1.5, "stroke-dasharray": "3 3" }), txt((x0 + x1) / 2, 36, "보리", 20, { fill: "#4E7F40" }));
   }
   if (opt.deco && opt.deco.kind === "walk") {
     const x1 = X(opt.deco.at);
@@ -2034,7 +2034,7 @@ function c3Vert(body, api, opt) {
       if (off !== okOff) return api.fail(off === ca + A.length - B.length ? "오른쪽 끝을 맞추면 안 돼요. 소수점끼리 세로로 나란히 맞추어요." : "빨간 점선이 지나는 소수점 자리에 아래 수의 소수점도 오게 옮겨요.", "자리 맞추기");
       aligned = true; calcPhase();
     } }, "자리를 맞췄어요");
-    stage.append(h("div", { class: "c3say" }, "① 소수점의 위치를 맞추어 써요. 아래 수(파란 카드)를 끌거나 단추로 옮겨 소수점끼리 맞추어 보세요."), reasonRow, h("div", { class: "c3stage c3sm" }, svg), say, tools, h("div", { class: "actions" }, go));
+    stage.append(h("div", { class: "c3say" }, "① 소수점의 위치를 맞추어 써요. 아래 수(파란 카드)를 끌거나 단추로 옮겨 소수점끼리 맞추어 보세요."), reasonRow || "", h("div", { class: "c3stage c3sm" }, svg), say, tools, h("div", { class: "actions" }, go));
   }
   /* 2단계: 같은 자리 수끼리 계산 → 소수점 내려 찍기 */
   function calcPhase() {
@@ -2074,7 +2074,7 @@ function c3Vert(body, api, opt) {
       }
       if (!dotOn) return api.fail("③ 소수점을 그대로 내려 찍어요. 가운데 점선 칸을 눌러요.", given);
       out.textContent = `${A} ${OPS} ${B} = ${c3F(R)}`; out.classList.remove("hidden");
-      api.tryOnce(); api.done(`${A}${OPS}${B}=${given}`, opt.ok || `${A} ${OPS} ${B} = ${c3F(R)}이에요. 소수점을 맞추어 쓰고, 같은 자리끼리 계산하고, 소수점을 내려 찍었어요!`);
+      api.tryOnce(); api.done(`${A}${OPS}${B}=${given}`, opt.ok || `${A} ${OPS} ${B} = ${c3J(c3F(R), "이에요")}. 소수점을 맞추어 쓰고, 같은 자리끼리 계산하고, 소수점을 내려 찍었어요!`);
     } }, "확인하기")));
   }
   api.provide({ words: ["소수점의 위치를 맞추어", "같은 자리 수끼리", word, "소수점을 그대로 내려 찍어요"], answers: reg.plain.concat([`${A} ${OPS} ${B} = ${res}`]) });
@@ -2690,7 +2690,7 @@ const LESSONS = [
         ["내가 만든 소수", s, "+ 친구가 만든 소수 4.27 =", { n: c3F(c3E(s + "+4.27")), e: s + "+4.27" }],
         ["밤을 슬기는 1.39 kg, 지호는 1.84 kg 주웠어요. 두 사람이 주운 밤은 모두", { n: "3.23", e: "1.39+1.84" }, "kg"],
         ["합이 더 큰 것은", { o: ["㉠ 0.5+1.56", "㉡ 0.75+1.43"], a: 1 }]],
-      ok: s => `${s}+4.27=${c3F(c3E(s + "+4.27"))}이에요. 만들 수 있는 소수는 2.47, 2.74, 4.27, 4.72, 7.24, 7.42예요.` }) }
+      ok: s => `${s}+4.27=${c3J(c3F(c3E(s + "+4.27")), "이에요")}. 만들 수 있는 소수는 2.47, 2.74, 4.27, 4.72, 7.24, 7.42예요.` }) }
 },
 {
   id: "l8", no: 10, title: "소수 한 자리 수의 뺄셈을 해 볼까요", soop: "개념 구축하기(O)",
