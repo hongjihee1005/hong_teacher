@@ -647,7 +647,7 @@ function t2AngleTag(body, api, opt) {
     const x = 10 + (n % per) * (CW + 10), y = 10 + Math.floor(n / per) * (CH + 10), m = t2Map(it.p, [x, y + 10, CW, CH - 10, 40]), P = m.P;
     svg.append(svgEl("rect", { x, y, width: CW, height: CH, rx: 12, fill: it.given ? "#F4F7F6" : "#fff", stroke: T2_LINE, "stroke-width": 2 }));
     svg.append(t2TriG(it.p, P, { fs: 17, sw: 3.5, rights: false }), txt(x + 20, y + 20, (it.label || T2_KO[n]) + (it.given ? " (보기)" : ""), 18, { "text-anchor": "start" }));
-    const lay = svgEl("g", { "pointer-events": "none" }), AA = t2Info(it.p).A, dd = AA.map(a => Math.max(30, 16 / Math.tan(t2Rad(a / 2)))); layers.push({ lay, P, dd }); svg.append(lay);
+    const lay = svgEl("g", { "pointer-events": "none" }), AA = t2Info(it.p).A, sl = [0, 1, 2].map(i => t2Dist(P[(i + 1) % 3], P[(i + 2) % 3])), ss = sl[0] + sl[1] + sl[2], Inc = [0, 1].map(c => (sl[0] * P[0][c] + sl[1] * P[1][c] + sl[2] * P[2][c]) / ss), dd = AA.map((a, i) => Math.max(26, Math.min(16 / Math.tan(t2Rad(a / 2)), .62 * t2Dist(P[i], Inc)))); layers.push({ lay, P, dd }); svg.append(lay);
     if (!it.given) [0, 1, 2].forEach(i => { const { V, b } = t2Corner(P, i), hc = svgEl("circle", { cx: t2F(V[0] + b[0] * dd[i]), cy: t2F(V[1] + b[1] * dd[i]), r: 22, fill: "rgba(0,0,0,0)", style: "cursor:pointer" });
       hc.addEventListener("click", () => { st[n][i] = (st[n][i] + 1) % 3; paint(); }); svg.append(hc); });
   });
@@ -893,7 +893,7 @@ function t2Fits(p, face) { const I = t2Info(p); return [I.side !== "부등변", 
 function t2Dice(body, api, opt) {
   const left = opt.cards.map((_, i) => i); let face = -1, rolls = 0, tries = 0;
   const die = h("div", { class: "t2hand" }, "?"), faceTxt = h("div", { class: "t2big" }, "주사위를 굴려요."), grid = h("div", { class: "t2row" });
-  const cardEls = opt.cards.map((p, i) => { const s = makeSvg(260, 200), m = t2Map(p, [0, 4, 260, 196, 58]); s.append(t2TriG(p, m.P, { fs: 21, lens: true, angs: true, sw: 3 }));
+  const cardEls = opt.cards.map((p, i) => { const s = makeSvg(260, 200), m = t2Map(p, [0, 4, 260, 196, 30]); s.append(t2TriG(p, m.P, { fs: 21, ticks: true, angs: true, sw: 3 }));
     const b = h("button", { class: "opt", style: "flex:1 1 11em;max-width:15em;padding:.2em", onclick: () => put(i) }, h("div", { class: "jua", style: "text-align:center" }, T2_KO[i]), s); return b; });
   grid.append(...cardEls);
   const put = i => {
@@ -1252,7 +1252,7 @@ const LESSONS = [
       render: (b, a) => t2Relay(b, a, { cards: T2_RELAY }) },
     { name: "말해 보기", inst: "놀이에서 이기려면 어떻게 해야 할까요?", hints: ["잘못 분류하면 5초가 더해져요."],
       render: (b, a) => quiz(b, a, [{ q: "놀이에서 이기기 위한 방법으로 알맞은 것을 모두 골라요.", o: ["두 기준에 따라 정확하게 분류해요", "빠른 친구가 먼 바구니에 넣을 카드를 맡아요", "카드를 아무 바구니에나 빨리 넣어요"], a: [0, 1], why: {} }], { ok: "정확하게 분류하고, 모둠 친구들이 거리를 나누어 맡으면 기록이 짧아져요.", bad: "아무 바구니에나 넣으면 벌점 5초가 더해져요." }) },
-    { name: "또 다른 놀이", inst: "주사위를 굴려 나온 눈에 맞는 삼각형 카드를 한 장 내려놓아요. 낼 카드가 없으면 ‘낼 카드가 없어요’를 눌러요. 카드 6장을 모두 내려놓아 보세요.", hints: ["카드에 적힌 길이와 각도를 보고 이름을 정해요.", "정삼각형도 두 변의 길이가 같아서 1(이등변삼각형)에 낼 수 있어요."],
+    { name: "또 다른 놀이", inst: "주사위를 굴려 나온 눈에 맞는 삼각형 카드를 한 장 내려놓아요. 낼 카드가 없으면 ‘낼 카드가 없어요’를 눌러요. 카드 6장을 모두 내려놓아 보세요.", hints: ["빨간 눈금이 같은 변은 길이가 같아요. 눈금과 각도를 보고 이름을 정해요.", "정삼각형도 두 변의 길이가 같아서 1(이등변삼각형)에 낼 수 있어요."],
       render: (b, a) => t2Dice(b, a, { cards: T2_DICE }) },
     { name: "확인하기", inst: "삼각형 카드를 어느 바구니에 넣어야 할까요?", hints: ["카드 하나를 왼쪽과 오른쪽에 하나씩 넣어요."],
       render: (b, a) => quiz(b, a, [

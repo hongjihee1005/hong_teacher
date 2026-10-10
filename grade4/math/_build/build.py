@@ -39,7 +39,7 @@ def build(path):
     out.write_text(html, encoding='utf-8')
     # 문법 점검: 본 스크립트를 node로 읽어 봄
     js = re.search(r'<script>\n(const APP.*?)\n</script>', html, re.S).group(1)
-    tmp = HERE / '.check.js'; tmp.write_text(js, encoding='utf-8')
+    import os; tmp = HERE / f'.check-{os.getpid()}.js'; tmp.write_text(js, encoding='utf-8')
     r = subprocess.run(['node', '--check', str(tmp)], capture_output=True, text=True); tmp.unlink()
     if r.returncode: raise SystemExit(f'[문제] {path.name} 자바스크립트 문법 오류\n{r.stderr[:1500]}')
     print('만듦', out.relative_to(HERE.parents[2]))
