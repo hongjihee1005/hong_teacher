@@ -28,6 +28,10 @@ def build(path):
     tpl = (HERE / f'tpl_{kind}.html').read_text(encoding='utf-8')
     html = (tpl.replace('{{TITLE}}', f'{t} · {u}').replace('/*@@APP@@*/', d['APP'])
                .replace('/*@@UNIT@@*/', d['UNIT']).replace('/*@@LESSONS@@*/', d['LESSONS']))
+    # 묶은 차시(no: "5~6")도 #5·#6으로 열리게
+    a = 'return LESSONS.find(L => String(L.no) === key || L.id === key) || null;'
+    b = 'return LESSONS.find(L => String(L.no) === key || L.id === key) || LESSONS.find(L => { const m = String(L.no).match(/^(\\d+)~(\\d+)$/); return m && +key >= +m[1] && +key <= +m[2]; }) || null;'
+    assert html.count(a) == 1; html = html.replace(a, b)
     out = OUT[kind] / f'{slug}.html'
     out.parent.mkdir(parents=True, exist_ok=True)
     # 이미 덮개가 입혀진 옛 파일이 있으면 덮개 조각만 지우고 다시 씀(덮개는 apply_content_theme.py가 다시 입힘)
