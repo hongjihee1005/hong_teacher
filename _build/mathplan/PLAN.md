@@ -70,7 +70,7 @@
 | 3 소수의 덧셈과 뺄셈 | u3-decimal | ✓ | | | |
 | 4 사각형 | u4-quad | ✓ | | | |
 | 5 꺾은선그래프 | u5-linegraph | ✓ | ✓ 강낭콩 관찰 연구소 | | |
-| 6 다각형 | u6-polygon | ✓ | | | |
+| 6 다각형 | u6-polygon | ✓ | ✓ 교실 꾸미기 디자인단 | | |
 
 ### 4-1 목록 페이지 (2026-10-10 만듦)
 - `grade4/math/sem1/index.html`·`sem1-soop/index.html`·README·전체안내·Code.gs는 `grade4/math/_build/gen_lists.py`가 단원 원본에서 만듦(이야기 6단원 완성 뒤 다시 돌리고 `apply_theme.py`). 수학방·학년·첫 화면 카드도 고침.

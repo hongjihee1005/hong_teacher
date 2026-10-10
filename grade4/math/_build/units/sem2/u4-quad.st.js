@@ -541,7 +541,7 @@ function q4Dist(body, api, opt) {
     askEl.textContent = (opt.items.length > 1 ? `(${k + 1}/${opt.items.length}) ` : "") + (I.ask || "주황 점을 끌어 두 직선을 잇는 선분을 가장 짧게 만들어요.");
   };
   dragOn(svg, q => { const B = st.S(sB, 0); return Math.hypot(B[0] - q.x, B[1] - q.y) < 40; },
-    q => { const v = q4Sub([q.x, q.y], st.O); sB = Math.max(-8, Math.min(8, Math.round(q4Dt(v, st.e) / U * 4) / 4)); draw(); });
+    q => { const v = q4Sub([q.x, q.y], st.O); sB = Math.max(-8, Math.min(8, Math.round(q4Dt(v, st.e) / U * 4) / 4)); draw(); }, () => auto());
   const askEl = h("p", { class: "jua", style: "margin:.2em 0" });
   api.provide({ words: ["수직인 선분", "가장 짧은 선분", "평행선 사이의 거리"], answers: [opt.items.map(I => `${I.d} cm`).join(", ")] });
   const judge = () => {
@@ -549,10 +549,11 @@ function q4Dist(body, api, opt) {
     if (Math.abs(sB - I.sA) > 1e-9) return api.fail("아직 가장 짧지 않아요. 선분이 평행선과 수직으로 만나도록 주황 점을 옮겨 봐요.", q4Cm(Math.hypot(sB - I.sA, I.d)));
     res.push(q4Cm(I.d));
     if (k < opt.items.length - 1) { api.hint(`○ 평행선과 수직인 선분의 길이는 ${q4Cm(I.d)}예요. 다음 평행선도 해 봐요.`); k++; sB = opt.items[k].sB0 || 0; draw(); return; }
-    api.done(res.join(", "), opt.ok);
+    return !api.done(res.join(", "), opt.ok);
   };
+  const auto = autoRun(() => Math.abs(sB - it().sA) < 1e-9, () => k + ":" + sB, judge, 900);
   sB = opt.items[0].sB0 || 0;
-  body.append(stageWrap(svg, h("div", { class: "side" }, askEl, h("p", { class: "inst", style: "margin:.2em 0" }, "선분의 길이를 보면서 점을 옮겨 봐요. 선분이 평행선과 수직이 되면 초록색이 돼요."))));
+  body.append(stageWrap(svg, h("div", { class: "side" }, askEl, h("p", { class: "inst", style: "margin:.2em 0" }, "선분의 길이를 보면서 점을 옮겨 봐요. 선분이 평행선과 수직이 되면 초록색이 되고 저절로 확인해요."))));
   draw();
 }
 
@@ -597,7 +598,7 @@ function q4Bins(body, api, opt) {
     });
     return c;
   });
-  const put = (i, b) => { where[i] = b; cards[i].classList.remove("q4good", "q4bad"); };
+  const put = (i, b) => { where[i] = b; cards[i].classList.remove("q4good", "q4bad"); auto(); };
   const paint = () => cards.forEach((c, i) => { c.classList.toggle("q4sel", sel === i); (where[i] < 0 ? pool : bins[where[i]]).append(c); });
   const ansOf = arr => opt.cats.map((cn, b) => `${cn}: ${opt.items.map((_, i) => arr[i] === b ? lab(i) : null).filter(Boolean).join(", ") || "없음"}`).join(" / ");
   api.provide({ words: opt.cats, answers: [ansOf(want)] });
@@ -610,7 +611,8 @@ function q4Bins(body, api, opt) {
     const b0 = opt.items[bad[0]];
     api.fail(b0.why || (opt.whyOf ? opt.whyOf(b0, lab(bad[0])) : `${lab(bad[0])}${q4J(lab(bad[0]), "을", "를")} 다시 살펴봐요.`), ans);
   };
-  const wrap = h("div", {}, h("p", { class: "inst", style: "margin:.2em 0" }, opt.tip || "카드를 끌어 알맞은 칸에 넣어요. 카드를 누른 다음 칸을 눌러도 돼요."), pool, binWrap);
+  const auto = autoRun(() => where.every(w => w >= 0), () => where.join(","), judge, 1200);
+  const wrap = h("div", {}, h("p", { class: "inst", style: "margin:.2em 0" }, (opt.tip || "카드를 끌어 알맞은 칸에 넣어요. 카드를 누른 다음 칸을 눌러도 돼요.") + " 카드를 모두 넣으면 저절로 확인해요."), pool, binWrap);
   body.append(wrap); paint();
 }
 /* 카드 속 변을 누르면 길이(1칸 = 1 cm) */
@@ -668,7 +670,7 @@ function q4Geo(body, api, opt) {
   dragOn(svg, q => {
     const P = V.map(px); di = P.findIndex((p, i) => canMove(i) && Math.hypot(p[0] - q.x, p[1] - q.y) < 30); moved = false;
     if (di >= 0) return true;
-    if (!start && V.length < 4) { const { best, bd } = nearest(q); if (bd < u * .45 && !V.some(v => v[0] === best[0] && v[1] === best[1])) { V.push(best); draw(); } }
+    if (!start && V.length < 4) { const { best, bd } = nearest(q); if (bd < u * .45 && !V.some(v => v[0] === best[0] && v[1] === best[1])) { V.push(best); draw(); auto(); } }
     return false;
   }, q => {
     if (di < 0) return; const { best } = nearest(q);
@@ -676,11 +678,11 @@ function q4Geo(body, api, opt) {
       if (start) V = start.map((s0, j) => j === di ? best.slice() : s0.slice()); else V[di] = best.slice();
       moved = true; draw();
     }
-  }, () => { di = -1; });
+  }, () => { di = -1; auto(); });
   const askEl = h("p", { class: "jua", style: "margin:.2em 0" }), tipEl = h("p", { class: "inst", style: "margin:.2em 0" });
   const tools = h("div", { class: "tools" },
     h("button", { onclick: e => { showR = !showR; e.currentTarget.classList.toggle("on", showR); draw(); } }, "📏 변의 길이 보기"),
-    h("button", { onclick: () => { if (!start && V.length > fixedN) { V.pop(); draw(); } } }, "한 점 지우기"),
+    h("button", { onclick: () => { if (!start && V.length > fixedN) { V.pop(); draw(); auto(); } } }, "한 점 지우기"),
     h("button", { onclick: () => { if (start) V = start.map(q => q.slice()); else V = (opt.items[k].fixed || []).map(q => q.slice()); draw(); } }, "처음으로"));
   const NEED = {
     trap: I => I.npar >= 1 ? null : "평행한 변이 없어요. 마주 보는 두 변 중 한 쌍이라도 평행하게 꼭짓점을 옮겨 봐요.",
@@ -702,9 +704,10 @@ function q4Geo(body, api, opt) {
     if (opt.diff && made.some(m => m.sig === sig(I))) return api.fail("앞에서 만든 것과 모양이 같아요. 다른 모양으로 만들어 봐요.", desc);
     made.push({ sig: sig(I), desc });
     if (k < opt.items.length - 1) { api.hint(`○ ${it.ok || "잘 만들었어요!"} 다음 것도 해 봐요.`); k++; setup(); draw(); return; }
-    api.done(made.map(m => m.desc).join(" / "), opt.ok || it.ok);
+    return !api.done(made.map(m => m.desc).join(" / "), opt.ok || it.ok);
   };
-  body.append(stageWrap(svg, h("div", { class: "side" }, askEl, tipEl, tools)));
+  const auto = autoRun(() => V.length === 4 && !(start && V.every((v, i) => v[0] === start[i][0] && v[1] === start[i][1])), () => k + ":" + JSON.stringify(V), judge, 1200);
+  body.append(stageWrap(svg, h("div", { class: "side" }, askEl, tipEl, h("p", { class: "inst", style: "margin:.2em 0" }, "꼭짓점 4개가 모두 놓이면 저절로 확인해요."), tools)));
   setup(); draw();
 }
 
@@ -721,7 +724,7 @@ function q4SidePick(body, api, opt) {
   const draw = () => {
     g.innerHTML = "";
     g.append(q4PolyG(P, { names: true, fs: 22, sideCol: P.map((_, i) => on.has(i) ? Q4_SKY : null) }));
-    P.forEach((v, i) => { const ln = q4Ln(v, P[(i + 1) % n], { stroke: "rgba(0,0,0,0)", "stroke-width": 26, style: "cursor:pointer" }); ln.addEventListener("click", () => { if (on.has(i)) on.delete(i); else { if (on.size >= 2) on.clear(); on.add(i); } draw(); }); g.append(ln); });
+    P.forEach((v, i) => { const ln = q4Ln(v, P[(i + 1) % n], { stroke: "rgba(0,0,0,0)", "stroke-width": 26, style: "cursor:pointer" }); ln.addEventListener("click", () => { if (on.has(i)) on.delete(i); else { if (on.size >= 2) on.clear(); on.add(i); } draw(); auto(); }); g.append(ln); });
     out.textContent = on.size ? "고른 변: " + [...on].map(sideName).join(", ") : "고른 변이 없어요.";
   };
   const out = h("div", { class: "readout", style: "font-size:var(--fs)" });
@@ -734,7 +737,8 @@ function q4SidePick(body, api, opt) {
     if (ok) return !api.done(ansTxt, opt.ok);
     api.fail(opt.bad || "고른 두 변은 늘이면 만나요. 늘여도 만나지 않는 두 변을 찾아봐요. 점 종이의 칸을 세어 기울기를 비교해 봐요.", ans);
   };
-  body.append(h("p", { class: "jua", style: "margin:.2em 0" }, opt.ask || ""), h("div", { class: "q4fig", style: "max-width:28em" }, svg), h("p", { class: "inst", style: "margin:.2em 0" }, "변을 눌러 두 개를 골라요."), out);
+  const auto = autoRun(() => on.size === 2, () => [...on].sort().join(","), judge, 900);
+  body.append(h("p", { class: "jua", style: "margin:.2em 0" }, opt.ask || ""), h("div", { class: "q4fig", style: "max-width:28em" }, svg), h("p", { class: "inst", style: "margin:.2em 0" }, "변을 눌러 두 개를 고르면 저절로 확인해요."), out);
   draw();
 }
 
@@ -762,13 +766,14 @@ function q4FoldPar(body, api, opt = {}) {
     q => { const v = q4Sub([q.x, q.y], RO); pos = Math.max(-6.5, Math.min(6.5, Math.round(q4Dt(v, re) / 40 * 2) / 2)); draw(); });
   const stepEl = h("p", { class: "jua", style: "margin:.2em 0" });
   const b1 = h("button", { onclick: () => { stage = 1; draw(); } }, "① 반으로 접기");
-  const b2 = h("button", { onclick: () => { if (blues.some(s => Math.abs(s - pos) < 1.5)) return api.hint("앞에서 접은 곳과 너무 가까워요. 조금 떨어진 곳에서 접어요."); blues.push(pos); pos = 4; draw(); if (blues.length === 2) api.hint("두 파란 선이 생겼어요. 아래 ‘확인하기’를 눌러요."); } }, "빨간 선에 맞추어 접기");
+  const b2 = h("button", { onclick: () => { if (blues.some(s => Math.abs(s - pos) < 1.5)) return api.hint("앞에서 접은 곳과 너무 가까워요. 조금 떨어진 곳에서 접어요."); blues.push(pos); pos = 4; draw(); auto(); } }, "빨간 선에 맞추어 접기");
   api.provide({ words: ["빨간 선", "수직", "평행"], answers: ["파란 선 두 개를 접었어요"] });
   const judge = () => {
     api.tryOnce();
     if (blues.length < 2) return api.fail("아직 파란 선을 두 개 다 접지 않았어요.", `파란 선 ${blues.length}개`);
-    api.done("빨간 선에 수직인 파란 선 2개", opt.ok || "두 파란 선은 모두 빨간 선에 수직이에요.");
+    return !api.done("빨간 선에 수직인 파란 선 2개", opt.ok || "두 파란 선은 모두 빨간 선에 수직이에요.");
   };
+  const auto = autoRun(() => blues.length >= 2, () => blues.join(","), judge, 600);
   body.append(stageWrap(svg, h("div", { class: "side" }, stepEl, h("div", { class: "tools" }, b1, b2))));
   draw();
 }
@@ -801,15 +806,16 @@ function q4Overlay(body, api, opt) {
     const Q = T2.map(tr);
     const match = Q.map(v => T1.findIndex(w => q4D(v, w) < 22));
     if (match.every(x => x >= 0) && new Set(match).size === 3) { /* 정확히 맞춤 */ const d = q4Sub(T1[match[0]], Q[0]); off = [off[0] + d[0], off[1] + d[1]]; snapped = true; }
-    draw();
+    draw(); auto();
   };
   const stEl = h("p", { class: "jua", style: "margin:.2em 0" });
   api.provide({ words: ["겹쳐요", "180° 돌리기", "마주 보는 두 변", "마주 보는 두 각"], answers: ["두 조각이 완전히 겹쳐요"] });
   const judge = () => {
     api.tryOnce();
     if (!snapped) return api.fail("아직 두 조각이 겹쳐지지 않았어요. ‘180° 돌리기’를 누른 다음 끌어서 겹쳐 봐요.", "겹치지 않음");
-    api.done("완전히 겹쳐요", opt.ok);
+    return !api.done("완전히 겹쳐요", opt.ok);
   };
+  const auto = autoRun(() => snapped, () => "s" + rot, judge, 900);
   body.append(stageWrap(svg, h("div", { class: "side" }, stEl, h("div", { class: "tools" }, h("button", { onclick: () => { rot = rot ? 0 : 180; const c = q4Cen(T2.map(tr)); snapped = false; tryS(); } }, "↻ 180° 돌리기"), h("button", { onclick: () => { rot = 0; off = [W * .42, 0]; snapped = false; draw(); } }, "처음으로")))));
   draw();
 }
@@ -822,14 +828,14 @@ function q4Corners(body, api, opt) {
   const W = 800, H = 380, svg = makeSvg(W, H), g = svgEl("g"); svg.append(g);
   const m = q4Map(opt.p, [0, 20, W * .5, H - 30, 40], 60), P = m.P, I = q4Info(opt.p);
   const cols = ["#F28B82", "#8ECAE6", "#A7D7A0", "#FBD25B"];
-  const pick = []; let seenAdj = false, seenOpp = false;
+  const pick = [], adjSet = new Set(); let seenAdj = false, seenOpp = false;
   const R = 46;
   const draw = () => {
     g.innerHTML = "";
     g.append(svgEl("polygon", { points: q4Pts(P), fill: "#FFFDF6", stroke: INK, "stroke-width": 4 }));
     P.forEach((v, i) => {
       const { V, u, w } = q4Corner(P, i), wd = svgEl("path", { d: q4Arc(V, u, w, R, true), fill: cols[i], stroke: pick.includes(i) ? INK : "none", "stroke-width": 3, style: "cursor:pointer" });
-      wd.addEventListener("click", () => { if (pick.length >= 2) pick.length = 0; if (!pick.includes(i)) pick.push(i); draw(); });
+      wd.addEventListener("click", () => { if (pick.length >= 2) pick.length = 0; if (!pick.includes(i)) pick.push(i); draw(); auto(); });
       g.append(wd);
       const { b } = q4Corner(P, i); g.append(txt(V[0] - b[0] * 22, V[1] - b[1] * 22, Q4_V[i], 20));
     });
@@ -846,7 +852,7 @@ function q4Corners(body, api, opt) {
     });
     if (pick.length === 2) {
       const [i, j] = pick, adj = (Math.abs(i - j) === 1 || Math.abs(i - j) === 3), sum = Math.round(I.A[i] + I.A[j]);
-      if (adj && sum === 180) { g.append(q4Ln([X[0] - 150, X[1]], [X[0] + 150, X[1]], { stroke: Q4_RED, "stroke-width": 3, "stroke-dasharray": "8 6" })); seenAdj = true; }
+      if (adj && sum === 180) { g.append(q4Ln([X[0] - 150, X[1]], [X[0] + 150, X[1]], { stroke: Q4_RED, "stroke-width": 3, "stroke-dasharray": "8 6" })); seenAdj = true; adjSet.add(Math.min(i, j) + "-" + Math.max(i, j)); }
       if (!adj) seenOpp = true;
       out.textContent = adj ? `이웃하는 두 각 ${Q4_V[i]}, ${Q4_V[j]}: ${q4Deg(I.A[i])} + ${q4Deg(I.A[j])} = ${sum}° ${sum === 180 ? "— 일직선이 돼요!" : ""}` : `마주 보는 두 각 ${Q4_V[i]}, ${Q4_V[j]}: ${q4Deg(I.A[i])}, ${q4Deg(I.A[j])}`;
     } else out.textContent = pick.length ? `각 ${Q4_V[pick[0]]}을 골랐어요. 붙일 각을 하나 더 눌러요.` : "색칠한 각을 두 개 눌러요.";
@@ -856,9 +862,10 @@ function q4Corners(body, api, opt) {
   const judge = () => {
     api.tryOnce();
     if (!seenAdj) return api.fail("나란히 붙어 있는(이웃하는) 두 각을 골라 이어 붙여 봐요.", out.textContent);
-    api.done("이웃하는 두 각을 붙이면 일직선(180°)", opt.ok);
+    return !api.done("이웃하는 두 각을 붙이면 일직선(180°)", opt.ok);
   };
-  body.append(h("div", { class: "stage" }, svg), h("p", { class: "inst", style: "margin:.2em 0" }, "평행사변형의 색칠한 각을 두 개 누르면 오른쪽에 두 각을 나란히 붙여 보여 줘요. 여러 짝을 붙여 봐요."), out);
+  const auto = autoRun(() => adjSet.size >= 2, () => [...adjSet].sort().join(","), judge, 1200);
+  body.append(h("div", { class: "stage" }, svg), h("p", { class: "inst", style: "margin:.2em 0" }, "평행사변형의 색칠한 각을 두 개 누르면 오른쪽에 두 각을 나란히 붙여 보여 줘요. 이웃하는 두 각을 서로 다른 두 짝 이상 붙여 보면 저절로 확인해요."), out);
   draw();
 }
 
@@ -889,10 +896,10 @@ function q4FoldRh(body, api, opt) {
         g.append(q4Ln(K.ㄱ, K.ㄷ, { stroke: Q4_RED, "stroke-width": 3, "stroke-dasharray": "10 6" }), q4Ln(K.ㄴ, K.ㄹ, { stroke: Q4_SKY, "stroke-width": 3, "stroke-dasharray": "10 6" }));
         if (meas.has("ang")) g.append(q4RightMk(C, d1, d2, 16, { stroke: Q4_RED, "stroke-width": 3 }));
         ["ㄱ", "ㄴ", "ㄷ", "ㄹ"].forEach(nm => { const P = K[nm], hit = q4Ln(C, P, { stroke: "rgba(0,0,0,0)", "stroke-width": 24, style: "cursor:pointer" });
-          hit.addEventListener("click", () => { meas.has(nm) ? meas.delete(nm) : meas.add(nm); draw(); }); g.append(hit);
+          hit.addEventListener("click", () => { meas.has(nm) ? meas.delete(nm) : meas.add(nm); draw(); auto(); }); g.append(hit);
           if (meas.has(nm)) { const M = [(C[0] + P[0]) / 2, (C[1] + P[1]) / 2], L = (nm === "ㄱ" || nm === "ㄷ") ? a : b, t = q4Cm(L), d = q4Unit(q4Sub(P, C)), nn = [-d[1] * 26, d[0] * 26];
             g.append(svgEl("rect", { x: q4F(M[0] + nn[0] * 1.6 - 50), y: q4F(M[1] + nn[1] * 1.6 - 14), width: 100, height: 28, rx: 7, fill: "#fff", stroke: "#1D4E80", "stroke-width": 1.2 }), txt(M[0] + nn[0] * 1.6, M[1] + nn[1] * 1.6, t, 17, { fill: "#1D4E80" })); } });
-        const hc = svgEl("circle", { cx: C[0], cy: C[1], r: 18, fill: "rgba(0,0,0,0)", style: "cursor:pointer" }); hc.addEventListener("click", () => { meas.has("ang") ? meas.delete("ang") : meas.add("ang"); draw(); }); g.append(hc);
+        const hc = svgEl("circle", { cx: C[0], cy: C[1], r: 18, fill: "rgba(0,0,0,0)", style: "cursor:pointer" }); hc.addEventListener("click", () => { meas.has("ang") ? meas.delete("ang") : meas.add("ang"); draw(); auto(); }); g.append(hc);
         if (meas.has("ang")) g.append(txt(C[0] + 34, C[1] - 30, "90°", 18, { fill: Q4_RED }));
         lab(C, "ㅁ", -20, 22);
       }
@@ -910,7 +917,7 @@ function q4FoldRh(body, api, opt) {
       poly([K.ㄴ, C, A2], f > .5 ? "#EFA6BF" : "#F7C6D7");
       lab(K.ㄴ, "ㄴ(ㄹ)", -34, 0); lab(C, "ㅁ", 16, -12); lab(K.ㄷ, f >= 1 ? "ㄷ(ㄱ)" : "ㄷ", 0, 22); if (f < 1) lab(A2, "ㄱ", 0, -18);
     }
-    stEl.textContent = ["① ‘ㄱㄷ을 따라 반으로 접기’를 눌러요.", f >= 1 ? "ㄹ이 ㄴ에 꼭 겹쳐요. 각 ㄴ과 각 ㄹ의 크기가 같아요. ② 한 번 더 접어요." : "접는 중…", f >= 1 ? "ㄱ이 ㄷ에 꼭 겹쳐요. 이제 펼쳐 봐요." : "접는 중…", "펼쳤어요. 선분 ㅁㄱ, ㅁㄴ, ㅁㄷ, ㅁㄹ을 눌러 길이를 재고, 점 ㅁ을 눌러 두 선분이 만나는 각을 재어 봐요."][stage];
+    stEl.textContent = ["① ‘ㄱㄷ을 따라 반으로 접기’를 눌러요.", f >= 1 ? "ㄹ이 ㄴ에 꼭 겹쳐요. 각 ㄴ과 각 ㄹ의 크기가 같아요. ② 한 번 더 접어요." : "접는 중…", f >= 1 ? "ㄱ이 ㄷ에 꼭 겹쳐요. 이제 펼쳐 봐요." : "접는 중…", "펼쳤어요. 선분 ㅁㄱ, ㅁㄴ, ㅁㄷ, ㅁㄹ을 눌러 길이를 재고, 점 ㅁ을 눌러 두 선분이 만나는 각을 재어 봐요. 모두 재면 저절로 확인해요."][stage];
     bA.disabled = stage !== 0; bB.disabled = !(stage === 1 && f >= 1); bC.disabled = !(stage === 2 && f >= 1);
   };
   const go = st => { stage = st; f = 0; const t0 = performance.now(); if (anim) cancelAnimationFrame(anim); const step = now => { f = Math.min(1, (now - t0) / 800); draw(); if (f < 1) anim = requestAnimationFrame(step); }; anim = requestAnimationFrame(step); draw(); };
@@ -923,8 +930,9 @@ function q4FoldRh(body, api, opt) {
     api.tryOnce();
     if (stage < 3) return api.fail("순서대로 두 번 접은 다음 펼쳐 봐요.", "접는 중");
     if (!["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ang"].every(x => meas.has(x))) return api.fail("펼친 종이에서 네 선분의 길이와 점 ㅁ의 각을 모두 재어 봐요.", `${meas.size}곳 잼`);
-    api.done(`ㅁㄱ=ㅁㄷ=${q4Cm(a)}, ㅁㄴ=ㅁㄹ=${q4Cm(b)}, 90°`, opt.ok);
+    return !api.done(`ㅁㄱ=ㅁㄷ=${q4Cm(a)}, ㅁㄴ=ㅁㄹ=${q4Cm(b)}, 90°`, opt.ok);
   };
+  const auto = autoRun(() => stage === 3 && ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ang"].every(x => meas.has(x)), () => [...meas].sort().join(""), judge, 900);
   body.append(stageWrap(svg, h("div", { class: "side" }, stEl, h("div", { class: "tools" }, bA, bB, bC, h("button", { onclick: () => { if (anim) cancelAnimationFrame(anim); stage = 0; f = 0; meas.clear(); draw(); } }, "처음으로")))));
   draw();
 }
