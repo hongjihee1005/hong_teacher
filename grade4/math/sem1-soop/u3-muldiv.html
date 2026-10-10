@@ -890,7 +890,7 @@ html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!imp
 /* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
 html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
-</style><meta name="hj-list" content="[[&quot;u1-bignum.html&quot;, &quot;우주 탐험대 큰 수 일지&quot;, &quot;웹앱&quot;], [&quot;u2-angle.html&quot;, &quot;우리 반 놀이터 설계단&quot;, &quot;웹앱&quot;], [&quot;u3-muldiv.html&quot;, &quot;과학 축제 준비 위원회&quot;, &quot;웹앱&quot;], [&quot;u4-move.html&quot;, &quot;우리 반 게임 제작소&quot;, &quot;웹앱&quot;], [&quot;u5-bargraph.html&quot;, &quot;우리 반 조사 기자단&quot;, &quot;웹앱&quot;], [&quot;u6-pattern.html&quot;, &quot;우리 반 나눔 저금통 프로젝트&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
+</style><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
 <div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div>
@@ -1795,6 +1795,16 @@ function d3sWatch(els, fire) {
   els.forEach(i => { i.addEventListener("input", fire); i.addEventListener("change", fire);
     i.addEventListener("keydown", e => { if (e.key === "Enter") { e.preventDefault(); i.blur(); fire(); } }); });
 }
+/* 칸을 덜 채운 채 멈추면 저절로 확인이 열리지 않으므로, 몇 초 뒤 알려 준다. need()가 알려 줄 글을 돌려주면 그 글을 보여 줌(같은 입력에는 한 번만) */
+function d3sSlow(api, els, need, wait) {
+  let t = null, said = null;
+  const go = () => { clearTimeout(t); t = setTimeout(() => {
+    const m = need(); if (!m) return;
+    const sg = els.map(i => i.value).join("|"); if (sg === said) return;
+    said = sg; api.hint(m);
+  }, wait || 3500); };
+  els.forEach(i => i.addEventListener("input", go));
+}
 function d3sCell(label) {
   const i = h("input", { type: "text", inputmode: "numeric", maxlength: 1, autocomplete: "off", class: "d3scell", "aria-label": label || "숫자 칸" });
   i.addEventListener("input", () => { i.value = i.value.replace(/[^0-9]/g, "").slice(-1); });
@@ -1935,6 +1945,7 @@ function d3sCalc(body, api, items, opt = {}) {
   const autoMain = autoRun(() => !chkPhase && mainIns.every(d3sFilled), () => mainIns.map(i => i.value).join("|"), judgeMain, 900);
   const autoChk = autoRun(() => chkPhase && chkIns.every(d3sFilled), () => chkIns.map(i => i.value).join("|"), judgeChk, 900);
   d3sWatch(mainIns, autoMain); d3sWatch(chkIns, autoChk);
+  d3sSlow(api, mainIns, () => !chkPhase && mainIns.some(d3sFilled) && rows.some(R => R.it.div && d3sFilled(R.qi) && !d3sFilled(R.ri)) ? "나머지 칸도 써요. 나머지가 없으면 나머지 칸에 0을 써요." : null);
   body.append(wrap, h("p", { class: "d3snote" }, (items.some(x => x.div) ? "나머지가 없으면 나머지 칸에 0을 써요. " : "") + "칸을 다 채우면 저절로 확인해요."));
 }
 
@@ -2174,6 +2185,11 @@ function d3sLongMul(body, api, opt) {
   const fire = autoRun(() => si < stages.length && stages[si].ins.filter(d3sFilled).length >= d3sDigits(stages[si].want),
     () => si + ":" + stages[si].ins.map(x => x.value).join(","), judge, 900);
   stages.forEach(s => d3sWatch(s.ins, fire));
+  d3sSlow(api, stages.flatMap(s => s.ins), () => {
+    const s = stages[si]; if (!s) return null;
+    const f = s.ins.filter(d3sFilled).length, need = d3sDigits(s.want);
+    return f > 0 && f < need ? `아직 빈칸이 있어요. ${s.name}에는 숫자가 ${need}개 들어가요. 일의 자리부터 오른쪽 칸에 맞추어 써요.` : null;
+  });
   setStage();
   body.append(h("p", { class: "inst" }, opt.tip || "색칠된 줄의 빈칸에 숫자를 한 개씩 써요. 그 줄을 다 쓰면 저절로 확인하고, 맞으면 다음 줄이 열려요."), h("div", { class: "d3swrap" }, box));
 }
@@ -2489,6 +2505,13 @@ function d3sLongDiv(body, api, opt) {
   };
   const fire = autoRun(ready, sign, judge, 900);
   d3sWatch(stages.flatMap(s => [s.qIn, ...s.pIns, ...s.dIns]).concat([c1, c2]), fire);
+  d3sSlow(api, stages.flatMap(s => [...s.pIns, ...s.dIns]), () => {
+    if (phaseChk || sub !== "pd" || ready()) return null;
+    const s = stages[si], w = want(s);
+    if (![...s.pIns, ...s.dIns].some(d3sFilled)) return null;
+    if (s.pIns.filter(d3sFilled).length < d3sDigits(w.pw)) return `아직 빈칸이 있어요. ${d} × ${Number(s.qIn.value) * s.place}의 곱을 자리에 맞추어 모두 써요.`;
+    return `아직 빈칸이 있어요. ${cur} − ${d3sJ(w.prod, "을를")} 계산해 뺀 결과를 일의 자리에 맞추어 모두 써요.`;
+  });
   setActive();
   body.append(h("p", { class: "inst" }, opt.tip || "몫을 어림해 쓰면 저절로 살펴봐요. 그다음 곱과 뺀 결과를 다 쓰면 저절로 확인해요."), h("div", { class: "d3swrap" }, box, h("div", { style: "flex:1;min-width:12em" }, st)), chkBox);
 }
