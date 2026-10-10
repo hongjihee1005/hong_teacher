@@ -356,8 +356,8 @@ def _vcell(x0, y0, a, b, op, lv, mode, title):
             if row == 1:
                 o.append(_t(x0 + CW / 2, y + CW / 2, sym, 42))
             if row == 2:
-                o.append(_l(x0 + 6, y - 2, right + 4, y - 2, INK, 3))
-                y += 6
+                o.append(_l(x0 + 6, y + 4, right + 4, y + 4, INK, 3))
+                y += 12
             o.append(box_row(y, 'box'))
             y += CW
     return o, right + 10 - x0, y - y0
@@ -429,7 +429,7 @@ RAB = [('sun', 'M40 80 a50 50 0 1 0 100 0 a50 50 0 1 0 -100 0z', 90, 80),
        ('head', 'M270 215 a120 85 0 1 0 240 0 a120 85 0 1 0 -240 0z', 390, 245),
        ('body', 'M280 445 q-10 -115 110 -145 q120 30 110 145 z', 390, 385),
        ('carrot', 'M540 270 h90 l-45 175 z', 585, 305),
-       ('grass', 'M45 445 q30 -90 55 0 q25 -90 55 0 q25 -90 55 0 z', 128, 425)]
+       ('grass', 'M45 445 q30 -90 55 0 q25 -90 55 0 q25 -90 55 0 z', 128, 412)]
 
 
 def svg_rabbit(labels):
