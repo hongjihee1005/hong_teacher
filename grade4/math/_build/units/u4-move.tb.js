@@ -1161,6 +1161,14 @@ function m4Room(body, api, opt) {
   body.append(stageWrap(svg, m4Side(h("p", {}, "아래 조각을 눌러 고른 다음, 알맞은 이동 방법을 눌러요. 바르게 서면 빈 곳으로 들어가요."), ...meth.map(op => h("button", { class: "opt", onclick: () => go(op) }, m4OpText(op))))));
   paint();
 }
+/* 판 그림 높이 제한: 좁은 화면(판과 단추가 위아래로 놓임)에서도 판이 520px보다 높아지지 않게(아래 '다음 계단' 막대에 가리지 않게) */
+(function m4Cap() {
+  const cap = s => {
+    if (s.dataset.m4cap) return; const vb = s.viewBox && s.viewBox.baseVal; if (!vb || !vb.width || !vb.height) return;
+    s.dataset.m4cap = "1"; s.style.maxWidth = Math.round(520 * vb.width / vb.height) + "px"; s.style.marginLeft = "auto"; s.style.marginRight = "auto";
+  };
+  new MutationObserver(() => document.querySelectorAll(".stage > svg").forEach(cap)).observe(document.documentElement, { childList: true, subtree: true });
+})();
 //@@LESSONS
 const UNIT_STORY = { title: "그림자 연극 「두두의 소원」", lines: [
   "오늘은 학교에서 그림자 연극 「두두의 소원」을 하는 날이에요. 두더지 두두가 세상에서 가장 예쁘고 향기로운 것을 찾으러 길을 떠나요.",
@@ -1186,7 +1194,7 @@ function m4Tangram(skip) {
 }
 const M4_TRI_S = { pts: [[1, 0], [0, 2], [3, 2]], names: ["ㄱ", "ㄴ", "ㄷ"] };            // 밀기 삼각형
 const M4_TRI_F = { pts: [[1, 0], [0, 3], [3, 3]], names: ["ㄱ", "ㄴ", "ㄷ"] };            // 뒤집기 삼각형(ㄱ 위, ㄴ 왼쪽 아래, ㄷ 오른쪽 아래)
-const M4_QUAD = { pts: [[0, 0], [0, 2], [3, 3], [2, 0]], names: ["ㄱ", "ㄴ", "ㄷ", "ㄹ"], fill: "#FDE3D3", stroke: TENT };   // ㄱ 왼쪽 위, ㄹ 오른쪽 위
+const M4_QUAD = { pts: [[0, 0], [0, 3], [3, 2], [2, 0]], names: ["ㄱ", "ㄴ", "ㄷ", "ㄹ"], fill: "#FDE3D3", stroke: TENT };   // ㄱ 왼쪽 위, ㄹ 오른쪽 위(대칭축이 없는 사각형: 뒤집은 모양과 돌린 모양이 겹치지 않게)
 const M4_TRI_R = { pts: [[0, 0], [0, 3], [2, 3]], names: ["ㄱ", "ㄴ", "ㄷ"], fill: "#DDEDE5", stroke: PINE };   // 돌리기 삼각형(ㄱ이 위쪽 부분)
 const M4_GAMMA = { pts: [[0, 0], [2, 0], [2, 1], [1, 1], [1, 3], [0, 3]], fill: "#EADFF6", stroke: "#7A5BB0" };
 const M4_LSH = { pts: [[0, 0], [3, 0], [3, 1], [1, 1], [1, 2], [0, 2]], fill: "#FFF1C7", stroke: "#B08A1E" };

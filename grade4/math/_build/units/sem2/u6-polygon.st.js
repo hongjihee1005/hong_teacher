@@ -643,6 +643,7 @@ function p6Pieces(body, api, opt) {
   const ready = () => {
     const t = tasks[ti]; if (!t || over || naming || drag || !pieces.length || t.type === "free") return false;
     const polys = pieces.map(W_);
+    if (t.type === "fill" && !polys.every(P => t.targets.some(T => p6InN(p6Cen(P), T)))) return false;   // 아직 상자에 있는 조각이 있으면 기다림
     if (t.type === "fill") return Math.abs(polys.reduce((s, P) => s + areaOf(P), 0) - t.targets.reduce((s, T) => s + areaOf(T), 0)) < .05;
     if (t.count ? pieces.length !== t.count : pieces.length < (t.min || 2)) return false;
     return p6Outline(polys).ok;
