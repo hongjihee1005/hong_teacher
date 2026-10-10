@@ -670,10 +670,14 @@ def join_fig(mode, a, b):
     """mode sum: 가(a)에 나(b)를 이어 붙임 / diff: 가(a) 위에 나(b)를 겹침."""
     R = 170
     p1 = C()
-    angle(p1, (0, 0), 0, a, R, fill=FILLS[0], text='%d°' % a, arc=48)
+    angle(p1, (0, 0), 0, a, R, fill=FILLS[0], arc=48)
+    q = pt((0, 0), a / 2, 48 + 26 if a >= 40 else R + 34)
+    p1.text(q[0], q[1], '%d°' % a, 22)
     p1.text(p1.x0 - 6, p1.y0, '가', 26, RED, bold=True)
     p2 = C()
-    angle(p2, (0, 0), 0, b, R, fill=FILLS[1], text='%d°' % b, arc=48, col=BLUE)
+    angle(p2, (0, 0), 0, b, R, fill=FILLS[1], arc=48, col=BLUE)
+    q = pt((0, 0), b / 2, 48 + 26 if b >= 40 else R + 34)
+    p2.text(q[0], q[1], '%d°' % b, 22)
     p2.text(p2.x0 - 6, p2.y0, '나', 26, RED, bold=True)
     p3 = C()
     V = (0, 0)
@@ -737,7 +741,6 @@ def tower_fig(tilt=5):
     V = (0, 0)
     c.rect(-160, 0, 320, 40, '#D8EBC8')
     L = 300
-    c.line(V, pt(V, 90, L + 20), BLUE, 3, '10 7')
     d = 90 + tilt
     P = pt(V, d, L)
     w = 34
@@ -746,10 +749,11 @@ def tower_fig(tilt=5):
     for t in range(1, 7):
         q = pt(V, d, L * t / 7)
         c.line((q[0] + nx, q[1] + ny), (q[0] - nx, q[1] - ny), '#B9A880', 2)
-    c.line(V, pt(V, d, L + 20), RED, 2.5)
-    c.arc(V, 90, d, 200, RED, 3)
-    q = pt(V, 90 + tilt / 2, 225)
-    c.text(q[0] + 4, q[1] - 6, '%d°' % tilt, 22, RED, bold=True)
+    c.line(V, pt(V, 90, L + 90), BLUE, 3, '10 7')
+    c.line(V, pt(V, d, L + 90), RED, 3)
+    c.arc(V, 90, d, L + 70, RED, 3)
+    q = pt(V, 90 + tilt / 2, L + 100)
+    c.text(q[0], q[1], '%d°' % tilt, 24, RED, bold=True)
     return c
 
 
@@ -1020,9 +1024,9 @@ def tb2(s, ch):
     s.step('① 만져 보기', '가를 투명 종이에 본떠 나에 겹쳐 보기')
     pa, pb = C(), C()
     angle(pa, (0, 0), 5, 98, 200, 170, arc=40)
-    pa.text(pa.x0, pa.y0, '가 코끼리 모양 의자', 22, RED, anchor='start', bold=True)
+    pa.text(pa.x0, pa.y1 + 36, '가 코끼리 모양 의자', 22, RED, anchor='start', bold=True)
     angle(pb, (0, 0), -12, 92, 290, 250, arc=40)
-    pb.text(pb.x0, pb.y0 - 6, '나 기린 모양 의자', 22, RED, anchor='start', bold=True)
+    pb.text(pb.x0, pb.y1 + 36, '나 기린 모양 의자', 22, RED, anchor='start', bold=True)
     figk(s, row([pa, pb], 70), .19)
     if ch:
         s.ask('각의 크기가 더 큰 것은 어느 것인가요?')
@@ -1280,11 +1284,10 @@ def tb6(s, ch):
         s.ask('등받이 각도가 110°인 의자를 140°가 되도록 더 눕혔어요. 몇 도 더 눕혔나요?')
         k = C()
         V = (0, 0)
-        for i, d in enumerate([0, 60]):
-            A, Bp = pt(V, d, 120), pt(V, d + 60, 240)
-            k.poly([V, A, Bp], fill=FILLS[i], sw=3)
+        k.poly([V, pt(V, 0, 120), pt(V, 60, 240)], fill=FILLS[0], sw=3)
+        k.poly([V, pt(V, 60, 240), pt(V, 120, 120)], fill=FILLS[1], sw=3)
         k.arc(V, 0, 120, 44, RED, 4)
-        q = pt(V, 60, 70)
+        q = pt(V, 90, 72)
         k.text(q[0], q[1], '?', 24)
         s.picture(png(k), width_mm=48)
         s.ask('30°·60° 삼각자 두 개의 60°인 부분을 이어 붙였어요. 만들어진 각은 몇 도인가요?')

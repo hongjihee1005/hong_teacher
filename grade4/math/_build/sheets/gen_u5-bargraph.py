@@ -465,9 +465,12 @@ class W:
     def __init__(self, s):
         self.s, self.y, self.buf = s, 0.0, []
         self.after_pic = False      # 단계의 첫 그림 뒤로는 문항마다 따로 넘길 수 있음
+        self.hold = False           # 다음 요소와 붙여 둠(질문 + 쓰는 칸)
 
     def _q(self, h, fn, *a, **k):
-        if self.after_pic and self.buf:
+        if self.hold:
+            self.hold = False
+        elif self.after_pic and self.buf:
             # 그림 바로 앞의 안내 글·표는 그림과 함께 둠
             if not (fn == self.s.picture and self.buf[-1][1] in (self.s.text, self.s.table, self.s.fill, self.s.choices)):
                 self.flush()
@@ -508,13 +511,15 @@ class W:
 
     def ask(self, q, blank=True):
         self._q(nlines(q + (' 답: (        )' if blank else ''), 34) * 8.1, self.s.ask, q, blank)
+        if not blank:
+            self.hold = True
 
     def lines(self, n=2):
         self._q(n * 8.3, self.s.lines, n)
 
     def why(self, q, n=2):
-        self.ask('왜 그럴까요? ' + q, blank=False)
-        self.lines(n)
+        q = '왜 그럴까요? ' + q
+        self._group([(nlines(q, 34) * 8.1, self.s.ask, (q, False)), (n * 8.3, self.s.lines, (n,))])
 
     def pic(self, svgt, mm=150, align='center', maxh=None):
         Wd, Hd = svgt[1], svgt[2]
@@ -544,11 +549,20 @@ class W:
     def table(self, rows, **k):
         self._q(len(rows) * 11.6 + 1, self.s.table, rows, **k)
 
+    def _group(self, items):
+        """[(h, fn, a)] 를 한 묶음(쪽에서 갈라지지 않게)으로."""
+        def run():
+            for _, fn, a in items:
+                fn(*a)
+        self._q(sum(i[0] for i in items), run)
+
     def pick(self, q, opts):
         """긴 보기 고르기: 질문 + ①②③ 줄."""
-        self.ask(q)
+        items = [(nlines(q + ' 답: (        )', 34) * 8.1, self.s.ask, (q,))]
         for i, o in enumerate(opts):
-            self.text('%s %s' % ('①②③④⑤'[i], o))
+            t = '%s %s' % ('①②③④⑤'[i], o)
+            items.append((nlines(t, 37) * 7.4, self.s.text, (t,)))
+        self._group(items)
 
 
 def dtable(cats, vals, head, row, total=True, blanks=()):
