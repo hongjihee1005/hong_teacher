@@ -3,6 +3,26 @@
 **선생님 요청(2026-10-10):** 4학년 수학(1·2학기)을 3학년처럼 두 버전(교과서 차시 버전 + 이야기 버전)의 웹앱과 활동지(hwpx 기본형·도전형)로 만들고, 오류를 두 번 점검한다.
 4학년이 끝나면 **5학년 → 6학년**을 같은 방식으로 이어서 만든다. **사용량이 다 차서 멈추면, 다음 세션이 열리자마자 이 파일을 읽고 바로 이어서 한다.** 목표: 수학 3~6학년 모두 완성.
 
+## 선생님 운영 원칙 (2026-10-10 밤, 선생님 말씀)
+
+- **자동으로 계속:** 4학년 → 5학년 → 6학년(1·2학기)까지 멈추지 말고 이어서. 선생님이 주무시는 동안에도 계속. 사용량이 다 차서 멈추면 다시 쓸 수 있게 되는 대로 바로 이어서.
+- **학년·학기 하나가 끝날 때마다 main에 올리기**(예: 4-1 끝 → main, 4-2 끝 → main …). 올리기 전 점검 통과, 올린 뒤 자동 보완 성공 확인.
+- **선생님이 꼭 확인해야 하는 문제는 건너뛰고** 아래 '선생님 확인 필요' 목록에 적은 뒤, 할 수 있는 일을 계속. 나중에 선생님과 함께 처리.
+
+## 선생님 확인 필요 (건너뛴 것)
+
+- (아직 없음)
+
+## 5·6학년 지도서 파일 (드라이브 file id)
+
+- 5-1: 1단원 `1Ul3-pO2NkJUupZAE-hv9vzax8Ag-YjhA` · 2단원 `1M2Zpe1qjGu3MSdZqIB4MfOLpxZrMAP7B` · 3단원 `1TR5DmF5TEHa3v50s9UZhW5IgbevVKB9K` · 4단원 `1bgnEZeQ8o-_N6klDPhmmgCZkuaEx2Hv3` · 5단원 `1wAhDCNfLnrEy5h7JsK9TBey5Q4Uf0rtp` · 6단원 `12uOiqySR1C6KQgcf2Eh0b5JA2yeJlbkV`
+- 5-2: 1 `16nxozizuifxzZvrMbVmcj68DGk4d0czx` · 2 `1c_ZrJKgNuN2yBvsufj18nSQsH8XxtqbU` · 3 `1JpNrVzVg6Q8i6nlaoS11oTLORc8J4Va1` · 4 `1ejfRE5Dti0UjLBFU5RowITM8Dx6qQifH` · 5 `1mLwlSOhDf9B1xqEhvMIKF_NN4G2zdCWm` · 6 `1ZJ1F9nZbvBZun8KzSYydQg-Nq_lmADLO`
+- 6학년 수학 폴더 id `13H1ILWiD7MbuLE_HeC9_sn5Wlv7t3URr`
+- 6-1: 1 `1TH0MfHkVhcshwOUr7S6tw7P_yyfKatUM` · 2 `1xYEoi1bqtlt9jo6pgWF-ZAWiOpjVeiBq` · 3 `1do72rYumu9j9q2byU4q17Bs1DPGysLvY` · 4 `1HlIvGyIx1U7SnoOauDdHdpyY_i0KZbLp` · 5 `1xH32HJYnArgAE1nmry3iCxIJJcw1RgK3` · 6 `1D8YxNgVh4K-Axpl02dn6yfi5oSraNiqE`
+- 6-2: 1 `161q_sL264ABAVki9OIxi4I0ot-DkVGtI` · 2 `1Utop4NXrCpBvdzAUZrQNj63Qf3B6N0lD` · 3 `1_b856nKP243VTFzB2Anh8q2wBx1QeEeQ` · 4 `1dp2KUS6OKlWhfpfMCXex_nPjwpqB_tBX` · 5 `1fa425DpjUnvD8JwKgMrB-j0XpN82zq9O` · 6 `1GovLtZtX18Qvi4UpftLWkSLHAORS8CyL`
+- 4학년 file id: 4-1 1 `1mYXASSMGjRFVCegJlM7VJYzF0GHhc0A0` · 2 `16mcU-0hv9cNMd4-ht6GDKbMXeX7NKHhX` · 3 `1lKQWjX01O9nhQQCiPlZ2uiQKG5OQAH-W` · 4 `1bMojzt2b2CZBbxPpLatzeYSSuLtW1Lek` · 5 `1lo1dafYlNtycPwJNTyQtH6v3oAPQfwSG` · 6 `1xrm37RhO10OvrmrtdmrgWU6xelJXGAAQ` / 4-2 1 `1NqrfxbZdaSkzgeAMcROXHP_M9jDR5cbm` · 2 `1r9p9lZ2CYyI8LquB5j6ncRCuvsa1HOme` · 3 `1LQrQ6pglcb1ZLY5E8HEgFhd6uSHwM1PG` · 4 `1qG_ljwg0EwH0qHYO9eb9fvXDfTra22m9` · 5 `1fhlAtV0SkuaStoNhlZC3tJLPnkiJ8RGi` · 6 `1orCpplrtvpMdQcUbFYEdPoaE6-zlGNrS`
+- 명세(지도서 정리)는 세션 임시 폴더에만 두므로, 새 세션에서는 남은 단원의 명세를 `BRIEF_SPEC.md`로 다시 만듭니다(이미 커밋된 단원 원본 `units/*.js`가 있으면 그 단원은 명세 없이 이어서 고치면 됨).
+
 ## 지도서 위치 (구글 드라이브, 연결된 Google Drive 도구로 읽음)
 
 - 4학년: 드라이브 폴더 **'수학 4학년'** (id `1Au9WIF_BJ_5UnksEuCW5nW-94PxL6OWa`) — 4-1 `[수학]4-1_N단원_지도서.pdf` 6개, 4-2 `4_2_수학_N_수학지도서.pdf` 6개
