@@ -72,6 +72,10 @@
 | 5 꺾은선그래프 | u5-linegraph | ✓ | | | |
 | 6 다각형 | u6-polygon | 진행 중 | | | |
 
+### 4-1 목록 페이지 (2026-10-10 만듦)
+- `grade4/math/sem1/index.html`·`sem1-soop/index.html`·README·전체안내·Code.gs는 `grade4/math/_build/gen_lists.py`가 단원 원본에서 만듦(이야기 6단원 완성 뒤 다시 돌리고 `apply_theme.py`). 수학방·학년·첫 화면 카드도 고침.
+- **이야기 6단원(`sem1-soop/u6-pattern.html`)이 생기기 전에는 main에 올리지 말 것**(링크 점검 실패).
+
 ### 남은 일 (4학년)
 - 목록 페이지·README·전체 안내·Code.gs, 활동지 전부, 점검 두 번, main 올리기, CLAUDE.md에 4학년 수학 항목 쓰기.
 - 알려진 고칠 거리(점검 때 고치기):
