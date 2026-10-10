@@ -808,7 +808,7 @@ function r6CheckPairs(pairs) {
   const vals = pairs.map(([x, y]) => {
     const a = r6Eval(x), b = r6Eval(y);
     if (!(a === b && Number.isInteger(a))) throw new Error(`짝 카드의 크기가 달라요: ${x}, ${y}`);
-    if ((x + y).match(/\d+/g).some(n => +n > 99)) throw new Error(`두 자리 수를 넘어요: ${x}, ${y}`);
+    if ((x + " " + y).match(/\d+/g).some(n => +n > 99)) throw new Error(`두 자리 수를 넘어요: ${x}, ${y}`);
     return a;
   });
   if (new Set(vals).size !== vals.length) throw new Error("서로 다른 짝의 크기가 겹쳐요");
