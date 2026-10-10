@@ -438,7 +438,7 @@ function d3Blocks(body, api, opt) {
   };
   const draw = () => {
     svg.innerHTML = "";
-    svg.append(txt(450, 32, `${opt.item || ""} ${d3J(n, "을를")} ${d}씩 묶어요`.trim(), 26));
+    svg.append(txt(450, 32, `${opt.item || ""} ${d3J(n + (opt.unit || ""), "을를")} ${d}${opt.unit || ""}씩 묶어요`.trim(), 26));
     if (!broken) {
       for (let i = 0; i < H; i++) {
         const x = HX(i), u = HS / 10;
@@ -1029,7 +1029,7 @@ function d3Space(body, api, opt) {
     status.textContent = `${cells[me].replace(/([×÷])/, " $1 ")}${e.op === "÷" ? "의 몫과 나머지를" : "의 곱을"} 구해요.`;
   };
   const myRoll = () => {
-    if (busy || state !== "roll") return api.hint(state === "answer" ? "먼저 칸에 있는 식을 계산해요." : "친구 차례예요. 잠깐 기다려요.");
+    if (busy || state !== "roll") return api.hint(state === "answer" ? "먼저 칸에 있는 식을 계산해요." : state === "judge" ? "먼저 친구의 계산이 맞는지 ‘맞아요’나 ‘틀렸어요’를 눌러요." : state === "end" ? "놀이가 끝났어요. ‘처음부터’를 눌러 다시 할 수 있어요." : "친구 차례예요. 잠깐 기다려요.");
     const d = 1 + Math.floor(Math.random() * 6);
     dieBox.textContent = `주사위: ${d}`; prev = me;
     move("me", d, () => {
@@ -1059,9 +1059,11 @@ function d3Space(body, api, opt) {
     else said = wrong && e.q >= 2 ? `${e.q - 1} … ${e.r + e.b}` : wrong ? `${e.q + 1} … 0` : `${e.q}${e.r ? ` … ${e.r}` : ""}`;
     const real = e.op === "×" ? `${e.p}` : `${e.q}${e.r ? ` … ${e.r}` : ""}`;
     const isWrong = said !== real;
+    state = "judge";
     status.textContent = `친구가 ${e.a} ${e.op} ${e.b} = ${said}${d3J(said, "이가").endsWith("이") ? "이라고" : "라고"} 했어요. 맞는지 확인해 주세요.`;
     work.innerHTML = "";
     const judge = ok => {
+      if (state !== "judge") return;
       const right = ok === !isWrong;
       log.prepend(h("div", {}, `${isWrong ? "×" : "○"} 친구: ${e.a}${e.op}${e.b}=${said}`));
       if (isWrong) { fr = fprev; draw(); }
@@ -1074,7 +1076,7 @@ function d3Space(body, api, opt) {
   const reset = () => { me = 0; fr = 0; prev = 0; state = "roll"; work.innerHTML = ""; dieBox.textContent = "주사위: -"; status.textContent = "‘주사위 굴리기’를 눌러 시작해요."; draw(); };
   draw(); setScore();
   body.append(stageWrap(svg, h("div", { class: "side" }, h("p", { style: "font-size:var(--fs-s)" }, opt.tip || `파란 말이 나, 주황 말이 친구예요. 계산을 ${goal}번 맞히거나 도착하면 이 계단을 통과해요.`),
-    rollB, dieBox, status, work, score, h("button", { class: "ghost", onclick: reset }, "처음부터"), log)));
+    rollB, dieBox, status, work, score, h("button", { class: "ghost", onclick: () => { if (!busy) reset(); } }, "처음부터"), log)));
 }
 //@@LESSONS
 const UNIT_STORY = { title: "가정의 달 축제 자원봉사", lines: [
@@ -1172,7 +1174,7 @@ const LESSONS = [
   summary: "(몇십)으로 나눌 때는 곱셈으로 몫을 어림해요. 나머지가 나누는 수보다 크거나 같으면 몫을 1 크게, 나누는 수 × 몫이 나누어지는 수보다 크면 몫을 1 작게 해요. 나머지는 나누는 수보다 작아야 해요.",
   steps: [
     { inst: "엽서 160장을 한 바구니에 20장씩 담으려고 해요. 수 모형을 20씩 묶어 필요한 바구니 수를 알아보세요.", hints: ["백 모형 1개는 십 모형 10개와 같아요.", "20은 십 모형 2개예요."],
-      render: (b, a) => d3Blocks(b, a, { n: 160, d: 20, item: "엽서", ask: [
+      render: (b, a) => d3Blocks(b, a, { n: 160, d: 20, item: "엽서", unit: "장", ask: [
         { q: "십 모형 2개씩 몇 묶음인가요?", a: 8, unit: "묶음" }, { q: "160 ÷ 20 =", a: 8 }, { q: "확인: 20 × 8 =", a: 160 }, { q: "필요한 바구니는 몇 개인가요?", a: 8, unit: "개" }],
         ok: "16 ÷ 2 = 8이니까 160 ÷ 20 = 8. 20 × 8 = 160이므로 계산이 맞아요. 바구니는 8개 필요해요." }) },
     { inst: "271 ÷ 50의 몫을 4, 6, 5로 차례로 어림해 보세요. 막대에서 무엇이 달라지는지 살펴보고 몫과 나머지를 구해요.", hints: ["몫이 4이면 나머지 71이 50보다 커요.", "몫이 6이면 50 × 6 = 300이라 뺄 수 없어요."],

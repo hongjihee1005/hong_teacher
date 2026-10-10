@@ -2212,7 +2212,7 @@ function d3sBlocks(body, api, opt) {
   const ans = h("div", {}, h("p", { class: "d3swait" }, `십 모형을 ${g}개씩 모두 묶으면 물음이 나와요.`));
   const draw = () => {
     svg.innerHTML = "";
-    svg.append(txt(450, 32, `${opt.item || ""} ${d3sJ(n, "을를")} ${d}씩 묶어요`.trim(), 26));
+    svg.append(txt(450, 32, `${opt.item || ""} ${d3sJ(n + (opt.unit || ""), "을를")} ${d}${opt.unit || ""}씩 묶어요`.trim(), 26));
     if (!broken) {
       for (let i = 0; i < H; i++) {
         const x = HX(i), u = HS / 10;
@@ -2858,7 +2858,7 @@ function d3sSpace(body, api, opt) {
     status.textContent = `${cells[me].replace(/([×÷])/, " $1 ")}${e.op === "÷" ? "의 몫과 나머지를" : "의 곱을"} 구해요.`;
   };
   const myRoll = () => {
-    if (busy || state !== "roll") return api.hint(state === "answer" ? "먼저 칸에 있는 식을 계산해요." : state === "end" ? "놀이가 끝났어요. ‘처음부터’를 눌러 다시 할 수 있어요." : "친구 차례예요. 잠깐 기다려요.");
+    if (busy || state !== "roll") return api.hint(state === "answer" ? "먼저 칸에 있는 식을 계산해요." : state === "judge" ? "먼저 친구의 계산이 맞는지 ‘맞아요’나 ‘틀렸어요’를 눌러요." : state === "end" ? "놀이가 끝났어요. ‘처음부터’를 눌러 다시 할 수 있어요." : "친구 차례예요. 잠깐 기다려요.");
     const d = 1 + Math.floor(Math.random() * 6);
     dieBox.textContent = `주사위: ${d}`; prev = me;
     move("me", d, () => {
@@ -3078,7 +3078,7 @@ const LESSONS = [
     { name: "만져 보기 — 예상하고 확인하기",
       inst: "탱탱볼 부스를 맡은 예린이가 고무 찰흙 180개를 한 바구니에 30개씩 담으려고 해요. 수 모형을 30씩 묶어 필요한 바구니 수를 알아보세요.",
       hints: ["백 모형 1개는 십 모형 10개와 같아요.", "30은 십 모형 3개예요."],
-      render: ruleFirst((b, a) => d3sBlocks(b, a, { n: 180, d: 30, item: "고무 찰흙", ask: [
+      render: ruleFirst((b, a) => d3sBlocks(b, a, { n: 180, d: 30, item: "고무 찰흙", unit: "개", ask: [
         { q: "십 모형 3개씩 몇 묶음인가요?", a: 6, unit: "묶음" }, { q: "180 ÷ 30 =", a: 6 }, { q: "확인: 30 × 6 =", a: 180 }],
         ok: "18 ÷ 3 = 6이니까 180 ÷ 30 = 6. 30 × 6 = 180이므로 바구니는 6개 필요해요." }),
         { q: "180 ÷ 30의 몫은 어떻게 구할 수 있을까요?", ph: "내 규칙: ~",
@@ -3378,7 +3378,7 @@ const LESSONS = [
     { name: "그려 보기 — 잘못 계산한 곳 찾기",
       inst: "도윤이가 계획표의 412 ÷ 53을 계산했어요. 잘못 계산한 곳을 찾아 까닭을 고르고 옳게 계산해 보세요.",
       hints: ["나머지 94와 나누는 수 53을 견주어 봐요.", "53 × 7 = 371이에요."],
-      render: (b, a) => d3sFixDiv(b, a, { n: 412, d: 53, wq: 6, ra: 0, who: "도윤",
+      render: (b, a) => d3sFixDiv(b, a, { n: 412, d: 53, wq: 6, ra: 0, who: "도윤이",
         reasons: ["나머지 94가 나누는 수 53보다 커서 더 나눌 수 있어요.", "53 × 6을 잘못 계산했어요.", "몫을 1 작게 해야 해요."],
         why: { 1: "53 × 6 = 318은 맞게 계산했어요.", 2: "나머지 94에서 53을 한 번 더 뺄 수 있어요. 몫을 크게 해야 해요." },
         ok: "412 ÷ 53 = 7 … 41. 나머지는 나누는 수보다 작아야 해요." }) },
