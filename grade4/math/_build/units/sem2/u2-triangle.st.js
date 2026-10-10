@@ -984,10 +984,10 @@ function t2Scene(body, api, opt) {
    ========================================================= */
 function t2Struct(kind, p, label) {
   return () => t2Fig(380, 280, s => {
-    const sky = { tower: "#EAF4FB", station: "#EEF2F7", bridge: "#E8F3F7", wheel: "#F1F7EE", museum: "#F6F1EA", dome: "#EEF6EE" }[kind];
+    const sky = { tower: "#EAF4FB", station: "#EEF2F7", bridge: "#E8F3F7", wheel: "#F1F7EE", museum: "#F6F1EA", dome: "#EEF6EE", tent: "#EEF6FB", roof: "#F6F1EA", sign: "#F1F7EE" }[kind];
     s.append(svgEl("rect", { x: 0, y: 0, width: 380, height: 280, fill: sky }));
     const ln = (a, b, w = 4, c = "#6B7A85") => s.append(t2Line(a, b, { stroke: c, "stroke-width": w }));
-    const box = { tower: [140, 70, 140, 150, 6], station: [40, 40, 300, 140, 8], bridge: [95, 95, 190, 120, 6], wheel: [100, 50, 180, 170, 4], museum: [110, 30, 160, 230, 6], dome: [150, 70, 130, 140, 6] }[kind];
+    const box = { tower: [140, 70, 140, 150, 6], station: [40, 40, 300, 140, 8], bridge: [95, 95, 190, 120, 6], wheel: [100, 50, 180, 170, 4], museum: [110, 30, 160, 230, 6], dome: [150, 70, 130, 140, 6], tent: [60, 40, 260, 215, 6], roof: [50, 30, 280, 105, 6], sign: [115, 25, 150, 140, 6] }[kind];
     const P = t2Map(p, box).P;
     if (kind === "tower") { ln([150, 270], [190, 30], 5); ln([270, 270], [230, 30], 5); ln([120, 70], [300, 70], 5); ln([135, 120], [285, 120], 4); for (let y = 30; y < 260; y += 40) { ln([150 + (270 - y) / 6, y], [270 - (270 - y - 40) / 6, y + 40], 2); ln([270 - (270 - y) / 6, y], [150 + (270 - y - 40) / 6, y + 40], 2); } }
     if (kind === "station") { ln([20, 230], [360, 230], 6); for (let x = 50; x < 360; x += 60) ln([x, 230], [x, 180], 3); s.append(svgEl("path", { d: "M20,180 Q190,60 360,180", fill: "none", stroke: "#6B7A85", "stroke-width": 4 })); }
@@ -995,6 +995,9 @@ function t2Struct(kind, p, label) {
     if (kind === "wheel") { const C = t2Cen(P), R = Math.max(...P.map(q => t2Dist(q, C))); s.append(svgEl("circle", { cx: t2F(C[0]), cy: t2F(C[1]), r: t2F(R), fill: "none", stroke: "#6B7A85", "stroke-width": 5 })); for (let a = 0; a < 360; a += 30) ln(C, t2Pt(C, a, R), 2); ln(C, [C[0] - 60, 270], 6); ln(C, [C[0] + 60, 270], 6); }
     if (kind === "museum") { s.append(svgEl("rect", { x: 40, y: 230, width: 300, height: 40, fill: "#D8CDBE" })); ln([60, 230], [60, 150], 3); ln([320, 230], [320, 150], 3); ln([60, 150], [320, 150], 3); }
     if (kind === "dome") { s.append(svgEl("path", { d: "M30,260 Q30,40 190,40 Q350,40 350,260 Z", fill: "#DDEFE0", stroke: "#6B7A85", "stroke-width": 4 })); for (let x = 70; x < 330; x += 40) ln([x, 260], [x + 20, 70], 1.5, "#9AB3A0"); for (let y = 90; y < 260; y += 40) ln([40, y], [340, y], 1.5, "#9AB3A0"); }
+    if (kind === "tent") { s.append(svgEl("rect", { x: 0, y: 252, width: 380, height: 28, fill: "#CFE6C0" })); const A = P.reduce((m, q) => q[1] < m[1] ? q : m, P[0]); ln(A, [20, 266], 2, "#8795A1"); ln(A, [360, 266], 2, "#8795A1"); ln(A, [A[0], A[1] - 18], 4, "#6B7A85"); }
+    if (kind === "roof") { s.append(svgEl("rect", { x: 30, y: 250, width: 320, height: 22, fill: "#D8CDBE" })); ln([75, 136], [75, 250], 7, "#8A6A3A"); ln([305, 136], [305, 250], 7, "#8A6A3A"); }
+    if (kind === "sign") { s.append(svgEl("rect", { x: 0, y: 255, width: 380, height: 25, fill: "#CFE6C0" })); ln([190, 160], [190, 262], 7, "#8795A1"); }
     const g = svgEl("g"); g.append(t2TriG(p, P, { fill: "rgba(255,183,77,.7)", stroke: "#C2410C", sw: 5, fs: 16 })); s.append(g);
     t2Measurable(s, p, P, { fs: 16 });
     s.append(svgEl("rect", { x: 8, y: 8, width: 150, height: 30, rx: 8, fill: "rgba(255,255,255,.9)" }), txt(83, 24, label, 17));
