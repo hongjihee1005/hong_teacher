@@ -534,7 +534,7 @@ function f1Fill(body, api, opt) {
   const d = opt.d, A = f1Str(opt.A.v), B = f1Str(opt.B.v), aN = A.num * d / A.den, bN = B.num * d / B.den;
   const nb = Math.ceil(aN / d) + Math.ceil(bN / d);
   let cells = Array(nb * d).fill(0), cur = 1, merged = false, estOk = !opt.est;
-  const W = 900, LX = 130, BW = 640, BH = 44, GP = 14, H = 24 + nb * (BH + GP);
+  const W = 900, LX = 110, BW = 600, BH = 44, GP = 14, H = 24 + nb * (BH + GP);
   const svg = makeSvg(W, H);
   const count = k => cells.filter(c => c === k).length;
   const fA = aN % d, fB = bN % d, wA = (aN - fA) / d, wB = (bN - fB) / d, fb = wA + wB, carry = fA + fB >= d;

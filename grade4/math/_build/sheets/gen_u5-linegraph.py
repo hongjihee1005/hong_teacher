@@ -999,9 +999,9 @@ def tb_l10(w, D):
     w.text("옳은 문장에 ○, 옳지 않은 문장에 ×를 하세요. ○인 얼음 조각만 밟아야 엄마 곰을 만나요.")
     w.choices([('얼음 %d. %s' % (i + 1, t), "( ○ / × )") for i, (t, _) in enumerate(ice)])
     ox = lambda b: '○' if b else '×'
-    ans = ("10차시  ① 가로: 월, 세로: 날수 / %s ② %s ③ 2014년 %s(28에서 %s칸 위) ④ 약 %s, 줄어들 것 같아요, %s "
+    ans = ("10차시  ① 가로: 월, 세로: 날수 / %s ② %s ③ 2014년 %s(%s에서 %s칸 위) ④ 약 %s, 줄어들 것 같아요, %s "
            "⑤ %s → 얼음 1·5"
-           % (U(gd['step'], '일'), ' '.join(ox(b) for _, b in st), U(pv[2], '만 명'), fmt(cells_of(pp)[2]),
+           % (U(gd['step'], '일'), ' '.join(ox(b) for _, b in st), U(pv[2], '만 명'), fmt(pp['lo']), fmt(cells_of(pp)[2]),
               U((pv[3] + pv[4]) / 2, '만 명'), '왜: (예: 2014년부터 계속 줄어들었기 때문이에요)' if D else '①',
               ' '.join(ox(b) for _, b in ice)))
     assert [b for _, b in ice] == [True, False, False, False, True]

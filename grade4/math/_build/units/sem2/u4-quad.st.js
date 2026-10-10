@@ -61,8 +61,14 @@ const APP={title:"우리 반 학교 지도 만들기", unit:"4-2 수학 4. 사�
 .q4big{font-family:"Jua";font-size:var(--fs-l);color:var(--night)}
 .q4slider{display:flex;align-items:center;gap:.5em;flex-wrap:wrap}
 .q4slider input{flex:1 1 10em;min-width:0}
+/* 활동 안의 단추 줄(.actions)이 엔진의 '다음 계단' 막대와 같은 자리(아래쪽)에 붙어 가려지지 않게, 막대 높이만큼 위에 붙인다 */
+.work > div .actions{bottom:var(--q4bar,0px)}
 `;
   document.head.append(s);
+  let wait = false;
+  const bar = () => { if (wait) return; wait = true; requestAnimationFrame(() => { wait = false; const a = document.querySelector(".work > .actions"); if (a) document.documentElement.style.setProperty("--q4bar", a.offsetHeight + "px"); }); };
+  ["scroll", "resize", "click", "input", "pointerup"].forEach(ev => window.addEventListener(ev, bar, { passive: true }));
+  new MutationObserver(bar).observe(document.documentElement, { childList: true, subtree: true });
 })();
 const Q4_KO = ["가", "나", "다", "라", "마", "바", "사", "아"];
 const Q4_V = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ"];

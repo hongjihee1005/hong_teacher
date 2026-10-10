@@ -715,7 +715,7 @@ const L5G = {
   pair: { title: "나이별 감정 그래프", xs: L5Y(7, 11), xAxis: "나이", xUnit: "살", yAxis: "점수", unit: "점", step: 10, cells: 10, major: 50,
     series: [{ name: "나", vals: [50, 70, 60, 80, 90] }, { name: "친구", vals: [60, 60, 80, 70, 100] }] },
   good: { title: "월별 미세먼지가 ‘좋음’인 날수", xs: L5Y(7, 11), xAxis: "월", xUnit: "월", yAxis: "날수", unit: "일", vals: [14, 18, 16, 14, 6], step: 2, cells: 10 },
-  pop: { title: "어느 지역의 연도별 인구", xs: L5Y(2006, 2022, 4), xAxis: "연도", xUnit: "년", yAxis: "인구", unit: "만 명", vals: [30, 43, 45, 38, 34], step: 1, lo: 28, cells: 18 },
+  pop: { title: "어느 지역의 연도별 인구", xs: L5Y(2006, 2022, 4), xAxis: "연도", xUnit: "년", yAxis: "인구", unit: "만 명", vals: [30, 43, 45, 38, 34], step: 1, lo: 30, cells: 16 },
   drink: { title: "월별 음료수 판매량", xs: L5Y(6, 10), xAxis: "월", xUnit: "월", yAxis: "판매량", unit: "병", vals: [400, 550, 700, 450, 350], step: 50, cells: 15, major: 250 }
 };
 const L5_MOODTBL = ["4학년이 되어 새로운 친구들을 만났다.", "1학기 체험 학습을 다녀왔다.", "부모님께 어린이날 선물을 받았다.", "학교 체육 대회에서 우리 반이 아쉽게 졌다.", "축구를 하다가 넘어져 다리를 다쳤다.", "가족여행을 다녀왔다.", "2학기 체험 학습을 다녀왔다.", "줄넘기 2단 넘기를 성공했다.", "반별 장기 자랑을 준비했다."];
