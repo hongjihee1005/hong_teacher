@@ -224,9 +224,11 @@ def cards(items, U=30, label_size=19):
     bw = max(d[0] for d in ds)
     bh = max(d[1] for d in ds)
     CWd, CH = bw * U + 30, bh * U + 50
-    if any(len(it) > 3 and it[3] for it in items):
+    named = any(len(it) > 3 and it[3] for it in items)
+    if named:
         CWd += U
-        CH += U * .6
+        CH += U * 1.2
+    CWd = max(CWd, max(len(it[2]) for it in items) * label_size * 1.05 + 30)
     body = []
     for i, (p, it) in enumerate(zip(ps, items)):
         gx, gy = 12 + i * (CWd + 12), 12
@@ -235,7 +237,7 @@ def cards(items, U=30, label_size=19):
             F(gx), F(gy), F(CWd), F(CH), '#FFF7E8' if lab in ('보기', '처음', '돌리기 전', '뒤집기 전', '도장') else '#fff',
             TENT if lab in ('보기', '처음', '돌리기 전', '뒤집기 전', '도장') else '#C9D4CF'))
         body.append(T(gx + 12, gy + 18, lab, label_size, anchor='start'))
-        body.append(p.at(it[1], gx + CWd / 2, gy + 30 + (CH - 40) / 2, U, names=len(it) > 3 and it[3]))
+        body.append(p.at(it[1], gx + CWd / 2, gy + 30 + (CH - 40) / 2 + (U * .45 if named else 0), U, names=len(it) > 3 and it[3]))
     W = 12 + len(items) * (CWd + 12)
     return svg(W, CH + 24, ''.join(body))
 
@@ -534,7 +536,7 @@ def slide_board(w, h, U, blocks, exit_row=None, targets=None):
         if not fixed:
             cx = sum(c[0] for c in cells) / len(cells)
             cy = sum(c[1] for c in cells) / len(cells)
-            b.append(T(10 + (x + cx) * U + U / 2, 10 + (y + cy) * U + U / 2, name, 18, weight='bold'))
+            b.append(T(10 + (x + cells[0][0]) * U + U / 2, 10 + (y + cells[0][1]) * U + U / 2, name, 17, weight='bold'))
     extra = U * 1.6 if exit_row is not None else 0
     return svg(w * U + 20 + extra, h * U + 40, ''.join(b))
 

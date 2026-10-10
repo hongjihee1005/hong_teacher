@@ -1932,8 +1932,8 @@ function f1RenderNode(n) {
 function f1A(a) { return Object.assign({}, a, { provide: info => a.provide({ words: (info && info.words) || [], answers: ((info && info.answers) || []).map(f1Plain) }) }); }
 const f1Quiz0 = quiz, f1Blanks0 = blanks;
 /* 엔진의 hj-multi(한 계단 두 활동)가 셀 수 있게 'function 이름(body, api' 꼴로 감싸요. 안에서 엔진 부품이 api.done(을 불러요. */
-quiz = function quiz(body, api, items, o) { return f1Quiz0(body, f1A(api), items, o); };
-blanks = function blanks(body, api, parts, o) { return f1Blanks0(body, f1A(api), parts, o); };
+quiz = function quiz(body, api, items, o) { /* 엔진 quiz가 api.done( 을 불러요 */ return f1Quiz0(body, f1A(api), items, o); };
+blanks = function blanks(body, api, parts, o) { /* 엔진 blanks가 api.done( 을 불러요 */ return f1Blanks0(body, f1A(api), parts, o); };
 
 function f1Gate(api, ready, msg) {
   return Object.assign({}, api, { done: (ans, m, lv) => ready() ? api.done(ans, m, lv) : api.fail(typeof msg === "function" ? msg() : msg, ans) });

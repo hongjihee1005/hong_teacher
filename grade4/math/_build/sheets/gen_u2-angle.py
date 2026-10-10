@@ -21,7 +21,8 @@ from hwpxgen import Sheet, svg_to_png, check  # noqa: E402
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..'))          # grade4/math
 OUT_TB = os.path.join(ROOT, 'sem1', 'sheets')
 OUT_ST = os.path.join(ROOT, 'sem1-soop', 'sheets')
-TMP = tempfile.mkdtemp(prefix='u2angle_')
+TMP = os.environ.get('U2_CACHE') or tempfile.mkdtemp(prefix='u2angle_')
+os.makedirs(TMP, exist_ok=True)
 FONT = "'Noto Sans KR','WenQuanYi Zen Hei',sans-serif"
 INK, TENT, BLUE, RED, GRAY = '#1D2A2A', '#E47A38', '#2B6FB8', '#C8472E', '#8795A1'
 FILLS = ['rgba(228,122,56,.30)', 'rgba(43,123,214,.26)', 'rgba(46,139,87,.28)', 'rgba(142,91,201,.26)']
@@ -828,7 +829,8 @@ def png(c, pad=12, px=1400):
     k = hashlib.md5((s + str(px)).encode()).hexdigest()[:16]
     if k not in _cache:
         p = os.path.join(TMP, k + '.png')
-        svg_to_png(s, p, px)
+        if not os.path.exists(p):
+            svg_to_png(s, p, px)
         _cache[k] = p
     return _cache[k]
 
@@ -848,14 +850,17 @@ class S(Sheet):
 
     def _bump(self, mm):
         self.est += mm
+        self.log = getattr(self, 'log', []) + [(sys._getframe(1).f_code.co_name, round(mm))]
         if self.est > self.BODY:
-            self.warn.append('%s: 쪽 넘침 어림 %.0fmm' % (self.cur, self.est))
+            self.warn.append('%s: 쪽 넘침 어림 %.0fmm %s' % (self.cur, self.est, self.log if os.environ.get('U2_DEBUG') else ''))
             self.est = mm
+            self.log = []
 
     def lesson(self, no, soop, title, question, grade_label=None):
         super().lesson(no, soop, title, question, grade_label)
         self.cur = '%s차시' % no
         self.est = 0
+        self.log = []
         self._bump(25.4 + 2.3 + max(12.7, self._lines('탐구 질문  ' + question, 15, 170) + 3))
 
     def scene(self, png_path=None, text=None, width_mm=None):
@@ -920,6 +925,7 @@ class S(Sheet):
     def page_break(self):
         super().page_break()
         self.est = 0
+        self.log = []
 
     def answers(self, title, lines, note=None):
         super().answers(title, lines, note)
@@ -1403,6 +1409,13 @@ def cmd_rows(cmds, blanks_for):
     return out
 
 
+def cmds(s, cs, blanks):
+    """주어진 명령은 한 줄 글로, 빈칸이 있는 명령만 테두리 칸에."""
+    rows = cmd_rows(cs, blanks)
+    s.text('주어진 명령:  ' + '   '.join(r for i, r in enumerate(rows, 1) if i not in blanks))
+    s.fill([r for i, r in enumerate(rows, 1) if i in blanks])
+
+
 def tb9(s, ch):
     s.lesson(9, '탐구 정리하기(O)', '생각을 더하다 ― 학교 안의 보물을 찾아라!', '거북이 명령어대로 움직이면 보물은 어디에 있을까요?')
     mj = mapJ()
@@ -1420,13 +1433,13 @@ def tb9(s, ch):
         s.choices([('보물이 있는 곳은?', CH('도서관', '본관', '운동장'))])
     s.step('② 그려 보기', '회전한 각 재기 (회색 점선 = 가던 방향을 늘인 선)')
     figk(s, row([col([turnfig(180, 60, 60, '①에서 온 길'), C().text(0, 0, '②에서 회전한 각', 20, bold=True)], 8),
-                 col([turnfig(240, 30, 30, '②에서 온 길'), C().text(0, 0, '③에서 회전한 각', 20, bold=True)], 8)], 60), .12)
+                 col([turnfig(240, 30, 30, '②에서 온 길'), C().text(0, 0, '③에서 회전한 각', 20, bold=True)], 8)], 60), .1)
     s.ask('②에서 회전한 각도 (      )°        ③에서 회전한 각도 (      )°', blank=False)
-    s.page_break()
     s.step('③ 말해 보기', '명령어 바꾸기 — 급식실에 도착하려면')
-    s.fill(cmd_rows([4, ('오른쪽', 30, 3), ('오른쪽', 30, 2)], {2: 'both', 3: 'both'}))
+    cmds(s, [4, ('오른쪽', 30, 3), ('오른쪽', 30, 2)], {2: 'both', 3: 'both'})
     if not ch:
         s.text('도움: 급식실은 처음 길보다 아래쪽에 있어요. 갈림길에서 아래로 가는 길은 가던 방향에서 30° 꺾여 있어요.')
+    s.page_break()
     s.step('④ 약속하기', '회전한 각도')
     if not ch:
         s.wordbox(['보조선', '거북이 가던 방향', '지도의 위쪽'])
@@ -1437,13 +1450,13 @@ def tb9(s, ch):
     assert run_cmds(my, [(0, 2), (-90, 9), (90, 5), (60, 3), (30, 4)]) == '강당'
     s.step('⑤ 확인하기', '예빈이네 학교 — 급식실과 강당의 보물 모두 찾기')
     cm_fig(s, mapfig(my, 40), 40)
-    s.fill(cmd_rows([2, ('오른쪽', 90, 9), ('왼쪽', 90, 5), ('왼쪽', 60, 3), ('왼쪽', 30, 4)], {3: 'both', 4: 'both', 5: 'both'}))
+    cmds(s, [2, ('오른쪽', 90, 9), ('왼쪽', 90, 5), ('왼쪽', 60, 3), ('왼쪽', 30, 4)], {3: 'both', 4: 'both', 5: 'both'})
     if not ch:
         s.text('도움: 거북이 아래쪽을 보고 출발해요. ④까지 가면 급식실, ⑤까지 가면 강당에 도착해야 해요.')
     ans = '9차시  ① 도서관   ② 60°, 30°   ③ ② 오른쪽 30° ③ 오른쪽 30°   ④ 보조선, 거북이 가던 방향   ⑤ ③ 왼쪽 90° ④ 왼쪽 60° ⑤ 왼쪽 30°'
     if ch:
         s.step('⑥ 도전하기', '수돗가로 가는 명령어 만들기(준하의 지도)')
-        s.fill(cmd_rows([4, ('오른쪽', 30, 3), ('왼쪽', 30, 2)], {2: 'both', 3: 'both'}))
+        cmds(s, [4, ('오른쪽', 30, 3), ('왼쪽', 30, 2)], {2: 'both', 3: 'both'})
         s.ask('③에서 거북은 처음과 같은 방향을 보게 돼요. 그 까닭을 써 보세요.', blank=False)
         s.lines(1)
         ans += '   ⑥ ② 오른쪽 30° ③ 왼쪽 30° (오른쪽으로 돈 만큼 왼쪽으로 돌면 처음 방향으로 돌아와요)'
@@ -1521,7 +1534,7 @@ def tb11(s, ch):
     g2 = cards([{'d1': 110, 'a': 50, 'label': '②'}], 190, 150)
     g3, _ = polyfig([105, 25, 50], [10], ['105°', '25°', '?'], size=220)
     g5, _ = polyfig([110, 70, 90, 90], [5.5, 7], ['?', '70°', 'R', 'R'], size=220)
-    figk(s, row([g1, g2, col([C().text(0, 0, '③', 26, RED, bold=True), g3], 4), col([C().text(0, 0, '⑤', 26, RED, bold=True), g5], 4)], 30), .1)
+    figk(s, col([row([g1, g2], 40), row([col([C().text(0, 0, '③', 26, RED, bold=True), g3], 4), col([C().text(0, 0, '⑤', 26, RED, bold=True), g5], 4)], 60)], 16), .1)
     if ch:
         s.ask('① 각의 크기 (      )°   ② (예각 / 둔각)   ③ ? = (      )°   ④ 175° − 85° = (      )°   ⑤ ? = (      )°', blank=False)
     else:
@@ -1976,26 +1989,26 @@ def st9(s, ch):
         s.choices([('로봇 청소기가 도착하는 곳은?', CH('그네', '미끄럼틀', '정글짐'))])
     s.step('② 그려 보기 — 회전한 각 재기', '회색 점선 = 가던 방향을 늘인 선')
     figk(s, row([col([turnfig(180, 50, 50, '①에서 온 길'), C().text(0, 0, '그네로 갈 때 ②', 20, bold=True)], 8),
-                 col([turnfig(140, 70, 250, '앞에서 온 길'), C().text(0, 0, '시소로 갈 때 마지막', 20, bold=True)], 8)], 60), .12)
+                 col([turnfig(140, 70, 250, '앞에서 온 길'), C().text(0, 0, '시소로 갈 때 마지막', 20, bold=True)], 8)], 60), .1)
     s.ask('그네로 갈 때 ② (      )°        시소로 갈 때 마지막 (      )°', blank=False)
-    s.page_break()
     s.step('③ 말해 보기 — 명령어 바꾸기', '모래밭으로 가려면')
-    s.fill(cmd_rows([4, ('오른쪽', 40, 3), ('왼쪽', 40, 3)], {2: 'both', 3: 'both'}))
+    cmds(s, [4, ('오른쪽', 40, 3), ('왼쪽', 40, 3)], {2: 'both', 3: 'both'})
     if not ch:
         s.text('도움: 모래밭은 처음 길보다 아래쪽에 있어요. ③에서는 처음 이동한 방향과 같은 쪽을 보게 돼요.')
+    s.page_break()
     s.step('④ 약속하기 — 회전한 각')
     if not ch:
         s.wordbox(['보조선', '로봇이 가던 방향', '40°', '140°'])
     s.fill(['로봇이 회전한 각도는 가던 방향을 곧게 늘인 %s과 새로 가는 길 사이의 각이에요.' % B,
             '왼쪽과 오른쪽은 %s을 기준으로 정해요.' % B, '오른쪽으로 40° 돈 다음 왼쪽으로 %s 돌면 처음 방향으로 돌아와요.' % B])
     s.step('⑤ 확인하기 — 시소까지', '③의 방향은 정해져 있어요')
-    s.fill(cmd_rows([4, ('오른쪽', 40, 3), ('오른쪽', 70, 2)], {2: 'both', 3: 'deg'}))
+    cmds(s, [4, ('오른쪽', 40, 3), ('오른쪽', 70, 2)], {2: 'both', 3: 'deg'})
     if not ch:
         s.text('도움: ③에서 회전한 각은 ②에서 재어 본 각이에요.')
     ans = '9차시  ① 그네   ② 50°, 70°   ③ ② 오른쪽 40° ③ 왼쪽 40°   ④ 보조선, 로봇이 가던 방향, 40°   ⑤ ② 오른쪽 40° ③ (오른쪽) 70°'
     if ch:
         s.step('⑥ 도전하기', '미끄럼틀로 가는 명령어 만들기')
-        s.fill(cmd_rows([4, ('왼쪽', 50, 3), ('왼쪽', 60, 2)], {2: 'both', 3: 'both'}))
+        cmds(s, [4, ('왼쪽', 50, 3), ('왼쪽', 60, 2)], {2: 'both', 3: 'both'})
         s.ask('처음 방향에서 모두 몇 도만큼 돌았나요? 식으로 나타내 보세요.', blank=False)
         s.lines(1)
         ans += '   ⑥ ② 왼쪽 50° ③ 왼쪽 60° / 50°+60°=110°'
