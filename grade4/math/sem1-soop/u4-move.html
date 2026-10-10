@@ -2968,6 +2968,14 @@ function m4sChest(g, U, x, y) {
   c.append(svgEl("rect", { x: -U * .55, y: -U * .25, width: U * 1.1, height: U * .7, rx: 6, fill: "#B5752F", stroke: "#6E4518", "stroke-width": 3 }), svgEl("rect", { x: -U * .55, y: -U * .5, width: U * 1.1, height: U * .3, rx: 6, fill: "#D08A3C", stroke: "#6E4518", "stroke-width": 3 }), svgEl("rect", { x: -U * .09, y: -U * .2, width: U * .18, height: U * .22, fill: M4_GOLD }), txt(0, U * .75, "보물", 17, { fill: "#8A5A1E" }));
   g.append(c);
 }
+/* 판 그림 높이 제한: 좁은 화면(판과 단추가 위아래로 놓임)에서도 판이 520px보다 높아지지 않게(아래 '다음 계단' 막대에 가리지 않게) */
+(function m4sCap() {
+  const cap = s => {
+    if (s.dataset.m4cap) return; const vb = s.viewBox && s.viewBox.baseVal; if (!vb || !vb.width || !vb.height) return;
+    s.dataset.m4cap = "1"; s.style.maxWidth = Math.round(520 * vb.width / vb.height) + "px"; s.style.marginLeft = "auto"; s.style.marginRight = "auto";
+  };
+  new MutationObserver(() => document.querySelectorAll(".stage > svg").forEach(cap)).observe(document.documentElement, { childList: true, subtree: true });
+})();
 /*hj-multi*/ /* 한 계단에 끝내야 하는 활동이 둘 이상이면(예: 빈칸 고르기 + 까닭 쓰기) 모두 끝내야 계단을 통과한다 (2026-10-09).
    계단의 api(또는 thenWhy처럼 그것을 복사한 api)를 받은, done(을 부르는 활동 함수만 센다. 활동 안에서 부르는 활동은 세지 않는다. */
 let STEP_CTX = null;

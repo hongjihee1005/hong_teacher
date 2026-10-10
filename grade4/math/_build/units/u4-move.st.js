@@ -1237,6 +1237,14 @@ function m4sChest(g, U, x, y) {
   c.append(svgEl("rect", { x: -U * .55, y: -U * .25, width: U * 1.1, height: U * .7, rx: 6, fill: "#B5752F", stroke: "#6E4518", "stroke-width": 3 }), svgEl("rect", { x: -U * .55, y: -U * .5, width: U * 1.1, height: U * .3, rx: 6, fill: "#D08A3C", stroke: "#6E4518", "stroke-width": 3 }), svgEl("rect", { x: -U * .09, y: -U * .2, width: U * .18, height: U * .22, fill: M4_GOLD }), txt(0, U * .75, "보물", 17, { fill: "#8A5A1E" }));
   g.append(c);
 }
+/* 판 그림 높이 제한: 좁은 화면(판과 단추가 위아래로 놓임)에서도 판이 520px보다 높아지지 않게(아래 '다음 계단' 막대에 가리지 않게) */
+(function m4sCap() {
+  const cap = s => {
+    if (s.dataset.m4cap) return; const vb = s.viewBox && s.viewBox.baseVal; if (!vb || !vb.width || !vb.height) return;
+    s.dataset.m4cap = "1"; s.style.maxWidth = Math.round(520 * vb.width / vb.height) + "px"; s.style.marginLeft = "auto"; s.style.marginRight = "auto";
+  };
+  new MutationObserver(() => document.querySelectorAll(".stage > svg").forEach(cap)).observe(document.documentElement, { childList: true, subtree: true });
+})();
 //@@LESSONS
 const UNIT_STORY = { title: "우리 반 게임 제작소", lines: [
   "별빛초등학교 4학년 1반은 쉬는 시간에 함께 할 ‘도형 퍼즐 게임’을 직접 만들기로 했어요. 제작소장 서아, 그림 담당 도윤, 퍼즐 담당 하준, 함정 담당 유나, 시험 담당 지민이가 로봇 캐릭터 ‘모모’를 만들었어요.",
