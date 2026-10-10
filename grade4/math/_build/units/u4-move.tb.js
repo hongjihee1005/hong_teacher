@@ -408,7 +408,7 @@ function m4Draw(body, api, opt) {
     // 꼭짓점 이름도 같이 움직임
     labelAt(givenG, n, pc.names ? m4NamesAfter(pc, M) : null, x0, y0);
   };
-  const expectFree = t => opt.before ? m4TP(pc.pts, m4Inv(opM(t))) : m4TP(pc.pts, opM(t));
+  const expectFree = t => opt.before ? pc.pts.map(p => p.slice()) : m4TP(pc.pts, opM(t));   /* before: 왼쪽에 보이는 것이 움직인 도형(opM·처음 도형)이므로 답은 처음 도형 */
   const showList = () => { list.innerHTML = ""; tasks.forEach((t, i) => list.append(h("li", { style: i === ti ? "font-weight:bold" : (i < ti ? "color:var(--ok)" : "color:var(--muted)") }, (t.label || m4OpText(Object.assign({ unit }, t.op))) + (i < ti ? " ✓" : "")))); };
   const drawChain = () => {
     chainG.innerHTML = "";
@@ -531,7 +531,7 @@ function m4Point(body, api, opt) {
   // explain
   const trail = svgEl("g"); svg.insertBefore(trail, lay);
   opt.pts.forEach((pt, i) => { const col = COL[i % COL.length]; dot(pt.p, col, false, pt.n); dot(pt.q, col, true); });
-  if (opt.example) side.push(h("div", { class: "safe" }, `보기: 점 ${opt.example.n}을 ${opt.example.dir}쪽으로 ${opt.example.k} ${unit} 밀었습니다.`));
+  if (opt.example) side.push(h("div", { class: "safe" }, `보기: 점 ${opt.example.n}을 ${opt.example.dir}쪽으로 ${m4U(opt.example.k, unit)} 밀었습니다.`));
   side.unshift(h("p", {}, "● 처음 점, ○ 민 뒤의 점이에요. 같은 색끼리 짝이에요."));
   side.push(m4Tools(h("button", { onclick: () => {
     trail.innerHTML = "";
@@ -540,7 +540,7 @@ function m4Point(body, api, opt) {
   body.append(stageWrap(svg, m4Side(...side)));
   const items = opt.pts.filter(pt => !(opt.example && opt.example.n === pt.n)).map(pt => {
     const dx = pt.q[0] - pt.p[0], dy = pt.q[1] - pt.p[1], dir = dx > 0 ? "오른" : dx < 0 ? "왼" : dy > 0 ? "아래" : "위", k = Math.abs(dx || dy);
-    return { parts: [`점 ${pt.n}을 `, { o: M4_DIRS, a: M4_DIRS.indexOf(dir), why: Object.fromEntries(M4_DIRS.map((d, i) => [String(i), `점 ${pt.n}에서 ○ 점이 어느 쪽에 있는지 다시 봐요.`])) }, "쪽으로 ", { n: k, why: { [String(k + 1)]: "점이 놓인 선의 수가 아니라 움직인 칸 수를 세어요." } }, ` ${unit} 밀었습니다.`] };
+    return { parts: [`점 ${pt.n}을 `, { o: M4_DIRS, a: M4_DIRS.indexOf(dir), why: Object.fromEntries(M4_DIRS.map((d, i) => [String(i), `점 ${pt.n}에서 ○ 점이 어느 쪽에 있는지 다시 봐요.`])) }, "쪽으로 ", { n: k, why: { [String(k + 1)]: "점이 놓인 선의 수가 아니라 움직인 칸 수를 세어요." } }, `${unit === "cm" ? " cm" : "칸"} 밀었습니다.`] };
   });
   m4Ask(body, api, items, { ok: opt.ok });
 }

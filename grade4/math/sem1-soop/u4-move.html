@@ -1940,11 +1940,12 @@ function m4Fig(o) {
 function m4Cards(items, opt = {}) {
   const U = opt.U || 30, ps = items.map(it => m4P(it.pc)), ds = items.map((it, i) => m4Dims(ps[i], it.M || M4_I));
   const bw = Math.max(...ds.map(d => d[0])), bh = Math.max(...ds.map(d => d[1])), per = opt.per || items.length;
-  const CW = bw * U + 30, CH = bh * U + 50, rows = Math.ceil(items.length / per), s = makeSvg(per * (CW + 12) + 12, rows * (CH + 12) + 12);
+  const pad = items.some(it => it.names) ? 20 : 0;   /* 꼭짓점 이름이 카드 제목·테두리와 겹치지 않게 여백 */
+  const CW = bw * U + 30 + 2 * pad, CH = bh * U + 50 + 2 * pad, rows = Math.ceil(items.length / per), s = makeSvg(per * (CW + 12) + 12, rows * (CH + 12) + 12);
   items.forEach((it, i) => {
     const gx = 12 + (i % per) * (CW + 12), gy = 12 + Math.floor(i / per) * (CH + 12), lab = it.label || M4_KO[i], g = svgEl("g");
     g.append(svgEl("rect", { x: gx, y: gy, width: CW, height: CH, rx: 12, fill: lab === "보기" ? "#FFF7E8" : "#fff", stroke: lab === "보기" ? TENT : "#C9D4CF", "stroke-width": 2.5 }), txt(gx + 18 + (lab.length - 1) * 8, gy + 18, lab, 19));
-    const inner = svgEl("g"), cx = gx + CW / 2, cy = gy + 30 + bh * U / 2;
+    const inner = svgEl("g"), cx = gx + CW / 2, cy = gy + 30 + pad + bh * U / 2;
     ps[i].draw(inner); inner.setAttribute("transform", m4XfC(ps[i], it.M || M4_I, cx, cy, U)); g.append(inner);
     if (it.names) m4Names(g, ps[i], it.M || M4_I, cx, cy, U);
     s.append(g);
@@ -2270,7 +2271,7 @@ function m4Point(body, api, opt) {
   // explain
   const trail = svgEl("g"); svg.insertBefore(trail, lay);
   opt.pts.forEach((pt, i) => { const col = COL[i % COL.length]; dot(pt.p, col, false, pt.n); dot(pt.q, col, true); });
-  if (opt.example) side.push(h("div", { class: "safe" }, `보기: 점 ${opt.example.n}을 ${opt.example.dir}쪽으로 ${opt.example.k} ${unit} 밀었습니다.`));
+  if (opt.example) side.push(h("div", { class: "safe" }, `보기: 점 ${opt.example.n}을 ${opt.example.dir}쪽으로 ${m4U(opt.example.k, unit)} 밀었습니다.`));
   side.unshift(h("p", {}, "● 처음 점, ○ 민 뒤의 점이에요. 같은 색끼리 짝이에요."));
   side.push(m4Tools(h("button", { onclick: () => {
     trail.innerHTML = "";
@@ -2279,7 +2280,7 @@ function m4Point(body, api, opt) {
   body.append(stageWrap(svg, m4Side(...side)));
   const items = opt.pts.filter(pt => !(opt.example && opt.example.n === pt.n)).map(pt => {
     const dx = pt.q[0] - pt.p[0], dy = pt.q[1] - pt.p[1], dir = dx > 0 ? "오른" : dx < 0 ? "왼" : dy > 0 ? "아래" : "위", k = Math.abs(dx || dy);
-    return { parts: [`점 ${pt.n}을 `, { o: M4_DIRS, a: M4_DIRS.indexOf(dir), why: Object.fromEntries(M4_DIRS.map((d, i) => [String(i), `점 ${pt.n}에서 ○ 점이 어느 쪽에 있는지 다시 봐요.`])) }, "쪽으로 ", { n: k, why: { [String(k + 1)]: "점이 놓인 선의 수가 아니라 움직인 칸 수를 세어요." } }, ` ${unit} 밀었습니다.`] };
+    return { parts: [`점 ${pt.n}을 `, { o: M4_DIRS, a: M4_DIRS.indexOf(dir), why: Object.fromEntries(M4_DIRS.map((d, i) => [String(i), `점 ${pt.n}에서 ○ 점이 어느 쪽에 있는지 다시 봐요.`])) }, "쪽으로 ", { n: k, why: { [String(k + 1)]: "점이 놓인 선의 수가 아니라 움직인 칸 수를 세어요." } }, `${unit === "cm" ? " cm" : "칸"} 밀었습니다.`] };
   });
   m4Ask(body, api, items, { ok: opt.ok });
 }
@@ -2719,7 +2720,7 @@ function m4Play(body, api, opt) {
   if (opt.mode === "cards") {
     const tried = new Set(), k = Object.keys(P)[0];
     const cnt = h("div", { class: "pill" }, "써 본 카드 0 / 10");
-    side.push(h("p", {}, `이동 카드를 하나씩 눌러 ${opt.who || "토끼 인형"}을 움직여 봐요. 10장을 모두 써 봐요.`), cardBtns((i, btn) => {
+    side.push(h("p", {}, `이동 카드를 하나씩 눌러 ${m4Jo(opt.who || "토끼 인형", "을/를")} 움직여 봐요. 10장을 모두 써 봐요.`), cardBtns((i, btn) => {
       if (busy) return;
       const go = () => move(k, i, () => { tried.add(i); btn.classList.add("on"); cnt.textContent = `써 본 카드 ${tried.size} / 10`; out.textContent = m4CardText(i).slice(2) + (M4_CARDS[i].t === "slide" ? ": 위치가 바뀌었어요." : ": 방향이 바뀌었어요."); if (tried.size === 10) { busy = true; m4Finish(body, api, opt, "10장 모두", "이동 카드 10장을 모두 써 봤어요!"); } });
       if (!valid(apply(P[k].s, i))) { P[k].s = Object.assign({}, P[k].s0); show(k); out.textContent = "무대 밖이나 땅속으로 가서 처음 자리에서 다시 움직여요."; setTimeout(go, 400); } else go();
@@ -3081,7 +3082,7 @@ const LESSONS = [
         { q: "‘점 ㄴ을 왼쪽으로 밀었어요.’라고만 말하면 왜 부족할까요?", ph: "~을 말하지 않으면 ~", help: ["① 방향만 들은 친구가 점을 옮겨 본다고 생각해요. → ② 무엇을 더 알아야 하는지 찾아요.", "‘몇 ~ 밀었는지 말하지 않으면 ~ 알 수 없기 때문이에요.’ 꼴로 써요."], ans: "왼쪽으로 몇 cm 밀었는지 말하지 않으면 점이 어디까지 갔는지 알 수 없기 때문이에요. 방향과 거리를 함께 말해야 해요." }) },
     { name: "약속하기 — 점을 민 방법 말하기", inst: "점을 민 방법을 말하는 약속을 완성해 보세요.", hints: ["점을 밀면 생김새가 아니라 자리가 바뀌어요.", "모눈 한 칸은 1 cm예요."],
       render: (b, a) => blanks(b, a, ["점을 밀면 미는 방향으로 민 거리만큼 ", { o: ["위치가", "모양이"], a: 0 }, " 바뀌어요. 점을 민 방법은 ", { o: ["방향과 거리를 함께", "방향만"], a: 0 }, " 말해요. 모눈 한 칸이 1 cm일 때 오른쪽으로 3칸 민 것은 오른쪽으로 ", { o: ["3 cm", "4 cm"], a: 0 }, " 민 거예요."], { ok: "방향과 거리를 함께 말하면 누구나 점을 같은 자리로 옮길 수 있어요." }) },
-    { name: "확인하기 — 지민이의 설명 고치기", inst: "지민이가 점을 민 방법을 맞혀 보래요. ● 처음 점, ○ 민 뒤의 점이에요.", hints: ["점과 점 사이의 칸을 하나씩 세어요.", "○ 점이 ● 점의 어느 쪽에 있는지 먼저 봐요."],
+    { name: "확인하기 — 지민이의 문제 풀기", inst: "지민이가 점을 민 방법을 맞혀 보래요. ● 처음 점, ○ 민 뒤의 점이에요.", hints: ["점과 점 사이의 칸을 하나씩 세어요.", "○ 점이 ● 점의 어느 쪽에 있는지 먼저 봐요."],
       render: (b, a) => quiz(b, a, [
         { q: "점 ㄱ을 어떻게 밀었나요?", fig: () => m4sDots({ w: 9, h: 5, U: 34, maxW: "20em", pts: [{ n: "ㄱ", p: [7, 1], q: [1, 1] }, { n: "ㄴ", p: [8, 4], q: [8, 2] }] }), o: ["왼쪽으로 5칸", "왼쪽으로 6칸", "오른쪽으로 6칸", "왼쪽으로 7칸"], a: 1,
           why: { "0": "점과 점 사이의 칸을 하나씩 다시 세어 봐요. 한 칸이 모자라요.", "2": "○ 점은 ● 점의 왼쪽에 있어요.", "3": "칸이 아니라 세로선의 수를 세었어요. 선과 선 사이의 칸을 세어요." } },
