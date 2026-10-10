@@ -450,14 +450,18 @@ def lines_fig(lines, W=520, H=280):
 
 def lines_named(lines, W=760, H=440):
     """앱 q4Lines(길이 아닌 것): 직선 + 끝에 이름"""
-    b = []
+    b, used = [], []
     for Ln in lines:
         d = ldir(Ln['a'])
         A = (Ln['c'][0] - d[0] * Ln['len'], Ln['c'][1] - d[1] * Ln['len'])
         B = (Ln['c'][0] + d[0] * Ln['len'], Ln['c'][1] + d[1] * Ln['len'])
         b.append(L(A, B))
         lp = (B[0] + d[0] * 18, B[1] + d[1] * 18)
-        b.append(T(max(14, min(W - 14, lp[0])), max(14, min(H - 14, lp[1])), Ln['n'], 22, weight='bold'))
+        if any(dist(lp, q) < 50 for q in used):      # 이름이 겹치면 다른 끝에
+            lp = (A[0] - d[0] * 18, A[1] - d[1] * 18)
+        lp = (max(14, min(W - 14, lp[0])), max(14, min(H - 14, lp[1])))
+        used.append(lp)
+        b.append(T(lp[0], lp[1], Ln['n'], 22, weight='bold'))
     return Fig(W, H, RECT(1, 1, W - 2, H - 2) + ''.join(b))
 
 
@@ -625,15 +629,15 @@ def seg_fig(d, segs, ang=0, Upx=U, names=None, lens=None, show=(), lineNames=Non
     S = lambda s_, n: (O[0] + e[0] * s_ * Upx + up[0] * n * Upx, O[1] + e[1] * s_ * Upx + up[1] * n * Upx)
     b = [L(S(-30, 0), S(30, 0)), L(S(-30, d), S(30, d))]
     if lineNames:
-        a, c = S(lnS, d + .5), S(lnS, -.5)
-        b.append(T(a[0], a[1], lineNames[0], 18) + T(c[0], c[1], lineNames[1], 18))
+        a, c = S(-W / Upx / 2 + .3, d + .45), S(-W / Upx / 2 + .3, -.45)
+        b.append(T(a[0], a[1], lineNames[0], 18, anchor='start') + T(c[0], c[1], lineNames[1], 18, anchor='start'))
     for i, (s1, s2) in enumerate(segs):
         A, B = S(s1, 0), S(s2, d)
         b.append(L(A, B, SKY, 4) + CIRC(A[0], A[1], 4.5) + CIRC(B[0], B[1], 4.5))
         if abs(s1 - s2) < 1e-9 and rightMk:
             b.append(RMK(A, e, up, 13))
-        lab = S(s2 + (s2 - s1) * .08, d + .42)
-        b.append(T(lab[0], lab[1], (names or KO)[i], 20, weight='bold'))
+        lab = S((s1 + s2) / 2, d / 2)
+        b.append(T(lab[0] - 20, lab[1], (names or KO)[i], 20, weight='bold'))
         if i in show:
             M = ((A[0] + B[0]) / 2, (A[1] + B[1]) / 2)
             tx = lens[i]
@@ -1295,13 +1299,13 @@ def build_tb(level):
         assert okc == [2]
 
         def mv(px):
-            P = [px(q) for q in [g0] + fixp]
+            P = [px((q[0] + 1, q[1])) for q in [g0] + fixp]
             o = POLY(P, 'rgba(228,122,56,.12)', INK, 3.5) + T(P[0][0] - 4, P[0][1] - 18, 'ㄱ', 20, RED, weight='bold') + CIRC(P[0][0], P[0][1], 6, RED)
             for k, c in enumerate(cand):
-                Q = px(c)
+                Q = px((c[0] + 1, c[1]))
                 o += CIRC(Q[0], Q[1], 6, SKY) + T(Q[0] - 16, Q[1] - 14, ['ㄴ', 'ㄷ', 'ㄹ', 'ㅁ'][k], 18, SKY, weight='bold')
             return o
-        pic(s, geo_panels([dict(cols=6, rows=5, extra=mv)]), 62)
+        pic(s, geo_panels([dict(cols=7, rows=5, extra=mv)]), 66)
         s.ask('점 ㄱ을 점 ㄴ, ㄷ, ㄹ, ㅁ 중 어디로 옮기면 사다리꼴이 되나요?  점 (     )', blank=False)
         s.text('평행한 두 변의 길이가 3 cm, 4 cm이고, 두 변 사이의 거리가 3 cm인 사다리꼴을 그려 보세요.')
         real(s, geo_panels([dict(cols=10, rows=6)]))
@@ -1471,7 +1475,7 @@ def build_tb(level):
         return o
     pic(s, tower_fig([(0, '다', '1층 바닥'), (2.9, '나', '2층 바닥'), (5.2, '가', '3층 바닥')],
                      [('2.9 m', 1, 0, 1, 2.9, 0), ('2.3 m', 1, 2.9, 1, 5.2, 0), ('2.1 m', 5.5, 5.2, 5.5, 7.3, 0), ('2.7 m', 5.5, 0, 5.5, 2.7, 0),
-                      ('3.5 m', 2.6, 0, 2.6 + 1.9596, 2.9, 44)], 2.4, deco9), 120)
+                      ('3.5 m', 2.6, 0, 2.6 + 1.9596, 2.9, -6)], 2.4, deco9), 120)
     assert abs(math.hypot(1.9596, 2.9) - 3.5) < .01
     b.help('층 바닥에서 바로 위층 바닥까지 수직으로 잰 길이를 찾아요. 문의 높이와 비스듬한 계단의 길이는 필요하지 않아요.')
     s.ask('1층 바닥에서 3층 바닥까지의 높이:  (       ) + (       ) = (       ) (m)', blank=False)
@@ -1587,7 +1591,7 @@ def build_tb(level):
     s.ask('도착한 곳의 꽃:  (          )', blank=False)
     a = ('11차시  ① 수선, 평행합니다 / 점 ㄱ을 지나는 평행선, 4 cm  ② ⑴ 평행한 변이 있게 완성(학생마다 다름) ⑵ 넷째 꼭짓점은 ㄱ에서 오른쪽으로 2칸, 아래로 1칸  '
          '③ ㉠ 5 ㉡ 4 ㉢ 120 ㉣ 60 ㉤ 7 ㉥ 90  ④ (예) ① %s → ② 꼭짓점 ㄴ을 %s (그 밖에 ①은 %s도 됨)  ⑤ %s → 해바라기'
-         % (move_txt(S11, 0, ex), move_txt(S11, 1, t11).split('을 ', 1)[1], ', '.join(move_txt(S11, 0, q).split('을 ', 1)[1] for _, q in mo11[1:]) or '없음',
+         % (move_txt(S11, 0, ex), move_txt(S11, 1, t11).split('을 ', 1)[1], ' / '.join(move_txt(S11, 0, q).split('을 ', 1)[1] for _, q in mo11[1:]) or '없음',
             ', '.join('%d %s' % (k + 1, '옳음' if t else '옳지 않음') for k, (_, t) in enumerate(ST11))))
     if C:
         s.step('⑥ 도전하기', '크기가 다른 직사각형 종이 2장을 겹쳤어요')
@@ -2010,7 +2014,7 @@ def build_st(level):
     pic(s, tower_fig([(0, '다', '1층 바닥'), (MAIN['f12'], '나', '2층 바닥'), (h_, '가', '3층 바닥')],
                      [('%s m' % MAIN['f12'], 1, 0, 1, MAIN['f12'], 0), ('%s m' % MAIN['f23'], 1, MAIN['f12'], 1, h_, 0),
                       ('%s m' % MAIN['win'], 6.3, h_ + 0.9, 6.3, h_ + 0.9 + MAIN['win'], 0), ('%s m' % MAIN['door'], 6.3, 0, 6.3, MAIN['door'], 0),
-                      ('%s m' % MAIN['stair'], 2.6, 0, 2.6 + MAIN['dx'], MAIN['f12'], 44)], 2.6, deco_m), 120)
+                      ('%s m' % MAIN['stair'], 2.6, 0, 2.6 + MAIN['dx'], MAIN['f12'], -6)], 2.6, deco_m), 120)
     b.help('층 바닥에서 바로 위층 바닥까지 수직으로 잰 길이를 찾아요. 문과 창문의 높이, 비스듬한 계단의 길이는 필요하지 않아요.')
     s.ask('1층 바닥에서 3층 바닥까지의 높이:  (       ) + (       ) = (       ) (m)', blank=False)
     s.ask('현수막의 길이는 (       ) m여야 해요.', blank=False)
