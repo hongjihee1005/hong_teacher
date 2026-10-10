@@ -905,17 +905,18 @@ function d3Salad(body, api, opt) {
   };
   const hitCard = p => [...cards].reverse().find(c => { const [x, y] = cardXY(c); return d3In(p, [x, y, CW, CH]); });
   const hitBowl = p => bowls.findIndex((_, k) => d3In(p, bowlR(k)));
-  let drag = null, ghost = null;
+  let drag = null, ghost = null, downP = null;
   dragOn(svg, p => {
     if (phase) return false;
     const c = hitCard(p);
-    if (c) { drag = c; sel = c.id; draw(); ghost = svgEl("rect", { x: p.x - CW / 2, y: p.y - CH / 2, width: CW, height: CH, rx: 10, fill: "none", stroke: TENT, "stroke-width": 3, "stroke-dasharray": "6 5", "pointer-events": "none" }); svg.append(ghost); return true; }
+    if (c) { drag = c; sel = c.id; downP = p; draw(); ghost = svgEl("rect", { x: p.x - CW / 2, y: p.y - CH / 2, width: CW, height: CH, rx: 10, fill: "none", stroke: TENT, "stroke-width": 3, "stroke-dasharray": "6 5", "pointer-events": "none" }); svg.append(ghost); return true; }
     const b = hitBowl(p);
     if (b >= 0 && sel != null) { cards[sel].at = b; sel = null; draw(); }
     else if (sel != null && p.y < 140) { cards[sel].at = -1; sel = null; draw(); }
     return false;
   }, p => { if (ghost) { ghost.setAttribute("x", p.x - CW / 2); ghost.setAttribute("y", p.y - CH / 2); } },
   p => {
+    if (drag && downP && Math.hypot(p.x - downP.x, p.y - downP.y) < 8) { drag = null; ghost = null; draw(); return; }   /* 살짝 누르기: 카드를 고른 채로 두고, 그릇을 누르면 담김 */
     const b = hitBowl(p);
     if (drag && b >= 0) { drag.at = b; sel = null; }
     else if (drag && p.y < 140) { drag.at = -1; sel = null; }
