@@ -106,7 +106,7 @@ input.c3in.c3w{width:8.5em}
 .c3pnl{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,15em),1fr));gap:.6em}
 .c3pnl>div{min-width:0}
 .c3cap{font-family:Jua,sans-serif;color:var(--night);margin:.15em 0}
-.c3vt{border-collapse:collapse;font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.5);margin:.3em 0}
+.c3vt{border-collapse:collapse;font-family:Jua,sans-serif;font-size:calc(var(--fs)*2);margin:.3em 0}
 .c3vt td{width:1.45em;height:1.55em;text-align:center;padding:0;line-height:1}
 .c3vt td.c3dc{width:.7em}
 .c3vt tr.c3sum td{border-top:3px solid var(--ink);padding-top:.12em}
@@ -880,25 +880,25 @@ function c3RelSvg() {
 function c3Color(body, api, opt) {
   c3Style();
   const IT = opt.items.map(it => Object.assign({}, it, { v: c3E(it.e) }));
-  const R = [ // 그림 칸: 토끼 얼굴
-    { id: "earL", d: "M330 60 q-40 -90 10 -110 q40 10 20 115 z", lx: 340, ly: 10 },
-    { id: "earR", d: "M450 60 q40 -90 -10 -110 q-40 10 -20 115 z", lx: 440, ly: 10 },
-    { id: "head", d: "M260 150 a130 110 0 1 0 260 0 a130 110 0 1 0 -260 0z", lx: 390, ly: 130 },
-    { id: "body", d: "M250 330 q140 -110 280 0 q20 70 -40 90 h-200 q-60 -20 -40 -90z", lx: 390, ly: 360 },
-    { id: "carrot", d: "M560 250 l60 -20 l-30 190 z", lx: 588, ly: 300 },
-    { id: "grass", d: "M60 420 q40 -80 60 0 q20 -70 50 0 q20 -60 50 0 z", lx: 135, ly: 400 },
-    { id: "sun", d: "M60 70 a50 50 0 1 0 100 0 a50 50 0 1 0 -100 0z", lx: 110, ly: 70 }];
+  const R = [ // 그림 칸: 해·풀·토끼(귀 둘·얼굴·몸)·당근
+    { id: "sun", d: "M40 80 a50 50 0 1 0 100 0 a50 50 0 1 0 -100 0z", lx: 90, ly: 80 },
+    { id: "earL", d: "M330 150 C290 60 305 10 345 20 C372 30 366 100 360 150 Z", lx: 338, ly: 85 },
+    { id: "earR", d: "M450 150 C490 60 475 10 435 20 C408 30 414 100 420 150 Z", lx: 442, ly: 85 },
+    { id: "head", d: "M270 215 a120 85 0 1 0 240 0 a120 85 0 1 0 -240 0z", lx: 390, ly: 245 },
+    { id: "body", d: "M280 445 q-10 -115 110 -145 q120 30 110 145 z", lx: 390, ly: 385 },
+    { id: "carrot", d: "M540 270 h90 l-45 175 z", lx: 585, ly: 305 },
+    { id: "grass", d: "M45 445 q30 -90 55 0 q25 -90 55 0 q25 -90 55 0 z", lx: 128, ly: 425 }];
   const labels = opt.labels; // 칸 id → 수 글
   const fills = {}; let cur = 0;
-  const svg = makeSvg(700, 440), g = svgEl("g"); svg.append(g);
+  const svg = makeSvg(700, 460), g = svgEl("g"); svg.append(g);
   const els = {};
   R.forEach(r => {
     const p = svgEl("path", { d: r.d, fill: "#fff", stroke: INK, "stroke-width": 2.5, style: "cursor:pointer" });
     p.addEventListener("click", () => { fills[r.id] = fills[r.id] === cur ? null : cur; paint(); });
     els[r.id] = p; g.append(p);
   });
-  R.forEach(r => g.append(txt(r.lx, r.ly + (r.id === "earL" || r.id === "earR" ? 30 : 0), labels[r.id], 24, { "pointer-events": "none" })));
-  g.append(svgEl("circle", { cx: 350, cy: 140, r: 6, fill: INK, "pointer-events": "none" }), svgEl("circle", { cx: 430, cy: 140, r: 6, fill: INK, "pointer-events": "none" }));
+  R.forEach(r => g.append(txt(r.lx, r.ly, labels[r.id], 26, { "pointer-events": "none" })));
+  g.append(svgEl("circle", { cx: 350, cy: 200, r: 6, fill: INK, "pointer-events": "none" }), svgEl("circle", { cx: 430, cy: 200, r: 6, fill: INK, "pointer-events": "none" }));
   const pal = h("div", { class: "c3tools" });
   const pbtn = IT.map((it, k) => h("button", { style: `border-color:${it.c}`, onclick: () => { cur = k; paintPal(); } }, h("span", { style: `display:inline-block;width:1em;height:1em;border-radius:50%;vertical-align:middle;margin-right:.3em;background:${it.c}` }, "​"), it.e.replace("-", "−")));
   pal.append(...pbtn);

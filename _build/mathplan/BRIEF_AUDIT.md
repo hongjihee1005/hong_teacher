@@ -15,3 +15,5 @@ Do not edit other units, templates, or anything else; never run git or theme scr
 Anything that truly needs the teacher's judgement (지도서 itself contradictory, can't be verified) — don't block; list it under "선생님 확인 필요".
 
 Report in Korean, concise: list of problems found → fixed (lesson/step, before → after), things checked by actually solving, remaining "선생님 확인 필요".
+
+STORY-ENGINE TRAP (found 2026-10-10): the story engine counts activities in a step only for render functions whose source contains `done(` (stepCount wrapping). A unit helper that merely wraps quiz/blanks/numbers (no literal `done(` in its own body) is NOT counted, so a step with e.g. quiz + writeStep can pass after the quiz alone. In the .st.js, for every step with 2+ activities, verify by actually solving only the first activity that the step does NOT pass; fix by making the wrapper's body contain a `done(` call path (e.g. call api.done explicitly or reference it) as in u1-fracadd.st.js.
