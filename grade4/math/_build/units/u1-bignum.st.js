@@ -461,7 +461,7 @@ function n1sMoney(body, api, opt) {
     if (can) (steps[d] || [1]).forEach(s => row.append(h("button", { onclick: () => { if (fin) return; cnt[d] += s; act(); } }, `+${s}`)));
     if (can) row.append(h("button", { onclick: () => { if (fin) return; cnt[d] = Math.max(0, cnt[d] - 1); act(); } }, "−1"));
     const up = i > 0 && D[i - 1] === d * 10 ? D[i - 1] : null;
-    const bb = up && opt.bundle ? h("button", { style: "font-weight:700", onclick: () => { if (fin || cnt[d] < 10) return; cnt[d] -= 10; cnt[up] += 1; act(); } }, `10${n1MoneyUnit(d) === "묶음" ? "개" : n1MoneyUnit(d)} 묶기 → ${N1_MONEY[up].t}원`) : null;
+    const bb = up && opt.bundle ? h("button", { style: "font-weight:700", onclick: () => { if (fin || cnt[d] < 10) return; cnt[d] -= 10; cnt[up] += 1; act(); } }, `10${n1MoneyUnit(d) === "묶음" ? "개" : n1MoneyUnit(d)} 묶기 → ${N1_MONEY[up].t}${/만$/.test(N1_MONEY[up].t) ? " 원" : "원"}`) : null;
     if (bb) row.append(bb);
     row.upd = () => { if (bb) bb.disabled = cnt[d] < 10; };
     return row;
