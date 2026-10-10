@@ -893,8 +893,8 @@ function t2Fits(p, face) { const I = t2Info(p); return [I.side !== "부등변", 
 function t2Dice(body, api, opt) {
   const left = opt.cards.map((_, i) => i); let face = -1, rolls = 0, tries = 0;
   const die = h("div", { class: "t2hand" }, "?"), faceTxt = h("div", { class: "t2big" }, "주사위를 굴려요."), grid = h("div", { class: "t2row" });
-  const cardEls = opt.cards.map((p, i) => { const s = makeSvg(200, 160), m = t2Map(p, [0, 6, 200, 154, 30]); s.append(t2TriG(p, m.P, { fs: 16, lens: true, angs: true, sw: 3 }));
-    const b = h("button", { class: "opt", style: "flex:1 1 9em;max-width:12em;padding:.2em", onclick: () => put(i) }, h("div", { class: "jua", style: "text-align:center" }, T2_KO[i]), s); return b; });
+  const cardEls = opt.cards.map((p, i) => { const s = makeSvg(260, 200), m = t2Map(p, [0, 4, 260, 196, 58]); s.append(t2TriG(p, m.P, { fs: 21, lens: true, angs: true, sw: 3 }));
+    const b = h("button", { class: "opt", style: "flex:1 1 11em;max-width:15em;padding:.2em", onclick: () => put(i) }, h("div", { class: "jua", style: "text-align:center" }, T2_KO[i]), s); return b; });
   grid.append(...cardEls);
   const put = i => {
     if (face < 0) return api.hint("먼저 주사위를 굴려요.");
@@ -1002,7 +1002,7 @@ const T2_SAIL = [
 const T2_ISO3 = [t2T(t2Iso(4, 40, 15), "이등변", "예각"), t2T(t2Iso(3, 120, -100), "이등변", "둔각"), t2T(t2Iso(3.5, 90, 200), "이등변", "직각")];
 const T2_TWOANG = [t2T(t2Iso(3, 80, 20), "이등변", "예각"), t2T(t2Iso(3, 130, -10), "이등변", "둔각")];
 /* 5차시: 가~마 */
-const T2_ACU = [t2T(t2SAS(4, 90, 3, 0), "부등변", "직각"), t2T(t2ASA(70, 60, 4, 10), "부등변", "예각"), t2T(t2ASA(35, 25, 5, 0), "부등변", "둔각"), t2T(t2ASA(65, 60, 4, 200), "부등변", "예각"), t2T(t2ASA(45, 35, 5, 195), "부등변", "둔각")];
+const T2_ACU = [t2T(t2SAS(4, 90, 3, 0), "부등변", "직각"), t2T(t2ASA(70, 60, 4, 10), "부등변", "예각"), t2T(t2ASA(40, 30, 5, 0), "부등변", "둔각"), t2T(t2ASA(65, 60, 4, 200), "부등변", "예각"), t2T(t2ASA(45, 35, 5, 195), "부등변", "둔각")];
 /* 6차시: 집에서 찾은 삼각형 가~마, 분류할 삼각형 가~사 */
 const T2_HOME = [t2T(t2SSS(3, 3, 3, 0), "정", "예각"), t2T(t2Iso(3, 40, 0), "이등변", "예각"), t2T(t2Iso(3, 50, 30), "이등변", "예각"), t2T(t2Iso(2.5, 90, 45), "이등변", "직각"), t2T(t2Iso(2.5, 120, 0), "이등변", "둔각")];
 const T2_SEVEN = [t2T(t2Iso(5, 50, 10), "이등변", "예각"), t2T(t2ASA(25, 40, 5, -5), "부등변", "둔각"), t2T(t2Iso(3, 120, 180), "이등변", "둔각"), t2T(t2ASA(75, 60, 4, 20), "부등변", "예각"),

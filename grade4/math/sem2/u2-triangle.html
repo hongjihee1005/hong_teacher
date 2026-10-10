@@ -2034,16 +2034,16 @@ function t2AngleTag(body, api, opt) {
     const x = 10 + (n % per) * (CW + 10), y = 10 + Math.floor(n / per) * (CH + 10), m = t2Map(it.p, [x, y + 10, CW, CH - 10, 40]), P = m.P;
     svg.append(svgEl("rect", { x, y, width: CW, height: CH, rx: 12, fill: it.given ? "#F4F7F6" : "#fff", stroke: T2_LINE, "stroke-width": 2 }));
     svg.append(t2TriG(it.p, P, { fs: 17, sw: 3.5, rights: false }), txt(x + 20, y + 20, (it.label || T2_KO[n]) + (it.given ? " (보기)" : ""), 18, { "text-anchor": "start" }));
-    const lay = svgEl("g", { "pointer-events": "none" }); layers.push({ lay, P }); svg.append(lay);
-    if (!it.given) [0, 1, 2].forEach(i => { const { V, b } = t2Corner(P, i), hc = svgEl("circle", { cx: t2F(V[0] + b[0] * 26), cy: t2F(V[1] + b[1] * 26), r: 24, fill: "rgba(0,0,0,0)", style: "cursor:pointer" });
+    const lay = svgEl("g", { "pointer-events": "none" }), AA = t2Info(it.p).A, dd = AA.map(a => Math.max(30, 16 / Math.tan(t2Rad(a / 2)))); layers.push({ lay, P, dd }); svg.append(lay);
+    if (!it.given) [0, 1, 2].forEach(i => { const { V, b } = t2Corner(P, i), hc = svgEl("circle", { cx: t2F(V[0] + b[0] * dd[i]), cy: t2F(V[1] + b[1] * dd[i]), r: 22, fill: "rgba(0,0,0,0)", style: "cursor:pointer" });
       hc.addEventListener("click", () => { st[n][i] = (st[n][i] + 1) % 3; paint(); }); svg.append(hc); });
   });
-  const paint = () => layers.forEach(({ lay, P }, n) => {
+  const paint = () => layers.forEach(({ lay, P, dd }, n) => {
     lay.innerHTML = "";
     [0, 1, 2].forEach(i => {
       const { V, u, w, b } = t2Corner(P, i);
       if (sq) lay.append(t2SqMk(P, i, 34));
-      const c = [V[0] + b[0] * 30, V[1] + b[1] * 30], v = st[n][i];
+      const c = [V[0] + b[0] * dd[i], V[1] + b[1] * dd[i]], v = st[n][i];
       lay.append(svgEl("rect", { x: t2F(c[0] - 15), y: t2F(c[1] - 13), width: 30, height: 26, rx: 5, fill: v < 0 ? "#fff" : "#FFF0DC", stroke: v < 0 ? T2_GRAY : TENT, "stroke-width": 2 }), txt(c[0], c[1] + 1, v < 0 ? "?" : TAG[v], 17, { fill: v < 0 ? T2_GRAY : "#7A3B08" }));
     });
   });
@@ -2280,8 +2280,8 @@ function t2Fits(p, face) { const I = t2Info(p); return [I.side !== "부등변", 
 function t2Dice(body, api, opt) {
   const left = opt.cards.map((_, i) => i); let face = -1, rolls = 0, tries = 0;
   const die = h("div", { class: "t2hand" }, "?"), faceTxt = h("div", { class: "t2big" }, "주사위를 굴려요."), grid = h("div", { class: "t2row" });
-  const cardEls = opt.cards.map((p, i) => { const s = makeSvg(200, 160), m = t2Map(p, [0, 6, 200, 154, 30]); s.append(t2TriG(p, m.P, { fs: 16, lens: true, angs: true, sw: 3 }));
-    const b = h("button", { class: "opt", style: "flex:1 1 9em;max-width:12em;padding:.2em", onclick: () => put(i) }, h("div", { class: "jua", style: "text-align:center" }, T2_KO[i]), s); return b; });
+  const cardEls = opt.cards.map((p, i) => { const s = makeSvg(260, 200), m = t2Map(p, [0, 4, 260, 196, 58]); s.append(t2TriG(p, m.P, { fs: 21, lens: true, angs: true, sw: 3 }));
+    const b = h("button", { class: "opt", style: "flex:1 1 11em;max-width:15em;padding:.2em", onclick: () => put(i) }, h("div", { class: "jua", style: "text-align:center" }, T2_KO[i]), s); return b; });
   grid.append(...cardEls);
   const put = i => {
     if (face < 0) return api.hint("먼저 주사위를 굴려요.");
@@ -2389,7 +2389,7 @@ const T2_SAIL = [
 const T2_ISO3 = [t2T(t2Iso(4, 40, 15), "이등변", "예각"), t2T(t2Iso(3, 120, -100), "이등변", "둔각"), t2T(t2Iso(3.5, 90, 200), "이등변", "직각")];
 const T2_TWOANG = [t2T(t2Iso(3, 80, 20), "이등변", "예각"), t2T(t2Iso(3, 130, -10), "이등변", "둔각")];
 /* 5차시: 가~마 */
-const T2_ACU = [t2T(t2SAS(4, 90, 3, 0), "부등변", "직각"), t2T(t2ASA(70, 60, 4, 10), "부등변", "예각"), t2T(t2ASA(35, 25, 5, 0), "부등변", "둔각"), t2T(t2ASA(65, 60, 4, 200), "부등변", "예각"), t2T(t2ASA(30, 40, 5, 70), "부등변", "둔각")];
+const T2_ACU = [t2T(t2SAS(4, 90, 3, 0), "부등변", "직각"), t2T(t2ASA(70, 60, 4, 10), "부등변", "예각"), t2T(t2ASA(40, 30, 5, 0), "부등변", "둔각"), t2T(t2ASA(65, 60, 4, 200), "부등변", "예각"), t2T(t2ASA(45, 35, 5, 195), "부등변", "둔각")];
 /* 6차시: 집에서 찾은 삼각형 가~마, 분류할 삼각형 가~사 */
 const T2_HOME = [t2T(t2SSS(3, 3, 3, 0), "정", "예각"), t2T(t2Iso(3, 40, 0), "이등변", "예각"), t2T(t2Iso(3, 50, 30), "이등변", "예각"), t2T(t2Iso(2.5, 90, 45), "이등변", "직각"), t2T(t2Iso(2.5, 120, 0), "이등변", "둔각")];
 const T2_SEVEN = [t2T(t2Iso(5, 50, 10), "이등변", "예각"), t2T(t2ASA(25, 40, 5, -5), "부등변", "둔각"), t2T(t2Iso(3, 120, 180), "이등변", "둔각"), t2T(t2ASA(75, 60, 4, 20), "부등변", "예각"),
