@@ -90,6 +90,8 @@ function n1HasB(word) {
 }
 function n1J(word, pair) { const [a, b] = pair.split("/"); return String(word) + (n1HasB(word) ? a : b); }
 function n1Place(e) { return N1_PLACE[e] + "의 자리"; }
+/* 으로/로: 받침이 없거나 ㄹ 받침이면 '로' */
+function n1Ro(word) { let w = String(word).trim(); if (/^\d+$/.test(w)) w = n1Read(w); const j = (w.charCodeAt(w.length - 1) - 0xAC00) % 28; return String(word) + (j === 0 || j === 8 ? "로" : "으로"); }
 
 /* ===== 화면 도우미 ===== */
 function n1Esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
@@ -583,7 +585,7 @@ function n1Compare(body, api, opt) {
     if (col == null) return api.fail("먼저 두 수의 크기가 정해지는 자리를 표에서 눌러요.", ans);
     if (col !== d) {
       if (a.length !== b.length) return api.fail(`두 수의 자리 수가 달라요(${a.length}자리, ${b.length}자리). 자리 수가 많은 수의 맨 앞 자리, ${n1Place(d)}를 눌러 봐요.`, ans);
-      if (col > d) return api.fail(`${n1Place(col)}의 숫자는 두 수가 같아요. 같으면 바로 다음 자리로 내려가 비교해요.`, ans);
+      if (col > d) return api.fail(col >= a.length ? `두 수 모두 ${n1Place(col)}에는 숫자가 없어요. 두 수의 가장 높은 자리부터 비교해요.` : `${n1Place(col)} 숫자는 두 수가 같아요. 같으면 바로 다음 자리로 내려가 비교해요.`, ans);
       return api.fail("그보다 높은 자리에서 이미 숫자가 달라요. 가장 높은 자리부터 차례대로 비교해요.", ans);
     }
     if (!sign) return api.fail("이제 ○ 안에 들어갈 >, =, < 중 하나를 골라요.", ans);
@@ -741,7 +743,7 @@ function n1Arrange(body, api, opt) {
   let si = 0, order = [], fin = false;
   const say = h("p", { class: "jua", style: "font-size:1.12em" }), made = h("div", { class: "opts" }), pool = h("div", { class: "opts" }), out = h("div", { class: "readout", style: N1_WRAP });
   function draw() {
-    const cs = opt.sets[si]; say.textContent = `${si + 1}번째 카드 ${cs.join(", ")} 로 가장 큰 수를 만들어 보세요.`;
+    const cs = opt.sets[si]; say.textContent = `${si + 1}번째: 카드 ${cs.slice(0, -1).join(", ")}, ${n1Ro(cs[cs.length - 1])} 가장 큰 수를 만들어 보세요.`;
     made.innerHTML = ""; pool.innerHTML = "";
     [0, 1, 2].forEach(k => made.append(order[k] == null ? h("span", { class: "opt", style: "min-width:3.2em;min-height:2.6em;color:#9AA5A1;text-align:center" }, `${k + 1}번째`) : n1CardBtn(cs[order[k]], { onclick: () => { if (!fin) { order.splice(k, 1); draw(); } } })));
     cs.forEach((c, i) => pool.append(n1CardBtn(c, { disabled: order.includes(i), onclick: () => { if (!fin && order.length < 3) { order.push(i); draw(); } } })));
@@ -958,7 +960,7 @@ const LESSONS = [
       render: (b, a) => n1Ask(b, a, [
         { q: "사만 육천이백오십구를 수로 써 보세요.", t: "num", a: 46259 },
         { q: "80573을 읽어 보세요.", t: "read", a: 80573 },
-        { q: "10000이 3개, 1000이 1개, 100이 5개, 10이 4개, 1이 8개인 수를 쓰고", t: "num", a: 31548 },
+        { q: "10000이 3개, 1000이 1개, 100이 5개, 10이 4개, 1이 8개인 수를 써 보세요.", t: "num", a: 31548 },
         { q: "31548을 읽어 보세요.", t: "read", a: 31548 },
         { q: "숫자 3이 30000을 나타내는 수를 고르세요.", t: "pick", o: ["㉠ 79831", "㉡ 30754", "㉢ 13256"], a: 1, why: { "2": "13256에서 3은 천의 자리 숫자라 3000을 나타내요." } },
         { q: "민호는 ‘35012 = 30000 + 500 + 10 + 2’라고 했어요. 바르게 고친 식을 고르세요.", t: "pick", o: ["35012 = 30000 + 5000 + 10 + 2", "35012 = 30000 + 500 + 100 + 2", "35012 = 3000 + 5000 + 10 + 2"], a: 0 }], { ok: "0인 자리는 읽지 않고, 읽지 않은 자리에는 0을 써요. 잘했어요!" }) }

@@ -91,6 +91,8 @@ function n1HasB(word) {
 }
 function n1J(word, pair) { const [a, b] = pair.split("/"); return String(word) + (n1HasB(word) ? a : b); }
 function n1Place(e) { return N1_PLACE[e] + "의 자리"; }
+/* 으로/로: 받침이 없거나 ㄹ 받침이면 '로' */
+function n1Ro(word) { let w = String(word).trim(); if (/^\d+$/.test(w)) w = n1Read(w); const j = (w.charCodeAt(w.length - 1) - 0xAC00) % 28; return String(word) + (j === 0 || j === 8 ? "로" : "으로"); }
 
 /* ===== 화면 도우미 ===== */
 function n1Esc(s) { return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;"); }
@@ -646,7 +648,7 @@ function n1sCompare(body, api, opt) {
     const p = P(), a = n1S(p.a), b = n1S(p.b), d = decide(), want = n1Cmp(a, b), ans = `${n1Place(col)} / ${a} ${sign} ${b}`;
     if (col !== d) {
       if (a.length !== b.length) { api.fail(`두 수의 자리 수가 달라요(${a.length}자리, ${b.length}자리). 자리 수가 많은 수의 맨 앞 자리, ${n1Place(d)}를 눌러 봐요.`, ans); return false; }
-      if (col > d) { api.fail(`${n1Place(col)}의 숫자는 두 수가 같아요. 같으면 바로 다음 자리로 내려가 비교해요.`, ans); return false; }
+      if (col > d) { api.fail(col >= a.length ? `두 수 모두 ${n1Place(col)}에는 숫자가 없어요. 두 수의 가장 높은 자리부터 비교해요.` : `${n1Place(col)} 숫자는 두 수가 같아요. 같으면 바로 다음 자리로 내려가 비교해요.`, ans); return false; }
       api.fail("그보다 높은 자리에서 이미 숫자가 달라요. 가장 높은 자리부터 차례대로 비교해요.", ans); return false;
     }
     if (sign !== want) { api.fail(a.length !== b.length ? "자리 수가 많은 쪽이 더 큰 수예요. 입이 벌어진 쪽이 큰 수를 향해요." : `${n1Place(d)} 숫자를 비교해요. ${n1J(a[a.length - 1 - d], "과/와")} ${b[b.length - 1 - d]} 중 어느 것이 더 큰가요?`, ans); return false; }
@@ -801,7 +803,7 @@ function n1sArrange(body, api, opt) {
   let si = 0, order = [], fin = false, kick = null;
   const say = h("p", { class: "jua", style: "font-size:1.12em" }), made = h("div", { class: "opts" }), pool = h("div", { class: "opts" }), out = h("div", { class: "readout", style: N1_WRAP });
   function draw() {
-    const cs = opt.sets[si]; say.textContent = `${si + 1}번째: 카드 ${cs.join(", ")}(으)로 가장 큰 수를 만들어 보세요.`;
+    const cs = opt.sets[si]; say.textContent = `${si + 1}번째: 카드 ${cs.slice(0, -1).join(", ")}, ${n1Ro(cs[cs.length - 1])} 가장 큰 수를 만들어 보세요.`;
     made.innerHTML = ""; pool.innerHTML = "";
     [0, 1, 2].forEach(k => made.append(order[k] == null ? h("span", { class: "opt", style: "min-width:3.2em;min-height:2.6em;color:#9AA5A1;text-align:center" }, `${k + 1}번째`) : n1CardBtn(cs[order[k]], { onclick: () => { if (!fin) { order.splice(k, 1); draw(); } } })));
     cs.forEach((c, i) => pool.append(n1CardBtn(c, { disabled: order.includes(i), onclick: () => { if (!fin && order.length < 3) { order.push(i); draw(); kick(260); } } })));
