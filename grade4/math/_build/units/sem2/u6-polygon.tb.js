@@ -56,6 +56,7 @@ function p6Jo(w, pair) {   // 받침에 따라 조사 고르기: p6Jo("오각형
   let bat = false;
   if (/[0-9]/.test(ch)) bat = "013678".includes(ch);
   else if (code >= 0xAC00 && code <= 0xD7A3) bat = (code - 0xAC00) % 28 !== 0;
+  else if (code >= 0x3131 && code <= 0x314E) bat = true;   // ㄱ(기역)·ㄴ(니은)… 자음 이름은 모두 받침이 있음
   if (pair === "으로/로" && code >= 0xAC00 && code <= 0xD7A3 && (code - 0xAC00) % 28 === 8) bat = false;
   return s + (bat ? a : b);
 }
@@ -461,8 +462,9 @@ function p6Diag(body, api, opt) {
     const S = shapes[si]; const r = { label: S.label || p6Name(n), n, count: need.length };
     if (S.measure) { const q = quadM(); Object.assign(r, q); mBtn.disabled = false; }
     results.push(r);
-    resBox.innerHTML = ""; resBox.append(p6Tbl(["도형", "대각선의 수"].concat(results.some(x => x.d1) ? ["두 대각선의 길이", "만나는 각"] : []),
-      results.map(x => [x.label, x.count + "개"].concat(results.some(y => y.d1) ? [x.d1 ? `${p6Fmt(x.d1)} cm, ${p6Fmt(x.d2)} cm` : "", x.d1 ? Math.round(x.ang) + "°" : ""] : []))));
+    const ms = results.some(x => x.d1);
+    resBox.innerHTML = ""; resBox.append(p6Tbl(["도형", "대각선의 수"].concat(ms ? ["두 대각선의 길이", "만나는 각", "만난 점에서 나뉜 길이"] : []),
+      results.map(x => [x.label, x.count + "개"].concat(ms ? [x.d1 ? `${p6Fmt(x.d1)} cm, ${p6Fmt(x.d2)} cm` : "", x.d1 ? Math.round(x.ang) + "°" : "", x.d1 ? `${p6Fmt(x.a1)}·${p6Fmt(x.a2)} cm / ${p6Fmt(x.b1)}·${p6Fmt(x.b2)} cm` : ""] : []))));
     if (S.measure) { msr = true; mBtn.classList.add("on"); draw(); }
     if (si < shapes.length - 1) { api.hint(`○ ${p6Jo(r.label, "의/의").slice(0, -1)}의 대각선은 ${r.count}개예요.${S.measure ? " 잰 길이와 각을 살펴보고" : ""} ‘다음 도형’을 눌러요.`); nextB.disabled = false; }
     else { over = true; nextB.style.display = "none"; p6Finish(body, api, opt, results.map(x => `${x.label} ${x.count}개`).join(", "), `${r.label}의 대각선은 ${r.count}개예요.`, results); }
@@ -476,7 +478,7 @@ function p6Diag(body, api, opt) {
   const undoB = h("button", { onclick: () => { if (over) return; if (drawn.length && drawn.length < need.length) { drawn.pop(); draw(); } } }, "한 개 지우기");
   const mBtn = h("button", { onclick: () => { msr = !msr; mBtn.classList.toggle("on", msr); draw(); } }, "자와 각도기로 재기");
   api.provide({ words: ["대각선", "이웃하지 않는 두 꼭짓점", "선분"], answers: [] });
-  body.append(stageWrap(svg, p6Side(title, h("p", {}, opt.tip || "꼭짓점 하나를 누르고, 이웃하지 않는 다른 꼭짓점을 눌러 선분을 그어요."), read, p6Tools(undoB, opt.none ? noneB : null, mBtn, nextB), resBox)));
+  body.append(stageWrap(svg, p6Side(title, h("p", {}, opt.tip || "꼭짓점 하나를 누르고, 이웃하지 않는 다른 꼭짓점을 눌러 선분을 그어요."), read, p6Tools(undoB, opt.none ? noneB : null, mBtn, nextB))), resBox);
   setup();
 }
 
@@ -873,8 +875,8 @@ function p6Tool(body, api, opt) {
 const P6_RABBIT = [
   { pts: [[262, 205], [236, 168], [232, 110], [246, 58], [270, 36], [294, 66], [298, 205]] },     // 왼쪽 귀 7
   { pts: [[338, 205], [364, 168], [368, 110], [354, 58], [330, 36], [306, 66], [302, 205]] },     // 오른쪽 귀 7
-  { pts: [[270, 195], [252, 150], [256, 92], [272, 64], [284, 195]], inner: true },               // 귀 안 5
-  { pts: [[330, 195], [348, 150], [344, 92], [328, 64], [316, 195]], inner: true },
+  { pts: [[272, 188], [260, 150], [262, 104], [272, 80], [282, 188]], inner: true },              // 귀 안 5
+  { pts: [[328, 188], [340, 150], [338, 104], [328, 80], [318, 188]], inner: true },
   { pts: [[215, 252], [258, 205], [342, 205], [385, 252], [395, 312], [352, 360], [248, 360], [205, 312]] },   // 머리 8
   { pts: [[250, 258], [276, 250], [282, 276], [256, 284]], inner: true },     // 눈 4
   { pts: [[350, 258], [324, 250], [318, 276], [344, 284]], inner: true },
@@ -1099,8 +1101,8 @@ const P6_ENT = {
     [[150, "물개"], [470, "고래"], [760, "나비"]].forEach(([x, t]) => s.append(svgEl("rect", { x: x - 40, y: 410, width: 80, height: 30, rx: 6, fill: "#fff", stroke: "#C9B79A" }), txt(x, 426, t, 18))); },
   items: [
     { n: "물개 몸", pts: [[60, 395], [250, 395], [272, 330], [205, 268], [105, 300]], fill: "#9FB7C9", info: "곧은 선 5개로 둘러싸여 있어요." },
-    { n: "물개 머리", circle: [232, 238, 36], fill: "#B7CAD8", info: "굽은 선으로 둘러싸인 도형(원)이에요." },
-    { n: "물개 앞지느러미", pts: [[150, 395], [118, 372], [196, 372]], fill: "#7E99AE", info: "곧은 선 3개로 둘러싸인 삼각형이에요." },
+    { n: "물개 머리", circle: [218, 250, 34], fill: "#B7CAD8", info: "굽은 선으로 둘러싸인 도형(원)이에요." },
+    { n: "물개 꼬리지느러미", pts: [[64, 392], [18, 346], [28, 398]], fill: "#7E99AE", info: "곧은 선 3개로 둘러싸인 삼각형이에요." },
     { n: "고래 몸", pts: [[340, 320], [395, 250], [540, 250], [592, 320], [540, 385], [395, 385]], fill: "#7FB3E0", info: "곧은 선 6개로 둘러싸여 있어요." },
     { n: "고래 꼬리", pts: [[592, 320], [648, 262], [648, 378]], fill: "#5E95C8", info: "곧은 선 3개로 둘러싸인 삼각형이에요." },
     { n: "고래 물줄기", circle: [470, 200, 26], fill: "#CFE8FA", info: "굽은 선으로 둘러싸인 도형(원)이에요." },

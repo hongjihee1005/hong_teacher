@@ -182,11 +182,12 @@ def bar_svg(g, bars='vals', title=True, ticks='num', names=None, axes=True, lock
             every = 1 if cells <= 15 else 5
     nl = max(len(lines_of(c)) for c in cats)
     longest = max(len(l) for c in cats for l in lines_of(c))
-    TT = 74 if title is not None else 44
+    TT = 88 if title is not None else 48
+    ph = 250 if (bars == 'vals' and lock is None) else 340
     valName = '%s (%s)' % (g['valAxis'], g['unit'])
     out = []
     if not g['horiz']:
-        CH = max(14, min(32, 340 // cells))
+        CH = max(12, min(32, ph // cells))
         SW = max(96, longest * fs + 24)
         L = max(84, len(g['catAxis']) * fs + 30)
         PW, PH = n * SW, cells * CH
@@ -203,15 +204,15 @@ def bar_svg(g, bars='vals', title=True, ticks='num', names=None, axes=True, lock
     W = max(W, len(g['title']) * 24 + 40 if title else 0, len(valName) * fs + 60)
     tick = lambda k: str(k * g['step'])
     if title:
-        out.append(T(W / 2, 30, g['title'], 23, weight='bold'))
+        out.append(T(W / 2, 26, g['title'], 23, weight='bold'))
     elif title is False:
-        out.append(T(W / 2, 30, '제목:', 21, anchor='end'))
-        out.append(BOX(W / 2 + 8, 14, min(W / 2 - 20, 340), 34))
+        out.append(T(W / 2 - 60, 28, '제목:', 21, anchor='end'))
+        out.append(BOX(W / 2 - 52, 10, min(W / 2 + 40, 420), 36))
     if not g['horiz']:
         if axes:
-            out.append(T(10, TT - 26, valName, fs, anchor='start', fill=SOFT))
+            out.append(T(10, TT - 24, valName, fs, anchor='start', fill=SOFT))
         else:
-            out.append(BOX(8, TT - 42, 150, 30))
+            out.append(BOX(8, TT - 40, 170, 30))
         for k in range(cells + 1):
             y = base - k * CH
             major = k % every == 0
@@ -238,7 +239,7 @@ def bar_svg(g, bars='vals', title=True, ticks='num', names=None, axes=True, lock
         if axes:
             out.append(T(L - 10, base + 18 + fs / 2, g['catAxis'], fs, anchor='end', fill=SOFT))
         else:
-            out.append(BOX(4, base + 8, L - 12, fs + 14))
+            out.append(BOX(4, base + 22, L - 30, fs + 12))
     else:
         if axes:
             out.append(T(L - 12, TT - 18, g['catAxis'], fs, anchor='end', fill=SOFT))
@@ -353,9 +354,9 @@ def tally_svg(cats, vals, title):
 def sticker_svg(cats, seq, names, title):
     CWID, top = 170, 64
     n = len(cats)
-    rows = max(seq.count(i) for i in range(n))
+    rows = (max(seq.count(i) for i in range(n)) + 1) // 2
     W = n * CWID + 20
-    H = top + 44 + rows * 50 + 16
+    H = top + 44 + rows * 48 + 20
     cols = ['#F6C6A8', '#B9DCF2', '#C8E6C0', '#F3E1A0']
     out = [T(W / 2, 24, title + ' — 스티커 판', 21, weight='bold')]
     filled = [0] * n
@@ -363,10 +364,11 @@ def sticker_svg(cats, seq, names, title):
         x = 10 + i * CWID
         out.append('<rect x="%d" y="%d" width="%d" height="%d" fill="#F2F5F4" stroke="%s"/>' % (x, top, CWID, 44, GRID2))
         out.append(T(x + CWID / 2, top + 22, c, 18))
-        out.append('<rect x="%d" y="%d" width="%d" height="%d" fill="none" stroke="%s"/>' % (x, top + 44, CWID, rows * 50 + 8, GRID2))
+        out.append('<rect x="%d" y="%d" width="%d" height="%d" fill="none" stroke="%s"/>' % (x, top + 44, CWID, rows * 48 + 12, GRID2))
     for k, ci in enumerate(seq):
-        x = 10 + ci * CWID + CWID / 2
-        y = top + 44 + 28 + filled[ci] * 50
+        r, c = divmod(filled[ci], 2)
+        x = 10 + ci * CWID + CWID / 2 + (c - .5) * 48
+        y = top + 44 + 30 + r * 48
         filled[ci] += 1
         out.append('<circle cx="%.1f" cy="%.1f" r="21" fill="%s" stroke="%s"/>' % (x, y, cols[ci % 4], SOFT))
         out.append(T(x, y, names[k], 15))
@@ -410,7 +412,7 @@ def map_svg(kinds, seed, title):
     out.append('<path d="M0 340 Q170 300 330 340 T680 320" stroke="#9CCBEA" stroke-width="16" fill="none"/>')
     for d, w in (("M0 190 H680", 14), ("M220 40 V490", 14), ("M470 40 Q450 260 500 490", 12)):
         out.append('<path d="%s" stroke="#E2DBCF" stroke-width="%d" fill="none"/>' % (d, w))
-    cx, cy = W - 46, 92
+    cx, cy = W - 62, 96
     out.append('<circle cx="%d" cy="%d" r="30" fill="#fff" stroke="%s"/>' % (cx, cy, GRID2))
     out.append('<path d="M%d %d L%d %d L%d %d Z" fill="#D9482B"/>' % (cx, cy - 24, cx + 7, cy, cx - 7, cy))
     out.append(T(cx, cy - 40, '북', 15) + T(cx, cy + 41, '남', 15) + T(cx - 41, cy, '서', 15) + T(cx + 41, cy, '동', 15))
@@ -507,9 +509,9 @@ class W:
         self.ask('왜 그럴까요? ' + q, blank=False)
         self.lines(n)
 
-    def pic(self, svgt, mm=150, align='center'):
+    def pic(self, svgt, mm=150, align='center', maxh=88):
         _, Wd, Hd = svgt
-        mm = min(mm, 178)
+        mm = min(mm, 178, maxh * Wd / Hd)
         self._q(mm * Hd / Wd + 2.5, self.s.picture, png(svgt), mm, align)
 
     def choices(self, pairs):
