@@ -950,17 +950,19 @@ function q4Table(body, api, opt) {
   const want = rows.map(r => opt.shapes.map(p => r[1](q4Info(p))));
   rows.forEach((r, ri) => {
     tbl.append(h("div", { class: "q4th q4rh" }, r[0]));
-    opt.shapes.forEach((_, ci) => { const c = h("button", { class: "q4cell", "aria-label": `${r[0]} ${labs[ci]}`, onclick: () => { st[ri][ci] = !st[ri][ci]; c.textContent = st[ri][ci] ? "◯" : "​"; c.classList.remove("q4good", "q4bad"); } }, "​"); cells.push({ c, ri, ci }); tbl.append(c); });
+    opt.shapes.forEach((_, ci) => { const c = h("button", { class: "q4cell", "aria-label": `${r[0]} ${labs[ci]}`, onclick: () => { st[ri][ci] = !st[ri][ci]; c.textContent = st[ri][ci] ? "◯" : "​"; c.classList.remove("q4good", "q4bad"); auto(); } }, "​"); cells.push({ c, ri, ci }); tbl.append(c); });
   });
   api.provide({ words: ["평행", "마주 보는", "네 변", "네 각"], answers: rows.map((r, ri) => `${r[0]} ${labs.filter((_, ci) => want[ri][ci]).join(", ")}`) });
   const judge = () => {
     api.tryOnce(); let bad = null;
-    cells.forEach(({ c, ri, ci }) => { const ok = st[ri][ci] === want[ri][ci]; c.classList.remove("q4good", "q4bad"); if (st[ri][ci] || !ok) c.classList.add(ok ? "q4good" : "q4bad"); if (!ok && !bad) bad = { ri, ci }; });
+    cells.forEach(({ c, ri, ci }) => { const ok = st[ri][ci] === want[ri][ci]; c.classList.remove("q4good", "q4bad"); if (st[ri][ci]) c.classList.add(ok ? "q4good" : "q4bad"); if (!ok && !bad) bad = { ri, ci }; });
     const ans = rows.map((r, ri) => labs.filter((_, ci) => st[ri][ci]).join("") || "-").join(" / ");
     if (!bad) return !api.done(ans, opt.ok);
     api.fail(`‘${rows[bad.ri][0]}’ 줄의 ${labs[bad.ci]}${q4J(labs[bad.ci], "을", "를")} 다시 살펴봐요. ${want[bad.ri][bad.ci] ? "이 사각형도 그 설명에 맞아요." : "이 사각형은 그 설명에 맞지 않아요."}`, ans);
   };
-  body.append(h("p", { class: "inst", style: "margin:.2em 0" }, "칸을 누르면 ◯가 생기고, 다시 누르면 지워져요. 점 종이의 칸을 세어 평행·길이·직각을 살펴봐요."), tbl);
+  const nWant = want.flat().filter(Boolean).length;
+  const auto = autoRun(() => st.flat().filter(Boolean).length >= nWant, () => JSON.stringify(st), judge, 1200);
+  body.append(h("p", { class: "inst", style: "margin:.2em 0" }, `칸을 누르면 ◯가 생기고, 다시 누르면 지워져요. 점 종이의 칸을 세어 평행·길이·직각을 살펴봐요. ◯를 ${nWant}개 그리면 저절로 확인해요.`), tbl);
 }
 
 /* =========================================================
@@ -999,11 +1001,11 @@ function q4Strips(body, api, opt = {}) {
     angEl.textContent = `각 ㄱ: ${ang}°`;
     madeEl.textContent = made.length ? "만든 사각형: " + made.join(", ") : "​";
   };
-  const sb = STR.map((L, i) => { const b = h("button", { class: "q4strip", style: `width:${L * 2.2}em;background:${L === 5 ? "#FBD25B" : "#A9D6F2"}`, onclick: () => { const k = order.indexOf(i); if (k >= 0) order.splice(k, 1); else if (order.length < 4) order.push(i); draw(); } }, `${L} cm`); return b; });
+  const sb = STR.map((L, i) => { const b = h("button", { class: "q4strip", style: `width:${L * 2.2}em;background:${L === 5 ? "#FBD25B" : "#A9D6F2"}`, onclick: () => { const k = order.indexOf(i); if (k >= 0) order.splice(k, 1); else if (order.length < 4) order.push(i); draw(); auto(); } }, `${L} cm`); return b; });
   const seq = h("div", { class: "jua" }), angEl = h("span", { class: "jua" }), madeEl = h("div", { class: "inst" });
-  const slider = h("input", { type: "range", min: 30, max: 150, step: 5, value: ang, "aria-label": "각 ㄱ", oninput: e => { ang = +e.target.value; draw(); } });
+  const slider = h("input", { type: "range", min: 30, max: 150, step: 5, value: ang, "aria-label": "각 ㄱ", oninput: e => { ang = +e.target.value; draw(); auto(); } });
   const NAMES = ["사다리꼴", "평행사변형", "마름모", "직사각형", "정사각형", "평행한 변이 없는 사각형"];
-  const nb = NAMES.map(n => { const b = h("button", { onclick: () => { name = n; draw(); } }, n); b.dataset.n = n; return b; });
+  const nb = NAMES.map(n => { const b = h("button", { onclick: () => { name = n; draw(); auto(); } }, n); b.dataset.n = n; return b; });
   api.provide({ words: ["네 변의 길이가 모두 같아요", "마주 보는 두 쌍의 변이 평행해요", "네 각이 모두 직각이에요"], answers: ["긴 띠 4개 → 마름모, 긴 띠 2개와 짧은 띠 2개를 마주 보게 → 평행사변형"] });
   const judge = () => {
     api.tryOnce(); const B = build();
@@ -1014,9 +1016,10 @@ function q4Strips(body, api, opt = {}) {
     if (made.includes(name)) return api.fail("앞에서 만든 사각형과 이름이 같아요. 띠나 각을 바꾸어 다른 사각형을 만들어 봐요.", name);
     made.push(name); name = null;
     if (made.length < need) { api.hint(`○ ${made[made.length - 1]}${q4J(made[made.length - 1], "을", "를")} 만들었어요! 다른 사각형도 만들어 봐요.`); draw(); return; }
-    draw(); api.done(made.join(", "), opt.ok || "종이띠로 여러 가지 사각형을 만들었어요. 띠의 길이와 각에 따라 이름이 달라져요.");
+    draw(); return !api.done(made.join(", "), opt.ok || "종이띠로 여러 가지 사각형을 만들었어요. 띠의 길이와 각에 따라 이름이 달라져요.");
   };
-  body.append(stageWrap(svg, h("div", { class: "side" }, seq, h("div", { class: "q4strips" }, sb), h("div", { class: "q4slider" }, angEl, slider), h("p", { class: "jua", style: "margin:.2em 0" }, "만든 사각형의 이름"), h("div", { class: "q4names" }, nb), madeEl)));
+  const auto = autoRun(() => !!name && order.length === 4, () => order.join("") + ":" + ang + ":" + name, judge, 1200);
+  body.append(stageWrap(svg, h("div", { class: "side" }, seq, h("div", { class: "q4strips" }, sb), h("div", { class: "q4slider" }, angEl, slider), h("p", { class: "jua", style: "margin:.2em 0" }, "만든 사각형의 이름(고르면 저절로 확인해요)"), h("div", { class: "q4names" }, nb), madeEl)));
   draw();
 }
 
