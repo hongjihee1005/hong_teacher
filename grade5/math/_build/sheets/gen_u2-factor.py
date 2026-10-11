@@ -333,9 +333,14 @@ def num_board(s, nums, cols):
 
 
 def row_table(s, label, nums, label_mm=32):
-    n = len(nums)
-    s.table([[label] + [str(v) for v in nums]], header=False, header_col=True,
-            col_mm=[label_mm] + [(180 - label_mm) / n] * n, row_h=2835)
+    """이름 칸 + 수 칸 한 줄. 수가 13개보다 많으면 두 줄로 나누어 칸이 좁아지지 않게 함."""
+    vals = [str(v) for v in nums]
+    k = -(-len(vals) // 2) if len(vals) > 13 else len(vals)
+    rows = []
+    for i in range(0, len(vals), k):
+        chunk = vals[i:i + k]
+        rows.append([label if i == 0 else ''] + chunk + [''] * (k - len(chunk)))
+    s.table(rows, header=False, header_col=True, col_mm=[label_mm] + [(180 - label_mm) / k] * k, row_h=2835)
 
 
 def share_table(s, n, unit_box, item, unit_item):
