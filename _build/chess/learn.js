@@ -100,7 +100,7 @@
     panel.appendChild(q); panel.appendChild(area); panel.appendChild(hb); panel.appendChild(fb); panel.appendChild(nextRow);
     function draw(extra) {
       var m = {}; function add(src) { Object.keys(src || {}).forEach(function (k) { var key = typeof k === 'number' ? CH.name(k) : k; var v = src[k]; m[key] = (m[key] || []).concat(Array.isArray(v) ? v : [v]); }); }
-      add(baseMarks); add(hintMarks); Object.keys(found).forEach(function (s) { add(objOf(s, 'ok')); }); add(extra);
+      add(baseMarks); add(dynMarks()); add(hintMarks); Object.keys(found).forEach(function (s) { add(objOf(s, 'ok')); }); add(extra);
       view.set({ pos: pos, marks: m, arrows: (T.board && T.board.arrows) || [], coords: T.board && T.board.coords !== undefined ? T.board.coords : true, swap: T.board && T.board.swap, flip: T.board && T.board.flip });
     }
     function objOf(k, v) { var o = {}; o[k] = v; return o; }
@@ -110,7 +110,7 @@
     function hint(lv, auto) {
       if (finished || lv <= HT.lv && auto) return; lv = Math.min(3, lv); HT.lv = Math.max(HT.lv, lv);
       var H = (T.hint || [])[lv - 1], text, marks = {};
-      if (lv === 3) { revealed = true; text = '정답을 보여 줄게요. ' + (T.type === 'pick' ? '반짝이는 답을 눌러 보세요.' : T.type === 'place' ? '반짝이는 칸에 놓아 보세요.' : '반짝이는 칸을 눌러 보세요.'); answerMarks(marks); }
+      if (lv === 3) { revealed = true; text = '정답을 보여 줄게요. ' + (T.type === 'pick' ? '반짝이는 답을 눌러 보세요.' : T.type === 'place' ? '반짝이는 칸에 놓아 보세요.' : T.type === 'move' ? '반짝이는 칸으로 움직여 보세요.' : T.type === 'game' ? '반짝이는 폰을 반짝이는 칸으로 움직여 보세요.' : '반짝이는 칸을 눌러 보세요.'); answerMarks(marks); }
       else if (H) { if (typeof H === 'string') text = H; else { text = H.text; marks = H.marks || {}; } }
       else text = lv === 1 ? '문제를 천천히 다시 읽어 보세요.' : '설명에서 본 것을 떠올려 보세요.';
       hintMarks = marks; hb.hidden = false; hb.innerHTML = '<b>💡 힌트 ' + lv + '</b> ' + text;
@@ -120,6 +120,8 @@
       if (auto && canSpeak()) { HT.on = false; speak(text, function () { HT.on = true; armTimer(); }); } else armTimer();
     }
     function answerMarks(m) {
+      if (T.type === 'move' && T.next) { var nx = T.next(mv.at, mv.stars); if (nx) m[nx] = 'hint'; }
+      if (T.type === 'game' && !gm.over) { var bm = T.game.ai(gm.p, 9); if (bm) { m[CH.name(bm.from)] = 'hint'; m[CH.name(bm.to)] = 'hint'; } }
       if (T.type === 'click') ans.forEach(function (s) { if (!found[s]) m[s] = 'hint'; });
       if (T.type === 'place') { var want = tray[pickT >= 0 ? pickT : 0]; if (opt.once) { Object.keys(T.need).forEach(function (s) { if (!placed[s]) m[s] = 'hint'; }); return; } Object.keys(T.need).forEach(function (s) { if (!placed[s] && T.need[s] === want) m[s] = 'hint'; }); }
     }
@@ -128,7 +130,7 @@
     var timerTask = { kind: T.kind, hint: hint };
     function finish() {
       finished = true; stopTimer(); hb.hidden = true; hintMarks = {};
-      var first = tries === 0 && !revealed;
+      var first = tries === 0 && !revealed && !over;
       fb.className = 'cs-fb cs-good'; fb.innerHTML = (first ? '<b>맞아요! 👏</b> ' : '<b>잘했어요.</b> ') + (T.ok || '');
       if (T.after) { pos = typeof T.after === 'string' ? CH.board(T.after) : T.after; }
       draw({});
@@ -176,8 +178,90 @@
       });
     }
     if (T.type === 'place') { pickT = 0; drawTray(); }
+    /* 말 움직이기(별 모으기): 움직일 말 하나(T.mover)로 별(T.stars)을 모두 모음. 가장 적은 횟수 T.par, 다음 한 수 T.next(지금 칸, 남은 별) */
+    var over = false, mv = T.type === 'move' ? { at: T.mover, stars: T.stars.slice(), n: 0, busy: false } : null;
+    /* 대국(폰 전쟁 등): T.game = {moves(p), play(p, m), result(p) → 'w'|'b'|'', ai(p, 단계)}, 수 m = {from, to}(칸 번호) */
+    var start = pos.slice(), gm = T.type === 'game' ? { p: { b: pos, turn: 'w' }, sel: -1, busy: false, over: false } : null;
+    function targets(sq) {
+      var o = {}; CH.pieceMoves({ b: pos, turn: 'w', cast: '', ep: -1 }, CH.idx(sq)).forEach(function (m) { if (T.capture || pos[m.to] === '.') o[CH.name(m.to)] = 1; });
+      return Object.keys(o);
+    }
+    function dynMarks() {
+      var m = {};
+      if (mv) { mv.stars.forEach(function (x) { m[x] = 'star'; }); m[mv.at] = 'sel'; }
+      if (gm && gm.sel >= 0) { m[CH.name(gm.sel)] = 'sel'; T.game.moves(gm.p).forEach(function (x) { if (x.from === gm.sel) m[CH.name(x.to)] = 'dot'; }); }
+      return m;
+    }
+    T.peek = function () { return mv ? { at: mv.at, stars: mv.stars.slice(), busy: mv.busy } : gm ? { p: gm.p, busy: gm.busy, over: gm.over } : null; }; /* 점검(Playwright)용 */
+    function gameOver(r) {
+      if (r === 'w') { T.ok = T.winText || '이겼어요!'; finish(); return; }
+      gm.over = true; tries++; if (opt.onWrong) opt.onWrong(); stopTimer();
+      fb.className = 'cs-fb cs-badfb'; fb.innerHTML = '<b>아쉬워요, 졌어요.</b> ' + (T.loseTip || '');
+      var b = btn('🔄 한 판 더', 'cs-main', function () { b.remove(); pos = start.slice(); gm = { p: { b: pos, turn: 'w' }, sel: -1, busy: false, over: false }; fb.className = 'cs-fb'; fb.innerHTML = '내가 먼저 둬요. 움직일 폰을 눌러요.'; HT.lv = 0; HT.on = true; armTimer(); show({}); });
+      nextRow.appendChild(b);
+    }
+    function gamePlay(m) {
+      gm.busy = true; gm.sel = -1; hintMarks = {}; show({});
+      view.anim(m.from, m.to, 320, function () {
+        if (finished) return;
+        gm.p = T.game.play(gm.p, m); pos = gm.p.b; show({});
+        var r = T.game.result(gm.p); if (r) { gm.busy = false; return gameOver(r); }
+        fb.className = 'cs-fb'; fb.innerHTML = '🤖 인공지능 차례예요 …';
+        setTimeout(function () {
+          if (finished || !gm || gm.over) return;
+          var a = T.game.ai(gm.p, T.level || 1);
+          view.anim(a.from, a.to, 320, function () {
+            if (finished) return;
+            gm.p = T.game.play(gm.p, a); pos = gm.p.b; gm.busy = false;
+            var mk = {}; mk[CH.name(a.from)] = 'hi'; mk[CH.name(a.to)] = 'hi'; show(mk);
+            var r2 = T.game.result(gm.p); if (r2) return gameOver(r2);
+            fb.className = 'cs-fb'; fb.innerHTML = '내 차례예요. 움직일 폰을 눌러요.';
+            if (HT.lv < 3) HT.lv = 0; armTimer();
+          });
+        }, 450);
+      });
+    }
     view.onSq = function (i) {
       if (finished) return; var s = CH.name(i);
+      if (T.type === 'move') {
+        if (mv.busy || s === mv.at) return;
+        var tg = targets(mv.at), nm = PC.NAME[pos[CH.idx(mv.at)].toUpperCase()];
+        if (tg.indexOf(s) < 0) {
+          var dm = {}; tg.forEach(function (x) { dm[x] = 'dot'; }); dm[s] = 'bad';
+          return wrong(T.why ? T.why(s, mv.at) : { text: (pos[i] !== '.' ? '그 칸에는 다른 말이 있어서 갈 수 없어요.' : PC.jo(nm, '은') + ' 그 칸으로 한 번에 갈 수 없어요.') + ' 초록 점이 있는 칸으로만 갈 수 있어요.', marks: dm });
+        }
+        mv.busy = true; var from = mv.at;
+        view.anim(from, s, 380, function () {
+          if (finished) return;
+          pos[CH.idx(s)] = pos[CH.idx(from)]; pos[CH.idx(from)] = '.'; mv.at = s; mv.n++; mv.busy = false;
+          var k = mv.stars.indexOf(s); if (k >= 0) mv.stars.splice(k, 1);
+          hintMarks = {}; if (HT.lv >= 3 && mv.stars.length) { var mm = {}; answerMarks(mm); hintMarks = mm; }
+          if (!mv.stars.length) {
+            if (T.par && mv.n > T.par) over = true;
+            T.ok = mv.n + '번 만에 별을 모두 모았어요!' + (T.par ? (mv.n <= T.par ? ' 가장 적은 횟수예요.' : ' 가장 적게는 ' + T.par + '번에 모을 수 있어요. 다음엔 더 적게 해 봐요.') : '');
+            return finish();
+          }
+          fb.className = 'cs-fb cs-good'; fb.innerHTML = (k >= 0 ? '⭐ 별을 모았어요! ' : '') + '남은 별 <b>' + mv.stars.length + '</b>개 · 움직인 횟수 <b>' + mv.n + '</b>번';
+          show({});
+          /* 이제 남은 별을 모을 수 없으면(폰이 지나침 등) 처음부터 */
+          if (T.next && !T.next(mv.at, mv.stars)) {
+            over = true; tries++; if (opt.onWrong) opt.onWrong(); mv.busy = true; stopTimer();
+            fb.className = 'cs-fb cs-badfb'; fb.innerHTML = '<b>앗!</b> 이제는 남은 별을 모을 수 없어요. 처음부터 다시 해요.';
+            var rb = btn('🔄 처음부터', 'cs-main', function () { rb.remove(); pos = start.slice(); mv = { at: T.mover, stars: T.stars.slice(), n: 0, busy: false }; hintMarks = {}; fb.className = 'cs-fb'; fb.innerHTML = ''; HT.lv = 0; HT.on = true; armTimer(); show({}); });
+            nextRow.appendChild(rb); rb.focus();
+          }
+        });
+        return;
+      }
+      if (T.type === 'game') {
+        if (gm.busy || gm.over) return;
+        var c = gm.p.b[i];
+        if (c !== '.' && CH.isW(c)) { gm.sel = i; show({}); return; }
+        if (gm.sel < 0) { fb.className = 'cs-fb'; fb.innerHTML = '먼저 움직일 내 폰(흰색)을 눌러요.'; return; }
+        var ms = T.game.moves(gm.p).filter(function (x) { return x.from === gm.sel && x.to === i; });
+        if (!ms.length) { fb.className = 'cs-fb cs-badfb'; fb.innerHTML = '그 칸으로는 갈 수 없어요. 초록 점이 있는 칸을 눌러요.'; return; }
+        return gamePlay(ms[0]);
+      }
       if (T.type === 'click') {
         if (ans.indexOf(s) >= 0) {
           if (found[s]) return; found[s] = 1;
@@ -397,6 +481,7 @@
       var l = list[k];
       panel.appendChild(h('div', 'cs-phl', (kind === 'exam' ? '📝 ' : '🔁 ') + (k + 1) + ' / ' + list.length + ' <span class="cs-cnt">' + l.no + '차시 ' + l.title + '</span>'));
       var T = l.practice.gen(R), nr = h('div', 'cs-row cs-navrow');
+      for (var g = 0; kind === 'exam' && T.type === 'game' && g < 30; g++) T = l.practice.gen(R); /* 확인 시험에는 대국을 넣지 않음 */
       if (kind === 'exam') { T.hint = []; }
       cur = runTask(T, view, panel, {
         kind: l.kind || 'easy', auto: kind !== 'exam', once: kind === 'exam',

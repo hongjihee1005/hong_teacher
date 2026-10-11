@@ -38,7 +38,7 @@
           if (t === 'dot') h.push('<circle cx="' + cx + '" cy="' + cy + '" r="15" fill="rgba(30,130,70,.75)"/>');
           else if (t === 'ring') h.push('<circle cx="' + cx + '" cy="' + cy + '" r="44" fill="none" stroke="rgba(30,130,70,.85)" stroke-width="8"/>');
           else if (t === 'sel') h.push('<rect x="' + (p[0] + 4) + '" y="' + (p[1] + 4) + '" width="' + (S - 8) + '" height="' + (S - 8) + '" fill="none" stroke="#1F6FE0" stroke-width="8" rx="6"/>');
-          else if (t === 'star') h.push('<path transform="translate(' + cx + ' ' + cy + ')" d="M0-34 10-11 34-10 15 5 21 30 0 16-21 30-15 5-34-10-10-11Z" fill="#FFC21A" stroke="#B07800" stroke-width="3" stroke-linejoin="round"/>');
+          else if (t === 'star') h.push('<path transform="' + (st.pos[+i] !== '.' ? 'translate(' + (p[0] + S - 24) + ' ' + (p[1] + 24) + ') scale(.6)' : 'translate(' + cx + ' ' + cy + ')') + '" d="M0-34 10-11 34-10 15 5 21 30 0 16-21 30-15 5-34-10-10-11Z" fill="#FFC21A" stroke="#B07800" stroke-width="3" stroke-linejoin="round"/>');
           else if (t === 'x') h.push('<path d="M' + (cx - 26) + ' ' + (cy - 26) + 'l52 52M' + (cx + 26) + ' ' + (cy - 26) + 'l-52 52" stroke="#D0453B" stroke-width="10" stroke-linecap="round"/>');
           else if (t && t.t === 'label') h.push('<text class="cs-lb" x="' + cx + '" y="' + (cy + (t.small ? 9 : 14)) + '" text-anchor="middle" font-size="' + (t.small ? 28 : 40) + '">' + t.s + '</text>');
         });
