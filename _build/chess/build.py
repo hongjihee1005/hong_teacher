@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
-"""기타 › 체스 학습관 (2026-10-11)
+"""특색교육 › 체스 학습관 (2026-10-11)
 
-    python3 _build/chess/build.py          # project/chess/m1.html … (마당마다 한 쪽)
+    python3 _build/chess/build.py          # special/chess/m1.html … (마당마다 한 쪽)
     python3 _build/chess/build.py check    # 점검만(node check.js)
 
 규칙 rules.js(window.CH, perft 점검) · 말 그림 pieces.js · 판 그리기 board.js · 학습 틀 learn.js · 마당 내용 m1.js …
-화면 틀 page.html, 모양 chess.css(+ 수학 교구실 page.css). 메뉴 project/chess/index.html은 손으로 고치는 메뉴(apply_theme.py).
+화면 틀 page.html, 모양 chess.css(+ 수학 교구실 page.css). 메뉴 special/chess/index.html(과 특색교육 메뉴 special/index.html)은 손으로 고치는 메뉴(apply_theme.py).
 계획·현황은 PLAN.md. 고친 뒤 루트에서 python3 _build/theme/apply_content_theme.py.
 """
 import re, sys, json, pathlib, subprocess
@@ -13,7 +13,7 @@ HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 OG = ROOT / '_build' / 'origami'
 MT = ROOT / '_build' / 'mathtools'
-OUT = ROOT / 'project' / 'chess'
+OUT = ROOT / 'special' / 'chess'
 
 MADANG = [  # (번호, 파일, 제목, 설명) — 원본 파일이 있는 마당만 만듦
     (1, 'm1', '1마당 · 체스판과 체스말', '체스판의 칸과 줄, 칸 이름, 여섯 가지 체스말의 이름과 모양, 처음 배치를 23차시로 차근차근 배워요.'),
