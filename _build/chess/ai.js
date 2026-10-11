@@ -76,16 +76,18 @@
     return top[Math.floor(Math.random() * top.length)].m;
   }
   /* 대국. goal 'win'(보통 대국: 체크메이트하면 승리) · 'mate'(메이트 연습: lim 번 안에 메이트, 스테일메이트·말 잃음은 실패)
-     단계: 1 한 수 앞 + 자주 실수 · 2 두 수 앞 + 가끔 실수 · 3 세 수 앞 · 9(힌트) 세 수 앞 */
-  var LV = { 1: { d: 1, err: .45, slack: 600 }, 2: { d: 2, err: .15, slack: 250 }, 3: { d: 3, err: 0 }, 9: { d: 3, err: 0 } };
+     단계: 1 한 수 앞 + 자주 실수 · 2 두 수 앞 + 가끔 실수 · 3 세 수 앞 · 4 세 수 앞(더 넓게) · 5~7 네 수 앞 · 8·9 다섯 수 앞 · 10 여섯 수 앞(읽는 양에 한도) · 99(힌트) 세 수 앞 */
+  var LV = { 1: { d: 1, err: .45, slack: 600 }, 2: { d: 2, err: .15, slack: 250 }, 3: { d: 3, err: 0 }, 4: { d: 3, err: 0, nodes: 70000 }, 5: { d: 4, err: 0, nodes: 60000 }, 6: { d: 4, err: 0, nodes: 110000 }, 7: { d: 4, err: 0, nodes: 180000 }, 8: { d: 5, err: 0, nodes: 200000 }, 9: { d: 5, err: 0, nodes: 320000 }, 10: { d: 6, err: 0, nodes: 450000 }, 99: { d: 3, err: 0 } };
   function game(lv, o) {
     o = o || {};
     function moves(p) { return CH.legal(p).filter(function (m) { return !m.promo || /q/i.test(m.promo); }); }
-    function play(p, m) { var q = CH.make(p, m); q.n = (p.n || 0) + 1; return q; }
+    function key(p) { return CH.placement(p.b) + p.turn + p.cast + p.ep; }
+    function play(p, m) { var q = CH.make(p, m); q.n = (p.n || 0) + 1; q.hist = (p.hist || [key(p)]).concat([key(q)]); return q; }
     function result(p) {
       var st = CH.status(p);
       if (st === 'mate') return p.turn === 'w' ? 'b' : 'w';
       if (st) return 'd';
+      if (p.hist) { var k = key(p), c = 0; p.hist.forEach(function (x) { if (x === k) c++; }); if (c >= 3) return 'd'; } /* 같은 국면 세 번 = 비김 */
       if (o.goal === 'mate') {
         var wm = 0; p.b.forEach(function (c) { if (c !== '.' && c !== 'K' && CH.isW(c)) wm++; });
         if (wm < (o.need || 1)) return 'b';
@@ -94,13 +96,13 @@
       if (o.lim && o.goal !== 'mate' && (p.n || 0) >= o.lim * 2) { var d = 0; p.b.forEach(function (c) { if (c !== '.') d += (CH.isW(c) ? 1 : -1) * V[c.toUpperCase()]; }); return o.lead && d >= o.lead * 100 ? 'w' : o.lead && d <= -o.lead * 100 ? 'b' : 'd'; }
       return '';
     }
-    function ai(p, l) { var L = LV[l] || LV[3], few = p.b.filter(function (c) { return c !== '.'; }).length <= 5; return best(p, l === 9 && few ? 4 : L.d, { err: L.err, slack: L.slack, nodes: o.nodes || (few ? 120000 : 40000) }); }
+    function ai(p, l) { var L = LV[l] || LV[3], few = p.b.filter(function (c) { return c !== '.'; }).length <= 5; return best(p, l === 99 && few ? 4 : L.d, { err: L.err, slack: L.slack, nodes: o.nodes || L.nodes || (few ? 120000 : 40000) }); }
     function info(p) {
       var st = CH.inCheck(p) && !CH.status(p) ? (p.turn === 'w' ? '내 킹이 체크예요! ' : '체크! ') : '';
       var d = 0; p.b.forEach(function (c) { if (c !== '.') d += (CH.isW(c) ? 1 : -1) * V[c.toUpperCase()] / 100; });
       return st + (o.lim ? '남은 수 ' + Math.max(0, o.lim - Math.floor((p.n || 0) / 2)) + '번' : (Math.floor((p.n || 0) / 2) + 1) + '번째 수') + (o.lead ? ' · 말 값 ' + (d > 0 ? '+' : '') + Math.round(d) : '');
     }
-    return { moves: moves, play: play, result: result, ai: ai, info: info, chess: true };
+    return { moves: moves, play: play, result: result, ai: ai, info: info, chess: true, spec: { lv: lv, o: o } }; /* spec: 웹 워커에서 같은 대국을 다시 만들 때 */
   }
   /* 모든 수의 점수(두는 쪽 입장, 큰 것부터) — 문제 은행 만들기용 */
   function scores(p, depth, o) { o = o || {}; var S = search(p, o); return order(CH.legal(p)).map(function (m) { return { m: m, s: -S.ab(CH.make(p, m), depth - 1, -Infinity, Infinity, 1) }; }).sort(function (a, b) { return b.s - a.s; }); }

@@ -101,7 +101,8 @@ function checkTask(where, T) {
   }
 }
 let nLes = 0, nTask = 0;
-fs.readdirSync(HERE).filter(f => /^m\d\.js$/.test(f)).sort().forEach(f => {
+const ONLY = process.argv[2]; /* node check.js m6 → 그 마당만 */
+fs.readdirSync(HERE).filter(f => /^m\d\.js$/.test(f) && (!ONLY || f === ONLY + '.js')).sort().forEach(f => {
   delete globalThis.MADANG;
   const dataF = f.replace('.js', '_data.js'); if (fs.existsSync(path.join(HERE, dataF))) vm.runInThisContext(fs.readFileSync(path.join(HERE, dataF), 'utf8'), { filename: dataF }); /* 미리 만든 문제 은행(5마당~) */
   vm.runInThisContext(fs.readFileSync(path.join(HERE, f), 'utf8'), { filename: f });

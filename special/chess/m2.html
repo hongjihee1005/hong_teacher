@@ -838,7 +838,7 @@ html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:n
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
 </style><!--/hj-ctheme--></head><body>
 <main>
-<nav class="tl-gnav" aria-label="체스 학습관 마당"><a href="index.html">♞ 체스 학습관</a><a href="m1.html">1마당</a><a href="m2.html" aria-current="page">2마당</a><a href="m3.html">3마당</a><a href="m4.html">4마당</a></nav>
+<nav class="tl-gnav" aria-label="체스 학습관 마당"><a href="index.html">♞ 체스 학습관</a><a href="m1.html">1마당</a><a href="m2.html" aria-current="page">2마당</a><a href="m3.html">3마당</a><a href="m4.html">4마당</a><a href="m5.html">5마당</a></nav>
 <header class="tl-head"><span class="tl-ico" aria-hidden="true">♞</span><div><h1>2마당 · 말이 움직이는 법</h1><p class="tl-desc">룩·비숍·퀸·킹·나이트·폰이 움직이는 길과 막히는 곳을 34차시로 배우고, 별 모으기와 폰 전쟁으로 연습해요.</p><p class="tl-rec">모든 학년 · 1차시부터 차례대로 · 혼자서도 배울 수 있어요</p></div></header>
 <section class="cs-app" id="csApp" aria-live="polite"></section>
 <details class="tl-how"><summary>쓰는 법 (선생님께)</summary><ul><li>학생은 1차시부터 차례대로 배우면 좋아요. 어느 차시·단계든 골라 들어갈 수 있지만, 완료 표시(★)는 그 차시의 연습까지 마쳐야 생겨요. 별과 진도는 <b>이 기기</b>에만 저장돼요(다른 기기와 나누지 않아요).</li><li>차시마다 📖 설명 → 👀 예시(움직이는 보기) → 👆 따라 하기 → ✏️ 연습(할 때마다 새 문제) → ⭐ 마무리 차례예요. 연습을 한 번에 많이 맞힐수록 별이 많아요.</li><li>틀리면 처음엔 실마리와 틀린 까닭을, 두 번째엔 정답을 보여 주고 비슷한 문제를 하나 더 내요.</li><li>아무것도 누르지 않고 있으면 힌트가 저절로 나와요(쉬운 문제 10초씩, 한 수 생각 15초씩, 깊은 생각 20초씩). 화면을 누르면 시간을 처음부터 다시 세요. ⚙️ 선생님 설정에서 빠르게·느긋하게·끄기를 고를 수 있어요.</li><li>🔊 읽어 주기는 브라우저의 한국어 음성이라 기기마다 목소리가 달라요. 켜져 있으면 읽기가 끝난 뒤부터 힌트 시간을 세요.</li><li>모든 차시를 마치면 확인 시험(15문제, 힌트 없음)을 볼 수 있고, 12문제 이상 맞히면 등급과 수료증(인쇄)을 받아요.</li><li>주소 끝에 <code>#l5</code>처럼 붙이면 5차시가 바로 열려요. 문제를 맞히면 저절로 다음 화면으로 넘어가요.</li></ul></details>
@@ -2067,6 +2067,17 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
   ['pointerdown', 'keydown'].forEach(function (ev) { document.addEventListener(ev, function () { if (HT.on) armTimer(); }, true); });
 
   /* ---------- 문제 하나 ---------- */
+  var AIW = { w: null, cb: {}, id: 0, bad: false };
+  function aiWorker() {
+    if (AIW.w || AIW.bad || !window.CS_AI_SRC || !window.Worker || !window.Blob) return AIW.w;
+    try {
+      var src = 'var window = self;\n' + window.CS_AI_SRC + '\nonmessage = function (e) { var d = e.data, G = CAI.game(d.lv, d.o), m = G.ai(d.p, d.l); postMessage({ id: d.id, m: m && { from: m.from, to: m.to, promo: m.promo || \'\' } }); };';
+      AIW.w = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+      AIW.w.onmessage = function (e) { var f = AIW.cb[e.data.id]; delete AIW.cb[e.data.id]; if (f) f(e.data.m); };
+      AIW.w.onerror = function () { AIW.bad = true; AIW.w = null; Object.keys(AIW.cb).forEach(function (k) { var f = AIW.cb[k]; delete AIW.cb[k]; f(null); }); };
+    } catch (e) { AIW.bad = true; AIW.w = null; }
+    return AIW.w;
+  }
   /* host: 판 칸 + 글 칸, opt: {kind, auto(저절로 힌트), onEnd(firstTry)} */
   function runTask(T, view, panel, opt) {
     var tries = 0, revealed = false, finished = false, found = {}, hintMarks = {}, tray = (T.tray || []).slice(), pickT = -1, placed = {};
@@ -2102,7 +2113,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
     }
     function answerMarks(m) {
       if (T.type === 'move' && T.next) { var nx = T.next(mv.at, mv.stars); if (nx) m[nx] = 'hint'; }
-      if (T.type === 'game' && !gm.over) { var bm = T.game.ai(gm.p, 9); if (bm) { m[CH.name(bm.from)] = 'hint'; m[CH.name(bm.to)] = 'hint'; } }
+      if (T.type === 'game' && !gm.over) { var bm = T.game.ai(gm.p, 99); if (bm) { m[CH.name(bm.from)] = 'hint'; m[CH.name(bm.to)] = 'hint'; } }
       if ((T.type === 'play' || T.type === 'line') && T.good && T.good.length) { m[T.good[0][0]] = 'hint'; m[T.good[0][1]] = 'hint'; if (T.good[0][2]) area.querySelectorAll('.cs-tp').forEach(function (b) { b.classList.toggle('cs-blink2', b.dataset.v === T.good[0][2]); }); }
       if (T.type === 'click') ans.forEach(function (s) { if (!found[s]) m[s] = 'hint'; });
       if (T.type === 'place') { var want = tray[pickT >= 0 ? pickT : 0]; if (opt.once) { Object.keys(T.need).forEach(function (s) { if (!placed[s]) m[s] = 'hint'; }); return; } Object.keys(T.need).forEach(function (s) { if (!placed[s] && T.need[s] === want) m[s] = 'hint'; }); }
@@ -2181,7 +2192,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
           if (finished) return; var nm = PC.NAME[ST.b[r.from].toUpperCase()];
           ST = CH.make(ST, r); pos = ST.b; T.good = T.goodAt(ST); pl.busy = false; hintMarks = {}; if (HT.lv >= 3) { var mm = {}; answerMarks(mm); hintMarks = mm; }
           var mk = {}; mk[CH.name(r.from)] = 'hi'; mk[CH.name(r.to)] = 'hi'; show(mk);
-          fb.className = 'cs-fb'; fb.innerHTML = '흑은 ' + PC.jo(nm, '을') + ' ' + CH.name(r.to) + PC.jo(CH.name(r.to), '으로').slice(CH.name(r.to).length) + ' 두었어요. <b>이어서 두어요!</b>' + (T.stepQ ? ' ' + T.stepQ : '');
+          fb.className = 'cs-fb'; fb.innerHTML = '흑은 ' + PC.jo(nm, '을') + ' ' + CH.name(r.to) + PC.jo(CH.name(r.to), '으로').slice(CH.name(r.to).length) + ' 두었어요. <b>이어서 두어요!</b>' + (T.stepQ ? ' ' + (typeof T.stepQ === 'function' ? T.stepQ(ST) : T.stepQ) : '');
           armTimer();
         });
       }, 450);
@@ -2200,7 +2211,17 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
       gm.over = true; tries++; if (opt.onWrong) opt.onWrong(); stopTimer();
       fb.className = 'cs-fb cs-badfb'; fb.innerHTML = (r === 'd' ? '<b>비겼어요.</b> 이겨야 통과예요. ' : '<b>아쉬워요, 졌어요.</b> ') + (T.game.info ? '(' + T.game.info(gm.p) + ') ' : '') + (T.loseTip || '');
       var b = btn('🔄 한 판 더', 'cs-main', function () { b.remove(); pos = start.slice(); gm = { p: newP(), sel: -1, busy: false, over: false }; fb.className = 'cs-fb'; fb.innerHTML = '내가 먼저 둬요. 움직일 ' + PC.jo(T.unit || '말', '을') + ' 눌러요.'; HT.lv = 0; HT.on = true; armTimer(); show({}); });
-      nextRow.appendChild(b);
+      var sk = btn('건너뛰기 ▶', '', function () { sk.remove(); b.remove(); finished = true; stopTimer(); if (opt.onEnd) opt.onEnd(false, nextRow); }); /* 계속 지면 막히지 않게(한 번에 맞힌 것으로는 세지 않음) */
+      b.onclick = (function (f) { return function () { sk.remove(); f(); }; })(b.onclick);
+      nextRow.appendChild(b); if (opt.onEnd) nextRow.appendChild(sk);
+    }
+    /* 인공지능 수: 정식 대국(spec 있음)은 웹 워커에서 계산해 화면이 멈추지 않게(안 되면 바로 계산) */
+    function aiMove(p, lv, cb) {
+      var W = aiWorker();
+      if (!W || !T.game.spec) return cb(T.game.ai(p, lv));
+      var id = ++AIW.id, done = false;
+      AIW.cb[id] = function (r) { if (done) return; done = true; var m = r && T.game.moves(p).filter(function (x) { return x.from === r.from && x.to === r.to && (x.promo || '') === (r.promo || ''); })[0]; cb(m || T.game.ai(p, lv)); };
+      W.postMessage({ id: id, p: p, lv: T.game.spec.lv, o: T.game.spec.o, l: lv });
     }
     function gamePlay(m) {
       gm.busy = true; gm.sel = -1; hintMarks = {}; show({});
@@ -2211,7 +2232,8 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
         fb.className = 'cs-fb'; fb.innerHTML = '🤖 인공지능 차례예요 …';
         setTimeout(function () {
           if (finished || !gm || gm.over) return;
-          var a = T.game.ai(gm.p, T.level || 1);
+          aiMove(gm.p, T.level || 1, function (a) {
+          if (finished || !gm || gm.over || !a) return;
           view.anim(a.from, a.to, 320, function () {
             if (finished) return;
             gm.p = T.game.play(gm.p, a); pos = gm.p.b; gm.busy = false;
@@ -2219,6 +2241,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
             var r2 = T.game.result(gm.p); if (r2) return gameOver(r2);
             fb.className = 'cs-fb'; fb.innerHTML = '내 차례예요. 움직일 ' + PC.jo(T.unit || '말', '을') + ' 눌러요.' + (T.game.info ? ' <small>(' + T.game.info(gm.p) + ')</small>' : '');
             if (HT.lv < 3) HT.lv = 0; armTimer();
+          });
           });
         }, 450);
       });
