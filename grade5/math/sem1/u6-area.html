@@ -1686,7 +1686,7 @@ function ar6Count(body, api, opt) {
   let doneOnce = false;
   function tap(i) {
     if (doneOnce) return;
-    if (opt.byRow) { const y = pcs[i].y; const inRow = pcs.map((p, j) => p.y === y ? j : -1).filter(j => j >= 0); if (inRow.every(j => order.includes(j))) inRow.forEach(j => order.splice(order.indexOf(j), 1)); else inRow.forEach(j => { if (!order.includes(j)) order.push(j); }); }
+    if (opt.byRow) { const y = pcs[i].y; const inRow = pcs.map((p, j) => p.y === y ? j : -1).filter(j => j >= 0); if (inRow.every(j => order.includes(j))) return; inRow.forEach(j => { if (!order.includes(j)) order.push(j); }); }
     else { const at = order.indexOf(i); if (at >= 0) order.splice(at, 1); else order.push(i); }
     paint();
     if (order.length === pcs.length) {
@@ -1991,14 +1991,14 @@ function ar6Tile(body, api, opt) {
     S[cu.id][bi].push({ cells: shapeCells(cu, x, y, vert) }); draw(); test();
   };
   let fin = false;
-  const test = () => { if (units.every(u => full(0, u) && full(1, u))) { fin = true; ar6Finish(body, api, opt, units.map(u => `${u.name} 가${S[u.id][0].length} 나${S[u.id][1].length}`).join(" / "), "세 가지 단위 모양으로 벽돌 가와 나를 모두 채워 보았어요."); } };
+  const test = () => { if (units.every(u => full(0, u) && full(1, u))) { fin = true; ar6Finish(body, api, opt, units.map(u => `${u.name} 가${S[u.id][0].length} 나${S[u.id][1].length}`).join(" / "), "세 가지 단위 모양으로 벽돌 가와 나를 모두 채워 보았어요.", { d0: S.d[0].length, d1: S.d[1].length }); } };
   dragOn(svg, p => { put(p); return !fin; }, p => put(p));
   const tabs = h("div", { class: "tools" }, h("span", {}, "단위 모양:"), units.map(u => h("button", { class: u === cu ? "on" : "", onclick: e => { cu = u; [...tabs.querySelectorAll("button.u")].forEach(b => b.classList.remove("on")); e.currentTarget.classList.add("on"); vb.style.display = u.id === "d" ? "" : "none"; draw(); } }, u.name)));
   [...tabs.querySelectorAll("button")].forEach(b => b.classList.add("u"));
   const vb = h("button", { style: "display:none", onclick: e => { vert = !vert; e.currentTarget.textContent = vert ? "▯ 세로로 놓기" : "▭ 가로로 놓기"; } }, "▭ 가로로 놓기");
   tabs.append(vb);
   api.provide({ words: ["빈틈", "단위", "정사각형"], answers: [] });
-  body.append(h("p", { class: "ar6small" }, "단위 모양을 고르고 벽돌 위를 누르거나 문질러 겹치지 않게 놓아요. 더 놓을 자리가 없을 때까지 채워요. 세 가지 단위를 모두 해 봐요."), tabs, svg, read, tblHost,
+  body.append(h("p", { class: "ar6small" }, "단위 모양을 고르고 벽돌 위를 누르거나 문질러 겹치지 않게 놓아요. 직사각형은 가로·세로를 바꾸어 가며 될 수 있는 대로 많이, 더 놓을 자리가 없을 때까지 채워요. 세 가지 단위를 모두 해 봐요."), tabs, svg, read, tblHost,
     h("div", { class: "tools" }, h("button", { onclick: () => { if (fin) return; S[cu.id] = [[], []]; draw(); } }, "이 단위 다시 놓기")));
   draw();
 }
@@ -2388,10 +2388,10 @@ const LESSONS = [
         ok: "가는 오른쪽이 남고 나는 아래(위)쪽이 남아서, 직접 대어 보는 것만으로는 비교하기 어려워요." }) },
     { name: "단위로 재기", inst: "여러 가지 모양을 단위로 사용하여 벽돌 가와 나의 넓이를 비교해 보세요. (단위 모양은 이 자료에서 다시 그렸어요.)", hints: ["단위 모양을 고르고 벽돌 위를 눌러 겹치지 않게 놓아요.", "더 놓을 자리가 없을 때까지 채워요."],
       render: (b, a) => ar6Tile(b, a, {
-        ask: [{ parts: ["○ 원: 가 ", { n: 10 }, "개, 나 ", { n: 9 }, "개 — 원 사이에 ", { o: ["빈틈이 생겨요", "빈틈이 없어요"], a: 0 }, "."] },
-          { parts: ["▭ 직사각형: 가 ", { n: 5 }, "개, 나 ", { n: 4 }, "개 — 나에는 ", { o: ["채우지 못한 곳이 남아요", "꼭 맞게 채워져요"], a: 0 }, "."] },
+        ask: d => [{ parts: ["○ 원: 가 ", { n: 10 }, "개, 나 ", { n: 9 }, "개 — 원 사이에 ", { o: ["빈틈이 생겨요", "빈틈이 없어요"], a: 0 }, "."] },
+          { parts: ["▭ 직사각형: 가 ", { n: d.d0 }, "개, 나 ", { n: d.d1 }, "개 — 나에는 ", { o: ["채우지 못한 곳이 남아요", "꼭 맞게 채워져요"], a: 0 }, "."] },
           { parts: ["□ 정사각형: 가 ", { n: 10 }, "개, 나 ", { n: 9 }, "개 → 더 넓은 벽돌은 ", { o: ["가", "나"], a: 0 }, "예요."] }],
-        ok: "원은 빈틈이 생기고, 직사각형은 남는 곳이 생겨요. 정사각형으로 재면 가 10개, 나 9개라서 가가 더 넓어요." }) },
+        ok: "원은 빈틈이 생기고, 작은 직사각형은 채우지 못하고 남는 곳이 생겨요. 정사각형으로 재면 가 10개, 나 9개라서 가가 더 넓어요." }) },
     { name: "말해 보기", inst: "여러 가지 단위로 재어 보고 알게 된 점을 이야기해 보세요.", hints: ["같은 벽돌 가를 재었는데 단위에 따라 개수가 달랐어요.", "겹치지 않고 빈틈없이 이어 붙일 수 있는 모양이 좋아요."],
       render: (b, a) => quiz(b, a, [
         { q: "같은 벽돌 가를 재었는데 직사각형 단위로는 5개, 정사각형 단위로는 10개였어요. 까닭은 무엇일까요?", o: ["단위의 모양과 크기가 달라서", "벽돌 가의 넓이가 바뀌어서"], a: 0 },
@@ -2562,7 +2562,7 @@ const LESSONS = [
         ask: [{ parts: ["나처럼 둔각삼각형은 높이가 삼각형 ", { o: ["밖에", "안에만"], a: 0 }, " 있을 수 있어요. 한 삼각형에서 밑변이 될 수 있는 변은 ", { o: ["세 변 모두", "아래에 있는 변 하나"], a: 0 }, "이고, 밑변에 따라 높이도 ", { o: ["달라져요", "언제나 같아요"], a: 0 }, "."] }],
         ok: "어느 변이든 밑변이 될 수 있고, 밑변에 따라 높이가 달라져요. 높이가 바깥에 있으면 밑변을 늘여서 그어요." }) },
     { name: "붙여 보기", inst: "똑같은 삼각형 2개로 평행사변형을 만들어 보세요. 아래 삼각형을 골라 ‘돌리기’로 반 바퀴 돌린 다음, 끌어서 위 삼각형 오른쪽에 붙여요.", hints: ["먼저 아래 삼각형을 눌러 고르고 ‘↻ 돌리기’를 눌러요.", "두 삼각형의 긴 변끼리 맞붙여요."],
-      render: (b, a) => ar6Cut(b, a, { cols: 12, rows: 11, k: 30, rotate: true, pieces: [
+      render: (b, a) => ar6Cut(b, a, { cols: 12, rows: 11, k: 30, rotate: true, maxW: "26em", pieces: [
           { P: AR6_TRI, fill: AR6.f1 },
           { P: AR6_TRI, fill: AR6.f2, move: true, start: { dx: 1, dy: 5 }, target: ar6RotT(AR6_TRI, [6, 3]) }],
         marks: (g, m) => { ar6Seg(g, m, [3, 1], [3, 5], { color: AR6.red, w: 2.5, dash: "5 4" }); ar6Lab(g, m, [1, 5], [9, 5], "8 cm", { c: [4, 3], color: AR6.blue }); g.append(txt(m([3.6, 3])[0] + 14, m([3, 3])[1], "4 cm", 14, { fill: AR6.red })); },
@@ -2660,7 +2660,7 @@ const LESSONS = [
           { parts: ["가의 높이는 ", { n: 4 }, " cm, 나의 높이는 ", { n: 3 }, " cm예요. 나처럼 윗변이 아랫변보다 ", { o: ["길 수도 있어요", "길 수 없어요"], a: 0 }, "."] }],
         ok: "평행한 두 변이 밑변(윗변·아랫변)이고, 두 밑변 사이의 거리가 높이예요. 윗변이 꼭 짧은 변은 아니에요." }) },
     { name: "붙여 보기", inst: "똑같은 사다리꼴 2개로 평행사변형을 만들어 보세요. 아래 사다리꼴을 골라 반 바퀴 돌린 다음, 끌어서 위 사다리꼴 오른쪽에 붙여요. (윗변 2 cm, 아랫변 8 cm, 높이 4 cm)", hints: ["아래 사다리꼴을 누르고 ‘↻ 돌리기’를 눌러요.", "비스듬한 오른쪽 변끼리 맞붙여요."],
-      render: (b, a) => ar6Cut(b, a, { cols: 14, rows: 11, k: 28, rotate: true, pieces: [
+      render: (b, a) => ar6Cut(b, a, { cols: 14, rows: 11, k: 28, rotate: true, maxW: "26em", pieces: [
           { P: AR6_TZ, fill: AR6.f6 },
           { P: AR6_TZ, fill: AR6.f4, move: true, start: { dx: 0, dy: 5 }, target: ar6RotT(AR6_TZ, [7, 3]) }],
         marks: (g, m) => { ar6Seg(g, m, [3, 1], [5, 1], { color: AR6.blue, w: 4 }); ar6Seg(g, m, [1, 5], [9, 5], { color: AR6.green, w: 4 }); ar6Seg(g, m, [4, 1], [4, 5], { color: AR6.red, w: 2.5, dash: "5 4" }); },
