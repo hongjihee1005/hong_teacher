@@ -134,7 +134,7 @@ grade1/ … grade6/
 
 ### 4학년 수학 (`grade4/math/`, 2026-10-10)
 
-- 3학년과 같은 두 버전: `sem1/`(교과서 차시 버전) · `sem1-soop/`(이야기 버전, 홍지희 선생님 버전), 단원 앱 `u단원-주제.html` 6개씩, 활동지 `sheets/*_활동지_기본형·도전형.hwpx`. 2학기(`sem2/`, `sem2-soop/`)는 만드는 중.
+- 3학년과 같은 두 버전: `sem1/`(교과서 차시 버전) · `sem1-soop/`(이야기 버전, 홍지희 선생님 버전), 단원 앱 `u단원-주제.html` 6개씩, 활동지 `sheets/*_활동지_기본형·도전형.hwpx`. 2학기(`sem2/`, `sem2-soop/`)도 같은 짜임(2026-10-11).
 - **4학년은 HTML이 아니라 `grade4/math/_build/units/[sem2/]<slug>.tb.js`·`.st.js`가 원본입니다.** 단원 HTML을 직접 고치지 말고 원본을 고친 뒤 `cd grade4/math/_build && python3 build.py <slug> && node check.js <slug>`, 루트에서 `apply_content_theme.py`. 짜임·부품은 `grade4/math/_build/README.md`.
 - 틀은 3학년 엔진에서 뗀 `tpl_tb.html`·`tpl_st.html`(`make_templates.py`). 이야기 엔진은 한 계단의 활동을 `done(`이 든 함수만 세므로, 부품을 감쌀 때 주의(`_build/mathplan/BRIEF_AUDIT.md` 'STORY-ENGINE TRAP').
 - 활동지는 `_build/sheets/gen_<slug>.py`(3학년 hwpx 양식을 그대로 쓰는 `hwpxgen.py`), 목록·README·전체 안내·Code.gs는 `_build/gen_lists.py`가 만듭니다.
