@@ -347,7 +347,7 @@ function fa5Calc(body, api, items, opt = {}) {
       }
       const r = R.inp.get(), J = fa5Judge(r, it.a, R.den); given.push(R.inp.text());
       if (J.code === "ok") { R.inp.paint(true); return; }
-      if (J.code === "diffden" || J.code === "zero") { R.inp.paint(null); if (!hint) hint = J.msg; return; }
+      if (J.code === "diffden" || J.code === "zero" || J.code === "improper") { R.inp.paint(null); if (!hint) hint = J.msg; return; }
       R.inp.paint(false);
       if (!bad) bad = (it.why && it.why[fa5Key(r)]) || J.msg || fa5Diag(it.e || it.x, r) || opt.bad || `${fa5J(`[1/${R.den}]`, "이가")} 몇 개인지 세어 다시 계산해 봐요.`;
     });
@@ -413,7 +413,7 @@ function fa5Chain(body, api, rows, opt = {}) {
     let ok = true, hint = null; const given = [];
     ins.forEach(x => {
       if (x.exp != null) { const v = x.value.replace(/\s/g, ""), g = v === x.exp; x.style.borderColor = g ? "var(--ok)" : "var(--no)"; if (!g) ok = false; given.push(v || "-"); }
-      else { const J = fa5Judge(x.get(), x.target, x.den); given.push(x.text()); if (J.code === "ok") x.paint(true); else if (J.code === "diffden" || J.code === "zero") { x.paint(null); hint = hint || J.msg; } else { x.paint(false); ok = false; } }
+      else { const J = fa5Judge(x.get(), x.target, x.den); given.push(x.text()); if (J.code === "ok") x.paint(true); else if (J.code === "diffden" || J.code === "zero" || J.code === "improper") { x.paint(null); hint = hint || J.msg; } else { x.paint(false); ok = false; } }
     });
     chs.forEach(C => { [...C.el.children].forEach((b, i) => { b.classList.remove("good", "bad"); if (i === C.sel) b.classList.add(C.sel === C.a ? "good" : "bad"); }); if (C.sel !== C.a) ok = false; given.push(C.sel == null ? "-" : C.el.children[C.sel].textContent); });
     if (!ok) return api.fail(opt.bad || "빨간 칸을 다시 생각해 봐요.", given.join(","));
@@ -704,7 +704,7 @@ function fa5Mixed(body, api, opt) {
         if (w !== x.best.w || n !== x.best.n || d !== x.best.d) return api.fail(x.g.kind === "max" ? "가장 큰 대분수는 자연수 부분에 가장 큰 수를 놓고, 남은 두 카드로 진분수를 만들어요." : "가장 작은 대분수는 자연수 부분에 가장 작은 수를 놓고, 남은 두 카드로 진분수를 만들어요.", given);
       }
       const J = fa5Judge(sum.get(), fa5Form(total.num, total.den));
-      if (J.code === "zero") { sum.paint(null); return api.hint(J.msg); }
+      if (J.code === "zero" || J.code === "improper") { sum.paint(null); return api.hint(J.msg); }
       if (J.code !== "ok") { sum.paint(false); return api.fail(J.msg || fa5Diag(`${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)}${op > 0 ? "+" : "-"}${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)}`, sum.get()) || "두 대분수를 통분한 다음 자연수 부분끼리, 분수 부분끼리 계산해 봐요.", given); }
       sum.paint(true); api.tryOnce();
       api.done(given, opt.ok || `${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)} ${op > 0 ? "+" : "−"} ${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)} = ${fa5Book(total.num, total.den)}${fa5Ie(total.num)}!`);
@@ -744,7 +744,7 @@ function fa5Proper(body, api, opt) {
     h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
       if (!mine) return api.fail("먼저 수 카드로 진분수를 만들고 ‘내 진분수 정하기’를 눌러요.", "-");
       const e = `[${mine.n}/${mine.d}]+[${friend.n}/${friend.d}]`, v = fa5Eval(e), r = sum.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
-      if (J.code === "zero") { sum.paint(null); return api.hint(J.msg); }
+      if (J.code === "zero" || J.code === "improper") { sum.paint(null); return api.hint(J.msg); }
       if (J.code !== "ok") { sum.paint(false); return api.fail(J.msg || fa5Diag(e, r) || "두 분모의 곱이나 최소공배수를 공통분모로 하여 통분한 다음 분자끼리 더해 봐요.", `${e} = ${sum.text()}`); }
       sum.paint(true); api.tryOnce();
       table.append(h("tr", {}, h("td", {}, `[${mine.n}/${mine.d}]`), h("td", {}, `[${friend.n}/${friend.d}]`), h("td", {}, fa5Book(v.num, v.den))));
@@ -952,7 +952,7 @@ function fa5Yut(body, api, opt) {
       info.textContent = f[0] === "+" ? `도착한 칸의 수와 분수 주사위의 수를 더해요.` : `도착한 칸의 수와 분수 주사위의 수의 차를 구해요. (큰 수)−(작은 수)로 식을 세워요.`;
       ctrl.append(h("span", { class: "jua" }, `${G.expr} =`), inp, h("button", { class: "fa5on", onclick: () => {
         const v = fa5Eval(G.expr), r = inp.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
-        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero") return api.hint(J.msg);
+        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero" || J.code === "improper") return api.hint(J.msg);
         const p = G.P[0][G.prev.j];
         if (J.code !== "ok") {
           Object.keys(p).forEach(k => delete p[k]); Object.assign(p, G.prev.prev);
@@ -1015,7 +1015,7 @@ function fa5CardGame(body, api, opt) {
       const e = exprOf(R.op, R.ys[R.y], R.bs[R.b]), v = fa5Eval(e), inp = fa5In("계산 결과");
       area.append(h("div", { class: "fa5cl" }, h("span", { class: "jua" }, `${e} =`), inp, h("span", { class: "fa5tools" }, h("button", { class: "fa5on", onclick: () => {
         const r = inp.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
-        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero") return api.hint(J.msg);
+        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero" || J.code === "improper") return api.hint(J.msg);
         const ok = J.code === "ok";
         if (!ok) api.fail(J.msg || fa5Diag(e, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num)}. 통분하여 다시 계산해 봐요.`, `${e} = ${inp.text()}`);
         const rop = Math.random() < .5 ? "+" : "-", ry = YEL[Math.floor(Math.random() * 6)], rb = BLU[Math.floor(Math.random() * 6)], re = exprOf(rop, ry, rb), rv = fa5Eval(re);

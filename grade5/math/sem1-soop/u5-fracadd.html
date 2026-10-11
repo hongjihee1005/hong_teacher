@@ -890,7 +890,7 @@ html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!imp
 /* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
 html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
-</style><meta name="hj-list" content="[[&quot;u1-mixcalc.html&quot;, &quot;우리 반 현장 체험 학습 계획단&quot;, &quot;웹앱&quot;], [&quot;u2-factor.html&quot;, &quot;우리 반 학급 장터 준비단&quot;, &quot;웹앱&quot;], [&quot;u3-corresp.html&quot;, &quot;우리 반 환경 동아리 탐사대&quot;, &quot;웹앱&quot;], [&quot;u4-reduce.html&quot;, &quot;우리 반 과일 가게 놀이&quot;, &quot;웹앱&quot;], [&quot;u5-fracadd.html&quot;, &quot;우리 반 텃밭 가꾸기&quot;, &quot;웹앱&quot;], [&quot;u6-area.html&quot;, &quot;우리 반 꿈의 교실 설계도&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
+</style><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
 <div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></div>
@@ -1773,6 +1773,8 @@ function fa5Book(num, den) {
   if (num % den === 0) return num > 0 && den > 1 ? `${m} (=${imp})` : m;
   return num > den ? `${fa5Tk(m)} (=${imp})` : fa5Tk(m);
 }
+/* 끝 글자(분수는 분자) 받침에 맞는 '이에요/예요' */
+const fa5Ie = num => "013678".includes(String(num).slice(-1)) ? "이에요" : "예요";
 /* 식 계산: "[1 3/5]+[2 4/5]", "3−[1 3/4]", "4−[1 1/8]−[5/8]" (덧셈·뺄셈만) */
 function fa5Eval(e) {
   let rest = String(e).replace(/−/g, "-").replace(/\s+/g, " ").trim(), acc = null, op = "+";
@@ -2101,7 +2103,7 @@ function fa5Calc(body, api, items, opt = {}) {
       }
       const r = R.inp.get(), J = fa5Judge(r, it.a); given.push(R.inp.text());
       if (J.code === "ok") { R.inp.paint(true); return; }
-      if (J.code === "zero") { R.inp.paint(null); if (!hint) hint = J.msg; return; }
+      if (J.code === "zero" || J.code === "improper") { R.inp.paint(null); if (!hint) hint = J.msg; return; }
       R.inp.paint(false);
       if (!bad) bad = (it.why && it.why[fa5Key(r)]) || J.msg || fa5Diag(it.e || it.x, r) || opt.bad || "두 분수를 통분한 다음 다시 계산해 봐요.";
     });
@@ -2177,7 +2179,7 @@ function fa5Chain(body, api, rows, opt = {}) {
     let ok = true, hint = null; const given = [];
     ins.forEach(x => {
       if (x.exp != null) { const v = x.value.replace(/\s/g, ""), g = v === x.exp; x.style.borderColor = g ? "var(--ok)" : "var(--no)"; if (!g) ok = false; given.push(v || "-"); }
-      else { const J = fa5Judge(x.get(), x.target); given.push(x.text()); if (J.code === "ok") x.paint(true); else if (J.code === "zero") { x.paint(null); hint = hint || J.msg; } else { x.paint(false); ok = false; } }
+      else { const J = fa5Judge(x.get(), x.target); given.push(x.text()); if (J.code === "ok") x.paint(true); else if (J.code === "zero" || J.code === "improper") { x.paint(null); hint = hint || J.msg; } else { x.paint(false); ok = false; } }
     });
     chs.forEach(C => { [...C.el.children].forEach((b, i) => { b.classList.remove("good", "bad"); if (i === C.sel) b.classList.add(C.sel === C.a ? "good" : "bad"); }); if (C.sel !== C.a) ok = false; given.push(C.sel == null ? "-" : C.el.children[C.sel].textContent); });
     if (!ok) { api.fail(opt.bad || "빨간 칸을 다시 생각해 봐요.", given.join(",")); return false; }
@@ -2465,10 +2467,10 @@ function fa5Mixed(body, api, opt) {
       if (w !== x.best.w || n !== x.best.n || d !== x.best.d) { api.fail(x.g.kind === "max" ? "가장 큰 대분수는 자연수 부분에 가장 큰 수를 놓고, 남은 두 카드로 진분수를 만들어요." : "가장 작은 대분수는 자연수 부분에 가장 작은 수를 놓고, 남은 두 카드로 진분수를 만들어요.", given); return false; }
     }
     const J = fa5Judge(sum.get(), fa5Form(total.num, total.den));
-    if (J.code === "zero") { sum.paint(null); api.hint(J.msg); return false; }
+    if (J.code === "zero" || J.code === "improper") { sum.paint(null); api.hint(J.msg); return false; }
     if (J.code !== "ok") { sum.paint(false); api.fail(J.msg || fa5Diag(ex, sum.get()) || "두 대분수를 통분한 다음 자연수 부분끼리, 분수 부분끼리 계산해 봐요.", given); return false; }
     sum.paint(true); api.tryOnce();
-    api.done(given, opt.ok || `${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)} ${op > 0 ? "+" : "−"} ${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)} = ${fa5Book(total.num, total.den)}이에요!`);
+    api.done(given, opt.ok || `${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)} ${op > 0 ? "+" : "−"} ${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)} = ${fa5Book(total.num, total.den)}${fa5Ie(total.num)}!`);
     return true;
   };
   auto = autoRun(() => G.every(x => ["w", "n", "d"].every(k => x.slot[k] != null)) && sum.full(), () => G.map(x => val(x).join(",")).join("|") + "#" + sum.sig(), judge, 900);
@@ -2501,14 +2503,14 @@ function fa5Proper(body, api, opt) {
     v = fa5Eval(`[${mine.n}/${mine.d}]+[${friend.n}/${friend.d}]`); sum.tv = v;
     fBox.append(h("span", { class: "fa5tag" }, "친구가 만든 진분수"), h("span", { class: "jua" }, `[${friend.n}/${friend.d}]`));
     sumRow.classList.remove("hidden");
-    api.hint(`내 진분수는 [${n}/${d}], 친구의 진분수는 [${friend.n}/${friend.d}]이에요. 통분하여 더해 봐요. 다 쓰면 저절로 확인해요.`);
+    api.hint(`내 진분수는 [${n}/${d}], 친구의 진분수는 [${friend.n}/${friend.d}]${fa5Ie(friend.n)}. 통분하여 더해 봐요. 다 쓰면 저절로 확인해요.`);
   } }, "내 진분수 정하기");
   api.provide({ words: ["통분", "분모는 그대로", "분자끼리 더하기"], answers: ["예) [5/6]+[3/4] = [10/12]+[9/12] = [19/12] = [1 7/12]"] });
   body.append(h("p", { class: "fa5tip" }, `수 카드 ${cards.join(", ")} 중에서 2장을 골라 한 번씩만 사용하여 진분수를 만들어요. 카드를 누르고 분자나 분모 칸을 눌러요.`),
     h("div", { class: "fa5cards" }, cBtns), h("div", { class: "fa5cl" }, h("span", { class: "fa5tag" }, "내가 만든 진분수"), frac, h("span", { class: "fa5tools" }, fix)), fBox, sumRow, table);
   const auto = autoRun(() => !!mine && sum.full(), () => sum.sig(), () => {
     const e = `[${mine.n}/${mine.d}]+[${friend.n}/${friend.d}]`, r = sum.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
-    if (J.code === "zero") { sum.paint(null); api.hint(J.msg); return false; }
+    if (J.code === "zero" || J.code === "improper") { sum.paint(null); api.hint(J.msg); return false; }
     if (J.code !== "ok") { sum.paint(false); api.fail(J.msg || fa5Diag(e, r) || "두 분모의 곱이나 최소공배수를 공통분모로 하여 통분한 다음 분자끼리 더해 봐요.", `${e} = ${sum.text()}`); return false; }
     sum.paint(true); api.tryOnce();
     table.append(h("tr", {}, h("td", {}, `[${mine.n}/${mine.d}]`), h("td", {}, `[${friend.n}/${friend.d}]`), h("td", {}, fa5Book(v.num, v.den))));
@@ -2622,7 +2624,7 @@ function fa5Yut(body, api, opt) {
       ctrl.append(h("button", { class: "fa5on", onclick: () => { const [n, f] = roll(); G.dice = [n, f]; G.last = `나: 주사위 ${n}, ${f}`; G.phase = "pick"; render(); } }, "주사위 던지기"));
     } else if (G.phase === "pick") {
       const [n, f] = G.dice, mov = G.P[0].map((p, j) => [p, j]).filter(([p]) => !p.done);
-      info.textContent = `주사위 ${n}, 분수 주사위 ${f}이 나왔어요. 움직일 말을 골라요. (★ 칸에 멈추면 지름길로 가요)`;
+      info.textContent = `주사위 ${n}, 분수 주사위 ${f}${f === "♥" ? "가" : fa5J(`[${f.slice(1)}]`, "이가").slice(-1)} 나왔어요. 움직일 말을 골라요. (★ 칸에 멈추면 지름길로 가요)`;
       mov.forEach(([p, j]) => ctrl.append(h("button", { onclick: () => {
         const prev = Object.assign({}, p), q = move(p, n); Object.assign(p, q); G.prev = { j, prev };
         if (q.done) { G.log.push(`나: 주사위 ${n} → 말 ${j + 1}이 다 돌았어요!`); return endTurn(0, false); }
@@ -2635,12 +2637,12 @@ function fa5Yut(body, api, opt) {
       ctrl.append(h("span", { class: "jua" }, `${G.expr} =`), inp);
       const calcAuto = autoRun(() => G.phase === "calc" && inp.full(), () => inp.sig(), () => {
         const r = inp.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
-        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero") { api.hint(J.msg); return false; }
+        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero" || J.code === "improper") { api.hint(J.msg); return false; }
         const p = G.P[0][G.prev.j];
         if (J.code !== "ok") {
           Object.keys(p).forEach(k => delete p[k]); Object.assign(p, G.prev.prev);
           G.log.push(`나: ${G.expr} = ${inp.text()} ✗ → 말을 원래 칸으로 되돌려요 (바른 답 ${fa5Book(v.num, v.den)})`);
-          api.fail(J.msg || fa5Diag(G.expr, r) || `바른 답은 ${fa5Book(v.num, v.den)}이에요. 두 분수를 통분해서 다시 계산해 봐요. 말은 원래 칸으로 돌아가요.`, `${G.expr} = ${inp.text()}`);
+          api.fail(J.msg || fa5Diag(G.expr, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num)}. 두 분수를 통분해서 다시 계산해 봐요. 말은 원래 칸으로 돌아가요.`, `${G.expr} = ${inp.text()}`);
           endTurn(0, false); return true;
         }
         G.ok++; const got = capture(0, node(p));
@@ -2701,9 +2703,9 @@ function fa5CardGame(body, api, opt) {
       const cur = R;
       const a2 = autoRun(() => R === cur && inp.full(), () => inp.sig(), () => {
         const r = inp.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
-        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero") { api.hint(J.msg); return false; }
+        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero" || J.code === "improper") { api.hint(J.msg); return false; }
         const ok = J.code === "ok";
-        if (!ok) api.fail(J.msg || fa5Diag(e, r) || `바른 답은 ${fa5Book(v.num, v.den)}이에요. 통분하여 다시 계산해 봐요.`, `${e} = ${inp.text()}`);
+        if (!ok) api.fail(J.msg || fa5Diag(e, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num)}. 통분하여 다시 계산해 봐요.`, `${e} = ${inp.text()}`);
         const rop = Math.random() < .5 ? "+" : "-", ry = YEL[Math.floor(Math.random() * 6)], rb = BLU[Math.floor(Math.random() * 6)], re = exprOf(rop, ry, rb), rv = fa5Eval(re);
         if (ok) score[0]++; score[1]++;
         const cmp = ok ? v.num * rv.den - rv.num * v.den : -1;
@@ -2711,7 +2713,7 @@ function fa5CardGame(body, api, opt) {
         rows.push([`${e} = ${ok ? fa5Book(v.num, v.den) + " ✓" : inp.text() + " ✗"}${cmp > 0 ? " (+1 큼)" : ""}`, `${re} = ${fa5Book(rv.num, rv.den)} ✓${cmp < 0 ? " (+1 큼)" : ""}`]);
         round++;
         if (round >= ROUNDS && !reported) { reported = true; drawTable(); api.done(rows.map(r => r[0]).join(" / "), `${ROUNDS}판을 모두 했어요! 나 ${score[0]}점, 로봇 ${score[1]}점이에요.`); }
-        else if (ok) api.hint(`맞았어요! 로봇은 ${re} = ${fa5Book(rv.num, rv.den)}이에요.`);
+        else if (ok) api.hint(`맞았어요! 로봇은 ${re} = ${fa5Book(rv.num, rv.den)}${fa5Ie(rv.num)}.`);
         start(); return true;
       }, 900);
       fa5Hook(inp, a2);
@@ -2841,14 +2843,14 @@ const LESSONS = [
           ans: "나는 두 분모의 최소공배수를 공통분모로 할래요. 수가 작아서 계산이 쉽고, 계산한 결과를 약분하지 않아도 되기 때문이에요. (두 분모의 곱이 편하다고 써도 까닭이 맞으면 좋아요.)" }) },
     { name: "약속하기 — 분모가 다른 분수의 덧셈", inst: "물 주기에서 찾은 방법을 약속해요.", hints: ["분모가 다르면 먼저 분모를 같게 만들어요."],
       render: (b, a) => blanks(b, a, ["분모가 다른 분수의 덧셈은 분수를 ", { o: ["통분한 후", "약분한 후"], a: 0 }, " 분모는 ", { o: ["그대로 쓰고", "분모끼리 더하고"], a: 0 }, " 분자끼리 ", { o: ["더합니다", "곱합니다"], a: 0 }, "."], { ok: "분모가 다른 분수의 덧셈은 분수를 통분한 후 분모는 그대로 쓰고 분자끼리 더합니다." }) },
-    { name: "확인하기 — 텃밭 물 계산하기", inst: "계산해 보세요. 약분하지 않은 분수로 써도 맞아요.", hints: ["12와 8의 최소공배수는 24, 7과 3의 최소공배수는 21이에요.", "[3/5]를 분모가 20인 분수로 나타내면 [12/20]예요."],
+    { name: "확인하기 — 텃밭 물 계산하기", inst: "계산해 보세요. 약분하지 않은 분수로 써도 맞아요.", hints: ["12와 8의 최소공배수는 24, 7과 3의 최소공배수는 21이에요.", "[3/5]을 분모가 20인 분수로 나타내면 [12/20]예요."],
       render: (b, a) => fa5Calc(b, a, [{ e: "[5/12]+[3/8]", a: "19/24", den: 24 }, { e: "[2/7]+[1/3]", a: "13/21", den: 21 },
         { q: "예나는 방울토마토 칸에 액체 비료 [1/4] L와 물 [3/5] L를 섞어 뿌렸어요. 뿌린 것은 모두 몇 L일까요?", x: "[1/4]+[3/5]", a: "17/20", unit: "L", lab: "[1/4]+[3/5] =", why: { "4/9": "분모는 분모끼리, 분자는 분자끼리 더하면 안 돼요. 먼저 통분해요.", "4/20": "분모만 20으로 바꾸고 분자는 그대로 두었어요. [1/4] = [5/20], [3/5] = [12/20]예요." } }]) }
   ],
   challenge: { inst: "★ 도전 — 텃밭 퀴즈를 풀어 보세요.", hints: ["[1/10]이 3개인 수는 [3/10], [1/15]이 4개인 수는 [4/15]예요.", "[5/8]를 분모가 16인 분수로 나타내면 [10/16]이에요."],
     render: (b, a) => fa5Calc(b, a, [
       { q: "태오: “[1/10]이 3개인 수야.” 지안: “[1/15]이 4개인 수야.” 두 사람이 말한 분수의 합은?", x: "[3/10]+[4/15]", a: "17/30", lab: "합" },
-      { q: "[3/16], [1/4], [5/8] 중에서 가장 큰 분수와 가장 작은 분수의 합은?", x: "[5/8]+[3/16]", a: "13/16", lab: "합", why: { "7/16": "[1/4]는 가장 작은 분수가 아니에요. 통분하면 [1/4] = [4/16]이고, [3/16]이 더 작아요.", "14/16": "[1/4]는 가장 큰 분수가 아니에요. [5/8] = [10/16]이 가장 커요." } }]) }
+      { q: "[3/16], [1/4], [5/8] 중에서 가장 큰 분수와 가장 작은 분수의 합은?", x: "[5/8]+[3/16]", a: "13/16", lab: "합", why: { "7/16": "[1/4]은 가장 큰 분수가 아니에요. 통분하면 [1/4] = [4/16], [5/8] = [10/16]이라서 [5/8]이 가장 커요.", "14/16": "[1/4]은 가장 작은 분수가 아니에요. 통분하면 [1/4] = [4/16]이고, [3/16]이 더 작아요." } }]) }
 },
 {
   id: "s3", no: 3, title: "거름 뿌리기 ― 진분수의 덧셈(2)", soop: "개념 구축하기(O)",
@@ -2860,11 +2862,11 @@ const LESSONS = [
         ["[5/6] = ", { q: [null, "?10", "12"] }],
         ["[3/4] = ", { q: [null, "?9", "12"] }],
         ["[5/6]+[3/4] = ", { q: [null, "10", "12"] }, "+", { q: [null, "9", "12"] }, " = ", { q: [null, "?19", "12"] }, " = ", { q: ["?1", "?7", "12"] }]], ok: "뿌린 거름은 모두 [1 7/12] kg이에요. 합이 1보다 커서 대분수로 나타냈어요." }) },
-    { name: "그려 보기 — 두 가지 방법으로 더하기", inst: "예나네 모둠은 오이 칸에 거름을 [4/9] kg, 가지 칸에 [5/6] kg 뿌렸어요. [4/9]+[5/6]를 두 가지 방법으로 계산해 보세요.", hints: ["9×6 = 54, 9와 6의 최소공배수는 18이에요.", "[69/54] = [1 15/54]예요. 약분하면 [1 5/18]이에요."],
+    { name: "그려 보기 — 두 가지 방법으로 더하기", inst: "예나네 모둠은 오이 칸에 거름을 [4/9] kg, 가지 칸에 [5/6] kg 뿌렸어요. [4/9]+[5/6]를 두 가지 방법으로 계산해 보세요.", hints: ["9×6 = 54, 9와 6의 최소공배수는 18이에요.", "[69/54] = [1 15/54]예요. 약분하면 [1 5/18]예요."],
       render: (b, a) => fa5Chain(b, a, [
         { t: "방법 1 · 두 분모의 곱", p: ["[4/9]+[5/6] = ", { q: [null, ["4", "×", "?6"], ["9", "×", "?6"]] }, "+", { q: [null, ["5", "×", "?9"], ["6", "×", "?9"]] }, " = ", { q: [null, "?24", "54"] }, "+", { q: [null, "?45", "54"] }, " = ", { q: [null, "?69", "54"] }, " = ", { q: ["?1", "?15", "54"] }] },
         { t: "방법 2 · 최소공배수", p: ["[4/9]+[5/6] = ", { q: [null, ["4", "×", "?2"], ["9", "×", "?2"]] }, "+", { q: [null, ["5", "×", "?3"], ["6", "×", "?3"]] }, " = ", { q: [null, "?8", "18"] }, "+", { q: [null, "?15", "18"] }, " = ", { q: [null, "?23", "18"] }, " = ", { q: ["?1", "?5", "18"] }] }],
-        { ok: "[1 15/54]를 약분하면 [1 5/18]이에요. 두 방법의 답은 크기가 같아요." }) },
+        { ok: "[1 15/54]를 약분하면 [1 5/18]예요. 두 방법의 답은 크기가 같아요." }) },
     { name: "말해 보기 — 지안이의 계산 고치기", inst: "지안이가 [5/8]+[3/4]을 잘못 계산했어요. 잘못된 까닭을 고르고 옳게 계산해 보세요.", hints: ["[3/4]의 분모 4에 2를 곱했으면 분자 3에도 2를 곱해야 해요.", "[3/4] = [6/8]이에요."],
       render: thenWhy((b, a) => fa5Chain(b, a, [
         ["지안이의 계산: [5/8]+[3/4] = [5/8]+[3/8] = [8/8] = 1"],
@@ -2877,7 +2879,7 @@ const LESSONS = [
       render: (b, a) => blanks(b, a, ["분모가 다른 진분수의 덧셈은 두 분모의 ", { o: ["곱이나 최소공배수", "합이나 차"], a: 0 }, "를 공통분모로 하여 통분한 후 분모는 그대로 쓰고 분자끼리 더합니다. 합이 가분수이면 ", { o: ["대분수", "진분수"], a: 0 }, "로 나타낼 수 있어요."], { ok: "가분수로 답해도, 약분하지 않아도 맞아요. 대분수로 나타내면 크기를 알기 쉬워요." }) },
     { name: "확인하기 — 거름 계산하기", inst: "계산해 보세요. 가분수로 써도, 대분수로 써도 맞아요.", hints: ["4와 10의 최소공배수는 20, 9와 12의 최소공배수는 36이에요.", "크기를 비교할 때는 두 식을 각각 계산한 다음 통분하여 비교해요."],
       render: (b, a) => fa5Calc(b, a, [{ e: "[3/4]+[9/10]", a: "1 13/20", den: 20 }, { e: "[8/9]+[5/12]", a: "1 11/36", den: 36 }, { e: "[5/7]+[1/2]", a: "1 3/14", den: 14 },
-        { q: "계산 결과의 크기를 비교해요.", e: "[7/8]+[1/3] ○ [5/6]+[3/10]", pick: [">", "=", "<"], a: 0, why: { "2": "[7/8]+[1/3] = [29/24] = [1 5/24], [5/6]+[3/10] = [34/30] = [1 2/15]이에요. 분수 부분 [5/24]와 [2/15]를 통분하여 비교해요.", "1": "두 식을 계산해 보면 값이 달라요." } }]) }
+        { q: "계산 결과의 크기를 비교해요.", e: "[7/8]+[1/3] ○ [5/6]+[3/10]", pick: [">", "=", "<"], a: 0, why: { "2": "[7/8]+[1/3] = [29/24] = [1 5/24], [5/6]+[3/10] = [34/30] = [1 2/15]예요. 분수 부분 [5/24]와 [2/15]를 통분하여 비교해요.", "1": "두 식을 계산해 보면 값이 달라요." } }]) }
   ],
   challenge: { inst: "★ 도전 — 텃밭 이름표에 붙일 수 카드 3, 4, 5, 6, 8 중에서 2장을 골라 한 번씩만 사용하여 진분수를 만들고, 친구가 만든 진분수와의 합을 구해 보세요.", hints: ["진분수는 분자가 분모보다 작아요.", "두 분모의 곱이나 최소공배수로 통분하여 더해요."],
     render: (b, a) => fa5Proper(b, a, { cards: [3, 4, 5, 6, 8] }) }
@@ -2889,7 +2891,7 @@ const LESSONS = [
   steps: [
     { name: "만져 보기 — 물 색칠하고 모으기", inst: "민재는 물뿌리개로 텃밭에 물을 [1 3/4] L 준 다음, 흙이 말라 보여서 [2 1/2] L를 더 주었어요. 먼저 어림한 다음, 1 L를 4칸으로 나눈 막대에 두 양을 색칠하고 모아 보세요.", hints: ["[2 1/2] = [2 2/4]예요. 한 칸은 [1/4] L예요.", "‘모으기’를 누르면 자연수 부분끼리, 분수 부분끼리 모여요."],
       render: (b, a) => fa5Fill(b, a, { d: 4, A: { name: "처음", v: "1 3/4" }, B: { name: "더", v: "2 1/2" },
-        est: { q: "민재가 준 물은 4 L보다 많을까요, 적을까요?", o: ["4 L보다 많아요", "4 L보다 적어요"], a: 0, why: { "1": "[1 3/4]은 [1 1/2]보다 커요. [1 1/2]+[2 1/2]은 4예요." } , ok: "[1 3/4]은 [1 1/2]보다 크고 여기에 [2 1/2]를 더하므로 4 L는 넘을 것 같아요." },
+        est: { q: "민재가 준 물은 4 L보다 많을까요, 적을까요?", o: ["4 L보다 많아요", "4 L보다 적어요"], a: 0, why: { "1": "[1 3/4]은 [1 1/2]보다 커요. [1 1/2]+[2 1/2]은 4예요." } , ok: "[1 3/4]은 [1 1/2]보다 크고 여기에 [2 1/2]을 더하므로 4 L는 넘을 것 같아요." },
         askCalc: [{ e: "[1 3/4]+[2 1/2]", a: "4 1/4", unit: "L" }], ok: "민재가 준 물은 모두 [4 1/4] L예요. 어림한 대로 4 L보다 조금 많아요." }) },
     { name: "그려 보기 — 두 가지 방법으로 더하기", inst: "하린이네 모둠은 상추 모종을 심는 데 흙을 [2 1/3]포대, 거름을 섞은 흙을 [1 3/5]포대 썼어요. [2 1/3]+[1 3/5]을 두 가지 방법으로 계산해 보세요.", hints: ["방법 1: 3과 5의 최소공배수 15로 통분한 다음 자연수끼리, 분수끼리 더해요.", "방법 2: [2 1/3] = [7/3], [1 3/5] = [8/5]이에요."],
       render: (b, a) => fa5Chain(b, a, [
@@ -2935,7 +2937,7 @@ const LESSONS = [
         { t: "방법 1 · 두 분모의 곱", p: ["[5/6]−[3/8] = ", { q: [null, ["5", "×", "?8"], ["6", "×", "?8"]] }, "−", { q: [null, ["3", "×", "?6"], ["8", "×", "?6"]] }, " = ", { q: [null, "?40", "48"] }, "−", { q: [null, "?18", "48"] }, " = ", { q: [null, "?22", "48"] }] },
         { t: "방법 2 · 최소공배수", p: ["[5/6]−[3/8] = ", { q: [null, ["5", "×", "?4"], ["6", "×", "?4"]] }, "−", { q: [null, ["3", "×", "?3"], ["8", "×", "?3"]] }, " = ", { q: [null, "?20", "24"] }, "−", { q: [null, "?9", "24"] }, " = ", { q: [null, "?11", "24"] }] }],
         { ok: "[22/48]를 약분하면 [11/24]이에요. 최소공배수로 통분하면 약분할 필요가 없어요." }) },
-    { name: "말해 보기 — 태오와 다른 방법", inst: "태오는 [7/10]−[1/4]를 두 분모의 곱으로 통분해 계산했어요. 태오와 다른 방법으로 계산해 보세요.", hints: ["10과 4의 최소공배수는 20이에요.", "[7/10] = [14/20], [1/4] = [5/20]예요."],
+    { name: "말해 보기 — 태오와 다른 방법", inst: "태오는 [7/10]−[1/4]을 두 분모의 곱으로 통분해 계산했어요. 태오와 다른 방법으로 계산해 보세요.", hints: ["10과 4의 최소공배수는 20이에요.", "[7/10] = [14/20], [1/4] = [5/20]예요."],
       render: thenWhy((b, a) => fa5Chain(b, a, [
         { t: "태오의 방법", p: ["[7/10]−[1/4] = [28/40]−[10/40] = [18/40] = [9/20]"] },
         { t: "다른 방법", p: ["[7/10]−[1/4] = ", { q: [null, ["7", "×", "?2"], ["10", "×", "?2"]] }, "−", { q: [null, ["1", "×", "?5"], ["4", "×", "?5"]] }, " = ", { q: [null, "?14", "20"] }, "−", { q: [null, "?5", "20"] }, " = ", { q: [null, "?9", "20"] }] }],
@@ -2948,7 +2950,7 @@ const LESSONS = [
       render: (b, a) => fa5Calc(b, a, [{ e: "[7/9]−[1/6]", a: "11/18", den: 18 }, { e: "[4/5]−[3/7]", a: "13/35", den: 35 },
         { q: "비가 온 뒤 상추 칸 물받이에는 빗물이 [5/6] L, 고추 칸 물받이에는 [3/4] L 모였어요. 상추 칸 물받이에 빗물이 몇 L 더 많이 모였을까요?", x: "[5/6]−[3/4]", a: "1/12", unit: "L", lab: "[5/6]−[3/4] =", why: { "2/2": "분모는 분모끼리, 분자는 분자끼리 빼면 안 돼요. 먼저 통분해요." } }]) }
   ],
-  challenge: { inst: "★ 도전 — 지안이가 비료 계산을 하다가 실수했어요. 어떤 수에서 [1/4]를 빼야 하는데 잘못하여 더했더니 [11/12]이 되었어요.", hints: ["어떤 수 + [1/4] = [11/12]이에요. 어떤 수는 [11/12]−[1/4]예요.", "바르게 계산하려면 어떤 수에서 [1/4]를 빼요."],
+  challenge: { inst: "★ 도전 — 지안이가 비료 계산을 하다가 실수했어요. 어떤 수에서 [1/4]을 빼야 하는데 잘못하여 더했더니 [11/12]이 되었어요.", hints: ["어떤 수 + [1/4] = [11/12]이에요. 어떤 수는 [11/12]−[1/4]이에요.", "바르게 계산하려면 어떤 수에서 [1/4]을 빼요."],
     render: (b, a) => fa5Calc(b, a, [
       { q: "어떤 수는 얼마일까요?", x: "[11/12]−[1/4]", a: "8/12", lab: "어떤 수", den: 12 },
       { q: "바르게 계산하면 얼마일까요?", x: "[8/12]−[1/4]", a: "5/12", lab: "바르게 계산한 값", den: 12 }], { ok: "어떤 수는 [8/12]([2/3])이고, 바르게 계산하면 [5/12]예요." }) }
@@ -2970,11 +2972,11 @@ const LESSONS = [
         { t: "방법 1 · 자연수끼리, 분수끼리", p: ["[4 5/6]−[2 3/8] = ", { q: ["4", "?20", "24"] }, "−", { q: ["2", "?9", "24"] }, " = (", { i: "4" }, "−", { i: "2" }, ")+(", { q: [null, "20", "24"] }, "−", { q: [null, "9", "24"] }, ") = ", { q: ["?2", "?11", "24"] }] },
         { t: "방법 2 · 가분수로", p: ["[4 5/6]−[2 3/8] = ", { q: [null, "?29", "6"] }, "−", { q: [null, "?19", "8"] }, " = ", { q: [null, "?116", "24"] }, "−", { q: [null, "?57", "24"] }, " = ", { q: [null, "?59", "24"] }, " = ", { q: ["?2", "?11", "24"] }] }],
         { ok: "두 방법 모두 [2 11/24] m예요. 방법 1은 분수 부분의 계산이 간단하고, 방법 2는 자연수 부분과 분수 부분을 따로 계산하지 않아도 돼요." }) },
-    { name: "말해 보기 — 민재의 계산 고치기", inst: "민재가 [3 2/3]−[1 1/4]를 잘못 계산했어요. 민재의 계산: [3 2/3]−[1 1/4] = [3 8/12]−[1 3/12] = 2−[5/12] = [1 7/12]. 잘못된 까닭을 고르고 옳게 계산해 보세요.", hints: ["[3 8/12]은 3과 [8/12]을 더한 수예요.", "(3−1)+([8/12]−[3/12])을 계산해요."],
+    { name: "말해 보기 — 민재의 계산 고치기", inst: "민재가 [3 2/3]−[1 1/4]을 잘못 계산했어요. 민재의 계산: [3 2/3]−[1 1/4] = [3 8/12]−[1 3/12] = 2−[5/12] = [1 7/12]. 잘못된 까닭을 고르고 옳게 계산해 보세요.", hints: ["[3 8/12]은 3과 [8/12]을 더한 수예요.", "(3−1)+([8/12]−[3/12])을 계산해요."],
       render: thenWhy((b, a) => fa5Chain(b, a, [
         ["까닭: ", { c: ["자연수끼리 뺀 결과와 분수끼리 뺀 결과를 더해야 하는데 뺐어요", "통분을 잘못했어요"], a: 0 }],
         { t: "옳은 계산", p: ["[3 2/3]−[1 1/4] = [3 8/12]−[1 3/12] = ", { i: "2" }, "+", { q: [null, "?5", "12"] }, " = ", { q: ["?2", "?5", "12"] }] }],
-        { ok: "[3 2/3]−[1 1/4] = [2 5/12]이에요. 자연수끼리 뺀 2와 분수끼리 뺀 [5/12]을 더해요." }),
+        { ok: "[3 2/3]−[1 1/4] = [2 5/12]예요. 자연수끼리 뺀 2와 분수끼리 뺀 [5/12]를 더해요." }),
         { q: "자연수끼리 뺀 결과와 분수끼리 뺀 결과를 더해야 하는 까닭을 써 봐요.", ph: "[3 8/12]은 3과 [8/12]을 ~", help: ["① 대분수 [3 8/12]이 어떤 두 수를 합한 수인지 생각해요. → ② 각각 뺀 두 결과를 합해야 처음 수의 차가 되는지 생각해요.", "‘대분수는 자연수와 분수를 ~ 수라서, 나누어 뺀 두 결과를 ~해야 해요.’ 꼴로 써요."],
           ans: "대분수 [3 8/12]은 3과 [8/12]을 더한 수예요. 그래서 3−1과 [8/12]−[3/12]을 각각 구한 다음 두 결과를 더해야 처음 두 수의 차가 돼요." }) },
     { name: "약속하기 — 대분수의 뺄셈 방법", inst: "분수 부분끼리 뺄 수 있는 대분수의 뺄셈 방법을 정리해요.", hints: ["두 방법 모두 먼저 통분해요."],
@@ -3078,14 +3080,14 @@ const LESSONS = [
     { name: "확인하기 — 이기는 전략 찾기", inst: "놀이에서 나온 카드로 생각해 보세요.", hints: ["[4/5]와 [7/9]은 모두 [1/2]보다 커요.", "[3/7]은 [3/8]보다 커요. 더 큰 수를 빼면 차는 작아져요."],
       render: thenWhy((b, a) => quiz(b, a, [
         { q: "[4/5]+[7/9]은 1보다 클까요, 작을까요?", o: ["1보다 커요", "1보다 작아요"], a: 0, why: { "1": "[4/5]와 [7/9]은 모두 [1/2]보다 커요. [1/2]보다 큰 수 두 개를 더하면 1보다 커요." } },
-        { q: "[1 2/3]−[5/6]은?", o: ["[5/6]", "[1 1/6]", "[3/6]"], a: 0, why: { "1": "[1 2/3] = [1 4/6]예요. [4/6]에서 [5/6]는 뺄 수 없으니 1만큼을 [6/6]으로 바꾸어요.", "2": "분모는 그대로 두고 통분하여 분자끼리 빼요. [10/6]−[5/6]예요." } },
+        { q: "[1 2/3]−[5/6]는?", o: ["[5/6]", "[1 1/6]", "[3/6]"], a: 0, why: { "1": "[1 2/3] = [1 4/6]예요. [4/6]에서 [5/6]는 뺄 수 없으니 1만큼을 [6/6]으로 바꾸어요.", "2": "분모는 그대로 두고 통분하여 분자끼리 빼요. [10/6]−[5/6]예요." } },
         { q: "[3/4]−[3/7]과 [3/4]−[3/8] 중 차가 더 큰 것은?", o: ["[3/4]−[3/7]", "[3/4]−[3/8]"], a: 1, why: { "0": "[3/7]은 [3/8]보다 커요. 더 큰 수를 빼면 차는 더 작아져요." } }], { ok: "[4/5]+[7/9] = [1 26/45], [1 2/3]−[5/6] = [5/6], [3/4]−[3/8] = [3/8]이 [3/4]−[3/7] = [9/28]보다 커요." }),
         { q: "카드 놀이에서 결과가 큰 사람이 1점을 더 얻으려면 덧셈과 뺄셈 중 무엇을 고르면 좋을까요?", ph: "~을 고르면 좋아요. 왜냐하면 ~", help: ["① 두 수를 더한 결과와 뺀 결과 중 어느 쪽이 더 큰지 생각해요. → ② 그 까닭을 함께 써요.", "‘~을 고르면 좋아요. 왜냐하면 ~하면 결과가 ~지기 때문이에요.’ 꼴로 써요."],
           ans: "덧셈을 고르면 좋아요. 두 수를 더하면 결과가 두 수보다 커지고, 빼면 큰 수보다 작아지기 때문이에요." }) }
   ],
-  challenge: { inst: "★ 도전 — 윷판에서 나올 수 있는 계산을 해 보세요.", hints: ["[2 1/3]−[3/4]은 분수 부분끼리 뺄 수 없어요.", "8과 5의 최소공배수는 40이에요."],
+  challenge: { inst: "★ 도전 — 윷판에서 나올 수 있는 계산을 해 보세요.", hints: ["[1 1/4]−[1/3]은 분수 부분끼리 뺄 수 없어요. [1 3/12] = [15/12]이에요.", "8과 5의 최소공배수는 40이에요."],
     render: (b, a) => fa5Calc(b, a, [
-      { q: "도착한 칸 [2 1/3], 분수 주사위 −[3/4]", e: "[2 1/3]−[3/4]", a: "1 7/12", den: 12 },
+      { q: "도착한 칸 [1 1/4], 분수 주사위 −[1/3]", e: "[1 1/4]−[1/3]", a: "11/12", den: 12 },
       { q: "도착한 칸 [1 7/8], 분수 주사위 +[2/5]", e: "[1 7/8]+[2/5]", a: "2 11/40", den: 40 }], { ok: "윷판 계산을 정확하게 했어요!" }) }
 },
 {
@@ -3125,8 +3127,6 @@ window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.stu
  if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});}})();
 </script>
 <a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden>🏠 홈</a><style>#hj-home{position:fixed;left:max(12px,env(safe-area-inset-left,0px));bottom:max(12px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:4px;font:700 18px/1 "Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;color:#1F2A44;background:#fff;border:3px solid #1F2A44;border-radius:999px;padding:9px 16px;text-decoration:none;box-shadow:0 3px 10px rgba(0,0,0,.18);opacity:.92}#hj-home[hidden]{display:none}#hj-home:hover,#hj-home:focus-visible{opacity:1;outline:3px solid #2F74E0;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}}:root[data-theme="dark"] #hj-home{background:#22304C;color:#F2F5FB;border-color:#B7C3DB}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
-<style id="hj-actbar">.work > div .actions{bottom:var(--hjbar,0px)}</style>
-<script id="hj-actbar-js">(function(){let w=false;const f=()=>{if(w)return;w=true;requestAnimationFrame(()=>{w=false;const a=document.querySelector(".work > .actions");document.documentElement.style.setProperty("--hjbar",(a?a.offsetHeight:0)+"px");});};["scroll","resize","click","input","pointerup","load"].forEach(e=>window.addEventListener(e,f,{passive:true}));f();})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
 var I={stop:'<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>',play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
@@ -3678,6 +3678,8 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
  function wire(){document.querySelectorAll('.frameline input:not([data-hjsz])').forEach(function(i){i.dataset.hjsz='1';i.addEventListener('input',function(){size(i)});size(i)})}
  document.addEventListener('click',function(e){if(e.target.closest('.chips,.chip,button'))setTimeout(function(){document.querySelectorAll('.frameline input').forEach(size)},30)},true);
  wire();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(wire,30)}).observe(document.body,{childList:true,subtree:true});addEventListener('resize',function(){document.querySelectorAll('.frameline input').forEach(size)})})();
-</script><!--/hj-cicons--></body>
+</script><!--/hj-cicons--><style id="hj-actbar">.work > div .actions{bottom:var(--hjbar,0px)}</style>
+<script id="hj-actbar-js">(function(){let w=false;const f=()=>{if(w)return;w=true;requestAnimationFrame(()=>{w=false;const a=document.querySelector(".work > .actions");document.documentElement.style.setProperty("--hjbar",(a?a.offsetHeight:0)+"px");});};["scroll","resize","click","input","pointerup","load"].forEach(e=>window.addEventListener(e,f,{passive:true}));f();})();</script>
+</body>
 </html>
 

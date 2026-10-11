@@ -858,7 +858,7 @@ html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!imp
 /* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
 html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
-</style><meta name="hj-list" content="[[&quot;u1-mixcalc.html&quot;, &quot;자연수의 혼합 계산&quot;, &quot;웹앱&quot;], [&quot;u2-factor.html&quot;, &quot;약수와 배수&quot;, &quot;웹앱&quot;], [&quot;u3-corresp.html&quot;, &quot;대응 관계&quot;, &quot;웹앱&quot;], [&quot;u4-reduce.html&quot;, &quot;약분과 통분&quot;, &quot;웹앱&quot;], [&quot;u5-fracadd.html&quot;, &quot;분수의 덧셈과 뺄셈&quot;, &quot;웹앱&quot;], [&quot;u6-area.html&quot;, &quot;다각형의 둘레와 넓이&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
+</style><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
 <div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
@@ -1427,6 +1427,8 @@ function fa5Book(num, den) {
   if (num % den === 0) return num > 0 && den > 1 ? `${m} (=${imp})` : m;
   return num > den ? `${fa5Tk(m)} (=${imp})` : fa5Tk(m);
 }
+/* 끝 글자(분수는 분자) 받침에 맞는 '이에요/예요' */
+const fa5Ie = num => "013678".includes(String(num).slice(-1)) ? "이에요" : "예요";
 /* 식 계산: "[1 3/5]+[2 4/5]", "3−[1 3/4]", "4−[1 1/8]−[5/8]" (덧셈·뺄셈만) */
 function fa5Eval(e) {
   let rest = String(e).replace(/−/g, "-").replace(/\s+/g, " ").trim(), acc = null, op = "+";
@@ -1732,7 +1734,7 @@ function fa5Calc(body, api, items, opt = {}) {
       }
       const r = R.inp.get(), J = fa5Judge(r, it.a, R.den); given.push(R.inp.text());
       if (J.code === "ok") { R.inp.paint(true); return; }
-      if (J.code === "diffden" || J.code === "zero") { R.inp.paint(null); if (!hint) hint = J.msg; return; }
+      if (J.code === "diffden" || J.code === "zero" || J.code === "improper") { R.inp.paint(null); if (!hint) hint = J.msg; return; }
       R.inp.paint(false);
       if (!bad) bad = (it.why && it.why[fa5Key(r)]) || J.msg || fa5Diag(it.e || it.x, r) || opt.bad || `${fa5J(`[1/${R.den}]`, "이가")} 몇 개인지 세어 다시 계산해 봐요.`;
     });
@@ -1798,7 +1800,7 @@ function fa5Chain(body, api, rows, opt = {}) {
     let ok = true, hint = null; const given = [];
     ins.forEach(x => {
       if (x.exp != null) { const v = x.value.replace(/\s/g, ""), g = v === x.exp; x.style.borderColor = g ? "var(--ok)" : "var(--no)"; if (!g) ok = false; given.push(v || "-"); }
-      else { const J = fa5Judge(x.get(), x.target, x.den); given.push(x.text()); if (J.code === "ok") x.paint(true); else if (J.code === "diffden" || J.code === "zero") { x.paint(null); hint = hint || J.msg; } else { x.paint(false); ok = false; } }
+      else { const J = fa5Judge(x.get(), x.target, x.den); given.push(x.text()); if (J.code === "ok") x.paint(true); else if (J.code === "diffden" || J.code === "zero" || J.code === "improper") { x.paint(null); hint = hint || J.msg; } else { x.paint(false); ok = false; } }
     });
     chs.forEach(C => { [...C.el.children].forEach((b, i) => { b.classList.remove("good", "bad"); if (i === C.sel) b.classList.add(C.sel === C.a ? "good" : "bad"); }); if (C.sel !== C.a) ok = false; given.push(C.sel == null ? "-" : C.el.children[C.sel].textContent); });
     if (!ok) return api.fail(opt.bad || "빨간 칸을 다시 생각해 봐요.", given.join(","));
@@ -2089,10 +2091,10 @@ function fa5Mixed(body, api, opt) {
         if (w !== x.best.w || n !== x.best.n || d !== x.best.d) return api.fail(x.g.kind === "max" ? "가장 큰 대분수는 자연수 부분에 가장 큰 수를 놓고, 남은 두 카드로 진분수를 만들어요." : "가장 작은 대분수는 자연수 부분에 가장 작은 수를 놓고, 남은 두 카드로 진분수를 만들어요.", given);
       }
       const J = fa5Judge(sum.get(), fa5Form(total.num, total.den));
-      if (J.code === "zero") { sum.paint(null); return api.hint(J.msg); }
+      if (J.code === "zero" || J.code === "improper") { sum.paint(null); return api.hint(J.msg); }
       if (J.code !== "ok") { sum.paint(false); return api.fail(J.msg || fa5Diag(`${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)}${op > 0 ? "+" : "-"}${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)}`, sum.get()) || "두 대분수를 통분한 다음 자연수 부분끼리, 분수 부분끼리 계산해 봐요.", given); }
       sum.paint(true); api.tryOnce();
-      api.done(given, opt.ok || `${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)} ${op > 0 ? "+" : "−"} ${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)} = ${fa5Book(total.num, total.den)}이에요!`);
+      api.done(given, opt.ok || `${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)} ${op > 0 ? "+" : "−"} ${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)} = ${fa5Book(total.num, total.den)}${fa5Ie(total.num)}!`);
     } }, "확인하기")));
 }
 
@@ -2121,7 +2123,7 @@ function fa5Proper(body, api, opt) {
     friend = pool[Math.floor(Math.random() * pool.length)] || all.find(f => f.d !== d);
     fBox.append(h("span", { class: "fa5tag" }, "친구가 만든 진분수"), h("span", { class: "jua" }, `[${friend.n}/${friend.d}]`));
     sumRow.classList.remove("hidden");
-    api.hint(`내 진분수는 [${n}/${d}], 친구의 진분수는 [${friend.n}/${friend.d}]이에요. 통분하여 더해 봐요.`);
+    api.hint(`내 진분수는 [${n}/${d}], 친구의 진분수는 [${friend.n}/${friend.d}]${fa5Ie(friend.n)}. 통분하여 더해 봐요.`);
   } }, "내 진분수 정하기");
   api.provide({ words: ["통분", "분모는 그대로", "분자끼리 더하기"], answers: ["예) [7/8]+[5/6] = [21/24]+[20/24] = [41/24] = [1 17/24]"] });
   body.append(h("p", { class: "fa5tip" }, `수 카드 ${cards.join(", ")} 중에서 2장을 골라 한 번씩만 사용하여 진분수를 만들어요. 카드를 누르고 분자나 분모 칸을 눌러요.`),
@@ -2129,7 +2131,7 @@ function fa5Proper(body, api, opt) {
     h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
       if (!mine) return api.fail("먼저 수 카드로 진분수를 만들고 ‘내 진분수 정하기’를 눌러요.", "-");
       const e = `[${mine.n}/${mine.d}]+[${friend.n}/${friend.d}]`, v = fa5Eval(e), r = sum.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
-      if (J.code === "zero") { sum.paint(null); return api.hint(J.msg); }
+      if (J.code === "zero" || J.code === "improper") { sum.paint(null); return api.hint(J.msg); }
       if (J.code !== "ok") { sum.paint(false); return api.fail(J.msg || fa5Diag(e, r) || "두 분모의 곱이나 최소공배수를 공통분모로 하여 통분한 다음 분자끼리 더해 봐요.", `${e} = ${sum.text()}`); }
       sum.paint(true); api.tryOnce();
       table.append(h("tr", {}, h("td", {}, `[${mine.n}/${mine.d}]`), h("td", {}, `[${friend.n}/${friend.d}]`), h("td", {}, fa5Book(v.num, v.den))));
@@ -2325,7 +2327,7 @@ function fa5Yut(body, api, opt) {
       ctrl.append(h("button", { class: "fa5on", onclick: () => { const [n, f] = roll(); G.dice = [n, f]; G.last = `나: 주사위 ${n}, ${f}`; G.phase = "pick"; render(); } }, "주사위 던지기"));
     } else if (G.phase === "pick") {
       const [n, f] = G.dice, mov = G.P[0].map((p, j) => [p, j]).filter(([p]) => !p.done);
-      info.textContent = `주사위 ${n}, 분수 주사위 ${f}이 나왔어요. 움직일 말을 골라요. (★ 칸에 멈추면 지름길로 가요)`;
+      info.textContent = `주사위 ${n}, 분수 주사위 ${f}${f === "♥" ? "가" : fa5J(`[${f.slice(1)}]`, "이가").slice(-1)} 나왔어요. 움직일 말을 골라요. (★ 칸에 멈추면 지름길로 가요)`;
       mov.forEach(([p, j]) => ctrl.append(h("button", { onclick: () => {
         const prev = Object.assign({}, p), q = move(p, n); Object.assign(p, q); G.prev = { j, prev };
         if (q.done) { G.log.push(`나: 주사위 ${n} → 말 ${j + 1}이 다 돌았어요!`); return endTurn(0, false); }
@@ -2337,12 +2339,12 @@ function fa5Yut(body, api, opt) {
       info.textContent = f[0] === "+" ? `도착한 칸의 수와 분수 주사위의 수를 더해요.` : `도착한 칸의 수와 분수 주사위의 수의 차를 구해요. (큰 수)−(작은 수)로 식을 세워요.`;
       ctrl.append(h("span", { class: "jua" }, `${G.expr} =`), inp, h("button", { class: "fa5on", onclick: () => {
         const v = fa5Eval(G.expr), r = inp.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
-        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero") return api.hint(J.msg);
+        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero" || J.code === "improper") return api.hint(J.msg);
         const p = G.P[0][G.prev.j];
         if (J.code !== "ok") {
           Object.keys(p).forEach(k => delete p[k]); Object.assign(p, G.prev.prev);
           G.log.push(`나: ${G.expr} = ${inp.text()} ✗ → 말을 원래 칸으로 되돌려요 (바른 답 ${fa5Book(v.num, v.den)})`);
-          api.fail(J.msg || fa5Diag(G.expr, r) || `바른 답은 ${fa5Book(v.num, v.den)}이에요. 두 분수를 통분해서 다시 계산해 봐요. 말은 원래 칸으로 돌아가요.`, `${G.expr} = ${inp.text()}`);
+          api.fail(J.msg || fa5Diag(G.expr, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num)}. 두 분수를 통분해서 다시 계산해 봐요. 말은 원래 칸으로 돌아가요.`, `${G.expr} = ${inp.text()}`);
           return endTurn(0, false);
         }
         G.ok++; const got = capture(0, node(p));
@@ -2400,9 +2402,9 @@ function fa5CardGame(body, api, opt) {
       const e = exprOf(R.op, R.ys[R.y], R.bs[R.b]), v = fa5Eval(e), inp = fa5In("계산 결과");
       area.append(h("div", { class: "fa5cl" }, h("span", { class: "jua" }, `${e} =`), inp, h("span", { class: "fa5tools" }, h("button", { class: "fa5on", onclick: () => {
         const r = inp.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
-        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero") return api.hint(J.msg);
+        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero" || J.code === "improper") return api.hint(J.msg);
         const ok = J.code === "ok";
-        if (!ok) api.fail(J.msg || fa5Diag(e, r) || `바른 답은 ${fa5Book(v.num, v.den)}이에요. 통분하여 다시 계산해 봐요.`, `${e} = ${inp.text()}`);
+        if (!ok) api.fail(J.msg || fa5Diag(e, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num)}. 통분하여 다시 계산해 봐요.`, `${e} = ${inp.text()}`);
         const rop = Math.random() < .5 ? "+" : "-", ry = YEL[Math.floor(Math.random() * 6)], rb = BLU[Math.floor(Math.random() * 6)], re = exprOf(rop, ry, rb), rv = fa5Eval(re);
         if (ok) score[0]++; score[1]++;
         const cmp = ok ? v.num * rv.den - rv.num * v.den : -1;
@@ -2410,7 +2412,7 @@ function fa5CardGame(body, api, opt) {
         rows.push([`${e} = ${ok ? fa5Book(v.num, v.den) + " ✓" : inp.text() + " ✗"}${cmp > 0 ? " (+1 큼)" : ""}`, `${re} = ${fa5Book(rv.num, rv.den)} ✓${cmp < 0 ? " (+1 큼)" : ""}`]);
         round++;
         if (round >= ROUNDS && !R.reported) { R.reported = true; drawTable(); api.done(rows.map(r => r[0]).join(" / "), `${ROUNDS}판을 모두 했어요! 나 ${score[0]}점, 로봇 ${score[1]}점이에요.`); }
-        else if (ok) api.hint(`맞았어요! 로봇은 ${re} = ${fa5Book(rv.num, rv.den)}이에요.`);
+        else if (ok) api.hint(`맞았어요! 로봇은 ${re} = ${fa5Book(rv.num, rv.den)}${fa5Ie(rv.num)}.`);
         start();
       } }, "계산 확인"))));
     }
@@ -2462,15 +2464,15 @@ const LESSONS = [
         ok: "모두 얼마인지는 덧셈으로, 남은 양이나 차는 뺄셈으로 구해요. 자연수의 덧셈·뺄셈과 같아요." }) },
     { name: "떠올리기 ① 분모가 같은 분수", inst: "4학년 때 배운 분모가 같은 분수의 덧셈과 뺄셈을 떠올려 계산해 보세요. 가분수로 써도, 대분수로 써도 맞아요.", hints: ["분모가 같으면 분모는 그대로 쓰고 분자끼리 더하거나 빼요.", "[3 1/4]−[1 3/4]은 분수 부분끼리 뺄 수 없어요. 자연수 1만큼을 [4/4]로 바꾸어요."],
       render: (b, a) => fa5Calc(b, a, [{ e: "[3/7]+[5/7]", a: "1 1/7" }, { e: "[1 3/5]+[2 4/5]", a: "4 2/5" }, { e: "[5/6]−[2/6]", a: "3/6" }, { e: "[3 1/4]−[1 3/4]", a: "1 2/4" }], { ok: "분모가 같으면 분모는 그대로 두고 분자끼리 계산했어요. 분모가 다르면 어떻게 할까요?" }) },
-    { name: "떠올리기 ② 통분", inst: "4단원에서 배운 통분을 떠올려요. [3/4]와 [1/6]의 막대를 더 잘게 나누어 한 칸의 크기를 같게 만들어 보세요. 이번에는 두 분모의 최소공배수로 맞춰 봐요.", hints: ["4와 6의 최소공배수는 12예요.", "[3/4]의 한 칸을 3칸으로, [1/6]의 한 칸을 2칸으로 나누면 한 칸이 [1/12]이 돼요."],
+    { name: "떠올리기 ② 통분", inst: "4단원에서 배운 통분을 떠올려요. [3/4]과 [1/6]의 막대를 더 잘게 나누어 한 칸의 크기를 같게 만들어 보세요. 이번에는 두 분모의 최소공배수로 맞춰 봐요.", hints: ["4와 6의 최소공배수는 12예요.", "[3/4]의 한 칸을 3칸으로, [1/6]의 한 칸을 2칸으로 나누면 한 칸이 [1/12]이 돼요."],
       render: (b, a) => fa5Split(b, a, { A: "3/4", B: "1/6", op: null, d: 12, ask: [
-        ["([3/4], [1/6]) → (", { q: [null, "?9", "12"] }, ", ", { q: [null, "?2", "12"] }, ")"]], ok: "분모가 다른 분수를 분모가 같은 분수로 나타내는 것을 통분이라고 해요. [3/4] = [9/12], [1/6] = [2/12]이에요." }) },
+        ["([3/4], [1/6]) → (", { q: [null, "?9", "12"] }, ", ", { q: [null, "?2", "12"] }, ")"]], ok: "분모가 다른 분수를 분모가 같은 분수로 나타내는 것을 통분이라고 해요. [3/4] = [9/12], [1/6] = [2/12]예요." }) },
     { name: "확인하기", inst: "대분수와 가분수를 바꾸고, 분모가 다른 분수의 크기를 비교해 보세요.", hints: ["[2 1/4]에서 2는 [8/4]이에요.", "크기를 비교할 때는 통분해서 분자를 비교해요. [3/4] = [9/12], [5/6] = [10/12]이에요."],
       render: (b, a) => fa5Chain(b, a, [
         ["[2 1/4] = ", { q: [null, "?9", "4"] }],
         ["[13/5] = ", { q: ["?2", "?3", "5"] }],
         ["[3/4] ", { c: [">", "=", "<"], a: 2 }, " [5/6]"],
-        ["[2/3] ", { c: [">", "=", "<"], a: 0 }, " [3/5]"]], { ok: "대분수와 가분수를 바꾸고, 통분하여 크기를 비교할 수 있어요. 분모가 다른 분수의 덧셈과 뺄셈을 배울 준비가 됐어요!", bad: "가분수와 대분수는 1 = [4/4] = [5/5]을 떠올려 바꾸고, 크기 비교는 통분하여 분자를 비교해요." }) }
+        ["[2/3] ", { c: [">", "=", "<"], a: 0 }, " [3/5]"]], { ok: "대분수와 가분수를 바꾸고, 통분하여 크기를 비교할 수 있어요. 분모가 다른 분수의 덧셈과 뺄셈을 배울 준비가 됐어요!", bad: "가분수와 대분수는 1 = [4/4] = [5/5]를 떠올려 바꾸고, 크기 비교는 통분하여 분자를 비교해요." }) }
   ],
   challenge: { inst: "곰곰! 계산하기 전에 어림해 보세요. 나무늘보는 하루에 [14 4/5]시간, 말은 [2 9/10]시간 정도 자요(이 앱의 예시 값).", hints: ["[14 4/5]는 15에 가깝고, [2 9/10]는 3에 가까워요.", "15−3은 얼마일까요?"],
     render: (b, a) => quiz(b, a, [
@@ -2492,9 +2494,9 @@ const LESSONS = [
       render: (b, a) => fa5Chain(b, a, [
         { t: "방법 1 · 두 분모의 곱", p: ["[1/4]+[3/10] = ", { q: [null, ["1", "×", "?10"], ["4", "×", "?10"]] }, "+", { q: [null, ["3", "×", "?4"], ["10", "×", "?4"]] }, " = ", { q: [null, "?10", "?40"] }, "+", { q: [null, "?12", "?40"] }, " = ", { q: [null, "?22", "40"] }] },
         { t: "방법 2 · 최소공배수", p: ["[1/4]+[3/10] = ", { q: [null, ["1", "×", "?5"], ["4", "×", "?5"]] }, "+", { q: [null, ["3", "×", "?2"], ["10", "×", "?2"]] }, " = ", { q: [null, "?5", "?20"] }, "+", { q: [null, "?6", "?20"] }, " = ", { q: [null, "?11", "20"] }] }],
-        { ok: "방법 1은 [22/40], 방법 2는 [11/20]이에요. [22/40]을 약분하면 [11/20]이므로 두 답은 크기가 같아요." }) },
-    { name: "말해 보기", inst: "두 방법을 비교해 보세요. 알맞은 말을 골라요.", hints: ["40은 4×10으로 바로 구할 수 있어요.", "[22/40]은 약분해야 [11/20]이 돼요."],
-      render: (b, a) => blanks(b, a, ["두 분모의 곱을 공통분모로 하여 통분하면 ", { o: ["공통분모를 구하기 쉽고", "약분할 필요가 없고"], a: 0 }, ", 두 분모의 최소공배수를 공통분모로 하여 통분하면 계산한 결과를 ", { o: ["약분할 필요가 없거나 간단해요", "반드시 약분해야 해요"], a: 0 }, ". [22/40]을 약분하면 ", { o: ["[11/20]", "[11/40]", "[22/20]"], a: 0 }, "이에요."], { ok: "두 방법 모두 맞아요. 자신에게 편리한 방법을 골라 계산해요." }) },
+        { ok: "방법 1은 [22/40], 방법 2는 [11/20]이에요. [22/40]를 약분하면 [11/20]이므로 두 답은 크기가 같아요." }) },
+    { name: "말해 보기", inst: "두 방법을 비교해 보세요. 알맞은 말을 골라요.", hints: ["40은 4×10으로 바로 구할 수 있어요.", "[22/40]는 약분해야 [11/20]이 돼요."],
+      render: (b, a) => blanks(b, a, ["두 분모의 곱을 공통분모로 하여 통분하면 ", { o: ["공통분모를 구하기 쉽고", "약분할 필요가 없고"], a: 0 }, ", 두 분모의 최소공배수를 공통분모로 하여 통분하면 계산한 결과를 ", { o: ["약분할 필요가 없거나 간단해요", "반드시 약분해야 해요"], a: 0 }, ". [22/40]를 약분하면 ", { o: ["[11/20]", "[11/40]", "[22/20]"], a: 0 }, "이에요."], { ok: "두 방법 모두 맞아요. 자신에게 편리한 방법을 골라 계산해요." }) },
     { name: "약속하기", inst: "분모가 다른 분수의 덧셈 방법을 약속해요.", hints: ["분모가 다르면 먼저 분모를 같게 만들어요."],
       render: (b, a) => blanks(b, a, ["분모가 다른 분수의 덧셈은 분수를 ", { o: ["통분한 후", "약분한 후"], a: 0 }, " 분모는 ", { o: ["그대로 쓰고", "분모끼리 더하고"], a: 0 }, " 분자끼리 ", { o: ["더합니다", "곱합니다"], a: 0 }, "."], { ok: "분모가 다른 분수의 덧셈은 분수를 통분한 후 분모는 그대로 쓰고 분자끼리 더합니다." }) },
     { name: "확인하기", inst: "계산해 보세요. 약분하지 않은 분수로 써도 맞아요.", hints: ["9와 15의 최소공배수는 45예요.", "[2/5]를 분모가 20인 분수로 나타내면 [8/20]이에요."],
@@ -2504,7 +2506,7 @@ const LESSONS = [
   challenge: { inst: "수학익힘 문제를 풀어 보세요.", hints: ["[1/9]이 2개인 수는 [2/9], [1/27]이 11개인 수는 [11/27]이에요.", "[3/8]을 분모가 32인 분수로 나타내면 [12/32]예요."],
     render: (b, a) => fa5Calc(b, a, [
       { q: "재범: “[1/9]이 2개인 수야.” 은지: “[1/27]이 11개인 수야.” 두 사람이 설명하는 분수의 합은?", x: "[2/9]+[11/27]", a: "17/27", lab: "합" },
-      { q: "[5/32], [3/8], [5/16] 중에서 가장 큰 분수와 가장 작은 분수의 합은?", x: "[3/8]+[5/32]", a: "17/32", lab: "합", why: { "15/32": "[5/16]이 가장 큰 분수가 아니에요. 통분하면 [3/8] = [12/32], [5/16] = [10/32]예요." } },
+      { q: "[5/32], [3/8], [5/16] 중에서 가장 큰 분수와 가장 작은 분수의 합은?", x: "[3/8]+[5/32]", a: "17/32", lab: "합", why: { "15/32": "[5/16]가 가장 큰 분수가 아니에요. 통분하면 [3/8] = [12/32], [5/16] = [10/32]이에요." } },
       { q: "이서는 파란색 리본 [7/10] m와 분홍색 리본 [1/4] m를 가지고 있어요. 리본은 모두 몇 m일까요?", x: "[7/10]+[1/4]", a: "19/20", unit: "m", lab: "[7/10]+[1/4] =" }]) }
 },
 {
@@ -2516,11 +2518,11 @@ const LESSONS = [
       render: (b, a) => fa5Split(b, a, { A: "3/4", B: "5/8", names: ["소윤 [3/4] kg", "지후 [5/8] kg"], op: "+", d: 8, ask: [
         ["[3/4] = ", { q: [null, "?6", "8"] }],
         ["[3/4]+[5/8] = ", { q: [null, "?6", "8"] }, "+[5/8] = ", { q: [null, "?11", "8"] }, " = ", { q: ["?1", "?3", "8"] }]], ok: "소윤이와 지후가 나누어 준 사료는 모두 [1 3/8] kg이에요. 합이 1보다 커서 대분수로 나타냈어요." }) },
-    { name: "그려 보기", inst: "[7/10]+[5/12]를 두 가지 방법으로 계산해 보세요.", hints: ["10×12 = 120, 10과 12의 최소공배수는 60이에요.", "[134/120] = [1 14/120]이에요. 약분하면 [1 7/60]이에요."],
+    { name: "그려 보기", inst: "[7/10]+[5/12]를 두 가지 방법으로 계산해 보세요.", hints: ["10×12 = 120, 10과 12의 최소공배수는 60이에요.", "[134/120] = [1 14/120]예요. 약분하면 [1 7/60]이에요."],
       render: (b, a) => fa5Chain(b, a, [
         { t: "방법 1 · 두 분모의 곱", p: ["[7/10]+[5/12] = ", { q: [null, ["7", "×", "?12"], ["10", "×", "?12"]] }, "+", { q: [null, ["5", "×", "?10"], ["12", "×", "?10"]] }, " = ", { q: [null, "?84", "120"] }, "+", { q: [null, "?50", "120"] }, " = ", { q: [null, "?134", "120"] }, " = ", { q: ["?1", "?14", "120"] }] },
         { t: "방법 2 · 최소공배수", p: ["[7/10]+[5/12] = ", { q: [null, ["7", "×", "?6"], ["10", "×", "?6"]] }, "+", { q: [null, ["5", "×", "?5"], ["12", "×", "?5"]] }, " = ", { q: [null, "?42", "60"] }, "+", { q: [null, "?25", "60"] }, " = ", { q: [null, "?67", "60"] }, " = ", { q: ["?1", "?7", "60"] }] }],
-        { ok: "[1 14/120]을 약분하면 [1 7/60]이에요. 두 방법의 답은 크기가 같아요." }) },
+        { ok: "[1 14/120]를 약분하면 [1 7/60]이에요. 두 방법의 답은 크기가 같아요." }) },
     { name: "말해 보기", inst: "친구가 [9/14]+[6/7]을 잘못 계산했어요. 잘못된 까닭을 고르고 옳게 계산해 보세요.", hints: ["[6/7]의 분모 7에 2를 곱했으면 분자 6에도 2를 곱해야 해요.", "[6/7] = [12/14]예요."],
       render: (b, a) => fa5Chain(b, a, [
         ["잘못된 계산: [9/14]+[6/7] = [9/14]+[6/14] = [15/14]"],
@@ -2545,12 +2547,12 @@ const LESSONS = [
       render: (b, a) => fa5Fill(b, a, { d: 6, A: { name: "처음", v: "2 2/3" }, B: { name: "더", v: "1 1/2" },
         est: { q: "청소하는 데 물을 4통보다 많이 사용했을까요, 적게 사용했을까요?", o: ["4통보다 많아요", "4통보다 적어요"], a: 0, why: { "1": "[2 2/3]는 [2 1/2]보다 커요. 여기에 [1 1/2]을 더하면 얼마보다 클까요?" }, ok: "[2 2/3]는 [2 1/2]보다 크고 여기에 [1 1/2]을 더하므로 4통은 넘을 것 같아요." },
         askCalc: [{ e: "[2 2/3]+[1 1/2]", a: "4 1/6", unit: "통" }], ok: "청소하는 데 사용한 물은 모두 [4 1/6]통이에요. 어림한 결과와 비슷해요." }) },
-    { name: "그려 보기", inst: "[1 3/4]+[2 1/8]을 두 가지 방법으로 계산해 보세요.", hints: ["방법 1: [1 3/4] = [1 6/8]로 통분한 다음 자연수끼리, 분수끼리 더해요.", "방법 2: [1 3/4] = [7/4] = [14/8], [2 1/8] = [17/8]이에요."],
+    { name: "그려 보기", inst: "[1 3/4]+[2 1/8]을 두 가지 방법으로 계산해 보세요.", hints: ["방법 1: [1 3/4] = [1 6/8]으로 통분한 다음 자연수끼리, 분수끼리 더해요.", "방법 2: [1 3/4] = [7/4] = [14/8], [2 1/8] = [17/8]이에요."],
       render: (b, a) => fa5Chain(b, a, [
         { t: "방법 1 · 자연수끼리, 분수끼리", p: ["[1 3/4]+[2 1/8] = ", { q: ["?1", "?6", "8"] }, "+[2 1/8] = (", { i: "1" }, "+", { i: "2" }, ")+(", { q: [null, "?6", "8"] }, "+[1/8]) = ", { q: ["?3", "?7", "8"] }] },
         { t: "방법 2 · 가분수로", p: ["[1 3/4]+[2 1/8] = ", { q: [null, "?7", "4"] }, "+", { q: [null, "?17", "8"] }, " = ", { q: [null, "?14", "8"] }, "+[17/8] = ", { q: [null, "?31", "8"] }, " = ", { q: ["?3", "?7", "8"] }] }],
         { ok: "두 방법 모두 [3 7/8]이에요." }) },
-    { name: "말해 보기", inst: "[2 3/5]+[3 5/6]을 두 가지 방법으로 계산하고, 두 방법을 설명해 보세요.", hints: ["5와 6의 최소공배수는 30이에요.", "분수 부분의 합 [43/30]은 [1 13/30]이에요. 1을 자연수 부분에 더해요."],
+    { name: "말해 보기", inst: "[2 3/5]+[3 5/6]를 두 가지 방법으로 계산하고, 두 방법을 설명해 보세요.", hints: ["5와 6의 최소공배수는 30이에요.", "분수 부분의 합 [43/30]은 [1 13/30]이에요. 1을 자연수 부분에 더해요."],
       render: (b, a) => fa5Chain(b, a, [
         { t: "방법 1", p: ["[2 3/5]+[3 5/6] = ", { q: ["2", "?18", "30"] }, "+", { q: ["3", "?25", "30"] }, " = ", { i: "5" }, "+", { q: [null, "?43", "30"] }, " = ", { q: ["?6", "?13", "30"] }] },
         { t: "방법 2", p: ["[2 3/5]+[3 5/6] = ", { q: [null, "?13", "5"] }, "+", { q: [null, "?23", "6"] }, " = ", { q: [null, "?78", "30"] }, "+", { q: [null, "?115", "30"] }, " = ", { q: [null, "?193", "30"] }, " = ", { q: ["?6", "?13", "30"] }] },
@@ -2580,7 +2582,7 @@ const LESSONS = [
       render: (b, a) => fa5Take(b, a, { d: 6, m: "5/6", s: "1/2", unit: "g", ask: [
         ["[1/2] = ", { q: [null, "?3", "6"] }],
         ["[5/6]−[1/2] = [5/6]−", { q: [null, "?3", "6"] }, " = ", { q: [null, "?2", "6"] }]], ok: "남은 영양제는 [2/6] g이에요. 약분하면 [1/3] g이에요." }) },
-    { name: "그려 보기", inst: "[2/9]−[1/6]을 두 가지 방법으로 계산해 보세요.", hints: ["9×6 = 54, 9와 6의 최소공배수는 18이에요.", "[3/54]를 약분하면 [1/18]이에요."],
+    { name: "그려 보기", inst: "[2/9]−[1/6]을 두 가지 방법으로 계산해 보세요.", hints: ["9×6 = 54, 9와 6의 최소공배수는 18이에요.", "[3/54]을 약분하면 [1/18]이에요."],
       render: (b, a) => fa5Chain(b, a, [
         { t: "방법 1 · 두 분모의 곱", p: ["[2/9]−[1/6] = ", { q: [null, ["2", "×", "?6"], ["9", "×", "?6"]] }, "−", { q: [null, ["1", "×", "?9"], ["6", "×", "?9"]] }, " = ", { q: [null, "?12", "54"] }, "−", { q: [null, "?9", "54"] }, " = ", { q: [null, "?3", "54"] }] },
         { t: "방법 2 · 최소공배수", p: ["[2/9]−[1/6] = ", { q: [null, ["2", "×", "?2"], ["9", "×", "?2"]] }, "−", { q: [null, ["1", "×", "?3"], ["6", "×", "?3"]] }, " = ", { q: [null, "?4", "18"] }, "−", { q: [null, "?3", "18"] }, " = ", { q: [null, "?1", "18"] }] }],
@@ -2598,11 +2600,11 @@ const LESSONS = [
         { q: "케이크를 만드는 데 다연이는 우유를 [6/7] L, 시우는 [2/5] L 사용했어요. 다연이는 시우보다 우유를 몇 L 더 사용했을까요?", x: "[6/7]-[2/5]", a: "16/35", unit: "L", lab: "[6/7]−[2/5] =", den: 35, why: { "4/2": "분모는 분모끼리, 분자는 분자끼리 빼면 안 돼요. 먼저 통분해요." } },
         { e: "[4/5]−[1/2]", a: "3/10", den: 10 }, { e: "[7/9]−[1/6]", a: "11/18", den: 18 }, { e: "[7/8]−[3/10]", a: "23/40", den: 40 }, { e: "[11/12]−[1/15]", a: "17/20", den: 60 }]) }
   ],
-  challenge: { inst: "수학익힘 문제를 풀어 보세요.", hints: ["어떤 수 + [2/7] = [16/21]이에요. 어떤 수는 [16/21]−[2/7]이에요.", "[3/7]과 [2/9]를 통분하면 [27/63], [14/63]이에요."],
+  challenge: { inst: "수학익힘 문제를 풀어 보세요.", hints: ["어떤 수 + [2/7] = [16/21]이에요. 어떤 수는 [16/21]−[2/7]예요.", "[3/7]과 [2/9]를 통분하면 [27/63], [14/63]예요."],
     render: (b, a) => fa5Calc(b, a, [
       { q: "어떤 수에서 [2/7]를 빼야 하는데 잘못하여 더했더니 [16/21]이 되었어요. 어떤 수는?", x: "[16/21]-[2/7]", a: "10/21", lab: "어떤 수", den: 21 },
       { q: "바르게 계산한 값은?", x: "[10/21]-[2/7]", a: "4/21", lab: "바른 값", den: 21 },
-      { q: "실과 시간에 모형을 꾸미는 데 색 테이프를 유진이는 [3/7] m, 동원이는 [2/9] m 사용했어요. 누가 더 많이 사용했을까요?", pick: ["유진", "동원"], a: 0, why: { "1": "통분하면 [3/7] = [27/63], [2/9] = [14/63]이에요." } },
+      { q: "실과 시간에 모형을 꾸미는 데 색 테이프를 유진이는 [3/7] m, 동원이는 [2/9] m 사용했어요. 누가 더 많이 사용했을까요?", pick: ["유진", "동원"], a: 0, why: { "1": "통분하면 [3/7] = [27/63], [2/9] = [14/63]예요." } },
       { q: "몇 m 더 많이 사용했을까요?", x: "[3/7]-[2/9]", a: "13/63", unit: "m", lab: "[3/7]−[2/9] =", den: 63 }]) }
 },
 {
@@ -2610,12 +2612,12 @@ const LESSONS = [
   question: "분수 부분끼리 뺄 수 있는 분모가 다른 대분수의 뺄셈은 어떻게 할까요?",
   summary: "두 대분수를 통분하여 자연수는 자연수끼리, 분수는 분수끼리 빼거나, 대분수를 가분수로 나타내고 두 가분수를 통분하여 빼요. [3 5/6]−[1 2/3] = [3 5/6]−[1 4/6] = 2+[1/6] = [2 1/6], [3 5/6]−[1 2/3] = [23/6]−[10/6] = [13/6] = [2 1/6]",
   steps: [
-    { name: "만져 보기", inst: "유기견들을 산책시키는 데 지후는 [1 1/2] km, 소윤이는 [1 1/5] km를 걸었어요. 1 km를 10칸으로 나눈 막대에 지후가 걸은 거리가 있어요. 소윤이가 걸은 거리만큼 ×표 하여 지후가 몇 km 더 걸었는지 알아보세요.", hints: ["[1 1/5] = [1 2/10]이에요. 1 km 막대 하나와 2칸에 ×표 해요.", "남은 칸이 지후가 더 걸은 거리예요."],
+    { name: "만져 보기", inst: "유기견들을 산책시키는 데 지후는 [1 1/2] km, 소윤이는 [1 1/5] km를 걸었어요. 1 km를 10칸으로 나눈 막대에 지후가 걸은 거리가 있어요. 소윤이가 걸은 거리만큼 ×표 하여 지후가 몇 km 더 걸었는지 알아보세요.", hints: ["[1 1/5] = [1 2/10]예요. 1 km 막대 하나와 2칸에 ×표 해요.", "남은 칸이 지후가 더 걸은 거리예요."],
       render: (b, a) => fa5Take(b, a, { d: 10, m: "1 1/2", s: "1 1/5", unit: "km", ask: [
         ["[1 1/2] = ", { q: ["1", "?5", "10"] }],
         ["[1 1/5] = ", { q: ["1", "?2", "10"] }],
         ["[1 1/2]−[1 1/5] = ", { q: ["1", "?5", "10"] }, "−", { q: ["1", "?2", "10"] }, " = ", { q: [null, "?3", "10"] }]], ok: "지후는 소윤이보다 [3/10] km 더 많이 걸었어요." }) },
-    { name: "그려 보기", inst: "[3 5/6]−[1 2/3]을 두 가지 방법으로 계산해 보세요.", hints: ["[1 2/3] = [1 4/6]이에요.", "[3 5/6] = [23/6], [1 2/3] = [5/3] = [10/6]이에요."],
+    { name: "그려 보기", inst: "[3 5/6]−[1 2/3]를 두 가지 방법으로 계산해 보세요.", hints: ["[1 2/3] = [1 4/6]예요.", "[3 5/6] = [23/6], [1 2/3] = [5/3] = [10/6]이에요."],
       render: (b, a) => fa5Chain(b, a, [
         { t: "방법 1 · 자연수끼리, 분수끼리", p: ["[3 5/6]−[1 2/3] = [3 5/6]−", { q: ["1", "?4", "6"] }, " = (", { i: "3" }, "−", { i: "1" }, ")+([5/6]−", { q: [null, "?4", "6"] }, ") = ", { q: ["?2", "?1", "6"] }] },
         { t: "방법 2 · 가분수로", p: ["[3 5/6]−[1 2/3] = ", { q: [null, "?23", "6"] }, "−", { q: [null, "?5", "3"] }, " = [23/6]−", { q: [null, "?10", "6"] }, " = ", { q: [null, "?13", "6"] }, " = ", { q: ["?2", "?1", "6"] }] }],
@@ -2626,7 +2628,7 @@ const LESSONS = [
         { t: "방법 2", p: ["[4 3/4]−[2 1/6] = ", { q: [null, "?19", "4"] }, "−", { q: [null, "?13", "6"] }, " = ", { q: [null, "?57", "12"] }, "−", { q: [null, "?26", "12"] }, " = ", { q: [null, "?31", "12"] }, " = ", { q: ["?2", "?7", "12"] }] },
         ["자연수는 자연수끼리, 분수는 분수끼리 계산하면 ", { c: ["분수 부분의 계산이 편리해요", "자연수 부분을 따로 계산하지 않아도 돼요"], a: 0 }],
         ["대분수를 가분수로 나타내어 계산하면 ", { c: ["분수 부분의 계산이 편리해요", "자연수 부분과 분수 부분을 따로 계산하지 않아서 편리해요"], a: 1 }]],
-        { ok: "두 방법 모두 [2 7/12]예요. 상황에 따라 편리한 방법을 골라요." }) },
+        { ok: "두 방법 모두 [2 7/12]이에요. 상황에 따라 편리한 방법을 골라요." }) },
     { name: "약속하기", inst: "분수 부분끼리 뺄 수 있는 대분수의 뺄셈 방법을 정리해요.", hints: ["(자연수끼리 뺀 결과) + (분수끼리 뺀 결과)예요."],
       render: (b, a) => blanks(b, a, ["두 대분수를 통분하여 자연수는 자연수끼리, 분수는 분수끼리 ", { o: ["빼거나", "더하거나"], a: 0 }, ", 대분수를 ", { o: ["가분수", "진분수"], a: 0 }, "로 나타내고 두 가분수를 통분하여 뺍니다. 자연수끼리 뺀 결과와 분수끼리 뺀 결과는 ", { o: ["더해요", "빼요"], a: 0 }, "."], { ok: "자연수끼리 뺀 결과와 분수끼리 뺀 결과를 빼면 안 돼요. 두 결과를 더해 대분수로 나타내요." }) },
     { name: "확인하기", inst: "계산해 보세요. 가분수로 써도, 대분수로 써도 맞아요.", hints: ["4와 20의 최소공배수는 20이에요.", "자연수끼리, 분수끼리 빼고 두 결과를 더해요."],
@@ -2643,24 +2645,24 @@ const LESSONS = [
 {
   id: "t7", no: 7, title: "대분수의 뺄셈을 해 볼까요(2)", soop: "개념 구축하기(O)",
   question: "분수 부분끼리 뺄 수 없는 분모가 다른 대분수의 뺄셈은 어떻게 할까요?",
-  summary: "분수 부분끼리 뺄 수 없을 때에는 자연수 부분의 1만큼을 분수로 나타내어 계산해요. [4 1/2]−[1 2/3] = [4 3/6]−[1 4/6] = [3 9/6]−[1 4/6] = 2+[5/6] = [2 5/6]. 대분수를 가분수로 나타내어 [27/6]−[10/6] = [17/6] = [2 5/6]으로 계산할 수도 있어요.",
+  summary: "분수 부분끼리 뺄 수 없을 때에는 자연수 부분의 1만큼을 분수로 나타내어 계산해요. [4 1/2]−[1 2/3] = [4 3/6]−[1 4/6] = [3 9/6]−[1 4/6] = 2+[5/6] = [2 5/6]. 대분수를 가분수로 나타내어 [27/6]−[10/6] = [17/6] = [2 5/6]로 계산할 수도 있어요.",
   steps: [
-    { name: "만져 보기", inst: "유기견들의 간식을 만드는 데 고구마를 소윤이는 [2 1/3] kg, 지후는 [1 3/4] kg 사용했어요. 1 kg을 12칸으로 나눈 막대에 소윤이가 사용한 양이 있어요. 지후가 사용한 양만큼 ×표 해 보세요.", hints: ["[1 3/4] = [1 9/12]이에요. 1 kg 막대 하나와 9칸에 ×표 해요.", "칸이 모자라면 ‘1을 쪼개기’를 눌러 1을 [12/12]로 바꾸어요."],
+    { name: "만져 보기", inst: "유기견들의 간식을 만드는 데 고구마를 소윤이는 [2 1/3] kg, 지후는 [1 3/4] kg 사용했어요. 1 kg을 12칸으로 나눈 막대에 소윤이가 사용한 양이 있어요. 지후가 사용한 양만큼 ×표 해 보세요.", hints: ["[1 3/4] = [1 9/12]예요. 1 kg 막대 하나와 9칸에 ×표 해요.", "칸이 모자라면 ‘1을 쪼개기’를 눌러 1을 [12/12]로 바꾸어요."],
       render: (b, a) => fa5Take(b, a, { d: 12, m: "2 1/3", s: "1 3/4", unit: "kg", ask: [
         ["[2 1/3] = ", { q: ["2", "?4", "12"] }, " = ", { q: ["1", "?16", "12"] }],
         ["[1 3/4] = ", { q: ["1", "?9", "12"] }],
         ["[2 1/3]−[1 3/4] = ", { q: ["1", "?16", "12"] }, "−", { q: ["1", "?9", "12"] }, " = ", { q: [null, "?7", "12"] }]], ok: "소윤이는 지후보다 고구마를 [7/12] kg 더 많이 사용했어요. [4/12]에서 [9/12]를 뺄 수 없어서 1만큼을 [12/12]로 바꾸었어요." }) },
-    { name: "그려 보기", inst: "[4 1/2]−[1 2/3]을 두 가지 방법으로 계산해 보세요.", hints: ["[4 3/6]−[1 4/6]에서 [3/6]에서 [4/6]을 뺄 수 없어요. [4 3/6] = [3 9/6]이에요.", "[4 1/2] = [9/2] = [27/6], [1 2/3] = [5/3] = [10/6]이에요."],
+    { name: "그려 보기", inst: "[4 1/2]−[1 2/3]를 두 가지 방법으로 계산해 보세요.", hints: ["[4 3/6]−[1 4/6]에서 [3/6]에서 [4/6]를 뺄 수 없어요. [4 3/6] = [3 9/6]예요.", "[4 1/2] = [9/2] = [27/6], [1 2/3] = [5/3] = [10/6]이에요."],
       render: (b, a) => fa5Chain(b, a, [
         { t: "방법 1 · 자연수끼리, 분수끼리", p: ["[4 1/2]−[1 2/3] = ", { q: ["4", "?3", "6"] }, "−", { q: ["1", "?4", "6"] }, " = ", { q: ["?3", "?9", "6"] }, "−[1 4/6] = (", { i: "3" }, "−", { i: "1" }, ")+(", { q: [null, "?9", "6"] }, "−[4/6]) = ", { q: ["?2", "?5", "6"] }] },
         { t: "방법 2 · 가분수로", p: ["[4 1/2]−[1 2/3] = ", { q: [null, "?9", "2"] }, "−", { q: [null, "?5", "3"] }, " = ", { q: [null, "?27", "6"] }, "−", { q: [null, "?10", "6"] }, " = ", { q: [null, "?17", "6"] }, " = ", { q: ["?2", "?5", "6"] }] }],
-        { ok: "두 방법 모두 [2 5/6]이에요." }) },
-    { name: "말해 보기", inst: "예준이는 [3 1/4]−[2 5/8]을 가분수로 나타내어 계산했어요. 예준이와 다른 방법으로 계산해 보세요.", hints: ["[3 1/4] = [3 2/8]이에요. [2/8]에서 [5/8]을 뺄 수 없어요.", "[3 2/8] = [2 10/8]이에요."],
+        { ok: "두 방법 모두 [2 5/6]예요." }) },
+    { name: "말해 보기", inst: "예준이는 [3 1/4]−[2 5/8]를 가분수로 나타내어 계산했어요. 예준이와 다른 방법으로 계산해 보세요.", hints: ["[3 1/4] = [3 2/8]예요. [2/8]에서 [5/8]를 뺄 수 없어요.", "[3 2/8] = [2 10/8]이에요."],
       render: (b, a) => fa5Chain(b, a, [
         ["예준이의 방법: [3 1/4]−[2 5/8] = [13/4]−[21/8] = [26/8]−[21/8] = [5/8]"],
         { t: "다른 방법", p: ["[3 1/4]−[2 5/8] = ", { q: ["3", "?2", "8"] }, "−[2 5/8] = ", { q: ["?2", "?10", "8"] }, "−[2 5/8] = ", { q: [null, "?5", "8"] }] },
-        ["[2/8]에서 [5/8]을 뺄 수 없어서 자연수 부분의 ", { c: ["1만큼을 분수로", "분모를 분자로"], a: 0 }, " 나타내었어요."]],
-        { ok: "[3 2/8]의 자연수 부분에서 1만큼을 [8/8]로 바꾸어 [2 10/8]로 나타냈어요. 답은 [5/8]이에요." }) },
+        ["[2/8]에서 [5/8]를 뺄 수 없어서 자연수 부분의 ", { c: ["1만큼을 분수로", "분모를 분자로"], a: 0 }, " 나타내었어요."]],
+        { ok: "[3 2/8]의 자연수 부분에서 1만큼을 [8/8]로 바꾸어 [2 10/8]으로 나타냈어요. 답은 [5/8]예요." }) },
     { name: "약속하기", inst: "분수 부분끼리 뺄 수 없을 때의 계산 방법을 약속해요.", hints: ["1 = [8/8] = [12/12]처럼 1은 분모와 분자가 같은 분수예요."],
       render: (b, a) => blanks(b, a, ["분수 부분끼리 뺄 수 없을 때에는 자연수 부분의 ", { o: ["1만큼을", "분수 부분만큼을"], a: 0 }, " 분수로 나타내어 계산해요. 이때 자연수 부분은 ", { o: ["1 작아져요", "그대로예요"], a: 0 }, "."], { ok: "분수 부분끼리 뺄 수 없을 때에는 자연수 부분의 1만큼을 분수로 나타내어 계산해요." }) },
     { name: "확인하기", inst: "[5 1/6]−[2 4/9]에 알맞은 문제를 고르고 해결해 보세요. 다른 식도 계산해 보세요.", hints: ["‘얼마나 더 긴지’는 뺄셈으로 구해요.", "6과 9의 최소공배수는 18이에요. [5 3/18] = [4 21/18]이에요."],
@@ -2683,7 +2685,7 @@ const LESSONS = [
         { q: "16분음표는 몇 박일까요?", o: ["[1/4]박", "[1/16]박", "4박"], a: 0, why: { "1": "16분음표는 8분음표의 반이에요. [1/2]의 반은?" } },
         { q: "음표 머리 오른쪽에 작은 점이 있는 점음표에서 점의 길이는?", o: ["본 음표 길이의 반", "본 음표 길이와 같음"], a: 0 }],
         { ok: "4분음표 1박, 8분음표 [1/2]박, 16분음표 [1/4]박이에요. 점은 본 음표 길이의 반을 나타내요." }) },
-    { name: "점 8분음표", inst: "점 8분음표는 몇 박인지 분수의 덧셈으로 구해 보세요.", hints: ["점 8분음표 = 8분음표 + (8분음표의 반) = 8분음표 + 16분음표예요.", "[1/2] = [2/4]이에요."],
+    { name: "점 8분음표", inst: "점 8분음표는 몇 박인지 분수의 덧셈으로 구해 보세요.", hints: ["점 8분음표 = 8분음표 + (8분음표의 반) = 8분음표 + 16분음표예요.", "[1/2] = [2/4]예요."],
       render: (b, a) => fa5Chain(b, a, [
         ["점 8분음표 = 8분음표 + 16분음표"],
         ["[1/2]+[1/4] = ", { q: [null, "?2", "4"] }, "+[1/4] = ", { q: [null, "?3", "4"] }],
@@ -2725,22 +2727,22 @@ const LESSONS = [
         { ok: "정확하게 계산하는 것이 가장 중요해요. 기약분수가 아니어도, 가분수여도 값이 같으면 맞아요." }) }
   ],
   challenge: { inst: "놀이판에서 나올 수 있는 계산을 해 보세요.", hints: ["통분한 후 분자끼리 계산해요.", "분수 부분끼리 뺄 수 없으면 1만큼을 분수로 나타내요."],
-    render: (b, a) => fa5Calc(b, a, [{ e: "[1 7/8]+[1/2]", a: "2 3/8", den: 8 }, { e: "[2 1/3]−[1/2]", a: "1 5/6", den: 6 }, { e: "[5/9]+[2/5]", a: "43/45", den: 45 }, { e: "[1 1/6]−[1/4]", a: "11/12", den: 12 }]) }
+    render: (b, a) => fa5Calc(b, a, [{ e: "[1 7/8]+[1/2]", a: "2 3/8", den: 8 }, { e: "[1 1/6]−[1/3]", a: "5/6", den: 6 }, { e: "[5/9]+[2/5]", a: "43/45", den: 45 }, { e: "[1 1/4]−[1/6]", a: "1 1/12", den: 12 }]) }
 },
 {
   id: "t10", no: 10, title: "공부한 내용을 확인해요", soop: "발표하기(P)",
   question: "분모가 다른 분수의 덧셈과 뺄셈을 할 수 있나요?",
   summary: "분모가 다른 분수의 덧셈과 뺄셈은 분모를 통분한 후 분모는 그대로 쓰고 분자끼리 계산해요. 대분수는 자연수는 자연수끼리, 분수는 분수끼리 계산하거나 가분수로 나타내어 계산해요. 분수 부분끼리 뺄 수 없으면 자연수 부분의 1만큼을 분수로 나타내어 계산해요.",
   steps: [
-    { name: "1. 그림으로 계산하기", inst: "[4/5]와 [1/3]의 막대를 한 칸이 [1/15]이 되게 나누어 [4/5]−[1/3]을 계산해 보세요.", hints: ["[4/5]의 한 칸을 3칸으로, [1/3]의 한 칸을 5칸으로 나누어요.", "[4/5] = [12/15], [1/3] = [5/15]이에요."],
+    { name: "1. 그림으로 계산하기", inst: "[4/5]와 [1/3]의 막대를 한 칸이 [1/15]이 되게 나누어 [4/5]−[1/3]을 계산해 보세요.", hints: ["[4/5]의 한 칸을 3칸으로, [1/3]의 한 칸을 5칸으로 나누어요.", "[4/5] = [12/15], [1/3] = [5/15]예요."],
       render: (b, a) => fa5Split(b, a, { A: "4/5", B: "1/3", op: "-", d: 15, ask: [
         ["[4/5]−[1/3] = ", { q: [null, "?12", "15"] }, "−", { q: [null, "?5", "15"] }, " = ", { q: [null, "?7", "15"] }]], ok: "[4/5]−[1/3] = [12/15]−[5/15] = [7/15]이에요." }) },
     { name: "2. 빈칸 채우기", inst: "□ 안에 알맞은 수를 써넣으세요.", hints: ["2와 7의 최소공배수는 14예요.", "분모에 곱한 수를 분자에도 곱해요."],
       render: (b, a) => fa5Chain(b, a, [
         ["[1/2]+[2/7] = ", { q: [null, ["1", "×", "?7"], ["2", "×", "?7"]] }, "+", { q: [null, ["2", "×", "?2"], ["7", "×", "?2"]] }, " = ", { q: [null, "?7", "14"] }, "+", { q: [null, "?4", "14"] }, " = ", { q: [null, "?11", "14"] }]], { ok: "[1/2]+[2/7] = [7/14]+[4/14] = [11/14]이에요." }) },
-    { name: "3~5. 계산하기", inst: "계산해 보세요. 가분수로 써도, 약분하지 않아도 맞아요.", hints: ["7과 9의 최소공배수는 63, 8과 10의 최소공배수는 40이에요.", "[2 1/6]−[1 1/5]은 분수 부분끼리 뺄 수 없어요. [2 5/30] = [1 35/30]이에요."],
+    { name: "3~5. 계산하기", inst: "계산해 보세요. 가분수로 써도, 약분하지 않아도 맞아요.", hints: ["7과 9의 최소공배수는 63, 8과 10의 최소공배수는 40이에요.", "[2 1/6]−[1 1/5]은 분수 부분끼리 뺄 수 없어요. [2 5/30] = [1 35/30]예요."],
       render: (b, a) => fa5Calc(b, a, [{ e: "[3 5/7]+[1 4/9]", a: "5 10/63", den: 63 }, { e: "[7 3/8]−[3 1/10]", a: "4 11/40", den: 40 },
-        { q: "계산 결과의 크기를 비교해요.", e: "[5/6]+[3/8] ○ [5 5/6]−[4 3/4]", pick: [">", "=", "<"], a: 0, why: { "2": "[5/6]+[3/8] = [1 5/24], [5 5/6]−[4 3/4] = [1 1/12] = [1 2/24]이에요.", "1": "두 식을 계산해 보면 값이 달라요." } },
+        { q: "계산 결과의 크기를 비교해요.", e: "[5/6]+[3/8] ○ [5 5/6]−[4 3/4]", pick: [">", "=", "<"], a: 0, why: { "2": "[5/6]+[3/8] = [1 5/24], [5 5/6]−[4 3/4] = [1 1/12] = [1 2/24]예요.", "1": "두 식을 계산해 보면 값이 달라요." } },
         { q: "유나는 일주일 동안 줄넘기를 [2 1/6]시간, 오래달리기를 [1 1/5]시간 했어요. 줄넘기를 몇 시간 더 했을까요?", x: "[2 1/6]-[1 1/5]", a: "29/30", unit: "시간", lab: "[2 1/6]−[1 1/5] =", den: 30 },
         { q: "1차시의 나무늘보는 하루에 [14 4/5]시간, 말은 [2 9/10]시간 잔다면(이 앱의 예시 값) 나무늘보는 말보다 몇 시간 더 잘까요?", x: "[14 4/5]-[2 9/10]", a: "11 9/10", unit: "시간", lab: "[14 4/5]−[2 9/10] =", den: 10 }]) },
     { name: "6. 잘못 찾기", inst: "잘못 계산한 부분을 찾아 까닭을 고르고 옳게 계산해 보세요.", hints: ["[4 9/24]에서 1만큼을 분수로 바꾸면 자연수 부분은 1 작아져요.", "[4 9/24] = [3 33/24]이에요."],
@@ -2748,7 +2750,7 @@ const LESSONS = [
         ["잘못된 계산: [4 3/8]−[2 7/12] = [4 9/24]−[2 14/24] = [4 33/24]−[2 14/24] = [2 19/24]"],
         ["까닭: ", { c: ["1만큼을 분수로 나타냈는데 자연수 부분을 그대로 두었어요", "통분을 잘못했어요"], a: 0 }],
         { t: "옳은 계산", p: ["[4 9/24]−[2 14/24] = ", { q: ["?3", "?33", "24"] }, "−[2 14/24] = ", { q: ["?1", "?19", "24"] }] }],
-        { ok: "[4 9/24]에서 1만큼을 분수로 나타내면 [3 33/24]이에요. 옳은 답은 [1 19/24]이에요." }) },
+        { ok: "[4 9/24]에서 1만큼을 분수로 나타내면 [3 33/24]이에요. 옳은 답은 [1 19/24]예요." }) },
     { name: "7. 수 카드 문제", inst: "지훈이는 수 카드 2, 5, 9를, 서윤이는 수 카드 4, 6, 7을 가지고 있어요. 각자 수 카드를 한 번씩만 사용하여 가장 큰 대분수를 만들고, 두 대분수의 합을 구해 보세요.", hints: ["가장 큰 대분수는 자연수 부분에 가장 큰 수 카드를 놓고, 남은 카드로 진분수를 만들어요.", "5와 6의 곱 30을 공통분모로 통분해요."],
       render: (b, a) => fa5Mixed(b, a, { groups: [{ name: "지훈", cards: [2, 5, 9], kind: "max" }, { name: "서윤", cards: [4, 6, 7], kind: "max" }], op: "+" }) }
   ],
@@ -2767,8 +2769,6 @@ window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.stu
  if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});}})();
 </script>
 <a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
-<style id="hj-actbar">.work > div .actions{bottom:var(--hjbar,0px)}</style>
-<script id="hj-actbar-js">(function(){let w=false;const f=()=>{if(w)return;w=true;requestAnimationFrame(()=>{w=false;const a=document.querySelector(".work > .actions");document.documentElement.style.setProperty("--hjbar",(a?a.offsetHeight:0)+"px");});};["scroll","resize","click","input","pointerup","load"].forEach(e=>window.addEventListener(e,f,{passive:true}));f();})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
 var I={stop:'<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>',play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
@@ -3320,6 +3320,8 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
  function wire(){document.querySelectorAll('.frameline input:not([data-hjsz])').forEach(function(i){i.dataset.hjsz='1';i.addEventListener('input',function(){size(i)});size(i)})}
  document.addEventListener('click',function(e){if(e.target.closest('.chips,.chip,button'))setTimeout(function(){document.querySelectorAll('.frameline input').forEach(size)},30)},true);
  wire();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(wire,30)}).observe(document.body,{childList:true,subtree:true});addEventListener('resize',function(){document.querySelectorAll('.frameline input').forEach(size)})})();
-</script><!--/hj-cicons--></body>
+</script><!--/hj-cicons--><style id="hj-actbar">.work > div .actions{bottom:var(--hjbar,0px)}</style>
+<script id="hj-actbar-js">(function(){let w=false;const f=()=>{if(w)return;w=true;requestAnimationFrame(()=>{w=false;const a=document.querySelector(".work > .actions");document.documentElement.style.setProperty("--hjbar",(a?a.offsetHeight:0)+"px");});};["scroll","resize","click","input","pointerup","load"].forEach(e=>window.addEventListener(e,f,{passive:true}));f();})();</script>
+</body>
 </html>
 
