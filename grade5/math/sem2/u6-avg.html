@@ -1502,7 +1502,7 @@ function av6Num(s) {
 const av6Fmt = v => { const r = Math.round(v * 1000) / 1000; return String(r); };
 const av6R = v => Math.round(v * 100) / 100;
 function av6Tbl(head, rows, o = {}) {
-  return h("div", { class: "av6tbl" }, h("table", {}, o.cap ? h("caption", { style: "font-family:Jua;caption-side:top;text-align:left;padding:.2em 0" }, o.cap) : "",
+  return h("div", { class: "av6tbl" }, o.cap ? h("div", { class: "jua", style: "margin-bottom:.15em" }, o.cap) : "", h("table", {},
     h("tr", {}, ...head.map(t => h("th", {}, t))), ...rows.map(r => h("tr", {}, ...r.map((t, i) => i === 0 && o.rowHead ? h("th", {}, t) : h("td", {}, t === "" ? "​" : t))))));
 }
 /* 가로 표: 첫 줄 제목 + 값 줄 */
@@ -2079,7 +2079,7 @@ function av6Sim(body, api, opt) {
   const face = h("span", {}, av6Face(opt.kind, coin ? 0 : 1));
   const big = h("div", { class: "av6big" }, "던져 보세요!");
   const tbl = h("div");
-  const bar = makeSvg(600, 46); bar.setAttribute("class", "av6fig"); bar.style.maxWidth = "36em";
+  const bar = makeSvg(600, 54); bar.setAttribute("class", "av6fig"); bar.style.maxWidth = "36em";
   const cntA = () => res.filter(r => r === 0).length;
   const draw = () => {
     const N = res.length, a = cntA(), b = N - a;
@@ -2091,12 +2091,12 @@ function av6Sim(body, api, opt) {
     past.forEach((p, i) => tbl.append(h("div", { class: "av6small" }, `지난 실험 ${i + 1}: ${p}`)));
     bar.innerHTML = "";
     const x0 = 20, w = 560, fa = N ? a / N : .5;
-    bar.append(svgEl("rect", { x: x0, y: 8, width: w * fa, height: 24, fill: coin ? "#E9C46A" : AV6.orange }));
-    bar.append(svgEl("rect", { x: x0 + w * fa, y: 8, width: w * (1 - fa), height: 24, fill: coin ? "#A9C7E8" : AV6.sky }));
+    bar.append(svgEl("rect", { x: x0, y: 8, width: w * fa, height: 24, fill: !N ? "#EEF1F0" : coin ? "#E9C46A" : AV6.orange }));
+    bar.append(svgEl("rect", { x: x0 + w * fa, y: 8, width: w * (1 - fa), height: 24, fill: !N ? "#EEF1F0" : coin ? "#A9C7E8" : AV6.sky }));
     bar.append(svgEl("rect", { x: x0, y: 8, width: w, height: 24, fill: "none", stroke: AV6.ink, "stroke-width": 1.5 }));
     bar.append(svgEl("line", { x1: x0 + w / 2, y1: 2, x2: x0 + w / 2, y2: 38, stroke: AV6.red, "stroke-width": 2.5, "stroke-dasharray": "4 3" }));
     if (N) { bar.append(txt(x0 + 6, 20, `${G[0]} ${a}`, 13, { "text-anchor": "start" })); bar.append(txt(x0 + w - 6, 20, `${G[1]} ${b}`, 13, { "text-anchor": "end" })); }
-    bar.append(txt(x0 + w / 2, 42, "반반", 11, { fill: AV6.red }));
+    bar.append(txt(x0 + w / 2, 45, "반반", 12, { fill: AV6.red }));
     big.textContent = N ? `지금까지 ${N}번: ${G[0]} ${a}번, ${G[1]} ${b}번` : "던져 보세요!";
   };
   const one = () => coin ? (Math.random() < .5 ? 0 : 1) : (1 + Math.floor(Math.random() * 6));
@@ -2678,13 +2678,13 @@ const LESSONS = [
   question: "평균과 가능성에 대해 공부한 내용을 잘 알고 있나요?",
   summary: "(평균)=(자룟값을 모두 더한 수)÷(자료의 수)예요. 평균을 알면 전체 합과 모르는 값을 구할 수 있어요. 가능성은 불가능하다(0), ~아닐 것 같다, 반반이다([1/2]), ~일 것 같다, 확실하다(1)로 나타내요.",
   steps: [
-    { name: "1. 고르게 하기", inst: "은찬이의 회별 고리 던지기 기록을 ○로 나타냈어요. ○를 옮겨 고르게 하여 평균을 구해 보세요.", hints: ["1회의 ○를 2회로 옮겨 봐요.", "○는 모두 8개, 4회예요."],
+    { name: "고르게 하기", inst: "1번. 은찬이의 회별 고리 던지기 기록을 ○로 나타냈어요. ○를 옮겨 고르게 하여 평균을 구해 보세요.", hints: ["1회의 ○를 2회로 옮겨 봐요.", "○는 모두 8개, 4회예요."],
       render: (b, a) => av6Level(b, a, { names: ["1회", "2회", "3회", "4회"], vals: [3, 1, 2, 2], unit: "개", item: "circle", max: 3, title: "은찬이의 회별 고리 던지기 기록",
         ask: [{ parts: ["은찬이의 고리 던지기 기록의 평균은 ", { n: 2 }, "개예요."] }], ok: "1회의 ○ 1개를 2회로 옮기면 모두 2개예요. 평균은 2개예요." }) },
-    { name: "2. 평균 구하기", inst: "어느 도서관의 5일 동안의 이용객 수예요. 이용객 수의 평균을 구해 보세요.", hints: ["148+150+146+152+154를 먼저 구해요.", "5일이니까 5로 나눠요."],
+    { name: "평균 구하기", inst: "2번. 어느 도서관의 5일 동안의 이용객 수예요. 이용객 수의 평균을 구해 보세요.", hints: ["148+150+146+152+154를 먼저 구해요.", "5일이니까 5로 나눠요."],
       render: av6WithCalc((b, a) => av6Ask(b, a, [{ fig: () => av6HTbl("도서관의 요일별 이용객 수", ["월", "화", "수", "목", "금"], [148, 150, 146, 152, 154], { h1: "요일", h2: "이용객 수(명)" }),
         parts: ["(148 + 150 + 146 + 152 + 154) ÷ 5 = ", { n: 750 }, " ÷ 5 = ", { n: 150, why: { "750": "5로 나누어야 해요." } }, "(명)"] }], { ok: "750÷5=150(명)이에요." })) },
-    { name: "3~4. 가능성 비교", inst: "주머니에서 구슬 한 개를 꺼낼 때 노란색 구슬이 나올 가능성이 높은 주머니부터 차례대로 누르고, 회전판과 결과 표를 알맞게 이어 보세요.", hints: ["노란색 구슬이 많을수록 가능성이 높아요.", "50회 중 빨간색에 37회 멈췄다면 빨간색이 가장 넓은 회전판이에요."],
+    { name: "가능성 비교", inst: "3~4번. 주머니에서 구슬 한 개를 꺼낼 때 노란색 구슬이 나올 가능성이 높은 주머니부터 차례대로 누르고, 회전판과 결과 표를 알맞게 이어 보세요.", hints: ["노란색 구슬이 많을수록 가능성이 높아요.", "50회 중 빨간색에 37회 멈췄다면 빨간색이 가장 넓은 회전판이에요."],
       render: (b, a) => av6Chain(b, a, [
         { title: "3번", run: (bx, ax) => av6Rank(bx, ax, { items: [
           { t: "가", fig: () => av6BagFig([{ name: "", shape: "ball", items: [{ c: AV6_GREEN, n: 3 }, { c: AV6_YEL, n: 3 }] }], { cw: 150, H: 150, maxW: "7em" }) },
@@ -2696,13 +2696,13 @@ const LESSONS = [
         { title: "4번", run: (bx, ax) => av6Ask(bx, ax, [{ fig: () => av6SpinFig(AV6_SP10, { cw: 130, r: 46 }),
           parts: ["표 ① 빨 16회, 노 17회, 파 17회 → ", { o: ["㉠", "㉡", "㉢"], a: 1 }, h("br"), "표 ② 빨 13회, 노 12회, 파 25회 → ", { o: ["㉠", "㉡", "㉢"], a: 2 }, h("br"), "표 ③ 빨 37회, 노 7회, 파 6회 → ", { o: ["㉠", "㉡", "㉢"], a: 0 }] }],
           { ok: "세 색이 비슷한 표 ①은 ㉡, 파란색이 절반쯤인 표 ②는 ㉢, 빨간색이 가장 많은 표 ③은 ㉠이에요." }) }]) },
-    { name: "5~6. 말과 수, 평균 활용", inst: "문제를 풀어 보세요.", hints: ["1부터 8까지의 짝수는 2, 4, 6, 8로 4장이에요.", "통 한 개의 평균 × 통의 수 = 전체 종이학 수"],
+    { name: "말과 수·평균 활용", inst: "5~6번 문제를 풀어 보세요.", hints: ["1부터 8까지의 짝수는 2, 4, 6, 8로 4장이에요.", "통 한 개의 평균 × 통의 수 = 전체 종이학 수"],
       render: (b, a) => av6Ask(b, a, [
         { q: "5. 1부터 8까지의 수 카드 8장이 든 상자에서 카드 한 장을 꺼내요.", parts: ["짝수일 가능성을 말로: ", { o: AV6_W3, a: 1 }, h("br"), "9 이상일 가능성을 수로: ", { o: AV6_N3, a: 0 }] },
         { q: "6. 예린: “나는 통 8개에 종이학을 접어서 넣었어. 통 한 개에 평균 65마리가 들어 있어.” 윤호: “나는 통 6개에 종이학을 접어서 넣었어. 통 한 개에 평균 90마리가 들어 있어.” 종이학을 더 많이 접은 사람은?",
           parts: ["예린: 65 × 8 = ", { n: 520 }, "(마리), 윤호: 90 × 6 = ", { n: 540 }, "(마리) → 더 많이 접은 사람은 ", { o: ["예린", "윤호"], a: 1, why: { "0": "통의 수는 예린이가 많지만 전체 종이학 수를 구해 비교해요." } }] }],
         { ok: "짝수는 반반이다, 9 이상은 0이에요. 예린 520마리, 윤호 540마리라서 윤호가 더 많이 접었어요." }) },
-    { name: "확인하고 정리해요", inst: "단원에서 배운 내용을 정리해 보세요.", hints: ["(평균)=(자룟값을 모두 더한 수)÷(자료의 수)", "주사위 눈 1~6 중 2 이상은 5가지, 5보다 큰 것은 6 한 가지예요."],
+    { name: "확인하고 정리해요", inst: "확인하고 정리해요(자기주도4). 단원에서 배운 내용을 정리해 보세요.", hints: ["(평균)=(자룟값을 모두 더한 수)÷(자료의 수)", "주사위 눈 1~6 중 2 이상은 5가지, 5보다 큰 것은 6 한 가지예요."],
       render: (b, a) => av6Chain(b, a, [
         (bx, ax) => av6Ask(bx, ax, [
           { parts: ["평균은 자룟값을 모두 더한 수를 ", { o: ["자료의 수", "가장 큰 자룟값"], a: 0 }, "로 나눈 값이에요."] },
