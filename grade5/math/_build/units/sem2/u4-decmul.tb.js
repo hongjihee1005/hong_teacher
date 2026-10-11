@@ -88,7 +88,7 @@ input.dm4in.dm4w{width:8.5em}
 input.dm4in.dm4s{width:3.4em}
 .dm4fi{display:inline-flex;flex-direction:column;align-items:center;gap:.12em;vertical-align:middle}
 .dm4fi input.dm4in{width:3.6em;height:1.45em}
-.dm4fi .dm4bar{width:100%;border-top:.13em solid currentColor}
+.dm4fi .dm4bar{width:100%;height:0;font-size:0;line-height:0;border-top:.13em solid currentColor}
 .dm4chs{display:inline-flex;gap:.25em;flex-wrap:wrap;background:#F2F5F4;border-radius:.6em;padding:.1em .25em}
 .dm4chs .opt{padding:.05em .55em}
 .opt.dm4on{border-color:var(--ring);background:var(--ring-soft)}
@@ -381,22 +381,22 @@ function dm4Blocks(body, api, opt) {
   dm4Style();
   const u = dm4P(opt.unit), ones = Number(u / DM4U), tens = Number(u % DM4U / (DM4U / 10n)), hund = Number(u % (DM4U / 10n) / (DM4U / 100n));
   let k = 0, sorted = false, traded = 0;
-  const W = 900, H = opt.frame ? 300 : 250, svg = makeSvg(W, H), g = svgEl("g"); svg.append(g);
-  const s = 9;  // 0.01 조각 한 변
+  const W = 900, H = 250, svg = makeSvg(W, H), g = svgEl("g"); svg.append(g);
+  const s = 16;  // 0.01 조각 한 변
   const say = h("div", { class: "dm4say" }, "​");
   const drawRod = (x, y, c) => { g.append(svgEl("rect", { x, y, width: s, height: s * 10, fill: c, stroke: INK, "stroke-width": 1 })); for (let i = 1; i < 10; i++) g.append(svgEl("line", { x1: x, y1: y + i * s, x2: x + s, y2: y + i * s, stroke: "#5D6E68", "stroke-width": .5 })); };
   const drawSq = (x, y, c) => g.append(svgEl("rect", { x, y, width: s, height: s, fill: c, stroke: INK, "stroke-width": 1 }));
   const drawFlat = (x, y, c) => { g.append(svgEl("rect", { x, y, width: s * 10, height: s * 10, fill: c, stroke: INK, "stroke-width": 1.2 })); for (let i = 1; i < 10; i++) g.append(svgEl("line", { x1: x + i * s, y1: y, x2: x + i * s, y2: y + s * 10, stroke: "#5D6E68", "stroke-width": .5 }), svgEl("line", { x1: x, y1: y + i * s, x2: x + s * 10, y2: y + i * s, stroke: "#5D6E68", "stroke-width": .5 })); };
   const draw = () => {
     g.innerHTML = "";
-    const top = opt.frame ? 70 : 20;
+    const top = 30;
     if (opt.frame) {
       // 정사각형 액자: 놓은 묶음 수만큼 변이 빨갛게
-      const fx = 30, fy = 14, fs = 46;
+      const fx = 745, fy = 70, fs = 110;
       g.append(svgEl("rect", { x: fx, y: fy, width: fs, height: fs, fill: "#FFF7EA", stroke: "#B9C5C0", "stroke-width": 7 }));
       const sides = [[fx, fy, fx + fs, fy], [fx + fs, fy, fx + fs, fy + fs], [fx + fs, fy + fs, fx, fy + fs], [fx, fy + fs, fx, fy]];
       sides.slice(0, Math.min(k, 4)).forEach(([a, b, c, d]) => g.append(svgEl("line", { x1: a, y1: b, x2: c, y2: d, stroke: DM4C.red, "stroke-width": 7, "stroke-linecap": "round" })));
-      g.append(txt(fx + fs + 110, fy + fs / 2, `한 변 ${opt.unit} m`, 18, { fill: DM4C.dark }));
+      g.append(txt(fx + fs / 2, fy - 30, `액자 한 변 ${opt.unit} m`, 18, { fill: DM4C.dark }));
     }
     if (!sorted) {
       let x = 30;
@@ -488,7 +488,7 @@ function dm4Jump(body, api, opt) {
 function dm4Double(body, api, opt) {
   dm4Style();
   const sv = dm4P(opt.step), N = Number(dm4P(opt.bot) / sv), T = Number(dm4P(opt.target) / sv);
-  const W = 960, H = 290, x0 = 70, len = 800, yt = 105, yb = 215, X = i => x0 + i * len / N;
+  const W = 960, H = 300, x0 = 70, len = 800, yt = 105, yb = 215, X = i => x0 + i * len / N;
   const svg = makeSvg(W, H), g = svgEl("g"), mv = svgEl("g"); svg.append(g, mv);
   g.append(txt(x0 - 40, yt - 46, opt.what || "", 19, { fill: DM4C.dark, "text-anchor": "start" }));
   g.append(svgEl("rect", { x: x0, y: yt - 30, width: len, height: 18, rx: 6, fill: "#E8EEEB", stroke: "#B9C5C0" }));
@@ -497,7 +497,7 @@ function dm4Double(body, api, opt) {
     g.append(svgEl("line", { x1: X(i), y1: yt - 9, x2: X(i), y2: yt + 9, stroke: INK, "stroke-width": i === 0 || i === N ? 2.2 : 1.3 }));
     g.append(svgEl("line", { x1: X(i), y1: yb - 9, x2: X(i), y2: yb + 9, stroke: INK, "stroke-width": i === 0 || i === N ? 2.2 : 1.3 }));
     const bv = dm4F(sv * BigInt(i));
-    if (i === 0 || i === N || (opt.labels || []).includes(bv)) g.append(txt(X(i), yb + 32, bv, 20));
+    if (i === 0 || i === N || (opt.labels || []).includes(bv)) g.append(txt(X(i), yb + 44, bv, 20));
   }
   g.append(txt(X(0), yt + 30, "0", 20), txt(X(N), yt + 30, `${opt.top}${opt.unit ? " " + opt.unit : ""}`, 20));
   (opt.topLabels || []).forEach(([i, t]) => g.append(txt(X(i), yt + 30, t, 20)));
@@ -534,7 +534,7 @@ function dm4Area(body, api, opt) {
   const u = opt.unit || "m";
   g.append(svgEl("rect", { x: x0, y: y0, width: S, height: S, fill: "#fff" }));
   for (let k = 1; k < 10; k++) g.append(svgEl("line", { x1: x0 + k * c, y1: y0, x2: x0 + k * c, y2: y0 + S, stroke: "#9AABA4", "stroke-width": 1 }), svgEl("line", { x1: x0, y1: y0 + k * c, x2: x0 + S, y2: y0 + k * c, stroke: "#9AABA4", "stroke-width": 1 }));
-  g.append(txt(x0 + S / 2, y0 - 46, `1 ${u}`, 20, { fill: DM4C.dark }), txt(x0 - 74, y0 + S / 2, `1 ${u}`, 20, { fill: DM4C.dark }));
+  g.append(txt(x0 + S / 2, y0 + S + 26, `← 가로 1${u ? " " + u : ""} →`, 18, { fill: DM4C.dark }), txt(x0 + S + 40, y0 + S / 2, `세로 1${u ? " " + u : ""}`, 18, { fill: DM4C.dark, transform: `rotate(90 ${x0 + S + 40} ${y0 + S / 2})` }));
   let w = 0, hh = 0;
   const say = h("div", { class: "dm4say" }, "​");
   const draw = () => {
@@ -567,7 +567,7 @@ function dm4VertBoard(pr) {
   const N = (BigInt(na) * BigInt(nb)).toString(), D = dm4Dn(A) + dm4Dn(B);
   const cellsOf = s => { const out = []; [...s].forEach(ch => { if (ch === ".") out[out.length - 1].dot = true; else out.push({ d: ch }); }); return out; };
   const ca = cellsOf(A), cb = cellsOf(B), need = N.padStart(D + 1, "0").length;
-  const C = Math.max(ca.length, cb.length + 1, need) + (pr.extra || 0);
+  const C = Math.max(ca.length, cb.length + 1, need) + (pr.extra == null ? 1 : pr.extra);
   const td = (c) => { const e = h("td", {}, c ? c.d : "​"); if (c && c.dot) e.append(h("span", { class: "dm4dot" }, "​")); return e; };
   const rowOf = (cells, sign) => h("tr", {}, Array.from({ length: C - cells.length }, (_, i) => h("td", {}, i === C - cells.length - 1 && sign ? sign : "​")), cells.map(td));
   const memoRows = nb.length >= 2 ? Array.from(nb, (_, r) => h("tr", { class: "dm4memo" + (r === 0 ? " dm4sum" : "") }, Array.from({ length: C }, () => h("td", {}, h("input", { type: "text", inputmode: "numeric", maxlength: 1, "aria-label": "부분 곱 메모" }))))) : [];
@@ -637,7 +637,7 @@ function dm4Point(body, api, opt) {
       if (b) pts.push(b);
       return h("span", { class: "dm4c" + (c.g ? " dm4g" : "") }, c.d, b);
     }));
-    const row = h("div", { class: "dm4row" }, h("span", {}, it.e.replace("×", " × ") + " ="), strip, res);
+    const row = h("div", { class: "dm4row" }, h("span", { style: "min-width:7.6em" }, it.e.replace("×", " × ") + " ="), strip, res);
     const judge = () => {
       if (p < 0) return { bad: `${it.e.replace("×", " × ")}: 소수점을 찍을 곳의 빨간 동그라미를 눌러요.`, given: "-" };
       const s = cells.slice(0, p + 1).map(c => c.d).join("") + "." + cells.slice(p + 1).map(c => c.d).join(""), got = dm4P(s);
@@ -661,15 +661,13 @@ function dm4Shift(body, api, opt) {
   opt.sets.forEach(S => {
     const s = dm4Norm(S.start), [ip, fp = ""] = s.split(".");
     const digs = []; [...ip].forEach((d, k) => digs.push({ d, e: ip.length - 1 - k })); [...fp].forEach((d, k) => digs.push({ d, e: -1 - k }));
-    const EH = 3, EL = -4, cols = EH - EL + 1, cw = 70, x0 = 30, W = x0 * 2 + cols * cw, H = 200;
+    const EH = 3, EL = -4, cols = EH - EL + 1, cw = 70, x0 = 30, W = x0 * 2 + cols * cw, H = 140;
     const cx = e => x0 + (EH - e) * cw + cw / 2;
     const svg = makeSvg(W, H), bg = svgEl("g"), fg = svgEl("g"), pg = svgEl("g"); svg.append(bg, fg, pg);
-    const NM = ["천", "백", "십", "일", "소수\n첫째", "소수\n둘째", "소수\n셋째", "소수\n넷째"];
     for (let e = EH; e >= EL; e--) {
-      bg.append(svgEl("rect", { x: cx(e) - cw / 2, y: 62, width: cw, height: 100, fill: e >= 0 ? "#F4F7F5" : "#FFF7EA", stroke: DM4C.line, "stroke-width": 2 }));
-      NM[EH - e].split("\n").forEach((t, j, arr) => bg.append(txt(cx(e), 26 + j * 20 - (arr.length - 1) * 6, t, 16, { fill: DM4C.dark })));
+      bg.append(svgEl("rect", { x: cx(e) - cw / 2, y: 20, width: cw, height: 100, fill: "#F7F9F8", stroke: DM4C.line, "stroke-width": 2 }));
     }
-    const dot = svgEl("circle", { cx: 0, cy: 146, r: 8, fill: DM4C.red });
+    const dot = svgEl("circle", { cx: 0, cy: 104, r: 8, fill: DM4C.red });
     dot.style.transition = "transform .55s ease";
     pg.append(dot);
     const show = q => {   // 소수점이 지수 q 칸의 오른쪽(q 이상은 자연수 부분)
@@ -685,7 +683,7 @@ function dm4Shift(body, api, opt) {
           if (e > q && !nzAbove(e)) grey = true;          // 맨 앞의 쓸데없는 0
           if (e < q && !nzBelow(e)) grey = true;          // 소수 끝자리의 0
         }
-        fg.append(txt(cx(e), 118, ch, 46, { fill: grey ? "#B9C5C0" : INK }));
+        fg.append(txt(cx(e), 76, ch, 46, { fill: grey ? "#B9C5C0" : INK }));
       }
       dot.style.transform = `translate(${cx(q) + cw / 2}px,0px)`;
     };
