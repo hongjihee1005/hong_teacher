@@ -65,6 +65,8 @@ function c3Diag(e, v) {
   } else {
     const nb = pa.split("").map((c, i) => Math.abs(+c - +pb[i])).join("");
     if (v === +nb * Math.pow(10, 3 - D)) return "작은 수에서 큰 수를 뺄 수 없을 때는 큰 수에서 작은 수를 빼면 안 돼요. 바로 윗자리에서 받아내림해요.";
+    const nk = pa.split("").map((c, i) => +c < +pb[i] ? +c + 10 - +pb[i] : +c - +pb[i]).join(""); // 받아내림하고 윗자리를 1 줄이지 않음
+    if (v === +nk * Math.pow(10, 3 - D)) return "받아내림을 했으면 바로 윗자리 수는 1 작아져요. 윗자리를 계산할 때 1을 빼고 계산해요.";
   }
   return null;
 }
@@ -286,7 +288,7 @@ function c3sAuto(root, ready, sig, judge) {
 }
 /* 묻는 칸이 다 찼나요? 읽는 말(글 칸)은 칸을 떠나야(Enter·다른 곳 누르기) 다 쓴 것으로 봐요 — 한글을 쓰는 중에 확인하지 않게 */
 function c3sFilled(reg) {
-  return reg.items.every(it => it.k === "n" ? it.inp.value.trim() !== "" : it.k === "t" ? it.inp.value.trim() !== "" && document.activeElement !== it.inp :
+  return reg.items.every(it => it.k === "n" ? it.inp.value.trim() !== "" && !/[.．。·]$/.test(it.inp.value.trim()) /* '2.'처럼 소수점까지만 쓴 중이면 기다려요 */ : it.k === "t" ? it.inp.value.trim() !== "" && document.activeElement !== it.inp :
     it.k === "m" ? it.sel.size >= it.pt.a.length : it.sel.size > 0);
 }
 function c3sSig(reg) { return reg.items.map(it => it.inp ? it.inp.value.trim() : [...it.sel].sort().join(",")).join("§"); }
@@ -496,7 +498,7 @@ function c3Line(body, api, opt) {
   body.append(h("div", { class: "c3say" }, opt.tip || "파란 표시를 끌거나 수직선을 눌러 옮겨요. ◀ ▶ 단추로 한 칸씩 옮길 수도 있어요."), h("div", { class: "c3stage" }, svg), say, tools, asks);
   api.provide({ words: opt.words || [], answers: [`화살표를 ${c3F(opt.target)}에`].concat(reg.plain) });
   c3sAuto(body, () => pos !== base && c3sFilled(reg), () => pos + "#" + c3sSig(reg), () => {
-    if (pos !== opt.target) { api.fail(opt.why || `작은 눈금 한 칸이 ${c3F(opt.minor)}예요. 몇 칸 옮겨야 하는지 다시 세어 봐요.`, "화살표 " + c3F(pos)); return false; }
+    if (pos !== opt.target) { api.fail(opt.why || `작은 눈금 한 칸이 ${c3J(c3F(opt.minor), "이에요")}. 몇 칸 옮겨야 하는지 다시 세어 봐요.`, "화살표 " + c3F(pos)); return false; }
     const r = c3Judge(reg, opt);
     if (r.bad) { api.fail(r.bad, "화살표 " + c3F(pos) + " / " + r.given); return false; }
     api.tryOnce(); api.done("화살표 " + c3F(pos) + (r.given ? " / " + r.given : ""), opt.ok); return true;
@@ -550,7 +552,7 @@ function c3Cmp(body, api, opt) {
   const mark = () => ths.forEach((b, k) => b.classList.toggle("c3nx", k === next && found == null));
   function click(k) {
     if (found != null) return;
-    if (k !== next) { api.hint(`높은 자리부터 차례대로 비교해요. 지금은 ‘${NAMES[next]}’를 누를 차례예요.`); return; }
+    if (k !== next) { api.hint(`높은 자리부터 차례대로 비교해요. 지금은 ‘${NAMES[next]}’${c3J(NAMES[next], "을를").slice(-1)} 누를 차례예요.`); return; }
     const x = part(A, k), y = part(B, k), xs = x == null ? "0" : x, ys = y == null ? "0" : y;
     if (x == null) { rowA[k].textContent = "0"; rowA[k].classList.add("c3ghost"); }
     if (y == null) { rowB[k].textContent = "0"; rowB[k].classList.add("c3ghost"); }
@@ -558,7 +560,7 @@ function c3Cmp(body, api, opt) {
     [rowA[k], rowB[k]].forEach(td => td.classList.add(cx === cy ? "c3same" : "c3diff"));
     rowR[k].textContent = cx === cy ? "같아요" : `${xs} ${cx > cy ? ">" : "<"} ${ys}`;
     if (cx !== cy || k === NAMES.length - 1) { found = k; signBox.classList.remove("hidden"); say.textContent = cx !== cy ? `${NAMES[k]}에서 크기가 정해졌어요. 알맞은 기호를 골라요.` : "모든 자리가 같아요. 알맞은 기호를 골라요."; }
-    else { next = k + 1; say.textContent = `${NAMES[k]}가 같아요. 다음 자리를 눌러요.`; }
+    else { next = k + 1; say.textContent = `${c3J(NAMES[k], "이가")} 같아요. 다음 자리를 눌러요.`; }
     mark();
   }
   mark();
@@ -801,7 +803,7 @@ function c3Color(body, api, opt) {
     { id: "head", d: "M270 215 a120 85 0 1 0 240 0 a120 85 0 1 0 -240 0z", lx: 390, ly: 245 },
     { id: "body", d: "M280 445 q-10 -115 110 -145 q120 30 110 145 z", lx: 390, ly: 385 },
     { id: "carrot", d: "M540 270 h90 l-45 175 z", lx: 585, ly: 305 },
-    { id: "grass", d: "M45 445 q30 -90 55 0 q25 -90 55 0 q25 -90 55 0 z", lx: 128, ly: 425 }];
+    { id: "grass", d: "M30 445 q100 -140 200 0 z", lx: 130, ly: 420 }];
   const labels = opt.labels; // 칸 id → 수 글
   const fills = {}; let cur = 0;
   const svg = makeSvg(700, 460), g = svgEl("g"); svg.append(g);
@@ -1296,7 +1298,7 @@ const LESSONS = [
         ["② 모두 마신 양: 0.75+0.58 =", { n: "1.33", e: "0.75+0.58" }, "L"],
         ["③ 남은 물: 1.5 −", { n: "1.33" }, "=", { n: "0.17", e: "1.5-1.33" }, "L"]],
         { ok: "민재는 물을 모두 1.33 L 마셨고, 물병에 0.17 L가 남았어요. 어림한 대로 1 L보다 많이 마셨어요." }) },
-    { name: "말해 보기 — 잘못 고치기", inst: "도현이는 기록 4.6과 2.35의 합을 왼쪽처럼 계산했어요. 잘못 계산한 까닭을 고르고, 아래 수를 옮겨 옳게 계산해 보세요.", hints: ["두 수의 오른쪽 끝을 맞추어 썼어요.", "소수점끼리 세로로 맞추어 써요.", "4.6=4.60으로 생각하면 4.60+2.35예요."],
+    { name: "말해 보기 — 잘못 고치기", inst: "도현이는 기록 4.6과 2.35의 합을 위처럼 계산했어요. 잘못 계산한 까닭을 고르고, 아래 수를 옮겨 옳게 계산해 보세요.", hints: ["두 수의 오른쪽 끝을 맞추어 썼어요.", "소수점끼리 세로로 맞추어 써요.", "4.6=4.60으로 생각하면 4.60+2.35예요."],
       render: (b, a) => c3Vert(b, a, { a: "4.6", b: "2.35", op: "+", align: true, pad: true,
         fig: () => h("div", {}, h("div", { class: "c3cap" }, "도현이가 계산한 세로셈"), c3CharTable([["", "", "4", ".", "6"], ["+", "2", ".", "3", "5"], ["", "2", ".", "8", "1"]])),
         reason: { q: "잘못 계산한 까닭은", o: ["소수점의 위치를 맞추어 쓰지 않았어요", "받아올림을 하지 않았어요", "자연수 부분만 더했어요"], a: 0, why: { "1": "받아올림보다 먼저, 두 수를 어떻게 맞추어 썼는지 살펴봐요.", "2": "두 수를 어떻게 맞추어 썼는지 살펴봐요." } },

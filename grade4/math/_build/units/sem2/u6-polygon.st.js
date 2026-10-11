@@ -247,7 +247,7 @@ function p6Sort(body, api, opt) {
     const btn = h("button", { class: "opt p6card", onclick: () => { if (over) return; sel = sel === i ? null : i; paint(); } }, h("div", { class: "jua" }, it.label || P6_KO[i]), s, tag);
     grid.append(btn); return { btn, tag, holder };
   });
-  const drawCards = () => cards.forEach((c, i) => { c.holder.innerHTML = ""; c.holder.append(p6ShapeG(items[i].S, CW, CH, { pad: tmea ? 58 : (tnum ? 32 : 24), nums: tnum, measure: tmea, fs: 20, unit: opt.unit, dots: !!items[i].S.pts })); });
+  const drawCards = () => cards.forEach((c, i) => { c.holder.innerHTML = ""; c.holder.append(p6ShapeG(items[i].S, CW, CH, { pad: tmea ? 76 : (tnum ? 32 : 24), nums: tnum, measure: tmea, fs: 20, unit: opt.unit, dots: !!items[i].S.pts })); });
   const paint = () => cards.forEach((c, i) => { c.btn.classList.toggle("on", sel === i); c.tag.textContent = where[i] < 0 ? "-" : cats[where[i]]; c.btn.classList.remove("good", "bad"); });
   const lab = i => items[i].label || P6_KO[i];
   const toolBtns = [];
@@ -426,7 +426,7 @@ function p6Diag(body, api, opt) {
     if (si < shapes.length - 1) { api.hint(`○ ${p6Jo(r.label, "의/의").slice(0, -1)}의 대각선은 ${r.count}개예요.${S.measure ? " 잰 길이와 각을 살펴보고" : ""} ‘다음 도형’을 눌러요.`); nextB.disabled = false; }
     else { over = true; nextB.style.display = "none"; p6Finish(body, api, opt, results.map(x => `${x.label} ${x.count}개`).join(", "), `${r.label}의 대각선은 ${r.count}개예요.`, results); }
   }
-  const nextB = h("button", { disabled: true, onclick: () => { nextB.disabled = true; si++; setup(); } }, "다음 도형 ▶");
+  const nextB = h("button", { disabled: true, onclick: () => { nextB.disabled = true; si++; setup(); } }, "이어서 도형 ▶");
   const noneB = h("button", { onclick: () => {
     if (over) return; api.tryOnce();
     if (need.length === 0) { api.hint("○ 삼각형은 세 꼭짓점이 모두 서로 이웃해 있어서 대각선을 그을 수 없어요."); complete(); }
@@ -633,7 +633,7 @@ function p6Pieces(body, api, opt) {
     const opts = [3, 4, 5, 6, 7, 8].map(p6Name);
     nameBox.append(h("p", { class: "jua" }, "만든 다각형의 변을 세어 이름을 골라요."), p6Tools(...opts.map(o => h("button", { onclick: e => {
       api.tryOnce();
-      if (o !== outl.name) { e.currentTarget.classList.add("bad"); return api.fail(`변을 하나씩 세어 봐요. 변이 ${o.replace("각형", "")}개가 맞나요?`, o); }
+      if (o !== outl.name) { e.currentTarget.classList.add("bad"); return api.fail(`변을 하나씩 세어 봐요. 변이 ${[3, 4, 5, 6, 7, 8].find(k => p6Name(k) === o)}개가 맞나요?`, o); }
       naming = false; nameBox.innerHTML = ""; r.say += ` → ${outl.name}`; nextTask(r, `조각 ${r.count}개로 ${p6Jo(outl.name, "을/를")} 만들었어요.`);
     } }, o))));
     api.hint("한 도형이 되었어요! 변의 수를 세어 이름을 골라요.");
@@ -646,7 +646,15 @@ function p6Pieces(body, api, opt) {
     if (t.type === "fill" && !polys.every(P => t.targets.some(T => p6InN(p6Cen(P), T)))) return false;   // 아직 상자에 있는 조각이 있으면 기다림
     if (t.type === "fill") return Math.abs(polys.reduce((s, P) => s + areaOf(P), 0) - t.targets.reduce((s, T) => s + areaOf(T), 0)) < .05;
     if (t.count ? pieces.length !== t.count : pieces.length < (t.min || 2)) return false;
-    return p6Outline(polys).ok;
+    const ol = p6Outline(polys); if (!ol.ok) return false;
+    /* 만드는 중에 저절로 '틀림'이 되지 않게: 조각 가짓수가 모자라거나 모양이 아직 다르면 안내만 하고 기다림 */
+    if (t.type === "make") {
+      const nk = p6Kinds(set, pieces).length, nm = ol.reg ? ol.best : (ol.n === 4 ? ol.best : ol.name);
+      const want = t.reg && t.n ? "정" + p6Name(t.n) : t.reg ? "정다각형" : t.isA || (t.n ? p6Name(t.n) : "");
+      if (t.kinds && nk < t.kinds) { api.hint(`지금은 ${nk}가지 조각으로 ${p6Jo(nm, "을/를")} 만들었어요. ${t.kinds}가지 조각을 써서 ${want ? p6Jo(want, "을/를") + " " : ""}만들어요.`); return false; }
+      if ((t.n && ol.n !== t.n) || (t.reg && !ol.reg) || (t.isA && !ol.is.has(t.isA))) { api.hint(`지금 만든 도형은 ${p6Jo(nm, "이에요/예요")}. 조각을 더 붙이거나 옮겨서 ${p6Jo(want, "을/를")} 만들어요.`); return false; }
+    }
+    return true;
   };
   auto = autoRun(ready, () => ti + "|" + pieces.map(pc => [pc.k, p6R(pc.x), p6R(pc.y), pc.r, pc.f ? 1 : 0].join(",")).join(";"), () => { judge(); }, 1200);
   const doneB = h("button", { class: "big", onclick: () => { if (tasks[ti] && tasks[ti].type === "free") judge(); } }, "다 만들었어요");
@@ -879,7 +887,7 @@ function p6sGame(body, api, opt) {
     const e = svgEl("polygon", { points: p6PtsAttr(r.pts), fill: "#fff", stroke: INK, "stroke-width": 3, "stroke-linejoin": "round", style: "cursor:pointer" });
     e.addEventListener("click", () => pick(i)); svg.append(e); return e;
   });
-  regs.forEach(r => r.pts.forEach(p => svg.append(svgEl("circle", { cx: p[0], cy: p[1], r: 3, fill: INK, "pointer-events": "none" }))));
+  regs.forEach(r => { const c = p6Cen(r.pts); r.pts.forEach(p => { const v = [c[0] - p[0], c[1] - p[1]], l = Math.hypot(...v) || 1, d = Math.min(7, l * .3); svg.append(svgEl("circle", { cx: p6R(p[0] + v[0] / l * d), cy: p6R(p[1] + v[1] / l * d), r: 2.6, fill: INK, "pointer-events": "none" })); }); });   // 꼭짓점 점은 그 다각형 안쪽으로 조금 들여 찍어 이웃 다각형의 변 위에 겹치지 않게
   const dieS = makeSvg(100, 100), turnT = h("div", { class: "readout" }), read = h("div", { class: "p6small" });
   function drawDie() {
     dieS.innerHTML = ""; dieS.append(svgEl("rect", { x: 6, y: 6, width: 88, height: 88, rx: 16, fill: "#fff", stroke: INK, "stroke-width": 4 }));
@@ -892,7 +900,7 @@ function p6sGame(body, api, opt) {
     read.textContent = `칠한 다각형 ${regs.filter(r => r.col).length}/${regs.length}`;
     roll.disabled = over || !!die; pass.disabled = over || !die;
   }
-  const roll = h("button", { class: "big", onclick: () => { if (die || over) return; let k = 0; const t = setInterval(() => { die = 1 + Math.floor(Math.random() * 6); drawDie(); if (++k > 7) { clearInterval(t); status(); api.hint(`눈 ${die}이 나왔어요. 그림에서 ${p6Jo(p6Name(want()), "을/를")} 찾아 칠해요.`); } }, 70); } }, "🎲 주사위 굴리기");
+  const roll = h("button", { class: "big", onclick: () => { if (die || over) return; let k = 0; const t = setInterval(() => { die = 1 + Math.floor(Math.random() * 6); drawDie(); if (++k > 7) { clearInterval(t); status(); api.hint(`눈 ${p6Jo(die, "이/가")} 나왔어요. 그림에서 ${p6Jo(p6Name(want()), "을/를")} 찾아 칠해요.`); } }, 70); } }, "🎲 주사위 굴리기");
   const pass = h("button", { onclick: () => {
     if (!die || over) return;
     const left = regs.filter(r => !r.col && r.n === want()).length;
@@ -1025,7 +1033,7 @@ function p6sSigns() {
 /* 4차시 바닥 타일: 정사각형 직사각형 정육각형 마름모(70°) 정삼각형 정팔각형 */
 const P6S_TILE = [p6Reg(4, 2), [[0, 0], [3.2, 0], [3.2, 1.8], [0, 1.8]], p6Reg(6, 1.4), p6sRh(2.2, 70), p6Reg(3, 2.6), p6Reg(8, 1.1)].map(p6S);
 /* 4차시 정다각형 찾기: 가 비스듬한 정사각형, 나 마름모(60°), 다 정오각형, 라 각만 같은 육각형, 마 정칠각형 */
-const P6S_REGQ = [p6Reg(4, 2, 25), p6sRh(2, 60), p6Reg(5, 1.8), p6Need(p6sTurtle([2.2, 1, 2.2, 1, 2.2, 1], 60), 6, "라"), p6Reg(7, 1.3)].map(p6S);
+const P6S_REGQ = [p6Reg(4, 2, 25), p6sRh(2, 60), p6Reg(5, 1.8), p6Need(p6sTurtle([2.2, 1.4, 2.2, 1.4, 2.2, 1.4], 60), 6, "라"), p6Reg(7, 1.3)].map(p6S);
 if (!p6Info(P6S_REGQ[3].pts).eqA || p6Info(P6S_REGQ[3].pts).eqL) throw new Error("그림 오류: 각만 같은 육각형");
 /* 4차시 정팔각형 타일 □ */
 const P6S_OCT = { side: 3, ang: (8 - 2) * 180 / 8 };
@@ -1116,7 +1124,7 @@ const LESSONS = [
       render: thenWhy((b, a) => { b.append(p6Cards(P6S_STK, { per: 4, cw: 180, ch: 170, shape: { dots: true }, maxW: "40em" }));
         numbers(b, a, P6S_STK.map((S, i) => ({ q: `${P6_KO[i]}의 변`, a: P6S_STKN[i], unit: "개" })), { ok: `가는 ${P6S_STKN[0]}개, 나는 ${P6S_STKN[1]}개, 다는 ${P6S_STKN[2]}개, 라는 ${P6S_STKN[3]}개예요.` }); },
         { q: "변의 수를 빠뜨리지 않고 세려면 어떻게 하면 좋을까요?", ph: "~부터 시작해서 ~", help: ["① 처음 센 변에 표시를 해요. → ② 한 방향으로 돌며 세어요.", "‘한 변에 표시를 하고 ~ 방향으로 돌며 세면 돼요.’ 꼴로 써요."], ans: "처음 센 변에 표시를 하고 한 방향으로 한 바퀴 돌며 세면 빠뜨리거나 두 번 세지 않아요." }) },
-    { name: "약속하기 — 배운 것 떠올리기", inst: "3학년과 4학년 1학기에 배운 것을 떠올려 알맞은 것을 골라 보세요.", hints: ["두 점을 곧게 이은 선이 선분이에요.", "마름모는 네 변의 길이가 모두 같은 사각형이에요."],
+    { name: "약속하기 — 배운 것 떠올리기", inst: "앞에서 배운 것을 떠올려 알맞은 것을 골라 보세요.", hints: ["두 점을 곧게 이은 선이 선분이에요.", "마름모는 네 변의 길이가 모두 같은 사각형이에요."],
       render: (b, a) => quiz(b, a, [
         { q: "두 점을 곧게 이은 선은?", o: ["선분", "반직선", "직선"], a: 0, why: { "1": "반직선은 한 점에서 한쪽으로 끝없이 늘인 곧은 선이에요.", "2": "직선은 양쪽으로 끝없이 늘인 곧은 선이에요." } },
         { q: "삼각형의 변과 꼭짓점은 각각 몇 개일까요?", o: ["변 3개, 꼭짓점 3개", "변 3개, 꼭짓점 4개", "변 4개, 꼭짓점 4개"], a: 0 },
@@ -1202,7 +1210,7 @@ const LESSONS = [
       render: (b, a) => blanks(b, a, [{ o: ["변의 길이가 모두 같고, 각의 크기가 모두 같은", "변의 길이만 모두 같은", "각의 크기만 모두 같은"], a: 0 }, " 다각형을 정다각형이라고 해요. 변이 8개인 정다각형은 ", { o: ["정팔각형", "팔각형", "정사각형"], a: 0 }, "이에요."], { ok: "변의 길이가 모두 같고, 각의 크기가 모두 같은 다각형을 정다각형이라고 해요." }) },
     { name: "확인하기 — 타일 가게에서", inst: "타일 가게에서 정다각형 타일을 찾고, 정팔각형 타일의 □를 구해 보세요.", hints: ["비스듬히 놓여 있어도 변의 길이와 각의 크기가 모두 같으면 정다각형이에요.", "정다각형은 변의 길이도 각의 크기도 모두 같아요."],
       render: (b, a) => p6Chain(b, a, [
-        (bx, ax) => quiz(bx, ax, [{ q: "정다각형 타일을 모두 골라요.", fig: () => p6Cards(P6S_REGQ, { per: 2, cw: 380, ch: 320, maxW: "36em", shape: { measure: true, unit: "cm", fs: 19, pad: 60 } }), o: P6_KO.slice(0, 5), a: [0, 2, 4] }], { bad: "변의 길이와 각의 크기를 함께 살펴봐요. 비스듬히 놓인 타일도 다시 봐요.", ok: "가, 다, 마가 정다각형이에요. 나는 변의 길이만, 라는 각의 크기만 모두 같아요." }),
+        (bx, ax) => quiz(bx, ax, [{ q: "정다각형 타일을 모두 골라요.", fig: () => p6Cards(P6S_REGQ, { per: 2, cw: 380, ch: 320, maxW: "36em", shape: { measure: true, unit: "cm", fs: 19, pad: 80 } }), o: P6_KO.slice(0, 5), a: [0, 2, 4] }], { bad: "변의 길이와 각의 크기를 함께 살펴봐요. 비스듬히 놓인 타일도 다시 봐요.", ok: "가, 다, 마가 정다각형이에요. 나는 변의 길이만, 라는 각의 크기만 모두 같아요." }),
         (bx, ax) => { bx.append(p6sOctFig()); numbers(bx, ax, [{ q: "변 □", a: P6S_OCT.side, unit: "cm" }, { q: "각 □", a: P6S_OCT.ang, unit: "°" }, { q: "이 타일의 둘레", a: P6S_OCT.side * 8, unit: "cm", why: { [P6S_OCT.side * 4]: "변이 4개인 정사각형처럼 계산했어요. 정팔각형은 변이 8개예요." } }], { ok: `정다각형은 변의 길이가 모두 ${P6S_OCT.side} cm, 각의 크기가 모두 ${P6S_OCT.ang}°예요. 둘레는 ${P6S_OCT.side} × 8 = ${P6S_OCT.side * 8} cm예요.` }); }]) }
   ],
   challenge: { inst: "★ 도전: 원형 도형판에서 점과 점 사이의 간격을 살펴보며 정삼각형, 정사각형, 정육각형을 차례로 만들어 보세요.", hints: ["원형 도형판의 점은 12개예요.", "12개의 점에서 정삼각형은 4칸씩, 정사각형은 3칸씩, 정육각형은 2칸씩 같은 간격으로 건너뛰어요."],

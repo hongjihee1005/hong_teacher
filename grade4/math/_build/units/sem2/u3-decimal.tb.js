@@ -63,6 +63,8 @@ function c3Diag(e, v) {
   } else {
     const nb = pa.split("").map((c, i) => Math.abs(+c - +pb[i])).join("");
     if (v === +nb * Math.pow(10, 3 - D)) return "작은 수에서 큰 수를 뺄 수 없을 때는 큰 수에서 작은 수를 빼면 안 돼요. 바로 윗자리에서 받아내림해요.";
+    const nk = pa.split("").map((c, i) => +c < +pb[i] ? +c + 10 - +pb[i] : +c - +pb[i]).join(""); // 받아내림하고 윗자리를 1 줄이지 않음
+    if (v === +nk * Math.pow(10, 3 - D)) return "받아내림을 했으면 바로 윗자리 수는 1 작아져요. 윗자리를 계산할 때 1을 빼고 계산해요.";
   }
   return null;
 }
@@ -464,7 +466,7 @@ function c3Line(body, api, opt) {
   body.append(h("div", { class: "c3say" }, opt.tip || "파란 표시를 끌거나 수직선을 눌러 옮겨요. ◀ ▶ 단추로 한 칸씩 옮길 수도 있어요."), h("div", { class: "c3stage" }, svg), say, tools, asks);
   api.provide({ words: opt.words || [], answers: [`화살표를 ${c3F(opt.target)}에`].concat(reg.plain) });
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
-    if (pos !== opt.target) return api.fail(opt.why || (pos === base ? "먼저 파란 표시를 옮겨 봐요." : `작은 눈금 한 칸이 ${c3F(opt.minor)}예요. 몇 칸 옮겨야 하는지 다시 세어 봐요.`), "화살표 " + c3F(pos));
+    if (pos !== opt.target) return api.fail(opt.why || (pos === base ? "먼저 파란 표시를 옮겨 봐요." : `작은 눈금 한 칸이 ${c3J(c3F(opt.minor), "이에요")}. 몇 칸 옮겨야 하는지 다시 세어 봐요.`), "화살표 " + c3F(pos));
     const r = c3Judge(reg, opt);
     if (r.bad) return api.fail(r.bad, "화살표 " + c3F(pos) + " / " + r.given);
     api.tryOnce(); api.done("화살표 " + c3F(pos) + (r.given ? " / " + r.given : ""), opt.ok);
@@ -518,7 +520,7 @@ function c3Cmp(body, api, opt) {
   const mark = () => ths.forEach((b, k) => b.classList.toggle("c3nx", k === next && found == null));
   function click(k) {
     if (found != null) return;
-    if (k !== next) { api.hint(`높은 자리부터 차례대로 비교해요. 지금은 ‘${NAMES[next]}’를 누를 차례예요.`); return; }
+    if (k !== next) { api.hint(`높은 자리부터 차례대로 비교해요. 지금은 ‘${NAMES[next]}’${c3J(NAMES[next], "을를").slice(-1)} 누를 차례예요.`); return; }
     const x = part(A, k), y = part(B, k), xs = x == null ? "0" : x, ys = y == null ? "0" : y;
     if (x == null) { rowA[k].textContent = "0"; rowA[k].classList.add("c3ghost"); }
     if (y == null) { rowB[k].textContent = "0"; rowB[k].classList.add("c3ghost"); }
@@ -526,7 +528,7 @@ function c3Cmp(body, api, opt) {
     [rowA[k], rowB[k]].forEach(td => td.classList.add(cx === cy ? "c3same" : "c3diff"));
     rowR[k].textContent = cx === cy ? "같아요" : `${xs} ${cx > cy ? ">" : "<"} ${ys}`;
     if (cx !== cy || k === NAMES.length - 1) { found = k; signBox.classList.remove("hidden"); say.textContent = cx !== cy ? `${NAMES[k]}에서 크기가 정해졌어요. 알맞은 기호를 골라요.` : "모든 자리가 같아요. 알맞은 기호를 골라요."; }
-    else { next = k + 1; say.textContent = `${NAMES[k]}가 같아요. 다음 자리를 눌러요.`; }
+    else { next = k + 1; say.textContent = `${c3J(NAMES[k], "이가")} 같아요. 다음 자리를 눌러요.`; }
     mark();
   }
   mark();
@@ -537,7 +539,7 @@ function c3Cmp(body, api, opt) {
     if (pick == null) return api.fail("두 수 사이에 들어갈 기호를 골라요.", "-");
     const btn = [...signBox.querySelectorAll(".opt")].find(b => b.textContent === pick);
     if (pick !== sign) { btn.classList.add("bad"); return api.fail(opt.why || "크기가 정해진 자리의 숫자를 다시 견주어 봐요. 그 자리 숫자가 큰 수가 더 커요.", `${A} ${pick} ${B}`); }
-    btn.classList.add("good"); api.tryOnce(); api.done(`${A} ${pick} ${B}`, opt.ok || `${A} ${sign} ${B}이에요. 높은 자리부터 차례대로 비교했어요!`);
+    btn.classList.add("good"); api.tryOnce(); api.done(`${A} ${pick} ${B}`, opt.ok || `${c3J(`${A} ${sign} ${B}`, "이에요")}. 높은 자리부터 차례대로 비교했어요!`);
   } }, "확인하기")));
 }
 
@@ -887,7 +889,7 @@ function c3Color(body, api, opt) {
     { id: "head", d: "M270 215 a120 85 0 1 0 240 0 a120 85 0 1 0 -240 0z", lx: 390, ly: 245 },
     { id: "body", d: "M280 445 q-10 -115 110 -145 q120 30 110 145 z", lx: 390, ly: 385 },
     { id: "carrot", d: "M540 270 h90 l-45 175 z", lx: 585, ly: 305 },
-    { id: "grass", d: "M45 445 q30 -90 55 0 q25 -90 55 0 q25 -90 55 0 z", lx: 128, ly: 425 }];
+    { id: "grass", d: "M30 445 q100 -140 200 0 z", lx: 130, ly: 420 }];
   const labels = opt.labels; // 칸 id → 수 글
   const fills = {}; let cur = 0;
   const svg = makeSvg(700, 460), g = svgEl("g"); svg.append(g);
@@ -945,7 +947,7 @@ function c3Bag(body, api, opt = {}) {
     paint();
   } }, "주머니에서 수 카드 뽑기");
   paint();
-  body.append(h("div", { class: "c3say" }, `선생님이 수어로 알려 준 일의 자리 수는 ${one}이에요. 주머니(0~9 수 카드)에서 카드 두 장을 뽑아 소수 첫째 자리와 소수 둘째 자리에 차례대로 써요.`), h("div", { class: "c3tools" }, bag), h("div", { class: "c3cap" }, "첫 번째 사람의 스케치북"), sk, say, more);
+  body.append(h("div", { class: "c3say" }, `선생님이 수어로 알려 준 일의 자리 수는 ${c3J(String(one), "이에요")}. 주머니(0~9 수 카드)에서 카드 두 장을 뽑아 소수 첫째 자리와 소수 둘째 자리에 차례대로 써요.`), h("div", { class: "c3tools" }, bag), h("div", { class: "c3cap" }, "첫 번째 사람의 스케치북"), sk, say, more);
   api.provide({ words: ["일의 자리", "소수 첫째 자리", "소수 둘째 자리"], answers: ["뽑은 카드를 차례대로 써요"] });
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     if (got.length < 2) return api.fail("주머니에서 카드 두 장을 뽑아요.", "-");
@@ -962,7 +964,7 @@ const C3COND = [
   { t: "두 번째로 작은 소수를 쓴 모둠", f: L => L.indexOf([...L].sort((a, b) => a - b)[1]) }];
 function c3Teams(body, api, opt = {}) {
   c3Style();
-  let round = 0, one, nums, last, cond, okList;
+  let round = 0, one, nums, last, cond, okList, locked = false;
   const box = h("div"), say = h("div", { class: "c3say" }, "​");
   const make = () => {
     one = 1 + c3Rand(9);
@@ -975,14 +977,15 @@ function c3Teams(body, api, opt = {}) {
     const valid = ok.filter(v => v != null);
     const pickIdx = (() => { const k = cond.f(valid); return ok.indexOf(valid[k]); })();
     okList = pickIdx;
-    box.innerHTML = "";
+    locked = false; box.innerHTML = "";
     box.append(h("div", { class: "c3row" }, `${round + 1}판 · 조건 카드: `, h("span", { class: "c3cond" }, cond.t)),
       h("div", { class: "c3teams" }, nums.map((v, i) => h("button", { class: "opt", onclick: ev => choose(i, ev.currentTarget) }, `${i + 1}모둠`, h("small", {}, `첫 번째 사람: ${c3Fd(v, 2)}`), h("small", {}, `마지막 사람: ${c3Fd(last[i], 2)}`)))));
   };
   function choose(i, btn) {
+    if (locked) return; // 맞힌 뒤 다음 판이 나오기 전에 또 누르면 세지 않아요
     if (nums[i] !== last[i]) { btn.classList.add("bad"); return api.fail(`${i + 1}모둠은 첫 번째 사람과 마지막 사람이 쓴 소수가 달라서 점수를 얻을 수 없어요.`, `${round + 1}판 ${i + 1}모둠`); }
     if (i !== okList) { btn.classList.add("bad"); return api.fail("점수를 얻을 수 있는 모둠의 소수끼리 자연수 부분, 소수 첫째 자리, 소수 둘째 자리 차례로 비교해 봐요.", `${round + 1}판 ${i + 1}모둠`); }
-    btn.classList.add("good"); round++;
+    locked = true; btn.classList.add("good"); round++;
     if (round >= 3) { say.textContent = "세 판 모두 알맞은 모둠을 찾았어요!"; api.tryOnce(); return api.done("3판 모두 맞힘", opt.ok); }
     say.textContent = `${i + 1}모둠이 1점을 얻었어요. 다음 판이에요.`; setTimeout(make, 900);
   }
@@ -993,16 +996,17 @@ function c3Teams(body, api, opt = {}) {
 /* ⑮ 또 다른 놀이: 9.□□ 두 수 중 더 큰 소수 고르기 */
 function c3Bigger(body, api, opt = {}) {
   c3Style();
-  const N = opt.n || 6; let k = 0, wrong = 0, t0 = Date.now(), a, b;
+  const N = opt.n || 6; let k = 0, wrong = 0, t0 = Date.now(), a, b, locked = false;
   const box = h("div", { class: "c3pair" }), say = h("div", { class: "c3say" }, "​"), cnt = h("div", { class: "c3cap" }, "​");
   const make = () => {
-    do { a = 9000 + c3Rand(100) * 10; b = 9000 + c3Rand(100) * 10; } while (a === b);
-    box.innerHTML = ""; cnt.textContent = `${k + 1} / ${N}번째 문제`;
+    do { a = 9000 + c3Rand(100) * 10; b = 9000 + c3Rand(100) * 10; } while (a === b || a % 100 === 0 || b % 100 === 0); // 9.00·9.30처럼 끝자리가 0인 수는 빼요
+    locked = false; box.innerHTML = ""; cnt.textContent = `${k + 1} / ${N}번째 문제`;
     [a, b].forEach(v => box.append(h("button", { class: "opt", onclick: ev => pick(v, ev.currentTarget) }, c3Fd(v, 2))));
   };
   function pick(v, btn) {
+    if (locked) return; // 맞힌 뒤 다음 문제가 나오기 전에 또 누르면 세지 않아요
     if (v !== Math.max(a, b)) { wrong++; btn.classList.add("bad"); return api.fail("자연수 부분이 9로 같으니 소수 첫째 자리부터 비교해요.", `${c3Fd(a, 2)} vs ${c3Fd(b, 2)} → ${c3Fd(v, 2)}`); }
-    btn.classList.add("good"); k++;
+    locked = true; btn.classList.add("good"); k++;
     if (k >= N) { const s = Math.round((Date.now() - t0) / 1000); say.textContent = `${N}문제를 ${s}초 만에 끝냈어요.`; api.tryOnce(); return api.done(`${N}문제 · ${s}초 · 틀림 ${wrong}`, opt.ok); }
     say.textContent = "맞아요! 다음 문제예요."; setTimeout(make, 500);
   }
@@ -1131,7 +1135,7 @@ const LESSONS = [
       render: (b, a) => c3Line(b, a, { from: 0, to: 130, minor: 1, major: 10, target: 125, fs: 17,
         asks: [
           ["[125/1000]는 [1/1000]이", { n: "125" }, "개예요."],
-          ["[1/1000]=0.001이므로 소수로", { n: "0.125", why: { "1.25": "0.01이 125개인 수가 1.25예요. 0.001이 125개예요.", "12.5": "0.001이 125개인 수예요." } }, "이에요."],
+          ["[1/1000]=0.001이므로 소수로", { n: "0.125", why: { "1.25": "0.01이 125개인 수가 1.25예요. 0.001이 125개예요.", "12.5": "0.001이 125개인 수예요." } }, "예요."],
           ["0.125는", { o: ["영 점 백이십오", "영 점 일이오"], a: 1, why: { "0": "소수점 아래 숫자는 하나씩 읽어요." } }, "라고 읽어요."]],
         ok: "[125/1000]=0.125예요. 0.125는 0.001이 125개이고, 영 점 일이오라고 읽어요." }) },
     { inst: "[1 853/1000]을 소수로 나타내어 봐요. 단추를 눌러 모눈종이에 [1 853/1000]만큼 칠해 보세요. 0.01 한 칸을 다시 10칸으로 나눈 가는 줄 하나가 0.001이에요.", hints: ["[853/1000]은 0.1이 8개, 0.01이 5개, 0.001이 3개예요.", "+1 한 번, +0.1 여덟 번, +0.01 다섯 번, +0.001 세 번 눌러요."],
@@ -1229,7 +1233,7 @@ const LESSONS = [
       render: (b, a) => blanks(b, a, ["1의 [1/10]은 0.1, [1/100]은 ", { o: ["0.01", "0.001"], a: 0 }, ", [1/1000]은 ", { o: ["0.01", "0.001"], a: 1 }, "이에요. 0.001을 10배 하면 ", { o: ["0.01", "0.1"], a: 0 }, ", 100배 하면 0.1, 1000배 하면 ", { o: ["1", "10"], a: 0 }, "이에요. 소수를 10배 하면 소수점을 기준으로 수가 ", { o: ["왼쪽", "오른쪽"], a: 0 }, "으로 한 자리 이동하고, [1/10]을 하면 ", { o: ["왼쪽", "오른쪽"], a: 1 }, "으로 한 자리 이동해요."]) },
     { inst: "□ 안에 알맞은 소수를 넣고, 다른 수를 설명한 사람을 찾아보세요.", hints: ["100배 하면 수가 왼쪽으로 두 자리 이동해요.", "[1/100]을 하면 수가 오른쪽으로 두 자리 이동해요.", "0.093의 1000배는 93이에요."],
       render: (b, a) => c3Sent(b, a, [
-        ["1.159의 100배는", { n: "115.9", why: { "11.59": "그것은 10배예요. 100배는 왼쪽으로 두 자리 이동해요." } }, "이고, 1000배는", { n: "1159" }, "이에요."],
+        ["1.159의 100배는", { n: "115.9", why: { "11.59": "그것은 10배예요. 100배는 왼쪽으로 두 자리 이동해요." } }, "이고, 1000배는", { n: "1159" }, "예요."],
         ["831의 [1/100]은", { n: "8.31", why: { "83.1": "그것은 [1/10]이에요." } }, "이고, [1/1000]은", { n: "0.831" }, "이에요."],
         { q: "예지: “0.93의 10배인 수야.” 하준: “93의 [1/10]이야.” 다윤: “0.093의 1000배야.”", p: ["다른 수를 설명한 사람은", { o: ["예지", "하준", "다윤"], a: 2, why: { "0": "0.93의 10배는 9.3이에요.", "1": "93의 [1/10]은 9.3이에요." } }, "이에요."] }],
         { ok: "예지와 하준이는 9.3, 다윤이는 93을 설명했어요. 소수 사이의 관계를 잘 이용했어요!" }) }
@@ -1362,7 +1366,7 @@ const LESSONS = [
   challenge: { inst: "0부터 9까지의 수 중에서 □ 안에 들어갈 수 있는 수를 모두 구해 보세요. 8.34−4.6 < 3.□4  수학익힘 문제도 풀어 보세요.", hints: ["먼저 8.34−4.6을 계산해 봐요.", "3.74 < 3.□4가 되려면 □는 7보다 커야 해요."],
     render: (b, a) => c3Sent(b, a, [
       c3Q("8.34-4.6", "3.74"),
-      ["3.74 < 3.□4 에서 □ 안에 들어갈 수 있는 수를 모두 골라요:", { m: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], a: [8, 9], bad: "3.74와 3.74는 같아요. □가 7보다 커야 해요." }],
+      ["3.74 < 3.□4 에서 □ 안에 들어갈 수 있는 수를 모두 골라요:", { m: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], a: [8, 9], bad: "□가 7이면 3.74와 3.74로 같아요. 3.74보다 커야 하니 □는 7보다 커야 해요." }],
       ["4.1은 0.01이", { n: "410" }, "개, 1.57은", { n: "157" }, "개 →", "4.1−1.57 =", { n: "2.53", e: "4.1-1.57" }],
       ["8.2 − 2.58 =", { n: "5.62", e: "8.2-2.58" }, "→ 5.62 − 1.79 =", { n: "3.83", e: "5.62-1.79" }],
       ["유은이의 키는 1.43 m, 동생의 키는 1.28 m예요. 유은이는 동생보다", { n: "0.15", e: "1.43-1.28" }, "m 더 커요."]], { ok: "□ 안에는 8, 9가 들어갈 수 있어요. 소수 두 자리 수의 뺄셈을 잘 활용했어요!" }) }
@@ -1450,7 +1454,7 @@ const LESSONS = [
         ["0.007의 100배와 나타내는 수가 같은 것은", { o: ["0.07의 10배", "7의 [1/100]"], a: 0 }],
         ["0.7의 [1/10]과 나타내는 수가 같은 것은", { o: ["0.07의 10배", "7의 [1/100]"], a: 1 }],
         ["㉠ 4.295 ㉡ 4.286 ㉢ 5.28을 큰 수부터 차례대로:", { o: ["㉢, ㉠, ㉡", "㉠, ㉡, ㉢", "㉢, ㉡, ㉠", "㉠, ㉢, ㉡"], a: 0, why: { "1": "소수점 아래 숫자가 많다고 큰 수가 아니에요. 자연수 부분부터 비교해요.", "2": "4.295와 4.286은 소수 둘째 자리 9와 8을 비교해요." } }]], { ok: "0.007의 100배와 0.07의 10배는 0.7, 0.7의 [1/10]과 7의 [1/100]은 0.07이에요." }) },
-    { name: "잘못 고치기", inst: "★ 누군가 3.8+5.76을 왼쪽처럼 계산했어요. 잘못 계산한 까닭을 고르고, 옳게 계산해 보세요.", hints: ["두 수의 오른쪽 끝을 맞추어 썼어요.", "소수점끼리 세로로 맞추어 써요.", "3.8=3.80으로 생각하면 3.80+5.76이에요."],
+    { name: "잘못 고치기", inst: "★ 누군가 3.8+5.76을 위처럼 계산했어요. 잘못 계산한 까닭을 고르고, 옳게 계산해 보세요.", hints: ["두 수의 오른쪽 끝을 맞추어 썼어요.", "소수점끼리 세로로 맞추어 써요.", "3.8=3.80으로 생각하면 3.80+5.76이에요."],
       render: (b, a) => c3Vert(b, a, { a: "3.8", b: "5.76", op: "+", align: true, pad: true,
         fig: () => h("div", {}, h("div", { class: "c3cap" }, "잘못 계산한 세로셈"), c3CharTable([["", "", "3", ".", "8"], ["+", "5", ".", "7", "6"], ["", "6", ".", "1", "4"]])),
         reason: { q: "잘못 계산한 까닭은", o: ["소수점의 위치를 맞추어 쓰지 않았어요", "받아올림을 하지 않았어요", "자연수 부분만 더했어요"], a: 0, why: { "1": "받아올림보다 먼저, 두 수를 어떻게 맞추어 썼는지 살펴봐요." } },

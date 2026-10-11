@@ -61,8 +61,14 @@ const APP={title:"하율이의 놀이공원 사각형", unit:"4-2 수학 4. 사�
 .q4big{font-family:"Jua";font-size:var(--fs-l);color:var(--night)}
 .q4slider{display:flex;align-items:center;gap:.5em;flex-wrap:wrap}
 .q4slider input{flex:1 1 10em;min-width:0}
+/* 활동 안의 단추 줄(.actions)이 엔진의 '다음 계단' 막대와 같은 자리(아래쪽)에 붙어 가려지지 않게, 막대 높이만큼 위에 붙인다 */
+.work > div .actions{bottom:var(--q4bar,0px)}
 `;
   document.head.append(s);
+  let wait = false;
+  const bar = () => { if (wait) return; wait = true; requestAnimationFrame(() => { wait = false; const a = document.querySelector(".work > .actions"); if (a) document.documentElement.style.setProperty("--q4bar", a.offsetHeight + "px"); }); };
+  ["scroll", "resize", "click", "input", "pointerup"].forEach(ev => window.addEventListener(ev, bar, { passive: true }));
+  new MutationObserver(bar).observe(document.documentElement, { childList: true, subtree: true });
 })();
 const Q4_KO = ["가", "나", "다", "라", "마", "바", "사", "아"];
 const Q4_V = ["ㄱ", "ㄴ", "ㄷ", "ㄹ", "ㅁ", "ㅂ"];
@@ -387,7 +393,7 @@ function q4Lines(body, api, opt) {
     const extra = pairs.find(p => !want.includes(p)), miss = want.find(p => !pairs.includes(p));
     if (extra == null && miss == null) return api.done(ans, opt.ok);
     if (extra != null) { const [i, j] = extra.split("-").map(Number);
-      return api.fail(opt.mode === "perp" ? `${nmJ(i)} ${nm(j)}${q4J(nm(j), "이", "가")} 만나서 이루는 각은 ${q4Deg(angBetween(i, j))}예요. 직각이 아니에요.` : `${nmJ(i)} ${nm(j)}${q4J(nm(j), "은", "는")} 늘이면 만나요. ‘직선 늘여 보기’로 확인해 봐요.`, ans); }
+      return api.fail(opt.mode === "perp" ? (angBetween(i, j) < 1e-9 ? `${nmJ(i)} ${nm(j)}${q4J(nm(j), "은", "는")} 아무리 늘여도 만나지 않아요(평행해요). 수직이 아니에요.` : `${nmJ(i)} ${nm(j)}${q4J(nm(j), "이", "가")} 만나서 이루는 각은 ${q4Deg(angBetween(i, j))}예요. 직각이 아니에요.`) : `${nmJ(i)} ${nm(j)}${q4J(nm(j), "은", "는")} 늘이면 만나요. ‘직선 늘여 보기’로 확인해 봐요.`, ans); }
     api.fail(opt.miss || (opt.mode === "perp" ? "서로 수직인 짝을 더 찾아봐요. 기울어진 직선도 살펴봐요." : "서로 만나지 않는 짝을 더 찾아봐요. 기울어진 직선끼리도 평행할 수 있어요."), ans);
   } }, "확인하기");
   body.append(stageWrap(svg, h("div", { class: "side" }, h("p", { class: "jua", style: "margin:.2em 0" }, opt.ask || ""), h("p", { class: "inst", style: "margin:.2em 0" }, opt.tip || "직선을 하나 누르고, 짝이 될 직선을 하나 더 눌러요."), tools, info, out, h("div", { class: "actions" }, check))));
@@ -1226,7 +1232,7 @@ function q4Overlap(body, api, opt) {
     if (!name) return api.fail("겹쳐진 부분(빨간 부분)의 이름을 골라요.", "-");
     if (name === "평행사변형") return api.done(name, "겹쳐진 부분은 마주 보는 두 쌍의 변이 서로 평행해서 평행사변형이에요.");
     if (name === "사다리꼴") return api.done(name, "맞아요. 평행한 변이 있으니 사다리꼴이에요. 그런데 마주 보는 두 쌍의 변이 모두 평행하니까 평행사변형이라고 할 수도 있어요.");
-    api.fail(name === "마름모" ? "두 종이의 폭이 달라서 네 변의 길이가 모두 같지는 않아요." : "겹친 각을 바꿔 보면 네 각이 직각이 아니에요.", name);
+    api.fail(name === "마름모" ? "두 종이의 폭이 달라서 네 변의 길이가 모두 같지는 않아요." : "겹쳐진 부분은 네 각이 모두 직각은 아니에요. 겹친 각을 바꿔 봐도 그래요.", name);
   } }, "확인하기");
   body.append(stageWrap(svg, h("div", { class: "side" }, h("div", { class: "q4slider" }, angEl, slider), h("p", { class: "inst", style: "margin:.2em 0" }, "막대를 움직여 두 종이를 겹친 각을 바꿔 봐요. 빨간 부분의 모양은 어떻게 될까요?"), h("p", { class: "jua", style: "margin:.2em 0" }, "겹쳐진 부분의 이름"), h("div", { class: "q4names" }, nb), h("div", { class: "actions" }, check))));
   draw();
@@ -1427,12 +1433,12 @@ const LESSONS = [
         ask: "서로 수직으로 만나는 두 길을 짝 지어요.", ok: "행복길과 나눔길, 희망길과 나눔길이 서로 수직으로 만나요." }) },
     { name: "확인하기", inst: "익힘 문제예요. 수직과 수선을 생각하며 풀어 보세요.", hints: ["수직은 두 직선의 관계, 수선은 한 직선을 부르는 말이에요.", "삼각자의 직각을 대어 보거나 ‘각 재어 보기’로 직각인지 확인해요."],
       render: (b, a) => q4Chain(b, a, [
-        (bx, ax) => quiz(bx, ax, [{ q: "직선 가와 직선 나가 직각으로 만나요. 알맞은 말을 골라요. ‘직선 가와 직선 나는 서로 ( )입니다.’", fig: () => q4LinesFig([{ n: "가", c: [260, 230], a: 0, len: 210 }, { n: "나", c: [260, 140], a: 90, len: 115 }]), o: ["수직", "수선"], a: 0 },
+        (bx, ax) => quiz(bx, ax, [{ q: "직선 가와 직선 나가 직각으로 만나요. 알맞은 말을 골라요. ‘직선 가와 직선 나는 서로 ( )입니다.’", fig: () => q4LinesFig([{ n: "가", c: [260, 230], a: 0, len: 210 }, { n: "나", c: [260, 140], a: 90, len: 105 }]), o: ["수직", "수선"], a: 0 },
           { q: "‘직선 가는 직선 나에 대한 ( )입니다.’", o: ["수직", "수선"], a: 1 }], { ok: "직선 가와 나는 서로 수직이고, 직선 가는 직선 나에 대한 수선이에요." }),
         (bx, ax) => quiz(bx, ax, [{ q: "서로 수직인 변이 있는 도형을 모두 골라요.", fig: () => q4Cards(Q4_PERP4, { per: 4, k: 30, maxW: "40em", o: { rights: false } }), o: ["가", "나", "다", "라"], a: [0, 3] }], { ok: "가와 라에는 서로 수직인 변이 있어요.", bad: "변과 변이 만나서 이루는 각이 직각인 곳을 찾아봐요. 점 종이의 칸을 보면 도움이 돼요." }),
         (bx, ax) => q4Lines(bx, ax, { mode: "perp", prot: true, lines: [
           { n: "가", c: [380, 70], a: 0, len: 320 }, { n: "나", c: [110, 275], a: 90, len: 140 }, { n: "다", c: [230, 285], a: 45, len: 130 },
-          { n: "라", c: [470, 285], a: 135, len: 130 }, { n: "마", c: [620, 200], a: 20, len: 110 }, { n: "바", c: [640, 330], a: 110, len: 90 }],
+          { n: "라", c: [490, 285], a: 135, len: 130 }, { n: "마", c: [620, 200], a: 20, len: 110 }, { n: "바", c: [640, 330], a: 110, len: 90 }],
           ask: "직선 가~바 중에서 서로 수직으로 만나는 두 직선을 모두 짝 지어요.", tip: "직선을 늘였을 때 만나는 것도 생각해요. ‘각 재어 보기’를 켜면 만나는 각을 알려 줘요.", ok: "가와 나, 다와 라, 마와 바가 서로 수직이에요." }),
         (bx, ax) => numbers(bx, ax, [{ q: "서로 수직으로 만나는 두 직선은 모두 몇 쌍인가요?", a: 3, unit: "쌍" }], { ok: "모두 3쌍이에요." })]) }
   ],
@@ -1669,7 +1675,7 @@ const LESSONS = [
             { t: "2.7 m", x1: 5.5, y1: 0, x2: 5.5, y2: 2.7, why: "2.7 m는 1층 문의 높이예요. 바닥과 바닥 사이의 거리가 아니에요." },
             { t: "3.5 m", x1: 2.6, y1: 0, x2: 2.6 + 1.9596, y2: 2.9, dx: 44, why: "3.5 m는 비스듬한 계단의 길이예요. 평행선 사이의 거리는 수직인 선분의 길이로 재요." }],
           ask: "1층 바닥에서 3층 바닥까지의 높이를 구하는 데 필요한 길이를 모두 골라요.", ok: "1층 바닥~2층 바닥 2.9 m, 2층 바닥~3층 바닥 2.3 m가 필요해요." }),
-        (bx, ax) => numbers(bx, ax, [{ q: "1층 바닥에서 3층 바닥까지의 높이는 몇 m인가요?", a: 5.2, unit: "m", why: { "13.8": "필요하지 않은 길이까지 모두 더했어요.", "0.6": "두 길이를 빼지 말고 더해요." } }], { ok: "2.9 + 2.3 = 5.2 (m)예요." }),
+        (bx, ax) => numbers(bx, ax, [{ q: "1층 바닥에서 3층 바닥까지의 높이는 몇 m인가요?", a: 5.2, unit: "m", why: { "13.5": "필요하지 않은 길이까지 모두 더했어요.", "0.6": "두 길이를 빼지 말고 더해요." } }], { ok: "2.9 + 2.3 = 5.2 (m)예요." }),
         (bx, ax) => blanks(bx, ax, ["줄사다리는 ", { o: ["5.2 m", "2.9 m", "3.5 m"], a: 0 }, "보다 길어야 해요."])]) },
     { name: "되돌아봐요", inst: "문제를 해결한 과정을 되돌아보세요.",
       render: (b, a) => writeStep(b, a, [
@@ -1709,7 +1715,7 @@ const LESSONS = [
         { q: "놀이에서 이기려면 어떻게 해야 할까요?", tag: "이기는 방법", ph: "예) 사각형의 성질을 잘 알고 도형 카드와 설명 카드를 빨리 이어요." },
         { q: "놀이하면서 헷갈렸던 성질을 써 보세요.", tag: "헷갈린 성질", ph: "예) 정사각형도 마주 보는 두 쌍의 변이 평행하다는 것이 헷갈렸어요." }]) }
   ],
-  challenge: { inst: "카드 놀이에서 내려놓을 수 있는 카드를 생각해 보세요.", hints: ["사다리꼴은 평행한 변이 한 쌍이에요.", "평행한 변이 없는 사각형에 맞는 도형 카드를 찾아요."],
+  challenge: { inst: "카드 놀이에서 내려놓을 수 있는 카드를 생각해 보세요.", hints: ["이 놀이의 사다리꼴 카드는 평행한 변이 한 쌍이에요.", "‘마주 보는 두 쌍의 변이 평행한’ 카드에 맞는 도형을 모두 찾아요."],
     render: (b, a) => quiz(b, a, [
       { q: "사다리꼴 도형 카드 위에 내려놓을 수 있는 설명 카드를 모두 골라요.", o: Q4_GDESC.map(d => d[0]), a: q4Ans(Q4_GDESC, d => d[1](q4Info(Q4_GSH[0].p)), [1]) },
       { q: "‘마주 보는 두 쌍의 변이 평행한 사각형’ 카드 위에 내려놓을 수 있는 도형 카드를 모두 골라요.", o: Q4_GSH.map(s => s.n), a: q4Ans(Q4_GSH, s => q4Info(s.p).npar === 2, [1, 2, 3, 4]) }], { ok: "이 놀이의 사다리꼴 카드에는 ‘평행한 변이 있는 사각형’만 맞아요. 평행사변형, 마름모, 직사각형, 정사각형은 모두 마주 보는 두 쌍의 변이 평행해요." }) }
@@ -1721,7 +1727,7 @@ const LESSONS = [
   steps: [
     { name: "수직과 평행", inst: "그림을 보고 알맞은 말을 고르고, 평행선을 그어 거리를 재어 보세요.", hints: ["직선 가와 라가 만나서 이루는 각을 봐요.", "점 ㄱ을 지나는 평행선을 그은 다음, 고정한 삼각자의 눈금으로 거리를 읽어요."],
       render: (b, a) => q4Chain(b, a, [
-        (bx, ax) => quiz(bx, ax, [{ q: "직선 가는 직선 라에 대한 (수선, 평행선)입니다.", fig: () => { const f = q4LinesFig([{ n: "라", c: [260, 210], a: 0, len: 220 }, { n: "가", c: [140, 135], a: 90, len: 115 }, { n: "나", c: [250, 135], a: 90, len: 115 }, { n: "다", c: [380, 135], a: 65, len: 115 }]); return f; }, o: ["수선", "평행선"], a: 0 },
+        (bx, ax) => quiz(bx, ax, [{ q: "직선 가는 직선 라에 대한 (수선, 평행선)입니다.", fig: () => { const f = q4LinesFig([{ n: "라", c: [260, 210], a: 0, len: 220 }, { n: "가", c: [140, 150], a: 90, len: 110 }, { n: "나", c: [250, 150], a: 90, len: 110 }, { n: "다", c: [380, 135], a: 65, len: 115 }]); return f; }, o: ["수선", "평행선"], a: 0 },
           { q: "직선 가와 직선 나는 서로 (수직입니다, 평행합니다).", o: ["수직입니다", "평행합니다"], a: 1 }], { ok: "직선 가는 직선 라에 대한 수선이고, 직선 가와 나는 서로 평행해요." }),
         (bx, ax) => q4Square(bx, ax, { mode: "para", ang: 8, pt: [1.5, 4], ask: "점 ㄱ을 지나고 주어진 직선과 평행한 직선을 그어요.", ok: "점 ㄱ을 지나는 평행선을 그었어요." }),
         (bx, ax) => numbers(bx, ax, [{ q: "그은 평행선과 주어진 직선 사이의 거리는 몇 cm인가요?", a: 4, unit: "cm" }], { ok: "점 ㄱ에서 주어진 직선에 수직인 선분의 길이가 4 cm예요." })]) },
@@ -1738,12 +1744,12 @@ const LESSONS = [
         { start: Q4_S11, move: [0], need: (I, V) => { if (I.npar < 1) return "평행한 변이 없어요. 꼭짓점 ㄱ을 옮겨 평행한 변이 생기게 해요."; if (I.npar === 2) return "평행사변형이 되었어요. 이번에는 평행한 변이 한 쌍인 사다리꼴로 만들어요. 다음에 꼭짓점 ㄴ을 옮길 거예요.";
           const t = [V[0][0] + V[2][0] - V[3][0], V[0][1] + V[2][1] - V[3][1]]; if (t[0] < 0 || t[0] > 9 || t[1] < 0 || t[1] > 6 || !q4Info([V[0], t, V[2], V[3]]).simple) return "사다리꼴이지만, 다음에 꼭짓점 ㄴ을 옮겨 평행사변형을 만들 수 없는 모양이에요. 꼭짓점 ㄱ을 다른 곳으로 옮겨 봐요."; return null; }, ask: "① 꼭짓점 ㄱ을 옮겨서 사다리꼴을 만들어요.", ok: "사다리꼴을 만들었어요." },
         { fromPrev: true, move: [1], need: "para", ask: "② 이어서 꼭짓점 ㄴ을 옮겨서 평행사변형을 만들어요.", ok: "평행사변형을 만들었어요." }], ok: "꼭짓점을 옮겨 사다리꼴과 평행사변형을 차례로 만들었어요." }) },
-    { name: "꼭꼭 정리하기", inst: "설명이 옳으면 오른쪽(→)으로, 옳지 않으면 아래쪽(↓)으로 이동하여 도착한 곳에 있는 꽃의 이름을 알아보세요.", hints: ["두 직선이 만나서 이루는 각이 직각이면 ‘수직’이에요.", "직사각형은 네 변의 길이가 모두 같지는 않아요."],
+    { name: "꼭꼭 정리하기", inst: "설명이 옳으면 오른쪽(→)으로, 옳지 않으면 아래쪽(↓)으로 이동하여 도착한 곳에 있는 꽃의 이름을 알아보세요.", hints: ["두 직선이 만나서 이루는 각이 직각이면 ‘수직’이에요.", "직사각형은 네 변의 길이가 모두 같은 것은 아니에요."],
       render: (b, a) => q4Path(b, a, { goal: "해바라기", ends: [null, "카네이션", "해바라기", "과꽃", "무궁화", null, null], items: [
         { t: "두 직선이 만나서 이루는 각이 직각일 때 두 직선은 서로 평행하다고 합니다.", a: false, why: "이때는 서로 ‘수직’이라고 해요." },
         { t: "평행한 변이 있는 사각형을 사다리꼴이라고 합니다.", a: true },
         { t: "마름모에서 마주 보는 두 각의 크기는 같습니다.", a: true },
-        { t: "직사각형은 네 변의 길이가 모두 같고 네 각의 크기가 모두 같습니다.", a: false, why: "직사각형은 네 각의 크기는 모두 같지만, 네 변의 길이가 모두 같지는 않아요." },
+        { t: "직사각형은 네 변의 길이가 모두 같고 네 각의 크기가 모두 같습니다.", a: false, why: "직사각형은 네 각의 크기는 모두 같지만, 네 변의 길이가 모두 같은 것은 아니에요." },
         { t: "평행사변형에서 마주 보는 두 변의 길이는 같습니다.", a: true },
         { t: "정사각형은 마주 보는 두 변이 서로 평행합니다.", a: true }], ok: "도착한 곳의 꽃은 해바라기예요. 다음 단원에서는 꺾은선그래프를 배워요." }) }
   ],
