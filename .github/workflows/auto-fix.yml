@@ -1,10 +1,10 @@
-# 자동 보완 — 하루에 한 번(한국 시각 새벽 2시 47분) 사이트를 '지금 상태'로 맞춥니다(2026-10-11 선생님 요청: 올릴 때마다 → 하루 한 번).
-# 바로 돌리려면 GitHub Actions 탭 → 자동 보완 → Run workflow.
+# 자동 보완 — main에 올라올 때마다(어느 대화·어느 기기에서 올렸든) 사이트를 '지금 상태'로 맞춥니다.
+# 손으로 돌리려면 GitHub Actions 탭 → 자동 보완 → Run workflow.
 # 하는 일은 _build/auto/run_all.py 맨 위 설명을 보세요. 바뀐 것이 있으면 '자동 보완' 커밋을 main에 올립니다.
 name: 자동 보완
 on:
-  schedule:
-    - cron: '47 17 * * *'   # UTC 17:47 = 한국 02:47
+  push:
+    branches: [main]
   workflow_dispatch:
 permissions:
   contents: write
@@ -27,8 +27,9 @@ jobs:
         id: run
         continue-on-error: true
         run: |
-          # 지난번 자동 보완 뒤(약 하루)에 올라온 변경을 기준으로 점검
-          SINCE=$(git rev-list -1 --before="25 hours ago" HEAD)
+          # 올릴 때는 이번에 올라온 변경, 손으로 돌릴 때는 지난 25시간 동안의 변경을 기준으로 점검
+          SINCE="${{ github.event.before }}"
+          [ -z "$SINCE" ] && SINCE=$(git rev-list -1 --before="25 hours ago" HEAD)
           python3 _build/auto/run_all.py --since "${SINCE:-0}"
       - name: 바뀐 것 올리기
         run: |
