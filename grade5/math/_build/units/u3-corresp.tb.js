@@ -113,7 +113,7 @@ function cr3Judge(toks, vars) {
   const sideOk = S => S.length % 2 === 1 && S.every((t, i) => i % 2 === 0 ? isOpd(t) : t in CR3OP);
   if (!sideOk(L) || !sideOk(R)) return { ok: false, msg: "식이 덜 끝났거나 기호 순서가 어색해요. 예) △=□+1 처럼 써요." };
   const ops = toks.filter(t => t in CR3OP);
-  for (const v of keys) { const c = toks.filter(t => t === v).length; if (!c) return { ok: false, msg: `두 양을 나타내는 ${keys.length === 2 && keys.every(k => k.length === 1) ? keys.join(", ") + " 기호" : "말"}를 모두 한 번씩 써서 식을 만들어요.` }; if (c > 1) return { ok: false, msg: `${cr3J(v, "을/를")} 두 번 썼어요. 두 양을 한 번씩만 써요.` }; }
+  for (const v of keys) { const c = toks.filter(t => t === v).length; if (!c) return { ok: false, msg: `두 양을 나타내는 ${keys.length === 2 && keys.every(k => k.length === 1) ? keys.join(", ") + " 기호를" : "말을"} 모두 한 번씩 써서 식을 만들어요.` }; if (c > 1) return { ok: false, msg: `${cr3J(v, "을/를")} 두 번 썼어요. 두 양을 한 번씩만 써요.` }; }
   if (!ops.length) return { ok: false, msg: "두 양 사이의 관계를 + − × ÷ 중 하나를 써서 나타내요." };
   if (ops.length > 1) return { ok: false, msg: "이 단원에서는 + − × ÷ 중 한 가지 기호만 한 번 써서 나타내요." };
   const n = vars[keys[0]].v.length;
@@ -659,7 +659,7 @@ function cr3Game(body, api, opt) {
             res.textContent = `${v}${v % 2 ? "은(는) 홀수" : "은(는) 짝수"}라서 ${plus}점을 더 얻었어요. 이 카드에서 1+${plus}=${1 + plus}(점)!`.replace(/(\d)은\(는\)/, (m0, d) => d + (cr3Jong(d) ? "은" : "는"));
             log.prepend(h("div", {}, `   주사위 ${v} → ${plus}점 더`));
             phase = i >= deck.length - 1 ? "end" : "flip"; sc();
-            side.append(h("button", { class: "big", type: "button", onclick: render }, phase === "end" ? "결과 보기" : "다음 카드로")); } }, 70);
+            side.append(h("button", { class: "big", type: "button", onclick: render }, phase === "end" ? "결과 보기" : "이어서 카드 뒤집기 ▶")); } }, 70);
         } }, "주사위 던지기"), res);
       return;
     }

@@ -1576,13 +1576,13 @@ function fm2Share(body, api, opt) {
   const pick = h("div", { class: "fm2btns" });
   const table = h("div", { class: "fm2chips" });
   const showTable = () => { table.innerHTML = ""; fm2Range(1, K).forEach(j => { if (res[j] != null) table.append(h("span", { class: "fm2chip" + (res[j] ? "" : " fm2no") }, `${holder} ${j}개 ${res[j] ? "○" : "×"}`)); }); };
-  const choose = j => { k = j; cnt = Array(j).fill(0); [...pick.children].forEach((b, i) => b.classList.toggle("fm2sel", i + 1 === j)); draw(); say.textContent = `${holder} ${j}개에 ${item} ${n}${unit}을 남김없이 똑같이 꽂아 보세요.`; };
+  const choose = j => { k = j; cnt = Array(j).fill(0); [...pick.children].forEach((b, i) => b.classList.toggle("fm2sel", i + 1 === j)); draw(); say.textContent = `${holder} ${j}개에 ${item} ${n}${fm2J(unit, "을를")} 남김없이 똑같이 꽂아 보세요.`; };
   fm2Range(1, K).forEach(j => pick.append(h("button", { class: "ghost", onclick: () => choose(j) }, `${j}개`)));
   const finishK = ok => {
     res[k] = ok; showTable();
     if (fm2Range(1, K).every(j => res[j] != null)) {
       const can = fm2Range(1, K).filter(j => res[j]);
-      say.textContent = `${item} ${n}${unit}은 ${holder} ${fm2L(can)}개에 남김없이 똑같이 나누어 꽂을 수 있어요.`;
+      say.textContent = `${item} ${n}${fm2J(unit, "은는")} ${holder} ${fm2L(can)}개에 남김없이 똑같이 나누어 꽂을 수 있어요.`;
       fm2Then(body, api, opt.ask, opt.ok, `가능: ${fm2L(can)}`);
     }
   };
@@ -1606,7 +1606,7 @@ function fm2Share(body, api, opt) {
     if (n % k === 0) return api.fail(`${holder} ${k}개에는 ${n / k}${unit}씩 똑같이 꽂을 수 있어요. 한 ${unit}씩 차례로 꽂아 봐요.`, `${k}개 ×`);
     if (left() > 0) return api.hint(`먼저 ${item}을 모두 꽂아 보고 판단해요.`);
     const q = Math.floor(n / k), r = n % k;
-    say.textContent = `맞아요. ${q + 1}${unit}씩 꽂으려면 ${holder} ${k - r}개에 1${unit}씩 부족하고, ${q}${unit}씩 꽂으면 ${r}${unit}이 남아요. ${holder} ${k}개에는 똑같이 나눌 수 없어요.`;
+    say.textContent = `맞아요. ${q + 1}${unit}씩 꽂으려면 ${holder} ${k - r}개에 1${unit}씩 부족하고, ${q}${unit}씩 꽂으면 ${r}${fm2J(unit, "이가")} 남아요. ${holder} ${k}개에는 똑같이 나눌 수 없어요.`;
     finishK(false);
   } }, "똑같이 나눌 수 없어요");
   draw();
@@ -1671,7 +1671,7 @@ function fm2Rect(body, api, opt) {
   const showFound = () => { chips.innerHTML = ""; [...found].sort((a, b) => a - b).forEach(v => chips.append(h("span", { class: "fm2chip" }, `${v}${unit}씩 ${n / v}${line}`))); cntTxt.textContent = `찾은 방법 ${found.size}가지`; };
   const rec = h("button", { class: "big", onclick: () => {
     api.tryOnce();
-    if (n % w) return api.fail(`마지막 ${line}이 ${n % w}${unit}뿐이라 모든 ${line}이 똑같지 않아요. ${n} ÷ ${w}는 나누어떨어지지 않아요.`, `${w}씩`);
+    if (n % w) return api.fail(`마지막 ${line}이 ${n % w}${unit}뿐이라 모든 ${line}이 똑같지 않아요. ${n} ÷ ${fm2J(w, "은는")} 나누어떨어지지 않아요.`, `${w}씩`);
     if (found.has(w)) return api.hint("이미 찾은 방법이에요. 다른 수로 늘어놓아 봐요.");
     found.add(w); showFound();
     if (found.size === want.length) {
@@ -1682,7 +1682,7 @@ function fm2Rect(body, api, opt) {
   } }, "이 방법 기록하기");
   draw(); showFound();
   body.append(stageWrap(svg, h("div", { class: "side" },
-    h("p", {}, opt.tip || `${item} ${n}${unit}을 한 ${line}에 똑같은 수씩 늘어놓아요. 모든 ${line}이 똑같이 꽉 차면 기록해요.`),
+    h("p", {}, opt.tip || `${item} ${n}${fm2J(unit, "을를")} 한 ${line}에 똑같은 수씩 늘어놓아요. 모든 ${line}이 똑같이 꽉 차면 기록해요.`),
     h("div", { class: "fm2row" }, `한 ${line}에`, h("button", { class: "ghost", onclick: () => setW(w - 1) }, "−"), inp, h("button", { class: "ghost", onclick: () => setW(w + 1) }, "+"), `${unit}씩`),
     rec, cntTxt, chips)));
 }
@@ -1940,7 +1940,7 @@ function fm2Tree(body, api, opt) {
         fm2Paint(inp, false);
         let m = tip;
         if (goal === "gcd" && v === l) m = `${v}${fm2J(v, "은는").slice(String(v).length)} 최소공배수예요. ${G}는 공통으로 들어 있는 수만 곱해요.`;
-        if (goal === "lcm" && v === a * b && a * b !== l) m = `${a} × ${b}를 그대로 곱했어요. 공통으로 들어 있는 수(${fm2L(C)})를 두 번 곱한 셈이에요. 공통인 수는 한 번만 곱해요.`;
+        if (goal === "lcm" && v === a * b && a * b !== l) m = `${a} × ${fm2J(b, "을를")} 그대로 곱했어요. 공통으로 들어 있는 수(${fm2L(C)})를 두 번 곱한 셈이에요. 공통인 수는 한 번만 곱해요.`;
         if (goal === "lcm" && v === g) m = `${v}${fm2J(v, "은는").slice(String(v).length)} 최대공약수예요. 공통이 아닌 남은 수도 곱해요.`;
         return api.fail(m, String(inp.value));
       }
@@ -2032,12 +2032,12 @@ function fm2Ladder(body, api, opt) {
       fm2Paint(q1, g1); fm2Paint(q2, g2);
       if (!g1 || !g2) return api.fail(`몫을 다시 계산해 봐요. ${!g1 ? a : b} ÷ ${d} = □`, `${q1.value},${q2.value}`);
       rows.push({ d, a, b }); cur = [a / d, b / d]; draw(); row();
-      api.hint(`○ ${d}로 나누었어요. ${fm2J(cur[0], "과와")} ${cur[1]}을 또 나눌 수 있는지 살펴봐요.`);
+      api.hint(`○ ${fm2J(d, "으로")} 나누었어요. ${fm2J(cur[0], "과와")} ${fm2J(cur[1], "을를")} 또 나눌 수 있는지 살펴봐요.`);
     } }, "나누기");
     const stop = h("button", { class: "ghost", onclick: () => {
       api.tryOnce();
       const g = fm2Gcd(cur[0], cur[1]);
-      if (!rows.length) return api.fail(`${fm2J(cur[0], "과와")} ${cur[1]}${cur[1] === cur[1] ? "" : ""}은 ${g}로 함께 나눌 수 있어요. 먼저 공약수로 나누어요.`, "멈춤");
+      if (!rows.length) return api.fail(`${fm2J(cur[0], "과와")} ${fm2J(cur[1], "은는")} ${fm2J(g, "으로")} 함께 나눌 수 있어요. 먼저 공약수로 나누어요.`, "멈춤");
       if (g > 1) return api.fail(`${fm2J(cur[0], "과와")} ${fm2J(cur[1], "은는")} 아직 ${fm2J(g, "으로")} 함께 나눌 수 있어요. 더 이상 나눌 수 없을 때까지 나누어요.`, "멈춤");
       toAnswer();
     } }, "더 이상 나눌 수 없어요");
@@ -2056,7 +2056,7 @@ function fm2Ladder(body, api, opt) {
         let m = x.nm === "최대공약수" ? "왼쪽에 나눈 공약수를 모두 곱해요." : "왼쪽에 나눈 공약수와 마지막 몫을 모두 곱해요(ㄴ자 모양).";
         if (x.nm === "최대공약수" && v === l) m = "그 수는 최소공배수예요. 최대공약수는 왼쪽에 나눈 공약수만 곱해요.";
         if (x.nm === "최소공배수" && v === g) m = "그 수는 최대공약수예요. 최소공배수는 마지막 몫까지 모두 곱해요.";
-        if (x.nm === "최소공배수" && v === a * b && a * b !== l) m = `${a} × ${b}는 공배수이지만 가장 작은 공배수가 아니에요. 나눈 공약수와 마지막 몫을 곱해요.`;
+        if (x.nm === "최소공배수" && v === a * b && a * b !== l) m = `${a} × ${fm2J(b, "은는")} 공배수이지만 가장 작은 공배수가 아니에요. 나눈 공약수와 마지막 몫을 곱해요.`;
         return api.fail(m, ins.map(y => y.inp.value).join(","));
       }
       go.disabled = true; draw(goal);
@@ -2326,7 +2326,7 @@ const LESSONS = [
     { inst: "약속을 완성해 보세요.", hints: ["6 ÷ 1, 6 ÷ 2, 6 ÷ 3, 6 ÷ 6은 나누어떨어져요.", "어떤 수든 1로 나누거나 자기 자신으로 나누면 나누어떨어져요."],
       render: (b, a) => blanks(b, a, ["6을 나누어떨어지게 하는 수인 1, 2, 3, 6을 6의 ", { o: ["약수", "배수", "몫"], a: 0 }, "라고 해요. 이와 같이 어떤 수를 ", { o: ["나누어떨어지게 하는", "1배, 2배, 3배, … 한"], a: 0 }, " 수를 그 수의 약수라고 해요. 어떤 수의 약수에는 ", { o: ["1과 자기 자신", "0과 1", "2와 자기 자신"], a: 0 }, "이 항상 들어 있어요."]) },
     { inst: "9의 약수를 모두 찾아 ○표 하세요.", hints: ["9를 1, 2, 3, …으로 나누어 나누어떨어지는지 살펴봐요.", "1 × 9 = 9, 3 × 3 = 9예요."],
-      render: (b, a) => fm2Board(b, a, { nums: fm2Range(1, 9), cols: 9, cell: 80, layers: [{ name: "9의 약수", want: FM2_D(9), shape: "circle", why: v => `9 ÷ ${v} = ${Math.floor(9 / v)} … ${9 % v}로 나머지가 있어요.` }], ask: [
+      render: (b, a) => fm2Board(b, a, { nums: fm2Range(1, 9), cols: 9, cell: 80, layers: [{ name: "9의 약수", want: FM2_D(9), shape: "circle", why: v => `9 ÷ ${v} = ${Math.floor(9 / v)} … ${fm2J(9 % v, "으로")} 나머지가 있어요.` }], ask: [
         { q: "9의 약수를 찾은 방법으로 알맞은 것을 모두 고르세요.", o: ["9를 나누어떨어지게 하는 수를 찾았어요.", "곱이 9가 되는 곱셈식 1 × 9 = 9, 3 × 3 = 9를 찾았어요.", "9보다 작은 홀수를 모두 찾았어요."], a: [0, 1], why: { "2": "5와 7은 홀수이지만 9를 나누어떨어지게 하지 않아요." } }],
         ok: "9의 약수는 1, 3, 9예요. 9를 나누어떨어지게 하는 수를 찾거나 곱이 9가 되는 곱셈식을 찾으면 돼요." }) }
   ],
@@ -2363,7 +2363,7 @@ const LESSONS = [
     { name: "약속하기", inst: "약속을 완성해 보세요.", hints: ["3, 6, 9, …는 3을 1배, 2배, 3배, … 한 수예요.", "3을 1배 한 수는 3 자신이에요."],
       render: (b, a) => blanks(b, a, ["3을 1배, 2배, 3배, … 한 수인 3, 6, 9, …를 3의 ", { o: ["배수", "약수", "곱"], a: 0 }, "라고 해요. 이와 같이 어떤 수를 ", { o: ["1배, 2배, 3배, …", "나누어떨어지게"], a: 0 }, " 한 수를 그 수의 배수라고 해요. 어떤 수의 배수는 ", { o: ["셀 수 없이 많아요", "3개뿐이에요"], a: 0 }, ". 어떤 수의 배수 중 가장 작은 수는 ", { o: ["자기 자신", "0", "1"], a: 0 }, "이에요."]) },
     { name: "4의 배수 찾기", inst: "4의 배수를 모두 찾아 색칠해 보세요.", hints: ["4에 1, 2, 3, 4, …를 곱해 빠짐없이 찾아요.", "4 × 5 = 20이에요."],
-      render: (b, a) => fm2Board(b, a, { nums: fm2Range(1, 20), cols: 10, layers: [{ name: "4의 배수", want: fm2MultsTo(4, 20), shape: "fill", why: v => `4 × ${Math.floor(v / 4)} = ${4 * Math.floor(v / 4)}, 4 × ${Math.floor(v / 4) + 1} = ${4 * Math.floor(v / 4) + 4}이라 ${fm2J(v, "은는")} 그 사이에 있어요.`, miss: "4 × 1, 4 × 2, 4 × 3, …을 차례로 계산해 봐요." }],
+      render: (b, a) => fm2Board(b, a, { nums: fm2Range(1, 20), cols: 10, layers: [{ name: "4의 배수", want: fm2MultsTo(4, 20), shape: "fill", why: v => v < 4 ? `${fm2J(v, "은는")} 4보다 작아서 4의 배수가 아니에요. 4의 배수 중 가장 작은 수는 4예요.` : `4 × ${Math.floor(v / 4)} = ${4 * Math.floor(v / 4)}, 4 × ${Math.floor(v / 4) + 1} = ${fm2J(4 * Math.floor(v / 4) + 4, "이라")} ${fm2J(v, "은는")} 그 사이에 있는 수예요. 4의 배수가 아니에요.`, miss: "4 × 1, 4 × 2, 4 × 3, …을 차례로 계산해 봐요." }],
         ok: "4의 배수는 4, 8, 12, 16, 20, …이에요. 4씩 커져요." }) },
     { name: "약수와 배수의 관계", inst: "18을 여러 수의 곱으로 나타낸 식을 보고 친구들이 이야기해요. 옳게 말한 것을 모두 골라 보세요.", hints: ["18 = 2 × 9에서 2와 9는 18을 나누어떨어지게 해요.", "18은 2를 9배 한 수이기도 해요."],
       render: (b, a) => quiz(b, a, [
@@ -2386,8 +2386,8 @@ const LESSONS = [
   steps: [
     { inst: "할머니 생신 기념 선물로 윤우는 양갱 12개와 약과 16개를 상자에 남김없이 똑같이 나누어 담으려고 해요. 양갱과 약과를 각각 똑같이 나누어 담을 수 있는 상자 수에 ○표 하세요. 수를 누르면 아래에 나눗셈이 보여요.", hints: ["양갱은 12의 약수, 약과는 16의 약수만큼의 상자에 나누어 담을 수 있어요.", "두 줄에 모두 ○표 한 수는 양갱과 약과를 모두 똑같이 나눌 수 있는 상자 수예요."],
       render: (b, a) => fm2Rows(b, a, { common: true, rows: [
-        { label: "양갱 12개", nums: fm2Range(1, 12), want: FM2_D(12), what: "양갱 12개를 똑같이 나눌 수 있는 상자 수", why: v => `양갱 12개를 상자 ${v}개에 나누면 12 ÷ ${v} = ${Math.floor(12 / v)} … ${12 % v}로 남아요.`, peek: v => `12 ÷ ${v} = ${Math.floor(12 / v)}${12 % v ? ` … ${12 % v} (남아요)` : " (똑같이 나누어져요)"}` },
-        { label: "약과 16개", nums: fm2Range(1, 16), want: FM2_D(16), what: "약과 16개를 똑같이 나눌 수 있는 상자 수", why: v => `약과 16개를 상자 ${v}개에 나누면 16 ÷ ${v} = ${Math.floor(16 / v)} … ${16 % v}로 남아요.`, peek: v => `16 ÷ ${v} = ${Math.floor(16 / v)}${16 % v ? ` … ${16 % v} (남아요)` : " (똑같이 나누어져요)"}` }],
+        { label: "양갱 12개", nums: fm2Range(1, 12), want: FM2_D(12), what: "양갱 12개를 똑같이 나눌 수 있는 상자 수", why: v => `양갱 12개를 상자 ${v}개에 나누면 12 ÷ ${v} = ${Math.floor(12 / v)} … ${fm2J(12 % v, "으로")} 남아요.`, peek: v => `12 ÷ ${v} = ${Math.floor(12 / v)}${12 % v ? ` … ${12 % v} (남아요)` : " (똑같이 나누어져요)"}` },
+        { label: "약과 16개", nums: fm2Range(1, 16), want: FM2_D(16), what: "약과 16개를 똑같이 나눌 수 있는 상자 수", why: v => `약과 16개를 상자 ${v}개에 나누면 16 ÷ ${v} = ${Math.floor(16 / v)} … ${fm2J(16 % v, "으로")} 남아요.`, peek: v => `16 ÷ ${v} = ${Math.floor(16 / v)}${16 % v ? ` … ${16 % v} (남아요)` : " (똑같이 나누어져요)"}` }],
         found: "양갱과 약과를 모두 똑같이 나눌 수 있는 상자 수: ",
         ask: [
           { q: "양갱 12개와 약과 16개를 모두 남김없이 똑같이 나누어 담을 수 있는 상자 수를 모두 써 보세요.", set: fm2Both(FM2_D(12), FM2_D(16)), unit: "개", why: { "3": "약과 16개는 상자 3개에 똑같이 나눌 수 없어요.", "8": "양갱 12개는 상자 8개에 똑같이 나눌 수 없어요." } },
