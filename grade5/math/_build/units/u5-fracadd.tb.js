@@ -6,7 +6,7 @@ const APP={title:"유기견 보호 센터 분수의 덧셈과 뺄셈", unit:"5-1
    글 속 분수 표기: [3/7] 진분수·가분수, [2 1/4] 대분수, [□/5]·[3+5/7](분자에 식)도 됨.
    채점은 값으로 해요: 약분하지 않은 분수, 가분수, 대분수 모두 정답이에요(지도서 채점 원칙). */
 /*fa5-core*/
-const FA5_SRC = "\\[(?:(\\d+|□) )?([0-9□]+(?:[+−-][0-9□]+)?)\\/([0-9□]+)\\]";
+const FA5_SRC = "\\[(?:(\\d+|□) )?([0-9□]+(?:[+−×-][0-9□]+)?)\\/([0-9□]+(?:×[0-9□]+)?)\\]";
 const fa5Re = () => new RegExp(FA5_SRC, "g");
 /* 칸에 쓴 글(자연수·분자·분모) → 수 */
 function fa5Raw(ws, ns, ds) {
@@ -367,7 +367,7 @@ function fa5Chain(body, api, rows, opt = {}) {
   const ins = [], chs = [], plains = [];
   const wrap = h("div");
   const ex = v => v == null ? "" : Array.isArray(v) ? v.map(ex).join("") : String(v)[0] === "?" ? String(v).slice(1) : String(v);
-  const jsNum = v => ex(v).replace(/−/g, "-");
+  const jsNum = v => ex(v).replace(/−/g, "-").replace(/×/g, "*");
   const jsStr = s => String(s).replace(fa5Re(), (m, w, n, d) => `(${w && w !== "□" ? w : 0}+(${n.replace(/−/g, "-")})/(${d}))`).replace(/−/g, "-").replace(/×/g, "*");
   const cell = v => {
     if (v == null) return null;
@@ -405,7 +405,8 @@ function fa5Chain(body, api, rows, opt = {}) {
       if (vals.some(v => !isFinite(v) || Math.abs(v - vals[0]) > 1e-9)) throw new Error("식 확인 필요: " + plain);
     }
   });
-  api.provide({ words: opt.words || ["분모는 그대로", "분자끼리", "자연수 부분끼리", "분수 부분끼리", "가분수", "1 = 분모와 분자가 같은 분수"], answers: plains });
+  api.provide({ words: opt.words || ["통분", "분모는 그대로", "분자끼리", "자연수 부분끼리", "분수 부분끼리", "가분수"], answers: plains });
+  if (opt.fig) body.append(opt.fig());
   body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     let ok = true, hint = null; const given = [];
     ins.forEach(x => {
@@ -499,4 +500,548 @@ function fa5Match(body, api, opt) {
       if (!ok) return api.fail("값을 계산해 보고 다시 이어요. 가분수와 대분수 중 편리한 꼴로 바꾸어 비교해요.", given);
       api.tryOnce(); api.done(given, opt.ok || "값이 같은 식끼리 잘 이었어요!");
     } }, "확인하기")));
+}
+
+/* ④ 통분 막대: 두 분수 막대의 한 칸을 똑같이 더 잘게 나누어 조각의 크기를 같게 만들어요.
+   opt: A, B(진분수), names, op("+"|"-"|null), d(이 크기로 맞추기, 없으면 공배수 아무것이나), ask·askCalc, ok */
+function fa5Split(body, api, opt) {
+  fa5Style();
+  const A = fa5Str(opt.A), B = fa5Str(opt.B), V = [A, B], names = opt.names || [opt.A, opt.B];
+  if (V.some(v => !v || v.err || v.num >= v.den)) throw new Error("통분 막대는 진분수만: " + opt.A + ", " + opt.B);
+  const k = [1, 1], MAXD = opt.maxd || 48, sg = opt.op === "-" ? -1 : 1;
+  const W = 900, LX = 230, UW = 620, BH = 56, GP = 46;
+  const svg = makeSvg(W, 100);
+  const dOf = i => V[i].den * k[i], same = () => dOf(0) === dOf(1);
+  const ctl = h("div");
+  const labs = [0, 1].map(() => h("span", { class: "jua" }));
+  const btn = (i, dk) => h("button", { onclick: () => { const nk = k[i] + dk; if (nk < 1) return; if (V[i].den * nk > MAXD) return api.hint(`그림으로는 한 막대를 ${MAXD}칸까지만 나눌 수 있어요. 더 작은 공통분모를 찾아봐요.`); k[i] = nk; draw(); } }, dk > 0 ? "더 잘게 ＋" : "－ 되돌리기");
+  [0, 1].forEach(i => ctl.append(h("div", { class: "fa5tools" }, h("span", { class: "fa5tag", style: `border-left:8px solid ${FA5_F[i]}` }, fa5Plain(names[i]) === names[i] ? names[i] : names[i]), btn(i, -1), labs[i], btn(i, 1))));
+  const readout = h("p", { class: "fa5tip" });
+  const cellsRow = (y, d, fill, cross, label, labCol) => {
+    for (let c = 0; c < d; c++) {
+      const f = fill(c);
+      svg.append(svgEl("rect", { x: LX + c * UW / d, y, width: UW / d, height: BH, fill: f || "#fff", stroke: INK, "stroke-width": d > 30 ? 1 : 1.6 }));
+      if (cross && cross(c)) { const x0 = LX + c * UW / d, w = UW / d; svg.append(svgEl("line", { x1: x0 + w * .2, y1: y + 10, x2: x0 + w * .8, y2: y + BH - 10, stroke: "#C8472E", "stroke-width": 3 }), svgEl("line", { x1: x0 + w * .8, y1: y + 10, x2: x0 + w * .2, y2: y + BH - 10, stroke: "#C8472E", "stroke-width": 3 })); }
+    }
+    svg.append(svgEl("rect", { x: LX, y, width: UW, height: BH, fill: "none", stroke: INK, "stroke-width": 4 }));
+    if (label) svg.append(fa5SvgLine(label, LX - 16, y + BH / 2, 24, { anchor: "end", fill: labCol || INK }));
+  };
+  const draw = () => {
+    svg.innerHTML = "";
+    let y = 16;
+    [0, 1].forEach(i => {
+      const d = dOf(i), n = V[i].num * k[i];
+      cellsRow(y, d, c => c < n ? FA5_F[i] : null, null, names[i]);
+      for (let c = 1; c < V[i].den; c++) svg.append(svgEl("line", { x1: LX + c * UW / V[i].den, y1: y - 4, x2: LX + c * UW / V[i].den, y2: y + BH + 4, stroke: INK, "stroke-width": 4 }));
+      svg.append(fa5SvgLine(`= [${n}/${d}]`, LX + UW + 12, y + BH / 2, 24, { anchor: "start", fill: FA5_S[i] }));
+      labs[i].textContent = k[i] === 1 ? `한 칸 그대로 → [${n}/${d}]` : `한 칸을 ${k[i]}칸으로 → [${n}/${d}]`;
+      y += BH + GP;
+    });
+    if (same() && opt.op) {
+      const d = dOf(0), a = V[0].num * k[0], b = V[1].num * k[1];
+      if (sg > 0) {
+        const t = a + b, rows = Math.ceil(t / d);
+        for (let r = 0; r < rows; r++) { cellsRow(y, d, c => { const g = r * d + c; return g < a ? FA5_F[0] : g < t ? FA5_F[1] : null; }, null, r === 0 ? "합" : "", TENT); y += BH + 16; }
+        svg.append(fa5SvgLine(`[${a}/${d}]+[${b}/${d}] = [${t}/${d}]`, LX + UW / 2, y + 14, 25, { fill: TENT })); y += 46;
+      } else {
+        cellsRow(y, d, c => c < a ? FA5_F[0] : null, c => c >= a - b && c < a, "차", TENT); y += BH + 16;
+        svg.append(fa5SvgLine(`[${a}/${d}]−[${b}/${d}] = [${a - b}/${d}]`, LX + UW / 2, y + 14, 25, { fill: TENT })); y += 46;
+      }
+    }
+    svg.setAttribute("viewBox", `0 0 ${W} ${y + 4}`);
+    readout.textContent = same() ? (opt.d && dOf(0) !== opt.d ? `두 막대의 조각 크기가 같아졌어요([1/${dOf(0)}]). 이번에는 한 칸이 [1/${opt.d}]이 되게 맞춰 봐요.` : `두 막대의 조각 크기가 [1/${dOf(0)}]로 같아졌어요. 이것이 통분이에요!`)
+      : `지금 한 칸의 크기: 위 [1/${dOf(0)}], 아래 [1/${dOf(1)}] — 아직 달라요.`;
+  };
+  draw();
+  const ready = () => same() && (!opt.d || dOf(0) === opt.d);
+  const ask = h("div", { class: "fa5ask" });
+  body.append(h("p", { class: "fa5tip" }, opt.tip || "‘더 잘게’를 눌러 막대의 한 칸을 똑같이 더 잘게 나누어요. 두 막대의 조각 크기가 같아지게 만들어 보세요."), ctl, readout, h("div", { class: "fa5stage" }, svg), ask);
+  fa5Ask(ask, api, ready, () => !same() ? "먼저 두 막대의 조각 크기를 같게 만들어요. 두 분모의 공배수를 생각해 봐요." : `이번에는 한 칸이 [1/${opt.d}]이 되게 나누어요.`, opt);
+}
+
+/* ⑤ 두 대분수를 색칠하고 모으기(분수 부분의 합이 1이 되면 자연수로): opt d(공통분모), A:{name,v}, B:{name,v}, est, ask */
+function fa5Fill(body, api, opt) {
+  fa5Style();
+  const d = opt.d, A = fa5Str(opt.A.v), B = fa5Str(opt.B.v), aN = A.num * d / A.den, bN = B.num * d / B.den;
+  if (!Number.isInteger(aN) || !Number.isInteger(bN)) throw new Error("공통분모 확인 필요");
+  const nb = Math.ceil(aN / d) + Math.ceil(bN / d);
+  let cells = Array(nb * d).fill(0), cur = 1, merged = false, estOk = !opt.est;
+  const W = 900, LX = 110, BW = 600, BH = 44, GP = 14, H = 24 + nb * (BH + GP);
+  const svg = makeSvg(W, H);
+  const count = k => cells.filter(c => c === k).length;
+  const fA = aN % d, fB = bN % d, wA = (aN - fA) / d, wB = (bN - fB) / d, fb = wA + wB, carry = fA + fB >= d;
+  const draw = () => {
+    svg.innerHTML = "";
+    for (let i = 0; i < nb; i++) {
+      const y = 14 + i * (BH + GP), full = cells.slice(i * d, i * d + d).every(c => c);
+      for (let c = 0; c < d; c++) {
+        const k = i * d + c, v = cells[k];
+        const r = svgEl("rect", { x: LX + c * BW / d, y, width: BW / d, height: BH, fill: v ? FA5_F[v - 1] : "#fff", stroke: INK, "stroke-width": 2, style: merged ? "" : "cursor:pointer" });
+        if (!merged) r.addEventListener("click", () => { cells[k] = cells[k] === cur ? 0 : cur; draw(); stat(); });
+        svg.append(r);
+      }
+      const hl = merged && carry && i === fb;
+      svg.append(svgEl("rect", { x: LX, y, width: BW, height: BH, fill: "none", stroke: hl ? TENT : INK, "stroke-width": hl ? 7 : 4, "pointer-events": "none" }));
+      if (merged && full) svg.append(txt(LX - 30, y + BH / 2, "1", 28, { fill: hl ? TENT : INK }));
+      if (hl) svg.append(fa5SvgLine(`분수 부분끼리 모여 1`, LX + BW + 10, y + BH / 2, 18, { anchor: "start", fill: TENT }));
+    }
+  };
+  const readout = h("p", { class: "fa5tip" });
+  const stat = () => { readout.textContent = merged ? `모은 결과: ${fa5J(String(wA + wB + (carry ? 1 : 0)), "과와")} [${(fA + fB) % d}/${d}]만큼이에요.` : `${opt.A.name} 색칠 ${count(1)}칸, ${opt.B.name} 색칠 ${count(2)}칸 (막대 하나가 1, 한 칸은 [1/${d}])`; };
+  const bA = h("button", { class: "fa5on", onclick: () => { cur = 1; bA.classList.add("fa5on"); bB.classList.remove("fa5on"); } }, `${opt.A.name} ${fa5Tk(opt.A.v)} 색칠하기`);
+  const bB = h("button", { onclick: () => { cur = 2; bB.classList.add("fa5on"); bA.classList.remove("fa5on"); } }, `${opt.B.name} ${fa5Tk(opt.B.v)} 색칠하기`);
+  bA.style.borderLeft = `8px solid ${FA5_F[0]}`; bB.style.borderLeft = `8px solid ${FA5_F[1]}`;
+  const mergeBtn = h("button", { onclick: () => {
+    if (merged) return;
+    if (count(1) !== aN || count(2) !== bN) return api.hint(`한 칸은 [1/${d}]이에요. 두 수를 분모가 ${d}인 분수로 바꾸어 색칠할 칸 수를 세어 봐요. 지금 ${count(1)}칸, ${count(2)}칸이에요.`);
+    if (!estOk) return api.hint("먼저 위에서 어림해요.");
+    merged = true; const out = [];
+    for (let i = 0; i < wA * d; i++) out.push(1); for (let i = 0; i < wB * d; i++) out.push(2);
+    for (let i = 0; i < fA; i++) out.push(1); for (let i = 0; i < fB; i++) out.push(2);
+    while (out.length < cells.length) out.push(0);
+    cells = out; draw(); stat();
+    api.hint(carry ? `자연수 부분끼리 모으고, 분수 부분끼리 모았더니 [${fA}/${d}]+[${fB}/${d}]에서 1이 생겼어요!` : "자연수 부분끼리, 분수 부분끼리 모았어요.");
+  } }, "모으기");
+  const reset = h("button", { onclick: () => { cells = Array(nb * d).fill(0); merged = false; draw(); stat(); } }, "처음부터");
+  draw(); stat();
+  const ask = h("div", { class: "fa5ask" });
+  if (opt.est) body.append(fa5EstBox(api, opt.est, () => { estOk = true; }));
+  body.append(h("div", { class: "fa5tools" }, bA, bB, mergeBtn, reset), readout, h("div", { class: "fa5stage" }, svg), ask);
+  fa5Ask(ask, api, () => merged && estOk, () => !estOk ? "먼저 어림해요." : "두 수를 알맞게 색칠한 다음 ‘모으기’를 눌러요.", opt);
+}
+
+/* ⑥ 덜어 내기(×표): 공통분모 d로 나눈 막대. 자연수 1은 통째로 ×표 하거나 쪼개어 한 칸씩 ×표. opt d, m(빼어지는 수), s(빼는 수), unit, est, ask */
+function fa5Take(body, api, opt) {
+  fa5Style();
+  const d = opt.d, M = fa5Str(opt.m), Sb = fa5Str(opt.s), mN = M.num * d / M.den, sN = Sb.num * d / Sb.den;
+  if (!Number.isInteger(mN) || !Number.isInteger(sN) || sN > mN) throw new Error("덜어 내기 확인 필요");
+  const Wn = Math.floor(mN / d), rn = mN % d;
+  const units = [];
+  for (let i = 0; i < Wn; i++) units.push({ split: false, whole: false, part: d, cells: Array(d).fill(false) });
+  if (rn) units.push({ split: true, whole: false, part: rn, cells: Array(d).fill(false), rest: true });
+  let estOk = !opt.est;
+  const crossed = () => units.reduce((a, u) => a + (u.split ? u.cells.filter(Boolean).length : u.whole ? d : 0), 0);
+  const nU = units.length;
+  const W = 900, H = 24 + nU * 70;
+  const svg = makeSvg(W, H);
+  const X = (g, x1, y1, x2, y2) => g.append(svgEl("line", { x1, y1, x2, y2, stroke: "#C8472E", "stroke-width": 4, "stroke-linecap": "round", "pointer-events": "none" }));
+  const splitBtn = (u, x, y, w) => {
+    const g = svgEl("g", { style: "cursor:pointer" });
+    g.append(svgEl("rect", { x, y, width: w, height: 40, rx: 10, fill: u.split ? "#EEF2F0" : "#FDF1E8", stroke: u.split ? "#B9C4C0" : TENT, "stroke-width": 2 }));
+    g.append(fa5SvgLine(u.split ? `1 = [${d}/${d}]` : "1을 쪼개기", x + w / 2, y + 20, u.split ? 20 : 19, { fill: u.split ? "#5B6B6B" : "#B85A22" }));
+    if (!u.split) g.addEventListener("click", () => { u.split = true; u.whole = false; draw(); });
+    return g;
+  };
+  const draw = () => {
+    svg.innerHTML = "";
+    units.forEach((u, i) => {
+      const BW = 560, x = 120, y = 14 + i * 70, BH = 48;
+      if (!u.split) {
+        const r = svgEl("rect", { x, y, width: BW, height: BH, fill: "#F7E3C4", stroke: INK, "stroke-width": 4, style: "cursor:pointer" });
+        r.addEventListener("click", () => { u.whole = !u.whole; draw(); }); svg.append(r);
+        svg.append(txt(x + BW / 2, y + BH / 2, opt.unit ? `1 ${opt.unit}` : "1", 26, { "pointer-events": "none" }));
+        if (u.whole) { const g = svgEl("g"); X(g, x + 10, y + 6, x + BW - 10, y + BH - 6); X(g, x + BW - 10, y + 6, x + 10, y + BH - 6); svg.append(g); }
+      } else {
+        for (let c = 0; c < d; c++) {
+          const live = c < u.part, cx = x + c * BW / d;
+          const r = svgEl("rect", { x: cx, y, width: BW / d, height: BH, fill: live ? (u.cells[c] ? "#E9ECEB" : "#F7E3C4") : "#fff", stroke: live ? INK : "#B9C4C0", "stroke-width": d > 20 ? 1.2 : 2, "stroke-dasharray": live ? "" : "6 5", style: live ? "cursor:pointer" : "" });
+          if (live) r.addEventListener("click", () => { u.cells[c] = !u.cells[c]; draw(); });
+          svg.append(r);
+          if (u.cells[c]) { const g = svgEl("g"), w = BW / d; X(g, cx + w * .2, y + 10, cx + w * .8, y + BH - 10); X(g, cx + w * .8, y + 10, cx + w * .2, y + BH - 10); svg.append(g); }
+        }
+        svg.append(svgEl("rect", { x, y, width: u.rest ? BW * u.part / d : BW, height: BH, fill: "none", stroke: INK, "stroke-width": 4, "pointer-events": "none" }));
+      }
+      if (u.rest) svg.append(fa5SvgLine(`[${u.part}/${d}]`, x - 44, y + BH / 2, 22)); else svg.append(splitBtn(u, x + BW + 18, y + 4, 170));
+    });
+    readout.textContent = `×표 한 양: [1/${d}]이 ${crossed()}개` + (crossed() ? ` (${fa5Tk(fa5Form(crossed(), d))}${opt.unit ? " " + opt.unit : ""})` : "");
+  };
+  const readout = h("p", { class: "fa5tip" });
+  draw();
+  const ask = h("div", { class: "fa5ask" });
+  if (opt.est) body.append(fa5EstBox(api, opt.est, () => { estOk = true; }));
+  body.append(h("p", { class: "inst", style: "font-size:var(--fs-s);margin:.1em 0" }, opt.tip || `막대 하나가 1이고, 작은 칸 하나는 [1/${d}]이에요. 막대(1)를 누르면 통째로 ×표, ‘1을 쪼개기’를 누르면 1이 ${fa5J(`[${d}/${d}]`, "으로")} 나뉘어 한 칸씩 ×표 할 수 있어요.`),
+    readout, h("div", { class: "fa5stage" }, svg),
+    h("div", { class: "fa5tools" }, h("button", { onclick: () => { units.forEach(u => { u.whole = false; u.cells.fill(false); if (!u.rest) u.split = false; }); draw(); } }, "처음부터")), ask);
+  fa5Ask(ask, api, () => crossed() === sN && estOk, () => !estOk ? "먼저 어림해요." : `${fa5Tk(opt.s)}${opt.unit ? " " + opt.unit : ""}만큼 ×표 해요. ${fa5J(fa5Tk(opt.s), "을를")} 분모가 ${d}인 분수로 바꾸어 칸 수를 세어 봐요. 지금은 [1/${d}]이 ${crossed()}개예요.`, opt);
+}
+
+/* ⑨ 수 카드로 대분수 만들기 (자연수·분자·분모 모두 카드): groups [{name, cards, kind:"max"|"min"}], op("+"|"-") — 두 대분수의 합 또는 차 */
+function fa5Mixed(body, api, opt) {
+  fa5Style();
+  const op = opt.op === "-" ? -1 : 1;
+  const bestOf = g => {
+    let best = null; const c = g.cards;
+    c.forEach((w, i) => c.forEach((n, j) => c.forEach((d, k) => { if (i === j || j === k || i === k || n >= d) return; const v = w + n / d; if (!best || (g.kind === "max" ? v > best.v : v < best.v)) best = { w, n, d, v }; })));
+    return best;
+  };
+  const G = opt.groups.map(g => ({ g, best: bestOf(g), slot: { w: null, n: null, d: null }, sel: null }));
+  const bv = G.map(x => fa5Str(`${x.best.w} ${x.best.n}/${x.best.d}`));
+  const total = fa5Add(bv[0], bv[1], op);
+  if (total.num <= 0) throw new Error("카드 대분수 확인 필요");
+  const sum = fa5In(op > 0 ? "두 수의 합" : "두 수의 차");
+  G.forEach(x => {
+    const used = () => ["w", "n", "d"].map(k => x.slot[k]).filter(v => v != null);
+    const cBtns = x.g.cards.map((c, i) => h("button", { class: "opt", onclick: () => { x.sel = x.sel === i ? null : i; cBtns.forEach((b, k) => b.classList.toggle("fa5on", x.sel === k)); } }, String(c)));
+    const sb = {};
+    const slotBtn = key => { const b = h("button", { class: "fa5slot", "aria-label": { w: "자연수", n: "분자", d: "분모" }[key], onclick: () => { x.slot[key] = x.sel == null ? null : x.sel; x.sel = null; cBtns.forEach(c => c.classList.remove("fa5on")); paint(); } }, "​"); sb[key] = b; return b; };
+    const paint = () => { ["w", "n", "d"].forEach(k => { sb[k].textContent = x.slot[k] == null ? "​" : String(x.g.cards[x.slot[k]]); }); cBtns.forEach((b, i) => b.style.opacity = used().includes(i) ? .45 : 1); };
+    const mixed = h("span", { class: "fa5fr fa5frin" }, h("span", { class: "fa5fw" }, slotBtn("w")), h("span", { class: "fa5q" }, h("span", { class: "fa5n" }, slotBtn("n")), h("span", { class: "fa5d" }, slotBtn("d"))));
+    x.box = h("div", { class: "fa5grp" }, h("div", { class: "fa5gt" }, `${x.g.name} — 수 카드 ${x.g.cards.join(", ")}`), h("div", { class: "fa5cards" }, cBtns), h("div", { class: "fa5cl" }, h("span", { class: "fa5tag" }, x.g.kind === "max" ? "가장 큰 대분수" : "가장 작은 대분수"), mixed));
+  });
+  api.provide({ words: ["가장 큰 대분수", "가장 작은 대분수"], answers: G.map(x => `${x.g.name}: ${fa5Plain(`[${x.best.w} ${x.best.n}/${x.best.d}]`)}`).concat([`${op > 0 ? "합" : "차"} ${fa5Plain(fa5Tk(fa5Form(total.num, total.den)))}`]) });
+  body.append(h("p", { class: "fa5tip" }, "수 카드를 누른 다음 빈칸(자연수·분자·분모)을 눌러 넣어요. 빈칸을 다시 누르면 지워져요. 카드는 한 번씩만 써요."), ...G.map(x => x.box),
+    h("div", { class: "fa5cl" }, h("span", {}, op > 0 ? "두 대분수의 합 =" : "두 대분수의 차 ="), sum),
+    h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+      const val = x => ["w", "n", "d"].map(k => x.slot[k] == null ? null : x.g.cards[x.slot[k]]);
+      const given = G.map(x => val(x).map(v => v == null ? "□" : v).join(" ")).join(", ") + ` / ${sum.text()}`;
+      for (const x of G) {
+        const [w, n, d] = val(x), ids = ["w", "n", "d"].map(k => x.slot[k]);
+        if (ids.some(v => v == null)) return api.fail(`${x.g.name}의 빈칸에 수 카드를 모두 넣어요.`, given);
+        if (new Set(ids).size < 3) return api.fail("수 카드는 한 번씩만 써요.", given);
+        if (n >= d) return api.fail("대분수의 분수 부분은 진분수예요. 분자가 분모보다 작아야 해요.", given);
+        if (w !== x.best.w || n !== x.best.n || d !== x.best.d) return api.fail(x.g.kind === "max" ? "가장 큰 대분수는 자연수 부분에 가장 큰 수를 놓고, 남은 두 카드로 진분수를 만들어요." : "가장 작은 대분수는 자연수 부분에 가장 작은 수를 놓고, 남은 두 카드로 진분수를 만들어요.", given);
+      }
+      const J = fa5Judge(sum.get(), fa5Form(total.num, total.den));
+      if (J.code === "zero") { sum.paint(null); return api.hint(J.msg); }
+      if (J.code !== "ok") { sum.paint(false); return api.fail(J.msg || fa5Diag(`${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)}${op > 0 ? "+" : "-"}${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)}`, sum.get()) || "두 대분수를 통분한 다음 자연수 부분끼리, 분수 부분끼리 계산해 봐요.", given); }
+      sum.paint(true); api.tryOnce();
+      api.done(given, opt.ok || `${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)} ${op > 0 ? "+" : "−"} ${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)} = ${fa5Book(total.num, total.den)}이에요!`);
+    } }, "확인하기")));
+}
+
+/* ⑩ 수 카드로 진분수를 만들고 친구의 진분수와 더하기 (3차시 창의) */
+function fa5Proper(body, api, opt) {
+  fa5Style();
+  const cards = opt.cards, all = [];
+  cards.forEach(n => cards.forEach(d => { if (n < d) all.push({ n, d }); }));
+  const slot = { n: null, d: null }; let sel = null, mine = null, friend = null;
+  const cBtns = cards.map((c, i) => h("button", { class: "opt", onclick: () => { if (mine) return; sel = sel === i ? null : i; cBtns.forEach((b, k) => b.classList.toggle("fa5on", sel === k)); } }, String(c)));
+  const sb = {};
+  const slotBtn = key => { const b = h("button", { class: "fa5slot", "aria-label": key === "n" ? "분자" : "분모", onclick: () => { if (mine) return; slot[key] = sel; sel = null; cBtns.forEach(c => c.classList.remove("fa5on")); paint(); } }, "​"); sb[key] = b; return b; };
+  const paint = () => ["n", "d"].forEach(k => { sb[k].textContent = slot[k] == null ? "​" : String(cards[slot[k]]); });
+  const frac = h("span", { class: "fa5fr fa5frin" }, h("span", { class: "fa5q" }, h("span", { class: "fa5n" }, slotBtn("n")), h("span", { class: "fa5d" }, slotBtn("d"))));
+  const fBox = h("div", { class: "fa5cl" }), sumRow = h("div", { class: "fa5cl hidden" }), sum = fa5In("두 진분수의 합");
+  const table = h("table", { class: "fa5score" }, h("tr", {}, h("th", {}, "내가 만든 진분수"), h("th", {}, "친구가 만든 진분수"), h("th", {}, "합")));
+  sumRow.append(h("span", { class: "jua" }, "두 진분수의 합 ="), sum);
+  const fix = h("button", { onclick: () => {
+    if (mine) return;
+    if (slot.n == null || slot.d == null) return api.hint("분자와 분모에 수 카드를 하나씩 넣어요.");
+    if (slot.n === slot.d) return api.hint("수 카드는 한 번씩만 써요.");
+    const n = cards[slot.n], d = cards[slot.d];
+    if (n >= d) return api.hint("진분수는 분자가 분모보다 작은 분수예요. 카드를 바꾸어 봐요.");
+    mine = { n, d };
+    const pool = all.filter(f => f.d !== d && f.n * d + n * f.d > f.d * d);
+    friend = pool[Math.floor(Math.random() * pool.length)] || all.find(f => f.d !== d);
+    fBox.append(h("span", { class: "fa5tag" }, "친구가 만든 진분수"), h("span", { class: "jua" }, `[${friend.n}/${friend.d}]`));
+    sumRow.classList.remove("hidden");
+    api.hint(`내 진분수는 [${n}/${d}], 친구의 진분수는 [${friend.n}/${friend.d}]이에요. 통분하여 더해 봐요.`);
+  } }, "내 진분수 정하기");
+  api.provide({ words: ["통분", "분모는 그대로", "분자끼리 더하기"], answers: ["예) [7/8]+[5/6] = [21/24]+[20/24] = [41/24] = [1 17/24]"] });
+  body.append(h("p", { class: "fa5tip" }, `수 카드 ${cards.join(", ")} 중에서 2장을 골라 한 번씩만 사용하여 진분수를 만들어요. 카드를 누르고 분자나 분모 칸을 눌러요.`),
+    h("div", { class: "fa5cards" }, cBtns), h("div", { class: "fa5cl" }, h("span", { class: "fa5tag" }, "내가 만든 진분수"), frac, h("span", { class: "fa5tools" }, fix)), fBox, sumRow, table,
+    h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+      if (!mine) return api.fail("먼저 수 카드로 진분수를 만들고 ‘내 진분수 정하기’를 눌러요.", "-");
+      const e = `[${mine.n}/${mine.d}]+[${friend.n}/${friend.d}]`, v = fa5Eval(e), r = sum.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
+      if (J.code === "zero") { sum.paint(null); return api.hint(J.msg); }
+      if (J.code !== "ok") { sum.paint(false); return api.fail(J.msg || fa5Diag(e, r) || "두 분모의 곱이나 최소공배수를 공통분모로 하여 통분한 다음 분자끼리 더해 봐요.", `${e} = ${sum.text()}`); }
+      sum.paint(true); api.tryOnce();
+      table.append(h("tr", {}, h("td", {}, `[${mine.n}/${mine.d}]`), h("td", {}, `[${friend.n}/${friend.d}]`), h("td", {}, fa5Book(v.num, v.den))));
+      api.done(`${e} = ${sum.text()}`, `${e} = ${fa5Book(v.num, v.den)}. 내가 만든 진분수와 친구의 진분수를 통분하여 더했어요!`);
+    } }, "확인하기")));
+}
+
+/* ⑪ 음표 (8차시) — 4분음표를 1박으로 */
+const FA5_NOTE = { s: { b: "1/4", name: "16분음표" }, e: { b: "1/2", name: "8분음표" }, de: { b: "3/4", name: "점 8분음표" }, q: { b: "1", name: "4분음표" }, dq: { b: "1 1/2", name: "점 4분음표" }, hf: { b: "2", name: "2분음표" } };
+function fa5DrawNote(g, t, x, y, col = INK) {
+  const head = svgEl("ellipse", { cx: x, cy: y, rx: 12, ry: 8.5, transform: `rotate(-22 ${x} ${y})`, fill: t === "hf" ? "#fff" : col, stroke: col, "stroke-width": 3 });
+  g.append(head, svgEl("line", { x1: x + 10.5, y1: y - 3, x2: x + 10.5, y2: y - 62, stroke: col, "stroke-width": 3 }));
+  const flag = yy => svgEl("path", { d: `M${x + 10.5},${yy} C${x + 22},${yy + 10} ${x + 32},${yy + 18} ${x + 24},${yy + 36}`, fill: "none", stroke: col, "stroke-width": 4, "stroke-linecap": "round" });
+  if (t === "e" || t === "de") g.append(flag(y - 62));
+  if (t === "s") g.append(flag(y - 62), flag(y - 48));
+  if (t === "de" || t === "dq") g.append(svgEl("circle", { cx: x + 22, cy: y + 1, r: 4, fill: col }));
+}
+function fa5NoteFig(types, opt = {}) {
+  return () => {
+    fa5Style();
+    const n = types.length, W = Math.max(220, 110 + n * 90), svg = makeSvg(W, 140), g = svgEl("g");
+    svg.append(svgEl("line", { x1: 10, y1: 100, x2: W - 10, y2: 100, stroke: "#9AA8A4", "stroke-width": 2 }));
+    types.forEach((t, i) => { fa5DrawNote(g, t, 70 + i * 90, 100); if (opt.label) g.append(txt(70 + i * 90 + 6, 128, FA5_NOTE[t].name, 15, { fill: "#5B6B6B" })); });
+    svg.append(g);
+    return h("div", { class: "fa5stage", style: `max-width:${Math.min(40, 8 + n * 7)}em` }, svg);
+  };
+}
+/* 마디 완성하기: measures [{beats, notes:[…], one?:true(음표 하나만), label}], top(박자표 위 수) */
+function fa5Music(body, api, opt) {
+  fa5Style();
+  const ms = opt.measures.map(m => ({ m, add: [] }));
+  let cur = 0;
+  const beatsOf = list => list.reduce((a, t) => fa5Add(a, fa5Str(FA5_NOTE[t].b)), { num: 0, den: 1 });
+  ms.forEach(M => { const g = beatsOf(M.m.notes), rest = fa5Add(fa5Q(M.m.beats, 1), g, -1); if (rest.num <= 0) throw new Error("마디 확인 필요"); M.need = rest; });
+  const NW = 74, W = 900;
+  const svg = makeSvg(W, 100);
+  const draw = () => {
+    svg.innerHTML = "";
+    let y = 30;
+    ms.forEach((M, i) => {
+      const list = M.m.notes, slotN = Math.max(1, M.add.length), w = 120 + (list.length + slotN) * NW + 30, x0 = Math.max(10, (W - w) / 2), yl = y + 92;
+      const isCur = i === cur;
+      svg.append(fa5SvgLine(M.m.label || `${i + 1}번째 마디`, x0, y + 6, 20, { anchor: "start", fill: "#5B6B6B" }));
+      svg.append(svgEl("line", { x1: x0, y1: yl, x2: x0 + w, y2: yl, stroke: INK, "stroke-width": 2 }));
+      svg.append(svgEl("line", { x1: x0, y1: yl - 40, x2: x0, y2: yl + 40, stroke: INK, "stroke-width": 3 }), svgEl("line", { x1: x0 + w, y1: yl - 40, x2: x0 + w, y2: yl + 40, stroke: INK, "stroke-width": 3 }));
+      svg.append(txt(x0 + 36, yl - 20, String(M.m.beats), 30), txt(x0 + 36, yl + 20, "4", 30));
+      const g = svgEl("g", { "pointer-events": "none" });
+      list.forEach((t, k) => fa5DrawNote(g, t, x0 + 100 + k * NW, yl));
+      const sx = x0 + 100 + list.length * NW - 26, sw = slotN * NW + 12;
+      const slot = svgEl("rect", { x: sx, y: yl - 82, width: sw, height: 112, rx: 10, fill: isCur ? "#FFF6EC" : "#fff", stroke: isCur ? TENT : "#B9C4C0", "stroke-width": 3, "stroke-dasharray": "8 6", style: "cursor:pointer" });
+      slot.addEventListener("click", () => { cur = i; draw(); });
+      svg.append(slot);
+      M.add.forEach((t, k) => fa5DrawNote(g, t, sx + 26 + k * NW, yl, "#B85A22"));
+      if (!M.add.length) svg.append(txt(sx + sw / 2, yl - 24, "?", 34, { fill: "#B85A22", "pointer-events": "none" }));
+      svg.append(g);
+      const now = beatsOf(list.concat(M.add));
+      svg.append(fa5SvgLine(`음표의 박을 모두 더하면 ${fa5Tk(fa5Form(now.num, now.den))}박 / ${M.m.beats}박이 되어야 해요`, W / 2, yl + 62, 20, { fill: now.num === M.m.beats * now.den ? "#2E8B57" : "#5B6B6B" }));
+      y += 200;
+    });
+    svg.setAttribute("viewBox", `0 0 ${W} ${y - 10}`);
+  };
+  const pal = h("div", { class: "fa5tools" });
+  Object.keys(FA5_NOTE).forEach(t => {
+    const ic = makeSvg(46, 80), g = svgEl("g"); fa5DrawNote(g, t, 16, 66); ic.append(g); ic.style.width = "1.6em"; ic.style.verticalAlign = "middle";
+    pal.append(h("button", { onclick: () => { const M = ms[cur]; if (M.add.length >= 4) return api.hint("빈칸에는 음표를 4개까지 넣을 수 있어요."); if (M.m.one && M.add.length >= 1) return api.hint("이 빈칸에는 음표 하나만 넣어요. ‘한 개 빼기’로 바꾸어 보세요."); M.add.push(t); draw(); } }, ic, ` ${FA5_NOTE[t].name} [${FA5_NOTE[t].b}]박`.replace("[1]박", "1박").replace("[2]박", "2박")));
+  });
+  const tools = h("div", { class: "fa5tools" },
+    h("button", { onclick: () => { ms[cur].add.pop(); draw(); } }, "한 개 빼기"),
+    h("button", { onclick: () => fa5Play(ms[cur].m.notes.concat(ms[cur].add)) }, "리듬 들어 보기"));
+  draw();
+  api.provide({ words: ms.map(M => FA5_NOTE[M.m.ans || "q"].name), answers: ms.map((M, i) => `${M.m.label || i + 1 + "번째 마디"}: 모자란 박 ${fa5Plain(fa5Tk(fa5Form(M.need.num, M.need.den)))}박${M.m.ans ? " → " + FA5_NOTE[M.m.ans].name : ""}`) });
+  body.append(h("p", { class: "fa5tip" }, opt.tip || "아래 음표 단추를 누르면 주황색 빈칸에 음표가 들어가요. 마디의 박을 모두 더해 박자표에 맞게 만들어요."), pal, tools, h("div", { class: "fa5stage" }, svg),
+    h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+      const given = ms.map(M => M.add.map(t => FA5_NOTE[t].name).join("+") || "-").join(" / ");
+      for (let i = 0; i < ms.length; i++) {
+        const M = ms[i];
+        if (!M.add.length) { cur = i; draw(); return api.fail(`${M.m.label || i + 1 + "번째 마디"}의 빈칸에 음표를 넣어요.`, given); }
+        const v = beatsOf(M.add);
+        if (!fa5Eq(v, M.need)) { cur = i; draw(); const now = beatsOf(M.m.notes); return api.fail(`${M.m.label || i + 1 + "번째 마디"}: 이미 있는 음표가 ${fa5Tk(fa5Form(now.num, now.den))}박이에요. ${M.m.beats}박이 되려면 몇 박이 더 필요한지 분모를 같게 하여 계산해 봐요. 지금 넣은 음표는 ${fa5Tk(fa5Form(v.num, v.den))}박이에요.`, given); }
+      }
+      api.tryOnce(); api.done(given, opt.ok || "모든 마디가 박자표에 맞게 완성되었어요!");
+    } }, "확인하기")));
+}
+function fa5Play(list) {
+  try {
+    const AC = window.AudioContext || window.webkitAudioContext; if (!AC) return;
+    const ac = fa5Play.ac || (fa5Play.ac = new AC()); let t = ac.currentTime + .05; const beat = .55;
+    list.forEach(tp => { const v = fa5Str(FA5_NOTE[tp].b), dur = v.num / v.den * beat; const o = ac.createOscillator(), g = ac.createGain(); o.frequency.value = 660; g.gain.setValueAtTime(.0001, t); g.gain.exponentialRampToValueAtTime(.25, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + Math.max(.08, dur * .8)); o.connect(g); g.connect(ac.destination); o.start(t); o.stop(t + dur); t += dur; });
+  } catch (e) { /* 소리를 못 내도 괜찮아요 */ }
+}
+
+/* ⑫ 신나는 분수 윷놀이 (9차시) — 놀이판 칸의 분수는 지도서에 없어 새로 정했어요(분수 주사위의 분수와 같은 칸은 없음). */
+const FA5_YUT_VAL = ["2/3", "5/8", "1 1/4", "3/10", "7/12", "1 2/5", "4/9", "5/6", "2 1/3", "3/7", "1 5/6", "7/8", "2/9", "1 3/4", "4/5", "3/8", "2 1/2", "5/12", "1 1/3", "9/10", "3/5", "1 7/8", "5/9", "2 3/4", "1/8", "1 1/6", "7/10", "1 1/2"];
+const FA5_YUT_DIE = ["+1/2", "−1/3", "+1/4", "−1/6", "+2/5", "♥"];
+function fa5Yut(body, api, opt) {
+  fa5Style();
+  const NODE = {}, S = 560, M = 70, at = (x, y) => [M + x * S, M + y * S];
+  for (let i = 0; i < 20; i++) {
+    let p; if (i <= 5) p = [1, 1 - i / 5]; else if (i <= 10) p = [1 - (i - 5) / 5, 0]; else if (i <= 15) p = [0, (i - 10) / 5]; else p = [(i - 15) / 5, 1];
+    NODE["o" + i] = at(...p);
+  }
+  Object.assign(NODE, { a1: at(5 / 6, 1 / 6), a2: at(4 / 6, 2 / 6), C: at(.5, .5), b1: at(2 / 6, 4 / 6), b2: at(1 / 6, 5 / 6), c1: at(1 / 6, 1 / 6), c2: at(2 / 6, 2 / 6), d1: at(4 / 6, 4 / 6), d2: at(5 / 6, 5 / 6) });
+  const ids = [...Array(19)].map((_, i) => "o" + (i + 1)).concat(["a1", "a2", "b1", "b2", "c1", "c2", "d1", "d2", "C"]);
+  const VAL = {}; ids.forEach((id, i) => VAL[id] = FA5_YUT_VAL[i]);
+  FA5_YUT_DIE.forEach(f => { if (f === "♥") return; const dv = fa5Str(f.slice(1)); ids.forEach(id => { if (fa5Eq(fa5Str(VAL[id]), dv)) throw new Error("윷판 칸 분수 확인 필요"); }); });
+  const R0 = [...Array(20)].map((_, i) => "o" + i).concat(["END"]), R5 = ["o5", "a1", "a2", "C", "b1", "b2", "o15", "o16", "o17", "o18", "o19", "END"], R10 = ["o10", "c1", "c2", "C", "d1", "d2", "END"], RC = ["C", "d1", "d2", "END"];
+  const ROUTES = { R0, R5, R10, RC };
+  const node = p => p.home ? null : p.done ? "END" : ROUTES[p.r][p.i];
+  const move = (p, n) => {
+    const q = { r: p.home ? "R0" : p.r, i: p.home ? 0 : p.i, home: false, done: false };
+    q.i += n; const R = ROUTES[q.r];
+    if (q.i >= R.length - 1) { q.done = true; return q; }
+    const id = R[q.i];
+    if (q.r === "R0" && id === "o5") { q.r = "R5"; q.i = 0; } else if (q.r === "R0" && id === "o10") { q.r = "R10"; q.i = 0; } else if (q.r === "R5" && id === "C") { q.r = "RC"; q.i = 0; }
+    return q;
+  };
+  const W = 1000, H = 700, svg = makeSvg(W, H);
+  const info = h("p", { class: "fa5tip" }), ctrl = h("div", { class: "fa5tools" }), logBox = h("div");
+  const COL = [FA5_S[1], FA5_S[0]], NAMES = ["나", "로봇"];
+  let G = null;
+  const newGame = n => { G = { n, P: [0, 1].map(() => [...Array(n)].map(() => ({ home: true, done: false }))), turn: 0, phase: "roll", log: [], ok: 0, last: null }; render(); };
+  const tk = s => fa5Tk(s);
+  const exprFor = (id, f) => {
+    const v = VAL[id], fv = f.slice(1);
+    if (f[0] === "+") return `${tk(v)}+${tk(fv)}`;
+    return fa5Eval(`${tk(v)}-${tk(fv)}`).num > 0 ? `${tk(v)}−${tk(fv)}` : `${tk(fv)}−${tk(v)}`;
+  };
+  const draw = () => {
+    svg.innerHTML = "";
+    svg.append(svgEl("rect", { x: 20, y: 20, width: 660, height: 660, rx: 24, fill: "#F6E7CF", stroke: "#A47A45", "stroke-width": 5 }));
+    const L = (a, b) => svg.append(svgEl("line", { x1: NODE[a][0], y1: NODE[a][1], x2: NODE[b][0], y2: NODE[b][1], stroke: "#B48A55", "stroke-width": 5 }));
+    L("o0", "o5"); L("o5", "o10"); L("o10", "o15"); L("o15", "o0"); L("o5", "o15"); L("o10", "o0");
+    Object.entries(NODE).forEach(([id, [x, y]]) => {
+      const big = ["o0", "o5", "o10", "o15", "C"].includes(id);
+      svg.append(svgEl("circle", { cx: x, cy: y, r: big ? 42 : 34, fill: id === "o0" ? "#DDEFE6" : "#fff", stroke: big ? TENT : "#8A6A3E", "stroke-width": big ? 5 : 3 }));
+      if (id === "o0") svg.append(txt(x, y, "출발", 22, { fill: PINE }));
+      else svg.append(fa5SvgLine(tk(VAL[id]), x, y, 21));
+      if (["o5", "o10", "C"].includes(id)) svg.append(txt(x + 30, y - 32, "★", 22, { fill: TENT }));
+    });
+    if (G) {
+      const here = {};
+      G.P.forEach((ps, k) => ps.forEach((p, j) => { const id = node(p); if (!id || id === "END") return; (here[id] = here[id] || []).push([k, j]); }));
+      Object.entries(here).forEach(([id, list]) => list.forEach(([k, j], m) => {
+        const [x, y] = NODE[id], ox = (m - (list.length - 1) / 2) * 30;
+        svg.append(svgEl("circle", { cx: x + ox, cy: y + 30, r: 15, fill: COL[k], stroke: "#fff", "stroke-width": 3 }), txt(x + ox, y + 31, String(j + 1), 16, { fill: "#fff" }));
+      }));
+      [0, 1].forEach(k => {
+        const y0 = 120 + k * 280;
+        svg.append(txt(840, y0 - 70, `${NAMES[k]}의 말`, 26, { fill: COL[k] }));
+        svg.append(txt(840, y0 - 30, "기다리는 말", 18, { fill: "#5B6B6B" }), txt(840, y0 + 60, "다 돈 말", 18, { fill: "#5B6B6B" }));
+        G.P[k].forEach((p, j) => {
+          if (p.home) svg.append(svgEl("circle", { cx: 800 + j * 40, cy: y0 + 5, r: 16, fill: COL[k] }), txt(800 + j * 40, y0 + 6, String(j + 1), 16, { fill: "#fff" }));
+          if (p.done) svg.append(svgEl("circle", { cx: 800 + j * 40, cy: y0 + 95, r: 16, fill: "#fff", stroke: COL[k], "stroke-width": 4 }), txt(800 + j * 40, y0 + 96, "✓", 16, { fill: COL[k] }));
+        });
+      });
+      if (G.last) svg.append(txt(840, 640, G.last, 22, { fill: "#1F2F4A" }));
+    }
+  };
+  const capture = (k, id) => { let got = false; G.P[1 - k].forEach(p => { if (!p.home && !p.done && node(p) === id) { p.home = true; p.r = null; got = true; } }); return got; };
+  const win = k => G.P[k].every(p => p.done);
+  const endTurn = (k, again) => {
+    if (win(k)) { G.phase = "end"; G.winner = k; render(); return; }
+    if (again) { G.phase = k === 0 ? "roll" : "robot"; render(); if (k === 1) setTimeout(robot, 900); return; }
+    G.turn = 1 - k; G.phase = G.turn === 0 ? "roll" : "robot"; render();
+    if (G.turn === 1) setTimeout(robot, 900);
+  };
+  const roll = () => [1 + Math.floor(Math.random() * 6), FA5_YUT_DIE[Math.floor(Math.random() * 6)]];
+  const robot = () => {
+    if (!G || G.phase !== "robot") return;
+    const [n, f] = roll(), ps = G.P[1], cand = ps.map((p, j) => [p, j]).filter(([p]) => !p.done);
+    let pick = cand.find(([p]) => { const q = move(p, n); return !q.done && G.P[0].some(o => !o.home && !o.done && node(o) === node(q)); }) || cand.sort((a, b) => (b[0].home ? -1 : b[0].i) - (a[0].home ? -1 : a[0].i))[0];
+    const [p, j] = pick, q = move(p, n); Object.assign(p, q);
+    let msg = `로봇: 주사위 ${n}, 분수 주사위 ${f} → 말 ${j + 1}`;
+    if (q.done) msg += " 이 다 돌았어요!";
+    else if (f !== "♥") { const e = exprFor(node(q), f), v = fa5Eval(e); msg += ` · ${e} = ${fa5Book(v.num, v.den)} (맞았어요)`; }
+    else msg += " · ♥라서 계산하지 않아요";
+    const got = !q.done && capture(1, node(q));
+    if (got) msg += " · 내 말을 잡았어요! 로봇이 한 번 더 던져요.";
+    G.log.push(msg); G.last = `로봇: 주사위 ${n}, ${f}`;
+    endTurn(1, got);
+  };
+  const render = () => {
+    ctrl.innerHTML = ""; draw();
+    logBox.innerHTML = "";
+    if (G && G.log.length) logBox.append(h("div", { class: "fa5grp" }, h("div", { class: "fa5gt" }, "놀이 기록"), ...G.log.slice(-6).map(t => h("div", {}, t))));
+    if (!G) {
+      info.textContent = "모둠별 말을 몇 개로 놀이할까요? (교과서 놀이는 말 2개예요)";
+      [1, 2].forEach(n => ctrl.append(h("button", { class: n === 2 ? "fa5on" : "", onclick: () => newGame(n) }, `말 ${n}개로 놀이하기`)));
+      return;
+    }
+    if (G.phase === "roll") {
+      info.textContent = "내 차례예요. 주사위와 분수 주사위를 함께 던져요.";
+      ctrl.append(h("button", { class: "fa5on", onclick: () => { const [n, f] = roll(); G.dice = [n, f]; G.last = `나: 주사위 ${n}, ${f}`; G.phase = "pick"; render(); } }, "주사위 던지기"));
+    } else if (G.phase === "pick") {
+      const [n, f] = G.dice, mov = G.P[0].map((p, j) => [p, j]).filter(([p]) => !p.done);
+      info.textContent = `주사위 ${n}, 분수 주사위 ${f}이 나왔어요. 움직일 말을 골라요. (★ 칸에 멈추면 지름길로 가요)`;
+      mov.forEach(([p, j]) => ctrl.append(h("button", { onclick: () => {
+        const prev = Object.assign({}, p), q = move(p, n); Object.assign(p, q); G.prev = { j, prev };
+        if (q.done) { G.log.push(`나: 주사위 ${n} → 말 ${j + 1}이 다 돌았어요!`); return endTurn(0, false); }
+        if (f === "♥") { const got = capture(0, node(q)); G.log.push(`나: 주사위 ${n}, ♥ → 계산하지 않고 그대로${got ? " · 로봇 말을 잡았어요! 한 번 더" : ""}`); return endTurn(0, got); }
+        G.expr = exprFor(node(q), f); G.phase = "calc"; render();
+      } }, `말 ${j + 1}${p.home ? "(새로 출발)" : ""} 움직이기`)));
+    } else if (G.phase === "calc") {
+      const [n, f] = G.dice, inp = fa5In("계산 결과");
+      info.textContent = f[0] === "+" ? `도착한 칸의 수와 분수 주사위의 수를 더해요.` : `도착한 칸의 수와 분수 주사위의 수의 차를 구해요. (큰 수)−(작은 수)로 식을 세워요.`;
+      ctrl.append(h("span", { class: "jua" }, `${G.expr} =`), inp, h("button", { class: "fa5on", onclick: () => {
+        const v = fa5Eval(G.expr), r = inp.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
+        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero") return api.hint(J.msg);
+        const p = G.P[0][G.prev.j];
+        if (J.code !== "ok") {
+          Object.keys(p).forEach(k => delete p[k]); Object.assign(p, G.prev.prev);
+          G.log.push(`나: ${G.expr} = ${inp.text()} ✗ → 말을 원래 칸으로 되돌려요 (바른 답 ${fa5Book(v.num, v.den)})`);
+          api.fail(J.msg || fa5Diag(G.expr, r) || `바른 답은 ${fa5Book(v.num, v.den)}이에요. 두 분수를 통분해서 다시 계산해 봐요. 말은 원래 칸으로 돌아가요.`, `${G.expr} = ${inp.text()}`);
+          return endTurn(0, false);
+        }
+        G.ok++; const got = capture(0, node(p));
+        G.log.push(`나: ${G.expr} = ${fa5Book(v.num, v.den)} ✓${got ? " · 로봇 말을 잡았어요! 한 번 더" : ""}`);
+        api.hint(`맞았어요! 말은 그 칸에 그대로 있어요.${got ? " 로봇의 말을 잡았으니 한 번 더 던져요." : ""}`);
+        endTurn(0, got);
+      } }, "계산 확인"));
+    } else if (G.phase === "robot") {
+      info.textContent = "로봇 차례예요…";
+    } else if (G.phase === "end") {
+      info.textContent = `${G.winner === 0 ? "내가" : "로봇이"} 모든 말을 먼저 놀이판에서 내보냈어요! 내가 맞힌 계산은 ${G.ok}번이에요.`;
+      ctrl.append(h("button", { class: "fa5on", onclick: () => { G = null; render(); } }, "한 판 더"));
+      if (!G.reported) { G.reported = true; api.done(`${G.winner === 0 ? "승" : "패"}, 맞힌 계산 ${G.ok}번`, `${G.winner === 0 ? "이겼어요!" : "아쉽게 졌지만 끝까지 놀이했어요!"} 분모가 다른 분수를 ${G.ok}번 정확하게 더하고 뺐어요.`); }
+    }
+  };
+  render();
+  api.provide({ words: ["통분", "(큰 수)−(작은 수)", "♥는 계산하지 않아요"], answers: [] });
+  body.append(info, ctrl, h("div", { class: "fa5stage" }, svg), logBox);
+}
+
+/* ⑬ 또 다른 놀이: 카드로 덧셈·뺄셈 (9차시) — 카드에 쓸 수는 지도서 조건(노랑 분모 2~5, 파랑 분모 6~9)에 맞춰 정했어요. */
+function fa5CardGame(body, api, opt) {
+  fa5Style();
+  const YEL = opt.yel || ["1/2", "2/3", "3/4", "4/5", "1 2/3", "2 1/5"], BLU = opt.blu || ["5/6", "3/7", "5/8", "7/9", "1 1/6", "2 3/8"];
+  YEL.forEach(y => BLU.forEach(b => { if (fa5Eq(fa5Str(y), fa5Str(b))) throw new Error("카드 값 확인 필요"); }));
+  const ROUNDS = opt.rounds || 5;
+  const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+  const info = h("p", { class: "fa5tip" }), area = h("div"), table = h("table", { class: "fa5score" });
+  let R = null, round = 0, score = [0, 0], rows = [];
+  const exprOf = (op, y, b) => op === "+" ? `${fa5Tk(y)}+${fa5Tk(b)}` : fa5Eval(`${fa5Tk(y)}-${fa5Tk(b)}`).num > 0 ? `${fa5Tk(y)}−${fa5Tk(b)}` : `${fa5Tk(b)}−${fa5Tk(y)}`;
+  const start = () => { R = { op: null, ys: shuffle(YEL), bs: shuffle(BLU), y: null, b: null }; render(); };
+  const drawTable = () => {
+    table.innerHTML = ""; table.append(h("tr", {}, h("th", {}, "판"), h("th", {}, "나"), h("th", {}, "로봇")));
+    rows.forEach((r, i) => table.append(h("tr", {}, h("td", {}, `${i + 1}`), h("td", {}, r[0]), h("td", {}, r[1]))));
+    table.append(h("tr", {}, h("th", {}, "점수"), h("th", {}, `${score[0]}점`), h("th", {}, `${score[1]}점`)));
+  };
+  const render = () => {
+    area.innerHTML = ""; drawTable();
+    if (round >= ROUNDS) {
+      const t = score[0] > score[1] ? "내가 이겼어요!" : score[0] < score[1] ? "로봇이 이겼어요!" : "비겼어요!";
+      info.textContent = `${ROUNDS}판이 끝났어요. ${t}`;
+      area.append(h("div", { class: "fa5tools" }, h("button", { class: "fa5on", onclick: () => { round = 0; score = [0, 0]; rows = []; start(); } }, "한 판 더")));
+      return;
+    }
+    if (!R.op) {
+      info.textContent = `${round + 1}번째 판: 카드를 보기 전에 ‘덧셈’ 또는 ‘뺄셈’을 먼저 말해요(골라요).`;
+      area.append(h("div", { class: "fa5tools" }, h("button", { class: "fa5on", onclick: () => { R.op = "+"; render(); } }, "덧셈"), h("button", { class: "fa5on", onclick: () => { R.op = "-"; render(); } }, "뺄셈")));
+      return;
+    }
+    const pickRow = (list, key, col, name) => h("div", { class: "fa5cl" }, h("span", { class: "fa5tag", style: `background:${col}` }, name),
+      ...list.map((v, i) => h("button", { class: "opt fa5crd" + (R[key] === i ? " fa5on" : ""), style: `background:${R[key] === i ? "#fff" : col};min-width:3em`, onclick: () => { if (R[key] != null) return; R[key] = i; render(); } }, R[key] === i ? fa5Tk(v) : "?")));
+    info.textContent = `${R.op === "+" ? "덧셈" : "뺄셈"}을 골랐어요. 노란 카드와 파란 카드를 한 장씩 뒤집어요.`;
+    area.append(pickRow(R.ys, "y", "#FCE9A6", "노란 카드"), pickRow(R.bs, "b", "#CFE3F7", "파란 카드"));
+    if (R.y != null && R.b != null) {
+      const e = exprOf(R.op, R.ys[R.y], R.bs[R.b]), v = fa5Eval(e), inp = fa5In("계산 결과");
+      area.append(h("div", { class: "fa5cl" }, h("span", { class: "jua" }, `${e} =`), inp, h("span", { class: "fa5tools" }, h("button", { class: "fa5on", onclick: () => {
+        const r = inp.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
+        if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero") return api.hint(J.msg);
+        const ok = J.code === "ok";
+        if (!ok) api.fail(J.msg || fa5Diag(e, r) || `바른 답은 ${fa5Book(v.num, v.den)}이에요. 통분하여 다시 계산해 봐요.`, `${e} = ${inp.text()}`);
+        const rop = Math.random() < .5 ? "+" : "-", ry = YEL[Math.floor(Math.random() * 6)], rb = BLU[Math.floor(Math.random() * 6)], re = exprOf(rop, ry, rb), rv = fa5Eval(re);
+        if (ok) score[0]++; score[1]++;
+        const cmp = ok ? v.num * rv.den - rv.num * v.den : -1;
+        if (cmp > 0) score[0]++; else if (cmp < 0) score[1]++;
+        rows.push([`${e} = ${ok ? fa5Book(v.num, v.den) + " ✓" : inp.text() + " ✗"}${cmp > 0 ? " (+1 큼)" : ""}`, `${re} = ${fa5Book(rv.num, rv.den)} ✓${cmp < 0 ? " (+1 큼)" : ""}`]);
+        round++;
+        if (round >= ROUNDS && !R.reported) { R.reported = true; drawTable(); api.done(rows.map(r => r[0]).join(" / "), `${ROUNDS}판을 모두 했어요! 나 ${score[0]}점, 로봇 ${score[1]}점이에요.`); }
+        else if (ok) api.hint(`맞았어요! 로봇은 ${re} = ${fa5Book(rv.num, rv.den)}이에요.`);
+        start();
+      } }, "계산 확인"))));
+    }
+  };
+  start();
+  api.provide({ words: ["덧셈", "뺄셈", "(큰 수)−(작은 수)"], answers: [] });
+  body.append(h("p", { class: "inst", style: "font-size:var(--fs-s);margin:.1em 0" }, "규칙: 계산이 맞으면 1점, 두 사람 중 계산 결과가 더 큰 사람은 1점을 더 얻어요. 뺄셈은 (큰 수)−(작은 수)로 해요."), info, area, table);
+}
+/* 1차시 도입 그림: 하루 24시간 중 잠자는 시간 (수치는 이 앱의 예시) */
+function fa5Sleep() {
+  fa5Style();
+  const svg = makeSvg(900, 230), LX = 170, UW = 680, Y = [40, 130];
+  [["세 발가락 나무늘보", "14 4/5", FA5_F[2]], ["말", "2 9/10", FA5_F[0]]].forEach(([n, v, c], i) => {
+    const t = fa5Str(v), w = UW * t.num / t.den / 24;
+    svg.append(svgEl("rect", { x: LX, y: Y[i], width: UW, height: 50, fill: "#fff", stroke: INK, "stroke-width": 2 }), svgEl("rect", { x: LX, y: Y[i], width: w, height: 50, fill: c, stroke: INK, "stroke-width": 2 }));
+    for (let k = 0; k <= 24; k += 6) svg.append(svgEl("line", { x1: LX + UW * k / 24, y1: Y[i] + 50, x2: LX + UW * k / 24, y2: Y[i] + 58, stroke: INK, "stroke-width": 2 }));
+    svg.append(fa5SvgLine(n, LX - 12, Y[i] + 25, 21, { anchor: "end" }), fa5SvgLine(`[${v}]시간`, LX + w + 12, Y[i] + 25, 22, { anchor: "start", fill: "#1F2F4A" }));
+  });
+  [0, 6, 12, 18, 24].forEach(k => svg.append(txt(LX + UW * k / 24, 218, `${k}시간`, 17, { fill: "#5B6B6B" })));
+  return h("div", { class: "fa5stage" }, svg);
 }
