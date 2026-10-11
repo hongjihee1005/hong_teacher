@@ -316,11 +316,11 @@ def day_svg():
 
 def hot_svg(title, days):
     n, CW = len(days), 64
-    W, H = 30 + n * CW, 330
+    W, H = 30 + n * CW + 56, 330
     lo, hi, top, bot = 28, 38, 66, 260
     Y = lambda t: bot - (t - lo) / (hi - lo) * (bot - top)
     o = [T(W / 2, 22, title, 19)]
-    o.append(L_(10, Y(33), W - 10, Y(33), SEL, 2, ' stroke-dasharray="7 5"') + T(W - 12, Y(33) - 12, '33 ℃', 15, anchor='end', fill=SEL))
+    o.append(L_(10, Y(33), W - 10, Y(33), SEL, 2, ' stroke-dasharray="7 5"') + T(W - 6, Y(33) - 12, '33 ℃', 15, anchor='end', fill=SEL))
     for i, (d, t) in enumerate(days):
         cx = 15 + CW * (i + .5)
         o.append('<rect x="%.1f" y="%d" width="14" height="%d" rx="7" fill="#fff" stroke="%s" stroke-width="1.5"/>' % (cx - 7, top - 6, bot - top + 10, GRID2))
@@ -999,9 +999,9 @@ def tb_l10(w, D):
     w.text("옳은 문장에 ○, 옳지 않은 문장에 ×를 하세요. ○인 얼음 조각만 밟아야 엄마 곰을 만나요.")
     w.choices([('얼음 %d. %s' % (i + 1, t), "( ○ / × )") for i, (t, _) in enumerate(ice)])
     ox = lambda b: '○' if b else '×'
-    ans = ("10차시  ① 가로: 월, 세로: 날수 / %s ② %s ③ 2014년 %s(28에서 %s칸 위) ④ 약 %s, 줄어들 것 같아요, %s "
+    ans = ("10차시  ① 가로: 월, 세로: 날수 / %s ② %s ③ 2014년 %s(%s에서 %s칸 위) ④ 약 %s, 줄어들 것 같아요, %s "
            "⑤ %s → 얼음 1·5"
-           % (U(gd['step'], '일'), ' '.join(ox(b) for _, b in st), U(pv[2], '만 명'), fmt(cells_of(pp)[2]),
+           % (U(gd['step'], '일'), ' '.join(ox(b) for _, b in st), U(pv[2], '만 명'), fmt(pp['lo']), fmt(cells_of(pp)[2]),
               U((pv[3] + pv[4]) / 2, '만 명'), '왜: (예: 2014년부터 계속 줄어들었기 때문이에요)' if D else '①',
               ' '.join(ox(b) for _, b in ice)))
     assert [b for _, b in ice] == [True, False, False, False, True]
