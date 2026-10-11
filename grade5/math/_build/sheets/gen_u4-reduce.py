@@ -571,6 +571,14 @@ def V(t):
         return Fraction(t)
     if re.fullmatch(r'\d+', t):
         return Fraction(int(t))
+    m = re.fullmatch(r'\[?([\d×÷]+)/([\d×÷]+)\]?', t)
+    if m and re.search('[×÷]', t):       # [12÷2/18÷2] · [1×2/2×2]
+        def side(x):
+            v = Fraction(1)
+            for op, k in re.findall(r'(^|[×÷])(\d+)', x):
+                v = v / int(k) if op == '÷' else v * int(k)
+            return v
+        return side(m.group(1)) / side(m.group(2))
     return F(t)
 
 
