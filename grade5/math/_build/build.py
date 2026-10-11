@@ -21,6 +21,9 @@ def parts(src):
         if k not in d: raise SystemExit(f'묶음 //@@{k} 이 없어요')
     return d
 
+# 3학년 앱 맨 끝의 시작 줄(첫 화면 띄우기·주소 바뀜·자료 목록 단추) — 틀을 뗄 때 빠졌던 것(2026-10-11)
+BOOT = "\nwindow.addEventListener('load',()=>{ flushQueue(); S.student ? showMap() : showGate(); });\nwindow.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.student) openLesson(L.id); });\n(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\\.io$/.test(h)||/^localhost$/.test(h);\n if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});}})();"
+
 def build(path):
     slug, kind = path.name.split('.')[0], path.name.split('.')[1]
     d = parts(path.read_text(encoding='utf-8'))
@@ -28,7 +31,7 @@ def build(path):
     u = re.search(r'unit\s*:\s*"([^"]+)"', d['APP']).group(1)
     tpl = (HERE / f'tpl_{kind}.html').read_text(encoding='utf-8')
     html = (tpl.replace('{{TITLE}}', f'{t} · {u}').replace('/*@@APP@@*/', d['APP'])
-               .replace('/*@@UNIT@@*/', d['UNIT']).replace('/*@@LESSONS@@*/', d['LESSONS']))
+               .replace('/*@@UNIT@@*/', d['UNIT']).replace('/*@@LESSONS@@*/', d['LESSONS'] + BOOT))
     # 묶은 차시(no: "5~6")도 #5·#6으로 열리게
     a = 'return LESSONS.find(L => String(L.no) === key || L.id === key) || null;'
     b = 'return LESSONS.find(L => String(L.no) === key || L.id === key) || LESSONS.find(L => { const m = String(L.no).match(/^(\\d+)~(\\d+)$/); return m && +key >= +m[1] && +key <= +m[2]; }) || null;'

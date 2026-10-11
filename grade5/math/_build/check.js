@@ -18,6 +18,8 @@ for (const d of ['sem1', 'sem1-soop', 'sem2', 'sem2-soop']) {
       p.on('pageerror', e => errs.push(e.message));
       await p.route(/^https?:/, r => r.abort());
       await p.goto('file://' + f + '#1'); await p.waitForTimeout(300);
+      const boot = await p.evaluate(() => { const a = document.querySelector('#app'); return a ? a.innerText.trim().length : -1; });
+      if (boot < 20) errs.push('첫 화면이 비어 있어요(시작 줄 빠짐?)');
       const out = await p.evaluate(async () => {
         const res = []; let n = 0;
         for (const L of LESSONS) for (const i of [...L.steps.map((_, k) => k), 'chal']) {

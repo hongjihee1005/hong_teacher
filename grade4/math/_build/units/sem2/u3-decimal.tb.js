@@ -464,7 +464,7 @@ function c3Line(body, api, opt) {
   body.append(h("div", { class: "c3say" }, opt.tip || "파란 표시를 끌거나 수직선을 눌러 옮겨요. ◀ ▶ 단추로 한 칸씩 옮길 수도 있어요."), h("div", { class: "c3stage" }, svg), say, tools, asks);
   api.provide({ words: opt.words || [], answers: [`화살표를 ${c3F(opt.target)}에`].concat(reg.plain) });
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
-    if (pos !== opt.target) return api.fail(opt.why || (pos === base ? "먼저 파란 표시를 옮겨 봐요." : `작은 눈금 한 칸이 ${c3F(opt.minor)}예요. 몇 칸 옮겨야 하는지 다시 세어 봐요.`), "화살표 " + c3F(pos));
+    if (pos !== opt.target) return api.fail(opt.why || (pos === base ? "먼저 파란 표시를 옮겨 봐요." : `작은 눈금 한 칸이 ${c3J(c3F(opt.minor), "이에요")}. 몇 칸 옮겨야 하는지 다시 세어 봐요.`), "화살표 " + c3F(pos));
     const r = c3Judge(reg, opt);
     if (r.bad) return api.fail(r.bad, "화살표 " + c3F(pos) + " / " + r.given);
     api.tryOnce(); api.done("화살표 " + c3F(pos) + (r.given ? " / " + r.given : ""), opt.ok);
@@ -518,7 +518,7 @@ function c3Cmp(body, api, opt) {
   const mark = () => ths.forEach((b, k) => b.classList.toggle("c3nx", k === next && found == null));
   function click(k) {
     if (found != null) return;
-    if (k !== next) { api.hint(`높은 자리부터 차례대로 비교해요. 지금은 ‘${NAMES[next]}’를 누를 차례예요.`); return; }
+    if (k !== next) { api.hint(`높은 자리부터 차례대로 비교해요. 지금은 ‘${NAMES[next]}’${c3J(NAMES[next], "을를").slice(-1)} 누를 차례예요.`); return; }
     const x = part(A, k), y = part(B, k), xs = x == null ? "0" : x, ys = y == null ? "0" : y;
     if (x == null) { rowA[k].textContent = "0"; rowA[k].classList.add("c3ghost"); }
     if (y == null) { rowB[k].textContent = "0"; rowB[k].classList.add("c3ghost"); }
@@ -526,7 +526,7 @@ function c3Cmp(body, api, opt) {
     [rowA[k], rowB[k]].forEach(td => td.classList.add(cx === cy ? "c3same" : "c3diff"));
     rowR[k].textContent = cx === cy ? "같아요" : `${xs} ${cx > cy ? ">" : "<"} ${ys}`;
     if (cx !== cy || k === NAMES.length - 1) { found = k; signBox.classList.remove("hidden"); say.textContent = cx !== cy ? `${NAMES[k]}에서 크기가 정해졌어요. 알맞은 기호를 골라요.` : "모든 자리가 같아요. 알맞은 기호를 골라요."; }
-    else { next = k + 1; say.textContent = `${NAMES[k]}가 같아요. 다음 자리를 눌러요.`; }
+    else { next = k + 1; say.textContent = `${c3J(NAMES[k], "이가")} 같아요. 다음 자리를 눌러요.`; }
     mark();
   }
   mark();
@@ -537,7 +537,7 @@ function c3Cmp(body, api, opt) {
     if (pick == null) return api.fail("두 수 사이에 들어갈 기호를 골라요.", "-");
     const btn = [...signBox.querySelectorAll(".opt")].find(b => b.textContent === pick);
     if (pick !== sign) { btn.classList.add("bad"); return api.fail(opt.why || "크기가 정해진 자리의 숫자를 다시 견주어 봐요. 그 자리 숫자가 큰 수가 더 커요.", `${A} ${pick} ${B}`); }
-    btn.classList.add("good"); api.tryOnce(); api.done(`${A} ${pick} ${B}`, opt.ok || `${A} ${sign} ${B}이에요. 높은 자리부터 차례대로 비교했어요!`);
+    btn.classList.add("good"); api.tryOnce(); api.done(`${A} ${pick} ${B}`, opt.ok || `${c3J(`${A} ${sign} ${B}`, "이에요")}. 높은 자리부터 차례대로 비교했어요!`);
   } }, "확인하기")));
 }
 
@@ -945,7 +945,7 @@ function c3Bag(body, api, opt = {}) {
     paint();
   } }, "주머니에서 수 카드 뽑기");
   paint();
-  body.append(h("div", { class: "c3say" }, `선생님이 수어로 알려 준 일의 자리 수는 ${one}이에요. 주머니(0~9 수 카드)에서 카드 두 장을 뽑아 소수 첫째 자리와 소수 둘째 자리에 차례대로 써요.`), h("div", { class: "c3tools" }, bag), h("div", { class: "c3cap" }, "첫 번째 사람의 스케치북"), sk, say, more);
+  body.append(h("div", { class: "c3say" }, `선생님이 수어로 알려 준 일의 자리 수는 ${c3J(String(one), "이에요")}. 주머니(0~9 수 카드)에서 카드 두 장을 뽑아 소수 첫째 자리와 소수 둘째 자리에 차례대로 써요.`), h("div", { class: "c3tools" }, bag), h("div", { class: "c3cap" }, "첫 번째 사람의 스케치북"), sk, say, more);
   api.provide({ words: ["일의 자리", "소수 첫째 자리", "소수 둘째 자리"], answers: ["뽑은 카드를 차례대로 써요"] });
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     if (got.length < 2) return api.fail("주머니에서 카드 두 장을 뽑아요.", "-");
