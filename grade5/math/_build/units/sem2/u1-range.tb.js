@@ -58,13 +58,13 @@ const APP={title:"농산물 축제 수의 범위와 어림", unit:"5-2 수학 1.
 .rg1mk button.rg1on.rg1tri{background:#E47A38;border-color:#E47A38}
 .rg1digs{display:flex;flex-wrap:wrap;gap:.6em;margin:.3em 0}
 .rg1row{border:2px solid var(--line);border-radius:12px;background:#fff;padding:.4em .6em;flex:1 1 17em;min-width:0}
-.rg1num{display:inline-flex;align-items:flex-end;gap:.15em;margin:.2em 0;flex-wrap:wrap}
+.rg1num{display:inline-flex;align-items:flex-start;gap:.15em;margin:.2em 0;flex-wrap:wrap}
 .rg1d{display:inline-flex;flex-direction:column;align-items:center;border:none;background:none;padding:0;cursor:pointer}
 .rg1d span{display:grid;place-items:center;width:1.75em;height:2em;border:2px solid var(--line);border-radius:.45em;background:#fff;font-family:"Jua",sans-serif;font-size:1.3em;color:var(--night)}
 .rg1d small{font-size:.62em;color:var(--muted);margin-top:.15em;white-space:nowrap}
 .rg1d.rg1tgt span{border-color:#2B7BD6;background:#DCEAFB;box-shadow:0 0 0 2px #2B7BD6}
 .rg1d.rg1low span{background:#FFE9D6;border-color:#E47A38}
-.rg1dot{font-family:"Jua",sans-serif;font-size:1.5em;align-self:center;padding-bottom:.6em}
+.rg1dot{font-family:"Jua",sans-serif;font-size:1.5em;line-height:1;padding-top:.55em}
 .rg1say{font-size:var(--fs-s);color:#8A4A12;background:#FFF4E6;border-radius:.5em;padding:.2em .5em;margin:.2em 0;word-break:keep-all}
 .rg1ans{display:flex;flex-wrap:wrap;align-items:center;gap:.35em;margin-top:.25em}
 .rg1ans input{width:7em;font-size:1.1em;text-align:center}
@@ -400,7 +400,7 @@ function rg1Pack(host, api, o) {
     if (k * u > n && o.mode === "ceil") lay.append(svgEl("rect", { x: X(n), y: 24, width: X(k * u) - X(n), height: 34, fill: "url(#rg1hatch)", opacity: .9 }));
     lay.append(svgEl("line", { x1: X(0), y1: 116, x2: X(S), y2: 116, stroke: RG1C.axis, "stroke-width": 1.5 }));
     for (let v = 0; v <= S + 1e-9; v += u) { const L = rg1Mult(v, lab); lay.append(svgEl("line", { x1: X(v), y1: 116 - (L ? 7 : 4), x2: X(v), y2: 116 + (L ? 7 : 4), stroke: RG1C.axis, "stroke-width": L ? 1.8 : 1 })); if (L) lay.append(txt(X(v), 134, rg1F(v), 13)); }
-    lay.append(svgEl("line", { x1: X(n), y1: 76, x2: X(n), y2: 120, stroke: "#B5541C", "stroke-width": 2 }), txt(X(n), 146, rg1F(n), 14, { fill: "#B5541C" }));
+    lay.append(svgEl("line", { x1: X(n), y1: 76, x2: X(n), y2: 120, stroke: "#B5541C", "stroke-width": 2 }));
     read.textContent = o.read(k);
   }
   const defs = svgEl("defs"); defs.innerHTML = '<pattern id="rg1hatch" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="8" height="8" fill="#fff"/><line x1="0" y1="0" x2="0" y2="8" stroke="#9DC0EA" stroke-width="3"/></pattern>'; svg.prepend(defs);
@@ -564,12 +564,12 @@ function rg1Fee(host, api, o) {
   if (o.q) host.append(h("p", { class: "rg1q" }, o.q));
   host.append(rg1BoxFig(o));
   const sizeIn = h("input", { type: "text", inputmode: "numeric", style: "width:5em;font-size:1.1em;text-align:center", "aria-label": "상자의 크기" });
-  if (o.e) host.append(h("p", { class: "sent" }, `① 상자의 크기: ${o.e[0]} + ${o.e[1]} + ${o.e[2]} = `, sizeIn, " cm"));
-  host.append(h("div", { class: "rg1small" }, `${o.e ? "②" : "①"} 요금표에서 무게(${o.kg} kg)가 속하는 칸과 크기가 속하는 칸을 하나씩 눌러요.`));
+  if (o.e) host.append(h("p", { class: "sent" }, `상자의 크기: ${o.e[0]} + ${o.e[1]} + ${o.e[2]} = `, sizeIn, " cm"));
+  host.append(h("div", { class: "rg1small" }, `요금표에서 무게(${o.kg} kg)가 속하는 칸과 크기가 속하는 칸을 하나씩 눌러요.`));
   const T = rg1FeeTable(true); host.append(T.el);
   ["w", "s"].forEach(key => T.cells[key].forEach((c, i) => c.addEventListener("click", () => { sel[key] = i; T.cells[key].forEach((x, j) => { x.classList.toggle("rg1pk", j === i); x.classList.remove("rg1good", "rg1bad"); }); })));
   const feeIn = h("input", { type: "text", inputmode: "numeric", style: "width:6em;font-size:1.1em;text-align:center", "aria-label": "택배 요금" });
-  host.append(h("p", { class: "sent" }, `${o.e ? "③" : "②"} ${o.name || "상자"}의 택배 요금: `, feeIn, " 원"));
+  host.append(h("p", { class: "sent" }, `${o.name || "상자"}의 택배 요금: `, feeIn, " 원"));
   api.provide({ words: ["더 높은 요금", rg1FeeTxt(RG1FEE[wr].w, "kg"), rg1FeeTxt(RG1FEE[sr].s, "cm")], answers: [`${o.e ? `크기 ${size} cm, ` : ""}무게 ${RG1FEE[wr].f}원, 크기 ${RG1FEE[sr].f}원 → ${fee}원`] });
   host.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     api.tryOnce(); const sv = rg1Num(sizeIn.value), fv = rg1Num(feeIn.value);
@@ -676,8 +676,8 @@ function rg1FestSvg(onPick) {
 }
 function rg1Fest(host, api, o) {
   const seen = new Set(), msg = h("div", { class: "rg1msg" }, "그림에서 축제의 여러 곳을 눌러 정우와 함께 둘러봐요."), cnt = h("div", { class: "rg1small" }, `둘러본 곳: 0 / ${RG1FEST.length}`);
-  host.append(rg1FestSvg(i => { seen.add(i); msg.textContent = `${RG1FEST[i].name} · ${RG1FEST[i].say}`; cnt.textContent = `둘러본 곳: ${seen.size} / ${RG1FEST.length}`; if (seen.size === RG1FEST.length && !o.ask) api.done("축제 둘러보기", o.ok); if (seen.size === RG1FEST.length && o.ask && !askBox.children.length) { api.hint("○ 축제를 모두 둘러봤어요. 아래 물음에 답해 봐요."); rg1Ask(askBox, api, o.ask, { ok: o.ok }); } }), msg, cnt);
-  const askBox = h("div", { class: "rg1part" }); host.append(askBox);
+  host.append(rg1FestSvg(i => { seen.add(i); msg.textContent = `${RG1FEST[i].name} · ${RG1FEST[i].say}`; cnt.textContent = `둘러본 곳: ${seen.size} / ${RG1FEST.length}`; if (seen.size === RG1FEST.length && !o.ask) api.done("축제 둘러보기", o.ok); if (seen.size === RG1FEST.length && o.ask && !askBox.children.length) { askBox.hidden = false; api.hint("○ 축제를 모두 둘러봤어요. 아래 물음에 답해 봐요."); rg1Ask(askBox, api, o.ask, { ok: o.ok }); } }), msg, cnt);
+  const askBox = h("div", { class: "rg1part", hidden: true }); host.append(askBox);
   api.provide({ words: RG1FEST.map(f => f.name), answers: [] });
 }
 

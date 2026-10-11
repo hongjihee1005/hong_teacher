@@ -304,6 +304,7 @@ function dm4Judge(reg, opt = {}) {
 }
 /* 확인 단추(그림 조작 검사 → 줄 묶음 채점) */
 function dm4Check(body, api, reg, opt, pre) {
+  body.__dm4 = () => reg;   // 점검용
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     const p = pre ? pre() : null;
     if (p && p.bad) return api.fail(p.bad, p.given || "-");
@@ -740,6 +741,7 @@ function dm4Cards(body, api, opt) {
     more.append(dm4Rows(opt.after(e, dm4F(v)), reg)); more.classList.remove("hidden");
   }
   paint();
+  body.__dm4 = () => reg;
   body.append(h("div", { class: "dm4say" }, opt.tip || "수 카드를 골라 빈칸에 놓아 곱셈식을 만들어요."), pool, row, say, more);
   api.provide({ words: opt.words || [], answers: [`${best.e.replace("×", " × ")} = ${dm4F(best.v)}`] });
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
@@ -826,6 +828,7 @@ function dm4Meal(body, api, opt) {
     });
   };
   paint();
+  body.__dm4 = () => reg;
   const lockBtn = h("button", { class: "big", onclick: () => {
     if (locked) return;
     const items = [...tray.entries()].filter(([, v]) => v > 0n).sort((a, b) => a[0] - b[0]);
@@ -974,6 +977,7 @@ function dm4Land(body, api, opt) {
   const quick = h("button", { onclick: () => { if (phase !== "aim") return; const pw = 120 + Math.random() * 420; fly((Math.random() - 0.5) * 120, -pw); } }, "그냥 위로 튕기기");
   const restart = h("button", { onclick: () => { owner.fill(null); turn = -1; count = [0, 0]; finished = false; nextTurn(); } }, "처음부터 다시");
   drawBoard(); drawStone(); paintStatus();
+  body.__dm4land = { hit: i => { if (phase === "aim") land(bx + (i % C) * cs + cs / 2, by + Math.floor(i / C) * cs + cs / 2); }, phase: () => phase, owner };
   say.textContent = `${P[0].n} 차례예요. 출발선 위에서 바둑돌을 옮기고, 돌을 뒤로 당겼다 놓아 튕겨요.`;
   body.append(h("div", { class: "dm4say" }, opt.tip || `두 사람이 번갈아 바둑돌을 튕겨요(한 사람에 ${TURNS}번). 돌을 아래로 당겼다 놓으면 반대쪽으로 날아가요. 많이 당길수록 멀리 가요.`), status, h("div", { class: "dm4stage" }, svg), say, ask, h("div", { class: "dm4tools" }, quick, restart));
   api.provide({ words: ["소수의 곱셈", "연속으로 색칠", "추가 점수"], answers: [] });
@@ -1013,6 +1017,7 @@ function dm4Memory(body, api, opt) {
       }
     }
   } }, "?"));
+  body.__dm4mem = cards;
   body.append(h("div", { class: "dm4say" }, "카드 두 장을 뒤집어 곱이 같으면 가져가요. 다르면 다시 뒤집어 놓아요."), h("div", { class: "dm4mem" }, btns), say, list);
   api.provide({ words: ["곱의 소수점 위치", "오른쪽으로", "왼쪽으로"], answers: DM4MEM.map(([a, b]) => `${a} = ${b} = ${dm4V(a)}`) });
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
