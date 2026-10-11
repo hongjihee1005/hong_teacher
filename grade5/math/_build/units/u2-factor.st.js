@@ -107,7 +107,7 @@ function fm2Ask(body, api, items, opt = {}) {
       box.append(h("div", { class: "jua" }, lead + it.q + (multi ? " (모두 고르세요)" : "")), row);
     } else {
       R.inp = fm2Input(it.q, !!it.set);
-      box.append(h("span", { class: "jua" }, lead + it.q), R.inp, it.post ? h("span", { class: "jua" }, it.post) : null, it.unit ? h("span", {}, it.unit) : null);
+      box.append(...[h("span", { class: "jua" }, lead + it.q), R.inp, it.post ? h("span", { class: "jua" }, it.post) : null, it.unit ? h("span", {}, it.unit) : null].filter(Boolean));
       if (it.set) box.append(h("div", { class: "fm2tip" }, (it.ordered ? "작은 수부터 차례대로, 쉼표(,)로 나누어 써요." : "쉼표(,)로 나누어 써요.") + " 다 쓰면 Enter를 눌러요."));
       fm2Hook(R.inp, () => auto());
     }

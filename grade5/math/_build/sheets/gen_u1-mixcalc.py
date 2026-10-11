@@ -195,7 +195,7 @@ def story_all(start, cards):
                 e = ('(%s)' % e if top else e) + ' ÷ %d' % n
                 v = v / n
             else:
-                if o == '-' and v < n:
+                if o == '-' and v <= n:          # 0개가 남는 문제('몇 장일까요?'에 0장)도 빼요
                     ok = False
                     break
                 e = e + (' + %d' % n if o == '+' else ' − %d' % n)
