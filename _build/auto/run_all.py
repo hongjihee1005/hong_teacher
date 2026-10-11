@@ -51,7 +51,7 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
     ('학년 공통 한자 급수', '_build/hanja/', ['common/hanja/lv*.html'], [('.', ['_build/hanja/build.py'])]),
     ('공통 음악이론', '_build/music/', ['common/music/t*.html'], [('.', ['_build/music/build.py'])]),
     ('공통 기초연산', '_build/arith/', ['common/arith/[!i]*.html'], [('.', ['_build/arith/build.py'])]),
-    ('공통 받아쓰기·맞춤법', '_build/dictation/', ['common/dictation/g*.html'], [('.', ['_build/dictation/build.py'])]),
+    ('공통 받아쓰기·맞춤법', '_build/dictation/', ['common/dictation/g*.html', 'grade*/korean/dictation/index.html'], [('.', ['_build/dictation/build.py'])]),
     ('공통 속담·관용어·사자성어', '_build/words/', ['common/words/[!i]*.html'], [('.', ['_build/words/build.py'])]),
     ('프로젝트 세계시민교육', '_build/gced/', ['project/global/t*.html'], [('.', ['_build/gced/build.py'])]),
     ('프로젝트 독서교육', '_build/reading/', ['project/reading/[!i]*.html'], [('.', ['_build/reading/build.py'])]),

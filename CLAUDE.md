@@ -266,6 +266,7 @@ grade1/ … grade6/
 - **`common/arith/*.html`(index 제외)을 직접 고치지 마세요.** 원본은 `_build/arith/`: 단계·문제 생성기 `skills.js`(영역 `AREAS`, 단계 `S` — 단계마다 `gen(r)`, 급수 `LV`; 같은 단계·같은 번호면 언제나 같은 문제), 화면 틀 `page.html` + 본문 `area.html`·`rank.html` + `page.css`·`app.js`, 영역 소개는 `build.py`의 `AREAS`.
   `node _build/arith/check.js`가 모든 단계에서 문제를 만들어 ① 정답을 분수로 따로 다시 계산해 맞는지 ② 단계 조건(받아올림 여부·자릿수·나누어떨어짐·혼합 계산 중간 결과가 자연수 등) ③ 정답 입력은 '맞음', 틀린 입력은 '틀림', 약분 안 한 답·모양이 다른 답 처리 ④ 학습지 30장·급수 12급×20회 문제 수와 겹침 ⑤ 같은 번호면 같은 문제인지 점검합니다(약 9만 문제, `build.py`가 먼저 돌리고 실패하면 빌드를 멈춤).
   고친 뒤 `python3 _build/arith/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 단계를 더하면 `index.html`(메뉴)의 단계 수 글도 고치고 `apply_theme.py`.
+- **학년별 기초연산(2026-10-11 선생님 요청):** 학년 수학방 `gradeN/math/index.html`의 '🧮 기초연산' 카드 → `common/arith/g1.html ~ g6.html`(그 학년 단계(`skills.js`의 `g`)만 영역별로 모은 쪽, 단계를 누르면 영역 페이지와 같은 연습·학습지, 아래 '실력 확인'에 그 학년 급수 시험 두 급(`rank.html#lvN`)·일일수학). 같은 `areaPage`가 `PG.grade`일 때 이렇게 보여 주고, 맨 아래 '자료 목록으로'는 그 학년 수학방으로 갑니다. `build.py`가 함께 만들고, 공통 기초연산 메뉴에도 '학년별 연습' 묶음 카드가 있습니다.
 - 클래스 이름은 `ar-` 앞글자를 씁니다(공통 덮개 content.css의 `.ex`·`.ln`·`.rc`·`.fb`·`.st`·`.an` 등과 겹치지 않게).
 - 메뉴 아이콘 ➖(math)·🍕(pie)·🏆🏅(trophy)는 `_build/theme/icons.js`에 추가했습니다.
 
@@ -280,6 +281,7 @@ grade1/ … grade6/
 - 읽어 주기는 브라우저의 한국어 음성(`speechSynthesis`, ko-KR)이라 기기마다 목소리가 다르고, 한국어 목소리가 없으면 안내가 뜹니다. 공통 덮개의 '듣는 중' 막대(`#hj-player`)는 이 페이지에서 숨깁니다.
 - **`g1~g6.html`을 직접 고치지 마세요.** 원본은 `_build/dictation/`: 자료 `data/gN.txt`(`# 낱말`·`# 어절`·`# 문장` 아래 100줄씩, `# 문장 부호` 아래 50줄, 한 줄에 `바른 글|맞춤법 포인트|틀리기 쉬운 꼴`(낱말은 소리가 같은 말이 있으면 넷째 칸에 불러 줄 예문) — 포인트의 '작은따옴표'는 굵게, [대괄호]는 소리로 표시), 화면 `page.html`·`page.css`·`app.js`, 학년 소개는 `build.py`의 `INTRO`.
   `python3 _build/dictation/build.py check`가 개수(100·100·100·50)·겹침·학년끼리 같은 글·숫자(소리로 구별 안 됨)·틀린 꼴≠바른 글·낱말 띄어쓰기 없음·어절 띄어쓰기 있음·문장 부호(문장 부호 급은 틀린 꼴이 부호만 다른지, 쓸 수 있는 부호인지)를 점검합니다(`build.py`가 먼저 돌림). 고친 뒤 `python3 _build/dictation/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음).
+- **학년 국어방 하위 메뉴(2026-10-11 선생님 요청):** `gradeN/korean/index.html`의 '✏️ 받아쓰기·맞춤법 급수' 카드 → `gradeN/korean/dictation/index.html`(35급을 낱말 1~10 · 어절 11~20 · 문장 21~30 · 문장 부호 31~35로 나눈 카드, 카드마다 첫 글 보기, 누르면 `common/dictation/gN.html#급`). **이 메뉴도 `build.py`가 자료로 만들고 apply_theme을 입히므로 직접 고치지 마세요**(틀은 `_build/gced-books/menu.html`).
 - 1학년은 대화에서 직접 썼고, 2~6학년은 학년별 맞춤법 중점(겹받침·사이시옷·두음 법칙·외래어 표기 등)을 주고 나누어 쓴 뒤 검토했습니다. 기준은 국립국어원 「한글 맞춤법」·「표준어 규정」·「외래어 표기법」. 고칠 곳이 보이면 `data/gN.txt`만 고치면 됩니다.
 
 ### 공통 › 속담·관용어·사자성어 (`common/words/`, 2026-10-05)

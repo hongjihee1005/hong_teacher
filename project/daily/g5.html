@@ -48,6 +48,11 @@ section{margin:14px 0}
 .ar-sk .eg .ar-box{min-width:28px;height:24px}
 .ar-sk .rec{font-style:normal;font-size:14px;color:var(--okc);font-weight:700}
 /* 단계 보기 */
+/* 학년 페이지(g1.html …) 아래 '이 학년 급수 시험·일일수학' 바로 가기 */
+.ar-more{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:10px;margin:8px 0 6px}
+.ar-more a{display:flex;flex-direction:column;gap:2px;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:12px 16px;color:var(--ink);text-decoration:none;min-width:0}
+.ar-more a:hover,.ar-more a:focus-visible{border-color:var(--acc);outline:0}
+.ar-more b{font-size:clamp(17px,1.7vw,20px)}.ar-more small{color:var(--soft);font-size:15px}
 .ar-skno{margin:12px 0 0;color:var(--acc);font-weight:700}
 .ar-skt{font-family:var(--display);font-weight:400;font-size:clamp(26px,3.2vw,38px);margin:0;line-height:1.25}
 .ar-skt.sm{font-size:clamp(22px,2.6vw,30px)}
@@ -1257,6 +1262,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
 window.ARP={"daily": 5};
 /* 공통 › 기초연산 화면 (2026-10-05)
    영역 페이지(add.html …): 단계 고르기 → ✏️ 연습하기(한 문제씩, 바로 확인) · 🖨️ 학습지(번호 1~30, 같은 번호면 같은 문제, 정답 인쇄)
+   학년 페이지(g1.html …): 그 학년 단계만 영역별로(학년 수학방 '기초연산' 메뉴), 고르면 영역 페이지와 같은 연습·학습지
    급수 시험(rank.html): 12급 ~ 1급, 급마다 20회, 화면에서 풀고 채점 · 시험지/정답 인쇄
    기록은 그 기기 localStorage('hj-arith-v1')에만 저장합니다. */
 (function () {
@@ -1415,16 +1421,19 @@ window.ARP={"daily": 5};
 
   /* ════════ 영역 페이지 ════════ */
   function areaPage() {
-    var A = AREA[PG.area], SS = AR.S.filter(function (s) { return s.ar === A.id }), cur = null;
+    // 학년 페이지(g1.html …, PG.grade): 그 학년 단계만 영역별로 모아 보여 줌 — 학년 수학방의 '기초연산' 메뉴 (2026-10-11)
+    var G = PG.grade, A = G ? null : AREA[PG.area], SS = AR.S.filter(function (s) { return G ? s.g === G : s.ar === A.id }), cur = null;
+    if (G) { var AO = AR.AREAS.map(function (a) { return a.id }); SS.sort(function (x, y) { return AO.indexOf(x.ar) - AO.indexOf(y.ar) || x.i - y.i }) }
+    function an(s) { return AREA[s.ar].name }
     // 단계 목록
     function rec(id) { var r = st.s[id]; return r ? '최고 ' + r.b + '/' + r.n + ' · ' + tm(r.t) + (r.b === r.n ? ' ⭐' : '') : '' }
     function list() {
       var h = '', g = -1;
       SS.forEach(function (s, i) {
-        var gg = s.g * 10 + (s.ch ? 1 : 0);
-        if (gg !== g) { if (g >= 0) h += '</div>'; g = gg; h += '<h2 class="ar-gh">' + s.g + '학년' + (s.ch ? ' · 도전' : '') + '</h2><div class="ar-sl">' }
+        var gg = G ? AR.AREAS.indexOf(AREA[s.ar]) : s.g * 10 + (s.ch ? 1 : 0);
+        if (gg !== g) { if (g >= 0) h += '</div>'; g = gg; h += '<h2 class="ar-gh">' + (G ? AREA[s.ar].ico + ' ' + an(s) : s.g + '학년' + (s.ch ? ' · 도전' : '')) + '</h2><div class="ar-sl">' }
         var ex = AR.gen(s.id, s.id + '#ex');
-        h += '<button type="button" class="ar-sk" data-id="' + s.id + '"><span class="no">' + (i + 1) + '</span><span class="tx"><b>' + esc(s.nm) + '</b><small>' + esc(s.de) + '</small>' +
+        h += '<button type="button" class="ar-sk" data-id="' + s.id + '"><span class="no">' + (i + 1) + '</span><span class="tx"><b>' + esc(s.nm) + '</b><small>' + (G && s.ch ? '도전 · ' : '') + esc(s.de) + '</small>' +
           '<span class="eg">' + qH(ex, 'print') + '</span><i class="rec">' + rec(s.id) + '</i></span></button>';
       });
       $('arList').innerHTML = h + '</div>';
@@ -1434,7 +1443,7 @@ window.ARP={"daily": 5};
     function open(id, tab, ws) {
       cur = AR.BY[id]; document.body.classList.add('sk-open'); $('arPick').hidden = true; $('arSkill').hidden = false;
       var i = SS.indexOf(cur);
-      $('skNo').textContent = A.name + ' ' + (i + 1) + '단계 · ' + gtag(cur);
+      $('skNo').textContent = G ? G + '학년 ' + (i + 1) + '단계 · ' + an(cur) + (cur.ch ? ' · 도전' : '') : A.name + ' ' + (i + 1) + '단계 · ' + gtag(cur);
       $('skTitle').textContent = cur.nm; $('skDe').textContent = cur.de;
       $('skPrev').disabled = i === 0; $('skNext').disabled = i === SS.length - 1;
       setTab(tab || 'p', ws);
@@ -1528,7 +1537,7 @@ window.ARP={"daily": 5};
       $('wsView').innerHTML = wsPaper(n, 'print');
       history.replaceState(null, '', '#' + cur.id + '-ws' + n);
     }
-    function wsPaper(n, mode) { var ps = AR.sheet(cur.id, n); return paperH(A.name + ' · ' + cur.nm, '학습지 ' + n + '번 · ' + gtag(cur), askOf(cur), ps, mode, colsOf(ps)) }
+    function wsPaper(n, mode) { var ps = AR.sheet(cur.id, n); return paperH(an(cur) + ' · ' + cur.nm, '학습지 ' + n + '번 · ' + gtag(cur), askOf(cur), ps, mode, colsOf(ps)) }
     $('wsNos').onclick = function (e) { var b = e.target.closest('[data-w]'); if (b) wsShow(+b.dataset.w) };
     $('wsPrint').onclick = function () { out(wsPaper(wsNo, 'print')) };
     $('wsKey').onclick = function () { out(wsPaper(wsNo, 'key')) };
@@ -1537,7 +1546,7 @@ window.ARP={"daily": 5};
 
     list();
     var m = /^#([a-z]+\d+)(?:-ws(\d+))?$/.exec(location.hash);
-    if (m && AR.BY[m[1]] && AR.BY[m[1]].ar === A.id) open(m[1], m[2] ? 'w' : 'p', m[2] ? Math.min(30, Math.max(1, +m[2])) : 0);
+    if (m && AR.BY[m[1]] && SS.indexOf(AR.BY[m[1]]) >= 0) open(m[1], m[2] ? 'w' : 'p', m[2] ? Math.min(30, Math.max(1, +m[2])) : 0);
   }
 
   /* ════════ 급수 시험 ════════ */
@@ -1717,7 +1726,7 @@ window.ARP={"daily": 5};
 
   /* ── 공통 ── */
   var nav = '';
-  if (PG.daily) { for (var gi = 1; gi <= 6; gi++) nav += '<a href="g' + gi + '.html"' + (PG.daily === gi ? ' aria-current="page"' : '') + '>' + gi + '학년</a>' }
+  if (PG.daily || PG.grade) { for (var gi = 1; gi <= 6; gi++) nav += '<a href="g' + gi + '.html"' + ((PG.daily || PG.grade) === gi ? ' aria-current="page"' : '') + '>' + gi + '학년</a>' }
   else {
   AR.AREAS.forEach(function (a) { nav += '<a href="' + a.file + '"' + (PG.area === a.id ? ' aria-current="page"' : '') + '>' + a.ico + ' ' + a.name + '</a>' });
   var RK = 'rank.html'; nav += '<a href="' + RK + '" class="rk"' + (PG.rank ? ' aria-current="page"' : '') + '>🏆 급수 시험</a>';
