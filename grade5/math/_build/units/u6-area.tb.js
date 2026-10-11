@@ -147,7 +147,7 @@ function ar6Ask(host, api, items, opts = {}) {
     if (it.fig) box.append(typeof it.fig === "function" ? it.fig() : it.fig);
     const sent = h("p", { class: "sent" });
     (it.parts || []).forEach(pt => {
-      if (typeof pt === "string") { sent.append(pt); return; }
+      if (typeof pt === "string" || (pt && pt.nodeType)) { sent.append(pt); return; }
       if (pt.o) {
         const slot = h("span", { class: "slot" }), s = { pt, v: pt.multi ? new Set() : null, slot };
         pt.o.forEach((o, oi) => slot.append(h("button", { class: "opt", onclick: e => {
@@ -164,7 +164,7 @@ function ar6Ask(host, api, items, opts = {}) {
     box.append(sent); wrap.append(box);
   });
   const right = pt => pt.o ? (pt.multi ? pt.a.map(i => pt.o[i]).join(", ") : pt.o[pt.a]) : String(pt.n);
-  api.provide({ words: all.map(s => right(s.pt)), answers: items.map(it => (it.parts || []).map(pt => typeof pt === "string" ? pt : right(pt)).join("")) });
+  api.provide({ words: all.map(s => right(s.pt)), answers: items.map(it => (it.parts || []).map(pt => typeof pt === "string" ? pt : pt.nodeType ? " " : right(pt)).join("")) });
   const good = s => s.pt.o ? (s.pt.multi ? (s.v.size === s.pt.a.length && s.pt.a.every(i => s.v.has(i))) : s.v === s.pt.a) : ar6Num(s.inp.value) === s.pt.n;
   const val = s => s.pt.o ? (s.pt.multi ? ([...s.v].sort().map(i => s.pt.o[i]).join("·") || "-") : (s.v == null ? "-" : s.pt.o[s.v])) : (s.inp.value.trim() || "-");
   const check = h("button", { class: "big", onclick: () => {
@@ -860,7 +860,6 @@ const AR6_T4 = [[1, 1], [2, 1], [3, 1], [2, 2]];             // 4차시: 1 cm² 
 const AR6_C15 = [[1, 1], [2, 1], [3, 1], [4, 1], [5, 1], [1, 2], [2, 2], [3, 2], [4, 2], [5, 2], [1, 3], [2, 3], [3, 3], [1, 4], [2, 4]];   // 15 cm²
 const AR6_CMP = { ga: [[1, 1], [2, 1], [3, 1], [1, 2], [2, 2], [3, 2], [1, 3]], na: [[6, 1], [7, 1], [8, 1], [6, 2], [7, 2], [8, 2], [6, 3], [7, 3], [8, 3]], da: [[11, 1], [12, 1], [11, 2], [12, 2], [11, 3], [12, 3]] };
 const AR6_RECT = (x, y, w, hh) => [[x, y], [x + w, y], [x + w, y + hh], [x, y + hh]];
-const ar6Cells2 = (cells, name, fill) => { const s = ar6Cells(cells, fill); s.push({ P: cells.length ? [[0, 0]] : [], fill: "none", stroke: "none" }); return s; };
 const AR6_SQ3 = 3 * Math.sqrt(3) / 2;   // 정삼각형 높이(그림용)
 
 /* 115쪽 야구장 내야 그림 */
@@ -1035,7 +1034,7 @@ const LESSONS = [
   summary: "직사각형에서 1 cm²가 가로 한 줄에 (가로)개씩 (세로)줄 있으므로 (직사각형의 넓이) = (가로) × (세로)예요. 정사각형은 가로와 세로가 같으므로 (정사각형의 넓이) = (한 변의 길이) × (한 변의 길이)예요.",
   steps: [
     { name: "만져 보기", inst: "태민이가 직사각형 모양의 문패를 만들었어요. 문패 설계도에서 1 cm²의 개수를 세어 넓이를 구해 보세요. 칸을 하나씩 눌러요.", hints: ["한 칸이 1 cm²예요.", "1 cm²가 ■개이면 ■ cm²예요."],
-      render: (b, a) => ar6Count(b, a, { cols: 6, rows: 5, cells: AR6_RECT(0, 0, 4, 3) && [[1, 1], [2, 1], [3, 1], [4, 1], [1, 2], [2, 2], [3, 2], [4, 2], [1, 3], [2, 3], [3, 3], [4, 3]], maxW: "20em",
+      render: (b, a) => ar6Count(b, a, { cols: 6, rows: 5, cells: [[1, 1], [2, 1], [3, 1], [4, 1], [1, 2], [2, 2], [3, 2], [4, 2], [1, 3], [2, 3], [3, 3], [4, 3]], maxW: "20em",
         ask: [{ parts: ["1 cm²가 ", { n: 12 }, "개 → 1 cm²의 ", { n: 12 }, "배 → 넓이는 ", { n: 12 }, " cm²"] }], ok: "문패의 넓이는 12 cm²예요." }) },
     { name: "줄로 세기", inst: "이번에는 한 줄씩 눌러 세어 보세요. 1 cm²가 가로 한 줄에 몇 개씩 몇 줄인지 알아봐요.", hints: ["한 칸을 누르면 그 줄 전체가 칠해져요.", "가로 4 cm이면 한 줄에 4개, 세로 3 cm이면 3줄이에요."],
       render: (b, a) => ar6Count(b, a, { cols: 6, rows: 5, byRow: true, cells: [[1, 1], [2, 1], [3, 1], [4, 1], [1, 2], [2, 2], [3, 2], [4, 2], [1, 3], [2, 3], [3, 3], [4, 3]], maxW: "20em",

@@ -2148,7 +2148,7 @@ function mx1Bag(body, api, opt = {}) {
   });
   drawRows();
   const keys = h("div", { class: "mx1keys" }, ...["×", "÷", "+", "−", "(", ")"].map(s => h("button", { class: "mx1sym", onmousedown: e => e.preventDefault(), onclick: () => { if (!lastIn) return api.hint("먼저 식 칸을 눌러요."); lastIn.value += s; lastIn.focus(); } }, s)));
-  body.append(h("div", { class: "mx1box" }, h("div", { class: "mx1lab" }, "생존 물건 목록"), mx1ItemTable()));
+  if (opt.fixed) body.append(h("div", { class: "mx1box" }, h("div", { class: "mx1lab" }, "생존 물건 목록"), mx1ItemTable()));
   if (!opt.fixed) body.append(h("div", { class: "mx1box" }, h("div", { class: "mx1lab" }, "넣을 물건의 개수를 + − 로 정해요"), grid));
   body.append(h("div", { class: "mx1box" }, h("div", { class: "mx1lab" }, "물건마다 무게를 하나의 식으로 나타내고 구해요"), rowsBox, h("div", { class: "mx1note" }, "기호 단추는 식 칸에 써져요(키보드의 * / 도 돼요)."), keys,
     h("div", { class: "mx1ask" }, h("span", {}, "가방에 넣은 물건의 무게는 모두"), totIn, h("span", {}, "g"))));
