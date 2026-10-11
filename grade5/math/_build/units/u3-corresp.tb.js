@@ -565,7 +565,7 @@ function cr3ParkFig(onTap) {
   // 의자와 태양열 충전기
   const gc = svgEl("g", { transform: "translate(232 112) scale(.5)" }); cr3DrawRowInto(gc, "chair", 3); gc.append(svgEl("rect", { x: 0, y: 20, width: 400, height: 150, fill: "transparent" }));
   spot("chair", gc, 330, 205, "");
-  svg.append(txt(330, 196, "의자와 태양열 충전기", 14, { fill: CR3C.gray, "pointer-events": "none" }));
+  svg.append(txt(330, 212, "의자와 태양열 충전기", 14, { fill: CR3C.gray, "pointer-events": "none" }));
   // 자전거
   const gb = svgEl("g", { transform: "translate(565 150) scale(.5)" }); CR3EACH.bike.d(gb, () => {}); gb.append(svgEl("rect", { x: -80, y: 50, width: 160, height: 110, fill: "transparent" }));
   spot("bike", gb, 565, 236, "자전거");
