@@ -650,7 +650,7 @@
   function warPos(n) { var fs = { 4: 'cdef', 6: 'bcdefg', 8: 'abcdefgh' }[n], o = {}; fs.split('').forEach(function (f) { o[f + '2'] = 'P'; o[f + '7'] = 'p'; }); return B(o); }
   function warTask(n, lv) {
     return { type: 'game', kind: 'deep', q: '🤖 폰 전쟁(폰 ' + n + '개씩, ' + lv + '단계)! 내 폰을 끝 줄(8번 가로줄)에 먼저 보내면 이겨요. 움직일 폰을 누르고, 갈 칸을 눌러요.',
-      board: { pos: warPos(n) }, game: PW, level: lv, winText: '폰 전쟁에서 이겼어요! 🎉',
+      board: { pos: warPos(n) }, game: PW, level: lv, unit: '폰', winText: '폰 전쟁에서 이겼어요! 🎉',
       loseTip: '상대 폰이 끝 줄에 닿으면 져요. 앞으로 오는 상대 폰을 대각선으로 잡을 수 있는지 살펴봐요.',
       hint: ['상대 폰이 내 폰 대각선 앞에 오면 잡을 수 있어요.', '상대 폰에게 잡히지 않는 길로 폰을 보내요. 상대 폰이 없는 줄이 좋아요.'] };
   }
