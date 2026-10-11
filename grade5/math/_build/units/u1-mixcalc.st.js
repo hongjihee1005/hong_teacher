@@ -1023,8 +1023,9 @@ function mx1sRoad(pts, br) {
   const svg = makeSvg(860, 240); svg.classList.add("mx1svg"); svg.style.maxWidth = "860px";
   svg.append(svgEl("line", { x1: X(0), y1: 125, x2: X(max), y2: 125, stroke: "#8A7F74", "stroke-width": 6, "stroke-linecap": "round" }));
   pts.forEach(([d, n]) => { svg.append(svgEl("circle", { cx: X(d), cy: 125, r: 9, fill: "#2F6B57" })); svg.append(txt(X(d), 150, n, 20)); });
-  br.forEach(([a, b, t, up], i) => {
-    const y = up ? (i % 2 ? 40 : 85) : 195, d = up ? 1 : -1;
+  let nUp = 0;   /* 위쪽 괄호는 차례로 높이를 바꿔 겹치지 않게 */
+  br.forEach(([a, b, t, up]) => {
+    const y = up ? (nUp++ % 2 ? 40 : 85) : 195, d = up ? 1 : -1;
     svg.append(svgEl("path", { d: `M${X(a)} ${y + 12 * d} V${y} H${X(b)} V${y + 12 * d}`, fill: "none", stroke: "#E47A38", "stroke-width": 2.5 }));
     svg.append(txt((X(a) + X(b)) / 2, y - 12 * d, t, 20, { fill: "#C0571C" }));
   });

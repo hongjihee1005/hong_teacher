@@ -263,6 +263,20 @@ class Fig:
         self.W = (cols + 2 * self.px) * k
         self.H = (rows + 2 * self.py) * k
         self.under, self.parts = [], []
+        self.boxes, self.done = [], False
+
+    def final(self):
+        """글자가 그림 밖으로 나가면 그만큼 바탕을 넓혀요(1 cm의 px은 그대로)."""
+        if self.done:
+            return
+        self.done = True
+        x0 = min([0] + [b[0] for b in self.boxes])
+        y0 = min([0] + [b[1] for b in self.boxes])
+        x1 = max([self.W] + [b[2] for b in self.boxes])
+        y1 = max([self.H] + [b[3] for b in self.boxes])
+        self.dx, self.dy = -x0 + (4 if x0 < 0 else 0), -y0 + (4 if y0 < 0 else 0)
+        self.W = x1 - x0 + (4 if x0 < 0 else 0) + (4 if x1 > self.W else 0)
+        self.H = y1 - y0 + (4 if y0 < 0 else 0) + (4 if y1 > self.H else 0)
 
     def m(self, p):
         return ((self.px + p[0]) * self.k, (self.py + p[1]) * self.k)
@@ -282,6 +296,9 @@ class Fig:
 
     def text(self, p, t, size=18, col=INK, anchor='middle', weight='normal'):
         x, y = self.m(p)
+        w = sum(size * (1.0 if '\uac00' <= ch <= '\ud7a3' else .6) for ch in str(t))
+        a = {'start': 0, 'middle': .5, 'end': 1}[anchor]
+        self.boxes.append((x - w * a, y - size * .62, x + w * (1 - a), y + size * .62))
         self.parts.append(T(x, y, t, size, col, anchor, weight))
 
     def lab(self, a, b, t, c=None, col=INK, off=.42, size=17):
@@ -292,6 +309,11 @@ class Fig:
         nx, ny = -dy / L, dx / L
         if c is not None and (c[0] - mx) * nx + (c[1] - my) * ny > 0:
             nx, ny = -nx, -ny
+        if abs(nx) > .6:      # 세로에 가까운 변: 글자를 변 바깥쪽에 붙여 써요
+            gap = 8 / self.k
+            self.text((mx + nx * gap, my + ny * gap), t, size, col, 'start' if nx > 0 else 'end')
+            return
+        off = max(off, (size * .75 + 4) / self.k)
         self.text((mx + nx * off, my + ny * off), t, size, col)
 
     def labels(self, P, idx_text, col=INK, size=17):
@@ -323,6 +345,7 @@ class Fig:
             self.poly(rect(x, y, 1, 1), fill, INK, 1.6)
 
     def svg(self):
+        self.final()
         g = []
         if self.grid:
             for x in range(self.cols + 1):
@@ -331,25 +354,29 @@ class Fig:
             for y in range(self.rows + 1):
                 (a, b), (c, d) = self.m((0, y)), self.m((self.cols, y))
                 g.append('<line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" stroke-width="1.3"/>' % (F(a), F(b), F(c), F(d), GRID))
-        return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %s %s"><rect width="%s" height="%s" fill="#fff"/>%s%s%s</svg>'
-                % (F(self.W), F(self.H), F(self.W), F(self.H), ''.join(self.under), ''.join(g), ''.join(self.parts)))
+        return ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %s %s"><rect width="%s" height="%s" fill="#fff"/><g transform="translate(%s,%s)">%s%s%s</g></svg>'
+                % (F(self.W), F(self.H), F(self.W), F(self.H), F(self.dx), F(self.dy), ''.join(self.under), ''.join(g), ''.join(self.parts)))
 
 
 def real(s, fig):
     """실제 크기로 넣기(1 cm = 40 px → 그림 너비 mm = px ÷ 4)"""
     assert fig.k == U
+    fig.final()
     mm = fig.W / 4
     assert mm <= 182, ('실제 크기 그림이 너무 넓어요', mm)
     s.picture(SHOT.png(fig.svg(), fig.W * 2.5), width_mm=min(mm, 180))
 
 
 def small(s, fig, mm):
+    fig.final()
     s.picture(SHOT.png(fig.svg(), min(2400, fig.W * 2.5)), width_mm=mm)
 
 
 def side_by_side(figs, gap=.6):
     """같은 k의 Fig 여러 개를 가로로 잇기(실제 크기 유지)"""
     k = figs[0].k
+    for f in figs:
+        f.final()
     W = sum(f.W for f in figs) + gap * k * (len(figs) - 1)
     H = max(f.H for f in figs)
     out, x = [], 0
@@ -358,7 +385,7 @@ def side_by_side(figs, gap=.6):
         out.append('<g transform="translate(%s,0)">%s</g>' % (F(x), inner))
         x += f.W + gap * k
     box = Fig(0, 0, k)
-    box.W, box.H = W, H
+    box.W, box.H, box.done = W, H, True
     box.svg = lambda: ('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 %s %s"><rect width="%s" height="%s" fill="#fff"/>%s</svg>'
                        % (F(W), F(H), F(W), F(H), ''.join(out)))
     return box
@@ -812,7 +839,7 @@ def tb3(s, lv):
         f.poly(P2, F1)
         f.labels(P2, {0: '15 cm', 1: '10 cm'}, INK, 15)
         f.text((9, 12.2), '직사각형', 15, GRAY)
-        f.text((31, 10.2), '평행사변형', 15, GRAY)
+        f.text((31, 11.6), '평행사변형', 15, GRAY)
         small(s, f, 120)
         a6 = calc_rows(s, [('직사각형의 둘레는?', '%d cm' % ((18 + 11) * 2)), ('평행사변형의 둘레는?', '%d cm' % ((15 + 10) * 2)),
                            ('둘레가 더 짧은 것은?', '평행사변형'), ('한 변이 14 cm인 마름모의 둘레는?', '%d cm' % (14 * 4))])
@@ -1492,7 +1519,7 @@ def st2(s, lv):
     a1 += calc_rows(s, [('정사각형의 변은 (    )개 → 텃밭의 둘레는 4 × (    ) = (      ) m', '4개, 4, %d m' % nr(perim([(x * 1, y) for x, y in SQ])))])
     step(s, 1, '그려 보기', '정삼각형과 정육각형 꽃밭')
     s.text('서아는 꽃밭을 한 변이 2 m인 정삼각형으로 할지, 정육각형으로 할지 고민 중이에요(그림은 줄여서 그렸어요). 표를 완성해 보세요.')
-    small(s, reg_fig([(3, 2, '2 m', '정삼각형 꽃밭', F4), (6, 2, '2 m', '정육각형 꽃밭', F6)], k=30), 80)
+    small(s, reg_fig([(3, 2, '2 m', '정삼각형', F4), (6, 2, '2 m', '정육각형', F6)]), 70)
     rows = [(3, '정삼각형'), (4, '정사각형'), (6, '정육각형')]
     s.table([['도형', '한 변의 길이', '변의 수', '둘레']] + [[nm, '2 m', '(    )개', '(    ) m'] for n, nm in rows])
     a2 = ', '.join('%s %d개 %d m' % (nm, n, nr(perim(regpoly(n, 2)))) for n, nm in rows)
@@ -1506,7 +1533,7 @@ def st2(s, lv):
     a4 = blanks(s, lv, ['(정다각형의 둘레) = (', (['한 변의 길이', '둘레', '넓이'], 0), ') × (', (['변의 수', '대각선의 수', '한 변의 길이'], 0), ')'])
     step(s, 4, '확인하기', '교실 속 정다각형')
     s.text('교실에서 찾은 정다각형 물건이에요(그림은 줄여서 그렸어요).')
-    small(s, reg_fig([(5, 6, '6 cm', '정오각형 화분 받침', F1), (8, 5, '5 cm', '정팔각형 시계', F2)], k=20), 120)
+    small(s, reg_fig([(5, 6, '6 cm', '정오각형 화분 받침', F1), (8, 5, '5 cm', '정팔각형 시계', F2)], k=24), 120)
     assert nr(perim(regpoly(5, 6))) == 30 and nr(perim(regpoly(8, 5))) == 40 and 42 // 7 == 6
     a5 = calc_rows(s, [('정오각형 화분 받침의 둘레:  6 × (    ) = (      ) cm', '5, 30 cm'), ('정팔각형 시계의 둘레:  5 × (    ) = (      ) cm', '8, 40 cm'),
                        ('둘레가 42 cm인 정칠각형 모양 컵받침의 한 변의 길이는 몇 cm일까요?', '6 cm')])
@@ -1560,7 +1587,7 @@ def st3(s, lv):
     f = Fig(24, 10, 14, pad=1.2, grid=False)
     f.poly(RH, F1, INK, 3)
     f.ticks(RH, [1, 1, 1, 1])
-    f.labels(RH, {0: '13 cm'}, BLUE, 16)
+    f.lab(RH[0], RH[1], '13 cm', (12, 5), BLUE, off=1.5, size=16)
     small(s, f, 80)
     a3 = blanks(s, lv, ['마름모는 네 변의 길이가 ', (['모두 같아요', '모두 달라요'], 0), '.'])
     a3 += calc_rows(s, [('둘레:  13 × (    ) = (      ) cm', '4, %d cm' % nr(perim(RH)))])
