@@ -148,8 +148,9 @@ const CR3EACH = {
       g.append(el, svgEl("ellipse", { cx: x, cy: y + 3, rx: 12, ry: 3.5, fill: "#fff", stroke: "#5E6D6A", "stroke-width": 1.2 })); add(el, x, y + 26); }
   } },
   team: { w: 160, h: 180, d(g, add) {
-    g.append(svgEl("ellipse", { cx: 0, cy: 104, rx: 44, ry: 22, fill: "#E8C9A0", stroke: "#8C6F4E", "stroke-width": 3 }));
-    const seats = [[-60, 76], [0, 52], [60, 76], [-52, 146], [52, 146]];
+    g.append(svgEl("rect", { x: -74, y: 32, width: 148, height: 146, rx: 18, fill: "#F7F3EA", stroke: "#C9B79A", "stroke-width": 2, "stroke-dasharray": "6 4" }));
+    g.append(svgEl("ellipse", { cx: 0, cy: 106, rx: 34, ry: 20, fill: "#E8C9A0", stroke: "#8C6F4E", "stroke-width": 3 }));
+    const seats = [[-50, 78], [0, 54], [50, 78], [-32, 144], [32, 144]];
     const cols = ["#F29BB8", "#7CC48A", "#8EC1F0", "#F6C85F", "#C5A5E8"];
     seats.forEach(([x, y], k) => { g.append(svgEl("path", { d: `M${x - 15},${y + 26} Q${x},${y + 4} ${x + 15},${y + 26} Z`, fill: cols[k], stroke: "#5E6D6A", "stroke-width": 1.5 }));
       const el = svgEl("circle", { cx: x, cy: y, r: 12, fill: "#FFE3C4", stroke: "#8C6F4E", "stroke-width": 2 }); g.append(el); add(el, x, y); });
@@ -165,10 +166,10 @@ const CR3EACH = {
     g.append(txt(0, 140, "15 g", 22, { fill: CR3C.blue }));
   } },
   milk: { w: 170, h: 170, d(g, add) {
-    g.append(svgEl("rect", { x: -80, y: 60, width: 160, height: 92, rx: 8, fill: "#9ED39A", stroke: "#3E8A46", "stroke-width": 3 }));
-    for (let r = 0; r < 2; r++) for (let c = 0; c < 5; c++) { const x = -60 + 30 * c, y = 26 + 30 * r;
+    g.append(svgEl("rect", { x: -80, y: 40, width: 160, height: 116, rx: 8, fill: "#9ED39A", stroke: "#3E8A46", "stroke-width": 3 }));
+    for (let r = 0; r < 2; r++) for (let c = 0; c < 5; c++) { const x = -60 + 30 * c, y = 54 + 38 * r;
       const el = svgEl("polygon", { points: cr3P([[x - 11, y + 22], [x + 11, y + 22], [x + 11, y + 4], [x, y - 6], [x - 11, y + 4]]), fill: "#fff", stroke: "#4A8FB8", "stroke-width": 2 }); g.append(el); add(el, x, y + 10); }
-    g.append(txt(0, 128, "우유 10팩", 18, { fill: "#fff" }));
+    g.append(txt(0, 142, "우유 10팩", 16, { fill: "#fff" }));
   } },
   wind: { w: 130, h: 230, d(g, add) {
     g.append(svgEl("line", { x1: 0, y1: 220, x2: 0, y2: 82, stroke: "#9AA9A3", "stroke-width": 6, "stroke-linecap": "round" }));

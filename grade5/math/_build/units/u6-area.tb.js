@@ -105,8 +105,8 @@ function ar6Lab(svg, m, a, b, t, o = {}) {
   let nx = -(B[1] - A[1]), ny = B[0] - A[0]; const L = Math.hypot(nx, ny) || 1; nx /= L; ny /= L;
   if (o.c) { const C = m(o.c); if ((C[0] - mx) * nx + (C[1] - my) * ny > 0) { nx = -nx; ny = -ny; } }
   if (o.flip) { nx = -nx; ny = -ny; }
-  const d = o.d || 15;
-  svg.append(txt(ar6R(mx + nx * d), ar6R(my + ny * d), t, o.size || 17, { fill: o.color || AR6.ink }));
+  const side = Math.abs(nx) > .8, d = o.d || (side ? 8 : 15);
+  svg.append(txt(ar6R(mx + nx * d), ar6R(my + ny * d), t, o.size || 17, { fill: o.color || AR6.ink, "text-anchor": side ? (nx > 0 ? "start" : "end") : "middle" }));
 }
 function ar6Right(svg, m, F, u, v, color) {   // 직각 표시: F에서 u, v 방향(cm 단위 벡터)
   const s = .32, P = [F, [F[0] + u[0] * s, F[1] + u[1] * s], [F[0] + (u[0] + v[0]) * s, F[1] + (u[1] + v[1]) * s], [F[0] + v[0] * s, F[1] + v[1] * s]];
@@ -254,7 +254,7 @@ function ar6Perim(body, api, opt) {
     svg.append(vis, hit); sideEls.push(vis);
   });
   api.provide({ words: ["둘레", "변", "모두 더하기"], answers: [`${L.map(ar6Fmt).join(" + ")} = ${ar6Fmt(per)}`] });
-  body.append(opt.tip ? h("p", { class: "ar6small" }, opt.tip) : null, svg, read,
+  body.append(...(opt.tip ? [h("p", { class: "ar6small" }, opt.tip)] : []), svg, read,
     h("div", { class: "tools" }, h("button", { onclick: () => { if (used.length === n) return; used.length = 0; sideEls.forEach(e => e.setAttribute("stroke", "transparent")); redraw(); } }, "끈 다시 두르기")));
   redraw();
 }
@@ -309,7 +309,7 @@ function ar6Count(body, api, opt) {
     }
   }
   api.provide({ words: [small, "1 cm²의 몇 배", "반 칸 2개 = 1 cm²"], answers: [`${small} ${nF}개` + (nH ? `, 반 칸 ${nH}개` : "")] });
-  body.append(opt.tip ? h("p", { class: "ar6small" }, opt.tip) : null, svg, read,
+  body.append(...(opt.tip ? [h("p", { class: "ar6small" }, opt.tip)] : []), svg, read,
     h("div", { class: "tools" }, h("button", { onclick: () => { if (doneOnce) return; order.length = 0; paint(); } }, "처음부터 다시 세기")));
   paint();
 }
@@ -401,7 +401,7 @@ function ar6Rect(body, api, opt) {
   }
   api.provide({ words: ["가로", "세로", "(가로)×(세로)", "(가로+세로)×2"], answers: C ? want.map(d => `${d[0]}×${d[1]}`) : tasks.map(t => t.w ? `가로 ${t.w}, 세로 ${t.h}` : "").filter(Boolean) });
   setTask(); drawTable();
-  body.append(opt.tip ? h("p", { class: "ar6small" }, opt.tip) : null, taskTxt, svg, read, tblHost, btns);
+  body.append(...(opt.tip ? [h("p", { class: "ar6small" }, opt.tip)] : []), taskTxt, svg, read, tblHost, btns);
 }
 
 /* =========================================================
@@ -463,7 +463,7 @@ function ar6Cut(body, api, opt) {
   } }, "↻ 고른 조각 돌리기(반 바퀴)"));
   tools.append(h("button", { onclick: () => { if (finished) return; pcs.forEach(p => { p.st = Object.assign({ dx: 0, dy: 0, rot: 0 }, p.start || {}); p.ok = !p.move; }); draw(); } }, "처음 자리로"));
   api.provide({ words: opt.words || ["밑변", "높이", "옮기기", "돌리기"], answers: [] });
-  body.append(opt.tip ? h("p", { class: "ar6small" }, opt.tip) : null, svg, read, tools);
+  body.append(...(opt.tip ? [h("p", { class: "ar6small" }, opt.tip)] : []), svg, read, tools);
   draw();
 }
 
@@ -529,7 +529,7 @@ function ar6Height(body, api, opt) {
     });
   function drawLive() { live.innerHTML = ""; if (!cur) return; const m = regs[cur.ri].m; ar6Seg(live, m, cur.A, cur.B, { color: AR6.org, w: 3, dash: "6 4" }); const Q = m(cur.A); live.append(svgEl("circle", { cx: Q[0], cy: Q[1], r: 5, fill: AR6.org })); }
   api.provide({ words: ["밑변", "높이", "수직", "삼각자"], answers: [] });
-  body.append(opt.tip ? h("p", { class: "ar6small" }, opt.tip) : null, svg, read);
+  body.append(...(opt.tip ? [h("p", { class: "ar6small" }, opt.tip)] : []), svg, read);
 }
 
 /* =========================================================
@@ -672,7 +672,7 @@ function ar6Poly(body, api, opt) {
   }
   api.provide({ words: ["밑변", "높이", "대각선", "윗변", "아랫변"], answers: [] });
   setTask(); drawCur();
-  body.append(opt.tip ? h("p", { class: "ar6small" }, opt.tip) : null, taskTxt, svg, read, h("div", { class: "tools" }, h("button", { onclick: () => { pts = []; drawCur(); } }, "다시 그리기")));
+  body.append(...(opt.tip ? [h("p", { class: "ar6small" }, opt.tip)] : []), taskTxt, svg, read, h("div", { class: "tools" }, h("button", { onclick: () => { pts = []; drawCur(); } }, "다시 그리기")));
 }
 
 /* =========================================================
@@ -824,7 +824,7 @@ function ar6Paint(body, api, opt) {
   } }, "다 그렸어요");
   api.provide({ words: ["1 cm²", "칸의 수"], answers: [] });
   setTask(); paint();
-  body.append(opt.tip ? h("p", { class: "ar6small" }, opt.tip) : null, taskTxt, svg, read, madeTxt, h("div", { class: "tools" }, h("button", { onclick: () => { cells.clear(); paint(); } }, "모두 지우기")), h("div", { class: "actions" }, btn));
+  body.append(...(opt.tip ? [h("p", { class: "ar6small" }, opt.tip)] : []), taskTxt, svg, read, madeTxt, h("div", { class: "tools" }, h("button", { onclick: () => { cells.clear(); paint(); } }, "모두 지우기")), h("div", { class: "actions" }, btn));
 }
 /* 정다각형 여러 개 그림 (한 변 길이 글자) */
 function ar6RegFig(items, maxW) {
@@ -1313,3 +1313,100 @@ const LESSONS = [
         { q: "넓이가 70 cm², 윗변 6 cm, 아랫변 8 cm인 사다리꼴의 높이는?", parts: [{ n: 10, why: { "5": "(6+8)×□÷2=70이면 14×□=140이에요." } }, " cm"] }], { ok: "가 10 cm², 나 20 cm²로 사다리꼴은 30 cm²예요. 공식 (4+8)×5÷2=30과 같아요. 높이는 10 cm예요." }),
       { title: "점을 이어 넓이가 12 cm²인 사다리꼴을 그려요. (평행한 변이 한 쌍만 있게 그려 봐요.)", run: (bx, ax) => ar6Poly(bx, ax, { cols: 10, rows: 7, tasks: [{ kind: "trap", area: 12 }], ok: "(윗변+아랫변)×높이÷2가 12이면 넓이가 12 cm²인 사다리꼴이에요." }) }]) }
 },
+{
+  id: "t15", no: 15, title: "생각을 더하다 ― 공원을 만들어요", soop: "탐구 정리하기(O)",
+  question: "넓이가 같은 직사각형 공원 중에서 둘레가 가장 짧은 것은? 둘레가 같은 직사각형 공원 중에서 가장 넓은 것은?",
+  summary: "넓이가 같은 직사각형이라도 둘레는 다를 수 있고, 둘레가 같은 직사각형이라도 넓이는 다를 수 있어요. 가로와 세로의 길이가 비슷할수록(정사각형에 가까울수록) 넓이가 같을 때 둘레는 짧고, 둘레가 같을 때 넓이는 넓어요.",
+  steps: [
+    { name: "넓이가 같은 공원", inst: "※ 이 자료에서 만든 활동이에요(교과서 내용을 확인하지 못해 단원 계획에 맞추어 만들었어요). 공원 설계도의 모눈 한 칸은 1 cm²예요. 넓이가 16 cm²인 직사각형 공원을 서로 다른 모양으로 모두 그려 넣고, 둘레를 구해 보세요.", hints: ["가로를 1 cm, 2 cm, 3 cm …로 바꾸어 가며 16을 나누어떨어지게 하는 세로를 찾아요.", "둘레 = (가로 + 세로) × 2"],
+      render: (b, a) => ar6Rect(b, a, { cols: 17, rows: 9, k: 26, maxW: "40em", collect: { area: 16 },
+        ask: [{ parts: ["둘레가 가장 짧은 공원은 가로 ", { n: 4 }, " cm, 세로 ", { n: 4 }, " cm인 ", { o: ["정사각형", "길쭉한 직사각형"], a: 0 }, "이고, 둘레는 ", { n: 16 }, " cm예요."] }],
+        ok: "넓이가 16 cm²로 같아도 둘레는 34 cm, 20 cm, 16 cm로 달라요. 정사각형일 때 둘레가 가장 짧아요." }) },
+    { name: "둘레가 같은 공원", inst: "※ 이 자료에서 만든 활동이에요. 둘레가 20 cm인 직사각형 공원을 서로 다른 모양으로 모두 그려 넣고, 넓이를 구해 보세요.", hints: ["둘레가 20 cm이면 가로 + 세로 = 10 (cm)예요.", "가로를 1부터 5까지 바꾸어 봐요."],
+      render: (b, a) => ar6Rect(b, a, { cols: 11, rows: 7, k: 30, collect: { perim: 20 },
+        ask: [{ parts: ["가장 넓은 공원은 가로 ", { n: 5 }, " cm, 세로 ", { n: 5 }, " cm인 정사각형이고, 넓이는 ", { n: 25 }, " cm²예요."] }],
+        ok: "둘레가 20 cm로 같아도 넓이는 9, 16, 21, 24, 25 cm²로 달라요. 정사각형일 때 가장 넓어요." }) },
+    { name: "말해 보기", inst: "두 활동에서 알게 된 점을 정리해 보세요.", hints: ["넓이 16 cm²인 직사각형들의 둘레를 비교해요.", "가로와 세로의 차가 작을수록 어떻게 되었는지 살펴봐요."],
+      render: (b, a) => blanks(b, a, ["넓이가 같은 직사각형이라도 둘레는 ", { o: ["다를 수 있어요", "언제나 같아요"], a: 0 }, ". 가로와 세로의 길이가 비슷할수록 넓이가 같을 때 둘레는 ", { o: ["짧아지고", "길어지고"], a: 0 }, ", 둘레가 같을 때 넓이는 ", { o: ["넓어져요", "좁아져요"], a: 0 }, "."],
+        { ok: "정사각형에 가까울수록 같은 넓이에서 둘레가 짧고, 같은 둘레에서 넓이가 넓어요." }) },
+    { name: "설계하기", inst: "※ 이 자료에서 만든 활동이에요. 울타리 24 cm로 가장 넓은 직사각형 공원을, 넓이 36 cm²로 울타리가 가장 짧은 직사각형 공원을 설계해 보세요.", hints: ["둘레 24 cm이면 가로 + 세로 = 12 (cm)예요.", "정사각형에 가까울수록 좋아요."],
+      render: (b, a) => ar6Rect(b, a, { cols: 13, rows: 8, k: 28, tasks: [
+          { label: "① 둘레가 24 cm인 직사각형 중에서 넓이가 가장 넓은 공원을 그려요.", test: (w, hh) => (w + hh) * 2 !== 24 ? `지금 그린 공원의 둘레는 (${w}+${hh})×2=${(w + hh) * 2} (cm)예요. 둘레가 24 cm가 되게 그려요.` : w * hh !== 36 ? `둘레는 24 cm가 맞아요. 넓이가 ${w}×${hh}=${w * hh} (cm²)인데, 더 넓게 만들 수 있어요.` : null },
+          { label: "② 넓이가 36 cm²인 직사각형 중에서 둘레가 가장 짧은 공원을 그려요.", test: (w, hh) => w * hh !== 36 ? `지금 그린 공원의 넓이는 ${w}×${hh}=${w * hh} (cm²)예요. 넓이가 36 cm²가 되게 그려요.` : (w + hh) * 2 !== 24 ? `넓이는 36 cm²가 맞아요. 둘레가 (${w}+${hh})×2=${(w + hh) * 2} (cm)인데, 더 짧게 만들 수 있어요.` : null }],
+        ask: [{ parts: ["두 공원 모두 한 변이 ", { n: 6 }, " cm인 정사각형이에요. ①의 넓이는 ", { n: 36 }, " cm², ②의 둘레는 ", { n: 24 }, " cm예요."] }],
+        ok: "둘레 24 cm로 가장 넓은 공원도, 넓이 36 cm²로 둘레가 가장 짧은 공원도 한 변이 6 cm인 정사각형이에요." }) },
+    { name: "확인하기", inst: "공원을 설계하면서 알게 된 점을 써 보세요.",
+      render: (b, a) => writeStep(b, a, [
+        { q: "넓이가 같은 직사각형의 둘레를 비교하여 알게 된 점을 써 보세요.", tag: "알게 된 점", ph: "예) 넓이가 16 cm²로 같아도 1×16은 둘레가 34 cm, 4×4는 16 cm예요. 정사각형에 가까울수록 둘레가 짧아요." },
+        { q: "울타리를 아끼려면 공원을 어떤 모양으로 만들면 좋을지 써 보세요.", tag: "공원 모양", ph: "예) 가로와 세로의 길이를 비슷하게 만들어요." }]) }
+  ],
+  challenge: { inst: "※ 이 자료에서 만든 문제예요. 생각을 넓혀 보세요.", hints: ["정사각형에 가까울수록 같은 넓이에서 둘레가 짧아요.", "둘레 28 cm이면 가로 + 세로 = 14 (cm)예요."],
+    render: (b, a) => ar6Ask(b, a, [
+      { q: "넓이가 64 cm²인 직사각형 중에서 둘레가 가장 짧은 것의 둘레는?", parts: [{ n: 32, why: { "34": "가로와 세로가 같은 8 cm, 8 cm일 때를 생각해요." } }, " cm"] },
+      { q: "둘레가 28 cm인 직사각형 중에서 가장 넓은 것의 넓이는?", parts: [{ n: 49, why: { "48": "6×8보다 더 넓은 7×7이 있어요." } }, " cm²"] },
+      { q: "“넓이가 같은 두 직사각형은 둘레도 같아요.” 이 말은 옳을까요?", parts: [{ o: ["옳아요", "옳지 않아요"], a: 1 }] }], { ok: "8×8의 둘레 32 cm, 7×7의 넓이 49 cm²예요. 넓이가 같아도 둘레는 다를 수 있어요." }) }
+},
+{
+  id: "t16", no: 16, title: "놀이를 더하다 ― 직사각형 보물 탐험대", soop: "탐구 정리하기(O)",
+  question: "주사위 눈의 수의 곱이 넓이 또는 둘레가 되는 직사각형을 그려 보물을 찾을 수 있을까요?",
+  summary: "주사위 두 개의 눈의 곱을 넓이로 하면 곱이 되는 두 수를 가로와 세로로, 둘레로 하면 가로와 세로의 합이 (둘레 ÷ 2)인 두 수를 찾아 직사각형을 그려요. 둘레는 언제나 짝수이므로 곱이 홀수이면 넓이로만 그릴 수 있어요.",
+  steps: [
+    { name: "규칙 알기", inst: "※ 이 자료에서 만든 놀이예요(교과서 놀이판을 확인하지 못해 단원 계획에 맞추어 만들었어요). 주사위 두 개를 던져 나온 눈의 곱이 넓이 또는 둘레가 되도록 직사각형을 그려요. 곱이 12일 때를 생각해 보세요.", hints: ["넓이 12: 가로 × 세로 = 12", "둘레 12: (가로 + 세로) × 2 = 12, 가로 + 세로 = 6"],
+      render: (b, a) => quiz(b, a, [
+        { q: "넓이가 12 cm²인 직사각형을 모두 골라요.", o: ["가로 3 cm, 세로 4 cm", "가로 2 cm, 세로 6 cm", "가로 2 cm, 세로 5 cm", "가로 1 cm, 세로 12 cm", "가로 4 cm, 세로 4 cm"], a: [0, 1, 3], why: {} },
+        { q: "둘레가 12 cm인 직사각형을 모두 골라요.", o: ["가로 2 cm, 세로 4 cm", "가로 3 cm, 세로 3 cm", "가로 1 cm, 세로 5 cm", "가로 3 cm, 세로 4 cm"], a: [0, 1, 2], why: {} }],
+        { bad: "넓이는 가로×세로, 둘레는 (가로+세로)×2로 확인해 봐요.", ok: "넓이 12: 3×4, 2×6, 1×12 / 둘레 12: 2×4, 3×3, 1×5예요." }) },
+    { name: "놀이하기", inst: "주사위를 던지고, 넓이로 할지 둘레로 할지 골라 판 위에 직사각형을 그려요. 직사각형 안에 보물 상자가 들어가면 보물을 찾아요. 직사각형 5개를 그려 보세요. (모눈 한 칸은 1 cm)", hints: ["보물 상자가 있는 칸을 덮도록 가로와 세로를 정해요.", "앞에서 그린 직사각형과 겹치면 안 돼요.", "놓을 곳이 없으면 주사위를 다시 던져요."],
+      render: (b, a) => ar6Game(b, a, { goal: 5, ok: "곱을 넓이나 둘레로 하는 직사각형을 5개 그렸어요. 보물을 몇 개 찾았나요?" }) },
+    { name: "전략 세우기", inst: "보물을 많이 찾으려면 어떻게 하면 좋을지 생각해 보세요.", hints: ["넓이가 같아도 길쭉한 직사각형은 멀리까지 닿아요.", "둘레로 그리면 가로와 세로를 여러 가지로 고를 수 있어요."],
+      render: (b, a) => blanks(b, a, ["넓이가 같을 때 가로와 세로의 차가 큰 길쭉한 직사각형일수록 둘레가 ", { o: ["길어서", "짧아서"], a: 0 }, " 멀리 있는 보물까지 닿기 좋아요. 곱이 홀수일 때는 ", { o: ["넓이로만", "둘레로만"], a: 0 }, " 그릴 수 있어요."],
+        { ok: "길쭉하게 그리면 멀리까지 닿고, 홀수는 둘레가 될 수 없으니 넓이로 그려요." }) },
+    { name: "정리하기", inst: "놀이에서 나올 수 있는 경우를 계산해 보세요.", hints: ["둘레 30 cm → 가로 + 세로 = 15 (cm)", "넓이 30 cm² → 가로 × 세로 = 30"],
+      render: (b, a) => ar6Ask(b, a, [
+        { parts: ["주사위 눈이 5와 6이면 곱은 ", { n: 30 }, "이에요.", h("br"), "둘레가 30 cm이고 가로가 3 cm인 직사각형의 세로는 ", { n: 12, why: { "10": "가로 + 세로 = 30 ÷ 2 = 15예요.", "27": "둘레는 (가로+세로)×2예요. 가로 + 세로 = 15예요." } }, " cm", h("br"), "넓이가 30 cm²이고 가로가 5 cm인 직사각형의 세로는 ", { n: 6 }, " cm"] },
+        { q: "주사위 눈이 3과 5이면 곱 15로 그릴 수 있는 직사각형은?", parts: [{ o: ["넓이로만 그릴 수 있어요", "둘레로만 그릴 수 있어요", "둘 다 그릴 수 있어요"], a: 0, why: { "1": "둘레 = (가로+세로)×2라서 둘레는 언제나 짝수예요.", "2": "둘레 = (가로+세로)×2라서 둘레는 언제나 짝수예요." } }] }],
+        { ok: "곱 30이면 둘레로 3×12, 넓이로 5×6을 그릴 수 있어요. 15는 홀수라 넓이로만 그려요." }) },
+    { name: "확인하기", inst: "놀이를 하며 생각한 것을 써 보세요.",
+      render: (b, a) => writeStep(b, a, [
+        { q: "보물을 찾으려고 어떤 직사각형을 그렸는지 써 보세요.", tag: "나의 전략", ph: "예) 곱이 12일 때 둘레로 1×5를 그려서 멀리 있는 보물까지 닿게 했어요." },
+        { q: "놀이를 하며 알게 된 점을 써 보세요.", tag: "알게 된 점", ph: "예) 같은 수로도 넓이로 그릴 때와 둘레로 그릴 때 직사각형의 모양이 달라요." }]) }
+  ],
+  challenge: { inst: "※ 이 자료에서 만든 문제예요. 조건에 맞는 직사각형을 그려 보세요. (모눈 한 칸은 1 cm)", hints: ["넓이 18, 한 변 3 → 다른 변 18÷3", "둘레 18, 한 변 2 → 다른 변 18÷2−2"],
+    render: (b, a) => ar6Rect(b, a, { cols: 10, rows: 8, k: 30, tasks: [{ area: 18, side: 3 }, { perim: 18, side: 2 }], ok: "넓이 18 cm²는 3 cm×6 cm, 둘레 18 cm는 2 cm×7 cm예요." }) }
+},
+{
+  id: "t17", no: 17, title: "공부한 내용을 확인해요", soop: "발표하기(P)",
+  question: "다각형의 둘레와 넓이를 구하는 방법을 정리하고 문제를 해결할 수 있을까요?",
+  summary: "정다각형의 둘레는 (한 변)×(변의 수), 직사각형 (가로+세로)×2, 평행사변형 (한 변+이웃한 변)×2, 마름모 (한 변)×4예요. 1 m² = 10000 cm², 1 km² = 1000000 m²예요. 넓이는 직사각형 (가로)×(세로), 평행사변형 (밑변)×(높이), 삼각형 (밑변)×(높이)÷2, 마름모 (한 대각선)×(다른 대각선)÷2, 사다리꼴 (윗변+아랫변)×(높이)÷2예요.",
+  steps: [
+    { name: "둘레", inst: "※ 이 자료에서 만든 문제예요(교과서 문제를 확인하지 못했어요). 도형의 둘레를 구해 보세요.", hints: ["정다각형: (한 변의 길이)×(변의 수)", "직사각형·평행사변형: (두 변의 합)×2, 마름모: (한 변)×4"],
+      render: (b, a) => ar6Ask(b, a, [
+        { parts: ["한 변이 6 cm인 정오각형: ", { n: 30 }, " cm", h("br"), "가로 9 cm, 세로 4 cm인 직사각형: ", { n: 26, why: { "36": "넓이가 아니라 둘레예요." } }, " cm", h("br"), "한 변이 7 cm인 마름모: ", { n: 28 }, " cm", h("br"), "두 변이 8 cm, 5 cm인 평행사변형: ", { n: 26 }, " cm"] }], { ok: "30 cm, 26 cm, 28 cm, 26 cm예요." }) },
+    { name: "넓이의 단위", inst: "※ 이 자료에서 만든 문제예요. 넓이의 단위 사이의 관계를 이용해 보세요.", hints: ["1 m² = 10000 cm²", "1 km² = 1000000 m²"],
+      render: (b, a) => ar6Ask(b, a, [
+        { parts: ["4 m² = ", { n: 40000 }, " cm²", h("br"), "3000000 m² = ", { n: 3 }, " km²"] },
+        { q: "알맞은 단위를 골라요.", parts: ["스케치북 한 장의 넓이는 약 1000 ", { o: ["cm²", "m²", "km²"], a: 0 }, ", 우리 집 거실의 넓이는 약 30 ", { o: ["cm²", "m²", "km²"], a: 1 }, ", 울릉도의 넓이는 약 73 ", { o: ["cm²", "m²", "km²"], a: 2 }, "예요."] }], { ok: "40000 cm², 3 km²예요. 작은 물건은 cm², 방·건물은 m², 섬·도시는 km²가 알맞아요." }) },
+    { name: "사각형의 넓이", inst: "※ 이 자료에서 만든 문제예요. 모눈 한 칸은 1 cm예요. 칸을 세어 길이를 알아보고 넓이를 구해 보세요.", hints: ["직사각형 (가로)×(세로)", "평행사변형은 밑변과 높이를 찾아요(비스듬한 변의 길이가 아니에요)."],
+      render: (b, a) => ar6Ask(b, a, [{ fig: () => ar6Static({ cols: 22, rows: 7, k: 22, shapes: [{ P: AR6_RECT(1, 1, 6, 4), fill: AR6.f1, name: "가" }, { P: AR6_RECT(8, 1, 5, 5), fill: AR6.f2, name: "나" }, { P: [[14, 6], [20, 6], [21, 3], [15, 3]], fill: AR6.f3, name: "다" }], maxW: "38em" }),
+        parts: ["가(직사각형): ", { n: 24 }, " cm²", h("br"), "나(정사각형): ", { n: 25 }, " cm²", h("br"), "다(평행사변형): ", { n: 18, why: { "24": "밑변 6 cm에 높이 3 cm를 곱해요. 비스듬한 변이 아니라 높이를 써요." } }, " cm²"] }],
+        { ok: "가 6×4=24, 나 5×5=25, 다 6×3=18 (cm²)예요." }) },
+    { name: "여러 도형의 넓이", inst: "※ 이 자료에서 만든 문제예요. 모눈 한 칸은 1 cm예요. 삼각형, 마름모, 사다리꼴의 넓이를 구해 보세요.", hints: ["삼각형 (밑변)×(높이)÷2, 마름모 (대각선)×(대각선)÷2", "사다리꼴 (윗변+아랫변)×(높이)÷2"],
+      render: (b, a) => ar6Ask(b, a, [{ fig: () => ar6Static({ cols: 23, rows: 6, k: 22, shapes: [{ P: [[1, 5], [7, 5], [5, 1]], fill: AR6.f1, name: "가", nameAt: [4.3, 3.8] }, { P: [[9, 3], [12, 1], [15, 3], [12, 5]], fill: AR6.f4, name: "나" }, { P: [[17, 5], [22, 5], [21, 1], [18, 1]], fill: AR6.f6, name: "다" }], maxW: "38em" }),
+        parts: ["가(삼각형): ", { n: 12, why: { "24": "÷2를 잊었어요." } }, " cm²", h("br"), "나(마름모): ", { n: 12, why: { "24": "24 cm²는 둘러싸는 직사각형의 넓이예요." } }, " cm²", h("br"), "다(사다리꼴): ", { n: 16, why: { "32": "÷2를 잊었어요." } }, " cm²"] }],
+        { ok: "가 6×4÷2=12, 나 6×4÷2=12, 다 (3+5)×4÷2=16 (cm²)예요." }) },
+    { name: "정리하기", inst: "도형과 넓이를 구하는 식을 알맞게 이어 보세요.", hints: ["어떤 도형을 잘라 붙이거나 2개를 붙여 무엇을 만들었는지 떠올려요."],
+      render: (b, a) => ar6Ask(b, a, [{ parts: [
+        "평행사변형: ", { o: ["(밑변)×(높이)", "(밑변)×(높이)÷2", "(윗변+아랫변)×(높이)÷2"], a: 0 }, h("br"),
+        "삼각형: ", { o: ["(밑변)×(높이)", "(밑변)×(높이)÷2", "(한 대각선)×(다른 대각선)÷2"], a: 1 }, h("br"),
+        "마름모: ", { o: ["(한 변)×4", "(한 대각선)×(다른 대각선)÷2", "(밑변)×(높이)÷2"], a: 1 }, h("br"),
+        "사다리꼴: ", { o: ["(윗변+아랫변)×(높이)÷2", "(윗변)×(아랫변)÷2", "(밑변)×(높이)"], a: 0 }] }],
+        { ok: "평행사변형 (밑변)×(높이), 삼각형 (밑변)×(높이)÷2, 마름모 (대각선)×(대각선)÷2, 사다리꼴 (윗변+아랫변)×(높이)÷2예요." }) }
+  ],
+  challenge: { inst: "※ 이 자료에서 만든 문제예요. 생각을 모아 해결해 보세요.", hints: ["도형을 직사각형 2개로 나누어 넓이를 구해요.", "둘레는 바깥 테두리의 길이를 모두 더해요."],
+    render: (b, a) => ar6Ask(b, a, [
+      { q: "모눈 한 칸은 1 cm예요. 도형의 둘레와 넓이를 구해 보세요.", fig: () => ar6Static({ cols: 8, rows: 7, k: 30, shapes: [{ P: [[1, 1], [7, 1], [7, 3], [4, 3], [4, 6], [1, 6]], fill: AR6.f3 }], maxW: "16em" }),
+        parts: ["둘레: ", { n: 22 }, " cm, 넓이: ", { n: 21, why: { "30": "30 cm²는 둘러싸는 직사각형의 넓이예요. 빈 곳을 빼요." } }, " cm²"] },
+      { q: "넓이가 다른 하나는?  가: 밑변 6 cm, 높이 4 cm인 삼각형  나: 밑변 4 cm, 높이 3 cm인 평행사변형  다: 윗변 2 cm, 아랫변 4 cm, 높이 4 cm인 사다리꼴  라: 대각선이 6 cm, 5 cm인 마름모", parts: [{ o: ["가", "나", "다", "라"], a: 3 }] }],
+      { ok: "둘레 22 cm, 넓이 6×2+3×3=21 (cm²)예요. 가·나·다는 12 cm², 라는 15 cm²예요." }) }
+}
+];

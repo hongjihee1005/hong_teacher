@@ -73,17 +73,18 @@ function rd4DecFrac(s) { const m = String(s).match(/^(\d*)\.(\d+)$/); if (!m) re
 /* 두 수(분수·소수)를 통분하여 비교하는 풀이 글 */
 function rd4Explain(a, b) {
   const part = s => { const d = rd4DecFrac(s); if (d) return { pre: `${s} = ${d.t}`, n: d.num, d: d.den }; const v = /\//.test(s) ? rd4ND(s) : [+s, 1]; return { pre: "", n: v[0], d: v[1] }; };
+  if (rd4DecFrac(a) && rd4DecFrac(b)) return `높은 자리부터 차례로 비교하면 ${a} ${rd4Sign(rd4Cmp(a, b))} ${rd4J(b, "이에요")}.`;
   const A = part(a), B = part(b), L = rd4Lcm(A.d, B.d), na = A.n * L / A.d, nb = B.n * L / B.d;
   const pre = [A.pre, B.pre].filter(Boolean).join(", ");
   const sg = rd4Sign(rd4Cmp(a, b));
-  const lead = (pre ? pre + "이고, " : "") + (A.d === B.d ? "" : `분모를 ${L}로 같게 하면 ${rd4Tk(a)} → ${rd4F(na, L)}, ${rd4Tk(b)} → ${rd4F(nb, L)}이므로 `);
-  return `${lead}${rd4Tk(a)} ${sg} ${rd4Tk(b)}예요.`.replace(/^이고, /, "");
+  const lead = (pre ? pre + "이고, " : "") + (A.d === B.d ? "" : `분모를 ${rd4J(String(L), "으로")} 같게 하면 ${rd4Tk(a)} → ${rd4F(na, L)}, ${rd4Tk(b)} → ${rd4F(nb, L)}이므로 `);
+  return `${lead}${rd4Tk(a)} ${sg} ${rd4J(rd4Tk(b), "이에요")}.`;
 }
 /* 흔한 실수 찾기(지도서 오개념: 분모에만 곱하기·서로 다른 수로 나누기 등) */
 function rd4Diag(from, r) {
   if (!from || !r || r.err || !r.hasF || r.hasW) return null;
   const [n0, d0] = rd4ND(from);
-  if (r.n === n0 && r.d !== d0 && r.d % d0 === 0) return `분모에만 ${r.d / d0}을(를) 곱했어요. 분자에도 같은 수를 곱해야 크기가 같아요.`.replace("1을(를)", "1을").replace(/(\d)을\(를\)/, (m, x) => rd4J(x, "을를"));
+  if (r.n === n0 && r.d !== d0 && r.d % d0 === 0) return `분모에만 ${rd4J(String(r.d / d0), "을를")} 곱했어요. 분자에도 같은 수를 곱해야 크기가 같아요.`;
   if (r.n === n0 && r.d !== d0 && d0 % r.d === 0) return "분모만 나누었어요. 분자도 같은 수로 나누어야 크기가 같아요.";
   if (r.d !== d0 && r.d % d0 === 0 && r.n % n0 === 0 && r.d / d0 !== r.n / n0) return "분모와 분자에 서로 다른 수를 곱했어요. 0이 아닌 같은 수를 곱해야 크기가 같아요.";
   if (r.d !== d0 && d0 % r.d === 0 && r.n && n0 % r.n === 0 && d0 / r.d !== n0 / r.n) return "분모와 분자를 서로 다른 수로 나누었어요. 0이 아닌 같은 수로 나누어야 크기가 같아요.";
@@ -407,7 +408,7 @@ function rd4Calc(body, api, items, opt = {}) {
           let msg = null;
           if (r.err) msg = r.err === "empty" ? "빈칸에 분수를 써요." : "분자와 분모를 모두 수로 써요.";
           else if (!r.hasF || r.hasW) msg = "분수로 써요.";
-          else if (r.num * d0 !== n0 * r.den) msg = rd4Diag(it.eq, r) || `${rd4Tk(rd4Key(r))}는 ${rd4Tk(it.eq)}과 크기가 달라요.`.replace(/\]는/, m => m) ;
+          else if (r.num * d0 !== n0 * r.den) msg = rd4Diag(it.eq, r) || `${rd4J(rd4Tk(rd4Key(r)), "은는")} ${rd4J(rd4Tk(it.eq), "과와")} 크기가 달라요.`;
           else if (r.n === n0 && r.d === d0) msg = `${rd4J(rd4Tk(it.eq), "은는")} 처음 분수예요. 다른 분수를 만들어요.`;
           else if (seen.has(rd4Key(r))) msg = "같은 분수를 두 번 썼어요. 서로 다른 분수를 만들어요.";
           if (!msg) seen.add(rd4Key(r));
@@ -608,8 +609,7 @@ function rd4Split(body, api, opt) {
       });
     }
     readout.textContent = fold ? `지금 색종이는 똑같이 ${n}칸으로 나누어져 있어요. 빨간색 부분은 ${n}칸 중 ${V[0].num * n / V[0].den}칸 → ${fr(0, n)}`
-      : bars.map((b, i) => (V[i].num * n) % V[i].den === 0 ? `${rd4Plain(b.name).replace(/^\s+/, "")}: ${n}칸 중 ${V[i].num * n / V[i].den}칸 → ${fr(i, n)}` : `${b.name}: 색칠한 끝이 칸의 경계와 맞지 않아요.`).join("  ·  ");
-    if (!fold) readout.textContent = bars.map((b, i) => (V[i].num * n) % V[i].den === 0 ? `${b.name} → ${n}칸 중 ${V[i].num * n / V[i].den}칸 = ${fr(i, n)}` : `${b.name} → 색칠한 끝이 칸의 경계와 맞지 않아요`).join(" · ");
+      : bars.map((b, i) => (V[i].num * n) % V[i].den === 0 ? `${b.name} → ${n}칸 중 ${V[i].num * n / V[i].den}칸 = ${fr(i, n)}` : `${b.name} → 색칠한 끝이 칸의 경계와 맞지 않아요`).join(" · ");
     [...tools.querySelectorAll("button[data-n]")].forEach(btn => btn.classList.toggle("rd4on", +btn.dataset.n === n));
     chips.innerHTML = "";
     chips.append(h("span", { class: "rd4lab" }, "기록한 분수: "));
@@ -620,7 +620,7 @@ function rd4Split(body, api, opt) {
     if (!aligned(n)) { if (!auto) api.hint(nb > 1 ? "두 막대의 색칠한 끝이 모두 칸의 경계와 맞아야 분수로 나타낼 수 있어요. 다른 칸 수로 나누어 봐요." : "색칠한 끝이 칸의 경계와 맞지 않아요. 그러면 분수로 딱 맞게 나타낼 수 없어요. 다른 칸 수로 나누어 봐요."); return; }
     if (found.includes(n)) { if (!auto) api.hint("이미 기록했어요. 다른 칸 수로도 나누어 봐요."); return; }
     found.push(n); draw();
-    api.hint(nb > 1 ? `${n}칸으로 나누니 ${bars.map((b, i) => fr(i, n)).join(", ")}이 되었어요. 분모가 같아졌어요!` : `${fr(0, n)}을(를) 기록했어요.`.replace(/(\])을\(를\)/, () => rd4J(fr(0, n), "을를").slice(-1) === "을" ? "]을" : "]를"));
+    api.hint(nb > 1 ? `${n}칸으로 나누니 ${rd4J(bars.map((b, i) => fr(i, n)).join(", "), "이가")} 되었어요. 분모가 같아졌어요!` : `${rd4J(fr(0, n), "을를")} 기록했어요.`);
   };
   const tools = h("div", { class: "rd4tools" });
   if (fold) {
@@ -807,10 +807,10 @@ function rd4Place(body, api, opt) {
     const p = svgPt(svg, ev), k = Math.round((p.x - X0) / U);
     if (k < 0 || k > N || cur == null) return;
     const it = items[cur];
-    if (k !== it.k) return api.hint(`그곳은 ${rd4J(rd4DecStr(rd4F(k, T)) || rd4F(k, T), "이에요")}. ${it.name}의 자리를 다시 찾아봐요.${opt.lab === "dec" ? "" : ` 작은 눈금 한 칸은 ${rd4F(1, T)}이에요.`}`.replace("이에요이에요", "이에요"));
+    if (k !== it.k) return api.hint(`그곳은 ${rd4J(opt.lab === "dec" ? rd4DecStr(rd4F(k, T)) : rd4F(k, T), "이에요")}. ‘${it.name}’의 자리를 다시 찾아봐요.${opt.lab === "dec" ? "" : ` 작은 눈금 한 칸은 ${rd4J(rd4F(1, T), "이에요")}.`}`);
     it.at = k; const nx = items.findIndex(x => x.at == null); if (nx >= 0) cur = nx;
     draw();
-    api.hint(nx >= 0 ? `${it.name}을(를) 놓았어요. 다음 수도 놓아 봐요.`.replace("을(를)", "") : "모두 알맞은 자리에 놓았어요. 어느 쪽이 더 오른쪽에 있나요?");
+    api.hint(nx >= 0 ? `‘${it.name}’의 자리를 찾았어요. 다음 수도 놓아 봐요.` : "모두 알맞은 자리에 놓았어요. 어느 쪽이 더 오른쪽에 있나요?");
   });
   draw();
   const ask = h("div", { class: "rd4ask" });
@@ -964,7 +964,7 @@ function rd4Hand(up) {
 /* 손가락 접어! 나와 컴퓨터 친구 3명, 모두의 카드 24장을 섞어 한 판에 한 장씩 */
 function rd4Game(body, api, opt) {
   rd4Style();
-  const P = ["나", "하은", "유주", "준서"];
+  const P = ["나", "하은", "유주", "준서"], PN = ["내", "하은이의", "유주의", "준서의"], PT = ["나는", "하은이는", "유주는", "준서는"];
   const others = [["[3/4]", "0.2", "[5/6]", "0.55", "[2/5]", "0.9"], ["[1/3]", "0.8", "[5/9]", "0.35", "[3/7]", "0.68"], ["[4/5]", "0.1", "[2/9]", "0.64", "[5/8]", "0.4"]];
   let deck, fingers, round, total, hands, cond, pick, phase, done = false;
   const top = h("div", { class: "rd4tip" }), say = h("div"), grid = h("div", { class: "rd4players" }), ctl = h("div", { class: "rd4tools" }), log = h("div");
@@ -1007,14 +1007,14 @@ function rd4Game(body, api, opt) {
     });
     say.innerHTML = ""; ctl.innerHTML = "";
     if (phase === "talk") {
-      say.append(h("div", { class: "rd4say" }, `내 카드는 ${hands[0]}예요. 어떤 조건을 말할까요? 다른 사람이 많이 접을수록 좋아요.`.replace(/(\S+)예요\./, (m, x) => rd4J(x, "이에요") + ".")));
+      say.append(h("div", { class: "rd4say" }, `내 카드는 ${rd4J(hands[0], "이에요")}. 어떤 조건을 말할까요? 다른 사람이 많이 접을수록 좋아요.`));
       [">", "<"].forEach(sg => ctl.append(h("button", { onclick: () => { cond = { by: 0, v: hands[0], sign: sg }; phase = "pick"; render(); } }, `${hands[0]}보다 ${word(sg)} 수를 가진 사람 접어!`)));
     } else if (phase === "pick") {
       say.append(h("div", { class: "rd4say" }, `${P[cond.by]}: “${condText()}”`));
       say.append(h("p", { class: "rd4tip" }, "손가락을 접어야 하는 사람을 모두 눌러 고르고 ‘판정하기’를 눌러요(아무도 없으면 바로 눌러요)."));
       ctl.append(h("button", { onclick: judge }, "판정하기"));
     } else if (phase === "next") {
-      ctl.append(h("button", { onclick: () => { round++; deal(); } }, round + 1 >= total ? "결과 보기" : "다음 판"));
+      ctl.append(h("button", { onclick: () => { round++; deal(); } }, round + 1 >= total ? "결과 보기" : "이어서 한 판"));
     } else if (phase === "end") {
       ctl.append(h("button", { onclick: start }, "새로 놀이하기"));
     }
@@ -1024,7 +1024,7 @@ function rd4Game(body, api, opt) {
     const miss = want.find(i => !pick.has(i)), extra = [...pick].find(i => !want.includes(i));
     if (miss != null || extra != null) {
       const i = miss != null ? miss : extra;
-      return api.hint(`${P[i]}의 카드 ${hands[i]}: ${rd4Explain(hands[i], cond.v)} 그래서 ${P[i]}${i === 0 ? "는" : "는"} 손가락을 ${miss != null ? "접어야 해요" : "접지 않아요"}.`);
+      return api.hint(`${PN[i]} 카드 ${hands[i]}: ${rd4Explain(hands[i], cond.v)} 그래서 ${PT[i]} 손가락을 ${miss != null ? "접어야 해요" : "접지 않아요"}.`);
     }
     want.forEach(i => { fingers[i] = Math.max(0, fingers[i] - 1); });
     log.prepend(h("p", { class: "rd4log" }, `${round + 1}번째 판: ${P[cond.by]} “${condText()}” → ${want.length ? want.map(i => P[i]).join(", ") + " 접음" : "아무도 접지 않음"}`));
@@ -1061,7 +1061,7 @@ function rd4Tong(body, api, opt) {
     if (!ja.ok || !jb.ok) {
       const r = !ja.ok ? ra : rb, F = !ja.ok ? A : B;
       const sameDen = !r.err && r.hasF && rd4Same(rd4Key(r), rd4F(F[0], F[1]));
-      return api.hint(sameDen ? `값은 같아요. 그런데 공통분모는 ${A[1]}와(과) ${B[1]}의 최소공배수예요.`.replace(/(\d+)와\(과\)/, (m, x) => rd4J(x, "과와")) : (!ja.ok ? ja.msg : jb.msg) || "두 분모의 최소공배수를 구하고, 분모에 곱한 수만큼 분자에도 곱해요.");
+      return api.hint(sameDen ? `값은 같아요. 그런데 공통분모는 ${rd4J(String(A[1]), "과와")} ${B[1]}의 최소공배수예요.` : (!ja.ok ? ja.msg : jb.msg) || "두 분모의 최소공배수를 구하고, 분모에 곱한 수만큼 분자에도 곱해요.");
     }
     score++;
     log.prepend(h("p", { class: "rd4log" }, `(${rd4F(A[0], A[1])}, ${rd4F(B[0], B[1])}) → (${rd4F(A[0] * L / A[1], L)}, ${rd4F(B[0] * L / B[1], L)}) 1점!`));
@@ -1467,7 +1467,7 @@ const LESSONS = [
       render: (b, a) => rd4Calc(b, a, [
         { q: "가와 나를 24로 통분해 보세요.", e: "가 [5/6]", a: "20/24", den: 24, from: "5/6" }, { e: "나 [5/8]", a: "15/24", den: 24, from: "5/8" },
         { q: "가와 다를 30으로 통분해 보세요.", e: "가 [5/6]", a: "25/30", den: 30, from: "5/6" }, { e: "다 [9/10]", a: "27/30", den: 30, from: "9/10" },
-        { q: "녹은 소금이 가장 많은 비커는?", pick: ["가", "나", "다"], a: 2, chk: null },
+        { q: "녹은 소금이 가장 많은 비커는?", pick: ["가", "나", "다"], a: 2 },
         { q: "녹은 소금이 가장 적은 비커는?", pick: ["가", "나", "다"], a: 1 }],
         { ok: "다 > 가 > 나이므로 녹은 소금이 가장 많은 비커는 다, 가장 적은 비커는 나예요." }) },
     { name: "확인하고 정리해요", inst: "이 단원에서 배운 내용을 정리해 보세요.", hints: ["크기가 같은 분수는 분모와 분자에 같은 수를 곱하거나 같은 수로 나누어 만들어요.", "[1/4] = [25/100] = 0.25예요."],
