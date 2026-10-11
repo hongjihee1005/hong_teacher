@@ -89,6 +89,17 @@
   ['pointerdown', 'keydown'].forEach(function (ev) { document.addEventListener(ev, function () { if (HT.on) armTimer(); }, true); });
 
   /* ---------- 문제 하나 ---------- */
+  var AIW = { w: null, cb: {}, id: 0, bad: false };
+  function aiWorker() {
+    if (AIW.w || AIW.bad || !window.CS_AI_SRC || !window.Worker || !window.Blob) return AIW.w;
+    try {
+      var src = 'var window = self;\n' + window.CS_AI_SRC + '\nonmessage = function (e) { var d = e.data, G = CAI.game(d.lv, d.o), m = G.ai(d.p, d.l); postMessage({ id: d.id, m: m && { from: m.from, to: m.to, promo: m.promo || \'\' } }); };';
+      AIW.w = new Worker(URL.createObjectURL(new Blob([src], { type: 'text/javascript' })));
+      AIW.w.onmessage = function (e) { var f = AIW.cb[e.data.id]; delete AIW.cb[e.data.id]; if (f) f(e.data.m); };
+      AIW.w.onerror = function () { AIW.bad = true; AIW.w = null; Object.keys(AIW.cb).forEach(function (k) { var f = AIW.cb[k]; delete AIW.cb[k]; f(null); }); };
+    } catch (e) { AIW.bad = true; AIW.w = null; }
+    return AIW.w;
+  }
   /* host: 판 칸 + 글 칸, opt: {kind, auto(저절로 힌트), onEnd(firstTry)} */
   function runTask(T, view, panel, opt) {
     var tries = 0, revealed = false, finished = false, found = {}, hintMarks = {}, tray = (T.tray || []).slice(), pickT = -1, placed = {};
@@ -124,7 +135,7 @@
     }
     function answerMarks(m) {
       if (T.type === 'move' && T.next) { var nx = T.next(mv.at, mv.stars); if (nx) m[nx] = 'hint'; }
-      if (T.type === 'game' && !gm.over) { var bm = T.game.ai(gm.p, 9); if (bm) { m[CH.name(bm.from)] = 'hint'; m[CH.name(bm.to)] = 'hint'; } }
+      if (T.type === 'game' && !gm.over) { var bm = T.game.ai(gm.p, 99); if (bm) { m[CH.name(bm.from)] = 'hint'; m[CH.name(bm.to)] = 'hint'; } }
       if ((T.type === 'play' || T.type === 'line') && T.good && T.good.length) { m[T.good[0][0]] = 'hint'; m[T.good[0][1]] = 'hint'; if (T.good[0][2]) area.querySelectorAll('.cs-tp').forEach(function (b) { b.classList.toggle('cs-blink2', b.dataset.v === T.good[0][2]); }); }
       if (T.type === 'click') ans.forEach(function (s) { if (!found[s]) m[s] = 'hint'; });
       if (T.type === 'place') { var want = tray[pickT >= 0 ? pickT : 0]; if (opt.once) { Object.keys(T.need).forEach(function (s) { if (!placed[s]) m[s] = 'hint'; }); return; } Object.keys(T.need).forEach(function (s) { if (!placed[s] && T.need[s] === want) m[s] = 'hint'; }); }
@@ -203,7 +214,7 @@
           if (finished) return; var nm = PC.NAME[ST.b[r.from].toUpperCase()];
           ST = CH.make(ST, r); pos = ST.b; T.good = T.goodAt(ST); pl.busy = false; hintMarks = {}; if (HT.lv >= 3) { var mm = {}; answerMarks(mm); hintMarks = mm; }
           var mk = {}; mk[CH.name(r.from)] = 'hi'; mk[CH.name(r.to)] = 'hi'; show(mk);
-          fb.className = 'cs-fb'; fb.innerHTML = '흑은 ' + PC.jo(nm, '을') + ' ' + CH.name(r.to) + PC.jo(CH.name(r.to), '으로').slice(CH.name(r.to).length) + ' 두었어요. <b>이어서 두어요!</b>' + (T.stepQ ? ' ' + T.stepQ : '');
+          fb.className = 'cs-fb'; fb.innerHTML = '흑은 ' + PC.jo(nm, '을') + ' ' + CH.name(r.to) + PC.jo(CH.name(r.to), '으로').slice(CH.name(r.to).length) + ' 두었어요. <b>이어서 두어요!</b>' + (T.stepQ ? ' ' + (typeof T.stepQ === 'function' ? T.stepQ(ST) : T.stepQ) : '');
           armTimer();
         });
       }, 450);
@@ -222,7 +233,17 @@
       gm.over = true; tries++; if (opt.onWrong) opt.onWrong(); stopTimer();
       fb.className = 'cs-fb cs-badfb'; fb.innerHTML = (r === 'd' ? '<b>비겼어요.</b> 이겨야 통과예요. ' : '<b>아쉬워요, 졌어요.</b> ') + (T.game.info ? '(' + T.game.info(gm.p) + ') ' : '') + (T.loseTip || '');
       var b = btn('🔄 한 판 더', 'cs-main', function () { b.remove(); pos = start.slice(); gm = { p: newP(), sel: -1, busy: false, over: false }; fb.className = 'cs-fb'; fb.innerHTML = '내가 먼저 둬요. 움직일 ' + PC.jo(T.unit || '말', '을') + ' 눌러요.'; HT.lv = 0; HT.on = true; armTimer(); show({}); });
-      nextRow.appendChild(b);
+      var sk = btn('건너뛰기 ▶', '', function () { sk.remove(); b.remove(); finished = true; stopTimer(); if (opt.onEnd) opt.onEnd(false, nextRow); }); /* 계속 지면 막히지 않게(한 번에 맞힌 것으로는 세지 않음) */
+      b.onclick = (function (f) { return function () { sk.remove(); f(); }; })(b.onclick);
+      nextRow.appendChild(b); if (opt.onEnd) nextRow.appendChild(sk);
+    }
+    /* 인공지능 수: 정식 대국(spec 있음)은 웹 워커에서 계산해 화면이 멈추지 않게(안 되면 바로 계산) */
+    function aiMove(p, lv, cb) {
+      var W = aiWorker();
+      if (!W || !T.game.spec) return cb(T.game.ai(p, lv));
+      var id = ++AIW.id, done = false;
+      AIW.cb[id] = function (r) { if (done) return; done = true; var m = r && T.game.moves(p).filter(function (x) { return x.from === r.from && x.to === r.to && (x.promo || '') === (r.promo || ''); })[0]; cb(m || T.game.ai(p, lv)); };
+      W.postMessage({ id: id, p: p, lv: T.game.spec.lv, o: T.game.spec.o, l: lv });
     }
     function gamePlay(m) {
       gm.busy = true; gm.sel = -1; hintMarks = {}; show({});
@@ -233,7 +254,8 @@
         fb.className = 'cs-fb'; fb.innerHTML = '🤖 인공지능 차례예요 …';
         setTimeout(function () {
           if (finished || !gm || gm.over) return;
-          var a = T.game.ai(gm.p, T.level || 1);
+          aiMove(gm.p, T.level || 1, function (a) {
+          if (finished || !gm || gm.over || !a) return;
           view.anim(a.from, a.to, 320, function () {
             if (finished) return;
             gm.p = T.game.play(gm.p, a); pos = gm.p.b; gm.busy = false;
@@ -241,6 +263,7 @@
             var r2 = T.game.result(gm.p); if (r2) return gameOver(r2);
             fb.className = 'cs-fb'; fb.innerHTML = '내 차례예요. 움직일 ' + PC.jo(T.unit || '말', '을') + ' 눌러요.' + (T.game.info ? ' <small>(' + T.game.info(gm.p) + ')</small>' : '');
             if (HT.lv < 3) HT.lv = 0; armTimer();
+          });
           });
         }, 450);
       });
