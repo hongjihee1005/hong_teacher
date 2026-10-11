@@ -550,7 +550,9 @@ function ar6Height(body, api, opt) {
       const L = ar6D(b0, b1), u = [(b1[0] - b0[0]) / L, (b1[1] - b0[1]) / L], hl = ar6D(F, T), v = [(T[0] - F[0]) / hl, (T[1] - F[1]) / hl];
       const C = ar6Cen(t.P); const uu = (C[0] - F[0]) * u[0] + (C[1] - F[1]) * u[1] >= 0 ? u : [-u[0], -u[1]];
       ar6Right(lineG, m, F, uu, v);
-      if (opt.showLen !== false) { const Mx = m([(F[0] + T[0]) / 2, (F[1] + T[1]) / 2]); lineG.append(txt(ar6R(Mx[0] + (Math.abs(v[0]) > .5 ? 0 : 16)), ar6R(Mx[1] + (Math.abs(v[0]) > .5 ? -12 : 0)), `${ar6Fmt(hl)} cm`, 15, { fill: AR6.red, "text-anchor": Math.abs(v[0]) > .5 ? "middle" : "start" })); }
+      if (opt.showLen !== false) { const Mx = m([(F[0] + T[0]) / 2, (F[1] + T[1]) / 2]), hz = Math.abs(v[0]) > .5;   // 글자는 도형의 무게중심 반대쪽에(변과 겹치지 않게)
+        const sd = hz ? ((C[1] - (F[1] + T[1]) / 2) > 0 ? -1 : 1) : ((C[0] - (F[0] + T[0]) / 2) > 0 ? -1 : 1);
+        lineG.append(txt(ar6R(Mx[0] + (hz ? 0 : sd * 8)), ar6R(Mx[1] + (hz ? sd * 12 : 0)), `${ar6Fmt(hl)} cm`, 15, { fill: AR6.red, "text-anchor": hz ? "middle" : (sd < 0 ? "end" : "start") })); }
       const n = state.filter(Boolean).length;
       read.textContent = opt.tasks.length > 1 ? `높이를 그은 도형: ${n}/${opt.tasks.length}` : `높이를 그었어요. 높이는 ${ar6Fmt(hl)} cm예요.`;
       if (n === regs.length) ar6Finish(body, api, opt, state.map(s => `${s[0]}→${s[1]}`).join(" / "), opt.msg || "밑변에 수직인 높이를 바르게 그었어요.", state);
@@ -1189,10 +1191,10 @@ const LESSONS = [
         { title: "② 넓이를 구해요.", run: (bx, ax) => ar6Ask(bx, ax, [
           { parts: ["밑변 8 cm, 높이 5 cm → ", { n: 40 }, " cm²", h("br"), "밑변 9 m, 높이 4 m → ", { n: 36 }, " m²", h("br"), "넓이 42 cm², 밑변 7 cm → 7 × □ = 42 → 높이 ", { n: 6, why: { "35": "넓이에서 밑변을 빼지 말고 42÷7을 계산해요." } }, " cm"] },
           { q: "평행선 사이에 있는 러그 가, 나, 다의 넓이를 비교해 보세요.",
-            fig: () => ar6Static({ cols: 20, rows: 5, k: 24, shapes: [{ P: [[1, 4], [5, 4], [6, 1], [2, 1]], fill: AR6.f1, name: "가" }, { P: [[7, 4], [11, 4], [14, 1], [10, 1]], fill: AR6.f2, name: "나" }, { P: [[15, 4], [19, 4], [18, 1], [14, 1]], fill: AR6.f3, name: "다", nameAt: [17, 2.6] }],
-              segs: [{ a: [0, 1], b: [20, 1], color: AR6.gray, w: 1.5, dash: "6 5" }, { a: [0, 4], b: [20, 4], color: AR6.gray, w: 1.5, dash: "6 5" }, { a: [2, 1], b: [2, 4], color: AR6.red, w: 2.5 }, { a: [10, 1], b: [10, 4], color: AR6.red, w: 2.5 }, { a: [15, 1], b: [15, 4], color: AR6.red, w: 2.5 }],
-              labs: [{ a: [1, 4], b: [5, 4], t: "4 cm", c: [3, 2] }, { a: [7, 4], b: [11, 4], t: "4 cm", c: [9, 2] }, { a: [15, 4], b: [19, 4], t: "4 cm", c: [17, 2] }],
-              texts: [{ p: [.9, 2.5], t: "3 cm", size: 14, color: AR6.red }], maxW: "36em" }),
+            fig: () => ar6Static({ cols: 21, rows: 5, k: 24, shapes: [{ P: [[1, 4], [5, 4], [6, 1], [2, 1]], fill: AR6.f1, name: "가" }, { P: [[7, 4], [11, 4], [14, 1], [10, 1]], fill: AR6.f2, name: "나" }, { P: [[16, 4], [20, 4], [19, 1], [15, 1]], fill: AR6.f3, name: "다", nameAt: [18, 2.6] }],
+              segs: [{ a: [0, 1], b: [21, 1], color: AR6.gray, w: 1.5, dash: "6 5" }, { a: [0, 4], b: [21, 4], color: AR6.gray, w: 1.5, dash: "6 5" }, { a: [2, 1], b: [2, 4], color: AR6.red, w: 2.5 }, { a: [10, 1], b: [10, 4], color: AR6.red, w: 2.5 }, { a: [16, 1], b: [16, 4], color: AR6.red, w: 2.5 }],
+              labs: [{ a: [1, 4], b: [5, 4], t: "4 cm", c: [3, 2] }, { a: [7, 4], b: [11, 4], t: "4 cm", c: [9, 2] }, { a: [16, 4], b: [20, 4], t: "4 cm", c: [18, 2] }],
+              texts: [{ p: [.45, 2.5], t: "3 cm", size: 14, color: AR6.red }], maxW: "36em" }),
             parts: ["가 ", { n: 12 }, " cm², 나 ", { n: 12 }, " cm², 다 ", { n: 12 }, " cm² → 밑변의 길이와 높이가 각각 같으면 넓이도 ", { o: ["같아요", "달라요"], a: 0 }, "."] }],
           { ok: "40 cm², 36 m², 높이 6 cm예요. 가, 나, 다는 모두 4×3=12 (cm²)로 모양이 달라도 넓이가 같아요." }) }]) }
   ],
@@ -1294,7 +1296,7 @@ const LESSONS = [
     { name: "확인하기 — 여러 가지 마름모 장식", inst: "교실과 복도에 붙일 마름모 장식의 넓이를 구해 보세요.", hints: ["두 대각선의 길이를 곱하고 2로 나누어요."],
       render: (b, a) => ar6Ask(b, a, [{ fig: () => ar6Static({ cols: 23, rows: 9, k: 20, grid: false, shapes: [{ P: [[1, 4.5], [6, 1.5], [11, 4.5], [6, 7.5]], fill: AR6.f1 }, { P: [[12.5, 4.5], [17.3, 1.7], [22.1, 4.5], [17.3, 7.3]], fill: AR6.f4 }],
           segs: [{ a: [1, 4.5], b: [11, 4.5], color: AR6.blue, w: 2 }, { a: [6, 1.5], b: [6, 7.5], color: AR6.red, w: 2 }, { a: [12.5, 4.5], b: [22.1, 4.5], color: AR6.blue, w: 2 }, { a: [17.3, 1.7], b: [17.3, 7.3], color: AR6.red, w: 2 }],
-          texts: [{ p: [3.4, 4], t: "10 cm", size: 14, color: AR6.blue }, { p: [6.9, 6.4], t: "6 cm", size: 14, color: AR6.red }, { p: [14.8, 4], t: "12 m", size: 14, color: AR6.blue }, { p: [18.2, 6.3], t: "7 m", size: 14, color: AR6.red }, { p: [6, 8.4], t: "가(교실 창문)" }, { p: [17.3, 8.4], t: "나(복도 벽)" }], maxW: "34em" }),
+          texts: [{ p: [3.4, 4], t: "10 cm", size: 14, color: AR6.blue }, { p: [7, 3.3], t: "6 cm", size: 14, color: AR6.red }, { p: [14.8, 4], t: "12 m", size: 14, color: AR6.blue }, { p: [18.2, 3.4], t: "7 m", size: 14, color: AR6.red }, { p: [6, 8.4], t: "가(교실 창문)" }, { p: [17.3, 8.4], t: "나(복도 벽)" }], maxW: "34em" }),
         parts: ["가: 10 × 6 ÷ 2 = ", { n: 30, why: { "60": "÷2를 잊었어요." } }, " (cm²)", h("br"), "나: 12 × 7 ÷ 2 = ", { n: 42, why: { "84": "÷2를 잊었어요." } }, " (m²)"] }],
         { ok: "가는 10×6÷2=30 (cm²), 나는 12×7÷2=42 (m²)예요." }) }
   ],

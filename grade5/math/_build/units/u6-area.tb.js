@@ -521,7 +521,9 @@ function ar6Height(body, api, opt) {
       const L = ar6D(b0, b1), u = [(b1[0] - b0[0]) / L, (b1[1] - b0[1]) / L], hl = ar6D(F, T), v = [(T[0] - F[0]) / hl, (T[1] - F[1]) / hl];
       const C = ar6Cen(t.P); const uu = (C[0] - F[0]) * u[0] + (C[1] - F[1]) * u[1] >= 0 ? u : [-u[0], -u[1]];
       ar6Right(lineG, m, F, uu, v);
-      if (opt.showLen !== false) { const Mx = m([(F[0] + T[0]) / 2, (F[1] + T[1]) / 2]); lineG.append(txt(ar6R(Mx[0] + (Math.abs(v[0]) > .5 ? 0 : 16)), ar6R(Mx[1] + (Math.abs(v[0]) > .5 ? -12 : 0)), `${ar6Fmt(hl)} cm`, 15, { fill: AR6.red, "text-anchor": Math.abs(v[0]) > .5 ? "middle" : "start" })); }
+      if (opt.showLen !== false) { const Mx = m([(F[0] + T[0]) / 2, (F[1] + T[1]) / 2]), hz = Math.abs(v[0]) > .5;   // 글자는 도형의 무게중심 반대쪽에(변과 겹치지 않게)
+        const sd = hz ? ((C[1] - (F[1] + T[1]) / 2) > 0 ? -1 : 1) : ((C[0] - (F[0] + T[0]) / 2) > 0 ? -1 : 1);
+        lineG.append(txt(ar6R(Mx[0] + (hz ? 0 : sd * 8)), ar6R(Mx[1] + (hz ? sd * 12 : 0)), `${ar6Fmt(hl)} cm`, 15, { fill: AR6.red, "text-anchor": hz ? "middle" : (sd < 0 ? "end" : "start") })); }
       const n = state.filter(Boolean).length;
       read.textContent = opt.tasks.length > 1 ? `높이를 그은 도형: ${n}/${opt.tasks.length}` : `높이를 그었어요. 높이는 ${ar6Fmt(hl)} cm예요.`;
       if (n === regs.length) ar6Finish(body, api, opt, state.map(s => `${s[0]}→${s[1]}`).join(" / "), opt.msg || "밑변에 수직인 높이를 바르게 그었어요.", state);
@@ -681,7 +683,7 @@ function ar6Poly(body, api, opt) {
 const AR6_PLACES = [
   { id: "fence", name: "집터 울타리", shape: "정사각형", what: "둘레", no: "2차시" },
   { id: "garden", name: "정원", shape: "직사각형", what: "둘레", no: "3차시" },
-  { id: "brick", name: "벽돌 벽", shape: "벽돌", what: "넓이 비교", no: "4차시" },
+  { id: "brick", name: "벽돌 벽", shape: "직사각형·정사각형", what: "넓이 비교", no: "4차시" },
   { id: "plate", name: "문패", shape: "직사각형", what: "넓이", no: "5차시" },
   { id: "living", name: "거실 바닥", shape: "직사각형", what: "넓은 곳의 넓이(1 m²)", no: "6~7차시" },
   { id: "tile", name: "화장실 타일", shape: "평행사변형", what: "넓이", no: "8~9차시" },
@@ -1145,7 +1147,7 @@ const LESSONS = [
           fig: () => ar6Static({ cols: 19, rows: 7, k: 24, shapes: [{ P: [[1, 6], [4, 6], [5, 1], [2, 1]], fill: AR6.f1, name: "가" }, { P: [[6, 6], [9, 6], [13, 1], [10, 1]], fill: AR6.f2, name: "나" }, { P: [[15, 6], [18, 6], [17, 1], [14, 1]], fill: AR6.f3, name: "다" }],
             segs: [{ a: [0, 1], b: [19, 1], color: AR6.gray, w: 1.5, dash: "6 5" }, { a: [0, 6], b: [19, 6], color: AR6.gray, w: 1.5, dash: "6 5" }, { a: [2, 1], b: [2, 6], color: AR6.red, w: 2.5 }, { a: [10, 1], b: [10, 6], color: AR6.red, w: 2.5 }, { a: [15, 1], b: [15, 6], color: AR6.red, w: 2.5 }],
             labs: [{ a: [1, 6], b: [4, 6], t: "3 cm", c: [2.5, 3] }, { a: [6, 6], b: [9, 6], t: "3 cm", c: [7.5, 3] }, { a: [15, 6], b: [18, 6], t: "3 cm", c: [16.5, 3] }],
-            texts: [{ p: [.9, 3.5], t: "5 cm", size: 14, color: AR6.red }], maxW: "36em" }),
+            texts: [{ p: [.45, 3.5], t: "5 cm", size: 14, color: AR6.red }], maxW: "36em" }),
           parts: ["가 ", { n: 15 }, " cm², 나 ", { n: 15 }, " cm², 다 ", { n: 15 }, " cm² → 밑변의 길이와 높이가 각각 같으면 넓이도 ", { o: ["같아요", "달라요"], a: 0 }, "."] }],
           { ok: "가, 나, 다 모두 3×5=15 (cm²)예요. 밑변의 길이와 높이가 각각 같으면 모양이 달라도 넓이가 같아요." })]) }
   ],
@@ -1238,7 +1240,7 @@ const LESSONS = [
         ask: [{ parts: ["만든 평행사변형의 밑변의 길이는 마름모의 한 대각선(파란색)의 길이인 ", { n: 6 }, " cm, 높이는 다른 대각선(빨간색)의 길이의 반인 ", { n: 2 }, " cm예요. → 6 × 2 = ", { n: 12 }, " (cm²)"] }],
         ok: "잘라 붙여서 만든 평행사변형도 넓이가 12 cm²예요." }) },
     { name: "말해 보기", inst: "두 가지 방법을 비교하여 마름모의 넓이를 구하는 방법을 말해 보세요.", hints: ["두 방법 모두 두 대각선의 길이를 사용했어요."],
-      render: (b, a) => blanks(b, a, ["둘러싸는 직사각형으로 구해도 6 × 4 ÷ 2, 잘라서 평행사변형으로 구해도 6 × (4 ÷ 2)예요. 두 방법 모두 ", { o: ["두 대각선의 길이를 곱한 다음 2로 나눈 것", "두 대각선의 길이를 더한 것"], a: 0 }, "과 같아요."],
+      render: (b, a) => blanks(b, a, ["둘러싸는 직사각형으로 구해도 6 × 4 ÷ 2, 잘라서 평행사변형으로 구해도 6 × (4 ÷ 2)예요. 두 방법 모두 ", { o: ["두 대각선의 길이를 곱하고 2로 나눈 것", "두 대각선의 길이를 더한 것"], a: 0 }, "과 같아요."],
         { ok: "마름모의 넓이는 두 대각선의 길이를 곱한 다음 2로 나누어 구해요." }) },
     { name: "약속하기", inst: "마름모의 넓이를 구하는 식을 완성해 보세요.", hints: ["둘러싸는 직사각형의 넓이의 반이에요."],
       render: (b, a) => blanks(b, a, ["(마름모의 넓이) = (한 대각선의 길이) × (", { o: ["다른 대각선의 길이", "한 변의 길이", "높이"], a: 0 }, ") ÷ ", { o: ["2", "4"], a: 0 }],
@@ -1246,7 +1248,7 @@ const LESSONS = [
     { name: "확인하기", inst: "마름모의 넓이를 구해 보세요.", hints: ["두 대각선의 길이를 곱하고 2로 나누어요."],
       render: (b, a) => ar6Ask(b, a, [{ fig: () => ar6Static({ cols: 21, rows: 9, k: 20, grid: false, shapes: [{ P: [[1, 4.5], [5, 2], [9, 4.5], [5, 7]], fill: AR6.f3 }, { P: [[12, 4.5], [16.5, 1.5], [21, 4.5], [16.5, 7.5]], fill: AR6.f4 }],
           segs: [{ a: [1, 4.5], b: [9, 4.5], color: AR6.blue, w: 2 }, { a: [5, 2], b: [5, 7], color: AR6.red, w: 2 }, { a: [12, 4.5], b: [21, 4.5], color: AR6.blue, w: 2 }, { a: [16.5, 1.5], b: [16.5, 7.5], color: AR6.red, w: 2 }],
-          texts: [{ p: [3, 4], t: "8 cm", size: 14, color: AR6.blue }, { p: [5.9, 6.2], t: "5 cm", size: 14, color: AR6.red }, { p: [14, 4], t: "9 m", size: 14, color: AR6.blue }, { p: [17.3, 6.6], t: "6 m", size: 14, color: AR6.red }, { p: [5, 8.3], t: "가" }, { p: [16.5, 8.5], t: "나" }], maxW: "32em" }),
+          texts: [{ p: [3, 4], t: "8 cm", size: 14, color: AR6.blue }, { p: [6, 3.5], t: "5 cm", size: 14, color: AR6.red }, { p: [14, 4], t: "9 m", size: 14, color: AR6.blue }, { p: [17.4, 3.4], t: "6 m", size: 14, color: AR6.red }, { p: [5, 8.3], t: "가" }, { p: [16.5, 8.5], t: "나" }], maxW: "32em" }),
         parts: ["가: 8 × 5 ÷ 2 = ", { n: 20, why: { "40": "÷2를 잊었어요." } }, " (cm²)", h("br"), "나: 9 × 6 ÷ 2 = ", { n: 27, why: { "54": "÷2를 잊었어요." } }, " (m²)"] }],
         { ok: "가는 8×5÷2=20 (cm²), 나는 9×6÷2=27 (m²)예요." }) }
   ],
