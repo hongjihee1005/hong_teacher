@@ -78,6 +78,8 @@
 
 **4-1 main에 올림 (2026-10-10 20:00 UTC, 커밋 138eae8, sem2 폴더는 빼고 올림 — sem2 앱이 아직 없는 index.html을 가리켜 링크 점검이 막으므로).**
 
+**2026-10-11 고침(main 1bd7da0):** 4학년 앱이 첫 화면을 띄우지 못했음(틀을 뗄 때 3학년 앱 맨 끝 시작 줄이 빠짐, check.js는 renderLesson을 직접 불러 못 잡음). build.py가 `BOOT`를 넣고, check.js가 첫 화면이 비면 [문제]로 알림. 5학년 build.py·check.js에도 같은 수정.
+
 ### 4-2 (`grade4/math/_build/units/sem2/`)
 | 단원 | slug | 교과서 | 이야기 | 활동지 | 점검 |
 |---|---|---|---|---|---|
