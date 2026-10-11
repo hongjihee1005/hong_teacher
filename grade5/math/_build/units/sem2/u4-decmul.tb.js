@@ -98,6 +98,7 @@ input.dm4in.dm4s{width:3.4em}
 .dm4ask{margin-top:.5em;border-top:2px dashed var(--line);padding-top:.3em}
 .dm4stage svg{width:100%;height:auto;max-height:60vh;display:block;background:#FBFCFB;border:2px solid var(--line);border-radius:var(--r);touch-action:none;user-select:none}
 .dm4stage.dm4sm svg{max-height:42vh}
+.dm4rel{max-width:26em}
 .dm4fig svg{width:100%;height:auto;display:block;max-height:44vh;background:#FBFCFB;border:2px solid var(--line);border-radius:var(--r)}
 .dm4tools{display:flex;flex-wrap:wrap;gap:.4em;align-items:center;margin:.4em 0}
 .dm4tools button{border:2px solid var(--line);background:#fff;border-radius:.6em;padding:.25em .75em;font-family:Jua,sans-serif;color:var(--ink)}
@@ -210,7 +211,7 @@ function dm4RelFig(rows, arr) {
     g.append(svgEl("path", { d: `M${x + 30} ${y1 + 22} Q${x - 4} ${(y1 + y2) / 2} ${x + 30} ${y2 - 24}`, fill: "none", stroke: DM4C.red, "stroke-width": 2.5 }), svgEl("path", { d: `M${x + 30} ${y2 - 24} l-12 -4 l6 -10 z`, fill: DM4C.red }));
     g.append(dm4SvgFr(x - 34, (y1 + y2) / 2, n, d, 17, DM4C.red), txt(x - 5, (y1 + y2) / 2, "배", 17, { fill: DM4C.red }));
   });
-  return dm4Fig(svg);
+  return dm4Fig(svg, "dm4fig dm4rel");
 }
 function dm4Talk(lines) { return h("div", { class: "dm4talk" }, lines.map(([who, t]) => h("p", {}, h("b", {}, who + " "), t))); }
 
@@ -329,7 +330,7 @@ function dm4Sent(body, api, rows, opt = {}) {
 function dm4Bars(body, api, opt) {
   dm4Style();
   const bars = opt.bars || 1, per = opt.per, times = opt.times, total = bars * 10, need = per * times;
-  const cw = 58, x0 = 40, bh = 52, gap = 92, W = x0 * 2 + cw * 10, H = 40 + bars * gap;
+  const cw = 58, x0 = 40, bh = 52, gap = 104, W = x0 * 2 + cw * 10, H = 30 + bars * gap;
   const svg = makeSvg(W, H), g = svgEl("g"); svg.append(g);
   let n = 0;
   const say = h("div", { class: "dm4say" }, "​");
@@ -337,7 +338,7 @@ function dm4Bars(body, api, opt) {
   const draw = () => {
     g.innerHTML = "";
     for (let b = 0; b < bars; b++) {
-      const y = 28 + b * gap;
+      const y = 40 + b * gap;
       for (let k = 0; k < 10; k++) {
         const i = b * 10 + k, grp = Math.floor(i / per), on = i < n;
         g.append(svgEl("rect", { x: x0 + k * cw, y, width: cw, height: bh, fill: on ? (grp % 2 ? DM4C.b : DM4C.a) : "#fff", stroke: DM4C.dark, "stroke-width": 1.4 }));
@@ -346,18 +347,20 @@ function dm4Bars(body, api, opt) {
       const lo = dm4F(unitV * 10n * BigInt(b)), hi = dm4F(unitV * 10n * BigInt(b + 1));
       g.append(txt(x0, y + bh + 20, lo, 19), txt(x0 + cw * 10, y + bh + 20, hi, 19));
     }
-    // 묶음 표시
+    // 묶음 표시(두 막대에 걸치면 나누어 그려요)
+    const arc = (bar, c0, c1, lab) => {
+      const y = 40 + bar * gap, xa = x0 + c0 * cw + 4, xb = x0 + (c1 + 1) * cw - 4;
+      g.append(svgEl("path", { d: `M${xa} ${y - 4} Q${(xa + xb) / 2} ${y - 22} ${xb} ${y - 4}`, fill: "none", stroke: DM4C.red, "stroke-width": 2 }));
+      if (lab) g.append(txt((xa + xb) / 2, y - 26, lab, 15, { fill: DM4C.red }));
+    };
     for (let k = 0; k < Math.floor(n / per); k++) {
-      const s = k * per, e = s + per - 1;
-      const sb = Math.floor(s / 10), eb = Math.floor(e / 10);
-      if (sb === eb) {
-        const y = 28 + sb * gap, xa = x0 + (s % 10) * cw + 4, xb = x0 + (e % 10 + 1) * cw - 4;
-        g.append(svgEl("path", { d: `M${xa} ${y - 4} Q${(xa + xb) / 2} ${y - 22} ${xb} ${y - 4}`, fill: "none", stroke: DM4C.red, "stroke-width": 2 }), txt((xa + xb) / 2, y - 18, `${k + 1}`, 15, { fill: DM4C.red }));
-      }
+      const s0 = k * per, e0 = s0 + per - 1, sb = Math.floor(s0 / 10), eb = Math.floor(e0 / 10);
+      if (sb === eb) arc(sb, s0 % 10, e0 % 10, String(k + 1));
+      else { const big = 10 - s0 % 10 >= e0 % 10 + 1; arc(sb, s0 % 10, 9, big ? String(k + 1) : ""); arc(eb, 0, e0 % 10, big ? "" : String(k + 1)); }
     }
     say.innerHTML = ""; say.append(`${opt.cell || "0.1"}만큼인 칸을 `, h("b", {}, String(n)), "칸 칠했어요" + (n >= per ? ` (${opt.step || dm4F(unitV * BigInt(per))}씩 ${Math.floor(n / per)}번${n % per ? `과 ${n % per}칸` : ""})` : "") + ".");
   };
-  const at = pt => { for (let b = 0; b < bars; b++) { const y = 28 + b * gap; if (pt.y >= y - 6 && pt.y <= y + bh + 6) { const k = Math.floor((pt.x - x0) / cw); if (k >= 0 && k < 10) return b * 10 + k; } } return -1; };
+  const at = pt => { for (let b = 0; b < bars; b++) { const y = 40 + b * gap; if (pt.y >= y - 6 && pt.y <= y + bh + 6) { const k = Math.floor((pt.x - x0) / cw); if (k >= 0 && k < 10) return b * 10 + k; } } return -1; };
   let mode = 1;
   dragOn(svg, pt => { const i = at(pt); if (i < 0) return false; mode = i < n && i === n - 1 ? 0 : 1; n = mode ? i + 1 : i; draw(); }, pt => { const i = at(pt); if (i < 0) return; n = Math.max(0, Math.min(total, i + 1)); draw(); });
   const tools = h("div", { class: "dm4tools" },
