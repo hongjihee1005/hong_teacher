@@ -2332,7 +2332,7 @@ function mx1Paren(body, api, items, opt = {}) {
       else s.b = k;
       draw(); auto();
     };
-    s.check = () => { const r = mx1Eval(withP(s)); if (!r.ok || r.neg || r.int !== s.it.target) return `지금 식을 계산하면 ${r.ok && r.int != null && !r.neg ? r.int : "자연수가 아니에요"}. ( )를 다른 곳에 넣어 봐요.`; return null; };
+    s.check = () => { const r = mx1Eval(withP(s)); if (!r.ok || r.neg || r.int !== s.it.target) return (r.ok && r.int != null && !r.neg) ? `지금 식을 계산하면 ${mx1J(String(r.int), "이에요")}. ( )를 다른 곳에 넣어 봐요.` : "이렇게 묶으면 자연수로 계산되지 않아요. ( )를 다른 곳에 넣어 봐요."; return null; };
     s.str = () => mx1Str(withP(s));
     box.append(h("div", { class: "mx1lab" }, (items.length > 1 ? (n + 1) + ". " : "") + "수를 눌러 ( )를 넣어요"), line, live,
       h("button", { class: "ghost", onclick: () => { s.a = -1; s.b = -1; draw(); } }, "( ) 지우기"));
