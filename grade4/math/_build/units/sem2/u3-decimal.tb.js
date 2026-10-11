@@ -962,7 +962,7 @@ const C3COND = [
   { t: "두 번째로 작은 소수를 쓴 모둠", f: L => L.indexOf([...L].sort((a, b) => a - b)[1]) }];
 function c3Teams(body, api, opt = {}) {
   c3Style();
-  let round = 0, one, nums, last, cond, okList;
+  let round = 0, one, nums, last, cond, okList, locked = false;
   const box = h("div"), say = h("div", { class: "c3say" }, "​");
   const make = () => {
     one = 1 + c3Rand(9);
@@ -975,14 +975,15 @@ function c3Teams(body, api, opt = {}) {
     const valid = ok.filter(v => v != null);
     const pickIdx = (() => { const k = cond.f(valid); return ok.indexOf(valid[k]); })();
     okList = pickIdx;
-    box.innerHTML = "";
+    locked = false; box.innerHTML = "";
     box.append(h("div", { class: "c3row" }, `${round + 1}판 · 조건 카드: `, h("span", { class: "c3cond" }, cond.t)),
       h("div", { class: "c3teams" }, nums.map((v, i) => h("button", { class: "opt", onclick: ev => choose(i, ev.currentTarget) }, `${i + 1}모둠`, h("small", {}, `첫 번째 사람: ${c3Fd(v, 2)}`), h("small", {}, `마지막 사람: ${c3Fd(last[i], 2)}`)))));
   };
   function choose(i, btn) {
+    if (locked) return; // 맞힌 뒤 다음 판이 나오기 전에 또 누르면 세지 않아요
     if (nums[i] !== last[i]) { btn.classList.add("bad"); return api.fail(`${i + 1}모둠은 첫 번째 사람과 마지막 사람이 쓴 소수가 달라서 점수를 얻을 수 없어요.`, `${round + 1}판 ${i + 1}모둠`); }
     if (i !== okList) { btn.classList.add("bad"); return api.fail("점수를 얻을 수 있는 모둠의 소수끼리 자연수 부분, 소수 첫째 자리, 소수 둘째 자리 차례로 비교해 봐요.", `${round + 1}판 ${i + 1}모둠`); }
-    btn.classList.add("good"); round++;
+    locked = true; btn.classList.add("good"); round++;
     if (round >= 3) { say.textContent = "세 판 모두 알맞은 모둠을 찾았어요!"; api.tryOnce(); return api.done("3판 모두 맞힘", opt.ok); }
     say.textContent = `${i + 1}모둠이 1점을 얻었어요. 다음 판이에요.`; setTimeout(make, 900);
   }
@@ -993,16 +994,17 @@ function c3Teams(body, api, opt = {}) {
 /* ⑮ 또 다른 놀이: 9.□□ 두 수 중 더 큰 소수 고르기 */
 function c3Bigger(body, api, opt = {}) {
   c3Style();
-  const N = opt.n || 6; let k = 0, wrong = 0, t0 = Date.now(), a, b;
+  const N = opt.n || 6; let k = 0, wrong = 0, t0 = Date.now(), a, b, locked = false;
   const box = h("div", { class: "c3pair" }), say = h("div", { class: "c3say" }, "​"), cnt = h("div", { class: "c3cap" }, "​");
   const make = () => {
-    do { a = 9000 + c3Rand(100) * 10; b = 9000 + c3Rand(100) * 10; } while (a === b);
-    box.innerHTML = ""; cnt.textContent = `${k + 1} / ${N}번째 문제`;
+    do { a = 9000 + c3Rand(100) * 10; b = 9000 + c3Rand(100) * 10; } while (a === b || a % 100 === 0 || b % 100 === 0); // 9.00·9.30처럼 끝자리가 0인 수는 빼요
+    locked = false; box.innerHTML = ""; cnt.textContent = `${k + 1} / ${N}번째 문제`;
     [a, b].forEach(v => box.append(h("button", { class: "opt", onclick: ev => pick(v, ev.currentTarget) }, c3Fd(v, 2))));
   };
   function pick(v, btn) {
+    if (locked) return; // 맞힌 뒤 다음 문제가 나오기 전에 또 누르면 세지 않아요
     if (v !== Math.max(a, b)) { wrong++; btn.classList.add("bad"); return api.fail("자연수 부분이 9로 같으니 소수 첫째 자리부터 비교해요.", `${c3Fd(a, 2)} vs ${c3Fd(b, 2)} → ${c3Fd(v, 2)}`); }
-    btn.classList.add("good"); k++;
+    locked = true; btn.classList.add("good"); k++;
     if (k >= N) { const s = Math.round((Date.now() - t0) / 1000); say.textContent = `${N}문제를 ${s}초 만에 끝냈어요.`; api.tryOnce(); return api.done(`${N}문제 · ${s}초 · 틀림 ${wrong}`, opt.ok); }
     say.textContent = "맞아요! 다음 문제예요."; setTimeout(make, 500);
   }
@@ -1362,7 +1364,7 @@ const LESSONS = [
   challenge: { inst: "0부터 9까지의 수 중에서 □ 안에 들어갈 수 있는 수를 모두 구해 보세요. 8.34−4.6 < 3.□4  수학익힘 문제도 풀어 보세요.", hints: ["먼저 8.34−4.6을 계산해 봐요.", "3.74 < 3.□4가 되려면 □는 7보다 커야 해요."],
     render: (b, a) => c3Sent(b, a, [
       c3Q("8.34-4.6", "3.74"),
-      ["3.74 < 3.□4 에서 □ 안에 들어갈 수 있는 수를 모두 골라요:", { m: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], a: [8, 9], bad: "3.74와 3.74는 같아요. □가 7보다 커야 해요." }],
+      ["3.74 < 3.□4 에서 □ 안에 들어갈 수 있는 수를 모두 골라요:", { m: ["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"], a: [8, 9], bad: "□가 7이면 3.74와 3.74로 같아요. 3.74보다 커야 하니 □는 7보다 커야 해요." }],
       ["4.1은 0.01이", { n: "410" }, "개, 1.57은", { n: "157" }, "개 →", "4.1−1.57 =", { n: "2.53", e: "4.1-1.57" }],
       ["8.2 − 2.58 =", { n: "5.62", e: "8.2-2.58" }, "→ 5.62 − 1.79 =", { n: "3.83", e: "5.62-1.79" }],
       ["유은이의 키는 1.43 m, 동생의 키는 1.28 m예요. 유은이는 동생보다", { n: "0.15", e: "1.43-1.28" }, "m 더 커요."]], { ok: "□ 안에는 8, 9가 들어갈 수 있어요. 소수 두 자리 수의 뺄셈을 잘 활용했어요!" }) }
