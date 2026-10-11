@@ -23,7 +23,7 @@
   var LES = [];
   MD.units.forEach(function (u, ui) { u.lessons.forEach(function (l) { l.unit = ui; l.no = LES.length + 1; LES.push(l); }); });
   function done(l) { return !!DB.l[l.id]; }
-  function open(i) { return DB.open || i === 0 || done(LES[i - 1]); }
+  function open() { return true; } /* 2026-10-11 선생님 요청: 어느 차시든 골라서 배움(완료 표시는 연습까지 마쳤을 때만) */
   function allDone() { return LES.every(done); }
 
   /* ---------- 무작위 ---------- */
@@ -70,7 +70,7 @@
   function rankOf() { var r = ''; for (var i = 1; i <= 6; i++) if (DB.pass['m' + i]) r = RANKS[i - 1]; return r; }
 
   /* ---------- 힌트 타이머 ---------- */
-  var HT = { lv: 0, t: 0, task: null, on: false, wait: 0 };
+  var HT = { lv: 0, t: 0, task: null, on: false, wait: 0 }, TASKTOK = 0;
   function stopTimer() { clearTimeout(HT.t); HT.on = false; }
   function armTimer() {
     clearTimeout(HT.t); if (!HT.task || !HT.on || HT.lv >= 3) return;
@@ -124,6 +124,7 @@
       if (T.type === 'place') { var want = tray[pickT >= 0 ? pickT : 0]; if (opt.once) { Object.keys(T.need).forEach(function (s) { if (!placed[s]) m[s] = 'hint'; }); return; } Object.keys(T.need).forEach(function (s) { if (!placed[s] && T.need[s] === want) m[s] = 'hint'; }); }
     }
     T.kind = T.kind || opt.kind; window.csNow = T; /* 점검(Playwright)용 */
+    var tok = ++TASKTOK;
     var timerTask = { kind: T.kind, hint: hint };
     function finish() {
       finished = true; stopTimer(); hb.hidden = true; hintMarks = {};
@@ -131,8 +132,12 @@
       fb.className = 'cs-fb cs-good'; fb.innerHTML = (first ? '<b>맞아요! 👏</b> ' : '<b>잘했어요.</b> ') + (T.ok || '');
       if (T.after) { pos = typeof T.after === 'string' ? CH.board(T.after) : T.after; }
       draw({});
-      speak((first ? '맞아요! ' : '잘했어요. ') + plain(T.ok || ''));
       if (opt.onEnd) opt.onEnd(first, nextRow);
+      /* 맞히면 '이어서'를 누르지 않아도 저절로 넘어감(읽어 주기가 켜져 있으면 다 읽은 뒤) */
+      var msg = (first ? '맞아요! ' : '잘했어요. ') + plain(T.ok || '');
+      var fire = function () { if (tok !== TASKTOK) return; var g = app.querySelector('.cs-go:not([disabled])'); if (g) g.click(); };
+      if (canSpeak()) speak(msg, function () { setTimeout(fire, 400); });
+      else setTimeout(fire, Math.min(4000, 1000 + plain(T.ok || '').length * 55));
     }
     function wrong(info) {
       tries++; if (opt.onWrong) opt.onWrong();
@@ -192,7 +197,7 @@
     };
     show({});
     startTimer(timerTask, plain(T.q), opt.auto);
-    return { hint: hint, stop: function () { finished = true; stopTimer(); } };
+    return { hint: hint, stop: function () { finished = true; stopTimer(); if (tok === TASKTOK) TASKTOK++; } };
   }
 
   /* ---------- 공통 머리 ---------- */
@@ -229,18 +234,17 @@
       var path = h('div', 'cs-path');
       LES.filter(function (l) { return l.unit === ui; }).forEach(function (l) {
         var i = l.no - 1, ok = open(i), d = DB.l[l.id];
-        var a = h('a', 'cs-node' + (d ? ' cs-done' : '') + (ok ? '' : ' cs-lock') + (i === nx ? ' cs-now' : ''));
-        a.innerHTML = '<span class="cs-no">' + (ok ? l.no : '🔒') + '</span><span class="cs-nt">' + l.title + '</span><span class="cs-st" aria-label="별 ' + (d ? d.s : 0) + '개">' + (d ? stars(d.s) : '') + '</span>';
-        if (ok) a.href = '#l' + l.no; else { a.setAttribute('aria-disabled', 'true'); a.title = '앞 차시를 마치면 열려요.'; }
+        var a = h('a', 'cs-node' + (d ? ' cs-done' : '') + (i === nx ? ' cs-now' : ''));
+        a.innerHTML = '<span class="cs-no">' + l.no + '</span><span class="cs-nt">' + l.title + '</span><span class="cs-st" aria-label="별 ' + (d ? d.s : 0) + '개">' + (d ? stars(d.s) : '') + '</span>';
+        a.href = '#l' + l.no; a.title = d ? '마친 차시예요. 다시 볼 수 있어요.' : '아직 마치지 않은 차시예요.';
         path.appendChild(a);
       });
       sec.appendChild(path); app.appendChild(sec);
     });
     var ex = h('section', 'cs-unit cs-examsec'), pass = DB.pass[MD.id];
-    ex.innerHTML = '<h2 class="cs-uh"><span>마무리</span> ' + MD.no + '마당 확인 시험</h2><p>모든 차시를 마치면 열려요. ' + EXAM_N + '문제 중 ' + EXAM_PASS + '문제 이상 맞히면 통과, <b>' + MD.rank + ' 등급</b>을 받아요. 확인 시험에서는 힌트가 없어요.</p>';
+    ex.innerHTML = '<h2 class="cs-uh"><span>마무리</span> ' + MD.no + '마당 확인 시험</h2><p>언제든 볼 수 있지만, 차시를 모두 배운 뒤에 보면 좋아요. ' + EXAM_N + '문제 중 ' + EXAM_PASS + '문제 이상 맞히면 통과, <b>' + MD.rank + ' 등급</b>을 받아요. 확인 시험에서는 힌트가 없어요.</p>';
     var er = h('div', 'cs-row');
-    var eb = btn(pass ? '📝 확인 시험 다시 보기' : '📝 확인 시험 보기', allDone() || DB.open ? 'cs-main' : '', function () { location.hash = 'exam'; });
-    if (!(allDone() || DB.open)) { eb.disabled = true; }
+    var eb = btn(pass ? '📝 확인 시험 다시 보기' : '📝 확인 시험 보기', allDone() ? 'cs-main' : '', function () { location.hash = 'exam'; });
     er.appendChild(eb);
     if (DB.ex[MD.id] !== undefined) er.appendChild(h('span', 'cs-best', '최고 점수 ' + DB.ex[MD.id] + ' / ' + EXAM_N + (pass ? ' · 통과 🏅' : '')));
     if (pass) er.appendChild(btn('🖨️ 수료증 만들기', '', function () { location.hash = 'cert'; }));
@@ -252,9 +256,8 @@
     var r1 = h('div', 'cs-row');
     Object.keys(SPNAME).forEach(function (k) { var b = btn(SPNAME[k] + (k === 'f' ? ' (절반)' : k === 's' ? ' (두 배)' : ''), DB.sp === k ? 'cs-main' : '', function () { DB.sp = k; save(); dl.remove(); settings(); }); b.setAttribute('aria-pressed', DB.sp === k); r1.appendChild(b); });
     box.appendChild(r1);
-    box.appendChild(h('h3', '', '차시 열기'));
+    box.appendChild(h('h3', '', '기록'));
     var r2 = h('div', 'cs-row');
-    r2.appendChild(btn(DB.open ? '🔒 차례대로 열기로 되돌리기' : '🔓 모든 차시 열기', '', function () { DB.open = DB.open ? 0 : 1; save(); dl.remove(); route(); }));
     r2.appendChild(btn('🗑️ 이 기기의 체스 기록 지우기', '', function () { if (confirm('이 기기에 저장된 체스 학습관 기록(별·시험 점수·등급)을 모두 지울까요?')) { var t = DB.tts, s = DB.sp; DB = { l: {}, wr: {}, pass: {}, ex: {}, tts: t, sp: s }; save(); dl.remove(); route(); } }));
     box.appendChild(r2);
     var cl = btn('닫기', 'cs-main', function () { dl.remove(); }); var r3 = h('div', 'cs-row'); r3.appendChild(cl); box.appendChild(r3);
@@ -266,7 +269,7 @@
     clear(true);
     var steps = l.screens.slice(), nPr = l.practice ? l.practice.n : 0;
     steps = steps.concat(nPr ? [{ t: 'pr' }] : []).concat([{ t: 'sum' }]);
-    var si = 0, score = { ok: 0, n: 0 };
+    var si = 0, score = { ok: 0, n: 0 }, practiced = false;
     var top = h('div', 'cs-ltop');
     var back = btn('← 차시 목록', 'cs-back', function () { location.hash = ''; });
     top.appendChild(back);
@@ -280,7 +283,7 @@
     var lastPh = '';
     function phases(t) {
       var order = ['say', 'ex', 'do', 'pr', 'sum'], have = {}; steps.forEach(function (s) { have[s.t] = 1; });
-      ph.innerHTML = ''; order.forEach(function (k) { if (!have[k]) return; ph.appendChild(h('span', 'cs-ph' + (k === t ? ' cs-ph-now' : ''), PHASE[k])); });
+      ph.innerHTML = ''; order.forEach(function (k) { if (!have[k]) return; var b = btn(PHASE[k], 'cs-ph' + (k === t ? ' cs-ph-now' : ''), function () { si = steps.findIndex(function (x) { return x.t === k; }); go(); }); b.title = PHASE[k] + '(으)로 가기'; ph.appendChild(b); });
       ph.appendChild(h('span', 'cs-ph-n', (si + 1) + ' / ' + steps.length));
     }
     function nav(canBack) {
@@ -320,8 +323,8 @@
         panel.appendChild(nav(true));
       } else if (s.t === 'do') {
         var T = typeof s.task === 'function' ? s.task(R) : s.task;
-        var nr = nav(true), gob = nr.querySelector('.cs-go'); gob.disabled = true;
-        cur = runTask(T, view, panel, { kind: l.kind || 'easy', auto: true, onEnd: function () { gob.disabled = false; gob.focus(); } });
+        var nr = nav(true), gob = nr.querySelector('.cs-go');
+        cur = runTask(T, view, panel, { kind: l.kind || 'easy', auto: true, onEnd: function () { gob.focus(); } });
         panel.appendChild(nr);
       } else if (s.t === 'pr') practice();
       else if (s.t === 'sum') summary();
@@ -329,7 +332,7 @@
     /* 연습: n문제, 두 번 틀린 문제는 비슷한 문제를 하나 더 */
     function practice() {
       var n = l.practice.n, k = 0, extra = 0;
-      score = { ok: 0, n: n };
+      score = { ok: 0, n: n }; practiced = false;
       function one(isExtra) {
         hush(); stopTimer(); if (cur && cur.stop) cur.stop(); panel.innerHTML = ''; phases('pr');
         panel.appendChild(h('div', 'cs-phl', PHASE.pr + ' <span class="cs-cnt">' + (isExtra ? '비슷한 문제 하나 더' : (k + 1) + ' / ' + n) + '</span>'));
@@ -340,6 +343,7 @@
           onWrong: function () { wrongs++; },
           onEnd: function (first) {
             if (!isExtra) { if (first) score.ok++; k++; }
+            if (k >= n) practiced = true;
             if (!first) { DB.wr[l.id] = (DB.wr[l.id] || 0) + 1; save(); }
             var more = !isExtra && wrongs >= 2 && extra < 3;
             var b = btn(k >= n && !more ? '⭐ 마무리 보기' : '이어서 ▶', 'cs-main cs-go', function () { if (more) { extra++; one(true); } else if (k >= n) { si++; go(); } else one(false); });
@@ -351,18 +355,18 @@
       one(false);
     }
     function summary() {
-      var st = nPr ? (score.ok / score.n >= .9 ? 3 : score.ok / score.n >= .7 ? 2 : 1) : 3;
-      if (nPr && !score.n) st = (DB.l[l.id] && DB.l[l.id].s) || 1; /* 연습을 건너뛰고 앞으로 돌아온 경우 */
-      var old = DB.l[l.id]; DB.l[l.id] = { s: Math.max(st, old ? old.s : 0) }; save();
+      var fin = !nPr || practiced, st = nPr ? (score.ok / score.n >= .9 ? 3 : score.ok / score.n >= .7 ? 2 : 1) : 3, old = DB.l[l.id];
+      if (fin) { DB.l[l.id] = { s: Math.max(st, old ? old.s : 0) }; save(); }
       view.set({ pos: CH.board('8/8/8/8/8/8/8/8'), marks: {}, coords: true });
       bh.hidden = true; run.classList.add('cs-nob');
       var box = h('div', 'cs-sum');
-      box.innerHTML = '<div class="cs-bigstar">' + stars(st) + '</div>' + (nPr ? '<p>연습 ' + score.n + '문제 중 <b>' + score.ok + '</b>문제를 한 번에 맞혔어요.</p>' : '') +
+      box.innerHTML = (fin ? '<div class="cs-bigstar">' + stars(st) + '</div>' + (nPr ? '<p>연습 ' + score.n + '문제 중 <b>' + score.ok + '</b>문제를 한 번에 맞혔어요.</p>' : '')
+        : '<p class="cs-notyet">✏️ 아직 연습을 끝까지 하지 않아서 <b>완료 표시가 되지 않았어요.</b>' + (old ? ' (전에 받은 별 ' + stars(old.s) + '은 그대로 있어요.)' : '') + '</p>') +
         '<div class="cs-learned"><b>오늘 배운 것</b><p>' + l.sum + '</p></div>';
       panel.appendChild(box);
       speak('오늘 배운 것. ' + plain(l.sum));
       var row = h('div', 'cs-row cs-navrow');
-      if (nPr) row.appendChild(btn('✏️ 연습 한 번 더', '', function () { si = steps.length - 2; go(); }));
+      if (nPr) row.appendChild(btn(fin ? '✏️ 연습 한 번 더' : '✏️ 연습하러 가기', fin ? '' : 'cs-main', function () { si = steps.length - 2; go(); }));
       var nx = LES[l.no];
       row.appendChild(btn('📋 차시 목록', '', function () { location.hash = ''; }));
       if (nx) row.appendChild(btn('이어서 배우기 ▶ ' + nx.no + '. ' + nx.title, 'cs-main', function () { location.hash = 'l' + nx.no; }));
@@ -452,7 +456,7 @@
   function route() {
     var hs = location.hash.replace('#', ''), m = /^l(\d+)$/.exec(hs);
     if (m) { var i = +m[1] - 1; if (LES[i] && open(i)) return lessonView(LES[i]); location.hash = ''; return; }
-    if (hs === 'exam') { if (allDone() || DB.open) return quiz('exam'); location.hash = ''; return; }
+    if (hs === 'exam') return quiz('exam');
     if (hs === 'review') return quiz('review');
     if (hs === 'cert') return cert();
     hub();

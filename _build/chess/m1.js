@@ -120,51 +120,69 @@
     { id: 'ranks', title: '가로줄(랭크)', kind: 'easy',
       screens: [
         { t: 'say', text: '옆으로 늘어선 칸들의 줄을 <b>가로줄</b>이라고 해요. 영어로 <b>랭크</b>(rank)라고 불러요.', board: { pos: E, marks: M(rank(3), 'row') } },
+        { t: 'say', text: '영어 낱말 <b>rank</b>(랭크)는 ‘옆으로 나란히 선 줄’이라는 뜻이에요. 운동장에서 친구들이 어깨를 나란히 하고 옆으로 한 줄로 선 모습을 떠올려 보세요. 체스판에서는 <b>가로줄 = 랭크</b>예요.', board: { pos: '8/8/8/8/PPPPPPPP/8/8/8', marks: M(rank(4), 'row') } },
         { t: 'say', text: '가로줄은 모두 8줄이에요. 판 왼쪽에 <b>1부터 8까지</b> 번호가 있어요. 백(내 쪽, 아래)이 <b>1</b>, 건너편(위)이 <b>8</b>이에요.', board: { pos: E, marks: J(M(rank(1), 'row'), M(rank(8), 'hi')) } },
+        { t: 'say', text: '<b>이름 붙이는 법:</b> 가로줄에는 <b>숫자</b>로 이름을 붙여요. <b>백 쪽</b>(밝은 말이 서는 쪽)에서 가장 가까운 줄이 <b>1</b>, 그다음 줄이 2, 3, 4 … 흑 쪽 끝 줄이 <b>8</b>이에요.', board: { pos: S0, marks: J(M(rank(1), 'row'), L('d1', '1번'), L('d8', '8번')) } },
+        { t: 'say', text: '그래서 백 말은 <b>1번·2번</b> 가로줄에서, 흑 말은 <b>7번·8번</b> 가로줄에서 시작해요. 번호는 언제나 <b>백 쪽부터</b> 세요.', board: { pos: S0, marks: J(M(rank(1).concat(rank(2)), 'ok'), M(rank(7).concat(rank(8)), 'hi')) } },
         { t: 'say', text: '같은 가로줄에 있는 칸은 모두 같은 번호를 가져요. 이 줄의 칸은 모두 <b>5번 가로줄</b>에 있어요.', board: { pos: E, marks: M(rank(5), 'row') } },
+        { t: 'say', text: '⚠️ <b>헷갈리기 쉬워요!</b> 숫자는 판 왼쪽에 <b>위아래로</b> 적혀 있어요. 하지만 숫자 하나하나는 <b>옆으로 뻗은 가로줄 하나</b>의 이름이에요. 숫자 4에서 오른쪽으로 쭉 가면 4번 가로줄이에요.', board: { pos: E, marks: J(M(rank(4), 'row'), { a4: 'ring' }), arrows: [['a4', 'h4']] } },
         { t: 'ex', text: '1번 가로줄부터 8번 가로줄까지 차례로 칠해 볼게요.', board: { pos: E },
           frames: [1, 2, 3, 4, 5, 6, 7, 8].map(function (r) { return { marks: M(rank(r), 'row'), cap: r + '번 가로줄' }; }) },
         { t: 'ex', text: '4번 가로줄을 찾는 방법: 왼쪽에서 숫자 <b>4</b>를 찾고, 오른쪽으로 쭉 가요.', board: { pos: E },
           frames: [{ marks: { a4: 'ring' }, cap: '왼쪽 숫자 4를 찾아요.' }, { marks: M(rank(4), 'row'), arrows: [['a4', 'h4']], cap: '오른쪽으로 쭉 → 이 줄이 4번 가로줄이에요.' }] },
         { t: 'ex', text: '별이 있는 칸은 몇 번 가로줄일까요? 별에서 왼쪽으로 쭉 가서 숫자를 읽어요.', board: { pos: E },
           frames: [{ marks: { f6: 'star' }, cap: '별이 여기 있어요.' }, { marks: J({ f6: 'star' }, M(rank(6), 'row')), arrows: [['f6', 'a6']], cap: '왼쪽으로 쭉 → 6번 가로줄!' }, { marks: { c2: 'star' }, cap: '이번엔 여기.' }, { marks: J({ c2: 'star' }, M(rank(2), 'row')), arrows: [['c2', 'a2']], cap: '2번 가로줄!' }] },
+        { t: 'ex', text: '이번에는 흑 쪽에 앉아서 판을 본 모습이에요. 숫자가 어떻게 보일까요?', board: { pos: S0, flip: true },
+          frames: [{ marks: {}, cap: '흑 자리에서는 8번 가로줄이 내 앞(아래)에 있어요.' }, { marks: M(rank(8), 'row'), cap: '내 앞줄이 8번! 번호는 앉은 자리와 상관없이 언제나 백 쪽부터 1이에요.' }, { marks: M(rank(1), 'row'), cap: '1번 가로줄은 건너편 백 쪽 끝이에요.' }] },
         { t: 'do', task: clickQ('5번 가로줄에 있는 칸을 아무거나 하나 눌러 보세요.', rank(5), { pos: E }, ['판 왼쪽에서 숫자 5를 찾아요.', { text: '숫자 5에서 오른쪽으로 쭉 가는 줄이에요.', marks: M(rank(5), 'hint') }], { why: function (s) { return { text: '그 칸은 <b>' + s[1] + '번</b> 가로줄이에요.', marks: J(M(rank(+s[1]), 'bad')) }; } }) },
         { t: 'do', task: pickQ('별이 있는 칸은 몇 번 가로줄인가요?', ['3번', '5번', '7번', '8번'], '7번', { pos: E, marks: { d7: 'star' } }, ['별에서 왼쪽으로 쭉 가요.', { text: '이 줄 왼쪽 끝의 숫자를 읽어요.', marks: M(rank(7), 'row') }]) }
       ],
       practice: { n: 9, gen: function (R) {
-        var k = R.int(4), r = R.int(8) + 1, s = R.sq();
+        var k = R.int(6), r = R.int(8) + 1, s = R.sq();
         if (k === 0) return clickQ(r + '번 가로줄에 있는 칸을 하나 눌러요.', rank(r), { pos: E }, ['판 왼쪽에서 숫자 ' + jo(r, '을') + ' 찾아요.', { text: '그 숫자에서 오른쪽으로 가는 줄이에요.', marks: M(rank(r), 'hint') }], { why: function (x) { return { text: '그 칸은 <b>' + x[1] + '번</b> 가로줄이에요.', marks: M(rank(+x[1]), 'bad') }; } });
         if (k === 1) return pickQ('별이 있는 칸은 몇 번 가로줄인가요?', R.opts(s[1] + '번', ['1번', '2번', '3번', '4번', '5번', '6번', '7번', '8번']), s[1] + '번', { pos: E, marks: M([s], 'star') }, ['별에서 왼쪽으로 쭉 가요.', { text: '이 줄 끝의 숫자를 읽어요.', marks: M(rank(+s[1]), 'row') }]);
         if (k === 2) return pickQ('색칠한 줄은 몇 번 가로줄인가요?', R.opts(r + '번', ['1번', '2번', '3번', '4번', '5번', '6번', '7번', '8번']), r + '번', { pos: E, marks: M(rank(r), 'row') }, ['칠한 줄의 왼쪽 끝 숫자를 봐요.']);
-        return pickQ(R.pick(['백(내 쪽, 아래)에 가장 가까운 가로줄은 몇 번인가요?', '건너편(위)에 가장 가까운 가로줄은 몇 번인가요?']).replace(/^(.)/, '$1'), ['1번', '4번', '8번'], null, { pos: E }, ['아래가 1번, 위가 8번이에요.']);
+        if (k === 3) return pickQ(R.pick(['백(내 쪽, 아래)에 가장 가까운 가로줄은 몇 번인가요?', '건너편(위)에 가장 가까운 가로줄은 몇 번인가요?']), ['1번', '4번', '8번'], null, { pos: E }, ['아래가 1번, 위가 8번이에요.']);
+        if (k === 4) return R.int(2) ? pickQ('가로줄을 영어로 무엇이라고 부를까요?', R.shuffle(['랭크(rank)', '파일(file)', '보드(board)']), '랭크(rank)', { pos: E, marks: M(rank(r), 'row') }, ['옆으로 나란히 선 줄이라는 뜻의 낱말이에요.', '‘랭’으로 시작해요.'])
+          : pickQ('가로줄 번호는 어느 쪽부터 1, 2, 3 … 으로 셀까요?', ['백 쪽부터', '흑 쪽부터', '아무 쪽이나'], '백 쪽부터', { pos: S0 }, ['백 말은 1번·2번 가로줄에서 시작해요.']);
+        return pickQ('흑 쪽에서 본 판이에요. 별이 있는 칸은 몇 번 가로줄인가요?', R.opts(s[1] + '번', ['1번', '2번', '3번', '4번', '5번', '6번', '7번', '8번']), s[1] + '번', { pos: E, flip: true, marks: M([s], 'star') }, ['판을 뒤집어 보아도 번호는 판 옆의 숫자를 읽으면 돼요.', { text: '이 줄 끝의 숫자를 읽어요.', marks: M(rank(+s[1]), 'row') }]);
       } },
-      sum: '옆으로 늘어선 줄은 <b>가로줄(랭크)</b>이에요. 아래(백 쪽)부터 <b>1~8번</b>이고, 번호는 판 왼쪽에 있어요.' },
+      sum: '옆으로 늘어선 줄은 <b>가로줄</b>, 영어로 <b>랭크</b>(rank)예요. 이름은 숫자로, <b>백 쪽부터 1~8번</b>이에요. 숫자는 판 왼쪽에 위아래로 적혀 있지만, 숫자 하나는 옆으로 뻗은 가로줄 하나의 이름이에요.' },
 
     { id: 'files', title: '세로줄(파일)', kind: 'easy',
       screens: [
         { t: 'say', text: '위아래로 늘어선 칸들의 줄을 <b>세로줄</b>이라고 해요. 영어로 <b>파일</b>(file)이라고 불러요.', board: { pos: E, marks: M(file('c'), 'row') } },
-        { t: 'say', text: '세로줄도 8줄이에요. 판 아래에 알파벳 <b>a b c d e f g h</b>가 있어요. 왼쪽 끝이 <b>a</b>, 오른쪽 끝이 <b>h</b>예요.', board: { pos: E, marks: J(M(file('a'), 'row'), M(file('h'), 'hi')) } },
+        { t: 'say', text: '영어 낱말 <b>file</b>(파일)은 ‘앞뒤로 한 줄로 선 줄’이라는 뜻이에요. 친구들이 앞사람 뒤에 차례차례 한 줄로 선 모습이에요(기차놀이처럼). 체스판에서는 <b>세로줄 = 파일</b>이에요.', board: { pos: '8/4P3/4P3/4P3/4P3/4P3/4P3/8', marks: M(file('e'), 'row') } },
+        { t: 'say', text: '<b>이름 붙이는 법:</b> 세로줄에는 <b>알파벳 글자</b>로 이름을 붙여요. <b>백 쪽에서 볼 때</b> 왼쪽 끝이 <b>a</b>, 그다음 b, c, d … 오른쪽 끝이 <b>h</b>예요. 알파벳 차례 그대로 여덟 글자예요.', board: { pos: E, marks: J(M(file('a'), 'row'), M(file('h'), 'hi'), L('a4', 'a'), L('h4', 'h')) } },
         { t: 'say', text: '알파벳 읽는 법: a 에이 · b 비 · c 씨 · d 디 · e 이 · f 에프 · g 지 · h 에이치. 영어를 몰라도 괜찮아요. 판 아래 글자를 보고 같은 모양을 찾으면 돼요.', board: { pos: E } },
+        { t: 'say', text: '⚠️ <b>헷갈리기 쉬워요!</b> 글자는 판 아래에 <b>옆으로</b> 적혀 있어요. 하지만 글자 하나하나는 <b>위아래로 뻗은 세로줄 하나</b>의 이름이에요. 글자 c에서 위로 쭉 가면 c 세로줄이에요.', board: { pos: E, marks: J(M(file('c'), 'row'), { c1: 'ring' }), arrows: [['c1', 'c8']] } },
+        { t: 'say', text: '정리해요. <b>가로줄 = 랭크 = 숫자 1~8</b>(백 쪽부터), <b>세로줄 = 파일 = 글자 a~h</b>(백 쪽에서 보아 왼쪽부터).', board: { pos: E, marks: J(M(rank(1), 'hi'), M(file('a'), 'row')) } },
         { t: 'ex', text: 'a 세로줄부터 h 세로줄까지 차례로 칠해 볼게요.', board: { pos: E },
           frames: F.split('').map(function (c) { return { marks: M(file(c), 'row'), cap: c + ' 세로줄 (' + RD[c] + ')' }; }) },
         { t: 'ex', text: '별이 있는 칸은 어느 세로줄일까요? 별에서 아래로 쭉 내려가 글자를 읽어요.', board: { pos: E },
           frames: [{ marks: { d6: 'star' }, cap: '별이 여기 있어요.' }, { marks: J({ d6: 'star' }, M(file('d'), 'row')), arrows: [['d6', 'd1']], cap: '아래로 쭉 → d 세로줄!' }, { marks: { g3: 'star' }, cap: '이번엔 여기.' }, { marks: J({ g3: 'star' }, M(file('g'), 'row')), arrows: [['g3', 'g1']], cap: 'g 세로줄!' }] },
         { t: 'ex', text: '가로줄과 세로줄을 견주어 봐요.', board: { pos: E },
           frames: [{ marks: M(rank(4), 'row'), cap: '옆으로 → 가로줄(숫자 이름)' }, { marks: M(file('e'), 'row'), cap: '위아래로 ↕ 세로줄(글자 이름)' }] },
+        { t: 'ex', text: '흑 쪽에 앉아서 판을 보면 글자가 어떻게 보일까요?', board: { pos: S0, flip: true },
+          frames: [{ marks: { h1: 'ring' }, cap: '흑 자리에서는 h가 왼쪽 끝에 보여요.' }, { marks: M(file('a'), 'row'), cap: 'a 세로줄은 흑에게 오른쪽 끝이에요. 이름은 언제나 백 쪽에서 본 차례로 붙여요.' }] },
         { t: 'do', task: clickQ('e 세로줄에 있는 칸을 하나 눌러 보세요.', file('e'), { pos: E }, ['판 아래에서 글자 e를 찾아요.', { text: 'e에서 위로 쭉 가는 줄이에요.', marks: M(file('e'), 'hint') }], { why: function (s) { return { text: '그 칸은 <b>' + s[0] + '</b> 세로줄이에요.', marks: M(file(s[0]), 'bad') }; } }) },
         { t: 'do', task: pickQ('별이 있는 칸은 어느 세로줄인가요?', ['a', 'b', 'f', 'h'], 'b', { pos: E, marks: { b5: 'star' } }, ['별에서 아래로 쭉 내려가요.', { text: '이 줄 아래의 글자를 읽어요.', marks: M(file('b'), 'row') }]) }
       ],
       practice: { n: 9, gen: function (R) {
-        var k = R.int(3), c = F[R.int(8)], s = R.sq();
+        var k = R.int(5), c = F[R.int(8)], s = R.sq();
+        if (k === 3) return R.int(2) ? pickQ('세로줄을 영어로 무엇이라고 부를까요?', R.shuffle(['파일(file)', '랭크(rank)', '보드(board)']), '파일(file)', { pos: E, marks: M(file(c), 'row') }, ['앞뒤로 한 줄로 선 줄이라는 뜻의 낱말이에요.', '‘파’로 시작해요.'])
+          : pickQ('a 세로줄은 백 쪽에서 볼 때 어디에 있나요?', ['왼쪽 끝', '오른쪽 끝', '한가운데'], '왼쪽 끝', { pos: E }, ['알파벳 첫 글자 a는 백 쪽에서 보아 왼쪽부터 시작해요.']);
+        if (k === 4) return pickQ(R.pick(['가로줄의 이름은 무엇으로 붙일까요?', '세로줄의 이름은 무엇으로 붙일까요?']), ['숫자 1~8', '글자 a~h'], null, { pos: E }, ['가로줄 = 랭크 = 숫자, 세로줄 = 파일 = 글자']);
         if (k === 0) return clickQ(c + ' 세로줄에 있는 칸을 하나 눌러요.', file(c), { pos: E }, ['판 아래에서 글자 ' + jo(c, '을') + ' 찾아요.', { text: '그 글자에서 위로 가는 줄이에요.', marks: M(file(c), 'hint') }], { why: function (x) { return { text: '그 칸은 <b>' + x[0] + '</b> 세로줄이에요.', marks: M(file(x[0]), 'bad') }; } });
         if (k === 1) return pickQ('별이 있는 칸은 어느 세로줄인가요?', R.opts(s[0], F.split('')), s[0], { pos: E, marks: M([s], 'star') }, ['별에서 아래로 쭉 내려가요.', { text: '이 줄 아래의 글자를 읽어요.', marks: M(file(s[0]), 'row') }]);
         return pickQ('색칠한 줄은 어느 세로줄인가요?', R.opts(c, F.split('')), c, { pos: E, marks: M(file(c), 'row') }, ['칠한 줄 아래의 글자를 봐요.']);
       } },
-      sum: '위아래로 늘어선 줄은 <b>세로줄(파일)</b>이에요. 왼쪽부터 <b>a b c d e f g h</b>이고, 글자는 판 아래에 있어요.' },
+      sum: '위아래로 늘어선 줄은 <b>세로줄</b>, 영어로 <b>파일</b>(file)이에요. 이름은 글자로, 백 쪽에서 보아 <b>왼쪽부터 a~h</b>예요. 글자는 판 아래에 옆으로 적혀 있지만, 글자 하나는 위아래로 뻗은 세로줄 하나의 이름이에요.' },
 
     { id: 'names', title: '칸 이름', kind: 'easy',
       screens: [
-        { t: 'say', text: '체스판의 64칸에는 모두 <b>이름</b>이 있어요. 세로줄 글자와 가로줄 숫자를 합쳐서 불러요.', board: { pos: E } },
+        { t: 'say', text: '체스판의 64칸에는 모두 <b>이름</b>이 있어요. <b>세로줄(파일) 글자</b>와 <b>가로줄(랭크) 숫자</b>를 합쳐서 불러요.', board: { pos: E } },
+        { t: 'say', text: '이 이름은 전 세계 체스 선수들이 똑같이 써요. 그래서 말이 통하지 않는 나라의 친구와도 “e4!”라고 하면 같은 칸을 가리킬 수 있어요. 이렇게 칸 이름으로 수를 적는 방법을 <b>대수 기보법</b>이라고 해요(6마당에서 더 배워요).', board: { pos: E, marks: J({ e4: 'star' }, L('e4', 'e4')) } },
         { t: 'say', text: 'e 세로줄과 4번 가로줄이 만나는 칸은 <b>e4</b>예요. 두 줄이 만나는 곳을 찾으면 돼요.', board: { pos: E, marks: J(M(file('e'), 'row'), M(rank(4), 'row'), { e4: ['star'] }) } },
         { t: 'say', text: '쓸 때는 <b>글자 먼저, 숫자 나중</b>이에요. ‘4e’라고 쓰지 않고 ‘e4’라고 써요. 읽을 때는 “이 사”라고 읽어요.', board: { pos: E, marks: J({ e4: 'star' }, L('e4', 'e4')) } },
         { t: 'say', text: '네 귀퉁이의 이름을 알아 두면 편해요. 왼쪽 아래 <b>a1</b>, 오른쪽 아래 <b>h1</b>, 왼쪽 위 <b>a8</b>, 오른쪽 위 <b>h8</b>.', board: { pos: E, marks: J(L('a1', 'a1'), L('h1', 'h1'), L('a8', 'a8'), L('h8', 'h8')) } },
@@ -376,6 +394,7 @@
   ];
   /* ganswer null → 질문 글에서 정함 */
   u1[3].practice.gen = (function (g) { return function (R) { var T = g(R); if (T.ans === null) T.ans = /건너편/.test(T.q) ? '8번' : '1번'; return T; }; })(u1[3].practice.gen);
+  u1[4].practice.gen = (function (g) { return function (R) { var T = g(R); if (T.ans === null) T.ans = /가로줄/.test(T.q) ? '숫자 1~8' : '글자 a~h'; return T; }; })(u1[4].practice.gen);
   u2[7].practice.gen = (function (g) { return function (R) { var T = g(R); if (T.ans === null) T.ans = /합하면/.test(T.q) ? '32개' : '16개'; return T; }; })(u2[7].practice.gen);
 
   /* ===== 3단원 처음 배치 ===== */

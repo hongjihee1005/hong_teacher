@@ -154,6 +154,8 @@ body.cs-inlesson .tl-head,body.cs-inlesson .tl-gnav,body.cs-inlesson .tl-how{dis
  body.cs-printcert .cs-cin{box-sizing:border-box;height:180mm;display:flex;flex-direction:column;justify-content:center;break-inside:avoid}
  @page{size:A4 landscape;margin:12mm}
 }
+.cs-btn.cs-ph{min-height:34px;font-family:var(--body);font-size:15px;padding:3px 12px;border-width:1.5px}
+.cs-notyet{background:#FFF4D6;border:2px solid #F2C14E;color:#4A3A10;border-radius:14px;padding:10px 14px;font-size:19px;text-align:left}
 
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로, 바탕·글자색을 메뉴와 같은 밝고 따뜻한 톤으로 */
@@ -1204,51 +1206,69 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
     { id: 'ranks', title: '가로줄(랭크)', kind: 'easy',
       screens: [
         { t: 'say', text: '옆으로 늘어선 칸들의 줄을 <b>가로줄</b>이라고 해요. 영어로 <b>랭크</b>(rank)라고 불러요.', board: { pos: E, marks: M(rank(3), 'row') } },
+        { t: 'say', text: '영어 낱말 <b>rank</b>(랭크)는 ‘옆으로 나란히 선 줄’이라는 뜻이에요. 운동장에서 친구들이 어깨를 나란히 하고 옆으로 한 줄로 선 모습을 떠올려 보세요. 체스판에서는 <b>가로줄 = 랭크</b>예요.', board: { pos: '8/8/8/8/PPPPPPPP/8/8/8', marks: M(rank(4), 'row') } },
         { t: 'say', text: '가로줄은 모두 8줄이에요. 판 왼쪽에 <b>1부터 8까지</b> 번호가 있어요. 백(내 쪽, 아래)이 <b>1</b>, 건너편(위)이 <b>8</b>이에요.', board: { pos: E, marks: J(M(rank(1), 'row'), M(rank(8), 'hi')) } },
+        { t: 'say', text: '<b>이름 붙이는 법:</b> 가로줄에는 <b>숫자</b>로 이름을 붙여요. <b>백 쪽</b>(밝은 말이 서는 쪽)에서 가장 가까운 줄이 <b>1</b>, 그다음 줄이 2, 3, 4 … 흑 쪽 끝 줄이 <b>8</b>이에요.', board: { pos: S0, marks: J(M(rank(1), 'row'), L('d1', '1번'), L('d8', '8번')) } },
+        { t: 'say', text: '그래서 백 말은 <b>1번·2번</b> 가로줄에서, 흑 말은 <b>7번·8번</b> 가로줄에서 시작해요. 번호는 언제나 <b>백 쪽부터</b> 세요.', board: { pos: S0, marks: J(M(rank(1).concat(rank(2)), 'ok'), M(rank(7).concat(rank(8)), 'hi')) } },
         { t: 'say', text: '같은 가로줄에 있는 칸은 모두 같은 번호를 가져요. 이 줄의 칸은 모두 <b>5번 가로줄</b>에 있어요.', board: { pos: E, marks: M(rank(5), 'row') } },
+        { t: 'say', text: '⚠️ <b>헷갈리기 쉬워요!</b> 숫자는 판 왼쪽에 <b>위아래로</b> 적혀 있어요. 하지만 숫자 하나하나는 <b>옆으로 뻗은 가로줄 하나</b>의 이름이에요. 숫자 4에서 오른쪽으로 쭉 가면 4번 가로줄이에요.', board: { pos: E, marks: J(M(rank(4), 'row'), { a4: 'ring' }), arrows: [['a4', 'h4']] } },
         { t: 'ex', text: '1번 가로줄부터 8번 가로줄까지 차례로 칠해 볼게요.', board: { pos: E },
           frames: [1, 2, 3, 4, 5, 6, 7, 8].map(function (r) { return { marks: M(rank(r), 'row'), cap: r + '번 가로줄' }; }) },
         { t: 'ex', text: '4번 가로줄을 찾는 방법: 왼쪽에서 숫자 <b>4</b>를 찾고, 오른쪽으로 쭉 가요.', board: { pos: E },
           frames: [{ marks: { a4: 'ring' }, cap: '왼쪽 숫자 4를 찾아요.' }, { marks: M(rank(4), 'row'), arrows: [['a4', 'h4']], cap: '오른쪽으로 쭉 → 이 줄이 4번 가로줄이에요.' }] },
         { t: 'ex', text: '별이 있는 칸은 몇 번 가로줄일까요? 별에서 왼쪽으로 쭉 가서 숫자를 읽어요.', board: { pos: E },
           frames: [{ marks: { f6: 'star' }, cap: '별이 여기 있어요.' }, { marks: J({ f6: 'star' }, M(rank(6), 'row')), arrows: [['f6', 'a6']], cap: '왼쪽으로 쭉 → 6번 가로줄!' }, { marks: { c2: 'star' }, cap: '이번엔 여기.' }, { marks: J({ c2: 'star' }, M(rank(2), 'row')), arrows: [['c2', 'a2']], cap: '2번 가로줄!' }] },
+        { t: 'ex', text: '이번에는 흑 쪽에 앉아서 판을 본 모습이에요. 숫자가 어떻게 보일까요?', board: { pos: S0, flip: true },
+          frames: [{ marks: {}, cap: '흑 자리에서는 8번 가로줄이 내 앞(아래)에 있어요.' }, { marks: M(rank(8), 'row'), cap: '내 앞줄이 8번! 번호는 앉은 자리와 상관없이 언제나 백 쪽부터 1이에요.' }, { marks: M(rank(1), 'row'), cap: '1번 가로줄은 건너편 백 쪽 끝이에요.' }] },
         { t: 'do', task: clickQ('5번 가로줄에 있는 칸을 아무거나 하나 눌러 보세요.', rank(5), { pos: E }, ['판 왼쪽에서 숫자 5를 찾아요.', { text: '숫자 5에서 오른쪽으로 쭉 가는 줄이에요.', marks: M(rank(5), 'hint') }], { why: function (s) { return { text: '그 칸은 <b>' + s[1] + '번</b> 가로줄이에요.', marks: J(M(rank(+s[1]), 'bad')) }; } }) },
         { t: 'do', task: pickQ('별이 있는 칸은 몇 번 가로줄인가요?', ['3번', '5번', '7번', '8번'], '7번', { pos: E, marks: { d7: 'star' } }, ['별에서 왼쪽으로 쭉 가요.', { text: '이 줄 왼쪽 끝의 숫자를 읽어요.', marks: M(rank(7), 'row') }]) }
       ],
       practice: { n: 9, gen: function (R) {
-        var k = R.int(4), r = R.int(8) + 1, s = R.sq();
+        var k = R.int(6), r = R.int(8) + 1, s = R.sq();
         if (k === 0) return clickQ(r + '번 가로줄에 있는 칸을 하나 눌러요.', rank(r), { pos: E }, ['판 왼쪽에서 숫자 ' + jo(r, '을') + ' 찾아요.', { text: '그 숫자에서 오른쪽으로 가는 줄이에요.', marks: M(rank(r), 'hint') }], { why: function (x) { return { text: '그 칸은 <b>' + x[1] + '번</b> 가로줄이에요.', marks: M(rank(+x[1]), 'bad') }; } });
         if (k === 1) return pickQ('별이 있는 칸은 몇 번 가로줄인가요?', R.opts(s[1] + '번', ['1번', '2번', '3번', '4번', '5번', '6번', '7번', '8번']), s[1] + '번', { pos: E, marks: M([s], 'star') }, ['별에서 왼쪽으로 쭉 가요.', { text: '이 줄 끝의 숫자를 읽어요.', marks: M(rank(+s[1]), 'row') }]);
         if (k === 2) return pickQ('색칠한 줄은 몇 번 가로줄인가요?', R.opts(r + '번', ['1번', '2번', '3번', '4번', '5번', '6번', '7번', '8번']), r + '번', { pos: E, marks: M(rank(r), 'row') }, ['칠한 줄의 왼쪽 끝 숫자를 봐요.']);
-        return pickQ(R.pick(['백(내 쪽, 아래)에 가장 가까운 가로줄은 몇 번인가요?', '건너편(위)에 가장 가까운 가로줄은 몇 번인가요?']).replace(/^(.)/, '$1'), ['1번', '4번', '8번'], null, { pos: E }, ['아래가 1번, 위가 8번이에요.']);
+        if (k === 3) return pickQ(R.pick(['백(내 쪽, 아래)에 가장 가까운 가로줄은 몇 번인가요?', '건너편(위)에 가장 가까운 가로줄은 몇 번인가요?']), ['1번', '4번', '8번'], null, { pos: E }, ['아래가 1번, 위가 8번이에요.']);
+        if (k === 4) return R.int(2) ? pickQ('가로줄을 영어로 무엇이라고 부를까요?', R.shuffle(['랭크(rank)', '파일(file)', '보드(board)']), '랭크(rank)', { pos: E, marks: M(rank(r), 'row') }, ['옆으로 나란히 선 줄이라는 뜻의 낱말이에요.', '‘랭’으로 시작해요.'])
+          : pickQ('가로줄 번호는 어느 쪽부터 1, 2, 3 … 으로 셀까요?', ['백 쪽부터', '흑 쪽부터', '아무 쪽이나'], '백 쪽부터', { pos: S0 }, ['백 말은 1번·2번 가로줄에서 시작해요.']);
+        return pickQ('흑 쪽에서 본 판이에요. 별이 있는 칸은 몇 번 가로줄인가요?', R.opts(s[1] + '번', ['1번', '2번', '3번', '4번', '5번', '6번', '7번', '8번']), s[1] + '번', { pos: E, flip: true, marks: M([s], 'star') }, ['판을 뒤집어 보아도 번호는 판 옆의 숫자를 읽으면 돼요.', { text: '이 줄 끝의 숫자를 읽어요.', marks: M(rank(+s[1]), 'row') }]);
       } },
-      sum: '옆으로 늘어선 줄은 <b>가로줄(랭크)</b>이에요. 아래(백 쪽)부터 <b>1~8번</b>이고, 번호는 판 왼쪽에 있어요.' },
+      sum: '옆으로 늘어선 줄은 <b>가로줄</b>, 영어로 <b>랭크</b>(rank)예요. 이름은 숫자로, <b>백 쪽부터 1~8번</b>이에요. 숫자는 판 왼쪽에 위아래로 적혀 있지만, 숫자 하나는 옆으로 뻗은 가로줄 하나의 이름이에요.' },
 
     { id: 'files', title: '세로줄(파일)', kind: 'easy',
       screens: [
         { t: 'say', text: '위아래로 늘어선 칸들의 줄을 <b>세로줄</b>이라고 해요. 영어로 <b>파일</b>(file)이라고 불러요.', board: { pos: E, marks: M(file('c'), 'row') } },
-        { t: 'say', text: '세로줄도 8줄이에요. 판 아래에 알파벳 <b>a b c d e f g h</b>가 있어요. 왼쪽 끝이 <b>a</b>, 오른쪽 끝이 <b>h</b>예요.', board: { pos: E, marks: J(M(file('a'), 'row'), M(file('h'), 'hi')) } },
+        { t: 'say', text: '영어 낱말 <b>file</b>(파일)은 ‘앞뒤로 한 줄로 선 줄’이라는 뜻이에요. 친구들이 앞사람 뒤에 차례차례 한 줄로 선 모습이에요(기차놀이처럼). 체스판에서는 <b>세로줄 = 파일</b>이에요.', board: { pos: '8/4P3/4P3/4P3/4P3/4P3/4P3/8', marks: M(file('e'), 'row') } },
+        { t: 'say', text: '<b>이름 붙이는 법:</b> 세로줄에는 <b>알파벳 글자</b>로 이름을 붙여요. <b>백 쪽에서 볼 때</b> 왼쪽 끝이 <b>a</b>, 그다음 b, c, d … 오른쪽 끝이 <b>h</b>예요. 알파벳 차례 그대로 여덟 글자예요.', board: { pos: E, marks: J(M(file('a'), 'row'), M(file('h'), 'hi'), L('a4', 'a'), L('h4', 'h')) } },
         { t: 'say', text: '알파벳 읽는 법: a 에이 · b 비 · c 씨 · d 디 · e 이 · f 에프 · g 지 · h 에이치. 영어를 몰라도 괜찮아요. 판 아래 글자를 보고 같은 모양을 찾으면 돼요.', board: { pos: E } },
+        { t: 'say', text: '⚠️ <b>헷갈리기 쉬워요!</b> 글자는 판 아래에 <b>옆으로</b> 적혀 있어요. 하지만 글자 하나하나는 <b>위아래로 뻗은 세로줄 하나</b>의 이름이에요. 글자 c에서 위로 쭉 가면 c 세로줄이에요.', board: { pos: E, marks: J(M(file('c'), 'row'), { c1: 'ring' }), arrows: [['c1', 'c8']] } },
+        { t: 'say', text: '정리해요. <b>가로줄 = 랭크 = 숫자 1~8</b>(백 쪽부터), <b>세로줄 = 파일 = 글자 a~h</b>(백 쪽에서 보아 왼쪽부터).', board: { pos: E, marks: J(M(rank(1), 'hi'), M(file('a'), 'row')) } },
         { t: 'ex', text: 'a 세로줄부터 h 세로줄까지 차례로 칠해 볼게요.', board: { pos: E },
           frames: F.split('').map(function (c) { return { marks: M(file(c), 'row'), cap: c + ' 세로줄 (' + RD[c] + ')' }; }) },
         { t: 'ex', text: '별이 있는 칸은 어느 세로줄일까요? 별에서 아래로 쭉 내려가 글자를 읽어요.', board: { pos: E },
           frames: [{ marks: { d6: 'star' }, cap: '별이 여기 있어요.' }, { marks: J({ d6: 'star' }, M(file('d'), 'row')), arrows: [['d6', 'd1']], cap: '아래로 쭉 → d 세로줄!' }, { marks: { g3: 'star' }, cap: '이번엔 여기.' }, { marks: J({ g3: 'star' }, M(file('g'), 'row')), arrows: [['g3', 'g1']], cap: 'g 세로줄!' }] },
         { t: 'ex', text: '가로줄과 세로줄을 견주어 봐요.', board: { pos: E },
           frames: [{ marks: M(rank(4), 'row'), cap: '옆으로 → 가로줄(숫자 이름)' }, { marks: M(file('e'), 'row'), cap: '위아래로 ↕ 세로줄(글자 이름)' }] },
+        { t: 'ex', text: '흑 쪽에 앉아서 판을 보면 글자가 어떻게 보일까요?', board: { pos: S0, flip: true },
+          frames: [{ marks: { h1: 'ring' }, cap: '흑 자리에서는 h가 왼쪽 끝에 보여요.' }, { marks: M(file('a'), 'row'), cap: 'a 세로줄은 흑에게 오른쪽 끝이에요. 이름은 언제나 백 쪽에서 본 차례로 붙여요.' }] },
         { t: 'do', task: clickQ('e 세로줄에 있는 칸을 하나 눌러 보세요.', file('e'), { pos: E }, ['판 아래에서 글자 e를 찾아요.', { text: 'e에서 위로 쭉 가는 줄이에요.', marks: M(file('e'), 'hint') }], { why: function (s) { return { text: '그 칸은 <b>' + s[0] + '</b> 세로줄이에요.', marks: M(file(s[0]), 'bad') }; } }) },
         { t: 'do', task: pickQ('별이 있는 칸은 어느 세로줄인가요?', ['a', 'b', 'f', 'h'], 'b', { pos: E, marks: { b5: 'star' } }, ['별에서 아래로 쭉 내려가요.', { text: '이 줄 아래의 글자를 읽어요.', marks: M(file('b'), 'row') }]) }
       ],
       practice: { n: 9, gen: function (R) {
-        var k = R.int(3), c = F[R.int(8)], s = R.sq();
+        var k = R.int(5), c = F[R.int(8)], s = R.sq();
+        if (k === 3) return R.int(2) ? pickQ('세로줄을 영어로 무엇이라고 부를까요?', R.shuffle(['파일(file)', '랭크(rank)', '보드(board)']), '파일(file)', { pos: E, marks: M(file(c), 'row') }, ['앞뒤로 한 줄로 선 줄이라는 뜻의 낱말이에요.', '‘파’로 시작해요.'])
+          : pickQ('a 세로줄은 백 쪽에서 볼 때 어디에 있나요?', ['왼쪽 끝', '오른쪽 끝', '한가운데'], '왼쪽 끝', { pos: E }, ['알파벳 첫 글자 a는 백 쪽에서 보아 왼쪽부터 시작해요.']);
+        if (k === 4) return pickQ(R.pick(['가로줄의 이름은 무엇으로 붙일까요?', '세로줄의 이름은 무엇으로 붙일까요?']), ['숫자 1~8', '글자 a~h'], null, { pos: E }, ['가로줄 = 랭크 = 숫자, 세로줄 = 파일 = 글자']);
         if (k === 0) return clickQ(c + ' 세로줄에 있는 칸을 하나 눌러요.', file(c), { pos: E }, ['판 아래에서 글자 ' + jo(c, '을') + ' 찾아요.', { text: '그 글자에서 위로 가는 줄이에요.', marks: M(file(c), 'hint') }], { why: function (x) { return { text: '그 칸은 <b>' + x[0] + '</b> 세로줄이에요.', marks: M(file(x[0]), 'bad') }; } });
         if (k === 1) return pickQ('별이 있는 칸은 어느 세로줄인가요?', R.opts(s[0], F.split('')), s[0], { pos: E, marks: M([s], 'star') }, ['별에서 아래로 쭉 내려가요.', { text: '이 줄 아래의 글자를 읽어요.', marks: M(file(s[0]), 'row') }]);
         return pickQ('색칠한 줄은 어느 세로줄인가요?', R.opts(c, F.split('')), c, { pos: E, marks: M(file(c), 'row') }, ['칠한 줄 아래의 글자를 봐요.']);
       } },
-      sum: '위아래로 늘어선 줄은 <b>세로줄(파일)</b>이에요. 왼쪽부터 <b>a b c d e f g h</b>이고, 글자는 판 아래에 있어요.' },
+      sum: '위아래로 늘어선 줄은 <b>세로줄</b>, 영어로 <b>파일</b>(file)이에요. 이름은 글자로, 백 쪽에서 보아 <b>왼쪽부터 a~h</b>예요. 글자는 판 아래에 옆으로 적혀 있지만, 글자 하나는 위아래로 뻗은 세로줄 하나의 이름이에요.' },
 
     { id: 'names', title: '칸 이름', kind: 'easy',
       screens: [
-        { t: 'say', text: '체스판의 64칸에는 모두 <b>이름</b>이 있어요. 세로줄 글자와 가로줄 숫자를 합쳐서 불러요.', board: { pos: E } },
+        { t: 'say', text: '체스판의 64칸에는 모두 <b>이름</b>이 있어요. <b>세로줄(파일) 글자</b>와 <b>가로줄(랭크) 숫자</b>를 합쳐서 불러요.', board: { pos: E } },
+        { t: 'say', text: '이 이름은 전 세계 체스 선수들이 똑같이 써요. 그래서 말이 통하지 않는 나라의 친구와도 “e4!”라고 하면 같은 칸을 가리킬 수 있어요. 이렇게 칸 이름으로 수를 적는 방법을 <b>대수 기보법</b>이라고 해요(6마당에서 더 배워요).', board: { pos: E, marks: J({ e4: 'star' }, L('e4', 'e4')) } },
         { t: 'say', text: 'e 세로줄과 4번 가로줄이 만나는 칸은 <b>e4</b>예요. 두 줄이 만나는 곳을 찾으면 돼요.', board: { pos: E, marks: J(M(file('e'), 'row'), M(rank(4), 'row'), { e4: ['star'] }) } },
         { t: 'say', text: '쓸 때는 <b>글자 먼저, 숫자 나중</b>이에요. ‘4e’라고 쓰지 않고 ‘e4’라고 써요. 읽을 때는 “이 사”라고 읽어요.', board: { pos: E, marks: J({ e4: 'star' }, L('e4', 'e4')) } },
         { t: 'say', text: '네 귀퉁이의 이름을 알아 두면 편해요. 왼쪽 아래 <b>a1</b>, 오른쪽 아래 <b>h1</b>, 왼쪽 위 <b>a8</b>, 오른쪽 위 <b>h8</b>.', board: { pos: E, marks: J(L('a1', 'a1'), L('h1', 'h1'), L('a8', 'a8'), L('h8', 'h8')) } },
@@ -1460,6 +1480,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
   ];
   /* ganswer null → 질문 글에서 정함 */
   u1[3].practice.gen = (function (g) { return function (R) { var T = g(R); if (T.ans === null) T.ans = /건너편/.test(T.q) ? '8번' : '1번'; return T; }; })(u1[3].practice.gen);
+  u1[4].practice.gen = (function (g) { return function (R) { var T = g(R); if (T.ans === null) T.ans = /가로줄/.test(T.q) ? '숫자 1~8' : '글자 a~h'; return T; }; })(u1[4].practice.gen);
   u2[7].practice.gen = (function (g) { return function (R) { var T = g(R); if (T.ans === null) T.ans = /합하면/.test(T.q) ? '32개' : '16개'; return T; }; })(u2[7].practice.gen);
 
   /* ===== 3단원 처음 배치 ===== */
@@ -1605,7 +1626,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
   var LES = [];
   MD.units.forEach(function (u, ui) { u.lessons.forEach(function (l) { l.unit = ui; l.no = LES.length + 1; LES.push(l); }); });
   function done(l) { return !!DB.l[l.id]; }
-  function open(i) { return DB.open || i === 0 || done(LES[i - 1]); }
+  function open() { return true; } /* 2026-10-11 선생님 요청: 어느 차시든 골라서 배움(완료 표시는 연습까지 마쳤을 때만) */
   function allDone() { return LES.every(done); }
 
   /* ---------- 무작위 ---------- */
@@ -1652,7 +1673,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
   function rankOf() { var r = ''; for (var i = 1; i <= 6; i++) if (DB.pass['m' + i]) r = RANKS[i - 1]; return r; }
 
   /* ---------- 힌트 타이머 ---------- */
-  var HT = { lv: 0, t: 0, task: null, on: false, wait: 0 };
+  var HT = { lv: 0, t: 0, task: null, on: false, wait: 0 }, TASKTOK = 0;
   function stopTimer() { clearTimeout(HT.t); HT.on = false; }
   function armTimer() {
     clearTimeout(HT.t); if (!HT.task || !HT.on || HT.lv >= 3) return;
@@ -1706,6 +1727,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
       if (T.type === 'place') { var want = tray[pickT >= 0 ? pickT : 0]; if (opt.once) { Object.keys(T.need).forEach(function (s) { if (!placed[s]) m[s] = 'hint'; }); return; } Object.keys(T.need).forEach(function (s) { if (!placed[s] && T.need[s] === want) m[s] = 'hint'; }); }
     }
     T.kind = T.kind || opt.kind; window.csNow = T; /* 점검(Playwright)용 */
+    var tok = ++TASKTOK;
     var timerTask = { kind: T.kind, hint: hint };
     function finish() {
       finished = true; stopTimer(); hb.hidden = true; hintMarks = {};
@@ -1713,8 +1735,12 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
       fb.className = 'cs-fb cs-good'; fb.innerHTML = (first ? '<b>맞아요! 👏</b> ' : '<b>잘했어요.</b> ') + (T.ok || '');
       if (T.after) { pos = typeof T.after === 'string' ? CH.board(T.after) : T.after; }
       draw({});
-      speak((first ? '맞아요! ' : '잘했어요. ') + plain(T.ok || ''));
       if (opt.onEnd) opt.onEnd(first, nextRow);
+      /* 맞히면 '이어서'를 누르지 않아도 저절로 넘어감(읽어 주기가 켜져 있으면 다 읽은 뒤) */
+      var msg = (first ? '맞아요! ' : '잘했어요. ') + plain(T.ok || '');
+      var fire = function () { if (tok !== TASKTOK) return; var g = app.querySelector('.cs-go:not([disabled])'); if (g) g.click(); };
+      if (canSpeak()) speak(msg, function () { setTimeout(fire, 400); });
+      else setTimeout(fire, Math.min(4000, 1000 + plain(T.ok || '').length * 55));
     }
     function wrong(info) {
       tries++; if (opt.onWrong) opt.onWrong();
@@ -1774,7 +1800,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
     };
     show({});
     startTimer(timerTask, plain(T.q), opt.auto);
-    return { hint: hint, stop: function () { finished = true; stopTimer(); } };
+    return { hint: hint, stop: function () { finished = true; stopTimer(); if (tok === TASKTOK) TASKTOK++; } };
   }
 
   /* ---------- 공통 머리 ---------- */
@@ -1811,18 +1837,17 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
       var path = h('div', 'cs-path');
       LES.filter(function (l) { return l.unit === ui; }).forEach(function (l) {
         var i = l.no - 1, ok = open(i), d = DB.l[l.id];
-        var a = h('a', 'cs-node' + (d ? ' cs-done' : '') + (ok ? '' : ' cs-lock') + (i === nx ? ' cs-now' : ''));
-        a.innerHTML = '<span class="cs-no">' + (ok ? l.no : '🔒') + '</span><span class="cs-nt">' + l.title + '</span><span class="cs-st" aria-label="별 ' + (d ? d.s : 0) + '개">' + (d ? stars(d.s) : '') + '</span>';
-        if (ok) a.href = '#l' + l.no; else { a.setAttribute('aria-disabled', 'true'); a.title = '앞 차시를 마치면 열려요.'; }
+        var a = h('a', 'cs-node' + (d ? ' cs-done' : '') + (i === nx ? ' cs-now' : ''));
+        a.innerHTML = '<span class="cs-no">' + l.no + '</span><span class="cs-nt">' + l.title + '</span><span class="cs-st" aria-label="별 ' + (d ? d.s : 0) + '개">' + (d ? stars(d.s) : '') + '</span>';
+        a.href = '#l' + l.no; a.title = d ? '마친 차시예요. 다시 볼 수 있어요.' : '아직 마치지 않은 차시예요.';
         path.appendChild(a);
       });
       sec.appendChild(path); app.appendChild(sec);
     });
     var ex = h('section', 'cs-unit cs-examsec'), pass = DB.pass[MD.id];
-    ex.innerHTML = '<h2 class="cs-uh"><span>마무리</span> ' + MD.no + '마당 확인 시험</h2><p>모든 차시를 마치면 열려요. ' + EXAM_N + '문제 중 ' + EXAM_PASS + '문제 이상 맞히면 통과, <b>' + MD.rank + ' 등급</b>을 받아요. 확인 시험에서는 힌트가 없어요.</p>';
+    ex.innerHTML = '<h2 class="cs-uh"><span>마무리</span> ' + MD.no + '마당 확인 시험</h2><p>언제든 볼 수 있지만, 차시를 모두 배운 뒤에 보면 좋아요. ' + EXAM_N + '문제 중 ' + EXAM_PASS + '문제 이상 맞히면 통과, <b>' + MD.rank + ' 등급</b>을 받아요. 확인 시험에서는 힌트가 없어요.</p>';
     var er = h('div', 'cs-row');
-    var eb = btn(pass ? '📝 확인 시험 다시 보기' : '📝 확인 시험 보기', allDone() || DB.open ? 'cs-main' : '', function () { location.hash = 'exam'; });
-    if (!(allDone() || DB.open)) { eb.disabled = true; }
+    var eb = btn(pass ? '📝 확인 시험 다시 보기' : '📝 확인 시험 보기', allDone() ? 'cs-main' : '', function () { location.hash = 'exam'; });
     er.appendChild(eb);
     if (DB.ex[MD.id] !== undefined) er.appendChild(h('span', 'cs-best', '최고 점수 ' + DB.ex[MD.id] + ' / ' + EXAM_N + (pass ? ' · 통과 🏅' : '')));
     if (pass) er.appendChild(btn('🖨️ 수료증 만들기', '', function () { location.hash = 'cert'; }));
@@ -1834,9 +1859,8 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
     var r1 = h('div', 'cs-row');
     Object.keys(SPNAME).forEach(function (k) { var b = btn(SPNAME[k] + (k === 'f' ? ' (절반)' : k === 's' ? ' (두 배)' : ''), DB.sp === k ? 'cs-main' : '', function () { DB.sp = k; save(); dl.remove(); settings(); }); b.setAttribute('aria-pressed', DB.sp === k); r1.appendChild(b); });
     box.appendChild(r1);
-    box.appendChild(h('h3', '', '차시 열기'));
+    box.appendChild(h('h3', '', '기록'));
     var r2 = h('div', 'cs-row');
-    r2.appendChild(btn(DB.open ? '🔒 차례대로 열기로 되돌리기' : '🔓 모든 차시 열기', '', function () { DB.open = DB.open ? 0 : 1; save(); dl.remove(); route(); }));
     r2.appendChild(btn('🗑️ 이 기기의 체스 기록 지우기', '', function () { if (confirm('이 기기에 저장된 체스 학습관 기록(별·시험 점수·등급)을 모두 지울까요?')) { var t = DB.tts, s = DB.sp; DB = { l: {}, wr: {}, pass: {}, ex: {}, tts: t, sp: s }; save(); dl.remove(); route(); } }));
     box.appendChild(r2);
     var cl = btn('닫기', 'cs-main', function () { dl.remove(); }); var r3 = h('div', 'cs-row'); r3.appendChild(cl); box.appendChild(r3);
@@ -1848,7 +1872,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
     clear(true);
     var steps = l.screens.slice(), nPr = l.practice ? l.practice.n : 0;
     steps = steps.concat(nPr ? [{ t: 'pr' }] : []).concat([{ t: 'sum' }]);
-    var si = 0, score = { ok: 0, n: 0 };
+    var si = 0, score = { ok: 0, n: 0 }, practiced = false;
     var top = h('div', 'cs-ltop');
     var back = btn('← 차시 목록', 'cs-back', function () { location.hash = ''; });
     top.appendChild(back);
@@ -1862,7 +1886,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
     var lastPh = '';
     function phases(t) {
       var order = ['say', 'ex', 'do', 'pr', 'sum'], have = {}; steps.forEach(function (s) { have[s.t] = 1; });
-      ph.innerHTML = ''; order.forEach(function (k) { if (!have[k]) return; ph.appendChild(h('span', 'cs-ph' + (k === t ? ' cs-ph-now' : ''), PHASE[k])); });
+      ph.innerHTML = ''; order.forEach(function (k) { if (!have[k]) return; var b = btn(PHASE[k], 'cs-ph' + (k === t ? ' cs-ph-now' : ''), function () { si = steps.findIndex(function (x) { return x.t === k; }); go(); }); b.title = PHASE[k] + '(으)로 가기'; ph.appendChild(b); });
       ph.appendChild(h('span', 'cs-ph-n', (si + 1) + ' / ' + steps.length));
     }
     function nav(canBack) {
@@ -1902,8 +1926,8 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
         panel.appendChild(nav(true));
       } else if (s.t === 'do') {
         var T = typeof s.task === 'function' ? s.task(R) : s.task;
-        var nr = nav(true), gob = nr.querySelector('.cs-go'); gob.disabled = true;
-        cur = runTask(T, view, panel, { kind: l.kind || 'easy', auto: true, onEnd: function () { gob.disabled = false; gob.focus(); } });
+        var nr = nav(true), gob = nr.querySelector('.cs-go');
+        cur = runTask(T, view, panel, { kind: l.kind || 'easy', auto: true, onEnd: function () { gob.focus(); } });
         panel.appendChild(nr);
       } else if (s.t === 'pr') practice();
       else if (s.t === 'sum') summary();
@@ -1911,7 +1935,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
     /* 연습: n문제, 두 번 틀린 문제는 비슷한 문제를 하나 더 */
     function practice() {
       var n = l.practice.n, k = 0, extra = 0;
-      score = { ok: 0, n: n };
+      score = { ok: 0, n: n }; practiced = false;
       function one(isExtra) {
         hush(); stopTimer(); if (cur && cur.stop) cur.stop(); panel.innerHTML = ''; phases('pr');
         panel.appendChild(h('div', 'cs-phl', PHASE.pr + ' <span class="cs-cnt">' + (isExtra ? '비슷한 문제 하나 더' : (k + 1) + ' / ' + n) + '</span>'));
@@ -1922,6 +1946,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
           onWrong: function () { wrongs++; },
           onEnd: function (first) {
             if (!isExtra) { if (first) score.ok++; k++; }
+            if (k >= n) practiced = true;
             if (!first) { DB.wr[l.id] = (DB.wr[l.id] || 0) + 1; save(); }
             var more = !isExtra && wrongs >= 2 && extra < 3;
             var b = btn(k >= n && !more ? '⭐ 마무리 보기' : '이어서 ▶', 'cs-main cs-go', function () { if (more) { extra++; one(true); } else if (k >= n) { si++; go(); } else one(false); });
@@ -1933,18 +1958,18 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
       one(false);
     }
     function summary() {
-      var st = nPr ? (score.ok / score.n >= .9 ? 3 : score.ok / score.n >= .7 ? 2 : 1) : 3;
-      if (nPr && !score.n) st = (DB.l[l.id] && DB.l[l.id].s) || 1; /* 연습을 건너뛰고 앞으로 돌아온 경우 */
-      var old = DB.l[l.id]; DB.l[l.id] = { s: Math.max(st, old ? old.s : 0) }; save();
+      var fin = !nPr || practiced, st = nPr ? (score.ok / score.n >= .9 ? 3 : score.ok / score.n >= .7 ? 2 : 1) : 3, old = DB.l[l.id];
+      if (fin) { DB.l[l.id] = { s: Math.max(st, old ? old.s : 0) }; save(); }
       view.set({ pos: CH.board('8/8/8/8/8/8/8/8'), marks: {}, coords: true });
       bh.hidden = true; run.classList.add('cs-nob');
       var box = h('div', 'cs-sum');
-      box.innerHTML = '<div class="cs-bigstar">' + stars(st) + '</div>' + (nPr ? '<p>연습 ' + score.n + '문제 중 <b>' + score.ok + '</b>문제를 한 번에 맞혔어요.</p>' : '') +
+      box.innerHTML = (fin ? '<div class="cs-bigstar">' + stars(st) + '</div>' + (nPr ? '<p>연습 ' + score.n + '문제 중 <b>' + score.ok + '</b>문제를 한 번에 맞혔어요.</p>' : '')
+        : '<p class="cs-notyet">✏️ 아직 연습을 끝까지 하지 않아서 <b>완료 표시가 되지 않았어요.</b>' + (old ? ' (전에 받은 별 ' + stars(old.s) + '은 그대로 있어요.)' : '') + '</p>') +
         '<div class="cs-learned"><b>오늘 배운 것</b><p>' + l.sum + '</p></div>';
       panel.appendChild(box);
       speak('오늘 배운 것. ' + plain(l.sum));
       var row = h('div', 'cs-row cs-navrow');
-      if (nPr) row.appendChild(btn('✏️ 연습 한 번 더', '', function () { si = steps.length - 2; go(); }));
+      if (nPr) row.appendChild(btn(fin ? '✏️ 연습 한 번 더' : '✏️ 연습하러 가기', fin ? '' : 'cs-main', function () { si = steps.length - 2; go(); }));
       var nx = LES[l.no];
       row.appendChild(btn('📋 차시 목록', '', function () { location.hash = ''; }));
       if (nx) row.appendChild(btn('이어서 배우기 ▶ ' + nx.no + '. ' + nx.title, 'cs-main', function () { location.hash = 'l' + nx.no; }));
@@ -2034,7 +2059,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
   function route() {
     var hs = location.hash.replace('#', ''), m = /^l(\d+)$/.exec(hs);
     if (m) { var i = +m[1] - 1; if (LES[i] && open(i)) return lessonView(LES[i]); location.hash = ''; return; }
-    if (hs === 'exam') { if (allDone() || DB.open) return quiz('exam'); location.hash = ''; return; }
+    if (hs === 'exam') return quiz('exam');
     if (hs === 'review') return quiz('review');
     if (hs === 'cert') return cert();
     hub();
