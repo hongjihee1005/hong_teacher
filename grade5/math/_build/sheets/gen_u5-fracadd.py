@@ -704,9 +704,28 @@ def split_fig(s, pairs, d, fine, fs=30):
     put_png(s, svg_doc(W, H, ''.join(out)), W, H)
 
 
-def take_fig(s, name, v, d):
-    """앱 fa5Take: 1을 d칸으로 나눈 막대에 v만큼 색칠(×표 할 막대)"""
-    amount_fig(s, [(name, v)], d)
+def take_fig(s, name, v, d, fs=30):
+    """앱 fa5Take: 1을 d칸으로 나눈 막대(1마다 굵은 테두리)에 v만큼 색칠 — 빼는 만큼 ×표 할 막대"""
+    n = F(v) * d
+    assert n.denominator == 1
+    n = int(n)
+    units = -(-n // d)
+    lab_w = eq_w(name, fs) + 30
+    uw = min((1080 - lab_w) / units - 16, 640)
+    h = 96 if tall(name) else 80
+    cy = 12 + h / 2
+    out = []
+    eq_line(name, 12, cy, fs, out)
+    x0 = 12 + lab_w
+    for c in range(units * d):
+        u, k = divmod(c, d)
+        out.append('<rect x="%.1f" y="%.1f" width="%.1f" height="56" fill="%s" stroke="%s" stroke-width="2"/>'
+                   % (x0 + u * (uw + 16) + k * uw / d, cy - 28, uw / d, '#E4E4E4' if c < n else '#fff', INK))
+    for u in range(units):
+        out.append('<rect x="%.1f" y="%.1f" width="%.1f" height="56" fill="none" stroke="%s" stroke-width="3.5"/>'
+                   % (x0 + u * (uw + 16), cy - 28, uw, INK))
+    W, H = int(x0 + units * (uw + 16) + 10), int(h + 24)
+    put_png(s, svg_doc(W, H, ''.join(out)), W, H)
 
 
 def fill_fig(s, rows, d):
