@@ -94,6 +94,8 @@
     var tries = 0, revealed = false, finished = false, found = {}, hintMarks = {}, tray = (T.tray || []).slice(), pickT = -1, placed = {};
     var ans = T.ans === undefined ? [] : Array.isArray(T.ans) ? T.ans.slice() : [T.ans];
     var baseMarks = Object.assign({}, (T.board && T.board.marks) || {});
+    var ST = T.state ? CH.parse(T.state) : null; /* 정식 국면(캐슬링·앙파상·차례): 4마당부터 */
+    if (ST) { T.board = Object.assign({}, T.board || {}, { pos: ST.b }); }
     var pos = T.board && T.board.pos !== undefined ? (typeof T.board.pos === 'string' ? CH.board(T.board.pos.split(' ')[0]) : T.board.pos.slice()) : CH.board('8/8/8/8/8/8/8/8');
     var q = h('div', 'cs-q', T.q), fb = h('div', 'cs-fb'), hb = h('div', 'cs-hint'), area = h('div', 'cs-area'), nextRow = h('div', 'cs-row');
     hb.hidden = true;
@@ -111,7 +113,7 @@
     function hint(lv, auto) {
       if (finished || lv <= HT.lv && auto) return; lv = Math.min(3, lv); HT.lv = Math.max(HT.lv, lv);
       var H = (T.hint || [])[lv - 1], text, marks = {};
-      if (lv === 3) { revealed = true; text = '정답을 보여 줄게요. ' + (T.type === 'pick' ? '반짝이는 답을 눌러 보세요.' : T.type === 'place' ? '반짝이는 칸에 놓아 보세요.' : T.type === 'move' ? '반짝이는 칸으로 움직여 보세요.' : T.type === 'game' || T.type === 'play' ? '반짝이는 말을 반짝이는 칸으로 움직여 보세요.' : '반짝이는 칸을 눌러 보세요.'); answerMarks(marks); }
+      if (lv === 3) { revealed = true; text = '정답을 보여 줄게요. ' + (T.type === 'pick' ? '반짝이는 답을 눌러 보세요.' : T.type === 'place' ? '반짝이는 칸에 놓아 보세요.' : T.type === 'move' ? '반짝이는 칸으로 움직여 보세요.' : T.type === 'game' || T.type === 'play' || T.type === 'line' ? '반짝이는 말을 반짝이는 칸으로 움직여 보세요.' : '반짝이는 칸을 눌러 보세요.'); answerMarks(marks); }
       else if (H) { if (typeof H === 'string') text = H; else { text = H.text; marks = H.marks || {}; } }
       else text = lv === 1 ? '문제를 천천히 다시 읽어 보세요.' : '설명에서 본 것을 떠올려 보세요.';
       hintMarks = marks; hb.hidden = false; hb.innerHTML = '<b>💡 힌트 ' + lv + '</b> ' + text;
@@ -123,7 +125,7 @@
     function answerMarks(m) {
       if (T.type === 'move' && T.next) { var nx = T.next(mv.at, mv.stars); if (nx) m[nx] = 'hint'; }
       if (T.type === 'game' && !gm.over) { var bm = T.game.ai(gm.p, 9); if (bm) { m[CH.name(bm.from)] = 'hint'; m[CH.name(bm.to)] = 'hint'; } }
-      if (T.type === 'play' && T.good && T.good.length) { m[T.good[0][0]] = 'hint'; m[T.good[0][1]] = 'hint'; }
+      if ((T.type === 'play' || T.type === 'line') && T.good && T.good.length) { m[T.good[0][0]] = 'hint'; m[T.good[0][1]] = 'hint'; if (T.good[0][2]) area.querySelectorAll('.cs-tp').forEach(function (b) { b.classList.toggle('cs-blink2', b.dataset.v === T.good[0][2]); }); }
       if (T.type === 'click') ans.forEach(function (s) { if (!found[s]) m[s] = 'hint'; });
       if (T.type === 'place') { var want = tray[pickT >= 0 ? pickT : 0]; if (opt.once) { Object.keys(T.need).forEach(function (s) { if (!placed[s]) m[s] = 'hint'; }); return; } Object.keys(T.need).forEach(function (s) { if (!placed[s] && T.need[s] === want) m[s] = 'hint'; }); }
     }
@@ -183,27 +185,43 @@
     /* 말 움직이기(별 모으기): 움직일 말 하나(T.mover)로 별(T.stars)을 모두 모음. 가장 적은 횟수 T.par, 다음 한 수 T.next(지금 칸, 남은 별) */
     var over = false, mv = T.type === 'move' ? { at: T.mover, stars: T.stars.slice(), n: 0, busy: false } : null;
     /* 대국(폰 전쟁 등): T.game = {moves(p), play(p, m), result(p) → 'w'|'b'|'', ai(p, 단계)}, 수 m = {from, to}(칸 번호) */
-    var start = pos.slice(), gm = T.type === 'game' ? { p: { b: pos, turn: 'w' }, sel: -1, busy: false, over: false } : null;
+    var start = pos.slice(), gm = T.type === 'game' ? { p: newP(), sel: -1, busy: false, over: false } : null;
+    function newP() { if (ST) { var q = CH.parse(T.state); q.n = 0; pos = q.b; return q; } return { b: pos, turn: 'w' }; }
     function targets(sq) {
       var o = {}; CH.pieceMoves({ b: pos, turn: 'w', cast: '', ep: -1 }, CH.idx(sq)).forEach(function (m) { if (T.capture || pos[m.to] === '.') o[CH.name(m.to)] = 1; });
       return Object.keys(o);
     }
     /* 한 수 두기(잡기·위험한 말 구하기): 내 말을 골라 한 번 움직임. 좋은 수 T.good = [[출발, 도착], …] */
-    var pl = T.type === 'play' ? { sel: -1, busy: false } : null;
-    function plTargets(i) { var o = {}; CH.pieceMoves({ b: pos, turn: 'w', cast: '', ep: -1 }, i).forEach(function (m) { o[CH.name(m.to)] = 1; }); return Object.keys(o); }
+    var pl = T.type === 'play' || T.type === 'line' ? { sel: -1, busy: false, n: 0 } : null; /* line: 여러 수 풀이(내 수 → 흑 대답 → 내 수 …), T.moves 내 수 개수, T.reply(p) 흑 수, T.goodAt(p) 다음 좋은 수 */
+    function plMoves(i) { return ST ? CH.legalFrom(ST, i) : CH.pieceMoves({ b: pos, turn: 'w', cast: '', ep: -1 }, i); }
+    function plTargets(i) { var o = {}; plMoves(i).forEach(function (m) { o[CH.name(m.to)] = 1; }); return Object.keys(o); }
+    function lineReply() { /* 여러 수 풀이: 흑이 대답하고 다음 내 수를 기다림 */
+      pl.busy = true; show({}); fb.className = 'cs-fb cs-good'; fb.innerHTML = '좋아요! 흑의 차례예요 …';
+      setTimeout(function () {
+        if (finished) return; var r = T.reply(ST);
+        view.anim(r.from, r.to, 380, function () {
+          if (finished) return; var nm = PC.NAME[ST.b[r.from].toUpperCase()];
+          ST = CH.make(ST, r); pos = ST.b; T.good = T.goodAt(ST); pl.busy = false; hintMarks = {}; if (HT.lv >= 3) { var mm = {}; answerMarks(mm); hintMarks = mm; }
+          var mk = {}; mk[CH.name(r.from)] = 'hi'; mk[CH.name(r.to)] = 'hi'; show(mk);
+          fb.className = 'cs-fb'; fb.innerHTML = '흑은 ' + PC.jo(nm, '을') + ' ' + CH.name(r.to) + PC.jo(CH.name(r.to), '으로').slice(CH.name(r.to).length) + ' 두었어요. <b>이어서 두어요!</b>' + (T.stepQ ? ' ' + T.stepQ : '');
+          armTimer();
+        });
+      }, 450);
+    }
     function dynMarks() {
       var m = {};
       if (pl && pl.sel >= 0) { m[CH.name(pl.sel)] = 'sel'; plTargets(pl.sel).forEach(function (x) { m[x] = 'dot'; }); }
       if (mv) { mv.stars.forEach(function (x) { m[x] = 'star'; }); m[mv.at] = 'sel'; }
+      if (gm && gm.p.cast !== undefined && CH.inCheck(gm.p)) { var kq = gm.p.b.indexOf(gm.p.turn === 'w' ? 'K' : 'k'); if (kq >= 0) m[CH.name(kq)] = 'bad'; }
       if (gm && gm.sel >= 0) { m[CH.name(gm.sel)] = 'sel'; T.game.moves(gm.p).forEach(function (x) { if (x.from === gm.sel) m[CH.name(x.to)] = 'dot'; }); }
       return m;
     }
-    T.peek = function () { return pl ? { sel: pl.sel, busy: pl.busy } : mv ? { at: mv.at, stars: mv.stars.slice(), busy: mv.busy } : gm ? { p: gm.p, busy: gm.busy, over: gm.over } : null; }; /* 점검(Playwright)용 */
+    T.peek = function () { return pl ? { sel: pl.sel, busy: pl.busy, n: pl.n } : mv ? { at: mv.at, stars: mv.stars.slice(), busy: mv.busy } : gm ? { p: gm.p, busy: gm.busy, over: gm.over } : null; }; /* 점검(Playwright)용 */
     function gameOver(r) {
       if (r === 'w') { T.ok = (T.winText || '이겼어요!') + (T.game.info ? ' (' + T.game.info(gm.p) + ')' : ''); finish(); return; }
       gm.over = true; tries++; if (opt.onWrong) opt.onWrong(); stopTimer();
       fb.className = 'cs-fb cs-badfb'; fb.innerHTML = (r === 'd' ? '<b>비겼어요.</b> 이겨야 통과예요. ' : '<b>아쉬워요, 졌어요.</b> ') + (T.game.info ? '(' + T.game.info(gm.p) + ') ' : '') + (T.loseTip || '');
-      var b = btn('🔄 한 판 더', 'cs-main', function () { b.remove(); pos = start.slice(); gm = { p: { b: pos, turn: 'w' }, sel: -1, busy: false, over: false }; fb.className = 'cs-fb'; fb.innerHTML = '내가 먼저 둬요. 움직일 ' + PC.jo(T.unit || '말', '을') + ' 눌러요.'; HT.lv = 0; HT.on = true; armTimer(); show({}); });
+      var b = btn('🔄 한 판 더', 'cs-main', function () { b.remove(); pos = start.slice(); gm = { p: newP(), sel: -1, busy: false, over: false }; fb.className = 'cs-fb'; fb.innerHTML = '내가 먼저 둬요. 움직일 ' + PC.jo(T.unit || '말', '을') + ' 눌러요.'; HT.lv = 0; HT.on = true; armTimer(); show({}); });
       nextRow.appendChild(b);
     }
     function gamePlay(m) {
@@ -259,17 +277,29 @@
         });
         return;
       }
-      if (T.type === 'play') {
+      if (T.type === 'play' || T.type === 'line') {
         if (pl.busy) return;
         var pc = pos[i];
         if (pc !== '.' && CH.isW(pc)) { pl.sel = i; show({}); return; }
         if (pl.sel < 0) { fb.className = 'cs-fb'; fb.innerHTML = '먼저 움직일 내 말(흰색)을 눌러요.'; return; }
         var fr = CH.name(pl.sel);
-        if (plTargets(pl.sel).indexOf(s) < 0) { fb.className = 'cs-fb cs-badfb'; fb.innerHTML = '그 칸으로는 갈 수 없어요. 초록 점이 있는 칸을 눌러요.'; return; }
-        if (T.good.some(function (g) { return g[0] === fr && g[1] === s; })) {
-          pl.busy = true; var a0 = pl.sel;
-          view.anim(a0, i, 380, function () { if (finished) return; pos[i] = pos[a0]; if (pos[i] === 'P' && i < 8) pos[i] = 'Q'; pos[a0] = '.'; pl.sel = -1; pl.busy = false; finish(); });
-        } else { var sv = pl.sel; pl.sel = -1; wrong(T.why ? T.why(fr, s) : { text: '더 좋은 수가 있어요.', marks: J2(objOf(fr, 'ring'), objOf(s, 'bad')) }); }
+        if (plTargets(pl.sel).indexOf(s) < 0) {
+          var kingBad = ST && CH.pieceMoves(ST, pl.sel).some(function (m) { return m.to === i; });
+          fb.className = 'cs-fb cs-badfb'; fb.innerHTML = kingBad ? '그 수는 둘 수 없어요. 그렇게 두면 <b>내 킹이 공격받아요</b>(체크). 초록 점이 있는 칸만 둘 수 있어요.' : '그 칸으로는 갈 수 없어요. 초록 점이 있는 칸을 눌러요.'; return;
+        }
+        var cand = plMoves(pl.sel).filter(function (m) { return m.to === i; });
+        var go = function (promo) {
+          var ok = T.good.some(function (g) { return g[0] === fr && g[1] === s && (!g[2] || !promo || g[2] === promo.toUpperCase()); });
+          if (!ok) { pl.sel = -1; return wrong(T.why ? T.why(fr, s, promo) : { text: '더 좋은 수가 있어요.', marks: J2(objOf(fr, 'ring'), objOf(s, 'bad')) }); }
+          pl.busy = true; var a0 = pl.sel, m = cand.filter(function (x) { return !promo || x.promo === promo; })[0];
+          view.anim(a0, i, 380, function () { if (finished) return; if (ST) { ST = CH.make(ST, m); pos = ST.b; } else { pos[i] = pos[a0]; if (pos[i] === 'P' && i < 8) pos[i] = 'Q'; pos[a0] = '.'; } pl.sel = -1; pl.busy = false; if (T.type === 'line' && ++pl.n < T.moves) lineReply(); else finish(); });
+        };
+        if (cand.length > 1 && cand[0].promo) { /* 프로모션: 바꿀 말 고르기 */
+          area.innerHTML = ''; var tr = h('div', 'cs-tray'); area.appendChild(h('p', 'cs-cnt', '폰이 무엇으로 바뀔까요? 골라요.')); area.appendChild(tr);
+          cand.forEach(function (m) { var bt = btn('<svg viewBox="0 0 100 100" aria-hidden="true">' + PC.svg(m.promo) + '</svg><span>' + PC.NAME[m.promo.toUpperCase()] + '</span>', 'cs-tp', function () { area.innerHTML = ''; go(m.promo); }); bt.dataset.v = m.promo.toUpperCase(); tr.appendChild(bt); });
+          return;
+        }
+        go(cand[0] && cand[0].promo || '');
         return;
       }
       if (T.type === 'game') {
