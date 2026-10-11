@@ -495,6 +495,9 @@ grade1/ … grade6/
   `node _build/chess/check.js`가 perft와 차시 짜임(설명·예시·따라 하기 있음), 따라 하기·연습 문제를 차시마다 400번 만들어 정답이 있는지(고르기 정답이 보기에 있음, 누르기 칸 이름, 놓기 칸이 비어 있고 말 상자와 맞음), 예시의 말 옮기기 칸에 말이 있는지 점검(`build.py`가 먼저 돌림).
   고친 뒤 `python3 _build/chess/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 마당을 더하면 `build.py`의 `MADANG`·메뉴 카드(wait를 링크로)·PLAN.md 현황을 고치고 `apply_theme.py`. 클래스 앞글자 `cs-`. 메뉴 아이콘 ♞(knight)는 `icons.js`에 추가.
 - 확인 거리: 1마당 내용과 힌트 시간·읽는 빠르기(1초에 5글자, 어림값)는 선생님이 써 보고 고칠 점을 알려 주기로 함(PLAN.md ③).
+- **교재(한글 HWPX, 2026-10-11 선생님 요청):** 체스 메뉴 아래 '교재 (한글 파일)' 묶음 → `special/chess/book/체스_N마당_학생용교재.hwpx`(차시마다 배워요·예시로 보기·풀어 봐요·정리해요 + 판 그림, 맨 뒤 정답) · `체스_N마당_지도서.hwpx`(학습관 짜임·힌트 시간·차시 한눈에 보기, 차시마다 지도 흐름·자주 하는 실수·지도 도움말·발문).
+  **직접 고치지 말고** `python3 _build/chess/book/gen_book.py m1`로 다시 만듭니다: 내용은 학습관 원본(`m1.js`)에서 `export.js`가 뽑고(연습 문제는 차시마다 정해진 씨앗으로 5문제 고정), 판 그림은 학습관과 같은 `board.js`로 `shots.js`가 PNG를 찍어 64색으로 줄여 넣음(캐시 `_build/chess/book/img/`, 저장소에 올리지 않음), 지도서의 실수·도움말·발문은 `guide_m1.py`(차시마다 꼭 있어야 빌드됨). 한글 틀은 4학년 수학 활동지 도구 `grade4/math/_build/sheets/hwpxgen.py`(점검에 `pip install python-hwpx` 필요).
+  그림이 환경마다 조금 달라질 수 있어 자동 보완 `run_all.py`에는 넣지 않았습니다 — 학습관 차시를 고치거나 마당을 더하면 손으로 다시 만들고 메뉴 카드를 더하세요. 한글 프로그램에서 직접 열어 보지는 못했음(선생님 확인).
 
 ### 기타 › 교과수학게임 (`project/mathgame/`, 2026-10-07)
 
