@@ -115,7 +115,7 @@
 ### 5-1 (`grade5/math/_build/units/`, 지시문 `BRIEF_TB_G5.md`·`BRIEF_TB2_G5.md`·`BRIEF_ST_G5.md`, 명세 scratchpad `g5/spec_uN.md`)
 | 단원 | slug | 교과서 | 이야기 | 활동지 | 점검 |
 |---|---|---|---|---|---|
-| 1 자연수의 혼합 계산 | u1-mixcalc | ✓ | ✓ 현장 체험 학습 계획단 | | |
+| 1 자연수의 혼합 계산 | u1-mixcalc | ✓ | ✓ 현장 체험 학습 계획단 | ✓ | |
 | 2 약수와 배수 | u2-factor | ✓ | ✓ 학급 장터 준비단 | ✓ | |
 | 3 대응 관계 | u3-corresp | ✓ | ✓ 환경 동아리 탐사대 | ✓ | |
 | 4 약분과 통분 | u4-reduce | ✓ | ✓ 과일 가게 놀이 | | |
