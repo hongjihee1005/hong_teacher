@@ -42,8 +42,8 @@ function fa5Book(num, den) {
   if (num % den === 0) return num > 0 && den > 1 ? `${m} (=${imp})` : m;
   return num > den ? `${fa5Tk(m)} (=${imp})` : fa5Tk(m);
 }
-/* 끝 글자(분수는 분자) 받침에 맞는 '이에요/예요' */
-const fa5Ie = num => "013678".includes(String(num).slice(-1)) ? "이에요" : "예요";
+/* 끝 글자(분수는 분자) 받침에 맞는 '이에요/예요' — den을 주면 fa5Book의 앞 꼴(대분수의 분수 부분·자연수)에 맞춰요(괄호 앞 말 기준) */
+const fa5Ie = (num, den) => { const k = den ? (num % den === 0 ? num / den : num % den) : num; return "013678".includes(String(k).slice(-1)) ? "이에요" : "예요"; };
 /* 식 계산: "[1 3/5]+[2 4/5]", "3−[1 3/4]", "4−[1 1/8]−[5/8]" (덧셈·뺄셈만) */
 function fa5Eval(e) {
   let rest = String(e).replace(/−/g, "-").replace(/\s+/g, " ").trim(), acc = null, op = "+";
@@ -739,7 +739,7 @@ function fa5Mixed(body, api, opt) {
     if (J.code === "zero" || J.code === "improper") { sum.paint(null); api.hint(J.msg); return false; }
     if (J.code !== "ok") { sum.paint(false); api.fail(J.msg || fa5Diag(ex, sum.get()) || "두 대분수를 통분한 다음 자연수 부분끼리, 분수 부분끼리 계산해 봐요.", given); return false; }
     sum.paint(true); api.tryOnce();
-    api.done(given, opt.ok || `${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)} ${op > 0 ? "+" : "−"} ${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)} = ${fa5Book(total.num, total.den)}${fa5Ie(total.num)}!`);
+    api.done(given, opt.ok || `${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)} ${op > 0 ? "+" : "−"} ${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)} = ${fa5Book(total.num, total.den)}${fa5Ie(total.num, total.den)}!`);
     return true;
   };
   auto = autoRun(() => G.every(x => ["w", "n", "d"].every(k => x.slot[k] != null)) && sum.full(), () => G.map(x => val(x).join(",")).join("|") + "#" + sum.sig(), judge, 900);
@@ -842,7 +842,7 @@ function fa5Yut(body, api, opt) {
       G.P.forEach((ps, k) => ps.forEach((p, j) => { const id = node(p); if (!id || id === "END") return; (here[id] = here[id] || []).push([k, j]); }));
       Object.entries(here).forEach(([id, list]) => list.forEach(([k, j], m) => {
         const [x, y] = NODE[id], ox = (m - (list.length - 1) / 2) * 30;
-        svg.append(svgEl("circle", { cx: x + ox, cy: y + 30, r: 15, fill: COL[k], stroke: "#fff", "stroke-width": 3 }), txt(x + ox, y + 31, String(j + 1), 16, { fill: "#fff" }));
+        svg.append(svgEl("circle", { cx: x + ox, cy: y + 40, r: 15, fill: COL[k], stroke: "#fff", "stroke-width": 3 }), txt(x + ox, y + 41, String(j + 1), 16, { fill: "#fff" }));
       }));
       [0, 1].forEach(k => {
         const y0 = 120 + k * 280;
@@ -911,7 +911,7 @@ function fa5Yut(body, api, opt) {
         if (J.code !== "ok") {
           Object.keys(p).forEach(k => delete p[k]); Object.assign(p, G.prev.prev);
           G.log.push(`나: ${G.expr} = ${inp.text()} ✗ → 말을 원래 칸으로 되돌려요 (바른 답 ${fa5Book(v.num, v.den)})`);
-          api.fail(J.msg || fa5Diag(G.expr, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num)}. 두 분수를 통분해서 다시 계산해 봐요. 말은 원래 칸으로 돌아가요.`, `${G.expr} = ${inp.text()}`);
+          api.fail(J.msg || fa5Diag(G.expr, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num, v.den)}. 두 분수를 통분해서 다시 계산해 봐요. 말은 원래 칸으로 돌아가요.`, `${G.expr} = ${inp.text()}`);
           endTurn(0, false); return true;
         }
         G.ok++; const got = capture(0, node(p));
@@ -974,7 +974,7 @@ function fa5CardGame(body, api, opt) {
         const r = inp.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
         if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero" || J.code === "improper") { api.hint(J.msg); return false; }
         const ok = J.code === "ok";
-        if (!ok) api.fail(J.msg || fa5Diag(e, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num)}. 통분하여 다시 계산해 봐요.`, `${e} = ${inp.text()}`);
+        if (!ok) api.fail(J.msg || fa5Diag(e, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num, v.den)}. 통분하여 다시 계산해 봐요.`, `${e} = ${inp.text()}`);
         const rop = Math.random() < .5 ? "+" : "-", ry = YEL[Math.floor(Math.random() * 6)], rb = BLU[Math.floor(Math.random() * 6)], re = exprOf(rop, ry, rb), rv = fa5Eval(re);
         if (ok) score[0]++; score[1]++;
         const cmp = ok ? v.num * rv.den - rv.num * v.den : -1;
@@ -982,7 +982,7 @@ function fa5CardGame(body, api, opt) {
         rows.push([`${e} = ${ok ? fa5Book(v.num, v.den) + " ✓" : inp.text() + " ✗"}${cmp > 0 ? " (+1 큼)" : ""}`, `${re} = ${fa5Book(rv.num, rv.den)} ✓${cmp < 0 ? " (+1 큼)" : ""}`]);
         round++;
         if (round >= ROUNDS && !reported) { reported = true; drawTable(); api.done(rows.map(r => r[0]).join(" / "), `${ROUNDS}판을 모두 했어요! 나 ${score[0]}점, 로봇 ${score[1]}점이에요.`); }
-        else if (ok) api.hint(`맞았어요! 로봇은 ${re} = ${fa5Book(rv.num, rv.den)}${fa5Ie(rv.num)}.`);
+        else if (ok) api.hint(`맞았어요! 로봇은 ${re} = ${fa5Book(rv.num, rv.den)}${fa5Ie(rv.num, rv.den)}.`);
         start(); return true;
       }, 900);
       fa5Hook(inp, a2);

@@ -764,7 +764,7 @@ function ar6Game(body, api, opt) {
     diceBox.innerHTML = ""; diceBox.append(dieSvg(d1), h("span", { class: "jua" }, "×"), dieSvg(d2), h("span", { class: "jua" }, `= ${N}`));
     const oa = options("area", N), op = options("perim", N);
     bA.disabled = !oa.length; bP.disabled = !op.length;
-    info.textContent = !oa.length && !op.length ? `${ar6Jo(N, "으로/로")} 그릴 수 있는 직사각형이 판에 들어갈 자리가 없어요. 주사위를 다시 던져요.` : `곱이 ${N}이에요. 넓이로 할지 둘레로 할지 골라요.${!op.length ? " (둘레로는 그릴 수 없어요.)" : ""}${!oa.length ? " (넓이로는 들어갈 자리가 없어요.)" : ""}`;
+    info.textContent = !oa.length && !op.length ? `${ar6Jo(N, "으로/로")} 그릴 수 있는 직사각형이 판에 들어갈 자리가 없어요. 주사위를 다시 던져요.` : `곱이 ${ar6Jo(N, "이에요/예요")}. 넓이로 할지 둘레로 할지 골라요.${!op.length ? " (둘레로는 그릴 수 없어요.)" : ""}${!oa.length ? " (넓이로는 들어갈 자리가 없어요.)" : ""}`;
   }
   function pick(md) { if (!N || fin) return; mode = md; bA.classList.toggle("on", md === "area"); bP.classList.toggle("on", md === "perim"); info.textContent = md === "area" ? `넓이가 ${N} cm²인 직사각형을 빈 곳에 그려요.` : `둘레가 ${N} cm인 직사각형을 빈 곳에 그려요.`; }
   const show = r => { cur.innerHTML = ""; if (!r) return; const x0 = Math.min(r[0][0], r[1][0]), y0 = Math.min(r[0][1], r[1][1]), w = Math.abs(r[1][0] - r[0][0]), hh = Math.abs(r[1][1] - r[0][1]); if (!w || !hh) return; ar6Poly0(cur, m, [[x0, y0], [x0 + w, y0], [x0 + w, y0 + hh], [x0, y0 + hh]], { fill: AR6.f2, stroke: AR6.org, op: .7, w: 2.6 }); };
@@ -1007,7 +1007,7 @@ const LESSONS = [
         ok: "원은 빈틈이 생기고, 작은 직사각형은 채우지 못하고 남는 곳이 생겨요. 정사각형으로 재면 가 10개, 나 9개라서 가가 더 넓어요." }) },
     { name: "말해 보기", inst: "여러 가지 단위로 재어 보고 알게 된 점을 이야기해 보세요.", hints: ["같은 벽돌 가를 재었는데 단위에 따라 개수가 달랐어요.", "겹치지 않고 빈틈없이 이어 붙일 수 있는 모양이 좋아요."],
       render: (b, a) => quiz(b, a, [
-        { q: "같은 벽돌 가를 재었는데 직사각형 단위로는 5개, 정사각형 단위로는 10개였어요. 까닭은 무엇일까요?", o: ["단위의 모양과 크기가 달라서", "벽돌 가의 넓이가 바뀌어서"], a: 0 },
+        { q: "같은 벽돌 가를 재었는데 직사각형(▭) 단위로 잰 개수와 정사각형 단위로 잰 개수(10개)가 달랐어요. 까닭은 무엇일까요?", o: ["단위의 모양과 크기가 달라서", "벽돌 가의 넓이가 바뀌어서"], a: 0 },
         { q: "넓이를 재는 단위로 가장 알맞은 모양은 무엇일까요?", o: ["원", "직사각형(▭)", "정사각형"], a: 2, why: { "0": "원은 빈틈없이 이어 붙일 수 없어요.", "1": "벽돌 나처럼 채우지 못하고 남는 곳이 생길 수 있어요. 가로와 세로가 같은 모양을 떠올려요." } }],
         { ok: "단위에 따라 개수가 달라지므로 모두가 같은 단위를 써야 해요. 정사각형은 겹치지 않고 빈틈없이 이어 붙일 수 있어서 넓이의 단위로 알맞아요." }) },
     { name: "약속하기", inst: "넓이의 단위를 약속해 보세요.", hints: ["한 변이 1 cm인 정사각형이에요.", "cm 오른쪽 위에 작은 2를 써요."],

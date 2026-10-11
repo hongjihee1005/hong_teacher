@@ -1773,8 +1773,8 @@ function fa5Book(num, den) {
   if (num % den === 0) return num > 0 && den > 1 ? `${m} (=${imp})` : m;
   return num > den ? `${fa5Tk(m)} (=${imp})` : fa5Tk(m);
 }
-/* 끝 글자(분수는 분자) 받침에 맞는 '이에요/예요' */
-const fa5Ie = num => "013678".includes(String(num).slice(-1)) ? "이에요" : "예요";
+/* 끝 글자(분수는 분자) 받침에 맞는 '이에요/예요' — den을 주면 fa5Book의 앞 꼴(대분수의 분수 부분·자연수)에 맞춰요(괄호 앞 말 기준) */
+const fa5Ie = (num, den) => { const k = den ? (num % den === 0 ? num / den : num % den) : num; return "013678".includes(String(k).slice(-1)) ? "이에요" : "예요"; };
 /* 식 계산: "[1 3/5]+[2 4/5]", "3−[1 3/4]", "4−[1 1/8]−[5/8]" (덧셈·뺄셈만) */
 function fa5Eval(e) {
   let rest = String(e).replace(/−/g, "-").replace(/\s+/g, " ").trim(), acc = null, op = "+";
@@ -2470,7 +2470,7 @@ function fa5Mixed(body, api, opt) {
     if (J.code === "zero" || J.code === "improper") { sum.paint(null); api.hint(J.msg); return false; }
     if (J.code !== "ok") { sum.paint(false); api.fail(J.msg || fa5Diag(ex, sum.get()) || "두 대분수를 통분한 다음 자연수 부분끼리, 분수 부분끼리 계산해 봐요.", given); return false; }
     sum.paint(true); api.tryOnce();
-    api.done(given, opt.ok || `${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)} ${op > 0 ? "+" : "−"} ${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)} = ${fa5Book(total.num, total.den)}${fa5Ie(total.num)}!`);
+    api.done(given, opt.ok || `${fa5Tk(`${G[0].best.w} ${G[0].best.n}/${G[0].best.d}`)} ${op > 0 ? "+" : "−"} ${fa5Tk(`${G[1].best.w} ${G[1].best.n}/${G[1].best.d}`)} = ${fa5Book(total.num, total.den)}${fa5Ie(total.num, total.den)}!`);
     return true;
   };
   auto = autoRun(() => G.every(x => ["w", "n", "d"].every(k => x.slot[k] != null)) && sum.full(), () => G.map(x => val(x).join(",")).join("|") + "#" + sum.sig(), judge, 900);
@@ -2573,7 +2573,7 @@ function fa5Yut(body, api, opt) {
       G.P.forEach((ps, k) => ps.forEach((p, j) => { const id = node(p); if (!id || id === "END") return; (here[id] = here[id] || []).push([k, j]); }));
       Object.entries(here).forEach(([id, list]) => list.forEach(([k, j], m) => {
         const [x, y] = NODE[id], ox = (m - (list.length - 1) / 2) * 30;
-        svg.append(svgEl("circle", { cx: x + ox, cy: y + 30, r: 15, fill: COL[k], stroke: "#fff", "stroke-width": 3 }), txt(x + ox, y + 31, String(j + 1), 16, { fill: "#fff" }));
+        svg.append(svgEl("circle", { cx: x + ox, cy: y + 40, r: 15, fill: COL[k], stroke: "#fff", "stroke-width": 3 }), txt(x + ox, y + 41, String(j + 1), 16, { fill: "#fff" }));
       }));
       [0, 1].forEach(k => {
         const y0 = 120 + k * 280;
@@ -2642,7 +2642,7 @@ function fa5Yut(body, api, opt) {
         if (J.code !== "ok") {
           Object.keys(p).forEach(k => delete p[k]); Object.assign(p, G.prev.prev);
           G.log.push(`나: ${G.expr} = ${inp.text()} ✗ → 말을 원래 칸으로 되돌려요 (바른 답 ${fa5Book(v.num, v.den)})`);
-          api.fail(J.msg || fa5Diag(G.expr, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num)}. 두 분수를 통분해서 다시 계산해 봐요. 말은 원래 칸으로 돌아가요.`, `${G.expr} = ${inp.text()}`);
+          api.fail(J.msg || fa5Diag(G.expr, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num, v.den)}. 두 분수를 통분해서 다시 계산해 봐요. 말은 원래 칸으로 돌아가요.`, `${G.expr} = ${inp.text()}`);
           endTurn(0, false); return true;
         }
         G.ok++; const got = capture(0, node(p));
@@ -2705,7 +2705,7 @@ function fa5CardGame(body, api, opt) {
         const r = inp.get(), J = fa5Judge(r, fa5Form(v.num, v.den));
         if (J.code === "empty" || J.code === "half" || J.code === "bad" || J.code === "zero" || J.code === "improper") { api.hint(J.msg); return false; }
         const ok = J.code === "ok";
-        if (!ok) api.fail(J.msg || fa5Diag(e, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num)}. 통분하여 다시 계산해 봐요.`, `${e} = ${inp.text()}`);
+        if (!ok) api.fail(J.msg || fa5Diag(e, r) || `바른 답은 ${fa5Book(v.num, v.den)}${fa5Ie(v.num, v.den)}. 통분하여 다시 계산해 봐요.`, `${e} = ${inp.text()}`);
         const rop = Math.random() < .5 ? "+" : "-", ry = YEL[Math.floor(Math.random() * 6)], rb = BLU[Math.floor(Math.random() * 6)], re = exprOf(rop, ry, rb), rv = fa5Eval(re);
         if (ok) score[0]++; score[1]++;
         const cmp = ok ? v.num * rv.den - rv.num * v.den : -1;
@@ -2713,7 +2713,7 @@ function fa5CardGame(body, api, opt) {
         rows.push([`${e} = ${ok ? fa5Book(v.num, v.den) + " ✓" : inp.text() + " ✗"}${cmp > 0 ? " (+1 큼)" : ""}`, `${re} = ${fa5Book(rv.num, rv.den)} ✓${cmp < 0 ? " (+1 큼)" : ""}`]);
         round++;
         if (round >= ROUNDS && !reported) { reported = true; drawTable(); api.done(rows.map(r => r[0]).join(" / "), `${ROUNDS}판을 모두 했어요! 나 ${score[0]}점, 로봇 ${score[1]}점이에요.`); }
-        else if (ok) api.hint(`맞았어요! 로봇은 ${re} = ${fa5Book(rv.num, rv.den)}${fa5Ie(rv.num)}.`);
+        else if (ok) api.hint(`맞았어요! 로봇은 ${re} = ${fa5Book(rv.num, rv.den)}${fa5Ie(rv.num, rv.den)}.`);
         start(); return true;
       }, 900);
       fa5Hook(inp, a2);
@@ -3034,7 +3034,7 @@ const LESSONS = [
       render: (b, a) => { b.append(fa5sHarvest()); quiz(b, a, [
         { q: "우리 반이 구하려는 것은 무엇인가요?", o: ["급식실에 보내고 남는 채소의 무게", "수확한 채소의 가격", "채소를 나누어 줄 친구의 수"], a: 0 },
         { q: "수확한 방울토마토는 몇 kg인가요?", o: ["[2 2/3] kg", "[1 3/4] kg", "[5/6] kg"], a: 0 },
-        { q: "급식실에 보낼 채소는 몇 kg인가요?", o: ["[2 1/2] kg", "[2 2/3] kg", "[5 1/4] kg"], a: 0 }], { ok: "구하려는 것과 주어진 것을 잘 찾았어요." }); } },
+        { q: "급식실에 보낼 채소는 몇 kg인가요?", o: ["[2 1/2] kg", "[2 2/3] kg", "[5 1/4] kg"], a: 0 }], { ok: "구하려는 것과 주어진 것을 잘 찾았어요.", bad: "수확 기록 카드를 다시 살펴보고 골라 봐요." }); } },
     { name: "그려 보기 — 계획 세우기", inst: "어떻게 해결할지 계획해요.", hints: ["‘모두’ 얼마인지와 ‘남는’ 양을 구할 때를 생각해요.", "4, 6, 3의 최소공배수는 12예요."],
       render: (b, a) => blanks(b, a, ["수확한 채소의 무게는 세 채소의 무게를 모두 ", { o: ["더해요", "빼요"], a: 0 }, ". 남는 채소는 수확한 무게에서 급식실에 보낼 무게를 ", { o: ["빼요", "더해요"], a: 0 }, ". 세 분수를 더할 때는 ", { o: ["두 수씩 차례대로 더하거나 세 분모의 공통분모로 통분해요", "분모끼리 모두 더해요"], a: 0 }, "."], { ok: "더해서 수확한 무게를, 빼서 남는 무게를 구해요." }) },
     { name: "말해 보기 — 차례대로 계산하기", inst: "계획대로 차례대로 계산해 보세요. 가분수로 써도, 대분수로 써도 맞아요.", hints: ["[1 3/4]+[5/6] = [1 9/12]+[10/12]이에요.", "[5 3/12]−[2 6/12]은 분수 부분끼리 뺄 수 없어요. 1만큼을 [12/12]로 바꾸어요."],
@@ -3067,7 +3067,7 @@ const LESSONS = [
       render: (b, a) => quiz(b, a, [
         { q: "분수 주사위에서 ♥가 나오면?", o: ["계산하지 않고 말을 그 칸에 그대로 두어요", "말을 처음으로 되돌려요"], a: 0 },
         { q: "계산 결과가 틀리면?", o: ["말을 옮기기 전에 있던 칸으로 되돌려요", "말을 한 칸 더 옮겨요"], a: 0 },
-        { q: "도착한 칸이 [1/8]이고 분수 주사위가 −[1/6]일 때 세울 식은?", o: ["[1/6]−[1/8]", "[1/8]−[1/6]"], a: 0, why: { "1": "[1/8]은 [1/6]보다 작아요. 큰 수에서 작은 수를 빼요." } }], { ok: "놀이 방법을 알았어요. 이기려면 계산을 정확하게 해야 해요." }) },
+        { q: "도착한 칸이 [1/8]이고 분수 주사위가 −[1/6]일 때 세울 식은?", o: ["[1/6]−[1/8]", "[1/8]−[1/6]"], a: 0, why: { "1": "[1/8]은 [1/6]보다 작아요. 큰 수에서 작은 수를 빼요." } }], { ok: "놀이 방법을 알았어요. 이기려면 계산을 정확하게 해야 해요.", bad: "놀이 방법을 다시 읽어 봐요. ♥가 나오면 계산하지 않고, 계산이 틀리면 말을 옮기기 전 칸으로 되돌려요." }) },
     { name: "그려 보기 — 예나의 놀이 기록", inst: "예나가 윷놀이를 하며 계산한 기록이에요. 차례대로 계산해 보세요.", hints: ["8과 2의 최소공배수는 8, 5와 3의 최소공배수는 15예요.", "6과 8의 최소공배수는 24예요."],
       render: (b, a) => fa5Calc(b, a, [
         { q: "도착한 칸 [5/8], 분수 주사위 +[1/2]", e: "[5/8]+[1/2]", a: "1 1/8", den: 8 },
