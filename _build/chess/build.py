@@ -19,6 +19,7 @@ MADANG = [  # (번호, 파일, 제목, 설명) — 원본 파일이 있는 마�
     (1, 'm1', '1마당 · 체스판과 체스말', '체스판의 칸과 줄, 칸 이름, 여섯 가지 체스말의 이름과 모양, 처음 배치를 23차시로 차근차근 배워요.'),
     (2, 'm2', '2마당 · 말이 움직이는 법', '룩·비숍·퀸·킹·나이트·폰이 움직이는 길과 막히는 곳을 34차시로 배우고, 별 모으기와 폰 전쟁으로 연습해요.'),
     (3, 'm3', '3마당 · 잡기와 지키기', '말로 상대 말을 잡는 법, 공격과 지킴, 말의 값과 교환, 위험한 말 구하기를 29차시로 배우고, 인공지능과 작은 대결을 해요.'),
+    (4, 'm4', '4마당 · 체크와 체크메이트', '체크와 체크 벗어나기, 체크메이트와 스테일메이트, 캐슬링·프로모션·앙파상, 기본 메이트를 40차시로 배우고, 인공지능과 첫 정식 대국을 해요.'),
 ]
 HOW = [
     '학생은 1차시부터 차례대로 배우면 좋아요. 어느 차시·단계든 골라 들어갈 수 있지만, 완료 표시(★)는 그 차시의 연습까지 마쳐야 생겨요. 별과 진도는 <b>이 기기</b>에만 저장돼요(다른 기기와 나누지 않아요).',
@@ -33,7 +34,7 @@ HOW = [
 def build(no, fid, title, desc):
     rd = lambda f: f.read_text(encoding='utf-8')
     gnav = '<a href="index.html">♞ 체스 학습관</a>' + ''.join(f'<a href="{f}.html"' + (' aria-current="page"' if f == fid else '') + f'>{n}마당</a>' for n, f, *_ in MADANG)
-    js = '\n'.join(rd(HERE / f) for f in ['rules.js', 'pieces.js', 'board.js'] + (['ai.js'] if no >= 4 else []) + [f'{fid}.js', 'learn.js'])  # ai.js: 정식 대국 인공지능(4마당부터)
+    js = '\n'.join(rd(HERE / f) for f in ['rules.js', 'pieces.js', 'board.js'] + (['ai.js'] if no >= 4 else []) + ([f'{fid}_data.js'] if (HERE / f'{fid}_data.js').exists() else []) + [f'{fid}.js', 'learn.js'])  # ai.js: 정식 대국 인공지능(4마당부터)
     rep = {'TITLE': title, 'DESC': desc, 'GNAV': gnav, 'HOW': '<ul>' + ''.join(f'<li>{x}</li>' for x in HOW) + '</ul>',
            'JS': js.replace('</script', '<\\/script'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', '#7A5230').replace('{TOOLCSS}', rd(HERE / 'chess.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),

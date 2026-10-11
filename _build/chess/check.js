@@ -6,7 +6,7 @@
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const HERE = __dirname;
 global.window = globalThis;
-['rules.js', 'pieces.js'].forEach(f => vm.runInThisContext(fs.readFileSync(path.join(HERE, f), 'utf8'), { filename: f }));
+['rules.js', 'pieces.js', 'ai.js'].forEach(f => vm.runInThisContext(fs.readFileSync(path.join(HERE, f), 'utf8'), { filename: f }));
 const CH = globalThis.CH;
 const errs = [];
 function bad(where, msg) { errs.push(where + ': ' + msg); }
@@ -34,7 +34,7 @@ const SQ = /^[a-h][1-8]$/;
 function board(b) { return b === undefined || b === null ? null : typeof b === 'string' ? CH.board(b.split(' ')[0]) : b; }
 function checkMarks(where, m) { Object.keys(m || {}).forEach(k => { if (!SQ.test(k)) bad(where, '표시 칸 이름이 이상함 ' + k); }); }
 function checkTask(where, T) {
-  if (!T || !/^(click|pick|place|move|game|play)$/.test(T.type)) return bad(where, '문제 종류가 없음');
+  if (!T || !/^(click|pick|place|move|game|play|line)$/.test(T.type)) return bad(where, '문제 종류가 없음');
   if (!T.q) bad(where, '질문 글이 없음');
   const b = board(T.board && T.board.pos);
   if (b && b.length !== 64) bad(where, '판 칸 수가 64가 아님');
@@ -61,6 +61,23 @@ function checkTask(where, T) {
       const k = rem.indexOf(nx); if (k >= 0) rem.splice(k, 1);
     }
     if (n !== T.par) bad(where, '다음 한 수를 따라가면 ' + n + '번, 가장 적은 횟수 ' + T.par);
+  } else if ((T.type === 'play' || T.type === 'line') && T.state) { /* 정식 국면 한 수 두기: 좋은 수가 규칙에 맞는 수(체크 따짐)인지 */
+    const p = CH.parse(T.state), L = CH.legal(p);
+    if (p.turn !== 'w') bad(where, '백 차례가 아님');
+    if (CH.inCheck(Object.assign({}, p, { turn: 'b' }))) bad(where, '흑 킹이 이미 체크인 국면');
+    if (!T.good || !T.good.length) return bad(where, '좋은 수가 없음 ' + T.q);
+    T.good.forEach(g => { if (!L.some(m => CH.name(m.from) === g[0] && CH.name(m.to) === g[1] && (!g[2] || (m.promo || '').toUpperCase() === g[2]))) bad(where, '좋은 수가 규칙에 맞지 않음 ' + g.join('-') + ' ' + T.state); });
+    if (T.why) L.forEach(m => { const f = CH.name(m.from), t = CH.name(m.to), pr = (m.promo || '').toUpperCase(); if (T.good.some(g => g[0] === f && g[1] === t && (!g[2] || g[2] === pr))) return; const w = T.why(f, t, m.promo); if (!w || typeof w.text !== 'string') bad(where, '까닭 글이 없음 ' + f + '-' + t); });
+    if (T.type === 'line') { /* 여러 수 풀이: 좋은 수 → 흑 대답 → 다음 좋은 수를 끝까지 따라가 봄 */
+      let q = CH.parse(T.state), g = T.good;
+      for (let k = 0; k < T.moves; k++) {
+        const m = CH.legal(q).find(x => CH.name(x.from) === g[0][0] && CH.name(x.to) === g[0][1] && (!g[0][2] || (x.promo || '').toUpperCase() === g[0][2]));
+        if (!m) { bad(where, '풀이 수가 규칙에 맞지 않음 ' + k); break; }
+        q = CH.make(q, m);
+        if (k < T.moves - 1) { const r = T.reply(q); if (!r) { bad(where, '흑 대답이 없음'); break; } q = CH.make(q, r); g = T.goodAt(q); if (!g || !g.length) { bad(where, '다음 좋은 수가 없음 ' + CH.fen(q)); break; } }
+      }
+      if (T.mate && CH.status(q) !== 'mate') bad(where, '메이트로 끝나지 않음 ' + T.state);
+    }
   } else if (T.type === 'play') { /* 한 수 두기: 좋은 수가 있고, 모두 백 말의 규칙에 맞는 수인지 */
     if (!b) return bad(where, '판이 없음');
     if (!T.good || !T.good.length) return bad(where, '좋은 수가 없음 ' + T.q);
@@ -71,9 +88,9 @@ function checkTask(where, T) {
       const w = T.why(f, t); if (!w || typeof w.text !== 'string') bad(where, '까닭 글이 없음 ' + f + '-' + t); });
   } else if (T.type === 'game') { /* 대국: 인공지능끼리 끝까지 두어 규칙에 맞게 끝나는지 */
     const G = T.game; if (!G || !G.moves || !G.play || !G.result || !G.ai) return bad(where, '대국 함수가 없음');
-    let p = { b: b.slice(), turn: 'w' }, n = 0;
-    while (!G.result(p) && n < 200) { const m = G.ai(p, n % 2 ? (T.level || 1) : 1); if (!m || !G.moves(p).some(x => x.from === m.from && x.to === m.to)) return bad(where, '인공지능 수가 규칙에 맞지 않음'); p = G.play(p, m); n++; }
-    if (!G.result(p)) bad(where, '대국이 끝나지 않음');
+    let p = T.state ? Object.assign(CH.parse(T.state), { n: 0 }) : { b: b.slice(), turn: 'w' }, n = 0;
+    while (!G.result(p) && n < (G.chess ? 60 : 200)) { const m = G.ai(p, G.chess ? 1 : n % 2 ? (T.level || 1) : 1); if (!m || !G.moves(p).some(x => x.from === m.from && x.to === m.to)) return bad(where, '인공지능 수가 규칙에 맞지 않음'); p = G.play(p, m); n++; }
+    if (!G.result(p) && !G.chess) bad(where, '대국이 끝나지 않음');
   } else {
     const need = T.need || {}, ks = Object.keys(need);
     if (!ks.length) bad(where, '놓을 말이 없음');
@@ -86,6 +103,7 @@ function checkTask(where, T) {
 let nLes = 0, nTask = 0;
 fs.readdirSync(HERE).filter(f => /^m\d\.js$/.test(f)).sort().forEach(f => {
   delete globalThis.MADANG;
+  const dataF = f.replace('.js', '_data.js'); if (fs.existsSync(path.join(HERE, dataF))) vm.runInThisContext(fs.readFileSync(path.join(HERE, dataF), 'utf8'), { filename: dataF }); /* 미리 만든 문제 은행(5마당~) */
   vm.runInThisContext(fs.readFileSync(path.join(HERE, f), 'utf8'), { filename: f });
   const MD = globalThis.MADANG, ids = new Set();
   if (!MD || !MD.units) return bad(f, 'MADANG이 없음');
