@@ -63,6 +63,8 @@ function c3Diag(e, v) {
   } else {
     const nb = pa.split("").map((c, i) => Math.abs(+c - +pb[i])).join("");
     if (v === +nb * Math.pow(10, 3 - D)) return "작은 수에서 큰 수를 뺄 수 없을 때는 큰 수에서 작은 수를 빼면 안 돼요. 바로 윗자리에서 받아내림해요.";
+    const nk = pa.split("").map((c, i) => +c < +pb[i] ? +c + 10 - +pb[i] : +c - +pb[i]).join(""); // 받아내림하고 윗자리를 1 줄이지 않음
+    if (v === +nk * Math.pow(10, 3 - D)) return "받아내림을 했으면 바로 윗자리 수는 1 작아져요. 윗자리를 계산할 때 1을 빼고 계산해요.";
   }
   return null;
 }
