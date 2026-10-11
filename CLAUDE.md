@@ -319,6 +319,7 @@ grade1/ … grade6/
 - **`project/reading/`의 index 말고는 직접 고치지 마세요.** 원본은 `_build/reading/`: 책 `data/grades.json`(학년별)·`data/subjects.json`(교과별), 기관 소개 `orgs.py`(recs의 org 이름과 같아야 함, `ASOF` 기준 달), 화면 `page.html`·`page.css`·`app.js`, 페이지 목록·설명은 `build.py`의 `PAGES`.
   같은 제목은 하나로 보고 추천 기관을 합쳐 셉니다. 학년별 페이지에는 교과 자료의 같은 학년 책도, 국어 페이지에는 '교과서 수록(국어)'이 확인된 학년 자료 책도 저절로 들어갑니다.
   고친 뒤 `python3 _build/reading/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음, `build.py check`는 점검만: 빈 칸·갈래·학년 묶음·모르는 기관·출처 주소·같은 기관 두 번). 메뉴 `index.html`의 권수 글은 손으로 고치고 `apply_theme.py`.
+- 학년별 국어 방(`gradeN/korean/index.html`)에도 '📚 추천도서' 카드가 있어 `project/reading/gN.html`로 바로 갑니다(2026-10-11). 카드의 권수 글은 손으로 고치고 `apply_theme.py`.
 - **아직 모자란 것은 `_build/reading/todo.md`**(사회·수학 권수, 내용 확인 못 한 책, 다시 확인할 출처). 교과를 더하면 `build.py`의 `PAGES`에 줄을 넣고 메뉴에 카드를 더한 뒤 `apply_theme.py`.
 
 ### 프로젝트 › 도서활용세계시민교육 (`project/gced-books/`, 2026-10-06)
