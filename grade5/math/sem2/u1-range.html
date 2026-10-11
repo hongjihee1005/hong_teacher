@@ -1515,6 +1515,7 @@ function rg1J(w, pair) {
 /* ---------- 어림 계산(0.001 단위 정수) ---------- */
 const RG1PN = { 6: "백만", 5: "십만", 4: "만", 3: "천", 2: "백", 1: "십", 0: "일", "-1": "소수 첫째", "-2": "소수 둘째", "-3": "소수 셋째" };
 const rg1PN = p => RG1PN[p];
+const rg1PL = p => p < 0 ? RG1PN[p] + " 자리" : RG1PN[p] + "의 자리";
 function rg1Rnd(n, m, p) {
   const V = Math.round(+n * 1000), u = Math.round(Math.pow(10, p + 3));
   const q = m === "올림" ? Math.ceil(V / u) : m === "버림" ? Math.floor(V / u) : Math.floor((V + u / 2) / u);
@@ -1817,33 +1818,33 @@ function rg1Digits(host, api, o) {
     [...s].forEach((ch, i) => {
       if (ch === ".") { num.append(h("span", { class: "rg1dot" }, ".")); return; }
       const ex = i < L ? L - 1 - i : -(i - L);
-      const d = h("button", { class: "rg1d", "aria-label": rg1PN(ex) + "의 자리 숫자 " + ch, onclick: () => {
+      const d = h("button", { class: "rg1d", "aria-label": rg1PL(ex) + " 숫자 " + ch, onclick: () => {
         if (row.tap && o.tap === false) return;
-        if (ex !== t.p) { api.hint(`그 숫자 ${ch}는 ${rg1PN(ex)}의 자리 숫자예요. ${rg1PN(t.p)}의 자리 숫자를 찾아 눌러요.`); return; }
+        if (ex !== t.p) { api.hint(`그 숫자 ${rg1J(ch, "은/는")} ${rg1PL(ex)} 숫자예요. ${rg1PL(t.p)} 숫자를 찾아 눌러요.`); return; }
         row.tap = true; digs.forEach(z => { z.d.classList.toggle("rg1tgt", z.ex === t.p); z.d.classList.toggle("rg1low", z.ex < t.p); });
         const V = Math.round(+s * 1000), U = Math.round(Math.pow(10, t.p + 3)), below = (V % U) / 1000, next = s[i + 1] === "." ? s[i + 2] : s[i + 1];
         const unitV = rg1F(Math.pow(10, t.p));
         say.hidden = false;
-        say.textContent = t.m === "올림" ? (below ? `${rg1PN(t.p)}의 자리 아래 수 ${rg1J(rg1F(below), "을/를")} ${rg1J(unitV, "으로/로")} 생각해서 올려요.` : `${rg1PN(t.p)}의 자리 아래 수가 모두 0이라 그대로예요.`)
-          : t.m === "버림" ? (below ? `${rg1PN(t.p)}의 자리 아래 수 ${rg1J(rg1F(below), "을/를")} 0으로 생각해서 버려요.` : `${rg1PN(t.p)}의 자리 아래 수가 모두 0이라 그대로예요.`)
-          : `바로 아래 자리인 ${rg1PN(t.p - 1)}의 자리 숫자가 ${next}예요. ${+next >= 5 ? "5, 6, 7, 8, 9이니 올려요." : "0, 1, 2, 3, 4이니 버려요."}`;
+        say.textContent = t.m === "올림" ? (below ? `${rg1PL(t.p)} 아래 수 ${rg1J(rg1F(below), "을/를")} ${rg1J(unitV, "으로/로")} 생각해서 올려요.` : `${rg1PL(t.p)} 아래 수가 모두 0이라 그대로예요.`)
+          : t.m === "버림" ? (below ? `${rg1PL(t.p)} 아래 수 ${rg1J(rg1F(below), "을/를")} 0으로 생각해서 버려요.` : `${rg1PL(t.p)} 아래 수가 모두 0이라 그대로예요.`)
+          : `바로 아래 자리인 ${rg1PL(t.p - 1)} 숫자가 ${rg1J(next, "이에요/예요")}. ${+next >= 5 ? "5, 6, 7, 8, 9이니 올려요." : "0, 1, 2, 3, 4이니 버려요."}`;
         if (o.noSay) say.hidden = true;
       } }, h("span", {}, ch), ex < 0 ? h("small", {}, "소수", h("br"), rg1PN(ex).slice(3)) : h("small", {}, rg1PN(ex)));
       digs.push({ d, ex }); num.append(d);
     });
     const inp = h("input", { type: "text", inputmode: "decimal", "aria-label": "어림한 수" });
     row.inp = inp;
-    row.el = h("div", { class: "rg1row" }, h("div", { class: "jua" }, `${t.pre || ""}${rg1J(s, "을/를")} ${t.m}하여 ${rg1PN(t.p)}의 자리까지 나타내요.`),
-      o.tap === false ? null : h("div", { class: "rg1small" }, `${rg1PN(t.p)}의 자리 숫자를 눌러요.`), num, say,
+    row.el = h("div", { class: "rg1row" }, h("div", { class: "jua" }, `${t.pre || ""}${rg1J(s, "을/를")} ${t.m}하여 ${rg1PL(t.p)}까지 나타내요.`),
+      o.tap === false ? null : h("div", { class: "rg1small" }, `${rg1PL(t.p)} 숫자를 눌러요.`), num, say,
       h("div", { class: "rg1ans" }, h("span", {}, "→"), inp, t.unit ? h("span", {}, t.unit) : null));
     rows.push(row); wrap.append(row.el);
   });
   host.append(wrap);
   api.provide({ words: [...new Set(o.tasks.map(t => t.m))].concat(["구하려는 자리"]), answers: rows.map(r => `${r.t.n} → ${rg1F(r.ans)}${r.t.unit || ""}`) });
   const whyOf = (t, w) => {
-    if (rg1Eq(w, +t.n)) return `${rg1J(String(t.n), "을/를")} 그대로 썼어요. ${rg1PN(t.p)}의 자리 아래 수를 어떻게 할지 생각해요.`;
+    if (rg1Eq(w, +t.n)) return `${rg1J(String(t.n), "을/를")} 그대로 썼어요. ${rg1PL(t.p)} 아래 수를 어떻게 할지 생각해요.`;
     for (const m of ["올림", "버림", "반올림"]) if (m !== t.m && rg1Eq(rg1Rnd(t.n, m, t.p), w) && !rg1Eq(rg1Rnd(t.n, t.m, t.p), w)) return `${rg1J(rg1F(w), "은/는")} ${m}한 값이에요. ${t.m === "올림" ? "올림은 아래 수를 올려서" : t.m === "버림" ? "버림은 아래 수를 버려서" : "반올림은 바로 아래 자리 숫자를 보고"} 나타내요.`;
-    for (let p = -3; p <= 6; p++) if (p !== t.p && rg1Eq(rg1Rnd(t.n, t.m, p), w) && rg1Low(t.n) < p) return `${rg1J(rg1F(w), "은/는")} ${rg1PN(p)}의 자리까지 나타낸 수예요. ${rg1PN(t.p)}의 자리까지 나타내요.`;
+    for (let p = -3; p <= 6; p++) if (p !== t.p && rg1Eq(rg1Rnd(t.n, t.m, p), w) && rg1Low(t.n) < p) return `${rg1J(rg1F(w), "은/는")} ${rg1PL(p)}까지 나타낸 수예요. ${rg1PL(t.p)}까지 나타내요.`;
     return null;
   };
   host.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
@@ -1852,7 +1853,7 @@ function rg1Digits(host, api, o) {
     rows.forEach(r => {
       const w = rg1Num(r.inp.value), ok = rg1Eq(w, r.ans);
       r.inp.style.borderColor = ok ? "var(--ok)" : "var(--no)";
-      if (!msg && !r.tap) msg = `먼저 ‘${r.t.n}’에서 ${rg1PN(r.t.p)}의 자리 숫자를 눌러 살펴봐요.`;
+      if (!msg && !r.tap) msg = `먼저 ‘${r.t.n}’에서 ${rg1PL(r.t.p)} 숫자를 눌러 살펴봐요.`;
       if (!msg && !ok) msg = isNaN(w) ? "빈칸에 수를 써요." : (whyOf(r.t, w) || `${r.t.m}의 뜻을 다시 생각해요.`);
     });
     if (msg) return api.fail(msg, ans);
@@ -2077,7 +2078,7 @@ const RG1GAME = [
   { n: "521", m: "올림", p: 1 }, { n: "457", m: "버림", p: 1 }, { n: "426.1", m: "올림", p: 0 }, { n: "434", m: "반올림", p: 1 },
   { n: "409", m: "올림", p: 2 }, { n: "549", m: "반올림", p: 2 }];
 (function () { RG1GAME.forEach((g, i) => { if (!rg1Eq(rg1Rnd(g.n, g.m, g.p), RG1BOARD[i])) throw new Error("놀이 문제 답이 칠판과 달라요: " + g.n); }); })();
-const rg1GQ = g => `${rg1J(g.n, "을/를")} ${g.m}하여 ${rg1PN(g.p)}의 자리까지 나타내면?`;
+const rg1GQ = g => `${rg1J(g.n, "을/를")} ${g.m}하여 ${rg1PL(g.p)}까지 나타내면?`;
 function rg1Game(host, api, o) {
   const notes = RG1BOARD.map((v, i) => ({ v, i, gone: false }));
   let basket = RG1GAME.map((g, i) => i).sort(() => Math.random() - .5), cur = -1, turn = 0, score = [0, 0], solved = 0;
@@ -2094,7 +2095,7 @@ function rg1Game(host, api, o) {
       api.hint(`○ ${rg1GQ(g).replace("나타내면?", "나타내면")} ${rg1J(rg1F(right), "이에요/예요")}. ${turn ? "나" : "가"} 모둠 1점!`);
     } else {
       basket.push(cur);
-      api.fail(`${rg1J(String(nt.v), "은/는")} 답이 아니에요. ${g.m === "반올림" ? `바로 아래 자리인 ${rg1PN(g.p - 1)}의 자리 숫자를 살펴봐요` : `${rg1PN(g.p)}의 자리 아래 수를 ${g.m === "올림" ? "올려요" : "버려요"}`}. 이 문제는 바구니로 돌아가요.`, `${g.n} → ${nt.v}`);
+      api.fail(`${rg1J(String(nt.v), "은/는")} 답이 아니에요. ${g.m === "반올림" ? `바로 아래 자리인 ${rg1PL(g.p - 1)} 숫자를 살펴봐요` : `${rg1PL(g.p)} 아래 수를 ${g.m === "올림" ? "올려요" : "버려요"}`}. 이 문제는 바구니로 돌아가요.`, `${g.n} → ${nt.v}`);
     }
     cur = -1; turn = 1 - turn; paint();
     if (solved === RG1GAME.length) { prob.textContent = `놀이 끝! 가 모둠 ${score[0]}점, 나 모둠 ${score[1]}점`; api.done(`가 ${score[0]} : 나 ${score[1]}`, o.ok); }
@@ -2125,11 +2126,11 @@ function rg1Make(host, api, o) {
       if (!/^\d+(\.\d{1,3})?$/.test(s) || v <= 0) return (msg = tag + "어림할 수를 써요(소수는 셋째 자리까지).");
       if (!nt.st.m || nt.st.p == null) return (msg = tag + "어림하는 방법과 나타낼 자리를 골라요.");
       const intLen = String(Math.floor(v)).length;
-      if (nt.st.p >= intLen) return (msg = tag + `${s}에는 ${rg1PN(nt.st.p)}의 자리가 없어요. 수에 있는 자리를 골라요.`);
-      if (rg1Low(s) >= nt.st.p) return (msg = tag + `${rg1PN(nt.st.p)}의 자리 아래 수가 모두 0이라 어림해도 그대로예요. 더 높은 자리를 골라 봐요.`);
+      if (nt.st.p >= intLen) return (msg = tag + `${s}에는 ${rg1PL(nt.st.p)}가 없어요. 수에 있는 자리를 골라요.`);
+      if (rg1Low(s) >= nt.st.p) return (msg = tag + `${rg1PL(nt.st.p)} 아래 수가 모두 0이라 어림해도 그대로예요. 더 높은 자리를 골라 봐요.`);
       const right = rg1Rnd(s, nt.st.m, nt.st.p), w = rg1Num(nt.ansIn.value);
       nt.box.classList.remove("rg1good", "rg1bad");
-      if (!rg1Eq(w, right)) { nt.box.classList.add("rg1bad"); return (msg = tag + `모둠 친구가 확인해 보니 답이 달라요. ${rg1J(s, "을/를")} ${nt.st.m}하여 ${rg1PN(nt.st.p)}의 자리까지 다시 나타내 봐요.`); }
+      if (!rg1Eq(w, right)) { nt.box.classList.add("rg1bad"); return (msg = tag + `모둠 친구가 확인해 보니 답이 달라요. ${rg1J(s, "을/를")} ${nt.st.m}하여 ${rg1PL(nt.st.p)}까지 다시 나타내 봐요.`); }
       nt.box.classList.add("rg1good"); out.push(`${s} ${nt.st.m} ${rg1PN(nt.st.p)} → ${rg1F(right)}`);
     });
     if (!msg && N > 1 && new Set(notes.map(n => n.st.m)).size < 2) msg = "올림, 버림, 반올림 문제를 골고루 만들어요. 두 쪽지의 어림 방법을 다르게 해요.";
