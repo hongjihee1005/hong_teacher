@@ -129,7 +129,8 @@ def menu(g, d):
             ws = [strip(it[0]) if k == '문장 부호' else it[0] for it in L[j * 10:j * 10 + 3]]
             if k in ('문장', '문장 부호'): ws = ws[:1]   # 문장은 첫 문장만(카드가 너무 길어지지 않게)
             ex = ' · '.join(esc(w if len(w) <= 28 else w[:27] + '…') for w in ws)
-            body += f'<a class="card room" href="{url}#{lv}"><span class="ico">{ico}</span><span class="nm">{lv}급</span><small>{nm} {j + 1}묶음 · {ex}{'' if ex.endswith('…') else ' …'}</small></a>\n'
+            tail = '' if ex.endswith('…') else ' …'
+            body += f'<a class="card room" href="{url}#{lv}"><span class="ico">{ico}</span><span class="nm">{lv}급</span><small>{nm} {j + 1}묶음 · {ex}{tail}</small></a>\n'
         body += '</div>\n'
     s = (ROOT / '_build' / 'gced-books' / 'menu.html').read_text(encoding='utf-8')
     s = s.replace('{TITLE}', f'{g}학년 받아쓰기·맞춤법 급수 · 국어 · 초등교사 홍지희').replace('{FOOTNOTE}', '학년별 받아쓰기·맞춤법 급수 자료입니다.').replace('{BODY}', body)
