@@ -562,7 +562,7 @@ function fm2Tree(body, api, opt) {
       ansBox.append(h("p", { class: "jua", style: "color:var(--pine)" }, `${fm2J(a, "과와")} ${b}의 ${G}: ${f}`));
       if (pi < opt.pairs.length - 1) {
         api.hint(`○ 맞았어요! 다음 두 수도 구해 봐요.`);
-        ansBox.append(h("button", { class: "big", onclick: () => { pi++; start(); } }, "다음 두 수로"));
+        ansBox.append(h("button", { class: "big", onclick: () => { pi++; start(); } }, "이어서 두 수로"));
       } else fm2Then(body, api, opt.ask, opt.ok, opt.pairs.map(([x, y]) => `${x},${y}→${goal === "gcd" ? fm2Gcd(x, y) : fm2Lcm(x, y)}`).join(" / "));
     } }, "확인");
     ansBox.innerHTML = "";
@@ -675,7 +675,7 @@ function fm2Ladder(body, api, opt) {
       go.disabled = true; draw(goal);
       const lines = ins.map(x => x.nm === "최대공약수" ? `최대공약수: ${D.length > 1 ? fm2X(D) + " = " : ""}${g}` : `최소공배수: ${fm2X([...D, ...cur])} = ${l}`);
       ansBox.append(h("p", { class: "jua", style: "color:var(--pine)" }, `${fm2J(a, "과와")} ${b} → ${lines.join(" · ")}`));
-      if (pi < opt.pairs.length - 1) { api.hint("○ 맞았어요! 다음 두 수도 구해 봐요."); ansBox.append(h("button", { class: "big", onclick: () => { pi++; start(); } }, "다음 두 수로")); }
+      if (pi < opt.pairs.length - 1) { api.hint("○ 맞았어요! 다음 두 수도 구해 봐요."); ansBox.append(h("button", { class: "big", onclick: () => { pi++; start(); } }, "이어서 두 수로")); }
       else fm2Then(body, api, opt.ask, opt.ok, opt.pairs.map(([x, y]) => `${x},${y}`).join(" / "));
     } }, "확인");
     work.append(...ins.map(x => h("div", { class: "fm2row" }, h("span", { class: "jua" }, `${x.nm} =`), x.inp)), go);

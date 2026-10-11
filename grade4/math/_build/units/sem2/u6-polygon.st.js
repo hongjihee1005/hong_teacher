@@ -426,7 +426,7 @@ function p6Diag(body, api, opt) {
     if (si < shapes.length - 1) { api.hint(`○ ${p6Jo(r.label, "의/의").slice(0, -1)}의 대각선은 ${r.count}개예요.${S.measure ? " 잰 길이와 각을 살펴보고" : ""} ‘다음 도형’을 눌러요.`); nextB.disabled = false; }
     else { over = true; nextB.style.display = "none"; p6Finish(body, api, opt, results.map(x => `${x.label} ${x.count}개`).join(", "), `${r.label}의 대각선은 ${r.count}개예요.`, results); }
   }
-  const nextB = h("button", { disabled: true, onclick: () => { nextB.disabled = true; si++; setup(); } }, "다음 도형 ▶");
+  const nextB = h("button", { disabled: true, onclick: () => { nextB.disabled = true; si++; setup(); } }, "이어서 도형 ▶");
   const noneB = h("button", { onclick: () => {
     if (over) return; api.tryOnce();
     if (need.length === 0) { api.hint("○ 삼각형은 세 꼭짓점이 모두 서로 이웃해 있어서 대각선을 그을 수 없어요."); complete(); }

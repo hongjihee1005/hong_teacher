@@ -22,3 +22,5 @@ EXTRA NOTES (learned while building): the shared site cover CSS hides empty <spa
 
 
 GRADE 5 NOTE: also study the finished, audited grade-4 sources in /home/user/hong_teacher/grade4/math/_build/units/ (and units/sem2/) as the best models of quality, widgets and the STORY-ENGINE TRAP handling (/home/user/hong_teacher/_build/mathplan/BRIEF_AUDIT.md). Grade-5 level only (2022 revised curriculum).
+
+BUTTON WORDING: never put the word '다음' in any button label other than the engine's own '다음 계단' (the shared site cover treats any button containing '다음' as lesson navigation). Use '이어서 …' or '한 판 더'.

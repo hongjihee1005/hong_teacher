@@ -797,7 +797,7 @@ function n1Game(body, api, opt) {
     if (n1Win(col, "me")) return finish("🎉 <b>파란색(나)</b>이 연속된 세 칸을 먼저 색칠했어요. 내가 이겼어요!");
     if (n1Win(col, "cpu")) return finish("빨간색(컴퓨터)이 연속된 세 칸을 먼저 색칠했어요. 아깝다! ‘새 놀이 시작’으로 다시 도전해요.");
     if (col.every(Boolean) || round >= 14) return finish("색칠할 칸이 모자라 비겼어요. 다시 해 볼까요?");
-    area.innerHTML = ""; area.append(h("div", { class: "tools" }, h("button", { class: "big", onclick: deal }, "다음 판")));
+    area.innerHTML = ""; area.append(h("div", { class: "tools" }, h("button", { class: "big", onclick: deal }, "한 판 더")));
   }
   function cpuColor() {
     const can = cellsOf(cpu.filter(c => true));
