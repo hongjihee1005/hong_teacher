@@ -319,7 +319,7 @@ function fm2Rect(body, api, opt) {
     found.add(w); showFound();
     if (found.size === want.length) {
       finished = true;
-      api.hint(`○ ${item} ${n}${fm2J(unit, "을를").slice(unit.length)} 늘어놓는 방법을 모두 찾았어요.`);
+      api.hint(`○ ${item} ${n}${fm2J(unit, "을를")} 늘어놓는 방법을 모두 찾았어요.`);
       fm2Then(body, api, opt.ask, opt.ok, [...found].sort((a, b) => a - b).join(", "));
     } else api.hint(`○ 한 ${line}에 ${w}${unit}씩 ${n / w}${line}! 기록했어요. 다른 방법도 찾아봐요.`);
     return false;
@@ -331,7 +331,7 @@ function fm2Rect(body, api, opt) {
   api.provide({ words: ["나누어떨어져요", "곱셈식"], answers: [want.map(v => `${v}${unit}씩 ${n / v}${line}`).join(", ")] });
   draw(); showFound();
   body.append(stageWrap(svg, h("div", { class: "side" },
-    h("p", {}, opt.tip || `${item} ${n}${fm2J(unit, "을를").slice(unit.length)} 한 ${line}에 똑같은 수씩 늘어놓아요. 모든 ${line}이 똑같이 꽉 차면 저절로 기록돼요.`),
+    h("p", {}, opt.tip || `${item} ${n}${fm2J(unit, "을를")} 한 ${line}에 똑같은 수씩 늘어놓아요. 모든 ${line}이 똑같이 꽉 차면 저절로 기록돼요.`),
     h("div", { class: "fm2row" }, `한 ${line}에`, h("button", { class: "ghost", onclick: () => setW(w - 1) }, "−"), inp, h("button", { class: "ghost", onclick: () => setW(w + 1) }, "+"), `${unit}씩`),
     cntTxt, chips)));
 }

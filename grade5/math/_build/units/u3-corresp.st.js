@@ -75,7 +75,7 @@ const CR3SNAME = { "□": "네모", "△": "세모", "☆": "별", "○": "동�
 
 /* 받침 있는 말 뒤 조사: cr3J("36", "이/가") → "36이", cr3J("☆", "과/와") → "☆과" */
 function cr3Jong(w) {
-  const t = String(w).trim(); const last = t.slice(-1);
+  const t = String(w).trim().replace(/\s*\([^()]*\)$/, ""); const last = t.slice(-1);   /* ‘양(L)’처럼 괄호가 붙으면 괄호 앞 말로 */
   if (CR3SNAME[last]) { const n = CR3SNAME[last], c = n.charCodeAt(n.length - 1); return (c - 0xAC00) % 28 !== 0; }
   const s = t.replace(/[^가-힣A-Za-z0-9]+$/, "");
   const c = s.charCodeAt(s.length - 1);
@@ -85,7 +85,7 @@ function cr3Jong(w) {
 }
 function cr3J(w, pair) {
   const [a, b] = pair.split("/");
-  if (pair === "으로/로") { const t = String(w).trim(), s = t.replace(/[^가-힣A-Za-z0-9]+$/, ""), c = s.charCodeAt(s.length - 1);
+  if (pair === "으로/로") { const t = String(w).trim().replace(/\s*\([^()]*\)$/, ""), s = t.replace(/[^가-힣A-Za-z0-9]+$/, ""), c = s.charCodeAt(s.length - 1);
     if (c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 === 8) return w + "로";
     if (/[0-9]$/.test(s) && /[178]$/.test(s)) return w + "로";
   }
