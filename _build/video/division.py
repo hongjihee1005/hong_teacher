@@ -417,7 +417,7 @@ def long_division_n(S, a, d, who="모둠", unit="개", title="세로셈으로 �
     F, dx = 66, 0.62
     x_right = -1.6
     xs = [x_right - (n - 1 - i) * dx for i in range(n)]
-    yq, ybar, yd, step = 2.45, 1.97, 1.5, 0.6
+    yq, ybar, yd, step = 2.45, 1.97, 1.5, 0.8
 
     def col(i):
         return place_color(n - 1 - i)
