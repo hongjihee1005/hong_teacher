@@ -133,7 +133,7 @@ class Ep13(EpisodeScene):
         e = row(frac(9, 4, 60, cn=ORANGE), "=", mixed(2, 1, 4, 60, cw=GREEN, cn=ORANGE), size=60).move_to([4.8, 1.3, 0])
         self.say(f"원 {g('2개')}와 {o('4분의 1')} → {g('2와 4분의 1')}", "원 2개와 4분의 1 조각 하나가 남았어요. 그래서 4분의 9는 2와 4분의 1이에요.")
         self.play(FadeIn(e), run_time=0.7)
-        tip = M(f"9 ÷ 4 = {g('2')} … {o('1')}  →  몫은 자연수, 나머지는 분자", 42).move_to([0, -2.25, 0])
+        tip = M(f"9 ÷ 4 = {g('2')} … {o('1')}  →  몫은 자연수, 나머지는 분자", 40).move_to([1.6, -2.4, 0])
         self.say("나눗셈으로도 생각할 수 있어요", "나눗셈으로 생각하면 9 나누기 4는 2, 나머지 1. 몫 2가 자연수, 나머지 1이 분자가 돼요.")
         self.play(FadeIn(tip, shift=UP * 0.2), run_time=0.7)
         self.wait(2.0)
