@@ -12,6 +12,7 @@
 | `epNN/timeline.json` | 자막이 바뀌는 시각(장면 확인용) |
 | `fonts/` | 도장방(도장 만들기)과 같은 본문 글꼴 고운돋움(모든 글자). SIL OFL 1.1, 출처 Google Fonts(github.com/google/fonts) |
 | `render.sh` | 미리보기·최종 렌더링 |
+| `add_bgm.py` | 완성 영상에 배경음악을 작게 깔기(`python add_bgm.py 1 음악.mp3` → `ep01/ep01_final_bgm.mp4`, 목표 -30 LUFS, 처음·끝 서서히, 멈춤 화면에서 더 작게). 음악이 든 영상은 저작권 때문에 저장소에 올리지 않음(.gitignore) |
 | `frames.py` | 완성 영상에서 자막마다 장면을 뽑아 6장씩 모아 보기(숫자·계산 확인용) |
 
 ## 1. 설치 (처음 한 번)
