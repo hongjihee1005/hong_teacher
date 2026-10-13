@@ -364,7 +364,7 @@ function sy3Ask(host, api, items, opts = {}) {
   return wrap;
 }
 /* 조작을 마친 뒤: then(이어서 할 활동) → ask(물음)이면 true, 없으면 false(부품의 fin이 api.done) */
-function fin(ans, msg, data) {
+function sy3Finish(body, api, opt, ans, msg, data) {
   const go = el => setTimeout(() => { try { el.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) { } }, 60);
   if (opt.then) { api.hint("○ " + (msg || "잘했어요!") + " 아래도 이어서 해 봐요."); const box = h("div", { class: "sy3part" }); body.append(box); opt.then(box, api, data); go(box); return true; }
   const ask = typeof opt.ask === "function" ? opt.ask(data) : opt.ask;
@@ -642,8 +642,8 @@ function sy3Measure(body, api, opt) {
   const total = segs.length + angs.length;
   const lenOf = n => dist({ x: N[n[0]][0], y: N[n[0]][1] }, { x: N[n[1]][0], y: N[n[1]][1] }) * per;
   const angOf = n => sy3AngVal(N[n[1]], N[n[0]], N[n[2]]);
-  const fin = () => {
-    if (got.size === total && !fin.d) { fin.d = true; api.tryOnce(); fin([...got.values()].join(" / "), opt.doneMsg || "모두 재었어요!"); }
+  const allGot = () => {
+    if (got.size === total && !allGot.d) { allGot.d = true; api.tryOnce(); fin([...got.values()].join(" / "), opt.doneMsg || "모두 재었어요!"); }
   };
   const reL = () => { list.innerHTML = ""; [...segs.map(s => (s.w || "변") + " " + s.n), ...angs.map(a => "각 " + a)].forEach(k => list.append(h("li", { class: got.has(k) ? "sy3ok" : "" }, got.has(k) ? got.get(k) : k + " : ?"))); };
   segs.forEach(s => {
@@ -653,7 +653,7 @@ function sy3Measure(body, api, opt) {
       if (got.has(key)) return; const v = sy3F(lenOf(s.n), dec);
       sy3Line(resG, m, N[s.n[0]], N[s.n[1]], { color: SY3.org, w: 4.5 });
       sy3Lab(resG, m, N[s.n[0]], N[s.n[1]], `${v}${unit === "칸" ? "칸" : " " + unit}`, { c: s.c || opt.cen || sy3Cen(opt.shapes[0].parts || [sy3P(opt.shapes[0].P)]), color: SY3.org, d: s.d || 18, flip: s.flip, size: 16 });
-      got.set(key, `${key} : ${v}${unit === "칸" ? "칸" : " " + unit}`); reL(); fin();
+      got.set(key, `${key} : ${v}${unit === "칸" ? "칸" : " " + unit}`); reL(); allGot();
     });
     hitG.append(hit);
   });
@@ -664,7 +664,7 @@ function sy3Measure(body, api, opt) {
     c.addEventListener("click", () => {
       if (got.has(key)) return; const v = Math.round(angOf(n));
       sy3Arc(resG, m, V, A, B, v + "°", { color: SY3.purple, r: 22, tr: 19 });
-      got.set(key, `${key} : ${v}°`); reL(); fin();
+      got.set(key, `${key} : ${v}°`); reL(); allGot();
     });
     hitG.append(c);
   });
@@ -1143,7 +1143,7 @@ function sy3Museum(body, api, opt) {
   svg.append(svgEl("rect", { x: 0, y: 0, width: W, height: 250, fill: "#F6EFE4" }), svgEl("rect", { x: 0, y: 250, width: W, height: 80, fill: "#E3D2BA" }));
   for (let x = 0; x < W; x += 76) svg.append(svgEl("line", { x1: x, y1: 250, x2: x - 40, y2: 330, stroke: "#D4BFA2", "stroke-width": 2 }));
   svg.append(txt(W / 2, 24, "미술관", 20, { fill: "#8A6E52" }));
-  let fin = false;
+  let seenAll = false;
   const seen = new Set(), read = h("div", { class: "sy3read" }, "작품을 하나씩 눌러 보세요."), list = h("ul", { class: "sy3list" });
   const n = opt.spots.length, fw = 128, gap = (W - n * fw) / (n + 1);
   opt.spots.forEach((s, i) => {
@@ -1157,7 +1157,7 @@ function sy3Museum(body, api, opt) {
       seen.add(s.id); ring.setAttribute("stroke", SY3.green);
       read.textContent = `${s.name}: ${s.say}`;
       list.innerHTML = ""; opt.spots.filter(t => seen.has(t.id)).forEach(t => list.append(h("li", { class: "sy3ok" }, `${t.name} — ${t.say}`)));
-      if (seen.size === n && !fin) { fin = true; api.tryOnce(); fin("모두 둘러봄", opt.doneMsg || "미술관을 모두 둘러보았어요!"); }
+      if (seen.size === n && !seenAll) { seenAll = true; api.tryOnce(); fin("모두 둘러봄", opt.doneMsg || "미술관을 모두 둘러보았어요!"); }
     });
     svg.append(g);
   });
@@ -1272,7 +1272,6 @@ function sy3CardSvg(c, w) {
 const SY3_PROPS = { L: ["선"], P: ["점"], B: ["선", "점"], N: ["없음"] };
 const SY3_SHOUT = { "선": "선대칭도형!", "점": "점대칭도형!", "없음": "둘 다 아닌 도형!" };
 function sy3Uno(body, api, opt) {
-  const fin = (ans, msg, data) => sy3Finish(body, api, opt, ans, msg, data) || api.done(ans, opt.ok || msg);   // 물음·이어서 할 활동이 없으면 바로 해결
   const NAMES = ["나", "다윤", "승현"], NI = ["나", "다윤이", "승현이"];
   let deck, pile, hands, turn, dir, anyNext, over, wrongShout, goodShout, waitCall, timer = null, note = "";
   const info = h("div", { class: "sy3players" }), pileBox = h("div", { style: "display:flex;gap:1em;align-items:center;flex-wrap:wrap" }), handBox = h("div", { class: "sy3hand" });
@@ -1395,7 +1394,6 @@ function sy3Uno(body, api, opt) {
    15. 짝 맞추기 기억 놀이(또 다른 놀이 방법) — 카드 2장을 펼쳐 대칭의 종류가 같으면 가져가요
    ========================================================= */
 function sy3Memory(body, api, opt) {
-  const fin = (ans, msg, data) => sy3Finish(body, api, opt, ans, msg, data) || api.done(ans, opt.ok || msg);   // 물음·이어서 할 활동이 없으면 바로 해결
   const cards = opt.cards.map((c, i) => Object.assign({ id: i }, c));
   let order, open, taken, turn, score, busy, over, seen;
   const grid = h("div", { class: "sy3hand", style: "max-width:36em" }), read = h("div", { class: "sy3read" }), sc = h("div", { class: "sy3players" });
