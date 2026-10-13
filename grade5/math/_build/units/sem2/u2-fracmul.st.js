@@ -399,7 +399,7 @@ function fx2Calc(body, api, items, opt = {}) {
    '='가 있고 한글이 없는 줄은 '='로 나눈 값이 모두 같은지 스스로 확인해요. */
 function fx2Chain(body, api, rows, opt = {}) {
   fx2Style();
-  const ins = [], chs = [], plains = [];
+  const ins = [], chs = [], plains = [], pairs = [];
   const wrap = h("div");
   const ex = v => v == null ? "" : Array.isArray(v) ? v.map(ex).join("") : String(v)[0] === "?" ? String(v).slice(1) : String(v);
   const jsNum = v => ex(v).replace(/−/g, "-").replace(/×/g, "*");
@@ -421,8 +421,10 @@ function fx2Chain(body, api, rows, opt = {}) {
       } else if (pt.i != null) {
         const b = fx2Box(pt.i); ins.push(b); line.append(b); plain += pt.i + " "; js += `(${pt.i})`;
       } else if (pt.q) {
-        const [W, N, D] = pt.q;
+        const [W, N, D] = pt.q, n0 = ins.length;
         line.append(h("span", { class: "fx2fr fx2frin" }, W != null ? h("span", { class: "fx2fw" }, cell(W)) : null, h("span", { class: "fx2q" }, h("span", { class: "fx2n" }, cell(N)), h("span", { class: "fx2d" }, cell(D)))));
+        /* 분자·분모가 모두 빈칸이면 값이 같은 다른 꼴(약분 덜 함·더 함)을 알아봐요 */
+        if (W == null && [N, D].every(v => typeof v === "string" && v[0] === "?")) pairs.push([ins[n0], ins[n0 + 1]]);
         plain += fx2Plain(`[${W != null ? ex(W) + " " : ""}${ex(N)}/${ex(D)}]`) + " ";
         js += `(${W != null ? jsNum(W) : 0}+(${jsNum(N)})/(${jsNum(D)}))`;
       } else if (pt.f) {
@@ -443,7 +445,12 @@ function fx2Chain(body, api, rows, opt = {}) {
   api.provide({ words: opt.words || ["분모는 그대로", "분자에 자연수를 곱하기", "분자는 분자끼리", "분모는 분모끼리", "가분수로 바꾸기", "약분"], answers: plains });
   const judge = () => {
     let ok = true, hint = null; const given = [];
+    const same = new Set();
+    pairs.forEach(([nb, db]) => { const a = nb.value.trim(), b = db.value.trim();
+      if (/^\d+$/.test(a) && /^[1-9]\d*$/.test(b) && !(a === nb.exp && b === db.exp) && +a * +db.exp === +b * +nb.exp) { same.add(nb); same.add(db);
+        hint = hint || (fx2G(+nb.exp, +db.exp) === 1 ? "값은 맞아요. 그런데 더 약분할 수 있어요. 분모와 분자를 최대공약수로 나누어 기약분수로 나타내요." : "값은 맞아요. 그런데 이 칸에는 약분하기 전의 분수를 써요."); } });
     ins.forEach(x => {
+      if (same.has(x)) { x.style.borderColor = ""; given.push(x.value.trim()); return; }
       if (x.exp != null) { const v = x.value.replace(/\s/g, ""), g = v === x.exp; x.style.borderColor = g ? "var(--ok)" : "var(--no)"; if (!g) ok = false; given.push(v || "-"); }
       else { const J = fx2Judge(x.get(), x.target); given.push(x.text()); if (J.code === "ok") x.paint(true); else if (J.code === "zero" || J.code === "improper") { x.paint(null); hint = hint || J.msg; } else { x.paint(false); ok = false; } }
     });
@@ -1295,7 +1302,7 @@ const LESSONS = [
           ans: "곱은 두 진분수보다 작아요. 진분수는 1보다 작아서, 어떤 수에 진분수를 곱하면 그 수의 일부분만 구하게 되기 때문이에요." }) },
     { name: "약속하기 — 세 분수와 약분", inst: "조각보와 식혜에서 알게 된 것을 약속해요.", hints: ["[3/4]×[1/2]×[2/3] = [3×1×2/4×2×3]였어요."],
       render: (b, a) => blanks(b, a, ["세 분수의 곱셈도 분자는 ", { o: ["분자끼리", "분모끼리"], a: 0 }, ", 분모는 분모끼리 곱해요. 약분은 곱하는 과정에서 해도 되고 ", { o: ["곱하기 전에 먼저 해도 돼요", "반드시 다 곱한 뒤에만 해요"], a: 0 }, ". 먼저 약분하면 곱하는 수가 ", { o: ["작아져 계산이 쉬워요", "커져 계산이 어려워요"], a: 0 }, "."], { ok: "편리한 때에 약분하며 분자는 분자끼리, 분모는 분모끼리 곱해요." }) },
-    { name: "확인하기 — 조각보와 식혜 계산", inst: "계산해 보세요. 약분하지 않아도 맞아요.", hints: ["[7/8]×[4/21]에서 7과 21, 4와 8을 약분할 수 있어요.", "[9/10]×[2/3]×[1/2]에서 9와 3, 2와 2, 2와 10을 약분할 수 있어요."],
+    { name: "확인하기 — 조각보와 식혜 계산", inst: "계산해 보세요. 약분하지 않아도 맞아요.", hints: ["[7/8]×[4/21]에서 7과 21, 4와 8을 약분할 수 있어요.", "[9/10]×[2/3]×[1/2]에서 9와 3을 3으로, 분자 2와 분모 2를 2로 약분할 수 있어요."],
       render: (b, a) => fx2Calc(b, a, [{ e: "[2/3]×[3/4]×[1/5]", a: "1/10" }, { e: "[5/6]×[9/10]", a: "3/4" }, { e: "[7/8]×[4/21]", a: "1/6" },
         { q: "식혜 [9/10] L 중 [2/3]를 시음 컵에 따르고, 그중 [1/2]을 선생님께 드렸어요. 선생님께 드린 식혜는 몇 L일까요?", x: "[9/10]×[2/3]×[1/2]", a: "3/10", unit: "L", lab: "[9/10]×[2/3]×[1/2] =" }]) }
   ],

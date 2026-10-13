@@ -365,7 +365,7 @@ function fx2Calc(body, api, items, opt = {}) {
    '='가 있고 한글이 없는 줄은 '='로 나눈 값이 모두 같은지 스스로 확인해요. */
 function fx2Chain(body, api, rows, opt = {}) {
   fx2Style();
-  const ins = [], chs = [], plains = [];
+  const ins = [], chs = [], plains = [], pairs = [];
   const wrap = h("div");
   const ex = v => v == null ? "" : Array.isArray(v) ? v.map(ex).join("") : String(v)[0] === "?" ? String(v).slice(1) : String(v);
   const jsNum = v => ex(v).replace(/−/g, "-").replace(/×/g, "*");
@@ -387,8 +387,10 @@ function fx2Chain(body, api, rows, opt = {}) {
       } else if (pt.i != null) {
         const b = fx2Box(pt.i); ins.push(b); line.append(b); plain += pt.i + " "; js += `(${pt.i})`;
       } else if (pt.q) {
-        const [W, N, D] = pt.q;
+        const [W, N, D] = pt.q, n0 = ins.length;
         line.append(h("span", { class: "fx2fr fx2frin" }, W != null ? h("span", { class: "fx2fw" }, cell(W)) : null, h("span", { class: "fx2q" }, h("span", { class: "fx2n" }, cell(N)), h("span", { class: "fx2d" }, cell(D)))));
+        /* 분자·분모가 모두 빈칸이면 값이 같은 다른 꼴(약분 덜 함·더 함)을 알아봐요 */
+        if (W == null && [N, D].every(v => typeof v === "string" && v[0] === "?")) pairs.push([ins[n0], ins[n0 + 1]]);
         plain += fx2Plain(`[${W != null ? ex(W) + " " : ""}${ex(N)}/${ex(D)}]`) + " ";
         js += `(${W != null ? jsNum(W) : 0}+(${jsNum(N)})/(${jsNum(D)}))`;
       } else if (pt.f) {
@@ -410,7 +412,12 @@ function fx2Chain(body, api, rows, opt = {}) {
   if (opt.fig) body.append(opt.fig());
   body.append(wrap, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
     let ok = true, hint = null; const given = [];
+    const same = new Set();
+    pairs.forEach(([nb, db]) => { const a = nb.value.trim(), b = db.value.trim();
+      if (/^\d+$/.test(a) && /^[1-9]\d*$/.test(b) && !(a === nb.exp && b === db.exp) && +a * +db.exp === +b * +nb.exp) { same.add(nb); same.add(db);
+        hint = hint || (fx2G(+nb.exp, +db.exp) === 1 ? "값은 맞아요. 그런데 더 약분할 수 있어요. 분모와 분자를 최대공약수로 나누어 기약분수로 나타내요." : "값은 맞아요. 그런데 이 칸에는 약분하기 전의 분수를 써요."); } });
     ins.forEach(x => {
+      if (same.has(x)) { x.style.borderColor = ""; given.push(x.value.trim()); return; }
       if (x.exp != null) { const v = x.value.replace(/\s/g, ""), g = v === x.exp; x.style.borderColor = g ? "var(--ok)" : "var(--no)"; if (!g) ok = false; given.push(v || "-"); }
       else { const J = fx2Judge(x.get(), x.target, x.den); given.push(x.text()); if (J.code === "ok") x.paint(true); else if (J.code === "diffden" || J.code === "zero" || J.code === "improper") { x.paint(null); hint = hint || J.msg; } else { x.paint(false); ok = false; } }
     });
