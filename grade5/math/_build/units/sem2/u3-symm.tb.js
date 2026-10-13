@@ -1542,7 +1542,7 @@ const SY3_PICS = [
       gg.append(svgEl("path", { d: `M${P(2.0, 3.2)} L${P(2.6, 2.4)} M${P(2.8, 3.4)} L${P(3.3, 2.4)}`, stroke: "#5B3E2B", "stroke-width": 2 })); });
     g.append(svgEl("rect", { x: m([3.85, 0.7])[0], y: m([3.85, 0.7])[1], width: m.k * .3, height: m.k * 1.0, rx: 3, fill: "#5B3E2B" })); } }] },
   { label: "코스모스", box: [0, 0, 8, 8], axes: [0, 22.5, 45, 67.5, 90, 112.5, 135, 157.5].map(d => [[4, 4], [4 + Math.cos(d * Math.PI / 180), 4 + Math.sin(d * Math.PI / 180)]]), parts: [{ t: "pic", box: [0, 0, 8, 8], draw(g, m) {
-    for (let i = 0; i < 8; i++) { const e = svgEl("ellipse", { cx: m([4, 2.2])[0], cy: m([4, 2.2])[1], rx: m.k * .62, ry: m.k * 1.75, fill: i % 2 ? "#F7A8C8" : "#F28CB6", stroke: "#B0517F", "stroke-width": 2, transform: `rotate(${i * 45} ${m([4, 4])[0]} ${m([4, 4])[1]})` }); g.append(e); }
+    for (let i = 0; i < 8; i++) { const e = svgEl("ellipse", { cx: m([4, 2.2])[0], cy: m([4, 2.2])[1], rx: m.k * .62, ry: m.k * 1.75, fill: "#F49CC0", stroke: "#B0517F", "stroke-width": 2, transform: `rotate(${i * 45} ${m([4, 4])[0]} ${m([4, 4])[1]})` }); g.append(e); }
     g.append(svgEl("circle", { cx: m([4, 4])[0], cy: m([4, 4])[1], r: m.k * .75, fill: "#F2C53D", stroke: "#B08A1E", "stroke-width": 2 })); } }] }];
 
 /* ---- 11차시 놀이 카드 ---- */
