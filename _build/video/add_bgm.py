@@ -1,5 +1,6 @@
 """완성 영상에 배경음악(BGM)을 작게 깔기
     python add_bgm.py 1 음악.mp3            → ep01/ep01_final_bgm.mp4
+    python add_bgm.py 1 음악.mp3 --tag piano → ep01/ep01_final_bgm_piano.mp4 (여러 곡을 견줘 볼 때)
     python add_bgm.py 1 음악.mp3 -20        → 목표 크기를 -20 LUFS 쪽으로 (기본 -30, 숫자가 작을수록 조용함)
 
 - 음악 크기를 재서 목표 크기(기본 -30 LUFS: 말소리 없이 깔리는 아주 작은 소리)로 맞춤
@@ -9,12 +10,18 @@
 """
 import json, os, re, subprocess, sys
 
-n, music = int(sys.argv[1]), sys.argv[2]
-target = float(sys.argv[3]) if len(sys.argv) > 3 else -30.0
+argv = sys.argv[1:]
+tag = ""
+if "--tag" in argv:
+    i = argv.index("--tag")
+    tag = argv[i + 1]
+    del argv[i:i + 2]
+n, music = int(argv[0]), argv[1]
+target = float(argv[2]) if len(argv) > 2 else -30.0
 here = os.path.dirname(os.path.abspath(__file__))
 ep = f"ep{n:02d}"
 video = os.path.join(here, ep, f"{ep}_final.mp4")
-out = os.path.join(here, ep, f"{ep}_final_bgm.mp4")
+out = os.path.join(here, ep, f"{ep}_final_bgm{'_' + tag if tag else ''}.mp4")
 
 def run(args):
     return subprocess.run(args, stdin=subprocess.DEVNULL, capture_output=True, text=True)

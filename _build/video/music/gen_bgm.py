@@ -2,6 +2,7 @@
 
     python music/gen_bgm.py 169            → music/bgm_169s.wav (169초에 맞춰 끝나는 곡)
     python music/gen_bgm.py 169 --seed 2   → 같은 짜임에 다른 가락
+    python music/gen_bgm.py 169 --style piano → 발랄하고 경쾌한 피아노 곡(1분에 약 120박, 쿵짝 반주 + 끊어 치는 가락)
 
 - 다장조, 1분에 약 96박(영상 길이에 맞춰 조금 고침), 4/4박자. 화음 진행 C–G–Am–F / C–F–G–C 를 되풀이
 - 소리: 마림바(가락), 오르골(가락 겹침, 작게), 부드러운 베이스, 잔잔한 패드(화음), 아주 작은 셰이커
@@ -179,6 +180,132 @@ def compose(seconds, seed=1):
     return buf[: int(SR * min(total, seconds))]
 
 
+# ── 피아노 (발랄하고 경쾌한 곡) ────────────────────────────────────
+def piano(m, hold, vel=1.0, rng=None):
+    """피아노 소리: 살짝 어긋난 배음(현의 성질) + 두 줄 현의 맥놀이 + 해머 소리.
+    hold초 동안 누르고 있다가 떼면 0.06초 안에 소리가 멎음(짧게 끊어 치기)"""
+    f = midi_hz(m)
+    tail = 0.12
+    n = int(SR * (hold + tail))
+    t = np.arange(n) / SR
+    s = np.zeros(n)
+    bright = 0.45 - 0.2 * min(vel, 1.0)
+    base_decay = 1.6 * (261.6 / f) ** 0.45
+    k = 1
+    while k <= 12 and k * f < 11000:
+        fk = k * f * math.sqrt(1 + 0.00035 * k * k)
+        amp = (1 / k ** 1.15) * math.exp(-(k - 1) * bright)
+        dk = base_decay / (1 + 0.55 * (k - 1))
+        for det in (-0.5, 0.5):                       # 두 줄 현(±0.5센트)
+            ff = fk * 2 ** (det / 1200)
+            s += amp * np.sin(2 * np.pi * ff * t + (0 if det < 0 else 0.7)) * (
+                0.7 * np.exp(-t / (dk * 0.25)) + 0.3 * np.exp(-t / dk))
+        k += 1
+    s *= np.minimum(1, t / 0.002)
+    damp = np.where(t > hold, np.exp(-(t - hold) / 0.06), 1.0)
+    s *= damp
+    if rng is not None:                               # 해머가 줄을 치는 짧은 소리
+        h = int(SR * 0.012)
+        noise = rng.standard_normal(h) * np.exp(-np.arange(h) / (SR * 0.003))
+        noise = np.convolve(noise, np.ones(6) / 6, mode="same")
+        s[:h] += 0.08 * noise
+    return vel * s / 1.6
+
+
+# 손으로 지은 가락: (박, 길이(박), 미디). 4마디가 한 프레이즈
+PIANO_PHRASES = {
+    "A": (["C", "Am", "F", "G"], [
+        [(0, .5, 72), (.5, .5, 76), (1, .5, 79), (1.5, .5, 76), (2, .5, 84), (2.5, .5, 79), (3, 1, 76)],
+        [(0, .5, 72), (.5, .5, 76), (1, .5, 81), (1.5, .5, 76), (2, 1, 84), (3, .5, 83), (3.5, .5, 81)],
+        [(0, .5, 77), (.5, .5, 81), (1, .5, 84), (1.5, .5, 81), (2, .5, 77), (2.5, .5, 81), (3, 1, 84)],
+        [(0, .75, 83), (.75, .25, 81), (1, .5, 79), (1.5, .5, 77), (2, 1, 74), (3, .5, 79), (3.5, .5, 71)],
+    ]),
+    "A2": (["C", "Am", "F", "G"], [
+        [(0, .5, 72), (.5, .5, 76), (1, .5, 79), (1.5, .5, 76), (2, .5, 84), (2.5, .5, 79), (3, 1, 76)],
+        [(0, .5, 72), (.5, .5, 76), (1, .5, 81), (1.5, .5, 76), (2, 1, 84), (3, .5, 83), (3.5, .5, 81)],
+        [(0, .5, 77), (.5, .5, 81), (1, .5, 84), (1.5, .5, 81), (2, .5, 77), (2.5, .5, 81), (3, 1, 84)],
+        [(0, .5, 79), (.5, .5, 83), (1, .5, 86), (1.5, .5, 83), (2, .5, 79), (2.5, .5, 83), (3, 1, 86)],
+    ]),
+    "B": (["F", "G", "Em", "Am"], [
+        [(0, 1, 81), (1, .5, 79), (1.5, .5, 77), (2, 1, 76), (3, 1, 77)],
+        [(0, .5, 79), (.5, .5, 83), (1, .5, 86), (1.5, .5, 83), (2, 1, 79), (3, 1, 83)],
+        [(0, 1, 79), (1, .5, 76), (1.5, .5, 79), (2, 1, 83), (3, 1, 79)],
+        [(0, .5, 81), (.5, .5, 84), (1, .5, 88), (1.5, .5, 84), (2, 2, 81)],
+    ]),
+    "B2": (["Dm", "G", "C", "C"], [
+        [(0, .5, 77), (.5, .5, 81), (1, .5, 86), (1.5, .5, 81), (2, 1, 77), (3, 1, 74)],
+        [(0, .5, 79), (.5, .5, 83), (1, .5, 86), (1.5, .5, 83), (2, .5, 79), (2.5, .5, 77), (3, .5, 74), (3.5, .5, 71)],
+        [(0, 1, 72), (1, .5, 76), (1.5, .5, 79), (2, 1, 84), (3, 1, 79)],
+        [(0, 2, 84), (2, .5, 79), (2.5, .5, 76), (3, 1, 72)],
+    ]),
+}
+PIANO_FORM = ["A", "A2", "B", "B2"]
+
+
+def voice(tones, lo=55, hi=67):
+    """화음 구성음을 lo~hi 사이로 모아 왼손 화음 자리를 만듦"""
+    out = []
+    for t in tones:
+        while t < lo:
+            t += 12
+        while t > hi:
+            t -= 12
+        out.append(t)
+    return sorted(out)
+
+
+def compose_piano(seconds, seed=1):
+    global BEAT, BAR
+    rng = np.random.default_rng(seed)
+    intro = 2
+    q = max(1, int(round((seconds - 2.5) / 2.0 - intro) / 4))   # 프레이즈 수(1마디 약 2초 = 1분에 120박)
+    nbars = intro + 4 * q
+    BAR = (seconds - 2.8) / nbars
+    BEAT = BAR / 4
+    phrases = [PIANO_FORM[i % 4] for i in range(q)]
+    phrases[-1] = "B2"                                   # 끝은 마침 프레이즈
+    bars = [("C", None), ("G", None)]
+    for k, name in enumerate(phrases):
+        chords, mel = PIANO_PHRASES[name]
+        octave = 12 if (k // 4) % 2 == 1 and name in ("A", "A2") else 0   # 두 번째 돌 때는 한 옥타브 위로 밝게
+        for c, notes in zip(chords, mel):
+            bars.append((c, [(b, l, m + octave) for b, l, m in notes]))
+    buf = np.zeros((int(SR * (seconds + 1)), 2))
+
+    def hum():
+        return rng.normal(0, 0.006)
+
+    for i, (ch, notes) in enumerate(bars):
+        t0 = i * BAR
+        tones = CHORDS[ch]
+        root = tones[0]
+        while root > 50:
+            root -= 12
+        fifth = root + 7
+        if ch in ("G", "Em"):                            # 낮은 음이 너무 높지 않게
+            fifth = root + 7 if root + 7 <= 50 else root - 5
+        v = voice(tones)
+        # 왼손: 쿵(낮은 음) - 짝(화음) - 쿵(5도) - 짝(화음)
+        add(buf, t0 + hum(), piano(root, BEAT * 0.9, 0.42, rng), -0.25)
+        add(buf, t0 + 2 * BEAT + hum(), piano(fifth, BEAT * 0.9, 0.38, rng), -0.25)
+        for b in (1, 3):
+            for m in v:
+                add(buf, t0 + b * BEAT + hum(), piano(m, BEAT * 0.38, 0.3, rng), -0.1)
+        if notes is None:
+            continue
+        for b, l, m in notes:
+            hold = l * BEAT * (0.55 if l <= 0.5 else 0.8)   # 짧은 음은 끊어 쳐서 통통 튀게
+            vel = 0.62 if b in (0, 2) else 0.52
+            add(buf, t0 + b * BEAT + hum(), piano(m, hold, vel + rng.normal(0, 0.03), rng), 0.2)
+    # 마무리: 위로 올라가는 도-미-솔-도, 그리고 으뜸화음
+    tf = len(bars) * BAR
+    for k, m in enumerate([72, 76, 79, 84]):
+        add(buf, tf + k * BEAT / 2, piano(m, 0.3 if k < 3 else 2.0, 0.55, rng), 0.2)
+    for m in (48, 60, 64, 67, 72):
+        add(buf, tf + 2 * BEAT, piano(m, 1.6, 0.5, rng), 0.0)
+    return buf[: int(SR * seconds)]
+
+
 def reverb(x, seed=7, length=1.4, mix=0.18):
     rng = np.random.default_rng(seed)
     n = int(SR * length)
@@ -197,14 +324,18 @@ def reverb(x, seed=7, length=1.4, mix=0.18):
 def main():
     secs = float(sys.argv[1]) if len(sys.argv) > 1 else 169
     seed = int(sys.argv[sys.argv.index("--seed") + 1]) if "--seed" in sys.argv else 1
-    x = reverb(compose(secs, seed))
+    style = sys.argv[sys.argv.index("--style") + 1] if "--style" in sys.argv else "marimba"
+    if style == "piano":
+        x = reverb(compose_piano(secs, seed), mix=0.14)
+    else:
+        x = reverb(compose(secs, seed))
     # 끝 3초 서서히 줄이기, 크기 맞추기(최대 -3dBFS)
     n = len(x)
     fade = int(SR * 3)
     x[-fade:] *= np.linspace(1, 0, fade)[:, None]
     x *= 10 ** (-3 / 20) / np.abs(x).max()
     here = os.path.dirname(os.path.abspath(__file__))
-    out = os.path.join(here, f"bgm_{int(round(secs))}s.wav")
+    out = os.path.join(here, f"bgm_{style}_{int(round(secs))}s.wav")
     with wave.open(out, "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
