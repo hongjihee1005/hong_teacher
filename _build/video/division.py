@@ -398,3 +398,138 @@ def long_division(S, a, d, who="모둠", unit="개"):
     S.settle()
     S.clear_sub()
     clear_stage(S)
+
+
+# ── 여러 자리 세로셈(세 자리 수 ÷ 한 자리 수 등) ─────────────────────────
+PLACE = {0: "일", 1: "십", 2: "백", 3: "천"}
+
+
+def place_color(k):
+    """오른쪽에서 k번째 자리(0=일)의 색: 일 주황, 십 파랑, 백 이상 검정"""
+    return {0: ORANGE, 1: BLUE}.get(k, INK)
+
+
+def long_division_n(S, a, d, who="모둠", unit="개", title="세로셈으로 나타내기"):
+    """큰 자리부터 한 자리씩 나누는 세로셈. 오른쪽에 단계 기록을 한 줄씩 쌓음."""
+    S.section(title)
+    digits = [int(c) for c in str(a)]
+    n = len(digits)
+    F, dx = 66, 0.62
+    x_right = -1.6
+    xs = [x_right - (n - 1 - i) * dx for i in range(n)]
+    yq, ybar, yd, step = 2.45, 1.97, 1.5, 0.6
+
+    def col(i):
+        return place_color(n - 1 - i)
+
+    def num_at(value, i_last, y, color, show_zero=True):
+        s = str(value)
+        if value == 0 and not show_zero:
+            return VGroup()
+        return VGroup(*[T(ch, F, color).move_to([xs[i_last - (len(s) - 1 - k)], y, 0]) for k, ch in enumerate(s)])
+
+    divisor = T(str(d), F).move_to([xs[0] - 1.1, yd, 0])
+    dig = VGroup(*[T(str(v), F, INK).move_to([xs[i], yd, 0]) for i, v in enumerate(digits)])
+    left = np.array([xs[0] - 0.48, ybar, 0])
+    bar = Line(left, [xs[-1] + 0.42, ybar, 0], color=INK, stroke_width=7)
+    brk = ArcBetweenPoints(left, left + np.array([-0.08, -0.92, 0]), angle=-PI / 2.4, color=INK, stroke_width=7)
+    log_x = 2.9
+    log = []
+
+    def add_log(markup):
+        m = M(markup, 40)
+        m.scale_to_fit_width(min(m.width, 6.2))
+        y = 2.2 - len(log) * 0.72
+        m.move_to([log_x, y, 0])
+        S.play(FadeIn(m, shift=LEFT * 0.2), run_time=0.5)
+        log.append(m)
+
+    S.say("세로셈으로 나타내 볼까요?", "이번에는 세로셈으로 나타내 볼까요?")
+    S.play(Write(VGroup(divisor, brk, bar, dig)), run_time=1.2)
+    S.wait(0.6)
+
+    # 처음 나눌 자리 찾기
+    i, cur = 0, digits[0]
+    if cur < d and n > 1:
+        S.say(f"{PLACE[n - 1]}의 자리 {digits[0]} ÷ {d}: 나눌 수 없어요",
+              f"{PLACE[n - 1]}의 자리 {j(digits[0], '은는')} {d}보다 작아서 {d}{who}에 나눌 수 없어요.")
+        S.play(Indicate(dig[0], color=SOFT, scale_factor=1.3), run_time=0.8)
+        while cur < d and i < n - 1:
+            i += 1
+            cur = cur * 10 + digits[i]
+        S.say(f"{PLACE[n - 1 - i]}의 자리까지 묶어 {col_mark(cur, col(i))} ÷ {d}",
+              f"그래서 {PLACE[n - 1 - i]}의 자리까지 함께 보아 {cur} 나누기 {d}로 계산해요. "
+              f"{PLACE[n - 1]} 모형을 {PLACE[n - 2]} 모형으로 바꾼 것과 같아요.")
+        add_log(f"{PLACE[n - 1]}의 자리 {digits[0]} &lt; {d} → {col_mark(cur, col(i))}로 봐요")
+    hl = SurroundingRectangle(VGroup(*dig[:i + 1]), color=col(i), buff=0.1, stroke_width=6)
+    S.play(Create(hl), *[dig[k].animate.set_color(col(i)) for k in range(i + 1)], run_time=0.6)
+
+    y = yd
+    qs = []
+    first = True
+    cur_row = VGroup(*dig[:i + 1])
+    while True:
+        q = cur // d
+        prod = q * d
+        r = cur - prod
+        pl = PLACE[n - 1 - i]
+        qd = T(str(q), F, col(i)).move_to([xs[i], yq, 0])
+        qs.append(qd)
+        S.say(f"{col_mark(cur, col(i))} ÷ {d} = {col_mark(q, col(i))} → 몫의 {pl}의 자리에 {col_mark(q, col(i))}",
+              f"{cur} 나누기 {j(d, '은는')} {q}. 몫의 {pl}의 자리에 {j(q, '을를')} 써요.")
+        S.play(FadeIn(qd, shift=DOWN * 0.3, scale=1.4), run_time=0.5)
+        S.wait(0.4)
+        y -= step
+        pr = num_at(prod, i, y, col(i))
+        ln = Line([xs[max(0, i - len(str(cur)) + 1)] - 0.36, y - step / 2, 0], [xs[i] + 0.36, y - step / 2, 0],
+                  color=INK, stroke_width=5)
+        S.say(f"{d} × {q} = {col_mark(prod, col(i))}을 쓰고 빼면 {col_mark(r, col(i))}",
+              f"{d} 곱하기 {j(q, '은는')} {prod}. {cur}에서 {j(prod, '을를')} 빼면 {j(r, '이에요')}.")
+        S.play(FadeIn(pr, shift=DOWN * 0.2), run_time=0.5)
+        S.play(Create(ln), run_time=0.3)
+        add_log(f"{col_mark(cur, col(i))} ÷ {d} = {col_mark(q, col(i))} ({pl}의 자리)" + (f", 남은 것 {r}" if r else ""))
+        y -= step
+        S.play(FadeOut(hl), run_time=0.2)
+        if i == n - 1:
+            rem_m = num_at(r, i, y, col(i))
+            S.play(FadeIn(rem_m, shift=DOWN * 0.2), run_time=0.5)
+            break
+        # 다음 자리 내리기
+        nxt = digits[i + 1]
+        cur2 = r * 10 + nxt
+        rem_m = num_at(r, i, y, col(i), show_zero=False)
+        down = T(str(nxt), F, col(i + 1)).move_to(dig[i + 1])
+        npl = PLACE[n - 2 - i]
+        if r:
+            S.say(f"남은 {r}에 {npl}의 자리 {j(nxt, '을를')} 내려 써서 {col_mark(cur2, col(i + 1))}",
+                  f"남은 {pl} 모형 {r}개는 {npl} 모형 {r * 10}개로 바꾸고, {npl}의 자리 {j(nxt, '을를')} 내려 쓰면 {j(cur2, '이에요')}.")
+            rem_m.set_color(col(i + 1))
+            S.play(FadeIn(rem_m), run_time=0.5)
+        else:
+            S.say(f"남은 것이 없으니 {npl}의 자리 {o(j(nxt, '을를')) if col(i + 1) == ORANGE else j(nxt, '을를')} 그대로 내려 써요",
+                  f"남은 것이 없으니 {npl}의 자리 {j(nxt, '을를')} 그대로 내려 써요.")
+        S.play(dig[i + 1].animate.set_color(col(i + 1)), down.animate.move_to([xs[i + 1], y, 0]), run_time=0.8)
+        i += 1
+        cur = cur2
+        hl = SurroundingRectangle(VGroup(*rem_m, down), color=col(i), buff=0.1, stroke_width=6)
+        S.play(Create(hl), run_time=0.3)
+        S.wait(0.3)
+
+    qv = a // d
+    rem = a % d
+    qbox = SurroundingRectangle(VGroup(*qs), color=GREEN, buff=0.15, stroke_width=7)
+    tail = f" … 나머지 {o(str(rem))}" if rem else ""
+    S.say(f"몫은 {g(str(qv))}{tail}",
+          f"그래서 몫은 {qv}" + (f", 나머지는 {j(rem, '이에요')}." if rem else "이에요."))
+    S.play(Create(qbox), Indicate(VGroup(*qs), color=GREEN), run_time=0.9)
+    res = M(f"{a} ÷ {d} = {g(str(qv))}" + (f" … {o(str(rem))}" if rem else ""), 56)
+    res.move_to([log_x, 2.2 - len(log) * 0.72 - 0.25, 0])
+    S.play(FadeIn(res, scale=1.2), run_time=0.6)
+    S.wait(2.0)
+    S.settle()
+    S.clear_sub()
+    clear_stage(S)
+
+
+def col_mark(v, color):
+    return f'<span foreground="{color}">{v}</span>'
