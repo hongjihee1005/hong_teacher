@@ -141,6 +141,8 @@ class DivBoard:
                   f"십 모형이 {self.r1}개 남았어요. 이대로는 {d}{'명' if self.who == '명' else '개 ' + self.who}에 똑같이 나눌 수 없어요.")
             S.play(Circumscribe(self.left_rods, color=BLUE, buff=0.12, stroke_width=6, run_time=1.2))
             S.wait(1.0)
+        else:
+            S.say(f"{b('십 모형')}은 남은 것이 없어요", "십 모형은 남은 것이 없어요.", wait=0.8)
 
     # 4) 남은 십 모형 → 일 모형 (핵심 장면)
     def exchange(self):
@@ -226,9 +228,9 @@ class DivBoard:
 
 
 # ── 세로셈 ──────────────────────────────────────────────────────────
-def long_division(S, a, d, who="모둠"):
+def long_division(S, a, d, who="모둠", unit="개"):
     t, u, q1, r1, n2, q2, rem = parts(a, d)
-    assert r1 > 0, "남는 십 모형이 없는 경우(내림 없음)는 아직 만들지 않았어요"
+    assert n2 > 0, "일의 자리에서 나눌 것이 없는 경우(예: 60 ÷ 3)는 세로셈 장면을 쓰지 않아요"
     S.section("세로셈으로 나타내기")
     F = 72
     xt, xo = -3.5, -2.85
@@ -303,41 +305,61 @@ def long_division(S, a, d, who="모둠"):
     cap(f"나누어 준 {b(f'십 모형 {used}개')}")
     S.wait(1.0)
     l1 = Line([xt - 0.4, yl1, 0], [xo + 0.4, yl1, 0], color=INK, stroke_width=6)
-    rr = dig(str(r1), xt, y3, BLUE)
-    S.say(f"{b(f'{t} − {used} = {r1}')}: 남은 {b(f'십 모형 {r1}개')}",
-          f"{t} 빼기 {j(used, '은는')} {r1}. 십 모형이 {r1}개 남았어요.")
-    S.play(Create(l1), run_time=0.4)
-    S.play(FadeIn(rr, shift=DOWN * 0.3), Circumscribe(VGroup(*mrods[used:]), color=BLUE, buff=0.06), run_time=0.9)
-    cap(f"남은 {b(f'십 모형 {r1}개')}")
-    S.play(FadeOut(hl), run_time=0.3)
-    S.wait(0.8)
+    if not r1:
+        S.say(f"{b(f'{t} − {used} = 0')}: 남은 {b('십 모형')}이 없어요",
+              f"{t} 빼기 {j(used, '은는')} 0. 남은 십 모형이 없어요.")
+        S.play(Create(l1), run_time=0.4)
+        cap(f"남은 {b('십 모형')}: 없음")
+        S.play(FadeOut(hl), run_time=0.3)
+        S.wait(0.8)
+        S.say(f"일의 자리 {o(j(u, '을를'))} 그대로 내려 써요",
+              f"이제 일의 자리 {j(u, '을를')} 그대로 내려 써요.")
+        duc = du.copy()
+        arrow = CurvedArrow(du.get_bottom() + DOWN * 0.05 + RIGHT * 0.3, np.array([xo + 0.3, y3 + 0.3, 0]),
+                            angle=-PI / 3, color=ORANGE, stroke_width=6)
+        S.play(du.animate.set_color(ORANGE), Indicate(mones, color=ORANGE), run_time=0.6)
+        S.play(Create(arrow), duc.animate.set_color(ORANGE).move_to([xo, y3, 0]), run_time=1.0)
+        m_all = VGroup(*mones)
+        cap(f"이제 {o(f'일 모형 {u}개')}를 나눠요")
+        hl2 = SurroundingRectangle(duc, color=ORANGE, buff=0.12, stroke_width=6)
+        S.play(Create(hl2), run_time=0.4)
+        S.wait(1.0)
+    else:
+        rr = dig(str(r1), xt, y3, BLUE)
+        S.say(f"{b(f'{t} − {used} = {r1}')}: 남은 {b(f'십 모형 {r1}개')}",
+              f"{t} 빼기 {j(used, '은는')} {r1}. 십 모형이 {r1}개 남았어요.")
+        S.play(Create(l1), run_time=0.4)
+        S.play(FadeIn(rr, shift=DOWN * 0.3), Circumscribe(VGroup(*mrods[used:]), color=BLUE, buff=0.06), run_time=0.9)
+        cap(f"남은 {b(f'십 모형 {r1}개')}")
+        S.play(FadeOut(hl), run_time=0.3)
+        S.wait(0.8)
 
-    # (2) 바꾸고 내리기 (주황)
-    S.say(f"남은 {b(f'십 모형 {r1}개')} → {o(f'일 모형 {r1 * 10}개')}",
-          f"남은 십 모형 {r1}개는 일 모형 {r1 * 10}개로 바꿔요.")
-    pts = grid_points([3.75, -0.45, 0], n2, 10 if n2 > 12 else 6, s * 1.5)
-    anims, mcubes = [], []
-    for jj, rod in enumerate(mrods[used:]):
-        an, cs = break_ten(rod, pts[jj * 10:(jj + 1) * 10], run_time=1.3, lag=0.08)
-        anims.append(an)
-        mcubes += list(cs)
-    S.play(*anims, rr.animate.set_color(ORANGE), run_time=1.3)
-    cap(f"{b(f'십 모형 {r1}개')} = {o(f'일 모형 {r1 * 10}개')}")
-    S.wait(0.8)
-    S.say(f"일의 자리 {o(j(u, '을를'))} 내려 써서 {o(str(n2))}",
-          f"일의 자리 {j(u, '을를')} 내려 쓰면 {j(n2, '이가')} 돼요.")
-    duc = du.copy()
-    arrow = CurvedArrow(du.get_bottom() + DOWN * 0.05 + RIGHT * 0.3, np.array([xo + 0.3, y3 + 0.3, 0]),
-                        angle=-PI / 3, color=ORANGE, stroke_width=6)
-    S.play(du.animate.set_color(ORANGE), run_time=0.3)
-    S.play(Create(arrow), duc.animate.set_color(ORANGE).move_to([xo, y3, 0]), run_time=1.0)
-    if u:
-        S.play(*[mones[i].animate.move_to(pts[r1 * 10 + i]) for i in range(u)], run_time=0.7)
-    m_all = VGroup(*mcubes, *mones)
-    cap(f"{o('일 모형')}은 모두 {o(f'{n2}개')}")
-    hl2 = SurroundingRectangle(VGroup(rr, duc), color=ORANGE, buff=0.12, stroke_width=6)
-    S.play(Create(hl2), run_time=0.4)
-    S.wait(1.0)
+        # (2) 바꾸고 내리기 (주황)
+        S.say(f"남은 {b(f'십 모형 {r1}개')} → {o(f'일 모형 {r1 * 10}개')}",
+              f"남은 십 모형 {r1}개는 일 모형 {r1 * 10}개로 바꿔요.")
+        pts = grid_points([3.75, -0.45, 0], n2, 10 if n2 > 12 else 6, s * 1.5)
+        anims, mcubes = [], []
+        for jj, rod in enumerate(mrods[used:]):
+            an, cs = break_ten(rod, pts[jj * 10:(jj + 1) * 10], run_time=1.3, lag=0.08)
+            anims.append(an)
+            mcubes += list(cs)
+        S.play(*anims, rr.animate.set_color(ORANGE), run_time=1.3)
+        cap(f"{b(f'십 모형 {r1}개')} = {o(f'일 모형 {r1 * 10}개')}")
+        S.wait(0.8)
+        S.say(f"일의 자리 {o(j(u, '을를'))} 내려 써서 {o(str(n2))}",
+              f"일의 자리 {j(u, '을를')} 내려 쓰면 {j(n2, '이가')} 돼요.")
+        duc = du.copy()
+        arrow = CurvedArrow(du.get_bottom() + DOWN * 0.05 + RIGHT * 0.3, np.array([xo + 0.3, y3 + 0.3, 0]),
+                            angle=-PI / 3, color=ORANGE, stroke_width=6)
+        S.play(du.animate.set_color(ORANGE), run_time=0.3)
+        S.play(Create(arrow), duc.animate.set_color(ORANGE).move_to([xo, y3, 0]), run_time=1.0)
+        if u:
+            S.play(*[mones[i].animate.move_to(pts[r1 * 10 + i]) for i in range(u)], run_time=0.7)
+        m_all = VGroup(*mcubes, *mones)
+        cap(f"{o('일 모형')}은 모두 {o(f'{n2}개')}")
+        hl2 = SurroundingRectangle(VGroup(rr, duc), color=ORANGE, buff=0.12, stroke_width=6)
+        S.play(Create(hl2), run_time=0.4)
+        S.wait(1.0)
 
     # (3) 일의 자리 (주황)
     qb = dig(str(q2), xo, yq, ORANGE)
@@ -368,8 +390,8 @@ def long_division(S, a, d, who="모둠"):
 
     q = q1 * 10 + q2
     qbox = SurroundingRectangle(VGroup(qa, qb), color=GREEN, buff=0.15, stroke_width=7)
-    S.say(f"몫은 {b(str(q1))}{o(str(q2))}: 한 {who}에 {g(f'{q}개')}씩!",
-          f"그래서 몫은 {q}. 한 {who}에 {q}개씩이에요.")
+    S.say(f"몫은 {b(str(q1))}{o(str(q2))}: 한 {who}에 {g(f'{q}{unit}')}씩!",
+          f"그래서 몫은 {q}. 한 {who}에 {q}{unit}씩이에요.")
     S.play(Create(qbox), Indicate(VGroup(qa, qb), color=GREEN), run_time=0.9)
     cap(f"한 묶음 = {b(f'{q1}0')} + {o(str(q2))} = {g(str(q))}")
     S.wait(2.0)
