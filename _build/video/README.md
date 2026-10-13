@@ -10,6 +10,7 @@
 | `epNN/scene.py` | 화마다 장면 (`EpisodeScene`을 물려받아 `construct()`만 씀) |
 | `epNN/narration.txt` | 렌더링할 때 저절로 만들어지는 **시간 표시 나레이션 원고**(Vrew용) |
 | `epNN/timeline.json` | 자막이 바뀌는 시각(장면 확인용) |
+| `fonts/` | 도장방(도장 만들기)과 같은 글꼴: 고운돋움(모든 글자)·송명(「초등교사 홍지희」 도장). SIL OFL 1.1, 출처 Google Fonts(github.com/google/fonts) |
 | `render.sh` | 미리보기·최종 렌더링 |
 | `frames.py` | 완성 영상에서 자막마다 장면을 뽑아 6장씩 모아 보기(숫자·계산 확인용) |
 
@@ -22,15 +23,15 @@ Manim Community 공식 설치 안내: https://docs.manim.community/en/stable/ins
 1. 파이썬 설치: https://www.python.org/downloads/ 에서 3.12를 받아 설치(첫 화면에서 **Add python.exe to PATH** 체크).
 2. FFmpeg 설치: 명령 프롬프트에서 `winget install ffmpeg`
 3. Manim 설치: `pip install manim`
-4. 한글 글꼴: 윈도에는 '맑은 고딕'이 있어 그대로 됩니다. 영상과 똑같이 하려면 Noto Sans KR(https://fonts.google.com/noto/specimen/Noto+Sans+KR)을 받아 설치.
+4. 한글 글꼴은 설치하지 않아도 됩니다(`fonts/` 폴더의 글꼴을 프로그램이 스스로 불러 씀).
 5. 확인: `manim --version`
 
 ### 맥
 1. Homebrew(https://brew.sh) 설치 뒤: `brew install python ffmpeg pango pkg-config`
 2. `pip3 install manim`
-3. 한글 글꼴은 'Apple SD Gothic Neo'가 있어 그대로 됩니다(Noto Sans KR을 설치하면 그것을 먼저 씀).
+3. 한글 글꼴은 설치하지 않아도 됩니다(`fonts/` 폴더의 글꼴을 씀).
 
-글꼴은 `series_style.py`의 `FONT_CANDIDATES` 차례(Noto Sans KR → Noto Sans CJK KR → 나눔고딕 → 맑은 고딕 → Apple SD Gothic Neo)로 컴퓨터에 있는 것을 고릅니다.
+글꼴은 `series_style.py`가 `fonts/`의 고운돋움·송명을 등록해 씁니다. 그 폴더가 없으면 `FONT_CANDIDATES` 차례(Noto Sans KR → Noto Sans CJK KR → 나눔고딕 → 맑은 고딕 → Apple SD Gothic Neo)로 컴퓨터에 있는 것을 고릅니다.
 
 ## 2. 렌더링
 
@@ -63,6 +64,8 @@ manim -qh --fps 30 --media_dir media --disable_caching -o ep01_final.mp4 ep01\sc
 4. 미리보기 → `python frames.py 2 preview`로 장면 사진을 보고 숫자·계산·겹침 확인 → 최종.
 
 ## 4. 1화에서 정한 것
+
+- 「초등교사 홍지희」: 도장방 로고처럼 빨간 테두리 도장(송명 글꼴, 살짝 기울임)을 오프닝 오른쪽 아래에 '쿵' 찍고, 마무리 오른쪽 아래 '만든 사람' 옆에 다시 찍음(`seal()`·`stamp_in()`). 빨강은 도장에만 씀.
 
 - 세로셈은 3학년 교과서처럼 나누어지는 수 위에 몫을 쓰는 꼴(`3 ) 42`), 십의 자리 단계는 파랑·일의 자리 단계는 주황으로 수모형 장면과 색을 맞춤.
 - 4 아래에 쓰는 3은 '나누어 준 십 모형 3개(30)'라고 자막으로 알려 줌(선생님이 주신 순서대로 30이 아닌 3만 씀 — 교과서 표기와 같은지는 확인하지 못함).

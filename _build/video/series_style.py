@@ -22,14 +22,24 @@ import re
 
 import manimpango
 from manim import (
-    BOLD, DOWN, DR, LEFT, ORIGIN, RIGHT, UL, UP, UR,
+    BOLD, DL, DOWN, DR, LEFT, ORIGIN, RIGHT, UL, UP, UR,
     AnimationGroup, Arc, Circle, Create, FadeIn, FadeOut, Line, MarkupText,
     Rectangle, RoundedRectangle, Scene, Text, Transform, VGroup, Write,
     linear, rate_functions,
 )
 
-# ── 글꼴: 컴퓨터에 있는 것 중 앞에서부터 고름 ─────────────────────────
+# ── 글꼴 ─────────────────────────────────────────────────────────
+# fonts/ 폴더의 글꼴을 이 프로그램 안에서만 등록하므로 컴퓨터에 따로 설치하지 않아도 됩니다.
+#   고운돋움(Gowun Dodum) — 도장방(도장 만들기) 본문 글꼴, 영상의 모든 글자
+#   송명(Song Myung)      — 도장방 도장 로고 글꼴, 「초등교사 홍지희」 도장에만
+FONT_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "fonts")
+for _f in ("GowunDodum-Regular.ttf", "SongMyung-Regular.ttf"):
+    if os.path.exists(os.path.join(FONT_DIR, _f)):
+        manimpango.register_font(os.path.join(FONT_DIR, _f))
+
+# 컴퓨터에 있는 것 중 앞에서부터 고름
 FONT_CANDIDATES = [
+    "Gowun Dodum",         # fonts/ 폴더(도장방 글꼴)
     "Noto Sans KR",        # 구글 글꼴에서 받은 Noto Sans KR
     "Noto Sans CJK KR",    # 리눅스 fonts-noto-cjk
     "NanumGothic", "나눔고딕",
@@ -50,6 +60,7 @@ def pick_font():
 
 
 FONT = pick_font()
+SEAL_FONT = "Song Myung" if "Song Myung" in set(manimpango.list_fonts()) else FONT
 
 # ── 색 (배경 + 글자 + 세 가지 강조색) ─────────────────────────────────
 BG = "#FFF9EE"          # 밝은 크림색 배경
@@ -63,6 +74,7 @@ BLUE_DARK = "#1C4A9C"
 ORANGE = "#F08A1C"      # 일 모형 · 일의 자리
 ORANGE_DARK = "#B25E08"
 GREEN = "#2E9E5B"       # 답·확인
+RED = "#C63B2C"         # 도장(도장방과 같은 빨강) — 오프닝·마무리의 「초등교사 홍지희」 도장에만
 
 
 def b(s):
@@ -87,8 +99,10 @@ def T(s, size=48, color=INK, bold=True):
 
 def M(markup, size=48, color=INK, bold=True):
     """색을 섞은 글자: M(f"{b('십 모형')} 4개") """
-    return MarkupText(markup, font=FONT, font_size=size, color=color,
-                      weight=BOLD if bold else "NORMAL")
+    # MarkupText는 weight 값을 따르지 않아 굵기를 글 안에 적음
+    if bold:
+        markup = f'<span weight="bold">{markup}</span>'
+    return MarkupText(markup, font=FONT, font_size=size, color=color)
 
 
 def plain(markup):
@@ -209,6 +223,27 @@ class EpisodeScene(Scene):
         handle.shift(ring.point_at_angle(-0.8))
         return VGroup(glass, ring, shine, handle)
 
+    # ── 「초등교사 홍지희」 도장 (도장방 로고처럼 빨간 테두리, 살짝 기울임) ──
+    @staticmethod
+    def seal(scale=1.0):
+        top = Text("초등교사", font=SEAL_FONT, font_size=30, color=RED)
+        name = Text("홍지희", font=SEAL_FONT, font_size=64, color=RED)
+        words = VGroup(top, name).arrange(DOWN, buff=0.08)
+        box = RoundedRectangle(corner_radius=0.2, width=words.width + 0.5, height=words.height + 0.45,
+                               stroke_color=RED, stroke_width=10)
+        box.move_to(words)
+        st = VGroup(box, words).rotate(-0.07)
+        st.scale(scale)
+        return st
+
+    def stamp_in(self, st, run_time=0.45):
+        """도장을 '쿵' 찍는 움직임: 크게 → 제자리"""
+        target = st.copy()
+        st.scale(1.7).set_opacity(0)
+        self.play(Transform(st, target, rate_func=rate_functions.ease_in_quad), run_time=run_time)
+        self.play(st.animate.scale(1.04), run_time=0.08)
+        self.play(st.animate.scale(1 / 1.04), run_time=0.1)
+
     # ── 오프닝 (5초) ──
     def opening(self):
         t0 = self.now()
@@ -226,8 +261,10 @@ class EpisodeScene(Scene):
         self.play(FadeIn(mag, scale=0.6), run_time=0.8)
         self.play(Write(series), Create(bar), run_time=1.2)
         self.play(FadeIn(ep, shift=UP * 0.3), run_time=0.8)
+        st = self.seal(0.95).move_to([5.25, -2.45, 0])
+        self.stamp_in(st)
         self.wait(max(0.0, 5.0 - 0.6 - (self.now() - t0)))
-        self.play(FadeOut(VGroup(mag, series, ep, bar)), run_time=0.6)
+        self.play(FadeOut(VGroup(mag, series, ep, bar, st)), run_time=0.6)
 
     # ── 생각해 보세요 멈춤 화면 ──
     def pause_screen(self, seconds=5, msg="잠시 멈추고 이야기해 보세요"):
@@ -282,7 +319,11 @@ class EpisodeScene(Scene):
         nxt.move_to([0, -2.1, 0])
         mag = self.magnifier(0.32)
         series = T(f"「{self.SERIES}」 {self.EP_NO}화", 34, SOFT)
-        logo = VGroup(mag, series).arrange(RIGHT, buff=0.3).to_corner(DR, buff=0.4)
+        logo_l = VGroup(mag, series).arrange(RIGHT, buff=0.3).to_corner(DL, buff=0.45)
+        maker = T("만든 사람", 34, SOFT)
+        st = self.seal(0.62)
+        logo_r = VGroup(maker, st).arrange(RIGHT, buff=0.3).to_corner(DR, buff=0.35)
+        logo = VGroup(logo_l, maker)
         self._log.append((t0, "마무리", plain(summary_markup),
                           plain(summary_markup)))
         if next_preview:
@@ -290,10 +331,11 @@ class EpisodeScene(Scene):
                               f"다음 화에서는 {next_preview}"))
         self.play(FadeIn(head, shift=DOWN * 0.2), FadeIn(logo), run_time=0.6)
         self.play(FadeIn(box, scale=0.95), run_time=0.9)
+        self.stamp_in(st, run_time=0.35)
         self.wait(3.0)
         self.play(FadeIn(nxt, shift=UP * 0.2), run_time=0.6)
         self.wait(max(0.0, 10.0 - 0.8 - (self.now() - t0)))
-        self.play(FadeOut(VGroup(head, box, nxt, logo)), run_time=0.8)
+        self.play(FadeOut(VGroup(head, box, nxt, logo, st)), run_time=0.8)
 
     # ── 렌더링이 끝나면 나레이션 원고 쓰기 ──
     def tear_down(self):
