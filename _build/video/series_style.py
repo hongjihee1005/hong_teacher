@@ -300,6 +300,8 @@ class EpisodeScene(Scene):
         VGroup(head, box).arrange(DOWN, buff=0.45).move_to([0, 1.1, 0])
         nxt_txt = next_preview if next_preview else "                "
         nxt = M(f"{o('다음 화 예고')}   {nxt_txt}", 46)
+        if nxt.width > 12.4:
+            nxt.scale_to_fit_width(12.4)
         nxt.move_to([0, -2.1, 0])
         mag = self.magnifier(0.32)
         series = T(f"「{self.SERIES}」 {self.EP_NO}화", 34, SOFT)
