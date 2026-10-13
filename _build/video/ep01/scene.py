@@ -104,7 +104,7 @@ class Ep01(EpisodeScene):
     # ── ③ 수모형으로 계산하기 ─────────────────────────────────────
     def blocks(self):
         self.section("수모형으로 나누기")
-        corner = M(f"{g('42')} ÷ {b('3')}", 54).to_corner(UR, buff=0.4)
+        corner = M(f"{g('42')} ÷ {b('3')}", 50).move_to([0.3, 3.55, 0])
         num42 = M(f"{b('4')}{o('2')}", 100).move_to([-5.4, 2.15, 0])
 
         rods = VGroup(*[ten_rod() for _ in range(4)]).arrange(RIGHT, buff=0.2).move_to([-5.85, 0.2, 0])
@@ -228,7 +228,7 @@ class Ep01(EpisodeScene):
         self.play(FadeOut(Group(*self.mobjects_without_ui())), run_time=0.8)
 
     def mobjects_without_ui(self):
-        keep = {id(self._chip), id(self._sub)}
+        keep = {id(self._chip), id(self._sub), id(self._mark)}
         if self._sub is not None:
             keep |= {id(m) for m in self._sub}
         return [m for m in self.mobjects if id(m) not in keep]
