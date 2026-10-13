@@ -62,5 +62,5 @@ def picture_graph(title, rows, units, item_head="항목", unit_word="", col1=1.9
         legend.add(VGroup(icon(r, c), T(f"{u}{unit_word}", 32)).arrange(RIGHT, buff=0.12))
     legend.arrange(RIGHT, buff=0.45).next_to(frame, DOWN, buff=0.2).align_to(frame, RIGHT)
     g = VGroup(frame, lines, h1, h2, names, icons, ttl, legend)
-    g.frame, g.names, g.icons, g.ttl, g.legend, g.heads = frame, names, icons, ttl, legend, VGroup(h1, h2)
+    g.frame, g.names, g.icons, g.ttl, g.legend, g.heads, g.lines = frame, names, icons, ttl, legend, VGroup(h1, h2), lines
     return g
