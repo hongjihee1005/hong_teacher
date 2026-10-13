@@ -3,6 +3,8 @@
     python music/gen_bgm.py 169            → music/bgm_169s.wav (169초에 맞춰 끝나는 곡)
     python music/gen_bgm.py 169 --seed 2   → 같은 짜임에 다른 가락
     python music/gen_bgm.py 169 --style piano → 발랄하고 경쾌한 피아노 곡(1분에 약 120박, 쿵짝 반주 + 끊어 치는 가락)
+      실제 피아노를 녹음한 음원(sf2)으로 연주: FluidSynth + FluidR3_GM(MIT 라이선스) 또는 music/piano.sf2
+      (리눅스: apt install fluidsynth fluid-soundfont-gm). 없으면 합성한 소리로 만듦. 악보 .mid도 함께 남김
 
 - 다장조, 1분에 약 96박(영상 길이에 맞춰 조금 고침), 4/4박자. 화음 진행 C–G–Am–F / C–F–G–C 를 되풀이
 - 소리: 마림바(가락), 오르골(가락 겹침, 작게), 부드러운 베이스, 잔잔한 패드(화음), 아주 작은 셰이커
@@ -254,7 +256,22 @@ def voice(tones, lo=55, hi=67):
     return sorted(out)
 
 
-def compose_piano(seconds, seed=1):
+SF2_CANDIDATES = [
+    os.path.join(os.path.dirname(os.path.abspath(__file__)), "piano.sf2"),   # 직접 넣은 음원이 있으면 먼저
+    "/usr/share/sounds/sf2/FluidR3_GM.sf2",                                  # 리눅스 fluid-soundfont-gm (MIT)
+    "/usr/share/soundfonts/FluidR3_GM.sf2",
+]
+
+
+def find_sf2():
+    for p in SF2_CANDIDATES:
+        if os.path.exists(p):
+            return p
+    return None
+
+
+def piano_events(seconds, seed=1):
+    """피아노 곡의 음표 목록: (시작 초, 누르는 시간 초, 미디 번호, 세기 0~1)"""
     global BEAT, BAR
     rng = np.random.default_rng(seed)
     intro = 2
@@ -270,7 +287,7 @@ def compose_piano(seconds, seed=1):
         octave = 12 if (k // 4) % 2 == 1 and name in ("A", "A2") else 0   # 두 번째 돌 때는 한 옥타브 위로 밝게
         for c, notes in zip(chords, mel):
             bars.append((c, [(b, l, m + octave) for b, l, m in notes]))
-    buf = np.zeros((int(SR * (seconds + 1)), 2))
+    ev = []
 
     def hum():
         return rng.normal(0, 0.006)
@@ -281,29 +298,86 @@ def compose_piano(seconds, seed=1):
         root = tones[0]
         while root > 50:
             root -= 12
-        fifth = root + 7
-        if ch in ("G", "Em"):                            # 낮은 음이 너무 높지 않게
-            fifth = root + 7 if root + 7 <= 50 else root - 5
+        fifth = root + 7 if root + 7 <= 50 else root - 5
         v = voice(tones)
         # 왼손: 쿵(낮은 음) - 짝(화음) - 쿵(5도) - 짝(화음)
-        add(buf, t0 + hum(), piano(root, BEAT * 0.9, 0.42, rng), -0.25)
-        add(buf, t0 + 2 * BEAT + hum(), piano(fifth, BEAT * 0.9, 0.38, rng), -0.25)
+        ev.append((t0 + hum(), BEAT * 0.9, root, 0.42))
+        ev.append((t0 + 2 * BEAT + hum(), BEAT * 0.9, fifth, 0.38))
         for b in (1, 3):
             for m in v:
-                add(buf, t0 + b * BEAT + hum(), piano(m, BEAT * 0.38, 0.3, rng), -0.1)
+                ev.append((t0 + b * BEAT + hum(), BEAT * 0.4, m, 0.3))
         if notes is None:
             continue
         for b, l, m in notes:
             hold = l * BEAT * (0.55 if l <= 0.5 else 0.8)   # 짧은 음은 끊어 쳐서 통통 튀게
             vel = 0.62 if b in (0, 2) else 0.52
-            add(buf, t0 + b * BEAT + hum(), piano(m, hold, vel + rng.normal(0, 0.03), rng), 0.2)
+            ev.append((t0 + b * BEAT + hum(), hold, m, vel + rng.normal(0, 0.03)))
     # 마무리: 위로 올라가는 도-미-솔-도, 그리고 으뜸화음
     tf = len(bars) * BAR
     for k, m in enumerate([72, 76, 79, 84]):
-        add(buf, tf + k * BEAT / 2, piano(m, 0.3 if k < 3 else 2.0, 0.55, rng), 0.2)
+        ev.append((tf + k * BEAT / 2, 0.3 if k < 3 else 2.2, m, 0.55))
     for m in (48, 60, 64, 67, 72):
-        add(buf, tf + 2 * BEAT, piano(m, 1.6, 0.5, rng), 0.0)
-    return buf[: int(SR * seconds)]
+        ev.append((tf + 2 * BEAT, 2.0, m, 0.5))
+    return [(max(0.0, t), d, m, v) for t, d, m, v in ev]
+
+
+def write_midi(events, path):
+    import mido
+    tpb = 480
+    tempo = int(round(BEAT * 1e6))
+    mid = mido.MidiFile(ticks_per_beat=tpb)
+    tr = mido.MidiTrack()
+    mid.tracks.append(tr)
+    tr.append(mido.MetaMessage("set_tempo", tempo=tempo, time=0))
+    tr.append(mido.Message("program_change", program=0, channel=0, time=0))   # 0번 = 어쿠스틱 그랜드 피아노
+    msgs = []
+    for t, d, m, v in events:
+        on = int(round(t / BEAT * tpb))
+        off = int(round((t + d) / BEAT * tpb))
+        vel = int(np.clip(30 + v * 95, 1, 127))
+        msgs.append((on, 1, mido.Message("note_on", note=int(m), velocity=vel, channel=0)))
+        msgs.append((off, 0, mido.Message("note_off", note=int(m), velocity=0, channel=0)))
+    msgs.sort(key=lambda x: (x[0], x[1]))
+    last = 0
+    for tick, _, msg in msgs:
+        msg.time = tick - last
+        last = tick
+        tr.append(msg)
+    mid.save(path)
+
+
+def compose_piano(seconds, seed=1):
+    """실제 피아노를 녹음한 음원(sf2)이 있으면 그 소리로, 없으면 합성한 피아노 소리로.
+    반환: (소리, 잔향을 더 넣어야 하는지)"""
+    import shutil
+    import subprocess
+    import tempfile
+    events = piano_events(seconds, seed)
+    sf2 = find_sf2()
+    if sf2 and shutil.which("fluidsynth"):
+        with tempfile.TemporaryDirectory() as d:
+            mpath, wpath = os.path.join(d, "bgm.mid"), os.path.join(d, "bgm.wav")
+            write_midi(events, mpath)
+            here = os.path.dirname(os.path.abspath(__file__))
+            write_midi(events, os.path.join(here, f"bgm_piano_{int(round(seconds))}s.mid"))   # 악보도 남김
+            subprocess.run(["fluidsynth", "-ni", "-q", "-F", wpath, "-r", str(SR), "-g", "0.6",
+                            "-o", "synth.reverb.active=1", "-o", "synth.chorus.active=0",
+                            "-o", "synth.reverb.room-size=0.45", "-o", "synth.reverb.level=0.6",
+                            sf2, mpath], check=True, stdin=subprocess.DEVNULL, capture_output=True)
+            with wave.open(wpath) as w:
+                x = np.frombuffer(w.readframes(w.getnframes()), "<i2").reshape(-1, w.getnchannels())
+            x = x.astype(float) / 32768
+        n = int(SR * seconds)
+        if len(x) < n:
+            x = np.vstack([x, np.zeros((n - len(x), x.shape[1]))])
+        print("피아노 음원:", sf2)
+        return x[:n], False
+    rng = np.random.default_rng(seed)
+    buf = np.zeros((int(SR * (seconds + 1)), 2))
+    for t, d, m, v in events:
+        add(buf, t, piano(m, d, v, rng), 0.2 if m >= 60 else -0.2)
+    print("피아노 음원이 없어 합성한 소리로 만듦(fluidsynth와 sf2 음원을 설치하면 실제 피아노 소리)")
+    return buf[: int(SR * seconds)], True
 
 
 def reverb(x, seed=7, length=1.4, mix=0.18):
@@ -326,7 +400,9 @@ def main():
     seed = int(sys.argv[sys.argv.index("--seed") + 1]) if "--seed" in sys.argv else 1
     style = sys.argv[sys.argv.index("--style") + 1] if "--style" in sys.argv else "marimba"
     if style == "piano":
-        x = reverb(compose_piano(secs, seed), mix=0.14)
+        x, more = compose_piano(secs, seed)
+        if more:
+            x = reverb(x, mix=0.14)
     else:
         x = reverb(compose(secs, seed))
     # 끝 3초 서서히 줄이기, 크기 맞추기(최대 -3dBFS)

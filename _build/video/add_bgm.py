@@ -1,9 +1,9 @@
 """완성 영상에 배경음악(BGM)을 작게 깔기
     python add_bgm.py 1 음악.mp3            → ep01/ep01_final_bgm.mp4
     python add_bgm.py 1 음악.mp3 --tag piano → ep01/ep01_final_bgm_piano.mp4 (여러 곡을 견줘 볼 때)
-    python add_bgm.py 1 음악.mp3 -20        → 목표 크기를 -20 LUFS 쪽으로 (기본 -30, 숫자가 작을수록 조용함)
+    python add_bgm.py 1 음악.mp3 -20        → 목표 크기를 -20 LUFS 쪽으로 (기본 -34, 숫자가 작을수록 조용함)
 
-- 음악 크기를 재서 목표 크기(기본 -30 LUFS: 말소리 없이 깔리는 아주 작은 소리)로 맞춤
+- 음악 크기를 재서 목표 크기(기본 -34 LUFS: 잔잔하게 깔리는 작은 소리, 2026-10-13 선생님 요청으로 -30에서 낮춤)로 맞춤
 - 처음 2초 서서히 커지고, 끝 4초 서서히 작아짐. 음악이 짧으면 되풀이, 길면 자름
 - '생각해 보세요' 멈춤 화면(timeline.json)에서는 절반 크기로 줄였다가 되돌림
 - 소리 없는 원본(epNN_final.mp4)은 그대로 둠 (Vrew 더빙용)
@@ -17,7 +17,7 @@ if "--tag" in argv:
     tag = argv[i + 1]
     del argv[i:i + 2]
 n, music = int(argv[0]), argv[1]
-target = float(argv[2]) if len(argv) > 2 else -30.0
+target = float(argv[2]) if len(argv) > 2 else -34.0
 here = os.path.dirname(os.path.abspath(__file__))
 ep = f"ep{n:02d}"
 video = os.path.join(here, ep, f"{ep}_final.mp4")
