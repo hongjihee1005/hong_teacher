@@ -64,7 +64,7 @@ class Ep01(EpisodeScene):
     def problem(self):
         self.section("문제")
         q = M(f"구슬 {g('42개')}를 {b('3명')}이 똑같이 나누어 가지면\n한 명이 몇 개씩 가질까요?", 56)
-        q.scale_to_fit_width(min(q.width, 11.4)).move_to([0.6, 2.2, 0])
+        q.scale_to_fit_width(min(q.width, 11.4)).move_to([0.3, 2.1, 0])
         marbles = VGroup(*[
             Circle(radius=0.17, fill_color=GREEN, fill_opacity=1, stroke_color="#1E6E3F", stroke_width=3)
             for _ in range(42)
@@ -256,14 +256,14 @@ class Ep01(EpisodeScene):
         # 오른쪽: 작은 수모형 장면 (위 장면과 같은 색)
         s = 0.13
         mplates = VGroup(*[plate("", width=1.35, height=1.75) for _ in range(3)]).arrange(RIGHT, buff=0.18)
-        mplates.move_to([3.75, 1.4, 0])
+        mplates.move_to([3.75, 1.25, 0])
         mrods = VGroup(*[ten_rod(s) for _ in range(4)]).arrange(RIGHT, buff=0.12)
         mones = VGroup(unit_cube(s), unit_cube(s)).arrange(UP, buff=0.06)
         pool = VGroup(mrods, mones).arrange(RIGHT, buff=0.3, aligned_edge=DOWN).move_to([3.75, -0.45, 0])
-        mini_title = T("수모형으로 보면", 38, SOFT).move_to([3.75, 2.62, 0])
-        panel_bg = RoundedRectangle(corner_radius=0.3, width=5.6, height=5.35,
+        mini_title = T("수모형으로 보면", 38, SOFT).move_to([3.75, 2.45, 0])
+        panel_bg = RoundedRectangle(corner_radius=0.3, width=5.6, height=5.0,
                                     fill_color=PAPER, fill_opacity=0.7, stroke_color=SOFT, stroke_width=2)
-        panel_bg.move_to([3.75, 0.45, 0])
+        panel_bg.move_to([3.75, 0.3, 0])
         caption = T("", 38)
 
         def set_caption(markup):

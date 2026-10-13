@@ -23,7 +23,7 @@ import re
 import manimpango
 from manim import (
     BOLD, DL, DOWN, DR, LEFT, ORIGIN, RIGHT, UL, UP, UR,
-    AnimationGroup, Arc, Circle, Create, FadeIn, FadeOut, Line, MarkupText,
+    AnimationGroup, Arc, Circle, ImageMobject, Create, FadeIn, FadeOut, Line, MarkupText,
     Rectangle, RoundedRectangle, Scene, Text, Transform, VGroup, Write,
     linear, rate_functions,
 )
@@ -119,7 +119,8 @@ BIG = 120           # 큰 숫자·식
 MID = 64            # 설명 글
 SMALL = 44          # 이름표
 
-MAKER = "초등교사 홍지희"   # 오른쪽 위에 늘 떠 있는 만든 사람 표시
+LOGO = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "logo.png")
+LOGO_H = 0.95   # 오른쪽 위 로고 높이(화면 높이 8 기준, 1080p에서 약 128픽셀)
 
 SUB_Y = -3.28       # 자막 띠 가운데 높이
 SUB_H = 1.12
@@ -143,8 +144,8 @@ class EpisodeScene(Scene):
         self._log = []          # (시각, 구역, 자막, 나레이션)
         self._section = ""
         self._need_until = 0.0  # 앞 나레이션을 다 읽을 때까지
-        # 오른쪽 위 고정 표시(처음부터 끝까지, 멈춤 화면 덮개보다 위)
-        self._mark = T(MAKER, 28, SOFT).to_corner(UR, buff=0.3).set_opacity(0.85)
+        # 오른쪽 위 고정 로고 「초등교사 홍지희」(처음부터 끝까지, 멈춤 화면 덮개보다 위)
+        self._mark = ImageMobject(LOGO).set_height(LOGO_H).to_corner(UR, buff=0.18)
         self._mark.set_z_index(100)
         self.add(self._mark)
 
