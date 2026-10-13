@@ -14,6 +14,7 @@
 | `render.sh` | 미리보기·최종 렌더링 |
 | `add_bgm.py` | 완성 영상에 배경음악을 작게 깔기(`python add_bgm.py 1 음악.mp3` → `ep01/ep01_final_bgm.mp4`, 목표 -34 LUFS(잔잔하게), 처음·끝 서서히, 멈춤 화면에서 더 작게). 남이 만든 음악을 쓸 때는 이용 조건을 먼저 확인 |
 | `music/gen_bgm.py` | **이 저장소에서 직접 짓고 합성하는 배경음악**(저작권 걱정 없음). `python music/gen_bgm.py 168.83`처럼 영상 길이(초)를 주면 그 길이에 딱 맞춰 끝나는 곡(다장조, 마림바·오르골·베이스·패드). 같은 길이·seed면 같은 곡, `--seed 2`로 다른 가락. `--style piano`는 발랄한 피아노 곡 — **실제 피아노를 녹음한 음원 FluidR3_GM(MIT 라이선스)으로 FluidSynth가 연주**(설치: 리눅스 `apt install fluidsynth fluid-soundfont-gm`, 맥 `brew install fluid-synth` 후 sf2를 `music/piano.sf2`로; 없으면 합성 소리), 악보 `.mid`도 남김(1분에 약 120박, 왼손 쿵짝 + 끊어 치는 가락, 손으로 지은 가락 `PIANO_PHRASES`). 1화 곡은 마림바 `music/bgm_ep01.mp3`·피아노 `music/bgm_ep01_piano.mp3` |
+| `EPISODES.md` | 3학년 영상 목록(51편 계획, 지도서 차시·예시·핵심 장면·필요한 부품) |
 | `frames.py` | 완성 영상에서 자막마다 장면을 뽑아 6장씩 모아 보기(숫자·계산 확인용) |
 
 ## 1. 설치 (처음 한 번)
