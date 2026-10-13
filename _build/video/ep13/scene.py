@@ -116,7 +116,7 @@ class Ep13(EpisodeScene):
             s.move_to([-3.4 + i * 0.95, 1.3, 0])
         self.play(LaggedStart(*[FadeIn(s, scale=0.6) for s in pieces], lag_ratio=0.1, run_time=1.2))
         self.say(f"{b('분모 4')}만큼씩 묶으면 원 하나", "분모가 4이니까 4조각씩 모으면 원 하나, 곧 1이 돼요.")
-        targets = [pie(4, 4, 0.9).move_to([-2.6, 0.0, 0]), pie(4, 4, 0.9).move_to([0.0, 0.0, 0]), pie(4, 1, 0.9).move_to([2.6, 0.0, 0])]
+        targets = [pie(4, 4, 0.9).move_to([-2.6, 0.25, 0]), pie(4, 4, 0.9).move_to([0.0, 0.25, 0]), pie(4, 1, 0.9).move_to([2.6, 0.25, 0])]
         anims = []
         for i, s in enumerate(pieces):
             gi, kk = divmod(i, 4)
@@ -133,7 +133,8 @@ class Ep13(EpisodeScene):
         e = row(frac(9, 4, 60, cn=ORANGE), "=", mixed(2, 1, 4, 60, cw=GREEN, cn=ORANGE), size=60).move_to([4.8, 1.3, 0])
         self.say(f"원 {g('2개')}와 {o('4분의 1')} → {g('2와 4분의 1')}", "원 2개와 4분의 1 조각 하나가 남았어요. 그래서 4분의 9는 2와 4분의 1이에요.")
         self.play(FadeIn(e), run_time=0.7)
-        tip = M(f"9 ÷ 4 = {g('2')} … {o('1')}  →  몫은 자연수, 나머지는 분자", 40).move_to([1.6, -2.4, 0])
+        tip = M(f"9 ÷ 4 = {g('2')} … {o('1')}  →  몫은 자연수, 나머지는 분자", 40)
+        tip.scale_to_fit_width(min(tip.width, 10.5)).move_to([0.6, -2.05, 0])
         self.say("나눗셈으로도 생각할 수 있어요", "나눗셈으로 생각하면 9 나누기 4는 2, 나머지 1. 몫 2가 자연수, 나머지 1이 분자가 돼요.")
         self.play(FadeIn(tip, shift=UP * 0.2), run_time=0.7)
         self.wait(2.0)

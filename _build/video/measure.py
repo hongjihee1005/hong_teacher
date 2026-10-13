@@ -113,7 +113,11 @@ def unit_calc(S, a, b_, op, big="L", small="mL", who="", y0=1.6):
                 num(b_[1], xs, ys[1], ORANGE), unit(small, xu2, ys[1]))
     bar = Line([xb - 2.0, ys[1] - 0.6, 0], [xu2 + 0.6, ys[1] - 0.6, 0], color=INK, stroke_width=6)
     S.play(FadeIn(r1), FadeIn(r2), Create(bar), run_time=0.9)
-    S.say(f"{b(big)}는 {b(big)}끼리, {o(small)}는 {o(small)}끼리", f"{big}는 {big}끼리, {small}는 {small}끼리 계산해요.")
+    def tp(u, pair):
+        fin = u in ("kg", "g")
+        return pair[0] if fin else pair[1]
+    S.say(f"{b(big)}{tp(big, '은는')} {b(big)}끼리, {o(small)}{tp(small, '은는')} {o(small)}끼리",
+          f"{big}{tp(big, '은는')} {big}끼리, {small}{tp(small, '은는')} {small}끼리 계산해요.")
     S.play(Indicate(VGroup(r1[0], r2[1]), color=BLUE), Indicate(VGroup(r1[2], r2[3]), color=ORANGE), run_time=1.0)
     extra = VGroup()
     if op == "+":
@@ -124,7 +128,7 @@ def unit_calc(S, a, b_, op, big="L", small="mL", who="", y0=1.6):
             tmp = num(s_small, xs, ys[2], ORANGE)
             S.play(FadeIn(tmp), run_time=0.6)
             S.wait(0.6)
-            S.say(f"{o(f'1000 {small}')} = {b(f'1 {big}')} → 받아올림!", f"1000{small}는 1{big}와 같아요. 1000{small}를 1{big}로 받아올려요!")
+            S.say(f"{o(f'1000 {small}')} = {b(f'1 {big}')} → 받아올림!", f"1000{small}{tp(small, '은는')} 1{big}{'과' if big == 'kg' else '와'} 같아요. 1000{small}{tp(small, '을를')} 1{big}{'으로' if big == 'kg' else '로'} 받아올려요!")
             c1 = T("1", 44, BLUE).move_to([xb + 0.35, ys[0] + 0.75, 0])
             S.play(Indicate(tmp, color=ORANGE, scale_factor=1.2), FadeIn(c1, shift=UP * 0.3), run_time=0.9)
             new_small = num(s_small - 1000, xs, ys[2], ORANGE)
@@ -146,7 +150,7 @@ def unit_calc(S, a, b_, op, big="L", small="mL", who="", y0=1.6):
             from division import j
             S.say(f"{a[1]}에서 {j(b_[1], '을를')} 뺄 수 없어요", f"{small}끼리 {a[1]}에서 {j(b_[1], '을를')} 뺄 수 없어요.")
             S.wait(0.8)
-            S.say(f"{b(f'1 {big}')}를 {o(f'1000 {small}')}로 받아내림!", f"그래서 {a[0]}{big}에서 1{big}를 1000{small}로 바꾸어 받아내려요!")
+            S.say(f"{b(f'1 {big}')}{tp(big, '을를')} {o(f'1000 {small}')}{'으로' if small == 'g' else '로'} 받아내림!", f"그래서 {a[0]}{big}에서 1{big}{tp(big, '을를')} 1000{small}{'으로' if small == 'g' else '로'} 바꾸어 받아내려요!")
             nb = T(str(a[0] - 1), 44, BLUE).move_to([xb + 0.35, ys[0] + 0.75, 0])
             ns = T(str(a[1] + 1000), 44, ORANGE).move_to([xs + 0.0, ys[0] + 0.75, 0])
             cross1 = Line(r1[0].get_corner(DOWN + LEFT), r1[0].get_corner(UP + RIGHT), color=INK, stroke_width=4)
