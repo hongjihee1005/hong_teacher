@@ -98,8 +98,8 @@ def sub_vertical(S, a, b_, x0=-2.2, y0=1.4, F=78, dx=0.62, side_x=0.6):
                 cross = Line(tgt.get_corner(DOWN + LEFT), tgt.get_corner(UP + RIGHT), color=INK, stroke_width=4)
                 if m in small:
                     S.play(FadeOut(small[m]), run_time=0.2)
-                nm = T(str(cur[m]), 38, pc(m)).move_to([xs[m], y0 + 0.75, 0])
-                ten = T(str(cur[m - 1]), 38, pc(m - 1)).move_to([xs[m - 1] + 0.05, y0 + 0.75, 0])
+                nm = T(str(cur[m]), 38 if cur[m] < 10 else 30, pc(m)).move_to([xs[m], y0 + 0.75, 0])
+                ten = T(str(cur[m - 1]), 38 if cur[m - 1] < 10 else 30, pc(m - 1)).move_to([xs[m - 1] + 0.05, y0 + 0.75, 0])
                 if (m - 1) in small:
                     S.play(FadeOut(small[m - 1]), run_time=0.2)
                 S.play(Create(cross), FadeIn(nm, shift=DOWN * 0.2), run_time=0.6)
