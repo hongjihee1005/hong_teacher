@@ -1910,7 +1910,7 @@ function cb5Cub(o) {
   return cb5Prism({ P: [[0, 0], [o.W, 0], [o.W, o.H], [0, o.H]], D: o.D, k: o.k, f: o.f, ang: o.ang, hidden: o.hidden, maxW: o.maxW, tint: o.tint, plain: o.plain, pad: o.pad,
     fill, lab: labMap ? CB5_PI.map(v => labMap[v]) : null,
     miss: (o.miss || []).map(([u, v]) => cb5EdgeKey(u, v)), red: (o.red || []).map(([u, v]) => cb5EdgeKey(u, v)),
-    dims: (o.dims || []).map(([u, v, t]) => ({ u: CB5_PI.indexOf(u), v: CB5_PI.indexOf(v), t })), extra: o.extra });
+    dims: (o.dims || []).map(([u, v, t]) => ({ u: CB5_PI.indexOf(u), v: CB5_PI.indexOf(v), t, d: o.dimD, size: o.dimSize })), extra: o.extra });
 }
 
 /* =========================================================
@@ -2464,7 +2464,7 @@ function cb5Deck() {
 function cb5CardFig(card) {
   const s = CB5_SHAPES[card.shape];
   if (card.kind === "sk") { const [W, H, D] = s.dims;
-    return cb5Cub({ W, H, D, k: 24, maxW: "100%", plain: true, pad: 24, f: .6, dims: [[0, 1, W + " cm"], [1, 3, H + " cm"], [3, 7, D + " cm"]] }); }
+    return cb5Cub({ W, H, D, k: 28, maxW: "100%", plain: true, pad: 40, f: .6, dimD: 24, dimSize: 14, dims: [[0, 1, W + " cm"], [0, 2, H + " cm"], [3, 7, D + " cm"]] }); }
   const N = cb5NetSvg(card.F, { k: 12, pad: 4, grid: true, gx: 1, gy: 1, maxW: "100%", plain: true, color: () => "#FFF6DD" });
   return N.svg;
 }
@@ -2958,13 +2958,13 @@ const LESSONS = [
       { title: "① 전개도를 접어 직육면체를 만들었을 때 겹치는 점과 선분을 찾아보세요.", run: (bx, ax) => cb5NetPts(bx, ax, { F: CB5_L6U1.F, P: CB5_L6U1.P, k: 26, maxW: "24em", tasks: [{ pt: "ㄱ" }, { seg: "ㄴㄷ" }], ok: "점 ㄱ은 점 ㅋ·점 ㅈ과, 선분 ㄴㄷ은 선분 ㅇㅅ과 겹쳐요." }) },
       { title: "② 직육면체의 겨냥도를 보고 전개도의 ㉠, ㉡, ㉢에 알맞은 수를 써 보세요.", run: (bx, ax) => {
         const F = cb5NetFromCells(CB5_CROSS, { 1: 4, 2: 7, 4: 9 });   // 가로 4·9·4·9, 높이 7, 위아래 9 × 4
-        cb5Ask(bx, ax, [{ fig: () => h("div", { class: "cb5row" }, h("div", { style: "flex:0 1 10em" }, cb5Cub({ W: 9, H: 7, D: 4, k: 14, maxW: "10em", dims: [[0, 1, "9 cm"], [1, 3, "7 cm"], [3, 7, "4 cm"]] })),
+        cb5Ask(bx, ax, [{ fig: () => h("div", { class: "cb5row" }, h("div", { style: "flex:0 1 12em" }, cb5Cub({ W: 9, H: 7, D: 4, k: 14, pad: 56, dimD: 32, dimSize: 19, maxW: "12em", dims: [[0, 1, "9 cm"], [0, 2, "7 cm"], [3, 7, "4 cm"]] })),
             h("div", {}, cb5NetSvg(F, { k: 12, maxW: "24em", extra: (s, m) => { const L = (p, q, t, dx, dy) => { const A = m(p), B = m(q); s.append(txt((A[0] + B[0]) / 2 + dx, (A[1] + B[1]) / 2 + dy, t, 15, { fill: CB5.red })); };
               L([0, 4], [4, 4], "㉠", 0, -11); L([4, 0], [13, 0], "㉡", 0, -11); L([26, 4], [26, 11], "㉢", 14, 0); } }).svg)),
           parts: ["㉠ ", { n: 4 }, " cm, ㉡ ", { n: 9 }, " cm, ㉢ ", { n: 7 }, " cm"] }], { ok: "㉠ 4 cm, ㉡ 9 cm, ㉢ 7 cm예요. 접었을 때 맞닿는 선분의 길이를 겨냥도의 모서리와 비교했어요." }); } },
       { title: "③ 직육면체의 전개도를 보고 ㉠, ㉡, ㉢에 알맞은 수를 써 보세요.", run: (bx, ax) => {
         const F = cb5NetFromCells(CB5_CROSS, { 1: 5, 2: 8, 4: 11 });  // 가로 5·11·5·11, 높이 8, 위아래 11 × 5
-        cb5Ask(bx, ax, [{ fig: () => cb5NetSvg(F, { k: 9, maxW: "26em", extra: (s, m) => { const L = (p, q, t, dx, dy, c) => { const A = m(p), B = m(q); s.append(txt((A[0] + B[0]) / 2 + dx, (A[1] + B[1]) / 2 + dy, t, 14, { fill: c || CB5.red })); };
+        cb5Ask(bx, ax, [{ fig: () => cb5NetSvg(F, { k: 9, pad: 44, maxW: "26em", extra: (s, m) => { const L = (p, q, t, dx, dy, c) => { const A = m(p), B = m(q); s.append(txt((A[0] + B[0]) / 2 + dx, (A[1] + B[1]) / 2 + dy, t, 14, { fill: c || CB5.red })); };
             L([32, 5], [32, 13], "8 cm", 22, 0, CB5.blue); L([5, 0], [16, 0], "11 cm", 0, -10, CB5.blue); L([16, 5], [21, 5], "5 cm", 0, -10, CB5.blue);
             L([0, 5], [0, 13], "㉠", -12, 0); L([5, 13], [5, 18], "㉡", -12, 0); L([21, 5], [32, 5], "㉢", 0, -10); } }).svg,
           parts: ["㉠ ", { n: 8 }, " cm, ㉡ ", { n: 5 }, " cm, ㉢ ", { n: 11 }, " cm"] }], { ok: "㉠ 8 cm, ㉡ 5 cm, ㉢ 11 cm예요." }); } },

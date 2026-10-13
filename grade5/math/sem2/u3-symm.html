@@ -1457,7 +1457,7 @@ const sy3R = v => Math.round(v * 1000) / 1000;
 const sy3F = (v, d = 1) => { const p = Math.pow(10, d), r = Math.round(v * p) / p; return String(r); };
 /* 받침에 따라 조사 고르기: sy3Jo("변 ㄱㄴ", "을/를") → "변 ㄱㄴ을", sy3Jo("4 cm", "이/가") → "4 cm가" */
 function sy3Jo(w, pair) {
-  const s = String(w), [a, b] = pair.split("/"), c = s.trim().slice(-1);
+  const s = String(w), c = s.trim().slice(-1); let [a, b] = pair.split("/"); if (["과", "을", "은", "이", "이에요"].includes(b)) [a, b] = [b, a];   // 받침 있을 때 쓰는 말을 a로
   let bat = false, rieul = false;
   if (/[0-9]/.test(c)) { bat = "013678".includes(c); rieul = "178".includes(c); }
   else if (/[ㄱ-ㅎ]/.test(c)) { bat = true; rieul = c === "ㄹ"; }
@@ -2554,7 +2554,7 @@ function sy3Decal(body, api, opt) {
   let col = COL[0], folded = false, done = false;
   const pal = COL.map(c => { const b = h("button", { style: `background:${c};width:2.2em;height:2.2em;border-radius:50%;border:3px solid #fff;box-shadow:0 0 0 2px var(--line)`, "aria-label": "물감 색", onclick: () => { col = c; pal.forEach(x => x.style.boxShadow = "0 0 0 2px var(--line)"); b.style.boxShadow = "0 0 0 3px #2F4A5E"; } }); return b; });
   pal[0].style.boxShadow = "0 0 0 3px #2F4A5E";
-  const read = h("div", { class: "sy3read" }, `접는 선 왼쪽 칸을 눌러 물감을 찍어요. (${opt.need || 5}칸 넘게)`);
+  const read = h("div", { class: "sy3read" }, `접는 선 왼쪽 칸을 눌러 물감을 찍어요. (${opt.need || 5}칸 이상)`);
   const redraw = () => {
     paintG.innerHTML = "";
     cells.forEach((c, k) => { const [x, y] = k.split(",").map(Number); const a = m([x, y]); paintG.append(svgEl("rect", { x: sy3R(a[0] + 2), y: sy3R(a[1] + 2), width: m.k - 4, height: m.k - 4, rx: 10, fill: c })); if (folded) { const b = m([cols - 1 - x, y]); paintG.append(svgEl("rect", { x: sy3R(b[0] + 2), y: sy3R(b[1] + 2), width: m.k - 4, height: m.k - 4, rx: 10, fill: c, opacity: .85 })); } });
@@ -2568,7 +2568,7 @@ function sy3Decal(body, api, opt) {
   });
   const fold = h("button", { class: "big", onclick: () => {
     if (done || folded) return;
-    if (cells.size < (opt.need || 5)) { read.textContent = `물감을 ${opt.need || 5}칸 넘게 찍어 봐요.`; return; }
+    if (cells.size < (opt.need || 5)) { read.textContent = `물감을 ${opt.need || 5}칸 이상 찍어 봐요.`; return; }
     const g = svgEl("g"); foldG.append(g); cells.forEach((c, k) => { const [x, y] = k.split(",").map(Number); const a = m([x, y]); g.append(svgEl("rect", { x: sy3R(a[0] + 2), y: sy3R(a[1] + 2), width: m.k - 4, height: m.k - 4, rx: 10, fill: c, opacity: .8 })); });
     sy3Anim(1300, t => g.setAttribute("transform", sy3PxM(sy3FoldAt([half, 0], [half, rows], t), m)), () => {
       foldG.innerHTML = ""; folded = true; redraw(); done = true; api.tryOnce();
@@ -2651,7 +2651,7 @@ function sy3Uno(body, api, opt) {
   const logBox = h("div", { class: "sy3log" }), read = h("div", { class: "sy3read" });
   const shoutBs = ["선", "점", "없음"].map(s => h("button", { onclick: () => play(s) }, SY3_SHOUT[s]));
   const spB = h("button", { onclick: () => play(null) }, "특별 카드 내기");
-  const drawB = h("button", { onclick: () => { if (turn === 0 && !over && !waitCall) { draw(0, 1); log(`나: 낼 카드가 없어서 한 장을 가져왔어요.`); endTurn(); } } }, "카드 한 장 가져오기");
+  const drawB = h("button", { onclick: () => { if (turn === 0 && !over && !waitCall) { draw(0, 1); anyNext = false; log(`나: 낼 카드가 없어서 한 장을 가져왔어요.`); endTurn(); } } }, "카드 한 장 가져오기");
   const callB = h("button", { class: "big", onclick: () => callSym() }, "대칭!");
   const again = h("button", { class: "ghost", onclick: () => start() }, "한 판 더");
   let sel = -1;
@@ -2698,7 +2698,7 @@ function sy3Uno(body, api, opt) {
     const nx = nextOf(p);
     if (c.sp === 1) { draw(nx, 2); log(`${NAMES[p]}: 특별 카드 ① — ${nx === 0 ? "나" : NI[nx]}에게 쌓아 둔 카드 2장을 선물해요.`); anyNext = true; }
     if (c.sp === 2) { dir = -dir; log(`${NAMES[p]}: 특별 카드 ② — 놀이 순서를 바꿔요.`); anyNext = true; }
-    if (c.sp === 3) { refill(); let k = deck.findIndex(x => !x.sp); if (k >= 0) { pile.push(deck.splice(k, 1)[0]); } log(`${NAMES[p]}: 특별 카드 ③ — 보이는 카드를 새 카드로 바꿔요.`); anyNext = false; }
+    if (c.sp === 3) { refill(); let k = deck.findIndex(x => !x.sp); if (k >= 0) { pile.push(deck.splice(k, 1)[0]); } log(`${NAMES[p]}: 특별 카드 ③ — 보이는 카드를 새 카드로 바꿔요.`); anyNext = true; }
   }
   function play(s) {
     if (turn !== 0 || over || waitCall) return;
@@ -2749,7 +2749,7 @@ function sy3Uno(body, api, opt) {
     const p = turn, hand = hands[p], top = topShape();
     let i = hand.findIndex(c => !c.sp && canPlay(c, top));
     if (i < 0) i = hand.findIndex(c => c.sp);
-    if (i < 0) { draw(p, 1); log(`${NAMES[p]}: 낼 카드가 없어서 한 장을 가져왔어요.`); return endTurn(); }
+    if (i < 0) { draw(p, 1); anyNext = false; log(`${NAMES[p]}: 낼 카드가 없어서 한 장을 가져왔어요.`); return endTurn(); }
     const c = hand[i];
     if (c.sp) { hand.splice(i, 1); pile.push(c); special(p, c); return afterPlay(p); }
     const can = kindsOf(c).filter(s => anyNext || kindsOf(top).includes(s));
@@ -3052,7 +3052,7 @@ const LESSONS = [
       render: (b, a) => sy3Museum(b, a, { spots: SY3_SPOTS,
         ask: [{ parts: ["미술관 바닥의 화살표들은 모양과 크기가 ", { o: ["같아요", "달라요"], a: 0 }, ". 색유리 창문 무늬는 ", { o: ["왼쪽과 오른쪽의 모양이 같아요", "왼쪽과 오른쪽의 모양이 달라요"], a: 0 }, "."] }],
         ok: "미술관에는 모양과 크기가 같은 화살표, 왼쪽과 오른쪽이 같은 창문 무늬, 돌려도 같은 글자 작품처럼 특별한 모양이 많아요." }) },
-    { name: "데칼코마니", inst: "인도의 타지마할은 건물의 왼쪽과 오른쪽이 대칭을 이룬대요. 데칼코마니 작품도 비슷한 특징이 있어요. 접는 선 왼쪽에 물감을 찍고 반으로 접었다 펴 보세요.", hints: ["색을 고르고 접는 선 왼쪽의 칸을 눌러요.", "5칸 넘게 찍은 다음 ‘반으로 접었다 펴기’를 눌러요."],
+    { name: "데칼코마니", inst: "인도의 타지마할은 건물의 왼쪽과 오른쪽이 대칭을 이룬대요. 데칼코마니 작품도 비슷한 특징이 있어요. 접는 선 왼쪽에 물감을 찍고 반으로 접었다 펴 보세요.", hints: ["색을 고르고 접는 선 왼쪽의 칸을 눌러요.", "5칸 이상 찍은 다음 ‘반으로 접었다 펴기’를 눌러요."],
       render: (b, a) => sy3Decal(b, a, { need: 5,
         ask: [{ parts: ["펼친 종이에서 접는 선의 왼쪽과 오른쪽 무늬는 모양과 크기가 ", { o: ["같아요", "달라요"], a: 0 }, ". 접는 선을 따라 다시 접으면 두 무늬가 ", { o: ["완전히 겹쳐요", "겹치지 않아요"], a: 0 }, "."] }],
         ok: "데칼코마니는 접는 선을 따라 접으면 왼쪽과 오른쪽이 완전히 겹쳐요. 이런 모양을 이 단원에서 자세히 배워요." }) },
@@ -3089,7 +3089,7 @@ const LESSONS = [
   question: "모양과 크기가 같은 도형은 어떻게 알 수 있을까요?",
   summary: "모양과 크기가 같아서 포개었을 때 완전히 겹치는 두 도형을 서로 합동이라고 해요. 뒤집거나 돌려서 포개었을 때 완전히 겹쳐도 합동이에요. 모눈의 칸 수를 세면 합동인 도형을 찾을 수 있어요.",
   steps: [
-    { name: "만져 보기", inst: "미술관 작품 만들기 체험장이에요. 색종이 한 장에 도형을 그리고, 그 아래에 다른 색종이 한 장을 겹쳐서 오려 보세요.", hints: ["점을 3개 넘게 차례로 누르고, 처음 점을 다시 눌러 도형을 닫아요.", "‘겹쳐서 오리기’를 누른 다음 ‘포개어 보기’를 눌러요."],
+    { name: "만져 보기", inst: "미술관 작품 만들기 체험장이에요. 색종이 한 장에 도형을 그리고, 그 아래에 다른 색종이 한 장을 겹쳐서 오려 보세요.", hints: ["점을 3개 이상 차례로 누르고, 처음 점을 다시 눌러 도형을 닫아요.", "‘겹쳐서 오리기’를 누른 다음 ‘포개어 보기’를 눌러요."],
       render: (b, a) => sy3Cut(b, a, { ask: [{ parts: ["색종이 2장을 겹쳐서 오렸으므로 오려 낸 두 도형은 모양과 크기가 ", { o: ["같아요", "달라요"], a: 0 }, ". 두 도형을 포개면 ", { o: ["완전히 겹쳐요", "조금 남아요"], a: 0 }, "."] }],
         ok: "겹쳐서 오린 두 도형은 모양과 크기가 같아서 포개면 완전히 겹쳐요." }) },
     { name: "포개어 보기", inst: "미술관 바닥에 관람 방향을 알려 주는 화살표가 있어요. 투명 종이에 도형 가를 그렸어요. 투명 종이를 끌어 도형 나, 다, 라, 마에 각각 포개어 보고, 도형 가와 완전히 겹치는 도형을 찾아보세요.", hints: ["투명 종이를 끌어서 각 도형 위에 올려 봐요.", "방향이 다른 도형에는 투명 종이를 돌리거나 뒤집어서 포개 봐요."],
@@ -3234,7 +3234,7 @@ const LESSONS = [
     { name: "구해 보기", inst: "직선 ㄱㄴ을 대칭축으로 하는 선대칭도형이에요. □ 안에 알맞은 수를 구해 보세요.", hints: ["왼쪽 도형: 대응변의 길이와 대응각의 크기는 같아요.", "오른쪽 도형: 대응점에서 대칭축까지의 거리는 같고, 대응점끼리 이은 선분은 대칭축과 수직이에요."],
       render: (b, a) => sy3Ask(b, a, [{ fig: () => sy3Fig(sy3FigKites()), parts: ["왼쪽 도형: ", { n: 5 }, " cm, ", { n: 100, why: { "80": "대응각의 크기는 같아요. 100°의 대응각을 찾아요." } }, "°", h("br"), "오른쪽 도형: ", { n: 4, why: { "8": "대응점끼리 이은 선분 전체가 아니라 대칭축까지의 거리를 구해요." } }, " cm, ", { n: 90, why: { "180": "대응점끼리 이은 선분과 대칭축은 수직으로 만나요." } }, "°"] }],
         { ok: "대응변의 길이가 같아 5 cm, 대응각의 크기가 같아 100°, 대칭축까지의 거리가 같아 4 cm, 수직으로 만나 90°예요." }) },
-    { name: "완성 방법 찾기", inst: "직선 ㅁㅂ을 대칭축으로 하는 선대칭도형의 일부가 그려져 있어요. 점 ㄴ과 점 ㄷ의 대응점을 찾아 각각 점 ㅅ과 점 ㅇ으로 표시해 보세요. 점 ㄱ, 점 ㅅ, 점 ㅇ, 점 ㄹ이 차례대로 이어져요.", hints: ["점 ㄴ에서 대칭축까지 몇 칸인지 세어 봐요. 반대쪽으로 같은 칸만큼 가요.", "‘도움선’을 켜면 각 점에서 대칭축에 그은 수선이 보여요."],
+    { name: "완성 방법 찾기", inst: "직선 ㅁㅂ을 대칭축으로 하는 선대칭도형의 일부가 그려져 있어요. 점 ㄴ과 점 ㄷ의 대응점을 찾아 각각 점 ㅅ과 점 ㅇ으로 표시해 보세요. 점 ㄱ, 점 ㅅ, 점 ㅇ, 점 ㄹ을 차례대로 이으면 선대칭도형이 돼요.", hints: ["점 ㄴ에서 대칭축까지 몇 칸인지 세어 봐요. 반대쪽으로 같은 칸만큼 가요.", "‘도움선’을 켜면 각 점에서 대칭축에 그은 수선이 보여요."],
       render: (b, a) => sy3Chain(b, a, [
         (bx, ax) => sy3Complete(bx, ax, { box: [0, 0, 10, 9], k: 36, maxW: "24em", mode: "line", axis: [[5, 0], [5, 9]], axisNames: ["ㅁ", "ㅂ"],
           pts: { "ㄱ": [5, 1], "ㄴ": [1, 3], "ㄷ": [2, 7], "ㄹ": [5, 8] }, drawn: [["ㄱ", "ㄴ"], ["ㄴ", "ㄷ"], ["ㄷ", "ㄹ"]], miss: [{ n: "ㅅ", of: "ㄴ" }, { n: "ㅇ", of: "ㄷ" }],
@@ -3330,7 +3330,7 @@ const LESSONS = [
             arcs: [{ V: L[0], A: L[5], B: L[1], t: "100°", r: 18 }, { V: L[3], A: L[2], B: L[4], t: "□°", r: 18, color: SY3.blue }] }); },
         parts: ["왼쪽: 선분 ㄹㅁ ", { n: 14, why: { "8": "8 cm는 변 ㄴㄷ이에요. 선분 ㄹㅁ의 대응변은 변 ㄱㄴ이에요." } }, " cm, 각 ㄷㄹㅁ ", { n: 100 }, "°", h("br"), "오른쪽: 선분 ㄴㅇ ", { n: 13, why: { "26": "대칭의 중심은 선분 ㄴㅁ을 똑같이 둘로 나눠요. 26÷2를 계산해요.", "52": "선분 ㄴㅇ은 선분 ㄴㅁ의 절반이에요." } }, " cm, 선분 ㄷㅂ ", { n: 20, why: { "10": "선분 ㄷㅂ은 선분 ㄷㅇ의 2배예요.", "5": "선분 ㄷㅂ은 선분 ㄷㅇ의 2배예요." } }, " cm"] }],
         { ok: "선분 ㄹㅁ은 대응변 ㄱㄴ과 같아 14 cm, 각 ㄷㄹㅁ은 대응각 ㅂㄱㄴ과 같아 100°, 선분 ㄴㅇ은 26÷2=13 (cm), 선분 ㄷㅂ은 10×2=20 (cm)예요." }) },
-    { name: "완성 방법 찾기", inst: "점 ㅇ을 대칭의 중심으로 하는 점대칭도형의 일부가 그려져 있어요. 점 ㄴ과 점 ㄷ의 대응점을 찾아 각각 점 ㅁ과 점 ㅂ으로 표시해 보세요. 점 ㄹ, 점 ㅁ, 점 ㅂ, 점 ㄱ이 차례대로 이어져요.", hints: ["점 ㄴ에서 점 ㅇ까지 가로·세로로 몇 칸인지 세어 봐요. 점 ㅇ을 지나 같은 만큼 더 가요.", "‘도움선’을 켜면 각 점과 대칭의 중심을 지나는 직선이 보여요."],
+    { name: "완성 방법 찾기", inst: "점 ㅇ을 대칭의 중심으로 하는 점대칭도형의 일부가 그려져 있어요. 점 ㄴ과 점 ㄷ의 대응점을 찾아 각각 점 ㅁ과 점 ㅂ으로 표시해 보세요. 점 ㄱ, 점 ㅂ, 점 ㅁ, 점 ㄹ을 차례대로 이으면 점대칭도형이 돼요.", hints: ["점 ㄴ에서 점 ㅇ까지 가로·세로로 몇 칸인지 세어 봐요. 점 ㅇ을 지나 같은 만큼 더 가요.", "‘도움선’을 켜면 각 점과 대칭의 중심을 지나는 직선이 보여요."],
       render: (b, a) => sy3Chain(b, a, [
         (bx, ax) => sy3Complete(bx, ax, { box: [0, 0, 10, 8], k: 36, maxW: "24em", mode: "point", center: [5, 4], cName: "ㅇ",
           pts: { "ㄱ": [2, 2], "ㄴ": [1, 5], "ㄷ": [4, 7], "ㄹ": [8, 6] }, drawn: [["ㄱ", "ㄴ"], ["ㄴ", "ㄷ"], ["ㄷ", "ㄹ"]], miss: [{ n: "ㅁ", of: "ㄴ" }, { n: "ㅂ", of: "ㄷ" }],
@@ -3348,7 +3348,7 @@ const LESSONS = [
       { title: "① 점 ㅇ을 대칭의 중심으로 하는 점대칭도형이에요.", run: (bx, ax) => sy3Ask(bx, ax, [{ fig: () => { const P = SY3_P115, c = sy3Cen([sy3P(P)]); return sy3Fig({ box: [0, 0, 7, 6], k: 44, grid: false, maxW: "20em", shapes: [{ P, names: SY3_N6, fill: SY3.f5 }], dots: [{ p: c, n: "ㅇ", d: [.8, -.6], color: SY3.red, tcolor: SY3.red, r: 4 }], labs: [{ a: P[3], b: P[4], t: "8 cm", c }], arcs: [{ V: P[2], A: P[1], B: P[3], t: "115°", r: 18 }] }); },
         parts: ["⑴ 변 ㄱㄴ의 대응변은 변 ", { nm: "ㄹㅁ" }, "이므로 변 ㄱㄴ은 ", { n: 8 }, " cm예요.", h("br"), "⑵ 각 ㄱㅂㅁ의 대응각은 각 ", { nm: "ㄹㄷㄴ", w: "5em" }, "이므로 각 ㄱㅂㅁ은 ", { n: 115 }, "°예요."] }], { ok: "변 ㄱㄴ의 대응변은 변 ㄹㅁ(8 cm), 각 ㄱㅂㅁ의 대응각은 각 ㄹㄷㄴ(115°)이에요." }) },
       { title: "② 점 ㅈ을 대칭의 중심으로 하는 점대칭도형이에요. 둘레가 58 cm일 때 물음에 답해 보세요.", run: (bx, ax) => sy3Ask(bx, ax, [{ fig: () => { const P = SY3_OCT, c = sy3Cen([sy3P(P)]); return sy3Fig({ box: [0, 0, 7.7, 7], k: 40, grid: false, maxW: "20em", shapes: [{ P, names: SY3_N8, fill: SY3.f3 }], dots: [{ p: c, n: "ㅈ", d: [.8, -.6], color: SY3.red, tcolor: SY3.red, r: 4 }], labs: [{ a: P[0], b: P[1], t: "7 cm", c }, { a: P[5], b: P[6], t: "11 cm", c }, { a: P[2], b: P[3], t: "5 cm", c }] }); },
-        parts: ["⑴ 변 ㄹㅁ과 변 ㅇㄱ의 길이의 합: ", { n: 12, why: { "35": "58−(7+11+5)은 한 번만 뺀 거예요. 대응변의 길이도 같으니 (7+11+5)×2를 빼요." } }, " cm", h("br"), "⑵ 변 ㄹㅁ의 길이: ", { n: 6, why: { "12": "12 cm는 변 ㄹㅁ과 변 ㅇㄱ을 더한 길이예요. 두 변은 대응변이라 길이가 같아요." } }, " cm"] }],
+        parts: ["⑴ 변 ㄹㅁ과 변 ㅇㄱ의 길이의 합: ", { n: 12, why: { "35": "58−(7+11+5)=35는 대응변을 한 번만 뺀 값이에요. 대응변의 길이도 같으니 (7+11+5)×2를 빼요." } }, " cm", h("br"), "⑵ 변 ㄹㅁ의 길이: ", { n: 6, why: { "12": "12 cm는 변 ㄹㅁ과 변 ㅇㄱ을 더한 길이예요. 두 변은 대응변이라 길이가 같아요." } }, " cm"] }],
         { ok: "58−(7+11+5)×2=12 (cm), 변 ㄹㅁ과 변 ㅇㄱ은 대응변이라 12÷2=6 (cm)예요." }) },
       { title: "③ 펜토미노 조각을 대칭의 종류로 나누어 보세요.", run: (bx, ax) => sy3Sort(bx, ax, { cards: Object.entries(SY3_PENTO).map(([k, r]) => ({ label: k, parts: [sy3Cells(sy3Grid(r), { fill: "#F3E3C0", stroke: "#8A6248" })] })),
         ok: "점대칭인 조각은 X, Z, I이고, 그중 X와 I는 선대칭이기도 해요. T, U, V, W는 선대칭만, F, L, N, P, Y는 둘 다 아니에요." }) }]) }
@@ -3358,7 +3358,7 @@ const LESSONS = [
   question: "자연 속 선대칭도형 모양을 어떻게 그릴 수 있을까요?",
   summary: "대칭축을 긋고, 대칭축의 한쪽에 선분을 그은 다음, 그 선분을 대칭축에 대하여 뒤집으면 대응변이 생겨요. 이것을 되풀이하면 선대칭도형을 그릴 수 있어요. 자연물의 곡선은 짧은 선분 여러 개로 나타내요. 선대칭도형은 대응변의 길이와 대응각의 크기가 같아요.",
   steps: [
-    { name: "도구 익히기", inst: "교과서에서는 공학 도구 ‘알지오매스 키즈’로 선대칭도형을 그려요. 이 앱의 그리기판도 같은 방법으로 그려요. ① 직선 도구로 점선 자리에 대칭축을 긋고, ② 선분 도구로 회색 점선을 따라 선분을 긋고, ③ 뒤집기 도구로 선분과 대칭축을 차례대로 눌러 대응변을 만들어 보세요.", hints: ["① 직선(대칭축)을 고르고 위아래 점선의 두 점을 눌러요.", "③ 뒤집기를 고른 다음, 파란 선분을 누르고 빨간 대칭축을 눌러요."],
+    { name: "도구 익히기", inst: "교과서에서는 공학 도구 ‘알지오매스 키즈’(xcms.kr/dtJaL2W)로 선대칭도형을 그려요. 이 앱의 그리기판도 같은 방법으로 그려요. ① 직선 도구로 점선 자리에 대칭축을 긋고, ② 선분 도구로 회색 점선을 따라 선분을 긋고, ③ 뒤집기 도구로 선분과 대칭축을 차례대로 눌러 대응변을 만들어 보세요.", hints: ["① 직선(대칭축)을 고르고 위아래 점선의 두 점을 눌러요.", "③ 뒤집기를 고른 다음, 파란 선분을 누르고 빨간 대칭축을 눌러요."],
       render: (b, a) => sy3Chain(b, a, [
         (bx, ax) => sy3Mirror(bx, ax, { cols: 12, rows: 10, k: 34, maxW: "24em", axisGuide: [[6, 0], [6, 10]], guide: [[[6, 1], [3, 3]], [[3, 3], [2, 6]], [[2, 6], [6, 9]]], ok: "대칭축의 한쪽에 그은 선분을 뒤집었더니 나뭇잎 모양 선대칭도형이 되었어요." }),
         { title: "선대칭도형을 그리는 차례를 눌러 보세요.", run: (bx, ax) => sequence(bx, ax, ["가. 선분과 대칭축을 차례대로 골라 뒤집어 대응변을 만들어요.", "나. 대칭축으로 할 직선을 그어요.", "다. 이것을 되풀이하여 선대칭도형을 완성해요.", "라. 대칭축의 한쪽에 선분을 그어요."], [1, 3, 0, 2], { ok: "직선(대칭축) → 선분 → 뒤집기 → 되풀이하기 차례예요." }) }]) },
@@ -3366,7 +3366,7 @@ const LESSONS = [
       render: (b, a) => sy3Fold(b, a, { mode: "find", items: SY3_PICS.map(p => Object.assign({ name: p.label }, p)), k: 36, need: { "나비": 1, "도토리": 1, "코스모스": 1 }, maxW: "22em",
         ask: [{ parts: ["나비와 도토리의 대칭축은 ", { o: ["1개", "2개"], a: 0 }, "이고, 코스모스의 대칭축은 ", { o: ["1개", "여러 개"], a: 1 }, "예요."] }],
         ok: "나비와 도토리는 가운데 세로 직선이 대칭축이고, 꽃잎이 8장인 코스모스는 대칭축이 여러 개(8개) 있어요." }) },
-    { name: "그리기", inst: "승현이는 잠자리를 선대칭도형 모양으로 그렸대요. 나도 주변에서 찾은 선대칭도형 모양인 동물이나 식물을 그려 보세요. 대칭축을 긋고, 한쪽에 선분을 6개 넘게 그어 뒤집어요. 다 그리면 ④ 자로 대응변의 길이를 재어 봐요.", hints: ["곡선은 짧은 선분 여러 개로 나타내요.", "④ 자를 고르고 선분을 누르면 그 선분과 대응변의 길이가 나와요."],
+    { name: "그리기", inst: "승현이는 잠자리를 선대칭도형 모양으로 그렸대요. 나도 주변에서 찾은 선대칭도형 모양인 동물이나 식물을 그려 보세요. 대칭축을 긋고, 한쪽에 선분을 6개 이상 그어 뒤집어요. 다 그리면 ④ 자로 대응변의 길이를 재어 봐요.", hints: ["곡선은 짧은 선분 여러 개로 나타내요.", "④ 자를 고르고 선분을 누르면 그 선분과 대응변의 길이가 나와요."],
       render: (b, a) => sy3Mirror(b, a, { cols: 14, rows: 10, k: 32, maxW: "26em", need: 6, measure: true, needMeasure: 2,
         ask: [{ parts: ["내가 그린 선대칭도형에서 대응변의 길이는 ", { o: ["같아요", "달라요"], a: 0 }, ". 대응각의 크기도 ", { o: ["같아요", "달라요"], a: 0 }, ". 자연물의 곡선은 ", { o: ["짧은 선분 여러 개로", "점 하나로"], a: 0 }, " 나타냈어요."] }],
         ok: "선대칭도형은 대응변의 길이와 대응각의 크기가 같아요." }) },
