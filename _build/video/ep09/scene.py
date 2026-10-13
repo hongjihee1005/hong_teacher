@@ -22,7 +22,7 @@ from series_style import BLUE, GREEN, INK, ORANGE, PAPER, SOFT, EpisodeScene, M,
 from division import clear_stage
 from items import check_mark, cross_mark
 
-CM = 0.5   # 1 cm = 화면 0.5
+CM = 0.75   # 1 cm = 화면 0.75
 
 
 def compass(center, tip, lift=1.6):
@@ -107,7 +107,7 @@ class Ep09(EpisodeScene):
         self.play(FadeIn(steps[0], shift=LEFT * 0.2), FadeIn(dot, scale=2), FadeIn(lab), run_time=0.8)
         self.wait(0.8)
         # ② 자에 대고 벌리기
-        org = np.array([-5.6, 2.3, 0])
+        org = np.array([-6.2, 2.3, 0])
         rl = ruler(org, 7)
         r_val = ValueTracker(0.5)
         cmp_r = always_redraw(lambda: compass(org + DOWN * 0.02, org + DOWN * 0.02 + RIGHT * r_val.get_value() * CM, lift=1.0))
@@ -149,22 +149,24 @@ class Ep09(EpisodeScene):
     # ── 지름이 6 cm인 원 ──
     def diameter6(self):
         self.section("지름이 주어지면?")
-        q = M(f"{g('지름')}이 6 cm인 원을 그리려면 컴퍼스를 몇 cm 벌릴까요?", 46).move_to([0, 2.45, 0])
+        D = 0.3
+        q = M(f"{g('지름')}이 6 cm인 원을 그리려면 컴퍼스를 몇 cm 벌릴까요?", 46)
+        q.scale_to_fit_width(min(q.width, 11.5)).move_to([0, 2.4, 0])
         self.say(f"{g('지름')}이 6 cm인 원을 그리려면?", "이번에는 지름이 6센티미터인 원을 그려 볼까요? 컴퍼스를 몇 센티미터 벌려야 할까요?")
         self.play(FadeIn(q), run_time=0.7)
         self.wait(1.5)
-        cl = np.array([-3.4, -0.5, 0])
-        big = Circle(radius=6 * CM, color=SOFT, stroke_width=5).move_to(cl)
-        bl = Line(cl, cl + RIGHT * 6 * CM, color=SOFT, stroke_width=6)
+        cl = np.array([-3.4, 0.0, 0])
+        big = Circle(radius=6 * D, color=SOFT, stroke_width=5).move_to(cl)
+        bl = Line(cl, cl + RIGHT * 6 * D, color=SOFT, stroke_width=6)
         bt = T("6 cm 벌림", 32, SOFT).next_to(big, DOWN, buff=0.15)
         x1 = cross_mark(0.5).next_to(big, UP + RIGHT, buff=-0.2)
         self.say("6 cm 벌리면 반지름이 6 cm가 돼요", "6센티미터 벌리면 반지름이 6센티미터, 지름은 12센티미터인 원이 돼요.")
         self.play(Create(big), Create(bl), FadeIn(bt), run_time=1.0)
         self.play(Create(x1), run_time=0.4)
-        cr = np.array([3.3, -0.5, 0])
-        sm = Circle(radius=3 * CM, color=INK, stroke_width=6).move_to(cr)
-        dl = Line(cr + LEFT * 3 * CM, cr + RIGHT * 3 * CM, color=GREEN, stroke_width=7)
-        rl = Line(cr, cr + RIGHT * 3 * CM, color=BLUE, stroke_width=9)
+        cr = np.array([3.3, 0.0, 0])
+        sm = Circle(radius=3 * D, color=INK, stroke_width=6).move_to(cr)
+        dl = Line(cr + LEFT * 3 * D, cr + RIGHT * 3 * D, color=GREEN, stroke_width=7)
+        rl = Line(cr, cr + RIGHT * 3 * D, color=BLUE, stroke_width=9)
         st = M(f"6 ÷ 2 = {b('3 cm')} 벌림", 38).next_to(sm, DOWN, buff=0.2)
         self.say(f"{g('지름')} 6 cm의 반, {b('3 cm')}만큼 벌려요", "지름이 6센티미터이면 반지름은 그 반인 3센티미터. 컴퍼스를 3센티미터 벌려요.")
         self.play(Create(sm), Create(dl), run_time=1.0)
@@ -180,7 +182,7 @@ class Ep09(EpisodeScene):
         self.section("같은 크기 원 그리기")
         c1 = np.array([-3.3, -0.3, 0])
         c2 = np.array([2.6, -0.3, 0])
-        r = 2.5 * CM
+        r = 2.0 * CM
         given = Circle(radius=r, color=INK, stroke_width=6).move_to(c1)
         g1 = Dot(c1, radius=0.08, color=ORANGE)
         d2 = Dot(c2, radius=0.08, color=ORANGE)
@@ -227,7 +229,7 @@ class Ep09(EpisodeScene):
             grid.add(Line([x0, y0 + j * cell, 0], [x1, y0 + j * cell, 0], color="#E6DDCC", stroke_width=1.5))
         self.play(FadeIn(grid), run_time=0.5)
         # 과녁
-        ct = np.array([-4.2, 0.0, 0])
+        ct = np.array([-4.2, 0.7, 0])
         rings = VGroup(*[Circle(radius=k * cell, color=INK, stroke_width=5).move_to(ct) for k in (2, 3, 4)])
         cd = Dot(ct, radius=0.07, color=ORANGE)
         self.say("과녁 모양에는 어떤 규칙이 있을까요?", "과녁 모양을 보세요. 어떤 규칙이 있을까요?")
@@ -246,7 +248,7 @@ class Ep09(EpisodeScene):
         self.play(LaggedStart(*[Create(c) for c in row], lag_ratio=0.3, run_time=1.4), FadeIn(dots))
         self.wait(1.5)
         arrows = VGroup(*[Line(cs[k] + DOWN * 0.95, cs[k + 1] + DOWN * 0.95, color=ORANGE, stroke_width=5) for k in range(3)])
-        t2 = M(f"{o('원의 중심')}이 3칸씩 오른쪽으로,\n{b('반지름')}은 2칸 그대로", 34).move_to([1.3, -1.75, 0])
+        t2 = M(f"{o('원의 중심')}이 3칸씩 오른쪽으로,\n{b('반지름')}은 2칸 그대로", 34).move_to([1.6, -1.15, 0])
         self.say(f"{o('원의 중심')}이 3칸씩 옮겨 가고 {b('반지름')}은 그대로",
                  "원의 중심이 오른쪽으로 3칸씩 옮겨 가고, 반지름은 2칸 그대로예요.")
         self.play(LaggedStart(*[Create(a) for a in arrows[:2]], lag_ratio=0.4, run_time=0.9), FadeIn(t2))

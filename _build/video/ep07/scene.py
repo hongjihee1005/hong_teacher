@@ -45,11 +45,11 @@ class Ep07(EpisodeScene):
     # ── 문제 ──
     def problem(self):
         self.section("문제")
-        c1 = np.array([-3.3, -0.55, 0])
+        c1 = np.array([-3.3, 0.15, 0])
         wob = ParametricFunction(lambda t: c1 + np.array([(1.4 + 0.15 * np.sin(3 * t) + 0.1 * np.cos(5 * t + 1)) * np.cos(t),
                                                           (1.4 + 0.15 * np.sin(3 * t) + 0.1 * np.cos(5 * t + 1)) * np.sin(t) * 0.92, 0]),
-                                 t_range=[0, TAU * 0.97], color=INK, stroke_width=6)
-        good = Circle(radius=1.4, color=INK, stroke_width=6).move_to([3.3, -0.55, 0])
+                                 t_range=[0, TAU], color=INK, stroke_width=6)
+        good = Circle(radius=1.4, color=INK, stroke_width=6).move_to([3.3, 0.15, 0])
         l1 = T("손으로 그린 원", 40, SOFT).next_to(wob, DOWN, buff=0.35)
         l2 = T("정확한 원", 40, SOFT).next_to(good, DOWN, buff=0.35)
         self.say("손으로 그린 원은 울퉁불퉁해요", "운동장에 큰 원을 그리려고 해요. 손으로 그리면 원이 울퉁불퉁해져요.")
