@@ -714,7 +714,7 @@ function fx2Area(body, api, opt) {
   const SG = opt.stages, K = SG.map(() => 1), sel = SG.map(() => new Set()), id = "fx2p" + (++FX2_PAT);
   let cur = 0;
   const W = 900, X0 = 40, Y0 = 30, S = 440;
-  const svg = makeSvg(W, 500);
+  const svg = makeSvg(W, 516);
   const vI = SG.findIndex(s => s.dir === "v"), hI = SG.findIndex(s => s.dir === "h"), h2I = SG.findIndex(s => s.dir === "h2");
   const ok = i => {
     const s = SG[i]; if (K[i] !== s.d || sel[i].size !== s.n) return false;
@@ -1044,9 +1044,14 @@ function fx2Flag() {
   const cx = x + w / 2, cy = y + hh / 2, r = hh / 4;
   svg.append(svgEl("circle", { cx, cy, r, fill: "#003478" }));
   svg.append(svgEl("path", { d: `M${cx - r} ${cy} A${r} ${r} 0 0 1 ${cx + r} ${cy} A${r / 2} ${r / 2} 0 0 1 ${cx} ${cy} A${r / 2} ${r / 2} 0 0 0 ${cx - r} ${cy}Z`, fill: "#C8102E" }));
-  [[x + 50, y + 45], [x + w - 50, y + 45], [x + 50, y + hh - 45], [x + w - 50, y + hh - 45]].forEach(([px, py]) => { for (let i = 0; i < 3; i++) svg.append(svgEl("rect", { x: px - 22, y: py - 16 + i * 12, width: 44, height: 7, fill: INK, transform: `rotate(${(px < cx) === (py < cy) ? -34 : 34} ${px} ${py})` })); });
+  /* 건(왼쪽 위 ☰)·감(오른쪽 위 ☵)·리(왼쪽 아래 ☲)·곤(오른쪽 아래 ☷): 1이면 가운데가 끊긴 막대 */
+  [[x + 50, y + 45, [0, 0, 0]], [x + w - 50, y + 45, [1, 0, 1]], [x + 50, y + hh - 45, [0, 1, 0]], [x + w - 50, y + hh - 45, [1, 1, 1]]].forEach(([px, py, pat]) => pat.forEach((cut, i) => {
+    const tf = `rotate(${(px < cx) === (py < cy) ? -34 : 34} ${px} ${py})`, yy = py - 16 + i * 12;
+    if (cut) [[px - 22, 19], [px + 3, 19]].forEach(([xx, ww]) => svg.append(svgEl("rect", { x: xx, y: yy, width: ww, height: 7, fill: INK, transform: tf })));
+    else svg.append(svgEl("rect", { x: px - 22, y: yy, width: 44, height: 7, fill: INK, transform: tf }));
+  }));
   svg.append(svgEl("line", { x1: cx - r, y1: cy + r + 18, x2: cx + r, y2: cy + r + 18, stroke: TENT, "stroke-width": 3 }));
-  svg.append(txt(cx, cy + r + 34, "지름 = 세로의 ½", 17, { fill: TENT }));
+  svg.append(fx2SvgLine("지름 = 세로의 [1/2]", cx, cy + r + 38, 17, { fill: TENT }));
   svg.append(txt(cx, y + hh + 24, "가로 72 cm", 20));
   svg.append(txt(x - 70, cy, "세로 ?", 20));
   return h("div", { class: "fx2stage" }, svg);

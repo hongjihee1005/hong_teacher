@@ -1701,6 +1701,8 @@ function cb5Chain(body, api, parts) {
 }
 /* 조작을 마친 뒤 물음(ask)으로 이어 가기 */
 function cb5Then(body, api, opt, ans, msg) {
+  if (body.cb5Fin) return; body.cb5Fin = true;   // 해결한 뒤 '확인하기'를 또 눌러도 물음이 두 번 붙지 않게
+  body.querySelectorAll(".actions button.big").forEach(b => { b.disabled = true; });
   if (opt.then) { api.hint("○ " + (msg || "잘했어요!") + " 아래도 이어서 해 봐요."); const box = h("div", { class: "cb5part" }); body.append(box); opt.then(box, api); cb5Go(box); return; }
   const ask = typeof opt.ask === "function" ? opt.ask() : opt.ask;
   if (ask && ask.length) { api.hint("○ " + (msg || "잘했어요!") + " 아래 물음에 답해 봐요."); const w = cb5Ask(body, api, ask, { ok: opt.ok, title: opt.askTitle, bad: opt.bad }); cb5Go(w); }
@@ -2823,7 +2825,7 @@ const LESSONS = [
     { name: "약속하기", inst: "겨냥도를 약속해 보세요.", hints: ["보이는 모서리와 보이지 않는 모서리를 다르게 그려요."],
       render: (b, a) => blanks(b, a, ["직육면체 모양을 잘 알 수 있도록 나타낸 그림을 직육면체의 ", { o: ["겨냥도", "전개도", "설계도"], a: 0 }, "라고 해요. 겨냥도에서 보이는 모서리는 ", { o: ["실선", "점선"], a: 0 }, "으로, 보이지 않는 모서리는 ", { o: ["실선", "점선"], a: 1 }, "으로 나타내요."],
         { ok: "직육면체 모양을 잘 알 수 있도록 나타낸 그림이 겨냥도예요. 보이는 모서리는 실선, 보이지 않는 모서리는 점선이에요." }) },
-    { name: "그려 보기", inst: "모눈종이에 직육면체의 겨냥도를 그려 보세요. 앞면은 그려져 있어요. 점에서 점까지 끌어 모서리를 긋고, 보이지 않는 모서리는 점선 펜으로 그어요.", hints: ["평행한 모서리는 평행하게 그어요. 오른쪽 위로 2칸, 위로 2칸씩 밀린 곳에 뒤쪽 꼭짓점이 있어요.", "왼쪽 아래 뒤쪽의 꼭짓점에서 만나는 모서리 3개가 보이지 않는 모서리예요."],
+    { name: "그려 보기", inst: "모눈종이에 직육면체의 겨냥도를 그려 보세요. 앞면은 그려져 있어요. 점에서 점까지 끌어 모서리를 긋고, 보이지 않는 모서리는 점선 펜으로 그어요.", hints: ["평행한 모서리는 평행하게 그어요. 앞면의 꼭짓점에서 오른쪽으로 2칸, 위로 2칸 간 곳에 뒤쪽 꼭짓점이 있어요.", "왼쪽 아래 뒤쪽의 꼭짓점에서 만나는 모서리 3개가 보이지 않는 모서리예요."],
       render: (b, a) => cb5Sketch(b, a, { W: 4, H: 3, dx: 2, dy: 2, cols: 8, rows: 7, ox: 1, oy: 1, given: [0, 1, 3, 5], mode: "draw",
         ask: [{ q: "그린 겨냥도를 살펴보고 빈칸을 채워 보세요.",
           parts: ["보이는 면 ", { n: 3 }, "개, 보이지 않는 면 ", { n: 3 }, "개", h("br"), "보이는 모서리 ", { n: 9 }, "개, 보이지 않는 모서리 ", { n: 3 }, "개", h("br"), "보이는 꼭짓점 ", { n: 7 }, "개, 보이지 않는 꼭짓점 ", { n: 1 }, "개"] }],
@@ -2986,10 +2988,10 @@ const LESSONS = [
     { name: "완성하기 ①", inst: "준비물의 머리와 몸통 전개도에는 면이 5개만 있어요. 전개도가 되도록 면 1개를 더 찾아 색칠하고, 색칠한 면의 잘리지 않는 모서리를 점선으로 바꿔 보세요.", hints: ["후보 자리를 하나씩 머릿속으로 접어 봐요.", "색칠한 면에서 다른 면과 맞닿은 모서리가 잘리지 않는 모서리예요."],
       render: (b, a) => cb5Chain(b, a, [
         { title: "머리(한 모서리 2 cm인 정육면체)", run: (bx, ax) => cb5AddFace(bx, ax, Object.assign({ k: 28, grid: true, dash: true, maxW: "20em", color: "#FFD27A", msg: "머리의 전개도를 완성했어요." }, CB5_PARTS.head)) },
-        { title: "몸통(가로 3 cm, 높이 4 cm, 깊이 2 cm인 직육면체)", run: (bx, ax) => cb5AddFace(bx, ax, Object.assign({ k: 24, grid: true, dash: true, maxW: "20em", color: "#9CC3F0", msg: "몸통의 전개도를 완성했어요." }, CB5_PARTS.body)) }]) },
+        { title: "몸통(가로 3 cm, 세로 2 cm, 높이 4 cm인 직육면체)", run: (bx, ax) => cb5AddFace(bx, ax, Object.assign({ k: 24, grid: true, dash: true, maxW: "20em", color: "#9CC3F0", msg: "몸통의 전개도를 완성했어요." }, CB5_PARTS.body)) }]) },
     { name: "완성하기 ②", inst: "팔과 다리의 전개도도 면 1개를 더 찾아 색칠하고, 색칠한 면의 잘리지 않는 모서리를 점선으로 바꿔 보세요.", hints: ["면 6개가 모두 있고 겹치는 면이 없어야 해요.", "점선을 따라 접어 확인해 봐요."],
       render: (b, a) => cb5Chain(b, a, [
-        { title: "팔(가로 1 cm, 높이 3 cm, 깊이 1 cm인 직육면체)", run: (bx, ax) => cb5AddFace(bx, ax, Object.assign({ k: 34, grid: true, dash: true, maxW: "16em", color: "#A9DDB8", msg: "팔의 전개도를 완성했어요." }, CB5_PARTS.arm)) },
+        { title: "팔(가로 1 cm, 세로 1 cm, 높이 3 cm인 직육면체)", run: (bx, ax) => cb5AddFace(bx, ax, Object.assign({ k: 34, grid: true, dash: true, maxW: "16em", color: "#A9DDB8", msg: "팔의 전개도를 완성했어요." }, CB5_PARTS.arm)) },
         { title: "다리(한 모서리 1 cm인 정육면체)", run: (bx, ax) => cb5AddFace(bx, ax, Object.assign({ k: 40, grid: true, dash: true, maxW: "16em", color: "#F6B38E", msg: "다리의 전개도를 완성했어요." }, CB5_PARTS.leg)) }]) },
     { name: "만들기", inst: "완성한 부분을 끌어서 설계도의 알맞은 자리에 붙여 장난감을 완성해 보세요.", hints: ["설계도의 점선 자리와 크기가 같은 부분을 찾아요.", "팔과 다리는 2개씩 있어요."],
       render: (b, a) => cb5Robot(b, a, { cols: 16, rows: 10, k: 26, planX: 4,
@@ -2998,7 +3000,7 @@ const LESSONS = [
         slots: CB5_TOY_SLOTS,
         then: (bx, ax) => writeStep(bx, ax, [{ q: "장난감을 만든 과정을 친구에게 설명하듯 써 보세요.", tag: "만든 과정", ph: "예) 면 6개가 겹치지 않도록 전개도를 완성하고, 점선을 따라 접어 각 부분을 만든 다음 설계도대로 붙였어요." }], { ok: "전개도로 장난감을 완성하고 과정을 설명했어요." }) }) }
   ],
-  challenge: { inst: "팔(가로 1 cm, 높이 3 cm, 깊이 1 cm인 직육면체)을 하나 더 만들려고 해요. 팔의 전개도가 될 수 있는 것을 모두 골라 보세요.", hints: ["1 cm × 3 cm인 면 4개와 1 cm × 1 cm인 면 2개가 있어야 해요.", "‘접어 보기’로 확인할 수 있어요."],
+  challenge: { inst: "팔(가로 1 cm, 세로 1 cm, 높이 3 cm인 직육면체)을 하나 더 만들려고 해요. 팔의 전개도가 될 수 있는 것을 모두 골라 보세요.", hints: ["1 cm × 3 cm인 면 4개와 1 cm × 1 cm인 면 2개가 있어야 해요.", "‘접어 보기’로 확인할 수 있어요."],
     render: (b, a) => cb5NetJudge(b, a, { k: 20, grid: true, solid: "직육면체", cardW: "10em", nets: [
       { name: "가", F: cb5NetFromCells(CB5_CROSS, { 1: 1, 2: 3, 4: 1 }) },
       { name: "나", F: [{ x: 0, y: 1, w: 1, h: 3 }, { x: 1, y: 1, w: 1, h: 3 }, { x: 2, y: 1, w: 1, h: 3 }, { x: 3, y: 1, w: 1, h: 3 }, { x: 1, y: 0, w: 1, h: 1 }, { x: 3, y: 0, w: 1, h: 1 }] },
@@ -3025,10 +3027,10 @@ const LESSONS = [
         { q: "놀이에서 이기려면 어떻게 하면 좋을까요?", tag: "이기는 방법", ph: "예) 모을 도형을 정하고 필요 없는 카드를 넘겨요. 전개도의 칸을 세어 면의 크기를 겨냥도와 비교해요." },
         { q: "같은 도형의 전개도인지 어떻게 알 수 있었나요?", tag: "알아본 방법", ph: "예) 마주 보는 면의 크기가 같은지, 면의 가로·세로가 겨냥도의 모서리 길이와 같은지 보았어요." }]) }
   ],
-  challenge: { inst: "도형 나(가로 3 cm, 높이 2 cm, 깊이 1 cm인 직육면체)의 전개도 카드를 모두 골라 보세요.", hints: ["3 cm × 2 cm, 3 cm × 1 cm, 2 cm × 1 cm인 면이 2개씩 있어야 해요.", "모눈 칸을 세어 봐요."],
+  challenge: { inst: "도형 나(가로 3 cm, 세로 1 cm, 높이 2 cm인 직육면체)의 전개도 카드를 모두 골라 보세요.", hints: ["3 cm × 2 cm, 3 cm × 1 cm, 2 cm × 1 cm인 면이 2개씩 있어야 해요.", "모눈 칸을 세어 봐요."],
     render: (b, a) => { const D = cb5Deck(), nets = D.filter(c => c.kind === "net"), pick = [nets[0], nets[2], nets[3], nets[5], nets[6]];
       cb5Pick(b, a, { cardW: "8.5em", items: pick.map((c, i) => ({ name: "①②③④⑤"[i], fig: () => cb5CardFig(c) })), a: pick.map((c, i) => c.shape === 1 ? i : -1).filter(i => i >= 0),
-        whyExtra: () => "고른 카드 중에 다른 도형의 전개도가 있어요. 면의 크기를 세어 봐요.", ok: "가로 3 cm, 높이 2 cm, 깊이 1 cm인 직육면체의 전개도를 모두 찾았어요." }); } }
+        whyExtra: () => "고른 카드 중에 다른 도형의 전개도가 있어요. 면의 크기를 세어 봐요.", ok: "가로 3 cm, 세로 1 cm, 높이 2 cm인 직육면체의 전개도를 모두 찾았어요." }); } }
 },
 {
   id: "t9", no: 9, title: "공부한 내용을 확인해요", soop: "발표하기(P)",
@@ -3042,7 +3044,7 @@ const LESSONS = [
           parts: ["① ", { o: ["면", "모서리", "꼭짓점"], a: 0 }, "  ② ", { o: ["면", "모서리", "꼭짓점"], a: 1 }, "  ③ ", { o: ["면", "모서리", "꼭짓점"], a: 2 }] }], { ok: "① 면, ② 모서리, ③ 꼭짓점이에요." })]) },
     { name: "3번", inst: "직육면체에서 색칠한 면 ㄱㄴㅂㅁ과 평행한 면, 수직인 면을 찾아보세요.", hints: ["평행한 면은 마주 보는 면이에요.", "수직인 면은 색칠한 면과 만나는 면 4개예요."],
       render: (b, a) => cb5Chain(b, a, [
-        { title: "① 색칠한 면과 평행한 면을 눌러 보세요.", run: (bx, ax) => cb5FacePick(bx, ax, { dims: [4, 2.5, 3], yaw: 35, base: 2, need: [3], baseText: "색칠한 면", ok: "색칠한 면과 평행한 면은 면 ㄷㅅㅇㄹ이에요." }) },
+        { title: "① 색칠한 면과 평행한 면을 눌러 보세요.", run: (bx, ax) => cb5FacePick(bx, ax, { dims: [4, 2.5, 3], yaw: 35, base: 2, need: [3], baseText: "색칠한 면", whyExtra: f => `${cb5FaceName(f)}은 색칠한 면과 만나는(수직인) 면이에요. 평행한 면은 마주 보는 면이에요.`, ok: "색칠한 면과 평행한 면은 면 ㄷㅅㅇㄹ이에요." }) },
         { title: "② 색칠한 면과 수직인 면을 모두 써 보세요.", run: (bx, ax) => { const S = cb5Solid({ dims: [4, 2.5, 3], yaw: 35, lab: true, fill: f => f === 2 ? CB5.par : null }); bx.append(S.svg, S.tools);
           cb5FaceAsk(bx, ax, [{ q: "색칠한 면 ㄱㄴㅂㅁ과 수직인 면", ans: [5, 0, 4, 1], why: "색칠한 면과 만나는 면 4개를 써요. 마주 보는 면 ㄷㅅㅇㄹ은 평행한 면이에요." }],
             { ok: "수직인 면은 면 ㄱㄴㄷㄹ, 면 ㄴㅂㅅㄷ, 면 ㅁㅂㅅㅇ, 면 ㄱㅁㅇㄹ이에요." }); } }]) },

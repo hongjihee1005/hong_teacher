@@ -714,7 +714,7 @@ function fx2Area(body, api, opt) {
   const SG = opt.stages, K = SG.map(() => 1), sel = SG.map(() => new Set()), id = "fx2p" + (++FX2_PAT);
   let cur = 0;
   const W = 900, X0 = 40, Y0 = 30, S = 440;
-  const svg = makeSvg(W, 500);
+  const svg = makeSvg(W, 516);
   const vI = SG.findIndex(s => s.dir === "v"), hI = SG.findIndex(s => s.dir === "h"), h2I = SG.findIndex(s => s.dir === "h2");
   const ok = i => {
     const s = SG[i]; if (K[i] !== s.d || sel[i].size !== s.n) return false;

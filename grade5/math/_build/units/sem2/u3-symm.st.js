@@ -2,7 +2,10 @@
 const APP={title:"우리 반 대칭 무늬 공방", unit:"5-2 수학 3. 합동과 대칭", key:"s52-symm-v1", welcome:"우리 반 대칭 무늬 공방에 온 것을 환영해요", intro:"한빛초등학교 5학년 3반이 가을 축제에서 ‘대칭 무늬 공방’ 부스를 열어요. 똑같은 배지와 타일을 오리고, 종이를 접어 무늬를 만들고, 돌려도 같은 바람개비를 만들며 도형의 합동과 선대칭도형·점대칭도형을 알아봐요."};
 //@@UNIT
 /* =========================================================
-   5-2 수학 3. 합동과 대칭 — 단원 조작 부품 (앞글자 sy3)
+   5-2 수학 3. 합동과 대칭 — 이야기 버전 단원 조작 부품 (앞글자 sy3, 이야기 전용 sy3s)
+   교과서 버전(u3-symm.tb.js)의 sy3 부품을 복사해 쓰고, '확인하기' 단추 없이 autoRun으로 저절로 확인해요.
+   기다리는 시간: 수·이름 칸 900ms(Enter는 blur) · 보기 고르기 260ms(수 칸과 함께면 600ms) · 도형 고르기 700ms · 카드 나누기 600ms · 점 찍기 1200ms.
+   한 계단에 활동이 둘이면(hj-multi) 부품 함수 몸통에 done( 이 있어야 활동으로 세어져요 — 부품마다 fin(…)이 sy3Finish 또는 api.done으로 끝내요.
    좌표: 모눈 칸(또는 cm) 단위, 오른쪽이 x+, 아래쪽이 y+ (화면 좌표).
    도형 조각(part): {t:"p", P:[[x,y]…]} 다각형 · {t:"c", c:[x,y], r} 원 · {t:"cells", C:[[x,y]…]} 칸 모음 · {t:"pic", draw(g,m)} 그림
    합동·대칭은 모두 코드로 꼭짓점을 옮겨 보고(포개기·접기·180° 돌리기) 판정해요.
@@ -82,7 +85,8 @@ function sy3Num(s) {
   let t = String(s == null ? "" : s).replace(/[\s,]/g, "").replace(/(센티미터|cm|°|도|칸|개|쌍|번|장)$/i, "");
   return t === "" || !/^-?\d+(\.\d+)?$/.test(t) ? NaN : Number(t);
 }
-const sy3Nm = s => String(s == null ? "" : s).replace(/[^ㄱ-ㅎ]/g, "");
+const SY3_JAMO = { "ㄳ": "ㄱㅅ", "ㄵ": "ㄴㅈ", "ㄶ": "ㄴㅎ", "ㄺ": "ㄹㄱ", "ㄻ": "ㄹㅁ", "ㄼ": "ㄹㅂ", "ㄽ": "ㄹㅅ", "ㄾ": "ㄹㅌ", "ㄿ": "ㄹㅍ", "ㅀ": "ㄹㅎ", "ㅄ": "ㅂㅅ" };
+const sy3Nm = s => String(s == null ? "" : s).replace(/[ㄳㄵㄶㄺ-ㅀㅄ]/g, c => SY3_JAMO[c] || c).replace(/[^ㄱ-ㅎ]/g, "");   // 자판에서 ㄹ+ㅁ이 ‘ㄻ’로 합쳐져도 풀어 읽음
 function sy3Anim(ms, f, end) {
   const fast = !window.requestAnimationFrame || (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches);
   if (fast) { f(1); if (end) end(); return; }
@@ -313,7 +317,8 @@ const sy3Tbl = (head, rows) => h("div", { class: "sy3tbl" }, h("table", {}, h("t
 /* 이름 붙은 점들을 한곳에: {ㄱ:[x,y], …} */
 function sy3NamePts(shapes) { const N = {}; (shapes || []).forEach(S => { if (S.P && S.names) S.P.forEach((p, i) => { if (S.names[i]) N[S.names[i]] = p; }); }); return N; }
 
-/* ---------- 묻고 답하기(빈칸 고르기·수 쓰기·이름 쓰기) ---------- */
+/* ---------- 묻고 답하기(빈칸 고르기·수 쓰기·이름 쓰기) — '확인하기' 단추 없이 저절로 확인 ----------
+   보기 고르기 260ms(수 칸이 함께 있으면 600ms), 수·이름 칸 900ms(Enter는 blur) 뒤에 확인. 모든 칸을 채워야 확인해요. */
 function sy3Ask(host, api, items, opts = {}) {
   const wrap = h("div", { class: "sy3ask", style: "margin-top:.6em" }), all = [];
   if (opts.title) wrap.append(h("p", { class: "inst" }, opts.title));
@@ -346,21 +351,32 @@ function sy3Ask(host, api, items, opts = {}) {
   api.provide({ words: all.map(s => right(s.pt)), answers: items.map(it => (it.parts || []).map(pt => typeof pt === "string" ? pt : pt.nodeType ? " " : right(pt)).join("")) });
   const good = s => s.pt.o ? (s.pt.multi ? (s.v.size === s.pt.a.length && s.pt.a.every(i => s.v.has(i))) : s.v === s.pt.a) : s.pt.nm != null ? sy3Nm(s.inp.value) === s.pt.nm : sy3Num(s.inp.value) === s.pt.n;
   const val = s => s.pt.o ? (s.pt.multi ? ([...s.v].sort().map(i => s.pt.o[i]).join("·") || "-") : (s.v == null ? "-" : s.pt.o[s.v])) : (s.inp.value.trim() || "-");
-  const check = h("button", { class: "big", onclick: () => {
+  const filled = s => s.pt.o ? (s.pt.multi ? s.v.size >= s.pt.a.length : s.v != null) : s.pt.nm != null ? sy3Nm(s.inp.value).length >= s.pt.nm.length : s.inp.value.trim() !== "";
+  const check = () => {
     api.tryOnce(); const ans = all.map(val).join(" / ");
     all.forEach(s => {
       if (s.pt.o) { [...s.slot.children].forEach((b, i) => { b.classList.remove("good", "bad"); const picked = s.pt.multi ? s.v.has(i) : s.v === i; if (picked) b.classList.add(good(s) ? "good" : "bad"); }); }
       else s.inp.style.borderColor = good(s) ? "var(--ok)" : "var(--no)";
     });
     const bad = all.find(s => !good(s));
-    if (!bad) return api.done(ans, opts.ok);
+    if (!bad) { all.forEach(s => { if (s.inp) s.inp.readOnly = true; }); api.done(ans, opts.ok); return true; }
     let key;
     if (bad.pt.o) key = bad.pt.multi ? [...bad.v].sort().join(",") : String(bad.v);
-    else if (bad.pt.nm != null) { key = sy3Nm(bad.inp.value); if (bad.pt.nm.length > 1 && key === [...bad.pt.nm].reverse().join("") && !(bad.pt.why && bad.pt.why[key])) return api.fail("대응점의 순서대로 읽어야 해요. 순서를 다시 살펴봐요.", ans); }
+    else if (bad.pt.nm != null) { key = sy3Nm(bad.inp.value); if (bad.pt.nm.length > 1 && key === [...bad.pt.nm].reverse().join("") && !(bad.pt.why && bad.pt.why[key])) { api.fail("대응점의 순서대로 읽어야 해요. 순서를 다시 살펴봐요.", ans); return false; } }
     else key = String(sy3Num(bad.inp.value));
     api.fail((bad.pt.why && bad.pt.why[key]) || opts.bad || "빨간 칸을 다시 살펴봐요.", ans);
-  } }, "확인하기");
-  host.append(wrap, h("div", { class: "actions" }, check));
+    return false;
+  };
+  const hasIn = all.some(s => !s.pt.o);
+  const kick = autoRun(() => all.every(filled), () => all.map(val).join("\u0001") + "|" + all.map(s => s.v instanceof Set ? [...s.v].sort().join(",") : "").join(";"), check, 0);
+  let tm = null; const later = w => { clearTimeout(tm); tm = setTimeout(kick, w); };
+  wrap.addEventListener("click", e => { if (e.target.closest(".opt")) later(hasIn ? 600 : 260); });
+  all.forEach(s => { if (!s.inp) return;
+    s.inp.addEventListener("input", e => { s.inp.style.borderColor = ""; if (!e.isComposing) later(900); });
+    s.inp.addEventListener("compositionend", () => later(900));
+    s.inp.addEventListener("change", () => later(200));
+    s.inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); s.inp.blur(); } }); });
+  host.append(wrap);
   return wrap;
 }
 /* 조작을 마친 뒤: then(이어서 할 활동) → ask(물음)이면 true, 없으면 false(부품의 fin이 api.done) */
@@ -523,17 +539,19 @@ function sy3Pick(body, api, opt) {
     api.provide({ words: ["모양", "크기", "모눈 칸 수", "합동"], answers: [Object.values(groups).filter(g => g.length > 1).map(g => g.map(x => x.S.label).join("와 ")).join(", ")] });
     body.append(...(opt.tip ? [h("p", { class: "sy3small" }, opt.tip)] : []), svg, read, list);
   } else {
-    tapFn = it => { if (done) return; it.on = !it.on; paint(it); read.textContent = "고른 도형: " + (items.filter(x => x.on).map(x => x.S.label).join(", ") || "없음"); };
     const ans = opt.answer;
     api.provide({ words: opt.words || [], answers: [ans.join(", ")] });
-    const check = h("button", { class: "big", onclick: () => {
-      if (done) return; api.tryOnce();
+    const check = () => {
+      if (done) return true; api.tryOnce();
       const picked = items.filter(x => x.on).map(x => x.S.label), ok = picked.length === ans.length && ans.every(l => picked.includes(l));
-      if (ok) { done = true; check.disabled = true; return fin(picked.join(", "), opt.doneMsg || "알맞게 골랐어요!"); }
+      if (ok) { done = true; read.textContent = "고른 도형: " + picked.join(", ") + " ✓"; fin(picked.join(", "), opt.doneMsg || "알맞게 골랐어요!"); return true; }
       const extra = picked.find(l => !ans.includes(l)), miss = ans.find(l => !picked.includes(l));
-      api.fail(extra && opt.why && opt.why[extra] ? opt.why[extra] : extra ? `도형 ${sy3Jo(extra, "은/는")} 알맞지 않아요. 다시 살펴봐요.` : `빠진 도형이 있어요. 다시 살펴봐요.` + (miss && opt.why && opt.why[miss] ? " " + opt.why[miss] : ""), picked.join(", ") || "-");
-    } }, "확인하기");
-    body.append(...(opt.tip ? [h("p", { class: "sy3small" }, opt.tip)] : []), svg, read, h("div", { class: "actions" }, check));
+      api.fail(extra && opt.why && opt.why[extra] ? opt.why[extra] : extra ? `${opt.unitName || "도형"} ${sy3Jo(extra, "은/는")} 알맞지 않아요. 다시 살펴봐요.` : `빠진 ${sy3Jo(opt.unitName || "도형", "이/가")} 있어요. 다시 살펴봐요.` + (miss && opt.why && opt.why[miss] ? " " + opt.why[miss] : ""), picked.join(", ") || "-");
+      return false;
+    };
+    const kick = autoRun(() => items.filter(x => x.on).length >= ans.length, () => items.filter(x => x.on).map(x => x.S.label).sort().join(","), check, 700);
+    tapFn = it => { if (done) return; it.on = !it.on; paint(it); read.textContent = "고른 " + (opt.unitName || "도형") + ": " + (items.filter(x => x.on).map(x => x.S.label).join(", ") || "없음"); kick(); };
+    body.append(...(opt.tip ? [h("p", { class: "sy3small" }, opt.tip)] : []), svg, read);
   }
   items.forEach(paint);
 }
@@ -964,15 +982,16 @@ function sy3Complete(body, api, opt) {
     const nxt = opt.miss.findIndex((y, i) => i > curI && !placed[y.n]); const any = opt.miss.findIndex(y => !placed[y.n]);
     curI = nxt >= 0 ? nxt : any >= 0 ? any : curI;
     redraw();
-    if (opt.miss.every(y => placed[y.n])) read.textContent = "모두 찍었어요. ‘확인하기’를 눌러요.";
+    if (opt.miss.every(y => placed[y.n])) read.textContent = "모두 찍었어요. 잠깐 기다리면 저절로 확인해요. 자리를 옮기려면 점 단추를 고르고 다시 눌러요.";
+    kick();
   });
-  const check = h("button", { class: "big", onclick: () => {
-    if (done) return;
-    if (!opt.miss.every(y => placed[y.n])) { read.textContent = "찍지 않은 점이 있어요."; return; }
+  const check = () => {
+    if (done) return true;
+    if (!opt.miss.every(y => placed[y.n])) return false;
     api.tryOnce();
     const bad = opt.miss.find(y => Math.hypot(placed[y.n][0] - want[y.n][0], placed[y.n][1] - want[y.n][1]) > 1e-6);
     if (!bad) {
-      done = true; check.disabled = true; chips.forEach(c => c.disabled = true);
+      done = true; chips.forEach(c => c.disabled = true);
       const all = Object.assign({}, P, placed);
       if (opt.poly) { const poly = opt.poly.map(n => all[n]); const e = sy3DrawPart(animG, sy3P(poly), m, { fill: "rgba(43,123,214,0.15)", stroke: SY3.blue, w: 3 }); e.setAttribute("stroke-dasharray", "none"); }
       const half = opt.half ? opt.half.map(n => all[n]) : null;
@@ -983,7 +1002,7 @@ function sy3Complete(body, api, opt) {
         });
       } else fin("완성", opt.doneMsg || "도형을 완성했어요!");
       read.textContent = "";
-      return;
+      return true;
     }
     const p = P[bad.of], s = placed[bad.n];
     let msg;
@@ -996,13 +1015,14 @@ function sy3Complete(body, api, opt) {
       msg = Math.abs(cr) > 1e-6 ? `점 ${sy3Jo(bad.of, "과/와")} 대칭의 중심을 지나는 직선 위에서 점 ${bad.n}을 찾아요.` : `점 ${bad.of}에서 대칭의 중심까지의 거리와 점 ${bad.n}에서 대칭의 중심까지의 거리가 같아야 해요. 대칭의 중심의 반대쪽에 있어야 해요.`;
     }
     api.fail(msg, Object.entries(placed).map(([n, p2]) => `${n}(${p2.join(",")})`).join(" "));
-  } }, "확인하기");
+    return false;
+  };
+  const kick = autoRun(() => opt.miss.every(y => placed[y.n]), () => opt.miss.map(y => placed[y.n] ? placed[y.n].join(",") : "-").join("|"), check, 1200);
   const gb = h("button", { onclick: () => { showG = !showG; gb.classList.toggle("sy3on", showG); guide(); } }, line ? "도움선: 대칭축에 수선 긋기" : "도움선: 대칭의 중심을 지나는 직선");
   api.provide({ words: line ? ["대칭축", "수선", "같은 거리", "대응점"] : ["대칭의 중심", "지나는 직선", "같은 거리", "대응점"], answers: opt.miss.map(x => `점 ${x.n}: 점 ${x.of}의 대응점`) });
   const side = sy3Side(h("p", { class: "sy3small" }, opt.tip || "찍을 점을 고르고 모눈의 꼭짓점을 눌러요. 다시 누르면 자리를 옮길 수 있어요."), sy3Tools(...chips), read, ...(opt.guide === false ? [] : [sy3Tools(gb)]));
   if (opt.intro) body.append(h("p", { class: "sy3small" }, opt.intro));
   sy3Layout(body, svg, side);
-  body.append(h("div", { class: "actions" }, check));
   redraw();
 }
 
@@ -1110,31 +1130,32 @@ function sy3Sort(body, api, opt) {
   const ans = {}; opt.cards.forEach(c => ans[c.label] = (opt.ans && opt.ans[c.label]) || sy3Kind(c.parts));
   const grid = h("div", { class: "sy3cards" });
   opt.cards.forEach(c => {
-    const bs = cats.map(k => h("button", { onclick: () => { picked[c.label] = k; bs.forEach((b, i) => b.classList.toggle("sy3on", cats[i] === k)); card.classList.remove("sy3good", "sy3bad"); } }, opt.catN ? opt.catN[k] : SY3_CATN[k]));
+    const bs = cats.map(k => h("button", { onclick: () => { if (done) return; picked[c.label] = k; bs.forEach((b, i) => b.classList.toggle("sy3on", cats[i] === k)); card.classList.remove("sy3good", "sy3bad"); kick(); } }, opt.catN ? opt.catN[k] : SY3_CATN[k]));
     const card = h("div", { class: "sy3card" }, h("div", { class: "sy3nm" }, c.label + (c.name ? " " + c.name : "")), sy3Mini(c.parts, 140), h("div", { class: "sy3choice" }, ...bs));
     cardEls[c.label] = card; grid.append(card);
   });
   let done = false;
-  const check = h("button", { class: "big", onclick: () => {
-    if (done) return; api.tryOnce();
+  const check = () => {
+    if (done) return true; api.tryOnce();
     let bad = null;
     opt.cards.forEach(c => { const ok = picked[c.label] === ans[c.label]; cardEls[c.label].classList.toggle("sy3good", ok); cardEls[c.label].classList.toggle("sy3bad", !ok); if (!ok && !bad) bad = c; });
     const got = opt.cards.map(c => `${c.label}:${picked[c.label] ? SY3_CATN[picked[c.label]] : "-"}`).join(" ");
-    if (!bad) { done = true; check.disabled = true; return fin(got, opt.doneMsg || "모두 알맞게 나누었어요!"); }
-    if (!picked[bad.label]) return api.fail(`${bad.label}${bad.name ? " " + bad.name : ""}도 골라 주세요.`, got);
+    if (!bad) { done = true; fin(got, opt.doneMsg || "모두 알맞게 나누었어요!"); return true; }
     const k = ans[bad.label], p = picked[bad.label];
     const why = (k === "L" || k === "B") && !(p === "L" || p === "B") ? "한 직선을 따라 접으면 완전히 겹치는지 다시 살펴봐요."
       : (k === "P" || k === "B") && !(p === "P" || p === "B") ? "어떤 점을 중심으로 180° 돌리면 처음 모양과 완전히 겹치는지 다시 살펴봐요."
       : (p === "L" || p === "B") && !(k === "L" || k === "B") ? "어느 직선으로 접어도 완전히 겹치지 않아요." : "180° 돌리면 처음 모양과 겹치지 않아요.";
     api.fail(`빨간 테두리 카드를 다시 살펴봐요. ${bad.label}${bad.name ? " " + bad.name : ""}: ${why}`, got);
-  } }, "확인하기");
+    return false;
+  };
+  const kick = autoRun(() => opt.cards.every(c => picked[c.label]), () => opt.cards.map(c => picked[c.label]).join(","), check, 600);
   api.provide({ words: ["선대칭도형", "점대칭도형", "접기", "180° 돌리기"], answers: [opt.cards.map(c => `${c.label} ${SY3_CATN[ans[c.label]]}`).join(", ")] });
   if (opt.intro) body.append(h("p", { class: "sy3small" }, opt.intro));
-  body.append(grid, h("div", { class: "actions" }, check));
+  body.append(grid);
 }
 
 /* =========================================================
-   11. 미술관 둘러보기(1차시) — 작품을 하나씩 눌러 특징을 살펴봐요
+   11. 둘러보기(1차시) — 장소마다 눌러 특징을 살펴봐요 (opt.place: 맨 위 이름)
    opt: {spots:[{id, name, say, draw(g)}], ask, ok}
    ========================================================= */
 function sy3Museum(body, api, opt) {
@@ -1142,7 +1163,7 @@ function sy3Museum(body, api, opt) {
   const W = 760, H = 330, svg = makeSvg(W, H); svg.setAttribute("class", "sy3fig"); svg.style.maxWidth = "40em";
   svg.append(svgEl("rect", { x: 0, y: 0, width: W, height: 250, fill: "#F6EFE4" }), svgEl("rect", { x: 0, y: 250, width: W, height: 80, fill: "#E3D2BA" }));
   for (let x = 0; x < W; x += 76) svg.append(svgEl("line", { x1: x, y1: 250, x2: x - 40, y2: 330, stroke: "#D4BFA2", "stroke-width": 2 }));
-  svg.append(txt(W / 2, 24, "미술관", 20, { fill: "#8A6E52" }));
+  svg.append(txt(W / 2, 24, opt.place || "대칭 무늬 공방", 20, { fill: "#8A6E52" }));
   let seenAll = false;
   const seen = new Set(), read = h("div", { class: "sy3read" }, "작품을 하나씩 눌러 보세요."), list = h("ul", { class: "sy3list" });
   const n = opt.spots.length, fw = 128, gap = (W - n * fw) / (n + 1);
@@ -1157,7 +1178,7 @@ function sy3Museum(body, api, opt) {
       seen.add(s.id); ring.setAttribute("stroke", SY3.green);
       read.textContent = `${s.name}: ${s.say}`;
       list.innerHTML = ""; opt.spots.filter(t => seen.has(t.id)).forEach(t => list.append(h("li", { class: "sy3ok" }, `${t.name} — ${t.say}`)));
-      if (seen.size === n && !seenAll) { seenAll = true; api.tryOnce(); fin("모두 둘러봄", opt.doneMsg || "미술관을 모두 둘러보았어요!"); }
+      if (seen.size === n && !seenAll) { seenAll = true; api.tryOnce(); fin("모두 둘러봄", opt.doneMsg || "부스를 모두 둘러보았어요!"); }
     });
     svg.append(g);
   });
@@ -1253,7 +1274,7 @@ function sy3Cut(body, api, opt) {
 }
 
 /* =========================================================
-   14. 카드를 없애는 완벽한 방법(11차시 놀이) — 나와 컴퓨터 친구 둘(다윤, 승현)
+   14. 대칭 카드 놀이(카드를 없애는 완벽한 방법) — 나와 컴퓨터 친구 둘(opt.names)
    카드: 도형 카드(선대칭도형만·점대칭도형만·둘 다·둘 다 아님) + 특별 카드 ①②③
    ========================================================= */
 function sy3SpecialSvg(sp, w = 80) {
@@ -1272,7 +1293,7 @@ function sy3CardSvg(c, w) {
 const SY3_PROPS = { L: ["선"], P: ["점"], B: ["선", "점"], N: ["없음"] };
 const SY3_SHOUT = { "선": "선대칭도형!", "점": "점대칭도형!", "없음": "둘 다 아닌 도형!" };
 function sy3Uno(body, api, opt) {
-  const NAMES = ["나", "다윤", "승현"], NI = ["나", "다윤이", "승현이"];
+  const NAMES = opt.names || ["나", "도윤", "지아"], NI = opt.ni || ["나", "도윤이", "지아"];
   let deck, pile, hands, turn, dir, anyNext, over, wrongShout, goodShout, waitCall, timer = null, note = "";
   const info = h("div", { class: "sy3players" }), pileBox = h("div", { style: "display:flex;gap:1em;align-items:center;flex-wrap:wrap" }), handBox = h("div", { class: "sy3hand" });
   const logBox = h("div", { class: "sy3log" }), read = h("div", { class: "sy3read" });
@@ -1312,7 +1333,7 @@ function sy3Uno(body, api, opt) {
     const tw = h("div", { style: "width:6.5em" }, sy3CardSvg(top)); const cap = h("div", { class: "sy3small" }, "보이는 카드");
     pileBox.append(h("div", {}, tw, cap));
     if (last.sp) pileBox.append(h("div", { style: "width:4.5em" }, sy3CardSvg(last), h("div", { class: "sy3small" }, "방금 낸 특별 카드")));
-    pileBox.append(h("div", { class: "sy3small" }, `쌓아 둔 카드 ${deck.length}장 · 순서: ${dir === 1 ? "나 → 다윤 → 승현" : "나 → 승현 → 다윤"}` + (anyNext && !over ? " · 이번 차례는 아무 카드나 낼 수 있어요" : "")));
+    pileBox.append(h("div", { class: "sy3small" }, `쌓아 둔 카드 ${deck.length}장 · 순서: ${dir === 1 ? NAMES.join(" → ") : [NAMES[0], NAMES[2], NAMES[1]].join(" → ")}` + (anyNext && !over ? " · 이번 차례는 아무 카드나 낼 수 있어요" : "")));
     handBox.innerHTML = "";
     hands[0].forEach((c, i) => { const b = h("button", { class: (i === sel ? "sy3on" : "") + (turn === 0 && !over && !canPlay(c, top) ? " sy3dim" : ""), "aria-label": c.sp ? "특별 카드" : "도형 카드", onclick: () => { if (over) return; sel = i === sel ? -1 : i; note = ""; render(); } }, sy3CardSvg(c)); handBox.append(b); });
     const my = turn === 0 && !over && !waitCall;
