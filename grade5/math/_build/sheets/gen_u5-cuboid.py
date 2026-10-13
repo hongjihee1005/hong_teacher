@@ -1036,8 +1036,6 @@ def views_svg(dims, views):
 
 def nets_svg(nets, k=22, grid=False, h=None):
     parts = [net(F, k=k, pad=12, grid=grid)[:3] for _, F in nets]
-    if h:
-        parts = [fit(p, h) for p in parts]
     return hstack(parts, 30, [n for n, _ in nets])
 
 
@@ -1416,7 +1414,7 @@ def tb6(s, lv):
         va = [math.dist(p, q) for p, q, *_ in la]
         assert va == [4, 9, 7]
         sk = cub(9, 7, 4, k=14, pad=56, dimd=32, dim_size=19, dims=[(0, 1, '9 cm'), (0, 2, '7 cm'), (3, 7, '4 cm')])[:3]
-        nt = net(Fa, k=12, extra=lambda m: ''.join(seg_label(m, p, q, t, dx, dy) for p, q, t, dx, dy in la))[:3]
+        nt = net(Fa, k=14, extra=lambda m: ''.join(seg_label(m, p, q, t, dx, dy, RED, 21) for p, q, t, dx, dy in la))[:3]
         s.picture(fig('tb6abc', hstack([sk, nt], 30)), width_mm=165)
         a7 = qa(s, [('㉠ / ㉡ / ㉢', ' / '.join('%d' % v for v in va), ' cm')])
         Fb = net_from_cells(CROSS, {1: 5, 2: 8, 4: 11})
@@ -1495,7 +1493,7 @@ def card_game(s, lv, shapes, word, i0):
     order = [nets[i] for i in NET_ORDER]
     for row in range(2):
         cs = order[row * 4:row * 4 + 4]
-        s.picture(fig('cards_net_%s%d' % (word, row), hstack([fit(card_svg(c, shapes), 140) for c in cs], 22,
+        s.picture(fig('cards_net_%s%d' % (word, row), hstack([card_svg(c, shapes) for c in cs], 22,
                                                              ['카드 %d' % (row * 4 + i + 1) for i in range(4)], 18)), width_mm=165)
     s.table([['카드'] + [str(i + 1) for i in range(8)], ['겨냥도'] + ['' for _ in range(8)]], header=True, header_col=True,
             col_mm=[28] + [19] * 8, row_h=3402)
@@ -1505,7 +1503,7 @@ def card_game(s, lv, shapes, word, i0):
     hand1 = [sks[0], nets[0], nets[4]]
     hand2 = [sks[0], sks[1], nets[2]]
     for hi, hand in enumerate((hand1, hand2)):
-        s.picture(fig('hand_%s%d' % (word, hi), hstack([fit(card_svg(c, shapes), 120) for c in hand], 22, ['A', 'B', 'C'], 18)), width_mm=120)
+        s.picture(fig('hand_%s%d' % (word, hi), hstack([fit(card_svg(c, shapes), 150) if c['kind'] == 'sk' else card_svg(c, shapes) for c in hand], 22, ['A', 'B', 'C'], 18)), width_mm=120)
     # 넘길 카드: 두 장이 같은 도형이면 나머지 하나, 겨냥도가 둘이면 전개도와 다른 쪽 겨냥도
     p1 = next(L for L, c in zip('ABC', hand1) if [x['shape'] for x in hand1].count(c['shape']) == 1)
     p2 = next(L for L, c in zip('ABC', hand2) if c['kind'] == 'sk' and c['shape'] != hand2[2]['shape'])
@@ -1539,7 +1537,7 @@ def tb8(s, lv):
         step(s, 5, '도전하기', '도형 나의 전개도 카드')
         pick = [nets[0], nets[2], nets[3], nets[5], nets[6]]
         s.text('도형 나(가로 3 cm, 세로 1 cm, 높이 2 cm인 직육면체)의 전개도 카드를 모두 골라 보세요.')
-        s.picture(fig('tb8pick', hstack([fit(card_svg(c, TB_SHAPES), 130) for c in pick], 20, list('①②③④⑤'), 18)), width_mm=170)
+        s.picture(fig('tb8pick', hstack([card_svg(c, TB_SHAPES) for c in pick], 20, list('①②③④⑤'), 18)), width_mm=170)
         a6 = [n for n, c in zip('①②③④⑤', pick) if c['shape'] == 1]
         qa(s, [('도형 나의 전개도 카드', ', '.join(a6))])
         why(s, '어떻게 찾았는지 써 보세요.', 1)
