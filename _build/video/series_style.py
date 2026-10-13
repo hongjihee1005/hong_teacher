@@ -21,8 +21,10 @@ import os
 import re
 
 import manimpango
+import numpy as np
 from manim import (
     BOLD, DL, DOWN, DR, LEFT, ORIGIN, RIGHT, UL, UP, UR,
+    PI, TAU, ValueTracker, always_redraw,
     AnimationGroup, Arc, Circle, ImageMobject, Create, FadeIn, FadeOut, Line, MarkupText,
     Rectangle, RoundedRectangle, Scene, Text, Transform, VGroup, Write,
     linear, rate_functions,
@@ -262,23 +264,24 @@ class EpisodeScene(Scene):
         top = T("생각해 보세요", 80, GREEN)
         text = T(msg, 64)
         grp = VGroup(top, VGroup(ring, icon), text).arrange(DOWN, buff=0.5).move_to([0, 0.15, 0])
-        num = T(str(seconds), 60, GREEN).next_to(ring, RIGHT, buff=0.5)
-        self.play(FadeIn(cover), FadeIn(grp, scale=0.9), FadeIn(num), run_time=0.5)
-        timer = Arc(radius=1.25, start_angle=1.5708, angle=6.2832, stroke_color=ORANGE, stroke_width=10)
-        timer.move_to(ring)
-        self.add(timer)
-        left = seconds - 0.5 - 0.5
-        steps = seconds
-        per = left / steps
-        for i in range(steps):
-            new_num = T(str(seconds - i), 60, GREEN).move_to(num)
-            frac = 1 - (i + 1) / steps
-            new_arc = Arc(radius=1.25, start_angle=1.5708, angle=max(6.2832 * frac, 0.001),
-                          stroke_color=ORANGE, stroke_width=10).move_to(ring.get_center())
-            new_arc.shift(ring.get_center() - new_arc.get_arc_center())
-            self.remove(num); num = new_num; self.add(num)
-            self.play(Transform(timer, new_arc), run_time=per, rate_func=linear)
-        self.play(FadeOut(VGroup(cover, grp, num, timer)), run_time=0.5)
+        c = ring.get_center()
+        # 남은 비율(1 → 0): 주황 호가 초록 원 위에서 12시 방향부터 시계 반대 방향으로 줄어듦
+        left = ValueTracker(1.0)
+        timer = always_redraw(lambda: Arc(
+            radius=1.25, start_angle=PI / 2, angle=max(TAU * left.get_value(), 1e-3),
+            arc_center=c, stroke_color=ORANGE, stroke_width=12))
+        num_pos = ring.get_right() + RIGHT * 0.75
+
+        def count_text():
+            n = max(1, int(np.ceil(left.get_value() * seconds - 1e-6)))
+            return T(str(n), 64, GREEN).move_to(num_pos)
+        num = always_redraw(count_text)
+        fade = 0.4
+        self.play(FadeIn(cover), FadeIn(grp, scale=0.9), run_time=fade)
+        self.add(timer, num)
+        self.play(left.animate.set_value(0.0), run_time=seconds - 2 * fade, rate_func=linear)
+        timer.clear_updaters(); num.clear_updaters()
+        self.play(FadeOut(VGroup(cover, grp, num, timer)), run_time=fade)
 
     # ── 마무리 (10초) ──
     def closing(self, summary_markup, next_preview=""):
