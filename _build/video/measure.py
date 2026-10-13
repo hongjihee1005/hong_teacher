@@ -94,7 +94,7 @@ def needle(c, v, r=1.9, maxv=4000, color=ORANGE):
     return VGroup(Line(c, c + d * (r - 0.12), color=color, stroke_width=7), Circle(radius=0.1, fill_color=INK, fill_opacity=1, stroke_width=0).move_to(c))
 
 
-def unit_calc(S, a, b_, op, big="L", small="mL", who="", y0=1.6):
+def unit_calc(S, a, b_, op, big="L", small="mL", who="", y0=1.6, base=1000):
     """'몇 L 몇 mL' 세로셈: a, b_ = (큰 단위, 작은 단위), op '+' 또는 '-'. 받아올림·받아내림을 1000으로 보여 줌."""
     from manim import Create, FadeIn, FadeOut, Indicate, Write
     from series_style import GREEN, M, b, g, o
@@ -114,7 +114,7 @@ def unit_calc(S, a, b_, op, big="L", small="mL", who="", y0=1.6):
     bar = Line([xb - 2.0, ys[1] - 0.6, 0], [xu2 + 0.6, ys[1] - 0.6, 0], color=INK, stroke_width=6)
     S.play(FadeIn(r1), FadeIn(r2), Create(bar), run_time=0.9)
     def tp(u, pair):
-        fin = u in ("kg", "g")
+        fin = u in ("kg", "g", "분")
         return pair[0] if fin else pair[1]
     S.say(f"{b(big)}{tp(big, '은는')} {b(big)}끼리, {o(small)}{tp(small, '은는')} {o(small)}끼리",
           f"{big}{tp(big, '은는')} {big}끼리, {small}{tp(small, '은는')} {small}끼리 계산해요.")
@@ -122,16 +122,16 @@ def unit_calc(S, a, b_, op, big="L", small="mL", who="", y0=1.6):
     extra = VGroup()
     if op == "+":
         s_small = a[1] + b_[1]
-        carry = s_small >= 1000
+        carry = s_small >= base
         if carry:
             S.say(f"{o(small)}끼리: {a[1]} + {b_[1]} = {o(str(s_small))}", f"먼저 {small}끼리 더하면 {a[1]} 더하기 {b_[1]}, {s_small}{small}예요.")
             tmp = num(s_small, xs, ys[2], ORANGE)
             S.play(FadeIn(tmp), run_time=0.6)
             S.wait(0.6)
-            S.say(f"{o(f'1000 {small}')} = {b(f'1 {big}')} → 받아올림!", f"1000{small}{tp(small, '은는')} 1{big}{'과' if big == 'kg' else '와'} 같아요. 1000{small}{tp(small, '을를')} 1{big}{'으로' if big == 'kg' else '로'} 받아올려요!")
+            S.say(f"{o(f'{base} {small}')} = {b(f'1 {big}')} → 받아올림!", f"{base}{small}{tp(small, '은는')} 1{big}{'과' if big in ('kg', '분') else '와'} 같아요. {base}{small}{tp(small, '을를')} 1{big}{'으로' if big in ('kg', '분') else '로'} 받아올려요!")
             c1 = T("1", 44, BLUE).move_to([xb + 0.35, ys[0] + 0.75, 0])
             S.play(Indicate(tmp, color=ORANGE, scale_factor=1.2), FadeIn(c1, shift=UP * 0.3), run_time=0.9)
-            new_small = num(s_small - 1000, xs, ys[2], ORANGE)
+            new_small = num(s_small - base, xs, ys[2], ORANGE)
             S.play(FadeOut(tmp), FadeIn(new_small), run_time=0.6)
             extra.add(c1, new_small)
             rb = a[0] + b_[0] + 1
@@ -143,23 +143,23 @@ def unit_calc(S, a, b_, op, big="L", small="mL", who="", y0=1.6):
             extra.add(new_small)
             rb = a[0] + b_[0]
             S.say(f"{b(big)}끼리: {a[0]} + {b_[0]} = {b(str(rb))}", f"{big}끼리 더하면 {rb}{big}.")
-        rs = s_small - 1000 if carry else s_small
+        rs = s_small - base if carry else s_small
     else:
         borrow = a[1] < b_[1]
         if borrow:
             from division import j
             S.say(f"{a[1]}에서 {j(b_[1], '을를')} 뺄 수 없어요", f"{small}끼리 {a[1]}에서 {j(b_[1], '을를')} 뺄 수 없어요.")
             S.wait(0.8)
-            S.say(f"{b(f'1 {big}')}{tp(big, '을를')} {o(f'1000 {small}')}{'으로' if small == 'g' else '로'} 받아내림!", f"그래서 {a[0]}{big}에서 1{big}{tp(big, '을를')} 1000{small}{'으로' if small == 'g' else '로'} 바꾸어 받아내려요!")
+            S.say(f"{b(f'1 {big}')}{tp(big, '을를')} {o(f'{base} {small}')}{'으로' if small == 'g' else '로'} 받아내림!", f"그래서 {a[0]}{big}에서 1{big}{tp(big, '을를')} {base}{small}{'으로' if small == 'g' else '로'} 바꾸어 받아내려요!")
             nb = T(str(a[0] - 1), 44, BLUE).move_to([xb + 0.35, ys[0] + 0.75, 0])
-            ns = T(str(a[1] + 1000), 44, ORANGE).move_to([xs + 0.0, ys[0] + 0.75, 0])
+            ns = T(str(a[1] + base), 44, ORANGE).move_to([xs + 0.0, ys[0] + 0.75, 0])
             cross1 = Line(r1[0].get_corner(DOWN + LEFT), r1[0].get_corner(UP + RIGHT), color=INK, stroke_width=4)
             cross2 = Line(r1[2].get_corner(DOWN + LEFT), r1[2].get_corner(UP + RIGHT), color=INK, stroke_width=4)
             S.play(Create(cross1), FadeIn(nb, shift=DOWN * 0.2), run_time=0.7)
             S.play(Create(cross2), FadeIn(ns, shift=DOWN * 0.2), run_time=0.7)
             extra.add(nb, ns, cross1, cross2)
-            rs = a[1] + 1000 - b_[1]
-            S.say(f"{o(small)}끼리: {a[1] + 1000} − {b_[1]} = {o(str(rs))}", f"{small}끼리 {a[1] + 1000} 빼기 {b_[1]}, {rs}{small}예요.")
+            rs = a[1] + base - b_[1]
+            S.say(f"{o(small)}끼리: {a[1] + base} − {b_[1]} = {o(str(rs))}", f"{small}끼리 {a[1] + base} 빼기 {b_[1]}, {rs}{small}예요.")
             rb = a[0] - 1 - b_[0]
         else:
             rs = a[1] - b_[1]
