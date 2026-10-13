@@ -394,12 +394,15 @@ def _circ(p, r, fill=INK, stroke='none', sw=0):
 
 def hstack(parts, gap=24, names=None, name_size=20, pad=6):
     """(w, h, body) 그림 여러 개를 가로로(아래에 이름)."""
-    H = max(h for _, h, _ in parts) + (34 if names else 0)
+    tot = sum(w for w, _, _ in parts) + gap * (len(parts) - 1)
+    name_size = max(name_size, tot * .024)
+    nh = name_size * 1.7
+    H = max(h for _, h, _ in parts) + (nh if names else 0)
     x, body = pad, []
     for i, (w, h, b) in enumerate(parts):
-        body.append('<g transform="translate(%s,%s)">%s</g>' % (r2(x), r2((H - (34 if names else 0) - h) / 2), b))
+        body.append('<g transform="translate(%s,%s)">%s</g>' % (r2(x), r2((H - (nh if names else 0) - h) / 2), b))
         if names:
-            body.append(_t(x + w / 2, H - 14, names[i], name_size, weight='bold'))
+            body.append(_t(x + w / 2, H - nh * .45, names[i], r2(name_size), weight='bold'))
         x += w + gap
     return _svg(x - gap + pad, H, ''.join(body))
 
@@ -1196,6 +1199,7 @@ def tb3(s, lv):
     s.text('평행한 모서리는 평행하게, 길이가 같은 모서리는 같게 그어요. 모서리는 모두 12개예요.')
     svg, wmm = cm_grid(10, 6, segs=[E2[i] for i in given], dots=True)
     s.picture(fig('tb3fin', svg), width_mm=wmm)
+    assert miss == [3, 6, 7, 8, 10] and (ms, md) == (4, 1)
     a4 = qa(s, [('더 그은 실선 / 점선', '%d / %d' % (ms, md), '개')])
     step(s, 4, '확인하기', '바르게 그린 겨냥도')
     parts = [cub(4, 2.5, 3, k=24, hidden='solid')[:3], cub(4, 2.5, 3, k=24)[:3], cub(4, 2.5, 3, k=24, miss=[(3, 7)])[:3]]
@@ -1205,7 +1209,7 @@ def tb3(s, lv):
     w, h, b = sketch_svg(3, 3, 2, 2, 7, 7, range(12))
     s.picture(fig('tb3cube', _svg(w, h, b)), width_mm=62)
     a5 = qa(s, [('보이지 않는 면', 3, '개'), ('보이는 꼭짓점 / 보이지 않는 꼭짓점', '7 / 1', '개')])
-    ans = '3차시  ① %s, 가, 점선으로 그려요   ② 겨냥도, 실선, 점선   ③ %s   ④ %s(앞면 오른쪽 위·뒤쪽 모서리)   ⑤ 나, 왼쪽 아래 뒤 꼭짓점에서 만나는 점선 3개에 ○, %s' % (
+    ans = '3차시  ① %s, 가, 점선으로 그려요   ② 겨냥도, 실선, 점선   ③ %s   ④ %s (실선: 앞면 오른쪽 세로, 윗면 비스듬한 모서리 2개, 뒷면 오른쪽 세로 / 점선: 뒷면 아래 가로)   ⑤ 나, 왼쪽 아래 뒤 꼭짓점에서 만나는 점선 3개에 ○, %s' % (
         ' / '.join(a1), ' / '.join(a3), a4[0], ' / '.join(a5))
     if lv == '도전형':
         step(s, 5, '도전하기', '모서리 길이의 합')
