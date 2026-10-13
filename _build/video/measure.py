@@ -65,3 +65,30 @@ def bottle(h=2.4, w=1.0, color=WATER, fill=1.0):
     wat = Rectangle(width=w - 0.1, height=h * 0.75 * fill - 0.1, stroke_width=0, fill_color=color, fill_opacity=0.85)
     wat.align_to(body, DOWN).shift(UP * 0.05)
     return VGroup(body, wat, neck, capm)
+
+
+def dial_face(c, r=1.9, maxv=4000, major=1000, minor=100, label=lambda v: f"{v // 1000}", unit="kg"):
+    """둥근 저울 눈금판(0이 맨 위, 시계 방향). 반환 VGroup(판, 눈금, 숫자, 단위)"""
+    from manim import TAU
+    face = Circle(radius=r, fill_color=PAPER, fill_opacity=1, stroke_color=INK, stroke_width=6).move_to(c)
+    ticks, nums = VGroup(), VGroup()
+    n = maxv // minor
+    for k in range(n):
+        v = k * minor
+        a = PI / 2 - TAU * v / maxv
+        d = np.array([np.cos(a), np.sin(a), 0])
+        big = v % major == 0
+        mid = (major // 2) and v % (major // 2) == 0
+        ln = 0.34 if big else (0.24 if mid else 0.15)
+        ticks.add(Line(c + d * (r - ln), c + d * r, color=INK, stroke_width=5 if big else 2.5))
+        if big:
+            nums.add(T(label(v), 34).move_to(c + d * (r - 0.62)))
+    u = T(unit, 28, SOFT).move_to(c + DOWN * r * 0.45)
+    return VGroup(face, ticks, nums, u)
+
+
+def needle(c, v, r=1.9, maxv=4000, color=ORANGE):
+    from manim import TAU
+    a = PI / 2 - TAU * v / maxv
+    d = np.array([np.cos(a), np.sin(a), 0])
+    return VGroup(Line(c, c + d * (r - 0.12), color=color, stroke_width=7), Circle(radius=0.1, fill_color=INK, fill_opacity=1, stroke_width=0).move_to(c))
