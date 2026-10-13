@@ -57,6 +57,12 @@ function dm4Diag(e, v) {
   const m = String(e).replace(/\s/g, "").match(/^([\d.]+)[×x*]([\d.]+)$/); if (!m) return null;
   const A = m[1], B = m[2], ok = dm4E(e); if (v === ok) return null;
   const da = dm4Dn(A), db = dm4Dn(B), D = da + db, N = BigInt(dm4Nat(A)) * BigInt(dm4Nat(B));
+  /* 10, 100, 1000이나 0.1, 0.01, 0.001을 곱할 때는 소수점을 옮기는 자리 수로 알려 줘요 */
+  const P10 = [B, A].find(x => /^10+$/.test(x) || /^0\.0*1$/.test(x));
+  if (P10 && v != null && dm4F(v).replace(".", "").replace(/^0+/, "").replace(/0+$/, "") === dm4F(ok).replace(".", "").replace(/^0+/, "").replace(/0+$/, "")) {
+    const big = /^10+$/.test(P10), k = big ? P10.length - 1 : dm4Dn(P10);
+    return `숫자는 맞는데 소수점 위치가 달라요. ${dm4J(P10, "을를")} 곱하면 곱의 소수점이 ${big ? "오른쪽" : "왼쪽"}으로 ${k}자리 옮겨져요.`;
+  }
   for (let d = 0; d <= 9; d++) {
     if (d === D) continue;
     if (v === N * DM4U / 10n ** BigInt(d)) {
@@ -469,7 +475,7 @@ function dm4Jump(body, api, opt) {
     const i = Math.round((pt.x - x0) / (len / N));
     const cur = hops.length ? hops[hops.length - 1] : 0;
     if (i === cur + st && i <= N) { hops.push(i); draw(); api.hint(""); }
-    else if (i > cur) api.hint(`${opt.step}은 작은 눈금 ${st}칸이에요. ${dm4F(mi * BigInt(cur))}에서 작은 눈금 ${st}칸만큼 간 곳을 눌러요.`);
+    else if (i > cur) api.hint(`${dm4J(opt.step, "은는")} 작은 눈금 ${st}칸이에요. ${dm4F(mi * BigInt(cur))}에서 작은 눈금 ${st}칸만큼 간 곳을 눌러요.`);
     return false;
   }, () => {});
   const tools = h("div", { class: "dm4tools" },
@@ -589,12 +595,13 @@ function dm4VertBoard(pr) {
     const last = v.length - 1 - [...v].reverse().findIndex(x => x !== "");
     if (v.slice(first, last + 1).some(x => x === "")) { ins.forEach((x, k) => { x.style.borderColor = k >= first && k <= last && x.value === "" ? "var(--no)" : ""; }); return { bad: "곱의 숫자 사이에 빈칸이 있어요. 빈칸 없이 이어서 써요.", given: v.join("") }; }
     if (pIdx >= 0 && (pIdx < first || pIdx >= last)) return { bad: pIdx < first ? "소수점 앞(일의 자리)에 숫자가 있어야 해요. 1보다 작은 곱이면 일의 자리에 0을 써요." : "소수점은 숫자 사이에 찍어요.", given: v.join("") };
+    if (v[first] === "0" && first < last && pIdx !== first) { ins.forEach((x, k) => { x.style.borderColor = k === first ? "var(--no)" : ""; }); return { bad: `${A} × ${B}: 맨 앞의 0은 쓰지 않아요. 곱이 1보다 작을 때만 일의 자리에 0을 써요.`, given: v.join("") }; }
     const digits = v.slice(first, last + 1).join(""), s = pIdx >= 0 ? v.slice(first, pIdx + 1).join("") + "." + v.slice(pIdx + 1, last + 1).join("") : digits;
     const got = dm4P(s), ok = got === val;
     ins.forEach((x, k) => { x.style.borderColor = k >= first && k <= last ? (ok ? "var(--ok)" : "var(--no)") : ""; });
     if (ok) return { ok: true, given: s };
     const nd = String(BigInt(digits));
-    if (nd !== N && nd !== N.replace(/0+$/, "")) return { bad: `${A} × ${B}: 먼저 자연수의 곱셈 ${na} × ${nb}를 다시 계산해 봐요.`, given: s };
+    if (nd !== N && nd !== N.replace(/0+$/, "")) return { bad: `${A} × ${B}: 먼저 자연수의 곱셈 ${na} × ${dm4J(nb, "을를")} 다시 계산해 봐요.`, given: s };
     if (pIdx < 0) return { bad: `${A} × ${B}: 곱의 소수점을 찍어요. 곱의 소수점 아래 자리 수는 ${dm4Dn(A)}+${dm4Dn(B)}=${D}(자리)예요.`, given: s };
     return { bad: `${A} × ${B}: ` + (dm4Diag(`${A}×${B}`, got) || `곱의 소수점 아래 자리 수는 ${dm4Dn(A)}+${dm4Dn(B)}=${D}(자리)예요.`), given: s };
   };
@@ -746,7 +753,7 @@ function dm4Cards(body, api, opt) {
   body.append(h("div", { class: "dm4say" }, opt.tip || "수 카드를 골라 빈칸에 놓아 곱셈식을 만들어요."), pool, row, say, more);
   api.provide({ words: opt.words || [], answers: [`${best.e.replace("×", " × ")} = ${dm4F(best.v)}`] });
   body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
-    if (!made) return api.fail(slots.every(x => x != null) ? `곱이 ${opt.goal === "max" ? "가장 큰" : "가장 작은"} 식이 아니에요. 큰 수(작은 수)를 어느 자리에 놓아야 할지 생각해 봐요.` : "빈칸을 모두 채워 식을 만들어요.", slots.map(i => i == null ? "□" : opt.cards[i]).join(""));
+    if (!made) return api.fail(slots.every(x => x != null) ? `곱이 ${opt.goal === "max" ? "가장 큰" : "가장 작은"} 식이 아니에요. ${opt.goal === "max" ? "큰 수" : "작은 수"}를 어느 자리에 놓아야 할지 생각해 봐요.` : "빈칸을 모두 채워 식을 만들어요.", slots.map(i => i == null ? "□" : opt.cards[i]).join(""));
     const r = dm4Judge(reg, opt);
     if (r.bad) return api.fail(r.bad, made + " / " + r.given);
     api.tryOnce(); api.done(made + " / " + r.given, opt.ok);
@@ -951,7 +958,7 @@ function dm4Land(body, api, opt) {
       const v = dm4P(inp.value); if (v == null) { say.textContent = "곱을 수로 써요."; return; }
       const right = dm4E(t);
       if (v === right) { owner[i] = turn % 2; drawBoard(); say.textContent = `계산기로 확인했더니 ${t.replace("×", " × ")} = ${dm4F(right)} 맞아요! 땅을 색칠해요.`; }
-      else say.textContent = `계산기로 확인했더니 ${t.replace("×", " × ")} = ${dm4F(right)}이에요. 틀려서 색칠하지 못해요.`;
+      else say.textContent = `계산기로 확인했더니 ${t.replace("×", " × ")} = ${dm4J(dm4F(right), "이에요")}. 틀려서 색칠하지 못해요.`;
       ask.innerHTML = ""; later();
     };
     inp.addEventListener("keydown", ev => { if (ev.key === "Enter") go(); });
@@ -1157,8 +1164,8 @@ const LESSONS = [
       render: (b, a) => dm4Vert(b, a, { probs: [{ a: "4.87", b: "2" }, { a: "6.09", b: "4" }],
         rows: [
           ["0.71×6 =", { f: ["71", "100"] }, "×6 =", { f: ["426", "100"] }, "=", { n: "4.26", e: "0.71×6" }],
-          { q: "수현이가 사는 지역에서는 매년 다문화 가정과 함께 김치를 담가요. 김치를 작년에는 1.25 t 담갔고, 올해는 작년의 3배만큼 담갔어요.", p: ["올해 담근 김치는", { n: "3.75", e: "1.25×3" }, "t예요."] }],
-        ok: "4.87×2=9.74, 6.09×4=24.36, 0.71×6=4.26, 올해 담근 김치는 1.25×3=3.75 (t)예요." }) }
+          { q: "수현이가 사는 지역에서는 매년 다문화 가정과 함께 김치를 담가요. 김치를 작년에는 1.25 t 담갔고, 올해는 작년의 3배만큼 담갔어요.", p: ["올해 담근 김치는", { n: "3.75", e: "1.25×3" }, "t이에요."] }],
+        ok: "4.87×2=9.74, 6.09×4=24.36, 0.71×6=4.26, 올해 담근 김치는 1.25×3=3.75 (t)이에요." }) }
   ],
   challenge: { inst: "수 카드 놀이예요. 수 카드 4, 8, 6을 한 번씩 놓아 곱이 가장 큰 (소수 두 자리 수)×(자연수)를 만들어 보세요.", hints: ["큰 수를 곱하는 수(자연수)에 놓을지, 소수 첫째 자리에 놓을지 비교해 봐요.", "0.86×4, 0.84×6, 0.64×8을 어림해서 견주어 봐요."],
     render: (b, a) => dm4Cards(b, a, { cards: ["4", "8", "6"], pat: ["0", ".", "□", "□", "×", "□"], goal: "max",

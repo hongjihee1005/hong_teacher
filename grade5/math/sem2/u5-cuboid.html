@@ -1789,8 +1789,9 @@ function cb5Solid(o) {
     }
     if (o.lab) { const lab = o.lab === true ? CB5_LAB : o.lab; for (let v = 0; v < 8; v++) { const dx = S[v][0] - cx, dy = S[v][1] - cy, L = Math.hypot(dx, dy) || 1;
       svg.append(txt(cb5R(S[v][0] + dx / L * 17), cb5R(S[v][1] + dy / L * 17), lab[v], 18, { fill: vv[v] ? CB5.ink : "#9AA6B0", "pointer-events": "none" })); } }
-    if (o.dimLab) o.dimLab.forEach(([u, v, t]) => { const a = S[u], b2 = S[v], mx = (a[0] + b2[0]) / 2, my = (a[1] + b2[1]) / 2, dx = mx - cx, dy = my - cy, L = Math.hypot(dx, dy) || 1;
-      svg.append(txt(cb5R(mx + dx / L * 20), cb5R(my + dy / L * 20), t, 15, { fill: CB5.blue, "pointer-events": "none" })); });
+    if (o.dimLab) o.dimLab.forEach(([u, v, t]) => { const a = S[u], b2 = S[v], mx = (a[0] + b2[0]) / 2, my = (a[1] + b2[1]) / 2, ex = b2[0] - a[0], ey = b2[1] - a[1], EL = Math.hypot(ex, ey) || 1;
+      let nx = -ey / EL, ny = ex / EL; if (nx * (mx - cx) + ny * (my - cy) < 0) { nx = -nx; ny = -ny; }   // 모서리에 수직으로, 바깥쪽에 씀(글자가 선에 걸리지 않게)
+      svg.append(txt(cb5R(mx + nx * (16 + 20 * Math.abs(nx))), cb5R(my + ny * 16 + 5), t, 15, { fill: CB5.blue, "pointer-events": "none" })); });
     if (o.after) o.after(svg, S, vis);
   };
   // 끌어서 돌리기 / 눌러서 고르기

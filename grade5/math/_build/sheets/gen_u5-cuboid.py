@@ -955,3 +955,116 @@ def real_note(s):
 
 def name_list(xs):
     return ', '.join(xs)
+
+
+# ================================================================ 교과서 차시 버전 자료(u5-cuboid.tb.js)
+CROSS = [[0, 1], [1, 1], [2, 1], [3, 1], [1, 0], [1, 2]]
+STAIR = [[0, 0], [0, 1], [1, 1], [2, 1], [3, 1], [3, 2]]
+TB_GIFT = net_from_cells(CROSS, {1: 2, 2: 3, 4: 4})
+CUBE_NET = SQ(CROSS)
+TB_L5A3 = lab_net([[0, 1], [1, 1], [2, 1], [3, 1], [2, 0], [1, 2]], {1: 1, 2: 1, 4: 1},
+                  [[2, 0, 'ㅌ'], [3, 0, 'ㅋ'], [0, 1, 'ㄱ'], [1, 1, 'ㅎ'], [2, 1, 'ㅍ'], [3, 1, 'ㅊ'], [4, 1, 'ㅈ'], [0, 2, 'ㄴ'], [1, 2, 'ㄷ'],
+                   [2, 2, 'ㅂ'], [3, 2, 'ㅅ'], [4, 2, 'ㅇ'], [1, 3, 'ㄹ'], [2, 3, 'ㅁ']])
+TB_L5U1 = lab_net([[0, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]], {1: 1, 2: 1, 4: 1},
+                  [[0, 0, 'ㄱ'], [1, 0, 'ㅎ'], [0, 1, 'ㄴ'], [1, 1, 'ㅍ'], [2, 1, 'ㅌ'], [3, 1, 'ㅋ'], [4, 1, 'ㅊ'], [0, 2, 'ㄷ'], [1, 2, 'ㄹ'],
+                   [2, 2, 'ㅅ'], [3, 2, 'ㅇ'], [4, 2, 'ㅈ'], [1, 3, 'ㅁ'], [2, 3, 'ㅂ']])
+TB_L6A3 = lab_net([[0, 1], [1, 1], [2, 1], [3, 1], [1, 0], [1, 2]], {1: 2, 2: 3, 4: 4},
+                  [[1, 0, 'ㅍ'], [2, 0, 'ㅌ'], [0, 1, 'ㄱ'], [1, 1, 'ㅎ'], [2, 1, 'ㅋ'], [3, 1, 'ㅊ'], [4, 1, 'ㅈ'], [0, 2, 'ㄴ'], [1, 2, 'ㄷ'],
+                   [2, 2, 'ㅂ'], [3, 2, 'ㅅ'], [4, 2, 'ㅇ'], [1, 3, 'ㄹ'], [2, 3, 'ㅁ']])
+TB_L6U1 = lab_net([[2, 0], [0, 1], [1, 1], [2, 1], [3, 1], [0, 2]], {1: 4, 2: 2, 4: 3},
+                  [[2, 0, 'ㅌ'], [3, 0, 'ㅋ'], [0, 1, 'ㄱ'], [1, 1, 'ㅎ'], [2, 1, 'ㅍ'], [3, 1, 'ㅊ'], [4, 1, 'ㅈ'], [0, 2, 'ㄴ'], [1, 2, 'ㅁ'],
+                   [2, 2, 'ㅂ'], [3, 2, 'ㅅ'], [4, 2, 'ㅇ'], [0, 3, 'ㄷ'], [1, 3, 'ㄹ']])
+TB_L5A2 = [('가', SQ([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [2, 2]])), ('나', SQ([[0, 0], [1, 0], [1, 1], [2, 1], [3, 1], [3, 2]])),
+           ('다', SQ([[0, 0], [2, 0], [0, 1], [1, 1], [2, 1], [3, 1]])), ('라', SQ([[0, 0], [1, 0], [1, 1], [2, 1], [2, 2], [3, 2]]))]
+TB_L6A2 = [('가', [R(0, 2, 1, 3), R(1, 2, 2, 3), R(3, 2, 1, 3), R(4, 2, 2, 3), R(1, 0, 2, 2), R(1, 5, 2, 1)]),
+           ('나', net_from_cells([[0, 0], [0, 1], [1, 1], [2, 1], [3, 1], [3, 2]], {1: 2, 2: 3, 4: 1})),
+           ('다', net_from_cells([[0, 0], [1, 0], [1, 1], [2, 1], [2, 2], [3, 2]], {1: 2, 2: 1, 4: 3})),
+           ('라', net_from_cells([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [2, 2]], {1: 3, 2: 1, 4: 2}))]
+TB_BOXES = [('가', [(0, 0), (4, 0), (4, 2), (0, 2)], 3, '#F6D3B4'), ('나', [(0, 0), (4, 0), (3.2, 2.2), (.8, 2.2)], 2.6, '#DDEDE5'),
+            ('다', [(0, 0), (2.6, 0), (2.6, 2.6), (0, 2.6)], 2.6, '#DCEAFB'), ('라', [(0, 0), (4, 0), (2, 2.4), (0, 2.4)], 2.2, '#FFF1C7'),
+            ('마', [(0, 0), (2, 0), (2, 2), (0, 2)], 2, '#EADFF6'), ('바', [(0, 0), (2.2, 0), (2.2, 3.4), (0, 3.4)], 1.6, '#FBE0E6')]
+TB_TOY = {'head': (2, 2, 2, '#FFD27A', '#FFE7B8', '#F2C25C'), 'body': (3, 4, 2, '#9CC3F0', '#C9DBEE', '#7FAEDF'),
+          'arm': (1, 3, 1, '#A9DDB8', '#D3EEDB', '#86C99A'), 'leg': (1, 1, 1, '#F6B38E', '#FBD6C1', '#E39A72')}
+TB_TOY_SLOTS = [('head', 3, .9), ('body', 2.5, 2.9), ('arm', 1.5, 2.9), ('arm', 5.5, 2.9), ('leg', 2.5, 6.9), ('leg', 4.5, 6.9)]
+PN = ['㉠', '㉡', '㉢']
+TB_PARTS = [('머리', '한 모서리 2 cm인 정육면체', part_net([[0, 1], [1, 1], [2, 1], [3, 1], [1, 0], [2, 2]], {1: 2, 2: 2, 4: 2}, 5, [[3, 'u', 2], None, [3, 'r', 2]], PN), '#FFD27A'),
+            ('몸통', '가로 3 cm, 높이 4 cm, 깊이 2 cm인 직육면체', part_net(CROSS, {1: 2, 2: 4, 4: 3}, 4, [[3, 'u', 3], None, [3, 'r', 2]], PN), '#9CC3F0'),
+            ('팔', '가로 1 cm, 높이 3 cm, 깊이 1 cm인 직육면체', part_net(CROSS, {1: 1, 2: 3, 4: 1}, 5, [[3, 'u', 1], [0, 'l', 1], None], PN), '#A9DDB8'),
+            ('다리', '한 모서리 1 cm인 정육면체', part_net([[0, 1], [1, 1], [2, 1], [3, 1], [0, 0], [3, 2]], {1: 1, 2: 1, 4: 1}, 5, [None, [1, 'u', 1], [3, 'r', 1]], PN), '#F6B38E')]
+TB_SHAPES = [('가', (2, 2, 2), [([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]], {1: 2, 2: 2, 4: 2}), ([[0, 0], [1, 0], [1, 1], [2, 1], [2, 2], [3, 2]], {1: 2, 2: 2, 4: 2})]),
+             ('나', (3, 2, 1), [([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]], {1: 1, 2: 2, 4: 3}), ([[0, 0], [0, 1], [1, 1], [2, 1], [3, 1], [3, 2]], {1: 3, 2: 2, 4: 1})]),
+             ('다', (3, 1, 1), [([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]], {1: 1, 2: 1, 4: 3}), ([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [2, 2]], {1: 3, 2: 1, 4: 1})]),
+             ('라', (2, 1, 2), [([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]], {1: 2, 2: 2, 4: 1}), ([[0, 0], [0, 1], [1, 1], [2, 1], [3, 1], [2, 2]], {1: 1, 2: 2, 4: 2})])]
+
+
+def deck(shapes):
+    """cb5Deck: 겨냥도 카드 + 전개도 카드(전개도는 접어서 크기가 맞는지 확인)."""
+    D = []
+    for si, (nm, dims, nets) in enumerate(shapes):
+        D.append({'shape': si, 'kind': 'sk'})
+        for cells, d in nets:
+            F = net_from_cells(cells, d)
+            assert dims_of(F) == sorted(dims), (nm, dims_of(F))
+            D.append({'shape': si, 'kind': 'net', 'F': F})
+    return D
+
+
+def card_svg(card, shapes):
+    if card['kind'] == 'sk':
+        W, H, D = shapes[card['shape']][1]
+        return cub(W, H, D, k=28, pad=40, f=.6, dimd=24, dim_size=15, dims=[(0, 1, '%d cm' % W), (0, 2, '%d cm' % H), (3, 7, '%d cm' % D)])[:3]
+    return net(card['F'], k=16, pad=6, grid=True, gx=1, gy=1, color=lambda f: '#FFF6DD')[:3]
+
+
+def fit(p, h=150):
+    w, hh, b = p[:3]
+    sc = h / hh
+    return w * sc, h, '<g transform="scale(%s)">%s</g>' % (r2(sc), b)
+
+
+def boxes_svg(boxes):
+    return hstack([fit(prism(P, D, k=22, hidden='none', tint=c, pad=12)) for _, P, D, c in boxes], 26, [n for n, *_ in boxes])
+
+
+def views_svg(dims, views):
+    parts = [solid(dims, y, p, size=(260, 200), hidden='none', face_fill='#FFE7B8')[:3] for y, p, _ in views]
+    return hstack(parts, 18, [t for *_, t in views])
+
+
+def nets_svg(nets, k=22, grid=False, h=None):
+    parts = [net(F, k=k, pad=12, grid=grid)[:3] for _, F in nets]
+    if h:
+        parts = [fit(p, h) for p in parts]
+    return hstack(parts, 30, [n for n, _ in nets])
+
+
+def judge(nets):
+    return [n for n, F in nets if ok(F)], {n: fold(F)['why'] for n, F in nets if not ok(F)}
+
+
+def pts_fig(key, F, P, k):
+    return fig(key, svg_of(net(F, k=k, lab=P, lab_size=19)))
+
+
+def ask_pts(s, lv, res):
+    rows = []
+    for kind, t, ans in res:
+        if kind == 'pt':
+            rows.append(['점 %s 겹치는 점%s' % (josa(t, '과와'), ' (%d개)' % len(ans) if lv == '기본형' else ''), '(                    )'])
+        else:
+            rows.append(['선분 %s 겹치는 선분' % josa(t, '과와'), '(                    )'])
+    s.table(rows, header=False, col_mm=[110, 70], row_h=3402)
+
+
+def add_face_task(s, key, title, F, cands, color, width_mm):
+    nm, nh = add_face(F, cands)
+    s.text(title)
+    s.picture(fig(key, svg_of(net(F, k=40, grid=True, gx=1, gy=1, plus=[(c, c['name']) for c in cands],
+                                  color=lambda f: color))), width_mm=width_mm)
+    return nm, nh
+
+
+def net_draw_example(given, extra, dims, cube=False):
+    F = given + extra
+    assert ok(F) and dims_of(F) == sorted(dims), (F, dims_of(F) if ok(F) else fold(F)['why'])
+    return F
