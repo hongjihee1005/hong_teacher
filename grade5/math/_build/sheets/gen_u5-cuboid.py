@@ -988,8 +988,8 @@ TB_TOY = {'head': (2, 2, 2, '#FFD27A', '#FFE7B8', '#F2C25C'), 'body': (3, 4, 2, 
 TB_TOY_SLOTS = [('head', 3, .9), ('body', 2.5, 2.9), ('arm', 1.5, 2.9), ('arm', 5.5, 2.9), ('leg', 2.5, 6.9), ('leg', 4.5, 6.9)]
 PN = ['㉠', '㉡', '㉢']
 TB_PARTS = [('머리', '한 모서리 2 cm인 정육면체', part_net([[0, 1], [1, 1], [2, 1], [3, 1], [1, 0], [2, 2]], {1: 2, 2: 2, 4: 2}, 5, [[3, 'u', 2], None, [3, 'r', 2]], PN), '#FFD27A'),
-            ('몸통', '가로 3 cm, 높이 4 cm, 깊이 2 cm인 직육면체', part_net(CROSS, {1: 2, 2: 4, 4: 3}, 4, [[3, 'u', 3], None, [3, 'r', 2]], PN), '#9CC3F0'),
-            ('팔', '가로 1 cm, 높이 3 cm, 깊이 1 cm인 직육면체', part_net(CROSS, {1: 1, 2: 3, 4: 1}, 5, [[3, 'u', 1], [0, 'l', 1], None], PN), '#A9DDB8'),
+            ('몸통', '가로 3 cm, 세로 2 cm, 높이 4 cm인 직육면체', part_net(CROSS, {1: 2, 2: 4, 4: 3}, 4, [[3, 'u', 3], None, [3, 'r', 2]], PN), '#9CC3F0'),
+            ('팔', '가로 1 cm, 세로 1 cm, 높이 3 cm인 직육면체', part_net(CROSS, {1: 1, 2: 3, 4: 1}, 5, [[3, 'u', 1], [0, 'l', 1], None], PN), '#A9DDB8'),
             ('다리', '한 모서리 1 cm인 정육면체', part_net([[0, 1], [1, 1], [2, 1], [3, 1], [0, 0], [3, 2]], {1: 1, 2: 1, 4: 1}, 5, [None, [1, 'u', 1], [3, 'r', 1]], PN), '#F6B38E')]
 TB_SHAPES = [('가', (2, 2, 2), [([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]], {1: 2, 2: 2, 4: 2}), ([[0, 0], [1, 0], [1, 1], [2, 1], [2, 2], [3, 2]], {1: 2, 2: 2, 4: 2})]),
              ('나', (3, 2, 1), [([[1, 0], [0, 1], [1, 1], [2, 1], [3, 1], [1, 2]], {1: 1, 2: 2, 4: 3}), ([[0, 0], [0, 1], [1, 1], [2, 1], [3, 1], [3, 2]], {1: 3, 2: 2, 4: 1})]),
@@ -1261,7 +1261,7 @@ def tb4(s, lv):
         s.choices([('직육면체에 대해 잘못 설명한 것', '( ㉠ 한 모서리에서 만나는 두 면은 수직이에요. /\n㉡ 밑면이 될 수 있는 면은 모두 2쌍이에요. /\n㉢ 한 꼭짓점에서 만나는 모서리는 모두 3개예요. )')])
         W, H, D = 7, 5, 11
         s.picture(fig('tb4ch', svg_of(solid([W, H, D], 62, 22, lab=True, fill=lambda f: PAR if f == 2 else None,
-                                             dim_lab=[(6, 2, '11 cm'), (2, 0, '5 cm'), (0, 1, '7 cm')]))), width_mm=82)
+                                             dim_lab=[(4, 0, '11 cm'), (6, 4, '5 cm'), (0, 1, '7 cm')]))), width_mm=82)
         par = OPP[2]
         l1, l2 = face_lens(par, (W, H, D))
         a6 = qa(s, [('색칠한 면 ㄱㄴㅂㅁ과 평행한 면', FTXT[par]), ('그 면의 모서리 길이의 합', (l1 + l2) * 2, ' cm')], col=(100, 80))
@@ -1439,7 +1439,7 @@ def tb7(s, lv):
     step(s, 0, '살펴보기', '장난감 설계도')
     s.picture(fig('tb7toy', toy_svg(TB_TOY, TB_TOY_SLOTS, [('머리 2×2×2', 7.1, 1.6), ('팔 1×3×1', 7.1, 3.6), ('몸통 3×4×2', 7.1, 4.6), ('다리 1×1×1', 7.1, 7.6)], 10.5, 9)),
               width_mm=85)
-    s.text('머리: 한 모서리 2 cm / 몸통: 가로 3 cm, 높이 4 cm, 깊이 2 cm / 팔: 가로 1 cm, 높이 3 cm, 깊이 1 cm / 다리: 한 모서리 1 cm')
+    s.text('머리: 한 모서리 2 cm / 몸통: 가로 3 cm, 세로 2 cm, 높이 4 cm / 팔: 가로 1 cm, 세로 1 cm, 높이 3 cm / 다리: 한 모서리 1 cm')
     kind = {k: '정육면체' if len(set(v[:3])) == 1 else '직육면체' for k, v in TB_TOY.items()}
     s.choices([('머리', opt('정육면체', '직육면체')), ('몸통', opt('정육면체', '직육면체')), ('팔', opt('정육면체', '직육면체')), ('다리', opt('정육면체', '직육면체'))])
     step(s, 1, '생각하기', '전개도를 그릴 때 생각할 점')
@@ -1469,7 +1469,7 @@ def tb7(s, lv):
         can, whyd = judge(n4)
         assert can == ['가', '다'] and whyd['나'] == 'overlap' and whyd['라'] in ('partial', 'length'), (can, whyd)
         assert all(dims_of(F) == [1, 1, 3] for n, F in n4 if n in can)
-        s.text('팔(가로 1 cm, 높이 3 cm, 깊이 1 cm인 직육면체)을 하나 더 만들려고 해요. (모눈 한 칸은 1 cm)')
+        s.text('팔(가로 1 cm, 세로 1 cm, 높이 3 cm인 직육면체)을 하나 더 만들려고 해요. (모눈 한 칸은 1 cm)')
         s.picture(fig('tb7arm', nets_svg(n4, 20, grid=True, h=140)), width_mm=160)
         a6 = qa(s, [('팔의 전개도가 될 수 있는 것', name_list(can))])
         why(s, '나와 라가 팔의 전개도가 될 수 없는 까닭을 각각 써 보세요.', 2)
@@ -1521,7 +1521,7 @@ def tb8(s, lv):
     s.scene(None, '연서는 친구들과 ‘같은 도형 카드를 모아요’ 놀이를 해요. 같은 도형 카드는 겨냥도 1장과 전개도 2장이에요.')
     step(s, 0, '놀이 방법', '차례대로 번호 쓰기')
     steps_ = ['카드를 섞어 한 명당 3장씩 나누어 가져요.', '각자 가진 카드 3장이 같은 도형을 나타내는지 확인해요.',
-              '모은 사람이 없으면 동시에 ‘넘겨’를 외치며 한 장을 시계 방향의 다음 사람에게 넘겨요.',
+              '모은 사람이 없으면 동시에 ‘넘겨’를 외치며 한 장을 시계 방향으로 옆 사람에게 넘겨요.',
               '같은 도형 카드 3장을 모은 사람은 카드를 보여 줘요. 10번 되풀이해 옳게 모은 횟수가 가장 많은 사람이 이겨요.']
     show = [2, 0, 3, 1]
     s.table([['놀이 방법', '차례']] + [[steps_[i], '(    )'] for i in show], col_mm=[155, 25], row_h=3402)
@@ -1534,7 +1534,7 @@ def tb8(s, lv):
     if lv == '도전형':
         step(s, 5, '도전하기', '도형 나의 전개도 카드')
         pick = [nets[0], nets[2], nets[3], nets[5], nets[6]]
-        s.text('도형 나(가로 3 cm, 높이 2 cm, 깊이 1 cm인 직육면체)의 전개도 카드를 모두 골라 보세요.')
+        s.text('도형 나(가로 3 cm, 세로 1 cm, 높이 2 cm인 직육면체)의 전개도 카드를 모두 골라 보세요.')
         s.picture(fig('tb8pick', hstack([fit(card_svg(c, TB_SHAPES), 130) for c in pick], 20, list('①②③④⑤'), 18)), width_mm=170)
         a6 = [n for n, c in zip('①②③④⑤', pick) if c['shape'] == 1]
         qa(s, [('도형 나의 전개도 카드', ', '.join(a6))])
@@ -1597,3 +1597,58 @@ def tb9(s, lv):
 
 
 TB = [tb1, tb2, tb3, tb4, tb5, tb6, tb7, tb8, tb9]
+
+ST = []
+
+
+# ================================================================ 만들기
+VERSIONS = {
+    'tb': ('u5-cuboid.tb.js', lambda: TB, '5-2 수학 5. 직육면체(교과서 차시)', '교과서 차시', OUT_TB),
+    'st': ('u5-cuboid.st.js', lambda: ST, '5-2 수학 5. 직육면체(이야기 버전)', '이야기 버전', OUT_ST),
+}
+
+
+def source_ready(ver):
+    """앱 원본이 있고 9차시가 모두 들어 있으면 True(이야기 버전을 쓰는 중이면 건너뜀)."""
+    path = os.path.join(UNITS, VERSIONS[ver][0])
+    if not os.path.exists(path):
+        return False
+    with open(path, encoding='utf-8') as f:
+        src = f.read()
+    return all('no: %d,' % n in src for n in range(1, 10)) and 'const LESSONS' in src
+
+
+def build(funcs, label, short, outdir, lv):
+    s = Sheet(unit_label=label, level=lv, grade_label='5학년')
+    lines = [f(s, lv) for f in funcs]
+    s.answers('【교사용】 5. 직육면체(%s) 활동지 정답 (%s)' % (short, lv), lines,
+              note='※ 이 활동지는 앱 u5-cuboid.html과 차시 번호가 같습니다. 전개도·겨냥도를 그리는 문제의 답은 여러 가지이며, 정답 쪽에는 예시를 적었습니다.')
+    os.makedirs(outdir, exist_ok=True)
+    path = os.path.join(outdir, NAME % lv)
+    s.save(path)
+    return path
+
+
+def main():
+    want = [a for a in sys.argv[1:] if a in VERSIONS] or ['tb', 'st']
+    out = []
+    try:
+        for ver in want:
+            if not source_ready(ver):
+                print('[건너뜀] %s 원본이 아직 없거나 덜 만들어졌어요: %s' % (ver, VERSIONS[ver][0]))
+                continue
+            _, funcs, label, short, outdir = VERSIONS[ver]
+            for lv in ('기본형', '도전형'):
+                out.append(build(funcs(), label, short, outdir, lv))
+    finally:
+        shutil.rmtree(WORK, ignore_errors=True)
+    bad = 0
+    for p in out:
+        prob = check(p)
+        bad += bool(prob)
+        print(p, 'OK' if not prob else '\n  ' + '\n  '.join(prob))
+    sys.exit(1 if bad else 0)
+
+
+if __name__ == '__main__':
+    main()

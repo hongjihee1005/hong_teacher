@@ -181,15 +181,16 @@ function av6Finish(body, api, opt, ans, msg, data) {
 /* 여러 활동을 차례로: 앞 활동을 해결하면 다음 활동이 열림 */
 function av6Chain(body, api, parts) {
   let k = 0;
+  const host = h("div"); body.append(host);   /* 뒤에 열리는 활동도 이 안에 붙여, 바깥에서 덧붙인 칸(까닭 쓰기 등)보다 위에 놓이게 해요 */
   const run = () => {
-    const box = h("div", { class: k ? "av6part" : "" }); body.append(box);
+    const box = h("div", { class: k ? "av6part" : "" }); host.append(box);
     const last = k === parts.length - 1, myK = k;
     const sub = Object.assign({}, api, { done: (ans, msg, lv) => {
       if (last) return api.done(ans, msg, lv);
       if (myK !== k) return;
       api.hint("○ " + (msg || "좋아요!") + " 아래 활동도 이어서 해 봐요.");
       box.querySelectorAll(".actions button.big").forEach(b => { b.disabled = true; });
-      k++; run(); setTimeout(() => { try { body.lastChild.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) { } }, 60);
+      k++; run(); setTimeout(() => { try { host.lastChild.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) { } }, 60);
     } });
     if (parts[myK].title) box.append(h("p", { class: "inst" }, h("b", {}, parts[myK].title)));
     (parts[myK].run || parts[myK])(box, sub);
@@ -340,7 +341,7 @@ function av6Line(body, api, opt) {
     dyn.innerHTML = ""; let ex = 0, de = 0;
     vals.forEach((v, i) => {
       const cx = padL + cw * (i + .5);
-      dyn.append(svgEl("rect", { x: cx - bw / 2, y: y(v), width: bw, height: baseY - y(v), fill: AV6_COLS[1], opacity: .85 }));
+      dyn.append(svgEl("rect", { x: cx - bw / 2, y: y(v), width: bw, height: baseY - y(v), fill: opt.cols ? opt.cols[i] : AV6_COLS[1], opacity: .85 }));
       if (v > L) { ex += v - L; dyn.append(svgEl("rect", { x: cx - bw / 2, y: y(v), width: bw, height: y(L) - y(v), fill: AV6.over, stroke: AV6.orange, "stroke-width": 1.5 })); }
       if (v < L) { de += L - v; dyn.append(svgEl("rect", { x: cx - bw / 2, y: y(L), width: bw, height: y(v) - y(L), fill: "#fff", stroke: AV6.blue, "stroke-width": 1.5, "stroke-dasharray": "5 4" })); }
       dyn.append(txt(cx, Math.min(y(v), y(L)) - 10, av6Fmt(v), 14, { fill: AV6.ink }));
@@ -377,7 +378,7 @@ function av6Strip(body, api, opt) {
   const draw = () => {
     g.innerHTML = "";
     vals.forEach((v, i) => {
-      const yy = 18 + i * (sh + gap), c = AV6_COLS[i % AV6_COLS.length], u = used.includes(i), w = v * k;
+      const yy = 18 + i * (sh + gap), c = (opt.cols || AV6_COLS)[i % (opt.cols || AV6_COLS).length], u = used.includes(i), w = v * k;
       const r = svgEl("rect", { x: px, y: yy, width: w, height: sh, rx: 5, fill: u ? "#F1F3F2" : c + "33", stroke: u ? AV6.grid : c, "stroke-width": 2, "stroke-dasharray": u ? "5 4" : "" });
       g.append(r); if (!u) ringRow(g, px, yy, v, c);
       const t = `${names[i]} ${v}${unit}`, inside = w > 150;
@@ -387,7 +388,7 @@ function av6Strip(body, api, opt) {
     g.append(txt(px, yL - 14, used.length === n ? `이어 붙인 띠: 모두 ${av6Fmt(sum)}${unit}` : "이어 붙인 띠", 15, { fill: AV6.ink, "text-anchor": "start" }));
     g.append(svgEl("rect", { x: px, y: yL, width: sum * k, height: sh, rx: 5, fill: "#fff", stroke: AV6.grid, "stroke-width": 2, "stroke-dasharray": "6 4" }));
     let x = px;
-    used.forEach(i => { const v = vals[i], c = AV6_COLS[i % AV6_COLS.length]; g.append(svgEl("rect", { x, y: yL, width: v * k, height: sh, fill: c + "55", stroke: c, "stroke-width": 1.5 })); ringRow(g, x, yL, v, c); if (!opt.ring) g.append(txt(x + v * k / 2, yL + sh / 2, String(v), 14)); x += v * k; });
+    used.forEach(i => { const v = vals[i], c = (opt.cols || AV6_COLS)[i % (opt.cols || AV6_COLS).length]; g.append(svgEl("rect", { x, y: yL, width: v * k, height: sh, fill: c + "55", stroke: c, "stroke-width": 1.5 })); ringRow(g, x, yL, v, c); if (!opt.ring) g.append(txt(x + v * k / 2, yL + sh / 2, String(v), 14)); x += v * k; });
     if (parts) {
       const pw = sum * k / parts;
       for (let j = 1; j < parts; j++) g.append(svgEl("line", { x1: px + pw * j, y1: yL - 8, x2: px + pw * j, y2: yL + sh + 8, stroke: parts === n ? AV6.red : AV6.gray, "stroke-width": 3 }));
@@ -1012,7 +1013,7 @@ const LESSONS = [
       render: (b, a) => blanks(b, a, ["자룟값을 ", { o: ["고르게 하여", "모두 더하여", "가장 큰 수로"], a: 0 }, " 그 자료를 대표하는 값으로 정할 수 있습니다. 이 값을 ", { o: ["평균", "합계", "자룟값"], a: 0 }, "이라고 합니다."],
         { ok: "자룟값을 고르게 하여 그 자료를 대표하는 값으로 정할 수 있고, 이 값을 평균이라고 해요." }) },
     { inst: "상자 4개에 들어 있는 구슬 수예요. 구슬 수의 평균을 예상한 후, 빨간 선을 끌어 넘치는 구슬과 모자란 구슬이 같아지는 높이를 찾아보세요.", hints: ["평균을 먼저 12개쯤으로 예상해 봐요.", "파란색은 12개보다 2개 많고, 초록색은 12개보다 2개 적어요."],
-      render: (b, a) => av6Line(b, a, { names: ["파란색", "빨간색", "노란색", "초록색"], vals: [14, 12, 12, 10], unit: "개", lo: 0, hi: 16, gstep: 2, snap: 1, start: 6, title: "상자별 구슬 수",
+      render: (b, a) => av6Line(b, a, { names: ["파란색", "빨간색", "노란색", "초록색"], vals: [14, 12, 12, 10], unit: "개", cols: [AV6_BLUE, AV6_RED, AV6_YEL, AV6_GREEN], lo: 0, hi: 16, gstep: 2, snap: 1, start: 6, title: "상자별 구슬 수",
         ask: [{ parts: ["파란색 상자에 들어 있는 구슬은 예상한 평균 ", { n: 12 }, "개보다 ", { n: 2 }, "개 더 많이 들어 있어요. 초록색 상자에 들어 있는 구슬은 예상한 평균 ", { n: 12 }, "개보다 ", { n: 2 }, "개 더 적게 들어 있어요. 구슬 수를 고르게 하여 4상자에 들어 있는 구슬 수의 평균을 구하면 ", { n: 12 }, "개예요."] }],
         ok: "파란색 상자의 2개를 초록색 상자로 옮기면 모두 12개예요. 평균은 12개예요." }),
       easy: (b, a) => av6Level(b, a, { names: ["지원", "원석", "소연", "준우"], vals: [4, 3, 5, 4], unit: "명", item: "circle", title: "모둠 친구들의 가족 구성원 수", ask: [{ parts: ["가족 구성원 수를 대표하는 값은 ", { n: 4 }, "명이에요."] }], ok: "소연이의 ○ 1개를 원석이에게 옮기면 모두 4개예요." }) }
@@ -1033,7 +1034,7 @@ const LESSONS = [
   summary: "평균은 자룟값을 모두 더한 수를 자료의 수로 나누어서 구해요. (평균)=(자룟값을 모두 더한 수)÷(자료의 수). 종이띠를 이어 붙이는 것은 더하기, 자료의 수만큼 등분하는 것은 나누기와 같아요.",
   steps: [
     { inst: "고리 던지기를 준비하는데 바구니마다 고리 수가 달라요(빨간색 7개, 노란색 4개, 파란색 6개, 초록색 3개). 고리가 그려진 종이띠를 하나씩 눌러 겹치지 않게 이어 붙이고, 이어 붙인 띠를 등분해 보세요.", hints: ["종이띠 4개를 모두 눌러 이어 붙여요.", "바구니가 4개이니까 4등분해요(반으로 접고 다시 반으로 접기)."],
-      render: (b, a) => av6Strip(b, a, { names: ["빨간색 바구니", "노란색 바구니", "파란색 바구니", "초록색 바구니"], vals: [7, 4, 6, 3], unit: "개", ring: true,
+      render: (b, a) => av6Strip(b, a, { names: ["빨간색 바구니", "노란색 바구니", "파란색 바구니", "초록색 바구니"], vals: [7, 4, 6, 3], unit: "개", ring: true, cols: [AV6_RED, AV6_YEL, AV6_BLUE, AV6_GREEN],
         ask: [{ parts: ["고리는 모두 7 + 4 + 6 + 3 = ", { n: 20, why: { "17": "7+4+6+3을 다시 더해 봐요." } }, "(개)예요. 4등분한 띠에는 20 ÷ 4 = ", { n: 5 }, "(개)씩 있어요. 바구니 한 개에 들어 있는 고리 수의 평균은 ", { n: 5 }, "개예요."] }],
         ok: "종이띠를 이어 붙이면 20개, 4등분하면 5개씩이에요. 고리 수의 평균은 5개예요." }) },
     { inst: "종이띠로 평균을 구한 방법을 말해 보세요.", hints: ["이어 붙이면 고리 수가 모두 몇 개인지 알 수 있어요.", "4등분은 4로 나누는 것과 같아요."],
