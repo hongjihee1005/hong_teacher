@@ -41,8 +41,8 @@ class Ep17(EpisodeScene):
 
     def problem(self):
         self.section("문제")
-        b1 = Beaker(2000, major=1000, minor=100, height=3.6, width=1.6, label_every=1000).move_to([-4.9, -0.3, 0])
-        b2 = Beaker(3000, major=1000, minor=100, height=3.6, width=1.6, label_every=1000).move_to([-1.0, -0.3, 0])
+        b1 = Beaker(2000, major=1000, minor=100, height=3.6, width=1.6, label_every=1000).move_to([-4.4, -0.55, 0])
+        b2 = Beaker(3000, major=1000, minor=100, height=3.6, width=1.6, label_every=1000).move_to([-0.6, -0.55, 0])
         b1.set_level(1300); b2.set_level(2400)
         l1 = M(f"멸치 육수\n{b('1 L')} {o('300 mL')}", 32).next_to(b1, UP, buff=0.3)
         l2 = M(f"다시마 육수\n{b('2 L')} {o('400 mL')}", 32).next_to(b2, UP, buff=0.3)

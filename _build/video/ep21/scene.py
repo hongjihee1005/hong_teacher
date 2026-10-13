@@ -43,7 +43,7 @@ class Ep21(EpisodeScene):
         self.three()
         self.survey()
         self.closing(f"① 그림 정하기 → ② 단위 정하기 → ③ 그리기 → ④ 제목 쓰기\n{o('작은 그림 10개')}는 {b('큰 그림 1개')}로 바꿔요",
-                     next_preview="22화 · 2학기 1단원 곱셈")
+                     next_preview="22화 · 세 자리 수 × 한 자리 수")
         self.wait(0.5)
 
     def problem(self):
