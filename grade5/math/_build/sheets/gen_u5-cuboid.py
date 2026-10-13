@@ -1413,8 +1413,8 @@ def tb6(s, lv):
         la = [((0, 4), (4, 4), '㉠', 0, -14), ((4, 0), (13, 0), '㉡', 0, -14), ((26, 4), (26, 11), '㉢', 18, 0)]
         va = [math.dist(p, q) for p, q, *_ in la]
         assert va == [4, 9, 7]
-        sk = cub(9, 7, 4, k=14, pad=56, dimd=32, dim_size=19, dims=[(0, 1, '9 cm'), (0, 2, '7 cm'), (3, 7, '4 cm')])[:3]
-        nt = net(Fa, k=14, extra=lambda m: ''.join(seg_label(m, p, q, t, dx, dy, RED, 21) for p, q, t, dx, dy in la))[:3]
+        sk = cub(9, 7, 4, k=16, pad=60, dimd=36, dim_size=24, dims=[(0, 1, '9 cm'), (0, 2, '7 cm'), (3, 7, '4 cm')])[:3]
+        nt = net(Fa, k=14, extra=lambda m: ''.join(seg_label(m, p, q, t, dx * 1.5, dy * 1.5, RED, 28) for p, q, t, dx, dy in la))[:3]
         s.picture(fig('tb6abc', hstack([sk, nt], 30)), width_mm=165)
         a7 = qa(s, [('㉠ / ㉡ / ㉢', ' / '.join('%d' % v for v in va), ' cm')])
         Fb = net_from_cells(CROSS, {1: 5, 2: 8, 4: 11})
@@ -1858,7 +1858,7 @@ def st4(s, lv):
         s.choices([('직육면체에 대해 잘못 말한 것', '( ㉠ 한 면과 평행한 면은 1개예요. /\n㉡ 한 꼭짓점에서 만나는 면은 3개예요. /\n㉢ 한 면과 수직인 면은 3개예요. )')])
         W, H, D = 8, 3, 5
         s.picture(fig('st4ch', svg_of(solid([W, H, D], -35, 22, lab=True, fill=lambda f: PAR if f == 3 else None,
-                                             dim_lab=[(0, 1, '8 cm'), (1, 3, '3 cm'), (3, 7, '5 cm')]))), width_mm=85)
+                                             dim_lab=[(0, 1, '8 cm'), (0, 2, '3 cm'), (1, 5, '5 cm')]))), width_mm=85)
         par = OPP[3]
         l1, l2 = face_lens(par, (W, H, D))
         a6 = qa(s, [('색칠한 면 ㄷㅅㅇㄹ과 평행한 면', FTXT[par]), ('그 면의 모서리 길이의 합', (l1 + l2) * 2, ' cm')], col=(100, 80))
@@ -1908,7 +1908,7 @@ def st5(s, lv):
         step(s, 5, '도전하기', '전개도 더 살펴보기')
         F, P = ST_N5C
         res2 = net_tasks(F, P, ['ㄱ', 'ㄹㅁ'])
-        assert [sorted(r[2]) for r in res2] == [['ㅈ', 'ㅍ'], ['ㅅㅇ']]
+        assert [r[2] for r in res2] == [['ㅈ', 'ㅍ'], ['ㅇㅅ']]
         s.picture(pts_fig('st5u1', F, P, 50), width_mm=70)
         ask_pts(s, lv, res2)
         base = SQ([[0, 0], [0, 1], [1, 1], [2, 1], [3, 1]])
@@ -1954,7 +1954,7 @@ def st6(s, lv):
     step(s, 3, '말해 보기', '붙일 곳 찾기')
     F, P = ST_N6
     res = net_tasks(F, P, ['ㅂ', 'ㄴ', 'ㅍㅌ', 'ㅌㅋ'])
-    assert [r[2] for r in res] == [['ㅇ', 'ㅌ'], ['ㄹ'], ['ㅁㅂ'], ['ㅈㅇ']], res
+    assert [r[2] for r in res] == [['ㅇ', 'ㅌ'], ['ㄹ'], ['ㅁㅂ'], ['ㅇㅈ']], res
     s.picture(pts_fig('st6pts', F, P, 30), width_mm=110)
     ask_pts(s, lv, res)
     step(s, 4, '확인하기', '카드 상자 전개도 그리기(가로 6 cm, 높이 2 cm, 깊이 3 cm)')
@@ -1978,8 +1978,8 @@ def st6(s, lv):
         la = [((0, 6), (0, 11), '㉠', -14, 0), ((6, 0), (9, 0), '㉡', 0, -14), ((6, 11), (6, 17), '㉢', -14, 0)]
         va = [math.dist(p, q) for p, q, *_ in la]
         assert va == [5, 3, 6]
-        sk = cub(6, 5, 3, k=16, pad=50, dimd=30, dim_size=19, dims=[(0, 1, '6 cm'), (1, 3, '5 cm'), (3, 7, '3 cm')])[:3]
-        nt = net(Fa, k=14, extra=lambda m: ''.join(seg_label(m, p, q, t, dx, dy, RED, 21) for p, q, t, dx, dy in la))[:3]
+        sk = cub(6, 5, 3, k=22, pad=56, dimd=34, dim_size=24, dims=[(0, 1, '6 cm'), (0, 2, '5 cm'), (3, 7, '3 cm')])[:3]
+        nt = net(Fa, k=14, extra=lambda m: ''.join(seg_label(m, p, q, t, dx * 1.5, dy * 1.5, RED, 28) for p, q, t, dx, dy in la))[:3]
         s.picture(fig('st6abc', hstack([sk, nt], 30)), width_mm=160)
         a7 = qa(s, [('㉠ / ㉡ / ㉢', ' / '.join('%d' % v for v in va), ' cm')])
         n2 = [('첫째', net_from_cells(STAIR, {1: 2, 2: 1, 4: 3})), ('둘째', [R(0, 1, 1, 3), R(1, 1, 2, 3), R(3, 1, 1, 3), R(4, 1, 2, 3), R(1, 0, 2, 1), R(1, 4, 2, 2)])]
@@ -2077,7 +2077,7 @@ def st9(s, lv):
     s.picture(fig('st9parts', svg_of(cub(5, 2.6, 3, k=30, extra=ex))), width_mm=72)
     s.choices([('①', opt('면', '모서리', '꼭짓점')), ('②', opt('면', '모서리', '꼭짓점')), ('③', opt('면', '모서리', '꼭짓점'))])
     step(s, 1, '그려 보기', '평행한 면과 수직인 면')
-    s.picture(fig('st9lab', svg_of(cub(4, 3, 3, k=32, lab=True, fill={4: PAR}))), width_mm=72)
+    s.picture(fig('st9lab', svg_of(solid([4, 3, 3], -35, -24, lab=True, fill=lambda f: PAR if f == 4 else None))), width_mm=72)
     s.text('서아가 진열대 상자의 아랫면 ㅁㅂㅅㅇ을 색칠했어요.')
     a2 = qa(s, [('색칠한 면과 평행한 면', FTXT[OPP[4]]), ('색칠한 면과 수직인 면 (4개)', face_set_txt(perp_faces(4)))], col=(80, 100))
     step(s, 2, '말해 보기', '발표용 전개도 그리기(가로 3 cm, 높이 2 cm, 깊이 4 cm)')
