@@ -2,7 +2,10 @@
 const APP={title:"우리 반 선물 상자 공방", unit:"5-2 수학 5. 직육면체", key:"s52-cuboid-v1", welcome:"우리 반 선물 상자 공방에 온 것을 환영해요", intro:"TODO"};
 //@@UNIT
 /* =========================================================
-   5-2 수학 5. 직육면체 — 단원 조작 부품 (앞글자 cb5)
+   5-2 수학 5. 직육면체 — 이야기 버전 단원 조작 부품 (앞글자 cb5, 이야기 전용 cb5s)
+   교과서 버전(u5-cuboid.tb.js)의 cb5 부품을 복사해 쓰고, '확인하기' 단추 없이 autoRun으로 저절로 확인해요.
+   기다리는 시간: 입력칸 900ms(Enter는 blur) · 보기·카드 고르기 260~600ms · 긋기·색칠·면 그리기·끌기 1200ms(손을 뗀 뒤).
+   한 계단에 활동이 둘이면(hj-multi) 부품 함수 몸통에 done( 이 있어야 활동으로 세어져요 — 부품마다 api.done 경로를 적어 둠.
    직육면체의 꼭짓점은 번호(가로 1 · 높이 2 ·깊이 4의 합)로 적고, 전개도는 모눈 위 직사각형 면 [{x,y,w,h}]로 적어요.
    전개도를 접는 일(cb5Fold)은 코드로 계산해서 채점해요: 겹치는 면, 맞닿는 모서리 길이, 겹치는 점·선분.
    cb5Spin     돌려 보는 직육면체(면·모서리·꼭짓점 누르기, 마주 보는 면·만나는 면 찾기)
@@ -251,8 +254,8 @@ function cb5Num(s) {
 function cb5Fig(W, H, draw, maxW, plain) { const s = makeSvg(W, H); draw(s); s.setAttribute("class", "cb5fig" + (plain ? " cb5plain" : "")); s.style.maxWidth = maxW || "30em"; return s; }
 const cb5Go = el => setTimeout(() => { try { el.scrollIntoView({ behavior: "smooth", block: "nearest" }); } catch (e) { } }, 60);
 
-/* ---------- 묻고 답하기(빈칸 고르기·수 쓰기, 여러 개 고르기 multi) ---------- */
-function cb5Ask(host, api, items, opts = {}) {
+/* ---------- 묻고 답하기(빈칸 고르기·수 쓰기, 여러 개 고르기 multi) — 저절로 확인 ---------- */
+function cb5Ask(body, api, items, opts = {}) {
   const wrap = h("div", { style: "margin-top:.6em" }), all = [];
   if (opts.title) wrap.append(h("p", { class: "inst" }, opts.title));
   items.forEach(it => {
@@ -280,18 +283,28 @@ function cb5Ask(host, api, items, opts = {}) {
   api.provide({ words: all.map(s => right(s.pt)), answers: items.map(it => (it.parts || []).map(pt => typeof pt === "string" ? pt : pt.nodeType ? " " : right(pt)).join("")) });
   const good = s => s.pt.o ? (s.pt.multi ? (s.v.size === s.pt.a.length && s.pt.a.every(i => s.v.has(i))) : s.v === s.pt.a) : cb5Num(s.inp.value) === s.pt.n;
   const val = s => s.pt.o ? (s.pt.multi ? ([...s.v].sort().map(i => s.pt.o[i]).join("·") || "-") : (s.v == null ? "-" : s.pt.o[s.v])) : (s.inp.value.trim() || "-");
-  const check = h("button", { class: "big", onclick: () => {
+  const filled = s => s.pt.o ? (s.pt.multi ? s.v.size >= s.pt.a.length : s.v != null) : s.inp.value.trim() !== "";
+  const check = () => {
     api.tryOnce(); const ans = all.map(val).join(" / ");
     all.forEach(s => {
       if (s.pt.o) [...s.slot.children].forEach((b, i) => { b.classList.remove("good", "bad"); const picked = s.pt.multi ? s.v.has(i) : s.v === i; if (picked) b.classList.add(good(s) ? "good" : "bad"); });
       else s.inp.style.borderColor = good(s) ? "var(--ok)" : "var(--no)";
     });
     const bad = all.find(s => !good(s));
-    if (!bad) return api.done(ans, opts.ok);
+    if (!bad) { all.forEach(s => { if (s.inp) s.inp.readOnly = true; }); api.done(ans, opts.ok); return true; }
     const key = bad.pt.o ? (bad.pt.multi ? [...bad.v].sort().join(",") : String(bad.v)) : String(cb5Num(bad.inp.value));
     api.fail((bad.pt.why && bad.pt.why[key]) || opts.bad || "빨간 칸을 다시 살펴봐요.", ans);
-  } }, "확인하기");
-  host.append(wrap, h("div", { class: "actions" }, check));
+    return false;
+  };
+  const hasIn = all.some(s => !s.pt.o);
+  const kick = autoRun(() => all.every(filled), () => all.map(val).join("\u0001") + "|" + all.map(s => s.v instanceof Set ? [...s.v].sort().join(",") : "").join(";"), check, 0);
+  let tm = null; const later = w => { clearTimeout(tm); tm = setTimeout(kick, w); };
+  wrap.addEventListener("click", e => { if (e.target.closest(".opt")) later(hasIn ? 600 : 260); });
+  all.forEach(s => { if (!s.inp) return;
+    s.inp.addEventListener("input", e => { s.inp.style.borderColor = ""; if (!e.isComposing) later(900); });
+    s.inp.addEventListener("change", () => later(200));
+    s.inp.addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); s.inp.blur(); } }); });
+  body.append(wrap);
   return wrap;
 }
 /* 여러 활동을 차례로: 앞 활동을 해결하면 다음 활동이 열려요 */
@@ -341,7 +354,8 @@ function cb5FaceAsk(body, api, items, opts = {}) {
     h("button", { onclick: () => { const t = focus || rows[0].ins[0]; const v = t.value.replace(/면\s*/, ""); t.value = v.length > 1 ? "면 " + v.slice(0, -1) : ""; t.focus(); } }, "⌫"));
   body.append(key);
   api.provide({ words: ["면 이름은 꼭짓점을 차례로 읽어요"], answers: items.map(it => it.ans.map(f => cb5FaceName(f, lab)).join(", ")) });
-  body.append(h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
+  const allIns = rows.flatMap(r => r.ins);
+  const check = () => {
     api.tryOnce(); let ok = true, why = "";
     rows.forEach(r => {
       const got = r.ins.map(i => cb5ParseFace(i.value, lab));
@@ -349,8 +363,14 @@ function cb5FaceAsk(body, api, items, opts = {}) {
         if (!why) why = g < 0 ? (r.ins[k].value.replace(/면|\s/g, "").length === 4 ? "꼭짓점을 차례로 이어 읽어야 면 이름이 돼요. 점의 차례를 확인해요." : "면 이름은 꼭짓점 4개를 차례로 써요.") : got.indexOf(g) !== k ? "같은 면을 두 번 썼어요." : (r.it.why || "그 면은 답이 아니에요. 그림을 돌려 가며 다시 살펴봐요."); } });
     });
     const ans = rows.map(r => r.ins.map(i => i.value.trim() || "-").join(", ")).join(" / ");
-    ok ? api.done(ans, opts.ok) : api.fail(why, ans);
-  } }, "확인하기")));
+    if (ok) { allIns.forEach(i => { i.readOnly = true; }); api.done(ans, opts.ok); return true; }
+    api.fail(why, ans); return false;
+  };
+  const kick = autoRun(() => allIns.every(i => i.value.replace(/면|\s|,/g, "").length >= 4), () => allIns.map(i => i.value.replace(/면|\s|,/g, "")).join("|"), check, 0);
+  let tm = null; const later = w => { clearTimeout(tm); tm = setTimeout(kick, w); };
+  allIns.forEach(i => { i.addEventListener("input", e => { i.style.borderColor = ""; if (!e.isComposing) later(900); }); i.addEventListener("change", () => later(200));
+    i.addEventListener("keydown", e => { if (e.key === "Enter" && !e.isComposing) { e.preventDefault(); i.blur(); } }); });
+  key.addEventListener("click", e => { if (e.target.closest("button")) later(900); });
 }
 
 /* =========================================================
@@ -423,7 +443,7 @@ function cb5Solid(o) {
 /* 면·모서리·꼭짓점 세기: 보이는 것을 눌러 표시하고, 돌려서 뒤쪽도 찾아요 */
 function cb5Count(body, api, opt) {
   const kinds = opt.kinds || ["face", "edge", "vert"], NM = { face: "면", edge: "모서리", vert: "꼭짓점" }, ALL = { face: 6, edge: 12, vert: 8 };
-  let kind = kinds[0];
+  let kind = kinds[0], fin = false;
   const got = { face: new Set(), edge: new Set(), vert: new Set() }, doneK = new Set();
   const fillOf = fi => got.face.has(fi) ? CB5.pick : (opt.fillAll || null);
   const S = cb5Solid({ dims: opt.dims, yaw: opt.yaw, pitch: opt.pitch, fill: fillOf, mark: { edges: got.edge, verts: got.vert },
@@ -441,7 +461,7 @@ function cb5Count(body, api, opt) {
     got[k].has(i) ? got[k].delete(i) : got[k].add(i);
     if (got[k].size === ALL[k] && !doneK.has(k)) { doneK.add(k); api.hint(`○ ${cb5Jo(NM[k], "을/를")} 모두 찾았어요.`); const nk = kinds.find(x => !doneK.has(x)); if (nk) kind = nk; }
     paint();
-    if (kinds.every(x => doneK.has(x))) cb5Then(body, api, opt, kinds.map(x => `${NM[x]} ${ALL[x]}`).join(", "), opt.msg || "돌려 가며 모두 찾았어요.");
+    if (kinds.every(x => doneK.has(x)) && !fin) { fin = true; cb5Then(body, api, opt, kinds.map(x => `${NM[x]} ${ALL[x]}`).join(", "), opt.msg || "돌려 가며 모두 찾았어요."); }   // → api.done(
   }
   api.provide({ words: ["면 6개", "모서리 12개", "꼭짓점 8개", "돌려서 뒤쪽 보기"], answers: ["면 6개, 모서리 12개, 꼭짓점 8개"] });
   body.append(...(opt.tip ? [h("p", { class: "cb5small" }, opt.tip)] : []), kb, S.svg, S.tools, read);
@@ -459,13 +479,18 @@ function cb5FacePick(body, api, opt) {
   const read = h("div", { class: "cb5read" });
   const paint = () => { S.draw(); read.textContent = opt.lab === false ? `고른 면: ${sel.size}개` : sel.size ? "고른 면: " + [...sel].map(f => cb5FaceName(f, lab)).join(", ") : "면을 눌러 골라요(다시 누르면 빠져요)."; };
   api.provide({ words: opt.need.map(f => cb5FaceName(f, lab)), answers: [opt.need.map(f => cb5FaceName(f, lab)).join(", ")] });
-  body.append(S.svg, S.tools, read, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
-    api.tryOnce(); const ans = [...sel].map(f => cb5FaceName(f, lab)).join(", ") || "-";
+  let fin = false;
+  const check = () => {
+    if (fin) return true; api.tryOnce(); const ans = [...sel].map(f => cb5FaceName(f, lab)).join(", ") || "-";
     const ok = sel.size === opt.need.length && opt.need.every(f => sel.has(f));
-    if (ok) return cb5Then(body, api, opt, ans, opt.msg);
+    if (ok) { fin = true; cb5Then(body, api, opt, ans, opt.msg || opt.ok); return true; }   // 끝나면 api.done(
     const extra = [...sel].find(f => !opt.need.includes(f));
     api.fail(extra != null ? (opt.whyExtra ? opt.whyExtra(extra) : `${cb5FaceName(extra, lab)}은 답이 아니에요.`) : (opt.whyFew || `아직 ${opt.need.length - sel.size}개 더 있어요. 그림을 돌려 뒤쪽도 살펴봐요.`), ans);
-  } }, "확인하기")));
+    return false;
+  };
+  const kick = autoRun(() => sel.size >= opt.need.length, () => [...sel].sort().join(","), check, 1200);
+  S.svg.addEventListener("pointerup", () => setTimeout(kick, 0));
+  body.append(S.svg, S.tools, read);
   paint();
 }
 
@@ -595,25 +620,30 @@ function cb5Sketch(body, api, opt) {
     pens.querySelector("button[data-p=solid]").classList.add("cb5-pick");
   }
   api.provide({ words: ["보이는 모서리는 실선", "보이지 않는 모서리는 점선", "실선 9개", "점선 3개"], answers: [mode === "pick" ? "보이지 않는 모서리 3개(점선)에 ○표" : "보이는 모서리 9개는 실선, 보이지 않는 모서리 3개는 점선"] });
-  const check = h("button", { class: "big", onclick: () => {
-    if (fin) return; api.tryOnce();
+  const check = () => {
+    if (fin) return true; api.tryOnce();
     const ans = mode === "pick" ? `○표 ${segs.filter(s => s.mark).length}개` : `실선 ${segs.filter(s => s.style === "solid").length}개, 점선 ${segs.filter(s => s.style === "dash").length}개`;
     if (mode === "pick") {
       const wrong = segs.filter((s, i) => s.mark !== (s.style === "dash")); wrong.forEach(s => { s.bad = true; }); draw();
-      if (!wrong.length) { fin = true; return cb5Then(body, api, opt, ans, opt.msg || "보이지 않는 모서리 3개를 모두 찾았어요."); }
-      return api.fail(segs.filter(s => s.mark && s.style !== "dash").length ? "보이는 모서리에 ○표를 했어요. 보이지 않는 모서리는 점선으로 그려져 있어요." : "보이지 않는 모서리가 더 있어요. 점선을 모두 찾아요.", ans);
+      if (!wrong.length) { fin = true; cb5Then(body, api, opt, ans, opt.msg || "보이지 않는 모서리 3개를 모두 찾았어요."); return true; }
+      api.fail(segs.filter(s => s.mark && s.style !== "dash").length ? "보이는 모서리에 ○표를 했어요. 보이지 않는 모서리는 점선으로 그려져 있어요." : "보이지 않는 모서리가 더 있어요. 점선을 모두 찾아요.", ans); return false;
     }
     const extra = segs.filter(s => !need.some(t => same(s, t)));
     const missing = need.filter(t => !segs.some(s => same(s, t)));
     const styleBad = segs.filter(s => { const t = need.find(t => same(s, t)); return t && t.style !== s.style; });
     segs.forEach(s => { s.bad = extra.includes(s) || styleBad.includes(s); }); draw();
-    if (extra.length) return api.fail(`필요 없는 선이 ${extra.length}개 있어요(빨간 선). 꼭짓점에서 꼭짓점까지 한 번에 긋고, 지우개로 지워요.`, ans);
-    if (missing.length) return api.fail(`빠진 모서리가 ${missing.length}개 있어요. 직육면체의 모서리는 모두 12개예요. 평행한 모서리는 평행하게 그어요.`, ans);
+    if (extra.length) { api.fail(`필요 없는 선이 ${extra.length}개 있어요(빨간 선). 꼭짓점에서 꼭짓점까지 한 번에 긋고, 지우개로 지워요.`, ans); return false; }
+    if (missing.length) { api.fail(`빠진 모서리가 ${missing.length}개 있어요. 직육면체의 모서리는 모두 12개예요. 평행한 모서리는 평행하게 그어요.`, ans); return false; }
     if (styleBad.length) { const hid = styleBad.filter(s => s.style === "solid").length;
-      return api.fail(hid ? "보이지 않는 모서리를 실선으로 그렸어요. 보이지 않는 모서리는 점선으로 나타내요." : "보이는 모서리를 점선으로 그렸어요. 보이는 모서리는 실선으로 나타내요.", ans); }
-    fin = true; cb5Then(body, api, opt, ans, opt.msg || "겨냥도를 바르게 그렸어요. 보이는 모서리 9개는 실선, 보이지 않는 모서리 3개는 점선이에요.");
-  } }, "확인하기");
-  body.append(...(opt.tip ? [h("p", { class: "cb5small" }, opt.tip)] : []), pens, svg, read, h("div", { class: "actions" }, check));
+      api.fail(hid ? "보이지 않는 모서리를 실선으로 그렸어요. 보이지 않는 모서리는 점선으로 나타내요." : "보이는 모서리를 점선으로 그렸어요. 보이는 모서리는 실선으로 나타내요.", ans); return false; }
+    fin = true; cb5Then(body, api, opt, ans, opt.msg || "겨냥도를 바르게 그렸어요. 보이는 모서리 9개는 실선, 보이지 않는 모서리 3개는 점선이에요.");   // → api.done(
+    return true;
+  };
+  /* 저절로 확인: 그리기는 선이 12개가 되면, 고치기는 점선이 3개 이상이면, 찾기는 ○표가 3개 이상이면(손을 떼고 1.2초 뒤) */
+  const ready = () => mode === "pick" ? segs.filter(s => s.mark).length >= 3 : mode === "fix" ? segs.filter(s => s.style === "dash").length >= 3 : segs.length >= 12;
+  const kick = autoRun(ready, () => segs.map(s => s.a.join(",") + "-" + s.b.join(",") + s.style + (s.mark ? "o" : "")).sort().join("|"), check, 1200);
+  svg.addEventListener("pointerup", () => setTimeout(kick, 0));
+  body.append(...(opt.tip ? [h("p", { class: "cb5small" }, opt.tip)] : []), pens, svg, read);
   draw();
 }
 
@@ -710,7 +740,7 @@ function cb5FoldView(F, opt = {}) {
   return { el: h("div", {}, svg, bar, h("p", { class: "cb5small" }, "그림을 끌면 보는 방향이 바뀌어요. 노란 면은 바닥에 놓인 면이에요.")), svg, draw, play, st };
 }
 /* 접기·펴기 해 보기: 끝까지 펴거나(goal 0) 접으면(goal 1) 해결 */
-function cb5FoldStep(body, api, opt) {
+function cb5FoldStep(body, api, opt) {   /* 끝나면 cb5Then → api.done( */
   let fin = false;
   const V = cb5FoldView(opt.F, Object.assign({}, opt, { onT: t => { if (fin || Math.abs(t - opt.goal) > .001) return; fin = true; cb5Then(body, api, opt, opt.goal ? "끝까지 접음" : "끝까지 폄", opt.msg); } }));
   api.provide({ words: opt.words || ["모서리를 잘라서 펼친 그림", "전개도"], answers: [] });
@@ -734,15 +764,18 @@ function cb5NetJudge(body, api, opt) {
     panel.append(h("div", { class: "jua" }, `${opt.nets[i].name}를 접어 봐요`), V.el); V.play(1); cb5Go(panel);
   }
   api.provide({ words: ans.map(i => opt.nets[i].name), answers: [ans.map(i => opt.nets[i].name).join(", ")] });
-  body.append(...(opt.q ? [h("div", { class: "jua" }, opt.q)] : []), h("div", { class: "cb5cards", style: "grid-template-columns:repeat(auto-fill,minmax(" + (opt.cardW || "11em") + ",1fr))" }, ...cards), panel,
-    h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
-      api.tryOnce(); const got = [...sel].sort().map(i => opt.nets[i].name).join(", ") || "-";
-      cards.forEach((c, i) => { c.classList.remove("cb5-good", "cb5-bad"); if (sel.has(i)) c.classList.add(ans.includes(i) ? "cb5-good" : "cb5-bad"); });
-      const wrong = [...sel].find(i => !ans.includes(i)), miss = ans.find(i => !sel.has(i));
-      if (wrong == null && miss == null) return cb5Then(body, api, opt, got, opt.msg);
-      if (wrong != null) return api.fail(want === "can" ? `${opt.nets[wrong].name}는 ${CB5_WHY[res[wrong].why].replace(/요\.$/, "요.")} ‘접어 보기’로 확인해 봐요.` : `${opt.nets[wrong].name}는 접으면 ${opt.solid || "정육면체"}가 돼요.`, got);
-      api.fail(`${opt.nets[miss].name}도 다시 살펴봐요. ‘접어 보기’를 눌러 확인할 수 있어요.`, got);
-    } }, "확인하기")));
+  let fin = false;
+  const check = () => {
+    if (fin) return true; api.tryOnce(); const got = [...sel].sort().map(i => opt.nets[i].name).join(", ") || "-";
+    cards.forEach((c, i) => { c.classList.remove("cb5-good", "cb5-bad"); if (sel.has(i)) c.classList.add(ans.includes(i) ? "cb5-good" : "cb5-bad"); });
+    const wrong = [...sel].find(i => !ans.includes(i)), miss = ans.find(i => !sel.has(i));
+    if (wrong == null && miss == null) { fin = true; cb5Then(body, api, opt, got, opt.msg || opt.ok); return true; }   // → api.done(
+    if (wrong != null) { api.fail(want === "can" ? `${opt.nets[wrong].name}는 ${CB5_WHY[res[wrong].why]} ‘접어 보기’로 확인해 봐요.` : `${opt.nets[wrong].name}는 접으면 ${opt.solid || "정육면체"}가 돼요.`, got); return false; }
+    api.fail(`${opt.nets[miss].name}도 다시 살펴봐요. ‘접어 보기’를 눌러 확인할 수 있어요.`, got); return false;
+  };
+  const kick = autoRun(() => sel.size >= ans.length, () => [...sel].sort().join(","), check, 700);
+  cards.forEach(c => c.addEventListener("click", () => kick()));
+  body.append(...(opt.q ? [h("div", { class: "jua" }, opt.q)] : []), h("div", { class: "cb5cards", style: "grid-template-columns:repeat(auto-fill,minmax(" + (opt.cardW || "11em") + ",1fr))" }, ...cards), panel);
 }
 /* 전개도에서 겹치는 점·선분 찾기: {F, P, tasks:[{pt:"ㅌ"}|{seg:"ㄴㄷ"}], k, grid} */
 function cb5NetPts(body, api, opt) {
@@ -773,24 +806,26 @@ function cb5NetPts(body, api, opt) {
   };
   const next = () => { sel.clear(); qline.textContent = tasks[ti] ? `${ti + 1}/${tasks.length}. ${tasks[ti].q}` : ""; draw(); };
   api.provide({ words: ["접었을 때 만나는 점", "접었을 때 맞닿는 선분"], answers: tasks.map(t => t.kind === "pt" ? `점 ${t.pt} → ${t.ans.map(n => "점 " + n).join(", ")}` : `선분 ${t.seg} → ${t.ansNm.map(n => "선분 " + n).join(", ")}`) });
-  const foldBtn = h("button", { class: "ghost", onclick: () => { foldBox.innerHTML = ""; const V = cb5FoldView(F, { lab: P, start: 0, size: [440, 300], labColor: n => { const T = tasks[ti]; return T && (T.pt === n || (T.seg && T.seg.includes(n))) ? CB5.red : "#33414D"; } }); foldBox.append(V.el); V.play(1); cb5Go(foldBox); } }, "접어서 확인하기");
-  const check = h("button", { class: "big", onclick: () => {
-    const T = tasks[ti]; if (!T) return; api.tryOnce();
+  const foldBtn = h("button", { class: "ghost", onclick: () => { foldBox.innerHTML = ""; const V = cb5FoldView(F, { lab: P, start: 0, size: [440, 300], labColor: n => { const T = tasks[ti]; return T && (T.pt === n || (T.seg && T.seg.includes(n))) ? CB5.red : "#33414D"; } }); foldBox.append(V.el); V.play(1); cb5Go(foldBox); } }, "접어서 살펴보기");
+  const check = () => {
+    const T = tasks[ti]; if (!T) return true; api.tryOnce();
     const got = [...sel].map(i => T.kind === "pt" ? P[i][2] : S[i].nm);
     const okSet = T.kind === "pt" ? T.ans : T.ans.map(s => s.nm);
     const good = got.length === okSet.length && okSet.every(x => got.includes(x));
     const gotTxt = (T.kind === "pt" ? got.map(n => "점 " + n) : got.map(n => "선분 " + n)).join(", ") || "-";
-    if (!good) return api.fail(got.some(x => !okSet.includes(x)) ? (T.kind === "pt" ? "접었을 때 그 점과 만나지 않는 점을 골랐어요. 접히는 모서리를 따라 하나씩 짝지어 봐요." : "접었을 때 맞닿지 않는 선분이에요. 이웃한 선분부터 짝지어 봐요.") : `아직 더 있어요. 겹치는 ${T.kind === "pt" ? "점" : "선분"}을 모두 찾아요.`, gotTxt);
+    if (!good) { api.fail(got.some(x => !okSet.includes(x)) ? (T.kind === "pt" ? "접었을 때 그 점과 만나지 않는 점을 골랐어요. 접히는 모서리를 따라 하나씩 짝지어 봐요." : "접었을 때 맞닿지 않는 선분이에요. 이웃한 선분부터 짝지어 봐요.") : `아직 더 있어요. 겹치는 ${T.kind === "pt" ? "점" : "선분"}을 모두 찾아요.`, gotTxt); return false; }
     log.append(h("div", {}, "✓ " + (T.kind === "pt" ? `점 ${cb5Jo(T.pt, "과/와")} 겹치는 점: ${T.ans.map(n => "점 " + n).join(", ")}` : `선분 ${cb5Jo(T.seg, "과/와")} 겹치는 선분: ${T.ansNm.map(n => "선분 " + n).join(", ")}`)));
     ti++;
-    if (ti >= tasks.length) { draw(); return cb5Then(body, api, opt, tasks.map(t => t.kind === "pt" ? t.ans.join(",") : t.ansNm.join(",")).join(" / "), opt.msg || "겹치는 점과 선분을 모두 찾았어요."); }
-    api.hint("○ 맞아요! 이어서 찾아봐요."); next();
-  } }, "확인하기");
-  body.append(qline, wrap, log, h("div", { class: "cb5btns" }, foldBtn), foldBox, h("div", { class: "actions" }, check));
+    if (ti >= tasks.length) { draw(); cb5Then(body, api, opt, tasks.map(t => t.kind === "pt" ? t.ans.join(",") : t.ansNm.join(",")).join(" / "), opt.msg || opt.ok || "겹치는 점과 선분을 모두 찾았어요."); return true; }   // → api.done(
+    api.hint("○ 맞아요! 이어서 찾아봐요."); next(); return false;
+  };
+  const kick = autoRun(() => !!tasks[ti] && sel.size >= tasks[ti].ans.length, () => ti + ":" + [...sel].sort().join(","), check, 700);
+  wrap.addEventListener("click", () => kick());
+  body.append(qline, wrap, log, h("div", { class: "cb5btns" }, foldBtn), foldBox);
   next();
 }
 /* 전개도에서 마주 보는 면 짝 찾기(접었을 때 서로 평행한 면) */
-function cb5NetPairs(body, api, opt) {
+function cb5NetPairs(body, api, opt) {   /* 끝나면 cb5Then → api.done( */
   const F = opt.F, fd = cb5Fold(F); if (!fd.ok) throw new Error("전개도 오류");
   const pairOf = new Map(), cols = ["#9CC3F0", "#F6B38E", "#A9DDB8"]; let sel = null, np = 0;
   const box = h("div"), read = h("div", { class: "cb5read" }, "면 두 개를 차례로 눌러 마주 보는 면을 찾아요.");
@@ -871,31 +906,35 @@ function cb5NetDraw(body, api, opt) {
       for (let i = 0; i < 4; i++) { const A = cs[i], B = cs[(i + 1) % 4]; if (!segs.some(s => (cb5Eq(s.a[0], A[0]) && cb5Eq(s.a[1], A[1]) && cb5Eq(s.b[0], B[0]) && cb5Eq(s.b[1], B[1])) || (cb5Eq(s.a[0], B[0]) && cb5Eq(s.a[1], B[1]) && cb5Eq(s.b[0], A[0]) && cb5Eq(s.b[1], A[1])))) segs.push({ a: A, b: B, hinge: false, dash: false }); } });
     phase = "lines"; draw();
   };
-  const check = h("button", { class: "big", onclick: () => {
-    if (fin) return; api.tryOnce();
+  const check = () => {
+    if (fin) return true; api.tryOnce();
     if (phase === "net") {
       const F = faces.map(r => ({ x: r.x, y: r.y, w: r.w, h: r.h })), ans = `면 ${F.length}개`;
-      if (F.length < 6) return api.fail(`면이 ${F.length}개예요. ${opt.cube ? "정육면체" : "직육면체"}의 면은 6개예요.`, ans);
+      if (F.length < 6) { api.fail(`면이 ${F.length}개예요. ${opt.cube ? "정육면체" : "직육면체"}의 면은 6개예요.`, ans); return false; }
       const fd = cb5Fold(F);
-      if (!fd.ok) return api.fail(CB5_WHY[fd.why] + " 면을 눌러 지우고 다시 그려 봐요.", ans);
+      if (!fd.ok) { api.fail(CB5_WHY[fd.why] + " 면을 눌러 지우고 다시 그려 봐요.", ans); return false; }
       const Ls = Object.values(fd.L).sort((u, v) => u - v), Ds = [a, b, c].sort((u, v) => u - v);
-      if (Ls.some((x, i) => !cb5Eq(x, Ds[i]))) return api.fail("접으면 겨냥도와 다른 크기의 직육면체가 돼요. 마주 보는 면은 모양과 크기가 같아야 해요.", ans);
+      if (Ls.some((x, i) => !cb5Eq(x, Ds[i]))) { api.fail("접으면 겨냥도와 다른 크기의 직육면체가 돼요. 마주 보는 면은 모양과 크기가 같아야 해요.", ans); return false; }
       const key = cb5RectKey(F);
-      if (opt.avoid && opt.avoid() === key) return api.fail("앞에서 그린 전개도와 같은 모양이에요(돌리거나 뒤집으면 같아요). 다른 모양으로 그려 봐요.", ans);
+      if (opt.avoid && opt.avoid() === key) { api.fail("앞에서 그린 전개도와 같은 모양이에요(돌리거나 뒤집으면 같아요). 다른 모양으로 그려 봐요.", ans); return false; }
       opt.onNet && opt.onNet(F, key);
-      if (opt.lines === false) { fin = true; return cb5Then(body, api, opt, "전개도 완성", opt.msg); }
+      if (opt.lines === false) { fin = true; cb5Then(body, api, opt, "전개도 완성", opt.msg); return true; }   // → api.done(
       startLines(F);
       api.hint("○ 접으면 " + (opt.cube ? "정육면체" : "직육면체") + "가 돼요! 이제 잘리지 않은 모서리(접는 선)를 눌러 점선으로 바꿔요.");
-      return;
+      return false;
     }
     const bad = segs.filter(s => s.dash !== s.hinge); segs.forEach(s => { s.bad = bad.includes(s); }); draw();
     const ans = `점선 ${segs.filter(s => s.dash).length}개`;
-    if (bad.length) return api.fail(bad.some(s => s.dash) ? "잘린 모서리(둘레)를 점선으로 바꿨어요. 잘린 모서리는 실선이에요." : "아직 실선인 접는 선이 있어요. 두 면이 맞닿은 선은 잘리지 않은 모서리라서 점선으로 나타내요.", ans);
-    fin = true; cb5Then(body, api, opt, "전개도 완성(점선 " + segs.filter(s => s.dash).length + "개)", opt.msg || "전개도를 바르게 그렸어요.");
-  } }, "확인하기");
+    if (bad.length) { api.fail(bad.some(s => s.dash) ? "잘린 모서리(둘레)를 점선으로 바꿨어요. 잘린 모서리는 실선이에요." : "아직 실선인 접는 선이 있어요. 두 면이 맞닿은 선은 잘리지 않은 모서리라서 점선으로 나타내요.", ans); return false; }
+    fin = true; cb5Then(body, api, opt, "전개도 완성(점선 " + segs.filter(s => s.dash).length + "개)", opt.msg || "전개도를 바르게 그렸어요."); return true;
+  };
+  /* 저절로 확인: 면 6개를 그리면 / 접는 선(5개)만큼 점선으로 바꾸면 (손을 떼고 1.2초 뒤) */
+  const kick = autoRun(() => phase === "net" ? faces.length >= 6 : segs.filter(s => s.dash).length >= 5,
+    () => phase + "|" + (phase === "net" ? faces.map(r => [r.x, r.y, r.w, r.h].join(",")).sort().join(";") : segs.map(s => s.dash ? 1 : 0).join("")), check, 1200);
+  svg.addEventListener("pointerup", () => setTimeout(kick, 0));
   body.append(...(opt.tip ? [h("p", { class: "cb5small" }, opt.tip)] : []), svg, read,
     h("div", { class: "cb5btns" }, h("button", { onclick: () => { if (fin) return; if (phase === "lines") { phase = "net"; segs = []; } faces.splice(0, faces.length, ...faces.filter(r => r.locked)); draw(); } }, "처음부터"),
-      h("span", { class: "cb5small" }, "그린 면을 누르면 지워져요.")), h("div", { class: "actions" }, check));
+      h("span", { class: "cb5small" }, "그린 면을 누르면 지워져요.")));
   draw();
 }
 /* 면을 한 개 더 붙여 전개도 만들기: {F(5면), cands:[{x,y,w,h,name}], k, grid, dims, dash(색칠한 면의 접는 선을 점선으로), color} */
@@ -924,21 +963,25 @@ function cb5AddFace(body, api, opt) {
     return [0, 1, 2, 3].filter(i => { const p = cs[i], q = cs[(i + 1) % 4]; return C.some(t => cb5Eq(p[0], q[0]) ? (cb5Eq(t.A[0], p[0]) && cb5Eq(t.B[0], p[0])) : (cb5Eq(t.A[1], p[1]) && cb5Eq(t.B[1], p[1]))); }); };
   const showFold = FF => { fold.innerHTML = ""; const V = cb5FoldView(FF, { start: 0, size: [400, 270] }); fold.append(V.el); V.play(1); cb5Go(fold); };
   api.provide({ words: opt.cands.filter((_, i) => good[i]).map(c => c.name), answers: [opt.cands.filter((_, i) => good[i]).map(c => c.name).join("")] });
-  const check = h("button", { class: "big", onclick: () => {
-    if (fin) return;
+  const check = () => {
+    if (fin) return true;
     if (phase === "pick") {
-      if (sel == null) return api.hint("붙일 자리를 먼저 눌러 골라요.");
+      if (sel == null) return false;
       api.tryOnce(); const nm = opt.cands[sel].name;
-      if (!good[sel]) { const fd = cb5Fold(F.concat([opt.cands[sel]])); showFold(F.concat([opt.cands[sel]])); return api.fail(`${nm} 자리에 붙이면 ${CB5_WHY[fd.why]} 접어 본 모습을 보고 다른 자리를 골라 봐요.`, nm); }
-      if (!opt.dash) { fin = true; showFold(F.concat([opt.cands[sel]])); return cb5Then(body, api, opt, nm, opt.msg || `${nm} 자리에 붙이면 전개도가 돼요.`); }
-      phase = "dash"; draw(); api.hint(`○ ${nm} 자리가 맞아요! 색칠한 면에서 잘리지 않는 모서리를 눌러 점선으로 바꿔요.`); return;
+      if (!good[sel]) { const fd = cb5Fold(F.concat([opt.cands[sel]])); showFold(F.concat([opt.cands[sel]])); api.fail(`${nm} 자리에 붙이면 ${CB5_WHY[fd.why]} 접어 본 모습을 보고 다른 자리를 골라 봐요.`, nm); return false; }
+      if (!opt.dash) { fin = true; showFold(F.concat([opt.cands[sel]])); cb5Then(body, api, opt, nm, opt.msg || `${nm} 자리에 붙이면 전개도가 돼요.`); return true; }   // → api.done(
+      phase = "dash"; draw(); api.hint(`○ ${nm} 자리가 맞아요! 색칠한 면에서 잘리지 않는 모서리를 눌러 점선으로 바꿔요.`); return false;
     }
     api.tryOnce(); const hs = hingeSides();
     const ok = hs.length === dashSel.size && hs.every(i => dashSel.has(i));
-    if (!ok) return api.fail(dashSel.size > hs.length || [...dashSel].some(i => !hs.includes(i)) ? "잘리는 모서리는 실선이에요. 다른 면과 맞닿아 접히는 모서리만 점선으로 나타내요." : "다른 면과 맞닿은 모서리를 찾아 점선으로 바꿔요.", `점선 ${dashSel.size}개`);
-    fin = true; showFold(F.concat([opt.cands[sel]])); cb5Then(body, api, opt, opt.cands[sel].name + " + 점선", opt.msg);
-  } }, "확인하기");
-  body.append(box, read, fold, h("div", { class: "actions" }, check));
+    if (!ok) { api.fail(dashSel.size > hs.length || [...dashSel].some(i => !hs.includes(i)) ? "잘리는 모서리는 실선이에요. 다른 면과 맞닿아 접히는 모서리만 점선으로 나타내요." : "다른 면과 맞닿은 모서리를 찾아 점선으로 바꿔요.", `점선 ${dashSel.size}개`); return false; }
+    fin = true; showFold(F.concat([opt.cands[sel]])); cb5Then(body, api, opt, opt.cands[sel].name + " + 점선", opt.msg); return true;
+  };
+  const kick = autoRun(() => phase === "pick" ? sel != null : dashSel.size >= hingeSides().length,
+    () => phase + "|" + sel + "|" + [...dashSel].sort().join(","), check, 0);
+  let tm = null;
+  box.addEventListener("click", () => { clearTimeout(tm); tm = setTimeout(kick, phase === "pick" ? 600 : 1200); });
+  body.append(box, read, fold);
   draw();
 }
 
@@ -950,22 +993,25 @@ function cb5Pick(body, api, opt) {
   const sel = new Set();
   const cards = opt.items.map((it, i) => { const c = h("div", { class: "cb5card" }, it.fig ? it.fig() : null, h("div", {}, it.name)); c.addEventListener("click", () => { sel.has(i) ? sel.delete(i) : sel.add(i); c.classList.toggle("cb5-pick", sel.has(i)); c.classList.remove("cb5-good", "cb5-bad"); }); return c; });
   api.provide({ words: opt.a.map(i => opt.items[i].name), answers: [opt.a.map(i => opt.items[i].name).join(", ")] });
-  body.append(...(opt.q ? [h("div", { class: "jua" }, opt.q)] : []), h("div", { class: "cb5cards", style: `grid-template-columns:repeat(auto-fill,minmax(${opt.cardW || "8em"},1fr))` }, ...cards),
-    h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
-      api.tryOnce(); const got = [...sel].sort().map(i => opt.items[i].name).join(", ") || "-";
-      cards.forEach((c, i) => { c.classList.remove("cb5-good", "cb5-bad"); if (sel.has(i)) c.classList.add(opt.a.includes(i) ? "cb5-good" : "cb5-bad"); });
-      const ex = [...sel].find(i => !opt.a.includes(i));
-      if (ex != null) return api.fail(opt.whyExtra ? opt.whyExtra(ex) : `${opt.items[ex].name}는 답이 아니에요.`, got);
-      if (sel.size < opt.a.length) return api.fail(opt.whyMiss || `아직 ${opt.a.length - sel.size}개 더 있어요.`, got);
-      cb5Then(body, api, opt, got, opt.msg);
-    } }, "확인하기")));
+  let fin = false;
+  const check = () => {
+    if (fin) return true; api.tryOnce(); const got = [...sel].sort().map(i => opt.items[i].name).join(", ") || "-";
+    cards.forEach((c, i) => { c.classList.remove("cb5-good", "cb5-bad"); if (sel.has(i)) c.classList.add(opt.a.includes(i) ? "cb5-good" : "cb5-bad"); });
+    const ex = [...sel].find(i => !opt.a.includes(i));
+    if (ex != null) { api.fail(opt.whyExtra ? opt.whyExtra(ex) : `${opt.items[ex].name}는 답이 아니에요.`, got); return false; }
+    if (sel.size < opt.a.length) { api.fail(opt.whyMiss || `아직 ${opt.a.length - sel.size}개 더 있어요.`, got); return false; }
+    fin = true; cb5Then(body, api, opt, got, opt.msg || opt.ok); return true;   // → api.done(
+  };
+  const kick = autoRun(() => sel.size >= opt.a.length, () => [...sel].sort().join(","), check, 600);
+  cards.forEach(c => c.addEventListener("click", () => kick()));
+  body.append(...(opt.q ? [h("div", { class: "jua" }, opt.q)] : []), h("div", { class: "cb5cards", style: `grid-template-columns:repeat(auto-fill,minmax(${opt.cardW || "8em"},1fr))` }, ...cards));
 }
 /* 상자를 눌러 둘러싼 면 6개를 펼쳐 보기 → 다 보면 물음(ask) */
 function cb5FaceShapes(P, D) {   // 앞뒤 다각형 2개 + 옆 직사각형들 (실제 모양)
   const n = P.length, L = P.map((p, i) => Math.hypot(P[(i + 1) % n][0] - p[0], P[(i + 1) % n][1] - p[1]));
   return [{ P }, { P }].concat(L.map(l => ({ P: [[0, 0], [l, 0], [l, D], [0, D]] })));
 }
-function cb5Boxes(body, api, opt) {
+function cb5Boxes(body, api, opt) {   /* 끝나면 cb5Then → api.done( */
   const seen = new Set(), panel = h("div", { class: "cb5box", style: "min-height:5em" }, "상자를 눌러 보세요. 상자를 둘러싼 면 6개가 펼쳐져 보여요.");
   const cards = opt.boxes.map((b, i) => { const c = h("div", { class: "cb5card" }, cb5Prism({ P: b.P, D: b.D, k: 22, hidden: "none", maxW: "100%", plain: true, tint: b.color, pad: 12 }), h("div", {}, b.name));
     c.addEventListener("click", () => show(i)); return c; });
@@ -1018,7 +1064,7 @@ function cb5BoxG(P, k) {
    7. 장난감 맞추기: 부분을 끌어 설계도 자리에 놓아요
    opt: {parts:[{name, W,H,D, color}], slots:[{x,y,part(번호)}], k}
    ========================================================= */
-function cb5Robot(body, api, opt) {
+function cb5Robot(body, api, opt) {   /* 끝나면 cb5Then → api.done( */
   const k = opt.k || 24, pad = 16, cols = opt.cols || 17, rows = opt.rows || 12, Wd = cols * k + pad * 2, Hd = rows * k + pad * 2;
   const m = p => [pad + p[0] * k, pad + p[1] * k];
   const svg = makeSvg(Wd, Hd); svg.setAttribute("class", "cb5fig"); svg.style.maxWidth = "34em";
@@ -1095,15 +1141,17 @@ function cb5CardSort(body, api, opt) {
       el.addEventListener("click", () => { sel = sel === n.id ? null : n.id; n.bad = false; draw(); }); bottom.append(el); });
   };
   api.provide({ words: ["모눈 한 칸은 1 cm", "면의 가로와 세로", "같은 크기의 면 2개씩"], answers: [] });
-  body.append(h("div", { class: "jua" }, "겨냥도 카드"), top, h("div", { class: "jua" }, "전개도 카드 (눌러 고른 뒤 위의 겨냥도 카드를 눌러요)"), bottom,
-    h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
-      api.tryOnce(); const ans = nets.map(n => put.has(n.id) ? CB5_SHAPES[sks[put.get(n.id)].shape].name : "-").join("");
-      if (nets.some(n => !put.has(n.id))) return api.fail("아직 놓지 않은 전개도 카드가 있어요.", ans);
-      nets.forEach(n => { n.bad = CB5_SHAPES[sks[put.get(n.id)].shape] !== CB5_SHAPES[n.shape]; }); draw();
-      const bad = nets.filter(n => n.bad).length;
-      if (bad) return api.fail(`잘못 놓은 카드가 ${bad}장 있어요(빨간 카드). 모눈 칸을 세어 면의 가로·세로가 겨냥도의 모서리 길이와 같은지 살펴봐요.`, ans);
-      cb5Then(body, api, opt, "12장 모두 나눔", opt.msg || "같은 도형끼리 3장씩 모두 모았어요.");
-    } }, "확인하기")));
+  let fin = false;
+  const check = () => {
+    if (fin) return true; api.tryOnce(); const ans = nets.map(n => put.has(n.id) ? CB5_SHAPES[sks[put.get(n.id)].shape].name : "-").join("");
+    nets.forEach(n => { n.bad = CB5_SHAPES[sks[put.get(n.id)].shape] !== CB5_SHAPES[n.shape]; }); draw();
+    const bad = nets.filter(n => n.bad).length;
+    if (bad) { api.fail(`잘못 놓은 카드가 ${bad}장 있어요(빨간 카드). 모눈 칸을 세어 면의 가로·세로가 겨냥도의 모서리 길이와 같은지 살펴봐요.`, ans); return false; }
+    fin = true; cb5Then(body, api, opt, "12장 모두 나눔", opt.msg || opt.ok || "같은 도형끼리 3장씩 모두 모았어요."); return true;   // → api.done(
+  };
+  const kick = autoRun(() => nets.every(n => put.has(n.id)), () => nets.map(n => put.get(n.id)).join(","), check, 1200);
+  top.addEventListener("click", () => kick());
+  body.append(h("div", { class: "jua" }, "겨냥도 카드"), top, h("div", { class: "jua" }, "전개도 카드 (눌러 고른 뒤 위의 겨냥도 카드를 눌러요)"), bottom);
   draw();
 }
 /* 넘겨 놀이: 4명(나 + 컴퓨터 친구 3명)이 3장씩, 시계 방향으로 한 장씩 넘겨 같은 도형 3장을 모아요 */
@@ -1180,7 +1228,7 @@ function cb5Memory(body, api, opt) {
 }
 
 /* ---------- 직육면체를 돌려 보이는 면 수 맞추기: 보이는 면이 goal개가 되면 해결 ---------- */
-function cb5SeeFaces(body, api, opt) {
+function cb5SeeFaces(body, api, opt) {   /* 끝나면 cb5Then → api.done( */
   let fin = false; const read = h("div", { class: "cb5read" });
   const S = cb5Solid({ dims: opt.dims, yaw: opt.yaw, pitch: opt.pitch, hidden: "none", fill: () => "#FFE7B8",
     onTurn: (st, vis) => { const n = vis.faces.filter(Boolean).length; read.textContent = `지금 보이는 면: ${n}개`; if (!fin && n === opt.goal) { fin = true; cb5Then(body, api, opt, `보이는 면 ${n}개`, opt.msg); } } });
@@ -1189,7 +1237,7 @@ function cb5SeeFaces(body, api, opt) {
   read.textContent = `지금 보이는 면: ${S.vis().faces.filter(Boolean).length}개`;
 }
 /* ---------- 마주 보는 면 3쌍 찾기(돌려 가며 두 면씩 누르기) ---------- */
-function cb5OppPairs(body, api, opt) {
+function cb5OppPairs(body, api, opt) {   /* 끝나면 cb5Then → api.done( */
   const pairOf = new Map(), cols = ["#9CC3F0", "#F6B38E", "#A9DDB8"]; let sel = null, np = 0, fin = false;
   const read = h("div", { class: "cb5read" }, "면 두 개를 차례로 눌러요. 마주 보는 면이면 같은 색이 칠해져요.");
   const S = cb5Solid({ dims: opt.dims, yaw: opt.yaw, pitch: opt.pitch, fill: fi => pairOf.has(fi) ? cols[pairOf.get(fi)] : fi === sel ? CB5.pick : null,
@@ -1206,7 +1254,7 @@ function cb5OppPairs(body, api, opt) {
   body.append(S.svg, S.tools, read);
 }
 /* ---------- 밑면 바꿔 보기: 평행한 면 3쌍을 차례로 밑면으로 정해 봐요 ---------- */
-function cb5Bases(body, api, opt) {
+function cb5Bases(body, api, opt) {   /* 끝나면 cb5Then → api.done( */
   const pairs = [[5, 4, "윗면과 아랫면"], [0, 1, "앞면과 뒷면"], [2, 3, "왼쪽 옆면과 오른쪽 옆면"]], seen = new Set(); let cur = -1, fin = false;
   const S = cb5Solid({ dims: opt.dims, yaw: opt.yaw, pitch: opt.pitch, fill: fi => cur < 0 ? null : pairs[cur].slice(0, 2).includes(fi) ? CB5.par : CB5.per,
     faceText: fi => cur < 0 ? "" : pairs[cur].slice(0, 2).includes(fi) ? "밑면" : "옆면" });

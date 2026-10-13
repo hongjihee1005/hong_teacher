@@ -246,8 +246,9 @@ function sy3Lab(g, m, a, b, t, o = {}) {   // 선분 a-b 옆 글자
   let nx = -(B[1] - A[1]), ny = B[0] - A[0]; const L = Math.hypot(nx, ny) || 1; nx /= L; ny /= L;
   if (o.c) { const C = m(o.c); if ((C[0] - mx) * nx + (C[1] - my) * ny > 0) { nx = -nx; ny = -ny; } }
   if (o.flip) { nx = -nx; ny = -ny; }
-  const d = o.d || 16;
-  const e = txt(sy3R(mx + nx * d), sy3R(my + ny * d), t, o.size || 17, { fill: o.color || SY3.ink, "font-weight": "bold" });
+  const fs = o.size || 17, tw = [...String(t)].reduce((w, ch) => w + (/[가-힣ㄱ-ㅎ□]/.test(ch) ? .95 : ch === " " ? .3 : .58) * fs, 0);   // 글자 폭을 어림해 선과 겹치지 않게
+  const half = Math.abs(nx) * tw / 2 + Math.abs(ny) * fs / 2, d = o.d ? Math.max(o.d, half + 4) : half + 7;
+  const e = txt(sy3R(mx + nx * d), sy3R(my + ny * d), t, fs, { fill: o.color || SY3.ink, "font-weight": "bold" });
   g.append(e); return e;
 }
 function sy3AngVal(V, A, B) {   // 각 AVB (0~180)
