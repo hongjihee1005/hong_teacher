@@ -490,7 +490,7 @@ function dm4Jump(body, api, opt) {
 }
 
 /* ===== ⑤ 이중 수직선: 아래(배)를 옮기면 위(양)가 따라와요 =====
-   opt: {top:"2", unit:"m", what:"철사", bot:"1", step:"0.1", labels:["0.1","0.5","0.9"], target:"0.9", asks} */
+   opt: {top:"2", base?:"2"(위 수직선의 1배 값, 없으면 top), unit:"m", what:"철사", bot:"1", step:"0.1", labels:["0.1","0.5","0.9"], target:"0.9", asks} */
 function dm4Double(body, api, opt) {
   dm4Style();
   const sv = dm4P(opt.step), N = Number(dm4P(opt.bot) / sv), T = Number(dm4P(opt.target) / sv);
@@ -517,7 +517,7 @@ function dm4Double(body, api, opt) {
     if (pos > 0) mv.append(svgEl("rect", { x: x0, y: yt - 30, width: X(pos) - x0, height: 18, rx: 6, fill: opt.color || DM4C.a }), svgEl("rect", { x: x0, y: yb - 6, width: X(pos) - x0, height: 12, fill: DM4C.b, opacity: .8 }));
     mv.append(svgEl("line", { x1: X(pos), y1: yt - 34, x2: X(pos), y2: yb, stroke: DM4C.red, "stroke-width": 2, "stroke-dasharray": "6 5" }));
     mv.append(svgEl("path", { d: `M${X(pos)} ${yb + 2} l-13 22 h26 z`, fill: DM4C.blue, stroke: "#fff", "stroke-width": 2 }));
-    say.innerHTML = ""; say.append("아래 파란 표시: ", h("b", {}, dm4F(sv * BigInt(pos)) + "배"), ` → 위 빨간 점선이 가리키는 곳이 ${opt.top} ${opt.unit}의 ${dm4F(sv * BigInt(pos))}배예요.`);
+    say.innerHTML = ""; say.append("아래 파란 표시: ", h("b", {}, dm4F(sv * BigInt(pos)) + "배"), ` → 위 빨간 점선이 가리키는 곳이 ${opt.base || opt.top}${opt.unit ? " " + opt.unit : ""}의 ${dm4F(sv * BigInt(pos))}배예요.`);
   };
   const snap = x => Math.max(0, Math.min(N, Math.round((x - x0) / (len / N))));
   dragOn(svg, pt => { if (pt.y < yb - 50) return false; pos = snap(pt.x); draw(); }, pt => { pos = snap(pt.x); draw(); });
@@ -1257,7 +1257,7 @@ const LESSONS = [
         ok: "17×0.32=5.44, 20×3.04=60.8, 5×2.63=13.15예요!" }) }
   ],
   challenge: { inst: "수학익힘 문제예요. 이중 수직선의 아래 표시를 1.75배로 옮기고 2×1.75를 구해 보세요. 그리고 물음에 답해 보세요.", hints: ["아래 작은 눈금 한 칸은 0.25배예요. 2의 0.25배를 먼저 구해요.", "1.75배는 0.25배가 7개예요.", "9×0.79는 9보다 작고, 6×1.48은 6과 1.5를 곱한 9에 가까워요."],
-    render: (b, a) => dm4Double(b, a, { top: "4", unit: "", what: "2의 몇 배", bot: "2", step: "0.25", labels: ["0.25", "0.5", "1", "1.75"], topLabels: [[4, "2"]], target: "1.75",
+    render: (b, a) => dm4Double(b, a, { top: "4", base: "2", unit: "", what: "2의 몇 배", bot: "2", step: "0.25", labels: ["0.25", "0.5", "1", "1.75"], topLabels: [[4, "2"]], target: "1.75",
       asks: [
         ["2의 0.25배는", { n: "0.5" }, "이므로 2의 1.75배는 2×1.75 =", { n: "3.5", e: "2×1.75" }],
         ["곱이 8보다 큰 것은", { o: ["9×0.79", "2×3.85", "6×1.48"], a: 2, why: { "0": "9×0.79=7.11이에요. 9에 1보다 작은 수를 곱했어요.", "1": "2×3.85=7.7이에요." } }],
