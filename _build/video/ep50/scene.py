@@ -34,7 +34,8 @@ class Ep50(EpisodeScene):
 
     def problem(self):
         self.section("문제")
-        q = M(f"색 테이프 길이가 9 cm보다 길고 10 cm보다 짧아요.\n{g('cm')}로만 나타낼 수 있을까요?", 50).move_to([0, 0.8, 0])
+        q = M(f"색 테이프 길이가 9 cm보다 길고 10 cm보다 짧아요.\n{g('cm')}로만 나타낼 수 있을까요?", 50)
+        q.scale_to_fit_width(min(q.width, 11.4)).move_to([0, 0.8, 0])
         self.say("9 cm와 10 cm 사이의 길이", "색 테이프 길이가 9 cm보다 길고 10 cm보다 짧아요. cm로만 나타낼 수 있을까요?")
         self.play(Write(q), run_time=1.2)
         self.wait(1.2)

@@ -44,10 +44,10 @@ class Ep49(EpisodeScene):
 
     def same_den(self):
         self.section("분모가 같으면")
-        b1 = frac_bar(8, 7, width=8.0, height=0.7).move_to([0.8, 1.4, 0])
-        b2 = frac_bar(8, 5, width=8.0, height=0.7, color=BLUE).move_to([0.8, 0.3, 0])
-        l1 = frac(7, 8, 48, cn=ORANGE).next_to(b1, LEFT, buff=0.4)
-        l2 = frac(5, 8, 48, cn=BLUE).next_to(b2, LEFT, buff=0.4)
+        b1 = frac_bar(8, 7, width=8.0, height=0.7).move_to([0.8, 1.65, 0])
+        b2 = frac_bar(8, 5, width=8.0, height=0.7, color=BLUE).move_to([0.8, 0.2, 0])
+        l1 = frac(7, 8, 42, cn=ORANGE).next_to(b1, LEFT, buff=0.4)
+        l2 = frac(5, 8, 42, cn=BLUE).next_to(b2, LEFT, buff=0.4)
         self.say("8분의 7과 8분의 5", "먼저 분모가 같은 8분의 7과 8분의 5를 견주어 볼게요.")
         self.play(FadeIn(b1), FadeIn(b2), FadeIn(l1), FadeIn(l2), run_time=0.7)
         r = row(frac(7, 8, 56, cn=ORANGE), "&gt;", frac(5, 8, 56, cn=BLUE), size=60).move_to([0, -1.3, 0])

@@ -33,7 +33,8 @@ class Ep51(EpisodeScene):
 
     def problem(self):
         self.section("문제")
-        q = M(f"민호는 우유를 {o('0.7')}컵, 지아는 {b('0.4')}컵 마셨어요.\n누가 더 많이 마셨을까요?", 52).move_to([0, 0.8, 0])
+        q = M(f"민호는 우유를 {o('0.7')}컵, 지아는 {b('0.4')}컵 마셨어요.\n누가 더 많이 마셨을까요?", 52)
+        q.scale_to_fit_width(min(q.width, 11.4)).move_to([0, 0.8, 0])
         self.say("우유 0.7컵과 0.4컵", "민호는 우유를 0.7컵, 지아는 0.4컵 마셨어요. 누가 더 많이 마셨을까요?")
         self.play(Write(q), run_time=1.2)
         self.wait(1.2)
