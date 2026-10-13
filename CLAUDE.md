@@ -142,7 +142,7 @@ grade1/ … grade6/
 
 ### 5학년 수학 (`grade5/math/`, 2026-10-11)
 
-- 4학년과 같은 짜임: `sem1/`(교과서 차시 버전) · `sem1-soop/`(이야기 버전), 단원 앱 6개씩, 활동지 `sheets/*_활동지_기본형·도전형.hwpx`. 2학기는 만드는 중(`sem2.html` '곧 열려요', 작업 파일은 작업 브랜치에만).
+- 4학년과 같은 짜임: `sem1/`(교과서 차시 버전) · `sem1-soop/`(이야기 버전), 단원 앱 6개씩, 활동지 `sheets/*_활동지_기본형·도전형.hwpx`. 2학기는 교과서 버전 `sem2/`만 열림(2026-10-13, 목록은 `TBONLY=1 python3 _build/gen_lists.py 2` — 공용 문서를 교과서 폴더에 두고 이야기 버전 카드는 '곧 열려요'). 이야기 버전 `sem2-soop/`은 작업 브랜치에만 있음(다 되면 `gen_lists.py 2`로 다시 만들어 함께 올림).
 - **원본은 `grade5/math/_build/units/[sem2/]<slug>.tb.js`·`.st.js`**(HTML 직접 고치지 말 것). `cd grade5/math/_build && python3 build.py <slug> && node check.js <slug>`, 루트에서 `apply_content_theme.py`. 활동지 `_build/sheets/gen_<slug>.py`, 목록·전체 안내·Code.gs `_build/gen_lists.py 1`.
 - 지도서와 다르게 정한 곳·선생님 확인 거리는 `_build/mathplan/PLAN.md`의 '선생님 확인 필요'.
 
