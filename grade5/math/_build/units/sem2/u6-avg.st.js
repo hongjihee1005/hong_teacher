@@ -371,7 +371,7 @@ function av6Line(body, api, opt) {
   const setL = p => { let v = lo + (baseY - p.y) / plotH * (hi - lo); const sn = opt.snap || gs; v = Math.round(v / sn) * sn; L = Math.max(lo, Math.min(hi, av6R(v))); draw(); };
   dragOn(svg, p => { if (fin) return false; setL(p); return true; }, setL, () => {
     if (fin) return; const [ex, de] = draw();
-    if (Math.abs(ex - de) < 1e-9) { fin = true; draw(); av6Finish(body, api, opt, `평균 ${av6Fmt(L)}${unit}`, opt.msg || `넘치는 양과 모자란 양이 ${av6Fmt(ex)}${unit}로 같아요. 넘치는 것을 모자란 곳에 채우면 모두 ${av6Fmt(L)}${unit}로 고르게 돼요.`, { L }); }
+    if (Math.abs(ex - de) < 1e-9) { fin = true; draw(); av6Finish(body, api, opt, `평균 ${av6Fmt(L)}${unit}`, opt.msg || `넘치는 양과 모자란 양이 ${av6Jo(av6Fmt(ex) + unit, "으로/로")} 같아요. 넘치는 것을 모자란 곳에 채우면 모두 ${av6Jo(av6Fmt(L) + unit, "으로/로")} 고르게 돼요.`, { L }); }
   });
   api.provide({ words: ["넘치는 양", "모자란 양", "고르게 하기"], answers: [`선의 높이 ${av6Fmt(mean)}`] });
   body.append(svg, read, h("p", { class: "av6small" }, "선을 위아래로 끌어 보세요. 넘치는 양과 모자란 양이 같아지는 높이가 고르게 한 수예요."));
@@ -749,7 +749,7 @@ function av6Sim(body, api, opt) {
     }
     face.innerHTML = ""; face.append(av6Face(opt.kind, lastV));
     draw();
-    if (!fin && res.length >= need) { fin = true; av6Finish(body, api, opt, `${res.length}번: ${G[0]} ${cntA()}, ${G[1]} ${res.length - cntA()}`, opt.msg || `${need}번 던지기를 마쳤어요.`, { a: rows[ms.length - 1] ? rows[ms.length - 1][0] : cntA(), b: rows[ms.length - 1] ? rows[ms.length - 1][1] : res.length - cntA(), n: res.length }); }
+    if (!fin && res.length >= need) { fin = true; if (typeof opt.ask === "function") { again.disabled = true; again.title = "아래 물음에 내 결과를 쓴 뒤에는 표를 지우지 않아요."; } av6Finish(body, api, opt, `${res.length}번: ${G[0]} ${cntA()}, ${G[1]} ${res.length - cntA()}`, opt.msg || `${need}번 던지기를 마쳤어요.`, { a: rows[ms.length - 1] ? rows[ms.length - 1][0] : cntA(), b: rows[ms.length - 1] ? rows[ms.length - 1][1] : res.length - cntA(), n: res.length }); }
   };
   const again = h("button", { onclick: () => { if (!res.length) return; past.push(`${res.length}번 던져 ${G[0]} ${cntA()}번, ${G[1]} ${res.length - cntA()}번`); res = []; rows.length = 0; draw(); } }, "새로 다시 실험하기");
   api.provide({ words: ["반반이다", "[1/2]", "던진 횟수가 많을수록", "비슷해져요"].map(av6Plain), answers: [] });
@@ -804,14 +804,14 @@ function av6Bars(body, api, opt) {
   const run = () => {
     api.tryOnce(); const bad = cur.findIndex((v, i) => v !== opt.vals[i]), ans = names.map((nm, i) => `${nm} ${cur[i]}`).join(", ");
     if (bad < 0) { fin = true; api.done(ans, opt.ok); return true; }
-    api.fail(`${names[bad]}의 막대를 다시 보세요. ${opt.vals[bad]}${opt.unit}${st > 1 ? `는 눈금 ${opt.vals[bad] / st}칸이에요` : "만큼 그려야 해요"}.`, ans);
+    api.fail(`${names[bad]}의 막대를 다시 보세요. ${st > 1 ? `${av6Jo(opt.vals[bad] + opt.unit, "은/는")} 눈금 ${opt.vals[bad] / st}칸이에요` : `${opt.vals[bad]}${opt.unit}만큼 그려야 해요`}.`, ans);
     return false;
   };
   const kick = autoRun(() => col < 0 && cur.every(v => v > 0), () => cur.join(","), run, 1200);
   dragOn(svg, p => { if (fin) return false; const i = Math.floor((p.x - padL) / cw); if (i < 0 || i >= n) return false; col = i; set(p); return true; }, set, () => { col = -1; kick(); });
   api.provide({ words: ["눈금 한 칸", "막대의 길이"], answers: [names.map((nm, i) => `${nm} ${opt.vals[i]}`).join(", ")] });
   body.append(av6HTbl(opt.cap, names, opt.vals.map(String), { h1: opt.catAxis || "항목", h2: `${opt.valAxis || "수"}(${opt.unit})` }), svg,
-    h("p", { class: "av6small" }, `막대를 위아래로 끌어 그려요. 세로 눈금 한 칸은 ${st}${opt.unit}예요.`),
+    h("p", { class: "av6small" }, `막대를 위아래로 끌어 그려요. 세로 눈금 한 칸은 ${av6Jo(st + opt.unit, "이에요/예요")}.`),
     h("p", { class: "av6small" }, "막대를 모두 그리면 저절로 확인해요."));
   draw();
 }
@@ -914,7 +914,7 @@ function av6Near(body, api, opt) {
     const pick = i => {
       if (step !== 1) return;
       const d = recs.map(v => Math.abs(v - avg)), best = Math.min(...d);
-      if (Math.abs(d[i] - best) > 1e-9) return api.fail(`${nm[i].value}의 기록과 평균의 차이는 ${av6Fmt(d[i])}예요. 차이가 더 작은 사람이 있어요.`, nm[i].value);
+      if (Math.abs(d[i] - best) > 1e-9) return api.fail(`${nm[i].value}의 기록과 평균의 차이는 ${av6Jo(av6Fmt(d[i]), "이에요/예요")}. 차이가 더 작은 사람이 있어요.`, nm[i].value);
       step = 2; out.style.display = "";
       out.innerHTML = ""; out.append(h("b", {}, `${tsel.value} 평균 ${av6Fmt(avg)}${unitOf()}`), h("br"),
         ...recs.map((v, k) => h("div", {}, `${nm[k].value}: ${av6Fmt(v)}${unitOf()} → 평균과 ${av6Fmt(d[k])}만큼 차이${Math.abs(d[k] - best) < 1e-9 ? " ★ 우리 모둠을 대표하는 친구" : ""}`)),
@@ -942,7 +942,7 @@ function av6Secret(body, api, opt) {
     cur = { a, sec, avg: (s + sec) / 5 }; tries = 0; inp.value = ""; inp.style.borderColor = ""; inp.readOnly = false;
     board.innerHTML = "";
     board.append(av6Tbl(["", ...nm, opt.maker || "설계자"], [["고른 수", ...a.map(String), "?"]], { rowHead: true }),
-      h("p", { class: "av6read" }, `${opt.maker || "설계자"}: “5개 수의 평균은 ${cur.avg}이에요. 비밀 숫자는 ${R} 이하의 수예요.”`));
+      h("p", { class: "av6read" }, `${opt.maker || "설계자"}: “5개 수의 평균은 ${av6Jo(cur.avg, "이에요/예요")}. 비밀 숫자는 ${R} 이하의 수예요.”`));
   };
   const show = () => { sc.textContent = `점수 ${score}점 ${"★".repeat(score)}${"☆".repeat(Math.max(0, goal - score))}`; };
   const go = () => {
@@ -958,7 +958,7 @@ function av6Secret(body, api, opt) {
       return false;
     }
     inp.style.borderColor = "var(--no)";
-    api.fail(tries >= 2 ? `5개 수의 합계는 평균 × 5 = ${cur.avg * 5}이에요. 여기에서 네 수의 합을 빼 보세요.` : "평균에 수의 개수 5를 곱하면 다섯 수의 합계가 돼요.", inp.value);
+    api.fail(tries >= 2 ? `5개 수의 합계는 평균 × 5 = ${av6Jo(cur.avg * 5, "이에요/예요")}. 여기에서 네 수의 합을 빼 보세요.` : "평균에 수의 개수 5를 곱하면 다섯 수의 합계가 돼요.", inp.value);
     return false;
   };
   const kick = autoRun(() => !!cur && inp.value.trim() !== "", () => (cur ? cur.a.join(",") + "#" + cur.sec : "-") + "|" + inp.value, go, 0);
