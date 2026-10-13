@@ -15,7 +15,7 @@ if [ "$MODE" = "final" ]; then
 else
   Q=(-ql --fps 15); OUT="${EP}_preview.mp4"
 fi
-"$MANIM" "${Q[@]}" --media_dir media --disable_caching -o "$OUT" "$EP/scene.py" "$SCENE"
-F=$(find media/videos -name "$OUT" -newer "$EP/scene.py" | head -1)
+"$MANIM" "${Q[@]}" --media_dir "${MEDIA:-media}" --disable_caching -o "$OUT" "$EP/scene.py" "$SCENE"
+F=$(find "${MEDIA:-media}"/videos -name "$OUT" -newer "$EP/scene.py" | head -1)
 cp "$F" "$EP/$OUT"
 echo "완성: $EP/$OUT"
