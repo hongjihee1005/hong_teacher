@@ -1080,7 +1080,7 @@ function cb5Deck() {
 function cb5CardFig(card) {
   const s = CB5_SHAPES[card.shape];
   if (card.kind === "sk") { const [W, H, D] = s.dims;
-    return cb5Cub({ W, H, D, k: 28, maxW: "100%", plain: true, pad: 40, f: .6, dimD: 24, dimSize: 14, dims: [[0, 1, W + " cm"], [0, 2, H + " cm"], [3, 7, D + " cm"]] }); }
+    return cb5Cub({ W, H, D, k: 28, maxW: "100%", plain: true, pad: 40, f: .6, dimD: 24, dimSize: 14, dims: [[0, 1, W + " cm"], [0, 2, H + " cm"], [1, 5, D + " cm"]] }); }
   const N = cb5NetSvg(card.F, { k: 12, pad: 4, grid: true, gx: 1, gy: 1, maxW: "100%", plain: true, color: () => "#FFF6DD" });
   return N.svg;
 }

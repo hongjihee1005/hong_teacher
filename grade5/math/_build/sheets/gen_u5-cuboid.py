@@ -1068,3 +1068,479 @@ def net_draw_example(given, extra, dims, cube=False):
     F = given + extra
     assert ok(F) and dims_of(F) == sorted(dims), (F, dims_of(F) if ok(F) else fold(F)['why'])
     return F
+
+
+# ================================================================ 교과서 차시 버전 차시
+def tb1(s, lv):
+    s.lesson(1, '개념 찾기(S)', '단원 도입 ― 연서의 국제 물류 센터 견학', '우리 주변에서 직육면체 모양의 상자는 어디에, 왜 쓰이고 있을까요?')
+    s.scene(None, '로봇 공학자인 아버지를 따라 국제 물류 센터에 견학 간 연서는 로봇들이 여러 가지 모양의 상자를 찾아 분류하고, '
+                  '운반하고, 정리하는 모습을 보았어요. 로봇이 상자의 모서리를 잘라 펼치는 모습도 보았지요.')
+    step(s, 0, '살펴보기', '컨테이너를 둘러싼 면')
+    s.text('트럭에 싣고 있는 컨테이너는 쇠로 만들어진 큰 상자예요. 보이지 않는 뒤쪽·아래쪽 면도 떠올리며 세어 보세요.')
+    s.picture(fig('tb1con', svg_of(cub(6, 2.6, 2.4, k=30, tint='#F3D2B0'))), width_mm=80)
+    a1 = qa(s, [('컨테이너를 둘러싸고 있는 면의 수', len(FACES), '개')])
+    s.choices([('면의 모양은 모두', ch(lv, ['직사각형', '삼각형', '원']))])
+    if lv == '기본형':
+        s.choices([('컨테이너를 상자 모양으로 만든 까닭', '( 짐을 꾸리기 편하고 운반이 쉬워서 /\n잘 굴러가서 / 가장 가벼운 모양이라서 )')])
+    else:
+        why(s, '컨테이너를 이런 상자 모양으로 만든 까닭을 써 보세요.', 1)
+    step(s, 1, '떠올리기', '직사각형과 정사각형, 수직과 평행')
+    s.picture(fig('tb1quad', quad_svg('가', '나', (30, 25, 150, 80, '#DCEAFB'), (250, 15, 100, 100, '#FDE3D3'))), width_mm=95)
+    s.choices([('가처럼 네 각이 모두 직각인 사각형', opt('직사각형', '사다리꼴', '마름모')),
+               ('나처럼 네 각이 모두 직각이고 네 변의 길이가 모두 같은 사각형', opt('정사각형', '평행사변형', '삼각형'))])
+    s.picture(fig('tb1line', lines_svg([(20, 40, 190, 40), (20, 120, 190, 120)], [(250, 130, 400, 130), (325, 20, 325, 130), '325,116 339,116 339,130'],
+                                       (105, 155, '가', 16), (325, 155, '나', 16))), width_mm=95)
+    s.choices([('나처럼 두 직선이 만나서 이루는 각이 직각일 때', opt('수직이다', '평행하다')),
+               ('가처럼 아무리 늘여도 서로 만나지 않는 두 직선', opt('수직이다', '평행하다'))])
+    step(s, 2, '이야기 보기', '물류 센터의 로봇')
+    s.text('“연서야, 여기가 바로 우리가 만든 미래야. 사람을 대신해서 로봇들이 일을 하지.” 물류 센터에서 로봇들이 하는 일에 ○, 아닌 것에 ×를 해요.')
+    a3 = ox(s, [('상자를 모양에 따라 분류해요.', 1), ('상자를 운반해요.', 1), ('상자를 정리해요.', 1), ('상자의 모서리를 잘라서 펼쳐요.', 1),
+                ('상자에 그림을 그려요.', 0)], '로봇이 하는 일')
+    s.choices([('물류 센터에 쌓여 있는 상자를 둘러싼 도형', opt('직사각형', '원', '삼각형'))])
+    step(s, 3, '확인하기', '이 단원에서 알고 싶은 것')
+    write_pane(s, lv, [('본 곳', '상자 모양의 물건을 ______________ 에서 보았어요.'),
+                       ('알고 싶은 것', '직육면체는 직사각형 ______ 개로 ______________ 이 알고 싶어요.')])
+    ans = '1차시  ① %s, 직사각형, 짐을 꾸리기 편하고 운반이 쉬워서   ② 직사각형, 정사각형 / 수직이다, 평행하다   ③ %s, 직사각형   ④ (자유)' % (a1[0], a3)
+    if lv == '도전형':
+        step(s, 4, '도전하기', '직사각형으로만 둘러싸인 물건')
+        items = [('휴지 상자', 'tissue', 1), ('음료수 캔', 'can', 0), ('책', 'book', 1), ('공', 'ball', 0), ('고깔', 'cone', 0)]
+        s.picture(fig('tb1obj', objs_svg([(n, k) for n, k, _ in items])), width_mm=170)
+        s.ask('직사각형으로만 둘러싸인 물건을 모두 써 보세요.')
+        why(s, '고르지 않은 물건 하나를 골라 그 까닭을 써 보세요.', 1)
+        ans += '   ⑤ %s (캔·공·고깔은 둥근 면이 있어요)' % name_list([n for n, _, a in items if a])
+    return ans
+
+
+def tb2(s, lv):
+    s.lesson(2, '개념 구축하기(O)', '직육면체와 정육면체를 알아볼까요', '직육면체와 정육면체는 어떤 도형이고, 무엇으로 이루어져 있을까요?')
+    s.scene(None, '물류 센터의 로봇이 물건이 들어 있는 상자를 모양에 따라 분류하고 있어요.')
+    step(s, 0, '만져 보기', '상자를 둘러싼 도형')
+    s.picture(fig('tb2box', boxes_svg(TB_BOXES)), width_mm=172)
+    if lv == '기본형':
+        s.text('면의 네 각이 모두 직각인지, 네 변의 길이가 모두 같은지 살펴봐요. 사다리꼴 모양의 면이 있는 상자도 있어요.')
+    rect = [n for n, P, D, _ in TB_BOXES if len(P) == 4 and P[1][0] == P[2][0] and P[0][0] == P[3][0]]
+    sq = [n for n, P, D, _ in TB_BOXES if n in rect and P[1][0] == P[2][1] == D]
+    assert rect == ['가', '다', '마', '바'] and sq == ['다', '마']
+    a1 = qa(s, [('직사각형으로 둘러싸인 상자', name_list(rect)), ('정사각형으로 둘러싸인 상자', name_list(sq))])
+    step(s, 1, '약속하기', '직육면체와 정육면체')
+    s.fill(['직사각형 6개로 둘러싸인 도형을 %s라고 해요.' % ch(lv, ['직육면체', '정육면체', '사각형']),
+            '정사각형 6개로 둘러싸인 도형을 %s라고 해요.' % ch(lv, ['직육면체', '정육면체', '정사각형'])])
+    items = [('가', 'dice', 1, 1), ('나', 'can', 0, 0), ('다', 'tissue', 1, 0), ('라', 'ball', 0, 0), ('마', 'cube', 1, 1), ('바', 'book', 1, 0)]
+    s.picture(fig('tb2obj', objs_svg([(n, k) for n, k, *_ in items])), width_mm=172)
+    a2 = qa(s, [('직육면체 모양', name_list([n for n, _, c, _ in items if c])), ('정육면체 모양', name_list([n for n, *_, q in items if q]))])
+    step(s, 2, '세어 보기', '면, 모서리, 꼭짓점')
+    s.picture(fig('tb2cub', svg_of(cub(4, 2.5, 3, k=30))), width_mm=70)
+    if lv == '기본형':
+        s.wordbox(['면', '모서리', '꼭짓점'])
+    s.fill(['선분으로 둘러싸인 부분을 (        ), 면과 면이 만나는 선분을 (        ),',
+            '모서리와 모서리가 만나는 점을 (        )이라고 해요.'])
+    nf, ne, nv = len(FACES), len(EDGES), 8
+    a3 = qa(s, [('직육면체의 면의 수', nf, '개'), ('모서리의 수', ne, '개'), ('꼭짓점의 수', nv, '개')])
+    step(s, 3, '비교하기', '직육면체와 정육면체')
+    s.table([['', '직육면체', '정육면체'], ['면의 수', '(    )개', '(    )개'], ['모서리의 수', '(    )개', '(    )개'], ['꼭짓점의 수', '(    )개', '(    )개'],
+             ['면의 모양', ch(lv, ['직사각형', '정사각형'], 8), ch(lv, ['직사각형', '정사각형'], 8)],
+             ['모서리의 길이', ch(lv, ['4개씩 3쌍이 같아요', '모두 같아요'], 10), ch(lv, ['4개씩 3쌍이 같아요', '모두 같아요'], 10)]],
+            col_mm=[40, 70, 70], row_h=3402)
+    step(s, 4, '확인하기', '수학익힘')
+
+    def ex(S):
+        return (parts_mark(S, S[3], '①', -16, -14) + parts_mark(S, mid(S[0], S[2]), '②', -22, 22) + parts_mark(S, mid(S[1], S[5]), '③', 22, 12))
+    s.picture(fig('tb2parts', svg_of(cub(5, 3, 3, k=30, extra=ex))), width_mm=70)
+    s.choices([('①', opt('꼭짓점', '면', '모서리')), ('②', opt('꼭짓점', '면', '모서리')), ('③', opt('꼭짓점', '면', '모서리'))])
+    s.picture(fig('tb2c11', svg_of(cub(3, 3, 3, k=34, dims=[(0, 1, '11 cm'), (1, 3, '㉠ cm'), (3, 7, '㉡ cm')]))), width_mm=58)
+    a5 = qa(s, [('㉠', 11, ' cm'), ('㉡', 11, ' cm')])
+    ans = ('2차시  ① %s   ② 직육면체, 정육면체 / %s   ③ 면, 모서리, 꼭짓점 / %s   ④ 직육면체·정육면체 모두 면 6·모서리 12·꼭짓점 8, '
+           '직사각형·정사각형, 4개씩 3쌍이 같아요·모두 같아요   ⑤ ① 꼭짓점 ② 면 ③ 모서리, ㉠ %s ㉡ %s') % (
+        ' / '.join(a1), ' / '.join(a2), ' / '.join(a3), a5[0], a5[1])
+    if lv == '도전형':
+        step(s, 5, '도전하기', '정육면체 찾기, 잘못 말한 것 고치기')
+        parts = [prism([(0, 0), (4, 0), (3, 2.4), (1, 2.4)], 2.4, k=20, pad=12)[:3], cub(2.6, 2.6, 2.6, k=20, pad=12)[:3],
+                 cub(4, 2, 2.6, k=20, pad=12)[:3], prism([(0, 0), (3.4, 0), (1.7, 2.8)], 3, k=20, pad=12)[:3]]
+        s.picture(fig('tb2ch', hstack([fit(p, 130) for p in parts], 26, list('①②③④'))), width_mm=150)
+        a6 = qa(s, [('정육면체를 모두 고르면', '②')])
+        s.picture(fig('tb2c533', svg_of(cub(5, 3, 3, k=26, dims=[(0, 1, '5 cm'), (1, 3, '3 cm'), (3, 7, '3 cm')]))), width_mm=62)
+        why(s, '가로 5 cm, 세로 3 cm, 높이 3 cm인 직육면체가 정육면체가 아닌 까닭을 써 보세요.', 1)
+        why(s, '유성: “직육면체와 정육면체는 모서리의 길이가 모두 같아.” 유성이의 말을 바르게 고쳐 써 보세요.', 2)
+        ans += ('   ⑥ %s, 5 cm × 3 cm처럼 정사각형이 아닌 면이 있어요, 정육면체는 모서리의 길이가 모두 같지만 '
+                '직육면체는 길이가 같은 모서리가 4개씩 3쌍 있어요') % a6[0]
+    return ans
+
+
+def tb3(s, lv):
+    s.lesson(3, '개념 구축하기(O)', '직육면체의 겨냥도를 알아볼까요', '직육면체 모양을 잘 알 수 있게 그리려면 어떻게 나타내면 좋을까요?')
+    s.scene(None, '연서는 직육면체 모양의 상자를 그리려고 해요. 정면에서 본 상자는 면이 1개만 보여요.')
+    step(s, 0, '만져 보기', '여러 방향에서 본 상자')
+    views = [(-35, 24, '가'), (-35, 0, '나'), (0, 0, '다')]
+    cnt = [sum(solid_vis([4, 2.5, 3], y, p)) for y, p, _ in views]
+    assert cnt == [3, 2, 1]
+    s.picture(fig('tb3views', views_svg([4, 2.5, 3], views)), width_mm=150)
+    a1 = qa(s, [('보이는 면의 수: 가', cnt[0], '개'), ('나', cnt[1], '개'), ('다', cnt[2], '개')])
+    s.choices([('직육면체 모양을 가장 잘 알 수 있는 것', opt('가', '나', '다')),
+               ('보이지 않는 면도 알 수 있게 하려면 보이지 않는 모서리를', opt('점선으로 그려요', '그리지 않아요', '더 굵게 그려요'))])
+    step(s, 1, '약속하기', '겨냥도')
+    s.fill(['직육면체 모양을 잘 알 수 있도록 나타낸 그림을 직육면체의 %s라고 해요.' % ch(lv, ['겨냥도', '전개도', '설계도']),
+            '겨냥도에서 보이는 모서리는 %s으로, 보이지 않는 모서리는 %s으로 나타내요.' % (ch(lv, ['실선', '점선'], 6), ch(lv, ['실선', '점선'], 6))])
+    step(s, 2, '그려 보기', '모눈에 겨냥도 그리기')
+    E = sketch_edges(4, 3, 2, 2)
+    s.text('앞면은 그려져 있어요. 뒤쪽 꼭짓점은 오른쪽으로 2칸, 위로 2칸 밀린 곳에 있어요. 보이지 않는 모서리는 점선으로 그어요.')
+    svg, wmm = cm_grid(8, 7, segs=[E[i] for i in (0, 1, 3, 5)], dots=True)
+    s.picture(fig('tb3draw', svg), width_mm=wmm)
+    hid = sum(1 for e in E if e[2])
+    a3 = qa(s, [('보이는 면 / 보이지 않는 면', '3 / 3', '개'), ('보이는 모서리 / 보이지 않는 모서리', '%d / %d' % (len(E) - hid, hid), '개'),
+                ('보이는 꼭짓점 / 보이지 않는 꼭짓점', '7 / 1', '개')])
+    step(s, 3, '완성하기', '빠진 모서리 긋기')
+    given = [0, 1, 2, 5, 9, 11, 4]
+    E2 = sketch_edges(5, 2, 3, 2)
+    miss = [i for i in range(12) if i not in given]
+    ms, md = sum(1 for i in miss if not E2[i][2]), sum(1 for i in miss if E2[i][2])
+    s.text('평행한 모서리는 평행하게, 길이가 같은 모서리는 같게 그어요. 모서리는 모두 12개예요.')
+    svg, wmm = cm_grid(10, 6, segs=[E2[i] for i in given], dots=True)
+    s.picture(fig('tb3fin', svg), width_mm=wmm)
+    a4 = qa(s, [('더 그은 실선 / 점선', '%d / %d' % (ms, md), '개')])
+    step(s, 4, '확인하기', '바르게 그린 겨냥도')
+    parts = [cub(4, 2.5, 3, k=24, hidden='solid')[:3], cub(4, 2.5, 3, k=24)[:3], cub(4, 2.5, 3, k=24, miss=[(3, 7)])[:3]]
+    s.picture(fig('tb3pick', hstack(parts, 24, ['가', '나', '다'])), width_mm=150)
+    s.choices([('직육면체의 겨냥도를 바르게 그린 것', opt('가', '나', '다'))])
+    s.text('정육면체의 겨냥도에서 보이지 않는 모서리를 모두 찾아 ○표 하세요.')
+    w, h, b = sketch_svg(3, 3, 2, 2, 7, 7, range(12))
+    s.picture(fig('tb3cube', _svg(w, h, b)), width_mm=62)
+    a5 = qa(s, [('보이지 않는 면', 3, '개'), ('보이는 꼭짓점 / 보이지 않는 꼭짓점', '7 / 1', '개')])
+    ans = '3차시  ① %s, 가, 점선으로 그려요   ② 겨냥도, 실선, 점선   ③ %s   ④ %s(앞면 오른쪽 위·뒤쪽 모서리)   ⑤ 나, 왼쪽 아래 뒤 꼭짓점에서 만나는 점선 3개에 ○, %s' % (
+        ' / '.join(a1), ' / '.join(a3), a4[0], ' / '.join(a5))
+    if lv == '도전형':
+        step(s, 5, '도전하기', '모서리 길이의 합')
+        s.picture(fig('tb3sum', svg_of(cub(5, 2, 4, k=32, dims=[(0, 1, '10 cm'), (1, 3, '4 cm'), (3, 7, '8 cm')]))), width_mm=75)
+        vis, hidn = (10 + 8 + 4) * 3, 10 + 8 + 4
+        a6 = qa(s, [('보이는 모서리 길이의 합', vis, ' cm'), ('보이지 않는 모서리 길이의 합', hidn, ' cm')])
+        why(s, '보이는 모서리 길이의 합을 어떻게 구했는지 써 보세요.', 1)
+        ans += '   ⑥ %s ((10+8+4)×3), %s (10+8+4)' % (a6[0], a6[1])
+    return ans
+
+
+def tb4(s, lv):
+    s.lesson(4, '개념 구축하기(O)', '직육면체의 성질을 알아볼까요', '직육면체에서 마주 보는 면과 서로 만나는 면은 어떤 관계일까요?')
+    s.scene(None, '로봇이 직육면체 모양의 상자를 운반하고 있어요. “이 상자들은 어떻게 안정적으로 쌓을 수 있는 걸까?”')
+    step(s, 0, '만져 보기', '마주 보는 면')
+
+    def ruler(S):
+        out = []
+        for p, q in ((S[3], S[7]), (S[0], S[4])):
+            dx, dy = q[0] - p[0], q[1] - p[1]
+            out.append('<line x1="%s" y1="%s" x2="%s" y2="%s" stroke="%s" stroke-width="5" stroke-linecap="round" opacity=".8"/>'
+                       % (r2(p[0] - dx * .3), r2(p[1] - dy * .3 - 8), r2(q[0] + dx * .5), r2(q[1] + dy * .5 - 8), ORG))
+        return ''.join(out)
+    s.picture(fig('tb4rul', svg_of(cub(4, 2.5, 3, k=30, fill={5: PAR, 4: PAR}, extra=ruler))), width_mm=72)
+    s.text('마주 보는 두 면(윗면과 아랫면)에 자를 대어 보았어요.')
+    a1 = qa(s, [('마주 보는 면은 모두 몇 쌍인가요?', len(FACES) // 2, '쌍')])
+    s.choices([('마주 보는 두 면은 계속 늘여도 서로', opt('만나지 않아요', '만나요'))])
+    step(s, 1, '약속하기', '평행한 면과 밑면')
+    s.fill(['직육면체에서 계속 늘여도 만나지 않는 두 면을 서로 %s고 해요.' % ch(lv, ['평행하다', '수직이다'], 10),
+            '이 두 면을 직육면체의 %s이라고 해요.' % ch(lv, ['밑면', '옆면', '윗면'], 6),
+            '서로 평행한 면은 (    )쌍 있고, 각각 밑면이 %s.' % ch(lv, ['될 수 있어요', '될 수 없어요'], 10)])
+    step(s, 2, '만나는 면', '○표 한 면과 만나는 면')
+
+    def ring(S):
+        c = mid(S[0], S[2])
+        return _t(c[0], c[1], '○', 30, RED, weight='bold')
+    s.picture(fig('tb4ring', svg_of(cub(4, 2.5, 3, k=30, fill={0: '#FFD27A'}, extra=ring))), width_mm=70)
+    meet = perp_faces(0)
+    a3 = qa(s, [('○표 한 면(앞면)과 만나는 면의 수', len(meet), '개')])
+    s.picture(fig('tb4right', right_svg(3, 4)), width_mm=65)
+    s.choices([('삼각자의 직각 부분이 꼭 맞으므로 서로 만나는 면은', opt('수직으로 만나요', '평행하게 만나요'))])
+    step(s, 3, '약속하기', '옆면')
+    s.fill(['직육면체에서 밑면과 만나는 면을 직육면체의 %s이라고 해요.' % ch(lv, ['옆면', '밑면', '윗면'], 6),
+            '밑면과 옆면은 %s 만나요. 한 밑면에 대한 옆면은 모두 %s예요.' % (ch(lv, ['수직으로', '평행하게'], 8), ch(lv, ['4개', '2개', '6개'], 6))])
+    step(s, 4, '확인하기', '면 ㄱㄴㄷㄹ과 평행한 면, 수직인 면')
+    s.picture(fig('tb4lab', svg_of(cub(4, 2.5, 3, k=32, lab=True, fill={5: PAR}))), width_mm=72)
+    s.text('면 이름은 꼭짓점을 차례대로 읽어요. (예: 면 ㄱㄴㄷㄹ)')
+    a5 = qa(s, [('면 ㄱㄴㄷㄹ과 평행한 면', FTXT[OPP[5]]), ('면 ㄱㄴㄷㄹ과 수직인 면 (4개)', face_set_txt(perp_faces(5)))], col=(80, 100))
+    ans = '4차시  ① %s, 만나지 않아요   ② 평행하다, 밑면, 3, 될 수 있어요   ③ %s, 수직으로 만나요   ④ 옆면, 수직으로, 4개   ⑤ %s / %s' % (
+        a1[0], a3[0], a5[0], a5[1])
+    if lv == '도전형':
+        step(s, 5, '도전하기', '직육면체의 성질 이용하기')
+        s.choices([('직육면체에 대해 잘못 설명한 것', '( ㉠ 한 모서리에서 만나는 두 면은 수직이에요. /\n㉡ 밑면이 될 수 있는 면은 모두 2쌍이에요. /\n㉢ 한 꼭짓점에서 만나는 모서리는 모두 3개예요. )')])
+        W, H, D = 7, 5, 11
+        s.picture(fig('tb4ch', svg_of(solid([W, H, D], 62, 22, lab=True, fill=lambda f: PAR if f == 2 else None,
+                                             dim_lab=[(6, 2, '11 cm'), (2, 0, '5 cm'), (0, 1, '7 cm')]))), width_mm=82)
+        par = OPP[2]
+        l1, l2 = face_lens(par, (W, H, D))
+        a6 = qa(s, [('색칠한 면 ㄱㄴㅂㅁ과 평행한 면', FTXT[par]), ('그 면의 모서리 길이의 합', (l1 + l2) * 2, ' cm')], col=(100, 80))
+        bp = both_perp(0, 3)
+        s.text('면 ㄴㅂㅅㄷ과 면 ㄷㅅㅇㄹ에 동시에 수직인 면을 모두 찾아요. (⑤의 그림을 보세요.)')
+        a7 = qa(s, [('동시에 수직인 면', face_set_txt(bp))], col=(80, 100))
+        why(s, '두 면에 동시에 수직인 면을 어떻게 찾았는지 써 보세요.', 1)
+        ans += '   ⑥ ㉡(평행한 면 3쌍 모두 밑면), %s, (%d+%d)×2=%s, %s' % (a6[0], max(l1, l2), min(l1, l2), a6[1], a7[0])
+    return ans
+
+
+def cube_draw_pages(s, lv, key, n, cols, rows, given, extra1, other_cells, title2):
+    """정육면체 전개도 그리기(실제 크기 모눈) ①·② — 정답 예시 글."""
+    svg, wmm = cm_grid(cols, rows, faces=given)
+    s.picture(fig(key + 'a', svg), width_mm=wmm)
+    F1 = net_draw_example(given, extra1, (n, n, n))
+    s.page_break()
+    s.text(title2)
+    svg, wmm = cm_grid(cols, rows)
+    s.picture(fig(key + 'b', svg), width_mm=wmm)
+    F2 = SQ(other_cells)
+    F2 = [R(r['x'] * n, r['y'] * n, n, n) for r in F2]
+    assert ok(F2) and dims_of(F2) == [n] * 3
+
+    def key_(F):
+        out = []
+        for t in range(8):
+            Q = []
+            for r in F:
+                P = [(r['x'], r['y']), (r['x'] + r['w'], r['y'] + r['h'])]
+                for _ in range(t % 4):
+                    P = [(y, -x) for x, y in P]
+                if t >= 4:
+                    P = [(-x, y) for x, y in P]
+                Q.append((min(P[0][0], P[1][0]), min(P[0][1], P[1][1])))
+            mx, my = min(q[0] for q in Q), min(q[1] for q in Q)
+            out.append(tuple(sorted((x - mx, y - my) for x, y in Q)))
+        return min(out)
+    assert key_(F1) != key_(F2)
+    return F1
+
+
+def tb5(s, lv):
+    s.lesson(5, '개념 구축하기(O)', '정육면체의 전개도를 알아볼까요', '정육면체의 모서리를 잘라서 펼치면 어떤 모양이 될까요?')
+    s.scene(None, '물류 센터의 로봇이 정육면체 모양의 상자를 모서리를 잘라 펼치고 있어요.')
+    step(s, 0, '만져 보기', '정육면체 상자 펼치기')
+    s.picture(fig('tb5cross', svg_of(net(CUBE_NET, k=40))), width_mm=75)
+    a1 = qa(s, [('펼친 모양을 이루는 정사각형의 수', len(CUBE_NET), '개')])
+    s.choices([('펼친 그림에는 잘린 모서리와', opt('잘리지 않은 모서리', '보이지 않는 모서리') + '가 있어요')])
+    step(s, 1, '약속하기', '정육면체의 전개도')
+    s.fill(['정육면체의 모서리를 잘라서 평면 위에 펼쳐 놓은 그림을 정육면체의 %s라고 해요.' % ch(lv, ['전개도', '겨냥도', '설계도']),
+            '전개도에서 잘린 모서리는 %s으로, 잘리지 않은 모서리는 %s으로 나타내요.' % (ch(lv, ['실선', '점선'], 6), ch(lv, ['실선', '점선'], 6))])
+    step(s, 2, '찾아보기', '정육면체의 전개도가 될 수 있는 것')
+    s.picture(fig('tb5judge', nets_svg(TB_L5A2, 30)), width_mm=165)
+    can, whyd = judge(TB_L5A2)
+    assert can == ['가', '나', '라'] and whyd == {'다': 'overlap'}
+    a3 = qa(s, [('전개도가 될 수 있는 것', name_list(can)), ('전개도가 될 수 없는 것', '다')])
+    s.choices([('될 수 없는 까닭', '( 접었을 때 겹치는 두 면이 있어요. /\n면이 6개보다 적어요. / 정사각형이 아닌 면이 있어요. )')])
+    step(s, 3, '겹치는 부분', '접었을 때 겹치는 점과 선분')
+    F, P = TB_L5A3
+    res = net_tasks(F, P, ['ㅌ', 'ㅈ', 'ㄴㄷ', 'ㅇㅅ'])
+    assert [r[2] for r in res] == [['ㅎ'], ['ㅋ', 'ㄱ'], ['ㄹㄷ'], ['ㄹㅁ']]
+    s.picture(pts_fig('tb5pts', F, P, 60), width_mm=100)
+    if lv == '기본형':
+        s.text('점선(접는 선)을 따라 이웃한 면을 접어 올린다고 생각해요.')
+    ask_pts(s, lv, res)
+    step(s, 4, '그려 보기', '한 모서리가 3 cm인 정육면체의 전개도')
+    real_note(s)
+    s.text('① 일부 그려진 전개도를 완성해 보세요. 잘린 모서리는 실선, 잘리지 않은 모서리는 점선으로 그어요.')
+    given = [R(1, 4, 3, 3), R(4, 4, 3, 3), R(7, 4, 3, 3)]
+    F1 = cube_draw_pages(s, lv, 'tb5draw', 3, 15, 11, given, [R(10, 4, 3, 3), R(4, 1, 3, 3), R(4, 7, 3, 3)],
+                         [[0, 0], [0, 1], [1, 1], [2, 1], [3, 1], [3, 2]], '② 이번에는 ①과 다른 모양으로 그려 보세요.')
+    s.text('그린 전개도가 옳은지 확인할 것에 ○, 아닌 것에 ×를 해요.')
+    a5 = ox(s, [('면이 6개예요.', 1), ('모든 모서리의 길이가 같아요.', 1), ('접었을 때 겹치는 면이 없어요.', 1), ('면의 크기가 모두 달라요.', 0)], '확인할 것')
+    ans = ('5차시  ① %s, 잘리지 않은 모서리   ② 전개도, 실선, 점선   ③ %s / 다, 접었을 때 겹치는 두 면이 있어요   ④ %s   '
+           '⑤ (예) ① 오른쪽 끝에 1개, 둘째 면 위·아래에 1개씩(십자 모양), 접는 선 5개는 점선 ② 계단 모양 등 ①과 다른 모양, %s') % (
+        a1[0], ' / '.join(a3), task_txt(res), a5)
+    if lv == '도전형':
+        step(s, 5, '도전하기', '수학익힘')
+        F, P = TB_L5U1
+        res2 = net_tasks(F, P, ['ㄱ', 'ㅇㅈ'])
+        assert [r[2] for r in res2] == [['ㅋ'], ['ㅂㅁ']]
+        s.picture(pts_fig('tb5u1', F, P, 56), width_mm=95)
+        ask_pts(s, lv, res2)
+        base = SQ([[0, 1], [1, 1], [2, 1], [3, 1], [1, 0]])
+        cands = [dict(R(x, y, 1, 1), name=nm) for x, y, nm in [[0, 0, '㉠'], [2, 0, '㉡'], [4, 1, '㉢'], [3, 0, '㉣'], [2, 2, '㉤']]]
+        nm, _ = add_face_task(s, 'tb5add', '정사각형 1개를 더 붙여 정육면체의 전개도를 만들려고 해요. 붙일 수 있는 자리는 어디일까요?', base, cands, '#EEF5FC', 85)
+        a7 = qa(s, [('붙일 수 있는 자리', nm)])
+        why(s, '다른 자리에 붙이면 안 되는 까닭을 써 보세요.', 1)
+        ans += '   ⑥ %s, %s (다른 자리는 접었을 때 겹치는 면이 생겨요)' % (task_txt(res2), a7[0])
+    return ans
+
+
+def tb6(s, lv):
+    s.lesson(6, '개념 구축하기(O)', '직육면체의 전개도를 알아볼까요', '직육면체의 모서리를 잘라서 펼치면 어떤 모양이 되고, 전개도는 어떻게 그릴까요?')
+    s.scene(None, '연서는 기념품으로 받은 직육면체 모양의 선물 상자(가로 4 cm, 세로 2 cm, 높이 3 cm)를 펼쳐 보았어요.')
+    step(s, 0, '만져 보기', '선물 상자 펼치기')
+    sizes = sorted((min(r['w'], r['h']), max(r['w'], r['h'])) for r in TB_GIFT)
+    assert len(set(sizes)) == 3 and all(sizes.count(z) == 2 for z in sizes)
+    s.picture(fig('tb6gift', svg_of(net(TB_GIFT, k=34, grid=True, face_text=lambda f: str(f + 1)))), width_mm=120)
+    s.text('선물 상자를 펼친 모양이에요. (모눈 한 칸은 1 cm, 면에 번호를 붙였어요.)')
+    s.choices([('펼친 모양을 이루는 도형', opt('직사각형', '정사각형', '삼각형'))])
+    a1 = qa(s, [('면의 수', len(TB_GIFT), '개'), ('모양과 크기가 같은 직사각형', '2개씩 3', '쌍')])
+    step(s, 1, '약속하기', '직육면체의 전개도와 마주 보는 면')
+    s.fill('직육면체의 모서리를 잘라서 평면 위에 펼쳐 놓은 그림을 직육면체의 %s라고 해요.' % ch(lv, ['전개도', '겨냥도']))
+    pairs = opp_pairs(TB_GIFT)
+    if lv == '기본형':
+        s.text('가로로 이어진 4개의 면에서는 한 면 건너 있는 면이 마주 보는 면이에요.')
+    a2 = qa(s, [('위 전개도에서 접었을 때 마주 보는 면 3쌍(번호)', ', '.join('%s %d' % (josa(i + 1, '과와'), j + 1) for i, j in pairs))])
+    s.choices([('마주 보는 두 면의 모양과 크기는', opt('같아요', '달라요'))])
+    step(s, 2, '찾아보기', '직육면체의 전개도가 될 수 있는 것')
+    can, whyd = judge(TB_L6A2)
+    assert can == ['나', '다', '라'] and list(whyd) == ['가']
+    s.picture(fig('tb6judge', nets_svg(TB_L6A2, 18, grid=True, h=150)), width_mm=172)
+    s.text('모눈 한 칸은 1 cm예요.')
+    a3 = qa(s, [('전개도가 될 수 있는 것', name_list(can)), ('전개도가 될 수 없는 것', '가')])
+    s.choices([('될 수 없는 까닭', '( 접었을 때 맞닿는 모서리의 길이가 달라요. /\n면이 7개예요. / 정사각형이 있어요. )')])
+    step(s, 3, '겹치는 부분', '접었을 때 겹치는 점과 선분')
+    F, P = TB_L6A3
+    res = net_tasks(F, P, ['ㅌ', 'ㅇ', 'ㅈㅊ', 'ㄴㄷ'])
+    assert [r[2] for r in res] == [['ㅊ'], ['ㄴ', 'ㄹ'], ['ㅍㅌ'], ['ㄹㄷ']]
+    s.picture(pts_fig('tb6pts', F, P, 30), width_mm=120)
+    ask_pts(s, lv, res)
+    step(s, 4, '그려 보기', '가로 4 cm, 세로 2 cm, 높이 3 cm인 직육면체의 전개도')
+    s.picture(fig('tb6cub', svg_of(cub(4, 3, 2, k=26, dims=[(0, 1, '4 cm'), (1, 3, '3 cm'), (3, 7, '2 cm')]))), width_mm=55)
+    real_note(s)
+    if lv == '기본형':
+        s.text('4 cm × 3 cm, 2 cm × 3 cm, 4 cm × 2 cm인 면이 2개씩 있어요. 면 3개는 그려져 있어요.')
+    else:
+        s.text('면 3개는 그려져 있어요. 나머지 면을 그리고 접는 선은 점선으로 그어요.')
+    given = [R(2, 3, 4, 3), R(6, 3, 2, 3), R(2, 1, 4, 2)]
+    net_draw_example(given, [R(8, 3, 4, 3), R(0, 3, 2, 3), R(2, 6, 4, 2)], (4, 3, 2))
+    svg, wmm = cm_grid(16, 11, faces=given)
+    s.picture(fig('tb6draw', svg), width_mm=wmm)
+    ans = ('6차시  ① 직사각형, %s   ② 전개도, %s, 같아요   ③ %s / 가, 맞닿는 모서리의 길이가 달라요   ④ %s   '
+           '⑤ (예) 4×3 면을 오른쪽 끝에, 2×3 면을 왼쪽에, 4×2 면을 아래에 그리고 접는 선 5개를 점선으로') % (
+        ' / '.join(a1), a2[0], ' / '.join(a3), task_txt(res))
+    if lv == '도전형':
+        s.page_break()
+        step(s, 5, '도전하기', '수학익힘')
+        F, P = TB_L6U1
+        res2 = net_tasks(F, P, ['ㄱ', 'ㄴㄷ'])
+        assert [r[2] for r in res2] == [['ㅋ', 'ㅈ'], ['ㅇㅅ']]
+        s.picture(pts_fig('tb6u1', F, P, 26), width_mm=110)
+        ask_pts(s, lv, res2)
+        Fa = net_from_cells(CROSS, {1: 4, 2: 7, 4: 9})
+        la = [((0, 4), (4, 4), '㉠', 0, -14), ((4, 0), (13, 0), '㉡', 0, -14), ((26, 4), (26, 11), '㉢', 18, 0)]
+        va = [math.dist(p, q) for p, q, *_ in la]
+        assert va == [4, 9, 7]
+        sk = cub(9, 7, 4, k=14, pad=56, dimd=32, dim_size=19, dims=[(0, 1, '9 cm'), (0, 2, '7 cm'), (3, 7, '4 cm')])[:3]
+        nt = net(Fa, k=12, extra=lambda m: ''.join(seg_label(m, p, q, t, dx, dy) for p, q, t, dx, dy in la))[:3]
+        s.picture(fig('tb6abc', hstack([sk, nt], 30)), width_mm=165)
+        a7 = qa(s, [('㉠ / ㉡ / ㉢', ' / '.join('%d' % v for v in va), ' cm')])
+        Fb = net_from_cells(CROSS, {1: 5, 2: 8, 4: 11})
+        lb = [((32, 5), (32, 13), '8 cm', 26, 0, BLUE), ((5, 0), (16, 0), '11 cm', 0, -12, BLUE), ((16, 5), (21, 5), '5 cm', 0, -12, BLUE),
+              ((0, 5), (0, 13), '㉠', -14, 0, RED), ((5, 13), (5, 18), '㉡', -14, 0, RED), ((21, 5), (32, 5), '㉢', 0, -12, RED)]
+        vb = [math.dist(p, q) for p, q, t, *_ in lb if t in '㉠㉡㉢']
+        assert vb == [8, 5, 11]
+        s.picture(fig('tb6abc2', svg_of(net(Fb, k=9, pad=44, extra=lambda m: ''.join(seg_label(m, p, q, t, dx, dy, c, 16) for p, q, t, dx, dy, c in lb)))), width_mm=120)
+        a8 = qa(s, [('㉠ / ㉡ / ㉢', ' / '.join('%d' % v for v in vb), ' cm')])
+        n4 = [('첫째', [R(0, 1, 1, 2), R(1, 1, 3, 2), R(4, 1, 1, 2), R(5, 1, 3, 2), R(1, 0, 2, 1), R(1, 3, 3, 1)]),
+              ('둘째', net_from_cells(CROSS, {1: 1, 2: 2, 4: 3}))]
+        can4, _ = judge(n4)
+        assert can4 == ['둘째']
+        s.picture(fig('tb6two', nets_svg(n4, 22, grid=True)), width_mm=120)
+        a9 = qa(s, [('직육면체의 전개도가 될 수 있는 것', can4[0])])
+        why(s, '고르지 않은 전개도가 직육면체의 전개도가 될 수 없는 까닭을 써 보세요.', 1)
+        ans += '   ⑥ %s, %s, %s, %s (첫째는 맞닿는 모서리의 길이가 달라요)' % (task_txt(res2), a7[0], a8[0], a9[0])
+    return ans
+
+
+def tb7(s, lv):
+    s.lesson(7, '탐구 정리하기(O)', '생각을 더하다 ― 직육면체로 장난감을 만들어요', '직육면체의 전개도를 이용해 장난감을 만들려면 어떻게 해야 할까요?')
+    s.scene(None, '직육면체를 이용하여 로봇 모양의 장난감을 만들려고 해요.')
+    step(s, 0, '살펴보기', '장난감 설계도')
+    s.picture(fig('tb7toy', toy_svg(TB_TOY, TB_TOY_SLOTS, [('머리 2×2×2', 7.1, 1.6), ('팔 1×3×1', 7.1, 3.6), ('몸통 3×4×2', 7.1, 4.6), ('다리 1×1×1', 7.1, 7.6)], 10.5, 9)),
+              width_mm=85)
+    s.text('머리: 한 모서리 2 cm / 몸통: 가로 3 cm, 높이 4 cm, 깊이 2 cm / 팔: 가로 1 cm, 높이 3 cm, 깊이 1 cm / 다리: 한 모서리 1 cm')
+    kind = {k: '정육면체' if len(set(v[:3])) == 1 else '직육면체' for k, v in TB_TOY.items()}
+    s.choices([('머리', opt('정육면체', '직육면체')), ('몸통', opt('정육면체', '직육면체')), ('팔', opt('정육면체', '직육면체')), ('다리', opt('정육면체', '직육면체'))])
+    step(s, 1, '생각하기', '전개도를 그릴 때 생각할 점')
+    a2 = ox(s, [('면을 6개 그려요.', 1), ('접었을 때 겹치는 면이 없도록 그려요.', 1), ('접었을 때 겹치는 선분의 길이가 같도록 그려요.', 1),
+                ('모든 면을 서로 다른 크기로 그려요.', 0)], '생각할 점')
+    out = []
+    for i, (nm, desc, (F, C), col) in enumerate(TB_PARTS):
+        if i == 0:
+            step(s, 2, '완성하기 ①', '머리와 몸통')
+            s.text('면이 5개만 있어요. 전개도가 되도록 면 1개를 붙일 자리(㉠, ㉡, ㉢)를 골라 색칠하고, 색칠한 면에서 잘리지 않는 모서리를 점선으로 그어 보세요.')
+        if i == 2:
+            step(s, 3, '완성하기 ②', '팔과 다리')
+        w = {0: 70, 1: 90, 2: 60, 3: 50}[i]
+        a, nh = add_face_task(s, 'tb7p%d' % i, '%s(%s) · 모눈 한 칸은 1 cm' % (nm, desc), F, C, col, w)
+        out.append((nm, a, nh))
+        qa(s, [('%s: 붙일 자리 / 점선으로 그을 모서리 수' % nm, '%s / %d' % (a, nh), '개')])
+    step(s, 4, '만들기', '장난감 완성하기')
+    s.text('완성한 전개도를 점선을 따라 접어 각 부분을 만들고, 설계도대로 붙여 장난감을 완성해요.')
+    write_pane(s, lv, [('만든 과정', '면 6개가 ______________ 전개도를 완성하고, ______ 을 따라 접어 설계도대로 붙였어요.')])
+    ans = '7차시  ① 머리 %s, 몸통 %s, 팔 %s, 다리 %s   ② %s   ③④ %s   ⑤ (자유)' % (
+        kind['head'], kind['body'], kind['arm'], kind['leg'], a2, ', '.join('%s %s(점선 %d개)' % x for x in out))
+    if lv == '도전형':
+        step(s, 5, '도전하기', '팔의 전개도 고르기')
+        n4 = [('가', net_from_cells(CROSS, {1: 1, 2: 3, 4: 1})), ('나', [R(0, 1, 1, 3), R(1, 1, 1, 3), R(2, 1, 1, 3), R(3, 1, 1, 3), R(1, 0, 1, 1), R(3, 0, 1, 1)]),
+              ('다', net_from_cells([[0, 0], [0, 1], [1, 1], [2, 1], [3, 1], [3, 2]], {1: 1, 2: 1, 4: 3})),
+              ('라', [R(0, 1, 1, 3), R(1, 1, 1, 3), R(2, 1, 1, 3), R(3, 1, 1, 3), R(1, 0, 1, 1), R(1, 4, 1, 3)])]
+        can, whyd = judge(n4)
+        assert can == ['가', '다'] and whyd['나'] == 'overlap' and whyd['라'] in ('partial', 'length'), (can, whyd)
+        assert all(dims_of(F) == [1, 1, 3] for n, F in n4 if n in can)
+        s.text('팔(가로 1 cm, 높이 3 cm, 깊이 1 cm인 직육면체)을 하나 더 만들려고 해요. (모눈 한 칸은 1 cm)')
+        s.picture(fig('tb7arm', nets_svg(n4, 20, grid=True, h=140)), width_mm=160)
+        a6 = qa(s, [('팔의 전개도가 될 수 있는 것', name_list(can))])
+        why(s, '나와 라가 팔의 전개도가 될 수 없는 까닭을 각각 써 보세요.', 2)
+        ans += '   ⑥ %s (나는 접었을 때 두 면이 겹치고, 라는 맞닿는 모서리의 길이가 달라요)' % a6[0]
+    return ans
+
+
+NET_ORDER = [3, 6, 0, 5, 2, 7, 1, 4]     # 활동지의 전개도 카드 1~8 차례(앱은 섞어서 보여 줌)
+
+
+def card_game(s, lv, shapes, word, i0):
+    """8차시 공통: 카드 살펴보기·놀이 장면·짝 맞추기. → 정답 글 목록"""
+    D = deck(shapes)
+    sks = [c for c in D if c['kind'] == 'sk']
+    nets = [c for c in D if c['kind'] == 'net']
+    step(s, i0, '카드 살펴보기', '겨냥도 카드와 전개도 카드')
+    s.text('겨냥도 카드 4장과 전개도 카드 8장이에요. 전개도의 모눈 칸을 세어 면의 가로와 세로를 알아보고, 같은 %s의 겨냥도를 찾아 써 보세요. (모눈 한 칸은 1 cm)' % word)
+    s.picture(fig('cards_sk_%s' % word, hstack([fit(card_svg(c, shapes), 150) for c in sks], 22, ['겨냥도 ' + shapes[c['shape']][0] for c in sks], 18)), width_mm=170)
+    order = [nets[i] for i in NET_ORDER]
+    for row in range(2):
+        cs = order[row * 4:row * 4 + 4]
+        s.picture(fig('cards_net_%s%d' % (word, row), hstack([fit(card_svg(c, shapes), 140) for c in cs], 22,
+                                                             ['카드 %d' % (row * 4 + i + 1) for i in range(4)], 18)), width_mm=165)
+    s.table([['카드'] + [str(i + 1) for i in range(8)], ['겨냥도'] + ['' for _ in range(8)]], header=True, header_col=True,
+            col_mm=[28] + [19] * 8, row_h=3402)
+    a1 = ' '.join('%d-%s' % (i + 1, shapes[c['shape']][0]) for i, c in enumerate(order))
+    step(s, i0 + 1, '놀이하기', '어떤 카드를 넘길까요?')
+    s.text('같은 %s 카드 3장(겨냥도 1장 + 전개도 2장)을 먼저 모으면 이겨요. 내 카드 3장 중 넘길 카드를 골라 보세요.' % word)
+    hand1 = [sks[0], nets[0], nets[4]]
+    hand2 = [sks[0], sks[1], nets[2]]
+    for hi, hand in enumerate((hand1, hand2)):
+        s.picture(fig('hand_%s%d' % (word, hi), hstack([fit(card_svg(c, shapes), 120) for c in hand], 22, ['A', 'B', 'C'], 18)), width_mm=120)
+    # 넘길 카드: 두 장이 같은 도형이면 나머지 하나, 겨냥도가 둘이면 전개도와 다른 쪽 겨냥도
+    p1 = next(L for L, c in zip('ABC', hand1) if [x['shape'] for x in hand1].count(c['shape']) == 1)
+    p2 = next(L for L, c in zip('ABC', hand2) if c['kind'] == 'sk' and c['shape'] != hand2[2]['shape'])
+    a2 = qa(s, [('첫째 손: 넘길 카드', p1), ('둘째 손: 넘길 카드', p2)])
+    step(s, i0 + 2, '짝 맞추기', '같은 %s의 전개도 카드' % word)
+    pairs = []
+    for si in range(4):
+        idx = [i + 1 for i, c in enumerate(order) if c['shape'] == si]
+        pairs.append('%d와 %d' % tuple(idx) if idx[0] in (2, 4, 5, 9) else '%s %d' % (josa(idx[0], '과와'), idx[1]))
+    s.text('뒤집어 놓은 전개도 카드 8장에서 두 장씩 펼쳐 같은 %s의 전개도이면 가져가요. 위 카드 1~8에서 짝을 모두 찾아 써 보세요.' % word)
+    s.lines(1)
+    return D, nets, order, a1, a2, ', '.join('%s %s' % (josa(idx, '과와') if False else '', '') for idx in []) or '; '.join(pairs)
+
+
+def tb8(s, lv):
+    s.lesson(8, '발표하기(P)', '놀이를 더하다 ― 같은 도형 카드를 모아요', '같은 도형의 겨냥도와 전개도 카드를 어떻게 하면 빨리 모을 수 있을까요?')
+    s.scene(None, '연서는 친구들과 ‘같은 도형 카드를 모아요’ 놀이를 해요. 같은 도형 카드는 겨냥도 1장과 전개도 2장이에요.')
+    step(s, 0, '놀이 방법', '차례대로 번호 쓰기')
+    steps_ = ['카드를 섞어 한 명당 3장씩 나누어 가져요.', '각자 가진 카드 3장이 같은 도형을 나타내는지 확인해요.',
+              '모은 사람이 없으면 동시에 ‘넘겨’를 외치며 한 장을 시계 방향의 다음 사람에게 넘겨요.',
+              '같은 도형 카드 3장을 모은 사람은 카드를 보여 줘요. 10번 되풀이해 옳게 모은 횟수가 가장 많은 사람이 이겨요.']
+    show = [2, 0, 3, 1]
+    s.table([['놀이 방법', '차례']] + [[steps_[i], '(    )'] for i in show], col_mm=[155, 25], row_h=3402)
+    a0 = ' '.join(str(show.index(i) + 1) for i in range(4))
+    a0 = ', '.join(str(i + 1) for i in [show.index(k) for k in range(4)])
+    seq = ' → '.join('%s' % '가나다라'[show.index(k)] for k in range(4))
+    D, nets, order, a1, a2, a3 = card_game(s, lv, TB_SHAPES, '도형', 1)
+    step(s, 4, '돌아보기', '놀이에서 이기는 방법')
+    write_pane(s, lv, [('이기는 방법', '모을 도형을 정하고 ______________ 카드를 넘겨요.'),
+                       ('알아본 방법', '전개도의 모눈 칸을 세어 면의 ______ 와 ______ 를 겨냥도의 모서리 길이와 비교했어요.')])
+    ans = '8차시  ① 위에서부터 %s   ② %s   ③ %s   ④ %s   ⑤ (자유)' % (
+        ', '.join(str([2, 0, 3, 1][r] + 1) for r in range(4)), a1, ' / '.join(a2), a3)
+    if lv == '도전형':
+        step(s, 5, '도전하기', '도형 나의 전개도 카드')
+        pick = [nets[0], nets[2], nets[3], nets[5], nets[6]]
+        s.text('도형 나(가로 3 cm, 높이 2 cm, 깊이 1 cm인 직육면체)의 전개도 카드를 모두 골라 보세요.')
+        s.picture(fig('tb8pick', hstack([fit(card_svg(c, TB_SHAPES), 130) for c in pick], 20, list('①②③④⑤'), 18)), width_mm=170)
+        a6 = [n for n, c in zip('①②③④⑤', pick) if c['shape'] == 1]
+        qa(s, [('도형 나의 전개도 카드', ', '.join(a6))])
+        why(s, '어떻게 찾았는지 써 보세요.', 1)
+        ans += '   ⑥ %s (3×2, 3×1, 2×1인 면이 2개씩)' % ', '.join(a6)
+    return ans
