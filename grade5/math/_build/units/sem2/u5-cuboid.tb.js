@@ -403,7 +403,7 @@ function cb5Solid(o) {
     if (o.lab) { const lab = o.lab === true ? CB5_LAB : o.lab; for (let v = 0; v < 8; v++) { const dx = S[v][0] - cx, dy = S[v][1] - cy, L = Math.hypot(dx, dy) || 1;
       svg.append(txt(cb5R(S[v][0] + dx / L * 17), cb5R(S[v][1] + dy / L * 17), lab[v], 18, { fill: vv[v] ? CB5.ink : "#9AA6B0", "pointer-events": "none" })); } }
     if (o.dimLab) o.dimLab.forEach(([u, v, t]) => { const a = S[u], b2 = S[v], mx = (a[0] + b2[0]) / 2, my = (a[1] + b2[1]) / 2, dx = mx - cx, dy = my - cy, L = Math.hypot(dx, dy) || 1;
-      svg.append(txt(cb5R(mx + dx / L * 20), cb5R(my + dy / L * 20), t, 15, { fill: CB5.blue, "pointer-events": "none" })); });
+      svg.append(txt(cb5R(mx + dx / L * 32), cb5R(my + dy / L * 26), t, 15, { fill: CB5.blue, "pointer-events": "none" })); });
     if (o.after) o.after(svg, S, vis);
   };
   // 끌어서 돌리기 / 눌러서 고르기
