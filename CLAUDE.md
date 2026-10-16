@@ -150,7 +150,7 @@ grade1/ … grade6/
 
 ### 6학년 수학 (`grade6/math/`, 2026-10-16)
 
-- 5학년과 같은 짜임. 지금은 **2학기 교과서 버전 `sem2/`만 단원별로 여는 중**(선생님 요청: 단원이 끝날 때마다 올림). 목록은 `cd grade6/math/_build && TBONLY=1 RELEASE=1,2 python3 gen_lists.py 2`(RELEASE에 올린 단원 번호 — 나머지는 '곧 열려요'). 6-1과 이야기 버전은 아직 없음.
+- 5학년과 같은 짜임. **2학기 교과서 버전 `sem2/` 6단원 모두 열림(2026-10-16, 단원이 끝날 때마다 올림).** 목록은 `cd grade6/math/_build && TBONLY=1 RELEASE=1,2 python3 gen_lists.py 2`(RELEASE에 올린 단원 번호 — 나머지는 '곧 열려요'). 6-1과 이야기 버전은 아직 없음.
 - **원본은 `grade6/math/_build/units/sem2/<slug>.tb.js`**(HTML 직접 고치지 말 것). `python3 build.py <slug> && node check.js <slug>`, 루트에서 `apply_content_theme.py`. 활동지 `_build/sheets/gen_<slug>.py`(앱 LESSONS를 node로 읽어 수를 따라감).
 - 지도서와 다르게 정한 곳·선생님 확인 거리는 `_build/mathplan/PLAN.md`의 '선생님 확인 필요'.
 

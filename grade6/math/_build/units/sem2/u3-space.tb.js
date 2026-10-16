@@ -430,7 +430,7 @@ function sp6Paint(body, api, opt) {
         if (hp.length !== ha.length) why = `‘${it.title}’은 세로줄이 ${ha.length}줄이에요. 줄 수를 다시 세어 봐요.`;
         else { const i = hp.findIndex((v, k) => v !== ha[k]); why = `‘${it.title}’의 왼쪽에서 ${i + 1}째 줄은 그 방향에서 본 가장 높은 층의 수만큼 칠해요.`; }
       }
-    } else if (!empty && it.kind === "layer") why = `‘${it.title}’ 모양을 다시 살펴봐요. 층별 모양은 그 층을 위에서 본 모양이라 자리까지 맞아야 해요.`;
+    } else if (!empty && it.kind === "layer") why = `‘${it.title}’을 다시 살펴봐요. 층별 모양은 그 층을 위에서 본 모양이라 자리까지 맞아야 해요.`;
     else if (!empty && it.kind === "top") why = `‘${it.title}’을 다시 살펴봐요. 위에서 본 모양은 바닥에 닿아 있는 면의 모양과 같아요.`;
     api.fail(opt.why ? opt.why(it, bad.m) || why : why, ansTxt);
   } }, "확인하기");
@@ -473,7 +473,7 @@ function sp6Nums(body, api, opt) {
     if (bad) {
       const v = sp6Num(bad.inp.value);
       if (isNaN(v)) return api.fail("빈칸이나 수가 아닌 칸이 있어요. 모든 자리에 쌓기나무의 개수를 써요.", ans);
-      return api.fail(v < bad.a ? "보이지 않는 아래쪽 쌓기나무도 세었나요? 위에 있는 쌓기나무 아래에는 반드시 쌓기나무가 있어요." : "빨간 칸에 쌓인 쌓기나무의 개수를 다시 세어 봐요.", ans);
+      return api.fail(v < bad.a ? opt.lowWhy || "보이지 않는 아래쪽 쌓기나무도 세었나요? 위에 있는 쌓기나무 아래에는 반드시 쌓기나무가 있어요." : "빨간 칸에 쌓인 쌓기나무의 개수를 다시 세어 봐요.", ans);
     }
     if (tot) { const v = sp6Num(tot.value), ok = v === S; tot.style.borderColor = ok ? "var(--ok)" : "var(--no)";
       if (!ok) return api.fail(opt.totalWhy && opt.totalWhy[String(v)] || "위에서 본 모양에 쓴 수를 모두 더해 봐요.", ans); }
@@ -495,7 +495,7 @@ function sp6Pick(body, api, opt) {
       cards.forEach((c, i) => { c.classList.remove("sp6-good", "sp6-bad"); if (sel.has(i)) c.classList.add(A.includes(i) ? "sp6-good" : "sp6-bad"); });
       if (!sel.size) return api.fail("카드를 눌러 골라 보세요.", got);
       const ex = [...sel].find(i => !A.includes(i));
-      if (ex != null) return api.fail(opt.whyExtra ? opt.whyExtra(ex) : `${opt.items[ex].name}은 답이 아니에요.`, got);
+      if (ex != null) return api.fail(opt.whyExtra ? opt.whyExtra(ex) : `${sp6Jo(opt.items[ex].name, "은/는")} 답이 아니에요.`, got);
       if (sel.size < A.length) return api.fail(opt.whyMiss || `아직 ${A.length - sel.size}개 더 있어요.`, got);
       sp6Then(body, api, opt, got, opt.msg);
     } }, "확인하기")));
@@ -699,10 +699,10 @@ function sp6Scene(body, api, opt) {
     const order = sp6Shot(opt.objs, ang).map(o => o.o.name);
     say.textContent = opt.order === false ? "" : "왼쪽부터 " + order.slice(0, -1).join(", ") + (order.length > 1 ? ", " : "") + sp6Jo(order[order.length - 1], "이/가") + " 보여요. ";
     const near = opt.marks.find(m => Math.abs(((ang - m.ang) % 360 + 540) % 360 - 180) <= 10);
-    if (near) { seen.add(near.t); say.textContent += `지금은 ‘${near.t}’ ${opt.markWord || "방향"}에서 보고 있어요.`; }
+    if (near) { seen.add(near.t); say.textContent += opt.markWord === "사람" ? `지금은 ${sp6Jo(near.t, "이/가")} 서 있는 곳에서 보고 있어요.` : `지금은 ‘${near.t}’ 방향에서 보고 있어요.`; }
     if (!body.sp6Fin) {
       if (seen.size >= opt.marks.length) sp6Then(body, api, opt, "모든 방향에서 봄", opt.msg || "모든 방향에서 살펴봤어요.");
-      else api.hint(`가 본 ${opt.markWord || "방향"} ${seen.size}곳 / ${opt.marks.length}곳 — 사진기를 끌어 돌리거나 아래 단추를 눌러 보세요.`);
+      else api.hint(`가 본 ${opt.markWord === "사람" ? "자리" : "방향"} ${seen.size}곳 / ${opt.marks.length}곳 — 사진기를 끌어 돌리거나 아래 단추를 눌러 보세요.`);
     }
   }
   dragOn(map, () => true, p => { const cx = camG.cx; ang = (Math.atan2(p.y - cx, p.x - cx) * 180 / Math.PI + 360) % 360; draw(); });
@@ -859,13 +859,13 @@ function sp6Peak(kind) {
   }, "100%", true);
 }
 /* 2차시 장면 */
-const SP6_GATE = [{ kind: "gate", name: "입구", x: 0, y: -1.2, f: [0, 1] }, { kind: "clap", name: "클래퍼보드 조형물", x: -1.6, y: .8, f: [0, 1] }, { kind: "film", name: "필름 조형물", x: 1.6, y: .3, f: [0, 1] }];
+const SP6_GATE = [{ kind: "gate", name: "입구", x: 0, y: -1.2, f: [0, 1] }, { kind: "clap", name: "클래퍼보드 조형물", x: -1.6, y: 1.1, f: [0, 1] }, { kind: "film", name: "필름 조형물", x: 1.6, y: -.2, f: [0, 1] }];
 const SP6_GATE_DIR = [{ t: "가", ang: 180 }, { t: "나", ang: 90 }, { t: "다", ang: 0 }];
 const SP6_HAE = [{ kind: "haetae", name: "해태 조형물", x: 0, y: 0, f: [0, 1], size: 1.3 }];
 const SP6_PEOPLE = [{ t: "소민", ang: 90 }, { t: "승우", ang: 0 }, { t: "시후", ang: 270 }, { t: "은채", ang: 180 }];
-const SP6_PARK = [{ kind: "swing", name: "그네", x: -1.5, y: -1, f: [1, 0] }, { kind: "bench", name: "의자", x: 0, y: 1.2, f: [0, 1] }, { kind: "slide", name: "미끄럼틀", x: 1.5, y: 0, f: [-1, 0] }];
+const SP6_PARK = [{ kind: "swing", name: "그네", x: -1.5, y: -1.2, f: [1, 0], size: .8 }, { kind: "bench", name: "의자", x: 0, y: 1.2, f: [0, 1] }, { kind: "slide", name: "미끄럼틀", x: 1.5, y: 0, f: [-1, 0] }];
 const SP6_PARK_DIR = [{ t: "가", ang: 180 }, { t: "나", ang: 90 }, { t: "다", ang: 0 }, { t: "라", ang: 270 }];
-const SP6_KIT = [{ kind: "kettle", name: "주전자", x: -.7, y: .4, f: [1, 0], size: 1.2 }, { kind: "pot", name: "냄비", x: .8, y: -.3, f: [0, 1], size: 1.2 }];
+const SP6_KIT = [{ kind: "kettle", name: "주전자", x: -1.1, y: .7, f: [1, 0], size: 1.2 }, { kind: "pot", name: "냄비", x: 1.1, y: -.6, f: [0, 1], size: 1.2 }];
 const SP6_BLD = [{ kind: "bldg", name: "건축물", x: 0, y: 0, f: [0, 1], size: 1.2 }];
 const SP6_BLD_DIR = [{ t: "가", ang: 180 }, { t: "나", ang: 270 }, { t: "다", ang: 90 }];
 function sp6PhotoCard(objs, ang, name) { return h("figure", { style: "margin:0;width:100%;text-align:center" }, h("div", { class: "sp6photo" }, sp6Photo(objs, ang)), h("figcaption", {}, name)); }
@@ -909,7 +909,7 @@ const LESSONS = [
   ],
   challenge: { inst: "쌓기나무 6개로, 그림에서는 쌓기나무가 5개만 보이도록 쌓아 보세요. (한 자리의 쌓기나무가 통째로 숨어야 해요.)", hints: ["높이 쌓은 쌓기나무의 왼쪽 뒤에 낮게 쌓으면 가려져요.", "그림은 오른쪽 앞 위에서 본 모습이에요."],
     render: (b, a) => sp6Build(b, a, { R: 3, C: 3, M: 3,
-      check: G => sp6Sum(G) !== 6 ? `쌓기나무를 6개 쌓아요. 지금은 ${sp6Sum(G)}개예요.` : sp6Hid(G).length < 1 ? "지금은 숨은 자리가 없어요. 높이 쌓은 쌓기나무 바로 왼쪽 뒤 자리에 낮게 쌓아 보세요." : sp6Look(G).part.length ? "윗면은 안 보이는데 옆면이 보이는 자리가 있어요. 한 자리가 통째로 숨게 해 봐요." : null,
+      check: G => sp6Sum(G) !== 6 ? `쌓기나무를 6개 쌓아요. 지금은 ${sp6Sum(G)}개예요.` : sp6Hid(G).length < 1 ? "지금은 숨은 자리가 없어요. 높이 쌓은 쌓기나무 바로 왼쪽 뒤 자리에 낮게 쌓아 보세요." : sp6Hid(G).reduce((t, [y, x]) => t + G[y][x], 0) > 1 ? "숨은 쌓기나무가 2개 이상이라 그림에서 5개보다 적게 보여요. 숨은 쌓기나무는 1개만 되게 쌓아 보세요." : sp6Look(G).part.length ? "윗면은 안 보이는데 옆면이 보이는 자리가 있어요. 한 자리가 통째로 숨게 해 봐요." : null,
       msg: "6개를 쌓았는데 그림에서는 5개만 보여요! 이렇게 숨은 쌓기나무가 있을 수 있어요.", ok: "높은 쌓기나무 뒤에 숨은 쌓기나무는 그림만 보아서는 알 수 없어요." }) }
 },
 {
@@ -1088,7 +1088,7 @@ const LESSONS = [
   ],
   challenge: { inst: "승우가 말했어요. “쌓기나무를 1층에 5개, 2층에 4개, 3층에 2개 쌓아서 만들었어.” 승우처럼 쌓아 보고, 내가 쌓은 모양의 층별 모양을 그려 보세요.", hints: ["1층에 5개를 먼저 놓고, 그 위에 2층 4개, 다시 그 위에 3층 2개를 쌓아요.", "층별 모양은 내가 쌓은 모양을 층마다 위에서 본 모양이에요."],
     render: (b, a) => sp6Build(b, a, { R: 3, C: 3, M: 3, live: ["layers"], check: G => sp6Lay(G).join() === "5,4,2,0" ? null : `1층 5개, 2층 4개, 3층 2개가 되게 쌓아요. 지금은 ${sp6LayTxt(G)}예요.`,
-      msg: "승우처럼 쌓았어요.", then: (bx, ax, G) => { bx.append(h("p", { class: "inst" }, "이제 내가 쌓은 모양의 1층, 2층, 3층 모양을 그려 보세요. (위에서 칸 아래의 층별 모양은 잠시 가려 두었어요.)"));
+      msg: "승우처럼 쌓았어요.", then: (bx, ax, G) => { bx.append(h("p", { class: "inst" }, "이제 내가 쌓은 모양의 1층, 2층, 3층 모양을 그려 보세요. (판 아래에 보이던 층별 모양은 잠시 가려 두었어요.)"));
         const lv = bx.parentNode.querySelector(".sp6build + div"); if (lv) lv.style.display = "none";
         sp6Paint(bx, ax, { show: () => sp6Iso(G, { frame: [3, 3, 3], maxW: "12em" }), items: sp6PaintItems(G, ["L1", "L2", "L3"]).map(it => Object.assign(it, { rows: 3, cols: 3, ans: it.ans })), ok: "쌓은 모양을 층별 모양으로 바르게 나타냈어요. 친구가 이 층별 모양을 보면 내 모양과 똑같이 만들 수 있어요." }); } }) }
 },
@@ -1191,7 +1191,7 @@ const LESSONS = [
           items: sp6PaintItems(SP6_D.t5, ["L2", "L3"]), ok: "2층에 쌓기나무 3개, 3층에 1개를 아래층과 같은 자리에 맞게 그렸어요." }) }]) },
     { name: "6번", inst: "쌓기나무로 만든 모양을 위와 앞에서 본 모양이에요. 옆에서 본 모양을 그리려고 해요. 위에서 본 모양에 수를 써 보고, 옆에서 본 모양을 그려 보세요.", hints: ["앞에서 본 모양에서 3층인 세로줄에는 위에서 본 모양의 칸이 하나뿐이에요. 그 자리가 ☆ 자리예요.", "앞에서 본 모양이 1층인 세로줄의 자리는 모두 1개씩이에요."],
       render: (b, a) => sp6Chain(b, a, [
-        { title: "위에서 본 모양에 수 쓰기", run: (bx, ax) => sp6Nums(bx, ax, { H: SP6_D.t6, total: true, totalQ: "쌓기나무는 모두", show: () => sp6Views3(sp6Views(SP6_D.t6), { show: ["top", "front"], rows: 3 }), msg: "위와 앞에서 본 모양을 연결 지어 각 자리의 개수를 찾았어요." }) },
+        { title: "위에서 본 모양에 수 쓰기", run: (bx, ax) => sp6Nums(bx, ax, { H: SP6_D.t6, total: true, totalQ: "쌓기나무는 모두", lowWhy: "앞에서 본 모양에서 3층인 세로줄을 찾아, 그 줄에 있는 칸에 3을 써요. 나머지 칸은 1개씩이에요.", show: () => sp6Views3(sp6Views(SP6_D.t6), { show: ["top", "front"], rows: 3 }), msg: "위와 앞에서 본 모양을 연결 지어 각 자리의 개수를 찾았어요." }) },
         { title: "옆에서 본 모양 그리기", run: (bx, ax) => sp6Paint(bx, ax, { items: sp6PaintItems(SP6_D.t6, ["side"]), ok: "◯ 자리는 각각 1개, ☆ 자리는 3개예요. 옆에서 본 모양은 왼쪽부터 1층, 3층, 1층이에요." }) }]) }
   ],
   challenge: { inst: "확인하고 정리해요. □ 안에 알맞은 수를 써 보세요.", hints: ["그림의 ㉠ 자리에 쌓인 쌓기나무를 세어 봐요.", "층별 모양에서 2층에 칠해진 칸을 세어 봐요."],
