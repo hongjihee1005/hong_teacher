@@ -203,7 +203,7 @@ def plain(s):
 def load(src):
     js = os.path.join(WORK, 'ex.js')
     with open(js, 'w', encoding='utf-8') as f:
-        f.write(_EX)
+        f.write(_EX_ST if src.endswith('.st.js') else _EX)
     r = subprocess.run(['node', js, src, FONT], capture_output=True, text=True)
     if r.returncode:
         raise RuntimeError(r.stderr[-3000:])
@@ -974,9 +974,284 @@ def build(D, label, short, outdir, lv):
     return path
 
 
+# ================================================================ 이야기 버전(ST) — u5-graph.st.js
+SRC_ST = os.path.join(ROOT, '_build', 'units', 'u5-graph.st.js')
+OUT_ST = os.path.join(ROOT, 'sem1-soop', 'sheets')
+
+
+def _make_ex_st():
+    """_EX(교과서 버전 읽기)를 고쳐 이야기 버전 엔진의 부품(panes·thenWhy·ruleFirst·wonderRecall·writeStep 도움과 답)과
+    편집부 말풍선(gr5sSay)·메모 상자(gr5sNote)도 모읍니다."""
+    ex = _EX
+    rep = [
+        ("function writeStep(b, a, items, opts) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag, ph: x.ph })) }); }",
+         "function writeStep(b, a, items, opts) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag, ph: x.ph, help: x.help || [], ans: x.ans || '' })) }); }\n"
+         "const clearTimeout = () => {};\n"
+         "function autoRun() { return () => false; }\n"
+         "function panes(b, a, items, opts) { if (!INNER) REC.push({ t: 'panes', items: items.map(x => ({ t: x.t, ph: x.ph, hint: x.hint || '', ex: x.ex || [] })) }); }\n"
+         "const _wo = o => ({ q: o.q, ph: o.ph, help: o.help || [], ans: o.ans || '' });\n"
+         "function thenWhy(f, o) { return function (b, a) { f(b, a); if (!INNER) REC.push({ t: 'thenWhy', o: _wo(o) }); }; }\n"
+         "function ruleFirst(f, o) { return function (b, a) { if (!INNER) REC.push({ t: 'ruleFirst', o: _wo(o) }); f(b, a); }; }\n"
+         "function wonderRecall(f) { return function (b, a) { if (!INNER) REC.push({ t: 'wonderRecall' }); f(b, a); }; }"),
+        ("  if (hasCls(v, 'gr5say')) return { say: v.textContent };",
+         "  if (hasCls(v, 'gr5ssay')) return { say: v.children[0].textContent + ': ' + v.children[1].textContent };\n"
+         "  if (hasCls(v, 'gr5snote')) return { note: v.children[0].textContent, lines: findAll(v, e => e.tag === 'li').map(e => e.textContent) };\n"
+         "  if (hasCls(v, 'gr5say')) return { say: v.textContent };"),
+    ]
+    for a, b in rep:
+        assert ex.count(a) == 1, a[:60]
+        ex = ex.replace(a, b)
+    return ex.replace('앱 원본(u5-graph.tb.js)', '앱 원본(u5-graph.st.js)')
+
+
+_EX_ST = _make_ex_st()
+
+# 종이에서 하는 말로 바꾸기(이야기 버전 단계 안내) — paper()가 PAPER보다 먼저 씀
+PAPER_ST = [
+    (' 두 활동을 모두 해야 계단을 올라요.', ''),
+    ('세 칸에 써서 붙여요.', '세 칸에 써 보세요.'),
+    ('배울 내용을 배우는 차례대로 눌러 학습 계획을 세워 보세요.', '배울 내용을 배우는 차례대로 기호를 써서 학습 계획을 세워 보세요.'),
+    ('두 그래프에서 ‘자전거’ 부분을 각각 찾아 눌러 보세요.', '두 그래프에서 ‘자전거’ 부분을 각각 찾아 ○표 해 보세요.'),
+    ('‘학교 버스’ 부분을 누르고,', '‘학교 버스’ 부분에 ○표 하고,'),
+    ('빨간 선을 옮겨 자리를 정하고 ‘여기에 선 긋기’를 눌러 띠를 나눈 다음, 나눈 부분에 내용과 백분율을 붙여요.',
+     '앞 항목에 이어서 백분율만큼 선을 그어 띠를 나눈 다음, 나눈 부분에 내용과 백분율을 써요.'),
+    ('‘비율로 보기’와 ‘실제 양으로 보기’를 번갈아 누르고 4월과 6월의 ‘캔’ 부분을 눌러 보세요.',
+     '‘비율로 보기’와 ‘실제 양으로 보기’ 그림을 견주어 보고, 두 그림에서 4월과 6월의 ‘캔’ 부분에 ○표 해 보세요.'),
+    ('(이 앱이 정한 수)', '(앱과 같은 수)'), ('(자료는 이 앱이 정했어요)', '(자료는 앱과 같아요)'),
+]
+
+EMOJI = re.compile('[\U00010000-\U0010FFFF☀-➿️‍]+')
+
+
+def jo(w, a, b):
+    """받침이 있으면 a, 없으면 b"""
+    c = w[-1]
+    return a if '가' <= c <= '힣' and (ord(c) - 0xAC00) % 28 else b
+
+
+def hs_el(s, lv, rec, st, D):
+    if rec.get('calc'):
+        return ''
+    if rec.get('note'):
+        s.text('〈%s〉' % EMOJI.sub('', rec['note']).strip())
+        s.fill([EMOJI.sub('', x).strip() for x in rec['lines']])
+        return ''
+    put_el(s, rec)
+    return ''
+
+
+def hs_pick(s, lv, rec, st, D):
+    for q in rec['qs']:
+        m = re.search(r'(\S+)의 (막대|점)을 눌러요\.$', q['q'])
+        if m:
+            q['q'] = q['q'][:m.start()] + m.group(1) + jo(m.group(1), '을', '를') + ' 써 보세요.'
+    return h_pick(s, lv, rec, st, D)
+
+
+def hs_survey(s, lv, rec, st, D):
+    names, seq = rec['names'], rec['seq']
+    assert sorted(seq) == sorted(i for i, c in enumerate(rec['counts']) for _ in range(c))
+    s.text('우리 반 %d명이 낸 설문 쪽지예요(앱과 같은 차례). 쪽지를 하나씩 읽으면서 아래 표에 바를 정(正) 자로 표시해요.' % len(seq))
+    cells = ['%d. %s' % (k + 1, names[i]) for k, i in enumerate(seq)]
+    s.table([cells[i:i + 5] for i in range(0, len(cells), 5)], header=False, col_mm=[36] * 5, row_h=2835)
+    s.table([['쓰임'] + names, ['표시'] + [''] * len(names), ['학생 수(명)'] + ['(    )'] * len(names)],
+            header=True, header_col=True, col_mm=[30] + [150 / len(names)] * len(names), row_h=3969)
+    return after(s, lv, rec)
+
+
+def hs_maker(s, lv, rec, st, D):
+    T = rec['target']
+    tot = sum(c for _, c in T)
+    pct = [c * 100 / tot for _, c in T]
+    assert all(abs(p - round(p)) < 1e-9 for p in pct)
+    m = re.search(r'「([^」]+)」', ' '.join(st['hints'] if st else []))
+    ttl = m.group(1) if m else '%s별 학생 수' % rec['head']
+    s.text('앱에서는 공학 도구(교과서의 EBSMath 이지통계처럼 움직이는 도구)로 그래프를 그려요. 종이에서는 표를 정리하고 원그래프로 나타내 보세요.')
+    s.fill('표의 제목: (                                                    )')
+    rows = [[rec['head'], '학생 수(%s)' % rec['unit'], '백분율(%)']] + [[n, '(      )', '(      )'] for n, _ in T] + [['합계', '(      )', '(      )']]
+    s.table(rows, header=True, col_mm=[70, 55, 55], row_h=2835)
+    items = [{'n': n, 'p': p} for (n, _), p in zip(T, pct)]
+    s.page_break()
+    s.text('원그래프 그리기 판(실제 크기, 반지름 5 cm, 눈금 100칸)이에요. 원의 중심에서 눈금까지 선을 그어 나누고, 나눈 부분에 내용과 백분율을 써요.')
+    pic_real(s, pie_real(items, 0))
+    s.fill(['그래프의 제목: (                                                    )',
+            '크기순으로 항목을 정렬할 때 ‘기타’는 ( 맨 앞 / 맨 나중 )에 놓아요.'])
+    cum = cum_of(items)
+    return ('표의 제목 %s, %s, 합계 %d명 / 백분율 %s, 합계 100 %% / 선의 자리 %s %% / 그래프 제목 예: %s의 비율 / 기타는 맨 나중'
+            % (ttl, ', '.join('%s %d' % (n, c) for n, c in T), tot, ', '.join(fmt(p) for p in pct),
+               ', '.join(fmt(c) for c in cum[:-1]), ttl))
+
+
+def hs_scaled(s, lv, rec, st, D):
+    s.text('비율로 보기: 띠의 길이가 모두 같아요.')
+    pic(s, rec['pct'], 160)
+    s.text('실제 양으로 보기: 띠의 길이가 그달에 모은 재활용품 전체의 무게에 비례해요.')
+    pic(s, rec['abs'], 160)
+    s.text('띠의 부분은 왼쪽부터 ' + ', '.join(rec['names']) + '이에요. 띠 안의 수는 백분율(%)이에요.')
+    need = rec['need']
+    nm = {rec['names'][i] for _, i in need}
+    assert len(nm) == 1
+    pre = '%s ○표(%s)' % (nm.pop(), '·'.join(rec['years'][y] for y, _ in need))
+    return after(s, lv, rec, pre)
+
+
+def hs_bingo(s, lv, rec, st, D):
+    cards = rec['cards']
+    assert len(cards) == 12
+    s.text('친구와 함께 놀이해요(2~4명). 신문 축제의 그래프 카드 12장 중 9장을 골라 번호를 빙고판에 써요(앱과 같은 그래프예요).')
+    pic(s, bingo_svg(cards), 172)
+    s.text('나의 빙고판 — 고른 그래프 카드의 번호를 써요. 친구가 말한 내용에 알맞은 그래프가 있으면 ◯표 해요. 먼저 3줄을 완성하면 이겨요.')
+    s.table([['', '', ''], ['', '', ''], ['', '', '']], header=False, col_mm=[40, 40, 40], row_h=4536)
+    s.ask('내 차례에 한 그래프를 설명한 말(제목은 말하지 않아요):', blank=False)
+    s.lines(2)
+    top = max(cards[0]['items'], key=lambda it: it['p'])
+    return '(놀이) 예: ①번 — 비율이 가장 높은 것은 %s(%s %%)%s.' % (top['n'], fmt(top['p']), jo(top['n'], '이에요', '예요'))
+
+
+def frame(help1):
+    """앱 도움 둘째 줄 '‘…~…’ 꼴로 써요.' → 쓰기 틀"""
+    t = help1.split('‘', 1)[1].rsplit('’', 1)[0] if '‘' in help1 else help1
+    return t.replace('~', '__________')
+
+
+def hs_write(s, lv, rec, st, D):
+    """앱 writeStep: 기본형은 앱 도움의 문장 틀, 도전형은 빈 줄. 정답은 앱의 모범 답"""
+    ans = []
+    for it in rec['items']:
+        s.ask('%s%s' % ('[%s] ' % it['tag'] if it.get('tag') else '', it['q']), blank=False)
+        if lv == '기본형' and len(it.get('help') or []) > 1:
+            s.fill(frame(it['help'][1]))
+        else:
+            s.lines(2)
+        ans.append('예) ' + (it.get('ans') or it['ph']))
+    return ' / '.join(ans)
+
+
+def hs_panes(s, lv, rec, st, D):
+    for p in rec['items']:
+        s.ask('%s  (%s)' % (p['t'], p['hint']) if p.get('hint') else p['t'], blank=False)
+        if lv == '기본형':
+            s.fill(frame(p['ph']))
+        else:
+            s.lines(1)
+    return '(자유) 예) ' + ' / '.join(p['ex'][0] for p in rec['items'] if p['ex'])
+
+
+def hs_why(s, lv, rec, st, D):
+    o = rec['o']
+    s.ask('왜 그럴까요? ' + o['q'], blank=False)
+    if lv == '기본형' and len(o['help']) > 1:
+        s.fill(frame(o['help'][1]))
+    else:
+        s.lines(2)
+    return '왜? 예) ' + o['ans']
+
+
+def hs_rule(s, lv, rec, st, D):
+    o = rec['o']
+    s.ask('먼저 예상해요 · ' + o['q'], blank=False)
+    if lv == '기본형' and len(o['help']) > 1:
+        s.fill(frame(o['help'][1]))
+    else:
+        s.lines(1)
+    return '예상(자유) — 실제: ' + o['ans']
+
+
+def hs_wonder(s, lv, rec, st, D):
+    s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 읽고, 이제 답할 수 있는지 생각해 보세요.')
+    return ''
+
+
+REC_ST = {'el': hs_el, 'pick': hs_pick, 'survey': hs_survey, 'maker': hs_maker, 'scaled': hs_scaled, 'bingo': hs_bingo,
+          'write': hs_write, 'panes': hs_panes, 'thenWhy': hs_why, 'ruleFirst': hs_rule, 'wonderRecall': hs_wonder}
+
+WHY_ST = {
+    '1': ('신문 기사에 학생 수 대신 백분율을 쓰면 좋은 점을 우리 반(25명)과 옆 반(20명)의 아침 식사를 견주는 일로 써 보세요.',
+          '두 반의 전체 학생 수가 달라도 전체를 100으로 보고 비율을 견줄 수 있어요. 예를 들어 우리 반 25명 중 밥을 먹은 10명은 40 %예요.'),
+    '2': ('그래프를 읽기 전에 작은 눈금 한 칸이 몇 %인지 먼저 확인해야 하는 까닭을 써 보세요.',
+          '그래프마다 전체를 나눈 칸 수가 달라서 한 칸이 나타내는 백분율이 다르기 때문이에요. 학급 문고 띠그래프는 20칸이라 한 칸이 5 %이고, 과학책 4칸은 20 %예요.'),
+    '3': ('띠나 원을 나눌 때 0부터 다시 재지 않고 이전 항목에 이어서 백분율만큼 선을 그어야 하는 까닭을 써 보세요.',
+          '각 항목이 전체에서 자기 백분율만큼만 차지해야 하기 때문이에요. 빵(25 %)은 밥이 끝난 40 %에서 이어서 25칸 더 간 65 %에 선을 그어요.'),
+    '4~5': ('6학년 2반(21명) 조사에서 반올림한 백분율의 합계가 100.1 %가 되었을 때 어떻게 하는지 까닭과 함께 써 보세요.',
+            '전체는 100 %이므로 가장 큰 항목인 퀴즈를 42.9 %에서 42.8 %로 0.1만큼 줄여 합계가 100 %가 되게 맞추어요.'),
+    '6': ('급식 잔반 원그래프를 근거로 잔반을 줄이는 방법을 하나 정하고, 그래프의 수를 들어 까닭을 써 보세요.',
+          '(예) 남긴 음식 중 채소 반찬이 36.5 %, 남긴 까닭 중 ‘입맛에 맞지 않아서’가 34 %로 가장 높으니, 채소 반찬을 맛있게 먹는 방법을 알리는 캠페인을 해요.'),
+    '7': ('같은 도서관 자료를 막대그래프와 원그래프로 나타내면 각각 무엇을 알아보기 편리한지 써 보세요.',
+          '막대그래프는 요일별 도서관을 찾은 학생 수의 많고 적음을, 원그래프는 학년별 도서관을 찾은 학생 수의 비율을 한눈에 알아보기 편리해요.'),
+    '8~9': ('알뜰 장터에서 2025년에 장난감의 비율은 늘었는데 실제 판매 개수는 줄어든 까닭을 써 보세요.',
+            '실제 판매 개수는 (팔린 물건 수)×(비율)인데, 2025년에 팔린 물건 수가 700개에서 500개로 줄어 500 × 0.23 = 115(개)로 2024년의 154개보다 적어졌기 때문이에요.'),
+    '10': ('빙고 카드 ①(좋아하는 급식 메뉴별 학생 수의 비율)을 제목을 말하지 않고 설명하는 문장을 두 가지 써 보세요.',
+           '(예) 비율이 가장 높은 것은 떡볶이(32 %)예요. 떡볶이의 비율은 짜장면(16 %)의 비율의 2배예요.'),
+    '11': ('5학년(80명)과 6학년(120명)의 ‘걸어서’ 비율이 모두 40 %일 때, 그래프만 보고 걸어서 오는 학생 수가 같다고 말하면 안 되는 까닭을 써 보세요.',
+           '띠그래프와 원그래프는 비율만 나타내요. 실제 학생 수는 (전체 학생 수)×(비율)이라 80 × 0.4 = 32(명), 120 × 0.4 = 48(명)으로 달라요.'),
+}
+
+
+def check_st(D):
+    """WHY_ST 답의 수를 앱 자료로 다시 계산해 맞추고, 소수가 앱 차시에 그대로 나오는지 확인(앱 수가 바뀌면 빌드를 멈춤)"""
+    Ls = {str(L['no']): L for L in D['lessons']}
+    assert set(Ls) == set(WHY_ST), (sorted(Ls), sorted(WHY_ST))
+    for k, (_, a) in WHY_ST.items():
+        blob = json.dumps(Ls[k], ensure_ascii=False)
+        bad = [x for x in re.findall(r'\d+\.\d+', a) if x not in blob]
+        assert not bad, ('WHY_ST의 수가 앱과 달라요', k, bad)
+    assert round(500 * 0.23) == 115 and round(700 * 0.22) == 154 and round(600 * 0.2) == 120
+    assert round(80 * 0.4) == 32 and round(120 * 0.4) == 48 and 10 / 25 * 100 == 40
+    assert round(9 / 21 * 100, 1) == 42.9 and round(6 / 21 * 100, 1) == 28.6 and round(42.9 + 28.6 * 2, 1) == 100.1
+    return len(WHY_ST)
+
+
+def do_step_st(s, lv, i, st, D):
+    nm, _, sub = st['name'].partition(' — ')
+    s.step('%s %s' % (NUM[i], nm), sub or None)
+    kinds = {r['t'] for r in all_recs(st['recs'])}
+    if not kinds & OWN_INST:
+        s.text(paper(st['inst']))
+    if lv == '기본형' and st['hints'] and has_num(st['recs']):
+        s.text('도움: ' + plain(st['hints'][0]))
+    return NUM[i] + ' ' + render_recs(s, lv, st['recs'], st, D)
+
+
+def lesson_st(s, lv, L, D):
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    if L['no'] == 1:
+        s.scene(None, D['story']['lines'][0])
+    out = [do_step_st(s, lv, i, st, D) for i, st in enumerate(L['steps'])]
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L['challenge']:
+            out.append(do_step_st(s, lv, n, L['challenge'], D))
+            n += 1
+        q, a = WHY_ST[str(L['no'])]
+        s.step('%s 까닭 쓰기' % NUM[n])
+        s.ask(q, blank=False)
+        s.lines(2)
+        out.append(NUM[n] + ' ' + a)
+    return '%s차시  ' % L['no'] + '   '.join(out)
+
+
+ST = [lesson_st]          # 이야기 버전 차시 함수(앱 LESSONS의 차시마다 lesson_st를 부름)
+
+
+def build_st(D, lv):
+    D_REF[0] = D
+    ST_MODE[0] = True
+    try:
+        s = Sheet(unit_label='6-1 수학 5. 여러 가지 그래프(이야기 버전)', level=lv, grade_label='6학년')
+        lines = [lesson_st(s, lv, L, D) for L in D['lessons']]
+    finally:
+        ST_MODE[0] = False
+    s.answers('【교사용】 5. 여러 가지 그래프(이야기 버전) 활동지 정답 (%s)' % lv, lines,
+              note='※ 이 활동지는 앱 u5-graph.html과 차시 번호가 같습니다. 띠그래프 판(길이 10 cm)·원그래프 판(반지름 5 cm)은 실제 크기이니 100%로 인쇄하세요.')
+    os.makedirs(OUT_ST, exist_ok=True)
+    path = os.path.join(OUT_ST, NAME % lv)
+    s.save(path)
+    return path
+
+
 def main():
     if 'dump' in sys.argv[1:]:
-        print(json.dumps(load(SRC_TB), ensure_ascii=False, indent=1))
+        print(json.dumps(load(SRC_ST if 'st' in sys.argv[1:] else SRC_TB), ensure_ascii=False, indent=1))
         shutil.rmtree(WORK, ignore_errors=True)
         return
     want = [a for a in sys.argv[1:] if a in ('tb', 'st')] or ['tb', 'st']
@@ -987,8 +1262,14 @@ def main():
             print('수 점검 %d곳' % check_numbers(D))
             for lv in ('기본형', '도전형'):
                 out.append(build(D, '6-1 수학 5. 여러 가지 그래프(교과서 차시)', '교과서 차시', OUT_TB, lv))
-        if 'st' in want and not ST:
-            print('[건너뜀] 이야기 버전 원본(u5-graph.st.js)이 아직 없어요.')
+        if 'st' in want:
+            if ST and os.path.exists(SRC_ST):
+                D = load(SRC_ST)
+                print('이야기 버전 수 점검 %d곳, 까닭 쓰기 %d차시' % (check_numbers(D), check_st(D)))
+                for lv in ('기본형', '도전형'):
+                    out.append(build_st(D, lv))
+            else:
+                print('[건너뜀] 이야기 버전 원본(u5-graph.st.js)이 없어요.')
     finally:
         SHOT.close()
         shutil.rmtree(WORK, ignore_errors=True)

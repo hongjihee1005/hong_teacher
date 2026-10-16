@@ -3,6 +3,7 @@
 
     python3 gen_u6-volume.py          # 만들 수 있는 것을 모두 만들고 점검
     python3 gen_u6-volume.py tb       # 교과서 차시 버전만
+    python3 gen_u6-volume.py st       # 이야기 버전만
 
 앱 원본 ../units/u6-volume.tb.js('자원봉사 센터 부피와 겉넓이', 8차시 묶음: 1·2·3~4·5~6·7~8·9·10·11)의
 LESSONS를 node에서 가짜 DOM으로 그대로 실행해(CAP_JS), 활동마다 넘긴 물음·보기·정답·수와 앱이 그린 그림(SVG)을 모읍니다.
@@ -17,7 +18,13 @@ LESSONS를 node에서 가짜 DOM으로 그대로 실행해(CAP_JS), 활동마다
     1차시 가로 8 cm·세로 5 cm 직사각형, 2차시 1 cm³ 정육면체의 전개도, 7~8차시 가로 5 cm·세로 2 cm·높이 3 cm 직육면체의 전개도.
   - 놀이(10차시)는 종이에서 할 수 있게 쪽지 만들기 표·찾은 쪽지 기록표·연습 문제·종이 뒤집기 기록표로 바꿉니다.
   - 정답의 계산(부피·겉넓이·단위 바꾸기)은 식이 적힌 칸은 식을 계산해, 식이 없는 칸은 파이썬으로 따로 계산해 assert로 앱의 답과 맞춥니다(check_numbers).
-  - 이야기 버전(ST)은 아직 없어서 건너뜁니다(앱 원본 u6-volume.st.js가 생기면 ST 목록에 더함).
+  - 이야기 버전(ST, `python3 gen_u6-volume.py st`)도 같은 방법으로 ../units/u6-volume.st.js('6학년 1반 교실 새 단장',
+    1·2·3~4·5~6·7~8·9·10·11차시)의 LESSONS를 읽어 sem1-soop/sheets/에 만듭니다. 이야기 엔진 부품은 종이로 바꿉니다:
+    panes(보여요·생각해요·궁금해요 세 칸) · thenWhy('왜 그럴까요?' 쓰기, 정답에 앱의 모범 답) · ruleFirst(활동 전에 '먼저 예상해요',
+    정답에 '실제 규칙') · wonderRecall(1차시 '궁금해요' 다시 보기) · sequence(차례 기호 쓰기). 기본형은 쓰기 칸에 앱 help의 문장 틀을 '도움'으로.
+    9차시 '상자 8개 쌓기'(앱에서 찾는 활동)는 정답 그림 대신 쌓는 방법을 적는 표를 줍니다.
+    실제 크기 그림: 1차시 가로 9 cm·세로 6 cm 이름표, 2차시 1 cm³ 정육면체의 전개도.
+    차시 id가 ST_IDS와 다르면 멈추고, 앱의 답은 ST_EXPECT(파이썬으로 따로 계산)와 맞춥니다.
 그림은 임시 폴더에서 PNG로 바꿉니다(저장소에는 남기지 않음).
 """
 
@@ -223,7 +230,6 @@ NUM = '①②③④⑤⑥⑦⑧⑨⑩'
 KO = '㉠㉡㉢㉣㉤㉥㉦㉧'
 WORK = tempfile.mkdtemp(prefix='u6vol_')
 K = 40            # 실제 크기: 1 cm = 40 px → 그림 너비 mm = px ÷ 4
-ST = []           # 이야기 버전 차시(아직 없음 — 원본이 생기면 더함)
 
 INK, BLUE, RED, GRAY, GRID = '#1D2A2A', '#2B7BD6', '#D64545', '#8795A1', '#B8C6D2'
 
@@ -505,12 +511,27 @@ PAPER_RULES = [
     (r'로 늘려 보세요\.$', '로 늘린 그림을 살펴보세요.'),
     (r'가를 쌓기나무로 채워 보세요\.', '가를 쌓기나무로 채운 그림을 살펴보세요.'),
 ]
+ST_RULES = [   # 이야기 버전 글만(교과서 버전 글은 그대로)
+    (r'떠오르는 것을 세 칸에 써서 붙여요\.', '떠오르는 것을 세 칸에 써 보세요.'),
+    (r'배울 내용을 차례대로 눌러 보세요\.', '배울 내용을 차례대로 기호로 써 보세요.'),
+    (r'카드를 차례대로 눌러 보세요\.', '카드를 차례대로 기호로 써 보세요.'),
+    (r'두 수납 상자 가와 나의 면끼리 여러 가지로 맞대어 보세요\.', '두 수납 상자 가와 나의 면끼리 여러 가지로 맞대어 본다고 생각해 보세요.'),
+    (r'두 상자를 빈틈없이 채워 보세요\.', '두 상자를 빈틈없이 채운 그림을 보고 세어 보세요.'),
+    (r'쌓기나무로 가로, 세로, 높이를 늘려 보며 부피의 변화를 살펴보세요\.', '쌓기나무 그림을 보고 가로, 세로, 높이를 늘렸을 때 부피의 변화를 살펴보세요.'),
+    (r'쌓기나무로 똑같이 쌓고, 하나하나', '쌓기나무로 똑같이 쌓은 그림을 보고, 하나하나'),
+    (r'정육면체 틀을 쌓아 보세요\.', '정육면체 틀을 가득 쌓은 그림을 살펴보세요.'),
+    (r'먼저 예상해 보고, 쌓기나무를 채워 보세요\.', '먼저 예상해 보고, 쌓기나무를 채운 그림으로 확인해 보세요.'),
+    (r'두 가지 모양으로 쌓아 보세요\.', '두 가지 모양으로 쌓은 그림을 살펴보세요.'),
+    (r'한 층에 1개씩 4층으로 쌓아 보세요\.', '한 층에 1개씩 4층으로 쌓았어요.'),
+    (r'한 층에 4개씩 1층으로 놓아 보세요\.', '한 층에 4개씩 1층으로 놓았어요.'),
+    (r'내 붙임쪽지 3장을 만들어 교실에 붙여요\.', '내 붙임쪽지 3장에 적을 수를 정해요.'),
+]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|단추|화면|컴퓨터 친구|앱|‘한 줄 채우기’|‘한 층 채우기’')
 
 
 def paper(t):
     t = str(t or '')
-    for a, b in PAPER_RULES:
+    for a, b in PAPER_RULES + (ST_RULES if DATA.get('kind') == 'st' else []):
         t = re.sub(a, b, t)
     sents = re.split(r'(?<=[.?!”])\s+', t)
     return ' '.join(x for x in sents if x and not INTERACT.search(x)).strip()
@@ -695,20 +716,58 @@ def w_sequence(s, lv, rec):
 
 def w_write(s, lv, rec):
     ans = []
+    st = DATA.get('kind') == 'st'
     for it in rec['items']:
         s.ask(it['q'], blank=False)
+        if st and lv == '기본형' and len(it.get('help') or []) > 1:
+            s.text('도움: ' + it['help'][1])
         if lv == '기본형' and it.get('tag'):
             s.labeled([(it['tag'], '')], row_h=3969 * 2)
         else:
             s.lines(3)
-        ans.append(it['ph'] or '(생각을 쓰면 맞아요)')
+        ans.append(('예) ' + it['ans']) if (st and it.get('ans')) else (it['ph'] or '(생각을 쓰면 맞아요)'))
     return ' / '.join(ans)
+
+
+# ================================================================ 이야기 엔진 부품 → 활동지
+def w_panes(s, lv, rec):
+    """보여요·생각해요·궁금해요 세 칸(이야기 1차시)"""
+    put_fig(s, rec.get('fig'), 0.25, hi=150)
+    if lv == '기본형':
+        s.labeled([(it['t'], '%s  (%s)' % (it['ph'], it['hint']) if it.get('hint') else it['ph']) for it in rec['items']], row_h=3969 * 2)
+    else:
+        for it in rec['items']:
+            s.ask(it['t'] + ':', blank=False)
+            s.lines(2)
+    return '(자유) ' + ' / '.join('%s 예) %s' % (it['t'], it['ex'][0]) for it in rec['items'] if it.get('ex'))
+
+
+def w_thenwhy(s, lv, rec):
+    s.ask('왜 그럴까요? ' + rec['q'], blank=False)
+    if lv == '기본형' and len(rec.get('help') or []) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(2)
+    return '왜? 예) ' + rec['ans']
+
+
+def w_rule(s, lv, rec):
+    s.ask('먼저 예상해요 · ' + rec['q'], blank=False)
+    if lv == '기본형' and len(rec.get('help') or []) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(2)
+    return '예상(자유) — 실제 규칙: ' + rec['ans']
+
+
+def w_wonder(s, lv, rec):
+    s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 보고, 이제 답할 수 있는지 떠올려 보세요.')
+    return ''
 
 
 
 
 # ================================================================ 이 단원의 조작 부품 → 활동지
-REAL_Q = {'직사각형의 넓이는 몇 cm²인가요?': lambda: rect_real(8, 5)}
+REAL_Q = {'직사각형의 넓이는 몇 cm²인가요?': lambda: rect_real(8, 5),
+          '직사각형 모양 이름표의 넓이는 몇 cm²인가요?': lambda: rect_real(9, 6)}     # 이야기 버전 1차시
 
 
 def w_ask_real(s, lv, rec, k=0.25):
@@ -775,8 +834,9 @@ def faces_of(d):
 
 def w_touch(s, lv, rec):
     A, B = rec['opt']['A'], rec['opt']['B']
-    side(s, [('상자 가', rec['figs0'][0]['svg']), ('상자 나', rec['figs0'][1]['svg'])], 110)
-    s.text('상자 가는 가로 쌓기나무 %d개, 세로 %d개, 높이 %d개 길이이고, 상자 나는 가로 %d개, 세로 %d개, 높이 %d개 길이예요.' % (A[0], A[1], A[2], B[0], B[1], B[2]))
+    nA, nB = rec['opt'].get('nA') or '상자 가', rec['opt'].get('nB') or '상자 나'
+    side(s, [(nA, rec['figs0'][0]['svg']), (nB, rec['figs0'][1]['svg'])], 110)
+    s.text('%s는 가로 쌓기나무 %d개, 세로 %d개, 높이 %d개 길이이고, %s는 가로 %d개, 세로 %d개, 높이 %d개 길이예요.' % (nA, A[0], A[1], A[2], nB, B[0], B[1], B[2]))
     FA, FB = faces_of(A), faces_of(B)
     both = [(a, b) for a in FA for b in FB if sorted(a[:2]) == sorted(b[:2])]
     s.choices([('가와 나의 면끼리 맞대었을 때 두 길이가 모두 같은 면이 있나요?', '( 있어요 / 없어요 )')])
@@ -852,6 +912,8 @@ def w_pack(s, lv, rec):
     o = rec['opt']
     B, N = o['box'], o['N']
     s.text('상자 한 개는 가로 %d cm, 세로 %d cm, 높이 %d cm예요. (겹치는 부분 없이 포장해요.)' % tuple(B))
+    if DATA.get('kind') == 'st' and o.get('start'):
+        return w_pack_search(s, lv, rec)
     if CTX['challenge']:
         good = [p for p in rec['all'] if p['s'] < 632]
         assert len(good) == 1 and len(rec['sol']) == 1 and good[0]['n'] == rec['sol'][0]['n'], good
@@ -876,6 +938,27 @@ def w_pack(s, lv, rec):
     return after(s, lv, rec)
 
 
+def w_pack_search(s, lv, rec):
+    """이야기 9차시 '상자 8개 쌓기': 앱에서 찾는 활동이라 정답 그림 대신 쌓는 방법을 적는 표"""
+    o = rec['opt']
+    N, st0 = o['N'], o['start']
+    best = min(p['s'] for p in rec['all'])
+    good = [p for p in rec['all'] if p['s'] == best]
+    assert len(good) == 1 and len(rec['sol']) == 1 and good[0]['n'] == rec['sol'][0]['n'], good
+    pic(s, rec['one'], 40)
+    s.text('상자 %d개를 여러 가지로 쌓아 보고, 쌓은 모양의 크기와 겉넓이를 표에 써 보세요. 겉넓이가 가장 작은 모양을 찾아요.' % N)
+    rows = [['가로로', '앞뒤로', '위로', '쌓은 모양(가로 × 세로 × 높이)', '겉넓이']]
+    ex = next(p for p in rec['all'] if p['n'] == st0)
+    rows.append(['%d개' % st0[0], '%d개' % st0[1], '%d층' % st0[2], '%d cm × %d cm × %d cm' % tuple(ex['D']), '%d cm²' % ex['s'] if lv == '기본형' else 'cm²'])
+    rows += [['개', '개', '층', 'cm ×      cm ×      cm', 'cm²'] for _ in range(4)]
+    s.table(rows, col_mm=[22, 22, 22, 74, 40])
+    g = good[0]
+    others = ', '.join('%s %d' % ('×'.join(map(str, p['n'])), p['s']) for p in sorted(rec['all'], key=lambda p: p['s']))
+    a = '표: 처음 모양 %d×%d×%d → %d cm × %d cm × %d cm, %d cm² / 가장 작은 쌓기 가로로 %d개·앞뒤로 %d개·%d층 → %d cm × %d cm × %d cm, %d cm² (8개를 쌓는 방법 모두: %s)' % (
+        tuple(st0) + tuple(ex['D']) + (ex['s'],) + tuple(g['n']) + tuple(g['D']) + (g['s'], others))
+    return after(s, lv, rec, a)
+
+
 def same_scale(items, gap=40):
     """그림을 줄이거나 늘리지 않고 아래를 맞춰 나란히(이름은 아래)"""
     H = max(vb(v)[3] for _, v in items)
@@ -892,20 +975,21 @@ def w_make(s, lv, rec):
     o = rec['opt']
     vol = o.get('kind') != 'surf'
     U, word = ('cm³', '부피') if vol else ('cm²', '겉넓이')
-    s.text('① 내 문제 만들기 — 주변에서 직육면체 모양의 물건을 하나 골라 자로 가로, 세로, 높이를 재고, %s를 구하는 문제를 만들어 보세요.' % word)
+    where = '교실에서' if DATA.get('kind') == 'st' else '주변에서'
+    s.text('① 내 문제 만들기 — %s 직육면체 모양의 물건을 하나 골라 자로 가로, 세로, 높이를 재고, %s를 구하는 문제를 만들어 보세요.' % (where, word))
     if lv == '기본형':
-        s.text('예) 지우개, 필통, 과자 상자, 택배 상자, 사물함, 주사위, 초콜릿 상자, 휴지 상자')
+        s.text('예) ' + ', '.join(o.get('objs') or ['지우개', '필통', '과자 상자', '택배 상자', '사물함', '주사위', '초콜릿 상자', '휴지 상자']))
     s.labeled([('고른 물건', ''), ('잰 길이', '가로 (       ) cm,  세로 (       ) cm,  높이 (       ) cm'), ('내가 만든 문제', ''), ('내 답', '')],
               label_mm=34, row_h=3969 + 600)
     f = o['friend']
-    s.text('② 바꾸어 풀기 — 짝이 만든 문제를 풀어 보세요.')
+    s.text('② 바꾸어 풀기 — %s 만든 문제를 풀어 보세요.' % (jo(f['who'], '이/가') if f.get('who') else '짝이'))
     s.fill(f['q'])
     pic(s, rec['friendSvg'], 50)
     s.ask('%s의 %s:   (            ) %s' % (f['obj'], word, U), blank=False)
     d = f['d']
     right = d[0] * d[1] * d[2] if vol else 2 * (d[0] * d[1] + d[1] * d[2] + d[0] * d[2])
     assert right == f['a'], (f, right)
-    return '내 문제: 잰 길이로 바르게 계산하면 맞아요 / 짝의 문제 %d %s' % (f['a'], U)
+    return '내 문제: 잰 길이로 바르게 계산하면 맞아요 / %s의 문제 %d %s' % (f.get('who') or '짝', f['a'], U)
 
 
 def w_notes(s, lv, rec):
@@ -1007,7 +1091,8 @@ def w_chain(s, lv, rec):
 
 WIDGETS = {'ask': w_ask_real, 'quiz': w_quiz, 'blanks': w_blanks, 'write': w_write, 'chain': w_chain, 'pre': w_pre,
            'vo6Pour': w_pour, 'vo6Touch': w_touch, 'vo6Fill': w_fill, 'vo6Dims': w_dims, 'vo6Net': w_net, 'vo6M3': w_m3,
-           'vo6Pack': w_pack, 'vo6Make': w_make, 'vo6Hunt': w_hunt, 'vo6Notes': w_notes, 'vo6Cards': w_cards}
+           'vo6Pack': w_pack, 'vo6Make': w_make, 'vo6Hunt': w_hunt, 'vo6Notes': w_notes, 'vo6Cards': w_cards,
+           'sequence': w_sequence, 'panes': w_panes, 'thenwhy': w_thenwhy, 'rule': w_rule, 'wonder': w_wonder}
 
 
 def run_rec(s, lv, r):
@@ -1025,7 +1110,7 @@ def extra_cube(s, lv):
     return '전개도 한 모서리 1 cm'
 
 
-EXTRA = {('t2', '약속하기'): extra_cube}
+EXTRA = {('t2', '약속하기'): extra_cube, ('s2', '약속하기 — 1 cm³'): extra_cube}
 
 
 # ================================================================ 정답 다시 계산(앱의 수와 맞추기)
@@ -1053,7 +1138,7 @@ def all_nums(recs, out=None):
 EXPR = re.compile(r'(\(?\d[\d.\s()−\-+×÷]*[−\-+×÷][\d.\s()−\-+×÷]*\d\)?)\s*=\s*$')
 
 
-def check_numbers(D):
+def check_numbers(D, expect=None, min_expr=25):
     """식이 적힌 칸은 식을 계산해 맞추고, 식이 없는 칸은 문제의 수로 따로 계산한 값과 맞춥니다."""
     seen, nexpr = [], 0
     for L in D['lessons']:
@@ -1067,10 +1152,10 @@ def check_numbers(D):
                     assert abs(v - n) < 1e-9, ('식 계산이 달라요', L['no'], prev, n, v)
                     nexpr += 1
                 seen.append(n)
-    assert nexpr >= 25, nexpr
+    assert nexpr >= min_expr, nexpr
     vol = lambda a, b, c: a * b * c
     surf = lambda a, b, c: 2 * (a * b + b * c + a * c)
-    expect = [8 * 5, 100 * 100, vol(*D['D']['boxA']), vol(*D['D']['boxB']), vol(*D['D']['boxA']) // 4,     # 1·2차시(지우개는 쌓기나무 4개)
+    expect = expect if expect is not None else [8 * 5, 100 * 100, vol(*D['D']['boxA']), vol(*D['D']['boxB']), vol(*D['D']['boxA']) // 4,     # 1·2차시(지우개는 쌓기나무 4개)
               vol(4, 3, 3), 4 * 3, vol(5, 4, 2), 5 * 4, vol(6, 4, 5), vol(5, 5, 5), vol(10, 9, 7), vol(8, 8, 8), vol(7, 4, 9),
               vol(10, 4, 6), 6 ** 3, 45 * 7, 360 / (12 * 6), vol(10, 14, 10), 2 ** 3,
               vol(400, 200, 250), 12, vol(9, 7, 3), 100 ** 3, 5 * 10 ** 6, 12000000 / 10 ** 6, 7 * 10 ** 6, 46000000 / 10 ** 6,
