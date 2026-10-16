@@ -231,7 +231,7 @@ var SY3_SYM_IS = (parts) => sy3Kind(parts, true);
 """
 
 
-def extract(src, jobs):
+def extract(src, jobs, pre_js=None):
     jf = os.path.join(WORK, 'jobs.json')
     with open(jf, 'w', encoding='utf-8') as f:
         json.dump(jobs, f, ensure_ascii=False)
@@ -239,7 +239,7 @@ def extract(src, jobs):
     with open(js, 'w', encoding='utf-8') as f:
         f.write(_EX)
     with open(pre, 'w', encoding='utf-8') as f:
-        f.write(WS_JS + WS_LESSON_JS)
+        f.write(WS_JS + (WS_LESSON_JS if pre_js is None else pre_js))
     r = subprocess.run(['node', js, src, jf, FONT, pre], capture_output=True, text=True)
     if r.returncode:
         raise RuntimeError(r.stderr[-3000:])
@@ -485,8 +485,12 @@ _SVG, _DAT = {}, {}
 def load(src):
     """앱 원본에서 그림·자료를 한 번에 뽑기"""
     if src not in _SVG:
-        _SVG[src] = extract(src, FIGS)
-        _DAT[src] = extract(src, DATA)
+        if src == SRC_ST:      # 이야기 버전: 앱 LESSONS를 그대로 읽어 쓰는 ST_JS·ST_FIGS·ST_DATA
+            _SVG[src] = extract(src, ST_FIGS, ST_JS)
+            _DAT[src] = extract(src, ST_DATA, ST_JS)
+        else:
+            _SVG[src] = extract(src, FIGS)
+            _DAT[src] = extract(src, DATA)
     return _SVG[src], _DAT[src]
 
 

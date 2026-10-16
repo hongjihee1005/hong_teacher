@@ -998,7 +998,7 @@ function cb5Pick(body, api, opt) {
     if (fin) return true; api.tryOnce(); const got = [...sel].sort().map(i => opt.items[i].name).join(", ") || "-";
     cards.forEach((c, i) => { c.classList.remove("cb5-good", "cb5-bad"); if (sel.has(i)) c.classList.add(opt.a.includes(i) ? "cb5-good" : "cb5-bad"); });
     const ex = [...sel].find(i => !opt.a.includes(i));
-    if (ex != null) { api.fail(opt.whyExtra ? opt.whyExtra(ex) : `${opt.items[ex].name}는 답이 아니에요.`, got); return false; }
+    if (ex != null) { api.fail(opt.whyExtra ? opt.whyExtra(ex) : `${cb5Jo(opt.items[ex].name, "은/는")} 답이 아니에요.`, got); return false; }
     if (sel.size < opt.a.length) { api.fail(opt.whyMiss || `아직 ${opt.a.length - sel.size}개 더 있어요.`, got); return false; }
     fin = true; cb5Then(body, api, opt, got, opt.msg || opt.ok); return true;   // → api.done(
   };
@@ -1090,7 +1090,7 @@ function cb5Robot(body, api, opt) {   /* 끝나면 cb5Then → api.done( */
     const si = opt.slots.findIndex((sl, i) => placed[i] == null && Math.hypot(sl.x - pc.x, sl.y - pc.y) < 1.3 && sl.kind === pc.kind);
     const near = opt.slots.findIndex((sl, i) => placed[i] == null && Math.hypot(sl.x - pc.x, sl.y - pc.y) < 1.3);
     if (si >= 0) { pc.x = opt.slots[si].x; pc.y = opt.slots[si].y; pc.at = si; placed[si] = pc.i; }
-    else { if (near >= 0) { api.tryOnce(); api.hint(`${pc.name}는 그 자리에 맞지 않아요. 설계도의 크기와 모양을 살펴봐요.`); } pc.x = pc.home[0]; pc.y = pc.home[1]; }
+    else { if (near >= 0) { api.tryOnce(); api.hint(`${cb5Jo(pc.name, "은/는")} 그 자리에 맞지 않아요. 설계도의 크기와 모양을 살펴봐요.`); } pc.x = pc.home[0]; pc.y = pc.home[1]; }
     draw();
     if (placed.every(x => x != null)) cb5Then(body, api, opt, "장난감 완성", opt.msg || "설계도대로 완성했어요!");
   });
@@ -1189,7 +1189,7 @@ function cb5PassGame(body, api, opt) {
     hands = hands.map((hd, p) => { const nh = hd.filter((_, i) => i !== give[p]); nh.push(out[(p + 3) % 4]); return nh; });
     passes++; sel = null;
     const w = [1, 2, 3].find(p => same(hands[p]));
-    if (w && !same(hands[0])) { over = true; reveal = w; wins[w]++; msg.textContent = `${NAMES[w]}가 같은 도형 카드 3장을 모았어요! 카드를 보고 정말 같은 도형인지 확인해 봐요.`; }
+    if (w && !same(hands[0])) { over = true; reveal = w; wins[w]++; msg.textContent = `${cb5Jo(NAMES[w], "이/가")} 같은 도형 카드 3장을 모았어요! 카드를 보고 정말 같은 도형인지 확인해 봐요.`; }
     else msg.textContent = `카드를 넘기고 ${NAMES[3]}에게서 한 장을 받았어요. 같은 도형 3장이 되었는지 살펴봐요.`;
     draw();
   }
