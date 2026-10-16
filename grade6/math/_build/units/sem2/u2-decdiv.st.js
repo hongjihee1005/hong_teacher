@@ -946,7 +946,7 @@ function dv2Island(body, api, opt) {
       phase = "wait";
       const q = c.r == null ? `${dv2Sp(c.e)} = ${c.ans}` : `${dv2Sp(c.e)} = ${dv2Str(dv2E(c.e))} → ${DV2PLACE[c.r]}까지 ${c.ans}`;
       if (dv2Eq(v, c.want)) say.textContent = `친구가 계산기로 확인했더니 ${q} 맞아요! 말이 그 칸에 머물러요.`;
-      else { pos[k] = start; drawTok(); say.textContent = `친구가 계산기로 확인했더니 ${q}예요. 말을 전에 있던 칸으로 돌려놓아요.`; }
+      else { pos[k] = start; drawTok(); say.textContent = `친구가 계산기로 확인했더니 ${dv2J(q, "이에요")}. 말을 전에 있던 칸으로 돌려놓아요.`; }
       ask.innerHTML = ""; paintStatus(); endTurn();
     };
     inp.addEventListener("keydown", ev => { if (ev.key === "Enter") go(); });
@@ -995,7 +995,7 @@ function dv2Bingo(body, api, opt) {
   const winCheck = who => {
     const a = dv2Lines(mk), b = dv2Lines(bmk);
     const first = who === "me" ? [a, "내가"] : [b, "컴퓨터 친구가"], second = who === "me" ? [b, "컴퓨터 친구가"] : [a, "내가"];
-    if (first[0] >= 3 || second[0] >= 3) { finished = true; phase = "end"; drawBot(); say.textContent = `${first[0] >= 3 ? first[1] : second[1]} 먼저 3줄을 만들었어요! 빙고! (나 ${a}줄, 컴퓨터 친구 ${b}줄)`; api.tryOnce(); api.done(`빙고 끝 (나 ${a}줄)`, opt && opt.ok); return true; }
+    if (first[0] >= 3 || second[0] >= 3) { finished = true; phase = "end"; drawBot(); say.textContent = (a >= 3 && b >= 3 ? "나와 컴퓨터 친구가 함께 3줄을 만들었어요! 빙고! 비겼어요." : `${first[0] >= 3 ? first[1] : second[1]} 먼저 3줄을 만들었어요! 빙고!`) + ` (나 ${a}줄, 컴퓨터 친구 ${b}줄)`; api.tryOnce(); api.done(`빙고 끝 (나 ${a}줄)`, opt && opt.ok); return true; }
     return false;
   };
   const myCall = k => {
@@ -1170,7 +1170,7 @@ const LESSONS = [
       render: ruleFirst((b, a) => dv2Line(b, a, { to: "4.56", step: "1.52", max: "5", tick: "1", unit: "m", sub: { k: 100, unit: "cm" },
         asks: [
           ["묶을 수 있는 꽃다발의 수를 구하는 식은", { o: ["4.56÷1.52", "4.56×1.52", "1.52÷4.56"], a: 0 }],
-          ["어림하기: 1.52 m를 1.5 m로 보면 1.5×3 =", { n: "4.5", e: "1.5×3" }, "이므로 약", { n: "3", s: 1 }, "다발쯤이에요."],
+          ["어림하기: 1.52 m를 1.5 m로 보면 1.5×3 =", { n: "4.5", e: "1.5×3" }, "이므로", { n: "3", s: 1 }, "다발쯤 될 것 같아요."],
           ["4.56 m =", { n: "456" }, "cm, 1.52 m =", { n: "152" }, "cm이므로 4.56÷1.52 = 456÷152 =", { n: "3", e: "456÷152" }],
           ["꽃다발을", { n: "3", s: 1 }, "다발 묶을 수 있어요."]],
         ok: "m를 cm로 바꾸어도 몫은 같아요. 4.56÷1.52=456÷152=3, 꽃다발을 3다발 묶을 수 있어요." }),
