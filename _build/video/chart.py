@@ -25,11 +25,14 @@ class Chart:
         g = VGroup()
         nt = int(round((vmax - vmin) / step))
         self.unit = h / nt
+        self.ylabels = {}
         for i in range(nt + 1):
             y = self.o[1] + i * self.unit
             g.add(Line([self.o[0], y, 0], [self.o[0] + w, y, 0], color=GRIDC if i else INK, stroke_width=2 if i else 4))
             if i % tick_every == 0:
-                g.add(T(str(vmin + i * step), label_size - 4, SOFT).next_to([self.o[0], y, 0], LEFT, buff=0.15))
+                lab = T(str(vmin + i * step), label_size - 4, SOFT).next_to([self.o[0], y, 0], LEFT, buff=0.15)
+                self.ylabels[i] = lab
+                g.add(lab)
         g.add(Line(self.o, self.o + UP * h, color=INK, stroke_width=4))
         self.xlabels = VGroup()
         for i, it in enumerate(items):
@@ -68,3 +71,23 @@ class Chart:
     def lines(self, values, color=ORANGE):
         return VGroup(*[Line([self.x(i), self.y(values[i]), 0], [self.x(i + 1), self.y(values[i + 1]), 0], color=color,
                              stroke_width=6) for i in range(len(values) - 1)])
+
+
+
+def wave(ch, real_start, color=INK, bg="#FFFFFF"):
+    """물결선: 맨 아래 눈금을 0으로 바꾸고, 0과 real_start 사이 세로축에 물결선(≈)을 그림
+    (ch는 vmin을 real_start보다 한두 칸 아래로 잡아 만든 Chart)"""
+    from manim import Rectangle, VMobject
+    o = ch.o
+    lab0 = ch.ylabels[0]
+    new0 = T("0", 22, SOFT).move_to(lab0.get_right() + LEFT * 0.12, aligned_edge=RIGHT)
+    lab0.become(new0)
+    yc = (o[1] + ch.y(real_start)) / 2
+    gap = Rectangle(width=0.16, height=0.22, fill_color=bg, fill_opacity=1, stroke_width=0).move_to([o[0], yc, 0])
+    g = VGroup(gap)
+    xs = np.linspace(o[0] - 0.2, o[0] + 0.2, 25)
+    for dy in (0.06, -0.06):
+        v = VMobject(color=color, stroke_width=4)
+        v.set_points_smoothly([np.array([x, yc + dy + 0.045 * np.sin((x - xs[0]) / 0.4 * 2 * np.pi), 0]) for x in xs])
+        g.add(v)
+    return g
