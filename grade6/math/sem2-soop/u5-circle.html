@@ -2295,7 +2295,7 @@ function ci6Lab(body, api, opt) {   /* 끝나면 ci6Then → api.done( */
 /* ---------- 4차시: 물레방아 바퀴 한 바퀴 굴리기 ---------- */
 function ci6Roll(body, api, opt) {   /* 끝나면 ci6Then → api.done( */
   /* 거리 재는 바퀴(측정 바퀴) 한 바퀴 굴리기. opt: {d, unit:"cm", k(1단위 px), tick(작은 눈금 간격), lab(글 간격), max} */
-  const D = opt.d, U = opt.unit || "cm", k = opt.k || 5.4, tick = opt.tick || 2, labE = opt.lab || 10, x0 = 70, gy = 222, r = D / 2 * k, W = 720, H = 280, goal = x0 + D * Math.PI * k;
+  const D = opt.d, U = opt.unit || "cm", k = opt.k || 5.4, tick = opt.tick || 2, labE = opt.lab || 10, r = D / 2 * k, x0 = Math.max(70, r + 18), gy = 222, W = 720, H = 280, goal = x0 + D * Math.PI * k;
   const max = opt.max || Math.floor((W - x0 - 10) / k / labE) * labE;
   const s = makeSvg(W, H); s.setAttribute("class", "ci6fig"); s.style.maxWidth = "38em";
   s.append(svgEl("rect", { x: 0, y: gy, width: W, height: H - gy, fill: "#DCEBD3" }));
@@ -2305,7 +2305,7 @@ function ci6Roll(body, api, opt) {   /* 끝나면 ci6Then → api.done( */
   const trace = ci6Line(s, x0, gy + 3, x0, gy + 3, CI6.blue, 6);
   const bars = svgEl("g"); s.append(bars);
   const handle = svgEl("g", { "pointer-events": "none" });
-  handle.append(svgEl("line", { x1: 0, y1: 0, x2: -r * .9, y2: -r * 1.05, stroke: "#4A5563", "stroke-width": 7, "stroke-linecap": "round" }), svgEl("rect", { x: ci6R(-r * .9 - 18), y: ci6R(-r * 1.05 - 8), width: 26, height: 14, rx: 6, fill: "#E47A38" }));
+  handle.append(svgEl("line", { x1: 0, y1: 0, x2: -r * .45, y2: -r * 1.25, stroke: "#4A5563", "stroke-width": 7, "stroke-linecap": "round" }), svgEl("rect", { x: ci6R(-r * .45 - 13), y: ci6R(-r * 1.25 - 8), width: 26, height: 14, rx: 6, fill: "#E47A38" }));
   const wheel = svgEl("g"); wheel.style.cursor = "grab";
   wheel.append(svgEl("circle", { cx: 0, cy: 0, r, fill: "rgba(255,214,102,.35)", stroke: "#33404D", "stroke-width": 7 }));
   for (let i = 0; i < 4; i++) { const a = i * Math.PI / 2; ci6Line(wheel, 0, 0, (r - 4) * Math.cos(a), (r - 4) * Math.sin(a), "#7C8794", 5); }
