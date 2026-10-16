@@ -928,17 +928,17 @@ def long_fig(s, probs, pre):
 
 # ---------------------------------------------------------------- 소수점 찍기 줄(앱 dn3Point)
 def point_fig(s, items):
-    c, fs = 46, 34
+    c, fs = 58, 34
     out, y, wmax = [], 34, 0
     for e, cells in items:
         cap = sp(e) + '의 몫:'
         out.append(T(12, y, cap, 28))
         x = 24 + tw(cap, 28)
         for k, dgt in enumerate(cells):
-            out.append(R(x + k * c, y - c / 2, c - 6, c, '#FFF8E6', INK, 2, rx=6))
-            out.append(T(x + k * c + (c - 6) / 2, y, dgt, fs, anchor='middle'))
+            out.append(R(x + k * c, y - 23, c - 18, 46, '#FFF8E6', INK, 2, rx=6))
+            out.append(T(x + k * c + (c - 18) / 2, y, dgt, fs, anchor='middle'))
             if k < len(cells) - 1:
-                out.append(C(x + k * c + c - 3, y + c / 2 - 4, 5, '#fff', GREY, 2))
+                out.append(C(x + k * c + c - 9, y + 17, 6, '#fff', DARK, 2))
         wmax = max(wmax, x + len(cells) * c + 12)
         y += c + 26
     W, H = int(wmax), int(y - 26 + c / 2 + 10)

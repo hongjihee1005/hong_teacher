@@ -5,6 +5,7 @@
  *    - 단원 모음 페이지: 배포 주소 그대로 (HTML 파일 이름 index_hub)
  *    - 1단원 분수의 나눗셈:  ?page=fracnat (index_fracnat)
  *    - 4단원 비와 비율:    ?page=ratio (index_ratio)
+ *    - 5단원 여러 가지 그래프: ?page=graph (index_graph)
  *    - 6단원 직육면체의 부피와 겉넓이: ?page=volume (index_volume)
  *    (교과서 버전과 이야기 버전 중 쓰려는 앱을 붙여 넣으면 됩니다. 두 버전을 함께 쓰려면 스크립트를 하나 더 만드세요.)
  * 3) 아래 TEACHER_PIN을 선생님만 아는 숫자로 바꿉니다.
@@ -20,7 +21,7 @@ function doGet(e) {
     catch (err) { return json_({ error: err.message }); }
   }
   const page = (e && e.parameter && e.parameter.page) || 'hub';   // 기본은 단원 모음 페이지
-  const files = { hub: 'index_hub', fracnat: 'index_fracnat', ratio: 'index_ratio', volume: 'index_volume' };
+  const files = { hub: 'index_hub', fracnat: 'index_fracnat', ratio: 'index_ratio', graph: 'index_graph', volume: 'index_volume' };
   const file = files[page] || 'index_hub';
   return HtmlService.createHtmlOutputFromFile(file)
     .setTitle('6학년 1학기 수학 개념 계단')
