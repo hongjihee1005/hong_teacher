@@ -485,7 +485,7 @@ function sp6Nums(body, api, opt) {
   }
   const tot = opt.total ? h("input", { type: "text", inputmode: "numeric", style: "width:3.6em;font-size:1.1em;text-align:center", "aria-label": "쌓기나무 개수" }) : null;
   body.append(h("div", { class: "sp6pt" }, h("div", { class: "sp6ttl" }, opt.title || "위에서 본 모양"), grid, h("div", { class: "sp6side" }, "앞")),
-    tot ? h("p", { class: "sent" }, (opt.totalQ || "똑같은 모양으로 만드는 데 필요한 쌓기나무는") + " ", tot, " 개예요.") : null);
+    ...(tot ? [h("p", { class: "sent" }, (opt.totalQ || "똑같은 모양으로 만드는 데 필요한 쌓기나무는") + " ", tot, " 개예요.")] : []));
   const S = sp6Sum(H);
   api.provide({ words: ["각 자리의 개수", "모두 더하기"], answers: [(opt.given ? "" : "각 자리 수: " + ins.map(o => o.a).join(", ") + " · ") + (tot ? `${S}개` : "")] });
   const all = ins.map(o => o.inp).concat(tot ? [tot] : []);
@@ -531,7 +531,7 @@ function sp6Pick(body, api, opt) {
   };
   kick = autoRun(() => sel.size >= A.length, () => [...sel].sort().join(","), check, multi ? 600 : 260);
   body.append(...(opt.q ? [h("div", { class: "jua" }, opt.q)] : []), h("div", { class: "sp6cards", style: `grid-template-columns:repeat(auto-fill,minmax(${opt.cardW || "9em"},1fr))` }, ...cards),
-    multi ? h("p", { class: "sp6small" }, `알맞은 것을 모두(${A.length}개) 고르면 저절로 확인해요.`) : null);
+    ...(multi ? [h("p", { class: "sp6small" }, `알맞은 것을 모두(${A.length}개) 고르면 저절로 확인해요.`)] : []));
 }
 
 /* ---------- 다섯 방향에서 본 모양 살펴보기 ---------- */
