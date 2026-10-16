@@ -278,6 +278,7 @@ PAPER_RULES = [
     (r'\(교과서 카드와 다를 수 있어요\)', '(교과서 카드와 다를 수 있어요)'),
 ]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|돌려 보세요|단추|컴퓨터|‘[^’]*’를 ')
+INTERACT_ST = re.compile(r'눌러|누르|누를|끌어|돌려 보세요|단추|컴퓨터(?! \d)|‘[^’]*’를 ')     # 가전제품 ‘컴퓨터 3 kWh’는 남김
 # 이야기 버전에만 쓰는 종이 안내(교과서 버전 글은 그대로 두려고 따로 둠)
 PAPER_RULES_ST = [
     (r'세 칸에 써서 붙여요\.', '세 칸에 써 보세요.'),
@@ -291,6 +292,9 @@ PAPER_RULES_ST = [
     (r'하는 차례대로 눌러 보세요\.', '하는 차례대로 기호를 써 보세요.'),
     (r'두 지도에 실제 거리 1000 m를 선으로 그려 보세요\.', '두 지도에 실제 거리 1000 m를 몇 cm로 그려야 할지 알아보세요.'),
     (r'\(이 앱에서 정한 수\)', ''),
+    (r'소식을 모두 눌러, ', '소식을 모두 살펴보며 '),
+    (r'배우는 차례대로 눌러 ', '배우는 차례대로 기호를 써서 '),
+    (r'기획표의 ‘([^’]+)’를 보고', r'기획표의 \1 소식을 보고'),
     (r'이 앱에서 ', ''),
 ]
 
@@ -300,10 +304,11 @@ def paper(t):
     for a, b in (PAPER_RULES_ST if MODE[0] == 'st' else []) + PAPER_RULES:
         t = re.sub(a, b, t)
     sents = re.split(r'(?:(?<=[.?!])|(?<=[.?!]”))\s+', t)
-    gone = [x for x in sents if x and INTERACT.search(x)]
+    IA = INTERACT_ST if MODE[0] == 'st' else INTERACT
+    gone = [x for x in sents if x and IA.search(x)]
     if gone and os.environ.get('SHOW_DROP'):
         print('  [뺀 문장]', ' | '.join(gone))
-    return ' '.join(x for x in sents if x and not INTERACT.search(x)).strip()
+    return ' '.join(x for x in sents if x and not IA.search(x)).strip()
 
 
 # ================================================================ 그림 찍기(Chromium 한 번만)

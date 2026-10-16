@@ -1170,6 +1170,12 @@ def _to(one):
     return '에' if ST_MODE[0] and not re.search(r'(명|모둠)$', one) else '에게'
 
 
+def _many(one, d, who):
+    """'3명' · 이야기 버전에서 사물이면 '그릇 3개'(교과서 버전 글은 그대로)"""
+    noun = re.sub(r'\s*한\s*\S+$', '', one)
+    return '%s %d%s' % (noun, d, who) if ST_MODE[0] and who != '명' and noun and noun != one else '%d%s' % (d, who)
+
+
 def w_share(s, lv, o, *_):
     N, d = int(o['N']), int(o['d'])
     unit = o.get('unit') or ''
@@ -1183,7 +1189,7 @@ def w_share(s, lv, o, *_):
         to = '에게' if who == '명' else '에'
         s.text('먼저 ‘%s’ 띠 %d개는 %s%s 1개씩 나누어 줄 수 있어요. %s의 몫인 띠 %d개에 색칠해 보세요. '
                '그다음 남은 띠를 똑같이 %d칸으로 %s %s%s 줄 한 칸을 색칠해 보세요.'
-               % (rd(o.get('strip') or '1'), n_whole, '%d%s' % (d, who), to, one, q, d,
+               % (rd(o.get('strip') or '1'), n_whole, _many(one, d, who), to, one, q, d,
                   '나누어 두었어요.' if lv == '기본형' else '나누고,', one, to))
     elif lv == '기본형':
         s.text('띠마다 똑같이 %d칸으로 나누어 두었어요. %s%s 줄 부분을 띠마다 한 칸씩 색칠해 보세요.' % (d, one, _to(one)))
