@@ -171,3 +171,17 @@ def chunk_row(s, size=80, gap=0.55, label_size=44):
         lab.next_to(nums[i], DOWN, buff=0.25)
         labs.add(lab)
     return nums, labs
+
+
+def digit_row(s, right_x, y, size=64, step=0.52, color=None):
+    """자리를 맞춘 숫자 줄: 오른쪽 끝(일의 자리)을 right_x에 두고 왼쪽으로 step씩. 
+    결과 VGroup의 .at(k)는 k번째 자리(0=일) 숫자"""
+    n = len(s)
+    g = VGroup()
+    for i, ch in enumerate(s):
+        k = n - 1 - i
+        d = T(ch, size, color or pcol(k)).move_to([right_x - k * step, y, 0])
+        d.place = k
+        g.add(d)
+    g.at = lambda k: g[n - 1 - k]
+    return g
