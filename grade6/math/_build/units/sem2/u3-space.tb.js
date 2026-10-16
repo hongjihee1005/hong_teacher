@@ -655,10 +655,10 @@ function sp6Photo(objs, ang, opt = {}) {
     s.append(svgEl("rect", { x: 0, y: 0, width: W, height: hz, fill: "#E3F1FB" }), svgEl("rect", { x: 0, y: hz, width: W, height: Hh - hz, fill: "#E5F2DF" }));
     sp6Shot(objs, ang).slice().sort((a, b) => b.depth - a.depth).forEach(o => {
       const sc = Math.max(.45, Math.min(1.6, SP6_RC / Math.max(o.depth, .5)));
-      const x = W / 2 + o.u * sc * (opt.K || 52), y = hz + 52 * sc;
-      const g = sp6Sprite(o.o.kind, o.view, o.side); g.setAttribute("transform", `translate(${sp6R(x)},${sp6R(y)}) scale(${sp6R(sc * (o.o.size || 1))})`); s.append(g);
+      const x = W / 2 + o.u * sc * (opt.K || 60), y = hz + 52 * sc;
+      const g = sp6Sprite(o.o.kind, o.view, o.side); g.setAttribute("transform", `translate(${sp6R(x)},${sp6R(y)}) scale(${sp6R(sc * 1.15 * (o.o.size || 1))})`); s.append(g);
     });
-    if (opt.label) s.append(txt(20, 16, opt.label, 16, { fill: SP6.ink }));
+    if (opt.label) s.append(txt(10, 16, opt.label, 15, { fill: SP6.ink, "text-anchor": "start" }));
   }, opt.maxW || "100%", true);
 }
 /* 위에서 본 지도: 물건 자리와 방향 표시 */
@@ -867,7 +867,7 @@ const SP6_PARK_DIR = [{ t: "가", ang: 180 }, { t: "나", ang: 90 }, { t: "다",
 const SP6_KIT = [{ kind: "kettle", name: "주전자", x: -.7, y: .4, f: [1, 0], size: 1.2 }, { kind: "pot", name: "냄비", x: .8, y: -.3, f: [0, 1], size: 1.2 }];
 const SP6_BLD = [{ kind: "bldg", name: "건축물", x: 0, y: 0, f: [0, 1], size: 1.2 }];
 const SP6_BLD_DIR = [{ t: "가", ang: 180 }, { t: "나", ang: 270 }, { t: "다", ang: 90 }];
-function sp6PhotoCard(objs, ang, name) { return h("figure", {}, h("div", { class: "sp6photo" }, sp6Photo(objs, ang)), h("figcaption", {}, name)); }
+function sp6PhotoCard(objs, ang, name) { return h("figure", { style: "margin:0;width:100%;text-align:center" }, h("div", { class: "sp6photo" }, sp6Photo(objs, ang)), h("figcaption", {}, name)); }
 function sp6Photos(objs, list) { return h("div", { class: "sp6cards", style: "grid-template-columns:repeat(auto-fill,minmax(11em,1fr))" }, ...list.map(([ang, name]) => sp6PhotoCard(objs, ang, name))); }
 const sp6Fr = (el, cap) => h("figure", {}, el, h("figcaption", {}, cap));
 
