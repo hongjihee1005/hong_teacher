@@ -19,8 +19,13 @@
   - 놀이(9차시)는 종이에서 할 수 있게 카드 24장 그림·짝 찾기 표, 또 다른 놀이는 정해 둔 차례(씨앗 고정)의 6판 표로 바꿉니다.
   - 분수: 식 줄은 그림으로 분수를 위아래로 쓰고(빈칸은 네모), 글 속 분수는 '5분의 3'처럼 읽는 말로 씁니다(정답 쪽은 3/5).
 
-이야기 버전은 아직 없습니다. 생기면 ST(차시 함수 목록)를 채우고 SRC_ST가 있으면 sem1-soop/sheets/에 만듭니다.
-ST가 비어 있거나 원본 파일이 없으면 건너뜁니다.
+    python3 gen_u4-ratio61.py st         # 이야기 버전만
+
+이야기 버전(2026-10-16): ../units/u4-ratio.st.js('우리 반 방송부 여론 조사', 10차시: 1~10)를 같은 방법으로 읽어
+sem1-soop/sheets/에 만듭니다(ST = 차시 id 목록 ST_IDS). 이야기 버전에만 있는 것: 기획표 글 상자(ra4sNote)·기획 보드 둘러보기
+(ra4sStudio)·막대사탕 나누어 주기(ra4Candy), 엔진의 panes(보여요·생각해요·궁금해요)·thenWhy(활동 뒤 '왜 그럴까요?')·
+ruleFirst(활동 앞 '먼저 예상해요')·wonderRecall, writeStep의 쓰기 틀(help)과 모범 답(ans). 문장제 답은 check_words_st가 따로 계산해 견줍니다.
+교과서 버전과 같은 부품은 같은 함수를 쓰고, 이야기 버전에서 글이 다른 곳(묶음 표 안내·문제 만들기·종이 안내)만 MODE로 나눕니다.
 """
 import json
 import math
@@ -55,6 +60,7 @@ INK = '#1D2A2A'
 PX_MM = 0.155
 STEP_NAMES = ["만져 보기", "그려 보기", "말해 보기", "약속하기", "확인하기"]     # 앱 엔진(tpl_tb.html)과 같음
 CHECKS = [0]
+MODE = ['tb']          # 지금 만드는 버전(tb | st) — 이야기 버전에서만 바뀌는 글을 고를 때
 
 # ================================================================ 수 읽기·계산
 FR_RE = re.compile(r'\[(?:(\d+) )?([^\[\]/ ]+)/([^\[\]]+)\]')
@@ -272,17 +278,37 @@ PAPER_RULES = [
     (r'\(교과서 카드와 다를 수 있어요\)', '(교과서 카드와 다를 수 있어요)'),
 ]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|돌려 보세요|단추|컴퓨터|‘[^’]*’를 ')
+INTERACT_ST = re.compile(r'눌러|누르|누를|끌어|돌려 보세요|단추|컴퓨터(?! \d)|‘[^’]*’를 ')     # 가전제품 ‘컴퓨터 3 kWh’는 남김
+# 이야기 버전에만 쓰는 종이 안내(교과서 버전 글은 그대로 두려고 따로 둠)
+PAPER_RULES_ST = [
+    (r'세 칸에 써서 붙여요\.', '세 칸에 써 보세요.'),
+    (r'다 고르면 저절로 확인해요\.', ''),
+    (r'두 활동을 모두 해야 계단을 올라가요\.', ''),
+    (r'체험 부스를 두 번 열어 보고, ', '체험 부스를 두 번 연다고 생각하고 '),
+    (r'꾸러미를 세 개까지 늘려 보며 ', '꾸러미 수를 늘린다고 생각하고 '),
+    (r'음료를 세 병까지 만들어 보고, ', '음료를 세 병까지 만든다고 생각하고 '),
+    (r'나누어 준 막대사탕 (\d+)개를 눌러 보고, ', r'나누어 준 막대사탕 \1개에 ×표를 하고, '),
+    (r'양 카드를 □에 놓아 문장을 비로 나타내 보세요\.', '양 카드의 수를 ( )에 써서 문장을 비로 나타내 보세요.'),
+    (r'하는 차례대로 눌러 보세요\.', '하는 차례대로 기호를 써 보세요.'),
+    (r'\(이 앱에서 정한 수\)', ''),
+    (r'소식을 모두 눌러, ', '소식을 모두 읽고 '),
+    (r'모눈 위의 화면 모서리\(빨간 점\)를 끌어 목표에 맞는 화면을 만들어 보세요\.', '모눈에 목표에 맞는 화면을 그려 보세요.'),
+    (r'배우는 차례대로 눌러 ', '배우는 차례대로 기호를 써서 '),
+    (r'기획표의 ‘([^’]+)’를 보고', r'기획표의 \1 소식을 보고'),
+    (r'이 앱에서 ', ''),
+]
 
 
 def paper(t):
     t = str(t or '')
-    for a, b in PAPER_RULES:
+    for a, b in (PAPER_RULES_ST if MODE[0] == 'st' else []) + PAPER_RULES:
         t = re.sub(a, b, t)
     sents = re.split(r'(?:(?<=[.?!])|(?<=[.?!]”))\s+', t)
-    gone = [x for x in sents if x and INTERACT.search(x)]
+    IA = INTERACT_ST if MODE[0] == 'st' else INTERACT
+    gone = [x for x in sents if x and IA.search(x)]
     if gone and os.environ.get('SHOW_DROP'):
         print('  [뺀 문장]', ' | '.join(gone))
-    return ' '.join(x for x in sents if x and not INTERACT.search(x)).strip()
+    return ' '.join(x for x in sents if x and not IA.search(x)).strip()
 
 
 # ================================================================ 그림 찍기(Chromium 한 번만)
@@ -629,7 +655,8 @@ const api = new Proxy({}, { get: () => () => {} });
 const ORIG = {};
 const sub = run => { const save = REC; REC = []; try { run(); } catch (e) { REC.push({ w: 'error', args: [String(e && e.stack || e).slice(0, 400)] }); } const r = REC; REC = save; return r; };
 ['ra4Build', 'ra4Slots', 'ra4Choc', 'ra4Comp', 'ra4Rect', 'ra4Map', 'ra4Tape2', 'ra4Grid', 'ra4Link', 'ra4Save', 'ra4Make',
- 'ra4Same', 'ra4Memory', 'ra4High', 'ra4Scene'].forEach(name => {
+ 'ra4Same', 'ra4Memory', 'ra4High', 'ra4Scene', 'ra4Candy', 'ra4sStudio'].forEach(name => {
+  if (eval('typeof ' + name) !== 'function') return;     // 교과서에만(ra4Choc·ra4Scene) · 이야기에만(ra4Candy·ra4sStudio) 있는 부품
   ORIG[name] = eval(name);
   const w = function (body, ap, opt) {
     opt = Object.assign({}, opt || {});
@@ -656,10 +683,17 @@ ra4Chain = function (body, ap, lines, opt) { REC.push({ w: 'ra4Chain', args: [li
 ra4Seq = function (body, ap, parts) {
   REC.push({ w: 'ra4Seq', args: [parts.map(p => ({ title: p.title || null, calls: sub(() => (p.run || p)(new Body('div'), api)) }))] });
 };
+// 이야기 버전: 글 상자(기획표), 엔진의 탐구 도우미(thenWhy 활동 뒤 '왜?', ruleFirst 활동 앞 '예상', wonderRecall '궁금해요' 다시 보기)·panes
+if (typeof ra4sNote === 'function') ra4sNote = function (title, lines) { REC.push({ w: 'note', args: [title, lines] }); return new El('div'); };
+var panes = rec('panes');
+var thenWhy = (f, o) => function (b, a) { const r = f(b, a); REC.push({ w: 'thenWhy', args: [o] }); return r; };
+var ruleFirst = (f, o) => function (b, a) { REC.push({ w: 'ruleFirst', args: [o] }); return f(b, a); };
+var wonderRecall = f => function (b, a) { REC.push({ w: 'wonderRecall', args: [] }); return f(b, a); };
 const lesSrc = all.slice(all.indexOf('//@@LESSONS'));
 eval(lesSrc.replace(/^(const|let) /gm, 'var '));
 const run = S => sub(() => S.render(new Body('div'), api));
-const sceneSrc = all.slice(all.indexOf('function ra4Scene('), all.indexOf('function ra4Scene(') + 4000);
+const SCN = all.indexOf('function ra4Scene(') >= 0 ? 'function ra4Scene(' : 'function ra4sStudio(';
+const sceneSrc = all.slice(all.indexOf(SCN), all.indexOf(SCN) + 4000);
 const spots = [...sceneSrc.matchAll(/\{ x: \d+, y: \d+, k: "\w+", t: "([^"]+)", d: "([^"]+)" \}/g)].map(m => ({ t: m[1], d: m[2] }));
 const out = { story: UNIT_STORY, cards: RA4_CARDS, high: RA4_HIGH, spots, lessons: LESSONS.map(L => ({
   id: L.id, no: L.no, title: L.title, soop: L.soop, question: L.question, summary: L.summary,
@@ -839,6 +873,15 @@ def w_sequence(s, lv, items, order, opts=None, *_):
 def w_write(s, lv, items, *_):
     out = []
     for it in items:
+        if it.get('ans'):          # 이야기 버전: 쓰기 틀(help)과 모범 답(ans)
+            s.ask(rd(it['q']), blank=False)
+            if lv == '기본형' and len(it.get('help') or []) > 1:
+                s.text('도움: ' + rd(it['help'][1]))
+                s.lines(2)
+            else:
+                s.lines(3)
+            out.append('(예) ' + flat(it['ans']))
+            continue
         s.ask(rd(it['q']), blank=False)
         ex = re.sub(r'^예\)\s*', '', it.get('ph') or '')
         if lv == '기본형' and ex:
@@ -931,14 +974,24 @@ def w_calc(s, lv, *_):
 CNT = ['한', '두', '세', '네', '다섯', '여섯']
 
 
+def jong_k(word):
+    """우리말 낱말 끝 글자에 받침이 있으면 True"""
+    c = str(word).strip()[-1:]
+    return '가' <= c <= '힣' and (ord(c) - 0xAC00) % 28 > 0
+
+
 def w_build(s, lv, o, svg=None):
     its, K, u = o['items'], o.get('max') or 4, o['unit']
     if svg:      # 앱 그림의 첫 묶음만(나머지 칸은 '?')
         H = re.search(r'viewBox="0 0 [\d.]+ ([\d.]+)"', svg).group(1)
         app_svg(s, svg, 38, viewbox='0 0 156 %s' % H)
     first = ', '.join('%s %s%s' % (it['name'], it['per'], unit_sp(it['unit'])) for it in its)
-    s.text(rd('%s %s %s:  %s.  %s 수가 늘어날 때 두 양을 표에 써 보세요.'
-              % (o['what'], CNT[o['start'] - 1], u, first, o['what'])))
+    if MODE[0] == 'st' and o.get('head'):
+        s.text(rd('%s %s %s:  %s.  %s%s 늘어날 때 두 양을 표에 써 보세요.'
+                  % (o['what'], CNT[o['start'] - 1], u, first, o['head'], '이' if jong_k(o['head']) else '가')))
+    else:
+        s.text(rd('%s %s %s:  %s.  %s 수가 늘어날 때 두 양을 표에 써 보세요.'
+                  % (o['what'], CNT[o['start'] - 1], u, first, o['what'])))
     rows = [[o.get('head') or '%s 수' % o['what']] + ['%s %s' % (CNT[k - 1], u) for k in range(1, K + 1)]]
     ans = []
     for it in its:
@@ -1054,6 +1107,11 @@ def w_rect(s, lv, o, svg=None):
         sols = T_['sols']
         assert sols, T_
         f = lambda p: '%s %d%s·%s %d%s' % (nw, p[0], unit_sp(u), nh, p[1], unit_sp(u))
+        if MODE[0] == 'st' and len(sols) > 1 and len({Fraction(p[1], p[0]) for p in sols}) > 1:     # 이야기: '1보다 큰' 목표
+            note = ('세로가 가로보다 길면 맞아요' if all(p[1] > p[0] for p in sols) else
+                    '세로가 가로보다 짧으면 맞아요' if all(p[1] < p[0] for p in sols) else '조건에 맞으면 맞아요')
+            ans.append(pre + '(예) ' + ', '.join(f(p) for p in sols[2:4]) + ' (%s)' % note)
+            continue
         ans.append((pre + f(sols[0])) if len(sols) == 1 else pre + '(예) ' + ', '.join(f(p) for p in sols[2:4]) + ' (%s)' % (
             '가로와 세로가 같으면 맞아요' if all(p[0] == p[1] for p in sols) else '비율이 같으면 맞아요'))
     return ' / '.join(ans)
@@ -1186,6 +1244,19 @@ def w_save(s, lv, o, svg=None):
 
 def w_make(s, lv, o, svg=None):
     (n1, d1, t1), (n2, d2, t2) = o['base']
+    if MODE[0] == 'st':      # 이야기 버전: 이어달리기 기록
+        nn = lambda n: n + ('은' if jong_k(n) else '는')
+        s.text('보기의 수를 바꾸어 나만의 문제를 만들고 풀어 보세요. 두 사람의 비율이 같아지지 않게 해요.')
+        s.text('보기: %s %d m를 달리는 데 %d초, %s %d m를 달리는 데 %d초가 걸렸어요.' % (nn(n1), d1, t1, nn(n2), d2, t2))
+        s.fill('%s (        ) m를 달리는 데 (        )초가 걸렸고, %s (        ) m를 달리는 데 (        )초가 걸렸습니다. '
+               '걸린 시간에 대한 달린 거리의 비율이 더 높은 사람은 누구인가요?' % (nn(n1), nn(n2)))
+        s.fill(['%s의 비율:  (        ) ÷ (        ) = (          )' % n1, '%s의 비율:  (        ) ÷ (        ) = (          )' % n2,
+                '비율이 더 높은 사람:  (          )'])
+        ex = [(80, 10), (90, 15)]
+        r = [Fraction(a, b) for a, b in ex]
+        assert r[0] != r[1] and ex != [(d1, t1), (d2, t2)]
+        return '(예) %s %d m·%d초 → %s, %s %d m·%d초 → %s → %s (만든 수에 따라 달라요: 비율 = 달린 거리 ÷ 걸린 시간)' % (
+            n1, ex[0][0], ex[0][1], num_txt(r[0]), n2, ex[1][0], ex[1][1], num_txt(r[1]), n1 if r[0] > r[1] else n2)
     s.text('보기의 수를 바꾸어 나만의 문제를 만들고 풀어 보세요. 두 사람의 비율이 같아지지 않게 해요.')
     s.fill('%s는 자전거를 타고 (        ) m를 가는 데 (        )초가 걸렸고, %s는 자전거를 타고 (        ) m를 가는 데 (        )초가 걸렸습니다. '
            '걸린 시간에 대한 간 거리의 비율이 더 높은 사람은 누구인가요?' % (n1, n2))
@@ -1284,7 +1355,7 @@ def w_high(s, lv, o, svg=None):
 def w_scene(s, lv, o, svg=None):
     if svg:
         app_svg(s, svg, 165)
-    s.text('휴양림의 여섯 곳에서 어떤 두 양을 비교할 수 있는지 써 보세요.')
+    s.text('%s의 여섯 곳에서 어떤 두 양을 비교할 수 있는지 써 보세요.' % ('기획 보드' if MODE[0] == 'st' else '휴양림'))
     rows = [['곳', '상황', '비교하는 두 양']]
     ans = []
     for i, sp in enumerate(DATA['spots']):
@@ -1297,6 +1368,58 @@ def w_scene(s, lv, o, svg=None):
     return '; '.join(ans)
 
 
+# ---------------------------------------------------------------- 이야기 버전 부품
+EMOJI = re.compile('[\U0001F000-\U0001FFFF\u2600-\u27BF\uFE0F\u200D]')
+
+
+def noemo(t):
+    return re.sub(r'\s{2,}', ' ', EMOJI.sub('', str(t))).strip()
+
+
+def w_note(s, lv, title, lines, *_):
+    s.labeled([('기획표', noemo(title) + '\n' + '\n'.join('· ' + rd(noemo(l)) for l in lines))], row_h=1000 * (len(lines) + 1))
+    return ''
+
+
+def w_panes(s, lv, items, *_):
+    s.labeled([(p['t'], ('(' + p['ph'] + ')') if lv == '기본형' else '') for p in items], row_h=3400)
+    return '(자유) ' + ' / '.join('%s: 예) %s' % (p['t'], flat(p['ex'][0])) for p in items if p.get('ex'))
+
+
+def w_thenwhy(s, lv, o, *_):
+    s.ask('왜 그럴까요?  ' + rd(o['q']), blank=False)
+    if lv == '기본형' and len(o.get('help') or []) > 1:
+        s.text('도움: ' + rd(o['help'][1]))
+        s.lines(2)
+    else:
+        s.lines(3)
+    return '왜? (예) ' + flat(o['ans'])
+
+
+def w_rulefirst(s, lv, o, *_):
+    s.ask('먼저 예상해요.  ' + rd(o['q']), blank=False)
+    if lv == '기본형' and len(o.get('help') or []) > 1:
+        s.text('도움: ' + rd(o['help'][1]))
+    s.lines(2)
+    s.text('▶ 아래 활동을 마친 뒤, 내 예상이 맞았는지 확인해 보세요.   맞았어요 (   )   고쳐야 해요 (   )')
+    return '예상 → 실제 규칙: ' + flat(o['ans'])
+
+
+def w_wonder(s, lv, *_):
+    s.ask('1차시에 내가 쓴 ‘궁금해요’를 다시 써 보세요.', blank=False)
+    s.lines(1)
+    return ''
+
+
+def w_candy(s, lv, o, svg=None):
+    if svg:
+        app_svg(s, svg, 100)
+    nm = o.get('name') or '막대사탕'
+    s.text('나누어 주고 남은 %s의 수를 세어 보세요.   남은 %s:  (        )개' % (nm, nm))
+    a = ask_part(s, o)
+    return '나누어 준 %d개, 남은 %d개' % (o['eat'], o['total'] - o['eat']) + (' / ' + a if a else '')
+
+
 def w_error(s, lv, msg, *_):
     raise RuntimeError('앱 원본의 활동을 읽지 못했어요: ' + msg)
 
@@ -1306,9 +1429,11 @@ WIDGETS = {'quiz': w_quiz, 'blanks': w_blanks, 'sequence': w_sequence, 'writeSte
            'ra4Build': w_build, 'ra4Slots': w_slots, 'ra4Choc': w_choc, 'ra4Comp': w_comp, 'ra4Rect': w_rect,
            'ra4Map': w_map, 'ra4Tape2': w_tape2, 'ra4Grid': w_grid, 'ra4Link': w_link, 'ra4Save': w_save,
            'ra4Make': w_make, 'ra4Same': w_same, 'ra4Memory': w_memory, 'ra4High': w_high, 'ra4Scene': w_scene,
-           'error': w_error}
+           'error': w_error,
+           'note': w_note, 'panes': w_panes, 'thenWhy': w_thenwhy, 'ruleFirst': w_rulefirst, 'wonderRecall': w_wonder,
+           'ra4Candy': w_candy, 'ra4sStudio': w_scene}
 SVG_W = {'ra4Build', 'ra4Slots', 'ra4Choc', 'ra4Comp', 'ra4Rect', 'ra4Map', 'ra4Tape2', 'ra4Grid', 'ra4Link', 'ra4Save',
-         'ra4Make', 'ra4Same', 'ra4Memory', 'ra4High', 'ra4Scene'}
+         'ra4Make', 'ra4Same', 'ra4Memory', 'ra4High', 'ra4Scene', 'ra4Candy', 'ra4sStudio'}
 
 
 def run_calls(s, lv, calls):
@@ -1379,6 +1504,60 @@ def check_words(D):
 
 
 
+def check_words_st(D):
+    """이야기 버전 문장제: 앱의 답 = 이 스크립트가 따로 계산한 값"""
+    Ls = {L['id']: L for L in D['lessons']}
+    F = Fraction
+    pc = lambda a, b: F(a * 100, b)
+    exp = [
+        ('s2', '체험 부스 두 번에', [F(16, 8 // 4)]),
+        ('s2', '꾸러미가 열 개일 때', [F(4 * 10, 1 * 10)]),
+        ('s2', '응원 현수막', [F(2 * 3), F(6 * 3)]),
+        ('s2', '현수막 네 장의', [F(2 * 4), F(6 * 4)]),
+        ('s2', '현수막 수에 따른', [F(6, 2)]),
+        ('s2', '옳게 고치기', [F(9, 3)]),
+        ('s2', '샌드위치', [F(2 * 5, 1 * 5)]),
+        ('s3', '인물 사진 수와', ['18 : %d' % (30 - 18)]),
+        ('s3', '전체 사진 수에 대한', ['%d : 30' % (30 - 18)]),
+        ('s4', '서윤: 분수', [F(1, 5), F(1, 5)]),
+        ('s4', '하준: 분수', [F(2, 8), F(2, 8)]),
+        ('s4', '국기 게양대', [F(400, 600)]),
+        ('s4', '방송부원 키', [F(100, 150)]),
+        ('s5', '실제 거리를 cm로', [F(200 * 100), F(500 * 100)]),
+        ('s5', '지호: ', [F(12, 16), F(12, 16), F(14, 20), F(14, 20)]),
+        ('s5', '걸린 시간에 대한 달린 거리', [F(100, 20), F(60, 10)]),
+        ('s5', '해오름구: ', [F(360000, 24)]),
+        ('s5', '달빛구: ', [F(420000, 35)]),
+        ('s5', '민서: ', [F(20, 100), F(20, 100)]),
+        ('s5', '태오: ', [F(30, 200), F(30, 200)]),
+        ('s6', '수아: 100', [F(13 * 100, 20)]),
+        ('s6', '은재: 100', [F(16 * 100, 25)]),
+        ('s7', '6학년 투표율', [pc(136, 160)]),
+        ('s7', '5학년은', [pc(132, 150)]),
+        ('s7', '① 음악 신청', [pc(84, 200), pc(56, 200)]),
+        ('s7', '③ 학교 소식', [pc(36, 200), pc(24, 200)]),
+        ('s7', '할인 금액: 스케치북', [F(3000 - 2400), F(10000 - 8500)]),
+        ('s7', '판매 금액에 대한', [pc(3000 - 2400, 3000), pc(10000 - 8500, 10000)]),
+        ('s7', '가 가게', [pc(12, 400)]),
+        ('s7', '나 가게', [pc(10, 250)]),
+        ('s7', '방송부 공연', [pc(255, 300), pc(216, 240)]),
+        ('s7', '예금한 돈에 대한', [pc(1500, 50000), pc(2400, 60000)]),
+        ('s8', '줄이려는 전기 사용량: 6', [F(6 + 9 + 3)]),
+        ('s8', '줄이려는 전기 사용량: 12', [F(12 + 8)]),
+        ('s8', '비율 [20/250]', [F(20, 250), F(20, 250), pc(20, 250)]),
+        ('s10', '세 통', [F(50 * 3)]),
+        ('s10', '네 통', [F(20 * 4), F(50 * 4)]),
+        ('s10', '다섯 통', [F(50 * 5, 20 * 5)]),
+        ('s10', '까닭: 반대한', [pc(25 - 15, 25)]),
+        ('s10', '배지 할인', [F(2000 - 1600), pc(2000 - 1600, 2000)]),
+        ('s10', '열쇠고리 할인', [F(3000 - 2550), pc(3000 - 2550, 3000)]),
+    ]
+    for lid, start, want in exp:
+        got = row_ans(Ls[lid], start)
+        assert got == want, ('답 확인 필요', lid, start, got, want)
+        CHECKS[0] += 1
+
+
 # ================================================================ 차시
 WHY = {   # 도전형 '왜' 쓰기(차시 id → 물음, 예시 답)
     't1': ('두 양을 비교할 때 ‘몇 배’로 나타내면 좋은 점을 생활 속 예를 들어 써 보세요.',
@@ -1407,6 +1586,8 @@ WHY = {   # 도전형 '왜' 쓰기(차시 id → 물음, 예시 답)
 PAPER_INST = {
     ('t9', 2): '친구와 놀이를 해요. 카드 2장을 뒤집어 두 카드의 비율이 같은지 판단하고, 같으면 카드를 가져와요. 카드를 더 많이 가져간 사람이 이겨요.',
     ('t9', 'ch'): '또 다른 놀이: 네 사람이 비율 카드를 동시에 한 장씩 뒤집고, 비율이 가장 높은 사람이 뒤집은 카드를 모두 가져가요. 4판부터는 규칙을 바꾸어 비율이 가장 낮은 사람이 가져가요. 지도서의 비율 카드 24장으로 6판을 해요.',
+    ('s9', 2): '친구와 퀴즈쇼 놀이를 해요. 내 차례에 카드 2장을 뒤집어 두 카드의 비율이 같은지 판단하고, 맞게 판단하면 카드를 가져오고 한 번 더 해요. 카드를 더 많이 가져간 사람이 이겨요.',
+    ('s9', 'ch'): '또 다른 놀이: 네 사람이 비율 카드를 동시에 한 장씩 뒤집고, 비율이 가장 높은 사람이 뒤집은 카드를 모두 가져가요. 4판부터는 규칙을 바꾸어 비율이 가장 낮은 사람이 가져가요. 비율 카드 24장으로 6판을 해요.',
 }
 
 
@@ -1449,10 +1630,75 @@ def tb_lesson(s, lv, L, first, story):
     return '%s차시  %s' % (L['no'], '  '.join(ans))
 
 
+WHY_ST = {   # 이야기 버전 도전형 '왜' 쓰기(차시 id → 물음, 예시 답)
+    's1': ('방송 소식이 아닌 생활에서 두 양을 비교하는 상황을 하나 찾아 써 보세요.',
+           '예) 우리 반 남학생 수와 여학생 수를 비교할 때, 줄넘기를 한 횟수와 성공한 횟수를 비교할 때예요.'),
+    's2': ('간식 꾸러미가 늘어날 때 뺄셈보다 나눗셈으로 비교하는 것이 좋은 까닭을 써 보세요.',
+           '예) 쿠키 수 − 주스 수는 3, 6, 9로 변하지만 쿠키 수 ÷ 주스 수는 언제나 4라서 두 양의 관계를 한 수로 나타낼 수 있어요.'),
+    's3': ('4500 : 1500과 1500 : 4500이 서로 다른 비인 까닭을 기준량을 넣어 써 보세요.',
+           '예) 4500 : 1500은 어린이 입장료 1500원이 기준량이고, 1500 : 4500은 어른 입장료 4500원이 기준량이에요. 기준이 다르니 서로 다른 비예요.'),
+    's4': ('크기가 다른 사진 가(가로 8 cm, 세로 6 cm)와 다(가로 4 cm, 세로 3 cm)의 비율이 같은 까닭을 써 보세요.',
+           '예) 가로에 대한 세로의 비율이 가는 6 ÷ 8 = 0.75, 다는 3 ÷ 4 = 0.75로 같아요. 비율은 길이가 아니라 몇 배인지를 나타내서 모양이 같아요.'),
+    's5': ('지도에서 실제 거리에 대한 지도에서의 거리의 비를 구할 때 단위를 같게 해야 하는 까닭을 써 보세요.',
+           '예) 1 cm와 200 m를 그대로 쓰면 1 : 200이 되어 틀려요. 200 m = 20000 cm로 바꾸어야 1 : 20000이에요.'),
+    's6': ('푼 문제 수가 다른 수아와 은재의 성적을 백분율로 나타내면 비교하기 쉬운 까닭을 써 보세요.',
+           '예) 백분율은 기준량을 100으로 같게 한 비율이라 수아 65 %, 은재 64 %처럼 수만 보고 바로 비교할 수 있어요.'),
+    's7': ('스케치북의 할인율을 구할 때 할인한 뒤의 가격 2400원으로 나누면 안 되는 까닭을 써 보세요.',
+           '예) 할인율은 판매 금액 3000원이 기준량이고 할인 금액 600원이 비교하는 양이에요. 2400원은 기준량이 아니에요.'),
+    's8': ('지난달 전기 사용량이 다른 두 집의 절약 계획을 백분율로 비교하는 까닭을 써 보세요.',
+           '예) 줄이는 양(kWh)만 보면 사용량이 많은 집이 유리해요. 백분율로 나타내면 지난달에 비해 얼마나 줄였는지 공평하게 비교할 수 있어요.'),
+    's9': ('비율이 같은 카드를 찾을 때 같은 표현으로 바꾸어 비교하는 까닭을 써 보세요.',
+           '예) 2 : 5와 40 %처럼 모양이 달라도 비율이 같을 수 있어요. 모두 소수로 바꾸면 0.4 = 0.4로 바로 알 수 있어요.'),
+    's10': ('비, 비율, 백분율의 관계를 여론 조사 결과(25명 중 15명 찬성)를 예로 들어 써 보세요.',
+            '예) 찬성한 학생 수와 전체 학생 수의 비는 15 : 25이고, 비율은 15 ÷ 25 = 3/5 = 0.6이에요. 0.6에 100을 곱한 60 %가 백분율이에요.'),
+}
+
+
+def st_lesson(s, lv, L, first, story):
+    """이야기 버전 한 차시: 앱의 계단 이름 '만져 보기 — 체험 부스 두 번 열기' → ① 만져 보기 | 체험 부스 두 번 열기"""
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    if first and story:
+        s.scene(None, rd(story['lines'][0] + ' ' + story['lines'][1]))
+        s.text('※ 식 줄은 분수를 위아래로 썼어요. 글 속에서는 ‘5분의 3’처럼 읽는 말로 썼어요. 네모 칸에는 수를 써요. '
+               '‘(예)’가 붙은 답은 조건에 맞으면 다른 답도 맞아요.')
+    ans = []
+    for i, st_ in enumerate(L['steps']):
+        nm = st_['name'] or STEP_NAMES[min(i, len(STEP_NAMES) - 1)]
+        main, _, sub = nm.partition(' — ')
+        s.step('%s %s' % (NUM[i], main.strip()), sub.strip() or None)
+        show_inst(s, lv, st_['inst'], st_['hints'], (L['id'], i))
+        ans.append('%s %s' % (NUM[i], run_calls(s, lv, st_['calls'])))
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L.get('ch'):
+            s.step('%s ★ 도전하기' % NUM[n], '앱의 도전 문제')
+            show_inst(s, lv, re.sub(r'^★ 도전 — ', '', L['ch']['inst']), [], (L['id'], 'ch'))
+            ans.append('%s %s' % (NUM[n], run_calls(s, lv, L['ch']['calls'])))
+            n += 1
+        q, a = WHY_ST[L['id']]
+        s.step('%s 생각 쓰기' % NUM[n], '왜 그럴까요?')
+        s.ask(rd(q), blank=False)
+        s.lines(2)
+        ans.append('%s %s' % (NUM[n], a))
+    return '%s차시  %s' % (L['no'], '  '.join(ans))
+
+
 DATA = {}
 
-# 이야기 버전 차시 함수(아직 없음 — 생기면 st1, st2, … 를 넣으세요)
-ST = []
+# 이야기 버전 차시(앱 u4-ratio.st.js의 LESSONS id 차례 — 1~10차시)
+ST_IDS = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10']
+
+
+def _st(lid):
+    def f(s, lv):
+        Ls = DATA['lessons']
+        k = [L['id'] for L in Ls].index(lid)
+        return st_lesson(s, lv, Ls[k], k == 0, DATA.get('story'))
+    f.__name__ = 'st_' + lid
+    return f
+
+
+ST = [_st(lid) for lid in ST_IDS]
 
 
 def build_file(kind, lv):
@@ -1460,7 +1706,12 @@ def build_file(kind, lv):
     D = cap(src)
     DATA.clear()
     DATA.update(D)
-    check_words(D)
+    MODE[0] = kind
+    if kind == 'tb':
+        check_words(D)
+    else:
+        assert [L['id'] for L in D['lessons']] == ST_IDS, ('이야기 버전 차시가 바뀌었어요', [L['id'] for L in D['lessons']])
+        check_words_st(D)
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'
     s = Sheet(unit_label='6-1 수학 %s(%s)' % (UNIT_NAME, label), level=lv, grade_label='6학년')
     if kind == 'tb':

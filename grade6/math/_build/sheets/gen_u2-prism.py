@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-"""6-1 수학 2. 각기둥과 각뿔 활동지(교과서 차시 버전 × 기본형·도전형) 만들기
+"""6-1 수학 2. 각기둥과 각뿔 활동지(교과서 차시 버전·이야기 버전 × 기본형·도전형) 만들기
 
     python3 gen_u2-prism.py          # 만들 수 있는 것을 모두 만들고 점검
     python3 gen_u2-prism.py tb       # 교과서 차시 버전만
+    python3 gen_u2-prism.py st       # 이야기 버전만
 
 앱 원본 ../units/u2-prism.tb.js('연서의 보물 찾기 각기둥과 각뿔', 9차시 묶음: 1·2~3·4·5~6·7·8·9·10·11)의
 LESSONS를 node에서 가짜 DOM으로 그대로 실행해(CAP_JS), 활동마다 넘긴 물음·보기·정답·수와 앱이 그린 그림(SVG)을 모읍니다.
@@ -19,7 +20,12 @@ LESSONS를 node에서 가짜 DOM으로 그대로 실행해(CAP_JS), 활동마다
     육각기둥(옆면 띠가 24 cm)은 A4에 실제 크기로 들어가지 않아 모눈 한 칸을 5 mm로 줄여 그리고 '한 칸을 1 cm로 생각해요'라고 적습니다.
   - 정답의 수(구성 요소의 수·모서리 길이의 합 등)는 식이 적힌 칸은 식을 계산해, 표의 각기둥·각뿔 이름이 있는 줄은
     (면 = □+2 / □+1, 모서리 = □×3 / □×2, 꼭짓점 = □×2 / □+1)로 따로 계산해 assert로 앱의 답과 맞춥니다(check_numbers).
-  - 이야기 버전(ST)은 이 단원에 아직 없어서 건너뜁니다(앱 원본 u2-prism.st.js가 생기면 ST 목록에 더함).
+  - 이야기 버전(ST, `python3 gen_u2-prism.py st`)도 같은 방법으로 ../units/u2-prism.st.js('꿈의 쉼터 설계 공모전',
+    1·2~3·4·5~6·7·8·9·10·11차시)의 LESSONS를 읽어 sem1-soop/sheets/에 만듭니다. 이야기 엔진 부품은 종이로 바꿉니다:
+    panes(보여요·생각해요·궁금해요 세 칸) · thenWhy('왜 그럴까요?' 쓰기, 정답에 앱의 모범 답) · ruleFirst(활동 전에 '먼저 예상해요',
+    정답에 '실제 규칙') · wonderRecall(11차시 '궁금해요' 다시 보기). 기본형은 쓰기 칸에 앱 help의 문장 틀을 '도움'으로 보여 줍니다.
+    설계도 모눈은 모두 실제 크기(한 칸 1 cm)이고, 가로가 18 cm인 화단 전개도는 모눈을 시계 방향으로 90° 돌려 세로로 넣습니다.
+    차시 id가 ST_IDS와 다르면 멈추고, 앱의 답은 check_story(파이썬으로 따로 계산)와 맞춥니다.
 그림은 임시 폴더에서 PNG로 바꿉니다(저장소에는 남기지 않음).
 """
 
@@ -77,6 +83,13 @@ function dragOn(svg, s, m, e) { DRAG = { s, m, e }; }
 function svgPt() { return { x: 0, y: 0 }; }
 let REC = [], INNER = 0;
 function quiz() {} function blanks() {} function writeStep() {} function sequence() {}
+/* 이야기 버전 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall)과 autoRun */
+function autoRun() { return () => {}; }
+function panes(b, a, items, opts) { if (INNER) return; const last = b.kids.length ? b.kids[b.kids.length - 1] : null;
+  REC.push({ t: 'panes', fig: last ? serEl(last) : null, items: items.map(x => ({ t: x.t, ph: x.ph || '', hint: x.hint || '', ex: x.ex || [] })) }); }
+function thenWhy(render, o) { return (b, a) => { render(b, a); if (!INNER) REC.push({ t: 'thenwhy', q: o.q, ph: o.ph || '', help: o.help || [], ans: o.ans || '' }); }; }
+function ruleFirst(render, o) { return (b, a) => { if (!INNER) REC.push({ t: 'rule', q: o.q, ph: o.ph || '', help: o.help || [], ans: o.ans || '' }); render(b, a); }; }
+function wonderRecall(render) { return (b, a) => { if (!INNER) REC.push({ t: 'wonder' }); render(b, a); }; }
 
 const unitSrc = src.slice(src.indexOf('//@@UNIT'), src.indexOf('//@@LESSONS'));
 const lesSrc = src.slice(src.indexOf('//@@LESSONS'));
@@ -121,7 +134,7 @@ const api = new Proxy({}, { get: (t, k) => k === 'provide' ? (x => { PROV = x; }
 
 quiz = function (b, a, items, opts) { if (!INNER) REC.push({ t: 'quiz', items: items.map(serQ), ok: (opts || {}).ok || '' }); };
 blanks = function (b, a, parts, opts) { if (!INNER) REC.push({ t: 'blanks', parts: parts.map(serPart), ok: (opts || {}).ok || '' }); };
-writeStep = function (b, a, items) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag || '', ph: x.ph || '' })) }); };
+writeStep = function (b, a, items) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag || '', ph: x.ph || '', help: x.help || [], ans: x.ans || '' })) }); };
 sequence = function (b, a, cards, order, opts) { if (!INNER) REC.push({ t: 'sequence', cards, order, ok: (opts || {}).ok || '' }); };
 const ORIG = { pp6Ask };
 pp6Ask = function (host, ap, items, opts) { if (!INNER) REC.push({ t: 'ask', items: items.map(serQ), ok: (opts || {}).ok || '', title: (opts || {}).title || '' }); return new El('div'); };
@@ -228,7 +241,6 @@ NUM = '①②③④⑤⑥⑦⑧⑨⑩'
 KO = '㉠㉡㉢㉣㉤㉥㉦㉧'
 WORK = tempfile.mkdtemp(prefix='u2prism_')
 K = 40            # 실제 크기: 1 cm = 40 px → 그림 너비 mm = px ÷ 4
-ST = []           # 이야기 버전 차시(아직 없음 — 원본이 생기면 더함)
 
 INK, BLUE, RED, GRAY, GRID = '#1D2A2A', '#2B7BD6', '#D64545', '#8795A1', '#B8C6D2'
 BASE_C, SIDE_C = '#F7C9A3', '#FFF1C7'
@@ -461,12 +473,23 @@ PAPER_RULES = [
     (r' ― 육각기둥의 모양은 이 앱이 정했어요\.', ''),
     (r'\(카드는 이 앱이 정했어요\.\) ', ''),
 ]
+ST_RULES = [   # 이야기 버전 글만(교과서 버전 글은 그대로)
+    (r'떠오르는 것을 세 칸에 써서 붙여요\.', '떠오르는 것을 세 칸에 써 보세요.'),
+    (r'텐트 모형을 잘라서 펼쳐 보세요\.', '텐트 모형을 잘라서 펼치는 그림을 살펴보세요.'),
+    (r'먼저 예상한 다음, 하나씩 접어서 확인해요\.', '먼저 예상한 다음, 오려서 접어 보거나 머릿속으로 접어 확인해요.'),
+    (r'먼저 예상한 다음, 하나씩 접어서 확인해 보세요\.', '먼저 예상한 다음, 오려서 접어 보거나 머릿속으로 접어 확인해 보세요.'),
+    (r'(각기둥|각뿔)을 돌려 가며 세어', r'\1의 그림을 살펴보며 세어'),
+    (r'공학 도구로 쉼터에 쓸 나만의 (각기둥|각뿔)(?: 지붕)?을 만들고', r'쉼터에 쓸 나만의 \1을 정하고'),
+    (r'컴퓨터 친구 2명과 함께 놀이를 해 보세요\.', '친구 2~3명과 모둠을 지어 놀이를 해 보세요.'),
+    (r'가장 먼저 찾아 보세요\.', '찾아 기호를 써 보세요.'),
+    (r'누른 것에는 번호가 붙어요\.', '센 것에 번호를 써 두면 두 번 세지 않아요.'),
+]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|단추|화면|컴퓨터 친구|앱|돌려서|막대를')
 
 
 def paper(t):
     t = str(t or '')
-    for a, b in PAPER_RULES:
+    for a, b in PAPER_RULES + (ST_RULES if DATA.get('kind') == 'st' else []):
         t = re.sub(a, b, t)
     sents = re.split(r'(?<=[.?!”])\s+', t)
     return ' '.join(x for x in sents if x and not INTERACT.search(x)).strip()
@@ -651,14 +674,55 @@ def w_sequence(s, lv, rec):
 
 def w_write(s, lv, rec):
     ans = []
+    st = DATA.get('kind') == 'st'
     for it in rec['items']:
         s.ask(it['q'], blank=False)
+        if st and lv == '기본형' and len(it.get('help') or []) > 1:
+            s.text('도움: ' + it['help'][1])
         if lv == '기본형' and it.get('tag'):
             s.labeled([(it['tag'], '')], row_h=3969 * 2)
         else:
             s.lines(3)
-        ans.append(it['ph'] or '(생각을 쓰면 맞아요)')
+        ans.append(('예) ' + it['ans']) if (st and it.get('ans')) else (it['ph'] or '(생각을 쓰면 맞아요)'))
     return ' / '.join(ans)
+
+
+# ---------------------------------------------------------------- 이야기 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall)
+def w_panes(s, lv, rec):
+    """보기·생각하기·궁금해하기 세 칸(이야기 1차시) — 앱 그림에 이름을 붙여 한 번만 보여 줌"""
+    fig = rec.get('fig') or {}
+    figs, names = fig.get('figs') or [], fig.get('texts') or []
+    if figs:
+        labs = names if len(names) == len(figs) else [f['label'] for f in figs]
+        side(s, list(zip(labs, [f['svg'] for f in figs])), cols=cols_for(len(figs)))
+    if lv == '기본형':
+        s.labeled([(it['t'], '%s  (%s)' % (it['ph'], it['hint']) if it.get('hint') else it['ph']) for it in rec['items']], row_h=3969 * 2)
+    else:
+        for it in rec['items']:
+            s.ask(it['t'] + ':', blank=False)
+            s.lines(2)
+    return '(자유) ' + ' / '.join('%s 예) %s' % (it['t'], it['ex'][0]) for it in rec['items'] if it.get('ex'))
+
+
+def w_thenwhy(s, lv, rec):
+    s.ask('왜 그럴까요? ' + rec['q'], blank=False)
+    if lv == '기본형' and len(rec.get('help') or []) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(2)
+    return '왜? 예) ' + rec['ans']
+
+
+def w_rule(s, lv, rec):
+    s.ask('먼저 예상해요 · ' + rec['q'], blank=False)
+    if lv == '기본형' and len(rec.get('help') or []) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(2)
+    return '예상(자유) — 실제 규칙: ' + rec['ans']
+
+
+def w_wonder(s, lv, rec):
+    s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 보고, 이제 답할 수 있는지 떠올려 보세요.')
+    return ''
 
 
 
@@ -713,6 +777,8 @@ def key_word(names):
 
 
 def w_pre(s, lv, rec):
+    if CTX.get('skip_pre'):      # 이야기 1차시: 같은 그림을 panes가 이름과 함께 보여 줌
+        return ''
     rep = PRE_FIGS.get(CTX['cur'])
     if rep:
         rep(s, lv)
@@ -901,24 +967,40 @@ def grid_svg(rec, cell, win):
     return _svg(W, H, ''.join(out))
 
 
-def net_window(rec, maxw):
+def net_window(rec, maxw, vm=2):
     xs = [p[0] for f in rec['full'] for p in f['P']]
     ys = [p[1] for f in rec['full'] for p in f['P']]
     bx0, bx1, by0, by1 = min(xs), max(xs), min(ys), max(ys)
     gw = min(rec['cols'], maxw)
     ox = int(round((bx0 + bx1) / 2 - gw / 2))
     ox = max(0, min(rec['cols'] - gw, ox))
-    oy0 = max(0, int(by0) - 2)
-    oy1 = min(rec['rows'], int(by1 + 0.999) + 2)
+    oy0 = max(0, int(by0) - vm)
+    oy1 = min(rec['rows'], int(by1 + 0.999) + vm)
     assert ox <= bx0 and bx1 <= ox + gw, ('정답 전개도가 모눈 밖으로 나가요', bx0, bx1, ox, gw)
     return ox, oy0, gw, oy1 - oy0
+
+
+def rot_rec(rec):
+    """모눈 전개도를 시계 방향으로 90° 돌리기(뒤집지 않음): (x, y) → (rows − y, x)"""
+    R = rec['rows']
+    r = dict(rec)
+    r['full'] = [{'P': [[R - y, x] for x, y in f['P']], 'base': f['base']} for f in rec['full']]
+    r['cols'], r['rows'] = rec['rows'], rec['cols']
+    return r
 
 
 def w_netdraw(s, lv, rec):
     full = rec['full']
     xs = [p[0] for f in full for p in f['P']]
+    ys = [p[1] for f in full for p in f['P']]
     real = max(xs) - min(xs) <= 17
-    if real:
+    if (not real and DATA.get('kind') == 'st' and max(ys) - min(ys) <= 15 and max(xs) - min(xs) <= 18):
+        # 이야기 버전: 가로가 18 cm인 전개도는 모눈을 옆으로 돌려 실제 크기 그대로(세로 20칸 = 200 mm)
+        win = net_window(rot_rec(rec), 17, vm=1)
+        svg = grid_svg(rot_rec(rec), K, win)
+        s.text(REAL_NOTE)
+        s.text('※ 종이에 실제 크기로 들어가도록 모눈을 옆으로 돌려 놓았어요. 종이를 돌려 보아도 좋아요.')
+    elif real:
         win = net_window(rec, 17)
         svg = grid_svg(rec, K, win)
         s.text(REAL_NOTE)
@@ -951,6 +1033,10 @@ def w_netdraw(s, lv, rec):
 
 
 def w_skeleton(s, lv, rec):
+    if DATA.get('kind') == 'st':     # 이야기 버전: 막대(모서리)와 이음새(꼭짓점) — 수는 뒤의 물음 칸에 써요
+        s.text('막대(선분)와 이음새(동그라미)를 빠짐없이 세어 보세요. 센 것에 차례대로 번호를 써도 좋아요.')
+        pic(s, rec['svg'], 62)
+        return after(s, lv, rec)
     s.text('이쑤시개(막대)와 스타이로폼 공(동그라미)을 빠짐없이 세어 보세요. 센 것에 차례대로 번호를 써도 좋아요.')
     pic(s, rec['svg'], 62)
     s.fill('이쑤시개 (       )개,   스타이로폼 공 (       )개')
@@ -1084,7 +1170,8 @@ def pre_tbl(key, kind):
 
 PRE_FIGS = {('t4', '표 완성하기'): pre_tbl('tblPr', '기둥'), ('t8', '표 완성하기'): pre_tbl('tblPy', '뿔')}
 
-WIDGETS = {'ask': lambda s, lv, r: w_ask(s, lv, r), 'quiz': w_quiz, 'blanks': w_blanks, 'write': w_write, 'sequence': w_sequence,
+WIDGETS = {'panes': w_panes, 'thenwhy': w_thenwhy, 'rule': w_rule, 'wonder': w_wonder,
+           'ask': lambda s, lv, r: w_ask(s, lv, r), 'quiz': w_quiz, 'blanks': w_blanks, 'write': w_write, 'sequence': w_sequence,
            'chain': w_chain, 'pre': w_pre,
            'pp6Pick': w_pick, 'pp6Sort': w_sort, 'pp6Tap': w_tap, 'pp6Parts': w_parts, 'pp6Ruler': w_ruler, 'pp6Columns': w_columns,
            'pp6Make': w_make, 'pp6FoldView': w_fold, 'pp6NetMark': w_netmark, 'pp6NetPairs': w_netpairs, 'pp6NetJudge': w_netjudge,
@@ -1140,7 +1227,7 @@ HEAD_KEY = [('옆면의 수', 'side'), ('모서리의 수', 'edge'), ('꼭짓점
 KN1 = ['', '', '', '삼', '사', '오', '육', '칠', '팔', '구', '십']
 
 
-def check_numbers(D):
+def check_numbers(D, story=False):
     """식이 적힌 칸은 식을 계산하고, 표는 각기둥·각뿔 공식으로 따로 계산해 앱의 답과 맞춥니다."""
     seen, nexpr, ntab = [], 0, 0
     for L in D['lessons']:
@@ -1177,12 +1264,13 @@ def check_numbers(D):
                             m = SHAPE_RE.match(t or '')
                             if m:
                                 n = KN1.index(m.group(1))
-                                kind = 'pyr' if st['name'] == '문제 2' else 'prism'
+                                kind = 'pyr' if (st['name'] == '문제 2' or '각뿔' in st['name']) else 'prism'
                     assert kind, ('표 줄의 도형을 모르겠어요', L['no'], txts)
                     for j, c in enumerate(r):
                         if 'n' not in c:
                             continue
-                        keys = [k for t, k in HEAD_KEY if t in head[j]]
+                        hj = re.sub(r'(?:막대|이음새)\((모서리|꼭짓점)\)', r'\1', head[j])
+                        keys = [k for t, k in HEAD_KEY if t in hj]
                         if not keys:   # 카드 표: 카드에 적힌 구성 요소
                             el = [k for t, k in HEAD_KEY if t in txts[0]]
                             keys = el
@@ -1190,9 +1278,12 @@ def check_numbers(D):
                         want = n if k == 'n' else cnt(kind, n)[k]
                         assert c['n'] == want, ('표 수가 공식과 달라요', L['no'], txts, head[j], c['n'], want)
                         ntab += 1
+    c = cnt
+    if story:
+        check_story(seen, nexpr, ntab, D)
+        return
     assert nexpr >= 3, nexpr
     assert ntab >= 60, ntab
-    c = cnt
     expect = [6, 12, 8, 6, 7 * 15, 2, 3, 5, 6, 7, 6 * 18, 5, 6, 6 * 6, c('pyr', 7)['face'] - 1, 10 * 3, 10 * 2,
               c('pyr', 8)['edge'], c('prism', 7)['face'], 72 / 8, 9 * 4, 8, 16 - 6, 10 + 6, 30, 20, 16]
     for v in expect:
@@ -1206,6 +1297,33 @@ def check_numbers(D):
     assert c('pyr', 8)['face'] == 9 and c('prism', 7)['vert'] == 14 and c('prism', 7)['face'] == 9
     assert [n for n in range(3, 11) if c('prism', n)['face'] + c('prism', n)['vert'] == 17] == [5]
     # 카드 값
+    for cd in D['cards']:
+        assert cd['v'] == cnt(cd['k'], cd['n'])[cd['e']], cd
+
+
+def check_story(seen, nexpr, ntab, D):
+    """이야기 버전: 문제의 수로 따로 계산한 값이 앱 답 중에 있는지(ST_EXPECT), 카드 값·구성 요소 공식"""
+    c = cnt
+    assert nexpr >= 3, nexpr
+    assert ntab >= 40, ntab
+    expect = [6, 12, 8,                                                       # 1차시 직육면체
+              4 * 12 + 9 * 6,                                                # 4차시 정육각기둥 모서리 합(표는 위에서 공식으로)
+              2, 3, c('prism', 3)['edge'] - (5 - 1),                          # 5~6차시 펼친 그림, 맞닿는 선분 짝
+              2 * 5, 5, 3 * 2 * 5 + 7 * 5,                                    # 정오각기둥 모서리 합
+              c('pyr', 6)['side'], 2, 1,                                      # 7차시
+              5 * c('pyr', 4)['edge'],                                         # 8차시
+              c('prism', 3)['edge'], c('prism', 3)['vert'], c('pyr', 4)['edge'], c('pyr', 4)['vert'],   # 9차시
+              c('prism', 8)['edge'], c('prism', 8)['vert'], c('pyr', 8)['edge'], c('pyr', 8)['vert'],
+              c('prism', 8)['edge'] + c('pyr', 8)['edge'], c('prism', 8)['vert'] + c('pyr', 8)['vert'],
+              c('prism', 30 // 3)['vert'], c('pyr', 11 - 1)['edge'],
+              c('pyr', 4)['edge'], 9 + c('pyr', 4)['edge'], c('pyr', 3)['edge'], 9 + 8 - 6,   # 10차시
+              c('pyr', 5)['edge'], 90 / c('pyr', 5)['edge'], 90 / c('pyr', 5)['edge'] * 5]  # 11차시
+    for v in expect:
+        assert any(abs(v - n) < 1e-9 for n in seen), ('앱 답 중에 없음(이야기)', v)
+    assert c('prism', 8)['vert'] == 16 and c('pyr', 9)['face'] == 10          # 꼭짓점 16개 → 팔각기둥, 면 10개 각뿔 → 구각뿔
+    assert 24 // 3 == 8 and 24 // 2 == 12                                    # 막대 24개 → 팔각기둥·십이각뿔
+    assert c('pyr', 7)['face'] == c('pyr', 7)['vert'] == 8 and c('prism', 5)['edge'] == 15   # 암호 7△8, 5▭15
+    assert 40 - c('prism', 4)['edge'] < 45 and 40 + c('prism', 5)['vert'] >= 45 and 40 + c('prism', 8)['face'] >= 45
     for cd in D['cards']:
         assert cd['v'] == cnt(cd['k'], cd['n'])[cd['e']], cd
 
@@ -1273,6 +1391,77 @@ def tb_lesson(s, lv, L):
     return '%s차시  %s' % (L['no'], '  '.join(ans))
 
 
+# ================================================================ 이야기 버전 차시
+ST_IDS = ['s1', 's23', 's4', 's56', 's7', 's8', 's9', 's10', 's11']   # 앱 u2-prism.st.js LESSONS의 id 차례(1·2~3·4·5~6·7·8·9·10·11차시)
+WHY_ST = {   # 도전형 '생각 쓰기'(앱 thenWhy·ruleFirst 물음과 겹치지 않게)
+    's1': ('기둥 모양 모형과 뿔 모양 모형은 무엇이 다른지 까닭과 함께 써 보세요.',
+           '예) 기둥 모양은 위와 아래(양쪽 끝)에 똑같은 면이 있고, 뿔 모양은 한쪽 끝이 뾰족해서 똑같은 두 면이 없어요.'),
+    's23': ('누워 있는 삼각 텐트에서도 밑면을 찾을 수 있는 까닭을 써 보세요.',
+            '예) 밑면은 아래에 있는 면이 아니라 평행하고 합동인 두 면이라서, 누워 있어도 양쪽 끝의 평행하고 합동인 삼각형 두 면이 밑면이에요.'),
+    's4': ('각기둥의 높이를 옆 모서리의 길이로 잴 수 있는 까닭을 써 보세요.',
+           '예) 각기둥의 옆면은 모두 직사각형이고 두 밑면과 수직으로 만나서, 옆 모서리의 길이가 두 밑면 사이의 거리(높이)와 같아요.'),
+    's56': ('텐트 설계도를 그릴 때 접었을 때 맞닿는 선분의 길이를 같게 그려야 하는 까닭을 써 보세요.',
+            '예) 접으면 맞닿는 두 선분이 한 모서리가 되므로, 길이가 다르면 꼭 맞게 붙지 않아 텐트(각기둥)가 만들어지지 않아요.'),
+    's7': ('각뿔의 밑면의 변의 수와 옆면의 수가 같은 까닭을 써 보세요.',
+           '예) 밑면의 변마다 그 변을 한 변으로 하는 삼각형 옆면이 하나씩 붙어 있어서 옆면의 수와 밑면의 변의 수가 같아요.'),
+    's8': ('각뿔의 모서리의 수가 밑면의 변의 수의 2배인 까닭을 써 보세요.',
+           '예) 밑면의 변(모서리)이 □개 있고, 각뿔의 꼭짓점에서 밑면의 꼭짓점으로 이어진 모서리도 □개 있어서 모두 □×2개예요.'),
+    's9': ('육각기둥 몸체와 육각뿔 지붕에 필요한 막대의 수가 다른 까닭을 써 보세요.',
+           '예) 막대는 모서리를 나타내요. 육각기둥은 모서리가 6×3=18개, 육각뿔은 6×2=12개라서 필요한 막대의 수가 달라요.'),
+    's10': ('암호 놀이에서 서로 다른 카드의 암호가 같아질 수 있는 까닭을 써 보세요.',
+            '예) 칠각뿔은 면과 꼭짓점이 모두 8개인 것처럼, 한 도형에서 구성 요소의 수가 같은 것이 있으면 옆면의 수·옆면 모양·수가 모두 같아져요.'),
+    's11': ('각기둥과 각뿔의 같은 점과 다른 점을 하나씩 써 보세요.',
+            '예) 같은 점: 밑면이 다각형이고 밑면의 변의 수와 옆면의 수가 같아요. 다른 점: 각기둥은 밑면이 2개이고 옆면이 직사각형, 각뿔은 밑면이 1개이고 옆면이 삼각형이에요.'),
+}
+
+
+def st_step_label(i, name):
+    parts = name.split(' — ', 1)
+    return ('%s %s' % (NUM[i], label_of(parts[0])), parts[1] if len(parts) > 1 else None)
+
+
+def st_lesson(s, lv, L, first, story):
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    if first and story:
+        s.scene(None, story['lines'][0])
+    ans = []
+    for i, st_ in enumerate(L['steps']):
+        s.step(*st_step_label(i, st_['name']))
+        show_inst(s, lv, st_['inst'], st_['hints'])
+        CTX['cur'] = (L['id'], st_['name'])
+        CTX['skip_pre'] = any(r['t'] == 'panes' for r in st_['recs'])
+        got = [run_rec(s, lv, r) for r in st_['recs']]
+        CTX['skip_pre'] = False
+        ans.append('%s %s' % (NUM[i], ' / '.join(x for x in got if x)))
+    CTX['cur'] = None
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L.get('challenge'):
+            s.step('%s ★ 도전하기' % NUM[n], '앱의 도전 문제')
+            show_inst(s, lv, L['challenge']['inst'], [])
+            CTX['challenge'] = True
+            ans.append('%s %s' % (NUM[n], ' / '.join(x for x in (run_rec(s, lv, r) for r in L['challenge']['recs']) if x)))
+            CTX['challenge'] = False
+            n += 1
+        q, a = WHY_ST.get(L['id'], ('오늘 배운 내용을 친구에게 설명하듯 써 보세요.', '예) ' + L['summary'].split('. ')[0] + '.'))
+        s.step('%s 생각 쓰기' % NUM[n], '왜 그럴까요?')
+        s.ask(q, blank=False)
+        s.lines(3)
+        ans.append('%s %s' % (NUM[n], a))
+    return '%s차시  %s' % (L['no'], '  '.join(ans))
+
+
+def _st(lid):
+    def f(s, lv):
+        Ls = DATA['lessons']
+        k = [L['id'] for L in Ls].index(lid)
+        return st_lesson(s, lv, Ls[k], k == 0, DATA.get('story'))
+    f.__name__ = 'st_' + lid
+    return f
+
+
+ST = [_st(i) for i in ST_IDS]
+
 DATA = {}
 
 
@@ -1281,18 +1470,26 @@ def build_file(kind, lv):
     D = load(src)
     if kind == 'tb':
         check_numbers(D)
+    else:
+        ids = [L['id'] for L in D['lessons']]
+        assert ids == ST_IDS, ('이야기 버전 차시가 바뀌었어요 — ST_IDS를 고치세요', ids)
+        check_numbers(D, story=True)
     DATA.clear()
     DATA.update(D)
+    DATA['kind'] = kind
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'
     s = Sheet(unit_label='6-1 수학 %s(%s)' % (UNIT_NAME, label), level=lv, grade_label='6학년')
     if kind == 'tb':
         lines = [tb_lesson(s, lv, L) for L in D['lessons']]
     else:
         lines = [f(s, lv) for f in ST]
-    s.answers('【교사용】 %s(%s) 활동지 정답 (%s)' % (UNIT_NAME, label, lv), lines,
-              note='※ 이 활동지는 앱 u2-prism.html과 차시 번호가 같습니다. '
-                   '5~6차시 삼각기둥·사각기둥 전개도 모눈은 실제 크기(한 칸 1 cm)이므로 100%로 인쇄하세요. 육각기둥 모눈은 종이에 들어가도록 반으로 줄였어요. '
-                   '쓰기 칸의 ‘예)’는 예시 답이에요.')
+    note = ('※ 이 활동지는 앱 u2-prism.html과 차시 번호가 같습니다. '
+            '5~6차시 삼각기둥·사각기둥 전개도 모눈은 실제 크기(한 칸 1 cm)이므로 100%로 인쇄하세요. 육각기둥 모눈은 종이에 들어가도록 반으로 줄였어요. '
+            '쓰기 칸의 ‘예)’는 예시 답이에요.') if kind == 'tb' else (
+            '※ 이 활동지는 앱 u2-prism.html(이야기 버전)과 차시 번호가 같습니다. '
+            '5~6차시 텐트·화단 설계도 모눈은 모두 실제 크기(한 칸 1 cm)이므로 100%로 인쇄하세요. 가로가 18 cm인 화단 모눈은 종이에 들어가도록 옆으로 돌려 놓았어요. '
+            '쓰기 칸의 ‘예)’는 예시 답이고, ‘먼저 예상해요’는 예상이 달라도 괜찮아요.')
+    s.answers('【교사용】 %s(%s) 활동지 정답 (%s)' % (UNIT_NAME, label, lv), lines, note=note)
     outdir = OUT_TB if kind == 'tb' else OUT_ST
     os.makedirs(outdir, exist_ok=True)
     path = os.path.join(outdir, NAME % lv)
