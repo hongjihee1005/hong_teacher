@@ -602,7 +602,12 @@ def render_why(s, lv, rec):
     if lv == '기본형' and rec.get('help') and len(rec['help']) > 1:
         s.text('도움: ' + rec['help'][1])
     s.lines(1 if first else 2)
-    return ('(예상) ' if first else '(왜) ') + (rec['ans'] or '(자유)')
+    return ('(예상) ' if first else '(왜) ') + josa_num(rec['ans'] or '(자유)')
+
+
+def josa_num(t):
+    """앱 글의 '2이 가장'처럼 수 뒤 조사를 받침에 맞게(2·4·5·9 → 가)"""
+    return re.sub(r'(\d)이 ', lambda m: m.group(1) + ('가 ' if m.group(1) in '2459' else '이 '), t)
 
 
 def ask_after(s, lv, rec, pre=''):
@@ -638,6 +643,8 @@ def render_rec(s, lv, rec, st):
             lab = t if re.fullmatch(r'[①②③]|보기', t) else SUB[k]
             if t:
                 s.text(lab if lab == t else lab + ' ' + re.sub(r'^[①②③]\s+(?=\S)', '', t))
+            elif MODE['v'] == 'st' and len(rec['parts']) > 1:     # 이름 없는 첫 활동도 정답의 ⑴과 맞게
+                s.text(lab)
             out.append(lab + ' ' + '; '.join(x for x in (render_rec(s, lv, r, None) for r in part['recs']) if x))
         return ' '.join(out)
     return HANDLERS[t](s, lv, rec, st)
@@ -781,7 +788,10 @@ PAPER = [('지도에서 사진기를 끌어 돌리거나 단추를 눌러 가, �
 # 이야기 버전: 화면에서 누르거나 끄는 말을 종이에서 하는 말로(위 PAPER도 함께 씀)
 PAPER_ST = [('지도에서 사진기를 끌어 돌리거나 단추를 눌러 가, 나, 다 방향에서 모두 보세요.', '지도에서 가, 나, 다 방향에 서서 교문 쪽을 본다고 생각해 보세요.'),
             ('층 단추를 눌러 별관 모형을 층별로 살펴보세요.', '별관 모형을 층별로 살펴보세요.'),
-            ('세 칸에 써서 붙여요.', '세 칸에 써 보세요.')]
+            ('세 칸에 써서 붙여요.', '세 칸에 써 보세요.'),
+            ('사진기는 지도 가운데를 바라보며 원을 따라 움직여요.', '가, 나, 다 자리에 서서 지도 가운데를 바라본다고 생각해요.'),
+            ('층 단추를 누르면 그 층만 진하게 보이고, 그 층을 위에서 본 모양도 보여요.', '층별 그림은 그 층에 있는 쌓기나무만 위에서 본 모양이에요.'),
+            ('점선 칸은 처음 급식실 모형이라 뺄 수 없어요.', '처음 급식실 모형의 쌓기나무는 그대로 두어요.')]
 
 WHY_ST = {
     '1': ('그림에서 보이는 쌓기나무의 수와 하준이·서윤이가 쌓은 쌓기나무의 수가 다른 까닭을 써 보세요.',
@@ -845,7 +855,7 @@ def lesson(s, lv, L, story=None):
         inst = paper(st['inst'])
         s.text(inst.strip())
         if lv == '기본형' and st['hints'] and st['recs'][0]['t'] not in ('write', 'sp6Guess'):
-            s.text('도움: ' + st['hints'][0])
+            s.text('도움: ' + (paper(st['hints'][0]) if MODE['v'] == 'st' else st['hints'][0]))
         out.append(NUM[i] + ' ' + '; '.join(x for x in (render_rec(s, lv, r, st) for r in st['recs']) if x))
     if lv == '도전형':
         n = len(L['steps'])

@@ -659,9 +659,9 @@ function rp4Terms(body, api, opt) {
       svg.innerHTML = "";
       if (arcs) {
         svg.append(svgEl("path", { d: `M${X[0]},62 C${X[0]},10 ${X[3]},10 ${X[3]},62`, fill: "none", stroke: "#D9822B", "stroke-width": 3 }));
-        svg.append(txt(280, 22, "외항", 18, { fill: "#B4610F" }));
+        svg.append(txt(280, 42, "외항", 18, { fill: "#B4610F" }));
         svg.append(svgEl("path", { d: `M${X[1]},138 C${X[1]},190 ${X[2]},190 ${X[2]},138`, fill: "none", stroke: "#2B7BD6", "stroke-width": 3 }));
-        svg.append(txt(280, 182, "내항", 18, { fill: "#2B7BD6" }));
+        svg.append(txt(280, 160, "내항", 18, { fill: "#2B7BD6" }));
       }
       svg.append(txt(130, 100, ":", 40), txt(280, 100, "=", 40), txt(430, 100, ":", 40));
       P.forEach((v, i) => {
@@ -716,7 +716,7 @@ function rp4Dbl(body, api, opt) {
     svg.append(svgEl("line", { x1: X(gt, tmax), y1: yT, x2: X(gb, bmax), y2: yB, stroke: "#2E8B57", "stroke-width": 3, "stroke-dasharray": "6 5" }));
     svg.append(svgEl("circle", { cx: X(gt, tmax), cy: yT, r: 8, fill: "#2E8B57" }), svgEl("circle", { cx: X(gb, bmax), cy: yB, r: 8, fill: "#2E8B57" }));
     svg.append(svgEl("circle", { cx: X(at, tmax), cy: yT, r: 9, fill: "#D9822B" }));
-    svg.append(txt(X(at, tmax), yT + 26, `${fmt(at)}`, 16, { fill: "#B4610F" }));
+    svg.append(txt(X(at, tmax) + 8, yT + 26, `${fmt(at)}`, 16, { fill: "#B4610F", "text-anchor": "start" }));
     svg.append(svgEl("line", { x1: X(at, tmax), y1: yT, x2: X(v, bmax), y2: yB, stroke: "#D9822B", "stroke-width": 2, "stroke-dasharray": "3 5" }));
     const mx = X(v, bmax);
     svg.append(svgEl("path", { d: `M${mx},${yB - 4} l-13,26 h26 Z`, fill: fin ? "#2E8B57" : "#C8472E", style: "cursor:grab" }));
@@ -860,6 +860,8 @@ function rp4Hand(body, api) {
   });
 }
 
+/* thenWhy 안에서 만지기 + 빈칸(ask)을 쓰는 부품: 빈칸이 ‘왜 그럴까요?’ 칸보다 위에 오게 따로 담아요 */
+function rp4In(body, api, fn, opt) { const d = h("div"); body.append(d); return fn(d, api, opt); }
 /* 그림·글 상자 */
 function rp4sNote(title, lines) { return h("div", { class: "rp4recipe" }, h("b", {}, title), h("ul", { style: "margin:.3em 0 .1em 1.2em;padding:0" }, lines.map(l => h("li", {}, l)))); }
 function rp4Recipe(title, lines) { return h("div", { class: "rp4recipe" }, h("b", {}, title), h("ol", {}, lines.map(l => h("li", {}, l)))); }
@@ -1019,7 +1021,7 @@ const LESSONS = [
         { q: "화분이 2개가 되면 상토 컵 수와 퇴비 컵 수의 비는 어떻게 바뀌고, 비율은 어떻게 될까요?", ph: "내 규칙: 화분이 2개가 되면 ~", help: ["① 화분이 2개가 되면 상토와 퇴비가 각각 몇 배가 되는지 생각해요. → ② 두 수가 같은 배만큼 커질 때 비율이 어떻게 될지 예상해요.", "‘내 규칙: 화분이 2개가 되면 상토와 퇴비가 모두 ~배가 되어 비는 ~이 되고, 비율은 ~.’ 꼴로 써요."],
           ans: "화분이 2개가 되면 상토와 퇴비가 모두 2배가 되어 비는 6 : 4가 돼요. 3 : 2의 전항과 후항에 2를 곱한 것이고, 비율은 [3/2]으로 같아요." }) },
     { name: "그려 보기 — 전항과 후항에 같은 수를", inst: "비 3 : 2에서 기호 : 앞에 있는 3을 전항, 뒤에 있는 2를 후항이라고 해요. 3 : 2의 전항과 후항에 같은 수를 곱하여 9 : 6을 만들어 보세요. ‘같은 수 더하기’나 0을 곱하는 것도 해 보고 모양과 비율을 비교해 보세요.", hints: ["‘× 같은 수 곱하기’를 고르고 같은 수를 3으로 정해요.", "직사각형의 가로 : 세로가 비를 나타내요. 모양이 같으면 비율도 같아요."],
-      render: thenWhy((b, a) => rp4Machine(b, a, { start: [3, 2], goal: [9, 6], ops: ["×", "+", "÷"],
+      render: thenWhy((b, a) => rp4In(b, a, rp4Machine, { start: [3, 2], goal: [9, 6], ops: ["×", "+", "÷"],
         ask: [["3 : 2에서 3은 ", { c: ["전항", "후항"], a: 0 }, ", 2는 ", { c: ["전항", "후항"], a: 1 }, "이에요."],
           ["3 : 2의 전항과 후항에 ", { i: "3" }, "을 곱하면 9 : 6이 되고, 비율은 같아요."],
           ["전항과 후항에 0을 곱하면 0 : 0이 되어 비율을 ", { c: ["비교할 수 없어요", "비교할 수 있어요"], a: 0 }, "."]],
@@ -1067,7 +1069,7 @@ const LESSONS = [
         { q: "소수의 비를 자연수의 비로 바꾸려면 전항과 후항에 어떤 수를 곱하면 될까요?", ph: "내 규칙: 소수 한 자리 수는 ~을 곱하면", help: ["① 1.2와 0.3이 소수 몇 자리 수인지 살펴요. → ② 소수 한 자리 수를 자연수로 만드는 수를 떠올려요.", "‘내 규칙: 소수 한 자리 수는 전항과 후항에 ~을 곱하면 자연수가 돼요.’ 꼴로 써요."],
           ans: "소수 한 자리 수는 전항과 후항에 10을 곱하면 자연수가 돼요. 1.2 : 0.3에 10을 곱하면 12 : 3이고, 공약수 3으로 나누면 4 : 1이에요." }) },
     { name: "그려 보기 — 분수의 비", inst: "소윤이는 퇴비 [3/4]포대와 상토 [5/6]포대를 섞으려고 해요. 퇴비 양과 상토 양의 비 [3/4] : [5/6]를 간단한 자연수의 비로 나타내 보세요. 전항과 후항에 어떤 수를 곱해야 할까요?", hints: ["두 분모 4와 6의 공배수를 곱하면 분모가 없어져요.", "12를 곱하면 [3/4]×12 = 9, [5/6]×12 = 10이에요."],
-      render: thenWhy((b, a) => rp4Simp(b, a, { a: "3/4", b: "5/6", ma: "frac", mb: "frac", simplest: true, noConv: true, mults: [4, 6, 12],
+      render: thenWhy((b, a) => rp4In(b, a, rp4Simp, { a: "3/4", b: "5/6", ma: "frac", mb: "frac", simplest: true, noConv: true, mults: [4, 6, 12],
         ask: [["두 분모 4와 6의 ", { c: ["공배수", "공약수"], a: 0 }, "인 ", { i: "12" }, "를 곱하면 ", { r: [9, 10] }, "이에요."]],
         ok: "[3/4] : [5/6] = 9 : 10이에요." }),
         { q: "[3/4] : [5/6]에 12 대신 24를 곱해도 될까요?", ph: "24도 4와 6의 ~이라서 ~", help: ["① 24가 4와 6의 공배수인지 살펴요. → ② 24를 곱한 비를 공약수로 나누면 어떻게 되는지 생각해요.", "‘24도 ~이라서 곱하면 ~ : ~이 되고, ~로 나누면 ~ : ~이 돼요.’ 꼴로 써요."],
@@ -1112,7 +1114,7 @@ const LESSONS = [
   summary: "비율이 같은 두 비를 기호 =를 사용하여 4 : 30=8 : 60과 같이 나타낸 식을 비례식이라고 해요. 비례식 4 : 30=8 : 60에서 바깥쪽에 있는 4와 60을 외항, 안쪽에 있는 30과 8을 내항이라고 해요.",
   steps: [
     { name: "만져 보기 — 상추 고랑 두 개", inst: "하린이네 모둠은 텃밭 한 고랑에 상추 모종 4포기를 심고 퇴비 30 g을 뿌려요. 고랑을 두 개로 늘려 보고, 모종 수와 퇴비의 양의 비와 비율을 비교해 보세요.", hints: ["‘상추 고랑 하나 더 만들기’를 눌러요.", "[4/30]와 [8/60]을 약분하면 둘 다 [2/15]예요."],
-      render: thenWhy((b, a) => rp4Build(b, a, { what: "상추 고랑", unit: "개", start: 1, target: 2, max: 3,
+      render: thenWhy((b, a) => rp4In(b, a, rp4Build, { what: "상추 고랑", unit: "개", start: 1, target: 2, max: 3,
         items: [{ name: "상추 모종", per: 4, unit: "포기", icon: "sprout" }, { name: "퇴비", per: 30, unit: "g", icon: "compost", lump: true }],
         ask: [{ t: "한 고랑", p: ["모종 수와 퇴비의 양의 비 ", { r: [4, 30] }, ", 비율 ", { f: "4/30" }] },
           { t: "두 고랑", p: ["모종 수와 퇴비의 양의 비 ", { r: [8, 60] }, ", 비율 ", { f: "8/60" }] },
@@ -1198,7 +1200,7 @@ const LESSONS = [
   summary: "구하려는 것을 □라 하고, 두 양의 비를 같은 차례(예: 시간 : 물의 양 = 시간 : 물의 양)로 써서 비례식을 세워요. 비례식의 성질(외항의 곱 = 내항의 곱), 비의 성질(전항과 후항에 같은 수 곱하기), 비율(두 비율이 같음)을 이용해 □를 구할 수 있어요.",
   steps: [
     { name: "만져 보기 — 방울토마토 바구니", inst: "방울토마토를 수확했어요! 지안이네 모둠은 방울토마토를 크기가 같은 바구니에 똑같은 개수씩 담아요. “방울토마토 60개를 담는 데 바구니 3개가 필요해. 그럼 200개를 담으려면 바구니가 몇 개 필요할까?” 두 줄 수직선에서 200개의 짝을 찾아보세요.", hints: ["방울토마토 20개마다 바구니 1개예요.", "비례식 60 : 3=200 : □에서 외항의 곱과 내항의 곱이 같아요."],
-      render: thenWhy((b, a) => rp4Dbl(b, a, { top: { name: "방울토마토 수", unit: "개", tick: 20 }, bot: { name: "바구니 수", unit: "개", tick: 1, snap: 1 }, given: [60, 3], askAt: 200, tmax: 240,
+      render: thenWhy((b, a) => rp4In(b, a, rp4Dbl, { top: { name: "방울토마토 수", unit: "개", tick: 20 }, bot: { name: "바구니 수", unit: "개", tick: 1, snap: 1 }, given: [60, 3], askAt: 200, tmax: 240,
         ask: [["방울토마토 60개일 때 방울토마토 수와 바구니 수의 비: ", { r: [60, 3] }],
           ["바구니를 □개라 하면 비례식은 60 : 3=200 : □"],
           ["60 × □ = 3 × 200 = ", { i: "600" }, ", □ = ", { i: "10" }, " (개)"]],

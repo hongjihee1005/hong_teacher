@@ -2068,8 +2068,8 @@ function ci6Scene(body, api, opt) {   /* 끝나면 ci6Then → api.done( */
   /* 둥근 화단, 맨홀 뚜껑, 자전거, 훌라후프 */
   add("둥근 화단", true, g => { g.append(svgEl("circle", { cx: 395, cy: 290, r: 46, fill: "#8CC084", stroke: "#8A6A45", "stroke-width": 6 })); [[0, 0], [18, -16], [-20, 10], [12, 22], [-14, -20], [26, 8]].forEach(([a, b], i) => g.append(svgEl("circle", { cx: 395 + a, cy: 290 + b, r: 6, fill: ["#F28C9C", "#FFD24D", "#F28C9C", "#B58CE0", "#FFD24D", "#F28C9C"][i] }))); }, [395, 290, 56]);
   add("맨홀 뚜껑", true, g => { g.append(svgEl("circle", { cx: 220, cy: 300, r: 28, fill: "#7C8794", stroke: "#4A5563", "stroke-width": 4 })); ci6Circle(g, 220, 300, 18, { stroke: "#5E6875", "stroke-width": 2 }); }, [220, 300, 36]);
-  add("자전거 바퀴", true, g => { [[70, 300], [150, 300]].forEach(([x, y]) => { ci6Circle(g, x, y, 28, { stroke: "#33404D", "stroke-width": 5 }); for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; ci6Line(g, x, y, x + 25 * Math.cos(a), y + 25 * Math.sin(a), "#9AA5AE", 1.5); } }); g.append(svgEl("path", { d: "M70,300 L102,262 L150,300 M102,262 L140,262 L150,300 M98,255 L112,255", fill: "none", stroke: "#2B7BD6", "stroke-width": 4, "stroke-linecap": "round" })); }, [[70, 300, 36], [150, 300, 36]]);
-  add("훌라후프", true, g => { ci6Circle(g, 545, 290, 40, { stroke: "#E47A38", "stroke-width": 7 }); }, [545, 290, 50]);
+  add("자전거 바퀴", true, g => { [[70, 300], [150, 300]].forEach(([x, y]) => { ci6Circle(g, x, y, 28, { fill: "rgba(255,255,255,0)", stroke: "#33404D", "stroke-width": 5 }); for (let k = 0; k < 6; k++) { const a = k * Math.PI / 3; ci6Line(g, x, y, x + 25 * Math.cos(a), y + 25 * Math.sin(a), "#9AA5AE", 1.5); } }); g.append(svgEl("path", { d: "M70,300 L102,262 L150,300 M102,262 L140,262 L150,300 M98,255 L112,255", fill: "none", stroke: "#2B7BD6", "stroke-width": 4, "stroke-linecap": "round" })); }, [[70, 300, 36], [150, 300, 36]]);
+  add("훌라후프", true, g => { ci6Circle(g, 545, 290, 40, { fill: "rgba(255,255,255,0)", stroke: "#E47A38", "stroke-width": 7 }); }, [545, 290, 50]);
   const need = items.filter(it => it.circ).length;
   const say = h("p", { class: "ci6read" }, `원 모양을 찾아 눌러요. (0/${need})`);
   const rings = svgEl("g", { "pointer-events": "none" }); s.append(rings);
@@ -2107,9 +2107,9 @@ function ci6String(body, api, opt) {   /* 끝나면 ci6Then → api.done( */
     lay.innerHTML = ""; shapes[kk].draw(lay);
     res[kk].pts.forEach(([x, y]) => lay.append(svgEl("circle", { cx: ci6R(C.x + x * k), cy: ci6R(C.y + y * k), r: 8, fill: "#2B2B2B", stroke: "#000" })));
     [...chips.children].forEach(b => b.classList.toggle("ci6-pick", b.dataset.k === kk));
-    seen.add(kk); say.textContent = `끈 ${P} cm로 만든 ${shapes[kk].name}에는 바둑돌이 ${res[kk].n}개 들어가요.`;
+    seen.add(kk); say.textContent = `끈 ${P} cm로 만든 ${shapes[kk].name}에는 바둑돌이 ${res[kk].n}개 들어가요.` + (seen.size > 1 ? ` (${Object.keys(shapes).filter(q => seen.has(q)).map(q => `${shapes[q].name} ${res[q].n}개`).join(" · ")})` : "");
     if (seen.size === 3) ci6Then(body, api, Object.assign({}, opt, { ask: [{ q: "끈의 길이가 같을 때 바둑돌이 가장 많이 들어가는 도형은 무엇인가요?", parts: [{ o: ["정삼각형", "정사각형", "원"], a: ["tri", "sq", "ci"].indexOf(best) }] },
-      { q: "둘레가 같을 때 넓이가 가장 넓은 도형은", parts: [{ o: ["정삼각형", "정사각형", "원"], a: ["tri", "sq", "ci"].indexOf(best) }, "이에요."] }] }), "", "세 도형을 모두 만들어 보았어요.");
+      { q: "바둑돌이 많이 들어갈수록 도형의 넓이가 넓어요. 끈의 길이(둘레)가 같을 때 넓이가 가장 넓은 도형은", parts: [{ o: ["정삼각형", "정사각형", "원"], a: ["tri", "sq", "ci"].indexOf(best) }, "이에요."] }] }), "", "세 도형을 모두 만들어 보았어요.");
   };
   Object.keys(shapes).forEach(kk => chips.append(h("button", { type: "button", "data-k": kk, onclick: () => show(kk) }, shapes[kk].name)));
   body.append(chips, say, s);
