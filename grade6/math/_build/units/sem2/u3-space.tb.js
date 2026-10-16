@@ -354,7 +354,7 @@ function sp6Build(body, api, opt) {
     cells.forEach(([y, x, b]) => { const v = G[y][x]; b.textContent = v ? String(v) : "​"; b.className = (v ? "sp6h" + v : "") + (opt.lock && start[y][x] ? " sp6lock" : ""); });
     mB[0].classList.toggle("sp6-pick", mode === 1); mB[1].classList.toggle("sp6-pick", mode === -1);
     cnt.textContent = `쌓은 쌓기나무 ${sp6Sum(G)}개`;
-    prev.innerHTML = ""; prev.append(sp6Iso(G, { frame: [R, C, M], maxW: "100%", plain: true, label: "내가 쌓은 모양" }));
+    prev.innerHTML = ""; prev.append(sp6Iso(G, { frame: [R, C, M], maxW: "16em", plain: true, label: "내가 쌓은 모양" }));
     live.innerHTML = "";
     const L = opt.live || [];
     if (L.includes("views")) live.append(sp6Views3(sp6Views(G), { cell: 20, rows: M }));
@@ -669,6 +669,7 @@ function sp6Map(objs, marks, opt = {}) {
     if (opt.road) s.append(svgEl("rect", { x: cx - 18, y: cx - 1.2 * S, width: 36, height: SP6_RC * S + 1.2 * S, fill: "#EDE6D8" }));
     objs.forEach(o => {
       const x = cx + o.x * S, y = cx + o.y * S, f = o.f || [0, 1];
+      if (o.kind === "bldg") { s.append(svgEl("rect", { x: x - 45, y: y - 25, width: 90, height: 40, fill: "#E8DCC8", stroke: SP6.ink, "stroke-width": 1.5 }), svgEl("rect", { x: x - 18, y: y + 15, width: 36, height: 18, fill: "#C9D9EA", stroke: SP6.ink, "stroke-width": 1.5 })); s.append(txt(x, y - 5, o.name, 13, { fill: SP6.ink })); return; }
       s.append(svgEl("rect", { x: x - 15, y: y - 15, width: 30, height: 30, rx: 6, fill: "#FFF6E5", stroke: SP6.ink, "stroke-width": 1.5 }));
       s.append(svgEl("line", { x1: x, y1: y, x2: sp6R(x + f[0] * 13), y2: sp6R(y + f[1] * 13), stroke: SP6.red, "stroke-width": 2.5 }));
       s.append(txt(x, y + 26, o.name, 13, { fill: SP6.ink }));
@@ -746,7 +747,7 @@ function sp6Guess(body, api, opt) {
     cells.forEach(([y, x, b]) => { const v = G[y][x]; b.textContent = v ? String(v) : "​"; b.className = v ? "sp6h" + v : ""; });
     mB[0].classList.toggle("sp6-pick", mode === 1); mB[1].classList.toggle("sp6-pick", mode === -1);
     cnt.textContent = `쌓은 쌓기나무 ${sp6Sum(G)}개 / ${n}개`;
-    prev.innerHTML = ""; prev.append(sp6Iso(G, { frame: [3, 3, 3], maxW: "100%", plain: true }));
+    prev.innerHTML = ""; prev.append(sp6Iso(G, { frame: [3, 3, 3], maxW: "16em", plain: true }));
     sc.innerHTML = ""; sc.append("내 점수 ", h("b", {}, String(score)), ` 점 / ${goal}점`, h("span", { class: "sp6small" }, ` · ${round}판째`));
   }
   const tryB = h("button", { type: "button", class: "big", onclick: () => {
@@ -759,7 +760,7 @@ function sp6Guess(body, api, opt) {
       paint(); return end();
     }
     if (stage < 2) { stage++; showClue(); say.textContent = `아쉬워요. ${stage === 1 ? "앞" : "옆"}에서 본 모양을 더 보여 줄게요. 다시 쌓아 보세요.`; return; }
-    say.textContent = "위, 앞, 옆에서 본 모양을 다 보고도 달랐어요(0점). 숨은 자리가 있으면 세 모양이 같아도 다르게 쌓일 수 있어요. 아래가 컴퓨터가 쌓은 모양이에요.";
+    say.textContent = sp6Same(sp6Views(sp6Trim3(G)), sp6Views(sp6Trim3(T))) ? "세 모양은 같은데 쌓은 모양이 달라요(0점). 숨은 자리가 있으면 위, 앞, 옆에서 본 모양이 같아도 다르게 쌓일 수 있어요. 아래가 컴퓨터가 쌓은 모양이에요." : "위, 앞, 옆에서 본 모양을 다 보고도 다르게 쌓았어요(0점). 아래의 컴퓨터가 쌓은 모양과 내 모양을 견주어 보세요.";
     end(true);
   } }, "맞는지 보기");
   const ansBox = h("div");
@@ -792,7 +793,7 @@ const SP6_D = {
   l3a4L: [[3, 0, 0], [2, 0, 0], [1, 1, 1]],    // 3차시 활동 4 왼쪽: 숨은 것 없음, 5+2+1 = 8
   l3a4R: [[0, 1, 0], [2, 3, 2], [1, 0, 1]],    //            오른쪽: 숨은 1개, 6+3+1 = 10
   l3ch: [[1, 1, 0], [0, 2, 0], [2, 1, 1]],     // 3차시 도전: 숨은 1개, 8개
-  city: [[1, 3, 1], [1, 0, 1], [0, 1, 2]],     // 4차시 시청
+  city: [[1, 1, 3], [0, 1, 0], [2, 1, 1]],     // 4차시 시청
   l4a2: [[2, 2, 1], [0, 1, 0], [2, 1, 1]],     // 4차시 활동 2: 위·앞·옆 모양이 같아도 9~11개
   dice: [[3, 1, 1], [0, 1, 0]],                // 4차시 활동 3 주사위 미술품: ◯ 1개씩 3자리 + ☆ 3개 = 6
   l4u: [[0, 1, 0], [0, 3, 0], [1, 2, 1]],      // 4차시 수학익힘 유사: 8개
@@ -1138,7 +1139,7 @@ const LESSONS = [
   steps: [
     { name: "놀이 알아보기", inst: "4명이 함께 하는 놀이예요. 가위바위보로 놀이 순서를 정하고, 카드를 섞은 후 뒤집어 쌓아 두어요. 놀이 방법을 차례대로 눌러 보세요.", hints: ["먼저 카드를 보여 주고, 층별 모양을 그린 다음, 쌓기나무로 만들어요.", "역할을 바꾸어 모두 한 번씩 만들면 놀이가 끝나요."],
       render: (b, a) => sequence(b, a, [
-        "㉢ 첫 번째 순서인 사람은 세 사람이 그린 1층, 2층, 3층 모양을 보고 쌓기나무로 만들어요. 옳게 만들면 다음 사람에게 차례가 넘어가고, 잘못 만들면 세 사람이 도와줘요.",
+        "㉢ 첫 번째 순서인 사람은 세 사람이 그린 1층, 2층, 3층 모양을 보고 쌓기나무로 만들어요. 옳게 만들면 차례가 넘어가고, 잘못 만들면 세 사람이 도와줘요.",
         "㉠ 첫 번째 순서인 사람은 뒤돌아 있고, 두 번째 순서인 사람은 카드 한 장을 나머지 두 사람과 함께 볼 수 있도록 뒤집어 내려놓아요.",
         "㉣ 순서를 바꾸어 가며 쌓기나무로 만드는 역할을 모두 한 번씩 하면 놀이가 끝나요.",
         "㉡ 카드를 보고 두 번째 사람은 1층, 세 번째 사람은 2층, 네 번째 사람은 3층 모양을 그리고, 옳게 그렸는지 서로 확인해요."], [1, 3, 0, 2],
@@ -1170,7 +1171,7 @@ const LESSONS = [
   summary: "어느 방향에서 본 모습인지 찾을 수 있어요. 쌓기나무로 만든 모양은 만든 모양과 위에서 본 모양, 위·앞·옆에서 본 모양, 위에서 본 모양에 수를 쓰는 방법, 층별로 나타내는 방법으로 나타내고, 이를 보고 쌓기나무의 개수를 구할 수 있어요.",
   steps: [
     { name: "1번", inst: "건축물을 어느 방향에서 본 모습인지 기호를 써 보세요.", hints: ["지도에서 건축물의 앞으로 튀어나온 부분이 어느 쪽에 있는지 살펴봐요.", "사진에서 튀어나온 부분이 정면으로 보여요."],
-      render: (b, a) => sp6Ask(b, a, [{ fig: () => h("div", { class: "sp6row" }, h("div", {}, sp6Map(SP6_BLD, SP6_BLD_DIR, { maxW: "14em" }), h("p", { class: "sp6small" }, "빨간 선 쪽으로 건물의 한 부분이 앞으로 튀어나와 있어요.")), h("div", {}, sp6PhotoCard(SP6_BLD, 90, "건축물의 모습"))),
+      render: (b, a) => sp6Ask(b, a, [{ fig: () => h("div", { class: "sp6row" }, h("div", {}, sp6Map(SP6_BLD, SP6_BLD_DIR, { maxW: "14em" }), h("p", { class: "sp6small" }, "위에서 본 건축물이에요. 파란 부분이 앞으로 튀어나와 있어요.")), h("div", {}, sp6PhotoCard(SP6_BLD, 90, "건축물의 모습"))),
         parts: [{ o: ["가", "나", "다"], a: 2, why: { "0": "가 방향에서 보면 튀어나온 부분이 옆쪽에 보여요.", "1": "나 방향은 튀어나온 부분의 반대쪽이라 튀어나온 부분이 가려져요." } }, " 방향"] }],
         { ok: "건축물에서 앞으로 튀어나온 부분이 정면으로 보이므로 다 방향에서 본 모습이에요." }) },
     { name: "2번", inst: "쌓기나무로 만든 모양과 위에서 본 모양을 보고 똑같은 모양으로 만드는 데 필요한 쌓기나무는 몇 개인지 구해 보세요.", hints: ["위에서 본 모양과 견주어 숨겨진 쌓기나무가 있는지 찾아요.", "층별로 세어 더해요."],
