@@ -72,3 +72,13 @@ def par_mark(a, b, n=1, size=0.18, color=BLUE):
 def regular(n, r=1.5, center=(0, 0, 0), start=90):
     c = np.array(center, float)
     return [c + r * np.array([np.cos(np.radians(start + 360 * k / n)), np.sin(np.radians(start + 360 * k / n)), 0]) for k in range(n)]
+
+
+def right_mark(O, u, v, s=0.32, color=ORANGE, width=5):
+    """O에서 방향 u, v(단위가 아니어도 됨)가 이루는 직각 표시(작은 네모)"""
+    O = np.array(O, float)
+    u = np.array(u, float) / np.linalg.norm(u)
+    v = np.array(v, float) / np.linalg.norm(v)
+    m = VMobject(color=color, stroke_width=width)
+    m.set_points_as_corners([O + u * s, O + (u + v) * s, O + v * s])
+    return m
