@@ -75,9 +75,12 @@ function findTag(e, t, out) { out = out || []; if (e && typeof e === 'object') {
 function serFig(v) {
   if (typeof v === 'function') v = v();
   if (!v || typeof v !== 'object') return v == null ? null : { text: String(v) };
-  const out = [], seen = new Set();
-  findTag(v, 'figure').forEach(f => { const s = findTag(f, 'svg')[0]; if (!s || seen.has(s)) return; seen.add(s); const c = findTag(f, 'figcaption')[0]; out.push({ svg: String(s), cap: c ? c.textContent : null }); });
-  findTag(v, 'svg').forEach(s => { if (!seen.has(s) && !(s.parent && s.parent.tag === 'svg')) { seen.add(s); out.push({ svg: String(s), cap: null }); } });
+  const out = [];
+  const walk = e => { if (!e || typeof e !== 'object' || !e.kids) return;
+    if (e.tag === 'figure') { const s = findTag(e, 'svg')[0]; if (s) { const c = findTag(e, 'figcaption')[0]; out.push({ svg: String(s), cap: c ? c.textContent : null }); return; } }
+    if (e.tag === 'svg') { out.push({ svg: String(e), cap: null }); return; }
+    e.kids.forEach(walk); };
+  walk(v);
   if (!out.length) return { text: v.textContent };
   return { figs: out };
 }
@@ -322,34 +325,37 @@ def _rect(x, y, w, h, fill='none', stroke=INK, sw=1.5, dash=None):
             % (fmt(x), fmt(y), fmt(w), fmt(h), fill, stroke, sw, ' stroke-dasharray="%s"' % dash if dash else ''))
 
 
+def cap_w(cap):
+    return (len(cap) * 15.5 + 6) if cap else 0
+
+
 def compose(figs, gap=26):
-    """[(svg, 이름)] → 한 장의 SVG(한 줄에 넘치면 다음 줄로), 너비 mm"""
+    """[(svg, 이름)] → 한 장의 SVG(한 줄에 넘치면 다음 줄로), 너비 mm. 이름이 그림보다 넓으면 칸을 넓힘"""
     items = []
     for svg, cap in figs:
         x0, y0, w, h = vb(svg)
-        k = min(1.0, 230 / w)            # 사진·지도처럼 큰 그림은 줄여서
-        items.append((svg, cap, x0, y0, w, h, k))
+        k = min(1.0, (320 if abs(w - h) < 1 else 230) / w)   # 사진·지도처럼 큰 그림은 줄여서(정사각형 지도는 덜 줄임)
+        items.append((svg, cap, w * k, h * k, max(w * k, cap_w(cap))))
     rows, cur, cw = [], [], 0
     for it in items:
-        ww = it[4] * it[6]
-        if cur and cw + gap + ww > ROW_PX:
+        if cur and cw + gap + it[4] > ROW_PX:
             rows.append(cur)
             cur, cw = [], 0
-        cw += (gap if cur else 0) + ww
+        cw += (gap if cur else 0) + it[4]
         cur.append(it)
     rows.append(cur)
     body, y, W = [], 0, 0
     for row in rows:
         x = 0
-        hmax = max(it[5] * it[6] for it in row)
+        hmax = max(it[3] for it in row)
         capH = 24 if any(it[1] for it in row) else 0
-        for svg, cap, x0, y0, w, h, k in row:
-            ww, hh = w * k, h * k
-            inner = re.sub(r'^<svg ', '<svg x="%s" y="%s" width="%s" height="%s" ' % (fmt(x), fmt(y + hmax - hh), fmt(ww), fmt(hh)), svg, count=1)
+        for svg, cap, ww, hh, slot in row:
+            fx = x + (slot - ww) / 2
+            inner = re.sub(r'^<svg ', '<svg x="%s" y="%s" width="%s" height="%s" ' % (fmt(fx), fmt(y + hmax - hh), fmt(ww), fmt(hh)), svg, count=1)
             body.append(inner)
             if cap:
-                body.append(_t(x + ww / 2, y + hmax + 14, cap, 15))
-            x += ww + gap
+                body.append(_t(x + slot / 2, y + hmax + 14, cap, 15))
+            x += slot + gap
         W = max(W, x - gap)
         y += hmax + capH + 14
     H = y - 14
@@ -562,9 +568,11 @@ def render_rec(s, lv, rec, st):
     if t == 'chain':
         out = []
         for k, part in enumerate(rec['parts']):
-            if part['title']:
-                s.text(SUB[k] + ' ' + re.sub(r'^[①②③]\s*', '', part['title']))
-            out.append(SUB[k] + ' ' + '; '.join(render_rec(s, lv, r, None) for r in part['recs']))
+            t = part['title'] or ''
+            lab = t if re.fullmatch(r'[①②③]|보기', t) else SUB[k]
+            if t:
+                s.text(lab if lab == t else lab + ' ' + re.sub(r'^[①②③]\s+(?=\S)', '', t))
+            out.append(lab + ' ' + '; '.join(render_rec(s, lv, r, None) for r in part['recs']))
         return ' '.join(out)
     return HANDLERS[t](s, lv, rec, st)
 

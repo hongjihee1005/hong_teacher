@@ -249,7 +249,7 @@ const readline = require('readline');
       '</head><body><div id="w">' + m.svg + '</div></body></html>');
     try { await p.evaluate(() => document.fonts.ready); } catch (e) {}
     await p.locator('#w').screenshot({ path: m.out });
-    process.stdout.write('{"ok":1}\\n');
+    process.stdout.write('{"ok":1}\n');
   }
   await b.close();
 })().catch(e => { console.error(e); process.exit(1); });
@@ -341,7 +341,7 @@ def cards_svg(items, cols=None, cw=170, ch=150, lab=True, box=True):
     n = len(items)
     cols = cols or min(n, 5)
     rows = (n + cols - 1) // cols
-    gap, lh = 12, (30 if lab else 0)
+    gap, lh = 12, (max(30, cw / 11) if lab else 0)
     W, H = cols * cw + (cols - 1) * gap, rows * (ch + lh) + (rows - 1) * gap
     b = []
     for i, (name, svg) in enumerate(items):
@@ -350,7 +350,8 @@ def cards_svg(items, cols=None, cw=170, ch=150, lab=True, box=True):
             b.append('<rect x="%s" y="%s" width="%s" height="%s" rx="12" fill="#fff" stroke="#C9D4CF" stroke-width="2"/>' % (x + 1, y + 1, cw - 2, ch + lh - 2))
         b.append(nest(svg, x + 6, y + 6, cw - 12, ch - 10))
         if lab and name:
-            b.append(_t(x + cw / 2, y + ch + lh / 2 - 2, name, 19 if len(name) < 8 else 16, INK, weight='bold'))
+            fs = max(19 if len(name) < 8 else 16, cw / 15)
+            b.append(_t(x + cw / 2, y + ch + lh / 2 - 2, name, round(fs), INK, weight='bold'))
     return _svg(W, H, ''.join(b))
 
 
@@ -374,7 +375,7 @@ def put_fig(s, fig, k=0.25, hi=160):
         cw = max(w * H / h for w, h in zip(ws, hs))
         lab = any(f['label'] for f in figs)
         svg = cards_svg([(f['label'], f['svg']) for f in figs], cols=len(figs), cw=cw, ch=H, lab=lab, box=lab)
-        pic(s, svg, fig_mm(svg, k * 0.95, hi=hi))
+        pic(s, svg, max(120, fig_mm(svg, k * 0.95, hi=hi)))
 
 
 # ================================================================ 실제 크기 그림
@@ -424,7 +425,7 @@ def paper(t):
     t = str(t or '')
     for a, b in PAPER_RULES:
         t = re.sub(a, b, t)
-    sents = re.split(r'(?<=[.?!)”])\s+', t)
+    sents = re.split(r'(?<=[.?!”])\s+', t)
     return ' '.join(x for x in sents if x and not INTERACT.search(x)).strip()
 
 
@@ -463,30 +464,34 @@ def render_parts(s, lv, parts, ctx):
         elif 's' in p:
             cur += p['s']
         elif 'n' in p:
-            cur += '(          )'
+            cur += '\x00'
             ans.append(fmt(p['n']))
         else:
             o = p['o']
             multi = p.get('multi') or isinstance(p['a'], list)
-            if multi or not is_short(o):
+            if multi and is_short(o):
+                cur += '%s 에서 모두 골라 써 보세요: \x00' % opt_text(o).replace(' / ', ' · ')
+                ans.append(', '.join(o[i] for i in p['a']))
+            elif multi or not is_short(o):
+                lab = cur.strip().rstrip(':').split()[-1] + ' ' if cur.strip() else ''
                 key = tuple(o)
                 if key not in [x[0] for x in lists]:
                     lists.append((key, multi))
                 li = [x[0] for x in lists].index(key)
                 tag = ('기호' if len(lists) == 1 else '기호%d' % (li + 1))
-                cur += '(          )' if cur.strip() else '%s: (          )' % ('알맞은 것을 모두 골라 기호를 써 보세요' if multi else '알맞은 것의 기호를 써 보세요')
+                cur += '\x00' if cur.strip() else '%s: \x00' % ('알맞은 것을 모두 골라 기호를 써 보세요' if multi else '알맞은 것의 기호를 써 보세요')
                 pre = '' if len(lists) == 1 else '[%d] ' % (li + 1)
-                ans.append(pre + ', '.join(KO[i] for i in (p['a'] if multi else [p['a']])))
+                ans.append(pre + lab + ', '.join(KO[i] for i in (p['a'] if multi else [p['a']])))
                 del tag
-            elif lv == '도전형':
-                cur += '(            )'
+            elif lv == '도전형' or tuple(o) in ctx.get('boxed', ()):
+                cur += '\x01'
                 ctx['words'].update(o)
                 ans.append(ans_of(p))
             else:
                 cur += opt_text(o)
                 ans.append(ans_of(p))
     lines.append(cur)
-    lines = [re.sub(r'\s+', ' ', x).strip() for x in lines if x.strip()]
+    lines = [re.sub(r'\s+', ' ', x).strip().replace('\x00', '(          )').replace('\x01', '(             )') for x in lines if x.strip()]
     for li, (o, multi) in enumerate(lists):
         pre = '' if len(lists) == 1 else '[%d] ' % (li + 1)
         s.fill(['%s%s %s' % (pre if i == 0 else ' ' * len(pre), KO[i], x) for i, x in enumerate(o)])
@@ -509,11 +514,23 @@ def words_of(items, lv):
 
 def w_ask(s, lv, rec, k=0.25):
     items = rec['items'] if 'items' in rec else rec
-    ctx = {'words': set()}
+    # 같은 보기가 세 번 넘게 되풀이되면(이름 붙이기·표 채우기) 기본형도 낱말 상자 + 빈칸
+    cnt = {}
+    for it in items:
+        for p in it.get('parts') or []:
+            if 'o' in p and not (p.get('multi') or isinstance(p['a'], list)) and is_short(p['o']):
+                cnt[tuple(p['o'])] = cnt.get(tuple(p['o']), 0) + 1
+    boxed = {o for o, c in cnt.items() if c >= 3}
+    ctx = {'words': set(), 'boxed': boxed}
     if lv == '도전형':
         w = words_of(items, lv)
-        if w:
-            s.wordbox(w)
+    else:
+        w = []
+        for o in cnt:
+            if o in boxed:
+                w += [x for x in o if x not in w]
+    if w:
+        s.wordbox(w)
     out = []
     for it in items:
         if it.get('q'):
@@ -530,6 +547,14 @@ def w_quiz(s, lv, rec):
         q = ('%d. ' % (n + 1) if len(items) > 1 else '') + it['q']
         o, a = it['o'], it['a']
         many = isinstance(a, list)
+        if all(x[:1] in KO for x in o):          # 보기가 이미 ㉠㉡…으로 시작함
+            s.ask(q, blank=False)
+            put_fig(s, it.get('fig'))
+            if any(len(x) > 1 for x in o):
+                s.fill(o)
+            s.ask('알맞은 것%s' % ('을 모두 골라 기호를 써 보세요.' if many else '의 기호를 써 보세요.'), answer_space=12)
+            ans.append(', '.join(o[i][:1] for i in (a if many else [a])))
+            continue
         if it.get('fig') or many or not all(len(x) <= 16 for x in o):
             s.ask(q, blank=False)
             put_fig(s, it.get('fig'))
@@ -550,17 +575,17 @@ def w_blanks(s, lv, rec):
         elif 's' in p:
             txt += p['s']
         elif 'n' in p:
-            txt += '(          )'
+            txt += '\x00'
             ans.append(fmt(p['n']))
         else:
             ans.append(p['o'][p['a']])
             for o in p['o']:
                 if o not in words:
                     words.append(o)
-            txt += opt_text(p['o']) if lv == '기본형' else '(              )'
+            txt += opt_text(p['o']) if lv == '기본형' else '\x01'
     if lv == '도전형':
         s.wordbox(words)
-    s.fill(re.sub(r'\s+', ' ', txt).strip())
+    s.fill(re.sub(r'\s+', ' ', txt).strip().replace('\x00', '(          )').replace('\x01', '(             )'))
     return ', '.join(ans)
 
 
@@ -570,7 +595,7 @@ def w_sequence(s, lv, rec):
     rnd = random.Random('|'.join(cards))
     while idx == sorted(idx) or idx == list(range(len(cards))):
         rnd.shuffle(idx)
-    s.fill(['%s %s' % (KO[j], cards[i]) for j, i in enumerate(idx)])
+    s.fill(['%s %s' % (KO[j], re.sub(r'^[①-⑨]\s*', '', cards[i])) for j, i in enumerate(idx)])
     s.ask('차례대로 기호를 써 보세요.   ' + ' → '.join(['(      )'] * len(cards)), blank=False)
     pos = {i: j for j, i in enumerate(idx)}
     return ' → '.join(KO[pos[i]] for i in order)
@@ -607,7 +632,7 @@ def w_pick(s, lv, rec):
             cols = 3
         svg = cards_svg(cards, cols=cols, cw=150 if 'cardW' not in o else 190, ch=130 if 'cardW' not in o else 150)
         pic(s, svg, min(170, vb(svg)[2] * 0.2))
-    s.ask('알맞은 것을 모두 골라 %s를 써 보세요.' % ('기호' if named else '이름'), answer_space=30)
+    s.ask('알맞은 것을 모두 골라 %s 써 보세요.' % ('기호를' if named else '이름을'), answer_space=30)
     a = ', '.join(items[i]['name'] for i in o['a'])
     more = w_ask(s, lv, rec['ask']) if rec.get('ask') else ''
     return a + (' / ' + more if more else '')
@@ -689,7 +714,6 @@ def w_unroll(s, lv, rec):
 
 def w_netmark(s, lv, rec):
     pic(s, rec['net'], 80)
-    s.text('밑면에는 ◯표, 옆면에는 △표를 그림 위에 해 보세요.')
     more = w_ask(s, lv, rec['ask'])
     return '원 2개 ◯, 직사각형 △ / ' + more
 
@@ -738,9 +762,9 @@ def w_riddle(s, lv, rec):
     pic(s, svg, 100)
     props = DATA['props']
     s.text('설명하는 말:')
-    s.fill(['%s %s' % (KO[i] if i < len(KO) else '(%d)' % (i + 1), p['l']) for i, p in enumerate(props)][:8])
-    if len(props) > 8:
-        s.fill(['(%d) %s' % (i + 1, p['l']) for i, p in enumerate(props)][8:])
+    half = (len(props) + 1) // 2
+    s.table([['(%d) %s' % (i + 1, props[i]['l']), '(%d) %s' % (i + 1 + half, props[i + half]['l']) if i + half < len(props) else '']
+             for i in range(half)], header=False)
     s.text('답이 될 물건을 하나 고르고, 그 물건의 모양을 설명하는 말을 1~3개 골라 문제를 만들어 보세요. 답이 하나만 나와야 해요.')
     s.labeled([('내가 만든 문제', ''), ('답', '')], row_h=3969 * 2)
     # 예시 문제: 첫 물건만 맞는 설명 하나
@@ -785,8 +809,6 @@ def w_shout(s, lv, rec):
 
 def w_namegame(s, lv, rec):
     kn = DATA['kn']
-    s.text('3명이 해요. 카드를 한 장 뒤집어 나온 입체도형 모양의 물건을 차례로 한 개씩 말해요. 이미 말한 물건은 다시 말할 수 없어요. '
-           '더 말하지 못하는 사람이 카드를 가져가고, 카드를 가장 적게 가진 사람이 이겨요.')
     s.text('놀이 전에 생각해 봐요: 입체도형 모양의 물건을 세 가지씩 써 보세요.')
     s.table([['', '물건 1', '물건 2', '물건 3']] + [[kn[k], '', '', ''] for k in ['cyl', 'cone', 'sph']])
     return '예) ' + ' / '.join('%s: %s' % (kn[k], ', '.join(DATA['bank'][k][:3])) for k in ['cyl', 'cone', 'sph'])
@@ -896,7 +918,7 @@ def show_inst(s, lv, inst, hints):
     t = paper(inst)
     if t:
         s.text(t)
-    if lv == '기본형':
+    if lv == '기본형' and t:
         for hn in hints or []:
             h = paper(hn)
             if h:
