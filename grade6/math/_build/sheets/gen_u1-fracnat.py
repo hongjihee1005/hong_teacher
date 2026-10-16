@@ -544,9 +544,9 @@ def chain(s, rows, check_rows=True, draw=True):
 
 
 def frame(help1):
-    """앱 도움 둘째 줄 '‘…~…’ 꼴로 써요.' → 쓰기 틀"""
-    m = re.search(r'‘(.*)’', help1)
-    t = m.group(1) if m else help1
+    """앱 도움 둘째 줄 '‘…~…’ 꼴로 써요.' → 쓰기 틀('‘…’ 또는 ‘…’'이면 두 틀을 '또는'으로 이음)"""
+    ms = re.findall(r'‘([^‘’]*)’', help1)
+    t = '  또는  '.join(ms) if len(ms) > 1 else (ms[0] if ms else help1)
     return rd(t).replace('~', '__________')
 
 
@@ -809,6 +809,7 @@ PAPER_RULES = [
     (r'이 앱에서는 ', ''),
     (r'(할 일을 )?차례대로 눌러요', r'\1차례대로 늘어놓아 보세요'),
     (r'교과서 차례대로 눌러 보세요', '교과서 차례대로 늘어놓아 보세요'),
+    (r'‘＋’(?:로|를 눌러) ', ''),          # 이야기 버전: 앱의 ＋ 단추
 ]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|표시를.*옮겨|드래그')
 
@@ -1161,6 +1162,14 @@ def share_fig(s, lv, o):
     return q, n_whole
 
 
+ST_MODE = [False]     # 이야기 버전을 만드는 동안 True
+
+
+def _to(one):
+    """'한 명에게' · '그릇 한 개에'(이야기 버전만 — 교과서 버전 활동지 글은 그대로 둠)"""
+    return '에' if ST_MODE[0] and not re.search(r'(명|모둠)$', one) else '에게'
+
+
 def w_share(s, lv, o, *_):
     N, d = int(o['N']), int(o['d'])
     unit = o.get('unit') or ''
@@ -1177,9 +1186,9 @@ def w_share(s, lv, o, *_):
                % (rd(o.get('strip') or '1'), n_whole, '%d%s' % (d, who), to, one, q, d,
                   '나누어 두었어요.' if lv == '기본형' else '나누고,', one, to))
     elif lv == '기본형':
-        s.text('띠마다 똑같이 %d칸으로 나누어 두었어요. %s에게 줄 부분을 띠마다 한 칸씩 색칠해 보세요.' % (d, one))
+        s.text('띠마다 똑같이 %d칸으로 나누어 두었어요. %s%s 줄 부분을 띠마다 한 칸씩 색칠해 보세요.' % (d, one, _to(one)))
     else:
-        s.text('띠마다 똑같이 %d칸으로 나누는 선을 긋고, %s에게 줄 부분을 띠마다 한 칸씩 색칠해 보세요.' % (d, one))
+        s.text('띠마다 똑같이 %d칸으로 나누는 선을 긋고, %s%s 줄 부분을 띠마다 한 칸씩 색칠해 보세요.' % (d, one, _to(one)))
     v = Fraction(N, d)
     a = ask_part(s, lv, o)
     g = '(그림) %s 몫 %d÷%d = %s%s' % (one, N, d, bk(v), unit)
@@ -1647,13 +1656,19 @@ def w_panes(s, lv, items, opts=None, *_):
     return '(자유) ' + ' / '.join('%s 예) %s' % (it['t'], flat(it['ex'][0])) for it in items if it.get('ex'))
 
 
+def _help1(o):
+    """쓰기 틀: 앱 도움 둘째 줄. 빈칸(~)이 없는 완성 문장이면(답이 그대로 보이므로) 입력 칸 안내(ph)를 씀"""
+    h = (o.get('help') or ['', ''])[-1]
+    return h if '~' in h or not o.get('ph') else o['ph']
+
+
 def w_then_why(s, lv, o, *_):
-    why(s, lv, o['q'], (o.get('help') or ['', o.get('ph') or ''])[-1])
+    why(s, lv, o['q'], _help1(o))
     return '왜? 예) ' + flat(o.get('ans') or '')
 
 
 def w_rule_first(s, lv, o, *_):
-    rule_first(s, lv, o['q'], (o.get('help') or ['', o.get('ph') or ''])[-1])
+    rule_first(s, lv, o['q'], _help1(o))
     return '예상(자유) — 실제 규칙: ' + flat(o.get('ans') or '')
 
 
@@ -1666,7 +1681,7 @@ def w_write(s, lv, items, opts=None, *_):
     out = []
     for it in items:
         q = ('%s · ' % it['tag'] if it.get('tag') else '') + it['q']
-        out.append(write_ans(s, lv, q, (it.get('help') or ['', it.get('ph') or ''])[-1], it.get('ans') or '(자유)'))
+        out.append(write_ans(s, lv, q, _help1(it), it.get('ans') or '(자유)'))
     return ' / '.join('예) ' + a for a in out)
 
 
@@ -1743,6 +1758,7 @@ def build_file(kind, lv):
         assert ids == ST_IDS, ('이야기 버전 차시가 바뀌었어요 — ST_IDS·WHY_ST를 고치세요', ids)
     DATA.clear()
     DATA.update(D)
+    ST_MODE[0] = kind == 'st'
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'
     s = Sheet(unit_label='6-1 수학 %s(%s)' % (UNIT_NAME, label), level=lv, grade_label='6학년')
     if kind == 'tb':
