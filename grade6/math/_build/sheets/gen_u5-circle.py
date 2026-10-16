@@ -458,3 +458,415 @@ def board_svg(GW=16, GH=12):
     for j in range(1, GH):
         b.append(_ln((m, m + j * K), (m + GW * K, m + j * K), GRID, 1.2))
     return _svg(W, H, ''.join(b))
+# ================================================================ 앱 물음 → 활동지
+SYM = ('>', '=', '<', '÷', '×', '+', '−')
+
+
+def blankable(p):
+    """도전형에서 빈칸으로 바꿀 보기: 짧은 낱말 보기 셋 이상(기호·기호 보기·여러 개 고르기 제외)"""
+    o = p['o']
+    return (not p['multi'] and len(o) >= 3 and all(len(x) <= 5 for x in o)
+            and not any(x in SYM or x[0] in '㉠㉡㉢' for x in o))
+
+
+def right(p):
+    if 'n' in p:
+        return fmt(p['n'])
+    if p['multi']:
+        return ', '.join(p['o'][i] for i in p['a'])
+    return p['o'][p['a']]
+
+
+def is_long(p):
+    return 'o' in p and (any(len(x) > 14 for x in p['o']) or p['multi'])
+
+
+def sentence(parts, lv):
+    """parts → (문장, 정답 목록, 긴 보기 목록)"""
+    out, ans, longs = [], [], []
+    for p in parts:
+        if 's' in p:
+            out.append(p['s'])
+        elif 'n' in p:
+            out.append('(        )')
+            ans.append(right(p))
+        else:
+            ans.append(right(p))
+            if is_long(p):
+                longs.append(p)
+                out.append('(        )')
+            elif lv == '도전형' and blankable(p):
+                out.append('(          )')
+            else:
+                out.append('( ' + ' / '.join(p['o']) + ' )')
+    return ''.join(out).strip(), ans, longs
+
+
+def opt_list(o):
+    return '   '.join('%s %s' % (NUM[i], x) for i, x in enumerate(o))
+
+
+def long_ans(p):
+    if p['multi']:
+        return ', '.join(NUM[i] for i in p['a'])
+    return NUM[p['a']]
+
+
+def put_fig(s, fig, default=110):
+    if not fig:
+        return
+    if fig.get('svg'):
+        pic(s, fig['svg'], em_mm(fig, default))
+    elif fig.get('table'):
+        rows = fig['table']
+        n = max(len(r) for r in rows)
+        s.table(rows, header=True, header_col=rows[0][1] != '원주(cm)' and rows[1][0] in ('지름(cm)',), col_mm=[180 / n] * n, row_h=3118)
+    elif fig.get('lines'):
+        for t in fig['lines']:
+            s.text(re.sub(r'^([^:]{1,6}):', r'\1: ', t))
+    elif fig.get('text'):
+        s.text(fig['text'])
+
+
+def render_items(s, lv, items):
+    """ci6Ask·blanks·ask 묶음 → 정답 글"""
+    ans_all, buf = [], []
+
+    def flush():
+        if buf:
+            s.fill(list(buf))
+            buf.clear()
+    for it in items:
+        if it.get('fig') or it.get('q'):
+            flush()
+        put_fig(s, it.get('fig'))
+        if it.get('q'):
+            s.text(it['q'])
+        sent, ans, longs = sentence(it['parts'] or [], lv)
+        if longs and sent == '(        )':          # 물음 하나에 긴 보기
+            p = longs[0]
+            s.ask(opt_list(p['o']))
+            ans_all.append(long_ans(p) + ' ' + right(p))
+            continue
+        if sent:
+            buf.append(sent)
+        for p in longs:
+            flush()
+            s.text('보기  ' + opt_list(p['o']))
+        ans_all.append(', '.join((long_ans(p) + ' ' + right(p)) if p in longs else a
+                                 for p, a in zip([q for q in it['parts'] if 's' not in q], ans)))
+    flush()
+    return '; '.join(ans_all)
+
+
+def render_quiz(s, lv, items):
+    ans = []
+    for it in items:
+        put_fig(s, it.get('fig'))
+        o, a = it['o'], it['a']
+        multi = isinstance(a, list)
+        if not multi and all(len(x) <= 12 for x in o) and sum(len(x) for x in o) <= 30:
+            s.choices([(it['q'], '( ' + ' / '.join(o) + ' )')])
+            ans.append(o[a])
+        else:
+            s.text(it['q'])
+            s.ask(opt_list(o))
+            ans.append(', '.join(NUM[i] for i in a) if multi else NUM[a] + ' ' + o[a])
+    return '; '.join(ans)
+
+
+def render_write(s, lv, items):
+    ans = []
+    for it in items:
+        s.ask(it['q'], blank=False)
+        s.lines(2)
+        ans.append('(자유) ' + it['ph'])
+    return ' / '.join(ans)
+
+
+def render_rec(s, lv, rec, st, D):
+    t = rec['t']
+    if t == 'quiz':
+        return render_quiz(s, lv, rec['items'])
+    if t == 'ask':
+        if rec['opts'].get('title'):
+            s.text(rec['opts']['title'])
+        return render_items(s, lv, rec['items'])
+    if t == 'blanks':
+        sent, ans, longs = sentence(rec['parts'], lv)
+        s.fill(sent)
+        return ', '.join(ans)
+    if t == 'write':
+        return render_write(s, lv, rec['items'])
+    if t == 'chain':
+        out = []
+        for k, part in enumerate(rec['parts']):
+            if part['title']:
+                s.text('⑴⑵⑶⑷'[k] + ' ' + re.sub(r'^[①②③]\s*', '', part['title']))
+            out.append('⑴⑵⑶⑷'[k] + ' ' + '; '.join(render_rec(s, lv, r, None, D) for r in part['recs']))
+        return ' '.join(out)
+    return HANDLERS[t](s, lv, rec, st, D)
+
+
+def ask_after(s, lv, rec, pre=''):
+    a = render_items(s, lv, rec['ask']) if rec.get('ask') else ''
+    return '; '.join(x for x in (pre, a) if x)
+
+
+# ---------------------------------------------------------------- 조작 활동(종이에서 하는 말로)
+def h_scene(s, lv, rec, st, D):
+    s.text(st['inst'].replace('찾아 눌러 보세요', '찾아 ○표 해 보세요'))
+    pic(s, rec['svg'], 150)
+    src = open(SRC_TB, encoding='utf-8').read()
+    found = re.findall(r'add\("([^"]+)", true', src[src.index('function ci6Scene'):src.index('function ci6String')])
+    assert len(found) == 5, found
+    s.ask('찾은 원 모양을 모두 써 보세요.', blank=False)
+    s.lines(1)
+    return ask_after(s, lv, rec, ', '.join(found))
+
+
+def h_string(s, lv, rec, st, D):
+    s.text(st['inst'].replace('세 도형을 모두 만들어 봐요.', '').strip())
+    s.text('그림은 실제 크기예요. 바둑돌 사이는 1 cm예요. 도형마다 바둑돌의 수를 세어 보세요.')
+    st_ = rec['stones']
+    for nm in st_:
+        assert len(st_[nm]) == rec['counts'][nm], (nm, len(st_[nm]), rec['counts'][nm])
+    pic_real(s, string_svg(['정삼각형', '정사각형'], st_))
+    pic_real(s, string_svg(['원'], st_))
+    names = ['정삼각형', '정사각형', '원']
+    s.table([names, ['(      )개'] * 3], header=True, col_mm=[60, 60, 60], row_h=3402)
+    best = max(names, key=lambda n: rec['counts'][n])
+    s.choices([('끈의 길이가 같을 때 바둑돌이 가장 많이 들어가는 도형', '( 정삼각형 / 정사각형 / 원 )'),
+               ('둘레가 같을 때 넓이가 가장 넓은 도형', '( 정삼각형 / 정사각형 / 원 )')])
+    return '%s; %s, %s' % (', '.join('%s %d개' % (n, rec['counts'][n]) for n in names), best, best)
+
+
+def h_wheel(s, lv, rec, st, D):
+    s.text(st['inst'].replace('표시해 보세요.', '그림에 표시해 보세요.'))
+    pic(s, rec['svg'], 80)
+    s.text('원의 중심은 점(•)으로, 지름은 선분으로, 둘레는 색연필로 한 바퀴 따라 그려요.')
+    return ask_after(s, lv, rec, '중심·지름·둘레 표시')
+
+
+def h_unroll(s, lv, rec, st, D):
+    C = 2 * math.pi        # 반지름 1 cm인 원이 한 바퀴 굴러간 길이(앱 그림과 같음)
+    s.text('반지름이 1 cm인 원이 있어요(그림은 실제 크기). 원 안에 꼭 맞는 정육각형(초록)과 원 밖에 꼭 맞는 정사각형(빨강)의 '
+           '둘레를 수직선 위에 선으로 그어 원주와 비교해 보세요. 파란 선은 원을 한 바퀴 굴려 나타낸 원주예요.')
+    pic_real(s, unroll_svg(C))
+    if lv == '기본형':
+        s.fill(['정육각형의 한 변은 반지름과 같은 (      ) cm  →  둘레 (      )×6 = (      ) cm',
+                '정사각형의 한 변은 지름과 같은 (      ) cm  →  둘레 (      )×4 = (      ) cm'])
+        pre = '정육각형 1 cm, 1×6=6 cm / 정사각형 2 cm, 2×4=8 cm (수직선에 6 cm, 8 cm 선)'
+    else:
+        s.fill('정육각형의 둘레: (      ) cm,   정사각형의 둘레: (      ) cm')
+        pre = '6 cm, 8 cm (수직선에 6 cm, 8 cm 선)'
+    return ask_after(s, lv, rec, pre)
+
+
+def h_lab(s, lv, rec, st, D):
+    items = rec['opt']['items']
+    c0 = items[0]
+    assert c0['d'] <= 15
+    s.text('채안이와 현준이는 나무로 만든 집의 탁자 위에 있는 여러 가지 원 모양 물건의 원주와 지름을 재어 보았어요.')
+    s.text('%s를 위에서 본 모양을 실제 크기로 그렸어요. 양쪽에 삼각자를 대어 지름을 재고, 둘레에 실을 감았다 펴서 원주를 재어 보세요.' % c0['name'])
+    pic_real(s, candle_svg(c0['d']))
+    s.fill('%s:  지름 (        ) cm,   원주 약 (        ) cm' % c0['name'])
+    s.text('채안이와 현준이가 잰 결과예요.')
+    s.table([['물건', '원주(cm)', '지름(cm)']] + [[it['name'], fmt(float(it['C'])), fmt(float(it['d']))] for it in items],
+            header=True, col_mm=[60, 60, 60], row_h=3118)
+    return ask_after(s, lv, rec, '%s 지름 %s cm, 원주 약 %s cm' % (c0['name'], fmt(float(c0['d'])), fmt(float(c0['C']))))
+
+
+def h_roll(s, lv, rec, st, D):
+    d = rec['opt']['d']
+    s.text(st['inst'].replace(' 한 바퀴 굴려 보세요.', ' 한 바퀴 굴린다고 생각해 보세요.'))
+    pic(s, rec['svg'], 150)
+    s.text('빨간 점이 다시 땅에 닿으면 한 바퀴예요. 그림의 눈금(m)으로 한 바퀴 굴러간 거리를 어림해 보세요.')
+    s.choices([('바퀴가 한 바퀴 굴러간 거리(원주)에는 지름 %d m가' % d, '( 2번 / 3번 / 4번 ) 들어가고 조금 남아요')])
+    assert 3 * d < d * math.pi < 4 * d
+    return ask_after(s, lv, rec, '3번')
+
+
+def h_diam(s, lv, rec, st, D):
+    C = rec['opt']['C']
+    dd = round(C / PI)
+    assert abs(r4(dd * PI) - C) < 1e-9
+    ds = [dd - 2, dd - 1, dd, dd + 1]
+    s.text('물레방아 옆에 단면이 원 모양인 기둥이 있어요. 기둥의 단면의 원주는 %s cm예요. 지름을 바꾸어 원주를 구해 보고, 단면의 원주와 같아지는 지름을 찾아보세요.' % fmt(C))
+    pic(s, rec['svg'], 70)
+    s.table([['지름(cm)'] + [str(x) for x in ds], ['원주(cm)'] + ['(        )'] * 4], header=False, header_col=True,
+            col_mm=[36, 36, 36, 36, 36], row_h=3402)
+    pre = '표 ' + ', '.join('%d→%s' % (x, fmt(r4(x * PI))) for x in ds) + ' (지름 %d cm)' % dd
+    return ask_after(s, lv, rec, pre)
+
+
+def h_inout(s, lv, rec, st, D):
+    s.text(st['inst'].replace('원 위의 점 4개를 눌러 원 안에 꼭 맞는 정사각형을 그려 보세요.',
+                              '원 위의 점 4개를 이어 원 안에 꼭 맞는 정사각형(초록)을 그리고, 원 밖에 꼭 맞는 정사각형(빨강)도 그려 보세요.'))
+    pic(s, rec['svg'], 72)
+    return ask_after(s, lv, rec, '정사각형 그리기')
+
+
+def h_grid(s, lv, rec, st, D):
+    r, unit = rec['opt']['r'], rec['opt']['unit']
+    g = D['calc']['grid'][str(r)]
+    s.text(st['inst'].replace('칠해 보세요', '색연필로 칠해 보세요') if st else
+           '원을 4등분한 한 조각이에요. 원 안에 완전히 들어간 칸은 초록, 원이 걸친 칸은 주황으로 칠해 보세요.')
+    s.text('모눈 한 칸은 1 cm예요(실제 크기%s).' % (', 1칸이 1 m×1 m를 나타내요' if unit == 'm' else ''))
+    pic_real(s, grid_svg(r, unit, g['T']))
+    # 앱과 따로 칸 세기: 칸 전체가 원 안(먼 꼭짓점이 원 안·위) / 원이 칸을 지나감
+    gg = sum(1 for i in range(r) for j in range(r) if (i + 1) ** 2 + (j + 1) ** 2 <= r * r)
+    aa = sum(1 for i in range(r) for j in range(r) if i * i + j * j < r * r)
+    assert (gg, aa) == (g['g'], g['all']), (r, gg, aa, g)
+    return ask_after(s, lv, rec, '초록 %d칸, 주황 %d칸' % (g['g'], g['all'] - g['g']))
+
+
+def h_cut(s, lv, rec, st, D):
+    if not rec['opt'].get('labels'):
+        s.text('원의 넓이를 어떻게 구하면 좋을지 생각해 보아요. 원을 잘게 잘라 위아래로 번갈아 이어 붙여 볼 거예요.')
+        s.ask('이어 붙이기 전에 어떤 도형이 될지 먼저 예상해 보세요.', blank=False)
+        s.lines(1)
+        s.text('아래 원(실제 크기, 반지름 4 cm)은 16등분되어 있어요. 선을 따라 오려 주황 조각과 파란 조각을 위아래로 번갈아 공책에 이어 붙여 보세요.')
+        pic_real(s, cutcircle_svg(4, 16))
+        s.fill('이어 붙인 모양의 가로는 약 (        ) cm, 세로는 약 (        ) cm예요. (자로 재어 보세요.)')
+        s.text('원을 8등분, 16등분, 32등분, 64등분하여 이어 붙인 모양이에요.')
+        pic(s, cuts_svg(rec['cuts']), 160)
+        half = r4(4 * 2 * PI / 2)
+        return ask_after(s, lv, rec, '(예상 자유) 가로 약 12.5 cm(원주의 ½ = %s cm), 세로 4 cm' % fmt(half))
+    s.text(st['inst'])
+    pic(s, rec['cuts']['32'], 150)
+    return ask_after(s, lv, rec)
+
+
+def h_move(s, lv, rec, st, D):
+    s.text(st['inst'])
+    s.text('종이에서는 옮긴 모양을 그림에 그려 넣어 보세요.')
+    pic(s, rec['svg'], em_mm({'maxW': rec['opt'].get('maxW')}, 130))
+    return ask_after(s, lv, rec)
+
+
+def h_make(s, lv, rec, st, D):
+    s.text(st['inst'])
+    out = []
+    for it in rec['opt']['items']:
+        r = it['d'] / 2
+        s.text('내가 찾은 %s의 지름은 %s cm입니다. 이 물건의 넓이는 몇 cm²인가요? (원주율 3.14)' % (it['name'], fmt(float(it['d']))))
+        s.fill('반지름 (        ) cm   →   넓이 (        )×(        )×3.14 = (            ) cm²')
+        out.append('%s 반지름 %s cm, %s cm²' % (it['name'], fmt(float(r)), fmt(area(r))))
+    s.text('내가 찾은 물건으로 문제를 만들고 풀어 보세요.')
+    s.fill(['내가 찾은 (            )의 지름은 (        ) cm입니다. 이 물건의 넓이는 몇 cm²인가요?',
+            '풀이:                                            답: (            ) cm²'])
+    return '; '.join(out) + '; (자유) (지름÷2)×(지름÷2)×3.14'
+
+
+def h_land(s, lv, rec, st, D):
+    s.text('짝과 함께 놀이해 보세요(파랑과 빨강). 주사위를 굴려 나온 눈의 수를 반지름(cm)으로 하는 원의 넓이를 구하고, 맞으면 아래 모눈종이에 '
+           '컴퍼스로 원을 그린 뒤 원 안에 넓이를 써요. 원의 중심은 모눈의 점에 놓아요. 원이 모눈종이 밖으로 나가거나 다른 원과 겹치면 안 돼요(한 점에서 만나는 것은 돼요).')
+    s.text('모눈종이는 실제 크기예요(한 칸 = 1 cm, 가로 16 cm, 세로 12 cm).')
+    pic_real(s, board_svg(16, 12))
+    rows = [['차례', '파랑 반지름(cm)', '파랑 넓이(cm²)', '빨강 반지름(cm)', '빨강 넓이(cm²)']]
+    rows += [[str(i + 1), '', '', '', ''] for i in range(6)] + [['합계', '', '', '', '']]
+    s.table(rows, header=True, col_mm=[20, 40, 40, 40, 40], row_h=2835)
+    return '(놀이) 넓이 = (눈의 수)×(눈의 수)×3.14'
+
+
+HANDLERS = {'ci6Scene': h_scene, 'ci6String': h_string, 'ci6Wheel': h_wheel, 'ci6Unroll': h_unroll, 'ci6Lab': h_lab,
+            'ci6Roll': h_roll, 'ci6Diam': h_diam, 'ci6InOut': h_inout, 'ci6Grid': h_grid, 'ci6Cut': h_cut,
+            'ci6Move': h_move, 'ci6Make': h_make, 'ci6Land': h_land}
+INTERACTIVE = set(HANDLERS) - {'ci6Make'}
+
+PAPER = [(' 피자를 끌어 겹쳐 보아도 돼요.', '')]
+
+WHY = {
+    '1': ('원의 둘레와 원의 넓이를 구하는 방법을 하나씩 써 보세요.', '둘레는 끈을 감아 잰 뒤 끈의 길이를 재요. 넓이는 원을 다각형으로 바꾸어 생각해요.'),
+    '2': ('원주가 지름의 3배보다 길고 4배보다 짧은 까닭을 정육각형과 정사각형을 이용하여 써 보세요.',
+          '원 안의 정육각형의 둘레는 지름의 3배, 원 밖의 정사각형의 둘레는 지름의 4배인데 원주는 그 사이에 있기 때문이에요.'),
+    '3': ('원주율을 3.14처럼 어림하여 사용하는 까닭을 써 보세요.', '원주율은 3.1415926…처럼 끝없이 계속되는 소수이기 때문이에요.'),
+    '4': ('지름을 알 때 원주를, 원주를 알 때 지름을 구하는 방법을 써 보세요.', '(원주)=(지름)×(원주율), (지름)=(원주)÷(원주율)'),
+    '5': ('모눈으로 원의 넓이를 어림할 때 어림한 값이 조금씩 다를 수 있는 까닭을 써 보세요.', '원이 걸친 칸을 세느냐 세지 않느냐에 따라 달라지기 때문이에요.'),
+    '6': ('(원의 넓이)=(반지름)×(반지름)×(원주율)인 까닭을 원을 잘라 이어 붙인 직사각형으로 설명해 보세요.',
+          '직사각형의 가로는 (원주)×½=(반지름)×(원주율), 세로는 반지름이므로 넓이는 (반지름)×(반지름)×(원주율)이에요.'),
+    '7': ('색칠한 부분의 넓이를 구할 때 쓴 방법(빼기·옮기기·나누기·합치기) 중 하나를 골라 어떻게 했는지 써 보세요.',
+          '(예) 정사각형의 넓이에서 네 모서리의 흰 부분을 합친 원의 넓이를 뺐어요.'),
+    '8~9': ('지름이 2배가 되면 원의 넓이는 몇 배가 되는지 까닭과 함께 써 보세요.', '반지름도 2배가 되므로 넓이는 2×2=4(배)가 돼요.'),
+    '10': ('땅을 더 넓게 차지하려면 원을 어디에 그리면 좋을지 까닭과 함께 써 보세요.', '(예) 큰 원이 들어갈 넓은 자리를 남겨 두고 작은 원은 구석에 그려요.'),
+    '11': ('원주가 251.2 cm인 탁자의 넓이를 구한 과정을 차례대로 써 보세요.', '지름 251.2÷3.14=80 (cm) → 반지름 40 cm → 40×40×3.14=5024 (cm²)'),
+}
+
+
+def has_num(recs):
+    for r in recs:
+        for it in r.get('items', []) + r.get('ask', []):
+            if any('n' in p for p in (it.get('parts') or [])):
+                return True
+        for part in r.get('parts', []) if r['t'] == 'chain' else []:
+            if has_num(part['recs']):
+                return True
+    return False
+
+
+def lesson(s, lv, L, D):
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    out = []
+    for i, st in enumerate(L['steps']):
+        s.step('%s %s' % (NUM[i], st['name']))
+        rec0 = st['recs'][0]
+        if rec0['t'] not in INTERACTIVE and rec0['t'] != 'ci6Make':
+            inst = st['inst']
+            for a, b in PAPER:
+                inst = inst.replace(a, b)
+            s.text(inst)
+        if lv == '기본형' and st['hints'] and has_num(st['recs']):
+            s.text('도움: ' + st['hints'][0])
+        out.append(NUM[i] + ' ' + '; '.join(render_rec(s, lv, r, st, D) for r in st['recs']))
+    if lv == '도전형':
+        n = len(L['steps'])
+        ch = L['challenge']
+        if ch:
+            s.step('%s 도전하기' % NUM[n])
+            if ch['recs'][0]['t'] not in INTERACTIVE:
+                s.text(ch['inst'])
+            out.append(NUM[n] + ' ' + '; '.join(render_rec(s, lv, r, ch, D) for r in ch['recs']))
+            n += 1
+        q, a = WHY[str(L['no'])]
+        s.step('%s 까닭 쓰기' % NUM[n])
+        s.ask(q, blank=False)
+        s.lines(2)
+        out.append(NUM[n] + ' ' + a)
+    return '%s차시  ' % L['no'] + '   '.join(out)
+
+
+def build(D, label, short, outdir, lv):
+    s = Sheet(unit_label=label, level=lv, grade_label='6학년')
+    lines = [lesson(s, lv, L, D) for L in D['lessons']]
+    s.answers('【교사용】 5. 원의 둘레와 넓이(%s) 활동지 정답 (%s)' % (short, lv), lines,
+              note='※ 이 활동지는 앱 u5-circle.html과 차시 번호가 같습니다. 원주율은 3.14로 계산합니다. 실제 크기 그림(양초·모눈·16등분한 원·놀이판 등)은 100%로 인쇄하세요.')
+    os.makedirs(outdir, exist_ok=True)
+    path = os.path.join(outdir, NAME % lv)
+    s.save(path)
+    return path
+
+
+def main():
+    want = [a for a in sys.argv[1:] if a in ('tb', 'st')] or ['tb', 'st']
+    out = []
+    try:
+        if 'tb' in want:
+            D = load(SRC_TB)
+            for lv in ('기본형', '도전형'):
+                out.append(build(D, '6-2 수학 5. 원의 둘레와 넓이(교과서 차시)', '교과서 차시', OUT_TB, lv))
+        if 'st' in want and not ST:
+            print('[건너뜀] 이야기 버전 원본(u5-circle.st.js)이 아직 없어요.')
+    finally:
+        SHOT.close()
+        shutil.rmtree(WORK, ignore_errors=True)
+    bad = 0
+    for p in out:
+        prob = check(p)
+        bad += bool(prob)
+        print(p, 'OK' if not prob else '\n  ' + '\n  '.join(prob))
+    sys.exit(1 if bad else 0)
+
+
+if __name__ == '__main__':
+    main()

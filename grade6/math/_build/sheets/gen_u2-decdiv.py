@@ -200,7 +200,7 @@ def sp(e):
 # ================================================================ 글(앱 글 속 [1/10] → '10분의 1')
 JO = [('이에요', '예요'), ('으로', '로'), ('은', '는'), ('이', '가'), ('을', '를'), ('과', '와')]
 FR_RE = re.compile(r'\[(?:(\d+) )?([^\[\]/ ]+)/([^\[\]]+)\]')
-PART = r'(이에요|예요|으로|은|는|을|를|과|와|이|가|로)?(?![가-힣])'
+PART = r'(?:(이에요|예요|으로|은|는|을|를|과|와|이|가|로)(?![가-힣]))?'
 
 
 def has_jong(num):
@@ -767,8 +767,9 @@ def shift_fig(s, items, pre):
         out.append(T(x + 30, y0, '÷', fs, anchor='middle'))
         x = strip(B, x + 60)
         wmax = max(wmax, x + 20)
+        ybot = y0 + (fs * 1.55 + 22 if pre and k else fs * .9)
         y0 += 120 if pre else 80
-    W, H = int(wmax), int(y0 - (60 if pre else 30))
+    W, H = int(wmax), int(ybot)
     put_png(s, svg_doc(W, H, ''.join(out)), W, H, max_mm=110)
 
 
@@ -1071,7 +1072,7 @@ def w_round(s, lv, a):
         want = fix(rnd(q, to), to)
         digit = fix(trunc(q, to + 1), to + 1)[-1]
         rows.append([sp(it['e']), sh, PLACE[to] + '까지', '(      )', '(          )'])
-        out.append('%s = %s → %s 숫자 %s를 보고 %s' % (sp(it['e']), sh, PLACE[to + 1], digit, want))
+        out.append('%s = %s → %s 숫자 %s%s 보고 %s' % (sp(it['e']), sh, PLACE[to + 1], digit, '을' if has_jong(digit)[0] else '를', want))
     s.table(rows, col_mm=[34, 40, 38, 32, 36])
     return out + sent(s, o.get('asks') or [])
 
