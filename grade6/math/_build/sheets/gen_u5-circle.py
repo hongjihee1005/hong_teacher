@@ -218,7 +218,7 @@ const readline = require('readline');
       '</head><body><div id="w">' + m.svg + '</div></body></html>');
     try { await p.evaluate(() => document.fonts.ready); } catch (e) {}
     await p.locator('#w').screenshot({ path: m.out });
-    process.stdout.write('{"ok":1}\\n');
+    process.stdout.write('{"ok":1}\n');
   }
   await b.close();
 })().catch(e => { console.error(e); process.exit(1); });

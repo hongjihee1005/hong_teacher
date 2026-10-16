@@ -4,6 +4,7 @@
  * 2) 이 코드를 Code.gs에 붙여 넣고, [+] > HTML 로 아래 이름의 파일을 만들어 각 앱 HTML 전체를 붙여 넣습니다.
  *    - 단원 모음 페이지: 배포 주소 그대로 (HTML 파일 이름 index_hub)
  *    - 1단원 분수의 나눗셈:  ?page=fracdiv (index_fracdiv)
+ *    - 2단원 소수의 나눗셈:  ?page=decdiv (index_decdiv)
  *    (교과서 버전과 이야기 버전 중 쓰려는 앱을 붙여 넣으면 됩니다. 두 버전을 함께 쓰려면 스크립트를 하나 더 만드세요.)
  * 3) 아래 TEACHER_PIN을 선생님만 아는 숫자로 바꿉니다.
  * 4) [배포] > [새 배포] > 유형: 웹 앱 / 실행: 나 / 액세스 권한: 학생들이 열 수 있는 범위로 배포합니다.
@@ -18,7 +19,7 @@ function doGet(e) {
     catch (err) { return json_({ error: err.message }); }
   }
   const page = (e && e.parameter && e.parameter.page) || 'hub';   // 기본은 단원 모음 페이지
-  const files = { hub: 'index_hub', fracdiv: 'index_fracdiv' };
+  const files = { hub: 'index_hub', fracdiv: 'index_fracdiv', decdiv: 'index_decdiv' };
   const file = files[page] || 'index_hub';
   return HtmlService.createHtmlOutputFromFile(file)
     .setTitle('6학년 2학기 수학 개념 계단')
