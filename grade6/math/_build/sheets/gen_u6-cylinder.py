@@ -425,12 +425,17 @@ PAPER_RULES = [
     (r'통을 잘라서 펼쳐 보세요', '통을 잘라서 펼친 그림을 살펴보세요'),
     (r'막대를 돌리면 어떤 입체도형이 만들어지는지 알아보세요', '막대를 한 바퀴 돌리면 어떤 입체도형이 만들어지는지 그림을 보고 알아보세요'),
 ]
+ST_RULES = [   # 이야기 버전 글만(교과서 버전 글은 그대로)
+    (r'먼저 예상해 보고 돌려 보세요', '먼저 예상해 보고, 한 바퀴 돌린 그림으로 확인해 보세요'),
+    (r'등을 잘라서 펼쳐 보세요', '등을 잘라서 펼친 그림을 살펴보세요'),
+    (r'배울 내용을 차례대로 눌러 보세요', '배울 내용을 차례대로 기호로 써 보세요'),
+]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|끌거나|단추|화면|연습판|컴퓨터 친구|돌려요\(|▲|막대를 끝까지')
 
 
 def paper(t):
     t = str(t or '')
-    for a, b in PAPER_RULES:
+    for a, b in PAPER_RULES + (ST_RULES if DATA.get('kind') == 'st' else []):
         t = re.sub(a, b, t)
     sents = re.split(r'(?<=[.?!”])\s+', t)
     return ' '.join(x for x in sents if x and not INTERACT.search(x)).strip()
@@ -610,13 +615,16 @@ def w_sequence(s, lv, rec):
 
 def w_write(s, lv, rec):
     ans = []
+    st = DATA.get('kind') == 'st'
     for it in rec['items']:
         s.ask(it['q'], blank=False)
+        if st and lv == '기본형' and len(it.get('help') or []) > 1:
+            s.text('도움: ' + it['help'][1])
         if lv == '기본형' and it.get('tag'):
             s.labeled([(it['tag'], '')], row_h=3969 * 2)
         else:
             s.lines(3)
-        ans.append(it['ph'] or '(생각을 쓰면 맞아요)')
+        ans.append(('예) ' + it['ans']) if (st and it.get('ans')) else (it['ph'] or '(생각을 쓰면 맞아요)'))
     return ' / '.join(ans)
 
 
@@ -823,7 +831,8 @@ def w_namegame(s, lv, rec):
 
 def w_tube(s, lv, rec):
     d = rec['opt'].get('d', 6)
-    s.text('지름이 %s cm인 테니스공 2개를 통에 꼭 맞게 넣은 그림이에요.' % fmt(d))
+    nm, n = rec['opt'].get('name', '테니스공'), rec['opt'].get('n', 2)
+    s.text('지름이 %s cm인 %s %d개를 통에 꼭 맞게 넣은 그림이에요.' % (fmt(d), nm, n))
     pic(s, rec['svg1'], 75)
     return w_ask(s, lv, rec['ask'])
 
@@ -840,7 +849,42 @@ def w_chain(s, lv, rec):
     return ' / '.join(x for x in out if x)
 
 
-WIDGETS = {'ask': w_ask, 'quiz': w_quiz, 'blanks': w_blanks, 'sequence': w_sequence, 'write': w_write, 'chain': w_chain,
+def w_panes(s, lv, rec):
+    """보기·생각하기·궁금해하기 세 칸(이야기 1차시)"""
+    put_fig(s, rec.get('fig'), 0.25, hi=150)
+    s.text('그림을 보고 떠오르는 것을 세 칸에 써 보세요.')
+    if lv == '기본형':
+        s.labeled([('%s' % it['t'], '%s  (%s)' % (it['ph'], it['hint']) if it.get('hint') else it['ph']) for it in rec['items']], row_h=3969 * 2)
+    else:
+        for it in rec['items']:
+            s.ask(it['t'] + ':', blank=False)
+            s.lines(2)
+    return '(자유) ' + ' / '.join('%s 예) %s' % (it['t'], it['ex'][0]) for it in rec['items'] if it.get('ex'))
+
+
+def w_thenwhy(s, lv, rec):
+    s.ask('왜 그럴까요? ' + rec['q'], blank=False)
+    if lv == '기본형' and len(rec.get('help') or []) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(2)
+    return '왜? 예) ' + rec['ans']
+
+
+def w_rule(s, lv, rec):
+    s.ask('먼저 예상해요 · ' + rec['q'], blank=False)
+    if lv == '기본형' and len(rec.get('help') or []) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(2)
+    return '예상(자유) — 실제 규칙: ' + rec['ans']
+
+
+def w_wonder(s, lv, rec):
+    s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 보고, 이제 답할 수 있는지 떠올려 보세요.')
+    return ''
+
+
+WIDGETS = {'panes': w_panes, 'thenwhy': w_thenwhy, 'rule': w_rule, 'wonder': w_wonder,
+           'ask': w_ask, 'quiz': w_quiz, 'blanks': w_blanks, 'sequence': w_sequence, 'write': w_write, 'chain': w_chain,
            'cy6Pick': w_pick, 'cy6Sort': w_sort, 'cy6Tap': w_tap, 'cy6Ruler': w_ruler, 'cy6Spin': w_spin, 'cy6Gen': w_gen,
            'cy6Probe': w_probe, 'cy6Unroll': w_unroll, 'cy6NetMark': w_netmark, 'cy6NetJudge': w_netjudge, 'cy6NetDraw': w_netdraw,
            'cy6View': w_view, 'cy6Make': w_make, 'cy6Riddle': w_riddle, 'cy6CardCheck': w_cardcheck, 'cy6Shout': w_shout,
@@ -875,7 +919,7 @@ def all_nums(recs, out=None):
     return out
 
 
-def check_numbers(D):
+def check_numbers(D, expect=None):
     """식이 적힌 칸은 식을 계산해 맞추고, 식이 없는 칸은 문제의 수로 따로 계산한 값과 맞춥니다."""
     seen = []
     for L in D['lessons']:
@@ -889,7 +933,7 @@ def check_numbers(D):
                     assert abs(v - n) < 1e-9, ('식 계산이 달라요', L['no'], prev, n, v)
                 seen.append(n)
     # 문제의 수로 따로 계산(앱 문제와 같은 수): 원주 = 지름 × 3.14 등
-    expect = [r2(10 * PI), r2(4 * 2 * PI),                    # 1차시 원주
+    expect = expect if expect is not None else [r2(10 * PI), r2(4 * 2 * PI),                    # 1차시 원주
               r2(3 * 2 * PI), r2(2 * 2 * PI), r2(2.5 * 2 * PI),  # 3~4차시 옆면의 가로
               r2(6 * 2 * PI), r2(25.12 / PI), r2(51.96 - 8), r2((51.96 - 8) / PI),
               4 * 2, 6 * 2, math.hypot(6, 8), 8 * 2, 14 * 2, 5 * 2,   # 돌려 만든 도형의 지름·모선
