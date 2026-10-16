@@ -14,8 +14,12 @@ UNIT·LESSONS를 node에서 그대로 실행해(활동 부품 대신 기록하�
     모눈·비 카드는 수에 맞는 비율로 이 스크립트가 그립니다. 임시 폴더에서 PNG로 바꿉니다(저장소에는 남기지 않음).
   - 분수: 식 줄은 그림으로 분수를 위아래로 쓰고(빈칸은 네모), 글 속 분수는 '5분의 3'처럼 읽는 말로 씁니다(정답 쪽은 3/5).
 
-이야기 버전은 아직 없습니다. 생기면 ST(차시 함수 목록)를 채우고 SRC_ST가 있으면 sem2-soop/sheets/에 만듭니다.
-ST가 비어 있거나 원본 파일이 없으면 건너뜁니다.
+    python3 gen_u4-ratio.py st         # 이야기 버전만
+
+이야기 버전(2026-10-16): ../units/sem2/u4-ratio.st.js('우리 반 초록 텃밭 프로젝트', 1~7, 8~9, 10, 11차시)를 같은 방법으로 읽어
+sem2-soop/sheets/에 만듭니다(ST = 차시 id 목록 ST_IDS). 이야기 버전에만 있는 것: 계획표 글 상자(rp4sNote)·설계도(rp4sPlan)·
+텃밭 둘러보기(rp4sGarden), 엔진의 panes(보여요·생각해요·궁금해요)·thenWhy(활동 뒤 '왜 그럴까요?')·ruleFirst(활동 앞
+'먼저 예상해요')·wonderRecall, writeStep의 쓰기 틀(help)과 모범 답(ans). 문장제 답은 check_words_st가 따로 계산해 견줍니다.
 """
 import json
 import os
@@ -224,6 +228,14 @@ def rd(t):
     return re.sub(FR_RE.pattern + PART, rep, str(t))
 
 
+def eul(word, a='을', b='를'):
+    """우리말 낱말 끝 받침에 맞는 조사(받침 있으면 a)"""
+    ch = str(word).strip()[-1:]
+    if '가' <= ch <= '힣':
+        return a if (ord(ch) - 0xAC00) % 28 else b
+    return a if jong(str(word)) else b
+
+
 def ro(num):
     """수 뒤 '(으)로': 3 → 으로, 2 → 로, 1 → 로"""
     return '으로' if jong(str(num)) == 'o' else '로'
@@ -245,6 +257,10 @@ PAPER_RULES = [
     (r'줄여 보고,? ', '줄인다고 생각하고 '),
     (r'(빨간색 톱니바퀴)를 (\d+)바퀴 돌려 보고, ', r'\1가 \2바퀴 회전할 때 '),
     (r'\(교과서 카드와 다를 수 있어요\)', '(교과서 카드와 다를 수 있어요)'),
+    (r'배우는 차례대로 눌러 ', '배우는 차례대로 기호를 써서 '),      # 이야기 버전
+    (r'‘초록 텃밭 계획표’를 보고, 세 칸에 써서 붙여요\.', '초록 텃밭 계획표를 보고, 세 칸에 써 보세요.'),
+    (r'텃밭 곳곳을 모두 눌러 ', '텃밭 곳곳을 모두 살펴보며 '),
+    (r'늘려 보고,? ', '늘린다고 생각하고 '),
 ]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|돌려 보세요|‘[^’]*’를 ')
 
@@ -586,7 +602,8 @@ quiz = rec('quiz'); blanks = rec('blanks');
 const api = new Proxy({}, { get: () => () => {} });
 const ORIG = {};
 const sub = run => { const save = REC; REC = []; try { run(); } catch (e) { REC.push({ w: 'error', args: [String(e && e.stack || e).slice(0, 400)] }); } const r = REC; REC = save; return r; };
-['rp4Build', 'rp4Machine', 'rp4Simp', 'rp4Terms', 'rp4Area', 'rp4Dbl', 'rp4Gear', 'rp4Tape', 'rp4Clay', 'rp4Dice', 'rp4Rect', 'rp4Scene', 'rp4Hand', 'rp4Meet', 'rp4Match'].forEach(name => {
+['rp4Build', 'rp4Machine', 'rp4Simp', 'rp4Terms', 'rp4Area', 'rp4Dbl', 'rp4Gear', 'rp4Tape', 'rp4Clay', 'rp4Dice', 'rp4Rect', 'rp4Scene', 'rp4Hand', 'rp4Meet', 'rp4Match', 'rp4sGarden'].forEach(name => {
+  if (eval('typeof ' + name) !== 'function') return;     // 이야기 버전에는 없는 부품(rp4Scene)·교과서에는 없는 부품(rp4sGarden)
   ORIG[name] = eval(name);
   const w = function (body, ap, opt) {
     opt = Object.assign({}, opt || {});
@@ -603,6 +620,13 @@ rp4Seq = function (body, ap, parts) {
   REC.push({ w: 'rp4Seq', args: [parts.map(p => ({ title: p.title || null, calls: sub(() => (p.run || p)(new El('div'), api)) }))] });
 };
 rp4Recipe = function (title, lines) { REC.push({ w: 'recipe', args: [title, lines] }); return new El('div'); };
+// 이야기 버전: 글 상자·설계도 그림, 엔진의 탐구 도우미(thenWhy 활동 뒤 '왜?', ruleFirst 활동 앞 '예상', wonderRecall '궁금해요' 다시 보기)·panes
+if (typeof rp4sNote === 'function') rp4sNote = function (title, lines) { REC.push({ w: 'note', args: [title, lines] }); return new El('div'); };
+if (typeof rp4sPlan === 'function') { const P0 = rp4sPlan; rp4sPlan = function () { REC.push({ w: 'plan', args: [String(P0())] }); return new El('div'); }; }
+var panes = rec('panes');
+var thenWhy = (f, o) => function (b, a) { const r = f(b, a); REC.push({ w: 'thenWhy', args: [o] }); return r; };
+var ruleFirst = (f, o) => function (b, a) { REC.push({ w: 'ruleFirst', args: [o] }); return f(b, a); };
+var wonderRecall = f => function (b, a) { REC.push({ w: 'wonderRecall', args: [] }); return f(b, a); };
 const lesSrc = all.slice(all.indexOf('//@@LESSONS'));
 eval(lesSrc.replace(/^(const|let) /gm, 'var '));
 const run = S => sub(() => S.render(new El('div'), api));
@@ -610,7 +634,9 @@ const handSrc = all.slice(all.indexOf('function rp4Hand('));
 const order = JSON.parse(handSrc.match(/const order = (\[[^\]]*\])/)[1]);
 const sceneSrc = all.slice(all.indexOf('function rp4Scene('), all.indexOf('function rp4Scene(') + 6000);
 const spots = [...sceneSrc.matchAll(/\{ x: \d+, t: "([^"]+)", ok: (?:true|false), say: "([^"]+)"/g)].map(m => ({ t: m[1], say: m[2] }));
-const out = { story: UNIT_STORY, cards: RP4_CARDS, handOrder: order, spots, lessons: LESSONS.map(L => ({
+const gi = all.indexOf('function rp4sGarden(');
+const gspots = gi < 0 ? [] : [...all.slice(gi, gi + 6000).matchAll(/\{ x: \d+, t: "([^"]+)", say: "([^"]+)"/g)].map(m => ({ t: m[1], say: m[2] }));
+const out = { story: UNIT_STORY, cards: RP4_CARDS, handOrder: order, spots, gspots, lessons: LESSONS.map(L => ({
   id: L.id, no: L.no, title: L.title, soop: L.soop, question: L.question, summary: L.summary,
   steps: L.steps.map(S => ({ name: S.name || null, inst: S.inst, hints: S.hints || [], calls: run(S) })),
   ch: L.challenge ? { inst: L.challenge.inst, hints: L.challenge.hints || [], calls: run(L.challenge) } : null })) };
@@ -788,6 +814,15 @@ def w_sequence(s, lv, items, order, opts=None, *_):
 def w_write(s, lv, items, *_):
     out = []
     for it in items:
+        if it.get('ans'):          # 이야기 버전
+            s.ask(rd(it['q']), blank=False)
+            if lv == '기본형' and len(it.get('help') or []) > 1:
+                s.text('도움: ' + rd(it['help'][1]))
+                s.lines(2)
+            else:
+                s.lines(3)
+            out.append('(예) ' + flat(it['ans']))
+            continue
         s.ask(rd(it['q']), blank=False)
         ex = re.sub(r'^예\)\s*', '', it.get('ph') or '')
         if lv == '기본형' and ex:
@@ -829,8 +864,8 @@ def w_build(s, lv, o, svg=None):
     K = max(o['start'], o['target'])
     if svg:
         app_svg(s, svg, min(150, 30 * o['start'] + 4), viewbox='0 0 %d 210' % (118 * o['start'] - 2))
-    s.text(rd('%s %d%s를 만드는 재료예요. %s %d%s일 때 필요한 재료의 양을 표에 써 보세요.'
-              % (o['what'], o['start'], o['unit'], o['what'], o['target'], o['unit'])).replace('개를', '개를'))
+    s.text(rd('%s %d%s%s 만드는 재료예요. %s %d%s일 때 필요한 재료의 양을 표에 써 보세요.'
+              % (o['what'], o['start'], o['unit'], eul(o['unit']), o['what'], o['target'], o['unit'])))
     rows = [['%s 수(%s)' % (o['what'], o['unit'])] + [str(k) for k in range(1, K + 1)]]
     ans = []
     for it in its:
@@ -1153,9 +1188,10 @@ def w_rect(s, lv, o, svg=None):
                % (ox, oy - bh * cell, bw * cell, bh * cell))
     W, H = ox * 2 + gx * cell, oy + 20
     put_png(s, svg_doc(W, H, ''.join(out)), W, H, max_mm=120)
-    s.text('파란 점선은 가로 %d칸, 세로 %d칸인 액자예요. 왼쪽 아래 모서리를 같게 하여 가로와 세로의 비가 %d : %d와 비율이 같은 더 큰 액자를 그려 보세요.'
-           % (bw, bh, bw, bh))
-    s.fill('내가 그린 액자: 가로 : 세로 = (      ) : (      )  →  %d : %d의 전항과 후항에 (      )을/를 곱한 비예요.' % (bw, bh))
+    what = o.get('what') or '액자'
+    s.text('파란 점선은 가로 %d칸, 세로 %d칸인 %s예요. 왼쪽 아래 모서리를 같게 하여 가로와 세로의 비가 %d : %d와 비율이 같은 더 큰 %s%s 그려 보세요.'
+           % (bw, bh, what, bw, bh, what, eul(what)))
+    s.fill('내가 그린 ' + what + ': 가로 : 세로 = (      ) : (      )  →  %d : %d의 전항과 후항에 (      )을/를 곱한 비예요.' % (bw, bh))
     ex = ['%d : %d' % (bw * k, bh * k) for k in range(2, 10) if bw * k <= gx and bh * k <= gy]
     return '(예) ' + ', '.join(ex)
 
@@ -1253,6 +1289,69 @@ def w_match(s, lv, o, svg=None):
     return ', '.join(pairs[:need] if need == 1 else pairs)
 
 
+# ---------------------------------------------------------------- 이야기 버전 부품
+EMOJI = re.compile('[\U0001F000-\U0001FFFF\u2600-\u27BF\uFE0F\u200D]')
+
+
+def noemo(t):
+    return re.sub(r'\s{2,}', ' ', EMOJI.sub('', str(t))).strip()
+
+
+def w_note(s, lv, title, lines, *_):
+    s.labeled([('계획표', noemo(title) + '\n' + '\n'.join('· ' + rd(noemo(l)) for l in lines))], row_h=1100 * (len(lines) + 1))
+    return ''
+
+
+def w_plan(s, lv, svg, *_):
+    app_svg(s, svg, 110)
+    return ''
+
+
+def w_panes(s, lv, items, *_):
+    s.labeled([(p['t'], ('(' + p['ph'] + ')') if lv == '기본형' else '') for p in items], row_h=3400)
+    return '(자유) ' + ' / '.join('%s: 예) %s' % (p['t'], flat(p['ex'][0])) for p in items if p.get('ex'))
+
+
+def w_thenwhy(s, lv, o, *_):
+    s.ask('왜 그럴까요?  ' + rd(o['q']), blank=False)
+    if lv == '기본형' and len(o.get('help') or []) > 1:
+        s.text('도움: ' + rd(o['help'][1]))
+        s.lines(2)
+    else:
+        s.lines(3)
+    return '왜? (예) ' + flat(o['ans'])
+
+
+def w_rulefirst(s, lv, o, *_):
+    s.ask('먼저 예상해요.  ' + rd(o['q']), blank=False)
+    if lv == '기본형' and len(o.get('help') or []) > 1:
+        s.text('도움: ' + rd(o['help'][1]))
+    s.lines(2)
+    s.text('▶ 아래 활동을 마친 뒤, 내 예상이 맞았는지 확인해 보세요.   맞았어요 (   )   고쳐야 해요 (   )')
+    return '예상 → 실제 규칙: ' + flat(o['ans'])
+
+
+def w_wonder(s, lv, *_):
+    s.ask('1차시에 내가 쓴 ‘궁금해요’를 다시 써 보세요.', blank=False)
+    s.lines(1)
+    return ''
+
+
+def w_garden(s, lv, o, svg=None):
+    if svg:
+        app_svg(s, svg, 170)
+    s.text('텃밭 다섯 곳에서 두 양을 비교하는 상황과 주어진 양을 나누는 상황을 찾아 써 보세요.')
+    rows = [['텃밭 곳곳', '무엇과 무엇을 비교할까요? (또는 무엇을 나눌까요?)']]
+    ans = []
+    for i, sp in enumerate(DATA['gspots']):
+        rows.append([sp['t'], rd(sp['say']) if lv == '기본형' and i == 0 else ''])
+        if not (lv == '기본형' and i == 0):
+            ans.append('%s: %s' % (sp['t'], flat(sp['say'])))
+    assert len(rows) == 6, rows
+    s.table(rows, col_mm=[44, 136], row_h=3400)
+    return '; '.join(ans)
+
+
 def w_error(s, lv, msg, *_):
     raise RuntimeError('앱 원본의 활동을 읽지 못했어요: ' + msg)
 
@@ -1261,9 +1360,11 @@ WIDGETS = {'quiz': w_quiz, 'blanks': w_blanks, 'sequence': w_sequence, 'writeSte
            'rp4Chain': w_chain, 'rp4Seq': w_seq, 'rp4Build': w_build, 'rp4Machine': w_machine, 'rp4Simp': w_simp,
            'rp4Terms': w_terms, 'rp4Area': w_area, 'rp4Dbl': w_dbl, 'rp4Gear': w_gear, 'rp4Tape': w_tape,
            'rp4Clay': w_clay, 'rp4Dice': w_dice, 'rp4Rect': w_rect, 'rp4Scene': w_scene, 'rp4Hand': w_hand,
-           'rp4Meet': w_meet, 'rp4Match': w_match, 'error': w_error}
+           'rp4Meet': w_meet, 'rp4Match': w_match, 'error': w_error,
+           'note': w_note, 'plan': w_plan, 'panes': w_panes, 'thenWhy': w_thenwhy, 'ruleFirst': w_rulefirst,
+           'wonderRecall': w_wonder, 'rp4sGarden': w_garden}
 SVG_W = {'rp4Build', 'rp4Machine', 'rp4Simp', 'rp4Terms', 'rp4Area', 'rp4Dbl', 'rp4Gear', 'rp4Tape', 'rp4Clay', 'rp4Dice',
-         'rp4Rect', 'rp4Scene', 'rp4Hand', 'rp4Meet', 'rp4Match'}
+         'rp4Rect', 'rp4Scene', 'rp4Hand', 'rp4Meet', 'rp4Match', 'rp4sGarden'}
 
 
 def run_calls(s, lv, calls):
@@ -1319,6 +1420,47 @@ def check_words(D):
         ('t89', '섞은 것', [720 * 3, pr(2, 720, 3)]),
         ('t89', '찬밥', [800 * 3, pr(4, 800, 3)]),
         ('t1', '실제 다보탑의 높이: ', [105 * Fraction('9.8')]),
+    ]
+    for lid, start, want in exp:
+        got = row_ans(Ls[lid], start)
+        assert [g for g in got if not isinstance(g, str)] == want, ('답 확인 필요', lid, start, got, want)
+        CHECKS[0] += 1
+
+
+def check_words_st(D):
+    """이야기 버전 문장제: 앱의 답 = 이 스크립트가 따로 계산한 값"""
+    Ls = {L['id']: L for L in D['lessons']}
+    pr = lambda a, b, c: Fraction(b * c, a)            # a : b = c : □
+    dist = lambda n, p, q: [Fraction(n * p, p + q), Fraction(n * q, p + q)]
+    exp = [
+        ('s1', '실제 텃밭의 가로: 8 × 50', [8 * 50, Fraction(8 * 50, 100)]),
+        ('s6', '60 × □', [3 * 200, pr(60, 3, 200)]),
+        ('s6', '우진 · 비례식의 성질', [10 * 18, pr(4, 10, 18)]),
+        ('s6', '민재 · 비율', [pr(4, 10, 18)]),
+        ('s6', '소윤 · 비의 성질', [Fraction(18, 4), pr(4, 10, 18)]),
+        ('s6', '퇴비와 흙을 2 : 7', [pr(2, 7, 6)]),
+        ('s6', '가로와 세로의 비가 3 : 5', [Fraction(40 * 3, 5)]),
+        ('s6', '씨앗 5봉지가', [pr(5, 4500, 8)]),
+        ('s6', '일정하게 내리는 비에', [Fraction('7.5') * 3 / Fraction('4.5')]),
+        ('s7', '씨앗 30개를', dist(30, 2, 3)),
+        ('s7', '96을 5 : 3', dist(96, 5, 3)),
+        ('s7', '모종값 18000원', dist(18000, 5, 4)),
+        ('s7', '화분 흙 45컵', dist(45, 4, 5)),
+        ('s7', '2시간 동안', dist(120, 3, 5)[1:]),
+        ('s7', '경로당: 12 ×', [Fraction(1, 4), Fraction(12, 4)]),
+        ('s7', '1모둠: 800 ×', [Fraction(3, 8), Fraction(800 * 3, 8)]),
+        ('s5', '비례식 15 : ㉠=3 : ㉡', [Fraction(120, 15), Fraction(120, 3)]),
+        ('s5', '5 : 6=㉠ : ㉡', [Fraction(210, 6), Fraction(210, 5)]),
+        ('s89', '상추', [200 * 6, pr(4, 200, 6)]),
+        ('s89', '섞은 것', [60 * 6, pr(4, 60, 6)]),
+        ('s89', '양파: 90 ×', [Fraction(2, 5), Fraction(90 * 2, 5)]),
+        ('s89', '방울토마토', [450 * 5, pr(3, 450, 5)]),
+        ('s89', '3 : 240=5', [240 * 5, pr(3, 240, 5)]),
+        ('s89', '우유: 400 ×', [Fraction(5, 8), Fraction(400 * 5, 8)]),
+        ('s11', '1모둠: 750 ×', [Fraction(2, 5), Fraction(750 * 2, 5)]),
+        ('s11', '방법 2 비례식의 성질', [200 * 7, pr(4, 7, 200)]),
+        ('s11', '가로와 세로의 합', [Fraction(240, 2)]),
+        ('s11', '가로: 120 ×', [Fraction(5, 12), Fraction(120 * 5, 12)]),
     ]
     for lid, start, want in exp:
         got = row_ans(Ls[lid], start)
@@ -1395,10 +1537,75 @@ def tb_lesson(s, lv, L, first, story):
     return '%s차시  %s' % (L['no'], '  '.join(ans))
 
 
+WHY_ST = {   # 이야기 버전 도전형 '왜' 쓰기
+    's1': ('텃밭이 아닌 생활에서 두 양을 비로 비교하거나 주어진 양을 나누는 상황을 하나 찾아 써 보세요.',
+           '예) 미숫가루 2숟가락에 우유 1컵을 섞을 때, 친구와 낸 돈의 비로 과자를 나눌 때예요.'),
+    's2': ('상토 3컵에 퇴비 2컵을 섞은 흙과 상토 4컵에 퇴비 3컵을 섞은 흙이 같지 않은 까닭을 비율로 써 보세요.',
+           '예) 3 : 2의 비율은 3/2, 4 : 3의 비율은 4/3으로 달라요. 같은 수를 곱하거나 나눌 때만 비율이 같아요.'),
+    's3': ('물 1.2 L와 영양제 0.3 L를 4 : 1로 나타내도 섞인 정도가 같은 까닭을 써 보세요.',
+           '예) 1.2 : 0.3의 전항과 후항에 10을 곱하고 3으로 나누었으니 비의 성질에 따라 비율이 4로 같아요.'),
+    's4': ('4 : 30=8 : 60에서 외항과 내항을 전항·후항과 어떻게 구별하는지 써 보세요.',
+           '예) 전항·후항은 비 하나에서 앞과 뒤이고, 외항·내항은 비례식 전체에서 바깥쪽 두 수(4, 60)와 안쪽 두 수(30, 8)예요.'),
+    's5': ('비례식 3 : 7=12 : □에서 □를 구할 때 외항의 곱과 내항의 곱을 쓰면 편리한 까닭을 써 보세요.',
+           '예) 3 × □ = 7 × 12 = 84처럼 곱셈식 하나로 바꾸어 84 ÷ 3 = 28을 바로 구할 수 있어요.'),
+    's6': ('물 펌프 문제에서 4 : 10=□ : 18처럼 세우면 안 되는 까닭을 써 보세요.',
+           '예) 앞의 비는 시간 : 물의 양, 뒤의 비는 물의 양 : 시간이라 차례가 달라서 비율이 같은 두 비가 아니에요.'),
+    's7': ('상추 12봉지를 1 : 3으로 나눌 때 12를 3등분하지 않고 4등분하는 까닭을 써 보세요.',
+           '예) 1 : 3은 1만큼과 3만큼으로 나누는 것이라 전체를 (1+3)=4만큼 똑같이 나누어야 해요.'),
+    's89': ('방울토마토 주스 조리법이 몇 인분 기준인지 먼저 확인해야 하는 까닭을 써 보세요.',
+            '예) 기준 인분과 만들 인분으로 비례식을 세우므로, 3인분 기준을 4인분으로 보면 재료의 양이 틀려요.'),
+    's10': ('5 : 4와 4 : 5로 비례식을 세울 수 없는 까닭을 써 보세요.',
+            '예) 5 : 4의 비율은 5/4, 4 : 5의 비율은 4/5로 달라요. 비율이 같은 두 비만 비례식이 돼요.'),
+    's11': ('둘레가 240 cm인 꽃밭 틀에서 240을 그대로 5 : 7로 나누면 안 되는 까닭을 써 보세요.',
+            '예) 둘레는 가로와 세로를 두 번씩 더한 길이라서, 가로와 세로의 합 120 cm를 5 : 7로 나누어야 해요.'),
+}
+
+
+def st_lesson(s, lv, L, first, story):
+    """이야기 버전 한 차시: 앱의 계단 이름 '만져 보기 — 모종 화분 두 개' → ① 만져 보기 | 모종 화분 두 개"""
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    if first and story:
+        s.scene(None, rd(story['lines'][0] + ' ' + story['lines'][1]))
+        s.text('※ 식 줄은 분수를 위아래로 썼어요. 글 속에서는 ‘5분의 3’처럼 읽는 말로 썼어요. 네모 칸에는 수를 써요. '
+               '‘(예)’가 붙은 답은 비율이 같으면 다른 답도 맞아요.')
+    ans = []
+    for i, st_ in enumerate(L['steps']):
+        nm = st_['name'] or STEP_NAMES[min(i, len(STEP_NAMES) - 1)]
+        main, _, sub = nm.partition(' — ')
+        s.step('%s %s' % (NUM[i], main.strip()), sub.strip() or None)
+        show_inst(s, lv, st_['inst'], st_['hints'])
+        ans.append('%s %s' % (NUM[i], run_calls(s, lv, st_['calls'])))
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L.get('ch'):
+            s.step('%s ★ 도전하기' % NUM[n], '앱의 도전 문제')
+            show_inst(s, lv, re.sub(r'^★ 도전 — ', '', L['ch']['inst']), [])
+            ans.append('%s %s' % (NUM[n], run_calls(s, lv, L['ch']['calls'])))
+            n += 1
+        q, a = WHY_ST[L['id']]
+        s.step('%s 생각 쓰기' % NUM[n], '왜 그럴까요?')
+        s.ask(rd(q), blank=False)
+        s.lines(2)
+        ans.append('%s %s' % (NUM[n], a))
+    return '%s차시  %s' % (L['no'], '  '.join(ans))
+
+
 DATA = {}
 
-# 이야기 버전 차시 함수(아직 없음 — 생기면 st1, st2, … 를 넣으세요)
-ST = []
+# 이야기 버전 차시(앱 u4-ratio.st.js의 LESSONS id 차례 — 1~7, 8~9, 10, 11차시)
+ST_IDS = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's89', 's10', 's11']
+
+
+def _st(lid):
+    def f(s, lv):
+        Ls = DATA['lessons']
+        k = [L['id'] for L in Ls].index(lid)
+        return st_lesson(s, lv, Ls[k], k == 0, DATA.get('story'))
+    f.__name__ = 'st_' + lid
+    return f
+
+
+ST = [_st(lid) for lid in ST_IDS]
 
 
 def build_file(kind, lv):
@@ -1406,7 +1613,11 @@ def build_file(kind, lv):
     D = cap(src)
     DATA.clear()
     DATA.update(D)
-    check_words(D)
+    if kind == 'tb':
+        check_words(D)
+    else:
+        assert [L['id'] for L in D['lessons']] == ST_IDS, ('이야기 버전 차시가 바뀌었어요', [L['id'] for L in D['lessons']])
+        check_words_st(D)
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'
     s = Sheet(unit_label='6-2 수학 %s(%s)' % (UNIT_NAME, label), level=lv, grade_label='6학년')
     if kind == 'tb':
