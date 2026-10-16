@@ -800,7 +800,7 @@ function ra4Memory(body, api, opt) {
       b.textContent = o || open ? RA4_CARDS[deck[pos]] : "?"; b.dataset.t = o || open ? RA4_CARDS[deck[pos]] : "";
       b.disabled = !!o;
     });
-    score.innerHTML = ""; score.append(h("span", {}, `나 ${me}장`), h("span", {}, `컴퓨터 ${com}장`), h("span", {}, `남은 카드 ${owner.filter(o => !o).length}장`), h("span", {}, turn === "me" ? "▶ 내 차례" : "▶ 컴퓨터 차례"));
+    score.innerHTML = ""; score.append(h("span", {}, `나 ${me}장`), h("span", {}, `컴퓨터 ${com}장`), h("span", {}, `남은 카드 ${owner.filter(o => !o).length}장`), h("span", {}, turn === "me" ? "▶ 내 차례" : turn === "com" ? "▶ 컴퓨터 차례" : "놀이 끝"));
     tools.style.visibility = turn === "me" && up.length === 2 && !busy ? "visible" : "hidden";
   };
   const remember = pos => { seen.add(pos); if (Math.random() < (opt.mem || .5)) comMem.set(pos, deck[pos]); };
@@ -973,9 +973,9 @@ function ra4Juice() {
   return s;
 }
 function ra4MemoFig() {
-  const s = makeSvg(620, 230); s.setAttribute("class", "ra4fig"); s.style.maxWidth = "620px";
+  const s = makeSvg(700, 230); s.setAttribute("class", "ra4fig"); s.style.maxWidth = "700px";
   const u = 26, base = 190;
-  [["가", 5, 3, 30], ["나", 5, 6, 220], ["다", 10, 6, 360]].forEach(([n, w, hh, x]) => {
+  [["가", 5, 3, 60], ["나", 5, 6, 240], ["다", 10, 6, 420]].forEach(([n, w, hh, x]) => {
     s.append(svgEl("rect", { x, y: base - hh * u, width: w * u, height: hh * u, fill: "#FFF3B0", stroke: "#B48A12", "stroke-width": 2.5 }));
     s.append(txt(x + w * u / 2, base - hh * u / 2, n, 22));
     s.append(txt(x + w * u / 2, base + 18, `${w} cm`, 15), txt(x - 6, base - hh * u / 2, `${hh} cm`, 13, { "text-anchor": "end" }));
@@ -1240,7 +1240,7 @@ const LESSONS = [
     { inst: "농구공 던져 넣기를 해요. “난 공을 20번 던져서 7번 넣었어!”(주리) “나는 공을 25번 던져서 8번 넣었어!”(민석) 던진 횟수만큼 칸이 있는 모눈에 넣은 횟수만큼 색칠해 보세요.", hints: ["주리 모눈은 20칸, 민석이 모눈은 25칸이에요.", "주리는 7칸, 민석이는 8칸을 색칠해요."],
       render: (b, a) => ra4Grid(b, a, { grids: [{ name: "주리", title: "주리(공을 20번 던짐)", cols: 10, rows: 2, target: 7 }, { name: "민석", title: "민석(공을 25번 던짐)", cols: 5, rows: 5, target: 8, col: "#7FB8E6" }],
         ask: [["공을 던진 횟수에 대한 공을 넣은 횟수의 비율: 주리 ", { f: "7/20" }, ", 민석 ", { f: "8/25" }],
-          ["던진 횟수가 다를 때 쉽게 비교하는 방법: ", { c: ["던진 횟수(기준량)를 같게 한 다음 비교해요.", "넣은 횟수만 비교해요."], a: 0, why: { "1": "민석이가 1번 더 넣었지만 던진 횟수도 5번 더 많아요. 넣은 횟수만으로는 알 수 없어요." } }]],
+          ["던진 횟수가 다를 때 쉽게 비교하는 방법: ", { c: ["던진 횟수(기준량)를 같게 한 뒤 비교해요.", "넣은 횟수만 비교해요."], a: 0, why: { "1": "민석이가 1번 더 넣었지만 던진 횟수도 5번 더 많아요. 넣은 횟수만으로는 알 수 없어요." } }]],
         ok: "기준량(던진 횟수)이 다르면 기준량을 같게 하여 비교하면 쉬워요." }) },
     { inst: "두 사람이 공을 100번씩 던졌다면 각각 몇 번 넣었을지 생각해 보고, 100칸 모눈에 색칠해 보세요.", hints: ["100은 20의 5배예요. 주리는 7번의 5배를 넣는다고 생각해요.", "100은 25의 4배예요. 민석이는 8번의 4배예요."],
       render: (b, a) => ra4Grid(b, a, { cell: 24, grids: [{ name: "주리", title: "주리가 100번 던졌다면", cols: 10, rows: 10, target: 35 }, { name: "민석", title: "민석이가 100번 던졌다면", cols: 10, rows: 10, target: 32, col: "#7FB8E6" }],
@@ -1402,7 +1402,7 @@ const LESSONS = [
     { name: "두 양 비교하기", inst: "1번. 노란색 물감 60 g과 파란색 물감 40 g을 섞어 초록색 물감 한 병을 만들어요. 병을 두 개로 늘려 보고, 표를 완성하여 두 양을 비교해 보세요.", hints: ["한 병이 늘 때마다 노란색 60 g, 파란색 40 g이 늘어나요.", "60 ÷ 40 = [60/40] = [3/2] = 1.5예요. 몇 병이든 같아요."],
       render: (b, a) => ra4Build(b, a, { what: "초록색 물감", head: "초록색 물감 병 수", unit: "병", prod: "bottle", start: 1, target: 2, max: 4,
         items: [{ name: "노란색 물감의 양", per: 60, unit: "g", icon: "yuja", lump: true }, { name: "파란색 물감의 양", per: 40, unit: "g", icon: "water", lump: true }],
-        ask: [["세 병: 파란색 물감 ", { i: "120" }, " g"], ["네 병: 노란색 물감 ", { i: "240" }, " g, 파란색 물감 ", { i: "160" }, " g"],
+        ask: [["세 병: 노란색 물감 180 g, 파란색 물감 ", { i: "120" }, " g"], ["네 병: 노란색 물감 ", { i: "240" }, " g, 파란색 물감 ", { i: "160" }, " g"],
           ["다섯 병일 때 노란색 물감의 양은 파란색 물감의 양의 ", { i: "3/2", w: true, why: { "100": "300 − 200 = 100은 차이예요. 300 ÷ 200을 해요." } }, "배, 열 병일 때도 ", { i: "3/2", w: true }, "배 (분수나 소수로 써요)"]],
         ok: "노란색 물감의 양은 언제나 파란색 물감의 양의 [3/2]배(1.5배)예요." }) },
     { name: "비로 나타내기", inst: "2번, 3번 문제예요.", hints: ["‘사과 수에 대한’이니 사과 수 3이 기준량이에요.", "6 : 20 = [6/20] = [3/10] = 0.3 = 30 %예요."],

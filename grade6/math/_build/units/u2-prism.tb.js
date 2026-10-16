@@ -284,7 +284,7 @@ function pp6Draw(svg, o) {
   let sc, mx = 0, my = 0, cx, cy;
   if (o.s) { sc = o.s; cx = o.cx; cy = o.cy; }
   else {
-    const [bx, by, bw, bh] = o.box || [0, 0, 300, 240], pad = o.pad == null ? 16 : o.pad;
+    const [bx, by, bw, bh] = o.box || [0, 0, 300, 240], pad = o.pad == null ? (o.lab ? 34 : 16) : o.pad;
     const xs = Q.map(q => q[0]), yy = Q.map(q => q[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...yy), y1 = Math.max(...yy);
     sc = Math.min((bw - 2 * pad) / Math.max(x1 - x0, 1e-6), (bh - 2 * pad) / Math.max(y1 - y0, 1e-6)); if (o.maxS) sc = Math.min(sc, o.maxS);
     mx = (x0 + x1) / 2; my = (y0 + y1) / 2; cx = bx + bw / 2; cy = by + bh / 2;
@@ -328,7 +328,7 @@ function pp6Draw(svg, o) {
   if (o.ring != null) g.append(svgEl("circle", { cx: pp6R(S2[o.ring][0]), cy: pp6R(S2[o.ring][1]), r: 14, fill: "none", stroke: PP6.gold, "stroke-width": 3, "pointer-events": "none" }));
   if (o.tapV) V.forEach((v, i) => g.append(hit(svgEl("circle", { cx: pp6R(S2[i][0]), cy: pp6R(S2[i][1]), r: 12, fill: "rgba(0,0,0,0)" }), "v" + i)));
   if (o.lab) { const cxs = S2.reduce((s, p) => s + p[0], 0) / S2.length, cys = S2.reduce((s, p) => s + p[1], 0) / S2.length;
-    o.lab.forEach((t, i) => { if (!t) return; const p = S2[i], dx = p[0] - cxs, dy = p[1] - cys, d = Math.hypot(dx, dy) || 1; pp6T(g, p[0] + dx / d * 15, p[1] + dy / d * 15, t, 16, { fill: o.labCol || PP6.blue }); }); }
+    o.lab.forEach((t, i) => { if (!t) return; const p = S2[i], dx = p[0] - cxs, dy = p[1] - cys, d = Math.hypot(dx, dy) || 1; pp6T(g, p[0] + dx / d * 17, p[1] + dy / d * 17, t, 21, { fill: o.labCol || PP6.blue, "font-weight": 700 }); }); }
   return info;
 }
 function pp6Fig(o) {
@@ -378,15 +378,15 @@ const PP6_HEX = [[3, 0], [5, 0], [8, 4], [5, 8], [3, 8], [0, 4]]; // 변 2·5·5
 const pp6PrN = (n, h, r, rot) => pp6Prism(pp6Ngon(n, r || 1, rot), h);
 const pp6PyN = (n, h, r, rot) => pp6Pyramid(pp6Ngon(n, r || 1, rot), h);
 const PP6_SH = {
-  tri: () => pp6PrN(3, 1.7, 1.15, -90), sq: () => pp6Prism([[-1, -.75], [1, -.75], [1, .75], [-1, .75]], 1.5), cube: () => pp6Prism([[-1, -1], [1, -1], [1, 1], [-1, 1]], 2),
+  tri: () => pp6PrN(3, 1.7, 1.15, -67), sq: () => pp6Prism([[-1, -.75], [1, -.75], [1, .75], [-1, .75]], 1.5), cube: () => pp6Prism([[-1, -1], [1, -1], [1, 1], [-1, 1]], 2),
   pent: () => pp6PrN(5, 1.5, 1.05), hex: () => pp6PrN(6, 1.4, 1.05, 0), hept: () => pp6PrN(7, 1.4, 1.05), oct: () => pp6PrN(8, 1.3, 1.05, 22.5),
-  trap: () => pp6Prism([[-1.2, -.7], [1.2, -.7], [.6, .7], [-.6, .7]], 1.4), lowhex: () => pp6PrN(6, .55, 1.2, 0), tallsq: () => pp6Prism([[-.6, -.6], [.6, -.6], [.6, .6], [-.6, .6]], 2.6),
-  py3: () => pp6PyN(3, 1.9, 1.2), py4: () => pp6Pyramid([[-1, -1], [1, -1], [1, 1], [-1, 1]], 1.9), py5: () => pp6PyN(5, 1.9, 1.15), py6: () => pp6PyN(6, 1.8, 1.15, 0),
+  trilie: () => pp6PrN(3, 2.6, .85, -90), trap: () => pp6Prism([[-1.2, -.7], [1.2, -.7], [.6, .7], [-.6, .7]], 1.4), lowhex: () => pp6PrN(6, .55, 1.2, 0), tallsq: () => pp6Prism([[-.6, -.6], [.6, -.6], [.6, .6], [-.6, .6]], 2.6),
+  py3: () => pp6PyN(3, 1.9, 1.2, -67), py4: () => pp6Pyramid([[-1, -1], [1, -1], [1, 1], [-1, 1]], 1.9), py5: () => pp6PyN(5, 1.9, 1.15), py6: () => pp6PyN(6, 1.8, 1.15, 0),
   py7: () => pp6PyN(7, 1.8, 1.15), py8: () => pp6PyN(8, 1.7, 1.15, 22.5),
   frus4: () => pp6Frustum([[-1.1, -1.1], [1.1, -1.1], [1.1, 1.1], [-1.1, 1.1]], 1.3, .5), frus6: () => pp6Frustum(pp6Ngon(6, 1.2, 0), 1.2, .55)
 };
 /* 카드용 작은 그림: k는 PP6_SH 이름, o2로 눕히기 등 */
-function pp6Shp(k, o2 = {}) { return () => pp6Fig(Object.assign({ solid: PP6_SH[k](), W: 150, H: 130, plain: true, maxW: "100%", pad: 12, yaw: -22, pitch: 22, side: "#FFF1C7" }, o2)); }
+function pp6Shp(k, o2 = {}) { return () => { const S = PP6_SH[k](); return pp6Fig(Object.assign({ solid: S, W: 150, H: 130, plain: true, maxW: "100%", pad: 12, yaw: -22, pitch: 22, side: "#FFF1C7", fc: o2.tilt && S.kind === "prism" ? ["#F7D9BE", "#F7D9BE"] : null }, o2)); }; }
 const pp6Cyl = (o2 = {}) => () => pp6Fig(Object.assign({ kind: "cyl", r: 1, h: 1.8, W: 150, H: 130, plain: true, maxW: "100%", pad: 12, pitch: 22, side: "#FFF1C7" }, o2));
 /* 꼭짓점 이름: 각기둥은 한 밑면(위) ㄱㄴㄷ… 다른 밑면(아래) 그다음 글자, 각뿔은 꼭대기 ㄱ, 밑면 ㄴㄷㄹ… */
 function pp6PrLab(n) { const L = []; for (let i = 0; i < n; i++) { L[n + i] = PP6_JA[i]; L[i] = PP6_JA[n + i]; } return L; }
@@ -584,7 +584,7 @@ function pp6Parts(body, api, opt) {
 
 /* ---------- 자와 삼각자로 높이 재기 ---------- */
 function pp6Ruler(body, api, opt) {
-  const S = opt.S, hh = opt.h, isPy = S.kind === "pyr", W = 440, H = 340, pitch = 12, yaw = opt.yaw == null ? -20 : opt.yaw, cbv = Math.cos(pitch * PP6_D);
+  const S = opt.S, hh = opt.h, isPy = S.kind === "pyr", W = 440, H = 340, pitch = 7, yaw = opt.yaw == null ? -20 : opt.yaw, cbv = Math.cos(pitch * PP6_D);
   const xs = S.V.map(v => v[0] * Math.cos(yaw * PP6_D) + v[2] * Math.sin(yaw * PP6_D)), x0 = Math.min(...xs), x1 = Math.max(...xs);
   const rx = x1 + .6, top = hh + 1.8, sc = Math.min((H - 40) / ((hh + 3.2) * cbv), (W - 60) / (rx + 1.4 - x0)), cx = W / 2 - sc * (x0 + rx + .9) / 2, cy = H / 2 + .9 * sc * cbv;
   const svg = makeSvg(W, H); svg.setAttribute("class", "pp6fig"); svg.style.maxWidth = "28em";
@@ -623,7 +623,7 @@ function pp6Columns(body, api, opt) {
     svg.innerHTML = "";
     svg.append(svgEl("rect", { x: 0, y: 0, width: W, height: H * .42, fill: "#E3F1FB" }), svgEl("rect", { x: 0, y: H * .42, width: W, height: H * .58, fill: "#DCE8E2" }));
     cols.map((c, i) => i).sort((a, b) => cols[a].z - cols[b].z).forEach(i => {
-      const I = pp6Draw(svg, { solid: sol[i], s: 44, cx: W / 2, cy: H * .62, yaw: 0, pitch: 34, mid: 0, hidden: "none", side: "#8E97A1", fc: [null, seen.has(i) ? "#FFD27A" : "#B3BCC6"], sw: 2 });
+      const I = pp6Draw(svg, { solid: sol[i], s: 44, cx: W / 2, cy: H * .74, yaw: -12, pitch: 34, mid: 0, hidden: "none", side: "#8E97A1", fc: [null, seen.has(i) ? "#FFD27A" : "#B3BCC6"], sw: 2 });
       const top = sol[i].F[1].map(k => I.S2[k]), hit = svgEl("polygon", { points: pp6Pts(top), fill: "rgba(0,0,0,0)", class: "pp6hit" }); hit.dataset.k = "c" + i; svg.append(hit);
       if (seen.has(i)) { const c = top.reduce((s, p) => [s[0] + p[0] / top.length, s[1] + p[1] / top.length], [0, 0]); pp6T(svg, c[0], c[1], PP6_POLY[cols[i].n], 13, { fill: "#7A4E00" }); }
     });
@@ -658,19 +658,38 @@ function pp6Make(body, api, opt) {
 /* 접는 그림(움직이는 그림 판): U = pp6Unfold 결과(또는 같은 꼴의 마디), set(t) 0 펼침 ~ 1 접힘 */
 function pp6FoldSvg(S, U, o = {}) {
   const W = o.W || 420, H = o.H || 320, svg = makeSvg(W, H); svg.setAttribute("class", "pp6fig" + (o.plain ? " pp6plain" : "")); svg.style.maxWidth = o.maxW || "27em";
-  const yaw = (o.yaw == null ? -20 : o.yaw) * PP6_D, p0 = o.p0 == null ? 74 : o.p0, p1 = o.p1 == null ? 26 : o.p1, pad = o.pad == null ? 14 : o.pad;
-  const proj = (q, t) => { const X = q[0], Y = -q[2], Zd = -q[1], p = (p0 - (p0 - p1) * t) * PP6_D;
-    const X1 = X * Math.cos(yaw) + Zd * Math.sin(yaw), Z1 = -X * Math.sin(yaw) + Zd * Math.cos(yaw); return [X1, Y * Math.cos(p) - Z1 * Math.sin(p), Y * Math.sin(p) + Z1 * Math.cos(p)]; };
-  const bb = t => { const Q = pp6FoldPts(U, t).flat().map(q => proj(q, t)), xs = Q.map(q => q[0]), ys = Q.map(q => q[1]); return [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]; };
-  const B = [0, .25, .5, .75, 1].map(bb);
-  const sc = Math.min(...B.map(b => Math.min((W - 2 * pad) / Math.max(b[1] - b[0], 1e-6), (H - 2 * pad) / Math.max(b[3] - b[2], 1e-6))));
-  const cen = t => { const a = B[0], b = B[4]; return [((a[0] + a[1]) / 2) * (1 - t) + ((b[0] + b[1]) / 2) * t, ((a[2] + a[3]) / 2) * (1 - t) + ((b[2] + b[3]) / 2) * t]; };
+  const pad = o.pad == null ? 14 : o.pad, y0d = o.yaw == null ? -20 : o.yaw, p0 = o.p0 == null ? 74 : o.p0;
   const isB = nd => nd.base != null ? nd.base : pp6IsBase(S, nd.f);
+  // 다 접었을 때: 같은 면이 두 번 나오면(겹침) 빨갛게, 빠진 면은 빨간 점선으로
+  const F1 = pp6FoldPts(U, 1), seenF = new Set(), dup = U.map(nd => { const d = seenF.has(nd.f); seenF.add(nd.f); return d; });
+  const pairs = new Map(); U.forEach((nd, i) => (nd.ids || []).forEach((id, k) => { if (!pairs.has(id)) pairs.set(id, F1[i][k]); }));
+  let miss = [];
+  if (U[0].ids) { const ids = [...pairs.keys()], v = ids.map(id => S.V[id]), f = ids.map(id => pairs.get(id));
+    let q = null; for (let a = 1; a < ids.length && !q; a++) for (let b = a + 1; b < ids.length && !q; b++) for (let c = b + 1; c < ids.length && !q; c++) {
+      const A = [pp6Sub(v[a], v[0]), pp6Sub(v[b], v[0]), pp6Sub(v[c], v[0])], det = pp6Dot3(A[0], pp6Crs(A[1], A[2])); if (Math.abs(det) > 1e-3) q = [a, b, c, A, det]; }
+    if (q) { const [a, b, c, A] = q, Bm = [pp6Sub(f[a], f[0]), pp6Sub(f[b], f[0]), pp6Sub(f[c], f[0])];
+      const solve = d => { const det = pp6Dot3(A[0], pp6Crs(A[1], A[2])); return [pp6Dot3(d, pp6Crs(A[1], A[2])) / det, pp6Dot3(A[0], pp6Crs(d, A[2])) / det, pp6Dot3(A[0], pp6Crs(A[1], d)) / det]; };
+      const M = p => { const w = solve(pp6Sub(p, v[0])); return [0, 1, 2].map(k => f[0][k] + w[0] * Bm[0][k] + w[1] * Bm[1][k] + w[2] * Bm[2][k]); };
+      miss = S.F.map((fc, fi) => seenF.has(fi) ? null : fc.map(id => M(S.V[id]))).filter(Boolean); } }
+  const flag = miss.length ? miss[0] : dup.includes(true) ? F1[dup.indexOf(true)] : null;
+  const W3 = q => [q[0], -q[2], -q[1]];
+  const all1 = F1.flat().map(W3), cen1 = all1.reduce((a, q) => a.map((x, k) => x + q[k] / all1.length), [0, 0, 0]);
+  let y1d = y0d, p1 = o.p1 == null ? 26 : o.p1;
+  if (flag) { const c = flag.map(W3).reduce((a, q) => a.map((x, k) => x + q[k] / flag.length), [0, 0, 0]), d = pp6Sub(c, cen1);
+    y1d = Math.atan2(-d[0], d[2]) / PP6_D; while (y1d - y0d > 180) y1d -= 360; while (y0d - y1d > 180) y1d += 360; p1 = Math.max(18, Math.min(62, Math.atan2(d[1], Math.hypot(d[0], d[2])) / PP6_D)); }
+  const cam = t => [(y0d + (y1d - y0d) * t) * PP6_D, (p0 - (p0 - p1) * t) * PP6_D];
+  const proj = (q, t) => { const [X, Y, Zd] = W3(q), [ya, p] = cam(t);
+    const X1 = X * Math.cos(ya) + Zd * Math.sin(ya), Z1 = -X * Math.sin(ya) + Zd * Math.cos(ya); return [X1, Y * Math.cos(p) - Z1 * Math.sin(p), Y * Math.sin(p) + Z1 * Math.cos(p)]; };
+  const bb = t => { const Q = pp6FoldPts(U, t).flat().concat(t > .97 ? miss.flat() : []).map(q => proj(q, t)), xs = Q.map(q => q[0]), ys = Q.map(q => q[1]); return [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]; };
+  const fit = b => Math.min((W - 2 * pad) / Math.max(b[1] - b[0], 1e-6), (H - 2 * pad) / Math.max(b[3] - b[2], 1e-6));
+  const B0 = bb(0), B1 = bb(1), s0 = fit(B0), s1 = Math.min(fit(B1), s0 * 1.9);
   const set = t => {
     svg.innerHTML = "";
-    const F = pp6FoldPts(U, t), c = cen(t);
-    const fs = F.map((pts, i) => { const Q = pts.map(q => proj(q, t)); return { i, Q, d: Q.reduce((s, q) => s + q[2], 0) / Q.length }; }).sort((a, b) => a.d - b.d);
-    fs.forEach(({ i, Q }) => svg.append(svgEl("polygon", { points: pp6Pts(Q.map(q => [W / 2 + sc * (q[0] - c[0]), H / 2 - sc * (q[1] - c[1])])), fill: (o.col && o.col[i]) || (isB(U[i]) ? PP6.base : PP6.sideN), "fill-opacity": .9, stroke: PP6.ink, "stroke-width": 2, "stroke-linejoin": "round" })));
+    const F = pp6FoldPts(U, t), sc = s0 + (s1 - s0) * t, c = [((B0[0] + B0[1]) / 2) * (1 - t) + ((B1[0] + B1[1]) / 2) * t, ((B0[2] + B0[3]) / 2) * (1 - t) + ((B1[2] + B1[3]) / 2) * t];
+    const T2 = q => [W / 2 + sc * (q[0] - c[0]), H / 2 - sc * (q[1] - c[1])];
+    const fs = F.map((pts, i) => { const Q = pts.map(q => proj(q, t)); return { i, Q, d: Q.reduce((s2, q) => s2 + q[2], 0) / Q.length }; }).sort((a, b) => a.d - b.d);
+    fs.forEach(({ i, Q }) => svg.append(svgEl("polygon", { points: pp6Pts(Q.map(T2)), fill: (o.col && o.col[i]) || (dup[i] && t > .9 ? "#F28B82" : isB(U[i]) ? PP6.base : PP6.sideN), "fill-opacity": .9, stroke: PP6.ink, "stroke-width": 2, "stroke-linejoin": "round" })));
+    if (t > .97) miss.forEach(m => svg.append(svgEl("polygon", { points: pp6Pts(m.map(q => T2(proj(q, t)))), fill: "rgba(214,69,69,.08)", stroke: PP6.red, "stroke-width": 2.6, "stroke-dasharray": "7 5" })));
   };
   set(o.t == null ? 0 : o.t);
   return { svg, set };
@@ -711,8 +730,9 @@ function pp6NetSvg(faces, o = {}) {
     if (L.mid) { const at = X(c); pp6T(svg, at[0], at[1], L.t, L.size || 15, { fill: L.col || PP6.blue }); return; }
     let j = L.j; if (L.side) { const sc = { right: m => m[0], left: m => -m[0], top: m => m[1], bottom: m => -m[1] }[L.side]; let best = -1e9; f.P.forEach((p, k) => { const q = f.P[(k + 1) % f.P.length], v = sc([(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]); if (v > best + 1e-9) { best = v; j = k; } }); }
     const p = f.P[j], q = f.P[(j + 1) % f.P.length];
-    const m = [(p[0] + q[0]) / 2, (p[1] + q[1]) / 2], d = [m[0] - c[0], m[1] - c[1]], l = Math.hypot(...d) || 1, k = L.out == null ? -.42 : L.out, at = X([m[0] + d[0] / l * k * (14 / s) * 2.2, m[1] + d[1] / l * k * (14 / s) * 2.2]);
-    pp6T(svg, at[0], at[1], L.t, L.size || 14, { fill: L.col || PP6.blue }); });
+    const M = X([(p[0] + q[0]) / 2, (p[1] + q[1]) / 2]), C = X(c), d = [M[0] - C[0], M[1] - C[1]], l = Math.hypot(...d) || 1, sg = (L.out == null || L.out > 0) ? 1 : -1;
+    if (Math.abs(d[0]) > Math.abs(d[1])) pp6T(svg, M[0] + sg * Math.sign(d[0]) * 7, M[1], L.t, L.size || 14, { fill: L.col || PP6.blue, "text-anchor": (sg * d[0] > 0) ? "start" : "end" });
+    else pp6T(svg, M[0], M[1] + sg * Math.sign(d[1]) * 14, L.t, L.size || 14, { fill: L.col || PP6.blue }); });
   if (o.vlab) o.vlab.forEach(({ p, t }) => { const c = all.reduce((a, r) => [a[0] + r[0] / all.length, a[1] + r[1] / all.length], [0, 0]), Q = X(p), C = X(c), d = [Q[0] - C[0], Q[1] - C[1]], l = Math.hypot(...d) || 1; pp6T(svg, Q[0] + d[0] / l * 11, Q[1] + d[1] / l * 11, t, 14, { fill: PP6.purple }); });
   if (o.after) o.after(svg, { X, s });
   return { svg, el, segs, X, s };
@@ -1084,7 +1104,7 @@ function pp6Lab(o) {
       else if (!m.nodot) pp6Dot(svg, A, 5, col);
       const M = B ? [(A[0] + B[0]) / 2, (A[1] + B[1]) / 2] : A, d = [M[0] - C[0], M[1] - C[1]], l = Math.hypot(...d) || 1, k = m.off == null ? 18 : m.off;
       const at = m.at ? [M[0] + m.at[0], M[1] + m.at[1]] : [M[0] + d[0] / l * k, M[1] + d[1] / l * k];
-      if (m.t) pp6T(svg, at[0], at[1], m.t, m.size || 15, { fill: col });
+      if (m.t) pp6T(svg, at[0], at[1], m.t, m.size || (m.t.length > 2 ? 16 : 21), { fill: col, "font-weight": 700 });
     });
     if (o.after2) o.after2(svg, I);
   } }));
@@ -1100,7 +1120,7 @@ const PP6_OBJ = {
   tent: { n: "인디언 텐트", k: "pyr", o: () => ({ solid: pp6PyN(6, 2.4, 1.1, 0), yaw: -15, pitch: 16, side: "#B6D7A8", fc: ["#6AA84F"] }) },
   louvre: { n: "루브르 피라미드", k: "pyr", o: () => ({ solid: pp6Pyramid([[-1.2, -1.2], [1.2, -1.2], [1.2, 1.2], [-1.2, 1.2]], 1.5), yaw: -30, pitch: 16, side: "#CFE2F3", fc: ["#9FC5E8"] }) },
   pyramid: { n: "피라미드", k: "pyr", o: () => ({ solid: pp6Pyramid([[-1.2, -1.2], [1.2, -1.2], [1.2, 1.2], [-1.2, 1.2]], 1.6), yaw: -38, pitch: 16, side: "#F1D99A", fc: ["#D9B85F"] }) },
-  puzzle: { n: "각뿔 모양 퍼즐", k: "pyr", o: () => ({ solid: pp6PyN(3, 1.8, 1.2), yaw: -20, pitch: 18, side: "#F4CCCC", fc: ["#E06666"] }) }
+  puzzle: { n: "각뿔 모양 퍼즐", k: "pyr", o: () => ({ solid: pp6PyN(3, 1.8, 1.2, -67), yaw: -20, pitch: 18, side: "#F4CCCC", fc: ["#E06666"] }) }
 };
 function pp6ObjFig(key, o2 = {}) { const ob = PP6_OBJ[key]; return pp6Fig(Object.assign({ W: 150, H: 120, plain: true, maxW: "100%", pad: 12, hidden: "none" }, ob.o(), o2)); }
 /* 건물(7차시): 각뿔·각기둥 모양 건물, 앞면에 문 */
@@ -1125,22 +1145,22 @@ function pp6HeightPair() {
   const S = pp6Pyramid([[-1, -1], [1, -1], [1, 1], [-1, 1]], 2.4), hh = 2.4;
   const ruler = (pts) => svg.append(svgEl("polygon", { points: pp6Pts(pts), fill: "#FFF6D6", stroke: "#B8963A", "stroke-width": 1.5 }));
   // 채린: 바닥에 수직으로 세운 자 + 삼각자
-  const I1 = pp6Draw(svg, { solid: S, s: 56, cx: 110, cy: 130, yaw: 0, pitch: 12, side: "#FBE0E6", fc: [PP6.base] });
+  const I1 = pp6Draw(svg, { solid: S, s: 66, cx: 120, cy: 128, yaw: 0, pitch: 12, side: "#FBE0E6", fc: [PP6.base] });
   const P1 = q => I1.P(q), rx = 1.5;
   ruler([P1([rx, 0, 0]), P1([rx + .35, 0, 0]), P1([rx + .35, 3, 0]), P1([rx, 3, 0])]);
   for (let k = 0; k <= 6; k++) pp6Seg(svg, P1([rx, k / 2, 0]), P1([rx + .15, k / 2, 0]), { stroke: "#8A6D1F", "stroke-width": 1.2 });
   svg.append(svgEl("polygon", { points: pp6Pts([P1([rx, hh, 0]), P1([0, hh, 0]), P1([rx, hh + .7, 0])]), fill: "rgba(43,123,214,.22)", stroke: PP6.blue, "stroke-width": 2 }));
   pp6Seg(svg, P1([0, 0, 0]), P1([0, hh, 0]), { stroke: PP6.red, "stroke-width": 2.4, "stroke-dasharray": "6 4" });
   pp6Seg(svg, P1([-1.6, 0, 0]), P1([rx + .7, 0, 0]), { stroke: "#B9A27A", "stroke-width": 3 });
-  pp6T(svg, 110, H - 16, "채린", 18, { fill: PP6.purple });
+  pp6T(svg, 110, H - 16, "채린", 20, { fill: PP6.purple });
   // 하진: 옆면의 모서리에 댄 자
-  const I2 = pp6Draw(svg, { solid: S, s: 56, cx: 380, cy: 130, yaw: 0, pitch: 12, side: "#FBE0E6", fc: [PP6.base] });
+  const I2 = pp6Draw(svg, { solid: S, s: 66, cx: 390, cy: 128, yaw: 0, pitch: 12, side: "#FBE0E6", fc: [PP6.base] });
   const A = I2.P(S.V[4]), B = I2.P(S.V[2]), d = [A[0] - B[0], A[1] - B[1]], l = Math.hypot(...d), C2 = I2.P([0, hh / 2, 0]); let n = [d[1] / l * 12, -d[0] / l * 12]; if (n[0] * ((A[0] + B[0]) / 2 - C2[0]) + n[1] * ((A[1] + B[1]) / 2 - C2[1]) < 0) n = n.map(x => -x);
   ruler([[B[0] + n[0] * .2, B[1] + n[1] * .2], [A[0] + n[0] * .2, A[1] + n[1] * .2], [A[0] + n[0] * 1.6, A[1] + n[1] * 1.6], [B[0] + n[0] * 1.6, B[1] + n[1] * 1.6]]);
   for (let k = 0; k <= 6; k++) { const t = k / 6, p = [B[0] + d[0] * t + n[0] * .2, B[1] + d[1] * t + n[1] * .2]; pp6Seg(svg, p, [p[0] + n[0] * .6, p[1] + n[1] * .6], { stroke: "#8A6D1F", "stroke-width": 1.2 }); }
   pp6Seg(svg, B, A, { stroke: PP6.red, "stroke-width": 3 });
   pp6Seg(svg, I2.P([-1.6, 0, 0]), I2.P([1.9, 0, 0]), { stroke: "#B9A27A", "stroke-width": 3 });
-  pp6T(svg, 380, H - 16, "하진", 18, { fill: PP6.purple });
+  pp6T(svg, 380, H - 16, "하진", 20, { fill: PP6.purple });
   return svg;
 }
 //@@LESSONS
@@ -1152,7 +1172,7 @@ const UNIT_STORY = { title: "탐험가 삼촌과 연서의 보물 찾기", lines
 const UNIT_KEYWORDS = ["입체도형", "각기둥", "밑면", "옆면", "삼각기둥·사각기둥·오각기둥", "모서리", "꼭짓점", "높이", "전개도", "잘린 모서리(실선)", "잘리지 않은 모서리(점선)", "각뿔", "각뿔의 꼭짓점", "삼각뿔·사각뿔·오각뿔", "평행", "합동"];
 
 const PP6_RED = { c: "#F6A6A0", n: "빨간색", e: "#D64545", t: "밑면" }, PP6_BLUE = { c: "#9CC3F0", n: "파란색", e: "#2B7BD6", t: "옆면" };
-const pp6Two = (...fs) => () => h("div", { class: "pp6row" }, ...fs.map(f => h("div", { style: "text-align:center" }, f())));
+const pp6Two = (...fs) => () => h("div", { style: `display:grid;grid-template-columns:repeat(auto-fit,minmax(${fs.length > 2 ? 8 : 11}em,1fr));gap:.6em;align-items:start;max-width:${fs.length * 15}em` }, ...fs.map(f => h("div", { style: "text-align:center;min-width:0" }, f())));
 const pp6Card = (name, f) => () => h("div", { style: "text-align:center" }, f(), h("div", { class: "jua" }, name));
 /* 전개도 마디: 옆면 띠(뿌리 r번째 옆면, 양쪽으로) + 밑면 붙일 옆면 */
 function pp6Strip(n, top, bot, root) { const r = root || 0, nodes = [{ f: 2 + r, p: -1 }]; for (let k = 1; k < n; k++) nodes.push({ f: 2 + (r + k) % n, p: k - 1 }); const at = i => (i - r + n) % n; nodes.push({ f: 1, p: at(top) }, { f: 0, p: at(bot) }); return nodes; }
@@ -1178,7 +1198,7 @@ const PP6_IK2 = [{ S: pp6Prism(pp6Ngon(5, 1.2), 2.2), nodes: [{ f: 2, p: -1 }, {
   { S: pp6Prism([[0, 0], [3, 0], [0, 4]], 2.5), nodes: [{ f: 2, p: -1 }, { f: 3, p: 0 }, { f: 4, p: 1 }, { f: 1, p: 0 }, { f: 0, p: 2 }] }];
 const PP6_T567 = () => pp6Prism([[0, 0], [6, 0], [1, Math.sqrt(24)]], 4);
 const PP6_T567N = [{ f: 2, p: -1 }, { f: 4, p: 0 }, { f: 3, p: 0 }, { f: 1, p: 0 }, { f: 0, p: 0 }];
-const PP6_HEX6N = pp6Strip(6, 1, 1, 0), PP6_HEX6S = "top";
+const PP6_HEX6N = pp6Strip(6, 1, 1, 0), PP6_HEX6S = "bottom";
 /* 모눈에 그리기(5~6차시 활동 3·4·5): 주어진 면 = given(마디 번호) */
 const PP6_D3 = { S: pp6Prism(PP6_TRI345, 5), nodes: [{ f: 2, p: -1 }, { f: 4, p: 0 }, { f: 3, p: 0 }, { f: 1, p: 0 }, { f: 0, p: 0 }], given: [0, 1, 3], cols: 20, rows: 16, at: [6, 2], cs: 22 };
 const PP6_D4 = { S: pp6Prism(PP6_TRAP, 2), nodes: [{ f: 5, p: -1 }, { f: 4, p: 0 }, { f: 2, p: 0 }, { f: 3, p: 2 }, { f: 1, p: 0 }, { f: 0, p: 0 }], given: [0, 1, 4], cols: 24, rows: 16, at: [6, 2], cs: 20 };
@@ -1252,19 +1272,19 @@ const LESSONS = [
     { name: "밑면 알아보기", inst: "각기둥에서 색칠된 두 면(면 ㄱㄴㄷ, 면 ㄹㅁㅂ)을 살펴보고 밑면을 약속해 보세요. 그다음 여러 방향으로 놓인 각기둥에서 밑면을 찾아보세요.", hints: ["색칠된 두 면은 서로 마주 보고, 모양과 크기가 같아요.", "누워 있는 각기둥은 양쪽 끝의 두 면이 밑면이에요. 밑면은 항상 2개예요."],
       render: (b, a) => pp6Chain(b, a, [
         (bx, ax) => quiz(bx, ax, [
-          { q: "색칠된 두 면의 공통점을 모두 골라 보세요.", fig: () => { const S = pp6Prism(pp6Ngon(3, 1.3, -90), 2.2); return pp6Fig({ solid: S, W: 300, H: 250, maxW: "15em", yaw: -28, pitch: 24, fc: [PP6.base, PP6.base], side: "#F4F8FC", lab: pp6PrLab(3),
+          { q: "색칠된 두 면의 공통점을 모두 골라 보세요.", fig: () => { const S = pp6Prism(pp6Ngon(3, 1.3, 30), 2.2); return pp6Fig({ solid: S, W: 300, H: 250, maxW: "15em", yaw: -20, pitch: 32, fc: [PP6.base, PP6.base], side: "#F4F8FC", lab: pp6PrLab(3),
               after: (svg, I) => { pp6Right(svg, I, S.V[3], S.V[4], S.V[0]); pp6Right(svg, I, S.V[0], S.V[1], S.V[3]); } }); },
             o: ["두 면은 평행해요.", "두 면은 합동이에요.", "두 면은 다각형이에요.", "두 면은 직사각형이에요."], a: [0, 1, 2], why: { "0,1,2,3": "색칠된 두 면은 삼각형이에요." } },
           { q: "색칠된 두 면은 나머지 면들과 어떻게 만나나요? (그림의 직각 표시를 보세요.)", o: ["모두 수직으로 만나요.", "만나지 않아요.", "비스듬히 만나요."], a: 0 }],
           { ok: "색칠된 두 면은 평행하고 합동인 다각형이고, 나머지 면들과 모두 수직으로 만나요." }),
         (bx, ax) => blanks(bx, ax, ["각기둥에서 면 ㄱㄴㄷ과 면 ㄹㅁㅂ과 같이 평행하고 합동인 두 면을 ", { o: ["밑면", "옆면", "꼭짓점"], a: 0 }, "이라고 해요. 이때 두 밑면은 나머지 면들과 모두 ", { o: ["수직", "평행"], a: 0 }, "으로 만나요."], { ok: "평행하고 합동인 두 면을 밑면이라고 해요." }),
-        (bx, ax) => pp6Tap(bx, ax, { items: [{ name: "가", S: PP6_SH.tri(), tilt: 90, yaw: -25, pitch: 22 }, { name: "나", S: PP6_SH.lowhex(), yaw: -20, pitch: 26 }, { name: "다", S: PP6_SH.trap(), tilt: 90, yaw: -30, pitch: 20 }, { name: "라", S: PP6_SH.pent(), tilt: -90, yaw: 20, pitch: 18 }],
+        (bx, ax) => pp6Tap(bx, ax, { items: [{ name: "가", S: PP6_SH.trilie(), tilt: 90, yaw: -30, pitch: 22 }, { name: "나", S: PP6_SH.lowhex(), yaw: -20, pitch: 26 }, { name: "다", S: PP6_SH.trap(), tilt: 90, yaw: -30, pitch: 20 }, { name: "라", S: PP6_SH.pent(), tilt: -90, yaw: 20, pitch: 18 }],
           pens: [PP6_RED], tip: "각기둥 가~라를 하나씩 골라 밑면을 모두 눌러 색칠해요. 밑면은 각기둥마다 2개예요. 뒤에 숨은 밑면은 돌려서 찾아요.",
           why: (it, fi, w, c) => w == null ? `${it.name}: 칠한 면 중에 밑면이 아닌 면이 있어요. 밑면은 평행하고 합동인 두 면이에요.` : `${it.name}: 아직 찾지 못한 밑면이 있어요. 밑면은 2개예요. 돌려서 뒤쪽도 살펴봐요.`,
           ok: "누워 있어도, 높이가 낮아도 평행하고 합동인 두 면이 밑면이에요. 밑면은 아래에 있는 면이 아니에요." })]) },
     { name: "옆면 알아보기", inst: "각기둥에서 두 밑면과 만나는 면을 알아보고 옆면을 약속해 보세요. 그다음 육각기둥에서 밑면과 옆면을 모두 찾아보세요.", hints: ["두 밑면과 만나는 면은 모두 직사각형이에요.", "육각기둥의 한 밑면은 육각형이라서 변이 6개, 옆면도 6개예요."],
       render: (b, a) => pp6Chain(b, a, [
-        (bx, ax) => quiz(bx, ax, [{ q: "두 밑면을 색칠한 삼각기둥이에요. 두 밑면과 만나는 면은 어떤 도형인가요?", fig: () => pp6Fig({ solid: pp6Prism(pp6Ngon(3, 1.3, -90), 2.2), W: 300, H: 250, maxW: "15em", yaw: -28, pitch: 24, fc: [PP6.base, PP6.base, PP6.sideN, PP6.sideN, PP6.sideN], lab: pp6PrLab(3) }),
+        (bx, ax) => quiz(bx, ax, [{ q: "두 밑면을 색칠한 삼각기둥이에요. 두 밑면과 만나는 면은 어떤 도형인가요?", fig: () => pp6Fig({ solid: pp6Prism(pp6Ngon(3, 1.3, 30), 2.2), W: 300, H: 250, maxW: "15em", yaw: -20, pitch: 32, fc: [PP6.base, PP6.base, PP6.sideN, PP6.sideN, PP6.sideN], lab: pp6PrLab(3) }),
           o: ["직사각형", "삼각형", "오각형"], a: 0, why: { "1": "삼각형은 밑면이에요. 두 밑면과 만나는 노란 면을 보세요." } }], { ok: "두 밑면과 만나는 면은 모두 직사각형이에요." }),
         (bx, ax) => blanks(bx, ax, ["각기둥에서 면 ㄱㄹㅁㄴ, 면 ㄴㅁㅂㄷ, 면 ㄱㄹㅂㄷ과 같이 두 밑면과 만나는 면을 ", { o: ["옆면", "밑면", "모서리"], a: 0 }, "이라고 해요. 이때 각기둥의 옆면은 모두 ", { o: ["직사각형", "삼각형", "정사각형"], a: 0, }, "이에요."], { ok: "두 밑면과 만나는 면을 옆면이라 하고, 각기둥의 옆면은 모두 직사각형이에요." }),
         (bx, ax) => pp6Tap(bx, ax, Object.assign(pp6PrL(pp6Ngon(6, 1.2, 0), 1.6, { yaw: -20, pitch: 26 }), { pens: [PP6_RED, PP6_BLUE], fill: .36,
@@ -1285,7 +1305,7 @@ const LESSONS = [
     render: (b, a) => pp6Chain(b, a, [
       (bx, ax) => pp6Pick(bx, ax, { q: "각기둥을 모두 찾아보세요.", items: [{ name: "가", fig: pp6Shp("py3") }, { name: "나", fig: pp6Shp("hex") }, { name: "다", fig: pp6Shp("frus4") }, { name: "라", fig: pp6Shp("trap", { tilt: 90, yaw: -30 }) }], a: [1, 3],
         whyExtra: i => ({ 0: "가는 평행한 두 면이 없어요.", 2: "다는 평행한 두 면이 합동이 아니에요." })[i], ok: "나와 라가 각기둥이에요. 라는 누워 있는 사각기둥이에요." }),
-      (bx, ax) => pp6Tap(bx, ax, Object.assign(pp6PrL(pp6Ngon(3, 1.3, -90), 2.2, { yaw: -28, pitch: 24 }), { pens: [PP6_BLUE], want: { 2: 0, 3: 0, 4: 0 }, tip: "삼각기둥의 옆면을 모두 눌러 파란색으로 칠해요. 누른 면의 이름이 아래에 써져요.",
+      (bx, ax) => pp6Tap(bx, ax, Object.assign(pp6PrL(pp6Ngon(3, 1.3, 30), 2.2, { yaw: -20, pitch: 32 }), { pens: [PP6_BLUE], want: { 2: 0, 3: 0, 4: 0 }, tip: "삼각기둥의 옆면을 모두 눌러 파란색으로 칠해요. 누른 면의 이름이 아래에 써져요.",
         why: (it, fi, w, c) => w == null ? `${pp6Jo(pp6FaceName(it.S, fi, it.lab), "은/는")} 밑면이에요. 옆면만 칠해요.` : "아직 찾지 못한 옆면이 있어요. 돌려서 뒤쪽도 살펴봐요.",
         ask: [{ q: "이 입체도형이 각기둥이 아닌 이유를 골라 보세요.", fig: pp6Shp("frus4", { W: 220, H: 160, plain: false, maxW: "11em" }), parts: [{ o: ["평행한 두 면이 합동이 아니에요.", "평행한 두 면이 없어요.", "옆면이 사각형이에요."], a: 0, why: { "1": "위와 아래의 면은 평행해요. 크기가 달라요." } }] }],
         ok: "삼각기둥의 옆면은 면 ㄱㄹㅁㄴ, 면 ㄴㅁㅂㄷ, 면 ㄷㅂㄹㄱ이에요. 위와 아래의 면이 평행하지만 합동이 아닌 입체도형은 각기둥이 아니에요." }))]) }
@@ -1328,7 +1348,7 @@ const LESSONS = [
   ],
   challenge: { inst: "수학익힘 문제예요. 이름, 높이, 구성 요소의 수를 알아보세요.", hints: ["밑면이 칠각형이면 칠각기둥이에요.", "모서리가 21개면 한 밑면의 변의 수는 21÷3이에요."],
     render: (b, a) => pp6Chain(b, a, [
-      (bx, ax) => pp6Ask(bx, ax, [{ q: "각기둥의 밑면의 모양과 이름을 써 보세요.", fig: pp6Two(pp6Card("⑴", pp6Shp("tri", { tilt: 90, yaw: -25 })), pp6Card("⑵", pp6Shp("hept"))),
+      (bx, ax) => pp6Ask(bx, ax, [{ q: "각기둥의 밑면의 모양과 이름을 써 보세요.", fig: pp6Two(pp6Card("⑴", pp6Shp("trilie", { tilt: 90, yaw: -30 })), pp6Card("⑵", pp6Shp("hept"))),
         parts: ["⑴ 밑면 ", { o: ["삼각형", "사각형"], a: 0 }, " / 이름 ", { o: ["삼각기둥", "사각기둥"], a: 0, why: { "1": "누워 있는 각기둥의 밑면은 양쪽 끝의 삼각형이에요." } }, h("br"),
           "⑵ 밑면 ", { o: ["육각형", "칠각형", "팔각형"], a: 1 }, " / 이름 ", { o: ["육각기둥", "칠각기둥", "팔각기둥"], a: 1 }] },
         { q: "각기둥의 높이를 나타내는 것을 골라 보세요.", fig: () => { const S = pp6PrN(4, 2, 1.1, 45); return pp6Lab({ solid: S, yaw: -25, pitch: 24, side: "#F4F8FC", marks: [{ a: 4, b: 5, t: "㉠", col: PP6.purple }, { a: 1, b: 5, t: "㉡", col: PP6.red }, { a: 4, b: 1, t: "㉢", col: PP6.green }] }); },
@@ -1383,9 +1403,9 @@ const LESSONS = [
         o: ["㉠", "㉡"], a: 0, why: { "1": "㉡은 삼각기둥의 전개도예요. 밑면 2개가 옆면의 위아래에 하나씩 있어요." } }], { ok: "㉠은 밑면 2개가 옆면의 같은 쪽에 있어서 접으면 겹쳐요." }),
       (bx, ax) => pp6Ask(bx, ax, [
         { q: "전개도를 접어 만든 삼각기둥이에요. 전개도의 □ 안에 알맞은 수를 왼쪽에서부터 써넣으세요.", fig: pp6Two(() => { const S = PP6_T567(); return pp6Lab({ solid: S, yaw: -25, pitch: 24, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 260, H: 220, maxW: "13em", marks: [{ a: 3, b: 4, t: "6 cm", col: PP6.blue, w: 2 }, { a: 4, b: 5, t: "7 cm", col: PP6.blue, w: 2 }, { a: 5, b: 3, t: "5 cm", col: PP6.blue, w: 2 }, { a: 1, b: 4, t: "4 cm", col: PP6.red, w: 2, off: 24 }] }); },
-            () => { const S = PP6_T567(), U = pp6Unfold(S, PP6_T567N); return pp6NetSvg(pp6Faces(S, U), { s: 15, maxW: "15em", lens: [{ i: 1, mid: true, t: "□" }, { i: 0, mid: true, t: "□" }, { i: 2, mid: true, t: "□" }, { i: 2, side: "right", t: "4 cm", col: PP6.red, out: .9 }] }).svg; }),
+            () => { const S = PP6_T567(), U = pp6Unfold(S, PP6_T567N); return pp6NetSvg(pp6Faces(S, U), { s: 15, pad: 40, maxW: "16em", lens: [{ i: 1, mid: true, t: "□", size: 24 }, { i: 0, mid: true, t: "□", size: 24 }, { i: 2, mid: true, t: "□", size: 24 }, { i: 2, side: "right", t: "4 cm", col: PP6.red, out: .9 }] }).svg; }),
           parts: ["□ = ", { n: 5 }, ", ", { n: 6 }, ", ", { n: 7 }, " (cm)"] },
-        { q: "밑면이 정육각형인 각기둥의 전개도예요. 이 각기둥의 모든 모서리의 길이의 합은 몇 cm인가요?", fig: () => { const S = pp6PrN(6, 6, 6, 0), U = pp6Unfold(S, PP6_HEX6N); return pp6NetSvg(pp6Faces(S, U), { s: 4.6, maxW: "17em", lens: [{ i: 6, side: PP6_HEX6S, t: "6 cm", out: .9 }, { i: 5, side: "right", t: "6 cm", col: PP6.red, out: .9 }] }).svg; },
+        { q: "밑면이 정육각형인 각기둥의 전개도예요. 이 각기둥의 모든 모서리의 길이의 합은 몇 cm인가요?", fig: () => { const S = pp6PrN(6, 6, 6, 0), U = pp6Unfold(S, PP6_HEX6N); return pp6NetSvg(pp6Faces(S, U), { s: 4.6, pad: 40, maxW: "17em", lens: [{ i: 6, side: PP6_HEX6S, t: "6 cm", out: .9 }, { i: 5, side: "right", t: "6 cm", col: PP6.red, out: .9 }] }).svg; },
           parts: [{ n: 108, why: { "72": "옆 모서리 6개(6×6=36 cm)도 더해요.", "36": "밑면의 모서리 12개(6×12=72 cm)도 더해요.", "48": "모서리는 모두 18개예요." } }, " cm"] }],
         { ok: "맞닿는 선분의 길이가 같으므로 □는 5, 6, 7이에요. 정육각형 밑면의 모서리 12개는 6 cm, 옆 모서리 6개도 6 cm라서 6×18=108 (cm)예요." })]) }
 },
@@ -1555,7 +1575,7 @@ const LESSONS = [
           parts: ["⑴ ", { o: ["오각기둥", "오각뿔", "육각기둥"], a: 0 }, " ⑵ ", { o: ["육각기둥", "육각뿔", "오각기둥"], a: 0, why: { "2": "누워 있는 각기둥의 밑면은 양쪽 끝의 육각형이에요." } }, " ⑶ ", { o: ["삼각뿔", "삼각기둥", "사각뿔"], a: 0 }, " ⑷ ", { o: ["사각뿔", "사각기둥", "오각뿔"], a: 0 }] }],
           { ok: "⑴ 오각기둥 ⑵ 육각기둥 ⑶ 삼각뿔 ⑷ 사각뿔이에요." }),
         (bx, ax) => { const BO = ["모서리", "높이", "꼭짓점", "밑면", "옆면", "각뿔의 꼭짓점"], sl = (a0, why) => ({ o: BO, a: a0, why }); pp6Ask(bx, ax, [
-          { q: "2. 각기둥의 ㉠, ㉡, ㉢에 알맞은 말은?", fig: () => { const S = pp6PrN(5, 1.8, 1.1); return pp6Lab({ solid: S, yaw: -15, pitch: 24, side: "#F4F8FC", fc: [null, "#FFE3B8"], W: 320, H: 250, marks: [{ a: [0, 1.8, 0], t: "㉠", col: PP6.org, at: [0, 0], nodot: true }, { a: [1.35, 0, -.1], b: [1.35, 1.8, -.1], t: "㉡", col: PP6.red, off: 22 }, { a: 7, t: "㉢", col: PP6.blue }] }); },
+          { q: "2. 각기둥의 ㉠, ㉡, ㉢에 알맞은 말은?", fig: () => { const S = pp6PrN(5, 1.8, 1.1); return pp6Lab({ solid: S, yaw: -15, pitch: 24, side: "#F4F8FC", fc: [null, "#FFE3B8"], W: 320, H: 250, marks: [{ a: [0, 1.8, 0], t: "㉠", col: PP6.org, at: [0, 0], nodot: true }, { a: [1.35, 0, -.1], b: [1.35, 1.8, -.1], t: "㉡", col: PP6.red, off: 22 }, { a: 2, t: "㉢", col: PP6.blue }] }); },
             parts: ["㉠ ", sl(3, { "4": "㉠은 평행하고 합동인 두 면 중 하나라서 밑면이에요." }), h("br"), "㉡ ", sl(1, { "0": "㉡은 두 밑면 사이의 거리를 나타내요." }), h("br"), "㉢ ", sl(2, { "5": "각뿔의 꼭짓점은 각뿔에만 있어요." })] },
           { q: "각뿔의 ㉠, ㉡, ㉢, ㉣에 알맞은 말은?", fig: () => { const S = pp6PyN(4, 2, 1.4, 45); return pp6Lab({ solid: S, yaw: -25, pitch: 16, side: "#FBE0E6", W: 320, H: 260, marks: [{ a: 4, t: "㉠", col: PP6.purple, at: [0, -16] }, { a: 4, b: 1, t: "㉡", col: PP6.red, off: 20 }, { a: [0, .67, .66], t: "㉢", col: PP6.green, at: [0, 0], nodot: true }, { a: [0, 0, .99], t: "㉣", col: PP6.blue, at: [0, 18], nodot: true }] }); },
             parts: ["㉠ ", sl(5, { "2": "옆면이 모두 만나는 점이라서 각뿔의 꼭짓점이에요." }), h("br"), "㉡ ", sl(0), h("br"), "㉢ ", sl(4), h("br"), "㉣ ", sl(3)] }],
