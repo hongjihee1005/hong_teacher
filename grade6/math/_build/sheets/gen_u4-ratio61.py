@@ -910,7 +910,9 @@ def fig_mm(svg, lo=60, hi=125):
 
 
 def w_fig(s, lv, o, *_):
-    app_svg(s, o['svg'], fig_mm(o['svg']))
+    m = re.search(r'viewBox="0 0 ([\d.]+) ([\d.]+)"', o['svg'])
+    vb = '-36 0 %g %s' % (float(m.group(1)) + 44, m.group(2)) if m else None     # 왼쪽 글이 잘리지 않게
+    app_svg(s, o['svg'], fig_mm(o['svg']), viewbox=vb)
     return ''
 
 
@@ -931,8 +933,9 @@ CNT = ['한', '두', '세', '네', '다섯', '여섯']
 
 def w_build(s, lv, o, svg=None):
     its, K, u = o['items'], o.get('max') or 4, o['unit']
-    if svg:
-        app_svg(s, svg, min(165, 40 * K + 6))
+    if svg:      # 앱 그림의 첫 묶음만(나머지 칸은 '?')
+        H = re.search(r'viewBox="0 0 [\d.]+ ([\d.]+)"', svg).group(1)
+        app_svg(s, svg, 38, viewbox='0 0 156 %s' % H)
     first = ', '.join('%s %s%s' % (it['name'], it['per'], unit_sp(it['unit'])) for it in its)
     s.text(rd('%s %s %s:  %s.  %s 수가 늘어날 때 두 양을 표에 써 보세요.'
               % (o['what'], CNT[o['start'] - 1], u, first, o['what'])))
@@ -973,7 +976,7 @@ def comp_fig(s, lv, o):
     B, C = o['base'], o['comp']
     v = Fraction(C['n'], B['n'])
     mx = max(Fraction(1), Fraction(math.ceil(v * 10), 10))
-    x0, L = 120, 900 / mx
+    x0, L = 190, 900 / mx
     cell = L / B['n']
     out = []
     for y, it, col in ((70, B, '#2B7BD6'), (170, C, '#E47A38')):
@@ -1062,17 +1065,17 @@ def map_fig(s, o):
     for i, M in enumerate(maps):
         y = 10 + i * 170
         out.append('<rect x="10" y="%d" width="%d" height="158" rx="14" fill="%s" stroke="#C9B79C" stroke-width="2.5"/>'
-                   % (y, x0 + MX * cm + 40, '#FFF6E3' if i == 0 else '#EEF6EA'))
+                   % (y, x0 + MX * cm + 70, '#FFF6E3' if i == 0 else '#EEF6EA'))
         out.append(T(28, y + 28, '%s (실제 거리 %d m를 1 cm로)' % (M['name'], M['per']), 24, weight='bold', fill='#4A3A20'))
-        out.append('<circle cx="%d" cy="%d" r="10" fill="#2F6B57"/>' % (x0 + 20, y + 76))
-        out.append(T(x0 + 20, y + 52, '입구', 19, anchor='middle', fill='#2F6B57'))
+        out.append('<circle cx="%d" cy="%d" r="10" fill="#2F6B57"/>' % (x0 + 20, y + 84))
+        out.append(T(x0 + 54, y + 84, '입구', 19, fill='#2F6B57'))
         ry = y + 108
         out.append('<rect x="%d" y="%d" width="%d" height="20" fill="#fff" stroke="#8A7B66" stroke-width="2"/>' % (x0 + 20, ry, MX * cm))
         for t in range(MX + 1):
             out.append('<line x1="%d" y1="%d" x2="%d" y2="%d" stroke="#5A4A30" stroke-width="2"/>' % (x0 + 20 + t * cm, ry, x0 + 20 + t * cm, ry + 12))
             out.append(T(x0 + 20 + t * cm, ry + 34, str(t), 18, anchor='middle', fill='#5A4A30'))
         out.append(T(x0 + 34 + MX * cm, ry + 34, 'cm', 18, fill='#5A4A30'))
-    W, H = x0 + MX * cm + 60, 10 + len(maps) * 170
+    W, H = x0 + MX * cm + 90, 10 + len(maps) * 170
     put_png(s, svg_doc(W, H, ''.join(out)), W, H, max_mm=160)
 
 
