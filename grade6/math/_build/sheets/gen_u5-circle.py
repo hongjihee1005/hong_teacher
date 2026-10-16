@@ -851,6 +851,441 @@ def build(D, label, short, outdir, lv):
     return path
 
 
+# ================================================================ 이야기 버전(ST) — u5-circle.st.js
+def _make_ex_st():
+    """_EX(교과서 버전 읽기)를 고쳐 이야기 버전 엔진의 부품(panes·thenWhy·ruleFirst·wonderRecall)도 모읍니다."""
+    ex = _EX
+    rep = [
+        ("function writeStep(b, a, items, opts) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag, ph: x.ph })) }); }",
+         "function writeStep(b, a, items, opts) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag, ph: x.ph, help: x.help || [], ans: x.ans || '' })) }); }\n"
+         "const clearTimeout = () => {};\n"
+         "function autoRun() { return () => false; }\n"
+         "function panes(b, a, items, opts) { if (!INNER) REC.push({ t: 'panes', items: items.map(x => ({ t: x.t, ph: x.ph, hint: x.hint || '', ex: x.ex || [] })) }); }\n"
+         "const _wo = o => ({ q: o.q, ph: o.ph, help: o.help || [], ans: o.ans || '' });\n"
+         "function thenWhy(f, o) { return function (b, a) { f(b, a); if (!INNER) REC.push({ t: 'thenWhy', o: _wo(o) }); }; }\n"
+         "function ruleFirst(f, o) { return function (b, a) { if (!INNER) REC.push({ t: 'ruleFirst', o: _wo(o) }); f(b, a); }; }\n"
+         "function wonderRecall(f) { return function (b, a) { if (!INNER) REC.push({ t: 'wonderRecall' }); f(b, a); }; }"),
+        ("OUT.calc = { grid: Object.fromEntries([4, 5, 7].map(", "OUT.calc = { grid: Object.fromEntries([3, 4, 5, 6, 7].map("),
+        ("function cap(render) { REC = []; try { render(new El('div'), api); } catch (e) { REC.push({ t: 'error', err: String(e.stack || e).slice(0, 400) }); } return REC; }",
+         "let ROOTFIG = [];\n"
+         "function cap(render) { REC = []; const root = new El('div'); try { render(root, api); } catch (e) { REC.push({ t: 'error', err: String(e.stack || e).slice(0, 400) }); }"
+         " ROOTFIG = findTag(root, 'svg').map(String); return REC; }"),
+        ("steps: L.steps.map(s => ({ name: s.name, inst: s.inst, hints: s.hints || [], recs: cap(s.render) })),",
+         "steps: L.steps.map(s => { const recs = cap(s.render); return { name: s.name, inst: s.inst, hints: s.hints || [], recs, figs: ROOTFIG }; }),"),
+    ]
+    for a, b in rep:
+        assert ex.count(a) == 1, a[:60]
+        ex = ex.replace(a, b)
+    return ex.replace('앱 원본(u5-circle.tb.js)', '앱 원본(u5-circle.st.js)')
+
+
+_EX_ST = _make_ex_st()
+
+# 종이에서 하는 말로 바꾸기(이야기 버전 단계 안내)
+PAPER_ST = [
+    ('그림에서 원 모양을 모두 찾아 눌러 보세요.', '그림에서 원 모양을 모두 찾아 ○표 해 보세요.'),
+    ('원의 중심, 지름, 둘레를 차례로 표시해 보세요.', '원의 중심, 지름, 둘레를 차례로 그림에 표시해 보세요.'),
+    ('먼저 원을 한 바퀴 굴려 원주를 수직선에 나타내고, 원 안에 꼭 맞는 정육각형(초록)과 원 밖에 꼭 맞는 정사각형(빨강)의 둘레를 막대로 늘여 원주와 비교해 보세요.',
+     '원을 한 바퀴 굴린 원주는 수직선에 파란 선으로 나타냈어요. 원 안에 꼭 맞는 정육각형(초록)과 원 밖에 꼭 맞는 정사각형(빨강)의 둘레를 수직선 위에 선으로 그어 원주와 비교해 보세요.'),
+    ('바퀴를 끌어 한 바퀴 굴려 보세요.', '바퀴를 한 바퀴 굴린다고 생각해 보세요.'),
+    ('막대를 움직여 지름을 바꾸어 보며 둘레가 141.3 cm가 되는 지름을 찾아보세요.', '지름을 바꾸어 둘레를 구해 보며 둘레가 141.3 cm가 되는 지름을 찾아보세요.'),
+    ('원 위의 점 4개를 눌러 원 안에 꼭 맞는 정사각형을 그려 보세요.', '원 위의 점 4개를 이어 원 안에 꼭 맞는 정사각형(초록)을 그리고, 원 밖에 꼭 맞는 정사각형(빨강)도 그려 보세요.'),
+    ('원이 걸친 칸은 주황으로 칠해 보세요.', '원이 걸친 칸은 주황으로 색연필로 칠해 보세요.'),
+    (' (세 가지 이상 해 봐요.)', ''),
+    ('분수(작은 원)를 끌어 오른쪽 점선 자리로 옮겨 보세요.', '분수(작은 원)를 오른쪽 점선 자리로 옮긴다고 생각해 보세요.'),
+    ('왼쪽 아래에 붙은 작은 반원을 끌어 오른쪽의 빈 곳(점선)에 넣어 보세요.', '왼쪽 아래에 붙은 작은 반원을 오른쪽의 빈 곳(점선)으로 옮겨 그려 보세요.'),
+    ('네 모서리의 색칠하지 않은 부분(흰 부분)을 끌어 오른쪽 점선 원에 모아 보세요.', '네 모서리의 색칠하지 않은 부분(흰 부분)을 오른쪽 점선 원에 모아 그려 보세요.'),
+    (' 피자를 끌어 겹쳐 보아도 돼요.', ''),
+    ('맞으면 모눈의 점을 눌러 원의 중심을 정해요.', '맞으면 아래 모눈종이에 컴퍼스로 원을 그리고 원 안에 넓이를 써요(원의 중심은 모눈의 점에 놓아요).'),
+    (' 세 도형을 모두 만들어 봐요.', ''),
+]
+
+
+def paper_st(t):
+    for a, b in PAPER_ST:
+        t = t.replace(a, b)
+    return t
+
+
+def string_inside_p(P, shape, x, y, m=SR):
+    """앱과 따로 계산: 바둑돌(반지름 m cm)이 끈 P cm로 만든 도형 안에 통째로 들어가는지"""
+    if shape == '정삼각형':
+        a = P / 3
+        hh = a * math.sqrt(3) / 2
+        V = [(0, -hh * 2 / 3), (a / 2, hh / 3), (-a / 2, hh / 3)]
+        for e in range(3):
+            (x1, y1), (x2, y2) = V[e], V[(e + 1) % 3]
+            if ((x2 - x1) * (y - y1) - (y2 - y1) * (x - x1)) / math.hypot(x2 - x1, y2 - y1) < m - 1e-3:
+                return False
+        return True
+    if shape == '정사각형':
+        return abs(x) <= P / 8 - m + 1e-3 and abs(y) <= P / 8 - m + 1e-3
+    return math.hypot(x, y) <= P / (2 * math.pi) - m + 1e-3
+
+
+def string_svg_p(P, shapes, stones):
+    """끈 P cm로 만든 도형과 앱이 놓은 바둑돌(실제 크기, 바둑돌 사이 1 cm)"""
+    a = P / 3
+    hh = a * math.sqrt(3) / 2
+    rc = P / (2 * math.pi)
+    q = P / 8
+    box = {'정삼각형': (-a / 2 - .3, -hh * 2 / 3 - .3, a / 2 + .3, hh / 3 + .3), '정사각형': (-q - .3, -q - .3, q + .3, q + .3),
+           '원': (-rc - .3, -rc - .3, rc + .3, rc + .3)}
+    gap, top = 0.3, 0.8
+    W = sum(box[k][2] - box[k][0] for k in shapes) + gap * (len(shapes) - 1)
+    H = max(box[k][3] - box[k][1] for k in shapes) + top
+    b, x = [], 0.0
+    for k in shapes:
+        x0, y0, x1, y1 = box[k]
+        ox, oy = x - x0, top - y0
+        Pt = lambda p: ((ox + p[0]) * K, (oy + p[1]) * K)   # noqa: E731
+        if k == '정삼각형':
+            b.append(_poly([Pt((0, -hh * 2 / 3)), Pt((a / 2, hh / 3)), Pt((-a / 2, hh / 3))], 'none', RED, 3))
+        elif k == '정사각형':
+            b.append(_poly([Pt((-q, -q)), Pt((q, -q)), Pt((q, q)), Pt((-q, q))], 'none', RED, 3))
+        else:
+            b.append(_circ(Pt((0, 0)), rc * K, 'none', RED, 3))
+        for p in stones[k]:
+            assert string_inside_p(P, k, p[0], p[1]), (k, p)
+            b.append(_circ(Pt(p), SR * K, '#2B2B2B', '#000', 1))
+        b.append(_t(ox * K, 0.35 * K, '%s (둘레 %s cm)' % (k, fmt(P)), 15, INK, weight='bold'))
+        x += (x1 - x0) + gap
+    return _svg(W * K, H * K, ''.join(b))
+
+
+def unroll_svg_r(r):
+    """반지름 r cm인 원(원 안 정육각형·원 밖 정사각형, 실제 크기)과 cm 수직선. 원주(파란 선)는 원을 한 바퀴 굴린 길이"""
+    N = math.ceil(8 * r) + 1                    # 앱 ci6Unroll과 같은 수직선 길이(cm)
+    x0 = 1.0 * K
+    W = x0 + N * K + 0.8 * K
+    R = r * K
+    F = (W - R - 0.5 * K, 0.4 * K + R)
+    b = [_poly([(F[0] - R, F[1] - R), (F[0] + R, F[1] - R), (F[0] + R, F[1] + R), (F[0] - R, F[1] + R)], '#FDECEC', RED, 2.5),
+         _circ(F, R, '#fff', BLUE, 2.5),
+         _poly([(F[0] + R * math.cos(i * math.pi / 3), F[1] + R * math.sin(i * math.pi / 3)) for i in range(6)], '#E3F4EA', GREEN, 2.5),
+         _ln(F, (F[0] + R, F[1]), INK, 1.6), _t(F[0] + R / 2, F[1] - 9, '%s cm' % fmt(r), 11),
+         _t(F[0], F[1] + R + 16, '반지름이 %s cm인 원' % fmt(r), 12, GRAY)]
+    C = 2 * math.pi * r
+    assert x0 + C * K < F[0] - R - 6, '원주 선이 그림과 겹쳐요'
+    top = F[1] + R + 1.0 * K
+    rows = [(1.0 * K, '원의 지름 (%s cm)' % fmt(2 * r), GRAY, 2 * r), (2.1 * K, '원주 (원을 한 바퀴 굴린 길이)', BLUE, C),
+            (top + 0.3 * K, '정육각형의 둘레', GREEN, None), (top + 1.6 * K, '정사각형의 둘레', RED, None)]
+    base = top + 2.9 * K
+    H = base + 1.2 * K
+    for i in range(N + 1):
+        b.append(_ln((x0 + i * K, 0.6 * K), (x0 + i * K, base), '#DCE4E0', 1, '4 4'))
+    for y, lab, col, L in rows:
+        b.append(_t(x0, y - 14, lab, 13, col, 'start', 'bold'))
+        if L:
+            b.append(_ln((x0, y), (x0 + L * K, y), col, 7))
+        else:
+            b.append(_circ((x0, y), 4, col, 'none', 0))
+            b.append(_ln((x0, y + 12), (x0 + N * K, y + 12), '#C9D3DA', 1, '2 4'))
+    b.append(_ln((x0 - 6, base), (x0 + N * K + 6, base), INK, 2))
+    for i in range(2 * N + 1):
+        x = x0 + i * K / 2
+        b.append(_ln((x, base), (x, base + (6 if i % 2 else 11)), INK, 1.5))
+        if i % 2 == 0:
+            b.append(_t(x, base + 24, str(i // 2), 13))
+    b.append(_t(x0 - 22, base + 24, '(cm)', 10, GRAY))
+    return _svg(W, H, ''.join(b))
+
+
+def coaster_svg(d):
+    """앱 ci6ObjG('coaster')를 실제 크기로: 위에서 본 컵 받침"""
+    r = d / 2 * K
+    W = H = d * K + 1.2 * K
+    c = (W / 2, H / 2)
+    b = [_circ(c, r, '#CFE8C9', '#5E9A55', 3), _circ(c, r * .6, 'none', '#8CC084', 2, '4 3')]
+    return _svg(W, H, ''.join(b))
+
+
+def hs_scene(s, lv, rec, st, D):
+    pic(s, rec['svg'], 150)
+    src = open(SRC_ST, encoding='utf-8').read()
+    found = re.findall(r'add\("([^"]+)", true', src[src.index('function ci6Scene'):src.index('function ci6String')])
+    assert len(found) == 5, found
+    s.ask('찾은 원 모양을 모두 써 보세요.', blank=False)
+    s.lines(1)
+    return ask_after(s, lv, rec, ', '.join(found))
+
+
+def hs_string(s, lv, rec, st, D):
+    P = rec['opt'].get('P', 24)
+    s.text('그림은 실제 크기예요. 끈 %s cm로 만든 세 도형 안에 바둑돌을 1 cm 간격으로 넣었어요. 도형마다 바둑돌의 수를 세어 보세요.' % fmt(P))
+    st_ = rec['stones']
+    for nm in st_:
+        assert len(st_[nm]) == rec['counts'][nm], (nm, len(st_[nm]), rec['counts'][nm])
+    pic_real(s, string_svg_p(P, ['정삼각형', '정사각형'], st_))
+    pic_real(s, string_svg_p(P, ['원'], st_))
+    names = ['정삼각형', '정사각형', '원']
+    s.table([names, ['(      )개'] * 3], header=True, col_mm=[60, 60, 60], row_h=3402)
+    best = max(names, key=lambda n: rec['counts'][n])
+    s.choices([('끈의 길이가 같을 때 바둑돌이 가장 많이 들어가는 도형', '( 정삼각형 / 정사각형 / 원 )'),
+               ('둘레가 같을 때 넓이가 가장 넓은 도형', '( 정삼각형 / 정사각형 / 원 )')])
+    return '%s; %s, %s' % (', '.join('%s %d개' % (n, rec['counts'][n]) for n in names), best, best)
+
+
+def hs_wheel(s, lv, rec, st, D):
+    pic(s, rec['svg'], 80)
+    s.text('원의 중심은 점(•)으로, 지름은 선분으로 그리고, 보호 띠를 두를 둘레는 색연필로 한 바퀴 따라 그려요.')
+    return ask_after(s, lv, rec, '중심·지름·둘레 표시')
+
+
+def hs_unroll(s, lv, rec, st, D):
+    r = rec['opt'].get('r', 1)
+    s.text('그림은 실제 크기예요. 파란 선은 반지름이 %s cm인 원을 한 바퀴 굴려 나타낸 원주예요.' % fmt(r))
+    pic_real(s, unroll_svg_r(r))
+    hx, sq = r4(6 * r), r4(8 * r)
+    if lv == '기본형':
+        s.fill(['정육각형의 한 변은 반지름과 같은 (      ) cm  →  둘레 (      )×6 = (      ) cm',
+                '정사각형의 한 변은 지름과 같은 (      ) cm  →  둘레 (      )×4 = (      ) cm'])
+        pre = '정육각형 %s cm, %s×6=%s cm / 정사각형 %s cm, %s×4=%s cm (수직선에 %s cm, %s cm 선)' % (
+            fmt(r), fmt(r), fmt(hx), fmt(2 * r), fmt(2 * r), fmt(sq), fmt(hx), fmt(sq))
+    else:
+        s.fill('정육각형의 둘레: (      ) cm,   정사각형의 둘레: (      ) cm')
+        pre = '%s cm, %s cm (수직선에 %s cm, %s cm 선)' % (fmt(hx), fmt(sq), fmt(hx), fmt(sq))
+    return ask_after(s, lv, rec, pre)
+
+
+def hs_lab(s, lv, rec, st, D):
+    items = rec['opt']['items']
+    c0 = items[0]
+    assert c0['d'] <= 15
+    s.text('%s를 위에서 본 모양을 실제 크기로 그렸어요. 양쪽에 삼각자를 대어 지름을 재고, 둘레에 실을 감았다 펴서 원주를 재어 보세요.' % c0['name'])
+    pic_real(s, coaster_svg(c0['d']))
+    s.fill('%s:  지름 (        ) cm,   원주 약 (        ) cm' % c0['name'])
+    s.text('도윤이가 잰 결과예요.')
+    s.table([['물건', '원주(cm)', '지름(cm)']] + [[it['name'], fmt(float(it['C'])), fmt(float(it['d']))] for it in items],
+            header=True, col_mm=[60, 60, 60], row_h=3118)
+    return ask_after(s, lv, rec, '%s 지름 %s cm, 원주 약 %s cm' % (c0['name'], fmt(float(c0['d'])), fmt(float(c0['C']))))
+
+
+def hs_roll(s, lv, rec, st, D):
+    d, u = rec['opt']['d'], rec['opt'].get('unit', 'cm')
+    pic(s, rec['svg'], 150)
+    s.text('빨간 점이 다시 땅에 닿으면 한 바퀴예요. 그림의 눈금(%s)으로 한 바퀴 굴러간 거리를 어림해 보세요.' % u)
+    s.choices([('바퀴가 한 바퀴 굴러간 거리(원주)에는 지름 %s %s가' % (fmt(d), u), '( 2번 / 3번 / 4번 ) 들어가고 조금 남아요')])
+    assert 3 * d < d * math.pi < 4 * d
+    return ask_after(s, lv, rec, '3번')
+
+
+def hs_diam(s, lv, rec, st, D):
+    C = rec['opt']['C']
+    dd = round(C / PI)
+    assert abs(r4(dd * PI) - C) < 1e-9
+    ds = [dd - 2, dd - 1, dd, dd + 1]
+    pic(s, rec['svg'], 70)
+    s.table([['지름(cm)'] + [str(x) for x in ds], ['원주(cm)'] + ['(        )'] * 4], header=False, header_col=True,
+            col_mm=[36, 36, 36, 36, 36], row_h=3402)
+    pre = '표 ' + ', '.join('%d→%s' % (x, fmt(r4(x * PI))) for x in ds) + ' (지름 %d cm)' % dd
+    return ask_after(s, lv, rec, pre)
+
+
+def hs_inout(s, lv, rec, st, D):
+    pic(s, rec['svg'], 72)
+    return ask_after(s, lv, rec, '정사각형 그리기')
+
+
+def hs_grid(s, lv, rec, st, D):
+    r, unit = rec['opt']['r'], rec['opt']['unit']
+    g = D['calc']['grid'][str(r)]
+    if not st:
+        s.text('원을 4등분한 한 조각이에요. 원 안에 완전히 들어간 칸은 초록, 원이 걸친 칸은 주황으로 칠해 보세요.')
+    s.text('모눈 한 칸은 1 cm예요(실제 크기%s).' % (', 1칸이 1 m×1 m를 나타내요' if unit == 'm' else ''))
+    pic_real(s, grid_svg(r, unit, g['T']))
+    gg = sum(1 for i in range(r) for j in range(r) if (i + 1) ** 2 + (j + 1) ** 2 <= r * r)
+    aa = sum(1 for i in range(r) for j in range(r) if i * i + j * j < r * r)
+    assert (gg, aa) == (g['g'], g['all']), (r, gg, aa, g)
+    return ask_after(s, lv, rec, '초록 %d칸, 주황 %d칸' % (g['g'], g['all'] - g['g']))
+
+
+def hs_cut(s, lv, rec, st, D):
+    if not rec['opt'].get('labels'):
+        s.text('아래 원(실제 크기, 반지름 4 cm)은 16등분되어 있어요. 선을 따라 오려 주황 조각과 파란 조각을 위아래로 번갈아 공책에 이어 붙여 보세요.')
+        pic_real(s, cutcircle_svg(4, 16))
+        s.fill('이어 붙인 모양의 가로는 약 (        ) cm, 세로는 약 (        ) cm예요. (자로 재어 보세요.)')
+        s.text('원을 8등분, 16등분, 32등분, 64등분하여 이어 붙인 모양이에요.')
+        pic(s, cuts_svg(rec['cuts']), 160)
+        half = r4(4 * 2 * PI / 2)
+        return ask_after(s, lv, rec, '가로 약 12.5 cm(원주의 ½ = %s cm), 세로 4 cm' % fmt(half))
+    pic(s, rec['cuts']['32'], 150)
+    return ask_after(s, lv, rec)
+
+
+def hs_move(s, lv, rec, st, D):
+    s.text('종이에서는 옮긴 모양을 그림에 그려 넣어 보세요.')
+    pic(s, rec['svg'], em_mm({'maxW': rec['opt'].get('maxW')}, 130))
+    return ask_after(s, lv, rec)
+
+
+def hs_make(s, lv, rec, st, D):
+    out = []
+    for it in rec['opt']['items']:
+        r = it['d'] / 2
+        s.text('쉼터에 놓을 %s의 지름은 %s cm입니다. 이 물건의 넓이는 몇 cm²인가요? (원주율 3.14)' % (it['name'], fmt(float(it['d']))))
+        s.fill('반지름 (        ) cm   →   넓이 (        )×(        )×3.14 = (            ) cm²')
+        out.append('%s 반지름 %s cm, %s cm²' % (it['name'], fmt(float(r)), fmt(area(r))))
+    s.text('내가 찾은 물건으로 문제를 만들고 풀어 보세요.')
+    s.fill(['내가 찾은 (            )의 지름은 (        ) cm입니다. 이 물건의 넓이는 몇 cm²인가요?',
+            '풀이:                                            답: (            ) cm²'])
+    return '; '.join(out) + '; (자유) (지름÷2)×(지름÷2)×3.14'
+
+
+def hs_land(s, lv, rec, st, D):
+    s.text('모눈종이는 실제 크기예요(한 칸 = 1 cm, 가로 16 cm, 세로 12 cm). 다른 원과 한 점에서 만나는 것은 돼요.')
+    pic_real(s, board_svg(16, 12))
+    rows = [['차례', '파랑 반지름(cm)', '파랑 넓이(cm²)', '빨강 반지름(cm)', '빨강 넓이(cm²)']]
+    rows += [[str(i + 1), '', '', '', ''] for i in range(6)] + [['합계', '', '', '', '']]
+    s.table(rows, header=True, col_mm=[20, 40, 40, 40, 40], row_h=2835)
+    return '(놀이) 넓이 = (눈의 수)×(눈의 수)×3.14'
+
+
+HANDLERS_ST = {'ci6Scene': hs_scene, 'ci6String': hs_string, 'ci6Wheel': hs_wheel, 'ci6Unroll': hs_unroll, 'ci6Lab': hs_lab,
+               'ci6Roll': hs_roll, 'ci6Diam': hs_diam, 'ci6InOut': hs_inout, 'ci6Grid': hs_grid, 'ci6Cut': hs_cut,
+               'ci6Move': hs_move, 'ci6Make': hs_make, 'ci6Land': hs_land}
+WRAP_ST = {'thenWhy', 'ruleFirst', 'wonderRecall'}
+
+
+def frame(help1):
+    """앱 도움 둘째 줄 '‘…~…’ 꼴로 써요.' → 쓰기 틀"""
+    t = help1.split('‘', 1)[1].rsplit('’', 1)[0] if '‘' in help1 else help1
+    return t.replace('~', '__________')
+
+
+def render_write_st(s, lv, items):
+    """앱 writeStep: 기본형은 앱 도움의 문장 틀, 도전형은 빈 줄. 정답은 앱의 모범 답"""
+    ans = []
+    for it in items:
+        s.ask('%s%s' % ('[%s] ' % it['tag'] if it.get('tag') else '', it['q']), blank=False)
+        if lv == '기본형' and len(it.get('help') or []) > 1:
+            s.fill(frame(it['help'][1]))
+        else:
+            s.lines(2)
+        ans.append('예) ' + (it.get('ans') or it['ph']))
+    return ' / '.join(ans)
+
+
+def render_rec_st(s, lv, rec, st, D):
+    t = rec['t']
+    if t == 'quiz':
+        return render_quiz(s, lv, rec['items'])
+    if t == 'ask':
+        if rec['opts'].get('title'):
+            s.text(rec['opts']['title'])
+        return render_items(s, lv, rec['items'])
+    if t == 'blanks':
+        sent, ans, longs = sentence(rec['parts'], lv)
+        s.fill(sent)
+        return ', '.join(ans)
+    if t == 'write':
+        return render_write_st(s, lv, rec['items'])
+    if t == 'panes':
+        for p in rec['items']:
+            s.ask('%s  (%s)' % (p['t'], p['hint']) if p.get('hint') else p['t'], blank=False)
+            if lv == '기본형':
+                s.fill(frame(p['ph']))
+            else:
+                s.lines(1)
+        return '(자유) 예) ' + ' / '.join(p['ex'][0] for p in rec['items'] if p['ex'])
+    if t == 'thenWhy':
+        o = rec['o']
+        s.ask('왜 그럴까요? ' + o['q'], blank=False)
+        if lv == '기본형' and len(o['help']) > 1:
+            s.fill(frame(o['help'][1]))
+        else:
+            s.lines(2)
+        return '왜? 예) ' + o['ans']
+    if t == 'ruleFirst':
+        o = rec['o']
+        s.ask('먼저 예상해요 · ' + o['q'], blank=False)
+        if lv == '기본형' and len(o['help']) > 1:
+            s.fill(frame(o['help'][1]))
+        else:
+            s.lines(1)
+        return '예상(자유) — 실제: ' + o['ans']
+    if t == 'wonderRecall':
+        s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 읽어 보세요.')
+        return ''
+    if t == 'chain':
+        out = []
+        for k, part in enumerate(rec['parts']):
+            if part['title']:
+                s.text('⑴⑵⑶⑷'[k] + ' ' + re.sub(r'^[①②③]\s*', '', part['title']))
+            out.append('⑴⑵⑶⑷'[k] + ' ' + '; '.join(x for x in (render_rec_st(s, lv, r, None, D) for r in part['recs']) if x))
+        return ' '.join(out)
+    return HANDLERS_ST[t](s, lv, rec, st, D)
+
+
+WHY_ST = {
+    '1': ('둥근 쉼터를 만들 때 원의 둘레가 필요한 곳과 원의 넓이가 필요한 곳을 하나씩 써 보세요.',
+          '둘레: 둥근 탁자의 보호 띠, 분수 화단의 울타리 / 넓이: 원형 잔디밭의 잔디 씨앗, 탁자의 식탁보'),
+    '2': ('반지름이 1.5 cm인 원의 원주가 9 cm보다 길고 12 cm보다 짧은 까닭을 정육각형과 정사각형을 이용하여 써 보세요.',
+          '원 안의 정육각형의 둘레는 9 cm(지름의 3배), 원 밖의 정사각형의 둘레는 12 cm(지름의 4배)인데 원주는 그 사이에 있기 때문이에요.'),
+    '3': ('원주율을 3.14처럼 어림하여 사용하는 까닭을 써 보세요.', '원주율은 3.1415926…처럼 끝없이 계속되는 소수이기 때문이에요.'),
+    '4': ('지름을 알 때 원주를, 원주를 알 때 지름을 구하는 방법을 써 보세요.', '(원주)=(지름)×(원주율), (지름)=(원주)÷(원주율)'),
+    '5': ('모눈으로 잔디밭의 넓이를 어림할 때 어림한 값이 조금씩 다를 수 있는 까닭을 써 보세요.', '원이 걸친 칸을 세느냐 세지 않느냐에 따라 달라지기 때문이에요.'),
+    '6': ('(원의 넓이)=(반지름)×(반지름)×(원주율)인 까닭을 원을 잘라 이어 붙인 직사각형으로 설명해 보세요.',
+          '직사각형의 가로는 (원주)×½=(반지름)×(원주율), 세로는 반지름이므로 넓이는 (반지름)×(반지름)×(원주율)이에요.'),
+    '7': ('꽃 화단에서 꽃을 심을 곳의 넓이를 구한 방법을 써 보세요.', '큰 원(반지름 6 m)의 넓이 113.04 m²에서 분수(반지름 2 m)의 넓이 12.56 m²를 빼서 100.48 m²예요.'),
+    '8': ('메뉴 1과 메뉴 2의 넓이를 비교할 때 3.14를 곱하지 않고 비교해도 되는 까닭을 써 보세요.',
+          '두 넓이 모두 3.14를 곱하므로 18×18=324와 12×12×2=288만 비교해도 크기 비교의 결과가 같아요.'),
+    '9': ('지름이 2배가 되면 원의 넓이는 몇 배가 되는지 까닭과 함께 써 보세요.', '반지름도 2배가 되므로 넓이는 2×2=4(배)가 돼요.'),
+    '10': ('땅을 더 넓게 차지하려면 원을 어디에 그리면 좋을지 까닭과 함께 써 보세요.', '(예) 큰 원이 들어갈 넓은 자리를 남겨 두고 작은 원은 구석이나 틈새에 그려요.'),
+    '11': ('둘레가 188.4 cm인 탁자에 꼭 맞는 탁자보의 넓이를 구한 과정을 차례대로 써 보세요.', '지름 188.4÷3.14=60 (cm) → 반지름 30 cm → 30×30×3.14=2826 (cm²)'),
+}
+
+
+def lesson_st(s, lv, L, D):
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    if L['no'] == 1:
+        s.scene(None, D['story']['lines'][0])
+    out = []
+
+    def one(i, label, st):
+        nm, _, sub = label.partition(' — ')
+        s.step('%s %s' % (NUM[i], nm), sub or None)
+        recs = st['recs']
+        main = next(r for r in recs if r['t'] not in WRAP_ST)
+        s.text(paper_st(st['inst']))
+        for svg in st.get('figs') or []:
+            pic(s, svg, 140)
+        if lv == '기본형' and st['hints'] and has_num(recs) and main['t'] not in INTERACTIVE:
+            s.text('도움: ' + st['hints'][0])
+        parts = [render_rec_st(s, lv, r, st, D) for r in recs]
+        out.append(NUM[i] + ' ' + '; '.join(x for x in parts if x))
+    for i, st in enumerate(L['steps']):
+        one(i, st['name'], st)
+    n = len(L['steps'])
+    if lv == '도전형':
+        if L['challenge']:
+            one(n, '도전하기', L['challenge'])
+            n += 1
+        q, a = WHY_ST[str(L['no'])]
+        s.step('%s 까닭 쓰기' % NUM[n])
+        s.ask(q, blank=False)
+        s.lines(2)
+        out.append(NUM[n] + ' ' + a)
+    return '%s차시  ' % L['no'] + '   '.join(out)
+
+
+ST = [lesson_st]          # 이야기 버전 차시 함수(앱 LESSONS의 차시마다 lesson_st를 부름)
+
+
+def build_st(D, lv):
+    assert len(D['lessons']) == 11, len(D['lessons'])
+    s = Sheet(unit_label='6-2 수학 5. 원의 둘레와 넓이(이야기 버전)', level=lv, grade_label='6학년')
+    lines = [lesson_st(s, lv, L, D) for L in D['lessons']]
+    s.answers('【교사용】 5. 원의 둘레와 넓이(이야기 버전) 활동지 정답 (%s)' % lv, lines,
+              note='※ 이 활동지는 앱 u5-circle.html과 차시 번호가 같습니다. 원주율은 3.14로 계산합니다. '
+                   '실제 크기 그림(끈 28 cm 도형·수직선·컵 받침·모눈·16등분한 원·놀이판)은 100%로 인쇄하세요.')
+    os.makedirs(OUT_ST, exist_ok=True)
+    path = os.path.join(OUT_ST, NAME % lv)
+    s.save(path)
+    return path
+
+
+
 def main():
     want = [a for a in sys.argv[1:] if a in ('tb', 'st')] or ['tb', 'st']
     out = []

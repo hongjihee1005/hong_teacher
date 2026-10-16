@@ -918,11 +918,11 @@ const sp6LayTxt = G => sp6Lay(G).filter(Boolean).map((n, i) => `${i + 1}층 ${n}
 const sp6Fr = (el, cap) => h("figure", {}, el, h("figcaption", {}, cap));
 const sp6Hs = (a, sep) => a.join(sep || "층, ") + "층";
 /* 이야기 장면(지도 좌표: 오른쪽이 동쪽, 아래쪽이 남쪽) */
-const SP6S_GATE = [{ kind: "gate", name: "교문", label: "교문", x: 0, y: -1.2, f: [0, 1] }, { kind: "stone", name: "교명석", label: "하늘초", x: -1.6, y: 1.0, f: [0, 1] }, { kind: "tree", name: "은행나무", x: 1.6, y: -0.1, f: [0, 1] }];
+const SP6S_GATE = [{ kind: "gate", name: "교문", label: "교문", x: 0, y: -1.2, f: [0, 1] }, { kind: "stone", name: "교명석", label: "하늘초", x: -1.6, y: 1.0, f: [0, 1], size: .6 }, { kind: "tree", name: "은행나무", x: 1.6, y: -0.1, f: [0, 1] }];
 const SP6S_GATE_DIR = [{ t: "가", ang: 180 }, { t: "나", ang: 90 }, { t: "다", ang: 0 }];
 const SP6S_STAT = [{ kind: "statue", name: "책 읽는 아이 동상", x: 0, y: 0, f: [0, 1], size: 1.3 }];
 const SP6S_PEOPLE = [{ t: "하준", ang: 90 }, { t: "예린", ang: 0 }, { t: "도윤", ang: 270 }, { t: "서윤", ang: 180 }];
-const SP6S_PARK = [{ kind: "clock", name: "시계탑", x: -1.4, y: -1.0, f: [0, 1], size: .62 }, { kind: "bench", name: "의자", x: 1.4, y: -0.6, f: [0, 1] }, { kind: "flag", name: "깃발", x: 0.2, y: 1.4, f: [0, 1], size: .62 }];
+const SP6S_PARK = [{ kind: "clock", name: "시계탑", x: -1.4, y: -1.0, f: [0, 1], size: .5 }, { kind: "bench", name: "의자", x: 1.4, y: -0.6, f: [0, 1] }, { kind: "flag", name: "깃발", x: 0.2, y: 1.4, f: [0, 1], size: .5 }];
 const SP6S_PARK_DIR = [{ t: "가", ang: 0 }, { t: "나", ang: 90 }, { t: "다", ang: 180 }, { t: "라", ang: 270 }];
 const SP6S_KIT = [{ kind: "kettle", name: "주전자", x: 1.0, y: 0.8, f: [-1, 0], size: 1.2 }, { kind: "pot", name: "냄비", x: -1.1, y: -0.5, f: [0, 1], size: 1.2 }];
 const SP6S_BLD = [{ kind: "bldg", name: "본관", x: 0, y: 0, f: [0, 1], size: 1.2 }];
