@@ -1688,6 +1688,7 @@ function ra4Chain(body, api, lines, opt = {}) {
     const why = t.why && (t.why[key] || t.why[String(bad.r.v)]);
     api.fail(why || opt.bad || "빨간 칸을 다시 생각해 봐요.", ra4Plain(got.join(" / ")));
   } }, opt.btn || "확인하기");
+  wrap.ra4ctl = ctl; wrap.ra4btn = btn;
   body.append(wrap, h("div", { class: "actions" }, btn));
   return wrap;
 }
@@ -2156,7 +2157,7 @@ function ra4Same(body, api, opt) {
   let k = 0; const P = opt.pairs;
   const row = h("div", { class: "ra4cards", style: "grid-template-columns:repeat(2,minmax(0,1fr));max-width:24em" });
   const cnt = h("div", { class: "ra4read" }, "​"), log = h("div", { class: "ra4note" });
-  const show = () => { row.innerHTML = ""; P[k].forEach(t => row.append(h("div", { class: "ra4card ra4up" }, t))); cnt.textContent = `${k + 1} / ${P.length}번째 카드 두 장`; };
+  const show = () => { row.innerHTML = ""; P[k].forEach(t => row.append(h("div", { class: "ra4card ra4up", "data-t": t }, t))); cnt.textContent = `${k + 1} / ${P.length}번째 카드 두 장`; };
   const judge = same => {
     api.tryOnce(); const [a, b] = P[k], real = ra4EqQ(ra4V(a), ra4V(b));
     if (same !== real) return api.fail(`${ra4Why(a, b)} ${real ? "비율이 같아요." : "비율이 달라요."}`, `${a} / ${b}: ${same ? "같아요" : "달라요"}`);
@@ -2183,7 +2184,7 @@ function ra4Memory(body, api, opt) {
     cards.forEach((b, pos) => {
       const o = owner[pos], open = up.includes(pos);
       b.className = "ra4card" + (o === "me" ? " ra4me" : o === "com" ? " ra4com" : open ? " ra4up" : " ra4back");
-      b.textContent = o || open ? RA4_CARDS[deck[pos]] : "?";
+      b.textContent = o || open ? RA4_CARDS[deck[pos]] : "?"; b.dataset.t = o || open ? RA4_CARDS[deck[pos]] : "";
       b.disabled = !!o;
     });
     score.innerHTML = ""; score.append(h("span", {}, `나 ${me}장`), h("span", {}, `컴퓨터 ${com}장`), h("span", {}, `남은 카드 ${owner.filter(o => !o).length}장`), h("span", {}, turn === "me" ? "▶ 내 차례" : "▶ 컴퓨터 차례"));
@@ -2262,7 +2263,7 @@ function ra4High(body, api, opt) {
   const draw = () => {
     area.innerHTML = "";
     ruleEl.textContent = `${r + 1}판 / ${R}판 · 규칙: 비율이 가장 ${rule(r) === "high" ? "높은" : "낮은"} 사람이 카드를 모두 가져가요.`;
-    names.forEach((nm, i) => area.append(h("div", { class: "ra4pl", onclick: () => pick(i) }, nm, h("div", { class: "ra4card " + (flipped ? "ra4up" : "ra4back") }, flipped ? deck[r * 4 + i] : "?"))));
+    names.forEach((nm, i) => area.append(h("div", { class: "ra4pl", onclick: () => pick(i) }, nm, h("div", { class: "ra4card " + (flipped ? "ra4up" : "ra4back"), "data-t": flipped ? deck[r * 4 + i] : "" }, flipped ? deck[r * 4 + i] : "?"))));
     score.innerHTML = ""; names.forEach((nm, i) => score.append(h("span", {}, `${nm} ${got[i]}장`)));
     flipBtn.disabled = flipped || r >= R;
   };

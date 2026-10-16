@@ -1550,7 +1550,7 @@ function vo6Ask(host, api, items, opts = {}) {
         } }, o)));
         sent.append(slot); all.push(st);
       } else {
-        const inp = h("input", { type: "text", inputmode: "decimal", "aria-label": "답", style: `width:${pt.w || (String(pt.n).length > 5 ? "7em" : "3.8em")};max-width:100%;font-size:1.1em;text-align:center` });
+        const inp = h("input", { type: "text", inputmode: "decimal", "aria-label": "답", style: `width:${pt.w || (String(pt.n).length > 5 ? "7em" : String(pt.n).length > 3 ? "5.4em" : "3.8em")};max-width:100%;font-size:1.1em;text-align:center` });
         sent.append(inp); all.push({ pt, inp });
       }
     });
@@ -1869,7 +1869,7 @@ function vo6Make(body, api, opt) {
     api.tryOnce();
     const d = ins.map(i => vo6Num(i.value));
     if (!obj) return api.fail("먼저 물건을 하나 골라 보세요.", "-");
-    if (d.some(v => isNaN(v) || v <= 0 || v > 300 || Math.round(v * 10) !== v * 10)) return api.fail("가로·세로·높이를 0보다 크고 300보다 작거나 같은 수로, 소수는 한 자리까지 써 보세요.", ins.map(i => i.value).join(","));
+    if (d.some(v => isNaN(v) || v <= 0 || v > 300 || Math.abs(Math.round(v * 10) - v * 10) > 1e-9)) return api.fail("가로·세로·높이를 0보다 크고 300보다 작거나 같은 수로, 소수는 한 자리까지 써 보세요.", ins.map(i => i.value).join(","));
     make.disabled = true; ins.forEach(i => { i.disabled = true; });
     const qs = `가로가 ${d[0]} cm, 세로가 ${d[1]} cm, 높이가 ${d[2]} cm인 직육면체 모양의 ${vo6Jo(obj, "이/가")} 있습니다. 이 ${obj}의 ${vo6Jo(word, "은/는")} 몇 ${U}인가요?`;
     const right = vo6Fix(vol ? vo6Vol(d) : vo6Surf(d)), inp = h("input", { type: "text", inputmode: "decimal", style: "width:7em;font-size:1.1em;text-align:center", "aria-label": "내 문제의 답" });
@@ -1900,7 +1900,7 @@ function vo6Hunt(body, api, opt) {
   const notes = [], used = new Set();
   const spots = VO6_SPOTS.slice().sort(() => Math.random() - .5).slice(0, 9);
   spots.forEach((p, i) => { let d; do { d = [vo6Rnd(20), vo6Rnd(20), vo6Rnd(20)]; } while (used.has(d.join())); used.add(d.join()); notes.push({ p, d, name: VO6_NAMES[(i + 1) % VO6_NAMES.length], got: false }); });
-  let left = opt.time || 180, timer = null, picked = [];
+  let left = opt.time || 180, timer = null, picked = [], over = false;
   const clock = h("div", { class: "vo6cnt" }), list = h("div", { class: "vo6notes" }), area = h("div");
   const svg = vo6Fig(800, 440, s => {
     s.append(svgEl("rect", { x: 0, y: 0, width: 800, height: 330, fill: "#F6EEDF" }), svgEl("rect", { x: 0, y: 330, width: 800, height: 110, fill: "#E2CDA8" }));
@@ -1921,7 +1921,7 @@ function vo6Hunt(body, api, opt) {
     g.addEventListener("click", () => take(nt, g)); svg.append(g); return g;
   });
   function take(nt, g) {
-    if (body.vo6Fin || nt.got || left <= 0) return;
+    if (body.vo6Fin || over || nt.got || left <= 0) return;
     if (picked.length >= 3) return api.hint("붙임쪽지는 한 사람이 3장까지만 찾을 수 있어요. ‘다 찾았어요’를 눌러요.");
     nt.got = true; picked.push(nt); g.style.display = "none";
     const inp = h("input", { type: "text", inputmode: "numeric", "aria-label": nt.name + " 쪽지의 부피" }); nt.inp = inp;
@@ -1929,7 +1929,7 @@ function vo6Hunt(body, api, opt) {
     api.hint(`찾은 쪽지 ${picked.length}장 / 3장`);
     if (picked.length === 3) stop();
   }
-  function stop() { if (timer) { clearInterval(timer); timer = null; } doneB.disabled = true; clock.textContent = "찾기 끝! 자리에 돌아와 쪽지에 적힌 직육면체의 부피를 구해 빈 곳에 써요."; checkWrap.style.display = ""; }
+  function stop() { over = true; if (timer) { clearInterval(timer); timer = null; } doneB.disabled = true; clock.textContent = "찾기 끝! 자리에 돌아와 쪽지에 적힌 직육면체의 부피를 구해 빈 곳에 써요."; checkWrap.style.display = ""; }
   const start = h("button", { type: "button", class: "big", onclick: () => {
     start.disabled = true; area.style.display = ""; clock.textContent = `남은 시간 ${left}초`;
     timer = setInterval(() => { if (!document.body.contains(clock)) { clearInterval(timer); timer = null; return; } left--; clock.textContent = `남은 시간 ${left}초`; if (left <= 0) { if (picked.length) stop(); else { clearInterval(timer); timer = null; left = opt.time || 180; start.disabled = false; clock.textContent = "시간이 다 되었어요. 한 장도 찾지 못했으니 다시 시작해 봐요."; } } }, 1000);
@@ -2014,7 +2014,7 @@ function vo6Cards(body, api, opt) {
     let n = 0; const step = () => { const i = pick[n++]; cards[i].up = true; sel.push(i); show(); if (n < 3) setTimeout(step, 450); else settle(1); }; step();
   }
   function finish() {
-    info.textContent = "종이가 모두 없어졌어요! 기록표에 부피를 구해 써요.";
+    info.textContent = "종이가 모두 없어졌어요! 기록표에 부피를 구해 써요." + (mine.length ? "" : " 내가 가져온 종이가 없으니 합계에 0을 써요.");
     const ins = mine.map(() => h("input", { type: "text", inputmode: "numeric", "aria-label": "부피" })), sumIn = h("input", { type: "text", inputmode: "numeric", "aria-label": "부피의 합" });
     tables.append(h("table", { class: "vo6tbl" }, h("tr", {}, h("th", {}, "가로(cm)"), h("th", {}, "세로(cm)"), h("th", {}, "높이(cm)"), h("th", {}, "부피(cm³)")),
       ...mine.map((d, i) => h("tr", {}, h("td", {}, String(d[0])), h("td", {}, String(d[1])), h("td", {}, String(d[2])), h("td", {}, ins[i]))),
@@ -2027,7 +2027,7 @@ function vo6Cards(body, api, opt) {
       const ms = mine.reduce((t, d) => t + vo6Vol(d), 0);
       if (vo6Num(sumIn.value) !== ms) { sumIn.style.borderColor = "var(--no)"; return api.fail("부피를 모두 더해 합계를 다시 구해 봐요.", ans); }
       sumIn.style.borderColor = "var(--ok)";
-      api.done(ans, `내 부피의 합은 ${ms} cm³, 컴퓨터 친구의 부피의 합은 ${hs} cm³예요. ` + (ms > hs ? "내가 이겼어요!" : ms < hs ? "컴퓨터 친구가 이겼어요. 한 판 더 해 볼까요?" : "비겼어요!"));
+      api.done(ans, `내 부피의 합은 ${ms} cm³, 컴퓨터 친구의 부피의 합은 ${hs} cm³예요. ` + (ms > hs ? "내가 이겼어요!" : ms < hs ? "컴퓨터 친구가 이겼어요. 그래도 부피를 모두 바르게 구했어요!" : "비겼어요!"));
     } }, "기록표 확인하기")));
     vo6Go(tables);
   }

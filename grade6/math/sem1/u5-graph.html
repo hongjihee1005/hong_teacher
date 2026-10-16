@@ -1406,8 +1406,9 @@ function numbers(body, api, items, opts = {}) {
   const s = document.createElement("style");
   s.textContent = `
 .gr5fig{width:100%;height:auto;display:block;margin:.3em 0;background:#FBFCFB;border:2px solid var(--line);border-radius:12px;touch-action:none}
-.gr5figs{display:flex;flex-wrap:wrap;gap:.6em}.gr5figs>div{flex:1 1 300px;min-width:0}
-.gr5figs.gr5three>div{flex:1 1 220px}
+.gr5figs{display:flex;flex-wrap:wrap;gap:.6em;align-items:flex-end}.gr5figs>div{flex:1 1 420px;min-width:0}
+.gr5figs.gr5three>div{flex:1 1 300px}
+.gr5figs>div.gr5wide{flex-basis:100%}
 .gr5lead{font-family:Jua,sans-serif;color:var(--night);margin:.2em 0 0}
 .gr5small{font-size:var(--fs-s);color:var(--muted)}
 .gr5part{margin-top:.8em;padding-top:.5em;border-top:2px dashed var(--line)}
@@ -1570,7 +1571,7 @@ function gr5Wrap(svg, parts, maxW, o) {
 
 /* ========== 띠그래프 ========== */
 function gr5BandGeo(o) {
-  const mini = !!(o && o.mini), W = mini ? 360 : 720, x0 = mini ? 12 : 30, tH = o && o.noTitle ? 0 : 30;
+  const mini = !!(o && o.mini), W = mini ? 360 : 720, x0 = mini ? 12 : 30, tH = o && o.noTitle ? 14 : 30;
   return { mini, W, x0, L: W - 2 * x0, tH, bandY: mini ? tH + 8 : tH + 36, BH: mini ? 112 : 58 };
 }
 function gr5BandLay(g, G, show) {
@@ -1633,7 +1634,27 @@ function gr5Arc(cx, cy, r, a, b) {
 function gr5PieGeo(o) {
   const tH = o && o.noTitle ? 0 : 30;
   if (o && o.mini) { const r = 136, cy = tH + 8 + r; return { mini: true, W: 360, cx: 180, cy, r, H: cy + r + 10, tH }; }
-  const r = 140, cy = tH + 50 + r; return { mini: false, W: 640, cx: 320, cy, r, H: cy + r + 50, tH };
+  const r = 140, cy = tH + 50 + r, W = 560; return { mini: false, W, cx: W / 2, cy, r, H: cy + r + 50, tH };
+}
+/* 부채꼴 안에 글 상자가 들어가는지 점으로 확인해요 */
+function gr5InSec(G, x, y, a, b) {
+  const d = Math.hypot(x - G.cx, y - G.cy); if (d > G.r * .96) return false; if (d < 4) return b - a >= 50;
+  const t = ((Math.atan2(x - G.cx, -(y - G.cy)) / (2 * Math.PI) * 100) + 100) % 100, m = .4;
+  return t >= a + m && t <= b - m;
+}
+function gr5PieFit(it, a, G) {
+  const b = a + it.p, mid = a + it.p / 2, pct = gr5P(it.p), sp = gr5Split(it.n);
+  const cands = [[it.n, pct]]; if (sp) cands.push([sp[0], sp[1], pct]);
+  const maxF = G.mini ? 21 : 16, minF = G.mini ? 10 : 11;
+  for (let f = maxF; f >= minF; f -= .5) for (const lines of cands) {
+    const bw = Math.max(...lines.map(l => gr5TW(l, f))) + 4, bh = lines.length * f * 1.16;
+    for (const fr of it.p >= 50 ? [.35, .25, .45, .55] : [.6, .5, .68, .42, .74]) {
+      const [x, y] = gr5Pt(G.cx, G.cy, G.r * fr, mid);
+      const pts = [[-1, -1], [1, -1], [-1, 1], [1, 1], [0, -1], [0, 1], [-1, 0], [1, 0]].map(([dx, dy]) => [x + dx * bw / 2, y + dy * bh / 2]);
+      if (pts.every(([px, py]) => gr5InSec(G, px, py, a, b))) return { x, y, r: { lines, f } };
+    }
+  }
+  return null;
 }
 function gr5PieTicks(svg, G, step) {
   const g = svgEl("g", { "pointer-events": "none" }); svg.append(g);
@@ -1648,20 +1669,22 @@ function gr5PieLay(g, G, show) {
   const cum = gr5Cum(g), ins = [], outs = [];
   g.items.forEach((it, i) => {
     if (show && !show[i]) return;
-    const a = cum[i] - it.p, mid = a + it.p / 2, span = it.p / 100 * 2 * Math.PI, pct = gr5P(it.p);
-    const rr = it.p >= 45 ? G.r * .45 : G.r * .62, w = it.p >= 45 ? G.r * .95 : 2 * rr * Math.sin(Math.min(span, Math.PI) / 2) * .92;
-    let r = gr5Inside(it.n, pct, w, G.r * .5, G.mini ? 21 : 15, G.mini ? 10 : 11);
-    if (!r && G.mini) r = { lines: gr5Split(it.n) ? [...gr5Split(it.n), pct] : [it.n, pct], f: 10 };
-    const [x, y] = gr5Pt(G.cx, G.cy, rr, mid);
-    if (r) ins.push({ i, x, y, r }); else outs.push({ i, mid, t: `${it.n}(${pct})` });
+    const a = cum[i] - it.p, mid = a + it.p / 2, pct = gr5P(it.p);
+    let fit = G.mini || it.p >= 9 ? gr5PieFit(it, a, G) : null;
+    if (!fit && G.mini) { const [x, y] = gr5Pt(G.cx, G.cy, G.r * .62, mid); fit = { x, y, r: { lines: gr5Split(it.n) ? [...gr5Split(it.n), pct] : [it.n, pct], f: 10 } }; }
+    if (fit) ins.push(Object.assign({ i }, fit)); else outs.push({ i, mid, t: `${it.n}(${pct})`, n: it.n, pct });
   });
-  /* 바깥 글: 왼쪽·오른쪽으로 나누어 겹치지 않게 아래로 밀어요 */
+  /* 바깥 글: 왼쪽·오른쪽으로 나누어 겹치지 않게 밀어요(자리가 모자라면 두 줄) */
   const R = G.r + 40, f2 = 13;
-  outs.forEach(o => { const [x, y] = gr5Pt(G.cx, G.cy, R, o.mid); o.x = x; o.y = y; o.side = Math.sin(o.mid / 100 * 2 * Math.PI) >= 0 ? 1 : -1; });
+  outs.forEach(o => {
+    const [x, y] = gr5Pt(G.cx, G.cy, R, o.mid); o.x = x; o.y = y; o.side = Math.sin(o.mid / 100 * 2 * Math.PI) >= 0 ? 1 : -1;
+    const room = o.side > 0 ? G.W - 4 - x : x - 4;
+    o.lines = gr5TW(o.t, f2) <= room ? [o.t] : [o.n, `(${o.pct})`]; o.hh = o.lines.length * (f2 + 3);
+  });
   [1, -1].forEach(sd => {
-    const l = outs.filter(o => o.side === sd).sort((a, b) => a.y - b.y);
-    for (let k = 1; k < l.length; k++) if (l[k].y - l[k - 1].y < f2 + 5) l[k].y = l[k - 1].y + f2 + 5;
-    const maxY = G.H - 10; for (let k = l.length - 1; k >= 0; k--) { if (l[k].y > maxY) l[k].y = maxY; if (k && l[k].y - l[k - 1].y < f2 + 5) l[k - 1].y = l[k].y - f2 - 5; }
+    const l = outs.filter(o => o.side === sd).sort((p, q) => p.y - q.y);
+    for (let k = 1; k < l.length; k++) { const need = (l[k - 1].hh + l[k].hh) / 2 + 3; if (l[k].y - l[k - 1].y < need) l[k].y = l[k - 1].y + need; }
+    const maxY = G.H - 6; for (let k = l.length - 1; k >= 0; k--) { if (l[k].y + l[k].hh / 2 > maxY) l[k].y = maxY - l[k].hh / 2; if (k) { const need = (l[k - 1].hh + l[k].hh) / 2 + 3; if (l[k].y - l[k - 1].y < need) l[k - 1].y = l[k].y - need; } }
   });
   return { ins, outs, f2 };
 }
@@ -1672,9 +1695,9 @@ function gr5PieLabDraw(svg, G, lay) {
     const [x1, y1] = gr5Pt(G.cx, G.cy, G.r * .92, o.mid), [x2, y2] = gr5Pt(G.cx, G.cy, G.r + 14, o.mid);
     const ex = o.x - o.side * 4;
     g.append(svgEl("path", { d: `M${x1.toFixed(1)} ${y1.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}L${ex.toFixed(1)} ${o.y.toFixed(1)}`, fill: "none", stroke: GR5.gray, "stroke-width": 1.3 }));
-    let x = o.x; const w = gr5TW(o.t, lay.f2);
+    const w = Math.max(...o.lines.map(l => gr5TW(l, lay.f2))); let x = o.x;
     if (o.side > 0) x = Math.min(x, G.W - 4 - w); else x = Math.max(x, 4 + w);
-    g.append(txt(x, o.y, o.t, lay.f2, { fill: GR5.ink, "text-anchor": o.side > 0 ? "start" : "end" }));
+    o.lines.forEach((l, k) => g.append(txt(x, o.y + (k - (o.lines.length - 1) / 2) * (lay.f2 + 3), l, lay.f2, { fill: GR5.ink, "text-anchor": o.side > 0 ? "start" : "end" })));
   });
 }
 function gr5Pie(g, o = {}) {
@@ -1773,7 +1796,7 @@ function gr5Graph(g, o = {}) {
 /* 그림만 보여 주기(묻는 그림) */
 function gr5Show(list, o = {}) {
   const arr = Array.isArray(list) ? list : [list];
-  const els = arr.map(x => { const g = x.g || x; const el = gr5Graph(g, o).el; return x.lead ? h("div", {}, h("div", { class: "gr5lead" }, x.lead), el) : h("div", {}, el); });
+  const els = arr.map(x => { const g = x.g || x; const el = gr5Graph(g, o).el, c = g.kind === "pie" ? "" : "gr5wide"; return x.lead ? h("div", { class: c }, h("div", { class: "gr5lead" }, x.lead), el) : h("div", { class: c }, el); });
   return els.length > 1 ? h("div", { class: "gr5figs" + (els.length > 2 ? " gr5three" : "") }, els) : els[0];
 }
 /* 가로 표 */
@@ -1900,7 +1923,7 @@ function gr5Pick(body, api, opt) {
   };
   const nameOf = k => { const [gi, i] = k.split("-").map(Number); const g = opt.figs[gi]; if (opt.whole) return opt.leads ? opt.leads[gi] : g.title; return g.items ? g.items[i].n : (g.names || g.xs)[i]; };
   opt.figs.forEach((g, gi) => W.push(gr5Graph(g, { onPart: i => tap(gi, i), mini: opt.mini })));
-  const els = W.map((w, gi) => h("div", {}, opt.leads ? h("div", { class: "gr5lead" }, opt.leads[gi]) : "", w.el));
+  const els = W.map((w, gi) => h("div", { class: opt.figs[gi].kind === "pie" ? "" : "gr5wide" }, opt.leads ? h("div", { class: "gr5lead" }, opt.leads[gi]) : "", w.el));
   const figEl = els.length > 1 ? h("div", { class: "gr5figs" + (els.length > 2 ? " gr5three" : "") }, els) : els[0];
   const show = () => { const q = opt.qs[qi], multi = q.multi || keysOf(q).length > 1; qbox.textContent = `${opt.qs.length > 1 ? `(${qi + 1}/${opt.qs.length}) ` : ""}${q.q}${multi ? " (여러 개를 눌러요)" : ""}`; read.textContent = ""; };
   api.provide({ words: opt.words || [], answers: opt.qs.map(q => keysOf(q).map(nameOf).join(", ")) });
@@ -1933,7 +1956,7 @@ function gr5Draw(body, api, opt) {
   const wantLab = opt.label !== false, lab = g.items.map((_, i) => i < given || !wantLab);
   let k = given, phase = "line", cur = given ? cum[given - 1] : 0, selCard = null;
   let G;
-  if (band) { G = gr5BandGeo({ noTitle: true }); G.H = gr5BandH(G, gr5BandLay(g, G)) + 6; }
+  if (band) { G = gr5BandGeo({ noTitle: true }); G.H = Math.max(gr5BandH(G, gr5BandLay(g, G)) + 6, G.bandY + G.BH + 30); }
   else G = gr5PieGeo({ noTitle: true });
   const svg = makeSvg(G.W, G.H); svg.setAttribute("class", "gr5fig"); svg.style.maxWidth = band ? "42em" : "30em";
   const base = svgEl("g"), dyn = svgEl("g"), top = svgEl("g", { "pointer-events": "none" }); svg.append(base, dyn, top);
@@ -2035,7 +2058,7 @@ function gr5Draw(body, api, opt) {
 function gr5Maker(body, api, opt) {
   const unit = opt.unit || "명";
   const mk = (n, c) => ({ n: h("input", { type: "text", class: "gr5nm", value: n || "", "aria-label": "항목" }), c: h("input", { type: "text", inputmode: "numeric", value: c == null ? "" : String(c), "aria-label": "수" }) });
-  const rows = [mk(), mk(), mk()];
+  const rows = (opt.target || [0, 0, 0]).map(() => mk());
   let sumOn = false, pctOn = false, kind = "band", sort = false; const seen = new Set();
   const ttl = h("input", { type: "text", placeholder: "표의 제목을 써요", style: "width:20em" }), gttl = h("input", { type: "text", placeholder: "그래프의 제목", style: "width:20em" });
   const tblHost = h("div"), stage = h("div"), note = h("p", { class: "gr5small" });
@@ -2170,7 +2193,7 @@ function gr5Scaled(body, api, opt) {
   const read = h("div", { class: "gr5read" });
   const col = i => /^기타/.test(opt.names[i]) ? GR5_ETC : GR5_COLS[i % GR5_COLS.length];
   const draw = () => {
-    g.innerHTML = "";
+    g.innerHTML = ""; const tiny = [];
     g.append(txt(W / 2, 14, mode === "pct" ? `${opt.title} (비율로 보기: 띠의 길이가 모두 같아요)` : `${opt.title} (실제 양으로 보기: 띠의 길이가 전체의 양에 비례해요)`, 15, { fill: GR5.gray }));
     opt.rows.forEach((r, ri) => {
       const y = top + ri * rowH + 10, len = mode === "pct" ? L : L * opt.totals[ri] / maxT;
@@ -2181,10 +2204,13 @@ function gr5Scaled(body, api, opt) {
         const rc = svgEl("rect", { x, y, width: w, height: BH, fill: col(i), stroke: got.has(`${ri}-${i}`) ? GR5.orange : GR5.line, "stroke-width": got.has(`${ri}-${i}`) ? 3 : 1.2, style: "cursor:pointer" });
         rc.addEventListener("click", () => tap(ri, i)); g.append(rc);
         const t = `${p}`; if (gr5TW(t, 13) < w - 4) g.append(txt(x + w / 2, y + BH / 2, t, 13, { "pointer-events": "none" }));
+        if (w < 22) tiny.push([x + w / 2, y, ri, i]);
         a += p;
       });
       if (mode === "abs") g.append(txt(x0 + len + 6, y + BH + 13, `${opt.totals[ri].toLocaleString()}${opt.unit}`, 12, { fill: GR5.gray, "text-anchor": "end" }));
     });
+    /* 아주 좁은 부분도 누르기 쉽게 */
+    tiny.forEach(([cx, y, ri, i]) => { const hit = svgEl("rect", { x: cx - 11, y: y - 4, width: 22, height: BH + 8, fill: "transparent", style: "cursor:pointer" }); hit.addEventListener("click", () => tap(ri, i)); g.append(hit); });
   };
   const tap = (ri, i) => {
     got.add(`${ri}-${i}`);
