@@ -673,8 +673,8 @@ def h_draw(s, lv, rec, st, D):
     assert abs(cum[-1] - 100) < 1e-9
     data = ', '.join('%s %s %%' % (it['n'], fmt(it['p'])) for it in items)
     draw_scaffold(s, lv, items, given, band)
-    s.page_break()
     if not band:
+        s.page_break()
         s.text('나타낼 자료: ' + data)
     if band:
         s.text('띠그래프 그리기 판(실제 크기, 띠의 길이 10 cm)이에요. 가장 작은 눈금 한 칸은 1 %(1 mm)예요.')
@@ -780,7 +780,6 @@ def h_dice(s, lv, rec, st, D):
     s.table([['두 눈의 수의 차', '0', '1', '2', '3', '4', '5', '합계'], ['횟수(번)'] + ['(   )'] * 6 + [str(n)], ['백분율(%)'] + ['(   )'] * 6 + ['100']],
             header=True, header_col=True, col_mm=[40] + [20] * 7, row_h=3402)
     s.text('%d번 던졌으니 한 번은 전체의 %s %%예요.' % (n, fmt(100 / n)))
-    s.page_break()
     s.text('띠그래프 그리기 판(실제 크기, 띠의 길이 10 cm, 가장 작은 눈금 한 칸 1 %)이에요. 나온 차의 백분율만큼 띠를 나누어 내용과 백분율을 써요.')
     pic_real(s, band_real([{'n': '', 'p': 100}], 0, '두 눈의 수의 차별 나온 횟수의 비율', '내가 던진 결과로 나타내요. (차 0 ~ 차 5, 나오지 않은 차는 빼요)'))
     s.ask('두 눈의 수의 차가 3인 횟수의 비율은 몇 %인가요?')
