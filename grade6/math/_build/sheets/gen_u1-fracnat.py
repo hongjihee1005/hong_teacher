@@ -10,8 +10,9 @@ LESSONS를 node에서 그대로 실행해(활동 함수 대신 기록하는 함�
 탐구 질문·이야기·수가 앱과 같고, 원본의 수가 바뀌면 활동지도 저절로 따라 바뀝니다. 정답은 모두 이 스크립트가
 분수(Fraction)로 다시 계산해 앱의 답과 같은지 assert로 확인합니다.
 
-이야기 버전은 아직 없습니다. 생기면 ST(차시 함수 목록)를 채우고 SRC_ST가 있으면 sem1-soop/sheets/에 만듭니다.
-ST가 비어 있거나 원본 파일이 없으면 건너뜁니다.
+이야기 버전 ../units/u1-fracnat.st.js('6학년 3반 나눔 빵 공방', 10차시)도 같은 방법으로 읽어 sem1-soop/sheets/에
+같은 이름으로 만듭니다(python3 gen_u1-fracnat.py st). 이야기 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall·writeStep)과
+공방 그림·준비 쪽지·상자 그림·상자 바닥 그림도 기록해 넣습니다.
 
 분수 표기(6-2 「분수의 나눗셈」 활동지 gen_u1-fracdiv.py와 같음)
   - 계산 식·빈칸은 그림(PNG)으로 넣어 분수를 위아래(분자/분모)로 씁니다. 빈칸은 네모, 답 칸은 큰 네모.
@@ -1582,12 +1583,164 @@ def _cap_st_js():
     return js
 
 
-ST = []
+def w_bakery(s, lv, *_):
+    if DATA.get('scene'):
+        scene_pic(s, DATA['scene'])
+    return ''
+
+
+def w_note(s, lv, title, lines, *_):
+    s.text(re.sub(r'^\W+\s*', '', title))
+    s.fill([rd(re.sub(r'^[^\w\[(]+\s*', '', t)) for t in lines])
+    return ''
+
+
+def w_boxes(s, lv, n, per, label, kind='box', *_):
+    """앱 fn6sBoxes: 상자(바구니) n개, 한 개에 빵 per개"""
+    n, per = int(n), int(per)
+    W, GAP = 900, 16
+    bw = min(150, (W - 40) / n - GAP)
+    x0 = (W - n * (bw + GAP) + GAP) / 2
+    out = []
+    fs = 24
+    eq_line(label, W / 2 - eq_w(label, fs) / 2, 26, fs, out)
+    cols = math.ceil(per / 2)
+    cwid = (bw - 16) / cols
+    for i in range(n):
+        x, y = x0 + i * (bw + GAP), 50
+        if kind == 'basket':
+            out.append('<path d="M%.1f %d L%.1f %d L%.1f %d L%.1f %d Z" fill="#D9A55E" stroke="%s" stroke-width="3"/>'
+                       % (x, y + 30, x + bw, y + 30, x + bw - 12, y + 110, x + 12, y + 110, INK))
+        else:
+            out.append('<rect x="%.1f" y="%d" width="%.1f" height="90" fill="#FBE6CC" stroke="%s" stroke-width="3"/>' % (x, y + 20, bw, INK))
+        for k in range(per):
+            cx, cy = x + 8 + (k % cols + .5) * cwid, y + 52 + (k // cols) * 34
+            r = min(14, cwid / 2 - 2) if kind == 'basket' else min(16, cwid / 2 - 2)
+            if kind == 'basket':
+                out.append('<circle cx="%.1f" cy="%d" r="%.1f" fill="#B5764A" stroke="#6B3E1E" stroke-width="2"/>' % (cx, cy, r))
+            else:
+                out.append('<rect x="%.1f" y="%d" width="%.1f" height="26" rx="8" fill="#F2D29B" stroke="#8A4A0B" stroke-width="2"/>'
+                           % (cx - r, cy - 13, 2 * r))
+    out.append(T(W / 2, 190, '%d개 · 한 개에 %d개씩' % (n, per), 20, anchor='middle', fill='#555'))
+    put_png(s, svg_doc(W, 212, ''.join(out)), W, 212, max_mm=140)
+    return ''
+
+
+def w_rect(s, lv, *_):
+    """앱 fn6sRect: 직사각형 상자 바닥(글은 원본에서 읽음)"""
+    src = open(SRC_ST, encoding='utf-8').read()
+    i = src.index('function fn6sRect(')
+    labs = re.findall(r'fn6SvgLine\("([^"]+)"', src[i:src.index('\n}\n', i)])
+    assert len(labs) == 3, labs
+    out = ['<rect x="250" y="30" width="400" height="140" fill="#FBE6CC" stroke="%s" stroke-width="4"/>' % INK]
+    for (t, x, y, fill, anchor) in [(labs[0], 450, 200, INK, 'mid'), (labs[1], 664, 100, '#C8472E', 'start'), (labs[2], 450, 100, INK, 'mid')]:
+        if fill == INK:
+            eq_line(t, x - (eq_w(t, 24) / 2 if anchor == 'mid' else 0), y, 24, out)
+        else:
+            out.append(T(x, y, t, 24, fill=fill))
+    put_png(s, svg_doc(900, 225, ''.join(out)), 900, 225, max_mm=120)
+    return ''
+
+
+def w_panes(s, lv, items, opts=None, *_):
+    panes(s, lv, [(it['t'], it.get('ph') or '~', (it.get('ex') or [''])[0]) for it in items])
+    return '(자유) ' + ' / '.join('%s 예) %s' % (it['t'], flat(it['ex'][0])) for it in items if it.get('ex'))
+
+
+def w_then_why(s, lv, o, *_):
+    why(s, lv, o['q'], (o.get('help') or ['', o.get('ph') or ''])[-1])
+    return '왜? 예) ' + flat(o.get('ans') or '')
+
+
+def w_rule_first(s, lv, o, *_):
+    rule_first(s, lv, o['q'], (o.get('help') or ['', o.get('ph') or ''])[-1])
+    return '예상(자유) — 실제 규칙: ' + flat(o.get('ans') or '')
+
+
+def w_wonder(s, lv, *_):
+    s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 보고, 이제 답할 수 있게 된 것을 떠올려 보세요.')
+    return ''
+
+
+def w_write(s, lv, items, opts=None, *_):
+    out = []
+    for it in items:
+        q = ('%s · ' % it['tag'] if it.get('tag') else '') + it['q']
+        out.append(write_ans(s, lv, q, (it.get('help') or ['', it.get('ph') or ''])[-1], it.get('ans') or '(자유)'))
+    return ' / '.join('예) ' + a for a in out)
+
+
+WIDGETS.update({'bakery': w_bakery, 'note': w_note, 'boxes': w_boxes, 'rect': w_rect, 'panes': w_panes,
+                'thenWhy': w_then_why, 'ruleFirst': w_rule_first, 'wonder': w_wonder, 'writeStep': w_write})
+
+WHY_ST = {   # 도전형 '왜' 쓰기(이야기 차시 id → 물음, 예시 답)
+    's1': ('나눔 빵 공방에서 몫이 자연수가 아닌 나눗셈을 써야 하는 때를 쪽지 말고 하나 더 찾아 써 보세요.',
+           '예) 머핀 반죽 2덩이를 5모둠이 똑같이 나누어 쓸 때 한 모둠이 받는 양을 구할 때 써요.'),
+    's2': ('3÷4의 몫이 [3/4]인 까닭을 막대 반죽으로 설명해 보세요.',
+           '예) 반죽 1줄을 4명이 나누면 한 명이 [1/4]줄씩 받고, 3줄이면 [1/4]줄을 3개 받아서 [3/4]줄이에요.'),
+    's3': ('5÷3을 방법 1로 구한 몫 [1 2/3]과 방법 2로 구한 몫 [5/3]이 같은 까닭을 우유 그릇으로 설명해 보세요.',
+           '예) [5/3]은 [1/3] L가 5개이고, [1/3] L가 3개면 1 L이므로 1 L와 [2/3] L를 더한 [1 2/3] L와 같아요.'),
+    's4': ('[2/5]÷3을 계산할 때 [2/5]를 [6/15]로 바꾸는 까닭을 써 보세요.',
+           '예) 분자 2는 3으로 나누어떨어지지 않아서, 크기가 같고 분자가 3의 배수인 [6/15]로 바꾸면 분자를 3으로 나눌 수 있어요.'),
+    's5': ('설탕 [2/3] kg을 반죽 4덩이에 나눌 때 ÷4 대신 ×[1/4]을 해도 되는 까닭을 써 보세요.',
+           '예) 4덩이로 똑같이 나눈 것 중 하나는 [2/3]의 [1/4]이므로 ÷4는 ×[1/4]과 같아요.'),
+    's6': ('[6 3/4]÷3은 방법 1(자연수 부분과 진분수 부분으로 나누기)이 편리한 까닭을 써 보세요.',
+           '예) 자연수 부분 6과 분자 3이 모두 3으로 나누어떨어져서 6÷3 = 2, [3/4]÷3 = [1/4]로 바로 계산할 수 있어요.'),
+    's7': ('식빵 1개의 무게를 구할 때 상자 1개의 무게를 먼저 구하는 까닭을 써 보세요.',
+           '예) 주어진 무게는 상자 여러 개를 합한 무게라서, 상자 1개의 무게를 알아야 빈 상자 무게를 빼고 식빵의 무게를 구할 수 있어요.'),
+    's8': ('문제에 필요 없는 정보가 있을 때 어떻게 해야 하는지 써 보세요.',
+           '예) 구하려는 것을 먼저 확인하고, 그것을 구하는 데 쓰이는 정보만 골라 식을 세워요.'),
+    's9': ('주문서 이어달리기 놀이에서 점수를 많이 얻으려면 어떻게 해야 하는지 써 보세요.',
+           '예) 카드의 수를 정확하게 기억해 전달하고, 분자가 나누는 수의 배수가 아니면 크기가 같은 분수로 바꾸거나 ×[1/▲]로 정확하게 계산해요.'),
+    's10': ('(분수)÷(자연수)를 계산하는 방법 가운데 가장 편리한 방법과 그 까닭을 써 보세요.',
+            '예) 분수의 곱셈(×[1/▲])으로 나타내는 방법이 편리해요. 분자가 나누는 수의 배수가 아니어도 바로 계산할 수 있어요.'),
+}
+ST_IDS = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10']
+
+
+def st_lesson(s, lv, L, first, story):
+    s.lesson(L['no'], L['soop'], rd(L['title']), rd(L['question']))
+    if first and story:
+        s.scene(None, rd(story['lines'][0]))
+        note_line(s)
+    ans = []
+    for i, st_ in enumerate(L['steps']):
+        lab, sub = split_name(st_['name'])
+        step(s, i, lab, sub)
+        show_inst(s, lv, st_['inst'], st_['hints'], [c['w'] for c in st_['calls']])
+        ans.append('%s %s' % (NUM[i], run_calls(s, lv, st_['calls'])))
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L.get('ch'):
+            step(s, n, '★ 도전하기', '앱의 도전 문제')
+            show_inst(s, lv, L['ch']['inst'], [], [c['w'] for c in L['ch']['calls']])
+            ans.append('%s %s' % (NUM[n], run_calls(s, lv, L['ch']['calls'])))
+            n += 1
+        q, a = WHY_ST.get(L['id'], ('오늘 배운 계산 방법을 친구에게 설명하듯 써 보세요.', '예) ' + flat(L['summary'].split('. ')[-1])))
+        step(s, n, '생각 쓰기', '왜 그럴까요?')
+        challenge_why(s, q)
+        ans.append('%s %s' % (NUM[n], flat(a)))
+    return '%s차시  %s' % (L['no'], '  '.join(ans))
+
+
+def _st(lid):
+    def f(s, lv):
+        Ls = DATA['lessons']
+        k = [L['id'] for L in Ls].index(lid)
+        return st_lesson(s, lv, Ls[k], k == 0, DATA.get('story'))
+    f.__name__ = 'st_' + lid
+    return f
+
+
+ST = [_st(i) for i in ST_IDS]
 
 
 def build_file(kind, lv):
     src = SRC_TB if kind == 'tb' else SRC_ST
     D = cap(src)
+    if kind == 'st':
+        ids = [L['id'] for L in D['lessons']]
+        assert ids == ST_IDS, ('이야기 버전 차시가 바뀌었어요 — ST_IDS·WHY_ST를 고치세요', ids)
     DATA.clear()
     DATA.update(D)
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'

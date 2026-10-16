@@ -468,12 +468,22 @@ PAPER_RULES = [
     (r' ― 육각기둥의 모양은 이 앱이 정했어요\.', ''),
     (r'\(카드는 이 앱이 정했어요\.\) ', ''),
 ]
+ST_RULES = [   # 이야기 버전 글만(교과서 버전 글은 그대로)
+    (r'떠오르는 것을 세 칸에 써서 붙여요\.', '떠오르는 것을 세 칸에 써 보세요.'),
+    (r'텐트 모형을 잘라서 펼쳐 보세요\.', '텐트 모형을 잘라서 펼치는 그림을 살펴보세요.'),
+    (r'먼저 예상한 다음, 하나씩 접어서 확인해요\.', '먼저 예상한 다음, 오려서 접어 보거나 머릿속으로 접어 확인해요.'),
+    (r'먼저 예상한 다음, 하나씩 접어서 확인해 보세요\.', '먼저 예상한 다음, 오려서 접어 보거나 머릿속으로 접어 확인해 보세요.'),
+    (r'(각기둥|각뿔)을 돌려 가며 세어', r'\1의 그림을 살펴보며 세어'),
+    (r'공학 도구로 쉼터에 쓸 나만의 (각기둥|각뿔)(?: 지붕)?을 만들고', r'쉼터에 쓸 나만의 \1을 정하고'),
+    (r'컴퓨터 친구 2명과 함께 놀이를 해 보세요\.', '친구 2~3명과 모둠을 지어 놀이를 해 보세요.'),
+    (r'가장 먼저 찾아 보세요\.', '찾아 기호를 써 보세요.'),
+]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|단추|화면|컴퓨터 친구|앱|돌려서|막대를')
 
 
 def paper(t):
     t = str(t or '')
-    for a, b in PAPER_RULES:
+    for a, b in PAPER_RULES + (ST_RULES if DATA.get('kind') == 'st' else []):
         t = re.sub(a, b, t)
     sents = re.split(r'(?<=[.?!”])\s+', t)
     return ' '.join(x for x in sents if x and not INTERACT.search(x)).strip()
@@ -658,14 +668,55 @@ def w_sequence(s, lv, rec):
 
 def w_write(s, lv, rec):
     ans = []
+    st = DATA.get('kind') == 'st'
     for it in rec['items']:
         s.ask(it['q'], blank=False)
+        if st and lv == '기본형' and len(it.get('help') or []) > 1:
+            s.text('도움: ' + it['help'][1])
         if lv == '기본형' and it.get('tag'):
             s.labeled([(it['tag'], '')], row_h=3969 * 2)
         else:
             s.lines(3)
-        ans.append(it['ph'] or '(생각을 쓰면 맞아요)')
+        ans.append(('예) ' + it['ans']) if (st and it.get('ans')) else (it['ph'] or '(생각을 쓰면 맞아요)'))
     return ' / '.join(ans)
+
+
+# ---------------------------------------------------------------- 이야기 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall)
+def w_panes(s, lv, rec):
+    """보기·생각하기·궁금해하기 세 칸(이야기 1차시) — 앱 그림에 이름을 붙여 한 번만 보여 줌"""
+    fig = rec.get('fig') or {}
+    figs, names = fig.get('figs') or [], fig.get('texts') or []
+    if figs:
+        labs = names if len(names) == len(figs) else [f['label'] for f in figs]
+        side(s, list(zip(labs, [f['svg'] for f in figs])), cols=cols_for(len(figs)))
+    if lv == '기본형':
+        s.labeled([(it['t'], '%s  (%s)' % (it['ph'], it['hint']) if it.get('hint') else it['ph']) for it in rec['items']], row_h=3969 * 2)
+    else:
+        for it in rec['items']:
+            s.ask(it['t'] + ':', blank=False)
+            s.lines(2)
+    return '(자유) ' + ' / '.join('%s 예) %s' % (it['t'], it['ex'][0]) for it in rec['items'] if it.get('ex'))
+
+
+def w_thenwhy(s, lv, rec):
+    s.ask('왜 그럴까요? ' + rec['q'], blank=False)
+    if lv == '기본형' and len(rec.get('help') or []) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(2)
+    return '왜? 예) ' + rec['ans']
+
+
+def w_rule(s, lv, rec):
+    s.ask('먼저 예상해요 · ' + rec['q'], blank=False)
+    if lv == '기본형' and len(rec.get('help') or []) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(2)
+    return '예상(자유) — 실제 규칙: ' + rec['ans']
+
+
+def w_wonder(s, lv, rec):
+    s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 보고, 이제 답할 수 있는지 떠올려 보세요.')
+    return ''
 
 
 
@@ -720,6 +771,8 @@ def key_word(names):
 
 
 def w_pre(s, lv, rec):
+    if CTX.get('skip_pre'):      # 이야기 1차시: 같은 그림을 panes가 이름과 함께 보여 줌
+        return ''
     rep = PRE_FIGS.get(CTX['cur'])
     if rep:
         rep(s, lv)
@@ -908,24 +961,40 @@ def grid_svg(rec, cell, win):
     return _svg(W, H, ''.join(out))
 
 
-def net_window(rec, maxw):
+def net_window(rec, maxw, vm=2):
     xs = [p[0] for f in rec['full'] for p in f['P']]
     ys = [p[1] for f in rec['full'] for p in f['P']]
     bx0, bx1, by0, by1 = min(xs), max(xs), min(ys), max(ys)
     gw = min(rec['cols'], maxw)
     ox = int(round((bx0 + bx1) / 2 - gw / 2))
     ox = max(0, min(rec['cols'] - gw, ox))
-    oy0 = max(0, int(by0) - 2)
-    oy1 = min(rec['rows'], int(by1 + 0.999) + 2)
+    oy0 = max(0, int(by0) - vm)
+    oy1 = min(rec['rows'], int(by1 + 0.999) + vm)
     assert ox <= bx0 and bx1 <= ox + gw, ('정답 전개도가 모눈 밖으로 나가요', bx0, bx1, ox, gw)
     return ox, oy0, gw, oy1 - oy0
+
+
+def rot_rec(rec):
+    """모눈 전개도를 시계 방향으로 90° 돌리기(뒤집지 않음): (x, y) → (rows − y, x)"""
+    R = rec['rows']
+    r = dict(rec)
+    r['full'] = [{'P': [[R - y, x] for x, y in f['P']], 'base': f['base']} for f in rec['full']]
+    r['cols'], r['rows'] = rec['rows'], rec['cols']
+    return r
 
 
 def w_netdraw(s, lv, rec):
     full = rec['full']
     xs = [p[0] for f in full for p in f['P']]
+    ys = [p[1] for f in full for p in f['P']]
     real = max(xs) - min(xs) <= 17
-    if real:
+    if (not real and DATA.get('kind') == 'st' and max(ys) - min(ys) <= 15 and max(xs) - min(xs) <= 18):
+        # 이야기 버전: 가로가 18 cm인 전개도는 모눈을 옆으로 돌려 실제 크기 그대로(세로 20칸 = 200 mm)
+        win = net_window(rot_rec(rec), 17, vm=1)
+        svg = grid_svg(rot_rec(rec), K, win)
+        s.text(REAL_NOTE)
+        s.text('※ 종이에 실제 크기로 들어가도록 모눈을 옆으로 돌려 놓았어요. 종이를 돌려 보아도 좋아요.')
+    elif real:
         win = net_window(rec, 17)
         svg = grid_svg(rec, K, win)
         s.text(REAL_NOTE)
@@ -1091,7 +1160,8 @@ def pre_tbl(key, kind):
 
 PRE_FIGS = {('t4', '표 완성하기'): pre_tbl('tblPr', '기둥'), ('t8', '표 완성하기'): pre_tbl('tblPy', '뿔')}
 
-WIDGETS = {'ask': lambda s, lv, r: w_ask(s, lv, r), 'quiz': w_quiz, 'blanks': w_blanks, 'write': w_write, 'sequence': w_sequence,
+WIDGETS = {'panes': w_panes, 'thenwhy': w_thenwhy, 'rule': w_rule, 'wonder': w_wonder,
+           'ask': lambda s, lv, r: w_ask(s, lv, r), 'quiz': w_quiz, 'blanks': w_blanks, 'write': w_write, 'sequence': w_sequence,
            'chain': w_chain, 'pre': w_pre,
            'pp6Pick': w_pick, 'pp6Sort': w_sort, 'pp6Tap': w_tap, 'pp6Parts': w_parts, 'pp6Ruler': w_ruler, 'pp6Columns': w_columns,
            'pp6Make': w_make, 'pp6FoldView': w_fold, 'pp6NetMark': w_netmark, 'pp6NetPairs': w_netpairs, 'pp6NetJudge': w_netjudge,

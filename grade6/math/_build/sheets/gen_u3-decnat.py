@@ -1378,7 +1378,6 @@ def load_st(src):
 PAPER_ST = [
     ('세 칸에 써서 붙여요', '세 칸에 써 보세요'),
     ('배우는 차례대로 눌러 학습 계획을 세워 보세요.', '배우는 차례대로 기호를 써서 학습 계획을 세워 보세요.'),
-    ('테이프를 눌러 자르는 선을 놓아 똑같이 5도막으로 잘라 보세요.', '테이프 그림에 자르는 선을 그어 똑같이 5도막으로 나누어 보세요.'),
     ('몫의 숫자 사이 동그라미를 눌러 소수점을 찍어 보세요.', '몫의 숫자 사이 동그라미 하나를 색칠해 소수점을 찍어 보세요.'),
     ('콩주머니에서 원하는 땅 쪽으로 끌었다가 놓으면 던져져요.',
      '지우개 조각을 ‘던지는 곳’에 놓고 원하는 땅 쪽으로 손가락으로 튕겨요(운동장에서는 콩주머니를 던져요). 도착한 땅의 나눗셈과 몫을 기록표에 쓰면 친구가 계산기로 확인해요.'),
@@ -1387,10 +1386,27 @@ PAPER_ST = [
 ]
 
 
+PAPER_ST_RE = [   # 원본 글이 조금 바뀌어도 맞도록(자르는 물건 이름·도막 수는 그대로 따라감)
+    (r'(\S+?)[을를] 눌러 자르는 선을 놓아 똑같이 (\d+)도막으로 잘라 보세요\.', r'\1 그림에 자르는 선을 그어 똑같이 \2도막으로 나누어 보세요.'),
+]
+
+
 def paper_st(t):
     for a, b in PAPER_ST:
         t = t.replace(a, b)
+    for a, b in PAPER_ST_RE:
+        t = re.sub(a, b, t)
     return paper(t)
+
+
+def j_eul(w):
+    c = ord(w[-1]) - 0xAC00
+    return w + ('을' if 0 <= c < 11172 and c % 28 else '를')
+
+
+def tape_item(o):
+    m = re.match(r'(\S+?)[을를] 눌러', o.get('tip') or '')
+    return o.get('item') or (m.group(1) if m else '테이프')
 
 
 EMO = re.compile('[\U00010000-\U0010FFFF☀-➿️‍]')
@@ -1443,8 +1459,9 @@ def w_tape_st(s, lv, a):
     """결승선 테이프 자르기(dn3Tape) — 그림은 교과서 버전과 같은 m·cm 두 눈금"""
     o = a[0]
     Lcm, part, n = tape_fig(s, o, lv == '기본형')
-    s.text('아래 cm 자를 보고 테이프를 똑같이 %d도막으로 자르는 선을 그어 보세요.%s'
-           % (n, ' 첫 번째 선은 그어 두었어요.' if lv == '기본형' else ''))
+    it = tape_item(o)
+    s.text('아래 cm 자를 보고 %s 똑같이 %d도막으로 자르는 선을 그어 보세요.%s'
+           % (j_eul(it), n, ' 첫 번째 선은 그어 두었어요.' if lv == '기본형' else ''))
     out = ['%d cm씩 %d도막(자르는 선 %s cm)' % (part, n, ', '.join(str(part * k) for k in range(1, n)))]
     return out + sent(s, o.get('asks') or [])
 
