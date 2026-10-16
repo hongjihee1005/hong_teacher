@@ -178,7 +178,7 @@ NUM = '①②③④⑤⑥⑦⑧⑨⑩⑪⑫'
 KO = '㉠㉡㉢㉣㉤㉥㉦'
 WORK = tempfile.mkdtemp(prefix='u5graph_')
 K = 40            # 실제 크기: 1 cm = 40 px → 그림 너비 mm = px ÷ 4
-ST = []           # 이야기 버전 차시(아직 없음 — 원본이 생기면 더함)
+ST_MODE = [False]  # 이야기 버전을 만드는 동안 True(render_rec·paper가 REC_ST·PAPER_ST를 먼저 씀)
 
 INK, GRAY, RED, LINE = '#1D2A2A', '#7B8A8A', '#D64545', '#3B4A47'
 COLS = ["#F6A89E", "#8FC3EA", "#A9D99B", "#F5D27B", "#C6B2E8", "#F7BC8C", "#9BD8CF", "#E9C7A8"]
@@ -586,6 +586,8 @@ def render_recs(s, lv, recs, st, D):
 
 def render_rec(s, lv, rec, st, D):
     t = rec['t']
+    if ST_MODE[0] and t in REC_ST:
+        return REC_ST[t](s, lv, rec, st, D)
     if t == 'el':
         if not rec.get('calc'):
             put_el(s, rec)
@@ -829,6 +831,8 @@ WHY = {
 
 
 def paper(t):
+    for a, b in PAPER_ST if ST_MODE[0] else []:
+        t = t.replace(a, b)
     for a, b in PAPER:
         t = t.replace(a, b)
     return t

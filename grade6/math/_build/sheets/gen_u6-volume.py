@@ -74,6 +74,12 @@ function dragOn(svg, s, m, e) { DRAG = { s, m, e }; }
 function svgPt() { return { x: 0, y: 0 }; }
 let REC = [], INNER = 0;
 function quiz() {} function blanks() {} function writeStep() {} function sequence() {}
+/* 이야기 버전 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall)과 autoRun — 교과서 버전에는 없음 */
+function autoRun() { return () => {}; }
+function panes(b, a, items, opts) { if (INNER) return; REC.push({ t: 'panes', fig: null, items: items.map(x => ({ t: x.t, ph: x.ph || '', hint: x.hint || '', ex: x.ex || [] })) }); }
+function thenWhy(render, o) { return (b, a) => { render(b, a); if (!INNER) REC.push({ t: 'thenwhy', q: o.q, ph: o.ph || '', help: o.help || [], ans: o.ans || '' }); }; }
+function ruleFirst(render, o) { return (b, a) => { if (!INNER) REC.push({ t: 'rule', q: o.q, ph: o.ph || '', help: o.help || [], ans: o.ans || '' }); render(b, a); }; }
+function wonderRecall(render) { return (b, a) => { if (!INNER) REC.push({ t: 'wonder' }); render(b, a); }; }
 
 const unitSrc = src.slice(src.indexOf('//@@UNIT'), src.indexOf('//@@LESSONS'));
 const lesSrc = src.slice(src.indexOf('//@@LESSONS'));
@@ -117,7 +123,8 @@ const api = new Proxy({}, { get: () => () => {} });
 
 quiz = function (b, a, items, opts) { if (!INNER) REC.push({ t: 'quiz', items: items.map(serQ), ok: (opts || {}).ok || '' }); };
 blanks = function (b, a, parts, opts) { if (!INNER) REC.push({ t: 'blanks', parts: parts.map(serPart), ok: (opts || {}).ok || '' }); };
-writeStep = function (b, a, items) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag || '', ph: x.ph || '' })) }); };
+writeStep = function (b, a, items) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag || '', ph: x.ph || '', ans: x.ans || '', help: x.help || [] })) }); };
+sequence = function (b, a, cards, order) { if (!INNER) REC.push({ t: 'sequence', cards, order }); };
 const ORIG = { vo6Ask };
 vo6Ask = function (host, ap, items, opts) { if (!INNER) REC.push({ t: 'ask', items: items.map(serQ), ok: (opts || {}).ok || '', title: (opts || {}).title || '' }); return new El('div'); };
 vo6Chain = function (body, ap, parts) {
@@ -126,7 +133,8 @@ vo6Chain = function (body, ap, parts) {
   REC.push({ t: 'chain', parts: out });
 };
 function capThen(fn, extra) { const save = REC; REC = []; const box = new El('div'); fn(box, api, extra); const r = REC; REC = save; return r; }
-const WID = ['vo6Pour', 'vo6Touch', 'vo6Fill', 'vo6Dims', 'vo6Net', 'vo6M3', 'vo6Pack', 'vo6Make', 'vo6Hunt', 'vo6Notes', 'vo6Cards'];
+const WID = ['vo6Pour', 'vo6Touch', 'vo6Fill', 'vo6Dims', 'vo6Net', 'vo6M3', 'vo6Pack', 'vo6Make', 'vo6Hunt', 'vo6Notes', 'vo6Cards']
+  .filter(n => { try { return typeof eval(n) === 'function'; } catch (e) { return false; } });   /* 이야기 버전에는 vo6Pour가 없음 */
 function run0(name, opt) { const fb = new El('div'); INNER++; try { ORIG[name](fb, api, opt); } finally { INNER--; } return fb; }
 WID.forEach(name => {
   ORIG[name] = eval(name);
@@ -184,7 +192,7 @@ function cap(render) { REC = []; const body = new El('div'); try { render(body, 
 const OUT = { story: UNIT_STORY, lessons: LESSONS.map(L => ({ id: L.id, no: L.no, title: L.title, soop: L.soop, question: L.question, summary: L.summary,
   steps: L.steps.map(s => ({ name: s.name, inst: s.inst, hints: s.hints || [], recs: cap(s.render) })),
   challenge: L.challenge ? { inst: L.challenge.inst, hints: L.challenge.hints || [], recs: cap(L.challenge.render) } : null })) };
-OUT.D = VO6_D; OUT.P8 = VO6_P8; OUT.names = VO6_NAMES;
+OUT.D = typeof VO6_D !== 'undefined' ? VO6_D : VO6S; OUT.P8 = typeof VO6_P8 !== 'undefined' ? VO6_P8 : VO6S_P8; OUT.names = VO6_NAMES;
 process.stdout.write(JSON.stringify(OUT));
 '''
 

@@ -399,7 +399,7 @@ function ra4Map(body, api, opt) {
       const ok = v[i] * M.per === opt.real;
       svg.append(svgEl("line", { x1: x0, y1: y + 66, x2: x0 + v[i] * cm, y2: y + 66, stroke: ok ? "#2E8B57" : "#C8472E", "stroke-width": 6, "stroke-linecap": "round" }));
       svg.append(svgEl("circle", { cx: x0 + v[i] * cm, cy: y + 66, r: 12, fill: ok ? "#2E8B57" : "#C8472E", stroke: "#fff", "stroke-width": 3, style: "cursor:grab" }));
-      svg.append(txt(x0 + v[i] * cm, y + 44, `${v[i]} cm → ${v[i] * M.per} m`, 15, { fill: ok ? "#2E8B57" : "#C8472E" }));
+      if (v[i]) svg.append(txt(x0 + v[i] * cm, y + 44, `${v[i]} cm → ${v[i] * M.per} m`, 15, { fill: ok ? "#2E8B57" : "#C8472E" }));
     });
     read.textContent = maps.map((M, i) => `${M.name}: 지도에서 ${v[i]} cm = 실제 ${v[i] * M.per} m`).join(" · ");
   };
@@ -1048,7 +1048,6 @@ function ra4sStudio(body, api, opt) {
     svg.append(svgEl("rect", { x: 10, y: 8, width: 660, height: 324, rx: 16, fill: "#F3EAD7", stroke: "#B9A27A", "stroke-width": 3 }));
     svg.append(svgEl("rect", { x: 22, y: 18, width: 112, height: 30, rx: 8, fill: "#E2574C" }), txt(78, 34, "방송 중", 17, { fill: "#fff" }));
     svg.append(txt(400, 34, "6학년 3반 방송부 ‘한빛 소식’ 기획 보드", 18, { fill: "#5A4A30" }));
-    [[60, 176], [300, 170], [520, 176]].forEach(([px, py]) => svg.append(svgEl("circle", { cx: px, cy: py, r: 5, fill: "#C8472E" })));
     SP.forEach((p, i) => {
       const g = svgEl("g", { style: "cursor:pointer" });
       g.append(svgEl("circle", { cx: p.x, cy: p.y, r: 36, fill: seen.has(i) ? "#DDEDE5" : "#FFFDF6", stroke: seen.has(i) ? "#2E8B57" : "#E47A38", "stroke-width": 3 }));
