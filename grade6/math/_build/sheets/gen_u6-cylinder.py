@@ -1,8 +1,9 @@
 # -*- coding: utf-8 -*-
-"""6-2 수학 6. 원기둥, 원뿔, 구 활동지(교과서 차시 버전 × 기본형·도전형) 만들기
+"""6-2 수학 6. 원기둥, 원뿔, 구 활동지(교과서 차시 버전·이야기 버전 × 기본형·도전형) 만들기
 
     python3 gen_u6-cylinder.py          # 만들 수 있는 것을 모두 만들고 점검
     python3 gen_u6-cylinder.py tb       # 교과서 차시 버전만
+    python3 gen_u6-cylinder.py st       # 이야기 버전만
 
 앱 원본 ../units/sem2/u6-cylinder.tb.js('마을 체육 대회 원기둥·원뿔·구', 8차시 묶음: 1·2·3~4·5·6·7~8·9·10)의
 LESSONS를 node에서 가짜 DOM으로 그대로 실행해(CAP_JS), 활동마다 넘긴 물음·보기·정답·수와 앱이 그린 그림(SVG)을 모읍니다.
@@ -16,7 +17,11 @@ LESSONS를 node에서 가짜 DOM으로 그대로 실행해(CAP_JS), 활동마다
     3~4차시 원기둥의 전개도 그리기 모눈(한 칸 1 cm, 17 cm × 13 cm), 6차시 구를 반으로 자른 단면(반지름은 앱의 R).
   - 놀이(9차시)는 종이에서 할 수 있게 놀이 순서 정하기·연습 표·물건 이름 쓰기로 바꿉니다(카드와 관계는 앱의 CY6_CARDS 그대로).
   - 정답의 계산(원주·옆면의 가로·지름·둘레 등)은 파이썬으로 따로 다시 계산해 assert로 앱의 답과 맞춥니다(check_numbers).
-  - 이야기 버전(ST)은 아직 없어서 건너뜁니다(앱 원본 u6-cylinder.st.js가 생기면 ST 목록에 더함).
+  - 이야기 버전(ST, `python3 gen_u6-cylinder.py st`)도 같은 방법으로 ../units/sem2/u6-cylinder.st.js('6학년 2반 달빛 등불 축제',
+    1·2·3~4·5·6·7~8·9·10차시)의 LESSONS를 읽어 sem2-soop/sheets/에 만듭니다. 이야기 엔진 부품은 종이로 바꿉니다:
+    panes(보여요·생각해요·궁금해요 세 칸) · thenWhy('왜 그럴까요?' 쓰기, 정답에 앱의 모범 답) · ruleFirst(활동 전에 '먼저 예상해요',
+    정답에 '실제 규칙') · wonderRecall(1차시 '궁금해요' 다시 보기). 기본형은 쓰기 칸에 앱 help의 문장 틀을 '도움'으로 보여 줍니다.
+    차시 id가 ST_IDS와 다르면 멈추고, 앱의 답은 ST_EXPECT(파이썬으로 따로 계산)와 맞춥니다.
 그림은 임시 폴더에서 PNG로 바꿉니다(저장소에는 남기지 않음).
 """
 
@@ -73,6 +78,13 @@ function dragOn(svg, s, m, e) { DRAG = { s, m, e }; }
 function svgPt() { return { x: 0, y: 0 }; }
 let REC = [], INNER = 0;
 function quiz() {} function blanks() {} function writeStep() {} function sequence() {}
+/* 이야기 버전 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall)과 autoRun */
+function autoRun() { return () => {}; }
+function panes(b, a, items, opts) { if (INNER) return; const last = b.kids.length ? b.kids[b.kids.length - 1] : null;
+  REC.push({ t: 'panes', fig: last ? serEl(last) : null, items: items.map(x => ({ t: x.t, ph: x.ph || '', hint: x.hint || '', ex: x.ex || [] })) }); }
+function thenWhy(render, o) { return (b, a) => { render(b, a); if (!INNER) REC.push({ t: 'thenwhy', q: o.q, ph: o.ph || '', help: o.help || [], ans: o.ans || '' }); }; }
+function ruleFirst(render, o) { return (b, a) => { if (!INNER) REC.push({ t: 'rule', q: o.q, ph: o.ph || '', help: o.help || [], ans: o.ans || '' }); render(b, a); }; }
+function wonderRecall(render) { return (b, a) => { if (!INNER) REC.push({ t: 'wonder' }); render(b, a); }; }
 
 const unitSrc = src.slice(src.indexOf('//@@UNIT'), src.indexOf('//@@LESSONS'));
 const lesSrc = src.slice(src.indexOf('//@@LESSONS'));
@@ -106,7 +118,7 @@ const api = new Proxy({}, { get: () => () => {} });
 
 quiz = function (b, a, items, opts) { if (!INNER) REC.push({ t: 'quiz', items: items.map(serQ), ok: (opts || {}).ok || '' }); };
 blanks = function (b, a, parts, opts) { if (!INNER) REC.push({ t: 'blanks', parts: parts.map(serPart), ok: (opts || {}).ok || '' }); };
-writeStep = function (b, a, items) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag || '', ph: x.ph || '' })) }); };
+writeStep = function (b, a, items) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag || '', ph: x.ph || '', ans: x.ans || '', help: x.help || [] })) }); };
 sequence = function (b, a, cards, order) { if (!INNER) REC.push({ t: 'sequence', cards, order }); };
 const ORIG = { cy6Ask };
 cy6Ask = function (host, ap, items, opts) { if (!INNER) REC.push({ t: 'ask', items: items.map(serQ), ok: (opts || {}).ok || '' }); return new El('div'); };
@@ -131,7 +143,7 @@ WID.forEach(name => {
       if (name === 'cy6Spin') { click(fb, '↻ 한 바퀴 돌리기'); rec.svg1 = String(findSvg(fb)); }
       if (name === 'cy6Unroll') { click(fb, '✂ 잘라서 펼치기'); rec.svg1 = String(findSvg(fb)); }
       if (name === 'cy6Ruler') { DRAG.m({ x: 0, y: 1e6 }); rec.svg1 = String(findSvg(fb)); }
-      if (name === 'cy6Tube') { const W = 420, H = 380; [[W * .78, H * .3], [W * .78, H * .72]].forEach(([x, y]) => { if (DRAG.s({ x, y })) { DRAG.m({ x: W * .33, y: 60 }); DRAG.e({ x: W * .33, y: 60 }); } }); rec.svg1 = String(findSvg(fb)); }
+      if (name === 'cy6Tube') { const W = 420, H = 380, N = opt.n || 2; Array.from({ length: N }, (_, i) => [W * .78, 30 + (H - 60) * (i + .5) / N]).forEach(([x, y]) => { if (DRAG.s({ x, y })) { DRAG.m({ x: W * .33, y: 60 }); DRAG.e({ x: W * .33, y: 60 }); } }); rec.svg1 = String(findSvg(fb)); }
     } catch (e) { rec.err = String(e && e.stack || e).slice(0, 400); }
     INNER--;
     if (name === 'cy6NetMark') rec.net = cy6NetSvg(opt.net, { s: opt.s || 26 }).svg.toString();
@@ -186,7 +198,6 @@ KO = '㉠㉡㉢㉣㉤㉥㉦㉧'
 WORK = tempfile.mkdtemp(prefix='u6cyl_')
 K = 40            # 실제 크기: 1 cm = 40 px → 그림 너비 mm = px ÷ 4
 PI = 3.14
-ST = []           # 이야기 버전 차시(아직 없음 — 원본이 생기면 더함)
 
 INK, BLUE, RED, GRAY, GRID = '#1D2A2A', '#2B7BD6', '#D64545', '#8795A1', '#B8C6D2'
 
@@ -418,12 +429,18 @@ PAPER_RULES = [
     (r'통을 잘라서 펼쳐 보세요', '통을 잘라서 펼친 그림을 살펴보세요'),
     (r'막대를 돌리면 어떤 입체도형이 만들어지는지 알아보세요', '막대를 한 바퀴 돌리면 어떤 입체도형이 만들어지는지 그림을 보고 알아보세요'),
 ]
+ST_RULES = [   # 이야기 버전 글만(교과서 버전 글은 그대로)
+    (r'먼저 예상해 보고 돌려 보세요', '먼저 예상해 보고, 한 바퀴 돌린 그림으로 확인해 보세요'),
+    (r'등을 잘라서 펼쳐 보세요', '등을 잘라서 펼친 그림을 살펴보세요'),
+    (r'배울 내용을 차례대로 눌러 보세요', '배울 내용을 차례대로 기호로 써 보세요'),
+    (r'세 칸에 써서 붙여요', '세 칸에 써 보세요'),
+]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|끌거나|단추|화면|연습판|컴퓨터 친구|돌려요\(|▲|막대를 끝까지')
 
 
 def paper(t):
     t = str(t or '')
-    for a, b in PAPER_RULES:
+    for a, b in PAPER_RULES + (ST_RULES if DATA.get('kind') == 'st' else []):
         t = re.sub(a, b, t)
     sents = re.split(r'(?<=[.?!”])\s+', t)
     return ' '.join(x for x in sents if x and not INTERACT.search(x)).strip()
@@ -603,13 +620,16 @@ def w_sequence(s, lv, rec):
 
 def w_write(s, lv, rec):
     ans = []
+    st = DATA.get('kind') == 'st'
     for it in rec['items']:
         s.ask(it['q'], blank=False)
+        if st and lv == '기본형' and len(it.get('help') or []) > 1:
+            s.text('도움: ' + it['help'][1])
         if lv == '기본형' and it.get('tag'):
             s.labeled([(it['tag'], '')], row_h=3969 * 2)
         else:
             s.lines(3)
-        ans.append(it['ph'] or '(생각을 쓰면 맞아요)')
+        ans.append(('예) ' + it['ans']) if (st and it.get('ans')) else (it['ph'] or '(생각을 쓰면 맞아요)'))
     return ' / '.join(ans)
 
 
@@ -816,7 +836,8 @@ def w_namegame(s, lv, rec):
 
 def w_tube(s, lv, rec):
     d = rec['opt'].get('d', 6)
-    s.text('지름이 %s cm인 테니스공 2개를 통에 꼭 맞게 넣은 그림이에요.' % fmt(d))
+    nm, n = rec['opt'].get('name', '테니스공'), rec['opt'].get('n', 2)
+    s.text('지름이 %s cm인 %s %d개를 통에 꼭 맞게 넣은 그림이에요.' % (fmt(d), nm, n))
     pic(s, rec['svg1'], 75)
     return w_ask(s, lv, rec['ask'])
 
@@ -833,7 +854,41 @@ def w_chain(s, lv, rec):
     return ' / '.join(x for x in out if x)
 
 
-WIDGETS = {'ask': w_ask, 'quiz': w_quiz, 'blanks': w_blanks, 'sequence': w_sequence, 'write': w_write, 'chain': w_chain,
+def w_panes(s, lv, rec):
+    """보기·생각하기·궁금해하기 세 칸(이야기 1차시)"""
+    put_fig(s, rec.get('fig'), 0.25, hi=150)
+    if lv == '기본형':
+        s.labeled([('%s' % it['t'], '%s  (%s)' % (it['ph'], it['hint']) if it.get('hint') else it['ph']) for it in rec['items']], row_h=3969 * 2)
+    else:
+        for it in rec['items']:
+            s.ask(it['t'] + ':', blank=False)
+            s.lines(2)
+    return '(자유) ' + ' / '.join('%s 예) %s' % (it['t'], it['ex'][0]) for it in rec['items'] if it.get('ex'))
+
+
+def w_thenwhy(s, lv, rec):
+    s.ask('왜 그럴까요? ' + rec['q'], blank=False)
+    if lv == '기본형' and len(rec.get('help') or []) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(2)
+    return '왜? 예) ' + rec['ans']
+
+
+def w_rule(s, lv, rec):
+    s.ask('먼저 예상해요 · ' + rec['q'], blank=False)
+    if lv == '기본형' and len(rec.get('help') or []) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(2)
+    return '예상(자유) — 실제 규칙: ' + rec['ans']
+
+
+def w_wonder(s, lv, rec):
+    s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 보고, 이제 답할 수 있는지 떠올려 보세요.')
+    return ''
+
+
+WIDGETS = {'panes': w_panes, 'thenwhy': w_thenwhy, 'rule': w_rule, 'wonder': w_wonder,
+           'ask': w_ask, 'quiz': w_quiz, 'blanks': w_blanks, 'sequence': w_sequence, 'write': w_write, 'chain': w_chain,
            'cy6Pick': w_pick, 'cy6Sort': w_sort, 'cy6Tap': w_tap, 'cy6Ruler': w_ruler, 'cy6Spin': w_spin, 'cy6Gen': w_gen,
            'cy6Probe': w_probe, 'cy6Unroll': w_unroll, 'cy6NetMark': w_netmark, 'cy6NetJudge': w_netjudge, 'cy6NetDraw': w_netdraw,
            'cy6View': w_view, 'cy6Make': w_make, 'cy6Riddle': w_riddle, 'cy6CardCheck': w_cardcheck, 'cy6Shout': w_shout,
@@ -868,7 +923,7 @@ def all_nums(recs, out=None):
     return out
 
 
-def check_numbers(D):
+def check_numbers(D, expect=None):
     """식이 적힌 칸은 식을 계산해 맞추고, 식이 없는 칸은 문제의 수로 따로 계산한 값과 맞춥니다."""
     seen = []
     for L in D['lessons']:
@@ -882,7 +937,7 @@ def check_numbers(D):
                     assert abs(v - n) < 1e-9, ('식 계산이 달라요', L['no'], prev, n, v)
                 seen.append(n)
     # 문제의 수로 따로 계산(앱 문제와 같은 수): 원주 = 지름 × 3.14 등
-    expect = [r2(10 * PI), r2(4 * 2 * PI),                    # 1차시 원주
+    expect = expect if expect is not None else [r2(10 * PI), r2(4 * 2 * PI),                    # 1차시 원주
               r2(3 * 2 * PI), r2(2 * 2 * PI), r2(2.5 * 2 * PI),  # 3~4차시 옆면의 가로
               r2(6 * 2 * PI), r2(25.12 / PI), r2(51.96 - 8), r2((51.96 - 8) / PI),
               4 * 2, 6 * 2, math.hypot(6, 8), 8 * 2, 14 * 2, 5 * 2,   # 돌려 만든 도형의 지름·모선
@@ -950,6 +1005,73 @@ def tb_lesson(s, lv, L, first, story):
     return '%s차시  %s' % (L['no'], '  '.join(ans))
 
 
+# ================================================================ 이야기 버전 차시
+ST_IDS = ['s1', 's2', 's34', 's5', 's6', 's78', 's9', 's10']     # 앱 u6-cylinder.st.js LESSONS의 id 차례(1·2·3~4·5·6·7~8·9·10차시)
+WHY_ST = {   # 도전형 '생각 쓰기'(앱 thenWhy 물음과 겹치지 않게)
+    's1': WHY['t1'],
+    's2': ('누워 있는 원통 종이 등에서 바닥에 닿은 면이 밑면이 아닌 까닭을 써 보세요.',
+           '예) 밑면은 아래에 있는 면이 아니라 평행하고 합동인 두 원이기 때문이에요. 바닥에 닿은 것은 굽은 옆면이에요.'),
+    's34': ('원통 종이 등의 설계도에서 두 밑면을 옆면의 같은 쪽에 그리면 안 되는 까닭을 써 보세요.',
+            '예) 옆면을 말아 접으면 두 밑면이 같은 쪽 끝에서 겹쳐서, 반대쪽은 뚫려 있게 되기 때문이에요.'),
+    's5': ('길 안내 고깔(원뿔)에 붙인 장식 끈(모선)의 길이가 모두 같은 까닭을 써 보세요.',
+           '예) 직각삼각형을 돌려 원뿔을 만들 때 가장 긴 변이 한 바퀴 돌며 모선이 되므로, 모선은 모두 그 변의 길이와 같아요.'),
+    's6': WHY['t6'],
+    's78': WHY['t78'],
+    's9': WHY['t9'],
+    's10': WHY['t10'],
+}
+# 이야기 버전 문제의 수로 따로 계산한 값(앱 답 중에 꼭 있어야 함)
+ST_EXPECT = [r2(8 * PI), r2(6 * 2 * PI),                                   # 1차시 원주
+             3 * 2, 9, 16, 4 * 2, 9 * 2,                                    # 2차시
+             r2(4 * 2 * PI), 10, 1.5, r2(1.5 * 2 * PI), 6, 2.5, 3, r2(2.5 * 2 * PI),   # 3~4차시
+             r2(5 * 2 * PI), 9, r2(18.84 / PI), r2(18.84 / PI / 2), r2(34.12 - 9), r2((34.12 - 9) / PI),
+             6, 9 * 2, math.hypot(9, 12), 12, 17, 7 * 2, 20 - 13,          # 5차시
+             16 / 2, 30 / 2, 18 / 2, r2(5 * 2 * PI),                       # 6차시
+             7 * 2,                                                         # 7~8차시
+             7 * 2, math.hypot(7, 24), 24, 9, 9 * 2, 5 * 3, r2(5 * PI),     # 10차시
+             r2(3 * 2 * PI), r2((r2(3 * 2 * PI) + 8) * 2)]
+
+
+def st_step_label(i, name):
+    parts = name.split(' — ', 1)
+    return ('%s %s' % (NUM[i], label_of(parts[0])), parts[1] if len(parts) > 1 else None)
+
+
+def st_lesson(s, lv, L, first, story):
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    if first and story:
+        s.scene(None, story['lines'][0])
+    ans = []
+    for i, st_ in enumerate(L['steps']):
+        s.step(*st_step_label(i, st_['name']))
+        show_inst(s, lv, st_['inst'], st_['hints'])
+        ans.append('%s %s' % (NUM[i], ' / '.join(x for x in (run_rec(s, lv, r) for r in st_['recs']) if x)))
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L.get('challenge'):
+            s.step('%s ★ 도전하기' % NUM[n], '앱의 도전 문제')
+            show_inst(s, lv, L['challenge']['inst'], [])
+            ans.append('%s %s' % (NUM[n], ' / '.join(x for x in (run_rec(s, lv, r) for r in L['challenge']['recs']) if x)))
+            n += 1
+        q, a = WHY_ST.get(L['id'], ('오늘 배운 내용을 친구에게 설명하듯 써 보세요.', '예) ' + L['summary'].split('. ')[0] + '.'))
+        s.step('%s 생각 쓰기' % NUM[n], '왜 그럴까요?')
+        s.ask(q, blank=False)
+        s.lines(3)
+        ans.append('%s %s' % (NUM[n], a))
+    return '%s차시  %s' % (L['no'], '  '.join(ans))
+
+
+def _st(lid):
+    def f(s, lv):
+        Ls = DATA['lessons']
+        k = [L['id'] for L in Ls].index(lid)
+        return st_lesson(s, lv, Ls[k], k == 0, DATA.get('story'))
+    f.__name__ = 'st_' + lid
+    return f
+
+
+ST = [_st(i) for i in ST_IDS]
+
 DATA = {}
 
 
@@ -958,8 +1080,13 @@ def build_file(kind, lv):
     D = load(src)
     if kind == 'tb':
         check_numbers(D)
+    else:
+        ids = [L['id'] for L in D['lessons']]
+        assert ids == ST_IDS, ('이야기 버전 차시가 바뀌었어요 — ST_IDS를 고치세요', ids)
+        check_numbers(D, ST_EXPECT)
     DATA.clear()
     DATA.update(D)
+    DATA['kind'] = kind
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'
     s = Sheet(unit_label='6-2 수학 %s(%s)' % (UNIT_NAME, label), level=lv, grade_label='6학년')
     if kind == 'tb':
