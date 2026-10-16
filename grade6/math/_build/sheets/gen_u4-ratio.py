@@ -14,8 +14,12 @@ UNIT·LESSONS를 node에서 그대로 실행해(활동 부품 대신 기록하�
     모눈·비 카드는 수에 맞는 비율로 이 스크립트가 그립니다. 임시 폴더에서 PNG로 바꿉니다(저장소에는 남기지 않음).
   - 분수: 식 줄은 그림으로 분수를 위아래로 쓰고(빈칸은 네모), 글 속 분수는 '5분의 3'처럼 읽는 말로 씁니다(정답 쪽은 3/5).
 
-이야기 버전은 아직 없습니다. 생기면 ST(차시 함수 목록)를 채우고 SRC_ST가 있으면 sem2-soop/sheets/에 만듭니다.
-ST가 비어 있거나 원본 파일이 없으면 건너뜁니다.
+    python3 gen_u4-ratio.py st         # 이야기 버전만
+
+이야기 버전(2026-10-16): ../units/sem2/u4-ratio.st.js('우리 반 초록 텃밭 프로젝트', 1~7, 8~9, 10, 11차시)를 같은 방법으로 읽어
+sem2-soop/sheets/에 만듭니다(ST = 차시 id 목록 ST_IDS). 이야기 버전에만 있는 것: 계획표 글 상자(rp4sNote)·설계도(rp4sPlan)·
+텃밭 둘러보기(rp4sGarden), 엔진의 panes(보여요·생각해요·궁금해요)·thenWhy(활동 뒤 '왜 그럴까요?')·ruleFirst(활동 앞
+'먼저 예상해요')·wonderRecall, writeStep의 쓰기 틀(help)과 모범 답(ans). 문장제 답은 check_words_st가 따로 계산해 견줍니다.
 """
 import json
 import os
@@ -1422,6 +1426,47 @@ def check_words(D):
         CHECKS[0] += 1
 
 
+def check_words_st(D):
+    """이야기 버전 문장제: 앱의 답 = 이 스크립트가 따로 계산한 값"""
+    Ls = {L['id']: L for L in D['lessons']}
+    pr = lambda a, b, c: Fraction(b * c, a)            # a : b = c : □
+    dist = lambda n, p, q: [Fraction(n * p, p + q), Fraction(n * q, p + q)]
+    exp = [
+        ('s1', '실제 텃밭의 가로: 8 × 50', [8 * 50, Fraction(8 * 50, 100)]),
+        ('s6', '60 × □', [3 * 200, pr(60, 3, 200)]),
+        ('s6', '우진 · 비례식의 성질', [10 * 18, pr(4, 10, 18)]),
+        ('s6', '민재 · 비율', [pr(4, 10, 18)]),
+        ('s6', '소윤 · 비의 성질', [Fraction(18, 4), pr(4, 10, 18)]),
+        ('s6', '퇴비와 흙을 2 : 7', [pr(2, 7, 6)]),
+        ('s6', '가로와 세로의 비가 3 : 5', [Fraction(40 * 3, 5)]),
+        ('s6', '씨앗 5봉지가', [pr(5, 4500, 8)]),
+        ('s6', '일정하게 내리는 비에', [Fraction('7.5') * 3 / Fraction('4.5')]),
+        ('s7', '씨앗 30개를', dist(30, 2, 3)),
+        ('s7', '96을 5 : 3', dist(96, 5, 3)),
+        ('s7', '모종값 18000원', dist(18000, 5, 4)),
+        ('s7', '화분 흙 45컵', dist(45, 4, 5)),
+        ('s7', '2시간 동안', dist(120, 3, 5)[1:]),
+        ('s7', '경로당: 12 ×', [Fraction(1, 4), Fraction(12, 4)]),
+        ('s7', '1모둠: 800 ×', [Fraction(3, 8), Fraction(800 * 3, 8)]),
+        ('s5', '비례식 15 : ㉠=3 : ㉡', [Fraction(120, 15), Fraction(120, 3)]),
+        ('s5', '5 : 6=㉠ : ㉡', [Fraction(210, 6), Fraction(210, 5)]),
+        ('s89', '상추', [200 * 6, pr(4, 200, 6)]),
+        ('s89', '섞은 것', [60 * 6, pr(4, 60, 6)]),
+        ('s89', '양파: 90 ×', [Fraction(2, 5), Fraction(90 * 2, 5)]),
+        ('s89', '방울토마토', [450 * 5, pr(3, 450, 5)]),
+        ('s89', '3 : 240=5', [240 * 5, pr(3, 240, 5)]),
+        ('s89', '우유: 400 ×', [Fraction(5, 8), Fraction(400 * 5, 8)]),
+        ('s11', '1모둠: 750 ×', [Fraction(2, 5), Fraction(750 * 2, 5)]),
+        ('s11', '방법 2 비례식의 성질', [4 * 0 + 200 * 7, pr(4, 7, 200)]),
+        ('s11', '가로와 세로의 합', [Fraction(240, 2)]),
+        ('s11', '가로: 120 ×', [Fraction(5, 12), Fraction(120 * 5, 12)]),
+    ]
+    for lid, start, want in exp:
+        got = row_ans(Ls[lid], start)
+        assert [g for g in got if not isinstance(g, str)] == want, ('답 확인 필요', lid, start, got, want)
+        CHECKS[0] += 1
+
+
 # ================================================================ 차시
 WHY = {   # 도전형 '왜' 쓰기(차시 id → 물음, 예시 답)
     't1': ('생활에서 두 양을 비로 비교하거나 주어진 양을 나누는 상황을 하나 찾아 써 보세요.',
@@ -1491,10 +1536,75 @@ def tb_lesson(s, lv, L, first, story):
     return '%s차시  %s' % (L['no'], '  '.join(ans))
 
 
+WHY_ST = {   # 이야기 버전 도전형 '왜' 쓰기
+    's1': ('텃밭이 아닌 생활에서 두 양을 비로 비교하거나 주어진 양을 나누는 상황을 하나 찾아 써 보세요.',
+           '예) 미숫가루 2숟가락에 우유 1컵을 섞을 때, 친구와 낸 돈의 비로 과자를 나눌 때예요.'),
+    's2': ('상토 3컵에 퇴비 2컵을 섞은 흙과 상토 4컵에 퇴비 3컵을 섞은 흙이 같지 않은 까닭을 비율로 써 보세요.',
+           '예) 3 : 2의 비율은 3/2, 4 : 3의 비율은 4/3으로 달라요. 같은 수를 곱하거나 나눌 때만 비율이 같아요.'),
+    's3': ('물 1.2 L와 영양제 0.3 L를 4 : 1로 나타내도 섞인 정도가 같은 까닭을 써 보세요.',
+           '예) 1.2 : 0.3의 전항과 후항에 10을 곱하고 3으로 나누었으니 비의 성질에 따라 비율이 4로 같아요.'),
+    's4': ('4 : 30=8 : 60에서 외항과 내항을 전항·후항과 어떻게 구별하는지 써 보세요.',
+           '예) 전항·후항은 비 하나에서 앞과 뒤이고, 외항·내항은 비례식 전체에서 바깥쪽 두 수(4, 60)와 안쪽 두 수(30, 8)예요.'),
+    's5': ('비례식 3 : 7=12 : □에서 □를 구할 때 외항의 곱과 내항의 곱을 쓰면 편리한 까닭을 써 보세요.',
+           '예) 3 × □ = 7 × 12 = 84처럼 곱셈식 하나로 바꾸어 84 ÷ 3 = 28을 바로 구할 수 있어요.'),
+    's6': ('물 펌프 문제에서 4 : 10=□ : 18처럼 세우면 안 되는 까닭을 써 보세요.',
+           '예) 앞의 비는 시간 : 물의 양, 뒤의 비는 물의 양 : 시간이라 차례가 달라서 비율이 같은 두 비가 아니에요.'),
+    's7': ('상추 12봉지를 1 : 3으로 나눌 때 12를 3등분하지 않고 4등분하는 까닭을 써 보세요.',
+           '예) 1 : 3은 1만큼과 3만큼으로 나누는 것이라 전체를 (1+3)=4만큼 똑같이 나누어야 해요.'),
+    's89': ('방울토마토 주스 조리법이 몇 인분 기준인지 먼저 확인해야 하는 까닭을 써 보세요.',
+            '예) 기준 인분과 만들 인분으로 비례식을 세우므로, 3인분 기준을 4인분으로 보면 재료의 양이 틀려요.'),
+    's10': ('5 : 4와 4 : 5로 비례식을 세울 수 없는 까닭을 써 보세요.',
+            '예) 5 : 4의 비율은 5/4, 4 : 5의 비율은 4/5로 달라요. 비율이 같은 두 비만 비례식이 돼요.'),
+    's11': ('둘레가 240 cm인 꽃밭 틀에서 240을 그대로 5 : 7로 나누면 안 되는 까닭을 써 보세요.',
+            '예) 둘레는 가로와 세로를 두 번씩 더한 길이라서, 가로와 세로의 합 120 cm를 5 : 7로 나누어야 해요.'),
+}
+
+
+def st_lesson(s, lv, L, first, story):
+    """이야기 버전 한 차시: 앱의 계단 이름 '만져 보기 — 모종 화분 두 개' → ① 만져 보기 | 모종 화분 두 개"""
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    if first and story:
+        s.scene(None, rd(story['lines'][0] + ' ' + story['lines'][1]))
+        s.text('※ 식 줄은 분수를 위아래로 썼어요. 글 속에서는 ‘5분의 3’처럼 읽는 말로 썼어요. 네모 칸에는 수를 써요. '
+               '‘(예)’가 붙은 답은 비율이 같으면 다른 답도 맞아요.')
+    ans = []
+    for i, st_ in enumerate(L['steps']):
+        nm = st_['name'] or STEP_NAMES[min(i, len(STEP_NAMES) - 1)]
+        main, _, sub = nm.partition(' — ')
+        s.step('%s %s' % (NUM[i], main.strip()), sub.strip() or None)
+        show_inst(s, lv, st_['inst'], st_['hints'])
+        ans.append('%s %s' % (NUM[i], run_calls(s, lv, st_['calls'])))
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L.get('ch'):
+            s.step('%s ★ 도전하기' % NUM[n], '앱의 도전 문제')
+            show_inst(s, lv, re.sub(r'^★ 도전 — ', '', L['ch']['inst']), [])
+            ans.append('%s %s' % (NUM[n], run_calls(s, lv, L['ch']['calls'])))
+            n += 1
+        q, a = WHY_ST[L['id']]
+        s.step('%s 생각 쓰기' % NUM[n], '왜 그럴까요?')
+        s.ask(rd(q), blank=False)
+        s.lines(2)
+        ans.append('%s %s' % (NUM[n], a))
+    return '%s차시  %s' % (L['no'], '  '.join(ans))
+
+
 DATA = {}
 
-# 이야기 버전 차시 함수(아직 없음 — 생기면 st1, st2, … 를 넣으세요)
-ST = []
+# 이야기 버전 차시(앱 u4-ratio.st.js의 LESSONS id 차례 — 1~7, 8~9, 10, 11차시)
+ST_IDS = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's89', 's10', 's11']
+
+
+def _st(lid):
+    def f(s, lv):
+        Ls = DATA['lessons']
+        k = [L['id'] for L in Ls].index(lid)
+        return st_lesson(s, lv, Ls[k], k == 0, DATA.get('story'))
+    f.__name__ = 'st_' + lid
+    return f
+
+
+ST = [_st(lid) for lid in ST_IDS]
 
 
 def build_file(kind, lv):
@@ -1502,7 +1612,11 @@ def build_file(kind, lv):
     D = cap(src)
     DATA.clear()
     DATA.update(D)
-    check_words(D)
+    if kind == 'tb':
+        check_words(D)
+    else:
+        assert [L['id'] for L in D['lessons']] == ST_IDS, ('이야기 버전 차시가 바뀌었어요', [L['id'] for L in D['lessons']])
+        check_words_st(D)
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'
     s = Sheet(unit_label='6-2 수학 %s(%s)' % (UNIT_NAME, label), level=lv, grade_label='6학년')
     if kind == 'tb':
