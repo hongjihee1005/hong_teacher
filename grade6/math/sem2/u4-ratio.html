@@ -858,7 +858,7 @@ html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!imp
 /* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
 html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
-</style><meta name="hj-list" content="[[&quot;u1-fracdiv.html&quot;, &quot;분수의 나눗셈&quot;, &quot;웹앱&quot;], [&quot;u2-decdiv.html&quot;, &quot;소수의 나눗셈&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
+</style><meta name="hj-list" content="[[&quot;u1-fracdiv.html&quot;, &quot;분수의 나눗셈&quot;, &quot;웹앱&quot;], [&quot;u2-decdiv.html&quot;, &quot;소수의 나눗셈&quot;, &quot;웹앱&quot;], [&quot;u5-circle.html&quot;, &quot;원의 둘레와 넓이&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
 <div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
@@ -1726,7 +1726,7 @@ function rp4Build(body, api, opt) {
       });
     }
     tbl.innerHTML = "";
-    tbl.append(rp4Tbl([`${opt.what} 수`, `${n}${opt.unit || "개"}`], its.map(it => [it.name, `${it.per * n} ${it.unit}`])));
+    tbl.append(rp4Tbl([`${opt.what} 수`, `${n}${opt.unit || "개"}`], its.map(it => [it.name, `${it.per * n}${it.unit === "g" ? " g" : it.unit}`])));
     read.textContent = `${opt.what} ${n}${opt.unit || "개"}: ${its[0].name} ${its[0].per * n}${its[0].unit === "g" ? " g" : its[0].unit}, ${its[1].name} ${its[1].per * n}${its[1].unit === "g" ? " g" : its[1].unit} → 비 ${its[0].per * n} : ${its[1].per * n}`;
   };
   const plus = h("button", { onclick: () => { if (fin || n >= max) return; n++; after(); } }, `＋ ${opt.what} 하나 더 만들기`);
@@ -2125,7 +2125,7 @@ function rp4Rect(body, api, opt) {
 function rp4Scene(body, api, opt) {
   const svg = makeSvg(720, 272); svg.setAttribute("class", "rp4fig");
   const spots = [
-    { x: 20, t: "현수막 가방 꾸미기", ok: true, say: "가방을 꾸밀 때 사용한 빨간색 물감과 파란색 물감의 양을 비교해요.", draw: g => { g.append(svgEl("rect", { x: 30, y: 120, width: 70, height: 70, rx: 8, fill: "#F0E6D2", stroke: "#8A7552", "stroke-width": 2 })); g.append(svgEl("rect", { x: 104, y: 150, width: 26, height: 40, rx: 4, fill: "#E2574C" }), svgEl("rect", { x: 104, y: 175, width: 26, height: 15, fill: "#962A21" })); g.append(svgEl("rect", { x: 134, y: 165, width: 22, height: 25, rx: 4, fill: "#2B7BD6" })); } },
+    { x: 20, t: "현수막 가방 꾸미기", ok: true, say: "가방을 꾸밀 때 사용한 빨간색 물감과 파란색 물감의 양을 비교해요.", draw: g => { g.append(svgEl("rect", { x: 28, y: 120, width: 64, height: 70, rx: 8, fill: "#F0E6D2", stroke: "#8A7552", "stroke-width": 2 })); g.append(svgEl("rect", { x: 97, y: 150, width: 24, height: 40, rx: 4, fill: "#E2574C" }), svgEl("rect", { x: 97, y: 175, width: 24, height: 15, fill: "#962A21" })); g.append(svgEl("rect", { x: 125, y: 165, width: 20, height: 25, rx: 4, fill: "#2B7BD6" })); } },
     { x: 160, t: "친환경 신발 부스", ok: true, say: "신발을 만들 때 필요한 페트병 수와 나무껍질의 양을 비교해요.", draw: g => { g.append(rp4Icon("shoe", 215, 140, 70)); g.append(rp4Icon("bottle", 190, 190, 34), rp4Icon("bottle", 215, 190, 34), rp4Icon("bark", 255, 190, 40)); } },
     { x: 300, t: "병뚜껑 모으기", ok: true, say: "모은 병뚜껑 수와 필요한 상자 수를 비교해요.", draw: g => { g.append(svgEl("rect", { x: 320, y: 140, width: 100, height: 60, fill: "#D9B98A", stroke: "#8A6A3A", "stroke-width": 2 })); [0, 1, 2, 3, 4, 5].forEach(i => g.append(svgEl("circle", { cx: 332 + i * 15, cy: 130 - (i % 2) * 8, r: 7, fill: ["#E2574C", "#2B7BD6", "#2E8B57", "#F2B04A", "#7D5BD6", "#E2574C"][i] }))); } },
     { x: 440, t: "헌 크레파스 녹이기", ok: true, say: "새 크레파스 수와 필요한 헌 크레파스의 양을 비교해요.", draw: g => { g.append(rp4Icon("old", 480, 150, 60), rp4Icon("newcr", 530, 185, 60)); } },
@@ -2283,7 +2283,7 @@ const LESSONS = [
     { name: "배울 내용 살펴보기", inst: "책장을 넘겨 이 단원에서 어떤 내용을 공부할지 알아봐요. 배울 차례대로 스티커를 붙이듯 눌러 보세요.", hints: ["비의 성질을 먼저 배우고, 그것을 이용해 간단한 자연수의 비로 나타내요.", "비례식을 배운 다음 비례식의 성질과 활용을 배우고, 마지막에 비례배분을 배워요."],
       render: (b, a) => sequence(b, a, ["㉠ 비례배분을 해 볼까요", "㉡ 비의 성질을 알아볼까요", "㉢ 비례식을 알아볼까요", "㉣ 간단한 자연수의 비로 나타내어 볼까요", "㉤ 비례식을 활용해 볼까요", "㉥ 비례식의 성질을 알아볼까요"], [1, 3, 2, 5, 4, 0],
         { ok: "비의 성질 → 간단한 자연수의 비 → 비례식 → 비례식의 성질 → 비례식 활용 → 비례배분 차례로 배워요." }) },
-    { name: "배운 내용 떠올리기", inst: "6학년 1학기에 배운 비와 비율을 떠올려요. 서영이가 빨간색 물감 3컵과 파란색 물감 5컵을 섞었어요. 빨간색 물감 양과 파란색 물감 양을 비교해 보세요.", hints: ["(비교하는 양) : (기준량)으로 써요. 빨간색 물감 양을 파란색 물감 양과 비교해요.", "비율은 (비교하는 양) ÷ (기준량)이에요. 백분율은 비율에 100을 곱해 % 를 붙여요."],
+    { name: "배운 내용 떠올리기", inst: "6학년 1학기에 배운 비와 비율을 떠올려요. 서영이가 빨간색 물감 3컵과 파란색 물감 5컵을 섞었어요. 빨간색 물감 양과 파란색 물감 양을 비교해 보세요.", hints: ["(비교하는 양) : (기준량)으로 써요. 빨간색 물감 양을 파란색 물감 양과 비교해요.", "비율은 (비교하는 양) ÷ (기준량)이에요. 백분율은 비율에 100을 곱해 %를 붙여요."],
       render: (b, a) => rp4Chain(b, a, [
         ["빨간색 물감 양과 파란색 물감 양의 비: ", { r: [3, 5], why: { "5:3": "빨간색 물감 양을 앞에, 파란색 물감 양을 뒤에 써요." } }],
         ["3 : 5는 ‘3 ", { c: ["대", "더하기", "나누기"], a: 0 }, " 5’라고 읽어요."],
@@ -2363,7 +2363,7 @@ const LESSONS = [
     { inst: "[2/3] : [4/9]를 간단한 자연수의 비로 나타내 보세요. 전항과 후항에 어떤 수를 곱해야 할까요?", hints: ["두 분모 3과 9의 공배수를 곱하면 분모가 없어져요.", "9를 곱하면 6 : 4, 공약수 2로 나누면 3 : 2예요."],
       render: (b, a) => rp4Simp(b, a, { a: "2/3", b: "4/9", ma: "frac", mb: "frac", simplest: true, noConv: true, mults: [3, 9],
         ask: [["두 분모 3과 9의 ", { c: ["공배수", "공약수"], a: 0 }, "인 ", { i: "9" }, "를 곱하면 ", { r: [6, 4] }, "이고, 2로 나누면 ", { r: [3, 2] }, "예요."]],
-        ok: "[2/3] : [4/9] = 6 : 4 = 3 : 2예요. 18, 27처럼 다른 공배수를 곱해도 같은 비가 돼요." }) },
+        ok: "[2/3] : [4/9] = 6 : 4 = 3 : 2예요. 18, 27처럼 다른 공배수를 곱해도 공약수로 나누면 3 : 2가 돼요." }) },
     { inst: "[2/5] : 0.6을 간단한 자연수의 비로 나타내려고 해요. 두 가지 방법으로 나타내 보세요.", hints: ["방법 1: ‘전항 바꾸기’로 [2/5]를 0.4로 바꾼 다음 10을 곱해요.", "방법 2: ‘후항 바꾸기’로 0.6을 [6/10]으로 바꾼 다음 10을 곱해요."],
       render: (b, a) => rp4Seq(b, a, [
         { title: "방법 1 전항을 소수로 바꾸어 나타내기", run: (bx, ax) => rp4Simp(bx, ax, { a: "2/5", b: "0.6", ma: "frac", mb: "dec", need: "a2dec", simplest: true, ok: "[2/5] = 0.4, 0.4 : 0.6 = 4 : 6 = 2 : 3이에요." }) },
@@ -2532,7 +2532,7 @@ const LESSONS = [
         ask: [["하윤: 600 × ", { f: "1/4" }, " = ", { i: "150" }, " (cm)"], ["승우: 600 × ", { f: "3/4" }, " = ", { i: "450" }, " (cm)"]],
         ok: "하윤이는 150 cm, 승우는 450 cm를 가지면 돼요." }) },
     { inst: "비례배분을 약속해요.", hints: ["전체를 주어진 비로 나누는 것이에요.", "2 : 3이면 2+3=5만큼 등분해요."],
-      render: (b, a) => blanks(b, a, ["전체를 주어진 비로 나누는 것을 ", { o: ["비례배분", "비례식", "비율"], a: 0 }, "이라고 합니다. 전체를 2 : 3으로 나누려면 전체를 ", { o: ["(2+3)만큼", "2만큼", "3만큼"], a: 0 }, " 등분하여 전체의 [2/5]과 [3/5]으로 나눠요."],
+      render: (b, a) => blanks(b, a, ["전체를 주어진 비로 나누는 것을 ", { o: ["비례배분", "비례식", "비율"], a: 0 }, "이라고 합니다. 전체를 2 : 3으로 나누려면 전체를 ", { o: ["(2+3)만큼", "2만큼", "3만큼"], a: 0 }, " 등분하여 전체의 [2/5]와 [3/5]으로 나눠요."],
         { ok: "전체를 주어진 비로 나누는 것을 비례배분이라고 합니다." }) },
     { inst: "보기에서 비 1개를 골라 문제를 완성하고, 답을 구해 보세요. 문제: “점토 720 g을 □(으)로 나누어 컵과 컵 받침을 만들었습니다. 컵과 컵 받침을 만드는 데 사용한 점토의 무게는 각각 몇 g인가요?”", hints: ["3 : 2를 고르면 전체를 5만큼 등분해요.", "컵은 720 × (전항) ÷ (비의 합)으로 구해요."],
       render: (b, a) => rp4Clay(b, a, { total: 720, cards: ["2 : 1", "3 : 2", "5 : 3", "7 : 2"], need: 2, names: ["컵", "컵 받침"], unit: "g",

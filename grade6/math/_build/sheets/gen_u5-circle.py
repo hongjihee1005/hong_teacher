@@ -437,13 +437,13 @@ def cutcircle_svg(R=4, n=16):
 
 def cuts_svg(cuts):
     """앱 ci6Cut에서 '이어 붙이기'를 누른 뒤의 그림 넷(8·16·32·64등분)을 이어 붙인 부분만 2×2로"""
-    cw, ch, gap, top = 410, 180, 20, 26
+    cw, ch, gap, top = 400, 175, 20, 26
     b = []
     for i, n in enumerate(['8', '16', '32', '64']):
         x, y = (i % 2) * (cw + gap), (i // 2) * (ch + top + gap) + top
         inner = re.sub(r'^<svg[^>]*>', '', cuts[n])[:-6]
         b.append('<rect x="%s" y="%s" width="%s" height="%s" rx="10" fill="#fff" stroke="#C9D4CF" stroke-width="2"/>' % (x, y, cw, ch))
-        b.append('<svg x="%s" y="%s" width="%s" height="%s" viewBox="232 48 410 %s">%s</svg>' % (x, y, cw, ch, ch, inner))
+        b.append('<svg x="%s" y="%s" width="%s" height="%s" viewBox="205 50 320 140">%s</svg>' % (x, y, cw, ch, inner))
         b.append(_t(x + cw / 2, y - 13, '%s등분' % n, 17, INK, weight='bold'))
     return _svg(2 * cw + gap, 2 * (ch + top) + gap, ''.join(b))
 
@@ -816,7 +816,7 @@ def lesson(s, lv, L, D):
             for a, b in PAPER:
                 inst = inst.replace(a, b)
             s.text(inst)
-        if lv == '기본형' and st['hints'] and has_num(st['recs']):
+        if lv == '기본형' and st['hints'] and has_num(st['recs']) and rec0['t'] not in INTERACTIVE:
             s.text('도움: ' + st['hints'][0])
         out.append(NUM[i] + ' ' + '; '.join(render_rec(s, lv, r, st, D) for r in st['recs']))
     if lv == '도전형':
