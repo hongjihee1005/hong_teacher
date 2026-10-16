@@ -17,7 +17,10 @@ LESSONS를 node에서 가짜 DOM으로 그대로 실행해, 단계마다 넘긴 
     5차시 모눈(한 칸 1 cm), 6차시 16등분한 원(반지름 4 cm), 10차시 놀이판(16 cm × 12 cm 모눈).
   - 바둑돌 수·모눈 칸 수·원의 넓이는 앱의 함수(ci6String의 셈, ci6GridCount·ci6GridTruth, ci6Area)로 구한 값을 쓰고,
     파이썬으로 따로 다시 계산해 assert로 맞춥니다.
-  - 이야기 버전(ST)은 아직 없어서 건너뜁니다(앱 원본 u5-circle.st.js가 생기면 ST 목록에 더함).
+  - 이야기 버전(ST, `python3 gen_u5-circle.py st`)은 앱 원본 ../units/sem2/u5-circle.st.js('우리 반 둥근 쉼터 설계단', 11차시)를
+    같은 방법(_EX_ST: _EX에 panes·thenWhy·ruleFirst·wonderRecall·writeStep 답을 더 모음)으로 읽어 sem2-soop/sheets/에 만듭니다.
+    이야기 버전 그림: 1차시 도전(끈 28 cm로 만든 세 도형), 2차시 반지름 1.5 cm인 원과 cm 수직선, 3차시 컵 받침(지름 9 cm),
+    5·6·10차시는 교과서 버전과 같은 실제 크기 그림. 기본형은 '왜 그럴까요?'·'먼저 예상해요'에 앱 도움의 문장 틀을 줍니다.
 그림은 임시 폴더에서 PNG로 바꿉니다(저장소에는 남기지 않음).
 """
 
@@ -164,7 +167,8 @@ NUM = '①②③④⑤⑥⑦⑧⑨'
 WORK = tempfile.mkdtemp(prefix='u5circ_')
 K = 40            # 실제 크기: 1 cm = 40 px → 그림 너비 mm = px ÷ 4
 PI = 3.14
-ST = []           # 이야기 버전 차시(아직 없음 — 원본이 생기면 더함)
+SRC_ST = os.path.join(UNITS, 'u5-circle.st.js')
+OUT_ST = os.path.join(ROOT, 'sem2-soop', 'sheets')
 
 INK, BLUE, RED, GREEN, ORG, GRAY, GRID = '#1D2A2A', '#2B7BD6', '#D64545', '#2E8B57', '#E47A38', '#8795A1', '#B8C6D2'
 
@@ -187,10 +191,10 @@ def fmt(v):
 
 
 # ================================================================ 앱 읽기(node)
-def load(src):
+def load(src, ex=None):
     js = os.path.join(WORK, 'ex.js')
     with open(js, 'w', encoding='utf-8') as f:
-        f.write(_EX)
+        f.write(ex or _EX)
     r = subprocess.run(['node', js, src, FONT], capture_output=True, text=True)
     if r.returncode:
         raise RuntimeError(r.stderr[-3000:])
@@ -855,8 +859,13 @@ def main():
             D = load(SRC_TB)
             for lv in ('기본형', '도전형'):
                 out.append(build(D, '6-2 수학 5. 원의 둘레와 넓이(교과서 차시)', '교과서 차시', OUT_TB, lv))
-        if 'st' in want and not ST:
-            print('[건너뜀] 이야기 버전 원본(u5-circle.st.js)이 아직 없어요.')
+        if 'st' in want:
+            if ST and os.path.exists(SRC_ST):
+                D = load(SRC_ST, _EX_ST)
+                for lv in ('기본형', '도전형'):
+                    out.append(build_st(D, lv))
+            else:
+                print('[건너뜀] 이야기 버전 원본(u5-circle.st.js)이 없어요.')
     finally:
         SHOT.close()
         shutil.rmtree(WORK, ignore_errors=True)

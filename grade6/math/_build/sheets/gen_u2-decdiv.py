@@ -1366,9 +1366,9 @@ def note_box(s, nt):
     s.text('【%s】' % noemo(nt['title']))
     pairs = []
     for ln in nt['lines']:
-        t = noemo(K(ln))
-        k, sep, v = t.partition(':')
-        pairs.append((k.strip(), v.strip()) if sep and len(k) <= 14 else ('·', t))
+        for t in re.split(r'(?<=”)\s+(?=[가-힣]{1,4}:)', noemo(K(ln))):   # 한 줄에 두 사람의 말이면 나눔
+            k, sep, v = t.partition(':')
+            pairs.append((k.strip(), v.strip()) if sep and len(k) <= 14 else ('·', t))
     s.labeled(pairs, label_mm=30, row_h=3402)
 
 

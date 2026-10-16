@@ -193,7 +193,6 @@ KO = '㉠㉡㉢㉣㉤㉥㉦㉧'
 WORK = tempfile.mkdtemp(prefix='u6cyl_')
 K = 40            # 실제 크기: 1 cm = 40 px → 그림 너비 mm = px ÷ 4
 PI = 3.14
-ST = []           # 이야기 버전 차시(아직 없음 — 원본이 생기면 더함)
 
 INK, BLUE, RED, GRAY, GRID = '#1D2A2A', '#2B7BD6', '#D64545', '#8795A1', '#B8C6D2'
 
@@ -1001,6 +1000,73 @@ def tb_lesson(s, lv, L, first, story):
     return '%s차시  %s' % (L['no'], '  '.join(ans))
 
 
+# ================================================================ 이야기 버전 차시
+ST_IDS = ['s1', 's2', 's34', 's5', 's6', 's78', 's9', 's10']     # 앱 u6-cylinder.st.js LESSONS의 id 차례(1·2·3~4·5·6·7~8·9·10차시)
+WHY_ST = {   # 도전형 '생각 쓰기'(앱 thenWhy 물음과 겹치지 않게)
+    's1': WHY['t1'],
+    's2': ('누워 있는 원통 종이 등에서 바닥에 닿은 면이 밑면이 아닌 까닭을 써 보세요.',
+           '예) 밑면은 아래에 있는 면이 아니라 평행하고 합동인 두 원이기 때문이에요. 바닥에 닿은 것은 굽은 옆면이에요.'),
+    's34': ('원통 종이 등의 설계도에서 두 밑면을 옆면의 같은 쪽에 그리면 안 되는 까닭을 써 보세요.',
+            '예) 옆면을 말아 접으면 두 밑면이 같은 쪽 끝에서 겹쳐서, 반대쪽은 뚫려 있게 되기 때문이에요.'),
+    's5': ('길 안내 고깔(원뿔)에 붙인 장식 끈(모선)의 길이가 모두 같은 까닭을 써 보세요.',
+           '예) 직각삼각형을 돌려 원뿔을 만들 때 가장 긴 변이 한 바퀴 돌며 모선이 되므로, 모선은 모두 그 변의 길이와 같아요.'),
+    's6': WHY['t6'],
+    's78': WHY['t78'],
+    's9': WHY['t9'],
+    's10': WHY['t10'],
+}
+# 이야기 버전 문제의 수로 따로 계산한 값(앱 답 중에 꼭 있어야 함)
+ST_EXPECT = [r2(8 * PI), r2(6 * 2 * PI),                                   # 1차시 원주
+             3 * 2, 9, 16, 4 * 2, 9 * 2,                                    # 2차시
+             r2(4 * 2 * PI), 10, 1.5, r2(1.5 * 2 * PI), 6, 2.5, 3, r2(2.5 * 2 * PI),   # 3~4차시
+             r2(5 * 2 * PI), 9, r2(18.84 / PI), r2(18.84 / PI / 2), r2(34.12 - 9), r2((34.12 - 9) / PI),
+             6, 9 * 2, math.hypot(9, 12), 12, 17, 7 * 2, 20 - 13,          # 5차시
+             16 / 2, 30 / 2, 18 / 2, r2(5 * 2 * PI),                       # 6차시
+             7 * 2,                                                         # 7~8차시
+             7 * 2, math.hypot(7, 24), 24, 9, 9 * 2, 5 * 3, r2(5 * PI),     # 10차시
+             r2(3 * 2 * PI), r2((r2(3 * 2 * PI) + 8) * 2)]
+
+
+def st_step_label(i, name):
+    parts = name.split(' — ', 1)
+    return ('%s %s' % (NUM[i], label_of(parts[0])), parts[1] if len(parts) > 1 else None)
+
+
+def st_lesson(s, lv, L, first, story):
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    if first and story:
+        s.scene(None, story['lines'][0])
+    ans = []
+    for i, st_ in enumerate(L['steps']):
+        s.step(*st_step_label(i, st_['name']))
+        show_inst(s, lv, st_['inst'], st_['hints'])
+        ans.append('%s %s' % (NUM[i], ' / '.join(x for x in (run_rec(s, lv, r) for r in st_['recs']) if x)))
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L.get('challenge'):
+            s.step('%s ★ 도전하기' % NUM[n], '앱의 도전 문제')
+            show_inst(s, lv, L['challenge']['inst'], [])
+            ans.append('%s %s' % (NUM[n], ' / '.join(x for x in (run_rec(s, lv, r) for r in L['challenge']['recs']) if x)))
+            n += 1
+        q, a = WHY_ST.get(L['id'], ('오늘 배운 내용을 친구에게 설명하듯 써 보세요.', '예) ' + L['summary'].split('. ')[0] + '.'))
+        s.step('%s 생각 쓰기' % NUM[n], '왜 그럴까요?')
+        s.ask(q, blank=False)
+        s.lines(3)
+        ans.append('%s %s' % (NUM[n], a))
+    return '%s차시  %s' % (L['no'], '  '.join(ans))
+
+
+def _st(lid):
+    def f(s, lv):
+        Ls = DATA['lessons']
+        k = [L['id'] for L in Ls].index(lid)
+        return st_lesson(s, lv, Ls[k], k == 0, DATA.get('story'))
+    f.__name__ = 'st_' + lid
+    return f
+
+
+ST = [_st(i) for i in ST_IDS]
+
 DATA = {}
 
 
@@ -1009,8 +1075,13 @@ def build_file(kind, lv):
     D = load(src)
     if kind == 'tb':
         check_numbers(D)
+    else:
+        ids = [L['id'] for L in D['lessons']]
+        assert ids == ST_IDS, ('이야기 버전 차시가 바뀌었어요 — ST_IDS를 고치세요', ids)
+        check_numbers(D, ST_EXPECT)
     DATA.clear()
     DATA.update(D)
+    DATA['kind'] = kind
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'
     s = Sheet(unit_label='6-2 수학 %s(%s)' % (UNIT_NAME, label), level=lv, grade_label='6학년')
     if kind == 'tb':
