@@ -186,4 +186,5 @@
 - 6-1 지도서 id는 위 '5·6학년 지도서 파일'의 6-1 줄. 명세는 scratchpad `g6/spec1_uN.md`.
 - 6-1 교과서: units/<slug>.tb.js → sem1/, key `t61-<이름>-v1`, gen_lists.py SEMS[1] 채우기, 6학년 수학방 1학기 카드 열기.
 - 6-2 이야기: units/sem2/<slug>.st.js → sem2-soop/, key `s62-<이름>-v1`, BRIEF_ST_G5.md를 6-2에 맞게. 이야기 버전 활동지는 gen_<slug>.py의 ST에 더함. 다 되면 TBONLY 없이 gen_lists.py 2(공용 문서는 sem2-soop로).
+- **6-1 3단원 지도서(`[수학 지도서]6-1_3단원.pdf`, 59MB, id `1do72rYumu9j9q2byU4q17Bs1DPGysLvY`)는 글이 읽히지 않음(2026-10-16, 스캔본이거나 너무 큼)** → 선생님께 글이 든 PDF나 30MB 이하로 나눈 PDF를 부탁함. 올라오기 전까지 3단원은 건너뛰고 다른 단원부터.
 
