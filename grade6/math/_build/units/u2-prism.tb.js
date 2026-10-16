@@ -584,7 +584,7 @@ function pp6Parts(body, api, opt) {
 
 /* ---------- 자와 삼각자로 높이 재기 ---------- */
 function pp6Ruler(body, api, opt) {
-  const S = opt.S, hh = opt.h, isPy = S.kind === "pyr", W = 440, H = 340, pitch = 12, yaw = opt.yaw == null ? -20 : opt.yaw, cbv = Math.cos(pitch * PP6_D);
+  const S = opt.S, hh = opt.h, isPy = S.kind === "pyr", W = 440, H = 340, pitch = 7, yaw = opt.yaw == null ? -20 : opt.yaw, cbv = Math.cos(pitch * PP6_D);
   const xs = S.V.map(v => v[0] * Math.cos(yaw * PP6_D) + v[2] * Math.sin(yaw * PP6_D)), x0 = Math.min(...xs), x1 = Math.max(...xs);
   const rx = x1 + .6, top = hh + 1.8, sc = Math.min((H - 40) / ((hh + 3.2) * cbv), (W - 60) / (rx + 1.4 - x0)), cx = W / 2 - sc * (x0 + rx + .9) / 2, cy = H / 2 + .9 * sc * cbv;
   const svg = makeSvg(W, H); svg.setAttribute("class", "pp6fig"); svg.style.maxWidth = "28em";
@@ -658,19 +658,38 @@ function pp6Make(body, api, opt) {
 /* 접는 그림(움직이는 그림 판): U = pp6Unfold 결과(또는 같은 꼴의 마디), set(t) 0 펼침 ~ 1 접힘 */
 function pp6FoldSvg(S, U, o = {}) {
   const W = o.W || 420, H = o.H || 320, svg = makeSvg(W, H); svg.setAttribute("class", "pp6fig" + (o.plain ? " pp6plain" : "")); svg.style.maxWidth = o.maxW || "27em";
-  const yaw = (o.yaw == null ? -20 : o.yaw) * PP6_D, p0 = o.p0 == null ? 74 : o.p0, p1 = o.p1 == null ? 26 : o.p1, pad = o.pad == null ? 14 : o.pad;
-  const proj = (q, t) => { const X = q[0], Y = -q[2], Zd = -q[1], p = (p0 - (p0 - p1) * t) * PP6_D;
-    const X1 = X * Math.cos(yaw) + Zd * Math.sin(yaw), Z1 = -X * Math.sin(yaw) + Zd * Math.cos(yaw); return [X1, Y * Math.cos(p) - Z1 * Math.sin(p), Y * Math.sin(p) + Z1 * Math.cos(p)]; };
-  const bb = t => { const Q = pp6FoldPts(U, t).flat().map(q => proj(q, t)), xs = Q.map(q => q[0]), ys = Q.map(q => q[1]); return [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]; };
-  const B = [0, .25, .5, .75, 1].map(bb);
-  const sc = Math.min(...B.map(b => Math.min((W - 2 * pad) / Math.max(b[1] - b[0], 1e-6), (H - 2 * pad) / Math.max(b[3] - b[2], 1e-6))));
-  const cen = t => { const a = B[0], b = B[4]; return [((a[0] + a[1]) / 2) * (1 - t) + ((b[0] + b[1]) / 2) * t, ((a[2] + a[3]) / 2) * (1 - t) + ((b[2] + b[3]) / 2) * t]; };
+  const pad = o.pad == null ? 14 : o.pad, y0d = o.yaw == null ? -20 : o.yaw, p0 = o.p0 == null ? 74 : o.p0;
   const isB = nd => nd.base != null ? nd.base : pp6IsBase(S, nd.f);
+  // 다 접었을 때: 같은 면이 두 번 나오면(겹침) 빨갛게, 빠진 면은 빨간 점선으로
+  const F1 = pp6FoldPts(U, 1), seenF = new Set(), dup = U.map(nd => { const d = seenF.has(nd.f); seenF.add(nd.f); return d; });
+  const pairs = new Map(); U.forEach((nd, i) => (nd.ids || []).forEach((id, k) => { if (!pairs.has(id)) pairs.set(id, F1[i][k]); }));
+  let miss = [];
+  if (U[0].ids) { const ids = [...pairs.keys()], v = ids.map(id => S.V[id]), f = ids.map(id => pairs.get(id));
+    let q = null; for (let a = 1; a < ids.length && !q; a++) for (let b = a + 1; b < ids.length && !q; b++) for (let c = b + 1; c < ids.length && !q; c++) {
+      const A = [pp6Sub(v[a], v[0]), pp6Sub(v[b], v[0]), pp6Sub(v[c], v[0])], det = pp6Dot3(A[0], pp6Crs(A[1], A[2])); if (Math.abs(det) > 1e-3) q = [a, b, c, A, det]; }
+    if (q) { const [a, b, c, A] = q, Bm = [pp6Sub(f[a], f[0]), pp6Sub(f[b], f[0]), pp6Sub(f[c], f[0])];
+      const solve = d => { const det = pp6Dot3(A[0], pp6Crs(A[1], A[2])); return [pp6Dot3(d, pp6Crs(A[1], A[2])) / det, pp6Dot3(A[0], pp6Crs(d, A[2])) / det, pp6Dot3(A[0], pp6Crs(A[1], d)) / det]; };
+      const M = p => { const w = solve(pp6Sub(p, v[0])); return [0, 1, 2].map(k => f[0][k] + w[0] * Bm[0][k] + w[1] * Bm[1][k] + w[2] * Bm[2][k]); };
+      miss = S.F.map((fc, fi) => seenF.has(fi) ? null : fc.map(id => M(S.V[id]))).filter(Boolean); } }
+  const flag = miss.length ? miss[0] : dup.includes(true) ? F1[dup.indexOf(true)] : null;
+  const W3 = q => [q[0], -q[2], -q[1]];
+  const all1 = F1.flat().map(W3), cen1 = all1.reduce((a, q) => a.map((x, k) => x + q[k] / all1.length), [0, 0, 0]);
+  let y1d = y0d, p1 = o.p1 == null ? 26 : o.p1;
+  if (flag) { const c = flag.map(W3).reduce((a, q) => a.map((x, k) => x + q[k] / flag.length), [0, 0, 0]), d = pp6Sub(c, cen1);
+    y1d = Math.atan2(-d[0], d[2]) / PP6_D; while (y1d - y0d > 180) y1d -= 360; while (y0d - y1d > 180) y1d += 360; p1 = Math.max(18, Math.min(62, Math.atan2(d[1], Math.hypot(d[0], d[2])) / PP6_D)); }
+  const cam = t => [(y0d + (y1d - y0d) * t) * PP6_D, (p0 - (p0 - p1) * t) * PP6_D];
+  const proj = (q, t) => { const [X, Y, Zd] = W3(q), [ya, p] = cam(t);
+    const X1 = X * Math.cos(ya) + Zd * Math.sin(ya), Z1 = -X * Math.sin(ya) + Zd * Math.cos(ya); return [X1, Y * Math.cos(p) - Z1 * Math.sin(p), Y * Math.sin(p) + Z1 * Math.cos(p)]; };
+  const bb = t => { const Q = pp6FoldPts(U, t).flat().concat(t > .97 ? miss.flat() : []).map(q => proj(q, t)), xs = Q.map(q => q[0]), ys = Q.map(q => q[1]); return [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)]; };
+  const fit = b => Math.min((W - 2 * pad) / Math.max(b[1] - b[0], 1e-6), (H - 2 * pad) / Math.max(b[3] - b[2], 1e-6));
+  const B0 = bb(0), B1 = bb(1), s0 = fit(B0), s1 = Math.min(fit(B1), s0 * 1.9);
   const set = t => {
     svg.innerHTML = "";
-    const F = pp6FoldPts(U, t), c = cen(t);
-    const fs = F.map((pts, i) => { const Q = pts.map(q => proj(q, t)); return { i, Q, d: Q.reduce((s, q) => s + q[2], 0) / Q.length }; }).sort((a, b) => a.d - b.d);
-    fs.forEach(({ i, Q }) => svg.append(svgEl("polygon", { points: pp6Pts(Q.map(q => [W / 2 + sc * (q[0] - c[0]), H / 2 - sc * (q[1] - c[1])])), fill: (o.col && o.col[i]) || (isB(U[i]) ? PP6.base : PP6.sideN), "fill-opacity": .9, stroke: PP6.ink, "stroke-width": 2, "stroke-linejoin": "round" })));
+    const F = pp6FoldPts(U, t), sc = s0 + (s1 - s0) * t, c = [((B0[0] + B0[1]) / 2) * (1 - t) + ((B1[0] + B1[1]) / 2) * t, ((B0[2] + B0[3]) / 2) * (1 - t) + ((B1[2] + B1[3]) / 2) * t];
+    const T2 = q => [W / 2 + sc * (q[0] - c[0]), H / 2 - sc * (q[1] - c[1])];
+    const fs = F.map((pts, i) => { const Q = pts.map(q => proj(q, t)); return { i, Q, d: Q.reduce((s2, q) => s2 + q[2], 0) / Q.length }; }).sort((a, b) => a.d - b.d);
+    fs.forEach(({ i, Q }) => svg.append(svgEl("polygon", { points: pp6Pts(Q.map(T2)), fill: (o.col && o.col[i]) || (dup[i] && t > .9 ? "#F28B82" : isB(U[i]) ? PP6.base : PP6.sideN), "fill-opacity": .9, stroke: PP6.ink, "stroke-width": 2, "stroke-linejoin": "round" })));
+    if (t > .97) miss.forEach(m => svg.append(svgEl("polygon", { points: pp6Pts(m.map(q => T2(proj(q, t)))), fill: "rgba(214,69,69,.08)", stroke: PP6.red, "stroke-width": 2.6, "stroke-dasharray": "7 5" })));
   };
   set(o.t == null ? 0 : o.t);
   return { svg, set };
