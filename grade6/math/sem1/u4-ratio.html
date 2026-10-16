@@ -1434,7 +1434,7 @@ function ra4V(t) {
   return ra4P(s);
 }
 /* 비율을 세 가지로: [3/4] = 0.75 = 75 % */
-function ra4Say(q) { const d = ra4Dec(q); return `${ra4Fr(q)}${d && q.d !== 1 ? " = " + d : ""} = ${ra4Pc(q)} %`; }
+function ra4Say(q) { const d = ra4Dec(q); return `${ra4Fr(q)}${d && q.d !== 1 ? " = " + d : ""}${q.n <= q.d ? ` = ${ra4Pc(q)} %` : ""}`; }
 
 /* ---------- 분수 표기 (글 속 [3/5]) ---------- */
 const RA4_SRC = "\\[(?:(\\d+|□) )?([0-9□]+)\\/([0-9□]+)\\]";
@@ -1793,7 +1793,7 @@ function ra4Slots(body, api, opt) {
     lab[0].textContent = "비교하는 양"; lab[1].textContent = "기준량";
     done.append(h("div", {}, `✔ ${T.q}: ${got}`));
     if (k === opt.tasks.length - 1) { btn.disabled = true; return api.done(done.textContent, opt.ok); }
-    api.hint(`○ ${got} — 맞아요! 기호 : 의 오른쪽이 기준량이에요. 이어서 다음 문장도 비로 나타내 봐요.`.replace("다음 문장", "아래 문장"));
+    api.hint(`○ ${got} — 맞아요! 기호 : 의 오른쪽이 기준량이에요. 이어서 아래 문장도 비로 나타내 봐요.`);
     k++; setTimeout(() => { if (ra4Alive(btn)) show(); }, 900);
   } }, "확인하기");
   api.provide({ words: ["~에 대한", "기준량", "비교하는 양", "기호 : 의 오른쪽"], answers: opt.tasks.map(T => `${chips[T.a[0]].v} : ${chips[T.a[1]].v}`) });
@@ -1844,7 +1844,7 @@ function ra4Comp(body, api, opt) {
       for (let i = 0; i < k; i++) { svg.append(svgEl("rect", { x: x0 + i * cell, y: y - 22, width: cell, height: 44, fill: col, "fill-opacity": .25, stroke: col, "stroke-width": 2 })); svg.append(ra4Icon(icon, x0 + i * cell + cell / 2, y, Math.min(40, cell * .8))); }
     };
     bar(yB, B.n, B.name, B.icon, "#2B7BD6"); bar(yC, C.n, C.name, C.icon, "#E47A38");
-    svg.append(txt(x0 + B.n * cell + 8, yB, "← 기준량", 15, { "text-anchor": "start", fill: "#2B7BD6" }));
+    svg.append(txt(x0 + B.n * cell, yB - 38, "기준량 전체 = 1", 15, { "text-anchor": "end", fill: "#2B7BD6" }));
     svg.append(svgEl("line", { x1: x0, y1: yN, x2: x0 + mx * L + 6, y2: yN, stroke: INK, "stroke-width": 3 }));
     for (let t = 0; t <= mx * 10 + 1e-9; t++) {
       const x = x0 + t / 10 * L, big = t % 10 === 0 || t % 5 === 0;
@@ -1986,7 +1986,7 @@ function ra4Tape2(body, api, opt) {
     svg.append(txt(Math.min(Math.max(X, x0 + 40), x0 + L - 40), yT - 32, `${fmt(N * k / K)}${U}`, 16, { fill: col }));
     const below = opt.mode === "pct" ? `${fmt(100 * k / K)} %` : fmt(k / K);
     svg.append(txt(Math.min(Math.max(X + 44, x0 + 60), x0 + L - 30), (yT + yB) / 2, below, 17, { fill: col }));
-    read.textContent = `${opt.part} ${fmt(N * k / K)}${U} ↔ ${opt.mode === "pct" ? "백분율 " + fmt(100 * k / K) + " %" : "비율 " + fmt(k / K)}`;
+    read.textContent = `${opt.part} ${fmt(N * k / K)}${U}일 때 ${opt.mode === "pct" ? "백분율 " + fmt(100 * k / K) + " %" : "비율 " + fmt(k / K)}`;
   };
   const setFrom = p => { if (fin) return; k = Math.max(0, Math.min(K, Math.round((p.x - x0) / L * K))); draw(); };
   dragOn(svg, p => { setFrom(p); return true; }, setFrom, () => {
@@ -2058,7 +2058,7 @@ function ra4Link(body, api, opt) {
     const got = items.map(it => it.t).join(" — ");
     if (bad >= 0) {
       chain.forEach((r, c) => btns[c][r].classList.remove("ra4pk")); chain = [];
-      return api.fail(`${items[0].t}의 비율은 ${ra4Fr(items[0].v)}${ra4Dec(items[0].v) ? " = " + ra4Dec(items[0].v) : ""}이고, ${items[bad].t}의 비율은 ${ra4Fr(items[bad].v)}${ra4Dec(items[bad].v) ? " = " + ra4Dec(items[bad].v) : ""}이에요. 다시 이어 봐요.`, got);
+      return api.fail(`${items[0].t}의 비율은 ${ra4Say(items[0].v)}, ${items[bad].t}의 비율은 ${ra4J(ra4Say(items[bad].v), "이에요")}. 다시 이어 봐요.`, got);
     }
     const color = COL[made % COL.length];
     chain.forEach((r, c) => { used[c][r] = made; const b = btns[c][r]; b.classList.remove("ra4pk"); b.style.background = color; b.style.borderColor = color; b.disabled = true; });
@@ -2084,7 +2084,7 @@ function ra4Save(body, api, opt) {
     const got = [...sel].map(i => opt.items[i].name).join(", ") || "-";
     if (opt.plan) {
       const P = new Set(opt.plan);
-      if (sel.size !== P.size || [...sel].some(i => !P.has(i))) return api.fail(`계획에 있는 가전제품은 ${opt.plan.map(i => opt.items[i].name).join(", ")}이에요.`, got);
+      if (sel.size !== P.size || [...sel].some(i => !P.has(i))) return api.fail(`계획에 있는 가전제품은 ${ra4J(opt.plan.map(i => opt.items[i].name).join(", "), "이에요")}.`, got);
     } else if (!sel.size) return api.fail("줄일 가전제품을 하나 이상 골라요.", got);
     fin = true; go.disabled = true; btns.forEach(b => { b.disabled = true; });
     const s = sum();
@@ -2125,7 +2125,7 @@ function ra4Make(body, api, opt) {
     if (v.some(p => p.some(s => !/^\d+$/.test(s) || +s === 0 || +s > 9999))) return api.fail("거리와 시간은 0이 아닌 자연수(9999까지)로 써요.", "-");
     if (v.every((p, i) => +p[0] === D[i][1] && +p[1] === D[i][2])) return api.fail("보기와 다른 수로 조건을 바꾸어 새 문제를 만들어요.", "보기와 같음");
     const r = v.map(p => ra4Q(+p[0], +p[1]));
-    if (ra4EqQ(r[0], r[1])) return api.fail(`두 사람의 비율이 ${ra4Fr(r[0])}로 같아져서 누가 더 높은지 비교할 수 없어요. 수를 바꿔 봐요.`, v.join(" / "));
+    if (ra4EqQ(r[0], r[1])) return api.fail(`두 사람의 비율이 ${ra4J(ra4Fr(r[0]), "으로")} 같아져서 누가 더 높은지 비교할 수 없어요. 수를 바꿔 봐요.`, v.join(" / "));
     fin = true; make.disabled = true; ins.flat().forEach(x => { x.disabled = true; });
     const hi = ra4Lt(r[0], r[1]) ? 1 : 0;
     out.append(h("div", { class: "ra4phrase" }, `내가 만든 문제: ${D[0][0]}는 자전거를 타고 ${v[0][0]} m를 가는 데 ${v[0][1]}초가 걸렸고, ${D[1][0]}는 자전거를 타고 ${v[1][0]} m를 가는 데 ${v[1][1]}초가 걸렸습니다. 걸린 시간에 대한 간 거리의 비율이 더 높은 사람은 누구인가요?`));
@@ -2206,7 +2206,7 @@ function ra4Memory(body, api, opt) {
   const judge = same => {
     if (busy || up.length !== 2 || turn !== "me") return;
     api.tryOnce(); const [p, q] = up, a = RA4_CARDS[deck[p]], b = RA4_CARDS[deck[q]], real = ra4EqQ(RA4_CV[deck[p]], RA4_CV[deck[q]]);
-    if (same && real) { owner[p] = owner[q] = "me"; me += 2; up = []; comMem.delete(p); comMem.delete(q); msg.textContent = `맞아요! ${a}, ${b}의 비율은 ${ra4Fr(RA4_CV[deck[p]])}로 같아요. 카드를 가져오고 한 번 더 뒤집어요.`; paint(); if (!left().length) finish(); return; }
+    if (same && real) { owner[p] = owner[q] = "me"; me += 2; up = []; comMem.delete(p); comMem.delete(q); msg.textContent = `맞아요! ${a}, ${b}의 비율은 ${ra4J(ra4Fr(RA4_CV[deck[p]]), "으로")} 같아요. 카드를 가져오고 한 번 더 뒤집어요.`; paint(); if (!left().length) finish(); return; }
     if (same && !real) api.fail(`${ra4Why(a, b)} 비율이 달라서 카드를 가져올 수 없어요.`, `${a} / ${b}`);
     else if (!same && real) api.fail(`사실은 비율이 같아요. ${ra4Why(a, b)} 가져올 기회를 놓쳤어요.`, `${a} / ${b}`);
     else msg.textContent = `맞아요. ${ra4Why(a, b)} 비율이 달라서 카드를 다시 뒤집어 놓아요.`;
@@ -2229,8 +2229,8 @@ function ra4Memory(body, api, opt) {
     const settle = () => setTimeout(() => {
       if (!ra4Alive(grid)) return;
       const [p, q] = up, real = ra4EqQ(RA4_CV[deck[p]], RA4_CV[deck[q]]);
-      if (real) { owner[p] = owner[q] = "com"; com += 2; comMem.delete(p); comMem.delete(q); up = []; msg.textContent = `컴퓨터가 ${RA4_CARDS[deck[p]]}, ${RA4_CARDS[deck[q]]}를 찾아 가져갔어요(비율 ${ra4Fr(RA4_CV[deck[p]])}). 컴퓨터가 한 번 더 해요.`; paint(); if (!left().length) return finish(); return comTurn(); }
-      msg.textContent = `컴퓨터가 뒤집은 ${RA4_CARDS[deck[p]]}, ${RA4_CARDS[deck[q]]}는 비율이 달라요. 자리를 기억해 두었다가 내 차례에 찾아요.`;
+      if (real) { owner[p] = owner[q] = "com"; com += 2; comMem.delete(p); comMem.delete(q); up = []; msg.textContent = `컴퓨터가 ${RA4_CARDS[deck[p]]}, ${ra4J(RA4_CARDS[deck[q]], "을를")} 찾아 가져갔어요(비율 ${ra4Fr(RA4_CV[deck[p]])}). 컴퓨터가 한 번 더 해요.`; paint(); if (!left().length) return finish(); return comTurn(); }
+      msg.textContent = `컴퓨터가 뒤집은 ${RA4_CARDS[deck[p]]}, ${ra4J(RA4_CARDS[deck[q]], "은는")} 비율이 달라요. 자리를 기억해 두었다가 내 차례에 찾아요.`;
       setTimeout(() => { if (!ra4Alive(grid)) return; up = []; turn = "me"; paint(); }, 1500);
     }, 900);
     msg.textContent = "컴퓨터가 카드를 뒤집어요…";
@@ -2272,9 +2272,9 @@ function ra4High(body, api, opt) {
     api.tryOnce(); const cs = deck.slice(r * 4, r * 4 + 4), v = cs.map(ra4V);
     let b = 0; v.forEach((x, j) => { if (rule(r) === "high" ? ra4Lt(v[b], x) : ra4Lt(x, v[b])) b = j; });
     if (i !== b) return api.fail(`${cs.map(c => `${c} → ${ra4Dec(ra4V(c)) || ra4Fr(ra4V(c))}`).join(", ")}. 같은 표현(소수)으로 바꾸어 비교해 봐요.`, `${names[i]}`);
-    got[b] += 4; msg.textContent = `맞아요! ${names[b]}의 ${cs[b]}(= ${ra4Dec(v[b])})가 가장 ${rule(r) === "high" ? "높아요" : "낮아요"}. ${names[b]}가 카드 4장을 가져가요.`;
+    got[b] += 4; msg.textContent = `맞아요! ${names[b]}의 카드 ${cs[b]}(= ${ra4Dec(v[b])})의 비율이 가장 ${rule(r) === "high" ? "높아요" : "낮아요"}. ${ra4J(names[b], "이가")} 카드 4장을 가져가요.`;
     r++; flipped = false;
-    if (r >= R) { draw(); const mx = Math.max(...got), win = names.filter((_, j) => got[j] === mx); return api.done(names.map((n, j) => `${n} ${got[j]}장`).join(", "), `놀이 끝! ${win.join(", ")}${win.length > 1 ? "가 함께" : "가"} 가장 많이 가져갔어요.`); }
+    if (r >= R) { draw(); const mx = Math.max(...got), win = names.filter((_, j) => got[j] === mx); return api.done(names.map((n, j) => `${n} ${got[j]}장`).join(", "), `놀이 끝! ${ra4J(win.join(", "), "이가")}${win.length > 1 ? " 함께" : ""} 가장 많이 가져갔어요.`); }
     draw();
   };
   api.provide({ words: ["소수로 바꾸어", "가장 높은", "가장 낮은"], answers: [] });
@@ -2323,7 +2323,7 @@ function ra4Scene(body, api, opt) {
       else if (p.k === "board") { g.append(svgEl("rect", { x: p.x - 22, y: p.y - 18, width: 44, height: 30, fill: "#fff", stroke: "#3B6FA8", "stroke-width": 2 })); [8, 16, 22].forEach((hh, j) => g.append(svgEl("rect", { x: p.x - 16 + j * 12, y: p.y + 8 - hh, width: 8, height: hh, fill: "#7FB8E6" }))); }
       else g.append(ra4Icon(p.k, p.x, p.y, 50));
       g.append(txt(p.x, p.y + 46, p.t, 14, { fill: "#2F3B33" }));
-      if (seen.has(i)) g.append(txt(p.x + 26, p.y - 26, "✓", 18, { fill: "#2E8B57" }));
+      if (seen.has(i)) g.append(svgEl("path", { d: `M${p.x + 18},${p.y - 28} l6,7 l12,-14`, stroke: "#2E8B57", "stroke-width": 4, fill: "none", "stroke-linecap": "round" }));
       g.addEventListener("click", () => { seen.add(i); info.textContent = `${p.t}: ${p.d}`; draw(); after(); });
       svg.append(g);
     });
@@ -2536,8 +2536,8 @@ const LESSONS = [
         { ok: "가와 다는 가로와 세로가 달라도 비율이 0.6으로 같아요. 나는 비율이 1.2로 1보다 커요." }); } },
     { inst: "메모지를 직접 만들어 보세요. 빨간 점을 끌어 가로와 세로를 바꾸고, 목표에 맞으면 확인해요.", hints: ["가로에 대한 세로의 비율이 1이려면 세로 ÷ 가로 = 1, 세로와 가로가 같아야 해요.", "비율 0.6 = [6/10]이에요. 가로 10 cm일 때 세로는 몇 cm일까요?"],
       render: (b, a) => ra4Rect(b, a, { W: 12, H: 9, w0: 5, h0: 3, base: "w",
-        tasks: [{ goal: "가로에 대한 세로의 비율이 1인 메모지를 만들어 보세요.", test: (w, hh) => w === hh, why: (w, hh) => `지금 비율은 [${hh}/${w}]이에요. 세로와 가로가 같아야 비율이 1이에요.` },
-          { goal: "가와 크기는 다르지만 가로에 대한 세로의 비율이 가(0.6)와 같은 메모지를 만들어 보세요.", test: (w, hh) => 5 * hh === 3 * w && w !== 5, why: (w, hh) => w === 5 && hh === 3 ? "가와 크기가 같아요. 크기가 다른 메모지를 만들어요." : `지금 비율은 [${hh}/${w}]이에요. [${hh}/${w}]이 [3/5] = 0.6과 같아지게 해 봐요.` }],
+        tasks: [{ goal: "가로에 대한 세로의 비율이 1인 메모지를 만들어 보세요.", test: (w, hh) => w === hh, why: (w, hh) => `지금 비율은 ${ra4J(`[${hh}/${w}]`, "이에요")}. 세로와 가로가 같아야 비율이 1이에요.` },
+          { goal: "가와 크기는 다르지만 가로에 대한 세로의 비율이 가(0.6)와 같은 메모지를 만들어 보세요.", test: (w, hh) => 5 * hh === 3 * w && w !== 5, why: (w, hh) => w === 5 && hh === 3 ? "가와 크기가 같아요. 크기가 다른 메모지를 만들어요." : `지금 비율은 ${ra4J(`[${hh}/${w}]`, "이에요")}. ${ra4J(`[${hh}/${w}]`, "이가")} [3/5] = 0.6과 같아지게 해 봐요.` }],
         ok: "가로와 세로가 같으면 비율이 1인 정사각형이 돼요. 가로 10 cm, 세로 6 cm도 비율이 0.6이에요. 가로와 세로가 다르더라도 비율은 같을 수 있어요." }) },
     { inst: "알게 된 점을 약속으로 정리해요.", hints: ["통발 2를 미끼통 5로 나누었어요.", "2 ÷ 5 = [2/5] = 0.4예요."],
       render: (b, a) => blanks(b, a, ["기준량에 대한 비교하는 양의 크기를 ", { o: ["비율", "백분율"], a: 0 }, "이라고 합니다. (비율) = (비교하는 양) ", { o: ["÷", "×", "−"], a: 0 }, " (기준량)입니다. 비 2 : 5를 비율로 나타내면 ", { o: ["[2/5]", "[5/2]"], a: 0 }, " 또는 ", { o: ["0.4", "2.5"], a: 0 }, "입니다."],

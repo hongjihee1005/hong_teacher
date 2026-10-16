@@ -406,7 +406,7 @@ function ra4Slots(body, api, opt) {
     lab[0].textContent = "비교하는 양"; lab[1].textContent = "기준량";
     done.append(h("div", {}, `✔ ${T.q}: ${got}`));
     if (k === opt.tasks.length - 1) { btn.disabled = true; return api.done(done.textContent, opt.ok); }
-    api.hint(`○ ${got} — 맞아요! 기호 : 의 오른쪽이 기준량이에요. 이어서 다음 문장도 비로 나타내 봐요.`.replace("다음 문장", "아래 문장"));
+    api.hint(`○ ${got} — 맞아요! 기호 : 의 오른쪽이 기준량이에요. 이어서 아래 문장도 비로 나타내 봐요.`);
     k++; setTimeout(() => { if (ra4Alive(btn)) show(); }, 900);
   } }, "확인하기");
   api.provide({ words: ["~에 대한", "기준량", "비교하는 양", "기호 : 의 오른쪽"], answers: opt.tasks.map(T => `${chips[T.a[0]].v} : ${chips[T.a[1]].v}`) });
@@ -697,7 +697,7 @@ function ra4Save(body, api, opt) {
     const got = [...sel].map(i => opt.items[i].name).join(", ") || "-";
     if (opt.plan) {
       const P = new Set(opt.plan);
-      if (sel.size !== P.size || [...sel].some(i => !P.has(i))) return api.fail(`계획에 있는 가전제품은 ${opt.plan.map(i => opt.items[i].name).join(", ")}이에요.`, got);
+      if (sel.size !== P.size || [...sel].some(i => !P.has(i))) return api.fail(`계획에 있는 가전제품은 ${ra4J(opt.plan.map(i => opt.items[i].name).join(", "), "이에요")}.`, got);
     } else if (!sel.size) return api.fail("줄일 가전제품을 하나 이상 골라요.", got);
     fin = true; go.disabled = true; btns.forEach(b => { b.disabled = true; });
     const s = sum();
@@ -1149,8 +1149,8 @@ const LESSONS = [
         { ok: "가와 다는 가로와 세로가 달라도 비율이 0.6으로 같아요. 나는 비율이 1.2로 1보다 커요." }); } },
     { inst: "메모지를 직접 만들어 보세요. 빨간 점을 끌어 가로와 세로를 바꾸고, 목표에 맞으면 확인해요.", hints: ["가로에 대한 세로의 비율이 1이려면 세로 ÷ 가로 = 1, 세로와 가로가 같아야 해요.", "비율 0.6 = [6/10]이에요. 가로 10 cm일 때 세로는 몇 cm일까요?"],
       render: (b, a) => ra4Rect(b, a, { W: 12, H: 9, w0: 5, h0: 3, base: "w",
-        tasks: [{ goal: "가로에 대한 세로의 비율이 1인 메모지를 만들어 보세요.", test: (w, hh) => w === hh, why: (w, hh) => `지금 비율은 [${hh}/${w}]이에요. 세로와 가로가 같아야 비율이 1이에요.` },
-          { goal: "가와 크기는 다르지만 가로에 대한 세로의 비율이 가(0.6)와 같은 메모지를 만들어 보세요.", test: (w, hh) => 5 * hh === 3 * w && w !== 5, why: (w, hh) => w === 5 && hh === 3 ? "가와 크기가 같아요. 크기가 다른 메모지를 만들어요." : `지금 비율은 [${hh}/${w}]이에요. [${hh}/${w}]이 [3/5] = 0.6과 같아지게 해 봐요.` }],
+        tasks: [{ goal: "가로에 대한 세로의 비율이 1인 메모지를 만들어 보세요.", test: (w, hh) => w === hh, why: (w, hh) => `지금 비율은 ${ra4J(`[${hh}/${w}]`, "이에요")}. 세로와 가로가 같아야 비율이 1이에요.` },
+          { goal: "가와 크기는 다르지만 가로에 대한 세로의 비율이 가(0.6)와 같은 메모지를 만들어 보세요.", test: (w, hh) => 5 * hh === 3 * w && w !== 5, why: (w, hh) => w === 5 && hh === 3 ? "가와 크기가 같아요. 크기가 다른 메모지를 만들어요." : `지금 비율은 ${ra4J(`[${hh}/${w}]`, "이에요")}. ${ra4J(`[${hh}/${w}]`, "이가")} [3/5] = 0.6과 같아지게 해 봐요.` }],
         ok: "가로와 세로가 같으면 비율이 1인 정사각형이 돼요. 가로 10 cm, 세로 6 cm도 비율이 0.6이에요. 가로와 세로가 다르더라도 비율은 같을 수 있어요." }) },
     { inst: "알게 된 점을 약속으로 정리해요.", hints: ["통발 2를 미끼통 5로 나누었어요.", "2 ÷ 5 = [2/5] = 0.4예요."],
       render: (b, a) => blanks(b, a, ["기준량에 대한 비교하는 양의 크기를 ", { o: ["비율", "백분율"], a: 0 }, "이라고 합니다. (비율) = (비교하는 양) ", { o: ["÷", "×", "−"], a: 0 }, " (기준량)입니다. 비 2 : 5를 비율로 나타내면 ", { o: ["[2/5]", "[5/2]"], a: 0 }, " 또는 ", { o: ["0.4", "2.5"], a: 0 }, "입니다."],
