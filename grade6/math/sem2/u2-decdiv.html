@@ -1543,7 +1543,7 @@ input.dv2in.dv2s{width:3.4em}
 .dv2shrow .dv2op{font-size:calc(var(--fs)*1.5)}
 .dv2tag{font-size:var(--fs-s);color:#C8472E;font-family:Jua,sans-serif;min-width:3.5em;display:inline-block;text-align:center}
 .dv2res{font-family:Jua,sans-serif;color:var(--pine);font-size:calc(var(--fs)*1.2)}
-.dv2dg{font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.35);border:2px solid transparent;background:#fff;border-radius:.3em;padding:0 .08em;min-width:.9em;color:var(--ink);line-height:1.2}
+.dv2dg{font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.35);border:2px dashed #C9D4CF;margin:0 .06em;background:#fff;border-radius:.3em;padding:0 .08em;min-width:.9em;color:var(--ink);line-height:1.2}
 .dv2dg.dv2pk{border-color:var(--ring);background:var(--ring-soft)}
 .dv2pnt{font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.35)}
 .dv2cards{display:flex;gap:.5em;flex-wrap:wrap;margin:.3em 0}
@@ -1557,8 +1557,9 @@ input.dv2in.dv2s{width:3.4em}
 .dv2note{font-size:var(--fs-s);color:var(--muted)}
 .dv2die{display:inline-grid;place-items:center;width:1.8em;height:1.8em;border:3px solid var(--ink);border-radius:.35em;background:#fff;font-family:Jua,sans-serif;font-size:calc(var(--fs)*1.5)}
 .dv2bgw{display:flex;flex-wrap:wrap;gap:1em 1.6em;align-items:flex-start}
-.dv2bg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.3em;width:min(100%,24em)}
-.dv2bg.dv2bot{width:min(100%,15em)}
+.dv2bgw>div{flex:1 1 20em;min-width:0;max-width:26em}
+.dv2bgw>div+div{flex:1 1 12em;max-width:16em}
+.dv2bg{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:.3em;width:100%}
 .dv2bc{position:relative;min-height:4.2em;border:2px solid var(--line);border-radius:.6em;background:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.15em;padding:.2em;font-family:Jua,sans-serif;font-size:var(--fs);word-break:keep-all;text-align:center}
 .dv2bot .dv2bc{min-height:2.6em;font-size:var(--fs-s)}
 .dv2bc input{box-sizing:border-box;width:4em;font-family:Jua,sans-serif;font-size:var(--fs);text-align:center;border:2px solid var(--line);border-radius:.3em}
@@ -2244,13 +2245,13 @@ function dv2Island(body, api, opt) {
         const c = DV2ISLAND[i - 1];
         g.append(txt(p.x + 14, p.y + 13, String(i), 12, { fill: DV2C.dark }));
         g.append(txt(p.x + cw / 2, p.y + (c.r == null ? ch / 2 : ch / 2 - 10), c.e, c.e.length > 9 ? 16 : 18));
-        if (c.r != null) { g.append(txt(p.x + cw / 2, p.y + ch / 2 + 14, "반올림하여", 12, { fill: DV2C.red }), txt(p.x + cw / 2, p.y + ch / 2 + 28, `${DV2PLACE[c.r]}까지`, 12, { fill: DV2C.red })); }
+        if (c.r != null) { g.append(txt(p.x + cw / 2, p.y + ch / 2 + 14, "반올림하여", 12, { fill: DV2C.red }), txt(p.x + cw / 2, p.y + ch / 2 + 28, `${DV2PLACE[c.r]}까지`, 12, Object.assign({ fill: DV2C.red }, c.r ? { textLength: 90, lengthAdjust: "spacingAndGlyphs" } : {}))); }
       }
     }
   };
   const drawTok = () => {
     tk.innerHTML = "";
-    P.forEach((pl, k) => { const p = cell(pos[k]); tk.append(svgEl("circle", { cx: p.x + 22 + k * 56, cy: p.y + ch - 4, r: 13, fill: pl.c, stroke: "#fff", "stroke-width": 3 })); });
+    P.forEach((pl, k) => { const p = cell(pos[k]); tk.append(svgEl("circle", { cx: p.x + cw - 40 + k * 26, cy: p.y + 2, r: 11, fill: pl.c, stroke: "#fff", "stroke-width": 3 })); });
   };
   const status = h("div", { class: "dv2score" }), say = h("div", { class: "dv2say" }, "​"), ask = h("div", { class: "dv2row" });
   const dieEl = h("span", { class: "dv2die" }, "​");
@@ -2317,11 +2318,11 @@ function dv2Bingo(body, api, opt) {
         c ? c.e : "빈칸", inp, c && phase === "make" ? h("button", { class: "dv2rm", "aria-label": "빼기", onclick: ev => { ev.stopPropagation(); mine[k] = null; drawMine(); drawChips(); } }, "✕") : null));
     });
   };
-  const drawBot = () => { botB.innerHTML = ""; bot.forEach((ci, k) => botB.append(h("div", { class: "dv2bc" + (bmk[k] ? " dv2mk" : "") }, finished ? POOL[ci].e : "?"))); };
+  const drawBot = () => { botB.innerHTML = ""; if (!bot.length) botB.append(h("div", { class: "dv2note", style: "grid-column:1/-1" }, "빙고판을 완성하면 로봇 친구도 빙고판을 만들어요.")); bot.forEach((ci, k) => botB.append(h("div", { class: "dv2bc" + (bmk[k] ? " dv2mk" : "") }, finished ? POOL[ci].e : "?"))); };
   const winCheck = who => {
     const a = dv2Lines(mk), b = dv2Lines(bmk);
-    const first = who === "me" ? [a, "나"] : [b, "로봇 친구"], second = who === "me" ? [b, "로봇 친구"] : [a, "나"];
-    if (first[0] >= 3 || second[0] >= 3) { finished = true; phase = "end"; drawBot(); say.textContent = `${first[0] >= 3 ? first[1] : second[1]}가 먼저 3줄을 만들었어요! 빙고! (나 ${a}줄, 로봇 친구 ${b}줄)`; return true; }
+    const first = who === "me" ? [a, "내가"] : [b, "로봇 친구가"], second = who === "me" ? [b, "로봇 친구가"] : [a, "내가"];
+    if (first[0] >= 3 || second[0] >= 3) { finished = true; phase = "end"; drawBot(); say.textContent = `${first[0] >= 3 ? first[1] : second[1]} 먼저 3줄을 만들었어요! 빙고! (나 ${a}줄, 로봇 친구 ${b}줄)`; return true; }
     return false;
   };
   const myCall = k => {
@@ -2367,13 +2368,13 @@ function dv2Bingo(body, api, opt) {
 
 /* 로봇 실험실 그림(4차시): 1초 동안 빨간색 로봇 5.89 m, 파란색 로봇 3.1 m */
 function dv2RobotFig() {
-  const W = 720, H = 170, x0 = 40, s = 100, svg = makeSvg(W, H), g = svgEl("g"); svg.append(g);
-  g.append(svgEl("line", { x1: x0, y1: 14, x2: x0, y2: 158, stroke: INK, "stroke-width": 3 }), txt(x0, 166, "출발선", 13));
+  const W = 720, H = 186, x0 = 40, s = 100, svg = makeSvg(W, H), g = svgEl("g"); svg.append(g);
+  g.append(svgEl("line", { x1: x0, y1: 14, x2: x0, y2: 158, stroke: INK, "stroke-width": 3 }), txt(x0, 176, "출발선", 14));
   [[5.89, DV2C.red, "빨간색 로봇", 46], [3.1, DV2C.blue, "파란색 로봇", 116]].forEach(([d, c, n, y]) => {
     const x = x0 + d * s;
     g.append(svgEl("line", { x1: x0, y1: y, x2: x, y2: y, stroke: c, "stroke-width": 6, opacity: .5 }));
-    g.append(svgEl("rect", { x: x - 2, y: y - 22, width: 30, height: 26, rx: 6, fill: c }), svgEl("circle", { cx: x + 8, cy: y - 12, r: 3, fill: "#fff" }), svgEl("circle", { cx: x + 19, cy: y - 12, r: 3, fill: "#fff" }));
-    [0, 9, 18, 27].forEach(o => g.append(svgEl("line", { x1: x + o, y1: y + 4, x2: x + o - 3, y2: y + 16, stroke: c, "stroke-width": 3 })));
+    g.append(svgEl("rect", { x: x - 30, y: y - 22, width: 30, height: 26, rx: 6, fill: c }), svgEl("circle", { cx: x - 20, cy: y - 12, r: 3, fill: "#fff" }), svgEl("circle", { cx: x - 9, cy: y - 12, r: 3, fill: "#fff" }), svgEl("line", { x1: x, y1: y - 30, x2: x, y2: y + 26, stroke: c, "stroke-width": 2, "stroke-dasharray": "4 3" }));
+    [-28, -19, -10, -1].forEach(o => g.append(svgEl("line", { x1: x + o, y1: y + 4, x2: x + o - 3, y2: y + 16, stroke: c, "stroke-width": 3 })));
     g.append(txt((x0 + x) / 2, y - 16, `${n} ${d} m`, 16, { fill: c }));
   });
   return dv2Fig(svg);
