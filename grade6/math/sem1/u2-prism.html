@@ -858,7 +858,7 @@ html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!imp
 /* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
 html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
-</style><meta name="hj-list" content="[[&quot;u1-fracnat.html&quot;, &quot;분수의 나눗셈&quot;, &quot;웹앱&quot;], [&quot;u6-volume.html&quot;, &quot;직육면체의 부피와 겉넓이&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
+</style><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
 <div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
@@ -1671,7 +1671,7 @@ function pp6Draw(svg, o) {
   let sc, mx = 0, my = 0, cx, cy;
   if (o.s) { sc = o.s; cx = o.cx; cy = o.cy; }
   else {
-    const [bx, by, bw, bh] = o.box || [0, 0, 300, 240], pad = o.pad == null ? 16 : o.pad;
+    const [bx, by, bw, bh] = o.box || [0, 0, 300, 240], pad = o.pad == null ? (o.lab ? 34 : 16) : o.pad;
     const xs = Q.map(q => q[0]), yy = Q.map(q => q[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...yy), y1 = Math.max(...yy);
     sc = Math.min((bw - 2 * pad) / Math.max(x1 - x0, 1e-6), (bh - 2 * pad) / Math.max(y1 - y0, 1e-6)); if (o.maxS) sc = Math.min(sc, o.maxS);
     mx = (x0 + x1) / 2; my = (y0 + y1) / 2; cx = bx + bw / 2; cy = by + bh / 2;
@@ -1715,7 +1715,7 @@ function pp6Draw(svg, o) {
   if (o.ring != null) g.append(svgEl("circle", { cx: pp6R(S2[o.ring][0]), cy: pp6R(S2[o.ring][1]), r: 14, fill: "none", stroke: PP6.gold, "stroke-width": 3, "pointer-events": "none" }));
   if (o.tapV) V.forEach((v, i) => g.append(hit(svgEl("circle", { cx: pp6R(S2[i][0]), cy: pp6R(S2[i][1]), r: 12, fill: "rgba(0,0,0,0)" }), "v" + i)));
   if (o.lab) { const cxs = S2.reduce((s, p) => s + p[0], 0) / S2.length, cys = S2.reduce((s, p) => s + p[1], 0) / S2.length;
-    o.lab.forEach((t, i) => { if (!t) return; const p = S2[i], dx = p[0] - cxs, dy = p[1] - cys, d = Math.hypot(dx, dy) || 1; pp6T(g, p[0] + dx / d * 15, p[1] + dy / d * 15, t, 16, { fill: o.labCol || PP6.blue }); }); }
+    o.lab.forEach((t, i) => { if (!t) return; const p = S2[i], dx = p[0] - cxs, dy = p[1] - cys, d = Math.hypot(dx, dy) || 1; pp6T(g, p[0] + dx / d * 17, p[1] + dy / d * 17, t, 21, { fill: o.labCol || PP6.blue, "font-weight": 700 }); }); }
   return info;
 }
 function pp6Fig(o) {
@@ -2639,7 +2639,7 @@ const LESSONS = [
     { name: "밑면 알아보기", inst: "각기둥에서 색칠된 두 면(면 ㄱㄴㄷ, 면 ㄹㅁㅂ)을 살펴보고 밑면을 약속해 보세요. 그다음 여러 방향으로 놓인 각기둥에서 밑면을 찾아보세요.", hints: ["색칠된 두 면은 서로 마주 보고, 모양과 크기가 같아요.", "누워 있는 각기둥은 양쪽 끝의 두 면이 밑면이에요. 밑면은 항상 2개예요."],
       render: (b, a) => pp6Chain(b, a, [
         (bx, ax) => quiz(bx, ax, [
-          { q: "색칠된 두 면의 공통점을 모두 골라 보세요.", fig: () => { const S = pp6Prism(pp6Ngon(3, 1.3, -90), 2.2); return pp6Fig({ solid: S, W: 300, H: 250, maxW: "15em", yaw: -28, pitch: 24, fc: [PP6.base, PP6.base], side: "#F4F8FC", lab: pp6PrLab(3),
+          { q: "색칠된 두 면의 공통점을 모두 골라 보세요.", fig: () => { const S = pp6Prism(pp6Ngon(3, 1.3, 30), 2.2); return pp6Fig({ solid: S, W: 300, H: 250, maxW: "15em", yaw: -20, pitch: 32, fc: [PP6.base, PP6.base], side: "#F4F8FC", lab: pp6PrLab(3),
               after: (svg, I) => { pp6Right(svg, I, S.V[3], S.V[4], S.V[0]); pp6Right(svg, I, S.V[0], S.V[1], S.V[3]); } }); },
             o: ["두 면은 평행해요.", "두 면은 합동이에요.", "두 면은 다각형이에요.", "두 면은 직사각형이에요."], a: [0, 1, 2], why: { "0,1,2,3": "색칠된 두 면은 삼각형이에요." } },
           { q: "색칠된 두 면은 나머지 면들과 어떻게 만나나요? (그림의 직각 표시를 보세요.)", o: ["모두 수직으로 만나요.", "만나지 않아요.", "비스듬히 만나요."], a: 0 }],
@@ -2651,7 +2651,7 @@ const LESSONS = [
           ok: "누워 있어도, 높이가 낮아도 평행하고 합동인 두 면이 밑면이에요. 밑면은 아래에 있는 면이 아니에요." })]) },
     { name: "옆면 알아보기", inst: "각기둥에서 두 밑면과 만나는 면을 알아보고 옆면을 약속해 보세요. 그다음 육각기둥에서 밑면과 옆면을 모두 찾아보세요.", hints: ["두 밑면과 만나는 면은 모두 직사각형이에요.", "육각기둥의 한 밑면은 육각형이라서 변이 6개, 옆면도 6개예요."],
       render: (b, a) => pp6Chain(b, a, [
-        (bx, ax) => quiz(bx, ax, [{ q: "두 밑면을 색칠한 삼각기둥이에요. 두 밑면과 만나는 면은 어떤 도형인가요?", fig: () => pp6Fig({ solid: pp6Prism(pp6Ngon(3, 1.3, -90), 2.2), W: 300, H: 250, maxW: "15em", yaw: -28, pitch: 24, fc: [PP6.base, PP6.base, PP6.sideN, PP6.sideN, PP6.sideN], lab: pp6PrLab(3) }),
+        (bx, ax) => quiz(bx, ax, [{ q: "두 밑면을 색칠한 삼각기둥이에요. 두 밑면과 만나는 면은 어떤 도형인가요?", fig: () => pp6Fig({ solid: pp6Prism(pp6Ngon(3, 1.3, 30), 2.2), W: 300, H: 250, maxW: "15em", yaw: -20, pitch: 32, fc: [PP6.base, PP6.base, PP6.sideN, PP6.sideN, PP6.sideN], lab: pp6PrLab(3) }),
           o: ["직사각형", "삼각형", "오각형"], a: 0, why: { "1": "삼각형은 밑면이에요. 두 밑면과 만나는 노란 면을 보세요." } }], { ok: "두 밑면과 만나는 면은 모두 직사각형이에요." }),
         (bx, ax) => blanks(bx, ax, ["각기둥에서 면 ㄱㄹㅁㄴ, 면 ㄴㅁㅂㄷ, 면 ㄱㄹㅂㄷ과 같이 두 밑면과 만나는 면을 ", { o: ["옆면", "밑면", "모서리"], a: 0 }, "이라고 해요. 이때 각기둥의 옆면은 모두 ", { o: ["직사각형", "삼각형", "정사각형"], a: 0, }, "이에요."], { ok: "두 밑면과 만나는 면을 옆면이라 하고, 각기둥의 옆면은 모두 직사각형이에요." }),
         (bx, ax) => pp6Tap(bx, ax, Object.assign(pp6PrL(pp6Ngon(6, 1.2, 0), 1.6, { yaw: -20, pitch: 26 }), { pens: [PP6_RED, PP6_BLUE], fill: .36,
@@ -2672,7 +2672,7 @@ const LESSONS = [
     render: (b, a) => pp6Chain(b, a, [
       (bx, ax) => pp6Pick(bx, ax, { q: "각기둥을 모두 찾아보세요.", items: [{ name: "가", fig: pp6Shp("py3") }, { name: "나", fig: pp6Shp("hex") }, { name: "다", fig: pp6Shp("frus4") }, { name: "라", fig: pp6Shp("trap", { tilt: 90, yaw: -30 }) }], a: [1, 3],
         whyExtra: i => ({ 0: "가는 평행한 두 면이 없어요.", 2: "다는 평행한 두 면이 합동이 아니에요." })[i], ok: "나와 라가 각기둥이에요. 라는 누워 있는 사각기둥이에요." }),
-      (bx, ax) => pp6Tap(bx, ax, Object.assign(pp6PrL(pp6Ngon(3, 1.3, -90), 2.2, { yaw: -28, pitch: 24 }), { pens: [PP6_BLUE], want: { 2: 0, 3: 0, 4: 0 }, tip: "삼각기둥의 옆면을 모두 눌러 파란색으로 칠해요. 누른 면의 이름이 아래에 써져요.",
+      (bx, ax) => pp6Tap(bx, ax, Object.assign(pp6PrL(pp6Ngon(3, 1.3, 30), 2.2, { yaw: -20, pitch: 32 }), { pens: [PP6_BLUE], want: { 2: 0, 3: 0, 4: 0 }, tip: "삼각기둥의 옆면을 모두 눌러 파란색으로 칠해요. 누른 면의 이름이 아래에 써져요.",
         why: (it, fi, w, c) => w == null ? `${pp6Jo(pp6FaceName(it.S, fi, it.lab), "은/는")} 밑면이에요. 옆면만 칠해요.` : "아직 찾지 못한 옆면이 있어요. 돌려서 뒤쪽도 살펴봐요.",
         ask: [{ q: "이 입체도형이 각기둥이 아닌 이유를 골라 보세요.", fig: pp6Shp("frus4", { W: 220, H: 160, plain: false, maxW: "11em" }), parts: [{ o: ["평행한 두 면이 합동이 아니에요.", "평행한 두 면이 없어요.", "옆면이 사각형이에요."], a: 0, why: { "1": "위와 아래의 면은 평행해요. 크기가 달라요." } }] }],
         ok: "삼각기둥의 옆면은 면 ㄱㄹㅁㄴ, 면 ㄴㅁㅂㄷ, 면 ㄷㅂㄹㄱ이에요. 위와 아래의 면이 평행하지만 합동이 아닌 입체도형은 각기둥이 아니에요." }))]) }
@@ -2981,8 +2981,6 @@ window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.stu
  if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});}})();
 </script>
 <a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
-<style id="hj-actbar">.work > div .actions{bottom:var(--hjbar,0px)}</style>
-<script id="hj-actbar-js">(function(){let w=false;const f=()=>{if(w)return;w=true;requestAnimationFrame(()=>{w=false;const a=document.querySelector(".work > .actions");document.documentElement.style.setProperty("--hjbar",(a?a.offsetHeight:0)+"px");});};["scroll","resize","click","input","pointerup","load"].forEach(e=>window.addEventListener(e,f,{passive:true}));f();})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
 var I={stop:'<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>',play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
@@ -3534,6 +3532,8 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
  function wire(){document.querySelectorAll('.frameline input:not([data-hjsz])').forEach(function(i){i.dataset.hjsz='1';i.addEventListener('input',function(){size(i)});size(i)})}
  document.addEventListener('click',function(e){if(e.target.closest('.chips,.chip,button'))setTimeout(function(){document.querySelectorAll('.frameline input').forEach(size)},30)},true);
  wire();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(wire,30)}).observe(document.body,{childList:true,subtree:true});addEventListener('resize',function(){document.querySelectorAll('.frameline input').forEach(size)})})();
-</script><!--/hj-cicons--></body>
+</script><!--/hj-cicons--><style id="hj-actbar">.work > div .actions{bottom:var(--hjbar,0px)}</style>
+<script id="hj-actbar-js">(function(){let w=false;const f=()=>{if(w)return;w=true;requestAnimationFrame(()=>{w=false;const a=document.querySelector(".work > .actions");document.documentElement.style.setProperty("--hjbar",(a?a.offsetHeight:0)+"px");});};["scroll","resize","click","input","pointerup","load"].forEach(e=>window.addEventListener(e,f,{passive:true}));f();})();</script>
+</body>
 </html>
 

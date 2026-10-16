@@ -284,7 +284,7 @@ function pp6Draw(svg, o) {
   let sc, mx = 0, my = 0, cx, cy;
   if (o.s) { sc = o.s; cx = o.cx; cy = o.cy; }
   else {
-    const [bx, by, bw, bh] = o.box || [0, 0, 300, 240], pad = o.pad == null ? 16 : o.pad;
+    const [bx, by, bw, bh] = o.box || [0, 0, 300, 240], pad = o.pad == null ? (o.lab ? 34 : 16) : o.pad;
     const xs = Q.map(q => q[0]), yy = Q.map(q => q[1]), x0 = Math.min(...xs), x1 = Math.max(...xs), y0 = Math.min(...yy), y1 = Math.max(...yy);
     sc = Math.min((bw - 2 * pad) / Math.max(x1 - x0, 1e-6), (bh - 2 * pad) / Math.max(y1 - y0, 1e-6)); if (o.maxS) sc = Math.min(sc, o.maxS);
     mx = (x0 + x1) / 2; my = (y0 + y1) / 2; cx = bx + bw / 2; cy = by + bh / 2;
@@ -328,7 +328,7 @@ function pp6Draw(svg, o) {
   if (o.ring != null) g.append(svgEl("circle", { cx: pp6R(S2[o.ring][0]), cy: pp6R(S2[o.ring][1]), r: 14, fill: "none", stroke: PP6.gold, "stroke-width": 3, "pointer-events": "none" }));
   if (o.tapV) V.forEach((v, i) => g.append(hit(svgEl("circle", { cx: pp6R(S2[i][0]), cy: pp6R(S2[i][1]), r: 12, fill: "rgba(0,0,0,0)" }), "v" + i)));
   if (o.lab) { const cxs = S2.reduce((s, p) => s + p[0], 0) / S2.length, cys = S2.reduce((s, p) => s + p[1], 0) / S2.length;
-    o.lab.forEach((t, i) => { if (!t) return; const p = S2[i], dx = p[0] - cxs, dy = p[1] - cys, d = Math.hypot(dx, dy) || 1; pp6T(g, p[0] + dx / d * 15, p[1] + dy / d * 15, t, 16, { fill: o.labCol || PP6.blue }); }); }
+    o.lab.forEach((t, i) => { if (!t) return; const p = S2[i], dx = p[0] - cxs, dy = p[1] - cys, d = Math.hypot(dx, dy) || 1; pp6T(g, p[0] + dx / d * 17, p[1] + dy / d * 17, t, 21, { fill: o.labCol || PP6.blue, "font-weight": 700 }); }); }
   return info;
 }
 function pp6Fig(o) {
@@ -1252,7 +1252,7 @@ const LESSONS = [
     { name: "밑면 알아보기", inst: "각기둥에서 색칠된 두 면(면 ㄱㄴㄷ, 면 ㄹㅁㅂ)을 살펴보고 밑면을 약속해 보세요. 그다음 여러 방향으로 놓인 각기둥에서 밑면을 찾아보세요.", hints: ["색칠된 두 면은 서로 마주 보고, 모양과 크기가 같아요.", "누워 있는 각기둥은 양쪽 끝의 두 면이 밑면이에요. 밑면은 항상 2개예요."],
       render: (b, a) => pp6Chain(b, a, [
         (bx, ax) => quiz(bx, ax, [
-          { q: "색칠된 두 면의 공통점을 모두 골라 보세요.", fig: () => { const S = pp6Prism(pp6Ngon(3, 1.3, -90), 2.2); return pp6Fig({ solid: S, W: 300, H: 250, maxW: "15em", yaw: -28, pitch: 24, fc: [PP6.base, PP6.base], side: "#F4F8FC", lab: pp6PrLab(3),
+          { q: "색칠된 두 면의 공통점을 모두 골라 보세요.", fig: () => { const S = pp6Prism(pp6Ngon(3, 1.3, 30), 2.2); return pp6Fig({ solid: S, W: 300, H: 250, maxW: "15em", yaw: -20, pitch: 32, fc: [PP6.base, PP6.base], side: "#F4F8FC", lab: pp6PrLab(3),
               after: (svg, I) => { pp6Right(svg, I, S.V[3], S.V[4], S.V[0]); pp6Right(svg, I, S.V[0], S.V[1], S.V[3]); } }); },
             o: ["두 면은 평행해요.", "두 면은 합동이에요.", "두 면은 다각형이에요.", "두 면은 직사각형이에요."], a: [0, 1, 2], why: { "0,1,2,3": "색칠된 두 면은 삼각형이에요." } },
           { q: "색칠된 두 면은 나머지 면들과 어떻게 만나나요? (그림의 직각 표시를 보세요.)", o: ["모두 수직으로 만나요.", "만나지 않아요.", "비스듬히 만나요."], a: 0 }],
@@ -1264,7 +1264,7 @@ const LESSONS = [
           ok: "누워 있어도, 높이가 낮아도 평행하고 합동인 두 면이 밑면이에요. 밑면은 아래에 있는 면이 아니에요." })]) },
     { name: "옆면 알아보기", inst: "각기둥에서 두 밑면과 만나는 면을 알아보고 옆면을 약속해 보세요. 그다음 육각기둥에서 밑면과 옆면을 모두 찾아보세요.", hints: ["두 밑면과 만나는 면은 모두 직사각형이에요.", "육각기둥의 한 밑면은 육각형이라서 변이 6개, 옆면도 6개예요."],
       render: (b, a) => pp6Chain(b, a, [
-        (bx, ax) => quiz(bx, ax, [{ q: "두 밑면을 색칠한 삼각기둥이에요. 두 밑면과 만나는 면은 어떤 도형인가요?", fig: () => pp6Fig({ solid: pp6Prism(pp6Ngon(3, 1.3, -90), 2.2), W: 300, H: 250, maxW: "15em", yaw: -28, pitch: 24, fc: [PP6.base, PP6.base, PP6.sideN, PP6.sideN, PP6.sideN], lab: pp6PrLab(3) }),
+        (bx, ax) => quiz(bx, ax, [{ q: "두 밑면을 색칠한 삼각기둥이에요. 두 밑면과 만나는 면은 어떤 도형인가요?", fig: () => pp6Fig({ solid: pp6Prism(pp6Ngon(3, 1.3, 30), 2.2), W: 300, H: 250, maxW: "15em", yaw: -20, pitch: 32, fc: [PP6.base, PP6.base, PP6.sideN, PP6.sideN, PP6.sideN], lab: pp6PrLab(3) }),
           o: ["직사각형", "삼각형", "오각형"], a: 0, why: { "1": "삼각형은 밑면이에요. 두 밑면과 만나는 노란 면을 보세요." } }], { ok: "두 밑면과 만나는 면은 모두 직사각형이에요." }),
         (bx, ax) => blanks(bx, ax, ["각기둥에서 면 ㄱㄹㅁㄴ, 면 ㄴㅁㅂㄷ, 면 ㄱㄹㅂㄷ과 같이 두 밑면과 만나는 면을 ", { o: ["옆면", "밑면", "모서리"], a: 0 }, "이라고 해요. 이때 각기둥의 옆면은 모두 ", { o: ["직사각형", "삼각형", "정사각형"], a: 0, }, "이에요."], { ok: "두 밑면과 만나는 면을 옆면이라 하고, 각기둥의 옆면은 모두 직사각형이에요." }),
         (bx, ax) => pp6Tap(bx, ax, Object.assign(pp6PrL(pp6Ngon(6, 1.2, 0), 1.6, { yaw: -20, pitch: 26 }), { pens: [PP6_RED, PP6_BLUE], fill: .36,
@@ -1285,7 +1285,7 @@ const LESSONS = [
     render: (b, a) => pp6Chain(b, a, [
       (bx, ax) => pp6Pick(bx, ax, { q: "각기둥을 모두 찾아보세요.", items: [{ name: "가", fig: pp6Shp("py3") }, { name: "나", fig: pp6Shp("hex") }, { name: "다", fig: pp6Shp("frus4") }, { name: "라", fig: pp6Shp("trap", { tilt: 90, yaw: -30 }) }], a: [1, 3],
         whyExtra: i => ({ 0: "가는 평행한 두 면이 없어요.", 2: "다는 평행한 두 면이 합동이 아니에요." })[i], ok: "나와 라가 각기둥이에요. 라는 누워 있는 사각기둥이에요." }),
-      (bx, ax) => pp6Tap(bx, ax, Object.assign(pp6PrL(pp6Ngon(3, 1.3, -90), 2.2, { yaw: -28, pitch: 24 }), { pens: [PP6_BLUE], want: { 2: 0, 3: 0, 4: 0 }, tip: "삼각기둥의 옆면을 모두 눌러 파란색으로 칠해요. 누른 면의 이름이 아래에 써져요.",
+      (bx, ax) => pp6Tap(bx, ax, Object.assign(pp6PrL(pp6Ngon(3, 1.3, 30), 2.2, { yaw: -20, pitch: 32 }), { pens: [PP6_BLUE], want: { 2: 0, 3: 0, 4: 0 }, tip: "삼각기둥의 옆면을 모두 눌러 파란색으로 칠해요. 누른 면의 이름이 아래에 써져요.",
         why: (it, fi, w, c) => w == null ? `${pp6Jo(pp6FaceName(it.S, fi, it.lab), "은/는")} 밑면이에요. 옆면만 칠해요.` : "아직 찾지 못한 옆면이 있어요. 돌려서 뒤쪽도 살펴봐요.",
         ask: [{ q: "이 입체도형이 각기둥이 아닌 이유를 골라 보세요.", fig: pp6Shp("frus4", { W: 220, H: 160, plain: false, maxW: "11em" }), parts: [{ o: ["평행한 두 면이 합동이 아니에요.", "평행한 두 면이 없어요.", "옆면이 사각형이에요."], a: 0, why: { "1": "위와 아래의 면은 평행해요. 크기가 달라요." } }] }],
         ok: "삼각기둥의 옆면은 면 ㄱㄹㅁㄴ, 면 ㄴㅁㅂㄷ, 면 ㄷㅂㄹㄱ이에요. 위와 아래의 면이 평행하지만 합동이 아닌 입체도형은 각기둥이 아니에요." }))]) }
