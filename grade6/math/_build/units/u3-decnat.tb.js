@@ -343,7 +343,7 @@ function dn3Blocks(body, api, opt) {
   const T = 1 + Math.max(af.length, dn3Dn(qS));
   const init = [Number(ai), Number(af[0] || 0), Number(af[1] || 0)].slice(0, T);
   const q100 = Number(Q.n * 100n / Q.d), goal = [Math.floor(q100 / 100), Math.floor(q100 / 10) % 10, q100 % 10].slice(0, T);
-  const grpName = opt.grp || "묶음";
+  const grpName = opt.grp || "묶음", cntW = opt.cnt || "개";
   let pool, grp, hist, drag = null, boxes = [], zones = [];
   const reset = () => { pool = init.slice(); grp = Array.from({ length: K }, () => Array(T).fill(0)); hist = []; };
   reset();
@@ -407,7 +407,7 @@ function dn3Blocks(body, api, opt) {
   const give = (t, k) => { if (!pool[t]) return; snap(); pool[t]--; grp[k][t]++; draw(); };
   const fewest = t => { let b = 0; grp.forEach((r, k) => { if (r[t] < grp[b][t]) b = k; }); return b; };
   const round = t => {
-    if (pool[t] < K) { say.textContent = pool[t] ? `${DN3T[t]}이 ${pool[t]}개뿐이라 ${grpName} ${K}개에 하나씩 나누어 줄 수 없어요.` + (t < T - 1 ? ` ${DN3T[t + 1]} 10개로 바꾸어 봐요.` : "") : `남은 ${DN3T[t]}이 없어요.`; return; }
+    if (pool[t] < K) { say.textContent = pool[t] ? `${DN3T[t]}이 ${pool[t]}개뿐이라 ${grpName} ${K}${cntW === "개" ? "개에" : cntW + "에게"} 하나씩 나누어 줄 수 없어요.` + (t < T - 1 ? ` ${DN3T[t + 1]} 10개로 바꾸어 봐요.` : "") : `남은 ${DN3T[t]}이 없어요.`; return; }
     snap(); for (let k = 0; k < K; k++) { pool[t]--; grp[k][t]++; } draw();
   };
   const exch = t => {
@@ -431,7 +431,7 @@ function dn3Blocks(body, api, opt) {
   draw();
   const reg = dn3Reg();
   const asks = opt.asks ? h("div", { class: "dn3ask" }, dn3Rows(opt.asks, reg)) : null;
-  body.append(h("div", { class: "dn3say" }, opt.tip || `위의 수 모형을 끌어 ${grpName}에 놓거나 눌러서 ${grpName} ${K}개에 똑같이 나누어 주어요. 똑같이 나누어 줄 수 없으면 더 작은 모형 10개로 바꾸어요.`),
+  body.append(h("div", { class: "dn3say" }, opt.tip || `위의 수 모형을 끌어 ${grpName}에 놓거나 눌러서 ${grpName} ${K}${cntW === "개" ? "개에" : cntW + "에게"} 똑같이 나누어 주어요. 똑같이 나누어 줄 수 없으면 더 작은 모형 10개로 바꾸어요.`),
     h("div", { class: "dn3stage" }, svg), say, tools, asks);
   body.__dn3solve = () => {
     reset();
@@ -445,7 +445,7 @@ function dn3Blocks(body, api, opt) {
       const t = pool.findIndex(c => c >= K);
       if (t >= 0) return { bad: `아직 ${DN3T[t]}을 ${grpName}마다 하나씩 더 나누어 줄 수 있어요. 남은 것이 없도록 끝까지 나누어 주어요.`, given: giv };
       const t2 = pool.findIndex(c => c > 0);
-      return { bad: `남은 ${DN3T[t2]}이 ${pool[t2]}개 있어요. ${grpName} ${K}개에 하나씩 줄 수 없으니 ${DN3T[t2 + 1] || "더 작은 모형"} 10개로 바꾸어 나누어 주어요.`, given: giv };
+      return { bad: `남은 ${DN3T[t2]}이 ${pool[t2]}개 있어요. ${grpName} ${K}${cntW === "개" ? "개에" : cntW + "에게"} 하나씩 줄 수 없으니 ${DN3T[t2 + 1] || "더 작은 모형"} 10개로 바꾸어 나누어 주어요.`, given: giv };
     }
     if (!eq) return { bad: `${grpName}마다 받은 수 모형이 달라요. ${grpName}마다 ${T > 2 ? "1, 0.1, 0.01" : "1, 0.1"}의 수가 똑같아야 해요. ‘한 번 되돌리기’로 고쳐 봐요.`, given: giv };
     return { given: giv };
@@ -512,6 +512,7 @@ function dn3LongBoard(pr) {
     const s = p >= 0 ? r.v.slice(r.first, p + 1).join("") + "." + r.v.slice(p + 1, r.last + 1).join("") : r.v.slice(r.first, r.last + 1).join("");
     const got = dn3P(s);
     if (dn3Eq(got, Q)) {
+      if (!qDec && r.last !== pDot) { paint(qRow, r.first, r.last, false); return { bad: `${cap}: 몫의 값은 맞지만 숫자를 쓴 자리가 어긋났어요. 몫의 각 자리 숫자를 나누어지는 수의 자리에 맞추어 써요(몫의 일의 자리는 나누어지는 수의 일의 자리 위에).`, given: s }; }
       if (qDec && p !== pDot) { paint(qRow, r.first, r.last, false); return { bad: `${cap}: 몫의 값은 맞지만 숫자를 쓴 자리가 어긋났어요. 몫의 소수점은 나누어지는 수의 소수점(빨간 점) 바로 위에 찍고, 몫의 숫자를 나누어지는 수의 자리에 맞추어 써요.`, given: s }; }
       paint(qRow, r.first, r.last, true); return { ok: true, given: s };
     }
@@ -621,7 +622,7 @@ function dn3Point(body, api, opt) {
     const judge = () => {
       const v = valOf(), giv = dn3Str(v);
       if (p < 0) return { bad: `${dn3Sp(it.e)}: 몫의 숫자 사이 동그라미를 눌러 소수점을 찍어요.`, given: giv };
-      if (!dn3Eq(v, Q)) return { bad: `${dn3Sp(it.e)}: 지금 찍은 몫은 ${giv}예요. 어림셈한 몫${it.est ? `(약 ${it.est.o[it.est.a]})` : ""}과 비슷한 크기가 되도록 소수점을 다시 찍어요.`, given: giv };
+      if (!dn3Eq(v, Q)) return { bad: `${dn3Sp(it.e)}: 지금 찍은 몫은 ${dn3J(giv, "이에요")}. ${it.est ? `어림셈한 결과인 약 ${dn3J(it.est.o[it.est.a], "과와")}` : "어림셈한 결과와"} 비슷한 크기가 되도록 소수점을 다시 찍어요.`, given: giv };
       return { given: giv };
     };
     if (/^0\./.test(qS)) throw new Error("몫이 1보다 작은 나눗셈은 소수점 찍기에 쓰지 않아요 " + it.e);
@@ -1272,7 +1273,7 @@ const LESSONS = [
   summary: "30÷2=15이고 3은 30의 [1/10]배이므로 3÷2=1.5예요. 300÷4=75이고 3은 300의 [1/100]배이므로 3÷4=0.75예요. 세로셈에서는 3=3.0=3.00처럼 자연수 뒤에 소수점이 있다고 생각하고 그 소수점에 맞추어 몫의 소수점을 찍은 뒤 0을 내려 계산해요. 3÷4=[3/4]=[75/100]=0.75처럼 몫을 분수로 나타낸 다음 소수로 나타낼 수도 있어요.",
   steps: [
     { inst: "“축제 안내판을 꾸미기 위해 크기가 같은 한지 3장을 2명이 똑같이 나누어 가지려고 합니다. 한 명이 가질 수 있는 한지의 양은 얼마인지 알아보세요.” 수 모형 1을 한지 1장이라고 생각하고 2명에게 똑같이 나누어 주어 보세요.", hints: ["한 명에게 1장씩 주면 1장이 남아요.", "남은 1장을 0.1 10개로 바꾸면 한 명에게 0.1이 5개씩이에요.", "30÷2=15이고, 3은 30의 [1/10]배예요."],
-      render: (b, a) => dn3Blocks(b, a, { a: "3", k: 2, grp: "사람",
+      render: (b, a) => dn3Blocks(b, a, { a: "3", k: 2, grp: "사람", cnt: "명",
         tip: "수 모형 1을 한지 1장이라고 생각해요. 수 모형을 끌거나 눌러서 2명에게 똑같이 나누어 주고, 나누어 줄 수 없으면 0.1 10개로 바꾸어요.",
         asks: [
           ["한 명이 가질 수 있는 한지의 양을 구하는 식은", { o: ["3÷2", "2÷3", "3×2"], a: 0 }],
@@ -1343,11 +1344,11 @@ const LESSONS = [
         { e: "40.2÷5", est: { lab: "40÷5", o: ["0.8", "8", "80"], a: 1 } },
         { e: "23.7÷6", est: { lab: "24÷6", o: ["0.4", "4", "40"], a: 1 } }],
         asks: [
-          ["3.78 ÷ 9의 몫은", { o: ["420", "42", "4.2", "0.42"], a: 3, why: { "2": "3.78은 9보다 작으니 몫은 1보다 작아요." } }],
-          ["43.6 ÷ 8의 몫은", { o: ["545", "54.5", "5.45", "0.545"], a: 2, why: { "1": "43.6을 40으로 어림하면 40÷8=5예요.", "3": "43.6을 40으로 어림하면 40÷8=5예요." } }]],
+          ["3.78 ÷ 9의 몫은", { o: ["420", "42", "4.2", "0.42"], a: 3, why: { "0": "3.78은 9보다 작으니 몫은 1보다 작아요.", "1": "3.78은 9보다 작으니 몫은 1보다 작아요.", "2": "3.78은 9보다 작으니 몫은 1보다 작아요." } }],
+          ["43.6 ÷ 8의 몫은", { o: ["545", "54.5", "5.45", "0.545"], a: 2, why: { "0": "43.6을 40으로 어림하면 40÷8=5예요.", "1": "43.6을 40으로 어림하면 40÷8=5예요.", "3": "43.6을 40으로 어림하면 40÷8=5예요." } }]],
         ok: "40.2÷5=8.04, 23.7÷6=3.95, 3.78÷9=0.42, 43.6÷8=5.45예요!" }) }
   ],
-  challenge: { inst: "수학익힘 문제예요. 어림셈을 이용해 답해 보세요.", hints: ["18.84÷3은 18÷3=6, 41.2÷8은 40÷8=5쯤이에요.", "몫이 5보다 큰지 어림셈으로 확인한 뒤 계산해 봐요(41.2÷8=5.15).", "7.41÷3을 6÷3=2 또는 7.5÷3=2.5로 어림하면 약 2예요."],
+  challenge: { inst: "수학익힘 문제예요. 어림셈을 이용해 답해 보세요.", hints: ["18.84÷3은 18÷3=6, 41.2÷8은 40÷8=5쯤이에요.", "몫이 5보다 큰지 어림셈으로 확인한 뒤 계산해 봐요(41.2÷8=5.15).", "7.41을 7.5로 어림하면 7.5÷3=2.5이므로 한 도막은 약 2.5 m예요. 24.7 m는 너무 길어요."],
     render: (b, a) => dn3Sent(b, a, [
       { q: "몫이 5보다 큰 나눗셈을 모두 골라 보세요.", p: [{ m: ["㉠ 18.84÷3", "㉡ 12.9÷6", "㉢ 20.85÷5", "㉣ 41.2÷8", "㉤ 29.16÷9", "㉥ 30.1÷7"], a: [0, 3] }] },
       { q: "이준: “철사 7.41 m를 똑같이 3도막으로 자르면 한 도막의 길이는 24.7 m야.” 시은: “철사 9.92 m를 똑같이 4도막으로 자르면 한 도막의 길이는 2.48 m야.”", p: ["소수점을 잘못 찍은 사람은", { o: ["이준", "시은"], a: 0, why: { "1": "9.92÷4를 10÷4로 어림셈하면 약 2.5이므로 2.48 m는 알맞아요." } }, "→ 바르게 고치면", { n: "2.47", e: "7.41÷3" }, "m"] }],
