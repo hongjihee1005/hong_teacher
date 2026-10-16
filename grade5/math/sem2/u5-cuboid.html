@@ -2013,7 +2013,7 @@ function cb5Sketch(body, api, opt) {
 function cb5Bounds(F) { const xs = F.flatMap(r => [r.x, r.x + r.w]), ys = F.flatMap(r => [r.y, r.y + r.h]); return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) }; }
 /* 평면 전개도: o {k, pad, grid(모눈 칸 수 여유), color(fi), lab:P, dims:[{a:[x,y],b:[x,y],t}], hingeDash(true), maxW, extra(svg,m), solidAll} */
 function cb5NetSvg(F, o = {}) {
-  const B = cb5Bounds(F), k = o.k || 28, pad = o.pad == null ? 26 : o.pad, gx = o.gx || 0, gy = o.gy || 0;
+  const B = o.bounds || cb5Bounds(F), k = o.k || 28, pad = o.pad == null ? 26 : o.pad, gx = o.gx || 0, gy = o.gy || 0;
   const W = (B.x1 - B.x0 + 2 * gx) * k + pad * 2, H = (B.y1 - B.y0 + 2 * gy) * k + pad * 2;
   const m = p => [cb5R(pad + (p[0] - B.x0 + gx) * k), cb5R(pad + (p[1] - B.y0 + gy) * k)];
   const C = cb5Contacts(F);
@@ -2298,7 +2298,7 @@ function cb5AddFace(body, api, opt) {
   const draw = () => {
     box.innerHTML = "";
     const FF = phase === "pick" ? F : F.concat([opt.cands[sel]]);
-    const N = cb5NetSvg(FF, { k: opt.k || 30, grid: opt.grid, dims: opt.dims, maxW: opt.maxW || "26em", gx: 0, color: fi => fi === 5 ? (opt.color || "#F6B38E") : (opt.base || "#EEF5FC"), extra: (s, m) => {
+    const N = cb5NetSvg(FF, { k: opt.k || 30, grid: opt.grid, dims: opt.dims, maxW: opt.maxW || "26em", gx: 0, bounds: B, color: fi => fi === 5 ? (opt.color || "#F6B38E") : (opt.base || "#EEF5FC"), extra: (s, m) => {
       if (phase === "pick") opt.cands.forEach((c, i) => { const A = m([c.x, c.y]), Bp = m([c.x + c.w, c.y + c.h]);
         const e = svgEl("rect", { x: A[0], y: A[1], width: Bp[0] - A[0], height: Bp[1] - A[1], fill: sel === i ? (opt.color || "#F6B38E") : "#fff", "fill-opacity": sel === i ? .9 : .5, stroke: "#8795A1", "stroke-width": 1.6, "stroke-dasharray": "4 4", class: "cb5hit" });
         e.addEventListener("click", () => { sel = i; draw(); read.textContent = `${c.name} 자리를 골랐어요.`; }); s.append(e);

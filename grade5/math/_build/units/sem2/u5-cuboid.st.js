@@ -529,7 +529,7 @@ function cb5Prism(o) {
     const cx = S.reduce((s, p) => s + p[0], 0) / S.length, cy = S.reduce((s, p) => s + p[1], 0) / S.length;
     (o.lab || []).forEach((t, i) => { if (!t) return; const dx = S[i][0] - cx, dy = S[i][1] - cy, L = Math.hypot(dx, dy) || 1; svg.append(txt(cb5R(S[i][0] + dx / L * 15), cb5R(S[i][1] + dy / L * 15), t, 16, { fill: CB5.ink })); });
     (o.dims || []).forEach(d => { const A = S[d.u], B = S[d.v], mx = (A[0] + B[0]) / 2, my = (A[1] + B[1]) / 2; let dx = mx - cx, dy = my - cy; const L = Math.hypot(dx, dy) || 1;
-      svg.append(txt(cb5R(mx + dx / L * (d.d || 18)), cb5R(my + dy / L * (d.d || 18)), d.t, d.size || 15, { fill: d.color || CB5.blue })); });
+      svg.append(txt(cb5R(mx + dx / L * (d.d || 18)), cb5R(my + dy / L * (d.d || 18)), d.t, d.size || 15, { fill: d.color || CB5.blue, stroke: "#FFFFFF", "stroke-width": 4, "paint-order": "stroke", "stroke-linejoin": "round" })); });
     if (o.extra) o.extra(svg, S);
   }, o.maxW || "16em", o.plain);
 }
@@ -653,7 +653,7 @@ function cb5Sketch(body, api, opt) {
 function cb5Bounds(F) { const xs = F.flatMap(r => [r.x, r.x + r.w]), ys = F.flatMap(r => [r.y, r.y + r.h]); return { x0: Math.min(...xs), y0: Math.min(...ys), x1: Math.max(...xs), y1: Math.max(...ys) }; }
 /* 평면 전개도: o {k, pad, grid(모눈 칸 수 여유), color(fi), lab:P, dims:[{a:[x,y],b:[x,y],t}], hingeDash(true), maxW, extra(svg,m), solidAll} */
 function cb5NetSvg(F, o = {}) {
-  const B = cb5Bounds(F), k = o.k || 28, pad = o.pad == null ? 26 : o.pad, gx = o.gx || 0, gy = o.gy || 0;
+  const B = o.bounds || cb5Bounds(F), k = o.k || 28, pad = o.pad == null ? 26 : o.pad, gx = o.gx || 0, gy = o.gy || 0;
   const W = (B.x1 - B.x0 + 2 * gx) * k + pad * 2, H = (B.y1 - B.y0 + 2 * gy) * k + pad * 2;
   const m = p => [cb5R(pad + (p[0] - B.x0 + gx) * k), cb5R(pad + (p[1] - B.y0 + gy) * k)];
   const C = cb5Contacts(F);
@@ -947,7 +947,7 @@ function cb5AddFace(body, api, opt) {
   const draw = () => {
     box.innerHTML = "";
     const FF = phase === "pick" ? F : F.concat([opt.cands[sel]]);
-    const N = cb5NetSvg(FF, { k: opt.k || 30, grid: opt.grid, dims: opt.dims, maxW: opt.maxW || "26em", gx: 0, color: fi => fi === 5 ? (opt.color || "#F6B38E") : (opt.base || "#EEF5FC"), extra: (s, m) => {
+    const N = cb5NetSvg(FF, { k: opt.k || 30, grid: opt.grid, dims: opt.dims, maxW: opt.maxW || "26em", gx: 0, bounds: B, color: fi => fi === 5 ? (opt.color || "#F6B38E") : (opt.base || "#EEF5FC"), extra: (s, m) => {
       if (phase === "pick") opt.cands.forEach((c, i) => { const A = m([c.x, c.y]), Bp = m([c.x + c.w, c.y + c.h]);
         const e = svgEl("rect", { x: A[0], y: A[1], width: Bp[0] - A[0], height: Bp[1] - A[1], fill: sel === i ? (opt.color || "#F6B38E") : "#fff", "fill-opacity": sel === i ? .9 : .5, stroke: "#8795A1", "stroke-width": 1.6, "stroke-dasharray": "4 4", class: "cb5hit" });
         e.addEventListener("click", () => { sel = i; draw(); read.textContent = `${c.name} 자리를 골랐어요.`; }); s.append(e);
@@ -998,7 +998,7 @@ function cb5Pick(body, api, opt) {
     if (fin) return true; api.tryOnce(); const got = [...sel].sort().map(i => opt.items[i].name).join(", ") || "-";
     cards.forEach((c, i) => { c.classList.remove("cb5-good", "cb5-bad"); if (sel.has(i)) c.classList.add(opt.a.includes(i) ? "cb5-good" : "cb5-bad"); });
     const ex = [...sel].find(i => !opt.a.includes(i));
-    if (ex != null) { api.fail(opt.whyExtra ? opt.whyExtra(ex) : `${opt.items[ex].name}는 답이 아니에요.`, got); return false; }
+    if (ex != null) { api.fail(opt.whyExtra ? opt.whyExtra(ex) : `${cb5Jo(opt.items[ex].name, "은/는")} 답이 아니에요.`, got); return false; }
     if (sel.size < opt.a.length) { api.fail(opt.whyMiss || `아직 ${opt.a.length - sel.size}개 더 있어요.`, got); return false; }
     fin = true; cb5Then(body, api, opt, got, opt.msg || opt.ok); return true;   // → api.done(
   };
@@ -1090,7 +1090,7 @@ function cb5Robot(body, api, opt) {   /* 끝나면 cb5Then → api.done( */
     const si = opt.slots.findIndex((sl, i) => placed[i] == null && Math.hypot(sl.x - pc.x, sl.y - pc.y) < 1.3 && sl.kind === pc.kind);
     const near = opt.slots.findIndex((sl, i) => placed[i] == null && Math.hypot(sl.x - pc.x, sl.y - pc.y) < 1.3);
     if (si >= 0) { pc.x = opt.slots[si].x; pc.y = opt.slots[si].y; pc.at = si; placed[si] = pc.i; }
-    else { if (near >= 0) { api.tryOnce(); api.hint(`${pc.name}는 그 자리에 맞지 않아요. 설계도의 크기와 모양을 살펴봐요.`); } pc.x = pc.home[0]; pc.y = pc.home[1]; }
+    else { if (near >= 0) { api.tryOnce(); api.hint(`${cb5Jo(pc.name, "은/는")} 그 자리에 맞지 않아요. 설계도의 크기와 모양을 살펴봐요.`); } pc.x = pc.home[0]; pc.y = pc.home[1]; }
     draw();
     if (placed.every(x => x != null)) cb5Then(body, api, opt, "장난감 완성", opt.msg || "설계도대로 완성했어요!");
   });
@@ -1123,7 +1123,7 @@ function cb5Deck() {
 function cb5CardFig(card) {
   const s = CB5_SHAPES[card.shape];
   if (card.kind === "sk") { const [W, H, D] = s.dims;
-    return cb5Cub({ W, H, D, k: 28, maxW: "100%", plain: true, pad: 40, f: .6, dimD: 24, dimSize: 14, dims: [[0, 1, W + " cm"], [0, 2, H + " cm"], [3, 7, D + " cm"]] }); }
+    return cb5Cub({ W, H, D, k: 28, maxW: "100%", plain: true, pad: 50, f: .6, dimD: 26, dimSize: 20, dims: [[0, 1, W + " cm"], [0, 2, H + " cm"], [1, 5, D + " cm"]] }); }
   const N = cb5NetSvg(card.F, { k: 12, pad: 4, grid: true, gx: 1, gy: 1, maxW: "100%", plain: true, color: () => "#FFF6DD" });
   return N.svg;
 }
@@ -1189,7 +1189,7 @@ function cb5PassGame(body, api, opt) {
     hands = hands.map((hd, p) => { const nh = hd.filter((_, i) => i !== give[p]); nh.push(out[(p + 3) % 4]); return nh; });
     passes++; sel = null;
     const w = [1, 2, 3].find(p => same(hands[p]));
-    if (w && !same(hands[0])) { over = true; reveal = w; wins[w]++; msg.textContent = `${NAMES[w]}가 같은 도형 카드 3장을 모았어요! 카드를 보고 정말 같은 도형인지 확인해 봐요.`; }
+    if (w && !same(hands[0])) { over = true; reveal = w; wins[w]++; msg.textContent = `${cb5Jo(NAMES[w], "이/가")} 같은 도형 카드 3장을 모았어요! 카드를 보고 정말 같은 도형인지 확인해 봐요.`; }
     else msg.textContent = `카드를 넘기고 ${NAMES[3]}에게서 한 장을 받았어요. 같은 도형 3장이 되었는지 살펴봐요.`;
     draw();
   }
@@ -1366,7 +1366,7 @@ function cb5sRightFig() {
 }
 /* 겨냥도 세 가지(3차시 말해 보기) */
 function cb5sThreeSk() {
-  const one = (o, t) => h("div", { style: "text-align:center" }, cb5Cub(Object.assign({ W: 5, H: 2, D: 3, k: 22, maxW: "10em" }, o)), h("div", { class: "jua" }, t));
+  const one = (o, t) => { const f = cb5Cub(Object.assign({ W: 5, H: 2, D: 3, k: 22, maxW: "10em" }, o)); f.style.margin = ".3em auto"; return h("div", { style: "text-align:center" }, f, h("div", { class: "jua" }, t)); };
   return h("div", { class: "cb5row" }, one({ hidden: "none" }, "가"), one({ hidden: "solid" }, "나"), one({}, "다"));
 }
 /* 이름 붙인 전개도(둘레 점을 시계 방향으로 ㄱ~ㅎ) */
@@ -1455,8 +1455,8 @@ const LESSONS = [
   challenge: { inst: "공방 일을 하며 배운 내용을 한 번 더 떠올려 보세요.", hints: ["직사각형과 정사각형의 각을 떠올려요.", "평행한 두 직선 사이에 수직인 선분을 그어 봐요."],
     render: (b, a) => quiz(b, a, [
       { q: "직사각형과 정사각형의 같은 점을 골라 보세요.", o: ["네 각이 모두 직각이에요.", "네 변의 길이가 모두 같아요.", "변이 3개예요."], a: 0, why: { "1": "직사각형은 네 변의 길이가 모두 같지는 않아요.", "2": "사각형은 변이 4개예요." } },
-      { q: "서로 평행한 두 직선에 수직인 선분을 그었어요. 이 선분은 다른 한 직선과 어떻게 만날까요?", o: ["수직으로 만나요", "만나지 않아요"], a: 0, why: { "1": "선분을 늘이면 다른 직선과도 만나요. 이때 이루는 각도 직각이에요." } }],
-      { ok: "직사각형과 정사각형은 네 각이 모두 직각이에요. 평행한 두 직선에 수직인 선분은 두 직선과 모두 수직으로 만나요." }) }
+      { q: "서로 평행한 두 직선 중 한 직선에 수직인 선분을 다른 직선까지 그었어요. 이 선분은 다른 한 직선과 어떻게 만날까요?", o: ["수직으로 만나요", "만나지 않아요"], a: 0, why: { "1": "선분을 늘이면 다른 직선과도 만나요. 이때 이루는 각도 직각이에요." } }],
+      { ok: "직사각형과 정사각형은 네 각이 모두 직각이에요. 평행한 두 직선 중 한 직선에 수직인 선분은 다른 직선과도 수직으로 만나요." }) }
 },
 {
   id: "s2", no: 2, title: "재료 상자를 나누어요 ― 직육면체와 정육면체", soop: "개념 구축하기(O)",
@@ -1498,7 +1498,7 @@ const LESSONS = [
       render: (b, a) => cb5Chain(b, a, [
         (bx, ax) => cb5Ask(bx, ax, [{ q: "직육면체에서 ①, ②, ③이 가리키는 곳의 이름을 골라 보세요.", fig: () => cb5sPartsFig([{ t: "①" }, { i: 1, t: "②" }, { t: "③" }]),
           parts: ["① ", { o: ["꼭짓점", "면", "모서리"], a: 1 }, "  ② ", { o: ["꼭짓점", "면", "모서리"], a: 0 }, "  ③ ", { o: ["꼭짓점", "면", "모서리"], a: 2 }] }], { ok: "① 면, ② 꼭짓점, ③ 모서리예요." }),
-        (bx, ax) => cb5Ask(bx, ax, [{ q: "한 모서리가 8 cm인 정육면체 선물 상자의 모든 모서리에 리본을 붙이려고 해요.", fig: () => cb5Cub({ W: 3, H: 3, D: 3, k: 30, maxW: "13em", dims: [[0, 1, "8 cm"]] }),
+        (bx, ax) => cb5Ask(bx, ax, [{ q: "한 모서리가 8 cm인 정육면체 선물 상자의 모든 모서리에 리본을 붙이려고 해요.", fig: () => cb5Cub({ W: 3, H: 3, D: 3, k: 30, maxW: "13em", pad: 46, dims: [[0, 1, "8 cm"]] }),
           parts: ["정육면체의 모서리는 ", { n: 12, why: { "8": "꼭짓점의 수를 썼어요. 모서리는 면과 면이 만나는 선분이에요.", "9": "보이지 않는 모서리 3개도 세어요." } }, "개이고, 길이가 모두 ", { n: 8 }, " cm예요.", h("br"), "필요한 리본은 8 × 12 = ", { n: 96, why: { "64": "모서리는 8개가 아니라 12개예요.", "48": "면 6개가 아니라 모서리 12개만큼 곱해요." } }, " (cm)예요."] }], { ok: "정육면체는 모서리 12개의 길이가 모두 같아서 8 × 12 = 96 (cm)의 리본이 필요해요." })]) }
   ],
   challenge: { inst: "질문 대장 건우의 말과 민호의 상자를 살펴보세요.", hints: ["직육면체는 길이가 같은 모서리가 4개씩 3쌍 있어요.", "정육면체는 정사각형 6개로 둘러싸인 도형이에요."],
@@ -1506,7 +1506,7 @@ const LESSONS = [
       { q: "건우: “직육면체와 정육면체는 모서리의 길이가 모두 같아.” 건우의 말을 바르게 고친 것을 골라 보세요.",
         o: ["정육면체는 모서리의 길이가 모두 같지만, 직육면체는 길이가 같은 모서리가 4개씩 3쌍 있어요.", "직육면체와 정육면체는 모서리의 길이가 모두 달라요.", "직육면체는 모서리의 길이가 모두 같지만, 정육면체는 달라요."], a: 0,
         why: { "1": "정육면체는 모서리의 길이가 모두 같아요.", "2": "거꾸로 말했어요. 모서리의 길이가 모두 같은 것은 정육면체예요." } },
-      { q: "가로 6 cm, 세로 4 cm, 높이 4 cm인 민호의 상자가 정육면체가 아닌 까닭을 골라 보세요.", fig: () => cb5Cub({ W: 4.5, H: 3, D: 3, k: 26, maxW: "14em", dims: [[0, 1, "6 cm"], [1, 3, "4 cm"], [3, 7, "4 cm"]] }),
+      { q: "가로 6 cm, 세로 4 cm, 높이 4 cm인 민호의 상자가 정육면체가 아닌 까닭을 골라 보세요.", fig: () => cb5Cub({ W: 4.5, H: 3, D: 3, k: 26, maxW: "14em", pad: 46, dims: [[0, 1, "6 cm"], [0, 2, "4 cm"], [1, 5, "4 cm"]] }),
         o: ["정사각형이 아닌 면이 있기 때문이에요.", "면이 6개보다 많기 때문이에요.", "꼭짓점이 8개이기 때문이에요."], a: 0, why: { "1": "이 상자의 면은 6개예요.", "2": "정육면체도 꼭짓점이 8개예요." } }],
       { ok: "정육면체는 모서리의 길이가 모두 같지만 직육면체는 4개씩 3쌍이 같아요. 6 cm × 4 cm인 면은 정사각형이 아니라서 민호의 상자는 정육면체가 아니에요." }) }
 },
@@ -1515,7 +1515,7 @@ const LESSONS = [
   question: "상자 모양을 잘 알 수 있게 그리려면 어떻게 나타내면 좋을까요?",
   summary: "직육면체 모양을 잘 알 수 있도록 나타낸 그림을 직육면체의 겨냥도라고 해요. 겨냥도에서는 보이는 모서리를 실선으로, 보이지 않는 모서리를 점선으로 그려요. 겨냥도에는 보이는 면 3개와 보이지 않는 면 3개, 보이는 모서리 9개와 보이지 않는 모서리 3개, 보이는 꼭짓점 7개와 보이지 않는 꼭짓점 1개가 있어요.",
   steps: [
-    { name: "만져 보기 — 상자를 어디에서 볼까", inst: "유나는 나눔 장터 카탈로그에 선물 상자 그림을 실으려고 해요. 정면에서 본 상자는 면이 1개만 보여요. 상자를 돌려서 면이 3개 보이게 만들어 보세요.", hints: ["▶와 ▲ 단추로 조금씩 돌려 봐요.", "비스듬히 위에서 보면 앞면, 옆면, 윗면이 함께 보여요."],
+    { name: "만져 보기 — 상자를 어디에서 볼까", inst: "유나는 나눔 장터 카탈로그에 선물 상자 그림을 실으려고 해요. 정면에서 본 상자는 면이 1개만 보여요. 상자를 돌려서 면이 3개 보이게 만들어 보세요.", hints: ["▶와 ▼ 단추로 조금씩 돌려 봐요. ▼를 누르면 윗면이 보이기 시작해요.", "비스듬히 위에서 보면 앞면, 옆면, 윗면이 함께 보여요."],
       render: (b, a) => cb5SeeFaces(b, a, { dims: [5, 2, 3], yaw: 0, pitch: 0, goal: 3, msg: "면이 3개 보이도록 돌렸어요.",
         ask: [{ q: "유나가 같은 상자를 여러 방향에서 그려 본 모양이에요.", fig: () => h("div", { class: "cb5row" },
             ...[[0, 0, "가"], [-35, 24, "나"], [-35, 0, "다"]].map(([y, p, t]) => h("div", { style: "text-align:center" }, cb5Solid({ dims: [5, 2, 3], yaw: y, pitch: p, hidden: "none", fixed: true, size: [260, 200], fill: () => "#FFE7B8", maxW: "11em" }).svg, h("div", { class: "jua" }, t)))),
@@ -1542,7 +1542,7 @@ const LESSONS = [
         ok: "정육면체의 겨냥도에도 보이지 않는 모서리 3개와 보이지 않는 꼭짓점 1개가 있어요." }) }
   ],
   challenge: { inst: "가로 9 cm, 세로 6 cm, 높이 5 cm인 선물 상자의 카탈로그 그림이에요. 그림의 보이는 모서리에는 금색 테이프를, 보이지 않는 모서리에는 은색 테이프를 붙였다고 생각해 보세요.", hints: ["보이는 모서리 9개에는 9 cm, 6 cm, 5 cm인 모서리가 3개씩 있어요.", "보이지 않는 모서리 3개에는 9 cm, 6 cm, 5 cm인 모서리가 1개씩 있어요."],
-    render: (b, a) => cb5Ask(b, a, [{ fig: () => cb5Cub({ W: 4.5, H: 2.5, D: 3, k: 34, maxW: "18em", dims: [[0, 1, "9 cm"], [1, 3, "5 cm"], [3, 7, "6 cm"]] }),
+    render: (b, a) => cb5Ask(b, a, [{ fig: () => cb5Cub({ W: 4.5, H: 2.5, D: 3, k: 34, maxW: "18em", pad: 46, dims: [[0, 1, "9 cm"], [0, 2, "5 cm"], [1, 5, "6 cm"]] }),
       parts: ["금색 테이프(보이는 모서리 길이의 합): (9 + 6 + 5) × ", { n: 3 }, " = ", { n: 60, why: { "20": "보이는 모서리는 9개라서 9 cm, 6 cm, 5 cm가 3개씩 있어요.", "80": "보이는 모서리는 12개가 아니라 9개예요." } }, " (cm)", h("br"),
         "은색 테이프(보이지 않는 모서리 길이의 합): 9 + 6 + 5 = ", { n: 20, why: { "60": "보이지 않는 모서리는 3개뿐이에요. 길이가 다른 모서리가 1개씩 있어요." } }, " (cm)"] }],
       { ok: "보이는 모서리의 합은 (9+6+5)×3=60 (cm), 보이지 않는 모서리의 합은 9+6+5=20 (cm)예요." }) }
@@ -1618,7 +1618,7 @@ const LESSONS = [
         { q: "겹치는 선분을 어떻게 찾았는지 써 볼까요?", ph: "접는 선을 따라 ~", help: ["① 빨간 선분이 붙은 면을 어느 접는 선을 따라 접는지 떠올려요. → ② 접었을 때 그 선분과 맞닿는 선분을 생각해요.", "‘접는 선을 따라 ~을 접어 올리면 ~과 맞닿아요.’ 꼴로 써요."], ans: "접는 선을 따라 이웃한 면을 접어 올리면 빨간 선분과 맞닿는 선분이 생겨요. 접는 선이 꺾이는 곳에서 가까운 선분끼리 차례로 짝지어 찾았어요." }) },
     { name: "확인하기 — 동생 선물 상자 그리기", inst: "1학년 동생들에게 줄 한 모서리 2 cm인 정육면체 상자의 전개도를 모눈종이에 그려 보세요. 점에서 대각선 쪽 점까지 끌면 면이 생겨요. (모눈 한 칸은 1 cm)", hints: ["면 6개를 겹치는 면 없이 그려요. 정사각형의 한 변은 2칸이에요.", "다 그리면 두 면이 맞닿은 선(접는 선)을 눌러 점선으로 바꿔요."],
       render: (b, a) => { let first = null; cb5Chain(b, a, [
-        { title: "① 일부 그려진 전개도를 완성해 보세요.", run: (bx, ax) => { bx.append(h("div", { class: "cb5row" }, h("div", { style: "flex:0 1 9em" }, cb5Cub({ W: 2, H: 2, D: 2, k: 34, maxW: "8em", dims: [[0, 1, "2 cm"], [1, 3, "2 cm"], [3, 7, "2 cm"]] }))));
+        { title: "① 일부 그려진 전개도를 완성해 보세요.", run: (bx, ax) => { bx.append(h("div", { class: "cb5row" }, h("div", { style: "flex:0 1 11em" }, cb5Cub({ W: 2, H: 2, D: 2, k: 34, maxW: "10em", pad: 46, dims: [[0, 1, "2 cm"], [0, 2, "2 cm"], [1, 5, "2 cm"]] }))));
           cb5NetDraw(bx, ax, { cols: 13, rows: 9, k: 26, dims: [2, 2, 2], cube: true, given: [{ x: 1, y: 3, w: 2, h: 2 }, { x: 3, y: 3, w: 2, h: 2 }, { x: 5, y: 3, w: 2, h: 2 }], onNet: (F, key) => { first = key; }, msg: "정육면체 상자의 전개도를 완성했어요." }); } },
         { title: "② 이번에는 ①과 다른 모양으로 그려 보세요.", run: (bx, ax) => cb5NetDraw(bx, ax, { cols: 13, rows: 9, k: 26, dims: [2, 2, 2], cube: true, avoid: () => first, lines: false, msg: "다른 모양의 전개도도 그렸어요.",
           ask: [{ q: "그린 전개도가 옳은지 확인할 것을 모두 골라 보세요.", parts: [{ o: ["면이 6개예요.", "모든 모서리의 길이가 같아요.", "접었을 때 겹치는 면이 없어요.", "면의 크기가 모두 달라요."], multi: true, a: [0, 1, 2] }] }],
@@ -1653,7 +1653,7 @@ const LESSONS = [
       render: (b, a) => cb5NetPts(b, a, { F: CB5S_N6.F, P: CB5S_N6.P, k: 30, maxW: "26em", tasks: [{ pt: "ㅂ" }, { pt: "ㄴ" }, { seg: "ㅍㅌ" }, { seg: "ㅌㅋ" }],
         ok: "점 ㅂ은 점 ㅇ·점 ㅌ, 점 ㄴ은 점 ㄹ과 겹치고, 선분 ㅍㅌ은 선분 ㅁㅂ, 선분 ㅌㅋ은 선분 ㅈㅇ과 겹쳐요." }) },
     { name: "확인하기 — 카드 상자 전개도 그리기", inst: "가로 6 cm, 높이 2 cm, 깊이 3 cm인 카드 상자의 전개도를 완성해 보세요. 점에서 대각선 쪽 점까지 끌면 면이 생겨요. (모눈 한 칸은 1 cm)", hints: ["6 cm × 2 cm, 3 cm × 2 cm, 6 cm × 3 cm인 면이 2개씩 있어요.", "접었을 때 겹치는 모서리의 길이가 같은지 확인해요. 다 그리면 접는 선을 눌러 점선으로 바꿔요."],
-      render: (b, a) => { b.append(cb5Cub({ W: 6, H: 2, D: 3, k: 22, maxW: "13em", dims: [[0, 1, "6 cm"], [1, 3, "2 cm"], [3, 7, "3 cm"]] }));
+      render: (b, a) => { b.append(cb5Cub({ W: 6, H: 2, D: 3, k: 22, maxW: "13em", pad: 46, dims: [[0, 1, "6 cm"], [0, 2, "2 cm"], [1, 5, "3 cm"]] }));
         cb5NetDraw(b, a, { cols: 20, rows: 10, k: 22, dims: [6, 2, 3], given: [{ x: 4, y: 4, w: 6, h: 2 }, { x: 4, y: 1, w: 6, h: 3 }],
           msg: "카드 상자의 전개도를 완성했어요. 잘린 모서리는 실선, 잘리지 않은 모서리는 점선이에요." }); } }
   ],
@@ -1661,7 +1661,7 @@ const LESSONS = [
     render: (b, a) => cb5Chain(b, a, [
       { title: "① 직육면체의 겨냥도를 보고 전개도의 ㉠, ㉡, ㉢에 알맞은 수를 써 보세요.", run: (bx, ax) => {
         const F = cb5NetFromCells(CB5_CROSS, { 1: 6, 2: 5, 4: 3 });   // 가로 6·3·6·3, 높이 5, 위아래 3 × 6
-        cb5Ask(bx, ax, [{ fig: () => h("div", { class: "cb5row" }, h("div", { style: "flex:0 1 12em" }, cb5Cub({ W: 6, H: 5, D: 3, k: 16, pad: 50, dimD: 30, dimSize: 18, maxW: "12em", dims: [[0, 1, "6 cm"], [1, 3, "5 cm"], [3, 7, "3 cm"]] })),
+        cb5Ask(bx, ax, [{ fig: () => h("div", { class: "cb5row" }, h("div", { style: "flex:0 1 12em" }, cb5Cub({ W: 6, H: 5, D: 3, k: 16, pad: 50, dimD: 30, dimSize: 18, maxW: "12em", dims: [[0, 1, "6 cm"], [0, 2, "5 cm"], [1, 5, "3 cm"]] })),
             h("div", {}, cb5NetSvg(F, { k: 12, maxW: "22em", extra: (s, m) => { const L = (p, q, t, dx, dy) => { const A = m(p), B = m(q); s.append(txt((A[0] + B[0]) / 2 + dx, (A[1] + B[1]) / 2 + dy, t, 15, { fill: CB5.red })); };
               L([0, 6], [0, 11], "㉠", -12, 0); L([6, 0], [9, 0], "㉡", 0, -11); L([6, 11], [6, 17], "㉢", -12, 0); } }).svg)),
           parts: ["㉠ ", { n: 5 }, " cm, ㉡ ", { n: 3 }, " cm, ㉢ ", { n: 6 }, " cm"] }], { ok: "㉠ 5 cm, ㉡ 3 cm, ㉢ 6 cm예요. 접었을 때 맞닿는 선분의 길이를 겨냥도의 모서리와 견주었어요." }); } },
@@ -1746,7 +1746,7 @@ const LESSONS = [
           cb5FaceAsk(bx, ax, [{ q: "색칠한 면 ㅁㅂㅅㅇ과 수직인 면", ans: [0, 1, 2, 3], why: "색칠한 면과 만나는 면 4개를 써요. 마주 보는 면 ㄱㄴㄷㄹ은 평행한 면이에요." }],
             { ok: "수직인 면은 면 ㄴㅂㅅㄷ, 면 ㄱㅁㅇㄹ, 면 ㄱㄴㅂㅁ, 면 ㄷㅅㅇㄹ이에요." }); } }]) },
     { name: "말해 보기 — 발표용 전개도 그리기", inst: "발표회에서 보여 줄 가로 3 cm, 높이 2 cm, 깊이 4 cm인 상자의 전개도를 모눈종이에 그려 보세요. (모눈 한 칸은 1 cm)", hints: ["3 cm × 2 cm, 4 cm × 2 cm, 3 cm × 4 cm인 면이 2개씩 있어요.", "다 그리면 접는 선을 눌러 점선으로 바꿔요."],
-      render: (b, a) => { b.append(cb5Cub({ W: 3, H: 2, D: 4, k: 24, maxW: "11em", dims: [[0, 1, "3 cm"], [1, 3, "2 cm"], [3, 7, "4 cm"]] }));
+      render: (b, a) => { b.append(cb5Cub({ W: 3, H: 2, D: 4, k: 24, maxW: "11em", pad: 46, dims: [[0, 1, "3 cm"], [0, 2, "2 cm"], [1, 5, "4 cm"]] }));
         cb5NetDraw(b, a, { cols: 17, rows: 12, k: 22, dims: [3, 2, 4], msg: "상자의 전개도를 그렸어요. 면 6개, 겹치는 면 없음, 맞닿는 모서리 길이가 같음, 실선·점선 구분까지 확인했어요." }); } },
     { name: "약속하기 — 친구들의 말과 그림 고치기", inst: "발표회에서 친구들이 한 말을 살펴보고, 건우가 잘못 그린 카탈로그 그림을 고쳐 보세요.", hints: ["한 면과 평행한 면은 1개, 서로 평행한 면은 3쌍이에요.", "보이지 않는 모서리는 점선이에요."],
       render: (b, a) => cb5Chain(b, a, [
