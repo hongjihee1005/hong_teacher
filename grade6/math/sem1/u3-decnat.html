@@ -1734,8 +1734,8 @@ function dn3Blocks(body, api, opt) {
   let pool, grp, hist, drag = null, boxes = [], zones = [];
   const reset = () => { pool = init.slice(); grp = Array.from({ length: K }, () => Array(T).fill(0)); hist = []; };
   reset();
-  const W = 760, x0 = 10, PH = 170, GY = PH + 16, SZ = [{ w: 44, h: 44, gx: 6, gy: 6 }, { w: 6, h: 44, gx: 4, gy: 6 }, { w: 7, h: 7, gx: 3, gy: 3 }];
-  const zw = T === 2 ? [420, 316] : [300, 236, 196];
+  const W = 760, x0 = 10, PH = 170, GY = PH + 16, SZ = [{ w: 44, h: 44, gx: 6, gy: 6 }, { w: 7, h: 44, gx: 4, gy: 6 }, { w: 9, h: 9, gx: 3, gy: 3 }];
+  const zw = T === 2 ? [420, 310] : [290, 230, 200];
   const svg = makeSvg(W, 400), g = svgEl("g"), gh = svgEl("g"); svg.append(g, gh);
   const say = h("div", { class: "dn3say" }, "​");
   const piece = (t, x, y, sc = 1) => {
@@ -1951,7 +1951,7 @@ function dn3Tape(body, api, opt) {
     // m 눈금
     g.append(svgEl("line", { x1: x0, y1: my + 12, x2: x0 + Lp, y2: my + 12, stroke: DN3C.dark, "stroke-width": 1.5 }));
     for (let c = 0; c <= Lcm; c += 50) { const x = x0 + Lp * c / Lcm; g.append(svgEl("line", { x1: x, y1: my + 6, x2: x, y2: my + 18, stroke: INK, "stroke-width": 2 }), txt(x, my - 6, dn3Str(dn3R(BigInt(c), 100n)), 15)); }
-    g.append(txt(x0 + Lp, my - 6, opt.m, 15, { fill: DN3C.red }), txt(x0 + Lp + 18, my + 12, "m", 14, { fill: DN3C.dark }));
+    g.append(txt(x0 + Lp, my - 24, opt.m, 15, { fill: DN3C.red }), txt(x0 + Lp + 18, my + 12, "m", 14, { fill: DN3C.dark }));
     // 막대
     g.append(svgEl("rect", { x: x0, y: sy, width: Lp, height: bh, rx: 6, fill: "#E8C48E", stroke: "#9A6B32", "stroke-width": 2.5 }));
     const list = [0, ...[...cuts].sort((a, b) => a - b), N];
@@ -1963,7 +1963,7 @@ function dn3Tape(body, api, opt) {
     // cm 자
     g.append(svgEl("rect", { x: x0, y: ry - 14, width: Lp, height: 40, fill: "#F3F7F5", stroke: DN3C.line }));
     for (let c = 0; c <= Lcm; c += 5) { const x = x0 + Lp * c / Lcm, big = c % 50 === 0, mid = c % 10 === 0; g.append(svgEl("line", { x1: x, y1: ry - 14, x2: x, y2: ry - 14 + (big ? 18 : mid ? 12 : 6), stroke: INK, "stroke-width": big ? 2 : 1 })); if (big) g.append(txt(x, ry + 16, String(c), 14)); }
-    g.append(txt(x0 + Lp, ry + 16, String(Lcm), 14, { fill: DN3C.red }), txt(x0 + Lp + 20, ry - 2, "cm", 14, { fill: DN3C.dark }));
+    g.append(txt(x0 + Lp, ry + 34, String(Lcm), 14, { fill: DN3C.red }), txt(x0 + Lp + 20, ry - 2, "cm", 14, { fill: DN3C.dark }));
     say.innerHTML = ""; say.append("자르는 선 ", h("b", {}, String(cuts.size)), `개 → ${cuts.size + 1}도막`);
   };
   svg.addEventListener("pointerdown", e => {
@@ -2002,7 +2002,7 @@ function dn3Point(body, api, opt) {
     }));
     const valOf = () => dn3P(p < 0 ? cells.join("") : cells.slice(0, p + 1).join("") + "." + cells.slice(p + 1).join(""));
     const parts = [`${dn3Sp(it.e)}`];
-    if (it.est) parts.push(it.est.lab ? `→ ${dn3Sp(it.est.lab)}(으)로 어림셈하면 약` : "→ 어림셈하면 약", { o: it.est.o, a: it.est.a }, "→");
+    if (it.est) parts.push(it.est.lab ? `→ ${dn3J(dn3Sp(it.est.lab), "으로")} 어림셈하면 약` : "→ 어림셈하면 약", { o: it.est.o, a: it.est.a }, "→");
     parts.push("몫:", { el: () => strip });
     const row = dn3Parts(parts, reg);
     const judge = () => {
