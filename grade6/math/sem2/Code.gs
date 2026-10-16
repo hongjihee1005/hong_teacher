@@ -5,6 +5,7 @@
  *    - 단원 모음 페이지: 배포 주소 그대로 (HTML 파일 이름 index_hub)
  *    - 1단원 분수의 나눗셈:  ?page=fracdiv (index_fracdiv)
  *    - 2단원 소수의 나눗셈:  ?page=decdiv (index_decdiv)
+ *    - 3단원 공간과 입체:   ?page=space (index_space)
  *    - 4단원 비례식과 비례배분: ?page=ratio (index_ratio)
  *    - 5단원 원의 둘레와 넓이: ?page=circle (index_circle)
  *    - 6단원 원기둥, 원뿔, 구: ?page=cylinder (index_cylinder)
@@ -22,7 +23,7 @@ function doGet(e) {
     catch (err) { return json_({ error: err.message }); }
   }
   const page = (e && e.parameter && e.parameter.page) || 'hub';   // 기본은 단원 모음 페이지
-  const files = { hub: 'index_hub', fracdiv: 'index_fracdiv', decdiv: 'index_decdiv', ratio: 'index_ratio', circle: 'index_circle', cylinder: 'index_cylinder' };
+  const files = { hub: 'index_hub', fracdiv: 'index_fracdiv', decdiv: 'index_decdiv', space: 'index_space', ratio: 'index_ratio', circle: 'index_circle', cylinder: 'index_cylinder' };
   const file = files[page] || 'index_hub';
   return HtmlService.createHtmlOutputFromFile(file)
     .setTitle('6학년 2학기 수학 개념 계단')
