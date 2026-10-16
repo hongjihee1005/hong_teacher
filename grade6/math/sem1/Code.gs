@@ -4,6 +4,7 @@
  * 2) 이 코드를 Code.gs에 붙여 넣고, [+] > HTML 로 아래 이름의 파일을 만들어 각 앱 HTML 전체를 붙여 넣습니다.
  *    - 단원 모음 페이지: 배포 주소 그대로 (HTML 파일 이름 index_hub)
  *    - 1단원 분수의 나눗셈:  ?page=fracnat (index_fracnat)
+ *    - 2단원 각기둥과 각뿔:  ?page=prism (index_prism)
  *    - 3단원 소수의 나눗셈:  ?page=decnat (index_decnat)
  *    - 4단원 비와 비율:    ?page=ratio (index_ratio)
  *    - 5단원 여러 가지 그래프: ?page=graph (index_graph)
@@ -22,7 +23,7 @@ function doGet(e) {
     catch (err) { return json_({ error: err.message }); }
   }
   const page = (e && e.parameter && e.parameter.page) || 'hub';   // 기본은 단원 모음 페이지
-  const files = { hub: 'index_hub', fracnat: 'index_fracnat', decnat: 'index_decnat', ratio: 'index_ratio', graph: 'index_graph', volume: 'index_volume' };
+  const files = { hub: 'index_hub', fracnat: 'index_fracnat', prism: 'index_prism', decnat: 'index_decnat', ratio: 'index_ratio', graph: 'index_graph', volume: 'index_volume' };
   const file = files[page] || 'index_hub';
   return HtmlService.createHtmlOutputFromFile(file)
     .setTitle('6학년 1학기 수학 개념 계단')

@@ -817,7 +817,7 @@ function pp6NetFaces(body, api, opt) {
   const tgt = opt.target, adj = faces.map((f, i) => i !== tgt && S.F[f.f].filter(v => S.F[faces[tgt].f].includes(v)).length === 2), sel = new Set();
   const col = () => faces.map((f, i) => i === tgt ? "#FFD27A" : sel.has(i) ? "#9CC3F0" : "#FFFFFF");
   const box = h("div");
-  const draw = () => { box.innerHTML = ""; const N = pp6NetSvg(faces, { s: opt.s || 26, tapF: true, col: col(), vlab: pts.map(p => ({ p, t: lab(p) })), maxW: "24em" }); box.append(N.svg);
+  const draw = () => { box.innerHTML = ""; const N = pp6NetSvg(faces, { s: opt.s || 26, pad: 26, tapF: true, col: col(), vlab: pts.map(p => ({ p, t: lab(p) })), maxW: "24em" }); box.append(N.svg);
     N.svg.addEventListener("click", e => { const k = e.target.dataset && e.target.dataset.k; if (!k) return; const i = +k.slice(1); if (i === tgt) return api.hint(`노란 면이 ${fname(tgt)}이에요. 이 면과 만나는 면을 눌러요.`); sel.has(i) ? sel.delete(i) : sel.add(i); draw(); });
     read.textContent = sel.size ? "고른 면: " + [...sel].map(fname).join(", ") : "아직 고른 면이 없어요."; };
   const read = h("div", { class: "pp6read" });
@@ -991,7 +991,7 @@ function pp6CardFace(c, o = {}) {
 /* 구성 요소의 수를 더하고 빼기 놀이: 나 + 컴퓨터 친구 2명 */
 function pp6PlusGame(body, api, opt) {
   const NM = ["나", "친구 1", "친구 2"];
-  let start = 10, end = 45, deck, pl, cur, p, phase = "set", pick = null, miss = 0, right = 0, total = 0, solved = false, timer = null, log = "";
+  let start = 10, end = 45, deck, pl, cur, p, phase = "set", pick = null, passes = 0, miss = 0, right = 0, total = 0, solved = false, timer = null, log = "";
   const wrap = h("div"); body.append(wrap);
   api.provide({ words: ["끝 수 미만이면 카드 한 장 가져오기", "끝 수 이상이면 카드를 모두 내려놓기"], answers: [] });
   const setUI = () => { wrap.innerHTML = "";
@@ -999,8 +999,9 @@ function pp6PlusGame(body, api, opt) {
     const eb = h("div", { class: "pp6btns" }, h("span", { class: "pp6small" }, "끝 수:"), ...Array.from({ length: 11 }, (_, i) => 40 + i).map(v => h("button", { class: v === end ? "pp6-pick" : "", onclick: () => { end = v; setUI(); } }, String(v))));
     wrap.append(h("div", { class: "jua" }, "① 시작 수는 8, 9, 10 중에서, 끝 수는 40부터 50까지의 자연수 중에서 정해요."), sb, eb,
       h("div", { class: "pp6small" }, "카드는 이 앱이 정한 12장을 두 벌(24장) 섞어 써요. 한 사람당 3장씩 나누어 가져요."), h("div", { class: "pp6btns" }, h("button", { class: "ghost", onclick: begin }, "놀이 시작"))); };
-  function begin() { deck = pp6Shuffle([...PP6_CARDS, ...PP6_CARDS].map(c => c.id)); pl = NM.map(n => ({ n, hand: [deck.pop(), deck.pop(), deck.pop()], out: false })); cur = start; p = 0; phase = "me"; pick = null; log = `시작 수는 ${start}, 끝 수는 ${pp6Jo(end, "이에요/예요")}. 가위바위보로 정한 순서대로 해요. 내 차례예요. 낼 카드를 골라요.`; render(); }
+  function begin() { deck = pp6Shuffle([...PP6_CARDS, ...PP6_CARDS].map(c => c.id)); pl = NM.map(n => ({ n, hand: [deck.pop(), deck.pop(), deck.pop()], out: false })); cur = start; p = 0; passes = 0; phase = "me"; pick = null; log = `시작 수는 ${start}, 끝 수는 ${pp6Jo(end, "이에요/예요")}. 가위바위보로 정한 순서대로 해요. 내 차례예요. 낼 카드를 골라요.`; render(); }
   const live = () => pl.filter(x => !x.out);
+  const can = id => cur + PP6_CARDS[id].s * PP6_CARDS[id].v >= 0;   // 0보다 작아지는 뺄셈은 하지 않아요(6학년은 음수를 배우지 않아요)
   function render() {
     wrap.innerHTML = "";
     wrap.append(h("div", { class: "pp6table" }, ...pl.map((x, i) => h("div", { class: "pp6pl" + (i === p && phase !== "over" ? " pp6-turn" : "") + (x.out ? " pp6-out" : "") }, x.n, h("div", {}, x.out ? "카드를 모두 내려놓음" : `가진 카드 ${x.hand.length}장`)))),
@@ -1008,7 +1009,7 @@ function pp6PlusGame(body, api, opt) {
         h("div", {}, h("div", { class: "pp6read" }, log))));
     if (phase === "me" || phase === "say") {
       const me = pl[0];
-      wrap.append(h("div", { class: "jua" }, "내 카드" + (phase === "me" ? " (낼 카드를 눌러요)" : "")), h("div", { class: "pp6hand" }, ...me.hand.map((id, hi) => { const el = pp6CardFace(PP6_CARDS[id], { cls: phase === "me" ? "pp6-on" : (pick === hi ? "pp6-on" : "pp6-dim") }); if (phase === "me") el.addEventListener("click", () => { pick = hi; phase = "say"; miss = 0; log = "카드를 냈어요. 계산한 값을 외쳐요(써요)."; render(); }); return el; })));
+      wrap.append(h("div", { class: "jua" }, "내 카드" + (phase === "me" ? " (낼 카드를 눌러요)" : "")), h("div", { class: "pp6hand" }, ...me.hand.map((id, hi) => { const el = pp6CardFace(PP6_CARDS[id], { cls: phase === "me" ? "pp6-on" : (pick === hi ? "pp6-on" : "pp6-dim") }); if (phase === "me") el.addEventListener("click", () => { if (!can(id)) return api.hint(`지금 수 ${cur}에서 ${pp6Jo(PP6_CARDS[id].v, "을/를")} 빼면 0보다 작아져서 낼 수 없어요. 다른 카드를 골라요.`); pick = hi; phase = "say"; miss = 0; log = "카드를 냈어요. 계산한 값을 외쳐요(써요)."; render(); }); return el; })));
       if (phase === "say") { const c = PP6_CARDS[me.hand[pick]], inp = h("input", { type: "text", inputmode: "numeric", "aria-label": "계산한 값", style: "width:5em;font-size:1.2em;text-align:center" });
         const go = () => { const v = pp6Num(inp.value), ans = cur + c.s * c.v; if (isNaN(v)) return api.hint("계산한 값을 수로 써요.");
           if (v !== ans) { miss++; api.tryOnce(); if (miss === 1) return api.hint(`다시 계산해 봐요. ${c.name}의 ${pp6Jo(PP6_EL[c.e], "은/는")} 몇 개인지 먼저 세어 봐요.`);
@@ -1022,7 +1023,7 @@ function pp6PlusGame(body, api, opt) {
     if (phase === "over") wrap.append(h("div", { class: "pp6btns" }, h("button", { class: "ghost", onclick: setUI }, "한 판 더")));
   }
   function after(i, v) {
-    cur = v; const x = pl[i];
+    cur = v; passes = 0; const x = pl[i];
     if (cur >= end) { x.out = true; x.hand = []; log += ` ${x.n === "나" ? "내가 계산한 값" : x.n + "의 값"}이 끝 수 ${end} 이상이라서 ${x.n === "나" ? "나는" : pp6Jo(x.n, "은/는")} 가진 카드를 모두 내려놓아요.`; }
     else if (deck.length) { x.hand.push(deck.pop()); log += ` 끝 수보다 작아서 카드 한 장을 가져와요.`; }
     else log += " 쌓아 둔 카드가 없어서 가져오지 못해요.";
@@ -1035,9 +1036,10 @@ function pp6PlusGame(body, api, opt) {
     do { p = (p + 1) % 3; } while (pl[p].out);
     const x = pl[p];
     if (!x.hand.length) { log = `${x.n}: 낼 카드가 없어서 차례를 넘겨요.`; phase = "wait"; render(); timer = setTimeout(nextTurn, 1200); return; }
+    if (!x.hand.some(can)) { passes++; log = `${x.n}: 지금 수 ${cur}에서 뺄 수 없는 − 카드만 남아서 차례를 넘겨요.`; if (passes >= live().length) return over(); phase = "wait"; render(); timer = setTimeout(nextTurn, 1200); return; }
     if (p === 0) { phase = "me"; log = `내 차례예요. 지금 수는 ${pp6Jo(cur, "이에요/예요")}. 낼 카드를 골라요.`; render(); return; }
     // 친구: 끝 수를 넘지 않는 카드 중에서 큰 값이 되는 카드를 주로 골라요
-    const opts = x.hand.map((id, hi) => ({ hi, c: PP6_CARDS[id], v: cur + PP6_CARDS[id].s * PP6_CARDS[id].v }));
+    const opts = x.hand.map((id, hi) => ({ hi, c: PP6_CARDS[id], v: cur + PP6_CARDS[id].s * PP6_CARDS[id].v })).filter(o => o.v >= 0);
     const safe = opts.filter(o => o.v < end).sort((a, b) => b.v - a.v), ch = safe.length ? (Math.random() < .7 ? safe[0] : safe[Math.floor(Math.random() * safe.length)]) : opts.sort((a, b) => a.v - b.v)[0];
     x.hand.splice(ch.hi, 1);
     log = `${x.n}: “${ch.c.name}의 ${pp6Jo(PP6_EL[ch.c.e], "은/는")} ${pp6Jo(ch.c.v, "이니까/니까")} ${cur}${ch.c.s > 0 ? "에 " + pp6Jo(ch.c.v, "을/를") + " 더하면" : "에서 " + pp6Jo(ch.c.v, "을/를") + " 빼면"} ${ch.v}!”`;
@@ -1145,7 +1147,7 @@ function pp6HeightPair() {
   const S = pp6Pyramid([[-1, -1], [1, -1], [1, 1], [-1, 1]], 2.4), hh = 2.4;
   const ruler = (pts) => svg.append(svgEl("polygon", { points: pp6Pts(pts), fill: "#FFF6D6", stroke: "#B8963A", "stroke-width": 1.5 }));
   // 채린: 바닥에 수직으로 세운 자 + 삼각자
-  const I1 = pp6Draw(svg, { solid: S, s: 66, cx: 120, cy: 128, yaw: 0, pitch: 12, side: "#FBE0E6", fc: [PP6.base] });
+  const I1 = pp6Draw(svg, { solid: S, s: 66, cx: 120, cy: 128, yaw: 0, pitch: 5, side: "#FBE0E6", fc: [PP6.base] });
   const P1 = q => I1.P(q), rx = 1.5;
   ruler([P1([rx, 0, 0]), P1([rx + .35, 0, 0]), P1([rx + .35, 3, 0]), P1([rx, 3, 0])]);
   for (let k = 0; k <= 6; k++) pp6Seg(svg, P1([rx, k / 2, 0]), P1([rx + .15, k / 2, 0]), { stroke: "#8A6D1F", "stroke-width": 1.2 });
@@ -1154,7 +1156,7 @@ function pp6HeightPair() {
   pp6Seg(svg, P1([-1.6, 0, 0]), P1([rx + .7, 0, 0]), { stroke: "#B9A27A", "stroke-width": 3 });
   pp6T(svg, 110, H - 16, "채린", 20, { fill: PP6.purple });
   // 하진: 옆면의 모서리에 댄 자
-  const I2 = pp6Draw(svg, { solid: S, s: 66, cx: 390, cy: 128, yaw: 0, pitch: 12, side: "#FBE0E6", fc: [PP6.base] });
+  const I2 = pp6Draw(svg, { solid: S, s: 66, cx: 390, cy: 128, yaw: 0, pitch: 5, side: "#FBE0E6", fc: [PP6.base] });
   const A = I2.P(S.V[4]), B = I2.P(S.V[2]), d = [A[0] - B[0], A[1] - B[1]], l = Math.hypot(...d), C2 = I2.P([0, hh / 2, 0]); let n = [d[1] / l * 12, -d[0] / l * 12]; if (n[0] * ((A[0] + B[0]) / 2 - C2[0]) + n[1] * ((A[1] + B[1]) / 2 - C2[1]) < 0) n = n.map(x => -x);
   ruler([[B[0] + n[0] * .2, B[1] + n[1] * .2], [A[0] + n[0] * .2, A[1] + n[1] * .2], [A[0] + n[0] * 1.6, A[1] + n[1] * 1.6], [B[0] + n[0] * 1.6, B[1] + n[1] * 1.6]]);
   for (let k = 0; k <= 6; k++) { const t = k / 6, p = [B[0] + d[0] * t + n[0] * .2, B[1] + d[1] * t + n[1] * .2]; pp6Seg(svg, p, [p[0] + n[0] * .6, p[1] + n[1] * .6], { stroke: "#8A6D1F", "stroke-width": 1.2 }); }
@@ -1180,9 +1182,9 @@ function pp6Strip(n, top, bot, root) { const r = root || 0, nodes = [{ f: 2 + r,
 const PP6_UNF = () => pp6Prism(pp6Ngon(3, 1.5, -90), 2.6);
 const PP6_UNF_N = [{ f: 3, p: -1 }, { f: 2, p: 0 }, { f: 4, p: 0 }, { f: 1, p: 0 }, { f: 0, p: 0 }];
 /* 길이 그림: 3·4·5 cm 삼각기둥, 사다리꼴 사각기둥, 육각기둥 */
-const pp6TriDim = () => { const S = pp6Prism(PP6_TRI345, 5); return pp6Lab({ solid: S, yaw: -35, pitch: 22, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 280, H: 260, maxW: "14em", marks: [{ a: 3, b: 4, t: "4 cm", col: PP6.blue, w: 2 }, { a: 4, b: 5, t: "5 cm", col: PP6.blue, w: 2 }, { a: 5, b: 3, t: "3 cm", col: PP6.blue, w: 2 }, { a: 1, b: 4, t: "5 cm", col: PP6.red, w: 2, off: 26 }] }); };
-const pp6TrapDim = () => { const S = pp6Prism(PP6_TRAP, 2); return pp6Lab({ solid: S, yaw: -30, pitch: 30, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 300, H: 240, maxW: "15em", marks: [{ a: 4, b: 5, t: "5 cm", col: PP6.blue, w: 2 }, { a: 5, b: 6, t: "5 cm", col: PP6.blue, w: 2 }, { a: 6, b: 7, t: "2 cm", col: PP6.blue, w: 2 }, { a: 7, b: 4, t: "4 cm", col: PP6.blue, w: 2 }, { a: 1, b: 5, t: "2 cm", col: PP6.red, w: 2, off: 24 }] }); };
-const pp6HexDim = () => { const S = pp6Prism(PP6_HEX, 4); return pp6Lab({ solid: S, yaw: -25, pitch: 28, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 300, H: 260, maxW: "15em", marks: [{ a: 6, b: 7, t: "2 cm", col: PP6.blue, w: 2 }, { a: 7, b: 8, t: "5 cm", col: PP6.blue, w: 2 }, { a: 8, b: 9, t: "5 cm", col: PP6.blue, w: 2 }, { a: 9, b: 10, t: "2 cm", col: PP6.blue, w: 2 }, { a: 10, b: 11, t: "5 cm", col: PP6.blue, w: 2 }, { a: 11, b: 6, t: "5 cm", col: PP6.blue, w: 2 }, { a: 2, b: 8, t: "4 cm", col: PP6.red, w: 2, off: 26 }] }); };
+const pp6TriDim = () => { const S = pp6Prism(PP6_TRI345, 5); return pp6Lab({ solid: S, yaw: -35, pitch: 40, pad: 40, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 280, H: 260, maxW: "14em", marks: [{ a: 3, b: 4, t: "4 cm", col: PP6.blue, w: 2 }, { a: 4, b: 5, t: "5 cm", col: PP6.blue, w: 2 }, { a: 5, b: 3, t: "3 cm", col: PP6.blue, w: 2 }, { a: 1, b: 4, t: "5 cm", col: PP6.red, w: 2, off: 26 }] }); };
+const pp6TrapDim = () => { const S = pp6Prism(PP6_TRAP, 2); return pp6Lab({ solid: S, yaw: -30, pitch: 30, pad: 44, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 300, H: 240, maxW: "15em", marks: [{ a: 4, b: 5, t: "5 cm", col: PP6.blue, w: 2 }, { a: 5, b: 6, t: "5 cm", col: PP6.blue, w: 2 }, { a: 6, b: 7, t: "2 cm", col: PP6.blue, w: 2 }, { a: 7, b: 4, t: "4 cm", col: PP6.blue, w: 2 }, { a: 1, b: 5, t: "2 cm", col: PP6.red, w: 2, off: 24 }] }); };
+const pp6HexDim = () => { const S = pp6Prism(PP6_HEX, 4); return pp6Lab({ solid: S, yaw: -25, pitch: 28, pad: 40, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 300, H: 260, maxW: "15em", marks: [{ a: 6, b: 7, t: "2 cm", col: PP6.blue, w: 2 }, { a: 7, b: 8, t: "5 cm", col: PP6.blue, w: 2 }, { a: 8, b: 9, t: "5 cm", col: PP6.blue, w: 2 }, { a: 9, b: 10, t: "2 cm", col: PP6.blue, w: 2 }, { a: 10, b: 11, t: "5 cm", col: PP6.blue, w: 2 }, { a: 11, b: 6, t: "5 cm", col: PP6.blue, w: 2 }, { a: 2, b: 8, t: "4 cm", col: PP6.red, w: 2, off: 26 }] }); };
 
 /* 전개도 카드(5~6차시 활동 2, 11차시 3번, 익힘) — 판정은 pp6Judge로 다시 확인해요 */
 const PP6_J56 = [
@@ -1357,7 +1359,7 @@ const LESSONS = [
       (bx, ax) => pp6Table(bx, ax, { q: "표를 완성해 보세요.", head: ["이름", "면의 수(개)", "모서리의 수(개)", "꼭짓점의 수(개)"], rows: [["육각기둥", { n: 8 }, { n: 18 }, { n: 12 }], ["팔각기둥", { n: 10 }, { n: 24 }, { n: 16 }]], ok: "육각기둥 8·18·12, 팔각기둥 10·24·16이에요." }),
       (bx, ax) => pp6Ask(bx, ax, [
         { q: "두 밑면이 평행하고 합동인 다각형이고, 옆면이 모두 직사각형이며, 모서리가 21개인 입체도형의 이름은?", parts: [{ o: ["칠각기둥", "육각기둥", "칠각뿔"], a: 0, why: { "1": "육각기둥의 모서리는 6×3=18개예요." } }] },
-        { q: "밑면이 정오각형인 각기둥이에요. 밑면의 한 변이 7 cm, 높이가 7 cm일 때 모든 모서리의 길이의 합은 몇 cm인가요?", fig: () => { const S = pp6PrN(5, 1.8, 1.05); return pp6Lab({ solid: S, yaw: -15, pitch: 24, side: "#FFF1C7", marks: [{ a: 5, b: 6, t: "7 cm", col: PP6.blue, w: 2 }, { a: 2, b: 7, t: "7 cm", col: PP6.red, w: 2, off: 26 }] }); },
+        { q: "밑면이 정오각형인 각기둥이에요. 밑면의 한 변이 7 cm, 높이가 7 cm일 때 모든 모서리의 길이의 합은 몇 cm인가요?", fig: () => { const S = pp6PrN(5, 1.8, 1.05); return pp6Lab({ solid: S, yaw: -15, pitch: 24, pad: 40, side: "#FFF1C7", marks: [{ a: 5, b: 6, t: "7 cm", col: PP6.blue, w: 2 }, { a: 2, b: 7, t: "7 cm", col: PP6.red, w: 2, off: 26 }] }); },
           parts: [{ n: 105, why: { "70": "옆 모서리 5개도 더해요.", "35": "밑면의 모서리 10개와 옆 모서리 5개, 모두 15개예요.", "49": "모서리는 모두 15개예요. 7×15를 계산해요." } }, " cm"] }],
         { ok: "모서리가 21개면 한 밑면의 변은 21÷3=7개라서 칠각기둥이에요. 오각기둥의 모서리 15개가 모두 7 cm라서 7×15=105 (cm)예요." })]) }
 },
@@ -1402,8 +1404,8 @@ const LESSONS = [
           () => h("div", {}, pp6NetSvg(pp6Faces(PP6_IK2[1].S, pp6Unfold(PP6_IK2[1].S, PP6_IK2[1].nodes)), { s: 16, maxW: "12em" }).svg, h("div", { class: "jua" }, "㉡"))),
         o: ["㉠", "㉡"], a: 0, why: { "1": "㉡은 삼각기둥의 전개도예요. 밑면 2개가 옆면의 위아래에 하나씩 있어요." } }], { ok: "㉠은 밑면 2개가 옆면의 같은 쪽에 있어서 접으면 겹쳐요." }),
       (bx, ax) => pp6Ask(bx, ax, [
-        { q: "전개도를 접어 만든 삼각기둥이에요. 전개도의 □ 안에 알맞은 수를 왼쪽에서부터 써넣으세요.", fig: pp6Two(() => { const S = PP6_T567(); return pp6Lab({ solid: S, yaw: -25, pitch: 24, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 260, H: 220, maxW: "13em", marks: [{ a: 3, b: 4, t: "6 cm", col: PP6.blue, w: 2 }, { a: 4, b: 5, t: "7 cm", col: PP6.blue, w: 2 }, { a: 5, b: 3, t: "5 cm", col: PP6.blue, w: 2 }, { a: 1, b: 4, t: "4 cm", col: PP6.red, w: 2, off: 24 }] }); },
-            () => { const S = PP6_T567(), U = pp6Unfold(S, PP6_T567N); return pp6NetSvg(pp6Faces(S, U), { s: 15, pad: 40, maxW: "16em", lens: [{ i: 1, mid: true, t: "□", size: 24 }, { i: 0, mid: true, t: "□", size: 24 }, { i: 2, mid: true, t: "□", size: 24 }, { i: 2, side: "right", t: "4 cm", col: PP6.red, out: .9 }] }).svg; }),
+        { q: "전개도를 접어 만든 삼각기둥이에요. 전개도의 □ 안에 알맞은 수를 왼쪽에서부터 써넣으세요.", fig: pp6Two(() => { const S = PP6_T567(); return pp6Lab({ solid: S, yaw: -25, pitch: 24, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 260, H: 220, maxW: "13em", pad: 40, marks: [{ a: 3, b: 4, t: "6 cm", col: PP6.blue, w: 2 }, { a: 4, b: 5, t: "7 cm", col: PP6.blue, w: 2 }, { a: 5, b: 3, t: "5 cm", col: PP6.blue, w: 2 }, { a: 1, b: 4, t: "4 cm", col: PP6.red, w: 2, off: 24 }] }); },
+            () => { const S = PP6_T567(), U = pp6Unfold(S, PP6_T567N); return pp6NetSvg(pp6Faces(S, U), { s: 15, pad: 58, maxW: "16em", lens: [{ i: 1, mid: true, t: "□", size: 36 }, { i: 0, mid: true, t: "□", size: 36 }, { i: 2, mid: true, t: "□", size: 36 }, { i: 2, side: "right", t: "4 cm", col: PP6.red, out: .9, size: 20 }] }).svg; }),
           parts: ["□ = ", { n: 5 }, ", ", { n: 6 }, ", ", { n: 7 }, " (cm)"] },
         { q: "밑면이 정육각형인 각기둥의 전개도예요. 이 각기둥의 모든 모서리의 길이의 합은 몇 cm인가요?", fig: () => { const S = pp6PrN(6, 6, 6, 0), U = pp6Unfold(S, PP6_HEX6N); return pp6NetSvg(pp6Faces(S, U), { s: 4.6, pad: 40, maxW: "17em", lens: [{ i: 6, side: PP6_HEX6S, t: "6 cm", out: .9 }, { i: 5, side: "right", t: "6 cm", col: PP6.red, out: .9 }] }).svg; },
           parts: [{ n: 108, why: { "72": "옆 모서리 6개(6×6=36 cm)도 더해요.", "36": "밑면의 모서리 12개(6×12=72 cm)도 더해요.", "48": "모서리는 모두 18개예요." } }, " cm"] }],
@@ -1445,7 +1447,7 @@ const LESSONS = [
   challenge: { inst: "각기둥과 각뿔을 비교해 보세요. 설명 카드를 공통점과 차이점으로 나누고, 정삼각뿔의 밑면을 생각해 보세요.", hints: ["두 입체도형 모두에 맞는 설명이면 공통점이에요.", "정삼각뿔은 네 면이 모두 합동인 정삼각형이에요."],
     render: (b, a) => pp6Chain(b, a, [
       (bx, ax) => pp6Sort(bx, ax, { bins: ["공통점", "차이점"], cardW: "11em",
-        items: [{ name: "밑면의 모양이 다각형이에요.", bin: 0 }, { name: "각기둥의 옆면은 직사각형이고, 각뿔의 옆면은 삼각형이에요.", bin: 1 }, { name: "각기둥의 밑면은 2개이고, 각뿔의 밑면은 1개예요.", bin: 1 }, { name: "모든 면이 다각형이에요.", bin: 0 }, { name: "밑면의 변의 수와 옆면의 수가 같아요.", bin: 0, why: "각기둥도 각뿔도 밑면의 변의 수와 옆면의 수가 같아요." }],
+        items: [{ name: "밑면의 모양이 다각형이에요.", bin: 0, why: "각기둥도 각뿔도 밑면이 다각형이라서 공통점이에요." }, { name: "각기둥의 옆면은 직사각형이고, 각뿔의 옆면은 삼각형이에요.", bin: 1, why: "옆면의 모양이 서로 달라서 차이점이에요." }, { name: "각기둥의 밑면은 2개이고, 각뿔의 밑면은 1개예요.", bin: 1, why: "밑면의 수가 서로 달라서 차이점이에요." }, { name: "모든 면이 다각형이에요.", bin: 0, why: "각기둥도 각뿔도 모든 면이 다각형이라서 공통점이에요." }, { name: "밑면의 변의 수와 옆면의 수가 같아요.", bin: 0, why: "각기둥도 각뿔도 밑면의 변의 수와 옆면의 수가 같아요." }],
         ok: "각기둥과 각뿔은 밑면이 다각형이고, 밑면의 변의 수와 옆면의 수가 같아요. 각기둥은 밑면이 2개이고 옆면이 직사각형, 각뿔은 밑면이 1개이고 옆면이 삼각형이에요." }),
       (bx, ax) => quiz(bx, ax, [{ q: "네 면이 모두 합동인 정삼각형인 삼각뿔(정삼각뿔)이에요. 밑면이 될 수 있는 면은 몇 개인가요?", fig: () => pp6Fig({ solid: pp6Pyramid(pp6Ngon(3, 1.2, -90), Math.sqrt(2 / 3) * 1.2 * Math.sqrt(3)), W: 240, H: 190, maxW: "12em", yaw: -20, pitch: 18, side: "#FBE0E6" }),
         o: ["1개", "4개", "3개"], a: 1, why: { "0": "어느 면을 아래에 두어도 나머지 세 면이 삼각형으로 둘러싸요." } }], { ok: "정삼각뿔은 네 면 중 어느 면이든 밑면이 될 수 있어요. 한 면을 밑면으로 정하면 나머지 면은 옆면이 돼요." })]) }
