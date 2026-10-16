@@ -1231,6 +1231,98 @@ def tb_lesson(s, lv, L):
     return '%s차시  %s' % (L['no'], '  '.join(ans))
 
 
+# ================================================================ 이야기 버전 차시
+ST_IDS = ['s1', 's2', 's34', 's56', 's78', 's9', 's10', 's11']   # 앱 u6-volume.st.js LESSONS의 id 차례(1·2·3~4·5~6·7~8·9·10·11차시)
+WHY_ST = {   # 도전형 '생각 쓰기'(앱 thenWhy 물음과 겹치지 않게)
+    's1': ('교실 새 단장에서 부피가 필요한 일과 겉넓이가 필요한 일을 하나씩 들고, 그 까닭을 써 보세요.',
+           '예) 수조에 물이 얼마나 들어가는지 알려면 수조 안 공간의 크기인 부피가, 수납장을 시트지로 감싸려면 겉면의 넓이인 겉넓이가 필요해요.'),
+    's2': ('1 cm³처럼 모두가 같은 단위로 부피를 나타내면 좋은 점을 써 보세요.',
+           '예) 누가 재어도 같은 수로 나타나서, 서로 다른 상자의 부피도 수만 보고 바로 비교할 수 있어요.'),
+    's34': ('가로, 세로, 높이가 각각 2배가 되면 부피가 8배가 되는 까닭을 써 보세요.',
+            '예) 가로가 2배이면 부피가 2배, 세로도 2배이면 또 2배, 높이도 2배이면 또 2배가 되어 2 × 2 × 2 = 8(배)가 돼요.'),
+    's56': WHY['t56'],
+    's78': ('옆면을 하나의 직사각형으로 보았을 때 그 가로가 밑면의 둘레와 같은 까닭을 써 보세요.',
+            '예) 옆면 네 개를 이어 붙이면 밑면의 네 변을 한 바퀴 두르게 되어, 가로가 밑면의 둘레(6 + 3 + 6 + 3 = 18 cm)와 같아요.'),
+    's9': ('상자 8개를 가로로 1개, 앞뒤로 2개씩 4층으로 쌓은 모양이 비닐을 가장 적게 쓰는 까닭을 써 보세요.',
+           '예) 넓은 면(9 cm × 5 cm)끼리 많이 맞닿아 가려지는 넓이가 커지므로 겉넓이가 484 cm²로 가장 작아지기 때문이에요.'),
+    's10': WHY['t10'],
+    's11': ('겉넓이가 216 cm²인 정육면체의 한 모서리의 길이를 어떻게 구했는지 써 보세요.',
+            '예) 정육면체의 여섯 면은 넓이가 같으니 216 ÷ 6 = 36(cm²)이 한 면의 넓이예요. 6 × 6 = 36이므로 한 모서리는 6 cm예요.'),
+}
+
+
+def _st_expect():
+    """이야기 버전 문제의 수로 따로 계산한 값(앱 답 중에 꼭 있어야 함)"""
+    vol = lambda a, b, c: a * b * c
+    surf = lambda a, b, c: 2 * (a * b + b * c + a * c)
+    return [9 * 6, 100 * 100, 3 * 10000, 6, 3,                                   # 1차시
+            6 // 3,                                                               # 1차시 도전(가·나 높이 6, 3)
+            vol(6, 2, 3) // vol(2, 1, 3), vol(2, 4, 4), vol(6, 2, 3),             # 2차시
+            vol(3, 2, 3), vol(4, 2, 2), vol(2, 3, 3),
+            5 * 3, 2, vol(5, 3, 2), 4 * 4, 3, vol(4, 4, 3),                       # 3~4차시
+            2 * 2, 2 * 3, 3 * 2, 3 * 3, 4 * 2, 4 * 3, vol(4, 2, 2), 8,
+            vol(7, 3, 4), 4, vol(4, 4, 4), vol(12, 5, 6), 9 ** 3, 48 * 8,
+            12000 / (30 * 20), vol(8, 5, 7), 7 ** 3, 60 * 5, vol(8, 6, 10),
+            vol(300, 100, 200), 12, 8 * 6, vol(8, 6, 3), 100, 100 ** 3,          # 5~6차시
+            4 * 10 ** 6, 15000000 / 10 ** 6, 0.8 * 10 ** 6, vol(400, 50, 150), vol(400, 50, 150) / 10 ** 6,
+            0.5, 1.5, vol(6, 4, 3), 2 ** 3, 7500000 / 10 ** 6, vol(300, 200, 140) / 10 ** 6,
+            surf(6, 3, 4), 2 * (6 + 3), 2 * (6 + 3) * 4, 6 * 3 * 2 + 2 * (6 + 3) * 4,   # 7~8차시
+            surf(5, 5, 5), surf(4, 2, 5), 10 * 10 * 6, surf(20, 10, 15), surf(25, 10, 10), surf(20, 10, 15) - surf(25, 10, 10),
+            84 / 12, 7 * 7 * 6, surf(9, 4, 5),
+            9, 5, 2 * 4, 18, 10, vol(9, 5, 8), surf(9, 5, 8), surf(18, 10, 2),   # 9차시
+            surf(9, 10, 8), vol(9, 10, 8), surf(9, 10, 6), surf(27, 10, 2), surf(27, 10, 2) - surf(9, 10, 6),
+            vol(12, 5, 7),                                                        # 10차시
+            vol(4, 3, 2), vol(5, 2, 2), 3 * 10 ** 6, 250000000 / 10 ** 6, 0.5 * 10 ** 6,   # 11차시
+            10 * 4, (10 + 4 + 10 + 4) * 3, 10 * 4 * 2 + (10 + 4 + 10 + 4) * 3, vol(8, 3, 5), surf(8, 3, 5),
+            vol(5, 5, 3), surf(5, 5, 3), 30 ** 3, vol(40, 25, 30), vol(50, 20, 25),
+            216 / 6, 6, 6 ** 3, 10 ** 3, vol(20, 5, 10), 10 * 10 * 6, surf(20, 5, 10)]
+
+
+def st_step_label(i, name):
+    parts = name.split(' — ', 1)
+    return ('%s %s' % (NUM[i], label_of(parts[0])), parts[1] if len(parts) > 1 else None)
+
+
+def st_lesson(s, lv, L, first, story):
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    if first and story:
+        s.scene(None, story['lines'][0])
+    ans = []
+    for i, st_ in enumerate(L['steps']):
+        s.step(*st_step_label(i, st_['name']))
+        show_inst(s, lv, st_['inst'], st_['hints'])
+        CTX['challenge'] = False
+        got = [run_rec(s, lv, r) for r in st_['recs']]
+        f = EXTRA.get((L['id'], st_['name']))
+        if f:
+            got.append(f(s, lv))
+        ans.append('%s %s' % (NUM[i], ' / '.join(x for x in got if x)))
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L.get('challenge'):
+            s.step('%s ★ 도전하기' % NUM[n], '앱의 도전 문제')
+            show_inst(s, lv, L['challenge']['inst'], [])
+            ans.append('%s %s' % (NUM[n], ' / '.join(x for x in (run_rec(s, lv, r) for r in L['challenge']['recs']) if x)))
+            n += 1
+        q, a = WHY_ST.get(L['id'], ('오늘 배운 내용을 친구에게 설명하듯 써 보세요.', '예) ' + L['summary'].split('. ')[0] + '.'))
+        s.step('%s 생각 쓰기' % NUM[n], '왜 그럴까요?')
+        s.ask(q, blank=False)
+        s.lines(3)
+        ans.append('%s %s' % (NUM[n], a))
+    return '%s차시  %s' % (L['no'], '  '.join(ans))
+
+
+def _st(lid):
+    def f(s, lv):
+        Ls = DATA['lessons']
+        k = [L['id'] for L in Ls].index(lid)
+        return st_lesson(s, lv, Ls[k], k == 0, DATA.get('story'))
+    f.__name__ = 'st_' + lid
+    return f
+
+
+ST = [_st(i) for i in ST_IDS]
+
 DATA = {}
 
 
@@ -1239,17 +1331,24 @@ def build_file(kind, lv):
     D = load(src)
     if kind == 'tb':
         check_numbers(D)
+    else:
+        ids = [L['id'] for L in D['lessons']]
+        assert ids == ST_IDS, ('이야기 버전 차시가 바뀌었어요 — ST_IDS를 고치세요', ids)
+        check_numbers(D, _st_expect(), 25)
     DATA.clear()
     DATA.update(D)
+    DATA['kind'] = kind
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'
     s = Sheet(unit_label='6-1 수학 %s(%s)' % (UNIT_NAME, label), level=lv, grade_label='6학년')
     if kind == 'tb':
         lines = [tb_lesson(s, lv, L) for L in D['lessons']]
     else:
         lines = [f(s, lv) for f in ST]
+    real = ('1차시 직사각형, 2차시 1 cm³ 정육면체의 전개도, 7~8차시 직육면체의 전개도는' if kind == 'tb'
+            else '1차시 이름표(직사각형)와 2차시 1 cm³ 정육면체의 전개도는')
     s.answers('【교사용】 %s(%s) 활동지 정답 (%s)' % (UNIT_NAME, label, lv), lines,
               note='※ 이 활동지는 앱 u6-volume.html과 차시 번호가 같습니다. '
-                   '1차시 직사각형, 2차시 1 cm³ 정육면체의 전개도, 7~8차시 직육면체의 전개도는 실제 크기이므로 100%로 인쇄하세요. 쓰기 칸의 ‘예)’는 예시 답이에요.')
+                   '%s 실제 크기이므로 100%%로 인쇄하세요. 쓰기 칸의 ‘예)’는 예시 답이에요.' % real)
     outdir = OUT_TB if kind == 'tb' else OUT_ST
     os.makedirs(outdir, exist_ok=True)
     path = os.path.join(outdir, NAME % lv)
