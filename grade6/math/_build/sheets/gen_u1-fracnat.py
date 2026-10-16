@@ -10,8 +10,9 @@ LESSONS를 node에서 그대로 실행해(활동 함수 대신 기록하는 함�
 탐구 질문·이야기·수가 앱과 같고, 원본의 수가 바뀌면 활동지도 저절로 따라 바뀝니다. 정답은 모두 이 스크립트가
 분수(Fraction)로 다시 계산해 앱의 답과 같은지 assert로 확인합니다.
 
-이야기 버전은 아직 없습니다. 생기면 ST(차시 함수 목록)를 채우고 SRC_ST가 있으면 sem1-soop/sheets/에 만듭니다.
-ST가 비어 있거나 원본 파일이 없으면 건너뜁니다.
+이야기 버전 ../units/u1-fracnat.st.js('6학년 3반 나눔 빵 공방', 10차시)도 같은 방법으로 읽어 sem1-soop/sheets/에
+같은 이름으로 만듭니다(python3 gen_u1-fracnat.py st). 이야기 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall·writeStep)과
+공방 그림·준비 쪽지·상자 그림·상자 바닥 그림도 기록해 넣습니다.
 
 분수 표기(6-2 「분수의 나눗셈」 활동지 gen_u1-fracdiv.py와 같음)
   - 계산 식·빈칸은 그림(PNG)으로 넣어 분수를 위아래(분자/분모)로 씁니다. 빈칸은 네모, 답 칸은 큰 네모.
@@ -543,9 +544,9 @@ def chain(s, rows, check_rows=True, draw=True):
 
 
 def frame(help1):
-    """앱 도움 둘째 줄 '‘…~…’ 꼴로 써요.' → 쓰기 틀"""
-    m = re.search(r'‘(.*)’', help1)
-    t = m.group(1) if m else help1
+    """앱 도움 둘째 줄 '‘…~…’ 꼴로 써요.' → 쓰기 틀('‘…’ 또는 ‘…’'이면 두 틀을 '또는'으로 이음)"""
+    ms = re.findall(r'‘([^‘’]*)’', help1)
+    t = '  또는  '.join(ms) if len(ms) > 1 else (ms[0] if ms else help1)
     return rd(t).replace('~', '__________')
 
 
@@ -788,7 +789,7 @@ def cap(src):
     if src not in _CAP:
         js = os.path.join(WORK, 'cap.js')
         with open(js, 'w', encoding='utf-8') as f:
-            f.write(CAP_JS)
+            f.write(_cap_st_js() if src == SRC_ST else CAP_JS)
         r = subprocess.run(['node', js, src, FONT.replace("'", '')], capture_output=True, text=True)
         if r.returncode:
             raise RuntimeError('앱 원본을 읽지 못했어요: ' + r.stderr[-800:])
@@ -808,6 +809,7 @@ PAPER_RULES = [
     (r'이 앱에서는 ', ''),
     (r'(할 일을 )?차례대로 눌러요', r'\1차례대로 늘어놓아 보세요'),
     (r'교과서 차례대로 눌러 보세요', '교과서 차례대로 늘어놓아 보세요'),
+    (r'‘＋’(?:로|를 눌러) ', ''),          # 이야기 버전: 앱의 ＋ 단추
 ]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|표시를.*옮겨|드래그')
 
@@ -1160,6 +1162,20 @@ def share_fig(s, lv, o):
     return q, n_whole
 
 
+ST_MODE = [False]     # 이야기 버전을 만드는 동안 True
+
+
+def _to(one):
+    """'한 명에게' · '그릇 한 개에'(이야기 버전만 — 교과서 버전 활동지 글은 그대로 둠)"""
+    return '에' if ST_MODE[0] and not re.search(r'(명|모둠)$', one) else '에게'
+
+
+def _many(one, d, who):
+    """'3명' · 이야기 버전에서 사물이면 '그릇 3개'(교과서 버전 글은 그대로)"""
+    noun = re.sub(r'\s*한\s*\S+$', '', one)
+    return '%s %d%s' % (noun, d, who) if ST_MODE[0] and who != '명' and noun and noun != one else '%d%s' % (d, who)
+
+
 def w_share(s, lv, o, *_):
     N, d = int(o['N']), int(o['d'])
     unit = o.get('unit') or ''
@@ -1173,12 +1189,12 @@ def w_share(s, lv, o, *_):
         to = '에게' if who == '명' else '에'
         s.text('먼저 ‘%s’ 띠 %d개는 %s%s 1개씩 나누어 줄 수 있어요. %s의 몫인 띠 %d개에 색칠해 보세요. '
                '그다음 남은 띠를 똑같이 %d칸으로 %s %s%s 줄 한 칸을 색칠해 보세요.'
-               % (rd(o.get('strip') or '1'), n_whole, '%d%s' % (d, who), to, one, q, d,
+               % (rd(o.get('strip') or '1'), n_whole, _many(one, d, who), to, one, q, d,
                   '나누어 두었어요.' if lv == '기본형' else '나누고,', one, to))
     elif lv == '기본형':
-        s.text('띠마다 똑같이 %d칸으로 나누어 두었어요. %s에게 줄 부분을 띠마다 한 칸씩 색칠해 보세요.' % (d, one))
+        s.text('띠마다 똑같이 %d칸으로 나누어 두었어요. %s%s 줄 부분을 띠마다 한 칸씩 색칠해 보세요.' % (d, one, _to(one)))
     else:
-        s.text('띠마다 똑같이 %d칸으로 나누는 선을 긋고, %s에게 줄 부분을 띠마다 한 칸씩 색칠해 보세요.' % (d, one))
+        s.text('띠마다 똑같이 %d칸으로 나누는 선을 긋고, %s%s 줄 부분을 띠마다 한 칸씩 색칠해 보세요.' % (d, one, _to(one)))
     v = Fraction(N, d)
     a = ask_part(s, lv, o)
     g = '(그림) %s 몫 %d÷%d = %s%s' % (one, N, d, bk(v), unit)
@@ -1551,15 +1567,204 @@ def note_line(s):
 
 DATA = {}
 
-# 이야기 버전 차시 함수(아직 없음 — 생기면 st1, st2, … 를 넣으세요)
-ST = []
+# ================================================================ 이야기 버전(u1-fracnat.st.js '6학년 3반 나눔 빵 공방', 10차시)
+# 교과서 버전과 같은 부품(fn6Share·fn6Div·fn6Calc·fn6Chain …)을 쓰고, 이야기 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall·
+# writeStep)과 공방 그림(fn6sBakery)·준비 쪽지(fn6sNote)·상자 그림(fn6sBoxes)·상자 바닥(fn6sRect)을 더 기록합니다.
+_ST_REPL = [
+    ("function fn6Style() {} function fn6Style2() {} function fn6Style3() {} function fn6Style4() {}",
+     "function fn6Style() {} function fn6Style2() {} function fn6Style3() {} function fn6Style4() {} function fn6sStyle() {}"),
+    ("eval(fnSrc('fn6Scene').replace('function fn6Scene', 'var fn6SceneReal = function'));",
+     "eval(fnSrc('fn6sBakery').replace('function fn6sBakery', 'var fn6SceneReal = function'));"),
+    ("{ const m = all.match(/^const FN6_CARDS = (\\[[^\\n]*\\]);/m); var FN6_CARDS = m ? eval(m[1]) : []; }",
+     "{ const m = all.match(/^const FN6S_CARDS = (\\[[^\\n]*\\]);/m); var FN6S_CARDS = m ? eval(m[1]) : []; var FN6_CARDS = FN6S_CARDS; }"),
+    ("function fn6Scene() {} function fn6Para() {} function fn6Tri() {}",
+     "var fn6sBakery = () => { REC.push({ w: 'bakery', args: [] }); return null; };\n"
+     "var fn6sNote = (title, lines) => { REC.push({ w: 'note', args: [title, lines] }); return null; };\n"
+     "var fn6sBoxes = (n, per, label, kind) => { REC.push({ w: 'boxes', args: [n, per, label, kind || 'box'] }); return null; };\n"
+     "var fn6sRect = () => { REC.push({ w: 'rect', args: [] }); return null; };\n"
+     "const figFirst = w => function (b, a, items, opt) { if (opt && typeof opt.fig === 'function') { opt.fig(); opt = Object.assign({}, opt); delete opt.fig; } REC.push({ w, args: [items, opt] }); };\n"
+     "fn6Calc = figFirst('fn6Calc'); fn6Chain = figFirst('fn6Chain');\n"
+     "var thenWhy = (fn, o) => (b, a) => { fn(b, a); REC.push({ w: 'thenWhy', args: [o] }); };\n"
+     "var ruleFirst = (fn, o) => (b, a) => { REC.push({ w: 'ruleFirst', args: [o] }); fn(b, a); };\n"
+     "var wonderRecall = (fn, o) => (b, a) => { REC.push({ w: 'wonder', args: [] }); fn(b, a); };"),
+]
+
+
+def _cap_st_js():
+    js = CAP_JS
+    for a, b in _ST_REPL:
+        assert js.count(a) == 1, ('CAP_JS가 바뀌었어요', a[:40])
+        js = js.replace(a, b)
+    return js
+
+
+def w_bakery(s, lv, *_):
+    if DATA.get('scene'):
+        scene_pic(s, DATA['scene'])
+    return ''
+
+
+def w_note(s, lv, title, lines, *_):
+    s.text(re.sub(r'^\W+\s*', '', title))
+    s.fill([rd(re.sub(r'^[^\w\[(]+\s*', '', t)) for t in lines])
+    return ''
+
+
+def w_boxes(s, lv, n, per, label, kind='box', *_):
+    """앱 fn6sBoxes: 상자(바구니) n개, 한 개에 빵 per개"""
+    n, per = int(n), int(per)
+    W, GAP = 900, 16
+    bw = min(150, (W - 40) / n - GAP)
+    x0 = (W - n * (bw + GAP) + GAP) / 2
+    out = []
+    fs = 24
+    eq_line(label, W / 2 - eq_w(label, fs) / 2, 26, fs, out)
+    cols = math.ceil(per / 2)
+    cwid = (bw - 16) / cols
+    for i in range(n):
+        x, y = x0 + i * (bw + GAP), 50
+        if kind == 'basket':
+            out.append('<path d="M%.1f %d L%.1f %d L%.1f %d L%.1f %d Z" fill="#D9A55E" stroke="%s" stroke-width="3"/>'
+                       % (x, y + 30, x + bw, y + 30, x + bw - 12, y + 110, x + 12, y + 110, INK))
+        else:
+            out.append('<rect x="%.1f" y="%d" width="%.1f" height="90" fill="#FBE6CC" stroke="%s" stroke-width="3"/>' % (x, y + 20, bw, INK))
+        for k in range(per):
+            cx, cy = x + 8 + (k % cols + .5) * cwid, y + 52 + (k // cols) * 34
+            r = min(14, cwid / 2 - 2) if kind == 'basket' else min(16, cwid / 2 - 2)
+            if kind == 'basket':
+                out.append('<circle cx="%.1f" cy="%d" r="%.1f" fill="#B5764A" stroke="#6B3E1E" stroke-width="2"/>' % (cx, cy, r))
+            else:
+                out.append('<rect x="%.1f" y="%d" width="%.1f" height="26" rx="8" fill="#F2D29B" stroke="#8A4A0B" stroke-width="2"/>'
+                           % (cx - r, cy - 13, 2 * r))
+    out.append(T(W / 2, 190, '%d개 · 한 개에 %d개씩' % (n, per), 20, anchor='middle', fill='#555'))
+    put_png(s, svg_doc(W, 212, ''.join(out)), W, 212, max_mm=140)
+    return ''
+
+
+def w_rect(s, lv, *_):
+    """앱 fn6sRect: 직사각형 상자 바닥(글은 원본에서 읽음)"""
+    src = open(SRC_ST, encoding='utf-8').read()
+    i = src.index('function fn6sRect(')
+    labs = re.findall(r'fn6SvgLine\("([^"]+)"', src[i:src.index('\n}\n', i)])
+    assert len(labs) == 3, labs
+    out = ['<rect x="250" y="30" width="400" height="140" fill="#FBE6CC" stroke="%s" stroke-width="4"/>' % INK]
+    for (t, x, y, fill, anchor) in [(labs[0], 450, 200, INK, 'mid'), (labs[1], 664, 100, '#C8472E', 'start'), (labs[2], 450, 100, INK, 'mid')]:
+        if fill == INK:
+            eq_line(t, x - (eq_w(t, 24) / 2 if anchor == 'mid' else 0), y, 24, out)
+        else:
+            out.append(T(x, y, t, 24, fill=fill))
+    put_png(s, svg_doc(900, 225, ''.join(out)), 900, 225, max_mm=120)
+    return ''
+
+
+def w_panes(s, lv, items, opts=None, *_):
+    panes(s, lv, [(it['t'], it.get('ph') or '~', (it.get('ex') or [''])[0]) for it in items])
+    return '(자유) ' + ' / '.join('%s 예) %s' % (it['t'], flat(it['ex'][0])) for it in items if it.get('ex'))
+
+
+def _help1(o):
+    """쓰기 틀: 앱 도움 둘째 줄. 빈칸(~)이 없는 완성 문장이면(답이 그대로 보이므로) 입력 칸 안내(ph)를 씀"""
+    h = (o.get('help') or ['', ''])[-1]
+    return h if '~' in h or not o.get('ph') else o['ph']
+
+
+def w_then_why(s, lv, o, *_):
+    why(s, lv, o['q'], _help1(o))
+    return '왜? 예) ' + flat(o.get('ans') or '')
+
+
+def w_rule_first(s, lv, o, *_):
+    rule_first(s, lv, o['q'], _help1(o))
+    return '예상(자유) — 실제 규칙: ' + flat(o.get('ans') or '')
+
+
+def w_wonder(s, lv, *_):
+    s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 보고, 이제 답할 수 있게 된 것을 떠올려 보세요.')
+    return ''
+
+
+def w_write(s, lv, items, opts=None, *_):
+    out = []
+    for it in items:
+        q = ('%s · ' % it['tag'] if it.get('tag') else '') + it['q']
+        out.append(write_ans(s, lv, q, _help1(it), it.get('ans') or '(자유)'))
+    return ' / '.join('예) ' + a for a in out)
+
+
+WIDGETS.update({'bakery': w_bakery, 'note': w_note, 'boxes': w_boxes, 'rect': w_rect, 'panes': w_panes,
+                'thenWhy': w_then_why, 'ruleFirst': w_rule_first, 'wonder': w_wonder, 'writeStep': w_write})
+
+WHY_ST = {   # 도전형 '왜' 쓰기(이야기 차시 id → 물음, 예시 답)
+    's1': ('나눔 빵 공방에서 몫이 자연수가 아닌 나눗셈을 써야 하는 때를 쪽지 말고 하나 더 찾아 써 보세요.',
+           '예) 머핀 반죽 2덩이를 5모둠이 똑같이 나누어 쓸 때 한 모둠이 받는 양을 구할 때 써요.'),
+    's2': ('3÷4의 몫이 [3/4]인 까닭을 막대 반죽으로 설명해 보세요.',
+           '예) 반죽 1줄을 4명이 나누면 한 명이 [1/4]줄씩 받고, 3줄이면 [1/4]줄을 3개 받아서 [3/4]줄이에요.'),
+    's3': ('5÷3을 방법 1로 구한 몫 [1 2/3]과 방법 2로 구한 몫 [5/3]이 같은 까닭을 우유 그릇으로 설명해 보세요.',
+           '예) [5/3]은 [1/3] L가 5개이고, [1/3] L가 3개면 1 L이므로 1 L와 [2/3] L를 더한 [1 2/3] L와 같아요.'),
+    's4': ('[2/5]÷3을 계산할 때 [2/5]를 [6/15]로 바꾸는 까닭을 써 보세요.',
+           '예) 분자 2는 3으로 나누어떨어지지 않아서, 크기가 같고 분자가 3의 배수인 [6/15]로 바꾸면 분자를 3으로 나눌 수 있어요.'),
+    's5': ('설탕 [2/3] kg을 반죽 4덩이에 나눌 때 ÷4 대신 ×[1/4]을 해도 되는 까닭을 써 보세요.',
+           '예) 4덩이로 똑같이 나눈 것 중 하나는 [2/3]의 [1/4]이므로 ÷4는 ×[1/4]과 같아요.'),
+    's6': ('[6 3/4]÷3은 방법 1(자연수 부분과 진분수 부분으로 나누기)이 편리한 까닭을 써 보세요.',
+           '예) 자연수 부분 6과 분자 3이 모두 3으로 나누어떨어져서 6÷3 = 2, [3/4]÷3 = [1/4]로 바로 계산할 수 있어요.'),
+    's7': ('식빵 1개의 무게를 구할 때 상자 1개의 무게를 먼저 구하는 까닭을 써 보세요.',
+           '예) 주어진 무게는 상자 여러 개를 합한 무게라서, 상자 1개의 무게를 알아야 빈 상자 무게를 빼고 식빵의 무게를 구할 수 있어요.'),
+    's8': ('문제에 필요 없는 정보가 있을 때 어떻게 해야 하는지 써 보세요.',
+           '예) 구하려는 것을 먼저 확인하고, 그것을 구하는 데 쓰이는 정보만 골라 식을 세워요.'),
+    's9': ('주문서 이어달리기 놀이에서 점수를 많이 얻으려면 어떻게 해야 하는지 써 보세요.',
+           '예) 카드의 수를 정확하게 기억해 전달하고, 분자가 나누는 수의 배수가 아니면 크기가 같은 분수로 바꾸거나 ×[1/▲]로 정확하게 계산해요.'),
+    's10': ('(분수)÷(자연수)를 계산하는 방법 가운데 가장 편리한 방법과 그 까닭을 써 보세요.',
+            '예) 분수의 곱셈(×[1/▲])으로 나타내는 방법이 편리해요. 분자가 나누는 수의 배수가 아니어도 바로 계산할 수 있어요.'),
+}
+ST_IDS = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10']
+
+
+def st_lesson(s, lv, L, first, story):
+    s.lesson(L['no'], L['soop'], rd(L['title']), rd(L['question']))
+    if first and story:
+        s.scene(None, rd(story['lines'][0]))
+        note_line(s)
+    ans = []
+    for i, st_ in enumerate(L['steps']):
+        lab, sub = split_name(st_['name'])
+        step(s, i, lab, sub)
+        show_inst(s, lv, st_['inst'], st_['hints'], [c['w'] for c in st_['calls']])
+        ans.append('%s %s' % (NUM[i], run_calls(s, lv, st_['calls'])))
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L.get('ch'):
+            step(s, n, '★ 도전하기', '앱의 도전 문제')
+            show_inst(s, lv, L['ch']['inst'], [], [c['w'] for c in L['ch']['calls']])
+            ans.append('%s %s' % (NUM[n], run_calls(s, lv, L['ch']['calls'])))
+            n += 1
+        q, a = WHY_ST.get(L['id'], ('오늘 배운 계산 방법을 친구에게 설명하듯 써 보세요.', '예) ' + flat(L['summary'].split('. ')[-1])))
+        step(s, n, '생각 쓰기', '왜 그럴까요?')
+        challenge_why(s, q)
+        ans.append('%s %s' % (NUM[n], flat(a)))
+    return '%s차시  %s' % (L['no'], '  '.join(ans))
+
+
+def _st(lid):
+    def f(s, lv):
+        Ls = DATA['lessons']
+        k = [L['id'] for L in Ls].index(lid)
+        return st_lesson(s, lv, Ls[k], k == 0, DATA.get('story'))
+    f.__name__ = 'st_' + lid
+    return f
+
+
+ST = [_st(i) for i in ST_IDS]
 
 
 def build_file(kind, lv):
     src = SRC_TB if kind == 'tb' else SRC_ST
     D = cap(src)
+    if kind == 'st':
+        ids = [L['id'] for L in D['lessons']]
+        assert ids == ST_IDS, ('이야기 버전 차시가 바뀌었어요 — ST_IDS·WHY_ST를 고치세요', ids)
     DATA.clear()
     DATA.update(D)
+    ST_MODE[0] = kind == 'st'
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'
     s = Sheet(unit_label='6-1 수학 %s(%s)' % (UNIT_NAME, label), level=lv, grade_label='6학년')
     if kind == 'tb':
