@@ -57,9 +57,9 @@ def protractor(c, R=3.0, inner=True, outer=True, color=INK, num_size=20):
     for d in range(0, 181, 10):
         u = unit(d)
         if outer:
-            nums.add(T(str(180 - d), num_size, PURPLE).move_to(c + u * (R - 0.55)))
+            nums.add(T(str(180 - d), num_size, PURPLE).move_to(c + u * (R - 0.5)))
         if inner:
-            nums.add(T(str(d), num_size, BLUE).move_to(c + u * (R - 0.95)))
+            nums.add(T(str(d), num_size, BLUE).move_to(c + u * (R - 1.05)))
     center = VGroup(Line(c + LEFT * 0.15, c + RIGHT * 0.15, color=ORANGE, stroke_width=4),
                     Line(c, c + UP * 0.25, color=ORANGE, stroke_width=4))
     g = VGroup(body, base, ticks, nums, center)
