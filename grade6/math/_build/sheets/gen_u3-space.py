@@ -3,6 +3,7 @@
 
     python3 gen_u3-space.py          # 만들 수 있는 것을 모두 만들고 점검
     python3 gen_u3-space.py tb       # 교과서 차시 버전만
+    python3 gen_u3-space.py st       # 이야기 버전만
 
 앱 원본 ../units/sem2/u3-space.tb.js('영상 촬영 학교 공간과 입체', 9개 차시 묶음: 1·2·3·4·5·6·7~8·9·10)의
 LESSONS를 node에서 가짜 DOM으로 그대로 실행해, 단계마다 넘긴 물음·보기·정답·쌓기나무 배치(SP6_D)·그림(SVG)을 모아(_EX) 그대로 씁니다.
@@ -13,7 +14,9 @@ LESSONS를 node에서 가짜 DOM으로 그대로 실행해, 단계마다 넘긴 
     쌓기(sp6Build)는 판과 같은 크기의 '위에서 본 모양에 수 쓰기' 칸을 넣습니다(종이에서는 쌓기나무로 쌓은 뒤 수로 나타냄).
   - 쌓기 활동의 정답은 node에서 앱의 채점 함수(check·sp6Joined)에 맞는 배치를 모두 찾아 씁니다(개수가 여러 가지면 모두).
   - 위·앞·옆 모양과 층별 개수는 파이썬으로 따로 다시 계산해 assert로 맞춥니다.
-  - 이야기 버전(ST)은 아직 없어서 건너뜁니다(앱 원본 u3-space.st.js가 생기면 ST 목록에 더함).
+  - 이야기 버전(ST)도 같은 방법으로 ../units/sem2/u3-space.st.js('우리 학교 쌓기나무 모형 전시회')의 LESSONS를 읽어 씁니다.
+    이야기 엔진의 탐구 도우미(panes 세 칸·thenWhy '왜 그럴까요?'·ruleFirst '먼저 예상해요'·wonderRecall)와 글쓰기 칸의 도움(help)·모범 답(ans)도 그대로 옮깁니다.
+    차시 목록 ST는 원본 LESSONS의 차시 번호(그 차시에 도전형 '까닭 쓰기'를 붙일 WHY_ST가 있어야 함)이고, 원본과 어긋나면 멈춥니다.
 그림은 임시 폴더에서 PNG로 바꿉니다(저장소에는 남기지 않음). node 계산에 1분쯤 걸립니다.
 """
 
@@ -63,7 +66,14 @@ function dragOn() {} function svgPt() { return { x: 0, y: 0 }; }
 let REC = [];
 function quiz(b, a, items, opts) { REC.push({ t: 'quiz', items: items.map(serQ), opts: serOpt(opts) }); }
 function blanks(b, a, parts, opts) { REC.push({ t: 'blanks', parts: parts.map(serPart), opts: serOpt(opts) }); }
-function writeStep(b, a, items, opts) { REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag, ph: x.ph })) }); }
+function writeStep(b, a, items, opts) { REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag, ph: x.ph, help: x.help || null, ans: x.ans || null })) }); }
+/* 이야기 버전 엔진의 탐구 도우미(칸 나누기·왜 그럴까요?·먼저 예상해요·궁금해요 다시 보기) */
+function panes(b, a, items, opts) { REC.push({ t: 'panes', items: items.map(x => ({ t: x.t, ph: x.ph, hint: x.hint || null, ex: x.ex || [] })) }); }
+const _wq = (t, o) => ({ t, q: o.q, ph: o.ph || null, help: o.help || null, ans: o.ans || null });
+function thenWhy(f, o) { return (b, a) => { f(b, a); REC.push(_wq('thenWhy', o)); }; }
+function ruleFirst(f, o) { return (b, a) => { REC.push(_wq('ruleFirst', o)); f(b, a); }; }
+function wonderRecall(f) { return (b, a) => { REC.push({ t: 'wonder' }); f(b, a); }; }
+function autoRun() { return () => {}; }
 function sequence(b, a, cards, order, opts) { REC.push({ t: 'sequence', cards, order, opts: serOpt(opts) }); }
 
 const unitSrc = src.slice(src.indexOf('//@@UNIT'), src.indexOf('//@@LESSONS'));
@@ -176,7 +186,9 @@ from hwpxgen import Sheet, check  # noqa: E402
 ROOT = os.path.normpath(os.path.join(HERE, '..', '..'))      # grade6/math
 UNITS = os.path.join(ROOT, '_build', 'units', 'sem2')
 SRC_TB = os.path.join(UNITS, 'u3-space.tb.js')
+SRC_ST = os.path.join(UNITS, 'u3-space.st.js')
 OUT_TB = os.path.join(ROOT, 'sem2', 'sheets')
+OUT_ST = os.path.join(ROOT, 'sem2-soop', 'sheets')
 NAME = '3단원_공간과입체_활동지_%s.hwpx'
 FONT = "'Noto Sans KR','WenQuanYi Zen Hei',sans-serif"
 NUM = '①②③④⑤⑥⑦⑧⑨'
@@ -184,7 +196,8 @@ SUB = '⑴⑵⑶⑷⑸'
 WORK = tempfile.mkdtemp(prefix='u3space_')
 F = 0.3           # 그림: SVG 1 px = 0.3 mm (쌓기나무 한 개 너비 52 px ≈ 16 mm, 모눈 한 칸 34 px ≈ 10 mm)
 ROW_PX = 170 / F  # 한 줄에 놓을 수 있는 그림 너비
-ST = []           # 이야기 버전 차시(아직 없음 — 원본 u3-space.st.js가 생기면 더함)
+ST = ['1', '2', '3', '4', '5', '6', '7~8', '9', '10']   # 이야기 버전 차시(원본 u3-space.st.js의 LESSONS 차시 번호와 같아야 함)
+MODE = {'v': 'tb'}   # 지금 만드는 버전(tb|st) — 그림 이름·종이용 말 바꾸기·까닭 쓰기가 버전마다 다름
 
 INK, BLUE, GREEN, GRAY, LINE = '#1D2A2A', '#2B7BD6', '#2E8B57', '#8795A1', '#5A6B73'
 
@@ -195,7 +208,7 @@ def fmt(v):
 
 
 # ================================================================ 앱 읽기(node)
-def load(src):
+def load(src, ver='tb'):
     js = os.path.join(WORK, 'ex.js')
     with open(js, 'w', encoding='utf-8') as f:
         f.write(_EX)
@@ -217,7 +230,7 @@ def load(src):
     for L in d['lessons']:
         for st in L['steps'] + ([L['challenge']] if L['challenge'] else []):
             walk(st['recs'])
-    verify(d)
+    (verify if ver == 'tb' else verify_st)(d)
     return d
 
 
@@ -249,6 +262,29 @@ def verify(d):
     assert [sum(map(sum, D[k])) for k in ('l5b', 'l5c', 'l5d', 'l5a3')] == [8, 11, 11, 10]
     assert layers(D['hotel'])[:3] == [5, 4, 3] and layers(D['l6a2'])[:3] == [6, 5, 4]
     assert sum(map(sum, D['t2'])) == 9 and sum(map(sum, D['t3'])) == 8 and sum(map(sum, D['k1'])) == 9
+
+
+def verify_st(d):
+    """이야기 버전: 앱 주석에 적힌 개수·층별 개수·숨은 쌓기나무와 맞는지"""
+    for k, V in d['views'].items():
+        H = d['D'][k]
+        top, front, side = views(H)
+        assert (top, front, side) == (V['top'], V['front'], V['side']), k
+        assert sum(map(sum, H)) == V['sum'] and layers(H) == V['lay'], k
+    D, Vw = d['D'], d['views']
+    n = lambda k: sum(map(sum, D[k]))
+    assert layers(D['l1A'])[:3] == [6, 2, 1] and layers(D['l1B'])[:3] == [5, 3, 1]
+    assert n('main') == 8 and Vw['main']['hid'] == 1 and layers(D['main'])[:2] == [6, 2]
+    assert n('l3a4L') == 9 and Vw['l3a4L']['hid'] == 0 and layers(D['l3a4L'])[:3] == [5, 3, 1]
+    assert n('l3a4R') == 11 and Vw['l3a4R']['hid'] == 1 and layers(D['l3a4R'])[:3] == [6, 3, 2]
+    assert n('l3ch') == 10 and Vw['l3ch']['hid'] == 1 and layers(D['l3ch'])[:3] == [7, 2, 1]
+    assert [n(k) for k in ('lib', 'l5b', 'l5c', 'l5d', 'l5a3', 'art')] == [9, 8, 10, 12, 11, 8]
+    assert layers(D['annex'])[:3] == [6, 4, 2] and layers(D['l6a2'])[:3] == [7, 4, 2]
+    assert n('ga') == 4 and n('na') == 5 and [sum(map(sum, H)) for H in D['gaC']] == [5, 5, 5]
+    assert [sum(map(sum, H)) for H in D['naC']] == [6, 7, 7, 7]
+    assert n('t2a') == 10 and Vw['t2a']['hid'] == 1 and layers(D['t2a'])[:3] == [6, 3, 1]
+    assert n('t2b') == 9 and layers(D['t2b'])[:3] == [6, 2, 1] and n('t3') == 9 and Vw['t3']['hid'] == 0
+    assert layers(D['t5'])[1:3] == [3, 1] and D['k2'][0][2] == 2 and layers(D['k3'])[1] == 4
 
 
 # ================================================================ 그림 찍기(Chromium 하나)
@@ -541,9 +577,32 @@ def render_write(s, lv, items):
     ans = []
     for it in items:
         s.ask(it['q'], blank=False)
+        if lv == '기본형' and it.get('help') and len(it['help']) > 1:
+            s.text('도움: ' + it['help'][1])
         s.lines(2)
-        ans.append('(자유) ' + it['ph'].replace('예) ', '예: '))
+        ans.append(('(예) ' + it['ans']) if it.get('ans') else ('(자유) ' + it['ph'].replace('예) ', '예: ')))
     return ' / '.join(ans)
+
+
+def render_panes(s, lv, items):
+    """보여요·생각해요·궁금해요 세 칸"""
+    if lv == '기본형':
+        s.labeled([(it['t'], '______________________ ' + re.sub(r'^~\s*', '', it['ph'])) for it in items])
+    else:
+        for it in items:
+            s.ask(it['t'] + ':', blank=False)
+            s.lines(1)
+    return '(자유) 예) ' + ' / '.join(it['ex'][0] for it in items if it['ex'])
+
+
+def render_why(s, lv, rec):
+    """thenWhy(왜 그럴까요?)·ruleFirst(먼저 예상해요)"""
+    first = rec['t'] == 'ruleFirst'
+    s.ask(('먼저 예상해요 · ' if first else '왜 그럴까요? ') + rec['q'], blank=False)
+    if lv == '기본형' and rec.get('help') and len(rec['help']) > 1:
+        s.text('도움: ' + rec['help'][1])
+    s.lines(1 if first else 2)
+    return ('(예상) ' if first else '(왜) ') + (rec['ans'] or '(자유)')
 
 
 def ask_after(s, lv, rec, pre=''):
@@ -565,6 +624,13 @@ def render_rec(s, lv, rec, st):
         return ', '.join(ans)
     if t == 'write':
         return render_write(s, lv, rec['items'])
+    if t == 'panes':
+        return render_panes(s, lv, rec['items'])
+    if t in ('thenWhy', 'ruleFirst'):
+        return render_why(s, lv, rec)
+    if t == 'wonder':
+        s.text('1차시에 쓴 ‘궁금해요’ 쪽지를 다시 꺼내 읽어 보세요.')
+        return ''
     if t == 'chain':
         out = []
         for k, part in enumerate(rec['parts']):
@@ -660,11 +726,11 @@ def h_nums(s, lv, rec, st):
 def h_turn(s, lv, rec, st):
     V = {v['d']: v for v in rec['views']}
     if lv == '기본형':
-        put_figs(s, [(rec['iso'], '시청 모양')] + [(V[d]['svg'], d + '에서 본 모양') for d in ('위', '앞', '뒤', '왼쪽', '오른쪽')])
+        put_figs(s, [(rec['iso'], CAPS[MODE['v']]['turn'])] + [(V[d]['svg'], d + '에서 본 모양') for d in ('위', '앞', '뒤', '왼쪽', '오른쪽')])
         s.text('앞과 뒤에서 본 모양, 오른쪽과 왼쪽에서 본 모양을 견주어 보세요.')
         out = ''
     else:
-        put_figs(s, [(rec['iso'], '시청 모양')] + [(V[d]['svg'], d + '에서 본 모양') for d in ('위', '앞', '오른쪽')])
+        put_figs(s, [(rec['iso'], CAPS[MODE['v']]['turn'])] + [(V[d]['svg'], d + '에서 본 모양') for d in ('위', '앞', '오른쪽')])
         M = max(max(v['v']) if isinstance(v['v'][0], int) else 1 for v in rec['views'])
         s.text('뒤와 왼쪽에서 본 모양을 칸에 칠해 그려 보세요. (뒤에서 보면 왼쪽과 오른쪽이 바뀌어요.)')
         put_figs(s, [(grid_svg(M + 1, len(V['뒤']['v']) + 1, 'up'), '뒤에서 본 모양'), (grid_svg(M + 1, len(V['왼쪽']['v']) + 1, 'up'), '왼쪽에서 본 모양')])
@@ -674,7 +740,7 @@ def h_turn(s, lv, rec, st):
 
 def h_layers(s, lv, rec, st):
     nm = rec['names'] or []
-    put_figs(s, [(rec['iso'], '호텔 모양')] + [(L['svg'], '%d층%s' % (L['k'], ' · ' + nm[L['k'] - 1] if nm else '')) for L in rec['layers']])
+    put_figs(s, [(rec['iso'], CAPS[MODE['v']]['layers'])] + [(L['svg'], '%d층%s' % (L['k'], ' · ' + nm[L['k'] - 1] if nm else '')) for L in rec['layers']])
     return ask_after(s, lv, rec)
 
 
@@ -699,6 +765,8 @@ def h_figs(s, lv, rec, st):
     return ''
 
 
+CAPS = {'tb': {'turn': '시청 모양', 'layers': '호텔 모양'}, 'st': {'turn': '강당 모형', 'layers': '별관 모형'}}
+
 HANDLERS = {'figs': h_figs, 'sequence': h_sequence, 'sp6Pick': h_pick, 'sp6Build': h_build, 'sp6Paint': h_paint, 'sp6Nums': h_nums,
             'sp6Turn': h_turn, 'sp6Layers': h_layers, 'sp6Scene': h_scene, 'sp6Guess': h_guess}
 
@@ -709,6 +777,32 @@ PAPER = [('지도에서 사진기를 끌어 돌리거나 단추를 눌러 가, �
          ('놀이 방법을 차례대로 눌러 보세요.', '놀이 방법을 차례대로 알아보세요.'),
          ('2명이 하는 놀이를 컴퓨터와 해 보세요. 컴퓨터가 쌓기나무 5개로 만든 모양의 위에서 본 모양을 보여 줘요. ', '짝과 함께 2명이 하는 놀이를 해 보세요. '),
          ('(위에서 칸 아래의 층별 모양은 잠시 가려 두었어요.)', '')]
+
+# 이야기 버전: 화면에서 누르거나 끄는 말을 종이에서 하는 말로(위 PAPER도 함께 씀)
+PAPER_ST = [('지도에서 사진기를 끌어 돌리거나 단추를 눌러 가, 나, 다 방향에서 모두 보세요.', '지도에서 가, 나, 다 방향에 서서 교문 쪽을 본다고 생각해 보세요.'),
+            ('층 단추를 눌러 별관 모형을 층별로 살펴보세요.', '별관 모형을 층별로 살펴보세요.'),
+            ('세 칸에 써서 붙여요.', '세 칸에 써 보세요.')]
+
+WHY_ST = {
+    '1': ('그림에서 보이는 쌓기나무의 수와 하준이·서윤이가 쌓은 쌓기나무의 수가 다른 까닭을 써 보세요.',
+          '그림에서 보이지 않는 뒤쪽 자리에 숨겨진 쌓기나무가 있을 수 있기 때문이에요.'),
+    '2': ('동상 사진 ㉢을 하준이가 찍었다고 생각한 까닭을 써 보세요.',
+          '하준이가 서 있는 곳을 앞이라고 했으므로, 앞에서 찍은 사진에는 동상의 얼굴과 책이 보여요. ㉢에 얼굴과 책이 보여요.'),
+    '3': ('“보이는 쌓기나무만큼만 있으면 돼.”라는 도윤이의 말이 맞지 않는 까닭을 써 보세요.',
+          '위에서 본 모양을 보면 그림에서 보이지 않는 가운데 자리에 숨겨진 쌓기나무가 1개 있어서, 보이는 것보다 1개 더 많은 8개가 필요해요.'),
+    '4': ('옆에서 본 모양을 오른쪽에서 본 모양 하나만 그려도 되는 까닭을 써 보세요.',
+          '오른쪽과 왼쪽에서 본 모양은 좌우로 뒤집으면 같기 때문이에요.'),
+    '5': ('위에서 본 모양에 수를 쓰면 모양이 한 가지로만 만들어지는 까닭을 써 보세요.',
+          '각 자리에 쌓여 있는 쌓기나무의 개수를 모두 알 수 있기 때문이에요.'),
+    '6': ('층별 모양에서 1층 모양이 위에서 본 모양과 같은 까닭을 써 보세요.',
+          '쌓기나무는 바닥부터 쌓으므로 위층 쌓기나무는 모두 1층 쌓기나무 위에 있어요. 그래서 위에서 내려다보면 1층 자리가 그대로 보여요.'),
+    '7~8': ('㉠이 가 모형에 쌓기나무 1개를 더 붙인 모양이 아닌 까닭을 써 보세요.',
+            '㉠도 쌓기나무가 5개이지만 가 모형이 그대로 들어 있지 않아요. 가 모형처럼 2층 쌓기나무가 뒷줄에 있어야 해요.'),
+    '9': ('층별 모양을 그릴 때 2층, 3층을 1층과 같은 칸 자리에 그려야 하는 까닭을 써 보세요.',
+          '층별 모양은 각 층을 위에서 본 모양이라 자리가 달라지면 실제 모양도 달라지기 때문이에요.'),
+    '10': ('위, 앞, 옆에서 본 모양만으로는 쌓기나무의 개수를 정확히 모를 수 있는 까닭과, 정확히 나타내는 방법을 써 보세요.',
+           '숨어 있는 부분이 있을 수 있기 때문이에요. 위에서 본 모양에 수를 쓰거나 층별로 나타내면 정확히 알 수 있어요.'),
+}
 
 WHY = {
     '1': ('그림에 보이는 쌓기나무만 세면 실제 개수와 다를 수 있는 까닭을 써 보세요.',
@@ -732,14 +826,23 @@ WHY = {
 }
 
 
-def lesson(s, lv, L):
+def paper(t):
+    for a, b in PAPER + (PAPER_ST if MODE['v'] == 'st' else []):
+        t = t.replace(a, b)
+    return t
+
+
+def lesson(s, lv, L, story=None):
     s.lesson(L['no'], L['soop'], L['title'], L['question'])
+    if story:
+        s.scene(None, story)
     out = []
     for i, st in enumerate(L['steps']):
-        s.step('%s %s' % (NUM[i], st['name']))
-        inst = st['inst']
-        for a, b in PAPER:
-            inst = inst.replace(a, b)
+        if MODE['v'] == 'st' and ' — ' in st['name']:       # 이야기 버전 계단 이름 '만져 보기 — 교문 둘러보기'
+            s.step('%s %s' % (NUM[i], st['name'].split(' — ')[0]), st['name'].split(' — ', 1)[1])
+        else:
+            s.step('%s %s' % (NUM[i], st['name']))
+        inst = paper(st['inst'])
         s.text(inst.strip())
         if lv == '기본형' and st['hints'] and st['recs'][0]['t'] not in ('write', 'sp6Guess'):
             s.text('도움: ' + st['hints'][0])
@@ -749,13 +852,10 @@ def lesson(s, lv, L):
         ch = L['challenge']
         if ch:
             s.step('%s 도전하기' % NUM[n])
-            inst = ch['inst']
-            for a, b in PAPER:
-                inst = inst.replace(a, b)
-            s.text(inst)
+            s.text(paper(ch['inst']))
             out.append(NUM[n] + ' ' + '; '.join(x for x in (render_rec(s, lv, r, ch) for r in ch['recs']) if x))
             n += 1
-        q, a = WHY[str(L['no'])]
+        q, a = (WHY if MODE['v'] == 'tb' else WHY_ST)[str(L['no'])]
         s.step('%s 까닭 쓰기' % NUM[n])
         s.ask(q, blank=False)
         s.lines(2)
@@ -763,12 +863,21 @@ def lesson(s, lv, L):
     return '%s차시  ' % L['no'] + '   '.join(out)
 
 
-def build(D, label, short, outdir, lv):
+def build(D, label, short, outdir, lv, ver='tb'):
+    MODE['v'] = ver
     s = Sheet(unit_label=label, level=lv, grade_label='6학년')
-    lines = [lesson(s, lv, L) for L in D['lessons']]
+    if ver == 'tb':
+        lines = [lesson(s, lv, L) for L in D['lessons']]
+        tail = '쌓기나무 그림은 지도서의 답이 그대로 나오도록 앱에서 새로 그린 모양입니다.'
+    else:
+        nos = [str(L['no']) for L in D['lessons']]
+        assert nos == ST, ('이야기 버전 차시가 원본과 달라요', nos, ST)
+        assert set(WHY_ST) == set(ST)
+        story = D['story']['lines'][:2]
+        lines = [lesson(s, lv, L, story if i == 0 else None) for i, L in enumerate(D['lessons'])]
+        tail = '쌓기나무 배치는 이야기 버전에서 새로 설계한 것으로, 앱과 같은 그림입니다. 글쓰기 칸의 답은 모범 답의 한 예입니다.'
     s.answers('【교사용】 3. 공간과 입체(%s) 활동지 정답 (%s)' % (short, lv), lines,
-              note='※ 이 활동지는 앱 u3-space.html과 차시 번호가 같습니다. 수를 쓴 모양 [ ]은 뒷줄부터 앞줄 차례, 왼쪽부터이고 ‘-’는 빈자리, ■는 칠할 칸입니다. '
-                   '쌓기나무 그림은 지도서의 답이 그대로 나오도록 앱에서 새로 그린 모양입니다.')
+              note='※ 이 활동지는 앱 u3-space.html과 차시 번호가 같습니다. 수를 쓴 모양 [ ]은 뒷줄부터 앞줄 차례, 왼쪽부터이고 ‘-’는 빈자리, ■는 칠할 칸입니다. ' + tail)
     os.makedirs(outdir, exist_ok=True)
     path = os.path.join(outdir, NAME % lv)
     s.save(path)
@@ -783,8 +892,13 @@ def main():
             D = load(SRC_TB)
             for lv in ('기본형', '도전형'):
                 out.append(build(D, '6-2 수학 3. 공간과 입체(교과서 차시)', '교과서 차시', OUT_TB, lv))
-        if 'st' in want and not ST:
-            print('[건너뜀] 이야기 버전 원본(u3-space.st.js)이 아직 없어요.')
+        if 'st' in want:
+            if not os.path.exists(SRC_ST):
+                print('[건너뜀] 이야기 버전 원본(u3-space.st.js)이 아직 없어요.')
+            else:
+                D = load(SRC_ST, 'st')
+                for lv in ('기본형', '도전형'):
+                    out.append(build(D, '6-2 수학 3. 공간과 입체(이야기 버전)', '이야기 버전', OUT_ST, lv, 'st'))
     finally:
         SHOT.close()
         shutil.rmtree(WORK, ignore_errors=True)
