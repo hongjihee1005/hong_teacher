@@ -572,7 +572,7 @@ def render_rec(s, lv, rec, st):
             lab = t if re.fullmatch(r'[①②③]|보기', t) else SUB[k]
             if t:
                 s.text(lab if lab == t else lab + ' ' + re.sub(r'^[①②③]\s+(?=\S)', '', t))
-            out.append(lab + ' ' + '; '.join(render_rec(s, lv, r, None) for r in part['recs']))
+            out.append(lab + ' ' + '; '.join(x for x in (render_rec(s, lv, r, None) for r in part['recs']) if x))
         return ' '.join(out)
     return HANDLERS[t](s, lv, rec, st)
 
@@ -653,7 +653,7 @@ def h_nums(s, lv, rec, st):
     put_figs(s, [(grid_svg(len(H), len(H[0]), 'top', nums=H if rec['given'] else None, only=only), rec['title'] or '위에서 본 모양')])
     if rec['total']:
         s.ask(('%s ' % rec['totalQ'] if rec['totalQ'] else '똑같은 모양으로 만드는 데 필요한 쌓기나무는 ') + '(        )개예요.', blank=False)
-    out = ('보기 ' if rec['given'] else '') + num_txt(H) + (' → %d개' % rec['sum'] if rec['total'] else '')
+    out = num_txt(H) + (' → %d개' % rec['sum'] if rec['total'] else '')
     return ask_after(s, lv, rec, out)
 
 
@@ -743,7 +743,7 @@ def lesson(s, lv, L):
         s.text(inst.strip())
         if lv == '기본형' and st['hints'] and st['recs'][0]['t'] not in ('write', 'sp6Guess'):
             s.text('도움: ' + st['hints'][0])
-        out.append(NUM[i] + ' ' + '; '.join(render_rec(s, lv, r, st) for r in st['recs']))
+        out.append(NUM[i] + ' ' + '; '.join(x for x in (render_rec(s, lv, r, st) for r in st['recs']) if x))
     if lv == '도전형':
         n = len(L['steps'])
         ch = L['challenge']
@@ -753,7 +753,7 @@ def lesson(s, lv, L):
             for a, b in PAPER:
                 inst = inst.replace(a, b)
             s.text(inst)
-            out.append(NUM[n] + ' ' + '; '.join(render_rec(s, lv, r, ch) for r in ch['recs']))
+            out.append(NUM[n] + ' ' + '; '.join(x for x in (render_rec(s, lv, r, ch) for r in ch['recs']) if x))
             n += 1
         q, a = WHY[str(L['no'])]
         s.step('%s 까닭 쓰기' % NUM[n])
