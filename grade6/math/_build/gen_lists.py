@@ -1,4 +1,4 @@
-"""5학년 수학 학기 목록·README·전체 안내·Code.gs 만들기.
+"""6학년 수학 학기 목록·README·전체 안내·Code.gs 만들기.
 
 python3 gen_lists.py        # 1학기·2학기 모두
 python3 gen_lists.py 1      # 1학기만 (sem1/, sem1-soop/)
@@ -10,90 +10,43 @@ python3 gen_lists.py 2      # 2학기만 (sem2/, sem2-soop/)
 import re, os, html, sys
 TBONLY = os.environ.get('TBONLY') == '1'   # 교과서 버전만 먼저 올릴 때: 공용 문서를 교과서 폴더에 두고 이야기 버전 카드는 '곧 열려요'
 R = os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..'))
-UB = R + '/grade5/math/_build/units'
+UB = R + '/grade6/math/_build/units'
 
 SEMS = {
-    1: dict(
-        units=UB,
-        tb='sem1', st='sem1-soop', code='5-1', label='1학기',
-        UNITS=[  # n, slug, 단원명, 붙여쓰기, emoji
-            (1, 'mixcalc', '자연수의 혼합 계산', '자연수의혼합계산', '🧮'),
-            (2, 'factor', '약수와 배수', '약수와배수', '🔢'),
-            (3, 'corresp', '대응 관계', '대응관계', '🔄'),
-            (4, 'reduce', '약분과 통분', '약분과통분', '🍕'),
-            (5, 'fracadd', '분수의 덧셈과 뺄셈', '분수의덧셈과뺄셈', '➕'),
-            (6, 'area', '다각형의 둘레와 넓이', '다각형의둘레와넓이', '📐'),
-        ],
-        TB_DE={
-            1: '학급 임원 서아의 자치회 활동 — 덧셈과 뺄셈, 곱셈과 나눗셈, 네 가지 계산이 섞여 있는 식의 계산 순서, 생존 가방과 빙고 놀이까지',
-            2: '할머니와 함께 살게 된 윤우 — 약수와 배수, 공약수와 최대공약수, 공배수와 최소공배수, 체육 대회 입장과 약수·배수 이어달리기까지',
-            3: '친환경 에너지 공원 — 두 양 사이의 관계, 대응 관계를 □, △ 같은 기호를 사용한 식으로 나타내기, 생활 속 대응 관계, 물 절약까지',
-            4: '세계 음식 축제 — 크기가 같은 분수, 약분과 기약분수, 통분, 분수의 크기 비교, 분수와 소수의 크기 비교, 1/2을 기준으로 길이 비교까지',
-            5: '유기견 보호 센터 봉사 활동 — 분모가 다른 진분수·대분수의 덧셈과 뺄셈, 음표로 하는 분수의 덧셈, 분수 윷놀이까지',
-            6: '태민이의 온라인 집 — 정다각형·사각형의 둘레, 1 cm²와 직사각형의 넓이, m²·km², 평행사변형·삼각형·마름모·사다리꼴의 넓이, 공원 만들기까지',
-        },
-        TB_SRC={1: '학급 임원 서아의 자치회 활동', 2: '할머니와 함께 살게 된 윤우', 3: '다온이와 한결이의 친환경 에너지 공원',
-                4: '준서·하은·유주의 세계 음식 축제', 5: '소윤이와 지후의 유기견 보호 센터 봉사 활동', 6: '태민이의 온라인 집'},
-        ST_EMO={1: '🎒', 2: '🛒', 3: '🌍', 4: '🍎', 5: '🌱', 6: '🏠'},
-        ST_DE={
-            1: '별빛 과학관 체험 학습을 계획하며 버스 빈자리·표값·간식 나누기·거스름돈을 하나의 식으로 나타내고 계산 순서를 정해요',
-            2: '학급 장터를 준비하며 쿠키를 봉지에 똑같이 나누고 이벤트 시간표를 짜면서 약수와 배수, 최대공약수와 최소공배수를 찾아요',
-            3: '환경 동아리 초록 탐사대가 되어 함께 변하는 두 양을 표로 정리하고, 규칙을 □, △ 같은 기호를 사용한 식으로 나타내요',
-            4: '과일 가게 놀이를 열어 파이와 수박을 똑같이 나누고, 주스 양과 가격표의 무게를 약분과 통분으로 비교해요',
-            5: '학교 텃밭을 가꾸며 물·거름·덩굴 길이·수확한 채소의 양을 분모가 다른 분수로 통분하여 더하고 빼요',
-            6: '꿈의 교실을 설계하며 울타리와 테두리의 둘레, 타일·교실·마을 지도의 넓이, 러그·깃발·창문 장식·화단의 넓이를 구해요',
-        },
-        st_names='현장 체험 학습 계획단, 학급 장터 준비단, 환경 동아리 탐사대, 과일 가게 놀이, 텃밭 가꾸기, 꿈의 교실 설계도',
-        group_readme=('지도서에서 두 차시로 묶인 활동(2단원 4~5·6~7차시, 6단원 6~7·8~9·10~11·13~14차시)은 한 차시 칸으로 두고 번호를 `4~5`처럼 적었습니다.\n'
-                      '이야기 버전은 차시마다 한 칸입니다.'),
-        group_hash='(교과서 버전의 묶인 차시는 `#4`)',
-        group_guide='교과서 차시 버전에서 지도서에서 두 차시로 묶인 활동(교과서 2단원 4~5·6~7차시, 6단원 6~7·8~9·10~11·13~14차시)은 한 칸으로 두고 번호를 `4~5`처럼 적었습니다.',
-        print_units=('- 길이를 재고 모눈을 세는 **6단원 다각형의 둘레와 넓이**는 실제 크기로 인쇄되는지 확인하세요(1 cm² 모눈).\n'
-                     '  나머지 단원은 조금 줄어도 괜찮습니다.'),
-        book='지도서(5-1 1~6단원)',
-        scope='5학년 1학기 범위를 벗어난 내용(예: 분수의 곱셈, 소수의 곱셈, 합동과 대칭, 직육면체, 평균과 가능성 — 5학년 2학기)은 넣지 않았습니다.',
-    ),
+    1: dict(UNITS=[]),   # 6-1은 아직 없음
     2: dict(
         units=UB + '/sem2',
-        tb='sem2', st='sem2-soop', code='5-2', label='2학기',
+        tb='sem2', st='sem2-soop', code='6-2', label='2학기',
         UNITS=[
-            (1, 'range', '수의 범위와 어림하기', '수의범위와어림하기', '📏'),
-            (2, 'fracmul', '분수의 곱셈', '분수의곱셈', '🍕'),
-            (3, 'symm', '합동과 대칭', '합동과대칭', '🦋'),
-            (4, 'decmul', '소수의 곱셈', '소수의곱셈', '🔢'),
-            (5, 'cuboid', '직육면체', '직육면체', '📦'),
-            (6, 'avg', '평균과 가능성', '평균과가능성', '🎲'),
+            (1, 'fracdiv', '분수의 나눗셈', '분수의나눗셈', '🍰'),
+            (2, 'decdiv', '소수의 나눗셈', '소수의나눗셈', '🔢'),
+            (3, 'space', '공간과 입체', '공간과입체', '🧊'),
+            (4, 'ratio', '비례식과 비례배분', '비례식과비례배분', '⚖️'),
+            (5, 'circle', '원의 둘레와 넓이', '원의둘레와넓이', '⭕'),
+            (6, 'cylinder', '원기둥, 원뿔, 구', '원기둥원뿔구', '🥫'),
         ],
         TB_DE={
-            1: '크리에이터 정우의 마을 농산물 축제 — 이상·이하·초과·미만, 수의 범위 활용, 올림·버림·반올림과 그 활용, 택배 요금과 어림 놀이까지',
-            2: '하준이와 나은이의 한옥 마을 체험 — (분수)×(자연수), (자연수)×(분수), 진분수의 곱셈, 대분수의 곱셈, 투표 과정과 곱이 더 큰 식 만들기 놀이까지',
-            3: '다윤이와 승현이의 미술관 나들이 — 도형의 합동과 합동인 도형의 성질, 선대칭도형·점대칭도형과 그 성질, 대칭 그림 그리기와 카드 놀이까지',
-            4: '은성이네 모둠의 문화 예술 체험 센터 — (소수)×(자연수), (자연수)×(소수), (소수)×(소수), 곱의 소수점 위치, 식단 열량과 땅따먹기 놀이까지',
-            5: '연서의 국제 물류 센터 견학 — 직육면체와 정육면체, 겨냥도, 직육면체의 성질, 정육면체·직육면체의 전개도, 장난감 만들기와 도형 카드 놀이까지',
-            6: '건우네 마을 연합 송년 잔치 — 평균의 뜻과 구하기, 평균 활용, 일이 일어날 가능성을 말과 수로 나타내기, 동전·주사위 실험과 평균 놀이까지',
+            1: '준혁이와 남극 과학 기지 삼촌의 영상 통화 — 분모가 같은·다른 (분수)÷(분수), (자연수)÷(분수), 분수의 곱셈으로 나타내기, (대분수)÷(분수), 가게 값 비교와 나눗셈 놀이까지',
+            2: '지윤이와 은우의 과학 기술 체험관 — (소수)÷(소수), (자연수)÷(소수), 몫을 반올림하여 나타내기, 나누어 주고 남는 양, 연료 절약과 섬나라 여행 놀이까지',
+            3: '규진이와 시연이의 영상 촬영 학교 — 어느 방향에서 보았는지, 쌓기나무로 만든 모양과 개수(위·앞·옆에서 본 모양, 층별로 나타낸 모양), 쌓기나무 놀이까지',
+            4: '서영이의 새 활용 체험관 — 비의 성질, 간단한 자연수의 비, 비례식과 비례식의 성질, 비례식 활용, 비례배분, 요리 재료 비와 비례식 짝 찾기 놀이까지',
+            5: '채안이와 현준이의 수학 체험 마을 — 원주와 원주율, 원주와 지름 구하기, 원의 넓이 어림과 구하는 방법, 피자 메뉴 비교와 땅따먹기 놀이까지',
+            6: '예빈이네 마을 체육 대회 — 원기둥과 원기둥의 전개도, 원뿔, 구, 공학 도구로 입체도형 살펴보기와 입체도형 카드 놀이까지',
         },
-        TB_SRC={1: '크리에이터 정우의 마을 농산물 축제', 2: '하준이와 나은이의 한옥 마을 체험', 3: '다윤이와 승현이의 미술관 나들이',
-                4: '은성이네 모둠의 문화 예술 체험 센터', 5: '연서의 국제 물류 센터 견학', 6: '건우네 마을 연합 송년 잔치'},
-        ST_EMO={1: '🎒', 2: '🍡', 3: '🎨', 4: '🔬', 5: '🎁', 6: '🏃'},
-        ST_DE={
-            1: '현장 체험 학습을 준비하며 놀이 기구 키 기준·입장료 나이 범위를 수의 범위로 나타내고, 기념품·지폐·방문자 수를 올림·버림·반올림으로 어림해요',
-            2: '전통 음식 장터를 준비하며 식혜·인절미·보자기 끈·약과 쟁반의 양을 분수의 곱셈으로 구하고, 수익금 쓰임을 투표로 정해요',
-            3: '대칭 무늬 공방을 열어 합동인 타일과 배지를 만들고, 접어 보고 돌려 보며 선대칭·점대칭 무늬를 완성해요',
-            4: '과학 탐구 캠프를 열어 비커 소금물·강낭콩 줄기·모종판 넓이·캠프 식단 열량을 소수의 곱셈으로 구해요',
-            5: '선물 상자 공방에서 상자를 나누고 겨냥도를 그리고, 전개도를 펼치고 접어 보며 직육면체의 성질을 찾아요',
-            6: '학급 운동회를 준비하며 기록의 평균으로 팀을 비교하고, 경품 뽑기·회전판 게임의 가능성을 말과 수로 나타내요',
-        },
-        st_names='현장 체험 학습 준비, 전통 음식 장터, 대칭 무늬 공방, 과학 탐구 캠프, 선물 상자 공방, 학급 운동회 준비',
-        group_readme=('지도서에서 두 차시로 묶인 활동(2단원 6~7차시, 3단원 5~6·8~9차시)은 한 차시 칸으로 두고 번호를 `6~7`처럼 적었습니다.\n'
-                      '이야기 버전은 차시마다 한 칸입니다.'),
-        group_hash='(교과서 버전의 묶인 차시는 `#6`)',
-        group_guide='교과서 차시 버전에서 지도서에서 두 차시로 묶인 활동(교과서 2단원 6~7차시, 3단원 5~6·8~9차시)은 한 칸으로 두고 번호를 `6~7`처럼 적었습니다.',
-        print_units=('- 모눈에 그리고 재는 **3단원 합동과 대칭**·**5단원 직육면체**는 실제 크기로 인쇄되는지 확인하세요(1 cm 모눈).\n'
+        TB_SRC={1: '준혁이와 남극 과학 기지', 2: '지윤이와 은우의 과학 기술 체험관', 3: '규진이와 시연이의 영상 촬영 학교',
+                4: '서영이의 새 활용 체험관', 5: '채안이와 현준이의 수학 체험 마을', 6: '예빈이네 마을 체육 대회'},
+        ST_EMO={1: '🧑‍🏫', 2: '🧑‍🏫', 3: '🧑‍🏫', 4: '🧑‍🏫', 5: '🧑‍🏫', 6: '🧑‍🏫'},
+        ST_DE={n: '(이야기 버전, 만드는 중)' for n in range(1, 7)},
+        st_names='(이야기 버전은 만드는 중)',
+        group_readme=None, group_hash=None, group_guide=None,
+        print_units=('- 모눈·자로 재는 **3단원 공간과 입체**·**5단원 원의 둘레와 넓이**·**6단원 원기둥, 원뿔, 구**는 실제 크기로 인쇄되는지 확인하세요.\n'
                      '  나머지 단원은 조금 줄어도 괜찮습니다.'),
-        book='지도서(5-2 1~6단원)',
-        scope='5학년 2학기 범위를 벗어난 내용(예: 분수의 나눗셈, 소수의 나눗셈, 각기둥과 각뿔, 비와 비율 — 6학년)은 넣지 않았습니다.',
+        book='지도서(6-2 1~6단원)',
+        scope='6학년 2학기 범위를 벗어난 내용(중학교 내용 등)은 넣지 않았습니다.',
     ),
 }
+# 단원별로 올릴 때: RELEASE=1,3 처럼 올린 단원만 목록에 열고 나머지는 '곧 열려요'
+RELEASE = [int(x) for x in os.environ.get('RELEASE', '').split(',') if x.strip()]
 
 
 def parse(path):
@@ -138,9 +91,9 @@ def page(tpl, title, crumb_last_html, body):
     s = s.replace('</style>', LES_CSS + '</style>', 1)
     a, b = s.index('<h1>'), s.index('<footer')
     s = s[:a] + body + s[b:]
-    # crumb: 3학년 -> 5학년
+    # crumb: 3학년 -> 6학년
     nav = re.search(r'<nav class="crumb".*?</nav>', s, re.S)
-    nv = nav.group(0).replace('>3학년<', '>5학년<')
+    nv = nav.group(0).replace('>3학년<', '>6학년<')
     s = s[:nav.start()] + nv + s[nav.end():]
     return s
 
@@ -151,15 +104,24 @@ def build(sem):
         print('건너뜀', sem, '— 단원 원본이 아직 없습니다(SEMS 채우기)')
         return
     UNITS, TB_DE, TB_SRC, ST_EMO, ST_DE = C['UNITS'], C['TB_DE'], C['TB_SRC'], C['ST_EMO'], C['ST_DE']
+    ALL = UNITS
+    UNITS = [u for u in UNITS if (not RELEASE or u[0] in RELEASE) and os.path.exists(f"{C['units']}/u{u[0]}-{u[1]}.tb.js")]
+    WAIT = [u for u in ALL if u not in UNITS]
     TBD, STD, CODE, LB = C['tb'], C['st'], C['code'], C['label']
     GUIDE = f'{CODE}수학_개념계단_전체안내.md'
     D = {}
     for n, slug, nm, nb, emo in UNITS:
         D[n] = dict(tb=parse(f'{C["units"]}/u{n}-{slug}.tb.js'), st=parse(f'{C["units"]}/u{n}-{slug}.st.js'))
     first = UNITS[0][1]
+    if C.get('group_readme') is None:
+        grp = [f"{n}단원 " + '·'.join(no for no, _, _ in D[n]['tb']['lessons'] if '~' in no) for n, *_ in UNITS if any('~' in no for no, _, _ in D[n]['tb']['lessons'])]
+        g = ', '.join(grp) if grp else '없음'
+        C = dict(C, group_readme=f'지도서에서 두 차시로 묶인 활동({g}차시)은 한 차시 칸으로 두고 번호를 `8~9`처럼 적었습니다.\n이야기 버전은 차시마다 한 칸입니다.',
+                 group_hash='(교과서 버전의 묶인 차시는 첫 번호로, 예: `#8`)',
+                 group_guide=f'교과서 차시 버전에서 지도서에서 두 차시로 묶인 활동({g}차시)은 한 칸으로 두고 번호를 `8~9`처럼 적었습니다.')
 
     # ---------- 교과서 버전 ----------
-    body = [f'<h1>5학년 {LB} 수학 학습 자료</h1>\n',
+    body = [f'<h1>6학년 {LB} 수학 학습 자료</h1>\n',
             '<p class="sub">2022 개정 교육과정 · 교과서 차시 그대로 만든 자료입니다.<br>\n'
             '모든 차시가 <b>만져 보기 → 그려 보기 → 말해 보기 → 약속하기 → 확인하기</b> 다섯 계단과 ★도전 계단으로 되어 있어요.</p>\n',
             '<p class="gsub">단원을 누르면 그 단원의 <b>💻 웹앱</b>과 <b>🖨️ 활동지(기본형·도전형)</b>가 나와요. <b>📋 차시 목록</b>에서 차시를 누르면 그 차시가 바로 열려요.</p>\n']
@@ -169,6 +131,9 @@ def build(sem):
                     f'<a class="card" href="{fn}"><span class="tag" style="background:#D9731A">💻 웹앱</span><span class="nm">{emo} {nm}</span>'
                     f'<span class="de">{TB_DE[n]} {count(tb["lessons"])}차시</span></a>\n'
                     + SHEET.format(n=n, nb=nb) + '</div>\n' + lessons_html(fn, tb['lessons']))
+    for n, slug, nm, nb, emo in WAIT:
+        body.append(f'<h2>{emo} {n}단원 · {nm}</h2>\n<div class="grid">\n<div class="card wait"><span class="tag" style="background:#D9731A">💻 웹앱</span><span class="nm">{emo} {nm}</span><span class="de">곧 열려요 — 만들고 점검하는 중이에요</span></div>\n</div>\n')
+    body.sort(key=lambda x: (0,) if not x.startswith('<h2>') else (1, int(re.search(r'(\d)단원', x).group(1))) if re.search(r'^<h2>\S+ (\d)단원', x) else (0,))
     _gp = '' if TBONLY else f'../{STD}/'
     _story = ('<div class="card wait"><span class="tag" style="background:#6A4FC9">이야기 버전</span><span class="nm">🧑‍🏫 홍지희 선생님 버전</span><span class="de">곧 열려요 — 같은 내용을 우리 학교·학급 이야기로 다시 짠 수업</span></div>\n'
               if TBONLY else f'<a class="card" href="../{STD}/index.html"><span class="tag" style="background:#6A4FC9">이야기 버전</span><span class="nm">🧑‍🏫 홍지희 선생님 버전</span><span class="de">같은 내용을 우리 학교·학급 이야기로 다시 짠 수업</span></a>\n')
@@ -179,11 +144,11 @@ def build(sem):
     body.append('<h2>💡 쓰는 방법</h2>\n'
                 '<p class="gsub"><b>💻 웹앱</b> — 전자칠판이나 크롬북에서 바로 씁니다. 앞 계단을 해결해야 다음 계단이 열리고, 막히면 도움이 단서 → 낱말 → 답 따라 쓰기 세 단계로 나옵니다. 주소 끝에 <code>#3</code>처럼 차시 번호를 붙이면 그 차시가 바로 열려요.</p>\n'
                 '<p class="gsub"><b>🖨️ 활동지</b> — 흑백 인쇄용 hwpx입니다. <b>기본형</b>은 낱말 상자와 빈칸 문장으로 돕고, <b>도전형</b>은 도움을 빼고 서술형·심화를 더했습니다. 맨 뒤에 교사용 정답이 붙어 있으니 배부 전에 마지막 장을 빼세요.<br>인쇄할 때는 한글 인쇄 창의 <b>「인쇄 방식」을 「자동 인쇄」</b>로 두세요. 그것이 실제 크기입니다(「공급 용지에 맞추어」로 하면 줄어듭니다). 맨 윗줄에 10 cm 눈금자가 있으니, 처음 한 장만 뽑아 자를 대어 10 cm가 나오는지 확인하시면 됩니다.</p>\n')
-    open(f'{R}/grade5/math/{TBD}/index.html', 'w', encoding='utf-8').write(
-        page(R + '/grade3/math/sem1/index.html', f'5학년 {LB} 수학 · 초등교사 홍지희', None, ''.join(body)))
+    open(f'{R}/grade6/math/{TBD}/index.html', 'w', encoding='utf-8').write(
+        page(R + '/grade3/math/sem1/index.html', f'6학년 {LB} 수학 · 초등교사 홍지희', None, ''.join(body)))
 
     # ---------- 이야기 버전 ----------
-    body = [f'<h1>5학년 {LB} 수학 · 홍지희 선생님 버전</h1>\n',
+    body = [f'<h1>6학년 {LB} 수학 · 홍지희 선생님 버전</h1>\n',
             '<p class="sub">2022 개정 교육과정 · <b>우리 학교·학급 상황으로 다시 짠 이야기 수업</b>입니다.<br>교과서 차시 버전과 배우는 것은 같고, 단원마다 이야기 하나로 이어집니다.</p>\n',
             '<p class="gsub">모든 차시가 <b>만져 보기 → 그려 보기 → 말해 보기 → 약속하기 → 확인하기</b> 다섯 계단과 ★도전 계단으로 되어 있어요. <b>📋 차시 목록</b>에서 차시를 누르면 그 차시가 바로 열려요.</p>\n']
     for n, slug, nm, nb, emo in UNITS:
@@ -201,17 +166,17 @@ def build(sem):
                 '<a class="card" href="Code.gs"><span class="tag" style="background:#6A4FC9">📋 교사용</span><span class="nm">⚙️ Code.gs</span><span class="de">학생 기록을 구글 시트에 모으는 앱스 스크립트</span></a>\n'
                 '</div>\n'
                 '<p class="gsub">활동지 맨 뒤 <b>마지막 한 장</b>이 교사용 정답입니다. 학생용으로 뽑을 때는 인쇄 범위에서 그 한 장만 빼면 됩니다.</p>\n')
-    open(f'{R}/grade5/math/{STD}/index.html', 'w', encoding='utf-8').write(
-        page(R + '/grade3/math/sem1-soop/index.html', f'5학년 {LB} 수학 · 홍지희 선생님 버전 · 초등교사 홍지희', None, ''.join(body)))
+    open(f'{R}/grade6/math/{STD}/index.html', 'w', encoding='utf-8').write(
+        page(R + '/grade3/math/sem1-soop/index.html', f'6학년 {LB} 수학 · 홍지희 선생님 버전 · 초등교사 홍지희', None, ''.join(body)))
 
     # ---------- README (교과서) ----------
     rows = '\n'.join(f'| {n}. {nm} | `u{n}-{slug}.html` | {count(D[n]["tb"]["lessons"])} | {TB_SRC[n]} |' for n, slug, nm, nb, e in UNITS)
     pages = ', '.join(f'`index_{slug}`' for n, slug, nm, nb, e in UNITS)
     u0, uN = UNITS[0], UNITS[-1]
     unitdir = 'units/sem2/' if sem == 2 else 'units/'
-    open(f'{R}/grade5/math/{TBD}/README.md', 'w', encoding='utf-8').write(f'''# 5학년 {LB} 수학 학습 자료 (교과서 차시 버전)
+    open(f'{R}/grade6/math/{TBD}/README.md', 'w', encoding='utf-8').write(f'''# 6학년 {LB} 수학 학습 자료 (교과서 차시 버전)
 
-2022 개정 교육과정 초등학교 5학년 {LB} 수학과 수업 자료입니다.
+2022 개정 교육과정 초등학교 6학년 {LB} 수학과 수업 자료입니다.
 지도서의 **차시 번호와 주제, 소재를 그대로** 따랐습니다.
 
 모든 차시가 같은 다섯 계단으로 되어 있습니다.
@@ -242,7 +207,7 @@ def build(sem):
 - 오른쪽 위 `선생님` → 비밀번호 → `기록 보기`로 학생 기록(틀린 답 포함)을 볼 수 있습니다.
   기본값은 이 기기에 저장된 기록만 보여 줍니다(기본 비밀번호 1234).
 - 맨 아래 `📋 자료 목록으로` 단추로 이 목록에 돌아옵니다.
-- 앱의 원본은 `grade5/math/_build/{unitdir}*.tb.js`입니다. 이 폴더의 단원 HTML은 직접 고치지 말고 `_build/README.md`대로 다시 만드세요.
+- 앱의 원본은 `grade6/math/_build/{unitdir}*.tb.js`입니다. 이 폴더의 단원 HTML은 직접 고치지 말고 `_build/README.md`대로 다시 만드세요.
 
 ## 반 전체 기록을 모으려면
 
@@ -279,7 +244,7 @@ def build(sem):
 
     # ---------- README (이야기) ----------
     rows = '\n'.join(f'| {n} {nm} | `u{n}-{slug}.html` | {D[n]["st"]["title"] if D[n]["st"] else f"({nm} 이야기, 만드는 중)"} | {count(D[n]["st"]["lessons"]) if D[n]["st"] else ""} |' for n, slug, nm, nb, e in UNITS)
-    open(f'{R}/grade5/math/{STD}/README.md', 'w', encoding='utf-8').write(f'''# 5학년 {LB} 수학 · 홍지희 선생님 버전
+    open(f'{R}/grade6/math/{STD}/README.md', 'w', encoding='utf-8').write(f'''# 6학년 {LB} 수학 · 홍지희 선생님 버전
 
 우리 학교·학급 상황으로 다시 짠 **이야기 수업** 자료입니다. 누구나 열어 볼 수 있습니다.
 
@@ -293,7 +258,7 @@ def build(sem):
 인쇄용 활동지(hwpx)는 `sheets/`에 단원마다 **기본형·도전형** 두 벌이 있습니다.
 교사용 자료(전체 안내서 `{GUIDE}`, `Code.gs`)도 이 폴더에 있습니다.
 
-앱의 원본은 `grade5/math/_build/{unitdir}*.st.js`입니다. 이 폴더의 단원 HTML은 직접 고치지 말고 `_build/README.md`대로 다시 만드세요.
+앱의 원본은 `grade6/math/_build/{unitdir}*.st.js`입니다. 이 폴더의 단원 HTML은 직접 고치지 말고 `_build/README.md`대로 다시 만드세요.
 
 활동지 맨 뒤 **마지막 한 장**이 교사용 정답입니다.
 학생용으로 뽑을 때는 인쇄 범위에서 그 한 장만 빼면 됩니다.
@@ -303,12 +268,12 @@ def build(sem):
     cg = open(R + '/grade3/math/sem1-soop/Code.gs', encoding='utf-8').read()
     lines = ''.join(f' *    - {n}단원 {nm}:{" " * max(1, 9 - len(nm))}?page={slug} (index_{slug})\n' for n, slug, nm, nb, e in UNITS)
     cg = re.sub(r' \*    - 1단원 덧셈과 뺄셈.*?\(index_fracdec\)\n', lines, cg, flags=re.S)
-    cg = cg.replace('3학년 1학기', f'5학년 {LB}')
+    cg = cg.replace('3학년 1학기', f'6학년 {LB}')
     files = ', '.join(f"{slug}: 'index_{slug}'" for n, slug, nm, nb, e in UNITS)
     cg = re.sub(r"const files = \{ hub: 'index_hub', .*?\};", "const files = { hub: 'index_hub', " + files + " };", cg)
-    open(f'{R}/grade5/math/{STD}/Code.gs', 'w', encoding='utf-8').write(cg)
+    open(f'{R}/grade6/math/{STD}/Code.gs', 'w', encoding='utf-8').write(cg)
     if TBONLY:
-        open(f'{R}/grade5/math/{TBD}/Code.gs', 'w', encoding='utf-8').write(cg)
+        open(f'{R}/grade6/math/{TBD}/Code.gs', 'w', encoding='utf-8').write(cg)
 
     # ---------- 전체 안내 ----------
     def lesson_md(v):
@@ -325,14 +290,14 @@ def build(sem):
     pre = 's' + CODE.replace('-', '')
     st_rows = '\n'.join(f'| {n}. {nm} | {D[n]["st"]["title"] if D[n]["st"] else "(만드는 중)"} | {count(D[n]["st"]["lessons"]) if D[n]["st"] else ""} | `{n}단원_{nb}_활동지_기본형/도전형` | `u{n}-{slug}.html` | `{D[n]["st"]["key"] if D[n]["st"] else f"{pre}-{slug}-v1"}` |' for n, slug, nm, nb, e in UNITS)
     tb_rows = '\n'.join(f'| {n}. {nm} | {TB_SRC[n]} | {count(D[n]["tb"]["lessons"])} | `{n}단원_{nb}_활동지_기본형/도전형` | `u{n}-{slug}.html` | `{D[n]["tb"]["key"]}` |' for n, slug, nm, nb, e in UNITS)
-    open(f'{R}/grade5/math/{STD}/{GUIDE}', 'w', encoding='utf-8').write(f'''# 5학년 {LB} 수학 · 개념 계단 자료 (1~6단원 전체)
+    open(f'{R}/grade6/math/{STD}/{GUIDE}', 'w', encoding='utf-8').write(f'''# 6학년 {LB} 수학 · 개념 계단 자료 (1~6단원 전체)
 
 두 가지 버전이 있습니다. 내용과 구조(개념 계단 다섯 칸, 도움 3단계, 선생님 확인 화면)는 같고, **차시 순서와 문제 상황(소재)만** 다릅니다.
 
 - **이야기 버전(홍지희 선생님 버전, `{STD}/`)** — 우리 학교·학급 상황으로 새로 구성({C['st_names']}). 단원마다 이야기 하나로 이어지는 수업·복습·학급 프로젝트용.
 - **교과서 차시 버전(`{TBD}/`)** — 지도서의 차시 번호·주제·소재를 그대로 따름. 교과서 진도에 맞춘 본 수업용.
 
-두 버전 모두 공개 목록입니다(잠금 없음). 앱 원본은 `grade5/math/_build/{unitdir}`(`*.tb.js` 교과서, `*.st.js` 이야기)이고, 3학년 앱과 같은 엔진을 씁니다.
+두 버전 모두 공개 목록입니다(잠금 없음). 앱 원본은 `grade6/math/_build/{unitdir}`(`*.tb.js` 교과서, `*.st.js` 이야기)이고, 3학년 앱과 같은 엔진을 씁니다.
 
 ## 1. 전체 구성
 
@@ -429,9 +394,9 @@ def build(sem):
 
 def tbonly_copy(sem):
     C = SEMS[sem]
-    g = f"{R}/grade5/math/{C['st']}/{C['code']}수학_개념계단_전체안내.md"
+    g = f"{R}/grade6/math/{C['st']}/{C['code']}수학_개념계단_전체안내.md"
     if TBONLY and os.path.exists(g):
-        import shutil; shutil.copy(g, f"{R}/grade5/math/{C['tb']}/")
+        import shutil; shutil.copy(g, f"{R}/grade6/math/{C['tb']}/")
 
 if __name__ == '__main__':
     for sem in ([int(a) for a in sys.argv[1:]] or [1, 2]):
