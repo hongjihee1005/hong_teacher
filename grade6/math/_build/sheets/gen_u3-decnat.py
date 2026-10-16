@@ -1039,7 +1039,7 @@ def w_sent(s, lv, a):
     return sent(s, rows)
 
 
-def w_blocks(s, lv, a):
+def w_blocks(s, lv, a, cnt_ok=False):
     o = a[0]
     A, K_, qs, T_, init, goal = blocks_data(o)
     grp = o.get('grp') or '묶음'
@@ -1048,7 +1048,7 @@ def w_blocks(s, lv, a):
     if lv == '기본형':
         s.text('도움: 똑같이 나누어 줄 수 없는 모형은 바로 아래 자리 모형 10개로 바꾸어 나누어요(1 → 0.1 10개, 0.1 → 0.01 10개).')
     s.table([['', ] + ['%s의 수' % UNITS[t] for t in range(T_)],
-             [('%s 한 명에' if o.get('cnt') == '명' else '%s 하나에') % grp] + ['(      )개'] * T_], col_mm=[44] + [int(136 / T_)] * T_)
+             [('%s 한 명에' if cnt_ok and o.get('cnt') == '명' else '%s 하나에') % grp] + ['(      )개'] * T_], col_mm=[44] + [int(136 / T_)] * T_)
     desc = ', '.join('%s이 %d개' % (UNITS[t], goal[t]) for t in range(T_))
     return ['%s마다 %s → %s' % (grp, desc, qs)] + sent(s, o.get('asks') or [])
 
@@ -1508,6 +1508,8 @@ def run_call_st(s, lv, call, Ls, app):
         return w_panes(s, lv, a)
     if w == 'tape':
         return w_tape_st(s, lv, a)
+    if w == 'blocks':
+        return w_blocks(s, lv, a, cnt_ok=True)
     if w == 'make':
         return w_make_st(s, lv, app)
     return run_call(s, lv, call, Ls['id'], app)
