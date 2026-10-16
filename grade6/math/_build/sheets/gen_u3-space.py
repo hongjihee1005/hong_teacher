@@ -75,9 +75,12 @@ function findTag(e, t, out) { out = out || []; if (e && typeof e === 'object') {
 function serFig(v) {
   if (typeof v === 'function') v = v();
   if (!v || typeof v !== 'object') return v == null ? null : { text: String(v) };
-  const out = [], seen = new Set();
-  findTag(v, 'figure').forEach(f => { const s = findTag(f, 'svg')[0]; if (!s || seen.has(s)) return; seen.add(s); const c = findTag(f, 'figcaption')[0]; out.push({ svg: String(s), cap: c ? c.textContent : null }); });
-  findTag(v, 'svg').forEach(s => { if (!seen.has(s) && !(s.parent && s.parent.tag === 'svg')) { seen.add(s); out.push({ svg: String(s), cap: null }); } });
+  const out = [];
+  const walk = e => { if (!e || typeof e !== 'object' || !e.kids) return;
+    if (e.tag === 'figure') { const s = findTag(e, 'svg')[0]; if (s) { const c = findTag(e, 'figcaption')[0]; out.push({ svg: String(s), cap: c ? c.textContent : null }); return; } }
+    if (e.tag === 'svg') { out.push({ svg: String(e), cap: null }); return; }
+    e.kids.forEach(walk); };
+  walk(v);
   if (!out.length) return { text: v.textContent };
   return { figs: out };
 }
@@ -331,7 +334,7 @@ def compose(figs, gap=26):
     items = []
     for svg, cap in figs:
         x0, y0, w, h = vb(svg)
-        k = min(1.0, 230 / w)            # 사진·지도처럼 큰 그림은 줄여서
+        k = min(1.0, (320 if abs(w - h) < 1 else 230) / w)   # 사진·지도처럼 큰 그림은 줄여서(정사각형 지도는 덜 줄임)
         items.append((svg, cap, w * k, h * k, max(w * k, cap_w(cap))))
     rows, cur, cw = [], [], 0
     for it in items:

@@ -341,7 +341,7 @@ def cards_svg(items, cols=None, cw=170, ch=150, lab=True, box=True):
     n = len(items)
     cols = cols or min(n, 5)
     rows = (n + cols - 1) // cols
-    gap, lh = 12, (30 if lab else 0)
+    gap, lh = 12, (max(30, cw / 11) if lab else 0)
     W, H = cols * cw + (cols - 1) * gap, rows * (ch + lh) + (rows - 1) * gap
     b = []
     for i, (name, svg) in enumerate(items):
@@ -350,7 +350,8 @@ def cards_svg(items, cols=None, cw=170, ch=150, lab=True, box=True):
             b.append('<rect x="%s" y="%s" width="%s" height="%s" rx="12" fill="#fff" stroke="#C9D4CF" stroke-width="2"/>' % (x + 1, y + 1, cw - 2, ch + lh - 2))
         b.append(nest(svg, x + 6, y + 6, cw - 12, ch - 10))
         if lab and name:
-            b.append(_t(x + cw / 2, y + ch + lh / 2 - 2, name, 19 if len(name) < 8 else 16, INK, weight='bold'))
+            fs = max(19 if len(name) < 8 else 16, cw / 15)
+            b.append(_t(x + cw / 2, y + ch + lh / 2 - 2, name, round(fs), INK, weight='bold'))
     return _svg(W, H, ''.join(b))
 
 
@@ -374,7 +375,7 @@ def put_fig(s, fig, k=0.25, hi=160):
         cw = max(w * H / h for w, h in zip(ws, hs))
         lab = any(f['label'] for f in figs)
         svg = cards_svg([(f['label'], f['svg']) for f in figs], cols=len(figs), cw=cw, ch=H, lab=lab, box=lab)
-        pic(s, svg, fig_mm(svg, k * 0.95, hi=hi))
+        pic(s, svg, max(120, fig_mm(svg, k * 0.95, hi=hi)))
 
 
 # ================================================================ 실제 크기 그림
