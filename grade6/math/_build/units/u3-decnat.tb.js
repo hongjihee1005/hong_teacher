@@ -508,7 +508,9 @@ function dn3LongBoard(pr) {
     if (r.gap) { paint(qRow, r.first, r.last, false); return { bad: `${cap}: 몫의 숫자 사이에 빈칸이 있어요. 나눌 수 없는 자리에는 0을 써요.`, given: r.v.join("") }; }
     const p = qRow.p;
     if (p >= 0 && (p < r.first || p >= r.last)) { paint(qRow, r.first, r.last, false); return { bad: p < r.first ? `${cap}: 소수점 앞(일의 자리)에도 숫자가 있어야 해요. 나누어지는 수의 자연수 부분을 나눌 수 없으면 몫의 일의 자리에 0을 써요.` : `${cap}: 소수점은 숫자와 숫자 사이에 찍어요.`, given: r.v.join("") }; }
-    if (r.v[r.first] === "0" && r.first < r.last && p !== r.first) { paint(qRow, r.first, r.first, false); return { bad: `${cap}: 몫의 맨 앞에는 0을 쓰지 않아요(몫이 1보다 작을 때 일의 자리의 0만 써요).`, given: r.v.join("") }; }
+    if (r.v[r.first] === "0" && r.first < r.last && p !== r.first) {
+      if (qDec && p >= 0 && p !== pDot) { paint(qRow, r.first, r.last, false); return { bad: `${cap}: 몫의 소수점은 나누어지는 수의 소수점(빨간 점) 바로 위에 찍어요. 몫의 숫자도 나누어지는 수의 자리에 맞추어 써요.`, given: r.v.join("") }; }
+      paint(qRow, r.first, r.first, false); return { bad: `${cap}: 몫의 맨 앞에는 0을 쓰지 않아요(몫이 1보다 작을 때 일의 자리의 0만 써요).`, given: r.v.join("") }; }
     const s = p >= 0 ? r.v.slice(r.first, p + 1).join("") + "." + r.v.slice(p + 1, r.last + 1).join("") : r.v.slice(r.first, r.last + 1).join("");
     const got = dn3P(s);
     if (dn3Eq(got, Q)) {

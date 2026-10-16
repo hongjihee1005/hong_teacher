@@ -858,7 +858,7 @@ html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!imp
 /* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
 html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
-</style><meta name="hj-list" content="[[&quot;u1-fracnat.html&quot;, &quot;분수의 나눗셈&quot;, &quot;웹앱&quot;], [&quot;u4-ratio.html&quot;, &quot;비와 비율&quot;, &quot;웹앱&quot;], [&quot;u6-volume.html&quot;, &quot;직육면체의 부피와 겉넓이&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
+</style><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
 <div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
@@ -2026,8 +2026,8 @@ function gr5Draw(body, api, opt) {
       cur = cum[k - 1]; api.hint(`○ ${it.n}(${gr5P(it.p)}) 부분을 나누었어요. 이어서 ${g.items[k].n}(${gr5P(P[k])})를 나누어 봐요.`); draw(); return;
     }
     let why;
-    if (c <= pv + 1e-9) why = `앞 항목과 겹치거나 크기가 0이에요. 앞의 선(${gr5F(pv)} %)에서 이어서 ${gr5P(it.p)}만큼 더 가요.`;
-    else if (Math.abs(c - it.p) < 1e-9 && pv > 0) why = `0부터 다시 쟀어요. 이전 항목에 이어서 앞의 선(${gr5F(pv)} %)부터 ${gr5P(it.p)}만큼 가야 해요.`;
+    if (Math.abs(c - it.p) < 1e-9 && pv > 0) why = `0부터 다시 쟀어요. 이전 항목에 이어서 앞의 선(${gr5F(pv)} %)부터 ${gr5P(it.p)}만큼 가야 해요.`;
+    else if (c <= pv + 1e-9) why = `앞 항목과 겹치거나 크기가 0이에요. 앞의 선(${gr5F(pv)} %)에서 이어서 ${gr5P(it.p)}만큼 더 가요.`;
     else why = `새로 나눈 부분이 ${gr5P(Math.round((c - pv) * 1000) / 1000)}예요. ${it.n}${gr5Jo(it.n, "은/는")} ${gr5P(it.p)}예요.`;
     api.fail(why, `${it.n} 선 ${gr5F(c)} %`);
   };
@@ -2491,7 +2491,7 @@ const LESSONS = [
       render: (b, a) => { b.append(gr5HTbl("고민거리별 학생 수의 비율", ["고민거리", "친구 관계", "성적", "외모", "진로", "건강", "합계"], [["백분율(%)", 29, 26, 18, 16, 11, 100]]));
         gr5Pick(b, a, { figs: [GR5D.worry, GR5D.worryPie], leads: ["가", "나"],
           qs: [{ q: "가 그래프와 나 그래프에서 ‘외모’ 부분을 각각 눌러요.", at: [[0, 2], [1, 2]], ok: "두 그래프 모두 외모는 18 %예요." }],
-          ask: [{ parts: ["두 그래프는 ", { o: ["고민거리별 학생 수의 비율", "고민 상담 대상별 학생 수"], a: 0 }, "을 조사하여 나타낸 그래프예요. 가 그래프는 ", { o: ["띠", "원", "막대"], a: 0 }, " 모양, 나 그래프는 ", { o: ["띠", "원", "막대"], a: 1 }, " 모양이에요."] },
+          ask: [{ parts: ["두 그래프는 ", { o: ["고민거리별 학생 수의 비율", "고민 상담 대상별 학생 수의 비율"], a: 0 }, "을 조사하여 나타낸 그래프예요. 가 그래프는 ", { o: ["띠", "원", "막대"], a: 0 }, " 모양, 나 그래프는 ", { o: ["띠", "원", "막대"], a: 1 }, " 모양이에요."] },
             { parts: ["두 그래프에서 백분율의 합계는 모두 ", { n: 100, why: { "0": "29 + 26 + 18 + 16 + 11을 계산해 봐요." } }, " %예요."] }],
           ok: "가 그래프는 띠 모양, 나 그래프는 원 모양이고 백분율의 합계는 모두 100 %예요." }); } },
     { name: "그려 보기", inst: "두 그래프의 눈금을 살펴봐요. 나 그래프에서 ‘진로’ 부분을 누르고, 그 부분이 작은 눈금 몇 칸인지 세어 보세요.", hints: ["가 그래프는 0부터 100까지를 100칸으로 나누었어요. 10칸마다 수가 쓰여 있어요.", "나 그래프의 원 둘레도 100칸이에요. 0, 25, 50, 75가 쓰여 있어요."],
@@ -2508,7 +2508,7 @@ const LESSONS = [
           { q: "띠그래프와 원그래프의 차이점으로 알맞은 것을 골라요.", o: ["띠그래프는 띠 모양, 원그래프는 원 모양으로 나타내요", "띠그래프는 백분율의 합계가 100 %, 원그래프는 360 %예요"], a: 0, why: { "1": "두 그래프 모두 백분율의 합계는 100 %예요." } }],
           { ok: "두 그래프 모두 전체에 대한 각 부분의 비율을 나타내요. 띠그래프는 띠 모양(가로를 100등분), 원그래프는 원 모양(원의 중심을 100등분)이에요." }) }) },
     { name: "약속하기", inst: "알게 된 것을 약속으로 정리해요.", hints: ["가 그래프는 띠 모양, 나 그래프는 원 모양이었어요.", "두 그래프는 전체에 대한 각 부분의 비율을 나타내요."],
-      render: (b, a) => blanks(b, a, ["가 그래프와 같이 전체에 대한 각 부분의 ", { o: ["비율", "개수", "변화"], a: 0 }, "을 띠 모양에 나타낸 그래프를 ", { o: ["띠그래프", "원그래프", "막대그래프"], a: 0 }, "라 하고, 나 그래프와 같이 전체에 대한 각 부분의 비율을 원 모양에 나타낸 그래프를 ", { o: ["띠그래프", "원그래프", "꺾은선그래프"], a: 1 }, "라고 합니다."],
+      render: (b, a) => blanks(b, a, ["가 그래프와 같이 전체에 대한 각 부분의 ", { o: ["비율", "수량", "변화량"], a: 0 }, "을 띠 모양에 나타낸 그래프를 ", { o: ["띠그래프", "원그래프", "막대그래프"], a: 0 }, "라 하고, 나 그래프와 같이 전체에 대한 각 부분의 비율을 원 모양에 나타낸 그래프를 ", { o: ["띠그래프", "원그래프", "꺾은선그래프"], a: 1 }, "라고 합니다."],
         { ok: "전체에 대한 각 부분의 비율을 띠 모양에 나타낸 그래프는 띠그래프, 원 모양에 나타낸 그래프는 원그래프예요." }) },
     { name: "확인하기", inst: "서우네 학교 체육관에 있는 공과 주성이네 마을 알뜰 장터의 판매량을 나타낸 그래프예요. 이 두 그래프는 작은 눈금이 몇 칸인지 세어 보고 답해 보세요.", hints: ["두 그래프는 전체를 20칸으로 나누었어요. 100 ÷ 20을 생각해요.", "배구공 부분은 작은 눈금 5칸이에요."],
       render: (b, a) => gr5Ask(b, a, [
@@ -2529,7 +2529,7 @@ const LESSONS = [
   steps: [
     { name: "백분율 구하기", inst: "승아네 학교 학생들이 고민 상담을 하는 대상을 조사하여 나타낸 표예요. 띠그래프와 원그래프로 나타내려면 먼저 무엇을 구해야 할까요? 전체 학생 수에 대한 고민 상담 대상별 학생 수의 백분율을 구해 표를 완성해 보세요.", hints: ["(고민 상담 대상별 학생 수) ÷ (전체 학생 수) × 100으로 백분율을 구해요.", "부모님: 50 ÷ 200 × 100 = 25예요."],
       render: (b, a) => { b.append(gr5HTbl("고민 상담 대상별 학생 수", ["대상", "친구", "부모님", "선후배", "형제", "기타", "합계"], [["학생 수(명)", 80, 50, 40, 20, 10, 200]]), h("p", { class: "gr5small" }, "자료의 수량이 적은 항목들을 모아서 ‘기타’로 나타내요."));
-        gr5Ask(b, a, [{ parts: ["띠그래프와 원그래프로 나타내려면 먼저 전체에 대한 각 항목의 ", { o: ["백분율", "합계", "평균"], a: 0 }, "을 구해야 해요."] },
+        gr5Ask(b, a, [{ parts: ["띠그래프와 원그래프로 나타내려면 먼저 전체에 대한 각 항목의 ", { o: ["백분율", "학생 수의 합", "평균"], a: 0 }, "을 구해야 해요."] },
           { parts: ["친구 [80/200] × 100 = 40 (%)"] },
           { parts: ["부모님 [50/200] × 100 = ", { n: 25, why: { "50": "학생 수를 그대로 쓰면 안 돼요. 전체 200명에 대한 비율을 백분율로 바꿔요.", "0.25": "비율 0.25에 100을 곱해요." } }, " (%)"] },
           { parts: ["선후배 [40/200] × 100 = ", { n: 20 }, " (%), 형제 [20/200] × 100 = ", { n: 10 }, " (%), 기타 [10/200] × 100 = ", { n: 5 }, " (%)"] },
@@ -2537,11 +2537,11 @@ const LESSONS = [
           { ok: "친구 40 %, 부모님 25 %, 선후배 20 %, 형제 10 %, 기타 5 %이고 합계는 100 %예요." }); } },
     { name: "띠그래프 완성하기", inst: "1의 표를 보고 띠그래프를 완성해 보세요. ‘친구(40 %)’는 미리 나타내 두었어요. 각 항목의 백분율만큼 이어서 선을 그어 띠를 나눈 다음, 나눈 부분에 내용과 백분율을 써요.", hints: ["부모님은 25 %이니 친구가 끝난 40 %에서 25칸 더 간 65 %에 선을 그어요.", "선후배는 65 %에서 20칸 더 간 85 %, 형제는 85 %에서 10칸 더 간 95 %예요."],
       render: (b, a) => gr5Draw(b, a, { g: GR5D.counsel, given: 1,
-        ask: [{ parts: ["이 그래프에 알맞은 제목은 ", { o: ["고민 상담 대상별 학생 수의 비율", "고민거리별 학생 수의 비율", "연도별 고민 상담 학생 수의 변화"], a: 0 }, "이에요."] }],
+        ask: [{ parts: ["이 그래프에 알맞은 제목은 ", { o: ["고민 상담 대상별 학생 수의 비율", "고민거리별 학생 수의 비율", "연도별 고민 상담 학생 수의 비율"], a: 0 }, "이에요."] }],
         ok: "띠를 40 %, 65 %, 85 %, 95 % 자리에서 나누었어요. 띠 안에 쓰기 어려우면 화살표를 써서 그래프 밖에 써도 돼요." }) },
     { name: "원그래프 완성하기", inst: "1의 표를 보고 원그래프를 완성해 보세요. ‘친구(40 %)’는 미리 나타내 두었어요. 원을 나눌 때에는 원의 중심에서 눈금까지 선으로 잇고, 이전 항목에 이어서 백분율만큼 선을 그어요.", hints: ["0에서 시계 방향으로 친구 40칸이 끝났어요. 부모님은 그 자리에서 25칸 더 가요.", "선은 원의 중심에서 시작해요. 65, 85, 95 자리에 선을 그어요."],
       render: (b, a) => gr5Draw(b, a, { g: Object.assign({}, GR5D.counsel, { kind: "pie" }), given: 1,
-        ask: [{ parts: ["원을 나누는 선은 ", { o: ["원의 중심에서 눈금까지", "원 위의 아무 두 점 사이"], a: 0, why: { "1": "원의 중심을 지나지 않게 아무렇게나 나누면 부분의 크기가 백분율과 맞지 않아요." } }, " 그어요. 이 그래프의 제목은 ", { o: ["고민 상담 대상별 학생 수의 비율", "고민 상담 대상별 학생 수"], a: 0 }, "이에요."] }],
+        ask: [{ parts: ["원을 나누는 선은 ", { o: ["원의 중심에서 눈금까지", "원 위의 아무 두 점 사이"], a: 0, why: { "1": "원의 중심을 지나지 않게 아무렇게나 나누면 부분의 크기가 백분율과 맞지 않아요." } }, " 그어요. 이 그래프의 제목은 ", { o: ["고민 상담 대상별 학생 수의 비율", "고민 상담 대상별 학생 수의 합"], a: 0 }, "이에요."] }],
         ok: "원의 중심에서 눈금까지 선을 그어 40, 65, 85, 95 자리에서 원을 나누었어요." }) },
     { name: "약속하기", inst: "띠그래프와 원그래프로 나타내는 방법을 차례대로 정리해 보세요.", hints: ["백분율을 구하고, 합계가 100 %인지 확인한 다음 나누어요.", "제목은 먼저 써도 돼요. 여기서는 마지막에 써요."],
       render: (b, a) => gr5Chain(b, a, [
@@ -2577,7 +2577,7 @@ const LESSONS = [
     { name: "조사하여 표로 정리하기", inst: "승아네 모둠이 우리 반 학생 25명에게 받은 설문 쪽지를 정리해요(쪽지의 수는 지도서 예시 표와 같게 이 앱이 정했어요). 쪽지를 한 장씩 읽고 알맞은 칸을 눌러 표시한 다음 표를 완성해요.", hints: ["쪽지에 쓰인 말과 같은 칸을 눌러요.", "‘힘내’와 ‘응원할게’처럼 수량이 적은 항목은 모아서 ‘기타’로 나타낼 수 있어요."],
       render: (b, a) => gr5Survey(b, a, { names: ["같이 놀자", "정말 잘한다", "고마워", "넌 좋은 친구야", "힘내", "응원할게"], counts: [8, 6, 5, 4, 1, 1], seed: 23,
         ask: () => [{ q: "표시한 것을 세어 표에 써요.", parts: ["같이 놀자 ", { n: 8 }, "명, 정말 잘한다 ", { n: 6 }, "명, 고마워 ", { n: 5 }, "명, 넌 좋은 친구야 ", { n: 4 }, "명, 힘내 ", { n: 1 }, "명, 응원할게 ", { n: 1 }, "명"] },
-          { parts: ["수량이 적은 ‘힘내’와 ‘응원할게’를 모아 ", { o: ["기타", "합계", "평균"], a: 0 }, "로 나타내면 ", { n: 2 }, "명이에요. 모두 ", { n: 25 }, "명이에요."] }],
+          { parts: ["수량이 적은 ‘힘내’와 ‘응원할게’를 모아 ", { o: ["기타", "합계", "나머지"], a: 0 }, "로 나타내면 ", { n: 2 }, "명이에요. 모두 ", { n: 25 }, "명이에요."] }],
         ok: "같이 놀자 8명, 정말 잘한다 6명, 고마워 5명, 넌 좋은 친구야 4명, 기타 2명, 합계 25명이에요." }) },
     { name: "백분율 구해 나타내기", inst: "조사한 자료를 정리한 표의 백분율을 구하고 띠그래프로 나타내 보세요. (단, 백분율은 반올림하여 소수 첫째 자리까지 나타내요.) 계산기를 써도 좋아요.", hints: ["같이 놀자: 8 ÷ 25 × 100 = 32예요.", "띠그래프의 가장 작은 눈금 한 칸은 1 %예요. 앞 항목에 이어서 나누어요."],
       render: (b, a) => { b.append(gr5Calc(), gr5HTbl("친구에게 듣고 싶어 하는 말별 학생 수", ["듣고 싶어 하는 말", "같이 놀자", "정말 잘한다", "고마워", "넌 좋은 친구야", "기타", "합계"], [["학생 수(명)", 8, 6, 5, 4, 2, 25]]));
@@ -2585,7 +2585,7 @@ const LESSONS = [
           (bx, ax) => gr5Ask(bx, ax, [{ parts: ["같이 놀자 ", { n: 32 }, " %, 정말 잘한다 ", { n: 24 }, " %, 고마워 ", { n: 20 }, " %, 넌 좋은 친구야 ", { n: 16, why: { "4": "학생 수를 그대로 썼어요. 4 ÷ 25 × 100을 계산해요." } }, " %, 기타 ", { n: 8 }, " %, 합계 ", { n: 100 }, " %"] }],
             { ok: "백분율의 합계가 100 %예요. 이제 띠를 나누어 봐요." }),
           (bx, ax) => gr5Draw(bx, ax, { g: GR5D.words, given: 0,
-            ask: [{ parts: ["이 그래프의 제목은 ", { o: ["친구에게 듣고 싶어 하는 말별 학생 수의 비율", "친구에게 듣고 싶어 하는 말별 학생 수의 변화"], a: 0 }, "이에요."] }],
+            ask: [{ parts: ["이 그래프의 제목은 ", { o: ["친구에게 듣고 싶어 하는 말별 학생 수의 비율", "친구에게 듣고 싶어 하는 말별 학생 수의 합"], a: 0 }, "이에요."] }],
             ok: "같이 놀자(32 %) | 정말 잘한다(24 %) | 고마워(20 %) | 넌 좋은 친구야(16 %) | 기타(8 %)로 나타냈어요." })]); } },
     { name: "공학 도구로 나타내기", inst: "공학 도구를 사용하여 띠그래프와 원그래프로 나타내 보세요. (교과서의 EBSMath 이지통계처럼 움직이는 이 앱의 도구예요.) ① 표의 제목과 내용을 써요. ② 계산 도구에서 합계와 백분율을 켜요. ③ 띠그래프와 원그래프를 골라 그려 봐요. ④ 그래프의 제목을 알맞게 바꾸어요.", hints: ["표의 제목은 「친구에게 듣고 싶어 하는 말별 학생 수」예요. 항목은 같이 놀자 8, 정말 잘한다 6, 고마워 5, 넌 좋은 친구야 4, 기타 2예요.", "그래프의 제목은 ‘…별 학생 수의 비율’로 써요. ‘항목 정렬’을 누르면 크기순으로 정렬돼요."],
       render: (b, a) => gr5Maker(b, a, { head: "듣고 싶어 하는 말", target: [["같이 놀자", 8], ["정말 잘한다", 6], ["고마워", 5], ["넌 좋은 친구야", 4], ["기타", 2]],
@@ -2660,14 +2660,14 @@ const LESSONS = [
         qs: [{ q: "꺾은선그래프에서 1년 전과 비교하여 비율이 가장 많이 늘어난 해의 점을 눌러요.", at: [[0, 1]], why: { "0-3": "2022년은 31.6에서 33.6으로 2.0만큼 늘었어요. 2020년은 6.1만큼 늘었어요.", "0-2": "2021년은 1.1만큼 늘었어요." }, ok: "2020년이에요. 24.4에서 30.5로 6.1만큼 늘었어요." },
           { q: "띠그래프에서 비율이 20 % 이상 30 % 이하인 여가 활동을 모두 눌러요.", at: [[1, 1], [1, 2]], why: { "1-0": "운동은 32 %로 30 %보다 높아요." }, ok: "독서(29 %)와 퍼즐·보드게임(22 %)이에요." }],
         ask: [{ parts: ["조사한 자료를 각각 ", { o: ["꺾은선그래프와 띠그래프", "막대그래프와 원그래프"], a: 0 }, "로 나타냈어요. 2019년부터 2022년까지 스마트폰 과의존 초등학생 수의 비율은 ", { o: ["늘어났어요", "줄어들었어요"], a: 0 }, "."] },
-          { parts: ["꺾은선그래프는 ", { o: ["시간에 따른 수량의 변화", "전체에 대한 각 부분의 비율"], a: 0 }, "를 쉽게 알 수 있고, 띠그래프는 ", { o: ["시간에 따른 수량의 변화", "전체에 대한 각 부분의 비율"], a: 1 }, "을 한눈에 알아보기 쉬워요."] }],
+          { parts: ["꺾은선그래프로는 ", { o: ["시간에 따른 수량의 변화", "전체에 대한 각 부분의 비율"], a: 0 }, "에 대해 쉽게 알 수 있고, 띠그래프로는 ", { o: ["시간에 따른 수량의 변화", "전체에 대한 각 부분의 비율"], a: 1 }, "에 대해 한눈에 알아보기 쉬워요."] }],
         ok: "꺾은선그래프는 시간에 따른 변화, 띠그래프는 전체에 대한 각 부분의 비율을 알아보기 편리해요." }) },
     { name: "산불 그래프 읽기", inst: "10년간 요일별 산불 평균 발생 건수와 계절별 산불 평균 발생 건수를 조사하여 각각 나타낸 그래프예요(출처: 국가통계포털, 2024). 그래프를 보고 답해 보세요.", hints: ["막대가 가장 긴 요일을 찾아요. 막대의 길이가 같은 두 요일도 있어요.", "원그래프에서 가장 큰 부분과 가장 작은 부분을 찾아요."],
       render: (b, a) => gr5Pick(b, a, { figs: [GR5D.fireDay, GR5D.fireSeason],
         qs: [{ q: "막대그래프에서 산불 평균 발생 건수가 가장 많은 요일을 눌러요.", at: [[0, 6]], why: { "0-5": "토요일은 86건, 일요일은 87건이에요." }, ok: "일요일(87건)이에요." },
           { q: "막대그래프에서 산불 평균 발생 건수가 같은 두 요일을 눌러요.", at: [[0, 2], [0, 4]], ok: "수요일과 금요일이 66건으로 같아요." },
           { q: "원그래프에서 비율이 가장 높은 계절과 가장 낮은 계절을 눌러요.", at: [[1, 0], [1, 2]], why: { "1-1": "여름은 9.2 %, 가을은 8.6 %예요. 가을이 더 낮아요." }, ok: "봄(56.5 %)이 가장 높고 가을(8.6 %)이 가장 낮아요." }],
-        ask: [{ parts: ["막대그래프는 막대의 ", { o: ["길이", "기울기"], a: 0 }, "로 수량의 많고 적음을 한눈에 비교하기 편리하고, 원그래프는 전체에 대한 각 부분의 ", { o: ["비율", "변화"], a: 0 }, "을 한눈에 알아보기 편리해요."] }],
+        ask: [{ parts: ["막대그래프는 막대의 ", { o: ["길이", "기울기"], a: 0 }, "로 수량의 많고 적음을 한눈에 비교하기 편리하고, 원그래프는 전체에 대한 각 부분의 ", { o: ["비율", "변화량"], a: 0 }, "을 한눈에 알아보기 편리해요."] }],
         ok: "같은 산불 자료도 목적에 따라 막대그래프와 원그래프로 나타낼 수 있어요." }) },
     { name: "그래프의 특징 정리하기", inst: "여러 가지 그래프의 특징을 정리해요. 카드를 하나 골라 알맞은 그래프 칸을 눌러 넣어 보세요.", hints: ["꺾은선그래프는 시간에 따라 변하는 양을 나타내요.", "띠그래프와 원그래프는 전체에 대한 각 부분의 비율을 나타내요."],
       render: (b, a) => gr5Sort(b, a, { bins: ["그림그래프", "막대그래프", "꺾은선그래프", "띠그래프·원그래프"],
@@ -2732,7 +2732,7 @@ const LESSONS = [
           { parts: ["옳게 고치면 “사업장 폐기물 발생량의 ", { o: ["비율이", "양이"], a: 0 }, " 점점 증가했습니다.”예요."] }],
           { ok: "2021년보다 2022년에 사업장의 비율은 늘었지만 전체 폐기물 발생량이 줄어 실제 발생량은 약 8487만 t에서 약 8111만 t으로 줄었어요." }); } },
     { name: "정리하기", inst: "자료를 보고 판단할 때 생각할 점을 정리해요.", hints: ["띠그래프와 원그래프는 비율을 나타내요.", "실제 양은 (전체의 양) × (비율)이에요."],
-      render: (b, a) => blanks(b, a, ["띠그래프와 원그래프는 전체에 대한 각 부분의 ", { o: ["비율", "실제 양"], a: 0 }, "을 나타내요. 전체의 양이 다르면 비율이 같아도 실제 양은 ", { o: ["다를 수 있어요", "언제나 같아요"], a: 0 }, ". 비율이 늘어나도 전체의 양이 줄면 실제 양은 ", { o: ["줄어들 수 있어요", "반드시 늘어나요"], a: 0 }, ". 그래서 그래프와 ", { o: ["전체의 양을 나타낸 표", "그래프의 색깔"], a: 0 }, "를 함께 보고 판단해요."],
+      render: (b, a) => blanks(b, a, ["띠그래프와 원그래프는 전체에 대한 각 부분의 ", { o: ["비율", "실제 양"], a: 0 }, "을 나타내요. 전체의 양이 다르면 비율이 같아도 실제 양은 ", { o: ["다를 수 있어요", "언제나 같아요"], a: 0 }, ". 비율이 늘어나도 전체의 양이 줄면 실제 양은 ", { o: ["줄어들 수 있어요", "반드시 늘어나요"], a: 0 }, ". 그래서 그래프와 ", { o: ["전체의 양을 나타낸 표", "그래프의 크기"], a: 0 }, "를 함께 보고 판단해요."],
         { ok: "비율만 보고 실제 양을 말하면 안 돼요. 전체의 양도 함께 살펴봐요." }) }
   ],
   challenge: { inst: "도윤이의 말이 옳은지 실제 양을 구해 확인해 보세요. 생활계 폐기물의 비율은 2020년과 2021년 모두 11.5 %예요. (반올림하여 일의 자리까지, 계산기를 써도 좋아요.)", hints: ["2020년: 19546 × 0.115", "2021년: 19738 × 0.115"],
@@ -2801,7 +2801,7 @@ const LESSONS = [
   challenge: { inst: "자료와 알맞은 그래프에 대해 잘못 설명한 사람을 찾고, 내용을 옳게 고쳐 보세요.", hints: ["그림그래프는 그림의 크기와 수로 많고 적음을 나타내요.", "국토의 용도별 면적 ‘비율’을 나타내야 해요."],
     render: (b, a) => gr5Ask(b, a, [
       { q: "서희: “우리나라 국토의 용도별 면적 비율을 나타내기에 가장 알맞은 그래프는 그림그래프야.” / 하진: “연도별 65세 이상 인구의 변화를 나타내기에 가장 알맞은 그래프는 꺾은선그래프야.” / 연우: “막대그래프로 나라별 수출 금액을 비교할 수 있어.”",
-        parts: ["잘못 설명한 사람은 ", { o: ["서희", "하진", "연우"], a: 0, why: { "1": "시간에 따른 인구의 변화는 꺾은선그래프가 알맞아요.", "2": "막대그래프는 수량의 많고 적음을 비교하기 좋아요." } }, "예요. 옳게 고치면 “우리나라 국토의 용도별 면적 비율을 나타내기에 가장 알맞은 그래프는 ", { o: ["띠그래프 또는 원그래프", "막대그래프", "꺾은선그래프"], a: 0 }, "입니다.”예요."] }],
+        parts: ["잘못 설명한 사람: ", { o: ["서희", "하진", "연우"], a: 0, why: { "1": "시간에 따른 인구의 변화는 꺾은선그래프가 알맞아요.", "2": "막대그래프는 수량의 많고 적음을 비교하기 좋아요." } }, ". 옳게 고치면 “우리나라 국토의 용도별 면적 비율을 나타내기에 가장 알맞은 그래프는 ", { o: ["띠그래프 또는 원그래프", "막대그래프", "꺾은선그래프"], a: 0 }, "입니다.”예요."] }],
       { ok: "그림그래프는 그림의 크기와 수로 수량의 많고 적음을 파악하기에 알맞아서, 비율을 나타내기에는 띠그래프나 원그래프가 알맞아요." }) }
 }
 ];
@@ -2811,8 +2811,6 @@ window.addEventListener('hashchange',()=>{ const L=wantedLesson(); if(L && S.stu
  if(ok){document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on');});}})();
 </script>
 <a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
-<style id="hj-actbar">.work > div .actions{bottom:var(--hjbar,0px)}</style>
-<script id="hj-actbar-js">(function(){let w=false;const f=()=>{if(w)return;w=true;requestAnimationFrame(()=>{w=false;const a=document.querySelector(".work > .actions");document.documentElement.style.setProperty("--hjbar",(a?a.offsetHeight:0)+"px");});};["scroll","resize","click","input","pointerup","load"].forEach(e=>window.addEventListener(e,f,{passive:true}));f();})();</script>
 <!--hj-cicons--><script>/* hj-cicons · 수업 자료의 이모지 단추 아이콘을 깔끔한 선 아이콘으로 바꿈 (앱이 글자를 바꿔도 다시 적용) */
 (function(){
 var I={stop:'<rect x="6" y="6" width="12" height="12" rx="2" fill="currentColor"/>',play:'<path d="M7 4.8v14.4L19 12Z" fill="currentColor"/>',pause:'<rect x="6.5" y="5" width="3.6" height="14" rx="1" fill="currentColor"/><rect x="13.9" y="5" width="3.6" height="14" rx="1" fill="currentColor"/>',house:'<path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/>',
@@ -3364,6 +3362,8 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
  function wire(){document.querySelectorAll('.frameline input:not([data-hjsz])').forEach(function(i){i.dataset.hjsz='1';i.addEventListener('input',function(){size(i)});size(i)})}
  document.addEventListener('click',function(e){if(e.target.closest('.chips,.chip,button'))setTimeout(function(){document.querySelectorAll('.frameline input').forEach(size)},30)},true);
  wire();var t=0;new MutationObserver(function(){clearTimeout(t);t=setTimeout(wire,30)}).observe(document.body,{childList:true,subtree:true});addEventListener('resize',function(){document.querySelectorAll('.frameline input').forEach(size)})})();
-</script><!--/hj-cicons--></body>
+</script><!--/hj-cicons--><style id="hj-actbar">.work > div .actions{bottom:var(--hjbar,0px)}</style>
+<script id="hj-actbar-js">(function(){let w=false;const f=()=>{if(w)return;w=true;requestAnimationFrame(()=>{w=false;const a=document.querySelector(".work > .actions");document.documentElement.style.setProperty("--hjbar",(a?a.offsetHeight:0)+"px");});};["scroll","resize","click","input","pointerup","load"].forEach(e=>window.addEventListener(e,f,{passive:true}));f();})();</script>
+</body>
 </html>
 
