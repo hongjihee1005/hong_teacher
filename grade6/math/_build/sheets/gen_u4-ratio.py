@@ -586,7 +586,8 @@ quiz = rec('quiz'); blanks = rec('blanks');
 const api = new Proxy({}, { get: () => () => {} });
 const ORIG = {};
 const sub = run => { const save = REC; REC = []; try { run(); } catch (e) { REC.push({ w: 'error', args: [String(e && e.stack || e).slice(0, 400)] }); } const r = REC; REC = save; return r; };
-['rp4Build', 'rp4Machine', 'rp4Simp', 'rp4Terms', 'rp4Area', 'rp4Dbl', 'rp4Gear', 'rp4Tape', 'rp4Clay', 'rp4Dice', 'rp4Rect', 'rp4Scene', 'rp4Hand', 'rp4Meet', 'rp4Match'].forEach(name => {
+['rp4Build', 'rp4Machine', 'rp4Simp', 'rp4Terms', 'rp4Area', 'rp4Dbl', 'rp4Gear', 'rp4Tape', 'rp4Clay', 'rp4Dice', 'rp4Rect', 'rp4Scene', 'rp4Hand', 'rp4Meet', 'rp4Match', 'rp4sGarden'].forEach(name => {
+  if (eval('typeof ' + name) !== 'function') return;     // 이야기 버전에는 없는 부품(rp4Scene)·교과서에는 없는 부품(rp4sGarden)
   ORIG[name] = eval(name);
   const w = function (body, ap, opt) {
     opt = Object.assign({}, opt || {});
@@ -603,6 +604,13 @@ rp4Seq = function (body, ap, parts) {
   REC.push({ w: 'rp4Seq', args: [parts.map(p => ({ title: p.title || null, calls: sub(() => (p.run || p)(new El('div'), api)) }))] });
 };
 rp4Recipe = function (title, lines) { REC.push({ w: 'recipe', args: [title, lines] }); return new El('div'); };
+// 이야기 버전: 글 상자·설계도 그림, 엔진의 탐구 도우미(thenWhy 활동 뒤 '왜?', ruleFirst 활동 앞 '예상', wonderRecall '궁금해요' 다시 보기)·panes
+if (typeof rp4sNote === 'function') rp4sNote = function (title, lines) { REC.push({ w: 'note', args: [title, lines] }); return new El('div'); };
+if (typeof rp4sPlan === 'function') { const P0 = rp4sPlan; rp4sPlan = function () { REC.push({ w: 'plan', args: [String(P0())] }); return new El('div'); }; }
+var panes = rec('panes');
+var thenWhy = (f, o) => function (b, a) { const r = f(b, a); REC.push({ w: 'thenWhy', args: [o] }); return r; };
+var ruleFirst = (f, o) => function (b, a) { REC.push({ w: 'ruleFirst', args: [o] }); return f(b, a); };
+var wonderRecall = f => function (b, a) { REC.push({ w: 'wonderRecall', args: [] }); return f(b, a); };
 const lesSrc = all.slice(all.indexOf('//@@LESSONS'));
 eval(lesSrc.replace(/^(const|let) /gm, 'var '));
 const run = S => sub(() => S.render(new El('div'), api));
@@ -610,7 +618,9 @@ const handSrc = all.slice(all.indexOf('function rp4Hand('));
 const order = JSON.parse(handSrc.match(/const order = (\[[^\]]*\])/)[1]);
 const sceneSrc = all.slice(all.indexOf('function rp4Scene('), all.indexOf('function rp4Scene(') + 6000);
 const spots = [...sceneSrc.matchAll(/\{ x: \d+, t: "([^"]+)", ok: (?:true|false), say: "([^"]+)"/g)].map(m => ({ t: m[1], say: m[2] }));
-const out = { story: UNIT_STORY, cards: RP4_CARDS, handOrder: order, spots, lessons: LESSONS.map(L => ({
+const gi = all.indexOf('function rp4sGarden(');
+const gspots = gi < 0 ? [] : [...all.slice(gi, gi + 6000).matchAll(/\{ x: \d+, t: "([^"]+)", say: "([^"]+)"/g)].map(m => ({ t: m[1], say: m[2] }));
+const out = { story: UNIT_STORY, cards: RP4_CARDS, handOrder: order, spots, gspots, lessons: LESSONS.map(L => ({
   id: L.id, no: L.no, title: L.title, soop: L.soop, question: L.question, summary: L.summary,
   steps: L.steps.map(S => ({ name: S.name || null, inst: S.inst, hints: S.hints || [], calls: run(S) })),
   ch: L.challenge ? { inst: L.challenge.inst, hints: L.challenge.hints || [], calls: run(L.challenge) } : null })) };

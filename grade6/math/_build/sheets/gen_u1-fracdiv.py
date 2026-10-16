@@ -720,8 +720,8 @@ def rd(t):
     """[■/●]·[□/13] 같은 기호 분수도 다룸: [□/13] → '13분의 □', [■/●] → '■/●'"""
     def sym(m):
         w, n, d = m.group(1), m.group(2), m.group(3)
-        if w is None and _sym(n) and not _sym(d) and n == '□':
-            return '%s분의 □' % d
+        if w is None and _sym(n) and not _sym(d) and n in ('□', '~'):
+            return '%s분의 %s' % (d, n)
         if w is None and (_sym(n) or _sym(d)) and not re.search(r'\d', n + d):
             return '%s/%s' % (n, d)
         return m.group(0)
