@@ -1048,7 +1048,7 @@ def w_blocks(s, lv, a):
     if lv == '기본형':
         s.text('도움: 똑같이 나누어 줄 수 없는 모형은 바로 아래 자리 모형 10개로 바꾸어 나누어요(1 → 0.1 10개, 0.1 → 0.01 10개).')
     s.table([['', ] + ['%s의 수' % UNITS[t] for t in range(T_)],
-             ['%s 하나에' % grp] + ['(      )개'] * T_], col_mm=[44] + [int(136 / T_)] * T_)
+             [('%s 한 명에' if o.get('cnt') == '명' else '%s 하나에') % grp] + ['(      )개'] * T_], col_mm=[44] + [int(136 / T_)] * T_)
     desc = ', '.join('%s이 %d개' % (UNITS[t], goal[t]) for t in range(T_))
     return ['%s마다 %s → %s' % (grp, desc, qs)] + sent(s, o.get('asks') or [])
 
@@ -1125,7 +1125,7 @@ def w_pick2(s, lv, a):
 
 def w_clip(s, lv, a, app):
     cells = board_cells(app['board'])
-    clip_fig(s, app['board'])
+    clip_fig(s, app['board'], *app.get('go', ('발사', '(클립을 놓는 곳)')))
     s.text('‘한 번 쉬기’ 땅에 도착하면 한 번 쉬고, ‘원하는 땅 한 칸 색칠하기’ 땅에 도착하면 원하는 땅 한 칸을 색칠해요. ‘계산기’ 표시가 있는 땅은 계산기로 계산해도 돼요.')
     s.table([['차례', '도착한 땅의 나눗셈', '몫', '친구 확인(○/×)']] + [[str(i + 1), '', '', ''] for i in range(8)],
             col_mm=[18, 66, 50, 46], row_h=2300)
@@ -1324,6 +1324,217 @@ def build_tb(app, lv):
     return path
 
 
+# ================================================================ 이야기 버전(st) — '새봄 스포츠 클럽 기록실'
+ST_JS = r"""
+const fs = require('fs');
+const src = fs.readFileSync(process.argv[2], 'utf8');
+const cut = (a, b) => { const i = src.indexOf(a), j = src.indexOf(b); if (i < 0 || j < 0) throw new Error('원본에서 못 찾음: ' + a); return src.slice(i, j); };
+const core = cut('/*dn3-core*/', '/*dn3-core-end*/');
+const brd = cut('const DN3BOARD', 'const DN3CELLS');
+const deck = cut('const DN3DECK', 'function dn3CardGame(');
+const mk = cut('const DN3MK', 'function dn3Make(');
+const les = src.slice(src.indexOf('//@@LESSONS'));
+let REC = [];
+const rec = w => function (b, a, ...args) { REC.push({ w, args }); };
+const stubs = `
+var dn3Sent=rec('sent'), dn3Blocks=rec('blocks'), dn3Long=rec('long'), dn3Tape=rec('tape'), dn3Point=rec('point'), dn3Pick2=rec('pick2'),
+ dn3Clip=rec('clip'), dn3CardGame=rec('cardgame'), dn3Make=rec('make'),
+ quiz=rec('quiz'), blanks=rec('blanks'), sequence=rec('sequence'), writeStep=rec('writeStep'), panes=rec('panes');
+var dn3Style = () => {};
+var dn3LongStep = opt => (b, a) => dn3Long(b, a, opt);
+var thenWhy = (f, o) => function (b, a) { f(b, a); REC.push({ w: 'thenWhy', args: [o] }); };
+var ruleFirst = (f, o) => function (b, a) { REC.push({ w: 'ruleFirst', args: [o] }); f(b, a); };
+var wonderRecall = f => function (b, a) { REC.push({ w: 'wonder', args: [] }); f(b, a); };
+var dn3Talk = lines => ({ talk: lines }), dn3RelFig = (rows, k) => ({ rel: rows, k }),
+ dn3Record = (title, head, rows) => ({ rec2: { title, head, rows } }), dn3sNote = (title, lines) => ({ note: { title, lines } }),
+ dn3WithCalc = fig => () => ({ calc: 1, inner: fig ? fig() : null });
+`;
+const B = () => ({ append: (...xs) => xs.forEach(x => REC.push({ w: 'append', args: [x] })) });
+const R = eval(core + '\n' + brd + '\n' + deck + '\n' + mk + '\n' + stubs + '\n' + les +
+  '\n;({LESSONS, UNIT_STORY, DN3BOARD, DECK: DN3DECK.map(c => ({ e: c.e, a: c.a })), DN3MK, ' +
+  'MKT: DN3MK.filter(a => a.dec).map(a => DN3MK.filter(b => !b.dec).map(b => dn3MakeText(a, b)))})');
+const ser = v => JSON.parse(JSON.stringify(v, (k, x) => typeof x === 'bigint' ? String(x) : (typeof x === 'function' ? (x.length === 0 ? x() : undefined) : x)));
+const out = R.LESSONS.map(L => {
+  const steps = L.steps.map(S => { REC = []; S.render(B(), {}); return { name: S.name || null, inst: S.inst, hints: S.hints || [], calls: ser(REC) }; });
+  REC = []; L.challenge.render(B(), {});
+  return { id: L.id, no: L.no, title: L.title, soop: L.soop, question: L.question, steps,
+    ch: { inst: L.challenge.inst, hints: L.challenge.hints || [], calls: ser(REC) } };
+});
+process.stdout.write(JSON.stringify({ lessons: out, story: R.UNIT_STORY, board: R.DN3BOARD, deck: R.DECK, mk: R.DN3MK, mkt: R.MKT }));
+"""
+
+
+def load_st(src):
+    js = os.path.join(WORK, 'ex_st.js')
+    with open(js, 'w') as f:
+        f.write(ST_JS)
+    r = subprocess.run(['node', js, src], capture_output=True, text=True)
+    if r.returncode:
+        raise RuntimeError('이야기 버전 앱 원본을 읽지 못했어요\n' + r.stderr)
+    return json.loads(r.stdout)
+
+
+# 종이 활동지에 맞게 바꾸는 이야기 버전 안내 글(앱의 '누르기·끌기·단추' 말)
+PAPER_ST = [
+    ('세 칸에 써서 붙여요', '세 칸에 써 보세요'),
+    ('배우는 차례대로 눌러 학습 계획을 세워 보세요.', '배우는 차례대로 기호를 써서 학습 계획을 세워 보세요.'),
+    ('테이프를 눌러 자르는 선을 놓아 똑같이 5도막으로 잘라 보세요.', '테이프 그림에 자르는 선을 그어 똑같이 5도막으로 나누어 보세요.'),
+    ('몫의 숫자 사이 동그라미를 눌러 소수점을 찍어 보세요.', '몫의 숫자 사이 동그라미 하나를 색칠해 소수점을 찍어 보세요.'),
+    ('콩주머니에서 원하는 땅 쪽으로 끌었다가 놓으면 던져져요.',
+     '지우개 조각을 ‘던지는 곳’에 놓고 원하는 땅 쪽으로 손가락으로 튕겨요(운동장에서는 콩주머니를 던져요). 도착한 땅의 나눗셈과 몫을 기록표에 쓰면 친구가 계산기로 확인해요.'),
+    ('로봇 친구와 번갈아 나눗셈 카드를 뒤집어요. 로봇 친구가 뒤집은 카드는 내가 계산하고, 내가 뒤집은 카드는 로봇 친구의 답을 계산기로 확인해요.',
+     '짝과 번갈아 나눗셈 카드를 뒤집어요(아래 카드를 오려서 엎어 놓아요). 짝이 뒤집은 카드는 내가 계산하고, 내가 뒤집은 카드는 짝이 계산한 답을 계산기로 확인해요.'),
+]
+
+
+def paper_st(t):
+    for a, b in PAPER_ST:
+        t = t.replace(a, b)
+    return paper(t)
+
+
+EMO = re.compile('[\U00010000-\U0010FFFF☀-➿️‍]')
+
+
+def noemo(t):
+    return re.sub(r'\s{2,}', ' ', EMO.sub('', str(t))).strip()
+
+
+def note_box(s, nt):
+    """이야기 쪽지: 제목 한 줄 + '이름: 내용' 표"""
+    s.text('【%s】' % noemo(nt['title']))
+    pairs = []
+    for ln in nt['lines']:
+        t = noemo(K(ln))
+        k, sep, v = t.partition(':')
+        pairs.append((k.strip(), v.strip()) if sep and len(k) <= 14 else ('·', t))
+    s.labeled(pairs, label_mm=30, row_h=3402)
+
+
+def frame_st(help1):
+    m = re.search(r'‘(.*)’', help1 or '')
+    return K(m.group(1) if m else help1).replace('~', '__________')
+
+
+def write_st(s, lv, q, o, n=2):
+    """글쓰기 칸: 기본형은 앱 도움의 문장 틀, 도전형은 쓰는 줄. 정답은 앱 모범 답(ans)."""
+    s.ask(q, blank=False)
+    hp = o.get('help') or []
+    if lv == '기본형' and len(hp) > 1:
+        s.fill(frame_st(hp[1]))
+    else:
+        s.lines(n)
+    return '예) ' + flat(K(o.get('ans') or re.sub(r'^예\)\s*', '', o.get('ph') or '')))
+
+
+def w_panes(s, lv, a):
+    items = a[0]
+    if lv == '기본형':
+        s.labeled([(p['t'], K(p['ph']).replace('~', '______________')) for p in items], label_mm=30)
+        s.text('예시) ' + K(items[0]['ex'][0]))
+    else:
+        for p in items:
+            s.ask('%s: %s' % (p['t'], K(p['ph']).replace('~', '…')), blank=False)
+            s.lines(1)
+    return ['(자유) 예) ' + ' / '.join('%s: %s' % (p['t'], K(p['ex'][0])) for p in items)]
+
+
+def w_tape_st(s, lv, a):
+    """결승선 테이프 자르기(dn3Tape) — 그림은 교과서 버전과 같은 m·cm 두 눈금"""
+    o = a[0]
+    Lcm, part, n = tape_fig(s, o, lv == '기본형')
+    s.text('아래 cm 자를 보고 테이프를 똑같이 %d도막으로 자르는 선을 그어 보세요.%s'
+           % (n, ' 첫 번째 선은 그어 두었어요.' if lv == '기본형' else ''))
+    out = ['%d cm씩 %d도막(자르는 선 %s cm)' % (part, n, ', '.join(str(part * k) for k in range(1, n)))]
+    return out + sent(s, o.get('asks') or [])
+
+
+def w_make_st(s, lv, app):
+    """기록실의 수로 (소수)÷(자연수) 문제 만들기(이야기 앱 DN3MK)"""
+    A = [x for x in app['mk'] if x['dec']]
+    Bs = [x for x in app['mk'] if not x['dec']]
+    s.choices([('나누어지는 수(소수)', '( ' + ' / '.join(x['lab'] for x in A) + ' )'),
+               ('나누는 수(자연수)', '( ' + ' / '.join(x['lab'] for x in Bs) + ' )')])
+    s.ask('고른 수로 (소수)÷(자연수) 문제를 만들어 써 보세요.', blank=False)
+    if lv == '기본형':
+        s.fill('(                    )을(를) (                )이(가) 똑같이 나누면 하나에 몇 (     )일까요?')
+    else:
+        s.lines(2)
+    s.ask('식과 답을 써 보세요.', blank=False)
+    s.fill('식: (          ) ÷ (        ) = (            )      답: (            )')
+    out = []
+    for i, x in enumerate(A):
+        for j, y in enumerate(Bs):
+            q = dec(Q(x['v']) / Q(y['v']))
+            assert q is not None, (x, y)
+            out.append('%s÷%s=%s %s' % (x['v'], y['v'], q, x['u']))
+    return ['예) ' + K(app['mkt'][0][0]) + ' → 만들 수 있는 식: ' + ', '.join(out)]
+
+
+def run_call_st(s, lv, call, Ls, app):
+    w, a = call['w'], call['args']
+    if w == 'append':
+        fig(s, a[0])
+        return []
+    if w == 'thenWhy':
+        return [write_st(s, lv, '왜 그럴까요? ' + K(a[0]['q']), a[0])]
+    if w == 'ruleFirst':
+        o = a[0]
+        r = write_st(s, lv, '먼저 예상해요 · ' + K(o['q']), o, n=1)
+        return ['(예상은 자유) 실제 규칙: ' + r[3:]]
+    if w == 'wonder':
+        s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 보고 써 보세요.')
+        return []
+    if w == 'writeStep':
+        return [write_st(s, lv, K(it['q']), it) for it in a[0]]
+    if w == 'panes':
+        return w_panes(s, lv, a)
+    if w == 'tape':
+        return w_tape_st(s, lv, a)
+    if w == 'make':
+        return w_make_st(s, lv, app)
+    return run_call(s, lv, call, Ls['id'], app)
+
+
+def lesson_st(s, lv, Ls, app):
+    head(s, Ls)
+    if Ls['id'] == 's1':
+        s.scene(None, K(app['story']['lines'][0]))
+    parts = []
+    for i, st in enumerate(Ls['steps']):
+        step(s, i, K(st['name'] or STEP_NAMES[i]))
+        s.text(paper_st(st['inst']))
+        if lv == '기본형':
+            t = tip(st['hints'])
+            if t:
+                s.text(t)
+        a = []
+        for call in st['calls']:
+            a += run_call_st(s, lv, call, Ls, app)
+        parts.append('%s %s' % (NUM[i], J(a)))
+    if lv == '도전형':
+        n = len(Ls['steps'])
+        s.step('%s 도전 계단' % NUM[n], '★ 도전 문제')
+        s.text(paper_st(Ls['ch']['inst']))
+        a = []
+        for call in Ls['ch']['calls']:
+            a += run_call_st(s, lv, call, Ls, app)
+        parts.append('%s ★ %s' % (NUM[n], J(a)))
+    return '%s차시  ' % Ls['no'] + '  '.join(parts)
+
+
+def build_st(app, lv):
+    s = Sheet(unit_label=LABEL_ST, level=lv, grade_label='6학년')
+    lines = [lesson_st(s, lv, Ls, app) for Ls in app['lessons']]
+    s.answers('【교사용】 3. 소수의 나눗셈(이야기 버전) 활동지 정답 (%s)' % lv, lines,
+              note='※ 이 활동지는 앱 u3-decnat.html과 차시 번호가 같습니다. 정답의 ‘69/10’은 분수 10분의 69를 뜻해요. '
+                   '소수의 끝자리 0은 생략할 수 있어요. 글쓰기 칸의 ‘예)’는 예시 답이에요.')
+    os.makedirs(OUT_ST, exist_ok=True)
+    path = os.path.join(OUT_ST, NAME % lv)
+    s.save(path)
+    return path
+
+
 def main():
     out = []
     try:
@@ -1332,7 +1543,13 @@ def main():
         assert nos == [str(i) for i in range(1, 12)], nos
         for lv in ('기본형', '도전형'):
             out.append(build_tb(app, lv))
-        # 이야기 버전(ST)은 아직 없어서 건너뜀
+        st = load_st(SRC_ST)
+        st['go'] = ('던지는 곳', '(콩주머니를 놓는 곳)')
+        ids = [L['id'] for L in st['lessons']]
+        assert ids == ST, ids
+        assert [str(L['no']) for L in st['lessons']] == [str(i) for i in range(1, 12)]
+        for lv in ('기본형', '도전형'):
+            out.append(build_st(st, lv))
     finally:
         SHOT.close()
         if os.environ.get('KEEP_FIGS'):

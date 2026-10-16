@@ -788,7 +788,7 @@ def cap(src):
     if src not in _CAP:
         js = os.path.join(WORK, 'cap.js')
         with open(js, 'w', encoding='utf-8') as f:
-            f.write(CAP_JS)
+            f.write(_cap_st_js() if src == SRC_ST else CAP_JS)
         r = subprocess.run(['node', js, src, FONT.replace("'", '')], capture_output=True, text=True)
         if r.returncode:
             raise RuntimeError('앱 원본을 읽지 못했어요: ' + r.stderr[-800:])
@@ -1551,7 +1551,37 @@ def note_line(s):
 
 DATA = {}
 
-# 이야기 버전 차시 함수(아직 없음 — 생기면 st1, st2, … 를 넣으세요)
+# ================================================================ 이야기 버전(u1-fracnat.st.js '6학년 3반 나눔 빵 공방', 10차시)
+# 교과서 버전과 같은 부품(fn6Share·fn6Div·fn6Calc·fn6Chain …)을 쓰고, 이야기 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall·
+# writeStep)과 공방 그림(fn6sBakery)·준비 쪽지(fn6sNote)·상자 그림(fn6sBoxes)·상자 바닥(fn6sRect)을 더 기록합니다.
+_ST_REPL = [
+    ("function fn6Style() {} function fn6Style2() {} function fn6Style3() {} function fn6Style4() {}",
+     "function fn6Style() {} function fn6Style2() {} function fn6Style3() {} function fn6Style4() {} function fn6sStyle() {}"),
+    ("eval(fnSrc('fn6Scene').replace('function fn6Scene', 'var fn6SceneReal = function'));",
+     "eval(fnSrc('fn6sBakery').replace('function fn6sBakery', 'var fn6SceneReal = function'));"),
+    ("{ const m = all.match(/^const FN6_CARDS = (\\[[^\\n]*\\]);/m); var FN6_CARDS = m ? eval(m[1]) : []; }",
+     "{ const m = all.match(/^const FN6S_CARDS = (\\[[^\\n]*\\]);/m); var FN6S_CARDS = m ? eval(m[1]) : []; var FN6_CARDS = FN6S_CARDS; }"),
+    ("function fn6Scene() {} function fn6Para() {} function fn6Tri() {}",
+     "var fn6sBakery = () => { REC.push({ w: 'bakery', args: [] }); return null; };\n"
+     "var fn6sNote = (title, lines) => { REC.push({ w: 'note', args: [title, lines] }); return null; };\n"
+     "var fn6sBoxes = (n, per, label, kind) => { REC.push({ w: 'boxes', args: [n, per, label, kind || 'box'] }); return null; };\n"
+     "var fn6sRect = () => { REC.push({ w: 'rect', args: [] }); return null; };\n"
+     "const figFirst = w => function (b, a, items, opt) { if (opt && typeof opt.fig === 'function') { opt.fig(); opt = Object.assign({}, opt); delete opt.fig; } REC.push({ w, args: [items, opt] }); };\n"
+     "fn6Calc = figFirst('fn6Calc'); fn6Chain = figFirst('fn6Chain');\n"
+     "var thenWhy = (fn, o) => (b, a) => { fn(b, a); REC.push({ w: 'thenWhy', args: [o] }); };\n"
+     "var ruleFirst = (fn, o) => (b, a) => { REC.push({ w: 'ruleFirst', args: [o] }); fn(b, a); };\n"
+     "var wonderRecall = (fn, o) => (b, a) => { REC.push({ w: 'wonder', args: [] }); fn(b, a); };"),
+]
+
+
+def _cap_st_js():
+    js = CAP_JS
+    for a, b in _ST_REPL:
+        assert js.count(a) == 1, ('CAP_JS가 바뀌었어요', a[:40])
+        js = js.replace(a, b)
+    return js
+
+
 ST = []
 
 
