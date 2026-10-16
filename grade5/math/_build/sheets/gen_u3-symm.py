@@ -8,9 +8,9 @@
 앱 원본 ../units/sem2/u3-symm.tb.js('미술관 합동과 대칭', 12차시: 1·2·3·4·5~6·7·8~9·10·11·12)의
 차시 번호·제목·S.O.O.P.·탐구 질문·이야기·수를 그대로 따릅니다.
 
-이야기 버전(u3-symm.st.js)은 아직 만드는 중이라, 원본 파일이 없거나 LESSONS가 다 들어 있지 않으면 건너뜁니다.
-나중에 st1 … st12 함수를 쓰고 ST 목록에 넣으면 sem2-soop/sheets/에 같은 이름으로 만들어집니다
-(교과서 버전과 같은 그림 도구 fig_*·wsComplete를 그대로 쓸 수 있어요. 이야기 버전 그림은 extract()에 st.js를 넘겨 뽑아요).
+이야기 버전은 앱 원본 ../units/sem2/u3-symm.st.js('우리 반 대칭 무늬 공방', 12차시: 1~12)의 LESSONS를 node에서 그대로 실행해
+활동마다 넘긴 설정(물음·보기·정답·도형 좌표·완성할 점)을 모아(ST_JS의 CAP) 그 물음과 수를 그대로 씁니다 → sem2-soop/sheets/.
+원본 파일이 없거나 LESSONS가 없으면 건너뜁니다.
 
 그림
   - 모든 도형은 앱 원본의 그리기 코드(sy3Fig·sy3RowFig·sy3Museum …)를 node로 그대로 실행해 SVG로 옮겨 씁니다.
@@ -25,6 +25,7 @@
 import json
 import math
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -1366,11 +1367,1061 @@ def tb12(s, lv):
 
 TB = [tb1, tb2, tb3, tb4, tb56, tb7, tb89, tb10, tb11, tb12]
 
-# ================================================================ 이야기 버전(st) — 원본을 만드는 중
-# 이야기 버전 원본(u3-symm.st.js)이 다 되면 st1 … 함수를 tb 함수처럼 써서 ST에 넣으세요.
-#   - 그림: load(SRC_ST)로 뽑고 pic(s, 키, mm, src=SRC_ST). 이야기 버전 상수 이름이 다르면 FIGS·DATA처럼 따로 사전을 만들어 extract(SRC_ST, …)로 뽑아요.
-#   - 함수는 (s, lv)를 받아 정답 한 줄을 돌려줘요.
-ST = []
+# ================================================================ 이야기 버전(st) — '우리 반 대칭 무늬 공방'
+# 앱 원본 ../units/sem2/u3-symm.st.js의 LESSONS를 node에서 그대로 읽어(활동 함수 대신 기록하는 함수를 넣어 render를 실행)
+# 활동마다 넘긴 설정(도형 좌표·물음·보기·정답 번호·완성할 점)을 모읍니다(CAP). 그래서 활동지의 차시·제목·물음·수가 앱과 같고,
+# 원본의 수가 바뀌면 assert가 멈춰 알려 줘요. 그림도 같은 설정으로 그립니다.
+ST_JS = r"""
+var CAP = (function () {
+  var REC = [];
+  var rec = w => function (b, a, ...args) { REC.push({ w, args }); };
+  var thenWhy = (f, o) => function (b, a) { REC.push({ w: "thenWhy", args: [o] }); return f(b, a); };
+  var ruleFirst = (f, o) => function (b, a) { REC.push({ w: "ruleFirst", args: [o] }); return f(b, a); };
+  var wonderRecall = f => function (b, a) { REC.push({ w: "wonderRecall", args: [] }); return f(b, a); };
+  var sy3Chain = function (b, a, parts) { parts.forEach(p => { if (typeof p === "function") p(b, a); else { REC.push({ w: "title", args: [p.title] }); p.run(b, a); } }); };
+  var panes = rec("panes"), quiz = rec("quiz"), blanks = rec("blanks"), sequence = rec("sequence"), writeStep = rec("writeStep");
+  var sy3Museum = rec("sy3Museum"), sy3Decal = rec("sy3Decal"), sy3Pick = rec("sy3Pick"), sy3Cut = rec("sy3Cut"), sy3Trace = rec("sy3Trace"), sy3Corr = rec("sy3Corr");
+  var sy3Measure = rec("sy3Measure"), sy3Ask = rec("sy3Ask"), sy3Fold = rec("sy3Fold"), sy3Complete = rec("sy3Complete"), sy3Mirror = rec("sy3Mirror"), sy3Spin = rec("sy3Spin");
+  var sy3Join = rec("sy3Join"), sy3Sort = rec("sy3Sort"), sy3Uno = rec("sy3Uno"), sy3Memory = rec("sy3Memory");
+  var LESSONS;
+  const all = fs.readFileSync(process.argv[2], "utf8"), ls = all.slice(all.indexOf("//@@LESSONS"));
+  eval(ls.slice(ls.indexOf("const LESSONS")).replace("const LESSONS", "LESSONS"));
+  const out = {};
+  LESSONS.forEach(L => {
+    const steps = L.steps.map(S => { REC = []; S.render(new El("div"), api); return REC; });
+    REC = []; L.challenge.render(new El("div"), api);
+    out[L.id] = { no: L.no, title: L.title, soop: L.soop, question: L.question, names: L.steps.map(S => S.name), insts: L.steps.map(S => S.inst),
+      hints: L.steps.map(S => S.hints), steps, ch: REC, chInst: L.challenge.inst, chHints: L.challenge.hints };
+  });
+  return out;
+})();
+function CO(id, st, w, n) { const L = st === "c" ? CAP[id].ch : CAP[id].steps[st]; const r = L.filter(x => x.w === w)[n || 0]; if (!r) throw new Error("앱 원본에 없음: " + id + " " + st + " " + w); return r.args; }
+function noLab(o) { return Object.assign({}, o, { segs: [], angs: [], shapes: (o.shapes || []).map(S => S.hideLabel ? Object.assign({}, S, { label: null }) : S) }); }
+function capJSON() { return JSON.parse(JSON.stringify(CAP, (k, v) => typeof v === "function" ? undefined : (v instanceof El ? (v.tag === "br" ? "⏎" : "") : v))); }
+function CK(shapes) { return Object.fromEntries(shapes.map(S => [S.label, sy3CKey(S.parts || [sy3P(S.P)])])); }
+function KD(list) { return Object.fromEntries(list.map(c => [c.label, sy3Kind(c.parts || [sy3P(c.P)])])); }
+function NAX(items) { return Object.fromEntries(items.map(it => { const L = sy3SymLines(it.parts); return [it.label, L === Infinity ? -1 : L.length]; })); }
+/* 1차시 물감 무늬(활동지에서 정한 물감 자리 — 접는 선 왼쪽 5칸 안) */
+var ST_DECAL = [[1, 1, "#E5533D"], [2, 1, "#E5533D"], [3, 2, "#F2B33D"], [1, 3, "#3D8FE5"], [4, 3, "#3D8FE5"], [0, 4, "#5DAA4E"], [2, 5, "#9A5BD6"], [3, 5, "#9A5BD6"]];
+/* 11차시 기억 놀이 카드를 섞어 놓는 차례(활동지에서 정함) */
+var ST_ORDER = [4, 9, 0, 6, 11, 2, 8, 5, 1, 10, 3, 7];
+var ST_MEM = ST_ORDER.map((j, i) => ({ label: String(i + 1), parts: [Object.assign({}, SY3_MEM[j].parts[0], { fill: "#EAF1F8" })], kind: SY3_MEM[j].kind }));
+var ST_CPL = { c6a: ["s6", 0, 0], c6b: ["s6", 1, 0], c6d: ["s6", 3, 0], c6x: ["s6", "c", 0], c9a: ["s9", 0, 0], c9b: ["s9", 1, 0], c9d: ["s9", 3, 0], c9x: ["s9", "c", 0], c12a: ["s12", 3, 0], c12b: ["s12", 3, 1] };
+function CPL(k) { const [id, st, n] = ST_CPL[k]; return CO(id, st, "sy3Complete", n)[0]; }
+function polyKind(o) { const all = Object.assign({}, o.pts, wsWant(o)); return sy3Kind([sy3P(o.poly.map(n => all[n]))]); }
+"""
+
+ST_FIGS = {
+    # 1차시
+    'booth': 'sy3sBooth()',
+    'spots': '(() => { const b = new El("div"); sy3Museum(b, api, CO("s1", 1, "sy3Museum")[0]); return b; })()',
+    'decal': 'wsDecal(ST_DECAL, 10, 6)',
+    'flag_flip': 'CO("s1", 3, "quiz")[0][0].fig()',
+    'flag_rot': 'CO("s1", 3, "quiz")[0][1].fig()',
+    'perp': 'CO("s1", 4, "quiz")[0][0].fig()',
+    'pent': 'CO("s1", 4, "quiz")[0][1].fig()',
+    'tiles1': 'wsFig(CO("s1", "c", "sy3Pick")[0], 30)',
+    # 2차시
+    'badges': 'wsFig(CO("s2", 1, "sy3Trace")[0], 30)',
+    'ten2': 'wsFig(CO("s2", 4, "sy3Pick")[0], 28)',
+    'hole2': 'wsFig(CO("s2", "c", "sy3Pick", 0)[0], 30)',
+    'cut2': 'wsFig(CO("s2", "c", "sy3Pick", 1)[0], 40)',
+    # 3차시
+    'stamp': 'wsFig(noLab(CO("s3", 0, "sy3Trace")[0]), 34)',
+    'tq': 'wsFig(noLab(CO("s3", 2, "sy3Measure")[0]))',
+    'q6': 'CO("s3", 3, "sy3Ask")[0][0].fig()',
+    'puzzle': 'wsFig(sy3sFigPuzzle(true), 34)',
+    'ft': 'wsFig(noLab(CO("s3", "c", "sy3Corr")[0]), 34)',
+    'q34': 'CO("s3", "c", "sy3Ask")[0][0].fig()',
+    't55': 'CO("s3", "c", "sy3Ask")[0][2].fig()',
+    # 4차시
+    'win4': 'wsItems(CO("s4", 0, "sy3Fold")[0].items, { k: 18, lines: true })',
+    'flags4': 'wsItems(CO("s4", 1, "sy3Fold")[0].items, { k: 26, grid: true })',
+    'hl4': 'wsFig(sy3sFigHL(), 40)',
+    'pick4': 'wsFig(CO("s4", 4, "sy3Pick")[0], 25)',
+    'ax4': 'wsItems(CO("s4", "c", "sy3Fold")[0].items, { k: 30, grid: true })',
+    # 5차시
+    'hl5': 'wsFig(sy3sFigHL())',
+    'grid5': 'wsFig(noLab(CO("s5", 1, "sy3Measure")[0]), 32)',
+    'kites': 'CO("s5", 3, "sy3Ask")[0][0].fig()',
+    'half5': 'CO("s5", 4, "sy3Ask")[0][0].fig()',
+    # 6차시
+    'c6a1': 'wsComplete(CPL("c6a"), true)', 'c6a0': 'wsComplete(CPL("c6a"), false)',
+    'c6b1': 'wsComplete(CPL("c6b"), true)', 'c6b0': 'wsComplete(CPL("c6b"), false)',
+    'mir6': '(() => { const o = CO("s6", 2, "sy3Mirror")[0]; return wsMirror(o.cols, o.rows, o.axis, o.guide, 34); })()',
+    'c6d1': 'wsComplete(CPL("c6d"), true)', 'c6d0': 'wsComplete(CPL("c6d"), false)',
+    'c6x0': 'wsComplete(CPL("c6x"), false)',
+    # 7차시
+    'n7': 'wsItems(CO("s7", 0, "sy3Spin")[0].items, { k: 30, center: true })',
+    'spin7': 'wsItems(CO("s7", 1, "sy3Spin")[0].items, { k: 28, center: true })',
+    'find7': 'wsItems(CO("s7", 3, "sy3Spin")[0].items, { k: 26 })',
+    'hp7': 'wsFig(sy3sFigHP({ dots: [SY3S_CEN(SY3S_HPC)] }), 46)',
+    'gly7': 'wsFig(CO("s7", "c", "sy3Pick")[0], 15)',
+    # 8차시
+    'hp8': 'wsFig(sy3sFigHP({ dots: [SY3S_CEN(SY3S_HPC)] }))',
+    'hp8n': 'wsFig(sy3sFigHP())',
+    'p8': 'CO("s8", 3, "sy3Ask")[0][0].fig()',
+    'oct8': 'CO("s8", 4, "sy3Ask")[0][0].fig()',
+    'pento8': 'wsCards(CO("s8", "c", "sy3Sort")[0].cards, 6)',
+    # 9차시
+    'c9a1': 'wsComplete(CPL("c9a"), true)', 'c9a0': 'wsComplete(CPL("c9a"), false)',
+    'c9b1': 'wsComplete(CPL("c9b"), true)', 'c9b0': 'wsComplete(CPL("c9b"), false)',
+    'c9d1': 'wsComplete(CPL("c9d"), true)', 'c9d0': 'wsComplete(CPL("c9d"), false)',
+    'c9x0': 'wsComplete(CPL("c9x"), false)',
+    # 10차시
+    'mir10': '(() => { const o = CO("s10", 0, "sy3Mirror")[0]; return wsMirror(o.cols, o.rows, o.axisGuide, o.guide, 34); })()',
+    'pics10': 'wsPics(24)',
+    'blank10': '(() => { const o = CO("s10", 2, "sy3Mirror")[0]; return wsMirror(o.cols, o.rows, [[o.cols / 2, 0], [o.cols / 2, o.rows]], [], 30); })()',
+    'cards10': 'wsCards(CO("s10", 3, "sy3Sort")[0].cards, 4)',
+    'poly10': 'CO("s10", "c", "quiz")[0][1].fig()',
+    # 11차시
+    'play11': 'CO("s11", 0, "quiz")[0][0].fig()',
+    'cards11': 'wsCards(CO("s11", 1, "sy3Sort")[0].cards, 4)',
+    'mem11': 'wsCards(ST_MEM, 6)',
+    # 12차시
+    'badge12': 'wsFig(CO("s12", 0, "sy3Pick")[0], 28)',
+    'quad12': 'CO("s12", 1, "sy3Ask")[0][0].fig()',
+    'ax12': 'CO("s12", 2, "sy3Ask")[0][0].fig()',
+    'c12a1': 'wsComplete(CPL("c12a"), true)', 'c12a0': 'wsComplete(CPL("c12a"), false)',
+    'c12b1': 'wsComplete(CPL("c12b"), true)', 'c12b0': 'wsComplete(CPL("c12b"), false)',
+    'hex12': 'CO("s12", 4, "sy3Ask")[0][0].fig()',
+    'signs12': 'wsCards(CO("s12", 5, "sy3Sort")[0].cards, 5)',
+}
+
+ST_DATA = {
+    'cap': 'capJSON()',
+    'want': '(() => { const W = {}, P = {}; Object.keys(ST_CPL).forEach(k => { W[k] = wsWant(CPL(k)); P[k] = CPL(k).pts; }); W.pts = P; return W; })()',
+    'pt': '({ HL: SY3S_HL, HP: SY3S_HP, HPC: SY3S_HPC, ST: SY3S_ST, STM: SY3S_STM, TQ1: SY3S_TQ1, TQ2: SY3S_TQ2, PZ: SY3S_PZ, HOLE: SY3S_HOLE, PZA: SY3S_PZA,'
+          ' FTA: SY3S_FT.a, FTB: SY3S_FT.b, Q6: sy3sFigQ6().shapes.map(S => S.P), Q6S: .42, KITE: sy3sFigKites(), P8L: SY3S_P8L, P8R: SY3S_P8R, OCT: SY3S_OCT,'
+          ' HEX36: SY3S_HEX36, Q34: SY3S_Q34, T55: SY3S_T55 })',
+    'ckey': '({ s1c: CK(CO("s1", "c", "sy3Pick")[0].shapes), s2b: CK(Object.entries(SY3S_BADGE).map(([label, P]) => ({ label, P }))),'
+            ' s2t: CK(CO("s2", 4, "sy3Pick")[0].shapes), s2h: CK(CO("s2", "c", "sy3Pick", 0)[0].shapes),'
+            ' hole: sy3CKey([sy3P(sy3Put([[0, 0], [2, 0], [2, 2], [3, 2], [3, 3], [0, 3]], 0, 1, 1.4))]),'
+            ' s2c: CK(CO("s2", "c", "sy3Pick", 1)[0].shapes), s12: CK(CO("s12", 0, "sy3Pick")[0].shapes) })',
+    'kind': '({ s4fold: CO("s4", 0, "sy3Fold")[0].items.map(w => sy3Key(sy3XPs(w.parts, sy3Refl(w.line[0], w.line[1]))) === sy3Key(w.parts)),'
+            ' s4find: NAX(CO("s4", 1, "sy3Fold")[0].items), s4pick: KD(CO("s4", 4, "sy3Pick")[0].shapes), s4ax: NAX(CO("s4", "c", "sy3Fold")[0].items),'
+            ' s7n: CO("s7", 0, "sy3Spin")[0].items.map(it => sy3Key(sy3XPs(it.parts, sy3Rot(it.center, 180))) === sy3Key(it.parts)),'
+            ' s7spin: Object.fromEntries(CO("s7", 1, "sy3Spin")[0].items.map(it => [it.label, [90, 180].map(d => sy3Key(sy3XPs(it.parts, sy3Rot(it.center, d))) === sy3Key(it.parts))])),'
+            ' s7find: KD(CO("s7", 3, "sy3Spin")[0].items), s7gly: KD(CO("s7", "c", "sy3Pick")[0].shapes),'
+            ' s8: KD(CO("s8", "c", "sy3Sort")[0].cards), s10: KD(CO("s10", 3, "sy3Sort")[0].cards), s11: KD(CO("s11", 1, "sy3Sort")[0].cards),'
+            ' s12: KD(CO("s12", 5, "sy3Sort")[0].cards), pics: SY3_PICS.map(p => [p.label, p.axes.length]),'
+            ' mem: ST_MEM.map(c => [c.label, c.kind, sy3Kind(c.parts)]), c9x: polyKind(CPL("c9x")),'
+            ' play: { see: sy3Kind([SY3_SHAPES.P[0]]), 가: sy3Kind([SY3_SHAPES.L[0]]), 나: sy3Kind([SY3_SHAPES.B[0]]), 다: sy3Kind([SY3_SHAPES.N[1]]), 라: sy3Kind([SY3_SHAPES.P[1]]) } })',
+}
+
+
+def SD():
+    return load(SRC_ST)[1]
+
+
+def CAPL(id_):
+    return SD()['cap'][id_]
+
+
+def calls(id_, st):
+    L = CAPL(id_)
+    return L['ch'] if st == 'c' else L['steps'][st]
+
+
+def arg(id_, st, w, n=0):
+    r = [c for c in calls(id_, st) if c['w'] == w]
+    assert len(r) > n, ('앱 원본에 없음', id_, st, w, n)
+    return r[n]['args']
+
+
+def spic(s, key, mm=None):
+    pic(s, key, mm, src=SRC_ST)
+
+
+def slesson(s, id_):
+    L = CAPL(id_)
+    s.lesson(L['no'], L['soop'], L['title'], L['question'])
+
+
+def sstep(s, id_, i, sub=None):
+    """앱 계단 이름 '그려 보기 — 부스 둘러보기' → '② 그려 보기 | 부스 둘러보기'"""
+    lab, _, sb = CAPL(id_)['names'][i].partition(' — ')
+    step(s, i, lab, sub or sb)
+
+
+def nf(v):
+    t = '%.2f' % round(v, 2)
+    return t.rstrip('0').rstrip('.') if '.' in t else t
+
+
+LONG = 12
+CIR = '㉠㉡㉢㉣㉤㉥'
+
+
+def ptxt(parts, lv, ans, keep=False):
+    """앱 물음 조각 → 활동지 문장. {n}은 빈칸, {o}는 기본형 보기 고르기·도전형 빈칸(보기가 길거나 여러 개 고르기면 보기를 남김)."""
+    out = []
+    for p in parts:
+        if isinstance(p, str):
+            out.append('\n' if p == '⏎' else p)
+        elif not p:
+            continue
+        elif 'n' in p:
+            out.append('(      )')
+            ans.append(nf(p['n']))
+        elif 'o' in p:
+            o, a = p['o'], p['a']
+            many = isinstance(a, list)
+            ans.append(', '.join(o[i] for i in a) if many else o[a])
+            if lv == '기본형' or keep or many or max(map(len, o)) > LONG:
+                out.append(opt(*o) + (' ← 모두 고르기' if many else ''))
+            else:
+                out.append('(' + ' ' * 14 + ')')
+    return ''.join(out)
+
+
+def optq(s, q, o, a):
+    """보기 고르기 물음 하나. 여러 개 고르기·긴 보기는 ㉠㉡…로 늘어놓아요."""
+    many = isinstance(a, list)
+    if many or max(map(len, o)) > 24:
+        s.ask(q, blank=False)
+        for i, t in enumerate(o):
+            s.text('%s %s' % (CIR[i], t))
+        s.ask('알맞은 것%s' % ('을 모두 골라 기호를 써 보세요' if many else '의 기호'), answer_space=12)
+        return ', '.join(CIR[i] for i in (a if many else [a]))
+    s.choices([(q, (optn if max(map(len, o)) > LONG else opt)(*o))])
+    return o[a]
+
+
+def ask_parts(s, lv, parts, ans, q=None, keep=False):
+    """sy3Ask 한 물음(또는 blanks)의 조각"""
+    only = [p for p in parts if isinstance(p, dict) and p]
+    if len(parts) == 1 and only and 'o' in only[0]:          # 보기만 있는 물음
+        ans.append(optq(s, q or '알맞은 것을 골라 보세요.', only[0]['o'], only[0]['a']))
+        return
+    if q:
+        s.ask(q, blank=False)
+    t = ptxt(parts, lv, ans, keep)
+    s.fill([x.strip() for x in t.split('\n') if x.strip()])
+
+
+def asks(s, lv, items, figs=None, keep=False):
+    """sy3Ask 물음 목록(그림 키는 figs[i])"""
+    ans = []
+    for i, it in enumerate(items):
+        if figs and i < len(figs) and figs[i]:
+            k, mm = figs[i]
+            spic(s, k, mm)
+        ask_parts(s, lv, it['parts'], ans, it.get('q'), keep)
+    return ans
+
+
+def quizq(s, items, figs=None):
+    ans = []
+    for i, it in enumerate(items):
+        if figs and i < len(figs) and figs[i]:
+            k, mm = figs[i]
+            spic(s, k, mm)
+        ans.append(optq(s, it['q'], it['o'], it['a']))
+    return ans
+
+
+def frame(h):
+    m = re.search(r'‘(.+?)’', h or '')
+    return m.group(1).replace('~', '__________') if m else None
+
+
+def thenwhy(s, lv, o, n=2):
+    """'왜 그럴까요?'·글쓰기 칸: 기본형은 앱 도움의 문장 틀, 도전형은 쓰는 줄"""
+    s.ask(o['q'], blank=False)
+    fr = frame(o['help'][1]) if lv == '기본형' and o.get('help') else None
+    if fr:
+        s.fill(fr)
+    else:
+        s.lines(n)
+    return '(예) ' + o['ans']
+
+
+def rulefirst(s, o):
+    s.ask('먼저 예상해요 ― ' + o['q'], blank=False)
+    s.lines(1)
+    return '(예상은 자유) 실제: ' + o['ans']
+
+
+def ph(t):
+    return t.replace('~', '______________________ ')
+
+
+def first(id_, st, w):
+    return arg(id_, st, w)[0]
+
+
+def tw(id_, st):
+    return arg(id_, st, 'thenWhy')[0]
+
+
+def rf(id_, st):
+    return arg(id_, st, 'ruleFirst')[0]
+
+
+def hint(s, lv, id_, st, i=0):
+    if lv == '기본형':
+        h = (CAPL(id_)['chHints'] if st == 'c' else CAPL(id_)['hints'][st])[i]
+        s.text('도움: ' + h)
+
+
+def corr_items(s, lv, items):
+    """sy3sItems 목록({k, q, a}) → 대응점·대응변·대응각 표. 기본형은 첫 칸이 보기."""
+    rows, ans, seen = [], [], {}
+    for it in items:
+        seen.setdefault(it['k'], []).append(it)
+    for k, its in seen.items():
+        cells = ['대응' + k]
+        for i, it in enumerate(its):
+            ans.append('%s %s→%s' % (k, it['q'], it['a']))
+            if lv == '기본형' and i == 0 and k == '점':
+                cells.append('%s → ( %s )' % (it['q'], it['a']))
+            else:
+                cells.append('%s → (%s)' % (it['q'], ' ' * (3 + 2 * len(it['q']))))
+        rows.append(cells)
+    n = max(len(r) for r in rows)
+    rows = [r + [''] * (n - len(r)) for r in rows]
+    s.table(rows, header=False, header_col=True, col_mm=[24] + [156 / (n - 1)] * (n - 1), row_h=3402)
+    return ans
+
+
+def check_items(P, Q, A, items):
+    """앱의 대응 관계가 실제 도형의 합동 이동과 같은지"""
+    mp = {}
+    for n, p in P.items():           # 앱 좌표는 소수 셋째 자리까지라 조금 넉넉히 견줘요
+        q = ap(A, p)
+        hit = [m for m, r in Q.items() if dist(q, r) < 1e-2]
+        assert len(hit) == 1, (n, q)
+        mp[n] = hit[0]
+    for it in items:
+        assert ''.join(mp[c] for c in it['q']) == it['a'], (it, mp)
+    return mp
+
+
+def sort_table(s, kinds, lv):
+    grp = {k: [c for c, v in kinds.items() if v == k] for k in 'LPBN'}
+    if lv == '기본형':
+        s.text('도움: 먼저 한 직선을 따라 접으면 겹치는지, 다음으로 180° 돌리면 겹치는지 생각해요.')
+    s.table([[KIND[k] for k in 'LPBN'], ['', '', '', '']], header=True, col_mm=[45] * 4, row_h=4536)
+    return ' / '.join('%s: %s' % (KIND[k], ', '.join(grp[k]) or '없음') for k in 'LPBN')
+
+
+def answer(no, parts, chal=None, lv='기본형'):
+    t = '%s차시  ' % no + '   '.join('%s %s' % (NUM[i], p) for i, p in enumerate(parts))
+    if lv == '도전형' and chal:
+        t += '   %s %s' % (NUM[len(parts)], chal)
+    return t
+
+
+def J(a, sep=', '):
+    return sep.join(a)
+
+
+def st1(s, lv):
+    I = 's1'
+    slesson(s, I)
+    s.scene(None, '한빛초등학교 5학년 3반이 가을 축제에서 ‘대칭 무늬 공방’ 부스를 열기로 했어요. 공방장 하린이와 도윤, 지아, 민재, 서윤이가 '
+                  '배지와 타일을 오리고, 종이를 접어 무늬를 만들고, 바람개비와 카드 놀이를 준비해요.')
+    A = []
+    sstep(s, I, 0)
+    spic(s, 'booth', 140)
+    s.text('공방장 하린이가 부스를 꾸밀 물건을 늘어놓았어요. 그림을 보고 떠오르는 것을 세 칸에 써 보세요.')
+    write_pane(s, lv, [(p['t'], ph(p['ph'])) for p in first(I, 0, 'panes')])
+    A.append('(자유) 예) ' + first(I, 0, 'panes')[0]['ex'][0])
+    sstep(s, I, 1)
+    mu = first(I, 1, 'sy3Museum')
+    spic(s, 'spots', 160)
+    s.text('지아와 민재가 부스 다섯 곳을 둘러보고 있어요. 하나씩 살펴보고 어떤 특징이 있는지 알아보세요.')
+    sp = {x['id']: x['name'] for x in mu['spots']}
+    a1 = qa(s, [('모양과 크기가 똑같은 도형이 되풀이되는 곳', '%s, %s' % (sp['tile'], sp['badge'])),
+                ('가운데 선을 따라 접으면 완전히 겹치는 곳', sp['fold']),
+                ('가운데 점을 중심으로 180° 돌리면 처음과 겹치는 곳', '%s, %s' % (sp['letter'], sp['wheel']))], col=(110, 70))
+    a1b = asks(s, lv, mu['ask'])
+    A.append(J(a1, ' / ') + ' / ' + J(a1b))
+    sstep(s, I, 2)
+    de = first(I, 2, 'sy3Decal')
+    s.text('서윤이가 부스 손님과 함께 할 물감 놀이를 준비했어요. 접는 선 왼쪽에 물감을 찍었어요. 반으로 접었다 펴면 오른쪽에 생기는 무늬를 같은 색으로 칠해 보세요.')
+    spic(s, 'decal', 105)
+    a2 = asks(s, lv, de['ask'])
+    a2w = thenwhy(s, lv, tw(I, 2))
+    A.append('오른쪽에 접는 선에서 같은 거리만큼 떨어진 칸을 같은 색으로(좌우가 바뀐 모양), %s / %s' % (J(a2), a2w))
+    sstep(s, I, 3)
+    s.text('도윤이가 깃발 모양 스티커를 이리저리 움직여 붙이려고 해요. 4학년 ‘평면도형의 이동’을 떠올려 알맞은 모양을 골라 보세요.')
+    hint(s, lv, I, 3)
+    A.append(J(quizq(s, first(I, 3, 'quiz'), [('flag_flip', 100), ('flag_rot', 100)])))
+    sstep(s, I, 4)
+    s.text('부스 안내판을 만들려면 4학년 때 배운 수직과 대각선도 알아야 해요.')
+    qz = first(I, 4, 'quiz')
+    A.append(J(quizq(s, qz, [('perp', 90), ('pent', 40)])))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 5, '도전하기', '부스 바닥 타일')
+        pk = first(I, 'c', 'sy3Pick')
+        spic(s, 'tiles1', 140)
+        K = SD()['ckey']['s1c']
+        odd = [k for k, v in K.items() if list(K.values()).count(v) == 1]
+        assert odd == pk['answer'], (odd, pk['answer'])
+        s.ask('부스 바닥에 깔 타일이에요. 다른 타일들과 모양과 크기가 다른 타일 하나를 찾아 기호를 써 보세요.')
+        why(s, '그 타일이 다른 까닭과, 나머지 타일들이 모양과 크기가 같다고 할 수 있는 까닭을 써 보세요.', 2)
+        ch_ = '%s (%s)' % (J(odd), pk['ok'])
+    return answer(1, A, ch_, lv)
+
+
+def st2(s, lv):
+    I = 's2'
+    slesson(s, I)
+    s.scene(None, '부스에서 나누어 줄 배지를 만들어요. 똑같은 배지가 여러 개 있어야 해요.')
+    A = []
+    sstep(s, I, 0)
+    s.text('하린이처럼 노란 색종이 아래에 다른 색종이를 겹쳐 놓고, 노란 색종이에 배지 모양을 그려 한 번에 오려 보세요. 오려 낸 두 배지를 포개어 보세요.')
+    A.append(J(asks(s, lv, first(I, 0, 'sy3Cut')['ask'])))
+    sstep(s, I, 1)
+    r1 = rulefirst(s, rf(I, 1))
+    tr = first(I, 1, 'sy3Trace')
+    spic(s, 'badges', 165)
+    s.text('도윤이가 배지 가를 투명 종이에 본떠 그렸어요. 투명 종이를 배지 나, 다, 라, 마에 하나씩 포개어 보고, 배지 가와 완전히 겹치는 배지를 찾아보세요. '
+           '방향이 다르면 투명 종이를 돌리거나 뒤집어 봐요.')
+    K = SD()['ckey']['s2b']
+    fit = [k for k in tr['visit'] if K[k] == K['가']]
+    assert fit == tr['fit'], (fit, tr['fit'])
+    A.append(r1 + ' / ' + J(asks(s, lv, tr['ask'])))
+    sstep(s, I, 2)
+    s.text('민재가 “배지 라는 뒤집어야 겹치니까 배지 가와 다른 배지야.”라고 말했어요. 포개어 본 것을 떠올리며 물음에 답해 보세요.')
+    a2 = quizq(s, first(I, 2, 'quiz'))
+    A.append(J(a2) + ' / ' + thenwhy(s, lv, tw(I, 2)))
+    sstep(s, I, 3)
+    A.append(J(asks(s, lv, [{'parts': first(I, 3, 'blanks')}])))
+    sstep(s, I, 4)
+    pk = first(I, 4, 'sy3Pick')
+    spic(s, 'ten2', 175)
+    s.text('지아가 모눈종이에 타일 가~차를 그렸어요. 서로 합동인 타일을 모두 찾아 짝 지어 보세요.')
+    hint(s, lv, I, 4)
+    g = {}
+    for k, v in SD()['ckey']['s2t'].items():
+        g.setdefault(v, []).append(k)
+    pairs = sorted(tuple(sorted(x, key='가나다라마바사아자차'.index)) for x in g.values() if len(x) == 2)
+    assert pairs == [('가', '사'), ('나', '바'), ('다', '아')] and all(len(x) <= 2 for x in g.values()), pairs
+    s.fill(('( 가 ) 와 (      ),   ' if lv == '기본형' else '(      ) 와 (      ),   ') + '(      ) 와 (      ),   (      ) 와 (      )')
+    a4 = []
+    for it in pk['ask']:
+        ask_parts(s, lv, it['parts'], a4, it.get('q'))
+    A.append(J(['%s와 %s' % p for p in pairs]) + ' / ' + J(a4))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 5, '도전하기', '부스 바닥과 간판 조각')
+        p0 = arg(I, 'c', 'sy3Pick', 0)[0]
+        s.text('⑴ 부스 바닥에 빈자리(빨간 점선)가 생겼어요. 빈자리에 꼭 맞게 붙일 수 있는 타일의 기호를 쓰고, 어떻게 붙이면 되는지 써 보세요.')
+        spic(s, 'hole2', 140)
+        KH = SD()['ckey']
+        fit = [k for k, v in KH['s2h'].items() if v == KH['hole']]
+        assert fit == p0['answer'], (fit, p0['answer'])
+        s.ask('붙일 수 있는 타일')
+        s.lines(1)
+        p1 = arg(I, 'c', 'sy3Pick', 1)[0]
+        s.text('⑵ 간판 판자를 점선을 따라 모두 잘랐어요. 잘라 낸 조각 중 서로 합동인 조각을 짝 지어 보세요.')
+        spic(s, 'cut2', 75)
+        g2 = {}
+        for k, v in KH['s2c'].items():
+            g2.setdefault(v, []).append(k)
+        p2 = sorted(tuple(sorted(x, key='가나다라마바사아자차'.index)) for x in g2.values())
+        assert p2 == [('가', '다'), ('나', '라')], p2
+        s.fill('(      ) 와 (      ),   (      ) 와 (      )')
+        why(s, '두 조각이 합동이라고 할 수 있는 까닭을 써 보세요.', 1)
+        ch_ = '⑴ %s(%s) ⑵ %s (%s)' % (J(fit), p0['ok'], J(['%s와 %s' % p for p in p2]), p1['ok'].split('. ', 1)[1])
+    return answer(2, A, ch_, lv)
+
+
+def st3(s, lv):
+    I = 's3'
+    slesson(s, I)
+    s.scene(None, '서윤이가 고무판에 삼각형을 새겨 배지 도장을 만들었어요. 도장으로 찍으면 모양이 뒤집혀요!')
+    P = SD()['pt']
+    A = []
+    sstep(s, I, 0)
+    s.text('고무판에 새긴 삼각형 ㄱㄴㄷ을 종이에 찍었더니 삼각형 ㄹㅁㅂ이 나왔어요. 삼각형 ㄱㄴㄷ을 투명 종이에 본떠 그린 다음, 뒤집어서 삼각형 ㄹㅁㅂ에 완전히 겹치도록 포개어 보세요. '
+           '포개었을 때 겹치는 꼭짓점, 변, 각을 써 보세요.')
+    spic(s, 'stamp', 125)
+    co = first(I, 0, 'sy3Corr')
+    check_items(named(P['ST'], 'ㄱㄴㄷ'), named(P['STM'], 'ㄹㅁㅂ'), co['demo']['A'], co['items'])
+    A.append(J(corr_items(s, lv, co['items'])))
+    sstep(s, I, 1)
+    A.append(J(asks(s, lv, [{'parts': first(I, 1, 'blanks')}])))
+    sstep(s, I, 2)
+    me = first(I, 2, 'sy3Measure')
+    s.text('하린이가 모눈종이에 서로 합동인 사각형 ㄱㄴㄷㄹ과 사각형 ㅁㅂㅅㅇ 모양 이름표를 그렸어요(점 ㄱ과 점 ㅁ, 점 ㄴ과 점 ㅂ, 점 ㄷ과 점 ㅅ, 점 ㄹ과 점 ㅇ이 대응점). '
+           '그림은 실제 크기예요(모눈 한 칸은 1 cm). 자와 각도기로 대응변의 길이와 대응각의 크기를 재어 비교해 보세요.')
+    spic(s, 'tq')
+    Aq, Bq = named(P['TQ1'], 'ㄱㄴㄷㄹ'), named(P['TQ2'], 'ㅁㅂㅅㅇ')
+    mpq = dict(zip('ㄱㄴㄷㄹ', 'ㅁㅂㅅㅇ'))
+    for w in ['ㄱㄴ', 'ㄴㄷ', 'ㄷㄹ', 'ㄹㄱ']:
+        near(dist(Bq[mpq[w[0]]], Bq[mpq[w[1]]]), dist(Aq[w[0]], Aq[w[1]]))
+    L3 = [dist(Aq['ㄱ'], Aq['ㄴ']), dist(Aq['ㄴ'], Aq['ㄷ']), dist(Aq['ㄹ'], Aq['ㄱ'])]
+    G3 = [ang(Aq['ㄷ'], Aq['ㄴ'], Aq['ㄹ']), ang(Aq['ㄹ'], Aq['ㄷ'], Aq['ㄱ']), ang(Aq['ㄱ'], Aq['ㄹ'], Aq['ㄴ']), ang(Aq['ㄴ'], Aq['ㄱ'], Aq['ㄷ'])]
+    for nm in 'ㄱㄴㄷㄹ':
+        i = 'ㄱㄴㄷㄹ'.index(nm)
+        a_, v_, b_ = 'ㄱㄴㄷㄹ'[i - 1], nm, 'ㄱㄴㄷㄹ'[(i + 1) % 4]
+        near(ang(Bq[mpq[v_]], Bq[mpq[a_]], Bq[mpq[b_]]), ang(Aq[v_], Aq[a_], Aq[b_]), 1e-6)
+    a2 = asks(s, lv, me['ask'])
+    assert [float(x) for x in a2[:3]] == [round(v, 6) for v in L3], (a2, L3)
+    assert [float(x) for x in a2[4:7]] == [round(G3[0]), round(G3[1]), 90] and round(G3[2]) == round(G3[3]) == 90, (a2, G3)
+    A.append(J(a2))
+    sstep(s, I, 3)
+    s.text('도윤이가 사각형 ㄱㄴㄷㄹ 모양 도장으로 이름표 ㅁㅂㅅㅇ을 찍었어요. 두 사각형은 서로 합동이에요(점 ㄱ과 점 ㅁ, 점 ㄴ과 점 ㅂ, 점 ㄷ과 점 ㅅ, 점 ㄹ과 점 ㅇ이 대응점). '
+           '□ 안에 알맞은 변의 길이와 각의 크기를 구해 보세요.')
+    L, R = P['Q6']
+    near(dist(L[0], L[1]) / P['Q6S'], 6, 1e-3)
+    near(ang(L[1], L[0], L[2]), 115, .05)
+    near(dist(R[0], R[1]) / P['Q6S'], 6, 1e-3)
+    near(ang(R[1], R[0], R[2]), 115, .05)
+    a3 = asks(s, lv, first(I, 3, 'sy3Ask'), [('q6', 125)])
+    assert a3 == ['6', '115'], a3
+    A.append(J(a3) + ' / ' + thenwhy(s, lv, tw(I, 3)))
+    sstep(s, I, 4)
+    s.text('부스 간판 퍼즐에 삼각형 조각 하나가 빠졌어요. 오른쪽의 삼각형 ㄱㄴㄷ을 돌리거나 뒤집어 빈자리(점선)에 꼭 맞게 넣으려고 해요.')
+    spic(s, 'puzzle', 135)
+    assert P['PZA'][:4] == [0, 1, -1, 0], P['PZA']          # 화면에서 시계 방향 90°
+    s.choices([('삼각형 ㄱㄴㄷ을 빈자리에 꼭 맞게 넣으려면', optn('시계 방향으로 90° 돌려요', '시계 반대 방향으로 90° 돌려요', '위쪽으로 뒤집어요'))])
+    s.text('삼각형 ㄱㄴㄷ과 합동인 삼각형 ㅂㄹㅁ에서 대응점, 대응변, 대응각을 찾아 써 보세요.')
+    co = arg(I, 4, 'sy3Corr')[0]
+    check_items(named(P['PZ'], 'ㄱㄴㄷ'), named(P['HOLE'], 'ㅂㄹㅁ'), P['PZA'], co['items'])
+    A.append('시계 방향으로 90° 돌려요, ' + J(corr_items(s, lv, co['items'])))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 5, '도전하기', '배지 도장 문제')
+        s.text('⑴ 두 삼각형은 서로 합동이에요(도장으로 찍어서 한 삼각형은 뒤집힌 모양이에요).')
+        spic(s, 'ft', 105)
+        co = arg(I, 'c', 'sy3Corr')[0]
+        mp = check_items(named(P['FTA'], 'ㄱㄴㄷ'), named(P['FTB'], 'ㄹㅂㅁ'), co['demo']['A'], co['items'])
+        what = {'점': '대응점', '변': '대응변', '각': '대응각'}
+        f = qa(s, [('%s %s의 %s' % (it['k'], it['q'], what[it['k']]), '%s %s' % (it['k'], it['a'])) for it in co['items']])
+        s.text('⑵ 물음에 답해 보세요.')
+        items = arg(I, 'c', 'sy3Ask')[0]
+        Q = P['Q34']
+        sd = [dist(Q[i], Q[(i + 1) % 4]) for i in range(4)]
+        assert [round(v, 6) for v in sd] == [11, 6, 9, 8], sd
+        T = P['T55']
+        near(ang(T[0], T[1], T[2]), 50, .05)
+        near(ang(T[1], T[0], T[2]), 55, .05)
+        near(ang(T[2], T[0], T[1]), 75, .05)
+        b = []
+        for i, it in enumerate(items):
+            if i == 0:
+                spic(s, 'q34', 140)
+            if i == 2:
+                spic(s, 't55', 105)
+            ask_parts(s, lv, it['parts'], b, it['q'])
+        assert b == [nf(34 - 6 - 9 - 8), '5', '5', '5', nf(180 - 50 - 75)], b
+        why(s, '각 ㄹㅁㅂ의 크기를 구한 방법을 써 보세요.', 1)
+        ch_ = '⑴ %s ⑵ 변 ㄱㄴ %s cm(34−6−9−8), 대응점·대응변·대응각 각각 5쌍, 각 ㄹㅁㅂ %s°(180°−50°−75°)' % (J(f), b[0], b[4])
+    return answer(3, A, ch_, lv)
+
+
+def st4(s, lv):
+    I = 's4'
+    slesson(s, I)
+    s.scene(None, '지아와 민재가 부스 창문 장식과 깃발을 만들어요. 종이를 반으로 접어 오리면 어떤 무늬가 될까요?')
+    P, KD_ = SD()['pt'], SD()['kind']
+    A = []
+    sstep(s, I, 0)
+    fo = first(I, 0, 'sy3Fold')
+    assert all(KD_['s4fold'])
+    spic(s, 'win4', 172)
+    s.text('지아가 만든 창문 장식 다섯 장이에요. 장식마다 그어 둔 빨간 선을 따라 접으면 어떻게 될지 생각해 보세요. (종이에 옮겨 그려 접어 봐도 좋아요.)')
+    A.append(J(asks(s, lv, fo['ask'])))
+    sstep(s, I, 1)
+    r1 = rulefirst(s, rf(I, 1))
+    fo = arg(I, 1, 'sy3Fold')[0]
+    spic(s, 'flags4', 172)
+    s.text('민재가 오린 부스 깃발 모양 가~마예요. 반으로 접었을 때 완전히 겹치는 깃발을 찾아, 접을 수 있는 직선을 모두 그어 보세요. 세로·가로뿐 아니라 비스듬한 방향도 생각해 봐요.')
+    n6 = KD_['s4find']
+    need = {k: (-1 if v == 'inf' else v) for k, v in fo['need'].items()}
+    assert {k: v for k, v in n6.items() if v} == need, (n6, need)
+    A.append(r1 + ' / ' + J(asks(s, lv, fo['ask'])))
+    sstep(s, I, 2)
+    A.append(J(asks(s, lv, [{'parts': first(I, 2, 'blanks')}])))
+    sstep(s, I, 3)
+    s.text('하린이가 만든 육각형 배지는 직선 ㅅㅇ을 대칭축으로 하는 선대칭도형이에요. 대칭축을 따라 접었을 때 겹치는 대응점, 대응변, 대응각을 써 보세요.')
+    spic(s, 'hl4', 62)
+    H = named(P['HL'], 'ㄱㄴㄷㄹㅁㅂ')
+    co = first(I, 3, 'sy3Corr')
+    check_items(H, H, refl_x(co['demo']['p'][0]), co['items'])
+    hint(s, lv, I, 3, 1)
+    A.append(J(corr_items(s, lv, co['items'])))
+    sstep(s, I, 4)
+    pk = first(I, 4, 'sy3Pick')
+    spic(s, 'pick4', 175)
+    a4 = kinds_of(KD_['s4pick'], 'L')
+    assert a4 == pk['answer'], (a4, pk['answer'])
+    s.ask('부스 안내판 가~바 중에서 선대칭도형을 모두 찾아 기호를 써 보세요.', answer_space=16)
+    hint(s, lv, I, 4, 1)
+    A.append(J(a4))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 5, '도전하기', '대칭축의 수 비교하기')
+        fo = first(I, 'c', 'sy3Fold')
+        s.text('장식 가~라의 대칭축을 모두 찾아 긋고, 대칭축의 수가 적은 것부터 차례대로 기호를 써 보세요.')
+        spic(s, 'ax4', 150)
+        n4 = KD_['s4ax']
+        assert n4 == fo['need'], (n4, fo['need'])
+        order = sorted(n4, key=lambda k: n4[k])
+        oa = []
+        ptxt(fo['ask'][0]['parts'], lv, oa)
+        assert oa == order, (oa, order)
+        s.table([['장식', '가', '나', '다', '라'], ['대칭축의 수'] + ['(    )개'] * 4], header=True, header_col=True, col_mm=[40, 35, 35, 35, 35], row_h=3402)
+        s.ask('대칭축의 수가 적은 것부터:   (     ) → (     ) → (     ) → (     )', blank=False)
+        why(s, '정사각형 장식 나의 대칭축은 어디에 있는지 써 보세요.', 1)
+        ch_ = '가 %d개, 나 %d개, 다 %d개, 라 %d개 → %s (정사각형: 마주 보는 변의 가운데끼리, 마주 보는 꼭짓점끼리 이은 직선)' % (
+            n4['가'], n4['나'], n4['다'], n4['라'], ' → '.join(order))
+    return answer(4, A, ch_, lv)
+
+
+def hl_st(P):
+    """선대칭 육각형 SY3S_HL: 변 3·4·2 cm, 각 110°·130°"""
+    H = named(P['HL'], 'ㄱㄴㄷㄹㅁㅂ')
+    for w, v in [('ㄱㄴ', 3), ('ㄱㅂ', 3), ('ㄴㄷ', 4), ('ㅂㅁ', 4), ('ㄷㄹ', 2), ('ㅁㄹ', 2)]:
+        near(dist(H[w[0]], H[w[1]]), v, 1e-3)
+    for (a_, v_, b_), g in [('ㄱㄴㄷ', 110), ('ㄱㅂㅁ', 110), ('ㄴㄷㄹ', 130), ('ㅂㅁㄹ', 130)]:
+        near(ang(H[v_], H[a_], H[b_]), g, .05)
+    return H
+
+
+def st5(s, lv):
+    I = 's5'
+    slesson(s, I)
+    s.scene(None, '접어서 만든 배지와 무늬에는 어떤 비밀이 있을까요? 하린이와 도윤이가 자와 각도기로 재어 보기로 했어요.')
+    P = SD()['pt']
+    A = []
+    sstep(s, I, 0)
+    s.text('하린이의 육각형 배지예요. 직선 ㅅㅇ을 대칭축으로 하는 선대칭도형이에요. 그림은 실제 크기예요. 자와 각도기로 대응변의 길이와 대응각의 크기를 재어 보세요.')
+    spic(s, 'hl5')
+    hl_st(P)
+    a0 = asks(s, lv, first(I, 0, 'sy3Measure')['ask'])
+    assert a0 == ['3', '3', '4', '4', '2', '2', '110', '110', '130', '130'], a0
+    A.append(J(a0[:6], '·') + ' cm, ' + J(a0[6:], '·') + '°')
+    sstep(s, I, 1)
+    r1 = rulefirst(s, rf(I, 1))
+    me = arg(I, 1, 'sy3Measure')[0]
+    s.text('도윤이가 모눈종이에 그린 선대칭도형이에요. 직선 ㅅㅇ이 대칭축이고, 선분 ㄴㅂ과 대칭축이 만나는 점을 점 ㅈ, 선분 ㄷㅁ과 대칭축이 만나는 점을 점 ㅊ이라고 해요. '
+           '선분의 길이(모눈 칸 수)와 대칭축과 이루는 각을 재어 보세요.')
+    spic(s, 'grid5', 95)
+    N = named(me['shapes'][0]['P'], me['shapes'][0]['names'])
+    J_, C_ = me['pts']['ㅈ'], me['pts']['ㅊ']
+    assert dist(N['ㄴ'], J_) == dist(N['ㅂ'], J_) == 3 and dist(N['ㄷ'], C_) == dist(N['ㅁ'], C_) == 5
+    assert N['ㄴ'][1] == N['ㅂ'][1] == J_[1] and N['ㄷ'][1] == N['ㅁ'][1] == C_[1] and J_[0] == C_[0] == me['lines'][0]['p'][0] == me['lines'][0]['q'][0]
+    A.append(r1 + ' / ' + J(asks(s, lv, me['ask'])))
+    sstep(s, I, 2)
+    A.append(J(asks(s, lv, [{'parts': first(I, 2, 'blanks')}])))
+    sstep(s, I, 3)
+    s.text('직선 ㄱㄴ을 대칭축으로 하는 선대칭도형 두 개예요. □ 안에 알맞은 수를 구해 보세요.')
+    KT = P['KITE']
+    k1, k2 = KT['shapes'][0]['P'], KT['shapes'][1]['P']
+    near(dist(k1[0], k1[1]), 6, 1e-3)
+    near(dist(k1[0], k1[3]), 6, 1e-3)
+    near(ang(k1[3], k1[0], k1[2]), 110, .05)
+    near(ang(k1[1], k1[2], k1[0]), 110, .05)
+    near(abs(k2[5][0] - KT['lines'][1]['p'][0]), 5, 1e-6)
+    near(k2[5][1], k2[1][1])
+    a3 = asks(s, lv, first(I, 3, 'sy3Ask'), [('kites', 130)])
+    assert a3 == ['6', '110', '5', '90'], a3
+    A.append(J(a3) + ' / ' + thenwhy(s, lv, tw(I, 3)))
+    sstep(s, I, 4)
+    s.text('서윤이가 반쪽만 그린 무늬를 직선 ㄱㄴ을 대칭축으로 하는 선대칭도형으로 완성하려고 해요.')
+    hint(s, lv, I, 4)
+    a4 = asks(s, lv, first(I, 4, 'sy3Ask'), [('half5', 40)])
+    assert a4 == [nf((5 + 8 + 7) * 2), nf(6 * 2)], a4
+    A.append('%s cm((5+8+7)×2), %s cm(6×2)' % tuple(a4))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 5, '도전하기', '잘못 말한 친구 찾기')
+        s.text('친구들이 선대칭도형의 성질을 말했어요.')
+        b = quizq(s, first(I, 'c', 'quiz'))
+        why(s, '민재의 말을 바르게 고쳐 써 보세요.', 1)
+        ch_ = '%s(도윤, 민재) / %s / 선대칭도형의 대칭축은 여러 개일 수도 있어(정사각형 4개, 원은 셀 수 없이 많음)' % tuple(b)
+    return answer(5, A, ch_, lv)
+
+
+def complete(s, lv, key, text, help_txt, how, order=None):
+    """선대칭·점대칭도형 완성(실제 크기 모눈)"""
+    s.text(text)
+    if lv == '기본형' and help_txt:
+        s.text('도움: ' + help_txt)
+    spic(s, key + ('1' if lv == '기본형' else '0'))
+    return want_txt(SRC_ST, key, how)
+
+
+HELP_LINE = '흐린 점선은 각 점에서 대칭축에 그은 수선이에요. 대칭축까지 몇 칸인지 세어 반대쪽으로 같은 칸만큼 가요.'
+HELP_POINT = '흐린 점선은 각 점과 대칭의 중심을 지나는 직선이에요. 대칭의 중심까지 가로·세로로 몇 칸인지 세어, 대칭의 중심을 지나 같은 만큼 더 가요.'
+
+
+def howmap(o):
+    return {x['n']: x['of'] for x in o['miss']}
+
+
+def cpl(id_, st, n=0):
+    return arg(id_, st, 'sy3Complete', n)[0]
+
+
+def st6(s, lv):
+    I = 's6'
+    slesson(s, I)
+    s.scene(None, '공방 로고와 왕관·하트·리본 로고를 반쪽만 그려 두었어요. 선대칭도형의 성질을 이용해 나머지 반쪽을 완성해요. 모눈 한 칸은 1 cm예요(실제 크기).')
+    A = []
+    sstep(s, I, 0)
+    o = cpl(I, 0)
+    w0 = complete(s, lv, 'c6a', '공방 로고를 반쪽만 그렸어요. 직선 ㅅㅇ이 대칭축이에요. 점 ㄴ과 점 ㄷ의 대응점을 찾아 각각 점 ㅂ과 점 ㅁ으로 표시하고, '
+                  '점 ㄱ, 점 ㅂ, 점 ㅁ, 점 ㄹ을 차례대로 이어 로고를 완성해 보세요.', HELP_LINE, howmap(o))
+    sq = arg(I, 0, 'sequence')
+    o0 = order_q(s, lv, sq[0], sq[1], '선대칭도형을 완성하는 방법을')
+    A.append('%s / %s' % (w0, o0))
+    sstep(s, I, 1)
+    o = cpl(I, 1)
+    w1 = complete(s, lv, 'c6b', '도윤이가 왕관 모양 로고를 그리다가 멈췄어요. 가로로 놓인 빨간 직선이 대칭축이에요. 점 ㄹ, ㄷ, ㄴ의 대응점을 찾아 각각 점 ㅂ, ㅅ, ㅇ으로 표시하고 '
+                  '선대칭도형을 완성해 보세요.', '대칭축이 가로로 놓여 있어요. 각 점에서 대칭축까지 세로로 몇 칸인지 세어요. 점 ㄱ과 점 ㅁ은 대칭축 위에 있어요.', howmap(o))
+    a1 = []
+    for it in o['ask']:
+        ask_parts(s, lv, it['parts'], a1, it['q'])
+    A.append('%s / %s' % (w1, J(a1)))
+    sstep(s, I, 2)
+    mi = first(I, 2, 'sy3Mirror')
+    s.text('지아가 하트 로고를 그려요. 빨간 점선이 대칭축이에요. 회색 점선을 따라 선분을 긋고, 그 선분을 대칭축에 대하여 뒤집은 대응변을 그어 하트 모양 선대칭도형을 완성해 보세요.')
+    spic(s, 'mir6', 105)
+    ax = mi['axis'][0][0]
+    assert mi['axis'][0][0] == mi['axis'][1][0] and mi['guide'][0][0][0] == ax == mi['guide'][-1][1][0]
+    A.append('회색 점선의 꺾인 점 %d개와 같은 높이에서 대칭축 오른쪽으로 각각 %s칸 떨어진 곳에 점을 찍고 차례로 이어요(하트 모양) / %s' % (
+        len(mi['guide']) - 1, J([nf(ax - g[1][0]) for g in mi['guide'][:-1]]), thenwhy(s, lv, tw(I, 2))))
+    sstep(s, I, 3)
+    o = cpl(I, 3)
+    w3 = complete(s, lv, 'c6d', '민재가 리본 모양 로고의 반쪽을 그렸어요. 세로로 놓인 빨간 직선이 대칭축이에요. 점 ㄹ, ㄷ, ㄴ의 대응점을 찾아 각각 점 ㅂ, ㅅ, ㅇ으로 표시하고 '
+                  '선대칭도형을 완성해 보세요.', '점 ㄱ과 점 ㅁ은 대칭축 위에 있어요. 각 점에서 대칭축까지 가로로 몇 칸인지 세어 반대쪽에 찍어요.', howmap(o))
+    A.append(w3)
+    ch_ = None
+    if lv == '도전형':
+        step(s, 4, '도전하기', '비스듬한 대칭축')
+        o = cpl(I, 'c')
+        wx = complete(s, lv, 'c6x', '대칭축이 비스듬히 놓여 있어요. 먼저 각 점에서 대칭축에 수선을 그어 점 ㄷ, ㄴ의 대응점 ㅁ, ㅂ을 찾아 선대칭도형을 완성해 보세요.', None, howmap(o))
+        why(s, '비스듬한 대칭축에서 대응점을 찾은 방법을 써 보세요.', 1)
+        ch_ = wx + ' (모눈의 다른 대각선 방향이 대칭축과 수직이에요)'
+    return answer(6, A, ch_, lv)
+
+
+def hp_st(P):
+    """점대칭 육각형 SY3S_HP: 변 2·3·1.5 cm, 각 130°·120°·110°"""
+    H = named(P['HP'], 'ㄱㄴㄷㄹㅁㅂ')
+    n = 'ㄱㄴㄷㄹㅁㅂ'
+    for i, v in enumerate([2, 3, 1.5, 2, 3, 1.5]):
+        near(dist(H[n[i]], H[n[(i + 1) % 6]]), v, 1e-3)
+    for i, g in enumerate([110, 130, 120, 110, 130, 120]):          # 각 ㅂㄱㄴ, ㄱㄴㄷ, ㄴㄷㄹ, …
+        near(ang(H[n[i]], H[n[i - 1]], H[n[(i + 1) % 6]]), g, .05)
+    return H
+
+
+def st7(s, lv):
+    I = 's7'
+    slesson(s, I)
+    s.scene(None, '부스 간판 글자와 바람개비를 만들어요. 거꾸로 붙이거나 돌려도 똑같아 보이는 모양이 있을까요?')
+    P, KD_ = SD()['pt'], SD()['kind']
+    A = []
+    sstep(s, I, 0)
+    sp = first(I, 0, 'sy3Spin')
+    assert all(KD_['s7n'])
+    spic(s, 'n7', 50)
+    s.text('부스 간판에 붙일 글자 ‘N’이 거꾸로 붙어도 괜찮을지 서윤이가 걱정해요. 글자를 투명 종이에 본떠 그리고, 연필 끝으로 점 ㅇ을 누른 채 180° 돌려 보세요.')
+    A.append(J(asks(s, lv, sp['ask'])))
+    sstep(s, I, 1)
+    r1 = rulefirst(s, rf(I, 1))
+    sp = arg(I, 1, 'sy3Spin')[0]
+    spic(s, 'spin7', 150)
+    s.text('민재가 만든 바람개비 날개 판 가~다예요. 점 ㅇ을 중심으로 각각 90°, 180° 돌려 보고, 처음 모양과 완전히 겹치면 ○, 겹치지 않으면 ×를 써 보세요.')
+    assert all(v == [False, True] for v in KD_['s7spin'].values()), KD_['s7spin']
+    s.table([['', '가', '나', '다'], ['90° 돌렸을 때', '', '', ''], ['180° 돌렸을 때', '', '', '']],
+            header=True, header_col=True, col_mm=[54, 42, 42, 42], row_h=3402)
+    A.append(r1 + ' / 가·나·다 모두 90° ×, 180° ○ / ' + J(asks(s, lv, sp['ask'])))
+    sstep(s, I, 2)
+    A.append(J(asks(s, lv, [{'parts': first(I, 2, 'blanks')}])))
+    sstep(s, I, 3)
+    sp = arg(I, 3, 'sy3Spin')[0]
+    spic(s, 'find7', 172)
+    s.text('부스 소품 가~마 중에서 점대칭도형을 모두 찾아보세요. 대칭의 중심이 될 만한 점을 찾아 180° 돌려 봐요.')
+    hint(s, lv, I, 3)
+    a3 = kinds_of(KD_['s7find'], 'P')
+    assert a3 == sp['need'], (a3, sp['need'])
+    A.append(J(asks(s, lv, sp['ask'])) + ' / ' + thenwhy(s, lv, tw(I, 3)))
+    sstep(s, I, 4)
+    s.text('점 ㅇ을 대칭의 중심으로 하는 점대칭도형 모양의 바람개비 판이에요. 대칭의 중심을 중심으로 180° 돌렸을 때 겹치는 대응점, 대응변, 대응각을 써 보세요.')
+    spic(s, 'hp7', 66)
+    H = hp_st(P)
+    co = first(I, 4, 'sy3Corr')
+    check_items(H, H, rot180(P['HPC']), co['items'])
+    hint(s, lv, I, 4, 1)
+    A.append(J(corr_items(s, lv, co['items'])))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 5, '도전하기', '간판 글자')
+        spic(s, 'gly7', 170)
+        g = KD_['s7gly']
+        p1, p2 = kinds_of(g, 'P'), kinds_of(g, 'B')
+        q1, q2 = arg(I, 'c', 'sy3Pick', 0)[0], arg(I, 'c', 'sy3Pick', 1)[0]
+        assert p1 == q1['answer'] and p2 == q2['answer'], (p1, p2)
+        s.ask('⑴ 점대칭도형 모양인 글자를 모두 써 보세요.', answer_space=14)
+        s.ask('⑵ 점대칭도형이면서 선대칭도형 모양인 글자를 모두 써 보세요.', answer_space=10)
+        why(s, '⑶ 글자 ‘ㅗ’가 점대칭도형이 아닌 까닭을 써 보세요.', 1)
+        ch_ = '⑴ %s ⑵ %s ⑶ 180° 돌리면 ‘ㅜ’ 모양이 되어 처음 글자와 완전히 겹치지 않기 때문' % (J(p1), J(p2))
+    return answer(7, A, ch_, lv)
+
+
+def st8(s, lv):
+    I = 's8'
+    slesson(s, I)
+    s.scene(None, '돌려도 같은 바람개비 판에는 어떤 비밀이 있을까요? 하린이와 친구들이 자와 각도기로 재어 보기로 했어요.')
+    P, KD_ = SD()['pt'], SD()['kind']
+    A = []
+    sstep(s, I, 0)
+    s.text('점 ㅇ을 대칭의 중심으로 하는 바람개비 판이에요. 그림은 실제 크기예요. 자와 각도기로 대응변의 길이와 대응각의 크기를 재어 보세요.')
+    spic(s, 'hp8')
+    H = hp_st(P)
+    a0 = asks(s, lv, first(I, 0, 'sy3Measure')['ask'])
+    assert a0[:12] == ['2', '2', '3', '3', '1.5', '1.5', '130', '130', '120', '120', '110', '110'], a0
+    A.append('%s cm, %s°, %s' % (J(a0[:6], '·'), J(a0[6:12], '·'), J(a0[12:])))
+    sstep(s, I, 1)
+    jo = first(I, 1, 'sy3Join')
+    s.text('하린이가 바람개비 판의 대칭의 중심 표시를 지워 버렸어요. 대응점끼리 각각 선분으로 이어 보세요(%s). 세 선분이 만나는 점을 점 ㅇ으로 표시하고, 점 ㅇ까지의 길이를 재어 보세요.'
+           % ', '.join('점 %s과 점 %s' % tuple(p) for p in jo['pairs']))
+    spic(s, 'hp8n')
+    O = P['HPC']
+    seg = [dist(H[n], O) for n in 'ㄱㄹㄴㅁㄷㅂ']
+    for i in range(0, 6, 2):
+        near(seg[i], seg[i + 1], 1e-3)
+    measure_table(s, ['선분 ㄱㅇ', '선분 ㄹㅇ', '선분 ㄴㅇ', '선분 ㅁㅇ', '선분 ㄷㅇ', '선분 ㅂㅇ'], ' cm')
+    A.append('ㄱㅇ=ㄹㅇ 약 %s cm, ㄴㅇ=ㅁㅇ 약 %s cm, ㄷㅇ=ㅂㅇ 약 %s cm, %s' % (cm(seg[0]), cm(seg[2]), cm(seg[4]), J(asks(s, lv, jo['ask']))))
+    sstep(s, I, 2)
+    A.append(J(asks(s, lv, [{'parts': first(I, 2, 'blanks')}])))
+    sstep(s, I, 3)
+    s.text('점 ㅇ을 대칭의 중심으로 하는 점대칭도형 두 개예요. 오른쪽 도형에서 선분 ㄴㅁ은 18 cm, 선분 ㄷㅇ은 7 cm예요. 선분의 길이와 각의 크기를 구해 보세요.')
+    Lp, Rp = P['P8L'], P['P8R']
+    near(dist(Lp[0], Lp[1]) / .2, 12, .02)
+    near(dist(Lp[1], Lp[2]) / .2, 7, .02)
+    near(dist(Lp[3], Lp[4]) / .2, 12, .02)
+    near(ang(Lp[0], Lp[5], Lp[1]), 105, .1)
+    near(ang(Lp[3], Lp[2], Lp[4]), 105, .1)
+    cR = (sum(p[0] for p in Rp) / 6, sum(p[1] for p in Rp) / 6)
+    near(dist(Rp[1], Rp[4]) / .22, 18, .02)
+    near(dist(Rp[2], cR) / .22, 7, .02)
+    a3 = asks(s, lv, first(I, 3, 'sy3Ask'), [('p8', 150)])
+    assert a3 == ['12', '105', nf(18 / 2), nf(7 * 2)], a3
+    A.append('%s cm, %s°, %s cm(18÷2), %s cm(7×2) / %s' % (tuple(a3) + (thenwhy(s, lv, tw(I, 3)),)))
+    sstep(s, I, 4)
+    s.text('점 ㅈ을 대칭의 중심으로 하는 팔각형 바람개비 판이에요. 둘레가 54 cm일 때 물음에 답해 보세요.')
+    Oc = P['OCT']
+    L8 = [dist(Oc[i], Oc[(i + 1) % 8]) / .3 for i in range(8)]
+    assert [round(v, 2) for v in L8] == [6, 9, 4, 8, 6, 9, 4, 8], L8
+    hint(s, lv, I, 4)
+    a4 = asks(s, lv, first(I, 4, 'sy3Ask'), [('oct8', 60)])
+    rest = 54 - (6 + 9 + 4) * 2
+    assert a4 == [nf(rest), nf(rest / 2)], a4
+    A.append('%s cm(54−(6+9+4)×2), %s cm' % tuple(a4))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 5, '도전하기', '펜토미노 조각 나누기')
+        s.text('부스 장식에 쓸 펜토미노 조각을 대칭의 종류로 나누어 기호를 써 보세요.')
+        spic(s, 'pento8', 165)
+        ch_ = sort_table(s, KD_['s8'], lv)
+    return answer(8, A, ch_, lv)
+
+
+def st9(s, lv):
+    I = 's9'
+    slesson(s, I)
+    s.scene(None, '바람개비 무늬를 반쪽만 그려 두었어요. 점대칭도형의 성질을 이용해 나머지를 완성해요. 모눈 한 칸은 1 cm예요(실제 크기).')
+    KD_ = SD()['kind']
+    A = []
+    sstep(s, I, 0)
+    o = cpl(I, 0)
+    w0 = complete(s, lv, 'c9a', '점 ㅇ을 대칭의 중심으로 하는 점대칭도형 무늬의 일부예요. 점 ㄴ과 점 ㄷ의 대응점을 찾아 각각 점 ㅁ과 점 ㅂ으로 표시하고, '
+                  '점 ㄹ, 점 ㅁ, 점 ㅂ, 점 ㄱ을 차례대로 이어 무늬를 완성해 보세요.', HELP_POINT, howmap(o))
+    sq = arg(I, 0, 'sequence')
+    A.append('%s / %s' % (w0, order_q(s, lv, sq[0], sq[1], '점대칭도형을 완성하는 방법을')))
+    sstep(s, I, 1)
+    o = cpl(I, 1)
+    w1 = complete(s, lv, 'c9b', '지아가 바람개비 무늬의 반쪽을 그렸어요. 점 ㅈ을 대칭의 중심으로 하는 점대칭도형이 되도록 점 ㄴ, ㄷ, ㄹ의 대응점을 찾아 각각 점 ㅂ, ㅅ, ㅇ으로 표시하고 '
+                  '완성해 보세요.', '점 ㄱ의 대응점은 점 ㅁ이에요. 이미 그려져 있어요. 점 ㄴ의 대응점은 점 ㅈ의 건너편, 같은 거리에 있어요.', howmap(o))
+    a1 = []
+    for it in o['ask']:
+        ask_parts(s, lv, it['parts'], a1, it['q'])
+    A.append('%s / %s' % (w1, J(a1)))
+    sstep(s, I, 2)
+    s.text('민재가 점대칭도형을 완성하다가 대칭의 중심을 지나는 세로선을 ‘대칭축’처럼 보고, 점 ㄴ의 대응점을 세로선의 반대쪽에 같은 높이로 찍었어요.')
+    a2 = quizq(s, first(I, 2, 'quiz'))
+    A.append('%s / %s' % (J(a2), thenwhy(s, lv, tw(I, 2))))
+    sstep(s, I, 3)
+    o = cpl(I, 3)
+    A.append(complete(s, lv, 'c9d', '서윤이의 리본 바람개비 무늬예요. 점 ㅈ을 대칭의 중심으로 하는 점대칭도형이 되도록 점 ㄱ, ㄴ, ㄷ, ㄹ의 대응점을 찾아 각각 점 ㅁ, ㅂ, ㅅ, ㅇ으로 표시하고 '
+                      '완성해 보세요.', '각 점에서 점 ㅈ까지 가로·세로로 몇 칸인지 세어요. 점 ㅈ을 지나 같은 칸만큼 더 가면 대응점이에요.', howmap(o)))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 4, '도전하기', '공방 엠블럼')
+        o = cpl(I, 'c')
+        assert KD_['c9x'] == 'B', KD_['c9x']
+        wx = complete(s, lv, 'c9x', '선대칭도형이면서 점대칭도형인 공방 엠블럼을 만들어요. 빨간 세로 직선을 대칭축으로 하여 점 ㄹ, ㄷ, ㄴ의 대응점 ㅂ, ㅅ, ㅇ을 찾아 선대칭도형을 완성해 보세요.', None, howmap(o))
+        b = []
+        for it in o['ask']:
+            ask_parts(s, lv, it['parts'], b, it['q'])
+        why(s, '완성한 엠블럼이 점대칭도형인지 확인한 방법을 써 보세요.', 1)
+        ch_ = '%s / %s' % (wx, J(b))
+    return answer(9, A, ch_, lv)
+
+
+def st10(s, lv):
+    I = 's10'
+    slesson(s, I)
+    s.scene(None, '포스터 담당 서윤이가 부스 포스터를 꾸며요. 모눈 위에 대칭축을 긋고, 한쪽에 선분을 그은 다음 뒤집은 대응변을 그려 자연 속 선대칭도형을 그려요.')
+    KD_ = SD()['kind']
+    A = []
+    sstep(s, I, 0)
+    mi = first(I, 0, 'sy3Mirror')
+    ax = mi['axisGuide'][0][0]
+    assert mi['axisGuide'][1][0] == ax == mi['guide'][0][0][0] == mi['guide'][-1][1][0]
+    s.text('서윤이가 잠자리 날개를 그리려고 해요. 빨간 점선이 대칭축이에요. 회색 점선을 따라 선분을 긋고, 대칭축에 대하여 뒤집은 대응변을 그어 잠자리 날개 모양 선대칭도형을 완성해 보세요.')
+    spic(s, 'mir10', 105)
+    sq = arg(I, 0, 'sequence')
+    o1 = order_q(s, lv, sq[0], sq[1], '선대칭도형을 그리는')
+    A.append('회색 점선의 꺾인 점 %d개와 같은 높이에서 대칭축 오른쪽으로 각각 %s칸 떨어진 곳에 점을 찍고 차례로 이어요 / %s' % (
+        len(mi['guide']) - 1, J([nf(ax - g[1][0]) for g in mi['guide'][:-1]]), o1))
+    sstep(s, I, 1)
+    fo = first(I, 1, 'sy3Fold')
+    s.text('포스터에 넣을 나비, 도토리, 코스모스 그림이에요. 그림마다 대칭축을 모두 그어 보세요.')
+    spic(s, 'pics10', 140)
+    na = dict(KD_['pics'])
+    assert na == {'나비': 1, '도토리': 1, '코스모스': 8}, na
+    A.append(J(asks(s, lv, fo['ask'])) + '(8개)')
+    sstep(s, I, 2)
+    mi = arg(I, 2, 'sy3Mirror')[0]
+    s.text('우리 주변에서 찾은 선대칭도형 모양의 동물이나 식물을 그려 포스터에 넣어요. 빨간 점선을 대칭축으로 하여 한쪽에 선분을 %d개 이상 긋고, 대칭축에 대하여 뒤집은 대응변을 그어요. '
+           '곡선은 짧은 선분 여러 개로 나타내요.' % mi['need'])
+    spic(s, 'blank10', 118)
+    s.text('자로 대응변 %d쌍의 길이를 재어 써 보세요.' % mi['needMeasure'])
+    s.table([['', '선분', '대응변'], ['첫째 쌍', '(      ) cm', '(      ) cm'], ['둘째 쌍', '(      ) cm', '(      ) cm']],
+            header=True, header_col=True, col_mm=[40, 70, 70], row_h=3402)
+    A.append('(자유) 대응변의 길이가 같아요 / ' + thenwhy(s, lv, tw(I, 2)))
+    sstep(s, I, 3)
+    s.text('포스터 둘레에 붙일 장식 카드 ①~⑧을 대칭의 종류에 따라 나누어 번호를 써 보세요.')
+    spic(s, 'cards10', 120)
+    A.append(sort_table(s, KD_['s10'], lv))
+    sstep(s, I, 4)
+    s.text('포스터 아래에 선대칭도형과 점대칭도형을 설명하는 글을 써요.')
+    A.append(J([thenwhy(s, lv, o) for o in first(I, 4, 'writeStep')], ' / '))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 5, '도전하기', '정다각형 무늬')
+        b = quizq(s, first(I, 'c', 'quiz'), [None, ('poly10', 70)])
+        why(s, '정오각형이 점대칭도형이 아닌 까닭을 써 보세요.', 1)
+        ch_ = '%s, %s (정오각형은 180° 돌리면 뾰족한 꼭짓점이 아래로 가서 겹치지 않아요)' % tuple(b)
+    return answer(10, A, ch_, lv)
+
+
+def st11(s, lv):
+    I = 's11'
+    slesson(s, I)
+    s.scene(None, '축제 둘째 날, 부스에서 ‘대칭 카드 놀이 대회’를 열어요. 보이는 카드와 같은 종류의 대칭인 카드를 내며 도형 이름을 외치는 놀이예요. '
+                  '선대칭도형이면서 점대칭도형인 카드는 둘 중 어느 쪽으로도 낼 수 있어요.')
+    KD_ = SD()['kind']
+    A = []
+    sstep(s, I, 0)
+    qz = first(I, 0, 'quiz')
+    pl = KD_['play']
+    sym = {'L': {'L'}, 'P': {'P'}, 'B': {'L', 'P'}, 'N': {'N'}}
+    can = [k for k in '가나다라' if sym[pl[k]] & sym[pl['see']]]
+    assert pl['see'] == 'P' and [qz[0]['o'][i] for i in qz[0]['a']] == can, (pl, can)
+    hint(s, lv, I, 0)
+    A.append(J(quizq(s, qz, [('play11', 140)])) + '(%s)' % J(can))
+    sstep(s, I, 1)
+    s.text('놀이 전에 지아가 카드를 미리 살펴보재요. 카드 ①~⑧을 대칭의 종류에 따라 나누어 번호를 써 보세요.')
+    spic(s, 'cards11', 120)
+    A.append(sort_table(s, KD_['s11'], lv))
+    sstep(s, I, 2)
+    s.text('도윤, 지아와 셋이서 놀이를 해요. 카드를 5장씩 나누어 갖고, 내 차례에 보이는 카드와 같은 종류의 대칭인 카드를 골라 어떤 도형인지 외치며 내요. '
+           '낼 카드가 없으면 한 장 가져오고, 카드가 한 장 남으면 ‘대칭!’을 외쳐요. 카드를 먼저 모두 내려놓으면 이겨요.')
+    s.text('특별 카드: ① 다음 차례의 친구에게 2장 선물 · ② 놀이 순서 바꾸기 · ③ 보이는 카드 바꾸기')
+    s.table([['차례', '보이는 카드(대칭의 종류)', '내가 낸 카드', '외친 말']] + [[str(i), '', '', ''] for i in range(1, 6)],
+            header=True, col_mm=[18, 62, 50, 50], row_h=3402)
+    A.append('(놀이 기록)')
+    sstep(s, I, 3)
+    mem = KD_['mem']
+    assert all(a == b for _, a, b in mem)
+    g3 = {k: [n for n, a, _ in mem if a == k] for k in 'LPN'}
+    assert all(len(v) == 4 for v in g3.values())
+    s.text('민재와 둘이서 하는 기억 놀이예요. 카드 2장을 펼쳐 대칭의 종류가 같으면 2장을 가져가요. 놀이 전에 카드 12장을 대칭의 종류가 같은 것끼리 세 묶음으로 나누어 번호를 써 보세요.')
+    spic(s, 'mem11', 165)
+    hint(s, lv, I, 3, 1)
+    s.labeled([('선대칭도형', ''), ('점대칭도형', ''), ('둘 다 아닌 도형', '')], label_mm=40)
+    A.append('선대칭도형 %s / 점대칭도형 %s / 둘 다 아닌 도형 %s' % tuple(J(g3[k]) for k in 'LPN'))
+    sstep(s, I, 4)
+    s.text('놀이를 마치고 반 친구들과 이기는 전략을 나누어요.')
+    A.append(J([thenwhy(s, lv, o) for o in first(I, 4, 'writeStep')], ' / '))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 5, '도전하기', '놀이에서 생긴 일')
+        ch_ = J(quizq(s, first(I, 'c', 'quiz')))
+        why(s, '보이는 카드가 원일 때 부등변삼각형 카드를 낼 수 없는 까닭을 써 보세요.', 1)
+        ch_ += ' (부등변삼각형은 선대칭도형도 점대칭도형도 아니에요)'
+    return answer(11, A, ch_, lv)
+
+
+def st12(s, lv):
+    I = 's12'
+    slesson(s, I)
+    s.scene(None, '축제를 마치며 ‘대칭 무늬 공방 발표회’를 열어요. 공방에서 만든 작품으로 배운 합동과 대칭을 설명해요.')
+    P, KD_ = SD()['pt'], SD()['kind']
+    A = []
+    sstep(s, I, 0)
+    pk = first(I, 0, 'sy3Pick')
+    spic(s, 'badge12', 160)
+    K = SD()['ckey']['s12']
+    fit = [k for k in K if k != '가' and K[k] == K['가']]
+    assert fit == pk['answer'], (fit, pk['answer'])
+    s.ask('발표회에서 하린이가 질문했어요. “배지 가와 합동인 배지는 어느 것일까요?” 모눈의 칸 수를 세어 찾아 기호를 써 보세요.')
+    hint(s, lv, I, 0, 1)
+    A.append(J(fit))
+    sstep(s, I, 1)
+    s.text('도윤이가 서로 합동인 두 사각형 이름표를 보여 주며 물었어요. 두 사각형을 포갠다고 생각하여 대응점을 찾고, 대응점의 순서대로 읽은 것을 골라 보세요.')
+    hint(s, lv, I, 1)
+    A.append(J(asks(s, lv, first(I, 1, 'sy3Ask'), [('quad12', 120)], keep=True)))
+    sstep(s, I, 2)
+    s.text('지아가 부스 깃발 가~다의 대칭축을 세어 발표해요.')
+    a2 = asks(s, lv, first(I, 2, 'sy3Ask'), [('ax12', 110)])
+    assert a2 == ['2', '6', '3', '나', '다', '가'], a2
+    A.append('가 2개, 나 6개, 다 3개 → 나 → 다 → 가')
+    sstep(s, I, 3)
+    o = cpl(I, 3, 0)
+    w1 = complete(s, lv, 'c12a', '⑴ 민재가 그려 온 공방 로고예요. 직선 ㅅㅇ을 대칭축으로 하는 선대칭도형이 되도록 점 ㄷ, ㄴ의 대응점 ㅁ, ㅂ을 찾아 완성해 보세요.', HELP_LINE, howmap(o))
+    o = cpl(I, 3, 1)
+    w2 = complete(s, lv, 'c12b', '⑵ 점 ㅈ을 대칭의 중심으로 하는 점대칭도형이 되도록 점 ㄴ, ㄷ의 대응점 ㅁ, ㅂ을 찾아 완성해 보세요.', HELP_POINT, howmap(o))
+    A.append('⑴ %s ⑵ %s' % (w1, w2))
+    sstep(s, I, 4)
+    s.text('서윤이가 만든 바람개비 판은 점 ㅇ을 대칭의 중심으로 하는 점대칭도형이에요. 둘레는 몇 cm인지 구해 보세요.')
+    Hx = P['HEX36']
+    L6 = [dist(Hx[i], Hx[(i + 1) % 6]) / .4 for i in range(6)]
+    assert [round(v, 2) for v in L6] == [4, 6, 8, 4, 6, 8], L6
+    hint(s, lv, I, 4)
+    a4 = asks(s, lv, first(I, 4, 'sy3Ask'), [('hex12', 60)])
+    assert a4 == [nf((4 + 6 + 8) * 2)], a4
+    A.append('%s cm((4+6+8)×2) / %s' % (a4[0], thenwhy(s, lv, tw(I, 4))))
+    sstep(s, I, 5)
+    s.text('축제를 마치고 부스 안내판 가~마를 정리해요. 안내판 모양을 대칭의 종류에 따라 나누어 기호를 써 보세요.')
+    spic(s, 'signs12', 130)
+    A.append(sort_table(s, KD_['s12'], lv))
+    sstep(s, I, 6)
+    s.text('단원에서 배운 내용을 정리하고, 1차시에 쓴 ‘궁금해요’ 쪽지를 다시 읽어 궁금했던 것을 해결했는지 돌아보세요.')
+    a6 = asks(s, lv, [{'parts': first(I, 6, 'blanks')}])
+    A.append(J(a6) + ' / ' + J([thenwhy(s, lv, o) for o in first(I, 6, 'writeStep')]))
+    ch_ = None
+    if lv == '도전형':
+        step(s, 7, '도전하기', '발표회 마지막 퀴즈')
+        ch_ = J(quizq(s, first(I, 'c', 'quiz')))
+        why(s, '직사각형을 대각선으로 잘라 생긴 두 삼각형이 합동인 까닭을 써 보세요.', 1)
+    return answer(12, A, ch_, lv)
+
+
+ST = [st1, st2, st3, st4, st5, st6, st7, st8, st9, st10, st11, st12]
 
 
 def st_ready():
