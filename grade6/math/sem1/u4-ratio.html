@@ -2187,7 +2187,7 @@ function ra4Memory(body, api, opt) {
       b.textContent = o || open ? RA4_CARDS[deck[pos]] : "?"; b.dataset.t = o || open ? RA4_CARDS[deck[pos]] : "";
       b.disabled = !!o;
     });
-    score.innerHTML = ""; score.append(h("span", {}, `나 ${me}장`), h("span", {}, `컴퓨터 ${com}장`), h("span", {}, `남은 카드 ${owner.filter(o => !o).length}장`), h("span", {}, turn === "me" ? "▶ 내 차례" : "▶ 컴퓨터 차례"));
+    score.innerHTML = ""; score.append(h("span", {}, `나 ${me}장`), h("span", {}, `컴퓨터 ${com}장`), h("span", {}, `남은 카드 ${owner.filter(o => !o).length}장`), h("span", {}, turn === "me" ? "▶ 내 차례" : turn === "com" ? "▶ 컴퓨터 차례" : "놀이 끝"));
     tools.style.visibility = turn === "me" && up.length === 2 && !busy ? "visible" : "hidden";
   };
   const remember = pos => { seen.add(pos); if (Math.random() < (opt.mem || .5)) comMem.set(pos, deck[pos]); };
