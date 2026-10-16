@@ -393,7 +393,7 @@ def cards_svg(items, cols=None, cw=170, ch=150, lab=True, box=True):
             b.append('<rect x="%s" y="%s" width="%s" height="%s" rx="12" fill="#fff" stroke="#C9D4CF" stroke-width="2"/>' % (x + 1, y + 1, cw - 2, ch + lh - 2))
         b.append(nest(svg, x + 6, y + 6, cw - 12, ch - 10))
         if lab and name:
-            fs = max(19 if len(name) < 8 else 16, cw / 15)
+            fs = min(max(19 if len(name) < 8 else 16, cw / 15), (cw - 16) / (len(name) * 0.92))
             b.append(_t(x + cw / 2, y + ch + lh / 2 - 2, name, round(fs), INK, weight='bold'))
     return _svg(W, H, ''.join(b))
 
@@ -427,7 +427,7 @@ def put_fig(s, fig, k=0.25, hi=160):
 REAL_NOTE = '※ 아래 모눈은 실제 크기예요(한 칸 = 1 cm). 100%로 인쇄하면 자로 재어 확인할 수 있어요.'
 
 
-def side(s, figs, mm=None, labels=True, cols=None):
+def side(s, figs, mm=None, labels=True, cols=None, cwmin=0):
     """[(이름, svg)] 여러 그림을 한 줄(또는 cols개씩 여러 줄)로(높이를 맞춤)"""
     if len(figs) == 1 and not (labels and figs[0][0]):
         pic(s, figs[0][1], mm or fig_mm(figs[0][1], 0.3))
@@ -435,7 +435,7 @@ def side(s, figs, mm=None, labels=True, cols=None):
     ws = [vb(f[1])[2] for f in figs]
     hs = [vb(f[1])[3] for f in figs]
     H = max(hs)
-    cw = max(w * H / h for w, h in zip(ws, hs))
+    cw = max([w * H / h for w, h in zip(ws, hs)] + [cwmin])
     lab = labels and any(f[0] for f in figs)
     cols = cols or len(figs)
     svg = cards_svg(figs, cols=cols, cw=cw, ch=H, lab=lab, box=lab)
@@ -873,7 +873,7 @@ def w_netjudge(s, lv, rec):
 
 
 def w_netfaces(s, lv, rec):
-    s.ask(paper(rec['q']).replace('모두 보세요.', '모두 찾아보세요.') or rec['q'], blank=False)
+    s.ask(rec['q'].replace('모두 눌러 보세요.', '모두 찾아 색칠해 보세요.'), blank=False)
     pic(s, rec['svg'], 74)
     s.ask('만나는 면을 모두 써 보세요.', answer_space=36)
     return after(s, lv, rec, ', '.join(rec['ans']))
@@ -996,7 +996,7 @@ def w_self(s, lv, rec):
 
 
 def card_lab(c, sign=True):
-    return ('%s ' % ('+' if c['s'] > 0 else '−') if sign else '') + '%s · %s' % (c['name'], c['el'])
+    return ('%s ' % ('+' if c['s'] > 0 else '−') if sign else '') + '%s · %s' % (c['name'], c['el'].replace('의 수', ''))
 
 
 PLUS_SEQ = [2, 7, 3, 9, 1]     # 연습: 시작 수 10, 끝 수 45
@@ -1005,7 +1005,7 @@ PLUS_SEQ = [2, 7, 3, 9, 1]     # 연습: 시작 수 10, 끝 수 45
 def w_plus(s, lv, rec):
     C = DATA['cards']
     s.text('놀이 카드 12장이에요(카드는 이 활동지에서 정했어요). 두 벌을 만들어 섞어 쓰고, 한 사람당 3장씩 나누어 가져요.')
-    side(s, [(card_lab(c), c['svg']) for c in C], 170, cols=4)
+    side(s, [(card_lab(c), c['svg']) for c in C], 170, cols=4, cwmin=200)
     start, end = 10, 45
     s.text('연습해요: 시작 수는 %d, 끝 수는 %s. 다섯 사람이 차례대로 아래 카드를 냈어요. 표를 완성해 보세요.' % (start, jo(end, '이에요/예요')))
     rows = [['차례', '낸 카드', '구성 요소의 수', '계산', '계산한 값']]
@@ -1037,7 +1037,7 @@ def w_code(s, lv, rec):
     cs = [C[i] for i in CODE_IDS]
     codes = [c['code'] for c in cs]
     assert len(set(codes)) == len(codes)
-    side(s, [('%s %s' % (KO[i], card_lab(c, False)), c['svg']) for i, c in enumerate(cs)], 165, cols=5)
+    side(s, [('%s %s' % (KO[i], card_lab(c, False)), c['svg']) for i, c in enumerate(cs)], 170, cols=5, cwmin=190)
     order = [2, 4, 0, 3, 1]
     s.text('친구가 보여 준 암호예요. 어떤 카드의 암호인지 기호를 써 보세요.')
     s.table([['암호'] + [codes[i] for i in order], ['카드 기호'] + [''] * len(order)])
@@ -1047,7 +1047,7 @@ def w_code(s, lv, rec):
 def w_codemake(s, lv, rec):
     C = DATA['cards']
     cs = [C[i] for i in rec['ids']]
-    side(s, [(card_lab(c, False), c['svg']) for c in cs], 120, cols=len(cs))
+    side(s, [(card_lab(c, False), c['svg']) for c in cs], 130, cols=len(cs), cwmin=180)
     rows = [['카드', '옆면의 수', '옆면 모양(▭/△)', '구성 요소의 수', '암호']]
     for c in cs:
         rows.append([card_lab(c, False), '', '', '', ''])
