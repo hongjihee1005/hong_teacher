@@ -14,8 +14,7 @@ LESSONS를 node에서 가짜 DOM으로 그대로 실행해, 단계마다 넘긴 
   - 그래프 부분 누르기(gr5Pick)는 앱이 그린 그래프를 그대로 넣고 '찾아 써 보세요·○표 해 보세요'로 바꿉니다.
   - 띠·원 나누기(gr5Draw)와 공학 도구(gr5Maker)·주사위 놀이(gr5Dice)는 학생이 종이에 직접 그리도록 **실제 크기** 판을 줍니다
     (SVG 1 cm = 40 px, 그림 너비 mm = px ÷ 4, 100%로 인쇄):
-      띠그래프 — 길이 20 cm 띠, 가장 작은 눈금 한 칸 1 %(2 mm), 10 %마다 수. 본문 너비(18 cm)보다 길어서 그림을 옆으로 눕혀 넣었어요
-                 (종이를 시계 방향으로 돌려 놓고 그려요).
+      띠그래프 — 길이 10 cm 띠(가로), 가장 작은 눈금 한 칸 1 %(1 mm), 10 %마다 굵은 눈금과 수.
       원그래프 — 반지름 5 cm 원, 둘레에 눈금 100칸(한 칸 1 %), 0·25·50·75 수, 원의 중심 점.
     앱에서 '미리 나타내 둔' 항목(given)은 색칠하고 이름을 써 둡니다.
   - 쪽지 조사(gr5Survey)는 앱과 같은 차례의 쪽지 25장과 표시 표, 특징 카드(gr5Sort)는 번호를 쓰는 표,
@@ -378,11 +377,11 @@ def col_of(items, i):
 
 
 def band_real(items, given, title, data_line):
-    """길이 20 cm 띠(가장 작은 눈금 한 칸 1 % = 2 mm). 본문(18 cm)에 들어가도록 눕혀서(시계 반대 방향 90°) 그려요."""
-    L, x0 = 20 * K, 1.2 * K
-    W = L + 2 * x0
-    yT, yD, yN, bandY, BH = 0.55 * K, 1.35 * K, 2.25 * K, 3.0 * K, 1.6 * K
-    H = bandY + BH + 3.2 * K
+    """길이 10 cm 띠(가로, 가장 작은 눈금 한 칸 1 % = 1 mm, 10 %마다 굵은 눈금과 수). 그림 너비 17 cm 가운데에 띠를 놓아요."""
+    L, W = 10 * K, 17 * K
+    x0 = (W - L) / 2
+    yT, yD, yN, bandY, BH = 0.55 * K, 1.35 * K, 2.2 * K, 2.95 * K, 1.3 * K
+    H = bandY + BH + 2.8 * K
     X = lambda t: x0 + L * t / 100   # noqa: E731
     cum = cum_of(items)
     b = ['<rect x="0" y="0" width="%s" height="%s" fill="#fff"/>' % (fmt(W), fmt(H))]
@@ -394,16 +393,15 @@ def band_real(items, given, title, data_line):
         b.append('<rect x="%s" y="%s" width="%s" height="%s" fill="%s" stroke="%s" stroke-width="2"/>'
                  % (fmt(X(a)), fmt(bandY), fmt(L * items[i]['p'] / 100), fmt(BH), col_of(items, i), LINE))
         cx = X(a + items[i]['p'] / 2)
-        b.append(_t(cx, bandY + BH * .36, items[i]['n'], 14))
-        b.append(_t(cx, bandY + BH * .70, '(%s %%)' % fmt(items[i]['p']), 14))
+        b.append(_t(cx, bandY + BH * .34, items[i]['n'], 13))
+        b.append(_t(cx, bandY + BH * .70, '(%s %%)' % fmt(items[i]['p']), 13))
     for t in range(101):
-        ln = 0.42 * K if t % 10 == 0 else 0.3 * K if t % 5 == 0 else 0.18 * K
-        b.append(_ln((X(t), bandY - ln), (X(t), bandY), LINE, 1.6 if t % 10 == 0 else 1))
+        ln = 0.42 * K if t % 10 == 0 else 0.28 * K if t % 5 == 0 else 0.16 * K
+        b.append(_ln((X(t), bandY - ln), (X(t), bandY), LINE, 2.4 if t % 10 == 0 else 0.8))
         if t % 10 == 0:
             b.append(_t(X(t), yN, str(t), 14, GRAY))
-    b.append(_t(W - 6, yN - 0.5 * K, '(%)', 12, GRAY, 'end'))
-    # 눕히기: (x, y) → (y, W − x)  → 종이를 시계 방향으로 돌리면 바로 보여요
-    return _svg(H, W, '<g transform="translate(0 %s) rotate(-90)">%s</g>' % (fmt(W), ''.join(b)))
+    b.append(_t(x0 + L + 0.5 * K, yN, '(%)', 12, GRAY, 'start'))
+    return _svg(W, H, ''.join(b))
 
 
 def pie_real(items, given, R=5):
@@ -679,7 +677,7 @@ def h_draw(s, lv, rec, st, D):
     if not band:
         s.text('나타낼 자료: ' + data)
     if band:
-        s.text('띠그래프 그리기 판(실제 크기, 띠의 길이 20 cm)이에요. 종이를 시계 방향으로 돌려 놓고 그려요.')
+        s.text('띠그래프 그리기 판(실제 크기, 띠의 길이 10 cm)이에요. 가장 작은 눈금 한 칸은 1 %(1 mm)예요.')
         s.text(('%s 이전 항목에 이어서 백분율만큼 선을 그어 띠를 나누고, 나눈 부분에 내용과 백분율을 써요. 띠 안에 쓰기 어려우면 화살표를 그어 띠 밖에 써요.'
                % ('색칠한 부분은 미리 나타내 두었어요.' if given else '')).strip())
         pic_real(s, band_real(items, given, '%s' % g['title'], '나타낼 자료: ' + data))
@@ -783,7 +781,7 @@ def h_dice(s, lv, rec, st, D):
             header=True, header_col=True, col_mm=[40] + [20] * 7, row_h=3402)
     s.text('%d번 던졌으니 한 번은 전체의 %s %%예요.' % (n, fmt(100 / n)))
     s.page_break()
-    s.text('띠그래프 그리기 판(실제 크기, 띠의 길이 20 cm)이에요. 종이를 시계 방향으로 돌려 놓고, 나온 차의 백분율만큼 띠를 나누어 내용과 백분율을 써요.')
+    s.text('띠그래프 그리기 판(실제 크기, 띠의 길이 10 cm, 가장 작은 눈금 한 칸 1 %)이에요. 나온 차의 백분율만큼 띠를 나누어 내용과 백분율을 써요.')
     pic_real(s, band_real([{'n': '', 'p': 100}], 0, '두 눈의 수의 차별 나온 횟수의 비율', '내가 던진 결과로 나타내요. (차 0 ~ 차 5, 나오지 않은 차는 빼요)'))
     s.ask('두 눈의 수의 차가 3인 횟수의 비율은 몇 %인가요?')
     return '(결과에 따라 다름) 백분율 = 횟수 × %s; 합계 100 %%; 많이 던질수록 차가 1인 경우가 가장 많이 나오는 편' % fmt(100 / n)
@@ -966,7 +964,7 @@ def build(D, label, short, outdir, lv):
     s = Sheet(unit_label=label, level=lv, grade_label='6학년')
     lines = [lesson(s, lv, L, D) for L in D['lessons']]
     s.answers('【교사용】 5. 여러 가지 그래프(%s) 활동지 정답 (%s)' % (short, lv), lines,
-              note='※ 이 활동지는 앱 u5-graph.html과 차시 번호가 같습니다. 띠그래프 판(길이 20 cm)·원그래프 판(반지름 5 cm)은 실제 크기이니 100%로 인쇄하세요.')
+              note='※ 이 활동지는 앱 u5-graph.html과 차시 번호가 같습니다. 띠그래프 판(길이 10 cm)·원그래프 판(반지름 5 cm)은 실제 크기이니 100%로 인쇄하세요.')
     os.makedirs(outdir, exist_ok=True)
     path = os.path.join(outdir, NAME % lv)
     s.save(path)
