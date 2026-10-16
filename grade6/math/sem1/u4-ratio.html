@@ -2262,8 +2262,9 @@ function ra4High(body, api, opt) {
   const flipBtn = h("button", { onclick: () => { flipped = true; draw(); msg.textContent = `카드를 모두 뒤집었어요. 비율이 가장 ${rule(r) === "high" ? "높은" : "낮은"} 사람을 눌러요.`; } }, "모두 동시에 뒤집기");
   const draw = () => {
     area.innerHTML = "";
-    ruleEl.textContent = `${r + 1}판 / ${R}판 · 규칙: 비율이 가장 ${rule(r) === "high" ? "높은" : "낮은"} 사람이 카드를 모두 가져가요.`;
-    names.forEach((nm, i) => area.append(h("div", { class: "ra4pl", onclick: () => pick(i) }, nm, h("div", { class: "ra4card " + (flipped ? "ra4up" : "ra4back"), "data-t": flipped ? deck[r * 4 + i] : "" }, flipped ? deck[r * 4 + i] : "?"))));
+    const end = r >= R, rr = end ? R - 1 : r, up = flipped || end;
+    ruleEl.textContent = end ? `${R}판을 모두 했어요. 마지막 판의 카드예요.` : `${r + 1}판 / ${R}판 · 규칙: 비율이 가장 ${rule(r) === "high" ? "높은" : "낮은"} 사람이 카드를 모두 가져가요.`;
+    names.forEach((nm, i) => area.append(h("div", { class: "ra4pl", onclick: () => pick(i) }, nm, h("div", { class: "ra4card " + (up ? "ra4up" : "ra4back"), "data-t": up ? deck[rr * 4 + i] : "" }, up ? deck[rr * 4 + i] : "?"))));
     score.innerHTML = ""; names.forEach((nm, i) => score.append(h("span", {}, `${nm} ${got[i]}장`)));
     flipBtn.disabled = flipped || r >= R;
   };
@@ -2272,7 +2273,7 @@ function ra4High(body, api, opt) {
     api.tryOnce(); const cs = deck.slice(r * 4, r * 4 + 4), v = cs.map(ra4V);
     let b = 0; v.forEach((x, j) => { if (rule(r) === "high" ? ra4Lt(v[b], x) : ra4Lt(x, v[b])) b = j; });
     if (i !== b) return api.fail(`${cs.map(c => `${c} → ${ra4Dec(ra4V(c)) || ra4Fr(ra4V(c))}`).join(", ")}. 같은 표현(소수)으로 바꾸어 비교해 봐요.`, `${names[i]}`);
-    got[b] += 4; msg.textContent = `맞아요! ${names[b]}의 카드 ${cs[b]}(= ${ra4Dec(v[b])})의 비율이 가장 ${rule(r) === "high" ? "높아요" : "낮아요"}. ${ra4J(names[b], "이가")} 카드 4장을 가져가요.`;
+    got[b] += 4; msg.textContent = `맞아요! ${names[b]}의 카드 ${cs[b]}${cs[b] === ra4Dec(v[b]) ? "" : `(= ${ra4Dec(v[b])})`}의 비율이 가장 ${rule(r) === "high" ? "높아요" : "낮아요"}. ${ra4J(names[b], "이가")} 카드 4장을 가져가요.`;
     r++; flipped = false;
     if (r >= R) { draw(); const mx = Math.max(...got), win = names.filter((_, j) => got[j] === mx); return api.done(names.map((n, j) => `${n} ${got[j]}장`).join(", "), `놀이 끝! ${ra4J(win.join(", "), "이가")}${win.length > 1 ? " 함께" : ""} 가장 많이 가져갔어요.`); }
     draw();

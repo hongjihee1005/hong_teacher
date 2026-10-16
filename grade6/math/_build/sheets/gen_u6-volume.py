@@ -164,9 +164,9 @@ WID.forEach(name => {
         rec.sol = sol; sol.sort((p, q) => p.s - q.s); extra = sol[0] && sol[0].n;
         rec.all = []; for (let a = 1; a <= N; a++) for (let b = 1; b <= N; b++) for (let c = 1; c <= N; c++) if (a * b * c === N) rec.all.push({ n: [a, b, c], D: vo6PackD(opt.box, [a, b, c]), s: vo6Surf(vo6PackD(opt.box, [a, b, c])) });
         const B = opt.box, packSvg = n => { const bl = []; for (let i = 0; i < n[0]; i++) for (let j = 0; j < n[1]; j++) for (let k = 0; k < n[2]; k++) bl.push({ x: i * B[0], y: j * B[1], z: k * B[2], w: B[0], d: B[1], h: B[2], c: VO6.box });
-          const D = vo6PackD(B, n); return String(vo6Solid({ d: D, mode: 'none', blocks: bl, W: 230, H: 170, labels: { a: D[0] + ' cm', b: D[1] + ' cm', c: D[2] + ' cm' }, plain: true })); };
+          const D = vo6PackD(B, n); return String(vo6Solid({ d: D, mode: 'none', blocks: bl, s: 9, plain: true })); };
         rec.svgSol = sol.length ? packSvg(sol[0].n) : null;
-        rec.one = String(vo6Solid({ d: B, mode: 'solid', s: 12, tint: { top: VO6.box[0], front: VO6.box[1], right: VO6.box[2] }, labels: { a: B[0] + ' cm', b: B[1] + ' cm', c: B[2] + ' cm' }, plain: true }));
+        rec.one = String(vo6Solid({ d: B, mode: 'solid', s: 9, tint: { top: VO6.box[0], front: VO6.box[1], right: VO6.box[2] }, labels: { a: B[0] + ' cm', b: B[1] + ' cm', c: B[2] + ' cm' }, plain: true }));
       }
       else if (name === 'vo6Make') { rec.friendSvg = String(vo6Cub(opt.friend.d, 'cm', { maxW: '12em' })); }
       else if (name === 'vo6Hunt') { rec.names = VO6_NAMES; }
@@ -862,8 +862,22 @@ def w_pack(s, lv, rec):
         others = ', '.join('%s %d' % ('×'.join(map(str, p['n'])), p['s']) for p in sorted(rec['all'], key=lambda p: p['s']))
         return '가로 %d cm, 세로 %d cm, 높이 %d cm(가로로 %d개·앞뒤로 %d개·%d층) → 겉넓이 %d cm² (8개를 쌓는 방법 모두: %s)' % (
             tuple(g['D']) + tuple(g['n']) + (g['s'], others))
-    side(s, [('상자 한 개', rec['one']), ('쌓은 모양', rec['svgSol'])], 100)
+    # 상자 한 개와 쌓은 모양을 같은 비율로(두 그림 모두 1 cm = 9 px)
+    svg = same_scale([('상자 한 개', rec['one']), ('쌓은 모양', rec['svgSol'])])
+    pic(s, svg, min(150, vb(svg)[2] * 0.32))
     return after(s, lv, rec)
+
+
+def same_scale(items, gap=40):
+    """그림을 줄이거나 늘리지 않고 아래를 맞춰 나란히(이름은 아래)"""
+    H = max(vb(v)[3] for _, v in items)
+    x, out = 0, []
+    for name, v in items:
+        vx, vy, vw, vh = vb(v)
+        out.append(nest(v, x, H - vh, vw, vh))
+        out.append(_t(x + vw / 2, H + 18, name, 15, INK, weight='bold'))
+        x += vw + gap
+    return _svg(x - gap, H + 34, ''.join(out))
 
 
 def w_make(s, lv, rec):
