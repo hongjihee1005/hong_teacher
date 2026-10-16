@@ -1569,7 +1569,7 @@ def ptxt(parts, lv, ans, keep=False):
             many = isinstance(a, list)
             ans.append(', '.join(o[i] for i in a) if many else o[a])
             if lv == '기본형' or keep or many or max(map(len, o)) > LONG:
-                out.append(opt(*o) + (' ← 모두 고르기' if many else ''))
+                out.append(('( 모두 고르기: ' + ' / '.join(o) + ' )') if many else opt(*o))
             else:
                 out.append('(' + ' ' * 14 + ')')
     return ''.join(out)
@@ -1578,6 +1578,9 @@ def ptxt(parts, lv, ans, keep=False):
 def optq(s, q, o, a):
     """보기 고르기 물음 하나. 여러 개 고르기·긴 보기는 ㉠㉡…로 늘어놓아요."""
     many = isinstance(a, list)
+    if many and max(map(len, o)) <= 3:                    # 그림 속 기호(가~라)를 모두 고르기
+        s.ask('%s %s' % (q, opt(*o)), answer_space=12)
+        return ', '.join(o[i] for i in a)
     if many or max(map(len, o)) > 24:
         s.ask(q, blank=False)
         for i, t in enumerate(o):
@@ -1748,11 +1751,11 @@ def st1(s, lv):
     sstep(s, I, 3)
     s.text('도윤이가 깃발 모양 스티커를 이리저리 움직여 붙이려고 해요. 4학년 ‘평면도형의 이동’을 떠올려 알맞은 모양을 골라 보세요.')
     hint(s, lv, I, 3)
-    A.append(J(quizq(s, first(I, 3, 'quiz'), [('flag_flip', 100), ('flag_rot', 100)])))
+    A.append(J(quizq(s, first(I, 3, 'quiz'), [('flag_flip', 100), ('flag_rot', 100)]), ' / '))
     sstep(s, I, 4)
     s.text('부스 안내판을 만들려면 4학년 때 배운 수직과 대각선도 알아야 해요.')
     qz = first(I, 4, 'quiz')
-    A.append(J(quizq(s, qz, [('perp', 90), ('pent', 40)])))
+    A.append(J(quizq(s, qz, [('perp', 90), ('pent', 40)]), ' / '))
     ch_ = None
     if lv == '도전형':
         step(s, 5, '도전하기', '부스 바닥 타일')
@@ -1788,7 +1791,7 @@ def st2(s, lv):
     sstep(s, I, 2)
     s.text('민재가 “배지 라는 뒤집어야 겹치니까 배지 가와 다른 배지야.”라고 말했어요. 포개어 본 것을 떠올리며 물음에 답해 보세요.')
     a2 = quizq(s, first(I, 2, 'quiz'))
-    A.append(J(a2) + ' / ' + thenwhy(s, lv, tw(I, 2)))
+    A.append(J(a2, ' / ') + ' / ' + thenwhy(s, lv, tw(I, 2)))
     sstep(s, I, 3)
     A.append(J(asks(s, lv, [{'parts': first(I, 3, 'blanks')}])))
     sstep(s, I, 4)
@@ -2036,7 +2039,7 @@ def st5(s, lv):
         s.text('친구들이 선대칭도형의 성질을 말했어요.')
         b = quizq(s, first(I, 'c', 'quiz'))
         why(s, '민재의 말을 바르게 고쳐 써 보세요.', 1)
-        ch_ = '%s(도윤, 민재) / %s / 선대칭도형의 대칭축은 여러 개일 수도 있어(정사각형 4개, 원은 셀 수 없이 많음)' % tuple(b)
+        ch_ = '%s (도윤, 민재) / %s / 선대칭도형의 대칭축은 여러 개일 수도 있어(정사각형 4개, 원은 셀 수 없이 많음)' % tuple(b)
     return answer(5, A, ch_, lv)
 
 
@@ -2251,7 +2254,7 @@ def st9(s, lv):
     sstep(s, I, 2)
     s.text('민재가 점대칭도형을 완성하다가 대칭의 중심을 지나는 세로선을 ‘대칭축’처럼 보고, 점 ㄴ의 대응점을 세로선의 반대쪽에 같은 높이로 찍었어요.')
     a2 = quizq(s, first(I, 2, 'quiz'))
-    A.append('%s / %s' % (J(a2), thenwhy(s, lv, tw(I, 2))))
+    A.append('%s / %s' % (J(a2, ' / '), thenwhy(s, lv, tw(I, 2))))
     sstep(s, I, 3)
     o = cpl(I, 3)
     A.append(complete(s, lv, 'c9d', '서윤이의 리본 바람개비 무늬예요. 점 ㅈ을 대칭의 중심으로 하는 점대칭도형이 되도록 점 ㄱ, ㄴ, ㄷ, ㄹ의 대응점을 찾아 각각 점 ㅁ, ㅂ, ㅅ, ㅇ으로 표시하고 '
@@ -2332,7 +2335,7 @@ def st11(s, lv):
     can = [k for k in '가나다라' if sym[pl[k]] & sym[pl['see']]]
     assert pl['see'] == 'P' and [qz[0]['o'][i] for i in qz[0]['a']] == can, (pl, can)
     hint(s, lv, I, 0)
-    A.append(J(quizq(s, qz, [('play11', 140)])) + '(%s)' % J(can))
+    A.append(J(quizq(s, qz, [('play11', 140)]), ' / '))
     sstep(s, I, 1)
     s.text('놀이 전에 지아가 카드를 미리 살펴보재요. 카드 ①~⑧을 대칭의 종류에 따라 나누어 번호를 써 보세요.')
     spic(s, 'cards11', 120)
@@ -2360,7 +2363,7 @@ def st11(s, lv):
     ch_ = None
     if lv == '도전형':
         step(s, 5, '도전하기', '놀이에서 생긴 일')
-        ch_ = J(quizq(s, first(I, 'c', 'quiz')))
+        ch_ = J(quizq(s, first(I, 'c', 'quiz')), ' / ')
         why(s, '보이는 카드가 원일 때 부등변삼각형 카드를 낼 수 없는 까닭을 써 보세요.', 1)
         ch_ += ' (부등변삼각형은 선대칭도형도 점대칭도형도 아니에요)'
     return answer(11, A, ch_, lv)
@@ -2416,7 +2419,7 @@ def st12(s, lv):
     ch_ = None
     if lv == '도전형':
         step(s, 7, '도전하기', '발표회 마지막 퀴즈')
-        ch_ = J(quizq(s, first(I, 'c', 'quiz')))
+        ch_ = J(quizq(s, first(I, 'c', 'quiz')), ' / ')
         why(s, '직사각형을 대각선으로 잘라 생긴 두 삼각형이 합동인 까닭을 써 보세요.', 1)
     return answer(12, A, ch_, lv)
 
