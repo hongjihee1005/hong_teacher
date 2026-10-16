@@ -345,12 +345,13 @@ function ci6Scene(body, api, opt) {
 function ci6String(body, api, opt) {
   const P = 24, k = 22, W = 420, H = 300, C = { x: 198, y: 132 };   // 1칸 = 1 cm, 바둑돌은 1 cm 간격
   const shapes = {
-    tri: { name: "정삼각형", inside: (x, y) => { const a = 8, hh = a * Math.sqrt(3) / 2, top = -hh * 2 / 3, bot = hh / 3; if (y <= top || y >= bot) return false; const half = (y - top) / hh * a / 2; return Math.abs(x) < half; },
+    tri: { name: "정삼각형", inside: (x, y, m) => { const a = 8, hh = a * Math.sqrt(3) / 2, V = [[0, -hh * 2 / 3], [a / 2, hh / 3], [-a / 2, hh / 3]]; return V.every(([x1, y1], e) => { const [x2, y2] = V[(e + 1) % 3]; return ((x2 - x1) * (y - y1) - (y2 - y1) * (x - x1)) / Math.hypot(x2 - x1, y2 - y1) >= m; }); },
       draw: g => { const a = 8, hh = a * Math.sqrt(3) / 2; ci6Poly(g, [[C.x, C.y - hh * 2 / 3 * k], [C.x + a / 2 * k, C.y + hh / 3 * k], [C.x - a / 2 * k, C.y + hh / 3 * k]], { stroke: CI6.red, "stroke-width": 4 }); } },
-    sq: { name: "정사각형", inside: (x, y) => Math.abs(x) < 3 && Math.abs(y) < 3, draw: g => ci6Poly(g, [[C.x - 3 * k, C.y - 3 * k], [C.x + 3 * k, C.y - 3 * k], [C.x + 3 * k, C.y + 3 * k], [C.x - 3 * k, C.y + 3 * k]], { stroke: CI6.red, "stroke-width": 4 }) },
-    ci: { name: "원", inside: (x, y) => Math.hypot(x, y) < P / (2 * Math.PI), draw: g => ci6Circle(g, C.x, C.y, P / (2 * Math.PI) * k, { stroke: CI6.red, "stroke-width": 4 }) } };
-  /* 바둑돌 자리: 가운데가 칸의 가운데에 오도록 반 칸씩 비켜 놓은 1 cm 간격 점 */
-  const count = sh => { let n = 0; const pts = []; for (let i = -6; i <= 6; i++) for (let j = -6; j <= 6; j++) { const x = i + .5, y = j + .5; if (shapes[sh].inside(x, y)) { n++; pts.push([x, y]); } } return { n, pts }; };
+    sq: { name: "정사각형", inside: (x, y, m) => Math.abs(x) <= 3 - m && Math.abs(y) <= 3 - m, draw: g => ci6Poly(g, [[C.x - 3 * k, C.y - 3 * k], [C.x + 3 * k, C.y - 3 * k], [C.x + 3 * k, C.y + 3 * k], [C.x - 3 * k, C.y + 3 * k]], { stroke: CI6.red, "stroke-width": 4 }) },
+    ci: { name: "원", inside: (x, y, m) => Math.hypot(x, y) <= P / (2 * Math.PI) - m, draw: g => ci6Circle(g, C.x, C.y, P / (2 * Math.PI) * k, { stroke: CI6.red, "stroke-width": 4 }) } };
+  /* 바둑돌 자리: 1 cm 간격 점. 바둑돌(반지름 8/k cm)이 끈 안에 통째로 들어가야 하고, 도형마다 가장 많이 들어가게 점의 자리를 0.05 cm씩 옮겨 고름 */
+  const SR = 8 / k;
+  const count = sh => { let best = { n: -1, pts: [] }; for (let dx = 0; dx < 1; dx += .05) for (let dy = 0; dy < 1; dy += .05) { const pts = []; for (let i = -6; i <= 6; i++) for (let j = -6; j <= 6; j++) { const x = i + dx, y = j + dy; if (shapes[sh].inside(x, y, SR)) pts.push([x, y]); } if (pts.length > best.n) best = { n: pts.length, pts }; } return best; };
   const res = {}; Object.keys(shapes).forEach(kk => { res[kk] = count(kk); });
   const best = Object.keys(shapes).reduce((a, b) => res[a].n >= res[b].n ? a : b);
   const s = makeSvg(W, H, k); s.setAttribute("class", "ci6fig"); s.style.maxWidth = "24em";
@@ -549,7 +550,7 @@ function ci6Roll(body, api, opt) {
   s.append(svgEl("rect", { x: 0, y: gy, width: W, height: H - gy, fill: "#EADBC0" }));
   ci6Line(s, 0, gy, W, gy, "#8A6A45", 3);
   for (let m = 0; m <= 22; m++) { const x = x0 + m * k; ci6Line(s, x, gy, x, gy + (m % 2 ? 7 : 12), CI6.ink, 1.4); if (m % 2 === 0) s.append(txt(x, gy + 46, String(m), 13)); }
-  s.append(txt(x0 + 22 * k + 6, gy + 46, "(m)", 12, { "text-anchor": "start", fill: CI6.gray }));
+  s.append(txt(x0 - 40, gy + 46, "(m)", 12, { fill: CI6.gray }));
   const trace = ci6Line(s, x0, gy + 3, x0, gy + 3, CI6.blue, 6);
   const bars = svgEl("g"); s.append(bars);
   const wheel = svgEl("g"); wheel.style.cursor = "grab";
@@ -834,7 +835,7 @@ function ci6Land(body, api, opt) {
     pass(`${p.name}: 반지름 ${die} cm인 원을 그렸어요.`);
   });
   sync(); say.textContent = "파랑부터 시작해요. 주사위를 굴려요.";
-  body.append(h("div", { class: "ci6score" }, ...cards), h("div", { class: "ci6btns" }, rollBtn, dieBox, endBtn), say, askRow, s, ci6Calc(), h("p", { class: "ci6small" }, "원을 6개 넘게 그리면 ‘놀이 끝내기’로 끝낼 수 있어요. 반지름 1 cm인 원도 그릴 자리가 없으면 저절로 끝나요."));
+  body.append(h("div", { class: "ci6score" }, ...cards), h("div", { class: "ci6btns" }, rollBtn, dieBox, endBtn), say, askRow, s, ci6Calc(), h("p", { class: "ci6small" }, "여섯 차례가 지나면 ‘놀이 끝내기’로 끝낼 수 있어요. 반지름 1 cm인 원도 그릴 자리가 없으면 저절로 끝나요."));
 }
 
 /* ---------- 7·11차시 그림 ---------- */
@@ -1083,7 +1084,7 @@ const LESSONS = [
         { parts: ["초록색 정사각형의 넓이: (5×5÷2)×4 = ", { n: 50, why: { "25": "삼각형 하나의 넓이가 12.5 m²이고, 삼각형이 4개예요.", "100": "삼각형의 넓이는 (밑변의 길이)×(높이)÷2예요." } }, " (m²)"] },
         { parts: ["빨간색 정사각형의 넓이: 10×10 = ", { n: 100 }, " (m²)"] },
         { parts: [{ n: 50 }, " m² < (반지름이 5 m인 원 모양 텃밭의 넓이) < ", { n: 100 }, " m²"] }],
-        ok: "원 안 정사각형은 삼각형 4개로 (5×5÷2)×4=50 (m²), 원 밖 정사각형은 10×10=100 (m²)이에요. 텃밭의 넓이는 50 m²보다 넓고 100 m²보다 좁아요." }) },
+        ok: "원 안 정사각형은 삼각형 4개로 (5×5÷2)×4=50 (m²), 원 밖 정사각형은 10×10=100 (m²)예요. 텃밭의 넓이는 50 m²보다 넓고 100 m²보다 좁아요." }) },
     { name: "그려 보기", inst: "반지름이 5 m인 원을 1칸이 1 m×1 m인 모눈 위에 그렸어요. “전체를 4등분한 모양에서 모눈을 세어 본 후 4배 해도 돼.” 4등분한 한 조각에서 원 안에 완전히 들어간 칸은 초록, 원이 걸친 칸은 주황으로 칠해 보세요.", hints: ["칸 전체가 원 안에 있으면 초록이에요.", "원의 둘레가 칸을 지나가면 주황이에요.", "꼭짓점 하나만 원 위에 닿은 칸은 원 안에 들어간 칸이에요."],
       render: (b, a) => { const q = ci6GridCount(5); return ci6Grid(b, a, { r: 5, unit: "m", ask: [
         { parts: ["한 조각에서 초록 칸은 ", { n: q.g }, "칸이므로 초록색 선 안쪽(원 안에 완전히 들어간 칸)은 모두 ", { n: q.g * 4, why: { [q.g]: "4등분한 한 조각에서 센 칸 수예요. 4배 해요." } }, "칸 → ", { n: q.g * 4 }, " m²"] },
@@ -1241,7 +1242,7 @@ const LESSONS = [
       render: (b, a) => ci6Ask(b, a, [
         { fig: () => ci6PizzaFig([{ name: "메뉴 1", d: 30, n: 1, price: 18000 }, { name: "메뉴 2", d: 22, n: 2, price: 18000 }], 3.2), parts: ["메뉴 1의 넓이: ", { n: 706.5, why: { "2826": "반지름 15 cm로 구해요." } }, " cm²"] },
         { parts: ["메뉴 2의 넓이: ", { n: 759.88, why: { "379.94": "피자가 2판이에요." } }, " cm²"] },
-        { parts: ["서현이는 ", { o: ["메뉴 1", "메뉴 2"], a: 1, why: { "0": "706.5 cm²보다 759.88 cm²가 더 넓어요." } }, "을 골라야 해요."] }],
+        { parts: ["서현이가 골라야 하는 메뉴는 ", { o: ["메뉴 1", "메뉴 2"], a: 1, why: { "0": "706.5 cm²보다 759.88 cm²가 더 넓어요." } }, "예요."] }],
       { ok: "메뉴 1은 15×15×3.14=706.5 (cm²), 메뉴 2는 11×11×3.14×2=759.88 (cm²)이므로 서현이는 메뉴 2를 골라야 해요. 이번에는 작은 피자 2판이 더 많아요!", calc: true }) }
   ],
   challenge: { inst: "조건을 바꾸어 새 문제를 만들어 보았어요. 지름이 20 cm인 피자 몇 판의 넓이의 합이 지름이 40 cm인 피자 1판의 넓이와 같을까요?", hints: ["지름이 40 cm인 피자의 반지름은 20 cm예요.", "20×20×3.14=1256, 10×10×3.14=314예요.", "1256은 314의 몇 배인지 구해요."],

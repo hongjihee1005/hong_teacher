@@ -680,12 +680,13 @@ function dv2LongBoard(pr) {
     const P = rRow.p >= 0 ? rRow.p : C - 1;
     let val = dv2R(0n);
     for (let k = r.first; k <= r.last; k++) { const d = BigInt(r.v[k]), e = P - k; val = dv2Add(val, e >= 0 ? dv2R(d * dv2Pow(e)) : dv2R(d, dv2Pow(-e))); }
-    const ok = dv2Eq(val, remR);
+    let ok = dv2Eq(val, remR);
+    if (ok && remR.d !== 1n && rRow.p !== pOrig) { paint(rRow, r.first, r.last, false); return { bad: `${cap}: 남는 양의 숫자를 나누어지는 수의 자리에 맞추어 쓰고, 소수점은 ${A}의 처음 소수점 자리에 찍어요.`, given: dv2Str(val) }; }
     paint(rRow, r.first, r.last, ok);
     if (ok) return { ok: true, given: dv2Str(val) };
     const sameDigits = [dv2Pow(1), dv2Pow(2), dv2Pow(3)].some(m => dv2Eq(val, dv2Mul(remR, dv2R(m))) || dv2Eq(val, dv2Div(remR, dv2R(m))));
-    if (sameDigits) return { bad: `${cap}: 남는 양의 숫자는 맞는데 소수점 위치가 달라요. 남는 양의 소수점은 나누어지는 수 ${A}의 처음 소수점(흐린 동그라미)에 맞추어 찍어요.`, given: dv2Str(val) };
-    return { bad: `${cap}: 몫 ${qStr}에 대한 빼기를 다시 해 봐요. ${shownA} − ${shownB} × ${qStr}를 계산해요.`, given: dv2Str(val) };
+    if (sameDigits) return { bad: `${cap}: 남는 양의 숫자는 맞는데 소수점 위치가 달라요. 남는 양의 소수점은 나누어지는 수 ${A}의 처음 소수점${sh ? "(흐린 동그라미)" : ""}에 맞추어 찍어요.`, given: dv2Str(val) };
+    return { bad: `${cap}: 몫 ${qStr}에 대한 빼기를 다시 해 봐요. ${dv2J(`${shownA} − ${shownB} × ${qStr}`, "을를")} 계산해요.`, given: dv2Str(val) };
   };
   const judge = () => {
     const q = judgeQ(); if (q.bad) return q;
@@ -739,7 +740,7 @@ function dv2Round(body, api, opt) {
       return { given: cells[pick] };
     };
     row.__solve = () => { pick = intLen + it.to; };
-    return { row, judge, ans: `${dv2Sp(it.e)} = ${show}… → ${DV2PLACE[it.to + 1]} 숫자 ${cells[intLen + it.to]}를 보고 ${want}` };
+    return { row, judge, ans: `${dv2Sp(it.e)} = ${show}… → ${DV2PLACE[it.to + 1]} 숫자 ${dv2J(cells[intLen + it.to], "을를")} 보고 ${want}` };
   });
   body.append(h("div", { class: "dv2say" }, opt.tip || "몫에서 확인할 숫자(나타낼 자리의 바로 아래 자리)를 누르고, 반올림한 몫을 칸에 써요."), ...items.map(i => i.row));
   if (opt.asks) body.append(h("div", { class: "dv2ask" }, dv2Rows(opt.asks, reg)));
@@ -1259,7 +1260,7 @@ const LESSONS = [
         asks: [
           ["구하는 식은", { o: ["6.3÷2", "6.3×2", "2÷6.3"], a: 0 }],
           ["뺄셈식: 6.3 − 2 − 2 − 2 =", { n: "0.3", e: "6.3−2−2−2" }],
-          ["나누어 담을 수 있는 통의 수:", { n: "3", s: 1 }, "통, 남는 흙의 양:", { n: "0.3", why: { "3": "흙의 양은 6.3에서 6을 뺀 만큼이에요." } }, "kg"]],
+          ["나누어 담을 수 있는 통의 수:", { n: "3", s: 1 }, "통, 남는 흙의 양:", { n: "0.3", why: { "3": "남는 흙의 양은 6.3에서 2를 3번 뺀 만큼이에요. 3 kg이 아니라 0.3 kg이에요." } }, "kg"]],
         ok: "6.3에서 2를 3번 뺄 수 있으므로 3통, 3번 빼면 0.3이 남으므로 남는 흙은 0.3 kg이에요." }) },
     { inst: "“주스 12.4 L를 한 사람에게 1.5 L씩 나누어 주려고 합니다. 주스를 1.5 L씩 몇 명까지 나누어 줄 수 있고, 남는 주스는 몇 L인지 구해 봅시다.” 세로셈으로 계산해 보세요. 몫은 자연수 부분까지만 쓰고, 남는 양을 주황 칸에 쓴 뒤 소수점을 찍어요. 말풍선: “남는 양의 소수점은 12.4의 소수점에 맞추어 찍어요.”", hints: ["15)124처럼 계산해요. 15×8=120이에요.", "124−120=4예요. 남는 양은 4 L일까요?", "남는 양의 소수점은 12.4의 처음 소수점(흐린 동그라미)에 맞추어 찍어요. 0.4 L예요."],
       render: (b, a) => dv2Long(b, a, { probs: [{ a: "12.4", b: "1.5", mode: "rem", what: "사람 수" }],
@@ -1330,11 +1331,11 @@ const LESSONS = [
         { q: "필요한 연료의 양을 어떻게 구했는지 설명해 보세요.", tag: "해결 방법", ph: "예) 거리를 1 L로 갈 수 있는 거리로 나누었어요. 337.92÷17.6=19.2예요." },
         { q: "같은 거리를 갈 때 연료를 적게 쓰면 어떤 점이 좋은지, 내가 할 수 있는 환경 보호 활동을 써 보세요.", tag: "환경", ph: "예) 연료를 아끼면 공기가 덜 오염돼요. 가까운 곳은 걸어서 가요." }]) }
   ],
-  challenge: { inst: "연료 1 L로 갈 수 있는 거리를 비교해요. 하이브리드 자동차는 휘발유 자동차보다 약 몇 배 더 멀리 갈 수 있을까요? 몫을 반올림하여 소수 첫째 자리까지 나타내 보세요.", hints: ["(하이브리드 자동차가 1 L로 가는 거리)÷(휘발유 자동차가 1 L로 가는 거리)를 계산해요.", "17.6÷9.6=1.833…이에요.", "소수 둘째 자리 숫자를 보고 반올림해요."],
+  challenge: { inst: "연료 1 L로 갈 수 있는 거리를 비교해요. 하이브리드 자동차가 연료 1 L로 갈 수 있는 거리는 휘발유 자동차가 1 L로 갈 수 있는 거리의 약 몇 배일까요? 몫을 반올림하여 소수 첫째 자리까지 나타내 보세요.", hints: ["(하이브리드 자동차가 1 L로 가는 거리)÷(휘발유 자동차가 1 L로 가는 거리)를 계산해요.", "17.6÷9.6=1.833…이에요.", "소수 둘째 자리 숫자를 보고 반올림해요."],
     render: (b, a) => dv2Sent(b, a, [
       ["민영이네: 17.6 ÷ 9.6 → 약", { n: "1.8", r: ["17.6÷9.6", 1], why: { "1.9": "소수 둘째 자리 숫자가 3이에요. 5보다 작으면 버려요." } }, "배"],
       ["수찬이네: 24.14 ÷ 8.52 → 약", { n: "2.8", r: ["24.14÷8.52", 1] }, "배"]],
-      { ok: "민영이네 하이브리드 자동차는 약 1.8배, 수찬이네는 약 2.8배 더 멀리 갈 수 있어요." }) }
+      { ok: "연료 1 L로 갈 수 있는 거리가 민영이네 하이브리드 자동차는 휘발유 자동차의 약 1.8배, 수찬이네는 약 2.8배예요." }) }
 },
 {
   id: "t10", no: 10, title: "놀이를 더하다 ― 소수의 나눗셈으로 떠나는 섬나라 여행", soop: "발표하기(P)",

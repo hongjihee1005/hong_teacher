@@ -364,16 +364,16 @@ function rp4Machine(body, api, opt) {
   const RT = (a, b) => `${rp4Fr(a)} : ${rp4Fr(b)}`;
   const draw = () => {
     svg.innerHTML = "";
+    const val = q => q.n / q.d, Hh = 120;
+    const U = Math.min(30, 250 / Math.max(val(st[0]), val(cur[0])), Hh / Math.max(val(st[1]), val(cur[1])));
     const shape = (a, b, x, col, title) => {
-      const r = rp4DivQ(a, b).n / rp4DivQ(a, b).d, Hh = 120, W = Math.min(250, Hh * r);
-      const hh = W < Hh * r ? W / r : Hh;
+      const W = val(a) * U, hh = val(b) * U;
       svg.append(txt(x, 24, title, 18, { fill: "#4A5A55" }));
       svg.append(svgEl("rect", { x: x - W / 2, y: 50 + (Hh - hh), width: W, height: hh, fill: col, "fill-opacity": .35, stroke: col, "stroke-width": 3, rx: 4 }));
-      svg.append(txt(x, 50 + Hh + 18, "가로 : 세로", 15, { fill: "#4A5A55" }));
-      svg.append(rp4SvgLine(`${rp4Fr(a)} : ${rp4Fr(b)}`, x, 50 + Hh + 46, 22));
+      svg.append(rp4SvgLine(`${rp4Fr(a)} : ${rp4Fr(b)}`, x, 50 + Hh + 30, 22));
     };
-    shape(st[0], st[1], 170, "#2B7BD6", "처음 비가 나타내는 모양");
-    shape(cur[0], cur[1], 470, rp4EqQ(rp4DivQ(cur[0], cur[1]), rp4DivQ(st[0], st[1])) ? "#2E8B57" : "#C8472E", "지금 비가 나타내는 모양");
+    shape(st[0], st[1], 170, "#2B7BD6", "처음 비(가로 : 세로)");
+    shape(cur[0], cur[1], 470, rp4EqQ(rp4DivQ(cur[0], cur[1]), rp4DivQ(st[0], st[1])) ? "#2E8B57" : "#C8472E", "지금 비(가로 : 세로)");
   };
   const showHist = () => { histEl.textContent = [RT(st[0], st[1])].concat(hist).join(" "); };
   const opBtns = opt.ops.map(o => h("button", { onclick: e => { op = o; opBtns.forEach(b => b.classList.toggle("rp4sel", b === e.currentTarget)); } }, o === "+" ? "+ 같은 수 더하기" : o === "×" ? "× 같은 수 곱하기" : "÷ 같은 수로 나누기"));
@@ -443,15 +443,14 @@ function rp4Simp(body, api, opt) {
   };
   const kIn = rp4Inp(false, "곱하거나 나눌 수");
   const mults = (opt.mults || [10, 100]).map(m => h("button", { onclick: () => doOp("×", rp4Q(m, 1)) }, `× ${m}`));
-  const convBtns = [0, 1].map(k => h("button", { onclick: () => convert(k) }, k ? "후항 바꾸기(소수↔분수)" : "전항 바꾸기(소수↔분수)"));
+  const convBtns = [0, 1].map(k => h("button", { onclick: () => convert(k) }, k ? "후항 바꾸기(소수는 분수로, 분수는 소수로)" : "전항 바꾸기(소수는 분수로, 분수는 소수로)"));
   const reset = () => { cur = st.map(x => Object.assign({}, x)); hist.length = 0; conv = false; fin = false; refresh(); msg.textContent = "​"; };
   api.provide({ words: ["10, 100, 1000", "분모의 공배수", "공약수로 나누기", "간단한 자연수의 비"], answers: [] });
   body.append(big,
     h("div", { class: "rp4tools" }, h("span", { class: "jua" }, "전항과 후항에 함께"), ...mults),
     h("div", { class: "rp4tools" }, h("span", { class: "jua" }, "같은 수"), kIn,
       h("button", { onclick: () => doOp("×", rp4P(kIn.value)) }, "× 곱하기"), h("button", { onclick: () => doOp("÷", rp4P(kIn.value)) }, "÷ 나누기")),
-    opt.noConv ? null : h("div", { class: "rp4tools" }, ...convBtns, h("button", { onclick: reset }, "처음으로")),
-    opt.noConv ? h("div", { class: "rp4tools" }, h("button", { onclick: reset }, "처음으로")) : null,
+    opt.noConv ? h("div", { class: "rp4tools" }, h("button", { onclick: reset }, "처음으로")) : h("div", { class: "rp4tools" }, ...convBtns, h("button", { onclick: reset }, "처음으로")),
     histEl, msg);
   refresh();
 }
@@ -512,7 +511,7 @@ function rp4Area(body, api, opt) {
   const partner = u === 0 ? p[3] : u === 3 ? p[0] : u === 1 ? p[2] : p[1];
   const ans = known / partner; if (ans !== Math.round(ans)) throw new Error("rp4Area 답이 자연수가 아님");
   const MAX = opt.max || Math.max(ans * 2, ans + 4);
-  let v = opt.init || 1, fin = false;
+  let v = opt.init || Math.max(1, Math.round(ans / 3)), fin = false;
   const W = 660, H = 360, base = 330, x1 = 40, x2 = 360;
   const dims = () => { const q = p.slice(); q[u] = v; return q; };
   const maxW = Math.max(u === 0 ? MAX : p[0], u === 1 ? MAX : p[1]);
@@ -560,17 +559,17 @@ function rp4Area(body, api, opt) {
    opt: {top:{name, unit, tick}, bot:{name, unit, tick, snap}, given:[t,b], ask:[t], tmax, ask(빈칸 줄), ok} */
 function rp4Dbl(body, api, opt) {
   const [gt, gb] = opt.given, at = opt.askAt, ab = at * gb / gt, tmax = opt.tmax, bmax = tmax * gb / gt;
-  const L = 560, x0 = 50, yT = 70, yB = 190, snap = opt.bot.snap || opt.bot.tick;
+  const L = 560, x0 = 50, yT = 86, yB = 200, snap = opt.bot.snap || opt.bot.tick;
   let v = 0, fin = false;
   const X = (val, mx) => x0 + val / mx * L;
-  const svg = makeSvg(660, 250); svg.setAttribute("class", "rp4fig");
+  const svg = makeSvg(660, 262); svg.setAttribute("class", "rp4fig");
   const read = h("div", { class: "rp4read" }, "​");
   const fmt = x => (Math.round(x * 1000) / 1000).toString();
   const draw = () => {
     svg.innerHTML = "";
     [[yT, opt.top, tmax], [yB, opt.bot, bmax]].forEach(([y, ax, mx]) => {
       svg.append(svgEl("line", { x1: x0, y1: y, x2: x0 + L + 12, y2: y, stroke: INK, "stroke-width": 3 }));
-      svg.append(txt(x0 + L + 20, y - 22, `${ax.name}(${ax.unit})`, 15, { "text-anchor": "end", fill: "#4A5A55" }));
+      svg.append(txt(x0 - 10, y === yT ? y - 48 : y - 24, `${ax.name}(${ax.unit})`, 15, { "text-anchor": "start", fill: "#4A5A55" }));
       for (let t = 0; t <= mx + 1e-9; t += ax.tick) { svg.append(svgEl("line", { x1: X(t, mx), y1: y - 7, x2: X(t, mx), y2: y + 7, stroke: INK, "stroke-width": 2 })); if (ax.lab !== false) svg.append(txt(X(t, mx), y + (y === yT ? -18 : 22), fmt(t), 14, { fill: "#4A5A55" })); }
     });
     svg.append(svgEl("line", { x1: X(gt, tmax), y1: yT, x2: X(gb, bmax), y2: yB, stroke: "#2E8B57", "stroke-width": 3, "stroke-dasharray": "6 5" }));
@@ -583,12 +582,12 @@ function rp4Dbl(body, api, opt) {
     svg.append(txt(mx, yB + 42, `${fmt(v)}`, 16, { fill: fin ? "#2E8B57" : "#C8472E" }));
     read.textContent = `${opt.top.name} ${fmt(at)}${opt.top.unit === "개" ? "개" : " " + opt.top.unit}에 짝이 되는 ${opt.bot.name}: ${v ? fmt(v) + (opt.bot.unit === "개" ? "개" : " " + opt.bot.unit) : "?"}`;
   };
-  dragOn(svg, pt => !fin && Math.abs(pt.y - (yB + 10)) < 50, pt => { v = Math.max(0, Math.min(bmax, Math.round(((pt.x - x0) / L * bmax) / snap) * snap)); v = Math.round(v * 1000) / 1000; draw(); });
+  dragOn(svg, pt => !fin && Math.abs(pt.y - (yB + 10)) < 55, pt => { v = Math.max(0, Math.min(bmax, Math.round(((pt.x - x0) / L * bmax) / snap) * snap)); v = Math.round(v * 1000) / 1000; draw(); });
   api.provide({ words: ["두 양의 비", "비율이 같아요", "비례식"], answers: [] });
-  body.append(h("p", { class: "rp4note" }, `초록 점선은 알고 있는 짝(${fmt(gt)} ↔ ${fmt(gb)})이에요. 아래 줄의 빨간 세모를 끌어 ${fmt(at)}의 짝을 찾아요.`), svg, read,
+  body.append(h("p", { class: "rp4note" }, `초록 점선은 알고 있는 짝(위 ${fmt(gt)}, 아래 ${fmt(gb)})이에요. 아래 줄의 빨간 세모를 끌어 ${fmt(at)}의 짝을 찾아요.`), svg, read,
     h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
       if (fin) return; api.tryOnce();
-      if (Math.abs(v - ab) < 1e-6) { fin = true; draw(); rp4Finish(body, api, opt, `${fmt(at)} ↔ ${fmt(v)}`, `${fmt(at)}의 짝은 ${fmt(ab)}예요.`); }
+      if (Math.abs(v - ab) < 1e-6) { fin = true; draw(); rp4Finish(body, api, opt, `${fmt(at)} ↔ ${fmt(v)}`, `${fmt(at)}의 짝은 ${rp4J(fmt(ab), "이에요")}.`); }
       else api.fail(`위의 ${rp4J(fmt(gt), "이가")} ${rp4J(fmt(at), "이가")} 되려면 몇 배를 해야 하는지 생각하고, 아래 수도 같은 배만큼 바꾸어 봐요.`, fmt(v));
     } }, "여기로 정했어요")));
   draw();
@@ -655,8 +654,8 @@ function rp4Tape(body, api, opt) {
     h("div", { class: "rp4tools" }, h("button", { onclick: () => { if (fin) return; v = Math.max(0, v - snap); draw(); } }, `◀ ${snap}${u} 옮기기`), h("button", { onclick: () => { if (fin) return; v = Math.min(N, v + snap); draw(); } }, `${snap}${u} 옮기기 ▶`)),
     h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
       if (fin) return; api.tryOnce();
-      if (v * Q === (N - v) * P && v > 0) { fin = true; draw(); rp4Finish(body, api, opt, `${v} : ${N - v}`, `${rp4J(N + u, "을를")} ${rp4J(P + " : " + Q, "으로")} 나누면 ${rp4J(v + u, "과와")} ${N - v}${u}예요. 전체를 ${P}+${Q}=${P + Q}등분했어요.`); }
-      else api.fail(`지금은 ${v} : ${N - v}예요. 전체를 ${P}+${Q}=${P + Q}등분한 것 중 ${P}만큼이 ${opt.names[0]} 몫이에요.`, `${v} : ${N - v}`);
+      if (v * Q === (N - v) * P && v > 0) { fin = true; draw(); rp4Finish(body, api, opt, `${v} : ${N - v}`, `${rp4J(N + u, "을를")} ${rp4J(P + " : " + Q, "으로")} 나누면 ${rp4J(v + u, "과와")} ${rp4J(N - v + u, "이에요")}. 전체를 ${P}+${Q}=${P + Q}등분했어요.`); }
+      else api.fail(`지금은 ${rp4J(v + " : " + (N - v), "이에요")}. 전체를 ${P}+${Q}=${P + Q}등분한 것 중 ${P}만큼이 ${opt.names[0]} 몫이에요.`, `${v} : ${N - v}`);
     } }, "이렇게 나눌래요")));
   draw();
 }
@@ -698,7 +697,7 @@ function rp4Dice(body, api, opt) {
     host.innerHTML = "";
     const sub = Object.assign({}, api, { done: () => {
       got++; cur = null; host.innerHTML = "";
-      if (got >= opt.need) api.done(`${got}번`, opt.ok); else api.hint(`○ 맞았어요! ${a} : ${b} = ${opt.base} : ${opt.base * b / a}이에요. 주사위를 한 번 더 던져 봐요.`);
+      if (got >= opt.need) api.done(`${got}번`, opt.ok); else api.hint(`○ 맞았어요! ${a} : ${b} = ${opt.base} : ${rp4J(String(opt.base * b / a), "이에요")}. 주사위를 한 번 더 던져 봐요.`);
     } });
     rp4Chain(host, sub, [[`${a} : ${b} = ${opt.base} : `, { i: String(opt.base * b / a) }], ["외항의 곱 ", { i: String(opt.base * b) }, " = 내항의 곱"]], { bad: `비례식의 성질을 써요. ${a} × □ = ${b} × ${opt.base}예요.` });
   };
@@ -737,7 +736,7 @@ function rp4Rect(body, api, opt) {
 
 /* ---------- ⑬ 새 활용 체험관 둘러보기 ---------- */
 function rp4Scene(body, api, opt) {
-  const svg = makeSvg(720, 330); svg.setAttribute("class", "rp4fig");
+  const svg = makeSvg(720, 272); svg.setAttribute("class", "rp4fig");
   const spots = [
     { x: 20, t: "현수막 가방 꾸미기", ok: true, say: "가방을 꾸밀 때 사용한 빨간색 물감과 파란색 물감의 양을 비교해요.", draw: g => { g.append(svgEl("rect", { x: 30, y: 120, width: 70, height: 70, rx: 8, fill: "#F0E6D2", stroke: "#8A7552", "stroke-width": 2 })); g.append(svgEl("rect", { x: 104, y: 150, width: 26, height: 40, rx: 4, fill: "#E2574C" }), svgEl("rect", { x: 104, y: 175, width: 26, height: 15, fill: "#962A21" })); g.append(svgEl("rect", { x: 134, y: 165, width: 22, height: 25, rx: 4, fill: "#2B7BD6" })); } },
     { x: 160, t: "친환경 신발 부스", ok: true, say: "신발을 만들 때 필요한 페트병 수와 나무껍질의 양을 비교해요.", draw: g => { g.append(rp4Icon("shoe", 215, 140, 70)); g.append(rp4Icon("bottle", 190, 190, 34), rp4Icon("bottle", 215, 190, 34), rp4Icon("bark", 255, 190, 40)); } },
@@ -745,7 +744,7 @@ function rp4Scene(body, api, opt) {
     { x: 440, t: "헌 크레파스 녹이기", ok: true, say: "새 크레파스 수와 필요한 헌 크레파스의 양을 비교해요.", draw: g => { g.append(rp4Icon("old", 480, 150, 60), rp4Icon("newcr", 530, 185, 60)); } },
     { x: 580, t: "우유갑 지갑 기부", ok: true, say: "만든 지갑을 두 센터에 나누어 기부해요. 주어진 양을 나누는 상황이에요.", draw: g => { g.append(rp4Icon("wallet", 620, 140, 50), rp4Icon("wallet", 670, 140, 50), rp4Icon("wallet", 645, 185, 50)); } }];
   const found = new Set(); const say = h("div", { class: "rp4read" }, "체험 부스를 눌러 두 양을 비교하거나 나누는 상황을 찾아봐요.");
-  svg.append(svgEl("rect", { x: 0, y: 228, width: 720, height: 102, fill: "#EFE7DA" }));
+  svg.append(svgEl("rect", { x: 0, y: 228, width: 720, height: 44, fill: "#EFE7DA" }));
   svg.append(txt(360, 26, "새 활용 체험관", 24, { fill: "#2F6B57" }));
   spots.forEach((s, i) => {
     const g = svgEl("g", { style: "cursor:pointer" });
@@ -789,7 +788,8 @@ function rp4Meet(body, api, opt) {
   let good = 0, fr = null, phase = "pick"; const need = opt.rounds || 6;
   const area = h("div", { class: "rp4meet" }), mine = h("div"), friend = h("div"), msg = h("div", { class: "rp4read" }, "​"), score = h("div", { class: "rp4read" }, "​");
   const newFriend = () => {
-    const pool = RP4_CARDS.map((_, i) => i).filter(i => !hand.includes(i));
+    const got = RP4_GOT.flat(), pool0 = RP4_CARDS.map((_, i) => i).filter(i => !hand.includes(i) && !got.includes(i));
+    const pool = pool0.filter(i => i !== fr).length ? pool0.filter(i => i !== fr) : pool0;
     const want = Math.random() < .55 ? hand.map(rp4Partner).filter(i => pool.includes(i)) : pool.filter(i => !hand.some(k => rp4Same(RP4_CR[i], RP4_CR[k])));
     const list = want.length ? want : pool; fr = list[Math.floor(Math.random() * list.length)]; phase = "pick"; draw();
   };
@@ -1018,7 +1018,7 @@ const LESSONS = [
         items: [{ name: "페트병", per: 6, unit: "개", icon: "bottle" }, { name: "나무껍질", per: 20, unit: "g", icon: "bark", lump: true }],
         ask: [{ t: "한 켤레", p: ["페트병 수와 나무껍질양의 비 ", { r: [6, 20] }, ", 비율 ", { f: "6/20" }] },
           { t: "두 켤레", p: ["페트병 수와 나무껍질양의 비 ", { r: [12, 40] }, ", 비율 ", { f: "12/40" }] },
-          ["두 비율은 약분하면 ", { f: "3/10" }, "로 같아요."]],
+          ["두 비율은 약분하면 ", { f: "3/10" }, "으로 같아요."]],
         ok: "6 : 20과 12 : 40의 비율은 [3/10]으로 같아요. 비율이 같으니 기호 =를 사용하면 좋겠어요." }) },
     { inst: "비율이 같은 두 비를 기호 =를 사용하여 6 : 20=12 : 40과 같이 나타낼 수 있어요. 이와 같은 식을 비례식이라고 해요. 비례식에서 바깥쪽에 있는 두 수에 ◯, 안쪽에 있는 두 수에 △를 해 보세요.", hints: ["바깥쪽은 맨 앞의 6과 맨 뒤의 40이에요.", "안쪽은 기호 = 의 양옆에 있는 20과 12예요."],
       render: (b, a) => rp4Terms(b, a, { props: [[6, 20, 12, 40]], ok: "6 : 20=12 : 40에서 바깥쪽 6과 40은 외항, 안쪽 20과 12는 내항이에요." }) },

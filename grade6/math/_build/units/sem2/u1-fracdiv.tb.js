@@ -7,7 +7,7 @@ const APP={title:"남극 과학 기지 분수의 나눗셈", unit:"6-2 수학 1.
    채점은 값으로 해요: 약분하지 않은 분수, 가분수, 대분수 모두 정답이에요(지도서 채점 원칙). */
 /*fd6-core*/
 const FD6_WORDS = ["분자끼리 나누기", "통분", "분자와 분모를 바꾸어 곱하기", "가분수로 바꾸기", "약분", "대분수"];
-const FD6_SRC = "\\[(?:(\\d+|□) )?([0-9□]+(?:[+−×÷-][0-9□]+)*)\\/([0-9□]+(?:×[0-9□]+)*)\\]";
+const FD6_SRC = "\\[(?:(\\d+|□) )?([0-9□■●▲♥]+(?:[+−×÷-][0-9□]+)*)\\/([0-9□■●▲♥]+(?:×[0-9□]+)*)\\]";
 const fd6Re = () => new RegExp(FD6_SRC, "g");
 /* 칸에 쓴 글(자연수·분자·분모) → 수 */
 function fd6Raw(ws, ns, ds) {
@@ -258,6 +258,7 @@ function fd6In(label) {
 function fd6Box(exp) {
   const i = h("input", { type: "text", inputmode: "numeric", autocomplete: "off", maxlength: 4, class: "fd6box", "aria-label": "빈칸" });
   i.exp = String(exp);
+  if (i.exp.length >= 3) i.classList.add("fd6wide");
   return i;
 }
 /* 어림 상자 */
@@ -617,7 +618,7 @@ function fd6Scoop(body, api, opt) {
         const x1 = LX + full * g * cw, x2 = x1 + rem * cw, yb = y2 + 64;
         svg.append(svgEl("path", { d: `M${x1 + 3} ${yb} L${x1 + 3} ${yb + 10} L${x2 - 3} ${yb + 10} L${x2 - 3} ${yb}`, fill: "none", stroke: "#B8860B", "stroke-width": 3 }));
         /* 남은 부분 위에 한 묶음 크기 점선 */
-        svg.append(svgEl("rect", { x: x1, y: y2 - 6, width: g * cw, height: 66, fill: "none", stroke: "#B8860B", "stroke-width": 2.5, "stroke-dasharray": "7 5" }));
+        svg.append(svgEl("rect", { x: x1, y: y2 - 6, width: Math.min(g * cw, W - 6 - x1), height: 66, fill: "none", stroke: "#B8860B", "stroke-width": 2.5, "stroke-dasharray": "7 5" }));
         svg.append(fd6SvgLine(`한 ${one}의 [${rem}/${g}]`, Math.min(W - 70, Math.max(LX + 70, (x1 + x2) / 2)), yb + 34, 18, { fill: "#8A6400" }));
       }
     }
@@ -649,7 +650,7 @@ function fd6Scoop(body, api, opt) {
   const ask = h("div", { class: "fd6ask" });
   body.append(h("p", { class: "fd6tip" }, opt.tip || `아래 띠(나누어지는 수)를 누를 때마다 위 띠(나누는 수)만큼씩 덜어 내요.`),
     stA || "", stB || "", h("div", { class: "fd6ctl" }, h("button", { onclick: scoop }, "한 번 덜어 내기"), h("button", { onclick: back }, "하나 되돌리기")), rd, h("div", { class: "fd6stage" }, svg), ask);
-  fd6Ask(ask, api, ready, () => !same() ? `칸의 크기를 같게 해요. 두 띠의 한 칸이 모두 [1/${cd}]${unit}이 되게 나누어요.` : p < full ? `${g}칸씩 덜어 내요. 지금 ${p}번 덜어 냈어요.` : "남은 부분을 눌러 한 묶음의 얼마만큼인지 알아봐요.", opt);
+  fd6Ask(ask, api, ready, () => !same() ? `칸의 크기를 같게 해요. 두 띠의 한 칸이 모두 [1/${cd}]${unit ? fd6U(unit, "이가") : "이"} 되게 나누어요.` : p < full ? `${g}칸씩 덜어 내요. 지금 ${p}번 덜어 냈어요.` : "남은 부분을 눌러 한 묶음의 얼마만큼인지 알아봐요.", opt);
 }
 
 /* ② 원 모양(파이) 덜어 내기: 분모가 같은 경우. opt A, B, word, unit, ask */
@@ -690,6 +691,9 @@ function fd6Pie(body, api, opt) {
 /* 단위 뒤 조사: 읽는 말(킬로그램·리터…)의 받침으로 정해요 */
 const FD6_UR = { km: "킬로미터", L: "리터", "원": "원", kg: "킬로그램", m: "미터", g: "그램", "시간": "시간", "수조": "수조" };
 function fd6U(u, pair) { const w = FD6_UR[String(u).trim()] || String(u); return u + fd6J(w, pair).slice(w.length); }
+/* 아래 수직선의 양 읽기: pre가 있으면 '수조의 [1/3]', '수조 1개'처럼 읽어요 */
+function fd6P(it, x) { return it.pre ? (x === "1" ? `${it.pre} 1개` : `${it.pre}의 ${x}`) : `${x}${it.bot}`; }
+function fd6PJ(it, x, pair) { return it.pre ? fd6J(fd6P(it, x), pair) : x + fd6U(it.bot, pair); }
 /* ③ 이중 척도 모델: 위는 양(km·L·원·kg), 아래는 수직선(시간·수조·kg·m). 아래 a/b일 때 위 Q.
    items [{Q:"6", a:2, b:3, top:"km", bot:"시간", name}] — 표시를 [1/b]로 옮기면 ÷a, 1로 옮기면 ×b. 모든 모델을 끝내야 해요. */
 function fd6Double(body, api, opt) {
@@ -732,20 +736,21 @@ function fd6Double(body, api, opt) {
         svg.append(svgEl("circle", { cx: x2, cy: y, r: 5, fill: col }));
         svg.append(svgEl("rect", { x: m - 22, y: y - hgt / 2 - 13, width: 44, height: 24, rx: 6, fill: "#fff" }));
         svg.append(fd6SvgLine(t, m, y - hgt / 2 - 1, 19, { fill: col })); };
-      if (S.stage >= 1) arc(a, 1, YB - 14, 36, `÷${a}`, "#C8472E");
+      /* ×b 화살표를 먼저 그려 ÷a 글자가 위에 보이게 */
       if (S.stage >= 2) arc(1, b, YB - 14, 92, `×${b}`, "#2E8B57");
+      if (S.stage >= 1) arc(a, 1, YB - 14, 36, `÷${a}`, "#C8472E");
       /* 움직이는 표시 */
       const mx = LX + S.pos * step;
       svg.append(svgEl("polygon", { points: `${mx},${YB - 4} ${mx - 13},${YB - 28} ${mx + 13},${YB - 28}`, fill: TENT, "pointer-events": "none" }));
       const U_ = (u, pr) => fd6U(u, pr);
-      rds[k].textContent = S.stage === 0 ? `[${a}/${b}]${it.bot}에 ${lab(Q)}${U_(it.top, "이에요")}. 먼저 [1/${b}]${U_(it.bot, "으로")} 표시를 옮겨 보세요.`
-        : S.stage === 1 ? `[1/${b}]${U_(it.bot, "은는")} [${a}/${b}]${U_(it.bot, "을를")} ${fd6J(String(a), "으로")} 나눈 것이니 ${lab(Q)}÷${a} = ${lab(seg)}${U_(it.top, "이에요")}. 이제 1${U_(it.bot, "으로")} 옮겨 보세요.`
-        : `1${U_(it.bot, "은는")} [1/${b}]${it.bot}의 ${b}배이니 ${lab(seg)}×${b} = ${lab(one)}${U_(it.top, "이에요")}.`;
+      rds[k].textContent = S.stage === 0 ? `${fd6P(it, `[${a}/${b}]`)}에 ${lab(Q)}${U_(it.top, "이에요")}. 먼저 ${fd6PJ(it, `[1/${b}]`, "으로")} 표시를 옮겨 보세요.`
+        : S.stage === 1 ? `${fd6PJ(it, `[1/${b}]`, "은는")} ${fd6PJ(it, `[${a}/${b}]`, "을를")} ${fd6J(String(a), "으로")} 나눈 것이니 ${lab(Q)}÷${a} = ${lab(seg)}${U_(it.top, "이에요")}. 이제 ${fd6PJ(it, "1", "으로")} 옮겨 보세요.`
+        : `${fd6PJ(it, "1", "은는")} ${fd6P(it, `[1/${b}]`)}의 ${b}배이니 ${lab(seg)}×${b} = ${lab(one)}${U_(it.top, "이에요")}.`;
       rds[k].classList.toggle("fd6good", S.stage === 2);
     };
     const move = j => {
-      if (S.stage === 0) { if (j !== 1) return api.hint(`먼저 [1/${b}]${fd6U(it.bot, "으로")} 옮겨요. [1/${b}]${fd6U(it.bot, "은는")} [${a}/${b}]${fd6U(it.bot, "을를")} ${fd6J(String(a), "으로")} 나눈 것이에요.`); S.stage = 1; S.pos = 1; }
-      else if (S.stage === 1) { if (j !== b) return api.hint(`이제 1${fd6U(it.bot, "으로")} 옮겨요. 1은 [1/${b}]의 ${b}배예요.`); S.stage = 2; S.pos = b; }
+      if (S.stage === 0) { if (j !== 1) return api.hint(`먼저 ${fd6PJ(it, `[1/${b}]`, "으로")} 옮겨요. ${fd6PJ(it, `[1/${b}]`, "은는")} ${fd6PJ(it, `[${a}/${b}]`, "을를")} ${fd6J(String(a), "으로")} 나눈 것이에요.`); S.stage = 1; S.pos = 1; }
+      else if (S.stage === 1) { if (j !== b) return api.hint(`이제 ${fd6PJ(it, "1", "으로")} 옮겨요. 1은 [1/${b}]의 ${b}배예요.`); S.stage = 2; S.pos = b; }
       draw();
     };
     const jAt = p => Math.round((p.x - LX) / step);
@@ -761,7 +766,7 @@ function fd6Double(body, api, opt) {
   if (opt.est) body.append(fd6EstBox(api, opt.est, () => {}));
   body.append(h("p", { class: "fd6tip" }, opt.tip || "아래 수직선의 눈금을 누르거나 주황 표시를 끌어 옮겨요."), wrap,
     h("div", { class: "fd6ctl" }, h("button", { onclick: () => { st.forEach((S, k) => { S.stage = 0; S.pos = items[k].a; svgs[k].draw(); }); } }, "처음부터")), ask);
-  fd6Ask(ask, api, () => st.every(S => S.stage === 2), () => { const k = st.findIndex(S => S.stage < 2), it = items[k]; return st[k].stage === 0 ? `${items.length > 1 ? (k + 1) + "번 그림: " : ""}표시를 [1/${it.b}]${fd6U(it.bot, "으로")} 옮겨요.` : `${items.length > 1 ? (k + 1) + "번 그림: " : ""}표시를 1${fd6U(it.bot, "으로")} 옮겨요.`; }, opt);
+  fd6Ask(ask, api, () => st.every(S => S.stage === 2), () => { const k = st.findIndex(S => S.stage < 2), it = items[k]; return st[k].stage === 0 ? `${items.length > 1 ? (k + 1) + "번 그림: " : ""}표시를 ${fd6PJ(it, `[1/${it.b}]`, "으로")} 옮겨요.` : `${items.length > 1 ? (k + 1) + "번 그림: " : ""}표시를 ${fd6PJ(it, "1", "으로")} 옮겨요.`; }, opt);
 }
 
 /* ④ 나눗셈을 곱셈으로 바꾸기: ÷를 누르면 ×로, 분수를 누르면 분자와 분모가 바뀌어요.
@@ -903,7 +908,7 @@ function fd6Pose(body, api, opt) {
       const v = fd6R(fd6Val(fr[p]).num * fd6Val(fr[q]).den, fd6Val(fr[p]).den * fd6Val(fr[q]).num), r = quo.get(), e = `[${fr[p]}]÷[${fr[q]}]`;
       const given = `${fd6Plain(e)} = ${quo.text()}`;
       if (r.err) { quo.paint(false); return api.fail(r.err === "empty" ? "답을 써요." : "답을 분수나 자연수로 써요.", given); }
-      if (!fd6Eq(r, v)) { quo.paint(false); return api.fail(fd6Diag(e, r) || `${fd6Plain(e)}를 다시 계산해 봐요. 통분한 다음 분자끼리 나누어요.`, given); }
+      if (!fd6Eq(r, v)) { quo.paint(false); return api.fail(fd6Diag(e, r) || `${fd6J(fd6Plain(e), "을를")} 다시 계산해 봐요. 통분한 다음 분자끼리 나누어요.`, given); }
       quo.paint(true); api.tryOnce(); api.done(given, (opt.ok || "문제를 만들고 답을 구했어요!") + ` ${e} = ${fd6Book(v.num, v.den)}`);
     } }, "확인하기")));
 }
@@ -1182,7 +1187,7 @@ const LESSONS = [
         { t: "그림 이용", p: ["6÷[2/3] = (6÷", { i: "2" }, ")×", { i: "3" }, " = ", { i: "9" }] },
         { t: "분수로 바꾸기", p: ["6÷[2/3] = ", { q: [null, "?18", "3"] }, "÷[2/3] = ", { i: "18" }, "÷", { i: "2" }, " = ", { i: "9" }] },
         ["첫째 방법은 자연수를 분수의 ", { c: ["분자로 나누고 분모를 곱했어요", "분모로 나누고 분자를 곱했어요"], a: 0 }, "."],
-        ["둘째 방법은 자연수를 ", { c: ["나누는 수와 분모가 같은 분수로 바꾼 다음 분자끼리 나누었어요", "자연수끼리 곱했어요"], a: 0 }, "."]],
+        ["둘째 방법은 자연수를 ", { c: ["나누는 수와 분모가 같은 분수로 바꾸고 분자끼리 나누었어요", "자연수끼리 곱했어요"], a: 0 }, "."]],
         { ok: "두 방법 모두 6÷[2/3] = 9예요." }) },
     { name: "말해 보기", inst: "리본 6 m를 [3/4] m씩 나누어 상자를 포장하려고 해요. 1 m를 똑같이 나누어 [3/4] m씩 덜어 내 보고, 상자를 몇 개 포장할 수 있는지 구해 보세요.", hints: ["1 m를 똑같이 4칸으로 나누면 한 칸은 [1/4] m예요.", "6÷[3/4] = (6÷3)×4예요."],
       render: (b, a) => fd6Scoop(b, a, { A: "6", B: "3/4", unit: " m", word: "상자", aName: "리본 6 m", bName: "상자 1개 [3/4] m", ask: [
@@ -1207,7 +1212,7 @@ const LESSONS = [
   summary: "바닷물 [4/5] L로 수조의 [2/3]가 찼다면, 수조의 [1/3]에는 [4/5]÷2 = [2/5] (L), 수조 가득은 [2/5]×3 = [6/5] = [1 1/5] (L)이에요. [4/5]÷[2/3] = [4/5]÷2×3 = [4/5]×[1/2]×3 = [4/5]×[3/2]. (분수)÷(분수)를 분수의 곱셈으로 나타내어 계산할 때에는 나눗셈을 곱셈으로 바꾸고 나누는 분수의 분자와 분모를 바꾸어 계산합니다.",
   steps: [
     { name: "만져 보기", inst: "과학 기지에서 바닷물을 연구한 결과는 기후 변화의 연구 자료로 쓰여요. 바닷물 [4/5] L를 빈 수조에 옮겨 담았더니 수조의 [2/3]만큼 찼어요. 수조를 가득 채울 수 있는 바닷물은 몇 L일까요? 아래 수직선의 표시를 수조의 [1/3], 수조 1개로 차례로 옮겨 보세요.", hints: ["수조의 [1/3]만큼은 수조의 [2/3]만큼을 2로 나눈 것과 같아요.", "수조를 가득 채우는 양은 수조의 [1/3]만큼 들어 있는 양을 3배 한 것과 같아요."],
-      render: (b, a) => fd6Double(b, a, { items: [{ Q: "4/5", a: 2, b: 3, top: " L", bot: "수조", name: "바닷물" }], ask: [
+      render: (b, a) => fd6Double(b, a, { items: [{ Q: "4/5", a: 2, b: 3, top: " L", bot: "수조", pre: "수조", name: "바닷물" }], ask: [
         ["구하는 식: ", { c: ["[4/5]÷[2/3]", "[4/5]×[2/3]", "[2/3]÷[4/5]"], a: 0 }],
         ["수조의 [1/3]만큼: [4/5]÷", { i: "2" }, " = ", { q: [null, "?2", "5"] }, " (L)"],
         ["수조 가득: [2/5]×", { i: "3" }, " = ", { q: [null, "?6", "5"] }, " = ", { q: ["?1", "?1", "5"] }, " (L)"]], ok: "수조를 가득 채울 수 있는 바닷물은 [1 1/5] L예요." }) },
