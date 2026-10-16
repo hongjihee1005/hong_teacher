@@ -483,7 +483,7 @@ function ra4Comp(body, api, opt) {
 /* ---------- ⑥ 모눈 직사각형 ----------
    opt: {W, H, w0, h0, lockH, nw:"가로", nh:"세로", base:"w"(기준량이 가로)|"h", tasks:[{goal, test:(w,h)=>bool, why:(w,h)=>글}], ok} */
 function ra4Rect(body, api, opt) {
-  const W = opt.W || 12, Hh = opt.H || 9, u = 40, ox = 40, oy = 20;
+  const W = opt.W || 12, Hh = opt.H || 9, u = 40, ox = 100, oy = 20;
   let w = opt.w0, hh = opt.h0, k = 0, fin = false;
   const svg = makeSvg(ox + W * u + 30, oy + Hh * u + 44); svg.setAttribute("class", "ra4fig"); svg.style.maxWidth = "620px";
   const goal = h("div", { class: "ra4phrase" }, "​"), read = h("div", { class: "ra4read" }, "​");
@@ -495,7 +495,7 @@ function ra4Rect(body, api, opt) {
     const by = oy + Hh * u;
     svg.append(svgEl("rect", { x: ox, y: by - hh * u, width: w * u, height: hh * u, fill: opt.fill || "#FFE9A8", "fill-opacity": .85, stroke: "#B48A12", "stroke-width": 3 }));
     svg.append(txt(ox + w * u / 2, by + 22, `${nw} ${w} ${opt.unit || "cm"}`, 17, { fill: "#4A5A55" }));
-    svg.append(txt(ox - 8, by - hh * u / 2, `${hh}`, 17, { "text-anchor": "end", fill: "#4A5A55" }));
+    svg.append(txt(ox - 8, by - hh * u / 2, `${nh} ${hh} ${opt.unit || "cm"}`, 17, { "text-anchor": "end", fill: "#4A5A55" }));
     svg.append(svgEl("circle", { cx: ox + w * u, cy: by - hh * u, r: 12, fill: fin ? "#2E8B57" : "#C8472E", stroke: "#fff", "stroke-width": 3, style: "cursor:grab" }));
     const q = opt.base === "h" ? ra4Q(w, hh) : ra4Q(hh, w), d = ra4Dec(q);
     read.textContent = opt.base === "h"
