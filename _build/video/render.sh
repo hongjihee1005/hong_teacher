@@ -7,8 +7,9 @@ set -e
 cd "$(dirname "$0")"
 N=${1:?화 번호를 적으세요 (예: 1)}
 MODE=${2:-preview}
-EP=$(printf "ep%02d" "$N")
-SCENE=$(printf "Ep%02d" "$N")
+PRE=$([ "${GRADE:-3}" = 3 ] && echo "" || echo "g${GRADE}")  # 4학년: GRADE=4 → g4ep01
+EP=$(printf "${PRE}ep%02d" "$N")
+SCENE=$(printf "%sEp%02d" "$(echo "$PRE" | tr g G)" "$N")
 MANIM=${MANIM:-manim}
 if [ "$MODE" = "final" ]; then
   Q=(-qh --fps 30); OUT="${EP}_final.mp4"

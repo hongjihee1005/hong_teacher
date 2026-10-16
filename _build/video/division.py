@@ -151,7 +151,7 @@ class DivBoard:
             return
         S.say(f"{b(f'십 모형 {r1}개')}를 {o(f'일 모형 {r1 * 10}개')}로 바꿔요!",
               f"남은 십 모형 {r1}개를 일 모형 {r1 * 10}개로 바꾸면 돼요!")
-        cover = Rectangle(width=15, height=6.1, fill_color=BG, fill_opacity=0.9, stroke_width=0).move_to([0, 0.75, 0])
+        cover = Rectangle(width=15, height=6.1, fill_color=getattr(S, "bg", BG), fill_opacity=0.9, stroke_width=0).move_to([0, 0.75, 0])
         S.play(FadeIn(cover), run_time=0.5)
         S.bring_to_front(self.left_rods)
         rows_y = [1.2 - 0.9 * i for i in range(r1)]

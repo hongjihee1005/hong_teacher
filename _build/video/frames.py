@@ -5,7 +5,7 @@ import json, os, subprocess, sys
 from PIL import Image, ImageDraw
 
 n, mode = int(sys.argv[1]), sys.argv[2] if len(sys.argv) > 2 else "preview"
-ep = f"ep{n:02d}"
+ep = ("" if os.environ.get("GRADE", "3") == "3" else "g" + os.environ["GRADE"]) + f"ep{n:02d}"  # 4학년: GRADE=4
 here = os.path.dirname(os.path.abspath(__file__))
 out = sys.argv[3] if len(sys.argv) > 3 else os.path.join(here, "media", "frames", ep)
 os.makedirs(out, exist_ok=True)

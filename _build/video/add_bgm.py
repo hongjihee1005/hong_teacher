@@ -19,7 +19,7 @@ if "--tag" in argv:
 n, music = int(argv[0]), argv[1]
 target = float(argv[2]) if len(argv) > 2 else -34.0
 here = os.path.dirname(os.path.abspath(__file__))
-ep = f"ep{n:02d}"
+ep = ("" if os.environ.get("GRADE", "3") == "3" else "g" + os.environ["GRADE"]) + f"ep{n:02d}"  # 4학년: GRADE=4
 video = os.path.join(here, ep, f"{ep}_final.mp4")
 out = os.path.join(here, ep, f"{ep}_final_bgm{'_' + tag if tag else ''}.mp4")
 

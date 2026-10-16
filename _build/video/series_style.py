@@ -75,6 +75,19 @@ ORANGE = "#F08A1C"      # 일 모형 · 일의 자리
 ORANGE_DARK = "#B25E08"
 GREEN = "#2E9E5B"       # 답·확인
 
+# ── 학년·학기마다 다른 바탕색 (선생님 요청 2026-10-16) ──────────────────
+#   (학년, 학기): (바탕색, 왼쪽 위 구역 이름표 색). 3학년은 이미 만든 크림색 그대로.
+#   숫자·모형 색(주황·파랑·초록)은 모든 학년이 같아야 해서 바탕만 바꿈.
+THEMES = {
+    (3, 1): ("#FFF9EE", INK), (3, 2): ("#FFF9EE", INK),          # 크림
+    (4, 1): ("#EDF7F0", "#1F5E46"),                              # 민트 · 짙은 초록
+    (4, 2): ("#EDF3FB", "#24427A"),                              # 하늘 · 남색
+    (5, 1): ("#F4F0FA", "#4B3577"),                              # 연보라 · 보라
+    (5, 2): ("#FDF1EA", "#8A3B1E"),                              # 살구 · 밤색
+    (6, 1): ("#FBF6E1", "#6B5310"),                              # 연노랑 · 올리브
+    (6, 2): ("#F7EEF1", "#7A2E4A"),                              # 연분홍 · 자주
+}
+
 
 def b(s):
     """파란색(십) 글자 — MarkupText 안에서 씀"""
@@ -135,12 +148,15 @@ def fmt(t):
 
 class EpisodeScene(Scene):
     EP_NO = 0
+    GRADE = None   # 4학년부터 4 → 화면에 "4학년 1화"
+    SEM = None     # 학기(1·2) — 바탕색을 고름(THEMES)
     EP_TITLE = ""
     SERIES = "수학 원리 돋보기"
 
     # ── 준비 ──
     def setup(self):
-        self.camera.background_color = BG
+        self.bg, self.chip_color = THEMES.get((self.GRADE or 3, self.SEM or 1), (BG, INK))
+        self.camera.background_color = self.bg
         self._sub = None
         self._chip = None
         self._log = []          # (시각, 구역, 자막, 나레이션)
@@ -166,7 +182,7 @@ class EpisodeScene(Scene):
         chip_txt = T(name, 34, PAPER)
         box = RoundedRectangle(corner_radius=0.22, width=chip_txt.width + 0.6,
                                height=chip_txt.height + 0.36,
-                               fill_color=INK, fill_opacity=1, stroke_width=0)
+                               fill_color=self.chip_color, fill_opacity=1, stroke_width=0)
         chip = VGroup(box, chip_txt).to_corner(UL, buff=0.32)
         chip_txt.move_to(box)
         if self._chip is None:
@@ -230,19 +246,22 @@ class EpisodeScene(Scene):
         return VGroup(glass, ring, shine, handle)
 
     # ── 오프닝 (5초) ──
+    def ep_label(self):
+        return f"{self.GRADE}학년 {self.EP_NO}화" if self.GRADE else f"{self.EP_NO}화"
+
     def opening(self):
         t0 = self.now()
         self._section = "오프닝"
         mag = self.magnifier(0.95).move_to([-4.6, 1.15, 0])
         series = T(f"「{self.SERIES}」", 86).next_to(mag, RIGHT, buff=0.5)
         VGroup(mag, series).move_to([0, 1.3, 0])
-        ep = M(f"{o(str(self.EP_NO) + '화')}  {self.EP_TITLE}", 62)
+        ep = M(f"{o(self.ep_label())}  {self.EP_TITLE}", 62)
         if ep.width > 13:
             ep.scale_to_fit_width(13)
         ep.move_to([0, -0.9, 0])
         bar = Line(LEFT * 5.5, RIGHT * 5.5, stroke_color=BLUE, stroke_width=8).move_to([0, 0.05, 0])
-        self._log.append((t0, "오프닝", f"「{self.SERIES}」 {self.EP_NO}화: {self.EP_TITLE}",
-                          f"수학 원리 돋보기, {self.EP_NO}화. {self.EP_TITLE}"))
+        self._log.append((t0, "오프닝", f"「{self.SERIES}」 {self.ep_label()}: {self.EP_TITLE}",
+                          f"수학 원리 돋보기, {self.ep_label()}. {self.EP_TITLE}"))
         self.play(FadeIn(mag, scale=0.6), run_time=0.8)
         self.play(Write(series), Create(bar), run_time=1.2)
         self.play(FadeIn(ep, shift=UP * 0.3), run_time=0.8)
@@ -254,7 +273,7 @@ class EpisodeScene(Scene):
         self.settle()
         self._log.append((self.now(), self._section, msg,
                           "잠시 멈추고, 옆 친구와 이야기해 보세요."))
-        cover = Rectangle(width=16, height=9, fill_color=BG, fill_opacity=0.93, stroke_width=0)
+        cover = Rectangle(width=16, height=9, fill_color=self.bg, fill_opacity=0.93, stroke_width=0)
         icon = VGroup(
             RoundedRectangle(corner_radius=0.12, width=0.42, height=1.5, fill_color=GREEN, fill_opacity=1, stroke_width=0),
             RoundedRectangle(corner_radius=0.12, width=0.42, height=1.5, fill_color=GREEN, fill_opacity=1, stroke_width=0),
@@ -304,7 +323,7 @@ class EpisodeScene(Scene):
             nxt.scale_to_fit_width(12.4)
         nxt.move_to([0, -2.1, 0])
         mag = self.magnifier(0.32)
-        series = T(f"「{self.SERIES}」 {self.EP_NO}화", 34, SOFT)
+        series = T(f"「{self.SERIES}」 {self.ep_label()}", 34, SOFT)
         logo_l = VGroup(mag, series).arrange(RIGHT, buff=0.3).to_corner(DL, buff=0.45)
         logo = logo_l
         self._log.append((t0, "마무리", plain(summary_markup),
@@ -327,7 +346,7 @@ class EpisodeScene(Scene):
         end = self.now()
         log = sorted(self._log, key=lambda x: x[0])
         lines = [
-            f"「{self.SERIES}」 {self.EP_NO}화 — {self.EP_TITLE}",
+            f"「{self.SERIES}」 {self.ep_label()} — {self.EP_TITLE}",
             f"전체 길이 {fmt(end)}  (시간은 영상 기준 [시작 ~ 끝], Vrew에서 자막 줄마다 나레이션을 넣을 때 참고)",
             "",
         ]

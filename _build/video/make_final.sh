@@ -4,7 +4,8 @@
 set -e
 cd "$(dirname "$0")"
 N=${1:?화 번호}
-EP=$(printf "ep%02d" "$N")
+PRE=$([ "${GRADE:-3}" = 3 ] && echo "" || echo "g${GRADE}")  # 4학년: GRADE=4 → g4ep01
+EP=$(printf "${PRE}ep%02d" "$N")
 PY=${PY:-/opt/manimenv/bin/python}
 MANIM=${MANIM:-/opt/manimenv/bin/manim} ./render.sh "$N" final
 DUR=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$EP/${EP}_final.mp4")
