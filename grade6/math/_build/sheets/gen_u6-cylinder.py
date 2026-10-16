@@ -73,6 +73,13 @@ function dragOn(svg, s, m, e) { DRAG = { s, m, e }; }
 function svgPt() { return { x: 0, y: 0 }; }
 let REC = [], INNER = 0;
 function quiz() {} function blanks() {} function writeStep() {} function sequence() {}
+/* 이야기 버전 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall)과 autoRun */
+function autoRun() { return () => {}; }
+function panes(b, a, items, opts) { if (INNER) return; const last = b.kids.length ? b.kids[b.kids.length - 1] : null;
+  REC.push({ t: 'panes', fig: last ? serEl(last) : null, items: items.map(x => ({ t: x.t, ph: x.ph || '', hint: x.hint || '', ex: x.ex || [] })) }); }
+function thenWhy(render, o) { return (b, a) => { render(b, a); if (!INNER) REC.push({ t: 'thenwhy', q: o.q, ph: o.ph || '', help: o.help || [], ans: o.ans || '' }); }; }
+function ruleFirst(render, o) { return (b, a) => { if (!INNER) REC.push({ t: 'rule', q: o.q, ph: o.ph || '', help: o.help || [], ans: o.ans || '' }); render(b, a); }; }
+function wonderRecall(render) { return (b, a) => { if (!INNER) REC.push({ t: 'wonder' }); render(b, a); }; }
 
 const unitSrc = src.slice(src.indexOf('//@@UNIT'), src.indexOf('//@@LESSONS'));
 const lesSrc = src.slice(src.indexOf('//@@LESSONS'));
@@ -106,7 +113,7 @@ const api = new Proxy({}, { get: () => () => {} });
 
 quiz = function (b, a, items, opts) { if (!INNER) REC.push({ t: 'quiz', items: items.map(serQ), ok: (opts || {}).ok || '' }); };
 blanks = function (b, a, parts, opts) { if (!INNER) REC.push({ t: 'blanks', parts: parts.map(serPart), ok: (opts || {}).ok || '' }); };
-writeStep = function (b, a, items) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag || '', ph: x.ph || '' })) }); };
+writeStep = function (b, a, items) { if (!INNER) REC.push({ t: 'write', items: items.map(x => ({ q: x.q, tag: x.tag || '', ph: x.ph || '', ans: x.ans || '', help: x.help || [] })) }); };
 sequence = function (b, a, cards, order) { if (!INNER) REC.push({ t: 'sequence', cards, order }); };
 const ORIG = { cy6Ask };
 cy6Ask = function (host, ap, items, opts) { if (!INNER) REC.push({ t: 'ask', items: items.map(serQ), ok: (opts || {}).ok || '' }); return new El('div'); };
@@ -131,7 +138,7 @@ WID.forEach(name => {
       if (name === 'cy6Spin') { click(fb, '↻ 한 바퀴 돌리기'); rec.svg1 = String(findSvg(fb)); }
       if (name === 'cy6Unroll') { click(fb, '✂ 잘라서 펼치기'); rec.svg1 = String(findSvg(fb)); }
       if (name === 'cy6Ruler') { DRAG.m({ x: 0, y: 1e6 }); rec.svg1 = String(findSvg(fb)); }
-      if (name === 'cy6Tube') { const W = 420, H = 380; [[W * .78, H * .3], [W * .78, H * .72]].forEach(([x, y]) => { if (DRAG.s({ x, y })) { DRAG.m({ x: W * .33, y: 60 }); DRAG.e({ x: W * .33, y: 60 }); } }); rec.svg1 = String(findSvg(fb)); }
+      if (name === 'cy6Tube') { const W = 420, H = 380, N = opt.n || 2; Array.from({ length: N }, (_, i) => [W * .78, 30 + (H - 60) * (i + .5) / N]).forEach(([x, y]) => { if (DRAG.s({ x, y })) { DRAG.m({ x: W * .33, y: 60 }); DRAG.e({ x: W * .33, y: 60 }); } }); rec.svg1 = String(findSvg(fb)); }
     } catch (e) { rec.err = String(e && e.stack || e).slice(0, 400); }
     INNER--;
     if (name === 'cy6NetMark') rec.net = cy6NetSvg(opt.net, { s: opt.s || 26 }).svg.toString();
