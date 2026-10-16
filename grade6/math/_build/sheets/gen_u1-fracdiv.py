@@ -10,8 +10,10 @@ LESSONS를 node에서 그대로 실행해(활동 함수 대신 기록하는 함�
 이야기·수가 앱과 같고, 원본의 수가 바뀌면 활동지도 저절로 따라 바뀝니다. 정답은 모두 이 스크립트가
 분수(Fraction)로 다시 계산해 앱의 답과 같은지 assert로 확인합니다.
 
-이야기 버전은 아직 없습니다. 생기면 ST(차시 함수 목록)를 채우고 SRC_ST가 있으면 sem2-soop/sheets/에 만듭니다.
-ST가 비어 있거나 원본 파일이 없으면 건너뜁니다.
+이야기 버전 ../units/sem2/u1-fracdiv.st.js('6학년 2반 숲속 수련회', 11차시)도 같은 방법으로 읽어 sem2-soop/sheets/에
+만듭니다(CAP_JS에 이야기 엔진 부품 panes·thenWhy·ruleFirst·wonderRecall·writeStep과 수련회 그림·쪽지·놀이 활동지 표를 더 기록 —
+_ST_REPL). 차시 목록은 ST_IDS, 도전형 '왜' 쓰기는 WHY_ST.
+    python3 gen_u1-fracdiv.py st         # 이야기 버전만
 
 분수 표기(5-2 「분수의 곱셈」 활동지 gen_u2-fracmul.py의 방법을 그대로 옮김)
   - 계산 식·빈칸은 그림(PNG)으로 넣어 분수를 위아래(분자/분모)로 씁니다. 빈칸은 네모, 답 칸은 큰 네모.
@@ -718,8 +720,8 @@ def rd(t):
     """[■/●]·[□/13] 같은 기호 분수도 다룸: [□/13] → '13분의 □', [■/●] → '■/●'"""
     def sym(m):
         w, n, d = m.group(1), m.group(2), m.group(3)
-        if w is None and _sym(n) and not _sym(d) and n == '□':
-            return '%s분의 □' % d
+        if w is None and _sym(n) and not _sym(d) and n in ('□', '~'):
+            return '%s분의 %s' % (d, n)
         if w is None and (_sym(n) or _sym(d)) and not re.search(r'\d', n + d):
             return '%s/%s' % (n, d)
         return m.group(0)
@@ -786,7 +788,7 @@ def cap(src):
     if src not in _CAP:
         js = os.path.join(WORK, 'cap.js')
         with open(js, 'w', encoding='utf-8') as f:
-            f.write(CAP_JS)
+            f.write(_cap_st_js() if src == SRC_ST else CAP_JS)
         r = subprocess.run(['node', js, src, FONT.replace("'", '')], capture_output=True, text=True)
         if r.returncode:
             raise RuntimeError('앱 원본을 읽지 못했어요: ' + r.stderr[-800:])
@@ -1191,11 +1193,13 @@ def w_quiz(s, lv, items, opts=None, *_):
         fig = (it.get('fig') or {}).get('fn')
         if fig == 'fd6Scene' and DATA.get('scene'):
             scene_pic(s, DATA['scene'])
-        elif fig == 'fd6Sheets' and DATA.get('sheets'):
+        elif fig in ('fd6Sheets', 'fd6sSheet') and DATA.get('sheets'):
             sh = DATA['sheets']
             if sh['cap']:
                 s.text(rd(sh['cap']))
-            s.table([[rd(c) if not re.search(r'\[\d', c) else flat(c) for c in r] for r in sh['rows']], col_mm=[18, 40, 30, 92])
+            ncol = len(sh['rows'][0])
+            s.table([[rd(c) if not re.search(r'\[\d', c) else flat(c) for c in r] for r in sh['rows']],
+                    col_mm=[18, 40, 30, 92] if ncol == 4 else [180 // ncol] * ncol)
         q = ('%d. ' % (k + 1) if len(items) > 1 else '') + rd(it['q'])
         o, a = it['o'], it['a']
         many = isinstance(a, list)
@@ -1498,13 +1502,150 @@ def note_line(s):
 
 DATA = {}
 
-# 이야기 버전 차시 함수(아직 없음 — 생기면 st1, st2, … 를 넣으세요)
-ST = []
+# ================================================================ 이야기 버전(u1-fracdiv.st.js '6학년 2반 숲속 수련회', 11차시)
+# 교과서 버전과 같은 부품(fd6Scoop·fd6Calc·fd6Chain …)을 쓰고, 이야기 엔진 부품(panes·thenWhy·ruleFirst·wonderRecall·
+# writeStep)과 수련회 그림(fd6sCamp)·준비 쪽지(fd6sNote)·놀이 활동지 표(fd6sSheet)를 더 기록합니다.
+_ST_REPL = [
+    ("function fd6Style() {} function fd6Style2() {} function fd6Style3() {}",
+     "function fd6Style() {} function fd6Style2() {} function fd6Style3() {} function fd6sStyle() {}\n"
+     "const fd6G = (a, b) => b ? fd6G(b, a % b) : Math.abs(a);\n"
+     "function fd6R(num, den) { const g = fd6G(num, den) || 1; return { num: num / g, den: den / g }; }\n"
+     "function fd6Form(num, den) { const w = Math.floor(num / den), r = num % den; return r === 0 ? String(w) : w === 0 ? `${r}/${den}` : `${w} ${r}/${den}`; }"),
+    ("eval(fnSrc('fd6Scene').replace('function fd6Scene', 'var fd6SceneReal = function'));\n"
+     "eval(fnSrc('fd6Sheets').replace('function fd6Sheets', 'var fd6SheetsReal = function'));",
+     "eval(fnSrc('fd6sCamp').replace('function fd6sCamp', 'var fd6SceneReal = function'));\n"
+     "eval(fnSrc('fd6sSheet').replace('function fd6sSheet', 'var fd6SheetsReal = function'));"),
+    ("function fd6Scene() {} function fd6Sheets() {}",
+     "function fd6sSheet() {}\n"
+     "var fd6sCamp = () => { REC.push({ w: 'camp', args: [] }); return null; };\n"
+     "var fd6sNote = (title, lines) => { REC.push({ w: 'note', args: [title, lines] }); return null; };\n"
+     "var thenWhy = (fn, o) => (b, a) => { fn(b, a); REC.push({ w: 'thenWhy', args: [o] }); };\n"
+     "var ruleFirst = (fn, o) => (b, a) => { REC.push({ w: 'ruleFirst', args: [o] }); fn(b, a); };\n"
+     "var wonderRecall = (fn, o) => (b, a) => { REC.push({ w: 'wonder', args: [] }); fn(b, a); };"),
+]
+
+
+def _cap_st_js():
+    js = CAP_JS
+    for a, b in _ST_REPL:
+        assert js.count(a) == 1, ('CAP_JS가 바뀌었어요', a[:40])
+        js = js.replace(a, b)
+    return js
+
+
+def w_camp(s, lv, *_):
+    if DATA.get('scene'):
+        scene_pic(s, DATA['scene'])
+    return ''
+
+
+def w_note(s, lv, title, lines, *_):
+    s.text(re.sub(r'^\W+\s*', '', title))
+    s.fill([rd(re.sub(r'^[^\w\[(]+\s*', '', t)) for t in lines])
+    return ''
+
+
+def w_panes(s, lv, items, opts=None, *_):
+    panes(s, lv, [(it['t'], it.get('ph') or '~', (it.get('ex') or [''])[0]) for it in items])
+    return '(자유) ' + ' / '.join('%s 예) %s' % (it['t'], flat(it['ex'][0])) for it in items if it.get('ex'))
+
+
+def w_then_why(s, lv, o, *_):
+    why(s, lv, o['q'], (o.get('help') or ['', o.get('ph') or ''])[-1])
+    return '왜? 예) ' + flat(o.get('ans') or '')
+
+
+def w_rule_first(s, lv, o, *_):
+    rule_first(s, lv, o['q'], (o.get('help') or ['', o.get('ph') or ''])[-1])
+    return '예상(자유) — 실제 규칙: ' + flat(o.get('ans') or '')
+
+
+def w_wonder(s, lv, *_):
+    s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 보고, 이제 답할 수 있게 된 것을 떠올려 보세요.')
+    return ''
+
+
+def w_write(s, lv, items, opts=None, *_):
+    out = []
+    for it in items:
+        q = ('%s · ' % it['tag'] if it.get('tag') else '') + it['q']
+        out.append(write_ans(s, lv, q, (it.get('help') or ['', it.get('ph') or ''])[-1], it.get('ans') or '(자유)'))
+    return ' / '.join('예) ' + a for a in out)
+
+
+WIDGETS.update({'camp': w_camp, 'note': w_note, 'panes': w_panes, 'thenWhy': w_then_why, 'ruleFirst': w_rule_first,
+                'wonder': w_wonder, 'writeStep': w_write})
+
+WHY_ST = {   # 도전형 '왜' 쓰기(이야기 차시 id → 물음, 예시 답)
+    's1': ('수련회에서 나누는 수가 분수인 나눗셈을 써야 하는 때를 쪽지 말고 하나 더 찾아 써 보세요.',
+           '예) 물 2 L를 [1/4] L씩 컵에 따르면 몇 컵이 되는지 알아볼 때 써요.'),
+    's2': ('[6/8]÷[2/8]을 분자끼리 6÷2로 계산해도 되는 까닭을 피자 조각으로 설명해 보세요.',
+           '예) 두 분수가 모두 [1/8]판 조각으로 되어 있어서 조각 6개를 2개씩 묶는 것과 같기 때문이에요.'),
+    's3': ('[7/8]÷[3/8]의 몫이 2와 3 사이인 까닭을 레모네이드 컵으로 설명해 보세요.',
+           '예) [3/8] L 컵을 2번 채우고 [1/8] L가 남아서, 2컵과 1컵의 [1/3]만큼이 되기 때문이에요.'),
+    's4': ('분모가 다른 (분수)÷(분수)에서 먼저 통분하는 까닭을 써 보세요.',
+           '예) 분모를 같게 해야 같은 크기 조각의 개수로 나타내어 분자끼리 나눌 수 있기 때문이에요.'),
+    's5': ('8÷[2/3]의 몫 12가 8보다 큰 까닭을 팔찌 끈으로 설명해 보세요.',
+           '예) 1 m보다 짧은 [2/3] m씩 자르면 8 m에서 8번보다 많이 자를 수 있어서 몫이 8보다 커요.'),
+    's6': ('[3/4]÷[3/5]이 [3/4]×[5/3]과 같은 까닭을 보리차 물통으로 설명해 보세요.',
+           '예) 물통의 [1/5]만큼을 구하려고 3으로 나누고(×[1/3]), 물통 가득을 구하려고 5를 곱하니 ×[5/3]이 돼요.'),
+    's7': ('[2 1/2]÷[5/8]을 계산할 때 대분수를 그대로 두고 분수 부분만 나누면 어떤 잘못이 생기는지 써 보세요.',
+           '예) 자연수 부분 2를 나누지 않아 몫이 틀려요. 가분수 [5/2]로 바꾸어야 바르게 계산해요.'),
+    's8': ('양이 다른 두 마트의 값을 비교할 때 1 kg의 가격을 구하는 까닭을 써 보세요.',
+           '예) 양이 달라서 값만으로는 비교할 수 없으니, 같은 양(1 kg)의 가격으로 바꾸어 비교해요.'),
+    's9': ('분수의 나눗셈을 계산하는 방법 가운데 가장 편리한 방법과 그 까닭을 써 보세요.',
+           '예) 분수의 곱셈으로 바꾸는 방법이 편리해요. 통분하지 않아도 되고 약분을 먼저 할 수 있어요.'),
+    's10': ('캠프파이어 놀이에서 점수를 많이 얻으려면 어떻게 해야 하는지 써 보세요.',
+            '예) 친구와 다른 나눗셈을 만들고, 나누는 분수의 분자와 분모를 바꾸어 곱해 정확하게 계산해요.'),
+    's11': ('이 단원에서 배운 것 가운데 1차시에 궁금했던 것에 답할 수 있게 된 것을 써 보세요.',
+            '예) 몫이 나누어지는 수보다 커질 수 있는지 궁금했는데, 1보다 작은 수로 나누면 몫이 커진다는 것을 알았어요.'),
+}
+ST_IDS = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11']
+
+
+def st_lesson(s, lv, L, first, story):
+    s.lesson(L['no'], L['soop'], rd(L['title']), rd(L['question']))
+    if first and story:
+        s.scene(None, rd(story['lines'][0]))
+        note_line(s)
+    ans = []
+    for i, st_ in enumerate(L['steps']):
+        lab, sub = split_name(st_['name'])
+        step(s, i, lab, sub)
+        show_inst(s, lv, st_['inst'], st_['hints'])
+        ans.append('%s %s' % (NUM[i], run_calls(s, lv, st_['calls'])))
+    if lv == '도전형':
+        n = len(L['steps'])
+        if L.get('ch'):
+            step(s, n, '★ 도전하기', '앱의 도전 문제')
+            show_inst(s, lv, L['ch']['inst'], [])
+            ans.append('%s %s' % (NUM[n], run_calls(s, lv, L['ch']['calls'])))
+            n += 1
+        q, a = WHY_ST.get(L['id'], ('오늘 배운 계산 방법을 친구에게 설명하듯 써 보세요.', '예) ' + flat(L['summary'].split('. ')[-1])))
+        step(s, n, '생각 쓰기', '왜 그럴까요?')
+        challenge_why(s, q)
+        ans.append('%s %s' % (NUM[n], flat(a)))
+    return '%s차시  %s' % (L['no'], '  '.join(ans))
+
+
+def _st(lid):
+    def f(s, lv):
+        Ls = DATA['lessons']
+        k = [L['id'] for L in Ls].index(lid)
+        return st_lesson(s, lv, Ls[k], k == 0, DATA.get('story'))
+    f.__name__ = 'st_' + lid
+    return f
+
+
+ST = [_st(i) for i in ST_IDS]
 
 
 def build_file(kind, lv):
     src = SRC_TB if kind == 'tb' else SRC_ST
     D = cap(src)
+    if kind == 'st':
+        ids = [L['id'] for L in D['lessons']]
+        assert ids == ST_IDS, ('이야기 버전 차시가 바뀌었어요 — ST_IDS·WHY_ST를 고치세요', ids)
     DATA.clear()
     DATA.update(D)
     label = '교과서 차시' if kind == 'tb' else '이야기 버전'

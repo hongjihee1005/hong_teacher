@@ -64,9 +64,16 @@ SEMS = {
         },
         TB_SRC={1: '준혁이와 남극 과학 기지', 2: '지윤이와 은우의 과학 기술 체험관', 3: '규진이와 시연이의 영상 촬영 학교',
                 4: '서영이의 새 활용 체험관', 5: '채안이와 현준이의 수학 체험 마을', 6: '예빈이네 마을 체육 대회'},
-        ST_EMO={1: '🧑‍🏫', 2: '🧑‍🏫', 3: '🧑‍🏫', 4: '🧑‍🏫', 5: '🧑‍🏫', 6: '🧑‍🏫'},
-        ST_DE={n: '(이야기 버전, 만드는 중)' for n in range(1, 7)},
-        st_names='(이야기 버전은 만드는 중)',
+        ST_EMO={1: '🏕️', 2: '🎪', 3: '🏫', 4: '🌱', 5: '⭕', 6: '🏮'},
+        ST_DE={
+            1: '1박 2일 숲속 수련회를 다녀오며 찰흙·레모네이드·숲길·버스·보리차·쿠키 반죽·간식값을 분수의 나눗셈으로 구해요',
+            2: '나눔 축제 부스를 열어 레몬청·리본·종이비행기·초대장·재료값을 소수의 나눗셈으로 구하고, 남는 양과 반올림한 몫을 상황에 맞게 골라요',
+            3: '개교 50주년 전시회에 우리 학교 건물을 쌓기나무로 만들며 사진 방향, 위·앞·옆에서 본 모양, 수와 층으로 나타낸 설계 카드를 만들어요',
+            4: '학교 텃밭을 가꾸며 흙·영양제·모종·수확물의 양을 비의 성질과 비례식으로 구하고, 수확물을 비례배분으로 나누어요',
+            5: '운동장 옆 둥근 쉼터를 설계하며 탁자·바퀴·잔디밭·화단의 원주와 넓이를 구하고, 개장 잔치 피자를 비교해요',
+            6: '달빛 등불 축제에서 산책길을 밝힐 둥근 등을 만들며 원기둥·원뿔·구를 알아보고 원기둥의 전개도를 그려요',
+        },
+        st_names='숲속 수련회, 나눔 축제 부스, 쌓기나무 모형 전시회, 초록 텃밭 프로젝트, 둥근 쉼터 설계단, 달빛 등불 축제',
         group_readme=None, group_hash=None, group_guide=None,
         print_units=('- 모눈·자로 재는 **3단원 공간과 입체**·**5단원 원의 둘레와 넓이**·**6단원 원기둥, 원뿔, 구**는 실제 크기로 인쇄되는지 확인하세요.\n'
                      '  나머지 단원은 조금 줄어도 괜찮습니다.'),
@@ -76,6 +83,8 @@ SEMS = {
 }
 # 단원별로 올릴 때: RELEASE=1,3 처럼 올린 단원만 목록에 열고 나머지는 '곧 열려요'
 RELEASE = [int(x) for x in os.environ.get('RELEASE', '').split(',') if x.strip()]
+# 이야기 버전을 단원별로 올릴 때: STREL=2,5 처럼 올린 이야기 단원만 열고 나머지 이야기 카드는 '곧 열려요'
+STREL = [int(x) for x in os.environ.get('STREL', '').split(',') if x.strip()]
 
 
 def parse(path):
@@ -114,7 +123,7 @@ LES_CSS = ('\nhtml details.les{margin:12px 0 0;background:var(--paper);border:3p
            '\nhtml .les-l b{flex:none;min-width:2.4em;color:var(--soft);font-variant-numeric:tabular-nums}\n')
 
 
-def page(tpl, title, crumb_last_html, body):
+def page(tpl, title, crumb_last_html, body, lb='1학기', tbd='sem1'):
     s = open(tpl, encoding='utf-8').read()
     s = re.sub(r'<title>.*?</title>', f'<title>{title}</title>', s, count=1)
     s = s.replace('</style>', LES_CSS + '</style>', 1)
@@ -122,7 +131,7 @@ def page(tpl, title, crumb_last_html, body):
     s = s[:a] + body + s[b:]
     # crumb: 3학년 -> 6학년
     nav = re.search(r'<nav class="crumb".*?</nav>', s, re.S)
-    nv = nav.group(0).replace('>3학년<', '>6학년<')
+    nv = nav.group(0).replace('>3학년<', '>6학년<').replace('>1학기<', f'>{lb}<').replace('>1학기 ', f'>{lb} ').replace('../sem1/', f'../{tbd}/')
     s = s[:nav.start()] + nv + s[nav.end():]
     return s
 
@@ -141,6 +150,8 @@ def build(sem):
     D = {}
     for n, slug, nm, nb, emo in UNITS:
         D[n] = dict(tb=parse(f'{C["units"]}/u{n}-{slug}.tb.js'), st=parse(f'{C["units"]}/u{n}-{slug}.st.js'))
+        if STREL and n not in STREL:
+            D[n]['st'] = None
     first = UNITS[0][1]
     if C.get('group_readme') is None:
         grp = [f"{n}단원 " + '·'.join(no for no, _, _ in D[n]['tb']['lessons'] if '~' in no) for n, *_ in UNITS if any('~' in no for no, _, _ in D[n]['tb']['lessons'])]
@@ -174,7 +185,7 @@ def build(sem):
                 '<p class="gsub"><b>💻 웹앱</b> — 전자칠판이나 크롬북에서 바로 씁니다. 앞 계단을 해결해야 다음 계단이 열리고, 막히면 도움이 단서 → 낱말 → 답 따라 쓰기 세 단계로 나옵니다. 주소 끝에 <code>#3</code>처럼 차시 번호를 붙이면 그 차시가 바로 열려요.</p>\n'
                 '<p class="gsub"><b>🖨️ 활동지</b> — 흑백 인쇄용 hwpx입니다. <b>기본형</b>은 낱말 상자와 빈칸 문장으로 돕고, <b>도전형</b>은 도움을 빼고 서술형·심화를 더했습니다. 맨 뒤에 교사용 정답이 붙어 있으니 배부 전에 마지막 장을 빼세요.<br>인쇄할 때는 한글 인쇄 창의 <b>「인쇄 방식」을 「자동 인쇄」</b>로 두세요. 그것이 실제 크기입니다(「공급 용지에 맞추어」로 하면 줄어듭니다). 맨 윗줄에 10 cm 눈금자가 있으니, 처음 한 장만 뽑아 자를 대어 10 cm가 나오는지 확인하시면 됩니다.</p>\n')
     open(f'{R}/grade6/math/{TBD}/index.html', 'w', encoding='utf-8').write(
-        page(R + '/grade3/math/sem1/index.html', f'6학년 {LB} 수학 · 초등교사 홍지희', None, ''.join(body)))
+        page(R + '/grade3/math/sem1/index.html', f'6학년 {LB} 수학 · 초등교사 홍지희', None, ''.join(body), LB, TBD))
 
     # ---------- 이야기 버전 ----------
     body = [f'<h1>6학년 {LB} 수학 · 홍지희 선생님 버전</h1>\n',
@@ -182,10 +193,10 @@ def build(sem):
             '<p class="gsub">모든 차시가 <b>만져 보기 → 그려 보기 → 말해 보기 → 약속하기 → 확인하기</b> 다섯 계단과 ★도전 계단으로 되어 있어요. <b>📋 차시 목록</b>에서 차시를 누르면 그 차시가 바로 열려요.</p>\n']
     for n, slug, nm, nb, emo in UNITS:
         st = D[n]['st']; fn = f'u{n}-{slug}.html'; em = ST_EMO[n]
-        if st:
-            name = st['title']; de = f'{ST_DE[n]} {count(st["lessons"])}차시'
-        else:
-            name = nm; de = ST_DE[n]
+        if not st:
+            body.append(f'<h2>{em} {n}단원 · {nm}</h2>\n<div class="grid">\n<div class="card wait"><span class="tag" style="background:#D9731A">💻 웹앱</span><span class="nm">{em} {nm}</span><span class="de">곧 열려요 — 만들고 점검하는 중이에요</span></div>\n</div>\n')
+            continue
+        name = st['title']; de = f'{ST_DE[n]} {count(st["lessons"])}차시'
         body.append(f'<h2>{em} {n}단원 · {nm}</h2>\n<div class="grid">\n'
                     f'<a class="card" href="{fn}"><span class="tag" style="background:#D9731A">💻 웹앱</span><span class="nm">{em} {name}</span>'
                     f'<span class="de">{de}</span></a>\n' + SHEET.format(n=n, nb=nb) + '</div>\n'
@@ -196,7 +207,7 @@ def build(sem):
                 '</div>\n'
                 '<p class="gsub">활동지 맨 뒤 <b>마지막 한 장</b>이 교사용 정답입니다. 학생용으로 뽑을 때는 인쇄 범위에서 그 한 장만 빼면 됩니다.</p>\n')
     open(f'{R}/grade6/math/{STD}/index.html', 'w', encoding='utf-8').write(
-        page(R + '/grade3/math/sem1-soop/index.html', f'6학년 {LB} 수학 · 홍지희 선생님 버전 · 초등교사 홍지희', None, ''.join(body)))
+        page(R + '/grade3/math/sem1-soop/index.html', f'6학년 {LB} 수학 · 홍지희 선생님 버전 · 초등교사 홍지희', None, ''.join(body), LB, TBD))
 
     # ---------- README (교과서) ----------
     rows = '\n'.join(f'| {n}. {nm} | `u{n}-{slug}.html` | {count(D[n]["tb"]["lessons"])} | {TB_SRC[n]} |' for n, slug, nm, nb, e in UNITS)

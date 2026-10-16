@@ -9,7 +9,9 @@
   - 세로셈 판은 앱 dv2LongBoard와 같은 규칙(옮긴 소수점·흐린 0·지운 앞자리 0·계산 메모 줄 수)으로 그립니다.
     기본형은 소수점을 옮긴 모습(흐린 동그라미 = 처음 소수점, 빨간 점 = 옮긴 소수점)을 보여 주고, 도전형은 처음 수만 보여 줘요.
   - 화면 글에는 '나누어 주고 남는 양'만 씁니다(지도서 유의 사항) — 활동지에 '나머지'라는 낱말이 없는지 확인합니다.
-이야기 버전(u2-decdiv.st.js)은 아직 없어서 ST 목록은 비어 있고 건너뜁니다(나중에 더함).
+이야기 버전(u2-decdiv.st.js, '우리 반 나눔 축제 부스', 11차시)도 같은 방법으로 LESSONS를 node에서 실행해 읽습니다(ST_JS).
+  이야기 엔진의 thenWhy('왜 그럴까요?')·ruleFirst('먼저 예상해요')·wonderRecall·panes·쪽지(dv2sNote)·1 kg의 값(dv2sUnit)도 기록해
+  기본형은 앱 도움 문장 틀, 도전형은 쓰는 줄로 바꾸고, 모범 답은 앱의 ans를 그대로 씁니다.
 그림(막대·수직선·종이·소수점 옮기기·세로셈·관계 그림·로봇·놀이판·수 카드)은 SVG로 그려 임시 폴더에서 PNG로 바꿉니다.
 """
 import json
@@ -35,7 +37,10 @@ SRC_TB = os.path.join(ROOT, '_build', 'units', 'sem2', 'u2-decdiv.tb.js')
 OUT_TB = os.path.join(ROOT, 'sem2', 'sheets')
 NAME = '2단원_소수의나눗셈_활동지_%s.hwpx'
 LABEL_TB = '6-2 수학 2. 소수의 나눗셈(교과서 차시)'
-ST = []          # 이야기 버전(아직 없음) — 생기면 (함수 목록) 을 넣고 main에서 만듦
+SRC_ST = os.path.join(ROOT, '_build', 'units', 'sem2', 'u2-decdiv.st.js')
+OUT_ST = os.path.join(ROOT, 'sem2-soop', 'sheets')
+LABEL_ST = '6-2 수학 2. 소수의 나눗셈(이야기 버전)'
+ST = ['s1', 's2', 's3', 's4', 's5', 's6', 's7', 's8', 's9', 's10', 's11']   # 이야기 버전 차시 id(앱 LESSONS 차례)
 FONT = "'Noto Sans KR','WenQuanYi Zen Hei',sans-serif"
 NUM = '①②③④⑤⑥⑦⑧⑨'
 KO = '㉠㉡㉢㉣㉤㉥'
@@ -633,6 +638,10 @@ def fig(s, f):
         rel_fig(s, f['rel'], f['lab'])
     elif 'robot' in f:
         robot_fig(s)
+    elif 'note' in f:            # 이야기 버전 쪽지(dv2sNote)
+        note_box(s, f['note'])
+    elif 'plane' in f:           # 이야기 버전 종이비행기 그림(dv2sPlaneFig)
+        plane_fig(s, f['plane'])
     elif 'journal' in f:
         s.labeled([('10월 2일', '이틀 전보다 잎은 3장 더 생겼고 줄기는 길어졌다. 잎의 수: 5장, 줄기의 길이: 13.5 cm'),
                    ('10월 17일', '15일 전보다 잎은 9장 더 생겼고 줄기의 길이는 □배가 되었다. 잎의 수: 14장, 줄기의 길이: 22.95 cm')])
@@ -1279,6 +1288,229 @@ def build_tb(app, lv):
     return path
 
 
+# ================================================================ 이야기 버전(st) — '우리 반 나눔 축제 부스'
+ST_JS = r"""
+const fs = require('fs');
+const src = fs.readFileSync(process.argv[2], 'utf8');
+const core = src.slice(src.indexOf('/*dv2-core*/'), src.indexOf('/*dv2-core-end*/'));
+const cellsFn = src.slice(src.indexOf('function dv2sCells('), src.indexOf('function dv2Island('));
+const dv2c = (src.match(/const DV2C = \{[^\n]*\};/) || ['const DV2C = {};'])[0];
+const les = src.slice(src.indexOf('//@@LESSONS'));
+let REC = [];
+const rec = w => function (b, a, ...args) { REC.push({ w, args }); };
+const stubs = `
+var dv2Sent=rec('sent'), dv2Bars=rec('bars'), dv2Shift=rec('shift'), dv2Long=rec('long'), dv2Line=rec('line'), dv2Fold=rec('fold'),
+ dv2Round=rec('round'), dv2Cards=rec('cards'), dv2Island=rec('island'), dv2Bingo=rec('bingo'), dv2sUnit=rec('unit'),
+ quiz=rec('quiz'), blanks=rec('blanks'), sequence=rec('sequence'), writeStep=rec('writeStep'), panes=rec('panes');
+var dv2Style = () => {};
+var dv2LongStep = opt => (b, a) => dv2Long(b, a, opt);
+var thenWhy = (f, o) => function (b, a) { f(b, a); REC.push({ w: 'thenWhy', args: [o] }); };
+var ruleFirst = (f, o) => function (b, a) { REC.push({ w: 'ruleFirst', args: [o] }); f(b, a); };
+var wonderRecall = f => function (b, a) { REC.push({ w: 'wonder', args: [] }); f(b, a); };
+var dv2Talk = lines => ({ talk: lines }), dv2RelFig = (rows, lab) => ({ rel: rows, lab }),
+ dv2sNote = (title, lines) => ({ note: { title, lines } }), dv2sPlaneFig = rows => ({ plane: rows });
+`;
+const B = () => ({ append: (...xs) => xs.forEach(x => REC.push({ w: 'append', args: [x] })) });
+const R = eval(core + '\n' + dv2c + '\n' + cellsFn + '\n' + stubs + '\n' + les + '\n;({LESSONS, UNIT_STORY})');
+const ser = v => JSON.parse(JSON.stringify(v, (k, x) => typeof x === 'bigint' ? String(x) : (typeof x === 'function' ? (x.length === 0 ? x() : undefined) : x)));
+const out = R.LESSONS.map(L => {
+  const steps = L.steps.map(S => { REC = []; S.render(B(), {}); return { name: S.name || null, inst: S.inst, hints: S.hints || [], calls: ser(REC) }; });
+  REC = []; L.challenge.render(B(), {});
+  return { id: L.id, no: L.no, title: L.title, soop: L.soop, question: L.question, steps,
+    ch: { inst: L.challenge.inst, hints: L.challenge.hints || [], calls: ser(REC) } };
+});
+process.stdout.write(JSON.stringify({ lessons: out, story: R.UNIT_STORY }));
+"""
+
+
+def load_st(src):
+    js = os.path.join(WORK, 'ex_st.js')
+    with open(js, 'w') as f:
+        f.write(ST_JS)
+    r = subprocess.run(['node', js, src], capture_output=True, text=True)
+    if r.returncode:
+        raise RuntimeError('이야기 버전 앱 원본을 읽지 못했어요\n' + r.stderr)
+    return json.loads(r.stdout)
+
+
+# 종이 활동지에 맞게 바꾸는 이야기 버전 안내 글(앱의 '누르기·끌기·단추' 말)
+PAPER_ST = [
+    ('세 칸에 써서 붙여요', '세 칸에 써 보세요'),
+    ('빨간 동그라미를 눌러 두 수의 소수점을', '두 수의 소수점을'),
+    ('종이를 눌러 접는 선을 놓아 보세요', '종이 그림에 접는 선을 그어 보세요'),
+    ('몫에서 확인할 숫자를 누르고 답을 써요', '몫에서 확인할 숫자에 ○표 하고 답을 써요'),
+    ('확인할 숫자(소수 셋째 자리)를 누르고 답을 써요', '확인할 숫자(소수 셋째 자리)에 ○표 하고 답을 써요'),
+    ('남는 양을 주황 칸에 쓴 뒤', '남는 양을 맨 아래 칸에 쓴 뒤'),
+    ('단추로 가 가게 설탕 1 kg의 값을 바꾸어 3.5 kg의 값이 8400원과 딱 맞게 해 보세요.',
+     '가 가게 설탕 1 kg의 값을 정해 3.5 kg의 값이 8400원과 딱 맞는지 표에 써서 알아보세요.'),
+    ('나 가게 설탕 1 kg의 값을 맞추어 보고', '나 가게 설탕 1 kg의 값을 표에 써서 맞추어 보고'),
+    ('(3~4명이 하는 놀이를 컴퓨터 친구와 해 봐요)', '(3~4명이 함께 해요)'),
+]
+
+
+def paper_st(t):
+    for a, b in PAPER_ST:
+        t = t.replace(a, b)
+    return paper(t)
+
+
+EMO = re.compile('[\U00010000-\U0010FFFF☀-➿️‍]')
+
+
+def noemo(t):
+    return re.sub(r'\s{2,}', ' ', EMO.sub('', str(t))).strip()
+
+
+def note_box(s, nt):
+    """이야기 쪽지: 제목 한 줄 + '이름: 내용' 표"""
+    s.text('【%s】' % noemo(nt['title']))
+    pairs = []
+    for ln in nt['lines']:
+        for t in re.split(r'(?<=”)\s+(?=[가-힣]{1,4}:)', noemo(K(ln))):   # 한 줄에 두 사람의 말이면 나눔
+            k, sep, v = t.partition(':')
+            pairs.append((k.strip(), v.strip()) if sep and len(k) <= 14 else ('·', t))
+    s.labeled(pairs, label_mm=30, row_h=3402)
+
+
+def plane_fig(s, rows):
+    """종이비행기가 날아간 거리(앱 dv2sPlaneFig와 같은 눈금: 1 m = 80)"""
+    W, x0, sc = 720, 40, 80
+    H = 54 + len(rows) * 66
+    out = [L(x0, 10, x0, H - 26, INK, 3), T(x0, H - 10, '출발선', 14, anchor='middle')]
+    for m in range(1, 9):
+        x = x0 + m * sc
+        out.append(L(x, H - 32, x, H - 24, DARK, 1.5))
+        out.append(T(x, H - 10, '%d m' % m, 12, anchor='middle', fill=DARK))
+    for k, (d, n, c) in enumerate(rows):
+        y, x = 40 + k * 66, x0 + float(Q(d)) * sc
+        out.append(L(x0, y, x - 6, y, c, 3, '7 6'))
+        out.append('<path d="M%.1f %d L%.1f %d L%.1f %d L%.1f %d z" fill="#fff" stroke="%s" stroke-width="2.5" stroke-linejoin="round"/>'
+                   % (x, y, x - 34, y - 14, x - 24, y, x - 34, y + 14, c))
+        out.append(T((x0 + x) / 2, y - 16, '%s의 종이비행기 %s m' % (n, d), 16, anchor='middle', fill=c))
+    put_png(s, svg_doc(W, H, ''.join(out)), W, H, max_mm=120)
+
+
+def frame_st(help1):
+    m = re.search(r'‘(.*)’', help1 or '')
+    return K(m.group(1) if m else help1).replace('~', '__________')
+
+
+def write_st(s, lv, q, o, n=2):
+    """글쓰기 칸: 기본형은 앱 도움의 문장 틀, 도전형은 쓰는 줄. 정답은 앱 모범 답(ans)."""
+    s.ask(q, blank=False)
+    hp = o.get('help') or []
+    if lv == '기본형' and len(hp) > 1:
+        s.fill(frame_st(hp[1]))
+    else:
+        s.lines(n)
+    return '예) ' + flat(K(o.get('ans') or re.sub(r'^예\)\s*', '', o.get('ph') or '')))
+
+
+def w_unit(s, lv, a):
+    """1 kg의 값 맞추기(dv2sUnit) → 표에 1 kg의 값과 봉지 전체의 값을 써서 견주기"""
+    o = a[0]
+    TOT, QTY, u = Q(o['total']), Q(o['qty']), o.get('unit') or 'kg'
+    want = TOT / QTY
+    assert want.denominator == 1 and want % int(o.get('step') or 100) == 0, o
+    s.text('%s: %s %s = %s원' % (o.get('item') or '봉지', o['qty'], u, o['total']))
+    rows = [['1 %s의 값(원)' % u, '%s %s의 값(원)' % (o['qty'], u), '%s원과 견주기' % o['total']]]
+    if lv == '기본형':
+        g = (want // 1000) * 1000
+        if g == want:
+            g -= 500
+        gt = g * QTY
+        assert gt != TOT
+        rows.append(['%s' % g, '%s × %s = %s' % (g, o['qty'], dec(gt)), '봉지 값보다 %s' % ('적어요' if gt < TOT else '많아요')])
+    rows += [['', '', ''], ['', '', '']]
+    s.table(rows, col_mm=[50, 70, 60], row_h=3118)
+    out = ['1 %s에 %s원(%s × %s = %s)' % (u, want, want, o['qty'], o['total'])]
+    return out + sent(s, o.get('asks') or [])
+
+
+def w_panes(s, lv, a):
+    items = a[0]
+    if lv == '기본형':
+        s.labeled([(p['t'], K(p['ph']).replace('~', '______________')) for p in items], label_mm=30)
+        s.text('예시) ' + K(items[0]['ex'][0]))
+    else:
+        for p in items:
+            s.ask('%s: %s' % (p['t'], K(p['ph']).replace('~', '…')), blank=False)
+            s.lines(1)
+    return ['(자유) 예) ' + ' / '.join('%s: %s' % (p['t'], K(p['ex'][0])) for p in items)]
+
+
+def run_call_st(s, lv, call, Ls):
+    w, a = call['w'], call['args']
+    if w == 'append':
+        fig(s, a[0])
+        return []
+    if w == 'thenWhy':
+        return [write_st(s, lv, '왜 그럴까요? ' + K(a[0]['q']), a[0])]
+    if w == 'ruleFirst':
+        o = a[0]
+        r = write_st(s, lv, '먼저 예상해요 · ' + K(o['q']), o, n=1)
+        return ['(예상은 자유) 실제 규칙: ' + r[3:]]
+    if w == 'wonder':
+        s.text('1차시에 쓴 ‘궁금해요’ 칸을 다시 보고 써 보세요.')
+        return []
+    if w == 'writeStep':
+        return [write_st(s, lv, K(it['q']), it) for it in a[0]]
+    if w == 'panes':
+        return w_panes(s, lv, a)
+    if w == 'unit':
+        return w_unit(s, lv, a)
+    if w in ('island', 'bingo'):
+        return run_call(s, lv, call, Ls['id'], a[0]['cells'])
+    return run_call(s, lv, call, Ls['id'], None)
+
+
+def lesson_st(s, lv, Ls, app):
+    head(s, Ls)
+    if Ls['id'] == 's1':
+        s.scene(None, K(app['story']['lines'][0]))
+    parts = []
+    for i, st in enumerate(Ls['steps']):
+        step(s, i, K(st['name'] or STEP_NAMES[i]))
+        s.text(paper_st(st['inst']))
+        if lv == '기본형':
+            t = tip(st['hints'])
+            if t:
+                s.text(t)
+        a = []
+        for call in st['calls']:
+            a += run_call_st(s, lv, call, Ls)
+        parts.append('%s %s' % (NUM[i], J(a)))
+    if lv == '도전형':
+        n = len(Ls['steps'])
+        s.step('%s 도전 계단' % NUM[n], '★ 도전 문제')
+        s.text(paper_st(Ls['ch']['inst']))
+        a = []
+        for call in Ls['ch']['calls']:
+            a += run_call_st(s, lv, call, Ls)
+        parts.append('%s ★ %s' % (NUM[n], J(a)))
+    return '%s차시  ' % Ls['no'] + '  '.join(parts)
+
+
+def build_st(app, lv):
+    s = Sheet(unit_label=LABEL_ST, level=lv, grade_label='6학년')
+    lines = [lesson_st(s, lv, Ls, app) for Ls in app['lessons']]
+    s.answers('【교사용】 2. 소수의 나눗셈(이야기 버전) 활동지 정답 (%s)' % lv, lines,
+              note='※ 이 활동지는 앱 u2-decdiv.html과 차시 번호가 같습니다. 정답의 ‘42/10’은 분수 10분의 42를 뜻해요. '
+                   '소수의 끝자리 0은 생략할 수 있어요. ‘1.833…’처럼 …가 있는 몫은 끝없이 이어져요. 글쓰기 칸의 ‘예)’는 예시 답이에요.')
+    os.makedirs(OUT_ST, exist_ok=True)
+    path = os.path.join(OUT_ST, NAME % lv)
+    s.save(path)
+    return path
+
+
+def no_namuji(path):
+    """활동지 글에 '나머지'라는 낱말이 없는지(지도서 유의 사항: '나누어 주고 남는 양')"""
+    import zipfile
+    with zipfile.ZipFile(path) as z:
+        sec = z.read('Contents/section0.xml').decode('utf-8')
+    return ['‘나머지’라는 낱말이 있어요'] if '나머지' in sec else []
+
+
 def main():
     out = []
     try:
@@ -1287,7 +1519,12 @@ def main():
         assert nos == ['1', '2', '3', '4', '5', '6', '7', '8~9', '10', '11'], nos
         for lv in ('기본형', '도전형'):
             out.append(build_tb(app, lv))
-        # 이야기 버전(ST)은 아직 없어서 건너뜀
+        st = load_st(SRC_ST)
+        ids = [L['id'] for L in st['lessons']]
+        assert ids == ST, ids
+        assert [str(L['no']) for L in st['lessons']] == [str(i) for i in range(1, 12)]
+        for lv in ('기본형', '도전형'):
+            out.append(build_st(st, lv))
     finally:
         SHOT.close()
         if os.environ.get('KEEP_FIGS'):
@@ -1296,7 +1533,7 @@ def main():
             shutil.rmtree(WORK, ignore_errors=True)
     bad = 0
     for p in out:
-        prob = check(p)
+        prob = check(p) + no_namuji(p)
         bad += bool(prob)
         print(p, 'OK' if not prob else '\n  ' + '\n  '.join(prob))
     sys.exit(1 if bad else 0)
