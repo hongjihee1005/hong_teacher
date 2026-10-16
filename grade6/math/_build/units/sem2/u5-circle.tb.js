@@ -422,8 +422,8 @@ function ci6Wheel(body, api, opt) {
 
 /* ---------- 2차시: 원을 굴리고 정육각형·정사각형의 둘레를 수직선에 늘이기 ---------- */
 function ci6Unroll(body, api, opt) {
-  const k = 60, x0 = 70, W = 640, H = 488, base = 292;     // 1 cm = 60
-  const rows = { hex: { y: 375, v: 1, col: CI6.green, name: "정육각형의 둘레", want: 6 }, sq: { y: 420, v: 1, col: CI6.red, name: "정사각형의 둘레", want: 8 } };
+  const k = 60, x0 = 70, W = 640, H = 500, base = 292;     // 1 cm = 60
+  const rows = { hex: { y: 382, v: 1, col: CI6.green, name: "정육각형의 둘레", want: 6 }, sq: { y: 432, v: 1, col: CI6.red, name: "정사각형의 둘레", want: 8 } };
   const s = makeSvg(W, H); s.setAttribute("class", "ci6fig"); s.style.maxWidth = "36em";
   /* 위 오른쪽: 원 안의 정육각형과 원 밖의 정사각형 */
   const F = { x: 530, y: 88 };
@@ -433,16 +433,16 @@ function ci6Unroll(body, api, opt) {
   ci6Line(s, F.x, F.y, F.x + k, F.y, CI6.ink, 2); s.append(txt(F.x + k / 2, F.y - 11, "1 cm", 14));
   ci6Line(s, F.x - k, F.y + k + 12, F.x + k, F.y + k + 12, CI6.ink, 1.5); s.append(txt(F.x, F.y + k + 26, "2 cm", 14));
   /* 수직선과 세로 눈금선 */
-  for (let i = 0; i <= 9; i++) ci6Line(s, x0 + i * k, base + 6, x0 + i * k, 452, "#DCE4E0", 1.2, { "stroke-dasharray": "4 4" });
-  ci6Line(s, x0 - 8, 455, x0 + 9 * k + 8, 455, CI6.ink, 2);
-  for (let i = 0; i <= 18; i++) { const x = x0 + i * k / 2; ci6Line(s, x, 455, x, i % 2 ? 462 : 467, CI6.ink, 1.6); if (i % 2 === 0) s.append(txt(x, 479, String(i / 2), 14)); }
-  s.append(txt(x0 + 9 * k + 6, 479, "(cm)", 12, { "text-anchor": "end", fill: CI6.gray }));
+  for (let i = 0; i <= 9; i++) ci6Line(s, x0 + i * k, base + 6, x0 + i * k, 464, "#DCE4E0", 1.2, { "stroke-dasharray": "4 4" });
+  ci6Line(s, x0 - 8, 467, x0 + 9 * k + 8, 467, CI6.ink, 2);
+  for (let i = 0; i <= 18; i++) { const x = x0 + i * k / 2; ci6Line(s, x, 467, x, i % 2 ? 474 : 479, CI6.ink, 1.6); if (i % 2 === 0) s.append(txt(x, 491, String(i / 2), 14)); }
+  s.append(txt(x0 - 36, 491, "(cm)", 12, { fill: CI6.gray }));
   /* 원의 지름 막대 */
   ci6Line(s, x0, 332, x0 + 2 * k, 332, CI6.gray, 9); s.append(txt(x0 + 2 * k + 10, 332, "원의 지름 (2 cm)", 14, { "text-anchor": "start", fill: CI6.gray }));
   /* 끌어서 늘이는 막대 */
   Object.values(rows).forEach(r => {
     r.bar = ci6Line(s, x0, r.y, x0 + r.v * k, r.y, r.col, 9);
-    s.append(txt(x0, r.y - 16, r.name, 14, { "text-anchor": "start", fill: r.col }));
+    s.append(txt(x0, r.y - 24, r.name, 14, { "text-anchor": "start", fill: r.col }));
     r.hd = ci6Circle(s, x0 + r.v * k, r.y, 12, { fill: "#fff", stroke: r.col, "stroke-width": 3.5 }); r.hd.style.cursor = "ew-resize";
     r.lab = txt(x0 + r.v * k + 18, r.y, "1 cm", 14, { fill: r.col, "text-anchor": "start" }); s.append(r.lab);
   });
