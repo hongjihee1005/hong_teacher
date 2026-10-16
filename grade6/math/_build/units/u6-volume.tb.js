@@ -109,6 +109,9 @@ function vo6Solid(o) {
       for (let j = step; j < dd - 1e-9; j += step) { line([x, y + j, z + hh], [x + w, y + j, z + hh], gs); line([x + w, y + j, z], [x + w, y + j, z + hh], gs); }
     }
   };
+  if (o.floor) { const [fa, fb] = o.floor, fs = { stroke: "#CBD5CE", "stroke-width": 1 };
+    g.append(svgEl("polygon", { points: pts([[0, 0, 0], [fa, 0, 0], [fa, fb, 0], [0, fb, 0]]), fill: "#EEF2EE", stroke: "#B9C6BE", "stroke-width": 1.2 }));
+    for (let i = 1; i < fa; i++) line([i, 0, 0], [i, fb, 0], fs); for (let j = 1; j < fb; j++) line([0, j, 0], [fa, j, 0], fs); }
   const tint = o.tint || {}, col = [tint.top || VO6.top, tint.front || VO6.front, tint.right || VO6.right];
   if (mode === "sketch" || mode === "box") [[[0, b, 0], [a, b, 0]], [[0, b, 0], [0, 0, 0]], [[0, b, 0], [0, b, c]]].forEach(([p, q]) => line(p, q, { "stroke-dasharray": "5 4", stroke: "#8A7A6A", "stroke-width": 1.5 }));
   if (mode === "solid" || mode === "sketch") block(0, 0, 0, a, b, c, col, mode === "sketch" ? .5 : 1, o.grid);
@@ -116,7 +119,7 @@ function vo6Solid(o) {
   if (o.blocks) o.blocks.slice().sort((p, q) => q.y - p.y || p.z - q.z || p.x - q.x).forEach(k => block(k.x, k.y, k.z, k.w, k.d, k.h, k.c || VO6.cube, 1, k.step, VO6.ink));
   if (mode !== "none") [[[0, 0, 0], [a, 0, 0]], [[a, 0, 0], [a, 0, c]], [[a, 0, c], [0, 0, c]], [[0, 0, c], [0, 0, 0]], [[a, 0, 0], [a, b, 0]], [[a, b, 0], [a, b, c]], [[a, b, c], [a, 0, c]], [[0, 0, c], [0, b, c]], [[0, b, c], [a, b, c]]].forEach(([p, q]) => line(p, q, mode === "box" ? { "stroke-width": 2.2 } : null));
   const L = o.labels || {}, f = 15;
-  const C8 = []; for (const x of [0, a]) for (const y of [0, b]) for (const z of [0, c]) C8.push(P(x, y, z));
+  const Fr = o.frame || [a, b, c], C8 = []; for (const x of [0, Math.max(a, Fr[0])]) for (const y of [0, Math.max(b, Fr[1])]) for (const z of [0, Math.max(c, Fr[2])]) C8.push(P(x, y, z));
   let x0 = Math.min(...C8.map(p => p[0])) - 8, x1 = Math.max(...C8.map(p => p[0])) + 8, y0 = Math.min(...C8.map(p => p[1])) - 8, y1 = Math.max(...C8.map(p => p[1])) + 8;
   if (L.a) { const p = P(a / 2, 0, 0); g.append(txt(p[0], p[1] + 15, L.a, f, { fill: VO6.blue })); y1 = Math.max(y1, p[1] + 26); x0 = Math.min(x0, p[0] - vo6TW(L.a, f) / 2 - 4); }
   if (L.c) { const p = P(0, 0, c / 2); g.append(txt(p[0] - 7, p[1], L.c, f, { fill: VO6.blue, "text-anchor": "end" })); x0 = Math.min(x0, p[0] - 12 - vo6TW(L.c, f)); }
@@ -232,7 +235,7 @@ function vo6Dims(body, api, opt) {
     d.forEach((x, i) => { vals[i].textContent = String(x); });
     pic.innerHTML = "";
     if (opt.room) pic.append(vo6Solid({ d: opt.room, mode: "box", inner: d, labels: opt.roomLabels, W: opt.W || 260, maxW: opt.maxW || "19em", plain: true, label: "교실 안에 쌓은 상자" }));
-    else { const big = mx.map((x, i) => Math.max(x, d[i])); pic.append(vo6Stack(d, { s: Math.min((opt.W || 230) / (big[0] + big[1] * .39), 150 / (big[2] + big[1] * .31)), labels: opt.labels ? opt.labels(d) : null, maxW: opt.maxW || "17em", plain: true, label: "쌓은 직육면체" })); }
+    else { const big = mx.map((x, i) => Math.max(x, d[i])); pic.append(vo6Stack(d, { frame: big, floor: [big[0], big[1]], s: Math.min((opt.W || 230) / (big[0] + big[1] * .39), 150 / (big[2] + big[1] * .31)), labels: opt.labels ? opt.labels(d) : null, maxW: opt.maxW || "17em", plain: true, label: "쌓은 직육면체" })); }
     cnt.textContent = opt.hideCount ? "" : opt.countText ? opt.countText(d) : `${opt.word || "쌓기나무"} ${vo6Vol(d)}개`;
     body.querySelectorAll(".vo6fb").forEach(e => e.remove());
   }
@@ -254,7 +257,7 @@ function vo6Fill(body, api, opt) {
   let k = 0;
   if (opt.show) { const sh = opt.show(); if (sh) body.append(sh); }
   const pic = h("div"), cnt = h("div", { class: "vo6cnt" });
-  const go = n => { if (body.vo6Fin) return; k = Math.max(0, Math.min(N, n)); paint(); if (k === N) vo6Then(body, api, opt, `${nm} ${N}개`, opt.msg || `상자를 빈틈없이 채웠어요. ${nm} ${N}개가 들어가요.`); };
+  const go = n => { if (body.vo6Fin) return; k = Math.max(0, Math.min(N, n)); paint(); if (k === N) vo6Then(body, api, opt, `${nm} ${N}개`, opt.msg || "상자를 빈틈없이 채웠어요."); };
   const row = nx, layer = nx * ny;
   const btns = h("div", { class: "vo6btns" },
     h("button", { type: "button", onclick: () => go(k + 1) }, "한 개 넣기"),
@@ -283,19 +286,19 @@ function vo6Touch(body, api, opt) {
   FA.forEach((f, i) => rowA.append(h("button", { type: "button", onclick: () => { ia = i; paint(); } }, `${f[3]} 모양`)));
   FB.forEach((f, i) => rowB.append(h("button", { type: "button", onclick: () => { ib = i; paint(); } }, `${f[3]} 모양`)));
   const turnB = h("button", { type: "button", onclick: () => { turn = !turn; paint(); } }, "나를 돌려서 대기");
-  body.append(h("div", { class: "vo6figs" }, vo6Fr(vo6Solid({ d: opt.A, mode: "solid", W: 150, maxW: "9em", plain: true, tint: { top: "#FFE2B0", front: "#F4B46C", right: "#DC8C4A" } }), "상자 가"),
-    vo6Fr(vo6Solid({ d: opt.B, mode: "solid", W: 110, maxW: "8em", plain: true, tint: { top: "#CFE5FA", front: "#8DBDEB", right: "#5C97D0" } }), "상자 나")), rowA, rowB, h("div", { class: "vo6btns" }, turnB), pic, msg);
+  body.append(h("div", { class: "vo6figs" }, vo6Fr(vo6Solid({ d: opt.A, mode: "solid", s: 16, maxW: "10em", plain: true, tint: { top: "#FFE2B0", front: "#F4B46C", right: "#DC8C4A" } }), "상자 가"),
+    vo6Fr(vo6Solid({ d: opt.B, mode: "solid", s: 16, maxW: "4.6em", plain: true, tint: { top: "#CFE5FA", front: "#8DBDEB", right: "#5C97D0" } }), "상자 나")), rowA, rowB, h("div", { class: "vo6btns" }, turnB), pic, msg);
   function paint() {
     [...rowA.querySelectorAll("button")].forEach((b, i) => b.classList.toggle("vo6-pick", i === ia));
     [...rowB.querySelectorAll("button")].forEach((b, i) => b.classList.toggle("vo6-pick", i === ib));
-    const a = FA[ia], b0 = FB[ib], b = turn ? [b0[1], b0[0], b0[2]] : b0, u = 18;
+    const a = FA[ia], b0 = FB[ib], b = turn ? [b0[1], b0[0], b0[2]] : b0, u = 26;
     const W = Math.max(a[0], b[0]) * u + 40, Hh = Math.max(a[1], b[1]) * u + 40;
     pic.innerHTML = "";
     pic.append(vo6Fig(W, Hh, s => {
       const y0 = Hh - 20;
       s.append(svgEl("rect", { x: 20, y: y0 - a[1] * u, width: a[0] * u, height: a[1] * u, fill: "rgba(244,180,108,.55)", stroke: "#B5732E", "stroke-width": 2.5 }));
       s.append(svgEl("rect", { x: 20, y: y0 - b[1] * u, width: b[0] * u, height: b[1] * u, fill: "rgba(92,151,208,.35)", stroke: "#2B6FB8", "stroke-width": 2.5, "stroke-dasharray": "6 4" }));
-    }, Math.max(6, W / 22) + "em"));
+    }, Math.max(7, W / 16) + "em"));
     const same = (a[0] === b[0] ? 1 : 0) + (a[1] === b[1] ? 1 : 0);
     tried.add(ia + "," + ib + "," + turn);
     msg.innerHTML = "";
@@ -350,7 +353,7 @@ function vo6Net(body, api, opt) {
       t.textContent = on ? `${ar(f)} ${u}²` : "";
     });
     if (mode === "six") expr.textContent = "누른 면의 넓이: " + (picked.length ? picked.map(id => ar(svg.vo6Rects[id].f)).join(" + ") : "");
-    if (mode === "pair") expr.textContent = "평행한 두 면: " + pairs.map(p => `${[a * b, a * c, b * c][[0, 2, 1][p]] ?? ""}`).map((v, i) => { const f = vo6NetFaces(a, b, c).find(q => q.pair === pairs[i]); return `${ar(f)} × 2`; }).join(" + ");
+    if (mode === "pair") expr.textContent = "평행한 두 면: " + pairs.map(p => `${ar(vo6NetFaces(a, b, c).find(q => q.pair === p))} × 2`).join(" + ");
   };
   const click = f => {
     if (body.vo6Fin) return;
@@ -366,7 +369,7 @@ function vo6Net(body, api, opt) {
       Object.values(svg.vo6Rects).forEach(({ r, f }) => r.setAttribute("fill", f.side ? "#FFE9C4" : VO6.pair[0]));
       Object.values(svg.vo6Rects).forEach(({ r, f }) => { if (f.side) r.setAttribute("stroke-dasharray", "4 3"); });
       svg.append(svgEl("rect", { x: L, y: vo6R(T + b * s), width: vo6R((2 * a + 2 * b) * s), height: vo6R(c * s), fill: "none", stroke: VO6.red, "stroke-width": 4 }));
-      svg.append(txt(vo6R(L + (a + b) * s), vo6R(T + (b + c / 2) * s), "옆면", 16, { fill: VO6.red }));
+      svg.append(txt(vo6R(L + (b + a / 2) * s), vo6R(T + (b + c / 2) * s), "옆면", 16, { fill: VO6.red }));
       join.disabled = true;
       vo6Then(body, api, opt, "옆면을 하나로", opt.msg || "옆면 네 개를 하나의 직사각형으로 이어 보았어요.");
     } }, "옆면을 하나로 이어 보기");
@@ -415,7 +418,8 @@ function vo6Pack(body, api, opt) {
     n.forEach((x, i) => { vals[i].textContent = x + "개"; });
     const bl = []; for (let i = 0; i < n[0]; i++) for (let j = 0; j < n[1]; j++) for (let k = 0; k < n[2]; k++) bl.push({ x: i * B[0], y: j * B[1], z: k * B[2], w: B[0], d: B[1], h: B[2], c: VO6.box });
     const D = [n[0] * B[0], n[1] * B[1], n[2] * B[2]];
-    pic.innerHTML = ""; pic.append(vo6Solid({ d: D, mode: "none", blocks: bl, W: 230, H: 170, s: Math.min(230 / (B[0] * 4 + B[1] * 4 * .39), 170 / (B[2] * 4 + B[1] * 4 * .31)), maxW: "16em", plain: true, label: "쌓은 상자" }));
+    const FR = [B[0] * Math.max(4, n[0]), B[1] * Math.max(4, n[1]), B[2] * Math.max(4, n[2])];
+    pic.innerHTML = ""; pic.append(vo6Solid({ d: D, mode: "none", blocks: bl, frame: FR, s: Math.min(230 / (FR[0] + FR[1] * .39), 170 / (FR[2] + FR[1] * .31)), maxW: "16em", plain: true, label: "쌓은 상자" }));
     cnt.textContent = `쌓은 상자 ${n[0] * n[1] * n[2]}개` + (n[0] * n[1] * n[2] === N ? " ✓" : ` (상자는 ${N}개예요)`);
   }
   api.provide({ words: ["가로, 세로, 높이", "겉넓이"], answers: [] });
@@ -526,7 +530,7 @@ function vo6Hunt(body, api, opt) {
   svg.style.maxWidth = "40em";
   const marks = notes.map(nt => {
     const [x, y] = nt.p, g = svgEl("g", { style: "cursor:pointer", transform: `rotate(${(Math.random() * 16 - 8).toFixed(1)} ${x} ${y})` });
-    g.append(svgEl("rect", { x: x - 13, y: y - 13, width: 26, height: 26, fill: "#FFF3A6", stroke: "#D9B93A", "stroke-width": 2 }), svgEl("polygon", { points: `${x + 13},${y + 5} ${x + 13},${y + 13} ${x + 5},${y + 13}`, fill: "#E8D46A" }));
+    g.append(svgEl("rect", { x: x - 10, y: y - 10, width: 20, height: 20, fill: "#FFF3A6", stroke: "#D9B93A", "stroke-width": 2 }), svgEl("polygon", { points: `${x + 10},${y + 4} ${x + 10},${y + 10} ${x + 4},${y + 10}`, fill: "#E8D46A" }));
     g.addEventListener("click", () => take(nt, g)); svg.append(g); return g;
   });
   function take(nt, g) {
@@ -541,7 +545,7 @@ function vo6Hunt(body, api, opt) {
   function stop() { if (timer) { clearInterval(timer); timer = null; } doneB.disabled = true; clock.textContent = "찾기 끝! 자리에 돌아와 쪽지에 적힌 직육면체의 부피를 구해 빈 곳에 써요."; checkWrap.style.display = ""; }
   const start = h("button", { type: "button", class: "big", onclick: () => {
     start.disabled = true; area.style.display = ""; clock.textContent = `남은 시간 ${left}초`;
-    timer = setInterval(() => { left--; clock.textContent = `남은 시간 ${left}초`; if (left <= 0) { if (picked.length) stop(); else { clearInterval(timer); timer = null; left = opt.time || 180; start.disabled = false; clock.textContent = "시간이 다 되었어요. 한 장도 찾지 못했으니 다시 시작해 봐요."; } } }, 1000);
+    timer = setInterval(() => { if (!document.body.contains(clock)) { clearInterval(timer); timer = null; return; } left--; clock.textContent = `남은 시간 ${left}초`; if (left <= 0) { if (picked.length) stop(); else { clearInterval(timer); timer = null; left = opt.time || 180; start.disabled = false; clock.textContent = "시간이 다 되었어요. 한 장도 찾지 못했으니 다시 시작해 봐요."; } } }, 1000);
   } }, "눈 뜨고 찾기 시작!");
   const doneB = h("button", { type: "button", onclick: () => { if (!picked.length) return api.hint("붙임쪽지를 한 장 이상 찾아요."); stop(); } }, "다 찾았어요");
   const checkWrap = h("div", { style: "display:none" }, h("div", { class: "actions" }, h("button", { class: "big", onclick: () => {
@@ -604,7 +608,7 @@ function vo6Cards(body, api, opt) {
     setTimeout(() => {
       const good = okSet(sel), S = sel.slice(); sel = [];
       if (good) { const rec = {}; S.forEach(i => { rec[cards[i].k] = cards[i].v; cards[i].gone = true; }); (who ? his : mine).push([rec["가로"], rec["세로"], rec["높이"]]); log.textContent = `${who ? "컴퓨터 친구" : "나"}: 가로·세로·높이가 모두 있어서 가져왔어요.`; }
-      else { S.forEach(i => { cards[i].up = false; cards[i].seen = true; }); log.textContent = `${who ? "컴퓨터 친구" : "나"}: ${K.filter(k => !S.some(i => cards[i].k === k)).join("·") || ""}${vo6Jo(K.filter(k => !S.some(i => cards[i].k === k)).join("·") || "같은 것", "이/가")} 없어서 다시 뒤집어 놓았어요.`; }
+      else { S.forEach(i => { cards[i].up = false; cards[i].seen = true; }); const miss = K.filter(k => !S.some(i => cards[i].k === k)); log.textContent = `${who ? "컴퓨터 친구" : "나"}: ${vo6Jo(miss.join("·"), "이/가")} 없어서 다시 뒤집어 놓았어요.`; }
       show(); busy = false;
       if (cards.every(c => c.gone)) return finish();
       turn = 1 - turn; info.textContent = turn ? "컴퓨터 친구 차례예요." : "내 차례예요. 종이 3장을 골라 뒤집어요.";
@@ -671,7 +675,7 @@ const VO6_D = {
 })();
 /* 9차시 도전: 상자 8개로 632 cm²보다 적게 — 모든 쌓기 방법을 따져 보면 1×2×4(592 cm²) 하나뿐 */
 const VO6_P8 = (() => { const out = []; for (let a = 1; a <= 8; a++) for (let b = 1; b <= 8; b++) for (let c = 1; c <= 8; c++) if (a * b * c === 8) out.push({ n: [a, b, c], s: vo6Surf(vo6PackD(VO6_D.pkg, [a, b, c])) }); return out; })();
-const VO6_SMALL = s => s.split(";").map(x => x.trim());
+const vo6DimTxt = D => `가로 ${D[0]} cm, 세로 ${D[1]} cm, 높이 ${D[2]} cm`;
 
 const LESSONS = [
 {
@@ -753,7 +757,7 @@ const LESSONS = [
     render: (b, a) => { const er = (n) => vo6Slots(n, VO6_D.eraser).out.map(k => Object.assign({ c: VO6.er }, k));
       const F = { 가: [6, 2, 2], 나: [4, 2, 4], 다: [2, 6, 2] };
       vo6Chain(b, a, [
-        (bx, ax) => vo6Ask(bx, ax, [{ fig: () => h("div", { class: "vo6figs" }, ...Object.keys(F).map(k => vo6Fr(vo6Solid({ d: F[k], mode: "none", blocks: er(F[k]), s: 15, maxW: "8em", plain: true }), k))),
+        (bx, ax) => vo6Ask(bx, ax, [{ fig: () => h("div", { class: "vo6figs" }, ...Object.keys(F).map(k => vo6Fr(vo6Solid({ d: F[k], mode: "none", blocks: er(F[k]), s: 15, frame: [6, 6, 4], maxW: "9em", plain: true }), k))),
           parts: ["지우개는 가 ", { n: vo6Slots(F.가, VO6_D.eraser).out.length }, "개, 나 ", { n: vo6Slots(F.나, VO6_D.eraser).out.length }, "개, 다 ", { n: vo6Slots(F.다, VO6_D.eraser).out.length }, "개예요. 부피가 같은 두 개는 ", { o: ["가, 나", "가, 다", "나, 다"], a: 1 }, "예요."] }],
           { ok: "가와 다는 모양은 달라도 같은 지우개가 6개씩이라 부피가 같아요." }),
         (bx, ax) => { bx.append(h("div", { class: "vo6box" }, "규민: “크기가 같은 직육면체 모양의 과자 상자 10개를 쌓아 만들었어.” 나현: “크기가 같은 정육면체 모양의 퍼즐 8개를 쌓아 만들었어.”"));
@@ -769,7 +773,7 @@ const LESSONS = [
       render: (b, a) => vo6Chain(b, a, [
         { title: "① 첫째 상자", run: (bx, ax) => vo6Fill(bx, ax, { box: VO6_D.l3a, ask: [{ parts: ["한 층에 ", { n: 12 }, "개씩 ", { n: 3 }, "층이니까 쌓기나무는 ", { n: 36 }, "개, 부피는 ", { n: 36 }, " cm³예요."] }] }) },
         { title: "② 둘째 상자", run: (bx, ax) => vo6Fill(bx, ax, { box: VO6_D.l3b, ask: [{ parts: ["한 층에 ", { n: 20 }, "개씩 ", { n: 2 }, "층이니까 쌓기나무는 ", { n: 40 }, "개, 부피는 ", { n: 40 }, " cm³예요."] },
-          { q: "쌓기나무를 어떻게 세었나요?", parts: [{ o: ["한 층의 수를 센 다음 몇 층인지 세었어요.", "색깔별로 세었어요."], a: 0 }] }],
+          { q: "쌓기나무를 어떻게 세었나요?", parts: [{ o: ["한 층의 수를 세고, 몇 층인지 세었어요.", "색깔별로 세었어요."], a: 0 }] }],
           ok: "한 층의 쌓기나무 수와 층수로 셀 수 있어요. 한 층의 수는 가로와 세로에, 층수는 높이에 따라 달라져요." }) }]) },
     { name: "늘려 보기", inst: "쌓기나무로 가로, 세로, 높이의 변화에 따른 부피의 변화를 살펴보세요.", hints: ["＋ 단추를 누르면 그 방향으로 한 줄씩 늘어나요.", "쌓기나무 수가 몇 배가 되는지 살펴봐요."],
       render: (b, a) => vo6Chain(b, a, [
@@ -946,13 +950,13 @@ const LESSONS = [
         ok: "나의 부피는 480 cm³, 겉넓이는 376 cm²예요." }) },
     { name: "비교하기", inst: "가와 나 중 포장지를 절약할 수 있는 것은 어느 것인지 알아보세요.", hints: ["가: 부피 480 cm³, 겉넓이 392 cm² / 나: 부피 480 cm³, 겉넓이 376 cm²", "포장지의 넓이는 쌓은 모양의 겉넓이와 같아요."],
       render: (b, a) => vo6Ask(b, a, [
-        { fig: () => h("div", { class: "vo6figs" }, ...[["가", [1, 1, 4]], ["나", [1, 2, 2]]].map(([t, n]) => { const bl = []; for (let i = 0; i < n[0]; i++) for (let j = 0; j < n[1]; j++) for (let k = 0; k < n[2]; k++) bl.push({ x: i * 8, y: j * 5, z: k * 3, w: 8, d: 5, h: 3, c: VO6.box }); return vo6Fr(vo6Solid({ d: vo6PackD(VO6_D.pkg, n), mode: "none", blocks: bl, s: 7, maxW: "8em", plain: true }), t); })),
-          parts: ["두 모양의 부피는 ", { o: ["같아요", "달라요"], a: 0 }, ". 겉넓이는 376 ", { o: [">", "=", "<"], a: 2 }, " 392이므로 ", { o: ["가", "나"], a: 1 }, "가 겉넓이가 더 좁아 포장지를 더 적게 사용해요."] },
+        { fig: () => h("div", { class: "vo6figs" }, ...[["가", [1, 1, 4]], ["나", [1, 2, 2]]].map(([t, n]) => { const bl = []; for (let i = 0; i < n[0]; i++) for (let j = 0; j < n[1]; j++) for (let k = 0; k < n[2]; k++) bl.push({ x: i * 8, y: j * 5, z: k * 3, w: 8, d: 5, h: 3, c: VO6.box }); return vo6Fr(vo6Solid({ d: vo6PackD(VO6_D.pkg, n), mode: "none", blocks: bl, s: 7, frame: [8, 10, 12], maxW: "9em", plain: true }), t); })),
+          parts: ["두 모양의 부피는 ", { o: ["같아요", "달라요"], a: 0 }, ". 겉넓이는 376 ", { o: [">", "=", "<"], a: 2 }, " 392이므로 ", { o: ["가", "나"], a: 1 }, "의 겉넓이가 더 좁아 포장지를 더 적게 사용해요."] },
         { q: "알게 된 점을 골라 보세요.", parts: [{ o: ["부피가 같아도 쌓은 모양에 따라 겉넓이가 다를 수 있어요.", "부피가 같으면 겉넓이도 언제나 같아요."], a: 0, why: { "1": "가와 나는 부피가 480 cm³로 같지만 겉넓이는 392 cm², 376 cm²로 달랐어요." } }] }],
         { ok: "부피가 같아도 쌓은 모양에 따라 겉넓이가 달라요. 나 모양으로 쌓으면 포장지를 절약할 수 있어요." }) },
     { name: "상자 8개", inst: "상자 8개를 가 모양(가로 16 cm, 세로 10 cm, 높이 6 cm)과 나 모양(가로 16 cm, 세로 5 cm, 높이 12 cm)으로 쌓아 비교해 보세요.", hints: ["가는 가로로 2개, 앞뒤로 2개, 2층이에요.", "나는 가로로 2개, 앞뒤로 1개, 4층이에요."],
       render: (b, a) => vo6Chain(b, a, [
-        { title: "① 가 모양(가로 16 cm, 세로 10 cm, 높이 6 cm)으로 쌓기", run: (bx, ax) => vo6Pack(bx, ax, { box: VO6_D.pkg, N: 8, check: n => vo6PackD(VO6_D.pkg, n).join() === "16,10,6" ? null : `쌓은 모양이 가로 16 cm, 세로 10 cm, 높이 6 cm가 되게 쌓아요. 지금은 가로 ${vo6PackD(VO6_D.pkg, n).join(" cm, 세로 ").replace(/, 세로 (\d+)$/, " cm, 높이 $1")} cm예요.`,
+        { title: "① 가 모양(가로 16 cm, 세로 10 cm, 높이 6 cm)으로 쌓기", run: (bx, ax) => vo6Pack(bx, ax, { box: VO6_D.pkg, N: 8, check: n => vo6PackD(VO6_D.pkg, n).join() === "16,10,6" ? null : `쌓은 모양이 가로 16 cm, 세로 10 cm, 높이 6 cm가 되게 쌓아요. 지금은 ${vo6DimTxt(vo6PackD(VO6_D.pkg, n))}예요.`,
           ask: [{ parts: ["부피: ", { n: 960 }, " cm³, 겉넓이: 160 × 2 + 96 × 2 + 60 × 2 = ", { n: 632 }, " (cm²)"] }] }) },
         { title: "② 나 모양(가로 16 cm, 세로 5 cm, 높이 12 cm)으로 쌓기", run: (bx, ax) => vo6Pack(bx, ax, { box: VO6_D.pkg, N: 8, check: n => vo6PackD(VO6_D.pkg, n).join() === "16,5,12" ? null : "쌓은 모양이 가로 16 cm, 세로 5 cm, 높이 12 cm가 되게 쌓아요(가로로 2개, 4층).",
           ask: [{ parts: ["부피: ", { n: 960 }, " cm³, 겉넓이: 80 × 2 + 192 × 2 + 60 × 2 = ", { n: 664 }, " (cm²)"] }, { parts: ["포장지를 절약할 수 있는 것은 ", { o: ["가", "나"], a: 0, why: { "1": "632 < 664이므로 겉넓이가 더 좁은 쪽은 가예요." } }, "예요."] }],
@@ -961,7 +965,7 @@ const LESSONS = [
       render: (b, a) => writeStep(b, a, [{ q: "포장지를 더 적게 사용하려면 상자를 어떻게 쌓아야 하는지 까닭과 함께 써 보세요.", tag: "알게 된 점", ph: "예) 부피가 같아도 쌓은 모양에 따라 겉넓이가 달라요. 겉넓이가 더 좁은 모양으로 쌓으면 포장지를 덜 써서 쓰레기를 줄일 수 있어요." }]) }
   ],
   challenge: { inst: "상자 8개를 가 모양(겉넓이 632 cm²)보다 포장지를 더 적게 사용하도록 쌓아 보세요.", hints: ["가로로, 세로로, 위로 놓는 개수를 여러 가지로 바꾸어 겉넓이를 견주어 봐요.", "쌓은 모양이 정육면체에 가까울수록 겉넓이가 좁아지는 경향이 있어요."],
-    render: (b, a) => vo6Pack(b, a, { box: VO6_D.pkg, N: 8, start: [2, 2, 2], check: n => { const s = vo6Surf(vo6PackD(VO6_D.pkg, n)); return s < 632 ? null : `이렇게 쌓으면 가로 ${vo6PackD(VO6_D.pkg, n).join(" cm, 세로 ").replace(/, 세로 (\d+)$/, " cm, 높이 $1")} cm로 겉넓이가 ${s} cm²예요. 632 cm²보다 좁게 쌓아 보세요.`; },
+    render: (b, a) => vo6Pack(b, a, { box: VO6_D.pkg, N: 8, start: [2, 2, 2], check: n => { const s = vo6Surf(vo6PackD(VO6_D.pkg, n)); return s < 632 ? null : `이렇게 쌓으면 ${vo6DimTxt(vo6PackD(VO6_D.pkg, n))}로 겉넓이가 ${s} cm²예요. 632 cm²보다 좁게 쌓아 보세요.`; },
       msg: "632 cm²보다 겉넓이가 좁은 모양을 찾았어요!",
       ask: n => [{ parts: [`쌓은 모양은 가로 ${vo6PackD(VO6_D.pkg, n)[0]} cm, 세로 ${vo6PackD(VO6_D.pkg, n)[1]} cm, 높이 ${vo6PackD(VO6_D.pkg, n)[2]} cm예요. 겉넓이는 `, { n: vo6Surf(vo6PackD(VO6_D.pkg, n)) }, " cm²예요."] }],
       ok: `가로 8 cm, 세로 10 cm, 높이 12 cm로 쌓으면 겉넓이가 ${VO6_P8.find(p => p.n.join() === "1,2,4").s} cm²로, 상자 8개를 쌓는 방법 중 포장지가 가장 적게 들어요.` }) }
@@ -1000,7 +1004,7 @@ const LESSONS = [
   summary: "부피의 단위는 1 cm³, 1 m³이고 1 m³ = 1000000 cm³예요. (직육면체의 부피) = (가로) × (세로) × (높이), (정육면체의 부피) = (한 모서리의 길이) × (한 모서리의 길이) × (한 모서리의 길이)예요. (직육면체의 겉넓이) = (면 ㉮의 넓이) × 2 + (면 ㉯의 넓이) × 2 + (면 ㉰의 넓이) × 2, (정육면체의 겉넓이) = (한 면의 넓이) × 6이에요.",
   steps: [
     { name: "1번", inst: "부피가 1 cm³인 쌓기나무로 만든 직육면체 가와 나의 부피를 비교해 보세요.", hints: ["한 층의 수와 층수를 세어 곱해요.", "가는 한 층에 10개씩 2층, 나는 한 층에 9개씩 2층이에요."],
-      render: (b, a) => vo6Ask(b, a, [{ fig: () => h("div", {}, h("div", { class: "vo6figs" }, vo6Fr(vo6Stack(VO6_D.ex11a, { s: 22, maxW: "10em" }), "가"), vo6Fr(vo6Stack(VO6_D.ex11b, { s: 22, maxW: "9em" }), "나")), vo6Redrawn("쌓기나무 모양은 지도서의 답(가 20개, 나 18개)이 그대로 나오도록 이 앱이 정했어요.")),
+      render: (b, a) => vo6Ask(b, a, [{ fig: () => h("div", {}, h("div", { class: "vo6figs" }, vo6Fr(vo6Stack(VO6_D.ex11a, { s: 22, frame: [5, 3, 2], maxW: "10em" }), "가"), vo6Fr(vo6Stack(VO6_D.ex11b, { s: 22, frame: [5, 3, 2], maxW: "10em" }), "나")), vo6Redrawn("쌓기나무 모양은 지도서의 답(가 20개, 나 18개)이 그대로 나오도록 이 앱이 정했어요.")),
         parts: ["가의 부피는 ", { n: 20 }, " cm³이고, 나의 부피는 ", { n: 18 }, " cm³예요. ", { o: ["가", "나"], a: 0 }, "의 부피가 더 커요."] }],
         { ok: "가는 5 × 2 × 2 = 20(cm³), 나는 3 × 3 × 2 = 18(cm³)이니까 가의 부피가 더 커요." }) },
     { name: "2번", inst: "□ 안에 알맞은 수를 써넣으세요.", hints: ["1 m³ = 1000000 cm³예요.", "1 m = 100 cm이고 100 × 100 × 100 = 1000000이에요."],

@@ -353,7 +353,7 @@ function ra4Build(body, api, opt) {
       const x = 8 + i * CW, on = i < n, cx = x + (CW - 10) / 2;
       svg.append(svgEl("rect", { x, y: 6, width: CW - 10, height: H - 12, rx: 12, fill: on ? "#FFFDF6" : "none", stroke: on ? "#C9B79C" : "#E3E7E5", "stroke-width": 2, "stroke-dasharray": on ? "" : "6 6" }));
       if (!on) { svg.append(txt(cx, H / 2, "?", 30, { fill: "#C9D4CF" })); continue; }
-      if (opt.prod) { svg.append(ra4Icon(opt.prod, cx, 34, 56)); svg.append(txt(cx, 66, `${RA4_CNT[i]} ${opt.unit === "개" || opt.unit === "병" || opt.unit === "통" ? "" : ""}번째`, 13, { fill: "#8A7B66" })); }
+      if (opt.prod) { svg.append(ra4Icon(opt.prod, cx, 32, 54)); svg.append(txt(cx, 64, `${RA4_CNT[i]} ${opt.unit}`, 14, { fill: "#8A7B66" })); }
       its.forEach((it, k) => {
         const L = lay[k];
         for (let j = 0; j < L.cnt; j++) {
@@ -364,7 +364,7 @@ function ra4Build(body, api, opt) {
       });
     }
     tbl.innerHTML = "";
-    tbl.append(ra4Tbl([`${opt.what} 수`].concat(RA4_CNT.slice(0, max).map(c => `${c} ${opt.unit}`)),
+    tbl.append(ra4Tbl([opt.head || `${opt.what} 수`].concat(RA4_CNT.slice(0, max).map(c => `${c} ${opt.unit}`)),
       its.map(it => [`${it.name}${it.unit === "g" ? "(g)" : `(${it.unit})`}`].concat(RA4_CNT.slice(0, max).map((_, i) => i < n ? String(it.per * (i + 1)) : "?")))));
     read.textContent = `${opt.what} ${n}${opt.unit}: ` + its.map(it => `${it.name} ${it.per * n}${U(it)}`).join(", ");
   };
@@ -424,9 +424,10 @@ function ra4Choc(body, api, opt) {
     svg.innerHTML = "";
     for (let i = 0; i < N; i++) {
       const x = 10 + (i % cols) * S + S / 2, y = 10 + Math.floor(i / cols) * 74 + 37;
-      const g = ra4Icon(eaten.has(i) ? "wrap" : "choco", x, y, 76); g.style.cursor = fin ? "default" : "pointer";
+      const g = svgEl("g", { style: fin ? "cursor:default" : "cursor:pointer" });
+      g.append(svgEl("rect", { x: x - S / 2 + 4, y: y - 34, width: S - 8, height: 68, fill: "#FFFDF6" }), ra4Icon(eaten.has(i) ? "wrap" : "choco", x, y, 76));
       g.addEventListener("click", () => { if (fin) return; eaten.has(i) ? eaten.delete(i) : eaten.add(i); after(); });
-      svg.append(svgEl("rect", { x: x - S / 2 + 4, y: y - 34, width: S - 8, height: 68, fill: "transparent" }), g);
+      svg.append(g);
     }
     read.textContent = `처음 초콜릿 ${N}개 · 먹은 초콜릿 ${eaten.size}개 · 남은 초콜릿 ${N - eaten.size}개`;
   };
@@ -435,7 +436,6 @@ function ra4Choc(body, api, opt) {
     if (eaten.size === opt.eat) { fin = true; draw(); ra4Finish(body, api, opt, `먹은 ${opt.eat}개, 남은 ${N - opt.eat}개`, `초콜릿 ${opt.eat}개를 먹었어요. 남은 초콜릿은 ${N - opt.eat}개예요.`); }
     else if (eaten.size > opt.eat) api.hint(`${opt.eat}개만 먹어요. 먹은 초콜릿을 다시 누르면 되돌릴 수 있어요.`);
   };
-  svg.addEventListener("click", e => { const t = e.target; if (fin || t.tagName !== "rect" || t.getAttribute("fill") !== "transparent") return; });
   api.provide({ words: RA4_WORDS, answers: [] });
   body.append(svg, read); draw();
 }
@@ -499,7 +499,7 @@ function ra4Rect(body, api, opt) {
     const q = opt.base === "h" ? ra4Q(w, hh) : ra4Q(hh, w), d = ra4Dec(q);
     read.textContent = opt.base === "h"
       ? `${nw} ${w} ${opt.unit || "cm"}, ${nh} ${hh} ${opt.unit || "cm"} → ${nw}는 ${nh}의 ${ra4Fr(q)}${d && q.d !== 1 ? " (= " + d + ")" : ""}배`
-      : `${nw} ${w} cm, ${nh} ${hh} cm → ${nw}에 대한 ${nh}의 비 ${hh} : ${w}, 비율 ${ra4Fr(ra4Q(hh, w)) === String(hh / w) ? hh / w : `[${hh}/${w}]`}${d ? " = " + d : ""}`;
+      : `${nw} ${w} cm, ${nh} ${hh} cm → ${nw}에 대한 ${nh}의 비 ${hh} : ${w}, 비율 [${hh}/${w}]${d ? " = " + d : ""}`;
   };
   const show = () => { goal.textContent = `${k + 1}. ${opt.tasks[k].goal}`; };
   const setFrom = p => { if (fin) return; w = Math.max(1, Math.min(W, Math.round((p.x - ox) / u))); if (!opt.lockH) hh = Math.max(1, Math.min(Hh, Math.round((oy + Hh * u - p.y) / u))); draw(); };
@@ -597,7 +597,6 @@ function ra4Tape2(body, api, opt) {
     svg.append(svgEl("circle", { cx: X, cy: (yT + yB) / 2, r: 13, fill: col, stroke: "#fff", "stroke-width": 3, style: "cursor:grab" }));
     svg.append(txt(Math.min(Math.max(X, x0 + 40), x0 + L - 40), yT - 32, `${fmt(N * k / K)}${U}`, 16, { fill: col }));
     const below = opt.mode === "pct" ? `${fmt(100 * k / K)} %` : fmt(k / K);
-    svg.append(txt(Math.min(Math.max(X, x0 + 40), x0 + L - 40), (yT + yB) / 2 + 1, "", 1));
     svg.append(txt(Math.min(Math.max(X + 44, x0 + 60), x0 + L - 30), (yT + yB) / 2, below, 17, { fill: col }));
     read.textContent = `${opt.part} ${fmt(N * k / K)}${U} ↔ ${opt.mode === "pct" ? "백분율 " + fmt(100 * k / K) + " %" : "비율 " + fmt(k / K)}`;
   };
@@ -619,8 +618,8 @@ function ra4Grid(body, api, opt) {
   const states = G.map(g => new Array(g.cols * g.rows).fill(false));
   const labs = [];
   G.forEach((g, gi) => {
-    const svg = makeSvg(g.cols * u + 8, g.rows * u + 8); svg.setAttribute("class", "ra4fig"); svg.style.maxWidth = Math.min(100, g.cols * 9) + "%";
-    svg.style.width = (g.cols * u + 8) + "px";
+    const svg = makeSvg(g.cols * u + 8, g.rows * u + 8); svg.setAttribute("class", "ra4fig");
+    svg.style.width = (g.cols * u + 8) + "px"; svg.style.maxWidth = "100%";
     const cells = [];
     for (let i = 0; i < g.cols * g.rows; i++) { const r = svgEl("rect", { x: 4 + (i % g.cols) * u, y: 4 + Math.floor(i / g.cols) * u, width: u, height: u, fill: "#fff", stroke: "#8DA39A", "stroke-width": 1.5 }); cells.push(r); svg.append(r); }
     const lab = h("div", { class: "ra4read" }, "​"); labs.push(lab);
@@ -671,7 +670,7 @@ function ra4Link(body, api, opt) {
     const got = items.map(it => it.t).join(" — ");
     if (bad >= 0) {
       chain.forEach((r, c) => btns[c][r].classList.remove("ra4pk")); chain = [];
-      return api.fail(`${ra4J(items[0].t, "의")}`.replace(/의$|이$|가$/, "") + `${items[0].t}의 비율은 ${ra4Fr(items[0].v)}${ra4Dec(items[0].v) ? " = " + ra4Dec(items[0].v) : ""}이고, ${items[bad].t}의 비율은 ${ra4Fr(items[bad].v)}${ra4Dec(items[bad].v) ? " = " + ra4Dec(items[bad].v) : ""}이에요. 다시 이어 봐요.`, got);
+      return api.fail(`${items[0].t}의 비율은 ${ra4Fr(items[0].v)}${ra4Dec(items[0].v) ? " = " + ra4Dec(items[0].v) : ""}이고, ${items[bad].t}의 비율은 ${ra4Fr(items[bad].v)}${ra4Dec(items[bad].v) ? " = " + ra4Dec(items[bad].v) : ""}이에요. 다시 이어 봐요.`, got);
     }
     const color = COL[made % COL.length];
     chain.forEach((r, c) => { used[c][r] = made; const b = btns[c][r]; b.classList.remove("ra4pk"); b.style.background = color; b.style.borderColor = color; b.disabled = true; });
@@ -896,26 +895,55 @@ function ra4High(body, api, opt) {
 
 /* ---------- 정해진 그림 ---------- */
 function ra4Parthenon() {
-  const s = makeSvg(560, 280); s.setAttribute("class", "ra4fig"); s.style.maxWidth = "560px";
+  const s = makeSvg(560, 300); s.setAttribute("class", "ra4fig"); s.style.maxWidth = "560px";
   const u = 40, x = 100, y = 40, W = 9 * u, H = 4 * u;
-  s.append(svgEl("rect", { x: 0, y: 0, width: 560, height: 280, fill: "#EAF4FB" }));
+  s.append(svgEl("rect", { x: 0, y: 0, width: 560, height: 300, fill: "#EAF4FB" }));
   s.append(svgEl("polygon", { points: `${x},${y + 30} ${x + W / 2},${y} ${x + W},${y + 30}`, fill: "#E9E2D0", stroke: "#8A7B5E", "stroke-width": 2 }));
   s.append(svgEl("rect", { x, y: y + 30, width: W, height: 16, fill: "#E9E2D0", stroke: "#8A7B5E", "stroke-width": 2 }));
   for (let i = 0; i < 8; i++) s.append(svgEl("rect", { x: x + 10 + i * (W - 30) / 7, y: y + 46, width: 12, height: H - 62, fill: "#F3EEE2", stroke: "#8A7B5E", "stroke-width": 1.5 }));
   s.append(svgEl("rect", { x: x - 6, y: y + H - 16, width: W + 12, height: 16, fill: "#E9E2D0", stroke: "#8A7B5E", "stroke-width": 2 }));
   s.append(svgEl("line", { x1: x, y1: y + H + 22, x2: x + W, y2: y + H + 22, stroke: "#C8472E", "stroke-width": 3 }), txt(x + W / 2, y + H + 42, "가로", 18, { fill: "#C8472E" }));
   s.append(svgEl("line", { x1: x + W + 26, y1: y, x2: x + W + 26, y2: y + H, stroke: "#2B7BD6", "stroke-width": 3 }), txt(x + W + 52, y + H / 2, "높이", 18, { fill: "#2B7BD6" }));
-  s.append(txt(280, 262, "파르테논 신전(앞에서 본 모습) · 가로는 높이의 [9/4]배".replace("[9/4]", "9/4"), 15, { fill: "#4A5A55" }));
+  s.append(ra4SvgLine("파르테논 신전(앞에서 본 모습) · 가로는 높이의 [9/4]배", 280, 278, 16, { fill: "#4A5A55" }));
   return s;
 }
-function ra4Forest(spots, seen) {
-  const s = makeSvg(660, 330); s.setAttribute("class", "ra4fig");
-  s.append(svgEl("rect", { x: 0, y: 0, width: 660, height: 330, fill: "#E6F3E1" }));
-  s.append(svgEl("path", { d: "M0,120 L120,40 L230,110 L360,20 L500,100 L660,50 V0 H0Z", fill: "#BFDDB5" }));
-  s.append(svgEl("path", { d: "M0,300 C160,250 260,320 420,280 S600,250 660,280 V330 H0Z", fill: "#9FD0F2" }));
-  s.append(svgEl("line", { x1: 40, y1: 230, x2: 360, y2: 30, stroke: "#6F6656", "stroke-width": 4 }));
-  for (let i = 0; i < 12; i++) { const tx = 20 + i * 56, ty = 200 + (i % 3) * 14; s.append(svgEl("polygon", { points: `${tx},${ty} ${tx - 14},${ty + 34} ${tx + 14},${ty + 34}`, fill: "#4E8A2F" })); }
-  return s;
+/* 휴양림 둘러보기: 장면의 곳곳을 눌러 비교할 수 있는 두 양을 찾아요 */
+function ra4Scene(body, api, opt) {
+  const SP = [
+    { x: 215, y: 118, k: "car", t: "모노레일", d: "집라인 체험장으로 가는 모노레일 한 대에는 어른 6명, 어린이 3명이 탈 수 있어요. → 어른 수와 어린이 수를 비교해요." },
+    { x: 470, y: 205, k: "bottle", t: "유자차", d: "유자청 1컵과 물 4컵을 섞어 유자차 한 병을 만들어요. → 유자청의 양과 물의 양을 비교해요." },
+    { x: 300, y: 290, k: "trap", t: "계곡 낚시", d: "낚시 도구 한 세트에는 통발 2개와 미끼통 5개가 들어 있어요. → 통발 수와 미끼통 수를 비교해요." },
+    { x: 610, y: 205, k: "map", t: "산책로 안내 지도", d: "실제 거리 300 m를 1 cm로 나타낸 지도예요. → 실제 거리와 지도에서의 거리를 비교해요." },
+    { x: 80, y: 160, k: "hoop", t: "농구 골대", d: "주리는 공을 20번 던져서 7번, 민석이는 공을 25번 던져서 8번 넣었어요. → 던진 횟수와 넣은 횟수를 비교해요." },
+    { x: 560, y: 70, k: "board", t: "설문 조사", d: "휴양림 홍보 자료에 휴양림을 찾는 이유를 조사한 결과가 있어요. → 전체 사람 수와 각 항목을 고른 사람 수를 비교해요." }];
+  const seen = new Set(); let fin = false;
+  const svg = makeSvg(680, 340); svg.setAttribute("class", "ra4fig");
+  const info = h("div", { class: "ra4phrase" }, "장면의 동그라미를 눌러 보세요.");
+  const read = h("div", { class: "ra4read" }, "​");
+  const draw = () => {
+    svg.innerHTML = "";
+    svg.append(svgEl("rect", { x: 0, y: 0, width: 680, height: 340, fill: "#E6F3E1" }));
+    svg.append(svgEl("path", { d: "M0,130 L120,50 L230,120 L360,24 L500,110 L680,56 V0 H0Z", fill: "#BFDDB5" }));
+    svg.append(svgEl("path", { d: "M0,310 C160,260 260,330 420,290 S610,262 680,290 V340 H0Z", fill: "#9FD0F2" }));
+    svg.append(svgEl("line", { x1: 60, y1: 240, x2: 370, y2: 34, stroke: "#6F6656", "stroke-width": 4 }));
+    for (let i = 0; i < 11; i++) { const tx = 140 + i * 50, ty = 222 + (i % 3) * 10; if (Math.abs(tx - 470) < 30 || Math.abs(tx - 610) < 30) continue; svg.append(svgEl("polygon", { points: `${tx},${ty} ${tx - 14},${ty + 34} ${tx + 14},${ty + 34}`, fill: "#4E8A2F" })); }
+    SP.forEach((p, i) => {
+      const g = svgEl("g", { style: "cursor:pointer" });
+      g.append(svgEl("circle", { cx: p.x, cy: p.y, r: 34, fill: seen.has(i) ? "#DDEDE5" : "#FFFDF6", stroke: seen.has(i) ? "#2E8B57" : "#E47A38", "stroke-width": 3 }));
+      if (p.k === "hoop") { g.append(svgEl("rect", { x: p.x - 18, y: p.y - 24, width: 36, height: 24, fill: "#fff", stroke: "#5A4A30", "stroke-width": 2 }), svgEl("ellipse", { cx: p.x, cy: p.y + 4, rx: 14, ry: 5, fill: "none", stroke: "#E2574C", "stroke-width": 3 }), svgEl("circle", { cx: p.x + 10, cy: p.y + 18, r: 8, fill: "#F08A24" })); }
+      else if (p.k === "map") { g.append(svgEl("rect", { x: p.x - 20, y: p.y - 16, width: 40, height: 30, fill: "#FFF6E3", stroke: "#8A6A3A", "stroke-width": 2 }), svgEl("path", { d: `M${p.x - 14},${p.y + 8} L${p.x - 2},${p.y - 4} L${p.x + 6},${p.y + 4} L${p.x + 14},${p.y - 10}`, stroke: "#C8472E", "stroke-width": 2, fill: "none" })); }
+      else if (p.k === "board") { g.append(svgEl("rect", { x: p.x - 22, y: p.y - 18, width: 44, height: 30, fill: "#fff", stroke: "#3B6FA8", "stroke-width": 2 })); [8, 16, 22].forEach((hh, j) => g.append(svgEl("rect", { x: p.x - 16 + j * 12, y: p.y + 8 - hh, width: 8, height: hh, fill: "#7FB8E6" }))); }
+      else g.append(ra4Icon(p.k, p.x, p.y, 50));
+      g.append(txt(p.x, p.y + 46, p.t, 14, { fill: "#2F3B33" }));
+      if (seen.has(i)) g.append(txt(p.x + 26, p.y - 26, "✓", 18, { fill: "#2E8B57" }));
+      g.addEventListener("click", () => { seen.add(i); info.textContent = `${p.t}: ${p.d}`; draw(); after(); });
+      svg.append(g);
+    });
+    read.textContent = `찾은 곳 ${seen.size} / ${SP.length}`;
+  };
+  const after = () => { if (!fin && seen.size === SP.length) { fin = true; api.done(`${SP.length}곳`, opt.ok || "휴양림에서 두 양을 비교하는 상황을 모두 찾았어요."); } };
+  api.provide({ words: ["두 양을 비교해요"], answers: [] });
+  body.append(svg, info, read); draw();
 }
 function ra4AppleCarrot() {
   const s = makeSvg(520, 120); s.setAttribute("class", "ra4fig"); s.style.maxWidth = "520px";
