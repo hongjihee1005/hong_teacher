@@ -1317,7 +1317,7 @@ def check_story(seen, nexpr, ntab, D):
               c('prism', 8)['edge'] + c('pyr', 8)['edge'], c('prism', 8)['vert'] + c('pyr', 8)['vert'],
               c('prism', 30 // 3)['vert'], c('pyr', 11 - 1)['edge'],
               c('pyr', 4)['edge'], 9 + c('pyr', 4)['edge'], c('pyr', 3)['edge'], 9 + 8 - 6,   # 10차시
-              c('pyr', 6)['edge'], 84 / c('pyr', 6)['edge'], 84 / c('pyr', 6)['edge'] * 6]  # 11차시
+              c('pyr', 5)['edge'], 90 / c('pyr', 5)['edge'], 90 / c('pyr', 5)['edge'] * 5]  # 11차시
     for v in expect:
         assert any(abs(v - n) < 1e-9 for n in seen), ('앱 답 중에 없음(이야기)', v)
     assert c('prism', 8)['vert'] == 16 and c('pyr', 9)['face'] == 10          # 꼭짓점 16개 → 팔각기둥, 면 10개 각뿔 → 구각뿔

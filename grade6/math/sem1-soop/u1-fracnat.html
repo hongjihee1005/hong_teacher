@@ -1934,10 +1934,40 @@ function fn6RenderNode(n) {
 })();
 /* 엔진 부품의 '답 따라 쓰기' 글은 읽는 말(7분의 3)로 바꿔 줌 */
 function fn6A(a) { return Object.assign({}, a, { provide: info => a.provide({ words: (info && info.words) || [], answers: ((info && info.answers) || []).map(fn6Plain) }) }); }
+/* 이야기 버전: 보기 순서를 섞어 정답 자리를 짐작하지 못하게 해요(같은 문제는 언제나 같은 순서, 채점은 섞은 순서에 맞춰 바꿈).
+   순서에 뜻이 있는 보기(>, <, = · 2점·1점·0점 · ㉠㉡㉢)는 그대로 둬요. */
+function fn6Perm(o, seed) {
+  const n = o.length, idx = [...Array(n).keys()], S = o.map(x => String(x).trim());
+  if (n < 2 || S.every(x => /^[<>=]$/.test(x)) || S.every(x => /점$/.test(x)) || S.some(x => /^[㉠-㉣]/.test(x))) return idx;
+  let g = 2166136261; for (const ch of String(seed) + "|" + S.join("|")) { g ^= ch.charCodeAt(0); g = Math.imul(g, 16777619) >>> 0; }
+  const rnd = () => { g ^= g << 13; g >>>= 0; g ^= g >>> 17; g ^= g << 5; g >>>= 0; return g / 4294967296; };
+  for (let i = n - 1; i > 0; i--) { const j = Math.floor(rnd() * (i + 1)); [idx[i], idx[j]] = [idx[j], idx[i]]; }
+  return idx; /* idx[새 자리] = 원래 번호 */
+}
+function fn6Mix(o, a, why, seed) {
+  const P = fn6Perm(o, seed), inv = []; P.forEach((old, nw) => { inv[old] = nw; });
+  const na = Array.isArray(a) ? a.map(x => inv[x]).sort((x, y) => x - y) : inv[a];
+  let nw = why;
+  if (why) { nw = {}; Object.keys(why).forEach(k => { nw[k.split(",").map(x => inv[+x]).sort((x, y) => x - y).join(",")] = why[k]; }); }
+  return { o: P.map(i => o[i]), a: na, why: nw };
+}
+/* 여러 개 고르기: 틀린 보기 하나에 단 까닭(why:{"3":…})이 그 보기를 넣어 고른 모든 경우에 나오게 해요 */
+function fn6WhyMulti(m, n) {
+  if (!Array.isArray(m.a) || !m.why) return m;
+  const why = Object.assign({}, m.why), K = m.a.length;
+  const rec = (start, pick) => {
+    if (pick.length === K) { const key = pick.join(","); if (!why[key]) { const w = pick.find(i => !m.a.includes(i) && m.why[String(i)]); if (w != null) why[key] = m.why[String(w)]; } return; }
+    for (let i = start; i < n; i++) rec(i + 1, pick.concat(i));
+  };
+  rec(0, []);
+  return Object.assign({}, m, { why });
+}
+const fn6MixQ = it => it && it.o && it.a != null ? Object.assign({}, it, fn6WhyMulti(fn6Mix(it.o, it.a, it.why, it.q || ""), it.o.length)) : it;
+const fn6MixB = pt => pt && typeof pt === "object" && pt.o && pt.a != null ? Object.assign({}, pt, { o: fn6Mix(pt.o, pt.a, null, "b").o, a: fn6Mix(pt.o, pt.a, null, "b").a }) : pt;
 const fn6Quiz0 = quiz, fn6Blanks0 = blanks;
 /* 엔진의 hj-multi(한 계단 두 활동)가 셀 수 있게 'function 이름(body, api' 꼴로 감싸요. 안에서 엔진 부품이 api.done(을 불러요. */
-quiz = function quiz(body, api, items, o) { /* 엔진 quiz가 api.done( 을 불러요 */ return fn6Quiz0(body, fn6A(api), items, o); };
-blanks = function blanks(body, api, parts, o) { /* 엔진 blanks가 api.done( 을 불러요 */ return fn6Blanks0(body, fn6A(api), parts, o); };
+quiz = function quiz(body, api, items, o) { /* 엔진 quiz가 api.done( 을 불러요 */ return fn6Quiz0(body, fn6A(api), items.map(fn6MixQ), Object.assign({ bad: items.some(it => it.fig) ? "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요." : "빨간 칸을 다시 살펴봐요. 문제를 다시 읽고 골라 보세요." }, o)); };
+blanks = function blanks(body, api, parts, o) { /* 엔진 blanks가 api.done( 을 불러요 */ return fn6Blanks0(body, fn6A(api), parts.map(fn6MixB), o); };
 
 function fn6Gate(api, ready, msg) {
   return Object.assign({}, api, { done: (ans, m, lv) => ready() ? api.done(ans, m, lv) : api.fail(typeof msg === "function" ? msg() : msg, ans) });
@@ -2031,6 +2061,7 @@ function fn6EstBox(api, e, onOk) {
           | {q, e|x, n: 수} | {q, pick:[…], a: 번호, why:{번호:"까닭"}}  */
 function fn6Calc(body, api, items, opt = {}) {
   fn6Style();
+  items = items.map(it => it.pick ? Object.assign({}, it, (m => ({ pick: m.o, a: m.a, why: m.why }))(fn6Mix(it.pick, it.a, it.why, it.q || ""))) : it);
   const rows = []; const wrap = h("div");
   let grp = null, gName = null;
   items.forEach((it, k) => {
@@ -2119,6 +2150,8 @@ function fn6Calc(body, api, items, opt = {}) {
    '='가 있고 한글이 없는 줄은 '='로 나눈 값이 모두 같은지 스스로 확인해요. */
 function fn6Chain(body, api, rows, opt = {}) {
   fn6Style();
+  const mixC = pt => pt && typeof pt === "object" && pt.c ? (m => Object.assign({}, pt, { c: m.o, a: m.a }))(fn6Mix(pt.c, pt.a, null, "c")) : pt;
+  rows = rows.map(r => Array.isArray(r) ? r.map(mixC) : Object.assign({}, r, { p: r.p.map(mixC) }));
   const ins = [], chs = [], plains = [], pairs = [];
   const wrap = h("div");
   const ex = v => v == null ? "" : Array.isArray(v) ? v.map(ex).join("") : String(v)[0] === "?" ? String(v).slice(1) : String(v);
@@ -2234,6 +2267,7 @@ function fn6Bars(body, api, opt) {
 /* ⑦ 분류하기: cards [{t, k(bin 번호)}], bins [이름] */
 function fn6Sort(body, api, opt) {
   fn6Style();
+  opt = Object.assign({}, opt, { cards: fn6Perm(opt.cards.map(c => c.t), "sort").map(i => opt.cards[i]) }); /* 카드도 섞어서 놓아요 */
   const where = opt.cards.map(() => -1); let sel = null;
   const pool = h("div", { class: "fn6pool" }), binsEl = h("div", { class: "fn6bins" });
   const lists = opt.bins.map((b, bi) => { const list = h("div", { class: "fn6binl" }); binsEl.append(h("div", { class: "fn6bin", onclick: e => { if (e.target.closest(".fn6crd")) return; put(bi); } }, h("button", { class: "fn6binh" }, b), list)); return list; });
@@ -3039,11 +3073,11 @@ const LESSONS = [
     { name: "만져 보기 — 방법 1로 붓기", inst: "서아는 우유 5 L를 반죽 그릇 3개에 똑같이 나누어 부었어요. 그릇 한 개에 부은 우유의 양을 방법 1로 구해 봐요. 먼저 1 L씩 나누어 붓고, 남은 우유를 똑같이 나누어 보세요.", hints: ["우유 3 L는 그릇 3개에 1 L씩 나누어 부을 수 있어요.", "남은 2 L를 각각 똑같이 3칸으로 나누어 한 칸씩 부어요."],
       render: (b, a) => fn6Share(b, a, { N: 5, d: 3, mode: "whole", unit: " L", strip: "우유 1 L", who: "개", one: "그릇 한 개", tip: "먼저 그릇 한 개에 부을 1 L짜리를 누르고, ‘＋’로 남은 우유를 똑같이 나눈 다음 남은 띠마다 한 칸씩 골라요.", ask: [
         ["구하는 식: ", { c: ["5÷3", "3÷5", "5×3"], a: 0 }],
-        ["5÷3 = (3÷3) + (2÷3) = ", { i: "1" }, " + ", { q: [null, "?2", "?3"] }, " = ", { q: ["?1", "?2", "3"] }]], ok: "1 L씩 나누어 붓고 남은 2 L를 3으로 나누었어요. 5÷3 = [1 2/3]이에요." }) },
+        ["5÷3 = (3÷3) + (2÷3) = ", { i: "1" }, " + ", { q: [null, "?2", "?3"] }, " = ", { q: ["?1", "?2", "3"] }]], ok: "1 L씩 나누어 붓고 남은 2 L를 3으로 나누었어요. 5÷3 = [1 2/3]예요." }) },
     { name: "그려 보기 — 방법 2로 붓기", inst: "이번에는 방법 2로 구해 봐요. 우유 5 L를 각각 똑같이 3칸으로 나누어 그릇 한 개에 부을 양을 골라 보세요.", hints: ["1 L마다 똑같이 3칸으로 나누어 한 칸씩 골라요.", "[1/3] L가 5개예요."],
       render: thenWhy((b, a) => fn6Share(b, a, { N: 5, d: 3, unit: " L", strip: "우유 1 L", who: "개", one: "그릇 한 개", ask: [
         ["5÷3 = (1÷3)+(1÷3)+(1÷3)+(1÷3)+(1÷3) = [1/3]+[1/3]+[1/3]+[1/3]+[1/3] = ", { q: [null, "?5", "?3"] }],
-        ["방법 1의 몫 [1 2/3]와 방법 2의 몫 [5/3]는 ", { c: ["같아요", "달라요"], a: 0 }, "."]], ok: "5÷3 = [5/3] = [1 2/3]이에요. 그릇 한 개에 부은 우유는 [1 2/3] L(= [5/3] L)예요." }),
+        ["방법 1의 몫 [1 2/3]와 방법 2의 몫 [5/3]는 ", { c: ["같아요", "달라요"], a: 0 }, "."]], ok: "5÷3 = [5/3] = [1 2/3]예요. 그릇 한 개에 부은 우유는 [1 2/3] L(= [5/3] L)예요." }),
         { q: "방법 1과 방법 2의 몫이 같은 까닭을 써 봐요.", ph: "두 방법 모두 ~", help: ["① 두 방법 모두 우유 몇 L를 그릇 몇 개에 나누었는지 떠올려요. → ② [1 2/3]가 [1/3]이 몇 개인지 세어 [5/3]와 견주어요.", "‘두 방법 모두 우유 5 L를 그릇 3개에 똑같이 나누었고, [1 2/3]는 [1/3]이 ~개라서 몫이 같아요.’ 꼴로 써요."],
           ans: "두 방법 모두 우유 5 L를 그릇 3개에 똑같이 나누었고, [1 2/3]는 [1/3]이 5개인 [5/3]와 크기가 같아서 몫이 같아요." }) },
     { name: "말해 보기 — 피자 도우 나누기", inst: "모양과 크기가 같은 피자 도우 7장을 4모둠이 똑같이 나누어 쓰려고 해요. 방법 1과 방법 2 중 하나를 골라 한 모둠이 쓸 수 있는 피자 도우의 양을 분수로 나타내고, 친구에게 설명해 보세요.", hints: ["방법 1: 도우를 1장씩 나누어 주고 남은 3장을 각각 4로 똑같이 나누어요.", "방법 2: 도우 7장을 각각 4로 똑같이 나누어 한 칸씩 골라요."],
@@ -3208,7 +3242,7 @@ const LESSONS = [
         { t: "방법 2", p: ["[76/9]÷4 = ", { q: [null, ["76", "÷", "?4"], "9"] }, " = ", { q: [null, "?19", "9"] }] }]),
       (x, y) => fn6Calc(x, y, [
         { e: "[5 5/8]÷5", a: "1 1/8" },
-        { q: "몫이 다른 나눗셈을 고르세요.", pick: ["[2 1/3]÷7", "[1 2/3]÷5", "[3 1/3]÷5"], a: 2, why: { "0": "[2 1/3]÷7 = [1/3], [1 2/3]÷5 = [1/3], [3 1/3]÷5 = [2/3]이에요.", "1": "[2 1/3]÷7 = [1/3], [1 2/3]÷5 = [1/3], [3 1/3]÷5 = [2/3]이에요." } },
+        { q: "몫이 다른 나눗셈을 고르세요.", pick: ["[2 1/3]÷7", "[1 2/3]÷5", "[3 1/3]÷5"], a: 2, why: { "0": "[2 1/3]÷7 = [1/3], [1 2/3]÷5 = [1/3], [3 1/3]÷5 = [2/3]예요.", "1": "[2 1/3]÷7 = [1/3], [1 2/3]÷5 = [1/3], [3 1/3]÷5 = [2/3]예요." } },
         { q: "두 나눗셈의 몫의 합을 구하세요. [1 1/2]÷3, [2 2/3]÷4", x: "[1 1/2]÷3+[2 2/3]÷4", a: "1 1/6", lab: "합" },
         { q: "잘못 계산한 것을 바르게 계산하세요. [3 3/4]÷5 = [15/4]×5 = [75/4] = [18 3/4]", x: "[3 3/4]÷5", a: "3/4", lab: "[3 3/4]÷5 =", why: { "75/4": "÷5를 ×5로 바꾸어 계산했어요. ÷5는 ×[1/5]이에요.", "18 3/4": "÷5를 ×5로 바꾸어 계산했어요. ÷5는 ×[1/5]이에요." } },
         { q: "밀가루 [12 3/5] kg을 6봉지에 똑같이 나누어 담았어요. 한 봉지에 담은 밀가루는 몇 kg일까요?", x: "[12 3/5]÷6", a: "2 1/10", unit: "kg", lab: "[12 3/5]÷6 =" }])],
@@ -3297,7 +3331,7 @@ const LESSONS = [
     render: (b, a) => fn6Calc(b, a, [
       { lab: "하윤이네 쿠키 봉지 1개", x: "([2 1/2]÷2−[1/2])÷3", a: "1/4", unit: "kg" },
       { lab: "태오네 쿠키 봉지 1개", x: "([4 1/5]÷3−[3/5])÷4", a: "1/5", unit: "kg" },
-      { q: "쿠키 봉지 1개가 더 무거운 모둠은?", pick: ["하윤이네", "태오네", "같아요"], a: 0, why: { "1": "[1/4] = [5/20], [1/5] = [4/20]이에요.", "2": "[1/4]과 [1/5]은 크기가 달라요. [1/4] = [5/20], [1/5] = [4/20]이에요." } }], { ok: "하윤이네 쿠키 봉지 1개([1/4] kg)가 태오네([1/5] kg)보다 더 무거워요." }) }
+      { q: "쿠키 봉지 1개가 더 무거운 모둠은?", pick: ["하윤이네", "태오네", "같아요"], a: 0, why: { "1": "[1/4] = [5/20], [1/5] = [4/20]예요.", "2": "[1/4]과 [1/5]은 크기가 달라요. [1/4] = [5/20], [1/5] = [4/20]예요." } }], { ok: "하윤이네 쿠키 봉지 1개([1/4] kg)가 태오네([1/5] kg)보다 더 무거워요." }) }
 },
 {
   id: "s9", no: 9, title: "주문서 이어달리기 ― 기억하고 전달하고 계산해요", soop: "발표하기(P)",
@@ -3305,7 +3339,7 @@ const LESSONS = [
   summary: "공방에 빵 주문이 몰려 주문서를 모둠원이 차례로 기억해 전달하는 놀이를 해요. 4명씩 모둠을 만들어 한 줄로 서요. 맨 뒷사람이 주문서에 적힌 나눗셈을 화이트보드에 옮겨 쓰고, 앞사람에게 차례로 전달해요. 맨 앞사람은 전달받은 나눗셈을 칠판에 쓰고 계산해요. 주문서를 맞히고 옳게 계산하면 2점, 맞혔으나 잘못 계산하면 1점, 맞히지 못했으나 옳게 계산하면 1점, 둘 다 못 하면 0점이에요. 속도보다 정확하게 쓰고 계산해요.",
   steps: [
     { name: "만져 보기 — 놀이 방법 알아보기", inst: "‘주문서 이어달리기’ 놀이 순서를 차례대로 눌러 보세요. (준비물: 나눗셈 주문서 카드, 타이머, 화이트보드, 칠판 펜)", hints: ["먼저 모둠을 만들고 한 줄로 서요.", "맨 앞사람이 마지막에 칠판에 쓰고 계산해요."],
-      render: (b, a) => sequence(b, a, ["맨 뒷사람이 주문서 한 장을 뒤집어 확인하고 화이트보드에 옮겨 써요.", "4명씩 모둠을 만들고 순서를 정해 칠판을 바라보고 한 줄로 서요.", "맨 앞사람은 전달받은 나눗셈을 칠판에 쓰고 계산해요.", "바로 앞사람에게 화이트보드를 보여 주고, 앞사람은 외워서 자기 화이트보드에 쓴 다음 다시 앞사람에게 보여 주어요."], [1, 0, 3, 2], { ok: "정한 시간 동안 맨 앞사람까지 전달해요. 사용한 주문서는 맨 아래에 넣고, 서 있는 순서를 바꾸어 반복해요." }) },
+      render: (b, a) => sequence(b, a, ["맨 뒷사람이 주문서 한 장을 뒤집어 확인하고 화이트보드에 옮겨 써요.", "4명씩 모둠을 만들고 순서를 정해 칠판을 바라보고 한 줄로 서요.", "맨 앞사람은 전달받은 나눗셈을 칠판에 쓰고 계산해요.", "바로 앞사람에게 화이트보드를 보여 주고, 앞사람은 외워서 자기 화이트보드에 쓴 뒤 다시 앞사람에게 보여 주어요."], [1, 0, 3, 2], { ok: "정한 시간 동안 맨 앞사람까지 전달해요. 사용한 주문서는 맨 아래에 넣고, 서 있는 순서를 바꾸어 반복해요." }) },
     { name: "그려 보기 — 점수 매기기", inst: "주문서에 적힌 나눗셈은 [8/9]÷4예요. 네 모둠의 맨 앞사람이 칠판에 쓴 것을 보고 점수를 매겨 보세요.", hints: ["주문서와 같은 나눗셈을 썼는지, 쓴 나눗셈을 옳게 계산했는지 두 가지를 봐요.", "약분하지 않은 답도 값이 같으면 옳은 계산이에요."],
       render: thenWhy((b, a) => quiz(b, a, [
         { q: "1모둠: [8/9]÷4 = [2/9]", o: ["2점", "1점", "0점"], a: 0, why: { "1": "주문서를 맞혔고 옳게 계산했으니까 2점이에요.", "2": "주문서를 맞혔고 옳게 계산했으니까 2점이에요." } },
@@ -3338,7 +3372,7 @@ const LESSONS = [
       render: (b, a) => fn6Share(b, a, { N: 2, d: 7, strip: "1", who: "명", one: "한 명", ask: [
         ["1÷7 = [1/7]이고 2는 1이 2개이므로 2÷7은 [1/7]이 ", { i: "2" }, "개예요."],
         ["2÷7 = ", { q: [null, "?2", "?7"] }]], ok: "2÷7 = [2/7]예요." }) },
-    { name: "그려 보기 — 칸을 가장 적게 나누기", inst: "[2/3]÷4의 몫을 그림에 나타내어 보세요. 색칠한 부분이 [2/3]이에요. 이번에는 칸을 가장 적게 나누어 분자가 4로 나누어떨어지게 해 보세요.", hints: ["각 칸을 2칸으로만 나누어도 색칠한 칸이 4칸이 되어 4로 나누어떨어져요.", "[2/3] = [4/6]이고, 4칸을 4묶음으로 나누면 한 묶음은 1칸이에요."],
+    { name: "그려 보기 — 칸을 가장 적게 나누기", inst: "[2/3]÷4의 몫을 그림에 나타내어 보세요. 색칠한 부분이 [2/3]예요. 이번에는 칸을 가장 적게 나누어 분자가 4로 나누어떨어지게 해 보세요.", hints: ["각 칸을 2칸으로만 나누어도 색칠한 칸이 4칸이 되어 4로 나누어떨어져요.", "[2/3] = [4/6]이고, 4칸을 4묶음으로 나누면 한 묶음은 1칸이에요."],
       render: thenWhy((b, a) => fn6Div(b, a, { A: "2/3", k: 4, m: 2, ask: [
         ["[2/3]÷4 = ", { q: [null, "?4", "6"] }, "÷4 = ", { q: [null, ["?4", "÷", "4"], "6"] }, " = ", { q: [null, "?1", "6"] }]], ok: "[2/3]÷4 = [4/6]÷4 = [1/6]이에요. [8/12]÷4 = [2/12]로 해도 몫은 같아요." }),
         { q: "각 칸을 4칸이 아니라 2칸으로만 나누어도 된 까닭을 써 봐요.", ph: "분자 2에 2를 곱하면 ~", help: ["① 각 칸을 2칸으로 나누면 [2/3]가 어떤 분수가 되는지 생각해요. → ② 그 분수의 분자가 4로 나누어떨어지는지 살펴봐요.", "‘분자 2에 2를 곱하면 ~가 되어 4로 나누어떨어지기 때문이에요. 분자가 나누는 수의 ~가 되기만 하면 돼요.’ 꼴로 써요."],

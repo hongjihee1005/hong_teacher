@@ -615,7 +615,7 @@ function ra4Memory(body, api, opt) {
   const left = () => owner.map((o, p) => o ? -1 : p).filter(p => p >= 0);
   const finish = () => {
     if (over) return; over = true; turn = "-"; paint();
-    const res = me > com ? "내가 이겼어요!" : me < com ? "컴퓨터가 이겼어요. 한 판 더 하면 더 잘할 수 있어요." : "비겼어요!";
+    const res = me > com ? "내가 이겼어요!" : me < com ? "컴퓨터가 이겼어요. 이 계단을 다시 열어 놀이를 또 하면 더 잘할 수 있어요." : "비겼어요!";
     msg.textContent = `놀이 끝! 나 ${me}장, 컴퓨터 ${com}장 — ${res}`;
     api.done(`나 ${me}장, 컴퓨터 ${com}장`, `놀이 끝! 나 ${me}장, 컴퓨터 ${com}장 — ${res}`);
   };
@@ -1010,7 +1010,7 @@ function ra4Make(body, api, opt) {
       [`${D[1][0]}의 비율: ${v[1][0]} ÷ ${v[1][1]} = `, { i: ra4Dec(r[1]) || `${r[1].n}/${r[1].d}`, w: true }],
       ["비율이 더 높은 사람: ", { c: [D[0][0], D[1][0]], a: hi }]],
       { ok: `${D[hi][0]}의 비율이 더 높아요. 같은 시간 동안 더 멀리 달렸다는 뜻이에요. 내가 만든 문제를 친구와 바꾸어 풀어 봐요.` });
-    out.append(h("p", { class: "ra4note" }, "비율이 나누어떨어지지 않으면 분수(예: 7/3)로 써도 돼요."));
+    out.append(h("p", { class: "ra4note" }, "비율이 나누어떨어지지 않으면 분수(예: 10/3)로 써요."));
     ra4Go(out);
   } }, "이 조건으로 문제 만들기");
   api.provide({ words: ["걸린 시간에 대한 달린 거리의 비율", "(달린 거리) ÷ (걸린 시간)"], answers: [] });

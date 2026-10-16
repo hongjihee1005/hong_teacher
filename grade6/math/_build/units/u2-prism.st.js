@@ -935,8 +935,10 @@ function pp6NetDraw(body, api, opt) {   /* 다 그리면 저절로 확인 → pp
       if (!J.ok) { api.fail({ apart: "다른 면과 떨어져 있는 면이 있어요. 면의 한 변이 다른 면의 한 변과 꼭 맞닿게 그려요.", part: "맞닿는 선분의 길이가 같지 않은 곳이 있어요. 서로 맞닿는 두 선분의 길이를 같게 그려요.",
         len: "접었을 때 서로 맞닿는 선분의 길이가 같지 않아요. 옆면의 가로는 맞닿는 밑면의 변의 길이와 같아야 해요.", dup: "접으면 서로 겹치는 면이 있어요. 두 밑면이 옆면의 같은 쪽에 있거나, 같은 자리로 가는 옆면이 둘 있는지 살펴봐요.",
         flat: "겹친 면이 있어요.", count: "면의 수가 맞지 않아요.", shape: "접었을 때 면이 제자리에 맞지 않아요. 밑면의 각 변에 그 변의 길이와 같은 옆면이 오도록 그려요." }[J.why] || "다시 살펴봐요.", got); return false; }
-      const key = drawn.map(P => P.map(p => p.join(",")).sort().join(";")).sort().join("|");
-      if (opt.differ && opt.store && opt.store.key === key) { api.fail("앞에서 완성한 전개도와 같은 모양이에요. 면을 다른 자리에 붙여 다른 모양으로 완성해 봐요.", got); return false; }
+      /* 다른 모양 판정: 모든 면(주어진 면 + 그린 면)을 자리 옮김 없이 견줌 — 앞 계단에서 그린 것이 없어도 정답 예시와 견줌 */
+      const keyOf = PS => { const xs = PS.flatMap(P => P.map(p => p[0])), ys = PS.flatMap(P => P.map(p => p[1])), mx = Math.min(...xs), my = Math.min(...ys); return PS.map(P => P.map(p => pp6R(p[0] - mx) + "," + pp6R(p[1] - my)).sort().join(";")).sort().join("|"); };
+      const key = keyOf(polys);
+      if (opt.differ && (key === keyOf(U.map(u => pp6Clean(u.P.map(toG)))) || (opt.store && opt.store.key === key))) { api.fail("앞에서 완성한 전개도와 같은 모양이에요. 면을 다른 자리에 붙여 다른 모양으로 완성해 봐요.", got); return false; }
       if (opt.store) opt.store.key = key;
       fin = true; draw();
       const nodes = pp6NodesOf(S, polys.map(P => pp6Clean(P.map(([x, y]) => [x, -y]))), J);
@@ -1247,6 +1249,8 @@ const PP6S_J11 = [
 const PP6S_ISO = [[0, 0], [6, 0], [3, 4]];
 const PP6S_TRAP = [[0, 0], [6, 0], [3, 4], [0, 4]];
 const PP6S_D1 = { S: pp6Prism(PP6S_ISO, 3), nodes: [{ f: 2, p: -1 }, { f: 4, p: 0 }, { f: 3, p: 0 }, { f: 1, p: 0 }, { f: 0, p: 0 }], given: [0, 1, 3], cols: 20, rows: 14, at: [2, 1], cs: 22 };
+/* 다른 모양으로 그리기: 옆면 1개(6 cm)와 밑면 1개만 주고, 모눈을 넓혀 옆면 2개를 모두 왼쪽에 이어 붙일 수도 있게 함 */
+const PP6S_D1B = Object.assign({}, PP6S_D1, { given: [0, 3], cols: 25, at: [7, 1] });
 const PP6S_D2 = { S: pp6Prism(PP6S_TRAP, 2), nodes: [{ f: 2, p: -1 }, { f: 3, p: 0 }, { f: 4, p: 1 }, { f: 5, p: 2 }, { f: 1, p: 0 }, { f: 0, p: 0 }], given: [0, 1, 4], cols: 22, rows: 13, at: [2, 1], cs: 20 };
 const pp6sIsoDim = () => { const S = pp6Prism(PP6S_ISO, 3); return pp6Lab({ solid: S, yaw: -35, pitch: 38, pad: 40, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 280, H: 250, maxW: "14em", marks: [{ a: 3, b: 4, t: "6 cm", col: PP6.blue, w: 2 }, { a: 4, b: 5, t: "5 cm", col: PP6.blue, w: 2 }, { a: 5, b: 3, t: "5 cm", col: PP6.blue, w: 2 }, { a: 1, b: 4, t: "3 cm", col: PP6.red, w: 2, off: 26 }] }); };
 const pp6sTrapDim = () => { const S = pp6Prism(PP6S_TRAP, 2); return pp6Lab({ solid: S, yaw: 20, pitch: 34, pad: 44, side: "#FFF1C7", fc: [PP6.base, PP6.base], W: 300, H: 240, maxW: "15em", marks: [{ a: 4, b: 5, t: "6 cm", col: PP6.blue, w: 2 }, { a: 5, b: 6, t: "5 cm", col: PP6.blue, w: 2 }, { a: 6, b: 7, t: "3 cm", col: PP6.blue, w: 2 }, { a: 7, b: 4, t: "4 cm", col: PP6.blue, w: 2 }, { a: 2, b: 6, t: "2 cm", col: PP6.red, w: 2, off: 24 }] }); };
@@ -1443,10 +1447,10 @@ const LESSONS = [
         { title: "텐트의 설계도를 완성해 보세요. (밑면 1개와 옆면 1개를 더 그려요)", run: (bx, ax) => { bx.append(pp6sIsoDim()); pp6NetDraw(bx, ax, Object.assign({
           ask: [{ q: "그린 설계도를 확인해 보세요.", parts: ["새로 그린 옆면의 가로는 ", { n: 5, why: { "6": "새 옆면은 밑면의 5 cm인 변과 맞닿아요.", "3": "3 cm는 옆면의 세로(텐트의 높이)예요." } }, " cm, 세로는 ", { n: 3, why: { "5": "옆면의 세로는 텐트의 높이와 같아요." } }, " cm예요."] }],
           ok: "새 옆면은 가로 5 cm, 세로 3 cm인 직사각형이에요. 맞닿는 선분의 길이를 같게 그렸어요." }, PP6S_D1, { store: PP6S_ST })); } }]) },
-    { name: "확인하기 — 쉼터 화단 설계도 그리기", inst: "나래가 쉼터 앞에 사각기둥 모양 화단(밑면의 네 변 6 cm, 5 cm, 3 cm, 4 cm, 높이 2 cm)을 놓으려고 해요. 모형의 설계도를 완성하고, 텐트 설계도도 다른 모양으로 그려 보세요.", hints: ["사각기둥의 옆면은 4개예요. 옆면의 가로는 맞닿는 밑면의 변의 길이와 같아요.", "다른 모양으로 그릴 때는 밑면이나 옆면을 다른 변에 붙여 봐요."],
+    { name: "확인하기 — 쉼터 화단 설계도 그리기", inst: "나래가 쉼터 앞에 사각기둥 모양 화단(밑면의 네 변 6 cm, 5 cm, 3 cm, 4 cm, 높이 2 cm)을 놓으려고 해요. 모형의 설계도를 완성하고, 텐트 설계도도 다른 모양으로 그려 보세요.", hints: ["사각기둥의 옆면은 4개예요. 옆면의 가로는 맞닿는 밑면의 변의 길이와 같아요.", "텐트 설계도를 다른 모양으로 그릴 때는 옆면을 붙이는 자리를 바꾸어 봐요. 예를 들어 옆면 2개를 모두 한쪽에 이어 붙일 수 있어요."],
       render: (b, a) => pp6Chain(b, a, [
         { title: "화단의 설계도를 완성해 보세요. (밑면 1개와 옆면 2개를 더 그려요)", run: (bx, ax) => { bx.append(pp6sTrapDim()); pp6NetDraw(bx, ax, Object.assign({ ok: "밑면 2개와 옆면 4개를 겹치지 않게, 맞닿는 선분의 길이가 같게 그렸어요." }, PP6S_D2)); } },
-        { title: "텐트의 설계도를 이 차시의 약속하기 계단과 다른 모양으로 완성해 보세요.", run: (bx, ax) => pp6NetDraw(bx, ax, Object.assign({ store: PP6S_ST, differ: true }, PP6S_D1, {
+        { title: "텐트의 설계도를 약속하기 계단에서 그린 것과 다른 모양으로 완성해 보세요. (옆면 2개와 밑면 1개를 더 그려요)", run: (bx, ax) => pp6NetDraw(bx, ax, Object.assign({ store: PP6S_ST, differ: true }, PP6S_D1B, {
           ask: [{ q: "전개도에서 실선과 점선은 무엇을 나타내나요?", parts: ["실선은 ", { o: ["잘린 모서리", "잘리지 않은 모서리"], a: 0 }, ", 점선은 ", { o: ["잘린 모서리", "잘리지 않은 모서리"], a: 1 }, "예요."] }],
           ok: "같은 텐트라도 어느 모서리를 자르는지에 따라 여러 가지 설계도를 그릴 수 있어요." })) }]) }
   ],

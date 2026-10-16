@@ -220,11 +220,22 @@ function fn6Mix(o, a, why, seed) {
   if (why) { nw = {}; Object.keys(why).forEach(k => { nw[k.split(",").map(x => inv[+x]).sort((x, y) => x - y).join(",")] = why[k]; }); }
   return { o: P.map(i => o[i]), a: na, why: nw };
 }
-const fn6MixQ = it => it && it.o && it.a != null ? Object.assign({}, it, fn6Mix(it.o, it.a, it.why, it.q || "")) : it;
+/* 여러 개 고르기: 틀린 보기 하나에 단 까닭(why:{"3":…})이 그 보기를 넣어 고른 모든 경우에 나오게 해요 */
+function fn6WhyMulti(m, n) {
+  if (!Array.isArray(m.a) || !m.why) return m;
+  const why = Object.assign({}, m.why), K = m.a.length;
+  const rec = (start, pick) => {
+    if (pick.length === K) { const key = pick.join(","); if (!why[key]) { const w = pick.find(i => !m.a.includes(i) && m.why[String(i)]); if (w != null) why[key] = m.why[String(w)]; } return; }
+    for (let i = start; i < n; i++) rec(i + 1, pick.concat(i));
+  };
+  rec(0, []);
+  return Object.assign({}, m, { why });
+}
+const fn6MixQ = it => it && it.o && it.a != null ? Object.assign({}, it, fn6WhyMulti(fn6Mix(it.o, it.a, it.why, it.q || ""), it.o.length)) : it;
 const fn6MixB = pt => pt && typeof pt === "object" && pt.o && pt.a != null ? Object.assign({}, pt, { o: fn6Mix(pt.o, pt.a, null, "b").o, a: fn6Mix(pt.o, pt.a, null, "b").a }) : pt;
 const fn6Quiz0 = quiz, fn6Blanks0 = blanks;
 /* 엔진의 hj-multi(한 계단 두 활동)가 셀 수 있게 'function 이름(body, api' 꼴로 감싸요. 안에서 엔진 부품이 api.done(을 불러요. */
-quiz = function quiz(body, api, items, o) { /* 엔진 quiz가 api.done( 을 불러요 */ return fn6Quiz0(body, fn6A(api), items.map(fn6MixQ), o); };
+quiz = function quiz(body, api, items, o) { /* 엔진 quiz가 api.done( 을 불러요 */ return fn6Quiz0(body, fn6A(api), items.map(fn6MixQ), Object.assign({ bad: items.some(it => it.fig) ? "빨간 칸을 다시 살펴봐요. 그림을 다시 보고 골라 보세요." : "빨간 칸을 다시 살펴봐요. 문제를 다시 읽고 골라 보세요." }, o)); };
 blanks = function blanks(body, api, parts, o) { /* 엔진 blanks가 api.done( 을 불러요 */ return fn6Blanks0(body, fn6A(api), parts.map(fn6MixB), o); };
 
 function fn6Gate(api, ready, msg) {
