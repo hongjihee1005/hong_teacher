@@ -1217,7 +1217,7 @@ HEAD_KEY = [('옆면의 수', 'side'), ('모서리의 수', 'edge'), ('꼭짓점
 KN1 = ['', '', '', '삼', '사', '오', '육', '칠', '팔', '구', '십']
 
 
-def check_numbers(D):
+def check_numbers(D, story=False):
     """식이 적힌 칸은 식을 계산하고, 표는 각기둥·각뿔 공식으로 따로 계산해 앱의 답과 맞춥니다."""
     seen, nexpr, ntab = [], 0, 0
     for L in D['lessons']:
@@ -1254,12 +1254,13 @@ def check_numbers(D):
                             m = SHAPE_RE.match(t or '')
                             if m:
                                 n = KN1.index(m.group(1))
-                                kind = 'pyr' if st['name'] == '문제 2' else 'prism'
+                                kind = 'pyr' if (st['name'] == '문제 2' or '각뿔' in st['name']) else 'prism'
                     assert kind, ('표 줄의 도형을 모르겠어요', L['no'], txts)
                     for j, c in enumerate(r):
                         if 'n' not in c:
                             continue
-                        keys = [k for t, k in HEAD_KEY if t in head[j]]
+                        hj = re.sub(r'(?:막대|이음새)\((모서리|꼭짓점)\)', r'\1', head[j])
+                        keys = [k for t, k in HEAD_KEY if t in hj]
                         if not keys:   # 카드 표: 카드에 적힌 구성 요소
                             el = [k for t, k in HEAD_KEY if t in txts[0]]
                             keys = el
@@ -1267,9 +1268,12 @@ def check_numbers(D):
                         want = n if k == 'n' else cnt(kind, n)[k]
                         assert c['n'] == want, ('표 수가 공식과 달라요', L['no'], txts, head[j], c['n'], want)
                         ntab += 1
+    c = cnt
+    if story:
+        check_story(seen, nexpr, ntab, D)
+        return
     assert nexpr >= 3, nexpr
     assert ntab >= 60, ntab
-    c = cnt
     expect = [6, 12, 8, 6, 7 * 15, 2, 3, 5, 6, 7, 6 * 18, 5, 6, 6 * 6, c('pyr', 7)['face'] - 1, 10 * 3, 10 * 2,
               c('pyr', 8)['edge'], c('prism', 7)['face'], 72 / 8, 9 * 4, 8, 16 - 6, 10 + 6, 30, 20, 16]
     for v in expect:
@@ -1283,6 +1287,33 @@ def check_numbers(D):
     assert c('pyr', 8)['face'] == 9 and c('prism', 7)['vert'] == 14 and c('prism', 7)['face'] == 9
     assert [n for n in range(3, 11) if c('prism', n)['face'] + c('prism', n)['vert'] == 17] == [5]
     # 카드 값
+    for cd in D['cards']:
+        assert cd['v'] == cnt(cd['k'], cd['n'])[cd['e']], cd
+
+
+def check_story(seen, nexpr, ntab, D):
+    """이야기 버전: 문제의 수로 따로 계산한 값이 앱 답 중에 있는지(ST_EXPECT), 카드 값·구성 요소 공식"""
+    c = cnt
+    assert nexpr >= 6, nexpr
+    assert ntab >= 40, ntab
+    expect = [6, 12, 8,                                                       # 1차시 직육면체
+              4 * 12 + 9 * 6, c('prism', 7)['face'], c('prism', 9)['edge'],   # 4차시 정육각기둥 모서리 합, 표
+              2, 3, c('prism', 3)['edge'] - (5 - 1),                          # 5~6차시 펼친 그림, 맞닿는 선분 짝
+              2 * 5, 5, 3 * 2 * 5 + 7 * 5,                                    # 정오각기둥 모서리 합
+              c('pyr', 6)['side'], 2, 1,                                      # 7차시
+              5 * c('pyr', 4)['edge'], c('pyr', 7)['edge'], c('pyr', 9)['face'],   # 8차시
+              c('prism', 3)['edge'], c('prism', 3)['vert'], c('pyr', 4)['edge'], c('pyr', 4)['vert'],   # 9차시
+              c('prism', 8)['edge'], c('prism', 8)['vert'], c('pyr', 8)['edge'], c('pyr', 8)['vert'],
+              c('prism', 8)['edge'] + c('pyr', 8)['edge'], c('prism', 8)['vert'] + c('pyr', 8)['vert'],
+              c('prism', 30 // 3)['vert'], c('pyr', 11 - 1)['edge'],
+              c('pyr', 4)['edge'], 9 + c('pyr', 4)['edge'], c('pyr', 3)['edge'], 9 + 8 - 6,   # 10차시
+              c('pyr', 6)['edge'], 84 / c('pyr', 6)['edge'], 84 / c('pyr', 6)['edge'] * 6]  # 11차시
+    for v in expect:
+        assert any(abs(v - n) < 1e-9 for n in seen), ('앱 답 중에 없음(이야기)', v)
+    assert c('prism', 8)['vert'] == 16 and c('pyr', 9)['face'] == 10          # 꼭짓점 16개 → 팔각기둥, 면 10개 각뿔 → 구각뿔
+    assert 24 // 3 == 8 and 24 // 2 == 12                                    # 막대 24개 → 팔각기둥·십이각뿔
+    assert c('pyr', 7)['face'] == c('pyr', 7)['vert'] == 8 and c('prism', 5)['edge'] == 15   # 암호 7△8, 5▭15
+    assert 40 - c('prism', 4)['edge'] < 45 and 40 + c('prism', 5)['vert'] >= 45 and 40 + c('prism', 8)['face'] >= 45
     for cd in D['cards']:
         assert cd['v'] == cnt(cd['k'], cd['n'])[cd['e']], cd
 
