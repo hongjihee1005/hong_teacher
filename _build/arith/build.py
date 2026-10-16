@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """공통 › 기초연산 페이지 만들기 (2026-10-05)
 
-    python3 _build/arith/build.py      # common/arith/add.html … dec.html(영역 8개) + rank.html(급수 시험). 먼저 node check.js로 점검합니다.
+    python3 _build/arith/build.py      # common/arith/add.html … dec.html(영역 8개) + rank.html(급수 시험) + g1~g6.html(학년별, 학년 수학방 '기초연산' 메뉴). 먼저 node check.js로 점검합니다.
 
 단계와 문제 생성기는 skills.js(같은 단계·같은 번호면 언제나 같은 문제), 화면은 page.html(틀) + area.html·rank.html(본문) + page.css + app.js.
 아래쪽 '만든 사람'·홈 단추 조각은 _build/origami/의 것을 같이 씁니다.
@@ -25,7 +25,7 @@ AREAS = {   # skills.js의 AREAS와 같은 차례·색
 }
 FOOTTXT = '덧셈·뺄셈·곱셈·나눗셈·분수·소수의 기초 계산을 단계별로 연습하는 자료입니다.'
 
-def page(fname, title, ico, acc, intro, main, pg, desc):
+def page(fname, title, ico, acc, intro, main, pg, desc, tolist=None):
     rd = lambda p: p.read_text(encoding='utf-8')
     rep = {'TITLE': title, 'ICO': ico, 'INTRO': intro, 'DESC': desc, 'MAIN': main,
            'CSS': rd(HERE / 'page.css').replace('{ACC}', acc), 'HEADSNIP': rd(OG / 'head_snip.html'),
@@ -33,6 +33,7 @@ def page(fname, title, ico, acc, intro, main, pg, desc):
            'SKILLS': rd(HERE / 'skills.js'), 'PAGE': json.dumps(pg, ensure_ascii=False), 'APP': rd(HERE / 'app.js'),
            'HOMEFRAG': rd(OG / 'home.html').replace('{HOME}', '../../index.html')}
     s = re.sub(r'\{([A-Z]+)\}', lambda m: rep.get(m.group(1), m.group(0)), rd(HERE / 'page.html'))   # 한 번에 바꿈(넣은 내용 속 {…}는 건드리지 않음)
+    if tolist: s = s.replace('<a class="tolist" href="index.html">', f'<a class="tolist" href="{tolist}">')
     out = ROOT / 'common' / 'arith' / fname
     out.parent.mkdir(parents=True, exist_ok=True)
     old = out.read_text(encoding='utf-8') if out.exists() else ''
@@ -51,4 +52,16 @@ if __name__ == '__main__':
     n += page('rank.html', '급수 시험', '🏆', '#B4610F',
               '12급(1학년 수준)부터 1급(6학년 수준)까지, 급마다 20문제 시험이 20회씩 있어요. 화면에서 풀고 채점하거나 시험지를 인쇄해서 풀어요.',
               rank, {'rank': 1}, '초등 기초연산 급수 시험: 12급~1급, 급마다 20회, 채점·시험지 인쇄')
-    print(f'기초연산 {n}개 페이지 다시 만듦 (모두 {len(AREAS) + 1}개)')
+    # 학년 페이지 g1~g6 — 학년 수학방 '기초연산' 메뉴(gradeN/math/index.html 카드)가 가리킴 (2026-10-11)
+    sk = (HERE / 'skills.js').read_text(encoding='utf-8')
+    LVS = re.findall(r"\{ id: (\d+), nm: '([^']+)', lv: '(\d)학년 수준 ([①②][^']*)'", sk)
+    for g in range(1, 7):
+        cnt = len(re.findall(rf"ar: '\w+', g: {g},", sk))
+        more = ''.join(f'<a href="rank.html#lv{i}"><b>🏆 {nm} 급수 시험</b><small>{g}학년 수준 {k} · 20문제 20회</small></a>' for i, nm, gg, k in LVS if int(gg) == g)
+        more += f'<a href="../../project/daily/g{g}.html"><b>📅 {g}학년 일일수학</b><small>날마다 계산 10문제 · 도장 달력</small></a>'
+        main = re.sub(r'<p class="ar-note">.*?</p>\n', '', area, count=1).replace('<div id="arList"></div>', '<div id="arList"></div>\n<h2 class="ar-gh">🏆 실력 확인</h2>\n<div class="ar-more">' + more + '</div>')
+        n += page(f'g{g}.html', f'{g}학년 기초연산', '🧮', '#B4610F',
+                  f'{g}학년에서 주로 배우는 계산 {cnt}단계를 영역별로 모았어요. 단계를 누르면 바로 연습하고, 🖨️ 학습지는 단계마다 30장(같은 번호면 언제나 같은 문제, 정답 포함)을 인쇄할 수 있어요. 학년은 교과서에서 주로 배우는 때를 참고로 정한 것이에요.',
+                  main, {'grade': g}, f'초등 {g}학년 기초연산: 학년별 계산 {cnt}단계 연습(바로 확인), 학습지와 정답 인쇄, 급수 시험',
+                  tolist=f'../../grade{g}/math/index.html')
+    print(f'기초연산 {n}개 페이지 다시 만듦 (모두 {len(AREAS) + 7}개)')
