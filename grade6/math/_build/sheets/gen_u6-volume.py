@@ -492,9 +492,11 @@ PAPER_RULES = [
     (r'내 붙임쪽지 3장을 만들어 붙이고, 다른 모둠 친구가 구한 부피를 확인해 보세요\.', '내 붙임쪽지 3장에 적을 수를 정하고, 다른 모둠 친구가 구한 부피를 확인해 보세요.'),
     (r'다른 모둠 친구들이 교실 곳곳에 붙인 쪽지를 3분 동안 찾고, 부피를 구해 보세요\.', '다른 모둠 친구들이 교실 곳곳에 붙인 쪽지를 3분 동안 찾고, 기록표에 적어 부피를 구해 보세요.'),
     (r'면을 눌러 평행한 두 면을 찾아보세요\.', '평행한 두 면을 찾아 같은 색으로 칠해 보세요.'),
-    (r'전개도의 면을 모두 눌러 보세요\.', '전개도의 각 면에 넓이를 써 보세요.'),
+    (r'\s*전개도의 면을 모두 눌러 보세요\.', ''),
+    (r'로 늘려 보세요\.$', '로 늘린 그림을 살펴보세요.'),
+    (r'가를 쌓기나무로 채워 보세요\.', '가를 쌓기나무로 채운 그림을 살펴보세요.'),
 ]
-INTERACT = re.compile(r'눌러|누르|누를|끌어|단추|화면|컴퓨터 친구|앱')
+INTERACT = re.compile(r'눌러|누르|누를|끌어|단추|화면|컴퓨터 친구|앱|‘한 줄 채우기’|‘한 층 채우기’')
 
 
 def paper(t):
@@ -513,6 +515,11 @@ def label_of(name):
 
 
 # ================================================================ 앱 부품 → 활동지
+def unparen(t):
+    """앱 글 '(' + 빈칸 + ')' 처럼 괄호가 겹치면 하나로"""
+    return re.sub(r'\(\((\s*)([^()]*?)(\s*)\)\)', lambda m: '( %s )' % m.group(2) if m.group(2) else '(%s)' % (m.group(1) + m.group(3)), t)
+
+
 def opt_text(opts):
     return '( ' + ' / '.join(opts) + ' )'
 
@@ -549,7 +556,7 @@ def render_parts(s, lv, parts, ctx):
                 cur += '%s 에서 모두 골라 써 보세요: \x00' % opt_text(o).replace(' / ', ' · ')
                 ans.append(', '.join(o[i] for i in p['a']))
             elif multi or not is_short(o):
-                lab = cur.strip().rstrip(':').split()[-1] + ' ' if cur.strip() else ''
+                lab = ''
                 key = tuple(o)
                 if key not in [x[0] for x in lists]:
                     lists.append((key, multi))
@@ -572,7 +579,7 @@ def render_parts(s, lv, parts, ctx):
         pre = '' if len(lists) == 1 else '[%d] ' % (li + 1)
         s.fill(['%s%s %s' % (pre if i == 0 else ' ' * len(pre), KO[i], x) for i, x in enumerate(o)])
     if lines:
-        s.fill(lines)
+        s.fill([unparen(x) for x in lines])
     return ans
 
 
@@ -661,7 +668,7 @@ def w_blanks(s, lv, rec):
             txt += opt_text(p['o']) if lv == '기본형' else '\x01'
     if lv == '도전형':
         s.wordbox(words)
-    s.fill(re.sub(r'\s+', ' ', txt).strip().replace('\x00', '(          )').replace('\x01', '(             )'))
+    s.fill(unparen(re.sub(r'\s+', ' ', txt).strip().replace('\x00', '(          )').replace('\x01', '(             )')))
     return ', '.join(ans)
 
 

@@ -763,7 +763,7 @@ RA4_CV.forEach((v, i) => { const n = RA4_CV.filter((w, j) => j !== i && ra4EqQ(v
 /* 지도서의 '또 다른 놀이' 비율 카드 24장 */
 const RA4_HIGH = ["[1/10]", "[35/100]", "[22/25]", "[3/20]", "[1/5]", "[27/100]", "[1/4]", "[7/10]", "0.09", "0.36", "0.8", "0.45", "0.95", "0.56", "0.64", "0.76", "5 %", "35 %", "8 %", "40 %", "90 %", "16 %", "50 %", "58 %"];
 const ra4Shuffle = a => { const b = a.slice(); for (let i = b.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [b[i], b[j]] = [b[j], b[i]]; } return b; };
-const ra4Why = (a, b) => `${a}의 비율은 ${ra4Say(ra4V(a))}, ${b}의 비율은 ${ra4Say(ra4V(b))}예요.`;
+const ra4Why = (a, b) => `${a}의 비율은 ${ra4Say(ra4V(a))}, ${b}의 비율은 ${ra4J(ra4Say(ra4V(b)), "이에요")}.`;
 
 /* 두 카드의 비율 판단 연습 — opt: {pairs:[[a,b],…]} */
 function ra4Same(body, api, opt) {
