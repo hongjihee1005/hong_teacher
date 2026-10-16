@@ -9,7 +9,10 @@
   - 세로셈 판은 앱 dn3LongBoard와 같은 규칙(나누어지는 수의 소수점·끝에 붙인 흐린 0·계산 메모 줄 수)으로 그립니다.
     기본형은 붙인 0(흐린 0)과 소수점(빨간 점)을 보여 주고, 도전형은 처음 수만 보여 주고 붙일 자리는 빈 점선 칸으로 둡니다.
   - 수 모형 나누어 주기·나무 막대 자르기·소수점 찍기·놀이판(발사! 내 땅)·나눗셈 카드도 앱의 수 그대로 그립니다.
-이야기 버전(u3-decnat.st.js)은 아직 없어서 ST 목록은 비어 있고 건너뜁니다(나중에 더함).
+이야기 버전(u3-decnat.st.js, '새봄 스포츠 클럽 기록실', 11차시)도 같은 방법으로 LESSONS를 node에서 실행해 읽습니다(ST_JS).
+  이야기 엔진의 thenWhy('왜 그럴까요?')·ruleFirst('먼저 예상해요')·wonderRecall·panes·쪽지(dn3sNote)·기록 표(dn3Record)도 기록해
+  기본형은 앱 도움 문장 틀, 도전형은 쓰는 줄로 바꾸고, 모범 답은 앱의 ans를 그대로 씁니다.
+  놀이판(콩주머니 땅따먹기)·나눗셈 카드·문제 만들기(DN3MK)는 이야기 앱의 것을 그대로 읽습니다.
 그림은 SVG로 그려 임시 폴더에서 PNG로 바꿉니다(저장소에는 남기지 않음).
 """
 import json
@@ -35,7 +38,10 @@ SRC_TB = os.path.join(ROOT, '_build', 'units', 'u3-decnat.tb.js')
 OUT_TB = os.path.join(ROOT, 'sem1', 'sheets')
 NAME = '3단원_소수의나눗셈_활동지_%s.hwpx'
 LABEL_TB = '6-1 수학 3. 소수의 나눗셈(교과서 차시)'
-ST = []          # 이야기 버전(아직 없음) — 생기면 (함수 목록) 을 넣고 main에서 만듦
+SRC_ST = os.path.join(ROOT, '_build', 'units', 'u3-decnat.st.js')
+OUT_ST = os.path.join(ROOT, 'sem1-soop', 'sheets')
+LABEL_ST = '6-1 수학 3. 소수의 나눗셈(이야기 버전)'
+ST = ['s%d' % i for i in range(1, 12)]   # 이야기 버전 차시 id(앱 LESSONS 차례)
 FONT = "'Noto Sans KR','WenQuanYi Zen Hei',sans-serif"
 NUM = '①②③④⑤⑥⑦⑧⑨'
 KO = '㉠㉡㉢㉣㉤㉥'
@@ -648,6 +654,13 @@ def fig(s, f):
         fest_fig(s)
     elif 'clay' in f:
         clay_fig(s)
+    elif 'note' in f:            # 이야기 버전 쪽지(dn3sNote)
+        note_box(s, f['note'])
+    elif 'rec2' in f:            # 이야기 버전 기록 표(dn3Record(제목, 머리, 줄))
+        r = f['rec2']
+        s.text(noemo(K(r['title'])))
+        n = len(r['head'])
+        s.table([list(r['head'])] + [list(x) for x in r['rows']], col_mm=[int(180 / n)] * n)
     else:
         raise ValueError('모르는 그림', f)
 
@@ -963,7 +976,7 @@ def board_cells(board):
     return cells
 
 
-def clip_fig(s, board):
+def clip_fig(s, board, go_t='발사', go_sub='(클립을 놓는 곳)'):
     COLS, ROWS = len(board[0]), len(board)
     cw_, ch, gp, x0, y0 = 150, 90, 6, 10, 10
     W, H = x0 * 2 + COLS * cw_ + (COLS - 1) * gp, y0 * 2 + ROWS * ch + (ROWS - 1) * gp
@@ -994,8 +1007,8 @@ def clip_fig(s, board):
     gx, gy = X(c0), Y(r0)
     gw, gh = X(c1) + cw_ - gx, Y(r1) + ch - gy
     out.append(R(gx, gy, gw, gh, '#FFD7CF', RED, 2.5, rx=16))
-    out.append(T(gx + gw / 2, gy + gh / 2 - 14, '발사', 34, anchor='middle', fill=RED, weight='bold'))
-    out.append(T(gx + gw / 2, gy + gh / 2 + 26, '(클립을 놓는 곳)', 17, anchor='middle', fill=RED))
+    out.append(T(gx + gw / 2, gy + gh / 2 - 14, go_t, 34, anchor='middle', fill=RED, weight='bold'))
+    out.append(T(gx + gw / 2, gy + gh / 2 + 26, go_sub, 17, anchor='middle', fill=RED))
     put_png(s, svg_doc(W, H, ''.join(out)), W, H, max_mm=180)
 
 

@@ -629,7 +629,8 @@ const api = new Proxy({}, { get: () => () => {} });
 const ORIG = {};
 const sub = run => { const save = REC; REC = []; try { run(); } catch (e) { REC.push({ w: 'error', args: [String(e && e.stack || e).slice(0, 400)] }); } const r = REC; REC = save; return r; };
 ['ra4Build', 'ra4Slots', 'ra4Choc', 'ra4Comp', 'ra4Rect', 'ra4Map', 'ra4Tape2', 'ra4Grid', 'ra4Link', 'ra4Save', 'ra4Make',
- 'ra4Same', 'ra4Memory', 'ra4High', 'ra4Scene'].forEach(name => {
+ 'ra4Same', 'ra4Memory', 'ra4High', 'ra4Scene', 'ra4Candy', 'ra4sStudio'].forEach(name => {
+  if (eval('typeof ' + name) !== 'function') return;     // 교과서에만(ra4Choc·ra4Scene) · 이야기에만(ra4Candy·ra4sStudio) 있는 부품
   ORIG[name] = eval(name);
   const w = function (body, ap, opt) {
     opt = Object.assign({}, opt || {});
@@ -656,10 +657,17 @@ ra4Chain = function (body, ap, lines, opt) { REC.push({ w: 'ra4Chain', args: [li
 ra4Seq = function (body, ap, parts) {
   REC.push({ w: 'ra4Seq', args: [parts.map(p => ({ title: p.title || null, calls: sub(() => (p.run || p)(new Body('div'), api)) }))] });
 };
+// 이야기 버전: 글 상자(기획표), 엔진의 탐구 도우미(thenWhy 활동 뒤 '왜?', ruleFirst 활동 앞 '예상', wonderRecall '궁금해요' 다시 보기)·panes
+if (typeof ra4sNote === 'function') ra4sNote = function (title, lines) { REC.push({ w: 'note', args: [title, lines] }); return new El('div'); };
+var panes = rec('panes');
+var thenWhy = (f, o) => function (b, a) { const r = f(b, a); REC.push({ w: 'thenWhy', args: [o] }); return r; };
+var ruleFirst = (f, o) => function (b, a) { REC.push({ w: 'ruleFirst', args: [o] }); return f(b, a); };
+var wonderRecall = f => function (b, a) { REC.push({ w: 'wonderRecall', args: [] }); return f(b, a); };
 const lesSrc = all.slice(all.indexOf('//@@LESSONS'));
 eval(lesSrc.replace(/^(const|let) /gm, 'var '));
 const run = S => sub(() => S.render(new Body('div'), api));
-const sceneSrc = all.slice(all.indexOf('function ra4Scene('), all.indexOf('function ra4Scene(') + 4000);
+const SCN = all.indexOf('function ra4Scene(') >= 0 ? 'function ra4Scene(' : 'function ra4sStudio(';
+const sceneSrc = all.slice(all.indexOf(SCN), all.indexOf(SCN) + 4000);
 const spots = [...sceneSrc.matchAll(/\{ x: \d+, y: \d+, k: "\w+", t: "([^"]+)", d: "([^"]+)" \}/g)].map(m => ({ t: m[1], d: m[2] }));
 const out = { story: UNIT_STORY, cards: RA4_CARDS, high: RA4_HIGH, spots, lessons: LESSONS.map(L => ({
   id: L.id, no: L.no, title: L.title, soop: L.soop, question: L.question, summary: L.summary,
