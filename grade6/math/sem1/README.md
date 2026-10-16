@@ -12,6 +12,7 @@
 | 단원 | 파일 | 차시 | 교과서 소재 |
 |---|---|---|---|
 | 1. 분수의 나눗셈 | `u1-fracnat.html` | 10 | 민아의 생태 도시 푸름시 |
+| 3. 소수의 나눗셈 | `u3-decnat.html` | 11 | 한민족 전통문화 축제 |
 | 4. 비와 비율 | `u4-ratio.html` | 10 | 민석이네·주리네 휴양림 나들이 |
 | 5. 여러 가지 그래프 | `u5-graph.html` | 11 | 또래 상담사 승아의 고민 조사 |
 | 6. 직육면체의 부피와 겉넓이 | `u6-volume.html` | 11 | 유찬이의 자원봉사 센터 |
@@ -44,7 +45,7 @@
 
 1. 새 구글 시트를 만들고 **[확장 프로그램] → [Apps Script]** 를 엽니다.
 2. `../sem1-soop/Code.gs`를 붙여 넣고 맨 위 `TEACHER_PIN`을 선생님만 아는 숫자로 바꿉니다.
-3. **[+] → HTML** 로 `index_fracnat`, `index_ratio`, `index_graph`, `index_volume` 파일을 만들어 이 폴더의 HTML을 통째로 붙여 넣습니다.
+3. **[+] → HTML** 로 `index_fracnat`, `index_decnat`, `index_ratio`, `index_graph`, `index_volume` 파일을 만들어 이 폴더의 HTML을 통째로 붙여 넣습니다.
 4. **[배포] → [새 배포] → 웹 앱**, 실행: 나, 액세스: 학교 도메인 내 모든 사용자.
 5. 나온 주소 뒤에 `?page=fracnat`처럼 붙여 학생들에게 알려 주면 됩니다.
 
