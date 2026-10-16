@@ -290,9 +290,9 @@ PAPER_RULES_ST = [
     (r'나누어 준 막대사탕 (\d+)개를 눌러 보고, ', r'나누어 준 막대사탕 \1개에 ×표를 하고, '),
     (r'양 카드를 □에 놓아 문장을 비로 나타내 보세요\.', '양 카드의 수를 ( )에 써서 문장을 비로 나타내 보세요.'),
     (r'하는 차례대로 눌러 보세요\.', '하는 차례대로 기호를 써 보세요.'),
-    (r'두 지도에 실제 거리 1000 m를 선으로 그려 보세요\.', '두 지도에 실제 거리 1000 m를 몇 cm로 그려야 할지 알아보세요.'),
     (r'\(이 앱에서 정한 수\)', ''),
-    (r'소식을 모두 눌러, ', '소식을 모두 살펴보며 '),
+    (r'소식을 모두 눌러, ', '소식을 모두 읽고 '),
+    (r'모눈 위의 화면 모서리\(빨간 점\)를 끌어 목표에 맞는 화면을 만들어 보세요\.', '모눈에 목표에 맞는 화면을 그려 보세요.'),
     (r'배우는 차례대로 눌러 ', '배우는 차례대로 기호를 써서 '),
     (r'기획표의 ‘([^’]+)’를 보고', r'기획표의 \1 소식을 보고'),
     (r'이 앱에서 ', ''),
@@ -1107,6 +1107,11 @@ def w_rect(s, lv, o, svg=None):
         sols = T_['sols']
         assert sols, T_
         f = lambda p: '%s %d%s·%s %d%s' % (nw, p[0], unit_sp(u), nh, p[1], unit_sp(u))
+        if MODE[0] == 'st' and len(sols) > 1 and len({Fraction(p[1], p[0]) for p in sols}) > 1:     # 이야기: '1보다 큰' 목표
+            note = ('세로가 가로보다 길면 맞아요' if all(p[1] > p[0] for p in sols) else
+                    '세로가 가로보다 짧으면 맞아요' if all(p[1] < p[0] for p in sols) else '조건에 맞으면 맞아요')
+            ans.append(pre + '(예) ' + ', '.join(f(p) for p in sols[2:4]) + ' (%s)' % note)
+            continue
         ans.append((pre + f(sols[0])) if len(sols) == 1 else pre + '(예) ' + ', '.join(f(p) for p in sols[2:4]) + ' (%s)' % (
             '가로와 세로가 같으면 맞아요' if all(p[0] == p[1] for p in sols) else '비율이 같으면 맞아요'))
     return ' / '.join(ans)
@@ -1410,8 +1415,7 @@ def w_candy(s, lv, o, svg=None):
     if svg:
         app_svg(s, svg, 100)
     nm = o.get('name') or '막대사탕'
-    s.text('%s %d개 중 나누어 준 %d개에 ×표를 하고, 남은 %s의 수를 세어 보세요.   남은 %s:  (        )개'
-           % (nm, o['total'], o['eat'], nm, nm))
+    s.text('나누어 주고 남은 %s의 수를 세어 보세요.   남은 %s:  (        )개' % (nm, nm))
     a = ask_part(s, o)
     return '나누어 준 %d개, 남은 %d개' % (o['eat'], o['total'] - o['eat']) + (' / ' + a if a else '')
 
