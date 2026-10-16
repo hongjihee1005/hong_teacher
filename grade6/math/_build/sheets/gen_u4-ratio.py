@@ -224,6 +224,11 @@ def rd(t):
     return re.sub(FR_RE.pattern + PART, rep, str(t))
 
 
+def ro(num):
+    """수 뒤 '(으)로': 3 → 으로, 2 → 로, 1 → 로"""
+    return '으로' if jong(str(num)) == 'o' else '로'
+
+
 def flat(t):
     """[2 1/4] → 2 1/4 (정답 쪽 표기), 빈칸 {x} → x"""
     t = re.sub(r'\{([^}]*)\}', r'\1', str(t))
@@ -235,16 +240,23 @@ PAPER_RULES = [
     (r'배울 차례대로 스티커를 붙이듯 눌러 보세요\.', '배울 차례대로 기호를 써 보세요.'),
     (r'놀이 순서대로 눌러 보세요\.', '놀이 순서대로 기호를 써 보세요.'),
     (r'이 앱이 정한', '앱에서 정한'),
+    (r'체험 부스를 모두 눌러 ', '체험 부스를 모두 살펴보며 '),
+    (r'만들어 보고,? ', '만든다고 생각하고 '),
+    (r'줄여 보고,? ', '줄인다고 생각하고 '),
+    (r'(빨간색 톱니바퀴)를 (\d+)바퀴 돌려 보고, ', r'\1가 \2바퀴 회전할 때 '),
     (r'\(교과서 카드와 다를 수 있어요\)', '(교과서 카드와 다를 수 있어요)'),
 ]
-INTERACT = re.compile(r'눌러|누르|누를|끌어|돌려 보고|돌려 보세요|만들어 보고|줄여 보고|‘[^’]*’를 ')
+INTERACT = re.compile(r'눌러|누르|누를|끌어|돌려 보세요|‘[^’]*’를 ')
 
 
 def paper(t):
     t = str(t or '')
     for a, b in PAPER_RULES:
         t = re.sub(a, b, t)
-    sents = re.split(r'(?<=[.?!])\s+', t)
+    sents = re.split(r'(?:(?<=[.?!])|(?<=[.?!]”))\s+', t)
+    gone = [x for x in sents if x and INTERACT.search(x)]
+    if gone and os.environ.get('SHOW_DROP'):
+        print('  [뺀 문장]', ' | '.join(gone))
     return ' '.join(x for x in sents if x and not INTERACT.search(x)).strip()
 
 
@@ -739,12 +751,14 @@ def w_quiz(s, lv, items, opts=None, *_):
         pre = all(re.match(r'[㉠-㉦]', x) for x in o)
         if many or pre or max(len(rd(x)) for x in o) > 16:
             s.ask(q, blank=False)
-            s.fill([x if pre else '%s %s' % (KO[i], rd(x)) for i, x in enumerate(o)])
+            s.fill([rd(x) if pre else '%s %s' % (KO[i], rd(x)) for i, x in enumerate(o)])
             s.ask('알맞은 것%s' % ('을 모두 골라 기호를 써 보세요.' if many else '의 기호를 써 보세요.'), answer_space=12)
             ans.append(', '.join(KO[i] for i in (a if many else [a])))
         else:
             s.choices([(q, opt_text(o))])
             ans.append(flat(o[a]))
+    if len(ans) > 1:
+        return '  '.join('%d) %s' % (i + 1, a) for i, a in enumerate(ans))
     return ', '.join(ans)
 
 
@@ -814,7 +828,7 @@ def w_build(s, lv, o, svg=None):
     its = [it for it in o['items'] if it['name'] != o['what']]
     K = max(o['start'], o['target'])
     if svg:
-        app_svg(s, svg, min(150, 30 * o['start'] + 4), viewbox='0 0 %d 210' % (118 * o['start'] + 10))
+        app_svg(s, svg, min(150, 30 * o['start'] + 4), viewbox='0 0 %d 210' % (118 * o['start'] - 2))
     s.text(rd('%s %d%s를 만드는 재료예요. %s %d%s일 때 필요한 재료의 양을 표에 써 보세요.'
               % (o['what'], o['start'], o['unit'], o['what'], o['target'], o['unit'])).replace('개를', '개를'))
     rows = [['%s 수(%s)' % (o['what'], o['unit'])] + [str(k) for k in range(1, K + 1)]]
@@ -823,11 +837,11 @@ def w_build(s, lv, o, svg=None):
         r = ['%s(%s)' % (it['name'], it['unit'])]
         for k in range(1, K + 1):
             v = it['per'] * k
-            if k == o['start'] or (lv == '기본형' and k == 1):
+            if k == o['start'] or (lv == '기본형' and k == 1 and k != o['target']):
                 r.append(str(v))
             else:
                 r.append('')
-                ans.append('%s %d%s일 때 %d%s' % (it['name'], k, o['unit'], v, unit_sp(it['unit'])))
+                ans.append('%s %d%s일 때 %s %d%s' % (o['what'], k, o['unit'], it['name'], v, unit_sp(it['unit'])))
         rows.append(r)
     s.table(rows, col_mm=[52] + [128 / K] * K)
     a = ask_part(s, o)
@@ -836,7 +850,7 @@ def w_build(s, lv, o, svg=None):
 
 def rect_grid_fig(s, rects, cell=34, gx=None, gy=None, max_mm=170):
     """모눈 위 직사각형들: [(가로, 세로, 이름, 색)]"""
-    gx = gx or sum(r[0] for r in rects) + len(rects) + 1
+    gx = gx or sum(r[0] for r in rects) + 3 * len(rects) - 1
     gy = gy or max(r[1] for r in rects) + 1
     ox, oy = 20, 20 + gy * cell
     out = ['<g stroke="#DCE4E0" stroke-width="1.5">']
@@ -850,7 +864,7 @@ def rect_grid_fig(s, rects, cell=34, gx=None, gy=None, max_mm=170):
         out.append('<rect x="%d" y="%d" width="%d" height="%d" fill="%s" fill-opacity=".3" stroke="%s" stroke-width="3.5"/>'
                    % (ox + x * cell, oy - hh * cell, w * cell, hh * cell, col, col))
         out.append(T(ox + (x + w / 2) * cell, oy + 26, name, 24, anchor='middle'))
-        x += w + 1
+        x += w + 3
     W, H = ox * 2 + gx * cell, oy + 50
     put_png(s, svg_doc(W, H, ''.join(out)), W, H, max_mm)
 
@@ -862,16 +876,17 @@ def w_machine(s, lv, o, svg=None):
     k = int(g)
     rows = [('처음', a0, b0), ('× %d' % k, a0 * k, b0 * k), ('+ %d' % k, a0 + k, b0 + k)]
     if lv == '기본형':
-        rect_grid_fig(s, [(a, b, '%s  %d : %d' % (n, a, b) if n == '처음' else n, c)
-                          for (n, a, b), c in zip(rows, ['#2B7BD6', '#D9822B', '#7D5BD6'])], cell=30)
+        rect_grid_fig(s, [(a, b, n.replace(' ', ''), c)
+                          for (n, a, b), c in zip(rows, ['#2B7BD6', '#D9822B', '#7D5BD6'])], cell=40, max_mm=120)
         s.text('모눈의 직사각형은 가로 : 세로가 비를 나타내요. 모양이 같은지 비교해 보세요.')
-    tb = [['전항과 후항을 바꾸는 방법', '비', '비율', '처음과 비율이']]
+    tb = [['전항과 후항을 바꾸는 방법', '비', '비율', '처음과 비교한 비율']]
     ans = []
     for i, (n, a, b) in enumerate(rows + [('× 0', 0, 0)]):
         if i == 0:
             tb.append(['처음', '%d : %d' % (a, b), fr_txt(Fraction(a, b)), ''])
             continue
-        tb.append(['전항과 후항에 %s' % n.replace('× ', '× ').replace('+ ', '+ '), '(    ) : (    )', '', '같아요 / 달라요 / 비교할 수 없어요'])
+        how = '%s%s %s' % (n[2:], '을' if jong(n[2:]) else '를', '더하기' if n[0] == '+' else '곱하기')
+        tb.append(['전항과 후항에 ' + how, '(    ) : (    )', '', '같아요 / 달라요 / 비교할 수 없어요'])
         if b:
             same = Fraction(a, b) == Fraction(a0, b0)
             ans.append('%s → %d : %d, 비율 %s, %s' % (n, a, b, fr_txt(Fraction(a, b)), '같아요' if same else '달라요'))
@@ -952,7 +967,7 @@ def w_area(s, lv, o, svg=None):
         M = max(q)
         sc = 300 / M
         out = []
-        x0 = 40
+        x0 = 70
         for nm, w, hh, wl, hl, col in (('외항의 곱', q[0], q[3], lab[0], lab[3], '#D9822B'), ('내항의 곱', q[1], q[2], lab[1], lab[2], '#2B7BD6')):
             W, H = max(w * sc, 14), max(hh * sc, 14)
             out.append('<rect x="%.1f" y="%.1f" width="%.1f" height="%.1f" fill="%s" fill-opacity=".25" stroke="%s" stroke-width="3"/>'
@@ -1016,7 +1031,7 @@ def w_dbl(s, lv, o, svg=None):
 def w_gear(s, lv, o, svg=None):
     r, b, tg = o['r'], o['b'], o['target']
     if svg:
-        app_svg(s, svg, 80, viewbox='60 10 480 280')
+        app_svg(s, svg, 80, viewbox='70 10 390 280')
     s.text('빨간색 톱니바퀴가 %d바퀴 회전할 때 파란색 톱니바퀴는 %d바퀴 회전해요. 표를 완성해 보세요.' % (r, b))
     ks = list(range(r, tg + 1, r))
     rows = [['빨간색(바퀴)'] + [str(k) for k in ks], ['파란색(바퀴)'] + [str(b) if i == 0 else '' for i, k in enumerate(ks)]]
@@ -1041,7 +1056,7 @@ def tape_fig(s, lv, o):
             out.append('<rect x="%.1f" y="%d" width="%.1f" height="%d" rx="8" fill="#FFF8E6" stroke="%s" stroke-width="2.5"/>'
                        % (x0 + i * cwid + 4, y0, cwid - 8, TH, INK))
             out.append(T(x0 + (i + .5) * cwid, y0 + TH / 2, str(i + 1), 22, anchor='middle', fill='#999'))
-        if lv == '기본형' and N % (p + q) == 0:
+        if lv == '기본형' and N % (p + q) == 0 and N > p + q:
             g = N // (p + q)
             for j in range(1, p + q):
                 x = x0 + j * g * cwid
@@ -1071,11 +1086,11 @@ def w_tape(s, lv, o, svg=None):
     tape_fig(s, lv, o)
     nm = o['names']
     if N <= 20:
-        s.text(rd('%s %d%s를 %d : %d로 나누어 %s의 몫과 %s의 몫을 서로 다른 색으로 칠해 보세요.'
-                  % (o.get('icon') == 'wallet' and '지갑' or '전체', N, o['unit'], p, q, nm[0], nm[1]))
-               + (' 빨간 점선은 %d개씩 나눈 묶음이에요.' % (N // (p + q)) if lv == '기본형' and N % (p + q) == 0 else ''))
+        s.text(rd('%s %d%s를 %d : %d%s 나누어 %s의 몫과 %s의 몫을 서로 다른 색으로 칠해 보세요.'
+                  % (o.get('icon') == 'wallet' and '지갑' or '전체', N, o['unit'], p, q, ro(q), nm[0], nm[1]))
+               + (' 빨간 점선은 %d개씩 나눈 묶음이에요.' % (N // (p + q)) if lv == '기본형' and N % (p + q) == 0 and N > p + q else ''))
     else:
-        s.text('띠를 %d : %d로 나누어 %s의 몫과 %s의 몫을 서로 다른 색으로 칠해 보세요.' % (p, q, nm[0], nm[1])
+        s.text('띠를 %d : %d%s 나누어 %s의 몫과 %s의 몫을 서로 다른 색으로 칠해 보세요.' % (p, q, ro(q), nm[0], nm[1])
                + (' 점선은 띠를 %d등분한 선이에요.' % (p + q) if lv == '기본형' else ''))
     if o.get('ask'):
         return ask_part(s, o)
@@ -1232,7 +1247,7 @@ def w_match(s, lv, o, svg=None):
             pairs.append('%s=%s' % (flat(c), flat(cards[js[0]])))
     assert len(pairs) >= need, (cards, pairs)
     s.text('비율이 같은 두 비를 찾아 비례식을 세워 보세요.' + (' 짝이 없는 카드도 있어요.' if len(pairs) * 2 < len(cards) else ''))
-    s.fill(['비례식 %s:  (                    ) = (                    )' % (NUM[k] if need > 1 else '') for k in range(need)])
+    s.fill(['비례식%s:  (                    ) = (                    )' % (' ' + NUM[k] if need > 1 else '') for k in range(need)])
     if o.get('timer'):
         s.ask('걸린 시간:  (      )분 (      )초', blank=False)
     return ', '.join(pairs[:need] if need == 1 else pairs)

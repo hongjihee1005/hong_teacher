@@ -858,7 +858,7 @@ html body.ov>.hj-contact,html body.ov>p.made,html body.ov>.made{display:none!imp
 /* 2026-10-03 선생님 요청: 수업 앱(첫 화면·진행 화면)에는 이메일·유튜브 줄을 숨김. 메뉴 페이지(첫 화면~학기 목록)에는 그대로 보임(메뉴는 이 덮개를 쓰지 않음). 우리 반 교실(class)은 제외 */
 html body:not(.mix) .hj-contact,html body:not(.mix) .hj-contact.hj-cvc{display:none!important}
 html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:center;align-items:baseline;column-gap:.3em;row-gap:.2em}html body .frameline input{max-width:100%;text-align:center}
-</style><meta name="hj-list" content="[[&quot;u1-fracdiv.html&quot;, &quot;분수의 나눗셈&quot;, &quot;웹앱&quot;], [&quot;u2-decdiv.html&quot;, &quot;소수의 나눗셈&quot;, &quot;웹앱&quot;], [&quot;u5-circle.html&quot;, &quot;원의 둘레와 넓이&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
+</style><meta name="hj-list" content="[[&quot;u1-fracdiv.html&quot;, &quot;분수의 나눗셈&quot;, &quot;웹앱&quot;], [&quot;u2-decdiv.html&quot;, &quot;소수의 나눗셈&quot;, &quot;웹앱&quot;], [&quot;u4-ratio.html&quot;, &quot;비례식과 비례배분&quot;, &quot;웹앱&quot;], [&quot;u5-circle.html&quot;, &quot;원의 둘레와 넓이&quot;, &quot;웹앱&quot;]]"><!--/hj-ctheme--></head>
 <body>
 <div id="app"></div>
 <div class="creditbar"><a class="tolist" id="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
@@ -2280,7 +2280,7 @@ function cy6Shout(body, api, opt) {
   }
   function myFlip() { cur = deck.pop(); piles[0]++; phase = "shout"; render("카드를 뒤집었어요. 정한 순서에 맞는 입체도형을 외쳐요."); }
   function myShout(x) { total++; const e = expect(); k++;
-    if (x !== e) { api.tryOnce(); phase = "wait"; render(`“${CY6_KN[x]}!” — 정한 순서에 맞지 않아요. 지금은 ‘${CY6_KN[e]}’를 외칠 차례였어요. “네 차례야.”`); return nextTurn(); }
+    if (x !== e) { api.tryOnce(); phase = "wait"; render(`“${CY6_KN[x]}!” — 정한 순서에 맞지 않아요. 지금은 ${cy6Jo(CY6_KN[e], "을/를")} 외칠 차례였어요. “네 차례야.”`); return nextTurn(); }
     cur_e = e; phase = "judge"; render(`“${CY6_KN[x]}!” 이 카드는 ${cy6Jo(CY6_KN[e], "과/와")} 관계가 있을까요?`); }
   let cur_e = null;
   function myJudge(take) { const c = CY6_CARDS[cur], rel = c.rel.includes(cur_e); api.tryOnce(); phase = "wait";
@@ -2485,9 +2485,9 @@ const LESSONS = [
           { ok: "각기둥의 평행하고 합동인 두 면은 밑면, 밑면과 만나는 면은 옆면이에요. 각뿔의 옆면은 모두 삼각형이에요." })]) },
     { name: "떠올리기 ②", inst: "배운 내용을 떠올려 보세요. (수학익힘 ‘이전에 배웠어요’ ― 각기둥의 전개도 그리기, 원주 구하기)", hints: ["삼각기둥의 옆면은 직사각형 3개예요.", "(원주) = (지름) × (원주율), 원주율은 3.14로 계산해요."],
       render: (b, a) => cy6Chain(b, a, [
-        (bx, ax) => quiz(bx, ax, [{ q: "삼각기둥의 전개도예요. 옆면은 어떤 모양이고 몇 개인가요?", fig: () => { const s = makeSvg(320, 200); s.setAttribute("class", "cy6fig"); s.style.maxWidth = "17em";
+        (bx, ax) => quiz(bx, ax, [{ q: "삼각기둥의 전개도예요. 옆면은 어떤 모양이고 몇 개인가요?", fig: () => { const s = makeSvg(320, 212); s.setAttribute("class", "cy6fig"); s.style.maxWidth = "17em";
             [[40, 70], [120, 70], [200, 70]].forEach(([x, y]) => s.append(svgEl("rect", { x, y, width: 80, height: 70, fill: "#FFF1C7", stroke: CY6.ink, "stroke-width": 2 })));
-            s.append(svgEl("polygon", { points: "120,70 200,70 160,1", fill: "#FBD3A6", stroke: CY6.ink, "stroke-width": 2 })); s.append(svgEl("polygon", { points: "120,140 200,140 160,209", fill: "#FBD3A6", stroke: CY6.ink, "stroke-width": 2, transform: "translate(0,-12)" }));
+            s.append(svgEl("polygon", { points: "120,70 200,70 160,1", fill: "#FBD3A6", stroke: CY6.ink, "stroke-width": 2 })); s.append(svgEl("polygon", { points: "120,140 200,140 160,209", fill: "#FBD3A6", stroke: CY6.ink, "stroke-width": 2 }));
             return s; }, o: ["직사각형 3개", "삼각형 3개", "직사각형 2개"], a: 0, why: { "1": "삼각형 2개는 밑면이에요. 옆면은 가운데의 사각형들이에요." } }], { ok: "삼각기둥의 전개도에서 밑면은 삼각형 2개, 옆면은 직사각형 3개예요." }),
         (bx, ax) => cy6Ask(bx, ax, [{ q: "원주를 구해 보세요. (원주율 3.14)", parts: ["지름이 10 cm인 원의 원주: ", { n: 31.4, why: { "15.7": "반지름(5 cm)에 원주율을 곱했어요. 원주는 (지름)×(원주율)이에요.", "10": "지름을 그대로 썼어요." } }, " cm", h("br"),
           "반지름이 4 cm인 원의 원주: ", { n: 25.12, why: { "12.56": "반지름에 원주율을 곱했어요. 지름은 4×2=8 (cm)이에요." } }, " cm"] }], { ok: "원주는 (지름)×(원주율)이에요. 10×3.14=31.4 (cm), 8×3.14=25.12 (cm)예요." })]) },

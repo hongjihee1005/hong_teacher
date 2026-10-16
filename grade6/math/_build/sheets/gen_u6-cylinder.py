@@ -275,6 +275,9 @@ class Shot:
                 self._start()
             self.n += 1
             out = os.path.join(WORK, 'f%04d.png' % self.n)
+            if os.environ.get('DUMP_SVG'):
+                with open(out[:-4] + '.svg', 'w') as f:
+                    f.write(svg)
             self.proc.stdin.write(json.dumps({'svg': svg, 'out': out, 'width': int(width_px)}, ensure_ascii=False) + '\n')
             self.proc.stdin.flush()
             if not self.proc.stdout.readline():

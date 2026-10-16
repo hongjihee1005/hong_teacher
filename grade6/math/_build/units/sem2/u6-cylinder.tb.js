@@ -796,7 +796,7 @@ function cy6Make(body, api, opt) {
   };
   const bar = h("div", { class: "cy6btns" }, h("span", { class: "cy6small" }, "입체 도구:"), ...TOOLS.map(([k, n]) => h("button", { onclick: e => { tool = k; [...bar.querySelectorAll("button")].forEach(b => b.classList.remove("cy6-pick")); e.currentTarget.classList.add("cy6-pick"); draw(); } }, n)),
     h("button", { onclick: () => { made.length = 0; draw(); } }, "모두 지우기"));
-  svg.addEventListener("click", e => { const p = svgPt(svg, e); if (!tool) return api.hint("먼저 [원기둥], [원뿔], [구] 중 하나를 눌러요."); if (p.y < 110 || p.y > H - 10) return api.hint("바닥(모눈) 위를 눌러요.");
+  svg.addEventListener("click", e => { const p = svgPt(svg, e); if (!tool) return api.hint("먼저 [원기둥], [원뿔], [구] 중 하나를 눌러요."); if (p.y < 76 || p.y > H - 10) return api.hint("바닥(모눈) 위를 눌러요.");
     if (made.length >= 8) made.shift(); made.push({ k: tool, x: Math.max(40, Math.min(W - 40, p.x)), y: p.y }); draw();
     const kinds = new Set(made.map(m => m.k)); if (kinds.size === 3 && !fin) { fin = true; cy6Then(body, api, opt, "원기둥·원뿔·구를 만듦", "원기둥, 원뿔, 구를 모두 만들었어요."); } });
   api.provide({ words: ["원기둥", "원뿔", "구"], answers: [] });
@@ -893,7 +893,7 @@ function cy6Shout(body, api, opt) {
   }
   function myFlip() { cur = deck.pop(); piles[0]++; phase = "shout"; render("카드를 뒤집었어요. 정한 순서에 맞는 입체도형을 외쳐요."); }
   function myShout(x) { total++; const e = expect(); k++;
-    if (x !== e) { api.tryOnce(); phase = "wait"; render(`“${CY6_KN[x]}!” — 정한 순서에 맞지 않아요. 지금은 ‘${CY6_KN[e]}’를 외칠 차례였어요. “네 차례야.”`); return nextTurn(); }
+    if (x !== e) { api.tryOnce(); phase = "wait"; render(`“${CY6_KN[x]}!” — 정한 순서에 맞지 않아요. 지금은 ${cy6Jo(CY6_KN[e], "을/를")} 외칠 차례였어요. “네 차례야.”`); return nextTurn(); }
     cur_e = e; phase = "judge"; render(`“${CY6_KN[x]}!” 이 카드는 ${cy6Jo(CY6_KN[e], "과/와")} 관계가 있을까요?`); }
   let cur_e = null;
   function myJudge(take) { const c = CY6_CARDS[cur], rel = c.rel.includes(cur_e); api.tryOnce(); phase = "wait";
@@ -1098,9 +1098,9 @@ const LESSONS = [
           { ok: "각기둥의 평행하고 합동인 두 면은 밑면, 밑면과 만나는 면은 옆면이에요. 각뿔의 옆면은 모두 삼각형이에요." })]) },
     { name: "떠올리기 ②", inst: "배운 내용을 떠올려 보세요. (수학익힘 ‘이전에 배웠어요’ ― 각기둥의 전개도 그리기, 원주 구하기)", hints: ["삼각기둥의 옆면은 직사각형 3개예요.", "(원주) = (지름) × (원주율), 원주율은 3.14로 계산해요."],
       render: (b, a) => cy6Chain(b, a, [
-        (bx, ax) => quiz(bx, ax, [{ q: "삼각기둥의 전개도예요. 옆면은 어떤 모양이고 몇 개인가요?", fig: () => { const s = makeSvg(320, 200); s.setAttribute("class", "cy6fig"); s.style.maxWidth = "17em";
+        (bx, ax) => quiz(bx, ax, [{ q: "삼각기둥의 전개도예요. 옆면은 어떤 모양이고 몇 개인가요?", fig: () => { const s = makeSvg(320, 212); s.setAttribute("class", "cy6fig"); s.style.maxWidth = "17em";
             [[40, 70], [120, 70], [200, 70]].forEach(([x, y]) => s.append(svgEl("rect", { x, y, width: 80, height: 70, fill: "#FFF1C7", stroke: CY6.ink, "stroke-width": 2 })));
-            s.append(svgEl("polygon", { points: "120,70 200,70 160,1", fill: "#FBD3A6", stroke: CY6.ink, "stroke-width": 2 })); s.append(svgEl("polygon", { points: "120,140 200,140 160,209", fill: "#FBD3A6", stroke: CY6.ink, "stroke-width": 2, transform: "translate(0,-12)" }));
+            s.append(svgEl("polygon", { points: "120,70 200,70 160,1", fill: "#FBD3A6", stroke: CY6.ink, "stroke-width": 2 })); s.append(svgEl("polygon", { points: "120,140 200,140 160,209", fill: "#FBD3A6", stroke: CY6.ink, "stroke-width": 2 }));
             return s; }, o: ["직사각형 3개", "삼각형 3개", "직사각형 2개"], a: 0, why: { "1": "삼각형 2개는 밑면이에요. 옆면은 가운데의 사각형들이에요." } }], { ok: "삼각기둥의 전개도에서 밑면은 삼각형 2개, 옆면은 직사각형 3개예요." }),
         (bx, ax) => cy6Ask(bx, ax, [{ q: "원주를 구해 보세요. (원주율 3.14)", parts: ["지름이 10 cm인 원의 원주: ", { n: 31.4, why: { "15.7": "반지름(5 cm)에 원주율을 곱했어요. 원주는 (지름)×(원주율)이에요.", "10": "지름을 그대로 썼어요." } }, " cm", h("br"),
           "반지름이 4 cm인 원의 원주: ", { n: 25.12, why: { "12.56": "반지름에 원주율을 곱했어요. 지름은 4×2=8 (cm)이에요." } }, " cm"] }], { ok: "원주는 (지름)×(원주율)이에요. 10×3.14=31.4 (cm), 8×3.14=25.12 (cm)예요." })]) },
@@ -1122,7 +1122,7 @@ const LESSONS = [
     { name: "분류하기", inst: "체육관에 도착한 예빈이가 대회를 준비하는 마을 사람들을 도와 물건을 정리하고 있어요. “어떻게 정리하면 좋을지 체육관에 있는 여러 가지 입체도형의 모양을 살펴볼까?” 입체도형 가~마를 분류해 보세요.", hints: ["두 면이 서로 평행하고 모양과 크기가 같은(합동인) 입체도형을 찾아요.", "평행하고 합동인 두 면이 원인지, 원이 아닌지 살펴봐요."],
       render: (b, a) => cy6Chain(b, a, [
         (bx, ax) => cy6Pick(bx, ax, { q: "평행한 두 면이 합동인 입체도형을 모두 골라 보세요.", items: [{ name: "가", fig: cy6Shp("tri") }, { name: "나", fig: cy6Shp("cylT") }, { name: "다", fig: cy6Shp("box") }, { name: "라", fig: cy6Shp("cylL") }, { name: "마", fig: cy6Shp("cone") }], a: [0, 1, 2, 3],
-          whyExtra: () => "마에는 평행한 두 면이 없어요.", whyMiss: "라는 누워 있지만 왼쪽과 오른쪽의 두 면이 평행하고 합동이에요.", ok: "가, 나, 다, 라는 평행한 두 면이 합동이에요." }),
+          whyExtra: () => "마에는 평행한 두 면이 없어요.", whyMiss: "아직 더 있어요. 라처럼 누워 있는 입체도형도 평행하고 합동인 두 면이 있는지 살펴봐요.", ok: "가, 나, 다, 라는 평행한 두 면이 합동이에요." }),
         (bx, ax) => cy6Sort(bx, ax, { q: "가, 나, 다, 라를 기준에 따라 분류해 보세요.", bins: ["평행하고 합동인 두 면이 원인 입체도형", "평행하고 합동인 두 면이 원이 아닌 입체도형"],
           items: [{ name: "가", fig: cy6Shp("tri"), bin: 1, why: "가의 평행하고 합동인 두 면은 삼각형이에요." }, { name: "나", fig: cy6Shp("cylT"), bin: 0 }, { name: "다", fig: cy6Shp("box"), bin: 1, why: "다의 평행하고 합동인 두 면은 사각형이에요." }, { name: "라", fig: cy6Shp("cylL"), bin: 0, why: "라는 누워 있지만 평행하고 합동인 두 면이 원이에요." }],
           ask: [{ q: "평행하고 합동인 두 면이 원인 입체도형의 특징을 모두 골라 보세요.", parts: [{ o: ["평행하고 합동인 두 면이 원이에요.", "굽은 면이 있어요.", "뾰족한 부분이 있어요.", "평평한 면이 1개예요."], multi: true, a: [0, 1], why: { "0,1,2": "뾰족한 부분은 없어요.", "0,2": "뾰족한 부분은 없어요." } }] }],
