@@ -1582,11 +1582,14 @@ function gr5BandLay(g, G, show) {
     const r = gr5Inside(it.n, pct, w - 5, G.BH - 6, G.mini ? 20 : 15, G.mini ? 10.5 : 11);
     if (r) ins.push({ i, cx, r }); else outs.push({ i, cx, t: `${it.n}(${pct})` });
   });
-  const f2 = G.mini ? 15 : 13, lvR = []; let maxLv = -1;
+  const f2 = G.mini ? 15 : 13, lv = []; let maxLv = -1;
+  /* 바깥 글: 가운데보다 오른쪽이면 글의 끝을, 왼쪽이면 글의 시작을 이끔선에 맞춰요 */
   outs.forEach(ob => {
-    const w = gr5TW(ob.t, f2), x = Math.min(Math.max(ob.cx, G.x0 + w / 2), G.x0 + G.L - w / 2); let lv = 0;
-    while (lvR[lv] != null && x - w / 2 < lvR[lv] + 8) lv++;
-    lvR[lv] = x + w / 2; ob.x = x; ob.lv = lv; maxLv = Math.max(maxLv, lv);
+    const w = gr5TW(ob.t, f2), right = ob.cx > G.x0 + G.L / 2;
+    let l = right ? ob.cx + 4 - w : ob.cx - 4; l = Math.max(G.x0, Math.min(l, G.x0 + G.L - w));
+    const r = l + w; let k = 0;
+    while ((lv[k] || []).some(([a, b]) => l < b + 8 && r > a - 8)) k++;
+    (lv[k] = lv[k] || []).push([l, r]); ob.l = l; ob.r = r; ob.lv = k; ob.x = (l + r) / 2; maxLv = Math.max(maxLv, k);
   });
   return { ins, outs, maxLv, f2 };
 }
@@ -1606,7 +1609,8 @@ function gr5BandLabDraw(svg, G, lay) {
   lay.ins.forEach(o => gr5Lines(g, o.cx, G.bandY + G.BH / 2, o.r.lines, o.r.f));
   lay.outs.forEach(o => {
     const y = G.bandY + G.BH + 16 + o.lv * (lay.f2 + 7);
-    g.append(svgEl("path", { d: `M${o.cx} ${G.bandY + G.BH - 4}L${o.cx} ${y - 9}${Math.abs(o.x - o.cx) > 2 ? `L${o.x} ${y - 9}` : ""}`, fill: "none", stroke: GR5.gray, "stroke-width": 1.3 }));
+    const hx = o.cx < o.l ? o.l + 2 : o.cx > o.r ? o.r - 2 : o.cx;
+    g.append(svgEl("path", { d: `M${o.cx} ${G.bandY + G.BH - 4}L${o.cx} ${y - 9}${Math.abs(hx - o.cx) > 1 ? `L${hx} ${y - 9}` : ""}`, fill: "none", stroke: GR5.gray, "stroke-width": 1.3 }));
     g.append(txt(o.x, y, o.t, lay.f2, { fill: GR5.ink }));
   });
 }
@@ -2509,7 +2513,7 @@ const LESSONS = [
     { name: "확인하기", inst: "서우네 학교 체육관에 있는 공과 주성이네 마을 알뜰 장터의 판매량을 나타낸 그래프예요. 이 두 그래프는 작은 눈금이 몇 칸인지 세어 보고 답해 보세요.", hints: ["두 그래프는 전체를 20칸으로 나누었어요. 100 ÷ 20을 생각해요.", "배구공 부분은 작은 눈금 5칸이에요."],
       render: (b, a) => gr5Ask(b, a, [
         { fig: () => gr5Show(GR5D.ball), parts: ["전체에 대한 각 부분의 비율을 띠 모양에 나타낸 이 그래프는 ", { o: ["띠그래프", "원그래프"], a: 0 }, "예요. 작은 눈금 한 칸은 ", { n: 5, why: { "1": "이 그래프는 전체를 20칸으로 나누었어요. 100 ÷ 20을 계산해요.", "10": "수가 쓰여 있는 눈금 사이를 다시 둘로 나누었어요." } }, " %이고, 배구공의 수는 전체의 ", { n: 25 }, " %예요."] },
-        { fig: () => gr5Show(GR5D.market), parts: ["원 모양에 나타낸 이 그래프는 ", { o: ["띠그래프", "원그래프"], a: 1 }, "예요. 눈금 한 칸은 ", { n: 5, why: { "1": "이 원은 둘레를 20칸으로 나누었어요." } }, " %이고, 판매량의 비율이 가장 높은 물품은 ", { o: ["학용품", "의류", "장난감"], a: 0 }, "이에요."] }],
+        { fig: () => gr5Show(GR5D.market), parts: ["원 모양에 나타낸 이 그래프는 ", { o: ["띠그래프", "원그래프"], a: 1 }, "예요. 눈금 한 칸은 ", { n: 5, why: { "1": "이 원은 둘레를 20칸으로 나누었어요." } }, " %이고, 판매량의 비율이 가장 높은 물품은 ", { o: ["학용품", "의류", "장난감"], a: 0 }, "입니다."] }],
       { ok: "눈금 한 칸의 크기는 그래프마다 다를 수 있어요. 먼저 한 칸이 몇 %인지 확인해요." }) }
   ],
   challenge: { inst: "우리 주변에서 찾은 원그래프예요. 「독서 빈도별 학생 수의 비율」(출처: 공공뉴스, 2024)과 「부모의 출신 국적별 학생 수의 비율」(출처: 어린이조선일보, 2024)을 보고 답해 보세요. (빈도: 같은 현상이나 일이 반복되는 횟수)", hints: ["가장 큰 부분 다음으로 큰 부분을 찾아요.", "32.1 + 24.6을 계산해요."],
@@ -2585,7 +2589,7 @@ const LESSONS = [
             ok: "같이 놀자(32 %) | 정말 잘한다(24 %) | 고마워(20 %) | 넌 좋은 친구야(16 %) | 기타(8 %)로 나타냈어요." })]); } },
     { name: "공학 도구로 나타내기", inst: "공학 도구를 사용하여 띠그래프와 원그래프로 나타내 보세요. (교과서의 EBSMath 이지통계처럼 움직이는 이 앱의 도구예요.) ① 표의 제목과 내용을 써요. ② 계산 도구에서 합계와 백분율을 켜요. ③ 띠그래프와 원그래프를 골라 그려 봐요. ④ 그래프의 제목을 알맞게 바꾸어요.", hints: ["표의 제목은 「친구에게 듣고 싶어 하는 말별 학생 수」예요. 항목은 같이 놀자 8, 정말 잘한다 6, 고마워 5, 넌 좋은 친구야 4, 기타 2예요.", "그래프의 제목은 ‘…별 학생 수의 비율’로 써요. ‘항목 정렬’을 누르면 크기순으로 정렬돼요."],
       render: (b, a) => gr5Maker(b, a, { head: "듣고 싶어 하는 말", target: [["같이 놀자", 8], ["정말 잘한다", 6], ["고마워", 5], ["넌 좋은 친구야", 4], ["기타", 2]],
-        ok: "공학 도구로 띠그래프와 원그래프를 그렸어요. 각 항목의 내용은 색깔로 구분되고, 항목 순서는 표 순서와 같아요." }) },
+        ok: "공학 도구로 띠그래프와 원그래프를 그렸어요. 항목 순서는 표 순서와 같고, ‘항목 정렬’을 누르면 크기순으로 바뀌어요(기타는 맨 나중)." }) },
     { name: "알 수 있는 내용 말하기", inst: "모둠별로 나타낸 띠그래프와 원그래프를 보고 알 수 있는 내용을 이야기해 보세요. 그리고 반올림한 백분율의 합계가 100 %가 되지 않을 때 어떻게 하는지 알아봐요.", hints: ["띠그래프에서 가장 긴 부분을 찾아요.", "33.3 + 33.3 + 33.3 = 99.9예요. 한 항목을 0.1만큼 맞추어 합계를 100으로 만들어요."],
       render: (b, a) => gr5Ask(b, a, [
         { fig: () => gr5Show(GR5D.words), parts: ["우리 모둠이 나타낸 띠그래프를 살펴보면 친구에게 듣고 싶어 하는 말 중 비율이 가장 높은 것은 ", { o: ["같이 놀자", "고마워", "기타"], a: 0 }, "이고, 그 비율은 ", { n: 32 }, " %예요."] },

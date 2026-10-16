@@ -163,9 +163,10 @@ WID.forEach(name => {
         for (let a = 1; a <= N; a++) for (let b = 1; b <= N; b++) for (let c = 1; c <= N; c++) if (a * b * c === N && (!opt.check || opt.check([a, b, c]) == null)) sol.push({ n: [a, b, c], D: vo6PackD(opt.box, [a, b, c]), s: vo6Surf(vo6PackD(opt.box, [a, b, c])) });
         rec.sol = sol; sol.sort((p, q) => p.s - q.s); extra = sol[0] && sol[0].n;
         rec.all = []; for (let a = 1; a <= N; a++) for (let b = 1; b <= N; b++) for (let c = 1; c <= N; c++) if (a * b * c === N) rec.all.push({ n: [a, b, c], D: vo6PackD(opt.box, [a, b, c]), s: vo6Surf(vo6PackD(opt.box, [a, b, c])) });
-        rec.svgSol = sol.length ? figsOf(run0(name, Object.assign({}, opt, { start: sol[0].n })))[0].svg : null;
-        rec.svgStart = figsOf(run0(name, opt))[0].svg;
-        rec.one = figsOf(run0(name, Object.assign({}, opt, { N: 1, start: [1, 1, 1] })))[0].svg;
+        const B = opt.box, packSvg = n => { const bl = []; for (let i = 0; i < n[0]; i++) for (let j = 0; j < n[1]; j++) for (let k = 0; k < n[2]; k++) bl.push({ x: i * B[0], y: j * B[1], z: k * B[2], w: B[0], d: B[1], h: B[2], c: VO6.box });
+          const D = vo6PackD(B, n); return String(vo6Solid({ d: D, mode: 'none', blocks: bl, W: 230, H: 170, labels: { a: D[0] + ' cm', b: D[1] + ' cm', c: D[2] + ' cm' }, plain: true })); };
+        rec.svgSol = sol.length ? packSvg(sol[0].n) : null;
+        rec.one = String(vo6Solid({ d: B, mode: 'solid', s: 12, tint: { top: VO6.box[0], front: VO6.box[1], right: VO6.box[2] }, labels: { a: B[0] + ' cm', b: B[1] + ' cm', c: B[2] + ' cm' }, plain: true }));
       }
       else if (name === 'vo6Make') { rec.friendSvg = String(vo6Cub(opt.friend.d, 'cm', { maxW: '12em' })); }
       else if (name === 'vo6Hunt') { rec.names = VO6_NAMES; }
