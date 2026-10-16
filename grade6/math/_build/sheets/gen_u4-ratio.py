@@ -224,6 +224,14 @@ def rd(t):
     return re.sub(FR_RE.pattern + PART, rep, str(t))
 
 
+def eul(word, a='을', b='를'):
+    """우리말 낱말 끝 받침에 맞는 조사(받침 있으면 a)"""
+    ch = str(word).strip()[-1:]
+    if '가' <= ch <= '힣':
+        return a if (ord(ch) - 0xAC00) % 28 else b
+    return a if jong(str(word)) else b
+
+
 def ro(num):
     """수 뒤 '(으)로': 3 → 으로, 2 → 로, 1 → 로"""
     return '으로' if jong(str(num)) == 'o' else '로'
@@ -245,6 +253,9 @@ PAPER_RULES = [
     (r'줄여 보고,? ', '줄인다고 생각하고 '),
     (r'(빨간색 톱니바퀴)를 (\d+)바퀴 돌려 보고, ', r'\1가 \2바퀴 회전할 때 '),
     (r'\(교과서 카드와 다를 수 있어요\)', '(교과서 카드와 다를 수 있어요)'),
+    (r'배우는 차례대로 눌러 ', '배우는 차례대로 기호를 써서 '),      # 이야기 버전
+    (r'텃밭 곳곳을 모두 눌러 ', '텃밭 곳곳을 모두 살펴보며 '),
+    (r'늘려 보고,? ', '늘린다고 생각하고 '),
 ]
 INTERACT = re.compile(r'눌러|누르|누를|끌어|돌려 보세요|‘[^’]*’를 ')
 
@@ -798,6 +809,15 @@ def w_sequence(s, lv, items, order, opts=None, *_):
 def w_write(s, lv, items, *_):
     out = []
     for it in items:
+        if it.get('ans'):          # 이야기 버전
+            s.ask(rd(it['q']), blank=False)
+            if lv == '기본형' and len(it.get('help') or []) > 1:
+                s.text('도움: ' + rd(it['help'][1]))
+                s.lines(2)
+            else:
+                s.lines(3)
+            out.append('(예) ' + flat(it['ans']))
+            continue
         s.ask(rd(it['q']), blank=False)
         ex = re.sub(r'^예\)\s*', '', it.get('ph') or '')
         if lv == '기본형' and ex:
@@ -839,8 +859,8 @@ def w_build(s, lv, o, svg=None):
     K = max(o['start'], o['target'])
     if svg:
         app_svg(s, svg, min(150, 30 * o['start'] + 4), viewbox='0 0 %d 210' % (118 * o['start'] - 2))
-    s.text(rd('%s %d%s를 만드는 재료예요. %s %d%s일 때 필요한 재료의 양을 표에 써 보세요.'
-              % (o['what'], o['start'], o['unit'], o['what'], o['target'], o['unit'])).replace('개를', '개를'))
+    s.text(rd('%s %d%s%s 만드는 재료예요. %s %d%s일 때 필요한 재료의 양을 표에 써 보세요.'
+              % (o['what'], o['start'], o['unit'], eul(o['unit']), o['what'], o['target'], o['unit'])))
     rows = [['%s 수(%s)' % (o['what'], o['unit'])] + [str(k) for k in range(1, K + 1)]]
     ans = []
     for it in its:
@@ -1163,9 +1183,10 @@ def w_rect(s, lv, o, svg=None):
                % (ox, oy - bh * cell, bw * cell, bh * cell))
     W, H = ox * 2 + gx * cell, oy + 20
     put_png(s, svg_doc(W, H, ''.join(out)), W, H, max_mm=120)
-    s.text('파란 점선은 가로 %d칸, 세로 %d칸인 액자예요. 왼쪽 아래 모서리를 같게 하여 가로와 세로의 비가 %d : %d와 비율이 같은 더 큰 액자를 그려 보세요.'
-           % (bw, bh, bw, bh))
-    s.fill('내가 그린 액자: 가로 : 세로 = (      ) : (      )  →  %d : %d의 전항과 후항에 (      )을/를 곱한 비예요.' % (bw, bh))
+    what = o.get('what') or '액자'
+    s.text('파란 점선은 가로 %d칸, 세로 %d칸인 %s예요. 왼쪽 아래 모서리를 같게 하여 가로와 세로의 비가 %d : %d와 비율이 같은 더 큰 %s%s 그려 보세요.'
+           % (bw, bh, what, bw, bh, what, eul(what)))
+    s.fill('내가 그린 ' + what + ': 가로 : 세로 = (      ) : (      )  →  %d : %d의 전항과 후항에 (      )을/를 곱한 비예요.' % (bw, bh))
     ex = ['%d : %d' % (bw * k, bh * k) for k in range(2, 10) if bw * k <= gx and bh * k <= gy]
     return '(예) ' + ', '.join(ex)
 
@@ -1263,6 +1284,69 @@ def w_match(s, lv, o, svg=None):
     return ', '.join(pairs[:need] if need == 1 else pairs)
 
 
+# ---------------------------------------------------------------- 이야기 버전 부품
+EMOJI = re.compile('[\U0001F000-\U0001FFFF\u2600-\u27BF\uFE0F\u200D]')
+
+
+def noemo(t):
+    return re.sub(r'\s{2,}', ' ', EMOJI.sub('', str(t))).strip()
+
+
+def w_note(s, lv, title, lines, *_):
+    s.labeled([('계획표', noemo(title) + '\n' + '\n'.join('· ' + rd(noemo(l)) for l in lines))], row_h=1100 * (len(lines) + 1))
+    return ''
+
+
+def w_plan(s, lv, svg, *_):
+    app_svg(s, svg, 110)
+    return ''
+
+
+def w_panes(s, lv, items, *_):
+    s.labeled([(p['t'], ('(' + p['ph'] + ')') if lv == '기본형' else '') for p in items], row_h=3400)
+    return '(자유) ' + ' / '.join('%s: 예) %s' % (p['t'], flat(p['ex'][0])) for p in items if p.get('ex'))
+
+
+def w_thenwhy(s, lv, o, *_):
+    s.ask('왜 그럴까요?  ' + rd(o['q']), blank=False)
+    if lv == '기본형' and len(o.get('help') or []) > 1:
+        s.text('도움: ' + rd(o['help'][1]))
+        s.lines(2)
+    else:
+        s.lines(3)
+    return '왜? (예) ' + flat(o['ans'])
+
+
+def w_rulefirst(s, lv, o, *_):
+    s.ask('먼저 예상해요.  ' + rd(o['q']), blank=False)
+    if lv == '기본형' and len(o.get('help') or []) > 1:
+        s.text('도움: ' + rd(o['help'][1]))
+    s.lines(2)
+    s.text('▶ 아래 활동을 마친 뒤, 내 예상이 맞았는지 확인해 보세요.   맞았어요 (   )   고쳐야 해요 (   )')
+    return '예상 → 실제 규칙: ' + flat(o['ans'])
+
+
+def w_wonder(s, lv, *_):
+    s.ask('1차시에 내가 쓴 ‘궁금해요’를 다시 써 보세요.', blank=False)
+    s.lines(1)
+    return ''
+
+
+def w_garden(s, lv, o, svg=None):
+    if svg:
+        app_svg(s, svg, 170)
+    s.text('텃밭 다섯 곳에서 두 양을 비교하는 상황과 주어진 양을 나누는 상황을 찾아 써 보세요.')
+    rows = [['텃밭 곳곳', '무엇과 무엇을 비교할까요? (또는 무엇을 나눌까요?)']]
+    ans = []
+    for i, sp in enumerate(DATA['gspots']):
+        rows.append([sp['t'], rd(sp['say']) if lv == '기본형' and i == 0 else ''])
+        if not (lv == '기본형' and i == 0):
+            ans.append('%s: %s' % (sp['t'], flat(sp['say'])))
+    assert len(rows) == 6, rows
+    s.table(rows, col_mm=[44, 136], row_h=3400)
+    return '; '.join(ans)
+
+
 def w_error(s, lv, msg, *_):
     raise RuntimeError('앱 원본의 활동을 읽지 못했어요: ' + msg)
 
@@ -1271,9 +1355,11 @@ WIDGETS = {'quiz': w_quiz, 'blanks': w_blanks, 'sequence': w_sequence, 'writeSte
            'rp4Chain': w_chain, 'rp4Seq': w_seq, 'rp4Build': w_build, 'rp4Machine': w_machine, 'rp4Simp': w_simp,
            'rp4Terms': w_terms, 'rp4Area': w_area, 'rp4Dbl': w_dbl, 'rp4Gear': w_gear, 'rp4Tape': w_tape,
            'rp4Clay': w_clay, 'rp4Dice': w_dice, 'rp4Rect': w_rect, 'rp4Scene': w_scene, 'rp4Hand': w_hand,
-           'rp4Meet': w_meet, 'rp4Match': w_match, 'error': w_error}
+           'rp4Meet': w_meet, 'rp4Match': w_match, 'error': w_error,
+           'note': w_note, 'plan': w_plan, 'panes': w_panes, 'thenWhy': w_thenwhy, 'ruleFirst': w_rulefirst,
+           'wonderRecall': w_wonder, 'rp4sGarden': w_garden}
 SVG_W = {'rp4Build', 'rp4Machine', 'rp4Simp', 'rp4Terms', 'rp4Area', 'rp4Dbl', 'rp4Gear', 'rp4Tape', 'rp4Clay', 'rp4Dice',
-         'rp4Rect', 'rp4Scene', 'rp4Hand', 'rp4Meet', 'rp4Match'}
+         'rp4Rect', 'rp4Scene', 'rp4Hand', 'rp4Meet', 'rp4Match', 'rp4sGarden'}
 
 
 def run_calls(s, lv, calls):

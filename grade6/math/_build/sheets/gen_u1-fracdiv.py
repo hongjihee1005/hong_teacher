@@ -1540,7 +1540,7 @@ def w_camp(s, lv, *_):
 
 
 def w_note(s, lv, title, lines, *_):
-    s.text(re.sub(r'^\W+\s*', '', title) + ' (쪽지)')
+    s.text(re.sub(r'^\W+\s*', '', title))
     s.fill([rd(re.sub(r'^[^\w\[(]+\s*', '', t)) for t in lines])
     return ''
 
