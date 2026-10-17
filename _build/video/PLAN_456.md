@@ -24,8 +24,8 @@
 |---|---|---|---|
 | 4-1 | `EPISODES_G4.md` | 1~28화 | ✅ 최종본 모두 커밋 |
 | 4-2 | `EPISODES_G4.md` | 29~56화 | ✅ 최종본 모두 커밋(2026-10-17) |
-| 5-1 | `EPISODES_G5.md` | 1~30화 | 장면 30편 모두 씀(부품 `mixcalc.py` 계산 순서 선, `corresp.py` 대응 표, `area.py` 모눈·단위넓이). 최종본 1~30 커밋 |
-| 5-2 | `EPISODES_G5.md` | 31~62화 | 장면 32편 모두 씀(부품 `numrange.py` 수의 범위, `cuboid.py` 직육면체). 최종본은 대기열 순서대로(31~34 커밋) |
+| 5-1 | `EPISODES_G5.md` | 1~30화 | 장면 30편 모두 씀(부품 `mixcalc.py` 계산 순서 선, `corresp.py` 대응 표, `area.py` 모눈·단위넓이). 최종본 1~30 커밋 ✅ |
+| 5-2 | `EPISODES_G5.md` | 31~62화 | 장면 32편 모두 씀(부품 `numrange.py` 수의 범위, `cuboid.py` 직육면체). ✅ 최종본 31~62 모두 커밋(2026-10-17) |
 | 6-1 | `EPISODES_G6.md` | 1~32화 | 장면 32편 모두 씀(부품 `solid.py` 각기둥·각뿔, `decdiv.py` 소수 세로 나눗셈·소수 모형, `tablekit.py` 표, `ratiograph.py` 띠·원그래프, `cubes.py` 쌓기나무). 최종본은 대기열 순서대로 |
 | 6-2 | `EPISODES_G6.md` | 33~66화 | |
 
