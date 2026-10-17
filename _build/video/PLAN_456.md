@@ -26,11 +26,11 @@
 | 4-2 | `EPISODES_G4.md` | 29~56화 | ✅ 최종본 모두 커밋(2026-10-17) |
 | 5-1 | `EPISODES_G5.md` | 1~30화 | 장면 30편 모두 씀(부품 `mixcalc.py` 계산 순서 선, `corresp.py` 대응 표, `area.py` 모눈·단위넓이). 최종본 1~30 커밋 |
 | 5-2 | `EPISODES_G5.md` | 31~62화 | 장면 32편 모두 씀(부품 `numrange.py` 수의 범위, `cuboid.py` 직육면체). 최종본은 대기열 순서대로(31~34 커밋) |
-| 6-1 | `EPISODES_G6.md` | 1~32화 | 목록 만듦(2026-10-17, main의 `grade6/math/_build/units`에서) |
+| 6-1 | `EPISODES_G6.md` | 1~32화 | 장면 32편 모두 씀(부품 `solid.py` 각기둥·각뿔, `decdiv.py` 소수 세로 나눗셈·소수 모형, `tablekit.py` 표, `ratiograph.py` 띠·원그래프, `cubes.py` 쌓기나무). 최종본은 대기열 순서대로 |
 | 6-2 | `EPISODES_G6.md` | 33~66화 | |
 
 ## 다음 할 일
 - 5학년 최종본: 대기열이 끝난 화는 장면 사진 확인 → 커밋(`ls g5ep*/*bgm_piano.mp4`로 확인, 새 세션이면 빠진 화를 `GRADE=5 ./make_final.sh N`).
-- 6학년 1화(`GRADE, SEM = 6, 1`)부터 장면 쓰기. 6-2는 33화부터 `GRADE, SEM = 6, 2`.
+- 6학년 33화(6-2 1단원 분수의 나눗셈, `GRADE, SEM = 6, 2`)부터 장면 쓰기.
 - 부품: 큰 수 `bignum.py`, 각도 `angle.py`, 두 줄 곱셈 `mul2.py`, 세로 나눗셈 `divlong.py`, 이동 `move.py`, 막대·꺾은선 `chart.py`(물결선 `wave`), 도형 `shapes.py`(직각 표시 `right_mark`, 평행 표시 `par_mark`, 같은 길이 `tick`), 소수 `decimal4.py`(100칸 모눈, 소수 세로셈 `dec_vertical`), 계산 순서 `mixcalc.py`, 대응 표 `corresp.py`, 모눈 `area.py`, 수의 범위 `numrange.py`, 직육면체 `cuboid.py`.
 - 모두 끝나면: 노션에 4·5·6학년 '영상 목록' 정리(3학년 '영상 목록' 데이터베이스와 같은 모양), 이어 하기 트리거 끄기.
