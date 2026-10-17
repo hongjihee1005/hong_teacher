@@ -23,14 +23,14 @@
 | 학년·학기 | 목록 | 화 | 상태 |
 |---|---|---|---|
 | 4-1 | `EPISODES_G4.md` | 1~28화 | ✅ 최종본 모두 커밋 |
-| 4-2 | `EPISODES_G4.md` | 29~56화 | 장면 모두 씀, 최종본 29~44 커밋, 45~56은 대기열(끝나면 장면 사진 확인 → 커밋) |
-| 5-1 | `EPISODES_G5.md` | 1~30화 | 목록 만듦(2026-10-16) |
+| 4-2 | `EPISODES_G4.md` | 29~56화 | ✅ 최종본 모두 커밋(2026-10-17) |
+| 5-1 | `EPISODES_G5.md` | 1~30화 | 장면 1~17화 씀(부품 `mixcalc.py` 계산 순서 선, `corresp.py` 대응 표). 최종본은 대기열 순서대로 |
 | 5-2 | `EPISODES_G5.md` | 31~62화 | |
 | 6-1 | (만들 것) `EPISODES_G6.md` | | |
 | 6-2 | | | |
 
 ## 다음 할 일
-- 4-2 최종본 45~56 확인·커밋(대기열 `scratchpad/queue4.txt`, 실행기 `runq4.sh` — 새 세션이면 대기열이 사라졌을 수 있으니 `ls g4ep*/*bgm_piano.mp4`로 빠진 화를 찾아 `GRADE=4 ./make_final.sh N`).
-- 5학년 1화(`g5ep01`, `GRADE, SEM = 5, 1`)부터 장면 쓰기 → 최종본은 `GRADE=5 ./make_final.sh N`.
+- 5학년 최종본: 대기열이 끝난 화는 장면 사진 확인 → 커밋(`ls g5ep*/*bgm_piano.mp4`로 확인, 새 세션이면 빠진 화를 `GRADE=5 ./make_final.sh N`).
+- 5학년 18화(5-1 5단원 분수의 덧셈, `GRADE, SEM = 5, 1`)부터 장면 쓰기 → 31화부터는 `SEM = 2`.
 - 부품: 큰 수 `bignum.py`, 각도 `angle.py`, 두 줄 곱셈 `mul2.py`, 세로 나눗셈 `divlong.py`, 이동 `move.py`, 막대·꺾은선 `chart.py`(물결선 `wave`), 도형 `shapes.py`(직각 표시 `right_mark`, 평행 표시 `par_mark`, 같은 길이 `tick`), 소수 `decimal4.py`(100칸 모눈, 소수 세로셈 `dec_vertical`).
 - 모두 끝나면: 노션에 4·5·6학년 '영상 목록' 정리(3학년 '영상 목록' 데이터베이스와 같은 모양), 이어 하기 트리거 끄기.
