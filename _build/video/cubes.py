@@ -67,3 +67,52 @@ def find(g, cell):
         if m.cell == tuple(cell):
             return m
     return None
+
+
+# ── 위·앞·옆에서 본 모양 (평면 칸 그림) ──
+from manim import Square  # noqa: E402
+
+from series_style import PAPER, T  # noqa: E402
+
+
+def flat(squares, s=0.5, center=(0, 0, 0), color=DEF, nums=None, size=30, frame=None):
+    """squares: [(열, 행)] (행 0이 아래). nums: {(열, 행): 글}. frame=(열 수, 행 수)면 빈 칸 테두리도 그림"""
+    sq = list(squares)
+    cols = frame[0] if frame else max(c for c, _ in sq) + 1
+    rows = frame[1] if frame else max(r for _, r in sq) + 1
+    ox = center[0] - cols * s / 2 + s / 2
+    oy = center[1] - rows * s / 2 + s / 2
+    g = VGroup()
+    if frame:
+        for c in range(cols):
+            for r in range(rows):
+                if (c, r) not in sq:
+                    g.add(Square(side_length=s, stroke_color="#BDB3A0", stroke_width=1.5, fill_color=PAPER, fill_opacity=1).move_to([ox + c * s, oy + r * s, 0]))
+    for c, r in sq:
+        m = Square(side_length=s, fill_color=color, fill_opacity=0.85, stroke_color=INK, stroke_width=2.5).move_to([ox + c * s, oy + r * s, 0])
+        g.add(m)
+    if nums:
+        for (c, r), t in nums.items():
+            g.add(T(str(t), size).move_to([ox + c * s, oy + r * s, 0]))
+    return g
+
+
+def top_view(hmap):
+    """{(x, z): h} → 위에서 본 칸 [(x, z)] (앞줄 z = 0이 아래)"""
+    return [(x, z) for (x, z), h in hmap.items() if h > 0]
+
+
+def front_view(hmap):
+    """앞에서 본 모양: 열 x마다 가장 높은 층"""
+    mx = {}
+    for (x, z), h in hmap.items():
+        mx[x] = max(mx.get(x, 0), h)
+    return [(x, y) for x, h in mx.items() for y in range(h)]
+
+
+def side_view(hmap):
+    """오른쪽 옆에서 본 모양: 왼쪽이 앞줄(z = 0), 줄 z마다 가장 높은 층"""
+    mx = {}
+    for (x, z), h in hmap.items():
+        mx[z] = max(mx.get(z, 0), h)
+    return [(z, y) for z, h in mx.items() for y in range(h)]
