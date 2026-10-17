@@ -100,6 +100,12 @@ class DecDiv:
                 nb.set_opacity(0)
             anims.append(self.bpt.animate.set_opacity(0.25))
             anims.append(FadeIn(nb))
+            bd = self.b.replace(".", "")
+            ip = min(k + shift_cols, len(bd))          # 옮긴 뒤 자연수 부분 자리 수
+            for i in range(ip - 1):
+                if bd[i] != "0":
+                    break
+                anims.append(self.dv[i].animate.set_opacity(0.25))   # 앞의 0은 흐리게
         S.play(*anims, run_time=run_time)
         self.p = newp
         return nd
