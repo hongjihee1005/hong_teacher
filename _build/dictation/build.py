@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """공통 › 받아쓰기·맞춤법 급수 페이지 만들기 (2026-10-05)
 
-    python3 _build/dictation/build.py          # common/dictation/g1.html … g6.html (먼저 자료를 점검)
+    python3 _build/dictation/build.py          # common/dictation/g1.html … g6.html + 학년 국어방 하위 메뉴 gradeN/korean/dictation/index.html (먼저 자료를 점검)
     python3 _build/dictation/build.py check    # 자료 점검만
 
 자료: data/gN.txt — '# 낱말' · '# 어절' · '# 문장' 아래 100줄씩, '# 문장 부호' 아래 50줄, 한 줄에 '바른 글|맞춤법 포인트|틀리기 쉬운 꼴'.
@@ -104,6 +104,42 @@ def build(g, d):
     if strip(old) == s: return False
     out.write_text(s, encoding='utf-8'); return True
 
+# 학년 국어방 › '받아쓰기·맞춤법 급수' 하위 메뉴 (2026-10-11 선생님 요청) — gradeN/korean/dictation/index.html
+# 35급을 낱말·어절·문장·문장 부호로 나누어 카드로 보여 주고, 카드는 공통 급 페이지(common/dictation/gN.html#급)로 바로 갑니다.
+# 메뉴도 이 스크립트가 만들고 바로 apply_theme을 입힘(손으로 고치지 마세요). 틀은 도서활용세계시민교육의 menu.html.
+KIND_UI = {'낱말': ('📖', '낱말', '낱말 하나를 바르게 써요'), '어절': ('🧩', '어절', '띄어 쓴 말 한 덩이(어절)를 바르게 써요'),
+           '문장': ('📝', '문장', '띄어쓰기까지 생각하며 문장을 바르게 써요'), '문장 부호': ('✏️', '문장 부호', '부호가 빠진 글에 알맞은 문장 부호를 넣어 써요')}
+
+def esc(t): return t.replace('&', '&amp;').replace('<', '&lt;').replace('>', '&gt;').replace('"', '&quot;')
+
+def menu(g, d):
+    sys.path.insert(0, str(ROOT / '_build' / 'theme'))
+    import apply_theme
+    url = f'../../../common/dictation/g{g}.html'
+    body = (f'<nav class="crumb" aria-label="현재 위치"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a> <a class="back" href="../../index.html">{g}학년</a> <a class="back" href="../index.html">국어방</a></nav>\n'
+            f'<h1>✏️ {g}학년 받아쓰기·맞춤법 급수</h1>\n'
+            f'<p class="sub">{INTRO[g]} 35급을 낱말 · 어절 · 문장 · 문장 부호로 나누었어요. 급을 누르면 📖 익히기 · 🎧 받아쓰기 · ✅ 맞춤법 고르기 · 🖨️ 인쇄가 있는 급 페이지가 열려요.</p>\n'
+            f'<div class="grid g3 three"><a class="card room" href="{url}"><span class="ico">📚</span><span class="nm">35급 모두 보기</span><small>급수표 · 전체 급 시험지와 정답 인쇄</small></a></div>\n')
+    lv = 0
+    for k in KINDS:
+        ico, nm, de = KIND_UI[k]; L = d[k]; n = len(L) // 10
+        body += f'<h2>{ico} {nm} <small>— {lv + 1}~{lv + n}급 · {de}</small></h2>\n<div class="grid g3 three">\n'
+        for j in range(n):
+            lv += 1
+            ws = [strip(it[0]) if k == '문장 부호' else it[0] for it in L[j * 10:j * 10 + 3]]
+            if k in ('문장', '문장 부호'): ws = ws[:1]   # 문장은 첫 문장만(카드가 너무 길어지지 않게)
+            ex = ' · '.join(esc(w if len(w) <= 28 else w[:27] + '…') for w in ws)
+            tail = '' if ex.endswith('…') else ' …'
+            body += f'<a class="card room" href="{url}#{lv}"><span class="ico">{ico}</span><span class="nm">{lv}급</span><small>{nm} {j + 1}묶음 · {ex}{tail}</small></a>\n'
+        body += '</div>\n'
+    s = (ROOT / '_build' / 'gced-books' / 'menu.html').read_text(encoding='utf-8')
+    s = s.replace('{TITLE}', f'{g}학년 받아쓰기·맞춤법 급수 · 국어 · 초등교사 홍지희').replace('{FOOTNOTE}', '학년별 받아쓰기·맞춤법 급수 자료입니다.').replace('{BODY}', body)
+    out = ROOT / f'grade{g}' / 'korean' / 'dictation' / 'index.html'
+    out.parent.mkdir(parents=True, exist_ok=True)
+    old = out.read_text(encoding='utf-8') if out.exists() else None
+    out.write_text(s, encoding='utf-8'); apply_theme.apply(out)
+    return old is None or out.read_text(encoding='utf-8') != old
+
 if __name__ == '__main__':
     allbad, D = [], {}
     for g in range(1, 7):
@@ -113,3 +149,4 @@ if __name__ == '__main__':
     print(f'받아쓰기 자료 점검 통과 — 6개 학년 × {sum(COUNT.values())}개')
     if sys.argv[1:] == ['check']: sys.exit(0)
     print(f'받아쓰기 {sum(build(g, D[g]) for g in range(1, 7))}개 페이지 다시 만듦')
+    print(f'학년 국어방 받아쓰기 메뉴 {sum(menu(g, D[g]) for g in range(1, 7))}개 다시 만듦')

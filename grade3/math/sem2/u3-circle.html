@@ -1678,10 +1678,11 @@ function simFold(body, api) {
   const q = h("div", { class: "hidden" });
   const tools = h("div", { class: "tools" });
   dirs.forEach(([nm, deg]) => tools.append(h("button", { onclick: (e) => {
-    const a = deg * Math.PI / 180, x1 = C.x - R * Math.cos(a), y1 = C.y - R * Math.sin(a), x2 = C.x + R * Math.cos(a), y2 = C.y + R * Math.sin(a);
+    const btn = e.currentTarget; if (btn.disabled) return; btn.disabled = true; /*hj-fold*/
+    const a = deg * Math.PI / 180, x1 = C.x - R * Math.cos(a), y1 = C.y + R * Math.sin(a), x2 = C.x + R * Math.cos(a), y2 = C.y - R * Math.sin(a);
     flap.setAttribute("d", `M${x1} ${y1} A${R} ${R} 0 0 1 ${x2} ${y2} Z`); flap.setAttribute("opacity", .95);
     flap.animate([{ transform: "scale(1,1)" }, { transform: "scale(1,-1)" }, { transform: "scale(1,1)" }], { duration: 900 });
-    setTimeout(() => { flap.setAttribute("opacity", 0); creases.append(svgEl("line", { x1, y1, x2, y2, stroke: INK, "stroke-width": 3, "stroke-dasharray": "12 8" })); folds++; e.currentTarget.disabled = true; if (folds >= 2) { dot.setAttribute("opacity", 1); q.classList.remove("hidden"); } }, 900);
+    setTimeout(() => { flap.setAttribute("opacity", 0); creases.append(svgEl("line", { x1, y1, x2, y2, stroke: INK, "stroke-width": 3, "stroke-dasharray": "12 8" })); folds++; if (folds >= 2) { dot.setAttribute("opacity", 1); q.classList.remove("hidden"); } }, 900);
     flap.style.transformOrigin = `${C.x}px ${C.y}px`; flap.style.transformBox = "view-box";
   } }, nm)));
   q.append(h("div", { class: "jua" }, "접은 선들이 만나는 주황색 점은 무엇일까요?"));

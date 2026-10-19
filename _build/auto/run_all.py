@@ -51,7 +51,7 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
     ('학년 공통 한자 급수', '_build/hanja/', ['common/hanja/lv*.html'], [('.', ['_build/hanja/build.py'])]),
     ('공통 음악이론', '_build/music/', ['common/music/t*.html'], [('.', ['_build/music/build.py'])]),
     ('공통 기초연산', '_build/arith/', ['common/arith/[!i]*.html'], [('.', ['_build/arith/build.py'])]),
-    ('공통 받아쓰기·맞춤법', '_build/dictation/', ['common/dictation/g*.html'], [('.', ['_build/dictation/build.py'])]),
+    ('공통 받아쓰기·맞춤법', '_build/dictation/', ['common/dictation/g*.html', 'grade*/korean/dictation/index.html'], [('.', ['_build/dictation/build.py'])]),
     ('공통 속담·관용어·사자성어', '_build/words/', ['common/words/[!i]*.html'], [('.', ['_build/words/build.py'])]),
     ('프로젝트 세계시민교육', '_build/gced/', ['project/global/t*.html'], [('.', ['_build/gced/build.py'])]),
     ('프로젝트 독서교육', '_build/reading/', ['project/reading/[!i]*.html'], [('.', ['_build/reading/build.py'])]),
@@ -74,6 +74,7 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
     ('기타 일일수학', ('_build/daily/', '_build/arith/', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['project/daily/g1.html', 'project/daily/g2.html', 'project/daily/g3.html', 'project/daily/g4.html', 'project/daily/g5.html', 'project/daily/g6.html'], [('.', ['_build/daily/build.py'])]),
     ('기타 창의수학게임', ('_build/creative/', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['project/creative/magic.html', 'project/creative/tangram.html', 'project/creative/kenken.html', 'project/creative/hanoi.html', 'project/creative/nonogram.html', 'project/creative/make.html', 'project/creative/balance.html', 'project/creative/match.html', 'project/creative/pento.html', 'project/creative/nim.html', 'project/creative/blocks.html'], [('.', ['_build/creative/build.py'])]),
     ('프로젝트 도서 활용 세계시민교육', '_build/gced-books/', ['project/gced-books/*.html', 'project/gced-books/*/*.html'], [('.', ['_build/gced-books/build.py'])]),
+    ('특색교육 체스 학습관', ('_build/chess/', '_build/mathtools/page.css', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['special/chess/m*.html'], [('.', ['_build/chess/build.py'])]),
     ('기타 도장 만들기', ('_build/stamp/stamp.html', '_build/stamp/build.py', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['project/stamp/index.html'], [('.', ['_build/stamp/build.py'])]),
 ]
 
