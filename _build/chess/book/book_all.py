@@ -186,7 +186,7 @@ def front(d, full, toc, pg):
     d.add(tp(c0 + 1, None, d), 6)
     i1, i2 = find('제1화'), find('제2화')
     for t, key, lv in toc:
-        d.add(tp(i2 if lv else i1, '%s  %d' % (t, pg.get(key, 0)), d), 10)
+        d.add(tp(i2 if lv else i1, '%s  %d' % (t, pg.get(key, 0)), d), 7.8)  # 한글에서 잰 줄 간격 약 7.4mm
 
 
 def build(Ds, P, Ms, sts, plan=None):
