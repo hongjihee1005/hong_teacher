@@ -76,8 +76,11 @@ def render(path, rng=None):
                 elif e.tag == HP + 'tbl':
                     out.append(table(e))
                 elif e.tag == HP + 'pic':
-                    w = int(e.find('hp:curSz', NS).get('width')) / MM
-                    hh = int(e.find('hp:curSz', NS).get('height')) / MM
+                    c = e.find('hp:curSz', NS)
+                    if c is None or int(c.get('width')) == 0:
+                        c = e.find('hp:sz', NS)
+                    w = int(c.get('width')) / MM
+                    hh = int(c.get('height')) / MM
                     bid = e.find('.//hc:img', NS).get('binaryItemIDRef')
                     out.append('<img style="width:%.2fmm;height:%.2fmm;vertical-align:bottom" src="data:image/png;base64,%s">' % (w, hh, bins.get(bid, '')))
         return ''.join(out)
@@ -87,7 +90,8 @@ def render(path, rng=None):
         a = {'JUSTIFY': 'justify', 'LEFT': 'left', 'CENTER': 'center', 'RIGHT': 'right'}.get(al, 'left')
         inner = runs(p) or '&nbsp;'
         sz = max([chars.get(r.get('charPrIDRef'), (10,))[0] for r in p.findall('hp:run', NS)] or [10])
-        return '<div class="p" style="text-align:%s;line-height:%d%%;padding-left:%.1fmm;text-indent:%.1fmm;font-size:%.1fpt">%s</div>' % (a, ls, ml, ind, sz, inner)
+        pad = ml + (-ind if ind < 0 else 0)          # 한글: 음수 들여쓰기 = 첫 줄은 그대로, 둘째 줄부터 내어씀
+        return '<div class="p" style="text-align:%s;line-height:%d%%;padding-left:%.1fmm;text-indent:%.1fmm;font-size:%.1fpt">%s</div>' % (a, ls, pad, ind, sz, inner)
 
     def table(t):
         rows = []
@@ -110,10 +114,18 @@ def render(path, rng=None):
 
     pages, cur, hide = [], [], []
     hidden = False
+    last = None
     for p in sec.findall('hp:p', NS):
-        if p.get('pageBreak') == '1' and cur:
+        la = p.find('hp:linesegarray', NS)
+        vs = [int(x.get('vertpos')) for x in la.findall('hp:lineseg', NS)] if la is not None else []
+        flow = bool(vs) and last is not None and vs[0] < last     # 한글이 저장한 줄 위치로 본 쪽 넘김
+        if (p.get('pageBreak') == '1' or flow) and cur:
             pages.append((cur, hidden))
             cur, hidden = [], False
+        if p.get('pageBreak') == '1':
+            last = None
+        if vs:
+            last = vs[-1]
         if p.find('.//hp:pageHiding', NS) is not None and p.find('.//hp:pageHiding', NS).get('hideHeader') == '1':
             hidden = True
         if p.find('.//hp:secPr', NS) is not None:

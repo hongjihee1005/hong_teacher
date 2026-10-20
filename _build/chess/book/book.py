@@ -94,8 +94,11 @@ class Style:
         self.P['RT'] = self._para('RIGHT', 130)
         self.P['pic'] = self._para('CENTER', 100)
         self.P['picL'] = self._para('LEFT', 100)
-        self.P['hang'] = self._para('JUSTIFY', 160, left=mm(4.5), indent=-mm(4.5))
-        self.P['hangT'] = self._para('LEFT', 140, left=mm(4.5), indent=-mm(4.5))
+        self.P['hang'] = self._para('JUSTIFY', 160, indent=-mm(4.5))   # 한글: 음수 들여쓰기 = 둘째 줄부터 내어쓰기
+        self.P['hangT'] = self._para('LEFT', 140, indent=-mm(4.5))
+        self.P['numL'] = self._para('LEFT', 135, indent=-mm(4.6))      # '1  문제' 번호 뒤에 줄 맞춤
+        self.P['numL2'] = self._para('LEFT', 135, indent=-mm(6.6))     # '10  문제'
+        self.P['exH'] = self._para('JUSTIFY', 160, indent=-mm(14))     # '예시 1  …'
         self.P['tab'] = self._para('LEFT', 150, tab=True)
 
     def _char(self, pt, color, bold):
@@ -134,7 +137,7 @@ class Style:
               '<hh:lineSpacing type="PERCENT" value="%d" unit="HWPUNIT"/>') % (indent, left, ls)
         x = ('<hh:paraPr id="%d" tabPrIDRef="%d" condense="0" fontLineHeight="0" snapToGrid="0" suppressLineNumbers="0" checked="0" textDir="LTR">'
              '<hh:align horizontal="%s" vertical="BASELINE"/><hh:heading type="NONE" idRef="0" level="0"/>'
-             '<hh:breakSetting breakLatinWord="KEEP_WORD" breakNonLatinWord="KEEP_WORD" widowOrphan="0" keepWithNext="0" keepLines="0" pageBreakBefore="0" lineWrap="BREAK"/>'
+             '<hh:breakSetting breakLatinWord="KEEP_WORD" breakNonLatinWord="BREAK_WORD" widowOrphan="0" keepWithNext="0" keepLines="0" pageBreakBefore="0" lineWrap="BREAK"/>'
              '<hh:autoSpacing eAsianEng="0" eAsianNum="0"/><hp:switch><hp:case hp:required-namespace="http://www.hancom.co.kr/hwpml/2016/HwpUnitChar">%s</hp:case>'
              '<hp:default>%s</hp:default></hp:switch><hh:border borderFillIDRef="2" offsetLeft="0" offsetRight="0" offsetTop="0" offsetBottom="0" connect="0" ignoreMargin="0"/></hh:paraPr>'
              ) % (i, TAB0 if tab else 0, align, mg, mg)
@@ -882,6 +885,96 @@ def student(D, P, G, M, st, plan=None):
 
 
 # ---------------------------------------------------------------- 지도서
+def intro_page(d, k, st):
+    """지도서 '학습관과 교재' 쪽"""
+    d.add(d.P('학습관과 교재', 'pt', 'L'), 14)
+    k.gap(d)
+    d.add(d.P('1. 체스 학습관의 짜임', 'h2', 'L'), 10)
+    for t in ['학년 구분 없이 모든 학생이 1마당 1차시부터 차례대로 배웁니다(6마당 175차시). 마당을 마치면 확인 시험으로 등급(폰 → 나이트 → 비숍 → 룩 → 퀸 → 킹)을 받습니다.',
+              '차시 흐름: 설명 → 예시(판 위에서 차례로 움직이는 장면) → 따라 하기 → 연습(할 때마다 새 문제) → 마무리.',
+              '맞히면 저절로 넘어가고, 틀리면 처음엔 실마리와 틀린 까닭을, 두 번째엔 정답을 보여 준 뒤 비슷한 문제를 하나 더 냅니다. 연습을 한 번에 맞힌 비율로 별(★1~3)을 받습니다.',
+              '기록은 그 기기에만 저장됩니다. 읽어 주기(브라우저 한국어 음성)를 켜고 끌 수 있습니다.']:
+        k.bullet(d, t)
+    k.gap(d, 'gap2')
+    d.add(d.P('2. 저절로 나오는 힌트', 'h2', 'L'), 10)
+    rows = [['문제 종류', '1번째 힌트', '2번째 힌트', '3번째(정답)'], ['쉬운 조작', '10초', '+10초', '+10초'], ['한 수 생각', '15초', '+15초', '+15초'], ['깊은 생각', '20초', '+20초', '+20초']]
+    for i, r in enumerate(rows):
+        d.add(d.tbl([[(d.P(v, 'accS' if i == 0 else 'q', 'CT'), st.F['boxT'] if i == 0 else st.F['box'], 1, 'CENTER', None) for v in r]], [TW // 4] * 3 + [TW - 3 * (TW // 4)]), 8.5)
+    for t in ['아무것도 누르지 않을 때 시간을 세고, 화면을 누르면 처음부터 다시 셉니다. 읽어 주기가 꺼져 있으면 글을 읽을 시간(글자 수 ÷ 5초, 최소 3초)이 지난 뒤부터 셉니다.',
+              '⚙ 선생님 설정에서 빠르게(절반)·보통·느긋하게(두 배)·끄기, 모든 차시 열기, 기록 지우기를 할 수 있습니다. 확인 시험과 인공지능 대결에는 저절로 힌트가 없습니다.']:
+        k.bullet(d, t)
+    k.gap(d, 'gap2')
+    d.add(d.P('3. 교재와 학습관을 함께 쓰는 방법', 'h2', 'L'), 10)
+    for t in ['교실 수업: 전자칠판으로 학습관의 설명·예시를 함께 보고 → 학생용 교재의 ‘풀어 봐요’를 풀고 → 개인 기기로 연습합니다.',
+              '가정 학습: 교재의 ‘배워요·예시로 보기’를 읽고 학습관에서 같은 차시를 해 봅니다.',
+              '교재의 문제는 학습관 연습 문제에서 고른 것이라 학습관과 같은 꼴입니다. 인공지능 대결은 교재에 ‘학습관 대결’ 상자로만 안내합니다.',
+              '이 지도서의 차시마다 학생용 교재 쪽수를 적어 두었습니다. 정답은 학생용 교재 맨 뒤 ‘정답과 풀이’에도 있습니다.']:
+        k.bullet(d, t)
+
+
+def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
+    """지도서 본문: 단원 쪽 → 차시별 지도 → 확인 시험. sp(이름) = 학생용 교재 쪽"""
+    no, units = D['no'], D['units']
+    for ui, U in enumerate(units):
+        d.new_page()
+        d.marks[mk('u%d' % ui)] = len(d.pages)
+        x = d.tbl([[(d.P('%d단원' % (ui + 1), 'u1', 'LT') + d.P(U['title'], 'u2', 'LT'), st.F['tint'], 1, 'CENTER', (2500, 1500, 2000, 2000))]], [TW])
+        d.add(x, 45)
+        k.gap(d, 'gap2')
+        k.para(d, clean(M.UNIT[ui]))
+        k.gap(d, 'gap2')
+        d.add(d.P('단원의 차시', 'h2', 'L'), 10)
+        for L in U['lessons']:
+            k.bullet(d, '%d차시 %s — %s (학생용 교재 %d쪽)' % (L['no'], L['title'], clean(L['sum']), sp('l%d' % L['no'])))
+        for L in U['lessons']:
+            g = G[L['id']]
+            d.new_page()
+            d.marks[mk('l%d' % L['no'])] = len(d.pages)
+            k.banner(d, '%d차시' % L['no'], L['title'], L['sum'])
+            kd = KIND[L['kind']]
+            info = [('문제 종류', '%s · 저절로 힌트 %s' % kd), ('학습관', SITE + '%s.html#l%d' % (D['id'], L['no'])),
+                    ('학생용 교재', '%d쪽부터' % sp('l%d' % L['no']))]
+            for a, b in info:
+                d.add(d.tbl([[(d.P(a, 'accS', 'CT'), st.F['tint'], 1, 'CENTER', None), (d.P(b, 'q', 'LT'), st.F['box'], 1, 'CENTER', (700, 300, 200, 200))]], [mm(30), TW - mm(30)]), 8)
+            k.gap(d)
+            k.section(d, '지도 흐름')
+            d.add(d.P('① 설명', 'acc', 'L'), 7.5)
+            for s in L['say']:
+                k.bullet(d, s['text'], 'q', '-')
+            if L['ex']:
+                d.add(d.P('② 예시', 'acc', 'L'), 7.5)
+                for e in L['ex']:
+                    caps = ' → '.join(clean(f['cap']) for f in e['frames'] if f['cap'])
+                    k.bullet(d, clean(e['text']) + (' (' + caps + ')' if caps else ''), 'q', '-')
+            d.add(d.P('③ 따라 하기와 힌트', 'acc', 'L'), 7.5)
+            for t in L['do']:
+                if t:
+                    k.bullet(d, clean(t['q']) + (' — 힌트: ' + ' / '.join(clean(h) for h in t['hint']) if t.get('hint') else ''), 'q', '-')
+            items, games = lesson_items(L)
+            d.add(d.P('④ 교재 문제 정답', 'acc', 'L'), 7.5)
+            for i, t in enumerate(items):
+                k.bullet(d, '%d. %s' % (i + 1, ans_text(t, D, k.sanmode)), 'q', '')
+            for t in games:
+                k.bullet(d, '학습관 대결: ' + clean(t['q']), 'q', '-')
+            for key, nm, mark in [('mis', '자주 하는 실수', '•'), ('tip', '지도 도움말', '•'), ('ask', '생각을 여는 질문(발문)', 'Q.')]:
+                k.section(d, nm)
+                for t in g[key]:
+                    k.bullet(d, t, 'body', mark)
+            k.gap(d)
+            d.add(d.P('※ ‘생각 톡톡’(학생용 교재)에는 첫 번째 발문이 실려 있습니다.', 'cap', 'L'), 6)
+
+    d.new_page()
+    d.marks[mk('exam')] = len(d.pages)
+    d.add(d.P('확인 시험과 수료증', 'pt', 'L'), 14)
+    k.gap(d)
+    for t in ['학습관 차시 목록 맨 아래 ‘확인 시험’: %d마당의 모든 차시에서 고른 15문제, 12문제 이상 맞히면 통과(%s 등급).' % (no, RANK[no]),
+              '확인 시험은 힌트가 없고, 틀리면 정답을 보여 준 뒤 바로 다음 문제로 넘어갑니다. 결과 화면에 ‘다시 보면 좋은 차시’가 나옵니다.',
+              '통과하면 학습관에서 이름을 넣어 수료증(A4 가로)을 인쇄할 수 있습니다.',
+              '학생용 교재의 ‘마당 확인 평가’(%d쪽)로 종이 평가를 먼저 하고 학습관 확인 시험을 보게 하면 좋습니다.' % sp('exam'),
+              '🔁 다시 보기: 학습관은 배운 차시에서 3문제를 골라 다시 풀게 합니다(자주 틀린 차시 먼저).']:
+        k.bullet(d, t)
+
+
 def teacher(D, P, G, M, st, plan=None, spg=None):
     no, title = D['no'], D['title']
     d = Doc('체스 학습관 %d마당 지도서' % no, st, '체스 학습관 %d마당 지도서' % no, '%d마당 · %s' % (no, title))
@@ -909,29 +1002,7 @@ def teacher(D, P, G, M, st, plan=None, spg=None):
     d.add(d.P('초등교사 홍지희', 'bodyb', 'R'), 8)
 
     d.new_page()
-    d.add(d.P('학습관과 교재', 'pt', 'L'), 14)
-    k.gap(d)
-    d.add(d.P('1. 체스 학습관의 짜임', 'h2', 'L'), 10)
-    for t in ['학년 구분 없이 모든 학생이 1마당 1차시부터 차례대로 배웁니다(6마당 175차시). 마당을 마치면 확인 시험으로 등급(폰 → 나이트 → 비숍 → 룩 → 퀸 → 킹)을 받습니다.',
-              '차시 흐름: 설명 → 예시(판 위에서 차례로 움직이는 장면) → 따라 하기 → 연습(할 때마다 새 문제) → 마무리.',
-              '맞히면 저절로 넘어가고, 틀리면 처음엔 실마리와 틀린 까닭을, 두 번째엔 정답을 보여 준 뒤 비슷한 문제를 하나 더 냅니다. 연습을 한 번에 맞힌 비율로 별(★1~3)을 받습니다.',
-              '기록은 그 기기에만 저장됩니다. 읽어 주기(브라우저 한국어 음성)를 켜고 끌 수 있습니다.']:
-        k.bullet(d, t)
-    k.gap(d, 'gap2')
-    d.add(d.P('2. 저절로 나오는 힌트', 'h2', 'L'), 10)
-    rows = [['문제 종류', '1번째 힌트', '2번째 힌트', '3번째(정답)'], ['쉬운 조작', '10초', '+10초', '+10초'], ['한 수 생각', '15초', '+15초', '+15초'], ['깊은 생각', '20초', '+20초', '+20초']]
-    for i, r in enumerate(rows):
-        d.add(d.tbl([[(d.P(v, 'accS' if i == 0 else 'q', 'CT'), st.F['boxT'] if i == 0 else st.F['box'], 1, 'CENTER', None) for v in r]], [TW // 4] * 3 + [TW - 3 * (TW // 4)]), 8.5)
-    for t in ['아무것도 누르지 않을 때 시간을 세고, 화면을 누르면 처음부터 다시 셉니다. 읽어 주기가 꺼져 있으면 글을 읽을 시간(글자 수 ÷ 5초, 최소 3초)이 지난 뒤부터 셉니다.',
-              '⚙ 선생님 설정에서 빠르게(절반)·보통·느긋하게(두 배)·끄기, 모든 차시 열기, 기록 지우기를 할 수 있습니다. 확인 시험과 인공지능 대결에는 저절로 힌트가 없습니다.']:
-        k.bullet(d, t)
-    k.gap(d, 'gap2')
-    d.add(d.P('3. 교재와 학습관을 함께 쓰는 방법', 'h2', 'L'), 10)
-    for t in ['교실 수업: 전자칠판으로 학습관의 설명·예시를 함께 보고 → 학생용 교재의 ‘풀어 봐요’를 풀고 → 개인 기기로 연습합니다.',
-              '가정 학습: 교재의 ‘배워요·예시로 보기’를 읽고 학습관에서 같은 차시를 해 봅니다.',
-              '교재의 문제는 학습관 연습 문제에서 고른 것이라 학습관과 같은 꼴입니다. 인공지능 대결은 교재에 ‘학습관 대결’ 상자로만 안내합니다.',
-              '이 지도서의 차시마다 학생용 교재 쪽수를 적어 두었습니다. 정답은 학생용 교재 맨 뒤 ‘정답과 풀이’에도 있습니다.']:
-        k.bullet(d, t)
+    intro_page(d, k, st)
 
     d.new_page()
     d.add(d.P('차례', 'pt', 'L'), 14)
@@ -958,64 +1029,7 @@ def teacher(D, P, G, M, st, plan=None, spg=None):
             r = ['%d' % L['no'], U['title'], L['title'], KIND[L['kind']][0], '%d쪽' % spg.get('l%d' % L['no'], 0)]
             d.add(d.tbl([[(d.P(v, 'q', 'CT' if j != 2 else 'LT'), st.F['box'], 1, 'CENTER', None) for j, v in enumerate(r)]], ws), max(7.6, text_h(L['title'], st.C['q'], ws[2] / MM - 3, 135) + 2))
 
-    for ui, U in enumerate(units):
-        d.new_page()
-        d.marks['u%d' % ui] = len(d.pages)
-        x = d.tbl([[(d.P('%d단원' % (ui + 1), 'u1', 'LT') + d.P(U['title'], 'u2', 'LT'), st.F['tint'], 1, 'CENTER', (2500, 1500, 2000, 2000))]], [TW])
-        d.add(x, 45)
-        k.gap(d, 'gap2')
-        k.para(d, clean(M.UNIT[ui]))
-        k.gap(d, 'gap2')
-        d.add(d.P('단원의 차시', 'h2', 'L'), 10)
-        for L in U['lessons']:
-            k.bullet(d, '%d차시 %s — %s (학생용 교재 %d쪽)' % (L['no'], L['title'], clean(L['sum']), spg.get('l%d' % L['no'], 0)))
-        for L in U['lessons']:
-            g = G[L['id']]
-            d.new_page()
-            d.marks['l%d' % L['no']] = len(d.pages)
-            k.banner(d, '%d차시' % L['no'], L['title'], L['sum'])
-            kd = KIND[L['kind']]
-            info = [('문제 종류', '%s · 저절로 힌트 %s' % kd), ('학습관', SITE + '%s.html#l%d' % (D['id'], L['no'])),
-                    ('학생용 교재', '%d쪽부터' % spg.get('l%d' % L['no'], 0))]
-            for a, b in info:
-                d.add(d.tbl([[(d.P(a, 'accS', 'CT'), st.F['tint'], 1, 'CENTER', None), (d.P(b, 'q', 'LT'), st.F['box'], 1, 'CENTER', (700, 300, 200, 200))]], [mm(30), TW - mm(30)]), 8)
-            k.gap(d)
-            k.section(d, '지도 흐름')
-            d.add(d.P('① 설명', 'acc', 'L'), 7.5)
-            for s in L['say']:
-                k.bullet(d, s['text'], 'q', '-')
-            if L['ex']:
-                d.add(d.P('② 예시', 'acc', 'L'), 7.5)
-                for e in L['ex']:
-                    caps = ' → '.join(clean(f['cap']) for f in e['frames'] if f['cap'])
-                    k.bullet(d, clean(e['text']) + (' (' + caps + ')' if caps else ''), 'q', '-')
-            d.add(d.P('③ 따라 하기와 힌트', 'acc', 'L'), 7.5)
-            for t in L['do']:
-                if t:
-                    k.bullet(d, clean(t['q']) + (' — 힌트: ' + ' / '.join(clean(h) for h in t['hint']) if t.get('hint') else ''), 'q', '-')
-            items, games = lesson_items(L)
-            d.add(d.P('④ 교재 문제 정답', 'acc', 'L'), 7.5)
-            for i, t in enumerate(items):
-                k.bullet(d, '%d. %s' % (i + 1, ans_text(t, D, k.sanmode)), 'q', '')
-            for t in games:
-                k.bullet(d, '학습관 대결: ' + clean(t['q']), 'q', '-')
-            for key, nm, mk in [('mis', '자주 하는 실수', '•'), ('tip', '지도 도움말', '•'), ('ask', '생각을 여는 질문(발문)', 'Q.')]:
-                k.section(d, nm)
-                for t in g[key]:
-                    k.bullet(d, t, 'body', mk)
-            k.gap(d)
-            d.add(d.P('※ ‘생각 톡톡’(학생용 교재)에는 첫 번째 발문이 실려 있습니다.', 'cap', 'L'), 6)
-
-    d.new_page()
-    d.marks['exam'] = len(d.pages)
-    d.add(d.P('확인 시험과 수료증', 'pt', 'L'), 14)
-    k.gap(d)
-    for t in ['학습관 차시 목록 맨 아래 ‘확인 시험’: %d마당의 모든 차시에서 고른 15문제, 12문제 이상 맞히면 통과(%s 등급).' % (no, RANK[no]),
-              '확인 시험은 힌트가 없고, 틀리면 정답을 보여 준 뒤 바로 다음 문제로 넘어갑니다. 결과 화면에 ‘다시 보면 좋은 차시’가 나옵니다.',
-              '통과하면 학습관에서 이름을 넣어 수료증(A4 가로)을 인쇄할 수 있습니다.',
-              '학생용 교재의 ‘마당 확인 평가’(%d쪽)로 종이 평가를 먼저 하고 학습관 확인 시험을 보게 하면 좋습니다.' % spg.get('exam', 0),
-              '🔁 다시 보기: 학습관은 배운 차시에서 3문제를 골라 다시 풀게 합니다(자주 틀린 차시 먼저).']:
-        k.bullet(d, t)
+    tpart(d, k, D, G, M, P, st, sp=lambda x: spg.get(x, 0))
 
     d.new_page()
     d.marks['terms'] = len(d.pages)

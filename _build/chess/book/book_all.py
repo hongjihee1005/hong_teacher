@@ -118,7 +118,7 @@ class BookkDoc(B.Doc):
         return head.replace('</hs:sec>', ''.join(self.body) + '</hs:sec>')
 
     def header_xml(self):
-        h = THEAD
+        h = THEAD.replace('breakNonLatinWord="KEEP_WORD"', 'breakNonLatinWord="BREAK_WORD"')  # 한글은 반대: BREAK_WORD가 낱말을 안 끊음
         if self.bins:
             items = ''.join('<hh:binItem id="%d" Type="Embedding" BinData="%s.png" Format="png"/>' % (i, b) for i, (b, _) in enumerate(self.bins))
             h = h.replace('</hh:styles>', '</hh:styles><hh:binDataList itemCnt="%d">%s</hh:binDataList>' % (len(self.bins), items), 1)
@@ -153,23 +153,20 @@ def find(t, exact=False):
     return next(i for i, (_, s) in enumerate(TP) if (s.strip() == t if exact else s.strip().startswith(t)))
 
 
-def build(Ds, P, Ms, sts, plan=None):
-    pg = plan or {}
-    st0 = sts[1]
-    d = BookkDoc('%s %s' % (TITLE, SUB), st0, '', '')
-    k0 = B.Kit(Ds[1], P, Ms[1].G, st0)
+def front(d, full, toc, pg):
+    """틀의 앞 4쪽: 반표제 → 판권 → 속표지 → CONTENT(toc = [(글, 쪽 이름, 수준 0·1)])"""
     # ---- 반표제(1쪽) — 틀 문단 15~19
     i0 = find('어린 왕자(제목')
     for i in range(i0 - 3, i0):
         d.put(tp(i, None, d))
-    d.put(tp(i0, '%s — %s' % (TITLE, SUB), d))
+    d.put(tp(i0, full, d))
     # ---- 판권(2쪽) — 틀 문단 20~58
     d.new_page()
     a = find('어린 왕자(제목') + 1
     while TP[a][1].strip() == '':
         d.put(tp(a, None, d))
         a += 1
-    rep = {'어린 왕자(제목': '%s — %s' % (TITLE, SUB), '발  행': '발  행｜2026년 00월 00일', '저  자': '저  자｜%s' % AUTHOR, 'ⓒ': 'ⓒ %s 2026' % AUTHOR}
+    rep = {'어린 왕자(제목': full, '발  행': '발  행｜2026년 00월 00일', '저  자': '저  자｜%s' % AUTHOR, 'ⓒ': 'ⓒ %s 2026' % AUTHOR}
     sok = find('어', exact=True)
     while a < sok - 1:
         t = TP[a][1]
@@ -187,17 +184,25 @@ def build(Ds, P, Ms, sts, plan=None):
     c0 = find('CONTENT')
     d.add(tp(c0, 'CONTENT', d), 12)
     d.add(tp(c0 + 1, None, d), 6)
-    i1, i2, i3 = find('제1화'), find('제2화'), find('제3화')
-    toc = [('머리말', 'pre', i1), ('이 책을 쓰는 방법', 'how', i1), ('이 책의 짜임', 'struct', i1)]
+    i1, i2 = find('제1화'), find('제2화')
+    for t, key, lv in toc:
+        d.add(tp(i2 if lv else i1, '%s  %d' % (t, pg.get(key, 0)), d), 10)
+
+
+def build(Ds, P, Ms, sts, plan=None):
+    pg = plan or {}
+    st0 = sts[1]
+    d = BookkDoc('%s %s' % (TITLE, SUB), st0, '', '')
+    k0 = B.Kit(Ds[1], P, Ms[1].G, st0)
+    toc = [('머리말', 'pre', 0), ('이 책을 쓰는 방법', 'how', 0), ('이 책의 짜임', 'struct', 0)]
     for no in range(1, 7):
         D = Ds[no]
-        toc.append(('%d마당   %s' % (no, D['title']), 'm%d:open' % no, i1))
+        toc.append(('%d마당   %s' % (no, D['title']), 'm%d:open' % no, 0))
         for ui, U in enumerate(D['units']):
-            toc.append(('        %d단원  %s' % (ui + 1, U['title']), 'm%d:u%d' % (no, ui), i2))
-        toc.append(('        %d마당 확인 평가' % no, 'm%d:exam' % no, i2))
-    toc += [('정답과 풀이', 'ans', i1), ('용어 풀이', 'terms', i1)]
-    for t, key, ti in toc:
-        d.add(tp(ti, '%s  %d' % (t, pg.get(key, 0)), d), 10)
+            toc.append(('        %d단원  %s' % (ui + 1, U['title']), 'm%d:u%d' % (no, ui), 1))
+        toc.append(('        %d마당 확인 평가' % no, 'm%d:exam' % no, 1))
+    toc += [('정답과 풀이', 'ans', 0), ('용어 풀이', 'terms', 0)]
+    front(d, '%s — %s' % (TITLE, SUB), toc, pg)
     # ---- 머리말
     d.new_page()
     d.foot('머리말')
@@ -321,6 +326,93 @@ def build(Ds, P, Ms, sts, plan=None):
     return d
 
 
+GUIDE_NAME = '체스학습관_지도서_1-6마당_부크크A4.hwpx'
+TPREFACE = [
+    '이 지도서는 「체스 학습관」 1~6마당(175차시)과 학생용 교재를 함께 쓰시는 선생님을 위한 책입니다. 학년 구분 없이 모든 학생이 1마당 1차시부터 차례대로 배우도록 짜여 있으며, 마당을 마칠 때마다 확인 시험으로 폰 → 나이트 → 비숍 → 룩 → 퀸 → 킹 등급을 받습니다.',
+    '마당마다 처음에 그 마당 지도의 큰 줄기와 차시 한눈에 보기(학생용 교재 쪽수)를 두었고, 차시마다 지도 흐름(설명·예시·따라 하기와 힌트), 교재 문제 정답, 아이들이 자주 하는 실수, 지도 도움말, 생각을 여는 질문(발문)을 실었습니다. 첫 번째 발문은 학생용 교재의 ‘생각 톡톡’에도 실려 있습니다.',
+    '교실에서는 전자칠판으로 학습관의 설명과 예시를 함께 보고, 학생용 교재의 ‘풀어 봐요’를 풀린 뒤 개인 기기로 연습하게 하면 좋습니다. 실물 체스판이 있으면 처음 배치와 기본 메이트는 꼭 판 위에서 직접 해 보게 해 주세요.',
+]
+
+
+def build_guide(Ds, P, Ms, sts, plan=None, SP=None):
+    """지도서 한 권: 앞 4쪽 → 선생님께 → 학습관과 교재 → 마당마다(여는 쪽·지도의 줄기·차시 한눈에 보기·단원·차시) → 용어 풀이. SP = 학생용 교재 쪽 표시"""
+    pg, SP = plan or {}, SP or {}
+    st0 = sts[1]
+    d = BookkDoc('%s 1~6마당 지도서' % TITLE, st0, '', '')
+    k0 = B.Kit(Ds[1], P, Ms[1].G, st0)
+    toc = [('선생님께', 'pre', 0), ('학습관과 교재', 'intro', 0)]
+    for no in range(1, 7):
+        D = Ds[no]
+        toc.append(('%d마당   %s' % (no, D['title']), 'm%d:open' % no, 0))
+        for ui, U in enumerate(D['units']):
+            toc.append(('        %d단원  %s' % (ui + 1, U['title']), 'm%d:u%d' % (no, ui), 1))
+        toc.append(('        확인 시험과 수료증', 'm%d:exam' % no, 1))
+    toc.append(('용어 풀이', 'terms', 0))
+    front(d, '%s — 1~6마당 지도서' % TITLE, toc, pg)
+    d.new_page()
+    d.foot('선생님께')
+    d.marks['pre'] = len(d.pages)
+    d.add(d.P('선생님께', 'pt', 'L'), 14)
+    k0.gap(d, 'gap2')
+    for t in TPREFACE:
+        k0.para(d, t)
+        k0.gap(d)
+    d.add(d.P('초등교사 홍지희', 'bodyb', 'R'), 8)
+    d.new_page()
+    d.foot('학습관과 교재', even=False)
+    d.marks['intro'] = len(d.pages)
+    B.intro_page(d, k0, st0)
+    for no in range(1, 7):
+        D, M, st = Ds[no], Ms[no], sts[no]
+        d.S = st
+        k = B.Kit(D, P, M.G, st, teacher=True)
+        sp = (lambda x, no=no: SP.get('m%d:%s' % (no, x), 0))
+        d.to_odd(lambda: None if False else d.add(d.P(' ', 'gap'), 1))
+        d.hide.add(len(d.pages) - 1)
+        d.foot('%d마당 · %s' % (no, D['title']), even=False)
+        d.marks['m%d:open' % no] = len(d.pages)
+        x = d.tbl([[(d.P('체스 학습관 지도서', 'c0', 'LT') + d.P('%d마당' % no, 'c1', 'LT') + d.P(D['title'], 'c2', 'LT'),
+                     st.F['acc'], 1, 'CENTER', (2500, 1500, 4000, 4000))]], [TW])
+        d.add(x, 80)
+        d.add(d.P(' ', 'gap2'), 8)
+        d.add(d.P('%d마당 지도의 줄기' % no, 'h2', 'L'), 10)
+        for t in M.TPREFACE:
+            k.para(d, B.clean(t))
+            k.gap(d)
+        # 차시 한눈에 보기
+        d.new_page()
+        d.add(d.P('%d마당 차시 한눈에 보기' % no, 'pt', 'L'), 14)
+        k.gap(d)
+        ws = [mm(13), mm(30), TW - mm(13 + 30 + 22 + 22), mm(22), mm(22)]
+        d.add(d.tbl([[(d.P(v, 'accS', 'CT'), st.F['boxT'], 1, 'CENTER', None) for v in ['차시', '단원', '제목', '문제 종류', '학생용 교재']]], ws), 8.5)
+        for U in D['units']:
+            for L in U['lessons']:
+                r = ['%d' % L['no'], U['title'], L['title'], B.KIND[L['kind']][0], '%d쪽' % sp('l%d' % L['no'])]
+                d.add(d.tbl([[(d.P(v, 'q', 'CT' if j != 2 else 'LT'), st.F['box'], 1, 'CENTER', None) for j, v in enumerate(r)]], ws),
+                      max(7.6, B.text_h(L['title'], st.C['q'], ws[2] / MM - 3, 135) + 2))
+        B.tpart(d, k, D, M.G, M, P, st, mk=lambda x, no=no: 'm%d:%s' % (no, x), sp=sp)
+    d.S = st0
+    d.new_page()
+    d.foot('용어 풀이', even=False)
+    d.marks['terms'] = len(d.pages)
+    d.add(d.P('용어 풀이', 'pt', 'L'), 14)
+    k0.gap(d)
+    ws = [mm(32), TW - mm(32 + 32), mm(32)]
+    d.add(d.tbl([[(d.P(v, 'accS', 'CT'), st0.F['tint'], 1, 'CENTER', None) for v in ['용어', '뜻', '배우는 곳']]], ws, st0.F['box']), 9)
+    seen, rows = set(), []
+    for no in range(1, 7):
+        lno = {L['id']: L['no'] for U in Ds[no]['units'] for L in U['lessons']}
+        for term, mean, lid in Ms[no].TERMS:
+            if term not in seen:
+                seen.add(term)
+                rows.append((term, mean, no, lno.get(lid, 0)))
+    for term, mean, no, n in sorted(rows):
+        r = [[(d.P(term, 'bodyb', 'CT'), st0.F['box'], 1, 'CENTER', None), (d.P(B.clean(mean), 'q', 'LT'), st0.F['box'], 1, 'CENTER', (700, 400, 250, 250)),
+              (d.P('%d마당 %d차시\n(지도서 %d쪽)' % (no, n, pg.get('m%d:l%d' % (no, n), 0)), 'small', 'CT'), st0.F['box'], 1, 'CENTER', None)]]
+        d.add(d.tbl(r, ws, st0.F['box']), max(B.text_h(mean, st0.C['q'], ws[1] / MM - 4, 135) + 4, 13))
+    return d
+
+
 PREFACE = [
     '체스의 세계에 온 것을 환영해요! 이 책은 체스를 처음 만나는 친구가 체스판과 체스말부터 시작해, 말이 움직이는 법, 잡기와 지키기, 체크와 체크메이트, 전술, 그리고 한 판을 끝까지 두는 법까지 차근차근 배우도록 만든 책이에요.',
     '모두 여섯 마당, 175차시예요. 마당 하나를 마칠 때마다 폰 → 나이트 → 비숍 → 룩 → 퀸 → 킹 등급을 받아요. 1마당 1차시부터 차례대로, 하루에 한두 차시씩 천천히 공부해도 괜찮아요.',
@@ -329,7 +421,7 @@ PREFACE = [
 ]
 
 
-def main(check=False):
+def main(mode='student'):
     Ds, Ms, sts = {}, {}, {}
     reg = None
     for no in range(1, 7):
@@ -347,22 +439,33 @@ def main(check=False):
             out[no] = B.Style(*B.ACC[no], reg=reg)
             reg = reg or out[no]
         return out
-    d = build(Ds, P, Ms, styles())
-    P.shoot()
-    d = build(Ds, P, Ms, styles(), d.marks)
-    d2 = build(Ds, P, Ms, styles(), d.marks)
+    if mode == 'guide':
+        import fix_pages
+        SP = fix_pages.marks(os.path.join(B.OUT, OUTNAME))       # 선생님이 한글로 저장한 학생용 교재의 실제 쪽
+        d = build_guide(Ds, P, Ms, styles(), None, SP)
+        P.shoot()
+        d = build_guide(Ds, P, Ms, styles(), d.marks, SP)
+        d2 = build_guide(Ds, P, Ms, styles(), d.marks, SP)
+        name = GUIDE_NAME
+    else:
+        d = build(Ds, P, Ms, styles())
+        P.shoot()
+        d = build(Ds, P, Ms, styles(), d.marks)
+        d2 = build(Ds, P, Ms, styles(), d.marks)
+        name = OUTNAME
     assert d2.marks == d.marks, '쪽 번호가 흔들려요'
     print('한 권 %d쪽 (본문 %.0fmm × %.0fmm)' % (len(d2.pages), TW / MM, B.BODY_MM))
-    if check:
+    if mode == 'check':
         return
+    if mode == 'student':
+        sys.exit('학생용 한 권은 선생님이 한글에서 직접 고치는 파일이라 다시 만들지 않아요(덮어쓰려면 student-force).')
     d2.build_body()
-    p = os.path.join(B.OUT, OUTNAME)
+    p = os.path.join(B.OUT, name)
     d2.save(p, now=B.STAMP)
     bad = H.check(p)
     if bad:
         sys.exit('점검 실패: %s' % bad[:5])
-    print('만듦:', OUTNAME, '%.1fMB' % (os.path.getsize(p) / 1e6))
-
+    print('만듦:', name, '%.1fMB' % (os.path.getsize(p) / 1e6))
 
 if __name__ == '__main__':
-    main('check' in sys.argv[1:])
+    main(sys.argv[1] if len(sys.argv) > 1 else 'student')
