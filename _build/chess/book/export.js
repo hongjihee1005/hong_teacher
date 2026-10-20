@@ -5,9 +5,10 @@
 const fs = require('fs'), path = require('path'), vm = require('vm');
 const CHESS = path.join(__dirname, '..');
 global.window = globalThis;
-['rules.js', 'pieces.js'].forEach(f => vm.runInThisContext(fs.readFileSync(path.join(CHESS, f), 'utf8'), { filename: f }));
+['rules.js', 'pieces.js', 'ai.js'].forEach(f => vm.runInThisContext(fs.readFileSync(path.join(CHESS, f), 'utf8'), { filename: f }));
 const CH = globalThis.CH, PN = globalThis.PIECES.NAME;
-const MID = process.argv[2] || 'm1', N_PR = +(process.argv[3] || 5);
+const MID = process.argv[2] || 'm1', N_PR = +(process.argv[3] || 5), N_RV = +(process.argv[4] || 0);
+if (fs.existsSync(path.join(CHESS, MID + '_data.js'))) vm.runInThisContext(fs.readFileSync(path.join(CHESS, MID + '_data.js'), 'utf8'), { filename: MID + '_data.js' });
 
 /* 씨앗 있는 무작위(mulberry32) — learn.js의 R과 같은 꼴 */
 function rng(seed) { let a = seed >>> 0; return () => { a |= 0; a = a + 0x6D2B79F5 | 0; let t = Math.imul(a ^ a >>> 15, 1 | a); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
@@ -27,9 +28,52 @@ function board(b) {
   const pos = b.pos === undefined ? '8/8/8/8/8/8/8/8' : typeof b.pos === 'string' ? b.pos.split(' ')[0] : CH.placement(b.pos);
   return { pos, marks: b.marks || {}, arrows: b.arrows || [], coords: b.coords !== false, swap: !!b.swap, flip: !!b.flip };
 }
+/* 한 수를 글로: 말 이름 + 출발 → 도착(잡기·프로모션), 정식 국면이면 기보(SAN)도 */
+function mvInfo(p, g) {
+  const fr = CH.idx(g[0]), to = CH.idx(g[1]), pc = p.b[fr], cap = p.b[to];
+  let san = null;
+  if (p.turn !== undefined && p.cast !== undefined) {
+    const m = CH.legal(p).filter(x => x.from === fr && x.to === to && (!g[2] || !x.promo || x.promo.toUpperCase() === String(g[2]).toUpperCase()))[0];
+    if (m) san = CH.san(p, m);
+  }
+  const promo = g[2] || (pc === 'P' && to < 8 ? 'Q' : pc === 'p' && to > 55 ? 'q' : '');
+  return { from: g[0], to: g[1], promo: promo ? String(promo).toUpperCase() : '', pc, cap: cap !== '.' ? cap : '', san,
+    ko: PN[pc.toUpperCase()] + ' ' + g[0] + ' → ' + g[1] + (cap !== '.' ? ' (' + PN[cap.toUpperCase()] + ' 잡기)' : '') + (promo ? ' (' + PN[String(promo).toUpperCase()] + (String(promo).toUpperCase() === 'N' ? '로' : '으로') + ' 프로모션)' : '') };
+}
+function legalOf(p, g) { const fr = CH.idx(g[0]), to = CH.idx(g[1]); return CH.legal(p).filter(x => x.from === fr && x.to === to && (!g[2] || !x.promo || x.promo.toUpperCase() === String(g[2]).toUpperCase()))[0]; }
 function task(T) {
   if (!T) return null;
-  const o = { type: T.type, q: plain(T.q), board: board(T.board), all: !!T.all, kind: T.kind || '' };
+  const B = Object.assign({}, T.board || {});
+  if (T.state && B.pos === undefined) B.pos = T.state.split(' ')[0];
+  if (T.type === 'move') { B.marks = Object.assign({}, B.marks || {}); T.stars.forEach(s => { B.marks[s] = 'star'; }); }
+  const o = { type: T.type, q: plain(T.q), board: T.type === 'game' && !T.board && !T.state ? null : board(B), all: !!T.all, kind: T.kind || '' };
+  o.turn = T.state ? T.state.split(' ')[1] : 'w';
+  if (T.type === 'move') {
+    o.mover = T.mover; o.stars = T.stars.slice(); o.par = T.par || 0; o.path = [T.mover];
+    let at = T.mover, st = T.stars.slice();
+    for (let k = 0; k < 40 && st.length && T.next; k++) { const nx = T.next(at, st); if (!nx) break; at = nx; o.path.push(nx); st = st.filter(x => x !== nx); }
+    if (st.length) o.path = null;
+  }
+  if (T.type === 'play') {
+    const p = T.state ? CH.parse(T.state) : { b: typeof B.pos === 'string' ? CH.board(B.pos.split(' ')[0]) : B.pos.slice(), turn: 'w' };
+    o.good = T.good.map(g => mvInfo(p, g));
+  }
+  if (T.type === 'line') {
+    let p = CH.parse(T.state), good = T.good; const seq = [];
+    o.alts = good.map(g => mvInfo(p, g));
+    for (let k = 0; k < T.moves; k++) {
+      if (!good || !good.length) break;
+      const g = good[0], m = legalOf(p, g); if (!m) break;
+      seq.push(Object.assign(mvInfo(p, g), { side: 'w' })); p = CH.make(p, m);
+      if (CH.status(p) || k === T.moves - 1) break;
+      const r = T.reply(p); if (!r) break;
+      seq.push({ side: 'b', san: CH.san(p, r), ko: PN[p.b[r.from].toUpperCase()] + ' ' + CH.name(r.from) + ' → ' + CH.name(r.to) + (p.b[r.to] !== '.' ? ' (' + PN[p.b[r.to].toUpperCase()] + ' 잡기)' : ''), from: CH.name(r.from), to: CH.name(r.to) });
+      p = CH.make(p, r); good = T.goodAt(p);
+    }
+    o.seq = seq; o.moves = T.moves; o.mate = !!T.mate;
+    o.stepQ = typeof T.stepQ === 'string' ? plain(T.stepQ) : '';
+  }
+  if (T.type === 'game') o.level = T.level || 0;
   if (T.type === 'click') o.ans = [].concat(T.ans);
   if (T.type === 'pick') { o.opts = T.opts.slice(); o.ans = T.ans; }
   if (T.type === 'place') { o.need = Object.assign({}, T.need); o.tray = T.tray.slice(); }
@@ -55,10 +99,18 @@ MD.units.forEach((u, ui) => {
     /* 연습: 서로 다른 문제 N_PR개(질문+정답이 겹치지 않게) */
     const R = makeR(rng(no * 104729 + 3)), seen = new Set(L.do.filter(Boolean).map(t => t.q.replace(/ 보세요\.$/, '요.') + '|' + t.type)); /* 따라 하기와 같은 문제는 빼기 */
     for (let k = 0; k < 400 && L.pr.length < N_PR; k++) {
-      const t = task(l.practice.gen(R)), key = t.q + '|' + JSON.stringify(t.ans || t.need) + '|' + (t.board && t.board.pos);
+      const t = task(l.practice.gen(R)), key = t.q + '|' + JSON.stringify(MID === 'm1' ? (t.ans || t.need) : (t.ans || t.need || t.good || t.seq || t.stars)) + '|' + (t.board && t.board.pos);
       const qkey = t.q + '|' + t.type;
-      if (seen.has(key) || seen.has(t.q + '|' + t.type) || L.pr.filter(x => x.q + '|' + x.type === qkey).length >= 2) continue;
+      if (seen.has(key) || (MID === 'm1' && (seen.has(t.q + '|' + t.type) || L.pr.filter(x => x.q + '|' + x.type === qkey).length >= 2))) continue;
       seen.add(key); L.pr.push(t);
+    }
+    /* 단원 마무리·확인 평가용 문제(다른 씨앗, 교재의 다른 문제와 겹치지 않게) */
+    L.rv = [];
+    const R2 = makeR(rng(no * 15485863 + 101));
+    for (let k = 0; k < 400 && L.rv.length < N_RV; k++) {
+      const t = task(l.practice.gen(R2)), key = t.q + '|' + JSON.stringify(t.ans || t.need || t.good || t.seq || t.stars) + '|' + (t.board && t.board.pos);
+      if (seen.has(key)) continue;
+      seen.add(key); L.rv.push(t);
     }
     U.lessons.push(L);
   });
