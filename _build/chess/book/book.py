@@ -42,6 +42,11 @@ TW = PAGE_W - 2 * M_LR - GUT                            # 본문 너비 175mm
 BODY_MM = (PAGE_H - 2 * M_TB - 2 * M_HF) / MM           # 본문 높이 약 257mm
 BUDGET = BODY_MM * 0.94                                 # 어림이 10%쯤 크게 나오므로 실제로는 쪽의 80% 남짓(넘치지 않게)
 H.TEXT_W = TW
+# 덧붙이는 모양의 첫 번호(바탕 header.xml에 이미 있는 개수)와 글꼴 번호 — 다른 틀(book_all.py)은 바꿔 씀
+CP0, BF0, PP0, TAB0 = 20, 7, 21, 3
+FONT_N = FONT_B = 0
+PIC_GRID, PIC_SAY, PIC_EX = 50, 50, 47
+ANS_COLS, ANS_PIC = 3, 23
 
 
 def mm(x):
@@ -50,9 +55,10 @@ def mm(x):
 
 # ---------------------------------------------------------------- 글자·문단·테두리 모양(header.xml에 덧붙임)
 class Style:
-    def __init__(self, acc, tint):
+    def __init__(self, acc, tint, reg=None):
+        """reg: 같은 문서의 다른 Style — 모양 목록을 함께 써서 번호가 이어짐(한 책에 마당 색 여러 개)"""
         self.acc, self.tint = acc, tint
-        self.cp, self.bf, self.pp = [], [], []
+        self.cp, self.bf, self.pp = (reg.cp, reg.bf, reg.pp) if reg else ([], [], [])
         self.C, self.F, self.P = {}, {}, {}
         ink, soft, gray = '#2B2118', '#4A4038', '#7A6E62'
         for k, (pt, col, b) in {
@@ -93,20 +99,22 @@ class Style:
         self.P['tab'] = self._para('LEFT', 150, tab=True)
 
     def _char(self, pt, color, bold):
-        i = 20 + len(self.cp)
+        i = CP0 + len(self.cp)
+        f = FONT_B if bold else FONT_N
         x = ('<hh:charPr height="%d" textColor="%s" shadeColor="none" useFontSpace="0" useKerning="0" symMark="NONE" '
-             'borderFillIDRef="2" id="%d"><hh:fontRef hangul="0" latin="0" hanja="0" japanese="0" other="0" symbol="0" user="0"/>'
+             'borderFillIDRef="2" id="%d"><hh:fontRef hangul="{f}" latin="{f}" hanja="{f}" japanese="{f}" other="{f}" symbol="{f}" user="{f}"/>'
              '<hh:ratio hangul="100" latin="100" hanja="100" japanese="100" other="100" symbol="100" user="100"/>'
              '<hh:spacing hangul="0" latin="0" hanja="0" japanese="0" other="0" symbol="0" user="0"/>'
              '<hh:relSz hangul="100" latin="100" hanja="100" japanese="100" other="100" symbol="100" user="100"/>'
              '<hh:offset hangul="0" latin="0" hanja="0" japanese="0" other="0" symbol="0" user="0"/><hh:outline type="NONE"/>'
              '<hh:shadow type="NONE" color="#C0C0C0" offsetX="10" offsetY="10"/>%s'
-             '<hh:underline type="NONE" shape="SOLID" color="#000000"/></hh:charPr>') % (int(round(pt * 100)), color, i, '<hh:bold/>' if bold else '')
+             '<hh:underline type="NONE" shape="SOLID" color="#000000"/></hh:charPr>') % (int(round(pt * 100)), color, i, '<hh:bold/>' if bold and FONT_B == FONT_N else '')
+        x = x.replace('{f}', str(f))
         self.cp.append(x)
         return (i, pt)
 
     def _fill(self, color, sides):
-        i = 7 + len(self.bf)
+        i = BF0 + len(self.bf)
 
         def side(tag, k):
             t, w, c = sides.get(k, ('NONE', '0.1 mm', '#000000'))
@@ -120,7 +128,7 @@ class Style:
         return i
 
     def _para(self, align, ls, left=0, indent=0, tab=False):
-        i = 21 + len(self.pp)
+        i = PP0 + len(self.pp)
         mg = ('<hh:margin><hc:intent value="%d" unit="HWPUNIT"/><hc:left value="%d" unit="HWPUNIT"/><hc:right value="0" unit="HWPUNIT"/>'
               '<hc:prev value="0" unit="HWPUNIT"/><hc:next value="0" unit="HWPUNIT"/></hh:margin>'
               '<hh:lineSpacing type="PERCENT" value="%d" unit="HWPUNIT"/>') % (indent, left, ls)
@@ -129,12 +137,12 @@ class Style:
              '<hh:breakSetting breakLatinWord="KEEP_WORD" breakNonLatinWord="KEEP_WORD" widowOrphan="0" keepWithNext="0" keepLines="0" pageBreakBefore="0" lineWrap="BREAK"/>'
              '<hh:autoSpacing eAsianEng="0" eAsianNum="0"/><hp:switch><hp:case hp:required-namespace="http://www.hancom.co.kr/hwpml/2016/HwpUnitChar">%s</hp:case>'
              '<hp:default>%s</hp:default></hp:switch><hh:border borderFillIDRef="2" offsetLeft="0" offsetRight="0" offsetTop="0" offsetBottom="0" connect="0" ignoreMargin="0"/></hh:paraPr>'
-             ) % (i, 3 if tab else 0, align, mg, mg)
+             ) % (i, TAB0 if tab else 0, align, mg, mg)
         self.pp.append(x)
         return i
 
     def header_xml(self, h):
-        tab = ('<hh:tabPr id="3" autoTabLeft="0" autoTabRight="0"><hh:tabItem pos="%d" type="RIGHT" leader="DOT"/></hh:tabPr>' % (TW - 400))
+        tab = ('<hh:tabPr id="%d" autoTabLeft="0" autoTabRight="0"><hh:tabItem pos="%d" type="RIGHT" leader="DOT"/></hh:tabPr>' % (TAB0, TW - 400))
         h = re.sub(r'<hh:tabProperties itemCnt="(\d+)">(.*?)</hh:tabProperties>',
                    lambda m: '<hh:tabProperties itemCnt="%d">%s%s</hh:tabProperties>' % (int(m.group(1)) + 1, m.group(2), tab), h, flags=re.S)
         h = re.sub(r'<hh:borderFills itemCnt="(\d+)">(.*?)</hh:borderFills>',
@@ -412,12 +420,12 @@ class Kit:
         self.teacher = teacher
 
     # 공통 블록 ----------------------------------------------------
-    def para(self, d, text, ch='body', pp='J', w=TW / MM):
-        d.add(d.P(text, ch, pp), text_h(text, self.S.C[ch], w))
+    def para(self, d, text, ch='body', pp='J', w=None):
+        d.add(d.P(text, ch, pp), text_h(text, self.S.C[ch], w or TW / MM))
 
-    def bullet(self, d, text, ch='body', mark='•', w=TW / MM):
+    def bullet(self, d, text, ch='body', mark='•', w=None):
         t = mark + ' ' + clean(text)
-        d.add(d.P(t, ch, 'hang'), text_h(t, self.S.C[ch], w - 5))
+        d.add(d.P(t, ch, 'hang'), text_h(t, self.S.C[ch], (w or TW / MM) - 5))
 
     def gap(self, d, k='gap'):
         d.add(d.P('', k), self.S.C[k][1] * 0.3528 * 1.6)
@@ -501,7 +509,7 @@ class Kit:
             x += d.P('가장 적게 (      )번', 'q', 'RT')
             h += 6.5
         elif t['type'] == 'line' and t['moves'] > 1:
-            x += d.P('백 (          )  흑 (          )  백 (          )', 'small', 'CT')
+            x += d.P('백(       ) 흑(       ) 백(       )', 'small', 'CT')
             h += 6
         elif t['type'] == 'play' and t['board']['coords']:
             x += d.P('답: (        ) → (        )', 'small', 'RT')
@@ -512,7 +520,8 @@ class Kit:
             h += text_h(o, self.S.C['small'], w_mm - 4, 135)
         return x, h + 3
 
-    def grid(self, d, items, start=1, cols=3, pic_mm=50):
+    def grid(self, d, items, start=1, cols=3, pic_mm=None):
+        pic_mm = pic_mm or PIC_GRID
         """문제 여러 개를 2칸씩 줄지어(한 줄이 한 블록)"""
         cw = TW // cols
         k = 0
@@ -559,6 +568,198 @@ def lesson_items(L):
     items = [t for t in do if t['type'] != 'game'] + pr
     items = items[:max(6, len([t for t in do if t['type'] != 'game']))]
     return items, games[:1]
+
+
+def part(d, k, D, G, M, P, st, mk=lambda x: x, keys=None):
+    """단원 여는 쪽 → 차시 → 단원 마무리 … → 마당 확인 평가. 정답에 쓸 (차시, 문제) 목록을 돌려줌. mk: 쪽 표시 이름 바꾸기"""
+    no, units = D['no'], D['units']
+    keys = [] if keys is None else keys
+    for ui, U in enumerate(units):
+        d.to_odd(lambda: k.filler(d))
+        d.hide.add(len(d.pages) - 1)
+        d.marks[mk('u%d' % ui)] = len(d.pages)
+        x = d.tbl([[(d.P('%d마당' % no, 'u0', 'LT') + d.P('%d단원' % (ui + 1), 'u1', 'LT') + d.P(U['title'], 'u2', 'LT'),
+                     st.F['tint'], 1, 'CENTER', (2500, 1500, 3000, 3000))]], [TW])
+        d.add(x, 70)
+        d.add(d.P(' ', 'gap2'), 8)
+        k.para(d, clean(M.UNIT[ui]), 'body')
+        art = unit_art(U, D)
+        free = d.room() - (math.ceil(len(U['lessons']) / (2 if len(U['lessons']) > 8 else 1)) * 11 + 22)      # 단원 여는 쪽이 한 쪽을 넘지 않게
+        if art and free > 30:
+            d.add(d.P(' ', 'gap2'), 4)
+            if isinstance(art, list):
+                x, h = d.pic(P.big(art), min(34 * len(art), (free - 8) * len(art)))
+            else:
+                x, h = d.pic(P.board(art), min(70, free - 8))
+            d.add(x, h + 4)
+        d.add(d.P(' ', 'gap2'), 6)
+        d.add(d.P('이 단원에서 배울 것', 'h2', 'L'), 10)
+        two = len(U['lessons']) > 8
+        ls_ = U['lessons']
+        per = 2 if two else 1
+        for i in range(0, len(ls_), per):
+            row, ws = [], []
+            for L in ls_[i:i + per]:
+                row += [(d.P('%d차시' % L['no'], 'accS', 'CT'), st.F['tint'], 1, 'CENTER', (200, 200, 250, 250)),
+                        (d.P(L['title'], 'q' if two else 'bodyb', 'LT'), st.F['box'], 1, 'CENTER', (500, 200, 250, 250)),
+                        (d.P('□', 'body', 'CT'), st.F['box'], 1, 'CENTER', (100, 100, 250, 250))]
+                cw = TW // per
+                ws += [mm(20), cw - mm(30), mm(10)]
+            if len(row) < 3 * per:
+                row.append((d.P('', 'q', 'L'), st.F['none'], 3, 'CENTER', None))
+                ws += [mm(20), TW // 2 - mm(30), mm(10)]
+            ws[-1] += TW - sum(ws)
+            th = max(text_h(L['title'], st.C['q'], TW / MM / per - 33, 135) for L in ls_[i:i + per])
+            d.add(d.tbl([row], ws), max(9.6, th + 3))
+        d.add(d.P('다 공부한 차시는 □에 ✓ 표시를 해요.', 'cap', 'R'), 6)
+
+        for L in U['lessons']:
+            d.new_page()
+            d.marks[mk('l%d' % L['no'])] = len(d.pages)
+            k.banner(d, '%d차시' % L['no'], L['title'], L['sum'])
+            # 배워요
+            k.section(d, '배워요')
+            pics = 0
+            for s in L['say']:
+                b = s['board']
+                showb = b and pics < 3 and meaningful(b) and not s.get('big')
+                if s.get('big'):
+                    k.para(d, clean(s['text']))
+                    x, h = d.pic(P.big(s['big']), 20 * len(s['big']) + 6)
+                    d.add(x, h + 2)
+                elif showb:
+                    pics += 1
+                    pw = PIC_SAY
+                    tx = d.P(clean(s['text']), 'body', 'J')
+                    th = text_h(s['text'], st.C['body'], TW / MM - pw - 10)
+                    px, ph = d.pic(P.board(b), pw)
+                    x = d.tbl([[(tx, st.F['none'], 1, 'CENTER', (0, 900, 200, 200)), (px, st.F['none'], 1, 'CENTER', (0, 0, 200, 200))]],
+                              [TW - mm(pw + 2), mm(pw + 2)])
+                    d.add(x, max(th, ph) + 3)
+                else:
+                    k.para(d, clean(s['text']))
+                    k.gap(d)
+            # 예시로 보기
+            if L['ex']:
+                k.section(d, '예시로 보기', '장면을 차례로 따라가 보세요.')
+                for ei, e in enumerate(L['ex']):
+                    fr = e['frames']
+                    if len(fr) > 3:
+                        pick = [fr[0], fr[len(fr) // 2], fr[-1]] if len(fr) > 4 else [fr[0], fr[-2], fr[-1]]
+                    else:
+                        pick = fr
+                    head = '예시 %d  %s' % (ei + 1, clean(e['text']))
+                    hx = d.P('', 'body', 'J', runs=d.R('예시 %d  ' % (ei + 1), 'acc') + d.R(clean(e['text']), 'body'))
+                    hh = text_h(head, st.C['body'], TW / MM)
+                    cw = TW // 3
+                    cells, ph = [], 0
+                    for fi, f in enumerate(pick):
+                        n = fr.index(f) + 1
+                        px, h = d.pic(P.board(f['board']), PIC_EX)
+                        cap = '장면 %d  %s' % (n, clean(f['cap'])) if f['cap'] else '장면 %d' % n
+                        cells.append((px + d.P(cap, 'cap', 'CT'), st.F['none'], 1, 'TOP', (300, 300, 100, 100)))
+                        ph = max(ph, h + text_h(cap, st.C['cap'], 52, 130))
+                    while len(cells) < 3:
+                        cells.append((d.P('', 'cap', 'C'), st.F['none'], 1, 'TOP', None))
+                    rest = [(i + 1, clean(f['cap'])) for i, f in enumerate(fr) if f not in pick and f['cap']]
+                    rx, rh = '', 0
+                    for i, c in rest:
+                        t = '장면 %d  %s' % (i, c)
+                        rx += d.P(t, 'small', 'LT')
+                        rh += text_h(t, st.C['small'], TW / MM, 135)
+                    d.add(hx, hh, keep=True)
+                    d.add(d.tbl([cells], [cw, cw, TW - 2 * cw]), ph + 4)
+                    if rx:
+                        d.add(rx, rh)
+                    k.gap(d)
+            # 풀어 봐요
+            items, games = lesson_items(L)
+            k.section(d, '풀어 봐요', '1~%d번은 따라 하기, 그다음은 혼자 하기' % len([t for t in L['do'] if t and t['type'] != 'game']) if L['do'] else '')
+            k.grid(d, items)
+            for t in games:
+                k.callout(d, '학습관 대결', [clean(t['q']), '학습관 %s.html#l%d에서 인공지능과 겨뤄 보세요. 이기면 이 칸에 ✓, 걸린 판 수도 적어 봐요.  (     )판 만에 이겼어요.' % (D['id'], L['no'])])
+            keys.append((L, items))
+            # 정리해요
+            g = G.get(L['id'], {})
+            k.gap(d)
+            k.wrapup(d, L['sum'], g['ask'][0])
+
+        # 단원 마무리
+        d.new_page()
+        d.marks[mk('r%d' % ui)] = len(d.pages)
+        k.banner(d, '단원 마무리', '%d단원 %s' % (ui + 1, U['title']), '이 단원에서 배운 것을 섞어 풀어 보세요.', '')
+        pool = []
+        for L in U['lessons']:
+            pool += [(L, t) for t in L['rv'][:1] if t['type'] != 'game']
+        if len(pool) > 6:
+            step = len(pool) / 6.0
+            pool = [pool[int(i * step)] for i in range(6)]
+        k.grid(d, [t for _, t in pool])
+        keys.append(({'review': ui, 'title': '%d단원 마무리' % (ui + 1)}, [t for _, t in pool]))
+        rows = [[(d.P('맞힌 문제', 'accS', 'CT'), st.F['tint'], 1, 'CENTER', None), (d.P('(      ) / %d' % len(pool), 'body', 'CT'), st.F['box'], 1, 'CENTER', None),
+                 (d.P('다시 볼 차시', 'accS', 'CT'), st.F['tint'], 1, 'CENTER', None), (d.P(' ', 'body', 'CT'), st.F['box'], 1, 'CENTER', None)]]
+        k.gap(d)
+        d.add(d.tbl(rows, [mm(28), mm(40), mm(30), TW - mm(98)]), 10)
+
+    # 마당 확인 평가 ---------------------------------------------------
+    d.to_odd(lambda: k.filler(d))
+    d.marks[mk('exam')] = len(d.pages)
+    k.banner(d, '확인 평가', '%d마당 확인 평가' % no, '마당 전체를 돌아봐요. 힌트 없이 혼자 풀어 보세요.', '')
+    allL = [L for U in units for L in U['lessons']]
+    pool = [(L, L['rv'][1] if len(L['rv']) > 1 else (L['rv'][0] if L['rv'] else None)) for L in allL]
+    pool = [(L, t) for L, t in pool if t and t['type'] != 'game']
+    if len(pool) > 12:
+        step = len(pool) / 12.0
+        pool = [pool[int(i * step)] for i in range(12)]
+    k.grid(d, [t for _, t in pool])
+    keys.append(({'review': -1, 'title': '마당 확인 평가'}, [t for _, t in pool]))
+    k.gap(d)
+    k.callout(d, '나의 결과', ['맞힌 문제 (      ) / %d     ·  %d개 이상 맞혔다면 학습관의 ‘확인 시험’(15문제 중 12문제 통과)에 도전해 %s 등급을 받아요!' % (len(pool), max(1, len(pool) - 2), RANK[no])])
+
+    return keys
+
+
+def answers(d, k, D, keys, st, P):
+    """정답과 풀이(제목은 부르는 쪽에서)"""
+    for L, items in keys:
+        nm = ('%d차시  %s' % (L['no'], L['title'])) if 'no' in L else L['title']
+        d.add(d.tbl([[(d.P(nm, 'keyb', 'LT'), st.F['under'], 1, 'BOTTOM', (0, 0, 100, 100))]], [TW]), 8, )
+        NC = ANS_COLS
+        cw = TW // NC
+        cells, hs = [], []
+
+        def flush():
+            if not cells:
+                return
+            if len(cells) < NC:
+                cells.append((d.P('', 'key', 'L'), st.F['none'], NC - len(cells), 'TOP', None))
+            d.add(d.tbl([list(cells)], [cw] * (NC - 1) + [TW - cw * (NC - 1)]), max(hs) + 2)
+            cells.clear()
+            hs.clear()
+        for i, t in enumerate(items):
+            a = ans_text(t, D, k.sanmode)
+            body = d.P('', 'key', 'LT', runs=d.R('%d  ' % (i + 1), 'keyb') + d.R(a, 'key'))
+            pic = t['type'] in ('click', 'move', 'play', 'line') and t['board'] and not (t['type'] == 'click' and t['board']['coords'] and len(t['ans']) <= 2)
+            tw = cw / MM - (ANS_PIC + 3 if pic else 2)
+            h = text_h('%d  ' % (i + 1) + a, st.C['key'], tw, 135)
+            ok = clean(t.get('ok', ''))
+            ok = re.sub(r'^(맞아요|잘했어요|좋아요|정답이에요)[!.]?\s*', '', ok)
+            if ok and len(ok) > 4:
+                body += d.P(ok, 'cap', 'LT')
+                h += text_h(ok, st.C['cap'], tw, 130)
+            if pic:
+                px, ph = d.pic(P.board(ans_marks(t)), ANS_PIC, 'picL')
+                x = d.tbl([[(body, st.F['none'], 1, 'TOP', (0, 200, 0, 0)), (px, st.F['none'], 1, 'TOP', (0, 0, 0, 0))]], [cw - mm(ANS_PIC + 2), mm(ANS_PIC + 1)])
+                h = max(h, ph) + 1
+            else:
+                x = body
+            cells.append((x, st.F['none'], 1, 'TOP', (200, 300, 150, 150)))
+            hs.append(h + 1)
+            if len(cells) == NC:
+                flush()
+        flush()
+        k.gap(d)
+
 
 
 def student(D, P, G, M, st, plan=None):
@@ -653,193 +854,14 @@ def student(D, P, G, M, st, plan=None):
         if kind == 'U':
             pass
 
-    # 단원 ---------------------------------------------------------
-    keys = []
-    for ui, U in enumerate(units):
-        d.to_odd(lambda: k.filler(d))
-        d.hide.add(len(d.pages) - 1)
-        d.marks['u%d' % ui] = len(d.pages)
-        x = d.tbl([[(d.P('%d마당' % no, 'u0', 'LT') + d.P('%d단원' % (ui + 1), 'u1', 'LT') + d.P(U['title'], 'u2', 'LT'),
-                     st.F['tint'], 1, 'CENTER', (2500, 1500, 3000, 3000))]], [TW])
-        d.add(x, 70)
-        d.add(d.P(' ', 'gap2'), 8)
-        k.para(d, clean(M.UNIT[ui]), 'body')
-        art = unit_art(U, D)
-        free = d.room() - (math.ceil(len(U['lessons']) / (2 if len(U['lessons']) > 8 else 1)) * 11 + 22)      # 단원 여는 쪽이 한 쪽을 넘지 않게
-        if art and free > 30:
-            d.add(d.P(' ', 'gap2'), 4)
-            if isinstance(art, list):
-                x, h = d.pic(P.big(art), min(34 * len(art), (free - 8) * len(art)))
-            else:
-                x, h = d.pic(P.board(art), min(70, free - 8))
-            d.add(x, h + 4)
-        d.add(d.P(' ', 'gap2'), 6)
-        d.add(d.P('이 단원에서 배울 것', 'h2', 'L'), 10)
-        two = len(U['lessons']) > 8
-        ls_ = U['lessons']
-        per = 2 if two else 1
-        for i in range(0, len(ls_), per):
-            row, ws = [], []
-            for L in ls_[i:i + per]:
-                row += [(d.P('%d차시' % L['no'], 'accS', 'CT'), st.F['tint'], 1, 'CENTER', (200, 200, 250, 250)),
-                        (d.P(L['title'], 'q' if two else 'bodyb', 'LT'), st.F['box'], 1, 'CENTER', (500, 200, 250, 250)),
-                        (d.P('□', 'body', 'CT'), st.F['box'], 1, 'CENTER', (100, 100, 250, 250))]
-                cw = TW // per
-                ws += [mm(20), cw - mm(30), mm(10)]
-            if len(row) < 3 * per:
-                row.append((d.P('', 'q', 'L'), st.F['none'], 3, 'CENTER', None))
-                ws += [mm(20), TW // 2 - mm(30), mm(10)]
-            ws[-1] += TW - sum(ws)
-            th = max(text_h(L['title'], st.C['q'], TW / MM / per - 33, 135) for L in ls_[i:i + per])
-            d.add(d.tbl([row], ws), max(9.6, th + 3))
-        d.add(d.P('다 공부한 차시는 □에 ✓ 표시를 해요.', 'cap', 'R'), 6)
-
-        for L in U['lessons']:
-            d.new_page()
-            d.marks['l%d' % L['no']] = len(d.pages)
-            k.banner(d, '%d차시' % L['no'], L['title'], L['sum'])
-            # 배워요
-            k.section(d, '배워요')
-            pics = 0
-            for s in L['say']:
-                b = s['board']
-                showb = b and pics < 3 and meaningful(b) and not s.get('big')
-                if s.get('big'):
-                    k.para(d, clean(s['text']))
-                    x, h = d.pic(P.big(s['big']), 20 * len(s['big']) + 6)
-                    d.add(x, h + 2)
-                elif showb:
-                    pics += 1
-                    pw = 50
-                    tx = d.P(clean(s['text']), 'body', 'J')
-                    th = text_h(s['text'], st.C['body'], TW / MM - pw - 10)
-                    px, ph = d.pic(P.board(b), pw)
-                    x = d.tbl([[(tx, st.F['none'], 1, 'CENTER', (0, 900, 200, 200)), (px, st.F['none'], 1, 'CENTER', (0, 0, 200, 200))]],
-                              [TW - mm(pw + 2), mm(pw + 2)])
-                    d.add(x, max(th, ph) + 3)
-                else:
-                    k.para(d, clean(s['text']))
-                    k.gap(d)
-            # 예시로 보기
-            if L['ex']:
-                k.section(d, '예시로 보기', '장면을 차례로 따라가 보세요.')
-                for ei, e in enumerate(L['ex']):
-                    fr = e['frames']
-                    if len(fr) > 3:
-                        pick = [fr[0], fr[len(fr) // 2], fr[-1]] if len(fr) > 4 else [fr[0], fr[-2], fr[-1]]
-                    else:
-                        pick = fr
-                    head = '예시 %d  %s' % (ei + 1, clean(e['text']))
-                    hx = d.P('', 'body', 'J', runs=d.R('예시 %d  ' % (ei + 1), 'acc') + d.R(clean(e['text']), 'body'))
-                    hh = text_h(head, st.C['body'], TW / MM)
-                    cw = TW // 3
-                    cells, ph = [], 0
-                    for fi, f in enumerate(pick):
-                        n = fr.index(f) + 1
-                        px, h = d.pic(P.board(f['board']), 47)
-                        cap = '장면 %d  %s' % (n, clean(f['cap'])) if f['cap'] else '장면 %d' % n
-                        cells.append((px + d.P(cap, 'cap', 'CT'), st.F['none'], 1, 'TOP', (300, 300, 100, 100)))
-                        ph = max(ph, h + text_h(cap, st.C['cap'], 52, 130))
-                    while len(cells) < 3:
-                        cells.append((d.P('', 'cap', 'C'), st.F['none'], 1, 'TOP', None))
-                    rest = [(i + 1, clean(f['cap'])) for i, f in enumerate(fr) if f not in pick and f['cap']]
-                    rx, rh = '', 0
-                    for i, c in rest:
-                        t = '장면 %d  %s' % (i, c)
-                        rx += d.P(t, 'small', 'LT')
-                        rh += text_h(t, st.C['small'], TW / MM, 135)
-                    d.add(hx, hh, keep=True)
-                    d.add(d.tbl([cells], [cw, cw, TW - 2 * cw]), ph + 4)
-                    if rx:
-                        d.add(rx, rh)
-                    k.gap(d)
-            # 풀어 봐요
-            items, games = lesson_items(L)
-            k.section(d, '풀어 봐요', '1~%d번은 따라 하기, 그다음은 혼자 하기' % len([t for t in L['do'] if t and t['type'] != 'game']) if L['do'] else '')
-            k.grid(d, items)
-            for t in games:
-                k.callout(d, '학습관 대결', [clean(t['q']), '학습관 %s.html#l%d에서 인공지능과 겨뤄 보세요. 이기면 이 칸에 ✓, 걸린 판 수도 적어 봐요.  (     )판 만에 이겼어요.' % (D['id'], L['no'])])
-            keys.append((L, items))
-            # 정리해요
-            g = G.get(L['id'], {})
-            k.gap(d)
-            k.wrapup(d, L['sum'], g['ask'][0])
-
-        # 단원 마무리
-        d.new_page()
-        d.marks['r%d' % ui] = len(d.pages)
-        k.banner(d, '단원 마무리', '%d단원 %s' % (ui + 1, U['title']), '이 단원에서 배운 것을 섞어 풀어 보세요.', '')
-        pool = []
-        for L in U['lessons']:
-            pool += [(L, t) for t in L['rv'][:1] if t['type'] != 'game']
-        if len(pool) > 6:
-            step = len(pool) / 6.0
-            pool = [pool[int(i * step)] for i in range(6)]
-        k.grid(d, [t for _, t in pool])
-        keys.append(({'review': ui, 'title': '%d단원 마무리' % (ui + 1)}, [t for _, t in pool]))
-        rows = [[(d.P('맞힌 문제', 'accS', 'CT'), st.F['tint'], 1, 'CENTER', None), (d.P('(      ) / %d' % len(pool), 'body', 'CT'), st.F['box'], 1, 'CENTER', None),
-                 (d.P('다시 볼 차시', 'accS', 'CT'), st.F['tint'], 1, 'CENTER', None), (d.P(' ', 'body', 'CT'), st.F['box'], 1, 'CENTER', None)]]
-        k.gap(d)
-        d.add(d.tbl(rows, [mm(28), mm(40), mm(30), TW - mm(98)]), 10)
-
-    # 마당 확인 평가 ---------------------------------------------------
-    d.to_odd(lambda: k.filler(d))
-    d.marks['exam'] = len(d.pages)
-    k.banner(d, '확인 평가', '%d마당 확인 평가' % no, '마당 전체를 돌아봐요. 힌트 없이 혼자 풀어 보세요.', '')
-    allL = [L for U in units for L in U['lessons']]
-    pool = [(L, L['rv'][1] if len(L['rv']) > 1 else (L['rv'][0] if L['rv'] else None)) for L in allL]
-    pool = [(L, t) for L, t in pool if t and t['type'] != 'game']
-    if len(pool) > 12:
-        step = len(pool) / 12.0
-        pool = [pool[int(i * step)] for i in range(12)]
-    k.grid(d, [t for _, t in pool])
-    keys.append(({'review': -1, 'title': '마당 확인 평가'}, [t for _, t in pool]))
-    k.gap(d)
-    k.callout(d, '나의 결과', ['맞힌 문제 (      ) / %d     ·  %d개 이상 맞혔다면 학습관의 ‘확인 시험’(15문제 중 12문제 통과)에 도전해 %s 등급을 받아요!' % (len(pool), max(1, len(pool) - 2), RANK[no])])
+    keys = part(d, k, D, G, M, P, st)
 
     # 정답과 풀이 -----------------------------------------------------
     d.new_page()
     d.marks['ans'] = len(d.pages)
     d.add(d.P('정답과 풀이', 'pt', 'L'), 14)
     k.gap(d)
-    for L, items in keys:
-        nm = ('%d차시  %s' % (L['no'], L['title'])) if 'no' in L else L['title']
-        d.add(d.tbl([[(d.P(nm, 'keyb', 'LT'), st.F['under'], 1, 'BOTTOM', (0, 0, 100, 100))]], [TW]), 8, )
-        NC = 3
-        cw = TW // NC
-        cells, hs = [], []
-
-        def flush():
-            if not cells:
-                return
-            if len(cells) < NC:
-                cells.append((d.P('', 'key', 'L'), st.F['none'], NC - len(cells), 'TOP', None))
-            d.add(d.tbl([list(cells)], [cw] * (NC - 1) + [TW - cw * (NC - 1)]), max(hs) + 2)
-            cells.clear()
-            hs.clear()
-        for i, t in enumerate(items):
-            a = ans_text(t, D, k.sanmode)
-            body = d.P('', 'key', 'LT', runs=d.R('%d  ' % (i + 1), 'keyb') + d.R(a, 'key'))
-            pic = t['type'] in ('click', 'move', 'play', 'line') and t['board'] and not (t['type'] == 'click' and t['board']['coords'] and len(t['ans']) <= 2)
-            tw = cw / MM - (26 if pic else 2)
-            h = text_h('%d  ' % (i + 1) + a, st.C['key'], tw, 135)
-            ok = clean(t.get('ok', ''))
-            ok = re.sub(r'^(맞아요|잘했어요|좋아요|정답이에요)[!.]?\s*', '', ok)
-            if ok and len(ok) > 4:
-                body += d.P(ok, 'cap', 'LT')
-                h += text_h(ok, st.C['cap'], tw, 130)
-            if pic:
-                px, ph = d.pic(P.board(ans_marks(t)), 23, 'picL')
-                x = d.tbl([[(body, st.F['none'], 1, 'TOP', (0, 200, 0, 0)), (px, st.F['none'], 1, 'TOP', (0, 0, 0, 0))]], [cw - mm(25), mm(24)])
-                h = max(h, ph) + 1
-            else:
-                x = body
-            cells.append((x, st.F['none'], 1, 'TOP', (200, 300, 150, 150)))
-            hs.append(h + 1)
-            if len(cells) == NC:
-                flush()
-        flush()
-        k.gap(d)
+    answers(d, k, D, keys, st, P)
 
     # 용어 풀이 -------------------------------------------------------
     d.new_page()
