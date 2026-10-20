@@ -4,7 +4,7 @@
     python3 _build/chess/book/book.py m2        # special/chess/book/체스_2마당_학생용교재.hwpx · 체스_2마당_지도서.hwpx
     python3 _build/chess/book/book.py m2 check  # 만들지 않고 쪽 나눔·그림만 점검
 
-1마당 교재(gen_book.py로 만든 것)는 선생님이 직접 고치므로 이 도구로 만들지 않습니다(m1은 막아 둠).
+1마당도 2026-10-20부터 이 도구로 만듭니다(선생님 요청: 2~6마당과 같은 꼴). 옛 활동지 꼴 도구 gen_book.py는 그림 찍기 등 조각만 빌려 씁니다.
 
 책 짜임
 - 학생용: 표지 → 이 책의 주인·일러두기 → 머리말 → 이 책의 짜임 → 차례 → (단원 여는 쪽 → 차시들 → 단원 마무리) × 단원
@@ -24,7 +24,7 @@ ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, 'grade4', 'math', '_build', 'sheets'))
 import hwpxgen as H  # noqa: E402
-from gen_book import Pics, clean, click_q, IMG  # noqa: E402
+from gen_book import Pics, clean, click_q, IMG, place_marks  # noqa: E402
 
 OUT = os.path.join(ROOT, 'special', 'chess', 'book')
 SITE = 'https://hongjihee1005.github.io/hong_teacher/special/chess/'
@@ -32,8 +32,8 @@ STAMP = datetime.datetime(2026, 10, 20, 0, 0, 0, tzinfo=datetime.timezone.utc)
 NUM = '①②③④⑤⑥⑦⑧⑨⑩'
 KIND = {'easy': ('쉬운 조작', '10초 · 10초 · 10초'), 'one': ('한 수 생각', '15초 · 15초 · 15초'), 'deep': ('깊은 생각', '20초 · 20초 · 20초')}
 # 마당마다 색(진한 색, 옅은 색)
-ACC = {2: ('#2E7D5B', '#E4F2EA'), 3: ('#2B6FB8', '#E3EEF9'), 4: ('#B23A3A', '#F8E6E4'), 5: ('#6A4BA0', '#EEE8F6'), 6: ('#1F6F78', '#E2F1F2')}
-RANK = {2: '나이트', 3: '비숍', 4: '룩', 5: '퀸', 6: '킹'}
+ACC = {1: ('#7A5230', '#F4EBDF'), 2: ('#2E7D5B', '#E4F2EA'), 3: ('#2B6FB8', '#E3EEF9'), 4: ('#B23A3A', '#F8E6E4'), 5: ('#6A4BA0', '#EEE8F6'), 6: ('#1F6F78', '#E2F1F2')}
+RANK = {1: '폰', 2: '나이트', 3: '비숍', 4: '룩', 5: '퀸', 6: '킹'}
 
 MM = H.MM
 PAGE_W, PAGE_H = 59528, 84189
@@ -349,6 +349,8 @@ def book_q(t):
         return click_q(q, t['all'])
     q = re.sub(r'\s*내 말을 누르고[^.]*\.', '', q)
     q = re.sub(r'\s*(말을 )?누르고[^.]*눌러요\.', '', q)
+    if t['type'] == 'place':
+        return '처음 배치에서 그림의 번호 칸에 들어갈 말의 이름을 쓰세요.'
     if t['type'] == 'move':
         return q + ' 말이 가는 길을 판에 화살표로 그려 보세요.'
     if t['type'] == 'play':
@@ -484,7 +486,8 @@ class Kit:
         if t['type'] == 'game':
             return x, h
         if t['board'] and (t['type'] != 'pick' or meaningful(t['board'])):
-            px, ph = d.pic(self.P.board(t['board']), pic_mm)
+            bd = dict(t['board'], marks=place_marks(t)) if t['type'] == 'place' else t['board']
+            px, ph = d.pic(self.P.board(bd), pic_mm)
             x += px
             h += ph + 1
             if t.get('turn') == 'b':
@@ -504,7 +507,9 @@ class Kit:
             x += d.P('답: (        ) → (        )', 'small', 'RT')
             h += 6
         elif t['type'] == 'place':
-            pass
+            o = '   '.join('%d (        )' % (i + 1) for i in range(len(t['need'])))
+            x += d.P(o, 'small', 'LT')
+            h += text_h(o, self.S.C['small'], w_mm - 4, 135)
         return x, h + 3
 
     def grid(self, d, items, start=1, cols=3, pic_mm=50):
@@ -1005,8 +1010,6 @@ def teacher(D, P, G, M, st, plan=None, spg=None):
 
 # ---------------------------------------------------------------- 만들기
 def main(mid, check=False):
-    if mid == 'm1':
-        sys.exit('1마당 교재는 선생님이 직접 고치는 파일이라 이 도구로 만들지 않아요.')
     exp = subprocess.run(['node', os.path.join(HERE, 'export.js'), mid, '5', '2'], capture_output=True, text=True)
     if exp.returncode:
         sys.exit('자료 뽑기 실패\n' + exp.stderr[-2000:])
