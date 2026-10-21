@@ -935,7 +935,7 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
         k.gap(d, 'gap2')
         d.add(d.P('단원의 차시', 'h2', 'L'), 10)
         for L in U['lessons']:
-            k.bullet(d, '%d차시 %s — %s (학생용 교재 %d쪽)' % (L['no'], L['title'], clean(L['sum']), sp('l%d' % L['no'])))
+            k.bullet(d, '%d차시 %s — %s (학생용 교재 %s쪽)' % (L['no'], L['title'], clean(L['sum']), sp('l%d' % L['no'])))
         for L in U['lessons']:
             g = G[L['id']]
             if d.room() < 80:       # 차시는 이어서 싣고, 쪽이 얼마 안 남았을 때만 새 쪽에서 시작
@@ -946,7 +946,7 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
             k.banner(d, '%d차시' % L['no'], L['title'], L['sum'])
             kd = KIND[L['kind']]
             info = [('문제 종류', '%s · 저절로 힌트 %s' % kd), ('학습관', SITE + '%s.html#l%d' % (D['id'], L['no'])),
-                    ('학생용 교재', '%d쪽부터' % sp('l%d' % L['no']))]
+                    ('학생용 교재', '%s쪽부터' % sp('l%d' % L['no']))]
             for a, b in info:
                 d.add(d.tbl([[(d.P(a, 'accS', 'CT'), st.F['tint'], 1, 'CENTER', None), (d.P(b, 'q', 'LT'), st.F['box'], 1, 'CENTER', (700, 300, 200, 200))]], [mm(30), TW - mm(30)]), 8)
             k.gap(d)
@@ -986,7 +986,7 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
     for t in ['학습관 차시 목록 맨 아래 ‘확인 시험’: %d마당의 모든 차시에서 고른 15문제, 12문제 이상 맞히면 통과(%s 등급).' % (no, RANK[no]),
               '확인 시험은 힌트가 없고, 틀리면 정답을 보여 준 뒤 바로 다음 문제로 넘어갑니다. 결과 화면에 ‘다시 보면 좋은 차시’가 나옵니다.',
               '통과하면 학습관에서 이름을 넣어 수료증(A4 가로)을 인쇄할 수 있습니다.',
-              '학생용 교재의 ‘마당 확인 평가’(%d쪽)로 종이 평가를 먼저 하고 학습관 확인 시험을 보게 하면 좋습니다.' % sp('exam'),
+              '학생용 교재의 ‘마당 확인 평가’(%s쪽)로 종이 평가를 먼저 하고 학습관 확인 시험을 보게 하면 좋습니다.' % sp('exam'),
               '🔁 다시 보기: 학습관은 배운 차시에서 3문제를 골라 다시 풀게 합니다(자주 틀린 차시 먼저).']:
         k.bullet(d, t)
 

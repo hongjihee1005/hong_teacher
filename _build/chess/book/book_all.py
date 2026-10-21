@@ -257,7 +257,7 @@ def build(Ds, P, Ms, sts, plan=None):
         d.add(x, 15)
     # ---- 마당마다
     keys = {}
-    for no in nos:
+    for no in range(1, 7):
         D, M, st = Ds[no], Ms[no], sts[no]
         d.S = st
         k = B.Kit(D, P, M.G, st)
@@ -312,7 +312,7 @@ def build(Ds, P, Ms, sts, plan=None):
     ws = [mm(32), TW - mm(32 + 32), mm(32)]
     d.add(d.tbl([[(d.P(v, 'accS', 'CT'), st0.F['tint'], 1, 'CENTER', None) for v in ['용어', '뜻', '배우는 곳']]], ws, st0.F['box']), 9)
     seen, rows = set(), []
-    for no in range(1, b + 1):
+    for no in range(1, 7):
         lno = {L['id']: L['no'] for U in Ds[no]['units'] for L in U['lessons']}
         for term, mean, lid in Ms[no].TERMS:
             if term in seen:
@@ -365,14 +365,14 @@ def build_guide(Ds, P, Ms, sts, plan=None, SP=None, vol=None, prev=None):
         k0.para(d, t)
         k0.gap(d)
     if v:
-        k0.para(d, '지도서와 학생용 교재는 두 마당씩 세 권으로 나뉘어 있습니다(1권 1·2마당, 2권 3·4마당, 3권 5·6마당). 이 책은 %d권으로 %d마당과 %d마당을 담았고, 쪽수는 같은 %d권 학생용 교재의 쪽수입니다.' % (v, a, b, v))
+        k0.para(d, '학생용 교재는 마당마다 한 권씩 여섯 권(1권 = 1마당 … 6권 = 6마당), 지도서는 두 마당씩 세 권입니다. 이 책은 지도서 %d권으로 %d마당과 %d마당(학생용 %d·%d권)을 담았고, 학생용 교재 쪽수는 ‘%d권 38쪽’처럼 권과 쪽을 함께 적었습니다.' % (v, a, b, a, b, a))
         k0.gap(d)
     d.add(d.P('초등교사 홍지희', 'bodyb', 'R'), 8)
     d.new_page()
     d.foot('학습관과 교재', even=False)
     d.marks['intro'] = len(d.pages)
     B.intro_page(d, k0, st0)
-    for no in range(1, 7):
+    for no in nos:
         D, M, st = Ds[no], Ms[no], sts[no]
         d.S = st
         k = B.Kit(D, P, M.G, st, teacher=True)
@@ -396,7 +396,7 @@ def build_guide(Ds, P, Ms, sts, plan=None, SP=None, vol=None, prev=None):
         d.add(d.tbl([[(d.P(v, 'accS', 'CT'), st.F['boxT'], 1, 'CENTER', None) for v in ['차시', '단원', '제목', '문제 종류', '학생용 교재']]], ws), 8.5)
         for U in D['units']:
             for L in U['lessons']:
-                r = ['%d' % L['no'], U['title'], L['title'], B.KIND[L['kind']][0], '%d쪽' % sp('l%d' % L['no'])]
+                r = ['%d' % L['no'], U['title'], L['title'], B.KIND[L['kind']][0], '%s쪽' % sp('l%d' % L['no'])]
                 d.add(d.tbl([[(d.P(v, 'q', 'CT' if j != 2 else 'LT'), st.F['box'], 1, 'CENTER', None) for j, v in enumerate(r)]], ws),
                       max(7.6, B.text_h(L['title'], st.C['q'], ws[2] / MM - 3, 135) + 2))
         B.tpart(d, k, D, M.G, M, P, st, mk=lambda x, no=no: 'm%d:%s' % (no, x), sp=sp)
@@ -409,7 +409,7 @@ def build_guide(Ds, P, Ms, sts, plan=None, SP=None, vol=None, prev=None):
     ws = [mm(32), TW - mm(32 + 32), mm(32)]
     d.add(d.tbl([[(d.P(v, 'accS', 'CT'), st0.F['tint'], 1, 'CENTER', None) for v in ['용어', '뜻', '배우는 곳']]], ws, st0.F['box']), 9)
     seen, rows = set(), []
-    for no in range(1, 7):
+    for no in range(1, b + 1):
         lno = {L['id']: L['no'] for U in Ds[no]['units'] for L in U['lessons']}
         for term, mean, lid in Ms[no].TERMS:
             if term not in seen:
@@ -452,7 +452,10 @@ def main(mode='student'):
     if mode == 'guide3':     # 지도서 세 권(학생용 세 권의 쪽: split.py가 남긴 student_marks_N.json)
         prev = {}
         for v, a, b in [(1, 1, 2), (2, 3, 4), (3, 5, 6)]:
-            SP = json.load(open(os.path.join(HERE, 'student_marks_%d.json' % v)))
+            SP = {}     # 학생용은 마당마다 한 권: '2권 38'처럼 권과 쪽
+            for no in (a, b):
+                mk = json.load(open(os.path.join(HERE, 'student_marks_m%d.json' % no)))
+                SP.update({k: '%d권 %d' % (no, x) for k, x in mk.items() if k.startswith('m%d:' % no)})
             kw = dict(SP=SP, vol=(v, a, b), prev=prev)
             d = build_guide(Ds, P, Ms, styles(), None, **kw)
             P.shoot()
