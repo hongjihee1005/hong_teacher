@@ -244,6 +244,50 @@ GRADES = ['폰', '나이트', '비숍', '룩', '퀸', '킹']
 # ---------------------------------------------------------------- 쪽마다 바꾸는 정도
 # 0 모두(문제 칸 표 두 줄 + 번호 내어쓰기) · 1 문제 칸 표는 한 줄 그대로, 그림을 칸 아래쪽에 맞춤 · 2 + 쪽 안의 빈 문단 빼기
 # 3 + 표 안 번호 문단은 내어쓰기 안 함 · 4 + 번호 내어쓰기 없음, 정리해요 쓰는 칸 빈 줄 하나 빼기
+PICRE = re.compile(r'(<hp:sz width=")(\d+)(" widthRelTo="ABSOLUTE" height=")(\d+)(" heightRelTo="ABSOLUTE" protect="0"/><hp:pos treatAsChar="1"[^>]*/><hp:outMargin[^>]*/></hp:pic>)')
+
+
+def scale_pics(p, f):
+    """문단 안 그림을 f배로(그림 틀·회전 중심도 함께)"""
+    def one(m):
+        q = m.group(0)
+        sz = re.search(r'<hp:sz width="(\d+)" widthRelTo="ABSOLUTE" height="(\d+)"', q)
+        w, h = int(int(sz.group(1)) * f), int(int(sz.group(2)) * f)
+        q = re.sub(r'<hp:sz width="\d+" widthRelTo="ABSOLUTE" height="\d+"', '<hp:sz width="%d" widthRelTo="ABSOLUTE" height="%d"' % (w, h), q)
+        q = re.sub(r'<hc:pt1 x="\d+" y="0"/><hc:pt2 x="\d+" y="\d+"/><hc:pt3 x="0" y="\d+"/>', '<hc:pt1 x="%d" y="0"/><hc:pt2 x="%d" y="%d"/><hc:pt3 x="0" y="%d"/>' % (w, w, h, h), q)
+        return re.sub(r'centerX="\d+" centerY="\d+"', 'centerX="%d" centerY="%d"' % (w // 2, h // 2), q)
+    return re.sub(r'<hp:pic .*?</hp:pic>', one, p, flags=re.S)
+
+
+def fit_examples(C, G):
+    """차시마다 '배워요 + 예시로 보기'가 한 쪽에 들어가면 같은 쪽에 싣기(예시 앞 쪽 나눔 없앰),
+    그림을 줄여(가장 작게 72%) 들어가면 배워요·예시 그림을 함께 줄여 싣기 — 2026-10-21 선생님 요청.
+    높이는 한글이 저장한 줄 정보(문단 높이)로 어림하고, 표 높이는 그림 높이만큼 줄어든다고 봄(넉넉히 4% 더 줄임)."""
+    T = [text(c).strip() for c in C]
+    ph = lambda p: max([int(m.group(4)) for m in PICRE.finditer(p)] or [0])
+    nshrink = nmove = 0
+    for a in range(len(C) - 1):
+        if not (re.match(r'\d+차시', T[a]) and T[a + 1].startswith('오늘의 목표')): continue
+        e = next((j for j in range(a, min(a + 40, len(C))) if T[j].startswith('예시로 보기')), None)
+        if e is None: continue
+        f = next((j for j in range(e + 1, min(e + 60, len(C))) if T[j].startswith('풀어 봐요') or re.match(r'<hp:p [^>]*pageBreak="1"', C[j])), None)
+        if f is None: continue
+        B = sum(G[j]['size'] for j in range(a, e)); E = sum(G[j]['size'] for j in range(e, f))
+        P = sum(ph(C[j]) for j in range(a, f) if '<hp:tbl' in C[j])
+        need = B + E - (H - 1500)
+        if need <= 0:
+            sc = 1
+        else:
+            sc = 1 - need / max(1, P) - 0.04
+            if sc < 0.72: continue
+            for j in range(a, f):
+                if '<hp:pic' in C[j]: C[j] = scale_pics(C[j], sc)
+            nshrink += 1
+        if re.match(r'<hp:p [^>]*pageBreak="1"', C[e]):
+            C[e] = re.sub(r'pageBreak="1"', 'pageBreak="0"', C[e], count=1); nmove += 1
+    return nshrink, nmove
+
+
 def bottom_align(p):
     def fix(m):     # 번호 문제 칸만(예시의 '장면' 칸은 그대로)
         t = m.group(0)
@@ -333,6 +377,15 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
     L = (lambda pg: 0) if flow else (lambda pg: lv.get(pg, 0))
 
     # ---- 1. 문제 칸 표·번호 내어쓰기·줄 나눔 (쪽마다 정도에 따라)
+    nfb = 0
+    for i, c in enumerate(C):       # 마당·단원 여는 쪽, 마당을 시작하며, 확인 평가는 늘 새 쪽(앞 쪽이 줄어도 올라오지 않게)
+        t = text(c).strip()
+        if re.search(r'^체스 학습관\d마당|^\d마당을 시작하며|^\d마당\d+단원|^확인 평가\d마당', t) and not re.match(r'<hp:p [^>]*pageBreak="1"', c):
+            if i and re.match(r'<hp:p [^>]*pageBreak="1"', C[i - 1]) and not text(C[i - 1]).strip(): continue
+            C[i] = re.sub(r'pageBreak="0"', 'pageBreak="1"', c, count=1); nfb += 1
+    log.append('여는 쪽 앞에 쪽 나눔 %d곳 더함' % nfb)
+    nshrink, nmove, nk = fit_examples(C, G), 0, 0
+    nmove = nshrink[1]; nshrink = nshrink[0]
     nsplit = nb = 0
     for i, g in enumerate(G):
         k = L(g['page']); p = C[i]
@@ -351,12 +404,19 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
                 r'(<hp:p [^>]*paraPrIDRef=")(\d+)("[^>]*><hp:run charPrIDRef="\d+"><hp:t>\d+  </hp:t>)',
                 lambda q: q.group(1) + TH.ppvar(q.group(2), ls=115) + q.group(3), m.group(0)), p, flags=re.S)
         p = polish(p, TH, caps=k < 3)
+        t = text(p).strip()
+        if (t == '배워요' or t.startswith(('예시로 보기', '풀어 봐요', '오늘의 목표')) or re.match(r'예시 \d+  ', t)
+                or (re.match(r'\d+차시', t) and i + 1 < len(C) and text(C[i + 1]).startswith('오늘의 목표'))):
+            pid = re.match(r'<hp:p [^>]*paraPrIDRef="(\d+)"', p).group(1)      # 제목은 다음 문단과 함께(쪽 끝에 홀로 남지 않게)
+            p = re.sub(r'paraPrIDRef="%s"' % pid, 'paraPrIDRef="%s"' % TH.ppvar(pid, kwn=True), p, count=1); nk += 1
+        p = re.sub(r'(<hp:tbl [^>]*?pageBreak=")\w+', r'\1NONE', p)            # 표는 쪽에서 쪼개지지 않게
         if k >= 1 and i + 1 < len(G) and G[i + 1]['page'] == g['page']:
             if (not re.search(r'<hp:t>[^<]*\S', p) and not re.search(r'<hp:(tbl|pic|ctrl|rect|container)', p)
                     and not re.match(r'<hp:p [^>]*pageBreak="1"', p)):
                 drop.add(i)
         C[i] = p
     log.append('문제 칸 표 %d개를 모두 두 줄로(문제 줄·그림 줄)' % nsplit)
+    log.append('배워요 아래에 예시로 보기 싣기: 그림을 줄인 차시 %d · 쪽 나눔을 없앤 곳 %d · 다음 문단과 함께 둔 제목 %d' % (nshrink, nmove, nk))
     tight = {pg: k for pg, k in lv.items() if k}
     if tight: log.append('빠듯한 쪽 %d곳(정도별 %s)' % (len(tight), {k: sum(1 for v in tight.values() if v == k) for k in sorted(set(tight.values()))}))
 
@@ -448,7 +508,7 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
             else:
                 x, h = box('단원 돌아보기', '이 단원에서 가장 기억에 남는 것과 아직 헷갈리는 것을 적어 보세요.', lines, acc, H_); kind = '단원 돌아보기'
         else:
-            if '배워요를 읽었어요' not in tx: continue    # 차시 중간(배워요·예시 뒤)에는 넣지 않음 — 차시가 끝난 쪽에만
+            continue    # '나의 체스 노트'는 넣지 않음(2026-10-21 선생님: 한 쪽 가득 노트만 남는 일이 생김)
             lines = (free - TITLE_ROW) // LINE_ROW - adj
             if lines < 3: continue
             x, h = box('나의 체스 노트', '오늘 배운 것, 궁금한 것, 헷갈린 것을 글이나 그림으로 남겨 보세요.', lines, acc, H_); kind = '나의 체스 노트'
