@@ -1,5 +1,6 @@
 /* 체스 학습관 학생용 교재 6권 표지(뒤표지 + 책등 + 앞표지 한 장) — 2026-10-21 선생님 요청
-   node _build/chess/cover/cover.js [출력폴더]   → 표지_학생용_N권.pdf(인쇄용, 벡터) · .png(300dpi)
+   node _build/chess/cover/cover.js [출력폴더]         → 표지_학생용_N권.pdf(인쇄용, 벡터) · .png(300dpi)
+   node _build/chess/cover/cover.js [출력폴더] guide   → 표지_지도서_N권 (지도서 3권, 두 마당씩)
    크기: 부크크 표지 틀 — 앞·뒤표지 210×297, 재단 여백 사방 3mm, 책등은 권마다(선생님이 부크크에서 받은 두께) */
 const fs = require('fs'), path = require('path');
 const { chromium } = require(require('child_process').execSync('npm root -g').toString().trim() + '/playwright');
@@ -25,6 +26,8 @@ const V = {
        blurb: '대국을 글로 적는 기보, 처음 부분인 오프닝, 계획을 세우는 중반, 킹도 싸우는 엔드게임을 배워요. 이제 한 판을 처음부터 끝까지 둘 수 있어요.' },
 };
 const B = 3, TW = 210, TH = 297, H = TH + 2 * B;
+const GSPINE = { 1: 8.31, 2: 9.52, 3: 7.65 };   // 지도서 책등 두께(mm, 선생님이 부크크에서 받은 값)
+const GV = { 1: [1, 2], 2: [3, 4], 3: [5, 6] };
 
 const pieceSvg = (c, cls) => `<svg class="${cls || ''}" viewBox="0 0 100 100">${PC.svg(c)}</svg>`;
 const board = (n, sq, acc) => { let s = ''; for (let r = 0; r < n; r++) for (let f = 0; f < 12; f++) if ((r + f) % 2) s += `<rect x="${f * sq}" y="${r * sq}" width="${sq}" height="${sq}"/>`; return `<svg viewBox="0 0 ${12 * sq} ${n * sq}" preserveAspectRatio="xMidYMax slice" style="fill:${acc}">${s}</svg>`; };
@@ -108,16 +111,88 @@ ${PC.CSS}
 </body></html>`;
 }
 
+function htmlGuide(g) {
+  const [a, b] = GV[g], s = GSPINE[g], W = 2 * TW + s + 2 * B, ink = '#2A221C', paper = '#F7F3EE';
+  const sfont = Math.min(5.2, s * 0.6).toFixed(2);
+  const disc = k => `<div class="gd"><div class="gdisc" style="background:${ACC[k][0]};box-shadow:0 0 0 2.6mm #fff,0 0 0 3.8mm ${ACC[k][0]}">${pieceSvg(V[k].p)}</div>
+    <div class="gm" style="color:${ACC[k][0]}">${k}마당</div><div class="gn">${V[k].name.replace(', ', ',<br>')}</div></div>`;
+  const unitCard = k => `<div class="gc" style="border-color:${ACC[k][0]}55"><h3 style="color:${ACC[k][0]}">${k}마당 ${V[k].name} · ${V[k].n}차시</h3>
+    <ol>${V[k].units.map((u, i) => `<li><span style="background:${ACC[k][0]}">${i + 1}</span>${u}</li>`).join('')}</ol></div>`;
+  const gser = Object.keys(GV).map(k => `<div class="gs${+k === g ? ' on' : ''}"><b>지도서 ${k}권</b><i>${GV[k][0]}·${GV[k][1]}마당</i></div>`).join('');
+  return `<!doctype html><html><head><meta charset="utf-8">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=block">
+<style>
+@page{size:${W}mm ${H}mm;margin:0}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:${W}mm;height:${H}mm}
+body{position:relative;font-family:'Noto Sans KR',sans-serif;color:${ink};background:${paper};word-break:keep-all;overflow:hidden}
+${PC.CSS}
+.zone{position:absolute;top:0;height:${H}mm;overflow:hidden}
+.back{left:0;width:${B + TW}mm}.spine{left:${B + TW}mm;width:${s}mm;background:${ink}}.front{left:${B + TW + s}mm;width:${TW + B}mm}
+.band{position:absolute;left:0;right:0;top:0;height:${B + 92}mm;background:${ink}}
+.stripe{position:absolute;left:0;right:0;top:${B + 92}mm;height:3mm;display:flex}.stripe i{flex:1}
+.f-in{position:absolute;left:12mm;right:${B + 12}mm;top:${B + 18}mm;bottom:${B + 12}mm;display:flex;flex-direction:column;align-items:center;text-align:center}
+.kick{font-size:5mm;font-weight:700;color:#E9DDD0;letter-spacing:.6mm}
+.title{font-family:'Black Han Sans';font-size:31mm;line-height:1;margin-top:5mm;letter-spacing:1mm;color:#fff}
+.tag{margin-top:6mm;font-family:'Black Han Sans';font-size:11mm;color:#F3C969;letter-spacing:1mm}
+.vol{margin-top:20mm;display:inline-flex;background:${ink};color:#fff;border-radius:20mm;padding:2.2mm 9mm;font-size:7mm;font-weight:900}
+.pair{display:flex;gap:14mm;margin-top:10mm}
+.gd{width:76mm}.gdisc{width:62mm;height:62mm;border-radius:50%;margin:0 auto;position:relative}
+.gdisc svg{position:absolute;left:8mm;top:6mm;width:46mm;height:46mm}.gdisc .cs-pc path,.gdisc .cs-pc circle{stroke-width:2.6}
+.gm{margin-top:6mm;font-size:6.5mm;font-weight:900}.gn{font-family:'Black Han Sans';font-size:${(V[a].name.length > 10 || V[b].name.length > 10) ? 7 : 8.5}mm;line-height:1.2;margin-top:1mm}
+.with{margin-top:9mm;font-size:5.2mm;font-weight:700}
+.gser{margin-top:auto;display:flex;gap:4mm;justify-content:center}
+.gs{width:40mm;padding:2.2mm 0;border-radius:3mm;border:.5mm solid #CFC4B8;color:#6B5F56}.gs b{display:block;font-size:4.3mm}.gs i{display:block;font-style:normal;font-size:3.6mm}
+.gs.on{background:${ink};border-color:${ink};color:#fff}
+.by{margin-top:6mm;font-size:6mm;font-weight:700}
+.sp-in{position:absolute;left:0;right:0;top:${B + 10}mm;bottom:${B + 10}mm;display:flex;flex-direction:column;align-items:center;color:#fff}
+.vt{writing-mode:vertical-rl;font-size:${sfont}mm;line-height:1;white-space:nowrap}
+.vt b{font-family:'Black Han Sans';font-weight:400}.vt em{font-style:normal;color:#F3C969}
+.sp-in .au{margin-top:auto}
+.b-in{position:absolute;left:${B + 14}mm;right:14mm;top:${B + 18}mm;bottom:${B + 52}mm;display:flex;flex-direction:column}
+.bh{font-family:'Black Han Sans';font-size:10mm}
+.blurb{margin-top:5mm;font-size:5mm;line-height:1.75}
+.gc{margin-top:6mm;background:#fff;border-radius:5mm;padding:5.5mm 7mm;border:.6mm solid}
+.gc h3{font-size:5mm;margin-bottom:2mm}
+.gc ol{list-style:none;columns:2;column-gap:8mm}
+.gc li{font-size:4.5mm;line-height:1.9;break-inside:avoid}.gc li span{display:inline-block;width:6mm;height:6mm;line-height:6mm;border-radius:50%;color:#fff;text-align:center;font-size:3.4mm;font-weight:700;margin-right:2.5mm}
+.has{margin-top:6mm;font-size:4.4mm;line-height:1.8}.has b{display:block;font-size:4.8mm}
+.bar{position:absolute;right:14mm;bottom:${B + 14}mm;width:52mm;height:32mm;background:#fff;border-radius:2mm}
+.web{position:absolute;left:${B + 14}mm;bottom:${B + 14}mm;width:120mm;font-size:3.9mm;line-height:1.7;color:#4A4038}
+</style></head><body>
+<div class="zone back"><div class="b-in">
+  <div class="bh">체스 학습관 지도서 ${g}권</div>
+  <p class="blurb">「체스 학습관」 ${a}·${b}마당과 학생용 교재 ${a}·${b}권을 함께 쓰시는 선생님을 위한 책입니다. 학년 구분 없이 모든 학생이 차례대로 배우도록 짜여 있습니다.</p>
+  ${unitCard(a)}${unitCard(b)}
+  <p class="has"><b>이 책에 담긴 것</b>마당 지도의 줄기 · 차시 한눈에 보기(학생용 교재 쪽수) · 차시마다 지도 흐름 · 교재 문제 정답 · 자주 하는 실수 · 지도 도움말 · 생각을 여는 질문 · 확인 시험과 등급 안내</p>
+</div>
+<p class="web">학습관 hongjihee1005.github.io/hong_teacher/special/chess/<br>지도서 1권 1·2마당 · 2권 3·4마당 · 3권 5·6마당</p>
+<div class="bar"></div></div>
+<div class="zone spine"><div class="sp-in"><div class="vt"><b>체스 학습관</b> <em>지도서 ${g}</em>　${a}·${b}마당</div><div class="vt au">홍지희</div></div></div>
+<div class="zone front"><div class="band"></div><div class="stripe"><i style="background:${ACC[a][0]}"></i><i style="background:${ACC[b][0]}"></i></div><div class="f-in">
+  <div class="kick">처음 배우는 어린이를 위한 체스 교재 · 선생님용</div>
+  <div class="title">체스 학습관</div>
+  <div class="tag">지도서</div>
+  <div class="vol">지도서 ${g}권 · ${a}~${b}마당</div>
+  <div class="pair">${disc(a)}${disc(b)}</div>
+  <div class="with">학생용 교재 ${a}권 · ${b}권과 함께 써요</div>
+  <div class="gser">${gser}</div>
+  <div class="by">홍지희 지음</div>
+</div></div>
+</body></html>`;
+}
+
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
   const br = await chromium.launch({ executablePath: '/opt/pw-browsers/chromium-1194/chrome-linux/chrome' }).catch(() => chromium.launch());
-  const only = process.argv[3] ? process.argv[3].split(',').map(Number) : [1, 2, 3, 4, 5, 6];
+  const guide = process.argv[3] === 'guide';
+  const only = guide ? [1, 2, 3] : process.argv[3] ? process.argv[3].split(',').map(Number) : [1, 2, 3, 4, 5, 6];
   for (const v of only) {
-    const W = 2 * TW + SPINE[v] + 2 * B;
+    const W = 2 * TW + (guide ? GSPINE : SPINE)[v] + 2 * B;
     const pg = await br.newPage({ viewport: { width: Math.round(W / 25.4 * 96), height: Math.round(H / 25.4 * 96) }, deviceScaleFactor: 300 / 96 });
-    await pg.setContent(html(v), { waitUntil: 'networkidle' });
+    await pg.setContent(guide ? htmlGuide(v) : html(v), { waitUntil: 'networkidle' });
     await pg.evaluate(() => document.fonts.ready);
-    const f = path.join(OUT, `표지_학생용_${v}권`);
+    const f = path.join(OUT, guide ? `표지_지도서_${v}권` : `표지_학생용_${v}권`);
     await pg.pdf({ path: f + '.pdf', width: W + 'mm', height: H + 'mm', printBackground: true, preferCSSPageSize: true });
     await pg.screenshot({ path: f + '.png', fullPage: false });
     const ok = await pg.evaluate(() => [...document.querySelectorAll('.f-in,.b-in,.sp-in')].map(e => e.scrollHeight <= e.clientHeight + 1));
