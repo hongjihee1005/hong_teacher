@@ -155,6 +155,49 @@ def kwl(lines, acc, H_):
 EMW = lambda c: 0.56 if c.isdigit() else 0.3 if c == ' ' else 0.55 if c.isascii() else 1.0
 
 
+def wrap_lines(segs, w1, w2):
+    """낱말 단위로 줄 바꿈한 줄 수와 마지막 줄 글자 수(segs = [(글자, 폭)])"""
+    words = []; cur = []
+    for ch, w in segs:
+        cur.append((ch, w))
+        if ch == ' ': words.append(cur); cur = []
+    if cur: words.append(cur)
+    lines = 1; used = 0; last = []
+    for wd in words:
+        ww = sum(w for c, w in wd if c != ' ') ; full = sum(w for c, w in wd)
+        lim = w1 if lines == 1 else w2
+        if used and used + ww > lim:
+            lines += 1; used = 0; last = []
+        used += full; last += [c for c, w in wd]
+    return lines, len(''.join(last).strip())
+
+
+def orphan(q, width, TH, spans=(-3, -5, -7, -9)):
+    """마지막 줄에 1~3글자만 남으면(외톨이 낱말) 그 문단 글자 간격을 조금 좁혀 앞 줄로 올림(한글 자간, 넉넉히 어림)"""
+    runs = re.findall(r'<hp:run charPrIDRef="(\d+)"><hp:t>([^<]*)</hp:t></hp:run>', q)
+    if not runs or sum(len(t) for c, t in runs) < 12: return q
+    pid = re.match(r'<hp:p [^>]*paraPrIDRef="(\d+)"', q).group(1)
+    x = TH.pp.get(pid) or next((y for y in TH.new_pp if y.startswith('<hh:paraPr id="%s"' % pid)), '')
+    gv = lambda tag: int((re.search(r'<hc:%s value="(-?\d+)"' % tag, x) or [0, 0])[1])
+    left, right, ind = gv('left'), gv('right'), gv('intent')
+    w1 = width - left - right - max(0, ind); w2 = width - left - right + min(0, ind)
+    def segs(sp):
+        out = []
+        for c, t in runs:
+            pt = TH.ch.get(c, 1000) / 100.0 * 0.3528 * MM
+            for ch in t:
+                base = 0.3 if ch == ' ' else 0.3 if ch in '.,·:;!?()' else EMW(ch)
+                out.append((ch, (base + sp / 100.0) * pt * 1.04))
+        return out
+    n0, last = wrap_lines(segs(0), w1, w2)
+    if n0 < 2 or last > 3: return q
+    for sp in spans:
+        n1, _ = wrap_lines(segs(sp), w1, w2)
+        if n1 < n0:
+            return re.sub(r'<hp:run charPrIDRef="(\d+)">', lambda m: '<hp:run charPrIDRef="%s">' % TH.charsp(m.group(1), sp), q)
+    return q
+
+
 def polish(p, TH, caps=True):
     """높이를 거의 바꾸지 않는 다듬기: ① 그림 옆 글은 그림 위쪽에 맞춤 ② 예시 그림 밑 설명은 그림 너비에 맞춰 왼쪽 정렬·'장면 N' 뒤로 줄 맞춤
     ③ 고르기 보기(① … ④)는 번호와 글이 떨어지지 않게, 한 줄에 안 들어가면 두 개씩"""
@@ -186,22 +229,37 @@ def polish(p, TH, caps=True):
             # ③ 보기
             def ch(mm):
                 q = mm.group(0)
-                r = re.match(r'(<hp:p [^>]*><hp:run charPrIDRef="(\d+)"><hp:t>)(①[^<]*)(</hp:t>)', q)
+                r = re.match(r'(<hp:p [^>]*paraPrIDRef=")(\d+)("[^>]*><hp:run charPrIDRef="(\d+)"><hp:t>)(①[^<]*)(</hp:t>)', q)
                 if not r: return q
-                items = [x.strip() for x in re.split(r'\s{2,}(?=[②③④⑤⑥⑦⑧])', r.group(3)) if x.strip()]
+                items = [x.strip() for x in re.split(r'\s{2,}(?=[②③④⑤⑥⑦⑧])', r.group(5)) if x.strip()]
                 if len(items) < 2: return q
-                pt = TH.ch.get(r.group(2), 1000) / 100.0
-                wid = lambda x: sum(EMW(c) for c in x) * pt * 0.3528 * MM
-                gap = '   '
+                pt = TH.ch.get(r.group(4), 1000) / 100.0
+                wid = lambda x: sum(EMW(c) for c in x) * pt * 0.3528 * MM * 1.1      # 한글 글꼴이 조금 넓음(넉넉히)
                 nb = lambda x: x.replace(' ', '<hp:nbSpace/>')
-                body = None
-                for per in range(len(items), 0, -1):      # 한 줄에 몇 개씩: 모든 줄이 들어가는 가장 큰 수(①②③ / ④⑤⑥)
-                    rows = [items[k:k + per] for k in range(0, len(items), per)]
-                    if per == 1 or all(wid(gap.join(rw)) <= tw * 0.9 for rw in rows):
-                        body = '<hp:lineBreak/>'.join(gap.join(nb(x) for x in rw) for rw in rows)
-                        break
-                return r.group(1) + body + q[r.end(3):]
+                n = len(items); gapw = 2 * 0.3 * pt * 0.3528 * MM
+                # 한 줄에 다 들어가면 한 줄, 아니면 같은 칸 너비로 2개씩(3개면 한 줄에 하나씩), 5~6개는 3개씩 — 탭으로 칸을 맞춤
+                if sum(wid(x) for x in items) + gapw * (n - 1) <= tw * 0.95:
+                    per = n
+                else:
+                    per = None
+                    for cand in ([3, 2, 1] if n >= 5 else [2, 1] if n in (2, 4) else [1]):
+                        if cand == 1 or max(wid(x) for x in items) <= tw / cand - gapw:
+                            per = cand; break
+                rows = [items[k:k + per] for k in range(0, n, per)]
+                pid = r.group(2)
+                if 1 < per < n or (per == n and n > 1):
+                    colw = tw // per if per < n else None
+                    if colw:
+                        pid = TH.ppvar(pid, tab=TH.tabpr([colw * k for k in range(1, per)]))
+                        body = '<hp:lineBreak/>'.join('<hp:tab/>'.join(nb(x) for x in rw) for rw in rows)
+                    else:
+                        body = '   '.join(nb(x) for x in items)
+                else:
+                    body = '<hp:lineBreak/>'.join(nb(x) for x in items)
+                return r.group(1) + pid + r.group(3) + body + q[r.end(5):]
             c2 = re.sub(r'<hp:p [^>]*><hp:run charPrIDRef="\d+"><hp:t>①[^<]*</hp:t></hp:run>(?:<hp:linesegarray>(?:(?!</hp:p>).)*</hp:linesegarray>)?</hp:p>', ch, c2)
+            c2 = re.sub(r'<hp:p [^>]*>(?:<hp:run charPrIDRef="\d+"><hp:t>[^<]*</hp:t></hp:run>)+(?:<hp:linesegarray>(?:(?!</hp:p>).)*</hp:linesegarray>)?</hp:p>',
+                        lambda mm: orphan(mm.group(0), tw, TH), c2)
             if c2 != c:
                 out = out[:a + shift] + c2 + out[e + shift:]; shift += len(c2) - len(c)
         return out
@@ -288,6 +346,28 @@ def fit_examples(C, G):
     return nshrink, nmove
 
 
+def fit_practice(C, G):
+    """'풀어 봐요'가 쪽 맨 위에서 시작하는데 '정리해요·생각 톡톡'이 다음 쪽으로 넘어가면, 문제 칸 그림을 줄여(72%까지) 한 쪽에 — 2026-10-21 선생님 요청"""
+    T = [text(c).strip() for c in C]
+    done = set(); n = 0
+    for h in range(1, len(C)):
+        if not T[h].startswith('풀어 봐요'): continue
+        e = next((j for j in range(h + 1, min(h + 15, len(C))) if '<hp:t>정리해요</hp:t>' in C[j]), None)
+        if e is None: continue
+        top = 0 if G[h]['page'] != G[h - 1]['last'] else sum(G[j]['size'] for j in range(h) if G[j]['page'] == G[h]['page'])
+        grids = [j for j in range(h, e) if re.search(r'<hp:tbl [^>]*rowCnt="1" colCnt="3"', C[j]) and re.search(r'<hp:t>\d+  </hp:t>', C[j])]
+        est = sum(G[j]['size'] for j in range(h, e + 1)) + sum(grid_delta(G[j]['p']) for j in grids)
+        P = sum(max([int(m.group(4)) for m in PICRE.finditer(C[j])] or [0]) for j in grids)
+        need = top + est - (H - 1500)
+        if need <= 0 or not P: continue
+        f = 1 - need / P - 0.03
+        if f < 0.72: continue
+        for j in grids:
+            C[j] = scale_pics(C[j], f); done.add(j)
+        n += 1
+    return n, done
+
+
 def bottom_align(p):
     def fix(m):     # 번호 문제 칸만(예시의 '장면' 칸은 그대로)
         t = m.group(0)
@@ -311,6 +391,41 @@ def outside_tables(p, f):
 
 
 class LHead(tidy.Head):
+    def tabpr(self, pos):
+        """왼쪽 탭 자리들(HWPUNIT)로 된 새 탭 모양"""
+        key = ('tab',) + tuple(pos)
+        if key in self.ppcache: return self.ppcache[key]
+        if not hasattr(self, 'new_tab'): self.new_tab = []
+        base = max(int(v) for v in re.findall(r'<hh:tabPr id="(\d+)"', self.h))
+        nid = str(base + 1 + len(self.new_tab))
+        items = ''.join('<hp:switch><hp:case hp:required-namespace="http://www.hancom.co.kr/hwpml/2016/HwpUnitChar"><hh:tabItem pos="%d" type="LEFT" leader="NONE" unit="HWPUNIT"/></hp:case>'
+                        '<hp:default><hh:tabItem pos="%d" type="LEFT" leader="NONE"/></hp:default></hp:switch>' % (v, 2 * v) for v in pos)
+        self.new_tab.append('<hh:tabPr id="%s" autoTabLeft="0" autoTabRight="0">%s</hh:tabPr>' % (nid, items))
+        self.ppcache[key] = nid
+        return nid
+
+    def charsp(self, cid, sp):
+        """글자 모양 cid를 자간 sp%로 복사"""
+        key = ('cs', cid, sp)
+        if key in self.ppcache: return self.ppcache[key]
+        if not hasattr(self, 'new_ch'): self.new_ch = []
+        allc = re.findall(r'<hh:charPr id="(\d+)".*?</hh:charPr>', self.h, re.S)
+        x = re.search(r'<hh:charPr id="%s".*?</hh:charPr>' % cid, self.h, re.S).group(0)
+        nid = str(max(map(int, allc)) + 1 + len(self.new_ch))
+        x = re.sub(r'<hh:charPr id="\d+"', '<hh:charPr id="%s"' % nid, x, count=1)
+        x = re.sub(r'<hh:spacing [^>]*/>', '<hh:spacing hangul="%d" latin="%d" hanja="%d" japanese="%d" other="%d" symbol="%d" user="%d"/>' % ((sp,) * 7), x, count=1)
+        self.new_ch.append(x); self.ch[nid] = self.ch.get(cid, 1000)
+        self.ppcache[key] = nid
+        return nid
+
+    def out(self):
+        h = super().out()
+        for tag, lst in (('tabProperties', getattr(self, 'new_tab', [])), ('charProperties', getattr(self, 'new_ch', []))):
+            if lst:
+                h = h.replace('</hh:%s>' % tag, ''.join(lst) + '</hh:%s>' % tag, 1)
+                h = re.sub(r'<hh:%s itemCnt="(\d+)"' % tag, lambda m: '<hh:%s itemCnt="%d"' % (tag, int(m.group(1)) + len(lst)), h, count=1)
+        return h
+
     def line_bf(self):
         """아래쪽 점선만 있는 쓰는 줄"""
         if 'line' not in self.bfcache:
@@ -321,15 +436,16 @@ class LHead(tidy.Head):
             self.bfcache['line'] = nid
         return self.bfcache['line']
 
-    def ppvar(self, pid, align=None, left=None, right=None, intent=None, kwn=False, ls=None):
+    def ppvar(self, pid, align=None, left=None, right=None, intent=None, kwn=False, ls=None, tab=None):
         """문단 모양 복사(맞춤·왼쪽/오른쪽 여백·첫 줄). hp:switch의 case는 HWPUNIT, default는 그 두 배"""
-        key = ('pv', pid, align, left, right, intent, kwn, ls)
+        key = ('pv', pid, align, left, right, intent, kwn, ls, tab)
         if key in self.ppcache: return self.ppcache[key]
         x = self.pp.get(pid) or next(y for y in self.new_pp if y.startswith('<hh:paraPr id="%s"' % pid))
         nid = str(max(map(int, self.pp)) + 1 + len(self.new_pp))
         x = re.sub(r'<hh:paraPr id="\d+"', '<hh:paraPr id="%s"' % nid, x, count=1)
         if align: x = re.sub(r'(<hh:align horizontal=")\w+', r'\g<1>' + align, x, count=1)
         if kwn: x = x.replace('keepWithNext="0"', 'keepWithNext="1"')
+        if tab: x = re.sub(r'tabPrIDRef="\d+"', 'tabPrIDRef="%s"' % tab, x, count=1)
         if ls: x = re.sub(r'(<hh:lineSpacing type="PERCENT" value=")\d+', r'\g<1>%d' % ls, x)
         for tag, v in (('left', left), ('right', right), ('intent', intent)):
             if v is None: continue
@@ -384,26 +500,26 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
             if i and re.match(r'<hp:p [^>]*pageBreak="1"', C[i - 1]) and not text(C[i - 1]).strip(): continue
             C[i] = re.sub(r'pageBreak="0"', 'pageBreak="1"', c, count=1); nfb += 1
     log.append('여는 쪽 앞에 쪽 나눔 %d곳 더함' % nfb)
+    nprac, fitted = fit_practice(C, G)
+    log.append('풀어 봐요와 정리해요를 한 쪽에(문제 칸 그림 줄임) %d차시' % nprac)
     nshrink, nmove, nk = fit_examples(C, G), 0, 0
     nmove = nshrink[1]; nshrink = nshrink[0]
     nsplit = nb = 0
     for i, g in enumerate(G):
         k = L(g['page']); p = C[i]
-        # 문제 칸 표는 쪽마다 늘 '문제 줄 + 그림 줄'(문제 시작·그림 위치가 줄마다 같음, 2026-10-21 선생님 요청). 빠듯한 쪽은 다른 곳을 줄임:
-        # 1 쪽 안 빈 문단 빼기 · 2 + 표 안 번호 내어쓰기 안 함 · 3 + 정리해요 쓰는 칸 빈 줄 하나 빼기·장면 설명 그대로 · 4 + 문제 글 줄 간격 130→115%
+        # 문제 칸 표는 쪽마다 늘 '문제 줄 + 그림 줄', 번호 문단은 늘 내어쓰기(모든 쪽 같은 모양, 2026-10-21 선생님 요청). 빠듯한 쪽은:
+        # 1 쪽 안 빈 문단 빼기 · 2 + 정리해요 쓰는 칸 빈 줄 하나 빼기 · 3 + 문제 칸 그림 90% · 4 + 문제 칸 그림 82%
+        if k >= 3 and i not in fitted:
+            p = re.sub(r'<hp:tbl [^>]*rowCnt="1" colCnt="3".*?</hp:tbl>', lambda m: scale_pics(m.group(0), 0.9 if k == 3 else 0.82)
+                       if re.search(r'<hp:t>\d+  </hp:t>', m.group(0)) else m.group(0), p, flags=re.S)
         p, n = tidy.split_grids(p, TH, ids); nsplit += n
-        if k < 2:
-            p, _ = tidy.numbered(p, TH)
-        else:
-            p = outside_tables(p, lambda x: tidy.numbered(x, TH)[0])
-        if k >= 3 and '정리해요' in text(p):
+        p, _ = tidy.numbered(p, TH)
+        if k >= 2 and '정리해요' in text(p):
             m = re.search(r'(<hp:subList [^>]*vertAlign="TOP"[^>]*>)(<hp:p [^>]*paraPrIDRef="27"[^>]*><hp:run charPrIDRef="\d+"><hp:t> </hp:t></hp:run></hp:p>)(<hp:p [^>]*paraPrIDRef="27"[^>]*><hp:run charPrIDRef="\d+"><hp:t> </hp:t></hp:run></hp:p>)', p)
             if m: p = p[:m.start(3)] + p[m.end(3):]
-        if k >= 4:
-            p = re.sub(r'<hp:tbl [^>]*rowCnt="2" colCnt="3".*?</hp:tbl>', lambda m: re.sub(
-                r'(<hp:p [^>]*paraPrIDRef=")(\d+)("[^>]*><hp:run charPrIDRef="\d+"><hp:t>\d+  </hp:t>)',
-                lambda q: q.group(1) + TH.ppvar(q.group(2), ls=115) + q.group(3), m.group(0)), p, flags=re.S)
-        p = polish(p, TH, caps=k < 3)
+        p = polish(p, TH)
+        if '<hp:tbl' not in p and '<hp:pic' not in p:
+            p = orphan(p, 43937, TH)
         t = text(p).strip()
         if (t == '배워요' or t.startswith(('예시로 보기', '풀어 봐요', '오늘의 목표')) or re.match(r'예시 \d+  ', t)
                 or (re.match(r'\d+차시', t) and i + 1 < len(C) and text(C[i + 1]).startswith('오늘의 목표'))):
