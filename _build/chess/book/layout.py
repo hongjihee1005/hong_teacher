@@ -277,15 +277,16 @@ class LHead(tidy.Head):
             self.bfcache['line'] = nid
         return self.bfcache['line']
 
-    def ppvar(self, pid, align=None, left=None, right=None, intent=None, kwn=False):
+    def ppvar(self, pid, align=None, left=None, right=None, intent=None, kwn=False, ls=None):
         """문단 모양 복사(맞춤·왼쪽/오른쪽 여백·첫 줄). hp:switch의 case는 HWPUNIT, default는 그 두 배"""
-        key = ('pv', pid, align, left, right, intent, kwn)
+        key = ('pv', pid, align, left, right, intent, kwn, ls)
         if key in self.ppcache: return self.ppcache[key]
         x = self.pp.get(pid) or next(y for y in self.new_pp if y.startswith('<hh:paraPr id="%s"' % pid))
         nid = str(max(map(int, self.pp)) + 1 + len(self.new_pp))
         x = re.sub(r'<hh:paraPr id="\d+"', '<hh:paraPr id="%s"' % nid, x, count=1)
         if align: x = re.sub(r'(<hh:align horizontal=")\w+', r'\g<1>' + align, x, count=1)
         if kwn: x = x.replace('keepWithNext="0"', 'keepWithNext="1"')
+        if ls: x = re.sub(r'(<hh:lineSpacing type="PERCENT" value=")\d+', r'\g<1>%d' % ls, x)
         for tag, v in (('left', left), ('right', right), ('intent', intent)):
             if v is None: continue
             n = [0]
@@ -335,24 +336,27 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
     nsplit = nb = 0
     for i, g in enumerate(G):
         k = L(g['page']); p = C[i]
-        if k == 0:
-            p, n = tidy.split_grids(p, TH, ids); nsplit += n
-        else:
-            q = bottom_align(p); nb += q != p; p = q
-        if k < 3:
+        # 문제 칸 표는 쪽마다 늘 '문제 줄 + 그림 줄'(문제 시작·그림 위치가 줄마다 같음, 2026-10-21 선생님 요청). 빠듯한 쪽은 다른 곳을 줄임:
+        # 1 쪽 안 빈 문단 빼기 · 2 + 표 안 번호 내어쓰기 안 함 · 3 + 정리해요 쓰는 칸 빈 줄 하나 빼기·장면 설명 그대로 · 4 + 문제 글 줄 간격 130→115%
+        p, n = tidy.split_grids(p, TH, ids); nsplit += n
+        if k < 2:
             p, _ = tidy.numbered(p, TH)
-        elif k == 3:
+        else:
             p = outside_tables(p, lambda x: tidy.numbered(x, TH)[0])
-        if k >= 4 and '정리해요' in text(p):      # 빠듯한 쪽: 정리해요 쓰는 칸의 빈 줄 하나 빼기(낱말은 끊지 않음)
+        if k >= 3 and '정리해요' in text(p):
             m = re.search(r'(<hp:subList [^>]*vertAlign="TOP"[^>]*>)(<hp:p [^>]*paraPrIDRef="27"[^>]*><hp:run charPrIDRef="\d+"><hp:t> </hp:t></hp:run></hp:p>)(<hp:p [^>]*paraPrIDRef="27"[^>]*><hp:run charPrIDRef="\d+"><hp:t> </hp:t></hp:run></hp:p>)', p)
             if m: p = p[:m.start(3)] + p[m.end(3):]
+        if k >= 4:
+            p = re.sub(r'<hp:tbl [^>]*rowCnt="2" colCnt="3".*?</hp:tbl>', lambda m: re.sub(
+                r'(<hp:p [^>]*paraPrIDRef=")(\d+)("[^>]*><hp:run charPrIDRef="\d+"><hp:t>\d+  </hp:t>)',
+                lambda q: q.group(1) + TH.ppvar(q.group(2), ls=115) + q.group(3), m.group(0)), p, flags=re.S)
         p = polish(p, TH, caps=k < 3)
-        if k >= 2 and i + 1 < len(G) and G[i + 1]['page'] == g['page']:
+        if k >= 1 and i + 1 < len(G) and G[i + 1]['page'] == g['page']:
             if (not re.search(r'<hp:t>[^<]*\S', p) and not re.search(r'<hp:(tbl|pic|ctrl|rect|container)', p)
                     and not re.match(r'<hp:p [^>]*pageBreak="1"', p)):
                 drop.add(i)
         C[i] = p
-    log.append('문제 칸 표 %d개를 두 줄로(문제 줄·그림 줄), 쪽이 빠듯한 곳의 표 %d개는 한 줄 그대로 그림을 아래로 맞춤' % (nsplit, nb))
+    log.append('문제 칸 표 %d개를 모두 두 줄로(문제 줄·그림 줄)' % nsplit)
     tight = {pg: k for pg, k in lv.items() if k}
     if tight: log.append('빠듯한 쪽 %d곳(정도별 %s)' % (len(tight), {k: sum(1 for v in tight.values() if v == k) for k in sorted(set(tight.values()))}))
 
