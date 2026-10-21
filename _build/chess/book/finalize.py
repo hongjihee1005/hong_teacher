@@ -233,7 +233,7 @@ def main(src, dst, rep=None):
     # ---- 차시 글 중간에 손으로 넣은 쪽 나눔(예: '작전 하나')은 없앰 — 차시 블록이 한 쪽에 들어가게 아래에서 맞춤
     okb = re.compile(r'^\d+차시|^예시로 보기|^풀어 봐요|^단원 마무리|^체스 학습관|^\d마당을 시작하며|^\d마당\d+단원|^확인 평가|^정답과 풀이|^용어 풀이|^\d마당 ·|^\d+  ')
     ncl = 0
-    i1 = next(i for i in range(len(C)) if T[i].startswith('1마당을 시작하며'))
+    i1 = next(i for i in range(len(C)) if re.match(r'\d마당을 시작하며', T[i]))
     i2 = next(i for i in range(len(C) // 2, len(C)) if T[i].startswith('정답과 풀이'))
     for i in range(i1 + 1, i2):
         if pbreak(C[i]) and T[i] and not okb.search(T[i]):
