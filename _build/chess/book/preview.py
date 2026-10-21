@@ -68,10 +68,7 @@ def render(path, rng=None):
                 if e.tag == HP + 't':
                     t = e.text or ''
                     for sub in e:
-                        t += {HP + 'lineBreak': '\n', HP + 'nbSpace': '\u00a0', HP + 'fwSpace': '\u3000'}.get(sub.tag, '') + (sub.tail or '')
-                    if e.find('hp:tab', NS) is not None:
-                        out.append('<span class="tab"></span>')
-                        t = e.find('hp:tab', NS).tail or ''
+                        t += {HP + 'lineBreak': '\n', HP + 'nbSpace': '\u00a0', HP + 'fwSpace': '\u3000', HP + 'tab': '\u2003\u2003'}.get(sub.tag, '') + (sub.tail or '')
                     out.append('<span style="font-size:%.1fpt;color:%s;%s">%s</span>' % (sz, col, 'font-weight:700' if b else '', html.escape(t)))
                 elif e.tag == HP + 'tbl':
                     out.append(table(e))
