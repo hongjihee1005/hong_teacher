@@ -392,7 +392,7 @@ def fit_lessons(C, G, lo=0.62, extra=None):
         if f >= 0.999: return
         for j in range(a, b):
             if '<hp:pic' in C[j] and (not only_grid or isgrid(C[j])): C[j] = scale_pics(C[j], f)
-    st = dict(both=0, ex=0, exs=0, pr=0, prs=0, rev=0, empty=0)
+    st = dict(both=0, ex=0, exs=0, pr=0, prs=0, rev=0, empty=0, ls=0)
     # 블록 안의 빈 문단이 여러 개 이어지면(선생님이 지운 자리 등) 하나만 남김 — 이것 때문에 다음 쪽으로 밀리던 곳이 있었음
     blank = lambda c: not re.search(r'<hp:t>[^<]*\S', c) and not re.search(r'<hp:(tbl|pic|ctrl|rect|container)', c) and not re.match(r'<hp:p [^>]*pageBreak="1"', c)
     gone = set()
@@ -415,7 +415,7 @@ def fit_lessons(C, G, lo=0.62, extra=None):
         if z is None: continue
         e = next((j for j in range(a, h) if T[j].startswith('예시로 보기')), None)
         if e is not None:
-            Lh, Eh = size(a, e), size(e, h)
+            Lh, Eh = int(size(a, e) * 1.04), int(size(e, h) * 1.04)     # 줄 나눔·내어쓰기로 조금 길어질 수 있어 넉넉히
             clear(e, h)
             if Lh + Eh <= HP_:
                 brk(e, 0); used = Lh + Eh; st['both'] += 1
@@ -424,6 +424,8 @@ def fit_lessons(C, G, lo=0.62, extra=None):
                 shrink(a, h, 1 - (Lh + Eh - HP_) / max(1, pics(a, h)) - 0.04); brk(e, 0); used = HP_; st['both'] += 1
             else:
                 brk(e, 1); st['ex'] += 1
+                if Lh > HP_ or a in extra:      # 배워요만 한 쪽인데 한두 줄 넘치면 배워요 그림을 줄여 한 쪽에
+                    shrink(a, e, min(1, max(0.55, 1 - (Lh - HP_) / max(1, pics(a, e)) - 0.03))); st['ls'] += 1
                 if Eh > HP_:
                     f = max(lo, 1 - (Eh - HP_) / max(1, pics(e, h)) - 0.04); shrink(e, h, f); st['exs'] += 1
                 elif e in extra: shrink(e, h, 1)
@@ -587,7 +589,7 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False, extr
             C[i] = re.sub(r'pageBreak="0"', 'pageBreak="1"', c, count=1); nfb += 1
     log.append('여는 쪽 앞에 쪽 나눔 %d곳 더함' % nfb)
     st = fit_lessons(C, G, extra=extra); fitted = set(); nk = 0
-    log.append('차시 쪽 짜임: 배워요+예시 한 쪽 %(both)d · 예시만 한 쪽 %(ex)d(그림 줄임 %(exs)d) · 풀어 봐요~정리해요 새 쪽 %(pr)d(그림 줄임 %(prs)d) · 단원 마무리 그림 줄임 %(rev)d · 이어진 빈 문단 뺌 %(empty)d' % st)
+    log.append('차시 쪽 짜임: 배워요+예시 한 쪽 %(both)d · 예시만 한 쪽 %(ex)d(그림 줄임 %(exs)d, 배워요 그림 줄임 %(ls)d) · 풀어 봐요~정리해요 새 쪽 %(pr)d(그림 줄임 %(prs)d) · 단원 마무리 그림 줄임 %(rev)d · 이어진 빈 문단 뺌 %(empty)d' % st)
     nsplit = nb = 0
     for i, g in enumerate(G):
         k = L(g['page']); p = C[i]
