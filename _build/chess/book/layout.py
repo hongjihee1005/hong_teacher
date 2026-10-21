@@ -182,7 +182,7 @@ def polish(p, TH):
                     pt = TH.ch.get(r.group(2), 900) / 100.0
                     L = int(sum(EMW(ch) for ch in r.group(3)) * pt * 0.3528 * MM)
                     return q.replace('paraPrIDRef="%s"' % r.group(1), 'paraPrIDRef="%s"' % TH.ppvar(r.group(1), 'LEFT', off, off, -L), 1)
-                c2 = re.sub(r'<hp:p [^>]*><hp:run charPrIDRef="\d+"><hp:t>장면 \d+  [^<]*</hp:t></hp:run></hp:p>', cap, c2)
+                c2 = re.sub(r'<hp:p [^>]*><hp:run charPrIDRef="\d+"><hp:t>장면 \d+  [^<]*</hp:t></hp:run>(?:<hp:linesegarray>(?:(?!</hp:p>).)*</hp:linesegarray>)?</hp:p>', cap, c2)
             # ③ 보기
             def ch(mm):
                 q = mm.group(0)
@@ -194,14 +194,14 @@ def polish(p, TH):
                 wid = lambda x: sum(EMW(c) for c in x) * pt * 0.3528 * MM
                 gap = '   '
                 nb = lambda x: x.replace(' ', '<hp:nbSpace/>')
-                if wid(gap.join(items)) <= tw * 0.97:
+                if wid(gap.join(items)) <= tw * 0.85:
                     body = gap.join(nb(x) for x in items)
-                elif len(items) == 4 and max(wid(items[0] + gap + items[1]), wid(items[2] + gap + items[3])) <= tw * 0.97:
+                elif len(items) == 4 and max(wid(items[0] + gap + items[1]), wid(items[2] + gap + items[3])) <= tw * 0.85:
                     body = nb(items[0]) + gap + nb(items[1]) + '<hp:lineBreak/>' + nb(items[2]) + gap + nb(items[3])
                 else:
                     body = '<hp:lineBreak/>'.join(nb(x) for x in items)
                 return r.group(1) + body + q[r.end(3):]
-            c2 = re.sub(r'<hp:p [^>]*><hp:run charPrIDRef="\d+"><hp:t>①[^<]*</hp:t></hp:run></hp:p>', ch, c2)
+            c2 = re.sub(r'<hp:p [^>]*><hp:run charPrIDRef="\d+"><hp:t>①[^<]*</hp:t></hp:run>(?:<hp:linesegarray>(?:(?!</hp:p>).)*</hp:linesegarray>)?</hp:p>', ch, c2)
             if c2 != c:
                 out = out[:a + shift] + c2 + out[e + shift:]; shift += len(c2) - len(c)
         return out
