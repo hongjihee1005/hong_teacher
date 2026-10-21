@@ -277,14 +277,15 @@ class LHead(tidy.Head):
             self.bfcache['line'] = nid
         return self.bfcache['line']
 
-    def ppvar(self, pid, align=None, left=None, right=None, intent=None):
+    def ppvar(self, pid, align=None, left=None, right=None, intent=None, kwn=False):
         """문단 모양 복사(맞춤·왼쪽/오른쪽 여백·첫 줄). hp:switch의 case는 HWPUNIT, default는 그 두 배"""
-        key = ('pv', pid, align, left, right, intent)
+        key = ('pv', pid, align, left, right, intent, kwn)
         if key in self.ppcache: return self.ppcache[key]
         x = self.pp.get(pid) or next(y for y in self.new_pp if y.startswith('<hh:paraPr id="%s"' % pid))
         nid = str(max(map(int, self.pp)) + 1 + len(self.new_pp))
         x = re.sub(r'<hh:paraPr id="\d+"', '<hh:paraPr id="%s"' % nid, x, count=1)
         if align: x = re.sub(r'(<hh:align horizontal=")\w+', r'\g<1>' + align, x, count=1)
+        if kwn: x = x.replace('keepWithNext="0"', 'keepWithNext="1"')
         for tag, v in (('left', left), ('right', right), ('intent', intent)):
             if v is None: continue
             n = [0]
@@ -306,7 +307,7 @@ class LHead(tidy.Head):
         return nid
 
 
-def build(saved, lv, lines_adj, dst, check=None):
+def build(saved, lv, lines_adj, dst, check=None, flow=False):
     """saved = 한글로 저장한 선생님 파일, lv = {쪽: 정도}, lines_adj = {쪽: 넣는 칸에서 뺄 줄 수}"""
     global RNG
     RNG = random.Random(20261021)
@@ -328,7 +329,7 @@ def build(saved, lv, lines_adj, dst, check=None):
     ids = idgen()
     after = {}; drop = set(); log = []
     pages = sorted(set(g['page'] for g in G))
-    L = lambda pg: lv.get(pg, 0)
+    L = (lambda pg: 0) if flow else (lambda pg: lv.get(pg, 0))
 
     # ---- 1. 문제 칸 표·번호 내어쓰기·줄 나눔 (쪽마다 정도에 따라)
     nsplit = nb = 0
@@ -420,6 +421,8 @@ def build(saved, lv, lines_adj, dst, check=None):
         if H - fill.get(pg, 0) < MIN_FILL: continue
         acc = accs.get(madang, accs[0])
         adj = lines_adj.get(pg, 0)
+        if flow and not (m or '단원 마무리' in tx):   # 이어 싣기: 쪽이 바뀌므로 마당·단원 마무리 쪽(앞뒤가 강제 쪽 나눔)에만
+            continue
         if re.search(r'\d마당\d+단원', tx):     # 단원 여는 쪽: 알고 있는 것 · 알고 싶은 것
             lines = max(2, (free - TITLE_ROW - CHECK_ROW) // LINE_ROW - adj)
             x, h = kwl(lines, acc, H_); kind = '단원을 시작하며'
@@ -457,6 +460,9 @@ def build(saved, lv, lines_adj, dst, check=None):
         C[i] = C[i].replace('빨간 칸이나 는', '빨간 칸이나 X 표시는')
     log.append('풀어 봐요 안내 %d곳 고침(1~1번 → 1번 등)' % nfix)
 
+    if flow:
+        log += flow_edits(C, TH, after)
+
     def write(path, mark):
         CC = list(C)
         if mark:   # 미리보기 점검용: 한글이 쪽을 바꾼 자리마다 쪽 나눔
@@ -480,6 +486,134 @@ def build(saved, lv, lines_adj, dst, check=None):
     write(dst, False)
     if check: write(check, True)
     return log, fillers
+
+
+# ---------------------------------------------------------------- 이어 싣기·정답 촘촘하게 (2026-10-21 선생님이 고른 1·2번)
+KEEP_BREAK = re.compile(r'체스 학습관\d마당|\d마당을 시작하며|\d마당\d+단원|확인 평가\d마당|^단원 마무리|^정답과 풀이|^용어 풀이')
+ANS_PIC = 5102      # 정답 판 그림 18mm(본디 24mm)
+
+
+def flow_edits(C, TH, after):
+    """① 본문: 차시·예시로 보기·풀어 봐요(와 그 사이 손으로 넣은 쪽 나눔)를 앞 쪽에 이어 싣기 — 마당·단원 여는 쪽, 단원 마무리, 확인 평가는 새 쪽 그대로.
+    제목(차시 띠·오늘의 목표·배워요·예시로 보기·예시 N·풀어 봐요)은 '다음 문단과 함께'로 쪽 끝에 홀로 남지 않게, 표는 쪽에서 쪼개지지 않게(나눔 안 함).
+    ② 정답과 풀이: 판 그림 24 → 18mm, 한 줄 두 개 → 세 개"""
+    log = []
+    i0 = next(i for i, p in enumerate(C) if text(p).strip().startswith('1마당을 시작하며'))
+    ia = next(i for i in range(len(C) // 2, len(C)) if text(C[i]).strip().startswith('정답과 풀이'))
+    ig = next(i for i in range(ia, len(C)) if text(C[i]).strip().startswith('용어 풀이'))
+    nb = nk = 0
+    for i in range(i0, ia):
+        p = C[i]; t = text(p).strip()
+        if re.match(r'<hp:p [^>]*pageBreak="1"', p):
+            keep = KEEP_BREAK.search(t) or (not t and i + 1 < len(C) and KEEP_BREAK.search(text(C[i + 1]).strip()))
+            if not keep:
+                p = re.sub(r'pageBreak="1"', 'pageBreak="0"', p, count=1); nb += 1
+                if re.match(r'\d+차시', t):       # 앞 차시와 사이를 조금 띄움
+                    after[i - 1] = after.get(i - 1, '') + para(None, 27, 57) + para(None, 27, 57)
+        head = (t in ('배워요',) or t.startswith(('예시로 보기', '풀어 봐요', '오늘의 목표')) or re.match(r'예시 \d+  ', t)
+                or (re.match(r'\d+차시', t) and i + 1 < len(C) and text(C[i + 1]).startswith('오늘의 목표')))
+        if head:
+            pid = re.match(r'<hp:p [^>]*paraPrIDRef="(\d+)"', p).group(1)
+            p = re.sub(r'paraPrIDRef="%s"' % pid, 'paraPrIDRef="%s"' % TH.ppvar(pid, kwn=True), p, count=1); nk += 1
+        C[i] = re.sub(r'(<hp:tbl [^>]*?pageBreak=")\w+', r'\1NONE', p)
+    log.append('본문 강제 쪽 나눔 %d곳을 없애 이어 싣고, 제목 %d곳은 다음 문단과 함께 두기' % (nb, nk))
+    nb2 = 0
+    for i in range(ia + 1, len(C)):        # 정답과 풀이·용어 풀이 안에 손으로 넣은 쪽 나눔도 없앰(두 제목만 새 쪽)
+        t = text(C[i]).strip()
+        if re.match(r'<hp:p [^>]*pageBreak="1"', C[i]) and not t.startswith(('정답과 풀이', '용어 풀이')):
+            C[i] = re.sub(r'pageBreak="1"', 'pageBreak="0"', C[i], count=1); nb2 += 1
+        C[i] = re.sub(r'(<hp:tbl [^>]*?pageBreak=")\w+', r'\1NONE', C[i])
+    log.append('정답과 풀이·용어 풀이의 강제 쪽 나눔 %d곳 없앰' % nb2)
+    n_old = n_new = 0
+    for i in range(ia, ig):
+        x = answers_compact(C[i])
+        if x != C[i]:
+            n_old += C[i].count('<hp:tr>'); C[i] = x; n_new += x.count('<hp:tr>')
+    # 이어진 정답 줄 표를 한 차시 안에서 다시 묶기
+    i = ia
+    while i < ig:
+        if 'data-ans' not in C[i]:
+            i += 1; continue
+        j = i
+        items = []
+        while j < ig and ('data-ans' in C[j] or (not text(C[j]).strip() and '<hp:tbl' not in C[j] and j + 1 < ig and 'data-ans' in C[j + 1])):
+            if 'data-ans' in C[j]:
+                items += re.findall(r'<!--ans-->(.*?)<!--/ans-->', C[j], re.S)
+            C[j] = ''
+            j += 1
+        C[i] = ans_rows(items)
+        i = j
+    log.append('정답과 풀이: 판 그림 18mm, 한 줄에 세 개씩')
+    return log
+
+
+def answers_compact(p):
+    """정답 줄 표(번호 칸이 2개)에서 칸마다 (글 문단, 그림 문단) 꺼내 표시만 해 둠"""
+    if '<hp:tbl' not in p or not re.search(r'<hp:t>\d+  </hp:t>', p): return p
+    a = p.index('<hp:tr>'); e = p.rindex('</hp:tr>')
+    cells = tidy.tops(p, a + len('<hp:tr>'), e, 'tc')
+    items = []
+    for ca, ce in cells:
+        c = p[ca:ce]
+        sub = c[c.index('>', c.index('<hp:subList')) + 1:c.rindex('</hp:subList>')]
+        if '<hp:tbl' in sub:
+            inner = sub[sub.index('<hp:tr>'):]
+            ic = tidy.tops(inner, len('<hp:tr>'), len(inner), 'tc')
+            ts = [inner[x:y] for x, y in ic]
+            body = lambda q: q[q.index('>', q.index('<hp:subList')) + 1:q.rindex('</hp:subList>')]
+            txt, pic = body(ts[0]), body(ts[1]) if len(ts) > 1 else ''
+        else:
+            txt, pic = sub, ''
+        if not re.search(r'<hp:t>\d+  </hp:t>', txt): return p
+        items.append(txt + '<!--pic-->' + pic)
+    return '<!--data-ans-->' + ''.join('<!--ans-->%s<!--/ans-->' % x for x in items)
+
+
+def small_pic(q):
+    w = ANS_PIC
+    q = re.sub(r'<hp:sz width="\d+" widthRelTo="ABSOLUTE" height="\d+"', '<hp:sz width="%d" widthRelTo="ABSOLUTE" height="%d"' % (w, w), q)
+    q = re.sub(r'<hc:pt1 x="\d+" y="0"/><hc:pt2 x="\d+" y="\d+"/><hc:pt3 x="0" y="\d+"/>', '<hc:pt1 x="%d" y="0"/><hc:pt2 x="%d" y="%d"/><hc:pt3 x="0" y="%d"/>' % (w, w, w, w), q)
+    return re.sub(r'centerX="\d+" centerY="\d+"', 'centerX="%d" centerY="%d"' % (w // 2, w // 2), q)
+
+
+def ans_rows(items):
+    """정답 칸을 한 줄에 세 개씩(그림 있는 칸은 글 | 그림 18mm)"""
+    out = []
+    cw = [14645, 14646, 14646]
+    def tc(c, w, body, mg=(200, 300, 150, 150)):
+        return cell(c, 0, w, body, '3', mg, 500, va='TOP')
+    for k in range(0, len(items), 3):
+        row = items[k:k + 3]; cs = []; tall = False
+        for c, it in enumerate(row):
+            txt, pic = it.split('<!--pic-->')
+            if pic.strip():
+                tall = True
+                inner_w = cw[c] - 500; pw = ANS_PIC + 100
+                inner = ('<hp:p id="%s" paraPrIDRef="29" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0">'
+                         '<hp:tbl id="%s" zOrder="%d" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="NONE" repeatHeader="0" rowCnt="1" colCnt="2" cellSpacing="0" borderFillIDRef="3" noAdjust="0">'
+                         '<hp:sz width="%d" widthRelTo="ABSOLUTE" height="%d" heightRelTo="ABSOLUTE" protect="0"/>'
+                         '<hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="COLUMN" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>'
+                         '<hp:outMargin left="0" right="0" top="0" bottom="0"/><hp:inMargin left="0" right="0" top="0" bottom="0"/><hp:tr>%s%s</hp:tr></hp:tbl><hp:t/></hp:run></hp:p>'
+                         ) % (nid(), nid(), RNG.randrange(2000, 9000), inner_w, ANS_PIC, cell(0, 0, inner_w - pw, txt, '3', (0, 200, 0, 0), 500, va='TOP'),
+                              cell(1, 0, pw, small_pic(pic), '3', (0, 0, 0, 0), 500, va='TOP'))
+                cs.append(tc(c, cw[c], inner))
+            else:
+                cs.append(tc(c, cw[c], txt))
+        for c in range(len(row), 3):
+            cs.append(tc(c, cw[c], para(None, 27, 57)))
+        h = ANS_PIC + 300 if tall else 1300
+        out.append('<hp:p id="%s" paraPrIDRef="29" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0">'
+                   '<hp:tbl id="%s" zOrder="%d" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="NONE" repeatHeader="0" rowCnt="1" colCnt="3" cellSpacing="0" borderFillIDRef="3" noAdjust="0">'
+                   '<hp:sz width="43937" widthRelTo="ABSOLUTE" height="%d" heightRelTo="ABSOLUTE" protect="0"/>'
+                   '<hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="COLUMN" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>'
+                   '<hp:outMargin left="0" right="0" top="0" bottom="0"/><hp:inMargin left="0" right="0" top="0" bottom="0"/><hp:tr>%s</hp:tr></hp:tbl><hp:t/></hp:run></hp:p>'
+                   % (nid(), nid(), RNG.randrange(2000, 9000), h, ''.join(cs)))
+    return ''.join(out)
+
+
+def main_flow(saved, dst):
+    log, _ = build(saved, {}, {}, dst, None, flow=True)
+    for l in log: print(l)
 
 
 # ---------------------------------------------------------------- 미리보기로 쪽 높이 재기(크로미움)
@@ -556,5 +690,9 @@ def mark_only(saved, path):
 
 
 if __name__ == '__main__':
-    # python3 layout.py 한글로저장한파일.hwpx 출력.hwpx 작업폴더
-    main(sys.argv[1], sys.argv[2], sys.argv[3])
+    # python3 layout.py 한글로저장한파일.hwpx 출력.hwpx 작업폴더   (쪽마다 맞추기, 쪽 수 그대로)
+    # python3 layout.py flow 한글로저장한파일.hwpx 출력.hwpx       (이어 싣기·정답 촘촘하게 — 쪽 수가 줄어듦)
+    if sys.argv[1] == 'flow':
+        main_flow(sys.argv[2], sys.argv[3])
+    else:
+        main(sys.argv[1], sys.argv[2], sys.argv[3])
