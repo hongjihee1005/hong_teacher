@@ -1,0 +1,465 @@
+# -*- coding: utf-8 -*-
+"""선생님이 한글에서 고친 '체스 학습관 1~6마당' 한 권의 빈 공간 줄이기 (2026-10-21 선생님 요청)
+
+    python3 _build/chess/book/layout.py 지금파일.hwpx 한글로저장한파일.hwpx [출력.hwpx]
+
+- 쪽 위치는 '한글로 저장한 파일'(줄 정보 linesegarray가 있는 파일)에서 재고, 고치는 것은 '지금 파일'입니다
+  (tidy.py로 정리하면 줄 정보가 지워지므로, 정리하기 전에 한글로 저장한 파일을 함께 줍니다. 두 파일의 바깥 문단 차례는 같아야 함).
+- tidy.py가 문제 칸 표를 두 줄로 나누어 늘어난 높이를 셈해, 넘칠 것 같은 쪽은 그 쪽의 빈 문단·정리해요 쓰는 칸 빈 줄을 빼서 맞춥니다.
+- 앞쪽(머리말·이 책을 쓰는 방법·이 책의 짜임)은 내용을 더하고, 본문에서 50mm 넘게 빈 쪽은 쪽 끝에 칸을 넣어 채웁니다:
+  마당을 시작하며 → '이 마당에서 배울 단원'(체크 칸) + 나의 다짐 줄, 단원 마무리 → '차시 돌아보기' 표, 그 밖 → '나의 체스 노트' 줄.
+  넣는 칸은 남는 높이보다 넉넉히(SLACK) 작게 만들어 다음 쪽으로 밀리지 않게 합니다. 쪽 수와 쪽 번호는 그대로입니다.
+- '1~1번은 따라 하기', '1~0번은 …'과 글꼴에서 빠진 ✕를 고칩니다.
+줄 정보를 지우므로 한글에서 열어 저장한 뒤 fix_pages.py로 쪽 번호를 확인하세요.
+"""
+import re, sys, os, zipfile, random, json, subprocess
+sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
+import tidy
+
+H = 65765                  # 본문 높이(232mm, HWPUNIT)
+MM = 283.46
+SLACK = int(14 * MM)       # 넣는 칸은 남는 높이보다 이만큼 작게
+MIN_FILL = int(50 * MM)    # 이보다 많이 비면 채움
+LINE_ROW = 2550            # 쓰는 줄 한 칸(9mm)
+CHECK_ROW = 2400
+TITLE_ROW = 4700           # 제목 + 안내 한 줄 칸
+RNG = random.Random(20261021)
+
+
+def nid():
+    return str(RNG.randrange(10 ** 8, 2 * 10 ** 9))
+
+
+def tops_of(body):
+    tops = []; depth = 0
+    for m in re.finditer(r'<hp:p [^>]*>|</hp:p>', body):
+        if m.group(0).startswith('<hp:p '):
+            if depth == 0: st = m.start()
+            depth += 1
+        else:
+            depth -= 1
+            if depth == 0: tops.append((st, m.end()))
+    return tops
+
+
+def own(p):
+    m = re.search(r'<hp:linesegarray>((?:(?!<hp:linesegarray>).)*?)</hp:linesegarray></hp:p>$', p, re.S)
+    return [(int(a), int(b), int(c)) for a, b, c in re.findall(r'vertpos="(-?\d+)" vertsize="(\d+)" textheight="\d+" baseline="\d+" spacing="(\d+)"', m.group(1))] if m else []
+
+
+def text(p):
+    return ''.join(re.findall(r'<hp:t>([^<]*)</hp:t>', p))
+
+
+def geometry(saved):
+    """바깥 문단마다 (쪽, 그 쪽에서의 아래 끝), 쪽마다 채운 높이"""
+    s = zipfile.ZipFile(saved).read('Contents/section0.xml').decode('utf-8')
+    b0 = s.index('<hs:sec'); body = s[b0:]
+    page = 1; last = None; G = []; fill = {}
+    for k, (a, e) in enumerate(tops_of(body)):
+        p = body[a:e]
+        if k and re.match(r'<hp:p [^>]*pageBreak="1"', p): page += 1; last = None
+        segs = own(p); p0 = None; size = 0
+        for v, h, sp in segs:
+            if last is not None and v < last: page += 1
+            last = v
+            if p0 is None: p0 = page
+            fill[page] = max(fill.get(page, 0), v + h)
+            size += h + sp
+        G.append(dict(page=p0 or page, last=page, p=p, size=size, segs=segs))
+    return G, fill
+
+
+def grid_delta(p):
+    """tidy.py가 문제 칸 표(한 줄 세 칸)를 '문제 줄 + 그림 줄'로 나눌 때 늘어나는 높이(한글이 저장한 줄 정보로 셈)"""
+    d = 0
+    for t in re.finditer(r'<hp:tbl [^>]*rowCnt="1" colCnt="3".*?</hp:tbl>', p, re.S):
+        qs = []; rs = []
+        for c in re.findall(r'<hp:subList[^>]*>(.*?)</hp:subList>', t.group(0), re.S):
+            ps = [c[a:e] for a, e in tops_of(c)]
+            if not ps or '<hp:pic' not in c: continue
+            if not re.match(r'<hp:p [^>]*><hp:run charPrIDRef="\d+"><hp:t>\d+  </hp:t>', ps[0]): continue
+            sq = own(ps[0])
+            qb = max(v + h for v, h, sp in sq) + sq[-1][2] if sq else 0
+            allb = max([v + h for pp in ps for v, h, sp in own(pp)] or [0])
+            j = 1; skip = 0
+            while j < len(ps) - 1 and not re.search(r'<hp:t>[^<]*\S|<hp:pic|<hp:tbl', ps[j]):
+                sg = own(ps[j])
+                if sg: skip += sg[-1][1] + sg[-1][2]
+                j += 1
+            qs.append(qb); rs.append(allb - qb - skip)
+        if qs:
+            d += max(qs) + max(rs) + 150 - max(q + r for q, r in zip(qs, rs))
+    return d
+
+
+# ---------------------------------------------------------------- 표 만들기
+def cell(c, r, w, body, bf, mg=(300, 300, 300, 300), h=500, span=1, va='CENTER'):
+    return ('<hp:tc name="" header="0" hasMargin="1" protect="0" editable="0" dirty="0" borderFillIDRef="%s">'
+            '<hp:subList id="" textDirection="HORIZONTAL" lineWrap="BREAK" vertAlign="%s" linkListIDRef="0" linkListNextIDRef="0" textWidth="0" textHeight="0" hasTextRef="0" hasNumRef="0">%s</hp:subList>'
+            '<hp:cellAddr colAddr="%d" rowAddr="%d"/><hp:cellSpan colSpan="%d" rowSpan="1"/><hp:cellSz width="%d" height="%d"/>'
+            '<hp:cellMargin left="%d" right="%d" top="%d" bottom="%d"/></hp:tc>') % (bf, va, body, c, r, span, w, h, mg[0], mg[1], mg[2], mg[3])
+
+
+def para(t, pp, cp):
+    run = '<hp:run charPrIDRef="%s"><hp:t>%s</hp:t></hp:run>' % (cp, t) if t is not None else '<hp:run charPrIDRef="%s"/>' % cp
+    return '<hp:p id="%s" paraPrIDRef="%s" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0">%s</hp:p>' % (nid(), pp, run)
+
+
+def table(rows, cols, height):
+    """rows = [[cell xml …], …]; 바깥 문단 하나로 감싼 표"""
+    trs = ''.join('<hp:tr>%s</hp:tr>' % ''.join(r) for r in rows)
+    return ('<hp:p id="%s" paraPrIDRef="29" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="0">'
+            '<hp:tbl id="%s" zOrder="%d" numberingType="TABLE" textWrap="TOP_AND_BOTTOM" textFlow="BOTH_SIDES" lock="0" dropcapstyle="None" pageBreak="CELL" repeatHeader="0" rowCnt="%d" colCnt="%d" cellSpacing="0" borderFillIDRef="3" noAdjust="0">'
+            '<hp:sz width="43937" widthRelTo="ABSOLUTE" height="%d" heightRelTo="ABSOLUTE" protect="0"/>'
+            '<hp:pos treatAsChar="1" affectLSpacing="0" flowWithText="1" allowOverlap="0" holdAnchorAndSO="0" vertRelTo="PARA" horzRelTo="COLUMN" vertAlign="TOP" horzAlign="LEFT" vertOffset="0" horzOffset="0"/>'
+            '<hp:outMargin left="0" right="0" top="0" bottom="0"/><hp:inMargin left="0" right="0" top="0" bottom="0"/>%s</hp:tbl><hp:t/></hp:run></hp:p>'
+            ) % (nid(), nid(), RNG.randrange(2000, 9000), len(rows), cols, height, trs)
+
+
+def box(title, sub, lines, acc, H_, checks=()):
+    """색 제목 칸(정리해요와 같은 꼴) + 체크 줄 + 쓰는 줄"""
+    bf_t, cp_t = acc
+    w0, w1 = 30000, 13937
+    rows = [[cell(0, 0, 43937, para(title, 31, cp_t) + (para(sub, 28, 35) if sub else ''), bf_t, (1100, 800, 500, 500), span=2 if checks else 1)]]
+    cols = 2 if checks else 1
+    for k, (a, b) in enumerate(checks):
+        r = len(rows)
+        rows.append([cell(0, r, w0, para(a, 31, 35), H_.line_bf(), (1100, 300, 200, 200), CHECK_ROW),
+                     cell(1, r, w1, para(b, 31, 39), H_.line_bf(), (200, 300, 200, 200), CHECK_ROW)])
+    for k in range(lines):
+        r = len(rows)
+        if checks:
+            rows.append([cell(0, r, 43937, para(None, 27, 35), H_.line_bf(), (1100, 800, 300, 300), LINE_ROW, span=2)])
+        else:
+            rows.append([cell(0, r, 43937, para(None, 27, 35), H_.line_bf(), (1100, 800, 300, 300), LINE_ROW)])
+    height = TITLE_ROW + CHECK_ROW * len(checks) + LINE_ROW * lines
+    return table(rows, cols, height), height
+
+
+def grid_table(head, data, widths, H_, label_bf='5', cell_bf='7'):
+    """이 책의 짜임 표와 같은 꼴(이름 칸 색) — 머리 줄 + 자료 줄"""
+    rows = []
+    def row(vals, r, hd):
+        out = []; x = 0
+        for c, (v, w) in enumerate(zip(vals, widths)):
+            if hd or c == 0:
+                out.append(cell(c, r, w, para(v, 32, 45), label_bf, (300, 300, 400, 400)))
+            else:
+                out.append(cell(c, r, w, para(v, 31, 35), cell_bf, (500, 300, 400, 400)))
+        return out
+    rows.append(row(head, 0, True))
+    for k, v in enumerate(data): rows.append(row(v, k + 1, False))
+    return table(rows, len(widths), 2100 * len(rows)), 2100 * len(rows)
+
+
+# ---------------------------------------------------------------- 앞쪽 글
+PREFACE_HIST = ('체스는 1,500년쯤 전 인도에서 하던 놀이 ‘차투랑가’에서 비롯되었다고 알려져 있어요. 페르시아와 유럽을 거치며 지금의 모습이 되었고, '
+                '오늘날에는 세계 여러 나라 사람들이 같은 규칙으로 체스를 즐겨요. 말이 통하지 않는 친구와도 체스판 하나면 함께 놀 수 있지요.')
+PREFACE_POWER = [('집중하는 힘', '판 전체를 차분히 살피고, 말 하나하나가 어디로 갈 수 있는지 봐요.'),
+                 ('미리 생각하는 힘', '“내가 이렇게 두면 상대는 어떻게 할까?”를 한 수 앞서 생각해요.'),
+                 ('스스로 고치는 힘', '진 판에서 무엇을 놓쳤는지 찾아보고, 다음 판에 고쳐 봐요.'),
+                 ('예절과 배려', '시작과 끝에 인사하고, 상대가 생각하는 동안 조용히 기다려요.')]
+PREFACE_PARENT = ('부모님과 선생님께: 아이가 답을 맞혔는지보다 왜 그 칸을 골랐는지 말로 설명해 보게 해 주세요. '
+                  '설명하다 보면 스스로 실수를 찾아내곤 해요. 학습관에서 같은 차시를 함께 열어 보시면 더 좋아요.')
+PIECES = [('말', '킹', '퀸', '룩', '비숍', '나이트', '폰'),
+          ('기호', 'K', 'Q', 'R', 'B', 'N', '(없음)'),
+          ('값', '—', '9', '5', '3', '3', '1')]
+GRADES = ['폰', '나이트', '비숍', '룩', '퀸', '킹']
+
+
+
+
+# ---------------------------------------------------------------- 쪽마다 바꾸는 정도
+# 0 모두(문제 칸 표 두 줄 + 번호 내어쓰기) · 1 문제 칸 표는 한 줄 그대로, 그림을 칸 아래쪽에 맞춤 · 2 + 쪽 안의 빈 문단 빼기
+# 3 + 표 안 번호 문단은 내어쓰기 안 함 · 4 내어쓰기 없이 글자 단위 줄 나눔(선생님 파일 그대로, 빈 문단만 뺌)
+def bottom_align(p):
+    def fix(m):     # 번호 문제 칸만(예시의 '장면' 칸은 그대로)
+        t = m.group(0)
+        if '<hp:pic' not in t or not re.search(r'<hp:subList [^>]*><hp:p [^>]*><hp:run charPrIDRef="\d+"><hp:t>\d+  </hp:t>', t):
+            return t
+        return re.sub(r'(<hp:subList [^>]*vertAlign=")\w+(")', r'\1BOTTOM\2', t)
+    return re.sub(r'<hp:tbl [^>]*rowCnt="1" colCnt="3".*?</hp:tbl>', fix, p, flags=re.S)
+
+
+def outside_tables(p, f):
+    """표 밖 글에만 f를 적용(표 안은 그대로)"""
+    segs = tidy.tops(p, 0, len(p), 'tbl')
+    keep = {}
+    for k, (a, e) in reversed(list(enumerate(segs))):
+        keep['\x00%d\x00' % k] = p[a:e]
+        p = p[:a] + '\x00%d\x00' % k + p[e:]
+    p = f(p)
+    for k, v in keep.items():
+        p = p.replace(k, v)
+    return p
+
+
+class LHead(tidy.Head):
+    def line_bf(self):
+        """아래쪽 점선만 있는 쓰는 줄"""
+        if 'line' not in self.bfcache:
+            nid = str(max(map(int, self.bf)) + 1 + len(self.new_bf))
+            self.new_bf.append('<hh:borderFill id="%s" threeD="0" shadow="0" centerLine="NONE" breakCellSeparateLine="0"><hh:slash type="NONE" Crooked="0" isCounter="0"/><hh:backSlash type="NONE" Crooked="0" isCounter="0"/>'
+                               '<hh:leftBorder type="NONE" width="0.1 mm" color="#000000"/><hh:rightBorder type="NONE" width="0.1 mm" color="#000000"/><hh:topBorder type="NONE" width="0.1 mm" color="#000000"/>'
+                               '<hh:bottomBorder type="DOT" width="0.12 mm" color="#B9AC9E"/></hh:borderFill>' % nid)
+            self.bfcache['line'] = nid
+        return self.bfcache['line']
+
+    def keepword(self, pid):
+        key = ('kw', pid)
+        if key in self.ppcache: return self.ppcache[key]
+        x = self.pp.get(pid) or next(y for y in self.new_pp if y.startswith('<hh:paraPr id="%s"' % pid))
+        nid = str(max(map(int, self.pp)) + 1 + len(self.new_pp))
+        x = re.sub(r'<hh:paraPr id="\d+"', '<hh:paraPr id="%s"' % nid, x, count=1)
+        x = x.replace('breakNonLatinWord="BREAK_WORD"', 'breakNonLatinWord="KEEP_WORD"')
+        self.new_pp.append(x); self.ppcache[key] = nid
+        return nid
+
+
+def build(saved, lv, lines_adj, dst, check=None):
+    """saved = 한글로 저장한 선생님 파일, lv = {쪽: 정도}, lines_adj = {쪽: 넣는 칸에서 뺄 줄 수}"""
+    global RNG
+    RNG = random.Random(20261021)
+    Z = zipfile.ZipFile(saved)
+    s = Z.read('Contents/section0.xml').decode('utf-8')
+    hx = Z.read('Contents/header.xml').decode('utf-8')
+    TH = LHead(hx)
+    H_ = TH
+    b0 = s.index('<hs:sec'); body = s[b0:]
+    T = tops_of(body)
+    G, fill = geometry(saved)
+    C = [body[a:e] for a, e in T]
+    used = set(re.findall(r'<hp:p id="(\d+)"', s)); rnd = random.Random(20261020)
+    def idgen():
+        while True:
+            n = str(rnd.randint(1000000, 2147483646))
+            if n not in used:
+                used.add(n); yield n
+    ids = idgen()
+    after = {}; drop = set(); log = []
+    pages = sorted(set(g['page'] for g in G))
+    L = lambda pg: lv.get(pg, 0)
+
+    # ---- 1. 문제 칸 표·번호 내어쓰기·줄 나눔 (쪽마다 정도에 따라)
+    nsplit = nb = 0
+    for i, g in enumerate(G):
+        k = L(g['page']); p = C[i]
+        if k == 0:
+            p, n = tidy.split_grids(p, TH, ids); nsplit += n
+        else:
+            q = bottom_align(p); nb += q != p; p = q
+        if k < 3:
+            p, _ = tidy.numbered(p, TH)
+        elif k == 3:
+            p = outside_tables(p, lambda x: tidy.numbered(x, TH)[0])
+        if k >= 4:
+            p = re.sub(r'paraPrIDRef="(\d+)"', lambda m: 'paraPrIDRef="%s"' % TH.keepword(m.group(1)), p)
+        if k >= 2 and i + 1 < len(G) and G[i + 1]['page'] == g['page']:
+            if (not re.search(r'<hp:t>[^<]*\S', p) and not re.search(r'<hp:(tbl|pic|ctrl|rect|container)', p)
+                    and not re.match(r'<hp:p [^>]*pageBreak="1"', p)):
+                drop.add(i)
+        C[i] = p
+    log.append('문제 칸 표 %d개를 두 줄로(문제 줄·그림 줄), 쪽이 빠듯한 곳의 표 %d개는 한 줄 그대로 그림을 아래로 맞춤' % (nsplit, nb))
+    tight = {pg: k for pg, k in lv.items() if k}
+    if tight: log.append('빠듯한 쪽 %d곳(정도별 %s)' % (len(tight), {k: sum(1 for v in tight.values() if v == k) for k in sorted(set(tight.values()))}))
+
+    # ---- 차례·마당·단원·차시 정보(본문에서 읽음)
+    toc = {}; no = 0
+    for i, p in enumerate(C[:140]):
+        t = text(p).rstrip()
+        m = re.match(r'(\d)마당\s{2,}(.+?)\s+\d+$', t)
+        if m: no = int(m.group(1)); toc[no] = dict(title=m.group(2), units=[]); continue
+        m = re.match(r'\s*(\d+)단원\s+(.+?)\s+\d+$', t)
+        if m and no: toc[no]['units'].append((int(m.group(1)), m.group(2)))
+    lessons = {}; cur_m = cur_u = 0
+    for i, p in enumerate(C):
+        t = text(p)
+        m = re.search(r'체스 학습관(\d)마당', t)
+        if m: cur_m = int(m.group(1))
+        m = re.match(r'(\d)마당(\d+)단원', t)
+        if m: cur_m, cur_u = int(m.group(1)), int(m.group(2))
+        m = re.match(r'(\d+)차시(.+)$', t.strip())
+        if m and cur_u and i + 1 < len(C) and text(C[i + 1]).startswith('오늘의 목표'):
+            lessons.setdefault((cur_m, cur_u), []).append((int(m.group(1)), m.group(2).strip()))
+    accs = {}; cur_m = 0
+    for i, p in enumerate(C):
+        m = re.search(r'체스 학습관(\d)마당', text(p))
+        if m: cur_m = int(m.group(1))
+        if cur_m and cur_m not in accs and '<hp:t>정리해요</hp:t>' in p:
+            m = re.search(r'borderFillIDRef="(\d+)"><hp:subList[^>]*><hp:p [^>]*><hp:run charPrIDRef="(\d+)"><hp:t>정리해요</hp:t>', p)
+            if m: accs[cur_m] = (m.group(1), m.group(2))
+    accs[0] = accs[1]
+
+    # ---- 2. 앞쪽 3쪽
+    def find(pred, start=0):
+        return next(i for i in range(start, len(C)) if pred(text(C[i]).strip(), C[i]))
+    sp = lambda: para(None, 27, 57)
+    def add(i, x): after[i] = after.get(i, '') + x
+    i_sig = find(lambda t, p: t == '초등교사 홍지희')
+    i_wel = find(lambda t, p: t.startswith('체스의 세계에 온 것을'))
+    add(i_wel, sp() + para(PREFACE_HIST, 28, 35))
+    x = sp() + para('체스를 하면 이런 힘이 자라요', 27, 41)
+    for a, b in PREFACE_POWER: x += para('• %s — %s' % (a, b), 36, 35)
+    add(i_sig - 2, x + sp() + para(PREFACE_PARENT, 28, 35))
+    i_last = find(lambda t, p: t.startswith('• 화살표는 말이 움직이는 길'))
+    t3, _ = grid_table(PIECES[0], PIECES[1:], [7937, 6000, 6000, 6000, 6000, 6000, 6000], H_)
+    add(i_last, sp() + para('체스 말 한눈에 보기', 27, 41) + t3 + para('값은 말의 힘을 어림한 수예요. 킹은 잡히면 지는 말이라 값을 매기지 않아요.', 28, 39))
+    i_str = find(lambda t, p: t.endswith('이 책의 짜임') and '<hp:footer' in p, i_sig)
+    j = max(i for i, g in enumerate(G) if g['page'] == G[i_str]['page'])
+    data = [('%d마당' % n, toc[n]['title'], GRADES[n - 1], '      월      일') for n in range(1, 7)]
+    t4, _ = grid_table(('마당', '배우는 것', '등급', '받은 날'), data, [6500, 21437, 6500, 9500], H_)
+    add(j, sp() + para('나의 등급 기록', 27, 41) + para('마당 확인 평가를 마치고 학습관 확인 시험을 통과하면 등급을 받아요. 받은 날을 적어 보세요.', 28, 39) + t4)
+    log.append('앞쪽: 머리말(체스 이야기·자라는 힘·부모님께), 이 책을 쓰는 방법(체스 말 한눈에 보기), 이 책의 짜임(나의 등급 기록) 더함')
+
+    # ---- 3. 본문의 빈 쪽 채우기
+    start_pg = G[find(lambda t, p: t.startswith('1마당을 시작하며'))]['page']
+    end_pg = G[find(lambda t, p: t.startswith('정답과 풀이'), len(C) // 2)]['page']
+    fillers = {}; madang = 0; kinds = {}
+    for pg in pages:
+        idx = [i for i, g in enumerate(G) if g['page'] == pg and g['last'] == pg]
+        if not idx: continue
+        tx = ' '.join(text(C[i]) for i in idx)
+        m = re.search(r'(\d)마당을 시작하며', tx)
+        if m: madang = int(m.group(1))
+        mm = [int(k) for k in re.findall(r'체스 학습관(\d)마당', tx)]
+        if mm: madang = mm[-1]
+        if pg < start_pg or pg >= end_pg or re.search(r'체스 학습관\d마당|\d마당\d+단원', tx): continue
+        free = H - fill.get(pg, 0) - SLACK
+        if H - fill.get(pg, 0) < MIN_FILL: continue
+        acc = accs.get(madang, accs[0])
+        adj = lines_adj.get(pg, 0)
+        if m:
+            units = toc[int(m.group(1))]['units']
+            rows = [('□ %d단원  %s' % (u, nm), '다 배웠어요 □') for u, nm in units]
+            lines = max(0, (free - TITLE_ROW - CHECK_ROW * len(rows)) // LINE_ROW) - adj
+            if lines < 2:
+                rows = rows[:max(0, (free - TITLE_ROW - 2 * LINE_ROW) // CHECK_ROW - max(0, adj - lines))]; lines = 2
+            x, h = box('이 마당에서 배울 단원', '단원을 마칠 때마다 □에 ✓ 하고, 아래에 이 마당에서 해 보고 싶은 것을 적어요.', lines, acc, H_, rows); kind = '마당 단원 확인'
+        elif '단원 마무리' in tx:
+            mu = re.search(r'(\d+)단원 ', tx[tx.index('단원 마무리'):])
+            ls = lessons.get((madang, int(mu.group(1)) if mu else 0), [])
+            rows = [('%d차시  %s' % (k, nm), '□ 잘 알아요  □ 다시 볼래요') for k, nm in ls]
+            if len(rows) > (free - TITLE_ROW - LINE_ROW) // CHECK_ROW - adj: rows = []
+            lines = max(1, (free - TITLE_ROW - CHECK_ROW * len(rows)) // LINE_ROW - adj)
+            if rows:
+                x, h = box('차시 돌아보기', '차시마다 알맞은 곳에 ✓ 하고, ‘다시 볼래요’ 차시는 학습관에서 한 번 더 해 봐요.', lines, acc, H_, rows); kind = '차시 돌아보기'
+            else:
+                x, h = box('단원 돌아보기', '이 단원에서 가장 기억에 남는 것과 아직 헷갈리는 것을 적어 보세요.', lines, acc, H_); kind = '단원 돌아보기'
+        else:
+            lines = (free - TITLE_ROW) // LINE_ROW - adj
+            if lines < 3: continue
+            x, h = box('나의 체스 노트', '오늘 배운 것, 궁금한 것, 헷갈린 것을 글이나 그림으로 남겨 보세요.', lines, acc, H_); kind = '나의 체스 노트'
+        add(idx[-1], para(None, 27, 57) + x)
+        fillers[pg] = lines; kinds[kind] = kinds.get(kind, 0) + 1
+    log.append('빈 쪽 %d곳에 칸을 넣음 %s' % (len(fillers), kinds))
+
+    # ---- 4. 글 고치기
+    nfix = 0
+    for i in range(len(C)):
+        if '1~1번은 따라 하기' in C[i] or '1~0번은 따라 하기, 그다음은 혼자 하기' in C[i]:
+            C[i] = C[i].replace('1~1번은 따라 하기', '1번은 따라 하기').replace('1~0번은 따라 하기, 그다음은 혼자 하기', '모두 혼자 풀어요'); nfix += 1
+        C[i] = C[i].replace('빨간 칸이나 는', '빨간 칸이나 X 표시는')
+    log.append('풀어 봐요 안내 %d곳 고침(1~1번 → 1번 등)' % nfix)
+
+    def write(path, mark):
+        CC = list(C)
+        if mark:   # 미리보기 점검용: 한글이 쪽을 바꾼 자리마다 쪽 나눔
+            firsts = {}
+            for i, g in enumerate(G):
+                if i not in drop: firsts.setdefault(g['page'], i)
+            for i in firsts.values(): CC[i] = re.sub(r'pageBreak="0"', 'pageBreak="1"', CC[i], count=1)
+        out = []
+        for i, p in enumerate(CC):
+            if i not in drop: out.append(p)
+            if i in after: out.append(after[i])
+        N = s[:b0] + body[:T[0][0]] + ''.join(out) + body[T[-1][1]:]
+        N = re.sub(r'<hp:linesegarray>.*?</hp:linesegarray>', '', N, flags=re.S)
+        hh = TH.out()
+        tmp = path + '.tmp'
+        with zipfile.ZipFile(tmp, 'w') as z:
+            for zi in Z.infolist():
+                data = N.encode('utf-8') if zi.filename == 'Contents/section0.xml' else hh.encode('utf-8') if zi.filename == 'Contents/header.xml' else Z.read(zi.filename)
+                z.writestr(zipfile.ZipInfo(zi.filename, zi.date_time), data, compress_type=zi.compress_type)
+        os.replace(tmp, path)
+    write(dst, False)
+    if check: write(check, True)
+    return log, fillers
+
+
+# ---------------------------------------------------------------- 미리보기로 쪽 높이 재기(크로미움)
+MJS = r"""
+const { chromium } = require(require('child_process').execSync('npm root -g').toString().trim() + '/playwright');
+(async () => { const b = await chromium.launch(); const pg = await b.newPage({ viewport: { width: 900, height: 1200 } });
+  await pg.goto('file://' + process.argv[2]); const r = await pg.evaluate(() => [...document.querySelectorAll('.pg')].map(s => s.querySelector('.flow').scrollHeight));
+  console.log(JSON.stringify(r)); await b.close(); })();"""
+
+
+def measure(path, work, breakall=False):
+    import preview
+    doc, n = preview.render(path, None)
+    if breakall: doc = doc.replace('word-break:keep-all', 'word-break:break-all')
+    hf = os.path.join(work, 'm.html'); open(hf, 'w', encoding='utf-8').write(doc)
+    js = os.path.join(work, 'm.js'); open(js, 'w').write(MJS)
+    r = subprocess.run(['node', js, os.path.abspath(hf)], capture_output=True, text=True)
+    if r.returncode: sys.exit(r.stderr[-1500:])
+    return [h * 25.4 / 96 for h in json.loads(r.stdout.strip().splitlines()[-1])]
+
+
+LIMIT = 230.5     # 이 높이(mm)를 넘을 것 같으면 그 쪽은 덜 바꿈
+
+
+def main(saved, dst, work):
+    os.makedirs(work, exist_ok=True)
+    G, fill = geometry(saved)
+    bp = os.path.join(work, 'base.json')
+    if os.path.exists(bp):
+        hb = json.load(open(bp))
+    else:
+        raw = os.path.join(work, 'raw.hwpx'); mark_only(saved, raw)
+        hb = measure(raw, work, breakall=True); json.dump(hb, open(bp, 'w'))
+    lv, adj = {}, {}
+    lp = os.path.join(work, 'levels.json')
+    if os.path.exists(lp):
+        j = json.load(open(lp)); lv = {int(k): v for k, v in j['lv'].items()}; adj = {int(k): v for k, v in j['adj'].items()}
+    for it in range(8):
+        chk = os.path.join(work, 'chk.hwpx')
+        log, fillers = build(saved, lv, adj, dst, chk)
+        hc = measure(chk, work)
+        bad = []
+        for pg in range(1, len(hb) + 1):
+            if pg > len(hc) or hb[pg - 1] < 20: continue
+            pred = fill.get(pg, 0) / MM + hc[pg - 1] - hb[pg - 1]
+            if pred > LIMIT and lv.get(pg, 0) < 4: bad.append((pg, round(pred, 1)))   # 4는 선생님 파일과 같은 모양(미리보기는 글자 단위 줄 나눔을 흉내 내지 못함)
+        print('[%d차] 넘칠 것 같은 쪽 %d곳' % (it + 1, len(bad)), bad[:12])
+        json.dump(dict(lv=lv, adj=adj), open(lp, 'w'))
+        if not bad: break
+        for pg, pred in bad:
+            if pg in fillers:
+                adj[pg] = adj.get(pg, 0) + int((pred - LIMIT) * MM // LINE_ROW) + 1
+            elif lv.get(pg, 0) < 4:
+                lv[pg] = lv.get(pg, 0) + 1
+    for l in log: print(l)
+    if bad: print('[확인] 그래도 빠듯한 쪽(한글에서 확인):', bad)
+    json.dump(dict(lv=lv, adj=adj), open(os.path.join(work, 'levels.json'), 'w'))
+
+
+def mark_only(saved, path):
+    """선생님 파일 그대로 + 쪽 나눔 표시(기준 높이 재기용)"""
+    G, fill = geometry(saved)
+    Z = zipfile.ZipFile(saved); s = Z.read('Contents/section0.xml').decode('utf-8')
+    b0 = s.index('<hs:sec'); body = s[b0:]; T = tops_of(body)
+    C = [body[a:e] for a, e in T]
+    firsts = {}
+    for i, g in enumerate(G): firsts.setdefault(g['page'], i)
+    for i in firsts.values(): C[i] = re.sub(r'pageBreak="0"', 'pageBreak="1"', C[i], count=1)
+    N = s[:b0] + body[:T[0][0]] + ''.join(C) + body[T[-1][1]:]
+    N = re.sub(r'<hp:linesegarray>.*?</hp:linesegarray>', '', N, flags=re.S)
+    with zipfile.ZipFile(path, 'w') as z:
+        for zi in Z.infolist():
+            z.writestr(zipfile.ZipInfo(zi.filename, zi.date_time), N.encode('utf-8') if zi.filename == 'Contents/section0.xml' else Z.read(zi.filename), compress_type=zi.compress_type)
+
+
+if __name__ == '__main__':
+    # python3 layout.py 한글로저장한파일.hwpx 출력.hwpx 작업폴더
+    main(sys.argv[1], sys.argv[2], sys.argv[3])

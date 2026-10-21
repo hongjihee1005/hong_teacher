@@ -367,8 +367,7 @@ def build_guide(Ds, P, Ms, sts, plan=None, SP=None):
         d.S = st
         k = B.Kit(D, P, M.G, st, teacher=True)
         sp = (lambda x, no=no: SP.get('m%d:%s' % (no, x), 0))
-        d.to_odd(lambda: None if False else d.add(d.P(' ', 'gap'), 1))
-        d.hide.add(len(d.pages) - 1)
+        d.new_page(hide=True)      # 지도서는 빈 쪽을 두지 않음(마당 여는 쪽이 짝수 쪽이어도 됨)
         d.foot('%d마당 · %s' % (no, D['title']), even=False)
         d.marks['m%d:open' % no] = len(d.pages)
         x = d.tbl([[(d.P('체스 학습관 지도서', 'c0', 'LT') + d.P('%d마당' % no, 'c1', 'LT') + d.P(D['title'], 'c2', 'LT'),

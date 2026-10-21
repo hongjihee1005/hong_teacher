@@ -573,6 +573,13 @@ def lesson_items(L):
     return items, games[:1]
 
 
+def follow_note(n):
+    """풀어 봐요 제목 옆 안내 — 따라 하기 문제 수에 맞게"""
+    if n <= 0: return '모두 혼자 풀어요'
+    if n == 1: return '1번은 따라 하기, 그다음은 혼자 하기'
+    return '1~%d번은 따라 하기, 그다음은 혼자 하기' % n
+
+
 def part(d, k, D, G, M, P, st, mk=lambda x: x, keys=None):
     """단원 여는 쪽 → 차시 → 단원 마무리 … → 마당 확인 평가. 정답에 쓸 (차시, 문제) 목록을 돌려줌. mk: 쪽 표시 이름 바꾸기"""
     no, units = D['no'], D['units']
@@ -677,7 +684,7 @@ def part(d, k, D, G, M, P, st, mk=lambda x: x, keys=None):
                     k.gap(d)
             # 풀어 봐요
             items, games = lesson_items(L)
-            k.section(d, '풀어 봐요', '1~%d번은 따라 하기, 그다음은 혼자 하기' % len([t for t in L['do'] if t and t['type'] != 'game']) if L['do'] else '')
+            k.section(d, '풀어 봐요', follow_note(len([t for t in L['do'] if t and t['type'] != 'game'])))
             k.grid(d, items)
             for t in games:
                 k.callout(d, '학습관 대결', [clean(t['q']), '학습관 %s.html#l%d에서 인공지능과 겨뤄 보세요. 이기면 이 칸에 ✓, 걸린 판 수도 적어 봐요.  (     )판 만에 이겼어요.' % (D['id'], L['no'])])
@@ -916,7 +923,10 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
     """지도서 본문: 단원 쪽 → 차시별 지도 → 확인 시험. sp(이름) = 학생용 교재 쪽"""
     no, units = D['no'], D['units']
     for ui, U in enumerate(units):
-        d.new_page()
+        if ui == 0 or d.room() < 120:
+            d.new_page()
+        else:
+            k.gap(d, 'gap2'); k.gap(d, 'gap2')
         d.marks[mk('u%d' % ui)] = len(d.pages)
         x = d.tbl([[(d.P('%d단원' % (ui + 1), 'u1', 'LT') + d.P(U['title'], 'u2', 'LT'), st.F['tint'], 1, 'CENTER', (2500, 1500, 2000, 2000))]], [TW])
         d.add(x, 45)
@@ -928,7 +938,10 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
             k.bullet(d, '%d차시 %s — %s (학생용 교재 %d쪽)' % (L['no'], L['title'], clean(L['sum']), sp('l%d' % L['no'])))
         for L in U['lessons']:
             g = G[L['id']]
-            d.new_page()
+            if d.room() < 80:       # 차시는 이어서 싣고, 쪽이 얼마 안 남았을 때만 새 쪽에서 시작
+                d.new_page()
+            else:
+                k.gap(d, 'gap2'); k.gap(d, 'gap2')
             d.marks[mk('l%d' % L['no'])] = len(d.pages)
             k.banner(d, '%d차시' % L['no'], L['title'], L['sum'])
             kd = KIND[L['kind']]
@@ -963,7 +976,10 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
             k.gap(d)
             d.add(d.P('※ ‘생각 톡톡’(학생용 교재)에는 첫 번째 발문이 실려 있습니다.', 'cap', 'L'), 6)
 
-    d.new_page()
+    if d.room() < 70:
+        d.new_page()
+    else:
+        k.gap(d, 'gap2'); k.gap(d, 'gap2')
     d.marks[mk('exam')] = len(d.pages)
     d.add(d.P('확인 시험과 수료증', 'pt', 'L'), 14)
     k.gap(d)
