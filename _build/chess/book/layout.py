@@ -155,7 +155,7 @@ def kwl(lines, acc, H_):
 EMW = lambda c: 0.56 if c.isdigit() else 0.3 if c == ' ' else 0.55 if c.isascii() else 1.0
 
 
-def polish(p, TH):
+def polish(p, TH, caps=True):
     """높이를 거의 바꾸지 않는 다듬기: ① 그림 옆 글은 그림 위쪽에 맞춤 ② 예시 그림 밑 설명은 그림 너비에 맞춰 왼쪽 정렬·'장면 N' 뒤로 줄 맞춤
     ③ 고르기 보기(① … ④)는 번호와 글이 떨어지지 않게, 한 줄에 안 들어가면 두 개씩"""
     def fix_tbl(m):
@@ -173,7 +173,7 @@ def polish(p, TH):
             tw = cw - int(mg.group(1)) - int(mg.group(2))
             # ② 장면 설명
             pw = re.search(r'<hp:pic .*?<hp:sz width="(\d+)"', c, re.S)
-            if pw:
+            if pw and caps:
                 off = max(0, (tw - int(pw.group(1))) // 2)
                 def cap(mm):
                     q = mm.group(0)
@@ -188,18 +188,18 @@ def polish(p, TH):
                 q = mm.group(0)
                 r = re.match(r'(<hp:p [^>]*><hp:run charPrIDRef="(\d+)"><hp:t>)(①[^<]*)(</hp:t>)', q)
                 if not r: return q
-                items = [x.strip() for x in re.split(r'\s{2,}(?=[②③④⑤])', r.group(3)) if x.strip()]
+                items = [x.strip() for x in re.split(r'\s{2,}(?=[②③④⑤⑥⑦⑧])', r.group(3)) if x.strip()]
                 if len(items) < 2: return q
                 pt = TH.ch.get(r.group(2), 1000) / 100.0
                 wid = lambda x: sum(EMW(c) for c in x) * pt * 0.3528 * MM
                 gap = '   '
                 nb = lambda x: x.replace(' ', '<hp:nbSpace/>')
-                if wid(gap.join(items)) <= tw * 0.85:
-                    body = gap.join(nb(x) for x in items)
-                elif len(items) == 4 and max(wid(items[0] + gap + items[1]), wid(items[2] + gap + items[3])) <= tw * 0.85:
-                    body = nb(items[0]) + gap + nb(items[1]) + '<hp:lineBreak/>' + nb(items[2]) + gap + nb(items[3])
-                else:
-                    body = '<hp:lineBreak/>'.join(nb(x) for x in items)
+                body = None
+                for per in range(len(items), 0, -1):      # 한 줄에 몇 개씩: 모든 줄이 들어가는 가장 큰 수(①②③ / ④⑤⑥)
+                    rows = [items[k:k + per] for k in range(0, len(items), per)]
+                    if per == 1 or all(wid(gap.join(rw)) <= tw * 0.9 for rw in rows):
+                        body = '<hp:lineBreak/>'.join(gap.join(nb(x) for x in rw) for rw in rows)
+                        break
                 return r.group(1) + body + q[r.end(3):]
             c2 = re.sub(r'<hp:p [^>]*><hp:run charPrIDRef="\d+"><hp:t>①[^<]*</hp:t></hp:run>(?:<hp:linesegarray>(?:(?!</hp:p>).)*</hp:linesegarray>)?</hp:p>', ch, c2)
             if c2 != c:
@@ -345,7 +345,7 @@ def build(saved, lv, lines_adj, dst, check=None):
         if k >= 4 and '정리해요' in text(p):      # 빠듯한 쪽: 정리해요 쓰는 칸의 빈 줄 하나 빼기(낱말은 끊지 않음)
             m = re.search(r'(<hp:subList [^>]*vertAlign="TOP"[^>]*>)(<hp:p [^>]*paraPrIDRef="27"[^>]*><hp:run charPrIDRef="\d+"><hp:t> </hp:t></hp:run></hp:p>)(<hp:p [^>]*paraPrIDRef="27"[^>]*><hp:run charPrIDRef="\d+"><hp:t> </hp:t></hp:run></hp:p>)', p)
             if m: p = p[:m.start(3)] + p[m.end(3):]
-        p = polish(p, TH)
+        p = polish(p, TH, caps=k < 3)
         if k >= 2 and i + 1 < len(G) and G[i + 1]['page'] == g['page']:
             if (not re.search(r'<hp:t>[^<]*\S', p) and not re.search(r'<hp:(tbl|pic|ctrl|rect|container)', p)
                     and not re.match(r'<hp:p [^>]*pageBreak="1"', p)):
