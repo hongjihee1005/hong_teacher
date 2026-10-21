@@ -12,7 +12,7 @@
 글꼴은 틀에 있는 부크크 고딕 Light/Bold를 씁니다. 마당마다 색이 다릅니다(컬러 인쇄 기준).
 판권의 발행일·ISBN은 틀의 자리 표시를 그대로 둡니다(부크크에서 받은 값으로 바꿔 넣을 것).
 """
-import sys, os, re, json, subprocess, importlib, zipfile, warnings
+import json, sys, os, re, json, subprocess, importlib, zipfile, warnings
 import xml.etree.ElementTree as ET
 
 HERE = os.path.dirname(os.path.abspath(__file__))
@@ -440,7 +440,8 @@ def main(mode='student'):
         return out
     if mode == 'guide':
         import fix_pages
-        SP = fix_pages.marks(os.path.join(B.OUT, OUTNAME))       # 선생님이 한글로 저장한 학생용 교재의 실제 쪽
+        mp = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'student_marks.json')   # finalize.py가 계산한 학생용 쪽(줄 정보가 없는 파일일 때)
+        SP = json.load(open(mp)) if os.path.exists(mp) else fix_pages.marks(os.path.join(B.OUT, OUTNAME))
         d = build_guide(Ds, P, Ms, styles(), None, SP)
         P.shoot()
         d = build_guide(Ds, P, Ms, styles(), d.marks, SP)
