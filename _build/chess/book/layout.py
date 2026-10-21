@@ -392,7 +392,20 @@ def fit_lessons(C, G, lo=0.62, extra=None):
         if f >= 0.999: return
         for j in range(a, b):
             if '<hp:pic' in C[j] and (not only_grid or isgrid(C[j])): C[j] = scale_pics(C[j], f)
-    st = dict(both=0, ex=0, exs=0, pr=0, prs=0, rev=0)
+    st = dict(both=0, ex=0, exs=0, pr=0, prs=0, rev=0, empty=0)
+    # 블록 안의 빈 문단이 여러 개 이어지면(선생님이 지운 자리 등) 하나만 남김 — 이것 때문에 다음 쪽으로 밀리던 곳이 있었음
+    blank = lambda c: not re.search(r'<hp:t>[^<]*\S', c) and not re.search(r'<hp:(tbl|pic|ctrl|rect|container)', c) and not re.match(r'<hp:p [^>]*pageBreak="1"', c)
+    gone = set()
+    for j in range(1, len(C)):
+        if C[j] and blank(C[j]) and blank(C[j - 1]) and (j - 1) not in gone:
+            if re.match(r'\d+차시|체스 학습관|\d마당', T[j + 1] if j + 1 < len(T) else ''): continue
+            gone.add(j)
+        elif C[j] and blank(C[j]) and (j - 1) in gone:
+            gone.add(j)
+    for j in gone:
+        C[j] = ''
+    st['empty'] = len(gone)
+    size = lambda a, b: sum(G[j]['size'] for j in range(a, b) if j not in gone)
     starts = [a for a in range(len(C) - 1) if re.match(r'\d+차시', T[a]) and T[a + 1].startswith('오늘의 목표')]
     for n, a in enumerate(starts):
         nxt = starts[n + 1] if n + 1 < len(starts) else len(C)
@@ -407,7 +420,7 @@ def fit_lessons(C, G, lo=0.62, extra=None):
             if Lh + Eh <= HP_:
                 brk(e, 0); used = Lh + Eh; st['both'] += 1
                 if a in extra: shrink(a, h, 1)
-            elif 1 - (Lh + Eh - HP_) / max(1, pics(a, h)) - 0.04 >= 0.72:
+            elif 1 - (Lh + Eh - HP_) / max(1, pics(a, h)) - 0.04 >= 0.6:
                 shrink(a, h, 1 - (Lh + Eh - HP_) / max(1, pics(a, h)) - 0.04); brk(e, 0); used = HP_; st['both'] += 1
             else:
                 brk(e, 1); st['ex'] += 1
@@ -574,7 +587,7 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False, extr
             C[i] = re.sub(r'pageBreak="0"', 'pageBreak="1"', c, count=1); nfb += 1
     log.append('여는 쪽 앞에 쪽 나눔 %d곳 더함' % nfb)
     st = fit_lessons(C, G, extra=extra); fitted = set(); nk = 0
-    log.append('차시 쪽 짜임: 배워요+예시 한 쪽 %(both)d · 예시만 한 쪽 %(ex)d(그림 줄임 %(exs)d) · 풀어 봐요~정리해요 새 쪽 %(pr)d(그림 줄임 %(prs)d) · 단원 마무리 그림 줄임 %(rev)d' % st)
+    log.append('차시 쪽 짜임: 배워요+예시 한 쪽 %(both)d · 예시만 한 쪽 %(ex)d(그림 줄임 %(exs)d) · 풀어 봐요~정리해요 새 쪽 %(pr)d(그림 줄임 %(prs)d) · 단원 마무리 그림 줄임 %(rev)d · 이어진 빈 문단 뺌 %(empty)d' % st)
     nsplit = nb = 0
     for i, g in enumerate(G):
         k = L(g['page']); p = C[i]
