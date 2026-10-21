@@ -307,7 +307,7 @@ class LHead(tidy.Head):
         return nid
 
 
-def build(saved, lv, lines_adj, dst, check=None, flow=False):
+def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
     """saved = 한글로 저장한 선생님 파일, lv = {쪽: 정도}, lines_adj = {쪽: 넣는 칸에서 뺄 줄 수}"""
     global RNG
     RNG = random.Random(20261021)
@@ -460,8 +460,8 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False):
         C[i] = C[i].replace('빨간 칸이나 는', '빨간 칸이나 X 표시는')
     log.append('풀어 봐요 안내 %d곳 고침(1~1번 → 1번 등)' % nfix)
 
-    if flow:
-        log += flow_edits(C, TH, after)
+    if flow or answers:
+        log += flow_edits(C, TH, after, body=flow)
 
     def write(path, mark):
         CC = list(C)
@@ -493,7 +493,7 @@ KEEP_BREAK = re.compile(r'체스 학습관\d마당|\d마당을 시작하며|\d�
 ANS_PIC = 5102      # 정답 판 그림 18mm(본디 24mm)
 
 
-def flow_edits(C, TH, after):
+def flow_edits(C, TH, after, body=True):
     """① 본문: 차시·예시로 보기·풀어 봐요(와 그 사이 손으로 넣은 쪽 나눔)를 앞 쪽에 이어 싣기 — 마당·단원 여는 쪽, 단원 마무리, 확인 평가는 새 쪽 그대로.
     제목(차시 띠·오늘의 목표·배워요·예시로 보기·예시 N·풀어 봐요)은 '다음 문단과 함께'로 쪽 끝에 홀로 남지 않게, 표는 쪽에서 쪼개지지 않게(나눔 안 함).
     ② 정답과 풀이: 판 그림 24 → 18mm, 한 줄 두 개 → 세 개"""
@@ -502,7 +502,7 @@ def flow_edits(C, TH, after):
     ia = next(i for i in range(len(C) // 2, len(C)) if text(C[i]).strip().startswith('정답과 풀이'))
     ig = next(i for i in range(ia, len(C)) if text(C[i]).strip().startswith('용어 풀이'))
     nb = nk = 0
-    for i in range(i0, ia):
+    for i in (range(i0, ia) if body else ()):
         p = C[i]; t = text(p).strip()
         if re.match(r'<hp:p [^>]*pageBreak="1"', p):
             keep = KEEP_BREAK.search(t) or (not t and i + 1 < len(C) and KEEP_BREAK.search(text(C[i + 1]).strip()))
@@ -516,7 +516,7 @@ def flow_edits(C, TH, after):
             pid = re.match(r'<hp:p [^>]*paraPrIDRef="(\d+)"', p).group(1)
             p = re.sub(r'paraPrIDRef="%s"' % pid, 'paraPrIDRef="%s"' % TH.ppvar(pid, kwn=True), p, count=1); nk += 1
         C[i] = re.sub(r'(<hp:tbl [^>]*?pageBreak=")\w+', r'\1NONE', p)
-    log.append('본문 강제 쪽 나눔 %d곳을 없애 이어 싣고, 제목 %d곳은 다음 문단과 함께 두기' % (nb, nk))
+    if body: log.append('본문 강제 쪽 나눔 %d곳을 없애 이어 싣고, 제목 %d곳은 다음 문단과 함께 두기' % (nb, nk))
     nb2 = 0
     for i in range(ia + 1, len(C)):        # 정답과 풀이·용어 풀이 안에 손으로 넣은 쪽 나눔도 없앰(두 제목만 새 쪽)
         t = text(C[i]).strip()
@@ -691,8 +691,13 @@ def mark_only(saved, path):
 
 if __name__ == '__main__':
     # python3 layout.py 한글로저장한파일.hwpx 출력.hwpx 작업폴더   (쪽마다 맞추기, 쪽 수 그대로)
-    # python3 layout.py flow 한글로저장한파일.hwpx 출력.hwpx       (이어 싣기·정답 촘촘하게 — 쪽 수가 줄어듦)
-    if sys.argv[1] == 'flow':
+    # python3 layout.py flow 한글로저장한파일.hwpx 출력.hwpx       (이어 싣기·정답 촘촘하게 — 선생님이 써 보고 취소함)
+    # python3 layout.py ans 한글로저장한파일.hwpx 출력.hwpx 작업폴더  (쪽마다 맞춘 본문 + 정답 촘촘하게 — 지금 쓰는 것)
+    if sys.argv[1] == 'ans':      # 본문은 쪽마다 맞춘 그대로(작업폴더/levels.json), 정답과 풀이만 촘촘하게 — 2026-10-21 선생님: 이어 싣기는 취소
+        j = json.load(open(os.path.join(sys.argv[4], 'levels.json')))
+        log, _ = build(sys.argv[2], {int(k): v for k, v in j['lv'].items()}, {int(k): v for k, v in j['adj'].items()}, sys.argv[3], None, answers=True)
+        for l in log: print(l)
+    elif sys.argv[1] == 'flow':
         main_flow(sys.argv[2], sys.argv[3])
     else:
         main(sys.argv[1], sys.argv[2], sys.argv[3])
