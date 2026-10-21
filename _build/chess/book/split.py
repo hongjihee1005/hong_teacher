@@ -13,7 +13,7 @@ N권 = N마당. 권마다
 import re, sys, os, json, zipfile, copy
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from layout import text, tops_of
-import finalize
+import finalize, prune
 
 VOLS = [(1, 1, '폰'), (2, 2, '나이트'), (3, 3, '비숍'), (4, 4, '룩'), (5, 5, '퀸'), (6, 6, '킹')]   # (권, 마당, 마치면 받는 등급)
 NAME = '체스학습관_학생용교재_%d권_%d마당_부크크A4.hwpx'
@@ -146,6 +146,7 @@ def split(src, out):
         dst = os.path.join(out, NAME % (v, a))
         print('==== %d권 (%d마당)' % (v, a))
         mk = finalize.main(raw, dst, os.path.join(out, 'report%d.txt' % v))
+        prune.prune(dst)      # 한 권짜리 책의 그림 가운데 이 권에서 안 쓰는 것을 뺌
         prev[v] = mk
         os.remove(raw)
         made.append((dst, mk))
