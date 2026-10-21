@@ -217,7 +217,7 @@ def polish(p, TH, caps=True):
             # ② 장면 설명
             pw = re.search(r'<hp:pic .*?<hp:sz width="(\d+)"', c, re.S)
             if pw and caps:
-                off = max(0, (tw - int(pw.group(1))) // 2)
+                off = max(0, (tw - max(int(pw.group(1)), int(tw * 0.85))) // 2)      # 그림을 줄여도 설명 폭은 칸의 85% 아래로 좁히지 않음(줄이 늘지 않게)
                 def cap(mm):
                     q = mm.group(0)
                     r = re.match(r'<hp:p [^>]*paraPrIDRef="(\d+)"[^>]*><hp:run charPrIDRef="(\d+)"><hp:t>(장면 \d+  )', q)
@@ -368,6 +368,79 @@ def fit_practice(C, G):
     return n, done
 
 
+def fit_lessons(C, G, lo=0.62, extra=None):
+    """차시마다 '배워요' · '예시로 보기' · '풀어 봐요~정리해요'를 한 쪽 단위로(2026-10-21 선생님 요청).
+    배워요+예시가 한 쪽에 들어가면(그림 72%까지) 같은 쪽, 아니면 예시는 새 쪽에서 한 쪽에(넘치면 예시 그림을 줄임, 가장 작게 lo).
+    풀어 봐요~정리해요는 앞 쪽 남은 자리에 들어가면 이어서, 아니면 새 쪽에서 한 쪽에(넘치면 문제 칸 그림을 줄임).
+    단원 마무리도 문제~맞힌 문제 칸까지 한 쪽에. 블록 안에 손으로 넣은 쪽 나눔은 없앰. 높이는 한글이 저장한 문단 높이로 어림(넉넉히)."""
+    T = [text(c).strip() for c in C]
+    HP_ = H - 2200
+    ph = lambda p: max([int(m.group(4)) for m in PICRE.finditer(p)] or [0])
+    isgrid = lambda p: re.search(r'<hp:tbl [^>]*rowCnt="1" colCnt="3"', p) and re.search(r'<hp:t>\d+  </hp:t>', p)
+    size = lambda a, b: sum(G[j]['size'] for j in range(a, b))
+    def psize(a, b):
+        return int((size(a, b) + sum(grid_delta(G[j]['p']) for j in range(a, b) if isgrid(C[j]))) * 1.04)
+    pics = lambda a, b: sum(ph(C[j]) for j in range(a, b) if '<hp:tbl' in C[j])
+    def brk(i, on):
+        C[i] = re.sub(r'pageBreak="[01]"', 'pageBreak="%d"' % on, C[i], count=1)
+    def clear(a, b):
+        for j in range(a + 1, b):
+            if re.match(r'<hp:p [^>]*pageBreak="1"', C[j]): brk(j, 0)
+    extra = extra or {}
+    def shrink(a, b, f, only_grid=False):
+        f = max(0.5, f * extra.get(a, 1))
+        if f >= 0.999: return
+        for j in range(a, b):
+            if '<hp:pic' in C[j] and (not only_grid or isgrid(C[j])): C[j] = scale_pics(C[j], f)
+    st = dict(both=0, ex=0, exs=0, pr=0, prs=0, rev=0)
+    starts = [a for a in range(len(C) - 1) if re.match(r'\d+차시', T[a]) and T[a + 1].startswith('오늘의 목표')]
+    for n, a in enumerate(starts):
+        nxt = starts[n + 1] if n + 1 < len(starts) else len(C)
+        h = next((j for j in range(a, nxt) if T[j].startswith('풀어 봐요')), None)
+        if h is None: continue
+        z = next((j for j in range(h, nxt) if '<hp:t>정리해요</hp:t>' in C[j]), None)
+        if z is None: continue
+        e = next((j for j in range(a, h) if T[j].startswith('예시로 보기')), None)
+        if e is not None:
+            Lh, Eh = size(a, e), size(e, h)
+            clear(e, h)
+            if Lh + Eh <= HP_:
+                brk(e, 0); used = Lh + Eh; st['both'] += 1
+                if a in extra: shrink(a, h, 1)
+            elif 1 - (Lh + Eh - HP_) / max(1, pics(a, h)) - 0.04 >= 0.72:
+                shrink(a, h, 1 - (Lh + Eh - HP_) / max(1, pics(a, h)) - 0.04); brk(e, 0); used = HP_; st['both'] += 1
+            else:
+                brk(e, 1); st['ex'] += 1
+                if Eh > HP_:
+                    f = max(lo, 1 - (Eh - HP_) / max(1, pics(e, h)) - 0.04); shrink(e, h, f); st['exs'] += 1
+                elif e in extra: shrink(e, h, 1)
+                used = min(Eh, HP_)
+        else:
+            used = size(a, h)
+        clear(h, z + 1)
+        Ph = psize(h, z + 1)
+        if used + Ph <= HP_:
+            brk(h, 0)
+        else:
+            brk(h, 1); st['pr'] += 1
+            if Ph > HP_:
+                gp = sum(ph(C[j]) for j in range(h, z) if isgrid(C[j]))
+                f = max(lo, 1 - (Ph - HP_) / max(1, gp) - 0.03); shrink(h, z, f, True); st['prs'] += 1
+            elif h in extra: shrink(h, z, 1, True)
+    # 단원 마무리
+    for a in range(len(C)):
+        if not T[a].startswith('단원 마무리'): continue
+        z = next((j for j in range(a + 1, min(a + 30, len(C))) if '맞힌 문제' in T[j]), None)
+        if z is None: continue
+        clear(a, z + 1)
+        Ph = psize(a, z + 1)
+        if Ph > HP_:
+            gp = sum(ph(C[j]) for j in range(a, z) if isgrid(C[j]))
+            shrink(a, z, max(lo, 1 - (Ph - HP_) / max(1, gp) - 0.03), True); st['rev'] += 1
+        elif a in extra: shrink(a, z, 1, True)
+    return st
+
+
 def bottom_align(p):
     def fix(m):     # 번호 문제 칸만(예시의 '장면' 칸은 그대로)
         t = m.group(0)
@@ -468,7 +541,7 @@ class LHead(tidy.Head):
         return nid
 
 
-def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
+def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False, extra=None):
     """saved = 한글로 저장한 선생님 파일, lv = {쪽: 정도}, lines_adj = {쪽: 넣는 칸에서 뺄 줄 수}"""
     global RNG
     RNG = random.Random(20261021)
@@ -500,10 +573,8 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
             if i and re.match(r'<hp:p [^>]*pageBreak="1"', C[i - 1]) and not text(C[i - 1]).strip(): continue
             C[i] = re.sub(r'pageBreak="0"', 'pageBreak="1"', c, count=1); nfb += 1
     log.append('여는 쪽 앞에 쪽 나눔 %d곳 더함' % nfb)
-    nprac, fitted = fit_practice(C, G)
-    log.append('풀어 봐요와 정리해요를 한 쪽에(문제 칸 그림 줄임) %d차시' % nprac)
-    nshrink, nmove, nk = fit_examples(C, G), 0, 0
-    nmove = nshrink[1]; nshrink = nshrink[0]
+    st = fit_lessons(C, G, extra=extra); fitted = set(); nk = 0
+    log.append('차시 쪽 짜임: 배워요+예시 한 쪽 %(both)d · 예시만 한 쪽 %(ex)d(그림 줄임 %(exs)d) · 풀어 봐요~정리해요 새 쪽 %(pr)d(그림 줄임 %(prs)d) · 단원 마무리 그림 줄임 %(rev)d' % st)
     nsplit = nb = 0
     for i, g in enumerate(G):
         k = L(g['page']); p = C[i]
@@ -532,7 +603,7 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
                 drop.add(i)
         C[i] = p
     log.append('문제 칸 표 %d개를 모두 두 줄로(문제 줄·그림 줄)' % nsplit)
-    log.append('배워요 아래에 예시로 보기 싣기: 그림을 줄인 차시 %d · 쪽 나눔을 없앤 곳 %d · 다음 문단과 함께 둔 제목 %d' % (nshrink, nmove, nk))
+    log.append('다음 문단과 함께 둔 제목 %d' % nk)
     tight = {pg: k for pg, k in lv.items() if k}
     if tight: log.append('빠듯한 쪽 %d곳(정도별 %s)' % (len(tight), {k: sum(1 for v in tight.values() if v == k) for k in sorted(set(tight.values()))}))
 
@@ -579,8 +650,8 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
     add(i_last, sp() + para('체스 말 한눈에 보기', 27, 41) + t3 + para('값은 말의 힘을 어림한 수예요. 킹은 잡히면 지는 말이라 값을 매기지 않아요.', 28, 39))
     i_str = find(lambda t, p: t.endswith('이 책의 짜임') and '<hp:footer' in p, i_sig)
     j = max(i for i, g in enumerate(G) if g['page'] == G[i_str]['page'])
-    data = [('%d마당' % n, toc[n]['title'], GRADES[n - 1], '      월      일') for n in range(1, 7)]
-    t4, _ = grid_table(('마당', '배우는 것', '등급', '받은 날'), data, [6500, 21437, 6500, 9500], H_)
+    data = [('등급',) + tuple(GRADES), ('받은 날',) + ('   월    일',) * 6]
+    t4, _ = grid_table(('마당',) + tuple('%d마당' % n for n in range(1, 7)), data, [6437] + [6250] * 6, H_)
     add(j, sp() + para('나의 등급 기록', 27, 41) + para('마당 확인 평가를 마치고 학습관 확인 시험을 통과하면 등급을 받아요. 받은 날을 적어 보세요.', 28, 39) + t4)
     log.append('앞쪽: 머리말(체스 이야기·자라는 힘·부모님께), 이 책을 쓰는 방법(체스 말 한눈에 보기), 이 책의 짜임(나의 등급 기록) 더함')
 
@@ -651,6 +722,8 @@ def build(saved, lv, lines_adj, dst, check=None, flow=False, answers=False):
                 if i not in drop: firsts.setdefault(g['page'], i)
             for i in firsts.values(): CC[i] = re.sub(r'pageBreak="0"', 'pageBreak="1"', CC[i], count=1)
         out = []
+        global FORCED
+        FORCED = [i for i, p in enumerate(CC) if i not in drop and i and re.match(r'<hp:p [^>]*pageBreak="1"', p)]
         for i, p in enumerate(CC):
             if i not in drop: out.append(p)
             if i in after: out.append(after[i])
@@ -791,6 +864,34 @@ def ans_rows(items):
     return ''.join(out)
 
 
+def main_blocks(saved, dst, work, limit=233.0):
+    os.makedirs(work, exist_ok=True)
+    ep = os.path.join(work, 'extra.json')
+    extra = {int(k): v for k, v in json.load(open(ep)).items()} if os.path.exists(ep) else {}
+    prev, last, stuck = {}, {}, set()
+    for it in range(7):
+        log, _ = build(saved, {}, {}, dst, None, answers=True, extra=extra)
+        hs = measure(dst, work)
+        G, _ = geometry(saved)
+        T = [text(g['p']).strip() for g in G]
+        bad = []
+        for c, hgt in enumerate(hs):
+            if c == 0 or hgt <= limit: continue
+            b = FORCED[c - 1]
+            t = T[b] if b < len(T) else ''
+            if not (t.startswith(('예시로 보기', '풀어 봐요', '단원 마무리')) or re.match(r'\d+차시', t)): continue
+            if b in prev and hgt >= prev[b] - 0.5:        # 줄여도 낮아지지 않으면(설명 줄이 늚 등) 그만 — 두 쪽으로 둠
+                extra[b] = last.get(b, 1); stuck.add(b); continue
+            if b in stuck or extra.get(b, 1) <= 0.62: continue
+            last[b] = extra.get(b, 1); prev[b] = hgt
+            extra[b] = round(max(0.6, extra.get(b, 1) * max(0.85, 1 - (hgt - limit + 3) / hgt * 1.7)), 3)
+            bad.append((c + 1, round(hgt)))
+        print('[%d차] 넘치는 블록 %d' % (it + 1, len(bad)), bad[:15])
+        json.dump(extra, open(ep, 'w'))
+        if not bad: break
+    for l in log: print(l)
+
+
 def main_flow(saved, dst):
     log, _ = build(saved, {}, {}, dst, None, flow=True)
     for l in log: print(l)
@@ -877,6 +978,8 @@ if __name__ == '__main__':
         j = json.load(open(os.path.join(sys.argv[4], 'levels.json')))
         log, _ = build(sys.argv[2], {int(k): v for k, v in j['lv'].items()}, {int(k): v for k, v in j['adj'].items()}, sys.argv[3], None, answers=True)
         for l in log: print(l)
+    elif sys.argv[1] == 'blocks':      # 차시를 '배워요(+예시) · 예시 · 풀어 봐요~정리해요' 한 쪽 단위로, 넘치는 블록은 미리보기로 재어 그림을 더 줄임
+        main_blocks(sys.argv[2], sys.argv[3], sys.argv[4])
     elif sys.argv[1] == 'flow':
         main_flow(sys.argv[2], sys.argv[3])
     else:
