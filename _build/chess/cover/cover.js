@@ -9,7 +9,7 @@ eval(fs.readFileSync(path.join(HERE, '..', 'pieces.js'), 'utf8'));
 const PC = globalThis.PIECES;
 const OUT = process.argv[2] || path.join(HERE, '..', '..', '..', 'special', 'chess', 'book', 'cover');
 
-const SPINE = { 1: 6.44, 2: 8.255, 3: 6.66, 4: 8.805, 5: 5.725, 6: 9.715 };   // 선생님이 부크크에서 받은 책등 두께(mm)
+const SPINE = { 1: 6.44, 2: 8.255, 3: 6.66, 4: 8.805, 5: 5.725, 6: 6.715 };   // 선생님이 부크크에서 받은 책등 두께(mm)
 const ACC = { 1: ['#7A5230', '#F4EBDF'], 2: ['#2E7D5B', '#E4F2EA'], 3: ['#2B6FB8', '#E3EEF9'], 4: ['#B23A3A', '#F8E6E4'], 5: ['#6A4BA0', '#EEE8F6'], 6: ['#1F6F78', '#E2F1F2'] };  // 교재 본문과 같은 마당 색(book.py ACC)
 const V = {
   1: { name: '체스판과 체스말', p: 'P', rank: '폰', n: 23, units: ['체스판', '체스말 만나기', '처음 배치'],
@@ -37,15 +37,15 @@ function html(v) {
   const series = Object.keys(V).map(k => `<div class="sv${+k === v ? ' on' : ''}">${pieceSvg(V[k].p)}<b>${k}권</b><i>${V[k].rank}</i></div>`).join('');
   const sfont = Math.min(5.2, s * 0.62).toFixed(2);
   return `<!doctype html><html><head><meta charset="utf-8">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gothic+A1:wght@400;700;900&display=block">
 <style>
-@page{size:${W}mm ${H}mm;margin:0}
+@page{size:${W + 2}mm ${H + 2}mm;margin:0}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:${W}mm;height:${H}mm}
-body{position:relative;font-family:'Noto Sans KR',sans-serif;color:#2A221C;background:${lite};word-break:keep-all;overflow:hidden}
+html,body{width:${W + 2}mm;height:${H + 2}mm}
+body{position:relative;font-family:'Gothic A1',sans-serif;color:#2A221C;background:${lite};word-break:keep-all;overflow:hidden}
 ${PC.CSS}
 .zone{position:absolute;top:0;height:${H}mm;overflow:hidden}
-.back{left:0;width:${B + TW}mm}.spine{left:${B + TW}mm;width:${s}mm;background:${acc}}.front{left:${B + TW + s}mm;width:${TW + B}mm}
+.back{left:0;width:${B + TW}mm}.spine{left:${B + TW}mm;width:${s}mm;background:${acc}}.front{left:${B + TW + s}mm;width:${TW + B + 2}mm}
 .boardbg{position:absolute;left:0;right:0;bottom:0;height:95mm;opacity:.09;-webkit-mask-image:linear-gradient(to top,#000 30%,transparent);mask-image:linear-gradient(to top,#000 30%,transparent)}
 .boardbg svg{width:100%;height:100%}
 /* 앞표지(안전 영역: 재단선 안쪽 12mm) */
@@ -92,8 +92,8 @@ ${PC.CSS}
   <p class="blurb">${d.blurb}</p>
   <div class="card"><h3>이 책에서 배우는 단원</h3><ol>${d.units.map((u, i) => `<li><span>${i + 1}</span>${u}</li>`).join('')}</ol>
     <p>모두 ${d.n}차시 · 차시마다 배워요 → 예시로 보기 → 풀어 봐요 → 정리해요</p></div>
-  <div class="goal">${pieceSvg(d.p)}<span>마당 확인 평가를 마치고 학습관 확인 시험을 통과하면 <b style="color:${acc}">${d.rank} 등급</b>을 받아요!</span></div>
-  <p class="web">컴퓨터·태블릿의 <b>「체스 학습관」</b>에서 같은 차시를 열면 판 위에서 직접 말을 움직이고 힌트도 받을 수 있어요.<br>hongjihee1005.github.io/hong_teacher/special/chess/</p>
+  <div class="goal">${pieceSvg(d.p)}<span>학습관 확인 시험을 통과하면 <b style="color:${acc}">${d.rank} 등급</b>을 받아요!</span></div>
+  <p class="web"><b>「체스 학습관」</b>에서 같은 차시를 열면 직접 말을 움직이고 힌트도 받아요.<br>hongjihee1005.github.io/hong_teacher/special/chess/</p>
 </div>
 <div class="bseries"><b>체스 학습관 학생용 교재</b><br>${Object.keys(V).map(k => (+k === v ? '<b>' : '') + k + '권 ' + V[k].name + (+k === v ? '</b>' : '')).join('<br>')}</div>
 <div class="bar"></div></div>
@@ -120,15 +120,15 @@ function htmlGuide(g) {
     <ol>${V[k].units.map((u, i) => `<li><span style="background:${ACC[k][0]}">${i + 1}</span>${u}</li>`).join('')}</ol></div>`;
   const gser = Object.keys(GV).map(k => `<div class="gs${+k === g ? ' on' : ''}"><b>지도서 ${k}권</b><i>${GV[k][0]}·${GV[k][1]}마당</i></div>`).join('');
   return `<!doctype html><html><head><meta charset="utf-8">
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Noto+Sans+KR:wght@400;700;900&display=block">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&family=Gothic+A1:wght@400;700;900&display=block">
 <style>
-@page{size:${W}mm ${H}mm;margin:0}
+@page{size:${W + 2}mm ${H + 2}mm;margin:0}
 *{box-sizing:border-box;margin:0;padding:0}
-html,body{width:${W}mm;height:${H}mm}
-body{position:relative;font-family:'Noto Sans KR',sans-serif;color:${ink};background:${paper};word-break:keep-all;overflow:hidden}
+html,body{width:${W + 2}mm;height:${H + 2}mm}
+body{position:relative;font-family:'Gothic A1',sans-serif;color:${ink};background:${paper};word-break:keep-all;overflow:hidden}
 ${PC.CSS}
 .zone{position:absolute;top:0;height:${H}mm;overflow:hidden}
-.back{left:0;width:${B + TW}mm}.spine{left:${B + TW}mm;width:${s}mm;background:${ink}}.front{left:${B + TW + s}mm;width:${TW + B}mm}
+.back{left:0;width:${B + TW}mm}.spine{left:${B + TW}mm;width:${s}mm;background:${ink}}.front{left:${B + TW + s}mm;width:${TW + B + 2}mm}
 .band{position:absolute;left:0;right:0;top:0;height:${B + 92}mm;background:${ink}}
 .stripe{position:absolute;left:0;right:0;top:${B + 92}mm;height:3mm;display:flex}.stripe i{flex:1}
 .f-in{position:absolute;left:12mm;right:${B + 12}mm;top:${B + 18}mm;bottom:${B + 12}mm;display:flex;flex-direction:column;align-items:center;text-align:center}
@@ -193,8 +193,9 @@ ${PC.CSS}
     await pg.setContent(guide ? htmlGuide(v) : html(v), { waitUntil: 'networkidle' });
     await pg.evaluate(() => document.fonts.ready);
     const f = path.join(OUT, guide ? `표지_지도서_${v}권` : `표지_학생용_${v}권`);
-    await pg.pdf({ path: f + '.pdf', width: W + 'mm', height: H + 'mm', printBackground: true, preferCSSPageSize: true });
-    await pg.screenshot({ path: f + '.png', fullPage: false });
+    await pg.pdf({ path: f + '.pdf', width: (W + 2) + 'mm', height: (H + 2) + 'mm', printBackground: true, preferCSSPageSize: true });
+    require('child_process').execFileSync('python3', [path.join(HERE, 'fixbox.py'), f + '.pdf', String(W), String(H)]);   // 정확한 크기로 잘라 냄
+    await pg.screenshot({ path: f + '.png', clip: { x: 0, y: 0, width: W / 25.4 * 96, height: H / 25.4 * 96 } });
     const ok = await pg.evaluate(() => [...document.querySelectorAll('.f-in,.b-in,.sp-in')].map(e => e.scrollHeight <= e.clientHeight + 1));
     console.log(`${v}권 ${W.toFixed(3)}×${H}mm`, ok.every(Boolean) ? '' : '⚠ 넘침 ' + ok);
     await pg.close();

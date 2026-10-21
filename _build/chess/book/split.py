@@ -25,6 +25,27 @@ def josa(w):
     return '이' if 0 <= c < 11172 and c % 28 else '가'
 
 
+def tidy_review(P):
+    """단원 마무리 문제 칸 사이에 끼어 있는 '차시 돌아보기' 칸을 그 단원 마무리 끝(맞힌 문제 칸 뒤)으로 옮김
+    (한 권짜리 책에서 4마당 캐슬링 단원 마무리가 두 쪽이라 쓰는 칸이 첫 쪽 끝에 들어가 있었음 — 2026-10-21 점검)"""
+    T = [text(p).strip() for p in P]
+    i = 0
+    while i < len(P):
+        if T[i].startswith('단원 마무리'):
+            e = next((j for j in range(i + 1, len(P)) if re.match(r'<hp:p [^>]*pageBreak="1"', P[j]) and not T[j].startswith('차시 돌아보기')), len(P))
+            r = next((j for j in range(i + 1, e) if T[j].startswith('차시 돌아보기') and '<hp:tbl' in P[j]), None)
+            if r is not None and any('<hp:pic' in P[j] for j in range(r + 1, e)):
+                last = max(j for j in range(r + 1, e) if '<hp:tbl' in P[j])
+                box = P[r]; gap = P[r - 1] if not T[r - 1] and '<hp:tbl' not in P[r - 1] else None
+                P = P[:last + 1] + ([gap] if gap else []) + [box] + P[last + 1:]
+                del P[r]
+                if gap is not None: del P[r - 1]
+                T = [text(p).strip() for p in P]
+                print('단원 마무리 사이의 차시 돌아보기를 끝으로 옮김:', T[i][:20])
+        i += 1
+    return P
+
+
 def settext(p, new):
     """문단의 첫 글(hp:t)을 바꾸고 나머지 글은 비움"""
     first = [True]
@@ -137,6 +158,7 @@ def split(src, out):
             if k < a:
                 q = q.replace(m.group(0), '%d마당 %s차시<hp:lineBreak/>(%d권 %d쪽)' % (k, m.group(2), k, prev[k]['m%d:l%s' % (k, m.group(2))]))
             P.append(q)
+        P = tidy_review(P)
         NEW = s[:b0] + body[:TT[0][0]] + ''.join(P) + body[TT[-1][1]:]
         raw = os.path.join(out, 'raw%d.hwpx' % v)
         with zipfile.ZipFile(raw, 'w') as z:
