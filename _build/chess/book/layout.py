@@ -137,6 +137,77 @@ def box(title, sub, lines, acc, H_, checks=()):
     return table(rows, cols, height), height
 
 
+def kwl(lines, acc, H_):
+    """단원을 시작하며: 알고 있는 것 | 알고 싶은 것 두 칸 + 쓰는 줄"""
+    bf_t, cp_t = acc
+    w = 43937 // 2
+    rows = [[cell(0, 0, 43937, para('단원을 시작하며', 31, cp_t) + para('공부하기 전에 이 단원에 대해 이미 아는 것과 더 알고 싶은 것을 적어 보세요.', 28, 35), bf_t, (1100, 800, 500, 500), span=2)],
+            [cell(0, 1, w, para('내가 이미 알고 있는 것', 31, 45), H_.line_bf(), (1100, 300, 300, 200), CHECK_ROW),
+             cell(1, 1, 43937 - w, para('더 알고 싶은 것', 31, 45), H_.line_bf(), (800, 300, 300, 200), CHECK_ROW)]]
+    for k in range(lines):
+        r = len(rows)
+        rows.append([cell(0, r, w, para(None, 27, 35), H_.line_bf(), (1100, 300, 300, 300), LINE_ROW),
+                     cell(1, r, 43937 - w, para(None, 27, 35), H_.line_bf(), (800, 300, 300, 300), LINE_ROW)])
+    height = TITLE_ROW + CHECK_ROW + LINE_ROW * lines
+    return table(rows, 2, height), height
+
+
+EMW = lambda c: 0.56 if c.isdigit() else 0.3 if c == ' ' else 0.55 if c.isascii() else 1.0
+
+
+def polish(p, TH):
+    """높이를 거의 바꾸지 않는 다듬기: ① 그림 옆 글은 그림 위쪽에 맞춤 ② 예시 그림 밑 설명은 그림 너비에 맞춰 왼쪽 정렬·'장면 N' 뒤로 줄 맞춤
+    ③ 고르기 보기(① … ④)는 번호와 글이 떨어지지 않게, 한 줄에 안 들어가면 두 개씩"""
+    def fix_tbl(m):
+        t = m.group(0)
+        tcs = tidy.tops(t, 0, len(t), 'tc')
+        if not tcs: return t
+        out = t; shift = 0
+        for a, e in tcs:
+            c = t[a:e]; c2 = c
+            # ① 2칸 표에서 그림 없는 칸은 위쪽 맞춤
+            if 'colCnt="2"' in t[:300] and '<hp:pic' in t and '<hp:pic' not in c:
+                c2 = re.sub(r'(<hp:subList [^>]*vertAlign=")CENTER(")', r'\1TOP\2', c2, count=1)
+            cw = int(re.search(r'<hp:cellSz width="(\d+)"', c).group(1))
+            mg = re.search(r'<hp:cellMargin left="(\d+)" right="(\d+)"', c)
+            tw = cw - int(mg.group(1)) - int(mg.group(2))
+            # ② 장면 설명
+            pw = re.search(r'<hp:pic .*?<hp:sz width="(\d+)"', c, re.S)
+            if pw:
+                off = max(0, (tw - int(pw.group(1))) // 2)
+                def cap(mm):
+                    q = mm.group(0)
+                    r = re.match(r'<hp:p [^>]*paraPrIDRef="(\d+)"[^>]*><hp:run charPrIDRef="(\d+)"><hp:t>(장면 \d+  )', q)
+                    if not r: return q
+                    pt = TH.ch.get(r.group(2), 900) / 100.0
+                    L = int(sum(EMW(ch) for ch in r.group(3)) * pt * 0.3528 * MM)
+                    return q.replace('paraPrIDRef="%s"' % r.group(1), 'paraPrIDRef="%s"' % TH.ppvar(r.group(1), 'LEFT', off, off, -L), 1)
+                c2 = re.sub(r'<hp:p [^>]*><hp:run charPrIDRef="\d+"><hp:t>장면 \d+  [^<]*</hp:t></hp:run></hp:p>', cap, c2)
+            # ③ 보기
+            def ch(mm):
+                q = mm.group(0)
+                r = re.match(r'(<hp:p [^>]*><hp:run charPrIDRef="(\d+)"><hp:t>)(①[^<]*)(</hp:t>)', q)
+                if not r: return q
+                items = [x.strip() for x in re.split(r'\s{2,}(?=[②③④⑤])', r.group(3)) if x.strip()]
+                if len(items) < 2: return q
+                pt = TH.ch.get(r.group(2), 1000) / 100.0
+                wid = lambda x: sum(EMW(c) for c in x) * pt * 0.3528 * MM
+                gap = '   '
+                nb = lambda x: x.replace(' ', '<hp:nbSpace/>')
+                if wid(gap.join(items)) <= tw * 0.97:
+                    body = gap.join(nb(x) for x in items)
+                elif len(items) == 4 and max(wid(items[0] + gap + items[1]), wid(items[2] + gap + items[3])) <= tw * 0.97:
+                    body = nb(items[0]) + gap + nb(items[1]) + '<hp:lineBreak/>' + nb(items[2]) + gap + nb(items[3])
+                else:
+                    body = '<hp:lineBreak/>'.join(nb(x) for x in items)
+                return r.group(1) + body + q[r.end(3):]
+            c2 = re.sub(r'<hp:p [^>]*><hp:run charPrIDRef="\d+"><hp:t>①[^<]*</hp:t></hp:run></hp:p>', ch, c2)
+            if c2 != c:
+                out = out[:a + shift] + c2 + out[e + shift:]; shift += len(c2) - len(c)
+        return out
+    return re.sub(r'<hp:tbl [^>]*>.*?</hp:tbl>', lambda m: fix_tbl(m) if m.group(0).count('<hp:tbl ') == 1 else m.group(0), p, flags=re.S)
+
+
 def grid_table(head, data, widths, H_, label_bf='5', cell_bf='7'):
     """이 책의 짜임 표와 같은 꼴(이름 칸 색) — 머리 줄 + 자료 줄"""
     rows = []
@@ -172,7 +243,7 @@ GRADES = ['폰', '나이트', '비숍', '룩', '퀸', '킹']
 
 # ---------------------------------------------------------------- 쪽마다 바꾸는 정도
 # 0 모두(문제 칸 표 두 줄 + 번호 내어쓰기) · 1 문제 칸 표는 한 줄 그대로, 그림을 칸 아래쪽에 맞춤 · 2 + 쪽 안의 빈 문단 빼기
-# 3 + 표 안 번호 문단은 내어쓰기 안 함 · 4 내어쓰기 없이 글자 단위 줄 나눔(선생님 파일 그대로, 빈 문단만 뺌)
+# 3 + 표 안 번호 문단은 내어쓰기 안 함 · 4 + 번호 내어쓰기 없음, 정리해요 쓰는 칸 빈 줄 하나 빼기
 def bottom_align(p):
     def fix(m):     # 번호 문제 칸만(예시의 '장면' 칸은 그대로)
         t = m.group(0)
@@ -205,6 +276,24 @@ class LHead(tidy.Head):
                                '<hh:bottomBorder type="DOT" width="0.12 mm" color="#B9AC9E"/></hh:borderFill>' % nid)
             self.bfcache['line'] = nid
         return self.bfcache['line']
+
+    def ppvar(self, pid, align=None, left=None, right=None, intent=None):
+        """문단 모양 복사(맞춤·왼쪽/오른쪽 여백·첫 줄). hp:switch의 case는 HWPUNIT, default는 그 두 배"""
+        key = ('pv', pid, align, left, right, intent)
+        if key in self.ppcache: return self.ppcache[key]
+        x = self.pp.get(pid) or next(y for y in self.new_pp if y.startswith('<hh:paraPr id="%s"' % pid))
+        nid = str(max(map(int, self.pp)) + 1 + len(self.new_pp))
+        x = re.sub(r'<hh:paraPr id="\d+"', '<hh:paraPr id="%s"' % nid, x, count=1)
+        if align: x = re.sub(r'(<hh:align horizontal=")\w+', r'\g<1>' + align, x, count=1)
+        for tag, v in (('left', left), ('right', right), ('intent', intent)):
+            if v is None: continue
+            n = [0]
+            def rep(m):
+                n[0] += 1
+                return '<hc:%s value="%d"' % (tag, v if n[0] == 1 else 2 * v)
+            x = re.sub(r'<hc:%s value="-?\d+"' % tag, rep, x)
+        self.new_pp.append(x); self.ppcache[key] = nid
+        return nid
 
     def keepword(self, pid):
         key = ('kw', pid)
@@ -253,8 +342,10 @@ def build(saved, lv, lines_adj, dst, check=None):
             p, _ = tidy.numbered(p, TH)
         elif k == 3:
             p = outside_tables(p, lambda x: tidy.numbered(x, TH)[0])
-        if k >= 4:
-            p = re.sub(r'paraPrIDRef="(\d+)"', lambda m: 'paraPrIDRef="%s"' % TH.keepword(m.group(1)), p)
+        if k >= 4 and '정리해요' in text(p):      # 빠듯한 쪽: 정리해요 쓰는 칸의 빈 줄 하나 빼기(낱말은 끊지 않음)
+            m = re.search(r'(<hp:subList [^>]*vertAlign="TOP"[^>]*>)(<hp:p [^>]*paraPrIDRef="27"[^>]*><hp:run charPrIDRef="\d+"><hp:t> </hp:t></hp:run></hp:p>)(<hp:p [^>]*paraPrIDRef="27"[^>]*><hp:run charPrIDRef="\d+"><hp:t> </hp:t></hp:run></hp:p>)', p)
+            if m: p = p[:m.start(3)] + p[m.end(3):]
+        p = polish(p, TH)
         if k >= 2 and i + 1 < len(G) and G[i + 1]['page'] == g['page']:
             if (not re.search(r'<hp:t>[^<]*\S', p) and not re.search(r'<hp:(tbl|pic|ctrl|rect|container)', p)
                     and not re.match(r'<hp:p [^>]*pageBreak="1"', p)):
@@ -324,12 +415,15 @@ def build(saved, lv, lines_adj, dst, check=None):
         if m: madang = int(m.group(1))
         mm = [int(k) for k in re.findall(r'체스 학습관(\d)마당', tx)]
         if mm: madang = mm[-1]
-        if pg < start_pg or pg >= end_pg or re.search(r'체스 학습관\d마당|\d마당\d+단원', tx): continue
+        if pg < start_pg or pg >= end_pg or re.search(r'체스 학습관\d마당', tx): continue
         free = H - fill.get(pg, 0) - SLACK
         if H - fill.get(pg, 0) < MIN_FILL: continue
         acc = accs.get(madang, accs[0])
         adj = lines_adj.get(pg, 0)
-        if m:
+        if re.search(r'\d마당\d+단원', tx):     # 단원 여는 쪽: 알고 있는 것 · 알고 싶은 것
+            lines = max(2, (free - TITLE_ROW - CHECK_ROW) // LINE_ROW - adj)
+            x, h = kwl(lines, acc, H_); kind = '단원을 시작하며'
+        elif m:
             units = toc[int(m.group(1))]['units']
             rows = [('□ %d단원  %s' % (u, nm), '다 배웠어요 □') for u, nm in units]
             lines = max(0, (free - TITLE_ROW - CHECK_ROW * len(rows)) // LINE_ROW) - adj
@@ -347,6 +441,7 @@ def build(saved, lv, lines_adj, dst, check=None):
             else:
                 x, h = box('단원 돌아보기', '이 단원에서 가장 기억에 남는 것과 아직 헷갈리는 것을 적어 보세요.', lines, acc, H_); kind = '단원 돌아보기'
         else:
+            if '배워요를 읽었어요' not in tx: continue    # 차시 중간(배워요·예시 뒤)에는 넣지 않음 — 차시가 끝난 쪽에만
             lines = (free - TITLE_ROW) // LINE_ROW - adj
             if lines < 3: continue
             x, h = box('나의 체스 노트', '오늘 배운 것, 궁금한 것, 헷갈린 것을 글이나 그림으로 남겨 보세요.', lines, acc, H_); kind = '나의 체스 노트'
@@ -430,7 +525,7 @@ def main(saved, dst, work):
         for pg in range(1, len(hb) + 1):
             if pg > len(hc) or hb[pg - 1] < 20: continue
             pred = fill.get(pg, 0) / MM + hc[pg - 1] - hb[pg - 1]
-            if pred > LIMIT and lv.get(pg, 0) < 4: bad.append((pg, round(pred, 1)))   # 4는 선생님 파일과 같은 모양(미리보기는 글자 단위 줄 나눔을 흉내 내지 못함)
+            if pred > LIMIT and lv.get(pg, 0) < 4: bad.append((pg, round(pred, 1)))   # 4는 더 줄일 것이 없음(한글에서 확인)
         print('[%d차] 넘칠 것 같은 쪽 %d곳' % (it + 1, len(bad)), bad[:12])
         json.dump(dict(lv=lv, adj=adj), open(lp, 'w'))
         if not bad: break

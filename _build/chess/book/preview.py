@@ -29,12 +29,13 @@ def load(path):
         chars[c.get('id')] = (int(c.get('height')) / 100.0, c.get('textColor'), c.find('hh:bold', NS) is not None)
     for p in head.iter('{%s}paraPr' % NS['hh']):
         al = p.find('hh:align', NS).get('horizontal')
-        sw = p.find('.//hp:default', NS) if p.find('.//hp:default', NS) is not None else p
+        sw = p.find('.//hp:case', NS) if p.find('.//hp:case', NS) is not None else p     # 한글은 case(HWPUNIT)를 읽음, default는 두 배 값
         ls = sw.find('.//hh:lineSpacing', NS)
         ml = sw.find('.//hc:left', NS)
+        mr = sw.find('.//hc:right', NS)
         ind = sw.find('.//hc:intent', NS)
         paras[p.get('id')] = (al, int(ls.get('value')) if ls is not None else 160, int(ml.get('value')) / MM if ml is not None else 0,
-                              int(ind.get('value')) / MM if ind is not None else 0)
+                              int(ind.get('value')) / MM if ind is not None else 0, int(mr.get('value')) / MM if mr is not None else 0)
     for b in head.iter('{%s}borderFill' % NS['hh']):
         def bd(tag):
             e = b.find('hh:' + tag, NS)
@@ -65,10 +66,9 @@ def render(path, rng=None):
             sz, col, b = chars.get(r.get('charPrIDRef'), (10, '#000', False))
             for e in r:
                 if e.tag == HP + 't':
-                    t = ''.join(e.itertext())
+                    t = e.text or ''
                     for sub in e:
-                        if sub.tag == HP + 'tab':
-                            t = '\t'
+                        t += {HP + 'lineBreak': '\n', HP + 'nbSpace': '\u00a0', HP + 'fwSpace': '\u3000'}.get(sub.tag, '') + (sub.tail or '')
                     if e.find('hp:tab', NS) is not None:
                         out.append('<span class="tab"></span>')
                         t = e.find('hp:tab', NS).tail or ''
@@ -86,12 +86,12 @@ def render(path, rng=None):
         return ''.join(out)
 
     def para(p):
-        al, ls, ml, ind = paras.get(p.get('paraPrIDRef'), ('LEFT', 160, 0, 0))
+        al, ls, ml, ind, mr = paras.get(p.get('paraPrIDRef'), ('LEFT', 160, 0, 0, 0))
         a = {'JUSTIFY': 'justify', 'LEFT': 'left', 'CENTER': 'center', 'RIGHT': 'right'}.get(al, 'left')
         inner = runs(p) or '&nbsp;'
         sz = max([chars.get(r.get('charPrIDRef'), (10,))[0] for r in p.findall('hp:run', NS)] or [10])
         pad = ml + (-ind if ind < 0 else 0)          # 한글: 음수 들여쓰기 = 첫 줄은 그대로, 둘째 줄부터 내어씀
-        return '<div class="p" style="text-align:%s;line-height:%d%%;padding-left:%.1fmm;text-indent:%.1fmm;font-size:%.1fpt">%s</div>' % (a, ls, pad, ind, sz, inner)
+        return '<div class="p" style="text-align:%s;line-height:%d%%;padding-left:%.1fmm;padding-right:%.1fmm;text-indent:%.1fmm;font-size:%.1fpt">%s</div>' % (a, ls, pad, mr, ind, sz, inner)
 
     def table(t):
         rows = []
