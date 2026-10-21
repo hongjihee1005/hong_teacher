@@ -244,6 +244,16 @@ def main(src, dst, rep=None):
             C[i + 1] = re.sub(r'pageBreak="1"', 'pageBreak="0"', C[i + 1], count=1); G[i + 1]['p'] = C[i + 1]; nblank += 1
     log.append('차시 글 중간의 쪽 나눔 %d곳 · 꼬리말만 있던 빈 쪽 %d곳 없앰' % (ncl, nblank))
 
+    # ---- 새 쪽 바로 앞의 빈 문단(쪽이 꽉 찼을 때 혼자 넘어가 빈 쪽을 만듦)은 뺌
+    nempty = 0
+    blank = lambda c: c and not re.search(r'<hp:t>[^<]*\S', c) and not re.search(r'<hp:(tbl|pic|ctrl|rect|container)', c) and not pbreak(c)
+    for i in range(len(C) - 1):
+        j = i + 1
+        while j < len(C) and not C[j]: j += 1
+        if blank(C[i]) and j < len(C) and pbreak(C[j]) and i > 0:
+            C[i] = ''; sizes[i] = 0; G[i]['p'] = ''; nempty += 1
+    log.append('새 쪽 앞의 빈 문단 %d개 뺌' % nempty)
+
     # ---- 3. 쪽 넘침: 한 쪽짜리 블록이 넘치면 그림을 넘친 만큼 줄임
     one = lambda t: re.match(r'\d+차시', t) or t.startswith(('예시로 보기', '풀어 봐요', '단원 마무리'))
     nfit = 0; left = []; two = []
@@ -298,6 +308,33 @@ def main(src, dst, rep=None):
             nfit += 1; changed = True
         if not changed: break
     pg = paginate(G, sizes)
+    # ---- 쓰는 칸(단원 돌아보기·차시 돌아보기·단원을 시작하며·이 마당에서 배울 단원)이 혼자 다음 쪽으로 넘어가면 줄 수를 줄여 앞 쪽에, 안 되면 뺌
+    nbox = [0, 0]
+    for i in range(1, len(C)):
+        if not C[i] or not re.match(r'(단원 돌아보기|차시 돌아보기|단원을 시작하며|이 마당에서 배울 단원)', T[i]) or '<hp:tbl' not in C[i]: continue
+        k = i - 1
+        while k > 0 and not C[k]: k -= 1
+        if pg[i] == pg[k]: continue
+        used = sum(sizes[j] for j in range(len(C)) if pg[j] == pg[k] and j < i)
+        free = H - used - 1200
+        rows = re.findall(r'<hp:tr>.*?</hp:tr>', C[i], re.S)
+        lines = [r for r in rows if not re.search(r'<hp:t>[^<]*\S', r)]
+        rh = 2550
+        drop = max(0, math.ceil((sizes[i] - free) / rh))
+        if free > 4700 + 2 * rh and drop <= len(lines) - 2:
+            for r in lines[len(lines) - drop:]:
+                C[i] = C[i].replace(r, '', 1)
+            n = len(rows) - drop
+            C[i] = re.sub(r'rowCnt="\d+"', 'rowCnt="%d"' % n, C[i], count=1)
+            for ri, r in enumerate(re.findall(r'<hp:tr>.*?</hp:tr>', C[i], re.S)):
+                C[i] = C[i].replace(r, re.sub(r'rowAddr="\d+"', 'rowAddr="%d"' % ri, r), 1)
+            sizes[i] -= drop * rh; nbox[0] += 1
+        else:
+            C[i] = ''; sizes[i] = 0; G[i]['p'] = ''
+            if blank(C[k]): C[k] = ''; sizes[k] = 0; G[k]['p'] = ''
+            nbox[1] += 1
+        pg = paginate(G, sizes)
+    log.append('혼자 넘어간 쓰는 칸: 줄여서 앞 쪽에 %d · 뺌 %d' % tuple(nbox))
     log.append('넘친 블록 그림 줄여 한 쪽에 %d · 글이 길어 두 쪽으로 고르게 나눈 풀어 봐요 %s · 그래도 남는 블록 %s' % (nfit, two, sorted(set(left))[:20]))
     log.append('쪽 수: %d → %d' % (max(g['page'] for g in G), pg[-1]))
     used = {}
