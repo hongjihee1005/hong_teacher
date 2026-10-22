@@ -45,6 +45,7 @@ H.TEXT_W = TW
 # 덧붙이는 모양의 첫 번호(바탕 header.xml에 이미 있는 개수)와 글꼴 번호 — 다른 틀(book_all.py)은 바꿔 씀
 CP0, BF0, PP0, TAB0 = 20, 7, 21, 3
 FONT_N = FONT_B = 0
+EMPH = False      # True: 굵은 글자 모양에 굵게를 더하고 소제목 15pt(2026-10-22 선생님이 고친 학생용 1권 모양 — 지도서 세 권)
 PIC_GRID, PIC_SAY, PIC_EX = 50, 50, 47
 ANS_COLS, ANS_PIC = 3, 23
 
@@ -71,6 +72,7 @@ class Style:
             'pt': (22, ink, 1), 'toc': (11, ink, 0), 'tocU': (12, acc, 1), 'tocN': (11, gray, 0),
             'key': (9.5, ink, 0), 'keyb': (10, acc, 1), 'gap': (4, ink, 0), 'gap2': (8, ink, 0),
         }.items():
+            if EMPH and k == 'h2': pt = 15
             self.C[k] = self._char(pt, col, b)
         none = 'NONE'
         self.F['none'] = self._fill(None, {})
@@ -111,7 +113,7 @@ class Style:
              '<hh:relSz hangul="100" latin="100" hanja="100" japanese="100" other="100" symbol="100" user="100"/>'
              '<hh:offset hangul="0" latin="0" hanja="0" japanese="0" other="0" symbol="0" user="0"/><hh:outline type="NONE"/>'
              '<hh:shadow type="NONE" color="#C0C0C0" offsetX="10" offsetY="10"/>%s'
-             '<hh:underline type="NONE" shape="SOLID" color="#000000"/></hh:charPr>') % (int(round(pt * 100)), color, i, '<hh:bold/>' if bold and FONT_B == FONT_N else '')
+             '<hh:underline type="NONE" shape="SOLID" color="#000000"/></hh:charPr>') % (int(round(pt * 100)), color, i, '<hh:bold/>' if bold and (FONT_B == FONT_N or EMPH) else '')
         x = x.replace('{f}', str(f))
         self.cp.append(x)
         return (i, pt)
@@ -961,7 +963,7 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
             if d.room() < 80:       # 차시는 이어서 싣고, 쪽이 얼마 안 남았을 때만 새 쪽에서 시작
                 d.new_page()
             else:
-                k.gap(d, 'gap2'); k.gap(d, 'gap2')
+                k.gap(d, 'gap2'); k.gap(d, 'gap' if EMPH else 'gap2')   # EMPH: 줄인 만큼 차시 안내 아래로(쪽 수 그대로)
             d.marks[mk('l%d' % L['no'])] = len(d.pages)
             k.banner(d, '%d차시' % L['no'], L['title'], L['sum'], qr=(no, L['no']))
             kd = KIND[L['kind']]
@@ -970,21 +972,22 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
             for a, b in info:
                 d.add(d.tbl([[(d.P(a, 'accS', 'CT'), st.F['tint'], 1, 'CENTER', None), (d.P(b, 'q', 'LT'), st.F['box'], 1, 'CENTER', (700, 300, 200, 200))]], [mm(30), TW - mm(30)]), 8)
             k.gap(d)
+            if EMPH: k.gap(d)      # 차시 안내 다음, '지도 흐름' 앞 간격
             k.section(d, '지도 흐름')
-            d.add(d.P('① 설명', 'acc', 'L'), 7.5)
+            d.add(d.P('① 설명', 'acc', 'L'), 7.5, keep=EMPH)
             for s in L['say']:
                 k.bullet(d, s['text'], 'q', '-')
             if L['ex']:
-                d.add(d.P('② 예시', 'acc', 'L'), 7.5)
+                d.add(d.P('② 예시', 'acc', 'L'), 7.5, keep=EMPH)
                 for e in L['ex']:
                     caps = ' → '.join(clean(f['cap']) for f in e['frames'] if f['cap'])
                     k.bullet(d, clean(e['text']) + (' (' + caps + ')' if caps else ''), 'q', '-')
-            d.add(d.P('③ 따라 하기와 힌트', 'acc', 'L'), 7.5)
+            d.add(d.P('③ 따라 하기와 힌트', 'acc', 'L'), 7.5, keep=EMPH)
             for t in L['do']:
                 if t:
                     k.bullet(d, clean(t['q']) + (' — 힌트: ' + ' / '.join(clean(h) for h in t['hint']) if t.get('hint') else ''), 'q', '-')
             items, games = lesson_items(L)
-            d.add(d.P('④ 교재 문제 정답', 'acc', 'L'), 7.5)
+            d.add(d.P('④ 교재 문제 정답', 'acc', 'L'), 7.5, keep=EMPH)
             for i, t in enumerate(items):
                 k.bullet(d, '%d. %s' % (i + 1, ans_text(t, D, k.sanmode)), 'q', '')
             for t in games:
@@ -993,7 +996,7 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
                 k.section(d, nm)
                 for t in g[key]:
                     k.bullet(d, t, 'body', mark)
-            k.gap(d)
+            if not EMPH: k.gap(d)
             d.add(d.P('※ ‘생각 톡톡’(학생용 교재)에는 첫 번째 발문이 실려 있습니다.', 'cap', 'L'), 6)
 
     if d.room() < 70:

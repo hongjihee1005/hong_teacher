@@ -153,8 +153,15 @@ def find(t, exact=False):
     return next(i for i, (_, s) in enumerate(TP) if (s.strip() == t if exact else s.strip().startswith(t)))
 
 
-def front(d, full, toc, pg):
-    """틀의 앞 4쪽: 반표제 → 판권 → 속표지 → CONTENT(toc = [(글, 쪽 이름, 수준 0·1)])"""
+def rech(x, cid):
+    """문단 안 모든 글 칸의 글자 모양을 cid로"""
+    return re.sub(r'<hp:run charPrIDRef="\d+"', '<hp:run charPrIDRef="%d"' % cid, x)
+
+
+def front(d, full, toc, pg, emph=None):
+    """틀의 앞 4쪽: 반표제 → 판권 → 속표지 → CONTENT(toc = [(글, 쪽 이름, 수준 0·1)])
+    emph = 속표지에 넣을 권 제목(지도서 세 권, 2026-10-22 선생님이 고친 학생용 1권 모양: 판권을 쪽 아래로, 속표지 제목 20pt·지은이 15pt,
+    CONTENT 25pt 굵게, 차례 15pt + 줄 사이 빈 줄로 한 쪽에 거의 차게)"""
     # ---- 반표제(1쪽) — 틀 문단 15~19
     i0 = find('어린 왕자(제목')
     for i in range(i0 - 3, i0):
@@ -166,6 +173,7 @@ def front(d, full, toc, pg):
     while TP[a][1].strip() == '':
         d.put(tp(a, None, d))
         a += 1
+    # (지도서는 틀의 빈 줄로 판권이 이미 쪽 아래에 있음 — 학생용 한 권은 한글에서 고치며 빈 줄이 빠졌던 것)
     rep = {'어린 왕자(제목': full, '발  행': '발  행｜2026년 00월 00일', '저  자': '저  자｜%s' % AUTHOR, 'ⓒ': 'ⓒ %s 2026' % AUTHOR}
     sok = find('어', exact=True)
     while a < sok - 1:
@@ -178,13 +186,35 @@ def front(d, full, toc, pg):
     d.put(tp(sok - 1, None, d))
     for ch in TITLE.replace(' ', ''):
         d.put(tp(sok, ch, d))
-    d.put(tp(find('생텍쥐 페리 지음'), '%s 지음' % AUTHOR, d))
+    if emph:
+        au = find('생텍쥐 페리 지음')
+        d.put(rech(tp(au, emph, d), d.S._char(20, '#000000', 0)[0]))
+        d.put(rech(tp(au, '%s 지음' % AUTHOR, d), d.S._char(15, '#000000', 0)[0]))
+    else:
+        d.put(tp(find('생텍쥐 페리 지음'), '%s 지음' % AUTHOR, d))
     # ---- CONTENT(4쪽~)
     d.new_page()
     c0 = find('CONTENT')
+    i1, i2 = find('제1화'), find('제2화')
+    if emph:
+        d.add(rech(tp(c0, 'CONTENT', d), d.S._char(25, '#000000', 1)[0]), 16)
+        d.add(tp(c0 + 1, None, d), 6)
+        d.add(tp(c0 + 1, None, d), 6)
+        k = len(toc)
+        f = 0.3528 * 1.8                                   # 차례 줄: 글자 크기 × 줄 간격 180%(한글에서 15pt 줄 = 9.5mm)
+        avail = B.BUDGET - 16 - 12 - 3
+        pt = min(15, max(11, avail / k / f))
+        cid = d.S._char(pt, '#000000', 0)[0]
+        line = pt * f
+        gpt = min(15, (avail - k * line) / max(1, k - 1) / f)
+        gch = d.S._char(gpt, '#000000', 0)[0] if gpt >= 2 else None
+        for j, (t, key, lv) in enumerate(toc):
+            if j and gch is not None:
+                d.add(rech(tp(i2 if lv else i1, ' ', d), gch), gpt * f)       # 같은 꼴 빈 줄(줄 간격 180%)
+            d.add(rech(tp(i2 if lv else i1, '%s  %d' % (t, pg.get(key, 0)), d), cid), line)
+        return
     d.add(tp(c0, 'CONTENT', d), 12)
     d.add(tp(c0 + 1, None, d), 6)
-    i1, i2 = find('제1화'), find('제2화')
     for t, key, lv in toc:
         d.add(tp(i2 if lv else i1, '%s  %d' % (t, pg.get(key, 0)), d), 7.8)  # 한글에서 잰 줄 간격 약 7.4mm
 
@@ -355,7 +385,8 @@ def build_guide(Ds, P, Ms, sts, plan=None, SP=None, vol=None, prev=None):
             toc.append(('        %d단원  %s' % (ui + 1, U['title']), 'm%d:u%d' % (no, ui), 1))
         toc.append(('        확인 시험과 수료증', 'm%d:exam' % no, 1))
     toc.append(('용어 풀이', 'terms', 0))
-    front(d, '%s %s지도서' % (TITLE, '%d권 — %s ' % (v, rng) if v else '— 1~6마당 '), toc, pg)
+    front(d, '%s %s지도서' % (TITLE, '%d권 — %s ' % (v, rng) if v else '— 1~6마당 '), toc, pg,
+          emph=('지도서 %d권 · %s' % (v, rng)) if v else None)
     d.new_page()
     d.foot('선생님께')
     d.marks['pre'] = len(d.pages)
@@ -449,6 +480,8 @@ def main(mode='student'):
             out[no] = B.Style(*B.ACC[no], reg=reg)
             reg = reg or out[no]
         return out
+    if mode == 'guide3':
+        B.EMPH = True        # 학생용 교재와 같은 모양(굵게·소제목 15pt·차시 안내 아래 간격) — styles() 앞에
     if mode == 'guide3':     # 지도서 세 권(학생용 세 권의 쪽: split.py가 남긴 student_marks_N.json)
         prev = {}
         for v, a, b in [(1, 1, 2), (2, 3, 4), (3, 5, 6)]:
