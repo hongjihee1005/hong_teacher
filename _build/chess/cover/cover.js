@@ -196,6 +196,13 @@ ${PC.CSS}
     await pg.pdf({ path: f + '.pdf', width: (W + 2) + 'mm', height: (H + 2) + 'mm', printBackground: true, preferCSSPageSize: true });
     require('child_process').execFileSync('python3', [path.join(HERE, 'fixbox.py'), f + '.pdf', String(W), String(H)]);   // 정확한 크기로 잘라 냄
     await pg.screenshot({ path: f + '.png', clip: { x: 0, y: 0, width: W / 25.4 * 96, height: H / 25.4 * 96 } });
+    // 속표지용 앞표지 한 쪽(216×303 = 210×297 + 재단 여백 3mm, 교재 첫 쪽에 넣음 — 2026-10-22 선생님 요청)
+    const fp = await br.newPage({ viewport: { width: Math.round(216 / 25.4 * 96), height: Math.round(H / 25.4 * 96) }, deviceScaleFactor: 300 / 96 });
+    const one = (guide ? htmlGuide(v) : html(v)).replace('</style>', '.back,.spine{display:none!important}.front{left:0!important;width:216mm!important}.front .f-in{left:15mm!important;right:15mm!important}</style>');
+    await fp.setContent(one, { waitUntil: 'networkidle' });
+    await fp.evaluate(() => document.fonts.ready);
+    await fp.screenshot({ path: path.join(OUT, guide ? `속표지_지도서_${v}권.png` : `속표지_학생용_${v}권.png`), clip: { x: 0, y: 0, width: 216 / 25.4 * 96, height: H / 25.4 * 96 } });
+    await fp.close();
     const ok = await pg.evaluate(() => [...document.querySelectorAll('.f-in,.b-in,.sp-in')].map(e => e.scrollHeight <= e.clientHeight + 1));
     console.log(`${v}권 ${W.toFixed(3)}×${H}mm`, ok.every(Boolean) ? '' : '⚠ 넘침 ' + ok);
     await pg.close();

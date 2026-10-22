@@ -13,7 +13,7 @@ N권 = N마당. 권마다
 import re, sys, os, json, zipfile, copy
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from layout import text, tops_of
-import finalize, prune
+import finalize, prune, cover_page
 import io, random
 try:
     import segno     # QR 코드(pip install segno)
@@ -242,6 +242,9 @@ def split(src, out):
         print('==== %d권 (%d마당)' % (v, a))
         mk = finalize.main(raw, dst, os.path.join(out, 'report%d.txt' % v))
         prune.prune(dst)      # 한 권짜리 책의 그림 가운데 이 권에서 안 쓰는 것을 뺌
+        cp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'special', 'chess', 'book', 'cover', '속표지_학생용_%d권.png' % v)
+        if os.path.exists(cp):
+            cover_page.apply(dst, cp)      # 첫 쪽 = 앞표지와 같은 속표지(cover.js가 만든 그림)
         prev[v] = mk
         os.remove(raw)
         made.append((dst, mk))

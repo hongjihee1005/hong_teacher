@@ -467,6 +467,10 @@ def main(mode='student'):
             name = GUIDE3_NAME % (v, a, b)
             p = os.path.join(B.OUT, name)
             d2.save(p, now=B.STAMP)
+            cp = os.path.join(B.OUT, 'cover', '속표지_지도서_%d권.png' % v)
+            if os.path.exists(cp):
+                import cover_page
+                cover_page.apply(p, cp)      # 첫 쪽 = 앞표지와 같은 속표지
             bad = H.check(p)
             if bad:
                 sys.exit('점검 실패: %s' % bad[:5])
