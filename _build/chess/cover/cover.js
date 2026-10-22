@@ -67,7 +67,7 @@ ${PC.CSS}
 /* 책등 */
 .sp-in{position:absolute;left:0;right:0;top:${B + 10}mm;bottom:${B + 10}mm;display:flex;flex-direction:column;align-items:center;color:#fff}
 .sp-in svg{width:${(s * 0.8).toFixed(2)}mm;height:${(s * 0.8).toFixed(2)}mm;flex:none}
-.vt{writing-mode:vertical-rl;font-size:${sfont}mm;line-height:1;white-space:nowrap;margin-top:4mm}
+.vt{writing-mode:vertical-rl;font-size:${sfont}mm;line-height:1;white-space:nowrap;margin-top:4mm}.tcy{text-combine-upright:all}
 .vt b{font-family:'Black Han Sans';font-weight:400}
 .sp-in .au{margin-top:auto}
 /* 뒤표지(안전 영역: 재단선 안쪽 14mm) */
@@ -97,7 +97,7 @@ ${PC.CSS}
 </div>
 <div class="bseries"><b>체스 학습관 학생용 교재</b><br>${Object.keys(V).map(k => (+k === v ? '<b>' : '') + k + '권 ' + V[k].name + (+k === v ? '</b>' : '')).join('<br>')}</div>
 <div class="bar"></div></div>
-<div class="zone spine"><div class="sp-in">${pieceSvg(d.p)}<div class="vt"><b>체스 학습관 ${v}</b>　${v}마당 ${d.name}</div><div class="vt au">홍지희</div></div></div>
+<div class="zone spine"><div class="sp-in">${pieceSvg(d.p)}<div class="vt"><b>체스 학습관 ${tcy(v)}</b>　${tcy(v)}마당 ${d.name}</div><div class="vt au">홍지희</div></div></div>
 <div class="zone front"><div class="boardbg">${board(10, 12, acc)}</div><div class="f-in">
   <div class="kick">처음 배우는 어린이를 위한 체스 교재 · 학생용</div>
   <div class="title">체스 학습관</div>
@@ -146,7 +146,7 @@ ${PC.CSS}
 .gs.on{background:${ink};border-color:${ink};color:#fff}
 .by{margin-top:6mm;font-size:6mm;font-weight:700}
 .sp-in{position:absolute;left:0;right:0;top:${B + 10}mm;bottom:${B + 10}mm;display:flex;flex-direction:column;align-items:center;color:#fff}
-.vt{writing-mode:vertical-rl;font-size:${sfont}mm;line-height:1;white-space:nowrap}
+.vt{writing-mode:vertical-rl;font-size:${sfont}mm;line-height:1;white-space:nowrap}.tcy{text-combine-upright:all}
 .vt b{font-family:'Black Han Sans';font-weight:400}.vt em{font-style:normal;color:#F3C969}
 .sp-in .au{margin-top:auto}
 .b-in{position:absolute;left:${B + 14}mm;right:14mm;top:${B + 18}mm;bottom:${B + 52}mm;display:flex;flex-direction:column}
@@ -168,7 +168,7 @@ ${PC.CSS}
 </div>
 <p class="web">학습관 hongjihee1005.github.io/hong_teacher/special/chess/<br>지도서 1권 1·2마당 · 2권 3·4마당 · 3권 5·6마당</p>
 <div class="bar"></div></div>
-<div class="zone spine"><div class="sp-in"><div class="vt"><b>체스 학습관</b> <em>지도서 ${g}</em>　${a}·${b}마당</div><div class="vt au">홍지희</div></div></div>
+<div class="zone spine"><div class="sp-in"><div class="vt"><b>체스 학습관</b> <em>지도서 ${tcy(g)}</em>　${tcy(a + '·' + b)}마당</div><div class="vt au">홍지희</div></div></div>
 <div class="zone front"><div class="band"></div><div class="stripe"><i style="background:${ACC[a][0]}"></i><i style="background:${ACC[b][0]}"></i></div><div class="f-in">
   <div class="kick">처음 배우는 어린이를 위한 체스 교재 · 선생님용</div>
   <div class="title">체스 학습관</div>
@@ -181,6 +181,9 @@ ${PC.CSS}
 </div></div>
 </body></html>`;
 }
+
+// 세로 글(책등)에서 숫자가 옆으로 눕지 않게 가로로 세워 한 칸에(2026-10-22 선생님 지적)
+const tcy = x => '<span class="tcy">' + x + '</span>';
 
 (async () => {
   fs.mkdirSync(OUT, { recursive: true });
