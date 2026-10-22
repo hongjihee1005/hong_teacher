@@ -49,7 +49,7 @@ ${PC.CSS}
 .boardbg{position:absolute;left:0;right:0;bottom:0;height:95mm;opacity:.09;-webkit-mask-image:linear-gradient(to top,#000 30%,transparent);mask-image:linear-gradient(to top,#000 30%,transparent)}
 .boardbg svg{width:100%;height:100%}
 /* 앞표지(안전 영역: 재단선 안쪽 12mm) */
-.f-in{position:absolute;left:12mm;right:${B + 12}mm;top:${B + 16}mm;bottom:${B + 12}mm;display:flex;flex-direction:column;align-items:center;text-align:center}
+.f-in{position:absolute;left:12mm;right:${B + 12}mm;top:${B + 16}mm;bottom:34mm;display:flex;flex-direction:column;align-items:center;text-align:center}
 .kick{font-size:5mm;font-weight:700;color:${acc};letter-spacing:.6mm}
 .title{font-family:'Black Han Sans';font-size:31mm;line-height:1;margin-top:5mm;letter-spacing:1mm}
 .vol{margin-top:7mm;display:inline-flex;align-items:center;gap:3mm;background:${acc};color:#fff;border-radius:20mm;padding:2.2mm 8mm;font-size:7mm;font-weight:900}
@@ -65,7 +65,7 @@ ${PC.CSS}
 .sv.on{color:${acc}}.sv.on .cs-w path,.sv.on .cs-w circle{stroke:#2A221C}.sv.on svg{background:#fff;border-radius:50%;box-shadow:0 0 0 .8mm ${acc}}
 .by{margin-top:6mm;font-size:6mm;font-weight:700}
 /* 책등 */
-.sp-in{position:absolute;left:0;right:0;top:${B + 10}mm;bottom:${B + 10}mm;display:flex;flex-direction:column;align-items:center;color:#fff}
+.sp-in{position:absolute;left:0;right:0;top:${B + 10}mm;bottom:42mm;display:flex;flex-direction:column;align-items:center;color:#fff}
 .sp-in svg{width:${(s * 0.8).toFixed(2)}mm;height:${(s * 0.8).toFixed(2)}mm;flex:none}
 .vt{writing-mode:vertical-rl;font-size:${sfont}mm;line-height:1;white-space:nowrap;margin-top:4mm}.tcy{text-combine-upright:all}
 .vt b{font-family:'Black Han Sans';font-weight:400}
@@ -83,8 +83,8 @@ ${PC.CSS}
 .goal svg{width:16mm;height:16mm;background:#fff;border-radius:50%;box-shadow:0 0 0 .8mm ${acc}}
 .web{margin-top:7mm;font-size:4mm;line-height:1.7;color:#4A4038}
 .web b{color:${acc}}
-.bar{position:absolute;right:14mm;bottom:${B + 14}mm;width:52mm;height:32mm;background:#fff;border-radius:2mm}
-.bseries{position:absolute;left:${B + 14}mm;bottom:${B + 14}mm;font-size:3.8mm;line-height:1.75;color:#4A4038}
+.bar{position:absolute;left:8mm;bottom:18mm;width:59mm;height:28mm;background:#fff;border-radius:2mm}   /* 부크크 바코드 자리(뒤표지 왼쪽 아래) */
+.bseries{position:absolute;right:14mm;bottom:${B + 14}mm;text-align:right;font-size:3.8mm;line-height:1.75;color:#4A4038}
 .bseries b{color:${acc}}
 </style></head><body>
 <div class="zone back"><div class="b-in">
@@ -131,7 +131,7 @@ ${PC.CSS}
 .back{left:0;width:${B + TW}mm}.spine{left:${B + TW}mm;width:${s}mm;background:${ink}}.front{left:${B + TW + s}mm;width:${TW + B + 2}mm}
 .band{position:absolute;left:0;right:0;top:0;height:${B + 92}mm;background:${ink}}
 .stripe{position:absolute;left:0;right:0;top:${B + 92}mm;height:3mm;display:flex}.stripe i{flex:1}
-.f-in{position:absolute;left:12mm;right:${B + 12}mm;top:${B + 18}mm;bottom:${B + 12}mm;display:flex;flex-direction:column;align-items:center;text-align:center}
+.f-in{position:absolute;left:12mm;right:${B + 12}mm;top:${B + 18}mm;bottom:34mm;display:flex;flex-direction:column;align-items:center;text-align:center}
 .kick{font-size:5mm;font-weight:700;color:#E9DDD0;letter-spacing:.6mm}
 .title{font-family:'Black Han Sans';font-size:31mm;line-height:1;margin-top:5mm;letter-spacing:1mm;color:#fff}
 .tag{margin-top:6mm;font-family:'Black Han Sans';font-size:11mm;color:#F3C969;letter-spacing:1mm}
@@ -145,7 +145,7 @@ ${PC.CSS}
 .gs{width:40mm;padding:2.2mm 0;border-radius:3mm;border:.5mm solid #CFC4B8;color:#6B5F56}.gs b{display:block;font-size:4.3mm}.gs i{display:block;font-style:normal;font-size:3.6mm}
 .gs.on{background:${ink};border-color:${ink};color:#fff}
 .by{margin-top:6mm;font-size:6mm;font-weight:700}
-.sp-in{position:absolute;left:0;right:0;top:${B + 10}mm;bottom:${B + 10}mm;display:flex;flex-direction:column;align-items:center;color:#fff}
+.sp-in{position:absolute;left:0;right:0;top:${B + 10}mm;bottom:42mm;display:flex;flex-direction:column;align-items:center;color:#fff}
 .vt{writing-mode:vertical-rl;font-size:${sfont}mm;line-height:1;white-space:nowrap}.tcy{text-combine-upright:all}
 .vt b{font-family:'Black Han Sans';font-weight:400}.vt em{font-style:normal;color:#F3C969}
 .sp-in .au{margin-top:auto}
@@ -157,8 +157,8 @@ ${PC.CSS}
 .gc ol{list-style:none;columns:2;column-gap:8mm}
 .gc li{font-size:4.5mm;line-height:1.9;break-inside:avoid}.gc li span{display:inline-block;width:6mm;height:6mm;line-height:6mm;border-radius:50%;color:#fff;text-align:center;font-size:3.4mm;font-weight:700;margin-right:2.5mm}
 .has{margin-top:6mm;font-size:4.4mm;line-height:1.8}.has b{display:block;font-size:4.8mm}
-.bar{position:absolute;right:14mm;bottom:${B + 14}mm;width:52mm;height:32mm;background:#fff;border-radius:2mm}
-.web{position:absolute;left:${B + 14}mm;bottom:${B + 14}mm;width:120mm;font-size:3.9mm;line-height:1.7;color:#4A4038}
+.bar{position:absolute;left:8mm;bottom:18mm;width:59mm;height:28mm;background:#fff;border-radius:2mm}   /* 부크크 바코드 자리(뒤표지 왼쪽 아래) */
+.web{position:absolute;right:14mm;bottom:${B + 14}mm;width:125mm;text-align:right;font-size:3.9mm;line-height:1.7;color:#4A4038}
 </style></head><body>
 <div class="zone back"><div class="b-in">
   <div class="bh">체스 학습관 지도서 ${g}권</div>
