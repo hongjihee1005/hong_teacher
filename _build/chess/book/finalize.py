@@ -390,6 +390,7 @@ def main(src, dst, rep=None):
             z.writestr(zipfile.ZipInfo(zi.filename, zi.date_time), data, compress_type=zi.compress_type)
     os.replace(tmp, dst)
     json.dump(mk, open(os.path.splitext(dst)[0] + '.marks.json', 'w'), ensure_ascii=False)
+    json.dump([(pg[i], T[i][:40]) for i in range(len(C)) if C[i] and T[i]], open(os.path.splitext(dst)[0] + '.pages.json', 'w'), ensure_ascii=False)   # 점검용: 문단마다 계산한 쪽
     out = '\n'.join(log)
     print(out)
     if rep: open(rep, 'w').write(out + '\n')
