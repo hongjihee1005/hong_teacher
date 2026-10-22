@@ -439,11 +439,17 @@ class Kit:
         x = d.tbl([[(d.P(title, 'h2', 'L', runs=runs), self.S.F['under'], 1, 'BOTTOM', (0, 0, 0, 200))]], [TW])
         d.add(x, 13, keep=True)      # 소제목만 쪽 끝에 남지 않게
 
-    def banner(self, d, left, title, goal=None, label='오늘의 목표  '):
-        """차시·단원 마무리 머리: 진한 칸(번호) + 옅은 칸(제목)"""
+    def banner(self, d, left, title, goal=None, label='오늘의 목표  ', qr=None):
+        """차시·단원 마무리 머리: 진한 칸(번호) + 옅은 칸(제목) [+ 오른쪽 QR 칸: qr=(마당, 차시) — 학습관 그 차시로]"""
         lw = mm(30)
-        x = d.tbl([[(d.P(left, 'ban', 'CT'), self.S.F['acc'], 1, 'CENTER', (300, 300, 400, 400)),
-                    (d.P(title, 'h1', 'LT'), self.S.F['tint'], 1, 'CENTER', (900, 600, 400, 400))]], [lw, TW - lw])
+        row = [(d.P(left, 'ban', 'CT'), self.S.F['acc'], 1, 'CENTER', (300, 300, 400, 400)),
+               (d.P(title, 'h1', 'LT'), self.S.F['tint'], 1, 'CENTER', (900, 600, 400, 400))]
+        ws = [lw, TW - lw]
+        if qr:
+            qw = mm(QR_MM) + 200
+            row.append((d.pic(qr_png(*qr), QR_MM)[0], self.S.F['tint'], 1, 'CENTER', (100, 100, 100, 100)))
+            ws = [lw, TW - lw - qw, qw]
+        x = d.tbl([row], ws)
         d.add(x, max(17, text_h(title, self.S.C['h1'], 140, 135) + 4))
         if goal:
             t = label + clean(goal)
@@ -919,6 +925,20 @@ def intro_page(d, k, st):
         k.bullet(d, t)
 
 
+QR_MM = 13      # 차시 QR 코드 한 변(mm) — 학생용 교재(split.py add_qr)와 같은 크기·주소
+QR_URL = 'https://hongjihee1005.github.io/hong_teacher/special/chess/m%d.html?b=1#l%d'
+
+
+def qr_png(m, n):
+    """학습관 m마당 n차시 주소 QR 코드 그림(img/qr/에 저장해 두고 다시 씀, pip install segno)"""
+    p = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'img', 'qr', 'qr_m%d_l%d.png' % (m, n))
+    if not os.path.exists(p):
+        import segno
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        segno.make(QR_URL % (m, n), error='l', boost_error=False).save(p, kind='png', scale=10, border=2)
+    return p
+
+
 def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
     """지도서 본문: 단원 쪽 → 차시별 지도 → 확인 시험. sp(이름) = 학생용 교재 쪽"""
     no, units = D['no'], D['units']
@@ -943,7 +963,7 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
             else:
                 k.gap(d, 'gap2'); k.gap(d, 'gap2')
             d.marks[mk('l%d' % L['no'])] = len(d.pages)
-            k.banner(d, '%d차시' % L['no'], L['title'], L['sum'])
+            k.banner(d, '%d차시' % L['no'], L['title'], L['sum'], qr=(no, L['no']))
             kd = KIND[L['kind']]
             info = [('문제 종류', '%s · 저절로 힌트 %s' % kd), ('학습관', SITE + '%s.html#l%d' % (D['id'], L['no'])),
                     ('학생용 교재', '%s쪽부터' % sp('l%d' % L['no']))]
