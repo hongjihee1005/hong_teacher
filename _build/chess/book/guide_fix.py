@@ -70,7 +70,7 @@ def main(saved, made, dst):
             tcs = re.findall(r'<hp:tc .*?</hp:tc>', tr, re.S)
             if len(tcs) == 3:
                 m = re.search(r'(\d)마당 (\d+)차시', text(tcs[2]))
-                if m: where[text(tcs[0]).strip()] = (int(m.group(1)), int(m.group(2)))
+                if m: where[text(tcs[0]).strip()] = (int(m.group(1)), int(m.group(2)), re.search(r'\(지도서 (\d)권 (\d+)쪽\)', text(tcs[2])))
     ng = 0
     i_terms = next(k for k in range(len(T)) if T[k].startswith('용어뜻'))
     for k in range(i_terms + 1, len(C)):
@@ -79,10 +79,12 @@ def main(saved, made, dst):
         if len(tcs) != 3: continue
         w = where.get(text(tcs[0]).strip())
         if not w or text(tcs[2]).strip(): continue
-        a, l = w
+        a, l, prev = w
         cid = re.findall(r'<hp:run charPrIDRef="(\d+)"', tcs[2])
         cid = cid[0] if cid else '0'
-        body3 = '<hp:run charPrIDRef="%s"><hp:t>%d마당 %d차시<hp:lineBreak/>(지도서 %d쪽)</hp:t></hp:run>' % (cid, a, l, lno[(a, l)])
+        if (a, l) in lno: ref = '지도서 %d쪽' % lno[(a, l)]
+        else: ref = '지도서 %s권 %s쪽' % prev.groups()      # 앞 권 차시는 도구로 만든 권의 표시를 그대로
+        body3 = '<hp:run charPrIDRef="%s"><hp:t>%d마당 %d차시<hp:lineBreak/>(%s)</hp:t></hp:run>' % (cid, a, l, ref)
         new = re.sub(r'(<hp:p [^>]*>)(.*?)(<hp:linesegarray>|</hp:p>)', lambda m: m.group(1) + body3 + m.group(3), tcs[2], count=1, flags=re.S)
         C[k] = C[k].replace(tcs[2], new, 1); ng += 1
     # 실수로 들어간 '\'
