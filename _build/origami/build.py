@@ -42,7 +42,11 @@ def legend():
 
 def build(g):
     G = GRADES[g]
-    ms = finalize(importlib.import_module(f'models_g{g}').MODELS)
+    ms = list(importlib.import_module(f'models_g{g}').MODELS)
+    for suf in ('b', 'c', 'd'):                     # 새 작품 묶음 models_gNb.py, gNc.py …
+        if (HERE / f'models_g{g}{suf}.py').exists():
+            ms += importlib.import_module(f'models_g{g}{suf}').MODELS_B
+    ms = finalize(ms)
     rd = lambda n: (HERE / n).read_text(encoding='utf-8')
     data = json.dumps(ms, ensure_ascii=False, separators=(',', ':'))
     leg = json.dumps(legend(), ensure_ascii=False, separators=(',', ':'))

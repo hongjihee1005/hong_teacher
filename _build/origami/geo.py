@@ -141,3 +141,12 @@ def rounded(pts, r=10):
         p1, p2 = lerp(p, a, ra / math.dist(p, a)), lerp(p, b, rb / math.dist(p, b))
         d += ('M' if i == 0 else 'L') + '%.1f %.1fQ%.1f %.1f %.1f %.1f' % (p1[0], p1[1], p[0], p[1], p2[0], p2[1])
     return d + 'Z'
+
+def fk(poly, a, b, keep):
+    """다각형을 ab로 접기 → (keep 점이 있는 쪽(남음), 넘어간 쪽(뒤집힌 좌표))"""
+    l, r = split(poly, a, b)
+    return (l, Rs(r, a, b)) if side(keep, a, b) >= 0 else (r, Rs(l, a, b))
+
+def onto(p, q):
+    """점 p를 q에 맞추는 접는 선 (두 점)"""
+    return bisector(p, q)
