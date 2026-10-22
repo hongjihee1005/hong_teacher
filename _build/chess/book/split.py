@@ -13,7 +13,7 @@ N권 = N마당. 권마다
 import re, sys, os, json, zipfile, copy
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from layout import text, tops_of
-import finalize, prune, cover_page
+import finalize, prune, cover_page, restyle
 import io, random
 try:
     import segno     # QR 코드(pip install segno)
@@ -222,6 +222,8 @@ def split(src, out):
                 q = q.replace(m.group(0), '%d마당 %s차시<hp:lineBreak/>(%d권 %d쪽)' % (k, m.group(2), k, prev[k]['m%d:l%s' % (k, m.group(2))]))
             P.append(q)
         P = tidy_review(P)
+        P, hx = restyle.restyle(P, Z.read('Contents/header.xml').decode('utf-8'), v,
+                                dict(madang=madang_name, units=units, grade={k: gk for w, k, gk in VOLS}))   # 선생님이 고친 1권 모양으로(2026-10-22)
         P, qrs = add_qr(P, a)
         NEW = s[:b0] + body[:TT[0][0]] + ''.join(P) + body[TT[-1][1]:]
         raw = os.path.join(out, 'raw%d.hwpx' % v)
@@ -229,6 +231,8 @@ def split(src, out):
             for zi in Z.infolist():
                 if zi.filename == 'Contents/section0.xml':
                     data = NEW.encode('utf-8')
+                elif zi.filename == 'Contents/header.xml':
+                    data = hx.encode('utf-8')
                 elif zi.filename == 'Contents/content.hpf':
                     hpf = Z.read(zi.filename).decode('utf-8')
                     items = ''.join('<opf:item id="%s" href="BinData/%s.png" media-type="image/png" isEmbeded="1"/>' % (nm, nm) for nm, _ in qrs)
@@ -240,7 +244,7 @@ def split(src, out):
                 z.writestr(zipfile.ZipInfo('BinData/%s.png' % nm, (2026, 10, 22, 0, 0, 0)), png, compress_type=zipfile.ZIP_DEFLATED)
         dst = os.path.join(out, NAME % (v, a))
         print('==== %d권 (%d마당)' % (v, a))
-        mk = finalize.main(raw, dst, os.path.join(out, 'report%d.txt' % v))
+        mk = finalize.main(raw, dst, os.path.join(out, 'report%d.txt' % v), fill=True)
         prune.prune(dst)      # 한 권짜리 책의 그림 가운데 이 권에서 안 쓰는 것을 뺌
         cp = os.path.join(os.path.dirname(os.path.abspath(__file__)), '..', '..', '..', 'special', 'chess', 'book', 'cover', '속표지_학생용_%d권.png' % v)
         if os.path.exists(cp):

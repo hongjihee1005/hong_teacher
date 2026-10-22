@@ -506,6 +506,24 @@ class LHead(tidy.Head):
         self.ppcache[key] = nid
         return nid
 
+    def charvar(self, cid, height=None, bold=None):
+        """글자 모양 cid를 크기·굵기만 바꿔 복사"""
+        key = ('cv', cid, height, bold)
+        if key in self.ppcache: return self.ppcache[key]
+        if not hasattr(self, 'new_ch'): self.new_ch = []
+        allc = re.findall(r'<hh:charPr id="(\d+)"', self.h)
+        x = re.search(r'<hh:charPr id="%s".*?</hh:charPr>' % cid, self.h + ''.join(self.new_ch), re.S).group(0)
+        if (height is None or ('height="%d"' % height) in x[:60]) and (bold is None or bold == ('<hh:bold/>' in x)):
+            return cid
+        nid = str(max(map(int, allc)) + 1 + len(self.new_ch))
+        x = re.sub(r'<hh:charPr id="\d+"', '<hh:charPr id="%s"' % nid, x, count=1)
+        if height: x = re.sub(r'height="\d+"', 'height="%d"' % height, x, count=1)
+        if bold and '<hh:bold/>' not in x: x = x.replace('<hh:underline', '<hh:bold/><hh:underline', 1)
+        if bold is False: x = x.replace('<hh:bold/>', '')
+        self.new_ch.append(x); self.ch[nid] = height or self.ch.get(cid, 1000)
+        self.ppcache[key] = nid
+        return nid
+
     def out(self):
         h = super().out()
         for tag, lst in (('tabProperties', getattr(self, 'new_tab', [])), ('charProperties', getattr(self, 'new_ch', []))):

@@ -130,7 +130,7 @@ class Head(layout.LHead):
                       re.finditer(r'<hh:charPr id="(\d+)" height="(\d+)".*?<hh:ratio hangul="(\d+)".*?<hh:spacing hangul="(-?\d+)"', h, re.S)}
 
 
-def main(src, dst, rep=None):
+def main(src, dst, rep=None, fill=False):
     Z = zipfile.ZipFile(src)
     s = Z.read('Contents/section0.xml').decode('utf-8')
     hx = Z.read('Contents/header.xml').decode('utf-8')
@@ -341,6 +341,33 @@ def main(src, dst, rep=None):
     for i in range(len(C)): used[pg[i]] = used.get(pg[i], 0) + sizes[i]
     low = [(k, round(v / H * 100), T[min(i for i in range(len(C)) if pg[i] == k)][:14]) for k, v in sorted(used.items()) if v < H * 0.45]
     log.append('반 넘게 빈 쪽 %d: %s' % (len(low), low))
+
+    # ---- 쪽 안 남는 자리 고르게 (2026-10-22 선생님이 1권에서 손으로 빈 줄을 넣은 것처럼): 한 쪽짜리 블록의 남는 높이를 내용 사이에 나눔
+    if fill:
+        nf = 0; tot = 0; fl = []
+        starts = [i for i in range(len(C)) if C[i] and (i == 0 or pbreak(C[i]))]
+        sp_pp = {}
+        for k, a in enumerate(starts):
+            b = starts[k + 1] if k + 1 < len(starts) else len(C)
+            if not (i1 < a < i2) or not (one(T[a]) or T[a].startswith('단원 마무리')) or pg[a] != pg[b - 1]: continue
+            free = H - sum(sizes[a:b]) - 3400          # 12mm는 남겨 둠(어림 오차)
+            items = [j for j in range(a + 1, b) if C[j] and (T[j] or re.search(r'<hp:(tbl|pic)', C[j]))]
+            hd = re.compile(r'^(\d+차시|배워요|예시로 보기|풀어 봐요|단원 마무리)')
+            gaps = [j for n_, j in enumerate(items) if n_ > 0 and re.search(r'<hp:(tbl|pic)', C[items[n_ - 1]]) and not hd.match(T[items[n_ - 1]])]   # 그림·표 다음(제목 띠 다음은 빼고)
+            if free < 1400 or not gaps: continue
+            each = min(2550, free // len(gaps))
+            if each < 500: continue
+            each = each // 100 * 100
+            pid = re.match(r'<hp:p [^>]*paraPrIDRef="(\d+)"', C[a]).group(1)
+            if pid not in sp_pp: sp_pp[pid] = TH.ppvar(pid, align='LEFT', left=0, right=0, intent=0, ls=100)
+            cid = TH.charvar(re.search(r'charPrIDRef="(\d+)"', C[a]).group(1), height=each)
+            for j in gaps:
+                C[j] = ('<hp:p id="%d" paraPrIDRef="%s" styleIDRef="0" pageBreak="0" columnBreak="0" merged="0"><hp:run charPrIDRef="%s"/></hp:p>'
+                        % (1700000000 + nf, sp_pp[pid], cid)) + C[j]
+                nf += 1
+            tot += each * len(gaps); fl.append((pg[a], round(sum(sizes[a:b]) / MM), round(each * len(gaps) / MM)))
+        log.append('쪽 안 남는 자리 나눔: 빈 줄 %d개(모두 %dmm)' % (nf, tot / MM))
+        log.append('  (쪽, 채운 mm, 더한 mm): %s' % fl)
 
     # ---- 4. 쪽 번호(CONTENT·용어 풀이)
     import fix_pages
