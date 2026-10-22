@@ -358,6 +358,22 @@ def build(Ds, P, Ms, sts, plan=None):
 
 GUIDE_NAME = '체스학습관_지도서_1-6마당_부크크A4.hwpx'
 GUIDE3_NAME = '체스학습관_지도서_%d권_%d-%d마당_부크크A4.hwpx'
+GUIDE3_KEEP = {1}      # 2026-10-22 선생님이 지도서 1권을 한글에서 고침(차시마다 새 쪽, 138쪽) — 다시 만들지 않음(차례·용어 쪽은 guide_fix.py)
+
+
+def kept_marks(path):
+    """한글로 저장한 지도서의 차시 쪽 {'m1:l4': 17, …} (줄 정보로 셈)"""
+    from layout import tops_of, text, geometry
+    G, _ = geometry(path)
+    s = zipfile.ZipFile(path).read('Contents/section0.xml').decode('utf-8'); b = s[s.index('<hs:sec'):]
+    C = [b[x:y] for x, y in tops_of(b)]; out = {}; cur = None
+    for k, c in enumerate(C):
+        t = text(c).strip()
+        m = re.search(r'체스 학습관 지도서(\d)마당', t)
+        if m and '<hp:tbl' in c: cur = int(m.group(1))
+        m = re.match(r'(\d+)차시', t)
+        if m and cur and '<hp:tbl' in c: out.setdefault('m%d:l%s' % (cur, m.group(1)), G[k]['page'])
+    return out
 TPREFACE = [
     '이 지도서는 「체스 학습관」 1~6마당(175차시)과 학생용 교재를 함께 쓰시는 선생님을 위한 책입니다. 학년 구분 없이 모든 학생이 1마당 1차시부터 차례대로 배우도록 짜여 있으며, 마당을 마칠 때마다 확인 시험으로 폰 → 나이트 → 비숍 → 룩 → 퀸 → 킹 등급을 받습니다.',
     '마당마다 처음에 그 마당 지도의 큰 줄기와 차시 한눈에 보기(학생용 교재 쪽수)를 두었고, 차시마다 지도 흐름(설명·예시·따라 하기와 힌트), 교재 문제 정답, 아이들이 자주 하는 실수, 지도 도움말, 생각을 여는 질문(발문)을 실었습니다. 첫 번째 발문은 학생용 교재의 ‘생각 톡톡’에도 실려 있습니다.',
@@ -496,9 +512,13 @@ def main(mode='student'):
             d2 = build_guide(Ds, P, Ms, styles(), d.marks, **kw)
             assert d2.marks == d.marks, '쪽 번호가 흔들려요'
             prev[v] = d2.marks
-            d2.build_body()
             name = GUIDE3_NAME % (v, a, b)
             p = os.path.join(B.OUT, name)
+            if v in GUIDE3_KEEP and os.path.exists(p):     # 선생님이 한글에서 고친 권은 덮지 않음 — 그 파일의 실제 쪽을 앞 권 쪽으로 씀
+                prev[v] = kept_marks(p)
+                print('그대로 둠(선생님이 고친 파일):', name)
+                continue
+            d2.build_body()
             d2.save(p, now=B.STAMP)
             cp = os.path.join(B.OUT, 'cover', '속표지_지도서_%d권.png' % v)
             if os.path.exists(cp):

@@ -960,7 +960,7 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
             k.bullet(d, '%d차시 %s — %s (학생용 교재 %s쪽)' % (L['no'], L['title'], clean(L['sum']), sp('l%d' % L['no'])))
         for L in U['lessons']:
             g = G[L['id']]
-            if d.room() < 80:       # 차시는 이어서 싣고, 쪽이 얼마 안 남았을 때만 새 쪽에서 시작
+            if EMPH or d.room() < 80:       # 차시는 이어서 싣고, 쪽이 얼마 안 남았을 때만 새 쪽에서 시작(EMPH: 2026-10-22 선생님 지도서 1권 — 차시마다 새 쪽)
                 d.new_page()
             else:
                 k.gap(d, 'gap2'); k.gap(d, 'gap' if EMPH else 'gap2')   # EMPH: 줄인 만큼 차시 안내 아래로(쪽 수 그대로)
@@ -972,7 +972,7 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
             for a, b in info:
                 d.add(d.tbl([[(d.P(a, 'accS', 'CT'), st.F['tint'], 1, 'CENTER', None), (d.P(b, 'q', 'LT'), st.F['box'], 1, 'CENTER', (700, 300, 200, 200))]], [mm(30), TW - mm(30)]), 8)
             k.gap(d)
-            if EMPH: k.gap(d)      # 차시 안내 다음, '지도 흐름' 앞 간격
+            if EMPH: k.gap(d, 'body')      # 차시 안내 다음, '지도 흐름' 앞 빈 줄
             k.section(d, '지도 흐름')
             d.add(d.P('① 설명', 'acc', 'L'), 7.5, keep=EMPH)
             for s in L['say']:
@@ -988,11 +988,20 @@ def tpart(d, k, D, G, M, P, st, mk=lambda x: x, sp=lambda x: 0):
                     k.bullet(d, clean(t['q']) + (' — 힌트: ' + ' / '.join(clean(h) for h in t['hint']) if t.get('hint') else ''), 'q', '-')
             items, games = lesson_items(L)
             d.add(d.P('④ 교재 문제 정답', 'acc', 'L'), 7.5, keep=EMPH)
-            for i, t in enumerate(items):
+            if EMPH:        # 정답 두 개씩 한 줄(선생님 지도서 1권)
+                ans = ['%d. %s' % (i + 1, ans_text(t, D, k.sanmode)) for i, t in enumerate(items)]
+                hw = TW // 2
+                for j in range(0, len(ans), 2):
+                    pair = ans[j:j + 2] + [''] * (2 - len(ans[j:j + 2]))
+                    d.add(d.tbl([[(d.P(clean(a), 'q', 'hangT'), st.F['none'], 1, 'TOP', (0, 300, 60, 60)) for a in pair]], [hw, TW - hw]),
+                          max(text_h(clean(a), st.C['q'], hw / MM - 6, 140) for a in pair) + 1.2)
+            else:
+              for i, t in enumerate(items):
                 k.bullet(d, '%d. %s' % (i + 1, ans_text(t, D, k.sanmode)), 'q', '')
             for t in games:
                 k.bullet(d, '학습관 대결: ' + clean(t['q']), 'q', '-')
             for key, nm, mark in [('mis', '자주 하는 실수', '•'), ('tip', '지도 도움말', '•'), ('ask', '생각을 여는 질문(발문)', 'Q.')]:
+                if EMPH: k.gap(d, 'body')     # 소제목 앞 빈 줄(선생님 지도서 1권)
                 k.section(d, nm)
                 for t in g[key]:
                     k.bullet(d, t, 'body', mark)
