@@ -358,7 +358,7 @@ def build(Ds, P, Ms, sts, plan=None):
 
 GUIDE_NAME = '체스학습관_지도서_1-6마당_부크크A4.hwpx'
 GUIDE3_NAME = '체스학습관_지도서_%d권_%d-%d마당_부크크A4.hwpx'
-GUIDE3_KEEP = {1, 2}   # 2026-10-22 선생님이 지도서 1권(138쪽)·2권(169쪽)을 한글에서 고침 — 다시 만들지 않음(차례·용어 쪽은 guide_fix.py)
+GUIDE3_KEEP = {1, 2, 3}   # 2026-10-22~23 선생님이 지도서 1권(138쪽)·2권(169쪽)·3권(126쪽)을 한글에서 고침 — 다시 만들지 않음(차례·용어 쪽은 guide_fix.py)
 
 
 def kept_marks(path):
