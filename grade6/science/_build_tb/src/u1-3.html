@@ -1,0 +1,273 @@
+<!--
+title: 산성 용액과 염기성 용액의 성질을 비교해 볼까?
+unit: 1
+lesson: 5
+total: 12
+goal: 산성 용액이나 염기성 용액과 물질의 반응을 관찰할 수 있어요.<br>산성 용액과 염기성 용액의 성질을 설명할 수 있어요.
+pages: 「과학」 20~21쪽 · 「실험관찰」 11쪽 · 지도서 130~137쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"산","bl2":"성"}}]
+-->
+<style>
+.a3-steps{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.a3-steps button{font-size:.9rem;min-height:2.3rem;padding:.15em .7em}
+.a3-steps button[disabled]{opacity:.45}
+.a3-tab td,.a3-tab th{padding:5px 6px;text-align:center;font-size:.85rem}
+.a3-tab th{background:#efe9f8}
+.a3-tab td button{font-size:.82rem;min-height:2.1rem;padding:.1em .5em;border-width:2px;width:100%}
+.a3-tab td button.bad{border-color:var(--bad);background:#fbd0cb}
+.a3-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.a3-two>div{border:2px solid var(--line);border-radius:14px;padding:8px 10px;font-size:.92rem}
+.sg-pool{display:flex;flex-wrap:wrap;gap:8px;min-height:2.8rem;padding:6px;border:2px dashed var(--line);border-radius:12px}
+.sg-bins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.sg-bin{border:3px solid var(--navy);border-radius:14px;padding:6px 8px;min-height:4.4rem;cursor:pointer;background:var(--paper)}
+.sg-bin>b{display:block;font-family:Jua,sans-serif;font-weight:400;color:var(--navy);font-size:.92rem}
+.sg-in{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.sg-card{font-size:.88rem;min-height:2.2rem;padding:.1em .7em;border-width:2px}
+@keyframes a3up{from{transform:translateY(0);opacity:1}to{transform:translateY(-32px);opacity:0}}
+.a3-bub{animation:a3up 1.6s linear infinite}
+@media (max-width:640px){.sg-bins,.a3-two{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 20쪽</span>
+  <h2>달걀을 식초에 넣으면 어떻게 될까요?</h2>
+  <p>레몬즙은 신맛이 나고 제빵 소다 용액은 만지면 미끈미끈한 것처럼, 산성 용액과 염기성 용액은 서로 다른 성질이 있어요. (과학실의 용액은 맛보거나 맨손으로 만지지 않아요.)</p>
+  <svg class="scene" viewBox="0 0 600 220" style="max-height:26vh" role="img" aria-label="식초가 든 병 속의 달걀">
+    <rect width="600" height="220" fill="#fbf7ee"/><rect y="190" width="600" height="30" fill="#d9c49a"/>
+    <path d="M220 40 h160 v140 q0 12 -12 12 h-136 q-12 0 -12 -12z" fill="#fff8e0" fill-opacity=".7" stroke="#b9a46c" stroke-width="4"/>
+    <rect x="224" y="70" width="152" height="118" fill="#f2d77a" opacity=".6"/>
+    <ellipse cx="300" cy="150" rx="34" ry="42" fill="#fbf3e6" stroke="#d8c3a4" stroke-width="3"/>
+    <text x="300" y="30" text-anchor="middle" font-family="Jua" font-size="18" fill="#7a5a10">식초 (산성 용액)</text>
+    <text x="470" y="110" text-anchor="middle" font-family="Jua" font-size="40" fill="#b9a46c">?</text>
+  </svg>
+  <p class="jua" style="font-size:1.05rem">식초에 달걀을 일주일쯤 담가 두면 어떻게 될지 내 생각을 골라요.</p>
+  <div class="pick" id="a3Pred">
+    <button data-v="달걀 껍데기에서 거품이 나면서 녹을 것">달걀 껍데기에서 거품이 나면서 녹을 것 같아요</button>
+    <button data-v="아무 변화가 없을 것">아무 변화가 없을 것 같아요</button>
+  </div>
+  <div class="fb" id="a3PredFb"></div>
+</section>
+
+<section id="s2" data-nav="실험해요">
+  <span class="stage">실험해요 · 「실험관찰」 11쪽</span>
+  <h2>산성 용액과 염기성 용액에 여러 가지 물질을 넣어요</h2>
+  <p>① 단추로 용액을 넣고, 핀셋을 고른 뒤 홈을 눌러 물질을 넣어요. 용액이 섞이지 않게 <b>줄마다 다른 핀셋</b>을 써요. (<b id="a3N">0</b>/8)</p>
+  <div class="a3-steps" data-glue="1">
+    <button class="main" id="a3Fill">① 표시된 홈에 용액을 ⅔ 정도씩 넣기</button>
+    <button id="a3T1" disabled>🥢 핀셋 ① (묽은 염산 줄)</button>
+    <button id="a3T2" disabled>🥢 핀셋 ② (묽은 수산화 나트륨 용액 줄)</button>
+  </div>
+  <svg id="a3Lab" class="scene" viewBox="0 0 720 260" style="max-height:32vh" data-glue="1" role="img" aria-label="묽은 염산과 묽은 수산화 나트륨 용액이 담긴 홈판에 넣은 물질"></svg>
+  <div class="fb" id="a3LabFb"></div>
+  <p class="tip">⚠️ 이번 실험은 다른 차시보다 조금 더 진한 용액을 써서 더 조심해요 · 실험복·보안경·실험용 장갑 착용, 환기가 잘 되는 곳에서 · 물질은 핀셋으로 용액이 튀지 않게 살살 넣어요 · 용액이 피부에 닿거나 눈에 들어가면 흐르는 물로 충분히 씻어요 · 맛보거나 냄새를 맡지 않고, 물질로 장난치지 않아요.</p>
+</section>
+
+<section id="s3" data-nav="일주일 관찰">
+  <span class="stage">실험해요 · 시간이 지나면서 나타나는 변화</span>
+  <h2>홈판의 뚜껑을 닫고 안전한 곳에 두며 관찰해요</h2>
+  <div class="player">
+    <svg id="a3Mov" class="scene" viewBox="0 0 720 260" style="max-height:32vh" role="img" aria-label="일주일 동안 물질이 변하는 모습 애니메이션"></svg>
+    <div class="ctl"><button id="a3mPlay" class="main" aria-label="재생">▶</button><input type="range" id="a3mTime" min="0" max="16" step="0.02" value="0" aria-label="영상 시간"><span class="jua" id="a3mClock">0초</span></div>
+    <div class="row chapters" id="a3mChaps"></div>
+    <p class="cap" id="a3mCap"></p>
+  </div>
+  <div class="fb" id="a3MovFb"></div>
+  <p class="tip">💡 묽은 수산화 나트륨 용액과 삶은 달걀흰자·삶은 닭 가슴살의 반응은 오래 걸려서 수업 시간 안에는 잘 보이지 않아요. 준비한 재료에 따라 결과가 조금씩 다를 수 있으니 본 대로 기록해요.</p>
+</section>
+
+<section id="s4" data-nav="결과 기록">
+  <span class="stage">실험해요 · 「실험관찰」 11쪽</span>
+  <h2>관찰한 결과를 기록해요</h2>
+  <p>칸을 누를 때마다 기록이 바뀌어요. 관찰한 대로 기록한 뒤 확인해요.</p>
+  <table class="a3-tab" id="a3Tab" data-glue="1"></table>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="a3TabChk">기록 확인하기</button></div>
+  <div class="fb" id="a3TabFb"></div>
+</section>
+
+<section id="s5" data-nav="정리해요">
+  <span class="stage">정리해요 · 「과학」 21쪽</span>
+  <h2>산성 용액과 염기성 용액의 성질을 비교해요</h2>
+  <div class="a3-two">
+    <div><b class="jua">달걀 껍데기 · 조개껍데기</b><br>주요 성분: <b>탄산 칼슘</b></div>
+    <div><b class="jua">삶은 달걀흰자 · 삶은 닭 가슴살</b><br>주요 성분: <b>단백질</b></div>
+  </div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">산성 용액(묽은 염산)은 어떤 성질이 있나요?</p>
+  <div class="pick" id="a3P5a">
+    <button data-a="1" data-m="맞아요! 산성 용액은 탄산 칼슘과 반응해서 달걀 껍데기와 조개껍데기를 기포가 발생하며 녹여요.">달걀 껍데기·조개껍데기(탄산 칼슘)를 녹여요</button>
+    <button data-a="0" data-m="묽은 염산에 넣은 삶은 달걀흰자와 닭 가슴살은 변화가 없었어요.">삶은 달걀흰자·닭 가슴살(단백질)을 녹여요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem">염기성 용액(묽은 수산화 나트륨 용액)은 어떤 성질이 있나요?</p>
+  <div class="pick" id="a3P5b">
+    <button data-a="0" data-m="묽은 수산화 나트륨 용액에 넣은 달걀 껍데기와 조개껍데기는 변화가 없었어요.">달걀 껍데기·조개껍데기(탄산 칼슘)를 녹여요</button>
+    <button data-a="1" data-m="맞아요! 염기성 용액은 단백질과 반응해서 시간이 지나면 삶은 달걀흰자와 닭 가슴살을 녹여 흐물흐물하게 해요.">삶은 달걀흰자·닭 가슴살(단백질)을 녹여요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="더 알아봐요">
+  <span class="stage">더 알아봐요 · 대리암 조각과 두부</span>
+  <h2>대리암 조각과 두부를 넣으면 어떻게 될까요?</h2>
+  <p>대리암 조각의 주요 성분은 <b>탄산 칼슘</b>, 두부의 주요 성분은 <b>단백질</b>이에요. 오늘 배운 성질로 예상해 봐요.</p>
+  <p class="jua" style="font-size:1rem">묽은 염산에서 변화가 나타나는 것은?</p>
+  <div class="pick" id="a3P6a">
+    <button data-a="1" data-m="맞아요! 대리암 조각 표면에서 기포가 생기고 처음보다 작아져요. 그래서 산성비를 맞은 대리암 조각상이나 문화재가 녹아 모양이 변하기도 해요.">대리암 조각</button>
+    <button data-a="0" data-m="두부는 단백질이 많아요. 단백질과 반응하는 것은 어느 용액이었나요?">두부</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1rem">묽은 수산화 나트륨 용액에서 변화가 나타나는 것은?</p>
+  <div class="pick" id="a3P6b">
+    <button data-a="0" data-m="대리암 조각은 탄산 칼슘이 많아요. 탄산 칼슘과 반응하는 것은 산성 용액이에요.">대리암 조각</button>
+    <button data-a="1" data-m="맞아요! 두부는 시간이 지나면서 흐물흐물해져요. 하수구를 막은 머리카락(단백질)을 염기성 용액으로 녹이는 것도 같은 성질을 이용한 거예요.">두부</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 달걀 껍데기를 <span class="blank"><span id="bl1">ㅅ</span><span id="bl2">ㅅ</span></span> 용액에 넣으면 기포가 발생하며 녹습니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <div id="a3Q2" hidden>
+    <p class="jua" style="font-size:1.05rem;margin-top:8px">2. 💭 묽은 염산에 탄산 칼슘을 넣으면 어떻게 될까요?</p>
+    <div class="pick" id="a3P7">
+      <button data-a="1" data-m="맞아요! 묽은 염산은 탄산 칼슘과 반응하므로 탄산 칼슘은 기포가 발생하면서 녹아요.">기포가 발생하면서 녹아요</button>
+      <button data-a="0" data-m="달걀 껍데기와 조개껍데기의 주요 성분이 무엇이었는지 떠올려 봐요.">아무 변화가 없어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 용액과 만났을 때 반응이 일어나는 물질끼리 알맞게 넣어요.</p>
+  <div id="a3F1" data-glue="1"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:10px">2. ✏️ 서술형: 식초에 메추리알을 넣었을 때의 변화를 쓰고, 그 까닭을 산성 용액의 성질과 관련지어 써요.</p>
+  <textarea id="a3F2" rows="2" placeholder="예: 메추리알 껍데기에서 … 왜냐하면 식초는 …"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="a3F2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="a3F2Fb"></div>
+</section>
+
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 11쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>산성 용액과 염기성 용액의 성질을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>산성 용액과 염기성 용액의 성질을 관찰하여 비교할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>산성 용액과 염기성 용액의 성질을 비교하는 실험에 안전 수칙을 지키며 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+function needAll(n,sec){const s=new Set();return k=>{s.add(k);if(s.size>=n)doneNav(sec);};}
+function sortGame(id,items,bins,done,msg){const R=$('#'+id);let sel=null;
+  R.innerHTML=`<div class="sg-pool"></div><div class="sg-bins">${bins.map((b,i)=>`<div class="sg-bin" data-i="${i}"><b>${b}</b><div class="sg-in"></div></div>`).join('')}</div><div class="row" style="margin-top:6px"><button class="main sg-chk">확인하기</button></div><div class="fb"></div>`;
+  const pool=R.querySelector('.sg-pool');
+  items.forEach((it,k)=>{const c=document.createElement('button');c.className='sg-card';c.textContent=it.n;c.dataset.k=k;
+    c.onclick=()=>{if(c.classList.contains('right'))return;sel=sel===c?null:c;R.querySelectorAll('.sg-card').forEach(x=>x.classList.toggle('sel',x===sel));};pool.appendChild(c);});
+  pool.onclick=e=>{if(sel&&!e.target.closest('.sg-card')){pool.appendChild(sel);sel.classList.remove('sel');sel=null;}};
+  R.querySelectorAll('.sg-bin').forEach(b=>b.onclick=e=>{if(!sel||e.target.closest('.sg-card'))return;b.querySelector('.sg-in').appendChild(sel);sel.classList.remove('sel','wrong');sel=null;});
+  R.querySelector('.sg-chk').onclick=()=>{const out=R.querySelector('.fb');if(pool.querySelector('.sg-card')){fb(out,'아직 넣지 않은 카드가 있어요. 카드를 누르고 칸을 눌러요.','info');return;}let bad=0;
+    R.querySelectorAll('.sg-bin').forEach(b=>b.querySelectorAll('.sg-card').forEach(c=>{const ok=items[c.dataset.k].b==b.dataset.i;c.classList.toggle('right',ok);
+      if(!ok){bad++;c.classList.add('wrong');setTimeout(()=>{c.classList.remove('wrong');pool.appendChild(c);},700);}}));
+    if(bad)fb(out,`${bad}개가 알맞은 칸에 있지 않아요. 다시 넣어 봐요.`,false);else{fb(out,msg||'모두 맞았어요!',true);if(done)done();}};}
+function mkPlayer(o){let t=0,playing=false,raf=0,reached=false;const P=s=>$('#'+o.pre+s);
+  o.ch.forEach((c,i)=>{const b=document.createElement('button');b.textContent=o.names[i];b.onclick=()=>{stop();t=c[0]+0.01;render();};P('Chaps').appendChild(b);});
+  function render(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);P('Cap').textContent=o.ch[ci][2];
+    $$('#'+o.pre+'Chaps button').forEach((b,i)=>b.classList.toggle('on',i===ci));P('Time').value=t;P('Clock').textContent=Math.floor(t)+'초';o.draw(t,o.ch[ci][1]);
+    if(t>=o.end-0.3&&!reached){reached=true;if(o.onEnd)o.onEnd();}}
+  function stop(){playing=false;cancelAnimationFrame(raf);P('Play').textContent='▶';}
+  P('Play').onclick=()=>{if(playing){stop();return;}if(t>=o.end)t=0;playing=true;P('Play').textContent='⏸';let last=performance.now();
+    const step=now=>{if(!playing)return;t=Math.min(o.end,t+(now-last)/1000);last=now;render();if(t>=o.end){stop();return;}raf=requestAnimationFrame(step);};raf=requestAnimationFrame(step);};
+  P('Time').oninput=e=>{stop();t=+e.target.value;render();};render();}
+
+/* 도입 */
+$$('#a3Pred button').forEach(b=>b.onclick=()=>{$$('#a3Pred button').forEach(x=>x.classList.toggle('sel',x===b));fb('#a3PredFb','“'+b.dataset.v+'”이라고 예상했어요. 산성 용액과 염기성 용액에 여러 가지 물질을 넣어 확인해 봐요!',true);doneNav('s1');});
+
+/* 그림: 홈판 두 줄 + 물질 */
+const MAT=['달걀 껍데기','조개껍데기','삶은 달걀흰자','삶은 닭 가슴살'];
+function matSVG(k,x,y,s,melt,blur){/* melt 0~1: 녹아 작아짐, blur 0~1: 흐물흐물 */
+  const sc=s*(1-0.65*melt);let h=`<g transform="translate(${x} ${y}) scale(${sc})" opacity="${1-0.55*blur}">`;
+  const wob=blur?` style="filter:blur(${(blur*1.6).toFixed(2)}px)"`:'';
+  if(k===0)h+=`<path d="M-18 -10 l14 -8 l16 4 l8 14 l-10 12 l-18 2 l-12 -10z" fill="#fbf3e6" stroke="#cdb48f" stroke-width="2"/>`;
+  else if(k===1)h+=`<path d="M0 14 L-22 -6 q22 -22 44 0z" fill="#f0e0d0" stroke="#b99577" stroke-width="2"/><path d="M0 14 L-12 -12 M0 14 L0 -16 M0 14 L12 -12" stroke="#b99577" stroke-width="1.5"/>`;
+  else if(k===2)h+=`<path d="M-20 0 q0 -16 20 -16 q20 0 20 16 q0 14 -20 14 q-20 0 -20 -14z" fill="#fff" stroke="#d9d9d9" stroke-width="2"${wob}/>`;
+  else h+=`<path d="M-22 -10 h44 v20 h-44z" rx="6" fill="#f3dccb" stroke="#d1a98c" stroke-width="2"${wob}/><path d="M-18 -4 h36 M-18 2 h36" stroke="#e2bfa6" stroke-width="2"${wob}/>`;
+  return h+'</g>';}
+function plates(st,t){/* st[r][k] 넣었는지, t: 0~7일 */
+  let h='<rect width="720" height="260" fill="#fbf7ee"/>';
+  [['묽은 염산',62,'#eaf4fa'],['묽은 수산화 나트륨 용액',172,'#eef6ee']].forEach(([n,y,c],r)=>{
+    h+=`<rect x="20" y="${y-46}" width="680" height="92" rx="14" fill="#eef3f6" stroke="#9fb3bf" stroke-width="3"/><text x="34" y="${y-28}" font-family="Jua" font-size="15" fill="#3b5566">${n}</text>`;
+    MAT.forEach((m,k)=>{const x=230+k*126;const filled=st.fill;const cloudy=r===1&&k>=2&&st[r][k]?Math.min(1,t/7):0;
+      h+=`<circle cx="${x}" cy="${y}" r="38" fill="#fff" stroke="#9fb3bf" stroke-width="3"/>`;
+      if(filled)h+=`<circle cx="${x}" cy="${y}" r="33" fill="${cloudy?`rgba(225,225,215,${0.4+cloudy*0.5})`:c}"/>`;
+      if(st[r][k]){const melt=r===0&&k<2?Math.min(1,t/7):0,blur=r===1&&k>=2?Math.min(1,t/7):0;h+=matSVG(k,x,y+4,1,melt,blur);
+        if(r===0&&k<2&&t<6.5){for(let b=0;b<5;b++){if(st.css){h+=`<circle class="a3-bub" style="animation-delay:-${(b*0.33).toFixed(2)}s" cx="${x-14+b*7}" cy="${y+8}" r="${2+b%2}" fill="#fff" stroke="#9fc7de"/>`;continue;}
+          const yy=y+8-((t*30+b*9+(st.tick||0))%34);h+=`<circle cx="${x-14+b*7}" cy="${yy}" r="${2+b%2}" fill="#fff" stroke="#9fc7de"/>`;}}}
+      if(r===1)h+=`<text x="${x}" y="${y+64}" text-anchor="middle" font-family="Jua" font-size="13" fill="#4a3a20">${m}</text>`;});});
+  return h;}
+
+/* 실험 */
+const st={fill:false,0:[0,0,0,0],1:[0,0,0,0],tick:0,css:1};let tool=0,putN=0;
+$('#a3Lab').innerHTML='<g id="a3Base"></g><g id="a3Hit"></g>';
+function drawLab(){$('#a3Base').innerHTML=plates(st,0.4);}
+[62,172].forEach((y,r)=>MAT.forEach((m,k)=>{const c=document.createElementNS('http://www.w3.org/2000/svg','circle');const x=230+k*126;
+  c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',40);c.setAttribute('fill','transparent');c.setAttribute('class','hit');c.onclick=()=>put(r,k);$('#a3Hit').appendChild(c);}));
+drawLab();
+$('#a3Fill').onclick=()=>{st.fill=true;drawLab();$('#a3Fill').disabled=true;$('#a3Fill').classList.remove('main');['#a3T1','#a3T2'].forEach(s=>$(s).disabled=false);
+  fb('#a3LabFb','실험 도움판 ②에 표시된 홈에 묽은 염산과 묽은 수산화 나트륨 용액을 ⅔ 정도씩 넣었어요. 이제 핀셋을 골라요.','info');};
+[['#a3T1',1],['#a3T2',2]].forEach(([s,v])=>$(s).onclick=()=>{tool=v;['#a3T1','#a3T2'].forEach(x=>$(x).classList.toggle('sel',x===s));});
+function put(r,k){if(!st.fill){fb('#a3LabFb','먼저 ① 단추로 용액을 넣어요.','info');return;}if(!tool){fb('#a3LabFb','핀셋을 먼저 골라요.','info');return;}
+  if(tool!==r+1){fb('#a3LabFb','⚠️ 이 줄에 쓰는 핀셋이 아니에요! 핀셋 하나로 두 용액을 함께 쓰면 용액이 섞여요. 줄에 맞는 핀셋을 골라요.',false);return;}
+  if(st[r][k])return;st[r][k]=1;putN++;$('#a3N').textContent=putN;drawLab();
+  const m=MAT[k];let msg;
+  if(r===0&&k<2)msg=`묽은 염산 + ${m}: 표면에서 기포가 발생해요!`;else if(r===0)msg=`묽은 염산 + ${m}: 아무 변화가 없어요.`;
+  else if(k<2)msg=`묽은 수산화 나트륨 용액 + ${m}: 아무 변화가 없어요.`;else msg=`묽은 수산화 나트륨 용액 + ${m}: 지금은 변화가 잘 보이지 않아요. 시간이 오래 걸려요.`;
+  if(putN>=8){fb('#a3LabFb',msg+' 🎉 여덟 가지를 모두 넣었어요! 뚜껑을 닫고 안전한 곳에 두며 시간이 지나는 동안 관찰해요.',true);doneNav('s2');}else fb('#a3LabFb',msg,'info');}
+
+/* 일주일 관찰 영상 */
+(function(){const all={fill:true,0:[1,1,1,1],1:[1,1,1,1],tick:0};
+  mkPlayer({pre:'a3m',end:16,names:['넣은 직후','하루 뒤','사흘 뒤','일주일 뒤'],
+    ch:[[0,'0','넣은 직후: 묽은 염산에 넣은 달걀 껍데기와 조개껍데기에서 기포가 발생해요. 다른 것은 변화가 없어요.'],
+        [4,'1','하루 뒤: 달걀 껍데기와 조개껍데기가 기포를 내며 점점 작아져요.'],
+        [8,'3','사흘 뒤: 묽은 수산화 나트륨 용액에 넣은 삶은 달걀흰자와 닭 가슴살이 조금씩 흐물흐물해지고 용액이 뿌옇게 흐려져요.'],
+        [12,'7','일주일 뒤: 산성 용액은 달걀 껍데기·조개껍데기를, 염기성 용액은 삶은 달걀흰자·닭 가슴살을 녹였어요.']],
+    draw(t,lab){const day=t<4?t/4*0.5:t<8?0.5+(t-4)/4*1.5:t<12?2+(t-8)/4*2:4+(t-12)/4*3;all.tick=t*40;
+      $('#a3Mov').innerHTML=plates(all,day)+`<rect x="20" y="226" width="150" height="28" rx="8" fill="#6a4fa3"/><text x="95" y="246" text-anchor="middle" font-family="Jua" font-size="16" fill="#fff">${day<0.5?'넣은 직후':Math.round(day)+'일째'}</text>`;},
+    onEnd(){fb('#a3MovFb','일주일 동안의 변화를 모두 봤어요. 다음 쪽에서 결과를 기록해요.',true);doneNav('s3');}});})();
+
+/* 결과 기록 */
+const OPT=['?','기포가 발생하며 녹는다','변화 없다','흐물흐물해진다(녹는다)'];
+const ANS=[[1,1,2,2],[2,2,3,3]];const rec=[[0,0,0,0],[0,0,0,0]];
+function tab(){let h='<tr><th>구분</th>'+MAT.map(m=>`<th>${m}</th>`).join('')+'</tr>';
+  ['묽은 염산','묽은 수산화 나트륨 용액'].forEach((n,r)=>{h+=`<tr><th>${n}</th>`+MAT.map((m,k)=>`<td><button data-r="${r}" data-k="${k}">${OPT[rec[r][k]]}</button></td>`).join('')+'</tr>';});
+  $('#a3Tab').innerHTML=h;$$('#a3Tab button').forEach(b=>b.onclick=()=>{const r=+b.dataset.r,k=+b.dataset.k;rec[r][k]=rec[r][k]%3+1;tab();});}
+tab();
+$('#a3TabChk').onclick=()=>{let bad=0,empty=0;rec.forEach((row,r)=>row.forEach((v,k)=>{if(!v)empty++;else if(v!==ANS[r][k])bad++;}));
+  if(empty){fb('#a3TabFb',`아직 기록하지 않은 칸이 ${empty}개 있어요.`,'info');return;}
+  $$('#a3Tab button').forEach(b=>b.classList.toggle('bad',rec[b.dataset.r][b.dataset.k]!==ANS[b.dataset.r][b.dataset.k]));
+  if(bad)fb('#a3TabFb',`${bad}칸이 관찰 결과와 달라요. 일주일 관찰 영상을 다시 떠올려 고쳐요.`,false);
+  else{fb('#a3TabFb','정확히 기록했어요! 묽은 염산은 달걀 껍데기·조개껍데기를, 묽은 수산화 나트륨 용액은 삶은 달걀흰자·닭 가슴살을 녹였어요.',true);doneNav('s4');}};
+
+/* 정리 · 더 알아봐요 */
+{const d=needAll(2,'s5');pickOne('#a3P5a','','',null,()=>d(1));pickOne('#a3P5b','','',null,()=>d(2));}
+{const d=needAll(2,'s6');pickOne('#a3P6a','','',null,()=>d(1));pickOne('#a3P6b','','',null,()=>d(2));}
+
+/* 한눈에 쏙 */
+{const d=needAll(2,'s7');$('#blReveal').onclick=()=>{$('#a3Q2').hidden=false;fb('#blFb','달걀 껍데기를 산성 용액에 넣으면 기포가 발생하며 녹아요.',true);d(1);};pickOne('#a3P7','','',null,()=>d(2));}
+
+/* 형성 평가 */
+{const d=needAll(2,'s8');
+sortGame('a3F1',[{n:'㉠ 삶은 달걀흰자',b:1},{n:'㉡ 조개껍데기',b:0},{n:'㉢ 달걀 껍데기',b:0},{n:'㉣ 삶은 닭 가슴살',b:1}],['⑴ 묽은 염산','⑵ 묽은 수산화 나트륨 용액'],()=>d(1),
+  '정답! 묽은 염산은 ㉡ 조개껍데기·㉢ 달걀 껍데기(탄산 칼슘)와, 묽은 수산화 나트륨 용액은 ㉠ 삶은 달걀흰자·㉣ 삶은 닭 가슴살(단백질)과 반응해요.');
+$('#a3F2Btn').onclick=()=>{const t=$('#a3F2').value.trim();if(!t){fb('#a3F2Fb','먼저 답을 써 보세요.',false);return;}
+  const a=/기포|거품|녹/.test(t),b=/산성/.test(t),c=/탄산\s*칼슘|껍데기/.test(t);
+  if(a&&b){fb('#a3F2Fb','잘 썼어요! 예시 답: 메추리알 껍데기에서 기포가 발생하며 녹아요. 식초는 산성 용액이고, 산성 용액은 껍데기의 주요 성분인 탄산 칼슘을 녹이기 때문이에요.'+(c?'':' (탄산 칼슘까지 쓰면 더 좋아요.)'),true);d(2);}
+  else if(a)fb('#a3F2Fb','변화는 잘 썼어요. 식초가 어떤 용액이고 그 용액이 무엇을 녹이는지 까닭도 써요.','info');
+  else fb('#a3F2Fb','달걀 껍데기를 묽은 염산에 넣었을 때 어떤 일이 일어났는지 떠올려 써요.',false);};}
+
+faces('s9','잘했어요! 다음 시간에는 산성 용액과 염기성 용액을 섞으면 어떻게 되는지 알아봐요.','어려웠던 부분은 일주일 관찰 영상과 결과 표를 다시 봐요.');
+</script>

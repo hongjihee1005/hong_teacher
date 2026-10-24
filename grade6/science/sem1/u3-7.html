@@ -1,0 +1,774 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>식물의 각 기관은 연결되어 있어요!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#2f7d4a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+[hidden]{display:none!important}
+.p3-fit{width:min(100%,calc(var(--h,48vh)*var(--ar,1.6)));margin:0 auto}
+.p3-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:700px){.p3-two{grid-template-columns:1fr}}
+.p3-q{font-family:"Jua",sans-serif;font-size:1.08rem;margin:10px 0 6px}
+.p3-chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.p3-chips button{min-height:2.3rem;padding:.2em .8em}
+.p3-mt{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px}
+.p3-mt>div{display:flex;flex-direction:column;gap:8px}
+.p3-mt button{font-size:.95rem;min-height:2.4rem;text-align:left}
+.p3-mt>div:first-child button{text-align:center}
+.p3-ox{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:6px 0;padding:6px 10px;border:2px solid var(--line);border-radius:12px}
+.p3-ox .q{flex:1 1 60%}
+.p3-ox button{min-width:3.2rem}
+.p3-seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;min-height:2.2rem}
+.p3-seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 12px;font-family:"Jua",sans-serif}
+.p3-seq span+span::before{content:"→ ";}
+.p3-ord{display:flex;flex-wrap:wrap;gap:8px}
+.p3-ord button{font-size:.95rem;text-align:left}
+.p3-bins{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:8px;margin-top:8px}
+.p3-bins .bin{border:3px dashed var(--line);border-radius:14px;padding:8px;min-height:4.2rem;cursor:pointer;background:var(--paper)}
+.p3-bins .bin b{display:block;font-family:"Jua",sans-serif;font-weight:400;margin-bottom:4px}
+.p3-bins .bin span{display:inline-block;background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:2px 10px;margin:2px;font-size:.88rem}
+.p3-bins .bin.hot{border-color:var(--sun)}
+@media(max-width:700px){.p3-bins{grid-template-columns:repeat(2,minmax(0,1fr))}}
+svg .org{cursor:pointer}
+svg .org:hover>*{filter:brightness(1.08)}
+svg .org.ok>*{stroke:#16804a!important;stroke-width:3px}
+svg .org.ok>[fill="transparent"]{stroke:none!important}
+svg .org:focus{outline:none}
+svg .org:focus-visible>*{stroke:#b58400!important;stroke-width:4px}
+.p3-tbl td,.p3-tbl th{text-align:center;font-size:.92rem;padding:5px 6px}
+.p3-tbl th{background:#e3f3e6;color:#15313d}
+.cc{display:inline-flex;gap:4px;vertical-align:middle;margin:2px}
+.cc button{min-height:2.1rem;padding:.1em .6em;font-size:.92rem;border-width:2px}
+.p3-card{border:3px solid var(--navy);border-radius:16px;padding:10px 14px;background:#fbfff6;color:#15313d}
+.p3-num{font-family:"Jua",sans-serif;background:#2f7d4a;color:#fff;border-radius:999px;padding:1px 10px;margin-right:6px}
+
+@keyframes g7spin{to{transform:rotate(360deg)}}@keyframes g7spinR{to{transform:rotate(-360deg)}}
+.g7-run .g7a{animation:g7spin 6s linear infinite;transform-box:fill-box;transform-origin:center}
+.g7-run .g7b{animation:g7spinR 4s linear infinite;transform-box:fill-box;transform-origin:center}
+.g7-run .g7c{animation:g7spin 4s linear infinite;transform-box:fill-box;transform-origin:center}
+.g7-game{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:12px;align-items:start}
+@media(max-width:760px){.g7-game{grid-template-columns:1fr}}
+.g7-side{display:flex;flex-direction:column;gap:8px}
+.g7-side .row button{min-height:2.3rem;padding:.1em .7em;font-size:.95rem;border-width:2px}
+.g7-score{font-family:"Jua",sans-serif;display:flex;gap:10px;flex-wrap:wrap}
+.g7-score span{border-radius:999px;padding:2px 12px}
+.g7-w{background:#d6ecff;color:#124a7a}.g7-n{background:#fff1bf;color:#6a4a00}
+.g7-rps{font-size:1.6rem;text-align:center;font-family:"Jua",sans-serif;min-height:2.2rem}
+body.ov #g7Board{max-height:min(56vh,440px);width:auto}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M16 70 C16 34 40 14 72 14 C72 46 52 70 16 70z" fill="#5cb85c" stroke="#fff" stroke-width="3"/><path d="M18 68 L60 26" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+  <div><h1>식물의 각 기관은 연결되어 있어요!</h1><p>6학년 1학기 과학 · 3단원 식물의 구조와 기능 · 8/12차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">식물의 기관</a><a href="#s3">기관이 하는 일</a><a href="#s4">물과 양분의 길</a><a href="#s5">놀이해요</a><a href="#s6">정리해요</a><a href="#s7">한눈에 쏙</a><a href="#s8">형성 평가</a><a href="#s9">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>식물의 각 기관의 기능을 설명할 수 있어요.<br>식물의 각 기관이 서로 연결되어 있음을 설명할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 76쪽</span>
+  <h2>톱니바퀴 하나가 빠지면 어떻게 될까요?</h2>
+  <svg id="g7Gear" class="scene p3-fit g7-run" style="--ar:2.2;--h:28vh" viewBox="0 0 660 300" role="img" aria-label="맞물려 돌아가는 톱니바퀴 세 개와 시곗바늘"></svg>
+  <div class="row" style="margin-top:6px"><button class="main" id="g7Pull">✋ 가운데 톱니바퀴 빼기</button></div>
+  <div id="g7GearQ" hidden data-glue="1">
+    <p class="p3-q">시계가 어떻게 되었나요? 식물도 이와 같다면?</p>
+    <div class="pick" id="g7P1"><button data-a="1" data-m="맞아요! 톱니바퀴들이 연결되어 함께 움직이기 때문에 하나가 빠지면 시계가 제대로 작동하지 않아요. 식물도 한 기관에 문제가 생기면 식물 전체에 영향을 줄 수 있어요.">하나가 빠지자 시계가 멈췄어요. 식물도 각 기관이 연결되어 있을 것 같아요</button><button data-a="0" data-m="그림을 다시 봐요. 가운데 톱니바퀴를 빼자 시곗바늘은 어떻게 되었나요?">하나가 빠져도 시계는 그대로 잘 움직여요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s2" data-nav="식물의 기관">
+  <span class="stage">활동해요 · 「과학」 76쪽</span>
+  <h2>식물은 무엇으로 이루어져 있을까요? (애기똥풀)</h2>
+  <div class="p3-two">
+    <div><svg id="g7Plant" class="scene" viewBox="0 0 420 420" role="img" aria-label="뿌리, 줄기, 잎, 꽃, 열매가 있는 애기똥풀"></svg></div>
+    <div><p class="p3-q">이름 카드를 고르고 그림에서 그 부분을 눌러요.</p>
+      <div class="p3-chips" id="g7Chips"><button data-k="root">뿌리</button><button data-k="stem">줄기</button><button data-k="leaf">잎</button><button data-k="flower">꽃</button><button data-k="fruit">열매</button></div><div class="fb"></div>
+      <p class="tip" data-glue="1">애기똥풀의 열매는 좁은 원기둥 모양이에요. 열매의 생김새도 다양해요.</p></div>
+  </div>
+</section>
+
+<section id="s3" data-nav="기관이 하는 일">
+  <span class="stage">활동해요 · 「과학」 76쪽</span>
+  <h2>식물의 각 기관이 하는 일을 짝지어요</h2>
+  <div id="g7Fn"></div><div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="물과 양분의 길">
+  <span class="stage">활동해요 1 · 「실험관찰」 46쪽</span>
+  <h2>식물에서 물과 양분이 이동하는 경로를 알아봐요</h2>
+  <div class="p3-two">
+    <div><svg id="g7Flow" class="scene" viewBox="0 0 420 420" role="img" aria-label="애기똥풀에서 물과 양분이 이동하는 모습"></svg>
+      <div class="row" style="margin-top:6px"><button class="main" id="g7Wat">💧 물의 이동 보기</button><button class="main" id="g7Nut">🟡 양분의 이동 보기</button></div></div>
+    <div id="g7Path">
+      <p class="p3-card"><b>💧 물:</b> <span data-ans="뿌리" data-o="뿌리|잎"></span>에서 흡수된 물은 <span data-ans="줄기" data-o="꽃|줄기"></span>을/를 통해 식물의 각 부분으로 이동하여 사용되고, 물의 일부는 <span data-ans="잎" data-o="뿌리|잎"></span>의 기공을 통해 식물 밖으로 빠져나가요.</p>
+      <p class="p3-card"><b>🟡 양분:</b> <span data-ans="잎" data-o="뿌리|잎"></span>에서 광합성으로 만들어진 양분은 <span data-ans="줄기" data-o="꽃|줄기"></span>을/를 통해 식물의 각 부분으로 이동하여 사용되고, 남은 양분은 뿌리나 줄기, 열매 등에 저장돼요.</p>
+      <div class="fb"></div></div>
+  </div>
+</section>
+
+<section id="s5" data-nav="놀이해요">
+  <span class="stage">활동해요 2~4 · 「실험관찰」 47쪽, 81쪽</span>
+  <h2>물과 양분의 이동 놀이를 해요</h2>
+  <div class="g7-game">
+    <svg id="g7Board" class="scene" viewBox="0 0 440 440" role="img" aria-label="식물 말판"></svg>
+    <div class="g7-side">
+      <div id="g7Setup">
+        <p class="jua">① 놀이 방법을 골라요.</p>
+        <div class="row" id="g7Mode"><button data-m="cpu" class="sel">🤖 컴퓨터와</button><button data-m="pair">👫 짝과 함께</button></div>
+        <p class="jua" style="margin-top:6px">② 내 역할(컴퓨터와 할 때)과 말 수를 골라요.</p>
+        <div class="row" id="g7Role"><button data-r="w" class="sel">💧 물</button><button data-r="n">🟡 양분</button></div>
+        <div class="row" id="g7Cnt" style="margin-top:6px"><button data-n="5" class="sel">말 5개 (교과서)</button><button data-n="2">말 2개 (짧게)</button></div>
+        <div class="row" style="margin-top:8px"><button class="main" id="g7Start">▶ 놀이 시작</button></div>
+      </div>
+      <div id="g7Play" hidden>
+        <div class="g7-score"><span class="g7-w" id="g7SW">💧 물 0/5</span><span class="g7-n" id="g7SN">🟡 양분 0/5</span></div>
+        <div class="g7-rps" id="g7Rps">가위바위보!</div>
+        <div id="g7Cpu"><div class="row"><button data-h="0">✌️ 가위</button><button data-h="1">✊ 바위</button><button data-h="2">✋ 보</button></div></div>
+        <div id="g7Pair" hidden><p class="tip">실제로 가위바위보를 하고, 이긴 사람이 낸 것을 눌러요.</p>
+          <div class="row"><span class="jua">💧 물이 이김:</span><button data-w="w" data-h="0">✌️</button><button data-w="w" data-h="1">✊</button><button data-w="w" data-h="2">✋</button></div>
+          <div class="row" style="margin-top:4px"><span class="jua">🟡 양분이 이김:</span><button data-w="n" data-h="0">✌️</button><button data-w="n" data-h="1">✊</button><button data-w="n" data-h="2">✋</button></div></div>
+        <p class="cap" id="g7Cap">가위로 이기면 3칸, 바위로 이기면 2칸, 보로 이기면 1칸 움직여요.</p>
+        <div class="row"><button id="g7Again">🔄 처음부터</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="fb" id="g7Fb"></div>
+  <p class="tip">📏 놀이 규칙: 물은 뿌리의 출발점에서, 양분은 잎의 출발점에서 출발해요. 물은 잎의 마지막 칸, 양분은 열매나 뿌리의 마지막 칸에 도착하면 다음 말이 출발해요. 물과 양분이 같은 칸에 들어갈 수 있어요. 승부보다 물과 양분이 지나가는 길을 생각하며 놀이해요.</p>
+</section>
+
+<section id="s6" data-nav="정리해요">
+  <span class="stage">정리해요 · 「과학」 77쪽</span>
+  <h2>식물의 각 기관은 서로 어떤 관련이 있을까요?</h2>
+  <p class="p3-q">놀이에서 물과 양분이 공통으로 지나간 기관은?</p>
+  <div class="pick" id="g7P6a"><button data-a="1" data-m="맞아요! 뿌리에서 흡수한 물과 잎에서 만든 양분은 모두 줄기를 통해 식물 전체로 이동해요.">줄기</button><button data-a="0" data-m="물은 잎에서 끝나고, 양분은 열매나 뿌리에서 끝났어요. 둘 다 지나간 곳은?">꽃</button></div>
+  <div class="fb"></div>
+  <p class="p3-q" data-glue="1">식물의 기관 중 한 기관에 문제가 생긴다면 식물은 어떻게 될까요?</p>
+  <div class="pick" id="g7P6b" data-glue="1"><button data-a="1" data-m="맞아요! 식물의 각 기관은 각자의 역할이 있지만 서로 밀접한 관련이 있어서, 한 기관에 문제가 생기면 식물의 생명활동에 문제가 생길 수 있어요.">다른 기관에도 영향을 주어 식물이 살아가는 데 문제가 생길 수 있어요</button><button data-a="0" data-m="톱니바퀴를 떠올려 봐요. 각 기관은 서로 연결되어 있어요.">다른 기관과 관계없으니 아무 문제가 없어요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">뿌리에서 흡수한 물과 잎에서 만든 양분은 <span class="blank"><span id="bl1">ㅈ</span><span id="bl2">ㄱ</span></span>을/를 통해 식물 전체로 이동합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="tip" id="blSum" hidden>뿌리에서 흡수된 물은 줄기를 통해 식물 전체로 이동하여 생명활동에 사용되고, 잎에 도달한 물의 일부는 기공을 통해 식물 밖으로 빠져나가요. 잎에서 광합성으로 만든 양분은 줄기를 통해 식물 전체로 이동하여 사용되고, 남은 양분은 뿌리, 줄기, 열매 등에 저장돼요. 이처럼 식물의 각 기관은 서로 연결되어 있어요.</p>
+</section>
+
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="g7F1">
+    <p class="p3-q">1. 식물에서 양분이 이동하는 과정이에요. 알맞은 말을 골라요.</p>
+    <p class="p3-card">( ㉠ <span data-ans="잎" data-o="뿌리|잎|꽃"></span> )에서 광합성으로 양분을 만들면 이 양분은 ( ㉡ <span data-ans="줄기" data-o="줄기|기공|씨"></span> )을/를 통해 식물 전체로 이동하여 생명활동에 사용된다.</p>
+    <div class="fb"></div>
+  </div>
+  <p class="p3-q" data-glue="1">2. ✏️ 서술형: 식물의 각 기관이 연결되어 있음을 식물 내에서 <b>물의 이동</b>과 관련지어 써 봐요.</p>
+  <textarea id="g7W" rows="2" placeholder="뿌리에서 흡수된 물은 ~" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="g7WBtn">내 답 살펴보기</button></div>
+  <div class="fb" id="g7WFb"></div>
+</section>
+
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>식물 내에서 물과 양분의 이동을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>식물 내에서 물과 양분의 이동을 놀이로 확인할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>놀이 활동으로 다양한 식물에 관해 더 알고 싶은 마음과 호기심이 생겼어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 76~77쪽 · 「실험관찰」 46~47쪽, 81쪽 · 지도서 316~321쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+/* ===== 이 단원 공통 도우미 ===== */
+/* 고르기 보기 순서 섞기(정답이 늘 같은 자리에 있지 않게) */
+$$('.pick').forEach(p=>{if(p.dataset.keep)return;shuffle([...p.children]).forEach(c=>p.appendChild(c));});
+function tween(ms,f){return new Promise(res=>{const t0=performance.now();(function st(n){const p=Math.min(1,Math.max(0,(n-t0)/ms));f(p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2,p);if(p<1)requestAnimationFrame(st);else res();})(t0);});}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tap(el,f){el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 한 섹션에 활동이 여럿일 때: const g=gate('s3',3); 활동이 끝날 때마다 g('이름') */
+function gate(sec,n){const got=new Set();return k=>{got.add(k);if(got.size>=n)doneNav(sec);};}
+/* 여러 개 고르기: data-a="1"인 것을 모두 */
+function pickAll(box,okMsg,noMsg,sec,after){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(after)after();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+`좋아요! 더 있어요. (${got.size}/${need})`,'info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 짝 맞추기: 왼쪽 → 오른쪽 */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.classList.add('p3-mt');B.innerHTML='';
+  const L=document.createElement('div'),R=document.createElement('div');B.append(L,R);let sel=null,n=0;
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.onclick=()=>{if(b.disabled)return;$$('button',L).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=i;};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p[1],i])).forEach(([r,i])=>{const b=document.createElement('button');b.textContent=r;b.onclick=()=>{if(b.disabled)return;
+    if(sel==null){fb(out,'왼쪽에서 먼저 하나를 골라요.','info');return;}
+    if(i===sel){b.classList.add('right');b.disabled=true;const lb=L.children[sel];lb.classList.remove('sel');lb.classList.add('right');lb.disabled=true;sel=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${n}/${pairs.length})`,'info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,(pairs[sel][2]||'다시 생각해 봐요.'),false);}};R.appendChild(b);});}
+/* 차례 맞히기 */
+function orderer(box,steps,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;let k=0;const seq=document.createElement('div');seq.className='p3-seq';B.before(seq);B.innerHTML='';B.classList.add('p3-ord');
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.disabled)return;
+    if(i===k){b.classList.add('right');b.disabled=true;const sp=document.createElement('span');sp.textContent=s;seq.appendChild(sp);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그건 조금 뒤예요. 지금 차례를 찾아봐요.',false);}};B.appendChild(b);});}
+/* O/X: 행마다 data-a="o"/"x" */
+function oxList(box,okMsg,sec,cb){const rows=$$(box+' .p3-ox'),out=$(box).nextElementSibling,ok=new Set();
+  rows.forEach((r,i)=>{['⭕','❌'].forEach((t,j)=>{const b=document.createElement('button');b.textContent=t;b.setAttribute('aria-label',j?'틀려요':'맞아요');
+    b.onclick=()=>{if(ok.has(i))return;const good=(r.dataset.a==='o')===(j===0);if(good){b.classList.add('right');ok.add(i);fb(out,(r.dataset.m||'맞아요!')+(ok.size<rows.length?` (${ok.size}/${rows.length})`:''),ok.size<rows.length?'info':true);
+      if(ok.size===rows.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}}else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,r.dataset.h||'다시 생각해 봐요.',false);}};r.appendChild(b);});});}
+/* 나누어 담기: 낱말 카드 → 상자 */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='';const ch=document.createElement('div');ch.className='p3-chips';const bx=document.createElement('div');bx.className='p3-bins';bx.style.setProperty('--n',bins.length);B.append(ch,bx);
+  let sel=null,n=0;const bs=bins.map((t,i)=>{const d=document.createElement('div');d.className='bin';d.innerHTML='<b>'+t+'</b>';tap(d,()=>put(i));bx.appendChild(d);return d;});
+  shuffle(items).forEach(it=>{const b=document.createElement('button');b.textContent=it[0];b.onclick=()=>{if(b.disabled)return;$$('button',ch).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=[b,it];bs.forEach(d=>d.classList.add('hot'));};ch.appendChild(b);});
+  function put(i){if(!sel){fb(out,'위의 낱말 카드를 먼저 골라요.','info');return;}const [b,it]=sel;
+    if(it[1]===i){const s=document.createElement('span');s.textContent=it[0];bs[i].appendChild(s);b.remove();sel=null;n++;bs.forEach(d=>d.classList.remove('hot'));
+      if(n===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${n}/${items.length})`,'info');}
+    else fb(out,it[2]||'다른 상자에 어울려요. 다시 생각해 봐요.',false);}}
+/* 그림 속 이름 붙이기: 이름 카드(data-k) 고르고 그림(data-k) 누르기 → 이름표(data-for) 보이기 */
+function namer(svg,chips,okMsg,sec,cb){const S=$(svg),C=$(chips),out=C.nextElementSibling,ks=$$('button',C);let sel=null,n=0;
+  ks.forEach(b=>b.onclick=()=>{if(b.disabled)return;ks.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=b;});
+  $$('.org[data-k]',S).forEach(g=>tap(g,()=>{const k=g.dataset.k;if(g.classList.contains('ok'))return;
+    if(!sel){fb(out,'아래 이름 카드를 먼저 고르고 그림을 눌러요.','info');return;}
+    if(sel.dataset.k===k){$$('.org[data-k="'+k+'"]',S).forEach(x=>x.classList.add('ok'));sel.classList.remove('sel');sel.classList.add('right');sel.disabled=true;
+      $$('[data-for="'+k+'"]',S).forEach(x=>x.style.display='');sel=null;n++;
+      if(n===ks.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${n}/${ks.length})`,'info');}
+    else fb(out,'그곳은 '+sel.textContent+'이(가) 아니에요. 생김새와 자리를 다시 봐요.',false);}));}
+/* 이름표: lab(키, 선 시작 x,y, 글 x,y, 글, 'start'|'end') */
+function lab(k,x1,y1,x2,y2,t,anchor,show){const a=anchor||'start';const w=t.length*15+16;const rx=a==='end'?x2-w:x2;
+  return `<g data-for="${k}" ${show?'':'style="display:none"'} pointer-events="none"><line x1="${x1}" y1="${y1}" x2="${a==='end'?x2:x2}" y2="${y2}" stroke="#123b2a" stroke-width="1.8"/><rect x="${rx}" y="${y2-13}" width="${w}" height="26" rx="8" fill="#123b2a"/><text x="${rx+w/2}" y="${y2+6}" text-anchor="middle" font-size="16" font-family="Jua" fill="#fff">${t}</text></g>`;}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 고르는 칸: span[data-ans][data-o="가|나"] → 단추 */
+function ccSet(root,okMsg,sec,cb,hint){const R=$(root),cs=$$('[data-ans]',R),out=[...R.querySelectorAll('.fb')].pop()||R.nextElementSibling;const got=new Set();
+  cs.forEach((c,i)=>{c.classList.add('cc');c.dataset.o.split('|').forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{if(got.has(i))return;
+    if(t===c.dataset.ans){b.classList.add('right');got.add(i);$$('button',c).forEach(x=>{if(x!==b)x.remove();});
+      if(got.size===cs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${got.size}/${cs.length})`,'info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,c.dataset.h||hint||'다시 생각해 봐요.',false);}};c.appendChild(b);});});}
+/* 서술형: keyCheck가 '잘 썼어요'를 내면 cb */
+function keyDone(btn,out,cb){$(btn).addEventListener('click',()=>{if($(out).classList.contains('ok'))cb();});}
+const lerp=(a,b,p)=>a+(b-a)*p;
+
+/* ===== 애기똥풀 그림 (viewBox 0 0 420 420, 땅 y=300) ===== */
+const LEAVES=[[210,262,-1],[210,232,1],[210,200,-1],[210,168,1],[210,138,-1]];
+const FRUITS=[[150,52],[214,30],[270,52]];
+function plant(tag){const G=(k,inner)=>tag?`<g class="org" data-k="${k}">${inner}</g>`:`<g>${inner}</g>`;let s='<rect width="420" height="420" fill="#eef8f0"/><rect y="300" width="420" height="120" fill="#c9a77a"/><path d="M0 300 H420" stroke="#9b6b43" stroke-width="3"/>';
+  s+=G('root','<path d="M210 300 Q205 350 210 400 M210 318 Q170 340 150 380 M210 318 Q250 340 270 380 M208 350 Q186 360 176 396 M212 350 Q234 360 244 396" stroke="#e6d6a8" stroke-width="5" fill="none" stroke-linecap="round"/><rect x="140" y="304" width="140" height="100" fill="transparent"/>');
+  s+=G('stem','<path d="M210 300 V100 M210 100 Q184 80 166 64 M210 100 V50 M210 100 Q236 80 254 64" stroke="#7fb24d" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M210 300 V100" stroke="transparent" stroke-width="20"/>');
+  let lv='';LEAVES.forEach(([x,y,d],i)=>{const L=120-i*12;lv+=`<path d="M${x} ${y} q${d*L*.5} ${-L*.3} ${d*L} ${-L*.15} q${-d*L*.2} ${L*.25} ${-d*L} ${L*.15}z" fill="#79b85a" stroke="#3d7a2e" stroke-width="2"/><path d="M${x} ${y} q${d*L*.5} ${-L*.1} ${d*L*.95} ${-L*.14}" stroke="#3d7a2e" stroke-width="1.5" fill="none"/>`;});
+  s+=G('leaf',lv);
+  s+=G('flower',[[166,64],[254,64]].map(([x,y])=>`<g transform="translate(${x} ${y})">${[0,90,180,270].map(a=>`<ellipse cx="0" cy="-11" rx="9" ry="11" transform="rotate(${a})" fill="#ffd93b" stroke="#c9a300" stroke-width="1.5"/>`).join('')}<circle r="5" fill="#e8b800"/></g>`).join(''));
+  s+=G('fruit',FRUITS.map(([x,y],i)=>`<path d="M210 ${i===1?50:100} L${x} ${y+18}" stroke="#7fb24d" stroke-width="3"/><rect x="${x-5}" y="${y-18}" width="10" height="40" rx="5" fill="#9cc56b" stroke="#5a8a2e" stroke-width="2" transform="rotate(${(i-1)*25} ${x} ${y})"/>`).join(''));
+  return s;}
+
+/* ---------- 도입: 톱니바퀴 ---------- */
+(function(){function gear(cx,cy,r,n,cls,col){let p='';for(let i=0;i<n;i++){const a=i/n*Math.PI*2,b=(i+.5)/n*Math.PI*2;p+=`${i?'L':'M'}${(cx+Math.cos(a)*r).toFixed(1)} ${(cy+Math.sin(a)*r).toFixed(1)} L${(cx+Math.cos(a)*(r+12)).toFixed(1)} ${(cy+Math.sin(a)*(r+12)).toFixed(1)} L${(cx+Math.cos(b)*(r+12)).toFixed(1)} ${(cy+Math.sin(b)*(r+12)).toFixed(1)} L${(cx+Math.cos(b)*r).toFixed(1)} ${(cy+Math.sin(b)*r).toFixed(1)} `;}
+    return `<g class="${cls}"><path d="${p}Z" fill="${col}" stroke="#555" stroke-width="2"/><circle cx="${cx}" cy="${cy}" r="${r*.35}" fill="#fff" stroke="#555" stroke-width="2"/></g>`;}
+  let pulled=false;function draw(){let s='<rect width="660" height="300" fill="#f6f1e4"/>';
+    s+=gear(150,150,60,12,'g7a','#f2c94c');if(!pulled)s+=gear(262,150,40,8,'g7b','#7fb3e0');else s+='<g transform="translate(262 260)"><text text-anchor="middle" font-family="Jua" font-size="16" fill="#c2332c">빠진 톱니바퀴</text></g>';s+=gear(352,150,36,8,'g7c','#9cc56b');
+    s+='<circle cx="530" cy="150" r="96" fill="#fff" stroke="#8a6a44" stroke-width="6"/>';for(let i=0;i<12;i++){const a=i/12*Math.PI*2;s+=`<path d="M${530+Math.cos(a)*82} ${150+Math.sin(a)*82} L${530+Math.cos(a)*92} ${150+Math.sin(a)*92}" stroke="#555" stroke-width="3"/>`;}
+    s+=`<g class="${pulled?'':'g7a'}" style="transform-origin:530px 150px;transform-box:view-box"><path d="M530 150 L530 76" stroke="#333" stroke-width="5" stroke-linecap="round"/></g><circle cx="530" cy="150" r="6" fill="#333"/>`;
+    $('#g7Gear').innerHTML=s;}
+  draw();$('#g7Pull').onclick=()=>{pulled=true;$('#g7Gear').classList.remove('g7-run');draw();$('#g7GearQ').hidden=false;};pickOne('#g7P1','','','s1');})();
+
+/* ---------- 기관 이름 ---------- */
+$('#g7Plant').innerHTML=plant(true)+lab('root',240,370,300,400,'뿌리')+lab('stem',212,250,300,290,'줄기')+lab('leaf',100,250,14,210,'잎','start')+lab('flower',254,64,320,40,'꽃')+lab('fruit',150,40,14,24,'열매','start');
+namer('#g7Plant','#g7Chips','잘했어요! 식물은 뿌리, 줄기, 잎, 꽃, 열매 등으로 이루어져 있어요.','s2');
+
+matcher('#g7Fn',[['뿌리','물을 흡수해요'],['줄기','물과 양분이 이동하는 통로 역할을 해요'],['잎','스스로 양분을 만들고, 식물 밖으로 물을 내보내요'],['꽃','꽃가루받이가 이루어지고 씨를 만들어요'],['열매','씨를 보호하고 멀리 퍼뜨려요']],'잘했어요! 식물의 각 기관은 생김새와 하는 일이 서로 달라요.','s3');
+
+/* ---------- 물과 양분 이동 그림 ---------- */
+(function(){const S=$('#g7Flow');let busy=false;const base=plant(false);
+  const W=[[210,400],[210,300],[210,100]],LT=LEAVES.map(([x,y,d],i)=>[x+d*(120-i*12)*.9,y-(120-i*12)*.15]);
+  async function run(kind){if(busy)return;busy=true;await tween(3200,(e,p)=>{let s=base;for(let k=0;k<14;k++){const f=(p*1.6+k/14)%1;let x,y;
+      if(kind==='w'){const li=k%5,[lx,ly]=LT[li],sy=LEAVES[li][1];if(f<.5){x=210;y=lerp(400,sy,f/.5);}else{x=lerp(210,lx,(f-.5)/.5);y=lerp(sy,ly,(f-.5)/.5);}s+=`<circle cx="${x}" cy="${y}" r="5" fill="#3a8fd6" stroke="#fff" stroke-width="1.5"/>`;if(f>.9)s+=`<circle cx="${lx+(LEAVES[li][2])*10}" cy="${ly-20*(f-.9)*10}" r="4" fill="#cfe9fb" opacity=".8"/>`;}
+      else{const li=k%5,[lx,ly]=LT[li],sy=LEAVES[li][1];const dest=k%3===0?[150,380]:k%3===1?FRUITS[k%3]:[210,240];const tx=k%3===1?FRUITS[(k>>1)%3]:dest;if(f<.4){x=lerp(lx,210,f/.4);y=lerp(ly,sy,f/.4);}else{x=lerp(210,tx[0],(f-.4)/.6);y=lerp(sy,tx[1],(f-.4)/.6);}s+=`<rect x="${x-5}" y="${y-5}" width="10" height="10" rx="2" fill="#f2c94c" stroke="#a87a00"/>`;}}
+      S.innerHTML=s+(kind==='w'?'<text x="14" y="30" font-family="Jua" font-size="18" fill="#2a6fa6">물: 뿌리 → 줄기 → 잎 → 기공 밖으로</text>':'<text x="14" y="30" font-family="Jua" font-size="17" fill="#8a6a00">양분: 잎 → 줄기 → 식물 전체, 남으면 저장</text>');});busy=false;}
+  S.innerHTML=base;$('#g7Wat').onclick=()=>run('w');$('#g7Nut').onclick=()=>run('n');})();
+ccSet('#g7Path','잘했어요! 물은 뿌리 → 줄기 → 잎으로, 양분은 잎 → 줄기 → 식물 전체로 이동해요.','s4');
+
+/* ---------- 놀이 ---------- */
+(function(){/* 칸 만들기 */const SG=[[220,330],[220,296],[220,262],[220,228],[220,194],[220,160],[220,126],[220,92]];/* 줄기 칸(아래→위) */
+  const LEAFA=[[1,-1],[2,1],[3,-1],[4,1],[5,-1]];/* (줄기 칸 번호, 방향) */
+  const leafCells=LEAFA.map(([si,d])=>{const [x,y]=SG[si];return [[x+d*40,y-8],[x+d*80,y-14],[x+d*120,y-18]];});
+  const ROOT_START=[220,410],RB=[220,370];
+  const W_PATH=i=>[ROOT_START,RB,...SG.slice(0,LEAFA[i][0]+1),...leafCells[i]];
+  const NS=leafCells[2];/* 양분 출발: 가운데 잎 끝 */
+  const FRU=[[[190,64],[160,40]],[[220,58],[220,24]],[[250,64],[280,40]]];const ROO=[[[180,388],[140,414]],[[260,388],[300,414]]];
+  const N_PATH=j=>{const down=[...NS].reverse().concat([SG[3],SG[2],SG[1],SG[0]]);const up=[...NS].reverse().concat([SG[3],SG[4],SG[5],SG[6],SG[7]]);return j<3?up.concat(FRU[j]):down.concat([RB],ROO[j-3]);};
+  let mode='cpu',role='w',N=5,st=null;
+  const pick=(box,attr,set)=>$$(box+' button').forEach(b=>b.onclick=()=>{$$(box+' button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');set(b.dataset[attr]);});
+  pick('#g7Mode','m',v=>mode=v);pick('#g7Role','r',v=>role=v);pick('#g7Cnt','n',v=>N=+v);
+  function draw(){let s='<rect width="440" height="440" fill="#eef8f0"/><rect y="350" width="440" height="90" fill="#c9a77a"/>';
+    s+='<path d="M220 410 V92" stroke="#7fb24d" stroke-width="24" stroke-linecap="round" opacity=".5"/>';
+    LEAFA.forEach(([si,d],i)=>{const [x,y]=SG[si];s+=`<path d="M${x} ${y} q${d*70} -40 ${d*140} -20 q${-d*50} 30 ${-d*140} 20z" fill="#9fd07f" opacity=".6"/>`;});
+    FRU.forEach(f=>{s+=`<rect x="${f[1][0]-8}" y="${f[1][1]-22}" width="16" height="44" rx="8" fill="#c7e29a" opacity=".8"/>`;});
+    s+='<path d="M220 370 L140 414 M220 370 L300 414" stroke="#efe2bf" stroke-width="14" stroke-linecap="round" opacity=".8"/>';
+    const all=new Map();const add=(p,cls)=>{const k=p.join();if(!all.has(k))all.set(k,[p,cls]);};
+    for(let i=0;i<5;i++)W_PATH(i).forEach(p=>add(p,''));for(let j=0;j<5;j++)N_PATH(j).forEach(p=>add(p,''));
+    all.forEach(([p])=>{s+=`<circle cx="${p[0]}" cy="${p[1]}" r="10" fill="#fff" stroke="#6b8f5a" stroke-width="2"/>`;});
+    leafCells.forEach(c=>{const p=c[2];s+=`<circle cx="${p[0]}" cy="${p[1]}" r="12" fill="#d6ecff" stroke="#3a8fd6" stroke-width="3"/>`;});
+    FRU.forEach(f=>{const p=f[1];s+=`<circle cx="${p[0]}" cy="${p[1]}" r="12" fill="#fff1bf" stroke="#c99a00" stroke-width="3"/>`;});ROO.forEach(f=>{const p=f[1];s+=`<circle cx="${p[0]}" cy="${p[1]}" r="12" fill="#fff1bf" stroke="#c99a00" stroke-width="3"/>`;});
+    s+=`<text x="${ROOT_START[0]+18}" y="${ROOT_START[1]+5}" font-family="Jua" font-size="13" fill="#124a7a">물 출발</text><text x="${NS[2][0]-30}" y="${NS[2][1]-16}" font-family="Jua" font-size="13" fill="#6a4a00">양분 출발</text>`;
+    if(st){st.wDone.forEach(i=>{const p=leafCells[i][2];s+=`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="#3a8fd6"/>`;});st.nDone.forEach(j=>{const P=N_PATH(j),p=P[P.length-1];s+=`<rect x="${p[0]-6}" y="${p[1]-6}" width="12" height="12" rx="2" fill="#f2c94c" stroke="#a87a00"/>`;});
+      if(st.wi<N){const p=W_PATH(st.wi)[st.wp];s+=`<path d="M${p[0]} ${p[1]-14} C${p[0]-10} ${p[1]-2} ${p[0]-10} ${p[1]+8} ${p[0]} ${p[1]+8} C${p[0]+10} ${p[1]+8} ${p[0]+10} ${p[1]-2} ${p[0]} ${p[1]-14}Z" fill="#3a8fd6" stroke="#fff" stroke-width="2"/>`;}
+      if(st.ni<N){const p=N_PATH(st.ni)[st.np];s+=`<rect x="${p[0]-8+6}" y="${p[1]-8+6}" width="16" height="16" rx="3" fill="#f2c94c" stroke="#a87a00" stroke-width="2"/>`;}}
+    $('#g7Board').innerHTML=s;}
+  function where(path,i){const p=path[i];if(p[1]>=360)return '뿌리';if(path===null)return '';const k=p.join();if(leafCells.some(c=>c.some(q=>q.join()===k)))return '잎';if(FRU.some(c=>c.some(q=>q.join()===k)))return '열매';return '줄기';}
+  function score(){$('#g7SW').textContent=`💧 물 ${st.wDone.length}/${N}`;$('#g7SN').textContent=`🟡 양분 ${st.nDone.length}/${N}`;}
+  function move(who,steps,hand){if(st.over)return;const H=['✌️ 가위','✊ 바위','✋ 보'][hand];let msg='';
+    if(who==='w'){const P=W_PATH(st.wi);st.wp=Math.min(P.length-1,st.wp+steps);msg=`💧 물이 ${H}로 이겨 ${steps}칸! 지금 ${where(P,st.wp)}에 있어요.`;
+      if(st.wp===P.length-1){st.wDone.push(st.wi);msg+=` 잎에 도착! 물의 일부는 기공을 통해 식물 밖으로 빠져나가요.`;st.wi++;st.wp=0;}}
+    else{const P=N_PATH(st.ni);st.np=Math.min(P.length-1,st.np+steps);msg=`🟡 양분이 ${H}로 이겨 ${steps}칸! 지금 ${where(P,st.np)}에 있어요.`;
+      if(st.np===P.length-1){msg+=st.ni<3?' 열매에 도착! 남은 양분은 열매에 저장돼요.':' 뿌리에 도착! 남은 양분은 뿌리에 저장돼요.';st.nDone.push(st.ni);st.ni++;st.np=0;}}
+    $('#g7Cap').textContent=msg;score();draw();
+    if(st.wDone.length>=N||st.nDone.length>=N){st.over=true;const w=st.wDone.length>=N?'💧 물':'🟡 양분';
+      fb('#g7Fb',`${w}이(가) 먼저 모두 도착했어요! 놀이 끝. 물은 뿌리 → 줄기 → 잎으로, 양분은 잎 → 줄기 → 열매·뿌리로 이동했어요. 둘 다 줄기를 지났지요?`,true);doneNav('s5');}}
+  $$('#g7Cpu button').forEach(b=>b.onclick=()=>{if(!st||st.over)return;const me=+b.dataset.h,cp=Math.floor(Math.random()*3);const em=['✌️','✊','✋'];
+    $('#g7Rps').textContent=`나 ${em[me]}  :  ${em[cp]} 컴퓨터`;if(me===cp){$('#g7Cap').textContent='비겼어요! 다시 가위바위보!';return;}
+    const meWin=(me+2)%3===cp?false:(me===(cp+1)%3);/* 바위>가위, 보>바위, 가위>보 */const win=meWin?role:(role==='w'?'n':'w');move(win,[3,2,1][meWin?me:cp],meWin?me:cp);});
+  $$('#g7Pair button').forEach(b=>b.onclick=()=>{if(!st||st.over)return;const h=+b.dataset.h;$('#g7Rps').textContent=(b.dataset.w==='w'?'💧 물':'🟡 양분')+' 승리 '+['✌️','✊','✋'][h];move(b.dataset.w,[3,2,1][h],h);});
+  $('#g7Start').onclick=()=>{st={wi:0,wp:0,ni:0,np:0,wDone:[],nDone:[],over:false};$('#g7Setup').hidden=true;$('#g7Play').hidden=false;$('#g7Cpu').hidden=mode!=='cpu';$('#g7Pair').hidden=mode==='cpu';score();draw();
+    fb('#g7Fb',mode==='cpu'?`나는 ${role==='w'?'💧 물':'🟡 양분'} 역할이에요. 가위바위보 단추를 눌러요!`:'짝과 실제로 가위바위보를 하고, 이긴 사람의 단추를 눌러요.','info');};
+  $('#g7Again').onclick=()=>{st=null;$('#g7Setup').hidden=false;$('#g7Play').hidden=true;$('#g7Rps').textContent='가위바위보!';draw();fb('#g7Fb','','info');};
+  draw();})();
+
+const g6=gate('s6',2);pickOne('#g7P6a','','',null,()=>g6(1));pickOne('#g7P6b','','',null,()=>g6(2));
+
+$('#blReveal').onclick=()=>{$('#bl1').textContent='줄';$('#bl2').textContent='기';fb('#blFb','뿌리에서 흡수한 물과 잎에서 만든 양분은 줄기를 통해 식물 전체로 이동해요.',true);$('#blSum').hidden=false;doneNav('s7');};
+
+const g8=gate('s8',2);
+ccSet('#g7F1','잘했어요! 잎에서 만든 양분은 줄기를 통해 식물 전체로 이동해요.',null,()=>g8(1));
+keyCheck('#g7W','#g7WBtn','#g7WFb',[[/뿌리/,'뿌리에서 흡수'],[/줄기/,'줄기를 통해 이동'],[/잎|기공/,'잎(기공)으로 빠져나감'],[/연결/,'기관이 연결되어 있어요']],3,null,'뿌리 → 줄기 → 잎으로 물이 어떻게 이동하는지 차례대로 써 봐요.');
+keyDone('#g7WBtn','#g7WFb',()=>g8(2));
+
+faces('s9','멋져요! 다음 시간에는 우리 반 식물도감을 만들어 봐요.','어려웠던 부분은 물과 양분의 이동 그림을 다시 보고, 선생님께 질문해도 좋아요!');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 1학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"줄","bl2":"기"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>

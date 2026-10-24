@@ -1,0 +1,338 @@
+<!--
+title: 물체의 빠르기를 속력으로 비교해 보자!
+unit: 2
+lesson: 6
+total: 12
+goal: 속력의 의미를 알고 물체의 빠르기를 속력으로 비교할 수 있어요.<br>측정한 자료로 속력을 구할 수 있어요.
+pages: 「과학」 46~47쪽 · 「실험관찰」 28~29쪽 · 지도서 220~231쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"속","bl2":"력"}}]
+-->
+<style>
+/* ===== 2단원 공통 ===== */
+[hidden]{display:none!important}
+.m2-lab{margin:8px 0}
+.m2-lab svg,svg.m2-fig{display:block;margin:0 auto;max-width:100%;width:auto;height:min(36vh,300px);border-radius:14px;border:3px solid var(--navy);background:#fff}
+.m2-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:8px 0}
+.m2-ctl label{display:flex;align-items:center;gap:6px;font-family:"Jua",sans-serif;flex:1 1 15rem}
+.m2-ctl input[type=range]{flex:1;accent-color:var(--sky);height:2rem;min-width:6rem}
+.m2-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.m2-two figure{margin:0}
+.m2-two figcaption{text-align:center;font-family:"Jua",sans-serif;font-size:.95rem}
+.m2-two svg{display:block;margin:0 auto;max-width:100%;width:auto;height:min(25vh,210px);border-radius:12px;border:3px solid var(--navy);background:#fff}
+body.ov .pick.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pick.c3{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
+body.ov .pick.c1{grid-template-columns:minmax(0,1fr)}
+@media (max-width:640px){.m2-two svg{height:auto;width:100%}.m2-lab svg,svg.m2-fig{height:auto;width:100%}}
+.m2-sort{display:grid;gap:8px}
+.m2-sort.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
+.m2-it{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;border:2px solid var(--line);border-radius:12px;padding:4px 10px;background:var(--paper)}
+.m2-it .tx{flex:1 1 9rem}
+.m2-it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.m2-it .bs button{min-height:2.2rem;padding:.2em .7em}
+.m2-it.m2-ok{border-color:var(--good);background:#eefaf2}
+.m2-match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px}
+.m2-match .col{display:grid;gap:8px;align-content:start}
+.m2-match button.m2-pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.m2-num{width:5.6em;font:inherit;font-size:1rem;padding:4px 8px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink);text-align:center}
+.m2-num.m2-ok{border-color:var(--good);background:#eefaf2}
+.m2-num.m2-no{border-color:var(--bad);background:#fdecea}
+.m2-tbl{width:100%;border-collapse:collapse;margin:6px 0}
+.m2-tbl th,.m2-tbl td{border:2px solid var(--line);padding:4px 8px;text-align:center}
+.m2-tbl th{background:var(--bg);font-family:"Jua",sans-serif;font-weight:400}
+.m2-ord button .m2-n{display:inline-block;min-width:1.5em;margin-right:4px;border-radius:999px;background:var(--good);color:#fff}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:4px solid var(--sun)}
+svg .hs:focus{outline:none}
+svg .hs:focus-visible rect{stroke:var(--sun);stroke-width:4}
+.pick button svg{width:100%;max-width:12rem;height:auto;display:block;margin:0 auto 4px}
+.m2-say{font-family:"Jua",sans-serif;font-size:1.05rem;margin:6px 0}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .m2-it.m2-ok,:root:not([data-theme="light"]) .m2-num.m2-ok{background:#163b28}:root:not([data-theme="light"]) .m2-num.m2-no{background:#4a1f1c}}
+:root[data-theme="dark"] .m2-it.m2-ok,:root[data-theme="dark"] .m2-num.m2-ok{background:#163b28}
+:root[data-theme="dark"] .m2-num.m2-no{background:#4a1f1c}
+@media (max-width:640px){.m2-match{grid-template-columns:1fr 1fr}.m2-sort.c2{grid-template-columns:1fr}}
+
+.e5-wrap{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px;align-items:start}
+.e5-calc{border:3px solid var(--navy);border-radius:18px;padding:8px;background:#22313f;max-width:16rem;margin:0 auto}
+.e5-calc .dp{background:#dfeee0;color:#15313d;font-family:"Jua",sans-serif;font-size:1.4rem;text-align:right;border-radius:10px;padding:2px 10px;min-height:2.2rem;overflow:hidden;white-space:nowrap;font-variant-numeric:tabular-nums}
+.e5-calc .ks{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-top:6px}
+.e5-calc .ks button{min-height:2.3rem;padding:0;font-size:1.05rem;border-radius:10px;border-width:2px}
+.e5-calc .ks button.op{background:#ffd9a8;border-color:#b86b00;color:#5a3300}
+.e5-calc .ks button.eq{background:#bdf0cf;border-color:#16804a;color:#0d5a31}
+.e5-calc p{color:#cfe6f2;font-size:.8rem;margin:4px 0 0;text-align:center}
+.e5-f{display:inline-block;border:3px solid var(--sun);border-radius:14px;padding:4px 12px;font-family:"Jua",sans-serif;font-size:1.15rem;background:var(--paper)}
+.e5-ord{display:flex;flex-wrap:wrap;gap:6px}
+@media (max-width:640px){.e5-wrap{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입</span>
+  <h2>두 자동차의 빠르기는 어떻게 비교할 수 있을까요?</h2>
+  <div class="m2-lab"><svg id="e5Road" viewBox="0 0 640 200" role="img" aria-label="서로 반대 방향으로 달리는 두 자동차"></svg></div>
+  <p class="m2-say" data-glue="1">두 자동차는 서로 반대 방향으로 달리고 있어서 같은 출발선에 놓고 비교할 수 없어요. 어떻게 하면 빠르기를 비교할 수 있을지 내 생각을 골라요.</p>
+  <div class="pick c3" id="e5Q0" data-glue="1"><button data-m="좋은 생각이에요! 일정한 시간 동안 이동한 거리를 구하는 것이 바로 오늘 배울 ‘속력’이에요.">두 자동차가 1시간 동안 이동한 거리를 구해 비교해요</button><button data-m="좋은 생각이에요! 같은 거리를 가는 데 걸린 시간을 구해 비교할 수도 있어요.">두 자동차가 1 km를 이동하는 데 걸린 시간을 구해 비교해요</button><button data-m="그렇게 생각할 수도 있어요. 그런데 이동 거리와 걸린 시간이 모두 다르면 어떻게 비교할까요? 오늘 알아봐요.">어느 자동차가 더 멀리 갔는지만 봐요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="속력이란?">
+  <span class="stage">개념 · 속력</span>
+  <h2>속력은 일정한 시간 동안 물체가 이동한 거리예요</h2>
+  <p>이동 거리와 걸린 시간이 모두 다른 물체의 빠르기는 <b>속력</b>을 구해 비교해요. 속력은 1초(s), 1분(min), 1시간(h)과 같이 일정한 시간 동안 물체가 이동한 거리를 뜻해요. <span class="e5-f">속력 = 이동 거리 ÷ 걸린 시간</span></p>
+  <div class="m2-lab"><svg id="e5Hw" viewBox="0 0 640 140" role="img" aria-label="자동차가 2시간 동안 120 km를 이동하는 모습"></svg></div>
+  <div class="m2-ctl" data-glue="1"><button class="main" id="e5HwGo">▶ 2시간 동안 120 km 달리기 (빨리 감기)</button>
+    <span class="jua">자동차의 속력 = 120 km ÷ 2 h = <input class="m2-num" id="e5V0" inputmode="decimal" aria-label="자동차의 속력"> km/h</span><button id="e5V0b">확인</button></div>
+  <div class="fb" id="e5V0f" data-glue="1"></div>
+  <div id="e5Mean" hidden data-glue="1">
+    <div class="m2-two" style="align-items:start">
+      <div><p class="jua" style="margin:2px 0">60 km/h는 어떤 빠르기일까요?</p><div class="pick c1" id="e5Q1"><button data-a="1">1시간 동안 60 km를 이동한 것과 같은 빠르기</button><button data-a="0" data-m="km/h는 1시간 동안 몇 km를 이동했는지를 나타내요.">60시간 동안 1 km를 이동한 것과 같은 빠르기</button></div><div class="fb"></div></div>
+      <div><p class="jua" style="margin:2px 0">60 km/h는 어떻게 읽을까요?</p><div class="pick c1" id="e5Q2"><button data-a="1">육십 킬로미터 매 시</button><button data-a="0" data-m="‘/h’는 ‘매 시’라고 읽어요. ‘매’는 ‘하나하나의 모든’이라는 뜻이에요.">육십 킬로미터 나누기 에이치</button></div><div class="fb"></div></div>
+    </div>
+  </div>
+  <p class="tip" data-glue="1">💡 속력의 단위에는 km/h(킬로미터 매 시), m/s(미터 매 초) 등이 있어요. 예: 2 m/s는 1초 동안 2 m를 이동한 것과 같은 빠르기로 ‘이 미터 매 초’라고 읽어요. 속력의 단위가 같을 때 속력을 나타내는 숫자가 클수록 더 빨라요.</p>
+</section>
+
+<section id="s3" data-nav="태엽 자동차 속력">
+  <span class="stage">활동해요 1 · 「실험관찰」 28쪽</span>
+  <h2>태엽 자동차의 속력을 구해 빠르기 비교하기</h2>
+  <div class="e5-wrap">
+    <div>
+      <table class="m2-tbl"><tr><th>태엽 자동차</th><th>이동 거리(cm)</th><th>걸린 시간(초)</th><th>속력(cm/s)</th></tr>
+        <tr><td>빨간색</td><td>135</td><td>5</td><td><input class="m2-num" data-v="27" aria-label="빨간색 자동차 속력"></td></tr>
+        <tr><td>파란색</td><td>122</td><td>5</td><td><input class="m2-num" data-v="24.4" aria-label="파란색 자동차 속력"></td></tr>
+        <tr><td>초록색</td><td>100</td><td>4.2</td><td><input class="m2-num" data-v="23.8" aria-label="초록색 자동차 속력"></td></tr>
+        <tr><td>노란색</td><td>100</td><td>5.8</td><td><input class="m2-num" data-v="17.2" aria-label="노란색 자동차 속력"></td></tr></table>
+      <p class="tip" style="margin:0">위 두 줄은 ‘같은 시간’ 실험, 아래 두 줄은 ‘같은 거리’ 실험에서 잰 값이에요. 속력은 반올림해 소수 첫째 자리까지 써요.</p>
+      <div class="row" style="margin-top:6px"><button class="main" id="e5T1b">속력 확인</button></div>
+      <div class="fb" id="e5T1f"></div>
+    </div>
+    <div class="e5-calc" id="e5C1"></div>
+  </div>
+  <div id="e5O1w" hidden data-glue="1"><p class="jua" style="margin:4px 0">태엽 자동차를 빠른 순서대로 눌러요.</p>
+    <div class="e5-ord m2-ord" id="e5O1"><button data-k="y">노란색</button><button data-k="r">빨간색</button><button data-k="g">초록색</button><button data-k="b">파란색</button></div><div class="fb"></div></div>
+</section>
+
+<section id="s4" data-nav="교통수단 속력">
+  <span class="stage">활동해요 2 · 「실험관찰」 29쪽</span>
+  <h2>교통수단의 속력을 구해 빠르기 비교하기</h2>
+  <div class="e5-wrap">
+    <div>
+      <table class="m2-tbl"><tr><th>교통수단</th><th>이동 거리</th><th>걸린 시간</th><th>속력(km/h)</th></tr>
+        <tr><td>🚲 자전거</td><td>20 km</td><td>1시간</td><td><input class="m2-num" data-v="20" aria-label="자전거 속력"></td></tr>
+        <tr><td>🚗 자동차</td><td>145 km</td><td>2시간</td><td><input class="m2-num" data-v="72.5" aria-label="자동차 속력"></td></tr>
+        <tr><td>🚆 기차</td><td>450 km</td><td>3시간</td><td><input class="m2-num" data-v="150" aria-label="기차 속력"></td></tr>
+        <tr><td>🚢 배</td><td>138 km</td><td>4시간</td><td><input class="m2-num" data-v="34.5" aria-label="배 속력"></td></tr>
+        <tr><td>✈️ 비행기</td><td>4,500 km</td><td>5시간</td><td><input class="m2-num" data-v="900" aria-label="비행기 속력"></td></tr></table>
+      <div class="row" style="margin-top:6px"><button class="main" id="e5T2b">속력 확인</button></div>
+      <div class="fb" id="e5T2f"></div>
+    </div>
+    <div class="e5-calc" id="e5C2"></div>
+  </div>
+</section>
+
+<section id="s5" data-nav="빠르기 비교">
+  <span class="stage">활동해요 2 · 「실험관찰」 29쪽</span>
+  <h2>교통수단의 빠르기를 속력으로 비교하기</h2>
+  <p class="tip" id="e5Wait">앞에서 교통수단의 속력을 먼저 구해요.</p>
+  <div id="e5Cmp" hidden>
+    <div class="m2-lab"><svg id="e5Bar" viewBox="0 0 720 230" role="img" aria-label="교통수단이 1시간 동안 이동하는 거리를 실제 비율대로 나타낸 그림"></svg></div>
+    <p class="jua" style="margin:4px 0" data-glue="1">교통수단을 빠른 순서대로 눌러요.</p>
+    <div class="e5-ord m2-ord" id="e5O2" data-glue="1"><button data-k="bike">자전거</button><button data-k="ship">배</button><button data-k="plane">비행기</button><button data-k="car">자동차</button><button data-k="train">기차</button></div><div class="fb"></div>
+    <div id="e5Two" hidden data-glue="1"><p class="jua" style="margin:4px 0">배와 자전거의 빠르기를 속력으로 바르게 비교한 것은?</p>
+      <div class="pick c1" id="e5Q3"><button data-a="1">배의 속력은 34.5 km/h, 자전거의 속력은 20 km/h이므로 배가 자전거보다 더 빨라요.</button><button data-a="0" data-m="배는 4시간이나 걸렸지만 이동 거리도 길어요. 걸린 시간만 보면 안 돼요. 속력을 비교해요.">배는 4시간, 자전거는 1시간이 걸렸으므로 자전거가 더 빨라요.</button></div><div class="fb"></div></div>
+  </div>
+</section>
+
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 물체의 <span class="blank"><span id="bl1">ㅅ</span><span id="bl2">ㄹ</span></span>은/는 이동 거리를 걸린 시간으로 나누어 구합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <div data-glue="1">
+    <div class="m2-two" style="grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr);align-items:center">
+      <svg id="e5Gauge" viewBox="0 0 240 150" role="img" aria-label="자동차 계기판의 속력계"></svg>
+      <p class="jua" style="font-size:1.05rem;margin:0">2. 자동차의 빠르기를 속력으로 나타내면 어떤 점이 편리할까요?</p>
+    </div>
+    <div class="pick c1" id="e5Q4"><button data-a="1">계기판에 표시되는 속력을 보고 빠르기를 조절해 안전하게 운전할 수 있어요.</button><button data-a="0" data-m="속력은 빠르기를 나타내요. 자동차의 무게와는 상관없어요.">자동차의 무게를 바로 알 수 있어요.</button><button data-a="0" data-m="속력을 알아도 연료는 따로 넣어야 해요. 속력은 빠르기를 숫자로 나타낸 것이에요.">연료를 넣지 않아도 돼요.</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 2시간 동안 100 km를 이동한 자동차의 속력을 구하고 바르게 읽어 봐요.</p>
+  <p class="jua">속력: <input class="m2-num" id="e5F1" inputmode="decimal" aria-label="자동차의 속력"> km/h <button id="e5F1b">확인</button></p>
+  <div class="fb" id="e5F1f"></div>
+  <div id="quiz"></div>
+  <div data-glue="1"><p class="jua" style="font-size:1.05rem">4. ✏️ 서술형: 치타는 “50 m를 10초에 달릴 수 있어.”, 호랑이는 “100 m를 25초에 달릴 수 있어.”라고 말했어요. 두 동물의 속력을 구해 빠르기를 비교해 봐요.</p>
+  <textarea id="e5W" rows="2" placeholder="예: 치타의 속력은 … m/s이고, 호랑이의 속력은 … m/s이므로 …"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="e5WBtn">내 답 살펴보기</button></div>
+  <div class="fb" id="e5WFb"></div></div>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>속력의 의미를 알고 속력을 구해 물체의 빠르기를 비교하는 방법을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>측정한 자료로 속력을 구해 물체의 빠르기를 비교할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>물체의 빠르기를 속력으로 나타내면 의사소통하는 데 편리하다는 것을 느꼈어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 2단원 교과서 버전 공통 도우미 ===== */
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 고르기 문제 묶음: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua" style="font-size:1.05rem;margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.innerHTML=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='m2-it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('m2-ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb,lead){const B=$(box),out=B.nextElementSibling;B.classList.add('m2-match');B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('m2-pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’'+(lead||'과 이어지는 것을 오른쪽에서 골라요.'),'info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('m2-pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('m2-pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('m2-pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례대로 누르기: orderPick('#box', ['k1','k2',…], 다 맞힘 글, 틀릴 때 글, 섹션, cb) — 버튼 data-k */
+function orderPick(box,order,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;let i=0;
+  bs.forEach(b=>b.onclick=()=>{if(b.classList.contains('right')||i>=order.length)return;
+    if(b.dataset.k===order[i]){i++;b.classList.add('right');b.insertAdjacentHTML('afterbegin','<span class="m2-n">'+i+'</span>');
+      if(i===order.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'좋아요! 다음은요? ('+i+'/'+order.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,noMsg,false);}});}
+/* 수 확인: numOk(입력칸, 답, 허용 오차) */
+function numOk(el,ans,tol){const v=parseFloat(String(el.value).replace(/,/g,'').trim());const ok=!isNaN(v)&&Math.abs(v-ans)<=(tol==null?1e-9:tol);
+  el.classList.toggle('m2-ok',ok);el.classList.toggle('m2-no',!ok&&String(el.value).trim()!=='');return ok;}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=(o.clock?o.clock(t):Math.floor(t)+'초');o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 끝내야 할 일 여러 개를 모두 마치면 섹션 완료 */
+function need(sec,n,msgEl,msg){let k=new Set();return id=>{k.add(id);if(k.size>=n){doneNav(sec);if(msgEl)fb(msgEl,msg,true);}};}
+/* 사람 그림: P(x, 발 높이 y, {c 옷 색, s 크기, p 'stand'|'walk'|'run'|'sit'|'back', ph 걸음, f 보는 쪽 1/-1, h 머리 색}) */
+function P(x,y,o){o=o||{};const s=o.s||1,c=o.c||'#3d7cc9',sk='#f1c7a1',hr=o.h||'#3b2a20',p=o.p||'stand',ph=o.ph||0,f=o.f||1,pt=o.pt||'#33415c';
+  const leg=(a,len,hx,hy)=>[hx+Math.sin(a)*len,hy+Math.cos(a)*len];
+  let g=`<g transform="translate(${x} ${y}) scale(${s*f} ${s})">`;
+  if(p==='sit'){g+=`<path d="M0 -18 h14 v18" stroke="${pt}" stroke-width="7" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`;
+    g+=`<rect x="-7" y="-42" width="14" height="26" rx="6" fill="${c}"/><path d="M0 -36 l12 10" stroke="${sk}" stroke-width="5" stroke-linecap="round"/>`;
+    g+=`<circle cx="0" cy="-50" r="8.5" fill="${sk}"/><path d="M-8.5 -51 a8.5 8.5 0 0 1 17 0 q-8 -4 -17 0z" fill="${hr}"/></g>`;return g;}
+  const sw=p==='run'?0.7:p==='walk'?0.38:0;const a1=Math.sin(ph)*sw,a2=-a1;
+  const [x1,y1]=leg(a1,22,0,-22),[x2,y2]=leg(a2,22,0,-22);
+  g+=`<path d="M0 -22 L${x1.toFixed(1)} ${y1.toFixed(1)} M0 -22 L${x2.toFixed(1)} ${y2.toFixed(1)}" stroke="${pt}" stroke-width="6" stroke-linecap="round"/>`;
+  const [ax1,ay1]=leg(-a1*1.2,18,0,-40),[ax2,ay2]=leg(-a2*1.2,18,0,-40);
+  g+=`<path d="M0 -40 L${ax2.toFixed(1)} ${ay2.toFixed(1)}" stroke="${sk}" stroke-width="5" stroke-linecap="round"/>`;
+  g+=`<rect x="-7" y="-44" width="14" height="26" rx="6" fill="${c}"/>`;
+  g+=`<path d="M0 -40 L${ax1.toFixed(1)} ${ay1.toFixed(1)}" stroke="${sk}" stroke-width="5" stroke-linecap="round"/>`;
+  g+=`<circle cx="0" cy="-52" r="8.5" fill="${sk}"/>`+(p==='back'?`<circle cx="0" cy="-53" r="8.5" fill="${hr}"/>`:`<path d="M-8.5 -53 a8.5 8.5 0 0 1 17 0 q-8 -4 -17 0z" fill="${hr}"/><circle cx="4" cy="-52" r="1.3" fill="#333"/>`);
+  return g+'</g>';}
+function TREE(x,y,s){s=s||1;return `<g transform="translate(${x} ${y}) scale(${s})"><rect x="-5" y="-42" width="10" height="42" fill="#8a5a33"/><circle cx="0" cy="-62" r="24" fill="#4f9d4a"/><circle cx="-15" cy="-48" r="15" fill="#5cae55"/><circle cx="15" cy="-48" r="15" fill="#468f45"/></g>`;}
+
+
+/* ---------- 도입 ---------- */
+function carSide(x,y,col,f){return `<g transform="translate(${x} ${y}) scale(${f||1} 1)"><path d="M-48 0 v-16 q4 -10 18 -12 l10 -12 h40 l12 12 q16 2 16 12 v16z" fill="${col}"/><rect x="-16" y="-36" width="16" height="10" fill="#cfe6f2"/><rect x="4" y="-36" width="18" height="10" fill="#cfe6f2"/><circle cx="-28" cy="2" r="9" fill="#333"/><circle cx="30" cy="2" r="9" fill="#333"/></g>`;}
+$('#e5Road').innerHTML=`<rect width="640" height="200" fill="#d8eefb"/><rect y="70" width="640" height="110" fill="#7f8c8d"/><path d="M0 125 h640" stroke="#fff" stroke-width="4" stroke-dasharray="26 18"/>`+
+  carSide(220,112,'#e2573f',1)+`<path d="M280 80 h70 l-10 -7 v14z" fill="#e2573f"/>`+carSide(420,168,'#2e86c1',-1)+`<path d="M360 190 h-70 l10 -7 v14z" fill="#2e86c1"/>`+TREE(40,70,.6)+TREE(600,70,.7);
+pickIdea('#e5Q0','s1');
+
+/* ---------- 속력이란? ---------- */
+const HX0=40,HS=4.4; /* 1 km = 4.4 px */
+function hw(p){let s=`<rect width="640" height="140" fill="#eef6e8"/><rect y="70" width="640" height="40" fill="#7f8c8d"/><path d="M0 90 h640" stroke="#fff" stroke-width="3" stroke-dasharray="18 12"/>`;
+  [0,60,120].forEach((k,i)=>{const x=HX0+k*HS;s+=`<path d="M${x} 62 v56" stroke="#33415c" stroke-width="2"/><text x="${x}" y="130" font-size="14" text-anchor="middle" font-family="Jua" fill="#15313d">${k} km</text><text x="${x}" y="56" font-size="13" text-anchor="middle" font-family="Jua" fill="#1c6fa8">${i}시간</text>`;});
+  if(p>=.5)s+=`<path d="M${HX0} 40 H${HX0+60*HS}" stroke="#e2573f" stroke-width="3"/><text x="${HX0+30*HS}" y="34" font-size="14" text-anchor="middle" font-family="Jua" fill="#c2332c">1시간 동안 60 km</text>`;
+  if(p>=1)s+=`<path d="M${HX0+60*HS} 40 H${HX0+120*HS}" stroke="#e2573f" stroke-width="3"/><text x="${HX0+90*HS}" y="34" font-size="14" text-anchor="middle" font-family="Jua" fill="#c2332c">1시간 동안 60 km</text>`;
+  s+=carSide(HX0+120*HS*p,96,'#e2573f',1).replace('translate(','translate(').replace(/scale\(1 1\)/,'scale(.7 .7)');
+  s+=`<text x="630" y="22" font-size="15" text-anchor="end" font-family="Jua" fill="#15313d">⏱ ${(p*2).toFixed(1)}시간 · ${Math.round(p*120)} km</text>`;return s;}
+$('#e5Hw').innerHTML=hw(0);
+$('#e5HwGo').onclick=()=>{$('#e5HwGo').disabled=true;tween(4000,p=>{$('#e5Hw').innerHTML=hw(p);},()=>{$('#e5HwGo').disabled=false;$('#e5HwGo').textContent='🔁 다시 보기';});};
+const s2=need('s2',3);
+$('#e5V0b').onclick=()=>{const el=$('#e5V0');if(!el.value.trim()){fb('#e5V0f','속력을 구해 써요.','info');return;}
+  if(numOk(el,60)){fb('#e5V0f','정답! 120 km ÷ 2 h = 60 km/h예요. 자동차가 1시간 동안 60 km를 이동한 것과 같은 빠르기예요.',true);$('#e5Mean').hidden=false;s2('v');}
+  else fb('#e5V0f','이동 거리(120 km)를 걸린 시간(2 h)으로 나누어요.',false);};
+pickOne('#e5Q1','맞아요! 60 km/h는 1시간 동안 60 km를 이동한 것과 같은 빠르기예요.','다시 생각해 봐요.',null,()=>s2('m'));
+pickOne('#e5Q2','맞아요! ‘육십 킬로미터 매 시’라고 읽어요.','다시 생각해 봐요.',null,()=>s2('r'));
+
+/* ---------- 계산기 애플리케이션 ---------- */
+function calc(sel){const B=$(sel);B.innerHTML=`<div class="dp" aria-live="polite">0</div><div class="ks">${['7','8','9','÷','4','5','6','×','1','2','3','−','0','.','=','+'].map(k=>`<button class="${'÷×−+'.includes(k)?'op':k==='='?'eq':''}">${k}</button>`).join('')}</div><div class="ks" style="grid-template-columns:1fr"><button>C</button></div><p>계산기 애플리케이션</p>`;
+  const dp=$('.dp',B);let a=null,op=null,cur='0',fresh=true;
+  const f=n=>{if(!isFinite(n))return '오류';const r=Math.round(n*1e8)/1e8;return String(r);};
+  const ap=(x,o,y)=>o==='÷'?x/y:o==='×'?x*y:o==='−'?x-y:x+y;
+  $$('button',B).forEach(b=>b.onclick=()=>{const k=b.textContent;
+    if(/^[0-9]$/.test(k)){cur=fresh?k:(cur==='0'?k:cur+k);fresh=false;}
+    else if(k==='.'){if(fresh){cur='0.';fresh=false;}else if(!cur.includes('.'))cur+='.';}
+    else if(k==='C'){a=null;op=null;cur='0';fresh=true;}
+    else if(k==='='){if(op!==null){cur=f(ap(a,op,parseFloat(cur)));a=null;op=null;fresh=true;}}
+    else{if(op!==null&&!fresh){cur=f(ap(a,op,parseFloat(cur)));}a=parseFloat(cur);op=k;fresh=true;}
+    dp.textContent=(op&&fresh&&a!==null?f(a)+' '+op:cur);});}
+calc('#e5C1');calc('#e5C2');
+function checkTable(sec,btn,out,okMsg,cb){$(btn).onclick=()=>{const ins=$$('#'+sec+' input.m2-num');if(ins.some(i=>!i.value.trim())){fb(out,'빈칸을 모두 채워요. 계산기 애플리케이션을 써도 좋아요.','info');return;}
+  const bad=ins.filter(i=>!numOk(i,+i.dataset.v,0.001));
+  if(!bad.length){fb(out,okMsg,true);cb();}
+  else{const dec=bad.some(i=>/\.\d\d/.test(i.value));fb(out,(dec?'소수 둘째 자리에서 반올림해 소수 첫째 자리까지 써요. ':'')+'빨간 칸을 다시 계산해 봐요. 속력 = 이동 거리 ÷ 걸린 시간',false);}};}
+checkTable('s3','#e5T1b','#e5T1f','정답! 빨간색 27.0 cm/s, 파란색 24.4 cm/s, 초록색 23.8 cm/s, 노란색 17.2 cm/s예요. 1 cm/s는 1초 동안 1 cm를 이동한 것과 같은 빠르기예요. (27.0 cm/s는 매 초마다 꼭 27.0 cm씩 갔다는 뜻이 아니라, 전체 이동 거리와 걸린 시간으로 구한 평균적인 빠르기예요.)',()=>{$('#e5O1w').hidden=false;});
+orderPick('#e5O1',['r','b','g','y'],'맞아요! 빨간색, 파란색, 초록색, 노란색 자동차 순으로 빨라요. 속력을 구하면 서로 다른 실험에서 잰 자동차도 한꺼번에 비교할 수 있어요.','속력의 숫자를 다시 비교해 봐요. 단위가 같으면 숫자가 클수록 빨라요.','s3');
+
+/* ---------- 교통수단 ---------- */
+checkTable('s4','#e5T2b','#e5T2f','정답! 자전거 20 km/h, 자동차 72.5 km/h, 기차 150 km/h, 배 34.5 km/h, 비행기 900 km/h예요.',()=>{doneNav('s4');$('#e5Wait').hidden=true;$('#e5Cmp').hidden=false;bars();});
+const TV=[['비행기',900,'#2e86c1'],['기차',150,'#16a085'],['자동차',72.5,'#e2573f'],['배',34.5,'#8e44ad'],['자전거',20,'#e67e22']];
+function bars(){const X0=80,S=0.68;tween(3500,p=>{let s=`<rect width="720" height="230" fill="#f7fbff"/><text x="700" y="18" font-size="14" text-anchor="end" font-family="Jua" fill="#48646f">⏱ ${(p).toFixed(2)}시간 동안 이동한 거리(실제 비율)</text>`;
+  for(let k=0;k<=900;k+=150){const x=X0+k*S;s+=`<line x1="${x}" y1="26" x2="${x}" y2="210" stroke="#dde7ef"/><text x="${x}" y="226" font-size="11" text-anchor="middle" fill="#48646f">${k} km</text>`;}
+  TV.forEach((t,i)=>{const y=46+i*36,w=t[1]*S*p;s+=`<text x="${X0-8}" y="${y+5}" font-size="14" text-anchor="end" font-family="Jua" fill="#15313d">${t[0]}</text><rect x="${X0}" y="${y-9}" width="${Math.max(1,w)}" height="18" rx="5" fill="${t[2]}" opacity=".8"/>`+(p>=1?`<text x="${X0+w+6}" y="${y+5}" font-size="13" font-family="Jua" fill="#15313d">${t[1]} km</text>`:'');});
+  $('#e5Bar').innerHTML=s;});}
+orderPick('#e5O2',['plane','train','car','ship','bike'],'맞아요! 비행기, 기차, 자동차, 배, 자전거 순으로 빨라요.','속력(km/h)의 숫자를 다시 비교해 봐요.',null,()=>{$('#e5Two').hidden=false;});
+pickOne('#e5Q3','맞아요! 속력의 단위가 같으면 숫자가 큰 배가 자전거보다 더 빨라요.','다시 생각해 봐요.','s5');
+
+/* ---------- 한눈에 쏙 ---------- */
+(()=>{let s=`<rect width="240" height="150" rx="16" fill="#1d2633"/><path d="M40 120 A80 80 0 0 1 200 120" stroke="#3d4b5c" stroke-width="10" fill="none"/>`;
+  for(let k=0;k<=120;k+=20){const a=Math.PI*(1-k/120),x1=120+Math.cos(a)*70,y1=120-Math.sin(a)*70,x2=120+Math.cos(a)*58,y2=120-Math.sin(a)*58;s+=`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#fff" stroke-width="2"/><text x="${120+Math.cos(a)*46}" y="${124-Math.sin(a)*46}" font-size="11" text-anchor="middle" fill="#fff">${k}</text>`;}
+  const a=Math.PI*(1-60/120);s+=`<line x1="120" y1="120" x2="${120+Math.cos(a)*64}" y2="${120-Math.sin(a)*64}" stroke="#e2573f" stroke-width="4" stroke-linecap="round"/><circle cx="120" cy="120" r="6" fill="#e2573f"/><text x="120" y="142" font-size="14" text-anchor="middle" fill="#bdf0cf" font-family="Jua">60 km/h</text>`;
+  $('#e5Gauge').innerHTML=s;})();
+const s6=need('s6',2);
+$('#blReveal').onclick=()=>{fb('#blFb','물체의 속력은 이동 거리를 걸린 시간으로 나누어 구해요. 속력의 단위가 같을 때 숫자가 클수록 더 빨라요.',true);s6('bl');};
+pickOne('#e5Q4','맞아요! 계기판의 속력을 보고 빠르기를 조절해 안전하게 운전할 수 있어요. 빠르기를 숫자로 나타내니 서로 알려 주기도 편리해요.','다시 생각해 봐요.',null,()=>s6('g'));
+
+/* ---------- 형성 평가 ---------- */
+let q0=0,q1=0,q2=0;const c7=()=>{if(q0&&q1&&q2)doneNav('s7');};
+$('#e5F1b').onclick=()=>{const el=$('#e5F1');if(!el.value.trim()){fb('#e5F1f','속력을 써요.','info');return;}
+  if(numOk(el,50)){fb('#e5F1f','정답! 100 km ÷ 2 h = 50 km/h예요.',true);q0=1;c7();}else fb('#e5F1f','이동 거리를 걸린 시간으로 나누어요.',false);};
+quiz('#quiz',[
+ {q:'2. 50 km/h를 바르게 읽은 것은?',o:['오십 킬로미터 매 시','오십 킬로미터 매 초','오십 미터 매 시'],a:0,e:'km는 킬로미터, /h는 ‘매 시’라고 읽어요.',h:'km와 h를 각각 어떻게 읽는지 떠올려 봐요.'},
+ {q:'3. 속력의 단위가 같을 때 속력을 나타내는 숫자가 클수록 더 빠르다. (○, ×)',o:['○ 옳아요','× 옳지 않아요'],a:0,e:'단위가 같으면 숫자가 클수록 더 빨라요. 단위가 다르면 숫자만 보고 비교할 수 없어요.'}],()=>{q1=1;c7();});
+keyCheck('#e5W','#e5WBtn','#e5WFb',[[/(^|[^0-9.])5\s*(m\/s|미터\s*매\s*초)/,'치타 5 m/s'],[/(^|[^0-9.])4\s*(m\/s|미터\s*매\s*초)/,'호랑이 4 m/s'],[/치타[^.]*빠르|치타가[^.]*더/,'치타가 더 빠름']],3,null,'치타와 호랑이의 속력을 단위(m/s)와 함께 쓰고, 어느 동물이 더 빠른지 써요.');
+$('#e5WBtn').addEventListener('click',()=>{if($('#e5WFb').classList.contains('ok')&&!q2){$('#e5WFb').textContent+=' 예시 답: 치타의 속력은 50 m ÷ 10 s = 5 m/s이고, 호랑이의 속력은 100 m ÷ 25 s = 4 m/s이므로 치타가 호랑이보다 더 빠르다.';q2=1;c7();}});
+
+faces('s8','잘했어요! 다음 시간에는 속력과 관련된 안전 수칙과 안전장치를 조사해 봐요.','어려웠던 부분은 계산기로 속력을 다시 구해 보고, 선생님께 질문해도 좋아요!');
+</script>

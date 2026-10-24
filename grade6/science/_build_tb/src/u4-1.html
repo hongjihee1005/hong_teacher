@@ -1,0 +1,420 @@
+<!--
+title: 하루 동안 태양과 별의 위치는 어떻게 달라질까?
+unit: 4
+lesson: 2~3
+total: 11
+goal: 하루 동안 태양의 위치 변화를 관찰해 설명할 수 있어요.<br>하루 동안 별의 위치 변화를 관찰하고, 태양과 별의 위치 변화의 규칙성을 찾을 수 있어요.
+pages: 「과학」 88~91쪽 · 「실험관찰」 52~55쪽 · 지도서 348~359쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"동","bl2":"서"}}]
+-->
+<style>
+/* 4단원 지구의 운동 · 교과서 버전 공통 */
+[hidden]{display:none!important}
+.e4-lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.e4-lab svg{display:block;width:100%;height:auto;margin:0 auto}
+/* 그림을 화면 높이에 맞추되 옆 빈틈 없이: style="--h:40vh;--ar:2.1" (가로/세로) */
+svg.e4-fit,.e4-lab svg.e4-fit{width:min(100%,calc(var(--h,40vh)*var(--ar,2)));height:auto;max-height:none}
+.e4-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(8px,1vw,16px);align-items:start}
+.e4-two>*{min-width:0}
+@media(max-width:700px){.e4-two{grid-template-columns:1fr}}
+.e4-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.e4-ctl button{font-size:.92rem;min-height:2.3rem;padding:.2em .8em}
+.e4-ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.e4-ctl button[disabled]{opacity:.45;cursor:default}
+.e4-ctl .jua{font-size:.98rem}
+.e4-q{font-family:"Jua",sans-serif;font-size:1.06rem;margin:10px 0 6px}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:8px 12px;font-size:.95rem}
+.big{font-size:1.08rem}
+.e4-rp{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 0;border-bottom:2px dashed var(--line)}
+.e4-rp .q{flex:1 1 40%;font-family:"Jua",sans-serif;min-width:10em}
+.e4-rp button{min-height:2.3rem;padding:.15em .8em;font-size:.95rem}
+.e4-note{font-size:.88rem;color:var(--muted);margin:4px 0 0}
+/* 나누기 카드 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+#quiz>div{margin-bottom:6px}
+@media (max-width:600px){.t3sort,.t3match{grid-template-columns:1fr}}
+.s1-top{max-width:250px;margin:0 auto}
+.s1-phone{background:#1d2333;border-radius:22px;padding:10px;border:3px solid var(--navy)}
+.s1-phone svg{border-radius:12px;display:block;margin:0 auto}
+.s1-ctl button.cur{background:var(--sun);border-color:#b8860b;color:#3a2a00}
+.s1-glass.on{background:#3a3a3a!important;color:#ffd23f!important;border-color:#111!important}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 88쪽</span>
+  <h2>태양은 떠오르는 중일까요, 지는 중일까요?</h2>
+  <div class="e4-lab s1-dok"><svg id="dokdo" class="e4-fit" style="--h:27vh;--ar:2.667" viewBox="0 0 800 300" role="img" aria-label="바다 위 독도의 동도와 서도 옆으로 태양이 바다 가까이에 있는 그림"></svg></div>
+  <div class="pick" id="p1" data-glue="1">
+    <button data-m="그림 아래의 방위를 봐요. 태양은 동쪽 바다 위에 있어요. 동쪽 하늘에 있으니 떠오르는 중이에요. 독도는 동도와 서도로 이루어져 있는데, 오른쪽 섬이 동도예요.">떠오르는 중이에요</button>
+    <button data-m="노을처럼 보여서 그렇게 생각할 수 있어요. 그런데 그림 아래 방위를 보면 태양은 동쪽 바다 위에 있어요. 동쪽 하늘의 태양은 떠오르는 중이에요.">지는 중이에요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="e4-q" data-glue="1">하루 동안 태양의 위치 변화는 어떻게 알 수 있을까요?</p>
+  <div class="pick" id="p1b" data-glue="1">
+    <button data-a="1" data-m="맞아요! 같은 장소에서 일정한 시간 간격으로 태양을 관찰하면 위치 변화를 알 수 있어요. 직접 관찰해 봐요.">같은 장소에서 일정한 시간 간격으로 관찰해요</button>
+    <button data-a="0" data-m="장소가 바뀌면 태양이 보이는 방향도 다르게 느껴져요. 같은 장소에서 비교해야 해요.">여러 장소를 돌아다니며 아무 때나 관찰해요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="관찰 준비">
+  <span class="stage">활동해요 1~5 · 「실험관찰」 52쪽</span>
+  <h2>하루 동안 태양의 위치 변화를 관찰할 준비를 해요</h2>
+  <p>준비물: 나침반, 그림 도구, 태양 관측 안경, 태양 붙임딱지</p>
+  <div class="e4-two">
+    <div>
+      <div class="e4-lab s1-top"><svg id="topKid" viewBox="0 0 300 260" role="img" aria-label="남쪽을 바라보고 선 학생을 위에서 본 그림과 나침반"></svg></div>
+      <p class="e4-note">나침반은 평평한 곳에 놓고 방위를 확인해요. 주위에 높은 건물이나 나무가 많지 않은 장소가 좋아요.</p>
+    </div>
+    <div>
+      <p class="e4-q">① 오전일 때와 오후일 때 태양의 위치를 이야기해 봐요. (생각 고르기)</p>
+      <div class="pick" id="p2a"><button data-m="좋은 생각이에요. 정말 그런지 직접 관찰해서 확인해 봐요.">오전에는 동쪽, 오후에는 서쪽에 있어요</button><button data-m="좋은 생각이에요. 정말 그런지 직접 관찰해서 확인해 봐요.">오전에는 서쪽, 오후에는 동쪽에 있어요</button></div>
+      <div class="fb"></div>
+      <p class="e4-q">② 남쪽을 바라보고 섰어요. ③ 내 왼쪽은 어느 쪽일까요?</p>
+      <div class="pick" id="p2b"><button data-a="1" data-m="맞아요! 남쪽을 바라보고 서면 왼쪽이 동쪽, 오른쪽이 서쪽이에요. 앞으로 ‘왼쪽·오른쪽’ 대신 ‘동쪽·서쪽’이라고 말해요.">동쪽</button><button data-a="0" data-m="나침반에서 남쪽을 바라보는 학생의 왼손이 가리키는 곳을 봐요.">서쪽</button></div>
+      <div class="fb"></div>
+    </div>
+  </div>
+  <p class="e4-q" data-glue="1">⑤ 태양의 위치를 확인할 때는 어떻게 해야 할까요?</p>
+  <div class="pick" id="p2c" data-glue="1">
+    <button data-a="1" data-m="맞아요! 태양 빛은 매우 강해서 맨눈으로 절대 보지 않고, 반드시 태양 관측 안경을 쓰고 잠깐만 봐요.">태양 관측 안경을 쓰고 잠깐만 봐요</button>
+    <button data-a="0" data-m="안 돼요! 태양 빛은 매우 강해서 맨눈으로 보면 눈을 다쳐요. 잠깐이라도 맨눈으로 보지 않아요.">맨눈으로 잠깐만 봐요</button>
+    <button data-a="0" data-m="선글라스로는 눈을 지킬 수 없어요. 반드시 태양 관측 안경을 써요.">선글라스를 쓰고 봐요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="tip">⚠️ 태양 빛은 매우 강하므로 맨눈으로 절대 보지 않고, 반드시 태양 관측 안경을 착용해요. 안경을 쓰고도 오랫동안 보지 않아요. 야외 활동이 끝나면 손을 씻어요.</p>
+</section>
+
+<section id="s3" data-nav="태양 관찰">
+  <span class="stage">활동해요 6~7 · 「실험관찰」 53쪽</span>
+  <h2>같은 장소에서 시간 간격을 두고 태양의 위치를 기록해요</h2>
+  <p>🕶️ 안경을 쓴 다음, 시각 단추를 차례대로 누르고 <b>하늘에 보이는 태양을 눌러</b> 태양 붙임딱지를 붙여요. 관찰 시각도 함께 적혀요.</p>
+  <div class="e4-lab"><svg id="sunSky" class="e4-fit" style="--h:44vh;--ar:2.105" viewBox="0 0 800 380" role="img" aria-label="학교 운동장에서 남쪽을 바라본 하늘. 왼쪽이 동쪽, 가운데가 남쪽, 오른쪽이 서쪽"></svg></div>
+  <div class="e4-ctl s1-ctl" id="sunCtl" data-glue="1">
+    <button class="s1-glass" id="glass">🕶️ 태양 관측 안경 쓰기</button>
+    <span class="jua" id="sunDate"></span>
+  </div>
+  <div class="e4-ctl s1-ctl" id="sunTimes" data-glue="1"></div>
+  <div class="fb" id="sunFb"></div>
+  <div id="sunAsk" hidden data-glue="1">
+    <p class="e4-q">하루 동안 시간이 지남에 따라 태양의 위치는 어떻게 달라졌나요?</p>
+    <div class="pick" id="p3"><button data-a="1" data-m="맞아요! 하루 동안 태양은 동쪽 하늘에서 남쪽 하늘을 지나 서쪽 하늘로 위치가 달라져요.">동쪽 하늘 → 남쪽 하늘 → 서쪽 하늘</button><button data-a="0" data-m="붙임딱지에 적힌 시각을 차례대로 따라가 봐요. 오전 8시 30분 붙임딱지는 어느 쪽에 있나요?">서쪽 하늘 → 남쪽 하늘 → 동쪽 하늘</button></div>
+    <div class="fb"></div>
+    <div class="e4-ctl" id="otherDays" hidden><span class="jua">다른 날짜에도 같을까요?</span></div>
+  </div>
+</section>
+
+<section id="s4" data-nav="별 관찰">
+  <span class="stage">활동해요 · 「과학」 90쪽 · 「실험관찰」 54~55쪽</span>
+  <h2>천체 관측 프로그램으로 하루 동안 별의 위치 변화를 관찰해요</h2>
+  <p>화면 가운데가 남쪽 하늘이에요. 투명 필름을 붙였다고 생각하고, <b>고른 별을 눌러 유성펜으로 표시</b>한 뒤 ‘한 시간 뒤’를 눌러요.</p>
+  <div class="s1-phone"><svg id="starSky" class="e4-fit" style="--h:44vh;--ar:2.105" viewBox="0 0 800 380" role="img" aria-label="천체 관측 프로그램 화면: 2025년 7월 15일 밤 남쪽 하늘"></svg></div>
+  <div class="e4-ctl" id="starCtl" data-glue="1">
+    <button id="hrNext" disabled>⏩ 한 시간 뒤</button>
+    <button id="star2" hidden>⭐ 다른 별 고르기</button>
+    <span class="jua" id="starClock"></span>
+  </div>
+  <div class="fb" id="starFb"></div>
+  <div id="starAsk" hidden data-glue="1">
+    <p class="e4-q">하루 동안 시간이 지남에 따라 별의 위치는 어떻게 달라졌나요?</p>
+    <div class="pick" id="p4"><button data-a="1" data-m="맞아요! 하루 동안 별은 동쪽 하늘에서 서쪽 하늘로 위치가 달라져요. 두 별 모두 그랬어요.">동쪽 하늘에서 서쪽 하늘로</button><button data-a="0" data-m="필름에 표시한 점을 오후 7시부터 시각 차례대로 따라가 봐요.">서쪽 하늘에서 동쪽 하늘로</button></div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 프로그램의 대기 효과를 끈 화면이에요. 야외에서 별을 관찰할 때에는 주변에 불빛이 없고 탁 트인 남쪽 하늘을 바라보며, 너무 늦지 않은 시간에 보호자와 함께 관찰해요.</p>
+</section>
+
+<section id="s5" data-nav="정리해요">
+  <span class="stage">정리해요 · 「과학」 89쪽, 91쪽</span>
+  <h2>태양과 별의 위치 변화를 비교해요</h2>
+  <div id="rp5">
+    <div class="e4-rp"><span class="q">☀️ 하루 동안 태양은</span><button data-a="1" data-m="맞아요! 태양은 동쪽 하늘에서 남쪽 하늘을 지나 서쪽 하늘로.">동쪽 → 서쪽</button><button data-a="0" data-m="태양 붙임딱지의 시각 차례를 떠올려 봐요.">서쪽 → 동쪽</button></div>
+    <div class="e4-rp"><span class="q">⭐ 하루 동안 별은</span><button data-a="0" data-m="필름에 표시한 별의 위치 차례를 떠올려 봐요.">서쪽 → 동쪽</button><button data-a="1" data-m="맞아요! 별도 동쪽 하늘에서 서쪽 하늘로.">동쪽 → 서쪽</button></div>
+    <div class="e4-rp"><span class="q">🔍 태양과 별의 위치가 달라지는 방향은</span><button data-a="1" data-m="맞아요! 방향이 같아요.">서로 같아요</button><button data-a="0" data-m="두 줄의 답을 견주어 봐요.">서로 반대예요</button></div>
+  </div>
+  <div class="fb"></div>
+  <p class="warn" id="rule5" hidden data-glue="1">💡 규칙성: 하루 동안 태양과 별은 모두 <b>동쪽에서 서쪽으로</b> 위치가 달라져요. 다른 날짜에 관찰해도 같아요.</p>
+</section>
+
+<section id="s6" data-nav="생각+">
+  <span class="stage">생각이 한눈에 2 · 「과학」 91쪽</span>
+  <h2>우리나라에서 해돋이를 일찍 보려면 어느 방향으로 가야 할까요?</h2>
+  <div class="pick" id="p6">
+    <button data-a="1" data-m="맞아요! 태양은 동쪽 하늘에서 뜨기 때문에 해돋이를 일찍 보려면 동쪽으로 가야 해요.">동쪽으로 가요</button>
+    <button data-a="0" data-m="태양은 어느 쪽 하늘에서 떠오르나요?">서쪽으로 가요</button>
+    <button data-a="0" data-m="태양은 어느 쪽 하늘에서 떠오르나요? 남쪽 하늘은 태양이 지나가는 곳이에요.">남쪽으로 가요</button>
+    <button data-a="0" data-m="우리나라에서 북쪽 하늘에서 해가 뜨지는 않아요. 태양이 떠오르는 쪽을 생각해요.">북쪽으로 가요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="warn" data-glue="1">🤔 태양과 별은 왜 날마다 동쪽에서 서쪽으로 위치가 달라질까요? 다음 시간에 지구의 운동으로 알아봐요.</p>
+</section>
+
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에 1</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="big">하루 동안 태양과 별은 <span class="blank"><span id="bl1">?</span></span>쪽에서 <span class="blank"><span id="bl2">?</span></span>쪽으로 위치가 달라집니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div><div class="fb" id="blFb"></div>
+</section>
+
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <p class="jua big" style="margin-top:12px">2. 그림은 오후 1시일 때 태양의 위치예요. 오후 3시일 때 태양의 위치로 가장 알맞은 것을 고르고, 까닭을 써 봐요.</p>
+  <div class="e4-lab" data-glue="1" style="max-width:560px;margin:0 auto"><svg id="q2img" viewBox="0 0 560 230" role="img" aria-label="동쪽에서 남쪽을 지나 서쪽으로 이어지는 하늘에 오후 1시 태양과 ㉠~㉣ 위치"></svg></div>
+  <div class="pick" id="p8" data-glue="1"><button data-a="0" data-m="㉠은 동쪽 하늘이에요. 오후 3시면 오후 1시보다 어느 쪽에 있을까요?">㉠</button><button data-a="0" data-m="오후 1시보다 동쪽이에요. 시간이 지나면 태양은 어느 쪽으로 가나요?">㉡</button><button data-a="0" data-m="오후 1시보다 동쪽이에요. 시간이 지나면 태양은 어느 쪽으로 가나요?">㉢</button><button data-a="1" data-m="맞아요! ㉣이에요.">㉣</button></div>
+  <div class="fb"></div>
+  <textarea id="wr" rows="2" placeholder="그렇게 생각한 까닭: 하루 동안 태양은 ~ 쪽에서 ~ 쪽으로 …" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wrB">내 답 살펴보기</button></div><div class="fb" id="wrFb"></div>
+</section>
+
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 53쪽, 55쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>하루 동안 태양과 별의 위치 변화를 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>하루 동안 태양과 별의 위치 변화를 관찰하고 기록할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>하루 동안 태양과 별의 위치 변화에 흥미와 호기심을 느꼈어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 4단원 지구의 운동 · 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg', RAD=Math.PI/180;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 줄마다 고르기: 상자 안 .e4-rp 줄의 단추 중 data-a="1"이 정답. 모든 줄을 맞히면 끝 */
+function rowsPick(box,okMsg,sec,cb){const rows=$$(box+' .e4-rp'),out=$(box).nextElementSibling,ok=new Set();
+  rows.forEach((r,k)=>{const bs=$$('button',r);bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');ok.add(k);if(ok.size===rows.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m||'맞아요!')+' ('+ok.size+'/'+rows.length+')','info');}
+    else{b.classList.add('wrong');ok.delete(k);fb(out,b.dataset.m||'다시 생각해 봐요.',false);}});});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기(키보드도) */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 형성 평가: 고르기와 글쓰기가 모두 끝나야 섹션 완료 */
+function twoDone(sec){let a=false,b=false;return{q(){a=true;if(b)doneNav(sec);},w(){b=true;if(a)doneNav(sec);}};}
+function watchWrite(btn,out,f){$(btn).addEventListener('click',()=>{if($(out).classList.contains('ok'))f();});}
+/* 그림 그리기 도우미 */
+const sv=(tag,a,inner)=>'<'+tag+' '+Object.entries(a).map(([k,v])=>k+'="'+v+'"').join(' ')+(inner==null?'/>':'>'+inner+'</'+tag+'>');
+const tx=(x,y,t,o)=>'<text x="'+x+'" y="'+y+'" font-family="Jua" font-size="'+((o&&o.s)||18)+'" fill="'+((o&&o.c)||'#0f3b5c')+'" text-anchor="'+((o&&o.a)||'middle')+'"'+((o&&o.w)?' font-weight="700"':'')+'>'+t+'</text>';
+/* ===== 천체 위치 계산(서울 북위 37.57°, 동경 126.98°) — 실제 하늘과 같게 ===== */
+function JD(y,mo,d,hUT){if(mo<=2){y--;mo+=12;}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(mo+1))+d+B-1524.5+hUT/24;}
+const JDk=(y,mo,d,hK)=>JD(y,mo,d,hK-9); /* 한국 시각 */
+function GMST(J){const D=J-2451545;return ((280.46061837+360.98564736629*D)%360+360)%360;}
+function sunRD(J){const n=J-2451545,L=280.460+0.9856474*n,g=(357.528+0.9856003*n)*RAD,lam=(L+1.915*Math.sin(g)+0.020*Math.sin(2*g))*RAD,e=23.439*RAD;
+  return [(Math.atan2(Math.cos(e)*Math.sin(lam),Math.cos(lam))/RAD/15+24)%24,Math.asin(Math.sin(e)*Math.sin(lam))/RAD];}
+function altAz(raH,decD,J){const LAT=37.57*RAD,LON=126.98,H=(GMST(J)+LON-raH*15)*RAD,d=decD*RAD;
+  const alt=Math.asin(Math.sin(LAT)*Math.sin(d)+Math.cos(LAT)*Math.cos(d)*Math.cos(H));
+  const az=Math.atan2(-Math.cos(d)*Math.sin(H),Math.sin(d)*Math.cos(LAT)-Math.cos(d)*Math.sin(LAT)*Math.cos(H));
+  return [alt/RAD,((az/RAD)+360)%360];}
+/* 남쪽을 바라본 하늘 그림: 방위각 60°~300°, 고도 0°~90° */
+const PX=az=>400+(az-180)*3.3, PY=alt=>330-alt*3.55;
+
+/* ---------- 도입: 독도 ---------- */
+(function(){let s='<defs><linearGradient id="dkSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7fb6e0"/><stop offset=".62" stop-color="#f6c58a"/><stop offset="1" stop-color="#f39b62"/></linearGradient>'+
+  '<radialGradient id="dkSun"><stop offset="0" stop-color="#fff6c9"/><stop offset=".5" stop-color="#ffd23f"/><stop offset="1" stop-color="#ffb347" stop-opacity="0"/></radialGradient></defs>';
+  s+='<rect width="800" height="232" fill="url(#dkSky)"/><rect y="226" width="800" height="74" fill="#2f6f9f"/>';
+  s+='<circle cx="700" cy="226" r="70" fill="url(#dkSun)"/><path d="M672 226 a28 28 0 0 1 56 0z" fill="#ffd23f" stroke="#f08a24" stroke-width="2"/>';
+  for(let i=0;i<6;i++) s+='<rect x="'+(676-i*6)+'" y="'+(234+i*9)+'" width="'+(48+i*12)+'" height="3" rx="1.5" fill="#ffd98a" opacity="'+(0.8-i*0.1)+'"/>';
+  /* 서도: 높고 뾰족 */
+  s+='<path d="M110 228 L150 170 L185 120 L215 74 L236 66 L256 92 L290 140 L325 186 L352 228Z" fill="#6b5a46" stroke="#3d3226" stroke-width="3"/><path d="M200 120 L236 66 L246 120 L226 160Z" fill="#8a765c" opacity=".7"/><path d="M150 200 Q190 180 230 196 Q270 210 320 200" stroke="#4f7d3c" stroke-width="10" fill="none" opacity=".6"/>';
+  /* 동도: 낮고 넓음 */
+  s+='<path d="M430 228 L456 176 L490 150 L528 146 L560 132 L590 150 L612 186 L626 228Z" fill="#7a6650" stroke="#3d3226" stroke-width="3"/><path d="M470 196 Q520 176 600 196" stroke="#4f7d3c" stroke-width="9" fill="none" opacity=".6"/><rect x="540" y="120" width="10" height="16" fill="#e9e3d6" stroke="#3d3226" stroke-width="2"/>';
+  s+='<path d="M380 60 q8 -8 16 0 q8 -8 16 0" stroke="#3d3226" stroke-width="3" fill="none"/><path d="M420 88 q6 -6 12 0 q6 -6 12 0" stroke="#3d3226" stroke-width="3" fill="none"/>';
+  s+='<g><rect x="16" y="20" width="132" height="44" rx="14" fill="#fff" stroke="#0f3b5c" stroke-width="3"/><path d="M110 64 l18 22 l-2 -22z" fill="#fff" stroke="#0f3b5c" stroke-width="3"/><rect x="112" y="60" width="16" height="6" fill="#fff"/>'+tx(82,50,'나는 독도!',{s:22})+'</g>';
+  s+=tx(232,256,'서도',{c:'#fff',s:18})+tx(528,256,'동도',{c:'#fff',s:18});
+  s+='<rect x="12" y="262" width="48" height="32" rx="8" fill="#fff"/>'+tx(36,286,'서',{s:22})+'<rect x="740" y="262" width="48" height="32" rx="8" fill="#fff"/>'+tx(764,286,'동',{s:22});
+  s+=tx(400,290,'◀ 서쪽 ─────────────── 동쪽 ▶',{c:'#fff',s:16});
+  $('#dokdo').innerHTML=s;})();
+pickIdea('#p1');
+pickOne('#p1b','','다시 생각해 봐요.','s1');
+
+/* ---------- 관찰 준비: 위에서 본 학생 ---------- */
+(function(){let s='<rect width="300" height="260" fill="#eef7e6"/>';
+  s+=tx(150,26,'북',{s:20})+tx(150,252,'남',{s:20})+tx(18,140,'서',{s:20})+tx(282,140,'동',{s:20});
+  s+='<g transform="translate(150 130)"><ellipse rx="52" ry="22" fill="#e2573f" stroke="#7a2a1f" stroke-width="3"/><circle r="20" fill="#5a3a22" stroke="#2f1e10" stroke-width="3"/>'+
+     '<path d="M-52 0 h-26 M52 0 h26" stroke="#ffd9b0" stroke-width="10" stroke-linecap="round"/><circle cx="-80" cy="0" r="8" fill="#ffd9b0"/><circle cx="80" cy="0" r="8" fill="#ffd9b0"/>'+
+     '<path d="M0 26 v52" stroke="#1c6fa8" stroke-width="5"/><path d="M-11 70 L0 90 L11 70Z" fill="#1c6fa8"/></g>';
+  s+=tx(230,108,'왼손',{s:15,c:'#7a2a1f'})+tx(70,108,'오른손',{s:15,c:'#7a2a1f'})+tx(196,212,'바라보는 쪽',{s:14,c:'#1c6fa8',a:'start'});
+  s+='<g transform="translate(252 52)"><circle r="30" fill="#fff" stroke="#0f3b5c" stroke-width="3"/><path d="M0 -24 L7 0 L0 24 L-7 0Z" fill="#c2332c"/><path d="M0 0 L7 0 L0 24 L-7 0Z" fill="#9fb3c0"/>'+tx(0,-33,'N',{s:13})+'</g>';
+  $('#topKid').innerHTML=s;})();
+pickIdea('#p2a');
+let ok2={b:false,c:false};
+pickOne('#p2b','','',null,()=>{ok2.b=true;if(ok2.c)doneNav('s2');});
+pickOne('#p2c','','',null,()=>{ok2.c=true;if(ok2.b)doneNav('s2');});
+
+/* ---------- 남쪽을 바라본 풍경(학교 운동장) ---------- */
+function land(dark){let s='';
+  const g=dark?'#2b2b22':'#7fae5a', b=dark?'#3a3326':'#c9b79a', t=dark?'#2a3324':'#3f7d3a';
+  /* 산 */
+  s+='<path d="M'+PX(238)+' 332 Q'+PX(252)+' 312 '+PX(262)+' 318 Q'+PX(275)+' 306 '+PX(290)+' 322 L'+PX(300)+' 332Z" fill="'+(dark?'#2f3a2a':'#8fb48a')+'"/>';
+  /* 학교 건물 */
+  s+='<rect x="'+PX(150)+'" y="'+PY(7)+'" width="'+(PX(172)-PX(150))+'" height="'+(330-PY(7))+'" fill="'+b+'" stroke="#5a4a33" stroke-width="2"/>';
+  if(!dark) for(let i=0;i<6;i++) s+='<rect x="'+(PX(152)+i*12)+'" y="'+(PY(5.5))+'" width="7" height="6" fill="#8fc3e6"/><rect x="'+(PX(152)+i*12)+'" y="'+(PY(3))+'" width="7" height="6" fill="#8fc3e6"/>';
+  /* 아파트 */
+  s+='<rect x="'+PX(197)+'" y="'+PY(10)+'" width="'+(PX(209)-PX(197))+'" height="'+(330-PY(10))+'" fill="'+(dark?'#33302a':'#e3d7c6')+'" stroke="#5a4a33" stroke-width="2"/>';
+  /* 나무 */
+  [[100,6],[182,9],[120,4],[268,5]].forEach(([a,h])=>{const x=PX(a);s+='<rect x="'+(x-3)+'" y="'+PY(h*.45)+'" width="6" height="'+(330-PY(h*.45))+'" fill="#6b4a2a"/><ellipse cx="'+x+'" cy="'+PY(h*.7)+'" rx="'+(h*2.4)+'" ry="'+(h*1.4)+'" fill="'+t+'"/>';});
+  s+='<rect y="330" width="800" height="50" fill="'+g+'"/>';
+  [[90,'동'],[135,'남동'],[180,'남'],[225,'남서'],[270,'서']].forEach(([a,n])=>{const x=PX(a),big=n.length===1;
+    s+='<line x1="'+x+'" x2="'+x+'" y1="330" y2="338" stroke="'+(dark?'#ddd':'#2f4a1e')+'" stroke-width="2"/>'+(big?'<rect x="'+(x-20)+'" y="341" width="40" height="30" rx="8" fill="#fff" stroke="#0f3b5c" stroke-width="2"/>':'')+tx(x,big?364:362,n,{s:big?22:15,c:big?'#0f3b5c':(dark?'#ddd':'#24391a')});});
+  return s;}
+const fmtH=h=>{const hh=Math.floor(h),mm=Math.round((h-hh)*60);return (hh<12?'오전 ':'오후 ')+(hh>12?hh-12:hh)+'시'+(mm?' '+mm+'분':'');};
+const SUNT=[8.5,10.5,12.5,14.5,16.5];
+const today=new Date();
+const SD={y:today.getFullYear(),m:today.getMonth()+1,d:today.getDate()};
+let glassOn=false,curT=-1,stk=[],extra=[];
+const sunPos=(d,h)=>{const J=JDk(d.y,d.m,d.d,h);const r=sunRD(J);return altAz(r[0],r[1],J);};
+function drawSun(){let s='<defs><linearGradient id="skB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5aa7dc"/><stop offset="1" stop-color="#cfe9f7"/></linearGradient>'+
+   '<linearGradient id="skG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1e140a"/><stop offset="1" stop-color="#4a3418"/></linearGradient>'+
+   '<radialGradient id="glare"><stop offset="0" stop-color="#fff"/><stop offset=".35" stop-color="#fffbe0"/><stop offset="1" stop-color="#fff6c0" stop-opacity="0"/></radialGradient></defs>';
+  s+='<rect width="800" height="380" fill="url(#'+(glassOn?'skG':'skB')+')"/>'+land(glassOn);
+  extra.forEach(e=>{let p='';e.pts.forEach((q,i)=>{p+=(i?' L':'M')+PX(q[1]).toFixed(1)+' '+PY(q[0]).toFixed(1);});s+='<path d="'+p+'" fill="none" stroke="'+e.c+'" stroke-width="3" stroke-dasharray="6 6"/>';
+    e.pts.forEach(q=>{s+='<circle cx="'+PX(q[1])+'" cy="'+PY(q[0])+'" r="7" fill="'+e.c+'"/>';});s+=tx(PX(e.pts[4][1])+12,PY(e.pts[4][0])+5,e.n,{s:15,c:e.c,a:'start'});});
+  if(stk.length>1){let p='';stk.forEach((q,i)=>{p+=(i?' L':'M')+PX(q.az).toFixed(1)+' '+PY(q.alt).toFixed(1);});s+='<path d="'+p+'" fill="none" stroke="'+(glassOn?'#ffd23f':'#e2573f')+'" stroke-width="2.5" stroke-dasharray="4 6"/>';}
+  stk.forEach(q=>{const x=PX(q.az),y=PY(q.alt);s+='<g><circle cx="'+x+'" cy="'+y+'" r="15" fill="#ffd23f" stroke="#e2573f" stroke-width="3"/>';
+    for(let i=0;i<8;i++){const a=i*Math.PI/4;s+='<line x1="'+(x+19*Math.cos(a))+'" y1="'+(y+19*Math.sin(a))+'" x2="'+(x+25*Math.cos(a))+'" y2="'+(y+25*Math.sin(a))+'" stroke="#e2573f" stroke-width="3"/>';}
+    s+='<rect x="'+(x-46)+'" y="'+(y+27)+'" width="92" height="22" rx="8" fill="#fff" opacity=".92"/>'+tx(x,y+44,fmtH(q.h),{s:15})+'</g>';});
+  if(curT>=0&&!stk.some(q=>q.h===SUNT[curT])){const [alt,az]=sunPos(SD,SUNT[curT]),x=PX(az),y=PY(alt);
+    if(glassOn) s+='<g id="sunNow"><circle cx="'+x+'" cy="'+y+'" r="30" fill="#000" opacity="0"/><circle cx="'+x+'" cy="'+y+'" r="13" fill="#ff9a2e" stroke="#ffd23f" stroke-width="3"/></g>';
+    else s+='<g id="sunNow"><circle cx="'+x+'" cy="'+y+'" r="90" fill="url(#glare)"/><circle cx="'+x+'" cy="'+y+'" r="16" fill="#fff"/></g>';}
+  s+='<rect x="8" y="8" width="'+(glassOn?236:190)+'" height="32" rx="10" fill="#fff" opacity=".9"/>'+tx(18,31,(glassOn?'🕶️ 태양 관측 안경으로 보는 중':'맨눈으로 보는 하늘'),{s:17,a:'start'});
+  $('#sunSky').innerHTML=s;
+  const sn=$('#sunNow');if(sn) tap(sn,hitSun);}
+function hitSun(){if(!glassOn){fb('#sunFb','멈춰요! 맨눈으로 태양을 보면 눈을 다쳐요. 먼저 ‘태양 관측 안경 쓰기’를 눌러요.',false);return;}
+  const h=SUNT[curT],[alt,az]=sunPos(SD,h);stk.push({h,alt,az});drawSun();
+  const nb=$('#sunTimes button[data-i="'+(curT+1)+'"]');$('#sunTimes button[data-i="'+curT+'"]').classList.add('done');
+  if(nb){nb.disabled=false;fb('#sunFb',fmtH(h)+' 태양 붙임딱지를 붙였어요. 같은 장소에서 두 시간 뒤에 다시 관찰해요 → ‘'+fmtH(SUNT[curT+1])+'’ 단추를 눌러요.','info');}
+  else{fb('#sunFb','다섯 번 모두 기록했어요! 붙임딱지를 시각 차례대로 살펴봐요.',true);$('#sunAsk').hidden=false;}}
+$('#sunDate').textContent='관찰한 날: '+SD.m+'월 '+SD.d+'일 · 학교 운동장';
+SUNT.forEach((h,i)=>{const b=document.createElement('button');b.textContent=fmtH(h);b.dataset.i=i;b.disabled=i>0;
+  b.onclick=()=>{curT=i;$$('#sunTimes button').forEach(x=>x.classList.toggle('cur',x===b));drawSun();
+    fb('#sunFb',glassOn?'하늘에 보이는 태양을 눌러 붙임딱지를 붙여요.':'태양이 너무 눈부셔요! 맨눈으로 보지 말고 먼저 태양 관측 안경을 써요.',glassOn?'info':false);};
+  $('#sunTimes').appendChild(b);});
+$('#glass').onclick=()=>{glassOn=!glassOn;$('#glass').classList.toggle('on',glassOn);$('#glass').textContent=glassOn?'🕶️ 안경 벗기':'🕶️ 태양 관측 안경 쓰기';drawSun();
+  if(glassOn&&curT<0) fb('#sunFb','안경을 썼어요. ‘오전 8시 30분’ 단추를 눌러 관찰을 시작해요. 안경을 써도 오래 보지 않아요.','info');};
+drawSun();
+pickOne('#p3','','',null,()=>{doneNav('s3');$('#otherDays').hidden=false;});
+[[3,21,'3월 21일','#1c6fa8'],[6,21,'6월 21일','#16804a'],[12,22,'12월 22일','#8a3fb0']].forEach(([m,d,n,c])=>{const b=document.createElement('button');b.textContent='📅 '+n;
+  b.onclick=()=>{if(extra.some(e=>e.n===n))return;extra.push({n,c,pts:SUNT.map(h=>sunPos({y:SD.y,m,d},h))});b.classList.add('done');drawSun();
+    fb($('#p3').nextElementSibling,n+'에도 태양은 동쪽 하늘에서 남쪽 하늘을 지나 서쪽 하늘로 위치가 달라져요. (점선은 오전 8시 30분부터 두 시간마다의 위치)',true);};
+  $('#otherDays').appendChild(b);});
+
+/* ---------- 별 관찰: 2025년 7월 15일 오후 7시부터 한 시간 간격 ---------- */
+const STARS=[ /* 이름, 적경(시), 적위(도), 등급 */
+ ['견우성(알타이르)',19.846,8.87,0.8,'alt'],['안타레스',16.490,-26.43,1.0,'ant'],['직녀성(베가)',18.616,38.78,0.0],['데네브',20.690,45.28,1.3],['아르크투루스',14.261,19.18,-0.1],
+ ['',13.420,-11.16,1.0],['',22.961,-29.62,1.2],['',17.560,-37.10,1.6],['',18.921,-26.30,2.0],['',18.403,-34.38,1.8],['',17.582,12.56,2.1],['',15.578,26.71,2.2],
+ ['',20.370,40.26,2.2],['',21.736,9.88,2.4],['',23.079,15.21,2.5],['',23.063,28.08,2.4],['',0.140,29.09,2.1],['',19.771,10.61,2.7],['',19.922,6.41,3.7],['',19.512,27.96,3.1],
+ ['',22.096,-0.32,2.9],['',21.526,-5.57,2.9],['',21.784,-16.13,2.9],['',18.466,-25.42,2.8],['',16.090,-19.81,2.6],['',16.006,-22.62,2.3],['',17.173,-15.72,2.4],['',14.848,-16.04,2.8],
+ ['',16.836,-34.29,2.3],['',17.622,-43.0,1.9],['',18.350,-29.83,2.7],['',19.044,-29.88,2.6],['',15.738,6.43,2.6],['',16.239,-3.69,2.7],['',17.244,14.39,3.1],['',18.355,-2.90,3.3],['',0.727,-17.99,2.0],['',2.120,23.46,2.0],['',1.162,35.62,2.1]];
+const ST={alt:STARS[0],ant:STARS[1]};
+let hr=0,phase='pick1',tgt='alt';const marks={alt:[],ant:[]};
+const starPos=(st,k)=>altAz(st[1],st[2],JDk(2025,7,15,19+k));
+const clockTxt=k=>{const h=(19+k)%24;return (19+k<24?'2025년 7월 15일 ':'2025년 7월 16일 ')+(h<12?'오전 ':'오후 ')+(h>12?h-12:(h===0?0:h))+'시';};
+function drawStars(){let s='<defs><linearGradient id="ngt" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050a1e"/><stop offset="1" stop-color="#1b2550"/></linearGradient></defs><rect width="800" height="380" fill="url(#ngt)"/>';
+  STARS.forEach(st=>{const [a,z]=starPos(st,hr);if(a<0||z<62||z>298)return;const x=PX(z),y=PY(a),r=Math.max(1.2,3.6-st[3]*0.9);
+    const isT=st[4]&&(phase==='pick1'&&st[4]==='alt'||phase==='pick2'&&st[4]==='ant'||st[4]===tgt&&phase.startsWith('mark'));
+    s+='<g'+(st[4]?' class="tgt" data-k="'+st[4]+'"':'')+'>'+(st[4]?'<circle cx="'+x+'" cy="'+y+'" r="18" fill="#fff" opacity="0"/>':'')+'<circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="'+(st[4]==='ant'?'#ffb08a':'#fff')+'"/>'+
+      (isT?'<circle cx="'+x+'" cy="'+y+'" r="11" fill="none" stroke="#ffd23f" stroke-width="2" stroke-dasharray="4 3"/>':'')+(st[0]?tx(x+9,y-8,st[0],{s:16,c:'#c8d6ff',a:'start'}):'')+'</g>';});
+  s+='<path d="M0 334 Q60 322 120 330 Q200 318 260 330 L300 326 Q380 334 420 324 Q470 316 520 330 Q600 322 680 332 Q740 324 800 330 V380 H0Z" fill="#0d1a10"/>';
+  [[90,'동'],[135,'남동'],[180,'남'],[225,'남서'],[270,'서']].forEach(([a,n])=>{s+=tx(PX(a),364,n,{s:n.length===1?22:15,c:'#e9f0ff'});});
+  [['alt','#ff6b6b'],['ant','#6ec3f0']].forEach(([k,c])=>{const m=marks[k];if(m.length>1){let p='';m.forEach((q,i)=>{p+=(i?' L':'M')+q.x.toFixed(1)+' '+q.y.toFixed(1);});s+='<path d="'+p+'" stroke="'+c+'" stroke-width="2" fill="none" opacity=".7"/>';}
+    m.forEach(q=>{s+='<circle cx="'+q.x+'" cy="'+q.y+'" r="5" fill="'+c+'"/>'+tx(q.x,q.y+19,q.t,{s:14,c:c});});});
+  s+='<rect x="8" y="8" width="300" height="30" rx="8" fill="#26335f"/>'+tx(18,29,'📅 '+clockTxt(hr),{s:16,c:'#fff',a:'start'});
+  s+='<rect x="560" y="8" width="232" height="30" rx="8" fill="#26335f"/>'+tx(676,29,'투명 필름 · 대기 효과 끔',{s:15,c:'#c8d6ff'});
+  $('#starSky').innerHTML=s;
+  $$('#starSky .tgt').forEach(g=>tap(g,()=>hitStar(g.dataset.k)));
+  $('#starClock').textContent=clockTxt(hr);}
+const shortT=k=>{const h=(19+k)%24;return (h<12?'오전 ':'오후 ')+(h>12?h-12:h)+'시';};
+function hitStar(k){
+  if(phase==='pick1'){if(k!=='alt'){fb('#starFb','이 별 말고 동쪽 하늘에 있는 밝은 별 ‘견우성(알타이르)’을 골라 봐요.',false);return;}phase='mark';tgt='alt';fb('#starFb','견우성(알타이르)을 골랐어요. 이제 그 별을 한 번 더 눌러 지금 위치를 유성펜으로 표시해요.','info');drawStars();return;}
+  if(phase==='pick2'){if(k!=='ant'){fb('#starFb','이번에는 남동쪽 하늘의 붉은 별 ‘안타레스’를 골라 봐요.',false);return;}phase='mark';tgt='ant';fb('#starFb','안타레스를 골랐어요. 별을 다시 눌러 위치를 표시해요(파란색 펜).','info');drawStars();return;}
+  if(phase!=='mark')return;
+  if(k!==tgt){fb('#starFb','고른 별을 눌러 표시해요.',false);return;}
+  const m=marks[tgt];if(m.some(q=>q.k===hr)){fb('#starFb','이 시각에는 이미 표시했어요. ‘한 시간 뒤’를 눌러요.','info');return;}
+  const [a,z]=starPos(ST[tgt],hr);m.push({k:hr,x:PX(z),y:PY(a),t:shortT(hr)});drawStars();
+  const last=hr===9||(tgt==='ant'&&starPos(ST.ant,hr+1)[0]<0);
+  if(tgt==='alt'&&hr===9){phase='done1';$('#hrNext').disabled=true;$('#star2').hidden=false;fb('#starFb','오후 7시부터 오전 4시까지 열 번 표시했어요! 이제 ‘다른 별 고르기’를 눌러 다른 별도 관찰해요.',true);return;}
+  if(tgt==='ant'&&last){phase='done2';$('#hrNext').disabled=true;fb('#starFb','안타레스는 '+shortT(hr+1)+'에는 서쪽 지평선 아래로 내려가 보이지 않아요. 두 별의 표시를 시각 차례대로 따라가 봐요.',true);$('#starAsk').hidden=false;return;}
+  $('#hrNext').disabled=false;fb('#starFb',shortT(hr)+' 위치를 표시했어요. ‘한 시간 뒤’를 눌러요.','info');}
+$('#hrNext').onclick=()=>{if(phase!=='mark')return;if(!marks[tgt].some(q=>q.k===hr)){fb('#starFb','먼저 지금 시각의 별 위치를 표시해요.',false);return;}hr++;$('#hrNext').disabled=true;drawStars();fb('#starFb',clockTxt(hr)+'이 되었어요. 고른 별을 찾아 눌러 표시해요.','info');};
+$('#star2').onclick=()=>{$('#star2').hidden=true;hr=0;phase='pick2';drawStars();fb('#starFb','시각을 다시 오후 7시로 바꿨어요. 남동쪽 하늘의 붉은 별 ‘안타레스’를 눌러 골라요.','info');};
+drawStars();fb('#starFb','동쪽 하늘에서 밝은 별 하나를 골라요. 견우성(알타이르)을 눌러 봐요.','info');
+pickOne('#p4','','','s4');
+
+rowsPick('#rp5','모두 맞혔어요! 하루 동안 태양과 별은 동쪽에서 서쪽으로 위치가 달라진다는 규칙이 있어요.','s5',()=>{$('#rule5').hidden=false;});
+pickOne('#p6','','','s6');
+$('#blReveal').onclick=()=>{fb('#blFb','하루 동안 태양과 별은 동쪽에서 서쪽으로 위치가 달라집니다.',true);doneNav('s7');};
+
+/* ---------- 형성 평가 ---------- */
+const T8=twoDone('s8');
+quiz('#quiz',[{q:'1. 하루 동안 태양과 별의 위치 변화에 관한 설명으로 옳은 것은?',o:['㉠ 하루 동안 태양은 동쪽 하늘에서 서쪽 하늘로 위치가 달라진다.','㉡ 하루 동안 별은 서쪽 하늘에서 동쪽 하늘로 위치가 달라진다.','㉢ 하루 동안 태양과 별의 위치가 달라지는 방향은 서로 반대이다.'],a:0,
+  e:'하루 동안 태양과 별은 모두 동쪽에서 서쪽으로 위치가 달라져요.',h:'태양과 별의 위치가 달라지는 방향을 떠올려 봐요.'}]);
+(function(){const A=[60,205],C=[280,30],B=[500,205];const pt=u=>[(1-u)*(1-u)*A[0]+2*u*(1-u)*C[0]+u*u*B[0],(1-u)*(1-u)*A[1]+2*u*(1-u)*C[1]+u*u*B[1]];
+  let s='<rect width="560" height="230" fill="#e6f3fb"/><rect y="205" width="560" height="25" fill="#9cc47a"/><path d="M60 205 Q280 30 500 205" fill="none" stroke="#9fb3c0" stroke-width="3" stroke-dasharray="6 6"/>';
+  [[.12,'㉠'],[.3,'㉡'],[.45,'㉢'],[.72,'㉣']].forEach(([u,n])=>{const p=pt(u);s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="12" fill="#fff" stroke="#0f3b5c" stroke-width="2.5"/>'+tx(p[0],p[1]+6,n,{s:15});});
+  const q=pt(.58);s+='<circle cx="'+q[0]+'" cy="'+q[1]+'" r="14" fill="#ffd23f" stroke="#e2573f" stroke-width="3"/>'+tx(q[0]+4,q[1]-20,'오후 1시',{s:15,c:'#b4380f'});
+  s+=tx(60,224,'동',{s:18})+tx(280,224,'남',{s:18})+tx(500,224,'서',{s:18});
+  $('#q2img').innerHTML=s;})();
+pickOne('#p8','','',null,()=>T8.q());
+keyCheck('#wr','#wrB','#wrFb',[[/동/,'동쪽'],[/서/,'서쪽'],[/(남)/,'남쪽 하늘을 지남'],[/(지남|지나|시간|오후 ?3시|더 서)/,'시간이 지나면 더 서쪽']],3,null,'‘하루 동안 태양은 동쪽 하늘에서 남쪽 하늘을 지나 서쪽 하늘로 위치가 달라지므로, 오후 3시의 태양은 ~’처럼 써 봐요.');
+watchWrite('#wrB','#wrFb',()=>T8.w());
+faces('s9','멋져요! 다음 시간에는 태양과 별의 위치가 달라지는 까닭을 지구의 운동으로 알아봐요.','어려웠던 부분은 태양 붙임딱지와 별 표시를 다시 살펴보며 정리해 봐요.');
+</script>

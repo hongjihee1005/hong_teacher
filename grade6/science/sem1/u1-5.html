@@ -1,0 +1,640 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>산성 용액과 염기성 용액을 이용하는 예를 찾아라!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#6a4fa3;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+.sg-pool{display:flex;flex-wrap:wrap;gap:8px;min-height:2.8rem;padding:6px;border:2px dashed var(--line);border-radius:12px}
+.sg-bins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.sg-bin{border:3px solid var(--navy);border-radius:14px;padding:6px 8px;min-height:4.4rem;cursor:pointer;background:var(--paper)}
+.sg-bin>b{display:block;font-family:Jua,sans-serif;font-weight:400;color:var(--navy);font-size:.95rem}
+.sg-in{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.sg-card{font-size:.88rem;min-height:2.2rem;padding:.1em .7em;border-width:2px}
+.a5-q{border:3px solid var(--sky);border-radius:14px;padding:8px 10px;margin-top:6px;min-height:9.5rem}
+.a5-q .pick button{font-size:.92rem}
+.a5-hot circle.ring{fill:#ffd23f;fill-opacity:.25;stroke:#b58400;stroke-width:3;stroke-dasharray:6 4;animation:glow 1.6s infinite}
+.a5-hot.got circle.ring{fill:#bdf0cf;fill-opacity:.55;stroke:#16804a;stroke-dasharray:none;animation:none}
+.a5-chips{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0}
+.a5-chips button{font-size:.9rem;min-height:2.2rem;padding:.1em .7em;border-width:2px}
+.a5-form input{width:100%;font-size:1rem;padding:.35em;border:2px solid var(--line);border-radius:10px;margin-top:4px}
+.a5-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+.a5-card{border:2px solid var(--line);border-radius:12px;padding:6px 8px;font-size:.85rem;background:#fffdf6}
+.a5-card b{font-family:Jua,sans-serif;font-weight:400}
+.a5-card .tag{display:inline-block;border-radius:999px;padding:0 8px;font-size:.75rem;color:#fff}
+.a5-ch{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:6px 0;font-size:.98rem}
+.a5-ch button{font-size:.9rem;min-height:2.1rem;padding:.1em .6em;border-width:2px}
+.a5-in{width:100%;font-size:1rem;padding:.35em;border:2px solid var(--line);border-radius:10px}
+@media (max-width:640px){.sg-bins,.a5-board{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M26 12 h34 M30 12 v24 L16 70 a6 6 0 0 0 6 6 h42 a6 6 0 0 0 6 -6 L56 36 v-24" fill="#eaf6fb" stroke="#fff" stroke-width="3"/><path d="M22 58 h42 l4 10 a6 6 0 0 1 -6 6 h-38 a6 6 0 0 1 -6 -6z" fill="#6ec3f0"/><circle cx="38" cy="64" r="3" fill="#fff"/><circle cx="50" cy="62" r="2" fill="#fff"/></svg>
+  <div><h1>산성 용액과 염기성 용액을 이용하는 예를 찾아라!</h1><p>6학년 1학기 과학 · 1단원 산과 염기 · 7/12차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">조사해요 ①</a><a href="#s3">조사해요 ②</a><a href="#s4">공유해요</a><a href="#s5">까닭 알기</a><a href="#s6">한눈에 쏙</a><a href="#s7">형성 평가</a><a href="#s8">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>우리 주변에서 산성 용액과 염기성 용액을 이용하는 예를 찾아서 설명할 수 있어요.<br>산성 용액과 염기성 용액의 유용성을 느낄 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 24쪽</span>
+  <h2>생선 요리에 레몬이 같이 나오는 까닭은 무엇일까요?</h2>
+  <svg class="scene" viewBox="0 0 600 220" style="max-height:26vh" role="img" aria-label="레몬 조각이 곁들여진 생선 요리">
+    <rect width="600" height="220" fill="#fbf2e2"/><ellipse cx="300" cy="140" rx="220" ry="60" fill="#fff" stroke="#d9c49a" stroke-width="4"/>
+    <path d="M160 140 q60 -50 170 -20 l40 -26 l-6 40 l6 40 l-40 -26 q-110 30 -170 -8z" fill="#c98b4f" stroke="#8a5a2a" stroke-width="3"/>
+    <circle cx="190" cy="130" r="5" fill="#333"/><path d="M220 120 q10 20 0 36 M250 116 q10 22 0 42 M280 116 q10 22 0 42" stroke="#a4703a" stroke-width="3" fill="none"/>
+    <g transform="translate(440 120)"><path d="M-34 0 a34 34 0 0 1 68 0z" fill="#ffe14d" stroke="#d6b300" stroke-width="3"/><path d="M0 0 L-24 -24 M0 0 L0 -32 M0 0 L24 -24" stroke="#fff6b0" stroke-width="3"/></g>
+    <text x="300" y="34" text-anchor="middle" font-family="Jua" font-size="18" fill="#7a4a0c">생선 요리 + 레몬</text>
+  </svg>
+  <div class="pick" id="a5P1">
+    <button data-a="1" data-m="맞아요! 레몬즙 같은 산성 용액은 생선의 비린내를 약하게 해 줘요. 우리 주변에는 산성 용액과 염기성 용액을 이용하는 예가 많아요.">산성인 레몬즙이 생선의 비린내를 줄여 줘서</button>
+    <button data-a="0" data-m="레몬은 장식만 하는 것이 아니에요. 레몬즙이 어떤 성질의 용액인지 떠올려 봐요.">접시를 예쁘게 꾸미려고만 올려 두어서</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="조사해요 ①">
+  <span class="stage">조사해요 · 「실험관찰」 14쪽</span>
+  <h2>우리 주변에서 이용하는 산성 용액과 염기성 용액</h2>
+  <p>카드를 누르고 알맞은 칸을 눌러 넣어요.</p>
+  <div id="a5Sort" data-glue="1"></div>
+</section>
+
+<section id="s3" data-nav="조사해요 ②">
+  <span class="stage">조사해요 · 「과학」 25쪽</span>
+  <h2>집 안에서 산성 용액과 염기성 용액을 이용하는 곳을 찾아요</h2>
+  <p>반짝이는 곳을 눌러 어떤 용액을 이용하는지 골라요. (<b id="a5HN">0</b>/7)</p>
+  <svg id="a5House" class="scene" viewBox="0 0 720 300" style="max-height:30vh" data-glue="1" role="img" aria-label="부엌과 욕실이 있는 집 그림"></svg>
+  <div class="a5-q" id="a5Q" data-glue="1"><p class="jua" id="a5QT" style="margin:0 0 6px">위 그림에서 반짝이는 곳을 눌러요.</p><div class="pick" id="a5QP"></div><div class="fb" id="a5QFb"></div></div>
+</section>
+
+<section id="s4" data-nav="공유해요">
+  <span class="stage">공유해요 · 「실험관찰」 15쪽</span>
+  <h2>조사한 내용을 우리 반 공유 게시판에 올려요</h2>
+  <div class="a5-form">
+    <p class="jua" style="margin:0">① 용액을 골라요</p>
+    <div class="a5-chips" id="a5Sol" data-glue="1"><button data-k="a">레몬즙</button><button data-k="a">식초</button><button data-k="a">구연산 용액</button><button data-k="b">제빵 소다 용액</button><button data-k="b">하수구 세정제</button><button data-k="b">욕실 청소용 표백제</button></div>
+    <label class="jua" data-glue="1">② 이용하는 예<input id="a5Use" maxlength="40" placeholder="예: 샐러드 같은 음식에 뿌려 신맛을 내요."></label>
+    <label class="jua" data-glue="1">③ 출처 (선택)<input id="a5Src" maxlength="30" placeholder="예: 「과학」 25쪽, 에듀넷"></label>
+    <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="a5Post">게시판에 올리기</button></div>
+  </div>
+  <div class="fb" id="a5PostFb"></div>
+  <div class="a5-board" id="a5Board" data-glue="1"></div>
+  <p class="tip">⚠️ 스마트 기기에서 냄새가 나거나 열이 나면 바로 사용을 멈추고 선생님께 알려요 · 수업과 관련된 자료만 찾아요 · 조사한 자료가 믿을 만한지 확인하고, 출처를 밝혀요 · 다른 모둠의 발표를 바른 자세로 들어요.</p>
+</section>
+
+<section id="s5" data-nav="까닭 알기">
+  <span class="stage">더 생각해요 · 성질과 이어 보기</span>
+  <h2>왜 그 용액을 이용할까요?</h2>
+  <div id="a5Why">
+    <div class="a5-ch">속이 쓰릴 때: 위에 <span data-q="1"><button data-a="1">산</button><button data-a="0">염기</button></span>성 용액인 위액이 많이 나와 속이 쓰릴 때
+      <span data-q="2"><button data-a="0">산</button><button data-a="1">염기</button></span>성 용액인 제산제를 먹어 위 속의 <span data-q="3"><button data-a="1">산</button><button data-a="0">염기</button></span>성을 약하게 해요.</div>
+    <div class="a5-ch">하수구가 머리카락으로 막혔을 때: 머리카락의 주요 성분인 단백질을 녹이는 <span data-q="4"><button data-a="0">산성</button><button data-a="1">염기성</button></span> 용액인 하수구 세정제를 이용해요.</div>
+    <div class="a5-ch">도마에서 비린내가 날 때: 염기성인 비린내를 줄이려고 <span data-q="5"><button data-a="1">산성</button><button data-a="0">염기성</button></span> 용액인 식초로 닦아요.</div>
+  </div>
+  <div class="fb" id="a5WhyFb"></div>
+  <p class="tip">💡 산성 용액과 염기성 용액은 각각의 성질을 이용하기도 하고, 섞었을 때 성질이 변하는 것을 이용하기도 해요.</p>
+</section>
+
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 산성 용액인 위액이 많이 나와 속이 쓰릴 때 먹는 제산제에는 <span class="blank"><span id="bl1">ㅇ</span><span id="bl2">ㄱ</span><span id="bl3">ㅅ</span></span> 물질이 들어 있습니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <div id="a5Q2" hidden>
+    <p class="jua" style="font-size:1.05rem;margin-top:8px">2. 💭 변기의 때를 없애려고 할 때 변기 청소용 세제 대신 쓸 수 있는 용액은?</p>
+    <div class="pick" id="a5P6">
+      <button data-a="1" data-m="맞아요! 변기 청소용 세제는 산성 용액이에요. 콜라, 탄산수, 구연산 용액 같은 산성 용액을 쓸 수 있어요.">콜라, 탄산수, 구연산 용액 같은 산성 용액</button>
+      <button data-a="0" data-m="변기의 때는 염기성 물질이 만든 것이 많아서 산성 용액으로 없애요.">제빵 소다 용액, 손 세정제 같은 염기성 용액</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 생선을 손질한 도마의 비린내를 줄이는 데 식초를 써요. 어떤 용액의 성질을 이용한 것일까요?</p>
+  <div class="pick" id="a5F1">
+    <button data-a="1" data-m="정답! 식초는 산성 용액이에요. 염기성인 비린내를 산성 용액이 약하게 해요.">산성 용액</button>
+    <button data-a="0" data-m="식초는 푸른색 리트머스 시험지를 붉게 하는 용액이었어요.">염기성 용액</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:10px">2. ✏️ 서술형: 산성 용액과 염기성 용액이 이용되는 예를 각각 한 가지씩 써요.</p>
+  <label class="jua" data-glue="1">⑴ 산성 용액<input id="a5F2a" class="a5-in" placeholder="예: 레몬즙을 뿌려 …"></label>
+  <label class="jua" data-glue="1">⑵ 염기성 용액<input id="a5F2b" class="a5-in" placeholder="예: 속이 쓰릴 때 …"></label>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="a5F2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="a5F2Fb"></div>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 15쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>산성 용액과 염기성 용액을 이용하는 예를 옳게 설명할 수 있나요?</td><td class="face" data-r="0"></td></tr>
+    <tr><td>산성 용액과 염기성 용액을 이용하는 예를 조사하고, 그 결과를 친구들과 공유하며 의사소통을 했나요?</td><td class="face" data-r="1"></td></tr>
+    <tr><td>산성 용액과 염기성 용액을 이용하는 예를 조사하면서 그 유용성을 느꼈나요?</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 24~25쪽 · 「실험관찰」 14~15쪽 · 지도서 148~155쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+const NS='http://www.w3.org/2000/svg';
+function el(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
+function needAll(n,sec){const s=new Set();return k=>{s.add(k);if(s.size>=n)doneNav(sec);};}
+const esc=s=>s.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function sortGame(id,items,bins,done,msg){const R=$('#'+id);let sel=null;
+  R.innerHTML=`<div class="sg-pool"></div><div class="sg-bins">${bins.map((b,i)=>`<div class="sg-bin" data-i="${i}"><b>${b}</b><div class="sg-in"></div></div>`).join('')}</div><div class="row" style="margin-top:6px"><button class="main sg-chk">확인하기</button></div><div class="fb"></div>`;
+  const pool=R.querySelector('.sg-pool');
+  items.forEach((it,k)=>{const c=document.createElement('button');c.className='sg-card';c.textContent=it.n;c.dataset.k=k;
+    c.onclick=()=>{if(c.classList.contains('right'))return;sel=sel===c?null:c;R.querySelectorAll('.sg-card').forEach(x=>x.classList.toggle('sel',x===sel));};pool.appendChild(c);});
+  pool.onclick=e=>{if(sel&&!e.target.closest('.sg-card')){pool.appendChild(sel);sel.classList.remove('sel');sel=null;}};
+  R.querySelectorAll('.sg-bin').forEach(b=>b.onclick=e=>{if(!sel||e.target.closest('.sg-card'))return;b.querySelector('.sg-in').appendChild(sel);sel.classList.remove('sel','wrong');sel=null;});
+  R.querySelector('.sg-chk').onclick=()=>{const out=R.querySelector('.fb');if(pool.querySelector('.sg-card')){fb(out,'아직 넣지 않은 카드가 있어요. 카드를 누르고 칸을 눌러요.','info');return;}let bad=0;
+    R.querySelectorAll('.sg-bin').forEach(b=>b.querySelectorAll('.sg-card').forEach(c=>{const ok=items[c.dataset.k].b==b.dataset.i;c.classList.toggle('right',ok);
+      if(!ok){bad++;c.classList.add('wrong');setTimeout(()=>{c.classList.remove('wrong');pool.appendChild(c);},700);}}));
+    if(bad)fb(out,`${bad}개가 알맞은 칸에 있지 않아요. 다시 넣어 봐요.`,false);else{fb(out,msg||'모두 맞았어요!',true);if(done)done();}};}
+
+pickOne('#a5P1','','','s1');
+sortGame('a5Sort',[{n:'레몬즙',b:0},{n:'식초',b:0},{n:'변기 청소용 세제',b:0},{n:'구연산 용액',b:0},{n:'제산제',b:1},{n:'제빵 소다 용액',b:1},{n:'욕실 청소용 표백제',b:1},{n:'하수구 세정제',b:1}],
+  ['산성 용액','염기성 용액'],()=>doneNav('s2'),'잘했어요! 레몬즙·식초·변기 청소용 세제·구연산 용액은 산성 용액, 제산제·제빵 소다 용액·욕실 청소용 표백제·하수구 세정제는 염기성 용액이에요.');
+
+/* 집 안 찾기 */
+const HOT=[
+ {x:120,y:110,t:'샐러드에 신맛을 내고 싶어요.',a:'레몬즙 (산성)',w:'제빵 소다 용액 (염기성)',m:'레몬즙을 샐러드 같은 음식에 뿌려 신맛을 내요. 생선 요리의 비린내를 약하게 하기도 해요.',draw:'salad'},
+ {x:230,y:150,t:'생선을 손질한 도마에서 비린내가 나요.',a:'식초 (산성)',w:'욕실 청소용 표백제 (염기성)',m:'비린내는 염기성 물질 때문이라 산성인 식초로 닦으면 비린내가 줄어요.',draw:'board'},
+ {x:330,y:96,t:'과일 껍질에 남은 농약을 없애고 싶어요.',a:'제빵 소다 용액 (염기성)',w:'변기 청소용 세제 (산성)',m:'제빵 소다 용액으로 과일·채소 껍질에 남은 농약이나 주방의 기름때를 없애요.',draw:'fruit'},
+ {x:130,y:230,t:'속이 쓰려요.',a:'제산제 (염기성)',w:'식초 (산성)',m:'위액(산성)이 많이 나와 속이 쓰릴 때 염기성인 제산제를 먹어 속 쓰림을 약하게 해요.',draw:'medicine'},
+ {x:470,y:220,t:'화장실 변기의 때와 냄새를 없애고 싶어요.',a:'변기 청소용 세제 (산성)',w:'제빵 소다 용액 (염기성)',m:'염기성 물질이 만든 변기의 때와 냄새를 산성인 변기 청소용 세제로 없애요.',draw:'toilet'},
+ {x:600,y:110,t:'욕실 벽의 찌든 때와 세균을 없애고 싶어요.',a:'욕실 청소용 표백제 (염기성)',w:'레몬즙 (산성)',m:'단백질을 녹이는 염기성인 욕실 청소용 표백제로 욕실의 때와 세균을 없애요.',draw:'tile'},
+ {x:610,y:250,t:'머리카락 때문에 하수구가 막혔어요.',a:'하수구 세정제 (염기성)',w:'구연산 용액 (산성)',m:'머리카락의 주요 성분인 단백질을 녹이는 염기성 용액인 하수구 세정제로 막힌 하수구를 뚫어요.',draw:'drain'}];
+(function(){const S=$('#a5House');
+  S.innerHTML=`<rect width="720" height="300" fill="#fff8ec"/><rect x="0" y="0" width="400" height="300" fill="#fdf1dc"/><rect x="400" y="0" width="320" height="300" fill="#e6f3f8"/>
+  <text x="20" y="28" font-family="Jua" font-size="18" fill="#a5651e">부엌</text><text x="420" y="28" font-family="Jua" font-size="18" fill="#1c6fa8">욕실</text>
+  <rect x="40" y="130" width="340" height="18" fill="#c98b4f"/><rect x="40" y="148" width="340" height="60" fill="#e8c27a"/>
+  <g fill="#bfe3c0"><ellipse cx="120" cy="120" rx="40" ry="14" fill="#fff" stroke="#ccc" stroke-width="2"/><circle cx="104" cy="112" r="9"/><circle cx="122" cy="108" r="10" fill="#8fd18f"/><circle cx="138" cy="114" r="8" fill="#e2573f"/></g>
+  <rect x="190" y="138" width="90" height="16" rx="4" fill="#d9b48a" stroke="#a4703a" stroke-width="2"/><path d="M200 132 q30 -14 60 0 l14 -8 v18 l-14 -8 q-30 12 -60 0z" fill="#9ab3c4"/>
+  <path d="M300 116 q30 -14 60 0 l-6 16 h-48z" fill="#c98b4f"/><circle cx="318" cy="104" r="11" fill="#e2573f"/><circle cx="340" cy="100" r="11" fill="#ffd23f"/><circle cx="330" cy="92" r="9" fill="#8fd18f"/>
+  <rect x="96" y="214" width="70" height="40" rx="6" fill="#fff" stroke="#e2573f" stroke-width="3"/><path d="M131 220 v28 M117 234 h28" stroke="#e2573f" stroke-width="5"/>
+  <rect x="560" y="50" width="140" height="120" fill="#fff" stroke="#9fc7de" stroke-width="2"/><path d="M560 90 h140 M560 130 h140 M606 50 v120 M652 50 v120" stroke="#9fc7de" stroke-width="2"/><circle cx="584" cy="146" r="6" fill="#b9c37a"/><circle cx="624" cy="72" r="5" fill="#b9c37a"/>
+  <path d="M440 200 h70 v20 q0 30 -35 30 q-35 0 -35 -30z" fill="#fff" stroke="#9fb3bf" stroke-width="3"/><rect x="450" y="160" width="50" height="40" rx="6" fill="#fff" stroke="#9fb3bf" stroke-width="3"/>
+  <ellipse cx="610" cy="262" rx="30" ry="10" fill="#9fb3bf"/><path d="M590 262 h40 M596 256 h28 M596 268 h28" stroke="#5c6b73" stroke-width="2"/><path d="M584 250 q14 -16 30 -4 q10 8 22 -4" stroke="#4a3a20" stroke-width="2" fill="none"/>
+  <g id="a5Hots"></g>`;
+  const H=$('#a5Hots');let cur=-1;const got=new Set();
+  HOT.forEach((h,i)=>{const g=el('g',{class:'a5-hot hit'},H);el('circle',{cx:h.x,cy:h.y,r:34,class:'ring'},g);g.onclick=()=>ask(i);h.g=g;});
+  function ask(i){cur=i;const h=HOT[i];$('#a5QT').textContent='❓ '+h.t+' 어떤 용액을 이용할까요?';fb('#a5QFb','','info');$('#a5QFb').textContent='';$('#a5QFb').className='fb';
+    const opts=Math.random()<.5?[[h.a,1],[h.w,0]]:[[h.w,0],[h.a,1]];
+    $('#a5QP').innerHTML=opts.map(o=>`<button data-a="${o[1]}">${o[0]}</button>`).join('');
+    $$('#a5QP button').forEach(b=>b.onclick=()=>{$$('#a5QP button').forEach(x=>x.classList.remove('right','wrong'));
+      if(b.dataset.a==='1'){b.classList.add('right');got.add(i);h.g.classList.add('got');$('#a5HN').textContent=got.size;
+        fb('#a5QFb',h.m+(got.size>=7?' 🎉 일곱 곳을 모두 찾았어요!':' 다른 곳도 찾아봐요.'),true);if(got.size>=7)doneNav('s3');}
+      else{b.classList.add('wrong');fb('#a5QFb','그 용액의 성질을 떠올려 봐요. 어떤 성질이 필요한 상황인가요?',false);}});}})();
+
+/* 공유 게시판 */
+(function(){let sol=null,kind=null;const ex=[{s:'레몬즙',k:'a',u:'샐러드에 뿌려 신맛을 내요.',g:'1모둠'},{s:'제빵 소다 용액',k:'b',u:'과일 표면에 남은 오염 물질을 없애 깨끗하게 먹을 수 있어요.',g:'2모둠'}];
+  const card=c=>`<div class="a5-card"><span class="tag" style="background:${c.k==='a'?'#c0174a':'#2b55b8'}">${c.k==='a'?'산성 용액':'염기성 용액'}</span> <b>${esc(c.s)}</b><br>${esc(c.u)}${c.src?`<br><small>출처: ${esc(c.src)}</small>`:''}<br><small>— ${c.g}</small></div>`;
+  function board(mine){$('#a5Board').innerHTML=(mine?card(mine):'')+ex.map(card).join('');}board();
+  $$('#a5Sol button').forEach(b=>b.onclick=()=>{sol=b.textContent;kind=b.dataset.k;$$('#a5Sol button').forEach(x=>x.classList.toggle('sel',x===b));});
+  $('#a5Post').onclick=()=>{const u=$('#a5Use').value.trim();if(!sol){fb('#a5PostFb','① 용액을 골라요.','info');return;}if(u.length<6){fb('#a5PostFb','② 그 용액을 이용하는 예를 문장으로 써요.','info');return;}
+    board({s:sol,k:kind,u,src:$('#a5Src').value.trim(),g:'⭐ 우리 모둠'});fb('#a5PostFb','게시판에 올렸어요! 다른 모둠의 조사 내용도 읽어 보고, 더 알게 된 점을 이야기해요.',true);doneNav('s4');};})();
+
+/* 까닭 */
+(function(){const ok={};$$('#a5Why span[data-q]').forEach(sp=>$$('button',sp).forEach(b=>b.onclick=()=>{$$('button',sp).forEach(x=>x.classList.remove('right','wrong'));
+  if(b.dataset.a==='1'){b.classList.add('right');ok[sp.dataset.q]=1;}else{b.classList.add('wrong');fb('#a5WhyFb','그 물질이 산성인지 염기성인지, 무엇을 약하게 하거나 녹이는지 떠올려 봐요.',false);return;}
+  const n=Object.keys(ok).length;if(n>=5){fb('#a5WhyFb','모두 맞았어요! 산성 용액과 염기성 용액의 성질을 알면 생활에서 알맞게 이용할 수 있어요.',true);doneNav('s5');}else fb('#a5WhyFb',`좋아요! (${n}/5)`,'info');}));})();
+
+/* 한눈에 쏙 */
+{const d=needAll(2,'s6');$('#blReveal').onclick=()=>{$('#a5Q2').hidden=false;fb('#blFb','제산제에는 염기성 물질이 들어 있어서 위 속의 산성을 약하게 해요.',true);d(1);};pickOne('#a5P6','','',null,()=>d(2));}
+
+/* 형성 평가 */
+{const d=needAll(2,'s7');pickOne('#a5F1','','',null,()=>d(1));
+$('#a5F2Btn').onclick=()=>{const a=$('#a5F2a').value.trim(),b=$('#a5F2b').value.trim();if(!a||!b){fb('#a5F2Fb','⑴과 ⑵를 모두 써요.','info');return;}
+  const A=/레몬|식초|변기|구연산|탄산|콜라/.test(a),B=/제산제|제빵\s*소다|표백제|하수구|세정제|비누/.test(b);
+  if(A&&B){fb('#a5F2Fb','잘 썼어요! 예시 답: ⑴ 레몬즙을 뿌려 생선 요리의 비린내를 없애요. ⑵ 속이 쓰릴 때 제산제를 먹어 속 쓰림을 약하게 해요.',true);d(2);}
+  else if(A)fb('#a5F2Fb','⑴은 좋아요. ⑵에는 제산제, 제빵 소다 용액, 욕실 청소용 표백제, 하수구 세정제 같은 염기성 용액의 이용 예를 써요.','info');
+  else if(B)fb('#a5F2Fb','⑵는 좋아요. ⑴에는 레몬즙, 식초, 변기 청소용 세제 같은 산성 용액의 이용 예를 써요.','info');
+  else fb('#a5F2Fb','오늘 찾은 용액 이름(예: 레몬즙, 제산제)을 넣어 어떻게 이용하는지 써요.',false);};}
+
+faces('s8','잘했어요! 다음 시간에는 산성화가 환경에 미치는 영향을 알아봐요.','어려웠던 부분은 집 안 찾기 활동을 다시 해 보며 정리해요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 1학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"염","bl2":"기","bl3":"성"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>
