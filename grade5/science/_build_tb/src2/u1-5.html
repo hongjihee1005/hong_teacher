@@ -1,0 +1,383 @@
+<!--
+title: 혼합물의 분리를 이용한 장치를 찾아라!
+unit: 1
+lesson: 7
+total: 11
+goal: 혼합물의 분리 기술을 이용한 장치를 조사할 수 있어요.<br>생활 속 사례를 중심으로 혼합물의 분리 장치를 설명할 수 있어요.
+pages: 「과학」 24~25쪽 · 「실험관찰」 14~15쪽 · 지도서 148~153쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"분","bl2":"리"}}]
+-->
+<style>
+/* 1단원 혼합물의 분리 교과서 버전 공통 */
+.lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.lab svg{display:block;width:100%;margin:0 auto}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,18px)}
+.rtable{table-layout:fixed}
+.rtable td,.rtable th{text-align:center;padding:5px 4px;font-size:.88rem;word-break:keep-all}
+.rtable th{background:var(--bg)}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:10px 14px;font-size:.95rem}
+.big{font-size:1.1rem}
+.ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:2px dashed var(--line);padding:6px 0}
+.ox button{min-width:3rem}
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3ord{display:flex;flex-direction:column;gap:6px}
+.t3ord button{text-align:left}
+.t3ord .t3dn{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.t3seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+.t3cnt{font-family:"Jua",sans-serif;color:var(--muted);font-size:.95rem}
+.qz>div{margin-bottom:6px}
+/* 단계 단추 */
+.mxctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.mxctl button{font-size:.92rem}
+.mxctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.mxctl button[disabled]{opacity:.45}
+.mxq{margin-top:8px;border:2px dashed var(--sky);border-radius:14px;padding:8px 12px}
+/* 붙임딱지 */
+.stks{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.stks button{display:flex;align-items:center;gap:6px;font-size:.95rem;min-height:2.4rem;padding:.2em .7em;border-width:2px;border-style:dashed}
+.stks button svg{width:2rem;height:2rem}
+.stks button.used{visibility:hidden}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.slot{border:2px solid var(--line);border-radius:14px;padding:6px;background:var(--paper);text-align:center;font-family:"Jua",sans-serif;font-size:.95rem}
+.slot svg{max-height:15vh;margin:0 auto}
+.slot .dz{margin-top:4px;min-height:2.6rem;border:3px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:2px 6px}
+.slot .dz.ready{border-color:var(--sun);background:#fff8dc}
+.slot .dz.ok{border-style:solid;border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.slot .dz svg{width:1.8rem;height:1.8rem;margin:0}
+.slot .ar{color:var(--muted);font-size:.85rem}
+@media (max-width:640px){.two,.t3sort,.t3match{grid-template-columns:1fr}.slots{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.m5dev{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:6px}
+.m5dev button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.82rem;padding:.3em .2em;line-height:1.25}
+.m5dev button svg{width:100%;max-height:9vh}
+.m5dev button.seen{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.m5card{border:3px solid var(--line);border-radius:16px;padding:8px 12px;margin-top:8px;background:#fbfdfe}
+.m5tabs{display:flex;flex-wrap:wrap;gap:6px;margin:4px 0}
+.m5tabs button{font-size:.88rem;min-height:2.2rem;padding:.1em .7em;border-width:2px}
+.m5tabs button.read{background:#e9f9ef;border-color:var(--good)}
+.m5body{min-height:3.2em;font-size:.95rem}
+.m5news{display:grid;grid-template-columns:minmax(0,1fr);gap:6px}
+.m5rep{border:3px solid var(--navy);border-radius:14px;overflow:hidden}
+.m5rep table{border-collapse:collapse}
+.m5rep th{background:var(--bg);width:22%;font-size:.88rem}
+.m5rep td{font-size:.88rem}
+.m5post{border:2px solid var(--line);border-radius:12px;padding:6px 10px;margin:4px 0;background:var(--paper);font-size:.92rem}
+@media (max-width:760px){.m5dev{grid-template-columns:repeat(3,minmax(0,1fr))}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 24쪽</span>
+  <h2>마실 수 없는 물에서 어떻게 식수를 얻을 수 있을까요?</h2>
+  <svg id="sea1" class="scene" viewBox="0 0 800 200" role="img" aria-label="바다로 둘러싸인 섬과 물이 마른 물탱크" style="max-height:22vh"></svg>
+  <p class="jua big" data-glue="1">① 바닷물을 그대로 마실 수 있을까요?</p>
+  <div class="pick" id="p1a" data-glue="1">
+    <button data-a="1" data-m="맞아요! 바닷물에는 소금 등 여러 가지 물질이 섞여 있어 그대로 마실 수 없어요.">아니요, 소금 등 여러 가지 물질이 섞여 있어요</button>
+    <button data-a="0" data-m="바닷물이 짠 까닭을 떠올려 봐요.">네, 그대로 마셔도 돼요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua big" data-glue="1">② 마실 수 없는 물에서 식수를 얻으려면? 내 생각을 골라요.</p>
+  <div class="pick" id="p1b" data-glue="1">
+    <button data-m="좋은 생각이에요! 여러 겹의 거름망(필터)을 통과시키면 섞여 있는 물질을 걸러 낼 수 있어요.">여러 겹의 거름망(필터)으로 걸러요</button>
+    <button data-m="좋은 생각이에요! 물을 증발시키면 물에 녹아 있던 물질과 분리할 수 있어요. 증발한 물을 모으는 방법도 있을지 조사해 봐요.">물을 증발시켜 녹아 있는 물질과 분리해요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="토의해요">
+  <span class="stage">토의해요 · 「과학」 24쪽</span>
+  <h2>그림 속 상황을 살펴보고, 알 수 있는 점을 이야기해요</h2>
+  <svg id="tv" class="scene" viewBox="0 0 800 260" role="img" aria-label="섬 지역 물 부족 뉴스를 보며 이야기하는 친구들" style="max-height:30vh"></svg>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="talk">💬 이야기 듣기 (<span id="tk">0</span>/4)</button></div>
+  <div class="fb" id="tvFb"></div>
+  <div id="ask2" hidden data-glue="1">
+    <p class="jua big">이 상황에서 알 수 있는 점을 <b>모두</b> 골라요.</p>
+    <div class="pick" id="p2">
+      <button data-a="1" data-m="맞아요! 바닷물에는 소금이 많이 녹아 있어 사람들이 바로 사용하기 어려워요.">바닷물은 소금 등이 녹아 있어 바로 사용하기 어려워요</button>
+      <button data-a="1" data-m="맞아요! 혼합물의 분리와 연관 지어 바닷물을 사용할 수 있는 방법을 찾으려고 해요.">혼합물의 분리로 문제를 해결할 방법을 찾으려고 해요</button>
+      <button data-a="0" data-m="섬은 바다로 둘러싸여 있어도 마실 물이 부족할 수 있어요.">섬에는 물이 넉넉해서 걱정할 필요가 없어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s3" data-nav="조사해요 1">
+  <span class="stage">조사해요 1 · 「실험관찰」 14쪽</span>
+  <h2>바닷물에서 소금 등을 분리하는 장치를 조사해요</h2>
+  <p class="tip">💡 해수 담수화란 바닷물에서 소금 성분을 제거하여 생활용수로 사용할 수 있도록 만드는 과정이에요. 물정보포털 같은 믿을 수 있는 누리집에서 찾아볼 수 있어요.</p>
+  <div class="lab"><svg id="de" viewBox="0 0 800 220" role="img" aria-label="해수 담수화 장치로 바닷물에서 소금 등을 분리하는 모습" style="max-height:25vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="deGo">🌊 바닷물 넣기</button></div>
+  <div class="fb" id="deFb"></div>
+  <div id="ask3" hidden data-glue="1">
+    <div class="pick" id="p3">
+      <button data-a="1" data-m="맞아요! 해수 담수화 장치는 바닷물에서 소금 등을 걸러 내어 식수나 생활용수로 사용할 수 있게 해 주는 장치예요.">해수 담수화 장치는 바닷물에서 소금 등을 걸러 내요</button>
+      <button data-a="0" data-m="장치를 지나며 무엇이 남고 무엇이 나왔는지 다시 봐요.">해수 담수화 장치는 물에 소금을 더 넣어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s4" data-nav="조사해요 2">
+  <span class="stage">조사해요 2 · 「실험관찰」 14쪽</span>
+  <h2>혼합물의 분리 기술을 이용한 장치를 조사해요</h2>
+  <p>장치를 하나 골라 네 가지 내용(실제 이용 사례, 개발 배경, 원리, 효과)을 모두 읽어요. <b>장치 두 가지 이상</b>을 조사해 봐요. (<b id="n4">0</b>/2)</p>
+  <div class="m5dev" id="dev4" data-glue="1"></div>
+  <div class="m5card" id="card4" data-glue="1"><b id="cT">장치를 골라요</b><div class="m5tabs" id="tabs4"></div><div class="m5body" id="body4"></div></div>
+  <div class="fb" id="fb4"></div>
+  <p class="tip">⚠️ 스마트 기기로 자료를 조사할 때는 유해 사이트에 접속하지 않고, 올바른 정보인지 확인하고 출처를 반드시 밝혀요. 개인 정보를 보호해요.</p>
+</section>
+
+<section id="s5" data-nav="장치와 분리">
+  <span class="stage">개념 · 「과학」 25쪽</span>
+  <h2>장치는 무엇과 무엇을 분리할까요?</h2>
+  <p>장치를 고른 다음, 그 장치가 분리하는 것을 골라요.</p>
+  <div class="t3match" id="m5" data-glue="1"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="조사 보고서">
+  <span class="stage">조사해요 3 · 「실험관찰」 15쪽</span>
+  <h2>조사한 자료를 정리하여 조사 보고서를 써요</h2>
+  <p>보고서에 정리할 장치를 골라요. 조사한 내용이 들어가면 ‘알게 된 점’을 써요.</p>
+  <div class="row" id="pick6" data-glue="1"></div>
+  <div class="m5rep" data-glue="1"><table>
+    <tr><th>주제</th><td>혼합물의 분리를 이용한 장치 조사하기</td></tr>
+    <tr><th>조사 방법</th><td>스마트 기기나 참고 도서로 장치의 실제 이용 사례, 개발 배경, 원리, 효과를 조사한다.</td></tr>
+    <tr><th>조사 결과</th><td id="res6">—</td></tr>
+  </table></div>
+  <textarea id="wr6" rows="2" placeholder="알게 된 점: 혼합물의 분리 기술을 이용한 장치는 …" data-glue="1" style="margin-top:6px"></textarea>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="wr6B">보고서 완성하기</button></div>
+  <div class="fb" id="wr6Fb"></div>
+</section>
+
+<section id="s7" data-nav="공유해요">
+  <span class="stage">공유해요 · 「실험관찰」 15쪽</span>
+  <h2>조사한 내용을 공유 플랫폼에 올리고 댓글을 달아요</h2>
+  <div class="m5post"><b>○○ 모둠 · 인공지능 폐기물 선별 장치</b><br>폐기물 중 재활용할 수 있는 물질을 인공지능 감지기가 판별하고 분류하여 종류별로 모아요. 회수된 자원은 다시 쓰여 자원 절약과 환경 보호에 도움을 줘요.</div>
+  <p class="jua big">바르고 고운 말로 쓴 댓글을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p7" data-glue="1">
+    <button data-a="1" data-m="좋은 댓글이에요! 새롭게 알게 된 점을 구체적으로 썼어요.">재활용품을 자동으로 골라내는 장치가 있다는 것을 새롭게 알게 되었어요.</button>
+    <button data-a="1" data-m="좋은 댓글이에요! 친구의 조사를 칭찬하며 궁금한 점도 물었어요.">원리가 잘 정리되어 있어요. 어떤 재질까지 구분하는지 궁금해요.</button>
+    <button data-a="0" data-m="친구의 조사를 깎아내리는 말은 바르고 고운 말이 아니에요.">이거 다 아는 내용이라 재미없어요.</button>
+    <button data-a="0" data-m="무엇이 좋았는지 알 수 없는 짧은 말보다, 알게 된 점이나 칭찬을 구체적으로 써요.">ㅋㅋㅋ</button>
+  </div>
+  <div class="fb"></div>
+  <p class="tip">⚠️ 댓글을 쓸 때는 바르고 고운 말을 쓰고, 사이버 공간에서의 예절을 지켜요.</p>
+</section>
+
+<section id="s8" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua big">1. 물이나 공기 속 오염 물질을 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span></span>해 깨끗한 자원을 얻을 수 있습니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua big" style="margin-top:10px" data-glue="1">2. 💭 혼합물을 분리할 수 없다면 우리 생활에 어떤 일이 벌어질까요? <b>모두</b> 골라요.</p>
+  <div class="pick" id="p8" data-glue="1">
+    <button data-a="1" data-m="맞아요! 깨끗한 물과 공기를 얻기 어려워 건강과 안전을 해칠 수 있어요.">우리의 건강과 안전을 해칠 수 있어요</button>
+    <button data-a="1" data-m="맞아요! 자원을 다시 쓰기 어려워 자원 부족이나 환경오염 문제가 생길 수 있어요.">자원 부족이나 환경오염 문제가 생길 수 있어요</button>
+    <button data-a="0" data-m="혼합물의 분리는 우리 생활과 밀접하게 관련되어 있어요.">아무 일도 일어나지 않아요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s9" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div class="qz" id="qz9"></div>
+  <svg viewBox="0 0 360 120" style="max-height:13vh;max-width:360px;margin:6px auto 0" role="img" aria-label="구멍이 큰 거름망과 작은 오염 물질" id="net9" data-glue="1"></svg>
+  <p class="jua big" data-glue="1">✏️ 서술형: 마스크는 혼합물의 분리 기술을 이용한 장치예요. 구멍이 큰 거름망으로 마스크를 만들 수 없는 까닭을 써 봐요.</p>
+  <textarea id="wr9" rows="2" placeholder="거름망의 구멍이 …" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wr9B">내 답 살펴보기</button></div>
+  <div class="fb" id="wr9Fb"></div>
+</section>
+
+<section id="s10" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 15쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>여러 가지 문제 상황을 해결하는 데 혼합물의 분리 기술이 이용됨을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>혼합물의 분리 기술을 이용한 장치를 조사할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>조사 및 공유 활동에 참여하며 과학의 유용성을 느꼈어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+  <p class="tip">♻️ 재사용할 수 있는 자원을 분리해 배출할 수 있도록 노력해요.</p>
+</section>
+
+<script>
+/* ===== 1단원 혼합물의 분리 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+const rnd=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+function el(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
+/* 여러 활동을 다 해야 섹션 완료: const s3=need('s3',2); pickOne(…, s3('a')); s3('b')(); — 같은 활동은 한 번만 셈 */
+function need(sec,n){const got=new Set();return key=>()=>{if(got.has(key))return;got.add(key);if(got.size===n)doneNav(sec);};}
+/* 여러 개 고르기 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb&&!b.dataset.cbd){b.dataset.cbd=1;cb();}}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;let first=true;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb&&first){first=false;cb(b);}});}
+/* 고르기 문제 여러 개: items [{q,o:[…],a,e,h}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);const was=ok.size;ok.add(k);if(ok.size===items.length&&was<items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* ○× 문제: ox('#box', [{t, a:true|false, e}], cb) */
+function oxQuiz(box,items,cb){const B=$(box),out=B.nextElementSibling,ok=new Set();
+  items.forEach((it,k)=>{const d=document.createElement('div');d.className='ox';d.innerHTML='<span>'+it.t+'</span>';
+    [['○',true],['×',false]].forEach(([s,v])=>{const b=document.createElement('button');b.textContent=s;b.setAttribute('aria-label',v?'맞아요':'틀려요');
+      b.onclick=()=>{if(ok.has(k))return;$$('button',d).forEach(x=>x.classList.remove('wrong'));
+        if(v===it.a){b.classList.add('right');ok.add(k);fb(out,(ok.size===items.length?'모두 맞혔어요! ':'맞아요! ')+it.e,ok.size===items.length?true:'info');if(ok.size===items.length&&cb)cb();}
+        else{b.classList.add('wrong');fb(out,'다시 생각해 봐요. '+(it.h||''),false);}};d.appendChild(b);});
+    B.appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례 맞히기: orderer('#box', [단계…], 다 맞힘 글, 섹션, each(i), cb) */
+function orderer(box,steps,okMsg,sec,each,cb){const B=$(box),out=B.nextElementSibling;let k=0;
+  const seq=document.createElement('div');seq.className='t3seq';B.before(seq);
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.classList.contains('t3dn'))return;
+    if(i===k){b.classList.add('t3dn');b.disabled=true;const sp=document.createElement('span');sp.textContent=(k+1)+'. '+s;seq.appendChild(sp);if(each)each(k);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은 무엇일까요? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그 일은 조금 뒤에 해요. 지금 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 붙임딱지: stickers('#stk', '#slots', 다 맞힘 글, 섹션, cb) — 딱지 button[data-k], 칸 .dz[data-want] */
+function stickers(stk,slots,okMsg,sec,cb){const S=$(stk),Z=$(slots),out=Z.nextElementSibling;let cur=null,n=0;const zs=$$('.dz',Z);
+  $$('button',S).forEach(b=>b.onclick=()=>{if(b.classList.contains('used'))return;$$('button',S).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b;zs.forEach(z=>{if(!z.classList.contains('ok'))z.classList.add('ready');});fb(out,'붙일 칸을 눌러요.','info');});
+  zs.forEach(z=>{z.setAttribute('role','button');z.setAttribute('tabindex','0');const go=()=>{if(z.classList.contains('ok'))return;if(!cur){fb(out,'먼저 위의 붙임딱지를 하나 골라요.','info');return;}
+      if(cur.dataset.k===z.dataset.want){z.innerHTML=cur.innerHTML;z.classList.remove('ready');z.classList.add('ok');cur.classList.remove('sel');cur.classList.add('used');cur=null;n++;zs.forEach(x=>x.classList.remove('ready'));
+        if(n===zs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(z.dataset.m||'맞아요!')+' ('+n+'/'+zs.length+')','info');}
+      else fb(out,z.dataset.h||'이 칸에 알맞은 붙임딱지가 아니에요. 다시 생각해 봐요.',false);};
+    z.onclick=go;z.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기 */
+function tap(e,f){e.classList.add('hs');e.setAttribute('tabindex','0');e.setAttribute('role','button');e.addEventListener('click',f);e.addEventListener('keydown',v=>{if(v.key==='Enter'||v.key===' '){v.preventDefault();f();}});}
+/* 단계 단추: steps('#ctl', [함수…]) — 차례대로 하나씩 열림, 함수가 false를 돌려주면 그 단계에 머묾 */
+function steps(box,fns,cb){const bs=$$(box+' button');bs.forEach((b,i)=>{b.disabled=i>0;b.onclick=()=>{if(fns[i]()===false)return;b.classList.add('done');b.disabled=true;if(bs[i+1]){bs[i+1].disabled=false;bs[i+1].focus({preventScroll:true});}else if(cb)cb();};});}
+
+/* ===== 장치 자료 (지도서 보충 자료·실험관찰 예시를 쉬운 말로) ===== */
+const DEV=[
+ {k:'de',n:'해수 담수화 장치',ic:'<rect x="10" y="40" width="40" height="40" fill="#3d8bd4"/><rect x="56" y="30" width="48" height="50" fill="#c9d1d9" stroke="#59636e" stroke-width="3"/><path d="M62 44 h36 M62 56 h36 M62 68 h36" stroke="#59636e" stroke-width="2"/><rect x="110" y="40" width="40" height="40" fill="#cfe9f8" stroke="#7aa7bd" stroke-width="3"/>',
+  t:{'실제 이용 사례':'바닷가나 섬 지역에서 마실 물(식수원)을 마련하는 데 이용해요.','개발 배경':'바닷물에는 소금 등이 녹아 있어 바로 쓸 수 없어서, 물이 부족한 바닷가나 섬 지역에 필요했어요.','원리':'증발법, 역삼투법 등의 기술로 바닷물에서 염분(소금 성분)을 분리해요.','효과':'바닷물을 식수나 생활용수로 쓸 수 있게 되어 물 부족 문제를 해결하는 데 도움을 줘요.'}},
+ {k:'st',n:'휴대용 정수 장치(생명 빨대)',ic:'<rect x="64" y="10" width="32" height="76" rx="12" fill="#3fa36b" stroke="#2d7d4f" stroke-width="3"/><path d="M68 34 h24 M68 50 h24 M68 66 h24" stroke="#fff" stroke-width="3"/><rect x="74" y="0" width="12" height="12" fill="#2d7d4f"/>',
+  t:{'실제 이용 사례':'깊은 산속이나 오염된 물이 있는 곳에서 깨끗한 물을 마실 때 이용해요.','개발 배경':'깨끗한 물을 쉽게 구할 수 없는 곳에서 누구나 쉽게 이용할 수 있는 정수 장치가 필요했어요.','원리':'통 안의 여러 겹의 거름 장치(거름망)로 물속의 오염 물질을 걸러 내요.','효과':'휴대하기 편리하고 누구나 쉽게 사용할 수 있어요.'}},
+ {k:'ai',n:'공기 청정기',ic:'<rect x="50" y="8" width="60" height="80" rx="10" fill="#eef3f6" stroke="#59636e" stroke-width="3"/><path d="M58 24 h44 M58 34 h44 M58 44 h44 M58 54 h44" stroke="#9aa3ad" stroke-width="3"/><circle cx="80" cy="72" r="6" fill="#3fa36b"/>',
+  t:{'실제 이용 사례':'집이나 교실 같은 실내에서 공기를 깨끗하게 할 때 이용해요.','개발 배경':'실내 공기에는 먼지, 꽃가루, 동물의 털 같은 오염 물질이 섞여 있어요.','원리':'여러 단계의 거름망으로 실내 공기에 섞여 있는 오염 물질을 분리해요.','효과':'먼지, 꽃가루 같은 오염 물질을 걸러 내 깨끗한 공기를 공급해 줘요.'}},
+ {k:'rc',n:'인공지능 폐기물 선별 장치',ic:'<rect x="8" y="58" width="144" height="16" fill="#59636e"/><rect x="20" y="40" width="20" height="18" fill="#3d8bd4"/><rect x="60" y="44" width="18" height="14" fill="#c98b4f"/><rect x="100" y="38" width="16" height="20" fill="#3fa36b"/><rect x="66" y="6" width="28" height="18" rx="4" fill="#33414a"/><circle cx="80" cy="15" r="5" fill="#9cd3ff"/>',
+  t:{'실제 이용 사례':'카메라로 폐기물을 분석해 플라스틱, 종이, 유리 등 재질을 구분하여 재활용품을 분류해요.','개발 배경':'폐기물의 재활용 효율을 높이기 위해 개발되었어요.','원리':'인공지능 감지기가 재활용할 수 있는 물질을 판별하고 분류하여 종류별로 모아요.','효과':'회수된 자원은 자동차 부품, 의류 등으로 재활용되어 자원 절약과 환경 보호에 도움을 줘요.'}},
+ {k:'sw',n:'하수 처리 시설',ic:'<rect x="6" y="40" width="44" height="34" fill="#8a7765"/><rect x="58" y="40" width="44" height="34" fill="#7fb59a"/><rect x="110" y="40" width="44" height="34" fill="#cfe9f8"/><path d="M50 57 h8 M102 57 h8" stroke="#33414a" stroke-width="4"/>',
+  t:{'실제 이용 사례':'가정과 산업 현장에서 버리는 오염된 물을 정화하여 다시 쓸 수 있게 해요.','개발 배경':'빗물이나 집, 공장, 병원 등에서 쓰고 버리는 물(하수)에는 오염 물질이 섞여 있어요.','원리':'이물질을 걸러 내고(물리적 처리), 미생물로 물을 정화한 뒤(생물학적 처리), 화학적 처리와 소독을 해요.','효과':'오염된 물을 깨끗하게 만들어 다시 쓸 수 있어요.'}}];
+const devSvg=d=>'<svg viewBox="0 0 160 90" aria-hidden="true">'+d.ic+'</svg>';
+
+/* ===== 도입 ===== */
+$('#sea1').innerHTML='<rect width="800" height="200" fill="#3d8bd4"/>'+[0,1,2,3].map(i=>`<path d="M0 ${40+i*45} q50 -10 100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0 t100 0" stroke="#9cd3ff" stroke-width="3" fill="none"/>`).join('')+
+  '<ellipse cx="400" cy="120" rx="220" ry="62" fill="#e1c48a"/><ellipse cx="400" cy="112" rx="190" ry="48" fill="#7dbb4c"/><rect x="330" y="70" width="40" height="34" fill="#fff" stroke="#8a5a2b" stroke-width="3"/><path d="M324 72 l26 -20 l26 20z" fill="#e2573f"/><rect x="420" y="64" width="50" height="50" rx="6" fill="#c9d1d9" stroke="#59636e" stroke-width="3"/><rect x="424" y="104" width="42" height="6" fill="#9cd3ff"/><text x="445" y="58" text-anchor="middle" font-size="14" font-family="Jua" fill="#15313d">물탱크</text><text x="560" y="40" font-size="16" font-family="Jua" fill="#fff">바닷물로 둘러싸인 섬</text>';
+const s1=need('s1',2);pickOne('#p1a','','',null,s1('a'));pickIdea('#p1b',null,s1('b'));
+
+/* ===== 토의해요 ===== */
+(function(){const S=$('#tv');const L=[['섬 지역은 바다로 둘러싸여 있는데 왜 물이 부족하지?',250,'#ffe8a3'],['바닷물에는 소금 등 여러 물질이 녹아 있으므로 바로 사용할 수 없어.',470,'#d6f0ff'],['바닷물에 녹아 있는 물질을 분리할 수 없을까?',250,'#ffd6d6'],['바닷물에서 소금 등을 분리하는 장치를 조사해 보자!',470,'#d9f5dd']];let n=0;
+  function wrap(t,w){const out=[];let line='';for(const ch of t.split(' ')){if((line+' '+ch).trim().length>w){out.push(line.trim());line=ch;}else line+=' '+ch;}out.push(line.trim());return out;}
+  function draw(){S.innerHTML='<rect width="800" height="260" fill="#fdf6e3"/><rect x="20" y="20" width="200" height="130" rx="10" fill="#33414a"/><rect x="30" y="30" width="180" height="96" fill="#cfe9f8"/><ellipse cx="120" cy="100" rx="70" ry="18" fill="#7dbb4c"/><rect x="30" y="104" width="180" height="22" fill="#e2573f"/><text x="120" y="120" text-anchor="middle" font-size="11" font-family="Jua" fill="#fff">가뭄으로 섬 지역 물 부족 심각</text><rect x="100" y="150" width="40" height="14" fill="#33414a"/>';
+    [[90,220,'#ffd9b0'],[160,225,'#f4c9a0'],[230,222,'#ffd9b0'],[300,226,'#e8b98a']].forEach(([x,y,c],i)=>{el('circle',{cx:x,cy:y,r:20,fill:c,stroke:'#8a6a3a','stroke-width':2},S);el('rect',{x:x-18,y:y+18,width:36,height:20,rx:8,fill:['#3d8bd4','#e2573f','#3fa36b','#f08a24'][i]},S);});
+    for(let i=0;i<n;i++){const [t,x,c]=L[i],y=20+i*58,ls=wrap(t,20);el('rect',{x,y,width:300,height:20+ls.length*18,rx:12,fill:c,stroke:'#8a6a3a','stroke-width':1.5},S);
+      ls.forEach((s,j)=>{const tt=el('text',{x:x+12,y:y+22+j*18,'font-size':14,'font-family':'Jua',fill:'#15313d'},S);tt.textContent=s;});}}
+  draw();$('#talk').onclick=()=>{if(n>=4)return;n++;$('#tk').textContent=n;draw();
+    if(n===4){$('#talk').disabled=true;$('#ask2').hidden=false;fb('#tvFb','친구들이 물 부족 문제를 혼합물의 분리로 해결하려고 해요.','info');}};})();
+pickAll('#p2','모두 찾았어요! 바닷물은 소금이 많이 녹아 있어 바로 쓰기 어렵고, 이 문제를 해결하기 위해 혼합물의 분리와 연관 지어 방법을 찾으려는 상황이에요.','','s2');
+
+/* ===== 조사해요 1: 해수 담수화 ===== */
+(function(){const S=$('#de');let busy=false;
+  function draw(p){S.innerHTML='<rect width="800" height="220" fill="#fffdf8"/>';
+    el('rect',{x:30,y:60,width:190,height:120,fill:'#3d8bd4',stroke:'#2a6a9e','stroke-width':3},S);
+    el('rect',{x:300,y:40,width:200,height:150,rx:12,fill:'#e7ecf0',stroke:'#59636e','stroke-width':4},S);for(let i=0;i<6;i++)el('line',{x1:320+i*32,y1:60,x2:320+i*32,y2:170,stroke:'#9aa3ad','stroke-width':3,'stroke-dasharray':'4 4'},S);
+    el('rect',{x:580,y:80,width:180,height:100,fill:'#eef8fd',stroke:'#7aa7bd','stroke-width':3},S);
+    const lv=Math.min(1,p)*90;el('rect',{x:583,y:177-lv,width:174,height:lv,fill:'#cfe9f8'},S);
+    for(let i=0;i<30;i++){const tt=Math.min(1,Math.max(0,p*1.6-rnd(i,1)*.6));const x=lerp(60+rnd(i,2)*130,330+rnd(i,3)*150,tt),y=80+rnd(i,4)*90;el('rect',{x,y,width:5,height:5,fill:'#fff',stroke:'#999','stroke-width':.6},S);}
+    for(let i=0;i<14;i++){const tt=Math.max(0,p*1.4-rnd(i,5)*.4);if(tt<=0)continue;const x=tt<1?lerp(120,400,tt):lerp(400,600+rnd(i,6)*150,Math.min(1,tt-1)),y=tt<1?120:lerp(120,170-rnd(i,7)*Math.min(1,p)*80,Math.min(1,tt-1));el('circle',{cx:x,cy:y,r:4,fill:'#7fc1e8'},S);}
+    [['바닷물',125,40],['해수 담수화 장치',400,30],['마실 수 있는 물',670,70]].forEach(([s,x,y])=>{const t=el('text',{x,y,'text-anchor':'middle','font-size':16,'font-family':'Jua',fill:'#15313d'},S);t.textContent=s;});
+    if(p>=1){const t=el('text',{x:400,y:212,'text-anchor':'middle','font-size':14,'font-family':'Jua',fill:'#c2332c'},S);t.textContent='소금 등은 장치에 남아 분리돼요';}}
+  draw(0);$('#deGo').onclick=()=>{if(busy)return;busy=true;tween(2600,p=>draw(p*1.25),()=>{busy=false;draw(1.25);$('#ask3').hidden=false;fb('#deFb','바닷물이 장치를 지나면서 소금 등은 남고, 물만 빠져나왔어요.','info');});};})();
+pickOne('#p3','','','s3');
+
+/* ===== 조사해요 2 ===== */
+(function(){const read={};let cur=null;const B=$('#dev4');
+  DEV.forEach(d=>{const b=document.createElement('button');b.innerHTML=devSvg(d)+d.n;b.onclick=()=>open(d,b);B.appendChild(b);});
+  function open(d,b){cur=d;$$('#dev4 button').forEach(x=>x.classList.toggle('sel',x===b));$('#cT').textContent=d.n;const T=$('#tabs4');T.innerHTML='';$('#body4').textContent='알아볼 내용을 눌러요.';
+    read[d.k]=read[d.k]||new Set();
+    Object.keys(d.t).forEach(k=>{const t=document.createElement('button');t.textContent=k;if(read[d.k].has(k))t.classList.add('read');t.onclick=()=>{$('#body4').textContent=d.t[k];t.classList.add('read');read[d.k].add(k);
+      if(read[d.k].size===4){b.classList.add('seen');const n=Object.values(read).filter(s=>s.size===4).length;$('#n4').textContent=Math.min(2,n);
+        if(n>=2){fb('#fb4','장치 두 가지 이상을 조사했어요! 혼합물의 분리 기술은 물, 공기, 자원 문제를 해결하는 데 쓰여요.',true);doneNav('s4');}
+        else fb('#fb4','‘'+d.n+'’ 조사 끝! 다른 장치도 하나 더 조사해 봐요.','info');}};T.appendChild(t);});}})();
+
+/* ===== 장치와 분리 ===== */
+matcher('#m5',[['해수 담수화 장치','바닷물에서 소금 등을 분리해요'],['휴대용 정수 장치','오염된 물에서 오염 물질을 걸러 내요'],['공기 청정기','공기 중의 먼지, 꽃가루 등을 걸러 내요'],['인공지능 폐기물 선별 장치','폐기물에서 재활용품을 골라내요']],
+  '모두 이었어요! 혼합물의 분리 기술을 이용한 장치로 깨끗한 물과 공기, 다시 쓸 수 있는 자원을 얻어요.','s5');
+
+/* ===== 조사 보고서 ===== */
+(function(){let cur=null;DEV.forEach(d=>{const b=document.createElement('button');b.textContent=d.n;b.onclick=()=>{cur=d;$$('#pick6 button').forEach(x=>x.classList.toggle('sel',x===b));
+    $('#res6').innerHTML='<b>'+d.n+'</b><br>'+Object.entries(d.t).map(([k,v])=>'· '+k+': '+v).join('<br>');};$('#pick6').appendChild(b);});
+  $('#wr6B').onclick=()=>{if(!cur){fb('#wr6Fb','먼저 보고서에 정리할 장치를 골라요.','info');return;}const t=$('#wr6').value.trim();if(!t){fb('#wr6Fb','‘알게 된 점’을 써 보세요.',false);return;}
+    if(/다양|여러|지속|자원|환경|깨끗|건강|안전|도움|분리/.test(t)&&t.length>=10){fb('#wr6Fb','보고서를 완성했어요! 예시: 혼합물의 분리 기술을 이용한 장치가 다양하다는 것과, 이런 장치들이 지속가능한 삶을 유지하는 데 도움이 된다는 것을 알게 되었다. 그림이나 사진을 넣을 때는 출처를 밝혀요.',true);doneNav('s6');}
+    else fb('#wr6Fb','조사하면서 새롭게 알게 된 점을 조금 더 자세히 써 봐요. (예: 장치가 우리 생활에 어떤 도움을 주는지)','info');};})();
+
+/* ===== 공유해요 ===== */
+pickAll('#p7','모두 골랐어요! 알게 된 점과 칭찬, 궁금한 점을 바르고 고운 말로 써요.','','s7');
+
+/* ===== 한눈에 쏙 ===== */
+const s8=need('s8',2);
+$('#blReveal').onclick=()=>{fb('#blFb','물이나 공기 속 오염 물질을 분리해 깨끗한 자원을 얻을 수 있어요.',true);s8('bl')();};
+pickAll('#p8','모두 찾았어요! 혼합물의 분리 기술은 건강하고 안전한 생활과 지속가능한 삶에 꼭 필요해요.','',null,s8('p'));
+
+/* ===== 형성 평가 ===== */
+const s9=need('s9',2);
+quiz('#qz9',[{q:'1. 오염 물질을 제거하여 깨끗한 공기를 공급해 주는 장치는?',o:['선풍기','정수기','가습기','공기 청정기'],a:3,e:'공기 청정기는 여러 단계의 거름망으로 공기 속 오염 물질을 걸러 내요.',h:'각 장치가 무엇을 공급하는지 생각해 봐요.'}],s9('q'));
+$('#net9').innerHTML='<rect width="360" height="120" fill="#fffdf8"/>'+[0,1,2,3,4].map(i=>`<line x1="${120+i*30}" y1="10" x2="${120+i*30}" y2="110" stroke="#59636e" stroke-width="3"/>`).join('')+[0,1,2,3].map(i=>`<line x1="120" y1="${10+i*33}" x2="240" y2="${10+i*33}" stroke="#59636e" stroke-width="3"/>`).join('')+[...Array(16)].map((_,i)=>`<circle cx="${20+rnd(i,1)*320}" cy="${15+rnd(i,2)*90}" r="3" fill="#a0673a"/>`).join('')+'<text x="180" y="118" text-anchor="middle" font-size="12" font-family="Jua" fill="#15313d">구멍이 큰 거름망</text>';
+$('#wr9B').onclick=()=>{const t=$('#wr9').value.trim();if(!t){fb('#wr9Fb','먼저 답을 써 보세요.',false);return;}
+  const a=/구멍|눈/.test(t)&&/크|커/.test(t),b=/오염|먼지|황사|미세/.test(t)&&/(빠져|통과|들어|걸러 ?내지|분리하지|분리할 수 없|못)/.test(t);
+  if(a&&b){fb('#wr9Fb','잘 썼어요! 예시 답: 거름망의 구멍이 너무 커서 공기에 섞인 작은 오염 물질을 분리해 낼 수 없기 때문이다.',true);if(!$('#wr9B').dataset.ok){$('#wr9B').dataset.ok=1;s9('w')();}}
+  else if(a||b)fb('#wr9Fb','좋아요. 거름망 구멍의 크기와 오염 물질의 크기를 함께 비교해서 써 봐요.','info');
+  else fb('#wr9Fb','체로 모래와 자갈을 분리한 원리를 떠올려 봐요. 구멍보다 작은 알갱이는 어떻게 될까요?',false);};
+
+faces('s10','잘했어요! 다음 시간에는 조사한 장치를 포스터로 만들어 소개해 봐요.','어려웠던 부분은 장치 카드를 다시 읽고, 장치가 무엇을 분리하는지 정리해 봐요.');
+</script>
