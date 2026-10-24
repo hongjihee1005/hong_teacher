@@ -1,0 +1,288 @@
+<!--
+title: 강 주변 지형은 어떤 모습일까?
+unit: 3
+lesson: 3
+total: 11
+goal: 흐르는 물에 의해 변화된 강 상류와 강 하류 지형은 어떤 특징이 있는지 설명할 수 있어요.
+pages: 「과학」 68~71쪽 · 「실험관찰」 44~45쪽 · 지도서 284~293쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"침","bl2":"식","bl3":"퇴","bl4":"적"}}]
+-->
+<style>
+/* 3단원 교과서 버전 공통 */
+.lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.lab svg{display:block;width:100%}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,18px)}
+.two .photo{margin:0}
+.rtable{table-layout:fixed}
+.rtable td,.rtable th{text-align:center;padding:5px 4px;font-size:.88rem;word-break:keep-all}
+.rtable th{background:var(--bg)}
+.rtable td.q{background:var(--bg);font-family:"Jua",sans-serif}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:10px 14px;font-size:.95rem}
+.big{font-size:1.1rem}
+.ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:2px dashed var(--line);padding:6px 0}
+.ox button{min-width:3rem}
+/* 나누기 카드: 카드마다 칸 단추 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+/* 차례 맞히기 */
+.t3ord{display:flex;flex-direction:column;gap:6px}
+.t3ord button{text-align:left}
+.t3ord .t3dn{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.t3seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+/* 그림 속 누르기 */
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+.t3cnt{font-family:"Jua",sans-serif;color:var(--muted);font-size:.95rem}
+#quiz>div{margin-bottom:6px}
+@media (max-width:600px){.two,.t3sort,.t3match{grid-template-columns:1fr}}
+
+.b2spot circle{fill:#ffc93c;stroke:#0f3b5c;stroke-width:4}
+.b2spot.seen circle{fill:#bdf0cf;stroke:#16804a}
+.b2spot text{font-family:"Jua";font-size:22px;fill:#0f3b5c;pointer-events:none}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 68쪽</span>
+  <h2>래프팅은 강의 어디에서 출발하면 좋을까요?</h2>
+  <div class="lab"><svg id="raft" viewBox="0 0 800 300" role="img" aria-label="강에서 래프팅을 하는 모습 그림"></svg></div>
+  <p class="jua big" style="margin-top:8px">강물은 어디에서 어디로 흐를까요?</p>
+  <div class="pick" id="p1"><button data-a="1" data-m="맞아요! 강물은 높은 산에서 시작해 낮은 바다로 흘러가요. 래프팅은 물의 흐름이 빠른 강의 위쪽에서 많이 출발해요.">산에서 바다로 흘러요</button><button data-a="0" data-m="물은 높은 곳에서 낮은 곳으로 흘러요. 산과 바다 중 어디가 더 높을까요?">바다에서 산으로 흘러요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="관찰해요">
+  <span class="stage">관찰해요 · 「과학」 68~69쪽</span>
+  <h2>강 상류와 강 하류 주변 지형을 자세히 관찰해요</h2>
+  <p>강 지도에서 번호를 눌러 그곳의 모습을 살펴봐요. 산에 가까운 곳을 <b>강 상류</b>, 바다에 가까운 곳을 <b>강 하류</b>라고 해요.</p>
+  <div class="lab"><svg id="map" viewBox="0 0 900 330" role="img" aria-label="산에서 바다로 흐르는 강 지도"></svg></div>
+  <div class="lab" style="margin-top:8px"><svg id="near" viewBox="0 0 900 330" role="img" aria-label="고른 곳의 강 모습"></svg></div>
+  <p class="cap" id="nearCap">지도에서 ①, ②, ③을 눌러 봐요.</p>
+  <div class="fb" id="mapFb"></div>
+</section>
+
+<section id="s3" data-nav="붙임딱지">
+  <span class="stage">관찰해요 · 「실험관찰」 44쪽</span>
+  <h2>강 상류와 강 하류의 특징을 붙임딱지로 정리해요</h2>
+  <p>붙임딱지마다 강 상류와 강 하류 중 알맞은 곳을 눌러요. 헷갈리면 앞의 그림을 다시 봐요.</p>
+  <div class="t3sort" id="st3"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="물의 작용">
+  <span class="stage">관찰해요 3 · 흐르는 물의 작용과 관련짓기</span>
+  <h2>강 상류와 강 하류에서는 어떤 작용이 활발할까요?</h2>
+  <p>두 곳의 물 흐름을 보고, 지난 시간 흙 언덕 실험과 비교해 봐요.</p>
+  <div class="lab"><svg id="flow" viewBox="0 0 900 260" role="img" aria-label="강 상류와 강 하류의 물 흐름 비교"></svg></div>
+  <div class="row" style="margin-top:8px"><button class="main" id="flowBtn">▶ 물 흐름 보기</button><span class="t3cnt">점은 물에 실려 가는 돌과 흙이에요(눈에 보이게 그린 것).</span></div>
+  <p class="jua big" style="margin-top:8px">① 흙 언덕에서 흙이 많이 깎인 위쪽과 비슷한 곳은?</p>
+  <div class="pick" id="p4a"><button data-a="1" data-m="맞아요! 강 상류는 경사가 급해 물이 빠르게 흘러요. 그래서 침식 작용이 퇴적 작용보다 활발해요.">강 상류 · 침식 작용이 활발해요</button><button data-a="0" data-m="물이 빠르게 흐르며 바위를 깎는 곳은 어디였나요?">강 하류 · 침식 작용이 활발해요</button></div>
+  <div class="fb"></div>
+  <p class="jua big">② 흙 언덕에서 흙이 많이 쌓인 아래쪽과 비슷한 곳은?</p>
+  <div class="pick" id="p4b"><button data-a="0" data-m="물이 느려져 실려 온 흙이 쌓이는 곳은 어디였나요?">강 상류 · 퇴적 작용이 활발해요</button><button data-a="1" data-m="맞아요! 강 하류는 경사가 완만해 물이 느리게 흘러요. 그래서 운반된 돌이나 흙이 쌓이는 퇴적 작용이 활발해요.">강 하류 · 퇴적 작용이 활발해요</button></div>
+  <div class="fb"></div>
+  <p class="warn">💡 침식, 운반, 퇴적 작용은 강의 어디에서나 함께 일어나요. 다만 곳에 따라 더 활발한 작용이 달라요.</p>
+</section>
+
+<section id="s5" data-nav="강 주변 지형">
+  <span class="stage">정리해요 · 「과학」 70~71쪽</span>
+  <h2>강 주변에서 볼 수 있는 지형</h2>
+  <p>오랜 시간 흐르는 강물이 강 주변 지형을 서서히 바꾸었어요. 각 지형을 볼 수 있는 곳을 골라요.</p>
+  <div class="t3sort" id="st5"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="우리 고장 강">
+  <span class="stage">정리해요 2 · 「실험관찰」 45쪽</span>
+  <h2>우리나라의 강을 살펴봐요</h2>
+  <figure class="photo"><img src="@wm:File:Nakdong River Andong.JPG" alt="경상북도 안동을 흐르는 낙동강. 강폭이 넓고 강가에 모래가 넓게 쌓여 있어요."><figcaption>📷 경상북도 안동을 흐르는 낙동강의 모습이에요.</figcaption></figure>
+  <p class="jua big" style="margin-top:8px">이 사진의 강가 모습은 강 상류와 강 하류 중 어느 쪽 특징과 더 비슷한가요?</p>
+  <div class="pick" id="p6"><button data-a="0" data-m="사진에 커다란 바위가 많이 보이나요? 강가에 무엇이 넓게 쌓여 있는지 봐요.">강 상류 · 커다란 바위가 많아요</button><button data-a="1" data-m="맞아요! 강폭이 넓고 강가에 모래가 넓게 쌓여 있어 강 하류의 특징과 비슷해요.">강 하류 · 모래가 넓게 쌓여 있어요</button></div>
+  <div class="fb"></div>
+  <p class="tip">✏️ 우리 고장이나 가 본 곳의 강을 떠올려 보고, 강 상류·강 하류와 비슷한 점과 다른 점을 「실험관찰」 45쪽에 써 봐요.</p>
+</section>
+
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="big">강 상류에서는 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span></span> 작용이 활발하게 일어나고, 강 하류에서는 <span class="blank"><span id="bl3">?</span><span id="bl4">?</span></span> 작용이 활발하게 일어납니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div><div class="fb" id="blFb"></div>
+</section>
+
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <p class="jua big" style="margin-top:14px">✏️ 서술형: 강 상류와 강 하류 주변 지형이 서로 다른 까닭을 써 봅시다.</p>
+  <textarea id="wr" rows="2" placeholder="강 상류는 물이 ~ 흘러 ~ 작용이, 강 하류는 ~"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="wrB">내 답 살펴보기</button></div><div class="fb" id="wrFb"></div>
+</section>
+
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>강 상류와 강 하류 지형의 특징을 비교할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>강 주변 지형의 특징을 흐르는 물의 작용과 관련지을 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>내가 본 강과 오늘 배운 강 주변 지형을 흥미롭게 비교했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 3단원 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기: 고르면 그 단추의 data-m을 보여 줌 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick'+(it.one?' one':'')+'"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t:'글',k:'칸',m:'풀이'}], [{k,n}], 다 맞힘 글, 섹션) — 카드마다 칸 단추 */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach((it,i)=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 설명을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽 낱말을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례 맞히기: orderer('#box', [단계…(맞는 차례)], 다 맞힘 글, 섹션, 단계마다 cb(i)) */
+function orderer(box,steps,okMsg,sec,each,cb){const B=$(box),out=B.nextElementSibling;let k=0;
+  const seq=document.createElement('div');seq.className='t3seq';B.before(seq);
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.classList.contains('t3dn'))return;
+    if(i===k){b.classList.add('t3dn');b.disabled=true;const sp=document.createElement('span');sp.textContent=(k+1)+'. '+s;seq.appendChild(sp);if(each)each(k);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은 무엇일까요? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그 일은 조금 뒤에 해요. 지금 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 요소에 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+
+/* ---------- 도입: 래프팅 ---------- */
+(function(){ let s='<rect width="800" height="300" fill="#cfe9f7"/><path d="M0 150 L120 40 L260 150 Z" fill="#6c8f5a"/><path d="M180 150 L360 20 L520 150Z" fill="#5d7f4c"/><path d="M450 150 L620 50 L800 150Z" fill="#6c8f5a"/>'+
+  '<path d="M0 150 H800 V300 H0Z" fill="#7aa35a"/><path d="M0 170 Q200 150 400 190 T800 200 L800 300 L0 300Z" fill="#3a86c8"/>';
+  for(let i=0;i<14;i++){ const x=30+i*58, y=205+(i%3)*25; s+=`<path d="M${x} ${y} q12 -10 24 0" stroke="#fff" stroke-width="4" fill="none" opacity=".85"/>`; }
+  s+='<path d="M120 250 l30 -22 l40 6 l10 24 z" fill="#8c8c8c" stroke="#555" stroke-width="2"/><path d="M600 260 l24 -26 l36 8 l6 22z" fill="#9a9a9a" stroke="#555" stroke-width="2"/>';
+  s+='<g id="boat"><path d="M330 220 Q400 250 470 220 L460 205 Q400 228 340 205 Z" fill="#ffc93c" stroke="#b58400" stroke-width="3"/>'+[350,385,420,452].map((x,i)=>`<circle cx="${x}" cy="${190-(i%2)*4}" r="9" fill="#ffd9b0"/><rect x="${x-8}" y="${198-(i%2)*4}" width="16" height="14" rx="4" fill="${['#e2573f','#3a86c8','#16804a','#6b3fa0'][i]}"/><path d="M${x+6} ${206} l14 26" stroke="#8a5a2b" stroke-width="4"/>`).join('')+'</g>';
+  s+='<text x="400" y="34" text-anchor="middle" font-size="22" font-family="Jua" fill="#0f3b5c">물살을 따라 보트를 타고 내려가는 래프팅</text>';
+  $('#raft').innerHTML=s; })();
+pickOne('#p1','','다시 생각해 봐요.','s1');
+
+/* ---------- 강 지도와 가까이 보기 ---------- */
+const SPOTS={up:{x:190,y:120,n:'①',name:'강 상류',cap:'강 상류(산에 가까운 곳): 강폭이 좁고 강의 경사가 급해요. 물이 빠르게 흐르고, 커다란 바위와 모난 돌이 많아요. 폭포나 계곡을 볼 수 있어요.'},
+  mid:{x:470,y:200,n:'②',name:'강 중류',cap:'강 중류: 강 상류와 강 하류의 중간쯤이에요. 강이 구불구불하게 흘러요.'},
+  down:{x:760,y:262,n:'③',name:'강 하류',cap:'강 하류(바다에 가까운 곳): 강폭이 넓고 강의 경사가 완만해요. 물이 느리게 흐르고, 고운 모래와 흙으로 이루어진 넓고 편평한 땅을 볼 수 있어요.'}};
+const seen=new Set();
+function drawMap(){ let s='<rect width="900" height="330" fill="#cfe9f7"/><rect y="90" width="900" height="240" fill="#a8cf7a"/>'+
+  '<path d="M0 230 L60 40 L140 120 L210 20 L300 150 L330 330 L0 330Z" fill="#7d6a52"/><path d="M60 40 L80 62 L40 70Z M210 20 L232 50 L188 52Z" fill="#fff"/>'+
+  '<path d="M760 330 Q790 230 900 210 L900 330Z" fill="#3a86c8"/><text x="840" y="300" font-family="Jua" font-size="22" fill="#fff">바다</text><text x="40" y="320" font-family="Jua" font-size="22" fill="#fff">산</text>';
+  s+='<path d="M150 70 Q190 110 200 150 Q215 200 300 205" fill="none" stroke="#3a86c8" stroke-width="7" stroke-linecap="round"/>'+
+     '<path d="M300 205 Q380 150 430 200 Q480 250 540 200 Q600 150 640 220" fill="none" stroke="#3a86c8" stroke-width="14" stroke-linecap="round"/>'+
+     '<path d="M640 220 Q700 270 800 280" fill="none" stroke="#3a86c8" stroke-width="30" stroke-linecap="round"/>'+
+     '<path d="M660 252 Q710 290 790 300" fill="none" stroke="#efd9a6" stroke-width="10" stroke-linecap="round"/>';
+  s+='<path d="M120 50 L170 50" stroke="#0f3b5c" stroke-width="3"/><text x="98" y="30" font-family="Jua" font-size="18" fill="#0f3b5c">강물이 흐르는 방향 →</text>';
+  Object.entries(SPOTS).forEach(([k,o])=>{ s+=`<g class="b2spot${seen.has(k)?' seen':''}" data-k="${k}"><circle cx="${o.x}" cy="${o.y-40}" r="22"/><text x="${o.x}" y="${o.y-32}" text-anchor="middle">${o.n}</text>${seen.has(k)?`<text x="${o.x}" y="${o.y-72}" text-anchor="middle">${o.name}</text>`:''}<path d="M${o.x} ${o.y-18} V${o.y-4}" stroke="#0f3b5c" stroke-width="3"/></g>`; });
+  $('#map').innerHTML=s; $$('#map .b2spot').forEach(g=>tap(g,()=>showNear(g.dataset.k))); }
+function rocks(arr){ return arr.map(([x,y,r])=>`<path d="M${x-r} ${y} L${x-r*.5} ${y-r*.8} L${x+r*.4} ${y-r} L${x+r} ${y-r*.2} L${x+r*.7} ${y+r*.3} Z" fill="#8f8f8f" stroke="#555" stroke-width="2"/>`).join(''); }
+function showNear(k){ seen.add(k); drawMap(); const o=SPOTS[k]; let s='<rect width="900" height="330" fill="#cfe9f7"/>';
+  if(k==='up'){ s+='<path d="M0 330 L0 40 L330 330Z" fill="#6f8f55"/><path d="M900 330 L900 30 L560 330Z" fill="#6f8f55"/><path d="M380 60 L520 60 L540 330 L360 330Z" fill="#7d6a52"/>'+
+      '<rect x="430" y="60" width="40" height="150" fill="#9ccbea"/><path d="M430 70 V210 M445 70 V210 M460 70 V210" stroke="#fff" stroke-width="3" opacity=".8"/>'+
+      '<path d="M400 330 Q440 240 450 210 Q460 240 500 330Z" fill="#3a86c8"/>'+rocks([[330,300,40],[560,300,46],[410,270,22],[505,275,24],[260,318,30],[640,320,34]])+
+      '<g font-family="Jua" font-size="20" fill="#0f3b5c"><text x="560" y="90">폭포</text><path d="M555 85 L478 110" stroke="#0f3b5c" stroke-width="3"/><text x="40" y="70">경사가 급한 계곡</text><text x="610" y="250">커다란 바위</text></g>'+
+      '<path d="M440 320 H470" stroke="#0f3b5c" stroke-width="3"/><text x="380" y="322" font-family="Jua" font-size="18" fill="#fff">강폭이 좁아요</text>'; }
+  else if(k==='mid'){ s+='<rect y="70" width="900" height="260" fill="#a8cf7a"/><path d="M0 120 Q200 80 300 150 Q420 240 560 160 Q700 80 900 140" fill="none" stroke="#3a86c8" stroke-width="44" stroke-linecap="round"/>'+
+      '<path d="M300 170 Q330 200 360 205" stroke="#efd9a6" stroke-width="12" fill="none"/><path d="M560 140 Q600 110 640 108" stroke="#efd9a6" stroke-width="12" fill="none"/>'+
+      '<g font-family="Jua" font-size="22" fill="#0f3b5c"><text x="330" y="300">강이 구불구불하게 흘러요</text></g>'; }
+  else { s+='<rect y="60" width="900" height="270" fill="#a8cf7a"/><path d="M0 160 Q450 140 900 170 L900 270 Q450 240 0 260Z" fill="#3a86c8"/>'+
+      '<path d="M0 260 Q450 240 900 270 L900 300 Q450 285 0 300Z" fill="#efd9a6"/><path d="M0 150 Q450 128 900 160 L900 170 Q450 140 0 160Z" fill="#efd9a6"/>';
+    for(let i=0;i<120;i++){ const x=(i*37)%900, y=268+((i*13)%28); s+=`<circle cx="${x}" cy="${y}" r="2" fill="#c9a86a"/>`; }
+    s+='<path d="M560 205 q60 -18 120 0 q-60 14 -120 0z" fill="#efd9a6"/>'+
+      '<g font-family="Jua" font-size="20" fill="#0f3b5c"><text x="30" y="110">넓고 편평한 땅</text><text x="600" y="320">고운 모래와 흙</text></g><path d="M300 165 V255" stroke="#fff" stroke-width="3"/><text x="310" y="215" font-family="Jua" font-size="18" fill="#fff">강폭이 넓어요</text>'; }
+  s+=`<rect x="12" y="12" width="${o.name.length*24+40}" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text x="28" y="40" font-size="22" font-family="Jua" fill="#fff">${o.n} ${o.name}</text>`;
+  $('#near').innerHTML=s; $('#nearCap').textContent=o.cap;
+  if(seen.has('up')&&seen.has('down')){ fb('#mapFb','강 상류와 강 하류를 모두 살펴봤어요. 강폭, 강의 경사, 강가의 돌과 모래가 어떻게 다른지 정리해 봐요.',true); doneNav('s2'); }
+  else fb('#mapFb','다른 곳도 눌러 비교해 봐요.','info'); }
+drawMap(); $('#near').innerHTML='<rect width="900" height="330" fill="#eef6fb"/><text x="450" y="175" text-anchor="middle" font-family="Jua" font-size="26" fill="#48646f">지도에서 번호를 누르면 그곳의 모습이 보여요</text>';
+
+/* ---------- 붙임딱지 ---------- */
+const UPD=[{k:'up',n:'강 상류'},{k:'down',n:'강 하류'}];
+sorter('#st3',[{t:'강폭이 좁아요',k:'up'},{t:'강폭이 넓어요',k:'down'},{t:'강의 경사가 급해요',k:'up'},{t:'강의 경사가 완만해요',k:'down'},
+  {t:'바위나 큰 돌이 많아요',k:'up'},{t:'모래나 흙이 많아요',k:'down'}],UPD,'모두 붙였어요! 강 상류는 강폭이 좁고 경사가 급하며 바위나 큰 돌이 많아요. 강 하류는 강폭이 넓고 경사가 완만하며 모래나 흙이 많아요.','s3');
+
+/* ---------- 물 흐름 ---------- */
+let fl=null;
+function drawFlow(t){ let s='<rect width="900" height="260" fill="#f4fbff"/><line x1="450" y1="0" x2="450" y2="260" stroke="#bcd9e4" stroke-width="3"/>'+
+  '<path d="M20 60 L430 220 L430 250 L20 250Z" fill="#7d6a52"/><path d="M20 50 L430 210" stroke="#3a86c8" stroke-width="16"/>'+
+  '<path d="M470 190 L880 215 L880 250 L470 250Z" fill="#c9a77a"/><path d="M470 178 L880 203" stroke="#3a86c8" stroke-width="30"/>'+
+  '<g font-family="Jua" font-size="20" fill="#0f3b5c"><text x="30" y="30">강 상류 · 경사가 급해요</text><text x="490" y="30">강 하류 · 경사가 완만해요</text></g>';
+  for(let i=0;i<10;i++){ const u=((t*0.55+i/10)%1); const x=20+u*410, y=50+u*160; s+=`<circle cx="${x}" cy="${y}" r="5" fill="#5a3c1e"/>`;
+    const v=((t*0.12+i/10)%1); const x2=470+v*410, y2=178+v*25+ (v>0.6?(v-0.6)*40:0); s+=`<circle cx="${x2}" cy="${Math.min(y2,200)}" r="4" fill="#5a3c1e"/>`; }
+  s+='<path d="M120 120 l60 23" stroke="#c2332c" stroke-width="4" marker-end="url(#fa)"/><text x="190" y="120" font-family="Jua" font-size="18" fill="#c2332c">빠르게!</text>'+
+     '<path d="M600 160 l30 3" stroke="#16804a" stroke-width="4" marker-end="url(#fb2)"/><text x="640" y="160" font-family="Jua" font-size="18" fill="#16804a">느리게…</text>'+
+     '<defs><marker id="fa" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#c2332c"/></marker><marker id="fb2" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="5" markerHeight="5" orient="auto"><path d="M0 0L10 5L0 10z" fill="#16804a"/></marker></defs>';
+  s+=`<g fill="#5a3c1e">${[...Array(Math.min(14,Math.floor(t*1.5)))].map((_,i)=>`<circle cx="${760+i*8}" cy="${206-(i%3)*3}" r="4"/>`).join('')}</g>`;
+  $('#flow').innerHTML=s; }
+drawFlow(0);
+$('#flowBtn').onclick=()=>{ if(fl){ cancelAnimationFrame(fl); fl=null; $('#flowBtn').textContent='▶ 물 흐름 보기'; return; } const t0=performance.now(); $('#flowBtn').textContent='⏸ 멈추기';
+  const st=n=>{ drawFlow((n-t0)/1000); fl=requestAnimationFrame(st); }; fl=requestAnimationFrame(st); };
+let a4=0; const f4=()=>{ if(++a4===2) doneNav('s4'); };
+pickOne('#p4a','','다시 생각해 봐요.',null,f4); pickOne('#p4b','','다시 생각해 봐요.',null,f4);
+
+/* ---------- 강 주변 지형 ---------- */
+sorter('#st5',[{t:'🏞️ 폭포',k:'up',m:'폭포는 강 상류에서 볼 수 있어요.'},{t:'⛰️ 계곡',k:'up',m:'계곡은 강 상류에서 볼 수 있어요.'},{t:'〰️ 구불구불 흐르는 강',k:'mid',m:'강 중류에서는 구불구불 흐르는 강을 볼 수 있어요.'},
+  {t:'🏖️ 모래사장',k:'down',m:'모래사장은 강 하류에서 볼 수 있어요.'},{t:'🌾 넓고 편평한 땅',k:'down',m:'넓고 편평한 땅은 강 하류에서 볼 수 있어요.'}],
+  [{k:'up',n:'강 상류'},{k:'mid',n:'강 중류'},{k:'down',n:'강 하류'}],'모두 맞혔어요! 흐르는 강물은 침식, 운반, 퇴적 작용을 일으키며 오랜 시간에 걸쳐 강 주변 지형을 서서히 변화시켜요.','s5');
+
+pickOne('#p6','','다시 생각해 봐요.','s6');
+$('#blReveal').onclick=()=>{ fb('#blFb','강 상류에서는 침식 작용이, 강 하류에서는 퇴적 작용이 활발하게 일어나요.',true); doneNav('s7'); };
+
+/* ---------- 형성 평가 ---------- */
+let q8=false,w8=false;
+quiz('#quiz',[
+  {q:'1. 강 주변 지형에 대해 <u>잘못</u> 말한 친구는 누구인가요?',o:['하늘: 강 하류는 강폭이 좁고 경사가 급해서 계곡을 볼 수 있어.','바다: 강 상류는 강폭이 좁고 커다란 바위를 볼 수 있어.','누리: 강 하류에서는 퇴적 작용이 침식 작용보다 활발해.'],a:0,one:1,e:'강 하류는 강폭이 넓고 경사가 완만해요. 계곡은 강 상류에서 볼 수 있어요.',h:'강폭과 경사가 어느 곳에서 어땠는지 떠올려 봐요.'},
+  {q:'2. 강 상류에서 침식 작용이 활발한 까닭은?',o:['경사가 급해 물이 빠르게 흐르기 때문이에요','강폭이 넓기 때문이에요','고운 모래가 많기 때문이에요'],a:0,one:1,e:'강 상류는 경사가 급하고 물이 빠르게 흘러 침식 작용이 퇴적 작용보다 활발해요.',h:'물 흐름 그림을 다시 봐요.'}],()=>{q8=true;if(w8)doneNav('s8');});
+keyCheck('#wr','#wrB','#wrFb',[[/상류[^.]*(빠르|급)/,'상류는 물이 빠름(경사가 급함)'],[/하류[^.]*(느리|완만)/,'하류는 물이 느림(경사가 완만함)'],[/침식/,'침식 작용'],[/퇴적/,'퇴적 작용']],3,null,'‘강 상류는 물이 빠르게 흘러 ~ 작용이, 강 하류는 물이 느리게 흘러 ~ 작용이 활발해요’처럼 써 봐요.');
+$('#wrB').addEventListener('click',()=>{ if($('#wrFb').classList.contains('ok')){ w8=true; if(q8) doneNav('s8'); } });
+faces('s9','멋져요! 다음 시간에는 화산에 대해 알아봐요.','어려웠던 부분은 강 지도를 다시 눌러 보며 비교해 봐요.');
+</script>

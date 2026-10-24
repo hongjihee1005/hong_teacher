@@ -1,0 +1,649 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>물을 얻는 방법을 조사하자!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#1c6fa8;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+.w5-dev{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.w5-dev button.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.w5-dev button.done::after{content:" ✔";color:var(--good)}
+.w5-info{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:12px;align-items:start}
+.w5-info svg{max-height:40vh}
+.w5-box{border:2px solid var(--line);border-radius:14px;padding:10px 12px;font-size:.95rem}
+.w5-box p{margin:0 0 6px}
+.w5-form{display:grid;gap:8px;grid-template-columns:repeat(2,minmax(0,1fr))}
+.w5-form label{display:grid;gap:4px;font-family:"Jua",sans-serif}
+.w5-form input,.w5-form select{font:inherit;font-size:1rem;padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.w5-board{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:10px;padding:10px;border-radius:16px;background:#f3ead8;min-height:80px}
+.w5-post{background:#fffbe6;border:2px solid #e5c76b;border-radius:10px;padding:8px 10px;font-size:.88rem;box-shadow:0 2px 0 #d6b85a}
+.w5-post b{font-family:"Jua",sans-serif;font-size:1.05rem}
+.w5-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.w5-two svg{max-height:26vh}
+@media (max-width:700px){.w5-info,.w5-two,.w5-board,.w5-form{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M43 10 C30 30 20 42 20 54 a23 23 0 0 0 46 0 C66 42 56 30 43 10z" fill="#6ec3f0" stroke="#fff" stroke-width="3"/><path d="M33 56 a10 10 0 0 0 10 10" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/></svg>
+  <div><h1>물을 얻는 방법을 조사하자!</h1><p>4학년 1학기 과학 · 2단원 물의 상태 변화 · 7/11차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">물의 이용</a><a href="#s2">물이 중요한 까닭</a><a href="#s3">물이 부족하면</a><a href="#s4">물을 얻는 장치</a><a href="#s5">공유해요</a><a href="#s6">이런 곳이 있어요</a><a href="#s7">확인해 봐요</a><a href="#s8">함께 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>물의 중요성을 이해하고 물을 얻는 여러 가지 방법을 조사하여 발표할 수 있어요.</p>
+
+<section id="s1" data-nav="물의 이용">
+  <span class="stage">토의해요 · 「과학」 52쪽</span>
+  <h2>물은 우리 생활에서 어떻게 이용될까요?</h2>
+  <p>그림에서 물을 이용하는 곳을 눌러 보세요. 다섯 곳이에요. (<b id="w5UN">0</b>/5)</p>
+  <svg id="w5Use" class="scene" viewBox="0 0 800 400" style="max-height:46vh" aria-label="물이 이용되는 여러 장면">
+    <rect width="800" height="400" fill="#cfeefc"/><rect y="230" width="800" height="170" fill="#b9dc8f"/>
+    <g class="hit" data-k="dam"><path d="M20 230 L60 90 L140 90 L180 230z" fill="#9aa5ad"/><rect x="60" y="90" width="80" height="12" fill="#7a8288"/><path d="M100 102 v128" stroke="#6ec3f0" stroke-width="18"/><path d="M0 90 h60 v20 h-60z" fill="#4aa3df"/><path d="M80 230 q20 10 40 0" stroke="#4aa3df" stroke-width="6" fill="none"/><g stroke="#555" stroke-width="3"><line x1="170" y1="120" x2="170" y2="230"/><line x1="160" y1="130" x2="180" y2="130"/></g></g>
+    <g class="hit" data-k="home"><rect x="210" y="130" width="150" height="110" fill="#f4e1c1" stroke="#8a5a2b" stroke-width="3"/><path d="M200 134 L285 80 L370 134z" fill="#c0392b"/><rect x="230" y="160" width="60" height="40" fill="#e8f6ff" stroke="#7aa7bd" stroke-width="3"/><path d="M250 160 v-12 h20" stroke="#9aa5ad" stroke-width="4" fill="none"/><g fill="#6ec3f0"><circle cx="270" cy="170" r="3"/><circle cx="270" cy="180" r="3"/></g><rect x="300" y="170" width="44" height="40" rx="6" fill="#fff" stroke="#7aa7bd"/><text x="322" y="196" text-anchor="middle" font-size="12" font-family="Jua" fill="#1c6fa8">빨래</text></g>
+    <g class="hit" data-k="drink"><circle cx="420" cy="250" r="16" fill="#ffd9b0"/><rect x="406" y="266" width="28" height="44" rx="8" fill="#3b6fb6"/><rect x="438" y="240" width="14" height="30" rx="4" fill="#9fd6f2" stroke="#3d7fa8" stroke-width="2"/><text x="420" y="330" text-anchor="middle" font-size="12" font-family="Jua" fill="#0f3b5c">운동 뒤 물 마시기</text></g>
+    <g class="hit" data-k="farm"><rect x="480" y="270" width="160" height="90" fill="#7ab84a"/><g stroke="#3f8f46" stroke-width="4"><line x1="500" y1="290" x2="500" y2="270"/><line x1="530" y1="300" x2="530" y2="276"/><line x1="560" y1="290" x2="560" y2="268"/><line x1="590" y1="300" x2="590" y2="276"/><line x1="620" y1="290" x2="620" y2="270"/></g><path d="M480 340 h160" stroke="#4aa3df" stroke-width="8"/></g>
+    <g class="hit" data-k="factory"><rect x="650" y="140" width="130" height="100" fill="#9aa5ad"/><rect x="670" y="90" width="20" height="50" fill="#7a8288"/><rect x="720" y="100" width="20" height="40" fill="#7a8288"/><rect x="665" y="170" width="30" height="24" fill="#e8f6ff"/><rect x="735" y="170" width="30" height="24" fill="#e8f6ff"/><path d="M780 230 h20" stroke="#4aa3df" stroke-width="10"/></g>
+    <g id="w5Lbl" font-family="Jua" font-size="16" fill="#0f3b5c"></g>
+  </svg>
+  <div class="fb" id="w5UFb"></div>
+</section>
+
+<section id="s2" data-nav="물이 중요한 까닭">
+  <span class="stage">토의해요 · 「실험관찰」 34쪽</span>
+  <h2>물이 중요한 까닭은 무엇일까요?</h2>
+  <p>모둠 친구들과 이야기한 내용을 써 봐요.</p>
+  <textarea id="w5Why" rows="3" placeholder="예: 물은 …에 꼭 필요하고, 우리 생활에 …"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="w5WhyBtn">내 생각 살펴보기</button></div>
+  <div class="fb" id="w5WhyFb"></div>
+</section>
+
+<section id="s3" data-nav="물이 부족하면">
+  <span class="stage">조사해요 · 「과학」 53쪽</span>
+  <h2>물이 부족할 때 나타나는 현상</h2>
+  <div class="w5-two">
+    <svg viewBox="0 0 300 200" class="scene" role="img" aria-label="흙탕물을 길어 가는 사람"><rect width="300" height="200" fill="#f6e6c4"/><ellipse cx="150" cy="160" rx="120" ry="26" fill="#a68a5b"/><circle cx="90" cy="90" r="14" fill="#8d5524"/><rect x="78" y="104" width="24" height="40" rx="8" fill="#e2573f"/><rect x="104" y="118" width="26" height="30" rx="4" fill="#b08a55" stroke="#7a5a2a" stroke-width="2"/><text x="150" y="30" text-anchor="middle" font-size="16" font-family="Jua" fill="#7a3d1e">㉮</text></svg>
+    <svg viewBox="0 0 300 200" class="scene" role="img" aria-label="땅이 갈라지고 작물이 시든 밭"><rect width="300" height="200" fill="#fde9b0"/><circle cx="250" cy="40" r="22" fill="#ffb02e"/><rect y="110" width="300" height="90" fill="#c9a36b"/><g stroke="#8a6a3e" stroke-width="2" fill="none"><path d="M20 140 l30 10 l20 -14 l40 18"/><path d="M140 130 l20 20 l40 -6 l30 20"/><path d="M60 180 l40 -10 l30 12"/></g><g stroke="#9a8a3a" stroke-width="4" fill="none"><path d="M60 110 q4 -20 -10 -30"/><path d="M120 110 q4 -20 -10 -30"/><path d="M180 110 q4 -20 -10 -30"/></g><text x="150" y="30" text-anchor="middle" font-size="16" font-family="Jua" fill="#7a3d1e">㉯</text></svg>
+  </div>
+  <p class="jua" data-glue="1" style="font-size:1.05rem;margin-top:8px">㉮와 ㉯는 어떤 현상일까요? ㉮부터 골라요.</p>
+  <div class="pick" id="w5P3a">
+    <button data-a="1" data-m="맞아요! ㉮는 물이 오염되어 마실 수 있는 물이 부족한 모습이에요.">㉮ 오염되어 마실 수 있는 물이 부족해요</button>
+    <button data-a="0" data-m="㉮ 그림의 물 색깔을 다시 보세요.">㉮ 물이 너무 많아 홍수가 났어요</button>
+  </div>
+  <div class="fb"></div>
+  <div class="pick" id="w5P3b" style="margin-top:6px">
+    <button data-a="0" data-m="㉯ 그림의 땅과 식물을 다시 보세요.">㉯ 비가 많이 와 농작물이 잠겼어요</button>
+    <button data-a="1" data-m="맞아요! ㉯는 땅이 말라 농작물이 잘 자라지 않는 모습이에요.">㉯ 땅이 말라 농작물이 잘 자라지 않아요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="물을 얻는 장치">
+  <span class="stage">조사해요 · 물을 얻는 방법</span>
+  <h2>물 부족을 해결하는 장치를 살펴봐요</h2>
+  <p>물 부족이 심한 지역에서는 그 지역의 특성에 알맞은 방법으로 물을 모아서 이용해요. 장치를 하나씩 골라 움직여 보고, 어떤 방법으로 물을 얻는지 맞혀 봐요.</p>
+  <div class="w5-dev" id="w5Dev"><button data-d="warka" class="on">🕸️ 와카워터</button><button data-d="solar">☀️ 솔라볼</button><button data-d="rain">🌧️ 빗물 저금통</button></div>
+  <div class="w5-info">
+    <div><svg id="w5Svg" class="scene" viewBox="0 0 500 360" role="img" aria-label="물을 얻는 장치 그림"></svg>
+      <div class="row" style="margin-top:6px"><button class="main" id="w5Run">▶ 움직여 보기</button></div></div>
+    <div class="w5-box" id="w5Box"></div>
+  </div>
+  <p class="jua" data-glue="1" style="font-size:1.02rem;margin-top:8px" id="w5Q">이 장치는 물을 어떻게 얻을까요?</p>
+  <div class="pick" id="w5How" data-glue="1">
+    <button data-v="cond">공기 중의 수증기를 응결시켜요</button>
+    <button data-v="evap">더러운 물을 증발시키고 다시 응결시켜요</button>
+    <button data-v="none">빗물을 모아 걸러요 (상태 변화를 이용하지 않음)</button>
+  </div>
+  <div class="fb" id="w5HowFb"></div>
+</section>
+
+<section id="s5" data-nav="공유해요">
+  <span class="stage">공유해요 · 「실험관찰」 35쪽</span>
+  <h2>조사한 내용으로 발표 자료를 만들어 공유해요</h2>
+  <p>물의 상태 변화를 어떻게 이용했는지 설치 장소, 과학적 원리, 출처를 넣어 자료를 만들고 우리 반 게시판에 올려요. 역할을 나누어 만들어요.</p>
+  <div class="w5-form">
+    <label>장치 이름 <select id="w5Name"><option value="">골라요</option><option>와카워터</option><option>솔라볼</option><option>빗물 저금통</option><option>다른 장치(직접 조사)</option></select></label>
+    <label>설치 장소 <input id="w5Place" placeholder="예: 낮과 밤의 기온 차이가 큰 곳"></label>
+    <label>과학적 원리 <input id="w5Prin" placeholder="예: 밤에 공기 중의 수증기가 …"></label>
+    <label>출처 <input id="w5Src" placeholder="예: 참고 도서 이름, 누리집 이름"></label>
+  </div>
+  <div class="row" style="margin-top:8px"><button class="main" id="w5Post">📌 게시판에 올리기</button></div>
+  <div class="fb" id="w5PostFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">📋 우리 반 게시판</p>
+  <div class="w5-board" id="w5Board" aria-label="우리 반 게시판"><div class="w5-post"><b>예시 · 솔라볼</b><br>설치 장소: 햇볕이 잘 드는 곳<br>과학적 원리: 오염된 물에서 물이 증발해 수증기가 되고, 수증기가 다시 응결해 깨끗한 물을 얻어요.<br>출처: (조사한 곳)</div></div>
+  <p class="tip">학습 지킴이: 조사한 자료를 사용할 때는 출처를 밝혀요. 인터넷으로 조사할 때는 선생님이 알려 준 누리집을 이용해요. 이 화면의 게시판은 이 기기에서만 보이는 연습용이에요.</p>
+</section>
+
+<section id="s6" data-nav="이런 곳이 있어요">
+  <span class="stage">이런 곳이 있어요 · 「과학」 54~55쪽</span>
+  <h2>물의 소중함을 알 수 있는 물 박물관</h2>
+  <svg class="scene" viewBox="0 0 600 220" style="max-height:28vh" role="img" aria-label="물레방아가 있는 물 박물관 그림"><rect width="600" height="220" fill="#d7f0fb"/><rect y="170" width="600" height="50" fill="#9fd07a"/><rect x="220" y="70" width="220" height="110" fill="#f4e1c1" stroke="#8a5a2b" stroke-width="3"/><path d="M200 74 L330 20 L460 74z" fill="#1c6fa8"/><text x="330" y="120" text-anchor="middle" font-size="22" font-family="Jua" fill="#1c6fa8">물 박물관</text><g style="transform-box:fill-box;transform-origin:center;animation:spin 6s linear infinite"><circle cx="110" cy="130" r="46" fill="none" stroke="#8a5a2b" stroke-width="6"/><g stroke="#8a5a2b" stroke-width="5"><line x1="64" y1="130" x2="156" y2="130"/><line x1="110" y1="84" x2="110" y2="176"/><line x1="78" y1="98" x2="142" y2="162"/><line x1="142" y1="98" x2="78" y2="162"/></g></g><path d="M40 70 h70 v10" stroke="#4aa3df" stroke-width="10" fill="none"/></svg>
+  <p>물 박물관에서는 물 이용의 역사, 물과 사람에 관한 전시를 보고, 물의 상태 변화를 확인하는 구름 만들기 체험이나 물레방아·물지게 같은 체험도 할 수 있어요. 우리나라 곳곳에 물 박물관과 물 과학관이 있으니 ‘물 박물관’, ‘물 과학관’을 검색해 계획을 세워 봐요.</p>
+  <p class="jua" data-glue="1" style="font-size:1.05rem">방문하기 전에 꼭 미리 확인할 것은?</p>
+  <div class="pick" id="w5P6">
+    <button data-a="1" data-m="맞아요! 문을 여는 날짜와 시간을 미리 확인하는 것이 좋아요. 관람할 때 지켜야 할 점도 잘 지켜요.">문을 여는 날짜와 시간</button>
+    <button data-a="0" data-m="박물관을 찾아가기 전에 헛걸음하지 않으려면 무엇을 알아야 할까요?">박물관 건물의 색깔</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="확인해 봐요">
+  <span class="stage">정리</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 낮과 밤의 기온 차이가 큰 곳에 세워, 밤에 공기 중의 수증기가 그물망에 맺히게 해서 물을 얻는 장치에 이용된 물의 상태 변화는?</p>
+  <div class="pick" id="w5F1">
+    <button data-a="0">증발</button><button data-a="1" data-m="정답! 와카워터는 공기 중의 수증기가 응결해 생긴 물방울을 모아요.">응결</button><button data-a="0">얼음이 녹음</button><button data-a="0">물이 얾</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:10px">2. 솔라볼에서 깨끗한 물을 얻는 차례로 알맞은 것은?</p>
+  <div class="pick" id="w5F2" style="grid-template-columns:1fr!important">
+    <button data-a="1" data-m="정답! 오염된 물이 증발해 수증기가 되고, 수증기가 다시 응결해 깨끗한 물이 모여요.">오염된 물 → (증발) → 수증기 → (응결) → 깨끗한 물</button>
+    <button data-a="0">오염된 물 → (응결) → 수증기 → (증발) → 깨끗한 물</button>
+    <button data-a="0">오염된 물 → (얼음) → 깨끗한 물</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="함께 평가">
+  <span class="stage">함께 평가하기 · 우리 모둠</span>
+  <h2>우리 모둠을 되돌아봐요</h2>
+  <table>
+    <tr><td>물을 얻을 수 있는 방법에 이용된 물의 상태 변화를 설명했나요?</td><td class="face" data-r="0"></td></tr>
+    <tr><td>물을 얻을 수 있는 방법을 조사해 자료를 만들었나요?</td><td class="face" data-r="1"></td></tr>
+    <tr><td>조사한 자료를 물 부족 현상과 연결 지을 수 있나요?</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 52~55쪽 · 「실험관찰」 34~35쪽 · 지도서 242~249쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+/* 물의 이용 */
+(function(){const L={dam:['물을 이용해 전기를 얻어요(수력 발전소).',100,80],home:['씻을 때, 설거지·빨래할 때 일상생활에서 이용해요.',285,72],drink:['생명을 유지하는 데 필요해요. 운동 뒤 물을 마셔요.',420,230],farm:['농사를 지을 때 이용해요.',560,262],factory:['공장에서 물건을 만들 때 이용해요.',715,130]};
+  const NM={dam:'전기',home:'일상생활',drink:'생명 유지',farm:'농사',factory:'공장'};const f=new Set();
+  $$('#w5Use .hit').forEach(g=>g.addEventListener('click',()=>{const k=g.dataset.k;fb('#w5UFb',L[k][0],true);if(f.has(k))return;f.add(k);
+    const t=document.createElementNS('http://www.w3.org/2000/svg','text');t.setAttribute('x',L[k][1]);t.setAttribute('y',L[k][2]);t.setAttribute('text-anchor','middle');t.setAttribute('stroke','#fff');t.setAttribute('stroke-width','4');t.setAttribute('paint-order','stroke');t.textContent='✔ '+NM[k];$('#w5Lbl').appendChild(t);
+    $('#w5UN').textContent=f.size;if(f.size===5){fb('#w5UFb','🎉 다섯 곳을 모두 찾았어요! 물은 우리 생활에 다양하게 이용돼요. 물이 부족하면 어떤 일이 생길까요?',true);doneNav('s1');}}));})();
+keyCheck('#w5Why','#w5WhyBtn','#w5WhyFb',[[/생명|살아|살 수|생물|마시/,'생명을 유지해요'],[/다양|생활|이용|쓰|필요/,'생활에 다양하게 이용돼요']],1,'s2','물이 없으면 어떤 일이 생길지 떠올려 써 봐요.');
+let s3n=0;const s3d=()=>{if(++s3n===2)doneNav('s3');};
+pickOne('#w5P3a','','',null,s3d);pickOne('#w5P3b','','',null,s3d);
+
+/* 장치 */
+const DEV={
+ warka:{a:'cond',svg:`<rect width="500" height="360" id="w5Sky" fill="#fde9b0"/><circle id="w5Sun" cx="420" cy="60" r="30" fill="#ffb02e"/><g id="w5Moon" opacity="0"><circle cx="420" cy="60" r="26" fill="#f4f1c9"/><circle cx="432" cy="52" r="22" fill="#24345e"/></g><rect y="300" width="500" height="60" fill="#e0c088"/>
+   <g stroke="#8a5a2b" stroke-width="5"><line x1="250" y1="40" x2="170" y2="300"/><line x1="250" y1="40" x2="330" y2="300"/><line x1="250" y1="40" x2="250" y2="300"/></g>
+   <path d="M215 80 q35 -10 70 0 l18 170 q-53 16 -106 0z" fill="none" stroke="#5aa86c" stroke-width="2"/><g stroke="#5aa86c" stroke-width="1.5" fill="none"><path d="M210 120 h80 M205 160 h90 M202 200 h96 M200 240 h100"/><path d="M230 80 l-8 170 M250 78 v172 M270 80 l8 170"/></g>
+   <g id="w5WDrops" fill="#6ec3f0"></g><rect x="222" y="262" width="56" height="34" rx="6" fill="#3f8fd6" opacity=".85"/><rect id="w5Tank" x="226" y="294" width="48" height="0" fill="#9fd6f2"/>
+   <g id="w5Vap" fill="#9cc3d8"></g>`,
+   box:'<p><b>와카워터</b></p><p>📍 설치 장소: 낮과 밤의 기온 차이가 큰 곳 (예: 사막)</p><p>그물망 아래에 물통이 있어요. ▶를 눌러 밤이 되면 어떻게 되는지 보세요.</p>',
+   ok:'맞아요! 밤에 기온이 내려가면 공기 중의 수증기가 응결해 그물망에 물방울로 맺히고, 그 물방울이 아래쪽 물통에 고여요.'},
+ solar:{a:'evap',svg:`<rect width="500" height="360" fill="#fde9b0"/><circle cx="420" cy="60" r="30" fill="#ffb02e"/><rect y="300" width="500" height="60" fill="#e0c088"/>
+   <path d="M110 300 a140 150 0 0 1 280 0z" fill="#eef7fb" fill-opacity=".55" stroke="#7aa7bd" stroke-width="4"/>
+   <path d="M150 300 a100 70 0 0 1 200 0z" fill="#b08a55" opacity=".9"/><text x="250" y="292" text-anchor="middle" font-size="15" font-family="Jua" fill="#fff">오염된 물</text>
+   <path d="M112 300 h26 v-10 h-26z" fill="#6ec3f0" id="w5Clean"/><text x="125" y="324" text-anchor="middle" font-size="14" font-family="Jua" fill="#1c6fa8">깨끗한 물</text>
+   <g id="w5SVap" fill="#9cc3d8"></g><g id="w5SDrops" fill="#6ec3f0"></g>`,
+   box:'<p><b>솔라볼</b></p><p>📍 설치 장소: 햇볕이 잘 드는 곳</p><p>둥근 덮개 안에 오염된 물을 넣고 햇볕에 두어요. ▶를 눌러 보세요.</p>',
+   ok:'맞아요! 오염된 물에서 물이 증발해 수증기가 되고, 수증기가 둥근 덮개 안쪽에 닿아 다시 응결해 깨끗한 물이 모여요. 깨끗한 물이 부족한 지역에서 쓸 수 있어요.'},
+ rain:{a:'none',svg:`<rect width="500" height="360" fill="#c9d6de"/><g fill="#9aa5ad"><ellipse cx="150" cy="50" rx="80" ry="26"/><ellipse cx="330" cy="40" rx="90" ry="28"/></g><g id="w5Rain" stroke="#4aa3df" stroke-width="3"></g><rect y="300" width="500" height="60" fill="#9fd07a"/>
+   <rect x="60" y="150" width="170" height="150" fill="#f4e1c1" stroke="#8a5a2b" stroke-width="3"/><path d="M40 154 L145 100 L250 154z" fill="#c0392b"/><path d="M250 154 h20 v100" stroke="#7a8288" stroke-width="8" fill="none"/>
+   <rect x="250" y="250" width="70" height="20" rx="4" fill="#d8dde0" stroke="#7a8288" stroke-width="2"/><text x="285" y="265" text-anchor="middle" font-size="11" font-family="Jua" fill="#333">거르개</text>
+   <rect x="300" y="210" width="110" height="90" rx="10" fill="#3f8fd6" opacity=".35" stroke="#1c6fa8" stroke-width="3"/><rect id="w5RT" x="304" y="296" width="102" height="0" fill="#6ec3f0"/><text x="355" y="232" text-anchor="middle" font-size="15" font-family="Jua" fill="#0f3b5c">빗물 저금통</text><path d="M410 286 h22 v8" stroke="#7a8288" stroke-width="5" fill="none"/>`,
+   box:'<p><b>빗물 저금통</b></p><p>📍 설치 장소: 비가 특정 시기에 몰려 내리는 곳 (예: 우리나라)</p><p>① 빗물을 받아요 ② 섞인 더러운 물질을 걸러요 ③ 저장한 물을 필요할 때 써요.</p>',
+   ok:'맞아요! 빗물 저금통은 빗물을 받아 걸러 저장해요. 물의 상태 변화를 이용하는 것은 아니지만, 물을 얻는 좋은 방법이에요.'}};
+let cur='warka',raf=0;const solved=new Set();
+function show(d){cur=d;cancelAnimationFrame(raf);$('#w5Svg').innerHTML=DEV[d].svg;$('#w5Box').innerHTML=DEV[d].box;$$('#w5Dev button').forEach(b=>b.classList.toggle('on',b.dataset.d===d));
+  $$('#w5How button').forEach(b=>b.classList.remove('right','wrong'));fb('#w5HowFb','',null);$('#w5HowFb').className='fb';}
+$$('#w5Dev button').forEach(b=>b.onclick=()=>show(b.dataset.d));
+const NSv='http://www.w3.org/2000/svg',r5=i=>{const x=Math.sin(i*91.7)*43758.5;return x-Math.floor(x);};
+$('#w5Run').onclick=()=>{show(cur);const t0=performance.now();
+  const step=now=>{const t=(now-t0)/1000;
+    if(cur==='warka'){const night=Math.min(1,t/2);$('#w5Sky').setAttribute('fill',night>.5?'#24345e':'#fde9b0');$('#w5Sun').setAttribute('opacity',1-night);$('#w5Moon').setAttribute('opacity',night);
+      const g=$('#w5WDrops');if(t>2&&g.children.length<30&&Math.random()<.3){const c=document.createElementNS(NSv,'circle');c.setAttribute('cx',210+r5(g.children.length)*80);c.setAttribute('cy',100+r5(g.children.length+7)*150);c.setAttribute('r',3);g.appendChild(c);}
+      [...g.children].forEach((c,i)=>{const y=+c.getAttribute('cy');if(t>4)c.setAttribute('cy',Math.min(296,y+1.2));});
+      if(t>4)$('#w5Tank').setAttribute('height',Math.min(30,(t-4)*4)),$('#w5Tank').setAttribute('y',294-Math.min(30,(t-4)*4));
+      const v=$('#w5Vap');if(v.children.length<18){for(let i=0;i<18;i++){const c=document.createElementNS(NSv,'circle');c.setAttribute('r',3);v.appendChild(c);}}
+      [...v.children].forEach((c,i)=>{const k=((t*.3+r5(i+30))%1);c.setAttribute('cx',(i%2?60:440)+(i%2?1:-1)*k*170);c.setAttribute('cy',90+r5(i+50)*160);c.setAttribute('opacity',t>2?.6*(1-k):0);});}
+    else if(cur==='solar'){const v=$('#w5SVap');if(!v.children.length)for(let i=0;i<16;i++){const c=document.createElementNS(NSv,'circle');c.setAttribute('r',3);v.appendChild(c);}
+      [...v.children].forEach((c,i)=>{const k=((t*.35+r5(i))%1);c.setAttribute('cx',190+r5(i+3)*120);c.setAttribute('cy',270-k*110);c.setAttribute('opacity',.7*(1-k*.5));});
+      const d=$('#w5SDrops');if(t>1.5&&d.children.length<12&&Math.random()<.15){const c=document.createElementNS(NSv,'circle');c.dataset.a=(Math.PI*.55+r5(d.children.length+9)*Math.PI*.35);c.dataset.k=0;c.setAttribute('r',4);d.appendChild(c);}
+      [...d.children].forEach(c=>{let a=+c.dataset.a;a=Math.min(Math.PI*.98,a+0.01);c.dataset.a=a;c.setAttribute('cx',250+140*Math.cos(a));c.setAttribute('cy',300-150*Math.sin(a));});
+      $('#w5Clean').setAttribute('d',`M112 300 h26 v-${10+Math.min(20,t*2)} h-26z`);}
+    else{const g=$('#w5Rain');if(!g.children.length)for(let i=0;i<26;i++){const l=document.createElementNS(NSv,'line');g.appendChild(l);}
+      [...g.children].forEach((l,i)=>{const y=((t*1.2+r5(i))%1)*230+70,x=30+r5(i+4)*440;l.setAttribute('x1',x);l.setAttribute('x2',x-4);l.setAttribute('y1',y);l.setAttribute('y2',y+14);});
+      const h=Math.min(80,t*10);$('#w5RT').setAttribute('height',h);$('#w5RT').setAttribute('y',296-h);}
+    if(t<9)raf=requestAnimationFrame(step);};raf=requestAnimationFrame(step);};
+$$('#w5How button').forEach(b=>b.onclick=()=>{$$('#w5How button').forEach(x=>x.classList.remove('right','wrong'));
+  if(b.dataset.v===DEV[cur].a){b.classList.add('right');fb('#w5HowFb',DEV[cur].ok,true);solved.add(cur);$(`#w5Dev button[data-d="${cur}"]`).classList.add('done');
+    if(solved.size===3){fb('#w5HowFb',DEV[cur].ok+' 🎉 세 장치를 모두 알아봤어요!',true);doneNav('s4');}else if(solved.size<3)$('#w5HowFb').textContent+=' 다른 장치도 골라 봐요.';}
+  else{b.classList.add('wrong');fb('#w5HowFb','▶ 움직여 보기를 누르고 물이 어디에서 어떻게 모이는지 다시 보세요.',false);}});
+show('warka');
+
+/* 공유해요 */
+$('#w5Post').onclick=()=>{const n=$('#w5Name').value,p=$('#w5Place').value.trim(),r=$('#w5Prin').value.trim(),s=$('#w5Src').value.trim();
+  if(!n||!p||!r){fb('#w5PostFb','장치 이름, 설치 장소, 과학적 원리를 모두 채워요.','info');return;}
+  if(!s){fb('#w5PostFb','조사한 자료를 사용할 때는 출처를 밝혀요. 출처 칸을 채워 주세요.',false);return;}
+  if(n!=='빗물 저금통'&&!/증발|응결|수증기|얼|녹/.test(r)){fb('#w5PostFb','과학적 원리에 물의 상태 변화(증발, 응결 등)를 어떻게 이용했는지 넣어 봐요.','info');return;}
+  const d=document.createElement('div');d.className='w5-post';const esc=x=>x.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+  d.innerHTML=`<b>우리 모둠 · ${esc(n)}</b><br>설치 장소: ${esc(p)}<br>과학적 원리: ${esc(r)}<br>출처: ${esc(s)}`;$('#w5Board').appendChild(d);
+  fb('#w5PostFb','📌 게시판에 올렸어요! 친구들의 자료도 공정하게 살펴보고 의견을 나눠요.',true);doneNav('s5');};
+pickOne('#w5P6','','','s6');
+let s7n=0;const s7d=()=>{if(++s7n===2)doneNav('s7');};
+pickOne('#w5F1','','장치에서 공기 중의 수증기가 무엇으로 변했는지 떠올려 봐요.',null,s7d);pickOne('#w5F2','','솔라볼 그림을 다시 보세요. 먼저 물이 수증기로 변해요.',null,s7d);
+faces('s8','멋진 조사였어요! 다음 시간에는 물의 상태 변화를 이용해 물을 얻는 장치를 직접 만들어 봐요.','함께 다시 장치들을 살펴보고, 물의 상태 변화가 어디에 쓰였는지 찾아봐요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 1학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>

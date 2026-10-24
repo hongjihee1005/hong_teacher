@@ -1,0 +1,306 @@
+<!--
+title: 세균이 궁금해!
+unit: 4
+lesson: 5
+total: 12
+goal: 세균의 생김새를 조사할 수 있어요.<br>세균의 특징과 사는 곳을 설명할 수 있어요.
+pages: 「과학」 98~99쪽 · 「실험관찰」 64쪽 · 지도서 380~385쪽
+-->
+<style>
+[hidden]{display:none!important}
+.k-fit{width:min(100%,calc(var(--h,50vh)*var(--ar,1.6)));margin:0 auto}
+.k-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+@media(max-width:700px){.k-two{grid-template-columns:1fr}}
+.k-ox{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:6px 0;padding:6px 10px;border:2px solid var(--line);border-radius:12px}
+.k-ox .q{flex:1 1 55%}
+.k-ox button{min-width:3.4rem}
+.k-chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.k-chips button.used{opacity:.35;pointer-events:none}
+.k-q{font-family:"Jua",sans-serif;font-size:1.1rem;margin:12px 0 6px}
+.k-bins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.k-bin{border:3px dashed var(--line);border-radius:14px;padding:8px;min-height:5rem;cursor:pointer;background:var(--paper)}
+.k-bin.hot{border-color:var(--sun);background:#fff8dd}
+.k-bin b{display:block;font-family:"Jua",sans-serif;font-weight:400}
+.k-bin svg{display:inline-block;width:3rem;height:3rem;margin:2px}
+.u43-srch{display:flex;gap:8px;align-items:center;border:3px solid var(--navy);border-radius:999px;padding:6px 14px;background:var(--paper)}
+.u43-srch span{flex:1;font-family:"Jua",sans-serif;color:var(--muted)}
+.u43-res{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:10px}
+.u43-res figure{margin:0;border:3px solid var(--navy);border-radius:14px;overflow:hidden;background:#0d0d14}
+.u43-res figcaption{background:var(--paper);padding:4px 8px;font-size:.88rem}
+.u43-bug button{padding:4px}
+.u43-bug button svg{width:3.2rem;height:3.2rem;display:block}
+.u43-board{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
+@media(max-width:700px){.u43-board{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.u43-card{border:2px solid var(--line);border-radius:12px;padding:6px;background:#fffdf5;font-size:.85rem}
+.u43-card svg{width:100%;height:auto;background:#fff;border-radius:8px}
+.u43-card .cm{color:#12466b;margin-top:4px}
+.u43-card button{font-size:.8rem;min-height:1.9rem;padding:2px 8px;margin-top:4px}
+.u43-mk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);gap:12px;align-items:start}
+@media(max-width:700px){.u43-mk{grid-template-columns:1fr}}
+.u43-mk .row button{font-size:.9rem;min-height:2.2rem}
+.u43-sw{display:flex;gap:8px;flex-wrap:wrap}
+.u43-sw button.on{background:var(--sun);border-color:#b58400}
+.u43-cnt{font-family:"Jua",sans-serif;font-size:1.3rem;text-align:center}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 98쪽</span>
+  <h2>음식을 먹기 전에 손을 씻어야 하는 까닭은 무엇일까요?</h2>
+  <div class="k-two">
+    <div>
+      <svg id="hands" class="scene" viewBox="0 0 360 230" role="img" aria-label="손과 간식 그림" style="max-height:32vh;background:#fff8ec">
+        <rect x="230" y="150" width="110" height="60" rx="10" fill="#f0c27a" stroke="#a9733f" stroke-width="3"/><circle cx="262" cy="172" r="6" fill="#a9733f"/><circle cx="300" cy="186" r="6" fill="#a9733f"/>
+        <g fill="#ffd9b0" stroke="#c99a6b" stroke-width="3">
+          <path d="M40 210 v-90 q0 -12 12 -12 q12 0 12 12 v-40 q0 -12 12 -12 q12 0 12 12 v-6 q0 -12 12 -12 q12 0 12 12 v10 q0 -12 12 -12 q12 0 12 12 v90 q0 36 -40 36 h-30 q-20 0 -20 -10z"/>
+          <path d="M140 210 v-90 q0 -12 12 -12 q12 0 12 12 v-40 q0 -12 12 -12 q12 0 12 12 v-6 q0 -12 12 -12 q12 0 12 12 v10 q0 -12 12 -12 q12 0 12 12 v90 q0 36 -40 36 h-30 q-20 0 -20 -10z"/></g>
+        <g id="germs" opacity="0" style="transition:opacity .6s"></g>
+      </svg>
+      <div class="row" style="margin-top:6px"><button id="glass" aria-pressed="false">🕶️ 세균 보기 안경 쓰기</button></div>
+      <p class="tip">안경을 쓰면 세균을 점으로 그려서 보여 줘요. 실제 세균은 너무 작아 맨눈으로 볼 수 없어요.</p>
+    </div>
+    <div>
+      <div class="pick" id="introPick" style="grid-template-columns:1fr!important"><button data-a="1">손에 있던 세균이 음식과 함께 입으로 들어가 질병에 걸릴 수 있어서</button><button>손을 씻으면 음식이 더 맛있어져서</button><button>손이 차가워야 음식을 잡기 쉬워서</button></div>
+      <div class="fb"></div>
+      <p class="k-q" data-glue="1">세균은 맨눈으로 관찰할 수 있을까요?</p>
+      <div class="pick" id="eyePick" data-glue="1" style="grid-template-columns:1fr!important"><button data-a="1">관찰하기 어려워요 (균류나 원생생물보다 크기가 작아요)</button><button>맨눈으로 잘 보여요</button></div>
+      <div class="fb"></div>
+    </div>
+  </div>
+</section>
+
+<section id="s2" data-nav="조사해요">
+  <span class="stage">조사해요 · 「실험관찰」 64쪽</span>
+  <h2>세균의 모습을 볼 수 있는 사진을 찾아봐요</h2>
+  <p>준비물: 스마트 기기, 참고 도서 · 검색어를 눌러 사진 자료를 찾아봐요.</p>
+  <div class="u43-srch"><span id="srchTxt">검색어를 고르세요</span>🔎</div>
+  <div class="k-chips" id="kw"><button>세균</button><button>세균의 종류</button><button>세균의 생김새</button><button>세균의 모양</button><button>세균의 모습</button></div>
+  <div class="u43-res" id="res" hidden>
+    <figure><svg viewBox="0 0 200 150" id="pS"></svg><figcaption>나선 모양 세균 (캄필로박터균, 13,600배)</figcaption></figure>
+    <figure><svg viewBox="0 0 200 150" id="pR"></svg><figcaption>막대 모양 세균 (탄저균, 16,900배)</figcaption></figure>
+    <figure><svg viewBox="0 0 200 150" id="pC"></svg><figcaption>공 모양 세균 (포도알균, 6,240배)</figcaption></figure>
+  </div>
+  <p class="tip" id="resTip" hidden>📌 세균 사진은 전자 현미경으로 찍고 디지털로 색을 입힌 모습이라 원래 세균의 색과는 달라요. 세균의 이름은 외우지 않아도 돼요. 찾은 자료를 쓸 때는 출처를 밝혀요. (그림은 교과서 사진을 바탕으로 이 자료에서 그린 것이에요.)</p>
+  <p class="k-q">세균 그림을 골라 생김새가 같은 상자에 넣어요.</p>
+  <div>
+    <div class="k-chips u43-bug" id="bugChips"></div>
+    <div class="k-bins" id="bugBins"><div class="k-bin" data-b="C"><b>⚪ 공 모양</b></div><div class="k-bin" data-b="R"><b>➖ 막대 모양</b></div><div class="k-bin" data-b="S"><b>🌀 나선 모양</b></div></div>
+    <div class="fb" id="bugFb"></div>
+  </div>
+</section>
+
+<section id="s3" data-nav="그려요·공유해요">
+  <span class="stage">조사해요 · 공유해요 · 「실험관찰」 64쪽</span>
+  <h2>세균을 한 가지 골라 그림으로 나타내고 공유해요</h2>
+  <div class="u43-mk">
+    <div>
+      <p class="jua">① 생김새</p><div class="row" id="mkShape"><button data-v="C" class="sel">공 모양</button><button data-v="R">막대 모양</button><button data-v="S">나선 모양</button></div>
+      <p class="jua" style="margin-top:6px">② 모여 있는 모습</p><div class="row" id="mkArr"><button data-v="1" class="sel">하나씩</button><button data-v="g">한곳에 뭉쳐</button><button data-v="c">여러 개 연결</button></div>
+      <p class="jua" style="margin-top:6px">③ 색</p><div class="row" id="mkCol"><button data-v="#9b6bd6" class="sel">보라</button><button data-v="#e2873a">주황</button><button data-v="#3fae8a">초록</button></div>
+    </div>
+    <div>
+      <svg id="mkSvg" class="scene" viewBox="0 0 240 150" role="img" aria-label="내가 그린 세균" style="max-height:22vh;background:#fff"></svg>
+      <textarea id="mkTxt" rows="2" placeholder="세균의 생김새를 써 봐요. 예: 공 모양이고, 서로 한곳에 뭉쳐 있다." style="margin-top:6px"></textarea>
+      <div class="row" style="margin-top:6px"><button class="main" id="mkUp">📤 공유 플랫폼에 올리기</button></div>
+    </div>
+  </div>
+  <div class="fb" id="mkFb"></div>
+  <p class="jua">🖼️ 우리 반 세균 그림 게시판 · 내 그림을 올리고, 친구 그림에 칭찬 댓글을 달아요.</p>
+  <div>
+    <div class="u43-board" id="board"></div>
+    <p class="k-q">친구들이 공유한 그림을 보고, 세균의 생김새로 알맞은 것을 모두 골라요. (3가지)</p>
+    <div class="pick" id="shapePick"><button data-a="1">공 모양 세균이 있어요</button><button data-a="1">막대처럼 길쭉한 세균이 있어요</button><button data-a="1">나선 모양 세균이 있어요</button><button data-m="세균은 생김새가 단순해요. 다리나 눈은 없어요.">다리와 눈이 있는 세균이 있어요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s4" data-nav="사는 곳">
+  <span class="stage">전개 2 · 「과학」 99쪽</span>
+  <h2>세균은 어디에 살까요?</h2>
+  <p>세균 보기 안경을 쓰고, 세균이 사는 곳을 눌러 찾아요. (6곳)</p>
+  <svg id="town" class="scene k-fit" style="--ar:2.1;--h:38vh" viewBox="0 0 700 330" role="img" aria-label="우리 주변에서 세균이 사는 곳 찾기">
+    <rect width="700" height="330" fill="#e8f4fb"/><rect y="230" width="700" height="100" fill="#b98a55"/>
+    <g class="hit" data-k="soil"><rect x="20" y="250" width="160" height="70" rx="10" fill="#8a5a2b"/><path d="M40 270 q20 -8 40 0 M90 296 q20 -8 40 0" stroke="#6a4520" stroke-width="3" fill="none"/><text x="60" y="244" font-family="Jua" font-size="16" fill="#0f3b5c">흙(땅)</text></g>
+    <g class="hit" data-k="water"><ellipse cx="290" cy="280" rx="90" ry="30" fill="#5fa9cf"/><text x="262" y="244" font-family="Jua" font-size="16" fill="#0f3b5c">연못 물</text></g>
+    <g class="hit" data-k="mouth"><circle cx="460" cy="120" r="44" fill="#ffd9b0" stroke="#c99a6b" stroke-width="3"/><circle cx="446" cy="108" r="4"/><circle cx="474" cy="108" r="4"/><ellipse cx="460" cy="136" rx="16" ry="10" fill="#c2332c"/><rect x="430" y="164" width="60" height="66" rx="16" fill="#3b6fb6"/><text x="414" y="66" font-family="Jua" font-size="16" fill="#0f3b5c">사람의 입안</text></g>
+    <g class="hit" data-k="gut"><ellipse cx="460" cy="198" rx="20" ry="16" fill="#f0a2a2" stroke="#b55" stroke-width="2"/><path d="M448 196 q12 -10 24 0 q-12 10 -24 0" stroke="#b55" stroke-width="2" fill="none"/></g>
+    <g class="hit" data-k="door"><rect x="560" y="40" width="110" height="190" fill="#c79a62" stroke="#7a5a2a" stroke-width="4"/><circle cx="580" cy="140" r="9" fill="#ffd23f" stroke="#a07800" stroke-width="2"/><text x="566" y="30" font-family="Jua" font-size="16" fill="#0f3b5c">문손잡이</text></g>
+    <g class="hit" data-k="phone"><rect x="120" y="90" width="56" height="96" rx="10" fill="#333"/><rect x="126" y="98" width="44" height="74" rx="4" fill="#7cc4ef"/><text x="104" y="80" font-family="Jua" font-size="16" fill="#0f3b5c">휴대 전화</text></g>
+    <g id="tGerms" opacity="0" pointer-events="none" style="transition:opacity .6s"></g>
+    <g id="tMarks" pointer-events="none"></g>
+  </svg>
+  <div class="row" style="margin-top:6px"><button id="tGlass">🕶️ 세균 보기 안경 쓰기</button></div>
+  <div class="found" id="tFound"></div>
+  <div class="fb" id="tFb"></div>
+</section>
+
+<section id="s5" data-nav="세균의 특징">
+  <span class="stage">전개 2 · 「과학」 99쪽</span>
+  <h2>세균은 어떤 특징이 있을까요?</h2>
+  <div class="k-two">
+    <div>
+      <p class="jua">🔬 번식 실험실: 살기 적당한 조건을 만들어 주고 시간을 흘려 봐요.</p>
+      <div class="u43-sw" id="conds"><button data-c="food">🍞 먹이(양분)</button><button data-c="temp">🌡️ 알맞은 온도</button></div>
+      <svg id="dish" class="scene" viewBox="0 0 300 200" role="img" aria-label="세균이 번식하는 모습" style="max-height:26vh;margin-top:8px;background:#f4fbff"><ellipse cx="150" cy="100" rx="130" ry="85" fill="#fffbe9" stroke="#7aa7bd" stroke-width="4"/><g id="cells"></g></svg>
+      <p class="u43-cnt" id="cnt">세균 1마리</p>
+      <div class="row" style="justify-content:center"><button class="main" id="tick">⏩ 시간 흘려 보내기</button><button id="tReset">처음으로</button></div>
+      <div class="fb" id="grFb"></div>
+    </div>
+    <div>
+      <p class="jua">📏 크기 비교: 크기가 <b>큰 것부터</b> 차례로 눌러요.</p>
+      <div class="pick" id="sizePick" style="grid-template-columns:1fr!important"><button data-o="1">🍄 버섯 (균류)</button><button data-o="3">🦠 세균</button><button data-o="2">🔬 짚신벌레 (원생생물)</button></div>
+      <div class="fb" id="sizeFb"></div>
+      <p class="tip">세균은 균류나 원생생물보다 크기가 작아서 맨눈으로 관찰하기 어려워요. 그래서 사진이나 동영상 자료로 관찰해요.</p>
+    </div>
+  </div>
+</section>
+
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="k-q">1. 세균은 균류나 원생생물보다 크기가 ( 큽니다 , 작습니다 ).</p>
+  <div class="pick" id="sumPick"><button>큽니다</button><button data-a="1">작습니다</button></div>
+  <div class="fb"></div>
+  <p class="k-q">2. 💭 학교에서 세균이 많을 것 같은 곳을 눌러 까닭을 들어 봐요. (2곳 이상)</p>
+  <div class="pick" id="schPick"><button data-m="화장실은 물기가 많고 여러 사람이 써서 세균이 많을 것 같아요.">🚻 화장실</button><button data-m="쓰레기통에는 음식 찌꺼기가 있어 세균이 많을 것 같아요.">🗑️ 쓰레기통</button><button data-m="여러 사람이 만지는 문손잡이에는 세균이 많을 것 같아요.">🚪 문손잡이</button><button data-m="여러 사람이 함께 쓰는 키보드나 마우스에도 세균이 많을 것 같아요.">⌨️ 함께 쓰는 키보드</button></div>
+  <div class="fb" id="schFb"></div>
+</section>
+
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="k-q">1. 세균의 특징으로 옳은 것은 ◯, 옳지 않은 것은 ×를 골라요.</p>
+  <div id="f1">
+    <div class="k-ox" data-a="x" data-m="세균은 공 모양, 막대 모양, 나선 모양 등 여러 가지 생김새가 있어요."><span class="q">⑴ 세균은 모두 공 모양이다.</span><button data-v="o">◯</button><button data-v="x">×</button></div>
+    <div class="k-ox" data-a="x" data-m="세균은 생김새가 단순해요."><span class="q">⑵ 세균은 생김새가 복잡하다.</span><button data-v="o">◯</button><button data-v="x">×</button></div>
+    <div class="k-ox" data-a="o" data-m="세균은 크기가 매우 작아 맨눈으로 관찰하기 어려워요."><span class="q">⑶ 세균은 크기가 매우 작아 맨눈으로 관찰하기 어렵다.</span><button data-v="o">◯</button><button data-v="x">×</button></div>
+  </div>
+  <div class="fb" id="f1Fb"></div>
+  <p class="k-q">2. 세균은 살기 적당한 조건이 되면 많은 수로 ( 천천히 , 빠르게 ) 번식한다.</p>
+  <div class="pick" id="f2"><button>천천히</button><button data-a="1">빠르게</button></div>
+  <div class="fb"></div>
+  <p class="k-q">3. ✏️ 서술형: 우리 주변에서 세균이 사는 곳을 세 가지 이상 써 봅시다.</p>
+  <textarea id="f3" rows="2" placeholder="세균은 ~, ~, ~ 등에 산다."></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="f3Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="f3Fb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 64쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>다양한 세균의 생김새를 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>세균의 생김새를 조사해 자료를 만들어 공유할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>세균 그림을 그리는 활동에 적극적으로 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+const NS='http://www.w3.org/2000/svg';
+const mk=(tag,at,par)=>{const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;};
+const rnd=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+function multi(box,need,sec,okMsg,noMsg,after){const got=new Set();const out=$(box).nextElementSibling;
+  $$(box+' button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size>=need){fb(out,okMsg,true);if(sec)doneNav(sec);if(after)after();}else fb(out,`좋아요! (${got.size}/${need})`,'info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+function oxSet(box,out,okMsg,after){const rows=$$(box+' .k-ox');const ok=new Set();
+  rows.forEach((r,i)=>$$('button',r).forEach(b=>b.onclick=()=>{$$('button',r).forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.v===r.dataset.a){b.classList.add('right');ok.add(i);const all=ok.size===rows.length;fb(out,all?okMsg:r.dataset.m+` (${ok.size}/${rows.length})`,all?true:'info');if(all&&after)after();}
+    else{b.classList.add('wrong');ok.delete(i);fb(out,'다시 생각해 봐요. 오늘 배운 세균의 특징을 떠올려 봐요.',false);}}));}
+/* 세균 그리기: 종류 C/R/S, 배치 1/g/c, 색, 크기 */
+function bug(g,kind,x,y,s,col,rot){const G=mk('g',{transform:`translate(${x} ${y}) rotate(${rot||0}) scale(${s})`},g);
+  if(kind==='C')mk('circle',{r:10,fill:col,stroke:'#0003','stroke-width':1.5},G);
+  else if(kind==='R')mk('rect',{x:-22,y:-7,width:44,height:14,rx:7,fill:col,stroke:'#0003','stroke-width':1.5},G);
+  else mk('path',{d:'M-26 0 q6.5 -12 13 0 t13 0 t13 0 t13 0',stroke:col,'stroke-width':6,fill:'none','stroke-linecap':'round'},G);return G;}
+function scene(svg,kind,arr,col,W,H,S){svg.innerHTML='';const cx=W/2,cy=H/2;
+  if(arr==='g'&&kind==='C'){for(let k=0;k<16;k++){const a=k*2.4,r=Math.sqrt(k)*12*S;bug(svg,'C',cx+Math.cos(a)*r,cy+Math.sin(a)*r,S*1.2,col);}}
+  else if(arr==='g'){for(let k=0;k<7;k++)bug(svg,kind,cx+(rnd(k,1)-.5)*70*S,cy+(rnd(k,2)-.5)*50*S,S,col,rnd(k,3)*180);}
+  else if(arr==='c'){const n=kind==='C'?7:kind==='R'?4:3;const step=kind==='C'?20:kind==='R'?44:52;for(let k=0;k<n;k++)bug(svg,kind,cx+(k-(n-1)/2)*step*S,cy+Math.sin(k)*6*S,S*(kind==='C'?1:1),col);}
+  else{for(let k=0;k<3;k++)bug(svg,kind,cx+(k-1)*70*S,cy+(rnd(k,4)-.5)*40*S,S*1.3,col,rnd(k,5)*120);}}
+
+/* s1 */
+(function(){const g=$('#germs');for(let k=0;k<46;k++){const x=k<23?50+rnd(k,1)*80:150+rnd(k,1)*80,y=70+rnd(k,2)*130;bug(g,['C','R','S'][k%3],x,y,0.32,['#9b6bd6','#e2873a','#3fae8a'][k%3],rnd(k,3)*180);}
+  let on=false;$('#glass').onclick=()=>{on=!on;g.setAttribute('opacity',on?1:0);$('#glass').classList.toggle('sel',on);$('#glass').textContent=on?'🕶️ 세균 보기 안경 벗기':'🕶️ 세균 보기 안경 쓰기';};
+  let a=0,b=0;const d=()=>{if(a&&b)doneNav('s1');};
+  pickOne('#introPick','맞아요! 음식을 먹다가 손에 있던 세균이 입으로 들어가 질병에 걸릴 수 있어서 손을 씻어야 해요.','세균 보기 안경을 쓰고 손을 다시 살펴봐요.',null,()=>{a=1;d();});
+  pickOne('#eyePick','맞아요! 세균은 균류나 원생생물보다 크기가 작아 맨눈으로 관찰하기 어려워요. 그래서 사진과 동영상으로 생김새를 살펴봐요.','세균 보기 안경 없이 손을 보면 세균이 보였나요?',null,()=>{b=1;d();});})();
+
+/* s2 사진 조사 */
+(function(){const pS=$('#pS'),pR=$('#pR'),pC=$('#pC');
+  mk('rect',{width:200,height:150,fill:'#141428'},pS);for(let k=0;k<5;k++){const G=bug(pS,'S',30+rnd(k,1)*140,25+rnd(k,2)*100,1.4,['#f0c040','#ff9a3c'][k%2],rnd(k,3)*160);}
+  mk('rect',{width:200,height:150,fill:'#1a1426'},pR);for(let k=0;k<4;k++){for(let j=0;j<3;j++)bug(pR,'R',40+j*46+(k%2)*10,24+k*34,1,['#6fd36f','#4fc0c0'][k%2],0);}
+  mk('rect',{width:200,height:150,fill:'#10182a'},pC);for(let k=0;k<26;k++){const a=k*2.4,r=Math.sqrt(k)*13;bug(pC,'C',100+Math.cos(a)*r,75+Math.sin(a)*r,1.15,'#b07ae6');}
+  $$('#kw button').forEach(b=>b.onclick=()=>{$$('#kw button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');$('#srchTxt').textContent=b.textContent;$('#res').hidden=false;$('#resTip').hidden=false;});
+  /* 분류 */
+  const D=[['C','g','#b07ae6'],['C','c','#e2873a'],['R','1','#6fd36f'],['R','c','#4fc0c0'],['S','1','#f0c040'],['S','g','#ff9a3c']].sort(()=>0.5-Math.random());
+  const box=$('#bugChips');let cur=null,n=0;
+  D.forEach((d,i)=>{const b=document.createElement('button');b.dataset.b=d[0];b.setAttribute('aria-label','세균 그림 '+(i+1));const sv=document.createElementNS(NS,'svg');sv.setAttribute('viewBox','0 0 120 90');scene(sv,d[0],d[1],d[2],120,90,0.75);b.appendChild(sv);box.appendChild(b);
+    b.onclick=()=>{$$('#bugChips button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b;$$('#bugBins .k-bin').forEach(x=>x.classList.add('hot'));};});
+  $$('#bugBins .k-bin').forEach(bin=>bin.onclick=()=>{if(!cur)return;
+    if(bin.dataset.b===cur.dataset.b){bin.appendChild(cur.querySelector('svg').cloneNode(true));cur.classList.add('used');cur.classList.remove('sel');n++;
+      fb('#bugFb',n===6?'🎉 모두 나누었어요! 세균은 생김새가 단순하고, 공 모양·막대 모양·나선 모양 등이 있어요.':`맞아요! (${n}/6)`,true);if(n===6)doneNav('s2');}
+    else fb('#bugFb','생김새를 다시 살펴봐요. 동글동글한지, 길쭉한지, 꼬불꼬불한지 보세요.',false);
+    cur=null;$$('#bugBins .k-bin').forEach(x=>x.classList.remove('hot'));});})();
+
+/* s3 그리기·공유 */
+(function(){let sh='C',ar='1',col='#9b6bd6',up=false,likes=0,a=0;
+  const draw=()=>scene($('#mkSvg'),sh,ar,col,240,150,1);
+  const grp=(id,f)=>$$(id+' button').forEach(b=>b.onclick=()=>{$$(id+' button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');f(b.dataset.v);draw();});
+  grp('#mkShape',v=>sh=v);grp('#mkArr',v=>ar=v);grp('#mkCol',v=>col=v);draw();
+  const NAME={C:'공 모양',R:'막대 모양',S:'나선 모양'};
+  const FR=[['친구 1','R','1','#4fc0c0','긴 막대 모양이다.'],['친구 2','C','g','#e2873a','공 모양이고, 서로 한곳에 뭉쳐 있다.'],['친구 3','S','1','#3fae8a','나선 모양이고, 줄이 꼬인 것같이 생겼다.']];
+  const PR=['생김새를 자세히 그렸어요! 👍','색과 모양이 잘 보여요! 😀','설명이 알기 쉬워요! ✨'];
+  function card(who,s,a2,c,txt,mine){const d=document.createElement('div');d.className='u43-card';const sv=document.createElementNS(NS,'svg');sv.setAttribute('viewBox','0 0 240 150');scene(sv,s,a2,c,240,150,1);
+    d.appendChild(sv);d.insertAdjacentHTML('beforeend',`<div><b>${who}</b> · ${NAME[s]}</div><div>${txt.replace(/</g,'&lt;')}</div><div class="cm"></div>`);
+    if(!mine){const b=document.createElement('button');b.textContent='💬 칭찬 댓글';b.onclick=()=>{const cm=d.querySelector('.cm');if(cm.textContent)return;cm.textContent='나: '+PR[likes%3];likes++;b.disabled=true;
+      if(!up){fb('#mkFb','먼저 내 그림을 공유 플랫폼에 올려요.',false);cm.textContent='';likes--;b.disabled=false;return;}fb('#mkFb',likes>=2?'친구들에게 칭찬 댓글을 달았어요. 바르고 고운 말로 써서 멋져요!':'칭찬 댓글을 달았어요! 다른 친구에게도 달아 봐요.',likes>=2?true:'info');chk();};d.appendChild(b);}
+    return d;}
+  $('#mkUp').onclick=()=>{const t=$('#mkTxt').value.trim();if(t.length<5){fb('#mkFb','먼저 세균의 생김새를 한 문장으로 써 봐요. (예: 막대 모양이고 여러 개가 연결되어 있다.)',false);return;}
+    if(up){fb('#mkFb','이미 올렸어요. 친구 그림에 칭찬 댓글을 달아 봐요.','info');return;}up=true;
+    $('#board').prepend(card('나',sh,ar,col,t,true));
+    fb('#mkFb','공유 플랫폼에 올렸어요! 친구들이 올린 그림도 살펴봐요.','info');};
+  FR.forEach(f=>$('#board').appendChild(card(...f,false)));
+  function chk(){if(likes>=2&&a&&up)doneNav('s3');}
+  multi('#shapePick',3,null,'맞아요! 공 모양 세균, 막대 모양 세균, 나선 모양 세균 등이 있어요. 여러 개가 뭉쳐 있는 공 모양 세균도 있고, 막대처럼 길쭉한 세균도 있어요.','다시 살펴봐요.',()=>{a=1;chk();});})();
+
+/* s4 사는 곳 */
+(function(){const g=$('#tGerms');const spots=[[100,290],[290,280],[460,130],[460,198],[580,140],[148,140]];
+  spots.forEach((p,i)=>{for(let k=0;k<8;k++)bug(g,['C','R','S'][(k+i)%3],p[0]+(rnd(k+i*9,1)-.5)*60,p[1]+(rnd(k+i*9,2)-.5)*36,0.3,['#9b6bd6','#e2873a','#3fae8a'][k%3],rnd(k,3)*180);});
+  let on=false;$('#tGlass').onclick=()=>{on=!on;g.setAttribute('opacity',on?1:0);$('#tGlass').classList.toggle('sel',on);$('#tGlass').textContent=on?'🕶️ 세균 보기 안경 벗기':'🕶️ 세균 보기 안경 쓰기';};
+  const INFO={soil:'땅(흙): 흙 속에도 세균이 살아요.',water:'물: 연못이나 하천의 물에도 세균이 살아요.',mouth:'생물의 몸속(입안): 우리 입안에도 세균이 살아요.',gut:'생물의 몸속(장): 사람이나 동물의 장 속에도 세균이 살아요.',door:'물건(문손잡이): 여러 사람이 만지는 물건에도 세균이 있어요.',phone:'물건(휴대 전화): 자주 만지는 물건에도 세균이 있어요.'};
+  const got=new Set();
+  $$('#town .hit').forEach(h=>h.addEventListener('click',()=>{const k=h.dataset.k;if(got.has(k)){fb('#tFb',INFO[k],'info');return;}got.add(k);
+    const b=h.getBBox();mk('ellipse',{cx:b.x+b.width/2,cy:b.y+b.height/2,rx:b.width/2+12,ry:b.height/2+12,fill:'none',stroke:'#e2573f','stroke-width':5,style:'animation:pop .5s ease-out','stroke-dasharray':260},$('#tMarks'));
+    $('#tFound').innerHTML=[...got].map(x=>'<span>○ '+INFO[x].split(':')[0]+'</span>').join('');
+    if(got.size===6){fb('#tFb','🎉 모두 찾았어요! 세균은 땅, 물, 생물의 몸속, 물건 등 우리 주변 곳곳에 있어요.',true);doneNav('s4');}else fb('#tFb',INFO[k]+` (${got.size}/6)`,true);}));})();
+
+/* s5 번식·크기 */
+(function(){const C={food:false,temp:false};let n=1,t=0,a=0,b=0;const d=()=>{if(a&&b)doneNav('s5');};
+  const G=$('#cells');
+  function draw(){G.innerHTML='';const show=Math.min(n,256);for(let k=0;k<show;k++){const ang=k*2.4,r=Math.sqrt(k)*4.6;bug(G,'C',150+Math.cos(ang)*r*1.4,100+Math.sin(ang)*r,0.42,'#9b6bd6');}
+    $('#cnt').textContent=`세균 ${n.toLocaleString()}마리`+(t?` (${t}번 나뉨)`:'');}
+  $$('#conds button').forEach(bt=>bt.onclick=()=>{C[bt.dataset.c]=!C[bt.dataset.c];bt.classList.toggle('on',C[bt.dataset.c]);});
+  $('#tick').onclick=()=>{if(!(C.food&&C.temp)){fb('#grFb','세균이 거의 늘지 않아요. 살기 적당한 조건(먹이, 알맞은 온도)을 모두 만들어 줘 봐요.',false);return;}
+    n*=2;t++;draw();if(t>=8){fb('#grFb','짧은 시간에 1마리가 '+n+'마리가 되었어요! 세균은 살기 적당한 조건이 되면 많은 수로 빠르게 번식해요.',true);a=1;d();}
+    else fb('#grFb','세균이 둘로 나뉘어 수가 늘어나요. 계속 눌러 봐요.','info');};
+  $('#tReset').onclick=()=>{n=1;t=0;draw();fb('#grFb','','info');$('#grFb').className='fb';};draw();
+  let next=1;$$('#sizePick button').forEach(bt=>bt.onclick=()=>{if(bt.classList.contains('right'))return;
+    if(+bt.dataset.o===next){bt.classList.add('right');bt.textContent=next+'. '+bt.textContent;next++;
+      if(next>3){fb('#sizeFb','맞아요! 버섯 > 짚신벌레 > 세균 차례로 커요. 세균은 균류나 원생생물보다 크기가 작아요.',true);b=1;d();}else fb('#sizeFb','좋아요! 그다음으로 큰 것은?','info');}
+    else{bt.classList.add('wrong');setTimeout(()=>bt.classList.remove('wrong'),600);fb('#sizeFb','더 큰 것이 있어요. 맨눈으로 볼 수 있는지 떠올려 봐요.',false);}});})();
+
+/* s6 */
+(function(){let a=0;const seen=new Set();const d=()=>{if(a&&seen.size>=2)doneNav('s6');};
+  pickOne('#sumPick','맞아요! 세균은 균류나 원생생물보다 크기가 작습니다.','번식 실험실 옆의 크기 비교를 떠올려 봐요.',null,()=>{a=1;d();});
+  $$('#schPick button').forEach(b=>b.onclick=()=>{b.classList.add('sel');seen.add(b);fb('#schFb',b.dataset.m+(seen.size>=2?' 세균은 우리 주변 곳곳에 있으니 손을 자주 씻어요!':''),seen.size>=2?true:'info');d();});})();
+
+/* s7 */
+(function(){let a=0,b=0,c=0;const d=()=>{if(a&&b&&c)doneNav('s7');};
+  oxSet('#f1','#f1Fb','모두 맞혔어요! 세균은 생김새가 단순하고 여러 가지 모양이 있으며, 크기가 매우 작아요.',()=>{a=1;d();});
+  pickOne('#f2','정답! 세균은 살기 적당한 조건이 되면 많은 수로 빠르게 번식해요.','번식 실험실을 떠올려 봐요.',null,()=>{b=1;d();});
+  keyCheck('#f3','#f3Btn','#f3Fb',[[/땅|흙/,'땅'],[/(^|[^생동])물(?!건)/,'물'],[/몸속|입안|입 안|장|피부|몸/,'생물의 몸속'],[/물건|손잡이|휴대|전화|책상|키보드|컵/,'물건'],[/공기/,'공기'],[/손/,'손']],3,null,'세균이 사는 곳을 더 떠올려 봐요. (예: 땅, 물, 생물의 몸속, 물건)');
+  $('#f3Btn').addEventListener('click',()=>{if($('#f3Fb').classList.contains('ok')){c=1;d();}});})();
+
+faces('s8','오늘도 멋지게 조사했어요! 다음 시간에는 균류, 원생생물, 세균이 우리 생활에 주는 영향을 알아봐요.','어려웠던 부분은 세균 사진 분류와 세균이 사는 곳 찾기를 다시 해 봐요. 선생님께 질문해도 좋아요!');
+</script>

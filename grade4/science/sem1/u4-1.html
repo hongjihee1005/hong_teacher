@@ -1,0 +1,864 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>버섯과 곰팡이의 정체를 밝혀라!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#2f7d4a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+[hidden]{display:none!important}
+.k-fit{width:min(100%,calc(var(--h,50vh)*var(--ar,1.6)));margin:0 auto}
+.k-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+@media(max-width:700px){.k-two{grid-template-columns:1fr}}
+.k-ox{display:flex;flex-wrap:wrap;gap:6px 12px;align-items:center;margin:6px 0;padding:6px 10px;border:2px solid var(--line);border-radius:12px}
+.k-ox .q{flex:1 1 55%}
+.k-ox button{min-width:3.4rem}
+.k-chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.k-chips button.used{opacity:.35;pointer-events:none}
+.k-tbl td{vertical-align:top}
+.k-tbl td.slot{min-width:10rem;cursor:pointer;background:var(--paper)}
+.k-tbl td.slot.fill{background:#dcf5e5;color:#0d5a31}
+.k-tbl td.slot.hot{outline:3px dashed var(--sun);outline-offset:-4px}
+.k-step{font-family:"Jua",sans-serif;font-size:1.05rem;margin:6px 0}
+.k-q{font-family:"Jua",sans-serif;font-size:1.1rem;margin:12px 0 6px}
+.u41-part{cursor:pointer}
+.u41-part:hover>*{filter:brightness(1.12)}
+.u41-part.ok>*{stroke:#16804a!important;stroke-width:4!important}
+.u41-lab{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(0,1fr);gap:12px;align-items:start}
+@media(max-width:700px){.u41-lab{grid-template-columns:1fr}}
+.u41-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.u41-acts button{font-size:.92rem;min-height:2.4rem}
+.u41-acts button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.u41-view{position:relative}
+.u41-mag{font-family:"Jua",sans-serif;text-align:center;margin-top:4px}
+input.u41-rng{width:100%;accent-color:var(--sky);height:2rem}
+.u41-book{border:3px solid var(--navy);border-radius:16px;padding:12px 14px;background:#fffaf0}
+.u41-book .num{font-family:"Jua",sans-serif;color:var(--muted)}
+.u41-got{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.u41-got span{background:#e1f0fb;color:#12466b;border-radius:999px;padding:3px 10px;font-size:.88rem}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M12 44 a31 26 0 0 1 62 0z" fill="#e2573f" stroke="#fff" stroke-width="3"/><circle cx="30" cy="32" r="5" fill="#fff"/><circle cx="52" cy="28" r="6" fill="#fff"/><path d="M34 44 h18 l3 30 h-24z" fill="#f4e6cf" stroke="#fff" stroke-width="3"/></svg>
+  <div><h1>버섯과 곰팡이의 정체를 밝혀라!</h1><p>4학년 1학기 과학 · 4단원 다양한 생물과 우리 생활 · 2~3/12차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">숲속 균류</a><a href="#s3">균류 수첩</a><a href="#s4">실체 현미경</a><a href="#s5">맨눈·돋보기</a><a href="#s6">현미경 관찰</a><a href="#s7">정리해요</a><a href="#s8">한눈에 쏙</a><a href="#s9">형성 평가</a><a href="#s10">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>실체 현미경 사용법을 익혀 버섯과 곰팡이를 관찰할 수 있어요.<br>버섯과 곰팡이 같은 균류의 특징과 사는 곳을 설명할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입</span>
+  <h2>빵을 선반에 오래 놓아두면 어떻게 될까요?</h2>
+  <p>따뜻하고 습기가 있는 선반에 빵을 놓아두었어요. 날짜 막대를 움직여 빵을 살펴봐요.</p>
+  <svg class="scene k-fit" style="--ar:2;--h:28vh" viewBox="0 0 600 300" role="img" aria-label="선반 위 빵에 날이 갈수록 곰팡이가 생기는 그림">
+    <rect width="600" height="300" fill="#f7efe0"/>
+    <rect x="0" y="0" width="600" height="40" fill="#efe2c8"/>
+    <rect x="60" y="226" width="480" height="18" rx="4" fill="#a9733f"/><rect x="80" y="244" width="14" height="50" fill="#8a5a2b"/><rect x="506" y="244" width="14" height="50" fill="#8a5a2b"/>
+    <g id="drops" opacity=".0"><path d="M120 70 q6 12 0 18 q-6 -6 0 -18z" fill="#7cc4ef"/><path d="M470 90 q6 12 0 18 q-6 -6 0 -18z" fill="#7cc4ef"/><path d="M500 60 q6 12 0 18 q-6 -6 0 -18z" fill="#7cc4ef"/></g>
+    <path d="M190 226 v-96 q0 -40 50 -40 h120 q50 0 50 40 v96 z" fill="#e8b46c" stroke="#a9733f" stroke-width="5"/>
+    <path d="M208 220 v-86 q0 -28 40 -28 h104 q40 0 40 28 v86 z" fill="#fbe6bf"/>
+    <g id="mold"></g>
+    <rect x="16" y="12" width="230" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="dayT" x="30" y="40" font-size="21" font-family="Jua" fill="#fff">처음 놓아둔 날</text>
+  </svg>
+  <div class="row" style="margin-top:8px"><span class="jua">0일</span><input type="range" class="u41-rng" id="day" min="0" max="7" step="1" value="0" style="flex:1" aria-label="지난 날수"><span class="jua">7일</span></div>
+  <p class="k-q" data-glue="1">빵을 선반에 오래 놓아두면 빵은 어떻게 될까요?</p>
+  <div class="pick" id="introPick"><button data-a="1">빵에 곰팡이가 생겨요</button><button>빵이 점점 커져요</button><button>아무 변화가 없어요</button><button>빵이 투명해져요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="숲속 균류">
+  <span class="stage">전개 1 · 「과학」 92~93쪽</span>
+  <h2>숲속 어디에서 버섯과 곰팡이를 볼 수 있을까요?</h2>
+  <p>그림에서 버섯과 곰팡이가 자라는 곳을 눌러 찾아요. 모두 <b>5</b>곳이에요.</p>
+  <svg id="forest" class="scene k-fit" style="--ar:1.82;--h:46vh" viewBox="0 0 800 440" role="img" aria-label="숲속의 버섯과 곰팡이 찾기 그림">
+    <defs><linearGradient id="fsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#cfe9d4"/><stop offset="1" stop-color="#9fcf9a"/></linearGradient></defs>
+    <rect width="800" height="440" fill="url(#fsky)"/>
+    <rect x="610" y="20" width="42" height="300" fill="#7a4e27"/><circle cx="630" cy="40" r="90" fill="#3f8f46"/><circle cx="560" cy="70" r="60" fill="#357a3c"/><circle cx="700" cy="70" r="60" fill="#357a3c"/>
+    <rect x="60" y="0" width="34" height="250" fill="#7a4e27"/><circle cx="76" cy="10" r="80" fill="#357a3c"/>
+    <rect y="300" width="800" height="140" fill="#8a6a3e"/><path d="M0 300 Q200 280 400 300 T800 296 V310 H0Z" fill="#6f9c4a"/>
+    <!-- 죽은 나무(쓰러진 통나무) + 버섯 -->
+    <g class="hit" data-k="log"><rect x="150" y="262" width="300" height="56" rx="26" fill="#8a5a2b" stroke="#5a3a1a" stroke-width="4"/><ellipse cx="450" cy="290" rx="18" ry="28" fill="#c79a62" stroke="#5a3a1a" stroke-width="4"/>
+      <g stroke="#4a2e12" stroke-width="2"><rect x="216" y="232" width="12" height="32" rx="4" fill="#f4ead8"/><path d="M194 236 q28 -40 56 0 q-28 8 -56 0z" fill="#8b5a2b"/>
+      <rect x="268" y="242" width="9" height="22" rx="3" fill="#f4ead8"/><path d="M254 245 q18 -28 38 0 q-19 6 -38 0z" fill="#9b6a35"/>
+      <rect x="352" y="226" width="13" height="38" rx="4" fill="#f4ead8"/><path d="M326 230 q32 -46 64 0 q-32 9 -64 0z" fill="#7b4a22"/></g>
+      <g fill="#c9a77a" opacity=".8"><circle cx="210" cy="226" r="2.5"/><circle cx="232" cy="222" r="2"/><circle cx="350" cy="216" r="2.5"/><circle cx="372" cy="214" r="2"/></g></g>
+
+    <!-- 나무 속 균사 (잘라 보인 부분) -->
+    <g class="hit" data-k="hyph"><rect x="168" y="282" width="120" height="30" rx="8" fill="#e7cfa6" stroke="#5a3a1a" stroke-width="2" stroke-dasharray="5 4"/>
+      <path d="M174 296 q14 -8 26 2 t26 -4 t26 6 t28 -4 M180 306 q20 -6 34 0 t40 -2 t28 2 M196 288 q10 10 24 4 t30 2" stroke="#fff" stroke-width="2.4" fill="none"/></g>
+    <!-- 열매(떨어진 과일) 곰팡이 -->
+    <g class="hit" data-k="fruit"><circle cx="560" cy="350" r="26" fill="#d9532b"/><path d="M560 324 q4 -10 10 -12" stroke="#5a3a1a" stroke-width="4" fill="none"/>
+      <g fill="#cfe3c9"><circle cx="550" cy="342" r="10"/><circle cx="566" cy="338" r="8"/><circle cx="558" cy="354" r="9"/></g><g fill="#5f8f6a"><circle cx="550" cy="342" r="3"/><circle cx="566" cy="338" r="2.6"/><circle cx="558" cy="354" r="3"/></g></g>
+    <!-- 잎에 자란 곰팡이 -->
+    <g class="hit" data-k="leaf"><path d="M680 370 q50 -40 90 0 q-45 34 -90 0z" fill="#c9a24a" stroke="#7a5a1a" stroke-width="3"/><path d="M680 370 h90" stroke="#7a5a1a" stroke-width="2"/>
+      <g fill="#f0f0f0" stroke="#bbb"><circle cx="708" cy="364" r="6"/><circle cx="728" cy="376" r="7"/><circle cx="744" cy="364" r="5"/></g></g>
+    <!-- 낙엽 아래 버섯 -->
+    <g class="hit" data-k="litter"><g fill="#c98a3a" stroke="#7a4a1a" stroke-width="2"><path d="M80 372 q30 -22 60 0 q-30 16 -60 0z"/><path d="M120 384 q30 -20 56 2 q-30 14 -56 -2z"/></g>
+      <rect x="104" y="342" width="8" height="26" fill="#f4ead8"/><path d="M90 344 q18 -26 36 0z" fill="#e2573f" stroke="#8a1f19" stroke-width="2"/><circle cx="102" cy="336" r="2.4" fill="#fff"/><circle cx="114" cy="338" r="2" fill="#fff"/></g>
+    <!-- 방해 그림 -->
+    <g class="miss" data-m="꽃은 식물이에요"><rect x="500" y="250" width="4" height="50" fill="#3f8f46"/><circle cx="502" cy="244" r="9" fill="#ffd23f"/><g fill="#fff"><circle cx="502" cy="232" r="7"/><circle cx="514" cy="244" r="7"/><circle cx="490" cy="244" r="7"/><circle cx="502" cy="256" r="7"/></g><circle cx="502" cy="244" r="6" fill="#ffb000"/></g>
+    <g class="miss" data-m="다람쥐는 동물이에요"><ellipse cx="700" cy="292" rx="22" ry="16" fill="#b5651d"/><circle cx="720" cy="278" r="10" fill="#b5651d"/><path d="M680 290 q-26 -30 4 -46 q10 20 0 40" fill="#c97a2d"/><circle cx="723" cy="276" r="2" fill="#000"/></g>
+    <g class="miss" data-m="나비는 동물이에요"><g fill="#ef8bb3"><ellipse cx="340" cy="120" rx="16" ry="12"/><ellipse cx="368" cy="120" rx="16" ry="12"/><ellipse cx="344" cy="138" rx="10" ry="8"/><ellipse cx="364" cy="138" rx="10" ry="8"/></g><rect x="352" y="112" width="4" height="32" rx="2" fill="#333"/></g>
+    <g id="fMarks" pointer-events="none"></g>
+  </svg>
+  <div class="found" id="fFound"></div>
+  <div class="fb" id="fFb"></div>
+  <p class="tip">💡 「과학」 92쪽 그림처럼 나무 속을 잘라 보면, 버섯은 나무 위에 자란 부분뿐만 아니라 나무 속에 뿌리처럼 퍼진 부분도 균사로 이루어져 있어요.</p>
+</section>
+
+<section id="s3" data-nav="균류 수첩">
+  <span class="stage">전개 1 · 「과학」 93쪽</span>
+  <h2>균류 탐정 수첩: 버섯과 곰팡이는 어떤 생물일까요?</h2>
+  <p>물음에 하나씩 답하며 탐정 수첩을 채워요.</p>
+  <div class="u41-book">
+    <p class="num" id="bkNum">물음 1 / 5</p>
+    <p class="k-q" id="bkQ" style="margin-top:0"></p>
+    <div class="pick" id="bkPick"></div>
+    <div class="fb" id="bkFb"></div>
+    <div class="u41-got" id="bkGot"></div>
+  </div>
+  <div class="row" style="margin-top:10px"><button id="bkNext" class="main" hidden>이어서 ▶</button></div>
+</section>
+
+<section id="s4" data-nav="실체 현미경">
+  <span class="stage">알아봐요 · 「과학」 94쪽</span>
+  <h2>실체 현미경 각 부분의 이름과 하는 일</h2>
+  <p>아래에서 이름을 하나 고른 뒤, 현미경 그림에서 그 부분을 눌러요.</p>
+  <div class="k-two">
+    <svg id="scope" class="scene" viewBox="0 0 460 470" role="img" aria-label="실체 현미경 그림" style="max-height:52vh;background:#f6fbff">
+      <rect x="70" y="400" width="320" height="52" rx="16" fill="#dfe7ee" stroke="#5b7486" stroke-width="3"/>
+      <g class="u41-part" data-p="light"><circle cx="350" cy="426" r="15" fill="#9fb3c2" stroke="#3b5566" stroke-width="3"/><path d="M342 426 h16" stroke="#3b5566" stroke-width="3"/></g>
+      <g class="u41-part" data-p="stage"><rect x="120" y="372" width="200" height="30" rx="8" fill="#3b4a55" stroke="#1f2a33" stroke-width="3"/><ellipse cx="220" cy="386" rx="28" ry="7" fill="#ffe08a"/></g>
+      <rect x="330" y="120" width="40" height="282" rx="8" fill="#e8eef3" stroke="#5b7486" stroke-width="3"/>
+      <g class="u41-part" data-p="focus"><circle cx="388" cy="270" r="24" fill="#9fb3c2" stroke="#3b5566" stroke-width="3"/><path d="M372 270 h32 M388 254 v32" stroke="#3b5566" stroke-width="3"/></g>
+      <rect x="230" y="170" width="110" height="40" rx="8" fill="#e8eef3" stroke="#5b7486" stroke-width="3"/>
+      <rect x="160" y="132" width="110" height="88" rx="12" fill="#f3f6f8" stroke="#5b7486" stroke-width="3"/>
+      <g class="u41-part" data-p="turret"><rect x="150" y="214" width="130" height="24" rx="10" fill="#7d93a3" stroke="#3b5566" stroke-width="3"/><path d="M166 218 v16 M182 218 v16 M198 218 v16 M214 218 v16 M230 218 v16 M246 218 v16 M262 218 v16" stroke="#3b5566" stroke-width="2"/></g>
+      <g class="u41-part" data-p="obj"><rect x="190" y="238" width="52" height="56" rx="8" fill="#c7d3dc" stroke="#3b5566" stroke-width="3"/><rect x="196" y="290" width="40" height="12" rx="3" fill="#2f3d47"/></g>
+      <g class="u41-part" data-p="eye"><rect x="160" y="62" width="30" height="76" rx="8" fill="#c7d3dc" stroke="#3b5566" stroke-width="3" transform="rotate(-18 175 138)"/><rect x="230" y="62" width="30" height="76" rx="8" fill="#c7d3dc" stroke="#3b5566" stroke-width="3" transform="rotate(-18 245 138)"/></g>
+      <g id="scLabels" font-family="Jua" font-size="17" fill="#0f3b5c"></g>
+    </svg>
+    <div>
+      <div class="k-chips" id="partChips"></div>
+      <div class="fb" id="partFb"></div>
+      <ul id="partList" style="margin:6px 0 0;padding-left:1.2em"></ul>
+      <p class="tip" style="margin-top:8px">🔍 현미경의 배율은 <b>접안렌즈 배율 × 대물렌즈 배율</b>이에요. 예: 접안렌즈 10배 × 대물렌즈 4배 = 40배</p>
+    </div>
+  </div>
+</section>
+
+<section id="s5" data-nav="맨눈·돋보기">
+  <span class="stage">관찰해요 1 · 「실험관찰」 60쪽</span>
+  <h2>버섯과 곰팡이를 맨눈과 돋보기로 관찰해요</h2>
+  <p>준비물: 표고버섯, 빵에 자란 곰팡이(페트리 접시), 돋보기, 마스크, 실험복, 보안경, 실험용 장갑</p>
+  <div class="k-two">
+    <div>
+      <svg id="eyeView" class="scene" viewBox="0 0 400 220" role="img" aria-label="표고버섯과 페트리 접시 속 곰팡이" style="max-height:30vh;background:#fffaf0">
+        <g id="evMush"><path d="M40 120 q70 -90 140 0 z" fill="#8b5a2b" stroke="#4a2e12" stroke-width="3"/><path d="M48 118 q62 -16 124 0" stroke="#f4ead8" stroke-width="4" fill="none"/><rect x="98" y="120" width="26" height="70" rx="8" fill="#f4ead8" stroke="#bfae8c" stroke-width="3"/></g>
+        <g id="evMold"><ellipse cx="300" cy="140" rx="80" ry="60" fill="#e6f2f7" stroke="#7aa7bd" stroke-width="4"/><path d="M250 150 q-6 -40 30 -50 h40 q36 10 30 50 q-50 18 -100 0z" fill="#e8b46c"/>
+          <g fill="#d7e8d0"><circle cx="280" cy="128" r="16"/><circle cx="312" cy="140" r="13"/><circle cx="296" cy="152" r="11"/></g><g fill="#4f7d5a"><circle cx="280" cy="128" r="5"/><circle cx="312" cy="140" r="4"/></g></g>
+        <g id="lens" opacity="0" pointer-events="none"><circle id="lensC" cx="110" cy="110" r="62" fill="none" stroke="#3b3b3b" stroke-width="8"/><rect id="lensH" x="150" y="150" width="16" height="60" rx="6" fill="#3b3b3b" transform="rotate(-45 158 180)"/>
+          <g id="lensIn"></g></g>
+      </svg>
+      <div class="row" style="margin-top:6px"><button id="mgMush" class="main">🔍 버섯을 돋보기로</button><button id="mgMold" class="main">🔍 곰팡이를 돋보기로</button><button id="mgOff">맨눈으로 보기</button></div>
+      <p class="cap" id="evCap">맨눈으로 보면 버섯과 곰팡이는 어떻게 보이나요? 단추를 눌러 돋보기로도 살펴봐요.</p>
+    </div>
+    <div>
+      <p class="jua">관찰한 내용 카드를 고른 뒤, 알맞은 칸을 눌러 표를 채워요.</p>
+      <div class="k-chips" id="obsChips"></div>
+      <table class="k-tbl"><tr><th>구분</th><th>버섯</th><th>곰팡이</th></tr>
+        <tr><th>맨눈</th><td class="slot" data-s="mE"></td><td class="slot" data-s="fE"></td></tr>
+        <tr><th>돋보기</th><td class="slot" data-s="mM"></td><td class="slot" data-s="fM"></td></tr></table>
+      <div class="fb" id="obsFb"></div>
+    </div>
+  </div>
+  <p class="tip">⚠️ 곰팡이는 맨손으로 만지거나 코에 갖다 대지 않아요. 실험에 쓰는 버섯과 빵은 먹지 않아요. 곰팡이가 자란 빵은 페트리 접시 뚜껑을 닫은 채로 옮겨요.</p>
+</section>
+
+<section id="s6" data-nav="현미경 관찰">
+  <span class="stage">관찰해요 2 · 「실험관찰」 60~61쪽</span>
+  <h2>실체 현미경으로 버섯의 균사와 곰팡이를 관찰해요</h2>
+  <p>관찰할 것을 고르고, 실체 현미경 사용 순서대로 단추를 눌러요. 순서가 틀리면 알려 줘요.</p>
+  <div class="u41-lab">
+    <div>
+      <div class="row"><button id="smpM" class="sel">① 버섯 (셀로판테이프 받침 유리)</button><button id="smpF">② 곰팡이 (페트리 접시)</button></div>
+      <div id="tapeBox" style="margin-top:8px">
+        <p class="k-step">먼저 버섯 겉면을 받침 유리로 옮겨요.</p>
+        <svg id="tapeSvg" class="scene" viewBox="0 0 420 150" role="img" aria-label="셀로판테이프로 버섯 겉면을 받침 유리에 옮기는 그림" style="max-height:20vh;background:#fffaf0">
+          <path d="M20 110 q70 -90 140 0 z" fill="#8b5a2b" stroke="#4a2e12" stroke-width="3"/><rect x="78" y="110" width="26" height="36" fill="#f4ead8"/>
+          <rect x="250" y="80" width="150" height="50" rx="4" fill="#e9f6fb" stroke="#7aa7bd" stroke-width="3"/>
+          <rect id="tape" x="50" y="40" width="80" height="22" rx="3" fill="#fff7c2" stroke="#d6b84a" stroke-width="2" opacity=".9" style="transition:transform .8s"/>
+        </svg>
+        <div class="row" style="margin-top:6px"><button id="tp1">테이프 붙이기</button><button id="tp2">떼어 내기</button><button id="tp3">받침 유리에 붙이기</button></div>
+      </div>
+      <div class="u41-acts" style="margin-top:10px" id="acts">
+        <button data-k="1">회전판을 돌려 배율을 가장 낮게 하고 재물대에 올리기</button>
+        <button data-k="2">전원을 켜고 조명 조절 나사로 밝기 조절하기</button>
+        <button data-k="3">옆에서 보며 초점 조절 나사로 대물렌즈를 가깝게 내리기</button>
+        <button data-k="4">접안렌즈로 보며 대물렌즈를 천천히 올려 초점 맞추기</button>
+      </div>
+      <div class="fb" id="labFb"></div>
+    </div>
+    <div class="u41-view">
+      <svg id="mview" class="scene" viewBox="0 0 300 300" role="img" aria-label="실체 현미경으로 본 모습" style="max-height:40vh;background:#1b1b1b">
+        <defs><clipPath id="vc"><circle cx="150" cy="150" r="138"/></clipPath><filter id="blurF"><feGaussianBlur id="blurV" stdDeviation="8"/></filter></defs>
+        <circle cx="150" cy="150" r="138" fill="#111"/>
+        <g clip-path="url(#vc)"><rect id="vBg" width="300" height="300" fill="#111"/><g id="vImg" filter="url(#blurF)"></g></g>
+        <circle cx="150" cy="150" r="138" fill="none" stroke="#555" stroke-width="6"/>
+      </svg>
+      <div id="focusRow" hidden><span class="jua">초점 조절 나사</span><input type="range" class="u41-rng" id="focus" min="0" max="100" value="0" aria-label="초점 조절"></div>
+      <div class="row" id="zoomRow" hidden style="justify-content:center"><button id="zoomUp">회전판 돌려 배율 높이기</button></div>
+      <p class="u41-mag" id="mag">접안렌즈 10배 × 대물렌즈 ?배</p>
+    </div>
+  </div>
+  <p class="k-q">실체 현미경(40배)으로 본 모습으로 알맞은 것을 골라요. (버섯과 곰팡이를 모두 관찰한 뒤에 답해요)</p>
+  <div>
+    <div class="k-two">
+      <div><p class="jua">버섯의 균사</p><div class="pick" id="rM"><button data-a="1">실처럼 가늘고 긴 가닥이 거미줄처럼 엉켜 있어요</button><button data-m="둥근 알갱이가 많이 달린 것은 곰팡이에서 볼 수 있었어요.">가닥 끝에 둥근 알갱이가 많이 달려 있어요</button></div><div class="fb"></div></div>
+      <div><p class="jua">곰팡이</p><div class="pick" id="rF"><button data-a="1">가늘고 긴 가닥 끝에 둥근 알갱이가 많이 달려 있어요</button><button data-m="곰팡이에는 가닥 끝에 무엇이 달려 있었는지 다시 봐요.">초록색 잎과 줄기가 보여요</button></div><div class="fb"></div></div>
+    </div>
+  </div>
+  <p class="tip">⚠️ 실체 현미경 렌즈는 손으로 만지지 않아요. 대물렌즈가 버섯의 균사와 곰팡이에 닿지 않게 조심해요. 받침 유리가 깨지지 않게 조심해요. 관찰이 끝나면 손을 깨끗이 씻고 창문을 열어 환기해요.</p>
+</section>
+
+<section id="s7" data-nav="정리해요">
+  <span class="stage">정리해요 · 「실험관찰」 61쪽</span>
+  <h2>버섯과 곰팡이의 생김새에서 공통점을 찾아요</h2>
+  <svg class="scene k-fit" style="--ar:2.4;--h:28vh;background:#fff" viewBox="0 0 600 250" role="img" aria-label="버섯의 균사와 곰팡이를 확대한 그림 비교">
+    <g id="cmpM"></g><g id="cmpF"></g>
+    <text x="150" y="240" text-anchor="middle" font-family="Jua" font-size="18" fill="#0f3b5c">버섯의 균사 (40배)</text>
+    <text x="450" y="240" text-anchor="middle" font-family="Jua" font-size="18" fill="#0f3b5c">곰팡이 (40배)</text>
+  </svg>
+  <p class="k-q">버섯과 곰팡이의 공통점으로 알맞은 것을 모두 골라요. (3가지)</p>
+  <div class="pick" id="comPick">
+    <button data-a="1">실처럼 가늘고 긴 균사로 이루어져 있어요</button>
+    <button data-a="1">포자로 번식해요</button>
+    <button data-a="1">따뜻하고 습한 곳에서 잘 자라요</button>
+    <button data-m="버섯과 곰팡이는 스스로 양분을 만들지 못해요. 죽은 생물이나 다른 생물에서 양분을 얻어요.">햇빛으로 스스로 양분을 만들어요</button>
+    <button data-m="버섯과 곰팡이에는 식물 같은 뿌리, 줄기, 잎이 없어요.">뿌리, 줄기, 잎이 있어요</button>
+    <button data-m="버섯과 곰팡이는 꽃이나 열매를 만들지 않고 포자로 번식해요.">꽃이 피고 열매를 맺어요</button>
+  </div>
+  <div class="fb" id="comFb"></div>
+</section>
+
+<section id="s8" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 균류는 실처럼 가늘고 긴
+    <span class="blank"><span id="bl1">ㄱ</span><span id="bl2">ㅅ</span></span> 로 이루어져 있습니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <div data-glue="1">
+  <p class="jua" style="font-size:1.1rem;margin-top:16px">2. 💭 생각이 쑥: 집에서 곰팡이가 생기기 쉬운 곳은 어디일까요? 그림에서 눌러 찾아요. (4곳)</p>
+  <svg id="house" class="scene k-fit" style="--ar:2;--h:34vh" viewBox="0 0 640 320" role="img" aria-label="집 안에서 곰팡이가 생기기 쉬운 곳 찾기">
+    <rect width="640" height="320" fill="#fdf6e3"/>
+    <line x1="320" y1="0" x2="320" y2="230" stroke="#c9b48a" stroke-width="6"/><line x1="0" y1="230" x2="640" y2="230" stroke="#c9b48a" stroke-width="6"/>
+    <text x="14" y="26" font-family="Jua" font-size="18" fill="#7a5a2a">욕실</text><text x="334" y="26" font-family="Jua" font-size="18" fill="#7a5a2a">거실</text><text x="14" y="256" font-family="Jua" font-size="18" fill="#7a5a2a">지하실</text>
+    <g class="hit" data-k="bath"><rect x="40" y="120" width="200" height="90" rx="30" fill="#e9f6fb" stroke="#7aa7bd" stroke-width="4"/><path d="M60 40 h220 v70 h-220z" fill="#dfeef4"/><path d="M60 62 h220 M60 86 h220 M115 40 v70 M170 40 v70 M225 40 v70" stroke="#bcd2dc" stroke-width="2"/><g fill="#3d4a3d" opacity=".7"><circle cx="70" cy="104" r="5"/><circle cx="84" cy="106" r="4"/><circle cx="96" cy="103" r="3"/></g><path d="M250 40 q8 10 0 16" stroke="#7cc4ef" stroke-width="3" fill="none"/></g>
+    <g class="hit" data-k="wall"><path d="M600 40 v170 h-40 q-10 -60 10 -120 q14 -30 30 -50z" fill="#cfd8c8"/><g fill="#4a5a44" opacity=".75"><circle cx="590" cy="70" r="6"/><circle cx="582" cy="96" r="5"/><circle cx="594" cy="120" r="7"/><circle cx="578" cy="150" r="4"/></g><text x="520" y="214" font-size="13" fill="#555">습기가 찬 벽 모서리</text></g>
+    <g class="hit" data-k="cellar"><rect x="40" y="262" width="180" height="50" fill="#9a8a72"/><rect x="60" y="270" width="40" height="34" fill="#c9a77a" stroke="#6a5030" stroke-width="2"/><rect x="110" y="276" width="50" height="28" fill="#c9a77a" stroke="#6a5030" stroke-width="2"/><g fill="#e9efe4"><circle cx="72" cy="280" r="5"/><circle cx="130" cy="284" r="6"/><circle cx="144" cy="292" r="4"/></g></g>
+    <g class="hit" data-k="food"><rect x="420" y="262" width="150" height="40" rx="6" fill="#b8c4cc"/><ellipse cx="470" cy="262" rx="30" ry="8" fill="#fff" stroke="#999"/><path d="M450 260 q20 -16 40 0" fill="#e8b46c"/><g fill="#d6e6cf"><circle cx="462" cy="254" r="5"/><circle cx="476" cy="256" r="4"/></g><text x="420" y="316" font-size="13" fill="#555">오래된 음식</text></g>
+    <g class="miss" data-m="햇빛이 잘 들고 바람이 잘 통하는 창가는 곰팡이가 잘 자라지 않아요."><rect x="360" y="50" width="120" height="90" fill="#bfe6fb" stroke="#8a6a3e" stroke-width="5"/><circle cx="455" cy="70" r="14" fill="#ffd23f"/></g>
+    <g class="miss" data-m="마른 책장은 습하지 않아요."><rect x="510" y="140" width="40" height="80" fill="#a9733f"/><rect x="514" y="150" width="8" height="26" fill="#e2573f"/><rect x="524" y="150" width="8" height="26" fill="#1c6fa8"/><rect x="534" y="150" width="8" height="26" fill="#4fae4f"/></g>
+    <g id="hMarks" pointer-events="none"></g>
+  </svg>
+  <div class="fb" id="hFb"></div>
+  </div>
+</section>
+
+<section id="s9" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="k-q">1. 실체 현미경으로 곰팡이를 관찰할 때, 곰팡이를 올려놓는 곳은 어디일까요?</p>
+  <div class="pick" id="f1"><button>접안렌즈</button><button>대물렌즈</button><button>초점 조절 나사</button><button>조명 조절 나사</button><button data-a="1">재물대</button></div>
+  <div class="fb"></div>
+  <p class="k-q">2. 버섯과 곰팡이의 특징으로 옳은 것은 ◯, 옳지 않은 것은 ×를 골라요.</p>
+  <div id="f2">
+    <div class="k-ox" data-a="x" data-m="버섯과 곰팡이는 열매가 아니라 포자로 번식해요."><span class="q">⑴ 열매를 만들어 번식한다.</span><button data-v="o">◯</button><button data-v="x">×</button></div>
+    <div class="k-ox" data-a="o" data-m="균류는 스스로 양분을 만들지 못해 죽은 생물이나 다른 생물에서 양분을 얻어요."><span class="q">⑵ 스스로 양분을 만들지 못한다.</span><button data-v="o">◯</button><button data-v="x">×</button></div>
+    <div class="k-ox" data-a="o" data-m="균류는 따뜻하고 습한 곳에서 잘 자라요."><span class="q">⑶ 습기가 많고 따뜻한 곳에서 잘 자란다.</span><button data-v="o">◯</button><button data-v="x">×</button></div>
+  </div>
+  <div class="fb" id="f2Fb"></div>
+  <p class="k-q">3. ✏️ 서술형: 보기에서 알맞은 말을 두 가지 골라, 균류가 잘 자라는 환경을 써 봅시다.</p>
+  <p class="tip" style="font-size:.95rem">보기: 따뜻하고, 춥고, 습한 곳, 건조한 곳</p>
+  <textarea id="f3" rows="2" placeholder="균류는 ~에서 잘 자란다."></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="f3Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="f3Fb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p>
+</section>
+
+<section id="s10" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 61쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>버섯과 곰팡이의 생김새를 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>실체 현미경을 이용해 버섯과 곰팡이를 관찰했어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>주변에서 볼 수 있는 버섯과 곰팡이의 특징에 관심을 갖게 되었어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 92~95쪽 · 「실험관찰」 60~61쪽 · 지도서 358~369쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+const NS='http://www.w3.org/2000/svg';
+const mk=(tag,at,par)=>{const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;};
+const rnd=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+function ring(g,host,color){const b=g.getBBox();mk('ellipse',{cx:b.x+b.width/2,cy:b.y+b.height/2,rx:Math.max(b.width/2+12,26),ry:Math.max(b.height/2+12,26),fill:'none',stroke:color,'stroke-width':5,'stroke-dasharray':260,style:'animation:pop .5s ease-out'},host);}
+/* 찾기 그림 공통 */
+function finder(svg,host,info,total,sec,doneMsg,out,found){const got=new Set();
+  $$(svg+' .hit').forEach(g=>g.addEventListener('click',()=>{const k=g.dataset.k;if(got.has(k)){fb(out,info[k],'info');return;}
+    got.add(k);ring(g,$(host),'#e2573f');if(found)$(found).innerHTML=[...got].map(x=>'<span>○ '+info[x].split(':')[0]+'</span>').join('');
+    if(got.size===total){fb(out,'🎉 '+doneMsg,true);doneNav(sec);}else fb(out,'찾았어요! '+info[k]+` (${got.size}/${total})`,true);}));
+  $$(svg+' .miss').forEach(g=>g.addEventListener('click',()=>fb(out,g.dataset.m,false)));}
+/* 여러 개 고르기 */
+function multi(box,need,sec,okMsg,noMsg,after){const got=new Set();const out=$(box).nextElementSibling;
+  $$(box+' button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size>=need){fb(out,okMsg,true);if(sec)doneNav(sec);if(after)after();}else fb(out,`좋아요! (${got.size}/${need})`,'info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* ◯× 묶음 */
+function oxSet(box,out,sec,okMsg){const rows=$$(box+' .k-ox');const ok=new Set();
+  rows.forEach((r,i)=>$$('button',r).forEach(b=>b.onclick=()=>{$$('button',r).forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.v===r.dataset.a){b.classList.add('right');ok.add(i);fb(out,ok.size===rows.length?okMsg:r.dataset.m+` (${ok.size}/${rows.length})`,ok.size===rows.length?true:'info');if(ok.size===rows.length&&sec)doneNav(sec);}
+    else{b.classList.add('wrong');ok.delete(i);fb(out,'다시 생각해 봐요. 오늘 배운 내용을 떠올려 봐요.',false);}}));}
+
+/* ===== s1 빵과 곰팡이 ===== */
+(function(){const g=$('#mold');const P=[[250,150],[330,170],[290,200],[360,130],[230,190],[300,120],[375,195],[260,120]];
+  P.forEach((p,i)=>{const c=mk('g',{},g);mk('circle',{cx:p[0],cy:p[1],r:14,fill:i%3?'#cfe0c6':'#9fb8a8'},c);mk('circle',{cx:p[0]+4,cy:p[1]-3,r:4,fill:'#4f7d5a'},c);c.dataset.d=1+i*0.8;});
+  function draw(){const d=+$('#day').value;$('#dayT').textContent=d?d+'일이 지났어요':'처음 놓아둔 날';$('#drops').setAttribute('opacity',d?0.9:0);
+    $$('#mold>g').forEach(c=>{const s=Math.max(0,Math.min(1,(d-(+c.dataset.d)+1)/2));c.setAttribute('opacity',s?1:0);c.setAttribute('transform',`translate(${(1-s)*+c.firstChild.getAttribute('cx')} ${(1-s)*+c.firstChild.getAttribute('cy')}) scale(${s||0.001})`);});}
+  $('#day').oninput=draw;draw();
+  pickOne('#introPick','맞아요! 따뜻하고 습기가 있는 곳에 빵을 오래 두면 빵에 곰팡이가 생겨요. 욕실 벽이나 오래된 음식에서 곰팡이를 본 적이 있나요? 오늘은 곰팡이와 버섯이 어떤 생물인지 알아봐요.','날짜 막대를 7일까지 움직여 빵에 무엇이 생기는지 살펴봐요.','s1');})();
+
+/* ===== s2 숲속 균류 찾기 ===== */
+finder('#forest','#fMarks',{log:'죽은 나무에 자란 버섯: 버섯은 쓰러진 죽은 나무에서 자라요.',hyph:'나무 속 균사: 나무 속에 뿌리처럼 퍼진 하얀 실 같은 것이 버섯의 균사예요.',fruit:'열매에 자란 곰팡이: 떨어진 열매에 솜털 같은 곰팡이가 자라요.',leaf:'잎에 자란 곰팡이: 바닥에 떨어진 잎을 자세히 보면 곰팡이가 보여요.',litter:'낙엽 아래 버섯: 그늘진 낙엽 아래에서도 버섯이 자라요.'},5,'s2','5곳을 모두 찾았어요! 버섯과 곰팡이는 그늘지고 습한 숲속의 죽은 나무, 낙엽, 열매 등에서 자라요.','#fFb','#fFound');
+
+/* ===== s3 균류 탐정 수첩 ===== */
+(function(){const Q=[
+  ['버섯과 곰팡이는 동물이나 식물과 같은 생물일까요?',['동물이나 식물과 다른 생물이에요','식물과 같은 생물이에요','동물과 같은 생물이에요','생물이 아니에요'],0,'동물·식물과 다른 생물','버섯과 곰팡이는 식물처럼 뿌리, 줄기, 잎이 없고 동물처럼 움직이지도 않아요. 그래도 자라고 번식하는 생물이에요.'],
+  ['버섯과 곰팡이는 무엇으로 이루어져 있을까요?',['실처럼 가늘고 긴 균사','뿌리, 줄기, 잎','뼈와 근육','단단한 껍데기'],0,'균사로 이루어져 있음','버섯과 곰팡이는 실처럼 가늘고 긴 균사로 이루어져 있어요.'],
+  ['버섯과 곰팡이는 무엇으로 번식할까요?',['씨','알','포자','새끼'],2,'포자로 번식함','버섯과 곰팡이는 포자를 이용해 번식해요. 번식은 생물이 자손을 늘리는 것이에요.'],
+  ['균류는 주로 어떤 환경에서 잘 자랄까요?',['춥고 건조한 곳','따뜻하고 습한 곳','햇빛이 강하고 마른 곳','아주 뜨거운 곳'],1,'따뜻하고 습한 곳에서 잘 자람','균류는 따뜻하고 습한 곳에서 잘 자라요.'],
+  ['균류는 어디에서 양분을 얻을까요?',['햇빛으로 스스로 양분을 만들어요','죽은 생물이나 다른 생물에서 얻어요','공기에서 얻어요','흙 속 돌에서 얻어요'],1,'죽은 생물·다른 생물에서 양분을 얻음','균류는 스스로 양분을 만들지 못해 죽은 생물이나 다른 생물에서 양분을 얻어요.']];
+  let i=0;const got=[];
+  function show(){const q=Q[i];$('#bkNum').textContent=`물음 ${i+1} / ${Q.length}`;$('#bkQ').textContent=q[0];$('#bkFb').className='fb';$('#bkFb').textContent='';$('#bkNext').hidden=true;
+    $('#bkPick').innerHTML=q[1].map((t,j)=>`<button${j===q[2]?' data-a="1"':''}>${t}</button>`).join('');
+    pickOne('#bkPick',q[4],'다시 생각해 봐요. 오늘 숲속에서 본 버섯과 곰팡이를 떠올려 봐요.',null,()=>{if(!got.includes(q[3])){got.push(q[3]);}$('#bkGot').innerHTML=got.map(t=>'<span>📝 '+t+'</span>').join('');
+      if(i<Q.length-1)$('#bkNext').hidden=false;else{fb('#bkFb',q[4]+' 🎉 수첩을 다 채웠어요! 버섯과 곰팡이 같은 생물을 균류라고 해요.',true);doneNav('s3');}});}
+  $('#bkNext').onclick=()=>{i++;show();};show();})();
+
+/* ===== s4 실체 현미경 각 부분 ===== */
+(function(){const P={eye:['접안렌즈','눈으로 보는 렌즈로, 물체의 상을 확대해요.',[118,52]],turret:['회전판','대물렌즈의 배율을 조절하는 나사예요.',[20,232]],obj:['대물렌즈','관찰 대상 쪽의 렌즈로, 물체의 상을 확대해요.',[60,300]],focus:['초점 조절 나사','상의 초점을 맞출 때 사용하는 나사예요.',[330,320]],light:['조명 조절 나사','조명을 켜고 끄며 밝기를 조절하는 나사예요.',[300,466]],stage:['재물대','관찰 대상을 올려놓는 곳이에요.',[20,370]]};
+  const keys=Object.keys(P).sort(()=>0.5-Math.random());let cur=null;const done=new Set();
+  $('#partChips').innerHTML=keys.map(k=>`<button data-k="${k}">${P[k][0]}</button>`).join('');
+  $$('#partChips button').forEach(b=>b.onclick=()=>{$$('#partChips button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b.dataset.k;fb('#partFb',`'${P[cur][0]}'은(는) 현미경의 어느 부분일까요? 그림에서 눌러요.`,'info');});
+  $$('#scope .u41-part').forEach(g=>g.addEventListener('click',()=>{const k=g.dataset.p;
+    if(!cur){fb('#partFb','먼저 오른쪽에서 이름을 하나 골라요.','info');return;}
+    if(k!==cur){fb('#partFb',`그 부분은 '${P[cur][0]}'이(가) 아니에요. 하는 일: ${P[cur][1]}`,false);return;}
+    done.add(k);g.classList.add('ok');const t=mk('text',{x:P[k][2][0],y:P[k][2][1]},$('#scLabels'));t.textContent=P[k][0];
+    const b=$(`#partChips button[data-k="${k}"]`);b.classList.remove('sel');b.classList.add('used');cur=null;
+    $('#partList').insertAdjacentHTML('beforeend',`<li><b>${P[k][0]}</b>: ${P[k][1]}</li>`);
+    if(done.size===6){fb('#partFb','🎉 여섯 부분을 모두 찾았어요! 이제 실체 현미경으로 버섯과 곰팡이를 관찰해 봐요.',true);doneNav('s4');}else fb('#partFb',`맞아요! ${P[k][0]}: ${P[k][1]} (${done.size}/6)`,true);}));})();
+
+/* ===== s5 맨눈·돋보기 ===== */
+(function(){const C={
+  mE:'윗부분은 우산처럼 생겼고 아랫부분은 막대처럼 생겼어요',
+  mM:'우산처럼 생긴 윗부분 안쪽에 주름이 많이 보여요',
+  fE:'솜털 같은 것이 보여요',
+  fM:'솜털 같은 것이 많이 보이고 그 끝부분에 둥근 알갱이가 달려 있어요'};
+  const keys=Object.keys(C).sort(()=>0.5-Math.random());let cur=null,n=0;
+  $('#obsChips').innerHTML=keys.map(k=>`<button data-k="${k}">${C[k]}</button>`).join('');
+  $$('#obsChips button').forEach(b=>b.onclick=()=>{$$('#obsChips button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b.dataset.k;$$('.k-tbl td.slot').forEach(t=>t.classList.toggle('hot',!t.classList.contains('fill')));});
+  $$('.k-tbl td.slot').forEach(td=>td.onclick=()=>{if(!cur||td.classList.contains('fill'))return;
+    if(td.dataset.s===cur){td.textContent=C[cur];td.classList.add('fill');$(`#obsChips button[data-k="${cur}"]`).classList.add('used');cur=null;n++;$$('.k-tbl td.slot').forEach(t=>t.classList.remove('hot'));
+      if(n===4){fb('#obsFb','표를 다 채웠어요! 돋보기로 보면 맨눈으로 볼 때보다 더 자세히 보여요.',true);doneNav('s5');}else fb('#obsFb',`알맞은 칸이에요! (${n}/4)`,true);}
+    else fb('#obsFb','그 칸이 아니에요. 왼쪽 그림에서 맨눈과 돋보기로 다시 살펴봐요.',false);});
+  /* 돋보기 그림 */
+  const LI=$('#lensIn');
+  function lens(which){$('#lens').setAttribute('opacity',which?1:0);LI.innerHTML='';
+    const cx=which==='m'?110:300,cy=which==='m'?120:135;$('#lensC').setAttribute('cx',cx);$('#lensC').setAttribute('cy',cy);$('#lensH').setAttribute('x',cx+40);$('#lensH').setAttribute('y',cy+40);$('#lensH').setAttribute('transform',`rotate(-45 ${cx+48} ${cy+70})`);
+    mk('circle',{cx,cy,r:58,fill:which==='m'?'#f4ead8':'#e8f1e4'},LI);
+    if(which==='m'){for(let k=0;k<13;k++){const a=Math.PI*(0.08+0.84*k/12);mk('line',{x1:cx,y1:cy+30,x2:cx-Math.cos(a)*56,y2:cy+30-Math.sin(a)*46,stroke:'#b49a72','stroke-width':2.4},LI);}mk('rect',{x:cx-12,y:cy+30,width:24,height:28,fill:'#efe3cc'},LI);
+      $('#evCap').textContent='🔍 버섯을 돋보기로: 우산처럼 생긴 윗부분 안쪽에 주름이 많이 보여요.';}
+    else if(which==='f'){for(let k=0;k<26;k++){const x=cx-46+rnd(k,1)*92,y=cy+40-rnd(k,2)*20,h=20+rnd(k,3)*40;mk('path',{d:`M${x} ${y} q${(rnd(k,4)-.5)*14} ${-h/2} ${(rnd(k,5)-.5)*10} ${-h}`,stroke:'#d8e6d4','stroke-width':1.6,fill:'none'},LI);mk('circle',{cx:x+(rnd(k,5)-.5)*10,cy:y-h,r:3.2,fill:'#3f6b4c'},LI);}
+      $('#evCap').textContent='🔍 곰팡이를 돋보기로: 솜털 같은 것이 많이 보이고 그 끝부분에 둥근 알갱이가 달려 있어요.';}
+    else $('#evCap').textContent='맨눈으로 보면: 버섯은 윗부분이 우산처럼, 아랫부분은 막대처럼 생겼어요. 곰팡이는 솜털 같은 것이 보여요.';}
+  $('#mgMush').onclick=()=>lens('m');$('#mgMold').onclick=()=>lens('f');$('#mgOff').onclick=()=>lens(null);})();
+
+/* ===== s6 실체 현미경 가상 실험 ===== */
+(function(){let smp='m',tape=0,step=0,obj=0,seen={m:false,f:false},askDone=0;
+  const VI=$('#vImg');
+  function img(kind){VI.innerHTML='';const big=obj===4?1:0.6;
+    if(kind==='m'){$('#vBg').setAttribute('fill','#f3ecdc');for(let k=0;k<34;k++){let x=150+(rnd(k,1)-.5)*260,y=150+(rnd(k,2)-.5)*260,d=`M${x} ${y}`;for(let s=0;s<5;s++){x+=(rnd(k,s+3)-.5)*110*big;y+=(rnd(k,s+9)-.5)*110*big;d+=` Q${x+(rnd(k,s)-.5)*30} ${y+(rnd(k,s+1)-.5)*30} ${x} ${y}`;}mk('path',{d,stroke:'#fffdf6','stroke-width':(2.2*big+0.6).toFixed(1),fill:'none','stroke-linecap':'round'},VI);mk('path',{d,stroke:'#b8a27a','stroke-width':0.8,fill:'none',opacity:.6},VI);}}
+    else{$('#vBg').setAttribute('fill','#e8b46c');for(let k=0;k<30;k++){const x=20+rnd(k,1)*260,y=270-rnd(k,2)*40,h=(60+rnd(k,3)*120)*big+30;const ex=x+(rnd(k,4)-.5)*40;mk('path',{d:`M${x} ${y} Q${x+(rnd(k,6)-.5)*30} ${y-h/2} ${ex} ${y-h}`,stroke:'#f2f6ee','stroke-width':(1.6*big+0.6).toFixed(1),fill:'none'},VI);mk('circle',{cx:ex,cy:y-h,r:(5*big+2).toFixed(1),fill:'#2f5a3c',stroke:'#1d3a26','stroke-width':1},VI);}}}
+  function render(){const lit=step>=2;$('#mview').style.background=lit?'#1b1b1b':'#000';
+    if(step>=2){img(smp);}else{VI.innerHTML='';$('#vBg').setAttribute('fill',step>=1?'#222':'#111');}
+    const f=+$('#focus').value,target=72,bl=step>=4?Math.abs(f-target)/6:9;$('#blurV').setAttribute('stdDeviation',Math.max(0,bl-0.4).toFixed(2));
+    $('#mag').textContent=obj?`접안렌즈 10배 × 대물렌즈 ${obj}배 = ${10*obj}배`:'접안렌즈 10배 × 대물렌즈 ?배';
+    $$('#acts button').forEach(b=>b.classList.toggle('done',+b.dataset.k<=step));
+    $('#focusRow').hidden=step<4;$('#zoomRow').hidden=!(step>=4&&obj===2);$('#tapeBox').hidden=smp!=='m';}
+  function reset(){step=0;obj=0;$('#focus').value=0;render();}
+  $('#smpM').onclick=()=>{smp='m';$('#smpM').classList.add('sel');$('#smpF').classList.remove('sel');reset();fb('#labFb','버섯을 관찰해요. 먼저 셀로판테이프로 버섯 겉면을 받침 유리에 옮겨요.','info');};
+  $('#smpF').onclick=()=>{smp='f';$('#smpF').classList.add('sel');$('#smpM').classList.remove('sel');reset();fb('#labFb','곰팡이가 든 페트리 접시는 뚜껑을 닫은 채로 옮겨요. 이제 사용 순서대로 눌러요.','info');};
+  const T=$('#tape');
+  $('#tp1').onclick=()=>{T.style.transform='translate(0px,48px)';tape=1;fb('#labFb','버섯 겉면에 셀로판테이프를 붙였어요.','info');};
+  $('#tp2').onclick=()=>{if(tape<1){fb('#labFb','먼저 테이프를 버섯 겉면에 붙여요.',false);return;}T.style.transform='translate(0px,0px)';tape=2;fb('#labFb','테이프를 떼어 냈어요. 테이프에 버섯 겉면이 묻어 있어요.','info');};
+  $('#tp3').onclick=()=>{if(tape<2){fb('#labFb','테이프를 붙였다 떼어 낸 뒤에 받침 유리에 붙여요.',false);return;}T.style.transform='translate(235px,52px)';tape=3;fb('#labFb','받침 유리에 붙였어요! 이제 실체 현미경 사용 순서대로 눌러요.',true);};
+  const WHY={2:'전원을 켜기 전에 회전판을 돌려 배율을 가장 낮게 하고, 재물대에 관찰 대상을 올려놓아요.',3:'먼저 전원을 켜고 조명 조절 나사로 빛의 밝기를 조절해요.',4:'접안렌즈를 보기 전에, 옆에서 보면서 대물렌즈를 관찰 대상에 가깝게 내려요. 그래야 렌즈가 대상에 닿지 않아요.'};
+  $$('#acts button').forEach(b=>b.onclick=()=>{const k=+b.dataset.k;
+    if(smp==='m'&&tape<3){fb('#labFb','먼저 셀로판테이프로 버섯 겉면을 받침 유리에 옮겨요.',false);return;}
+    if(k<=step){fb('#labFb','이미 한 단계예요. 다음 단계를 골라요.','info');return;}
+    if(k!==step+1){fb('#labFb','순서가 달라요. '+WHY[k],false);return;}
+    step=k;if(k===1)obj=2;render();
+    fb('#labFb',['','배율을 가장 낮게(대물렌즈 2배) 하고 재물대에 올려놓았어요.','조명이 켜졌어요. 아직 흐릿하게 보여요.','옆에서 보면서 대물렌즈를 관찰 대상에 가깝게 내렸어요. 렌즈가 닿지 않게 조심!','이제 초점 조절 나사 막대를 천천히 움직여 또렷하게 보이게 해요.'][k],'info');});
+  $('#focus').oninput=()=>{render();const f=+$('#focus').value;if(Math.abs(f-72)<5){if(obj===2)fb('#labFb','초점이 맞았어요! 낮은 배율(20배)로 보았으니, 회전판을 돌려 배율을 높여 봐요.',true);else{seen[smp]=true;fb('#labFb',(smp==='m'?'40배로 본 버섯의 균사예요. 실처럼 가늘고 긴 가닥이 거미줄처럼 엉켜 있어요.':'40배로 본 곰팡이예요. 가늘고 긴 가닥 끝에 둥근 알갱이(포자가 든 주머니)가 많이 달려 있어요.')+(seen.m&&seen.f?' 두 가지를 모두 관찰했어요. 아래 물음에 답해요.':' 다른 것도 관찰해 봐요.'),true);}}};
+  $('#zoomUp').onclick=()=>{obj=4;$('#focus').value=40;render();fb('#labFb','회전판을 돌려 대물렌즈를 4배로 바꿨어요. 초점을 다시 맞춰요.','info');};
+  render();
+  const chk=()=>{askDone++;if(askDone>=2)doneNav('s6');};
+  pickOne('#rM','맞아요! 버섯의 균사는 실처럼 가늘고 긴 가닥이 거미줄처럼 엉켜 있어요.','다시 생각해 봐요.',null,chk);
+  pickOne('#rF','맞아요! 곰팡이는 가늘고 긴 균사와, 포자가 든 둥근 주머니를 볼 수 있어요.','다시 생각해 봐요.',null,chk);})();
+
+/* ===== s7 공통점 ===== */
+(function(){const draw=(g,ox,kind)=>{for(let k=0;k<24;k++){let x=ox+20+rnd(k,kind?7:1)*220,y=20+rnd(k,2)*190;
+  if(!kind){let d=`M${x} ${y}`;for(let s=0;s<4;s++){x=Math.min(ox+280,Math.max(ox+10,x+(rnd(k,s+3)-.5)*90));y=Math.min(215,Math.max(10,y+(rnd(k,s+9)-.5)*90));d+=` L${x} ${y}`;}mk('path',{d,stroke:'#8a7a5a','stroke-width':1.6,fill:'none','stroke-linejoin':'round'},g);}
+  else{const h=60+rnd(k,3)*110,yy=215;mk('path',{d:`M${x} ${yy} q${(rnd(k,4)-.5)*30} ${-h/2} ${(rnd(k,5)-.5)*20} ${-h}`,stroke:'#7a8a72','stroke-width':1.5,fill:'none'},g);mk('circle',{cx:x+(rnd(k,5)-.5)*20,cy:yy-h,r:5,fill:'#2f5a3c'},g);}}};
+  draw($('#cmpM'),0,0);draw($('#cmpF'),300,1);
+  multi('#comPick',3,'s7','정답! 버섯과 곰팡이는 가는 실과 같은 균사로 이루어져 있고, 포자로 번식하며, 따뜻하고 습한 곳에서 잘 자라요.','다시 생각해 봐요.');})();
+
+/* ===== s8 한눈에 쏙 ===== */
+let bl8=false,h8=false;const d8=()=>{if(bl8&&h8)doneNav('s8');};
+$('#blReveal').onclick=()=>{$('#bl1').textContent='균';$('#bl2').textContent='사';fb('#blFb','균류는 실처럼 가늘고 긴 균사로 이루어져 있습니다. 버섯과 곰팡이 같은 생물을 균류라고 해요.',true);bl8=true;d8();};
+finder('#house','#hMarks',{bath:'욕실: 물기가 많아 곰팡이가 잘 생겨요.',wall:'습기가 찬 벽 모서리: 햇빛이 잘 들지 않고 습해요.',cellar:'지하실: 어둡고 습기가 많아요.',food:'오래된 음식: 따뜻하고 습한 곳에 오래 두면 곰팡이가 생겨요.'},4,null,'곰팡이는 따뜻하고 습한 곳에서 잘 자라므로, 햇빛이 잘 들지 않고 습기가 많은 욕실, 벽면, 지하실 등에 생기기 쉬워요.','#hFb');
+$$('#house .hit').forEach(g=>g.addEventListener('click',()=>{if($$('#hMarks ellipse').length>=4){h8=true;d8();}}));
+
+/* ===== s9 형성 평가 ===== */
+let f9=0;const d9=()=>{f9++;if(f9>=3)doneNav('s9');};
+pickOne('#f1','정답! 관찰 대상을 올려놓는 곳은 재물대예요.','관찰 대상을 올려놓는 곳을 떠올려 봐요.',null,()=>{if(!window._f1){window._f1=1;d9();}});
+oxSet('#f2','#f2Fb',null,'모두 맞혔어요! 균류는 포자로 번식하고, 스스로 양분을 만들지 못하며, 따뜻하고 습한 곳에서 잘 자라요.');
+$$('#f2 button').forEach(b=>b.addEventListener('click',()=>{if($$('#f2 button.right').length===3&&!window._f2){window._f2=1;d9();}}));
+$('#f3Btn').onclick=()=>{const t=$('#f3').value.trim();if(!t){fb('#f3Fb','먼저 답을 써 보세요.',false);return;}
+  const w=/따뜻/.test(t),s=/습한|습기|축축/.test(t),bad=/춥|건조/.test(t);
+  if(w&&s&&!bad){fb('#f3Fb','잘 썼어요! 예: 균류는 따뜻하고 습한 곳에서 잘 자란다.',true);if(!window._f3){window._f3=1;d9();}}
+  else if(bad)fb('#f3Fb','균류는 춥거나 건조한 곳보다 어떤 곳에서 잘 자랄까요? 보기에서 다시 골라 봐요.',false);
+  else fb('#f3Fb',(w||s)?'한 가지는 맞았어요. 보기에서 알맞은 말을 하나 더 넣어 써 봐요.':'보기에서 알맞은 말을 두 가지 골라 넣어 써 봐요.','info');};
+
+/* ===== s10 스스로 평가 ===== */
+faces('s10','오늘도 멋지게 탐구했어요! 다음 시간에는 연못에 사는 해캄과 짚신벌레를 관찰해요.','어려웠던 부분은 실체 현미경 관찰과 균류 탐정 수첩을 다시 해 봐요. 선생님께 질문해도 좋아요!');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 1학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"균","bl2":"사"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>

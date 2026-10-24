@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """4-1 과학 · 홍지희 선생님 버전(실험·탐구 중심) 만들기 — 3-2 홍지희 버전 틀(grade3/science/_build_hong2)을 그대로 씀
-사용법: python3 build.py            -> lessons_u*.py 의 모든 차시를 ../sem1/ 에 만듦
+사용법: python3 build.py            -> lessons_u*.py 의 모든 차시를 ../sem1-hong/ 에 만듦
         python3 build.py sci41-u1-l2 -> 그 차시만
 - 사진: 이 환경에서 위키미디어를 받을 수 없어(2026-10-24) photos 값에 {'svg': '<svg …>', 'name': …}로 직접 그린 그림을 넣을 수 있습니다.
   위키미디어 사진('File:….jpg')은 캐시(_build/wmcache)에 있을 때만 씁니다.
@@ -12,7 +12,7 @@
 """
 import json, os, sys, base64, importlib, glob
 B = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(B, '..', 'sem1')
+OUT = os.path.join(B, '..', 'sem1-hong')
 sys.path.insert(0, B)
 import wm  # noqa
 

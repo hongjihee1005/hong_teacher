@@ -1,0 +1,722 @@
+<!DOCTYPE html>
+<html lang="ko"><head><meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>💧 차가운 비커에 맺힌 물방울은 어디서 왔을까?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Jua&family=Gowun+Dodum&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#EAF1F8;--paper:#FFFFFF;--ink:#1F2A44;--soft:#4F5B75;--line:#CAD6E4;
+  --ok:#1F9E63;--no:#D2453A;--acc:#2F74E0;--note:#FFF4C2;--note-ink:#3B3200;
+  --S:#E0506B;--O1:#2F74E0;--O2:#6A4FC9;--P:#1F9E63;
+  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  --body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;
+  box-sizing:border-box}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;--note:#4A4420;--note-ink:#FFF6CC}}
+:root[data-theme="dark"]{--bg:#162034;--paper:#22304C;--ink:#F2F5FB;--soft:#B7C3DB;--line:#3A4C74;--note:#4A4420;--note-ink:#FFF6CC}
+*,*::before,*::after{box-sizing:inherit}
+html,body{height:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--body);font-size:clamp(19px,1.9vw,24px);line-height:1.45;overflow:hidden}
+body,h1,h2,h3,p,li,span,div,button,a,small,b,label{word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+h1,h2,h3,.hd,.ttl{text-wrap:balance} p,li,small{text-wrap:pretty}
+button{font-family:var(--display);color:inherit;cursor:pointer}
+button:focus-visible,textarea:focus-visible,input:focus-visible{outline:4px solid var(--acc);outline-offset:3px}
+h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
+.screen{position:absolute;inset:0;display:none;flex-direction:column;padding:clamp(10px,1.6vw,24px)}
+.screen.on{display:flex}
+/* 표지 */
+#cover{overflow-y:auto;align-items:center;gap:14px}
+#cover .inner{width:min(1100px,100%);display:flex;flex-direction:column;gap:14px;align-items:center;margin:auto 0}
+.badge{display:inline-flex;align-items:center;gap:8px;font-family:var(--display);color:#fff;border-radius:999px;padding:4px 16px;font-size:clamp(17px,1.6vw,22px);background:var(--sc)}
+.title{font-size:clamp(34px,4.6vw,64px);text-align:center;line-height:1.15}
+.lead{color:var(--soft);text-align:center;margin:0;font-size:clamp(18px,1.7vw,23px)}
+.bq{width:100%;background:var(--paper);border:4px solid var(--sc);border-radius:22px;padding:12px 20px;text-align:center}
+.bq small{display:block;color:var(--soft);font-size:clamp(15px,1.4vw,19px)}
+.bq b{font-family:var(--display);font-weight:400;font-size:clamp(24px,2.6vw,36px)}
+.goalbox{background:#FFF4D6;color:#1F2A44;border:4px solid #E8961E;border-radius:18px;padding:8px 20px;font-family:var(--display);font-size:clamp(21px,2.1vw,30px);text-align:center}
+.map{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;width:100%}
+.mcol{background:var(--paper);border-radius:16px;border-top:10px solid var(--mc);padding:8px 10px}
+.mcol h3{font-size:clamp(17px,1.6vw,21px);color:var(--mc)}
+.mcol a,.mcol span.cur{display:block;font-size:clamp(15px,1.35vw,18px);color:var(--ink);text-decoration:none;padding:3px 6px;border-radius:8px;margin-top:3px}
+.mcol a:hover{background:var(--bg)}
+.mcol .cur{background:var(--mc);color:#fff!important;font-family:var(--display)}
+.plan{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.big-btn{font-size:clamp(24px,2.4vw,34px);padding:10px 40px;border-radius:999px;border:0;background:var(--ink);color:var(--bg);box-shadow:0 5px 0 rgba(0,0,0,.25)}
+.big-btn:active{transform:translateY(3px);box-shadow:0 2px 0 rgba(0,0,0,.25)}
+.ghost{font-size:clamp(17px,1.6vw,22px);padding:8px 18px;border-radius:999px;border:3px solid var(--ink);background:transparent}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:center}
+/* 수업 화면 */
+.topbar{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.steps{display:flex;gap:5px;align-items:center;flex:1;min-width:0;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+.st{flex:none;font-family:var(--display);font-size:clamp(14px,1.2vw,18px);padding:4px 10px;border-radius:999px;border:3px solid var(--line);background:var(--paper);color:var(--soft)}
+.st.now{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.st.done{border-color:var(--ok);color:var(--ok)}
+.tools{display:flex;gap:5px;align-items:center;flex:none}
+.tool{font-size:clamp(15px,1.3vw,19px);border:3px solid var(--line);background:var(--paper);border-radius:14px;padding:4px 9px;white-space:nowrap}
+.tool.qb{border-color:#E8961E}
+.tool .n{display:inline-block;min-width:1.5em;border-radius:999px;background:#E8961E;color:#fff;font-size:.8em;padding:0 5px;margin-left:4px}
+.sthead{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;margin:6px 0 2px}
+.routine{font-family:var(--display);font-size:clamp(15px,1.35vw,19px);background:var(--sc);color:#fff;border-radius:999px;padding:3px 12px}
+.hd{font-family:var(--display);font-size:clamp(26px,2.8vw,40px);text-align:center;margin:0}
+.ask{color:var(--soft);text-align:center;margin:0;font-size:clamp(17px,1.6vw,22px)}
+.body{flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column;align-items:center;justify-content:safe center;gap:10px;padding:6px 2px}
+.wrap{width:min(1240px,100%)}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:10px;padding-top:6px}
+.tnote{border:3px solid #6A4FC9;color:#6A4FC9;background:var(--paper);border-radius:14px;padding:6px 14px;font-size:clamp(16px,1.5vw,21px)}
+/* 붙임쪽지 칸 */
+.cols{display:grid;grid-template-columns:repeat(var(--n,3),1fr);gap:10px;width:100%}
+.col{background:var(--paper);border-radius:18px;border-top:10px solid var(--cc);padding:8px 10px;display:flex;flex-direction:column;gap:6px;min-height:170px}
+.col h3{font-size:clamp(20px,2vw,27px);color:var(--cc);display:flex;align-items:center;gap:6px}
+.col .frame{font-size:clamp(14px,1.3vw,17px);color:var(--soft);margin:0}
+.notes{display:flex;flex-direction:column;gap:6px;max-height:34vh;overflow-y:auto;flex:1}
+.note{background:var(--note);color:var(--note-ink);border-radius:10px;padding:6px 10px;font-size:clamp(17px,1.6vw,22px);display:flex;gap:6px;align-items:flex-start;justify-content:space-between}
+.note .x{border:0;background:none;font-size:15px;opacity:.6;padding:0 2px}
+.note .up{border:0;background:#E8961E;color:#fff;border-radius:8px;font-size:13px;padding:2px 6px;white-space:nowrap}
+.add{display:flex;gap:6px}
+.add input{flex:1;min-width:0;font-family:var(--body);font-size:clamp(17px,1.6vw,21px);padding:6px 10px;border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.add button{border:0;border-radius:10px;background:var(--cc);color:#fff;font-size:clamp(16px,1.5vw,20px);padding:4px 12px}
+/* 보기 자료 */
+.gal{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,170px),1fr));gap:10px;width:100%}
+.pic{background:var(--paper);border:3px solid var(--line);border-radius:16px;padding:6px;text-align:center;display:flex;flex-direction:column;align-items:center;gap:4px;font-family:var(--body)}
+.pic img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px}
+.pic .e{font-size:clamp(46px,5vw,70px);line-height:1.2}
+.pic b{font-family:var(--display);font-weight:400;font-size:clamp(18px,1.7vw,23px)}
+.pic small{color:var(--soft);font-size:clamp(14px,1.3vw,17px)}
+.pic .num{font-family:var(--display);background:var(--ink);color:var(--bg);border-radius:999px;padding:0 10px;font-size:15px;align-self:flex-start}
+.split{display:flex;flex-direction:column;gap:10px;width:100%}
+.split .gal{grid-template-columns:repeat(auto-fit,minmax(min(100%,150px),1fr))}
+.split .pic img{aspect-ratio:16/9;max-height:17vh}.split .pic .e{font-size:clamp(40px,4vw,56px)}
+.mini{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,260px),1fr));gap:8px;width:100%}
+.mini .m{display:flex;gap:10px;align-items:center;background:var(--paper);border:3px solid var(--line);border-radius:14px;padding:6px 10px;text-align:left}
+.mini .m img{width:96px;height:72px;object-fit:cover;border-radius:10px;flex:none;cursor:zoom-in}
+.mini .m .e{font-size:40px;flex:none;width:60px;text-align:center}
+.mini .m b{font-family:var(--display);font-weight:400;font-size:clamp(17px,1.6vw,21px);display:block}
+.mini .m span.d{font-size:clamp(14px,1.3vw,17px);display:block}
+.mini .m small{font-size:12px;color:var(--soft)}
+.mini .num{font-family:var(--display);background:var(--ink);color:var(--bg);border-radius:999px;padding:0 8px;font-size:14px}
+.col.cmp{min-height:0}.col.cmp .notes{max-height:14vh}
+/* 분류 */
+.deck{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%}
+.card1{width:min(900px,100%);background:var(--paper);border:4px solid var(--line);border-radius:22px;padding:12px 20px;display:flex;gap:16px;align-items:center;justify-content:center}
+.card1 .e{font-size:clamp(50px,5vw,80px);line-height:1}
+.card1 img{width:clamp(130px,16vw,220px);aspect-ratio:4/3;object-fit:cover;border-radius:12px}
+.card1 .x{font-family:var(--display);font-size:clamp(24px,2.6vw,38px)}
+.bins{display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:10px;width:min(1000px,100%)}
+.bin{border:0;background:var(--cc);color:#fff;border-radius:30px 30px 14px 14px;padding:10px;display:flex;flex-direction:column;align-items:center;gap:2px;box-shadow:0 6px 0 rgba(0,0,0,.2);font-size:clamp(21px,2.2vw,31px)}
+.bin .e{font-size:clamp(30px,3.2vw,46px)}
+.bin .c{font-family:var(--body);font-size:15px;opacity:.9}
+.fb{width:min(900px,100%);border-radius:16px;padding:8px 16px;font-size:clamp(18px,1.7vw,23px);display:none}
+.fb.on{display:block}.fb.ok{background:color-mix(in srgb,var(--ok) 18%,var(--paper));border:3px solid var(--ok)}
+.fb.no{background:color-mix(in srgb,var(--no) 12%,var(--paper));border:3px solid var(--no)}
+.fb.open{background:color-mix(in srgb,#E8961E 16%,var(--paper));border:3px solid #E8961E}
+.sorted{display:grid;grid-template-columns:repeat(var(--n,2),1fr);gap:10px;width:min(1000px,100%)}
+.sorted div{background:var(--paper);border-radius:14px;border-top:8px solid var(--cc);padding:6px 10px;font-size:clamp(15px,1.4vw,19px)}
+.after{background:#FFF4D6;color:#1F2A44;border:4px solid #E8961E;border-radius:18px;padding:8px 16px;width:min(1000px,100%);font-size:clamp(19px,1.8vw,25px)}
+/* 뜻 만들기 */
+.frameline{font-family:var(--display);font-size:clamp(24px,2.6vw,36px);text-align:center;background:var(--paper);border-radius:18px;padding:10px 16px;width:min(1100px,100%)}
+.frameline input{font-family:var(--display);font-size:inherit;width:min(26ch,70%);border:0;border-bottom:4px dashed var(--acc);background:transparent;color:var(--acc);text-align:center}
+.chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.chip{font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 12px}
+.chip[aria-pressed="true"]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 16%,var(--paper))}
+.book{display:none;width:min(1100px,100%);border:4px solid var(--ok);border-radius:18px;background:var(--paper);padding:10px 16px;text-align:center}
+.book.on{display:block}
+.book b{font-family:var(--display);font-weight:400;font-size:clamp(22px,2.3vw,32px)}
+.book mark{background:color-mix(in srgb,var(--ok) 25%,transparent);color:inherit;border-radius:6px;padding:0 3px}
+/* 주장-근거-질문 */
+.csq{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;width:100%}
+.evi{display:flex;flex-wrap:wrap;gap:6px}
+.evi button{font-family:var(--display);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);background:var(--paper);border-radius:12px;padding:4px 10px}
+.evi button[aria-pressed="true"]{border-color:#1F9E63;background:color-mix(in srgb,#1F9E63 18%,var(--paper))}
+.qpick{width:min(1100px,100%);background:var(--paper);border:4px solid #E8961E;border-radius:18px;padding:4px 12px;display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.qpick select{flex:1;min-width:220px;font-family:var(--body);font-size:clamp(17px,1.6vw,21px);padding:6px;border-radius:10px;border:3px solid var(--line);background:var(--bg);color:var(--ink)}
+.log{width:100%;display:grid;gap:6px}
+.log div{background:var(--paper);border-left:10px solid #1F9E63;border-radius:10px;padding:6px 12px;font-size:clamp(16px,1.5vw,20px)}
+/* 활동 안내 */
+.task{width:min(1100px,100%);display:grid;gap:8px}
+.task label{display:flex;gap:10px;align-items:center;background:var(--paper);border-radius:14px;padding:8px 14px;font-size:clamp(19px,1.8vw,25px);border:3px solid var(--line)}
+.task input{width:26px;height:26px;accent-color:var(--ok)}
+.task label.done{border-color:var(--ok);opacity:.8}
+.tip{background:#FFF4D6;color:#1F2A44;border-radius:14px;padding:8px 14px;width:min(1100px,100%);font-size:clamp(17px,1.6vw,21px)}
+/* 확인 */
+.qz{width:min(1000px,100%);display:flex;flex-direction:column;gap:8px;align-items:center}
+.qt{font-family:var(--display);font-size:clamp(23px,2.4vw,34px);text-align:center;background:var(--paper);border-radius:18px;padding:10px 16px;width:100%}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:8px;width:100%}
+.opt{font-family:var(--body);font-size:clamp(19px,1.9vw,26px);border:4px solid var(--line);background:var(--paper);border-radius:16px;padding:8px 12px}
+.opt.right{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 18%,var(--paper))}
+.opt.wrong{border-color:var(--no);background:color-mix(in srgb,var(--no) 12%,var(--paper))}
+/* 겹침 창 */
+.overlay{position:fixed;inset:0;background:rgba(15,22,40,.55);display:none;align-items:center;justify-content:center;padding:14px;z-index:20}
+.overlay.on{display:flex}
+.panel{background:var(--paper);border-radius:24px;padding:clamp(14px,2vw,28px);width:min(1150px,96vw);max-height:92vh;overflow-y:auto;border-top:16px solid var(--pc,var(--ink))}
+.panel h2{font-size:clamp(28px,3vw,42px);margin-bottom:6px}
+.tpanel h3{font-size:clamp(20px,1.9vw,26px);color:#6A4FC9;margin:12px 0 4px}
+.tpanel li,.tpanel p{font-size:clamp(17px,1.6vw,21px);line-height:1.55}
+.qadd{display:flex;gap:8px;flex-wrap:wrap;margin:8px 0}
+.qadd select,.qadd input{font-family:var(--body);font-size:clamp(17px,1.6vw,21px);padding:6px 10px;border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink)}
+.qadd input{flex:1;min-width:240px}
+.qadd button{border:0;border-radius:10px;background:#E8961E;color:#fff;font-size:clamp(17px,1.6vw,21px);padding:4px 14px}
+.stems{display:flex;flex-wrap:wrap;gap:6px}
+.stems button{font-family:var(--body);font-size:clamp(15px,1.4vw,18px);border:2px dashed #E8961E;background:transparent;border-radius:999px;padding:2px 10px}
+.qlist{display:grid;gap:8px;margin-top:10px}
+.qi{border:3px solid var(--line);border-radius:14px;padding:8px 12px;display:grid;gap:4px;background:var(--bg)}
+.qi.s1{border-color:#2F74E0}.qi.s2{border-color:var(--ok)}
+.qi .top{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.qi .ty{font-family:var(--display);font-size:14px;background:#E8961E;color:#fff;border-radius:999px;padding:1px 9px}
+.qi .from{font-size:13px;color:var(--soft)}
+.qi .q{font-size:clamp(18px,1.7vw,23px);flex:1}
+.qi .stt{font-family:var(--display);font-size:15px;border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:2px 10px}
+.qi .ans{font-size:clamp(16px,1.5vw,20px);color:var(--ink)}
+.qi input{font-family:var(--body);font-size:16px;padding:4px 8px;border:2px solid var(--line);border-radius:8px;background:var(--paper);color:var(--ink);width:100%}
+.picker{font-family:var(--display);font-size:clamp(90px,14vw,170px);text-align:center;line-height:1.1}
+.bigview{position:fixed;inset:0;background:rgba(8,12,22,.95);display:none;align-items:center;justify-content:center;z-index:30}
+.bigview.on{display:flex}.bigview img{max-width:96vw;max-height:84vh;border-radius:12px}
+.bigview .meta{position:fixed;left:0;right:0;bottom:0;padding:8px 14px;color:#fff;text-align:center;font-size:15px;background:linear-gradient(transparent,rgba(0,0,0,.8))}
+.bigview .close{position:fixed;top:12px;right:14px;width:56px;height:56px;border-radius:50%;border:0;font-size:26px;background:#fff;color:#1F2A44}
+.creditbar{display:flex;flex-wrap:wrap;justify-content:center;gap:10px;margin-top:10px;width:100%}
+.tolist{display:none;font-family:var(--display);font-size:clamp(17px,1.6vw,21px);text-decoration:none;color:inherit;border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 18px}
+.tolist.on{display:inline-flex}
+.hjfoot{display:block;width:100%;margin:14px 0 0;padding:10px 0 2px;border-top:3px solid var(--line);text-align:center;color:var(--soft);font-size:16px;line-height:1.7}
+.hjfoot p{margin:2px 0}
+.pcredit{font-size:13px;color:var(--soft);text-align:center;margin:0}
+@media (max-height:760px) and (min-width:900px){
+  .notes{max-height:24vh}.col{min-height:140px}.pic img{aspect-ratio:16/10}
+  .hd{font-size:clamp(24px,2.4vw,34px)}.sthead{margin:0}.ask{font-size:17px}.col .frame{display:none}
+}
+@media (max-width:900px){
+  .cols,.csq{grid-template-columns:1fr}.split{grid-template-columns:1fr}.map{grid-template-columns:1fr 1fr}
+  .opts{grid-template-columns:1fr}.notes{max-height:22vh}
+}
+@media print{
+  body{overflow:visible;background:#fff;color:#000}.screen{position:static;display:none}
+  .overlay{display:none!important}#qbPanel.printme{display:block!important;position:static;background:#fff}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ===== 과학 탐구 단계 ===== */
+.labwrap{width:min(1180px,100%);display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+.labwrap .task{width:100%}
+.labwrap .task{gap:5px}
+.labwrap .task label{font-size:clamp(16px,1.45vw,20px);padding:4px 10px;border-width:2px}
+.labwrap .task input{width:22px;height:22px;flex:none}
+.labr,.labl{display:grid;gap:8px}
+.labl2{margin:0;font-size:clamp(15px,1.3vw,18px);color:var(--soft)}
+.tnote2{margin:2px 0 0;font-size:clamp(15px,1.3vw,18px);color:var(--soft)}
+@media (max-width:900px),(orientation:portrait){.labwrap{grid-template-columns:minmax(0,1fr)}}
+.safe{background:#FDE7EA;color:#5A1320;border:3px solid #E0506B;border-radius:14px;padding:6px 12px;font-size:clamp(15px,1.35vw,19px)}
+.labgo{display:inline-block;text-decoration:none;font-size:clamp(16px,1.4vw,19px);padding:4px 14px}
+table.rec{width:100%;border-collapse:collapse;background:var(--paper);border-radius:14px;overflow:hidden}
+table.rec th,table.rec td{border:2px solid var(--line);padding:4px 6px;font-size:clamp(16px,1.5vw,20px);text-align:center;word-break:keep-all}
+table.rec thead th{background:var(--sc,#2F74E0);color:#fff;font-family:var(--display);font-weight:400}
+table.rec tbody th{background:var(--bg);font-family:var(--display);font-weight:400}
+table.rec input{width:100%;min-width:0;font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:2px dashed var(--line);border-radius:8px;background:transparent;color:var(--ink);padding:4px 6px;text-align:center}
+.prev{background:#EFEAFB;color:#1F2A44;border:3px solid #6A4FC9;border-radius:16px;padding:8px 14px;width:min(1100px,100%);font-size:clamp(17px,1.6vw,21px)}
+.prev .pv{display:inline-block;background:#fff;border-radius:10px;padding:2px 10px;margin:3px 4px;border:2px solid #CFC4F0}
+
+/* ===== 넓은 교실 화면 정렬 (2026.9.29 선생님 의견: 가운데 떠 있음·너비 제각각·사진 작음) ===== */
+/* 1) 내용은 위쪽부터 채우고, 모든 덩어리를 같은 너비로 맞춤 */
+#lesson .body{justify-content:flex-start;padding-top:clamp(6px,1.4vh,18px)}
+#lesson .body>*{width:min(1320px,100%)!important;max-width:100%}
+#lesson .hd,#lesson .ask{width:min(1320px,100%);margin-left:auto;margin-right:auto}
+#lesson .ask{font-size:clamp(17px,1.5vw,22px);color:var(--ink);opacity:.8}
+/* 2) 사진 보기: 왼쪽에 사진 2×2 크게, 오른쪽에 붙임쪽지 세 칸을 위아래로 */
+#lesson .split{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:14px;align-items:stretch}
+#lesson .split .gal{grid-template-columns:repeat(2,minmax(0,1fr));align-content:start}
+#lesson .split .pic img{aspect-ratio:auto;width:100%;height:clamp(110px,21vh,320px);object-fit:cover;max-height:none;cursor:zoom-in}
+#lesson .split .pic .e{font-size:clamp(56px,7vh,110px);height:clamp(110px,21vh,320px);display:flex;align-items:center}
+#lesson .split .cols{grid-template-columns:1fr!important}
+#lesson .split .col{min-height:0}
+#lesson .split .notes{max-height:12vh}
+.zoomhint{font-size:clamp(14px,1.2vw,17px);color:var(--soft);text-align:center;grid-column:1/-1;margin:0}
+@media (max-width:900px),(orientation:portrait){#lesson .split{grid-template-columns:1fr}}
+/* 3) 자료 카드·분류 카드 사진도 조금 크게 */
+#lesson .gal:not(.split .gal) .pic img{aspect-ratio:auto;height:clamp(100px,19vh,300px);max-height:none;object-fit:cover}
+#lesson .card1 img{width:clamp(150px,20vw,360px)}
+/* 4) 결론 문장 칸 */
+#lesson .frameline input{width:min(30ch,80%)}
+#lesson .frameline input::placeholder{color:var(--soft);opacity:.7;font-size:.8em}
+#lesson .split .pic{padding:5px;gap:2px}
+#lesson .split .pic b{font-size:clamp(17px,1.5vw,22px)}
+#lesson .split .col{padding:6px 10px;gap:4px}
+@media (max-height:800px) and (orientation:landscape){
+ #lesson .split .pic img,#lesson .split .pic .e{height:clamp(90px,17vh,200px)}
+ #lesson .split .pic b{display:none}
+ #lesson .split .pic small{font-size:clamp(15px,1.3vw,18px);color:var(--ink)}
+ #lesson .split .col h3{font-size:clamp(18px,1.6vw,22px)}
+ #lesson .split .notes{max-height:9vh}
+}
+@media (orientation:portrait){
+ #lesson .split .pic img,#lesson .split .pic .e{height:clamp(110px,17vh,260px)}
+ #lesson .split .cols{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+}
+
+/* ===== 2026.9.29 2차 다듬기: 사진 수에 맞춘 배치 · 큰 교실 화면 · 칸 너비 ===== */
+/* 사진 보기: 사진이 1~3장이면 빈칸 없이 채움 (1장·2장은 더 크게, 3장이면 마지막 사진을 가로로 길게) */
+#lesson .split .gal .pic:only-of-type{grid-column:1/-1}
+#lesson .split .pic img{object-fit:contain;background:color-mix(in srgb,var(--ink) 6%,var(--paper))}
+/* 사진 3장: 한 줄에 세 장, 길쭉한 사진도 잘리지 않게 */
+#lesson .split .gal:has(.pic:nth-of-type(3)):not(:has(.pic:nth-of-type(4))){grid-template-columns:repeat(3,minmax(0,1fr))}
+#lesson .split .gal:has(.pic:nth-of-type(3)):not(:has(.pic:nth-of-type(4))) .pic img{height:clamp(160px,36vh,480px)}
+#lesson .split .gal:not(:has(.pic:nth-of-type(3))) .pic img{height:clamp(150px,40vh,560px)}
+#lesson .split .gal:not(:has(.pic:nth-of-type(2))) .pic img{height:clamp(180px,48vh,640px)}
+@media (orientation:portrait){
+ #lesson .split .gal:not(:has(.pic:nth-of-type(3))) .pic img{height:clamp(150px,26vh,420px)}
+}
+/* 실험 단계: 기록표 쪽을 조금 넓게 */
+#lesson .labwrap{grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr)}
+@media (max-width:900px),(orientation:portrait){#lesson .labwrap{grid-template-columns:minmax(0,1fr)}}
+#lesson table.rec input::placeholder{font-size:.85em}
+#lesson table.rec tbody th{font-size:clamp(15px,1.3vw,19px)}
+/* 분류 카드: 다른 덩어리와 같은 너비, 사진 크게 */
+#lesson .deck .card1,#lesson .deck .bins,#lesson .deck .fb,#lesson .sorted{width:100%}
+#lesson .card1 img{width:clamp(170px,24vw,440px)}
+#lesson .card1 .e{font-size:clamp(60px,7vw,120px)}
+/* 주장-근거-질문 자료 카드: 사진·그림을 크게 */
+#lesson .mini .m img{width:clamp(96px,9vw,190px);height:auto;aspect-ratio:4/3}
+#lesson .mini .m .e{font-size:clamp(40px,4vw,72px);width:clamp(60px,6vw,110px)}
+#lesson .mini .m small{font-size:clamp(12px,1vw,15px)}
+/* 붙임쪽지 칸 사이 간격과 칸 높이 맞춤 */
+#lesson .cols{align-items:stretch}
+/* 교실 화면(1920×1080 등 큰 화면): 본문 전체를 키워 멀리서도 보이게 */
+@media (min-width:1500px) and (min-height:900px){
+ #lesson .body{zoom:1.22}
+ #lesson .body>*{width:min(1320px,100%)!important}
+ #lesson .hd{font-size:clamp(34px,2.4vw,48px)}
+ #lesson .ask{font-size:clamp(22px,1.3vw,27px)}
+ #lesson .routine{font-size:20px}
+ #lesson .split .pic img{height:clamp(150px,19vh,300px)}
+ #lesson .split .gal:not(:has(.pic:nth-of-type(3))) .pic img{height:clamp(180px,40vh,560px)}
+ #lesson .split .gal:not(:has(.pic:nth-of-type(2))) .pic img{height:clamp(200px,46vh,620px)}
+ #lesson .col{min-height:200px}
+}
+@media (max-height:760px) and (orientation:landscape){#lesson .card1 img{width:clamp(150px,17vw,250px)}#lesson .card1 .e{font-size:clamp(50px,5vw,80px)}}
+/* 세로로 긴 태블릿(갤럭시탭 800×1180): 남는 높이를 써서 조금 키우고, 좁은 쪽지 칸은 입력칸을 한 줄 전체로 */
+@media (orientation:portrait) and (min-height:1000px) and (min-width:700px){
+ #lesson .body{zoom:1.1}
+ #lesson .split .pic img{height:clamp(150px,15vh,260px)}
+}
+@media (orientation:portrait){
+ #lesson .split .add{flex-wrap:wrap}
+ #lesson .split .add input{flex:1 1 100%}
+ #lesson .split .add button{flex:1 1 100%;padding:3px}
+}
+@media (orientation:portrait){#lesson .split:not(:has(.pic:nth-of-type(3))) .cols{grid-template-columns:1fr!important}}
+/* 주장-근거-질문 자료 카드: 넓은 화면에서는 그림을 위, 글을 아래로 */
+@media (min-width:1500px) and (min-height:900px){
+ #lesson .mini .m{flex-direction:column;text-align:center;justify-content:flex-start}
+ #lesson .mini .m img{width:100%;height:clamp(100px,13vh,170px);aspect-ratio:auto}
+ #lesson .mini .m .e{width:auto;line-height:1.1}
+}
+@media (min-width:1500px) and (min-height:900px){#lesson .body>.cols .col{min-height:clamp(200px,24vh,300px)}}
+@media (min-width:1500px) and (min-height:900px){#lesson .split .gal:has(.pic:nth-of-type(3)):not(:has(.pic:nth-of-type(4))) .pic img{height:clamp(180px,38vh,480px)}}
+@media (orientation:portrait){#lesson .split .gal:has(.pic:nth-of-type(3)):not(:has(.pic:nth-of-type(4))) .pic img{height:clamp(150px,22vh,340px)}}
+/* 사진 2장: 높이를 고정하지 않고 사진 비율(4:3)대로 */
+#lesson .split .gal:has(.pic:nth-of-type(2)):not(:has(.pic:nth-of-type(3))) .pic img{height:auto!important;aspect-ratio:4/3}
+
+/* ===== 3-2 실험·탐구 단계 (engine_lab2.js) ===== */
+.rh{display:inline-flex;align-items:center;gap:8px;justify-content:flex-start;text-align:left}
+.rsv svg{width:clamp(70px,7vw,110px);height:auto;display:block}
+table.gt td{padding:4px}
+button.gc{width:100%;min-height:clamp(40px,5.4vh,56px);border:3px dashed var(--line);border-radius:10px;background:var(--paper);color:var(--soft);font-family:var(--body);font-weight:700;font-size:clamp(16px,1.5vw,21px);cursor:pointer;word-break:keep-all}
+button.gc.vo,button.gc.v0{border:3px solid #2F74E0;background:#E7F0FD;color:#123A73}
+button.gc.vx,button.gc.v1{border:3px solid #8A6A52;background:#F3ECE6;color:#4A3A2E}
+button.gc:disabled{cursor:default}
+.gwrap{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:14px;align-items:start}
+@media (max-width:900px),(orientation:portrait){.gwrap{grid-template-columns:minmax(0,1fr)}}
+/* 설계 카드 */
+.dpart{display:grid;gap:6px}
+.dq{font-family:var(--display);font-size:clamp(19px,1.8vw,25px)}
+.dcards{display:flex;flex-wrap:wrap;gap:8px}
+.dc{display:inline-flex;align-items:center;gap:6px;border:3px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:6px 16px;font-family:var(--body);font-size:clamp(16px,1.5vw,21px);cursor:pointer;word-break:keep-all}
+.dc[aria-pressed="true"]{border-color:#2F74E0;background:#E7F0FD}
+.dc.good{border-color:#1F9E63;background:#E3F5EC}
+.dc.bad{border-color:#E8961E;background:#FFF1DC}
+.dc.miss{border-style:dashed;border-color:#1F9E63}
+.dsv svg{width:28px;height:28px;display:block}
+.dfb{display:none;font-size:clamp(15px,1.35vw,19px)}
+.dfb.on{display:block}
+.dfb ul{margin:2px 0;padding-left:1.1em}
+.dfb li{margin:2px 0}
+.dfb li.bad{color:#8A4B00}
+.row-c{display:flex;justify-content:center}
+/* 자료판 */
+.btabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.bt{border:2px solid var(--line);background:var(--paper);color:var(--ink);border-radius:999px;padding:4px 14px;font-family:var(--body);font-weight:700;font-size:clamp(15px,1.4vw,19px);cursor:pointer}
+.bt.has{border-color:#1F9E63}
+.bt.on{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.bt.all{border-color:#2F74E0}
+table.sum td{vertical-align:middle}
+table.sum .bar{display:flex;height:12px;border-radius:6px;overflow:hidden;background:var(--line);margin:2px 4px}
+table.sum .bo{background:#2F74E0}
+table.sum .bx{background:#B08B6E}
+table.sum .cnt{font-size:clamp(14px,1.3vw,18px);color:var(--soft)}
+table.sum .cnt b{font-weight:500}
+table.sum .cnt b.m{font-weight:800;color:var(--ink)}
+table.sum td.spl{background:#FFF6E5}
+/* 예상과 결과 */
+table.cmp td{font-size:clamp(14px,1.3vw,18px)}
+table.cmp td span{display:block}
+table.cmp td .pp{color:var(--soft)}
+table.cmp td .rr{font-weight:800}
+table.cmp td.eq{background:#E3F5EC}
+table.cmp td.ne{background:#FFF1DC}
+/* 근거로 결론 */
+.evbox{background:var(--paper);border:3px solid var(--line);border-radius:14px;padding:6px 12px}
+.evbox .chips{justify-content:flex-start;margin-top:4px}
+.claim{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.claim label{display:grid;gap:4px;font-family:var(--display);font-size:clamp(17px,1.6vw,22px)}
+.claim textarea{font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:6px;resize:vertical}
+@media (orientation:portrait){.claim{grid-template-columns:1fr}}
+
+.after-book{display:none!important}
+.after-book.on{display:grid!important}
+@media (min-width:1000px){.dfb ul{columns:2;column-gap:24px}.dfb li{break-inside:avoid}}
+table.cmp td{white-space:normal}
+table.cmp td .rr{font-weight:800;color:var(--ink)}
+table.cmp td span{display:inline}
+table.cmp th,table.cmp td{padding:3px 6px}
+table.cmp .rsv svg,table.sum .rsv svg{width:clamp(56px,5vw,90px)}
+@media (max-height:760px) and (orientation:landscape){#lesson .cols .col{min-height:0}#lesson .gcmpcols .notes{max-height:8vh}}
+
+.dfb{font-size:clamp(14px,1.25vw,18px);line-height:1.4}
+#lesson .dpart{gap:4px}
+.dwhy{display:none;margin:0;background:#E3F5EC;border-radius:10px;padding:4px 10px;font-size:clamp(15px,1.35vw,19px)}
+.dwhy.on{display:block}
+.dtip{margin:2px 0 0;color:var(--soft);font-size:clamp(13px,1.15vw,16px)}
+@media (max-height:760px) and (orientation:landscape){.dc{padding:3px 12px;font-size:clamp(15px,1.35vw,19px)}.dq{font-size:clamp(17px,1.6vw,22px)}#lesson .dpart{gap:3px}}
+button.gc.v2{border:3px solid #1F9E63;background:#E3F5EC;color:#0E4A2E}
+button.gc.v3{border:3px solid #E8961E;background:#FFF1DC;color:#5A3A00}
+button.gc.v4{border:3px solid #6A4FC9;background:#EFEAFB;color:#2A1A5E}
+input.gn{width:100%;min-width:0;font-family:var(--body);font-weight:700;font-size:clamp(17px,1.6vw,22px);border:3px dashed var(--line);border-radius:10px;background:var(--paper);color:var(--ink);padding:6px;text-align:center}
+td.na{color:var(--soft);font-size:clamp(14px,1.3vw,18px)}
+table.sum .nlist{display:flex;flex-wrap:wrap;gap:4px;justify-content:center}
+table.sum .nlist span{background:var(--bg);border:2px solid var(--line);border-radius:8px;padding:0 6px;font-weight:700;font-size:clamp(14px,1.3vw,18px)}
+table.sum .cnt b{white-space:nowrap}
+/* 사고전략 칸별 예시 팝업 (engine_ex.js) */
+#lesson .body .col,#lesson .claim label{position:relative}
+.hintbtn{margin-left:auto;flex:none;font-family:var(--display);font-size:clamp(13px,1.1vw,16px);padding:2px 10px;border-radius:999px;border:2px solid var(--cc);background:var(--paper);color:var(--cc);cursor:pointer;white-space:nowrap}
+.hintbtn[aria-expanded="true"]{background:var(--cc);color:#fff}
+.hintpop{display:none;position:absolute;text-align:left;font-family:var(--body);z-index:30;left:6px;right:6px;background:var(--paper);border:3px solid var(--cc);border-radius:14px;padding:8px 34px 8px 14px;box-shadow:0 8px 22px rgba(0,0,0,.18);word-break:keep-all}
+.hintpop.on{display:block}
+.hintpop .hph{margin:0 0 2px;font-family:var(--display);color:var(--cc);font-size:clamp(15px,1.25vw,18px)}
+.hintpop ul{margin:0;padding-left:1.2em;font-size:clamp(15px,1.35vw,19px);line-height:1.5;color:var(--ink)}
+.hintpop .hpf{margin:2px 0 0;font-size:clamp(12px,1vw,14px);color:var(--soft)}
+.hintpop .hpx{position:absolute;top:4px;right:6px;border:0;background:transparent;color:var(--soft);font-size:18px;cursor:pointer;padding:2px 6px}
+#lesson .claim label>span{display:flex;align-items:center;gap:6px}
+#lesson .claim label{--cc:#1F9E63}#lesson .claim label+label{--cc:#6A4FC9}
+.hintt{min-width:0}
+#lesson .frameline{position:relative;--cc:#6A4FC9}#lesson .frameline .hintbtn{margin-left:.4em;align-self:center}
+</style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style></head><body>
+
+<section id="cover" class="screen on">
+ <div class="inner">
+  <span class="lead" style="font-family:var(--display)">🧑‍🏫 홍지희 선생님 버전 · SOOP 탐구 수업 · 과학</span>
+  <span class="badge" id="cBadge"></span>
+  <h1 class="title" id="cTitle"></h1>
+  <p class="lead" id="cSub"></p>
+  <div class="bq" id="cBq"></div>
+  <div class="goalbox" id="cGoal"></div>
+  <div class="map" id="cMap"></div>
+  <div class="plan" id="cPlan"></div>
+  <div class="row"><button class="big-btn" id="go">수업 시작</button><button class="tnote" id="tn0">👩‍🏫 교사 안내</button><button class="ghost" id="qb0">💬 우리 반 질문 판</button></div>
+  <p class="pcredit" id="pcredit"></p>
+  <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a>
+   <footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
+ </div>
+</section>
+
+<section id="lesson" class="screen">
+ <div class="topbar">
+  <div class="steps" id="steps"></div>
+  <div class="tools">
+   <button class="tool qb" id="qbBtn">💬 질문 판<span class="n" id="qn">0</span></button>
+   <button class="tool" id="pickBtn">🎲 발표자</button>
+   <button class="tool" id="timerBtn">⏱ <span id="tm">--:--</span></button>
+   <button class="tool" data-full>⛶</button>
+   <button class="tool" id="home">🏠</button>
+  </div>
+ </div>
+ <div class="sthead"><span class="routine" id="rt"></span></div>
+ <h2 class="hd" id="hd"></h2>
+ <p class="ask" id="ask"></p>
+ <div class="body" id="body"></div>
+ <div class="foot">
+  <button class="tnote" id="tn">👩‍🏫 교사 안내</button>
+  <div class="row"><button class="ghost" id="prev">← 이전</button><button class="big-btn" id="next" style="font-size:clamp(20px,2vw,28px);padding:8px 26px">다음 →</button></div>
+ </div>
+</section>
+
+<div class="overlay" id="tnO"><div class="panel tpanel" style="--pc:#6A4FC9"><h2 id="tnT"></h2><div id="tnB"></div><p style="text-align:center"><button class="big-btn" data-close="tnO">닫기</button></p></div></div>
+<div class="overlay" id="qbO"><div class="panel" id="qbPanel" style="--pc:#E8961E">
+ <h2>💬 우리 반 질문 판</h2>
+ <p class="ask" style="text-align:left">친구가 만든 질문에 자료를 근거로 답을 찾아요. 이 주제(<span id="qbTopic"></span>)의 모든 차시에서 같은 질문 판을 써요.</p>
+ <div class="stems" id="stems"></div>
+ <div class="qadd"><select id="qType"><option>왜</option><option>어떻게</option><option>만약에</option><option>무엇이 다를까</option><option>그 밖에</option></select><input id="qText" placeholder="질문을 써요 (예: 왜 같은 놀이터인데 느낌이 다를까?)"><button id="qAdd">올리기</button></div>
+ <div class="qlist" id="qList"></div>
+ <p class="row" style="margin-top:12px"><button class="ghost" id="qPrint">🖨️ 인쇄</button><button class="ghost" id="qClear">질문 판 비우기</button><button class="big-btn" data-close="qbO">닫기</button></p>
+</div></div>
+<div class="overlay" id="pkO"><div class="panel" style="--pc:#2F74E0;text-align:center"><h2>🎲 누가 말해 볼까요?</h2>
+ <div class="picker" id="pkN">?</div>
+ <p class="row"><label>우리 반 <input id="pkMax" type="number" min="2" max="40" value="25" style="width:4.5em;font-size:20px"> 명</label><button class="big-btn" id="pkGo">뽑기</button><button class="ghost" id="pkReset">처음부터</button><button class="ghost" data-close="pkO">닫기</button></p>
+ <p class="ask" id="pkLeft"></p></div></div>
+<div class="bigview" id="bv"><button class="close" id="bvX" aria-label="닫기">✕</button><img id="bvI" alt=""><div class="meta" id="bvM"></div></div>
+
+<script>
+const C={"file": "u2-l6.html", "lessonKey": "sci41-u2-l6", "short": "6차시", "soop": "O1", "title": "💧 차가운 비커에 맺힌 물방울은 어디서 왔을까?", "sub": "4학년 1학기 과학 2단원 · 6차시 · 「과학」 50~51쪽 · 「실험관찰」 32~33쪽", "goal": "얼음이 든 비커의 바깥 면을 관찰하고 무게를 재어, 수증기가 응결하는 현상을 알아봅시다.", "grids": {"cond": {"corner": "비닐 랩을 씌운 비커", "rows": [{"n": "얼음이 가득 든 비커"}, {"n": "(견주기) 실온의 물이 든 비커"}], "cols": [{"n": "바깥 면에 물방울이", "o": "맺혀요", "x": "안 맺혀요", "ev": "바깥 면에 물방울이"}, {"n": "10분 뒤 무게는 처음보다", "opts": ["늘었어요", "같아요", "줄었어요"], "ev": "무게가"}, {"n": "처음 무게", "type": "num", "unit": "g", "ev": "처음"}, {"n": "10분 뒤 무게", "type": "num", "unit": "g", "ev": "10분 뒤"}]}}, "groups": 6, "photos": {"glasses": {"name": "뿌옇게 흐려진 안경", "data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCIgZmlsbD0iI0Y1RjhGQiIvPjxwYXRoIGQ9Ik0xMCA3MCBxOTAgLTEwIDE4MCAwIiBzdHJva2U9IiM1RTY4NzMiIHN0cm9rZS13aWR0aD0iMyIgZmlsbD0ibm9uZSIvPjxyZWN0IHg9IjM0IiB5PSI1MiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjQyIiByeD0iMTgiIGZpbGw9IiNFOEVERjIiIHN0cm9rZT0iIzNCNDY1MCIgc3Ryb2tlLXdpZHRoPSI1Ii8+PHJlY3QgeD0iMTEwIiB5PSI1MiIgd2lkdGg9IjU2IiBoZWlnaHQ9IjQyIiByeD0iMTgiIGZpbGw9IiNFOEVERjIiIHN0cm9rZT0iIzNCNDY1MCIgc3Ryb2tlLXdpZHRoPSI1Ii8+PHBhdGggZD0iTTkwIDY2IHExMCAtOCAyMCAwIiBzdHJva2U9IiMzQjQ2NTAiIHN0cm9rZS13aWR0aD0iNSIgZmlsbD0ibm9uZSIvPjxnIGZpbGw9IiNmZmYiIG9wYWNpdHk9Ii45Ij48Y2lyY2xlIGN4PSI1MCIgY3k9IjY2IiByPSI3Ii8+PGNpcmNsZSBjeD0iNjYiIGN5PSI3OCIgcj0iOSIvPjxjaXJjbGUgY3g9IjEyOCIgY3k9IjcwIiByPSI4Ii8+PGNpcmNsZSBjeD0iMTQ4IiBjeT0iODAiIHI9IjciLz48L2c+PGcgZmlsbD0iIzlGQjNDOCI+PGNpcmNsZSBjeD0iMjAiIGN5PSIyMCIgcj0iMyIvPjxjaXJjbGUgY3g9IjQ0IiBjeT0iMzAiIHI9IjIuNSIvPjxjaXJjbGUgY3g9IjE3NiIgY3k9IjIyIiByPSIzIi8+PGNpcmNsZSBjeD0iMTYwIiBjeT0iMzYiIHI9IjIiLz48L2c+PC9zdmc+", "lic": "CC0", "artist": "초등교사 홍지희", "title": "뿌옇게 흐려진 안경 (그림)", "page": ""}, "bottle": {"name": "냉장고에서 꺼낸 물병", "data": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMDAgMTQwIj48cmVjdCB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE0MCIgZmlsbD0iI0ZGRjhFRSIvPjxyZWN0IHg9IjE2IiB5PSIxMCIgd2lkdGg9IjYyIiBoZWlnaHQ9IjEyMiIgcng9IjYiIGZpbGw9IiNGNEY3RkEiIHN0cm9rZT0iIzhBOTdBNiIgc3Ryb2tlLXdpZHRoPSIzIi8+PHBhdGggZD0iTTE2IDU4aDYyIiBzdHJva2U9IiM4QTk3QTYiIHN0cm9rZS13aWR0aD0iMyIvPjxyZWN0IHg9IjY2IiB5PSIyNiIgd2lkdGg9IjUiIGhlaWdodD0iMTgiIHJ4PSIyIiBmaWxsPSIjOEE5N0E2Ii8+PHJlY3QgeT0iMTIyIiB3aWR0aD0iMjAwIiBoZWlnaHQ9IjE4IiBmaWxsPSIjRDlCNjhDIi8+PHBhdGggZD0iTTEyMiAyMmgxOHYxMCBxMTQgNiAxNCAyMCB2NjIgcTAgOCAtOCA4IGgtMzAgcS04IDAgLTggLTggdi02MiBxMCAtMTQgMTQgLTIweiIgZmlsbD0iI0JGRTNGNiIgc3Ryb2tlPSIjNUY4RkEwIiBzdHJva2Utd2lkdGg9IjMiLz48cmVjdCB4PSIxMjAiIHk9IjEyIiB3aWR0aD0iMjIiIGhlaWdodD0iMTEiIHJ4PSIyIiBmaWxsPSIjMkY3NEUwIi8+PGcgZmlsbD0iI2ZmZiIgc3Ryb2tlPSIjNUZBOUQ2IiBzdHJva2Utd2lkdGg9IjEuMiI+PGNpcmNsZSBjeD0iMTE4IiBjeT0iNjYiIHI9IjMiLz48Y2lyY2xlIGN4PSIxMzAiIGN5PSI4MiIgcj0iMi41Ii8+PGNpcmNsZSBjeD0iMTQ2IiBjeT0iNzAiIHI9IjMiLz48Y2lyY2xlIGN4PSIxNDAiIGN5PSI5NiIgcj0iMy41Ii8+PGNpcmNsZSBjeD0iMTIwIiBjeT0iMTA0IiByPSIyLjUiLz48Y2lyY2xlIGN4PSIxNTAiIGN5PSIxMDgiIHI9IjMiLz48L2c+PC9zdmc+", "lic": "CC0", "artist": "초등교사 홍지희", "title": "냉장고에서 꺼낸 물병 (그림)", "page": ""}}, "notes0": "<h3>이 차시에서 아이들이 직접 하는 것<\/h3><ul><li><b>“물방울은 비커 안에서 나왔을까, 공기에서 왔을까?”를 실험으로 가립니다.<\/b> 지도서 오개념(“차가운 비커의 바깥 면에 맺힌 물방울은 비커 안에서 나온 것이다”, 236쪽)을 질문으로 삼아, 입구를 비닐 랩으로 막는 까닭과 무게를 재는 까닭을 아이들이 고릅니다.<\/li><li><b>무게를 숫자로 모읍니다.<\/b> 처음 무게·10분 뒤 무게(g)를 0.1 g 전자저울로 재어 우리 반 자료판에 모읍니다(190·234쪽). 3차시와 달리 <b>이번에는 물방울을 닦지 않고<\/b> 재는 것이 핵심이라, 설계 단계에서 ‘닦고 재기’ 카드를 일부러 넣어 견주게 했습니다.<\/li><li><b>(견주기 줄, 이 자료)<\/b> 지도서 238쪽 같은 주제 다른 탐구(상온의 아이스 큐브와 차갑게 한 아이스 큐브)를 본떠, 같은 비커에 실온의 물을 넣어 랩을 씌운 비커를 한 모둠 이상이 함께 놓으면 ‘차가워야 물방울이 맺힌다’를 견줄 수 있습니다. 준비가 어려우면 그 줄은 비워 두세요.<\/li><li>흐름(40분): 보기-생각하기 3분 → 실험 설계 4분 → 예상 3분 → 실험 12분 → 우리 반 자료판 5분 → 예상과 결과 비교 3분 → 근거로 결론 5분 → 개념 확인 3분 → 생각+ 2분 (지도서 수업 흐름: 도입 5분·전개 30분·정리 5분, 235쪽)<\/li><li>「과학」 50~51쪽 · 「실험관찰」 32~33쪽 · 지도서 234~241쪽<\/li><\/ul><h3>학습 목표 (지도서 234쪽)<\/h3><ul><li>수증기가 응결하는 현상을 관찰할 수 있다.<\/li><li>수증기의 응결 현상을 설명할 수 있다.<\/li><\/ul><h3>준비물 (지도서 234쪽)<\/h3><ul><li>모둠별: 얼음이 가득 든 비커, 비닐 랩, 페트리 접시, 고무줄, 전자저울 / 개인별: 실험복, 보안경, 실험용 장갑<\/li><li>(견주기, 이 자료) 같은 크기의 비커에 실온의 물을 넣고 비닐 랩·고무줄로 막은 것<\/li><li>준비물 길잡이: 얼음이 가득 든 비커 안의 얼음이 녹지 않은 상태에서 실험을 시작할 수 있도록 한다(234쪽). 비커가 차가울수록 수증기가 많이 응결하므로 얼음을 최대한 많이 넣도록 지도한다(240쪽). 0.1 g 단위의 전자저울을 사용하면 무게 변화를 쉽게 이해할 수 있다(234쪽).<\/li><\/ul><h3>차시 평가 (지도서 237쪽)<\/h3><ul><li>평가 목표: 차가운 물체 표면에 나타나는 변화를 관찰해 수증기가 응결할 때의 변화를 설명할 수 있다. 평가 방법: 실험·실습 평가, 서술·논술 평가<\/li><li>지식·이해 — 상: 응결 현상을 차가운 물체에 닿은 공기 중의 수증기가 물로 상태가 변화하는 것으로 설명할 수 있다. / 중: 수증기가 물로 상태가 변화하는 것으로 설명할 수 있다. / 하: 설명하는 것에 어려움이 있다.<\/li><li>과정·기능 — 상: 차가운 비커 표면의 변화를 관찰하고, 처음 무게와 나중 무게를 비교할 수 있으며, 비커 표면에 생긴 물질을 확인할 수 있다. / 중: 관찰하고 무게를 비교할 수 있다. / 하: 비교하는 데 어려움이 있다.<\/li><li>가치·태도 — 상: 흥미를 갖고 적극적으로 참여했다. / 중: 참여했다. / 하: 소극적으로 참여했다.<\/li><\/ul><h3>성취기준<\/h3><p>[4과10-02] 물이 얼 때, 얼음이 녹을 때, 물이 증발할 때와 끓을 때, 수증기가 응결할 때의 변화를 관찰할 수 있다.<\/p><h3>단원 지도상의 유의점 (지도서 190쪽)<\/h3><ul><li>상태 변화는 학생들이 일상생활에서 쉽게 접할 수 있는 현상이다. 학생들이 이미 알고 있는 것과 알고 싶은 것, 이 단원에서 배울 내용을 확인해 상황에 맞게 단원의 내용과 순서를 재구성할 수 있다.<\/li><li>물의 상태 변화는 관찰 가능한 현상 수준에서만 다루고, 물의 상태가 변하는 까닭은 다루지 않는다.<\/li><li>물이 얼 때와 얼음이 녹을 때의 부피 변화는 측정 도구를 이용해 정확한 수치로 비교하지 않고, 플라스틱병 속 물기둥의 높이 변화로 이해할 수 있도록 지도한다.<\/li><li>물이 수증기가 되는 현상은 눈으로 보기 어려우므로 물의 양이 줄어든 것을 통해 물이 수증기로 변했음을 인지할 수 있도록 지도한다.<\/li><li>물의 증발과 끓음을 비교할 때는 물이 수증기로 상태가 변하는 현상이라는 공통점에 중점을 두어 지도한다.<\/li><li>물의 증발이나 수증기의 응결은 기온, 습도 등 날씨에 따라 변화 정도가 다르게 나타날 수 있다.<\/li><li>수증기가 응결할 때의 무게를 측정할 때는 0.1 g까지의 측정이 가능한 전자저울을 이용하면 무게 변화를 쉽게 이해할 수 있다.<\/li><\/ul><p>이 자료에서 지킨 것: 분자·입자, 융해·응고·기화·액화·승화 같은 말은 쓰지 않습니다(초등은 승화를 다루지 않음, 지도서 202쪽). 부피는 높이로만 견주고, 무게는 전자저울 숫자로 모읍니다. 질량과 무게를 나누어 말하지 않습니다(지도서 212쪽).<\/p>", "steps": [{"k": "see", "t": "사진 보기", "min": 3, "hd": "추운 날 따뜻한 곳에 들어오면 왜 안경이 뿌옇게 될까요?", "ask": "두 그림을 보고 보여요 · 생각해요 · 궁금해요 칸에 한 가지씩 써서 붙여요.", "items": [{"p": "glasses", "cap": "그림 ①", "sub": "추운 날 따뜻한 곳에 들어왔을 때 안경"}, {"p": "bottle", "cap": "그림 ②", "sub": "냉장고에서 꺼내 놓은 물병"}], "f": ["물병 표면에 ~이 보여요.", "물방울은 ~에서 왔을 것 같아요.", "물병 속 물이 밖으로 나왔을까?"], "note": "<h3>발문 (지도서 235쪽 도입)<\/h3><ul><li>추운 겨울날 따뜻한 곳에 들어올 때 안경알이 뿌옇게 흐려지는 까닭은 무엇인지 이야기해 볼까요?<\/li><li>냉장고에 있던 차가운 물병을 꺼내 놓으면 어떻게 될지 이야기해 볼까요?<\/li><li>물병에 맺힌 물방울은 어떻게 생긴 것인지 관찰해 봅시다.<\/li><\/ul><h3>예상 반응 (지도서 235쪽)<\/h3><ul><li>차가운 곳에서 따뜻한 곳으로 들어왔기 때문입니다.<\/li><li>물병 표면에 물방울이 맺힙니다.<\/li><\/ul><h3>지도 길잡이 (지도서 235쪽)<\/h3><p>물병 표면에 맺힌 물방울이 어디에서 온 것인지 생각해 보게 하며, 눈에 보이지 않는 수증기의 존재를 상기시킨다. ‘궁금해요’에 “물병 속 물이 밖으로 나왔을까?”가 나오면 오늘 실험의 질문으로 삼으세요.<\/p>", "hints": [["안경알이 하얗게 뿌옇게 되었어요.", "냉장고에서 꺼낸 물병 겉에 작은 물방울이 맺혀 있어요."], ["물병이 차가워서 물방울이 생긴 것 같아요.", "안경이 뿌옇게 된 것도 물방울 때문인 것 같아요."], ["물병 속 물이 밖으로 새어 나온 걸까?", "물병을 계속 두면 물방울이 더 많아질까?"]]}, {"k": "design", "t": "실험 설계", "min": 4, "hd": "물방울이 어디서 왔는지 어떻게 알아볼까요?", "ask": "물방울이 비커 안에서 나온 것인지 가려내는 방법과 무게를 바르게 재는 방법을 모두 고른 뒤 ‘생각 확인하기’를 눌러요.", "parts": [{"q": "① 무엇을 해 볼까요? (여러 개 골라요)", "items": [{"x": "얼음이 가득 든 비커 입구를 비닐 랩으로 씌우고 고무줄로 고정하기", "ok": true, "w": "입구를 막으면 비커 안의 물이 밖으로 나올 수 없어요. (「과학」 50쪽)"}, {"x": "비커를 페트리 접시에 올려놓고 무게 재기", "ok": true, "w": "비커 바깥에서 생긴 변화까지 함께 잴 수 있어요. 페트리 접시에 올려놓은 채로 무게를 재요. (「과학」 50쪽, 지도서 235쪽)"}, {"x": "물방울이 맺히기 전에 처음 무게 재기", "ok": true, "w": "얼음이 든 비커 표면에 물방울이 맺히기 전에 처음 무게를 측정해요. (지도서 234쪽)"}, {"x": "10분 뒤에 다시 무게를 재어 견주기", "ok": true, "w": "처음 무게와 견주면 무게가 어떻게 변했는지 알 수 있어요. (「과학」 50쪽)"}, {"x": "실온의 물을 넣고 랩을 씌운 비커도 함께 놓기", "ok": null, "w": "좋은 생각이에요. 차갑지 않은 비커와 견줄 수 있어요. (지도서 238쪽 같은 주제 다른 탐구를 본뜸)"}, {"x": "얼음을 맨손으로 꺼내 만져 보기", "ok": false, "w": "얼음을 맨손으로 만지지 않아요. 손에 달라붙을 수 있어요. (지도서 235쪽 안전)"}]}, {"q": "② 무게를 바르게 견주려면 어떻게 할까요? (여러 개 골라요)", "items": [{"x": "저울을 평평한 곳에 놓고 영점 맞추기", "ok": true, "w": "무게를 재기 전 영점을 맞춰요. (「과학」 51쪽 도우미)"}, {"x": "처음과 10분 뒤 모두 페트리 접시째로 재기", "ok": true, "w": "두 번 모두 같은 방법으로 재야 견줄 수 있어요. (지도서 235쪽)"}, {"x": "얼음을 비커에 가득 넣기", "ok": true, "w": "비커가 충분히 차가워야 바깥 면의 변화를 잘 볼 수 있어요. (「과학」 50쪽 얼음이 가득 든 비커, 지도서 240쪽)"}, {"x": "10분 뒤 재기 전에 바깥 물방울을 수건으로 닦기", "ok": false, "w": "이번에는 바깥 면에 생긴 변화까지 그대로 두고 무게를 견줘요. 닦으면 그 변화가 무게에 들어가지 않아요. (3차시와 달라요)"}]}], "btn": "생각 확인하기", "note": "<h3>발문 (이 자료에서 더함)<\/h3><ul><li>비커 바깥에 맺힌 물방울이 비커 안에서 나온 것인지 알아보려면 어떻게 해야 할까요?<\/li><li>3차시에는 무게를 재기 전에 물기를 닦았어요. 이번에도 닦아야 할까요?<\/li><\/ul><h3>지도서 근거<\/h3><ul><li>“얼음이 든 비커의 표면에 물방울이 맺히기 전에 처음 무게를 측정하도록 지도한다.” (234쪽) “비커를 페트리 접시에 올려놓은 채로 무게를 재도록 한다.” (235쪽)<\/li><li>“비커가 차가울수록 수증기가 많이 응결하므로 얼음을 최대한 많이 넣도록 지도한다.” (240쪽)<\/li><li>‘닦기’ 카드는 3차시 설계(무게 재기 전 물기 닦기 — 그때는 맺힌 물방울이 오차였음)와 견주게 하려고 넣은 오답입니다.<\/li><\/ul>"}, {"k": "pgrid", "t": "예상하기", "min": 3, "g": "cond", "hd": "10분 뒤 비커의 바깥 면과 무게는 어떻게 될까요?", "ask": "표의 칸을 눌러 예상을 골라요. 누를 때마다 바뀌어요. 그렇게 예상한 까닭도 붙여요.", "ph": "얼음이 든 비커의 무게는 ~할 것 같아요. 왜냐하면 ~", "tip": "견주기 비커를 놓지 않으면 그 줄은 비워 둬요. 숫자 칸은 실험하면서 재요.", "note": "<h3>예상 반응<\/h3><ul><li>바깥 면에 물방울이 맺힐 것 같습니다.<\/li><li>(흔한 생각) 비커 안의 얼음이 녹아 밖으로 나오니 무게는 같을 것 같습니다. / 물이 흘러내리니 가벼워질 것 같습니다. — 그대로 두었다가 자료판 숫자로 확인합니다.<\/li><\/ul><h3>진행 팁<\/h3><p>예상은 채점하지 않습니다. 무게 예상과 그 까닭이 “물방울이 어디서 왔다고 생각하는지”와 이어지게 물어보세요.<\/p>", "hints": [["얼음이 든 비커의 무게는 늘어날 것 같아요. 왜냐하면 바깥에 물방울이 더 붙을 것 같으니까요.", "무게는 같을 것 같아요. 왜냐하면 입구를 막아서 아무것도 들어가지 못하니까요."]]}, {"k": "lab", "t": "실험하기", "min": 12, "hd": "얼음이 든 비커의 바깥 면을 관찰해요", "ask": "순서대로 하며 한 일에 ☑ 표시해요. 무게는 「실험관찰」 32~33쪽에 쓰고, 다음 단계 자료판에도 넣어요.", "list": ["① 얼음이 가득 든 비커 입구를 비닐 랩으로 씌우고 고무줄로 고정해요.", "② 비커를 페트리 접시에 올려놓고 무게를 재요. (처음 무게)", "③ 시간이 지남에 따라 비커 바깥 면과 페트리 접시를 관찰해요.", "④ 10분 뒤 페트리 접시째로 무게를 재요. (닦지 않아요)", "⑤ 처음 무게와 10분 뒤 무게를 견줘요."], "safe": ["얼음을 맨손으로 만지지 않아요.", "유리 기구가 깨지지 않게 조심해요.", "실험에 사용하는 물질은 먹지 않아요."], "note": "<h3>교과서 순서 (「과학」 50쪽 · 「실험관찰」 32~33쪽)<\/h3><ol><li>얼음이 가득 든 비커의 입구를 비닐 랩으로 씌우고 고무줄로 고정합니다.<\/li><li>1의 비커를 페트리 접시에 올려놓고 무게를 재 봅시다.<\/li><li>시간이 지남에 따라 비커 바깥 면에서 일어나는 변화를 관찰해 봅시다.<\/li><li>10분 뒤 페트리 접시에 올려놓은 비커의 무게를 재고 2에서 쟀던 무게와 비교해 봅시다.<\/li><\/ol><h3>예상 결과 (지도서 235쪽 · 「실험관찰」 예시)<\/h3><ul><li>처음 무게: 예 263.1 g → 나중 무게: 예 263.4 g. 처음보다 나중이 더 무겁습니다.<\/li><li>시간이 지남에 따라 비커 바깥 면에 작은 물방울이 서서히 맺히고, 점점 커지며, 흘러내려 페트리 접시에 고입니다.<\/li><\/ul><h3>지도 길잡이 (지도서 234~235쪽)<\/h3><ul><li>시간이 지날수록 무게가 더 늘어나는 것을 확인할 수 있음을 알려 준다. 나중 무게가 더 무거워진 까닭을 추리할 수 있도록 지도한다.<\/li><li>디지털 도구: 스마트 기기를 활용한 타임랩스 촬영으로 실험 결과를 확인할 수 있다(234쪽).<\/li><li>날씨(습도·기온)에 따라 물방울이 맺히는 정도가 다를 수 있습니다(190쪽).<\/li><\/ul><h3>안전 (지도서 234~235쪽)<\/h3><p>유리 기구가 깨지지 않게 조심하도록 한다. 손으로 얼음을 잡으면 손에 얼음이 달라붙을 수 있으므로 얼음을 맨손으로 만지지 않도록 주의하게 한다. 실험에 사용하는 물질은 먹지 않도록 지도한다. 정리: 페트리 접시와 비커는 씻어 말리고, 전자저울은 전원을 끄고 편평한 곳에 보관, 얼음은 개수대에 버린다(241쪽).<\/p>"}, {"k": "board", "t": "우리 반 자료판", "min": 5, "g": "cond", "hd": "모둠별 관찰 결과와 무게를 모아 봐요", "ask": "모둠 단추를 누르고 결과 칸을 눌러 고른 뒤, 처음 무게와 10분 뒤 무게(g)를 숫자로 써요. 다 넣으면 ‘반 전체’를 봐요.", "after": "무게가 늘어난 만큼의 물은 어디에서 왔을까요? 비커 입구는 막혀 있었어요.", "note": "<h3>진행 방법<\/h3><ul><li>얼음이 든 비커 줄은 모든 모둠이, 견주기 줄은 견주기 비커를 놓은 모둠만 넣습니다.<\/li><li>‘무게는 처음보다’ 칸은 두 숫자를 보고 고르게 하세요. 늘어난 양은 0.1~0.5 g쯤으로 작습니다.<\/li><\/ul><h3>결과가 갈릴 때<\/h3><p>무게가 같게 나온 모둠은 0.1 g 단위 저울이 아니었거나, 습도가 낮은 날이었거나, 물방울이 페트리 접시 밖으로 흘렀을 수 있습니다. 시간이 지날수록 무게가 더 늘어나므로(235쪽) 몇 분 더 두고 다시 재 보게 할 수 있습니다.<\/p>"}, {"k": "gcmp", "t": "예상과 결과 비교", "min": 3, "g": "cond", "hd": "우리 예상과 반 전체 결과를 견주어 봐요", "ask": "초록 칸은 예상과 같은 칸, 주황 칸은 다른 칸이에요. 숫자 칸에는 모둠들이 잰 무게가 나와요. 다른 칸의 까닭을 써서 붙여요.", "f": ["무게는 예상과 달랐어요. 왜냐하면 ~", "모둠마다 늘어난 무게가 달랐어요. ~ 때문인 것 같아요."], "note": "<h3>발문 (지도서 236쪽)<\/h3><ul><li>얼음이 든 비커의 바깥 면에 변화가 생긴 까닭은 무엇인지 이야기해 볼까요?<\/li><\/ul><h3>오개념 (지도서 236쪽)<\/h3><p>“차가운 비커의 바깥 면에 맺힌 물방울은 비커 안에서 나온 것이다.” → 공기 중의 수증기가 눈에 보이지 않기 때문에 보이지 않는 것에서 물이 생겼다고 생각하기 어려우며, 비커의 바깥 면에 생각보다 많은 양의 물방울이 맺히기 때문에 오개념을 갖고 있는 경우가 많다. 이 실험을 통해 공기 중의 수증기가 차가운 물체에 닿으면 응결하여 물로 상태 변화한다는 것을 이해할 수 있도록 한다. → “입구를 막았는데도 무게가 늘었다”가 근거입니다.<\/p>", "hints": [["무게가 같을 거라고 예상했는데 10분 뒤 무게가 0.3 g 늘었어요.", "견주기 비커에도 물방울이 맺힐 줄 알았는데 맺히지 않았어요."], ["늘어난 무게가 모둠마다 달랐어요. 넣은 얼음의 양이 달랐던 것 같아요.", "어떤 모둠은 무게가 같았어요. 물방울이 페트리 접시 밖으로 흘렀던 것 같아요."]]}, {"k": "claim", "t": "근거로 결론", "min": 5, "g": "cond", "hd": "비커 바깥의 물방울은 어디에서 왔을까요?", "ask": "근거 단추를 눌러 근거 칸에 넣고, 결론 칸에 물방울이 어떻게 생겼는지 써요. 다 쓰면 교과서 문장과 견줘요.", "f1": "우리 반 자료를 보니", "f2": "그래서 비커 바깥의 물방울은", "ph": "공기 중의 ~가 ~에 닿아 ~로 변한 거예요.", "btn": "교과서 문장과 비교하기", "bookLabel": "교과서 문장", "src": "「과학」 50~51쪽", "book": "차가운 물체 표면에 맺힌 물방울은 공기 중에 있던 수증기가 물로 변한 것입니다. 기체인 수증기가 액체인 물로 상태가 변하는 현상을 <b>응결<\/b>이라고 합니다.<br>응결의 예: 차가운 음료수병 표면에 물방울이 맺힙니다. 이른 아침 차가워진 풀잎이나 거미줄에 이슬이 맺힙니다.<br>📌 생각이 한눈에: 차가운 물체 표면에 생긴 물방울은 공기 중의 수증기가 (응결)해 물로 변한 것입니다.", "note": "<h3>발문 (지도서 236쪽)<\/h3><ul><li>비커의 바깥 면에 생긴 물방울은 어떻게 생기게 된 것인지 이야기해 볼까요? 응결이란 무엇인지 설명해 볼까요?<\/li><li>응결의 예를 이야기해 볼까요?<\/li><\/ul><h3>예상 반응 (지도서 236쪽)<\/h3><ul><li>얼음이 가득 든 비커의 바깥 면은 차갑기 때문에 공기 중의 수증기가 차가운 비커의 바깥 면에 닿아 물로 상태가 변해 물방울이 맺힙니다. 비커의 바깥 면에 맺힌 물방울의 무게만큼 비커의 무게가 늘어납니다.<\/li><li>응결의 예: 뜨거운 물로 씻은 후 욕실 거울에 물방울이 맺힙니다. 집 안과 밖의 온도 차가 크면 유리창의 안쪽에 물방울이 맺힙니다. 냄비 뚜껑을 닫고 음식을 찌거나 국을 끓일 때 생긴 수증기가 냄비 뚜껑 안쪽에 맺힙니다.<\/li><\/ul><h3>진행 팁<\/h3><p>결론에 ‘공기 중의 수증기’, ‘차가운 표면’, ‘물로 변함(응결)’ 세 가지가 들어가면 차시 평가 ‘상’ 기준과 같습니다(237쪽). 음식을 찌거나 국을 끓일 때 보이는 하얀 김은 수증기가 아니라 작은 물방울임을 덧붙일 수 있습니다(236쪽). 안개·이슬·구름은 보충 자료(239쪽)로 소개만 합니다.<\/p>", "hints": [["우리 반 자료를 보니 입구를 막았는데도 얼음이 든 비커의 무게가 늘었어요.", "우리 반 자료를 보니 실온의 물이 든 비커에는 물방울이 맺히지 않았어요."], ["그래서 비커 바깥의 물방울은 비커 안에서 나온 것이 아니에요.", "그래서 물방울은 차가운 비커 표면에서 생긴 것이라고 생각해요."]]}, {"k": "check", "t": "개념 확인", "min": 3, "hd": "확인해 봐요", "ask": "문제를 읽고 알맞은 답을 눌러요.", "items": [{"q": "얼음이 가득 든 비커 입구를 비닐 랩으로 씌우고 관찰한 결과로 옳은 것은?", "o": ["공기 중의 수증기가 비커의 바깥 면에 닿아 물로 맺혀요.", "비커 안의 얼음이 녹아 생긴 물이 바깥 면에 맺혀요.", "시간이 지나면서 비커의 무게가 더 가벼워져요."], "a": 0, "w": "입구를 막았으니 비커 안의 물은 나올 수 없어요. 공기 중의 수증기가 차가운 바깥 면에 닿아 물로 맺혀요. (지도서 237쪽 형성 평가 1, 정답 ④)"}, {"q": "기체인 수증기가 액체인 물로 상태가 변하는 현상은?", "o": ["응결", "증발", "끓음"], "a": 0, "w": "기체인 수증기가 액체인 물로 변하는 현상을 응결이라고 해요. (「과학」 51쪽)"}, {"q": "응결의 예로 알맞은 것은?", "o": ["이른 아침 풀잎에 이슬이 맺혀요.", "젖은 빨래가 말라요.", "얼음과자가 녹아요."], "a": 0, "w": "공기 중의 수증기가 차가워진 풀잎에 닿아 물방울로 맺혀요. 빨래가 마르는 것은 증발, 얼음과자가 녹는 것은 얼음이 물로 변한 것이에요. (「과학」 51쪽)"}], "note": "<h3>지도서 근거<\/h3><p>1번 지도서 237쪽 형성 평가 1(정답 ④ 공기 중의 수증기가 비커의 바깥 면에 닿아 물로 맺힌다), 2·3번 「과학」 51쪽 본문과 응결의 예입니다.<\/p><h3>형성 평가 2 (서술형, 지도서 237쪽)<\/h3><p>냉동실에서 꽁꽁 언 물병을 꺼내 놓으면 바깥 면에 맺히는 물방울은 어떻게 만들어진 것인지 — 예: 공기 중의 수증기가 차가운 물병 표면에 닿아 응결한 것이다. (상: 수증기·차가운 물체 표면·응결을 모두 / 중: 두 가지만 / 하: 설명하지 못함)<\/p>"}, {"k": "talk", "t": "생각+", "min": 2, "hd": "추운 겨울날 유리창 안쪽에 왜 물방울이 맺힐까요?", "ask": "오늘 실험과 이어서 까닭을 써요. 더 궁금한 것은 질문 판에 올려요.", "cols": ["❄️ 유리창 안쪽에 물방울이 맺히는 까닭"], "frames": ["집 안 공기 중의 ~가 차가운 ~에 닿아 ~했기 때문이에요."], "toBoard": true, "note": "<h3>지도서 근거 (236쪽 생각이 한눈에 2)<\/h3><p>추운 겨울날 따뜻한 집 안에서 유리창 안쪽에 물방울이 맺히는 까닭 — 예상 반응: 집 안과 밖의 온도 차가 크면 유리창 안쪽에 수증기가 응결해 물방울이 맺힙니다. 수증기가 차가운 물체 표면에 닿으면 물방울이 되기 때문입니다. 채점하지 않습니다.<\/p>"}], "topic": {"key": "sci41u2", "name": "2단원 물의 상태 변화", "bq": "물은 어떻게 얼음과 수증기로 모습을 바꿀까? 그 변화를 이용해 물을 얻을 수 있을까?", "map": [{"s": "S", "f": "u2-l2.html", "n": "2차시", "t": "물의 상태가 변하는 순간을 잡아라!"}, {"s": "O1", "f": "u2-l3.html", "n": "3차시", "t": "물이 얼면 무엇이 변하고, 무엇이 그대로일까?"}, {"s": "O1", "f": "u2-l45.html", "n": "4~5차시", "t": "증발과 끓음, 무엇이 같고 무엇이 다를까?"}, {"s": "O1", "f": "u2-l6.html", "n": "6차시", "t": "차가운 비커에 맺힌 물방울은 어디서 왔을까?"}, {"s": "O2", "f": "u2-l7.html", "n": "7차시", "t": "물이 부족한 곳에서 물을 얻는 방법을 찾아라!"}, {"s": "P", "f": "u2-l89.html", "n": "8~9차시", "t": "물의 상태 변화로 물을 얻는 장치 만들기"}]}};
+
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PH=C.photos||{};
+const SOOP={S:['S','개념 찾기','var(--S)'],O1:['O','개념 구축하기','var(--O1)'],O2:['O','탐구 정리하기','var(--O2)'],P:['P','발표하기','var(--P)']};
+const ROUT={see:['🔍','보기-생각하기-궁금해하기'],sort:['🗂️','예와 예가 아닌 것 나누기'],define:['✍️','우리 반 결론 만들기'],cards:['📑','자료 살펴보기'],csq:['🗣️','주장-근거-질문'],venn:['⚖️','같은 점·다른 점'],cse:['🔗','연결-확장-도전'],iuti:['🔄','예전 생각-지금 생각'],task:['🛠️','활동하기'],check:['✅','개념 확인하기'],talk:['💭','생각 나누기']};
+let SAVE=true;const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+const LK='soop:'+C.lessonKey+':', QK='soopQ:'+C.topic.key;
+let step=0;
+const sc=SOOP[C.soop];document.documentElement.style.setProperty('--sc',sc[2]);
+/* 표지 */
+$('cBadge').innerHTML=`${sc[0]} · ${sc[1]}`;$('cBadge').style.setProperty('--sc',sc[2]);
+$('cTitle').textContent=C.title;$('cSub').textContent=C.sub;document.title=C.title;
+$('cBq').innerHTML=`<small>🌟 이 주제의 핵심 질문</small><b>${esc(C.topic.bq)}</b>`;
+$('cGoal').textContent='학습 문제: '+C.goal;
+$('cMap').innerHTML=['S','O1','O2','P'].map(k=>`<div class="mcol" style="--mc:${SOOP[k][2]}"><h3>${SOOP[k][0]} ${SOOP[k][1]}</h3>${C.topic.map.filter(m=>m.s===k).map(m=>m.f===C.file?`<span class="cur">${esc(m.n)} ${esc(m.t)}</span>`:`<a href="${m.f}">${esc(m.n)} ${esc(m.t)}</a>`).join('')}</div>`).join('');
+$('cPlan').innerHTML=C.steps.map((s,i)=>`<button class="st" data-i="${i}">${i+1}. ${esc(s.t)} ${s.min}분</button>`).join('');
+$('cPlan').querySelectorAll('.st').forEach(b=>b.onclick=()=>go(+b.dataset.i));
+const pk=Object.keys(PH);$('pcredit').innerHTML=pk.length?'사진 출처 · 위키미디어 공용: '+pk.map(k=>`${esc(PH[k].name)}(${esc(PH[k].title)} / ${esc(PH[k].artist||'작자 미상')} / ${esc(PH[k].lic)})`).join(' · '):'';
+$('go').onclick=()=>go(0);$('home').onclick=()=>{stopT();show('cover')};
+function show(id){document.querySelectorAll('.screen').forEach(s=>s.classList.toggle('on',s.id===id))}
+function openO(id){$(id).classList.add('on')}
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=()=>$(b.dataset.close).classList.remove('on'));
+document.querySelectorAll('[data-full]').forEach(b=>b.onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen()}catch(e){}});
+/* 교사 안내 */
+function tnote(i){const n=i<0?C.notes0:C.steps[i].note;$('tnT').textContent='👩‍🏫 '+(i<0?'수업 준비':`${i+1}. ${C.steps[i].t}`);$('tnB').innerHTML=n||'<p>이 단계의 안내는 수업 준비 안내를 보세요.</p>';openO('tnO')}
+$('tn0').onclick=()=>tnote(-1);$('tn').onclick=()=>tnote(step);
+/* 질문 판 */
+const STEMS=['왜 ~할까?','어떻게 ~할 수 있을까?','만약 ~라면 어떻게 될까?','~와 ~는 무엇이 다를까?','~는 모두 같을까?'];
+$('stems').innerHTML='<span class="ask">질문 만들기 도우미:</span>'+STEMS.map(s=>`<button>${s}</button>`).join('');
+$('stems').querySelectorAll('button').forEach(b=>b.onclick=()=>{$('qText').value=b.textContent;$('qText').focus()});
+$('qbTopic').textContent=C.topic.name;
+function Q(){return LS.get(QK,[])}function setQ(v){LS.set(QK,v);qCount()}
+function qCount(){const q=Q();$('qn').textContent=q.filter(x=>x.s<2).length}
+function addQ(text,type){text=text.trim();if(!text)return;const q=Q();q.push({t:text,ty:type||'그 밖에',s:0,a:'',from:C.short,id:Date.now()+Math.random()});setQ(q);renderQ()}
+const STS=['❓ 궁금해요','🔎 찾는 중','✅ 답 찾음'];
+function renderQ(){const q=Q();$('qList').innerHTML=q.length?q.map((x,i)=>`<div class="qi s${x.s}"><div class="top"><span class="ty">${esc(x.ty)}</span><span class="q">${esc(x.t)}</span><span class="from">${esc(x.from)}</span><button class="stt" data-i="${i}">${STS[x.s]}</button><button class="stt" data-del="${i}" aria-label="지우기">✕</button></div>${x.s>0?`<input data-a="${i}" value="${esc(x.a)}" placeholder="찾은 답과 근거 (예: 자료 ②를 보니 …)">`:''}</div>`).join(''):'<p class="ask">아직 질문이 없어요. 첫 질문을 올려 보세요!</p>';
+ $('qList').querySelectorAll('[data-i]').forEach(b=>b.onclick=()=>{const q=Q();q[+b.dataset.i].s=(q[+b.dataset.i].s+1)%3;setQ(q);renderQ()});
+ $('qList').querySelectorAll('[data-del]').forEach(b=>b.onclick=()=>{const q=Q();q.splice(+b.dataset.del,1);setQ(q);renderQ()});
+ $('qList').querySelectorAll('[data-a]').forEach(inp=>inp.onchange=()=>{const q=Q();q[+inp.dataset.a].a=inp.value;setQ(q)});}
+$('qAdd').onclick=()=>{addQ($('qText').value,$('qType').value);$('qText').value=''};
+$('qText').onkeydown=e=>{if(e.key==='Enter')$('qAdd').onclick()};
+$('qbBtn').onclick=$('qb0').onclick=()=>{renderQ();openO('qbO')};
+$('qPrint').onclick=()=>{const p=$('qbPanel');p.classList.add('printme');window.print();p.classList.remove('printme')};
+$('qClear').onclick=()=>{if(confirm('질문 판을 모두 비울까요? (이 주제의 모든 차시에서 지워져요)')){setQ([]);renderQ()}};
+(function(){const q=Q();if(!q.some(x=>x.t===C.topic.bq)){q.unshift({t:C.topic.bq,ty:'왜',s:0,a:'',from:'🌟 핵심 질문',id:1});setQ(q)}})();
+qCount();
+/* 발표자 뽑기 */
+let drawn=LS.get('soopPick',[]);
+function pkLeft(){const m=+$('pkMax').value||25;$('pkLeft').textContent=`아직 말하지 않은 친구 ${m-drawn.filter(n=>n<=m).length}명`}
+$('pickBtn').onclick=()=>{pkLeft();openO('pkO')};
+$('pkGo').onclick=()=>{const m=+$('pkMax').value||25;let pool=[];for(let i=1;i<=m;i++)if(!drawn.includes(i))pool.push(i);if(!pool.length){drawn=[];pool=[...Array(m)].map((_,i)=>i+1)}
+ const n=pool[Math.floor(Math.random()*pool.length)];drawn.push(n);LS.set('soopPick',drawn);let k=0;const t=setInterval(()=>{$('pkN').textContent=pool[Math.floor(Math.random()*pool.length)]+'번';if(++k>10){clearInterval(t);$('pkN').textContent=n+'번';pkLeft()}},60)};
+$('pkReset').onclick=()=>{drawn=[];LS.set('soopPick',drawn);$('pkN').textContent='?';pkLeft()};
+/* 타이머 */
+let T=null,left=0;function stopT(){clearInterval(T);T=null}
+function showT(){$('tm').textContent=`${String(Math.floor(left/60)).padStart(2,'0')}:${String(left%60).padStart(2,'0')}`}
+$('timerBtn').onclick=()=>{if(T){stopT();return}left=left>0?left:C.steps[step].min*60;T=setInterval(()=>{left--;showT();if(left<=0){stopT();$('timerBtn').style.borderColor='var(--no)'}},1000);showT()};
+/* 사진 */
+function img(p,cls){const x=PH[p];return x?`<img src="${x.data}" alt="${esc(x.name)}" data-ph="${p}" ${cls?`class="${cls}"`:''}>`:''}
+function wireImgs(){document.querySelectorAll('#body img[data-ph]').forEach(im=>im.onclick=()=>{const p=PH[im.dataset.ph];$('bvI').src=p.data;$('bvM').textContent=`${p.name} — ${p.title} / ${p.artist||'작자 미상'} / ${p.lic} / 위키미디어 공용`;$('bv').classList.add('on')})}
+$('bvX').onclick=()=>$('bv').classList.remove('on');
+/* 붙임쪽지 칸 */
+function col(id,title,color,frame,opts={}){const ph=opts.ph||frame||'생각을 써요';return `<div class="col${opts.cmp?' cmp':''}" style="--cc:${color}"><h3>${title}</h3>${frame&&frame!==ph?`<p class="frame">${esc(frame)}</p>`:''}<div class="notes" id="n-${id}"></div><div class="add"><input id="i-${id}" placeholder="${esc(ph)}"><button data-add="${id}">붙이기</button></div></div>`}
+function drawNotes(id,toBoard){const arr=LS.get(LK+id,[]);const box=$('n-'+id);if(!box)return;
+ box.innerHTML=arr.map((t,i)=>`<div class="note"><span>${esc(t)}</span><span>${toBoard?`<button class="up" data-up="${i}">질문 판에 ↑</button>`:''}<button class="x" data-x="${i}" aria-label="지우기">✕</button></span></div>`).join('');
+ box.querySelectorAll('[data-x]').forEach(b=>b.onclick=()=>{arr.splice(+b.dataset.x,1);LS.set(LK+id,arr);drawNotes(id,toBoard)});
+ box.querySelectorAll('[data-up]').forEach(b=>b.onclick=()=>{addQ(arr[+b.dataset.up],'그 밖에');b.textContent='올렸어요 ✓';b.disabled=true});}
+function wireCols(ids,boardIds=[]){ids.forEach(id=>{const inp=$('i-'+id),btn=document.querySelector(`[data-add="${id}"]`);const f=()=>{const v=inp.value.trim();if(!v)return;const a=LS.get(LK+id,[]);a.push(v);LS.set(LK+id,a);inp.value='';drawNotes(id,boardIds.includes(id))};btn.onclick=f;inp.onkeydown=e=>{if(e.key==='Enter')f()};drawNotes(id,boardIds.includes(id))})}
+/* 단계 그리기 */
+function stepsBar(){$('steps').innerHTML=C.steps.map((s,i)=>`<button class="st ${i===step?'now':i<step?'done':''}" data-i="${i}">${i+1}. ${esc(s.t)}</button>`).join('');$('steps').querySelectorAll('.st').forEach(b=>b.onclick=()=>go(+b.dataset.i))}
+function go(i){step=i;stopT();left=0;$('tm').textContent='--:--';$('timerBtn').style.borderColor='';show('lesson');render()}
+$('prev').onclick=()=>step>0?go(step-1):show('cover');$('next').onclick=()=>step<C.steps.length-1?go(step+1):show('cover');
+function render(){const s=C.steps[step];stepsBar();const r=ROUT[s.k]||['•',''];$('rt').textContent=`${r[0]} ${s.routine||r[1]} · ${s.min}분`;$('hd').textContent=s.hd||s.t;$('ask').textContent=s.ask||'';
+ $('next').textContent=step<C.steps.length-1?'다음 →':'마치기 ✓';(R[s.k]||R.talk)(s,'s'+step);wireImgs();$('body').scrollTop=0}
+const R={};
+R.see=(s,id)=>{$('body').innerHTML=`<div class="split wrap"><div class="gal"><p class="zoomhint">🔍 사진을 누르면 크게 볼 수 있어요.</p>${s.items.map(it=>`<div class="pic">${it.p?img(it.p):`<span class="e">${it.e}</span>`}<b>${esc(it.cap||'')}</b>${it.sub?`<small>${esc(it.sub)}</small>`:''}</div>`).join('')}</div>
+ <div class="cols" style="--n:3">${col(id+'a','👀 보여요','#2F74E0',s.f?.[0]||'~이 보여요.')}${col(id+'b','💭 생각해요','#6A4FC9',s.f?.[1]||'~인 것 같아요.')}${col(id+'c','❓ 궁금해요','#E8961E',s.f?.[2]||'왜 ~할까?')}</div></div>`;
+ wireCols([id+'a',id+'b',id+'c'],[id+'c'])};
+R.sort=(s,id)=>{let deck=[...s.items],i=0,done=[];const bins=s.bins;
+ const draw=()=>{if(i>=deck.length){$('body').innerHTML=`<div class="sorted" style="--n:${bins.length}">${bins.map(b=>`<div style="--cc:${b.c}"><b>${b.e} ${esc(b.n)}</b><br>${done.filter(d=>d.k===b.k).map(d=>'· '+esc(d.x)).join('<br>')}</div>`).join('')}</div>${s.after?`<div class="after">💬 ${esc(s.after)}</div>`:''}${s.col?`<div class="cols" style="--n:1;width:min(1000px,100%)">${col(id+'z',s.col,'#E8961E','',{ph:s.colph||'생각을 써요',cmp:1})}</div>`:''}`;if(s.col)wireCols([id+'z']);return}
+  const it=deck[i];$('body').innerHTML=`<div class="deck"><p class="ask">${i+1} / ${deck.length}</p><div class="card1">${it.p?img(it.p):`<span class="e">${it.e}</span>`}<span class="x">${esc(it.x)}</span></div>
+  <div class="bins" style="--n:${bins.length}">${bins.map(b=>`<button class="bin" data-k="${b.k}" style="--cc:${b.c}"><span class="e">${b.e}</span>${esc(b.n)}${b.c2?`<span class="c">${esc(b.c2)}</span>`:''}</button>`).join('')}</div><div class="fb" id="fb"></div></div>`;wireImgs();
+  document.querySelectorAll('.bin').forEach(b=>b.onclick=()=>{const fb=$('fb');const open=it.k==='*';const ok=open||b.dataset.k===it.k;
+   fb.className='fb on '+(open?'open':ok?'ok':'no');fb.innerHTML=(open?'<b>생각이 다를 수 있어요.</b> ':ok?'<b>맞아요!</b> ':'<b>다시 생각해 봐요.</b> ')+esc(it.w||'')+(ok?` <button class="ghost" id="nx" style="margin-left:8px">다음 카드</button>`:'');
+   if(ok){done.push({k:open?b.dataset.k:it.k,x:it.x});document.querySelectorAll('.bin').forEach(x=>x.disabled=true);$('nx').onclick=()=>{i++;draw()};$('nx').focus()}})};draw()};
+R.define=(s,id)=>{const saved=LS.get(LK+id+'d','');$('body').innerHTML=`<div class="chips">${s.words.map(w=>`<button class="chip" aria-pressed="false">${esc(w)}</button>`).join('')}</div>
+ <div class="frameline">${esc(s.frame[0])} <input id="dIn" value="${esc(saved)}" placeholder="낱말 카드를 누르거나 직접 써요"> ${esc(s.frame[1])}</div>
+ <button class="big-btn" id="dShow" style="font-size:clamp(19px,1.8vw,25px);padding:8px 24px">📖 ${esc(s.btn||'교과서 뜻과 비교하기')}</button>
+ <div class="book" id="book"><small>${esc(s.bookLabel||'교과서 뜻')} (${esc(s.src)})</small><br><b>${s.book}</b></div>
+ <div class="cols" style="--n:2">${col(id+'s','🤝 교과서와 같은 점','#1F9E63','',{ph:'우리 결론과 ~이 같아요.'})}${col(id+'n','✨ 새로 알게 된 점','#2F74E0','',{ph:'~을 새로 알았어요.'})}</div>`;
+ document.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{c.setAttribute('aria-pressed',c.getAttribute('aria-pressed')==='true'?'false':'true');const inp=$('dIn');if(c.getAttribute('aria-pressed')==='true'){inp.value=(inp.value?inp.value+' ':'')+c.textContent;LS.set(LK+id+'d',inp.value)}});
+ $('dIn').oninput=()=>LS.set(LK+id+'d',$('dIn').value);$('dShow').onclick=()=>{$('book').classList.add('on');$('book').scrollIntoView({block:'center',behavior:'smooth'})};wireCols([id+'s',id+'n'])};
+R.cards=(s,id)=>{$('body').innerHTML=`<div class="gal wrap">${s.cards.map((c,i)=>`<div class="pic" style="border-color:${c.c||'var(--line)'}"><span class="num">자료 ${i+1}</span>${c.p?img(c.p):`<span class="e">${c.e}</span>`}<b>${esc(c.t)}</b><span style="font-size:clamp(15px,1.45vw,19px)">${esc(c.d)}</span><small>${esc(c.s||'')}</small></div>`).join('')}</div>${s.qs?`<div class="after wrap">💬 ${s.qs.map(esc).join('<br>💬 ')}</div>`:''}`};
+R.csq=(s,id)=>{const q=Q().filter(x=>x.s<2);const store=LS.get(LK+id+'log',[]);const nC=(s.cards||[]).length;
+ $('body').innerHTML=`<div class="qpick"><b style="font-family:var(--display);font-weight:400">🎯 함께 답할 질문</b><select id="qSel">${[...new Set([...(s.qs||[]),...q.map(x=>x.t)])].map(x=>`<option>${esc(x)}</option>`).join('')}</select></div>
+ ${nC?`<div class="mini wrap">${s.cards.map((c,i)=>`<div class="m">${c.p?img(c.p):`<span class="e">${c.e}</span>`}<div><span class="num">자료 ${i+1}</span> <b style="display:inline">${esc(c.t)}</b><span class="d">${esc(c.d)}</span><small>${esc(c.s||'')}</small></div></div>`).join('')}</div>`:''}
+ <div class="csq">
+  <div class="col cmp" style="--cc:#2F74E0"><h3>🗣️ 내 생각</h3><textarea id="cl" rows="2" placeholder="나는 ~라고 생각해요." style="font-family:var(--body);font-size:clamp(17px,1.6vw,21px);border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:6px"></textarea></div>
+  <div class="col cmp" style="--cc:#1F9E63"><h3>📑 근거</h3><p class="frame">근거가 되는 자료 번호를 눌러요.</p><div class="evi">${[...Array(nC)].map((_,i)=>`<button aria-pressed="false" data-e="${i+1}">자료 ${i+1}</button>`).join('')}</div><input id="ev" placeholder="왜냐하면 자료 ○을 보면 ~이기 때문이에요." style="font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:6px"></div>
+  <div class="col cmp" style="--cc:#E8961E"><h3>❓ 친구에게 묻기</h3><input id="bq" placeholder="그럼 ~는 어떨까?" style="font-family:var(--body);font-size:clamp(16px,1.5vw,20px);border:3px solid var(--line);border-radius:10px;background:var(--bg);color:var(--ink);padding:6px"><button class="big-btn" id="csqSave" style="font-size:clamp(18px,1.7vw,23px);padding:6px 20px;align-self:flex-end">✔ 기록하기</button></div>
+ </div>
+ <div class="log wrap" id="csqLog"></div>`;
+ const drawLog=()=>{$('csqLog').innerHTML=store.map(x=>`<div><b>질문:</b> ${esc(x.q)}<br>🗣️ ${esc(x.c)} · 📑 ${esc(x.e)}${x.b?` · ❓ ${esc(x.b)}`:''}</div>`).join('')};drawLog();
+ document.querySelectorAll('.evi button').forEach(b=>b.onclick=()=>b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')==='true'?'false':'true'));
+ $('csqSave').onclick=()=>{const c=$('cl').value.trim();if(!c)return;const ev=[...document.querySelectorAll('.evi button[aria-pressed="true"]')].map(b=>'자료 '+b.dataset.e).join(', ');
+  const rec={q:$('qSel').value,c,e:[ev,$('ev').value.trim()].filter(Boolean).join(' — ')||'(근거 없음 — 자료에서 찾아봐요)',b:$('bq').value.trim()};store.push(rec);LS.set(LK+id+'log',store);
+  const all=Q();const hit=all.find(x=>x.t===rec.q);if(hit&&rec.e&&!rec.e.startsWith('(')){hit.s=Math.max(hit.s,1);hit.a=(hit.a?hit.a+' / ':'')+rec.c+' ('+rec.e+')';setQ(all)}
+  if(rec.b)addQ(rec.b,'그 밖에');$('cl').value=$('ev').value=$('bq').value='';document.querySelectorAll('.evi button').forEach(b=>b.setAttribute('aria-pressed','false'));drawLog()}};
+R.venn=(s,id)=>{$('body').innerHTML=`<div class="cols wrap" style="--n:3">${col(id+'a',esc(s.a)+'만','#2F74E0',s.fa||'')}${col(id+'s','🤝 같은 점','#1F9E63',s.fs||'')}${col(id+'b',esc(s.b)+'만','#E0506B',s.fb||'')}</div>${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;wireCols([id+'a',id+'s',id+'b'])};
+R.cse=(s,id)=>{const f=s.f||[];$('body').innerHTML=`<div class="cols wrap" style="--n:3">${col(id+'a','🔗 이어지는 것','#2F74E0',f[0]||'~와 이어져요.')}${col(id+'b','🌱 더 찾은 것','#1F9E63',f[1]||'~도 알게 되었어요.')}${col(id+'c','🧗 아직 궁금한 것','#E8961E',f[2]||'왜 ~할까?')}</div>`;wireCols([id+'a',id+'b',id+'c'],[id+'c'])};
+R.iuti=(s,id)=>{const f=s.f||[];$('body').innerHTML=`<div class="cols wrap" style="--n:2">${col(id+'a','🕰️ 예전 생각','#6A4FC9',f[0]||'처음에 나는 ~라고 생각했어요.')}${col(id+'b','💡 지금 생각','#1F9E63',f[1]||'지금은 ~라고 생각해요.')}</div>${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;wireCols([id+'a',id+'b'])};
+R.task=(s,id)=>{const st=LS.get(LK+id+'t',[]);$('body').innerHTML=`<div class="task">${s.list.map((t,i)=>`<label class="${st[i]?'done':''}"><input type="checkbox" data-t="${i}" ${st[i]?'checked':''}> ${esc(t)}</label>`).join('')}</div>${s.tip?`<div class="tip">💡 ${esc(s.tip)}</div>`:''}${s.col?`<div class="cols wrap" style="--n:1">${col(id+'z',s.col,'#E8961E','',{ph:s.colph||'생각을 써요'})}</div>`:''}`;
+ document.querySelectorAll('[data-t]').forEach(c=>c.onchange=()=>{st[+c.dataset.t]=c.checked;LS.set(LK+id+'t',st);c.parentElement.classList.toggle('done',c.checked)});if(s.col)wireCols([id+'z'])};
+R.check=(s,id)=>{let i=0,sc=0;const draw=()=>{if(i>=s.items.length){$('body').innerHTML=`<div class="qz"><div class="qt">🎉 ${s.items.length}문제 중 ${sc}문제를 맞혔어요!</div><button class="ghost" id="again">다시 풀기</button></div>`;$('again').onclick=()=>{i=0;sc=0;draw()};return}
+ const q=s.items[i],ord=q.o.map((_,k)=>k).sort(()=>Math.random()-.5);$('body').innerHTML=`<div class="qz"><p class="ask">${i+1} / ${s.items.length}</p><div class="qt">${esc(q.q)}</div><div class="opts">${ord.map((k,n)=>`<button class="opt" data-k="${k}">${n+1}. ${esc(q.o[k])}</button>`).join('')}</div><div class="fb" id="fb"></div></div>`;
+ document.querySelectorAll('.opt').forEach(b=>b.onclick=()=>{const ok=+b.dataset.k===q.a;if(ok)sc++;document.querySelectorAll('.opt').forEach(x=>{x.disabled=true;if(+x.dataset.k===q.a)x.classList.add('right')});if(!ok)b.classList.add('wrong');
+  $('fb').className='fb on '+(ok?'ok':'no');$('fb').innerHTML=`<b>${ok?'정답이에요!':'정답을 확인해 봐요.'}</b> ${esc(q.w)} <button class="ghost" id="nx">다음</button>`;$('nx').onclick=()=>{i++;draw()};$('nx').focus()})};draw()};
+R.talk=(s,id)=>{$('body').innerHTML=`${s.points?`<div class="after wrap">${s.points.map(p=>'💬 '+esc(p)).join('<br>')}</div>`:''}<div class="cols wrap" style="--n:${s.cols?s.cols.length:1}">${(s.cols||[s.col||'우리 반 생각']).map((c,i)=>col(id+'t'+i,esc(c),['#2F74E0','#1F9E63','#E0506B','#E8961E'][i%4],(s.frames||[])[i]||'')).join('')}</div>`;wireCols((s.cols||[0]).map((_,i)=>id+'t'+i),s.toBoard?(s.cols||[0]).map((_,i)=>id+'t'+i):[])};
+document.addEventListener('keydown',e=>{if(e.key==='Escape')document.querySelectorAll('.overlay.on,.bigview.on').forEach(o=>o.classList.remove('on'))});
+
+/* ===== 과학 탐구 단계 (홍지희 선생님 버전 · 과학) ===== */
+Object.assign(ROUT,{pred:['🔮','예상하기'],lab:['🧪','실험하고 기록하기'],pvr:['⚖️','예상과 결과 비교하기']});
+/* 🔮 예상하기: 결과를 예상하고 까닭을 붙임쪽지로 써요. key가 같으면 뒤의 '예상과 결과 비교' 단계에서 불러와요. */
+R.pred=(s,id)=>{const k=s.key||'P1';const f=s.f||[];
+ $('body').innerHTML=`${s.q?`<div class="after wrap" style="font-size:clamp(19px,1.9vw,25px)">🔮 ${esc(s.q)}</div>`:''}${s.opts?`<div class="chips">${s.opts.map(o=>`<button class="chip" aria-pressed="false" data-o="${esc(o)}">${esc(o)}</button>`).join('')}</div>`:''}
+ <div class="cols wrap" style="--n:2">${col('pr'+k+'a','🔮 내 예상','#6A4FC9',f[0]||'~될 것 같아요.')}${col('pr'+k+'b','💡 그렇게 생각한 까닭','#2F74E0',f[1]||'왜냐하면 ~ 때문이에요.')}</div>${s.tip?`<div class="tip">💡 ${esc(s.tip)}</div>`:''}`;
+ document.querySelectorAll('.chip[data-o]').forEach(c=>c.onclick=()=>{const inp=$('i-pr'+k+'a');inp.value=c.dataset.o;inp.focus()});
+ wireCols(['pr'+k+'a','pr'+k+'b'])};
+/* 🧪 실험하고 기록하기: 실험 순서 점검 + 안전 약속 + 결과 기록표 + (선택) 가상 실험실 단추 */
+R.lab=(s,id)=>{const st=LS.get(LK+id+'t',[]);const tb=LS.get(LK+id+'tb',{});const T=s.table;
+ const safe=s.safe?`<div class="safe">⚠️ ${s.safe.map(esc).join('<br>⚠️ ')}</div>`:'';
+ const link=s.link?`<p class="labl2"><a class="ghost labgo" href="${s.link.href}" target="_blank" rel="noopener">🖥️ ${esc(s.link.label||'가상 실험실 열기')}</a> <small>${esc(s.link.note||'준비물이 없거나 다시 볼 때 써요.')}</small></p>`:'';
+ const tbl=T?`<table class="rec"><thead><tr><th>${esc(T.corner||'')}</th>${T.cols.map(c=>`<th>${esc(c)}</th>`).join('')}</tr></thead><tbody>${T.rows.map((r,ri)=>`<tr><th>${esc(r)}</th>${T.cols.map((c,ci)=>`<td><input data-c="${ri}_${ci}" value="${esc(tb[ri+'_'+ci]||'')}" placeholder="${esc((T.ph&&T.ph[ci])||'')}"></td>`).join('')}</tr>`).join('')}</tbody></table>${T.note?`<p class="tnote2">${esc(T.note)}</p>`:''}`:'';
+ $('body').innerHTML=`<div class="labwrap"><div class="labl"><div class="task">${s.list.map((t,i)=>`<label class="${st[i]?'done':''}"><input type="checkbox" data-t="${i}" ${st[i]?'checked':''}> ${esc(t)}</label>`).join('')}</div>${safe}</div><div class="labr">${tbl}${link}</div></div>`;
+ document.querySelectorAll('[data-t]').forEach(c=>c.onchange=()=>{st[+c.dataset.t]=c.checked;LS.set(LK+id+'t',st);c.parentElement.classList.toggle('done',c.checked)});
+ document.querySelectorAll('table.rec input').forEach(inp=>inp.oninput=()=>{tb[inp.dataset.c]=inp.value;LS.set(LK+id+'tb',tb)})};
+/* ⚖️ 예상과 결과 비교: 앞에서 쓴 예상을 불러와 실제 결과와 견줘요 */
+R.pvr=(s,id)=>{const k=s.key||'P1';const pa=LS.get(LK+'pr'+k+'a',[]),pb=LS.get(LK+'pr'+k+'b',[]);const f=s.f||[];
+ $('body').innerHTML=`<div class="prev wrap"><b>🔮 우리가 한 예상</b> ${pa.length?pa.map(x=>`<span class="pv">${esc(x)}</span>`).join(''):'<span class="ask" style="display:inline">(예상하기 단계에서 쓴 쪽지가 여기에 나와요)</span>'}${pb.length?`<br><b>💡 까닭</b> ${pb.map(x=>`<span class="pv">${esc(x)}</span>`).join('')}`:''}</div>
+ <div class="cols wrap" style="--n:3">${col(id+'a','📋 실제 결과','#1F9E63',f[0]||'실험해 보니 ~했어요.')}${col(id+'b','⚖️ 예상과 같은 점·다른 점','#E8961E',f[1]||'예상과 ~이 같았어요/달랐어요.')}${col(id+'c','🤔 왜 그럴까?','#E0506B',f[2]||'그 까닭은 ~인 것 같아요.')}</div>${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;
+ wireCols([id+'a',id+'b',id+'c'],[id+'c'])};
+
+/* ===== 3-2 과학 홍지희 선생님 버전: 실험·탐구 단계 (2026.10) =====
+   design 🧭 실험 설계 · pgrid 🔮 예상 표 · board 📊 우리 반 자료판 · gcmp ⚖️ 예상과 우리 반 결과 · claim ✍️ 근거로 결론
+   표 정의 C.grids[g] = {corner, rows:[{n, svg?}], cols:[...]}. 열(cols)은 세 가지 모양:
+   ① 두 보기 {n, o:'보여요', x:'안 보여요', ev?}  → 칸 값 'o' | 'x'
+   ② 여러 보기 {n, opts:['고체','액체','기체'], ev?} → 칸 값 '0' | '1' | '2' …
+   ③ 측정값 {n, type:'num', unit?:'', ev?, sum?:true(반 전체에서 모두 더한 값도 보여 줌)}      → 칸 값 숫자 글자(예상 표에서는 '더 큼/더 작음'을 묻지 않고 빈칸으로 둠)
+   표 전체: pl:'계획'(‘예상’ 대신 쓸 이름), rl:'친구들이 찾은 답'(‘결과’ 대신 쓸 이름) */
+Object.assign(ROUT,{design:['🧭','실험 설계하기'],pgrid:['🔮','예상하기'],board:['📊','우리 반 자료판'],gcmp:['⚖️','예상과 결과 비교하기'],claim:['✍️','근거로 결론 만들기']});
+const GDEF=C.grids||{};
+const NG=()=>C.groups||6;
+function rowHead(r){return `<span class="rh">${r.svg?`<span class="rsv">${r.svg}</span>`:''}<span>${esc(r.n)}</span></span>`}
+const isNum=c=>c.type==='num';
+function opts(c){return c.opts?c.opts.map((t,i)=>({v:String(i),t})):[{v:'o',t:c.o},{v:'x',t:c.x}]}
+function cellLab(c,v){if(isNum(c))return v===''||v==null?'?':v+(c.unit||'');const o=opts(c).find(x=>x.v===v);return o?o.t:'?'}
+function nextV(c,v){const o=opts(c);const i=o.findIndex(x=>x.v===v);return i<0?o[0].v:(i+1<o.length?o[i+1].v:'')}
+function gTable(G,vals,o={}){/* 누를 수 있는 표 (측정값 열은 숫자 칸) */
+ return `<table class="rec gt"><thead><tr><th>${esc(G.corner||'')}</th>${G.cols.map(c=>`<th>${esc(c.n)}${isNum(c)&&c.unit?` <small>(${esc(c.unit)})</small>`:''}</th>`).join('')}</tr></thead><tbody>${G.rows.map((r,ri)=>`<tr><th>${rowHead(r)}</th>${G.cols.map((c,ci)=>{const k=ri+'_'+ci;const v=vals[k]||'';
+  if(isNum(c))return o.pred?`<td class="na">—</td>`:`<td><input class="gn" data-c="${k}" inputmode="decimal" value="${esc(v)}" placeholder="숫자"></td>`;
+  return `<td><button class="gc v${esc(v)}" data-c="${k}">${esc(cellLab(c,v))}</button></td>`}).join('')}</tr>`).join('')}</tbody></table>`}
+function wireG(store,save,G){document.querySelectorAll('button.gc[data-c]').forEach(b=>b.onclick=()=>{const k=b.dataset.c;const c=G.cols[+k.split('_')[1]];const n=nextV(c,store[k]||'');store[k]=n;save();b.className='gc v'+n;b.textContent=cellLab(c,n)});
+ document.querySelectorAll('input.gn[data-c]').forEach(inp=>inp.oninput=()=>{store[inp.dataset.c]=inp.value.replace(/[^0-9.]/g,'');save()})}
+function jo(w,a,b){const c=w.charCodeAt(w.length-1)-0xAC00;return w+(c>=0&&c<11172&&c%28?a:b)}
+function hasData(gv){return gv&&Object.values(gv).some(x=>x!==''&&x!=null)}
+/* 반 전체 집계: 보기 열은 보기별 모둠 수·많은 쪽, 측정값 열은 모둠 값 목록·가장 작은 값·가장 큰 값 */
+function boardData(key){return LS.get(LK+'bd'+key,{})}
+function tally(key,G){const d=boardData(key);const out={};let ng=0;for(let g=1;g<=NG();g++)if(hasData(d['g'+g]))ng++;
+ G.rows.forEach((r,ri)=>G.cols.forEach((c,ci)=>{const k=ri+'_'+ci;const vals=[];for(let g=1;g<=NG();g++){const v=(d['g'+g]||{})[k];if(v!==''&&v!=null)vals.push(v)}
+  if(isNum(c)){const ns=vals.map(Number).filter(x=>!isNaN(x));out[k]={num:true,list:ns,min:ns.length?Math.min(...ns):null,max:ns.length?Math.max(...ns):null,sum:Math.round(ns.reduce((a,b)=>a+b,0)*100)/100,n:ns.length,split:false,maj:''};return}
+  const cnt={};vals.forEach(v=>cnt[v]=(cnt[v]||0)+1);const ks=Object.keys(cnt);let maj='';if(ks.length){const mx=Math.max(...ks.map(x=>cnt[x]));const top=ks.filter(x=>cnt[x]===mx);maj=top.length===1?top[0]:'tie'}
+  out[k]={cnt,n:vals.length,maj,split:ks.length>1}}));return {cells:out,ng}}
+/* 🧭 실험 설계: 질문마다 카드를 고르고 '생각 확인하기'로 까닭을 봐요 */
+R.design=(s,id)=>{const sel=LS.get(LK+id+'sel',{});
+ $('body').innerHTML=s.parts.map((p,pi)=>`<div class="dpart"><div class="dq">${esc(p.q)}</div><div class="dcards">${p.items.map((it,ii)=>{const k=pi+'_'+ii;return `<button class="dc" aria-pressed="${sel[k]?'true':'false'}" data-k="${k}">${it.svg?`<span class="dsv">${it.svg}</span>`:''}${esc(it.x)}</button>`}).join('')}</div><div class="dfb" id="dfb${pi}"></div></div>`).join('')+`<p class="dwhy" id="dwhy"></p>`
+ +`<div class="row-c"><button class="big-btn" id="dChk" style="font-size:clamp(18px,1.7vw,23px);padding:6px 22px">🔎 ${esc(s.btn||'생각 확인하기')}</button></div>${s.col?`<div class="cols wrap" style="--n:1">${col(id+'z',s.col,'#2F74E0','',{ph:s.colph||'생각을 써요'})}</div>`:''}`;
+ let checked=false;const strip=w=>(w||'').replace(/\s*\([^()]*쪽\)\s*$/,'');
+ document.querySelectorAll('.dc').forEach(b=>b.onclick=()=>{const [pi,ii]=b.dataset.k.split('_').map(Number);
+  if(checked){const it=s.parts[pi].items[ii];$('dwhy').innerHTML=`💬 <b>${esc(it.x)}</b> — ${esc(strip(it.w))}`;$('dwhy').classList.add('on');return}
+  const on=b.getAttribute('aria-pressed')!=='true';b.setAttribute('aria-pressed',on);sel[b.dataset.k]=on;LS.set(LK+id+'sel',sel)});
+ $('dChk').onclick=()=>{checked=true;$('dChk').textContent='🔁 다시 고르기';$('dChk').onclick=()=>R.design(s,id);s.parts.forEach((p,pi)=>{const msgs=[];p.items.forEach((it,ii)=>{const on=!!sel[pi+'_'+ii];const b=document.querySelector(`.dc[data-k="${pi}_${ii}"]`);b.classList.remove('good','bad','miss');
+   if(on&&it.ok===true)b.classList.add('good');if(on&&it.ok===false)b.classList.add('bad');if(!on&&it.ok===true&&!p.free)b.classList.add('miss');
+   if(((on&&it.ok!==true)||(!on&&it.ok===true&&!p.free))&&it.w)msgs.push(`<li class="${on?(it.ok===false?'bad':'good'):'miss'}">${on?(it.ok===false?'🤔':'👍'):'➕'} <b>${esc(it.x)}</b> — ${esc(strip(it.w))}</li>`)});
+  $('dfb'+pi).innerHTML=msgs.length?`<ul>${msgs.join('')}</ul>`:'<ul><li class="good">👍 잘 골랐어요!</li></ul>';$('dfb'+pi).classList.add('on')});$('dwhy').innerHTML='💬 카드를 누르면 그 까닭이 여기에 나와요.';$('dwhy').classList.add('on')};
+ if(s.col)wireCols([id+'z'])};
+/* 🔮 예상 표: 칸을 눌러 예상을 골라요(누를 때마다 바뀜). 측정값 열은 비워 두고, 까닭은 붙임쪽지로 */
+R.pgrid=(s,id)=>{const G=GDEF[s.g];const v=LS.get(LK+'pg'+s.g,{});const c0=G.cols.find(c=>!isNum(c));const o0=c0?opts(c0):[];
+ $('body').innerHTML=`<div class="gwrap"><div>${gTable(G,v,{pred:1})}${c0?`<p class="tnote2">칸을 누를 때마다 ${o0.map(x=>'‘'+esc(x.t)+'’').join(' → ')} → 처음으로 바뀌어요.</p>`:''}</div><div class="cols" style="--n:1">${col('pg'+s.g+'r',`💡 그렇게 ${G.pl?esc(G.pl)+'한':'예상한'} 까닭`,'#2F74E0','',{ph:s.ph||'왜냐하면 ~ 때문이에요.'})}</div></div>${s.tip?`<div class="tip">💡 ${esc(s.tip)}</div>`:''}`;
+ wireG(v,()=>LS.set(LK+'pg'+s.g,v),G);wireCols(['pg'+s.g+'r'])};
+/* 📊 우리 반 자료판: 모둠마다 결과를 넣고, '반 전체'에서 모아 봐요 */
+function sumCell(c,t){
+ if(t.num){if(!t.n)return '<span class="cnt">—</span>';const W=Math.max(1,...[t.max]);return `<div class="nlist">${t.list.map(x=>`<span>${x}</span>`).join('')}</div><div class="cnt">${c.sum?`모두 더하면 <b class="m">${t.sum}${esc(c.unit||'')}</b> · `:''}가장 작은 값 <b>${t.min}</b> · 가장 큰 값 <b>${t.max}</b>${esc(c.unit||'')}</div>`}
+ if(!t.n)return '<span class="cnt">—</span>';const os=opts(c);const pal=['#2F74E0','#B08B6E','#1F9E63','#E8961E','#6A4FC9'];
+ return `<div class="bar">${os.map((o,i)=>t.cnt[o.v]?`<span style="flex:${t.cnt[o.v]};background:${pal[i%pal.length]}"></span>`:'').join('')}</div><div class="cnt">${os.map(o=>`<b class="${t.maj===o.v?'m':''}">${esc(o.t)} ${t.cnt[o.v]||0}</b>`).join(' · ')}${t.split?' ⚠️':''}</div>`}
+R.board=(s,id)=>{const G=GDEF[s.g];const d=boardData(s.g);let cur=LS.get(LK+id+'cur','g1');
+ const draw=()=>{const tabs=[...Array(NG())].map((_,i)=>{const g='g'+(i+1);const has=hasData(d[g]);return `<button class="bt ${cur===g?'on':''} ${has?'has':''}" data-g="${g}">${i+1}모둠${has?' ✓':''}</button>`}).join('')+`<button class="bt all ${cur==='all'?'on':''}" data-g="all">📊 반 전체</button>`;
+  let main;
+  if(cur==='all'){const T=tally(s.g,G);
+   main=`<table class="rec gt sum"><thead><tr><th>${esc(G.corner||'')}</th>${G.cols.map(c=>`<th>${esc(c.n)}</th>`).join('')}</tr></thead><tbody>${G.rows.map((r,ri)=>`<tr><th>${rowHead(r)}</th>${G.cols.map((c,ci)=>{const t=T.cells[ri+'_'+ci];return `<td class="${t.split?'spl':''}">${sumCell(c,t)}</td>`}).join('')}</tr>`).join('')}</tbody></table>
+   <p class="tnote2">결과를 넣은 모둠: ${T.ng} / ${NG()}${G.cols.some(c=>!isNum(c))?' · 굵은 글씨가 더 많은 모둠의 결과예요. ⚠️ 표시는 모둠마다 결과가 달랐던 칸이에요.':''}${G.cols.some(isNum)?' · 숫자 칸은 모둠마다 잰 값이에요.':''}</p>`}
+  else{d[cur]=d[cur]||{};main=gTable(G,d[cur])+`<p class="tnote2">${esc(cur.slice(1))}모둠의 결과대로 ${G.cols.some(c=>!isNum(c))?'칸을 눌러요(누를 때마다 바뀌어요)':''}${G.cols.some(isNum)?(G.cols.some(c=>!isNum(c))?', ':'')+'숫자 칸에는 잰 값을 써요':''}.</p>`}
+  $('body').innerHTML=`<div class="btabs">${tabs}</div>${main}${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;
+  document.querySelectorAll('.bt').forEach(b=>b.onclick=()=>{cur=b.dataset.g;LS.set(LK+id+'cur',cur);draw()});
+  if(cur!=='all')wireG(d[cur],()=>{LS.set(LK+'bd'+s.g,d);const t=document.querySelector(`.bt[data-g="${cur}"]`);if(t)t.classList.toggle('has',hasData(d[cur]))},G)};
+ draw()};
+/* ⚖️ 예상과 우리 반 결과 (측정값 열은 비교하지 않고 '—') */
+R.gcmp=(s,id)=>{const G=GDEF[s.g];const PL=esc(G.pl||'예상'),RL=esc(G.rl||'결과');const p=LS.get(LK+'pg'+s.g,{});const T=tally(s.g,G);let same=0,n=0;const diffs=[],splits=[];
+ const tb=`<table class="rec gt cmp"><thead><tr><th>${esc(G.corner||'')}</th>${G.cols.map(c=>`<th>${esc(c.n)}</th>`).join('')}</tr></thead><tbody>${G.rows.map((r,ri)=>`<tr><th>${rowHead(r)}</th>${G.cols.map((c,ci)=>{const k=ri+'_'+ci;const t=T.cells[k];
+   if(isNum(c))return `<td class="na">${t.n?`${t.min}~${t.max}${esc(c.unit||'')}${c.sum?` (모두 ${t.sum}${esc(c.unit||'')})`:''}`:'—'}</td>`;
+   const pv=p[k]||'';const rv=t.maj&&t.maj!=='tie'?t.maj:'';
+   if(pv&&rv){n++;if(pv===rv)same++;else diffs.push(r.n+' · '+c.n)}if(t.split)splits.push(r.n+' · '+c.n);
+   const st=pv&&rv?(pv===rv?'eq':'ne'):'';return `<td class="${st}"><span class="pp">${esc(pv?cellLab(c,pv):'?')}</span> → <b class="rr">${esc(rv?cellLab(c,rv):(t.maj==='tie'?'반반':'?'))}</b>${t.split?' ⚠️':''}</td>`}).join('')}</tr>`).join('')}</tbody></table>`;
+ $('body').innerHTML=`${tb}<p class="tnote2">${n?`${jo(PL,'과','와')} ${jo(RL,'을','를')} 견줄 수 있는 ${n}칸 중 <b>${same}칸</b>이 같았어요.`:`${PL} 표와 우리 반 자료판을 채우면 여기에서 견주어 볼 수 있어요.`} 칸 글자는 ‘${PL} → ${G.rl?RL:'반 전체 결과'}’예요.</p>
+ <div class="cols wrap" style="--n:2">${col(id+'a',`⚖️ ${jo(PL,'과','와')} 달랐던 칸, 왜 그랬을까?`,'#E8961E',diffs.length?'달랐던 칸: '+diffs.join(', '):'',{ph:s.f?.[0]||`~은 ${jo(PL,'과','와')} 달랐어요. 왜냐하면 ~`})}${col(id+'b','⚠️ 모둠마다 결과가 달랐던 칸, 왜 그랬을까?','#E0506B',splits.length?'달랐던 칸: '+splits.join(', '):'',{ph:s.f?.[1]||'모둠마다 ~이 달랐을 것 같아요.'})}</div>${s.after?`<div class="after wrap">💬 ${esc(s.after)}</div>`:''}`;
+ wireCols([id+'a',id+'b'],[id+'b'])};
+/* ✍️ 근거로 결론: 우리 반 자료판(또는 s.evs 목록)에서 근거를 골라 결론 문장을 써요 */
+R.claim=(s,id)=>{const ev=[];
+ if(s.g){const G=GDEF[s.g];const T=tally(s.g,G);
+  G.cols.forEach((c,ci)=>{const pre=c.ev?c.ev+' ':'';
+   if(isNum(c)){const rs=G.rows.map((r,ri)=>({r,t:T.cells[ri+'_'+ci]})).filter(x=>x.t.n);rs.forEach(x=>ev.push(`${x.r.n}: ${pre}${x.t.min===x.t.max?x.t.min:x.t.min+'~'+x.t.max}${c.unit||''}${c.sum&&x.t.n>1?` (우리 반 모두 더하면 ${x.t.sum}${c.unit||''})`:''}`));return}
+   const by={};const ties=[];G.rows.forEach((r,ri)=>{const t=T.cells[ri+'_'+ci];const tag=t.split?`(모둠마다 달랐어요 ${opts(c).map(o=>t.cnt[o.v]||0).join(':')})`:'';if(t.maj==='tie')ties.push(r.n);else if(t.maj)(by[t.maj]=by[t.maj]||[]).push(r.n+tag)});
+   opts(c).forEach(o=>{if(by[o.v])ev.push(`${by[o.v].join(', ')}: ${pre}${o.t}`)});if(ties.length)ev.push(`${ties.join(', ')}: ${c.n} 모둠마다 반반이에요`)})}
+ (s.evs||[]).forEach(e=>ev.push(e));
+ const sv=LS.get(LK+id+'c',{e:'',c:''});
+ $('body').innerHTML=`<div class="evbox"><b>📊 ${esc(s.evTitle||'우리 반 자료판에서 찾은 근거')}</b> <small>(누르면 근거 칸에 들어가요)</small><div class="chips">${ev.length?ev.map(e=>`<button class="chip" aria-pressed="false">${esc(e)}</button>`).join(''):'<span class="ask">자료판에 결과를 넣으면 여기에 근거가 나와요.</span>'}</div></div>
+ <div class="claim"><label><span>📑 근거: ${esc(s.f1||'우리 반 자료를 보니')}</span><textarea id="ce" rows="2" placeholder="자료판에서 본 결과를 써요.">${esc(sv.e)}</textarea></label><label><span>✍️ 결론: ${esc(s.f2||'그래서')}</span><textarea id="cc" rows="2" placeholder="${esc(s.ph||'~을 알 수 있어요.')}">${esc(sv.c)}</textarea></label></div>
+ <button class="big-btn" id="dShow" style="font-size:clamp(18px,1.7vw,23px);padding:6px 22px">📖 ${esc(s.btn||'교과서 문장과 비교하기')}</button>
+ <div class="book" id="book"><small>${esc(s.bookLabel||'교과서 문장')} (${esc(s.src)})</small><br><b>${s.book}</b></div>
+ <div class="cols after-book" id="abk" style="--n:2">${col(id+'s','🤝 우리 결론과 같은 점','#1F9E63','',{ph:'우리 결론과 ~이 같아요.'})}${col(id+'n','✨ 더 알게 된 점','#2F74E0','',{ph:'~을 새로 알았어요.'})}</div>`;
+ const save=()=>LS.set(LK+id+'c',{e:$('ce').value,c:$('cc').value});$('ce').oninput=$('cc').oninput=save;
+ document.querySelectorAll('.evbox .chip').forEach(c=>c.onclick=()=>{c.setAttribute('aria-pressed','true');$('ce').value=($('ce').value?$('ce').value+' / ':'')+c.textContent;save()});
+ $('dShow').onclick=()=>{const eb=document.querySelector('.evbox');if(eb)eb.style.display='none';$('book').classList.add('on');$('abk').classList.add('on');$('dShow').style.display='none'};wireCols([id+'s',id+'n'])};
+
+/* 사고전략 칸별 예시 — 단계의 hintLabel('예시' 기본·'힌트'·'도움')이 단추 이름. 단계에 hints: [[첫째 칸 예시 2개], [둘째 칸 2개], …]를 두면
+   본문의 쓰는 칸(뜻 만들기 빈칸 .frameline, .col, 근거로 결론의 .claim label)에 화면 순서대로 '💡 예시' 단추가 생기고,
+   누르면 예시가 팝업으로 뜹니다(입력칸은 가리지 않음). 빈 목록([])인 칸은 건너뜁니다. */
+(function(){const close=()=>document.querySelectorAll('.hintpop.on').forEach(p=>{p.classList.remove('on');const b=p.parentElement.querySelector('.hintbtn');if(b)b.setAttribute('aria-expanded','false')});
+ document.addEventListener('click',e=>{if(!e.target.closest('.hintpop,.hintbtn'))close()});
+ document.addEventListener('keydown',e=>{if(e.key==='Escape')close()});
+ const LBL={'예시':['이렇게 써 볼 수 있어요','내가 보고 생각한 것으로 바꿔 써요.'],'힌트':['이렇게 생각해 봐요','힌트를 보고 내 말로 써요.'],'도움':['이렇게 써 보면 좋아요','차례대로 생각하며 내 말로 써요.']};
+ const r1=render;render=function(){r1();const s=C.steps[step];if(!s.hints)return;const lb=s.hintLabel||'예시',lt=LBL[lb]||LBL['예시'];
+  document.querySelectorAll('#body .frameline, #body .col, #body .claim label').forEach((c,i)=>{const h=s.hints[i];const fl=c.classList.contains('frameline');const hd=fl?c:c.querySelector(':scope>h3, :scope>span');if(!h||!h.length||!hd)return;
+   const inp=c.querySelector(':scope>.add')||[...c.querySelectorAll('textarea,input')].pop()||hd;
+   if(!fl){const w=document.createElement('span');w.className='hintt';while(hd.firstChild)w.append(hd.firstChild);hd.append(w)} /* 제목 글자를 한 덩어리로 묶어 줄바꿈이 흩어지지 않게(덮개 content.js가 나중에 글자를 조각내도 그 안에서만) */
+   const b=document.createElement('button');b.type='button';b.className='hintbtn';b.textContent='💡 '+lb;b.setAttribute('aria-expanded','false');hd.append(b);
+   const p=document.createElement('div');p.className='hintpop';p.setAttribute('role','dialog');p.setAttribute('aria-label',hd.textContent.replace('💡 '+lb,'').trim()+' '+lb);
+   p.innerHTML=`<button type="button" class="hpx" aria-label="닫기">✕</button><p class="hph">${lt[0]}</p><ul>${h.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><p class="hpf">${lt[1]}</p>`;c.append(p);
+   b.onclick=e=>{e.preventDefault();const on=!p.classList.contains('on');close();if(!on)return;p.classList.add('on');b.setAttribute('aria-expanded','true');
+    /* 입력칸 아래에 띄우고, 본문 아래가 모자라면 칸 제목 위로, 위도 모자라면 아래에 두고 그 자리로 굴림 */
+    const top=c.getBoundingClientRect().top,ib=inp.getBoundingClientRect(),hb=hd.getBoundingClientRect(),body=$('body').getBoundingClientRect();
+    p.style.bottom='auto';p.style.top=(ib.bottom-top+6)+'px';
+    if(p.getBoundingClientRect().bottom>Math.min(body.bottom,innerHeight)){p.style.top='auto';p.style.bottom=(c.getBoundingClientRect().bottom-hb.top+6)+'px';
+     if(p.getBoundingClientRect().top<body.top){p.style.bottom='auto';p.style.top=(ib.bottom-top+6)+'px';p.scrollIntoView({block:'nearest'})}}};
+   p.querySelector('.hpx').onclick=close})}})();
+</script>
+<script>(function(){var h=location.hostname,f=location.protocol==='file:',ok=f||/github\.io$/.test(h)||/^localhost$/.test(h);if(ok)document.querySelectorAll('.tolist').forEach(function(e){e.classList.add('on')})})();</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script></body></html>

@@ -1,0 +1,279 @@
+<!--
+title: 자석에 붙을까, 붙지 않을까?
+unit: 1
+lesson: 2
+total: 11
+goal: 여러 가지 물체를 자석에 붙는 물체와 자석에 붙지 않는 물체로 분류할 수 있어요.<br>자석에 붙는 물체의 공통점을 찾을 수 있어요.
+pages: 「과학」 18~19쪽 · 「실험관찰」 6~7쪽 · 지도서 114~121쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"철"}}]
+-->
+<style>
+.m1-objs{display:grid;grid-template-columns:repeat(auto-fill,minmax(7.2rem,1fr));gap:8px}
+.m1-objs button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:.3em .4em;font-size:.9rem;line-height:1.2}
+.m1-objs button svg{width:3.2rem;height:3.2rem}
+.m1-objs button .st{font-size:.8rem;color:var(--muted);min-height:1.1em}
+.m1-objs button.p-o{background:#e1f0fb;border-color:var(--sky)}
+.m1-objs button.p-x{background:#f3ece4;border-color:#a58a6a}
+.m1-objs button.tested{border-color:var(--good)}
+.m1-objs button.diff{background:#fff2c4}
+.m1-tbl td,.m1-tbl th{text-align:center;padding:4px 6px;font-size:.9rem}
+.m1-tbl th{background:#e1f0fb}
+.m1-tbl td.d{background:#fff2c4}
+.m1-sort{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+.m1-bin{border:3px dashed var(--line);border-radius:16px;padding:8px;min-height:7rem;cursor:pointer;background:var(--paper)}
+.m1-bin h3{margin:0 0 6px;font-size:1.05rem;text-align:center}
+.m1-bin.yes{border-color:#2f8f5b}.m1-bin.no{border-color:#b0705a}
+.m1-bin .chips{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.m1-chip{font-size:.9rem;min-height:2.2rem;padding:.15em .7em;border-radius:999px;border-width:2px}
+.m1-tray{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;margin-top:6px}
+.m1-crit{text-align:center;font-family:"Jua",sans-serif;font-size:1.1rem;background:var(--sun);color:#15313d;border-radius:12px;padding:4px 10px;width:fit-content;margin:6px auto}
+#m1House .hit:hover{filter:brightness(1.08)}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입</span>
+  <h2>자석 장식품은 어디에 붙여 놓을 수 있을까요?</h2>
+  <svg id="m1Intro" class="scene" viewBox="0 0 800 380" role="img" aria-label="냉장고, 칠판, 현관문, 나무 책장, 유리창이 있는 집 안 그림">
+    <rect width="800" height="380" fill="#fdf6e3"/><rect y="320" width="800" height="60" fill="#e6d3ad"/>
+    <g class="hit" data-k="fridge"><rect x="40" y="70" width="150" height="250" rx="12" fill="#e9eef2" stroke="#8a97a3" stroke-width="4"/><line x1="40" y1="160" x2="190" y2="160" stroke="#8a97a3" stroke-width="4"/><rect x="170" y="100" width="8" height="40" rx="3" fill="#8a97a3"/><rect x="170" y="190" width="8" height="60" rx="3" fill="#8a97a3"/><text x="115" y="300" text-anchor="middle" font-size="18" fill="#5b6b78" font-family="Jua">냉장고</text></g>
+    <g class="hit" data-k="board"><rect x="225" y="60" width="210" height="140" rx="6" fill="#2f6b4f" stroke="#7a5a3a" stroke-width="8"/><text x="330" y="140" text-anchor="middle" font-size="18" fill="#cfe9da" font-family="Jua">칠판</text></g>
+    <g class="hit" data-k="door"><rect x="470" y="70" width="130" height="250" rx="6" fill="#7d8b96" stroke="#55626c" stroke-width="5"/><circle cx="580" cy="200" r="8" fill="#e0c060"/><text x="535" y="300" text-anchor="middle" font-size="16" fill="#eef3f6" font-family="Jua">철 현관문</text></g>
+    <g class="hit" data-k="wood"><rect x="635" y="170" width="130" height="150" fill="#b98552" stroke="#7a5230" stroke-width="4"/><line x1="635" y1="245" x2="765" y2="245" stroke="#7a5230" stroke-width="4"/><text x="700" y="300" text-anchor="middle" font-size="16" fill="#fff" font-family="Jua">나무 책장</text></g>
+    <g class="hit" data-k="glass"><rect x="635" y="40" width="130" height="110" fill="#cfefff" stroke="#9aa9b2" stroke-width="5"/><line x1="700" y1="40" x2="700" y2="150" stroke="#9aa9b2" stroke-width="4"/><text x="700" y="100" text-anchor="middle" font-size="16" fill="#5b6b78" font-family="Jua">유리창</text></g>
+    <g id="m1Deco" pointer-events="none"></g>
+  </svg>
+  <p class="jua" style="font-size:1.1rem;margin-top:8px">자석 장식품이 붙을 곳을 그림에서 모두 눌러 보세요.</p>
+  <div class="found" id="m1IntroFound"></div>
+  <div class="fb" id="m1IntroFb"></div>
+  <div id="m1Why" hidden>
+    <p class="jua">자석 장식품이 붙는 곳들은 어떤 공통점이 있을까요? 생각한 것을 골라 봐요.</p>
+    <div class="pick" id="m1WhyPick"><button data-a="1">자석에 붙는 물체예요</button><button data-a="1">철로 만든 물체 같아요</button><button data-a="0">모두 하얀색이에요</button><button data-a="0">모두 무거운 물체예요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s2" data-nav="예상해요">
+  <span class="stage">예상해요 · 「실험관찰」 6쪽</span>
+  <h2>어떤 물체가 자석에 붙을지 예상해요</h2>
+  <p>물체를 누를 때마다 <b>⭕ 붙을 것 같아요</b> → <b>❌ 붙지 않을 것 같아요</b>로 바뀌어요. 아홉 가지 물체를 모두 예상해 보세요.</p>
+  <div class="m1-objs" id="m1Pred"></div>
+  <div class="row" style="margin-top:8px"><button class="main" id="m1PredDone">예상 끝!</button></div>
+  <div class="fb" id="m1PredFb"></div>
+  <p class="tip">💡 예상은 틀려도 괜찮아요. 내 생각을 그대로 골라요.</p>
+</section>
+
+<section id="s3" data-nav="실험해요">
+  <span class="stage">실험해요 · 「실험관찰」 6쪽</span>
+  <h2>막대자석을 여러 가지 물체에 가까이 해요</h2>
+  <p>물체를 고르면 막대자석이 그 물체에 다가가요. 어떻게 되는지 잘 보고, 아홉 가지 물체를 모두 실험해요.</p>
+  <svg id="m1Lab" class="scene" viewBox="0 0 800 330" role="img" aria-label="막대자석을 물체에 가까이 하는 실험 화면">
+    <rect width="800" height="330" fill="#f4fbff"/><rect y="250" width="800" height="80" fill="#d9c49a"/><rect y="246" width="800" height="8" fill="#b89a68"/>
+    <g id="m1Obj"></g>
+    <g id="m1Mag"><rect x="-90" y="-22" width="90" height="44" rx="6" fill="#e2573f"/><rect x="0" y="-22" width="90" height="44" rx="6" fill="#3a78c8"/><text x="-45" y="9" text-anchor="middle" font-size="26" fill="#fff" font-family="Jua">N</text><text x="45" y="9" text-anchor="middle" font-size="26" fill="#fff" font-family="Jua">S</text><rect x="70" y="-60" width="40" height="44" rx="14" fill="#ffd9b0" stroke="#c99a6b" stroke-width="3"/></g>
+    <g id="m1Say" opacity="0"><rect x="470" y="30" width="230" height="56" rx="18" fill="#fff" stroke="#0f3b5c" stroke-width="3"/><text id="m1SayT" x="585" y="67" text-anchor="middle" font-size="24" font-family="Jua" fill="#0f3b5c"></text></g>
+    <rect x="12" y="12" width="330" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="m1LabT" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">물체를 골라 보세요</text>
+  </svg>
+  <div class="m1-objs" id="m1Test" style="margin-top:8px"></div>
+  <p class="tip" data-glue="1">버튼 아래에 <b>내 예상 → 실험 결과</b>가 적혀요. 노란 버튼은 예상과 결과가 다른 물체예요.</p>
+  <div class="fb" id="m1LabFb"></div>
+  <p class="tip">⚠️ 막대자석을 떨어뜨리거나 물체를 내려치지 않아요. 철 클립 끝이나 빵 끈 속 철사에 손을 다치지 않게 조심해요.</p>
+</section>
+
+<section id="s4" data-nav="분류해요">
+  <span class="stage">정리해요 · 「실험관찰」 7쪽</span>
+  <h2>자석에 붙는 물체와 붙지 않는 물체로 분류해요</h2>
+  <p>물체 붙임딱지를 누른 다음, 알맞은 칸을 눌러 붙여요.</p>
+  <div class="m1-crit">분류 기준: 자석에 붙나요?</div>
+  <div class="m1-tray" id="m1Tray"></div>
+  <div class="m1-sort" data-glue="1">
+    <div class="m1-bin yes" id="m1BinY" data-v="1"><h3>그렇다.</h3><div class="chips"></div></div>
+    <div class="m1-bin no" id="m1BinN" data-v="0"><h3>그렇지 않다.</h3><div class="chips"></div></div>
+  </div>
+  <div class="fb" id="m1SortFb"></div>
+  <div id="m1Common" hidden>
+    <p class="jua" style="font-size:1.1rem">자석에 붙는 물체는 무엇으로 만들어졌을까요?</p>
+    <div class="pick" id="m1ComPick">
+      <button data-a="1" data-m="맞아요! 철 클립, 철 집게, 철자, 빵 끈(속에 철사)은 모두 철로 만들어졌어요.">철</button>
+      <button data-a="0" data-m="알루미늄 캔도 금속이지만 자석에 붙지 않았어요. 모든 금속이 자석에 붙는 것은 아니에요.">모든 금속</button>
+      <button data-a="0" data-m="플라스틱 자는 자석에 붙지 않았어요.">플라스틱</button>
+      <button data-a="0" data-m="나무토막은 자석에 붙지 않았어요.">나무</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s5" data-nav="생각+">
+  <span class="stage">생각+ · 「과학」 19쪽</span>
+  <h2>집에 있는 물체 중에서 자석에 붙는 것을 찾아요</h2>
+  <p>그림에서 자석에 붙는 물체(또는 부분)를 모두 눌러 보세요. 모두 <b>5</b>곳이에요.</p>
+  <svg id="m1House" class="scene" viewBox="0 0 800 400" role="img" aria-label="집 안 그림에서 자석에 붙는 물체 찾기">
+    <rect width="800" height="400" fill="#fff7ea"/><rect y="300" width="800" height="100" fill="#e9d6b3"/>
+    <g class="hit" data-k="fridge"><rect x="30" y="60" width="160" height="240" rx="12" fill="#e9eef2" stroke="#8a97a3" stroke-width="4"/><line x1="30" y1="150" x2="190" y2="150" stroke="#8a97a3" stroke-width="4"/><rect x="172" y="90" width="8" height="40" rx="3" fill="#8a97a3"/><rect x="172" y="180" width="8" height="60" rx="3" fill="#8a97a3"/><text x="110" y="285" text-anchor="middle" font-size="16" fill="#5b6b78" font-family="Jua">냉장고 문</text></g>
+    <g transform="translate(-30,0) translate(480,190) scale(1.4) translate(-480,-190)">
+    <rect x="300" y="190" width="360" height="22" fill="#b98552"/><rect x="315" y="212" width="16" height="90" fill="#9a6a3c"/><rect x="630" y="212" width="16" height="90" fill="#9a6a3c"/>
+    <g class="miss" data-m="플라스틱 컵"><path d="M335 140 h44 l-6 50 h-32z" fill="#8fd3ff" stroke="#3a7ab0" stroke-width="3"/></g>
+    <g class="hit" data-k="pin"><rect x="390" y="152" width="82" height="30" fill="transparent"/><path d="M400 175 h60 a8 8 0 0 0 0-16 h-56" fill="none" stroke="#7d8a95" stroke-width="5" stroke-linecap="round"/><circle cx="398" cy="167" r="6" fill="#7d8a95"/></g>
+    <g class="miss" data-m="고무지우개"><rect x="480" y="168" width="50" height="22" rx="4" fill="#fff" stroke="#888" stroke-width="2"/><rect x="480" y="168" width="20" height="22" rx="3" fill="#4a90d9"/></g>
+    <g class="hit" data-k="nail"><rect x="538" y="168" width="76" height="22" fill="transparent"/><path d="M548 186 l60 -4" stroke="#7d8a95" stroke-width="6" stroke-linecap="round"/><path d="M546 178 v16" stroke="#7d8a95" stroke-width="8" stroke-linecap="round"/></g>
+    <g class="hit" data-k="hairpin"><rect x="612" y="136" width="50" height="32" fill="transparent"/><path d="M620 150 q20 -8 30 0 q-20 6 -30 0 m0 10 q20 -8 34 0" fill="none" stroke="#6a7782" stroke-width="5" stroke-linecap="round"/></g>
+    <g id="m1Sc"><g class="hit" data-k="scissors"><rect x="408" y="88" width="72" height="44" fill="transparent"/><path d="M405 120 l70 -26 M405 100 l70 26" stroke="#9aa6b0" stroke-width="9" stroke-linecap="round"/></g>
+      <g class="miss" data-m="가위 손잡이" data-h="손잡이는 플라스틱이라 자석에 붙지 않아요. 가위의 다른 부분은 어떨까요?"><circle cx="388" cy="92" r="16" fill="none" stroke="#e2573f" stroke-width="9"/><circle cx="388" cy="128" r="16" fill="none" stroke="#e2573f" stroke-width="9"/></g></g>
+    </g>
+    <g class="miss" data-m="종이 가방"><path d="M690 230 h80 l-6 90 h-68z" fill="#d8b98a" stroke="#9a7a4a" stroke-width="3"/><path d="M710 230 q20 -30 40 0" fill="none" stroke="#9a7a4a" stroke-width="4"/></g>
+    <g class="miss" data-m="털실 인형"><circle cx="250" cy="330" r="28" fill="#f2a7c3"/><circle cx="238" cy="322" r="4" fill="#333"/><circle cx="262" cy="322" r="4" fill="#333"/><circle cx="230" cy="300" r="10" fill="#f2a7c3"/><circle cx="270" cy="300" r="10" fill="#f2a7c3"/></g>
+    <g id="m1Marks" pointer-events="none"></g>
+  </svg>
+  <div class="found" id="m1HFound"></div>
+  <div class="fb" id="m1HFb"></div>
+  <div class="row" style="margin-top:8px"><button id="m1HHint">힌트 보기</button></div>
+  <p class="tip">💡 가위처럼 여러 가지 물질로 만든 물체는 철로 만든 부분만 자석에 붙어요. 휴대폰·태블릿·텔레비전 같은 전자 기기에는 자석을 직접 대지 않아요.</p>
+</section>
+
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">자석에 붙는 물체는 <span class="blank"><span id="bl1">?</span></span>(으)로 만들어졌습니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="tip">철로 만들어진 물체는 자석에 붙습니다. 종이, 플라스틱, 나무, 고무, 알루미늄 등으로 만들어진 물체는 자석에 붙지 않습니다.</p>
+</section>
+
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.1rem">1. 자석에 붙는 물체를 두 가지 고르세요.</p>
+  <div class="pick" id="m1Q1"><button>① 연필</button><button data-a="1">② 철 캔</button><button>③ 플라스틱 컵</button><button data-a="1">④ 철로 만든 못</button><button data-m="알루미늄은 금속이지만 자석에 붙지 않아요.">⑤ 알루미늄 포일</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.1rem;margin-top:14px">2. ✏️ 서술형: 철로 만든 스프링과 종이로 이루어진 공책에 자석을 가까이 하면 어떤 현상을 관찰할 수 있는지 써 봅시다.</p>
+  <svg viewBox="0 0 300 120" style="width:min(100%,18rem);margin:0 auto 6px" aria-label="철 스프링 공책"><rect x="70" y="10" width="200" height="100" rx="6" fill="#fff" stroke="#9aa9b2" stroke-width="3"/><g fill="none" stroke="#7d8a95" stroke-width="5"><ellipse cx="70" cy="22" rx="14" ry="6"/><ellipse cx="70" cy="42" rx="14" ry="6"/><ellipse cx="70" cy="62" rx="14" ry="6"/><ellipse cx="70" cy="82" rx="14" ry="6"/><ellipse cx="70" cy="100" rx="14" ry="6"/></g><g stroke="#cfe0ea" stroke-width="2"><line x1="95" y1="35" x2="255" y2="35"/><line x1="95" y1="55" x2="255" y2="55"/><line x1="95" y1="75" x2="255" y2="75"/></g></svg>
+  <textarea id="m1W" rows="2" placeholder="예: 스프링은 ~, 종이는 ~"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="m1WBtn">내 답 살펴보기</button></div>
+  <div class="fb" id="m1WFb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>여러 가지 물체를 자석에 붙는 물체와 붙지 않는 물체로 분류할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>자석에 붙는 물체의 공통점을 말할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>직접 관찰한 결과로 분류하는 활동에 적극적으로 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+const NS='http://www.w3.org/2000/svg';
+function tween(ms,f){return new Promise(res=>{const t0=performance.now();(function step(now){const p=Math.min(1,Math.max(0,(now-t0)/ms));f(p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2,p);if(p<1)requestAnimationFrame(step);else res();})(t0);});}
+function pickAll(box,okMsg,noMsg,sec,after){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{ if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(after)after();} else fb(out,(b.dataset.m?b.dataset.m+' ':'')+`좋아요! 하나 더 있어요. (${got.size}/${need})`,'info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);} });}
+function ring(layer,g,color){const b=g.getBBox(),m=layer.getCTM().inverse().multiply(g.getCTM());
+  const P=(x,y)=>{const q=layer.ownerSVGElement.createSVGPoint();q.x=x;q.y=y;return q.matrixTransform(m);},a=P(b.x,b.y),c=P(b.x+b.width,b.y+b.height);
+  const e=document.createElementNS(NS,'ellipse');e.setAttribute('cx',(a.x+c.x)/2);e.setAttribute('cy',(a.y+c.y)/2);
+  e.setAttribute('rx',Math.max(Math.abs(c.x-a.x)/2+12,26));e.setAttribute('ry',Math.max(Math.abs(c.y-a.y)/2+12,26));e.setAttribute('fill','none');e.setAttribute('stroke',color);e.setAttribute('stroke-width',5);
+  layer.appendChild(e);}
+
+/* 물체 그림 (가운데 0,0 · 대략 140 크기) */
+const OBJ=[
+ {k:'clip',n:'철 클립',fe:1,why:'철로 만들었어요.',g:'<path d="M-40 -14 h70 a14 14 0 0 1 0 28 h-62 a9 9 0 0 1 0-18 h52" fill="none" stroke="#8a97a3" stroke-width="7" stroke-linecap="round"/>'},
+ {k:'pruler',n:'플라스틱 자',fe:0,why:'플라스틱으로 만들었어요.',g:'<rect x="-66" y="-16" width="132" height="32" rx="4" fill="#9fe0f7" fill-opacity=".8" stroke="#3a9fc8" stroke-width="3"/><path d="M-56 -16v10M-44 -16v6M-32 -16v10M-20 -16v6M-8 -16v10M4 -16v6M16 -16v10M28 -16v6M40 -16v10M52 -16v6" stroke="#2c7fa3" stroke-width="2"/>'},
+ {k:'clamp',n:'철 집게',fe:1,why:'철로 만들었어요.',g:'<path d="M-40 10 L0 -24 L40 10 Z" fill="#3e4750"/><path d="M-26 -2 L-46 -48 M26 -2 L46 -48" stroke="#a7b3bc" stroke-width="6" stroke-linecap="round" fill="none"/><path d="M-46 -48 h14 M46 -48 h-14" stroke="#a7b3bc" stroke-width="6" stroke-linecap="round"/><rect x="-40" y="10" width="80" height="14" fill="#2c333a"/>'},
+ {k:'wood',n:'나무토막',fe:0,why:'나무로 만들었어요.',g:'<rect x="-50" y="-30" width="100" height="60" rx="5" fill="#c99560" stroke="#8a5a2b" stroke-width="3"/><path d="M-42 -14 q30 8 84 0 M-42 6 q40 -10 84 2" stroke="#9a6a3c" stroke-width="2" fill="none"/>'},
+ {k:'iruler',n:'철자',fe:1,why:'철로 만들었어요.',g:'<rect x="-66" y="-14" width="132" height="28" rx="3" fill="#cfd8de" stroke="#7d8a95" stroke-width="3"/><path d="M-56 -14v10M-44 -14v6M-32 -14v10M-20 -14v6M-8 -14v10M4 -14v6M16 -14v10M28 -14v6M40 -14v10M52 -14v6" stroke="#5b6b78" stroke-width="2"/>'},
+ {k:'paper',n:'색종이',fe:0,why:'종이로 만들었어요.',g:'<rect x="-40" y="-40" width="80" height="80" fill="#ff8a5c" transform="rotate(-8)"/><path d="M14 -42 L42 -14 L14 -14Z" fill="#ffd0bc" transform="rotate(-8)"/>'},
+ {k:'tie',n:'빵 끈',fe:1,why:'겉은 종이·비닐이지만 속에 철사가 들어 있어요.',g:'<path d="M-62 4 q15 -14 30 0 t30 0 t30 0 t30 0" fill="none" stroke="#3fae5a" stroke-width="10" stroke-linecap="round"/><path d="M-62 4 q15 -14 30 0 t30 0 t30 0 t30 0" fill="none" stroke="#9aa6b0" stroke-width="2"/>'},
+ {k:'balloon',n:'고무풍선',fe:0,why:'고무로 만들었어요.',g:'<ellipse cx="0" cy="-8" rx="32" ry="40" fill="#ef6a4c"/><path d="M-4 32 l4 8 l4 -8z" fill="#c9503a"/><ellipse cx="-12" cy="-22" rx="7" ry="12" fill="#fff" opacity=".45"/>'},
+ {k:'can',n:'알루미늄 캔',fe:0,why:'금속이지만 알루미늄은 자석에 붙지 않아요.',g:'<rect x="-28" y="-44" width="56" height="88" rx="8" fill="#d6dde3" stroke="#8a97a3" stroke-width="3"/><rect x="-28" y="-14" width="56" height="30" fill="#5fb0e8"/><ellipse cx="0" cy="-44" rx="28" ry="6" fill="#eef2f5" stroke="#8a97a3" stroke-width="2"/>'}
+];
+const icon=o=>`<svg viewBox="-75 -55 150 110" aria-hidden="true">${o.g}</svg>`;
+
+/* 도입 */
+(function(){const OK={fridge:'냉장고',board:'칠판',door:'철 현관문'},NO={wood:'나무 책장은 자석이 붙지 않아요.',glass:'유리창에는 자석이 붙지 않아요.'};const got=new Set();
+  $$('#m1Intro .hit').forEach(g=>g.addEventListener('click',()=>{const k=g.dataset.k;
+    if(NO[k]){fb('#m1IntroFb',NO[k]+' 다른 곳을 찾아봐요.',false);return;}
+    if(got.has(k))return; got.add(k); const b=g.getBBox();
+    $('#m1Deco').insertAdjacentHTML('beforeend',`<g transform="translate(${b.x+b.width/2-18},${b.y+30})"><circle cx="18" cy="18" r="18" fill="#ffc93c" stroke="#b58400" stroke-width="3"/><path d="M10 18 l6 6 l12 -12" stroke="#fff" stroke-width="4" fill="none"/></g>`);
+    $('#m1IntroFound').innerHTML=[...got].map(x=>'<span>🧲 '+OK[x]+'</span>').join('');
+    if(got.size===3){fb('#m1IntroFb','냉장고, 칠판, 철 현관문에 붙일 수 있어요. 어떤 공통점이 있을까요?',true);$('#m1Why').hidden=false;}
+    else fb('#m1IntroFb',OK[k]+'에 붙였어요! ('+got.size+'/3)','info');}));
+  pickAll('#m1WhyPick','좋아요! 오늘은 어떤 물체가 자석에 붙는지 찾아보고, 자석에 붙는 물체의 공통점을 알아봐요.','색깔이나 무게가 아니라 무엇으로 만들었는지 생각해 봐요.','s1');
+})();
+
+/* 예상 */
+const pred={};
+$('#m1Pred').innerHTML=OBJ.map(o=>`<button data-k="${o.k}">${icon(o)}<span>${o.n}</span><span class="st">눌러서 예상</span></button>`).join('');
+$$('#m1Pred button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;pred[k]=pred[k]==='o'?'x':'o';
+  b.classList.toggle('p-o',pred[k]==='o');b.classList.toggle('p-x',pred[k]==='x');$('.st',b).textContent=pred[k]==='o'?'⭕ 붙을 것 같아요':'❌ 안 붙을 것 같아요';renderRows();});
+$('#m1PredDone').onclick=()=>{const n=OBJ.filter(o=>pred[o.k]).length;
+  if(n<OBJ.length){fb('#m1PredFb',`아직 예상하지 않은 물체가 ${OBJ.length-n}개 있어요.`,false);return;}
+  const yes=OBJ.filter(o=>pred[o.k]==='o').map(o=>o.n);fb('#m1PredFb',`예상 완료! 내가 붙을 것 같다고 한 물체: ${yes.join(', ')||'없음'}. 이제 실험으로 확인해요.`,true);doneNav('s2');};
+
+/* 실험 */
+const res={};
+function renderRows(){$$('#m1Test button').forEach(b=>{const k=b.dataset.k,p=pred[k],r=res[k];const pt=p?(p==='o'?'⭕':'❌'):'-',rt=r==null?'?':(r?'⭕':'❌');
+  $('.st',b).textContent='예상 '+pt+' → 결과 '+rt; b.classList.toggle('diff',r!=null&&!!p&&((p==='o')!==!!r));});}
+$('#m1Test').innerHTML=OBJ.map(o=>`<button data-k="${o.k}">${icon(o)}<span>${o.n}</span><span class="st"></span></button>`).join('');
+renderRows();
+let busy=false;
+function setMag(x,y){$('#m1Mag').setAttribute('transform',`translate(${x},${y})`);}
+setMag(130,150);
+async function runTest(o,btn){if(busy)return;busy=true;$$('#m1Test button').forEach(b=>b.classList.remove('sel'));btn.classList.add('sel');
+  const OX=560,OY=210;$('#m1Obj').innerHTML=`<g transform="translate(${OX},${OY})">${o.g}</g>`;$('#m1Say').setAttribute('opacity',0);$('#m1LabT').textContent=o.n+'에 막대자석을 가까이 해요';
+  setMag(130,150);await tween(500,p=>setMag(130+0*p,150+60*p));
+  const HW={clip:45,pruler:66,clamp:46,wood:50,iruler:66,paper:45,tie:62,balloon:32,can:28}[o.k], og=$('#m1Obj').firstElementChild;
+  if(o.fe){const mx=OX-HW-45-90; await tween(900,p=>setMag(130+(mx-130)*p,210));
+    const sx=mx+90+HW; await tween(220,p=>og.setAttribute('transform',`translate(${OX+(sx-OX)*p},${OY})`));
+    $('#m1SayT').textContent='붙네!';$('#m1Say').setAttribute('opacity',1);
+    await tween(700,p=>{setMag(mx,210-90*p);og.setAttribute('transform',`translate(${sx},${OY-90*p})`);});
+  } else {const mx=OX-HW-90-2; await tween(1000,p=>setMag(130+(mx-130)*p,210));
+    $('#m1SayT').textContent='붙지 않네!';$('#m1Say').setAttribute('opacity',1);
+    await tween(700,p=>setMag(mx,210-90*p));}
+  res[o.k]=o.fe;btn.classList.add('tested');renderRows();
+  const n=Object.keys(res).length;
+  if(n===OBJ.length){fb('#m1LabFb','아홉 가지 물체를 모두 실험했어요! 자석에 붙는 물체도 있고, 자석에 붙지 않는 물체도 있어요. 노란 버튼은 예상과 다른 결과예요.',true);doneNav('s3');}
+  else fb('#m1LabFb',`${o.n}: ${o.fe?'자석에 붙어요.':'자석에 붙지 않아요.'} (${n}/${OBJ.length})`,o.fe?true:'info');
+  busy=false;}
+$$('#m1Test button').forEach(b=>b.onclick=()=>runTest(OBJ.find(o=>o.k===b.dataset.k),b));
+
+/* 분류 */
+let selChip=null;const placed=new Set();
+$('#m1Tray').innerHTML=OBJ.map(o=>`<button class="m1-chip" data-k="${o.k}">${o.n}</button>`).join('');
+$$('#m1Tray .m1-chip').forEach(c=>c.onclick=()=>{$$('#m1Tray .m1-chip').forEach(x=>x.classList.remove('sel'));c.classList.add('sel');selChip=c;fb('#m1SortFb',c.textContent+'을(를) 골랐어요. 알맞은 칸을 눌러요.','info');});
+$$('.m1-bin').forEach(bin=>bin.addEventListener('click',()=>{if(!selChip){fb('#m1SortFb','먼저 위의 붙임딱지를 하나 골라요.','info');return;}
+  const o=OBJ.find(x=>x.k===selChip.dataset.k);
+  if(String(o.fe)!==bin.dataset.v){fb('#m1SortFb',`${o.n}은(는) 실험에서 자석에 ${o.fe?'붙었어요':'붙지 않았어요'}. 실험 결과를 다시 떠올려 봐요.`,false);return;}
+  selChip.classList.remove('sel');selChip.classList.add('right');$('.chips',bin).appendChild(selChip);selChip.onclick=null;placed.add(o.k);selChip=null;
+  if(placed.size===OBJ.length){fb('#m1SortFb','분류 완료! 그렇다: 철 클립, 철 집게, 철자, 빵 끈 / 그렇지 않다: 플라스틱 자, 나무토막, 색종이, 고무풍선, 알루미늄 캔',true);$('#m1Common').hidden=false;}
+  else fb('#m1SortFb',`${o.n} 붙임딱지를 붙였어요. ${o.why} (${placed.size}/${OBJ.length})`,true);}));
+pickOne('#m1ComPick','','다시 생각해 봐요.','s4');
+
+/* 생각+ 집 */
+(function(){const NAME={fridge:'냉장고 문',pin:'철 옷핀',nail:'철로 만든 못',hairpin:'철 머리핀',scissors:'가위 날'};
+  const HINT={fridge:'자석 장식품을 붙였던 큰 물건을 찾아봐요.',pin:'옷을 고정하는 작은 핀이 있어요.',nail:'망치로 박는 뾰족한 것이 있어요.',hairpin:'머리를 고정하는 핀이 있어요.',scissors:'가위에서 자르는 부분을 보세요.'};
+  const got=new Set();
+  $$('#m1House .hit').forEach(g=>g.addEventListener('click',()=>{const k=g.dataset.k;if(got.has(k))return;got.add(k);ring($('#m1Marks'),g,'#16804a');
+    $('#m1HFound').innerHTML=[...got].map(x=>'<span>⭕ '+NAME[x]+'</span>').join('');
+    if(got.size===5){fb('#m1HFb','5곳을 모두 찾았어요! 자석에 붙는 물체는 모두 철로 만든 물체(또는 철로 만든 부분)예요.',true);doneNav('s5');}
+    else fb('#m1HFb',NAME[k]+': 철로 만들어서 자석에 붙어요. ('+got.size+'/5)',true);}));
+  $$('#m1House .miss').forEach(g=>g.addEventListener('click',e=>{e.stopPropagation();fb('#m1HFb',g.dataset.h||(g.dataset.m+'은(는) 철로 만들지 않아서 자석에 붙지 않아요.'),false);}));
+  $('#m1HHint').onclick=()=>{const left=Object.keys(NAME).filter(k=>!got.has(k));if(left.length)fb('#m1HFb','💡 '+HINT[left[0]],'info');};
+})();
+
+/* 한눈에 쏙 */
+$('#blReveal').onclick=()=>{$('#bl1').textContent='철';fb('#blFb','자석에 붙는 물체는 철로 만들어졌어요. 이름이 아니라 무엇으로 만들었는지가 중요해요(철자는 붙고 플라스틱 자는 안 붙어요).',true);doneNav('s6');};
+
+/* 형성 평가 */
+pickAll('#m1Q1','정답! 철 캔과 철로 만든 못은 철로 만들어서 자석에 붙어요.','철로 만든 물체를 골라요.',null,()=>{q1=1;chk7();});
+let q1=0,q2=0;function chk7(){if(q1&&q2)doneNav('s7');}
+$('#m1WBtn').onclick=()=>{const t=$('#m1W').value.trim();if(!t){fb('#m1WFb','먼저 답을 써 보세요.',false);return;}
+  const a=/(스프링|철)[^.]*?(붙는|붙어|붙었|붙고|붙을|달라붙)/.test(t), b=/종이[^.]*?(붙지\s*않|안\s*붙|않)/.test(t);
+  if(a&&b){fb('#m1WFb','멋져요! 철로 만든 스프링은 자석에 붙고, 종이 부분은 자석에 붙지 않아요.',true);q2=1;chk7();}
+  else if(a||b)fb('#m1WFb',(a?'스프링은 잘 썼어요. ':'종이는 잘 썼어요. ')+(a?'종이 부분은 어떻게 될까요?':'철로 만든 스프링은 어떻게 될까요?'),'info');
+  else fb('#m1WFb','스프링(철)과 종이가 각각 자석에 붙는지 써 봐요.',false);};
+
+/* 스스로 평가 */
+faces('s8','오늘도 잘했어요! 다음 시간에는 자석과 철 사이에 작용하는 힘의 특징을 알아봐요.','어려웠던 부분은 실험 결과 표와 분류하기를 다시 살펴봐요. 선생님께 질문해도 좋아요!');
+</script>

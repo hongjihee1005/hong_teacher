@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""../sem1/index.html 목록 만들기 (4학년 1학기 과학) (사회 선생님 버전 목록과 같은 모양)
+"""../sem1-hong/index.html 목록 만들기 (4학년 1학기 과학) (사회 선생님 버전 목록과 같은 모양)
 lessons_u*.py 를 읽어 단원별 카드(SOOP 단계·사고전략)를 만들고, 아직 없는 단원은 '준비 중'으로 둡니다."""
 import os, re, sys, glob, importlib, html
 B = os.path.dirname(os.path.abspath(__file__))
@@ -7,7 +7,7 @@ sys.path.insert(0, B)
 SRC = os.path.join(B, '..', '..', '..', 'grade3', 'social', 'sem1-hong', 'index.html')  # 3학년 사회 선생님 버전 목록을 틀로 씀
 s = open(SRC, encoding='utf-8').read()
 head = s[:s.find('<body')]
-head = re.sub(r'<title>.*?</title>', '<title>4학년 1학기 과학</title>', head, flags=re.S)
+head = re.sub(r'<title>.*?</title>', '<title>4학년 1학기 과학 · 홍지희 선생님 버전</title>', head, flags=re.S)
 _tail = s[s.find('</main>'):]
 _tail = _tail.split('<!--hj-theme-js-->')[0]  # 메뉴 덮개 스크립트는 apply_theme.py가 따로 넣으므로 빼야 두 번 들어가지 않음
 scripts = ''.join(re.findall(r'<script>.*?</script>', _tail, re.S))
@@ -15,7 +15,7 @@ SO = {'S': ('S 개념 찾기', '#E0506B'), 'O1': ('O 개념 구축', '#2F74E0'),
 RN = {'see': '보기-생각-궁금', 'sort': '분류', 'define': '우리 반 결론', 'cards': '자료 살펴보기', 'csq': '주장-근거-질문', 'venn': '같은 점·다른 점',
       'cse': '연결-확장-도전', 'iuti': '예전-지금 생각', 'task': '활동', 'check': '개념 확인', 'talk': '생각 나누기',
       'pred': '예상하기', 'lab': '실험·기록', 'pvr': '예상과 결과 비교', 'design': '실험 설계', 'pgrid': '예상 표', 'board': '우리 반 자료판', 'gcmp': '예상과 결과 비교', 'claim': '근거로 결론'}
-UNITS = [(1, '1단원 자석의 이용'), (2, '2단원 물의 상태 변화'), (3, '3단원 땅의 변화'), (4, '4단원')]  # 4단원은 지도서(PDF 글자 추출 안 됨)를 받은 뒤 이름과 차시를 채움
+UNITS = [(1, '1단원 자석의 이용'), (2, '2단원 물의 상태 변화'), (3, '3단원 땅의 변화'), (4, '4단원 다양한 생물과 우리 생활')]
 e = html.escape
 groups, btns, total = [], ['<button type="button" class="ubtn" data-u="0" aria-pressed="true">전체</button>'], 0
 for n, name in UNITS:
@@ -38,9 +38,10 @@ for n, name in UNITS:
     groups.append(f'<div class="ugrp" data-u="{n}"><h3 class="unit">{e(name)} <small>{len(cards)}개</small></h3><p class="bqx"><small>🌟 핵심 질문</small>{e(M.TOPIC["bq"])}</p><div class="grid">\n' + '\n'.join(cards) + '\n</div></div>')
 
 body = f'''<body><main>
-<nav class="crumb"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a><a class="back" href="../../index.html">🚀 4학년</a><a class="back" href="../index.html">🔬 과학방</a><a class="back" href="index.html">🌸 1학기</a></nav>
+<nav class="crumb"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a><a class="back" href="../../index.html">🚀 4학년</a><a class="back" href="../index.html">🔬 과학방</a><a class="back" href="index.html">🧑‍🏫 1학기 · 홍지희 버전</a></nav>
 <h1>🔬 4학년 1학기 과학</h1>
 <p class="sub"><b>4학년 1학기 과학</b> · 홍지희 선생님 버전 · 실험·탐구 중심으로 다시 짠 수업이에요. 아이들이 실험 방법과 같게 할 것을 먼저 정하고, 예상하고, 실험한 결과를 우리 반 자료판에 모아 그 자료를 근거로 결론을 쓴 뒤 교과서 문장과 비교해요.</p>
+<p class="sub">📘 교과서 흐름 그대로 사진·가상 실험으로 탐구하는 앱은 <a href="../sem1/index.html">1학기 (교과서 버전)</a>에 있어요.</p>
 <nav class="tabs" role="tablist" aria-label="자료 종류"><a class="tab" role="tab" href="#lesson" data-pane="lesson">📖 차시별 탐구 수업<span class="cnt">{total}</span></a><a class="tab" role="tab" href="#how" data-pane="how">💡 쓰는 방법</a></nav>
 <section class="pane" id="lesson" role="tabpanel">
 <h2>📖 차시별 탐구 수업</h2><p class="gsub">단원마다 핵심 질문 하나를 붙잡고 S → O → O → P 순서로 탐구해요. 카드 아래에 그 차시의 탐구 단계와 사고전략이 적혀 있어요. (단원 도입 ‘열려라 과학’과 ‘과학이 톡톡’은 넣지 않았어요)</p><div class="legend"><span style="background:#E0506B">S 개념 찾기</span><span style="background:#2F74E0">O 개념 구축</span><span style="background:#6A4FC9">O 탐구 정리</span><span style="background:#1F9E63">P 발표</span></div><div class="subtabs" role="group" aria-label="단원 고르기">{''.join(btns)}</div>{''.join(groups)}
@@ -63,5 +64,5 @@ body = f'''<body><main>
 <footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p></footer></main>{scripts}
 </body></html>
 '''
-open(os.path.join(B, '..', 'sem1', 'index.html'), 'w', encoding='utf-8').write(head + body)
+open(os.path.join(B, '..', 'sem1-hong', 'index.html'), 'w', encoding='utf-8').write(head + body)
 print('목록 만듦: 차시', total)
