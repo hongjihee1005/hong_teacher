@@ -1,0 +1,440 @@
+<!--
+title: 혼합물을 왜 분리할까?
+unit: 1
+lesson: 2
+total: 11
+goal: 혼합물의 정의를 설명할 수 있어요.<br>혼합물을 분리하는 까닭을 이해하고, 예를 들어 설명할 수 있어요.
+pages: 「과학」 14~15쪽 · 「실험관찰」 6~7쪽 · 지도서 112~117쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"혼","bl2":"합","bl3":"물"}}]
+-->
+<style>
+/* 1단원 혼합물의 분리 교과서 버전 공통 */
+.lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.lab svg{display:block;width:100%;margin:0 auto}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,18px)}
+.rtable{table-layout:fixed}
+.rtable td,.rtable th{text-align:center;padding:5px 4px;font-size:.88rem;word-break:keep-all}
+.rtable th{background:var(--bg)}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:10px 14px;font-size:.95rem}
+.big{font-size:1.1rem}
+.ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:2px dashed var(--line);padding:6px 0}
+.ox button{min-width:3rem}
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3ord{display:flex;flex-direction:column;gap:6px}
+.t3ord button{text-align:left}
+.t3ord .t3dn{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.t3seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+.t3cnt{font-family:"Jua",sans-serif;color:var(--muted);font-size:.95rem}
+.qz>div{margin-bottom:6px}
+/* 단계 단추 */
+.mxctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.mxctl button{font-size:.92rem}
+.mxctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.mxctl button[disabled]{opacity:.45}
+.mxq{margin-top:8px;border:2px dashed var(--sky);border-radius:14px;padding:8px 12px}
+/* 붙임딱지 */
+.stks{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.stks button{display:flex;align-items:center;gap:6px;font-size:.95rem;min-height:2.4rem;padding:.2em .7em;border-width:2px;border-style:dashed}
+.stks button svg{width:2rem;height:2rem}
+.stks button.used{visibility:hidden}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.slot{border:2px solid var(--line);border-radius:14px;padding:6px;background:var(--paper);text-align:center;font-family:"Jua",sans-serif;font-size:.95rem}
+.slot svg{max-height:15vh;margin:0 auto}
+.slot .dz{margin-top:4px;min-height:2.6rem;border:3px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:2px 6px}
+.slot .dz.ready{border-color:var(--sun);background:#fff8dc}
+.slot .dz.ok{border-style:solid;border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.slot .dz svg{width:1.8rem;height:1.8rem;margin:0}
+.slot .ar{color:var(--muted);font-size:.85rem}
+@media (max-width:640px){.two,.t3sort,.t3match{grid-template-columns:1fr}.slots{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.m1tab{border:3px solid #33414a;border-radius:18px;background:#33414a;padding:8px}
+.m1tab .scr{background:#fff;border-radius:10px;padding:8px 10px;color:#15313d;min-height:150px}
+.m1tab .sb{display:flex;gap:6px;align-items:center;border:2px solid #9fb6c2;border-radius:999px;padding:4px 12px;font-size:.92rem;margin-bottom:6px;background:#f6fbfd}
+.m1chips{display:flex;flex-wrap:wrap;gap:6px}
+.m1chips button{font-size:.85rem;min-height:2.1rem;padding:.1em .7em;border-width:2px;border-radius:999px}
+.m1res{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin-top:6px}
+.m1res .r{border:2px solid var(--line);border-radius:12px;padding:6px 8px;font-size:.9rem;display:flex;flex-direction:column;gap:4px}
+.m1res .r button{font-size:.82rem;min-height:2rem;padding:.1em .5em;border-width:2px;align-self:flex-start}
+.m1note{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.m1note span{background:#fff4d6;border:2px solid #f0c24b;border-radius:10px;padding:3px 10px;font-size:.88rem}
+.m1tools{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.m1tools figure{margin:0;border:2px solid var(--line);border-radius:14px;padding:4px;text-align:center;background:#fffdf8}
+.m1tools figcaption{font-family:"Jua",sans-serif}
+.m1tools svg{max-height:16vh;margin:0 auto}
+@media (max-width:640px){.m1res{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 14쪽</span>
+  <h2>재활용품을 분리배출하면 무엇이 좋을까요?</h2>
+  <p>물건을 하나 누른 다음, 알맞은 분리배출 통을 눌러요. (<b id="r1n">0</b>/5)</p>
+  <div class="lab"><svg id="rec" viewBox="0 0 800 300" role="img" aria-label="재활용품과 분리배출 통 네 개" style="max-height:34vh"></svg></div>
+  <div class="fb" id="recFb"></div>
+  <div id="ask1" hidden data-glue="1">
+    <p class="jua big">재활용품을 물질별로 분리해서 배출하면 무엇이 좋을까요? <b>모두</b> 골라요.</p>
+    <div class="pick" id="p1">
+      <button data-a="1" data-m="맞아요! 플라스틱, 종이, 유리, 철처럼 필요한 물질을 따로 얻을 수 있어요.">필요한 물질을 얻을 수 있어요</button>
+      <button data-a="1" data-m="맞아요! 얻은 물질을 다시 쓰면 환경오염을 줄일 수 있어요.">다시 써서 환경오염을 줄일 수 있어요</button>
+      <button data-a="0" data-m="물질별로 나누어 다시 쓰면 버리는 쓰레기는 오히려 줄어요.">버리는 쓰레기의 양이 늘어나요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s2" data-nav="혼합물이란?">
+  <span class="stage">개념 · 「과학」 14쪽</span>
+  <h2>혼합물이란 무엇일까요?</h2>
+  <p class="warn">두 가지 이상의 물질이 <b>각각의 성질이 변하지 않은 채</b> 섞여 있는 것을 <b>혼합물</b>이라고 해요. 혼합물의 예에는 소금물, 설탕물과 같은 용액이나 공기, 사탕수수 등이 있어요.</p>
+  <p class="jua">‘열려라 과학’ 말판에 나왔던 물질이에요. 한 가지 물질로만 이루어져 있는지, 두 가지 이상의 물질이 섞여 있는지 골라요.</p>
+  <div class="t3sort" id="st2" data-glue="1"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s3" data-nav="활동해요 1">
+  <span class="stage">활동해요 1 · 「실험관찰」 6쪽</span>
+  <h2>주변에서 볼 수 있는 혼합물의 예</h2>
+  <svg viewBox="0 0 720 150" style="max-height:18vh;max-width:640px;margin:0 auto" role="img" aria-label="바닷물, 공기, 우유, 화단 흙 그림" id="ex3"></svg>
+  <p class="jua big">우리 주변에서 볼 수 있는 혼합물을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p3" data-glue="1">
+    <button data-a="1" data-m="맞아요! 바닷물에는 소금 등이 섞여 있어요.">바닷물</button>
+    <button data-a="1" data-m="맞아요! 공기에는 질소, 산소, 이산화 탄소 등 여러 가지 기체가 섞여 있어요.">공기</button>
+    <button data-a="1" data-m="맞아요! 우유에는 여러 가지 영양소가 들어 있어요.">우유</button>
+    <button data-a="1" data-m="맞아요! 탄산음료에는 물, 이산화 탄소 등이 섞여 있어요.">탄산음료</button>
+    <button data-a="0" data-m="얼음은 물 한 가지로만 이루어져 있어요.">얼음</button>
+    <button data-a="0" data-m="못은 철 한 가지로만 이루어져 있어요.">철로 만든 못</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="활동해요 2">
+  <span class="stage">활동해요 2 · 「실험관찰」 6쪽</span>
+  <h2>혼합물을 분리해 얻을 수 있는 물질을 붙임딱지로 붙여요</h2>
+  <p>붙임딱지를 하나 고른 다음, 그 물질을 얻을 수 있는 혼합물 아래 칸을 눌러요.</p>
+  <div class="stks" id="stk4">
+    <button data-k="salt"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M4 34 L20 12 L36 34Z" fill="#fff" stroke="#9aa"/><path d="M12 30 l4 -3 l3 3 M22 26 l4 -3 l3 3" stroke="#bcc" fill="none"/></svg>소금</button>
+    <button data-k="gold"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M6 30 L12 16 H28 L34 30Z" fill="#f2c12e" stroke="#a87b00" stroke-width="2"/><path d="M14 20 H26" stroke="#fff3b0" stroke-width="2"/></svg>금</button>
+    <button data-k="rub"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M10 14 h20 l-2 20 h-16z" fill="#f4f1e8" stroke="#8a8174" stroke-width="2"/><path d="M12 20 h16" stroke="#ddd6c4" stroke-width="5"/></svg>천연고무액</button>
+    <button data-k="sugar"><svg viewBox="0 0 40 40" aria-hidden="true"><rect x="6" y="20" width="12" height="12" fill="#fff" stroke="#c9a"/><rect x="20" y="20" width="12" height="12" fill="#fff" stroke="#c9a"/><rect x="13" y="8" width="12" height="12" fill="#fff" stroke="#c9a"/></svg>설탕</button>
+  </div>
+  <div class="slots" id="sl4" data-glue="1">
+    <div class="slot"><svg id="pSea" viewBox="0 0 200 120" role="img" aria-label="바닷물"></svg>바닷물<div class="ar">↓ 분리</div><div class="dz" data-want="salt" data-m="바닷물에서 소금을 얻어요.">붙임딱지</div></div>
+    <div class="slot"><svg id="pOre" viewBox="0 0 200 120" role="img" aria-label="금이 들어 있는 암석인 금광석"></svg>금광석<div class="ar">↓ 분리</div><div class="dz" data-want="gold" data-m="금광석은 금이 들어 있는 암석이에요. 금광석에서 금을 얻어요.">붙임딱지</div></div>
+    <div class="slot"><svg id="pRub" viewBox="0 0 200 120" role="img" aria-label="고무나무"></svg>고무나무<div class="ar">↓ 분리</div><div class="dz" data-want="rub" data-m="고무나무에서 천연고무액을 얻어요.">붙임딱지</div></div>
+    <div class="slot"><svg id="pCane" viewBox="0 0 200 120" role="img" aria-label="사탕수수"></svg>사탕수수<div class="ar">↓ 분리</div><div class="dz" data-want="sugar" data-m="사탕수수에서 설탕을 얻어요.">붙임딱지</div></div>
+  </div>
+  <div class="fb"></div>
+  <p class="tip">⚠️ 「실험관찰」의 붙임딱지를 떼어 낼 때 손을 베지 않게 조심하고, 붙일 곳을 먼저 정한 뒤 떼어 내요. 다 쓴 붙임딱지 종이는 분리배출해요.</p>
+</section>
+
+<section id="s5" data-nav="활동해요 3">
+  <span class="stage">활동해요 3 · 「실험관찰」 7쪽</span>
+  <h2>혼합물을 분리하는 예를 더 찾아봐요</h2>
+  <p>추천 검색어를 눌러 찾아보고, 알맞은 예를 <b>📒 기록하기</b>로 3개 이상 모아요. (<b id="n5">0</b>/3)</p>
+  <div class="m1tab" data-glue="1"><div class="scr">
+    <div class="sb">🔍 <span id="q5">검색어를 골라요</span></div>
+    <div class="m1chips" id="ch5"></div>
+    <div class="m1res" id="res5"></div>
+  </div></div>
+  <div class="m1note" id="note5" data-glue="1"></div>
+  <div class="fb" id="fb5"></div>
+  <p class="tip">⚠️ 스마트 기기를 활용할 때 믿을 수 있는 내용의 자료를 사용하고, 검색한 자료는 출처를 밝혀요. 스마트 기기에서 냄새가 나거나 열이 나면 바로 사용을 멈추고 선생님께 알려요. (이 화면은 이해를 돕기 위해 꾸민 것이에요.)</p>
+</section>
+
+<section id="s6" data-nav="정리해요">
+  <span class="stage">정리해요 · 「실험관찰」 7쪽</span>
+  <h2>혼합물을 분리하는 까닭은 무엇일까요?</h2>
+  <div class="pick" id="p6">
+    <button data-a="1" data-m="맞아요! 우리 주변의 대부분의 물질은 혼합물이에요. 혼합물에는 여러 가지 물질이 섞여 있으므로, 분리해야 필요한 물질을 얻을 수 있어요.">혼합물에는 여러 가지 물질이 섞여 있어서, 분리해야 필요한 물질을 얻을 수 있기 때문이에요</button>
+    <button data-a="0" data-m="혼합물을 분리하는 것은 물질을 없애려는 것이 아니라, 필요한 물질을 얻으려는 거예요.">혼합물 속의 물질을 모두 없애기 위해서예요</button>
+  </div>
+  <div class="fb"></div>
+  <h3 data-glue="1">🤔 생각 바로잡기: 소금물에서 소금을 분리하면 소금의 성질이 바뀔까요?</h3>
+  <div class="pick" id="p6b" data-glue="1">
+    <button data-a="0" data-m="혼합물 속의 물질은 성질이 변하지 않은 채 섞여 있어요. 분리해도 각 물질의 성질은 그대로예요.">네, 분리하면 다른 물질로 바뀌어요</button>
+    <button data-a="1" data-m="맞아요! 혼합물 속의 각 물질은 성질이 변하지 않은 채 섞여 있으므로, 분리해도 소금의 성질은 그대로예요.">아니요, 소금의 성질은 그대로예요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="얻은 물질 이용">
+  <span class="stage">개념 · 「과학」 15쪽</span>
+  <h2>혼합물을 분리해 얻은 물질은 어떻게 이용할까요?</h2>
+  <svg id="use7" viewBox="0 0 720 130" style="max-height:16vh;max-width:640px;margin:0 auto" role="img" aria-label="사탕수수에서 설탕, 목화에서 목화솜, 콩에서 콩기름을 분리하는 그림"></svg>
+  <p>왼쪽에서 얻은 물질을 고른 다음, 그 물질로 만들 수 있는 것을 오른쪽에서 골라요.</p>
+  <div class="t3match" id="m7" data-glue="1"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="더 알아보기">
+  <span class="stage">더 알아보기 · 옛날 생활 모습</span>
+  <h2>옛날 사람들은 혼합물을 어떻게 분리했을까요?</h2>
+  <div class="m1tools">
+    <figure><svg id="t1" viewBox="0 0 200 140" role="img" aria-label="도리깨"></svg><figcaption>도리깨</figcaption></figure>
+    <figure><svg id="t2" viewBox="0 0 200 140" role="img" aria-label="풍구"></svg><figcaption>풍구</figcaption></figure>
+    <figure><svg id="t3" viewBox="0 0 200 140" role="img" aria-label="키"></svg><figcaption>키</figcaption></figure>
+  </div>
+  <p style="margin-top:6px">농기구 이름을 고른 다음, 알맞은 쓰임을 골라요. <span class="tip">쭉정이: 껍질만 있고 속에 알맹이가 들지 않은 곡식</span></p>
+  <div class="t3match" id="m8" data-glue="1"></div>
+  <div class="fb"></div>
+  <div id="ask8" hidden data-glue="1">
+    <p class="jua big">옛날 사람들이 이런 농기구를 사용한 까닭은 무엇일까요?</p>
+    <div class="pick" id="p8">
+      <button data-a="1" data-m="맞아요! 곡식과 곡식이 아닌 것들이 섞인 혼합물에서 필요 없는 것을 없애고, 필요한 곡식만 분리하려고 사용했어요.">필요한 곡식만 분리해 얻으려고</button>
+      <button data-a="0" data-m="농기구는 곡식을 섞는 것이 아니라 필요한 곡식을 골라내는 데 썼어요.">여러 가지 곡식을 골고루 섞으려고</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s9" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua big">1. 두 가지 이상의 물질이 각각의 성질이 변하지 않은 채 섞여 있는 것을 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span><span id="bl3">?</span></span>(이)라고 합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua big" style="margin-top:10px" data-glue="1">2. 💭 사탕수수에서 얻은 설탕을 넣어 만들 수 있는 것을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p9" data-glue="1">
+    <button data-a="1" data-m="맞아요! 설탕으로 여러 가지 사탕을 만들 수 있어요.">여러 가지 사탕</button>
+    <button data-a="1" data-m="맞아요! 초콜릿이나 과자를 만들 때 설탕을 넣을 수 있어요.">초콜릿이나 과자</button>
+    <button data-a="1" data-m="맞아요! 단맛이 나는 음식을 만들 때 이용해요.">단맛이 나는 음식</button>
+    <button data-a="0" data-m="지우개는 고무나무에서 얻은 천연고무액 등으로 만들어요.">지우개</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s10" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua big">1. 혼합물과 혼합물 분리에 관한 설명이에요. 옳으면 ○, 옳지 않으면 ×를 눌러요.</p>
+  <div id="ox10"></div>
+  <div class="fb"></div>
+  <p class="jua big" style="margin-top:12px">2. ✏️ 서술형: 혼합물을 분리하는 까닭을 쓰고, 혼합물을 분리하는 예를 한 가지 써 봐요.</p>
+  <textarea id="wr10" rows="2" placeholder="까닭: … / 예: …"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wr10B">내 답 살펴보기</button></div>
+  <div class="fb" id="wr10Fb"></div>
+</section>
+
+<section id="s11" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 7쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>혼합물을 알고 혼합물 분리의 필요성을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>혼합물을 분리해 얻을 수 있는 물질을 찾을 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>혼합물 분리의 다양한 예를 통해 과학의 유용성을 느꼈어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 1단원 혼합물의 분리 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+const rnd=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+function el(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
+/* 여러 활동을 다 해야 섹션 완료: const s3=need('s3',2); … s3(); */
+function need(sec,n){let k=0;return()=>{if(++k===n)doneNav(sec);};}
+/* 여러 개 고르기 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb&&!b.dataset.cbd){b.dataset.cbd=1;cb();}}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;let first=true;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb&&first){first=false;cb(b);}});}
+/* 고르기 문제 여러 개: items [{q,o:[…],a,e,h}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);const was=ok.size;ok.add(k);if(ok.size===items.length&&was<items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* ○× 문제: ox('#box', [{t, a:true|false, e}], cb) */
+function oxQuiz(box,items,cb){const B=$(box),out=B.nextElementSibling,ok=new Set();
+  items.forEach((it,k)=>{const d=document.createElement('div');d.className='ox';d.innerHTML='<span>'+it.t+'</span>';
+    [['○',true],['×',false]].forEach(([s,v])=>{const b=document.createElement('button');b.textContent=s;b.setAttribute('aria-label',v?'맞아요':'틀려요');
+      b.onclick=()=>{if(ok.has(k))return;$$('button',d).forEach(x=>x.classList.remove('wrong'));
+        if(v===it.a){b.classList.add('right');ok.add(k);fb(out,(ok.size===items.length?'모두 맞혔어요! ':'맞아요! ')+it.e,ok.size===items.length?true:'info');if(ok.size===items.length&&cb)cb();}
+        else{b.classList.add('wrong');fb(out,'다시 생각해 봐요. '+(it.h||''),false);}};d.appendChild(b);});
+    B.appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례 맞히기: orderer('#box', [단계…], 다 맞힘 글, 섹션, each(i), cb) */
+function orderer(box,steps,okMsg,sec,each,cb){const B=$(box),out=B.nextElementSibling;let k=0;
+  const seq=document.createElement('div');seq.className='t3seq';B.before(seq);
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.classList.contains('t3dn'))return;
+    if(i===k){b.classList.add('t3dn');b.disabled=true;const sp=document.createElement('span');sp.textContent=(k+1)+'. '+s;seq.appendChild(sp);if(each)each(k);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은 무엇일까요? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그 일은 조금 뒤에 해요. 지금 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 붙임딱지: stickers('#stk', '#slots', 다 맞힘 글, 섹션, cb) — 딱지 button[data-k], 칸 .dz[data-want] */
+function stickers(stk,slots,okMsg,sec,cb){const S=$(stk),Z=$(slots),out=Z.nextElementSibling;let cur=null,n=0;const zs=$$('.dz',Z);
+  $$('button',S).forEach(b=>b.onclick=()=>{if(b.classList.contains('used'))return;$$('button',S).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b;zs.forEach(z=>{if(!z.classList.contains('ok'))z.classList.add('ready');});fb(out,'붙일 칸을 눌러요.','info');});
+  zs.forEach(z=>{z.setAttribute('role','button');z.setAttribute('tabindex','0');const go=()=>{if(z.classList.contains('ok'))return;if(!cur){fb(out,'먼저 위의 붙임딱지를 하나 골라요.','info');return;}
+      if(cur.dataset.k===z.dataset.want){z.innerHTML=cur.innerHTML;z.classList.remove('ready');z.classList.add('ok');cur.classList.remove('sel');cur.classList.add('used');cur=null;n++;zs.forEach(x=>x.classList.remove('ready'));
+        if(n===zs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(z.dataset.m||'맞아요!')+' ('+n+'/'+zs.length+')','info');}
+      else fb(out,z.dataset.h||'이 칸에 알맞은 붙임딱지가 아니에요. 다시 생각해 봐요.',false);};
+    z.onclick=go;z.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기 */
+function tap(e,f){e.classList.add('hs');e.setAttribute('tabindex','0');e.setAttribute('role','button');e.addEventListener('click',f);e.addEventListener('keydown',v=>{if(v.key==='Enter'||v.key===' '){v.preventDefault();f();}});}
+/* 단계 단추: steps('#ctl', [함수…]) — 차례대로 하나씩 열림, 함수가 false를 돌려주면 그 단계에 머묾 */
+function steps(box,fns,cb){const bs=$$(box+' button');bs.forEach((b,i)=>{b.disabled=i>0;b.onclick=()=>{if(fns[i]()===false)return;b.classList.add('done');b.disabled=true;if(bs[i+1]){bs[i+1].disabled=false;bs[i+1].focus({preventScroll:true});}else if(cb)cb();};});}
+
+/* ===== 도입: 분리배출 ===== */
+(function(){const S=$('#rec');
+  S.innerHTML='<rect width="800" height="300" fill="#f4f9fb"/><rect y="270" width="800" height="30" fill="#d9e4ea"/>';
+  const BINS=[{k:'pl',n:'플라스틱',c:'#3d8bd4'},{k:'can',n:'캔·고철',c:'#8a96a3'},{k:'pa',n:'종이',c:'#c98b4f'},{k:'gl',n:'유리병',c:'#3fa36b'}];
+  const bins=[];BINS.forEach((b,i)=>{const x=40+i*190,g=el('g',{},S);
+    el('path',{d:`M${x} 168 h150 l-10 100 h-130z`,fill:b.c,stroke:'#33414a','stroke-width':3},g);el('rect',{x:x-6,y:156,width:162,height:16,rx:6,fill:b.c,stroke:'#33414a','stroke-width':3},g);
+    el('rect',{x:x+30,y:196,width:90,height:30,rx:8,fill:'#fff'},g);const t=el('text',{x:x+75,y:218,'text-anchor':'middle','font-size':18,'font-family':'Jua',fill:'#15313d'},g);t.textContent=b.n;
+    bins.push({g,x:x+75,k:b.k,n:0});});
+  const ITEMS=[
+    {k:'pl',n:'페트병',d:'<path d="M-8 -46 h16 v8 q12 6 12 20 v52 q0 6 -6 6 h-28 q-6 0 -6 -6 v-52 q0 -14 12 -20z" fill="#d6ecfa" stroke="#3d8bd4" stroke-width="3"/><rect x="-9" y="-54" width="18" height="9" rx="2" fill="#3d8bd4"/><rect x="-20" y="-6" width="40" height="16" fill="#9ccbef"/>'},
+    {k:'can',n:'음료 캔',d:'<rect x="-18" y="-40" width="36" height="76" rx="6" fill="#c9d1d9" stroke="#59636e" stroke-width="3"/><rect x="-18" y="-16" width="36" height="26" fill="#e2573f"/><ellipse cx="0" cy="-40" rx="18" ry="4" fill="#e7ecf0" stroke="#59636e" stroke-width="2"/>'},
+    {k:'pa',n:'종이 상자',d:'<path d="M-34 -20 h68 v54 h-68z" fill="#d9a66b" stroke="#8a5a2b" stroke-width="3"/><path d="M-34 -20 l10 -16 h48 l10 16" fill="#e8bd88" stroke="#8a5a2b" stroke-width="3"/><path d="M-12 -20 v20 M12 -20 v20" stroke="#8a5a2b" stroke-width="2"/>'},
+    {k:'gl',n:'유리병',d:'<path d="M-7 -50 h14 v18 q16 8 16 26 v52 q0 6 -6 6 h-34 q-6 0 -6 -6 v-52 q0 -18 16 -26z" fill="#9fd8b5" stroke="#2d7d4f" stroke-width="3" opacity=".9"/><rect x="-8" y="-56" width="16" height="7" fill="#2d7d4f"/>'},
+    {k:'pl',n:'플라스틱 컵',d:'<path d="M-24 -30 h48 l-7 64 h-34z" fill="#eef6fc" stroke="#3d8bd4" stroke-width="3"/><path d="M-26 -34 h52" stroke="#3d8bd4" stroke-width="4"/>'}];
+  let cur=null,done=0;const out=$('#recFb');
+  ITEMS.forEach((it,i)=>{const x=90+i*150,y=82;const g=el('g',{transform:`translate(${x} ${y})`},S);g.innerHTML=it.d;
+    const t=el('text',{x:0,y:58,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#15313d'},g);t.textContent=it.n;it.g=g;it.x=x;it.y=y;
+    tap(g,()=>{if(it.done)return;ITEMS.forEach(o=>o.g.style.filter='');g.style.filter='drop-shadow(0 0 6px #ffc93c) drop-shadow(0 0 3px #ffc93c)';cur=it;fb(out,'‘'+it.n+'’을/를 골랐어요. 알맞은 통을 눌러요.','info');});});
+  bins.forEach(b=>tap(b.g,()=>{if(!cur){fb(out,'먼저 위의 물건을 하나 눌러요.','info');return;}const it=cur;
+    if(it.k!==b.k){fb(out,'‘'+it.n+'’은/는 어떤 물질로 만들었는지 생각해 봐요.',false);return;}
+    it.done=true;cur=null;it.g.style.filter='';const x0=it.x,y0=it.y,x1=b.x+(b.n++)*14-7,y1=200;
+    tween(500,p=>it.g.setAttribute('transform',`translate(${lerp(x0,x1,p)} ${lerp(y0,y1,p)}) scale(${lerp(1,.45,p)})`),()=>{it.g.style.opacity=.85;});
+    done++;$('#r1n').textContent=done;
+    if(done===ITEMS.length){fb(out,'모두 물질별로 분리배출했어요! 플라스틱, 철, 종이, 유리처럼 물질별로 나누었어요.',true);$('#ask1').hidden=false;}
+    else fb(out,'맞아요! ('+done+'/5)','info');}));})();
+pickAll('#p1','맞아요! 재활용품을 물질별로 분리배출하면 필요한 물질을 얻고, 다시 사용해서 환경오염을 줄일 수 있어요. 섞여 있는 것을 나누어 필요한 것을 얻는 일, 오늘은 ‘혼합물’로 알아봐요.','',
+  's1');
+
+/* ===== 혼합물이란? ===== */
+sorter('#st2',[
+  {t:'소금물',k:'m',m:'소금물은 소금과 물이 섞여 있어요.'},{t:'공기',k:'m',m:'공기는 질소, 산소 등이 섞여 있어요.'},
+  {t:'탄산음료',k:'m',m:'탄산음료는 물, 이산화 탄소 등이 섞여 있어요.'},{t:'유성 물감',k:'m',m:'유성 물감은 기름, 색소 등이 섞여 있어요.'},
+  {t:'반짝이 풀',k:'m',m:'반짝이 풀은 풀, 반짝이 가루 등이 섞여 있어요.'},{t:'바닷가 흙',k:'m',m:'바닷가 흙은 모래, 자갈 등이 섞여 있어요.'},
+  {t:'금관',k:'p',m:'금관은 금 한 가지로만 이루어져 있어요.',h:'금관은 무엇으로 만들었나요?'},{t:'산소',k:'p',m:'산소는 산소 한 가지로만 이루어져 있어요.',h:'산소는 다른 물질과 섞여 있나요?'},
+  {t:'못',k:'p',m:'못은 철 한 가지로만 이루어져 있어요.',h:'못은 무엇으로 만들었나요?'},{t:'얼음',k:'p',m:'얼음은 물 한 가지로만 이루어져 있어요.',h:'얼음이 녹으면 무엇이 되나요?'}],
+  [{k:'p',n:'한 가지 물질'},{k:'m',n:'섞여 있음(혼합물)'}],
+  '모두 맞혔어요! 소금물, 공기, 탄산음료, 유성 물감, 반짝이 풀, 바닷가 흙은 두 가지 이상의 물질이 섞여 있는 혼합물이에요. ‘용해와 용액’에서 배운 용액도 용질과 용매가 골고루 섞여 있는 혼합물이에요.','s2');
+
+/* ===== 그림 도우미: 혼합물·물질 ===== */
+function sea(g,x,y,w,h){el('rect',{x,y,width:w,height:h*.45,fill:'#cfe9f8'},g);el('circle',{cx:x+w*.8,cy:y+h*.2,r:h*.12,fill:'#ffd23f'},g);
+  el('rect',{x,y:y+h*.45,width:w,height:h*.55,fill:'#3d8bd4'},g);for(let i=0;i<3;i++)el('path',{d:`M${x} ${y+h*(.55+i*.14)} q${w/8} -8 ${w/4} 0 t${w/4} 0 t${w/4} 0 t${w/4} 0`,fill:'none',stroke:'#cfe9f8','stroke-width':3},g);}
+function drawSlots(){
+  let g=$('#pSea');sea(g,0,0,200,120);
+  g=$('#pOre');g.innerHTML='<rect width="200" height="120" fill="#f3efe6"/><path d="M30 98 L44 40 L96 22 L150 34 L176 82 L140 104Z" fill="#8f877b" stroke="#5e554a" stroke-width="3"/><path d="M60 60 l12 -4 M110 44 l10 6 M130 80 l12 -2 M80 86 l8 -6 M150 62 l6 6" stroke="#f2c12e" stroke-width="6" stroke-linecap="round"/>';
+  g=$('#pRub');g.innerHTML='<rect width="200" height="120" fill="#e9f5e4"/><rect x="80" y="0" width="40" height="120" fill="#9c7a52" stroke="#6b5233" stroke-width="2"/><path d="M80 30 l40 12 M80 46 l40 12 M80 62 l40 12" stroke="#6b5233" stroke-width="3"/><path d="M118 75 q8 6 10 18" stroke="#f4f1e8" stroke-width="5" fill="none"/><path d="M118 92 h22 l-3 20 h-16z" fill="#f4f1e8" stroke="#8a8174" stroke-width="2"/><path d="M10 10 q30 10 60 0 M130 12 q30 -8 60 4" stroke="#5cb85c" stroke-width="8" fill="none" stroke-linecap="round"/>';
+  g=$('#pCane');g.innerHTML='<rect width="200" height="120" fill="#fbf6e4"/>'+[60,95,130].map((x,i)=>`<rect x="${x}" y="${10+i*6}" width="14" height="${110-i*6}" fill="#7dbb4c" stroke="#4f7d2c" stroke-width="2"/>`+[30,55,80].map(y=>`<path d="M${x} ${y+i*6} h14" stroke="#4f7d2c" stroke-width="3"/>`).join('')+`<path d="M${x+7} ${12+i*6} q-30 -4 -44 18 M${x+7} ${12+i*6} q30 -6 44 14" stroke="#5cb85c" stroke-width="5" fill="none"/>`).join('');}
+drawSlots();
+(function(){const g=$('#ex3');const L=[['바닷물',0],['공기',1],['우유',2],['화단 흙',3]];
+  L.forEach(([n,i])=>{const x=10+i*180,gg=el('g',{},g);
+    if(i===0)sea(gg,x,10,160,100);
+    if(i===1){el('rect',{x,y:10,width:160,height:100,fill:'#eaf6fb'},gg);for(let k=0;k<26;k++)el('circle',{cx:x+10+rnd(k,1)*140,cy:20+rnd(k,2)*80,r:4,fill:['#6ec3f0','#f08a24','#9c88ff'][k%3]},gg);}
+    if(i===2){el('rect',{x,y:10,width:160,height:100,fill:'#fff8ec'},gg);el('path',{d:`M${x+55} 30 h50 l8 18 v56 h-66 v-56z`,fill:'#fff',stroke:'#3d8bd4','stroke-width':3},gg);el('rect',{x:x+47,y:60,width:66,height:22,fill:'#cfe9f8'},gg);const t=el('text',{x:x+80,y:76,'text-anchor':'middle','font-size':14,'font-family':'Jua',fill:'#1c6fa8'},gg);t.textContent='우유';}
+    if(i===3){el('rect',{x,y:10,width:160,height:100,fill:'#eaf6fb'},gg);el('path',{d:`M${x+10} 108 v-40 h140 v40z`,fill:'#a0673a'},gg);for(let k=0;k<30;k++)el('circle',{cx:x+16+rnd(k,4)*128,cy:74+rnd(k,5)*30,r:1.5+rnd(k,6)*3,fill:['#6b4a2b','#d0a26a','#c9b8a0'][k%3]},gg);el('path',{d:`M${x+50} 68 v-30 M${x+50} 46 q-14 -10 -20 0 M${x+50} 40 q14 -12 20 -2 M${x+110} 68 v-22 M${x+110} 50 q12 -8 16 2`,stroke:'#3fa36b','stroke-width':4,fill:'none'},gg);}
+    const t=el('text',{x:x+80,y:140,'text-anchor':'middle','font-size':17,'font-family':'Jua',fill:'#15313d'},gg);t.textContent=n;});})();
+pickAll('#p3','모두 찾았어요! 바닷물, 공기, 우유, 탄산음료처럼 우리 주변의 대부분의 물질은 혼합물이에요. 화단 흙, 설탕물, 소금물, 유성 물감도 혼합물이에요.','','s3');
+stickers('#stk4','#sl4','모두 붙였어요! 바닷물에서 소금, 금광석에서 금, 고무나무에서 천연고무액, 사탕수수에서 설탕을 분리해 얻을 수 있어요.','s4');
+
+/* ===== 활동해요 3: 스마트 기기로 찾기 ===== */
+(function(){const Q={
+  '혼합물을 분리하는 예':[['목화에서 솜과 씨를 분리해요.',1],['벌집에서 꿀을 분리해요.',1]],
+  '생활 속 혼합물의 분리':[['마스크로 공기 중의 황사나 먼지를 분리해요.',1],['공기 청정기로 공기 중의 미세먼지를 분리해요.',1]],
+  '꽃과 과일':[['꽃에서 향을 분리해요.',1],['과일에서 과즙을 분리해요.',1]],
+  '콩의 이용':[['콩에서 콩기름을 분리해요.',1],['콩에서 콩 단백질을 분리해요.',1]],
+  '사금 얻기':[['강에서 모래나 흙을 분리하여 사금을 얻어요.',1],['금은 강물에 녹아 있어서 보이지 않아요.',0]]};
+  const got=new Set();const ch=$('#ch5'),res=$('#res5');
+  Object.keys(Q).forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>{$$('button',ch).forEach(x=>x.classList.toggle('sel',x===b));$('#q5').textContent=k;res.innerHTML='';
+    Q[k].forEach(([t,ok])=>{const r=document.createElement('div');r.className='r';r.innerHTML='<span>'+t+'</span>';const a=document.createElement('button');a.textContent=got.has(t)?'✔ 기록함':'📒 기록하기';if(got.has(t)){a.disabled=true;a.classList.add('right');}
+      a.onclick=()=>{if(!ok){a.classList.add('wrong');fb('#fb5','이 내용은 혼합물을 분리하는 예가 아니에요. 믿을 수 있는 내용인지 따져 보고 골라요.',false);return;}
+        got.add(t);a.textContent='✔ 기록함';a.disabled=true;a.classList.add('right');const s=document.createElement('span');s.textContent='📒 '+t;$('#note5').appendChild(s);$('#n5').textContent=Math.min(3,got.size);
+        if(got.size===3){fb('#fb5','잘 찾았어요! 우리 주변에는 혼합물을 분리해 필요한 물질을 얻는 예가 많아요. 찾은 자료는 출처를 함께 적어 두어요.',true);doneNav('s5');}
+        else if(got.size<3)fb('#fb5','기록했어요. ('+got.size+'/3)','info');};
+      r.appendChild(a);res.appendChild(r);});};ch.appendChild(b);});})();
+
+/* ===== 정리해요 ===== */
+const s6=need('s6',2);pickOne('#p6','','',null,s6);pickOne('#p6b','','',null,s6);
+
+/* ===== 얻은 물질 이용 ===== */
+(function(){const g=$('#use7');const L=[['사탕수수','설탕'],['목화','목화솜'],['콩','콩기름']];
+  L.forEach(([a,b],i)=>{const x=10+i*240,gg=el('g',{},g);
+    if(i===0){[0,1,2].forEach(k=>{el('rect',{x:x+10+k*16,y:20,width:10,height:80,fill:'#7dbb4c',stroke:'#4f7d2c'},gg);});}
+    if(i===1){el('path',{d:`M${x+38} 100 v-50`,stroke:'#6b5233','stroke-width':4},gg);[[38,40],[22,56],[54,58]].forEach(([dx,dy])=>{el('circle',{cx:x+dx,cy:dy,r:13,fill:'#fff',stroke:'#bbb','stroke-width':2},gg);});}
+    if(i===2){[[20,50],[40,60],[30,80],[52,82],[60,56]].forEach(([dx,dy])=>el('ellipse',{cx:x+dx,cy:dy,rx:10,ry:8,fill:'#e8d28a',stroke:'#a8913c','stroke-width':2},gg));}
+    el('path',{d:`M${x+80} 60 h44 l-8 -8 M${x+124} 60 l-8 8`,stroke:'#1c6fa8','stroke-width':4,fill:'none'},gg);
+    const t2=el('text',{x:x+102,y:50,'text-anchor':'middle','font-size':13,'font-family':'Jua',fill:'#1c6fa8'},gg);t2.textContent='분리';
+    if(i===0){[0,1,2].forEach(k=>el('rect',{x:x+140+k*18,y:66,width:16,height:16,fill:'#fff',stroke:'#c9a'},gg));el('rect',{x:x+149,y:50,width:16,height:16,fill:'#fff',stroke:'#c9a'},gg);}
+    if(i===1){el('path',{d:`M${x+140} 80 q0 -30 20 -30 q10 -14 26 -4 q20 0 16 22 q6 12 -10 14z`,fill:'#fff',stroke:'#bbb','stroke-width':2},gg);}
+    if(i===2){el('path',{d:`M${x+150} 30 h24 v8 l8 10 v44 h-40 v-44 l8 -10z`,fill:'#fbe7a1',stroke:'#a8913c','stroke-width':2},gg);}
+    [[a,x+40],[b,x+172]].forEach(([s,cx])=>{const t=el('text',{x:cx,y:122,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#15313d'},gg);t.textContent=s;});});})();
+matcher('#m7',[['사탕수수에서 얻은 설탕','사탕이나 시럽을 만들어요','설탕은 단맛을 내는 데 써요.'],['콩에서 얻은 콩 단백질','두부나 콩고기를 만들어요','콩 단백질로 두부를 만들어요.'],
+  ['목화에서 얻은 목화솜','옷, 수건, 이불을 만들어요','목화솜으로 실을 만들어 옷감을 짜요.'],['고무나무에서 얻은 천연고무액','지우개 같은 고무 제품을 만들어요','천연고무액을 가공해 여러 가지 제품을 만들어요.']],
+  '모두 이었어요! 혼합물을 분리해 얻은 물질은 그대로 쓰기도 하고, 다시 가공해 필요한 제품을 만들기도 해요.','s7');
+
+/* ===== 더 알아보기: 옛날 농기구 ===== */
+$('#t1').innerHTML='<rect width="200" height="140" fill="#fbf6e4"/><path d="M20 130 L130 28" stroke="#8a5a2b" stroke-width="7" stroke-linecap="round"/><circle cx="130" cy="28" r="6" fill="#6b4a2b"/><g stroke="#a0673a" stroke-width="5" stroke-linecap="round"><path d="M130 28 L184 62"/><path d="M130 28 L180 74"/><path d="M130 28 L174 84"/></g><path d="M100 128 q30 -10 90 0" stroke="#e1b84b" stroke-width="10" fill="none"/>';
+$('#t2').innerHTML='<rect width="200" height="140" fill="#fbf6e4"/><rect x="40" y="50" width="120" height="58" fill="#c08a52" stroke="#6b4a2b" stroke-width="3"/><path d="M80 50 l-10 -34 h60 l-10 34z" fill="#d9a66b" stroke="#6b4a2b" stroke-width="3"/><circle cx="56" cy="79" r="26" fill="#d9a66b" stroke="#6b4a2b" stroke-width="3"/><path d="M56 79 l18 -18" stroke="#6b4a2b" stroke-width="4"/><circle cx="74" cy="61" r="4" fill="#6b4a2b"/><path d="M50 108 v24 M150 108 v24" stroke="#6b4a2b" stroke-width="5"/><g fill="#e1b84b"><circle cx="172" cy="70" r="3"/><circle cx="182" cy="62" r="2.5"/><circle cx="188" cy="76" r="2"/></g><path d="M100 108 v12 h22" stroke="#6b4a2b" stroke-width="4" fill="none"/>';
+$('#t3').innerHTML='<rect width="200" height="140" fill="#fbf6e4"/><path d="M30 40 q70 -30 140 0 l-14 70 q-56 18 -112 0z" fill="#d9b779" stroke="#8a6a3a" stroke-width="3"/><path d="M44 50 q56 -20 112 0 M48 70 q52 -16 104 0 M52 90 q48 -12 96 0" stroke="#b08a50" stroke-width="2" fill="none"/>'+[...Array(14)].map((_,k)=>`<ellipse cx="${70+rnd(k,7)*60}" cy="${70+rnd(k,8)*30}" rx="3.5" ry="2.5" fill="#e1b84b" stroke="#a8913c"/>`).join('')+'<g fill="#c9b8a0"><circle cx="150" cy="22" r="2"/><circle cx="162" cy="14" r="1.6"/><circle cx="140" cy="12" r="1.8"/></g>';
+matcher('#m8',[['도리깨','곡식의 이삭이나 껍질을 두드려 알곡을 떨어내요'],['풍구','바람을 일으켜 쭉정이, 겨 등을 날리고 알곡만 골라요'],['키','곡식을 까불러 쭉정이나 티끌을 골라내요']],
+  '모두 이었어요! 옛날 농기구도 섞여 있는 것에서 필요한 곡식을 골라내는 데 썼어요.',null,()=>{$('#ask8').hidden=false;});
+pickOne('#p8','','','s8');
+
+/* ===== 한눈에 쏙 ===== */
+const s9=need('s9',2);
+$('#blReveal').onclick=()=>{fb('#blFb','두 가지 이상의 물질이 각각의 성질이 변하지 않은 채 섞여 있는 것을 혼합물이라고 해요.',true);s9();};
+pickAll('#p9','모두 찾았어요! 사탕수수에서 분리해 얻은 설탕으로 사탕, 초콜릿, 과자 등 단맛이 나는 여러 가지 음식을 만들어요.','',null,s9);
+
+/* ===== 형성 평가 ===== */
+const s10=need('s10',2);
+oxQuiz('#ox10',[{t:'⑴ 혼합물은 두 가지 이상의 물질이 섞여 있다.',a:true,e:'혼합물은 두 가지 이상의 물질이 섞여 있어요.'},
+  {t:'⑵ 혼합물은 섞여 있는 각각의 성분 물질로 분리할 수 있다.',a:true,e:'혼합물은 각각의 성분 물질로 분리할 수 있어요.'},
+  {t:'⑶ 혼합물을 분리하면 섞여 있는 각각의 물질의 성질이 바뀐다.',a:false,e:'혼합물 속 물질은 성질이 변하지 않은 채 섞여 있어서, 분리해도 성질이 그대로예요.',h:'소금물에서 소금을 분리하면 소금의 성질이 어떻게 될까요?'}],s10);
+$('#wr10B').onclick=()=>{const t=$('#wr10').value.trim();if(!t){fb('#wr10Fb','먼저 답을 써 보세요.',false);return;}
+  const why=/필요|원하는|얻|쓰|사용|이용/.test(t),ex=/바닷물|소금|사탕수수|설탕|금광석|금|고무|목화|콩|꿀|향|과즙|마스크|먼지|공기 청정기|재활용/.test(t);
+  if(why&&ex){fb('#wr10Fb','잘 썼어요! 예시 답: ⑴ 혼합물을 분리하여 필요한 물질을 얻을 수 있기 때문이다. ⑵ 바닷물을 분리하여 소금을 얻는다.',true);if(!$('#wr10B').dataset.ok){$('#wr10B').dataset.ok=1;s10();}}
+  else if(why)fb('#wr10Fb','까닭은 잘 썼어요. 혼합물을 분리하는 예(예: 바닷물에서 소금 얻기)도 한 가지 써 봐요.','info');
+  else if(ex)fb('#wr10Fb','예는 잘 썼어요. 왜 분리하는지(무엇을 얻으려고) 까닭도 써 봐요.','info');
+  else fb('#wr10Fb','혼합물을 분리하면 무엇을 얻을 수 있는지 생각해 봐요. 오늘 붙인 붙임딱지를 떠올려 봐요.',false);};
+
+faces('s11','잘했어요! 다음 시간에는 알갱이의 크기가 다른 고체 혼합물을 분리해 봐요.','어려웠던 부분은 붙임딱지 활동(혼합물 → 얻는 물질)을 다시 해 봐요.');
+</script>
