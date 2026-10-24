@@ -1,33 +1,44 @@
 #!/usr/bin/env python3
-"""4학년 1학기 과학 교과서 버전 앱 만들기.
+"""4학년 과학 교과서 버전 앱 만들기 (1학기 src/ → ../sem1/, 2학기 src2/ → ../sem2/).
 
 src/uN-M.html (머리 주석 + 앱 CSS + section들 + 앱 script) → ../sem1/uN-M.html
 공통 틀(parts/head_css.html, parts/tail.html)은 3학년 2학기 교과서 버전 앱에서 떼어 온 것
 (한 화면 모드·빈칸 확인·홈 단추·연락처 줄). 앱마다 쓰는 도우미 $ $$ fb doneNav faces는 여기서 넣음.
 
-  python3 build.py            # 모두
-  python3 build.py u1-1 u2-3  # 몇 개만
+  python3 build.py            # 두 학기 모두
+  python3 build.py u1-1 u2-3  # 1학기 몇 개만 (2학기는 앞에 SEM=2)
+  SEM=2 python3 build.py      # 2학기만
   python3 build.py check      # 만들지 않고 원본만 점검
 """
 import base64, glob, html, json, os, re, sys
 
 B = os.path.dirname(os.path.abspath(__file__))
-OUT = os.path.join(B, '..', 'sem1')
 WM = os.environ.get('WM_CACHE') or os.path.join(B, '..', '..', '..', '_build', 'wmcache')
-ROOM = '1학기 과학방으로'
+SRC = {1: 'src', 2: 'src2'}
 
-UNITS = {
+UNITS1 = {
     1: ('1단원 자석의 이용', '#b8452f', 'magnet'),
     2: ('2단원 물의 상태 변화', '#1c6fa8', 'drop'),
     3: ('3단원 땅의 변화', '#8a5a2b', 'volcano'),
     4: ('4단원 다양한 생물과 우리 생활', '#2f7d4a', 'mushroom'),
 }
+UNITS2 = {
+    1: ('1단원', '#6a4fa3', 'leaf'),  # 지도서(PDF 83MB)를 아직 읽지 못함 — 받으면 단원 이름을 채움
+    2: ('2단원 생물과 환경', '#2f7d4a', 'leaf'),
+    3: ('3단원 여러 가지 기체', '#1c6fa8', 'balloon'),
+    4: ('4단원 기후변화와 우리 생활', '#b8452f', 'globe'),
+}
+UNITS_BY = {1: UNITS1, 2: UNITS2}
+UNITS = UNITS1  # 옛 이름(목록 빌더 호환)
 
 ICON = {
     'magnet': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M20 18 v28 a23 23 0 0 0 46 0 v-28 h-14 v28 a9 9 0 0 1 -18 0 v-28 z" fill="#e2573f" stroke="#fff" stroke-width="3"/><rect x="20" y="12" width="14" height="10" fill="#dfe7ee" stroke="#fff" stroke-width="3"/><rect x="52" y="12" width="14" height="10" fill="#dfe7ee" stroke="#fff" stroke-width="3"/></svg>',
     'drop': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M43 10 C30 30 20 42 20 54 a23 23 0 0 0 46 0 C66 42 56 30 43 10z" fill="#6ec3f0" stroke="#fff" stroke-width="3"/><path d="M33 56 a10 10 0 0 0 10 10" stroke="#fff" stroke-width="4" fill="none" stroke-linecap="round"/></svg>',
     'volcano': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M8 74 L32 34 h22 L78 74z" fill="#a0673a" stroke="#fff" stroke-width="3"/><path d="M32 34 q11 8 22 0" fill="#e2573f"/><circle cx="36" cy="20" r="7" fill="#c9d3da"/><circle cx="48" cy="14" r="9" fill="#c9d3da"/></svg>',
     'mushroom': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M12 44 a31 26 0 0 1 62 0z" fill="#e2573f" stroke="#fff" stroke-width="3"/><circle cx="30" cy="32" r="5" fill="#fff"/><circle cx="52" cy="28" r="6" fill="#fff"/><path d="M34 44 h18 l3 30 h-24z" fill="#f4e6cf" stroke="#fff" stroke-width="3"/></svg>',
+    'leaf': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M16 70 C16 34 40 14 72 14 C72 46 52 70 16 70z" fill="#5cb85c" stroke="#fff" stroke-width="3"/><path d="M18 68 L60 26" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>',
+    'balloon': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><ellipse cx="43" cy="34" rx="22" ry="26" fill="#6ec3f0" stroke="#fff" stroke-width="3"/><path d="M43 60 l-4 6 h8z" fill="#fff"/><path d="M43 66 q-6 8 0 16" stroke="#fff" stroke-width="2.5" fill="none"/></svg>',
+    'globe': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><circle cx="43" cy="43" r="30" fill="#6ec3f0" stroke="#fff" stroke-width="3"/><path d="M26 30 q10 -6 16 2 q4 8 -6 12 q-8 4 -4 14 M52 22 q8 6 2 12 q-6 6 4 14 q6 4 2 12" fill="#5cb85c" stroke="#fff" stroke-width="2"/></svg>',
 }
 
 HELPERS = r"""
@@ -125,11 +136,11 @@ def check(key, meta, css, body, js):
         raise SystemExit(key + ':\n  ' + '\n  '.join(errs))
 
 
-def build(key, write=True):
-    meta, css, body, js = parse(os.path.join(B, 'src', key + '.html'))
+def build(key, write=True, sem=1):
+    meta, css, body, js = parse(os.path.join(B, SRC[sem], key + '.html'))
     check(key, meta, css, body, js)
     u = int(meta['unit'])
-    uname, col, icon = UNITS[u]
+    uname, col, icon = UNITS_BY[sem][u]
     nav = ''.join('<a href="#%s">%s</a>' % (i, html.escape(n))
                   for i, n in re.findall(r'<section\b[^>]*\bid="([^"]+)"[^>]*\bdata-nav="([^"]+)"', body))
     if not nav:
@@ -148,11 +159,11 @@ def build(key, write=True):
     if credits:
         cred = '<details class="credits"><summary>📷 사진 출처 (위키미디어 공용 자유 이용 사진)</summary><ul>%s</ul></details>' % ''.join(credits)
     lesson = meta['lesson']
-    sub = '4학년 1학기 과학 · %s · %s/%s차시' % (uname, lesson, meta['total'])
+    sub = '4학년 %d학기 과학 · %s · %s/%s차시' % (sem, uname, lesson, meta['total'])
     head = open(os.path.join(B, 'parts', 'head_css.html'), encoding='utf-8').read()
     head = head.replace('--navy:#0f3b5c;', '--navy:%s;' % col, 1)
     tail = open(os.path.join(B, 'parts', 'tail.html'), encoding='utf-8').read()
-    tail = tail.replace('/*CFG*/[]', meta.get('blanks') or '[]').replace('/*ROOM*/', ROOM)
+    tail = tail.replace('/*CFG*/[]', meta.get('blanks') or '[]').replace('/*ROOM*/', '%d학기 과학방으로' % sem)
     out = f'''<!doctype html>
 <html lang="ko">
 <head>
@@ -189,22 +200,29 @@ def build(key, write=True):
 '''
     assert CONTACT in out
     if write:
-        os.makedirs(OUT, exist_ok=True)
-        open(os.path.join(OUT, key + '.html'), 'w', encoding='utf-8').write(out)
+        out_dir = os.path.join(B, '..', 'sem%d' % sem)
+        os.makedirs(out_dir, exist_ok=True)
+        open(os.path.join(out_dir, key + '.html'), 'w', encoding='utf-8').write(out)
     return key
 
 
-def keys():
-    return sorted(os.path.basename(p)[:-5] for p in glob.glob(os.path.join(B, 'src', 'u*-*.html')))
+def keys(sem=1):
+    return sorted(os.path.basename(p)[:-5] for p in glob.glob(os.path.join(B, SRC[sem], 'u*-*.html')))
 
 
 if __name__ == '__main__':
     args = sys.argv[1:]
-    if args[:1] == ['check']:
-        for k in args[1:] or keys():
-            build(k, write=False)
-        print('점검 끝:', len(args[1:] or keys()), '개')
-    else:
-        for k in args or keys():
-            build(k)
-            print('만듦', k)
+    chk = args[:1] == ['check']
+    if chk:
+        args = args[1:]
+    env = os.environ.get('SEM')
+    sems = [int(env)] if env else ([1] if args else [1, 2])
+    n = 0
+    for sem in sems:
+        for k in args or keys(sem):
+            build(k, write=not chk, sem=sem)
+            n += 1
+            if not chk:
+                print('만듦', '%d학기' % sem, k)
+    if chk:
+        print('점검 끝:', n, '개')
