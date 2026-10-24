@@ -481,7 +481,7 @@ function drawOrbitS(){let s='<rect width="800" height="400" fill="#0b1636"/>';
   s+='<path d="M'+(400+ER[0])+' 214 A'+ER[0]+' '+ER[1]+' 0 0 0 '+(400+ER[0])+' 186" fill="none" stroke="#9fe3a5" stroke-width="4"/><path d="M'+(400+ER[0])+' 178 l-7 11 l14 0z" fill="#9fe3a5"/>';
   const sunDir=seasonAt?ang(EARTH[seasonAt])+Math.PI:0;
   for(const g in GRP){const a=ang(GRP[g]),x=400+GR[0]*Math.cos(a),y=200-GR[1]*Math.sin(a);
-    let st='';if(seasonAt){const night=Math.abs(((a-ang(EARTH[seasonAt])+3*Math.PI)%(2*Math.PI))-Math.PI)<1.0,hid=Math.abs(((a-sunDir+3*Math.PI)%(2*Math.PI))-Math.PI)<0.6;st=night?'vis':hid?'hid':'';}
+    let st='';if(seasonAt){const night=Math.abs(((a-ang(EARTH[seasonAt])+3*Math.PI)%(2*Math.PI))-Math.PI)<0.8,hid=Math.abs(((a-sunDir+3*Math.PI)%(2*Math.PI))-Math.PI)<0.6;st=night?'vis':hid?'hid':'';}
     const names=Object.keys(CST).filter(k=>CST[k].s===g).map(k=>CST[k].n);
     s+='<rect x="'+(x-70)+'" y="'+(y-30)+'" width="140" height="60" rx="12" fill="'+(st==='vis'?'#ffe680':st==='hid'?'#3a3a4a':'#26335f')+'" stroke="#fff" stroke-opacity=".5"/>';
     s+=tx(x,y-10,SNAME[g]+'철 별자리',{s:15,c:st==='vis'?'#3a2a00':st==='hid'?'#999':'#fff'})+tx(x,y+8,names.slice(0,2).join('·'),{s:12,c:st==='vis'?'#3a2a00':st==='hid'?'#999':'#cfe0ff'})+tx(x,y+23,names[2],{s:12,c:st==='vis'?'#3a2a00':st==='hid'?'#999':'#cfe0ff'});
