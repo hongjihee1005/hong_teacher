@@ -59,7 +59,7 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"자","bl2":"석"}}]
   <div class="fb" id="m6ItemFb"></div>
   <h3>📋 조사 결과 표</h3>
   <table class="m6-tbl"><tr><th>자석을 이용한 예</th><th>자석이 있는 부분</th><th>자석이 있어 편리한 점</th></tr><tbody id="m6Rows"></tbody></table>
-  <p class="tip">💡 물건 자체의 쓰임(책을 읽는다, 물건을 넣는다)이 아니라 <b>자석을 이용해서 생기는</b> 편리한 점을 찾아요. 신용 카드, 자기 공명 영상(MRI)처럼 어려운 예는 다루지 않아요.</p>
+  <p class="tip">💡 물건 자체의 쓰임(책을 읽는다, 물건을 넣는다)이 아니라 <b>자석을 이용해서 생기는</b> 편리한 점을 찾아요.</p>
 </section>
 
 <section id="s3" data-nav="숨은 자석">
@@ -108,7 +108,7 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"자","bl2":"석"}}]
   <p class="jua" style="font-size:1.15rem"><span class="blank"><span id="bl1">ㅈ</span><span id="bl2">ㅅ</span></span>을/를 이용한 물건 정리함은 철로 만든 물체에 붙여서 사용할 수 있습니다.</p>
   <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
   <div class="fb" id="blFb"></div>
-  <p class="tip">우리는 일상생활에서 자석을 다양하게 이용합니다.</p>
+  <p class="tip" id="blSum" hidden>우리는 일상생활에서 자석을 다양하게 이용합니다.</p>
   <h3>💭 생각+ 자석이 있는 철 클립 통</h3>
   <svg viewBox="0 0 400 170" class="m6-fig" aria-label="입구에 자석이 있는 클립 통"><rect x="120" y="50" width="160" height="110" rx="14" fill="#cfefff" stroke="#3a7ab0" stroke-width="4"/><rect x="160" y="40" width="80" height="22" rx="8" fill="#e2573f"/><text x="200" y="57" text-anchor="middle" font-size="13" fill="#fff" font-family="Jua">자석</text>
     <g fill="none" stroke="#7d8a95" stroke-width="3"><path d="M170 66 l10 18 M200 64 v20 M226 66 l-8 18"/><path d="M140 130 h30 M200 140 h40 M150 150 h30 M230 120 h24"/></g></svg>
@@ -211,7 +211,7 @@ function show(i){cur=i;const it=ITEMS[i],s=st[i];$$('#m6Tabs button').forEach(b=
       const n=st.filter(x=>x.z&&x.c).length;
       if(n===ITEMS.length){fb('#m6ItemFb','다섯 가지를 모두 조사했어요! 우리 생활 곳곳에서 자석을 이용하고 있어요.',true);doneNav('s2');}
       else{fb('#m6ItemFb',`좋아요! (${n}/5) 다음 물건도 조사해요.`,true);const nx=st.findIndex(x=>!(x.z&&x.c));if(nx>=0)setTimeout(()=>show(nx),900);}}
-    else{b.classList.add('wrong');fb('#m6ItemFb','그건 물건의 쓰임이에요. 자석이 있어서 생기는 편리한 점을 골라요.',false);}});}
+    else{b.classList.add('wrong');fb('#m6ItemFb','자석 때문에 생기는 편리한 점이 아니에요. 자석이 무엇을 붙이거나 끌어당기는지 생각해 봐요.',false);}});}
 $$('#m6Tabs button').forEach(b=>b.onclick=()=>show(+b.dataset.i));
 rows();show(0);
 
@@ -247,7 +247,7 @@ rows();show(0);
 
 /* 한눈에 쏙 + 생각+ */
 let bl=0,cl=0;const c5=()=>{if(bl&&cl)doneNav('s5');};
-$('#blReveal').onclick=()=>{$('#bl1').textContent='자';$('#bl2').textContent='석';fb('#blFb','자석을 이용한 물건 정리함은 철로 만든 물체에 붙여서 사용할 수 있어요. 우리는 일상생활에서 자석을 다양하게 이용해요.',true);bl=1;c5();};
+$('#blReveal').onclick=()=>{$('#bl1').textContent='자';$('#bl2').textContent='석';$('#blSum').hidden=false;fb('#blFb','자석을 이용한 물건 정리함은 철로 만든 물체에 붙여서 사용할 수 있어요. 우리는 일상생활에서 자석을 다양하게 이용해요.',true);bl=1;c5();};
 pickOne('#m6Clip','맞아요! 통 입구의 자석에 철 클립이 붙어서 클립을 쉽게 꺼낼 수 있어요.','다시 생각해 봐요.',null,()=>{cl=1;c5();});
 
 /* 형성 평가 */

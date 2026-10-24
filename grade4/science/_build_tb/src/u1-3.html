@@ -81,7 +81,7 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"극"}}]
   <p class="jua" style="font-size:1.15rem">자석에서 철로 만든 물체가 가장 많이 붙는 곳을 자석의 <span class="blank"><span id="bl1">ㄱ</span></span>(이)라고 합니다.</p>
   <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
   <div class="fb" id="blFb"></div>
-  <p class="tip">자석의 극은 각각 N극과 S극으로 나타내요.</p>
+  <p class="tip" id="blSum" hidden>자석의 극은 각각 N극과 S극으로 나타내요.</p>
 </section>
 
 <section id="s6" data-nav="형성 평가">
@@ -184,11 +184,11 @@ $$('#m3Poles .m3-card').forEach(c=>{const m=PM.find(x=>x.k===c.dataset.k);pf[m.k
     const n=PM.filter(x=>pf[x.k].size===2).length;
     if(n===PM.length){fb('#m3PoleFb','네 가지 자석의 극을 모두 찾았어요! 모양은 달라도 한 자석에 극이 두 군데 있어요. 고리 자석의 극은 앞면과 뒷면이에요.',true);$('#m3NS').hidden=false;}
     else fb('#m3PoleFb',m.n+(pf[m.k].size===2?'의 극을 모두 찾았어요!':': 극을 하나 찾았어요. 하나 더!')+` (${n}/4)`,'info');}));});
-pickOne('#m3NSPick','맞아요! 자석의 모양은 다양하지만 하나의 자석에는 항상 두 개의 극이 있고, 각각 N극과 S극으로 나타내요.','다시 생각해 봐요.','s4',()=>{
+pickOne('#m3NSPick','맞아요! 자석의 모양은 다양하지만 하나의 자석에는 항상 두 개의 극이 있고, 각각 N극과 S극으로 나타내요. (색이 칠해지지 않은 자석에 붙인 N·S 표시는 예로 붙인 것이에요.)','다시 생각해 봐요.','s4',()=>{
   $$('#m3Poles .m3-card').forEach(c=>{const m=PM.find(x=>x.k===c.dataset.k);const zs=m.z.filter(z=>z[4]);$('.lab',c).innerHTML=zs.map(z=>`<circle cx="${z[6]}" cy="${z[7]}" r="13" fill="${z[5]==='N'?'#e2573f':'#3a78c8'}"/><text x="${z[6]}" y="${z[7]+5}" text-anchor="middle" font-size="14" fill="#fff" font-family="Jua">${z[5]}</text>`).join('');});});
 
 /* 한눈에 쏙 */
-$('#blReveal').onclick=()=>{$('#bl1').textContent='극';fb('#blFb','자석에서 철로 만든 물체가 가장 많이 붙는 곳을 자석의 극이라고 해요. 자석의 극은 N극과 S극으로 나타내요.',true);doneNav('s5');};
+$('#blReveal').onclick=()=>{$('#bl1').textContent='극';$('#blSum').hidden=false;fb('#blFb','자석에서 철로 만든 물체가 가장 많이 붙는 곳을 자석의 극이라고 해요. 자석의 극은 N극과 S극으로 나타내요.',true);doneNav('s5');};
 
 /* 형성 평가 */
 seed=21;$('#m3QFig').innerHTML='<g transform="translate(200,55)"><rect x="-110" y="-16" width="110" height="32" rx="4" fill="#9aa6b0"/><rect x="0" y="-16" width="110" height="32" rx="4" fill="#b3bec7"/>'+tufts(220,32,30)+'</g>';
