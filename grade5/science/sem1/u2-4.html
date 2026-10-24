@@ -386,8 +386,8 @@ function lensRec(){const h=+$('#d4H').value,r=lensRay(lt,h),S=seen[lt];
   if(Math.abs(h)>=30){const g=ghost[lt];if(g.every(x=>Math.abs(x.h-h)>15)){const pts=r.pts.slice();pts.h=h;g.push(pts);if(g.length>5)g.shift();}}
   lens();const done=['cv','cc'].filter(k=>seen[k].mid&&seen[k].edge).length;
   const ang=Math.round(Math.atan2(r.d[1],r.d[0])/DEG);
-  const msg=Math.abs(h)<=12?'가운데를 지난 빛은 거의 꺾이지 않아요.':lt==='cv'?'가장자리를 지난 빛이 렌즈의 가운데 쪽으로 꺾여요.':'가장자리를 지난 빛이 렌즈의 바깥쪽으로 꺾여요.';
-  if(done===2){fb('#d4LensFb','두 렌즈 모두 관찰했어요. '+msg+' 아래 질문에 답해 봐요.',true);$('#d4Q3').classList.remove('d4-lock');$('#d4Lock3').hidden=true;}
+  const msg=Math.abs(h)<=12?'렌즈의 가운데를 지난 빛을 잘 봐요.':'렌즈의 가장자리를 지난 빛이 어느 쪽으로 나아가는지 잘 봐요.';
+  if(done===2){fb('#d4LensFb','두 렌즈 모두 가운데와 가장자리에 비추어 보았어요. 흐린 선은 앞에서 비춘 빛이에요. 관찰한 것을 정리해 봐요.',true);$('#d4Q3').classList.remove('d4-lock');$('#d4Lock3').hidden=true;}
   else fb('#d4LensFb',msg+' (볼록 렌즈 '+(seen.cv.mid&&seen.cv.edge?'✔':'…')+' / 오목 렌즈 '+(seen.cc.mid&&seen.cc.edge?'✔':'…')+' — 가운데와 가장자리 모두)','info');}
 $('#d4H').oninput=lens;$('#d4H').onchange=lensRec;
 $('#d4Cv').onclick=()=>{lt='cv';$('#d4Cv').classList.add('sel');$('#d4Cc').classList.remove('sel');lens();};
@@ -415,7 +415,7 @@ function tank(){const i=+$('#d4I').value*DEG,d=[Math.sin(i),Math.cos(i)],r=Math.
   $('#d4Tank').innerHTML=s;}
 tank();
 function tankRec(){const i=+$('#d4I').value;if(i<=2)triedV=true;if(i>=25)triedS=true;
-  fb('#d4TankFb',i<=2?'물 표면에 수직으로 들어간 빛은 꺾이지 않아요.':'공기에서 물로 비스듬히 들어간 빛은 물 표면에서 꺾여요.'+(ghostOn?'':' (‘곧게 갔다면?’을 눌러 비교해 봐요)'),'info');
+  fb('#d4TankFb',(i<=2?'물 표면에 수직으로 비추었어요. 빛이 어떻게 나아가는지 봐요.':'비스듬히 비추었어요. 물 표면에서 빛이 어떻게 되는지 봐요.')+(ghostOn?'':' (‘곧게 갔다면?’을 눌러 비교해 봐요)')+(triedV&&triedS?' 이제 관찰한 것을 정리해요.':''),triedV&&triedS?true:'info');
   if(triedV&&triedS){$('#d4Q4').classList.remove('d4-lock');$('#d4Lock4').hidden=true;}}
 $('#d4I').oninput=tank;$('#d4I').onchange=tankRec;
 $('#d4Spr').onclick=()=>{clearInterval(sprT);spr=1;tank();sprT=setInterval(()=>{spr=Math.max(0,spr-.02);tank();if(spr<=0)clearInterval(sprT);},60);};
