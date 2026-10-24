@@ -4,7 +4,7 @@ lessons_u*.py 를 읽어 단원별 카드(SOOP 단계·사고전략)를 만들�
 import os, re, sys, glob, importlib, html
 B = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, B)
-SRC = os.path.join(B, '..', '..', 'social', 'sem1-hong', 'index.html')
+SRC = os.path.join(B, '..', '..', '..', 'grade3', 'social', 'sem1-hong', 'index.html')  # 3학년 사회 선생님 버전 목록을 틀로 씀
 s = open(SRC, encoding='utf-8').read()
 head = s[:s.find('<body')]
 head = re.sub(r'<title>.*?</title>', '<title>4학년 1학기 과학</title>', head, flags=re.S)
@@ -15,7 +15,7 @@ SO = {'S': ('S 개념 찾기', '#E0506B'), 'O1': ('O 개념 구축', '#2F74E0'),
 RN = {'see': '보기-생각-궁금', 'sort': '분류', 'define': '우리 반 결론', 'cards': '자료 살펴보기', 'csq': '주장-근거-질문', 'venn': '같은 점·다른 점',
       'cse': '연결-확장-도전', 'iuti': '예전-지금 생각', 'task': '활동', 'check': '개념 확인', 'talk': '생각 나누기',
       'pred': '예상하기', 'lab': '실험·기록', 'pvr': '예상과 결과 비교', 'design': '실험 설계', 'pgrid': '예상 표', 'board': '우리 반 자료판', 'gcmp': '예상과 결과 비교', 'claim': '근거로 결론'}
-UNITS = [(1, '1단원 자석의 이용'), (2, '2단원 물의 상태 변화'), (3, '3단원 땅의 변화'), (4, '4단원')]  # 4단원 이름은 지도서를 읽은 뒤 채움
+UNITS = [(1, '1단원 자석의 이용'), (2, '2단원 물의 상태 변화'), (3, '3단원 땅의 변화'), (4, '4단원')]  # 4단원은 지도서(PDF 글자 추출 안 됨)를 받은 뒤 이름과 차시를 채움
 e = html.escape
 groups, btns, total = [], ['<button type="button" class="ubtn" data-u="0" aria-pressed="true">전체</button>'], 0
 for n, name in UNITS:
