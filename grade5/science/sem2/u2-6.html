@@ -368,10 +368,11 @@ const WXI={sun:{n:'맑음',bg:'linear-gradient(#3d9be0,#9ed6f7)',h:45,r:0,c:'맑
  cloud:{n:'구름 많음',bg:'linear-gradient(#7f8c99,#b3bfca)',h:62,r:0,c:'구름 많음',p:'',tip:'🌥️ 하늘이 흐려요. 일기 예보를 자주 확인해요.'},
  rain:{n:'비',bg:'linear-gradient(#4b5b6b,#7f8c99)',h:90,r:12,c:'흐림',p:'저기압의 영향으로 비가 와요',tip:'☂️ 우산을 챙기고, 길이 미끄러우니 조심해요.'},
  snow:{n:'눈',bg:'linear-gradient(#8aa0b4,#d6e2ec)',h:80,r:5,c:'흐림',p:'저기압의 영향으로 눈이 와요',tip:'⛄ 두꺼운 옷을 입고, 빙판길을 조심해요.'}};
+const TODAY=(()=>{const d=new Date();return (d.getMonth()+1)+'월 '+d.getDate()+'일 ('+'일월화수목금토'[d.getDay()]+')';})();
 function cloth(t){return t>=28?'👕 반소매 옷, 모자':t>=20?'👚 얇은 긴소매 옷':t>=10?'🧥 가벼운 겉옷':'🧣 두꺼운 외투, 목도리';}
 function phone(){const t=+$('#w6T').value,w=WXI[WX];$('#w6TT').textContent=t+' °C';
   const P=$('#w6Phone');P.style.background=w.bg;const nm=$('#w6Name').value.trim()||'우리 모둠 날씨';
-  let h=`<div class="ti"></div><div class="big">${{sun:'☀️',cloud:'☁️',rain:'🌧️',snow:'❄️'}[WX]} ${selE.has('t')?t+' °C':''}</div><div class="sub">${w.n}${selL.has('date')?' · 10월 24일 (금)':''}</div>`;
+  let h=`<div class="ti"></div><div class="big">${{sun:'☀️',cloud:'☁️',rain:'🌧️',snow:'❄️'}[WX]} ${selE.has('t')?t+' °C':''}</div><div class="sub">${w.n}${selL.has('date')?' · '+TODAY:''}</div>`;
   const wg=[];
   if(selE.has('h'))wg.push(`<b>💧 습도</b> ${w.h} %`);
   if(selE.has('r'))wg.push(`<b>🌂 강수량</b> ${w.r} mm`);

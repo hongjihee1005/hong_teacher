@@ -143,6 +143,9 @@ img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radiu
 .mxctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
 .mxctl button[disabled]{opacity:.45}
 .mxq{margin-top:8px;border:2px dashed var(--sky);border-radius:14px;padding:8px 12px}
+.mxside{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:10px;align-items:start}
+.mxside .row button{font-size:.88rem;min-height:2.2rem;padding:.15em .6em}
+@media (max-width:760px){.mxside{grid-template-columns:1fr}}
 /* 붙임딱지 */
 .stks{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
 .stks button{display:flex;align-items:center;gap:6px;font-size:.95rem;min-height:2.4rem;padding:.2em .7em;border-width:2px;border-style:dashed}
@@ -291,7 +294,7 @@ img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radiu
   <span class="stage">더 알아보기 · 분별 깔때기</span>
   <h2>분별 깔때기로 물과 기름을 분리해 봐요</h2>
   <p>꼭지를 열면 아래층의 물이 먼저 빠져나와요. <b>물이 다 빠져나가 경계면이 꼭지에 가까워지면</b> 꼭지를 잠가요.</p>
-  <div class="lab"><svg id="sep" viewBox="0 0 800 300" role="img" aria-label="스탠드에 꽂힌 분별 깔때기와 비커" style="max-height:32vh"></svg></div>
+  <div class="lab"><svg id="sep" viewBox="0 0 800 300" role="img" aria-label="스탠드에 꽂힌 분별 깔때기와 비커" style="max-height:27vh"></svg></div>
   <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="tap">🔓 꼭지 열기</button><button id="sepR">🔄 처음부터</button></div>
   <div class="fb" id="sepFb"></div>
   <p class="tip">⚠️ 유리 기구가 깨지지 않도록 조심하고, 기름이 묻은 분별 깔때기를 다룰 때 미끄러지지 않게 주의해요. 기름이 묻은 유리 기구는 씻어서 보관해요.</p>
@@ -466,22 +469,22 @@ function beaker(g,x,y,w,h,o){o=o||{};const bot=y+h;
 pickIdea('#p1','s1');
 
 /* ===== 관찰해요 ===== */
-(function(){const S=$('#bk2');let busy=false,did={a:0,b:0};
+(function(){const S=$('#bk2');let busy=false,did={a:0,b:0};window.m3lab=false;
   function draw(cl){S.innerHTML='<rect width="800" height="250" fill="#fffdf8"/><rect y="226" width="800" height="24" fill="#d9e4ea"/>';const g=el('g',{},S);
     if(cl>0)beaker(g,330,40,140,186,{water:0,oil:0});
     const mixH=150;if(cl>0){el('rect',{x:333,y:226-mixH,width:134,height:mixH-3,fill:'#e8eecf'},g);for(let i=0;i<70;i++)el('circle',{cx:338+rnd(i,1)*124,cy:226-6-rnd(i,2)*(mixH-12),r:2+rnd(i,3)*4,fill:OC,opacity:cl},g);}
     else beaker(g,330,40,140,186,{water:120,oil:30});
     beaker(g,330,40,140,186,{});
-    const t=el('text',{x:400,y:30,'text-anchor':'middle','font-size':16,'font-family':'Jua',fill:'#15313d'},g);t.textContent=cl>0?'흔드는 중…':'물과 기름의 혼합물';
-    if(cl<=0){[['기름',76+40],['물',76+110]].forEach(([s,y])=>{el('line',{x1:470,y1:y,x2:530,y2:y,stroke:'#555','stroke-width':2},g);const tt=el('text',{x:538,y:y+6,'font-size':17,'font-family':'Jua',fill:'#15313d'},g);tt.textContent=s;});}}
+    const t=el('text',{x:400,y:30,'text-anchor':'middle','font-size':16,'font-family':'Jua',fill:'#15313d'},g);t.textContent=cl>0?'흔드는 중…':'물과 기름(노란색)의 혼합물';
+    if(cl<=0&&window.m3lab){[['기름',76+40],['물',76+110]].forEach(([s,y])=>{el('line',{x1:470,y1:y,x2:530,y2:y,stroke:'#555','stroke-width':2},g);const tt=el('text',{x:538,y:y+6,'font-size':17,'font-family':'Jua',fill:'#15313d'},g);tt.textContent=s;});}}
   draw(0);
   function shake(hard){if(busy)return;busy=true;const dur=hard?4200:2200;
     tween(dur,p=>{const cl=p<.25?1:(1-(p-.25)/.75)*(hard?1:.8);S.style.transform=p<.25?`rotate(${Math.sin(p*80)*(hard?3:1.5)}deg)`:'';draw(p>=.999?0:Math.max(.02,cl));},()=>{S.style.transform='';busy=false;draw(0);
       if(hard){did.b=1;fb('#bk2Fb','세게 흔들었더니 잠깐 뿌옇게 섞인 것처럼 보였지만, 시간이 지나자 다시 두 층으로 나뉘었어요.','info');}
       else{did.a=1;fb('#bk2Fb','살살 흔들어 섞었지만, 조금 지나자 다시 두 층으로 나뉘었어요.','info');}
       $('#ask2').hidden=false;});}
-  $('#shk1').onclick=()=>shake(false);$('#shk2').onclick=()=>shake(true);})();
-pickOne('#p2','','','s2');
+  $('#shk1').onclick=()=>shake(false);$('#shk2').onclick=()=>shake(true);S.addEventListener('relabel',()=>draw(0));})();
+pickOne('#p2','','','s2',()=>{window.m3lab=true;$('#shk1').click&&0;const S=$('#bk2');S.dispatchEvent(new Event('relabel'));});
 
 /* ===== 분리 방법 ===== */
 pickOne('#p3','','','s3');

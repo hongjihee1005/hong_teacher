@@ -143,6 +143,9 @@ img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radiu
 .mxctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
 .mxctl button[disabled]{opacity:.45}
 .mxq{margin-top:8px;border:2px dashed var(--sky);border-radius:14px;padding:8px 12px}
+.mxside{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:10px;align-items:start}
+.mxside .row button{font-size:.88rem;min-height:2.2rem;padding:.15em .6em}
+@media (max-width:760px){.mxside{grid-template-columns:1fr}}
 /* 붙임딱지 */
 .stks{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
 .stks button{display:flex;align-items:center;gap:6px;font-size:.95rem;min-height:2.4rem;padding:.2em .7em;border-width:2px;border-style:dashed}
@@ -198,14 +201,15 @@ img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radiu
   <span class="stage">실험해요 1 · 「실험관찰」 8쪽</span>
   <h2>모래와 자갈을 관찰하고 모양, 색깔, 크기를 비교해요</h2>
   <p class="tip">준비물: 모래와 자갈의 혼합물, 돋보기, 눈 크기가 다른 두 종류의 체, 쟁반, 실험복, 보안경, 실험용 장갑 · 실험하기 전에 모래와 자갈을 섞어 혼합물을 만들어요.</p>
-  <div class="lab"><svg id="obs" viewBox="0 0 800 230" role="img" aria-label="쟁반 위 모래와 자갈의 혼합물과 돋보기로 본 모습" style="max-height:22vh"></svg></div>
-  <div class="row" style="margin-top:6px" data-glue="1"><button id="lkS">🔍 돋보기로 모래 보기</button><button id="lkG">🔍 돋보기로 자갈 보기</button></div>
-  <table class="rtable m2obs" data-glue="1" style="margin-top:6px">
+  <div class="mxside">
+  <div class="lab"><svg id="obs" viewBox="0 0 800 230" role="img" aria-label="쟁반 위 모래와 자갈의 혼합물과 돋보기로 본 모습"></svg></div>
+  <div><div class="row"><button id="lkS">🔍 돋보기로 모래 보기</button><button id="lkG">🔍 돋보기로 자갈 보기</button></div>
+  <table class="rtable m2obs" style="margin-top:6px">
     <tr><th style="width:22%">구분</th><th>모래</th><th>자갈</th></tr>
     <tr><th>모양</th><td id="oS1">?</td><td id="oG1">?</td></tr>
     <tr><th>색깔</th><td id="oS2">?</td><td id="oG2">?</td></tr>
     <tr><th>크기</th><td id="oS3">자갈보다 <span class="m2c" data-w="s"><button data-v="1">작아요</button><button data-v="0">커요</button></span></td><td id="oG3">모래보다 <span class="m2c" data-w="g"><button data-v="0">작아요</button><button data-v="1">커요</button></span></td></tr>
-  </table>
+  </table></div></div>
   <div class="fb" id="obsFb"></div>
 </section>
 
@@ -243,7 +247,7 @@ img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radiu
     <button data-a="0" data-m="눈이 자갈 알갱이보다 커서 모래와 자갈이 모두 빠져나가요. 분리되지 않아요."><svg viewBox="0 0 160 100" aria-hidden="true" id="sv3"></svg>눈이 아주 큰 체</button>
   </div>
   <div class="fb"></div>
-  <div class="m2ineq" id="ineq" data-glue="1"><span>모래 알갱이의 크기</span>＜<span>체의 눈 크기</span>＜<span>자갈 알갱이의 크기</span></div>
+  <div class="m2ineq" id="ineq" data-glue="1" hidden><span>모래 알갱이의 크기</span>＜<span>체의 눈 크기</span>＜<span>자갈 알갱이의 크기</span></div>
 </section>
 
 <section id="s5" data-nav="체로 분리하기">
@@ -490,7 +494,7 @@ function sieve(g,x,y,w,hole){el('rect',{x:x-6,y:y-6,width:w+12,height:w*.55+12,r
   el('rect',{x,y,width:w,height:w*.55,fill:'#fff'},g);const step=hole+3;for(let a=x;a<=x+w;a+=step)el('line',{x1:a,y1:y,x2:a,y2:y+w*.55,stroke:'#59636e','stroke-width':1.6},g);
   for(let b=y;b<=y+w*.55;b+=step)el('line',{x1:x,y1:b,x2:x+w,y2:b,stroke:'#59636e','stroke-width':1.6},g);}
 [['#sv1',2],['#sv2',8],['#sv3',26]].forEach(([id,h])=>{const g=$(id);el('rect',{width:160,height:100,fill:'#fffdf8'},g);sieve(g,20,14,120,h);});
-const s4=need('s4',2);pickOne('#p4a','','',null,s4('k9'));pickOne('#p4b','','',null,()=>{$$('#ineq span').forEach(s=>s.classList.add('on'));s4('k8')();});
+const s4=need('s4',2);pickOne('#p4a','','',null,s4('k9'));pickOne('#p4b','','',null,()=>{$('#ineq').hidden=false;$$('#ineq span').forEach(s=>s.classList.add('on'));s4('k8')();});
 
 /* ===== 체로 분리하기 ===== */
 (function(){const S=$('#sv');S.innerHTML='<rect width="800" height="300" fill="#fffdf8"/><rect x="200" y="250" width="400" height="26" rx="8" fill="#9fb6c2" stroke="#59636e" stroke-width="3"/><text x="400" y="296" text-anchor="middle" font-size="15" font-family="Jua" fill="#33414a">쟁반</text>'+
