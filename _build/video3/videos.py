@@ -2,11 +2,12 @@
 
 목록(화·단원·차시·제목)은 노션 '수학 원리 돋보기 (3학년 개념 설명 영상) > 영상 목록'에서 옮겼습니다(2026-10-24).
 유튜브에 올린 영상은 LINKS에 '화 코드': '주소'를 넣으세요(예: '2-2-a': 'https://youtu.be/xxxxxxxxxxx').
-주소가 없는 영상은 메뉴에 '곧 올라와요'로 나옵니다. 재생목록 주소가 있으면 PLAYLIST에.
+주소가 없는 영상은 채널 안 검색(CHANNEL/search?query=제목)으로 이어집니다 — 유튜브 제목이 이 목록과 같다고 선생님이 확인(2026-10-24).
 고친 뒤: python3 _build/video3/build.py
 """
 
-PLAYLIST = ''   # 3학년 전체 재생목록 주소(있으면 맨 위 카드)
+PLAYLIST = 'https://www.youtube.com/@hongjihee1005/playlists'   # 맨 위 '재생목록 전체 보기' 카드
+CHANNEL = 'https://www.youtube.com/@hongjihee1005'   # 주소가 없는 영상은 이 채널 안에서 제목으로 찾기
 
 LINKS = {
     # '1화': 'https://youtu.be/...',
