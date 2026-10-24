@@ -373,7 +373,7 @@ const s4=need('s4',2);pickOne('#p4a','','',null,s4('k9'));pickOne('#p4b','','',n
     el('rect',{x:228,y:62,width:344,height:12,rx:5,fill:'#9aa3ad',stroke:'#59636e','stroke-width':3},g);
     const t=el('text',{x:620,y:110,'font-size':15,'font-family':'Jua',fill:'#33414a'},SB);t.textContent='체(눈이 중간인 체)';
     P.innerHTML='';if(st<1)return;const pg=el('g',{transform:`translate(${off} 0)`},P);
-    const lim=shake/3;sand.forEach((s,i)=>{if(s.fall<lim){el('circle',{cx:s.x+(rnd(i,6)-.5)*40,cy:246-rnd(i,7)*(10+lim*10),r:s.r,fill:s.c},P);}else el('circle',{cx:s.x,cy:128+rnd(i,8)*14,r:s.r,fill:s.c},pg);});
+    const lim=shake/3;sand.forEach((s,i)=>{if(s.fall<lim){el('circle',{cx:s.x+(rnd(i,6)-.5)*40,cy:247-rnd(i,7)*(3+lim*9),r:s.r,fill:s.c},P);}else el('circle',{cx:s.x,cy:128+rnd(i,8)*14,r:s.r,fill:s.c},pg);});
     grav.forEach(q=>stone(pg,q.x,q.y,q.r,q.c,q.k));}
   draw();
   steps('#ctl5',[()=>{const C=$('#cup');tween(900,p=>{C.innerHTML='';const x=lerp(120,230,p),y=lerp(40,60,p);el('path',{d:`M${x} ${y} h70 l-6 50 h-58z`,fill:'#d9e4ea',stroke:'#59636e','stroke-width':3,transform:`rotate(${lerp(0,55,p)} ${x+35} ${y+25})`},C);},()=>{C.innerHTML='';st=1;draw();});
@@ -425,7 +425,7 @@ const s10=need('s10',2);
 quiz('#qz10',[{q:'1. 모래와 자갈에 관한 설명으로 옳지 <b>않은</b> 것은?',o:['자갈 알갱이는 둥근 모양, 세모 모양 등 여러 가지이다.','모래 알갱이의 색은 갈색, 노란색 등 여러 가지이다.','모래는 자갈보다 알갱이의 크기가 크다.','자갈 알갱이의 색은 갈색, 회색 등 여러 가지이다.'],a:2,e:'모래는 자갈보다 알갱이의 크기가 작아요.',h:'모래와 자갈을 관찰한 결과를 떠올려 봐요.'},
   {q:'2. 모래와 자갈의 혼합물을 분리할 때 사용할 수 <b>있는</b> 체는?',o:['㉠ 눈의 크기가 자갈보다 큰 체','㉡ 눈의 크기가 모래보다 작은 체','㉢ 눈의 크기가 모래보다 크고 자갈보다 작은 체'],a:2,e:'㉠은 모래와 자갈이 모두 빠져나가고, ㉡은 모두 체에 남아 분리할 수 없어요.',h:'모래 하나만 체를 빠져나가야 분리할 수 있어요.'}],s10('k2'));
 $('#wr10B').onclick=()=>{const t=$('#wr10').value.trim();if(!t){fb('#wr10Fb','먼저 답을 써 보세요.',false);return;}
-  const a=/크기/.test(t),b=/모래.*(크|보다 큰)/.test(t)&&/자갈.*작/.test(t);
+  const a=/크기/.test(t),b=/모래[^.,/]*?보다\s*(크|큰)/.test(t)&&/자갈[^.,/]*?보다\s*(작|작은)/.test(t);
   if(a&&b){fb('#wr10Fb','잘 썼어요! 예시 답: ⑴ 모래와 자갈의 알갱이 크기 차이를 이용한다. ⑵ 눈 크기가 모래 알갱이보다 크고 자갈 알갱이보다 작은 체를 사용한다.',true);if(!$('#wr10B').dataset.ok){$('#wr10B').dataset.ok=1;s10('k1')();}}
   else if(a)fb('#wr10Fb','이용할 성질은 잘 썼어요. 체의 눈 크기를 모래, 자갈과 비교해서 써 봐요. (모래보다 ~, 자갈보다 ~)','info');
   else fb('#wr10Fb','모래와 자갈의 가장 큰 차이는 무엇이었나요? 그 차이와 체의 눈 크기를 함께 써 봐요.',false);};
