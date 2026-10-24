@@ -36,6 +36,7 @@ ICON = {
     'cloud': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><circle cx="58" cy="26" r="12" fill="#ffd23f" stroke="#fff" stroke-width="3"/><path d="M20 62 a12 12 0 0 1 4 -23 a16 16 0 0 1 30 -4 a12 12 0 0 1 12 27z" fill="#eaf3fb" stroke="#fff" stroke-width="3"/></svg>',
     'flame': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M43 10 C52 26 66 34 62 54 a19 19 0 0 1 -38 0 C24 42 34 36 34 24 C40 30 42 34 43 10z" fill="#e2573f" stroke="#fff" stroke-width="3"/><path d="M43 44 c6 6 9 10 6 16 a7 7 0 0 1 -12 0 c-2 -6 3 -10 6 -16z" fill="#ffd23f"/></svg>',
     'bolt': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M48 8 L20 48 h20 l-6 30 L66 34 h-20z" fill="#ffd23f" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg>',
+    'car': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M12 52 l6 -16 h40 l14 16 v12 h-60z" fill="#e2573f" stroke="#fff" stroke-width="3"/><rect x="24" y="40" width="14" height="10" fill="#cfe6f2"/><rect x="42" y="40" width="14" height="10" fill="#cfe6f2"/><circle cx="26" cy="66" r="7" fill="#333" stroke="#fff" stroke-width="3"/><circle cx="60" cy="66" r="7" fill="#333" stroke="#fff" stroke-width="3"/></svg>',
 }
 
 HELPERS = r"""
