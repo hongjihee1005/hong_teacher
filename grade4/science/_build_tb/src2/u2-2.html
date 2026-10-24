@@ -198,7 +198,7 @@ function sorter(chips,bins,out,items,lbl,done){let cur=null,n=0;
   $$(bins+' .k-bin').forEach(bin=>bin.onclick=()=>{if(!cur)return;const nm=cur.textContent,w=cur.dataset.w;
     if(cur.dataset.b.split(' ').includes(bin.dataset.b)){bin.insertAdjacentHTML('beforeend','<span>'+nm+'</span>');cur.classList.add('used');cur.classList.remove('sel');n++;
       fb(out,(n===items.length?'🎉 모두 나누었어요! ':'맞아요! ')+(w||'')+(n<items.length?` (${n}/${items.length})`:''),true);cur=null;hot(false);if(n===items.length&&done)done();return;}
-    fb(out,`‘${nm}’은(는) ‘${lbl[bin.dataset.b]}’에 들어가지 않아요. `+(w||'다시 생각해 봐요.'),false);cur=null;hot(false);});}
+    fb(out,`‘${nm}’${jp(nm,'은는')} ‘${lbl[bin.dataset.b]}’에 들어가지 않아요. `+(w||'다시 생각해 봐요.'),false);cur=null;hot(false);});}
 /* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
 function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
   const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
@@ -212,6 +212,8 @@ function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
 /* 그림 속 누르기(키보드도) */
 function tap(el,f){el.classList.add('hit');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2, seg=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+const relayout=()=>setTimeout(()=>window.dispatchEvent(new Event('resize')),40);
+const jp=(w,ab)=>{w=String(w).replace(/\(.*\)$/,'');const c=w.charCodeAt(w.length-1)-44032;return (c>=0&&c<11172&&c%28)?ab[0]:ab[1];};
 
 /* 생물 그림(직접 그림): ART.이름 → 가운데가 (0,0)인 약 90×70 크기 SVG 조각 */
 const ART=(function(){
@@ -294,7 +296,7 @@ function art(nm,x,y,s,fs){s=s||1;const lab=fs===0?'':`<text x="${x}" y="${y+40*s
 
 const CARD=[['괭이밥','p','햇빛 등을 이용해 스스로 양분을 만들어요.'],['개나리','p','햇빛 등을 이용해 스스로 양분을 만들어요.'],['갈참나무','p','햇빛 등을 이용해 스스로 양분을 만들어요.'],
   ['토끼','c','토끼풀 같은 풀을 먹고 살아요.'],['개구리','c','애벌레, 메뚜기 같은 작은 동물을 먹고 살아요.'],['뱀','c','개구리 같은 다른 동물을 잡아먹고 살아요.'],
-  ['달팽이','c','식물의 잎 같은 다른 생물을 먹고 살아요.'],['박새','c','애벌레 같은 곤충과 씨앗, 열매를 먹고 살아요.'],['잠자리','c','모기 같은 작은 곤충을 잡아먹고 살아요.'],
+  ['달팽이','c','식물의 잎 같은 다른 생물을 먹고 살아요.'],['박새','c','애벌레 같은 곤충과 씨앗, 열매를 먹고 살아요.'],['잠자리','c','작은 곤충을 잡아먹고 살아요.'],
   ['버섯','d','낙엽이나 죽은 나무 같은 죽은 생물체를 분해해 양분을 얻어요.'],['곰팡이','d','죽은 생물체나 배출물을 분해해 양분을 얻어요.'],['세균','d','(일부 세균은) 죽은 생물체나 배출물을 분해해 양분을 얻어요.']];
 const cardSvg=nm=>`<svg viewBox="-50 -48 100 92" aria-hidden="true">${ART[nm]}</svg>`;
 

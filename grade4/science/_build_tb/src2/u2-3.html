@@ -82,6 +82,7 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"먹","bl2":"이","bl3":"그","bl4":"물
   <p>카드를 눌러 뒷면을 봐요. (9장 모두)</p>
   <div class="e3-cards" id="e3Cards"></div>
   <div class="fb" id="e3CardFb"></div>
+  <p class="tip">※ 「실험관찰」의 생물 카드를 뜯을 때는 손을 다치지 않게 조심해요. 먹이 관계를 모르는 생물은 스마트 기기로 검색해 확인할 수 있어요.</p>
 </section>
 
 <section id="s3" data-nav="모형 만들기 놀이">
@@ -210,7 +211,7 @@ function sorter(chips,bins,out,items,lbl,done){let cur=null,n=0;
   $$(bins+' .k-bin').forEach(bin=>bin.onclick=()=>{if(!cur)return;const nm=cur.textContent,w=cur.dataset.w;
     if(cur.dataset.b.split(' ').includes(bin.dataset.b)){bin.insertAdjacentHTML('beforeend','<span>'+nm+'</span>');cur.classList.add('used');cur.classList.remove('sel');n++;
       fb(out,(n===items.length?'🎉 모두 나누었어요! ':'맞아요! ')+(w||'')+(n<items.length?` (${n}/${items.length})`:''),true);cur=null;hot(false);if(n===items.length&&done)done();return;}
-    fb(out,`‘${nm}’은(는) ‘${lbl[bin.dataset.b]}’에 들어가지 않아요. `+(w||'다시 생각해 봐요.'),false);cur=null;hot(false);});}
+    fb(out,`‘${nm}’${jp(nm,'은는')} ‘${lbl[bin.dataset.b]}’에 들어가지 않아요. `+(w||'다시 생각해 봐요.'),false);cur=null;hot(false);});}
 /* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
 function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
   const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
@@ -224,6 +225,8 @@ function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
 /* 그림 속 누르기(키보드도) */
 function tap(el,f){el.classList.add('hit');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2, seg=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+const relayout=()=>setTimeout(()=>window.dispatchEvent(new Event('resize')),40);
+const jp=(w,ab)=>{w=String(w).replace(/\(.*\)$/,'');const c=w.charCodeAt(w.length-1)-44032;return (c>=0&&c<11172&&c%28)?ab[0]:ab[1];};
 
 /* 생물 그림(직접 그림): ART.이름 → 가운데가 (0,0)인 약 90×70 크기 SVG 조각 */
 const ART=(function(){
@@ -337,7 +340,7 @@ sorter('#e3In','#e3InBins','#e3InFb',[['애벌레','eat'],['메뚜기','eat'],['
 /* ---------- s2 생물 카드 ---------- */
 (function(){const names=Object.keys(POS).reverse();const seen=new Set();
   const back=nm=>{const eat=REL.filter(r=>r[1]===nm&&MAIN.includes(r)).map(r=>r[0]),by=REL.filter(r=>r[0]===nm&&MAIN.includes(r)).map(r=>r[1]);
-    return `<b>${nm}</b><small>${eat.length?'🍽️ 먹는 것: '+eat.join(', '):'🌱 스스로 양분을 만들어요'}<br>${by.length?'⚠️ 먹히는 상대: '+by.join(', '):'⚠️ 이 카드들 중에는 먹는 생물이 없어요'}</small>`;};
+    return `<b>${nm}</b><small>${eat.length?'🍽️ 먹는 것: '+eat.join(', '):'🌱 스스로 양분을 만들어요'}<br>${by.length?'⚠️ 나를 먹는 생물: '+by.join(', '):'⚠️ 이 카드들 중에는 나를 먹는 생물이 없어요'}</small>`;};
   const front=nm=>`<svg viewBox="-50 -48 100 92" aria-hidden="true">${ART[nm]}</svg><b>${nm}</b>`;
   $('#e3Cards').innerHTML=names.map(n=>`<button class="e3-card" data-n="${n}">${front(n)}</button>`).join('');
   $$('#e3Cards .e3-card').forEach(b=>b.onclick=()=>{const n=b.dataset.n,bk=!b.classList.contains('back');b.classList.toggle('back',bk);b.innerHTML=bk?back(n):front(n);
@@ -358,26 +361,26 @@ function render(){const P={};G.placed.forEach(n=>P[n]=POS[n]);
   $('#e3Hand').innerHTML=G.me.map(n=>`<button data-n="${n}" ${G.turn!=='me'||G.newCard?'disabled':''}><svg viewBox="-50 -48 100 92" aria-hidden="true">${ART[n]}</svg>${n}</button>`).join('')||'<p class="tip">내 카드를 모두 냈어요.</p>';
   $$('#e3Hand button').forEach(b=>b.onclick=()=>playCard(b.dataset.n));
   const t=$('#e3Turn');t.classList.toggle('me',G.turn==='me');
-  t.textContent=G.done?'🎉 놀이 끝! 먹이 관계 모형이 완성되었어요.':G.turn==='me'?(G.newCard?`내 차례: ‘${G.newCard}’과(와) 먹이 관계에 있는 생물을 화살표로 이어요. (먹이 → 먹는 생물 순서로 두 카드를 눌러요)`:'내 차례: 낼 카드를 골라요.'):'친구 차례…';
+  t.textContent=G.done?'🎉 놀이 끝! 먹이 관계 모형이 완성되었어요.':G.turn==='me'?(G.newCard?`내 차례: ‘${G.newCard}’${jp(G.newCard,'과와')} 먹이 관계에 있는 생물을 화살표로 이어요. (먹이 → 먹는 생물 순서로 두 카드를 눌러요)`:'내 차례: 낼 카드를 골라요.'):'친구 차례…';
   $('#e3End').disabled=!(G.turn==='me'&&G.newCard&&G.newArrows>0&&!G.done);
   $('#e3Pass').hidden=!(G.turn==='me'&&!G.newCard&&!G.done&&G.me.length&&!G.me.some(canPlace));
   $('#e3FrInfo').textContent=`친구 카드: ${G.fr.length}장 · 화살표: ${G.arrows.length}개`;}
 function playCard(n){if(G.turn!=='me'||G.newCard||G.check)return;
-  if(!canPlace(n)){fb('#e3Fb',`‘${n}’은(는) 아직 판에 있는 생물과 먹이 관계가 없어요. 다른 카드를 골라요.`,false);return;}
+  if(!canPlace(n)){fb('#e3Fb',`‘${n}’${jp(n,'은는')} 아직 판에 있는 생물과 먹이 관계가 없어요. 다른 카드를 골라요.`,false);return;}
   G.me=G.me.filter(x=>x!==n);G.placed.add(n);G.newCard=n;G.newArrows=0;G.from=null;
   fb('#e3Fb',`‘${n}’ 카드를 냈어요! 이제 화살표를 그려요. 먼저 먹이가 되는 생물, 다음에 먹는 생물을 눌러요.`,'info');render();}
 function nodeTap(n){if(G.check)return;
   if(G.turn!=='me'||G.done){return;}
   if(!G.newCard){fb('#e3Fb','먼저 내 카드에서 한 장을 내요.','info');return;}
-  if(!G.from){G.from=n;render();fb('#e3Fb',`‘${n}’을(를) 골랐어요. 이제 ‘${n}’을(를) 먹는 생물을 눌러요.`,'info');return;}
+  if(!G.from){G.from=n;render();fb('#e3Fb',`‘${n}’${jp(n,'을를')} 골랐어요. 이제 ‘${n}’${jp(n,'을를')} 먹는 생물을 눌러요.`,'info');return;}
   const a=G.from,b=n;G.from=null;
   if(a===b){render();return;}
   if(drawn(a,b)){render();fb('#e3Fb','이미 그린 화살표예요.','info');return;}
   if(hasRel(a,b)){G.arrows.push([a,b]);if(a===G.newCard||b===G.newCard)G.newArrows++;render();
-    fb('#e3Fb',`맞아요! ${b}은(는) ${a}을(를) 먹어요. (${a} → ${b})`+(G.newArrows?' 더 그려도 되고, ‘내 차례 마치기’를 눌러도 돼요.':''),true);return;}
+    fb('#e3Fb',`맞아요! ${b}${jp(b,'은는')} ${a}${jp(a,'을를')} 먹어요. (${a} → ${b})`+(G.newArrows?' 더 그려도 되고, ‘내 차례 마치기’를 눌러도 돼요.':''),true);return;}
   render();
-  if(hasRel(b,a))fb('#e3Fb',`화살표 방향이 반대예요. ${a}이(가) ${b}을(를) 먹으므로 먹이가 되는 ‘${b}’부터 눌러요. 화살표는 먹이 → 먹는 생물 쪽으로 그려요.`,false);
-  else fb('#e3Fb',`${a}와(과) ${b}은(는) 이 카드 놀이에서 먹이 관계가 아니에요. 카드 뒷면을 떠올려 봐요.`,false);}
+  if(hasRel(b,a))fb('#e3Fb',`화살표 방향이 반대예요. ${a}${jp(a,'이가')} ${b}${jp(b,'을를')} 먹으므로 먹이가 되는 ‘${b}’부터 눌러요. 화살표는 먹이 → 먹는 생물 쪽으로 그려요.`,false);
+  else fb('#e3Fb',`${a}${jp(a,'과와')} ${b}${jp(b,'은는')} 이 카드 놀이에서 먹이 관계가 아니에요. 카드 뒷면을 떠올려 봐요.`,false);}
 $('#e3End').onclick=()=>{G.newCard=null;G.from=null;G.turn='fr';render();afterTurn();};
 $('#e3Pass').onclick=()=>{fb('#e3Fb','낼 수 있는 카드가 없어서 친구에게 순서가 넘어가요.','info');G.turn='fr';render();afterTurn();};
 function afterTurn(){if(!G.me.length&&!G.fr.length){finish();return;}setTimeout(friend,700);}

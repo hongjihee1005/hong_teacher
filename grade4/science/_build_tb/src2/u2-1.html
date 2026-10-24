@@ -92,7 +92,7 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"생","bl2":"물","bl3":"비","bl4":"생
   <div class="e1-mode"><span class="jua">표시 고르기:</span><button id="e1O">◯ 생물 요소</button><button id="e1T">△ 비생물 요소</button><span class="e1-prog" id="e1Prog"></span></div>
   <svg id="e1Scene" class="scene" viewBox="0 0 800 400" role="img" aria-label="생태계 그림"></svg>
   <div class="fb" id="e1Fb"></div>
-  <p class="tip">‘자라는가?’, ‘번식하는가?’처럼 생물인지 아닌지 생각하며 분류해요. 🔍 곰팡이와 반달말은 크게 확대한 모습이에요.</p>
+  <p class="tip">‘자라는가?’, ‘번식하는가?’처럼 생물인지 아닌지 생각하며 분류해요. 🔍 곰팡이와 반달말은 크게 확대한 모습이에요. ⚠️ 스마트 기기로 더 조사할 때는 유해 사이트에 접속하지 않아요.</p>
 </section>
 
 <section id="s4" data-nav="붙임딱지">
@@ -184,7 +184,7 @@ function sorter(chips,bins,out,items,lbl,done){let cur=null,n=0;
   $$(bins+' .k-bin').forEach(bin=>bin.onclick=()=>{if(!cur)return;const nm=cur.textContent,w=cur.dataset.w;
     if(cur.dataset.b.split(' ').includes(bin.dataset.b)){bin.insertAdjacentHTML('beforeend','<span>'+nm+'</span>');cur.classList.add('used');cur.classList.remove('sel');n++;
       fb(out,(n===items.length?'🎉 모두 나누었어요! ':'맞아요! ')+(w||'')+(n<items.length?` (${n}/${items.length})`:''),true);cur=null;hot(false);if(n===items.length&&done)done();return;}
-    fb(out,`‘${nm}’은(는) ‘${lbl[bin.dataset.b]}’에 들어가지 않아요. `+(w||'다시 생각해 봐요.'),false);cur=null;hot(false);});}
+    fb(out,`‘${nm}’${jp(nm,'은는')} ‘${lbl[bin.dataset.b]}’에 들어가지 않아요. `+(w||'다시 생각해 봐요.'),false);cur=null;hot(false);});}
 /* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
 function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
   const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
@@ -198,6 +198,8 @@ function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
 /* 그림 속 누르기(키보드도) */
 function tap(el,f){el.classList.add('hit');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2, seg=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+const relayout=()=>setTimeout(()=>window.dispatchEvent(new Event('resize')),40);
+const jp=(w,ab)=>{w=String(w).replace(/\(.*\)$/,'');const c=w.charCodeAt(w.length-1)-44032;return (c>=0&&c<11172&&c%28)?ab[0]:ab[1];};
 
 /* 생물 그림(직접 그림): ART.이름 → 가운데가 (0,0)인 약 90×70 크기 SVG 조각 */
 const ART=(function(){
@@ -299,7 +301,7 @@ const lbl=(x,y,t,an)=>`<text x="${x}" y="${y}" text-anchor="${an||'middle'}" fon
     $('#e1BedTags').insertAdjacentHTML('beforeend',`<g><rect x="${t[2]-36}" y="${t[3]-t[4]-24}" width="72" height="24" rx="12" fill="#16804a"/><text x="${t[2]}" y="${t[3]-t[4]-6}" text-anchor="middle" font-family="Jua" font-size="16" fill="#fff">${t[0]}</text></g>`);
     $('#e1Found').insertAdjacentHTML('beforeend',`<span>${t[0]}</span>`);
     if(got.size>=8){fb('#e1BedFb','잘 찾았어요! 화단에는 토끼풀·개미·참새처럼 살아 있는 것도 있고, 돌·흙·햇빛처럼 살아 있지 않은 것도 있어요.'+(got.size<IT.length?` (더 찾아도 돼요: ${got.size}/${IT.length})`:''),true);doneNav('s1');}
-    else fb('#e1BedFb',`‘${t[0]}’을(를) 찾았어요! (${got.size}/8)`,'info');}));
+    else fb('#e1BedFb',`‘${t[0]}’${jp(t[0],'을를')} 찾았어요! (${got.size}/8)`,'info');}));
   $('#e1Log').innerHTML=art('지렁이',120,108,.45,0)+art('개미',200,100,.35,0)+art('버섯',240,70,.4,0);})();
 
 /* ---------- s2 ---------- */
@@ -334,11 +336,11 @@ function prog(){const E=ECO[eco],M=MARK[eco];$('#e1Prog').textContent=`${E.nm} �
   $$('#e1Tabs button').forEach(b=>b.classList.toggle('ok',!!(MARK[b.dataset.e]&&MARK[b.dataset.e].size===ECO[b.dataset.e].it.length)));}
 function markIt(i){const E=ECO[eco],M=MARK[eco],t=E.it[i];if(M.has(i))return;
   if(!mode){fb('#e1Fb','먼저 위에서 ◯ 생물 요소 또는 △ 비생물 요소를 골라요.','info');return;}
-  if(mode!==t[1]){fb('#e1Fb',t[1]==='b'?`‘${t[0]}’은(는) 살아 있는 생물이에요. 생물 요소(◯)예요.`:`‘${t[0]}’은(는) 살아 있지 않아요. 비생물 요소(△)예요.`,false);return;}
+  if(mode!==t[1]){fb('#e1Fb',t[1]==='b'?`‘${t[0]}’${jp(t[0],'은는')} 살아 있는 생물이에요. 생물 요소(◯)예요.`:`‘${t[0]}’${jp(t[0],'은는')} 살아 있지 않아요. 비생물 요소(△)예요.`,false);return;}
   M.add(i);drawEco();fillTbl();
   if(M.size===E.it.length){const all=Object.keys(ECO).every(e=>MARK[e]&&MARK[e].size===ECO[e].it.length);
     fb('#e1Fb',all?'🎉 숲, 강, 바다 생태계를 모두 분류했어요! 세 생태계 모두 햇빛, 공기, 흙(강과 바다는 물도) 같은 비생물 요소와 여러 생물 요소로 이루어져 있어요.':`${E.nm} 생태계를 모두 분류했어요! 다른 생태계도 눌러 봐요.`,true);if(all)doneNav('s3');}
-  else fb('#e1Fb',`맞아요! ‘${t[0]}’은(는) ${t[1]==='b'?'생물 요소':'비생물 요소'}예요.`,true);}
+  else fb('#e1Fb',`맞아요! ‘${t[0]}’${jp(t[0],'은는')} ${t[1]==='b'?'생물 요소':'비생물 요소'}예요.`,true);}
 $$('#e1Tabs button').forEach(b=>b.onclick=()=>{eco=b.dataset.e;$$('#e1Tabs button').forEach(x=>x.classList.toggle('on',x===b));fb('#e1Fb','','info');drawEco();});
 $('#e1O').onclick=()=>{mode='b';$('#e1O').classList.add('on');$('#e1T').classList.remove('on');};
 $('#e1T').onclick=()=>{mode='a';$('#e1T').classList.add('on');$('#e1O').classList.remove('on');};

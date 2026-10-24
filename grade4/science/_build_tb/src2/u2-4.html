@@ -83,7 +83,7 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"토","bl2":"양"}}]
 <section id="s3" data-nav="조사해요">
   <span class="stage">조사해요 · 「과학」 51쪽 · 「실험관찰」 26쪽</span>
   <h2>환경오염의 사례와 원인, 생태계에 미치는 영향을 조사해요</h2>
-  <p>1. 우리 모둠이 조사할 환경오염을 골라요. (다른 것도 해 볼 수 있어요)</p>
+  <p>1. 우리 모둠이 조사할 환경오염을 골라요. (다른 것도 해 볼 수 있어요) <span class="tip">⚠️ 스마트 기기로 조사할 때는 수업과 관련 없는 내용을 검색하지 않아요.</span></p>
   <div class="e4-pick3" id="e4Kind">
     <button data-k="air">🌫️<b>대기오염</b></button><button data-k="water">💧<b>수질오염</b></button><button data-k="soil">🌱<b>토양오염</b></button>
   </div>
@@ -200,7 +200,7 @@ function sorter(chips,bins,out,items,lbl,done){let cur=null,n=0;
   $$(bins+' .k-bin').forEach(bin=>bin.onclick=()=>{if(!cur)return;const nm=cur.textContent,w=cur.dataset.w;
     if(cur.dataset.b.split(' ').includes(bin.dataset.b)){bin.insertAdjacentHTML('beforeend','<span>'+nm+'</span>');cur.classList.add('used');cur.classList.remove('sel');n++;
       fb(out,(n===items.length?'🎉 모두 나누었어요! ':'맞아요! ')+(w||'')+(n<items.length?` (${n}/${items.length})`:''),true);cur=null;hot(false);if(n===items.length&&done)done();return;}
-    fb(out,`‘${nm}’은(는) ‘${lbl[bin.dataset.b]}’에 들어가지 않아요. `+(w||'다시 생각해 봐요.'),false);cur=null;hot(false);});}
+    fb(out,`‘${nm}’${jp(nm,'은는')} ‘${lbl[bin.dataset.b]}’에 들어가지 않아요. `+(w||'다시 생각해 봐요.'),false);cur=null;hot(false);});}
 /* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
 function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
   const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
@@ -215,6 +215,7 @@ function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
 function tap(el,f){el.classList.add('hit');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
 const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2, seg=(t,a,b)=>clamp((t-a)/(b-a),0,1);
 const relayout=()=>setTimeout(()=>window.dispatchEvent(new Event('resize')),40);
+const jp=(w,ab)=>{w=String(w).replace(/\(.*\)$/,'');const c=w.charCodeAt(w.length-1)-44032;return (c>=0&&c<11172&&c%28)?ab[0]:ab[1];};
 
 /* ---------- s1 기름 유출 영상 ---------- */
 (function(){const S=$('#e4Oil');
@@ -250,7 +251,7 @@ multi('#e4OilQ',3,'s2','맞아요! 기름 막이 햇빛을 막아 바닷속 식�
     $('#e4Facts').innerHTML=shuffle(F[k].map(f=>[f[0],f[1],'o']).concat(extra)).map(f=>`<button data-s="${f[0]}" data-o="${f[2]}">${f[1]}</button>`).join('');
     $$('#e4Facts button').forEach(b=>b.onclick=()=>{if(b.dataset.o==='x'){b.classList.add('wrong');fb('#e4WorkFb',`이 카드는 ${N[kind]}에 관한 자료가 아니에요.`,false);return;}
       $$('#e4Facts button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b;$$('#s3 td.slot').forEach(t=>t.classList.toggle('hot',!t.classList.contains('fill')));});
-    relayout();fb('#e4WorkFb',`${N[k]}을(를) 골랐어요. 모둠원과 역할을 나누어 조사한다고 생각하며 자료 카드를 표에 정리해요. 📚 조사한 자료를 사용할 때는 출처를 밝혀요.`,'info');}
+    relayout();fb('#e4WorkFb',`${N[k]}${jp(N[k],'을를')} 골랐어요. 모둠원과 역할을 나누어 조사한다고 생각하며 자료 카드를 표에 정리해요. 📚 조사한 자료를 사용할 때는 출처를 밝혀요.`,'info');}
   $$('#e4Kind button').forEach(b=>b.onclick=()=>setup(b.dataset.k));
   $$('#s3 td.slot').forEach(td=>td.onclick=()=>{if(!cur||td.classList.contains('fill'))return;
     if(td.dataset.s===cur.dataset.s){td.textContent=cur.textContent;td.classList.add('fill');cur.classList.add('used');cur.classList.remove('sel');cur=null;n++;$$('#s3 td.slot').forEach(t=>t.classList.remove('hot'));
@@ -280,7 +281,8 @@ sorter('#e4Eff','#e4EffBins','#e4EffFb',[['동물이 숨쉬기 어려워지거�
   const draw=()=>{$('#e4Lab').innerHTML='<rect width="420" height="240" fill="#fffaf0"/>'+dish(108,'물',W[day],'#e9f5fb')+dish(312,'합성 세제 용액',D[day],'#eaf2d8');$('#e4DayT').textContent=day+'일째';};
   $$('#e4Steps button').forEach(b=>b.onclick=()=>{const k=+b.dataset.k;if(k<=step)return;if(k!==step+1){fb($('#e4LabQ').nextElementSibling,'실험 순서를 다시 생각해 봐요.',false);return;}
     step=k;b.classList.add('done');if(step===3){$('#e4Day').disabled=false;}draw();});
-  $('#e4Day').oninput=()=>{day=+$('#e4Day').value;draw();};draw();})();
+  $('#e4Day').oninput=()=>{day=+$('#e4Day').value;draw();};draw();
+  $('#e4LabQ').addEventListener('click',e=>{if(step<3||day<7){e.stopPropagation();fb($('#e4LabQ').nextElementSibling,'먼저 실험 순서대로 누르고, 날짜를 7일째까지 옮겨 결과를 확인해 봐요.','info');}},true);})();
 pickOne('#e4LabQ','맞아요! 물을 준 접시에서 무씨가 많이 싹 텄어요. 합성 세제는 씨가 싹 트는 것을 방해해요. 오염된 물에서는 씨가 싹 트기 어려워요.','다시 생각해 봐요.','s6');
 
 /* ---------- s7 ---------- */
