@@ -24,6 +24,33 @@
     if (a.t === 'list') return 'l' + a.v.join(',');
   }
 
+  /* 단위·도형·자료 계산(ms): 그 문제에서 흔한 실수를 먼저 (2026-10-24) */
+  function txt(p) { return (p.txt || []).filter(function (t) { return typeof t === 'string' }).join('#') }
+  function msWrong(p) {
+    var id = p.s || '', ns = nums(p), s = txt(p), a = ns[0], b = ns[1], c = ns[2], v = p.a.v, o = [];
+    if (!/^ms/.test(id)) return o;
+    if (id === 'ms01') o = s.indexOf(' cm ') >= 0 ? [a * 100 + b, a + b, a * 10 + b * 10] : s.indexOf(' km ') >= 0 ? [a * 100 + b, a * 10000 + b, a + b] : s.indexOf(' m ') >= 0 ? [a * 10 + b, a * 1000 + b, a + b] : [a * 100 + b, a + b, a * 10 + b];
+    else if (id === 'ms02') o = s.indexOf('반지름이') === 0 ? [a, a * 4, a + 2] : [a, a * 2, a - 2];
+    else if (id === 'ms03') o = [a * 100 + b, a * 10000 + b, a + b];
+    else if (id === 'ms05') { var sum = ns.reduce(function (x, y) { return x + y }, 0); o = s.indexOf('삼각형') === 0 ? [360 - sum, sum, v + 10, v - 10] : [180 - (sum - 180 > 0 ? sum - 180 : sum), sum - 180, v + 10, v - 10] }
+    else if (id === 'ms06') o = s.indexOf('+') >= 0 ? [Math.abs(a - b), v + 10, v - 10] : [a + b, v + 10, v - 10];
+    else if (id === 'ms07') {
+      if (s.indexOf('직사각형') >= 0) o = s.indexOf('넓이') >= 0 ? [2 * (a + b), a + b] : [a * b, a + b];
+      else if (s.indexOf('정사각형') >= 0) o = s.indexOf('넓이') >= 0 ? [4 * a, 2 * a] : [a * a, 2 * a];
+      else if (s.indexOf('평행사변형') >= 0) o = [a * b / 2, 2 * (a + b), a + b];
+      else if (s.indexOf('삼각형') >= 0) o = [a * b, a + b, v + a];
+      else { var n = { 정오각형: 5, 정육각형: 6, 정팔각형: 8 }[s.match(/정.각형/)[0]]; o = [a * (n - 1), a * (n + 1), a + n] }
+    }
+    else if (id === 'ms08') { var u = { 십: 10, 백: 100, 천: 1000 }[s.match(/(.)의 자리/)[1]];
+      [u, u * 10, u / 10].forEach(function (w) { if (w >= 1) { o.push(Math.ceil(a / w) * w, Math.floor(a / w) * w, Math.round(a / w) * w) } }) }
+    else if (id === 'ms09') { var t = ns.reduce(function (x, y) { return x + y }, 0); o = [t, v + 1, v - 1, Math.round(t / (ns.length + 1))] }
+    else if (id === 'ms10') { var f = (p.txt || []).filter(function (t) { return t && typeof t === 'object' })[0]; o = [100 - v, v + 10, v - 10]; if (f.k === 'f') o.unshift(f.n * 10 + f.d === v ? v + 5 : f.n * 10 + f.d); if (f.k === 'n') o.unshift(b) }
+    else if (id === 'ms11') o = s.indexOf('정육면체') >= 0 ? (s.indexOf('부피') >= 0 ? [6 * a * a, a * a, 3 * a] : [a * a * a, 4 * a * a, a * a]) : s.indexOf('부피') >= 0 ? [2 * (a * b + b * c + c * a), a + b + c, a * b] : [a * b + b * c + c * a, a * b * c, 4 * (a + b + c)];
+    else if (id === 'ms12') o = s.indexOf('사탕') === 0 ? [a - v, Math.round(a / 2), v + b] : s.indexOf('= □') >= 0 ? [a + c - b, c, v + 1] : [b + c - a, c, v + 1];
+    else if (id === 'ms13') { var k = s.indexOf('넓이') >= 0 ? [a * 2 * 314, a * 4 * a * 314, a * a * 31] : s.indexOf('지름이') === 0 ? [a * 2 * 314, a * 157, a * 31] : [a * 314, a * a * 314, a * 2 * 31]; return k.filter(function (x) { return x > 0 }).map(function (x) { return { t: 'd', v: x, p: 2 } }) }
+    return o.filter(function (x) { return x >= 0 && x === Math.floor(x) }).map(function (x) { return { t: 'n', v: x } });
+  }
+
   /* 자연수 오답 */
   function nCand(p, r) {
     var v = p.a.v, ns = nums(p), op = ops(p), c = [], s = String(v);
@@ -100,7 +127,7 @@
     n = n || 4;
     var a = p.a;
     if (a.t === 'cmp') return { opts: ['>', '=', '<'].map(function (v) { return { t: 'cmp', v: v } }), ok: ['>', '=', '<'].indexOf(a.v), fixed: true };
-    var cand = a.t === 'n' ? nCand(p, r) : a.t === 'd' ? dCand(p, r) : a.t === 'qr' ? qrCand(p, r) : a.t === 'f' ? fCand(p, r) : listCand(p, r);
+    var cand = msWrong(p).concat(a.t === 'n' ? nCand(p, r) : a.t === 'd' ? dCand(p, r) : a.t === 'qr' ? qrCand(p, r) : a.t === 'f' ? fCand(p, r) : listCand(p, r));
     var seen = {}, out = [a]; seen[vkey(a)] = 1;
     for (var i = 0; i < cand.length && out.length < n; i++) { var k = vkey(cand[i]); if (seen[k]) continue; seen[k] = 1; out.push(cand[i]) }
     // 모자라면(아주 작은 수 등) 가까운 수로 채움

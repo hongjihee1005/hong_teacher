@@ -58,7 +58,21 @@ const TX = {
   fac01: ([n]) => divs(n), fac02: ([n]) => [1, 2, 3, 4, 5].map(k => k * n),
   fac03: ([a, b]) => divs(a).filter(x => b % x === 0),
   fac04: ([a, b]) => Math.max(...divs(a).filter(x => b % x === 0)),
-  fac05: ([a, b]) => { for (let m = 1; ; m++) if (m % a === 0 && m % b === 0) return m }
+  fac05: ([a, b]) => { for (let m = 1; ; m++) if (m % a === 0 && m % b === 0) return m },
+  /* 단위·도형·자료 계산: 글을 보고 따로 계산 */
+  ms01: ([a, b], s) => s.includes(' cm ') ? a * 10 + b : s.includes(' m ') && s.includes('cm') ? a * 100 + b : s.includes(' km ') ? a * 1000 + b : a * 60 + b,
+  ms02: ([x], s) => s.startsWith('반지름') ? x * 2 : x / 2,
+  ms03: ([a, b]) => a * 1000 + b,
+  ms05: (v, s) => (s.startsWith('삼각형') ? 180 : 360) - v.reduce((a, b) => a + b, 0),
+  ms06: ([a, b], s) => s.includes('+') ? a + b : a - b,
+  ms07: ([a, b], s) => s.includes('직사각형') ? (s.includes('넓이') ? a * b : 2 * (a + b)) : s.includes('정사각형') ? (s.includes('넓이') ? a * a : 4 * a) :
+    s.includes('평행사변형') ? a * b : s.includes('삼각형') ? a * b / 2 : a * { 정오각형: 5, 정육각형: 6, 정팔각형: 8 }[s.match(/정.각형/)[0]],
+  ms08: ([x], s) => { const u = { 십: 10, 백: 100, 천: 1000 }[s.match(/(.)의 자리/)[1]]; return s.includes('반올림') ? Math.round(x / u) * u : s.includes('올림') ? Math.ceil(x / u) * u : Math.floor(x / u) * u },
+  ms09: (v) => v.reduce((a, b) => a + b, 0) / v.length,
+  ms10: (v, s, p) => { const t = p.txt.find(t => typeof t === 'object'); return t.k === 'd' ? t.v * 100 / 10 ** t.p : t.k === 'f' ? t.n * 100 / t.d : v[1] * 100 / v[0] },
+  ms11: ([a, b, c], s) => s.includes('정육면체') ? (s.includes('부피') ? a ** 3 : 6 * a * a) : s.includes('부피') ? a * b * c : 2 * (a * b + b * c + c * a),
+  ms12: ([a, b, c], s) => s.startsWith('사탕') ? a * b / (b + c) : s.includes('= □') ? a * c / b : b * c / a,
+  ms13: ([x], s) => s.includes('넓이') ? x * x * 3.14 : s.startsWith('지름') ? x * 3.14 : 2 * x * 3.14
 };
 
 function wrong(a) {   // 틀린 답(입력 꼴)
@@ -74,8 +88,10 @@ function verify(p, where) {
   const s = A.BY[p.s], a = p.a, q = p.q;
   try {
     if (p.txt) {
-      const x = TX[p.s](p.txt.filter(t => typeof t === 'object').map(t => t.v));
-      if (JSON.stringify(a.t === 'list' ? a.v : a.v) !== JSON.stringify(x)) err(`${where} 글 문제 정답 다름 ${JSON.stringify(p)}`);
+      if (!TX[p.s]) throw new Error('글 문제 점검 함수 없음');
+      const x = TX[p.s](p.txt.filter(t => typeof t === 'object').map(t => t.v), p.txt.filter(t => typeof t === 'string').join('#'), p);
+      const same = a.t === 'd' ? Math.abs(a.v / 10 ** a.p - x) < 1e-9 : JSON.stringify(a.v) === JSON.stringify(x);
+      if (!same) err(`${where} 글 문제 정답 다름 ${JSON.stringify(p)} → ${x}`);
     } else if (q.includes('○')) {
       const i = q.indexOf('○'), l = ev(q.slice(0, i)), r = ev(q.slice(i + 1)), c = l[0] * r[1] - r[0] * l[1];
       if ((c < 0 ? '<' : c > 0 ? '>' : '=') !== a.v) err(`${where} 크기 비교 틀림 ${JSON.stringify(p)}`);

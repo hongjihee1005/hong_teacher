@@ -24,9 +24,11 @@
     { id: 'memory', pl: [1, 1], pill: '뒤집은 횟수', nm: '짝 맞추기 카드', de: '카드 16장을 두 장씩 뒤집어 식과 답을 짝지어요. 시간 제한 없이 천천히! 적게 틀릴수록 별이 많아요.', noTxt: '크기 비교·여러 수 쓰기 문제는 카드로 만들지 않아요.' },
     { id: 'vault', pl: [1, 1], nm: '금고 열기', de: '보기 없이 답을 숫자판으로 직접 써요. 맞힐 때마다 자물쇠가 하나씩, 5개를 열면 금고가 열려요.', stars: [5, 12, 20] },
     { id: 'sort', pl: [1, 1], nm: '크기 순서로 줄 세우기', de: '식 카드 4장을 계산한 값이 작은(또는 큰) 것부터 차례로 눌러요. 어림하는 힘이 쑥쑥!', stars: [3, 7, 12], noTxt: '줄 세우기는 값이 나오는 계산(자연수·소수·분수)에서만 해요.' },
+    { id: 'ox', pl: [1, 1], nm: '맞을까 틀릴까 OX', de: '답이 적힌 식을 보고 맞으면 O, 틀리면 X! 직접 풀어 보고 확인하는 힘이 쑥쑥.', stars: [8, 16, 25] },
     { id: 'race', pl: [2, 4], timer: true, nm: '달리기 경주', de: '2~4명이 화면을 나눠 각자 문제를 풀어요. 맞힐 때마다 한 칸씩, 먼저 결승선(10칸)에 닿으면 이겨요.', two: true, how: '인원을 고르면 화면이 2~4칸으로 나뉘어요' },
     { id: 'buzz', pl: [4, 4], nm: '골든벨 버저', de: '같은 문제를 보고 네 귀퉁이 버저를 먼저 눌러 답해요. 틀리면 다른 사람에게 기회! 먼저 10점이면 이겨요.', two: true, how: '버저는 먼저 누른 한 사람만 받아요 · 모둠 대표 4명도 좋아요' },
     { id: 'land', pl: [2, 2], nm: '땅따먹기', de: '차례대로 칸을 골라 그 칸의 식을 풀어요. 맞히면 내 땅! 판이 다 차면 땅이 많은 쪽이 이겨요.', two: true, how: '한 번에 한 사람씩 · 빠르기보다 차례대로' },
+    { id: 'ladder', pl: [2, 4], nm: '사다리와 미끄럼틀', de: '차례대로 주사위를 굴리고 문제를 맞히면 그만큼 가요. 사다리는 쑥 올라가고 미끄럼틀은 주르륵! 30칸에 먼저 닿으면 이겨요.', two: true, how: '인원을 고르고 차례대로 · 운과 실력이 함께' },
     { id: 'tug', pl: [2, 2], timer: true, nm: '줄다리기', de: '두 사람(두 팀)이 화면 양쪽에서 동시에 풀어요. 먼저 5번 당기는 쪽이 이겨요.', two: true, how: '파랑 팀 · 빨강 팀, 한 사람씩 또는 모둠 대표로' }
   ];
   var GBY = {}; GAMES.forEach(function (x) { GBY[x.id] = x });
@@ -90,6 +92,12 @@
       [0, 1, 2, 3].map(function (r) { return [0, 1, 2, 3].map(function (c) { var k = (r * 4 + c) % 5; return '<rect x="' + c * 17 + '" y="' + r * 21 + '" width="15" height="19" rx="3" fill="' + (k === 1 ? '#4DA3FF' : k === 3 ? '#FF6B6B' : '#FFFDF7') + '"/>' }).join('') }).join('') + '</g></svg>',
     rocket: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#1B1F4B"/><circle cx="28" cy="20" r="1.6" fill="#fff"/><circle cx="60" cy="70" r="1.3" fill="#fff"/><circle cx="140" cy="16" r="1.8" fill="#fff"/><circle cx="118" cy="60" r="1.2" fill="#fff"/><circle cx="20" cy="80" r="1.4" fill="#fff"/>' +
       '<circle cx="130" cy="78" r="18" fill="#B07CFF"/><ellipse cx="130" cy="78" rx="28" ry="5" fill="none" stroke="#E0C9FF" stroke-width="2.5"/><g transform="translate(66 10) rotate(18) scale(.72)">' + ROCKET.replace(/<\/?svg[^>]*>/g, '') + '</g></svg>',
+    ox: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#FFF3D9"/><rect x="22" y="12" width="116" height="28" rx="10" fill="#fff"/><text x="80" y="33" font-size="17" text-anchor="middle" fill="#2A221C">7 × 8 = 54</text>' +
+      '<circle cx="52" cy="70" r="20" fill="none" stroke="#2E9E5B" stroke-width="8"/><path d="M98 54l28 32M126 54 98 86" stroke="#E9524A" stroke-width="8" stroke-linecap="round"/></svg>',
+    ladder: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#FFF1D6"/>' +
+      [0, 1, 2, 3].map(function (r) { return [0, 1, 2, 3, 4, 5].map(function (c) { return '<rect x="' + (14 + c * 22) + '" y="' + (8 + r * 22) + '" width="21" height="21" fill="' + ((r + c) % 2 ? '#FFE2A8' : '#FFF8E6') + '"/>' }).join('') }).join('') +
+      '<path d="M40 82 62 26M48 84 70 28M43 74h8M47 62h8M52 50h8M56 38h8" stroke="#B5793F" stroke-width="3" stroke-linecap="round"/><path d="M118 22q-24 20 6 34t-20 30" fill="none" stroke="#4DA3FF" stroke-width="7" stroke-linecap="round"/>' +
+      '<circle cx="32" cy="84" r="6" fill="#4DA3FF"/><circle cx="96" cy="40" r="6" fill="#FF6B6B"/></svg>',
     tug: '<svg viewBox="0 0 160 100" aria-hidden="true"><rect width="160" height="100" rx="14" fill="#CDEBFF"/><rect y="62" width="160" height="38" fill="#E8C98F"/><path d="M80 52v40" stroke="#fff" stroke-width="3" stroke-dasharray="5 4"/>' +
       '<path d="M30 60h100" stroke="#B5793F" stroke-width="4"/><path d="M80 56l-6 10h12Z" fill="#E9524A"/>' +
       '<g transform="translate(6 30) scale(.5)">' + kidSvg('#4DA3FF').replace(/<\/?svg[^>]*>/g, '') + '</g><g transform="translate(154 30) scale(-.5 .5)">' + kidSvg('#FF6B6B').replace(/<\/?svg[^>]*>/g, '') + '</g></svg>'
@@ -1001,6 +1009,144 @@
     },
     key: function (i) { if (this.open >= 0) this.hit(i) },
     result: function (why) { return teamRes(why, this.cnt, '칸') }
+  };
+
+  /* ── 맞을까 틀릴까 OX (2026-10-24): 답이 적힌 식을 보고 맞는지 판단 ── */
+  GM.ox = {
+    init: function () {
+      $('mgPlay').innerHTML = '<div class="mg-oxbg"><i class="mg-cloud c1"></i><i class="mg-cloud c2"></i></div><div class="mg-qbox mg-oxq" id="mgQ"></div>' +
+        '<div class="mg-oxbtns"><button type="button" class="mg-oxb o" id="mgO" aria-label="맞아요 (키 1 또는 O)"><span class="mg-oxs"><svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="14" fill="none" stroke="currentColor" stroke-width="6"/></svg></span><b>맞아요</b><small>키 1 · O</small></button>' +
+        '<button type="button" class="mg-oxb x" id="mgX" aria-label="틀려요 (키 2 또는 X)"><span class="mg-oxs"><svg viewBox="0 0 40 40" aria-hidden="true"><path d="M8 8l24 24M32 8 8 32" stroke="currentColor" stroke-width="6" stroke-linecap="round"/></svg></span><b>틀려요</b><small>키 2 · X</small></button></div>';
+      var self = this; tap($('mgO'), function () { self.hit(true) }); tap($('mgX'), function () { self.hit(false) });
+    },
+    go: function () { this.next() },
+    shown: function (q, o) {   // 식에 보여 줄 답을 채운 모양
+      var h = qH(q.p), a = '<span class="mg-blank mg-oxa">' + aH(o) + '</span>', h2 = h.replace('<span class="mg-blank">?</span>', a).replace('<span class="mg-blank" aria-label="빈칸">?</span>', a).replace('<span class="mg-circ" aria-label="빈 동그라미">○</span>', a);
+      return (hintOf(q.p) ? '<span class="mg-hint">' + esc(hintOf(q.p)) + '</span>' : '') + (h2 === h ? h + '<span class="mg-oxt">답: ' + a + '</span>' : h2);
+    },
+    next: function () {
+      var q = this.q = makeP(); q.t = 0; q.done = false;
+      var wrongs = q.c.opts.map(function (o, i) { return i }).filter(function (i) { return i !== q.c.ok });
+      q.truth = !wrongs.length || Math.random() < .5; q.show = q.truth ? q.c.opts[q.c.ok] : q.c.opts[wrongs[Math.floor(Math.random() * wrongs.length)]];
+      $('mgQ').innerHTML = this.shown(q, q.show) + '<span class="mg-qt"><i id="mgQt"></i></span>';
+      $('mgO').className = 'mg-oxb o'; $('mgX').className = 'mg-oxb x';
+      this.dur = speedOf(9, .5, 4.5);
+    },
+    hit: function (say) {
+      var q = this.q; if (!S || S.paused || S.over || q.done || S.wait > 0) return; q.done = true;
+      var btn = say ? $('mgO') : $('mgX');
+      if (say === q.truth) { btn.classList.add('right'); sfx('ok'); gain(1 - q.t / this.dur, btn); S.wait = .6 }
+      else {
+        btn.classList.add('wrong'); sfx('bad'); wrongRec(q, say ? q.show : null);
+        banner(q.truth ? '맞는 식이었어요!' : '틀린 식이었어요<small>정답은 ' + plain(q.c.opts[q.c.ok]) + '</small>', 'ans'); loseLife(); S.wait = 1.5;
+      }
+    },
+    tick: function (dt) {
+      if (S.ending) return;
+      if (S.wait > 0) { S.wait -= dt; if (S.wait <= 0) this.next(); return }
+      var q = this.q; q.t += dt; var L = Math.max(0, 1 - q.t / this.dur);
+      $('mgQt').style.width = (L * 100) + '%'; $('mgQt').classList.toggle('low', L < .3);
+      if (!q.done && q.t >= this.dur) { q.done = true; wrongRec(q, null); sfx('bad'); banner('시간이 지났어요<small>' + (q.truth ? '맞는 식이었어요' : '정답은 ' + plain(q.c.opts[q.c.ok])) + '</small>', 'ans'); loseLife(); S.wait = 1.5 }
+    },
+    key: function (i) { if (i === 0) this.hit(true); else if (i === 1) this.hit(false) },
+    keyAny: function (k) { if (k === 'o') { this.hit(true); return true } if (k === 'x') { this.hit(false); return true } return false }
+  };
+
+  function dieSvg(n) {   // 주사위 그림(0이면 물음표)
+    var P = { 1: [[20, 20]], 2: [[11, 11], [29, 29]], 3: [[11, 11], [20, 20], [29, 29]], 4: [[11, 11], [29, 11], [11, 29], [29, 29]], 5: [[11, 11], [29, 11], [20, 20], [11, 29], [29, 29]], 6: [[11, 10], [29, 10], [11, 20], [29, 20], [11, 30], [29, 30]] }[n] || [];
+    return '<svg viewBox="0 0 40 40" aria-hidden="true"><rect x="2" y="2" width="36" height="36" rx="8" fill="#fff" stroke="#2A221C" stroke-width="2.5"/>' + (n ? P.map(function (p) { return '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="3.6" fill="' + (n === 1 ? '#E9524A' : '#2A221C') + '"/>' }).join('') : '<text x="20" y="28" font-size="22" text-anchor="middle" fill="#2A221C">?</text>') + '</svg>';
+  }
+  /* ── 사다리와 미끄럼틀 (2~4명, 2026-10-24): 주사위 → 문제 → 맞히면 그만큼 ── */
+  GM.ladder = {
+    END: 30, COLS: 6, ANS: 20,
+    JUMP: { 3: 11, 8: 15, 13: 22, 19: 27, 17: 6, 24: 14, 29: 20 },   // 앞 → 뒤 (클수록 사다리, 작아지면 미끄럼틀)
+    xy: function (n) { var i = n - 1, r = Math.floor(i / this.COLS), c = i % this.COLS; if (r % 2) c = this.COLS - 1 - c; return [c, 4 - r] },   // 아래 줄부터 지그재그
+    init: function () {
+      var n = this.n = S.np, i, cells = '', self = this;
+      for (i = 1; i <= this.END; i++) { var p = this.xy(i), j = this.JUMP[i]; cells += '<div class="mg-lc' + (j ? (j > i ? ' up' : ' dn') : '') + (i === this.END ? ' goal' : '') + '" style="grid-column:' + (p[0] + 1) + ';grid-row:' + (p[1] + 1) + '"><b>' + i + '</b>' + (i === this.END ? '<span>도착</span>' : i === 1 ? '<span>출발</span>' : '') + '</div>' }
+      var lines = '';
+      Object.keys(this.JUMP).forEach(function (a) {
+        a = +a; var b = self.JUMP[a], A = self.xy(a), B = self.xy(b), x1 = A[0] * 100 + 50, y1 = A[1] * 100 + 50, x2 = B[0] * 100 + 50, y2 = B[1] * 100 + 50;
+        if (b > a) {   // 사다리: 두 줄 + 가로대
+          var dx = x2 - x1, dy = y2 - y1, L = Math.hypot(dx, dy), nx = -dy / L * 14, ny = dx / L * 14, rungs = '';
+          for (var k = 1; k < Math.max(3, Math.round(L / 45)); k++) { var t = k / Math.max(3, Math.round(L / 45)); rungs += '<path d="M' + (x1 + dx * t - nx) + ' ' + (y1 + dy * t - ny) + 'L' + (x1 + dx * t + nx) + ' ' + (y1 + dy * t + ny) + '"/>' }
+          lines += '<g class="mg-lad"><path d="M' + (x1 - nx) + ' ' + (y1 - ny) + 'L' + (x2 - nx) + ' ' + (y2 - ny) + 'M' + (x1 + nx) + ' ' + (y1 + ny) + 'L' + (x2 + nx) + ' ' + (y2 + ny) + '"/>' + rungs + '</g>';
+        } else {       // 미끄럼틀: 굽은 띠
+          var mx = (x1 + x2) / 2 + (x1 < x2 ? -60 : 60), my = (y1 + y2) / 2;
+          lines += '<path class="mg-sld" d="M' + x1 + ' ' + y1 + 'Q' + mx + ' ' + my + ' ' + x2 + ' ' + y2 + '"/><path class="mg-sld2" d="M' + x1 + ' ' + y1 + 'Q' + mx + ' ' + my + ' ' + x2 + ' ' + y2 + '"/>';
+        }
+      });
+      var pcs = ''; for (i = 0; i < n; i++) pcs += '<div class="mg-lpc" id="mgLp' + i + '" style="' + tv(i) + '"><span>' + (i + 1) + '</span></div>';
+      var side = ''; for (i = 0; i < n; i++) side += '<div class="mg-lpl" id="mgLpl' + i + '" style="' + tv(i) + '"><i></i><b>' + TEAM[i].nm + '</b><span id="mgLpos' + i + '">1칸</span></div>';
+      $('mgPlay').innerHTML = '<div class="mg-ldbg"></div><div class="mg-ldwrap"><div class="mg-ldboard" id="mgLb">' + cells + '<svg class="mg-ldsvg" viewBox="0 0 600 500" preserveAspectRatio="none" aria-hidden="true">' + lines + '</svg>' + pcs + '</div>' +
+        '<div class="mg-ldside"><div class="mg-lpls">' + side + '</div><p class="mg-ldmsg" id="mgLmsg"></p><button type="button" class="mg-dice" id="mgDice" aria-label="주사위 굴리기 (스페이스)"><span id="mgDv"></span><b>주사위 굴리기</b></button></div></div>' +
+        '<div class="mg-lpop" id="mgPop" hidden><div class="mg-lcard" id="mgLcard"><p class="mg-lwho" id="mgLwho"></p><div class="mg-qbox" id="mgQ"></div><div class="mg-opts" id="mgOpts"></div><span class="mg-qt"><i id="mgQt"></i></span></div></div>';
+      this.pos = []; for (i = 0; i < n; i++) this.pos.push(1);
+      this.turn = 0; this.phase = 'roll'; this.die = 0;
+      tap($('mgDice'), function () { self.roll() });
+    },
+    go: function () { this.place(); this.setTurn(0) },
+    place: function () {
+      var self = this, at = {};
+      this.pos.forEach(function (p, i) {
+        var k = at[p] = (at[p] || 0) + 1, xy = self.xy(p), el = $('mgLp' + i), off = [[-14, -14], [14, -14], [-14, 14], [14, 14]][i];
+        el.style.left = 'calc(' + (xy[0] + .5) * (100 / self.COLS) + '% + ' + off[0] + 'px)'; el.style.top = 'calc(' + (xy[1] + .5) * 20 + '% + ' + off[1] + 'px)';
+        $('mgLpos' + i).textContent = p + '칸';
+      });
+    },
+    setTurn: function (t) {
+      this.turn = t; this.phase = 'roll';
+      for (var i = 0; i < this.n; i++) { $('mgLpl' + i).classList.toggle('turn', i === t); $('mgLp' + i).classList.toggle('turn', i === t) }
+      $('mgDice').disabled = false; $('mgDice').setAttribute('style', tv(t)); $('mgDv').innerHTML = dieSvg(0);
+      $('mgLmsg').innerHTML = '<b style="color:' + TEAM[t].d + '">' + TEAM[t].nm + '</b> 차례예요. 주사위를 굴려요!';
+    },
+    roll: function () {
+      if (!S || S.paused || S.over || S.ending || this.phase !== 'roll') return;
+      this.phase = 'rolling'; $('mgDice').disabled = true; sfx('tick');
+      var self = this, k = 0, d = 1 + Math.floor(Math.random() * 6);
+      (function spin() {
+        if (!S || S.over) return;
+        if (k++ < 9) { $('mgDv').innerHTML = dieSvg(1 + Math.floor(Math.random() * 6)); setTimeout(spin, 70); return }
+        self.die = d; $('mgDv').innerHTML = dieSvg(d); sfx('go');
+        $('mgLmsg').innerHTML = '<b style="color:' + TEAM[self.turn].d + '">' + d + '</b>이(가) 나왔어요! 문제를 맞히면 ' + d + '칸 가요.';
+        setTimeout(function () { if (S && !S.over) self.ask() }, 650);
+      })();
+    },
+    ask: function () {
+      var q = this.q = makeP(), self = this; q.done = false; this.ta = 0; this.phase = 'q';
+      $('mgLwho').textContent = TEAM[this.turn].nm + ' 차례 · 맞히면 ' + this.die + '칸 · ' + this.ANS + '초 안에 골라요'; $('mgLcard').setAttribute('style', tv(this.turn));
+      $('mgQ').innerHTML = qbox(q); optBtns($('mgOpts'), q, function (j) { self.hit(j) }, true);
+      $('mgPop').hidden = false;
+    },
+    hit: function (j) {
+      if (!S || S.paused || S.over || this.phase !== 'q') return; var q = this.q; if (q.done) return; q.done = true;
+      var bs = $('mgOpts').children, t = this.turn, self = this, ok = j === q.c.ok;
+      if (ok) { bs[j].classList.add('right'); sfx('ok'); S.right++ } else { if (j >= 0) bs[j].classList.add('wrong'); bs[q.c.ok].classList.add('right'); sfx('bad'); S.wrong++ }
+      setTimeout(function () {
+        if (!S || S.over) return; $('mgPop').hidden = true; self.phase = 'move';
+        if (!ok) { $('mgLmsg').innerHTML = '아쉬워요! 이번에는 그 자리에 있어요.'; setTimeout(function () { if (S && !S.over) self.setTurn((t + 1) % self.n) }, 1100); return }
+        var to = Math.min(self.END, self.pos[t] + self.die); self.walk(t, to, function () {
+          var j2 = self.JUMP[self.pos[t]];
+          if (j2) { var up = j2 > self.pos[t]; $('mgLmsg').innerHTML = up ? '사다리! 쑥 올라가요.' : '미끄럼틀! 주르륵 내려가요.'; sfx(up ? 'up' : 'bad'); setTimeout(function () { if (!S || S.over) return; self.pos[t] = j2; self.place(); setTimeout(function () { self.after(t) }, 600) }, 500) }
+          else self.after(t);
+        });
+      }, ok ? 800 : 1500);
+    },
+    walk: function (t, to, fn) {   // 한 칸씩 옮겨 보여 줌
+      var self = this; (function step() { if (!S || S.over) return; if (self.pos[t] >= to) return fn(); self.pos[t]++; self.place(); sfx('tick'); setTimeout(step, 220) })();
+    },
+    after: function (t) {
+      if (this.pos[t] >= this.END) { S.ending = 1; sfx('up'); setTimeout(function () { end('') }, 700); return }
+      var self = this; setTimeout(function () { if (S && !S.over) self.setTurn((t + 1) % self.n) }, 500);
+    },
+    tick: function (dt) {
+      if (S.ending || this.phase !== 'q' || this.q.done) return;
+      this.ta += dt; var bar = $('mgQt'); bar.style.width = Math.max(0, 1 - this.ta / this.ANS) * 100 + '%'; bar.classList.toggle('low', this.ta > this.ANS * .7);
+      if (this.ta >= this.ANS) this.hit(-1);
+    },
+    key: function (i) { if (this.phase === 'q') this.hit(i) },
+    keyAny: function (k) { if (k === ' ' || k === 'enter') { if (this.phase === 'roll') { this.roll(); return true } } return false },
+    result: function (why) { return teamRes(why, this.pos, '칸') }
   };
 
   /* ── 줄다리기 (2명) ── */
