@@ -43,6 +43,8 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
      [('grade4/science/_build', ['build.py']), ('grade4/science/_build', ['index_build.py'])]),
     ('과학 5학년 교과서 버전', 'grade5/science/_build_tb/', ['grade5/science/sem1/u?-?.html', 'grade5/science/sem2/u?-?.html'],
      [('grade5/science/_build_tb', ['build.py']), ('grade5/science/_build_tb', ['index_build.py'])]),
+    ('과학 6학년 교과서 버전', 'grade6/science/_build_tb/', ['grade6/science/sem1/u?-?.html', 'grade6/science/sem2/u?-?.html'],
+     [('grade6/science/_build_tb', ['build.py']), ('grade6/science/_build_tb', ['index_build.py'])]),
     ('과학 4학년 교과서 버전', 'grade4/science/_build_tb/', ['grade4/science/sem1/u?-?.html', 'grade4/science/sem2/u?-?.html'],
      [('grade4/science/_build_tb', ['build.py']), ('grade4/science/_build_tb', ['index_build.py'])]),
     ('과학 실험 준비 길잡이', ('_build/labguide/', 'grade3/science/_build_hong/', 'grade3/science/_build_hong2/', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['grade3/science/labs.html'], [('.', ['_build/labguide/build.py'])]),

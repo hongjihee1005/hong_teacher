@@ -1,0 +1,840 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>계절별 태양의 남중 고도와 낮의 길이의 관계는?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#c9861a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+/* 2학기 1단원 계절의 변화 · 교과서 버전 공통 */
+[hidden]{display:none!important}
+.c1-lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.c1-lab svg{display:block;width:100%;height:auto;margin:0 auto}
+/* 그림을 화면 높이에 맞추되 옆 빈틈 없이: style="--h:40vh;--ar:2.1" (가로/세로) */
+svg.c1-fit,.c1-lab svg.c1-fit{width:min(100%,calc(var(--h,40vh)*var(--ar,2)));height:auto;max-height:none}
+.c1-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(8px,1vw,16px);align-items:start}
+.c1-two>*{min-width:0}
+@media(max-width:700px){.c1-two{grid-template-columns:1fr}}
+.c1-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.c1-ctl button{font-size:.92rem;min-height:2.3rem;padding:.2em .8em}
+.c1-ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.c1-ctl button[disabled]{opacity:.45;cursor:default}
+.c1-ctl input[type=range]{flex:1 1 180px;min-width:120px;accent-color:var(--navy)}
+.c1-ctl .jua{font-size:.98rem}
+.c1-q{font-family:"Jua",sans-serif;font-size:1.06rem;margin:10px 0 6px}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:8px 12px;font-size:.95rem}
+.big{font-size:1.08rem}
+.c1-rp{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 0;border-bottom:2px dashed var(--line)}
+.c1-rp .q{flex:1 1 40%;font-family:"Jua",sans-serif;min-width:10em}
+.c1-rp button{min-height:2.3rem;padding:.15em .8em;font-size:.95rem}
+.c1-note{font-size:.88rem;color:var(--muted);margin:4px 0 0}
+/* 나누기 카드 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+/* 차례대로 누르기 */
+.c1-ord{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.c1-ord button{text-align:left;min-height:2.6rem;font-size:.95rem}
+.c1-ord button .no{display:inline-block;min-width:1.6em;font-family:"Jua",sans-serif;color:var(--navy)}
+.c1-ord button.right{cursor:default}
+@media (max-width:600px){.t3sort,.t3match,.c1-ord{grid-template-columns:1fr}}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+/* 자료 표 */
+table.c1-tb{width:100%;border-collapse:collapse;font-size:.95rem}
+table.c1-tb th,table.c1-tb td{border:2px solid var(--line);padding:4px 6px;text-align:center}
+table.c1-tb th{background:var(--soft,#f3f0e8);font-family:"Jua",sans-serif;font-weight:400}
+table.c1-tb td.nw{background:#e9f9ef;color:#0d5a31;font-weight:700}
+table.c1-tb td.em{color:var(--muted)}
+.c1-cap{font-family:"Jua",sans-serif;font-size:.95rem;text-align:center;margin:2px 0 4px;color:var(--muted)}
+#quiz>div{margin-bottom:6px}
+.a3-web{border:3px solid #6a7a88;border-radius:14px;overflow:hidden;background:#fff}
+.a3-web .bar{background:#e9eef2;padding:6px 10px;font-family:"Jua",sans-serif;font-size:.95rem;color:#3b4a5a;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.a3-web .bar b{background:#fff;border-radius:8px;padding:2px 10px;font-weight:400}
+.a3-web .in{padding:8px 10px;display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:10px;align-items:start}
+@media(max-width:700px){.a3-web .in{grid-template-columns:1fr}}
+.a3-mon{display:grid;grid-template-columns:auto repeat(3,minmax(0,1fr));gap:6px;align-items:center}
+.a3-mon span{font-family:"Jua",sans-serif;font-size:.92rem}
+.a3-mon button{min-height:2.2rem;padding:.1em .3em;font-size:.95rem}
+.a3-mon button.ok{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.a3-res{border:2px dashed #9aa9b4;border-radius:12px;padding:8px 10px;font-family:"Jua",sans-serif;font-size:1.02rem;min-height:5.2em;line-height:1.6}
+.a3-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0}
+.a3-tabs button{min-height:2.3rem;padding:.15em .9em;font-size:.95rem}
+.a3-tabs button.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+.a3-tabs button.ok::after{content:" ✓"}
+#plot{cursor:crosshair}
+table.c1-tb.a3-t td,table.c1-tb.a3-t th{padding:2px 4px;font-size:.88rem}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><circle cx="24" cy="43" r="12" fill="#ffd23f" stroke="#fff" stroke-width="3"/><path d="M36 43 L66 22 M36 43 L72 43 M36 43 L66 64" stroke="#ffd23f" stroke-width="4" stroke-linecap="round"/><rect x="66" y="14" width="6" height="58" fill="#cfe6f2" stroke="#fff" stroke-width="2"/></svg>
+  <div><h1>계절별 태양의 남중 고도와 낮의 길이의 관계는?</h1><p>6학년 2학기 과학 · 1단원 계절의 변화 · 5~6/13차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">조사해요</a><a href="#s3">조사 결과</a><a href="#s4">그래프</a><a href="#s5">비교해요</a><a href="#s6">태양의 길</a><a href="#s7">관계 정리</a><a href="#s8">생각+</a><a href="#s9">한눈에 쏙</a><a href="#s10">형성 평가</a><a href="#s11">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>계절별 태양의 남중 고도와 낮의 길이를 조사할 수 있어요.<br>계절별 태양의 남중 고도와 낮의 길이를 그래프로 나타내고, 서로의 관계를 설명할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 20쪽</span>
+  <h2>여름과 겨울에 오후 6시 모습은 어떻게 다를까요?</h2>
+  <div class="c1-lab"><svg id="intro" class="c1-fit" style="--h:30vh;--ar:2.6" viewBox="0 0 780 300" role="img" aria-label="여름과 겨울의 오후 6시 모습"></svg></div>
+  <div class="pick" id="p1" data-glue="1">
+    <button data-a="1" data-m="맞아요! 여름에는 겨울보다 태양이 더 일찍 뜨고 더 늦게 져요. 태양의 남중 고도도 계절에 따라 달라질까요?">여름 오후 6시에는 태양이 떠 있어 밝고, 겨울 오후 6시에는 태양이 져서 어두워요</button>
+    <button data-a="0" data-m="그림을 다시 봐요. 같은 오후 6시인데 하늘의 밝기가 어떻게 다른가요?">여름과 겨울 모두 오후 6시에는 똑같이 밝아요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="조사해요">
+  <span class="stage">활동해요 1 · 「과학」 20쪽 · 「실험관찰」 12쪽</span>
+  <h2>매월 21일의 태양의 남중 고도와 낮의 길이를 조사해요</h2>
+  <div class="a3-web">
+    <div class="bar">🔎 천문 자료 찾기 <b>연습 화면</b> · 지역 <b>서울특별시</b> · <b>2024년</b> · 매월 21일 · 오후 12시 30분</div>
+    <div class="in">
+      <div class="a3-mon" id="mon"></div>
+      <div class="a3-res" id="res">달을 누르면 그날의 태양의 남중 고도와 낮의 길이가 나와요.</div>
+    </div>
+  </div>
+  <p class="c1-note" data-glue="1">실제로는 한국천문연구원 천문우주지식정보의 ‘생활 천문관’에서 ‘태양 고도/방위각 계산’과 ‘일출 일몰 시각 계산’으로 조사해요. 겨울은 다음 해 1월, 2월로 조사해요.</p>
+  <div class="fb" id="monFb"></div>
+  <p class="tip">⚠️ 스마트 기기를 활용할 때에는 필요한 정보만 조사해요.</p>
+</section>
+
+<section id="s3" data-nav="조사 결과">
+  <span class="stage">활동해요 1 · 「실험관찰」 12쪽</span>
+  <h2>조사한 결과를 표로 정리해요</h2>
+  <table class="c1-tb a3-t" id="tab3"></table>
+  <p class="c1-note">조사한 지역: 서울특별시 · 조사한 연도: 2024년 · 지역마다 값이 조금씩 달라요.</p>
+  <p class="c1-q" data-glue="1">표에서 태양의 남중 고도가 가장 높은 달은?</p>
+  <div class="pick" id="p3" data-glue="1"><button data-a="0" data-m="3월은 52.47°예요. 더 높은 달이 있어요.">3월</button><button data-a="1" data-m="맞아요! 6월(75.52°)이 가장 높아요.">6월</button><button data-a="0" data-m="12월은 29.00°로 가장 낮아요.">12월</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="그래프">
+  <span class="stage">활동해요 2-1 · 「과학」 21쪽 · 「실험관찰」 13쪽</span>
+  <h2>꺾은선그래프로 나타내요</h2>
+  <p>그래프를 고르고, 달마다 알맞은 높이를 눌러 점을 찍어요. 두 그래프를 한 모눈에 그려요.</p>
+  <div class="a3-tabs" id="tabs" data-glue="1"></div>
+  <div class="c1-lab" data-glue="1"><svg id="plot" class="c1-fit" style="--h:38vh;--ar:2.13" viewBox="0 0 640 300" role="img" aria-label="계절별 태양의 남중 고도와 낮의 길이 꺾은선그래프"></svg></div>
+  <div class="c1-ctl" data-glue="1"><span class="jua c1-note" id="plData"></span><button id="plHelp">💡 점 하나 찍어 주기</button></div>
+  <div class="fb" id="plFb"></div>
+</section>
+
+<section id="s5" data-nav="비교해요">
+  <span class="stage">활동해요 2-2 · 「실험관찰」 13쪽</span>
+  <h2>두 그래프를 비교해요</h2>
+  <div id="rp5">
+    <div class="c1-rp"><span class="q">태양의 남중 고도가 가장 <b>높은</b> 달과 계절</span><button data-a="1">6월 · 여름</button><button data-a="0" data-m="그래프의 가장 높은 점을 찾아봐요.">12월 · 겨울</button><button data-a="0" data-m="3월은 중간쯤이에요.">3월 · 봄</button></div>
+    <div class="c1-rp"><span class="q">태양의 남중 고도가 가장 <b>낮은</b> 달과 계절</span><button data-a="0" data-m="6월은 가장 높은 달이에요.">6월 · 여름</button><button data-a="1">12월 · 겨울</button><button data-a="0" data-m="9월은 중간쯤이에요.">9월 · 가을</button></div>
+    <div class="c1-rp"><span class="q">낮의 길이가 가장 <b>긴</b> 달과 계절</span><button data-a="1">6월 · 여름</button><button data-a="0" data-m="12월은 낮이 가장 짧아요.">12월 · 겨울</button><button data-a="0" data-m="9월은 12시간쯤이에요.">9월 · 가을</button></div>
+    <div class="c1-rp"><span class="q">낮의 길이가 가장 <b>짧은</b> 달과 계절</span><button data-a="0" data-m="6월은 낮이 가장 길어요.">6월 · 여름</button><button data-a="1">12월 · 겨울</button><button data-a="0" data-m="3월은 12시간쯤이에요.">3월 · 봄</button></div>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="태양의 길">
+  <span class="stage">정리해요 · 「과학」 21쪽 · 계절에 따른 태양의 남중 고도 변화</span>
+  <h2>계절에 따라 태양이 지나는 길은 어떻게 다를까요?</h2>
+  <div class="player" id="pl6">
+    <svg id="dome" class="scene" viewBox="0 0 800 360" role="img" aria-label="여름, 봄과 가을, 겨울에 태양이 하늘을 지나는 길"></svg>
+    <div class="ctl"><button class="main pBtn" aria-label="재생">▶</button><input type="range" class="pRng" min="0" step="0.02" value="0" aria-label="영상 시간"><span class="jua pClk">0초</span></div>
+    <div class="row chapters"></div>
+    <p class="cap"></p>
+  </div>
+  <div class="fb" id="pl6Fb"></div>
+</section>
+
+<section id="s7" data-nav="관계 정리">
+  <span class="stage">정리해요 · 「과학」 21쪽</span>
+  <h2>태양의 남중 고도와 낮의 길이는 어떤 관계가 있나요?</h2>
+  <div class="pick" id="p7">
+    <button data-a="1" data-m="맞아요! 태양의 남중 고도가 높아질수록 태양이 지평선 위에 떠 있는 시간이 길어져 낮의 길이가 길어져요.">태양의 남중 고도가 높을수록 낮의 길이가 길어요</button>
+    <button data-a="0" data-m="6월에는 남중 고도가 가장 높고 낮의 길이도 가장 길었어요.">태양의 남중 고도가 높을수록 낮의 길이가 짧아요</button>
+    <button data-a="0" data-m="두 그래프는 같은 모양으로 함께 오르내렸어요.">서로 관계가 없어요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="c1-q" data-glue="1">여름에서 겨울로 갈수록 어떻게 될까요?</p>
+  <div id="rp7" data-glue="1">
+    <div class="c1-rp"><span class="q">태양의 남중 고도는</span><button data-a="1">낮아지고</button><button data-a="0">높아지고</button></div>
+    <div class="c1-rp"><span class="q">낮의 길이는</span><button data-a="0">길어져요</button><button data-a="1">짧아져요</button></div>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="생각+">
+  <span class="stage">정리해요 2 · 「과학」 21쪽</span>
+  <h2>계절별로 같은 시각에 나무의 그림자 길이는?</h2>
+  <div class="c1-lab"><svg id="tree" class="c1-fit" style="--h:30vh;--ar:2.6" viewBox="0 0 780 300" role="img" aria-label="계절별 오후 12시 30분 무렵의 나무 그림자"></svg></div>
+  <div class="c1-ctl" data-glue="1" id="seaB"></div>
+  <div id="q8" hidden data-glue="1">
+    <div class="pick" id="p8">
+      <button data-a="1" data-m="맞아요! 겨울에서 여름으로 갈수록 남중 고도가 높아져 그림자가 짧아지고, 여름에서 겨울로 갈수록 남중 고도가 낮아져 그림자가 길어져요.">여름에 가장 짧고, 겨울에 가장 길어요</button>
+      <button data-a="0" data-m="태양 고도가 높을수록 그림자가 어떻게 되었나요?">여름에 가장 길고, 겨울에 가장 짧아요</button>
+      <button data-a="0" data-m="네 계절의 그림자 길이를 다시 비교해 봐요.">계절이 달라도 똑같아요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s9" data-nav="한눈에 쏙">
+  <span class="stage">정리해요 1 · 「과학」 21쪽</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="big">태양의 남중 고도가 높은 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span></span>에는 낮의 길이가 길고, 태양의 남중 고도가 낮은 <span class="blank"><span id="bl3">?</span><span id="bl4">?</span></span>에는 낮의 길이가 짧습니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div><div class="fb" id="blFb"></div>
+</section>
+
+<section id="s10" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <p class="jua big" style="margin-top:10px">2. 같은 시각의 여름과 겨울을 순서 없이 나타낸 그림이에요. 여름일 때는?</p>
+  <div class="c1-lab" data-glue="1"><svg id="q2" class="c1-fit" style="--h:20vh;--ar:3" viewBox="0 0 600 200" role="img" aria-label="같은 시각 두 그림: ㉠ 태양이 낮고 그림자가 긴 모습, ㉡ 태양이 높고 그림자가 짧은 모습"></svg></div>
+  <div class="pick" id="p10" data-glue="1"><button data-a="0" data-m="㉠은 태양이 낮게 떠 있어요.">㉠</button><button data-a="1" data-m="맞아요! 그렇게 생각한 까닭을 써 봐요.">㉡</button></div>
+  <div class="fb"></div>
+  <textarea id="wr" rows="2" placeholder="그렇게 생각한 까닭: 여름일 때 태양의 남중 고도가 …" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wrB">내 답 살펴보기</button></div><div class="fb" id="wrFb"></div>
+</section>
+
+<section id="s11" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 13쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>계절별 태양의 남중 고도와 낮의 길이를 조사하고, 꺾은선그래프로 나타낼 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>계절별 태양의 남중 고도와 낮의 길이의 관계를 설명할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>계절별 태양의 남중 고도와 낮의 길이 그래프를 비교하는 활동에 적극적으로 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 20~21쪽 · 「실험관찰」 12~13쪽 · 지도서 136~143쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+/* ===== 2학기 1단원 계절의 변화 · 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg', RAD=Math.PI/180;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 줄마다 고르기: 상자 안 .c1-rp 줄의 단추 중 data-a="1"이 정답. 모든 줄을 맞히면 끝 */
+function rowsPick(box,okMsg,sec,cb){const rows=$$(box+' .c1-rp'),out=$(box).nextElementSibling,ok=new Set();
+  rows.forEach((r,k)=>{const bs=$$('button',r);bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');ok.add(k);if(ok.size===rows.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m||'맞아요!')+' ('+ok.size+'/'+rows.length+')','info');}
+    else{b.classList.add('wrong');ok.delete(k);fb(out,b.dataset.m||'다시 생각해 봐요.',false);}});});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례대로 누르기: orderer('#box', ['첫째','둘째',…], 다 맞힘 글, 섹션, cb) */
+function orderer(box,steps,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;let n=0;
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.innerHTML='<span class="no"></span>'+s;b.onclick=()=>{if(b.classList.contains('right'))return;
+    if(i===n){b.classList.add('right');$('.no',b).textContent=(n+1)+'.';n++;
+      if(n===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은? ('+n+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,(n+1)+'번째로 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기(키보드도) */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 형성 평가: 고르기와 글쓰기가 모두 끝나야 섹션 완료 */
+function twoDone(sec){let a=false,b=false;return{q(){a=true;if(b)doneNav(sec);},w(){b=true;if(a)doneNav(sec);}};}
+function watchWrite(btn,out,f){$(btn).addEventListener('click',()=>{if($(out).classList.contains('ok'))f();});}
+/* 여러 활동이 다 끝나야 섹션 완료: const A=allDone('s3',2); … A(); */
+function allDone(sec,n,cb){let k=0;return()=>{k++;if(k===n){doneNav(sec);if(cb)cb();}};}
+/* 그림 그리기 도우미 */
+const sv=(tag,a,inner)=>'<'+tag+' '+Object.entries(a).map(([k,v])=>k+'="'+v+'"').join(' ')+(inner==null?'/>':'>'+inner+'</'+tag+'>');
+const tx=(x,y,t,o)=>'<text x="'+x+'" y="'+y+'" font-family="Jua" font-size="'+((o&&o.s)||18)+'" fill="'+((o&&o.c)||'#3b2a10')+'" text-anchor="'+((o&&o.a)||'middle')+'"'+((o&&o.w)?' font-weight="700"':'')+'>'+t+'</text>';
+/* 해 그림 */
+function sunG(x,y,r,glow){r=r||18;let g='<g transform="translate('+x+' '+y+')">';for(let i=0;i<12;i++){const a=i*Math.PI/6;g+='<line x1="'+((r+5)*Math.cos(a)).toFixed(1)+'" y1="'+((r+5)*Math.sin(a)).toFixed(1)+'" x2="'+((r+13)*Math.cos(a)).toFixed(1)+'" y2="'+((r+13)*Math.sin(a)).toFixed(1)+'" stroke="#f0a020" stroke-width="3.5" stroke-linecap="round"/>';}
+  return g+'<circle r="'+r+'" fill="#ffd23f" stroke="#e08a00" stroke-width="3"/>'+(glow?'<circle r="'+(r+20)+'" fill="#ffd23f" opacity=".18"/>':'')+'</g>';}
+/* 각의 호와 글: 꼭짓점 (x,y), 바닥에서 위로 a0~a1(도, 화면 기준 시계 반대), 반지름 r */
+function arcG(x,y,a0,a1,r,col,label){const p=a=>[x+r*Math.cos(a*RAD),y-r*Math.sin(a*RAD)];const [x0,y0]=p(a0),[x1,y1]=p(a1);
+  const big=Math.abs(a1-a0)>180?1:0,sw=a1>a0?0:1;let s='<path d="M'+x0.toFixed(1)+' '+y0.toFixed(1)+' A'+r+' '+r+' 0 '+big+' '+sw+' '+x1.toFixed(1)+' '+y1.toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="3"/>';
+  if(label){const m=(a0+a1)/2,[lx,ly]=[x+(r+22)*Math.cos(m*RAD),y-(r+22)*Math.sin(m*RAD)];s+=tx(lx.toFixed(1),(ly+6).toFixed(1),label,{s:17,c:col});}return s;}
+/* 「실험관찰」 12쪽 예시 답안(2024년 서울특별시, 매월 21일) */
+const MON=[3,4,5,6,7,8,9,10,11,12,1,2],SEA=['봄','봄','봄','여름','여름','여름','가을','가을','가을','겨울','겨울','겨울'];
+const ALT=[52.47,64.27,72.42,75.52,72.44,64.23,52.58,41.29,32.22,29.00,32.30,41.48];
+const DAYM=[[12,10],[13,23],[14,21],[14,45],[14,22],[13,24],[12,12],[11,1],[9,59],[9,33],[10,0],[11,2]];
+const DAY=DAYM.map(([h,m])=>h+m/60),dTxt=k=>DAYM[k][0]+'시간'+(DAYM[k][1]?' '+DAYM[k][1]+'분':'');
+
+/* ---------- 도입 ---------- */
+function houseG(x,y,lit){return '<g transform="translate('+x+' '+y+')"><path d="M0 -40 L40 -70 L80 -40Z" fill="#b8452f"/><rect x="6" y="-40" width="68" height="40" fill="#f3e3c3" stroke="#8a6a3a" stroke-width="2"/><rect x="16" y="-30" width="18" height="16" fill="'+(lit?'#ffe27a':'#9ad0f0')+'" stroke="#8a6a3a"/><rect x="46" y="-30" width="18" height="16" fill="'+(lit?'#ffe27a':'#9ad0f0')+'" stroke="#8a6a3a"/></g>';}
+(function(){let s='<defs><linearGradient id="sm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd0f5"/><stop offset="1" stop-color="#ffe6b8"/></linearGradient><linearGradient id="wn" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0f1a3d"/><stop offset="1" stop-color="#3a3f6e"/></linearGradient></defs>';
+  s+='<rect x="4" y="4" width="380" height="292" rx="12" fill="url(#sm)"/><rect x="4" y="232" width="380" height="64" fill="#7fbf5a"/>'+sunG(320,140,22)+houseG(60,236,false)+'<path d="M200 236 v-50" stroke="#7a5a3a" stroke-width="8"/><circle cx="200" cy="170" r="32" fill="#3f9a3f"/>';
+  s+='<rect x="20" y="14" width="200" height="34" rx="9" fill="#fff"/>'+tx(120,38,'여름 · 오후 6시',{s:20,c:'#b06a00'})+tx(320,190,'서',{s:16,c:'#7a4a00'});
+  s+='<rect x="396" y="4" width="380" height="292" rx="12" fill="url(#wn)"/><rect x="396" y="232" width="380" height="64" fill="#e8eef5"/>';
+  for(let i=0;i<22;i++)s+='<circle cx="'+(410+(i*53)%350)+'" cy="'+(60+(i*37)%150)+'" r="'+(i%4?1.4:2.2)+'" fill="#fff" opacity=".8"/>';
+  s+='<circle cx="700" cy="70" r="20" fill="#fff6c8"/><circle cx="710" cy="64" r="18" fill="#22284e"/>'+houseG(450,236,true)+'<path d="M600 236 v-50 M600 200 l-24 -20 M600 205 l22 -22" stroke="#5a4a3a" stroke-width="6" stroke-linecap="round"/>';
+  s+='<rect x="412" y="14" width="200" height="34" rx="9" fill="#fff"/>'+tx(512,38,'겨울 · 오후 6시',{s:20,c:'#1c4a8a'});
+  $('#intro').innerHTML=s;})();
+pickOne('#p1','','','s1');
+
+/* ---------- 조사 ---------- */
+const found=new Set();
+function tab3(){let h='<tr><th>계절</th><th>월</th><th>태양의 남중 고도(°)</th><th>낮의 길이</th></tr>';
+  MON.forEach((m,k)=>{h+='<tr>'+(k%3===0?'<th rowspan="3">'+SEA[k]+'</th>':'')+'<td>'+m+'월</td><td class="'+(found.has(k)?'':'em')+'">'+(found.has(k)?ALT[k].toFixed(2):'?')+'</td><td class="'+(found.has(k)?'':'em')+'">'+(found.has(k)?dTxt(k):'?')+'</td></tr>';});
+  $('#tab3').innerHTML=h;}
+(function(){const M=$('#mon');['봄','여름','가을','겨울'].forEach((sn,g)=>{const sp=document.createElement('span');sp.textContent=sn;M.appendChild(sp);
+  for(let j=0;j<3;j++){const k=g*3+j,b=document.createElement('button');b.textContent=MON[k]+'월 21일';b.onclick=()=>{found.add(k);b.classList.add('ok');
+    $('#res').innerHTML=(MON[k]<3?'(다음 해) ':'')+MON[k]+'월 21일 · 서울특별시<br>☀️ 오후 12시 30분 태양의 남중 고도: <b>'+ALT[k].toFixed(2)+'°</b><br>🕰️ 낮의 길이: <b>'+dTxt(k)+'</b>';tab3();
+    if(found.size===12){fb('#monFb','열두 달을 모두 조사했어요! 다음 쪽의 표에 정리되었어요.',true);doneNav('s2');}else fb('#monFb','조사한 달: '+found.size+'/12','info');};M.appendChild(b);}});})();
+tab3();
+pickOne('#p3','','','s3');
+
+/* ---------- 그래프 ---------- */
+const PL={x0:70,x1:580,y0:30,y1:250},colX=i=>PL.x0+(PL.x1-PL.x0)/12*(i+.5);
+const G=[{k:'alt',n:'태양의 남중 고도',u:'°',v:ALT,min:20,max:80,step:10,tol:3.2,col:'#e08a00',side:'L',fmt:v=>v.toFixed(2)+'°'},
+         {k:'day',n:'낮의 길이',u:'시간',v:DAY,min:9,max:16,step:1,tol:.38,col:'#1c6fa8',side:'R',fmt:(v,k)=>dTxt(k)}];
+const yOf=(g,v)=>PL.y1-(v-g.min)/(g.max-g.min)*(PL.y1-PL.y0);
+let gi=0;const got=G.map(()=>new Set());
+function drawPlot(){let s='<rect width="640" height="300" fill="#fff"/>';
+  for(let k=0;k<=12;k++){const y=PL.y0+(PL.y1-PL.y0)*k/12;s+='<line x1="'+PL.x0+'" x2="'+PL.x1+'" y1="'+y+'" y2="'+y+'" stroke="#e8eff4"/>';}
+  MON.forEach((m,i)=>{const x=colX(i);s+='<line x1="'+x+'" x2="'+x+'" y1="'+PL.y0+'" y2="'+PL.y1+'" stroke="#eef3f6"/>'+tx(x,PL.y1+20,m,{s:14,c:'#3b4a5a'});});
+  s+=tx((PL.x0+PL.x1)/2,PL.y1+42,'측정 시기(월)',{s:13,c:'#3b4a5a'});
+  G.forEach((g,k)=>{const x=g.side==='L'?PL.x0:PL.x1,a=g.side==='L'?'end':'start',on=k===gi;
+    s+='<line x1="'+x+'" x2="'+x+'" y1="'+(PL.y0-6)+'" y2="'+PL.y1+'" stroke="'+g.col+'" stroke-width="'+(on?3:1.5)+'"/>';
+    for(let v=g.min;v<=g.max+1e-9;v+=g.step){const y=yOf(g,v);s+=tx(a==='end'?x-6:x+6,y+5,v,{s:13,c:g.col,a:a});if(on)s+='<line x1="'+PL.x0+'" x2="'+PL.x1+'" y1="'+y.toFixed(1)+'" y2="'+y.toFixed(1)+'" stroke="'+g.col+'" stroke-opacity=".25"/>';}
+    s+=tx(a==='end'?x-4:x+4,18,g.n+'('+g.u+')',{s:13,c:g.col,a:g.side==='L'?'start':'end'});
+    const pts=[...got[k]].sort((a,b)=>a-b);
+    for(let j=1;j<pts.length;j++)if(pts[j]===pts[j-1]+1)s+='<line x1="'+colX(pts[j-1])+'" y1="'+yOf(g,g.v[pts[j-1]]).toFixed(1)+'" x2="'+colX(pts[j])+'" y2="'+yOf(g,g.v[pts[j]]).toFixed(1)+'" stroke="'+g.col+'" stroke-width="3.5" opacity="'+(on?1:.6)+'"/>';
+    pts.forEach(i=>{s+=(g.k==='alt'?'<circle cx="'+colX(i)+'" cy="'+yOf(g,g.v[i]).toFixed(1)+'" r="6"':'<rect x="'+(colX(i)-6)+'" y="'+(yOf(g,g.v[i])-6).toFixed(1)+'" width="12" height="12"')+' fill="'+g.col+'" stroke="#fff" stroke-width="2" opacity="'+(on?1:.6)+'"/>';});});
+  $('#plot').innerHTML=s;const g=G[gi];$('#plData').textContent=g.n+': '+MON.map((m,i)=>m+'월 '+(g.k==='alt'?g.v[i].toFixed(1):dTxt(i))).join(' · ');}
+function tabs(){$('#tabs').innerHTML='';G.forEach((g,k)=>{const b=document.createElement('button');b.textContent=g.n+' 그래프';b.style.borderColor=g.col;
+  if(k===gi)b.classList.add('on');if(got[k].size===12)b.classList.add('ok');b.onclick=()=>{gi=k;tabs();drawPlot();fb('#plFb',g.n+' 그래프를 그려요. 세로축은 '+(g.side==='L'?'왼쪽':'오른쪽')+' 눈금을 봐요.','info');};$('#tabs').appendChild(b);});}
+function placed(i){const g=G[gi];got[gi].add(i);drawPlot();
+  if(got[gi].size===12){tabs();const left=G.findIndex((x,k)=>got[k].size<12);
+    if(left<0){fb('#plFb','두 그래프를 모두 그렸어요! 두 그래프가 함께 오르내리는 모습을 비교해 봐요.',true);doneNav('s4');}
+    else fb('#plFb',g.n+' 그래프 완성! 이번에는 ‘'+G[left].n+' 그래프’를 골라 그려요.',true);}
+  else fb('#plFb',MON[i]+'월 점을 찍었어요. ('+got[gi].size+'/12)','info');}
+$('#plot').addEventListener('click',e=>{const svg=$('#plot'),pt=svg.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const p=pt.matrixTransform(svg.getScreenCTM().inverse());
+  const g=G[gi];if(p.x<PL.x0||p.x>PL.x1)return;const i=Math.max(0,Math.min(11,Math.floor((p.x-PL.x0)/((PL.x1-PL.x0)/12))));
+  if(got[gi].has(i)){fb('#plFb',MON[i]+'월에는 이미 점을 찍었어요.','info');return;}
+  const v=g.min+(PL.y1-p.y)/(PL.y1-PL.y0)*(g.max-g.min);
+  if(Math.abs(v-g.v[i])<=g.tol)placed(i);
+  else fb('#plFb',MON[i]+'월의 '+g.n+'는 '+g.fmt(g.v[i],i)+'예요. '+(g.side==='L'?'왼쪽':'오른쪽')+' 눈금을 보고 '+(v>g.v[i]?'조금 더 아래':'조금 더 위')+'를 눌러 봐요.',false);});
+$('#plHelp').onclick=()=>{for(let i=0;i<12;i++)if(!got[gi].has(i)){placed(i);return;}};
+tabs();drawPlot();
+rowsPick('#rp5','모두 맞혔어요! 태양의 남중 고도와 낮의 길이는 모두 6월(여름)에 가장 높고(길고), 12월(겨울)에 가장 낮아요(짧아요).','s5');
+
+/* ---------- 계절별 태양의 길 ---------- */
+const HZ={cx:400,cy:262,rx:300,ry:62};
+const hp=phi=>[HZ.cx+HZ.rx*Math.cos(phi*RAD),HZ.cy+HZ.ry*Math.sin(phi*RAD)];
+const PATHS=[{n:'여름(6월 21일 무렵)',c:'#e2573f',rise:212,set:328,alt:76,k:3},{n:'봄·가을(3월 21일, 9월 23일 무렵)',c:'#16804a',rise:180,set:360,alt:52.5,k:0},{n:'겨울(12월 21일 무렵)',c:'#1c6fa8',rise:148,set:32,alt:29,k:9}];
+function pathPts(P){const [x0,y0]=hp(P.rise),[x2,y2]=hp(P.set),py=HZ.cy+HZ.ry-P.alt*3.15,cx=HZ.cx,cy=2*py-(y0+y2)/2;return {x0,y0,x2,y2,cx,cy,at:u=>[(1-u)*(1-u)*x0+2*(1-u)*u*cx+u*u*x2,(1-u)*(1-u)*y0+2*(1-u)*u*cy+u*u*y2]};}
+function drawDome(t){let s='<rect width="800" height="360" fill="#e6f4fc"/>';
+  s+='<ellipse cx="'+HZ.cx+'" cy="'+HZ.cy+'" rx="'+HZ.rx+'" ry="'+HZ.ry+'" fill="#b8d98f" stroke="#6f9a4a" stroke-width="2"/>';
+  [[180,'동'],[0,'서'],[90,'남'],[270,'북']].forEach(([a,n])=>{const [x,y]=hp(a);const dx=a===180?-24:a===0?24:0,dy=a===90?26:a===270?-10:6;s+=tx(x+dx,y+dy,n,{s:20,c:'#3b2a10'});});
+  s+='<circle cx="'+HZ.cx+'" cy="'+HZ.cy+'" r="6" fill="#3b2a10"/>'+tx(HZ.cx,HZ.cy+22,'관측자',{s:13,c:'#3b2a10'});
+  const which=t<6?[0]:t<12?[0,1]:t<18?[0,1,2]:[0,1,2];
+  which.forEach(j=>{const P=PATHS[j],Q=pathPts(P);s+='<path d="M'+Q.x0.toFixed(1)+' '+Q.y0.toFixed(1)+' Q'+Q.cx.toFixed(1)+' '+Q.cy.toFixed(1)+' '+Q.x2.toFixed(1)+' '+Q.y2.toFixed(1)+'" fill="none" stroke="'+P.c+'" stroke-width="4" stroke-dasharray="'+(t>=18?'0':'8 6')+'"/>';
+    const [mx,my]=Q.at(.5);s+='<line x1="'+HZ.cx+'" y1="'+HZ.cy+'" x2="'+mx.toFixed(1)+'" y2="'+my.toFixed(1)+'" stroke="'+P.c+'" stroke-width="1.5" stroke-dasharray="3 4" opacity=".7"/>';});
+  /* 지금 움직이는 해 */
+  const cur=t<6?0:t<12?1:t<18?2:-1;
+  if(cur>=0){const P=PATHS[cur],Q=pathPts(P),u=Math.min(1,((t%6)-0.5)/4.5);if(u>=0){const [x,y]=Q.at(u);s+=sunG(x,y,15);}
+    s+='<rect x="16" y="14" width="370" height="64" rx="12" fill="#fff" stroke="'+P.c+'" stroke-width="3"/>'+tx(200,40,P.n,{s:19,c:P.c})+tx(200,68,'남중 고도 약 '+ALT[P.k].toFixed(0)+'° · 낮의 길이 '+dTxt(P.k),{s:17,c:'#3b2a10'});}
+  else{s+='<rect x="16" y="14" width="420" height="96" rx="12" fill="#fff"/>';PATHS.forEach((P,j)=>{s+='<rect x="30" y="'+(26+j*28)+'" width="22" height="8" fill="'+P.c+'"/>'+tx(62,36+j*28,P.n.split('(')[0]+': 남중 고도 약 '+ALT[P.k].toFixed(0)+'°, 낮 '+dTxt(P.k),{s:16,c:'#3b2a10',a:'start'});});
+    s+='<rect x="470" y="300" width="316" height="44" rx="12" fill="#ffe680"/>'+tx(628,329,'남중 고도가 높을수록 낮이 길어요',{s:19,c:'#7a2a1f'});}
+  s+=tx(790,352,'(서울, 크기·모양은 쉽게 나타낸 그림)',{s:12,c:'#5a6a7a',a:'end'});
+  $('#dome').innerHTML=s;}
+mkPlayer({root:'#pl6',end:24,ch:[[0,'① 여름','여름에는 태양이 남쪽 하늘 높이 지나가요. 남중 고도가 높고, 태양이 지나는 길이 길어 하늘에 떠 있는 시간이 길어요.'],
+  [6,'② 봄·가을','봄과 가을에는 태양의 남중 고도와 낮의 길이가 여름과 겨울의 중간 정도예요.'],
+  [12,'③ 겨울','겨울에는 태양이 남쪽 하늘 낮게 지나가요. 남중 고도가 낮고, 태양이 지나는 길이 짧아 낮의 길이가 짧아요.'],
+  [18,'④ 비교','태양의 남중 고도가 높을수록 태양이 지평선 위에 떠 있는 시간이 길어져 낮의 길이가 길어져요.']],
+  draw:drawDome,done(){fb('#pl6Fb','끝까지 봤어요. 남중 고도가 높은 여름에는 낮이 길고, 남중 고도가 낮은 겨울에는 낮이 짧아요.',true);doneNav('s6');}});
+
+const A7=allDone('s7',2);
+pickOne('#p7','','',null,A7);
+rowsPick('#rp7','맞아요! 여름에서 겨울로 갈수록 태양의 남중 고도는 낮아지고, 낮의 길이는 짧아져요.',null,A7);
+
+/* ---------- 나무 그림자 ---------- */
+const SE=[{n:'봄',k:0,c:'#f39bb5'},{n:'여름',k:3,c:'#3f9a3f'},{n:'가을',k:6,c:'#e08a00'},{n:'겨울',k:9,c:'#9aa9b4'}];const seen=new Set();let si=1;
+function drawTree(){const S=SE[si],A=ALT[S.k],H=120,L=H/Math.tan(A*RAD),X=200,Y=250;let s='<rect width="780" height="300" fill="#eaf6fd"/><rect y="'+Y+'" width="780" height="50" fill="'+(si===3?'#eef3f8':'#b8d98f')+'"/>';
+  const sx=X-170*Math.cos(A*RAD),sy=(Y-H)-170*Math.sin(A*RAD)+40;s+=sunG(Math.max(30,sx),Math.max(30,sy),18);
+  s+='<line x1="'+Math.max(30,sx).toFixed(1)+'" y1="'+Math.max(30,sy).toFixed(1)+'" x2="'+(X+L).toFixed(1)+'" y2="'+Y+'" stroke="#f0a020" stroke-width="2" stroke-dasharray="7 5"/>';
+  s+='<polygon points="'+(X-6)+','+Y+' '+(X+L).toFixed(1)+','+(Y+2)+' '+(X+L-10).toFixed(1)+','+(Y+14)+' '+(X-6)+','+(Y+12)+'" fill="#333" opacity=".35"/>';
+  s+='<rect x="'+(X-8)+'" y="'+(Y-70)+'" width="16" height="70" fill="#8a5a2a"/>';
+  if(si===3)s+='<path d="M'+X+' '+(Y-60)+' l-30 -50 M'+X+' '+(Y-70)+' l26 -48 M'+X+' '+(Y-40)+' l36 -30" stroke="#8a5a2a" stroke-width="6" stroke-linecap="round"/>';
+  else s+='<circle cx="'+X+'" cy="'+(Y-H+30)+'" r="46" fill="'+S.c+'"/>';
+  s+='<line x1="'+X+'" x2="'+(X+L).toFixed(1)+'" y1="'+(Y+30)+'" y2="'+(Y+30)+'" stroke="#6a4fa3" stroke-width="4"/>';
+  s+='<rect x="520" y="30" width="240" height="100" rx="12" fill="#fff" stroke="#c9861a" stroke-width="2"/>'+tx(640,62,S.n+' · 오후 12시 30분 무렵',{s:18,c:'#7a4a00'})+tx(640,92,'남중 고도 약 '+A.toFixed(0)+'°',{s:18,c:'#c2332c'})+tx(640,118,'그림자 길이 '+(L/H).toFixed(1)+' 배(나무 높이의)',{s:16,c:'#6a4fa3'});
+  $('#tree').innerHTML=s;}
+SE.forEach((S,k)=>{const b=document.createElement('button');b.textContent=S.n;b.onclick=()=>{si=k;seen.add(k);$$('#seaB button').forEach((x,j)=>x.classList.toggle('done',seen.has(j)));drawTree();if(seen.size===4)$('#q8').hidden=false;};$('#seaB').appendChild(b);});
+$('#seaB').insertAdjacentHTML('beforeend','<span class="c1-note">네 계절을 모두 눌러 비교해요.</span>');
+drawTree();pickOne('#p8','','','s8');
+
+$('#blReveal').onclick=()=>{fb('#blFb','태양의 남중 고도가 높은 여름에는 낮의 길이가 길고, 태양의 남중 고도가 낮은 겨울에는 낮의 길이가 짧습니다.',true);doneNav('s9');};
+
+/* ---------- 형성 평가 ---------- */
+const T10=twoDone('s10');
+quiz('#quiz',[{q:'1. 다음에 해당하는 계절은? <br>· 태양의 남중 고도가 가장 낮다. · 낮의 길이가 가장 짧다.',o:['봄','여름','가을','겨울'],a:3,e:'겨울에는 태양의 남중 고도가 가장 낮고, 낮의 길이가 가장 짧아요.',h:'12월의 자료를 떠올려 봐요.'}],()=>{q10a=true;if(q10b)T10.q();});
+let q10a=false,q10b=false;
+(function(){let s='';[['㉠',38,150],['㉡',72,40]].forEach(([n,A,sy],k)=>{const ox=k*304,X=150,Y=170,H=60,L=H/Math.tan(A*RAD);
+  s+='<g transform="translate('+ox+' 0)"><rect x="4" y="4" width="292" height="192" rx="12" fill="#eaf6fd"/><rect x="4" y="'+Y+'" width="292" height="26" fill="#b8d98f"/>'+sunG(X-110*Math.cos(A*RAD),Y-H-90*Math.sin(A*RAD)+ (k?40:10),14);
+  s+='<ellipse cx="'+(X+L/2)+'" cy="'+(Y+5)+'" rx="'+(L/2)+'" ry="5" fill="#333" opacity=".35"/><rect x="'+(X-5)+'" y="'+(Y-H)+'" width="10" height="'+H+'" fill="#8a5a2a"/><circle cx="'+X+'" cy="'+(Y-H)+'" r="22" fill="#3f9a3f"/>';
+  s+='<circle cx="30" cy="30" r="18" fill="#fff" stroke="#3b2a10" stroke-width="2"/>'+tx(30,37,n,{s:20})+'</g>';});$('#q2').innerHTML=s;})();
+pickOne('#p10','','',null,()=>{q10b=true;if(q10a)T10.q();});
+keyCheck('#wr','#wrB','#wrFb',[[/남중 ?고도/,'태양의 남중 고도'],[/(높|더 높)/,'여름에 더 높음'],[/(그림자|짧)/,'그림자가 짧음'],[/(겨울보다|여름)/,'여름과 겨울 비교']],2,null,'‘여름일 때 태양의 남중 고도가 겨울보다 더 높기 때문이다.’처럼 써 봐요.');
+watchWrite('#wrB','#wrFb',()=>T10.w());
+faces('s11','멋져요! 다음 시간에는 태양 고도와 태양 에너지양의 관계를 알아봐요.','어려웠던 부분은 그래프와 태양의 길 영상을 다시 보며 정리해 봐요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"여","bl2":"름","bl3":"겨","bl4":"울"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>
