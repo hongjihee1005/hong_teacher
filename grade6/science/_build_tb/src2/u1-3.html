@@ -394,7 +394,7 @@ function drawTree(){const S=SE[si],A=ALT[S.k],H=120,L=H/Math.tan(A*RAD),X=200,Y=
   if(si===3)s+='<path d="M'+X+' '+(Y-60)+' l-30 -50 M'+X+' '+(Y-70)+' l26 -48 M'+X+' '+(Y-40)+' l36 -30" stroke="#8a5a2a" stroke-width="6" stroke-linecap="round"/>';
   else s+='<circle cx="'+X+'" cy="'+(Y-H+30)+'" r="46" fill="'+S.c+'"/>';
   s+='<line x1="'+X+'" x2="'+(X+L).toFixed(1)+'" y1="'+(Y+30)+'" y2="'+(Y+30)+'" stroke="#6a4fa3" stroke-width="4"/>';
-  s+='<rect x="520" y="30" width="240" height="100" rx="12" fill="#fff" stroke="#c9861a" stroke-width="2"/>'+tx(640,62,S.n+' · 오후 12시 30분 무렵',{s:18,c:'#7a4a00'})+tx(640,92,'남중 고도 약 '+A.toFixed(0)+'°',{s:18,c:'#c2332c'})+tx(640,118,'그림자 길이 '+(L/H).toFixed(1)+' 배(나무 높이의)',{s:16,c:'#6a4fa3'});
+  s+='<rect x="520" y="30" width="240" height="100" rx="12" fill="#fff" stroke="#c9861a" stroke-width="2"/>'+tx(640,62,S.n+' · 오후 12시 30분 무렵',{s:18,c:'#7a4a00'})+tx(640,92,'남중 고도 약 '+A.toFixed(0)+'°',{s:18,c:'#c2332c'})+tx(640,118,'그림자: 나무 높이의 약 '+(L/H).toFixed(1)+'배',{s:16,c:'#6a4fa3'});
   $('#tree').innerHTML=s;}
 SE.forEach((S,k)=>{const b=document.createElement('button');b.textContent=S.n;b.onclick=()=>{si=k;seen.add(k);$$('#seaB button').forEach((x,j)=>x.classList.toggle('done',seen.has(j)));drawTree();if(seen.size===4)$('#q8').hidden=false;};$('#seaB').appendChild(b);});
 $('#seaB').insertAdjacentHTML('beforeend','<span class="c1-note">네 계절을 모두 눌러 비교해요.</span>');
@@ -411,7 +411,7 @@ let q10a=false,q10b=false;
   s+='<ellipse cx="'+(X+L/2)+'" cy="'+(Y+5)+'" rx="'+(L/2)+'" ry="5" fill="#333" opacity=".35"/><rect x="'+(X-5)+'" y="'+(Y-H)+'" width="10" height="'+H+'" fill="#8a5a2a"/><circle cx="'+X+'" cy="'+(Y-H)+'" r="22" fill="#3f9a3f"/>';
   s+='<circle cx="30" cy="30" r="18" fill="#fff" stroke="#3b2a10" stroke-width="2"/>'+tx(30,37,n,{s:20})+'</g>';});$('#q2').innerHTML=s;})();
 pickOne('#p10','','',null,()=>{q10b=true;if(q10a)T10.q();});
-keyCheck('#wr','#wrB','#wrFb',[[/남중 ?고도/,'태양의 남중 고도'],[/(높|더 높)/,'여름에 더 높음'],[/(그림자|짧)/,'그림자가 짧음'],[/(겨울보다|여름)/,'여름과 겨울 비교']],2,null,'‘여름일 때 태양의 남중 고도가 겨울보다 더 높기 때문이다.’처럼 써 봐요.');
+keyCheck('#wr','#wrB','#wrFb',[[/여름(?:(?!겨울|낮)[^.])*(높|크)|(남중 ?고도|태양 ?고도|태양이|태양의 높이)(?:(?!낮)[^.,])*(높|크)/,'태양의 남중 고도가 더 높음']],1,null,'‘여름일 때 태양의 남중 고도가 겨울보다 더 높기 때문이다.’처럼 써 봐요.');
 watchWrite('#wrB','#wrFb',()=>T10.w());
 faces('s11','멋져요! 다음 시간에는 태양 고도와 태양 에너지양의 관계를 알아봐요.','어려웠던 부분은 그래프와 태양의 길 영상을 다시 보며 정리해 봐요.');
 </script>
