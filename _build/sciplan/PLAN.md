@@ -11,7 +11,7 @@
 | 3 | 5학년 1학기 | ✅ 27개 열림(2026-10-24, main) |
 | 4 | 5학년 2학기 | ✅ 25개 열림(2026-10-24, main) |
 | 5 | 6학년 1학기 | 🔶 지도서 4개 글 뽑음(g6/s611~614), `grade6/science/_build_tb/` 준비, 단원 작성 중(u1 7·u2 7·u3 8·u4 6) |
-| 6 | 6학년 2학기 | ⏳ |
+| 6 | 6학년 2학기 | 🔶 1·2·4단원 지도서 글 뽑음(g6/s621·622·624), `UNITS2`·BRIEF 2학기 절 준비, 작성 중(u1 6·u2 6·u4 5 = 17개). **3단원은 지도서 PDF 62MB라 읽지 못함 → 선생님께 10MB 이하로 나눠 올려 달라고 요청** |
 
 (학기를 마칠 때마다 이 표를 고치고 커밋하세요. **덜 만든 학기 파일(src2·sem2 등)이 작업 브랜치에 커밋돼 있으면 main에 올리기 전에 `git rm -r --cached`로 빼고 올리세요** — 자동 보완이 그 원본으로 빌드해 버림.)
 
@@ -31,6 +31,7 @@
 - 5-2: `5_2_과학_1~4_지도서.pdf` (1fuFs4Sd9qXV6Hre6kHIYr7_ek_dazt-j · 1EFMfEgQ74TCfJIJBHpzrsZPQ7PXS3R-t · 1d1EircYfVPYcUkhA0dp14t1Or8YbbvSb · 1RsVOZm_hL44F3Tz6DbfekxnR_vow6bWq)
 - 6-1: `[과학] 6-1-1~4_지도서.pdf` (1pkudr1C4MG576If8gShmFrte1QWLMuz8 · 15YWuuWJI-rgHgIxePMdU_V2fESi06Y8i · 1w951PFiS07lIz7hrRv254Oc7RXIHl3Qq · 1X9jWxrl6oD_jxusczxUaJPBvuhrt9yph)
 - 6-2: `6_2_과학_1~4_지도서.pdf` (1rXfq73CPL8QkpjU-TrMGgx5V42NSkBaR · 11EJ641CGW1XpCLwrQrz3MXexVaMDXM09 · 1hXkJRDaRH4OpR-l0AzioK3SQ-c1Y217- · 1M_SoqMUceIw_euNa2YgQVusCyRLiK3VP)
+- 6-2-3: `6_2_과학_3_지도서.pdf`(1hXkJRDaRH4OpR-l0AzioK3SQ-c1Y217-, 62MB, 글 뽑기 안 됨 — 나눈 파일을 기다림)
 - 4-2-1: `4_2_과학_1_지도서.pdf`(1TU6IgUvQKkEn4RdtkTCfs6fo0JrfqC3v, 83MB, 글 뽑기 안 됨 — 나눈 파일을 기다림)
 
 ## 지킬 것

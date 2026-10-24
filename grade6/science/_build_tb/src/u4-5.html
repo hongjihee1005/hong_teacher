@@ -1,0 +1,382 @@
+<!--
+title: 계절에 따라 달라지는 별자리가 궁금해!
+unit: 4
+lesson: 7
+total: 11
+goal: 천체 관측 프로그램을 이용해 계절별 대표적인 별자리를 관찰할 수 있어요.<br>계절에 따라 보이는 별자리가 달라지는 까닭을 지구의 공전으로 설명할 수 있어요.
+pages: 「과학」 98~101쪽 · 「실험관찰」 62~63쪽 · 지도서 388~395쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"계","bl2":"절"}}]
+-->
+<style>
+/* 4단원 지구의 운동 · 교과서 버전 공통 */
+[hidden]{display:none!important}
+.e4-lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.e4-lab svg{display:block;width:100%;height:auto;margin:0 auto}
+/* 그림을 화면 높이에 맞추되 옆 빈틈 없이: style="--h:40vh;--ar:2.1" (가로/세로) */
+svg.e4-fit,.e4-lab svg.e4-fit{width:min(100%,calc(var(--h,40vh)*var(--ar,2)));height:auto;max-height:none}
+.e4-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(8px,1vw,16px);align-items:start}
+.e4-two>*{min-width:0}
+@media(max-width:700px){.e4-two{grid-template-columns:1fr}}
+.e4-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.e4-ctl button{font-size:.92rem;min-height:2.3rem;padding:.2em .8em}
+.e4-ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.e4-ctl button[disabled]{opacity:.45;cursor:default}
+.e4-ctl .jua{font-size:.98rem}
+.e4-q{font-family:"Jua",sans-serif;font-size:1.06rem;margin:10px 0 6px}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:8px 12px;font-size:.95rem}
+.big{font-size:1.08rem}
+.e4-rp{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 0;border-bottom:2px dashed var(--line)}
+.e4-rp .q{flex:1 1 40%;font-family:"Jua",sans-serif;min-width:10em}
+.e4-rp button{min-height:2.3rem;padding:.15em .8em;font-size:.95rem}
+.e4-note{font-size:.88rem;color:var(--muted);margin:4px 0 0}
+/* 나누기 카드 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+#quiz>div{margin-bottom:6px}
+@media (max-width:600px){.t3sort,.t3match{grid-template-columns:1fr}}
+.c5-phone{background:#1d2333;border-radius:22px;padding:10px;border:3px solid var(--navy)}
+.c5-phone svg{display:block;border-radius:12px;margin:0 auto}
+.c5-days button.cur{background:var(--sun);border-color:#b8860b;color:#3a2a00}
+.c5-got{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.c5-got span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:2px 10px;font-size:.9rem;font-family:"Jua",sans-serif}
+.c5-got span.no{background:var(--bg);color:var(--muted)}
+.c5-card{border:3px solid var(--line);border-radius:16px;padding:10px 14px;background:var(--paper)}
+#st3{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+#st3 .it{padding:5px 8px;gap:4px}
+#st3 .it .bs button{min-height:1.9rem;padding:.05em .55em;font-size:.85rem}
+@media(max-width:600px){#st3{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 98쪽</span>
+  <h2>별자리를 보고 어떤 동물이 떠올랐나요?</h2>
+  <p>옛날 사람들은 밤하늘에 무리 지어 있는 별을 이어 신화 속 인물이나 동물, 물건 등의 이름을 붙였어요. 이것이 별자리예요.</p>
+  <div class="e4-lab"><svg id="cyg" class="e4-fit" style="--h:28vh;--ar:1.6" viewBox="0 0 480 300" role="img" aria-label="밝은 별들을 선으로 이은 별자리 그림"></svg></div>
+  <div class="pick" id="p1" data-glue="1">
+    <button data-m="그렇게 보이죠? 이 별자리는 하늘을 나는 백조 모양이라서 ‘백조자리’예요. 여름철 밤하늘에서 볼 수 있어요.">날개를 펴고 나는 새</button>
+    <button data-m="재미있는 생각이에요. 옛날 사람들은 이 별들을 날개를 편 백조로 보아 ‘백조자리’라고 불렀어요.">헤엄치는 물고기</button>
+    <button data-m="그렇게도 보여요! 이 별자리는 날개를 편 백조 모양이라 ‘백조자리’라고 해요.">다른 것이 떠올라요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="e4-q" data-glue="1">계절마다 밤하늘에 보이는 별자리는 어떨까요?</p>
+  <div class="pick" id="p1b" data-glue="1">
+    <button data-m="좋은 예상이에요. 천체 관측 프로그램으로 확인해 봐요.">계절마다 다를 것 같아요</button>
+    <button data-m="좋은 예상이에요. 천체 관측 프로그램으로 확인해 봐요.">일 년 내내 같을 것 같아요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="활동해요">
+  <span class="stage">활동해요 1~4 · 「과학」 99쪽 · 「실험관찰」 62쪽</span>
+  <h2>천체 관측 프로그램으로 계절별 대표적인 별자리를 관찰해요</h2>
+  <p>남쪽 하늘, <b>오후 9시</b>로 맞췄어요. 날짜 단추로 계절을 바꾸고, 별자리를 눌러 이름을 확인해요. 계절마다 <b>대표적인 별자리 3개</b>를 찾으면 붙임딱지가 붙어요.</p>
+  <div class="c5-phone"><svg id="sky" class="e4-fit" style="--h:42vh;--ar:2.105" viewBox="0 0 800 380" role="img" aria-label="천체 관측 프로그램의 남쪽 하늘 화면"></svg></div>
+  <div class="e4-ctl c5-days" id="days" data-glue="1"></div>
+  <div class="c5-got" id="got" data-glue="1"></div>
+  <div class="fb" id="skyFb"></div>
+  <p class="tip">⚠️ 스마트 기기로는 수업에 필요한 누리집과 프로그램만 열어요. 별자리 선을 켜고 대기 효과를 끈 화면이에요.</p>
+</section>
+
+<section id="s3" data-nav="붙임딱지">
+  <span class="stage">활동해요 · 「실험관찰」 62~63쪽</span>
+  <h2>계절별 대표적인 별자리 붙임딱지를 붙여요</h2>
+  <p>프로그램에서 관찰한 것을 떠올려, 별자리 이름 카드마다 알맞은 계절을 눌러요. (잘 모르겠으면 앞 화면에서 다시 확인해도 돼요.)</p>
+  <div class="t3sort" id="st3"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="위치 변화">
+  <span class="stage">활동해요 5 · 「실험관찰」 63쪽</span>
+  <h2>계절이 바뀌면 이전 계절의 별자리는 어디에 보일까요?</h2>
+  <p>여름(7월 15일) 오후 9시 하늘에서 봄철 대표 별자리인 <b>사자자리</b>를 찾아봐요. 앞의 프로그램 화면에서 ‘여름’을 누르고 확인해도 좋아요.</p>
+  <div class="c5-phone"><svg id="sky2" class="e4-fit" style="--h:30vh;--ar:2.105" viewBox="0 0 800 380" role="img" aria-label="7월 15일 오후 9시 하늘에서 사자자리가 보이는 곳"></svg></div>
+  <p class="e4-q" data-glue="1">계절이 바뀌었을 때, 이전 계절의 별자리는 어느 쪽 하늘에서 보이나요?</p>
+  <div class="pick" id="p4" data-glue="1"><button data-a="0" data-m="사자자리가 있는 곳을 다시 봐요.">동쪽 하늘</button><button data-a="0" data-m="봄에는 남쪽 하늘에 있었어요. 여름에는 어디로 옮겨 갔나요?">남쪽 하늘</button><button data-a="1" data-m="맞아요! 계절이 바뀌면 이전 계절의 별자리는 서쪽 하늘에서 보여요. 여름철 독수리자리도 가을에는 서쪽 하늘에서 보여요.">서쪽 하늘</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s5" data-nav="까닭">
+  <span class="stage">정리해요 · 「과학」 99쪽</span>
+  <h2>계절에 따라 보이는 별자리가 달라지는 까닭</h2>
+  <p>계절을 눌러 지구를 옮겨 봐요. 밤이 되는 쪽(태양 반대쪽)에 있는 별자리가 보여요. <span class="e4-note">※ 크기와 거리는 실제와 달라요.</span></p>
+  <div class="e4-lab"><svg id="orb" class="e4-fit" style="--h:36vh;--ar:2" viewBox="0 0 800 400" role="img" aria-label="태양 둘레를 공전하는 지구와 바깥쪽의 계절별 별자리"></svg></div>
+  <div class="e4-ctl" id="seas" data-glue="1"></div>
+  <div class="fb" id="orbFb"></div>
+  <div id="ask5" hidden data-glue="1">
+    <p class="e4-q">여름철에 겨울철 대표적인 별자리를 볼 수 없는 까닭은?</p>
+    <div class="pick" id="p5"><button data-a="1" data-m="맞아요! 여름철 지구에서 보면 겨울철 별자리는 태양과 같은 방향에 있어요. 태양 빛 때문에 볼 수 없어요.">겨울철 별자리가 태양과 같은 방향에 있기 때문이에요</button><button data-a="0" data-m="별자리는 사라지지 않아요. 여름 위치의 지구에서 겨울철 별자리는 어느 방향에 있나요?">겨울철 별자리가 여름에는 사라지기 때문이에요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s6" data-nav="정리해요">
+  <span class="stage">정리해요 1~2 · 「실험관찰」 63쪽</span>
+  <h2>계절별 별자리를 정리해요</h2>
+  <div id="rp6">
+    <div class="e4-rp"><span class="q">같은 시각에 보이는 별자리는 계절에 따라</span><button data-a="1" data-m="맞아요!">달라져요</button><button data-a="0" data-m="봄과 겨울 화면을 견주어 봐요.">같아요</button></div>
+    <div class="e4-rp"><span class="q">그 까닭은 지구가</span><button data-a="0" data-m="자전은 하루 동안 별의 위치가 달라지는 까닭이에요.">자전하기 때문</button><button data-a="1" data-m="맞아요! 공전하기 때문에 일 년 동안 지구의 위치가 달라져요.">공전하기 때문</button></div>
+    <div class="e4-rp"><span class="q">일 년 동안 달라지는 것은 지구의</span><button data-a="1" data-m="맞아요! 지구의 위치에 따라 계절별로 밤하늘에 보이는 별자리가 달라져요.">위치</button><button data-a="0" data-m="공전하면서 태양 둘레의 어디에 있는지가 달라져요.">크기</button></div>
+  </div>
+  <div class="fb"></div>
+  <p class="warn" id="note6" hidden data-glue="1">💡 계절별 대표적인 별자리가 그 계절에만 보이는 것은 아니에요. 예를 들어, 독수리자리는 여름철에 가장 잘 보이지만 봄철과 가을철에도 볼 수 있어요.</p>
+</section>
+
+<section id="s7" data-nav="체험 더하기">
+  <span class="stage">체험 더하기 · 「과학」 100~101쪽</span>
+  <h2>우주를 체험해 볼 수 있는 천체 투영관</h2>
+  <div class="e4-two">
+    <div class="e4-lab"><svg id="dome" viewBox="0 0 400 240" role="img" aria-label="돔 모양 천체 투영관 안에서 밤하늘 영상을 보는 모습"></svg></div>
+    <div class="c5-card"><p>돔 모양으로 만들어진 <b>천체 투영관</b>에서는 낮과 밤, 날씨의 맑고 흐림에 상관없이 밤하늘 영상을 볼 수 있어요. 별과 별자리, 행성이 움직이는 모습을 입체 영상으로 보고, 천문 해설사 선생님의 계절별 별자리 이야기도 들을 수 있어요.</p>
+      <p class="e4-note">가고 싶은 천체 투영관이나 천문 과학관을 찾아보고, 예약한 뒤 보호자와 함께 방문해요.</p></div>
+  </div>
+  <p class="e4-q" data-glue="1">비가 오는 낮에도 천체 투영관에서 밤하늘을 볼 수 있을까요?</p>
+  <div class="pick" id="p7" data-glue="1"><button data-a="1" data-m="맞아요! 천체 투영관은 돔 화면에 밤하늘을 보여 주므로 낮이든 날씨가 흐리든 별자리를 볼 수 있어요.">볼 수 있어요</button><button data-a="0" data-m="천체 투영관은 진짜 하늘이 아니라 돔 화면에 밤하늘 영상을 보여 줘요.">볼 수 없어요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에 1</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="big">지구의 공전으로 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span></span>에 따라 밤하늘에 보이는 별자리가 달라집니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div><div class="fb" id="blFb"></div>
+</section>
+
+<section id="s9" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua big">1. 계절별 대표적인 별자리에 관한 설명으로 옳은 것을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p9" data-glue="1">
+    <button data-a="1" data-m="맞아요!">㉠ 계절마다 대표적인 별자리는 다르다.</button>
+    <button data-a="0" data-m="교과서에서는 계절마다 세 개씩 보여 주었고, 그 밖에도 많은 별자리가 있어요.">㉡ 계절별 대표적인 별자리는 두 개이다.</button>
+    <button data-a="1" data-m="맞아요!">㉢ 봄철 대표적인 별자리는 가을철에는 보기 어렵다.</button>
+    <button data-a="0" data-m="계절별 별자리가 달라지는 것은 지구의 공전으로 설명해요.">㉣ 계절별 대표적인 별자리는 지구의 자전으로 설명할 수 있다.</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua big" style="margin-top:12px">2. 계절에 따라 보이는 별자리가 달라지는 까닭을 써 봐요.</p>
+  <textarea id="wr" rows="3" placeholder="지구는 태양을 중심으로 ~. 지구가 공전하면서 ~" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wrB">내 답 살펴보기</button></div><div class="fb" id="wrFb"></div>
+</section>
+
+<section id="s10" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 63쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>계절에 따라 보이는 별자리가 달라지는 까닭을 지구의 공전으로 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>천체 관측 프로그램을 이용해 계절별 대표적인 별자리를 관찰할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>계절별 별자리에 관심을 가지고 흥미와 호기심을 느꼈어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 4단원 지구의 운동 · 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg', RAD=Math.PI/180;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 줄마다 고르기: 상자 안 .e4-rp 줄의 단추 중 data-a="1"이 정답. 모든 줄을 맞히면 끝 */
+function rowsPick(box,okMsg,sec,cb){const rows=$$(box+' .e4-rp'),out=$(box).nextElementSibling,ok=new Set();
+  rows.forEach((r,k)=>{const bs=$$('button',r);bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');ok.add(k);if(ok.size===rows.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m||'맞아요!')+' ('+ok.size+'/'+rows.length+')','info');}
+    else{b.classList.add('wrong');ok.delete(k);fb(out,b.dataset.m||'다시 생각해 봐요.',false);}});});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기(키보드도) */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 형성 평가: 고르기와 글쓰기가 모두 끝나야 섹션 완료 */
+function twoDone(sec){let a=false,b=false;return{q(){a=true;if(b)doneNav(sec);},w(){b=true;if(a)doneNav(sec);}};}
+function watchWrite(btn,out,f){$(btn).addEventListener('click',()=>{if($(out).classList.contains('ok'))f();});}
+/* 그림 그리기 도우미 */
+const sv=(tag,a,inner)=>'<'+tag+' '+Object.entries(a).map(([k,v])=>k+'="'+v+'"').join(' ')+(inner==null?'/>':'>'+inner+'</'+tag+'>');
+const tx=(x,y,t,o)=>'<text x="'+x+'" y="'+y+'" font-family="Jua" font-size="'+((o&&o.s)||18)+'" fill="'+((o&&o.c)||'#0f3b5c')+'" text-anchor="'+((o&&o.a)||'middle')+'"'+((o&&o.w)?' font-weight="700"':'')+'>'+t+'</text>';
+/* ===== 천체 위치 계산(서울 북위 37.57°, 동경 126.98°) — 실제 하늘과 같게 ===== */
+function JD(y,mo,d,hUT){if(mo<=2){y--;mo+=12;}const A=Math.floor(y/100),B=2-A+Math.floor(A/4);return Math.floor(365.25*(y+4716))+Math.floor(30.6001*(mo+1))+d+B-1524.5+hUT/24;}
+const JDk=(y,mo,d,hK)=>JD(y,mo,d,hK-9); /* 한국 시각 */
+function GMST(J){const D=J-2451545;return ((280.46061837+360.98564736629*D)%360+360)%360;}
+function sunRD(J){const n=J-2451545,L=280.460+0.9856474*n,g=(357.528+0.9856003*n)*RAD,lam=(L+1.915*Math.sin(g)+0.020*Math.sin(2*g))*RAD,e=23.439*RAD;
+  return [(Math.atan2(Math.cos(e)*Math.sin(lam),Math.cos(lam))/RAD/15+24)%24,Math.asin(Math.sin(e)*Math.sin(lam))/RAD];}
+function altAz(raH,decD,J){const LAT=37.57*RAD,LON=126.98,H=(GMST(J)+LON-raH*15)*RAD,d=decD*RAD;
+  const alt=Math.asin(Math.sin(LAT)*Math.sin(d)+Math.cos(LAT)*Math.cos(d)*Math.cos(H));
+  const az=Math.atan2(-Math.cos(d)*Math.sin(H),Math.sin(d)*Math.cos(LAT)-Math.cos(d)*Math.sin(LAT)*Math.cos(H));
+  return [alt/RAD,((az/RAD)+360)%360];}
+/* 남쪽을 바라본 하늘 그림: 방위각 60°~300°, 고도 0°~90° */
+const PX=az=>400+(az-180)*3.3, PY=alt=>330-alt*3.55;
+
+/* ---------- 별자리 자료(J2000 적경 시, 적위 도) ---------- */
+const CST={
+ leo:{n:'사자자리',s:'spring',st:{a:[10.1395,11.967,1.6],h:[10.1222,16.763,.9],g:[10.3329,19.842,1.3],z:[10.2781,23.417,.9],m:[9.8794,26.007,.9],e:[9.7642,23.774,1.1],d:[11.2351,20.524,1.1],t:[11.2373,15.43,.9],b:[11.8177,14.572,1.3]},
+  ln:'a-h h-g g-z z-m m-e g-d d-b b-t t-a d-t'},
+ vir:{n:'처녀자리',s:'spring',st:{a:[13.4199,-11.161,1.6],g:[12.6943,-1.449,1.2],d:[12.9267,3.398,.9],e:[13.0363,10.959,1.1],z:[13.5783,-0.596,.9],b:[11.8448,1.765,.9],h:[12.3317,-0.667,.9],t:[13.1658,-5.539,.8],i:[14.2669,-6.0,.8],m:[14.7176,-5.658,.8]},
+  ln:'b-h h-g g-d d-e g-t t-a d-z z-i i-m'},
+ hya:{n:'바다뱀자리',s:'spring',st:{d:[8.6276,5.704,.9],s:[8.6455,3.341,.9],h:[8.7206,3.399,.8],e:[8.7795,6.419,1],z:[8.9235,5.946,1],t:[9.239,2.314,.9],i:[9.6642,-1.143,.9],a:[9.4598,-8.659,1.4],u:[9.858,-14.847,.9],l:[10.1764,-12.354,.9],m:[10.4348,-16.836,.9],n:[10.8271,-16.194,.9],x:[11.55,-31.858,.9],b:[11.8818,-33.908,.8],g:[13.3154,-23.171,1],p:[14.1062,-26.682,.9]},
+  ln:'d-e e-z z-h h-s s-d z-t t-i i-a a-u u-l l-m m-n n-x x-b b-g g-p'},
+ aql:{n:'독수리자리',s:'summer',st:{a:[19.8464,8.868,1.6],g:[19.771,10.613,1.1],b:[19.9219,6.407,.9],d:[19.4249,3.115,1],z:[19.0902,13.863,1.1],e:[18.9937,15.068,.9],t:[20.1884,-0.821,1],l:[19.1042,-4.882,.9],h:[19.8745,1.006,.9]},
+  ln:'g-a a-b a-d d-l d-z z-e b-h h-t'},
+ sco:{n:'전갈자리',s:'summer',st:{b:[16.0906,-19.806,1.2],d:[16.0056,-22.622,1.2],p:[15.9809,-26.114,1],s:[16.3531,-25.593,1],a:[16.4901,-26.432,1.6],t:[16.598,-28.216,1],e:[16.8361,-34.293,1.1],m:[16.8645,-38.048,1],z:[16.9097,-42.362,1],h:[17.2025,-43.239,1],th:[17.622,-42.998,1.2],i:[17.793,-40.127,1],k:[17.7081,-39.03,1.1],l:[17.5601,-37.104,1.3],u:[17.5127,-37.296,1]},
+  ln:'b-d d-p d-s s-a a-t t-e e-m m-z z-h h-th th-i i-k k-l l-u'},
+ sgr:{n:'궁수자리',s:'summer',st:{g:[18.0968,-30.424,1],d:[18.3499,-29.828,1.1],e:[18.4029,-34.385,1.3],l:[18.4662,-25.422,1.1],f:[18.7609,-26.991,1],s:[18.9211,-26.297,1.3],t:[19.1157,-27.67,1],z:[19.0436,-29.88,1.1]},
+  ln:'g-d g-e d-e d-l l-f d-f f-s s-t t-z z-f z-e'},
+ peg:{n:'페가수스자리',s:'autumn',st:{a:[23.0793,15.205,1.3],b:[23.0629,28.083,1.3],g:[0.2206,15.184,1.2],A:[0.1398,29.091,1.3],e:[21.7364,9.875,1.3],t:[22.17,6.198,1],z:[22.691,10.831,1],h:[22.7167,30.221,1.1],m:[22.8333,24.602,.9],l:[22.7755,23.566,.9],i:[22.1167,25.345,.9],k:[21.7441,25.645,.9]},
+  ln:'a-b b-A A-g g-a a-z z-t t-e b-h b-m m-l l-i i-k'},
+ psc:{n:'물고기자리',s:'autumn',st:{h:[1.5247,15.346,1],o:[1.7566,9.158,.9],a:[2.034,2.764,1],n:[1.6905,5.488,.8],m:[1.503,6.144,.8],e:[1.0491,7.89,.8],d:[0.8114,7.585,.8],w:[23.9885,6.863,.8],i:[23.6658,5.626,.8],t:[23.4661,6.379,.8],g:[23.2861,3.282,.9],k:[23.449,1.256,.8],l:[23.7001,1.78,.8],f:[1.229,24.583,.8],u:[1.3244,27.264,.8],ta:[1.1945,30.09,.8],c:[1.1897,21.034,.8]},
+  ln:'g-t t-i i-l l-k k-g i-w w-d d-e e-m m-n n-a a-o o-h h-c c-f f-u u-ta'},
+ aqr:{n:'물병자리',s:'autumn',st:{a:[22.0964,-0.32,1.1],b:[21.526,-5.571,1.1],g:[22.3609,-1.387,.9],z:[22.4806,-0.02,.9],h:[22.5892,-0.117,.9],p:[22.4213,1.378,.8],t:[22.2808,-7.783,.9],l:[22.8769,-7.58,1],d:[22.9108,-15.821,1.1],ta:[22.8265,-13.592,.9],e:[20.7946,-9.496,.9],f:[23.2384,-6.049,.9],ps:[23.2649,-9.087,.9],q:[23.1574,-21.172,.9]},
+  ln:'e-b b-a a-g g-z z-h z-p a-t t-l l-ta ta-d l-f f-ps d-q'},
+ gem:{n:'쌍둥이자리',s:'winter',st:{a:[7.5767,31.888,1.4],b:[7.7553,28.026,1.5],g:[6.6285,16.399,1.3],m:[6.3827,22.514,1.1],h:[6.2479,22.507,1],e:[6.7322,25.131,1.1],d:[7.3354,21.982,1.1],z:[7.0685,20.57,1],x:[6.7548,12.896,1],t:[7.1857,30.245,1],l:[7.3017,16.54,1],u:[7.5983,26.896,.9],i:[7.4287,27.798,.9],th:[6.8798,33.961,.9],n:[6.4829,20.212,.9]},
+  ln:'a-t t-e e-m m-h t-th e-n a-b b-u u-i i-t u-d d-z z-g d-l l-x'},
+ ori:{n:'오리온자리',s:'winter',st:{bt:[5.9195,7.407,1.6],bl:[5.4189,6.35,1.3],mi:[5.5334,-0.299,1.2],al:[5.6036,-1.202,1.2],an:[5.6793,-1.943,1.2],ri:[5.2423,-8.202,1.6],sa:[5.7959,-9.67,1.2],me:[5.5856,9.934,1]},
+  ln:'bt-me me-bl bt-bl bl-mi bt-an mi-al al-an mi-ri an-sa ri-sa'},
+ cma:{n:'큰개자리',s:'winter',st:{a:[6.7525,-16.716,1.9],b:[6.3783,-17.956,1.1],i:[6.9357,-17.054,.9],g:[7.0626,-15.633,.9],o:[7.0503,-23.833,1],d:[7.1399,-26.393,1.2],e:[6.9771,-28.972,1.3],h:[7.4016,-29.303,1.1],z:[6.3384,-30.063,1],t:[6.9032,-12.039,.9]}, 
+  ln:'b-a a-t t-g g-i i-a a-o o-d d-h d-e e-z'}};
+const SNAME={spring:'봄',summer:'여름',autumn:'가을',winter:'겨울'};
+const DAYS=[{k:'spring',n:'봄 4월 15일',d:[2025,4,15]},{k:'summer',n:'여름 7월 15일',d:[2025,7,15]},{k:'autumn',n:'가을 10월 15일',d:[2025,10,15]},{k:'winter',n:'겨울 1월 15일',d:[2026,1,15]}];
+const EXTRA=[[14.261,19.18,1.4],[18.616,38.78,1.6],[20.69,45.28,1.3],[5.278,46.0,1.5],[4.599,16.51,1.4],[7.655,5.225,1.4],[22.961,-29.62,1.3],[2.12,23.46,1],[3.405,49.86,1],[16.5,-26.4,0]];
+/* 남쪽을 바라본 하늘: 지평선은 곧게, 높은 곳은 덜 늘어나게(사인 도법) */
+const QX=(az,alt)=>400+(az-180)*Math.cos(alt*RAD)*3.3, QY=alt=>335-alt*3.5;
+let curDay=0;const found={spring:new Set(),summer:new Set(),autumn:new Set(),winter:new Set()};
+function skySVG(di,opt){opt=opt||{};const D=DAYS[di],J=JDk(D.d[0],D.d[1],D.d[2],21);
+  let s='<defs><linearGradient id="ng'+(opt.id||'')+'" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#050a1e"/><stop offset="1" stop-color="#1b2550"/></linearGradient></defs><rect width="800" height="380" fill="url(#ng'+(opt.id||'')+')"/>';
+  const P=(r,d)=>{const [a,z]=altAz(r,d,J);return {a,z,x:QX(z,a),y:QY(a),ok:a>0&&z>55&&z<305};};
+  EXTRA.forEach(([r,d,m])=>{if(!m)return;const p=P(r,d);if(p.ok)s+='<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="'+(m*1.6)+'" fill="#e8eeff"/>';});
+  for(const k in CST){const C=CST[k],pts={};let vis=0,cx=0,cy=0;for(const id in C.st){const p=P(C.st[id][0],C.st[id][1]);pts[id]=p;if(p.ok){vis++;cx+=p.x;cy+=p.y;}}
+    if(vis<2)continue;cx/=vis;cy/=vis;const fd=found[C.s].has(k),hl=opt.hl?opt.hl===k:(fd&&C.s===DAYS[di].k);if(!hl&&fd&&!opt.hl)opt.namesOne=k;
+    let g='<g class="cst" data-c="'+k+'">';
+    C.ln.split(' ').forEach(e=>{const [u,v]=e.split('-'),p=pts[u],q=pts[v];if(p.ok&&q.ok)g+='<line x1="'+p.x.toFixed(1)+'" y1="'+p.y.toFixed(1)+'" x2="'+q.x.toFixed(1)+'" y2="'+q.y.toFixed(1)+'" stroke="'+(hl?'#ffd23f':'#7fa8e8')+'" stroke-width="'+(hl?2.5:1.6)+'" opacity=".9"/><line x1="'+p.x.toFixed(1)+'" y1="'+p.y.toFixed(1)+'" x2="'+q.x.toFixed(1)+'" y2="'+q.y.toFixed(1)+'" stroke="#fff" stroke-width="16" opacity="0"/>';});
+    for(const id in pts){const p=pts[id];if(p.ok)g+='<circle cx="'+p.x.toFixed(1)+'" cy="'+p.y.toFixed(1)+'" r="'+(C.st[id][2]*2.2)+'" fill="#fff"/>';}
+    if(hl||opt.names||(!opt.hl&&fd)) g+='<rect x="'+(cx-50)+'" y="'+(cy-44)+'" width="100" height="22" rx="7" fill="'+(hl?'#ffd23f':'#26335f')+'" opacity=".92"/>'+tx(cx,cy-28,C.n,{s:15,c:hl?'#3a2a00':'#fff'});
+    s+=g+'</g>';}
+  s+='<path d="M0 337 Q90 326 170 334 Q260 324 340 333 Q420 326 500 335 Q600 324 680 333 Q740 327 800 333 V380 H0Z" fill="#0d1a10"/>';
+  [[90,'동'],[135,'남동'],[180,'남'],[225,'남서'],[270,'서']].forEach(([a,n])=>{s+=tx(QX(a,0),366,n,{s:n.length===1?22:15,c:'#e9f0ff'});});
+  s+='<rect x="8" y="8" width="250" height="30" rx="8" fill="#26335f"/>'+tx(18,29,'📅 '+D.d[1]+'월 '+D.d[2]+'일 오후 9시 · 남쪽 하늘',{s:16,c:'#fff',a:'start'});
+  return s;}
+
+/* ---------- 도입: 백조자리 ---------- */
+(function(){const st={a:[20.6905,45.28,1.4],g:[20.3705,40.257,1.1],b:[19.512,27.96,1],d:[19.7496,45.131,1],e:[20.7702,33.97,1.1],h:[19.9384,35.083,.8],z:[21.2156,30.227,.9],i:[19.4953,51.73,.8],k:[19.2849,53.368,.8]};
+  const r0=20.3,d0=40,P=([r,d])=>[240-(r-r0)*15*Math.cos(d0*RAD)*9.5,150-(d-d0)*9.5];
+  let s='<rect width="480" height="300" fill="#0b1636"/>';for(let i=0;i<40;i++)s+='<circle cx="'+((i*97)%480)+'" cy="'+((i*53)%300)+'" r="1" fill="#fff" opacity=".5"/>';
+  'a-g g-h h-b g-d d-i i-k g-e e-z'.split(' ').forEach(e=>{const [u,v]=e.split('-'),p=P(st[u]),q=P(st[v]);s+='<line x1="'+p[0]+'" y1="'+p[1]+'" x2="'+q[0]+'" y2="'+q[1]+'" stroke="#7fa8e8" stroke-width="2.5"/>';});
+  for(const k in st){const p=P(st[k]);s+='<circle cx="'+p[0]+'" cy="'+p[1]+'" r="'+(st[k][2]*4)+'" fill="#fff"/>';}
+  $('#cyg').innerHTML=s;})();
+let s1a=false,s1b=false;
+pickIdea('#p1',null,()=>{s1a=true;if(s1b)doneNav('s1');});
+pickIdea('#p1b',null,()=>{s1b=true;if(s1a)doneNav('s1');});
+
+/* ---------- 천체 관측 프로그램 ---------- */
+function drawSky(){$('#sky').innerHTML=skySVG(curDay);$$('#sky .cst').forEach(g=>tap(g,()=>hitCst(g.dataset.c)));
+  $$('#days button').forEach((b,i)=>b.classList.toggle('cur',i===curDay));
+  $('#got').innerHTML=DAYS.map(D=>{const n=found[D.k].size;return '<span class="'+(n===3?'':'no')+'">'+SNAME[D.k]+' '+n+'/3</span>';}).join('');}
+function hitCst(k){const C=CST[k],D=DAYS[curDay];
+  if(C.s===D.k){if(!found[D.k].has(k)){found[D.k].add(k);}drawSky();
+    const n=found[D.k].size;
+    if(DAYS.every(x=>found[x.k].size===3)){fb('#skyFb','네 계절의 대표적인 별자리를 모두 찾았어요! 계절마다 오후 9시 무렵 남쪽 하늘에서 잘 보이는 별자리가 달랐어요.',true);doneNav('s2');}
+    else fb('#skyFb','‘'+C.n+'’ 붙임딱지를 붙였어요. ('+SNAME[D.k]+' '+n+'/3)'+(n===3?' 다른 날짜(계절)도 눌러 봐요.':''),'info');}
+  else fb('#skyFb','이 별자리는 ‘'+C.n+'’예요. '+SNAME[C.s]+'철 대표 별자리라 지금('+SNAME[D.k]+')은 남쪽 하늘의 대표 별자리가 아니에요.','info');}
+DAYS.forEach((D,i)=>{const b=document.createElement('button');b.textContent='📅 '+D.n;b.onclick=()=>{curDay=i;drawSky();fb('#skyFb',D.n+' 오후 9시 하늘이에요. 남쪽 하늘의 별자리를 눌러 봐요.','info');};$('#days').appendChild(b);});
+drawSky();fb('#skyFb','봄 4월 15일 오후 9시 하늘이에요. 별자리(선으로 이은 별)를 눌러 이름을 확인해요.','info');
+
+/* ---------- 붙임딱지 ---------- */
+sorter('#st3',Object.keys(CST).map(k=>({t:CST[k].n,k:CST[k].s,h:'관측 프로그램에서 이 별자리가 어느 계절에 남쪽 하늘에 보였는지 떠올려 봐요.'})),
+  [{k:'spring',n:'봄'},{k:'summer',n:'여름'},{k:'autumn',n:'가을'},{k:'winter',n:'겨울'}],'모두 붙였어요! 계절마다 대표적인 별자리가 달라요. 이름을 외우기보다 계절에 따라 보이는 별자리가 다르다는 점이 중요해요.','s3');
+
+/* ---------- 이전 계절 별자리 ---------- */
+$('#sky2').innerHTML=skySVG(1,{hl:'leo',id:'b'});
+pickOne('#p4','','','s4');
+
+/* ---------- 공전과 계절별 별자리(북쪽에서 내려다본 그림, 적경 방향으로 배치) ---------- */
+const GRP={spring:11.5,summer:18,autumn:23,winter:6.5},EARTH={spring:13.5,summer:19.6,autumn:1.3,winter:7.7};
+const ang=h=>h*15*RAD,OC=[400,200];
+let seasonAt=null;const seenS=new Set();
+function drawOrbitS(){let s='<rect width="800" height="400" fill="#0b1636"/>';
+  const ER=[140,85],GR=[290,140];
+  s+='<ellipse cx="400" cy="200" rx="'+ER[0]+'" ry="'+ER[1]+'" fill="none" stroke="#9fb3c0" stroke-dasharray="6 6"/>';
+  s+='<path d="M'+(400+ER[0])+' 214 A'+ER[0]+' '+ER[1]+' 0 0 0 '+(400+ER[0])+' 186" fill="none" stroke="#9fe3a5" stroke-width="4"/><path d="M'+(400+ER[0])+' 178 l-7 11 l14 0z" fill="#9fe3a5"/>';
+  const sunDir=seasonAt?ang(EARTH[seasonAt])+Math.PI:0;
+  for(const g in GRP){const a=ang(GRP[g]),x=400+GR[0]*Math.cos(a),y=200-GR[1]*Math.sin(a);
+    let st='';if(seasonAt){const night=Math.abs(((a-ang(EARTH[seasonAt])+3*Math.PI)%(2*Math.PI))-Math.PI)<1.0,hid=Math.abs(((a-sunDir+3*Math.PI)%(2*Math.PI))-Math.PI)<0.6;st=night?'vis':hid?'hid':'';}
+    const names=Object.keys(CST).filter(k=>CST[k].s===g).map(k=>CST[k].n);
+    s+='<rect x="'+(x-70)+'" y="'+(y-30)+'" width="140" height="60" rx="12" fill="'+(st==='vis'?'#ffe680':st==='hid'?'#3a3a4a':'#26335f')+'" stroke="#fff" stroke-opacity=".5"/>';
+    s+=tx(x,y-10,SNAME[g]+'철 별자리',{s:15,c:st==='vis'?'#3a2a00':st==='hid'?'#999':'#fff'})+tx(x,y+8,names.slice(0,2).join('·'),{s:12,c:st==='vis'?'#3a2a00':st==='hid'?'#999':'#cfe0ff'})+tx(x,y+23,names[2],{s:12,c:st==='vis'?'#3a2a00':st==='hid'?'#999':'#cfe0ff'});
+    if(st==='hid') s+=tx(x,y+48,'태양 빛 때문에 안 보여요',{s:13,c:'#ffb0a0'});}
+  s+='<circle cx="400" cy="200" r="40" fill="#ffd23f" opacity=".3"/><circle cx="400" cy="200" r="28" fill="#ffd23f"/>'+tx(400,206,'태양',{s:16,c:'#7a4a00'});
+  for(const g in EARTH){const a=ang(EARTH[g]),x=400+ER[0]*Math.cos(a),y=200-ER[1]*Math.sin(a),on=seasonAt===g;
+    s+='<g class="ep" data-g="'+g+'"><circle cx="'+x+'" cy="'+y+'" r="26" fill="#000" opacity="0"/><circle cx="'+x+'" cy="'+y+'" r="'+(on?16:12)+'" fill="#1d2f52" stroke="'+(on?'#ffe680':'#4fa3e0')+'" stroke-width="3"/>';
+    const sx=400-x,sy=200-y,L=Math.hypot(sx,sy),ux=sx/L,uy=sy/L,r=on?16:12;
+    s+='<path d="M'+(x-uy*r)+' '+(y+ux*r)+' A'+r+' '+r+' 0 0 '+(1)+' '+(x+uy*r)+' '+(y-ux*r)+'Z" fill="#4fa3e0"/>';
+    s+=tx(x-ux*34,y-uy*34+5,SNAME[g],{s:15,c:'#fff'})+'</g>';
+    if(on) s+='<line x1="'+x+'" y1="'+y+'" x2="'+(x-ux*120)+'" y2="'+(y-uy*120)+'" stroke="#ffe680" stroke-width="3" stroke-dasharray="6 5"/>';}
+  s+=tx(12,24,'북쪽에서 내려다본 지구의 공전',{s:15,c:'#cfe6f2',a:'start'})+tx(12,44,'밤이 되는 쪽 = 태양 반대쪽',{s:13,c:'#ffe680',a:'start'});
+  $('#orb').innerHTML=s;$$('#orb .ep').forEach(g=>tap(g,()=>{seasonAt=g.dataset.g;seenS.add(seasonAt);drawOrbitS();
+    fb('#orbFb',SNAME[seasonAt]+'철 지구에서는 밤하늘(태양 반대쪽)에 '+SNAME[seasonAt]+'철 별자리가 보여요. 태양과 같은 방향에 있는 별자리는 태양 빛 때문에 볼 수 없어요.'+(seenS.size<4?' ('+seenS.size+'/4) 다른 계절의 지구도 눌러 봐요.':''),seenS.size===4?true:'info');
+    if(seenS.size===4) $('#ask5').hidden=false;}));}
+drawOrbitS();fb('#orbFb','지구(파란 동그라미)를 눌러 계절마다 지구의 위치를 바꿔 봐요.','info');
+pickOne('#p5','','','s5');
+rowsPick('#rp6','모두 맞혔어요! 지구는 공전하기 때문에 일 년 동안 지구의 위치가 달라지고, 지구의 위치에 따라 계절별로 밤하늘에 보이는 별자리가 달라져요.','s6',()=>{$('#note6').hidden=false;});
+
+/* ---------- 체험 더하기 ---------- */
+(function(){let s='<rect width="400" height="240" fill="#f4f1ea"/><path d="M30 200 A170 160 0 0 1 370 200Z" fill="#0b1636" stroke="#5a6a7a" stroke-width="6"/>';
+  for(let i=0;i<40;i++){const a=Math.PI*(0.08+0.84*((i*37)%100)/100),r=40+((i*53)%120);s+='<circle cx="'+(200+r*Math.cos(a))+'" cy="'+(200-r*Math.sin(a)*.94)+'" r="'+(i%4?1.2:2)+'" fill="#fff"/>';}
+  s+='<path d="M120 90 L150 70 L185 80 L210 60" stroke="#7fa8e8" stroke-width="2" fill="none"/>';
+  for(let i=0;i<7;i++) s+='<rect x="'+(70+i*38)+'" y="200" width="28" height="22" rx="6" fill="#c2332c"/><circle cx="'+(84+i*38)+'" cy="194" r="8" fill="#5a3a22"/>';
+  s+=tx(200,234,'돔 화면에 밤하늘을 비춰요',{s:14});$('#dome').innerHTML=s;})();
+pickOne('#p7','','','s7');
+$('#blReveal').onclick=()=>{fb('#blFb','지구의 공전으로 계절에 따라 밤하늘에 보이는 별자리가 달라집니다.',true);doneNav('s8');};
+const T9=twoDone('s9');
+pickAll('#p9','맞아요! ㉠, ㉢이에요.','',null,()=>T9.q());
+keyCheck('#wr','#wrB','#wrFb',[[/공전/,'지구의 공전'],[/태양/,'태양을 중심으로'],[/위치/,'지구의 위치가 달라짐'],[/(계절|별자리)/,'계절에 따라 보이는 별자리가 달라짐']],3,null,'‘지구는 태양을 중심으로 일 년에 한 바퀴씩 공전해요. 공전하면서 지구의 위치가 달라지면 ~’처럼 써 봐요.');
+watchWrite('#wrB','#wrFb',()=>T9.w());
+faces('s10','멋져요! 다음 시간에는 지구의 운동 체험관을 만들어요.','어려웠던 부분은 공전 그림에서 지구를 옮겨 보며 정리해 봐요.');
+</script>
