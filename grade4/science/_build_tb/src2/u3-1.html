@@ -1,0 +1,362 @@
+<!--
+title: 보이지 않는 기체도 무게가 있을까?
+unit: 3
+lesson: 2
+total: 12
+goal: 실험을 통해 기체가 무게가 있음을 설명할 수 있어요.
+pages: 「과학」 66~67쪽 · 「실험관찰」 36~37쪽 · 지도서 262~269쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"무","bl2":"게"}}]
+-->
+<style>
+.a1-lab{max-height:46vh}
+.a1-ctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.a1-ctl button{font-size:.92rem;min-height:2.3rem;padding:.15em .7em;border-width:2px}
+.a1-rec{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.a1-rec div{border:2px dashed var(--line);border-radius:14px;padding:6px 10px;text-align:center;font-family:"Jua",sans-serif}
+.a1-rec b{display:block;font-size:1.35rem;color:var(--sky)}
+.a1-rec div.on{border-style:solid;border-color:var(--good);background:#f1fbf4}
+.a1-order{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.a1-order button{text-align:left;font-size:.95rem}
+.a1-order button .n{display:inline-grid;place-items:center;width:1.7em;height:1.7em;border-radius:50%;background:var(--line);margin-right:6px;font-size:.9rem}
+.a1-order button.right .n{background:var(--good);color:#fff}
+@media (max-width:640px){.a1-order,.a1-rec{grid-template-columns:1fr}}
+</style>
+
+<!-- 도입 -->
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 66쪽</span>
+  <h2>자전거 타이어가 빵빵해질 때까지 공기를 더 넣으면 자전거의 무게는 어떻게 될까요?</h2>
+  <p>바람이 빠져 납작한 타이어에 펌프로 공기를 넣어 봐요.</p>
+  <svg id="a1Bike" class="scene" viewBox="0 0 640 260" style="max-height:32vh" role="img" aria-label="바람 빠진 자전거 타이어에 펌프로 공기를 넣는 그림">
+    <rect width="640" height="260" fill="#e9f6fc"/><rect y="222" width="640" height="38" fill="#c9b27a"/>
+    <g id="a1Tires" fill="none" stroke="#2c333a">
+      <circle cx="170" cy="168" r="52" stroke-width="7"/><circle cx="410" cy="168" r="52" stroke-width="7"/>
+    </g>
+    <g stroke="#9aa5ad" stroke-width="2"><line x1="170" y1="120" x2="170" y2="216"/><line x1="122" y1="168" x2="218" y2="168"/><line x1="410" y1="120" x2="410" y2="216"/><line x1="362" y1="168" x2="458" y2="168"/></g>
+    <path d="M170 168 L250 168 L320 98 L410 168 M250 168 L230 98 M320 98 L218 98 M320 98 L330 70 h28" fill="none" stroke="#e2573f" stroke-width="8" stroke-linejoin="round" stroke-linecap="round"/>
+    <rect x="206" y="88" width="40" height="10" rx="5" fill="#2c333a"/>
+    <g id="a1Pump"><rect x="530" y="96" width="26" height="110" rx="6" fill="#3a78c8"/><rect id="a1Rod" x="538" y="60" width="10" height="44" fill="#9aa5ad"/><rect id="a1Hd" x="516" y="52" width="54" height="12" rx="5" fill="#2c333a"/>
+      <path d="M543 206 q-40 20 -100 -6 q-20 -8 -30 -24" fill="none" stroke="#2c333a" stroke-width="5"/></g>
+    <rect x="12" y="12" width="250" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a1BikeT" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">타이어: 납작해요</text>
+  </svg>
+  <div class="row" style="margin-top:8px"><button class="main" id="a1PumpBtn">💨 펌프질 하기</button><span class="jua" id="a1PumpN">0번</span></div>
+  <div id="a1Pred" hidden>
+    <p class="jua" style="font-size:1.08rem;margin-top:10px">빵빵해진 자전거의 무게는 어떻게 될까요? 내 생각을 골라요.</p>
+    <div class="pick" id="a1P1">
+      <button data-k="up">무게가 늘어날 것 같아요</button>
+      <button data-k="same">무게가 변하지 않을 것 같아요</button>
+      <button data-k="down">무게가 줄어들 것 같아요</button>
+    </div>
+    <div class="fb" id="a1P1Fb"></div>
+  </div>
+  <p class="tip">💬 내 생각이 틀려도 괜찮아요. 오늘 실험으로 공기에 무게가 있는지 알아봐요.</p>
+</section>
+
+<!-- 전자저울 -->
+<section id="s2" data-nav="전자저울">
+  <span class="stage">실험하기 전 · 「실험관찰」 67쪽</span>
+  <h2>공기의 무게는 어떻게 잴 수 있을까요?</h2>
+  <p>같은 통에 공기를 더 넣거나 빼고, 그 전과 후의 무게를 비교해요. 아주 작은 무게 차이를 재야 하므로 <b>전자저울</b>을 써요.</p>
+  <p class="jua" style="font-size:1.05rem">전자저울 사용법을 차례대로 눌러 봐요.</p>
+  <div class="a1-order" id="a1Order">
+    <button data-o="2"><span class="n">?</span>영점 단추를 눌러 영점을 맞춰요.</button>
+    <button data-o="0"><span class="n">?</span>전자저울을 평평한 곳에 놓고 수평을 맞춰요.</button>
+    <button data-o="3"><span class="n">?</span>물체를 올려놓고 숫자가 멈추면 무게를 읽어요.</button>
+    <button data-o="1"><span class="n">?</span>전원 단추를 누르고 숫자가 멈출 때까지 기다려요.</button>
+  </div>
+  <div class="fb" id="a1OrderFb"></div>
+  <p class="tip">💡 무게는 소수점 아래 첫째 자리까지 그대로 써요. 저울의 숫자가 멈출 때까지 기다려요.</p>
+</section>
+
+<!-- 실험해요 1 -->
+<section id="s3" data-nav="실험해요 1">
+  <span class="stage">실험해요 1 · 「실험관찰」 36쪽</span>
+  <h2>공기를 넣기 전과 넣은 후의 무게 비교하기</h2>
+  <p>준비물: 페트병(500 mL), 공기 주입 마개, 전자저울, 실험복, 보안경, 실험용 장갑 · 아래 단추로 차례대로 실험해요.</p>
+  <svg id="a1Lab1" class="scene a1-lab" viewBox="0 0 800 340" role="img" aria-label="공기 주입 마개를 끼운 페트병을 전자저울로 재는 실험">
+    <rect width="800" height="340" fill="#fdf6e3"/><rect y="290" width="800" height="50" fill="#d9c49a"/>
+    <!-- 저울 -->
+    <rect x="150" y="258" width="250" height="36" rx="10" fill="#dfe7ee" stroke="#5b6b78" stroke-width="3"/>
+    <rect x="180" y="250" width="190" height="12" rx="5" fill="#b3bec7"/>
+    <rect x="196" y="264" width="110" height="24" rx="5" fill="#173b2c"/><text id="a1Dsp1" x="300" y="283" text-anchor="end" font-size="20" font-family="monospace" fill="#7dff9a">----</text>
+    <text x="318" y="283" font-size="16" font-family="Jua" fill="#2c333a">g</text>
+    <circle cx="352" cy="276" r="9" fill="#e2573f" stroke="#7a2a20"/><text x="352" y="306" text-anchor="middle" font-size="12" font-family="Jua" fill="#2c333a">영점</text>
+    <circle cx="380" cy="276" r="9" fill="#3a78c8" stroke="#1b3f66"/><text x="380" y="306" text-anchor="middle" font-size="12" font-family="Jua" fill="#2c333a">전원</text>
+    <!-- 페트병 -->
+    <g id="a1Bot">
+      <g id="a1BotBody"><path d="M-34 0 v-120 q0 -26 20 -38 v-14 h28 v14 q20 12 20 38 v120 q0 10 -10 10 h-48 q-10 0 -10 -10z" fill="#e6f5fb" fill-opacity=".85" stroke="#7aa7bd" stroke-width="3"/>
+      <g stroke="#9fc9e6" stroke-width="2"><line x1="-30" y1="-60" x2="30" y2="-60"/><line x1="-30" y1="-30" x2="30" y2="-30"/></g></g>
+      <rect x="-16" y="-186" width="32" height="16" rx="3" fill="#2f8f5b"/>
+      <ellipse id="a1Ball" cx="0" cy="-200" rx="18" ry="16" fill="#e2573f" stroke="#7a2a20" stroke-width="2"/>
+    </g>
+    <text id="a1Feel" x="600" y="70" text-anchor="middle" font-size="20" font-family="Jua" fill="#0f3b5c"></text>
+    <rect x="12" y="12" width="360" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a1T1" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">① 영점을 맞추고 페트병을 올려요</text>
+  </svg>
+  <div class="a1-ctl" data-glue="1">
+    <button id="a1Zero1">⚖️ 영점 맞추기</button>
+    <button id="a1On1">⬇️ 저울에 올리기</button>
+    <button id="a1Off1">⬆️ 저울에서 내려놓기</button>
+    <button class="main" id="a1Push">👆 공기 주입 마개 누르기</button>
+    <button id="a1Touch">✋ 살짝 만져 보기</button>
+  </div>
+  <div class="a1-rec" data-glue="1"><div id="a1RecA">공기를 넣기 전<b>? g</b></div><div id="a1RecB">공기를 넣은 후<b>? g</b></div></div>
+  <div class="fb" id="a1Lab1Fb"></div>
+  <p class="tip">⚠️ 공기 주입 마개로 페트병에 공기를 너무 많이 넣지 않아요(약 25번보다 많이 누르면 마개를 열 때 큰 소리가 나거나 마개가 튕겨 나갈 수 있어요). 마개는 공기가 새지 않도록 잘 끼워요. 실험복·보안경·실험용 장갑을 써요. 잰 무게는 페트병의 종류에 따라 다르니 실제 실험에서는 내가 잰 결과를 그대로 써요.</p>
+  <div id="a1Cmp1" hidden>
+    <p class="jua" style="font-size:1.08rem">공기를 넣은 후의 무게는 넣기 전보다 어떻게 되었나요?</p>
+    <div class="pick" id="a1C1">
+      <button data-a="0">줄어들었어요</button><button data-a="0">변화가 없어요</button>
+      <button data-a="1" data-m="맞아요! 공기 주입 마개를 눌러 페트병에 공기를 더 넣었더니 무게가 늘어났어요.">늘어났어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<!-- 실험해요 2 -->
+<section id="s4" data-nav="실험해요 2">
+  <span class="stage">실험해요 2 · 「실험관찰」 37쪽</span>
+  <h2>공기를 빼기 전과 뺀 후의 무게 비교하기</h2>
+  <p>준비물: 공기를 빼는 장치(용기·펌프), 전자저울 · 펌프로 용기 안의 공기를 빼내요.</p>
+  <svg id="a1Lab2" class="scene a1-lab" viewBox="0 0 800 340" role="img" aria-label="공기를 빼는 장치의 용기 무게를 재는 실험">
+    <rect width="800" height="340" fill="#fdf6e3"/><rect y="290" width="800" height="50" fill="#d9c49a"/>
+    <rect x="150" y="258" width="250" height="36" rx="10" fill="#dfe7ee" stroke="#5b6b78" stroke-width="3"/>
+    <rect x="180" y="250" width="190" height="12" rx="5" fill="#b3bec7"/>
+    <rect x="196" y="264" width="110" height="24" rx="5" fill="#173b2c"/><text id="a1Dsp2" x="300" y="283" text-anchor="end" font-size="20" font-family="monospace" fill="#7dff9a">0.0</text>
+    <text x="318" y="283" font-size="16" font-family="Jua" fill="#2c333a">g</text>
+    <g id="a1Jar">
+      <rect x="-70" y="-120" width="140" height="120" rx="14" fill="#e6f5fb" fill-opacity=".8" stroke="#7aa7bd" stroke-width="3"/>
+      <g id="a1Lid"><rect x="-80" y="-140" width="160" height="24" rx="8" fill="#3a78c8" stroke="#1b3f66" stroke-width="2"/><circle cx="0" cy="-146" r="10" fill="#ffc93c" stroke="#b58400" stroke-width="2"/><text x="0" y="-162" text-anchor="middle" font-size="12" font-family="Jua" fill="#1b3f66">단추</text></g>
+    </g>
+    <g id="a1Pmp" opacity="0"><rect x="-14" y="-110" width="28" height="100" rx="6" fill="#e2573f"/><rect id="a1PRod" x="-5" y="-150" width="10" height="44" fill="#9aa5ad"/><rect x="-26" y="-158" width="52" height="12" rx="5" fill="#2c333a"/></g>
+    <rect x="600" y="80" width="170" height="26" rx="8" fill="#fff" stroke="#5b6b78" stroke-width="2"/><rect id="a1Eff" x="602" y="82" width="0" height="22" rx="6" fill="#e2573f"/>
+    <text x="685" y="72" text-anchor="middle" font-size="16" font-family="Jua" fill="#0f3b5c">펌프질 힘든 정도</text>
+    <text id="a1Puff" x="685" y="140" text-anchor="middle" font-size="18" font-family="Jua" fill="#0f3b5c"></text>
+    <rect x="12" y="12" width="400" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a1T2" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">① 뚜껑을 닫은 용기를 저울에 올려요</text>
+  </svg>
+  <div class="a1-ctl" data-glue="1">
+    <button id="a1On2">⬇️ 저울에 올리기</button>
+    <button id="a1Off2">⬆️ 저울에서 내려놓기</button>
+    <button class="main" id="a1Pmpbtn">🔽 펌프질 하기</button>
+    <button id="a1Btn2">🔘 뚜껑 가운데 단추 누르기</button>
+    <button id="a1Open2">🫙 뚜껑 열기</button>
+  </div>
+  <div class="a1-rec" data-glue="1"><div id="a1RecC">공기를 빼기 전<b>? g</b></div><div id="a1RecD">공기를 뺀 후<b>? g</b></div></div>
+  <div class="fb" id="a1Lab2Fb"></div>
+  <p class="tip">⚠️ 펌프질을 할 때 용기와 펌프가 떨어지지 않게 해요. 공기를 빼는 장치의 뚜껑을 열 때는 뚜껑의 단추를 누르거나 잡아당긴 뒤에 열어요(억지로 열면 다칠 수 있어요).</p>
+  <div id="a1Cmp2" hidden>
+    <p class="jua" style="font-size:1.08rem">공기를 뺀 후의 무게는 빼기 전보다 어떻게 되었나요?</p>
+    <div class="pick" id="a1C2">
+      <button data-a="1" data-m="맞아요! 용기 안의 공기를 빼냈더니 무게가 줄어들었어요.">줄어들었어요</button>
+      <button data-a="0">변화가 없어요</button><button data-a="0">늘어났어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<!-- 정리해요 -->
+<section id="s5" data-nav="정리해요">
+  <span class="stage">정리해요 · 「과학」 67쪽</span>
+  <h2>이 활동으로 알 수 있는 공기의 성질은 무엇일까요?</h2>
+  <div class="pick" id="a1S1">
+    <button data-a="0" data-m="공기는 색깔이 없어요. 오늘 실험에서 바뀐 것은 무게였어요.">공기는 색깔이 있어요</button>
+    <button data-a="1" data-m="맞아요! 공기를 넣으면 무게가 늘고, 빼면 무게가 줄었어요. 공기는 무게가 있어요.">공기는 무게가 있어요</button>
+    <button data-a="0" data-m="공기를 넣고 뺄 때 무게가 달라졌어요. 다시 생각해 봐요.">공기는 무게가 없어요</button>
+    <button data-a="0" data-m="실험에서 잰 것은 무게예요.">공기는 일정한 모양이 있어요</button>
+  </div>
+  <div class="fb"></div>
+  <div id="a1More" hidden>
+    <p class="jua" style="font-size:1.05rem;margin-top:10px">🤔 생각 바로잡기: 페트병이 54.2 g이었으면 페트병 속 공기의 무게가 54.2 g일까요?</p>
+    <div class="pick" id="a1S2" data-glue="1">
+      <button data-a="0" data-m="54.2 g에는 페트병과 마개의 무게도 들어 있어요.">네, 54.2 g이 모두 공기의 무게예요</button>
+      <button data-a="1" data-m="맞아요! 공기를 넣기 전에도 페트병 안에는 공기가 있었어요. 늘어난 0.2 g은 더 넣은 공기의 무게예요. 잰 무게가 모두 공기의 무게는 아니에요.">아니요, 늘어난 만큼이 더 넣은 공기의 무게예요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<!-- 교실 공기의 무게 -->
+<section id="s6" data-nav="공기의 무게">
+  <span class="stage">전개 2 · 「과학」 67쪽</span>
+  <h2>교실 안 공기의 무게는 얼마나 될까요?</h2>
+  <p>저울의 한쪽에 우리 교실 안에 있는 공기를 모두 모아 올리고, 다른 쪽에 무엇을 올리면 비슷할지 골라 봐요.</p>
+  <svg id="a1See" class="scene" viewBox="0 0 640 260" style="max-height:34vh" role="img" aria-label="교실 안 공기와 다른 물체의 무게를 비교하는 저울">
+    <rect width="640" height="260" fill="#eef7fb"/><rect y="236" width="640" height="24" fill="#c9b27a"/>
+    <path d="M320 236 l-26 -60 h52z" fill="#8a5a2b"/>
+    <g id="a1Beam" style="transform-box:view-box;transform-origin:320px 176px;transition:transform 1s">
+      <rect x="90" y="170" width="460" height="12" rx="6" fill="#5b6b78"/>
+      <g><rect x="100" y="70" width="130" height="100" fill="#bfe6fb" fill-opacity=".7" stroke="#3a78c8" stroke-width="3" stroke-dasharray="8 6"/><text x="165" y="118" text-anchor="middle" font-size="18" font-family="Jua" fill="#0f3b5c">교실 안</text><text x="165" y="142" text-anchor="middle" font-size="18" font-family="Jua" fill="#0f3b5c">공기</text></g>
+      <g id="a1Right"></g>
+    </g>
+    <rect x="12" y="12" width="300" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a1SeeT" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">오른쪽에 올릴 것을 골라요</text>
+  </svg>
+  <div class="row" style="margin-top:8px" id="a1Cands" data-glue="1">
+    <button data-k="feather">🪶 깃털 한 개</button><button data-k="bag">🎒 책가방 한 개</button><button data-k="piano">🎹 피아노 한 대</button>
+  </div>
+  <div class="fb" id="a1SeeFb"></div>
+  <div id="a1Exp" hidden>
+    <p class="tip">💡 가로, 세로, 높이가 모두 1 m인 상자에 가득 든 공기의 무게는 약 1.29 kg이에요. 교실 안 공기는 200 kg 정도예요.</p>
+    <p class="jua" style="font-size:1.05rem">일상생활에서 기체의 무게를 느낀 경험으로 알맞은 것을 골라요.</p>
+    <div class="pick" id="a1S3" data-glue="1">
+      <button data-a="1" data-m="맞아요! 큰 튜브나 고무보트, 농구공에 공기를 가득 넣으면 넣기 전보다 무거워져요.">고무보트에 공기를 가득 넣었더니 더 무거워졌어요</button>
+      <button data-a="0" data-m="공기는 무게가 있어서 공기를 더 넣으면 무게가 늘어나요. 가벼워지지 않아요.">공기를 넣은 농구공은 더 가벼워졌어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<!-- 생각이 한눈에 -->
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙</h2>
+  <p class="jua" style="font-size:1.15rem">공기와 같은 기체는 대부분 눈에 보이지 않고 손으로 잡을 수 없지만
+    <span class="blank"><span id="bl1">ㅁ</span><span id="bl2">ㄱ</span></span>가 있습니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:12px">1. 바람 빠진 농구공에 팽팽해질 때까지 공기를 더 넣으면 농구공의 무게는?</p>
+  <div class="pick" id="a1G1" data-glue="1">
+    <button data-a="1" data-m="맞아요! 공기는 무게가 있으므로 공기를 더 넣으면 농구공의 무게가 늘어나요.">늘어납니다</button>
+    <button data-a="0">변화가 없습니다</button><button data-a="0">줄어듭니다</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:12px">2. 💭 생각: 모양과 크기가 같은 두 개의 공기통 중에서 공기가 더 많이 들어 있는 것을 알 수 있는 방법을 써 봐요.</p>
+  <textarea id="a1G2" rows="2" placeholder="예: ○○○○로 두 공기통의 ○○를 재어 ○○○ 쪽에 공기가 더 많이 들어 있어요."></textarea>
+  <div class="row" style="margin-top:6px"><button class="main" id="a1G2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="a1G2Fb"></div>
+</section>
+
+<!-- 형성 평가 -->
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 공기를 빼는 장치의 뚜껑을 닫고 무게를 잰 뒤, 펌프로 용기 안의 공기를 빼내고 다시 무게를 재어 비교했어요. 이 실험으로 알 수 있는 사실로 옳은 것은?</p>
+  <div class="pick" id="a1F1" style="grid-template-columns:1fr!important">
+    <button data-a="0">① 공기는 색깔이 있다.</button>
+    <button data-a="0">② 공기는 부피가 없다.</button>
+    <button data-a="1" data-m="정답! 공기를 빼낸 뒤 무게가 줄어든 것으로 공기는 무게가 있음을 알 수 있어요.">③ 공기는 무게가 있다.</button>
+    <button data-a="0">④ 공기는 이동하지 않는다.</button>
+    <button data-a="0">⑤ 공기는 일정한 모양이 있다.</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:14px">2. ✏️ 서술형: 자전거 타이어에 공기 주입 펌프를 끼우고 펌프를 각각 10번, 20번, 30번 누른 뒤 무게를 재었어요. 펌프를 누르는 횟수를 늘릴 때 자전거의 무게 변화와 그 까닭을 써 봐요.</p>
+  <textarea id="a1F2" rows="3" placeholder="예: 자전거의 무게는 점점 ○○○○. 공기는 ○○가 있고, 펌프를 누를수록 ○○가 더 많이 들어가기 때문이에요."></textarea>
+  <div class="row" style="margin-top:6px"><button class="main" id="a1F2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="a1F2Fb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p>
+</section>
+
+<!-- 스스로 평가 -->
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 37쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>공기를 넣기 전과 넣은 후의 무게 변화를 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>전자저울을 사용하여 무게를 옳게 잴 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>친구들과 협력하며 실험 활동에 적극적으로 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* 저울 숫자: 잠깐 흔들리다 멈춤 */
+function a1Show(el,v,done){let k=0;const iv=setInterval(()=>{el.textContent=(v+(Math.random()-.5)*0.8).toFixed(1);if(++k>9){clearInterval(iv);el.textContent=v.toFixed(1);if(done)done();}},70);}
+
+/* 도입: 자전거 */
+(function(){let n=0;const T=$('#a1BikeT');
+  $('#a1PumpBtn').onclick=()=>{if(n>=6)return;n++;$('#a1PumpN').textContent=n+'번';
+    $('#a1Rod').setAttribute('y',90);$('#a1Hd').setAttribute('y',82);setTimeout(()=>{$('#a1Rod').setAttribute('y',60);$('#a1Hd').setAttribute('y',52);},220);
+    $$('#a1Tires circle').forEach(c=>{c.setAttribute('stroke-width',7+n*2.4);c.setAttribute('r',52+n*0.6);});
+    T.textContent=n<3?'타이어: 조금 부풀었어요':n<6?'타이어: 거의 빵빵해요':'타이어: 빵빵해요!';
+    if(n>=6){$('#a1Pred').hidden=false;}};
+  $$('#a1P1 button').forEach(b=>b.onclick=()=>{$$('#a1P1 button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');
+    fb('#a1P1Fb',{up:'“타이어 안의 공기가 더 많아졌으니 무거워질 것 같다”는 생각이군요.',same:'“공기는 보이지 않으니 무게도 없을 것 같다”는 생각이군요.',down:'“공기가 가벼워서 오히려 가벼워질 것 같다”는 생각이군요.'}[b.dataset.k]+' 공기에 무게가 있는지 실험으로 알아봐요!','info');doneNav('s1');});
+})();
+
+/* 전자저울 사용법 순서 */
+(function(){let next=0;const bs=$$('#a1Order button');
+  bs.forEach(b=>b.onclick=()=>{if(b.classList.contains('right'))return;const o=+b.dataset.o;
+    if(o===next){b.classList.add('right');$('.n',b).textContent=o+1;next++;fb('#a1OrderFb',next===4?'잘했어요! 평평한 곳·수평 → 전원 → 영점 → 올려놓고 읽기. 이제 실험해 봐요.':'좋아요! 그다음은 무엇일까요?',next===4?true:'info');if(next===4)doneNav('s2');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),600);fb('#a1OrderFb','순서가 달라요. 저울을 놓을 곳부터 생각해 봐요.',false);}});
+})();
+
+/* 실험해요 1 */
+(function(){let zero=false,on=false,p=0,recA=null,recB=null,busy=false;const D=$('#a1Dsp1'),T=$('#a1T1'),F='#a1Lab1Fb';
+  const mass=()=>54.0+0.1*Math.floor(Math.min(p,20)/10);
+  function draw(){$('#a1Bot').setAttribute('transform',on?'translate(275,242) scale(.85)':'translate(600,282) scale(.85)');
+    const s=1+Math.min(p,24)*0.003;$('#a1BotBody').setAttribute('transform',`scale(${s},1)`);
+    if(!on)D.textContent=zero?'0.0':'----';}
+  $('#a1Zero1').onclick=()=>{if(on){fb(F,'영점은 저울 위에 아무것도 없을 때 맞춰요. 먼저 페트병을 내려놓아요.',false);return;}zero=true;D.textContent='0.0';T.textContent='② 페트병을 저울에 올려요';fb(F,'영점을 맞췄어요. 이제 페트병을 올려요.','info');};
+  $('#a1On1').onclick=()=>{if(busy)return;if(!zero){fb(F,'먼저 ⚖️ 영점을 맞춰야 정확한 무게를 잴 수 있어요.',false);return;}if(on)return;on=true;draw();busy=true;
+    a1Show(D,mass(),()=>{busy=false;const v=mass().toFixed(1);
+      if(p===0){recA=v;$('#a1RecA b').textContent=v+' g';$('#a1RecA').classList.add('on');T.textContent='③ 내려놓고 마개를 눌러 공기를 넣어요';fb(F,'공기를 넣기 전 무게는 '+v+' g이에요. 이제 저울에서 내려놓고 마개를 눌러요.','info');}
+      else if(p<20){fb(F,'지금은 '+v+' g이에요. 아직 페트병이 덜 팽팽해요. 내려놓고 마개를 10번 더 눌러 봐요.','info');}
+      else{recB=v;$('#a1RecB b').textContent=v+' g';$('#a1RecB').classList.add('on');T.textContent='④ 넣기 전과 넣은 후를 비교해요';fb(F,'공기를 넣은 후 무게는 '+v+' g이에요. 두 무게를 비교해 봐요.',true);$('#a1Cmp1').hidden=false;}});};
+  $('#a1Off1').onclick=()=>{if(busy)return;on=false;draw();};
+  $('#a1Push').onclick=()=>{if(on){fb(F,'페트병을 전자저울에서 내려놓고 마개를 눌러요.',false);return;}if(recA===null){fb(F,'먼저 공기를 넣기 전의 무게를 재요.',false);return;}
+    if(p>=24){fb(F,'⚠️ 그만! 너무 많이 누르면 마개를 열 때 큰 소리가 나거나 마개가 튕겨 나갈 수 있어요. 이제 무게를 재요.',false);return;}
+    p++;$('#a1Ball').setAttribute('ry',9);setTimeout(()=>$('#a1Ball').setAttribute('ry',16),150);draw();$('#a1Feel').textContent='';
+    T.textContent='마개를 '+p+'번 눌렀어요';if(p===10)fb(F,'10번 눌렀어요. ✋ 페트병을 살짝 만져 볼까요? 그다음 10번 더 눌러요.','info');if(p===20)fb(F,'20번 눌렀어요. 페트병이 팽팽해졌는지 만져 보고, 저울에 올려 무게를 재요.','info');};
+  $('#a1Touch').onclick=()=>{$('#a1Feel').textContent=p<5?'말랑말랑해요':p<15?'조금 단단해졌어요':p<24?'팽팽해요!':'너무 팽팽해요! 그만 눌러요';};
+  draw();
+})();
+pickOne('#a1C1','','공기를 넣기 전과 넣은 후에 잰 두 숫자를 비교해 봐요.','s3');
+
+/* 실험해요 2 */
+(function(){let on=false,n=0,recC=null,recD=null,busy=false,pressed=false,opened=false;const D=$('#a1Dsp2'),T=$('#a1T2'),F='#a1Lab2Fb';
+  const mass=()=>Math.round((254.8-0.5*Math.min(n,8)/8)*10)/10;
+  function draw(){$('#a1Jar').setAttribute('transform',on?'translate(275,250)':'translate(560,290)');
+    $('#a1Pmp').setAttribute('transform','translate(560,140)');$('#a1Pmp').setAttribute('opacity',!on&&n>0&&!opened?1:0);
+    $('#a1Lid').setAttribute('transform',opened?'translate(160,136)':'');$('#a1Eff').setAttribute('width',Math.min(n,8)/8*166);if(!on)D.textContent='0.0';}
+  $('#a1On2').onclick=()=>{if(busy||on)return;if(opened){fb(F,'실험을 마쳤어요. 결과를 비교해 봐요.','info');return;}on=true;draw();busy=true;
+    a1Show(D,mass(),()=>{busy=false;const v=mass().toFixed(1);
+      if(n===0){recC=v;$('#a1RecC b').textContent=v+' g';$('#a1RecC').classList.add('on');T.textContent='② 내려놓고 펌프로 공기를 빼요';fb(F,'공기를 빼기 전 용기의 무게는 '+v+' g이에요. 저울에서 내려놓고 펌프질을 해요.','info');}
+      else if(n<8){fb(F,'지금은 '+v+' g이에요. 펌프질이 힘들어질 때까지 더 빼 봐요.','info');}
+      else{recD=v;$('#a1RecD b').textContent=v+' g';$('#a1RecD').classList.add('on');T.textContent='③ 비교하고, 단추를 누른 뒤 뚜껑을 열어요';fb(F,'공기를 뺀 후 무게는 '+v+' g이에요. 두 무게를 비교해 봐요.',true);$('#a1Cmp2').hidden=false;}});};
+  $('#a1Off2').onclick=()=>{if(busy)return;on=false;draw();};
+  $('#a1Pmpbtn').onclick=()=>{if(on){fb(F,'용기를 전자저울에서 내려놓고 펌프질을 해요.',false);return;}if(recC===null){fb(F,'먼저 공기를 빼기 전의 무게를 재요.',false);return;}if(opened)return;
+    if(n>=8){$('#a1Puff').textContent='더 이상 잘 안 빠져요';fb(F,'펌프질이 힘들어졌어요. 이제 무게를 재요.','info');return;}
+    n++;draw();$('#a1PRod').setAttribute('y',-126);setTimeout(()=>$('#a1PRod').setAttribute('y',-150),200);$('#a1Puff').textContent=n<4?'쉬익~':n<8?'조금 힘들어요':'펌프질이 힘들어요!';T.textContent='펌프질 '+n+'번';};
+  $('#a1Btn2').onclick=()=>{if(n===0){fb(F,'아직 공기를 빼지 않았어요.','info');return;}if(recD===null){fb(F,'먼저 공기를 뺀 후의 무게를 재요. 단추는 실험이 끝난 뒤에 눌러요.','info');return;}pressed=true;$('#a1Puff').textContent='칙— 공기가 다시 들어가요';fb(F,'단추를 누르니 공기가 다시 들어갔어요. 이제 뚜껑을 열 수 있어요.','info');};
+  $('#a1Open2').onclick=()=>{if(n===0||recD===null){fb(F,'실험을 마친 뒤에 뚜껑을 열어요.','info');return;}
+    if(!pressed){fb(F,'⚠️ 잠깐! 용기 안의 공기를 뺀 채로 억지로 열면 다칠 수 있어요. 먼저 뚜껑 가운데 단추를 눌러요.',false);return;}
+    opened=true;on=false;draw();fb(F,'안전하게 뚜껑을 열었어요. 👍',true);a1Done();};
+  draw();
+})();
+let a1c2=false,a1op=false;function a1Done(){a1op=true;if(a1c2)doneNav('s4');}
+pickOne('#a1C2','','공기를 빼기 전과 뺀 후에 잰 두 숫자를 비교해 봐요.',null,()=>{a1c2=true;if(a1op)doneNav('s4');else fb('#a1Lab2Fb','결과 비교 끝! 마지막으로 뚜껑 가운데 단추를 누른 뒤 뚜껑을 열어 정리해요.','info');});
+
+/* 정리해요 */
+pickOne('#a1S1','','실험 결과를 다시 떠올려 봐요.',null,()=>{$('#a1More').hidden=false;});
+pickOne('#a1S2','','','s5');
+
+/* 교실 공기의 무게 */
+(function(){const IC={feather:'<path d="M440 160 q40 -50 60 -60 q-10 30 -60 60z" fill="#ddd" stroke="#888"/>',
+  bag:'<rect x="420" y="110" width="70" height="60" rx="14" fill="#3a78c8"/><path d="M435 110 q20 -24 40 0" fill="none" stroke="#1b3f66" stroke-width="6"/>',
+  piano:'<rect x="400" y="60" width="140" height="110" rx="6" fill="#2c333a"/><rect x="410" y="120" width="120" height="16" fill="#fff"/><g stroke="#2c333a" stroke-width="2"><line x1="425" y1="120" x2="425" y2="136"/><line x1="440" y1="120" x2="440" y2="136"/><line x1="455" y1="120" x2="455" y2="136"/><line x1="470" y1="120" x2="470" y2="136"/><line x1="485" y1="120" x2="485" y2="136"/><line x1="500" y1="120" x2="500" y2="136"/><line x1="515" y1="120" x2="515" y2="136"/></g>'};
+  const ANG={feather:-14,bag:-12,piano:0},MSG={feather:'깃털 쪽이 훨씬 위로 올라가요. 교실 안 공기가 훨씬 무거워요!',bag:'책가방보다도 교실 안 공기가 훨씬 무거워요!',piano:'거의 수평이에요! 교실 안 공기의 무게는 200 kg 정도로 피아노의 무게와 비슷해요.'};
+  $$('#a1Cands button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;$('#a1Right').innerHTML=IC[k];$('#a1Beam').style.transform=`rotate(${ANG[k]}deg)`;
+    $$('#a1Cands button').forEach(x=>x.classList.remove('sel','right'));b.classList.add(k==='piano'?'right':'sel');
+    $('#a1SeeT').textContent=k==='piano'?'교실 공기 ≈ 피아노':'교실 공기가 더 무거워요';fb('#a1SeeFb',MSG[k],k==='piano'?true:'info');if(k==='piano')$('#a1Exp').hidden=false;});
+})();
+pickOne('#a1S3','','','s6');
+
+/* 생각이 한눈에 */
+let a1g=0;const a1gd=()=>{if(++a1g===3)doneNav('s7');};
+$('#blReveal').onclick=()=>{fb('#blFb','공기와 같은 기체는 대부분 눈에 보이지 않고 손으로 잡을 수 없지만 무게가 있어요.',true);a1gd();};
+pickOne('#a1G1','','공기를 넣으면 무게가 어떻게 되었는지 실험을 떠올려 봐요.',null,a1gd);
+(function(){let ok=false;$('#a1G2Btn').onclick=()=>{const t=$('#a1G2').value.trim();if(!t){fb('#a1G2Fb','먼저 답을 써 보세요.',false);return;}
+  const w=/저울|무게|재/.test(t),h=/무거|더 많이|무게가 더/.test(t);
+  if(w&&h){fb('#a1G2Fb','잘 썼어요! 전자저울로 두 공기통의 무게를 재었을 때 더 무거운 공기통에 공기가 더 많이 들어 있어요.',true);if(!ok){ok=true;a1gd();}}
+  else fb('#a1G2Fb',w?'무게를 재는 생각이 좋아요. 어느 쪽에 공기가 더 많을지도 써 봐요.':'공기는 무게가 있어요. 무엇으로 무엇을 재면 좋을까요?','info');};})();
+
+/* 형성 평가 */
+let a1f=0;const a1fd=()=>{if(++a1f===2)doneNav('s8');};
+pickOne('#a1F1','','실험에서 공기를 빼냈을 때 무엇이 달라졌는지 생각해 봐요.',null,a1fd);
+(function(){let ok=false;$('#a1F2Btn').onclick=()=>{const t=$('#a1F2').value.trim();if(!t){fb('#a1F2Fb','먼저 답을 써 보세요.',false);return;}
+  const up=/늘어|무거워|많아|커/.test(t)&&!/줄어|가벼워/.test(t),why=/무게가 있|공기.*(많|더)|더 많/.test(t);
+  if(up&&why){fb('#a1F2Fb','잘 썼어요! 자전거의 무게는 점점 늘어나요. 공기는 무게가 있고, 펌프를 누를수록 타이어에 공기가 더 많이 들어가기 때문이에요.',true);if(!ok){ok=true;a1fd();}}
+  else if(up)fb('#a1F2Fb','무게 변화는 맞아요. 그 까닭(공기의 성질, 들어가는 공기의 양)도 써 봐요.','info');
+  else fb('#a1F2Fb','펌프를 누를수록 타이어 속 공기의 양이 어떻게 될까요? 공기는 무게가 있어요.',false);};})();
+
+/* 스스로 평가 */
+faces('s9','오늘도 잘했어요! 다음 시간에는 온도가 변할 때 기체의 부피가 어떻게 되는지 알아봐요.','어려웠던 부분은 실험해요 1·2를 한 번 더 해 보고, 선생님께 질문해도 좋아요!');
+</script>

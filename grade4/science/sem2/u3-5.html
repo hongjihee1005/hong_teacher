@@ -1,0 +1,642 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>성질과 쓰임새가 다양한 기체를 소개할게!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#1c6fa8;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+.a5-q{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,17rem),1fr));gap:8px}
+.a5-qc{border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.a5-qc p{margin:0 0 6px;font-size:.93rem;line-height:1.35}
+.a5-qc .row{gap:5px}.a5-qc .row button{font-size:.8rem;min-height:1.9rem;padding:.05em .45em;border-width:2px}
+.a5-qc.done{border-color:var(--good);background:#f1fbf4}
+.a5-opts{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0 8px}
+.a5-opts button{font-size:.92rem;border-width:2px}
+.a5-sent{font-family:"Jua",sans-serif;font-size:1.05rem;line-height:2}
+.a5-sent input{font:inherit;font-size:1rem;padding:4px 10px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink);width:min(100%,24rem)}
+.a5-tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin:4px 0}
+.a5-tools button{min-height:2.1rem;padding:.05em .5em;font-size:.84rem;border-width:2px}
+.a5-tools input{font:inherit;font-size:.9rem;padding:5px 8px;border-radius:10px;border:2px solid var(--line);width:12rem;background:var(--paper);color:var(--ink)}
+.a5-panels{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:6px auto 0;max-width:min(100%,130vh)}
+.a5-panels.one{grid-template-columns:minmax(0,1fr);max-width:min(100%,46vh);margin-left:auto;margin-right:auto}
+.a5-pw{border:3px solid var(--line);border-radius:10px;background:#fff;position:relative}
+.a5-pw.on{border-color:var(--sky);box-shadow:0 0 0 3px var(--sun)}
+.a5-pw svg{width:100%;height:auto;display:block;touch-action:none;border-radius:8px}
+.a5-pw .no{position:absolute;left:4px;top:2px;font-family:"Jua",sans-serif;font-size:.8rem;color:#5b6b78}
+.a5-gal{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.a5-work{border:2px solid var(--line);border-radius:14px;padding:6px;background:var(--paper)}
+.a5-work svg{width:100%;height:auto;border-radius:8px;background:#fff;max-height:22vh}
+.a5-work .row{gap:5px}.a5-work .row button{font-size:.8rem;min-height:1.9rem;padding:.05em .4em;border-width:2px}
+.a5-work.done{border-color:var(--good);background:#f1fbf4}
+.a5-script{background:#fffdf3;border:2px dashed #c9b27a;border-radius:14px;padding:10px 14px;font-size:.98rem;line-height:1.7}
+.a5-stars button{min-height:2rem;padding:0 .4em;font-size:1.1rem;border-width:2px}
+@media (max-width:900px){.a5-panels{grid-template-columns:repeat(2,minmax(0,1fr))}.a5-gal{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><ellipse cx="43" cy="34" rx="22" ry="26" fill="#6ec3f0" stroke="#fff" stroke-width="3"/><path d="M43 60 l-4 6 h8z" fill="#fff"/><path d="M43 66 q-6 8 0 16" stroke="#fff" stroke-width="2.5" fill="none"/></svg>
+  <div><h1>성질과 쓰임새가 다양한 기체를 소개할게!</h1><p>4학년 2학기 과학 · 3단원 여러 가지 기체 · 7~8/12차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">계획해요</a><a href="#s3">활동해요</a><a href="#s4">발표해요</a><a href="#s5">함께 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>여러 가지 기체에 흥미를 느끼며 기체를 소개할 수 있어요.</p>
+
+<!-- 도입 -->
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 76쪽</span>
+  <h2>나는 어떤 기체일까요?</h2>
+  <p>산소, 이산화 탄소, 질소, 수소, 헬륨 등 여러 가지 기체는 성질과 쓰임새가 다양해요. 기체 친구의 말을 듣고 누구인지 골라요. (<b id="a5QN">0</b>/5)</p>
+  <div class="a5-q" id="a5Q"></div>
+  <div class="fb" id="a5QFb"></div>
+</section>
+
+<!-- 계획해요 -->
+<section id="s2" data-nav="계획해요">
+  <span class="stage">계획해요 · 「실험관찰」 44쪽</span>
+  <h2>여러 가지 기체를 이모티콘이나 네 컷 만화로 소개하는 계획을 세워요</h2>
+  <p class="jua">① 소개하고 싶은 기체를 골라요.</p>
+  <div class="a5-opts" id="a5Gas"></div>
+  <p class="jua">② 어떤 방식으로 표현할지 골라요.</p>
+  <div class="a5-opts" id="a5Way"><button data-w="1">😊 이모티콘 (한 칸)</button><button data-w="4">🗯️ 네 컷 만화</button></div>
+  <p class="tip" data-glue="1">이모티콘(emoticon): 컴퓨터나 휴대 전화의 문자와 기호, 숫자 등을 조합하여 만든 그림 문자</p>
+  <p class="jua">③ 기체의 특징을 써요.</p>
+  <p class="a5-sent">내가 소개할 기체는 <b id="a5GasT">○○</b>이고, 이 기체의 특징은 <input id="a5Feat" placeholder="예: 공기보다 위로 뜨는 성질이 있다는 것">입니다.</p>
+  <div class="row"><button class="main" id="a5PlanOk">계획 완성!</button><button id="a5Ex">💡 예시 보기</button></div>
+  <div class="fb" id="a5PlanFb"></div>
+</section>
+
+<!-- 활동해요 -->
+<section id="s3" data-nav="활동해요">
+  <span class="stage">활동해요 · 「실험관찰」 45쪽</span>
+  <h2>기체의 특징이 잘 드러나도록 표현해요</h2>
+  <p>칸을 고른 다음, 그림 도장과 말풍선을 넣어요. 넣은 그림은 끌어서 옮기고, 눌러서 고른 뒤 크기를 바꿀 수 있어요.</p>
+  <div class="a5-tools" id="a5Stamp"></div>
+  <div class="a5-tools"><span class="jua">배경:</span><button data-bg="#cfeaf8">하늘</button><button data-bg="#fdf6e3">방 안</button><button data-bg="#e8f6dc">바깥</button><button data-bg="#fff">흰색</button>
+    <input id="a5Txt" placeholder="말풍선 글" maxlength="22"><button class="main" id="a5Say">💬 말풍선 넣기</button></div>
+  <div class="a5-tools"><button id="a5Big">➕ 크게</button><button id="a5Small">➖ 작게</button><button id="a5Del">🗑 고른 것 지우기</button><button id="a5Clr">칸 비우기</button><button id="a5Demo">💡 예시 만화 불러오기</button><button id="a5Save">💾 그림 저장</button></div>
+  <div class="a5-panels" id="a5Panels" data-glue="1"></div>
+  <div class="row" style="margin-top:8px"><button class="main" id="a5Up">📤 공유 플랫폼에 올리기</button></div>
+  <div class="fb" id="a5UpFb"></div>
+  <p class="tip">💡 스마트 기기의 그림 그리기 애플리케이션이나 종이에 그려도 좋아요. 친구들이 올린 작품에는 칭찬 댓글을 달아요.</p>
+</section>
+
+<!-- 발표해요 -->
+<section id="s4" data-nav="발표해요">
+  <span class="stage">발표해요 · 「실험관찰」 45쪽</span>
+  <h2>내 작품을 소개하고 친구들의 작품을 감상해요</h2>
+  <div class="row"><button class="main" id="a5Script">🎤 소개 원고 만들기</button></div>
+  <div class="a5-script" id="a5ScriptBox" hidden></div>
+  <p class="jua" style="margin-top:10px">친구들의 작품을 보고 기체의 어떤 성질을 표현했는지 골라요.</p>
+  <div class="a5-gal" id="a5Gal"></div>
+  <div class="fb" id="a5GalFb"></div>
+  <p class="jua" style="margin-top:8px">친구 작품에 달 댓글을 골라요.</p>
+  <div class="pick" id="a5Cm" data-glue="1">
+    <button data-a="1" data-m="좋아요! 기체의 성질을 어떻게 표현했는지 구체적으로 칭찬했어요.">질소가 과자를 지켜 주는 장면이 재미있고, 질소의 쓰임새가 잘 보여!</button>
+    <button data-a="0" data-m="친구의 작품을 존중하는 말로 바꾸어 봐요. 잘된 점을 먼저 찾아 칭찬해요.">그림이 이상해. 나라면 이렇게 안 그려.</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<!-- 스스로 평가 -->
+<section id="s5" data-nav="함께 평가">
+  <span class="stage">함께 평가하기 · 「실험관찰」 45쪽</span>
+  <h2>우리 모둠을 되돌아봐요</h2>
+  <table>
+    <tr><td>여러 가지 기체의 특징을 소개했나요?</td><td class="face" data-r="0"></td></tr>
+    <tr><td>기체의 특징이 드러나게 이모티콘이나 네 컷 만화를 표현했나요?</td><td class="face" data-r="1"></td></tr>
+    <tr><td>친구의 작품을 바른 자세로 감상했나요?</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 76~77쪽 · 「실험관찰」 44~45쪽 · 지도서 302~307쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+const NS5='http://www.w3.org/2000/svg';
+const GAS5={'산소':{c:'#e2573f',k:/숨|호흡|타는|연소|생물/,ex:'생물이 숨을 쉬는 데 필요하고, 다른 물질이 타는 것을 돕는 것'},
+ '질소':{c:'#3a78c8',k:/과자|식품|신선|보존|보관|에어백|반응/,ex:'과자 봉지를 채워 식품을 신선하게 보존하는 것'},
+ '이산화 탄소':{c:'#5b6b78',k:/탄산|톡|소화기|가라앉|드라이아이스|불/,ex:'공기보다 아래로 가라앉아 불을 끄는 소화기에 이용되는 것'},
+ '수소':{c:'#2f8f5b',k:/연료|친환경|자동차|전기|드론/,ex:'친환경 연료로 수소 자동차를 움직이는 것'},
+ '헬륨':{c:'#b07cf0',k:/가벼|뜨|떠|풍선|비행선/,ex:'공기보다 위로 뜨는 성질이 있다는 것'},
+ '공기':{c:'#6ec3f0',k:/온도|압력|부피|무게/,ex:'온도가 높아지면 부피가 늘어나고 온도가 낮아지면 부피가 줄어든다는 것'}};
+
+/* 도입 */
+(function(){const Q=[['나는 우리가 숨을 쉬는 데 꼭 필요해. 다른 물질이 타는 것도 도와!','산소'],['나는 과자 봉지를 채워서 과자가 부서지지 않고 신선하게 지켜 줘.','질소'],['나는 탄산음료 속에서 톡 쏘는 느낌을 내. 공기보다 아래로 가라앉아.','이산화 탄소'],['나는 공기보다 가벼워서 풍선과 비행선을 띄워.','헬륨'],['나는 오염 물질을 내보내지 않는 친환경 연료야. 수소 자동차를 움직여.','수소']];
+  const G=['산소','질소','이산화 탄소','헬륨','수소'];let n=0;
+  Q.forEach(([t,a])=>{const d=document.createElement('div');d.className='a5-qc';d.innerHTML=`<p>💬 “${t}”</p><div class="row"></div>`;
+    G.forEach(g=>{const b=document.createElement('button');b.textContent=g;b.onclick=()=>{if(d.classList.contains('done'))return;
+      if(g===a){b.classList.add('right');d.classList.add('done');n++;$('#a5QN').textContent=n;fb('#a5QFb',n===5?'🎉 모두 맞혔어요! 이 기체들의 성질과 쓰임새를 만화로 소개해 봐요.':'맞아요, '+a+'예요!',n===5?true:'info');if(n===5)doneNav('s1');}
+      else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb('#a5QFb','「과학」 74~75쪽의 여러 가지 기체를 떠올려 봐요.',false);}};$('.row',d).appendChild(b);});
+    $('#a5Q').appendChild(d);});})();
+
+/* 계획해요 */
+let a5gas=null,a5way=0,a5plan=false;
+Object.keys(GAS5).forEach(g=>{const b=document.createElement('button');b.textContent=g;b.style.borderColor=GAS5[g].c;b.onclick=()=>{a5gas=g;$$('#a5Gas button').forEach(x=>x.classList.toggle('sel',x===b));$('#a5GasT').textContent=g;};$('#a5Gas').appendChild(b);});
+$$('#a5Way button').forEach(b=>b.onclick=()=>{a5way=+b.dataset.w;$$('#a5Way button').forEach(x=>x.classList.toggle('sel',x===b));a5Build();});
+$('#a5Ex').onclick=()=>{fb('#a5PlanFb','예시) 내가 소개할 기체는 헬륨이고, 이 기체의 특징은 공기보다 위로 뜨는 성질이 있다는 것입니다. → 네 컷 만화 「둥실둥실 헬륨 씨」','info');};
+$('#a5PlanOk').onclick=()=>{if(!a5gas){fb('#a5PlanFb','① 소개할 기체를 골라요.',false);return;}if(!a5way){fb('#a5PlanFb','② 이모티콘과 네 컷 만화 중 하나를 골라요.',false);return;}
+  const t=$('#a5Feat').value.trim();if(!t){fb('#a5PlanFb','③ 기체의 특징을 써요.',false);return;}
+  if(!GAS5[a5gas].k.test(t)){fb('#a5PlanFb',a5gas+'의 성질이나 쓰임새가 드러나게 써 봐요. 예: '+GAS5[a5gas].ex,'info');return;}
+  a5plan=true;fb('#a5PlanFb','계획 완성! 이제 ‘활동해요’에서 '+(a5way===4?'네 컷 만화':'이모티콘')+'로 표현해요.',true);doneNav('s2');};
+
+/* 활동해요: 만화 공방 */
+const ST5={
+ kid:'<circle cx="0" cy="-34" r="13" fill="#f2c39b"/><circle cx="-4" cy="-36" r="1.8" fill="#222"/><circle cx="4" cy="-36" r="1.8" fill="#222"/><path d="M-4 -29 q4 3 8 0" stroke="#222" fill="none" stroke-width="1.5"/><path d="M-13 -40 q13 -16 26 0" fill="#5a3b22"/><rect x="-11" y="-21" width="22" height="28" rx="7" fill="#ff8a3d"/><path d="M-5 7 v20 M5 7 v20" stroke="#2c333a" stroke-width="5" stroke-linecap="round"/><path d="M-11 -14 l-10 12 M11 -14 l10 -12" stroke="#f2c39b" stroke-width="4" stroke-linecap="round"/>',
+ gas:c=>`<path d="M-26 6 q-8 -26 10 -34 q8 -16 26 -6 q22 -4 20 20 q14 14 -4 26 q-12 12 -26 4 q-26 6 -26 -10z" fill="${c}" opacity=".9" stroke="#fff" stroke-width="2"/><circle cx="-8" cy="-6" r="3.5" fill="#fff"/><circle cx="10" cy="-6" r="3.5" fill="#fff"/><circle cx="-8" cy="-5" r="1.8" fill="#222"/><circle cx="10" cy="-5" r="1.8" fill="#222"/><path d="M-6 6 q7 6 14 0" stroke="#fff" stroke-width="2.5" fill="none"/>`,
+ balloon:'<ellipse cx="0" cy="-24" rx="18" ry="22" fill="#b07cf0"/><ellipse cx="-6" cy="-32" rx="4" ry="7" fill="#fff" opacity=".5"/><path d="M0 -2 q-6 14 4 32" stroke="#555" stroke-width="1.5" fill="none"/>',
+ snack:'<path d="M-20 -26 h40 q10 26 0 52 h-40 q-10 -26 0 -52z" fill="#3a78c8"/><text y="5" text-anchor="middle" font-size="12" font-family="Jua" fill="#fff">과자</text>',
+ o2:'<rect x="-11" y="-28" width="22" height="50" rx="8" fill="#e2573f"/><rect x="-6" y="-36" width="12" height="9" fill="#5b6b78"/><text y="4" text-anchor="middle" font-size="10" font-family="Jua" fill="#fff">산소</text>',
+ ext:'<rect x="-12" y="-24" width="24" height="46" rx="7" fill="#c0392b"/><rect x="-5" y="-33" width="10" height="10" fill="#2c333a"/><path d="M5 -29 h14 l10 10" fill="none" stroke="#2c333a" stroke-width="4"/>',
+ soda:'<path d="M-13 -24 l4 46 h18 l4 -46z" fill="#8a3b1a" opacity=".85"/><g fill="#fff"><circle cx="-2" cy="-4" r="2.5"/><circle cx="4" cy="-14" r="2"/><circle cx="1" cy="10" r="2.5"/></g>',
+ car:'<path d="M-36 10 q2 -14 16 -16 l10 -12 h22 l12 12 q12 2 12 16z" fill="#2f8f5b"/><circle cx="-20" cy="12" r="7" fill="#2c333a"/><circle cx="22" cy="12" r="7" fill="#2c333a"/>',
+ ship:'<ellipse cx="0" cy="0" rx="40" ry="14" fill="#9aa5ad"/><path d="M36 0 l10 -10 v20z" fill="#5b6b78"/><rect x="-10" y="14" width="20" height="8" rx="3" fill="#2c333a"/>',
+ fire:'<path d="M0 -30 q20 18 14 34 q-4 12 -14 12 q-12 0 -16 -12 q-4 -14 8 -22 q0 10 6 12 q2 -12 2 -24z" fill="#ff8a3d"/><path d="M0 -6 q8 8 4 16 q-4 4 -8 0 q-4 -8 4 -16z" fill="#ffd23f"/>',
+ drop:'<g fill="#fff" stroke="#9cc3d8"><circle cx="-10" cy="0" r="5"/><circle cx="4" cy="-10" r="4"/><circle cx="10" cy="6" r="6"/></g>',
+ cloud:'<g fill="#fff"><ellipse cx="-14" cy="0" rx="18" ry="12"/><ellipse cx="6" cy="-6" rx="18" ry="14"/><ellipse cx="22" cy="2" rx="14" ry="10"/></g>',
+ sun:'<circle r="16" fill="#ffd23f"/><g stroke="#ffd23f" stroke-width="3"><line y1="-22" y2="-28"/><line y1="22" y2="28"/><line x1="-22" x2="-28"/><line x1="22" x2="28"/></g>'};
+const SN5={kid:'🧒 아이',gas:'🫧 기체 친구',balloon:'🎈 풍선',snack:'과자 봉지',o2:'산소통',ext:'소화기',soda:'🥤 탄산음료',car:'🚗 수소 자동차',ship:'비행선',fire:'🔥 불',drop:'기포',cloud:'☁️ 구름',sun:'☀️ 해'};
+let a5P=[],a5cur=0,a5selEl=null,a5up=false;
+function a5Svg(){const s=document.createElementNS(NS5,'svg');s.setAttribute('viewBox','0 0 300 300');s.innerHTML='<rect class="bg" width="300" height="300" fill="#fff"/><g class="els"></g>';return s;}
+function a5Build(){const box=$('#a5Panels');box.innerHTML='';box.classList.toggle('one',a5way===1);a5P=[];
+  for(let i=0;i<(a5way||4);i++){const w=document.createElement('div');w.className='a5-pw'+(i===0?' on':'');const svg=a5Svg();w.appendChild(svg);
+    const no=document.createElement('span');no.className='no';no.textContent=a5way===1?'이모티콘':(i+1)+'컷';w.appendChild(no);
+    w.addEventListener('pointerdown',()=>{a5cur=i;$$('.a5-pw').forEach((x,j)=>x.classList.toggle('on',j===i));},true);
+    a5Drag(svg);box.appendChild(w);a5P.push(svg);}a5cur=0;}
+function a5Pt(svg,e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse());}
+function a5Drag(svg){let d=null,ox=0,oy=0;
+  svg.addEventListener('pointerdown',e=>{const g=e.target.closest('g[data-el]');if(!g)return;a5Sel(g);const q=a5Pt(svg,e);d=g;ox=q.x-+g.dataset.x;oy=q.y-+g.dataset.y;svg.setPointerCapture(e.pointerId);});
+  svg.addEventListener('pointermove',e=>{if(!d)return;const q=a5Pt(svg,e);d.dataset.x=Math.max(10,Math.min(290,q.x-ox)).toFixed(0);d.dataset.y=Math.max(10,Math.min(290,q.y-oy)).toFixed(0);a5Tr(d);});
+  const up=()=>d=null;svg.addEventListener('pointerup',up);svg.addEventListener('pointercancel',up);}
+function a5Tr(g){g.setAttribute('transform',`translate(${g.dataset.x},${g.dataset.y}) scale(${g.dataset.s})`);}
+function a5Sel(g){$$('g[data-el]').forEach(x=>x.style.outline='');a5selEl=g;if(g)g.style.outline='2px dashed #1c6fa8';}
+function a5Add(html,x,y,s,kind,panel){const svg=a5P[panel==null?a5cur:panel];if(!svg)return;const g=document.createElementNS(NS5,'g');g.dataset.el=kind;g.dataset.x=x;g.dataset.y=y;g.dataset.s=s;g.innerHTML=html;g.style.cursor='move';a5Tr(g);$('.els',svg).appendChild(g);return g;}
+function a5Bubble(t){t=t.replace(/[<&>]/g,'');const l1=t.slice(0,11),l2=t.slice(11);const w=Math.max(l1.length,l2.length)*13+20,h=l2?52:32;
+  return `<rect x="${-w/2}" y="${-h/2}" width="${w}" height="${h}" rx="14" fill="#fff" stroke="#15313d" stroke-width="2"/><path d="M-8 ${h/2-1} l-6 12 l14 -12z" fill="#fff" stroke="#15313d" stroke-width="2"/><path d="M-7 ${h/2-2} h12" stroke="#fff" stroke-width="3"/><text y="${l2?-4:5}" text-anchor="middle" font-size="13" font-family="Jua" fill="#15313d">${l1}</text>${l2?`<text y="16" text-anchor="middle" font-size="13" font-family="Jua" fill="#15313d">${l2}</text>`:''}`;}
+Object.keys(SN5).forEach(k=>{const b=document.createElement('button');b.textContent=SN5[k];b.onclick=()=>{if(!a5P.length){fb('#a5UpFb','먼저 ‘계획해요’에서 표현 방식을 골라요.','info');return;}
+  const html=k==='gas'?ST5.gas(GAS5[a5gas||'공기'].c)+`<text y="44" text-anchor="middle" font-size="12" font-family="Jua" fill="#15313d">${a5gas||'기체'}</text>`:ST5[k];
+  a5Sel(a5Add(html,110+Math.random()*80,150+Math.random()*60,1.3,k));};$('#a5Stamp').appendChild(b);});
+$$('[data-bg]').forEach(b=>b.onclick=()=>{const s=a5P[a5cur];if(s)$('.bg',s).setAttribute('fill',b.dataset.bg);});
+$('#a5Say').onclick=()=>{const t=$('#a5Txt').value.trim();if(!t){fb('#a5UpFb','말풍선에 넣을 글을 써요.','info');return;}if(!a5P.length)return;a5Sel(a5Add(a5Bubble(t),150,50,1,'say'));$('#a5Txt').value='';};
+$('#a5Txt').addEventListener('keydown',e=>{if(e.key==='Enter')$('#a5Say').click();});
+$('#a5Big').onclick=()=>{if(a5selEl){a5selEl.dataset.s=Math.min(3,+a5selEl.dataset.s+0.2).toFixed(1);a5Tr(a5selEl);}};
+$('#a5Small').onclick=()=>{if(a5selEl){a5selEl.dataset.s=Math.max(0.5,+a5selEl.dataset.s-0.2).toFixed(1);a5Tr(a5selEl);}};
+$('#a5Del').onclick=()=>{if(a5selEl){a5selEl.remove();a5selEl=null;}};
+$('#a5Clr').onclick=()=>{const s=a5P[a5cur];if(s)$('.els',s).innerHTML='';};
+$('#a5Demo').onclick=()=>{a5gas=a5gas||'헬륨';if(!a5way){a5way=4;$$('#a5Way button').forEach(x=>x.classList.toggle('sel',x.dataset.w==='4'));}a5Build();
+  const P=a5way===1?[[['balloon',150,170,2],['gas',150,190,1.2],['say:둥실둥실 헬륨 씨',150,50,1]]]:[
+   [['kid',110,200,1.6],['balloon',170,150,1.6],['say:헬륨 풍선 샀다!',150,50,1]],
+   [['kid',110,200,1.6],['balloon',190,70,1.3],['say:어? 내 풍선이…',150,40,1]],
+   [['kid',110,200,1.6],['cloud',200,80,1.4],['say:왜 날아갔지?',150,40,1]],
+   [['gas',150,180,1.5],['balloon',230,90,1.2],['say:둥실둥실 헬륨 씨',150,46,1]]];
+  const bg=['#fdf6e3','#cfeaf8','#cfeaf8','#cfeaf8'];
+  P.forEach((els,i)=>{$('.bg',a5P[i]).setAttribute('fill',bg[i]);els.forEach(([k,x,y,s])=>{
+    const html=k.startsWith('say:')?a5Bubble(k.slice(4)):k==='gas'?ST5.gas(GAS5['헬륨'].c)+'<text y="44" text-anchor="middle" font-size="12" font-family="Jua" fill="#15313d">헬륨</text>':ST5[k];a5Add(html,x,y,s,k.startsWith('say')?'say':k,i);});});
+  fb('#a5UpFb','「과학」 77쪽의 예시 만화예요. 헬륨이 공기보다 위로 뜨는 성질을 표현했어요. 예시를 참고해 나만의 작품으로 바꾸어 봐요!','info');};
+$('#a5Save').onclick=()=>{if(!a5P.length)return;const n=a5P.length,cols=n===1?1:2,rows=Math.ceil(n/cols);let inner='';
+  a5P.forEach((s,i)=>{inner+=`<g transform="translate(${(i%cols)*310+5},${Math.floor(i/cols)*310+5})">${s.innerHTML}<rect width="300" height="300" fill="none" stroke="#15313d" stroke-width="3"/></g>`;});
+  const W=cols*310,H=rows*310;const src=`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><rect width="${W}" height="${H}" fill="#fff"/>${inner}</svg>`.replace(/font-family="Jua"/g,'font-family="sans-serif"');
+  const img=new Image();img.onload=()=>{const c=document.createElement('canvas');c.width=W*2;c.height=H*2;const x=c.getContext('2d');x.drawImage(img,0,0,W*2,H*2);const a=document.createElement('a');a.download='gas-comic.png';a.href=c.toDataURL('image/png');a.click();};
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(src);};
+$('#a5Up').onclick=()=>{if(!a5P.length){fb('#a5UpFb','먼저 ‘계획해요’에서 기체와 표현 방식을 골라요.',false);return;}
+  const miss=a5P.map((s,i)=>{const e=$$('g[data-el]',s);return(e.some(g=>g.dataset.el!=='say')&&e.some(g=>g.dataset.el==='say'))?0:i+1;}).filter(Boolean);
+  if(miss.length){fb('#a5UpFb',(a5P.length===1?'이모티콘에':miss.join(', ')+'컷에')+' 그림과 말풍선을 모두 넣어요.',false);return;}
+  a5up=true;fb('#a5UpFb','공유 플랫폼에 올렸어요! 💾 그림 저장으로 내 기기에 보관할 수도 있어요. 이제 ‘발표해요’로 가요.',true);doneNav('s3');};
+
+a5Build();
+/* 발표해요 */
+let a5scr=false,a5gal=0,a5cm=false;
+function a5c4(){if(a5scr&&a5gal===3&&a5cm)doneNav('s4');}
+$('#a5Script').onclick=()=>{const g=a5gas||'(기체)',f=$('#a5Feat').value.trim()||'(특징)',w=a5way===1?'이모티콘':'네 컷 만화';
+  $('#a5ScriptBox').hidden=false;$('#a5ScriptBox').innerHTML=`🎤 제가 소개할 기체는 <b>${g}</b>입니다. ${g}의 특징은 ${f.replace(/[<&>]/g,'')}입니다.<br>이 특징이 잘 드러나도록 <b>${w}</b>로 표현했습니다. 제 작품에서 잘된 점은 ________이고, 고칠 점은 ________입니다.`;
+  a5scr=true;if(!a5up)fb('#a5GalFb','‘활동해요’에서 작품을 올리면 원고가 더 완성돼요.','info');a5c4();};
+(function(){const W=[
+  {t:'질소 친구',svg:'<rect width="300" height="160" fill="#fdf6e3"/><path d="M60 50 h60 q14 40 0 80 h-60 q-14 -40 0 -80z" fill="#3a78c8"/><text x="90" y="96" text-anchor="middle" font-size="14" font-family="Jua" fill="#fff">과자</text><g transform="translate(210,96)"><path d="M-26 6 q-8 -26 10 -34 q8 -16 26 -6 q22 -4 20 20 q14 14 -4 26 q-12 12 -26 4 q-26 6 -26 -10z" fill="#3a78c8" opacity=".8"/><circle cx="-8" cy="-5" r="2" fill="#222"/><circle cx="10" cy="-5" r="2" fill="#222"/></g><rect x="150" y="10" width="140" height="34" rx="12" fill="#fff" stroke="#15313d"/><text x="220" y="32" text-anchor="middle" font-size="12" font-family="Jua">과자는 내가 지킬게!</text>',a:1,o:['공기보다 위로 떠요','식품을 신선하게 보존해요','숨을 쉬게 해 줘요']},
+  {t:'이산화 탄소 친구',svg:'<rect width="300" height="160" fill="#fdf6e3"/><path d="M90 140 q30 -40 20 -70 q30 20 20 70z" fill="#ff8a3d"/><g transform="translate(110,70)"><path d="M-30 6 q-8 -20 10 -26 q10 -14 28 -4 q22 -2 22 18 q8 14 -8 22 q-30 8 -52 -10z" fill="#5b6b78" opacity=".85"/></g><path d="M100 98 v30" stroke="#5b6b78" stroke-width="4" stroke-dasharray="4 4"/><rect x="170" y="20" width="120" height="50" rx="12" fill="#fff" stroke="#15313d"/><text x="230" y="40" text-anchor="middle" font-size="12" font-family="Jua">내가 아래로 덮어</text><text x="230" y="58" text-anchor="middle" font-size="12" font-family="Jua">공기를 막을게!</text>',a:0,o:['공기보다 아래로 가라앉아 불을 꺼요','친환경 연료예요','과자를 보존해요']},
+  {t:'산소 친구',svg:'<rect width="300" height="160" fill="#cfeaf8"/><g transform="translate(90,110)"><circle cx="0" cy="-34" r="13" fill="#f2c39b"/><rect x="-11" y="-21" width="22" height="28" rx="7" fill="#ff8a3d"/></g><g transform="translate(160,80)"><path d="M-26 6 q-8 -26 10 -34 q8 -16 26 -6 q22 -4 20 20 q14 14 -4 26 q-12 12 -26 4 q-26 6 -26 -10z" fill="#e2573f" opacity=".85"/><circle cx="-8" cy="-5" r="2" fill="#fff"/><circle cx="10" cy="-5" r="2" fill="#fff"/></g><rect x="180" y="110" width="110" height="34" rx="12" fill="#fff" stroke="#15313d"/><text x="235" y="132" text-anchor="middle" font-size="12" font-family="Jua">후~ 숨 쉬어!</text>',a:2,o:['탄산음료의 톡 쏘는 맛','비행선을 띄워요','생물이 숨을 쉬는 데 필요해요']}];
+  W.forEach(w=>{const d=document.createElement('div');d.className='a5-work';d.innerHTML=`<b class="jua">${w.t}</b><svg viewBox="0 0 300 160">${w.svg}</svg><div class="row"></div>`;
+    w.o.forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>{if(d.classList.contains('done'))return;
+      if(i===w.a){b.classList.add('right');d.classList.add('done');a5gal++;fb('#a5GalFb',a5gal===3?'세 작품 모두 감상했어요! 기체의 성질을 그림으로 표현하니 기억하기 쉬워요.':'맞아요! '+w.t+' 작품은 "'+o+'"를 표현했어요.',a5gal===3?true:'info');a5c4();}
+      else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb('#a5GalFb','그림 속 말과 장면을 다시 살펴봐요.',false);}};$('.row',d).appendChild(b);});
+    $('#a5Gal').appendChild(d);});})();
+pickOne('#a5Cm','','',null,()=>{a5cm=true;a5c4();});
+
+faces('s5','멋진 소개였어요! 다음 시간에는 기체의 성질을 이용한 장치를 만들어 봐요.','어려웠던 부분은 「과학」 74~75쪽을 다시 읽어 보고, 친구들의 작품도 다시 살펴봐요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>

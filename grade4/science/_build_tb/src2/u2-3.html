@@ -1,0 +1,471 @@
+<!--
+title: 생물의 먹고 먹히는 관계를 알아볼까?
+unit: 2
+lesson: 5~6
+total: 13
+goal: 생물 요소들의 먹고 먹히는 관계를 조사할 수 있어요.<br>다양한 먹이 관계를 먹이그물로 표현할 수 있어요.
+pages: 「과학」 48~49쪽 · 「실험관찰」 24~25쪽 · 지도서 206~213쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"먹","bl2":"이","bl3":"그","bl4":"물"}}]
+-->
+<style>
+[hidden]{display:none!important}
+.k-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+@media(max-width:700px){.k-two{grid-template-columns:1fr}}
+.k-q{font-family:"Jua",sans-serif;font-size:1.1rem;margin:12px 0 6px}
+.k-chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.k-chips button{font-size:.95rem;min-height:2.3rem;padding:.2em .7em}
+.k-chips button.used{opacity:.3;pointer-events:none}
+.k-bins{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:8px;margin-top:8px}
+@media(max-width:700px){.k-bins{grid-template-columns:1fr}}
+.k-bin{border:3px dashed var(--line);border-radius:14px;padding:8px;min-height:4.6rem;cursor:pointer;background:var(--paper)}
+.k-bin.hot{border-color:var(--sun);background:#fff8dd;color:#15313d}
+.k-bin b{display:block;font-family:"Jua",sans-serif;font-weight:400}
+.k-bin span{display:inline-block;margin:3px;padding:2px 9px;border-radius:999px;background:#bdf0cf;color:#0d5a31;font-size:.88rem}
+.k-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.k-tabs button.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.k-tabs button.ok{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.k-tabs button.ok.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.k-card{border:2px solid var(--line);border-radius:16px;padding:10px 12px;background:var(--paper)}
+.k-card h3{margin:0 0 4px;font-size:1.05rem}
+.k-def{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media(max-width:800px){.k-def{grid-template-columns:1fr}}
+.k-def .k-card b{color:var(--sky)}
+.k-say{display:flex;flex-direction:column;gap:6px}
+.hit{cursor:pointer}
+.hit:focus-visible{outline:3px solid var(--sun)}
+
+.e3-node{cursor:pointer}
+.e3-node:focus-visible rect{stroke:#ffc93c;stroke-width:5}
+#e3Board{max-height:52vh}
+.e3-game{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(0,1fr);gap:12px;align-items:start}
+@media(max-width:800px){.e3-game{grid-template-columns:1fr}}
+.e3-hand{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+.e3-hand button{display:flex;align-items:center;gap:4px;padding:2px 6px;min-height:2.8rem;font-size:.95rem}
+.e3-hand button svg{width:42px;height:auto;flex:none}
+.e3-hand button.sel{background:var(--sun)}
+.e3-turn{font-family:"Jua",sans-serif;font-size:1.05rem;padding:6px 10px;border-radius:12px;background:#e1f0fb;color:#12466b;margin-bottom:6px}
+.e3-turn.me{background:#fff3c4;color:#5a4200}
+.e3-fr{font-size:.9rem;color:var(--muted)}
+.e3-cards{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px}
+@media(max-width:900px){.e3-cards{grid-template-columns:repeat(5,minmax(0,1fr))}}
+.e3-card{display:flex;flex-direction:column;align-items:center;gap:0;padding:4px 2px;min-height:7.4rem;border-width:2px;border-radius:12px;font-size:.9rem;line-height:1.25}
+.e3-card svg{width:100%;max-width:70px;height:auto}
+.e3-card small{font-family:"Gowun Dodum",sans-serif;font-size:.74rem;color:#15313d;text-align:left}
+.e3-card.back{background:#fff8dd;border-color:#b58400;color:#15313d}
+.e3-cmp svg{max-height:34vh}
+#e3Chain{max-height:44vh}
+#e3Web49{max-height:40vh}
+.e3-ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:6px;align-items:center;padding:4px 0;border-bottom:2px dashed var(--line)}
+.e3-ox button{min-height:2.2rem;font-size:.92rem;padding:.1em .7em}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 48쪽</span>
+  <h2>개구리가 먹는 동물과 개구리를 먹는 동물에는 어떤 것이 있을까요?</h2>
+  <div class="k-two">
+    <svg class="scene" viewBox="0 0 300 200" role="img" aria-label="연못가의 개구리" style="max-height:28vh;background:#dff1e6"><rect width="300" height="200" fill="#dff1e6"/><ellipse cx="150" cy="170" rx="150" ry="40" fill="#7cc0e0"/><ellipse cx="150" cy="150" rx="70" ry="16" fill="#3f8f46"/><g id="e3Frog"></g></svg>
+    <div>
+      <p>동물 카드를 고른 뒤 알맞은 칸을 눌러요.</p>
+      <div class="k-chips" id="e3In"></div>
+    </div>
+  </div>
+  <div class="k-bins" id="e3InBins">
+    <div class="k-bin" data-b="eat"><b>🐸 개구리가 먹는 동물</b></div>
+    <div class="k-bin" data-b="eaten"><b>🐸 개구리를 먹는 동물</b></div>
+  </div>
+  <div class="fb" id="e3InFb"></div>
+</section>
+
+<section id="s2" data-nav="조사해요">
+  <span class="stage">활동해요 1 · 「실험관찰」 24쪽</span>
+  <h2>생물 카드를 살펴보고 먹고 먹히는 관계를 조사해요</h2>
+  <p>카드를 눌러 뒷면을 봐요. (9장 모두)</p>
+  <div class="e3-cards" id="e3Cards"></div>
+  <div class="fb" id="e3CardFb"></div>
+</section>
+
+<section id="s3" data-nav="모형 만들기 놀이">
+  <span class="stage">활동해요 2 · 「실험관찰」 24쪽 · 함께해요</span>
+  <h2>친구와 함께 먹이 관계 모형 만들기 놀이를 해요</h2>
+  <div class="e3-game">
+    <svg id="e3Board" class="scene" viewBox="0 0 800 460" role="img" aria-label="먹이 관계 모형 판"></svg>
+    <div>
+      <div class="e3-turn" id="e3Turn"></div>
+      <p class="jua" style="margin:0 0 4px">내 카드</p>
+      <div class="e3-hand" id="e3Hand"></div>
+      <div class="row" style="margin-top:6px"><button class="main" id="e3End" disabled>✅ 내 차례 마치기</button><button id="e3Pass" hidden>🙅 낼 카드가 없어요</button></div>
+      <div class="row" id="e3Check" hidden style="margin-top:6px"><button id="e3Ok">👍 맞게 냈어요</button><button id="e3Bad">✋ 틀린 화살표가 있어요</button></div>
+      <p class="e3-fr" id="e3FrInfo"></p>
+      <div class="row" style="margin-top:4px"><button id="e3All" hidden>🕸️ 모든 먹이 관계 보기</button><button id="e3Again">🔄 처음부터</button></div>
+    </div>
+  </div>
+  <div class="fb" id="e3Fb"></div>
+  <details class="tip" data-glue="1"><summary>놀이 규칙 (「실험관찰」 24쪽)</summary>① 토끼풀 카드를 내려놓고, 나머지 8장을 4장씩 나누어 가져요. ② 내려놓은 생물과 먹이 관계에 있는 카드를 한 장 내고 화살표를 그려요(먹이가 되는 생물 → 먹는 생물). ③ 번갈아 가며 카드를 내요. 내 차례에 생물 카드는 한 번, 화살표는 여러 번 그릴 수 있어요. 낼 카드가 없으면 순서가 넘어가요. ④ 모든 카드를 쓰면 끝나요.</details>
+</section>
+
+<section id="s4" data-nav="정리해요 1">
+  <span class="stage">정리해요 · 「실험관찰」 25쪽</span>
+  <h2>완성된 먹이 관계 모형을 보며 먹고 먹히는 관계를 알아봐요</h2>
+  <div class="k-two">
+    <div><p class="k-q" style="margin-top:0">1. 족제비가 먹는 생물을 모두 골라요. (4가지)</p>
+      <div class="pick" id="e3Q1"><button data-a="1">직박구리</button><button data-a="1">개구리</button><button data-a="1">오리</button><button data-a="1">토끼</button><button data-m="족제비는 식물을 먹지 않아요.">토끼풀</button><button data-m="족제비는 식물을 먹지 않아요.">산수유</button></div><div class="fb"></div></div>
+    <div><p class="k-q" style="margin-top:0">2. 직박구리가 먹는 생물을 모두 골라요. (2가지)</p>
+      <div class="pick" id="e3Q2"><button data-a="1">산수유</button><button data-a="1">애벌레</button><button data-m="족제비는 직박구리를 먹는 쪽이에요.">족제비</button><button data-m="매는 직박구리를 먹는 쪽이에요.">매</button></div><div class="fb"></div>
+      <p class="k-q">3. 매가 먹는 생물을 모두 골라요. (3가지)</p>
+      <div class="pick" id="e3Q3"><button data-a="1">직박구리</button><button data-a="1">개구리</button><button data-a="1">족제비</button><button data-m="매는 식물을 먹지 않아요.">토끼풀</button></div><div class="fb"></div></div>
+  </div>
+</section>
+
+<section id="s5" data-nav="단순과 복잡">
+  <span class="stage">정리해요 · 「실험관찰」 25쪽</span>
+  <h2>개구리가 사라지면 생태계는 어떻게 될까요?</h2>
+  <div class="k-two e3-cmp">
+    <div><p class="jua" style="margin:0">단순한 먹이 관계</p><svg id="e3Simple" class="scene" viewBox="0 0 400 340" role="img" aria-label="단순한 먹이 관계"></svg></div>
+    <div><p class="jua" style="margin:0">복잡한 먹이 관계</p><svg id="e3Complex" class="scene" viewBox="0 0 800 460" role="img" aria-label="복잡한 먹이 관계"></svg></div>
+  </div>
+  <div class="row" style="margin-top:6px"><button class="main" id="e3Gone">🐸 개구리가 사라지게 하기</button></div>
+  <div id="e3OX" style="margin-top:6px" data-glue="1"></div>
+  <div class="fb" id="e3OXFb"></div>
+</section>
+
+<section id="s6" data-nav="먹이사슬·먹이그물">
+  <span class="stage">전개 2 · 「과학」 48~49쪽</span>
+  <h2>먹이사슬과 먹이그물</h2>
+  <div class="player" id="e3Pl">
+    <svg id="e3Chain" class="scene" viewBox="0 0 600 320" role="img" aria-label="풀, 메뚜기, 개구리, 오리, 매, 족제비의 먹이 관계"></svg>
+    <div class="ctl"><button class="main pBtn" aria-label="재생">▶</button><input type="range" class="pRng" min="0" step="0.02" value="0" aria-label="영상 시간"><span class="jua pClk">0초</span></div>
+    <div class="row chapters"></div>
+    <p class="cap"></p>
+  </div>
+  <div class="fb" id="e3PlFb"></div>
+</section>
+
+<section id="s7" data-nav="낱말 정리">
+  <span class="stage">전개 2 · 「과학」 49쪽</span>
+  <h2>먹이사슬과 먹이그물을 정리해요</h2>
+  <div id="e3Words"></div>
+  <div class="fb" id="e3WordFb"></div>
+  <p class="k-q" data-glue="1">먹이그물이 복잡할수록 생태계가 안정적으로 유지되는 데 도움이 되는 까닭은 무엇일까요?</p>
+  <div class="pick" id="e3Why" data-glue="1" style="grid-template-columns:1fr!important"><button data-a="1">한 가지 먹이가 부족하거나 사라지더라도 다른 먹이를 먹고 살아갈 수 있기 때문이에요</button><button data-m="먹이그물이 복잡해도 생물은 먹이를 먹어야 살 수 있어요.">생물이 먹이를 먹지 않아도 되기 때문이에요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="한눈에 쏙">
+  <span class="stage">정리 · 「과학」 49쪽</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 생물의 먹이 관계가 서로 복잡하게 얽혀 있는 것을
+    <span class="blank"><span id="bl1">ㅁ</span><span id="bl2">ㅇ</span><span id="bl3">ㄱ</span><span id="bl4">ㅁ</span></span> 이라고 합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="k-q" data-glue="1">2. 💭 이 먹이그물에서 직박구리가 사라지면 어떤 일이 생길까요?</p>
+  <div class="k-two" data-glue="1">
+    <div><svg id="e3Web49" class="scene" viewBox="0 0 800 460" role="img" aria-label="숲의 먹이그물"></svg><p class="tip" style="margin:2px 0 0">이 앱에서 간단히 그린 숲의 먹이그물이에요.</p></div>
+    <div><div class="row"><button class="main" id="e3Bulbul">직박구리가 사라지게 하기</button></div>
+      <div class="pick" id="e3Q49" style="grid-template-columns:1fr!important;margin-top:6px"><button data-a="1">직박구리의 먹이였던 애벌레의 수가 늘어날 것 같아요</button><button data-a="1">뱀, 매, 족제비는 다람쥐, 토끼, 개구리 같은 다른 동물을 먹을 것 같아요</button><button data-m="먹이그물에서는 한 생물이 사라져도 다른 먹이를 먹고 살아갈 수 있어요.">숲의 모든 동물이 곧바로 사라질 것 같아요</button></div>
+      <div class="fb"></div></div>
+  </div>
+</section>
+
+<section id="s9" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="k-q">1. 생물의 먹고 먹히는 관계를 먹이사슬로 옳게 나타낸 것은 어느 것일까요?</p>
+  <div class="pick" id="e3F1" style="grid-template-columns:repeat(3,minmax(0,1fr))!important">
+    <button data-m="오리는 뱀을 먹지 않고, 화살표는 먹이에서 먹는 생물 쪽으로 가요.">① 오리 → 뱀 → 토끼</button><button data-m="토끼는 족제비를 먹지 않아요.">② 뱀 → 족제비 → 토끼</button><button data-a="1">③ 토끼풀 → 토끼 → 뱀</button>
+    <button data-m="애벌레가 토끼풀을 먹으므로 화살표는 토끼풀 → 애벌레 방향이에요.">④ 애벌레 → 토끼풀 → 오리</button><button data-m="매가 직박구리를 먹으므로 화살표는 직박구리 → 매 방향이에요.">⑤ 애벌레 → 매 → 직박구리</button>
+  </div>
+  <div class="fb"></div>
+  <p class="k-q" data-glue="1">2. ✏️ 한 생물이 줄어들거나 사라져도 생태계가 안정적으로 유지될 수 있는 먹이 관계를 고르고, 까닭을 써 봐요.</p>
+  <div class="pick" id="e3F2" data-glue="1"><button data-m="단순한 먹이 관계에서는 한 생물이 사라지면 그 생물을 먹던 생물이 먹을 것이 없어져요.">㉠ 단순한 먹이 관계</button><button data-a="1">㉡ 복잡한 먹이 관계</button></div>
+  <div class="fb"></div>
+  <div class="row" data-glue="1" style="margin-top:6px"><textarea id="e3F2t" rows="2" style="flex:1" placeholder="왜냐하면 …"></textarea><button class="main" id="e3F2b">내 답 살펴보기</button></div>
+  <div class="fb" id="e3F2fb"></div>
+</section>
+
+<section id="s10" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 25쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>생태계의 구성 요소들이 서로 관련되어 있음을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>다양한 먹이 관계 모형을 만들 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>친구와 협력해서 먹이 관계 모형 만들기에 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+const NS='http://www.w3.org/2000/svg';
+const mk=(tag,at,par)=>{const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+/* 여러 개 고르기: multi('#box', 정답 수, 섹션, 맞힘 글, 틀림 글, 끝나면) — data-a="1"이 정답, data-m은 틀릴 때 풀이 */
+function multi(box,need,sec,okMsg,noMsg,after){const got=new Set();const out=$(box).nextElementSibling;
+  $$(box+' button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size>=need){fb(out,okMsg,true);if(sec)doneNav(sec);if(after)after();}else fb(out,`좋아요! (${got.size}/${need})`,'info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 나누기: sorter('#칩', '#상자들', '#fb', [[이름, 상자키(여럿이면 띄어 씀), 풀이]…], {키:상자 이름}, 끝나면) */
+function sorter(chips,bins,out,items,lbl,done){let cur=null,n=0;
+  $(chips).innerHTML=shuffle(items).map(d=>`<button data-b="${d[1]}" data-w="${d[2]||''}">${d[0]}</button>`).join('');
+  const hot=v=>$$(bins+' .k-bin').forEach(x=>x.classList.toggle('hot',v));
+  $$(chips+' button').forEach(b=>b.onclick=()=>{$$(chips+' button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b;hot(true);});
+  $$(bins+' .k-bin').forEach(bin=>bin.onclick=()=>{if(!cur)return;const nm=cur.textContent,w=cur.dataset.w;
+    if(cur.dataset.b.split(' ').includes(bin.dataset.b)){bin.insertAdjacentHTML('beforeend','<span>'+nm+'</span>');cur.classList.add('used');cur.classList.remove('sel');n++;
+      fb(out,(n===items.length?'🎉 모두 나누었어요! ':'맞아요! ')+(w||'')+(n<items.length?` (${n}/${items.length})`:''),true);cur=null;hot(false);if(n===items.length&&done)done();return;}
+    fb(out,`‘${nm}’은(는) ‘${lbl[bin.dataset.b]}’에 들어가지 않아요. `+(w||'다시 생각해 봐요.'),false);cur=null;hot(false);});}
+/* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기(키보드도) */
+function tap(el,f){el.classList.add('hit');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2, seg=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+
+/* 생물 그림(직접 그림): ART.이름 → 가운데가 (0,0)인 약 90×70 크기 SVG 조각 */
+const ART=(function(){
+const bird=(b,h,w,o)=>{o=o||{};return `<path d="M-30 6 q6 -24 32 -20 q20 2 26 14 l14 -2 l-12 10 q-10 16 -36 14 q-22 -2 -24 -16z" fill="${b}" stroke="#333" stroke-width="1.5"/>`+
+  `<circle cx="22" cy="-12" r="11" fill="${h}" stroke="#333" stroke-width="1.5"/>${o.cheek?`<ellipse cx="24" cy="-9" rx="6" ry="4" fill="${o.cheek}"/>`:''}<circle cx="26" cy="-14" r="2" fill="#111"/>`+
+  `<path d="M32 -12 l${o.beak||10} 3 l-${o.beak||10} 3z" fill="${o.bk||'#e8a23a'}"/><path d="M-6 -4 q-18 2 -24 14 q16 -2 26 -6z" fill="${w}" stroke="#333" stroke-width="1"/>`+
+  `<path d="M-30 6 l-14 ${o.tail||4} l4 6z" fill="${w}"/>${o.legs===0?'':'<path d="M0 22 v10 M8 22 v10" stroke="#a66" stroke-width="2"/>'}${o.belly?`<path d="M-14 10 q14 10 34 0" fill="none" stroke="${o.belly}" stroke-width="7" stroke-linecap="round"/>`:''}`;};
+const tree=(c,t,o)=>{o=o||{};return `<rect x="-6" y="0" width="12" height="34" fill="#8a5a2b"/>`+(o.pine?`<path d="M0 -40 l-30 34 h60z M0 -22 l-34 34 h68z" fill="${c}" stroke="#2c5e2e" stroke-width="1.5"/>`
+  :`<circle cx="-16" cy="-8" r="18" fill="${c}"/><circle cx="16" cy="-8" r="18" fill="${c}"/><circle cx="0" cy="-24" r="22" fill="${c}"/>`)+(t||'');};
+const fish=(c,o)=>{o=o||{};return `<path d="M-30 0 q20 -${o.h||16} 46 0 q-26 ${o.h||16} -46 0z" fill="${c}" stroke="#333" stroke-width="1.5"/><path d="M-28 0 l-14 -11 v22z" fill="${c}" stroke="#333" stroke-width="1.5"/><circle cx="8" cy="-3" r="2.2" fill="#111"/>${o.stripe?`<path d="M-20 -6 q6 4 0 8 M-10 -9 q6 5 0 10 M0 -10 q6 5 0 10" stroke="${o.stripe}" stroke-width="2" fill="none"/>`:''}`;};
+const lens=(inner,bg)=>`<circle r="30" fill="${bg||'#f3f7ee'}" stroke="#555" stroke-width="3"/><g>${inner}</g><circle r="30" fill="none" stroke="#555" stroke-width="3"/>`;
+const A={
+ '토끼':`<ellipse cx="0" cy="8" rx="26" ry="18" fill="#f2efe8" stroke="#555" stroke-width="1.5"/><circle cx="20" cy="-8" r="12" fill="#f2efe8" stroke="#555" stroke-width="1.5"/><path d="M14 -18 q-4 -22 2 -24 q6 2 2 24z M22 -18 q2 -22 9 -22 q4 4 -3 24z" fill="#f2efe8" stroke="#555" stroke-width="1.5"/><circle cx="24" cy="-9" r="2" fill="#c33"/><circle cx="-26" cy="4" r="5" fill="#fff" stroke="#555"/>`,
+ '다람쥐':`<path d="M-14 10 q-30 -10 -18 -36 q14 -6 14 10 q-6 10 4 20z" fill="#c07a3e" stroke="#6b3d16" stroke-width="1.5"/><ellipse cx="4" cy="8" rx="16" ry="14" fill="#c98a4b" stroke="#6b3d16" stroke-width="1.5"/><circle cx="16" cy="-8" r="10" fill="#c98a4b" stroke="#6b3d16" stroke-width="1.5"/><path d="M0 2 v12 M-4 2 v12" stroke="#5a3010" stroke-width="2"/><circle cx="20" cy="-10" r="1.8" fill="#111"/><path d="M12 -16 l2 -6 l4 5z" fill="#c98a4b"/>`,
+ '두더지':`<ellipse cx="0" cy="6" rx="30" ry="16" fill="#4b4b55" stroke="#222" stroke-width="1.5"/><path d="M28 2 q10 2 12 6 q-6 4 -12 2z" fill="#e7a3a8"/><path d="M-6 18 q-8 6 -14 2 M10 18 q8 6 14 2" stroke="#e7a3a8" stroke-width="5" stroke-linecap="round"/><circle cx="22" cy="0" r="1.5" fill="#999"/>`,
+ '족제비':`<path d="M-40 4 q-8 -12 4 -10 q20 -6 44 -4 q16 0 20 -8 q12 -4 14 6 q-2 10 -14 10 q-30 10 -60 10z" fill="#c9862f" stroke="#6b3d16" stroke-width="1.5"/><circle cx="36" cy="-12" r="2" fill="#111"/><path d="M-40 4 q-14 -2 -12 -12" stroke="#6b3d16" stroke-width="6" stroke-linecap="round"/><path d="M-20 12 v8 M14 12 v8" stroke="#6b3d16" stroke-width="3"/>`,
+ '돌고래':`<path d="M-40 6 q10 -26 50 -22 q20 2 26 10 l10 2 l-10 4 q-20 14 -56 10 q-14 -2 -20 -4z" fill="#7b97ad" stroke="#334" stroke-width="1.5"/><path d="M-6 -16 l6 -12 l8 12z M-40 6 l-10 -10 v20z" fill="#7b97ad" stroke="#334" stroke-width="1.5"/><circle cx="22" cy="-6" r="2" fill="#111"/><path d="M-30 8 q30 8 52 -2" stroke="#d6e2ea" stroke-width="5" fill="none"/>`,
+ '매':bird('#8a7563','#8a7563','#5e4b3c',{beak:7,bk:'#e0b23a',belly:'#e8dccb',cheek:'#3d3027'}),
+ '직박구리':bird('#8f969e','#9aa1a8','#6d747c',{cheek:'#9a5b3e',belly:'#c9ced2'}),
+ '참새':bird('#a8774a','#7a4a2a','#6b4024',{cheek:'#f3efe6',belly:'#ece6da'}),
+ '박새':bird('#9db070','#222','#5f6f7a',{cheek:'#fff',belly:'#e9eadf'}),
+ '까치':bird('#202634','#202634','#2f4d8a',{tail:-8,belly:'#fff'}),
+ '딱새':bird('#c8723a','#7c8796','#3d3d3d',{belly:'#e08a46',cheek:'#333'}),
+ '까마귀':bird('#1d1d22','#1d1d22','#2b2b33',{bk:'#222',beak:12}),
+ '갈매기':bird('#f4f6f8','#f4f6f8','#9aa7b3',{bk:'#e8c23a',legs:0}),
+ '오리':`<ellipse cx="-4" cy="8" rx="30" ry="16" fill="#a77b52" stroke="#4b3524" stroke-width="1.5"/><circle cx="22" cy="-12" r="11" fill="#2f7a4a" stroke="#1f3d2a" stroke-width="1.5"/><path d="M31 -12 q12 0 14 4 q-8 4 -14 2z" fill="#e3b23a"/><circle cx="24" cy="-15" r="2" fill="#111"/><path d="M-10 0 q12 -6 24 4" stroke="#3b5ea8" stroke-width="5" fill="none"/><path d="M18 -2 h10" stroke="#fff" stroke-width="3"/>`,
+ '왜가리':`<path d="M-24 4 q0 -18 22 -16 q16 2 14 18 q-10 12 -36 -2z" fill="#9aa6b2" stroke="#3e4955" stroke-width="1.5"/><path d="M8 -6 q10 -14 2 -28 q-2 -6 6 -10" stroke="#c8d0d8" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="16" cy="-42" r="7" fill="#e6eaee" stroke="#3e4955"/><path d="M22 -42 l18 2 l-18 3z" fill="#d9a23a"/><path d="M12 -46 l-14 -4" stroke="#222" stroke-width="2"/><path d="M-4 16 v20 M4 16 v20" stroke="#8a7a5a" stroke-width="2.5"/>`,
+ '상수리나무':tree('#4f8f3a','<g fill="#9b6b2e"><ellipse cx="-12" cy="-6" rx="4" ry="5"/><ellipse cx="14" cy="-14" rx="4" ry="5"/></g>'),
+ '갈참나무':tree('#6a9c3e','<g fill="#b8862e"><ellipse cx="-10" cy="-12" rx="4" ry="5"/><ellipse cx="12" cy="-2" rx="4" ry="5"/></g>'),
+ '소나무':tree('#3f7d44','',{pine:1}),
+ '주목':tree('#2f6a3a','<g fill="#e23b3b"><circle cx="-14" cy="-4" r="3"/><circle cx="10" cy="-16" r="3"/><circle cx="16" cy="0" r="3"/></g>',{pine:1}),
+ '산수유':tree('#7aa64a','<g fill="#ffd23f"><circle cx="-16" cy="-12" r="4"/><circle cx="6" cy="-30" r="4"/><circle cx="18" cy="-6" r="4"/><circle cx="-2" cy="-10" r="4"/></g><g fill="#d62f2f"><ellipse cx="-20" cy="2" rx="3" ry="4"/><ellipse cx="14" cy="8" rx="3" ry="4"/></g>'),
+ '개나리':`<g stroke="#6e8f3a" stroke-width="3" fill="none"><path d="M0 30 q-6 -30 -30 -44"/><path d="M0 30 q0 -34 4 -50"/><path d="M0 30 q8 -30 30 -40"/></g><g fill="#ffd21f" stroke="#c99a00" stroke-width=".8">${[[-24,-34],[-14,-20],[-6,-8],[2,-40],[4,-22],[8,-6],[22,-34],[16,-20],[26,-24]].map(p=>`<path d="M${p[0]} ${p[1]} l3 -6 l3 6 l-3 6z M${p[0]-3} ${p[1]} h12" />`).join('')}</g>`,
+ '토끼풀':`<path d="M0 30 v-28" stroke="#4f8f3a" stroke-width="3"/><g fill="#5cae4a" stroke="#2f6a2a" stroke-width="1.2"><path d="M0 0 q-22 -8 -14 -22 q10 -4 14 22z"/><path d="M0 0 q22 -8 14 -22 q-10 -4 -14 22z"/><path d="M0 0 q-14 -20 0 -28 q14 8 0 28z"/></g><circle cx="-24" cy="-26" r="9" fill="#fff" stroke="#ccc"/><path d="M-24 -18 v40" stroke="#4f8f3a" stroke-width="2"/>`,
+ '괭이밥':`<path d="M0 30 v-24 M0 10 q-12 -6 -18 -20 M0 10 q12 -6 18 -20" stroke="#4f8f3a" stroke-width="2.5" fill="none"/><g fill="#7cc35a" stroke="#2f6a2a" stroke-width="1"><path d="M-18 -10 q-12 -4 -6 -12 q6 0 6 12z M-18 -10 q2 -14 8 -10 q2 6 -8 10z"/><path d="M18 -10 q12 -4 6 -12 q-6 0 -6 12z M18 -10 q-2 -14 -8 -10 q-2 6 8 10z"/></g><g fill="#ffd21f" stroke="#c99a00"><circle cx="0" cy="0" r="3"/><circle cx="-5" cy="2" r="3.4"/><circle cx="5" cy="2" r="3.4"/><circle cx="0" cy="-6" r="3.4"/><circle cx="-3" cy="6" r="3.4"/><circle cx="3" cy="6" r="3.4"/></g>`,
+ '개망초':`<path d="M0 30 v-34 M0 8 l-14 -16 M0 8 l14 -14" stroke="#4f8f3a" stroke-width="2.5" fill="none"/>${[[0,-10],[-14,-14],[14,-12]].map(p=>`<g transform="translate(${p[0]} ${p[1]})"><circle r="8" fill="#fff" stroke="#bbb"/><circle r="3.4" fill="#f5c518"/></g>`).join('')}`,
+ '달맞이꽃':`<path d="M0 30 v-36" stroke="#4f8f3a" stroke-width="3"/><path d="M0 14 l-12 -4 M0 4 l12 -4" stroke="#6aa64a" stroke-width="4" stroke-linecap="round"/><g fill="#ffe14a" stroke="#c9a600" stroke-width="1"><circle cx="-8" cy="-14" r="8"/><circle cx="8" cy="-14" r="8"/><circle cx="-6" cy="-26" r="8"/><circle cx="6" cy="-26" r="8"/></g><circle cx="0" cy="-20" r="3" fill="#c9a600"/>`,
+ '풀':`<g stroke="#4f9a3a" stroke-width="3" fill="none" stroke-linecap="round"><path d="M-10 30 q-2 -26 -18 -40"/><path d="M-2 30 q0 -30 -4 -50"/><path d="M6 30 q4 -26 16 -42"/><path d="M14 30 q8 -16 24 -22"/></g>`,
+ '부들':`<g stroke="#4f8f3a" stroke-width="3" fill="none"><path d="M-6 34 v-60"/><path d="M8 34 v-50"/><path d="M-16 34 q-4 -30 -14 -50"/><path d="M18 34 q6 -30 16 -40"/></g><rect x="-11" y="-40" width="10" height="24" rx="5" fill="#7a4a24"/><rect x="3" y="-30" width="10" height="22" rx="5" fill="#7a4a24"/>`,
+ '붕어마름':`<g stroke="#2f7a3e" stroke-width="2" fill="none"><path d="M0 34 q-4 -30 2 -64"/>${[-24,-12,0,12,24].map(y=>`<path d="M1 ${y} l-14 -6 M1 ${y} l14 -6 M1 ${y} l-10 -12 M1 ${y} l10 -12"/>`).join('')}</g>`,
+ '미역':`<path d="M0 34 q-14 -20 -4 -40 q8 -16 -2 -30 q20 10 12 32 q-6 16 4 38z" fill="#5a6b2a" stroke="#333" stroke-width="1.2"/><path d="M0 30 q-6 -30 4 -60" stroke="#3b4a1a" stroke-width="2" fill="none"/>`,
+ '톳':`<g fill="#7a6a2a" stroke="#4a3d12" stroke-width="1"><path d="M0 34 v-60" stroke-width="3" fill="none"/>${[[-8,-20],[8,-12],[-8,-2],[8,8],[-6,16],[6,-28]].map(p=>`<ellipse cx="${p[0]}" cy="${p[1]}" rx="6" ry="3"/>`).join('')}</g>`,
+ '산호':`<g fill="#ef7f6f" stroke="#a8473b" stroke-width="1.5"><path d="M-4 34 q-4 -20 -20 -30 q-6 -10 2 -12 q10 6 14 20 q0 -20 -6 -34 q4 -8 10 0 q6 18 4 36 q8 -16 18 -22 q8 2 2 10 q-14 10 -14 32z"/></g>`,
+ '해파리':`<path d="M-26 0 q0 -30 26 -30 q26 0 26 30 q-6 -4 -10 0 q-6 -4 -10 0 q-6 -4 -12 0 q-6 -4 -10 0 q-6 -4 -10 0z" fill="#d7c3f2" stroke="#7d5bb3" stroke-width="1.5" opacity=".95"/><g stroke="#9b7fd0" stroke-width="2" fill="none"><path d="M-16 0 q-4 14 2 26"/><path d="M-4 0 q4 14 -2 30"/><path d="M8 0 q-4 14 4 28"/><path d="M18 0 q4 12 -2 22"/></g>`,
+ '바다거북':`<ellipse cx="0" cy="0" rx="26" ry="20" fill="#6b8f3a" stroke="#2f4a1a" stroke-width="2"/><path d="M-12 -12 l12 -6 l12 6 v14 l-12 6 l-12 -6z" fill="none" stroke="#2f4a1a" stroke-width="1.5"/><ellipse cx="34" cy="-2" rx="10" ry="8" fill="#a3b56a" stroke="#2f4a1a" stroke-width="1.5"/><circle cx="37" cy="-4" r="1.6" fill="#111"/><path d="M12 -16 q14 -16 26 -12 q-10 10 -22 14z M12 16 q14 16 26 12 q-10 -10 -22 -14z M-18 -14 q-10 -10 -18 -6 q6 8 16 10z M-18 14 q-10 10 -18 6 q6 -8 16 -10z" fill="#a3b56a" stroke="#2f4a1a" stroke-width="1.2"/>`,
+ '고등어':fish('#5b84a8',{stripe:'#1f3b5a',h:12}),
+ '붕어':fish('#c9a043',{h:18}),
+ '가오리':`<path d="M0 -24 q30 10 40 24 q-26 6 -40 18 q-14 -12 -40 -18 q10 -14 40 -24z" fill="#9a8a72" stroke="#4a3d2a" stroke-width="1.5"/><path d="M0 18 q4 14 18 22" stroke="#4a3d2a" stroke-width="2.5" fill="none"/><circle cx="-6" cy="-8" r="2" fill="#111"/><circle cx="6" cy="-8" r="2" fill="#111"/>`,
+ '게':`<ellipse cx="0" cy="4" rx="22" ry="14" fill="#d9573b" stroke="#7a2a1a" stroke-width="1.5"/><g stroke="#7a2a1a" stroke-width="3" fill="none"><path d="M-18 10 l-14 10 M-20 4 l-16 4 M18 10 l14 10 M20 4 l16 4"/></g><path d="M-14 -8 q-14 -14 -24 -6 q6 6 14 2z M14 -8 q14 -14 24 -6 q-6 6 -14 2z" fill="#d9573b" stroke="#7a2a1a" stroke-width="1.5"/><path d="M-5 -10 v-6 M5 -10 v-6" stroke="#333" stroke-width="2"/><circle cx="-5" cy="-17" r="2.4" fill="#111"/><circle cx="5" cy="-17" r="2.4" fill="#111"/>`,
+ '오징어':`<path d="M0 -36 l14 18 v26 q-14 6 -28 0 v-26z" fill="#f1d3c0" stroke="#a46a4a" stroke-width="1.5"/><g stroke="#c48a6a" stroke-width="2.5" fill="none"><path d="M-12 8 q-4 16 -2 26 M-6 8 q-2 16 0 24 M0 8 v26 M6 8 q2 16 0 24 M12 8 q4 16 2 26"/></g><circle cx="-6" cy="0" r="2.4" fill="#111"/><circle cx="6" cy="0" r="2.4" fill="#111"/>`,
+ '조개':`<path d="M-24 10 q0 -30 24 -30 q24 0 24 30z" fill="#e8d9b5" stroke="#8a7244" stroke-width="1.5"/><g stroke="#8a7244" stroke-width="1.2"><path d="M0 10 v-30 M-12 10 l-6 -24 M12 10 l6 -24"/></g><path d="M-26 10 h52" stroke="#8a7244" stroke-width="3"/>`,
+ '다슬기':`<path d="M-22 10 l34 -26 q14 4 10 20 q-14 12 -44 6z" fill="#5c4a2e" stroke="#2c2210" stroke-width="1.5"/><g stroke="#a58a5e" stroke-width="1.5" fill="none"><path d="M-12 10 l18 -18 M0 12 l14 -16 M-4 2 l20 -2"/></g>`,
+ '달팽이':`<path d="M-34 18 q30 6 60 0 l6 -12 l-4 -2 q-10 8 -24 6 z" fill="#d9c3a0" stroke="#7a6240" stroke-width="1.5"/><circle cx="-4" cy="0" r="18" fill="#b77a3e" stroke="#5a3a1a" stroke-width="1.5"/><path d="M-4 0 m0 -10 a10 10 0 1 1 -8 16 a6 6 0 1 1 6 -10" stroke="#5a3a1a" stroke-width="1.5" fill="none"/><path d="M26 6 l6 -18 M30 6 l10 -14" stroke="#7a6240" stroke-width="2"/>`,
+ '지렁이':`<path d="M-36 6 q12 -18 24 0 t24 0 t24 -6" stroke="#c97a7a" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M-6 0 h6" stroke="#a65a5a" stroke-width="10"/>`,
+ '뱀':`<path d="M-38 14 q14 -20 28 0 t28 0 t18 -18" stroke="#6b8f2a" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="38" cy="-6" r="8" fill="#6b8f2a"/><circle cx="40" cy="-8" r="1.8" fill="#111"/><path d="M45 -4 l8 2 M53 2 l-3 -4 l4 -1" stroke="#c33" stroke-width="1.5" fill="none"/>`,
+ '개구리':`<ellipse cx="0" cy="8" rx="24" ry="16" fill="#6cbf4a" stroke="#2f6a2a" stroke-width="1.5"/><circle cx="-10" cy="-8" r="7" fill="#6cbf4a" stroke="#2f6a2a" stroke-width="1.5"/><circle cx="10" cy="-8" r="7" fill="#6cbf4a" stroke="#2f6a2a" stroke-width="1.5"/><circle cx="-10" cy="-9" r="3" fill="#111"/><circle cx="10" cy="-9" r="3" fill="#111"/><path d="M-10 6 q10 6 20 0" stroke="#2f6a2a" stroke-width="1.5" fill="none"/><path d="M-22 16 q-10 4 -14 12 M22 16 q10 4 14 12" stroke="#2f6a2a" stroke-width="4" stroke-linecap="round"/>`,
+ '무당개구리':`<ellipse cx="0" cy="8" rx="24" ry="16" fill="#4f9a3a" stroke="#1f4a1a" stroke-width="1.5"/><circle cx="-10" cy="-8" r="7" fill="#4f9a3a" stroke="#1f4a1a" stroke-width="1.5"/><circle cx="10" cy="-8" r="7" fill="#4f9a3a" stroke="#1f4a1a" stroke-width="1.5"/><circle cx="-10" cy="-9" r="3" fill="#111"/><circle cx="10" cy="-9" r="3" fill="#111"/><g fill="#111"><circle cx="-8" cy="8" r="3"/><circle cx="6" cy="12" r="3.5"/><circle cx="14" cy="2" r="2.5"/></g><path d="M-22 16 q-10 4 -14 12 M22 16 q10 4 14 12" stroke="#e2573f" stroke-width="4" stroke-linecap="round"/>`,
+ '두꺼비':`<ellipse cx="0" cy="8" rx="28" ry="18" fill="#8a6a3e" stroke="#4a3418" stroke-width="1.5"/><circle cx="-11" cy="-8" r="7" fill="#8a6a3e" stroke="#4a3418"/><circle cx="11" cy="-8" r="7" fill="#8a6a3e" stroke="#4a3418"/><circle cx="-11" cy="-9" r="3" fill="#111"/><circle cx="11" cy="-9" r="3" fill="#111"/><g fill="#6a4e28">${[[-14,6],[-4,14],[8,4],[16,12],[0,0],[-18,14]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.4"/>`).join('')}</g>`,
+ '사슴벌레':`<ellipse cx="0" cy="8" rx="13" ry="20" fill="#4a2a14" stroke="#1a0d05" stroke-width="1.5"/><circle cx="0" cy="-16" r="9" fill="#3a2010"/><path d="M-6 -22 q-14 -14 -4 -26 M6 -22 q14 -14 4 -26" stroke="#3a2010" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M-12 0 l-14 -6 M-12 10 l-16 2 M-10 20 l-14 8 M12 0 l14 -6 M12 10 l16 2 M10 20 l14 8" stroke="#1a0d05" stroke-width="2"/><path d="M0 -10 v38" stroke="#1a0d05" stroke-width="1"/>`,
+ '개미':`<g fill="#2a1a12"><circle cx="-18" cy="0" r="6"/><circle cx="-4" cy="0" r="5"/><ellipse cx="14" cy="2" rx="11" ry="8"/></g><path d="M-22 -4 l-6 -10 M-18 -6 l-2 -12 M-8 4 l-6 10 M-2 4 l0 12 M4 4 l6 10 M-6 -4 l-4 -10 M0 -4 l4 -10" stroke="#2a1a12" stroke-width="1.6"/>`,
+ '나비':`<path d="M0 -2 q-30 -28 -32 -6 q0 14 32 8 q-26 6 -22 22 q8 8 22 -20 q14 28 22 20 q4 -16 -22 -22 q32 6 32 -8 q-2 -22 -32 6z" fill="#f2f2f2" stroke="#444" stroke-width="1.4"/><g fill="#333"><circle cx="-18" cy="-12" r="3"/><circle cx="18" cy="-12" r="3"/></g><path d="M0 -10 v26" stroke="#333" stroke-width="3"/><path d="M0 -10 q-6 -10 -10 -12 M0 -10 q6 -10 10 -12" stroke="#333" stroke-width="1.2" fill="none"/>`,
+ '잠자리':`<path d="M0 -14 v44" stroke="#c0392b" stroke-width="5" stroke-linecap="round"/><circle cx="0" cy="-18" r="6" fill="#c0392b"/><g fill="#d8eef8" stroke="#7aa" stroke-width="1" opacity=".95"><ellipse cx="-20" cy="-8" rx="20" ry="5" transform="rotate(-8 -20 -8)"/><ellipse cx="20" cy="-8" rx="20" ry="5" transform="rotate(8 20 -8)"/><ellipse cx="-18" cy="2" rx="18" ry="5" transform="rotate(10 -18 2)"/><ellipse cx="18" cy="2" rx="18" ry="5" transform="rotate(-10 18 2)"/></g>`,
+ '메뚜기':`<path d="M-30 4 q10 -14 40 -10 q14 2 16 10 q-4 8 -16 6 q-28 2 -40 -6z" fill="#7fb23a" stroke="#3f6a1a" stroke-width="1.5"/><circle cx="24" cy="0" r="2" fill="#111"/><path d="M-6 6 l-16 -18 l-10 26 M2 8 l-4 16 M10 8 l4 14" stroke="#3f6a1a" stroke-width="2.5" fill="none"/><path d="M26 -4 q10 -14 20 -16" stroke="#3f6a1a" stroke-width="1.2" fill="none"/>`,
+ '애벌레':`<g fill="#8cc63f" stroke="#4a7a1a" stroke-width="1.2">${[-30,-18,-6,6,18].map((x,i)=>`<circle cx="${x}" cy="${i%2?2:0}" r="8"/>`).join('')}<circle cx="30" cy="-4" r="9" fill="#9bd14a"/></g><circle cx="33" cy="-6" r="1.8" fill="#111"/>`,
+ '거미':`<circle cx="0" cy="6" r="10" fill="#333"/><circle cx="0" cy="-8" r="6" fill="#333"/><g stroke="#333" stroke-width="2" fill="none"><path d="M-6 -6 l-16 -10 l-6 6 M-6 -2 l-20 -2 l-6 8 M-6 4 l-18 8 l-4 10 M-6 8 l-12 14 M6 -6 l16 -10 l6 6 M6 -2 l20 -2 l6 8 M6 4 l18 8 l4 10 M6 8 l12 14"/></g>`,
+ '폭탄먼지벌레':`<ellipse cx="0" cy="6" rx="12" ry="18" fill="#2a2a3a" stroke="#111" stroke-width="1.5"/><path d="M-12 0 h24" stroke="#e8c23a" stroke-width="4"/><path d="M-12 12 h24" stroke="#e8c23a" stroke-width="3"/><circle cx="0" cy="-16" r="7" fill="#d9822b"/><path d="M-3 -22 l-6 -10 M3 -22 l6 -10 M-12 2 l-12 -4 M-12 10 l-14 2 M12 2 l12 -4 M12 10 l14 2" stroke="#111" stroke-width="1.6"/><g fill="#ddd" opacity=".8"><circle cx="0" cy="30" r="4"/><circle cx="-6" cy="36" r="3"/><circle cx="5" cy="38" r="3"/></g>`,
+ '버섯':`<path d="M-28 0 q0 -28 28 -28 q28 0 28 28z" fill="#c9773a" stroke="#6b3a12" stroke-width="1.5"/><rect x="-7" y="0" width="14" height="26" rx="5" fill="#f2e6cf" stroke="#8a6a44" stroke-width="1.5"/><g fill="#f6dcb8"><circle cx="-12" cy="-12" r="4"/><circle cx="8" cy="-18" r="3"/><circle cx="14" cy="-6" r="3.5"/></g>`,
+ '족제비눈물버섯':`<path d="M-24 0 q0 -26 24 -26 q24 0 24 26z" fill="#c89a62" stroke="#6b4a22" stroke-width="1.5"/><g fill="#f4ead6"><path d="M-22 0 l3 6 l3 -6 M-8 0 l3 7 l3 -7 M8 0 l3 6 l3 -6"/></g><rect x="-5" y="0" width="10" height="28" rx="4" fill="#f2e6cf" stroke="#8a6a44" stroke-width="1.5"/>`,
+ '애기낙엽버섯':`<g><path d="M-30 4 q0 -14 14 -14 q14 0 14 14z M2 0 q0 -16 16 -16 q16 0 16 16z" fill="#e8dcc4" stroke="#8a7a5a" stroke-width="1.2"/><g stroke="#b9a782" stroke-width="1"><path d="M-16 -10 v14 M-24 -6 l6 10 M-8 -6 l-6 10 M18 -16 v16 M8 -12 l8 12 M28 -12 l-8 12"/></g><path d="M-16 4 v22 M18 0 v26" stroke="#7a5a3a" stroke-width="2.5"/></g><path d="M-38 30 q20 -8 40 0 q20 6 36 -2" stroke="#b07a3a" stroke-width="6" fill="none"/>`,
+ '말징버섯':`<path d="M-20 10 q-6 -36 20 -36 q26 0 20 36z" fill="#d8c59a" stroke="#7a6640" stroke-width="1.5"/><g stroke="#a48c5a" stroke-width="1.2" fill="none"><path d="M-12 8 q-2 -14 2 -26 M0 8 v-30 M12 8 q2 -14 -2 -26"/></g><rect x="-12" y="8" width="24" height="18" rx="6" fill="#efe4c8" stroke="#7a6640" stroke-width="1.5"/>`,
+ '곰팡이':lens(`<g stroke="#6a7a8a" stroke-width="1.6" fill="none"><path d="M-22 14 q10 -10 20 -4 t20 -10"/><path d="M-6 10 v-18 M8 2 v-20 M-16 12 v-12"/></g><g fill="#3a4a5a"><circle cx="-6" cy="-10" r="5"/><circle cx="8" cy="-20" r="5"/><circle cx="-16" cy="-2" r="4"/></g>`,'#eef1ee'),
+ '세균':lens(`<g fill="#b98ad0" stroke="#6a3f86" stroke-width="1.2">${[[-14,-10,20],[6,-14,-30],[-4,6,60],[14,8,10],[-16,12,-20]].map(p=>`<rect x="-7" y="-3" width="14" height="6" rx="3" transform="translate(${p[0]} ${p[1]}) rotate(${p[2]})"/>`).join('')}</g>`,'#f6f0f8'),
+ '반달말':lens(`<g fill="#5aa64a" stroke="#2f6a2a" stroke-width="1.2">${[[-10,-8,-30],[10,4,20],[-6,12,70]].map(p=>`<path d="M-14 0 q14 -14 28 0 q-14 -6 -28 0z" transform="translate(${p[0]} ${p[1]}) rotate(${p[2]})"/>`).join('')}</g>`,'#eef6f8'),
+ '도토리':`<ellipse cx="0" cy="6" rx="14" ry="18" fill="#b0762e" stroke="#5a3a12" stroke-width="1.5"/><path d="M-16 -4 q16 -16 32 0 q-16 6 -32 0z" fill="#7a5a32" stroke="#4a3010" stroke-width="1.5"/><path d="M0 -12 v-8" stroke="#4a3010" stroke-width="3"/>`
+};
+return A;})();
+/* 그림 넣기: art('토끼', x, y, 크기, 이름표 글자 크기(0이면 없음)) */
+function art(nm,x,y,s,fs){s=s||1;const lab=fs===0?'':`<text x="${x}" y="${y+40*s+(fs||16)}" text-anchor="middle" font-family="Jua" font-size="${fs||16}" fill="#15313d" stroke="#fff" stroke-width="4" paint-order="stroke">${nm}</text>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})">${ART[nm]||''}</g>`+lab;}
+
+/* ---------- 먹이 관계 (먹이 → 먹는 생물) ---------- */
+const POS={'직박구리':[730,232],'산수유':[612,366],'애벌레':[400,407],'토끼풀':[188,366],'토끼':[75,262],'오리':[101,158],'개구리':[211,89],'매':[400,57],'족제비':[653,120]};
+const REL=[['토끼풀','애벌레'],['토끼풀','토끼'],['산수유','애벌레'],['산수유','직박구리'],['애벌레','직박구리'],['애벌레','개구리'],['애벌레','오리'],['개구리','오리'],
+  ['개구리','족제비'],['개구리','매'],['직박구리','족제비'],['직박구리','매'],['오리','족제비'],['오리','매'],['토끼','족제비'],['토끼','매'],['족제비','매']];
+const MAIN=REL.filter(r=>!(r[0]==='토끼'&&r[1]==='매'));
+const hasRel=(a,b)=>REL.some(r=>r[0]===a&&r[1]===b);
+let MKID=0;
+/* 먹이 관계 그림: drawWeb(svg, POS, 화살표들, {gone:이름 Set, hi:생물 Set, hiE:'a>b' Set, dash:[...], dim:Set, pick:이름}) */
+function drawWeb(svg,P,edges,o){o=o||{};const id='mk'+(MKID++);const gone=o.gone||new Set(),dim=o.dim||new Set(),hi=o.hi||new Set(),hiE=o.hiE||new Set();
+  let s=`<defs><marker id="${id}" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#c0392b"/></marker><marker id="${id}g" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#16804a"/></marker><marker id="${id}d" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0 L10 5 L0 10z" fill="#8aa"/></marker></defs>`;
+  s+=`<rect width="${svg.viewBox.baseVal.width}" height="${svg.viewBox.baseVal.height}" fill="#f6fbf2"/>`;
+  const line=(a,b,kind)=>{const A=P[a],B=P[b];if(!A||!B)return'';const dx=B[0]-A[0],dy=B[1]-A[1],L=Math.hypot(dx,dy),ux=dx/L,uy=dy/L;
+    const cut=(u,v)=>{const tx=Math.abs(u)>1e-6?54/Math.abs(u):1e9,ty=Math.abs(v)>1e-6?40/Math.abs(v):1e9;return Math.min(tx,ty)+4;};const c=cut(ux,uy);
+    const x1=A[0]+ux*c,y1=A[1]+uy*c,x2=B[0]-ux*c,y2=B[1]-uy*c;
+    const col=kind==='g'?'#16804a':kind==='d'?'#8aa':kind==='bad'?'#c0392b':'#c0392b';
+    return `<line x1="${x1.toFixed(1)}" y1="${y1.toFixed(1)}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="${col}" stroke-width="${kind==='g'?5:3.5}" ${kind==='d'?'stroke-dasharray="8 7"':''} marker-end="url(#${id}${kind==='g'?'g':kind==='d'?'d':''})"/>`;};
+  edges.forEach(e=>{if(gone.has(e[0])||gone.has(e[1]))return;s+=line(e[0],e[1],hiE.has(e[0]+'>'+e[1])?'g':e[2]||'');});
+  (o.dash||[]).forEach(e=>{if(gone.has(e[0])||gone.has(e[1]))return;s+=line(e[0],e[1],'d');});
+  for(const nm in P){if(o.only&&!o.only.has(nm))continue;const [x,y]=P[nm];const g=gone.has(nm);
+    const fill=g?'#eee':hi.has(nm)?'#fff3c4':'#fff', st=o.pick===nm?'#e0a000':hi.has(nm)?'#e0a000':'#2f7d4a';
+    s+=`<g class="e3-node" data-n="${nm}" opacity="${g?.35:dim.has(nm)?.35:1}"><rect x="${x-52}" y="${y-38}" width="104" height="76" rx="14" fill="${fill}" stroke="${st}" stroke-width="${o.pick===nm?5:3}"/>`+
+      `<g transform="translate(${x} ${y-10}) scale(.5)">${ART[nm]}</g><text x="${x}" y="${y+30}" text-anchor="middle" font-family="Jua" font-size="18" fill="#15313d">${nm}</text>`+
+      (g?`<path d="M${x-40} ${y-28} L${x+40} ${y+28} M${x+40} ${y-28} L${x-40} ${y+28}" stroke="#c0392b" stroke-width="4"/>`:'')+`</g>`;}
+  svg.innerHTML=s;}
+
+/* ---------- s1 ---------- */
+$('#e3Frog').innerHTML=art('개구리',150,120,1.4,0);
+sorter('#e3In','#e3InBins','#e3InFb',[['애벌레','eat'],['메뚜기','eat'],['파리','eat'],['거미','eat'],['매','eaten'],['뱀','eaten'],['족제비','eaten'],['오리','eaten']],{eat:'개구리가 먹는 동물',eaten:'개구리를 먹는 동물'},
+  ()=>{fb('#e3InFb','🎉 잘했어요! 개구리는 애벌레, 메뚜기, 파리, 거미 등을 먹고, 매, 뱀, 족제비, 오리 등은 개구리를 먹어요. 생물들은 서로 먹고 먹히는 관계에 있어요.',true);doneNav('s1');});
+
+/* ---------- s2 생물 카드 ---------- */
+(function(){const names=Object.keys(POS).reverse();const seen=new Set();
+  const back=nm=>{const eat=REL.filter(r=>r[1]===nm&&MAIN.includes(r)).map(r=>r[0]),by=REL.filter(r=>r[0]===nm&&MAIN.includes(r)).map(r=>r[1]);
+    return `<b>${nm}</b><small>${eat.length?'🍽️ 먹는 것: '+eat.join(', '):'🌱 스스로 양분을 만들어요'}<br>${by.length?'⚠️ 먹히는 상대: '+by.join(', '):'⚠️ 이 카드들 중에는 먹는 생물이 없어요'}</small>`;};
+  const front=nm=>`<svg viewBox="-50 -48 100 92" aria-hidden="true">${ART[nm]}</svg><b>${nm}</b>`;
+  $('#e3Cards').innerHTML=names.map(n=>`<button class="e3-card" data-n="${n}">${front(n)}</button>`).join('');
+  $$('#e3Cards .e3-card').forEach(b=>b.onclick=()=>{const n=b.dataset.n,bk=!b.classList.contains('back');b.classList.toggle('back',bk);b.innerHTML=bk?back(n):front(n);
+    if(bk)seen.add(n);if(seen.size===names.length){fb('#e3CardFb','9장을 모두 살펴봤어요! 토끼풀과 산수유는 스스로 양분을 만드는 생산자이고, 다른 생물들은 서로 먹고 먹히는 관계에 있어요. 이제 친구와 놀이를 해 봐요.',true);doneNav('s2');}
+    else fb('#e3CardFb',`살펴본 카드: ${seen.size}/9`,'info');});})();
+
+/* ---------- s3 먹이 관계 모형 만들기 놀이 ---------- */
+const G={};
+function newGame(){const rest=shuffle(Object.keys(POS).filter(n=>n!=='토끼풀'));
+  Object.assign(G,{placed:new Set(['토끼풀']),arrows:[],me:rest.slice(0,4),fr:rest.slice(4),turn:'me',newCard:null,newArrows:0,from:null,trick:false,tricked:false,check:false,done:false,passes:0});
+  $('#e3All').hidden=true;fb('#e3Fb','토끼풀 카드를 내려놓았어요. 내 카드 중에서 토끼풀과 먹이 관계에 있는 카드를 내 봐요.','info');render();}
+const canPlace=n=>REL.some(r=>(r[0]===n&&G.placed.has(r[1]))||(r[1]===n&&G.placed.has(r[0])));
+const drawn=(a,b)=>G.arrows.some(e=>e[0]===a&&e[1]===b);
+function render(){const P={};G.placed.forEach(n=>P[n]=POS[n]);
+  drawWeb($('#e3Board'),P,G.arrows,{pick:G.from,hi:G.newCard?new Set([G.newCard]):undefined,dash:G.done&&G.showAll?REL.filter(r=>!drawn(r[0],r[1])):[]});
+  $('#e3Board').insertAdjacentHTML('afterbegin','');Object.keys(POS).forEach(n=>{if(G.placed.has(n))return;const [x,y]=POS[n];$('#e3Board').insertAdjacentHTML('beforeend',`<rect x="${x-52}" y="${y-38}" width="104" height="76" rx="14" fill="none" stroke="#b9cfc0" stroke-width="2" stroke-dasharray="7 6"/><text x="${x}" y="${y+8}" text-anchor="middle" font-family="Jua" font-size="22" fill="#b9cfc0">?</text>`);});
+  $$('#e3Board .e3-node').forEach(g=>tap(g,()=>nodeTap(g.dataset.n)));
+  $('#e3Hand').innerHTML=G.me.map(n=>`<button data-n="${n}" ${G.turn!=='me'||G.newCard?'disabled':''}><svg viewBox="-50 -48 100 92" aria-hidden="true">${ART[n]}</svg>${n}</button>`).join('')||'<p class="tip">내 카드를 모두 냈어요.</p>';
+  $$('#e3Hand button').forEach(b=>b.onclick=()=>playCard(b.dataset.n));
+  const t=$('#e3Turn');t.classList.toggle('me',G.turn==='me');
+  t.textContent=G.done?'🎉 놀이 끝! 먹이 관계 모형이 완성되었어요.':G.turn==='me'?(G.newCard?`내 차례: ‘${G.newCard}’과(와) 먹이 관계에 있는 생물을 화살표로 이어요. (먹이 → 먹는 생물 순서로 두 카드를 눌러요)`:'내 차례: 낼 카드를 골라요.'):'친구 차례…';
+  $('#e3End').disabled=!(G.turn==='me'&&G.newCard&&G.newArrows>0&&!G.done);
+  $('#e3Pass').hidden=!(G.turn==='me'&&!G.newCard&&!G.done&&G.me.length&&!G.me.some(canPlace));
+  $('#e3FrInfo').textContent=`친구 카드: ${G.fr.length}장 · 화살표: ${G.arrows.length}개`;}
+function playCard(n){if(G.turn!=='me'||G.newCard||G.check)return;
+  if(!canPlace(n)){fb('#e3Fb',`‘${n}’은(는) 아직 판에 있는 생물과 먹이 관계가 없어요. 다른 카드를 골라요.`,false);return;}
+  G.me=G.me.filter(x=>x!==n);G.placed.add(n);G.newCard=n;G.newArrows=0;G.from=null;
+  fb('#e3Fb',`‘${n}’ 카드를 냈어요! 이제 화살표를 그려요. 먼저 먹이가 되는 생물, 다음에 먹는 생물을 눌러요.`,'info');render();}
+function nodeTap(n){if(G.check)return;
+  if(G.turn!=='me'||G.done){return;}
+  if(!G.newCard){fb('#e3Fb','먼저 내 카드에서 한 장을 내요.','info');return;}
+  if(!G.from){G.from=n;render();fb('#e3Fb',`‘${n}’을(를) 골랐어요. 이제 ‘${n}’을(를) 먹는 생물을 눌러요.`,'info');return;}
+  const a=G.from,b=n;G.from=null;
+  if(a===b){render();return;}
+  if(drawn(a,b)){render();fb('#e3Fb','이미 그린 화살표예요.','info');return;}
+  if(hasRel(a,b)){G.arrows.push([a,b]);if(a===G.newCard||b===G.newCard)G.newArrows++;render();
+    fb('#e3Fb',`맞아요! ${b}은(는) ${a}을(를) 먹어요. (${a} → ${b})`+(G.newArrows?' 더 그려도 되고, ‘내 차례 마치기’를 눌러도 돼요.':''),true);return;}
+  render();
+  if(hasRel(b,a))fb('#e3Fb',`화살표 방향이 반대예요. ${a}이(가) ${b}을(를) 먹으므로 먹이가 되는 ‘${b}’부터 눌러요. 화살표는 먹이 → 먹는 생물 쪽으로 그려요.`,false);
+  else fb('#e3Fb',`${a}와(과) ${b}은(는) 이 카드 놀이에서 먹이 관계가 아니에요. 카드 뒷면을 떠올려 봐요.`,false);}
+$('#e3End').onclick=()=>{G.newCard=null;G.from=null;G.turn='fr';render();afterTurn();};
+$('#e3Pass').onclick=()=>{fb('#e3Fb','낼 수 있는 카드가 없어서 친구에게 순서가 넘어가요.','info');G.turn='fr';render();afterTurn();};
+function afterTurn(){if(!G.me.length&&!G.fr.length){finish();return;}setTimeout(friend,700);}
+function friend(){if(!G.fr.length){G.turn='me';render();fb('#e3Fb','친구는 카드를 다 냈어요. 내 차례예요.','info');return;}
+  const ok=G.fr.filter(canPlace);
+  if(!ok.length){G.turn='me';render();fb('#e3Fb','친구는 낼 수 있는 카드가 없어서 순서를 넘겼어요. 내 차례예요.','info');return;}
+  const n=ok[Math.floor(Math.random()*ok.length)];G.fr=G.fr.filter(x=>x!==n);G.placed.add(n);
+  const add=REL.filter(r=>(r[0]===n&&G.placed.has(r[1]))||(r[1]===n&&G.placed.has(r[0]))).filter(r=>!drawn(r[0],r[1]));
+  G.trick=false;
+  add.forEach((r,i)=>{if(!G.tricked&&i===0){G.arrows.push([r[1],r[0],'bad']);G.trick=true;G.tricked=true;}else G.arrows.push([r[0],r[1]]);});
+  G.check=true;G.turn='me';render();$('#e3Check').hidden=false;
+  fb('#e3Fb',`친구가 ‘${n}’ 카드를 내고 화살표 ${add.length}개를 그렸어요. 친구가 먹이 관계에 맞게 그렸는지 확인해 줘요.`,'info');}
+$('#e3Ok').onclick=()=>{if(G.trick){fb('#e3Fb','다시 살펴봐요. 화살표가 ‘먹이 → 먹는 생물’ 방향이 아닌 것이 있어요. (화살표를 하나씩 따라가며 ‘누가 누구를 먹는지’ 살펴봐요)',false);return;}
+  G.check=false;$('#e3Check').hidden=true;fb('#e3Fb','확인 고마워! 이제 내 차례예요.','info');if(!G.me.length&&!G.fr.length){finish();return;}if(!G.me.length){G.turn='fr';render();afterTurn();return;}render();};
+$('#e3Bad').onclick=()=>{if(!G.trick){fb('#e3Fb','다시 살펴봐요. 친구가 그린 화살표는 모두 맞아요.',false);return;}
+  G.arrows=G.arrows.map(e=>e[2]==='bad'?[e[1],e[0]]:e);G.trick=false;G.check=false;$('#e3Check').hidden=true;
+  fb('#e3Fb','잘 찾았어요! 친구가 방향을 반대로 그린 화살표를 고쳤어요. 화살표는 먹이가 되는 생물에서 먹는 생물 쪽으로 그려요. 이제 내 차례예요.',true);
+  if(!G.me.length&&!G.fr.length){finish();return;}if(!G.me.length){G.turn='fr';render();afterTurn();return;}render();};
+function finish(){G.done=true;G.turn='me';render();$('#e3All').hidden=false;
+  fb('#e3Fb',`🎉 모든 카드를 써서 먹이 관계 모형을 완성했어요! 화살표 ${G.arrows.length}개. 처음에는 사슬처럼 단순했던 먹이 관계가 그물처럼 복잡해졌어요. ‘모든 먹이 관계 보기’로 더 그릴 수 있었던 화살표도 살펴봐요.`,true);doneNav('s3');}
+$('#e3All').onclick=()=>{G.showAll=true;render();const left=REL.filter(r=>!drawn(r[0],r[1])).length;fb('#e3Fb',left?`점선 ${left}개는 더 그릴 수 있었던 먹이 관계예요. 먹고 먹히는 관계가 알맞으면 모두 맞아요.`:'그릴 수 있는 먹이 관계를 모두 그렸어요! 멋져요.','info');};
+$('#e3Again').onclick=()=>{$('#e3Check').hidden=true;newGame();};
+newGame();
+
+/* ---------- s4 ---------- */
+let s4n=0;const d4=()=>{if(++s4n>=3)doneNav('s4');};
+multi('#e3Q1',4,null,'맞아요! 족제비는 직박구리, 개구리, 오리, 토끼를 먹어요.','다시 생각해 봐요.',d4);
+multi('#e3Q2',2,null,'맞아요! 직박구리는 산수유와 애벌레를 먹어요.','다시 생각해 봐요.',d4);
+multi('#e3Q3',3,null,'맞아요! 매는 직박구리, 개구리, 족제비를 먹어요. (오리도 먹어요)','다시 생각해 봐요.',d4);
+
+/* ---------- s5 단순·복잡 ---------- */
+(function(){const SP={'매':[200,44],'개구리':[200,128],'애벌레':[200,212],'토끼풀':[200,296]};let gone=false;
+  function draw(){const g=gone?new Set(['개구리']):new Set();
+    drawWeb($('#e3Simple'),SP,[['토끼풀','애벌레'],['애벌레','개구리'],['개구리','매']],{gone:g,dim:gone?new Set(['매']):undefined});
+    if(gone)$('#e3Simple').insertAdjacentHTML('beforeend','<text x="330" y="46" text-anchor="middle" font-family="Jua" font-size="18" fill="#c0392b">먹을 것이</text><text x="330" y="68" text-anchor="middle" font-family="Jua" font-size="18" fill="#c0392b">없어요!</text>');
+    drawWeb($('#e3Complex'),POS,MAIN,{gone:g,hiE:gone?new Set(['직박구리>매','오리>매','족제비>매']):undefined,hi:gone?new Set(['매']):undefined});}
+  draw();let seen=false;
+  $('#e3Gone').onclick=()=>{gone=!gone;draw();$('#e3Gone').textContent=gone?'↺ 개구리 되돌리기':'🐸 개구리가 사라지게 하기';if(gone){seen=true;fb('#e3OXFb','개구리가 사라졌어요. 두 먹이 관계에서 매는 어떻게 되었나요? 아래 문장을 완성해요.','info');}};
+  const Q=[['단순한 먹이 관계에서는 개구리가 사라지면 매도 먹을 것이 없어 살 수 없고 생태계가','유지되기 어려워요','유지될 수 있어요',0],
+    ['복잡한 먹이 관계에서는 개구리가 사라져도 매는 직박구리, 오리, 족제비를 먹고 살 수 있어 생태계가','유지되기 어려워요','유지될 수 있어요',1],
+    ['이처럼 먹이 관계가 (     )하면 어떤 생물이 사라져도 또 다른 먹이를 먹고 살아갈 수 있어 생태계를 안정적으로 유지하는 데 도움이 돼요.','단순','복잡',1]];
+  let ok=0;$('#e3OX').innerHTML=Q.map((q,i)=>`<div class="e3-ox" data-i="${i}"><span>${q[0]}</span><button data-k="0">${q[1]}</button><button data-k="1">${q[2]}</button></div>`).join('');
+  $$('#e3OX .e3-ox').forEach(r=>$$('button',r).forEach(b=>b.onclick=()=>{if(r.dataset.d)return;const q=Q[+r.dataset.i];
+    if(!seen){fb('#e3OXFb','먼저 ‘개구리가 사라지게 하기’를 눌러 두 먹이 관계를 살펴봐요.','info');return;}
+    if(+b.dataset.k===q[3]){b.classList.add('right');r.dataset.d=1;ok++;fb('#e3OXFb',ok===3?'🎉 맞아요! 먹이 관계가 복잡할수록 어떤 생물이 사라져도 다른 먹이를 먹고 살아갈 수 있어 환경 변화의 영향을 적게 받고 생태계를 안정적으로 유지하는 데 도움이 돼요.':`맞아요! (${ok}/3)`,true);if(ok===3)doneNav('s5');}
+    else{b.classList.add('wrong');fb('#e3OXFb','그림에서 매가 어떻게 되었는지 다시 살펴봐요.',false);}}));})();
+
+/* ---------- s6 먹이사슬·먹이그물 영상 ---------- */
+(function(){const CP={'풀':[80,272],'메뚜기':[230,272],'개구리':[380,272],'오리':[305,160],'매':[200,52],'족제비':[420,52]};
+  const E=[['풀','메뚜기',3],['메뚜기','개구리',6],['메뚜기','오리',10],['개구리','오리',11.5],['오리','매',14],['오리','족제비',15]];
+  const appear={'풀':0,'메뚜기':2.5,'개구리':5.5,'오리':9.5,'매':13.5,'족제비':14.5};
+  const draw=t=>{const P={};for(const n in CP)if(t>=appear[n])P[n]=CP[n];
+    const ed=E.filter(e=>t>=e[2]).map(e=>[e[0],e[1]]);
+    drawWeb($('#e3Chain'),P,ed,{hiE:t<9?new Set(['풀>메뚜기','메뚜기>개구리']):undefined});
+    let lab='';
+    if(t>=7.5&&t<9.5)lab='<rect x="460" y="246" width="130" height="52" rx="14" fill="#16804a"/><text x="525" y="281" text-anchor="middle" font-family="Jua" font-size="26" fill="#fff">먹이사슬</text>';
+    if(t>=17)lab='<rect x="460" y="134" width="130" height="52" rx="14" fill="#c46a00"/><text x="525" y="169" text-anchor="middle" font-family="Jua" font-size="26" fill="#fff">먹이그물</text>';
+    $('#e3Chain').insertAdjacentHTML('beforeend',lab);};
+  mkPlayer({root:'#e3Pl',end:20,draw,ch:[[0,'① 풀','풀은 스스로 양분을 만들어요.'],[2.5,'② 메뚜기','메뚜기는 풀을 먹어요. (풀 → 메뚜기)'],[5.5,'③ 개구리','개구리는 메뚜기를 먹어요. 이처럼 생물이 서로 먹고 먹히는 관계가 사슬처럼 연결된 것을 먹이사슬이라고 해요.'],
+    [9.5,'④ 오리','오리는 메뚜기뿐만 아니라 개구리도 먹어요.'],[13.5,'⑤ 매·족제비','오리는 매나 족제비에게 잡아먹혀요.'],[16.5,'⑥ 먹이그물','여러 개의 먹이사슬이 그물처럼 복잡하게 얽혀 있는 것을 먹이그물이라고 해요.']],
+    done:()=>{fb('#e3PlFb','먹이사슬은 먹고 먹히는 관계가 한 방향으로 연결되고, 먹이그물은 여러 방향으로 얽혀 있어요. 실제 생태계의 먹이 관계는 먹이그물로 나타나요.',true);doneNav('s6');}});})();
+
+/* ---------- s7 낱말 정리 ---------- */
+(function(){const W=[['생물이 서로 먹고 먹히는 관계가 사슬처럼 한 방향으로 연결된 것',0],['여러 개의 먹이사슬이 그물처럼 복잡하게 얽혀 있는 것',1],['먹고 먹히는 관계가 여러 방향으로 연결되어 있어요',1],['먹고 먹히는 관계가 한 줄로 이어져요',0]];
+  let ok=0;$('#e3Words').innerHTML=W.map((w,i)=>`<div class="e3-ox" data-i="${i}"><span>${i+1}. ${w[0]}</span><button data-k="0">먹이사슬</button><button data-k="1">먹이그물</button></div>`).join('');
+  $$('#e3Words .e3-ox').forEach(r=>$$('button',r).forEach(b=>b.onclick=()=>{if(r.dataset.d)return;
+    if(+b.dataset.k===W[+r.dataset.i][1]){b.classList.add('right');r.dataset.d=1;ok++;fb('#e3WordFb',ok===4?'🎉 모두 맞혔어요!':`맞아요! (${ok}/4)`,true);if(ok===4){s7a=1;d7();}}
+    else{b.classList.add('wrong');fb('#e3WordFb','한 방향인지, 여러 방향으로 얽혀 있는지 생각해 봐요.',false);}}));})();
+let s7a=0,s7b=0;function d7(){if(s7a&&s7b)doneNav('s7');}
+pickOne('#e3Why','맞아요! 먹이그물이 복잡하면 한 가지 먹이가 부족하거나 사라지더라도 다른 먹이를 먹고 살아갈 수 있어 생태계를 안정적으로 유지하는 데 도움이 돼요.','다시 생각해 봐요.',null,()=>{s7b=1;d7();});
+
+/* ---------- s8 ---------- */
+let s8a=0,s8b=0;const d8=()=>{if(s8a&&s8b)doneNav('s8');};
+$('#blReveal').onclick=()=>{['먹','이','그','물'].forEach((c,i)=>$('#bl'+(i+1)).textContent=c);fb('#blFb','생물의 먹이 관계가 서로 복잡하게 얽혀 있는 것을 먹이그물이라고 해요.',true);s8a=1;d8();};
+(function(){const WP={'매':[400,50],'뱀':[150,130],'족제비':[650,130],'다람쥐':[150,250],'토끼':[330,250],'개구리':[500,250],'직박구리':[680,260],'도토리':[110,400],'토끼풀':[330,400],'애벌레':[530,380],'산수유':[720,400]};
+  const WE=[['도토리','다람쥐'],['토끼풀','토끼'],['토끼풀','애벌레'],['산수유','애벌레'],['산수유','직박구리'],['애벌레','직박구리'],['애벌레','개구리'],
+    ['다람쥐','뱀'],['다람쥐','족제비'],['토끼','뱀'],['토끼','족제비'],['토끼','매'],['개구리','뱀'],['개구리','족제비'],['개구리','매'],['직박구리','뱀'],['직박구리','매'],['직박구리','족제비'],['족제비','매']];
+  let gone=false;const draw=()=>drawWeb($('#e3Web49'),WP,WE,gone?{gone:new Set(['직박구리']),hi:new Set(['애벌레']),hiE:new Set(['다람쥐>뱀','다람쥐>족제비','토끼>뱀','토끼>족제비','토끼>매','개구리>뱀','개구리>족제비','개구리>매'])}:{});
+  draw();$('#e3Bulbul').onclick=()=>{gone=!gone;draw();$('#e3Bulbul').textContent=gone?'↺ 직박구리 되돌리기':'직박구리가 사라지게 하기';};})();
+multi('#e3Q49',2,null,'맞아요! 직박구리의 먹이였던 애벌레의 수는 늘어날 것 같고, 직박구리를 먹던 뱀, 매, 족제비는 다른 동물을 먹이로 할 것 같아요.','다시 생각해 봐요.',()=>{s8b=1;d8();});
+
+/* ---------- s9 ---------- */
+let s9a=0,s9b=0,s9c=0;const d9=()=>{if(s9a&&s9b&&s9c)doneNav('s9');};
+pickOne('#e3F1','정답! 토끼는 토끼풀을 먹고, 뱀은 토끼를 먹어요. 화살표는 먹이에서 먹는 생물 쪽으로 가요.','다시 생각해 봐요.',null,()=>{s9a=1;d9();});
+pickOne('#e3F2','맞아요! 이제 까닭을 써 봐요.','다시 생각해 봐요.',null,()=>{s9b=1;d9();});
+keyCheck('#e3F2t','#e3F2b','#e3F2fb',[[/먹이/,'먹이'],[/다른/,'다른 먹이'],[/부족|사라|없어|줄어/,'먹이가 부족하거나 사라짐'],[/살아|살 수|먹고|먹을/,'살아갈 수 있음']],3,null,'먹이 하나가 사라지면 어떻게 살아갈 수 있는지 써 봐요. (예: 한 가지 먹이가 …)');
+$('#e3F2b').addEventListener('click',()=>{if($('#e3F2fb').classList.contains('ok')){s9c=1;d9();}});
+
+/* ---------- s10 ---------- */
+faces('s10','오늘도 멋지게 먹이 관계 모형을 만들었어요! 다음 시간에는 인간의 활동이 생태계에 어떤 영향을 주는지 알아봐요.','어려웠던 부분은 생물 카드 뒷면을 다시 보며 화살표 방향(먹이 → 먹는 생물)을 연습해 봐요.');
+</script>

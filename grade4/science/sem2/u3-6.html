@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>창의가 팡팡 · 기체의 성질을 이용한 장치 만들기</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#1c6fa8;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+#a6Pad,#a6Dev{touch-action:none}
+.a6-ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;margin:4px 0}
+.a6-ox button{min-width:3rem;font-size:1.1rem}
+.a6-dv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.a6-d{border:2px solid var(--line);border-radius:14px;padding:8px;background:var(--paper);display:flex;flex-direction:column;gap:6px}
+.a6-d svg{width:100%;height:auto;max-height:16vh;border-radius:10px;background:#eef7fb;cursor:pointer}
+.a6-d p{margin:0;font-size:.9rem;line-height:1.35}
+.a6-d .row{gap:5px}.a6-d .row button{font-size:.8rem;min-height:1.9rem;padding:.05em .4em;border-width:2px;flex:1}
+.a6-d.done{border-color:var(--good);background:#f1fbf4}
+.a6-form{display:grid;gap:6px}
+.a6-form label{font-family:"Jua",sans-serif}
+.a6-form input,.a6-form textarea{font:inherit;font-size:.95rem;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink);width:100%}
+.a6-chips{display:flex;flex-wrap:wrap;gap:6px}
+.a6-chips button{font-size:.85rem;min-height:2.1rem;padding:.05em .6em;border-width:2px;border-radius:999px}
+.a6-tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.a6-tools button{min-height:2.2rem;padding:.05em .55em;font-size:.85rem;border-width:2px}
+.a6-tools .sw{width:2rem;min-width:2rem;height:2rem;min-height:2rem;padding:0;border-radius:50%}
+.a6-tools input{font:inherit;font-size:.9rem;padding:5px 8px;border-radius:10px;border:2px solid var(--line);width:9rem;background:var(--paper);color:var(--ink)}
+#a6Pad{width:100%;height:auto;background:#fff;border:3px solid var(--navy);border-radius:14px;cursor:crosshair;max-height:40vh}
+.a6-chk{display:flex;flex-direction:column;gap:4px}
+.a6-chk label{display:flex;gap:8px;align-items:center;font-size:.93rem}
+.a6-chk input{width:1.2rem;height:1.2rem;flex:none}
+.a6-ctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.a6-ctl button{font-size:.86rem;min-height:2.2rem;padding:.1em .55em;border-width:2px}
+.a6-ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.a6-script{background:#fffdf3;border:2px dashed #c9b27a;border-radius:14px;padding:10px 14px;font-size:.98rem;line-height:1.7}
+.a6-stars button{min-height:2rem;padding:0 .4em;font-size:1.1rem;border-width:2px}
+@media (max-width:900px){.a6-dv{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><ellipse cx="43" cy="34" rx="22" ry="26" fill="#6ec3f0" stroke="#fff" stroke-width="3"/><path d="M43 60 l-4 6 h8z" fill="#fff"/><path d="M43 66 q-6 8 0 16" stroke="#fff" stroke-width="2.5" fill="none"/></svg>
+  <div><h1>창의가 팡팡 · 기체의 성질을 이용한 장치 만들기</h1><p>4학년 2학기 과학 · 3단원 여러 가지 기체 · 9~10/12차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">장치 찾아보기</a><a href="#s3">계획하기</a><a href="#s4">해 보기</a><a href="#s5">나누기</a><a href="#s6">함께 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>기체의 성질을 이용하여 작동시킬 수 있는 장치를 설계하고 만들 수 있어요.</p>
+
+<!-- 도입 -->
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 78쪽</span>
+  <h2>지난 시간까지 배운 기체의 성질을 떠올려 봐요</h2>
+  <p>맞으면 ⭕, 틀리면 ❌를 눌러요.</p>
+  <div id="a6OX"></div>
+  <div class="fb" id="a6OXFb"></div>
+  <p class="a6-def" style="margin-top:8px;padding:10px 14px;border-radius:14px;background:#e1f0fb" data-glue="1">💡 기체의 부피는 온도나 압력에 따라 달라져요. 이 성질을 이용하면 기체의 온도나 압력을 변화시켜 작동하는 장치를 만들 수 있어요.</p>
+</section>
+
+<!-- 장치 찾아보기 -->
+<section id="s2" data-nav="장치 찾아보기">
+  <span class="stage">기체를 이용한 장치 찾아보기</span>
+  <h2>기체의 성질을 이용한 장치를 살펴봐요</h2>
+  <p>그림을 눌러 작동시켜 보고, 어떤 성질을 이용했는지 골라요.</p>
+  <div class="a6-dv" id="a6Dv"></div>
+  <div class="fb" id="a6DvFb"></div>
+</section>
+
+<!-- 계획하기 -->
+<section id="s3" data-nav="계획하기">
+  <span class="stage">계획하기 · 「실험관찰」 46쪽</span>
+  <h2>우리 모둠이 만들고 싶은 장치를 설계해요</h2>
+  <div class="a6-form">
+    <label>① 이용할 기체의 성질</label>
+    <div class="a6-chips" id="a6Prop"><button data-p="t">온도에 따른 기체의 부피 변화</button><button data-p="p">압력에 따른 기체의 부피 변화</button></div>
+    <label for="a6Name">② 만들고 싶은 장치</label><input id="a6Name" placeholder="예: 만지지 않아도 물을 내뿜는 물뿌리개">
+  </div>
+  <p class="jua" style="margin:8px 0 4px">③ 설계도: 모양과 작동 원리를 그리고 이름표를 붙여요.</p>
+  <div class="a6-tools" id="a6Tools">
+    <button data-t="pen" class="sel">✏️ 펜</button><button class="sw" data-c="#15313d" style="background:#15313d" aria-label="검정"></button><button class="sw" data-c="#e2573f" style="background:#e2573f" aria-label="빨강"></button><button class="sw" data-c="#3a78c8" style="background:#3a78c8" aria-label="파랑"></button>
+    <button data-t="bottle">페트병</button><button data-t="water">물</button><button data-t="hot">♨️ 뜨거운 물</button><button data-t="syr">주사기</button><button data-t="arrow">➡ 화살표</button><button data-t="text">글자</button><input id="a6Txt" placeholder="이름표 글자" value="구멍">
+    <button id="a6Undo">↩ 되돌리기</button><button id="a6Clear">모두 지우기</button><button id="a6Save">💾 그림 저장</button>
+  </div>
+  <svg id="a6Pad" viewBox="0 0 800 380" role="img" aria-label="장치 설계도 그리는 판" data-glue="1"><rect width="800" height="380" fill="#fff"/><g id="a6Ink"></g></svg>
+  <div class="a6-form" style="margin-top:8px">
+    <label>④ 준비물 (재활용품을 먼저 골라요)</label>
+    <div class="a6-chips" id="a6Mat"><button>단단한 페트병(구멍은 선생님이 미리)</button><button>유성펜</button><button>차가운 물</button><button>뜨거운 물</button><button>수조</button><button>손잡이 달린 비커</button><button>주사기</button><button>빨대</button><button>점토</button><button>색소</button><button>유산균음료병</button></div>
+    <label for="a6Step">⑤ 만드는 순서</label><textarea id="a6Step" rows="2" placeholder="예: 페트병 구멍을 막고 차가운 물을 넣은 뒤 뚜껑을 닫고, 뜨거운 물을 부어요."></textarea>
+  </div>
+  <h3>✅ 설계 점검 (선생님과 함께)</h3>
+  <div class="a6-chk" id="a6Chk">
+    <label><input type="checkbox"> 장치를 작동시키는 기체로 공기를 이용해요.</label>
+    <label><input type="checkbox"> 송곳·칼처럼 날카로운 도구는 쓰지 않고, 미리 뚫린 재료를 써요.</label>
+    <label><input type="checkbox"> 뜨거운 물을 쓸 때는 실험복·보안경·실험용 장갑을 껴요.</label>
+    <label><input type="checkbox"> 재활용품을 활용하고 플라스틱·일회용품 사용을 줄여요.</label>
+    <label><input type="checkbox"> 모둠원 모두에게 역할을 나누었고, 선생님과 계획을 검토했어요.</label>
+  </div>
+  <div class="row" style="margin-top:8px"><button class="main" id="a6PlanOk">설계 완성!</button><button id="a6Ex">💡 예시 보기</button></div>
+  <div class="fb" id="a6PlanFb"></div>
+</section>
+
+<!-- 해 보기 -->
+<section id="s4" data-nav="해 보기">
+  <span class="stage">해 보기 · 「과학」 79쪽</span>
+  <h2>예시 장치: 만지지 않아도 물을 내뿜는 물뿌리개</h2>
+  <p>준비물: 아랫부분에 구멍을 뚫은 단단한 페트병, 유성펜, 차가운 물, 뜨거운 물, 수조, 손잡이 달린 비커, 실험복, 보안경, 실험용 장갑</p>
+  <svg id="a6Dev" class="scene" viewBox="0 0 800 330" style="max-height:38vh" role="img" aria-label="구멍 뚫린 페트병에 물을 넣고 뜨거운 물을 부어 물을 내뿜게 하는 장치">
+    <rect width="800" height="330" fill="#fdf6e3"/><rect y="300" width="800" height="30" fill="#d9c49a"/>
+    <rect x="200" y="200" width="360" height="100" rx="10" fill="#e6f5fb" fill-opacity=".7" stroke="#7aa7bd" stroke-width="4"/>
+    <rect id="a6Bath" x="204" y="296" width="352" height="0" fill="#ffb199" opacity=".7"/>
+    <g id="a6PB">
+      <path d="M330 296 v-150 q0 -24 22 -36 v-20 h36 v20 q22 12 22 36 v150z" fill="#eef9ff" fill-opacity=".7" stroke="#7aa7bd" stroke-width="4"/>
+      <rect id="a6W" x="334" y="296" width="72" height="0" fill="#6ec3f0" opacity=".85"/>
+      <g id="a6Art" opacity="0"><circle cx="380" cy="200" r="30" fill="none" stroke="#5b6b78" stroke-width="3"/><circle cx="370" cy="192" r="3" fill="#5b6b78"/><path d="M352 196 q-18 6 -14 24 M408 196 q18 6 14 24" fill="none" stroke="#5b6b78" stroke-width="3"/><path d="M372 226 q-6 24 -36 32" fill="none" stroke="#5b6b78" stroke-width="5"/></g>
+      <circle cx="334" cy="262" r="4" fill="#15313d"/>
+      <rect id="a6Lid" x="348" y="74" width="44" height="18" rx="4" fill="#2f8f5b" opacity="0"/>
+      <g id="a6Fin" opacity="0"><ellipse cx="322" cy="262" rx="14" ry="9" fill="#f2c39b" stroke="#c98f62" stroke-width="2"/></g>
+    </g>
+    <g id="a6Jet" fill="#3a8fd8"></g>
+    <g id="a6Kettle" opacity="0"><path d="M560 120 q0 -36 40 -36 q40 0 40 36 v40 h-80z" fill="#9aa5ad"/><path d="M560 130 l-40 -20 l-6 10 l40 22z" fill="#9aa5ad"/><path d="M520 118 q-30 10 -100 -6" id="a6Stream" fill="none" stroke="#ff8a6a" stroke-width="6" opacity="0"/></g>
+    <g id="a6Glove" opacity="0"><rect x="660" y="20" width="120" height="34" rx="12" fill="#bdf0cf" stroke="#16804a" stroke-width="2"/><text x="720" y="43" text-anchor="middle" font-size="15" font-family="Jua" fill="#0d5a31">🧤 장갑 착용</text></g>
+    <rect x="12" y="12" width="420" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a6DT" x="26" y="40" font-size="19" font-family="Jua" fill="#fff">① 페트병에 그림을 그려요</text>
+  </svg>
+  <div class="a6-ctl" id="a6Ctl" data-glue="1">
+    <button data-s="draw">① ✏️ 구멍 위치를 보고 그림 그리기</button>
+    <button data-s="block">👆 손가락으로 구멍 막기</button>
+    <button data-s="fill">② 🚰 차가운 물 절반 넣기</button>
+    <button data-s="lid">③ 🔒 뚜껑 닫기</button>
+    <button data-s="unblock">✋ 구멍에서 손가락 떼기</button>
+    <button data-s="glove">🧤 장갑 끼기</button>
+    <button data-s="pour">④ ♨️ 뜨거운 물 천천히 붓기</button>
+  </div>
+  <div class="fb" id="a6DevFb"></div>
+  <p class="tip">⚠️ 뜨거운 물에 데지 않게 조심해요. 페트병 안의 공기가 데워져 뜨거우므로 맨손으로 만지지 않아요. 구멍을 막고 물을 넣을 때 흘리지 않도록 친구와 협력해요.</p>
+  <div id="a6Why" hidden>
+    <p class="jua" style="font-size:1.03rem">뜨거운 물을 부으면 구멍에서 물이 나오는 까닭은?</p>
+    <div class="pick" id="a6W1" data-glue="1">
+      <button data-a="1" data-m="맞아요! 온도가 높아져 페트병 속 공기의 부피가 늘어나면서 물을 구멍으로 밀어내요.">온도가 높아져 페트병 속 공기의 부피가 늘어나 물을 밀어내요</button>
+      <button data-a="0" data-m="뜨거운 물은 페트병 바깥에 부었어요. 페트병 안의 무엇이 달라졌을까요?">뜨거운 물이 페트병 안으로 들어가 넘쳐요</button>
+    </div>
+    <div class="fb"></div>
+    <p class="jua" style="font-size:1.03rem;margin-top:8px">물이 더 많이 나오게 하려면 어떻게 고칠 수 있을까요?</p>
+    <div class="pick" id="a6W2" data-glue="1">
+      <button data-a="1" data-m="좋은 생각이에요! 페트병을 냉장고나 얼음물로 차갑게 했다가 뜨거운 물을 부으면 온도 차가 커서 물이 더 많이 밀려 나와요.">페트병을 차갑게 했다가 뜨거운 물을 부어요</button>
+      <button data-a="0" data-m="뚜껑을 열면 늘어난 공기가 위로 빠져나가 물을 밀어내지 못해요.">뚜껑을 열어 두고 뜨거운 물을 부어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<!-- 나누기 -->
+<section id="s5" data-nav="나누기">
+  <span class="stage">나누기 · 「실험관찰」 47쪽</span>
+  <h2>우리 모둠이 만든 장치를 소개하고 함께 평가해요</h2>
+  <div class="row"><button class="main" id="a6Script">🎤 소개 원고 만들기</button></div>
+  <div class="a6-script" id="a6ScriptBox" hidden></div>
+  <h3>⭐ 다른 모둠의 장치 평가하기</h3>
+  <table><tr><th>평가 내용</th><th>별점</th></tr>
+    <tr><td>기체의 성질을 잘 이용했나요?</td><td class="a6-stars" data-q="0"></td></tr>
+    <tr><td>장치가 잘 작동하나요?</td><td class="a6-stars" data-q="1"></td></tr>
+    <tr><td>창의적인 생각이 담겼나요?</td><td class="a6-stars" data-q="2"></td></tr></table>
+  <p class="jua" style="margin-top:8px">다른 모둠에게 할 말을 골라요. 먼저 잘된 점을 말하고, 그다음 고칠 점을 이야기해요.</p>
+  <div class="pick" id="a6Talk">
+    <button data-k="p">압력이 높아지면 기체의 부피가 줄어드는 성질로 손가락이 하나씩 움직이게 한 점이 재미있어요!</button>
+    <button data-k="q">알루미늄병처럼 열이 잘 전해지는 병을 쓰면 변화가 더 클 것 같아요.</button>
+    <button data-k="x" data-m="친구의 생각을 존중하는 말로 바꾸어 봐요. 잘된 점을 먼저 찾아 칭찬해요.">그건 시시해서 안 될 것 같아.</button>
+  </div>
+  <div class="fb" id="a6TalkFb"></div>
+  <div class="fb" id="a6ShareFb"></div>
+  <p class="tip">💬 친구의 장치 소개를 들을 때는 바른 자세로 들어요. 쓰고 남은 재료는 재활용하고 쓰레기는 분리배출해요.</p>
+</section>
+
+<!-- 함께 평가 -->
+<section id="s6" data-nav="함께 평가">
+  <span class="stage">함께 평가하기 · 「실험관찰」 47쪽</span>
+  <h2>우리 모둠을 되돌아봐요</h2>
+  <table>
+    <tr><td>모둠이 만든 장치가 기체의 어떤 성질을 이용했는지 설명했나요?</td><td class="face" data-r="0"></td></tr>
+    <tr><td>기체의 성질을 이용한 장치를 만들었나요?</td><td class="face" data-r="1"></td></tr>
+    <tr><td>친구의 의견을 존중하고 협력하며 활동에 참여했나요?</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 78~79쪽 · 「실험관찰」 46~47쪽 · 지도서 308~313쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+const NS6='http://www.w3.org/2000/svg';
+const a6Pt=(svg,e)=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse());};
+
+/* 도입: O/X */
+(function(){const Q=[['기체는 무게가 있다.',1,'맞아요! 공기를 넣으면 무게가 늘고, 빼면 줄었어요.'],['온도가 높아지면 기체의 부피는 줄어든다.',0,'온도가 높아지면 기체의 부피는 늘어나요.'],['기체에 가하는 압력이 높아지면 기체의 부피는 줄어든다.',1,'맞아요! 주사기의 피스톤을 누르면 공기의 부피가 줄었어요.']];let n=0;
+  Q.forEach(([t,a,m])=>{const d=document.createElement('div');d.className='a6-ox';d.innerHTML=`<span class="jua">${t}</span>`;
+    ['⭕','❌'].forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.setAttribute('aria-label',i?'틀려요':'맞아요');b.onclick=()=>{if(d.dataset.ok)return;
+      if((i===0)===!!a){b.classList.add('right');d.dataset.ok=1;n++;fb('#a6OXFb',m+(n===3?' 🎉 모두 맞혔어요!':''),true);if(n===3)doneNav('s1');}
+      else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb('#a6OXFb','지난 시간의 실험을 떠올려 봐요.',false);}};d.appendChild(b);});
+    $('#a6OX').appendChild(d);});})();
+
+/* 장치 찾아보기 */
+(function(){const D=[
+  {t:'공기 온도계',d:'유산균음료병에 색소를 섞은 물을 넣고 빨대를 꽂아 점토로 막았어요. 뜨거운 물에 넣으면?',a:0,
+   svg:k=>`<svg viewBox="0 0 200 130"><rect x="40" y="70" width="120" height="56" rx="8" fill="${k?'#ffd9cc':'#dff3fb'}" stroke="#7aa7bd" stroke-width="2"/><path d="M84 120 v-44 q0 -10 10 -12 h12 q10 2 10 12 v44z" fill="#fff" stroke="#7aa7bd" stroke-width="2"/><rect x="86" y="104" width="28" height="16" fill="#e2573f" opacity=".8"/><rect x="96" y="20" width="8" height="60" fill="#fff" stroke="#7aa7bd"/><rect x="97" y="${k?28:66}" width="6" height="${k?76:38}" fill="#e2573f"/><rect x="88" y="58" width="24" height="8" fill="#8a5a2b"/></svg>`,m:'빨대 속 물이 위로 올라가요. 온도가 높아져 병 속 공기의 부피가 늘어나 물을 밀어 올려요.'},
+  {t:'공기로 움직이는 손 모형',d:'손 모형의 손가락 마디에 붙인 빨대 속 실이 주사기에 이어져 있어요. 주사기의 피스톤을 누르면?',a:1,
+   svg:k=>`<svg viewBox="0 0 200 130"><rect x="40" y="70" width="70" height="40" rx="8" fill="#f2c39b"/><g stroke="#f2c39b" stroke-width="12" stroke-linecap="round"><path d="M50 72 ${k?'q-4 -20 10 -30':'v-46'}"/><path d="M66 72 ${k?'q-2 -22 12 -30':'v-54'}"/><path d="M82 72 ${k?'q0 -22 14 -28':'v-50'}"/><path d="M98 72 ${k?'q2 -18 14 -22':'v-40'}"/></g><rect x="118" y="84" width="60" height="16" rx="4" fill="#fff" stroke="#5b6b78" stroke-width="2"/><rect x="${k?150:168}" y="80" width="6" height="24" fill="#2c333a"/><path d="M118 92 h-8" stroke="#5b6b78" stroke-width="3"/></svg>`,m:'손가락이 움직여요. 피스톤을 눌러 압력을 주면 공기의 부피 변화로 손가락이 움직여요.'},
+  {t:'공기로 작동하는 물 펌프',d:'물이 든 병의 뚜껑에 주름 빨대와 고무관을 꽂고, 고무관에 주사기를 이었어요. 피스톤을 누르면?',a:1,
+   svg:k=>`<svg viewBox="0 0 200 130"><rect x="40" y="40" width="60" height="84" rx="8" fill="#eef9ff" stroke="#7aa7bd" stroke-width="2"/><rect x="42" y="${k?82:66}" width="56" height="${k?40:56}" fill="#6ec3f0"/><rect x="38" y="32" width="64" height="10" fill="#2f8f5b"/><path d="M60 112 v-88 q0 -10 10 -10 h30" fill="none" stroke="#e2573f" stroke-width="4"/><path d="M84 40 v-6 q0 -14 40 -14" fill="none" stroke="#5b6b78" stroke-width="3"/><rect x="124" y="12" width="50" height="16" rx="4" fill="#fff" stroke="#5b6b78" stroke-width="2"/><rect x="${k?140:166}" y="8" width="6" height="24" fill="#2c333a"/>${k?'<g fill="#6ec3f0"><circle cx="108" cy="16" r="4"/><circle cx="116" cy="22" r="3"/><circle cx="114" cy="32" r="3"/></g>':''}</svg>`,m:'빨대로 물이 나와요. 공기를 병 안으로 넣으면 병 안 공기의 압력이 높아져 물을 밀어내요.'}];
+  const O=['온도에 따른 부피 변화','압력에 따른 부피 변화'];let n=0;
+  D.forEach(it=>{const d=document.createElement('div');d.className='a6-d';let on=false,tried=false;
+    d.innerHTML=`<b class="jua">${it.t}</b><div class="pic">${it.svg(0)}</div><p>${it.d}</p><button class="go">▶ 작동시키기</button><div class="row"></div>`;
+    $('.go',d).onclick=()=>{on=!on;tried=true;$('.pic',d).innerHTML=it.svg(on?1:0);$('.go',d).textContent=on?'↺ 처음으로':'▶ 작동시키기';};
+    O.forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>{if(d.classList.contains('done'))return;
+      if(!tried){fb('#a6DvFb','먼저 ▶ 작동시키기를 눌러 어떻게 되는지 봐요.','info');return;}
+      if(i===it.a){b.classList.add('right');d.classList.add('done');n++;fb('#a6DvFb',it.m+(n===3?' 🎉 세 장치를 모두 살펴봤어요!':''),true);if(n===3)doneNav('s2');}
+      else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb('#a6DvFb','장치를 작동시킬 때 공기의 온도를 바꾸었나요, 공기를 누르는 힘을 바꾸었나요?',false);}};$('.row',d).appendChild(b);});
+    $('#a6Dv').appendChild(d);});})();
+
+/* 계획하기 */
+let a6prop=null;const a6mat=new Set();
+$$('#a6Prop button').forEach(b=>b.onclick=()=>{a6prop=b.dataset.p;$$('#a6Prop button').forEach(x=>x.classList.toggle('sel',x===b));});
+$$('#a6Mat button').forEach(b=>b.onclick=()=>{const t=b.textContent;a6mat.has(t)?a6mat.delete(t):a6mat.add(t);b.classList.toggle('sel',a6mat.has(t));});
+(function(){const svg=$('#a6Pad'),ink=$('#a6Ink');let tool='pen',color='#15313d',cur=null;
+  const add=(tag,at)=>{const e=document.createElementNS(NS6,tag);for(const k in at)e.setAttribute(k,at[k]);return e;};
+  $$('#a6Tools button[data-t]').forEach(b=>b.onclick=()=>{tool=b.dataset.t;$$('#a6Tools button[data-t]').forEach(x=>x.classList.toggle('sel',x===b));});
+  $$('#a6Tools .sw').forEach(b=>b.onclick=()=>{color=b.dataset.c;$$('#a6Tools .sw').forEach(x=>x.style.outline=x===b?'3px solid var(--sun)':'');});
+  const ST={bottle:'<path d="M-30 70 v-90 q0 -18 16 -26 v-16 h28 v16 q16 8 16 26 v90z" fill="#eef9ff" stroke="#7aa7bd" stroke-width="3"/>',
+    water:'<rect x="-40" y="-14" width="80" height="28" rx="4" fill="#6ec3f0" opacity=".8"/><text y="5" text-anchor="middle" font-size="13" fill="#0f3b5c" font-family="Jua">물</text>',
+    hot:'<rect x="-50" y="-16" width="100" height="32" rx="6" fill="#ffb199" opacity=".85"/><text y="5" text-anchor="middle" font-size="13" fill="#7a2a20" font-family="Jua">뜨거운 물</text>',
+    syr:'<rect x="-50" y="-10" width="80" height="20" rx="4" fill="#fff" stroke="#5b6b78" stroke-width="2"/><rect x="20" y="-14" width="6" height="28" fill="#2c333a"/><rect x="26" y="-3" width="30" height="6" fill="#9aa5ad"/><rect x="-62" y="-4" width="12" height="8" fill="#5b6b78"/>'};
+  function stamp(x,y){const g=add('g',{transform:`translate(${x.toFixed(0)},${y.toFixed(0)})`});
+    if(ST[tool])g.innerHTML=ST[tool];
+    else if(tool==='arrow')g.innerHTML=`<path d="M-40 0 h70" stroke="${color}" stroke-width="5"/><path d="M30 -10 l14 10 l-14 10z" fill="${color}"/>`;
+    else if(tool==='text'){const t=($('#a6Txt').value.trim()||'이름표').replace(/[<&>]/g,'');g.innerHTML=`<text text-anchor="middle" font-size="22" fill="${color}" font-family="Jua">${t}</text>`;}
+    ink.appendChild(g);}
+  svg.addEventListener('pointerdown',e=>{const q=a6Pt(svg,e);if(tool==='pen'){cur=add('polyline',{points:`${q.x.toFixed(0)},${q.y.toFixed(0)}`,fill:'none',stroke:color,'stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round'});ink.appendChild(cur);svg.setPointerCapture(e.pointerId);}else stamp(q.x,q.y);});
+  svg.addEventListener('pointermove',e=>{if(!cur)return;const q=a6Pt(svg,e);cur.setAttribute('points',cur.getAttribute('points')+` ${q.x.toFixed(0)},${q.y.toFixed(0)}`);});
+  const end=()=>cur=null;svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
+  $('#a6Undo').onclick=()=>{if(ink.lastChild)ink.removeChild(ink.lastChild);};
+  $('#a6Clear').onclick=()=>{if(ink.children.length&&confirm('설계도를 모두 지울까요?'))ink.innerHTML='';};
+  $('#a6Save').onclick=()=>{const s=new XMLSerializer().serializeToString(svg).replace(/font-family="Jua"/g,'font-family="sans-serif"');const img=new Image();
+    img.onload=()=>{const c=document.createElement('canvas');c.width=1600;c.height=760;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,1600,760);x.drawImage(img,0,0,1600,760);
+      const a=document.createElement('a');a.download='gas-device-design.png';a.href=c.toDataURL('image/png');a.click();};
+    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s);};
+})();
+$('#a6Ex').onclick=()=>fb('#a6PlanFb','예시) ① 온도에 따른 기체의 부피 변화 ② 만지지 않아도 물을 내뿜는 물뿌리개 ③ 페트병 아래 구멍, 물, 뜨거운 물을 그리고 이름표 붙이기 ④ 단단한 페트병, 차가운 물, 뜨거운 물, 수조, 유성펜 ⑤ 구멍을 막고 차가운 물을 넣은 뒤 뚜껑을 닫고, 페트병에 뜨거운 물을 부어요. (다른 예: 공기 온도계, 공기로 움직이는 손 모형)','info');
+$('#a6PlanOk').onclick=()=>{const miss=[];if(!a6prop)miss.push('①');if(!$('#a6Name').value.trim())miss.push('②');if($('#a6Ink').children.length<2)miss.push('③ 설계도');if(a6mat.size<2)miss.push('④ 준비물');if($('#a6Step').value.trim().length<6)miss.push('⑤');
+  if(miss.length){fb('#a6PlanFb',miss.join(', ')+'을(를) 채워 주세요.',false);return;}
+  if(!$$('#a6Chk input').every(c=>c.checked)){fb('#a6PlanFb','설계 점검 다섯 가지를 선생님과 함께 확인하고 표시해요.',false);return;}
+  fb('#a6PlanFb','설계 완성! 이용할 성질: '+(a6prop==='t'?'온도에 따른 기체의 부피 변화':'압력에 따른 기체의 부피 변화')+'. 이제 장치를 만들어 봐요.',true);doneNav('s3');};
+
+/* 해 보기: 물뿌리개 */
+(function(){const st={};let water=0,block=false,lid=false,raf=0,jet=false,t0=0;const F='#a6DevFb',T=$('#a6DT');
+  function drawW(){const h=water*1.0;$('#a6W').setAttribute('y',296-h);$('#a6W').setAttribute('height',h);}
+  function anim(to,cb){const go=()=>{water+=(to-water)*0.12;if(Math.abs(to-water)<.5)water=to;drawW();if(water!==to)raf=requestAnimationFrame(go);else if(cb)cb();};cancelAnimationFrame(raf);go();}
+  function leak(){const J=$('#a6Jet');J.innerHTML='';for(let i=0;i<5;i++){const c=document.createElementNS(NS6,'circle');c.setAttribute('cx',320-i*6);c.setAttribute('cy',266+i*6);c.setAttribute('r',4);J.appendChild(c);}
+    anim(0,()=>{J.innerHTML='';});}
+  function spray(){jet=true;t0=performance.now();const J=$('#a6Jet');const step=now=>{const t=(now-t0)/1000;J.innerHTML='';
+      if(t<4.5){for(let i=0;i<14;i++){const s=((t*2+i/14)%1);const x=330-s*170,y=262-s*90+s*s*150;const c=document.createElementNS(NS6,'circle');c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',3+s*2);J.appendChild(c);}
+        water=Math.max(70,140-t*14);drawW();requestAnimationFrame(step);}
+      else{J.innerHTML='';jet=false;T.textContent='물이 뿜어져 나왔어요!';$('#a6Why').hidden=false;}};requestAnimationFrame(step);}
+  const mark=s=>{st[s]=1;const b=$(`#a6Ctl [data-s="${s}"]`);if(b)b.classList.add('done');};
+  $$('#a6Ctl button').forEach(b=>b.onclick=()=>{const s=b.dataset.s;if(jet)return;
+    if(s==='draw'){mark(s);$('#a6Art').setAttribute('opacity',1);T.textContent='② 구멍을 막고 차가운 물을 넣어요';fb(F,'코끼리를 그렸어요. 코끝이 구멍과 이어지게 그렸어요.','info');return;}
+    if(s==='block'){block=true;$('#a6Fin').setAttribute('opacity',1);mark(s);fb(F,'손가락으로 구멍을 막았어요.','info');return;}
+    if(s==='fill'){if(lid){fb(F,'뚜껑이 닫혀 있어요.','info');return;}
+      if(!block){fb(F,'앗! 구멍으로 물이 새어 나와요. 먼저 👆 손가락으로 구멍을 막아요.',false);water=60;drawW();leak();return;}
+      anim(140);mark(s);T.textContent='③ 뚜껑을 닫고 손가락을 떼요';fb(F,'차가운 물을 절반 정도 넣었어요. 색소를 섞으면 물이 나오는 것이 더 잘 보여요.','info');return;}
+    if(s==='lid'){if(!st.fill){fb(F,'먼저 차가운 물을 절반 정도 넣어요.',false);return;}lid=true;$('#a6Lid').setAttribute('opacity',1);mark(s);fb(F,'뚜껑을 꼭 닫았어요. 이제 손가락을 떼 봐요.','info');return;}
+    if(s==='unblock'){if(!block)return;block=false;$('#a6Fin').setAttribute('opacity',0);$(`#a6Ctl [data-s="block"]`).classList.remove('done');
+      if(st.fill&&!lid){fb(F,'뚜껑이 열려 있어 구멍으로 물이 흘러나와요! 다시 구멍을 막고 물을 넣은 뒤 뚜껑을 먼저 닫아요.',false);leak();st.fill=0;$(`#a6Ctl [data-s="fill"]`).classList.remove('done');return;}
+      if(lid&&st.fill){mark(s);T.textContent='④ 수조에 넣고 뜨거운 물을 부어요';fb(F,'손가락을 떼어도 물이 나오지 않아요! 뚜껑을 닫아 공기가 페트병 안으로 들어가지 못하기 때문이에요. 이제 장갑을 끼고 뜨거운 물을 부어요.','info');}return;}
+    if(s==='glove'){mark(s);$('#a6Glove').setAttribute('opacity',1);fb(F,'실험복·보안경·실험용 장갑을 착용했어요.','info');return;}
+    if(s==='pour'){if(!st.unblock){fb(F,'먼저 물을 넣고 뚜껑을 닫은 뒤 손가락을 떼는 데까지 해요.',false);return;}
+      if(!st.glove){fb(F,'⚠️ 뜨거운 물을 다루기 전에 실험용 장갑을 먼저 껴요!',false);return;}
+      if(st.pour)return;mark(s);$('#a6Kettle').setAttribute('opacity',1);$('#a6Stream').setAttribute('opacity',.9);
+      let h=0;const iv=setInterval(()=>{h=Math.min(70,h+5);$('#a6Bath').setAttribute('y',296-h);$('#a6Bath').setAttribute('height',h);if(h>=70){clearInterval(iv);$('#a6Stream').setAttribute('opacity',0);}},80);
+      T.textContent='뜨거운 물을 천천히 부어요…';fb(F,'페트병 윗부분에 약 50 ℃의 뜨거운 물을 천천히 부었어요. 구멍을 지켜봐요!','info');setTimeout(spray,900);return;}
+  });
+  drawW();
+})();
+let a6w=0;const a6wd=()=>{if(++a6w===2)doneNav('s4');};
+pickOne('#a6W1','','',null,a6wd);pickOne('#a6W2','','',null,a6wd);
+
+/* 나누기 */
+let a6scr=0,a6ev=0,a6p=0,a6q=0;const a6stars=[0,0,0];
+function a6c5(){if(a6scr&&a6ev&&a6p&&a6q){fb('#a6ShareFb','소개와 함께 평가를 마쳤어요! 다른 모둠의 좋은 아이디어도 기억해 두어요.',true);doneNav('s5');}}
+$('#a6Script').onclick=()=>{const nm=($('#a6Name').value.trim()||'만지지 않아도 물을 내뿜는 물뿌리개').replace(/[<&>]/g,'');const pr=a6prop==='p'?'압력이 높아지면 기체의 부피가 줄어들고, 압력이 낮아지면 기체의 부피가 늘어나는':'온도가 높아지면 기체의 부피가 늘어나는';
+  $('#a6ScriptBox').hidden=false;$('#a6ScriptBox').innerHTML=`🎤 우리 모둠이 만든 장치는 <b>${nm}</b>입니다.<br>이 장치는 기체의 <b>${pr}</b> 성질을 이용했습니다.<br>잘된 점은 쉽게 구할 수 있는 재료를 사용한 것이고, 고칠 점은 ________입니다.`;a6scr=1;a6c5();};
+$$('.a6-stars').forEach(td=>{const q=+td.dataset.q;for(let i=1;i<=3;i++){const b=document.createElement('button');b.textContent='☆';b.setAttribute('aria-label','별 '+i+'개');
+  b.onclick=()=>{a6stars[q]=i;$$('button',td).forEach((x,j)=>x.textContent=j<i?'★':'☆');if(a6stars.every(x=>x)){a6ev=1;a6c5();}};td.appendChild(b);}});
+$$('#a6Talk button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;
+  if(k==='x'){b.classList.add('wrong');fb('#a6TalkFb',b.dataset.m,false);return;}
+  b.classList.add('right');if(k==='p')a6p=1;if(k==='q')a6q=1;
+  fb('#a6TalkFb',a6p&&a6q?'좋아요! 잘된 점을 칭찬하고, 고칠 점도 함께 이야기했어요.':k==='p'?'칭찬 좋아요! 고칠 점도 하나 이야기해 볼까요?':'좋은 의견이에요. 그 전에 잘된 점을 먼저 칭찬해 봐요.',a6p?true:'info');a6c5();});
+
+faces('s6','멋진 발명가였어요! 기체의 성질을 이용하면 생활에 쓸모 있는 장치를 만들 수 있어요.','어려웠던 부분은 「과학」 69쪽, 71쪽, 74~75쪽을 다시 읽어 보고, 선생님께 질문해도 좋아요!');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>

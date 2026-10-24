@@ -1,0 +1,324 @@
+<!--
+title: 일상생활에서 이용되는 기체를 찾아라!
+unit: 3
+lesson: 5~6
+total: 12
+goal: 일상생활에서 이용되는 여러 가지 기체의 종류와 성질을 조사할 수 있어요.
+pages: 「과학」 72~75쪽 · 「실험관찰」 42~43쪽 · 지도서 292~301쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"산","bl2":"소"}}]
+-->
+<style>
+.a4-air{display:flex;height:2.4rem;border-radius:12px;overflow:hidden;border:2px solid var(--navy);margin:6px 0}
+.a4-air span{display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:.85rem;color:#fff;white-space:nowrap;overflow:hidden}
+.a4-kw{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.a4-kw button{font-size:.9rem;min-height:2.2rem;padding:.1em .7em;border-width:2px;border-radius:999px}
+.a4-kw button.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.a4-search{display:flex;gap:8px;align-items:center;border:2px solid var(--line);border-radius:999px;padding:4px 14px;background:var(--paper);margin-bottom:8px;font-family:"Jua",sans-serif}
+.a4-res{display:grid;gap:8px}
+.a4-r{border:2px solid var(--line);border-radius:14px;padding:8px 12px;background:var(--paper)}
+.a4-r .src{font-size:.8rem;color:var(--muted)}
+.a4-r p{margin:2px 0 6px;font-size:.95rem}
+.a4-r .row{gap:6px}.a4-r .row button{font-size:.85rem;min-height:2.1rem;padding:.1em .6em;border-width:2px}
+.a4-r.posted{border-color:var(--good);background:#f1fbf4}.a4-r.rejected{border-color:#c9c9c9;background:#f4f4f4;opacity:.75}
+.a4-board{display:flex;flex-wrap:wrap;gap:8px;min-height:3rem;padding:8px;border:2px dashed var(--line);border-radius:14px;background:#fffdf3}
+.a4-note{background:#fff2a8;border:2px solid #e0c64a;border-radius:6px;padding:6px 8px;font-size:.85rem;max-width:15rem;cursor:pointer;text-align:left;min-height:0;color:#15313d}
+.a4-note.sel{outline:4px solid var(--sky);outline-offset:1px}
+.a4-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:8px}
+.a4-col{border:2px solid var(--line);border-radius:14px;padding:6px;background:var(--paper);min-height:5rem;cursor:pointer}
+.a4-col h4{margin:0 0 4px;font-family:"Jua",sans-serif;font-weight:400;font-size:1rem;text-align:center}
+.a4-col .a4-note{max-width:none;margin-bottom:4px;cursor:default;display:block;width:100%}
+.a4-slide{border:3px solid var(--navy);border-radius:16px;padding:12px 16px;background:#fff;color:#15313d}
+.a4-slide h4{margin:0 0 6px;font-family:"Jua",sans-serif;font-weight:400;font-size:1.25rem}
+.a4-brush{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.a4-brush button{font-size:.92rem;border-width:2px}
+.a4-tiles{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.a4-tile{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;border-radius:14px;border:2px solid var(--line);background:var(--paper);min-height:0;font-size:.85rem;line-height:1.25}
+.a4-tile svg{width:100%;max-width:120px;height:auto;max-height:9vh}
+.a4-tile b{font-family:"Jua",sans-serif;font-weight:400;font-size:.9rem}
+.a4-tile .g{font-size:.8rem;color:#0d5a31;min-height:1.2em}
+.a4-tile.done{border-color:var(--good);background:#f1fbf4}
+.a4-match{display:grid;grid-template-columns:minmax(0,.8fr) repeat(3,minmax(0,1fr));gap:6px;align-items:center;margin:4px 0}
+.a4-match button{font-size:.85rem;min-height:2.2rem;padding:.1em .4em}
+.a4-in{font:inherit;font-size:1rem;padding:8px 12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink);width:10rem}
+@media (max-width:900px){.a4-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.a4-cols{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.a4-tiles,.a4-cols{grid-template-columns:repeat(2,minmax(0,1fr))}.a4-match{grid-template-columns:1fr}}
+</style>
+
+<!-- 도입 -->
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 72쪽</span>
+  <h2>탄산음료의 기포는 어떤 기체일까요?</h2>
+  <svg id="a4Soda" class="scene" viewBox="0 0 600 230" style="max-height:28vh" role="img" aria-label="탄산음료를 컵에 따르면 기포가 생기는 그림">
+    <rect width="600" height="230" fill="#fdf6e3"/><rect y="204" width="600" height="26" fill="#d9c49a"/>
+    <g id="a4Bt" style="transform-box:view-box;transform-origin:220px 120px;transition:transform .8s"><rect x="190" y="70" width="60" height="134" rx="18" fill="#7a2a20" opacity=".9"/><rect x="204" y="44" width="32" height="30" fill="#7a2a20"/><rect id="a4BCap" x="200" y="34" width="40" height="14" rx="4" fill="#e2573f"/><rect x="190" y="120" width="60" height="34" fill="#ffd23f"/></g>
+    <path d="M330 110 l12 94 h76 l12 -94z" fill="#fff" fill-opacity=".5" stroke="#7aa7bd" stroke-width="4"/>
+    <path id="a4Liq" d="M336 204 h88 v0 h-88z" fill="#8a3b1a" opacity=".85"/>
+    <g id="a4Bub" fill="#fff" opacity=".9"></g>
+    <rect x="12" y="12" width="270" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a4ST" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">뚜껑을 열어 따라 봐요</text>
+  </svg>
+  <div class="row" style="margin-top:8px"><button class="main" id="a4Pour">🥤 뚜껑 열고 컵에 따르기</button></div>
+  <div id="a4Q1" hidden>
+    <p class="jua" style="font-size:1.05rem;margin-top:8px">톡 쏘는 느낌을 내는 이 기포는 어떤 기체일까요?</p>
+    <div class="pick" id="a4P1" data-glue="1">
+      <button data-a="0" data-m="많은 친구가 ‘공기 방울’이라고 생각해요. 탄산음료 속 기포는 공기가 아니라 다른 기체예요.">공기 방울</button>
+      <button data-a="1" data-m="맞아요! 탄산음료에는 이산화 탄소가 녹아 있어 톡 쏘는 느낌을 내요.">이산화 탄소</button>
+      <button data-a="0" data-m="수증기는 물이 끓을 때 생기는 기체예요. 차가운 탄산음료의 기포는 다른 기체예요.">수증기</button>
+      <button data-a="0" data-m="산소는 우리가 숨을 쉬는 데 필요한 기체예요. 탄산음료의 기포는 다른 기체예요.">산소</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div id="a4Air" hidden>
+    <p style="margin-top:8px">우리 주변의 공기에는 산소, 질소, 이산화 탄소 등 여러 가지 기체가 섞여 있어요. 이 기체들은 우리 생활에서 다양하게 이용돼요.</p>
+    <div class="a4-air" aria-label="공기를 이루는 기체의 비율"><span style="flex:78;background:#3a78c8">질소 약 78 %</span><span style="flex:21;background:#e2573f">산소 약 21 %</span><span style="flex:4;background:#5b6b78" title="아르곤, 이산화 탄소 등">기타</span></div>
+    <p class="tip">기타: 아르곤 약 0.9 %, 이산화 탄소 약 0.03 %, 그 밖에 아주 적은 양의 네온·헬륨·수소 등(건조한 공기 기준, 지도서 참고 자료)</p>
+  </div>
+</section>
+
+<!-- 조사해요 -->
+<section id="s2" data-nav="조사해요">
+  <span class="stage">조사해요 · 「실험관찰」 42쪽</span>
+  <h2>일상생활에서 이용되는 기체의 종류, 성질, 이용 사례를 조사해요</h2>
+  <p>검색어를 누르면 검색 결과가 나와요. <b>믿을 만한 내용</b>은 📌 공유 플랫폼에 올리고, 틀린 내용은 🚫 걸러 내요. 올린 쪽지 <b id="a4PostN">0</b>개 (6개 이상, 기체 3가지 이상)</p>
+  <div class="a4-kw" id="a4Kw"><span class="jua">추천 검색어:</span></div>
+  <div class="a4-search" data-glue="1">🔎 <span id="a4Q">검색어를 골라요</span></div>
+  <div class="a4-res" id="a4Res" data-glue="1"></div>
+  <div class="fb" id="a4ResFb"></div>
+  <p class="tip">⚠️ 조사하기 전에 약속해요: 수업과 관련 있는 자료만 검색하고 열어 봐요. 조사한 내용의 출처를 밝히고, 한 번에 한 가지 이용 사례를 올려요.</p>
+</section>
+
+<!-- 활동해요 -->
+<section id="s3" data-nav="활동해요">
+  <span class="stage">활동해요 · 「실험관찰」 43쪽</span>
+  <h2>공유 플랫폼에 올린 자료를 기체의 종류에 따라 모아 정리해요</h2>
+  <p>쪽지를 누른 다음, 알맞은 기체 칸을 눌러 옮겨요. 비슷한 내용은 한 칸에 모아요.</p>
+  <div class="a4-board" id="a4Board"><span class="tip" id="a4BoardEmpty">‘조사해요’에서 쪽지를 먼저 올려요.</span></div>
+  <div class="a4-cols" id="a4Cols"></div>
+  <div class="fb" id="a4SortFb"></div>
+</section>
+
+<!-- 발표해요 -->
+<section id="s4" data-nav="발표해요">
+  <span class="stage">발표해요 · 「실험관찰」 43쪽</span>
+  <h2>우리 모둠이 만든 자료를 발표해요</h2>
+  <p>발표할 기체를 골라 발표 자료를 만들어요. 역할을 나누어 발표를 준비해요.</p>
+  <div class="row" id="a4Pick"></div>
+  <div class="a4-slide" id="a4Slide" hidden data-glue="1"></div>
+  <p class="jua" style="font-size:1.03rem;margin-top:10px">다른 모둠의 발표를 듣고 새롭게 알게 된 점을 써 봐요.</p>
+  <textarea id="a4New" rows="2" placeholder="예: 헬륨은 공기보다 위로 뜨는 성질이 있어 비행선에 이용된다는 것을 새롭게 알았어요."></textarea>
+  <div class="row" style="margin-top:6px"><button class="main" id="a4NewBtn">다 썼어요</button></div>
+  <div class="fb" id="a4NewFb"></div>
+  <p class="tip">💬 친구의 발표를 주의 깊게 듣고, 우리 모둠이 조사한 내용과 비교하며 들어요.</p>
+</section>
+
+<!-- 74~75쪽 -->
+<section id="s5" data-nav="기체 이용 예">
+  <span class="stage">「과학」 74~75쪽</span>
+  <h2>여러 가지 기체를 이용한 예를 알아봐요</h2>
+  <p>기체를 하나 고른 다음, 그 기체를 이용한 물건을 모두 눌러요. (<b id="a4TCnt">0</b>/11)</p>
+  <div class="a4-brush" id="a4Brush"></div>
+  <div class="a4-tiles" id="a4Tiles" data-glue="1"></div>
+  <div class="fb" id="a4TFb"></div>
+</section>
+
+<!-- 생각 바로잡기 -->
+<section id="s6" data-nav="생각 바로잡기">
+  <span class="stage">생각 바로잡기</span>
+  <h2>🤔 헷갈리기 쉬운 것을 바르게 알아봐요</h2>
+  <p class="jua" style="font-size:1.03rem">1. 이산화 탄소 소화기로 불을 끌 수 있는 까닭은?</p>
+  <div class="pick" id="a4M1" data-glue="1">
+    <button data-a="1" data-m="맞아요! 이산화 탄소는 공기보다 아래로 가라앉는 성질이 있어 불이 났을 때 공기를 막아 불을 꺼요. 이산화 탄소 자체가 불을 끄는 성질이 있는 것은 아니에요.">이산화 탄소가 공기보다 아래로 가라앉아 공기를 막아 주기 때문이에요</button>
+    <button data-a="0" data-m="이산화 탄소 자체에 불을 끄는 성질이 있는 것은 아니에요. 이산화 탄소가 불 주변의 공기를 어떻게 하는지 생각해 봐요.">이산화 탄소에는 원래 불을 끄는 성질이 있기 때문이에요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.03rem;margin-top:10px">2. 산소, 질소, 이산화 탄소는 언제나 기체일까요?</p>
+  <div class="pick" id="a4M2" data-glue="1">
+    <button data-a="0" data-m="온도 같은 조건이 바뀌면 고체나 액체가 될 수 있어요. 아이스크림을 포장할 때 넣는 드라이아이스를 떠올려 봐요.">네, 언제나 기체예요</button>
+    <button data-a="1" data-m="맞아요! 조건에 따라 고체나 액체 상태도 될 수 있어요. 예를 들어 드라이아이스는 고체 이산화 탄소예요.">아니요, 조건에 따라 고체나 액체가 될 수도 있어요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.03rem;margin-top:10px">3. 잠수부가 물속에서 숨을 쉬려고 메는 통에는 무엇이 들어 있을까요?</p>
+  <div class="pick" id="a4M3" data-glue="1">
+    <button data-a="0" data-m="압축한 산소만 마시면 오히려 위험할 수 있어요. 잠수부의 통에는 우리가 늘 마시는 것과 같은 것이 들어 있어요.">산소만 들어 있어요(산소통)</button>
+    <button data-a="1" data-m="맞아요! 잠수부는 공기처럼 질소와 산소가 섞인 기체를 넣은 공기통을 메요.">공기가 들어 있어요(공기통)</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<!-- 생각이 한눈에 -->
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙</h2>
+  <p class="jua" style="font-size:1.15rem">1. 우리가 숨을 쉬는 데 반드시 필요하며, 다른 물질이 타는 것을 돕는 성질이 있는 기체는
+    <span class="blank"><span id="bl1">ㅅ</span><span id="bl2">ㅅ</span></span>입니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:12px">2. 💭 생각: 어떤 풍선은 아래로 가라앉고, 어떤 풍선은 위에 떠 있는 까닭을 기체의 성질과 관련지어 써 봐요.</p>
+  <svg class="scene" viewBox="0 0 600 170" style="max-height:20vh" role="img" aria-label="천장 쪽에 떠 있는 헬륨 풍선과 바닥에 놓인 입으로 분 풍선">
+    <rect width="600" height="170" fill="#eef7fb"/><rect y="150" width="600" height="20" fill="#c9b27a"/>
+    <ellipse cx="180" cy="40" rx="28" ry="32" fill="#e2573f"/><path d="M180 72 q-8 30 4 70" stroke="#555" stroke-width="2" fill="none"/><text x="230" y="44" font-size="16" font-family="Jua" fill="#0f3b5c">헬륨 풍선</text>
+    <ellipse cx="420" cy="122" rx="28" ry="26" fill="#3a78c8"/><text x="460" y="112" font-size="16" font-family="Jua" fill="#0f3b5c">입으로 분 풍선</text>
+  </svg>
+  <textarea id="a4G2" rows="2" placeholder="예: 헬륨은 공기보다 ○○ ○○ 성질이 있어 헬륨 풍선은 떠 있고, 입으로 분 풍선은 바닥으로 ○○○○."></textarea>
+  <div class="row" style="margin-top:6px"><button class="main" id="a4G2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="a4G2Fb"></div>
+</section>
+
+<!-- 형성 평가 -->
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 기체와 그 기체의 이용 사례를 이어 봐요.</p>
+  <div id="a4MT"></div>
+  <div class="fb" id="a4MTFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:12px">2. 다음에서 설명하는 기체의 종류를 써 봐요.</p>
+  <p style="margin:0 0 6px">• 공기를 구성하는 기체 중 하나이다. • 과자 봉지에 들어 있고, 식품을 보관하는 데 이용된다.</p>
+  <div class="row" data-glue="1"><input class="a4-in" id="a4F2" placeholder="기체 이름" aria-label="기체 이름"><button class="main" id="a4F2Btn">확인</button></div>
+  <div class="fb" id="a4F2Fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:12px">3. ✏️ 서술형: 이산화 탄소가 이용되는 사례를 두 가지 이상 써 봐요.</p>
+  <textarea id="a4F3" rows="2" placeholder="예: ○○○○, ○○○ 등에 이용돼요."></textarea>
+  <div class="row" style="margin-top:6px"><button class="main" id="a4F3Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="a4F3Fb"></div>
+</section>
+
+<!-- 함께 평가 -->
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">함께 평가하기 · 「실험관찰」 43쪽</span>
+  <h2>우리 모둠을 되돌아봐요</h2>
+  <table>
+    <tr><td>일상생활에서 이용되는 여러 가지 기체를 설명했나요?</td><td class="face" data-r="0"></td></tr>
+    <tr><td>스마트 기기를 활용하여 여러 가지 기체를 조사했나요?</td><td class="face" data-r="1"></td></tr>
+    <tr><td>친구가 발표할 때 주의 깊게 들었나요?</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+const A4G=['산소','질소','이산화 탄소','헬륨','수소','아르곤'];
+const A4C={'산소':'#e2573f','질소':'#3a78c8','이산화 탄소':'#5b6b78','헬륨':'#b07cf0','수소':'#2f8f5b','아르곤':'#c76b00'};
+
+/* 도입: 탄산음료 */
+(function(){let done=false;$('#a4Pour').onclick=()=>{if(done)return;done=true;$('#a4BCap').setAttribute('opacity',0);$('#a4Bt').style.transform='translate(80px,-20px) rotate(70deg)';
+  let h=0;const g=$('#a4Bub');const iv=setInterval(()=>{h=Math.min(80,h+4);$('#a4Liq').setAttribute('d',`M${336+0.13*h} ${204-h} h${88-0.26*h} L424 204 h-88z`);
+    for(let i=0;i<3;i++){const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',345+Math.random()*70);c.setAttribute('cy',200);c.setAttribute('r',2+Math.random()*3);g.appendChild(c);}
+    $$('circle',g).forEach(c=>{const y=+c.getAttribute('cy')-6;if(y<204-h)c.remove();else c.setAttribute('cy',y);});
+    if(h>=80&&$('#a4Q1').hidden){$('#a4Q1').hidden=false;$('#a4ST').textContent='보글보글 기포가 생겨요!';$('#a4Bt').style.transform='';}
+  },90);setTimeout(()=>clearInterval(iv),9000);};})();
+pickOne('#a4P1','','',null,()=>{$('#a4Air').hidden=false;doneNav('s1');});
+
+/* 조사해요: 검색 흉내 */
+const A4R={
+ '공기를 이루는 기체':[
+  {g:'산소',src:'초등 과학 백과사전',t:'산소는 생물이 숨을 쉬는 데 필요해요. 휴대용 산소통, 고압 산소 치료 장치에 이용돼요.',ok:1},
+  {g:'산소',src:'과학관 누리집',t:'산소는 다른 물질이 타는 것을 돕는 성질이 있어요.',ok:1},
+  {g:'질소',src:'어느 누리 소통망 글(출처 없음)',t:'질소는 공기 중에 가장 적게 들어 있는 기체래요!',ok:0,why:'공기를 이루는 기체 중 질소가 가장 많아요(약 78 %). 출처가 없는 글은 꼭 확인해요.'}],
+ '산소의 쓰임새':[
+  {g:'산소',src:'과학관 누리집',t:'어항 속 산소 발생기는 물고기가 숨을 쉴 수 있도록 산소를 넣어 줘요.',ok:1},
+  {g:'산소',src:'병원 건강 정보',t:'병원에서는 환자가 숨쉬기 편하도록 산소 호흡기를 써요.',ok:1}],
+ '질소의 쓰임새':[
+  {g:'질소',src:'식품 회사 누리집',t:'과자 봉지에 질소를 채워 과자가 부서지거나 맛이 변하는 것을 막고 신선하게 보존해요.',ok:1},
+  {g:'질소',src:'자동차 안전 자료',t:'자동차 사고가 나면 질소가 에어백을 채워 충격을 줄이고 탑승자를 보호해요.',ok:1},
+  {g:'질소',src:'익명 게시글',t:'질소는 우리가 숨 쉬는 데 꼭 필요해서 과자 봉지에 넣는대!',ok:0,why:'숨 쉬는 데 꼭 필요한 기체는 산소예요. 질소는 다른 물질과 잘 반응하지 않아 식품을 보존하는 데 이용해요.'}],
+ '이산화 탄소의 쓰임새':[
+  {g:'이산화 탄소',src:'초등 과학 백과사전',t:'이산화 탄소는 탄산음료 속에 녹아 있어 톡 쏘는 느낌을 내요.',ok:1},
+  {g:'이산화 탄소',src:'소방 안전 자료',t:'이산화 탄소는 공기보다 아래로 가라앉는 성질이 있어, 불이 났을 때 공기를 막아 불을 끄는 소화기에 이용돼요.',ok:1},
+  {g:'이산화 탄소',src:'익명 게시글',t:'이산화 탄소는 공기보다 가벼워서 풍선을 하늘 높이 띄울 때 넣어요.',ok:0,why:'이산화 탄소는 공기보다 아래로 가라앉아요. 풍선을 띄우는 기체는 헬륨이에요.'},
+  {g:'이산화 탄소',src:'과학 잡지',t:'고체 이산화 탄소인 드라이아이스는 아이스크림이 녹지 않게 차갑게 하는 데 이용돼요.',ok:1}],
+ '헬륨·수소의 쓰임새':[
+  {g:'헬륨',src:'초등 과학 백과사전',t:'헬륨은 공기보다 가벼워 위로 뜨는 성질이 있어 풍선이나 비행선을 띄우는 데 이용돼요.',ok:1},
+  {g:'수소',src:'에너지 연구소 누리집',t:'수소는 오염 물질을 내보내지 않는 친환경 연료로, 수소 자동차와 수소 연료 전지 드론에 이용돼요.',ok:1},
+  {g:'아르곤',src:'과학관 누리집',t:'아르곤은 형광등 안에 넣어 불을 밝히는 데 이용돼요.',ok:1}]
+};
+const a4Posts=[];let a4kw=null;
+(function(){Object.keys(A4R).forEach(k=>{const b=document.createElement('button');b.textContent=k;b.onclick=()=>{a4kw=k;$$('#a4Kw button').forEach(x=>x.classList.toggle('on',x===b));$('#a4Q').textContent=k;show();};$('#a4Kw').appendChild(b);});
+  function show(){const box=$('#a4Res');box.innerHTML='';
+    A4R[a4kw].forEach(r=>{const d=document.createElement('div');d.className='a4-r'+(r.st==='p'?' posted':r.st==='x'?' rejected':'');
+      d.innerHTML=`<span class="src">출처: ${r.src}</span><p>${r.t}</p><div class="row"></div>`;const row=$('.row',d);
+      if(!r.st){const p=document.createElement('button');p.textContent='📌 공유 플랫폼에 올리기';const x=document.createElement('button');x.textContent='🚫 믿기 어려워요';row.append(p,x);
+        p.onclick=()=>{if(r.ok){r.st='p';a4Posts.push(r);a4AddNote(r);fb('#a4ResFb','올렸어요! 출처: '+r.src+'.',true);upd();show();}
+          else fb('#a4ResFb','잠깐! 이 내용은 사실과 달라요. '+r.why,false);};
+        x.onclick=()=>{if(!r.ok){r.st='x';fb('#a4ResFb','잘 걸러 냈어요! '+r.why,true);show();}else fb('#a4ResFb','이 내용은 믿을 만한 출처의 바른 내용이에요. 다시 읽어 봐요.',false);};}
+      else row.innerHTML=r.st==='p'?'<span class="tip">✅ 올렸어요</span>':'<span class="tip">🚫 걸러 냈어요</span>';
+      box.appendChild(d);});}
+  function upd(){$('#a4PostN').textContent=a4Posts.length;const gs=new Set(a4Posts.map(r=>r.g));
+    if(a4Posts.length>=6&&gs.size>=3){doneNav('s2');fb('#a4ResFb','조사 끝! 쪽지 '+a4Posts.length+'개를 올렸어요. 이제 ‘활동해요’에서 기체의 종류에 따라 모아 정리해요. (더 올려도 좋아요)',true);}}
+})();
+
+/* 활동해요: 분류 */
+let a4Sel=null,a4Sorted=0;
+function a4AddNote(r){$('#a4BoardEmpty').hidden=true;const b=document.createElement('button');b.className='a4-note';b.textContent=r.t;b.onclick=()=>{$$('#a4Board .a4-note').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');a4Sel={b,r};fb('#a4SortFb','이 쪽지는 어느 기체 칸에 넣을까요?','info');};
+  $('#a4Board').appendChild(b);
+  if(!$('#a4Col-'+r.g.replace(' ','')))a4MakeCol(r.g);}
+function a4MakeCol(g){const d=document.createElement('div');d.className='a4-col';d.id='a4Col-'+g.replace(' ','');d.innerHTML=`<h4 style="color:${A4C[g]}">${g}</h4>`;
+  d.onclick=()=>{if(!a4Sel){fb('#a4SortFb','먼저 위에서 쪽지를 하나 눌러요.','info');return;}
+    if(a4Sel.r.g===g){const n=document.createElement('div');n.className='a4-note';n.textContent=a4Sel.r.t;d.appendChild(n);a4Sel.b.remove();a4Sel=null;a4Sorted++;
+      const left=$$('#a4Board .a4-note').length;fb('#a4SortFb',left?'좋아요! 남은 쪽지 '+left+'개':'모두 정리했어요! 같은 기체끼리 모으니 성질과 이용 사례가 한눈에 보여요.',left?'info':true);
+      if(!left&&a4Sorted>=6){doneNav('s3');a4MakePick();}}
+    else fb('#a4SortFb','쪽지를 다시 읽어 봐요. 어떤 기체에 관한 내용인가요?',false);};
+  $('#a4Cols').appendChild(d);}
+A4G.slice(0,5).forEach(a4MakeCol);
+
+/* 발표해요 */
+let a4slide=false;
+function a4MakePick(){const row=$('#a4Pick');row.innerHTML='';const gs=[...new Set(a4Posts.map(r=>r.g))];
+  gs.forEach(g=>{const b=document.createElement('button');b.textContent=g;b.onclick=()=>{$$('#a4Pick button').forEach(x=>x.classList.toggle('sel',x===b));
+    const it=a4Posts.filter(r=>r.g===g);$('#a4Slide').hidden=false;
+    $('#a4Slide').innerHTML=`<h4 style="color:${A4C[g]}">🎤 우리 모둠이 소개할 기체: ${g}</h4><ul>${it.map(r=>`<li>${r.t} <span class="tip">(출처: ${r.src})</span></li>`).join('')}</ul><p class="tip">역할 나누기 예: 성질 소개 · 이용 사례 소개 · 사진 보여 주기 · 질문 받기</p>`;a4slide=true;};row.appendChild(b);});}
+$('#a4NewBtn').onclick=()=>{if(!a4slide){fb('#a4NewFb','먼저 위에서 발표할 기체를 골라 발표 자료를 만들어요. (‘활동해요’를 마치면 기체 단추가 나와요.)','info');return;}
+  const t=$('#a4New').value.trim();if(t.length<8){fb('#a4NewFb','새롭게 알게 된 점을 한 문장으로 써 봐요.',false);return;}
+  fb('#a4NewFb','좋아요! 다른 모둠의 발표에서 새로운 것을 알게 되었어요.',true);doneNav('s4');};
+
+/* 74~75쪽: 기체 붓 */
+(function(){const IC={
+  can:'<svg viewBox="0 0 120 80"><rect x="46" y="14" width="28" height="60" rx="10" fill="#e2573f"/><rect x="52" y="6" width="16" height="10" fill="#5b6b78"/><path d="M60 20 q-30 0 -36 30" fill="none" stroke="#5b6b78" stroke-width="3"/></svg>',
+  hyper:'<svg viewBox="0 0 120 80"><rect x="10" y="26" width="100" height="40" rx="20" fill="#cfe9f5" stroke="#3a78c8" stroke-width="3"/><circle cx="30" cy="46" r="8" fill="#f2c39b"/><rect x="92" y="34" width="10" height="24" fill="#3a78c8"/></svg>',
+  aqua:'<svg viewBox="0 0 120 80"><rect x="14" y="14" width="92" height="58" rx="6" fill="#bfe6fb" stroke="#3a78c8" stroke-width="3"/><g fill="#fff" stroke="#7aa7bd"><circle cx="80" cy="30" r="4"/><circle cx="84" cy="44" r="3"/><circle cx="78" cy="56" r="4"/></g><ellipse cx="44" cy="44" rx="14" ry="8" fill="#ff8a3d"/><rect x="74" y="60" width="16" height="10" fill="#5b6b78"/></svg>',
+  snack:'<svg viewBox="0 0 120 80"><path d="M36 10 h48 q12 30 0 60 h-48 q-12 -30 0 -60z" fill="#3a78c8"/><text x="60" y="46" text-anchor="middle" font-size="14" font-family="Jua" fill="#fff">과자</text></svg>',
+  bag:'<svg viewBox="0 0 120 80"><rect x="10" y="40" width="40" height="26" rx="4" fill="#5b6b78"/><circle cx="72" cy="38" r="28" fill="#fff" stroke="#9aa5ad" stroke-width="3"/><text x="72" y="43" text-anchor="middle" font-size="12" font-family="Jua" fill="#5b6b78">에어백</text></svg>',
+  soda:'<svg viewBox="0 0 120 80"><path d="M44 14 l6 60 h20 l6 -60z" fill="#8a3b1a" opacity=".85"/><g fill="#fff"><circle cx="56" cy="40" r="3"/><circle cx="64" cy="30" r="2.5"/><circle cx="60" cy="56" r="3"/></g></svg>',
+  ext:'<svg viewBox="0 0 120 80"><rect x="44" y="20" width="30" height="56" rx="8" fill="#c0392b"/><rect x="52" y="10" width="14" height="12" fill="#2c333a"/><path d="M66 16 h20 l14 14" fill="none" stroke="#2c333a" stroke-width="5"/></svg>',
+  hel:'<svg viewBox="0 0 120 80"><ellipse cx="44" cy="26" rx="16" ry="20" fill="#b07cf0"/><ellipse cx="76" cy="22" rx="16" ry="20" fill="#ffc93c"/><path d="M44 46 q4 14 12 30 M76 42 q-6 16 -18 34" stroke="#555" stroke-width="2" fill="none"/></svg>',
+  ship:'<svg viewBox="0 0 120 80"><ellipse cx="60" cy="32" rx="50" ry="18" fill="#9aa5ad"/><path d="M104 32 l12 -12 v24z" fill="#5b6b78"/><rect x="48" y="50" width="24" height="10" rx="3" fill="#2c333a"/></svg>',
+  car:'<svg viewBox="0 0 120 80"><path d="M14 54 q2 -18 22 -20 l14 -14 h28 l16 14 q14 2 14 20z" fill="#2f8f5b"/><circle cx="36" cy="58" r="9" fill="#2c333a"/><circle cx="90" cy="58" r="9" fill="#2c333a"/><text x="60" y="48" text-anchor="middle" font-size="12" font-family="Jua" fill="#fff">H₂</text></svg>',
+  drone:'<svg viewBox="0 0 120 80"><rect x="44" y="34" width="32" height="16" rx="5" fill="#2f8f5b"/><path d="M44 40 l-20 -10 M76 40 l20 -10 M44 44 l-20 10 M76 44 l20 10" stroke="#2c333a" stroke-width="3"/><g fill="#9aa5ad"><ellipse cx="22" cy="28" rx="14" ry="3"/><ellipse cx="98" cy="28" rx="14" ry="3"/><ellipse cx="22" cy="56" rx="14" ry="3"/><ellipse cx="98" cy="56" rx="14" ry="3"/></g></svg>'};
+  const T=[['can','휴대용 산소통','산소'],['hyper','고압 산소 치료 장치','산소'],['aqua','어항 산소 발생기','산소'],['snack','질소 포장 과자 봉지','질소'],['bag','자동차 에어백','질소'],['soda','탄산음료','이산화 탄소'],['ext','이산화 탄소 소화기','이산화 탄소'],['hel','장식용 풍선','헬륨'],['ship','비행선','헬륨'],['car','수소 자동차','수소'],['drone','수소 연료 전지 드론','수소']];
+  const WHY={'산소':'숨을 쉬는 데 필요해요','질소':'식품을 보존하고, 에어백을 채워요','이산화 탄소':'톡 쏘는 맛, 불을 끄는 소화기','헬륨':'공기보다 가벼워 위로 떠요','수소':'친환경 연료로 이용해요'};
+  let brush=null,n=0;
+  ['산소','질소','이산화 탄소','헬륨','수소'].forEach(g=>{const b=document.createElement('button');b.textContent=g;b.style.borderColor=A4C[g];b.onclick=()=>{brush=g;$$('#a4Brush button').forEach(x=>x.classList.toggle('sel',x===b));};$('#a4Brush').appendChild(b);});
+  T.forEach(([k,nm,g])=>{const b=document.createElement('button');b.className='a4-tile';b.innerHTML=IC[k]+`<b>${nm}</b><span class="g"></span>`;
+    b.onclick=()=>{if(b.classList.contains('done'))return;if(!brush){fb('#a4TFb','먼저 위에서 기체를 하나 골라요.','info');return;}
+      if(brush===g){b.classList.add('done');$('.g',b).textContent=g+' · '+WHY[g];n++;$('#a4TCnt').textContent=n;fb('#a4TFb',n===11?'🎉 모두 찾았어요! 산소처럼 같은 종류의 기체라도 여러 곳에 다양하게 이용돼요.':nm+'에는 '+g+'을(를) 이용해요.',n===11?true:'info');if(n===11)doneNav('s5');}
+      else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb('#a4TFb',nm+'에는 '+brush+'이(가) 아닌 다른 기체를 이용해요.',false);}};
+    $('#a4Tiles').appendChild(b);});
+})();
+
+/* 생각 바로잡기 */
+let a4m=0;const a4md=()=>{if(++a4m===3)doneNav('s6');};
+pickOne('#a4M1','','',null,a4md);pickOne('#a4M2','','',null,a4md);pickOne('#a4M3','','',null,a4md);
+
+/* 생각이 한눈에 */
+let a4g=0;const a4gd=()=>{if(++a4g===2)doneNav('s7');};
+$('#blReveal').onclick=()=>{fb('#blFb','산소는 우리가 숨을 쉬는 데 반드시 필요하며, 다른 물질이 타는 것을 돕는 성질이 있어요.',true);a4gd();};
+(function(){let ok=false;$('#a4G2Btn').onclick=()=>{const t=$('#a4G2').value.trim();if(!t){fb('#a4G2Fb','먼저 답을 써 보세요.',false);return;}
+  const he=/헬륨/.test(t),up=/가벼|뜨|떠/.test(t),dn=/가라앉|무거|아래|바닥/.test(t);
+  if(he&&up&&dn){fb('#a4G2Fb','잘 썼어요! 헬륨은 공기보다 가벼워 위로 뜨는 성질이 있어 헬륨 풍선은 떠 있어요. 입으로 분 풍선에는 헬륨이 없고 우리가 내쉰 숨이 들어 있어 바닥으로 가라앉아요.',true);if(!ok){ok=true;a4gd();}}
+  else fb('#a4G2Fb',he?'헬륨을 생각한 점이 좋아요. 헬륨 풍선이 뜨는 까닭과, 다른 풍선이 가라앉는 것도 써 봐요.':'떠 있는 풍선에는 어떤 기체가 들어 있을까요? 「과학」 75쪽을 떠올려 봐요.','info');};})();
+
+/* 형성 평가 */
+let a4f=0;const a4fd=()=>{if(++a4f===3)doneNav('s8');};
+(function(){const M=[['⑴ 산소',2],['⑵ 수소',1],['⑶ 질소',0]];const O=['㉠ 에어백','㉡ 친환경 연료 전지','㉢ 병원 환자용 호흡기'];let ok=0;
+  M.forEach(([t,a])=>{const d=document.createElement('div');d.className='a4-match';d.innerHTML=`<span class="jua">${t}</span>`;
+    O.forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>{if(d.dataset.ok)return;
+      if(i===a){b.classList.add('right');d.dataset.ok=1;ok++;fb('#a4MTFb',ok===3?'모두 맞혔어요! 산소-호흡기, 수소-친환경 연료 전지, 질소-에어백':'맞아요! ('+ok+'/3)',ok===3?true:'info');if(ok===3)a4fd();}
+      else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb('#a4MTFb','기체의 성질을 떠올려 봐요. 숨 쉬는 데 필요한 기체, 친환경 연료, 에어백을 채우는 기체는?',false);}};d.appendChild(b);});
+    $('#a4MT').appendChild(d);});})();
+(function(){let ok=false;const go=()=>{const t=$('#a4F2').value.replace(/\s/g,'');if(!t){fb('#a4F2Fb','기체 이름을 써 보세요.',false);return;}
+  if(/^질소(기체)?$/.test(t)){fb('#a4F2Fb','정답! 질소는 과자 등 식품을 보존하고 신선하게 유지하는 데 이용돼요.',true);if(!ok){ok=true;a4fd();}}
+  else fb('#a4F2Fb','과자 봉지를 채우는 기체는 무엇이었나요? (첫소리 ㅈㅅ)',false);};
+  $('#a4F2Btn').onclick=go;$('#a4F2').addEventListener('keydown',e=>{if(e.key==='Enter')go();});})();
+(function(){let ok=false;$('#a4F3Btn').onclick=()=>{const t=$('#a4F3').value.trim();if(!t){fb('#a4F3Fb','먼저 답을 써 보세요.',false);return;}
+  const K=[[/탄산|사이다|콜라/,'탄산음료'],[/소화기|불/,'소화기'],[/드라이아이스/,'드라이아이스'],[/구명조끼/,'구명조끼'],[/광합성/,'식물의 광합성']];const hit=K.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hit.length>=2){fb('#a4F3Fb','잘 썼어요! 찾은 사례: '+hit.join(', ')+'.',true);if(!ok){ok=true;a4fd();}}
+  else fb('#a4F3Fb',hit.length?'찾은 사례: '+hit.join(', ')+'. 한 가지 더 써 봐요.':'탄산음료나 불을 끄는 도구를 떠올려 봐요.','info');};})();
+
+faces('s9','멋진 조사였어요! 다음 시간에는 여러 가지 기체를 만화로 소개해 봐요.','어려웠던 부분은 「과학」 74~75쪽을 다시 읽어 보고, 선생님께 질문해도 좋아요!');
+</script>

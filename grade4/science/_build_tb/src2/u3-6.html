@@ -1,0 +1,284 @@
+<!--
+title: 창의가 팡팡 · 기체의 성질을 이용한 장치 만들기
+unit: 3
+lesson: 9~10
+total: 12
+goal: 기체의 성질을 이용하여 작동시킬 수 있는 장치를 설계하고 만들 수 있어요.
+pages: 「과학」 78~79쪽 · 「실험관찰」 46~47쪽 · 지도서 308~313쪽
+-->
+<style>
+#a6Pad,#a6Dev{touch-action:none}
+.a6-ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;margin:4px 0}
+.a6-ox button{min-width:3rem;font-size:1.1rem}
+.a6-dv{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.a6-d{border:2px solid var(--line);border-radius:14px;padding:8px;background:var(--paper);display:flex;flex-direction:column;gap:6px}
+.a6-d svg{width:100%;height:auto;max-height:16vh;border-radius:10px;background:#eef7fb;cursor:pointer}
+.a6-d p{margin:0;font-size:.9rem;line-height:1.35}
+.a6-d .row{gap:5px}.a6-d .row button{font-size:.8rem;min-height:1.9rem;padding:.05em .4em;border-width:2px;flex:1}
+.a6-d.done{border-color:var(--good);background:#f1fbf4}
+.a6-form{display:grid;gap:6px}
+.a6-form label{font-family:"Jua",sans-serif}
+.a6-form input,.a6-form textarea{font:inherit;font-size:.95rem;padding:7px 10px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink);width:100%}
+.a6-chips{display:flex;flex-wrap:wrap;gap:6px}
+.a6-chips button{font-size:.85rem;min-height:2.1rem;padding:.05em .6em;border-width:2px;border-radius:999px}
+.a6-tools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.a6-tools button{min-height:2.2rem;padding:.05em .55em;font-size:.85rem;border-width:2px}
+.a6-tools .sw{width:2rem;min-width:2rem;height:2rem;min-height:2rem;padding:0;border-radius:50%}
+.a6-tools input{font:inherit;font-size:.9rem;padding:5px 8px;border-radius:10px;border:2px solid var(--line);width:9rem;background:var(--paper);color:var(--ink)}
+#a6Pad{width:100%;height:auto;background:#fff;border:3px solid var(--navy);border-radius:14px;cursor:crosshair;max-height:40vh}
+.a6-chk{display:flex;flex-direction:column;gap:4px}
+.a6-chk label{display:flex;gap:8px;align-items:center;font-size:.93rem}
+.a6-chk input{width:1.2rem;height:1.2rem;flex:none}
+.a6-ctl{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.a6-ctl button{font-size:.86rem;min-height:2.2rem;padding:.1em .55em;border-width:2px}
+.a6-ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.a6-script{background:#fffdf3;border:2px dashed #c9b27a;border-radius:14px;padding:10px 14px;font-size:.98rem;line-height:1.7}
+.a6-stars button{min-height:2rem;padding:0 .4em;font-size:1.1rem;border-width:2px}
+@media (max-width:900px){.a6-dv{grid-template-columns:1fr}}
+</style>
+
+<!-- 도입 -->
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 78쪽</span>
+  <h2>지난 시간까지 배운 기체의 성질을 떠올려 봐요</h2>
+  <p>맞으면 ⭕, 틀리면 ❌를 눌러요.</p>
+  <div id="a6OX"></div>
+  <div class="fb" id="a6OXFb"></div>
+  <p class="a6-def" style="margin-top:8px;padding:10px 14px;border-radius:14px;background:#e1f0fb" data-glue="1">💡 기체의 부피는 온도나 압력에 따라 달라져요. 이 성질을 이용하면 기체의 온도나 압력을 변화시켜 작동하는 장치를 만들 수 있어요.</p>
+</section>
+
+<!-- 장치 찾아보기 -->
+<section id="s2" data-nav="장치 찾아보기">
+  <span class="stage">기체를 이용한 장치 찾아보기</span>
+  <h2>기체의 성질을 이용한 장치를 살펴봐요</h2>
+  <p>그림을 눌러 작동시켜 보고, 어떤 성질을 이용했는지 골라요.</p>
+  <div class="a6-dv" id="a6Dv"></div>
+  <div class="fb" id="a6DvFb"></div>
+</section>
+
+<!-- 계획하기 -->
+<section id="s3" data-nav="계획하기">
+  <span class="stage">계획하기 · 「실험관찰」 46쪽</span>
+  <h2>우리 모둠이 만들고 싶은 장치를 설계해요</h2>
+  <div class="a6-form">
+    <label>① 이용할 기체의 성질</label>
+    <div class="a6-chips" id="a6Prop"><button data-p="t">온도에 따른 기체의 부피 변화</button><button data-p="p">압력에 따른 기체의 부피 변화</button></div>
+    <label for="a6Name">② 만들고 싶은 장치</label><input id="a6Name" placeholder="예: 만지지 않아도 물을 내뿜는 물뿌리개">
+  </div>
+  <p class="jua" style="margin:8px 0 4px">③ 설계도: 모양과 작동 원리를 그리고 이름표를 붙여요.</p>
+  <div class="a6-tools" id="a6Tools">
+    <button data-t="pen" class="sel">✏️ 펜</button><button class="sw" data-c="#15313d" style="background:#15313d" aria-label="검정"></button><button class="sw" data-c="#e2573f" style="background:#e2573f" aria-label="빨강"></button><button class="sw" data-c="#3a78c8" style="background:#3a78c8" aria-label="파랑"></button>
+    <button data-t="bottle">페트병</button><button data-t="water">물</button><button data-t="hot">♨️ 뜨거운 물</button><button data-t="syr">주사기</button><button data-t="arrow">➡ 화살표</button><button data-t="text">글자</button><input id="a6Txt" placeholder="이름표 글자" value="구멍">
+    <button id="a6Undo">↩ 되돌리기</button><button id="a6Clear">모두 지우기</button><button id="a6Save">💾 그림 저장</button>
+  </div>
+  <svg id="a6Pad" viewBox="0 0 800 380" role="img" aria-label="장치 설계도 그리는 판" data-glue="1"><rect width="800" height="380" fill="#fff"/><g id="a6Ink"></g></svg>
+  <div class="a6-form" style="margin-top:8px">
+    <label>④ 준비물 (재활용품을 먼저 골라요)</label>
+    <div class="a6-chips" id="a6Mat"><button>단단한 페트병(구멍은 선생님이 미리)</button><button>유성펜</button><button>차가운 물</button><button>뜨거운 물</button><button>수조</button><button>손잡이 달린 비커</button><button>주사기</button><button>빨대</button><button>점토</button><button>색소</button><button>유산균음료병</button></div>
+    <label for="a6Step">⑤ 만드는 순서</label><textarea id="a6Step" rows="2" placeholder="예: 페트병 구멍을 막고 차가운 물을 넣은 뒤 뚜껑을 닫고, 뜨거운 물을 부어요."></textarea>
+  </div>
+  <h3>✅ 설계 점검 (선생님과 함께)</h3>
+  <div class="a6-chk" id="a6Chk">
+    <label><input type="checkbox"> 장치를 작동시키는 기체로 공기를 이용해요.</label>
+    <label><input type="checkbox"> 송곳·칼처럼 날카로운 도구는 쓰지 않고, 미리 뚫린 재료를 써요.</label>
+    <label><input type="checkbox"> 뜨거운 물을 쓸 때는 실험복·보안경·실험용 장갑을 껴요.</label>
+    <label><input type="checkbox"> 재활용품을 활용하고 플라스틱·일회용품 사용을 줄여요.</label>
+    <label><input type="checkbox"> 모둠원 모두에게 역할을 나누었고, 선생님과 계획을 검토했어요.</label>
+  </div>
+  <div class="row" style="margin-top:8px"><button class="main" id="a6PlanOk">설계 완성!</button><button id="a6Ex">💡 예시 보기</button></div>
+  <div class="fb" id="a6PlanFb"></div>
+</section>
+
+<!-- 해 보기 -->
+<section id="s4" data-nav="해 보기">
+  <span class="stage">해 보기 · 「과학」 79쪽</span>
+  <h2>예시 장치: 만지지 않아도 물을 내뿜는 물뿌리개</h2>
+  <p>준비물: 아랫부분에 구멍을 뚫은 단단한 페트병, 유성펜, 차가운 물, 뜨거운 물, 수조, 손잡이 달린 비커, 실험복, 보안경, 실험용 장갑</p>
+  <svg id="a6Dev" class="scene" viewBox="0 0 800 330" style="max-height:38vh" role="img" aria-label="구멍 뚫린 페트병에 물을 넣고 뜨거운 물을 부어 물을 내뿜게 하는 장치">
+    <rect width="800" height="330" fill="#fdf6e3"/><rect y="300" width="800" height="30" fill="#d9c49a"/>
+    <rect x="200" y="200" width="360" height="100" rx="10" fill="#e6f5fb" fill-opacity=".7" stroke="#7aa7bd" stroke-width="4"/>
+    <rect id="a6Bath" x="204" y="296" width="352" height="0" fill="#ffb199" opacity=".7"/>
+    <g id="a6PB">
+      <path d="M330 296 v-150 q0 -24 22 -36 v-20 h36 v20 q22 12 22 36 v150z" fill="#eef9ff" fill-opacity=".7" stroke="#7aa7bd" stroke-width="4"/>
+      <rect id="a6W" x="334" y="296" width="72" height="0" fill="#6ec3f0" opacity=".85"/>
+      <g id="a6Art" opacity="0"><circle cx="380" cy="200" r="30" fill="none" stroke="#5b6b78" stroke-width="3"/><circle cx="370" cy="192" r="3" fill="#5b6b78"/><path d="M352 196 q-18 6 -14 24 M408 196 q18 6 14 24" fill="none" stroke="#5b6b78" stroke-width="3"/><path d="M372 226 q-6 24 -36 32" fill="none" stroke="#5b6b78" stroke-width="5"/></g>
+      <circle cx="334" cy="262" r="4" fill="#15313d"/>
+      <rect id="a6Lid" x="348" y="74" width="44" height="18" rx="4" fill="#2f8f5b" opacity="0"/>
+      <g id="a6Fin" opacity="0"><ellipse cx="322" cy="262" rx="14" ry="9" fill="#f2c39b" stroke="#c98f62" stroke-width="2"/></g>
+    </g>
+    <g id="a6Jet" fill="#3a8fd8"></g>
+    <g id="a6Kettle" opacity="0"><path d="M560 120 q0 -36 40 -36 q40 0 40 36 v40 h-80z" fill="#9aa5ad"/><path d="M560 130 l-40 -20 l-6 10 l40 22z" fill="#9aa5ad"/><path d="M520 118 q-30 10 -100 -6" id="a6Stream" fill="none" stroke="#ff8a6a" stroke-width="6" opacity="0"/></g>
+    <g id="a6Glove" opacity="0"><rect x="660" y="20" width="120" height="34" rx="12" fill="#bdf0cf" stroke="#16804a" stroke-width="2"/><text x="720" y="43" text-anchor="middle" font-size="15" font-family="Jua" fill="#0d5a31">🧤 장갑 착용</text></g>
+    <rect x="12" y="12" width="420" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a6DT" x="26" y="40" font-size="19" font-family="Jua" fill="#fff">① 페트병에 그림을 그려요</text>
+  </svg>
+  <div class="a6-ctl" id="a6Ctl" data-glue="1">
+    <button data-s="draw">① ✏️ 구멍 위치를 보고 그림 그리기</button>
+    <button data-s="block">👆 손가락으로 구멍 막기</button>
+    <button data-s="fill">② 🚰 차가운 물 절반 넣기</button>
+    <button data-s="lid">③ 🔒 뚜껑 닫기</button>
+    <button data-s="unblock">✋ 구멍에서 손가락 떼기</button>
+    <button data-s="glove">🧤 장갑 끼기</button>
+    <button data-s="pour">④ ♨️ 뜨거운 물 천천히 붓기</button>
+  </div>
+  <div class="fb" id="a6DevFb"></div>
+  <p class="tip">⚠️ 뜨거운 물에 데지 않게 조심해요. 페트병 안의 공기가 데워져 뜨거우므로 맨손으로 만지지 않아요. 구멍을 막고 물을 넣을 때 흘리지 않도록 친구와 협력해요.</p>
+  <div id="a6Why" hidden>
+    <p class="jua" style="font-size:1.03rem">뜨거운 물을 부으면 구멍에서 물이 나오는 까닭은?</p>
+    <div class="pick" id="a6W1" data-glue="1">
+      <button data-a="1" data-m="맞아요! 온도가 높아져 페트병 속 공기의 부피가 늘어나면서 물을 구멍으로 밀어내요.">온도가 높아져 페트병 속 공기의 부피가 늘어나 물을 밀어내요</button>
+      <button data-a="0" data-m="뜨거운 물은 페트병 바깥에 부었어요. 페트병 안의 무엇이 달라졌을까요?">뜨거운 물이 페트병 안으로 들어가 넘쳐요</button>
+    </div>
+    <div class="fb"></div>
+    <p class="jua" style="font-size:1.03rem;margin-top:8px">물이 더 많이 나오게 하려면 어떻게 고칠 수 있을까요?</p>
+    <div class="pick" id="a6W2" data-glue="1">
+      <button data-a="1" data-m="좋은 생각이에요! 페트병을 냉장고나 얼음물로 차갑게 했다가 뜨거운 물을 부으면 온도 차가 커서 물이 더 많이 밀려 나와요.">페트병을 차갑게 했다가 뜨거운 물을 부어요</button>
+      <button data-a="0" data-m="뚜껑을 열면 늘어난 공기가 위로 빠져나가 물을 밀어내지 못해요.">뚜껑을 열어 두고 뜨거운 물을 부어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<!-- 나누기 -->
+<section id="s5" data-nav="나누기">
+  <span class="stage">나누기 · 「실험관찰」 47쪽</span>
+  <h2>우리 모둠이 만든 장치를 소개하고 함께 평가해요</h2>
+  <div class="row"><button class="main" id="a6Script">🎤 소개 원고 만들기</button></div>
+  <div class="a6-script" id="a6ScriptBox" hidden></div>
+  <h3>⭐ 다른 모둠의 장치 평가하기</h3>
+  <table><tr><th>평가 내용</th><th>별점</th></tr>
+    <tr><td>기체의 성질을 잘 이용했나요?</td><td class="a6-stars" data-q="0"></td></tr>
+    <tr><td>장치가 잘 작동하나요?</td><td class="a6-stars" data-q="1"></td></tr>
+    <tr><td>창의적인 생각이 담겼나요?</td><td class="a6-stars" data-q="2"></td></tr></table>
+  <p class="jua" style="margin-top:8px">다른 모둠에게 할 말을 골라요. 먼저 잘된 점을 말하고, 그다음 고칠 점을 이야기해요.</p>
+  <div class="pick" id="a6Talk">
+    <button data-k="p">압력이 높아지면 기체의 부피가 줄어드는 성질로 손가락이 하나씩 움직이게 한 점이 재미있어요!</button>
+    <button data-k="q">알루미늄병처럼 열이 잘 전해지는 병을 쓰면 변화가 더 클 것 같아요.</button>
+    <button data-k="x" data-m="친구의 생각을 존중하는 말로 바꾸어 봐요. 잘된 점을 먼저 찾아 칭찬해요.">그건 시시해서 안 될 것 같아.</button>
+  </div>
+  <div class="fb" id="a6TalkFb"></div>
+  <div class="fb" id="a6ShareFb"></div>
+  <p class="tip">💬 친구의 장치 소개를 들을 때는 바른 자세로 들어요. 쓰고 남은 재료는 재활용하고 쓰레기는 분리배출해요.</p>
+</section>
+
+<!-- 함께 평가 -->
+<section id="s6" data-nav="함께 평가">
+  <span class="stage">함께 평가하기 · 「실험관찰」 47쪽</span>
+  <h2>우리 모둠을 되돌아봐요</h2>
+  <table>
+    <tr><td>모둠이 만든 장치가 기체의 어떤 성질을 이용했는지 설명했나요?</td><td class="face" data-r="0"></td></tr>
+    <tr><td>기체의 성질을 이용한 장치를 만들었나요?</td><td class="face" data-r="1"></td></tr>
+    <tr><td>친구의 의견을 존중하고 협력하며 활동에 참여했나요?</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+const NS6='http://www.w3.org/2000/svg';
+const a6Pt=(svg,e)=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse());};
+
+/* 도입: O/X */
+(function(){const Q=[['기체는 무게가 있다.',1,'맞아요! 공기를 넣으면 무게가 늘고, 빼면 줄었어요.'],['온도가 높아지면 기체의 부피는 줄어든다.',0,'온도가 높아지면 기체의 부피는 늘어나요.'],['기체에 가하는 압력이 높아지면 기체의 부피는 줄어든다.',1,'맞아요! 주사기의 피스톤을 누르면 공기의 부피가 줄었어요.']];let n=0;
+  Q.forEach(([t,a,m])=>{const d=document.createElement('div');d.className='a6-ox';d.innerHTML=`<span class="jua">${t}</span>`;
+    ['⭕','❌'].forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.setAttribute('aria-label',i?'틀려요':'맞아요');b.onclick=()=>{if(d.dataset.ok)return;
+      if((i===0)===!!a){b.classList.add('right');d.dataset.ok=1;n++;fb('#a6OXFb',m+(n===3?' 🎉 모두 맞혔어요!':''),true);if(n===3)doneNav('s1');}
+      else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb('#a6OXFb','지난 시간의 실험을 떠올려 봐요.',false);}};d.appendChild(b);});
+    $('#a6OX').appendChild(d);});})();
+
+/* 장치 찾아보기 */
+(function(){const D=[
+  {t:'공기 온도계',d:'유산균음료병에 색소를 섞은 물을 넣고 빨대를 꽂아 점토로 막았어요. 뜨거운 물에 넣으면?',a:0,
+   svg:k=>`<svg viewBox="0 0 200 130"><rect x="40" y="70" width="120" height="56" rx="8" fill="${k?'#ffd9cc':'#dff3fb'}" stroke="#7aa7bd" stroke-width="2"/><path d="M84 120 v-44 q0 -10 10 -12 h12 q10 2 10 12 v44z" fill="#fff" stroke="#7aa7bd" stroke-width="2"/><rect x="86" y="104" width="28" height="16" fill="#e2573f" opacity=".8"/><rect x="96" y="20" width="8" height="60" fill="#fff" stroke="#7aa7bd"/><rect x="97" y="${k?28:66}" width="6" height="${k?76:38}" fill="#e2573f"/><rect x="88" y="58" width="24" height="8" fill="#8a5a2b"/></svg>`,m:'빨대 속 물이 위로 올라가요. 온도가 높아져 병 속 공기의 부피가 늘어나 물을 밀어 올려요.'},
+  {t:'공기로 움직이는 손 모형',d:'손 모형의 손가락 마디에 붙인 빨대 속 실이 주사기에 이어져 있어요. 주사기의 피스톤을 누르면?',a:1,
+   svg:k=>`<svg viewBox="0 0 200 130"><rect x="40" y="70" width="70" height="40" rx="8" fill="#f2c39b"/><g stroke="#f2c39b" stroke-width="12" stroke-linecap="round"><path d="M50 72 ${k?'q-4 -20 10 -30':'v-46'}"/><path d="M66 72 ${k?'q-2 -22 12 -30':'v-54'}"/><path d="M82 72 ${k?'q0 -22 14 -28':'v-50'}"/><path d="M98 72 ${k?'q2 -18 14 -22':'v-40'}"/></g><rect x="118" y="84" width="60" height="16" rx="4" fill="#fff" stroke="#5b6b78" stroke-width="2"/><rect x="${k?150:168}" y="80" width="6" height="24" fill="#2c333a"/><path d="M118 92 h-8" stroke="#5b6b78" stroke-width="3"/></svg>`,m:'손가락이 움직여요. 피스톤을 눌러 압력을 주면 공기의 부피 변화로 손가락이 움직여요.'},
+  {t:'공기로 작동하는 물 펌프',d:'물이 든 병의 뚜껑에 주름 빨대와 고무관을 꽂고, 고무관에 주사기를 이었어요. 피스톤을 누르면?',a:1,
+   svg:k=>`<svg viewBox="0 0 200 130"><rect x="40" y="40" width="60" height="84" rx="8" fill="#eef9ff" stroke="#7aa7bd" stroke-width="2"/><rect x="42" y="${k?82:66}" width="56" height="${k?40:56}" fill="#6ec3f0"/><rect x="38" y="32" width="64" height="10" fill="#2f8f5b"/><path d="M60 112 v-88 q0 -10 10 -10 h30" fill="none" stroke="#e2573f" stroke-width="4"/><path d="M84 40 v-6 q0 -14 40 -14" fill="none" stroke="#5b6b78" stroke-width="3"/><rect x="124" y="12" width="50" height="16" rx="4" fill="#fff" stroke="#5b6b78" stroke-width="2"/><rect x="${k?140:166}" y="8" width="6" height="24" fill="#2c333a"/>${k?'<g fill="#6ec3f0"><circle cx="108" cy="16" r="4"/><circle cx="116" cy="22" r="3"/><circle cx="114" cy="32" r="3"/></g>':''}</svg>`,m:'빨대로 물이 나와요. 공기를 병 안으로 넣으면 병 안 공기의 압력이 높아져 물을 밀어내요.'}];
+  const O=['온도에 따른 부피 변화','압력에 따른 부피 변화'];let n=0;
+  D.forEach(it=>{const d=document.createElement('div');d.className='a6-d';let on=false,tried=false;
+    d.innerHTML=`<b class="jua">${it.t}</b><div class="pic">${it.svg(0)}</div><p>${it.d}</p><button class="go">▶ 작동시키기</button><div class="row"></div>`;
+    $('.go',d).onclick=()=>{on=!on;tried=true;$('.pic',d).innerHTML=it.svg(on?1:0);$('.go',d).textContent=on?'↺ 처음으로':'▶ 작동시키기';};
+    O.forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>{if(d.classList.contains('done'))return;
+      if(!tried){fb('#a6DvFb','먼저 ▶ 작동시키기를 눌러 어떻게 되는지 봐요.','info');return;}
+      if(i===it.a){b.classList.add('right');d.classList.add('done');n++;fb('#a6DvFb',it.m+(n===3?' 🎉 세 장치를 모두 살펴봤어요!':''),true);if(n===3)doneNav('s2');}
+      else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb('#a6DvFb','장치를 작동시킬 때 공기의 온도를 바꾸었나요, 공기를 누르는 힘을 바꾸었나요?',false);}};$('.row',d).appendChild(b);});
+    $('#a6Dv').appendChild(d);});})();
+
+/* 계획하기 */
+let a6prop=null;const a6mat=new Set();
+$$('#a6Prop button').forEach(b=>b.onclick=()=>{a6prop=b.dataset.p;$$('#a6Prop button').forEach(x=>x.classList.toggle('sel',x===b));});
+$$('#a6Mat button').forEach(b=>b.onclick=()=>{const t=b.textContent;a6mat.has(t)?a6mat.delete(t):a6mat.add(t);b.classList.toggle('sel',a6mat.has(t));});
+(function(){const svg=$('#a6Pad'),ink=$('#a6Ink');let tool='pen',color='#15313d',cur=null;
+  const add=(tag,at)=>{const e=document.createElementNS(NS6,tag);for(const k in at)e.setAttribute(k,at[k]);return e;};
+  $$('#a6Tools button[data-t]').forEach(b=>b.onclick=()=>{tool=b.dataset.t;$$('#a6Tools button[data-t]').forEach(x=>x.classList.toggle('sel',x===b));});
+  $$('#a6Tools .sw').forEach(b=>b.onclick=()=>{color=b.dataset.c;$$('#a6Tools .sw').forEach(x=>x.style.outline=x===b?'3px solid var(--sun)':'');});
+  const ST={bottle:'<path d="M-30 70 v-90 q0 -18 16 -26 v-16 h28 v16 q16 8 16 26 v90z" fill="#eef9ff" stroke="#7aa7bd" stroke-width="3"/>',
+    water:'<rect x="-40" y="-14" width="80" height="28" rx="4" fill="#6ec3f0" opacity=".8"/><text y="5" text-anchor="middle" font-size="13" fill="#0f3b5c" font-family="Jua">물</text>',
+    hot:'<rect x="-50" y="-16" width="100" height="32" rx="6" fill="#ffb199" opacity=".85"/><text y="5" text-anchor="middle" font-size="13" fill="#7a2a20" font-family="Jua">뜨거운 물</text>',
+    syr:'<rect x="-50" y="-10" width="80" height="20" rx="4" fill="#fff" stroke="#5b6b78" stroke-width="2"/><rect x="20" y="-14" width="6" height="28" fill="#2c333a"/><rect x="26" y="-3" width="30" height="6" fill="#9aa5ad"/><rect x="-62" y="-4" width="12" height="8" fill="#5b6b78"/>'};
+  function stamp(x,y){const g=add('g',{transform:`translate(${x.toFixed(0)},${y.toFixed(0)})`});
+    if(ST[tool])g.innerHTML=ST[tool];
+    else if(tool==='arrow')g.innerHTML=`<path d="M-40 0 h70" stroke="${color}" stroke-width="5"/><path d="M30 -10 l14 10 l-14 10z" fill="${color}"/>`;
+    else if(tool==='text'){const t=($('#a6Txt').value.trim()||'이름표').replace(/[<&>]/g,'');g.innerHTML=`<text text-anchor="middle" font-size="22" fill="${color}" font-family="Jua">${t}</text>`;}
+    ink.appendChild(g);}
+  svg.addEventListener('pointerdown',e=>{const q=a6Pt(svg,e);if(tool==='pen'){cur=add('polyline',{points:`${q.x.toFixed(0)},${q.y.toFixed(0)}`,fill:'none',stroke:color,'stroke-width':5,'stroke-linecap':'round','stroke-linejoin':'round'});ink.appendChild(cur);svg.setPointerCapture(e.pointerId);}else stamp(q.x,q.y);});
+  svg.addEventListener('pointermove',e=>{if(!cur)return;const q=a6Pt(svg,e);cur.setAttribute('points',cur.getAttribute('points')+` ${q.x.toFixed(0)},${q.y.toFixed(0)}`);});
+  const end=()=>cur=null;svg.addEventListener('pointerup',end);svg.addEventListener('pointercancel',end);
+  $('#a6Undo').onclick=()=>{if(ink.lastChild)ink.removeChild(ink.lastChild);};
+  $('#a6Clear').onclick=()=>{if(ink.children.length&&confirm('설계도를 모두 지울까요?'))ink.innerHTML='';};
+  $('#a6Save').onclick=()=>{const s=new XMLSerializer().serializeToString(svg).replace(/font-family="Jua"/g,'font-family="sans-serif"');const img=new Image();
+    img.onload=()=>{const c=document.createElement('canvas');c.width=1600;c.height=760;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,1600,760);x.drawImage(img,0,0,1600,760);
+      const a=document.createElement('a');a.download='gas-device-design.png';a.href=c.toDataURL('image/png');a.click();};
+    img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(s);};
+})();
+$('#a6Ex').onclick=()=>fb('#a6PlanFb','예시) ① 온도에 따른 기체의 부피 변화 ② 만지지 않아도 물을 내뿜는 물뿌리개 ③ 페트병 아래 구멍, 물, 뜨거운 물을 그리고 이름표 붙이기 ④ 단단한 페트병, 차가운 물, 뜨거운 물, 수조, 유성펜 ⑤ 구멍을 막고 차가운 물을 넣은 뒤 뚜껑을 닫고, 페트병에 뜨거운 물을 부어요. (다른 예: 공기 온도계, 공기로 움직이는 손 모형)','info');
+$('#a6PlanOk').onclick=()=>{const miss=[];if(!a6prop)miss.push('①');if(!$('#a6Name').value.trim())miss.push('②');if($('#a6Ink').children.length<2)miss.push('③ 설계도');if(a6mat.size<2)miss.push('④ 준비물');if($('#a6Step').value.trim().length<6)miss.push('⑤');
+  if(miss.length){fb('#a6PlanFb',miss.join(', ')+'을(를) 채워 주세요.',false);return;}
+  if(!$$('#a6Chk input').every(c=>c.checked)){fb('#a6PlanFb','설계 점검 다섯 가지를 선생님과 함께 확인하고 표시해요.',false);return;}
+  fb('#a6PlanFb','설계 완성! 이용할 성질: '+(a6prop==='t'?'온도에 따른 기체의 부피 변화':'압력에 따른 기체의 부피 변화')+'. 이제 장치를 만들어 봐요.',true);doneNav('s3');};
+
+/* 해 보기: 물뿌리개 */
+(function(){const st={};let water=0,block=false,lid=false,raf=0,jet=false,t0=0;const F='#a6DevFb',T=$('#a6DT');
+  function drawW(){const h=water*1.0;$('#a6W').setAttribute('y',296-h);$('#a6W').setAttribute('height',h);}
+  function anim(to,cb){const go=()=>{water+=(to-water)*0.12;if(Math.abs(to-water)<.5)water=to;drawW();if(water!==to)raf=requestAnimationFrame(go);else if(cb)cb();};cancelAnimationFrame(raf);go();}
+  function leak(){const J=$('#a6Jet');J.innerHTML='';for(let i=0;i<5;i++){const c=document.createElementNS(NS6,'circle');c.setAttribute('cx',320-i*6);c.setAttribute('cy',266+i*6);c.setAttribute('r',4);J.appendChild(c);}
+    anim(0,()=>{J.innerHTML='';});}
+  function spray(){jet=true;t0=performance.now();const J=$('#a6Jet');const step=now=>{const t=(now-t0)/1000;J.innerHTML='';
+      if(t<4.5){for(let i=0;i<14;i++){const s=((t*2+i/14)%1);const x=330-s*170,y=262-s*90+s*s*150;const c=document.createElementNS(NS6,'circle');c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',3+s*2);J.appendChild(c);}
+        water=Math.max(70,140-t*14);drawW();requestAnimationFrame(step);}
+      else{J.innerHTML='';jet=false;T.textContent='물이 뿜어져 나왔어요!';$('#a6Why').hidden=false;}};requestAnimationFrame(step);}
+  const mark=s=>{st[s]=1;const b=$(`#a6Ctl [data-s="${s}"]`);if(b)b.classList.add('done');};
+  $$('#a6Ctl button').forEach(b=>b.onclick=()=>{const s=b.dataset.s;if(jet)return;
+    if(s==='draw'){mark(s);$('#a6Art').setAttribute('opacity',1);T.textContent='② 구멍을 막고 차가운 물을 넣어요';fb(F,'코끼리를 그렸어요. 코끝이 구멍과 이어지게 그렸어요.','info');return;}
+    if(s==='block'){block=true;$('#a6Fin').setAttribute('opacity',1);mark(s);fb(F,'손가락으로 구멍을 막았어요.','info');return;}
+    if(s==='fill'){if(lid){fb(F,'뚜껑이 닫혀 있어요.','info');return;}
+      if(!block){fb(F,'앗! 구멍으로 물이 새어 나와요. 먼저 👆 손가락으로 구멍을 막아요.',false);water=60;drawW();leak();return;}
+      anim(140);mark(s);T.textContent='③ 뚜껑을 닫고 손가락을 떼요';fb(F,'차가운 물을 절반 정도 넣었어요. 색소를 섞으면 물이 나오는 것이 더 잘 보여요.','info');return;}
+    if(s==='lid'){if(!st.fill){fb(F,'먼저 차가운 물을 절반 정도 넣어요.',false);return;}lid=true;$('#a6Lid').setAttribute('opacity',1);mark(s);fb(F,'뚜껑을 꼭 닫았어요. 이제 손가락을 떼 봐요.','info');return;}
+    if(s==='unblock'){if(!block)return;block=false;$('#a6Fin').setAttribute('opacity',0);$(`#a6Ctl [data-s="block"]`).classList.remove('done');
+      if(st.fill&&!lid){fb(F,'뚜껑이 열려 있어 구멍으로 물이 흘러나와요! 다시 구멍을 막고 물을 넣은 뒤 뚜껑을 먼저 닫아요.',false);leak();st.fill=0;$(`#a6Ctl [data-s="fill"]`).classList.remove('done');return;}
+      if(lid&&st.fill){mark(s);T.textContent='④ 수조에 넣고 뜨거운 물을 부어요';fb(F,'손가락을 떼어도 물이 나오지 않아요! 뚜껑을 닫아 공기가 페트병 안으로 들어가지 못하기 때문이에요. 이제 장갑을 끼고 뜨거운 물을 부어요.','info');}return;}
+    if(s==='glove'){mark(s);$('#a6Glove').setAttribute('opacity',1);fb(F,'실험복·보안경·실험용 장갑을 착용했어요.','info');return;}
+    if(s==='pour'){if(!st.unblock){fb(F,'먼저 물을 넣고 뚜껑을 닫은 뒤 손가락을 떼는 데까지 해요.',false);return;}
+      if(!st.glove){fb(F,'⚠️ 뜨거운 물을 다루기 전에 실험용 장갑을 먼저 껴요!',false);return;}
+      if(st.pour)return;mark(s);$('#a6Kettle').setAttribute('opacity',1);$('#a6Stream').setAttribute('opacity',.9);
+      let h=0;const iv=setInterval(()=>{h=Math.min(70,h+5);$('#a6Bath').setAttribute('y',296-h);$('#a6Bath').setAttribute('height',h);if(h>=70){clearInterval(iv);$('#a6Stream').setAttribute('opacity',0);}},80);
+      T.textContent='뜨거운 물을 천천히 부어요…';fb(F,'페트병 윗부분에 약 50 ℃의 뜨거운 물을 천천히 부었어요. 구멍을 지켜봐요!','info');setTimeout(spray,900);return;}
+  });
+  drawW();
+})();
+let a6w=0;const a6wd=()=>{if(++a6w===2)doneNav('s4');};
+pickOne('#a6W1','','',null,a6wd);pickOne('#a6W2','','',null,a6wd);
+
+/* 나누기 */
+let a6scr=0,a6ev=0,a6p=0,a6q=0;const a6stars=[0,0,0];
+function a6c5(){if(a6scr&&a6ev&&a6p&&a6q){fb('#a6ShareFb','소개와 함께 평가를 마쳤어요! 다른 모둠의 좋은 아이디어도 기억해 두어요.',true);doneNav('s5');}}
+$('#a6Script').onclick=()=>{const nm=($('#a6Name').value.trim()||'만지지 않아도 물을 내뿜는 물뿌리개').replace(/[<&>]/g,'');const pr=a6prop==='p'?'압력이 높아지면 기체의 부피가 줄어들고, 압력이 낮아지면 기체의 부피가 늘어나는':'온도가 높아지면 기체의 부피가 늘어나는';
+  $('#a6ScriptBox').hidden=false;$('#a6ScriptBox').innerHTML=`🎤 우리 모둠이 만든 장치는 <b>${nm}</b>입니다.<br>이 장치는 기체의 <b>${pr}</b> 성질을 이용했습니다.<br>잘된 점은 쉽게 구할 수 있는 재료를 사용한 것이고, 고칠 점은 ________입니다.`;a6scr=1;a6c5();};
+$$('.a6-stars').forEach(td=>{const q=+td.dataset.q;for(let i=1;i<=3;i++){const b=document.createElement('button');b.textContent='☆';b.setAttribute('aria-label','별 '+i+'개');
+  b.onclick=()=>{a6stars[q]=i;$$('button',td).forEach((x,j)=>x.textContent=j<i?'★':'☆');if(a6stars.every(x=>x)){a6ev=1;a6c5();}};td.appendChild(b);}});
+$$('#a6Talk button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;
+  if(k==='x'){b.classList.add('wrong');fb('#a6TalkFb',b.dataset.m,false);return;}
+  b.classList.add('right');if(k==='p')a6p=1;if(k==='q')a6q=1;
+  fb('#a6TalkFb',a6p&&a6q?'좋아요! 잘된 점을 칭찬하고, 고칠 점도 함께 이야기했어요.':k==='p'?'칭찬 좋아요! 고칠 점도 하나 이야기해 볼까요?':'좋은 의견이에요. 그 전에 잘된 점을 먼저 칭찬해 봐요.',a6p?true:'info');a6c5();});
+
+faces('s6','멋진 발명가였어요! 기체의 성질을 이용하면 생활에 쓸모 있는 장치를 만들 수 있어요.','어려웠던 부분은 「과학」 69쪽, 71쪽, 74~75쪽을 다시 읽어 보고, 선생님께 질문해도 좋아요!');
+</script>

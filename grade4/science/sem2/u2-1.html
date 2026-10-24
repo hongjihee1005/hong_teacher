@@ -1,0 +1,803 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>생태계가 궁금해!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#2f7d4a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+[hidden]{display:none!important}
+.k-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;align-items:start}
+@media(max-width:700px){.k-two{grid-template-columns:1fr}}
+.k-q{font-family:"Jua",sans-serif;font-size:1.1rem;margin:12px 0 6px}
+.k-chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.k-chips button{font-size:.95rem;min-height:2.3rem;padding:.2em .7em}
+.k-chips button.used{opacity:.3;pointer-events:none}
+.k-bins{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:8px;margin-top:8px}
+@media(max-width:700px){.k-bins{grid-template-columns:1fr}}
+.k-bin{border:3px dashed var(--line);border-radius:14px;padding:8px;min-height:4.6rem;cursor:pointer;background:var(--paper)}
+.k-bin.hot{border-color:var(--sun);background:#fff8dd;color:#15313d}
+.k-bin b{display:block;font-family:"Jua",sans-serif;font-weight:400}
+.k-bin span{display:inline-block;margin:3px;padding:2px 9px;border-radius:999px;background:#bdf0cf;color:#0d5a31;font-size:.88rem}
+.k-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.k-tabs button.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.k-tabs button.ok{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.k-tabs button.ok.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.k-card{border:2px solid var(--line);border-radius:16px;padding:10px 12px;background:var(--paper)}
+.k-card h3{margin:0 0 4px;font-size:1.05rem}
+.k-def{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media(max-width:800px){.k-def{grid-template-columns:1fr}}
+.k-def .k-card b{color:var(--sky)}
+.k-say{display:flex;flex-direction:column;gap:6px}
+.hit{cursor:pointer}
+.hit:focus-visible{outline:3px solid var(--sun)}
+
+.e1-mode{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:6px 0}
+.e1-mode button.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.e1-prog{font-family:"Jua",sans-serif;color:var(--muted)}
+#e1Scene{max-height:44vh}
+#e1Bed{max-height:40vh}
+.e1-it{cursor:pointer}
+.e1-it:focus-visible{outline:none}
+.e1-it:focus-visible .e1-hl{stroke:#ffc93c;stroke-width:4}
+.e1-size{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.e1-size figure{margin:0;border:2px solid var(--line);border-radius:14px;overflow:hidden;background:var(--paper)}
+.e1-size figcaption{padding:4px 10px;font-size:.9rem}
+.e1-tbl td{font-size:.9rem;vertical-align:top}
+.e1-tbl td.e1-wait{color:var(--muted)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M16 70 C16 34 40 14 72 14 C72 46 52 70 16 70z" fill="#5cb85c" stroke="#fff" stroke-width="3"/><path d="M18 68 L60 26" stroke="#fff" stroke-width="3" stroke-linecap="round"/></svg>
+  <div><h1>생태계가 궁금해!</h1><p>4학년 2학기 과학 · 2단원 생물과 환경 · 3/13차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">생태계란?</a><a href="#s3">조사·분류해요</a><a href="#s4">붙임딱지</a><a href="#s5">정리해요</a><a href="#s6">한눈에 쏙</a><a href="#s7">형성 평가</a><a href="#s8">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>생태계의 의미를 설명할 수 있어요.<br>생태계 구성 요소를 조사하여 생물 요소와 비생물 요소로 분류할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 42쪽</span>
+  <h2>학교 화단에서는 어떤 것들을 볼 수 있을까요?</h2>
+  <p>화단 그림에서 보이는 것을 눌러 찾아봐요. (8가지 이상)</p>
+  <svg id="e1Bed" class="scene" viewBox="0 0 800 380" role="img" aria-label="학교 화단 그림"></svg>
+  <div class="found" id="e1Found"></div>
+  <div class="fb" id="e1BedFb"></div>
+</section>
+
+<section id="s2" data-nav="생태계란?">
+  <span class="stage">생각 열기 · 「과학」 42쪽</span>
+  <h2>생물 요소, 비생물 요소, 생태계</h2>
+  <div class="k-def">
+    <div class="k-card"><h3>🌱 생물 요소</h3>자연에서 동물이나 식물 등과 같이 <b>살아 있는 것</b></div>
+    <div class="k-card"><h3>☀️ 비생물 요소</h3>햇빛, 물, 공기, 흙 등과 같이 <b>살아 있지 않은 것</b></div>
+    <div class="k-card"><h3>🌏 생태계</h3>한 지역에서 <b>서로 영향을 주고받는</b> 생물 요소와 비생물 요소를 통틀어 이르는 말</div>
+  </div>
+  <div class="e1-size">
+    <figure><svg viewBox="0 0 300 130" role="img" aria-label="쓰러진 나무 아래 작은 공간"><rect width="300" height="130" fill="#e3f1d8"/><rect y="88" width="300" height="42" fill="#9a6a3a"/><rect x="20" y="62" width="250" height="30" rx="14" fill="#8a5a2b" stroke="#5a3a12" stroke-width="2"/><g id="e1Log"></g></svg><figcaption>쓰러진 나무 아래 공간처럼 <b>작은</b> 생태계</figcaption></figure>
+    <figure><svg viewBox="0 0 300 130" role="img" aria-label="바다 위의 섬"><rect width="300" height="130" fill="#cfeaf8"/><rect y="70" width="300" height="60" fill="#4f9fd0"/><path d="M50 80 q40 -50 100 -46 q60 4 100 46z" fill="#6aa84a"/><path d="M90 52 l6 -20 l6 20z M150 40 l8 -24 l8 24z M200 54 l6 -18 l6 18z" fill="#2f6a3a"/></svg><figcaption>섬처럼 <b>큰</b> 생태계</figcaption></figure>
+  </div>
+  <p class="k-q">1. 생태계를 바르게 말한 것을 골라요.</p>
+  <div class="pick" id="e1Def" style="grid-template-columns:1fr!important">
+    <button data-a="1">한 지역에서 서로 영향을 주고받는 생물 요소와 비생물 요소를 통틀어 이르는 말이에요</button>
+    <button data-m="생태계에는 햇빛, 물, 공기, 흙 같은 비생물 요소도 함께 들어가요.">살아 있는 동물과 식물만 모아 이르는 말이에요</button>
+    <button data-m="생물이 자리 잡고 사는 곳은 ‘서식지’예요. 생태계는 그곳의 생물 요소와 비생물 요소를 모두 포함해요.">생물이 자리 잡고 사는 곳(서식지)만 뜻하는 말이에요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="k-q" data-glue="1">2. 버섯, 곰팡이, 세균은 어떤 요소일까요?</p>
+  <div class="pick" id="e1Fungi" data-glue="1">
+    <button data-a="1">생물 요소</button>
+    <button data-m="버섯, 곰팡이, 세균은 동물이나 식물은 아니지만 살아 있는 생물이에요.">비생물 요소</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s3" data-nav="조사·분류해요">
+  <span class="stage">탐구 · 「과학」 43~45쪽 · 「실험관찰」 20쪽</span>
+  <h2>숲, 강, 바다 생태계를 구성하는 요소를 분류해요</h2>
+  <div class="k-tabs" id="e1Tabs"><button data-e="forest" class="on">🌳 숲 생태계</button><button data-e="river">🏞️ 강 생태계</button><button data-e="sea">🌊 바다 생태계</button></div>
+  <div class="e1-mode"><span class="jua">표시 고르기:</span><button id="e1O">◯ 생물 요소</button><button id="e1T">△ 비생물 요소</button><span class="e1-prog" id="e1Prog"></span></div>
+  <svg id="e1Scene" class="scene" viewBox="0 0 800 400" role="img" aria-label="생태계 그림"></svg>
+  <div class="fb" id="e1Fb"></div>
+  <p class="tip">‘자라는가?’, ‘번식하는가?’처럼 생물인지 아닌지 생각하며 분류해요. 🔍 곰팡이와 반달말은 크게 확대한 모습이에요.</p>
+</section>
+
+<section id="s4" data-nav="붙임딱지">
+  <span class="stage">탐구 · 「실험관찰」 21쪽</span>
+  <h2>생태계 구성 요소 붙임딱지를 어울리는 생태계에 붙여요</h2>
+  <p>붙임딱지를 고른 뒤 어울리는 생태계 칸을 눌러요. (어울리는 곳이 두 곳인 것도 있어요)</p>
+  <div class="k-chips" id="e1Stk"></div>
+  <div class="k-bins" id="e1StkBins" style="--n:3">
+    <div class="k-bin" data-b="숲"><b>🌳 숲 생태계</b></div>
+    <div class="k-bin" data-b="강"><b>🏞️ 강 생태계</b></div>
+    <div class="k-bin" data-b="바다"><b>🌊 바다 생태계</b></div>
+  </div>
+  <div class="fb" id="e1StkFb"></div>
+  <table class="e1-tbl" id="e1Tbl" style="margin-top:10px" data-glue="1"><tr><th>구분</th><th>생물 요소</th><th>비생물 요소</th></tr></table>
+</section>
+
+<section id="s5" data-nav="정리해요">
+  <span class="stage">정리해요 · 「실험관찰」 21쪽</span>
+  <h2>우리 주변에서 생물 요소와 비생물 요소를 찾아요</h2>
+  <p>우리 주변에서 볼 수 있는 것을 고른 뒤 알맞은 칸을 눌러 나누어요.</p>
+  <div class="k-chips" id="e1Near"></div>
+  <div class="k-bins" id="e1NearBins">
+    <div class="k-bin" data-b="b"><b>🌱 생물 요소</b></div>
+    <div class="k-bin" data-b="a"><b>☀️ 비생물 요소</b></div>
+  </div>
+  <div class="fb" id="e1NearFb"></div>
+</section>
+
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">정리 · 「과학」 45쪽</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 생태계에서는
+    <span class="blank"><span id="bl1">ㅅ</span><span id="bl2">ㅁ</span></span> 요소와
+    <span class="blank"><span id="bl3">ㅂ</span><span id="bl4">ㅅ</span><span id="bl5">ㅁ</span></span> 요소가 영향을 주고받습니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="k-q">2. 💭 우리 주변의 연못 생태계를 구성하는 요소를 모두 골라요. (6가지)</p>
+  <div class="pick" id="e1Pond">
+    <button data-a="1">공기</button><button data-a="1">개구리</button><button data-a="1">부레옥잠</button><button data-a="1">흙</button><button data-a="1">물</button><button data-a="1">소금쟁이</button>
+    <button data-m="낙타는 사막에 사는 동물이에요.">낙타</button><button data-m="북극곰은 아주 추운 북극에 사는 동물이에요.">북극곰</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="k-q">1. 생태계에 관한 설명으로 옳지 <u>않은</u> 것을 골라요.</p>
+  <div class="pick" id="e1F1" style="grid-template-columns:1fr!important">
+    <button data-m="옳은 설명이에요. 생태계의 크기는 다양해요.">㉠ 생태계에는 연못 생태계처럼 크기가 작은 것도 있다.</button>
+    <button data-a="1">㉡ 생태계는 살아 있는 동물과 식물로만 구성되어 있다.</button>
+    <button data-m="옳은 설명이에요. 생태계의 뜻이에요.">㉢ 한 지역에서 서로 영향을 주고받는 생물 요소와 비생물 요소를 통틀어 생태계라고 한다.</button>
+  </div>
+  <div class="fb"></div>
+  <p class="k-q" data-glue="1">2. ✏️ 다음 생태계 구성 요소를 생물 요소와 비생물 요소로 분류해요.</p>
+  <div class="k-chips" id="e1F2" data-glue="1"></div>
+  <div class="k-bins" id="e1F2Bins" data-glue="1">
+    <div class="k-bin" data-b="b"><b>⑴ 생물 요소</b></div>
+    <div class="k-bin" data-b="a"><b>⑵ 비생물 요소</b></div>
+  </div>
+  <div class="fb" id="e1F2Fb"></div>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 21쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>생태계를 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>생태계 구성 요소를 생물 요소와 비생물 요소로 분류할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>생물 요소와 비생물 요소를 분류하는 활동에 흥미를 갖고 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 42~45쪽 · 「실험관찰」 20~21쪽 · 지도서 186~193쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+const NS='http://www.w3.org/2000/svg';
+const mk=(tag,at,par)=>{const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;};
+const shuffle=a=>{a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;};
+/* 여러 개 고르기: multi('#box', 정답 수, 섹션, 맞힘 글, 틀림 글, 끝나면) — data-a="1"이 정답, data-m은 틀릴 때 풀이 */
+function multi(box,need,sec,okMsg,noMsg,after){const got=new Set();const out=$(box).nextElementSibling;
+  $$(box+' button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size>=need){fb(out,okMsg,true);if(sec)doneNav(sec);if(after)after();}else fb(out,`좋아요! (${got.size}/${need})`,'info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 나누기: sorter('#칩', '#상자들', '#fb', [[이름, 상자키(여럿이면 띄어 씀), 풀이]…], {키:상자 이름}, 끝나면) */
+function sorter(chips,bins,out,items,lbl,done){let cur=null,n=0;
+  $(chips).innerHTML=shuffle(items).map(d=>`<button data-b="${d[1]}" data-w="${d[2]||''}">${d[0]}</button>`).join('');
+  const hot=v=>$$(bins+' .k-bin').forEach(x=>x.classList.toggle('hot',v));
+  $$(chips+' button').forEach(b=>b.onclick=()=>{$$(chips+' button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b;hot(true);});
+  $$(bins+' .k-bin').forEach(bin=>bin.onclick=()=>{if(!cur)return;const nm=cur.textContent,w=cur.dataset.w;
+    if(cur.dataset.b.split(' ').includes(bin.dataset.b)){bin.insertAdjacentHTML('beforeend','<span>'+nm+'</span>');cur.classList.add('used');cur.classList.remove('sel');n++;
+      fb(out,(n===items.length?'🎉 모두 나누었어요! ':'맞아요! ')+(w||'')+(n<items.length?` (${n}/${items.length})`:''),true);cur=null;hot(false);if(n===items.length&&done)done();return;}
+    fb(out,`‘${nm}’은(는) ‘${lbl[bin.dataset.b]}’에 들어가지 않아요. `+(w||'다시 생각해 봐요.'),false);cur=null;hot(false);});}
+/* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기(키보드도) */
+function tap(el,f){el.classList.add('hit');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+const clamp=(v,a,b)=>Math.max(a,Math.min(b,v)), ease=p=>p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2, seg=(t,a,b)=>clamp((t-a)/(b-a),0,1);
+
+/* 생물 그림(직접 그림): ART.이름 → 가운데가 (0,0)인 약 90×70 크기 SVG 조각 */
+const ART=(function(){
+const bird=(b,h,w,o)=>{o=o||{};return `<path d="M-30 6 q6 -24 32 -20 q20 2 26 14 l14 -2 l-12 10 q-10 16 -36 14 q-22 -2 -24 -16z" fill="${b}" stroke="#333" stroke-width="1.5"/>`+
+  `<circle cx="22" cy="-12" r="11" fill="${h}" stroke="#333" stroke-width="1.5"/>${o.cheek?`<ellipse cx="24" cy="-9" rx="6" ry="4" fill="${o.cheek}"/>`:''}<circle cx="26" cy="-14" r="2" fill="#111"/>`+
+  `<path d="M32 -12 l${o.beak||10} 3 l-${o.beak||10} 3z" fill="${o.bk||'#e8a23a'}"/><path d="M-6 -4 q-18 2 -24 14 q16 -2 26 -6z" fill="${w}" stroke="#333" stroke-width="1"/>`+
+  `<path d="M-30 6 l-14 ${o.tail||4} l4 6z" fill="${w}"/>${o.legs===0?'':'<path d="M0 22 v10 M8 22 v10" stroke="#a66" stroke-width="2"/>'}${o.belly?`<path d="M-14 10 q14 10 34 0" fill="none" stroke="${o.belly}" stroke-width="7" stroke-linecap="round"/>`:''}`;};
+const tree=(c,t,o)=>{o=o||{};return `<rect x="-6" y="0" width="12" height="34" fill="#8a5a2b"/>`+(o.pine?`<path d="M0 -40 l-30 34 h60z M0 -22 l-34 34 h68z" fill="${c}" stroke="#2c5e2e" stroke-width="1.5"/>`
+  :`<circle cx="-16" cy="-8" r="18" fill="${c}"/><circle cx="16" cy="-8" r="18" fill="${c}"/><circle cx="0" cy="-24" r="22" fill="${c}"/>`)+(t||'');};
+const fish=(c,o)=>{o=o||{};return `<path d="M-30 0 q20 -${o.h||16} 46 0 q-26 ${o.h||16} -46 0z" fill="${c}" stroke="#333" stroke-width="1.5"/><path d="M-28 0 l-14 -11 v22z" fill="${c}" stroke="#333" stroke-width="1.5"/><circle cx="8" cy="-3" r="2.2" fill="#111"/>${o.stripe?`<path d="M-20 -6 q6 4 0 8 M-10 -9 q6 5 0 10 M0 -10 q6 5 0 10" stroke="${o.stripe}" stroke-width="2" fill="none"/>`:''}`;};
+const lens=(inner,bg)=>`<circle r="30" fill="${bg||'#f3f7ee'}" stroke="#555" stroke-width="3"/><g>${inner}</g><circle r="30" fill="none" stroke="#555" stroke-width="3"/>`;
+const A={
+ '토끼':`<ellipse cx="0" cy="8" rx="26" ry="18" fill="#f2efe8" stroke="#555" stroke-width="1.5"/><circle cx="20" cy="-8" r="12" fill="#f2efe8" stroke="#555" stroke-width="1.5"/><path d="M14 -18 q-4 -22 2 -24 q6 2 2 24z M22 -18 q2 -22 9 -22 q4 4 -3 24z" fill="#f2efe8" stroke="#555" stroke-width="1.5"/><circle cx="24" cy="-9" r="2" fill="#c33"/><circle cx="-26" cy="4" r="5" fill="#fff" stroke="#555"/>`,
+ '다람쥐':`<path d="M-14 10 q-30 -10 -18 -36 q14 -6 14 10 q-6 10 4 20z" fill="#c07a3e" stroke="#6b3d16" stroke-width="1.5"/><ellipse cx="4" cy="8" rx="16" ry="14" fill="#c98a4b" stroke="#6b3d16" stroke-width="1.5"/><circle cx="16" cy="-8" r="10" fill="#c98a4b" stroke="#6b3d16" stroke-width="1.5"/><path d="M0 2 v12 M-4 2 v12" stroke="#5a3010" stroke-width="2"/><circle cx="20" cy="-10" r="1.8" fill="#111"/><path d="M12 -16 l2 -6 l4 5z" fill="#c98a4b"/>`,
+ '두더지':`<ellipse cx="0" cy="6" rx="30" ry="16" fill="#4b4b55" stroke="#222" stroke-width="1.5"/><path d="M28 2 q10 2 12 6 q-6 4 -12 2z" fill="#e7a3a8"/><path d="M-6 18 q-8 6 -14 2 M10 18 q8 6 14 2" stroke="#e7a3a8" stroke-width="5" stroke-linecap="round"/><circle cx="22" cy="0" r="1.5" fill="#999"/>`,
+ '족제비':`<path d="M-40 4 q-8 -12 4 -10 q20 -6 44 -4 q16 0 20 -8 q12 -4 14 6 q-2 10 -14 10 q-30 10 -60 10z" fill="#c9862f" stroke="#6b3d16" stroke-width="1.5"/><circle cx="36" cy="-12" r="2" fill="#111"/><path d="M-40 4 q-14 -2 -12 -12" stroke="#6b3d16" stroke-width="6" stroke-linecap="round"/><path d="M-20 12 v8 M14 12 v8" stroke="#6b3d16" stroke-width="3"/>`,
+ '돌고래':`<path d="M-40 6 q10 -26 50 -22 q20 2 26 10 l10 2 l-10 4 q-20 14 -56 10 q-14 -2 -20 -4z" fill="#7b97ad" stroke="#334" stroke-width="1.5"/><path d="M-6 -16 l6 -12 l8 12z M-40 6 l-10 -10 v20z" fill="#7b97ad" stroke="#334" stroke-width="1.5"/><circle cx="22" cy="-6" r="2" fill="#111"/><path d="M-30 8 q30 8 52 -2" stroke="#d6e2ea" stroke-width="5" fill="none"/>`,
+ '매':bird('#8a7563','#8a7563','#5e4b3c',{beak:7,bk:'#e0b23a',belly:'#e8dccb',cheek:'#3d3027'}),
+ '직박구리':bird('#8f969e','#9aa1a8','#6d747c',{cheek:'#9a5b3e',belly:'#c9ced2'}),
+ '참새':bird('#a8774a','#7a4a2a','#6b4024',{cheek:'#f3efe6',belly:'#ece6da'}),
+ '박새':bird('#9db070','#222','#5f6f7a',{cheek:'#fff',belly:'#e9eadf'}),
+ '까치':bird('#202634','#202634','#2f4d8a',{tail:-8,belly:'#fff'}),
+ '딱새':bird('#c8723a','#7c8796','#3d3d3d',{belly:'#e08a46',cheek:'#333'}),
+ '까마귀':bird('#1d1d22','#1d1d22','#2b2b33',{bk:'#222',beak:12}),
+ '갈매기':bird('#f4f6f8','#f4f6f8','#9aa7b3',{bk:'#e8c23a',legs:0}),
+ '오리':`<ellipse cx="-4" cy="8" rx="30" ry="16" fill="#a77b52" stroke="#4b3524" stroke-width="1.5"/><circle cx="22" cy="-12" r="11" fill="#2f7a4a" stroke="#1f3d2a" stroke-width="1.5"/><path d="M31 -12 q12 0 14 4 q-8 4 -14 2z" fill="#e3b23a"/><circle cx="24" cy="-15" r="2" fill="#111"/><path d="M-10 0 q12 -6 24 4" stroke="#3b5ea8" stroke-width="5" fill="none"/><path d="M18 -2 h10" stroke="#fff" stroke-width="3"/>`,
+ '왜가리':`<path d="M-24 4 q0 -18 22 -16 q16 2 14 18 q-10 12 -36 -2z" fill="#9aa6b2" stroke="#3e4955" stroke-width="1.5"/><path d="M8 -6 q10 -14 2 -28 q-2 -6 6 -10" stroke="#c8d0d8" stroke-width="7" fill="none" stroke-linecap="round"/><circle cx="16" cy="-42" r="7" fill="#e6eaee" stroke="#3e4955"/><path d="M22 -42 l18 2 l-18 3z" fill="#d9a23a"/><path d="M12 -46 l-14 -4" stroke="#222" stroke-width="2"/><path d="M-4 16 v20 M4 16 v20" stroke="#8a7a5a" stroke-width="2.5"/>`,
+ '상수리나무':tree('#4f8f3a','<g fill="#9b6b2e"><ellipse cx="-12" cy="-6" rx="4" ry="5"/><ellipse cx="14" cy="-14" rx="4" ry="5"/></g>'),
+ '갈참나무':tree('#6a9c3e','<g fill="#b8862e"><ellipse cx="-10" cy="-12" rx="4" ry="5"/><ellipse cx="12" cy="-2" rx="4" ry="5"/></g>'),
+ '소나무':tree('#3f7d44','',{pine:1}),
+ '주목':tree('#2f6a3a','<g fill="#e23b3b"><circle cx="-14" cy="-4" r="3"/><circle cx="10" cy="-16" r="3"/><circle cx="16" cy="0" r="3"/></g>',{pine:1}),
+ '산수유':tree('#7aa64a','<g fill="#ffd23f"><circle cx="-16" cy="-12" r="4"/><circle cx="6" cy="-30" r="4"/><circle cx="18" cy="-6" r="4"/><circle cx="-2" cy="-10" r="4"/></g><g fill="#d62f2f"><ellipse cx="-20" cy="2" rx="3" ry="4"/><ellipse cx="14" cy="8" rx="3" ry="4"/></g>'),
+ '개나리':`<g stroke="#6e8f3a" stroke-width="3" fill="none"><path d="M0 30 q-6 -30 -30 -44"/><path d="M0 30 q0 -34 4 -50"/><path d="M0 30 q8 -30 30 -40"/></g><g fill="#ffd21f" stroke="#c99a00" stroke-width=".8">${[[-24,-34],[-14,-20],[-6,-8],[2,-40],[4,-22],[8,-6],[22,-34],[16,-20],[26,-24]].map(p=>`<path d="M${p[0]} ${p[1]} l3 -6 l3 6 l-3 6z M${p[0]-3} ${p[1]} h12" />`).join('')}</g>`,
+ '토끼풀':`<path d="M0 30 v-28" stroke="#4f8f3a" stroke-width="3"/><g fill="#5cae4a" stroke="#2f6a2a" stroke-width="1.2"><path d="M0 0 q-22 -8 -14 -22 q10 -4 14 22z"/><path d="M0 0 q22 -8 14 -22 q-10 -4 -14 22z"/><path d="M0 0 q-14 -20 0 -28 q14 8 0 28z"/></g><circle cx="-24" cy="-26" r="9" fill="#fff" stroke="#ccc"/><path d="M-24 -18 v40" stroke="#4f8f3a" stroke-width="2"/>`,
+ '괭이밥':`<path d="M0 30 v-24 M0 10 q-12 -6 -18 -20 M0 10 q12 -6 18 -20" stroke="#4f8f3a" stroke-width="2.5" fill="none"/><g fill="#7cc35a" stroke="#2f6a2a" stroke-width="1"><path d="M-18 -10 q-12 -4 -6 -12 q6 0 6 12z M-18 -10 q2 -14 8 -10 q2 6 -8 10z"/><path d="M18 -10 q12 -4 6 -12 q-6 0 -6 12z M18 -10 q-2 -14 -8 -10 q-2 6 8 10z"/></g><g fill="#ffd21f" stroke="#c99a00"><circle cx="0" cy="0" r="3"/><circle cx="-5" cy="2" r="3.4"/><circle cx="5" cy="2" r="3.4"/><circle cx="0" cy="-6" r="3.4"/><circle cx="-3" cy="6" r="3.4"/><circle cx="3" cy="6" r="3.4"/></g>`,
+ '개망초':`<path d="M0 30 v-34 M0 8 l-14 -16 M0 8 l14 -14" stroke="#4f8f3a" stroke-width="2.5" fill="none"/>${[[0,-10],[-14,-14],[14,-12]].map(p=>`<g transform="translate(${p[0]} ${p[1]})"><circle r="8" fill="#fff" stroke="#bbb"/><circle r="3.4" fill="#f5c518"/></g>`).join('')}`,
+ '달맞이꽃':`<path d="M0 30 v-36" stroke="#4f8f3a" stroke-width="3"/><path d="M0 14 l-12 -4 M0 4 l12 -4" stroke="#6aa64a" stroke-width="4" stroke-linecap="round"/><g fill="#ffe14a" stroke="#c9a600" stroke-width="1"><circle cx="-8" cy="-14" r="8"/><circle cx="8" cy="-14" r="8"/><circle cx="-6" cy="-26" r="8"/><circle cx="6" cy="-26" r="8"/></g><circle cx="0" cy="-20" r="3" fill="#c9a600"/>`,
+ '풀':`<g stroke="#4f9a3a" stroke-width="3" fill="none" stroke-linecap="round"><path d="M-10 30 q-2 -26 -18 -40"/><path d="M-2 30 q0 -30 -4 -50"/><path d="M6 30 q4 -26 16 -42"/><path d="M14 30 q8 -16 24 -22"/></g>`,
+ '부들':`<g stroke="#4f8f3a" stroke-width="3" fill="none"><path d="M-6 34 v-60"/><path d="M8 34 v-50"/><path d="M-16 34 q-4 -30 -14 -50"/><path d="M18 34 q6 -30 16 -40"/></g><rect x="-11" y="-40" width="10" height="24" rx="5" fill="#7a4a24"/><rect x="3" y="-30" width="10" height="22" rx="5" fill="#7a4a24"/>`,
+ '붕어마름':`<g stroke="#2f7a3e" stroke-width="2" fill="none"><path d="M0 34 q-4 -30 2 -64"/>${[-24,-12,0,12,24].map(y=>`<path d="M1 ${y} l-14 -6 M1 ${y} l14 -6 M1 ${y} l-10 -12 M1 ${y} l10 -12"/>`).join('')}</g>`,
+ '미역':`<path d="M0 34 q-14 -20 -4 -40 q8 -16 -2 -30 q20 10 12 32 q-6 16 4 38z" fill="#5a6b2a" stroke="#333" stroke-width="1.2"/><path d="M0 30 q-6 -30 4 -60" stroke="#3b4a1a" stroke-width="2" fill="none"/>`,
+ '톳':`<g fill="#7a6a2a" stroke="#4a3d12" stroke-width="1"><path d="M0 34 v-60" stroke-width="3" fill="none"/>${[[-8,-20],[8,-12],[-8,-2],[8,8],[-6,16],[6,-28]].map(p=>`<ellipse cx="${p[0]}" cy="${p[1]}" rx="6" ry="3"/>`).join('')}</g>`,
+ '산호':`<g fill="#ef7f6f" stroke="#a8473b" stroke-width="1.5"><path d="M-4 34 q-4 -20 -20 -30 q-6 -10 2 -12 q10 6 14 20 q0 -20 -6 -34 q4 -8 10 0 q6 18 4 36 q8 -16 18 -22 q8 2 2 10 q-14 10 -14 32z"/></g>`,
+ '해파리':`<path d="M-26 0 q0 -30 26 -30 q26 0 26 30 q-6 -4 -10 0 q-6 -4 -10 0 q-6 -4 -12 0 q-6 -4 -10 0 q-6 -4 -10 0z" fill="#d7c3f2" stroke="#7d5bb3" stroke-width="1.5" opacity=".95"/><g stroke="#9b7fd0" stroke-width="2" fill="none"><path d="M-16 0 q-4 14 2 26"/><path d="M-4 0 q4 14 -2 30"/><path d="M8 0 q-4 14 4 28"/><path d="M18 0 q4 12 -2 22"/></g>`,
+ '바다거북':`<ellipse cx="0" cy="0" rx="26" ry="20" fill="#6b8f3a" stroke="#2f4a1a" stroke-width="2"/><path d="M-12 -12 l12 -6 l12 6 v14 l-12 6 l-12 -6z" fill="none" stroke="#2f4a1a" stroke-width="1.5"/><ellipse cx="34" cy="-2" rx="10" ry="8" fill="#a3b56a" stroke="#2f4a1a" stroke-width="1.5"/><circle cx="37" cy="-4" r="1.6" fill="#111"/><path d="M12 -16 q14 -16 26 -12 q-10 10 -22 14z M12 16 q14 16 26 12 q-10 -10 -22 -14z M-18 -14 q-10 -10 -18 -6 q6 8 16 10z M-18 14 q-10 10 -18 6 q6 -8 16 -10z" fill="#a3b56a" stroke="#2f4a1a" stroke-width="1.2"/>`,
+ '고등어':fish('#5b84a8',{stripe:'#1f3b5a',h:12}),
+ '붕어':fish('#c9a043',{h:18}),
+ '가오리':`<path d="M0 -24 q30 10 40 24 q-26 6 -40 18 q-14 -12 -40 -18 q10 -14 40 -24z" fill="#9a8a72" stroke="#4a3d2a" stroke-width="1.5"/><path d="M0 18 q4 14 18 22" stroke="#4a3d2a" stroke-width="2.5" fill="none"/><circle cx="-6" cy="-8" r="2" fill="#111"/><circle cx="6" cy="-8" r="2" fill="#111"/>`,
+ '게':`<ellipse cx="0" cy="4" rx="22" ry="14" fill="#d9573b" stroke="#7a2a1a" stroke-width="1.5"/><g stroke="#7a2a1a" stroke-width="3" fill="none"><path d="M-18 10 l-14 10 M-20 4 l-16 4 M18 10 l14 10 M20 4 l16 4"/></g><path d="M-14 -8 q-14 -14 -24 -6 q6 6 14 2z M14 -8 q14 -14 24 -6 q-6 6 -14 2z" fill="#d9573b" stroke="#7a2a1a" stroke-width="1.5"/><path d="M-5 -10 v-6 M5 -10 v-6" stroke="#333" stroke-width="2"/><circle cx="-5" cy="-17" r="2.4" fill="#111"/><circle cx="5" cy="-17" r="2.4" fill="#111"/>`,
+ '오징어':`<path d="M0 -36 l14 18 v26 q-14 6 -28 0 v-26z" fill="#f1d3c0" stroke="#a46a4a" stroke-width="1.5"/><g stroke="#c48a6a" stroke-width="2.5" fill="none"><path d="M-12 8 q-4 16 -2 26 M-6 8 q-2 16 0 24 M0 8 v26 M6 8 q2 16 0 24 M12 8 q4 16 2 26"/></g><circle cx="-6" cy="0" r="2.4" fill="#111"/><circle cx="6" cy="0" r="2.4" fill="#111"/>`,
+ '조개':`<path d="M-24 10 q0 -30 24 -30 q24 0 24 30z" fill="#e8d9b5" stroke="#8a7244" stroke-width="1.5"/><g stroke="#8a7244" stroke-width="1.2"><path d="M0 10 v-30 M-12 10 l-6 -24 M12 10 l6 -24"/></g><path d="M-26 10 h52" stroke="#8a7244" stroke-width="3"/>`,
+ '다슬기':`<path d="M-22 10 l34 -26 q14 4 10 20 q-14 12 -44 6z" fill="#5c4a2e" stroke="#2c2210" stroke-width="1.5"/><g stroke="#a58a5e" stroke-width="1.5" fill="none"><path d="M-12 10 l18 -18 M0 12 l14 -16 M-4 2 l20 -2"/></g>`,
+ '달팽이':`<path d="M-34 18 q30 6 60 0 l6 -12 l-4 -2 q-10 8 -24 6 z" fill="#d9c3a0" stroke="#7a6240" stroke-width="1.5"/><circle cx="-4" cy="0" r="18" fill="#b77a3e" stroke="#5a3a1a" stroke-width="1.5"/><path d="M-4 0 m0 -10 a10 10 0 1 1 -8 16 a6 6 0 1 1 6 -10" stroke="#5a3a1a" stroke-width="1.5" fill="none"/><path d="M26 6 l6 -18 M30 6 l10 -14" stroke="#7a6240" stroke-width="2"/>`,
+ '지렁이':`<path d="M-36 6 q12 -18 24 0 t24 0 t24 -6" stroke="#c97a7a" stroke-width="9" fill="none" stroke-linecap="round"/><path d="M-6 0 h6" stroke="#a65a5a" stroke-width="10"/>`,
+ '뱀':`<path d="M-38 14 q14 -20 28 0 t28 0 t18 -18" stroke="#6b8f2a" stroke-width="10" fill="none" stroke-linecap="round"/><circle cx="38" cy="-6" r="8" fill="#6b8f2a"/><circle cx="40" cy="-8" r="1.8" fill="#111"/><path d="M45 -4 l8 2 M53 2 l-3 -4 l4 -1" stroke="#c33" stroke-width="1.5" fill="none"/>`,
+ '개구리':`<ellipse cx="0" cy="8" rx="24" ry="16" fill="#6cbf4a" stroke="#2f6a2a" stroke-width="1.5"/><circle cx="-10" cy="-8" r="7" fill="#6cbf4a" stroke="#2f6a2a" stroke-width="1.5"/><circle cx="10" cy="-8" r="7" fill="#6cbf4a" stroke="#2f6a2a" stroke-width="1.5"/><circle cx="-10" cy="-9" r="3" fill="#111"/><circle cx="10" cy="-9" r="3" fill="#111"/><path d="M-10 6 q10 6 20 0" stroke="#2f6a2a" stroke-width="1.5" fill="none"/><path d="M-22 16 q-10 4 -14 12 M22 16 q10 4 14 12" stroke="#2f6a2a" stroke-width="4" stroke-linecap="round"/>`,
+ '무당개구리':`<ellipse cx="0" cy="8" rx="24" ry="16" fill="#4f9a3a" stroke="#1f4a1a" stroke-width="1.5"/><circle cx="-10" cy="-8" r="7" fill="#4f9a3a" stroke="#1f4a1a" stroke-width="1.5"/><circle cx="10" cy="-8" r="7" fill="#4f9a3a" stroke="#1f4a1a" stroke-width="1.5"/><circle cx="-10" cy="-9" r="3" fill="#111"/><circle cx="10" cy="-9" r="3" fill="#111"/><g fill="#111"><circle cx="-8" cy="8" r="3"/><circle cx="6" cy="12" r="3.5"/><circle cx="14" cy="2" r="2.5"/></g><path d="M-22 16 q-10 4 -14 12 M22 16 q10 4 14 12" stroke="#e2573f" stroke-width="4" stroke-linecap="round"/>`,
+ '두꺼비':`<ellipse cx="0" cy="8" rx="28" ry="18" fill="#8a6a3e" stroke="#4a3418" stroke-width="1.5"/><circle cx="-11" cy="-8" r="7" fill="#8a6a3e" stroke="#4a3418"/><circle cx="11" cy="-8" r="7" fill="#8a6a3e" stroke="#4a3418"/><circle cx="-11" cy="-9" r="3" fill="#111"/><circle cx="11" cy="-9" r="3" fill="#111"/><g fill="#6a4e28">${[[-14,6],[-4,14],[8,4],[16,12],[0,0],[-18,14]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="2.4"/>`).join('')}</g>`,
+ '사슴벌레':`<ellipse cx="0" cy="8" rx="13" ry="20" fill="#4a2a14" stroke="#1a0d05" stroke-width="1.5"/><circle cx="0" cy="-16" r="9" fill="#3a2010"/><path d="M-6 -22 q-14 -14 -4 -26 M6 -22 q14 -14 4 -26" stroke="#3a2010" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M-12 0 l-14 -6 M-12 10 l-16 2 M-10 20 l-14 8 M12 0 l14 -6 M12 10 l16 2 M10 20 l14 8" stroke="#1a0d05" stroke-width="2"/><path d="M0 -10 v38" stroke="#1a0d05" stroke-width="1"/>`,
+ '개미':`<g fill="#2a1a12"><circle cx="-18" cy="0" r="6"/><circle cx="-4" cy="0" r="5"/><ellipse cx="14" cy="2" rx="11" ry="8"/></g><path d="M-22 -4 l-6 -10 M-18 -6 l-2 -12 M-8 4 l-6 10 M-2 4 l0 12 M4 4 l6 10 M-6 -4 l-4 -10 M0 -4 l4 -10" stroke="#2a1a12" stroke-width="1.6"/>`,
+ '나비':`<path d="M0 -2 q-30 -28 -32 -6 q0 14 32 8 q-26 6 -22 22 q8 8 22 -20 q14 28 22 20 q4 -16 -22 -22 q32 6 32 -8 q-2 -22 -32 6z" fill="#f2f2f2" stroke="#444" stroke-width="1.4"/><g fill="#333"><circle cx="-18" cy="-12" r="3"/><circle cx="18" cy="-12" r="3"/></g><path d="M0 -10 v26" stroke="#333" stroke-width="3"/><path d="M0 -10 q-6 -10 -10 -12 M0 -10 q6 -10 10 -12" stroke="#333" stroke-width="1.2" fill="none"/>`,
+ '잠자리':`<path d="M0 -14 v44" stroke="#c0392b" stroke-width="5" stroke-linecap="round"/><circle cx="0" cy="-18" r="6" fill="#c0392b"/><g fill="#d8eef8" stroke="#7aa" stroke-width="1" opacity=".95"><ellipse cx="-20" cy="-8" rx="20" ry="5" transform="rotate(-8 -20 -8)"/><ellipse cx="20" cy="-8" rx="20" ry="5" transform="rotate(8 20 -8)"/><ellipse cx="-18" cy="2" rx="18" ry="5" transform="rotate(10 -18 2)"/><ellipse cx="18" cy="2" rx="18" ry="5" transform="rotate(-10 18 2)"/></g>`,
+ '메뚜기':`<path d="M-30 4 q10 -14 40 -10 q14 2 16 10 q-4 8 -16 6 q-28 2 -40 -6z" fill="#7fb23a" stroke="#3f6a1a" stroke-width="1.5"/><circle cx="24" cy="0" r="2" fill="#111"/><path d="M-6 6 l-16 -18 l-10 26 M2 8 l-4 16 M10 8 l4 14" stroke="#3f6a1a" stroke-width="2.5" fill="none"/><path d="M26 -4 q10 -14 20 -16" stroke="#3f6a1a" stroke-width="1.2" fill="none"/>`,
+ '애벌레':`<g fill="#8cc63f" stroke="#4a7a1a" stroke-width="1.2">${[-30,-18,-6,6,18].map((x,i)=>`<circle cx="${x}" cy="${i%2?2:0}" r="8"/>`).join('')}<circle cx="30" cy="-4" r="9" fill="#9bd14a"/></g><circle cx="33" cy="-6" r="1.8" fill="#111"/>`,
+ '거미':`<circle cx="0" cy="6" r="10" fill="#333"/><circle cx="0" cy="-8" r="6" fill="#333"/><g stroke="#333" stroke-width="2" fill="none"><path d="M-6 -6 l-16 -10 l-6 6 M-6 -2 l-20 -2 l-6 8 M-6 4 l-18 8 l-4 10 M-6 8 l-12 14 M6 -6 l16 -10 l6 6 M6 -2 l20 -2 l6 8 M6 4 l18 8 l4 10 M6 8 l12 14"/></g>`,
+ '폭탄먼지벌레':`<ellipse cx="0" cy="6" rx="12" ry="18" fill="#2a2a3a" stroke="#111" stroke-width="1.5"/><path d="M-12 0 h24" stroke="#e8c23a" stroke-width="4"/><path d="M-12 12 h24" stroke="#e8c23a" stroke-width="3"/><circle cx="0" cy="-16" r="7" fill="#d9822b"/><path d="M-3 -22 l-6 -10 M3 -22 l6 -10 M-12 2 l-12 -4 M-12 10 l-14 2 M12 2 l12 -4 M12 10 l14 2" stroke="#111" stroke-width="1.6"/><g fill="#ddd" opacity=".8"><circle cx="0" cy="30" r="4"/><circle cx="-6" cy="36" r="3"/><circle cx="5" cy="38" r="3"/></g>`,
+ '버섯':`<path d="M-28 0 q0 -28 28 -28 q28 0 28 28z" fill="#c9773a" stroke="#6b3a12" stroke-width="1.5"/><rect x="-7" y="0" width="14" height="26" rx="5" fill="#f2e6cf" stroke="#8a6a44" stroke-width="1.5"/><g fill="#f6dcb8"><circle cx="-12" cy="-12" r="4"/><circle cx="8" cy="-18" r="3"/><circle cx="14" cy="-6" r="3.5"/></g>`,
+ '족제비눈물버섯':`<path d="M-24 0 q0 -26 24 -26 q24 0 24 26z" fill="#c89a62" stroke="#6b4a22" stroke-width="1.5"/><g fill="#f4ead6"><path d="M-22 0 l3 6 l3 -6 M-8 0 l3 7 l3 -7 M8 0 l3 6 l3 -6"/></g><rect x="-5" y="0" width="10" height="28" rx="4" fill="#f2e6cf" stroke="#8a6a44" stroke-width="1.5"/>`,
+ '애기낙엽버섯':`<g><path d="M-30 4 q0 -14 14 -14 q14 0 14 14z M2 0 q0 -16 16 -16 q16 0 16 16z" fill="#e8dcc4" stroke="#8a7a5a" stroke-width="1.2"/><g stroke="#b9a782" stroke-width="1"><path d="M-16 -10 v14 M-24 -6 l6 10 M-8 -6 l-6 10 M18 -16 v16 M8 -12 l8 12 M28 -12 l-8 12"/></g><path d="M-16 4 v22 M18 0 v26" stroke="#7a5a3a" stroke-width="2.5"/></g><path d="M-38 30 q20 -8 40 0 q20 6 36 -2" stroke="#b07a3a" stroke-width="6" fill="none"/>`,
+ '말징버섯':`<path d="M-20 10 q-6 -36 20 -36 q26 0 20 36z" fill="#d8c59a" stroke="#7a6640" stroke-width="1.5"/><g stroke="#a48c5a" stroke-width="1.2" fill="none"><path d="M-12 8 q-2 -14 2 -26 M0 8 v-30 M12 8 q2 -14 -2 -26"/></g><rect x="-12" y="8" width="24" height="18" rx="6" fill="#efe4c8" stroke="#7a6640" stroke-width="1.5"/>`,
+ '곰팡이':lens(`<g stroke="#6a7a8a" stroke-width="1.6" fill="none"><path d="M-22 14 q10 -10 20 -4 t20 -10"/><path d="M-6 10 v-18 M8 2 v-20 M-16 12 v-12"/></g><g fill="#3a4a5a"><circle cx="-6" cy="-10" r="5"/><circle cx="8" cy="-20" r="5"/><circle cx="-16" cy="-2" r="4"/></g>`,'#eef1ee'),
+ '세균':lens(`<g fill="#b98ad0" stroke="#6a3f86" stroke-width="1.2">${[[-14,-10,20],[6,-14,-30],[-4,6,60],[14,8,10],[-16,12,-20]].map(p=>`<rect x="-7" y="-3" width="14" height="6" rx="3" transform="translate(${p[0]} ${p[1]}) rotate(${p[2]})"/>`).join('')}</g>`,'#f6f0f8'),
+ '반달말':lens(`<g fill="#5aa64a" stroke="#2f6a2a" stroke-width="1.2">${[[-10,-8,-30],[10,4,20],[-6,12,70]].map(p=>`<path d="M-14 0 q14 -14 28 0 q-14 -6 -28 0z" transform="translate(${p[0]} ${p[1]}) rotate(${p[2]})"/>`).join('')}</g>`,'#eef6f8'),
+ '도토리':`<ellipse cx="0" cy="6" rx="14" ry="18" fill="#b0762e" stroke="#5a3a12" stroke-width="1.5"/><path d="M-16 -4 q16 -16 32 0 q-16 6 -32 0z" fill="#7a5a32" stroke="#4a3010" stroke-width="1.5"/><path d="M0 -12 v-8" stroke="#4a3010" stroke-width="3"/>`
+};
+return A;})();
+/* 그림 넣기: art('토끼', x, y, 크기, 이름표 글자 크기(0이면 없음)) */
+function art(nm,x,y,s,fs){s=s||1;const lab=fs===0?'':`<text x="${x}" y="${y+40*s+(fs||16)}" text-anchor="middle" font-family="Jua" font-size="${fs||16}" fill="#15313d" stroke="#fff" stroke-width="4" paint-order="stroke">${nm}</text>`;
+  return `<g transform="translate(${x} ${y}) scale(${s})">${ART[nm]||''}</g>`+lab;}
+
+const sunG=(x,y,r)=>{r=r||26;return `<circle cx="${x}" cy="${y}" r="${r}" fill="#ffd23f"/><g stroke="#ffc21f" stroke-width="5" stroke-linecap="round">${[0,45,90,135,180,225,270,315].map(a=>{const q=a*Math.PI/180;return `<line x1="${(x+Math.cos(q)*(r+7)).toFixed(1)}" y1="${(y+Math.sin(q)*(r+7)).toFixed(1)}" x2="${(x+Math.cos(q)*(r+17)).toFixed(1)}" y2="${(y+Math.sin(q)*(r+17)).toFixed(1)}"/>`;}).join('')}</g>`;};
+const airG=(x,y)=>`<g stroke="#5f9fc8" stroke-width="4" fill="none" stroke-linecap="round" opacity=".85"><path d="M${x-44} ${y} q22 -14 44 0 t44 0"/><path d="M${x-34} ${y+18} q22 -14 44 0 t34 0"/></g>`;
+const pill=(x,y,t)=>`<rect x="${x-34}" y="${y-18}" width="68" height="34" rx="17" fill="#fffbe8" stroke="#8a6a2b" stroke-width="2"/><text x="${x}" y="${y+7}" text-anchor="middle" font-family="Jua" font-size="18" fill="#5a3a12">${t}</text>`;
+const lbl=(x,y,t,an)=>`<text x="${x}" y="${y}" text-anchor="${an||'middle'}" font-family="Jua" font-size="20" fill="#15313d" stroke="#fff" stroke-width="4" paint-order="stroke">${t}</text>`;
+
+/* ---------- s1 학교 화단 ---------- */
+(function(){const S=$('#e1Bed');
+  let bg='<rect width="800" height="380" fill="#d6effa"/><rect y="166" width="800" height="84" fill="#bfe3a0"/><g fill="#e8d7b8" stroke="#a88a5a">'+[...Array(14)].map((_,i)=>`<rect x="${10+i*58}" y="96" width="14" height="70"/>`).join('')+'</g><rect y="110" width="800" height="8" fill="#e8d7b8"/>'+
+    '<rect y="250" width="800" height="130" fill="#8f6236"/><rect y="250" width="800" height="12" fill="#6fae4a"/><g fill="#a77a48">'+[...Array(30)].map((_,i)=>`<circle cx="${(i*97)%800}" cy="${280+(i*37)%90}" r="3"/>`).join('')+'</g>';
+  const web='<g stroke="#9aa" stroke-width="1.2" fill="none"><path d="M480 110 L560 190 M560 110 L480 190 M520 100 V200 M470 150 H570"/>'+[14,28,42].map(r=>`<circle cx="520" cy="150" r="${r}"/>`).join('')+'</g>';
+  const IT=[['햇빛',()=>sunG(720,62),720,62,50,0],['소나무',()=>art('소나무',110,190,1.5,0),110,180,60,1],['토끼풀',()=>art('토끼풀',250,232,1,0),250,230,40,1],
+    ['개미',()=>art('개미',372,262,.6,0),372,262,30,1],['나비',()=>art('나비',300,90,.9,0),300,90,40,1],['거미',()=>web+art('거미',520,150,.6,0),520,150,48,1],
+    ['참새',()=>art('참새',640,92,.8,0),640,92,40,1],['버섯',()=>art('버섯',450,232,.7,0),450,230,32,1],['지렁이',()=>art('지렁이',610,330,.9,0),610,330,40,1],
+    ['돌',()=>'<ellipse cx="200" cy="268" rx="34" ry="18" fill="#a5a8ad" stroke="#666" stroke-width="2"/><ellipse cx="236" cy="276" rx="16" ry="10" fill="#b8bbc0" stroke="#666" stroke-width="2"/>',212,270,40,0],
+    ['흙',()=>pill(130,340,'흙'),130,340,36,0]];
+  S.innerHTML=bg+IT.map((t,i)=>`<g class="e1-it" data-i="${i}" aria-label="${t[0]}">${t[1]()}<circle class="e1-hl" cx="${t[2]}" cy="${t[3]}" r="${t[4]}" fill="transparent" stroke="none"/></g>`).join('')+'<g id="e1BedTags"></g>';
+  const got=new Set();
+  $$('#e1Bed .e1-it').forEach(g=>tap(g,()=>{const i=+g.dataset.i,t=IT[i];if(got.has(i))return;got.add(i);
+    $('#e1BedTags').insertAdjacentHTML('beforeend',`<g><rect x="${t[2]-36}" y="${t[3]-t[4]-24}" width="72" height="24" rx="12" fill="#16804a"/><text x="${t[2]}" y="${t[3]-t[4]-6}" text-anchor="middle" font-family="Jua" font-size="16" fill="#fff">${t[0]}</text></g>`);
+    $('#e1Found').insertAdjacentHTML('beforeend',`<span>${t[0]}</span>`);
+    if(got.size>=8){fb('#e1BedFb','잘 찾았어요! 화단에는 토끼풀·개미·참새처럼 살아 있는 것도 있고, 돌·흙·햇빛처럼 살아 있지 않은 것도 있어요.'+(got.size<IT.length?` (더 찾아도 돼요: ${got.size}/${IT.length})`:''),true);doneNav('s1');}
+    else fb('#e1BedFb',`‘${t[0]}’을(를) 찾았어요! (${got.size}/8)`,'info');}));
+  $('#e1Log').innerHTML=art('지렁이',120,108,.45,0)+art('개미',200,100,.35,0)+art('버섯',240,70,.4,0);})();
+
+/* ---------- s2 ---------- */
+let s2a=0,s2b=0;const d2=()=>{if(s2a&&s2b)doneNav('s2');};
+pickOne('#e1Def','맞아요! 한 지역에서 서로 영향을 주고받는 생물 요소와 비생물 요소를 통틀어 생태계라고 해요. 생태계의 종류와 크기는 다양해요.','다시 생각해 봐요.',null,()=>{s2a=1;d2();});
+pickOne('#e1Fungi','맞아요! 버섯, 곰팡이, 세균은 동물도 식물도 아니지만 살아 있는 생물이므로 생물 요소예요.','다시 생각해 봐요.',null,()=>{s2b=1;d2();});
+
+/* ---------- s3 숲·강·바다 ---------- */
+const ECO={
+  forest:{nm:'숲',bg:'<rect width="800" height="400" fill="#d6effa"/><rect y="200" width="800" height="140" fill="#9cc56a"/><rect y="330" width="800" height="70" fill="#9a6a3a"/><g fill="#86b45a"><circle cx="560" cy="200" r="60"/><circle cx="640" cy="196" r="44"/></g>',
+    it:[['햇빛','a',60,52,1,'sun'],['공기','a',560,70,1,'air'],['흙','a',720,372,1,'pill'],
+      ['상수리나무','b',110,190,1.6],['직박구리','b',200,92,0.9],['매','b',380,56,0.9],['다람쥐','b',300,250,0.96],['사슴벌레','b',400,286,0.72],['뱀','b',540,286,0.9],
+      ['무당개구리','b',660,280,0.78],['버섯','b',750,240,0.72],['곰팡이(160배)','b',680,120,1.02,'곰팡이'],['두더지','b',240,362,0.84],['지렁이','b',470,366,0.84]]},
+  river:{nm:'강',bg:'<rect width="800" height="400" fill="#d6effa"/><path d="M0 150 h800 v80 h-800z" fill="#9cc56a"/><rect y="220" width="800" height="180" fill="#6fb6dc"/><rect y="370" width="800" height="30" fill="#c9b07a"/>',
+    it:[['햇빛','a',740,52,1,'sun'],['공기','a',430,64,1,'air'],['물','a',700,300,1,'pill'],['흙','a',120,384,1,'pill'],
+      ['부들','b',80,190,1],['왜가리','b',220,170,1.08],['오리','b',380,210,1.02],['붕어마름','b',300,320,1.08],['다슬기','b',520,360,0.72],['반달말(130배)','b',600,130,1.02,'반달말']]},
+  sea:{nm:'바다',bg:'<rect width="800" height="400" fill="#d6effa"/><rect y="140" width="800" height="260" fill="#3f8fc4"/><rect y="140" width="800" height="12" fill="#8cc8ea"/><rect y="365" width="800" height="35" fill="#e2c98f"/>',
+    it:[['햇빛','a',740,52,1,'sun'],['공기','a',470,70,1,'air'],['물','a',60,200,1,'pill'],['흙','a',740,382,1,'pill'],
+      ['갈매기','b',200,70,1.02],['돌고래','b',420,200,1.02],['바다거북','b',220,220,0.9],['해파리','b',620,210,0.78],['고등어','b',340,286,0.78],['가오리','b',650,300,0.78],
+      ['산호','b',520,335,0.84],['미역','b',410,340,0.84],['톳','b',130,330,0.9],['게','b',260,358,0.66]]}};
+const MARK={};let eco='forest',mode=null;
+function drawEco(){const E=ECO[eco];MARK[eco]=MARK[eco]||new Set();const M=MARK[eco];
+  $('#e1Scene').setAttribute('aria-label',E.nm+' 생태계 그림');
+  $('#e1Scene').innerHTML=E.bg+E.it.map((t,i)=>{const [nm,k,x,y,s,sp]=t;let g;
+    if(sp==='sun')g=sunG(x,y)+lbl(x,y+64,nm);else if(sp==='air')g=airG(x,y)+lbl(x,y+46,nm);else if(sp==='pill')g=pill(x,y,nm);
+    else g=art(sp||nm,x,y,s,0)+(y+40*s+20>396?lbl(x+44*s+4,y+7,nm,'start'):lbl(x,y+40*s+20,nm));
+    const r=sp==='pill'?36:sp==='sun'?46:sp==='air'?48:Math.max(30,44*s);
+    let mk='';if(M.has(i))mk=k==='b'?`<circle cx="${x}" cy="${y}" r="${r}" fill="none" stroke="#16804a" stroke-width="5"/>`:`<path d="M${x} ${y-r-4} L${x+r+4} ${y+r*.7} L${x-r-4} ${y+r*.7}Z" fill="none" stroke="#c46a00" stroke-width="5"/>`;
+    return `<g class="e1-it" data-i="${i}" aria-label="${nm}">${g}<circle class="e1-hl" cx="${x}" cy="${y}" r="${r}" fill="transparent" stroke="none"/>${mk}</g>`;}).join('');
+  $$('#e1Scene .e1-it').forEach(g=>tap(g,()=>markIt(+g.dataset.i)));prog();}
+function prog(){const E=ECO[eco],M=MARK[eco];$('#e1Prog').textContent=`${E.nm} 생태계: ${M.size}/${E.it.length}개 표시`;
+  $$('#e1Tabs button').forEach(b=>b.classList.toggle('ok',!!(MARK[b.dataset.e]&&MARK[b.dataset.e].size===ECO[b.dataset.e].it.length)));}
+function markIt(i){const E=ECO[eco],M=MARK[eco],t=E.it[i];if(M.has(i))return;
+  if(!mode){fb('#e1Fb','먼저 위에서 ◯ 생물 요소 또는 △ 비생물 요소를 골라요.','info');return;}
+  if(mode!==t[1]){fb('#e1Fb',t[1]==='b'?`‘${t[0]}’은(는) 살아 있는 생물이에요. 생물 요소(◯)예요.`:`‘${t[0]}’은(는) 살아 있지 않아요. 비생물 요소(△)예요.`,false);return;}
+  M.add(i);drawEco();fillTbl();
+  if(M.size===E.it.length){const all=Object.keys(ECO).every(e=>MARK[e]&&MARK[e].size===ECO[e].it.length);
+    fb('#e1Fb',all?'🎉 숲, 강, 바다 생태계를 모두 분류했어요! 세 생태계 모두 햇빛, 공기, 흙(강과 바다는 물도) 같은 비생물 요소와 여러 생물 요소로 이루어져 있어요.':`${E.nm} 생태계를 모두 분류했어요! 다른 생태계도 눌러 봐요.`,true);if(all)doneNav('s3');}
+  else fb('#e1Fb',`맞아요! ‘${t[0]}’은(는) ${t[1]==='b'?'생물 요소':'비생물 요소'}예요.`,true);}
+$$('#e1Tabs button').forEach(b=>b.onclick=()=>{eco=b.dataset.e;$$('#e1Tabs button').forEach(x=>x.classList.toggle('on',x===b));fb('#e1Fb','','info');drawEco();});
+$('#e1O').onclick=()=>{mode='b';$('#e1O').classList.add('on');$('#e1T').classList.remove('on');};
+$('#e1T').onclick=()=>{mode='a';$('#e1T').classList.add('on');$('#e1O').classList.remove('on');};
+drawEco();
+
+/* ---------- s4 붙임딱지 + 표 ---------- */
+function fillTbl(){let h='<tr><th>구분</th><th>생물 요소</th><th>비생물 요소</th></tr>';
+  for(const e in ECO){const E=ECO[e],M=MARK[e]||new Set();const b=E.it.filter((t,i)=>t[1]==='b'&&M.has(i)).map(t=>t[0].replace(/\(.*\)/,'')),a=E.it.filter((t,i)=>t[1]==='a'&&M.has(i)).map(t=>t[0]);
+    const st=(STK[e]||[]);
+    h+=`<tr><th>${E.nm} 생태계</th><td class="${b.length?'':'e1-wait'}">${b.concat(st).join(', ')||'(조사·분류해요에서 표시하면 채워져요)'}</td><td class="${a.length?'':'e1-wait'}">${a.join(', ')||'…'}</td></tr>`;}
+  $('#e1Tbl').innerHTML=h;}
+const STK={forest:[],river:[],sea:[]};
+sorter('#e1Stk','#e1StkBins','#e1StkFb',[['토끼','숲','토끼는 숲이나 풀밭에 살아요.'],['토끼풀','숲','토끼풀은 숲이나 풀밭에서 자라요.'],['잠자리','숲 강','잠자리는 숲 생태계에도, 강 생태계에도 붙일 수 있어요.'],
+  ['붕어','강','붕어는 강이나 호수 같은 민물에 살아요.'],['오징어','바다','오징어는 바다에 살아요.'],['조개','바다','조개는 바다(갯벌)에 살아요.']],{숲:'숲 생태계',강:'강 생태계',바다:'바다 생태계'},
+  ()=>{fb('#e1StkFb','🎉 붙임딱지를 모두 붙였어요! 숲에는 토끼·토끼풀·잠자리, 강에는 붕어·잠자리, 바다에는 오징어·조개가 어울려요. 잠자리는 숲과 강 두 곳 모두 어울려요.',true);doneNav('s4');});
+$('#e1StkBins').addEventListener('click',()=>{const m={'숲':'forest','강':'river','바다':'sea'};for(const k in m)STK[m[k]]=$$(`#e1StkBins .k-bin[data-b="${k}"] span`).map(s=>s.textContent);fillTbl();});
+fillTbl();
+
+/* ---------- s5 ---------- */
+sorter('#e1Near','#e1NearBins','#e1NearFb',[['개미','b'],['나비','b'],['풀','b'],['나무','b'],['개','b'],['고양이','b'],['참새','b'],['벌','b'],
+  ['물','a'],['흙','a'],['공기','a'],['햇빛','a'],['온도','a'],['모래','a'],['돌','a']],{b:'생물 요소',a:'비생물 요소'},
+  ()=>{fb('#e1NearFb','🎉 잘 나누었어요! 개미, 나비, 풀, 나무 같은 살아 있는 것은 생물 요소, 물, 흙, 공기, 햇빛, 온도 같은 살아 있지 않은 것은 비생물 요소예요.',true);doneNav('s5');});
+
+/* ---------- s6 ---------- */
+let s6a=0,s6b=0;const d6=()=>{if(s6a&&s6b)doneNav('s6');};
+$('#blReveal').onclick=()=>{['생','물','비','생','물'].forEach((c,i)=>$('#bl'+(i+1)).textContent=c);fb('#blFb','생태계에서는 생물 요소와 비생물 요소가 서로 영향을 주고받아요.',true);s6a=1;d6();};
+multi('#e1Pond',6,null,'맞아요! 연못 생태계는 공기, 흙, 물 같은 비생물 요소와 개구리, 부레옥잠, 소금쟁이 같은 생물 요소로 이루어져 있어요.','다시 생각해 봐요.',()=>{s6b=1;d6();});
+
+/* ---------- s7 ---------- */
+let s7a=0,s7b=0;const d7=()=>{if(s7a&&s7b)doneNav('s7');};
+pickOne('#e1F1','정답! 생태계에는 살아 있는 생물 요소뿐 아니라 햇빛, 물, 공기, 흙 같은 비생물 요소도 들어가요.','다시 생각해 봐요.',null,()=>{s7a=1;d7();});
+sorter('#e1F2','#e1F2Bins','#e1F2Fb',[['물','a'],['지렁이','b'],['공기','a'],['흙','a'],['오리','b'],['햇빛','a'],['토끼','b'],['세균','b','세균은 아주 작지만 살아 있는 생물이에요.']],{b:'생물 요소',a:'비생물 요소'},
+  ()=>{fb('#e1F2Fb','정답! ⑴ 생물 요소: 지렁이, 오리, 토끼, 세균 ⑵ 비생물 요소: 물, 공기, 흙, 햇빛',true);s7b=1;d7();});
+
+/* ---------- s8 ---------- */
+faces('s8','오늘도 멋지게 분류했어요! 다음 시간에는 생물 요소를 역할에 따라 나누어 봐요.','어려웠던 부분은 숲, 강, 바다 그림을 다시 보며 생물 요소와 비생물 요소를 나누어 봐요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"생","bl2":"물","bl3":"비","bl4":"생","bl5":"물"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>
