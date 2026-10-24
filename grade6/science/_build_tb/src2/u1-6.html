@@ -1,0 +1,355 @@
+<!--
+title: 창의가 팡팡 · 계절 축제 안내 자료 만들기
+unit: 1
+lesson: 10~11
+total: 13
+goal: 디자인 플랫폼을 활용해 계절 축제 안내 자료를 만들 수 있어요.
+pages: 「과학」 28~29쪽 · 「실험관찰」 18~19쪽 · 지도서 164~169쪽
+-->
+<style>
+/* 2학기 1단원 계절의 변화 · 교과서 버전 공통 */
+[hidden]{display:none!important}
+.c1-lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.c1-lab svg{display:block;width:100%;height:auto;margin:0 auto}
+/* 그림을 화면 높이에 맞추되 옆 빈틈 없이: style="--h:40vh;--ar:2.1" (가로/세로) */
+svg.c1-fit,.c1-lab svg.c1-fit{width:min(100%,calc(var(--h,40vh)*var(--ar,2)));height:auto;max-height:none}
+.c1-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(8px,1vw,16px);align-items:start}
+.c1-two>*{min-width:0}
+@media(max-width:700px){.c1-two{grid-template-columns:1fr}}
+.c1-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.c1-ctl button{font-size:.92rem;min-height:2.3rem;padding:.2em .8em}
+.c1-ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.c1-ctl button[disabled]{opacity:.45;cursor:default}
+.c1-ctl input[type=range]{flex:1 1 180px;min-width:120px;accent-color:var(--navy)}
+.c1-ctl .jua{font-size:.98rem}
+.c1-q{font-family:"Jua",sans-serif;font-size:1.06rem;margin:10px 0 6px}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:8px 12px;font-size:.95rem}
+.big{font-size:1.08rem}
+.c1-rp{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 0;border-bottom:2px dashed var(--line)}
+.c1-rp .q{flex:1 1 40%;font-family:"Jua",sans-serif;min-width:10em}
+.c1-rp button{min-height:2.3rem;padding:.15em .8em;font-size:.95rem}
+.c1-note{font-size:.88rem;color:var(--muted);margin:4px 0 0}
+/* 나누기 카드 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+/* 차례대로 누르기 */
+.c1-ord{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.c1-ord button{text-align:left;min-height:2.6rem;font-size:.95rem}
+.c1-ord button .no{display:inline-block;min-width:1.6em;font-family:"Jua",sans-serif;color:var(--navy)}
+.c1-ord button.right{cursor:default}
+@media (max-width:600px){.t3sort,.t3match,.c1-ord{grid-template-columns:1fr}}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+/* 자료 표 */
+table.c1-tb{width:100%;border-collapse:collapse;font-size:.95rem}
+table.c1-tb th,table.c1-tb td{border:2px solid var(--line);padding:4px 6px;text-align:center}
+table.c1-tb th{background:var(--soft,#f3f0e8);font-family:"Jua",sans-serif;font-weight:400}
+table.c1-tb td.nw{background:#e9f9ef;color:#0d5a31;font-weight:700}
+table.c1-tb td.em{color:var(--muted)}
+.c1-cap{font-family:"Jua",sans-serif;font-size:.95rem;text-align:center;margin:2px 0 4px;color:var(--muted)}
+#quiz>div{margin-bottom:6px}
+.a6-gal{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.a6-gal figure{margin:0;border:2px solid var(--line);border-radius:12px;overflow:hidden;background:#fff}
+.a6-gal img,.a6-gal svg{display:block;width:100%;height:clamp(80px,15vh,150px);object-fit:cover}
+.a6-gal figcaption{font-family:"Jua",sans-serif;text-align:center;font-size:.92rem;padding:2px}
+@media(max-width:700px){.a6-gal{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.a6-info{border:2px dashed #c9861a;border-radius:12px;padding:8px 12px;font-family:"Jua",sans-serif;background:#fffaf0;line-height:1.6}
+.a6-mk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px;align-items:start}
+@media(max-width:760px){.a6-mk{grid-template-columns:1fr}}
+.a6-mk label{display:block;font-family:"Jua",sans-serif;font-size:.95rem;margin:4px 0 2px}
+.a6-mk input[type=text]{width:100%;font:inherit;font-size:1rem;padding:6px 8px;border:2px solid var(--line);border-radius:10px;background:var(--paper);color:var(--ink)}
+.a6-chips{display:flex;flex-wrap:wrap;gap:6px}
+.a6-chips button{min-height:2.1rem;padding:.1em .6em;font-size:.88rem;border-width:2px}
+.a6-chips button.on{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.a6-post{border-radius:18px;padding:12px 14px;color:#2b2b2b;min-height:200px;position:relative;overflow:hidden;border:3px solid rgba(0,0,0,.08)}
+.a6-post h3{margin:0 0 4px;font-family:"Jua",sans-serif;font-size:1.7rem;line-height:1.2}
+.a6-post .sub{font-family:"Jua",sans-serif;font-size:1rem;opacity:.85}
+.a6-post .sci{background:rgba(255,255,255,.85);border-radius:10px;padding:6px 10px;margin:8px 0;font-family:"Jua",sans-serif}
+.a6-post ul{margin:4px 0 0;padding-left:1.2em;font-size:.95rem}
+.a6-post svg.deco{position:absolute;right:-10px;bottom:-10px;width:120px;height:120px;opacity:.9}
+.a6-sp{background:linear-gradient(160deg,#ffe3ec,#fff7d6)}.a6-su{background:linear-gradient(160deg,#c9f0ff,#fff3b0)}.a6-au{background:linear-gradient(160deg,#ffe0b8,#ffd0c0)}.a6-wi{background:linear-gradient(160deg,#e6f0ff,#ffffff)}
+.a6-ex{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.a6-ex .a6-post{min-height:0;padding:8px 10px}
+.a6-ex .a6-post h3{font-size:1.15rem}
+.a6-ex .a6-post .sci{font-size:.85rem;padding:4px 6px;margin:4px 0}
+.a6-ex .a6-post .sub{font-size:.82rem}
+@media(max-width:700px){.a6-ex{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 28쪽</span>
+  <h2>우리나라의 계절과 계절 축제</h2>
+  <div class="a6-gal">
+    <figure><img src="@wm:File:Cerisier du Japon Prunus serrulata.jpg" alt="활짝 핀 벚꽃"><figcaption>벚꽃</figcaption></figure>
+    <figure><img src="@wm:File:Watermelon Bahar1.jpg" alt="잘 익은 수박"><figcaption>수박</figcaption></figure>
+    <figure><img src="@wm:File:Pieris rapae on Cosmos.jpg" alt="코스모스 꽃"><figcaption>코스모스</figcaption></figure>
+    <figure><svg id="ice" viewBox="0 0 200 130" role="img" aria-label="꽁꽁 언 강 위의 얼음낚시"></svg><figcaption>얼음낚시(빙어)</figcaption></figure>
+  </div>
+  <p class="c1-q" data-glue="1">들어 보거나 가 본 축제예요. 어느 계절에 열리는 축제일까요?</p>
+  <div class="t3sort" id="so1" data-glue="1"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="계절의 특징">
+  <span class="stage">도입 · 계절별 특징</span>
+  <h2>봄, 여름, 가을, 겨울은 어떤 특징이 있나요?</h2>
+  <div class="t3match" id="mt2"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s3" data-nav="계획하기 1">
+  <span class="stage">계획하기 1 · 「실험관찰」 18쪽</span>
+  <h2>축제를 고르고, 그 시기의 태양의 남중 고도, 낮의 길이, 기온을 알아봐요</h2>
+  <p class="c1-q">우리 모둠이 안내할 축제를 골라요.</p>
+  <div class="pick" id="p3"><button data-s="0">🌸 봄 · 벚꽃 축제</button><button data-s="1">🍉 여름 · 수박 축제</button><button data-s="2">🍁 가을 · 단풍 축제</button><button data-s="3">❄️ 겨울 · 눈꽃 축제</button></div>
+  <div class="fb"></div>
+  <div id="q3" hidden data-glue="1">
+    <div class="a6-info" id="info3"></div>
+    <p class="c1-q">이 시기의 태양의 남중 고도, 낮의 길이, 기온을 바르게 정리한 것은?</p>
+    <div class="pick" id="p3b"></div>
+    <div class="fb"></div>
+  </div>
+  <p class="c1-note" data-glue="1">실제로는 한국천문연구원 천문우주지식정보(태양 고도, 낮의 길이)와 기상청 날씨누리(기온)에서 조사해요.</p>
+</section>
+
+<section id="s4" data-nav="계획하기 2">
+  <span class="stage">계획하기 2~3 · 「실험관찰」 18쪽</span>
+  <h2>준비물, 옷차림, 축제 운영 시간을 정해요</h2>
+  <p class="c1-q" id="q4t">과학 정보에 맞는 안내를 모두 골라요.</p>
+  <div class="pick" id="p4"></div>
+  <div class="fb"></div>
+  <p class="c1-q" data-glue="1">안내 자료에 더 넣고 싶은 내용을 두 가지 이상 골라요.</p>
+  <div class="a6-chips" id="ex4" data-glue="1"></div>
+  <div class="fb" id="ex4Fb"></div>
+</section>
+
+<section id="s5" data-nav="해 보기">
+  <span class="stage">해 보기 · 「과학」 29쪽 · 「실험관찰」 19쪽</span>
+  <h2>계절 축제 안내 자료를 만들어요</h2>
+  <div class="a6-mk">
+    <div>
+      <label for="fName">축제 이름</label><input type="text" id="fName" maxlength="18">
+      <div class="c1-two"><div><label for="fWhen">기간</label><input type="text" id="fWhen" maxlength="24"></div><div><label for="fWhere">장소</label><input type="text" id="fWhere" maxlength="20" placeholder="예: 학교 운동장"></div></div>
+      <label>과학 정보 한 줄 (하나 고르기)</label><div class="a6-chips" id="sciC"></div>
+      <label>운영 시간</label><div class="a6-chips" id="hourC"></div>
+      <div class="row" style="margin-top:8px"><button class="main" id="mkB">✅ 안내 자료 완성</button></div>
+    </div>
+    <div><div class="a6-post" id="post"></div></div>
+  </div>
+  <div class="fb" id="mkFb"></div>
+  <p class="c1-note">학교에서는 디자인 플랫폼으로 글자, 사진, 아이콘을 자유롭게 배치해 만들어요. 다른 모둠의 생각을 그대로 쓰지 말고 우리 모둠의 생각을 더해요.</p>
+  <p class="tip">⚠️ 스마트 기기에서 냄새가 나거나 열이 나면 바로 사용을 멈추고 선생님께 알려요. 해로운 누리집에 들어가지 않아요.</p>
+</section>
+
+<section id="s6" data-nav="나누기">
+  <span class="stage">나누기 · 「과학」 29쪽 · 「실험관찰」 19쪽</span>
+  <h2>다른 모둠의 자료에 잘한 점을 댓글로 달아요</h2>
+  <div class="a6-ex" id="ex6"></div>
+  <p class="c1-q" data-glue="1">어느 자료에 단 댓글일까요?</p>
+  <div class="t3match" id="mt6" data-glue="1"></div>
+  <div class="fb"></div>
+  <p class="c1-q">우리 반 친구 자료에 남길 댓글을 직접 써 봐요. (과학 정보를 칭찬해요)</p>
+  <textarea id="cm" rows="2" placeholder="예: 겨울에 낮의 길이가 짧다는 내용을 넣어 해 지는 시각을 알려 주었네!" data-glue="1"></textarea>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="cmB">댓글 달기</button></div><div class="fb" id="cmFb"></div>
+  <p class="tip">💬 댓글을 쓸 때는 바르고 고운 말을 사용해요.</p>
+</section>
+
+<section id="s7" data-nav="확인해요">
+  <span class="stage">확인해요</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <p class="jua big" style="margin-top:12px">내가 만든 안내 자료에 넣은 과학 정보와 그 까닭을 써 봐요.</p>
+  <textarea id="wr" rows="2" placeholder="예: 겨울에는 기온이 낮으므로 따뜻한 옷을 입고 오라고 안내했어요." data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wrB">내 답 살펴보기</button></div><div class="fb" id="wrFb"></div>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 19쪽</span>
+  <h2>오늘 활동을 되돌아봐요</h2>
+  <table>
+    <tr><td>계절에 따른 태양의 남중 고도, 낮의 길이, 기온을 설명했어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>계절 축제 안내 자료를 만들고 공유했어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>모둠원의 의견을 존중하고 협력하며 계절 축제 안내 자료를 만들었어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 2학기 1단원 계절의 변화 · 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg', RAD=Math.PI/180;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 줄마다 고르기: 상자 안 .c1-rp 줄의 단추 중 data-a="1"이 정답. 모든 줄을 맞히면 끝 */
+function rowsPick(box,okMsg,sec,cb){const rows=$$(box+' .c1-rp'),out=$(box).nextElementSibling,ok=new Set();
+  rows.forEach((r,k)=>{const bs=$$('button',r);bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');ok.add(k);if(ok.size===rows.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m||'맞아요!')+' ('+ok.size+'/'+rows.length+')','info');}
+    else{b.classList.add('wrong');ok.delete(k);fb(out,b.dataset.m||'다시 생각해 봐요.',false);}});});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례대로 누르기: orderer('#box', ['첫째','둘째',…], 다 맞힘 글, 섹션, cb) */
+function orderer(box,steps,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;let n=0;
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.innerHTML='<span class="no"></span>'+s;b.onclick=()=>{if(b.classList.contains('right'))return;
+    if(i===n){b.classList.add('right');$('.no',b).textContent=(n+1)+'.';n++;
+      if(n===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은? ('+n+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,(n+1)+'번째로 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기(키보드도) */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 형성 평가: 고르기와 글쓰기가 모두 끝나야 섹션 완료 */
+function twoDone(sec){let a=false,b=false;return{q(){a=true;if(b)doneNav(sec);},w(){b=true;if(a)doneNav(sec);}};}
+function watchWrite(btn,out,f){$(btn).addEventListener('click',()=>{if($(out).classList.contains('ok'))f();});}
+/* 여러 활동이 다 끝나야 섹션 완료: const A=allDone('s3',2); … A(); */
+function allDone(sec,n,cb){let k=0;return()=>{k++;if(k===n){doneNav(sec);if(cb)cb();}};}
+/* 그림 그리기 도우미 */
+const sv=(tag,a,inner)=>'<'+tag+' '+Object.entries(a).map(([k,v])=>k+'="'+v+'"').join(' ')+(inner==null?'/>':'>'+inner+'</'+tag+'>');
+const tx=(x,y,t,o)=>'<text x="'+x+'" y="'+y+'" font-family="Jua" font-size="'+((o&&o.s)||18)+'" fill="'+((o&&o.c)||'#3b2a10')+'" text-anchor="'+((o&&o.a)||'middle')+'"'+((o&&o.w)?' font-weight="700"':'')+'>'+t+'</text>';
+/* 해 그림 */
+function sunG(x,y,r,glow){r=r||18;let g='<g transform="translate('+x+' '+y+')">';for(let i=0;i<12;i++){const a=i*Math.PI/6;g+='<line x1="'+((r+5)*Math.cos(a)).toFixed(1)+'" y1="'+((r+5)*Math.sin(a)).toFixed(1)+'" x2="'+((r+13)*Math.cos(a)).toFixed(1)+'" y2="'+((r+13)*Math.sin(a)).toFixed(1)+'" stroke="#f0a020" stroke-width="3.5" stroke-linecap="round"/>';}
+  return g+'<circle r="'+r+'" fill="#ffd23f" stroke="#e08a00" stroke-width="3"/>'+(glow?'<circle r="'+(r+20)+'" fill="#ffd23f" opacity=".18"/>':'')+'</g>';}
+/* 각의 호와 글: 꼭짓점 (x,y), 바닥에서 위로 a0~a1(도, 화면 기준 시계 반대), 반지름 r */
+function arcG(x,y,a0,a1,r,col,label){const p=a=>[x+r*Math.cos(a*RAD),y-r*Math.sin(a*RAD)];const [x0,y0]=p(a0),[x1,y1]=p(a1);
+  const big=Math.abs(a1-a0)>180?1:0,sw=a1>a0?0:1;let s='<path d="M'+x0.toFixed(1)+' '+y0.toFixed(1)+' A'+r+' '+r+' 0 '+big+' '+sw+' '+x1.toFixed(1)+' '+y1.toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="3"/>';
+  if(label){const m=(a0+a1)/2,[lx,ly]=[x+(r+22)*Math.cos(m*RAD),y-(r+22)*Math.sin(m*RAD)];s+=tx(lx.toFixed(1),(ly+6).toFixed(1),label,{s:17,c:col});}return s;}
+/* 계절 정보(2024년 서울특별시, 매월 21일: 「실험관찰」 12쪽 예시 답안에서) */
+const SE=[
+ {n:'봄',fest:'벚꽃 축제',cls:'a6-sp',col:'#d6457a',mon:'4월',alt:'64.27°',day:'13시간 23분',desc:'태양의 남중 고도, 낮의 길이, 기온이 여름과 겨울의 중간 정도예요',when:'4월 ○일~○일',
+  ok:[['얇은 겉옷을 챙겨요(아침저녁으로 쌀쌀할 수 있어요)','기온'],['꽃이 핀 길을 낮 동안 걸어요(낮의 길이가 겨울보다 길어요)','낮의 길이']],no:[['두꺼운 패딩과 털장갑을 꼭 챙겨요','봄은 겨울처럼 기온이 낮지 않아요.'],['해가 아주 일찍 지니 오후 4시 전에 끝내요','봄은 겨울보다 낮의 길이가 길어요.']],
+  sci:['봄에는 낮의 길이가 겨울보다 길어 낮 동안 꽃길을 즐길 수 있어요','태양의 남중 고도가 점점 높아져 날이 따뜻해져요'],hours:['오전 10시~오후 6시','오전 10시~오후 4시']},
+ {n:'여름',fest:'수박 축제',cls:'a6-su',col:'#1c6fa8',mon:'6월',alt:'75.52°',day:'14시간 45분',desc:'태양의 남중 고도가 높고, 낮의 길이가 길며, 기온이 높아요',when:'6월 ○일~○일',
+  ok:[['자외선 차단제와 모자를 준비해요(태양의 남중 고도가 높아 햇빛이 강해요)','남중 고도'],['시원한 옷을 입어요(기온이 높아요)','기온'],['오전 10시부터 오후 7시까지 운영해요(낮의 길이가 길어요)','낮의 길이']],no:[['두꺼운 외투를 입고 와요','여름은 기온이 높아요.'],['해가 일찍 지니 오후 4시에 끝내요','여름은 낮의 길이가 길어요.']],
+  sci:['태양의 남중 고도가 높아 햇빛을 피할 그늘막을 많이 준비했어요','낮의 길이가 길어 저녁 7시까지 밝게 즐길 수 있어요'],hours:['오전 10시~오후 7시','오전 10시~오후 4시']},
+ {n:'가을',fest:'단풍 축제',cls:'a6-au',col:'#b8452f',mon:'10월',alt:'41.29°',day:'11시간 1분',desc:'여름보다 태양의 남중 고도가 낮아지고, 낮의 길이가 짧아지며, 기온이 낮아져요',when:'10월 ○일~○일',
+  ok:[['여름보다 낮의 길이가 짧으니 태양이 지는 시각을 확인해요','낮의 길이'],['얇은 겉옷을 챙겨요(여름보다 기온이 낮아요)','기온']],no:[['한여름처럼 덥게 입고 와요','가을은 여름보다 기온이 낮아요.'],['밤 9시까지 등산로 단풍 길을 걸어요','가을은 여름보다 낮이 짧아 일찍 어두워져요.']],
+  sci:['여름보다 낮의 길이가 짧으니 태양이 지는 시각을 확인하세요','태양의 남중 고도가 낮아져 서늘해졌어요'],hours:['오전 9시~오후 5시','오전 9시~오후 9시']},
+ {n:'겨울',fest:'눈꽃 축제',cls:'a6-wi',col:'#2b5aa8',mon:'12월',alt:'29.00°',day:'9시간 33분',desc:'태양의 남중 고도가 낮고, 낮의 길이가 짧으며, 기온이 낮아요',when:'12월 ○일~○일',
+  ok:[['옷을 따뜻하게 입고 장갑을 챙겨요(기온이 낮아요)','기온'],['일찍 어두워지니 낮 시간에 즐기고 조명을 준비해요(낮의 길이가 짧아요)','낮의 길이']],no:[['반소매 옷을 입고 와요','겨울은 기온이 낮아요.'],['낮이 길어 저녁 7시까지 밝아요','겨울은 낮의 길이가 짧아요.']],
+  sci:['기온이 낮으므로 옷을 따뜻하게 입고 오세요','낮의 길이가 짧아 오후 5시쯤이면 어두워지니 조명을 준비했어요'],hours:['오전 10시~오후 4시','오전 10시~오후 8시']}];
+let S=-1;
+/* ---------- 도입 ---------- */
+(function(){let s='<rect width="200" height="130" fill="#dfeefa"/><rect y="70" width="200" height="60" fill="#eef6fb"/><ellipse cx="100" cy="98" rx="22" ry="7" fill="#2a5a8a"/>';
+  s+='<path d="M60 70 v-26 a8 8 0 0 1 16 0 v26z" fill="#e2573f"/><circle cx="68" cy="34" r="8" fill="#ffd9b0"/><path d="M76 50 l30 30 v18" stroke="#5a3a1a" stroke-width="2" fill="none"/>';
+  s+='<path d="M140 60 l6 -12 l6 12z M160 64 l5 -10 l5 10z" fill="#9fc6e8"/>';for(let i=0;i<14;i++)s+='<circle cx="'+((i*37)%200)+'" cy="'+((i*23)%60)+'" r="2" fill="#fff"/>';$('#ice').innerHTML=s;})();
+sorter('#so1',[{t:'벚꽃 축제',k:0},{t:'수박 축제',k:1},{t:'코스모스 축제',k:2},{t:'빙어 축제',k:3}],[{k:0,n:'봄'},{k:1,n:'여름'},{k:2,n:'가을'},{k:3,n:'겨울'}],
+  '모두 맞혔어요! 우리나라에서는 계절에 따라 여러 가지 축제가 열려요.','s1');
+matcher('#mt2',[['봄','여러 가지 꽃이 피어요'],['여름','태양의 남중 고도가 높고, 낮의 길이가 길며 기온이 높아요'],['가을','알록달록한 단풍을 볼 수 있어요'],['겨울','태양의 남중 고도가 낮고, 낮의 길이가 짧으며 기온이 낮아요']],
+  '모두 이었어요! 이 단원에서 배운 태양의 남중 고도, 낮의 길이, 기온을 축제 안내에 활용해 봐요.','s2');
+
+/* ---------- 계획하기 1 ---------- */
+let p3ok=false;
+$$('#p3 button').forEach(b=>b.onclick=()=>{$$('#p3 button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');S=+b.dataset.s;const E=SE[S];
+  fb($('#p3').nextElementSibling,E.n+' '+E.fest+'를 골랐어요!','info');$('#q3').hidden=false;
+  $('#info3').innerHTML='🔎 '+E.mon+' 21일(서울특별시, 2024년) · 태양의 남중 고도 <b>'+E.alt+'</b> · 낮의 길이 <b>'+E.day+'</b>';
+  const P=$('#p3b');P.innerHTML='';
+  const cand=[{t:SE[S].desc,a:1}];[['태양의 남중 고도가 높고, 낮의 길이가 길며, 기온이 높아요',1],['태양의 남중 고도가 낮고, 낮의 길이가 짧으며, 기온이 낮아요',3]].forEach(([t,k])=>{if(k!==S)cand.push({t,a:0});});
+  if(cand.length<3)cand.push({t:'태양의 남중 고도가 높고, 낮의 길이가 짧으며, 기온이 낮아요',a:0});
+  shuffle(cand).forEach(c=>{const x=document.createElement('button');x.textContent=c.t;x.dataset.a=c.a;if(!c.a)x.dataset.m='조사한 남중 고도와 낮의 길이를 다시 봐요.';P.appendChild(x);});
+  pickOne('#p3b','맞아요! 이 정보를 안내 자료에 담아요.','',null,()=>{p3ok=true;doneNav('s3');setupS4();});
+  p3ok=false;});
+
+/* ---------- 계획하기 2 ---------- */
+const extra=['모기 기피제','물을 충분히','구급상자','간식이나 도시락','쓰레기봉투','양산이나 모자'];const exOn=new Set();let p4ok=false;
+function setupS4(){const E=SE[S],P=$('#p4');P.innerHTML='';$('#q4t').textContent=E.n+' '+E.fest+'에 알맞은 안내를 모두 골라요.';
+  shuffle([...E.ok.map(o=>({t:o[0],a:1})),...E.no.map(o=>({t:o[0],a:0,m:o[1]}))]).forEach(o=>{const b=document.createElement('button');b.textContent=o.t;b.dataset.a=o.a;if(o.m)b.dataset.m=o.m;P.appendChild(b);});
+  fb($('#p4').nextElementSibling,'','info');$('#p4').nextElementSibling.className='fb';p4ok=false;
+  pickAll('#p4','모두 골랐어요! 과학 정보에 맞춘 안내예요.','',null,()=>{p4ok=true;chk4();});setupS5();}
+extra.forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{b.classList.toggle('on');if(exOn.has(t))exOn.delete(t);else exOn.add(t);chk4();drawPost();};$('#ex4').appendChild(b);});
+function chk4(){if(exOn.size>=2)fb('#ex4Fb','좋아요! 고른 내용: '+[...exOn].join(', '),true);else fb('#ex4Fb','두 가지 이상 골라요. ('+exOn.size+'/2)','info');if(p4ok&&exOn.size>=2)doneNav('s4');}
+$('#p4').innerHTML='<p class="c1-note">먼저 ‘계획하기 1’에서 축제를 골라요.</p>';
+
+/* ---------- 해 보기 ---------- */
+let sciI=-1,hourI=-1;
+const deco=k=>['<svg class="deco" viewBox="0 0 100 100"><g fill="#f7a8c4">'+[0,72,144,216,288].map(a=>'<ellipse cx="50" cy="28" rx="12" ry="20" transform="rotate('+a+' 50 50)"/>').join('')+'</g><circle cx="50" cy="50" r="8" fill="#ffd23f"/></svg>',
+  '<svg class="deco" viewBox="0 0 100 100"><path d="M10 50 a40 40 0 0 0 80 0z" fill="#3f9a3f"/><path d="M16 50 a34 34 0 0 0 68 0z" fill="#e2453f"/>'+[30,45,60,70].map(x=>'<ellipse cx="'+x+'" cy="'+(62+(x%3)*4)+'" rx="2" ry="4" fill="#222"/>').join('')+'</svg>',
+  '<svg class="deco" viewBox="0 0 100 100"><path d="M50 10 l8 22 l20 -8 l-8 20 l22 8 l-22 8 l8 20 l-20 -8 l-8 22 l-8 -22 l-20 8 l8 -20 l-22 -8 l22 -8 l-8 -20 l20 8z" fill="#e2573f"/><path d="M50 50 v40" stroke="#8a4a10" stroke-width="3"/></svg>',
+  '<svg class="deco" viewBox="0 0 100 100"><g stroke="#7aa6d8" stroke-width="5" stroke-linecap="round">'+[0,60,120].map(a=>'<line x1="50" y1="12" x2="50" y2="88" transform="rotate('+a+' 50 50)"/>').join('')+'</g></svg>'][k];
+const esc=t=>t.replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function setupS5(){const E=SE[S];$('#fName').value=E.fest;$('#fWhen').value=E.when;sciI=-1;hourI=-1;
+  $('#sciC').innerHTML='';E.sci.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{sciI=i;$$('#sciC button').forEach((x,j)=>x.classList.toggle('on',j===i));drawPost();};$('#sciC').appendChild(b);});
+  $('#hourC').innerHTML='';E.hours.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{hourI=i;$$('#hourC button').forEach((x,j)=>x.classList.toggle('on',j===i));drawPost();
+    fb('#mkFb',i===0?'좋아요! '+E.n+'의 낮의 길이에 맞는 운영 시간이에요.':'이 시간은 '+E.n+'의 낮의 길이와 맞을까요? 어두워지는 시각을 생각해 봐요.',i===0?'info':false);};$('#hourC').appendChild(b);});
+  drawPost();}
+function drawPost(){if(S<0){$('#post').className='a6-post';$('#post').innerHTML='<p class="c1-note">‘계획하기 1’에서 축제를 고르면 여기에 안내 자료가 만들어져요.</p>';return;}
+  const E=SE[S];const P=$('#post');P.className='a6-post '+E.cls;
+  const ok=$$('#p4 button.right').map(b=>b.textContent.replace(/\(.*\)/,'').trim());
+  P.innerHTML='<div class="sub" style="color:'+E.col+'">'+E.n+' 축제에 초대해요</div><h3 style="color:'+E.col+'">'+esc($('#fName').value||E.fest)+'</h3>'+
+    '<div class="sub">📅 '+esc($('#fWhen').value||'')+(($('#fWhere').value)?' · 📍 '+esc($('#fWhere').value):'')+(hourI>=0?' · ⏰ '+E.hours[hourI]:'')+'</div>'+
+    (sciI>=0?'<div class="sci">☀️ '+E.sci[sciI]+'</div>':'<div class="sci" style="opacity:.6">☀️ 과학 정보를 골라요</div>')+
+    '<ul>'+ok.map(t=>'<li>'+esc(t)+'</li>').join('')+[...exOn].map(t=>'<li>'+esc(t)+' 준비</li>').join('')+'</ul>'+deco(S);}
+['#fName','#fWhen','#fWhere'].forEach(id=>$(id).addEventListener('input',drawPost));
+$('#mkB').onclick=()=>{if(S<0){fb('#mkFb','먼저 ‘계획하기 1’에서 축제를 골라요.',false);return;}
+  if(!$('#fName').value.trim()){fb('#mkFb','축제 이름을 써요.',false);return;}
+  if(sciI<0){fb('#mkFb','과학 정보 한 줄을 골라요. 태양의 남중 고도, 낮의 길이, 기온 같은 정보가 들어가야 해요.',false);return;}
+  if(hourI!==0){fb('#mkFb','운영 시간을 다시 골라요. '+SE[S].n+'의 낮의 길이에 맞는 시간은?',false);return;}
+  fb('#mkFb','멋진 안내 자료가 완성됐어요! 화면을 캡처하거나 디자인 플랫폼으로 옮겨 모둠별로 모아요.',true);doneNav('s5');};
+drawPost();
+
+/* ---------- 나누기 ---------- */
+(function(){const ex=[{c:'a6-su',col:'#1c6fa8',t:'시원하고 달콤한 수박 축제',w:'기간: 6월 ○일~○일 · 장소: ○○ 운동장',s:'태양의 남중 고도가 높아 태양 빛을 피할 수 있는 그늘막을 많이 준비했어요.'},
+  {c:'a6-au',col:'#b8452f',t:'가을이 깊어 가는 단풍 축제',w:'기간: 20△△년 9월 ○일~○일',s:'해넘이 행사합니다! 여름보다 낮의 길이가 짧으니 태양이 지는 시각을 확인하세요.'},
+  {c:'a6-wi',col:'#2b5aa8',t:'겨울맞이 눈꽃 축제',w:'기간: 12월 ○일~○일 · 장소: ○○ 공원',s:'기온이 낮으므로 옷을 따뜻하게 입고 오세요.'}];
+  $('#ex6').innerHTML=ex.map((e,i)=>'<div class="a6-post '+e.c+'"><div class="sub">'+(i+1)+'모둠</div><h3 style="color:'+e.col+'">'+e.t+'</h3><div class="sub">'+e.w+'</div><div class="sci">'+e.s+'</div></div>').join('');})();
+const A6=allDone('s6',2);
+matcher('#mt6',[['1모둠 수박 축제','여름에 태양의 남중 고도가 높다는 내용이 잘 드러나 있네.'],['2모둠 단풍 축제','여름과 가을의 낮의 길이를 비교해 쉽게 설명했구나.'],['3모둠 눈꽃 축제','겨울에 기온이 낮으니까 옷차림 안내를 잘했어.']],'모두 이었어요! 과학 정보를 짚어 칭찬하는 댓글이에요.',null,A6);
+keyCheck('#cm','#cmB','#cmFb',[[/(남중 ?고도|낮의 길이|낮이|기온|그림자|태양)/,'과학 정보'],[/(잘|좋|멋|쉽|구나|네|어요|아요|해요)/,'칭찬하는 고운 말']],2,null,'과학 정보(남중 고도, 낮의 길이, 기온)를 넣어 칭찬하는 말로 써 봐요.');
+watchWrite('#cmB','#cmFb',A6);
+
+/* ---------- 확인해요 ---------- */
+const T7=twoDone('s7');
+quiz('#quiz',[{q:'1. 겨울 축제 안내 자료에 넣기에 알맞은 과학 정보는?',o:['태양의 남중 고도가 높아 그늘막을 많이 준비했어요.','기온이 낮으므로 옷을 따뜻하게 입고 오세요.','낮의 길이가 길어 저녁 늦게까지 밝아요.'],a:1,e:'겨울에는 태양의 남중 고도가 낮고, 낮의 길이가 짧으며, 기온이 낮아요.',h:'겨울의 태양의 남중 고도, 낮의 길이, 기온을 떠올려 봐요.'},
+  {q:'2. 여름 축제를 저녁 7시까지 운영할 수 있는 까닭은?',o:['여름에는 낮의 길이가 길기 때문이에요.','여름에는 기온이 낮기 때문이에요.','여름에는 태양의 남중 고도가 낮기 때문이에요.'],a:0,e:'여름에는 태양의 남중 고도가 높아 낮의 길이가 길어요.',h:'여름 오후 6시 하늘을 떠올려 봐요.'}],()=>T7.q());
+keyCheck('#wr','#wrB','#wrFb',[[/(남중 ?고도|낮의 길이|낮이|기온)/,'과학 정보'],[/(므로|때문|아서|어서|니까|해서|라서)/,'까닭']],2,null,'‘겨울에는 기온이 낮으므로 따뜻한 옷을 입고 오라고 안내했어요.’처럼 과학 정보와 까닭을 함께 써 봐요.');
+watchWrite('#wrB','#wrFb',()=>T7.w());
+faces('s8','멋져요! 계절의 변화를 생활 속에서 활용해 보았어요.','어려웠던 부분은 모둠 친구들과 다시 이야기해 봐요.');
+</script>

@@ -1,0 +1,374 @@
+<!--
+title: 태양 고도와 태양 에너지양의 관계는?
+unit: 1
+lesson: 7
+total: 13
+goal: 손전등의 각도를 조절하면서 빛의 세기 변화를 관찰할 수 있어요.<br>태양 고도와 태양 에너지양의 관계를 설명할 수 있어요.
+pages: 「과학」 22~23쪽 · 「실험관찰」 14~15쪽 · 지도서 144~149쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"많"}}]
+-->
+<style>
+/* 2학기 1단원 계절의 변화 · 교과서 버전 공통 */
+[hidden]{display:none!important}
+.c1-lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.c1-lab svg{display:block;width:100%;height:auto;margin:0 auto}
+/* 그림을 화면 높이에 맞추되 옆 빈틈 없이: style="--h:40vh;--ar:2.1" (가로/세로) */
+svg.c1-fit,.c1-lab svg.c1-fit{width:min(100%,calc(var(--h,40vh)*var(--ar,2)));height:auto;max-height:none}
+.c1-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(8px,1vw,16px);align-items:start}
+.c1-two>*{min-width:0}
+@media(max-width:700px){.c1-two{grid-template-columns:1fr}}
+.c1-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.c1-ctl button{font-size:.92rem;min-height:2.3rem;padding:.2em .8em}
+.c1-ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.c1-ctl button[disabled]{opacity:.45;cursor:default}
+.c1-ctl input[type=range]{flex:1 1 180px;min-width:120px;accent-color:var(--navy)}
+.c1-ctl .jua{font-size:.98rem}
+.c1-q{font-family:"Jua",sans-serif;font-size:1.06rem;margin:10px 0 6px}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:8px 12px;font-size:.95rem}
+.big{font-size:1.08rem}
+.c1-rp{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 0;border-bottom:2px dashed var(--line)}
+.c1-rp .q{flex:1 1 40%;font-family:"Jua",sans-serif;min-width:10em}
+.c1-rp button{min-height:2.3rem;padding:.15em .8em;font-size:.95rem}
+.c1-note{font-size:.88rem;color:var(--muted);margin:4px 0 0}
+/* 나누기 카드 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+/* 차례대로 누르기 */
+.c1-ord{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.c1-ord button{text-align:left;min-height:2.6rem;font-size:.95rem}
+.c1-ord button .no{display:inline-block;min-width:1.6em;font-family:"Jua",sans-serif;color:var(--navy)}
+.c1-ord button.right{cursor:default}
+@media (max-width:600px){.t3sort,.t3match,.c1-ord{grid-template-columns:1fr}}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+/* 자료 표 */
+table.c1-tb{width:100%;border-collapse:collapse;font-size:.95rem}
+table.c1-tb th,table.c1-tb td{border:2px solid var(--line);padding:4px 6px;text-align:center}
+table.c1-tb th{background:var(--soft,#f3f0e8);font-family:"Jua",sans-serif;font-weight:400}
+table.c1-tb td.nw{background:#e9f9ef;color:#0d5a31;font-weight:700}
+table.c1-tb td.em{color:var(--muted)}
+.c1-cap{font-family:"Jua",sans-serif;font-size:.95rem;text-align:center;margin:2px 0 4px;color:var(--muted)}
+#quiz>div{margin-bottom:6px}
+.a4-rec{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:6px}
+.a4-rec div{border:2px solid var(--line);border-radius:12px;padding:6px 10px;font-family:"Jua",sans-serif;font-size:.98rem;background:var(--paper)}
+.a4-rec div.ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 22쪽</span>
+  <h2>무대 위 배우가 밝게 보이려면 조명을 어떻게 비춰야 할까요?</h2>
+  <div class="c1-lab"><svg id="stg" class="c1-fit" style="--h:30vh;--ar:2.4" viewBox="0 0 720 300" role="img" aria-label="각도를 바꿀 수 있는 무대 조명과 바닥에 비친 빛"></svg>
+    <div class="c1-ctl" style="padding:0 10px 8px"><span class="jua">조명 각도</span><input type="range" id="stgR" min="20" max="90" value="35" aria-label="조명 각도"><span class="jua" id="stgV"></span></div></div>
+  <div class="pick" id="p1" data-glue="1">
+    <button data-a="0" data-m="비스듬히 비추면 빛이 넓게 퍼져서 배우가 서 있는 곳이 덜 밝아요.">조명을 비스듬히 비춰요</button>
+    <button data-a="1" data-m="맞아요! 조명을 수직으로 비추면 빛이 좁은 곳에 모여 더 밝아요. 태양 고도에 따라 지표면이 받는 태양 에너지양도 달라질까요?">조명을 수직으로 비춰요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="실험 준비">
+  <span class="stage">실험해요 1~2 · 「실험관찰」 14쪽</span>
+  <h2>태양 고도에 따른 빛의 세기를 비교할 준비를 해요</h2>
+  <p>준비물: 스마트 기기, 빨판 달린 막대, 발광 다이오드(LED) 손전등, 자</p>
+  <p class="c1-q">실험 순서대로 눌러요.</p>
+  <div class="c1-ord" id="o2"></div>
+  <div class="fb"></div>
+  <p class="c1-note" data-glue="1">빛의 세기 측정 애플리케이션은 ‘조도 측정기’로 검색해 설치해요. 화면의 숫자가 클수록 빛이 더 세다는 뜻이에요.</p>
+  <p class="tip">⚠️ 손전등의 빛을 눈에 비추지 않아요. 스마트 기기에서 냄새가 나거나 열이 나면 바로 사용을 멈추고 선생님께 알려요. 주변의 다른 빛이 측정되지 않도록 교실을 어둡게 해요.</p>
+</section>
+
+<section id="s3" data-nav="실험해요">
+  <span class="stage">실험해요 3 · 「과학」 22쪽 · 「실험관찰」 14쪽</span>
+  <h2>막대의 그림자 길이가 짧을 때와 길 때 빛의 세기를 재요</h2>
+  <div class="c1-lab"><svg id="lab" class="c1-fit" style="--h:33vh;--ar:2.4" viewBox="0 0 720 300" role="img" aria-label="스마트 기기 옆 막대와, 20 cm 떨어진 곳에서 각도를 바꿔 비추는 손전등"></svg>
+    <div class="c1-ctl" style="padding:0 10px 8px"><span class="jua">손전등 각도</span><input type="range" id="labR" min="20" max="90" value="55" aria-label="손전등과 스마트 기기가 이루는 각"><span class="jua" id="labV"></span></div></div>
+  <div class="c1-ctl" data-glue="1"><button class="main" id="recS">📝 그림자가 짧을 때 기록</button><button class="main" id="recL">📝 그림자가 길 때 기록</button></div>
+  <div class="a4-rec" data-glue="1"><div id="rS">막대의 그림자 길이가 짧을 때: ?</div><div id="rL">막대의 그림자 길이가 길 때: ?</div></div>
+  <div class="fb" id="labFb"></div>
+  <p class="tip">⚠️ 손전등과 스마트 기기 사이의 거리(약 20 cm)는 언제나 같게 해요.</p>
+</section>
+
+<section id="s4" data-nav="결과 정리">
+  <span class="stage">실험해요 4~5 · 「실험관찰」 15쪽</span>
+  <h2>빛의 세기를 비교해요</h2>
+  <div id="rp4">
+    <div class="c1-rp"><span class="q">그림자가 <b>짧을</b> 때 손전등과 스마트 기기가 이루는 각이</span><button data-a="1">큽니다</button><button data-a="0">작습니다</button></div>
+    <div class="c1-rp"><span class="q">그림자가 <b>짧을</b> 때 빛의 세기가 더</span><button data-a="1">셉니다</button><button data-a="0">약합니다</button></div>
+    <div class="c1-rp"><span class="q">그림자가 <b>짧을</b> 때 센서가 받는 에너지양이</span><button data-a="1">많습니다</button><button data-a="0">적습니다</button></div>
+    <div class="c1-rp"><span class="q">그림자가 <b>길</b> 때 손전등과 스마트 기기가 이루는 각이</span><button data-a="0">큽니다</button><button data-a="1">작습니다</button></div>
+    <div class="c1-rp"><span class="q">그림자가 <b>길</b> 때 빛의 세기가 더</span><button data-a="0">셉니다</button><button data-a="1">약합니다</button></div>
+    <div class="c1-rp"><span class="q">그림자가 <b>길</b> 때 센서가 받는 에너지양이</span><button data-a="0">많습니다</button><button data-a="1">적습니다</button></div>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s5" data-nav="무엇을 뜻할까">
+  <span class="stage">실험해요 5 · 「실험관찰」 15쪽</span>
+  <h2>손전등을 태양이라고 하면 무엇을 뜻할까요?</h2>
+  <div class="t3match" id="mt5"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="왜 그럴까">
+  <span class="stage">생각해요 · 같은 빛, 다른 넓이</span>
+  <h2>각이 크면 왜 에너지양이 많을까요?</h2>
+  <div class="c1-lab"><svg id="ray" class="c1-fit" style="--h:32vh;--ar:2.4" viewBox="0 0 720 300" role="img" aria-label="같은 빛줄기가 각도에 따라 지표면에 좁게 또는 넓게 닿는 모습"></svg>
+    <div class="c1-ctl" style="padding:0 10px 8px"><span class="jua">태양 고도</span><input type="range" id="rayR" min="20" max="90" value="30" aria-label="태양 고도"><span class="jua" id="rayV"></span></div></div>
+  <div class="pick" id="p6" data-glue="1">
+    <button data-a="1" data-m="맞아요! 손전등(태양)에서 나오는 빛의 양은 같아요. 각이 크면 빛이 좁은 면적에 모이고, 각이 작으면 넓은 면적에 퍼져서 일정한 면적이 받는 빛의 양이 적어져요.">각이 크면 빛이 좁은 면적에 모여서</button>
+    <button data-a="0" data-m="손전등에서 나오는 빛의 양은 각도와 상관없이 같아요. 빛이 닿는 넓이를 봐요.">각이 크면 손전등에서 빛이 더 많이 나와서</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="여름과 겨울">
+  <span class="stage">정리해요 · 「과학」 23쪽 · 여름과 겨울일 때 태양의 남중 고도와 태양 에너지양</span>
+  <h2>여름과 겨울에 지표면이 받는 태양 에너지양</h2>
+  <div class="player" id="pl7">
+    <svg id="sw" class="scene" viewBox="0 0 800 340" role="img" aria-label="여름과 겨울의 태양의 남중 고도와 지표면이 받는 태양 에너지양"></svg>
+    <div class="ctl"><button class="main pBtn" aria-label="재생">▶</button><input type="range" class="pRng" min="0" step="0.02" value="0" aria-label="영상 시간"><span class="jua pClk">0초</span></div>
+    <div class="row chapters"></div>
+    <p class="cap"></p>
+  </div>
+  <div class="fb" id="pl7Fb"></div>
+</section>
+
+<section id="s8" data-nav="정리해요">
+  <span class="stage">정리해요 1~2 · 「과학」 23쪽</span>
+  <h2>계절별 태양의 남중 고도와 태양 에너지양</h2>
+  <div id="rp8">
+    <div class="c1-rp"><span class="q">여름에는 태양의 남중 고도가</span><button data-a="0">낮아</button><button data-a="1">높아</button></div>
+    <div class="c1-rp"><span class="q">일정한 면적의 지표면이 받는 태양 에너지양이</span><button data-a="1">많습니다</button><button data-a="0">적습니다</button></div>
+  </div>
+  <div class="fb"></div>
+  <p class="c1-q" data-glue="1">여름에는 덥고 겨울에는 추운 까닭은?</p>
+  <div class="pick" id="p8" data-glue="1">
+    <button data-a="1" data-m="맞아요! 여름에는 남중 고도가 높아 일정한 면적의 지표면이 받는 태양 에너지양이 많아 덥고, 겨울에는 남중 고도가 낮아 받는 에너지양이 적어 추워요.">여름에는 태양의 남중 고도가 높아 일정한 면적의 지표면이 받는 태양 에너지양이 많고, 겨울에는 적기 때문이에요</button>
+    <button data-a="0" data-m="태양에서 나오는 빛의 양은 계절마다 거의 같아요. 태양의 남중 고도를 떠올려 봐요.">여름에는 태양이 빛을 더 많이 내기 때문이에요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s9" data-nav="한눈에 쏙">
+  <span class="stage">정리해요 · 「과학」 23쪽</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="big">태양 고도가 높아질수록 일정한 면적의 지표면이 받는 태양 에너지양이 <span class="blank"><span id="bl1">?</span></span>아집니다. 반대로 태양 고도가 낮아질수록 일정한 면적의 지표면이 받는 태양 에너지양이 적어집니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div><div class="fb" id="blFb"></div>
+</section>
+
+<section id="s10" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <p class="jua big" style="margin-top:12px">2. 여름과 겨울일 때 일정한 면적의 지표면이 받는 태양 에너지양의 차이를 태양의 남중 고도와 관련지어 써 봐요.</p>
+  <textarea id="wr" rows="3" placeholder="여름에는 태양의 남중 고도가 ~ 일정한 면적의 지표면이 받는 태양 에너지양이 ~, 겨울에는 …" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wrB">내 답 살펴보기</button></div><div class="fb" id="wrFb"></div>
+</section>
+
+<section id="s11" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 15쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>손전등의 각도에 따른 빛의 세기 변화를 관찰할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>태양 고도와 태양 에너지양의 관계를 설명할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>태양 고도에 따른 빛의 세기를 비교하는 활동에 흥미를 느끼고, 관심을 가지게 되었어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 2학기 1단원 계절의 변화 · 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg', RAD=Math.PI/180;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 줄마다 고르기: 상자 안 .c1-rp 줄의 단추 중 data-a="1"이 정답. 모든 줄을 맞히면 끝 */
+function rowsPick(box,okMsg,sec,cb){const rows=$$(box+' .c1-rp'),out=$(box).nextElementSibling,ok=new Set();
+  rows.forEach((r,k)=>{const bs=$$('button',r);bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');ok.add(k);if(ok.size===rows.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m||'맞아요!')+' ('+ok.size+'/'+rows.length+')','info');}
+    else{b.classList.add('wrong');ok.delete(k);fb(out,b.dataset.m||'다시 생각해 봐요.',false);}});});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례대로 누르기: orderer('#box', ['첫째','둘째',…], 다 맞힘 글, 섹션, cb) */
+function orderer(box,steps,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;let n=0;
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.innerHTML='<span class="no"></span>'+s;b.onclick=()=>{if(b.classList.contains('right'))return;
+    if(i===n){b.classList.add('right');$('.no',b).textContent=(n+1)+'.';n++;
+      if(n===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은? ('+n+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,(n+1)+'번째로 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기(키보드도) */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 형성 평가: 고르기와 글쓰기가 모두 끝나야 섹션 완료 */
+function twoDone(sec){let a=false,b=false;return{q(){a=true;if(b)doneNav(sec);},w(){b=true;if(a)doneNav(sec);}};}
+function watchWrite(btn,out,f){$(btn).addEventListener('click',()=>{if($(out).classList.contains('ok'))f();});}
+/* 여러 활동이 다 끝나야 섹션 완료: const A=allDone('s3',2); … A(); */
+function allDone(sec,n,cb){let k=0;return()=>{k++;if(k===n){doneNav(sec);if(cb)cb();}};}
+/* 그림 그리기 도우미 */
+const sv=(tag,a,inner)=>'<'+tag+' '+Object.entries(a).map(([k,v])=>k+'="'+v+'"').join(' ')+(inner==null?'/>':'>'+inner+'</'+tag+'>');
+const tx=(x,y,t,o)=>'<text x="'+x+'" y="'+y+'" font-family="Jua" font-size="'+((o&&o.s)||18)+'" fill="'+((o&&o.c)||'#3b2a10')+'" text-anchor="'+((o&&o.a)||'middle')+'"'+((o&&o.w)?' font-weight="700"':'')+'>'+t+'</text>';
+/* 해 그림 */
+function sunG(x,y,r,glow){r=r||18;let g='<g transform="translate('+x+' '+y+')">';for(let i=0;i<12;i++){const a=i*Math.PI/6;g+='<line x1="'+((r+5)*Math.cos(a)).toFixed(1)+'" y1="'+((r+5)*Math.sin(a)).toFixed(1)+'" x2="'+((r+13)*Math.cos(a)).toFixed(1)+'" y2="'+((r+13)*Math.sin(a)).toFixed(1)+'" stroke="#f0a020" stroke-width="3.5" stroke-linecap="round"/>';}
+  return g+'<circle r="'+r+'" fill="#ffd23f" stroke="#e08a00" stroke-width="3"/>'+(glow?'<circle r="'+(r+20)+'" fill="#ffd23f" opacity=".18"/>':'')+'</g>';}
+/* 각의 호와 글: 꼭짓점 (x,y), 바닥에서 위로 a0~a1(도, 화면 기준 시계 반대), 반지름 r */
+function arcG(x,y,a0,a1,r,col,label){const p=a=>[x+r*Math.cos(a*RAD),y-r*Math.sin(a*RAD)];const [x0,y0]=p(a0),[x1,y1]=p(a1);
+  const big=Math.abs(a1-a0)>180?1:0,sw=a1>a0?0:1;let s='<path d="M'+x0.toFixed(1)+' '+y0.toFixed(1)+' A'+r+' '+r+' 0 '+big+' '+sw+' '+x1.toFixed(1)+' '+y1.toFixed(1)+'" fill="none" stroke="'+col+'" stroke-width="3"/>';
+  if(label){const m=(a0+a1)/2,[lx,ly]=[x+(r+22)*Math.cos(m*RAD),y-(r+22)*Math.sin(m*RAD)];s+=tx(lx.toFixed(1),(ly+6).toFixed(1),label,{s:17,c:col});}return s;}
+/* 빛의 세기(예): 「실험관찰」 14쪽 예시 1,412(그림자 짧을 때) · 986(그림자 길 때)에 맞춘 모형 */
+const lux=a=>Math.round(1503*Math.sin(a*RAD));
+const comma=n=>n.toLocaleString('ko-KR');
+
+/* ---------- 도입: 무대 조명 ---------- */
+let stgMoved=false;
+function drawStage(){const a=+$('#stgR').value,X=360,Y=240,R=200;
+  let s='<rect width="720" height="300" fill="#2a2140"/><path d="M0 0 h90 v300 h-90z M630 0 h90 v300 h-90z" fill="#7a1f2a"/><path d="M90 0 q30 60 0 120 M630 0 q-30 60 0 120" fill="#7a1f2a"/>';
+  s+='<rect x="60" y="'+Y+'" width="600" height="60" fill="#8a5a2a"/><line x1="60" x2="660" y1="'+Y+'" y2="'+Y+'" stroke="#5a3a1a" stroke-width="3"/>';
+  const lx=X-R*Math.cos(a*RAD),ly=Y-R*Math.sin(a*RAD),w=46/Math.sin(a*RAD),op=(.25+.7*Math.sin(a*RAD)).toFixed(2);
+  s+='<polygon points="'+lx.toFixed(1)+','+ly.toFixed(1)+' '+(X-w).toFixed(1)+','+Y+' '+(X+w).toFixed(1)+','+Y+'" fill="#fff3a8" opacity="'+(op*.45).toFixed(2)+'"/>';
+  s+='<ellipse cx="'+X+'" cy="'+Y+'" rx="'+w.toFixed(1)+'" ry="9" fill="#fff6c0" opacity="'+op+'"/>';
+  s+='<g transform="translate('+X+' '+(Y-2)+')"><circle cy="-92" r="15" fill="#ffd9b0"/><path d="M-16 -76 h32 l8 50 h-48z" fill="#4a7ad0"/><path d="M-8 -26 v26 M8 -26 v26" stroke="#2a2a4a" stroke-width="7"/></g>';
+  s+='<g transform="translate('+lx.toFixed(1)+' '+ly.toFixed(1)+') rotate('+(a)+')"><rect x="-26" y="-14" width="40" height="28" rx="5" fill="#555" stroke="#222" stroke-width="2"/><rect x="12" y="-16" width="8" height="32" fill="#ffe680"/></g>';
+  s+=arcG(X,Y,180-a,180,48,'#ffd23f');
+  s+='<rect x="470" y="18" width="200" height="60" rx="10" fill="#fff"/>'+tx(570,44,'조명 각도 '+a+'°',{s:18,c:'#3b2a10'})+tx(570,68,a>=80?'아주 밝아요!':a>=55?'밝아요':'빛이 넓게 퍼져 어두워요',{s:16,c:a>=55?'#16804a':'#c2332c'});
+  $('#stg').innerHTML=s;$('#stgV').textContent=a+'°';}
+$('#stgR').oninput=()=>{stgMoved=true;drawStage();};drawStage();
+pickOne('#p1','','','s1');
+
+/* ---------- 실험 준비 ---------- */
+orderer('#o2',['스마트 기기로 빛의 세기 측정 애플리케이션을 실행해요','스마트 기기의 카메라 센서가 있는 가까운 곳에 빨판 달린 막대를 세워요','손전등을 약 20 cm 떨어진 곳에서 비추고, 막대의 그림자가 짧을 때와 길 때 빛의 세기를 각각 재요'],
+  '순서를 모두 맞혔어요! 실험을 해 봐요.','s2');
+
+/* ---------- 가상 실험 ---------- */
+let rec={S:null,L:null};
+function drawLab(){const a=+$('#labR').value,X=330,Y=230,R=190,h=46,L=h/Math.tan(a*RAD);
+  let s='<rect width="720" height="300" fill="#26324a"/><rect x="0" y="'+(Y+14)+'" width="720" height="60" fill="#6b5640"/>';
+  /* 스마트 기기 */
+  s+='<rect x="'+(X-120)+'" y="'+(Y-2)+'" width="240" height="16" rx="6" fill="#dfe6ee" stroke="#555" stroke-width="2"/><circle cx="'+X+'" cy="'+(Y+3)+'" r="4" fill="#1c6fa8"/>'+tx(X+60,Y+10,'스마트 기기',{s:11,c:'#3b4a5a'});
+  const lx=X-R*Math.cos(a*RAD),ly=Y-R*Math.sin(a*RAD),w=34/Math.sin(a*RAD),op=(.25+.7*Math.sin(a*RAD)).toFixed(2);
+  s+='<polygon points="'+lx.toFixed(1)+','+ly.toFixed(1)+' '+(X-w).toFixed(1)+','+Y+' '+(X+w).toFixed(1)+','+Y+'" fill="#fff3a8" opacity="'+(op*.4).toFixed(2)+'"/>';
+  s+='<rect x="'+(X-w).toFixed(1)+'" y="'+(Y-3)+'" width="'+(2*w).toFixed(1)+'" height="5" fill="#fff6c0" opacity="'+op+'"/>';
+  /* 빨판 막대와 그림자 */
+  const mx=X-12;s+='<rect x="'+mx+'" y="'+(Y-2)+'" width="'+L.toFixed(1)+'" height="6" fill="#222" opacity=".8"/>';
+  s+='<rect x="'+(mx-3)+'" y="'+(Y-h)+'" width="6" height="'+h+'" fill="#e2573f"/><ellipse cx="'+mx+'" cy="'+(Y-1)+'" rx="9" ry="4" fill="#e2573f"/>';
+  s+=tx(mx+L/2,Y+40,'막대의 그림자 '+(L<12?'짧아요':L>40?'길어요':''),{s:16,c:'#ffe680'});
+  /* 손전등 */
+  s+='<g transform="translate('+lx.toFixed(1)+' '+ly.toFixed(1)+') rotate('+a+')"><rect x="-44" y="-11" width="44" height="22" rx="5" fill="#cfd6dd" stroke="#555" stroke-width="2"/><rect x="-4" y="-14" width="10" height="28" rx="3" fill="#ffe680" stroke="#555"/></g>';
+  s+='<line x1="'+X+'" y1="'+Y+'" x2="'+lx.toFixed(1)+'" y2="'+ly.toFixed(1)+'" stroke="#9aa9b4" stroke-width="1.5" stroke-dasharray="4 5"/>'+tx((X+lx)/2-14,(Y+ly)/2,'20 cm',{s:14,c:'#cfd6dd',a:'end'});
+  s+=arcG(X,Y,180-a,180,52,'#ffd23f');s+=tx(X-80,Y-18,a+'°',{s:18,c:'#ffd23f',a:'end'});
+  /* 화면 숫자 */
+  s+='<rect x="520" y="40" width="180" height="120" rx="16" fill="#111" stroke="#888" stroke-width="3"/>'+tx(610,72,'조도 측정기',{s:15,c:'#9fd8ff'})+tx(610,120,comma(lux(a)),{s:38,c:'#fff'})+tx(610,146,'숫자가 클수록 빛이 세요',{s:12,c:'#9fd8ff'});
+  $('#lab').innerHTML=s;$('#labV').textContent=a+'°';
+  $('#recS').disabled=a<65;$('#recL').disabled=a>45;}
+$('#labR').oninput=drawLab;drawLab();
+fb('#labFb','손전등 각도를 바꿔 막대의 그림자가 짧아지게(65° 이상), 길어지게(45° 이하) 해 보고 기록해요.','info');
+function recChk(){if(rec.S&&rec.L){fb('#labFb','두 번 모두 기록했어요! 그림자가 짧을 때(각이 클 때) 숫자가 더 커요.',true);doneNav('s3');}}
+$('#recS').onclick=()=>{const a=+$('#labR').value;rec.S=a;$('#rS').className='ok';$('#rS').textContent='그림자가 짧을 때: 각 '+a+'° · 화면 숫자 '+comma(lux(a));recChk();if(!rec.L)fb('#labFb','이번에는 각을 작게 해 그림자가 길 때를 재요.','info');};
+$('#recL').onclick=()=>{const a=+$('#labR').value;rec.L=a;$('#rL').className='ok';$('#rL').textContent='그림자가 길 때: 각 '+a+'° · 화면 숫자 '+comma(lux(a));recChk();if(!rec.S)fb('#labFb','이번에는 각을 크게 해 그림자가 짧을 때를 재요.','info');};
+
+rowsPick('#rp4','모두 맞혔어요! 각이 클수록 빛의 세기가 세고, 센서가 받는 에너지양이 많아요.','s4');
+matcher('#mt5',[['손전등','태양'],['스마트 기기','지표면'],['손전등과 스마트 기기가 이루는 각','태양 고도'],['센서가 받는 에너지양','태양 에너지양']],'모두 이었어요! 손전등과 스마트 기기가 이루는 각은 태양 고도를, 센서가 받는 에너지양은 태양 에너지양을 뜻해요.','s5');
+
+/* ---------- 같은 빛, 다른 넓이 ---------- */
+let rayMoves=new Set();
+function drawRay(){const a=+$('#rayR').value,Y=240,BX=360,N=10,W=110,box=110;let s='<rect width="720" height="300" fill="#eaf6fd"/><rect y="'+Y+'" width="720" height="60" fill="#c9b08a"/>';
+  const ux=Math.cos(a*RAD),uy=Math.sin(a*RAD),foot=W/uy;let inBox=0;
+  s+='<rect x="'+(BX-box/2)+'" y="'+(Y-2)+'" width="'+box+'" height="18" fill="#ffe680" stroke="#c9861a" stroke-width="2"/>'+tx(BX,Y+46,'일정한 면적',{s:16,c:'#7a4a00'});
+  for(let k=0;k<N;k++){const hx=BX-foot/2+foot*(k+.5)/N,sx=hx-300*ux,sy=Y-300*uy;const inside=Math.abs(hx-BX)<=box/2;if(inside)inBox++;
+    s+='<line x1="'+sx.toFixed(1)+'" y1="'+sy.toFixed(1)+'" x2="'+hx.toFixed(1)+'" y2="'+Y+'" stroke="'+(inside?'#f0a020':'#f6cf86')+'" stroke-width="'+(inside?3.5:2)+'"/><circle cx="'+hx.toFixed(1)+'" cy="'+Y+'" r="4" fill="'+(inside?'#e2573f':'#f6cf86')+'"/>';}
+  s+=arcG(BX-foot/2,Y,180-a,180,40,'#c2332c');
+  s+='<rect x="20" y="16" width="250" height="64" rx="10" fill="#fff"/>'+tx(145,42,'같은 빛줄기 10개',{s:17,c:'#b06a00'})+tx(145,68,'태양 고도 '+a+'°',{s:17,c:'#c2332c'});
+  s+='<rect x="450" y="16" width="250" height="64" rx="10" fill="#fff" stroke="#c9861a" stroke-width="2"/>'+tx(575,42,'노란 칸에 닿는 빛줄기',{s:16,c:'#7a4a00'})+tx(575,70,inBox+'개',{s:24,c:'#c2332c'});
+  $('#ray').innerHTML=s;$('#rayV').textContent=a+'°';}
+$('#rayR').oninput=()=>{rayMoves.add(+$('#rayR').value);drawRay();};drawRay();
+pickOne('#p6','','','s6');
+
+/* ---------- 여름과 겨울 영상 ---------- */
+function panelSW(x0,A,title,col,show,label){const Y=270,BX=x0+190,N=8,W=96,box=96;let s='<rect x="'+(x0+6)+'" y="6" width="380" height="328" rx="14" fill="'+(col)+'"/><rect x="'+(x0+6)+'" y="'+Y+'" width="380" height="64" fill="#b8d98f"/>';
+  s+='<rect x="'+(x0+216)+'" y="16" width="160" height="34" rx="9" fill="#fff"/>'+tx(x0+296,40,title,{s:20,c:'#3b2a10'});
+  if(!show)return s;const ux=Math.cos(A*RAD),uy=Math.sin(A*RAD),foot=W/uy;
+  s+=sunG(BX-(A>60?230:150)*ux+10,Y-(A>60?230:150)*uy+10,20);
+  s+='<rect x="'+(BX-box/2)+'" y="'+(Y-2)+'" width="'+box+'" height="16" fill="#ffe680" stroke="#c9861a" stroke-width="2"/>';
+  let n=0;for(let k=0;k<N;k++){const hx=BX-foot/2+foot*(k+.5)/N,ins=Math.abs(hx-BX)<=box/2;if(ins)n++;s+='<line x1="'+(hx-200*ux).toFixed(1)+'" y1="'+(Y-200*uy).toFixed(1)+'" x2="'+hx.toFixed(1)+'" y2="'+Y+'" stroke="'+(ins?'#f0a020':'#f6cf86')+'" stroke-width="'+(ins?3:1.8)+'"/>';}
+  s+=arcG(BX-foot/2,Y,180-A,180,36,'#c2332c');
+  if(label)s+='<rect x="'+(x0+40)+'" y="282" width="312" height="44" rx="10" fill="#fff" opacity=".92"/>'+tx(x0+196,302,label[0],{s:15,c:'#3b2a10'})+tx(x0+196,321,label[1],{s:15,c:'#c2332c'});
+  return s;}
+function drawSW(t){let s='<rect width="800" height="340" fill="#f6f2ea"/>';
+  s+=panelSW(0,76,'여름',t<5?'#fff1d6':'#fff1d6',t>=1,t>=3?['태양의 남중 고도가 높아요','좁은 면적에 모여 에너지양이 많아요']:null);
+  s+=panelSW(406,29,'겨울','#e6eef8',t>=6,t>=8?['태양의 남중 고도가 낮아요','넓게 퍼져 에너지양이 적어요']:null);
+  if(t>=11)s+='<rect x="270" y="110" width="260" height="52" rx="14" fill="#ffe680" stroke="#c9861a" stroke-width="2"/>'+tx(400,143,'여름은 덥고, 겨울은 추워요',{s:22,c:'#7a2a1f'});
+  $('#sw').innerHTML=s;}
+mkPlayer({root:'#pl7',end:15,ch:[[0,'① 여름','여름에는 태양의 남중 고도가 높아요. 태양 빛이 좁은 면적에 모여 일정한 면적의 지표면이 받는 태양 에너지양이 많아요.'],
+  [5,'② 겨울','겨울에는 태양의 남중 고도가 낮아요. 태양 빛이 넓은 면적에 퍼져 일정한 면적의 지표면이 받는 태양 에너지양이 적어요.'],
+  [10,'③ 그래서','여름에는 지표면이 받는 태양 에너지양이 많아 덥고, 겨울에는 적어 추워요.']],
+  draw:drawSW,done(){fb('#pl7Fb','끝까지 봤어요. 노란 칸(일정한 면적)에 닿는 빛줄기 수를 여름과 겨울에 비교해 봐요.',true);doneNav('s7');}});
+
+const A8=allDone('s8',2);
+rowsPick('#rp8','맞아요! 여름에는 태양의 남중 고도가 높아 일정한 면적의 지표면이 받는 태양 에너지양이 많아요.',null,A8);
+pickOne('#p8','','',null,A8);
+
+$('#blReveal').onclick=()=>{fb('#blFb','태양 고도가 높아질수록 일정한 면적의 지표면이 받는 태양 에너지양이 많아집니다.',true);doneNav('s9');};
+
+/* ---------- 형성 평가 ---------- */
+const T10=twoDone('s10');
+(function(){let g='<svg viewBox="0 0 600 190" style="max-height:22vh;width:100%" role="img" aria-label="태양 고도가 다른 세 그림 ㉠ ㉡ ㉢"><rect width="600" height="190" fill="#eaf6fd"/>';
+  [['㉠',25],['㉡',50],['㉢',80]].forEach(([n,A],k)=>{const x0=k*200,BX=x0+120,Y=160,W=40,ux=Math.cos(A*RAD),uy=Math.sin(A*RAD),foot=W/uy;
+    g+='<rect x="'+(x0+4)+'" y="'+Y+'" width="192" height="26" fill="#c9b08a"/>'+sunG(BX-120*ux,Y-120*uy+(A>70?16:0),12);
+    g+='<polygon points="'+(BX-foot/2-110*ux).toFixed(1)+','+(Y-110*uy).toFixed(1)+' '+(BX+foot/2-110*ux).toFixed(1)+','+(Y-110*uy).toFixed(1)+' '+(BX+foot/2).toFixed(1)+','+Y+' '+(BX-foot/2).toFixed(1)+','+Y+'" fill="#ffd23f" opacity=".55"/>';
+    g+='<line x1="'+(BX-foot/2).toFixed(1)+'" x2="'+(BX+foot/2).toFixed(1)+'" y1="'+Y+'" y2="'+Y+'" stroke="#c2332c" stroke-width="4"/>'+tx(x0+24,30,n,{s:22});});
+  g+='</svg>';
+  quiz('#quiz',[{q:'1. 태양 빛이 같은 양일 때, 일정한 면적의 지표면이 받는 태양 에너지양이 가장 <b>적은</b> 것은?',img:g,o:['㉠','㉡','㉢'],a:0,e:'㉠은 태양 고도가 가장 낮아 빛이 가장 넓은 면적에 퍼져요.',h:'태양 고도가 낮을수록 빛이 닿는 넓이가 어떻게 되나요?'}],()=>T10.q());})();
+keyCheck('#wr','#wrB','#wrFb',[[/여름[^.]*남중 ?고도[^.]*높/,'여름: 남중 고도가 높음'],[/여름[^.]*많/,'여름: 에너지양이 많음'],[/겨울[^.]*(낮)/,'겨울: 남중 고도가 낮음'],[/겨울[^.]*적/,'겨울: 에너지양이 적음']],3,null,
+  '‘여름에는 태양의 남중 고도가 높아 일정한 면적의 지표면이 받는 태양 에너지양이 많고, 겨울에는 …’처럼 써 봐요.');
+watchWrite('#wrB','#wrFb',()=>T10.w());
+faces('s11','멋져요! 다음 시간에는 계절 변화의 원인을 모형실험으로 찾아봐요.','어려웠던 부분은 ‘왜 그럴까’의 빛줄기 그림을 다시 움직여 봐요.');
+</script>

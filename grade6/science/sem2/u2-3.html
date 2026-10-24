@@ -1,0 +1,754 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>물질이 타려면 무엇이 필요할까?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#b8452f;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+.r3-steps{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.r3-steps button{font-size:.86rem;min-height:2.3rem;padding:.15em .7em}
+.r3-steps button[disabled]{opacity:.45}
+.r3-tri{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.r3-tri button{font-size:.92rem;min-height:2.4rem;padding:.15em .8em;border-width:3px}
+.r3-tri button.off{opacity:.55;text-decoration:line-through}
+.sg-pool{display:flex;flex-wrap:wrap;gap:8px;min-height:2.8rem;padding:6px;border:2px dashed var(--line);border-radius:12px}
+.sg-bins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px}
+.sg-bin{border:3px solid var(--navy);border-radius:14px;padding:6px 8px;min-height:4.4rem;cursor:pointer;background:var(--paper)}
+.sg-bin>b{display:block;font-family:Jua,sans-serif;font-weight:400;color:var(--navy);font-size:.92rem}
+.sg-in{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.sg-card{font-size:.86rem;min-height:2.2rem;padding:.1em .7em;border-width:2px}
+@media (max-width:640px){.sg-bins{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M43 10 C52 26 66 34 62 54 a19 19 0 0 1 -38 0 C24 42 34 36 34 24 C40 30 42 34 43 10z" fill="#e2573f" stroke="#fff" stroke-width="3"/><path d="M43 44 c6 6 9 10 6 16 a7 7 0 0 1 -12 0 c-2 -6 3 -10 6 -16z" fill="#ffd23f"/></svg>
+  <div><h1>물질이 타려면 무엇이 필요할까?</h1><p>6학년 2학기 과학 · 2단원 물질의 연소 · 4~5/11차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">실험 1 산소</a><a href="#s3">산소의 성질</a><a href="#s4">실험 2 온도</a><a href="#s5">연소와 발화점</a><a href="#s6">연소의 조건</a><a href="#s7">조건 찾기</a><a href="#s8">체험 더하기</a><a href="#s9">한눈에 쏙</a><a href="#s10">형성 평가</a><a href="#s11">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>물질의 연소에 필요한 조건을 찾아보는 실험을 수행할 수 있어요.<br>물질이 연소하는 데 필요한 조건을 설명할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 42쪽</span>
+  <h2>불을 피울 때 부채질을 하는 까닭은 무엇일까요?</h2>
+  <svg class="scene" viewBox="0 0 600 200" style="max-height:25vh" role="img" aria-label="숯불에 부채질을 하는 모습">
+    <rect width="600" height="200" fill="#fbf7ee"/><rect y="170" width="600" height="30" fill="#d9c49a"/>
+    <path d="M200 170 l20 -50 h160 l20 50z" fill="#6b6f76"/><rect x="214" y="110" width="172" height="14" rx="6" fill="#55585e"/>
+    <g fill="#3a3a3a"><ellipse cx="250" cy="108" rx="22" ry="10"/><ellipse cx="296" cy="104" rx="24" ry="11"/><ellipse cx="344" cy="108" rx="22" ry="10"/></g>
+    <g fill="#ff7a2f" opacity=".85"><ellipse cx="250" cy="104" rx="12" ry="5"/><ellipse cx="296" cy="99" rx="14" ry="6"/><ellipse cx="344" cy="104" rx="12" ry="5"/></g>
+    <path d="M280 96 q-10 -30 16 -50 q-4 24 14 30 q6 -14 2 -26 q22 20 6 46z" fill="#ffb13b"/>
+    <path d="M470 40 q50 30 30 90 l-60 -30z" fill="#e7c86a" stroke="#b9963a" stroke-width="3"/><rect x="430" y="96" width="44" height="10" rx="5" transform="rotate(30 452 101)" fill="#8a6a3a"/>
+    <path d="M430 70 q-30 6 -60 20 M432 90 q-30 4 -52 16" stroke="#7fb3d5" stroke-width="4" fill="none" stroke-dasharray="8 6"/>
+    <text x="470" y="160" text-anchor="middle" font-family="Jua" font-size="16" fill="#4a3a20">부채질</text>
+  </svg>
+  <div class="pick" id="r3P1">
+    <button data-a="1" data-m="맞아요! 부채질을 하면 공기(산소)가 공급되어 불씨가 잘 살아나고 더 잘 타요. 물질이 타려면 무엇이 필요한지 실험으로 알아봐요.">공기를 불어 넣어 불이 더 잘 타게 하려고</button>
+    <button data-a="0" data-m="부채질은 숯을 식히려는 것이 아니에요. 부채질을 하면 불이 어떻게 되는지 떠올려 봐요.">숯을 차갑게 식히려고</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="실험 1 산소">
+  <span class="stage">실험해요 1 · 물질이 탈 때 산소의 영향 · 「실험관찰」 26쪽</span>
+  <h2>두 촛불을 아크릴 통으로 덮으면 어떻게 될까요?</h2>
+  <div class="r3-steps" data-glue="1">
+    <button class="main" id="r3A1">① 양초 두 개에 불 붙이기</button>
+    <button id="r3A2" disabled>② 비커에 묽은 과산화 수소수 + 아이오딘화 칼륨 두 숟가락</button>
+    <button id="r3A3" disabled>③ 아크릴 통 두 개로 동시에 덮기</button>
+  </div>
+  <svg id="r3LabA" class="scene" viewBox="0 0 720 280" style="max-height:34vh" data-glue="1" role="img" aria-label="크기가 같은 아크릴 통 두 개로 덮은 촛불, 오른쪽 통에는 산소가 발생하는 비커가 함께 있음"></svg>
+  <div class="fb" id="r3AFb"></div>
+  <div id="r3AQ" hidden>
+    <p class="jua" style="font-size:1rem;margin:4px 0">더 오래 탄 촛불은 어느 것인가요?</p>
+    <div class="pick" id="r3P2a">
+      <button data-a="0" data-m="㉠은 비커 없이 덮은 촛불이에요. 먼저 꺼졌어요.">㉠ 양초만 덮은 촛불</button>
+      <button data-a="1" data-m="맞아요! 묽은 과산화 수소수와 아이오딘화 칼륨이 담긴 비커와 함께 덮은 ㉡이 더 오래 탔어요.">㉡ 비커와 함께 덮은 촛불</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 실험 전에 비상구·소화기·모래 보관함 위치 확인 · 실험복·보안경·실험용 장갑·면장갑 착용 · 유리 기구가 깨지지 않게 조심 · 양초가 연소한 뒤 아크릴 통이 뜨거울 수 있어요 · 묽은 과산화 수소수가 피부에 묻으면 흐르는 물로 오래 씻어요 · 다 쓴 용액은 선생님의 안내에 따라 버려요.</p>
+</section>
+
+<section id="s3" data-nav="산소의 성질">
+  <span class="stage">실험해요 1 · 「실험관찰」 26쪽</span>
+  <h2>실험 결과를 산소의 성질과 관련지어 생각해요</h2>
+  <p>묽은 과산화 수소수와 아이오딘화 칼륨이 반응하면 <b>산소</b>가 발생해 아크릴 통에 모여요. (4학년 2학기 “여러 가지 기체”에서 배운 산소의 성질을 떠올려요.)</p>
+  <p class="jua" style="font-size:1rem;margin:4px 0">㉡ 촛불이 더 오래 탄 까닭은 무엇일까요?</p>
+  <div class="pick" id="r3P3a">
+    <button data-a="1" data-m="맞아요! 산소는 물질이 타는 것을 돕는 성질이 있어요. 산소가 공급되면 촛불이 더 오래 탈 수 있어요.">산소는 물질이 타는 것을 돕는 성질이 있기 때문에</button>
+    <button data-a="0" data-m="비커의 물이 촛불을 식혔다면 오히려 빨리 꺼졌겠지요? 비커에서 어떤 기체가 나왔는지 떠올려요.">비커의 물이 촛불을 시원하게 해 주었기 때문에</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1rem;margin:4px 0">㉠ 촛불이 꺼졌을 때 아크릴 통 안에는 산소가 하나도 없을까요?</p>
+  <div class="pick" id="r3P3b">
+    <button data-a="0" data-m="통 안의 산소가 모두 없어진 것은 아니에요. 촛불이 꺼진 뒤에 재 보아도 산소가 남아 있어요.">네, 산소가 모두 없어져서 꺼졌어요</button>
+    <button data-a="1" data-m="맞아요! 산소가 남아 있지만, 물질이 연소할 수 있을 만큼 산소가 충분하지 않으면 연소가 일어나지 않아요.">산소가 남아 있지만, 탈 만큼 충분하지 않아서 꺼졌어요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="실험 2 온도">
+  <span class="stage">실험해요 2 · 물질이 탈 때 온도의 영향 · 「실험관찰」 27쪽</span>
+  <h2>철판을 가열하면 성냥의 어느 부분에 먼저 불이 붙을까요?</h2>
+  <p style="margin:0">② 핀셋으로 <b>성냥의 머리 부분</b>을 고른 뒤 점을 누르고, 이어서 <b>성냥의 나무 부분</b>도 점에 놓아요. 두 점은 철판 가운데로부터 <b>같은 거리</b>여야 해요.</p>
+  <div class="r3-steps" data-glue="1">
+    <button id="r3Bh" class="main">🔥 성냥의 머리 부분 집기</button>
+    <button id="r3Bw">🪵 성냥의 나무 부분 집기</button>
+    <button id="r3Bheat" disabled>③ 알코올램프로 철판 가운데 가열하기</button>
+  </div>
+  <svg id="r3LabB" class="scene" viewBox="0 0 720 280" style="max-height:34vh" data-glue="1" role="img" aria-label="삼발이 위 철판에 놓은 성냥의 머리 부분과 나무 부분, 아래에서 알코올램프로 가열"></svg>
+  <div class="fb" id="r3BFb"></div>
+  <div id="r3BQ" hidden>
+    <p class="jua" style="font-size:1rem;margin:4px 0">불이 먼저 붙은 것은 어느 것인가요?</p>
+    <div class="pick" id="r3P4">
+      <button data-a="1" data-m="맞아요! 불을 직접 붙이지 않았는데도 철판이 뜨거워지자 성냥의 머리 부분에 먼저 불이 붙었어요. 나무 부분은 더 오래 가열해야 불이 붙어요.">성냥의 머리 부분</button>
+      <button data-a="0" data-m="두 부분은 가운데로부터 같은 거리에 있었어요. 어느 쪽에서 먼저 불꽃이 일었는지 다시 봐요.">성냥의 나무 부분</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 알코올램프로 가열할 때 철판과 삼발이가 매우 뜨거워요. 실험이 끝난 뒤 완전히 식을 때까지 만지지 않아요 · 성냥의 머리 부분에 불이 붙을 때 갑자기 불꽃이 일어나니 얼굴을 가까이하지 않아요 · 머리 부분과 나무 부분을 너무 가까이 두지 않아요 · 연기를 들이마시지 않고, 실험 뒤에는 환기해요.</p>
+</section>
+
+<section id="s5" data-nav="연소와 발화점">
+  <span class="stage">정리해요 · 「과학」 44쪽</span>
+  <h2>연소와 발화점</h2>
+  <p>물질이 산소와 만나 빛과 열을 내면서 타는 현상을 <b>연소</b>라고 해요. 공기 중에 산소가 많을수록 연소가 활발하게 일어나요. 어떤 물질이 타기 시작하는 온도를 그 물질의 <b>발화점</b>이라고 해요. 물질이 타려면 온도가 발화점 이상이 되어야 하며, 발화점은 물질에 따라 달라요.</p>
+  <p class="jua" style="font-size:1rem;margin:4px 0">1. 송풍기나 화로의 공기 조절 장치로 불의 세기를 조절할 수 있는 까닭은?</p>
+  <div class="pick" id="r3P5a">
+    <button data-a="1" data-m="맞아요! 공기(산소)의 양을 조절해 불씨를 크게 하거나 불의 세기를 조절해요.">산소의 양을 조절할 수 있기 때문에</button>
+    <button data-a="0" data-m="송풍기는 공기를 불어 넣는 장치예요. 공기 속 무엇이 연소를 돕나요?">탈 물질의 양을 늘려 주기 때문에</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1rem;margin:4px 0">2. 성냥의 머리 부분이 나무 부분보다 먼저 불이 붙은 까닭은?</p>
+  <div class="pick" id="r3P5b">
+    <button data-a="0" data-m="두 부분은 철판 가운데로부터 같은 거리에 있어 받은 열의 조건이 같았어요.">성냥의 머리 부분이 불꽃에 더 가까웠기 때문에</button>
+    <button data-a="1" data-m="맞아요! 성냥의 머리 부분의 발화점이 나무 부분의 발화점보다 낮기 때문이에요.">성냥의 머리 부분의 발화점이 더 낮기 때문에</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="연소의 조건">
+  <span class="stage">정리해요 · 「과학」 44쪽</span>
+  <h2>연소의 조건을 하나씩 켜고 꺼 봐요</h2>
+  <p>단추를 눌러 조건을 없애거나 되살려 봐요. 불이 붙는 경우와 꺼지는 경우를 모두 만들어 봐요. (<b id="r3TN">0</b>/4)</p>
+  <div class="r3-tri" id="r3Tri" data-glue="1"><button data-k="f" class="sel">🪵 탈 물질</button><button data-k="o" class="sel">💨 산소(공기)</button><button data-k="t" class="sel">🌡️ 발화점 이상의 온도</button></div>
+  <svg id="r3Fire" class="scene" viewBox="0 0 600 220" style="max-height:28vh" data-glue="1" role="img" aria-label="연소의 세 가지 조건과 모닥불"></svg>
+  <div class="fb" id="r3TriFb"></div>
+</section>
+
+<section id="s7" data-nav="조건 찾기">
+  <span class="stage">생각+ · 불을 직접 붙이지 않아도 연소하는 예</span>
+  <h2>어떤 조건을 채워 주는 것일까요?</h2>
+  <p>카드를 누른 뒤 알맞은 칸을 눌러 넣어요.</p>
+  <div id="r3Sort" data-glue="1"></div>
+</section>
+
+<section id="s8" data-nav="체험 더하기">
+  <span class="stage">체험 더하기 · 「과학」 45쪽</span>
+  <h2>나로우주센터 우주과학관에서 연소를 알아봐요!</h2>
+  <svg class="scene" viewBox="0 0 600 200" style="max-height:26vh" role="img" aria-label="연료를 연소시키며 발사되는 로켓">
+    <rect width="600" height="200" fill="#dcecf8"/><rect y="176" width="600" height="24" fill="#9ab07a"/>
+    <rect x="200" y="60" width="16" height="116" fill="#8a8f96"/><rect x="216" y="80" width="40" height="6" fill="#8a8f96"/>
+    <path d="M300 20 q14 14 14 40 v70 h-28 v-70 q0 -26 14 -40z" fill="#f4f4f4" stroke="#7a8590" stroke-width="3"/>
+    <path d="M286 110 l-16 26 h16z M314 110 l16 26 h-16z" fill="#c0392b"/><circle cx="300" cy="62" r="7" fill="#7fb3d5" stroke="#555" stroke-width="2"/>
+    <path d="M288 132 q12 60 12 60 q0 0 12 -60z" fill="#ffb13b"/><path d="M294 132 q6 34 6 34 q0 0 6 -34z" fill="#fff3a0"/>
+    <g fill="#e8e8e8" opacity=".9"><circle cx="260" cy="180" r="18"/><circle cx="340" cy="180" r="20"/><circle cx="300" cy="186" r="16"/></g>
+  </svg>
+  <p>로켓은 연료를 연소시킬 때 생기는 힘을 이용해 우주로 날아가는 발사체예요. 우주과학관에서는 로켓이 발사되며 일어나는 연소 과정을 영상으로 볼 수 있어요.</p>
+  <div class="pick" id="r3P8">
+    <button data-a="1" data-m="맞아요! 로켓을 발사하려면 연료(탈 물질), 산소, 발화점 이상의 온도라는 연소의 조건을 모두 만족해야 해요.">로켓을 발사하려면 연소의 조건을 모두 만족해야 해요</button>
+    <button data-a="0" data-m="연소의 조건이 하나라도 없으면 연소가 일어나지 않아요. 로켓도 마찬가지예요.">로켓은 연소의 조건 중 하나만 있어도 돼요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s9" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 물질이 연소하려면 탈 물질과 <span class="blank"><span id="bl1">ㅅ</span><span id="bl2">ㅅ</span></span>, 발화점 이상의 온도가 필요합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <div id="r3Q2" hidden>
+    <p class="jua" style="font-size:1.05rem;margin-top:8px">2. 💭 마른나무를 마찰해 불을 피울 수 있는 까닭은?</p>
+    <div class="pick" id="r3P9">
+      <button data-a="1" data-m="맞아요! 마른나무를 마찰하면 열이 발생해 온도가 발화점 이상으로 높아지기 때문이에요.">마찰로 생긴 열 때문에 온도가 발화점 이상으로 높아져서</button>
+      <button data-a="0" data-m="마찰한다고 산소가 새로 생기지는 않아요. 손을 비비면 손이 어떻게 되는지 떠올려요.">마찰하면 나무에서 산소가 새로 생겨서</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s10" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p style="margin:0;font-size:.95rem">성냥의 머리 부분과 나무 부분을 철판 가운데로부터 같은 거리에 놓고 철판의 가운데 부분을 가열했어요.</p>
+  <p class="jua" style="font-size:1rem;margin:4px 0">1-⑴ 먼저 불이 붙는 것은?</p>
+  <div class="pick" id="r3F1a"><button data-a="1" data-m="정답! 성냥의 머리 부분에 먼저 불이 붙어요.">성냥의 머리 부분</button><button data-a="0" data-m="발화점이 낮은 쪽에 먼저 불이 붙어요.">성냥의 나무 부분</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1rem;margin:4px 0">1-⑵ 발화점이 높은 것은?</p>
+  <div class="pick" id="r3F1b"><button data-a="0" data-m="먼저 불이 붙은 머리 부분은 발화점이 더 낮아요.">성냥의 머리 부분</button><button data-a="1" data-m="정답! 늦게 불이 붙는 성냥의 나무 부분의 발화점이 더 높아요.">성냥의 나무 부분</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1rem;margin:6px 0 2px">2. ✏️ 서술형: 연소가 일어나는 데 필요한 세 가지 조건을 써요.</p>
+  <textarea id="r3F2" rows="2" data-glue="1" placeholder="예: 연소가 일어나려면 …"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="r3F2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="r3F2Fb"></div>
+</section>
+
+<section id="s11" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 27쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>물질이 탈 때 필요한 조건을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>물질이 탈 때 필요한 조건을 확인하는 실험을 수행할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>안전에 주의하며 실험에 적극적으로 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 42~45쪽 · 「실험관찰」 26~27쪽 · 지도서 204~215쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+function needAll(n,sec){const s=new Set();return k=>{s.add(k);if(s.size>=n)doneNav(sec);};}
+function sortGame(id,items,bins,done,msg){const R=$('#'+id);let sel=null;
+  R.innerHTML=`<div class="sg-pool"></div><div class="sg-bins">${bins.map((b,i)=>`<div class="sg-bin" data-i="${i}"><b>${b}</b><div class="sg-in"></div></div>`).join('')}</div><div class="row" style="margin-top:6px"><button class="main sg-chk">확인하기</button></div><div class="fb"></div>`;
+  const pool=R.querySelector('.sg-pool');
+  items.forEach((it,k)=>{const c=document.createElement('button');c.className='sg-card';c.textContent=it.n;c.dataset.k=k;
+    c.onclick=()=>{if(c.classList.contains('right'))return;sel=sel===c?null:c;R.querySelectorAll('.sg-card').forEach(x=>x.classList.toggle('sel',x===sel));};pool.appendChild(c);});
+  pool.onclick=e=>{if(sel&&!e.target.closest('.sg-card')){pool.appendChild(sel);sel.classList.remove('sel');sel=null;}};
+  R.querySelectorAll('.sg-bin').forEach(b=>b.onclick=e=>{if(!sel||e.target.closest('.sg-card'))return;b.querySelector('.sg-in').appendChild(sel);sel.classList.remove('sel','wrong');sel=null;});
+  R.querySelector('.sg-chk').onclick=()=>{const out=R.querySelector('.fb');if(pool.querySelector('.sg-card')){fb(out,'아직 넣지 않은 카드가 있어요. 카드를 누르고 칸을 눌러요.','info');return;}let bad=0;
+    R.querySelectorAll('.sg-bin').forEach(b=>b.querySelectorAll('.sg-card').forEach(c=>{const ok=items[c.dataset.k].b==b.dataset.i;c.classList.toggle('right',ok);
+      if(!ok){bad++;c.classList.add('wrong');setTimeout(()=>{c.classList.remove('wrong');pool.appendChild(c);},700);}}));
+    if(bad)fb(out,`${bad}개가 알맞은 칸에 있지 않아요. 다시 넣어 봐요.`,false);else{fb(out,msg||'모두 맞았어요!',true);if(done)done();}};}
+let PH=0;(function tick(){PH+=0.02;requestAnimationFrame(tick);})();
+function flame(cx,by,s){if(s<=0.02)return '';const w=13*s,H=46*s,sw=Math.sin(PH*7)*w*0.18;
+  return `<path d="M${cx} ${by-H} q${w*0.9+sw} ${H*0.55} ${w*0.45} ${H*0.9} q-${w*0.45} ${H*0.16} -${w*0.9} 0 q-${w*0.45} -${H*0.35} ${w*0.45} -${H*0.9}z" fill="#ff9a3c" opacity=".6"/><path d="M${cx} ${by-H*0.8} q${w*0.55} ${H*0.45} ${w*0.28} ${H*0.72} q-${w*0.28} ${H*0.12} -${w*0.56} 0 q-${w*0.28} -${H*0.27} ${w*0.28} -${H*0.72}z" fill="#ffd23f"/>`;}
+
+pickOne('#r3P1','','','s1');
+
+/* 실험 1: 산소 */
+(function(){const S={lit:false,beaker:false,cover:false,t:0,out:[false,false]};let raf=0;
+  function tea(x,s,out){let h=`<rect x="${x-34}" y="232" width="68" height="20" rx="4" fill="#c9cdd1" stroke="#9aa1a8" stroke-width="2"/><rect x="${x-26}" y="222" width="52" height="14" fill="#fbf3e2" stroke="#e2d2b0" stroke-width="2"/><rect x="${x-1.5}" y="212" width="3" height="10" fill="#333"/>`;
+    if(S.lit&&!out)h+=flame(x,214,s);if(out)h+=`<path d="M${x} 210 q-8 -16 4 -28 q-10 -12 2 -26" stroke="#aaa" stroke-width="3" fill="none" opacity=".7"/>`;return h;}
+  function draw(){const T=S.t;let h='<rect width="720" height="280" fill="#fbf7ee"/><rect y="252" width="720" height="28" fill="#e6d6b2"/>';
+    const s1=S.cover?Math.max(0,1-T/0.45):1,s2=S.cover?Math.max(0,1-T):1;
+    h+=tea(220,0.4+0.6*s1,S.out[0]);h+=tea(470,0.4+0.6*s2,S.out[1]);
+    if(S.beaker){const bub=S.t<1;h+=`<path d="M530 186 h50 v62 q0 6 -6 6 h-38 q-6 0 -6 -6z" fill="#eef6fb" fill-opacity=".8" stroke="#8fb1c6" stroke-width="3"/><rect x="533" y="214" width="44" height="38" fill="#e8f1d8" opacity=".9"/>`;
+      if(bub)for(let b=0;b<6;b++){const yy=246-((PH*90+b*13)%34);h+=`<circle cx="${538+b*7}" cy="${yy}" r="2.5" fill="#fff" stroke="#9fc7de"/>`;}
+      h+=`<text x="555" y="178" text-anchor="middle" font-family="Jua" font-size="12" fill="#3b5566">산소 발생</text>`;}
+    else h+=`<text x="560" y="240" text-anchor="middle" font-family="Jua" font-size="13" fill="#888">(비커 놓을 자리)</text>`;
+    if(S.cover){[[150,290],[400,600]].forEach(([a,b])=>{h+=`<rect x="${a}" y="${70}" width="${b-a}" height="182" rx="6" fill="#dff0fa" fill-opacity=".35" stroke="#7fb3d5" stroke-width="4"/>`;});}
+    h+=`<text x="220" y="${S.cover?60:150}" text-anchor="middle" font-family="Jua" font-size="18" fill="#4a3a20">㉠ 양초만</text><text x="500" y="${S.cover?60:150}" text-anchor="middle" font-family="Jua" font-size="18" fill="#4a3a20">㉡ 양초 + 비커</text>`;
+    if(S.cover)h+=`<rect x="20" y="16" width="120" height="30" rx="8" fill="#b8452f"/><text x="80" y="37" text-anchor="middle" font-family="Jua" font-size="15" fill="#fff">⏱ 덮은 뒤 ${S.t<0.45?'잠시':S.t<1?'조금 더':'한참'}</text>`;
+    $('#r3LabA').innerHTML=h;}
+  (function loop(){if(S.lit&&!(S.out[0]&&S.out[1]&&S.t>=1))draw();requestAnimationFrame(loop);})();draw();
+  const step=(i,msg)=>{$('#r3A'+i).disabled=true;$('#r3A'+i).classList.remove('main');const nx=$('#r3A'+(i+1));if(nx){nx.disabled=false;nx.classList.add('main');}fb('#r3AFb',msg,'info');draw();};
+  $('#r3A1').onclick=()=>{S.lit=true;step(1,'점화기로 크기와 심지 길이가 비슷한 두 양초에 불을 붙였어요.');};
+  $('#r3A2').onclick=()=>{S.beaker=true;step(2,'비커에 묽은 과산화 수소수를 절반 정도 넣고 아이오딘화 칼륨을 두 숟가락 넣었더니 보글거리며 기체(산소)가 발생해요. 산소가 날아가기 전에 바로 덮어요!');};
+  $('#r3A3').onclick=()=>{S.cover=true;step(3,'크기가 같은 아크릴 통 두 개로 동시에 덮었어요. 촛불을 지켜봐요.');const t0=performance.now();
+    const go=now=>{S.t=Math.min(1,(now-t0)/9000);if(S.t>=0.45&&!S.out[0]){S.out[0]=true;fb('#r3AFb','㉠ 양초만 덮은 촛불이 먼저 꺼졌어요!','info');}
+      if(S.t>=1&&!S.out[1]){S.out[1]=true;draw();fb('#r3AFb','㉡ 비커와 함께 덮은 촛불은 조금 더 타다가 꺼졌어요.',true);$('#r3AQ').hidden=false;return;}requestAnimationFrame(go);};requestAnimationFrame(go);};
+  pickOne('#r3P2a','','','s2');})();
+
+{const d=needAll(2,'s3');pickOne('#r3P3a','','',null,()=>d(1));pickOne('#r3P3b','','',null,()=>d(2));}
+
+/* 실험 2: 온도 */
+(function(){const DOT=[[250,0],[470,1],[330,2],[400,3]];/* x, id: 가운데 360에서 110 거리 = 250·470 */
+  const S={hold:null,put:{},t:0,heat:false,head:false,wood:0};
+  function draw(){const T=S.t;let h='<rect width="720" height="280" fill="#fbf7ee"/><rect y="252" width="720" height="28" fill="#e6d6b2"/>';
+    h+=`<path d="M230 252 l40 -96 M490 252 l-40 -96 M360 252 v-96" stroke="#555" stroke-width="6"/><rect x="250" y="150" width="220" height="10" rx="3" fill="#444"/>`;
+    /* 철판 */
+    const g=S.heat?Math.min(1,T*1.4):0;h+=`<defs><radialGradient id="r3pl" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="${g?'#d9543a':'#9aa3ab'}" stop-opacity="${0.3+g*0.7}"/><stop offset="1" stop-color="#9aa3ab"/></radialGradient></defs>`;
+    h+=`<rect x="160" y="140" width="400" height="12" fill="url(#r3pl)" stroke="#6b737a" stroke-width="2"/>`;
+    /* 알코올램프 */
+    h+=`<path d="M326 252 q-8 -40 22 -50 h24 q30 10 22 50z" fill="#eaf4fa" stroke="#8fb1c6" stroke-width="3"/><rect x="350" y="188" width="20" height="14" fill="#c9cdd1"/>`;
+    if(S.heat)h+=flame(360,190,1.3);
+    DOT.forEach(([x,k])=>{if(!S.put[k]&&S.put[k]!==0)h+=`<circle cx="${x}" cy="136" r="7" fill="${S.hold?'#ffd23f':'#fff'}" stroke="#b8452f" stroke-width="2" stroke-dasharray="3 2"/>`;});
+    const at=(x)=>x;
+    Object.entries(S.put).forEach(([k,what])=>{const x=DOT.find(d=>d[1]==k)[0];
+      if(what==='h'){h+=`<rect x="${x-10}" y="128" width="20" height="10" rx="5" fill="${S.head?'#3a2a2a':'#c0392b'}"/>`;if(S.head&&T<0.75)h+=flame(x,130,0.9);if(S.head&&T>=0.75)h+=`<path d="M${x} 126 q-6 -12 3 -22" stroke="#aaa" stroke-width="2" fill="none"/>`;}
+      else{h+=`<rect x="${x-16}" y="130" width="32" height="8" fill="${S.wood>0?'#4a3a2a':'#e0c08a'}" stroke="#a88a5a"/>`;if(S.wood>1)h+=flame(x,131,0.7);}
+      h+=`<text x="${x}" y="${what==='h'?115:118}" text-anchor="middle" font-family="Jua" font-size="13" fill="#4a3a20">${what==='h'?'머리 부분':'나무 부분'}</text>`;});
+    h+=`<text x="360" y="275" text-anchor="middle" font-family="Jua" font-size="13" fill="#4a3a20">철판 가운데를 가열해요</text>`;
+    $('#r3LabB').innerHTML=h+'<g id="r3Hit"></g>';
+    DOT.forEach(([x,k])=>{const c=document.createElementNS('http://www.w3.org/2000/svg','circle');c.setAttribute('cx',x);c.setAttribute('cy',136);c.setAttribute('r',18);c.setAttribute('fill','transparent');c.setAttribute('class','hit');c.onclick=()=>place(k,x);$('#r3Hit').appendChild(c);});}
+  function place(k,x){if(S.heat)return;if(!S.hold){fb('#r3BFb','먼저 위의 단추로 성냥의 머리 부분이나 나무 부분을 집어요.','info');return;}
+    if(S.put[k]){fb('#r3BFb','그 자리에는 이미 놓았어요.','info');return;}
+    const other=Object.keys(S.put)[0];
+    if(other!==undefined){const ox=DOT.find(d=>d[1]==other)[0];if(Math.abs(Math.abs(ox-360)-Math.abs(x-360))>1||Math.abs(ox-x)<100){fb('#r3BFb','⚠️ 두 성냥 조각은 철판 가운데로부터 같은 거리에, 서로 너무 가깝지 않게 놓아야 해요. 다른 점을 골라요.',false);return;}}
+    else if(Math.abs(x-360)<100){fb('#r3BFb','⚠️ 가운데에 너무 가까우면 두 조각을 같은 거리에 놓으면서 서로 떨어뜨리기 어려워요. 바깥쪽 점을 골라요.',false);return;}
+    S.put[k]=S.hold;$('#r3B'+S.hold).disabled=true;$('#r3B'+S.hold).classList.remove('sel','main');S.hold=null;draw();
+    if(Object.keys(S.put).length===2){$('#r3Bheat').disabled=false;$('#r3Bheat').classList.add('main');fb('#r3BFb','두 조각을 가운데로부터 같은 거리에 놓았어요. 이제 알코올램프로 철판 가운데를 가열해요.','info');}
+    else{fb('#r3BFb','좋아요! 남은 조각도 집어서 가운데로부터 같은 거리의 점에 놓아요.','info');$('#r3Bw').classList.add('main');}}
+  $('#r3Bh').onclick=()=>{S.hold='h';$('#r3Bh').classList.add('sel');$('#r3Bw').classList.remove('sel');draw();};
+  $('#r3Bw').onclick=()=>{S.hold='w';$('#r3Bw').classList.add('sel');$('#r3Bh').classList.remove('sel');draw();};
+  $('#r3Bheat').onclick=()=>{S.heat=true;$('#r3Bheat').disabled=true;fb('#r3BFb','철판의 가운데를 가열하고 있어요. 두 조각을 잘 지켜봐요.','info');const t0=performance.now();
+    const go=now=>{S.t=Math.min(1,(now-t0)/9000);
+      if(S.t>0.35&&!S.head){S.head=true;fb('#r3BFb','성냥의 머리 부분에 불이 붙었어요! 불을 직접 붙이지 않았는데도 탔어요.','info');}
+      if(S.t>0.6&&S.wood===0){S.wood=1;fb('#r3BFb','성냥의 나무 부분은 아직 불이 붙지 않고 색깔이 검게 변하고 있어요.','info');}
+      if(S.t>0.92&&S.wood===1)S.wood=2;
+      draw();if(S.t<1)requestAnimationFrame(go);else{fb('#r3BFb','더 오래 가열하자 성냥의 나무 부분에도 불이 붙었어요. (불이 붙지 않고 검게 변하기만 할 수도 있어요.)',true);$('#r3BQ').hidden=false;}};requestAnimationFrame(go);};
+  draw();(function loop(){if(S.heat&&S.t<1)return requestAnimationFrame(loop);if(S.heat)draw();requestAnimationFrame(loop);})();
+  pickOne('#r3P4','','','s4');})();
+
+{const d=needAll(2,'s5');pickOne('#r3P5a','','',null,()=>d(1));pickOne('#r3P5b','','',null,()=>d(2));}
+
+/* 연소의 조건 켜고 끄기 */
+(function(){const on={f:1,o:1,t:1};const seen=new Set();
+  function draw(){const burn=on.f&&on.o&&on.t;let h='<rect width="600" height="220" fill="#fbf7ee"/><rect y="196" width="600" height="24" fill="#d9c49a"/>';
+    h+=`<g transform="translate(300 0)">`;
+    if(on.f)h+=`<path d="M-60 196 l100 -26 M60 196 l-100 -26 M-50 186 l90 6" stroke="#8a5a2b" stroke-width="12" stroke-linecap="round"/>`;
+    else h+=`<text x="0" y="186" text-anchor="middle" font-family="Jua" font-size="15" fill="#999">(탈 물질 없음)</text>`;
+    if(burn)h+=`<path d="M-34 172 q-14 -50 22 -88 q-2 34 16 40 q8 -26 0 -50 q36 34 22 98z" fill="#ff8a2a"/><path d="M-16 172 q-6 -28 12 -50 q4 26 14 30 q8 -14 4 -26 q14 24 4 46z" fill="#ffd23f"/>`;
+    else if(on.f&&!on.t)h+=`<text x="0" y="150" text-anchor="middle" font-family="Jua" font-size="14" fill="#3b5566">온도가 발화점보다 낮아요</text>`;
+    if(!burn&&on.f&&on.t)h+=`<ellipse cx="0" cy="184" rx="26" ry="7" fill="#ff7a2f" opacity=".8"/>`;
+    if(!burn&&on.f)h+=`<path d="M-6 166 q-8 -16 4 -30 q-10 -12 2 -26" stroke="#aaa" stroke-width="3" fill="none" opacity="${on.o&&!on.t?0:0.8}"/>`;
+    if(!on.o)h+=`<path d="M-110 196 v-140 q0 -40 40 -40 h140 q40 0 40 40 v140" fill="#dff0fa" fill-opacity=".35" stroke="#7fb3d5" stroke-width="5"/><text x="0" y="12" text-anchor="middle" font-family="Jua" font-size="14" fill="#3b5566">통으로 덮어 공기를 막았어요</text>`;
+    h+='</g>';
+    const L=[['탈 물질','f',70,60],['산소','o',70,120],['발화점 이상의 온도','t',70,180]];
+    L.forEach(([n,k,x,y])=>{h+=`<rect x="${x-60}" y="${y-22}" width="140" height="34" rx="10" fill="${on[k]?'#e6f6ee':'#f2f2f2'}" stroke="${on[k]?'#1F8060':'#bbb'}" stroke-width="3"/><text x="${x+10}" y="${y+1}" text-anchor="middle" font-family="Jua" font-size="${n.length>5?12:15}" fill="${on[k]?'#1F8060':'#999'}">${on[k]?'✔ ':'✘ '}${n}</text>`;});
+    h+=`<text x="520" y="110" text-anchor="middle" font-family="Jua" font-size="22" fill="${burn?'#b8452f':'#777'}">${burn?'연소 ○':'연소 ✘'}</text>`;
+    $('#r3Fire').innerHTML=h;
+    const key=['f','o','t'].filter(k=>!on[k]).join('')||'all';seen.add(key);
+    const goal=['all','f','o','t'].filter(k=>seen.has(k)).length;$('#r3TN').textContent=goal;
+    if(goal>=4&&!draw.fin){draw.fin=1;fb('#r3TriFb','🎉 연소가 일어나려면 탈 물질, 산소, 발화점 이상의 온도가 모두 필요해요. 조건이 하나라도 없으면 연소는 일어나지 않아요!',true);doneNav('s6');}
+    else if(!draw.fin)fb('#r3TriFb',burn?'세 가지 조건이 모두 있어 연소가 일어나요. 조건을 하나씩만 없애 봐요.':`조건이 하나라도 없으니 연소가 일어나지 않아요. 다른 조건 하나만 없애 보기도 해요.`,'info');}
+  $$('#r3Tri button').forEach(b=>b.onclick=()=>{const k=b.dataset.k;on[k]=on[k]?0:1;b.classList.toggle('sel',!!on[k]);b.classList.toggle('off',!on[k]);draw();});
+  draw();(function loop(){if(on.f&&on.o&&on.t)draw();requestAnimationFrame(loop);})();})();
+
+/* 조건 찾기 */
+sortGame('r3Sort',[{n:'마른나무를 마찰해 불 피우기',b:2},{n:'볼록 렌즈로 햇빛을 모아 불 피우기',b:2},{n:'가열한 철판 위의 성냥',b:2},{n:'숯불에 부채질하기',b:1},{n:'송풍기로 공기 넣기',b:1},{n:'꺼져 가는 모닥불에 장작 더 넣기',b:0}],
+  ['🪵 탈 물질','💨 산소','🌡️ 발화점 이상의 온도'],()=>doneNav('s7'),'모두 맞았어요! 마찰·볼록 렌즈·가열한 철판은 온도를 발화점 이상으로 높이고, 부채질·송풍기는 산소를 공급해요.');
+
+pickOne('#r3P8','','','s8');
+
+/* 한눈에 쏙 */
+{const d=needAll(2,'s9');$('#blReveal').onclick=()=>{$('#r3Q2').hidden=false;fb('#blFb','연소가 일어나려면 탈 물질, 산소, 발화점 이상의 온도가 모두 필요해요.',true);d(1);};pickOne('#r3P9','','',null,()=>d(2));}
+
+/* 형성 평가 */
+{const d=needAll(3,'s10');pickOne('#r3F1a','','',null,()=>d(1));pickOne('#r3F1b','','',null,()=>d(2));
+$('#r3F2Btn').onclick=()=>{const t=$('#r3F2').value.trim();if(!t){fb('#r3F2Fb','먼저 답을 써 보세요.',false);return;}
+  const k=[[/탈\s*(물질|것)|연료/,'탈 물질'],[/산소|공기/,'산소'],[/발화점|온도[^.,]{0,8}(높|이상|올라|올리)|높은\s*온도|뜨거/,'발화점 이상의 온도']].filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(k.length===3){fb('#r3F2Fb','잘 썼어요! 예시 답: 탈 물질이 있어야 하고, 산소가 공급되어야 하며, 발화점 이상의 온도가 필요해요.',true);d(3);}
+  else fb('#r3F2Fb',(k.length?'찾은 조건: '+k.join(', ')+'. ':'')+`조건이 ${3-k.length}가지 더 있어요. 연소의 조건 화면을 떠올려요.`,k.length?'info':false);};}
+
+faces('s11','잘했어요! 다음 시간에는 연소 후에 어떤 물질이 생기는지 알아봐요.','어려웠던 부분은 연소의 조건 화면에서 조건을 하나씩 다시 꺼 봐요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"산","bl2":"소"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>
