@@ -78,6 +78,7 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
     ('프로젝트 도서 활용 세계시민교육', '_build/gced-books/', ['project/gced-books/*.html', 'project/gced-books/*/*.html'], [('.', ['_build/gced-books/build.py'])]),
     ('특색교육 체스 학습관', ('_build/chess/', '_build/mathtools/page.css', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['special/chess/m*.html'], [('.', ['_build/chess/build.py'])]),
     ('기타 도장 만들기', ('_build/stamp/stamp.html', '_build/stamp/build.py', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['project/stamp/index.html'], [('.', ['_build/stamp/build.py'])]),
+    ('3학년 수학 영상 메뉴', '_build/video3/', ['grade3/math/videos/index.html'], [('.', ['_build/video3/build.py'])]),
 ]
 
 
