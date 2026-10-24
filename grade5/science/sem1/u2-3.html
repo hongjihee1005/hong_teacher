@@ -1,0 +1,720 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>빛을 거울에 비추어 볼까?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#b58400;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+.g2-lab{margin:8px 0}
+.g2-lab svg,svg.g2-fig{width:100%;height:auto;max-height:34vh;display:block;margin:0 auto;border-radius:14px;border:3px solid var(--navy);background:#fff}
+.g2-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:8px 0}
+.g2-ctl label{display:flex;align-items:center;gap:6px;font-family:"Jua",sans-serif;flex:1 1 15rem}
+.g2-ctl input[type=range]{flex:1;accent-color:var(--sky);height:2rem;min-width:6rem}
+.g2-sort{display:grid;gap:8px}
+.g2-it{display:flex;flex-wrap:wrap;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--paper)}
+.g2-it .tx{flex:1 1 12rem;display:flex;align-items:center;gap:8px}
+.g2-it .tx svg{width:90px;height:auto;flex:none}
+.g2-it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.g2-it.g2-ok{border-color:var(--good);background:#eefaf2}
+.g2-match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px}
+.g2-match .col{display:grid;gap:8px;align-content:start}
+.g2-match button.g2-pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:4px solid var(--sun)}
+.pick button svg{width:100%;max-width:12rem;height:auto;display:block;margin:0 auto 4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .g2-it.g2-ok{background:#163b28}}
+:root[data-theme="dark"] .g2-it.g2-ok{background:#163b28}
+@media (max-width:640px){.g2-match{grid-template-columns:1fr 1fr}}
+
+.d3-hit{display:flex;gap:10px;flex-wrap:wrap}
+.d3-hit span{border:2px solid var(--line);border-radius:999px;padding:2px 12px;font-family:"Jua",sans-serif}
+.d3-hit span.on{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+#d3Top,#d3Game{touch-action:none}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><circle cx="24" cy="43" r="12" fill="#ffd23f" stroke="#fff" stroke-width="3"/><path d="M36 43 L66 22 M36 43 L72 43 M36 43 L66 64" stroke="#ffd23f" stroke-width="4" stroke-linecap="round"/><rect x="66" y="14" width="6" height="58" fill="#cfe6f2" stroke="#fff" stroke-width="2"/></svg>
+  <div><h1>빛을 거울에 비추어 볼까?</h1><p>5학년 1학기 과학 · 2단원 빛의 성질 · 5/11차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">거울에 비추기</a><a href="#s3">모양판 맞히기</a><a href="#s4">빛의 반사</a><a href="#s5">한눈에 쏙</a><a href="#s6">형성 평가</a><a href="#s7">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>평면거울에 빛을 비추어 보고, 빛의 성질을 설명할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입</span>
+  <h2>천장을 비추는 빛은 어디에서 온 것일까요?</h2>
+  <div class="g2-lab"><svg id="d3Room" viewBox="0 0 800 380" role="img" aria-label="창문으로 들어온 햇빛이 책상 위 거울에 닿아 천장을 비추는 교실"></svg></div>
+  <div class="row"><button class="main" id="d3Trace">☀️ 빛이 지나온 길 따라가 보기</button></div>
+  <p class="jua" style="font-size:1.05rem" data-glue="1">천장에 비친 밝은 빛은 어디에서 온 것일까요?</p>
+  <div class="pick" id="d3Q0"><button data-a="1">창밖에서 들어온 햇빛이 거울을 만나 방향이 바뀐 것이에요</button><button data-a="0" data-m="천장의 전등은 꺼져 있어요. 빛이 지나온 길을 따라가 봐요.">천장의 전등에서 나온 빛이에요</button><button data-a="0" data-m="거울은 스스로 빛을 내지 않아요. 빛이 지나온 길을 따라가 봐요.">거울이 스스로 빛을 낸 것이에요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="거울에 비추기">
+  <span class="stage">실험해요 1 · 「실험관찰」 26쪽</span>
+  <h2>레이저 지시기의 빛을 평면거울에 비추기</h2>
+  <p class="tip">흰 종이를 깔고 받침대에 끼운 평면거울을 수직으로 세운 뒤, 교실을 어둡게 하고 레이저 지시기(확산형)를 거울을 향해 켜요. 아래는 <b>위에서 내려다본</b> 모습이에요.</p>
+  <div class="g2-lab"><svg id="d3Top" viewBox="0 0 800 400" role="img" aria-label="흰 종이 위에 세운 평면거울과 레이저 지시기를 위에서 본 모습"></svg></div>
+  <div class="g2-ctl" data-glue="1"><label>레이저 위치 <input type="range" id="d3Y" min="90" max="310" value="200" aria-label="레이저 지시기 위치"></label><label>비추는 방향 <input type="range" id="d3A" min="-40" max="40" value="-20" aria-label="레이저 지시기 방향"></label></div>
+  <div class="fb" id="d3TopFb">레이저 지시기를 여러 방향으로 비추어 봐요. (다른 방향 3번)</div>
+  <div id="d3Ask1" hidden data-glue="1">
+    <p class="jua" style="font-size:1.05rem">빛이 거울에 부딪치면 어떻게 나아가나요? 알맞은 그림을 골라요.</p>
+    <div class="pick" id="d3Q1"></div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 레이저 지시기의 빛을 사람에게, 특히 눈에 비추지 않아요. 레이저 보안경을 써요. 거울이 깨지지 않게 조심해요.</p>
+</section>
+
+<section id="s3" data-nav="모양판 맞히기">
+  <span class="stage">실험해요 2 · 「실험관찰」 27쪽</span>
+  <h2>레이저 지시기의 빛으로 모양판 맞히기</h2>
+  <p class="tip">모양판을 접어서 세우고, 조금 떨어진 곳에 평면거울을 세웠어요(위에서 본 모습). 거울에 비춘 빛으로 <b>세모·네모·원</b>을 모두 맞혀요. 맞히기 어려우면 거울을 조금 돌려도 돼요.</p>
+  <div class="g2-lab"><svg id="d3Game" viewBox="0 0 800 400" role="img" aria-label="레이저 지시기의 빛을 거울에 반사시켜 모양판을 맞히는 놀이"></svg></div>
+  <div class="g2-ctl" data-glue="1"><button id="d3Am">◀</button><label>레이저 방향 <input type="range" id="d3GA" min="-20" max="20" step="0.5" value="4" aria-label="레이저 지시기 방향"></label><button id="d3Ap">▶</button><label>거울 돌리기 <input type="range" id="d3GM" min="-10" max="10" step="0.5" value="0" aria-label="거울 돌리기"></label></div>
+  <div class="d3-hit" id="d3Hits" data-glue="1"><span data-k="tri">▲ 세모</span><span data-k="sq">■ 네모</span><span data-k="ci">● 원</span></div>
+  <div class="fb" id="d3GameFb"></div>
+  <p class="tip">⚠️ 레이저 지시기의 빛을 사람에게 비추지 않아요. 지나치게 경쟁하지 말고, 역할을 바꾸어 가며 차례대로 해요.</p>
+</section>
+
+<section id="s4" data-nav="빛의 반사">
+  <span class="stage">정리해요</span>
+  <h2>빛의 반사</h2>
+  <p>빛이 직진하다가 거울에 부딪치면 나아가는 방향이 바뀌어요. 빛의 이러한 성질을 <b>빛의 반사</b>라고 해요. 우리가 물체를 볼 수 있는 까닭은 물체가 반사한 빛이 우리 눈에 들어오기 때문이에요.</p>
+  <div class="g2-lab"><svg id="d3Town" viewBox="0 0 800 360" role="img" aria-label="높은 산으로 둘러싸인 마을과 산꼭대기의 커다란 거울"></svg></div>
+  <div class="g2-ctl" data-glue="1"><label>산꼭대기 거울 돌리기 <input type="range" id="d3TM" min="-30" max="30" value="20" aria-label="산꼭대기 거울 돌리기"></label></div>
+  <div class="fb" id="d3TownFb">산으로 둘러싸여 그늘진 마을이 있어요. 산꼭대기의 거울을 돌려 마을을 밝혀 봐요.</div>
+  <div id="d3Ask4" hidden data-glue="1">
+    <p class="jua" style="font-size:1.05rem">산꼭대기에 거울을 설치한 까닭은 무엇일까요?</p>
+    <div class="pick" id="d3Q4"><button data-a="1">햇빛을 반사해 그늘진 마을에 햇빛이 들도록 하려고</button><button data-a="0" data-m="거울은 빛을 만들지 않아요. 햇빛의 방향을 바꿀 뿐이에요.">거울이 스스로 빛을 만들게 하려고</button><button data-a="0" data-m="거울은 햇빛을 막는 것이 아니라 방향을 바꾸어 보내요.">마을에 들어오는 햇빛을 막으려고</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s5" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.1rem">1. 빛이 거울에 부딪치면 ( 똑바로 나아가는 , 나아가는 방향이 바뀌는 ) 성질을 빛의 반사라고 합니다.</p>
+  <div class="pick" id="d3Q5"><button data-a="0" data-m="거울을 만난 빛은 똑바로 나아가지 않았어요.">똑바로 나아가는</button><button data-a="1">나아가는 방향이 바뀌는</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.1rem">이처럼 빛이 거울에 부딪쳐 나아가는 방향이 바뀌는 성질을 빛의 <span class="blank"><span id="bl1">ㅂ</span><span id="bl2">ㅅ</span></span>(이)라고 합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem">2. 거울처럼 빛의 반사가 일어나는 현상을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="d3Q6"><button data-a="1">꺼져 있는 스마트 기기 화면에 얼굴이 비쳐요</button><button data-a="1">잔잔한 호수의 표면에 주변 경치가 비쳐요</button><button data-a="1">매끄러운 자동차 표면에 얼굴이 비쳐요</button><button data-a="0" data-m="그림자는 빛이 곧게 나아가다 물체에 막혀서 생겨요(빛의 직진).">햇빛을 받은 나무 뒤에 그림자가 생겨요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <div data-glue="1"><p class="jua" style="font-size:1.05rem">6. ✏️ 서술형: 밖에서 스마트 기기의 화면을 보다가 햇빛 때문에 눈이 부실 때가 있어요. 그 까닭을 써 봐요.</p>
+  <textarea id="d3W" rows="2" placeholder="예: 햇빛이 스마트 기기의 화면에서 …"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="d3WBtn">내 답 살펴보기</button></div>
+  <div class="fb" id="d3WFb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p></div>
+</section>
+
+<section id="s7" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>평면거울에 비춘 빛을 관찰해 빛의 성질을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>레이저 지시기를 사용해 빛의 성질을 탐구할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>레이저 지시기를 안전하게 사용하며 친구와 협력해 실험에 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 48~49쪽 · 「실험관찰」 26~27쪽 · 지도서 210~221쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+/* ===== 2단원 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+const DEG=Math.PI/180;
+/* 여러 개 고르기: data-a="1"이 정답 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 고르기 문제 묶음: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua" style="font-size:1.05rem;margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.innerHTML=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='g2-it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('g2-ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.classList.add('g2-match');B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('g2-pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 쓰임새를 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('g2-pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('g2-pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('g2-pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 끝내야 할 일 여러 개를 모두 마치면 섹션 완료 */
+function need(sec,n,msgEl,msg){let k=new Set();return id=>{k.add(id);if(k.size>=n){doneNav(sec);if(msgEl)fb(msgEl,msg,true);}};}
+
+/* ---------- 빛 따라가기 계산(위에서 본 평면) ---------- */
+const cross=(a,b)=>a[0]*b[1]-a[1]*b[0];
+/* 거울: {c:[x,y], h:반길이, a:기울기(도, 0이면 세로), f:반사면 쪽(1이면 오른쪽, -1이면 왼쪽)} */
+function trace(p,d,mirrors,W,H,maxB=2){const segs=[];let bounces=0;
+  for(let k=0;k<=maxB;k++){let best=null;
+    mirrors.forEach(m=>{const u=[Math.sin(m.a*DEG),Math.cos(m.a*DEG)],cp=[m.c[0]-p[0],m.c[1]-p[1]],den=cross(d,u);if(Math.abs(den)<1e-9)return;
+      const t=cross(cp,u)/den,s=cross(cp,d)/den;if(t>1e-6&&Math.abs(s)<=m.h&&(!best||t<best.t))best={t,m};});
+    /* 화면 끝까지 */
+    let tb=Infinity;[[0,(0-p[0])/d[0]],[0,(W-p[0])/d[0]],[1,(0-p[1])/d[1]],[1,(H-p[1])/d[1]]].forEach(([_,t])=>{if(t>1e-6&&t<tb)tb=t;});
+    if(best&&best.t<tb){const q=[p[0]+d[0]*best.t,p[1]+d[1]*best.t];segs.push([p,q,bounces]);
+      const f=best.m.f||1,n=[f*Math.cos(best.m.a*DEG),-f*Math.sin(best.m.a*DEG)],dn=d[0]*n[0]+d[1]*n[1];
+      if(dn>0){break;} /* 거울 뒷면: 막힘 */
+      d=[d[0]-2*dn*n[0],d[1]-2*dn*n[1]];p=q;bounces++;}
+    else{segs.push([p,[p[0]+d[0]*tb,p[1]+d[1]*tb],bounces]);break;}}
+  return segs;}
+const segSvg=(segs,c,w,op)=>segs.map(s=>`<line x1="${s[0][0].toFixed(1)}" y1="${s[0][1].toFixed(1)}" x2="${s[1][0].toFixed(1)}" y2="${s[1][1].toFixed(1)}" stroke="${c}" stroke-width="${w}" opacity="${op}" stroke-linecap="round"/>`).join('');
+function mirrorSvg(m){const f=m.f||1,u=[Math.sin(m.a*DEG),Math.cos(m.a*DEG)],n=[f*Math.cos(m.a*DEG),-f*Math.sin(m.a*DEG)];
+  const A=[m.c[0]-u[0]*m.h,m.c[1]-u[1]*m.h],B=[m.c[0]+u[0]*m.h,m.c[1]+u[1]*m.h];
+  return `<polygon points="${A[0]-n[0]*14},${A[1]-n[1]*14} ${B[0]-n[0]*14},${B[1]-n[1]*14} ${B[0]},${B[1]} ${A[0]},${A[1]}" fill="#b98b55"/>`+
+    `<line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="#7fc6ec" stroke-width="7"/><line x1="${A[0]}" y1="${A[1]}" x2="${B[0]}" y2="${B[1]}" stroke="#e8f7ff" stroke-width="2"/>`;}
+function laserSvg(x,y,deg){return `<g transform="translate(${x} ${y}) rotate(${deg})"><rect x="-70" y="-11" width="76" height="22" rx="9" fill="#3a3f48"/><rect x="-46" y="-14" width="12" height="5" fill="#e74c3c"/><rect x="2" y="-6" width="8" height="12" fill="#888"/></g>`;}
+
+/* ---------- 도입: 교실 ---------- */
+function room(p){const MX=330,MY=330,a=40*DEG,wx=40,wy=MY-(MX-wx)*Math.tan(a),cx=MX+(MY-40)/Math.tan(a);
+  let s=`<rect width="800" height="380" fill="#fbf4e6"/><rect y="0" width="800" height="40" fill="#efe3c8"/><rect x="0" y="0" width="40" height="380" fill="#e8dcc0"/>`+
+   `<rect x="10" y="50" width="30" height="90" fill="#bfe6fb" stroke="#8a6a3e" stroke-width="3"/><text x="50" y="160" font-size="15" font-family="Jua" fill="#8a6a3e">창문</text>`+
+   `<rect x="230" y="338" width="240" height="14" fill="#a87b4f"/><rect x="250" y="352" width="10" height="28" fill="#8a6a3e"/><rect x="440" y="352" width="10" height="28" fill="#8a6a3e"/>`+
+   `<rect x="${MX-40}" y="${MY}" width="80" height="8" fill="#7fc6ec"/><text x="${MX-20}" y="${MY+28}" font-size="14" font-family="Jua" fill="#0f3b5c">거울</text>`+
+   `<rect x="560" y="40" width="80" height="10" fill="#ddd"/><text x="560" y="70" font-size="13" font-family="Jua" fill="#888">전등(꺼짐)</text>`+
+   `<ellipse cx="${cx}" cy="44" rx="34" ry="8" fill="#fff59a" opacity=".95"/>`;
+  if(p>0){const L=Math.hypot(MX-wx,MY-wy),L2=Math.hypot(cx-MX,MY-44),tot=L+L2,d=p*tot;
+    const x1=d<L?wx+(MX-wx)*d/L:MX,y1=d<L?wy+(MY-wy)*d/L:MY;
+    s+=`<line x1="${wx}" y1="${wy}" x2="${x1}" y2="${y1}" stroke="#f2b705" stroke-width="6" opacity=".8"/>`;
+    if(d>L){const q=(d-L)/L2;s+=`<line x1="${MX}" y1="${MY}" x2="${MX+(cx-MX)*q}" y2="${MY+(44-MY)*q}" stroke="#f2b705" stroke-width="6" opacity=".8"/>`;}}
+  $('#d3Room').innerHTML=s;}
+room(0);
+$('#d3Trace').onclick=()=>tween(2200,p=>room(p),()=>fb($('#d3Q0').nextElementSibling,'햇빛이 창문으로 들어와 거울에 닿은 뒤 방향이 바뀌어 천장으로 갔어요. 이제 질문에 답해 봐요.','info'));
+pickOne('#d3Q0','맞아요! 창밖에서 들어온 햇빛이 거울을 만나 방향이 바뀌어 천장을 비춘 거예요. 오늘은 빛이 거울을 만나면 어떻게 되는지 실험해요.','다시 생각해 봐요.','s1');
+
+/* ---------- 실험 1: 거울에 비추기 ---------- */
+const M1={c:[600,200],h:130,a:0,f:-1};let tried=[];
+function top1(){const y=+$('#d3Y').value,a=+$('#d3A').value,d=[Math.cos(a*DEG),Math.sin(a*DEG)],p=[120+6*d[0],y+6*d[1]];
+  const segs=trace(p,d,[M1],800,400,1);const hit=segs.length>1;
+  let s=`<rect width="800" height="400" fill="#fff"/><rect x="20" y="20" width="760" height="360" fill="none" stroke="#ddd" stroke-dasharray="6 6"/>`;
+  tried.forEach(t=>{s+=segSvg(t,'#e74c3c',2,.25);});
+  s+=segSvg(segs,'#ff2b2b',4,.95)+mirrorSvg(M1)+laserSvg(120,y,a)+
+    `<text x="612" y="60" font-size="15" font-family="Jua" fill="#0f3b5c">평면거울</text><text x="40" y="390" font-size="14" font-family="Jua" fill="#888">흰 종이</text>`;
+  $('#d3Top').innerHTML=s;return {segs,hit,a};}
+let cur1=top1();
+function onTop(){cur1=top1();}
+function rec1(){if(!cur1.hit){fb('#d3TopFb','빛이 거울에 닿지 않았어요. 방향을 바꾸어 거울을 향하게 해요.','info');return;}
+  if(tried.every(t=>Math.abs(t.a-cur1.a)>=8)){const t=cur1.segs.slice();t.a=cur1.a;tried.push(t);if(tried.length>4)tried.shift();}
+  const n=new Set(tried.map(t=>Math.round(t.a/8))).size;
+  if(n>=3){fb('#d3TopFb','여러 방향으로 비추어 보았어요. 거울에 닿은 빛은 어떻게 되었나요? (흐린 선은 앞에서 비춘 빛)',true);$('#d3Ask1').hidden=false;}
+  else fb('#d3TopFb','거울에 닿은 빛을 관찰했어요. 다른 방향으로도 비추어 봐요. ('+n+'/3)','info');top1();}
+['#d3Y','#d3A'].forEach(s=>{$(s).oninput=onTop;$(s).onchange=rec1;});
+const P1=[['방향이 바뀌어 나아가요',`<line x1="10" y1="20" x2="160" y2="60" stroke="#e33" stroke-width="5"/><line x1="160" y1="60" x2="10" y2="100" stroke="#e33" stroke-width="5"/>`,1],
+  ['거울을 뚫고 지나가요',`<line x1="10" y1="20" x2="190" y2="68" stroke="#e33" stroke-width="5"/>`,0],
+  ['거울에서 사라져요',`<line x1="10" y1="20" x2="160" y2="60" stroke="#e33" stroke-width="5"/>`,0]];
+$('#d3Q1').innerHTML=shuffle(P1).map(p=>`<button data-a="${p[2]}" data-m="${p[2]?'':'실험에서 거울에 닿은 빛이 어떻게 되었는지 다시 봐요.'}"><svg viewBox="0 0 200 120"><rect width="200" height="120" fill="#fff"/>${p[1]}<rect x="160" y="0" width="8" height="120" fill="#7fc6ec"/></svg>${p[0]}</button>`).join('');
+pickOne('#d3Q1','맞아요! 평면거울에 부딪친 빛은 나아가는 방향이 바뀌고, 다시 곧게 나아가요.','다시 봐요.','s2');
+
+/* ---------- 실험 2: 모양판 맞히기 ---------- */
+const LP=[330,210],TG=[{k:'tri',x:210,y:45},{k:'sq',x:60,y:120},{k:'ci',x:110,y:365}],got=new Set();
+function shape(t,c){return t.k==='tri'?`<polygon points="${t.x},${t.y-20} ${t.x+20},${t.y+16} ${t.x-20},${t.y+16}" fill="${c}"/>`:t.k==='sq'?`<rect x="${t.x-17}" y="${t.y-17}" width="34" height="34" fill="${c}"/>`:`<circle cx="${t.x}" cy="${t.y}" r="19" fill="${c}"/>`;}
+function game(){const a=+$('#d3GA').value,M={c:[640,210],h:90,a:+$('#d3GM').value,f:-1},d=[Math.cos(a*DEG),Math.sin(a*DEG)];
+  const segs=trace([LP[0]+8*d[0],LP[1]+8*d[1]],d,[M],800,400,1);const now=[];
+  segs.filter(s=>s[2]>=1).forEach(([P,Q])=>TG.forEach(t=>{const vx=Q[0]-P[0],vy=Q[1]-P[1],L2=vx*vx+vy*vy,u=Math.max(0,Math.min(1,((t.x-P[0])*vx+(t.y-P[1])*vy)/L2));
+    if(Math.hypot(P[0]+vx*u-t.x,P[1]+vy*u-t.y)<20)now.push(t.k);}));
+  now.forEach(k=>got.add(k));
+  let s=`<rect width="800" height="400" fill="#fff"/>`+TG.map(t=>`<rect x="${t.x-30}" y="${t.y-30}" width="60" height="60" rx="6" fill="#fdf2d6" stroke="#c9a85a" stroke-width="2"/>`+shape(t,now.includes(t.k)?'#e74c3c':got.has(t.k)?'#2e9e5b':'#5b6b78')).join('')+
+    segSvg(segs,'#ff2b2b',3.5,.95)+mirrorSvg(M)+laserSvg(LP[0],LP[1],a)+`<text x="660" y="330" font-size="15" font-family="Jua" fill="#0f3b5c">평면거울</text>`;
+  $('#d3Game').innerHTML=s;
+  $$('#d3Hits span').forEach(x=>x.classList.toggle('on',got.has(x.dataset.k)));
+  if(now.length)fb('#d3GameFb','맞혔어요! 거울에서 방향이 바뀐 빛이 모양판에 닿았어요. ('+got.size+'/3)',got.size===3?true:'info');
+  if(got.size===3){fb('#d3GameFb','세 모양판을 모두 맞혔어요! 거울에 부딪친 빛은 나아가는 방향이 바뀌어요. 레이저 지시기나 거울의 방향을 바꾸면 빛이 나아가는 방향도 바뀌어요.',true);doneNav('s3');}}
+game();
+$('#d3GA').oninput=game;$('#d3GM').oninput=game;
+$('#d3Am').onclick=()=>{$('#d3GA').value=+$('#d3GA').value-.5;game();};$('#d3Ap').onclick=()=>{$('#d3GA').value=+$('#d3GA').value+.5;game();};
+
+/* ---------- 빛의 반사: 산꼭대기 거울 ---------- */
+const SUN=25*DEG,MP=[130,135],VIL=[395,525];let lit=false;
+function town(){const ang=+$('#d3TM').value,d=[-Math.cos(SUN),Math.sin(SUN)],M={c:MP,h:22,a:ang};
+  const t0=(MP[1]-1)/Math.sin(SUN),segs=trace([MP[0]+Math.cos(SUN)*t0,1],d,[M],800,360,1);
+  let hit=false;const r=segs[1];if(r){const [P,Q]=r;if(Q[1]>P[1]){const x=P[0]+(320-P[1])*(Q[0]-P[0])/(Q[1]-P[1]);hit=x>VIL[0]&&x<VIL[1];}}
+  let s=`<rect width="800" height="360" fill="#cfe9f7"/><circle cx="770" cy="30" r="24" fill="#ffd23f"/>`;
+  for(let k=0;k<6;k++){const y0=-40+k*30;s+=`<line x1="800" y1="${y0}" x2="${800-Math.cos(SUN)*900}" y2="${y0+Math.sin(SUN)*900}" stroke="#f2b705" stroke-width="1.5" opacity=".35"/>`;}
+  s+=`<polygon points="250,330 700,120 700,330" fill="#2c3e50" opacity="${hit?.10:.32}"/>`+
+    `<polygon points="0,330 130,140 270,330" fill="#6b8f5a"/><polygon points="560,330 700,120 800,250 800,330" fill="#5d7f4d"/><rect y="330" width="800" height="30" fill="#7aa35f"/>`+
+    [400,440,480].map((x,i)=>`<g><rect x="${x}" y="${300-i%2*6}" width="32" height="${30+i%2*6}" fill="${hit?'#f6e7c8':'#9c927f'}"/><path d="M${x-4} ${300-i%2*6} l20 -16 l20 16z" fill="${hit?'#d35400':'#7a5a45'}"/></g>`).join('')+
+    `<text x="420" y="352" font-size="15" font-family="Jua" fill="#0f3b5c">마을</text>`;
+  s+=segSvg(segs.slice(0,1),'#f2b705',4,.9)+(r?segSvg([r],'#f2b705',4,hit?.95:.6):'')+mirrorSvg(M);
+  $('#d3Town').innerHTML=s;return hit;}
+town();
+$('#d3TM').oninput=()=>{if(town()&&!lit){lit=true;fb('#d3TownFb','마을이 밝아졌어요! 거울에서 반사된 햇빛이 그늘진 마을을 비춰요. (노르웨이의 리우칸 마을은 실제로 산꼭대기에 거울을 설치했어요.)',true);$('#d3Ask4').hidden=false;}};
+pickOne('#d3Q4','맞아요! 산꼭대기의 거울이 햇빛을 반사해 그늘진 마을에 햇빛이 들게 해요.','다시 생각해 봐요.','s4');
+
+/* ---------- 한눈에 쏙 ---------- */
+let k5=new Set();const c5=x=>{k5.add(x);if(k5.size===3)doneNav('s5');};
+pickOne('#d3Q5','맞아요! 빛이 거울에 부딪치면 나아가는 방향이 바뀌어요.','다시 생각해 봐요.',null,()=>c5('a'));
+$('#blReveal').onclick=()=>{fb('#blFb','빛이 거울에 부딪쳐 나아가는 방향이 바뀌는 성질을 빛의 반사라고 해요.',true);c5('b');};
+pickAll('#d3Q6','잘 찾았어요! 매끄러운 표면에서는 거울처럼 빛이 반사되어 모습이 비쳐요.','다시 생각해 봐요.',null,()=>c5('c'));
+
+/* ---------- 형성 평가 ---------- */
+let q1=0,q2=0;const c6=()=>{if(q1&&q2)doneNav('s6');};
+quiz('#quiz',[
+ {q:'1. 빛이 거울을 만나면 반사한다. (○, ×)',o:['○ 옳아요','× 옳지 않아요'],a:0,e:'빛은 거울을 만나면 반사해요.'},
+ {q:'2. 거울에서 반사한 빛은 사라진다. (○, ×)',o:['○ 옳아요','× 옳지 않아요'],a:1,e:'반사한 빛은 사라지지 않고 방향을 바꾸어 다시 곧게 나아가요.',h:'모양판 맞히기를 떠올려 봐요.'},
+ {q:'3. 매끄러운 자동차의 표면은 빛을 반사할 수 있다. (○, ×)',o:['○ 옳아요','× 옳지 않아요'],a:0,e:'매끄러운 자동차 표면에 얼굴이 비치는 것은 빛의 반사 때문이에요.'},
+ {q:'4. 빛의 반사와 관련이 <u>없는</u> 것은 어느 것일까요?',o:['갑자기 전등을 켜면 눈이 부시다.','아침에 거울을 보며 세수를 한다.','해가 질 때 반대편 건물의 창문에서 해가 보인다.','텔레비전을 켜기 전에 화면에 내 얼굴이 보인다.','자동차의 유리창을 보며 얼굴에 묻은 먼지를 떼어 냈다.'],a:0,e:'전등을 켤 때 눈이 부신 것은 전등에서 나온 빛이 바로 눈에 들어오기 때문이에요.',h:'거울이나 매끄러운 면에 비친 것을 보는 일이 아닌 것을 찾아요.'},
+ {q:'5. 레이저 지시기로 실험할 때 지켜야 할 것으로 알맞은 것은 어느 것일까요?',o:['레이저 지시기의 빛을 사람의 눈에 비추지 않는다.','레이저 지시기의 빛을 친구 얼굴에 비추어 본다.','거울은 깨져도 괜찮으니 세게 내려놓는다.'],a:0,e:'레이저 지시기는 사람을 향해 켜지 않아요. 거울이 깨지지 않도록 조심해요.'}],()=>{q1=1;c6();});
+keyCheck('#d3W','#d3WBtn','#d3WFb',[[/반사|방향이\s*바뀌|튕/,'빛의 반사'],[/화면|스마트/,'스마트 기기 화면에서'],[/눈/,'눈에 들어옴']],2,null,'햇빛이 화면에서 어떻게 되어 어디로 오는지 써요.');
+$('#d3WBtn').addEventListener('click',()=>{if($('#d3WFb').classList.contains('ok')){$('#d3WFb').textContent+=' 예시 답: 햇빛이 스마트 기기의 화면에서 반사되어 눈에 닿았기 때문이에요.';q2=1;c6();}});
+
+faces('s7','잘했어요! 다음 시간에는 빛을 렌즈와 물에 비추어 볼 거예요.','어려웠던 부분은 거울에 비추기 실험을 다시 해 보고, 선생님께 질문해도 좋아요!');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 1학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"반","bl2":"사"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>

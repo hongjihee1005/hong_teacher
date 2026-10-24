@@ -1,0 +1,338 @@
+<!--
+title: 여러 가지 화석을 관찰해 볼까?
+unit: 1
+lesson: 5
+total: 12
+goal: 여러 가지 화석을 관찰하고, 화석의 특징을 설명할 수 있어요.
+pages: 「과학」 22~23쪽 · 「실험관찰」 12~13쪽 · 지도서 140~147쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"화","bl2":"석"}}]
+-->
+<style>
+/* 1단원 교과서 버전 공통 */
+.lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.lab svg{display:block;width:100%}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,18px)}
+.two .photo{margin:0}
+.rtable{table-layout:fixed}
+.rtable td,.rtable th{text-align:center;padding:5px 4px;font-size:.88rem;word-break:keep-all}
+.rtable th{background:var(--bg)}
+.rtable td.q{background:var(--bg);font-family:"Jua",sans-serif}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:10px 14px;font-size:.95rem}
+.big{font-size:1.1rem}
+.ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:2px dashed var(--line);padding:6px 0}
+.ox button{min-width:3rem}
+/* 나누기 카드: 카드마다 칸 단추 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+/* 차례 맞히기 */
+.t3ord{display:flex;flex-direction:column;gap:6px}
+.t3ord button{text-align:left}
+.t3ord .t3dn{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.t3seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+/* 그림 속 누르기 */
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+.t3cnt{font-family:"Jua",sans-serif;color:var(--muted);font-size:.95rem}
+#quiz>div{margin-bottom:6px}
+@media (max-width:600px){.two,.t3sort,.t3match{grid-template-columns:1fr}}
+.f4grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.f4grid button{padding:4px;min-height:0;border-radius:12px;display:flex;flex-direction:column;align-items:center;font-size:.85rem}
+.f4grid button.seen{border-color:var(--good);background:#e9f9ef}
+.f4view{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:center;margin-top:8px}
+.f4note{font-size:.95rem;line-height:1.5}.f4note b{color:var(--navy)}
+#st3{grid-template-columns:repeat(4,minmax(0,1fr))}
+.t3sort .it svg{width:4.8rem;margin:0 auto}
+.t3sort .it .tx{text-align:center}
+.f4mus{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:8px}
+.f4mus figure{margin:0;border:3px solid var(--navy);border-radius:12px;overflow:hidden;background:#fffdf8;text-align:center}
+.f4mus figcaption{font-size:.85rem;padding:2px 6px}
+.f4mus svg{max-height:16vh;margin:0 auto}
+@media (max-width:600px){.f4grid{grid-template-columns:repeat(3,minmax(0,1fr))}.f4view{grid-template-columns:1fr}#st3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 22쪽</span>
+  <h2>과학자들은 무엇을 찾고 있을까요?</h2>
+  <p>붓으로 흙을 털어 내듯 흙더미를 하나씩 눌러 조심스럽게 찾아봐요.</p>
+  <div class="lab"><svg id="dig" viewBox="0 0 800 300" role="img" aria-label="땅속에 묻힌 것을 붓으로 털어 내며 찾는 그림" style="max-height:34vh"></svg></div>
+  <div class="fb" id="digFb"></div>
+  <div id="ask1" hidden>
+    <p class="jua big">땅속에 묻힌 공룡은 어떤 부분이 남아 있나요?</p>
+    <div class="pick" id="p1"><button data-a="1" data-m="맞아요! 단단한 뼈 부분이 남아 있어요. 지층 속에 옛날에 살았던 생물의 몸체나 흔적이 남아 발견되는 것을 화석이라고 해요.">단단한 뼈 부분</button><button data-a="0" data-m="말랑말랑한 살이나 피부는 오래 남기 어려워요. 그림에서 무엇이 보였나요?">부드러운 살과 피부</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s2" data-nav="관찰해요">
+  <span class="stage">관찰해요 · 「실험관찰」 12쪽</span>
+  <h2>여러 가지 화석을 관찰해요</h2>
+  <p>준비물: 여러 가지 화석 표본, 흰 종이, 돋보기, 스마트 기기, 실험복, 면장갑 · 화석을 하나씩 눌러 <b>생김새</b>를 살펴보고, <b>오늘날의 어떤 생물과 닮았는지</b> 생각해 봐요.</p>
+  <div class="f4grid" id="fos"></div>
+  <div class="f4view" data-glue="1">
+    <div class="lab"><svg id="fbig" viewBox="0 0 200 150" role="img" aria-label="크게 본 화석" style="max-height:26vh"></svg></div>
+    <div class="f4note" id="fnote">위에서 화석을 골라요.</div>
+  </div>
+  <div class="fb" id="fosFb"></div>
+  <p class="tip">⚠️ 화석 표본을 만진 손으로 눈이나 얼굴을 만지지 않아요. 화석 표본을 떨어뜨려 깨뜨리지 않게 조심하고, 거칠거나 날카로운 부분에 손을 다치지 않게 해요. 🖍️ 화석은 그림으로 대신했고, 실제 화석과 크기가 달라요.</p>
+</section>
+
+<section id="s3" data-nav="몸체와 흔적">
+  <span class="stage">정리해요 · 「과학」 23쪽</span>
+  <h2>생물의 몸체가 남은 화석일까, 흔적이 남은 화석일까?</h2>
+  <p>생물의 <b>몸체</b>뿐만 아니라 발자국, 배설물 같은 생물의 <b>흔적</b>도 화석이 될 수 있어요. 화석마다 알맞은 쪽을 눌러요.</p>
+  <div class="t3sort" id="st3"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="공유해요">
+  <span class="stage">공유해요 · 「실험관찰」 13쪽</span>
+  <h2>친구들이 공유한 화석 사진을 살펴봐요</h2>
+  <p>가상 현실(VR) 자료에서 찾은 화석을 친구들이 공유했어요. 화석 이름을 고른 다음, 알맞은 설명을 눌러 이어요.</p>
+  <div class="f4mus" id="mus"></div>
+  <div class="t3match" id="m4" data-glue="1"></div>
+  <div class="fb"></div>
+  <p class="tip">⚠️ 스마트 기기에서 냄새가 나거나 열이 나면 바로 쓰지 말고 선생님께 알려요. 가상 현실(VR)을 보다가 눈이 아프거나 어지러우면 바로 선생님께 알리고 쉬어요.</p>
+</section>
+
+<section id="s5" data-nav="화석의 특징">
+  <span class="stage">정리해요 · 「과학」 23쪽</span>
+  <h2>여러 가지 화석을 관찰하고 알게 된 점</h2>
+  <p class="jua big">화석에 관한 설명으로 알맞은 것을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p5">
+    <button data-a="1" data-m="맞아요! 화석은 맨눈으로 보이지 않을 만큼 작은 것부터 거대한 공룡 뼈까지 종류와 크기가 다양해요.">화석은 종류와 크기가 다양해요</button>
+    <button data-a="1" data-m="맞아요! 발자국, 배설물 같은 생물의 흔적도 화석이 될 수 있어요.">생물의 흔적도 화석이 될 수 있어요</button>
+    <button data-a="1" data-m="맞아요! 고사리 화석, 물고기 화석처럼 오늘날의 생물과 생김새가 비슷한 것도 있어요.">오늘날의 생물과 생김새가 비슷한 화석도 있어요</button>
+    <button data-a="0" data-m="작은 생물이나 식물의 잎, 꽃가루도 화석이 될 수 있어요.">큰 동물만 화석이 될 수 있어요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="warn" data-glue="1">💡 화석은 주로 지층 속에서 발견되지만, 얼음 속에 얼어 있던 매머드나 호박(나무의 수액이 굳은 것) 속 곤충처럼 다른 곳에서 발견되는 화석도 있어요.</p>
+</section>
+
+<section id="s6" data-nav="생각+">
+  <span class="stage">생각이 한눈에 2 · 「과학」 23쪽</span>
+  <h2>화석은 어떤 암석에서 발견될까요?</h2>
+  <p class="jua big">화석이 발견되는 암석은 화성암일까요, 퇴적암일까요?</p>
+  <div class="pick" id="p6">
+    <button data-a="1" data-m="맞아요! 퇴적암은 생물의 몸체나 흔적 위로 퇴적물이 쌓여 암석이 될 수 있어요. 화성암은 뜨거운 마그마나 용암이 식어 만들어지므로 생물의 몸체나 흔적이 남아 있기 어려워요.">퇴적암이에요</button>
+    <button data-a="0" data-m="화성암은 뜨거운 마그마나 용암이 식어서 만들어져요. 그 속에 생물의 몸체나 흔적이 남을 수 있을까요?">화성암이에요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="big">옛날에 살았던 생물의 몸체나 흔적이 지층 속에 남아 있는 것을 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span></span>(이)라고 합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div><div class="fb" id="blFb"></div>
+</section>
+
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <p class="jua big" style="margin-top:14px">✏️ 서술형: 위 2번에서 고른 것이 화석인 까닭을 써 봐요.</p>
+  <textarea id="wr" rows="2" placeholder="㉠은 먼 옛날에 ~" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wrB">내 답 살펴보기</button></div><div class="fb" id="wrFb"></div>
+</section>
+
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>화석이 무엇인지 알고 특징을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>여러 가지 화석을 관찰해 특징을 찾을 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>여러 가지 화석을 관찰하는 활동에 친구들과 협력하며 적극적으로 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 1단원 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기: 고르면 그 단추의 data-m을 보여 줌 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick'+(it.one?' one':'')+'"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t:'글',k:'칸',m:'풀이'}], [{k,n}], 다 맞힘 글, 섹션) — 카드마다 칸 단추 */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach((it,i)=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 설명을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽 낱말을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례 맞히기: orderer('#box', [단계…(맞는 차례)], 다 맞힘 글, 섹션, 단계마다 cb(i)) */
+function orderer(box,steps,okMsg,sec,each,cb){const B=$(box),out=B.nextElementSibling;let k=0;
+  const seq=document.createElement('div');seq.className='t3seq';B.before(seq);
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.classList.contains('t3dn'))return;
+    if(i===k){b.classList.add('t3dn');b.disabled=true;const sp=document.createElement('span');sp.textContent=(k+1)+'. '+s;seq.appendChild(sp);if(each)each(k);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은 무엇일까요? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그 일은 조금 뒤에 해요. 지금 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 요소에 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+
+/* ===== 1단원 지층 그리기: strata({x,y,w,h,layers:[{c,k:'g|s|m',t}],shape:'flat|fold|fault|tilt',amp,waves,ph,d,fx,tilt,pen,id}) ===== */
+let _sid=0;
+function strata(o){
+  const w=o.w||300,h=o.h||200,id=o.id||('st'+(++_sid)),L=o.layers,sh=o.shape||'flat',amp=o.amp||0,d=sh==='fault'?(o.d||0):0;
+  const off=x=>sh==='fold'?amp*Math.sin((x/w)*Math.PI*2*(o.waves||1)+(o.ph||0)):sh==='tilt'?(o.tilt||0)*(x-w/2):0;
+  let mn=1e9,mx=-1e9;for(let x=0;x<=w;x+=5){const v=off(x);mn=Math.min(mn,v);mx=Math.max(mx,v);}
+  const start=-mx-Math.abs(d)-2,end=h-mn+Math.abs(d)+2,tot=L.reduce((a,l)=>a+(l.t||1),0),sc=(end-start)/tot;
+  const cum=[0];L.forEach(l=>cum.push(cum[cum.length-1]+(l.t||1)));
+  const by=(i,x)=>start+cum[i]*sc+off(x);
+  let defs=`<clipPath id="${id}c"><rect width="${w}" height="${h}"/></clipPath>`;
+  const pats={};
+  L.forEach((l,i)=>{const k=l.k||'m',pid=id+'p'+i;pats[i]=pid;let p='';
+    if(k==='g'){p=`<pattern id="${pid}" width="34" height="26" patternUnits="userSpaceOnUse"><rect width="34" height="26" fill="${l.c}"/><ellipse cx="8" cy="8" rx="6" ry="4.5" fill="#fff" opacity=".28" stroke="#000" stroke-opacity=".25"/><ellipse cx="25" cy="18" rx="7" ry="5" fill="#000" opacity=".16"/><circle cx="22" cy="5" r="2" fill="#000" opacity=".2"/><circle cx="6" cy="20" r="1.6" fill="#fff" opacity=".4"/></pattern>`;}
+    else if(k==='s'){p=`<pattern id="${pid}" width="12" height="10" patternUnits="userSpaceOnUse"><rect width="12" height="10" fill="${l.c}"/><circle cx="3" cy="3" r="1.1" fill="#000" opacity=".22"/><circle cx="9" cy="7" r="1.1" fill="#fff" opacity=".35"/></pattern>`;}
+    else{p=`<pattern id="${pid}" width="40" height="8" patternUnits="userSpaceOnUse"><rect width="40" height="8" fill="${l.c}"/><path d="M0 4 H22" stroke="#000" stroke-opacity=".1" stroke-width="1"/></pattern>`;}
+    defs+=p;});
+  function block(shift){let s='';
+    L.forEach((l,i)=>{let dd='M0 '+(by(i,0)+shift).toFixed(1);for(let x=0;x<=w;x+=6)dd+=' L'+x+' '+(by(i,x)+shift).toFixed(1);dd+=' L'+w+' '+(by(i,w)+shift).toFixed(1);
+      for(let x=w;x>=0;x-=6)dd+=' L'+x+' '+(by(i+1,x)+shift).toFixed(1);dd+=' L0 '+(by(i+1,0)+shift).toFixed(1)+'Z';
+      s+=`<path d="${dd}" fill="url(#${pats[i]})"/>`;});
+    if(o.pen!=null){for(let i=1;i<L.length;i++){let dd='M0 '+(by(i,0)+shift).toFixed(1);for(let x=6;x<=w;x+=6)dd+=' L'+x+' '+(by(i,x)+shift).toFixed(1);
+      s+=`<path class="penline" d="${dd}" fill="none" stroke="#1d2b8f" stroke-width="3.5" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100-100*o.pen}"/>`;}}
+    return s;}
+  let body;
+  if(sh==='fault'){const fx=o.fx||w*.5,fs=o.fs==null?h*.25:o.fs;
+    defs+=`<clipPath id="${id}L"><path d="M-5 -5 L${fx+fs} -5 L${fx-fs} ${h+5} L-5 ${h+5}Z"/></clipPath><clipPath id="${id}R"><path d="M${fx+fs} -5 L${w+5} -5 L${w+5} ${h+5} L${fx-fs} ${h+5}Z"/></clipPath>`;
+    body=`<g clip-path="url(#${id}L)">${block(0)}</g><g clip-path="url(#${id}R)">${block(d)}</g><path d="M${fx+fs} 0 L${fx-fs} ${h}" stroke="#2b1a0c" stroke-width="4"/>`;}
+  else body=block(0);
+  return `<g transform="translate(${o.x||0} ${o.y||0})"><defs>${defs}</defs><g clip-path="url(#${id}c)">${body}</g>${o.frame===false?'':`<rect width="${w}" height="${h}" fill="none" stroke="#3b2a1a" stroke-width="3" rx="4"/>`}</g>`;}
+/* ===== 1단원 화석 그림: fossil(종류, x, y, 크기 k) — 200×150 판 기준 ===== */
+const FS={stone:'#b9b2a4',dark:'#5e554a',mid:'#8a8174',lite:'#d8d2c4'};
+function slab(w,h,c){ return `<rect width="${w}" height="${h}" rx="14" fill="${c||FS.stone}" stroke="#7d7465" stroke-width="3"/><path d="M14 ${h*.7} q40 -8 80 4 M${w*.55} 20 q30 6 60 -4" stroke="#a49b8c" stroke-width="2" fill="none"/>`; }
+const FOSSIL={
+  trilobite:()=>{ let s='<path d="M100 22 C60 22 52 50 56 62 L144 62 C148 50 140 22 100 22Z" fill="#7a7062" stroke="#4a4239" stroke-width="2.5"/>';
+    s+='<path d="M60 62 C62 110 84 132 100 134 C116 132 138 110 140 62Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/>';
+    for(let i=0;i<9;i++){ const y=68+i*7, w=40-i*2.6; s+=`<path d="M${100-w-2} ${y} Q100 ${y+3} ${100+w+2} ${y}" stroke="#4a4239" stroke-width="2" fill="none"/>`; }
+    s+='<path d="M88 62 C86 100 92 126 100 132 C108 126 114 100 112 62" fill="#9a9184" stroke="#4a4239" stroke-width="2"/><circle cx="80" cy="46" r="5" fill="#4a4239"/><circle cx="120" cy="46" r="5" fill="#4a4239"/>'; return s; },
+  fern:()=>{ let s='<path d="M60 140 Q100 80 150 14" stroke="#4a4239" stroke-width="4" fill="none"/>';
+    for(let i=0;i<9;i++){ const t=i/9, x=60+t*90-((1-t)*6), y=140-t*126+ (t*t*10); const L=26*(1-t*.6);
+      s+=`<path d="M${x} ${y} q${-L*.6} ${-L*.2} ${-L} ${-L*.6} q${L*.5} ${L*.1} ${L} ${L*.6}Z" fill="#6d6457" stroke="#4a4239" stroke-width="1.5"/><path d="M${x} ${y} q${L*.7} ${L*.05} ${L*1.1} ${-L*.3} q${-L*.5} ${-L*.2} ${-L*1.1} ${L*.3}Z" fill="#6d6457" stroke="#4a4239" stroke-width="1.5"/>`; } return s; },
+  fish:()=>{ let s='<path d="M30 76 C60 40 130 42 158 72 C130 104 60 108 30 76Z" fill="#9a9184" stroke="#4a4239" stroke-width="2.5"/><path d="M156 72 L188 46 L182 74 L188 102Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/>';
+    s+='<path d="M40 76 H160" stroke="#3d362f" stroke-width="3.5"/>'; for(let i=0;i<12;i++){ const x=58+i*8; s+=`<path d="M${x} 76 l-6 -${18-Math.abs(i-5)} M${x} 76 l-6 ${18-Math.abs(i-5)}" stroke="#4a4239" stroke-width="1.6"/>`; }
+    s+='<circle cx="44" cy="70" r="5" fill="#3d362f"/><path d="M96 44 l14 -14 l6 16Z M100 106 l12 12 l4 -14Z" fill="#8a8174" stroke="#4a4239" stroke-width="2"/>'; return s; },
+  ammonite:()=>{ let d='M100 75'; for(let a=0;a<=4*Math.PI*2.2;a+=.2){ const r=3+a*4.4; d+=` L${(100+Math.cos(a)*r).toFixed(1)} ${(75+Math.sin(a)*r).toFixed(1)}`; }
+    let s=`<circle cx="100" cy="75" r="62" fill="#8a8174" stroke="#4a4239" stroke-width="3"/><path d="${d}" fill="none" stroke="#4a4239" stroke-width="3"/>`;
+    for(let i=0;i<36;i++){ const a=i/36*Math.PI*2; s+=`<path d="M${100+Math.cos(a)*44} ${75+Math.sin(a)*44} L${100+Math.cos(a)*60} ${75+Math.sin(a)*60}" stroke="#4a4239" stroke-width="2"/>`; } return s; },
+  ginkgo:()=>{ let s='<path d="M100 132 L100 92" stroke="#4a4239" stroke-width="4"/><path d="M100 94 C66 92 36 64 42 30 C70 18 130 18 158 30 C164 64 134 92 100 94Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/><path d="M100 30 L100 60" stroke="#b9b2a4" stroke-width="4"/>';
+    for(let i=0;i<11;i++){ const a=Math.PI*(1.12+i*.076); s+=`<path d="M100 94 L${100+Math.cos(a)*68} ${94+Math.sin(a)*68}" stroke="#4a4239" stroke-width="1.2" opacity=".7"/>`; } return s; },
+  bird:()=>{ let s=''; [[50,110,-10],[95,70,10],[140,32,-8]].forEach(([x,y,r])=>{ s+=`<g transform="translate(${x} ${y}) rotate(${r+25})" stroke="#4a4239" stroke-width="5" stroke-linecap="round" fill="none"><path d="M0 0 L0 -26 M0 0 L-18 -18 M0 0 L18 -18 M0 0 L0 8"/></g>`; }); return s; },
+  pine:()=>{ let s='<ellipse cx="100" cy="78" rx="42" ry="58" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/>';
+    for(let r=0;r<8;r++) for(let c=0;c<5;c++){ const y=32+r*12, x=72+c*14+(r%2)*7; if(Math.hypot((x-100)/40,(y-78)/56)<1) s+=`<path d="M${x-6} ${y} Q${x} ${y-8} ${x+6} ${y} Q${x} ${y+5} ${x-6} ${y}Z" fill="#6d6457" stroke="#4a4239" stroke-width="1"/>`; } return s; },
+  bone:()=>{ const b=(x,y,l,r)=>`<g transform="translate(${x} ${y}) rotate(${r})"><rect x="${-l/2}" y="-6" width="${l}" height="12" rx="6" fill="#e9e1cf" stroke="#6b5f4c" stroke-width="2"/><circle cx="${-l/2}" cy="-6" r="8" fill="#e9e1cf" stroke="#6b5f4c" stroke-width="2"/><circle cx="${-l/2}" cy="6" r="8" fill="#e9e1cf" stroke="#6b5f4c" stroke-width="2"/><circle cx="${l/2}" cy="-6" r="8" fill="#e9e1cf" stroke="#6b5f4c" stroke-width="2"/><circle cx="${l/2}" cy="6" r="8" fill="#e9e1cf" stroke="#6b5f4c" stroke-width="2"/></g>`;
+    return b(70,60,80,-20)+b(130,95,90,15)+b(110,40,50,60)+'<path d="M40 120 q20 -10 40 0 q20 10 40 0" stroke="#e9e1cf" stroke-width="9" fill="none"/>'; },
+  dinofoot:()=>`<g transform="translate(100 80)" fill="#6d6457" stroke="#4a4239" stroke-width="3"><path d="M-14 30 C-24 10 -20 -6 -8 -10 L0 -60 L8 -10 C20 -6 24 10 14 30Z"/><path d="M-8 -6 L-46 -40 L-34 -46 L-2 -14Z"/><path d="M8 -6 L46 -40 L34 -46 L2 -14Z"/></g>`,
+  dung:()=>'<path d="M48 96 C40 70 70 58 90 66 C104 46 140 50 146 72 C166 76 168 104 146 110 C120 124 66 122 48 96Z" fill="#7a6a52" stroke="#4a3e2e" stroke-width="3"/><circle cx="90" cy="88" r="4" fill="#5a4c38"/><circle cx="122" cy="80" r="3" fill="#5a4c38"/><circle cx="110" cy="102" r="3.5" fill="#5a4c38"/>',
+  coral:()=>{ let s=''; for(let i=0;i<7;i++){ const x=40+i*20; s+=`<rect x="${x}" y="${30+(i%3)*8}" width="13" height="${100-(i%3)*8}" rx="6" fill="#8a8174" stroke="#4a4239" stroke-width="2"/><circle cx="${x+6.5}" cy="${36+(i%3)*8}" r="4" fill="#4a4239"/>`; for(let k=0;k<4;k++) s+=`<path d="M${x} ${55+k*18+(i%3)*8} h13" stroke="#4a4239" stroke-width="1.4"/>`; } return s; },
+  egg:()=>{ let s=''; [[66,62],[104,52],[140,66],[84,100],[124,104]].forEach(([x,y])=>{ s+=`<ellipse cx="${x}" cy="${y}" rx="20" ry="17" fill="#cfc6b4" stroke="#6b5f4c" stroke-width="2.5"/><path d="M${x-10} ${y-4} l6 4 l5 -5 l6 6" stroke="#6b5f4c" stroke-width="1.5" fill="none"/>`; }); return s; },
+  lizard:()=>{ let s=''; [[50,100,1],[80,76,-1],[110,100,1],[140,76,-1]].forEach(([x,y,f])=>{ s+=`<g transform="translate(${x} ${y}) scale(${f} 1)" stroke="#4a4239" stroke-width="3" stroke-linecap="round" fill="none"><path d="M0 0 L-8 -14 M0 0 L-2 -16 M0 0 L5 -14 M0 0 L10 -9 M0 0 L10 3"/></g>`; }); return s+'<path d="M30 112 Q100 90 170 70" stroke="#6d6457" stroke-width="2" stroke-dasharray="4 6" fill="none"/>'; },
+  wood:()=>'<path d="M30 60 L170 44 L176 86 L34 104Z" fill="#8a7a62" stroke="#4a3e2e" stroke-width="3"/><path d="M40 70 L168 54 M42 84 L170 68 M44 96 L172 80" stroke="#5e5040" stroke-width="2"/><ellipse cx="172" cy="65" rx="8" ry="21" fill="#a49274" stroke="#4a3e2e" stroke-width="3"/>',
+};
+function fossil(kind,o){ o=o||{}; const w=o.w||200,h=o.h||150; return (o.slab===false?'':slab(w,h,o.c))+`<g transform="scale(${w/200} ${h/150})">${FOSSIL[kind]()}</g>`; }
+
+/* ---------- 도입: 발굴 ---------- */
+const DIRT=[[230,140],[330,120],[430,150],[520,130],[300,200],[460,210]]; const brushed=new Set();
+function drawDig(){ let s='<rect width="800" height="300" fill="#cfe9f7"/><rect y="70" width="800" height="230" fill="#c9a77a"/><path d="M0 70 H800" stroke="#8a6a44" stroke-width="4"/>';
+  for(let i=0;i<60;i++){ const x=(i*131)%800, y=80+((i*47)%210); s+=`<circle cx="${x}" cy="${y}" r="2" fill="#a68456"/>`; }
+  s+='<g transform="translate(180 60) scale(2.2 1.5)">'+FOSSIL.bone()+'</g>';
+  DIRT.forEach(([x,y],i)=>{ if(!brushed.has(i)) s+=`<g class="dirt" data-i="${i}"><ellipse cx="${x}" cy="${y}" rx="70" ry="48" fill="#b38f62" stroke="#8a6a44" stroke-width="2"/><path d="M${x-30} ${y-6} q14 -10 28 0 M${x} ${y+16} q14 -8 26 0" stroke="#8a6a44" stroke-width="2" fill="none"/></g>`; });
+  s+='<g transform="translate(640 40)"><circle cx="40" cy="20" r="16" fill="#ffd9b0"/><rect x="24" y="36" width="34" height="56" rx="10" fill="#3a86c8"/><path d="M28 60 L-10 96" stroke="#3a86c8" stroke-width="10" stroke-linecap="round"/><path d="M-10 96 l-20 22" stroke="#8a5a2b" stroke-width="5"/><path d="M-34 116 l-8 10 l8 2 l6 -8z" fill="#f2d16b"/></g>';
+  $('#dig').innerHTML=s; $$('#dig .dirt').forEach(g=>tap(g,()=>{ brushed.add(+g.dataset.i); drawDig(); after(); })); }
+function after(){ if(brushed.size===DIRT.length){ fb('#digFb','공룡 뼈가 나타났어요! 과학자들은 지층에서 공룡 뼈를 조심스럽게 찾고 있었어요.',true); $('#ask1').hidden=false; }
+  else fb('#digFb','흙을 털어 냈어요. ('+brushed.size+'/'+DIRT.length+') 조심스럽게 계속 찾아봐요.','info'); }
+drawDig(); pickOne('#p1','','다시 생각해 봐요.','s1');
+
+/* ---------- 관찰 ---------- */
+const OBS=[
+  {k:'trilobite',n:'삼엽충 화석',f:'마디가 많은 벌레처럼 보여요.',like:'몸에 마디가 많은 동물',kind:'동물'},
+  {k:'fern',n:'고사리 화석',f:'잎이 많고 줄기가 잘 보여요.',like:'산에서 볼 수 있는 고사리',kind:'식물'},
+  {k:'fish',n:'물고기 화석',f:'가운데 굵은 뼈가 있고, 지느러미가 보여요.',like:'오늘날의 물고기',kind:'동물'},
+  {k:'ammonite',n:'암모나이트 화석',f:'껍데기의 무늬가 잘 보여요.',like:'조개나 달팽이',kind:'동물'},
+  {k:'ginkgo',n:'은행잎 화석',f:'잎이 넓고, 줄기가 가늘어요.',like:'길에서 볼 수 있는 은행잎',kind:'식물'},
+  {k:'bird',n:'새 발자국 화석',f:'새가 걸어 다닌 발자국처럼 보여요.',like:'오늘날 새의 발자국',kind:'흔적'}];
+const seenF=new Set();
+OBS.forEach((o,i)=>{ const b=document.createElement('button'); b.innerHTML=`<svg viewBox="0 0 200 150" aria-hidden="true">${fossil(o.k)}</svg>${o.n}`; b.onclick=()=>showF(i); $('#fos').appendChild(b); });
+function showF(i){ const o=OBS[i]; $$('#fos button').forEach((b,k)=>b.classList.toggle('sel',k===i)); $('#fbig').innerHTML=fossil(o.k);
+  $('#fnote').innerHTML=`<b>${o.n}</b><br>👀 생김새: ${o.f}<br>🔗 닮은 오늘날의 생물: ${o.like}<br>🏷️ ${o.kind==='흔적'?'생물의 흔적이 남은 화석':o.kind+'의 몸체가 남은 화석'}`;
+  seenF.add(i); $$('#fos button')[i].classList.add('seen');
+  if(seenF.size===OBS.length){ fb('#fosFb','6가지 화석을 모두 관찰했어요. 화석의 종류와 생김새가 다양하고, 오늘날의 생물과 생김새가 비슷한 것도 있어요.',true); doneNav('s2'); }
+  else fb('#fosFb','관찰한 화석 '+seenF.size+'/'+OBS.length+'가지','info'); }
+$('#fbig').innerHTML='<rect width="200" height="150" fill="#eef6fb"/><text x="100" y="80" text-anchor="middle" font-family="Jua" font-size="13" fill="#48646f">화석을 누르면 크게 보여요</text>';
+
+/* ---------- 몸체와 흔적 ---------- */
+const BT=[['trilobite','삼엽충 화석','body'],['fern','고사리 화석','body'],['pine','솔방울 화석','body'],['bone','공룡 뼈 화석','body'],
+  ['bird','새 발자국 화석','trace'],['dinofoot','공룡 발자국 화석','trace'],['dung','공룡의 배설물(똥) 화석','trace']];
+sorter('#st3',BT.map(([k,n,t])=>({t:`<svg viewBox="0 0 200 150" aria-hidden="true">${fossil(k)}</svg>${n}`,k:t,m:n+'은(는) 생물의 '+(t==='body'?'몸체':'흔적')+'이(가) 남은 화석이에요.',h:'생물의 몸 자체가 남았는지, 생물이 남긴 자국이나 배설물인지 생각해 봐요.'})),
+  [{k:'body',n:'몸체'},{k:'trace',n:'흔적'}],
+  '모두 맞혔어요! 생물의 몸체뿐만 아니라 발자국, 배설물 같은 생물의 흔적도 화석이 될 수 있어요.','s3');
+
+/* ---------- 공유해요 ---------- */
+$('#mus').innerHTML=[['lizard','도마뱀 발자국 화석'],['wood','나무 화석'],['egg','공룡알 화석']].map(([k,n])=>`<figure><svg viewBox="0 0 200 150" aria-hidden="true">${fossil(k)}</svg><figcaption>${n}</figcaption></figure>`).join('');
+matcher('#m4',[['도마뱀 발자국 화석','발자국의 크기가 작고 발가락이 펼쳐져 있어요.'],['나무 화석','막대처럼 길쭉한 모양이에요.'],['공룡알 화석','달걀처럼 생겼고, 여러 개의 알 화석이 모여 있어요.']],
+  '모두 이었어요! 친구들이 공유한 사진에서도 여러 가지 화석의 생김새를 볼 수 있어요.','s4');
+
+pickAll('#p5','모두 찾았어요! 화석은 종류와 크기가 다양하고, 생물의 몸체뿐만 아니라 흔적도 화석이 될 수 있어요.','다시 생각해 봐요.','s5');
+pickOne('#p6','','다시 생각해 봐요.','s6');
+$('#blReveal').onclick=()=>{ fb('#blFb','옛날에 살았던 생물의 몸체나 흔적이 지층 속에 남아 있는 것을 화석이라고 해요.',true); doneNav('s7'); };
+
+/* ---------- 형성 평가 ---------- */
+let q8=false,w8=false;
+const twoImg='<svg viewBox="0 0 420 160" style="max-width:420px;margin:4px 0" aria-label="㉠ 암석에 남은 공룡 발자국 화석, ㉡ 바닷가 모래 위에 찍힌 신발 자국"><g transform="translate(0 5)">'+fossil('dinofoot')+'</g>'+
+  '<g transform="translate(215 5)"><rect width="200" height="150" rx="14" fill="#f1dfae" stroke="#c9a96a" stroke-width="3"/>'+[[60,110],[100,70],[140,34]].map(([x,y],i)=>`<ellipse cx="${x}" cy="${y}" rx="14" ry="24" transform="rotate(30 ${x} ${y})" fill="#d9c28c" stroke="#b8995c" stroke-width="2"/>`).join('')+'</g>'+
+  '<text x="10" y="24" font-family="Jua" font-size="20" fill="#0f3b5c">㉠</text><text x="225" y="24" font-family="Jua" font-size="20" fill="#0f3b5c">㉡</text></svg>';
+quiz('#quiz',[
+  {q:'1. 화석에 관한 설명으로 옳지 <u>않은</u> 것은?',o:['옛날에 살던 동물의 배설물도 화석이 될 수 있어요.','옛날에 살았던 새들이 남긴 발자국은 화석이 될 수 없어요.','화석은 공룡 뼈처럼 매우 큰 것도 있고 꽃가루처럼 매우 작은 것도 있어요.'],a:1,one:1,e:'새 발자국처럼 생물이 남긴 흔적도 화석이 될 수 있어요.',h:'생물의 흔적도 화석이 될 수 있었나요?'},
+  {q:'2. ㉠(암석에 남은 공룡 발자국)과 ㉡(어제 바닷가 모래에 찍힌 신발 자국) 중 화석인 것은?',img:twoImg,o:['㉠','㉡'],a:0,e:'㉠은 먼 옛날에 살았던 생물의 흔적이 암석에 남은 것이에요. ㉡은 오늘날 사람이 남긴 자국이라 화석이 아니에요.',h:'화석은 ‘옛날에 살았던 생물’의 몸체나 흔적이에요.'}],()=>{q8=true;if(w8)doneNav('s8');});
+keyCheck('#wr','#wrB','#wrFb',[[/(옛날|오래전|먼 옛날|아주 오래)/,'옛날에 살았던 생물'],[/(흔적|발자국)/,'생물의 흔적'],[/(암석|지층|돌)/,'암석(지층)에 남음']],2,null,'‘㉠은 먼 옛날에 살았던 생물의 흔적이 ~에 남은 것이기 때문이에요’처럼 써 봐요.');
+$('#wrB').addEventListener('click',()=>{ if($('#wrFb').classList.contains('ok')){ w8=true; if(q8) doneNav('s8'); } });
+faces('s9','멋져요! 다음 시간에는 화석이 어떻게 만들어지는지 모형으로 알아봐요.','어려웠던 부분은 화석 그림을 다시 눌러 보며 생김새를 비교해 봐요.');
+</script>

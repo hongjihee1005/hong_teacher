@@ -1,0 +1,311 @@
+<!--
+title: 물체를 보려면 무엇이 필요할까?
+unit: 2
+lesson: 2~3
+total: 11
+goal: 어둠상자 속의 물체를 관찰하고, 물체를 보기 위해 무엇이 필요한지 설명할 수 있어요.<br>빛이 없을 때 불편한 점을 다양한 방법으로 표현하며 빛의 성질에 흥미를 느낄 수 있어요.
+pages: 「과학」 42~45쪽 · 「실험관찰」 22~23쪽 · 지도서 192~199쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"빛"}}]
+-->
+<style>
+.g2-lab{margin:8px 0}
+.g2-lab svg,svg.g2-fig{width:100%;height:auto;max-height:34vh;display:block;margin:0 auto;border-radius:14px;border:3px solid var(--navy);background:#fff}
+.g2-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:8px 0}
+.g2-ctl label{display:flex;align-items:center;gap:6px;font-family:"Jua",sans-serif;flex:1 1 15rem}
+.g2-ctl input[type=range]{flex:1;accent-color:var(--sky);height:2rem;min-width:6rem}
+.g2-sort{display:grid;gap:8px}
+.g2-it{display:flex;flex-wrap:wrap;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--paper)}
+.g2-it .tx{flex:1 1 12rem;display:flex;align-items:center;gap:8px}
+.g2-it .tx svg{width:90px;height:auto;flex:none}
+.g2-it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.g2-it.g2-ok{border-color:var(--good);background:#eefaf2}
+.g2-match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px}
+.g2-match .col{display:grid;gap:8px;align-content:start}
+.g2-match button.g2-pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:4px solid var(--sun)}
+.pick button svg{width:100%;max-width:12rem;height:auto;display:block;margin:0 auto 4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .g2-it.g2-ok{background:#163b28}}
+:root[data-theme="dark"] .g2-it.g2-ok{background:#163b28}
+@media (max-width:640px){.g2-match{grid-template-columns:1fr 1fr}}
+
+.d1-wrap{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:12px;align-items:center}
+.d1-wrap svg{width:100%;height:auto;max-height:30vh;display:block}
+.d1-eye{border-radius:50%;border:6px solid #3b3b3b;aspect-ratio:1;max-width:11rem;margin:0 auto;overflow:hidden;background:#000}
+.d1-eye svg{border:0;border-radius:0}
+.d1-steps{display:flex;flex-wrap:wrap;gap:8px}
+.d1-steps button[disabled]{opacity:.45;cursor:not-allowed}
+.d1-rec{display:grid;gap:8px;margin-top:6px}
+.d1-rec .row{gap:8px}
+.d1-rec b{font-family:"Jua",sans-serif}
+@media (max-width:640px){.d1-wrap{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입</span>
+  <h2>밤바다에서 등대가 필요한 까닭은 무엇일까요?</h2>
+  <div class="g2-lab"><svg id="d1Sea" viewBox="0 0 800 300" role="img" aria-label="밤바다의 등대와 배"></svg></div>
+  <div class="row"><button class="main" id="d1Lamp">💡 등대 불 켜기</button><span class="jua" id="d1LampSt">등대 불이 꺼져 있어요. 바다에 무엇이 있을까요?</span></div>
+  <p class="jua" style="font-size:1.05rem" data-glue="1">밤바다에서 등대가 필요한 까닭으로 알맞은 것을 골라요.</p>
+  <div class="pick" id="d1Q"><button data-a="1">등대에서 나오는 빛이 어두운 바다를 밝히고, 배가 육지의 위치를 알 수 있게 해서</button><button data-a="0" data-m="등대는 소리가 아니라 빛으로 바다를 밝혀요.">등대가 큰 소리를 내서 배를 부르기 때문에</button><button data-a="0" data-m="등대가 바람을 막는 것은 아니에요. 불을 켰을 때 무엇이 달라졌는지 다시 봐요.">등대가 거센 바람을 막아 주기 때문에</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="실험해요">
+  <span class="stage">실험해요 · 「실험관찰」 22쪽</span>
+  <h2>어둠상자 속의 물체 관찰하기</h2>
+  <div class="g2-lab d1-wrap">
+    <svg id="d1Box" viewBox="0 0 460 300" role="img" aria-label="손전등으로 위 구멍을 막은 어둠상자와 옆의 관찰 구멍"></svg>
+    <div><div class="d1-eye"><svg id="d1View" viewBox="0 0 200 200" role="img" aria-label="관찰 구멍으로 본 어둠상자 속"></svg></div><p class="tip" style="text-align:center">관찰 구멍으로 본 모습</p></div>
+  </div>
+  <div class="d1-steps">
+    <button class="main" id="d1S1">① 물체 넣고 뚜껑 닫기</button>
+    <button id="d1S2" disabled>② 손전등으로 구멍 막기</button>
+    <button id="d1S3" disabled>③ 관찰 구멍으로 보기</button>
+    <button id="d1S4" disabled>④ 손전등 켜고 보기</button>
+  </div>
+  <div class="fb" id="d1LabFb"></div>
+  <div class="d1-rec" id="d1Rec" data-glue="1"></div>
+  <p class="tip">⚠️ 손전등의 빛을 사람의 눈에 비추지 않아요. 손전등으로 장난치거나 떨어뜨리지 않아요. 관찰할 때는 어둠상자를 움직이지 않아요(얼굴이 부딪히지 않게).</p>
+  <p class="tip">💡 물체를 넣는 친구는 다른 친구가 물체를 보지 못하게 하고, 실험이 끝나면 역할을 바꾸어 다시 해요.</p>
+</section>
+
+<section id="s3" data-nav="정리해요">
+  <span class="stage">정리해요</span>
+  <h2>물체를 보려면 무엇이 필요할까요?</h2>
+  <p class="jua" style="font-size:1.05rem">어둠상자 속의 물체를 보려면 무엇이 필요했나요?</p>
+  <div class="pick" id="d1Need"><button data-a="1">물체를 비추는 빛</button><button data-a="0" data-m="관찰 구멍은 처음부터 있었지만 손전등을 켜기 전에는 보이지 않았어요.">더 큰 관찰 구멍</button><button data-a="0" data-m="손전등을 끈 채로는 물체가 보이지 않았어요.">조용한 교실</button><button data-a="0" data-m="물체의 색과 상관없이 빛이 없을 때는 보이지 않았어요.">밝은 색의 물체</button></div>
+  <div class="fb"></div>
+  <div class="g2-lab"><svg id="d1Street" viewBox="0 0 800 260" role="img" aria-label="가로등이 켜졌을 때와 꺼졌을 때의 밤길"></svg></div>
+  <div class="row"><button id="d1Pole">🔦 가로등 끄기</button><span class="tip" id="d1PoleSt">가로등이 켜져 있어서 길이 잘 보여요.</span></div>
+  <p class="tip" data-glue="1">우리가 물체를 보려면 <b>물체를 비추는 빛</b>이 있어야 해요. 낮에는 햇빛이 있어서, 밤에는 많은 전등이 빛을 내서 주변의 물체를 볼 수 있어요.</p>
+  <p class="jua" style="font-size:1.05rem">빛이 전혀 없는 곳에서 오래 기다리면 물체가 보이게 될까요?</p>
+  <div class="pick" id="d1Mis"><button data-a="1" data-m="맞아요! 어두운 곳에서 시간이 지나 조금 보이는 것은 아주 적은 빛이라도 있기 때문이에요. 빛이 전혀 없다면 오래 지나도 아무것도 보이지 않아요.">아니요. 빛이 전혀 없으면 오래 기다려도 보이지 않아요.</button><button data-a="0" data-m="눈이 어둠에 익숙해져서 보이는 것은 아주 적은 빛이라도 있을 때예요. 빛이 전혀 없다면 어떨까요?">네. 눈이 익숙해지면 빛이 없어도 보여요.</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="준비해요">
+  <span class="stage">준비해요 · 「실험관찰」 23쪽</span>
+  <h2>빛이 없으면 무엇이 불편할까요?</h2>
+  <p>빛이 모두 사라진 세상을 상상해 봐요. 빛이 없을 때 불편해지는 일을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="d1Hard">
+    <button data-a="1" data-m="앞에 있는 물체를 볼 수 없어요.">길을 걷다가 돌에 걸려 넘어질 수 있어요</button>
+    <button data-a="1" data-m="손잡이가 보이지 않아요.">문을 열려면 손잡이를 더듬어 찾아야 해요</button>
+    <button data-a="0" data-m="소리는 빛이 없어도 들을 수 있어요.">친구가 부르는 소리를 들을 수 없어요</button>
+    <button data-a="1" data-m="거울도, 세면대도 보이지 않아요.">세수를 하기 어려워요</button>
+    <button data-a="0" data-m="냄새는 빛이 없어도 맡을 수 있어요.">음식 냄새를 맡을 수 없어요</button>
+    <button data-a="1" data-m="글자를 볼 수 없어요.">책을 읽을 수 없어요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem">우리 모둠은 빛이 없을 때 불편한 점을 어떻게 표현할까요?</p>
+  <div class="pick" id="d1How"><button data-m="좋아요! 빛이 없을 때 길이나 화장실에서 일어날 수 있는 일을 글로 써 봐요.">✍️ 과학 글쓰기</button><button data-m="좋아요! 빛이 없을 때 불편한 장면을 그림으로 그려 봐요.">🎨 그림 그리기</button><button data-m="좋아요! 손을 휘저으며 걷는 모습처럼 몸으로 표현해 봐요.">🎭 역할놀이 하기</button><button data-m="좋아요! 글쓰기와 그림 그리기를 합쳐 그림일기로 표현해도 돼요.">📔 글 + 그림(그림일기)</button></div>
+  <div class="fb"></div>
+  <p class="tip">💬 친구와 이야기할 때는 바르고 고운 말을 써요. 친구의 의견을 존중해요.</p>
+</section>
+
+<section id="s5" data-nav="활동해요">
+  <span class="stage">활동해요</span>
+  <h2>빛이 없는 세상 — 과학 글쓰기</h2>
+  <p>제목: <b>빛이 없는 세상</b>. 빛이 모두 사라진다면 아침부터 어떤 일이 생길지 2~3문장으로 써 봐요.</p>
+  <textarea id="d1W" rows="4" placeholder="예: 빛이 모두 사라진다면 눈을 뜨고 있어도 …. 아침에 일어나 …"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="d1WBtn">내 글 살펴보기</button></div>
+  <div class="fb" id="d1WFb"></div>
+  <p class="tip">다른 모둠의 발표를 잘 듣고, 빛에 대해 느낀 점을 이야기해 봐요. 예) 빛이 있어서 우리가 물체를 볼 수 있고, 편리하게 살아갈 수 있어요.</p>
+</section>
+
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 물체를 보기 위해서는 물체를 비추는 <span class="blank"><span id="bl1">ㅂ</span></span>이/가 있어야 합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem">2. 방 안의 전등을 꺼서 어두운데도 물체가 보이는 까닭을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="d1Room"><button data-a="1">방 안에 빛이 나는 물체가 있기 때문이에요</button><button data-a="1">방 밖에서 빛이 들어오기 때문이에요</button><button data-a="0" data-m="빛이 전혀 없다면 아무리 오래 있어도 물체를 볼 수 없어요.">빛이 없어도 물체는 저절로 보이기 때문이에요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz">
+    <div><p class="jua" style="font-size:1.05rem">1. 어둠상자 속의 물체를 관찰하는 실험에 대한 설명으로 옳지 <u>않은</u> 것은 어느 것일까요?</p>
+    <div class="pick" id="d1Q1">
+      <button data-a="0" data-m="옳은 설명이에요. 바깥 빛이 들어가면 실험이 되지 않아요.">어둠상자 안에 주변의 빛이 들어가지 않아야 한다.</button>
+      <button data-a="0" data-m="옳은 설명이에요.">손전등을 켜지 않으면 어둠상자 속의 물체는 보이지 않는다.</button>
+      <button data-a="0" data-m="옳은 설명이에요.">어둠상자 위의 손전등을 켜면 어둠상자 속의 물체가 보인다.</button>
+      <button data-a="0" data-m="옳은 설명이에요.">빛이 있어야 우리가 물체를 볼 수 있다는 것을 알 수 있는 실험이다.</button>
+      <button data-a="1" data-m="정답! 관찰하는 사람은 물체가 무엇인지 몰라야 해요. 그래서 물체를 넣을 때 다른 친구가 보지 않게 해요.">관찰하는 사람은 어둠상자 속의 물체가 무엇인지 미리 알고 있어야 한다.</button>
+    </div>
+    <div class="fb"></div></div>
+    <div><p class="jua" style="font-size:1.05rem">2. ✏️ 서술형: 어두운 동굴 안의 바위가 잘 보이지 않는 까닭을 써 봐요.</p>
+    <textarea id="d1Cave" rows="2" placeholder="예: 동굴 안의 바위를 …"></textarea>
+    <div class="row" style="margin-top:8px"><button class="main" id="d1CaveBtn">내 답 살펴보기</button></div>
+    <div class="fb" id="d1CaveFb"></div>
+    <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p></div>
+  </div>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>어둠상자 속의 물체를 관찰할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>물체를 보기 위해 필요한 것이 무엇인지 설명할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>빛이 없을 때 불편한 점을 다양한 방법으로 표현할 수 있어요.</td><td class="face" data-r="2"></td></tr>
+    <tr><td>빛의 중요성에 흥미와 호기심을 느꼈어요.</td><td class="face" data-r="3"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 2단원 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+const DEG=Math.PI/180;
+/* 여러 개 고르기: data-a="1"이 정답 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 고르기 문제 묶음: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua" style="font-size:1.05rem;margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.innerHTML=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='g2-it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('g2-ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.classList.add('g2-match');B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('g2-pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 쓰임새를 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('g2-pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('g2-pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('g2-pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 끝내야 할 일 여러 개를 모두 마치면 섹션 완료 */
+function need(sec,n,msgEl,msg){let k=new Set();return id=>{k.add(id);if(k.size>=n){doneNav(sec);if(msgEl)fb(msgEl,msg,true);}};}
+
+/* ---------- 도입: 등대 ---------- */
+let lampOn=false,beamA=0,raf1=0;
+function sea(){const on=lampOn,o=on?1:.07;
+  let s=`<rect width="800" height="300" fill="#0b1630"/>`+[[60,30],[160,60],[300,24],[420,50],[520,20],[640,40],[760,26]].map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="1.6" fill="#fff" opacity=".7"/>`).join('')+
+    `<rect y="170" width="800" height="130" fill="#0d2a4a"/>`;
+  if(on){const a=beamA, x2=660+Math.cos(a)*900, y2=92+Math.sin(a)*120;
+    s+=`<polygon points="660,92 ${x2},${y2-70} ${x2},${y2+70}" fill="#ffe680" opacity=".28"/>`;}
+  s+=`<g opacity="${o}"><path d="M120 200 h150 l-20 26 h-112 z" fill="#c94f3d"/><rect x="170" y="170" width="40" height="30" fill="#eee"/><rect x="186" y="140" width="5" height="32" fill="#ddd"/>`+
+     `<path d="M360 250 q20 -30 50 -10 q30 -20 50 10 z" fill="#5b5f66"/><path d="M470 262 q15 -22 40 -8 q20 -14 36 8 z" fill="#4f535a"/></g>`+
+     `<path d="M600 300 L640 200 L720 180 L800 210 L800 300 Z" fill="#2c2620"/>`+
+     `<rect x="645" y="100" width="30" height="100" fill="${on?'#f4f1ea':'#5d5a55'}"/><rect x="645" y="120" width="30" height="14" fill="#c94f3d"/><rect x="645" y="160" width="30" height="14" fill="#c94f3d"/>`+
+     `<rect x="648" y="82" width="24" height="18" fill="${on?'#fff3a6':'#3a3a3a'}"/><path d="M640 82 L660 66 L680 82 Z" fill="#c94f3d"/>`+
+     `<text x="20" y="290" font-size="18" fill="#cfe3ff" font-family="Jua">${on?'등대 빛이 바다를 비춰요 — 배와 바위가 보여요!':'등대 불이 꺼진 밤바다'}</text>`;
+  $('#d1Sea').innerHTML=s;}
+sea();
+$('#d1Lamp').onclick=()=>{lampOn=!lampOn;cancelAnimationFrame(raf1);
+  $('#d1Lamp').textContent=lampOn?'🌑 등대 불 끄기':'💡 등대 불 켜기';
+  $('#d1LampSt').textContent=lampOn?'등대 빛이 비추자 배와 바위가 보여요.':'등대 불이 꺼져 있어요. 바다에 무엇이 있을까요?';
+  if(lampOn){const t0=performance.now();const st=n=>{beamA=Math.PI+0.5*Math.sin((n-t0)/900)-0.15;sea();raf1=requestAnimationFrame(st);};raf1=requestAnimationFrame(st);}else sea();};
+pickOne('#d1Q','맞아요! 등대에서 나오는 빛이 어두운 바다를 밝혀 주어 배가 바위를 피하고 육지의 위치를 알 수 있어요.','다시 생각해 봐요.','s1');
+
+/* ---------- 실험: 어둠상자 ---------- */
+const OBJ={
+  penguin:{n:'펭귄 인형',d:`<ellipse cx="100" cy="125" rx="42" ry="55" fill="#26323b"/><ellipse cx="100" cy="135" rx="28" ry="42" fill="#fff"/><circle cx="100" cy="70" r="30" fill="#26323b"/><circle cx="90" cy="66" r="7" fill="#fff"/><circle cx="110" cy="66" r="7" fill="#fff"/><circle cx="91" cy="67" r="3"/><circle cx="111" cy="67" r="3"/><path d="M93 80 l7 9 l7 -9z" fill="#f6a623"/><ellipse cx="84" cy="180" rx="14" ry="6" fill="#f6a623"/><ellipse cx="116" cy="180" rx="14" ry="6" fill="#f6a623"/>`},
+  car:{n:'장난감 자동차',d:`<path d="M30 130 h140 v30 h-140z" fill="#2f7fd0"/><path d="M60 130 l20 -30 h50 l20 30z" fill="#2f7fd0"/><rect x="86" y="106" width="20" height="20" fill="#cfeaff"/><rect x="112" y="106" width="22" height="20" fill="#cfeaff"/><circle cx="65" cy="162" r="16" fill="#222"/><circle cx="140" cy="162" r="16" fill="#222"/><circle cx="65" cy="162" r="6" fill="#bbb"/><circle cx="140" cy="162" r="6" fill="#bbb"/>`},
+  apple:{n:'사과',d:`<path d="M100 75 C60 50 30 90 45 135 C58 175 85 180 100 168 C115 180 142 175 155 135 C170 90 140 50 100 75z" fill="#d93a32"/><path d="M100 75 q4 -22 14 -30" stroke="#6b4a2a" stroke-width="5" fill="none"/><path d="M106 58 q22 -18 36 -4 q-18 14 -36 4z" fill="#4caf50"/><ellipse cx="72" cy="105" rx="8" ry="14" fill="#fff" opacity=".35"/>`},
+  cup:{n:'컵',d:`<path d="M55 70 h90 l-10 110 h-70z" fill="#f1c84b"/><path d="M145 95 q35 0 30 35 q-4 26 -36 22" stroke="#f1c84b" stroke-width="10" fill="none"/><ellipse cx="100" cy="70" rx="45" ry="9" fill="#d9ab25"/>`}};
+const OKEYS=Object.keys(OBJ);let hid=null,stage=0,rec={dark:false,lit:false};
+function boxDraw(){const lidOn=stage>=1,lamp=stage>=2,on=stage>=4;
+  let s=`<rect width="460" height="300" fill="#f6f1e7"/><rect y="250" width="460" height="50" fill="#d9c49a"/>`+
+   `<path d="M80 110 L300 110 L380 70 L160 70 Z" fill="${lidOn?'#6d5130':'#3b2a18'}"/>`+
+   `<path d="M80 110 L300 110 L300 250 L80 250 Z" fill="#8a6a42"/><path d="M300 110 L380 70 L380 210 L300 250 Z" fill="#6f5434"/>`+
+   `<ellipse cx="230" cy="90" rx="22" ry="8" fill="${lamp?'#555':'#1d140a'}"/>`+
+   `<circle cx="340" cy="160" r="12" fill="#120c06"/><text x="330" y="200" font-size="14" fill="#fff" font-family="Jua" transform="rotate(-27 340 200)">관찰 구멍</text>`;
+  if(!lidOn&&hid===null) s+=`<text x="190" y="190" font-size="16" fill="#fff" font-family="Jua" text-anchor="middle">빈 어둠상자</text>`;
+  if(lamp){s+=`<g transform="translate(230 82)"><rect x="-16" y="-70" width="32" height="64" rx="6" fill="#4a5d6e"/><path d="M-22 -8 h44 l-6 10 h-32z" fill="#7a8d9e"/><rect x="-6" y="-56" width="12" height="10" rx="2" fill="${on?'#2ecc71':'#c0392b'}"/></g>`;
+    if(on) s+=`<polygon points="215,96 245,96 290,240 170,240" fill="#fff6b0" opacity=".45"/>`;}
+  s+=`<text x="20" y="30" font-size="17" fill="#0f3b5c" font-family="Jua">${['물체를 넣어요','뚜껑을 닫았어요','손전등으로 위 구멍을 막았어요','관찰 구멍으로 봐요 (손전등 꺼짐)','손전등을 켰어요'][stage]}</text>`;
+  $('#d1Box').innerHTML=s;
+  let v='<rect width="200" height="200" fill="#000"/>';
+  if(stage>=4&&hid) v=`<rect width="200" height="200" fill="#e9dcc2"/><ellipse cx="100" cy="40" rx="80" ry="40" fill="#fff8d0" opacity=".7"/>${OBJ[hid].d}`;
+  else if(stage>=3) v+='<text x="100" y="105" font-size="15" fill="#555" text-anchor="middle" font-family="Jua">깜깜해요…</text>';
+  $('#d1View').innerHTML=v;}
+boxDraw();
+function en(i){['#d1S1','#d1S2','#d1S3','#d1S4'].forEach((s,k)=>{const b=$(s);b.disabled=k!==i;b.classList.toggle('main',k===i);});}
+$('#d1S1').onclick=()=>{hid=OKEYS[Math.floor(Math.random()*OKEYS.length)];stage=1;boxDraw();en(1);fb('#d1LabFb','친구가 몰래 물체를 넣고 뚜껑을 닫았어요. 무엇이 들었는지는 아직 몰라요!','info');};
+$('#d1S2').onclick=()=>{stage=2;boxDraw();en(2);fb('#d1LabFb','손전등으로 뚜껑의 구멍을 빈틈없이 막았어요. 아직 손전등은 켜지 않아요.','info');};
+$('#d1S3').onclick=()=>{stage=3;boxDraw();en(-1);fb('#d1LabFb','관찰 구멍으로 보았어요. 아래에 관찰한 것을 기록해요.','info');
+  $('#d1Rec').innerHTML=`<div><b>손전등을 켜기 전:</b> 어둠상자 속의 물체가 무엇인지</div><div class="pick" id="d1R1"><button data-a="1">잘 보이지 않습니다</button><button data-a="0" data-m="관찰 구멍으로 본 모습을 다시 봐요. 깜깜했어요.">잘 보입니다</button></div><div class="fb"></div>`;
+  pickOne('#d1R1','맞아요. 안이 어두워서 물체가 무엇인지 알 수 없었어요. 이제 손전등을 켜 봐요.','다시 봐요.',null,()=>{rec.dark=true;en(3);});};
+$('#d1S4').onclick=()=>{stage=4;boxDraw();en(-1);fb('#d1LabFb','손전등을 켜고 관찰 구멍으로 보았어요. 무엇이 보이나요?','info');
+  $('#d1Rec').insertAdjacentHTML('beforeend',`<div><b>손전등을 켠 뒤:</b> 어둠상자 속의 물체는 무엇일까요?</div><div class="pick" id="d1R2">${shuffle(OKEYS).map(k=>`<button data-a="${k===hid?1:0}" data-m="${k===hid?'':'관찰 구멍으로 본 모습을 다시 봐요.'}">${OBJ[k].n}</button>`).join('')}</div><div class="fb"></div>`);
+  pickOne('#d1R2','','다시 봐요.',null,()=>{rec.lit=true;
+    fb('#d1LabFb','손전등을 켜니 어둠상자 안이 밝아져서 물체('+OBJ[hid].n+')가 잘 보였어요! 역할을 바꾸어 다시 해 볼 수 있어요.',true);
+    $('#d1R2').nextElementSibling.textContent='정답! 손전등을 켜니 '+OBJ[hid].n+'이(가) 잘 보여요.';doneNav('s2');
+    $('#d1S1').disabled=false;$('#d1S1').textContent='🔁 역할 바꾸어 다시 하기';$('#d1S1').classList.add('main');});};
+const _s1=$('#d1S1').onclick;$('#d1S1').onclick=()=>{$('#d1Rec').innerHTML='';stage=0;_s1();};
+
+/* ---------- 정리: 가로등 ---------- */
+let poleOn=true;
+function street(){const o=poleOn?1:.06;
+  let s=`<rect width="800" height="260" fill="${poleOn?'#1c2740':'#05070c'}"/><rect y="180" width="800" height="80" fill="${poleOn?'#3a3f47':'#0a0b0d'}"/>`;
+  if(poleOn) s+=`<polygon points="190,62 90,250 330,250" fill="#ffe9a0" opacity=".35"/>`;
+  s+=`<rect x="186" y="60" width="8" height="190" fill="#555"/><path d="M190 60 q20 -14 40 -4" stroke="#555" stroke-width="7" fill="none"/><ellipse cx="190" cy="64" rx="16" ry="7" fill="${poleOn?'#fff3a6':'#333'}"/>`+
+   `<g opacity="${o}"><g transform="translate(250 200) scale(.35)">${OBJ.car.d}</g><circle cx="140" cy="232" r="9" fill="#888"/><rect x="420" y="120" width="120" height="60" fill="#55606b"/><rect x="440" y="134" width="20" height="20" fill="#ffd36b"/></g>`+
+   `<g transform="translate(560 140)"><circle r="14" fill="#f2c79b"/><rect x="-12" y="14" width="24" height="40" rx="8" fill="#3e7bc4"/></g>`+
+   `<text x="600" y="110" font-size="16" fill="#fff" font-family="Jua">${poleOn?'길이 잘 보이네.':'어두워서 앞이 잘 보이지 않아.'}</text>`;
+  $('#d1Street').innerHTML=s;}
+street();
+$('#d1Pole').onclick=()=>{poleOn=!poleOn;street();$('#d1Pole').textContent=poleOn?'🔦 가로등 끄기':'💡 가로등 켜기';
+  $('#d1PoleSt').textContent=poleOn?'가로등 빛이 있으면 물체를 볼 수 있어요.':'빛이 없으면 물체를 볼 수 없어요.';};
+const s3d=need('s3',2);
+pickOne('#d1Need','맞아요! 어둠상자 속의 물체를 보려면 물체를 비추는 빛이 있어야 해요.','다시 생각해 봐요.',null,()=>s3d('a'));
+pickOne('#d1Mis','','다시 생각해 봐요.',null,()=>s3d('b'));
+
+/* ---------- 준비해요 ---------- */
+const s4d=need('s4',2);
+pickAll('#d1Hard','잘 찾았어요! 빛이 없으면 물체를 볼 수 없어서 생활의 많은 일이 불편해져요. 소리와 냄새는 빛이 없어도 느낄 수 있어요.','그건 빛이 없어도 할 수 있어요.',null,()=>s4d('a'));
+pickIdea('#d1How',null,()=>s4d('b'));
+
+/* ---------- 활동해요 ---------- */
+keyCheck('#d1W','#d1WBtn','#d1WFb',[[/보이지|안\s*보|볼\s*수\s*없|못\s*보|깜깜|어두/,'볼 수 없음'],[/넘어|부딪|걸려|더듬|찾기\s*어렵|찾을\s*수\s*없|불편|어렵/,'불편한 일']],2,'s5','빛이 없어서 무엇을 볼 수 없는지, 그래서 어떤 일이 불편한지 함께 써요.');
+
+/* ---------- 한눈에 쏙 ---------- */
+const s6d=need('s6',2);
+$('#blReveal').onclick=()=>{$('#bl1').textContent='빛';fb('#blFb','물체를 보기 위해서는 물체를 비추는 빛이 있어야 해요.',true);s6d('a');};
+pickAll('#d1Room','맞아요! 전등을 꺼도 빛을 내는 물체나 바깥에서 들어오는 빛이 있으면 물체를 볼 수 있어요.','다시 생각해 봐요.',null,()=>s6d('b'));
+
+/* ---------- 형성 평가 ---------- */
+const s7d=need('s7',2);
+pickOne('#d1Q1','','다시 생각해 봐요.',null,()=>s7d('a'));
+keyCheck('#d1Cave','#d1CaveBtn','#d1CaveFb',[[/빛/,'빛'],[/비추|비치|없|닿지|들어오지|부족/,'바위를 비추는 빛이 없음']],2,null,'바위를 무엇이 비추지 않는지 써요.');
+$('#d1CaveBtn').addEventListener('click',()=>{if($('#d1CaveFb').classList.contains('ok')){$('#d1CaveFb').textContent+=' 예시 답: 동굴 안의 바위를 비추는 빛이 없기 때문이에요.';s7d('b');}});
+
+faces('s8','잘했어요! 다음 시간에는 빛이 어떻게 나아가는지 알아봐요.','어려웠던 부분은 어둠상자 실험을 다시 해 보고, 선생님께 질문해도 좋아요!');
+</script>

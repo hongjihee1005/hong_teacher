@@ -1,0 +1,319 @@
+<!--
+title: 지층은 어떤 특징이 있을까?
+unit: 1
+lesson: 2
+total: 12
+goal: 여러 가지 지층을 관찰하고, 지층의 특징을 설명할 수 있어요.
+pages: 「과학」 14~15쪽 · 「실험관찰」 6~7쪽 · 지도서 112~121쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"다","bl2":"양"}}]
+-->
+<style>
+/* 1단원 교과서 버전 공통 */
+.lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.lab svg{display:block;width:100%}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,18px)}
+.two .photo{margin:0}
+.rtable{table-layout:fixed}
+.rtable td,.rtable th{text-align:center;padding:5px 4px;font-size:.88rem;word-break:keep-all}
+.rtable th{background:var(--bg)}
+.rtable td.q{background:var(--bg);font-family:"Jua",sans-serif}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:10px 14px;font-size:.95rem}
+.big{font-size:1.1rem}
+.ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:2px dashed var(--line);padding:6px 0}
+.ox button{min-width:3rem}
+/* 나누기 카드: 카드마다 칸 단추 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+/* 차례 맞히기 */
+.t3ord{display:flex;flex-direction:column;gap:6px}
+.t3ord button{text-align:left}
+.t3ord .t3dn{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.t3seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+/* 그림 속 누르기 */
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+.t3cnt{font-family:"Jua",sans-serif;color:var(--muted);font-size:.95rem}
+#quiz>div{margin-bottom:6px}
+@media (max-width:600px){.two,.t3sort,.t3match{grid-template-columns:1fr}}
+.c1cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;align-content:start}
+#s2 .two{align-items:start}
+#st3{grid-template-columns:repeat(3,minmax(0,1fr))}
+.c1cards button{padding:4px;border-radius:12px;min-height:0;display:flex;flex-direction:column;align-items:center;gap:2px}
+.c1cards button svg{width:100%}
+.c1cards button.seen{border-color:var(--good);background:#e9f9ef}
+.c1big{border:3px solid var(--navy);border-radius:14px;background:#fffdf8;padding:6px}
+.c1note{font-size:.92rem;line-height:1.45;margin-top:6px}
+.c1note b{color:var(--navy)}
+.t3sort .it svg{width:100%;max-height:4.2rem}
+.t3sort .it .tx{text-align:center}
+.c1three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.c1three figure{margin:0;border:3px solid var(--navy);border-radius:12px;overflow:hidden;background:#fffdf8}
+.c1three svg{max-height:22vh;margin:0 auto}
+.c1three figcaption{font-size:.85rem;padding:3px 8px;text-align:center}
+@media (max-width:600px){.c1cards,.c1three,#st3{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 14쪽</span>
+  <h2>무지개떡은 어떤 모습인가요?</h2>
+  <div class="lab"><svg id="tteok" viewBox="0 0 800 260" role="img" aria-label="여러 색의 떡이 겹겹이 쌓인 무지개떡 그림" style="max-height:26vh"></svg></div>
+  <p class="jua big" style="margin-top:8px">무지개떡의 모습으로 알맞은 것을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p1">
+    <button data-a="1" data-m="맞아요! 층과 층 사이에 줄무늬가 보여요.">줄무늬가 보여요</button>
+    <button data-a="1" data-m="맞아요! 떡이 여러 겹으로 쌓여 있어요.">떡이 여러 겹으로 쌓여 있어요</button>
+    <button data-a="1" data-m="맞아요! 층마다 색깔이 달라요.">층마다 색깔이 달라요</button>
+    <button data-a="0" data-m="그림을 다시 봐요. 색깔이 한데 섞여 있나요, 층층이 나뉘어 있나요?">여러 색이 한데 섞여 있어요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="tip" data-glue="1">자갈, 모래, 진흙 등의 다양한 퇴적물이 쌓여 층을 이루는 것을 <b>지층</b>이라고 해요. 지층은 산비탈이나 바닷가의 절벽 등에서 볼 수 있어요.</p>
+</section>
+
+<section id="s2" data-nav="관찰해요">
+  <span class="stage">관찰해요 · 「실험관찰」 6~7쪽</span>
+  <h2>지층 카드로 여러 가지 지층을 관찰해요</h2>
+  <p>지층 카드를 하나씩 눌러 크게 봐요. <b>✏️ 유성펜으로 선 긋기</b>를 누르면 층의 줄무늬를 따라 선이 그어져요. 지층의 <b>모양, 층의 두께, 색깔</b>을 살펴봐요.</p>
+  <div class="two">
+    <div class="c1cards" id="cards"></div>
+    <div>
+      <div class="c1big"><svg id="big" viewBox="0 0 400 250" role="img" aria-label="크게 본 지층 카드"></svg></div>
+      <div class="row" style="margin-top:6px"><button id="penBtn" disabled>✏️ 유성펜으로 선 긋기</button></div>
+      <div class="c1note" id="note">왼쪽에서 지층 카드를 골라요.</div>
+    </div>
+  </div>
+  <div class="fb" id="cardFb"></div>
+  <p class="tip">💡 여행지에서 찍은 지층 사진이 있다면 함께 살펴봐요. 야외에서 지층을 직접 관찰할 때는 안전에 조심해요.</p>
+</section>
+
+<section id="s3" data-nav="분류해요">
+  <span class="stage">관찰해요 3 · 「실험관찰」 7쪽</span>
+  <h2>지층의 모양에 따라 지층 카드를 분류해요</h2>
+  <p>카드마다 알맞은 모양을 눌러요.</p>
+  <div class="t3sort" id="st3"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="여러 가지 지층">
+  <span class="stage">정리해요 · 「과학」 15쪽</span>
+  <h2>여러 가지 지층을 비교해 보고, 특징을 이야기해요</h2>
+  <div class="c1three">
+    <figure><svg id="ph1" viewBox="0 0 300 190" role="img" aria-label="수평인 지층 그림"></svg><figcaption>수평인 지층<br>(경상남도 고성군)</figcaption></figure>
+    <figure><svg id="ph2" viewBox="0 0 300 190" role="img" aria-label="휘어진 지층 그림"></svg><figcaption>휘어진 지층<br>(전북특별자치도 군산시)</figcaption></figure>
+    <figure><svg id="ph3" viewBox="0 0 300 190" role="img" aria-label="끊어진 지층 그림"></svg><figcaption>끊어진 지층<br>(전라남도 여수시)</figcaption></figure>
+  </div>
+  <p class="tip">🖍️ 교과서 사진 대신 그린 그림이에요.</p>
+  <p class="jua big" data-glue="1">세 지층에서 함께 볼 수 있는 특징을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p4" data-glue="1">
+    <button data-a="1" data-m="맞아요! 세 지층 모두 여러 층으로 이루어져 있어요.">여러 층으로 이루어져 있어요</button>
+    <button data-a="1" data-m="맞아요! 세 지층 모두 줄무늬가 보여요.">줄무늬가 보여요</button>
+    <button data-a="1" data-m="맞아요! 층마다 두께와 색깔이 달라요.">층마다 두께와 색깔이 달라요</button>
+    <button data-a="0" data-m="세 지층의 모양을 다시 봐요. 수평인 것, 휘어진 것, 끊어진 것이 있어요.">세 지층의 모양이 모두 같아요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s5" data-nav="생각+">
+  <span class="stage">생각이 한눈에 2 · 「과학」 15쪽</span>
+  <h2>우리 주변에서 지층처럼 층을 이루고 있는 것은?</h2>
+  <p class="jua big">지층처럼 층층이 쌓여 있는 것을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p5">
+    <button data-a="1" data-m="맞아요! 여러 재료가 층층이 쌓인 모습이 지층과 비슷해요.">🥪 샌드위치</button>
+    <button data-a="1" data-m="맞아요! 서랍 속에 층층이 쌓은 교과서도 지층과 비슷해요.">📚 서랍 속에 쌓아 둔 교과서</button>
+    <button data-a="1" data-m="맞아요! 개어서 쌓아 둔 이불도 층을 이루어요.">🛏️ 이불장에 개어 쌓은 이불</button>
+    <button data-a="0" data-m="축구공은 층층이 쌓여 있지 않아요.">⚽ 축구공</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="big">지층은 여러 층으로 이루어져 줄무늬가 보이고, 모양이 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span></span>합니다.</p>
+  <p class="tip">힌트: 수평인 지층, 휘어진 지층, 끊어진 지층이 있었어요. 모양이 ‘일정’할까요, ‘다양’할까요?</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div><div class="fb" id="blFb"></div>
+</section>
+
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <p class="jua big" style="margin-top:14px">✏️ 서술형: 모양이 다른 아래 두 지층의 공통점을 써 봐요.</p>
+  <div class="lab" style="max-width:520px"><svg id="q2" viewBox="0 0 520 150" role="img" aria-label="수평인 지층과 휘어진 지층"></svg></div>
+  <textarea id="wr" rows="2" placeholder="두 지층은 모두 ~"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="wrB">내 답 살펴보기</button></div><div class="fb" id="wrFb"></div>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>여러 가지 지층의 특징을 알고 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>여러 가지 지층을 관찰해 특징을 찾을 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>여러 가지 지층을 관찰하면서 자연의 아름다움을 느꼈어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 1단원 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기: 고르면 그 단추의 data-m을 보여 줌 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick'+(it.one?' one':'')+'"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t:'글',k:'칸',m:'풀이'}], [{k,n}], 다 맞힘 글, 섹션) — 카드마다 칸 단추 */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach((it,i)=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 설명을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽 낱말을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례 맞히기: orderer('#box', [단계…(맞는 차례)], 다 맞힘 글, 섹션, 단계마다 cb(i)) */
+function orderer(box,steps,okMsg,sec,each,cb){const B=$(box),out=B.nextElementSibling;let k=0;
+  const seq=document.createElement('div');seq.className='t3seq';B.before(seq);
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.classList.contains('t3dn'))return;
+    if(i===k){b.classList.add('t3dn');b.disabled=true;const sp=document.createElement('span');sp.textContent=(k+1)+'. '+s;seq.appendChild(sp);if(each)each(k);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은 무엇일까요? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그 일은 조금 뒤에 해요. 지금 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 요소에 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+
+/* ===== 1단원 지층 그리기: strata({x,y,w,h,layers:[{c,k:'g|s|m',t}],shape:'flat|fold|fault|tilt',amp,waves,ph,d,fx,tilt,pen,id}) ===== */
+let _sid=0;
+function strata(o){
+  const w=o.w||300,h=o.h||200,id=o.id||('st'+(++_sid)),L=o.layers,sh=o.shape||'flat',amp=o.amp||0,d=sh==='fault'?(o.d||0):0;
+  const off=x=>sh==='fold'?amp*Math.sin((x/w)*Math.PI*2*(o.waves||1)+(o.ph||0)):sh==='tilt'?(o.tilt||0)*(x-w/2):0;
+  let mn=1e9,mx=-1e9;for(let x=0;x<=w;x+=5){const v=off(x);mn=Math.min(mn,v);mx=Math.max(mx,v);}
+  const start=-mx-Math.abs(d)-2,end=h-mn+Math.abs(d)+2,tot=L.reduce((a,l)=>a+(l.t||1),0),sc=(end-start)/tot;
+  const cum=[0];L.forEach(l=>cum.push(cum[cum.length-1]+(l.t||1)));
+  const by=(i,x)=>start+cum[i]*sc+off(x);
+  let defs=`<clipPath id="${id}c"><rect width="${w}" height="${h}"/></clipPath>`;
+  const pats={};
+  L.forEach((l,i)=>{const k=l.k||'m',pid=id+'p'+i;pats[i]=pid;let p='';
+    if(k==='g'){p=`<pattern id="${pid}" width="34" height="26" patternUnits="userSpaceOnUse"><rect width="34" height="26" fill="${l.c}"/><ellipse cx="8" cy="8" rx="6" ry="4.5" fill="#fff" opacity=".28" stroke="#000" stroke-opacity=".25"/><ellipse cx="25" cy="18" rx="7" ry="5" fill="#000" opacity=".16"/><circle cx="22" cy="5" r="2" fill="#000" opacity=".2"/><circle cx="6" cy="20" r="1.6" fill="#fff" opacity=".4"/></pattern>`;}
+    else if(k==='s'){p=`<pattern id="${pid}" width="12" height="10" patternUnits="userSpaceOnUse"><rect width="12" height="10" fill="${l.c}"/><circle cx="3" cy="3" r="1.1" fill="#000" opacity=".22"/><circle cx="9" cy="7" r="1.1" fill="#fff" opacity=".35"/></pattern>`;}
+    else{p=`<pattern id="${pid}" width="40" height="8" patternUnits="userSpaceOnUse"><rect width="40" height="8" fill="${l.c}"/><path d="M0 4 H22" stroke="#000" stroke-opacity=".1" stroke-width="1"/></pattern>`;}
+    defs+=p;});
+  function block(shift){let s='';
+    L.forEach((l,i)=>{let dd='M0 '+(by(i,0)+shift).toFixed(1);for(let x=0;x<=w;x+=6)dd+=' L'+x+' '+(by(i,x)+shift).toFixed(1);dd+=' L'+w+' '+(by(i,w)+shift).toFixed(1);
+      for(let x=w;x>=0;x-=6)dd+=' L'+x+' '+(by(i+1,x)+shift).toFixed(1);dd+=' L0 '+(by(i+1,0)+shift).toFixed(1)+'Z';
+      s+=`<path d="${dd}" fill="url(#${pats[i]})"/>`;});
+    if(o.pen!=null){for(let i=1;i<L.length;i++){let dd='M0 '+(by(i,0)+shift).toFixed(1);for(let x=6;x<=w;x+=6)dd+=' L'+x+' '+(by(i,x)+shift).toFixed(1);
+      s+=`<path class="penline" d="${dd}" fill="none" stroke="#1d2b8f" stroke-width="3.5" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100-100*o.pen}"/>`;}}
+    return s;}
+  let body;
+  if(sh==='fault'){const fx=o.fx||w*.5,fs=o.fs==null?h*.25:o.fs;
+    defs+=`<clipPath id="${id}L"><path d="M-5 -5 L${fx+fs} -5 L${fx-fs} ${h+5} L-5 ${h+5}Z"/></clipPath><clipPath id="${id}R"><path d="M${fx+fs} -5 L${w+5} -5 L${w+5} ${h+5} L${fx-fs} ${h+5}Z"/></clipPath>`;
+    body=`<g clip-path="url(#${id}L)">${block(0)}</g><g clip-path="url(#${id}R)">${block(d)}</g><path d="M${fx+fs} 0 L${fx-fs} ${h}" stroke="#2b1a0c" stroke-width="4"/>`;}
+  else body=block(0);
+  return `<g transform="translate(${o.x||0} ${o.y||0})"><defs>${defs}</defs><g clip-path="url(#${id}c)">${body}</g>${o.frame===false?'':`<rect width="${w}" height="${h}" fill="none" stroke="#3b2a1a" stroke-width="3" rx="4"/>`}</g>`;}
+
+/* ---------- 무지개떡 ---------- */
+(function(){ const cols=['#f6a6b8','#ffffff','#ffe27a','#bfe3a0','#9fd3f0','#f9c9a0'];
+  let s='<rect width="800" height="260" fill="#fdf6ec"/><ellipse cx="400" cy="232" rx="300" ry="20" fill="#e9dcc8"/>';
+  let y=60; cols.forEach((c,i)=>{ const t=[26,22,30,24,28,22][i]; s+=`<rect x="160" y="${y}" width="480" height="${t}" fill="${c}" stroke="#d9c7ad" stroke-width="2"/>`; y+=t; });
+  s+='<rect x="160" y="60" width="480" height="152" fill="none" stroke="#a5865f" stroke-width="3" rx="6"/>';
+  s+='<text x="400" y="40" text-anchor="middle" font-family="Jua" font-size="24" fill="#6b4a22">여러 색의 떡을 겹겹이 쌓은 무지개떡</text>';
+  $('#tteok').innerHTML=s; })();
+pickAll('#p1','모두 찾았어요! 무지개떡처럼 여러 층이 쌓여 줄무늬가 보이는 것을 땅에서도 볼 수 있어요.','다시 생각해 봐요.','s1');
+
+/* ---------- 지층 카드 ---------- */
+const BR='#b07a45',GR='#9a9a92',DK='#4a4038',TN='#d9b98a',YL='#e8cf8a',LB='#c8a57a',RD='#b5654a',LG='#c9c6bc';
+const CARDS=[
+  {n:'①',shape:'flat',layers:[{c:BR,k:'s',t:1},{c:GR,k:'m',t:2.6},{c:DK,k:'m',t:.8},{c:TN,k:'s',t:2.2},{c:GR,k:'m',t:.9},{c:BR,k:'g',t:2.4}],
+    m:'지층이 수평으로 쌓여 있어요.',d:'얇은 층과 두꺼운 층이 섞여 있어요.',c:'갈색, 회색, 검은색 등의 층이 있어요.'},
+  {n:'②',shape:'fold',amp:16,waves:.5,ph:Math.PI*0.05,layers:[{c:YL,k:'s',t:1.4},{c:RD,k:'m',t:1},{c:LB,k:'s',t:1.6},{c:GR,k:'m',t:1.1},{c:TN,k:'g',t:1.5},{c:DK,k:'m',t:.9}],
+    m:'지층이 구부러져 있어요.',d:'층마다 두께가 조금씩 달라요.',c:'여러 가지 색깔의 층이 있어요.'},
+  {n:'③',shape:'fold',amp:30,waves:1.5,layers:[{c:GR,k:'m',t:1},{c:TN,k:'s',t:1.3},{c:DK,k:'m',t:.8},{c:LG,k:'s',t:1.2},{c:BR,k:'m',t:1},{c:GR,k:'s',t:1.2},{c:DK,k:'m',t:.9}],
+    m:'지층이 구불구불 휘어져 있어요.',d:'층마다 두께가 조금씩 달라요.',c:'층마다 색깔이 조금씩 달라요.'},
+  {n:'④',shape:'flat',layers:[{c:LG,k:'m',t:1},{c:TN,k:'m',t:.8},{c:GR,k:'m',t:1.1},{c:LB,k:'m',t:.9},{c:LG,k:'m',t:1.2},{c:TN,k:'m',t:.8},{c:GR,k:'m',t:1},{c:LB,k:'m',t:1.1},{c:LG,k:'m',t:.9}],
+    m:'지층이 수평으로 나란해요.',d:'층이 얇고, 층의 두께가 조금씩 달라요.',c:'층마다 색깔이 조금씩 달라요.'},
+  {n:'⑤',shape:'fault',d:72,fx:200,fs:45,layers:[{c:TN,k:'s',t:2.4},{c:DK,k:'m',t:.7},{c:BR,k:'g',t:2},{c:LG,k:'m',t:.8},{c:RD,k:'s',t:2.2},{c:GR,k:'m',t:1}],
+    m:'지층이 끊어져 어긋나 있어요.',d:'얇은 층과 두꺼운 층이 섞여 있어요.',c:'층마다 색깔이 달라요.'},
+  {n:'⑥',shape:'fault',d:-64,fx:190,fs:-40,layers:[{c:GR,k:'m',t:1.2},{c:YL,k:'s',t:1.4},{c:LB,k:'m',t:1.1},{c:DK,k:'m',t:1},{c:TN,k:'s',t:1.3},{c:LG,k:'m',t:1.2}],
+    m:'지층이 끊어져 어긋나 있어요.',d:'층마다 두께가 조금씩 달라요.',c:'층마다 색깔이 달라요.'}];
+function cardSVG(cd,w,h,pen,id){ const k=w/400; const o=Object.assign({},cd,{x:6,y:6,w:w-12,h:h-12,pen,id,amp:(cd.amp||0)*k,d:(cd.d||0)*k,fx:(cd.fx||0)*k,fs:(cd.fs||0)*k});
+  return `<rect width="${w}" height="${h}" rx="10" fill="#fff"/>`+strata(o)+`<rect x="8" y="8" width="${30*k+18}" height="${26*k+10}" rx="8" fill="#fff" opacity=".9"/><text x="${12+6*k}" y="${30*k+6}" font-family="Jua" font-size="${26*k+6}" fill="#0f3b5c">${cd.n}</text>`; }
+const seenC=new Set(); let curC=-1, penT=null;
+CARDS.forEach((cd,i)=>{ const b=document.createElement('button'); b.innerHTML=`<svg viewBox="0 0 200 125" aria-hidden="true">${cardSVG(cd,200,125,null,'mc'+i)}</svg><span class="jua">카드 ${cd.n}</span>`;
+  b.setAttribute('aria-label','지층 카드 '+cd.n); b.onclick=()=>showCard(i); $('#cards').appendChild(b); });
+function showCard(i){ curC=i; if(penT)cancelAnimationFrame(penT); const cd=CARDS[i]; $('#big').innerHTML=cardSVG(cd,400,250,null,'bg'+i);
+  $$('#cards button').forEach((b,k)=>b.classList.toggle('sel',k===i)); $('#penBtn').disabled=false;
+  $('#note').innerHTML=`<b>카드 ${cd.n}</b><br>• 모양: ${cd.m}<br>• 두께: ${cd.d}<br>• 색깔: ${cd.c}`;
+  seenC.add(i); $$('#cards button')[i].classList.add('seen');
+  if(seenC.size===6){ fb('#cardFb','지층 카드 6장을 모두 관찰했어요. 지층마다 모양, 층의 두께, 색깔이 서로 달라요.',true); doneNav('s2'); }
+  else fb('#cardFb','관찰한 카드 '+seenC.size+'/6장. 줄무늬를 따라 선도 그어 봐요.','info'); }
+$('#penBtn').onclick=()=>{ if(curC<0)return; const cd=CARDS[curC]; tween(1600,p=>{ $('#big').innerHTML=cardSVG(cd,400,250,p,'bg'+curC); }); };
+$('#big').innerHTML='<rect width="400" height="250" rx="10" fill="#eef6fb"/><text x="200" y="130" text-anchor="middle" font-family="Jua" font-size="22" fill="#48646f">카드를 누르면 크게 보여요</text>';
+
+/* ---------- 분류 ---------- */
+sorter('#st3',CARDS.map((cd,i)=>({t:`<svg viewBox="0 0 200 125" aria-hidden="true">${cardSVG(cd,200,125,1,'sc'+i)}</svg>카드 ${cd.n}`,k:cd.shape,
+  m:'카드 '+cd.n+'은(는) '+({flat:'수평인',fold:'휘어진',fault:'끊어진'})[cd.shape]+' 모양의 지층이에요.',h:'선을 그은 줄무늬가 곧은지, 휘었는지, 중간에 끊어졌는지 봐요.'})),
+  [{k:'flat',n:'수평인 모양'},{k:'fold',n:'휘어진 모양'},{k:'fault',n:'끊어진 모양'}],
+  '모두 분류했어요! 수평인 모양 ①, ④ · 휘어진 모양 ②, ③ · 끊어진 모양 ⑤, ⑥이에요.','s3');
+
+/* ---------- 여러 가지 지층 그림 ---------- */
+function cliff(id,o){ let s='<rect width="300" height="190" fill="#cfe9f7"/>'+strata(Object.assign({x:0,y:30,w:300,h:130,frame:false,id:id+'x'},o))+'<path d="M0 160 Q150 150 300 162 V190 H0Z" fill="#5b8fc4"/><path d="M0 30 Q80 20 160 28 T300 26" stroke="#6c8f5a" stroke-width="10" fill="none"/>'; $(id).innerHTML=s; }
+cliff('#ph1',{shape:'flat',layers:[{c:'#8d8d86',k:'m',t:1.4},{c:'#3f3a35',k:'m',t:.6},{c:'#a8a59a',k:'s',t:1.6},{c:'#5a524a',k:'m',t:.7},{c:'#8d8d86',k:'s',t:1.5},{c:'#3f3a35',k:'m',t:.8}]});
+cliff('#ph2',{shape:'fold',amp:26,waves:1,ph:Math.PI,layers:[{c:'#b07a45',k:'m',t:1},{c:'#3f3a35',k:'m',t:.7},{c:'#c99a66',k:'s',t:1.2},{c:'#6e5238',k:'m',t:.8},{c:'#b07a45',k:'s',t:1.1},{c:'#3f3a35',k:'m',t:.7}]});
+cliff('#ph3',{shape:'fault',d:30,fx:150,fs:30,layers:[{c:'#9a9a92',k:'m',t:1.2},{c:'#b07a45',k:'s',t:1},{c:'#3f3a35',k:'m',t:.6},{c:'#a8a59a',k:'s',t:1.4},{c:'#6e5238',k:'m',t:.8},{c:'#9a9a92',k:'m',t:1}]});
+pickAll('#p4','모두 찾았어요! 지층은 여러 층으로 이루어져 줄무늬가 보이고, 층마다 두께와 색깔이 달라요. 지층의 모양은 수평인 지층, 휘어진 지층, 끊어진 지층 등으로 다양해요.','다시 생각해 봐요.','s4');
+pickAll('#p5','잘 찾았어요! 여러 가지가 층층이 쌓인 모습이 지층의 모습과 비슷해요.','다시 생각해 봐요.','s5');
+$('#blReveal').onclick=()=>{ fb('#blFb','지층은 여러 층으로 이루어져 줄무늬가 보이고, 모양이 다양해요.',true); doneNav('s6'); };
+
+/* ---------- 형성 평가 ---------- */
+$('#q2').innerHTML=strata({x:10,y:10,w:240,h:130,id:'qa',shape:'flat',layers:[{c:TN,k:'s'},{c:GR,k:'m'},{c:BR,k:'g'},{c:DK,k:'m',t:.6},{c:LB,k:'s'}]})+strata({x:270,y:10,w:240,h:130,id:'qb',shape:'fold',amp:20,waves:1,layers:[{c:LG,k:'m'},{c:RD,k:'s'},{c:GR,k:'m'},{c:YL,k:'s'},{c:DK,k:'m',t:.6}]});
+let q7=false,w7=false;
+quiz('#quiz',[
+  {q:'1. 지층에 관한 설명으로 옳은 것끼리 짝 지은 것은?<br><span style="font-size:.9rem">㉠ 지층에서는 줄무늬를 볼 수 있다. ㉡ 지층을 이루는 층의 모양은 모두 같다. ㉢ 지층은 층마다 두께와 색깔이 다르다.</span>',
+   o:['㉠, ㉡','㉠, ㉢','㉡, ㉢'],a:1,e:'지층은 여러 층으로 이루어져 모양이 다양하고 줄무늬를 볼 수 있어요. 층마다 두께와 색깔이 달라요.',h:'지층의 모양은 모두 같았나요?'}],()=>{q7=true;if(w7)doneNav('s7');});
+keyCheck('#wr','#wrB','#wrFb',[[/(여러|많은)\s*(개의\s*)?층|층층/,'여러 층으로 이루어짐'],[/줄무늬/,'줄무늬가 보임'],[/(두께|색)/,'층마다 두께·색깔이 다름']],2,null,'‘두 지층은 모두 여러 층으로 이루어져 있고, ~이/가 보여요’처럼 써 봐요.');
+$('#wrB').addEventListener('click',()=>{ if($('#wrFb').classList.contains('ok')){ w7=true; if(q7) doneNav('s7'); } });
+faces('s8','멋져요! 다음 시간에는 지층이 어떻게 만들어지는지 모형으로 알아봐요.','어려웠던 부분은 지층 카드를 다시 눌러 보며 모양, 두께, 색깔을 비교해 봐요.');
+</script>

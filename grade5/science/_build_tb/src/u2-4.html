@@ -1,0 +1,313 @@
+<!--
+title: 빛을 렌즈와 물에 비추어 볼까?
+unit: 2
+lesson: 6
+total: 11
+goal: 렌즈와 물에 빛을 비추어 보고, 빛의 성질을 설명할 수 있어요.
+pages: 「과학」 50~53쪽 · 「실험관찰」 28~29쪽 · 지도서 222~231쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"굴","bl2":"절"}}]
+-->
+<style>
+.g2-lab{margin:8px 0}
+.g2-lab svg,svg.g2-fig{width:100%;height:auto;max-height:34vh;display:block;margin:0 auto;border-radius:14px;border:3px solid var(--navy);background:#fff}
+.g2-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:8px 0}
+.g2-ctl label{display:flex;align-items:center;gap:6px;font-family:"Jua",sans-serif;flex:1 1 15rem}
+.g2-ctl input[type=range]{flex:1;accent-color:var(--sky);height:2rem;min-width:6rem}
+.g2-sort{display:grid;gap:8px}
+.g2-it{display:flex;flex-wrap:wrap;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--paper)}
+.g2-it .tx{flex:1 1 12rem;display:flex;align-items:center;gap:8px}
+.g2-it .tx svg{width:90px;height:auto;flex:none}
+.g2-it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.g2-it.g2-ok{border-color:var(--good);background:#eefaf2}
+.g2-match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px}
+.g2-match .col{display:grid;gap:8px;align-content:start}
+.g2-match button.g2-pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:4px solid var(--sun)}
+.pick button svg{width:100%;max-width:12rem;height:auto;display:block;margin:0 auto 4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .g2-it.g2-ok{background:#163b28}}
+:root[data-theme="dark"] .g2-it.g2-ok{background:#163b28}
+@media (max-width:640px){.g2-match{grid-template-columns:1fr 1fr}}
+
+#d4Mag{touch-action:none}
+.d4-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.d4-two div{border:3px solid var(--navy);border-radius:14px;padding:6px 10px;background:var(--paper)}
+.d4-two svg{width:100%;max-width:9rem;height:auto;display:block;margin:0 auto}
+.d4-two b{font-family:"Jua",sans-serif}
+@media (max-width:640px){.d4-two{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입</span>
+  <h2>돋보기로 물체를 관찰한 경험을 이야기해 볼까요?</h2>
+  <div class="g2-lab"><svg id="d4Mag" viewBox="0 0 800 300" role="img" aria-label="돋보기로 개미와 글자를 보는 그림"></svg></div>
+  <p class="cap" id="d4MagCap" data-glue="1">돋보기를 끌어서 개미와 글자 위에 대어 봐요.</p>
+  <div id="d4Ask0" hidden data-glue="1">
+    <p class="jua" style="font-size:1.05rem">돋보기로 물체를 관찰하면 물체가 어떻게 보였나요?</p>
+    <div class="pick" id="d4Q0"><button data-a="1">크게 확대되어 보였어요</button><button data-a="0" data-m="돋보기 속의 개미를 다시 봐요.">더 작게 보였어요</button><button data-a="0" data-m="돋보기 속의 모습을 다시 봐요.">아무것도 보이지 않았어요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s2" data-nav="렌즈 알기">
+  <span class="stage">알아봐요</span>
+  <h2>볼록 렌즈와 오목 렌즈</h2>
+  <p><b>렌즈</b>는 투명한 유리나 플라스틱을 이용해 빛이 통과할 때 빛의 방향이 변하도록 한 기구예요.</p>
+  <div class="d4-two" data-glue="1">
+    <div><svg viewBox="-40 -60 80 120" aria-label="볼록 렌즈 단면"><path id="d4CvxIcon" fill="#bfe6fb" stroke="#2e86c1" stroke-width="2"/></svg><b>볼록 렌즈</b><br>가운데 부분이 볼록하고 가장자리로 갈수록 얇아지는 렌즈</div>
+    <div><svg viewBox="-40 -60 80 120" aria-label="오목 렌즈 단면"><path id="d4CcvIcon" fill="#bfe6fb" stroke="#2e86c1" stroke-width="2"/></svg><b>오목 렌즈</b><br>가운데 부분이 오목하고 가장자리로 갈수록 두꺼워지는 렌즈</div>
+  </div>
+  <p class="jua" style="font-size:1.05rem">여러 가지 렌즈를 옆에서 자른 모양이에요. 볼록 렌즈와 오목 렌즈로 나누어 봐요.</p>
+  <div class="g2-sort" id="d4Sort"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s3" data-nav="렌즈에 비추기">
+  <span class="stage">실험해요 1 · 「실험관찰」 28쪽</span>
+  <h2>레이저 지시기의 빛을 렌즈에 비추기</h2>
+  <p class="tip">볼록 렌즈를 받침대에 끼우고, 교실을 어둡게 한 뒤 레이저 지시기(확산형)를 렌즈를 향해 켜요. 레이저 지시기를 <b>좌우로</b> 움직이며 빛이 렌즈를 통과할 때의 모습을 관찰해요(위에서 본 모습).</p>
+  <div class="g2-lab"><svg id="d4Lens" viewBox="0 0 800 340" role="img" aria-label="레이저 지시기의 빛이 렌즈를 통과하는 모습을 위에서 본 그림"></svg></div>
+  <div class="g2-ctl" data-glue="1"><button id="d4Cv" class="sel">볼록 렌즈</button><button id="d4Cc">오목 렌즈</button><label>레이저 지시기 위치 <input type="range" id="d4H" min="-95" max="95" value="60" aria-label="레이저 지시기 위치"></label></div>
+  <div class="fb" id="d4LensFb">렌즈의 가운데와 가장자리를 왔다 갔다 하며 비추어 봐요. 두 렌즈 모두 해 봐요.</div>
+  <div id="d4Ask3" hidden data-glue="1"><div id="d4Q3"></div></div>
+  <p class="tip">⚠️ 렌즈가 깨지지 않게 조심해요. 볼록 렌즈로 태양을 바라보지 않아요. 레이저 지시기의 빛을 눈에 비추지 않아요. 렌즈를 쓴 뒤에는 지문을 닦아요.</p>
+</section>
+
+<section id="s4" data-nav="물에 비추기">
+  <span class="stage">실험해요 2 · 「실험관찰」 29쪽</span>
+  <h2>레이저 지시기의 빛을 물에 비추기</h2>
+  <p class="tip">물이 든 투명한 플라스틱 통에 우유를 스포이트로 4~5방울 떨어뜨리고 유리 막대로 저었어요. 교실을 어둡게 하고, 레이저 지시기의 빛이 공기에서 물로 나아가도록 여러 각도로 비추어요(옆에서 본 모습).</p>
+  <div class="g2-lab"><svg id="d4Tank" viewBox="0 0 800 380" role="img" aria-label="레이저 지시기의 빛이 공기에서 우유를 탄 물로 들어가는 모습"></svg></div>
+  <div class="g2-ctl" data-glue="1"><label>비추는 각도 <input type="range" id="d4I" min="0" max="60" value="40" aria-label="레이저 지시기를 기울인 정도"></label><button id="d4Spr">💦 앞쪽에 물 뿌리기</button><button id="d4Ghost">┈ 곧게 갔다면?</button></div>
+  <div class="fb" id="d4TankFb">빛을 비스듬히도, 물 표면에 수직으로도(각도 0) 비추어 봐요.</div>
+  <div id="d4Ask4" hidden data-glue="1"><div id="d4Q4"></div></div>
+  <p class="tip">⚠️ 실험에 사용하는 물질은 맛보지 않아요. 물을 쏟지 않게 조심하고, 스포이트·유리 막대가 깨지지 않게 다뤄요. 실험이 끝나면 주변을 정리하고, 사용한 액체는 선생님이 정한 곳에 버려요.</p>
+</section>
+
+<section id="s5" data-nav="빛의 굴절">
+  <span class="stage">정리해요 · 체험 더하기</span>
+  <h2>빛의 굴절 — 디지털로 만나는 빛의 세상</h2>
+  <p>빛을 렌즈에 비추면 빛이 렌즈를 통과하면서 나아가는 방향이 꺾여요. 또 빛이 공기 중에서 물로 비스듬히 들어갈 때 나아가는 방향이 꺾여요. 이처럼 빛이 직진하다가 서로 다른 물질의 경계에서 꺾여 나아가는 성질을 <b>빛의 굴절</b>이라고 해요.</p>
+  <p class="jua" style="font-size:1.05rem">지금까지 배운 빛의 성질이에요. 각 모습은 직진·반사·굴절 중 무엇일까요?</p>
+  <div class="g2-sort" id="d4Sort2"></div>
+  <div class="fb"></div>
+  <p class="tip">💡 증강 현실(AR)이나 시뮬레이션을 쓰면 빛이 직진·반사·굴절하는 모습을 화면에서 가상으로 체험할 수 있어요(선생님 안내에 따라 스마트 기기로).</p>
+</section>
+
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 빛이 직진하다가 서로 다른 물질의 경계에서 꺾여 나아가는 성질을 빛의 <span class="blank"><span id="bl1">ㄱ</span><span id="bl2">ㅈ</span></span>(이)라고 합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem">2. 레이저 지시기의 빛을 물에서 공기로 나아가도록 수조 아래쪽에서 위쪽으로 비스듬히 비추면 빛은 어떻게 나아갈까요?</p>
+  <div class="pick" id="d4Q6"><button data-a="1">물과 공기의 경계에서 꺾여 나아가요</button><button data-a="0" data-m="빛이 서로 다른 물질의 경계를 비스듬히 지나면 어떻게 되었나요?">꺾이지 않고 똑바로 나아가요</button><button data-a="0" data-m="빛은 물 밖으로도 나아가요.">물 표면에서 모두 사라져요</button></div>
+  <div class="fb"></div>
+  <svg id="d4Up" class="g2-fig" viewBox="0 0 400 200" role="img" aria-label="물속에서 공기로 나아가는 빛" hidden data-glue="1" style="max-width:24rem"></svg>
+</section>
+
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <div data-glue="1"><p class="jua" style="font-size:1.05rem">3. ✏️ 서술형: 볼록 렌즈로 만든 돋보기안경으로 글자를 보면 글자가 크게 보여요. 빛의 어떤 성질 때문인지 써 봐요.</p>
+  <textarea id="d4W" rows="2" placeholder="예: 빛이 볼록 렌즈를 지나면서 …"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="d4WBtn">내 답 살펴보기</button></div>
+  <div class="fb" id="d4WFb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p></div>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>렌즈와 물에 비춘 빛을 관찰해 빛의 성질을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>렌즈와 물을 통과한 빛이 나아가는 모습을 그림으로 나타낼 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>빛의 성질에 대해 호기심을 가졌어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 2단원 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+const DEG=Math.PI/180;
+/* 여러 개 고르기: data-a="1"이 정답 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 고르기 문제 묶음: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua" style="font-size:1.05rem;margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.innerHTML=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='g2-it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('g2-ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.classList.add('g2-match');B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('g2-pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 쓰임새를 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('g2-pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('g2-pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('g2-pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 끝내야 할 일 여러 개를 모두 마치면 섹션 완료 */
+function need(sec,n,msgEl,msg){let k=new Set();return id=>{k.add(id);if(k.size>=n){doneNav(sec);if(msgEl)fb(msgEl,msg,true);}};}
+
+/* ---------- 도입: 돋보기 ---------- */
+let mg={x:600,y:150},seenAnt=false,seenTxt=false;
+const SCENE=`<rect width="800" height="300" fill="#fbf6ea"/><text x="80" y="110" font-size="30" font-family="Gowun Dodum" fill="#333">작은 글씨도 크게!</text>`+
+  `<g transform="translate(250 200)"><ellipse cx="0" cy="0" rx="9" ry="6" fill="#3a2a1e"/><circle cx="-12" cy="0" r="6" fill="#3a2a1e"/><ellipse cx="14" cy="0" rx="12" ry="8" fill="#3a2a1e"/>`+
+  `<path d="M-4 3 l-8 10 M0 4 l0 12 M4 3 l8 10 M-4 -3 l-8 -10 M0 -4 l0 -12 M4 -3 l8 -10 M-16 -4 l-8 -8 M-16 -4 l-4 -10" stroke="#3a2a1e" stroke-width="1.6"/></g>`+
+  `<path d="M520 260 q60 -80 140 -40 q-40 60 -140 40z" fill="#7cbf6a"/><path d="M520 260 q70 -50 140 -40" stroke="#4e8c3e" stroke-width="2" fill="none"/>`;
+function mag(){const {x,y}=mg,r=62;
+  $('#d4Mag').innerHTML=SCENE+`<defs><clipPath id="d4Clip"><circle cx="${x}" cy="${y}" r="${r}"/></clipPath></defs>`+
+    `<g clip-path="url(#d4Clip)"><rect x="${x-r}" y="${y-r}" width="${2*r}" height="${2*r}" fill="#fbf6ea"/><g transform="translate(${x} ${y}) scale(2) translate(${-x} ${-y})">${SCENE}</g></g>`+
+    `<circle cx="${x}" cy="${y}" r="${r}" fill="#cfefff" opacity=".18" stroke="#5a4632" stroke-width="9"/><line x1="${x+r*0.72}" y1="${y+r*0.72}" x2="${x+r*0.72+60}" y2="${y+r*0.72+60}" stroke="#5a4632" stroke-width="16" stroke-linecap="round"/>`;}
+mag();
+(function(){const sv=$('#d4Mag');let drag=false;const pt=e=>{const r=sv.getBoundingClientRect();return {x:(e.clientX-r.left)*800/r.width,y:(e.clientY-r.top)*300/r.height};};
+  sv.addEventListener('pointerdown',e=>{drag=true;sv.setPointerCapture(e.pointerId);mg=pt(e);mag();chk();});
+  sv.addEventListener('pointermove',e=>{if(!drag)return;mg=pt(e);mg.x=Math.max(60,Math.min(740,mg.x));mg.y=Math.max(60,Math.min(240,mg.y));mag();chk();});
+  sv.addEventListener('pointerup',()=>drag=false);})();
+function chk(){if(Math.hypot(mg.x-250,mg.y-200)<40)seenAnt=true;if(mg.y<150&&mg.x<420)seenTxt=true;
+  if(seenAnt&&$('#d4Ask0').hidden){$('#d4MagCap').textContent='돋보기를 대니 개미가 크게 보여요!';$('#d4Ask0').hidden=false;}}
+pickOne('#d4Q0','맞아요! 돋보기로 보면 물체가 크게 확대되어 보여요. 돋보기에는 렌즈가 들어 있어요. 오늘은 렌즈와 물에 빛을 비추어 봐요.','다시 봐요.','s1');
+
+/* ---------- 렌즈 모양 ---------- */
+function lensPath(xl,xr,sc){let a=[],b=[];for(let i=0;i<=20;i++){const y=-1+i/10;a.push([xl(y)*sc,y*50]);b.push([xr(y)*sc,y*50]);}
+  return 'M'+a.map(p=>p.map(v=>v.toFixed(1)).join(' ')).join(' L')+' L'+b.reverse().map(p=>p.map(v=>v.toFixed(1)).join(' ')).join(' L')+'Z';}
+const LS={bi:[y=>-(4+18*(1-y*y)),y=>4+18*(1-y*y),'cv'],pl:[y=>-5,y=>5+26*(1-y*y),'cv'],me:[y=>-6-24*(1-y*y),y=>6-12*(1-y*y),'cv'],
+  bc:[y=>-4-16*y*y,y=>4+16*y*y,'cc'],pc:[y=>-5,y=>5+24*y*y,'cc'],mc:[y=>-9-12*(1-y*y),y=>9-24*(1-y*y),'cc']};
+$('#d4CvxIcon').setAttribute('d',lensPath(LS.bi[0],LS.bi[1],1));$('#d4CcvIcon').setAttribute('d',lensPath(LS.bc[0],LS.bc[1],1));
+sorter('#d4Sort',Object.entries(LS).map(([k,v],i)=>({t:`<svg viewBox="-40 -60 80 120" aria-hidden="true"><path d="${lensPath(v[0],v[1],1)}" fill="#bfe6fb" stroke="#2e86c1" stroke-width="2"/></svg>렌즈 ${'가나다라마바'[i]}`,k:v[2],
+  m:v[2]==='cv'?'가운데가 가장자리보다 두꺼워요 → 볼록 렌즈':'가운데가 가장자리보다 얇아요 → 오목 렌즈',h:'가운데와 가장자리 중 어디가 더 두꺼운지 봐요.'})),
+  [{k:'cv',n:'볼록 렌즈'},{k:'cc',n:'오목 렌즈'}],'잘 나누었어요! 모양은 달라도 가운데가 두꺼우면 볼록 렌즈, 가운데가 얇으면 오목 렌즈예요.','s2');
+
+/* ---------- 실험 1: 렌즈 굴절(실제 굴절 법칙으로 계산, 굴절률 1.5) ---------- */
+const X0=400,Y0=170,H=110,R=260,NG=1.5,SAG=R-Math.sqrt(R*R-H*H);
+function lensDef(t){if(t==='cv'){const tc=6+2*SAG;return [{c:[X0-tc/2+R,Y0],side:-1},{c:[X0+tc/2-R,Y0],side:1}];}
+  const tc=8;return [{c:[X0-tc/2-R,Y0],side:1},{c:[X0+tc/2+R,Y0],side:-1}];}
+function hitSurf(p,d,s){const ox=p[0]-s.c[0],oy=p[1]-s.c[1],b=ox*d[0]+oy*d[1],cc=ox*ox+oy*oy-R*R,disc=b*b-cc;if(disc<0)return null;
+  for(const t of [-b-Math.sqrt(disc),-b+Math.sqrt(disc)]){if(t<1e-6)continue;const q=[p[0]+d[0]*t,p[1]+d[1]*t];
+    if(Math.sign(q[0]-s.c[0])===s.side&&Math.abs(q[1]-Y0)<=H)return q;}return null;}
+function refr(d,q,s,n1,n2){let N=[(q[0]-s.c[0])/R,(q[1]-s.c[1])/R];let ci=-(N[0]*d[0]+N[1]*d[1]);if(ci<0){N=[-N[0],-N[1]];ci=-ci;}
+  const e=n1/n2,k=1-e*e*(1-ci*ci);if(k<0)return null;const f=e*ci-Math.sqrt(k);return [e*d[0]+f*N[0],e*d[1]+f*N[1]];}
+function lensRay(t,h){const S=lensDef(t);let p=[40,Y0+h],d=[1,0];const pts=[p];
+  const q1=hitSurf(p,d,S[0]);if(q1){pts.push(q1);d=refr(d,q1,S[0],1,NG);const q2=hitSurf(q1,d,S[1]);if(q2){pts.push(q2);d=refr(d,q2,S[1],NG,1);p=q2;}else p=q1;}
+  const tx=(790-p[0])/d[0];let e=[p[0]+d[0]*tx,p[1]+d[1]*tx];if(e[1]<5||e[1]>335){const ty=((d[1]<0?5:335)-p[1])/d[1];e=[p[0]+d[0]*ty,p[1]+d[1]*ty];}pts.push(e);return {pts,d};}
+function lensShape(t){const S=lensDef(t),a=[],b=[];for(let i=0;i<=30;i++){const y=Y0-H+i*2*H/30,dy=y-Y0,w=Math.sqrt(R*R-dy*dy);
+  a.push([S[0].c[0]+S[0].side*w,y]);b.push([S[1].c[0]+S[1].side*w,y]);}
+  return 'M'+a.map(p=>p.map(v=>v.toFixed(1)).join(' ')).join(' L')+' L'+b.reverse().map(p=>p.map(v=>v.toFixed(1)).join(' ')).join(' L')+'Z';}
+let lt='cv';const seen={cv:{mid:false,edge:false},cc:{mid:false,edge:false}},ghost={cv:[],cc:[]};
+function lens(){const h=+$('#d4H').value,r=lensRay(lt,h);
+  let s=`<rect width="800" height="340" fill="#1b2230"/><line x1="20" y1="${Y0}" x2="790" y2="${Y0}" stroke="#56627a" stroke-dasharray="4 8"/>`;
+  ghost[lt].forEach(g=>{s+=`<polyline points="${g.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="#ff4d4d" stroke-width="2" opacity=".3"/>`;});
+  s+=`<path d="${lensShape(lt)}" fill="#bfe6fb" opacity=".55" stroke="#9fd8f5" stroke-width="2"/><rect x="${X0-34}" y="${Y0+H}" width="68" height="16" fill="#b98b55"/>`;
+  s+=`<polyline points="${r.pts.map(p=>p.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="none" stroke="#ff2b2b" stroke-width="3.5"/>`;
+  s+=`<g transform="translate(40 ${Y0+h})"><rect x="-36" y="-9" width="40" height="18" rx="7" fill="#9aa3ad"/></g>`;
+  s+=`<text x="20" y="28" font-size="18" font-family="Jua" fill="#fff">${lt==='cv'?'볼록 렌즈':'오목 렌즈'}</text>`;
+  $('#d4Lens').innerHTML=s;return r;}
+lens();
+function lensRec(){const h=+$('#d4H').value,r=lensRay(lt,h),S=seen[lt];
+  if(Math.abs(h)<=12)S.mid=true;if(Math.abs(h)>=55)S.edge=true;
+  if(Math.abs(h)>=30){const g=ghost[lt];if(g.every(x=>Math.abs(x.h-h)>15)){const pts=r.pts.slice();pts.h=h;g.push(pts);if(g.length>5)g.shift();}}
+  lens();const done=['cv','cc'].filter(k=>seen[k].mid&&seen[k].edge).length;
+  const ang=Math.round(Math.atan2(r.d[1],r.d[0])/DEG);
+  const msg=Math.abs(h)<=12?'가운데를 지난 빛은 거의 꺾이지 않아요.':lt==='cv'?'가장자리를 지난 빛이 렌즈의 가운데 쪽으로 꺾여요.':'가장자리를 지난 빛이 렌즈의 바깥쪽으로 꺾여요.';
+  if(done===2){fb('#d4LensFb','두 렌즈 모두 관찰했어요. '+msg+' 아래 질문에 답해 봐요.',true);$('#d4Ask3').hidden=false;}
+  else fb('#d4LensFb',msg+' (볼록 렌즈 '+(seen.cv.mid&&seen.cv.edge?'✔':'…')+' / 오목 렌즈 '+(seen.cc.mid&&seen.cc.edge?'✔':'…')+' — 가운데와 가장자리 모두)','info');}
+$('#d4H').oninput=lens;$('#d4H').onchange=lensRec;
+$('#d4Cv').onclick=()=>{lt='cv';$('#d4Cv').classList.add('sel');$('#d4Cc').classList.remove('sel');lens();};
+$('#d4Cc').onclick=()=>{lt='cc';$('#d4Cc').classList.add('sel');$('#d4Cv').classList.remove('sel');lens();};
+let q3=false;
+quiz('#d4Q3',[
+ {q:'볼록 렌즈의 가장자리를 지난 빛은 어떻게 나아가나요?',o:['렌즈의 가운데 쪽으로 꺾여요','렌즈의 바깥쪽으로 꺾여요','꺾이지 않아요'],a:0,e:'볼록 렌즈의 가장자리를 지난 빛은 가운데 쪽으로 꺾여요.'},
+ {q:'오목 렌즈의 가장자리를 지난 빛은 어떻게 나아가나요?',o:['렌즈의 가운데 쪽으로 꺾여요','렌즈의 바깥쪽으로 꺾여요','꺾이지 않아요'],a:1,e:'오목 렌즈의 가장자리를 지난 빛은 바깥쪽으로 꺾여요.'},
+ {q:'두 렌즈 모두 가운데 부분을 지난 빛은 어떻게 되나요?',o:['크게 꺾여요','거의 꺾이지 않아요','사라져요'],a:1,e:'렌즈의 가운데를 지날 때는 빛이 거의 꺾이지 않아요.'}],()=>{q3=true;doneNav('s3');});
+
+/* ---------- 실험 2: 물(실제 굴절 법칙, 물 1.33) ---------- */
+const TX0=150,TX1=690,WY=170,BY=350,HP=[360,WY];let spr=0,sprT=0,ghostOn=false,triedV=false,triedS=false;
+function tank(){const i=+$('#d4I').value*DEG,d=[Math.sin(i),Math.cos(i)],r=Math.asin(Math.sin(i)/1.33),dw=[Math.sin(r),Math.cos(r)];
+  const Lp=[HP[0]-d[0]*200,HP[1]-d[1]*200];
+  let tb=(BY-WY)/dw[1];if(HP[0]+dw[0]*tb>TX1)tb=(TX1-HP[0])/dw[0];const E=[HP[0]+dw[0]*tb,WY+dw[1]*tb];
+  let s=`<rect width="800" height="380" fill="#141a26"/><rect x="${TX0}" y="${WY}" width="${TX1-TX0}" height="${BY-WY}" fill="#e9eef3" opacity=".22"/>`+
+    `<path d="M${TX0} 110 V${BY} H${TX1} V110" fill="none" stroke="#9fb3c8" stroke-width="4"/><line x1="${TX0}" y1="${WY}" x2="${TX1}" y2="${WY}" stroke="#cfe3f5" stroke-width="2"/>`+
+    `<text x="${TX1-60}" y="${WY+30}" font-size="16" font-family="Jua" fill="#cfe3f5">물</text><text x="${TX1-60}" y="${WY-14}" font-size="16" font-family="Jua" fill="#cfe3f5">공기</text>`;
+  if(ghostOn){let tg=(BY-WY)/d[1];if(HP[0]+d[0]*tg>TX1)tg=(TX1-HP[0])/d[0];s+=`<line x1="${HP[0]}" y1="${WY}" x2="${HP[0]+d[0]*tg}" y2="${WY+d[1]*tg}" stroke="#fff" stroke-width="2" stroke-dasharray="6 6" opacity=".7"/><text x="${HP[0]+d[0]*tg-10}" y="${Math.min(BY-6,WY+d[1]*tg)}" font-size="13" fill="#fff" font-family="Jua" text-anchor="end">곧게 갔다면</text>`;}
+  if(spr>0){s+=`<line x1="${Lp[0]}" y1="${Lp[1]}" x2="${HP[0]}" y2="${HP[1]}" stroke="#ff2b2b" stroke-width="4" opacity="${spr}"/>`;
+    for(let k=0;k<40;k++){const x=Lp[0]+((k*53)%180)-40,y=Lp[1]+((k*97)%150)-20;if(y<WY-4)s+=`<circle cx="${x}" cy="${y}" r="2" fill="#9fb7d6" opacity="${.6*spr}"/>`;}}
+  s+=`<line x1="${HP[0]}" y1="${HP[1]}" x2="${E[0]}" y2="${E[1]}" stroke="#ff4040" stroke-width="4" opacity=".9"/><circle cx="${HP[0]}" cy="${HP[1]}" r="4" fill="#ff8080"/>`;
+  s+=`<g transform="translate(${Lp[0]} ${Lp[1]}) rotate(${90-i/DEG})"><rect x="-60" y="-10" width="64" height="20" rx="8" fill="#9aa3ad"/></g>`;
+  s+=`<text x="16" y="30" font-size="17" font-family="Jua" fill="#fff">${spr>0?'공기 중의 빛도 보여요':'공기 중의 빛은 물을 뿌려야 보여요'}</text>`;
+  $('#d4Tank').innerHTML=s;}
+tank();
+function tankRec(){const i=+$('#d4I').value;if(i<=2)triedV=true;if(i>=25)triedS=true;
+  fb('#d4TankFb',i<=2?'물 표면에 수직으로 들어간 빛은 꺾이지 않아요.':'공기에서 물로 비스듬히 들어간 빛은 물 표면에서 꺾여요.'+(ghostOn?'':' (‘곧게 갔다면?’을 눌러 비교해 봐요)'),'info');
+  if(triedV&&triedS){$('#d4Ask4').hidden=false;}}
+$('#d4I').oninput=tank;$('#d4I').onchange=tankRec;
+$('#d4Spr').onclick=()=>{clearInterval(sprT);spr=1;tank();sprT=setInterval(()=>{spr=Math.max(0,spr-.02);tank();if(spr<=0)clearInterval(sprT);},60);};
+$('#d4Ghost').onclick=()=>{ghostOn=!ghostOn;$('#d4Ghost').classList.toggle('sel',ghostOn);tank();};
+quiz('#d4Q4',[
+ {q:'빛이 공기에서 물로 <b>비스듬히</b> 들어갈 때 어떻게 되나요?',o:['꺾여서 나아가요','꺾이지 않고 곧게 나아가요','물 표면에서 사라져요'],a:0,e:'빛이 공기에서 물로 비스듬히 들어갈 때 꺾여요.'},
+ {q:'빛이 물 표면에 <b>수직으로</b> 들어갈 때 어떻게 되나요?',o:['크게 꺾여요','꺾이지 않아요'],a:1,e:'수직으로 들어간 빛은 꺾이지 않아요.'}],()=>doneNav('s4'));
+
+/* ---------- 빛의 굴절: 직진·반사·굴절 나누기 ---------- */
+const mini=(b)=>`<svg viewBox="0 0 120 70" aria-hidden="true"><rect width="120" height="70" fill="#1b2230"/>${b}</svg>`;
+sorter('#d4Sort2',[
+ {t:mini('<line x1="8" y1="35" x2="112" y2="35" stroke="#f33" stroke-width="3"/>')+'레이저 지시기의 빛이 곧게 나아가요',k:'st'},
+ {t:mini('<rect x="96" y="5" width="6" height="60" fill="#7fc6ec"/><line x1="8" y1="12" x2="96" y2="35" stroke="#f33" stroke-width="3"/><line x1="96" y1="35" x2="8" y2="58" stroke="#f33" stroke-width="3"/>')+'거울에 부딪쳐 나아가는 방향이 바뀌어요',k:'re'},
+ {t:mini('<path d="M54 6 q14 29 0 58 q-14 -29 0 -58z" fill="#bfe6fb" transform="translate(6 0)"/><line x1="6" y1="18" x2="58" y2="18" stroke="#f33" stroke-width="3"/><line x1="58" y1="18" x2="112" y2="44" stroke="#f33" stroke-width="3"/>')+'렌즈를 통과하면서 나아가는 방향이 꺾여요',k:'rf'},
+ {t:mini('<circle cx="16" cy="35" r="7" fill="#ffd23f"/><rect x="56" y="24" width="10" height="22" fill="#c76b3a"/><rect x="100" y="16" width="14" height="38" fill="#555"/>')+'물체 뒤에 그림자가 생겨요',k:'st'},
+ {t:mini('<rect x="30" y="8" width="60" height="54" rx="6" fill="#222"/><circle cx="60" cy="34" r="12" fill="#f2c79b" opacity=".6"/>')+'꺼진 스마트 기기 화면에 얼굴이 비쳐요',k:'re'},
+ {t:mini('<rect y="38" width="120" height="32" fill="#3a6ea5" opacity=".6"/><line x1="10" y1="4" x2="50" y2="38" stroke="#f33" stroke-width="3"/><line x1="50" y1="38" x2="74" y2="68" stroke="#f33" stroke-width="3"/>')+'공기에서 물로 비스듬히 들어간 빛이 꺾여요',k:'rf'}],
+ [{k:'st',n:'직진'},{k:'re',n:'반사'},{k:'rf',n:'굴절'}],'잘 나누었어요! 빛은 곧게 나아가고(직진), 거울에서 방향이 바뀌고(반사), 서로 다른 물질의 경계에서 꺾여요(굴절).','s5');
+
+/* ---------- 한눈에 쏙 ---------- */
+let k6=new Set();const c6=x=>{k6.add(x);if(k6.size===2)doneNav('s6');};
+$('#blReveal').onclick=()=>{fb('#blFb','빛이 직진하다가 서로 다른 물질의 경계에서 꺾여 나아가는 성질을 빛의 굴절이라고 해요.',true);c6('a');};
+(function(){const iw=30*DEG,ia=Math.asin(1.33*Math.sin(iw)),P=[200,90];
+  $('#d4Up').innerHTML=`<rect width="400" height="200" fill="#1b2230"/><rect y="90" width="400" height="110" fill="#3a6ea5" opacity=".55"/><text x="12" y="80" font-size="14" fill="#cfe3f5" font-family="Jua">공기</text><text x="12" y="112" font-size="14" fill="#cfe3f5" font-family="Jua">물</text>`+
+   `<line x1="${P[0]-Math.tan(iw)*100}" y1="190" x2="${P[0]}" y2="${P[1]}" stroke="#ff4040" stroke-width="3"/><line x1="${P[0]}" y1="${P[1]}" x2="${P[0]+Math.tan(ia)*85}" y2="5" stroke="#ff4040" stroke-width="3"/>`+
+   `<line x1="${P[0]}" y1="${P[1]}" x2="${P[0]+Math.tan(iw)*85}" y2="5" stroke="#fff" stroke-width="1.5" stroke-dasharray="5 5" opacity=".6"/>`;})();
+pickOne('#d4Q6','맞아요! 빛이 물에서 공기로 나아갈 때에도 경계에서 꺾여요(굴절). 그림의 점선은 꺾이지 않았다면 나아갔을 길이에요.','다시 생각해 봐요.',null,()=>{$('#d4Up').hidden=false;c6('b');});
+
+/* ---------- 형성 평가 ---------- */
+let qa=0,qb=0;const c7=()=>{if(qa&&qb)doneNav('s7');};
+quiz('#quiz',[
+ {q:'1. 렌즈에 대해 옳게 말한 친구는 누구일까요?<br><span style="font-size:.95rem">친구 1: 오목 렌즈는 가운데 부분이 가장자리 부분보다 두꺼워.<br>친구 2: 렌즈에 레이저 지시기의 빛을 비추면 빛이 렌즈를 통과할 때 꺾여서 나아가.</span>',o:['친구 1','친구 2'],a:1,e:'오목 렌즈는 가운데가 가장자리보다 얇아요. 빛은 렌즈를 통과할 때 꺾여요.'},
+ {q:'2. 빛이 서로 다른 물질의 경계에서 나아가는 방향이 ( ㉠ ) 것은 빛이 ( ㉡ )하는 성질 때문이다. ㉠, ㉡에 알맞은 말은?',o:['㉠ 꺾이는, ㉡ 굴절','㉠ 꺾이는, ㉡ 직진','㉠ 바뀌지 않는, ㉡ 반사'],a:0,e:'빛이 경계에서 꺾이는 것은 빛의 굴절 때문이에요.'}],()=>{qa=1;c7();});
+keyCheck('#d4W','#d4WBtn','#d4WFb',[[/굴절|꺾/,'빛의 굴절'],[/렌즈|돋보기/,'볼록 렌즈를 지남']],2,null,'빛이 볼록 렌즈를 지날 때 어떻게 되는지 써요.');
+$('#d4WBtn').addEventListener('click',()=>{if($('#d4WFb').classList.contains('ok')){$('#d4WFb').textContent+=' 예시 답: 빛이 볼록 렌즈를 지나면서 굴절하는 성질 때문이에요.';qb=1;c7();}});
+
+faces('s8','잘했어요! 다음 시간에는 생활 속에서 거울과 렌즈를 찾아봐요.','어려웠던 부분은 렌즈와 물 실험을 다시 해 보고, 선생님께 질문해도 좋아요!');
+</script>
