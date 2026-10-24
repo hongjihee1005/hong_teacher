@@ -1051,7 +1051,8 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
     { id: 'mix', file: 'mix.html', name: '혼합 계산', ico: '🧮', acc: '#8A55D6', de: '덧셈·뺄셈·곱셈·나눗셈이 섞인 식과 괄호가 있는 식의 계산 순서' },
     { id: 'factor', file: 'factor.html', name: '약수와 배수', ico: '🧩', acc: '#1C8C7A', de: '약수·배수·공약수, 최대공약수·최소공배수, 약분과 통분' },
     { id: 'frac', file: 'frac.html', name: '분수', ico: '🍕', acc: '#C0503A', de: '분수의 크기 비교, 대분수와 가분수, 분수의 덧셈·뺄셈·곱셈·나눗셈' },
-    { id: 'dec', file: 'dec.html', name: '소수', ico: '🔢', acc: '#2B6FB8', de: '소수의 크기 비교, 분수를 소수로, 소수의 덧셈·뺄셈·곱셈·나눗셈' }
+    { id: 'dec', file: 'dec.html', name: '소수', ico: '🔢', acc: '#2B6FB8', de: '소수의 크기 비교, 분수를 소수로, 소수의 덧셈·뺄셈·곱셈·나눗셈' },
+    { id: 'more', file: 'more.html', name: '단위·도형·자료 계산', ico: '📐', acc: '#8A6D1F', de: '단위 바꾸기, 큰 수 비교, 각도, 둘레와 넓이, 어림하기, 평균, 백분율, 부피, 비례식, 원주와 원의 넓이' }
   ];
 
   var ASK = {
@@ -1185,8 +1186,62 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
       var p = ri(r, 1, 2), q = nz(r, 2, p === 1 ? 99 : 299), b = ri(r, 2, 9); return { q: [D(q * b, p), '÷', N(b)], a: Ad(q, p) } } },
     { id: 'de14', ar: 'dec', g: 6, nm: '(소수)÷(소수)', de: '7.2÷0.8, 5.25÷0.75', gen: function (r) { var p = ri(r, 1, 2), b = nz(r, 2, p === 1 ? 49 : 299), q = ri(r, 2, 15); return { q: [D(b * q, p), '÷', D(b, p)], a: An(q) } } },
     { id: 'de15', ar: 'dec', g: 6, nm: '(자연수)÷(소수)', de: '6÷1.5, 9÷0.3', gen: function (r) { return until(r, function () { var p = ri(r, 1, 2), b = nz(r, 2, p === 1 ? 49 : 99), q = ri(r, 2, 40); return { q: [N(b * q / P10[p]), '÷', D(b, p)], a: An(q), _ok: (b * q) % P10[p] === 0 && b * q / P10[p] <= 60 } }, function (x) { return x._ok }) } },
-    { id: 'de16', ar: 'dec', g: 5, nm: '분수를 소수로 (분모 2·4·5·8·20·25)', de: '3/4 = 0.75, 7/20 = 0.35', gen: function (r) { var d = pick(r, [2, 4, 5, 8, 20, 25, 50]), n = until(r, function () { return ri(r, 1, d - 1) }, function (n) { return gcd(n, d) === 1 }), e = 0; while ((n * P10[e]) % d) e++; return { q: [F(n, d), '='], a: Ad(n * P10[e] / d, e) } } }
+    { id: 'de16', ar: 'dec', g: 5, nm: '분수를 소수로 (분모 2·4·5·8·20·25)', de: '3/4 = 0.75, 7/20 = 0.35', gen: function (r) { var d = pick(r, [2, 4, 5, 8, 20, 25, 50]), n = until(r, function () { return ri(r, 1, d - 1) }, function (n) { return gcd(n, d) === 1 }), e = 0; while ((n * P10[e]) % d) e++; return { q: [F(n, d), '='], a: Ad(n * P10[e] / d, e) } } },
+    /* ── 단위·도형·자료 계산 (2026-10-24: 교과수학게임에 교과서 단원을 더 넣으려고 만듦, 글 문제) ── */
+    { id: 'ms01', ar: 'more', g: 3, nm: '길이·시간 단위 바꾸기', de: '4 cm 7 mm = 47 mm, 2 m 35 cm, 3분 25초 = 205초', gen: function (r) { var k = ri(r, 0, 3), a, b;
+      if (k === 0) { a = ri(r, 1, 30); b = ri(r, 1, 9); return { txt: [N(a), ' cm ', N(b), ' mm는 몇 mm일까요?'], a: An(a * 10 + b) } }
+      if (k === 1) { a = ri(r, 1, 9); b = ri(r, 1, 99); return { txt: [N(a), ' m ', N(b), ' cm는 몇 cm일까요?'], a: An(a * 100 + b) } }
+      if (k === 2) { a = ri(r, 1, 9); b = ri(r, 1, 999); return { txt: [N(a), ' km ', N(b), ' m는 몇 m일까요?'], a: An(a * 1000 + b) } }
+      a = ri(r, 1, 9); b = ri(r, 1, 59); return { txt: [N(a), '분 ', N(b), '초는 몇 초일까요?'], a: An(a * 60 + b) } } },
+    { id: 'ms02', ar: 'more', g: 3, nm: '원의 지름과 반지름', de: '지름은 반지름의 2배, 반지름은 지름의 반', gen: function (r) { var x = ri(r, 2, 40);
+      return r() < .5 ? { txt: ['반지름이 ', N(x), ' cm인 원의 지름은 몇 cm일까요?'], a: An(x * 2) } : { txt: ['지름이 ', N(x * 2), ' cm인 원의 반지름은 몇 cm일까요?'], a: An(x) } } },
+    { id: 'ms03', ar: 'more', g: 3, nm: '들이·무게 단위 바꾸기', de: '2 L 300 mL = 2300 mL, 3 kg 50 g = 3050 g', gen: function (r) { var a = ri(r, 1, 9), b = ri(r, 1, 999);
+      return r() < .5 ? { txt: [N(a), ' L ', N(b), ' mL는 몇 mL일까요?'], a: An(a * 1000 + b) } : { txt: [N(a), ' kg ', N(b), ' g은 몇 g일까요?'], a: An(a * 1000 + b) } } },
+    { id: 'ms04', ar: 'more', g: 4, nm: '큰 수의 크기 비교', de: '다섯 자리~아홉 자리 수, 높은 자리부터 비교', ask: 'cmp', gen: function (r) { return until(r, function () {
+      var E = function (k) { return Math.pow(10, k) }, la = ri(r, 5, 9), a = ri(r, E(la - 1), E(la) - 1), b;
+      if (r() < .25) { var lb = la + (r() < .5 ? -1 : 1); if (lb < 5) lb = 6; if (lb > 9) lb = 8; b = ri(r, E(lb - 1), E(lb) - 1) }
+      else { var i = ri(r, 0, la - 2), d = Math.floor(a / E(i)) % 10, nd = (d + ri(r, 1, 9)) % 10; b = a + (nd - d) * E(i) }
+      return { q: [N(a), '○', N(b)], a: Ac(a, b) } }, function (p) { return p.q[0].v !== p.q[2].v }) } },
+    { id: 'ms05', ar: 'more', g: 4, nm: '삼각형·사각형의 나머지 한 각', de: '삼각형 세 각의 합 180°, 사각형 네 각의 합 360°', gen: function (r) {
+      if (r() < .55) { var x = until(r, function () { var a = ri(r, 3, 22) * 5, b = ri(r, 3, 22) * 5; return [a, b, 180 - a - b] }, function (x) { return x[2] >= 15 }); return { txt: ['삼각형의 두 각이 ', N(x[0]), '°, ', N(x[1]), '°일 때, 나머지 한 각은 몇 도일까요?'], a: An(x[2]) } }
+      var y = until(r, function () { var a = ri(r, 8, 30) * 5, b = ri(r, 8, 30) * 5, c = ri(r, 8, 30) * 5; return [a, b, c, 360 - a - b - c] }, function (y) { return y[3] >= 40 && y[3] <= 170 });
+      return { txt: ['사각형의 세 각이 ', N(y[0]), '°, ', N(y[1]), '°, ', N(y[2]), '°일 때, 나머지 한 각은 몇 도일까요?'], a: An(y[3]) } } },
+    { id: 'ms06', ar: 'more', g: 4, nm: '각도의 합과 차', de: '35° + 80°, 150° − 65°', gen: function (r) { var x = until(r, function () { return [ri(r, 10, 170), ri(r, 10, 170)] }, function (x) { return x[0] + x[1] <= 360 && x[0] !== x[1] });
+      return r() < .5 ? { txt: [N(x[0]), '° + ', N(x[1]), '°는 몇 도일까요?'], a: An(x[0] + x[1]) } : { txt: [N(Math.max(x[0], x[1])), '° − ', N(Math.min(x[0], x[1])), '°는 몇 도일까요?'], a: An(Math.abs(x[0] - x[1])) } } },
+    { id: 'ms07', ar: 'more', g: 5, nm: '다각형의 둘레와 넓이', de: '직사각형·정사각형·평행사변형·삼각형의 넓이, 둘레', gen: function (r) { var k = ri(r, 0, 6), a = ri(r, 2, 20), b = ri(r, 2, 20);
+      if (k === 0) return { txt: ['가로 ', N(a), ' cm, 세로 ', N(b), ' cm인 직사각형의 넓이는 몇 cm²일까요?'], a: An(a * b) };
+      if (k === 1) return { txt: ['가로 ', N(a), ' cm, 세로 ', N(b), ' cm인 직사각형의 둘레는 몇 cm일까요?'], a: An((a + b) * 2) };
+      if (k === 2) return { txt: ['한 변이 ', N(a), ' cm인 정사각형의 넓이는 몇 cm²일까요?'], a: An(a * a) };
+      if (k === 3) return { txt: ['한 변이 ', N(a), ' cm인 정사각형의 둘레는 몇 cm일까요?'], a: An(a * 4) };
+      if (k === 4) return { txt: ['밑변 ', N(a), ' cm, 높이 ', N(b), ' cm인 평행사변형의 넓이는 몇 cm²일까요?'], a: An(a * b) };
+      if (k === 5) { if (a * b % 2) a++; return { txt: ['밑변 ', N(a), ' cm, 높이 ', N(b), ' cm인 삼각형의 넓이는 몇 cm²일까요?'], a: An(a * b / 2) } }
+      var n = pick(r, [5, 6, 8]); return { txt: ['한 변이 ', N(a), ' cm인 ', { 5: '정오각형', 6: '정육각형', 8: '정팔각형' }[n], '의 둘레는 몇 cm일까요?'], a: An(a * n) } } },
+    { id: 'ms08', ar: 'more', g: 5, nm: '어림하기 (올림·버림·반올림)', de: '3462를 반올림하여 백의 자리까지 → 3500', gen: function (r) { var pl = ri(r, 1, 3), u = P10[pl], m = pick(r, ['올림', '버림', '반올림']);
+      var x = until(r, function () { return ri(r, u * 10, Math.min(99999, u * 100 - 1)) }, function (x) { return x % u !== 0 }), y = m === '올림' ? Math.ceil(x / u) * u : m === '버림' ? Math.floor(x / u) * u : Math.floor(x / u + .5) * u;
+      return { txt: [N(x), eul(x) + ' ' + m + '하여 ' + ['', '십', '백', '천'][pl] + '의 자리까지 나타내면 얼마일까요?'], a: An(y) } } },
+    { id: 'ms09', ar: 'more', g: 5, nm: '평균 구하기', de: '자료의 값을 모두 더해 자료의 수로 나누기', gen: function (r) { var k = ri(r, 3, 5), x = until(r, function () { var o = []; for (var i = 0; i < k; i++) o.push(ri(r, 5, 99)); return o }, function (o) { return o.reduce(function (a, b) { return a + b }) % k === 0 });
+      var t = []; x.forEach(function (v, i) { if (i) t.push(', '); t.push(N(v)) }); t.push('의 평균은 얼마일까요?');
+      return { txt: t, a: An(x.reduce(function (a, b) { return a + b }) / k) } } },
+    { id: 'ms10', ar: 'more', g: 6, nm: '비율을 백분율로', de: '0.35 → 35%, 3/4 → 75%, 20명 중 7명 → 35%', gen: function (r) { var k = ri(r, 0, 2);
+      if (k === 0) { var v = until(r, function () { return ri(r, 1, 99) }, function (v) { return v % 10 !== 0 }); return { txt: ['비율 ', D(v, 2), eul(v) + ' 백분율로 나타내면 몇 %일까요?'], a: An(v) } }
+      if (k === 1) { var d = pick(r, [2, 4, 5, 10, 20, 25, 50]), n = ri(r, 1, d - 1); return { txt: ['비율 ', F(n, d), eul(n) + ' 백분율로 나타내면 몇 %일까요?'], a: An(n * 100 / d) } }
+      var b = pick(r, [10, 20, 25, 50]), c = ri(r, 1, b - 1); return { txt: ['전체 ', N(b), '명 중에서 ', N(c), '명은 전체의 몇 %일까요?'], a: An(c * 100 / b) } } },
+    { id: 'ms11', ar: 'more', g: 6, nm: '직육면체의 부피와 겉넓이', de: '부피 = 가로×세로×높이, 겉넓이 = 여섯 면의 넓이의 합', gen: function (r) { var k = ri(r, 0, 3), a = ri(r, 2, 12), b = ri(r, 2, 12), c = ri(r, 2, 12);
+      if (k === 0) return { txt: ['가로 ', N(a), ' cm, 세로 ', N(b), ' cm, 높이 ', N(c), ' cm인 직육면체의 부피는 몇 cm³일까요?'], a: An(a * b * c) };
+      if (k === 1) return { txt: ['가로 ', N(a), ' cm, 세로 ', N(b), ' cm, 높이 ', N(c), ' cm인 직육면체의 겉넓이는 몇 cm²일까요?'], a: An(2 * (a * b + b * c + c * a)) };
+      if (k === 2) return { txt: ['한 모서리가 ', N(a), ' cm인 정육면체의 부피는 몇 cm³일까요?'], a: An(a * a * a) };
+      return { txt: ['한 모서리가 ', N(a), ' cm인 정육면체의 겉넓이는 몇 cm²일까요?'], a: An(6 * a * a) } } },
+    { id: 'ms12', ar: 'more', g: 6, nm: '비례식과 비례배분', de: '3 : 4 = □ : 20, 35개를 3 : 4로 나누기', gen: function (r) { var x = until(r, function () { return [ri(r, 1, 9), ri(r, 1, 9)] }, function (x) { return x[0] !== x[1] && gcd(x[0], x[1]) === 1 }), a = x[0], b = x[1], k = ri(r, 2, 9), j = ri(r, 0, 2);
+      if (j === 0) return { txt: [N(a), ' : ', N(b), ' = □ : ', N(b * k), '에서 □는 얼마일까요?'], a: An(a * k) };
+      if (j === 1) return { txt: [N(a), ' : ', N(b), ' = ', N(a * k), ' : □에서 □는 얼마일까요?'], a: An(b * k) };
+      return { txt: ['사탕 ', N((a + b) * k), '개를 형과 동생이 ', N(a), ' : ', N(b), ro(b) + ' 나누어 가지면 형은 몇 개를 가질까요?'], a: An(a * k) } } },
+    { id: 'ms13', ar: 'more', g: 6, nm: '원주와 원의 넓이 (원주율 3.14)', de: '원주 = 지름×3.14, 넓이 = 반지름×반지름×3.14', gen: function (r) { var k = ri(r, 0, 2), x = ri(r, 2, 15);
+      if (k === 0) return { txt: ['지름이 ', N(x), ' cm인 원의 원주는 몇 cm일까요? (원주율 3.14)'], a: Ad(x * 314, 2) };
+      if (k === 1) return { txt: ['반지름이 ', N(x), ' cm인 원의 원주는 몇 cm일까요? (원주율 3.14)'], a: Ad(x * 2 * 314, 2) };
+      return { txt: ['반지름이 ', N(x), ' cm인 원의 넓이는 몇 cm²일까요? (원주율 3.14)'], a: Ad(x * x * 314, 2) } } }
   ];
+  function eul(n) { var d = n % 10; return d === 2 || d === 4 || d === 5 || d === 9 ? '를' : '을' }   // 수를 읽은 끝소리에 맞는 조사(10·20…은 '십'으로 끝남 → 을)
+  function ro(n) { var d = n % 10; return d === 0 || d === 3 || d === 6 ? '으로' : '로' }   // 끝소리가 받침(ㄹ 빼고)이면 '으로'
   function wa(n) { var d = n % 10; return d === 2 || d === 4 || d === 5 || d === 9 ? '와 ' : '과 ' }   // 수를 읽은 끝소리에 맞는 조사(10·20…은 '십'으로 끝남 → 과)
   function fl(n) { var o = []; for (var i = 1; i <= n; i++) if (n % i === 0) o.push(i); return o }
 
@@ -1212,7 +1267,7 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
   /* ── 문제 만들기 ── */
   function key(p) { return JSON.stringify(p.q || p.txt) }
   function gen(id, seed) { var s = BY[id], p = s.gen(rng(seed)); delete p._v; delete p._o; delete p._ok; p.s = id; return p }
-  function wsCount(s) { return s.ask === 'list' || s.ar === 'factor' && s.id !== 'fac06' && s.id !== 'fac07' ? 10 : s.v ? 12 : s.ar === 'frac' || /fac0[67]|de03|de16/.test(s.id) ? 16 : 20 }
+  function wsCount(s) { return s.ar === 'more' ? 10 : s.ask === 'list' || s.ar === 'factor' && s.id !== 'fac06' && s.id !== 'fac07' ? 10 : s.v ? 12 : s.ar === 'frac' || /fac0[67]|de03|de16/.test(s.id) ? 16 : 20 }
   function set(id, seed, n) {   // 같은 문제가 겹치지 않게 n개
     var r = rng(seed), out = [], seen = {};
     for (var i = 0; out.length < n && i < n * 40; i++) { var p = gen(id, Math.floor(r() * 4294967296)), k = key(p); if (seen[k] && i < n * 30) continue; seen[k] = 1; out.push(p) }
