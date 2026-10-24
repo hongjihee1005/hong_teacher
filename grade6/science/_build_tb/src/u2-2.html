@@ -92,7 +92,7 @@ svg .hs:focus-visible rect{stroke:var(--sun);stroke-width:4}
   <div class="b2-g">
     <svg id="b2Bd2" viewBox="0 0 400 400" role="img" aria-label="정원판 위의 꿀벌"></svg>
     <div>
-      <div class="b2-rule"><b>규칙</b> · 꿀벌은 오른쪽, 왼쪽, 위쪽, 아래쪽으로 한 칸씩 이동해요. · 한 칸 이동할 때 걸리는 시간은 1초예요. · 가장 짧은 길로 이동해요.</div>
+      <div class="b2-rule"><b>규칙</b> · 꿀벌은 오른쪽, 왼쪽, 위쪽, 아래쪽으로 한 칸씩 이동해요. · 한 칸 이동할 때 걸리는 시간은 1초예요.<br><small>이 화면에서는 가장 짧은 길로 움직여요.</small></div>
       <div class="b2-pad" id="b2Pad2"><button class="u" data-d="0,1" aria-label="위쪽">⬆</button><button class="l" data-d="-1,0" aria-label="왼쪽">⬅</button><button class="d" data-d="0,-1" aria-label="아래쪽">⬇</button><button class="r" data-d="1,0" aria-label="오른쪽">➡</button></div>
       <p class="b2-clock" id="b2T2">⏱ 걸린 시간 0초</p>
       <div class="fb" id="b2Fb2"></div>
@@ -281,7 +281,7 @@ function beeBoard(svgId,padId,clkId,onArrive){let pos=null,start=null,steps=0,bu
     const st=start?`<rect x="${cx(start[0])-C/2+3}" y="${cy(start[1])-C/2+3}" width="${C-6}" height="${C-6}" rx="8" fill="none" stroke="#1c6fa8" stroke-width="3"/>`:'';
     svg.innerHTML=board(st+tr+(pos?bee(X,Y):''));}
   function set(p){pos=[...p];start=[...p];steps=0;path=[[...p]];queue=[];$(clkId).textContent='⏱ 걸린 시간 0초';draw(cx(p[0]),cy(p[1]));}
-  function step(){if(busy||!queue.length||!pos)return;const [dx,dy]=queue.shift();const nx=pos[0]+dx,ny=pos[1]+dy;
+  function step(){if(busy||!queue.length||!pos)return;const [dx,dy]=queue.shift();const nx=pos[0]+dx,ny=pos[1]+dy;if(Math.abs(nx)>3||Math.abs(ny)>3){step();return;}
     if(Math.abs(nx)>3||Math.abs(ny)>3){step();return;}
     busy=true;const a=[cx(pos[0]),cy(pos[1])],b=[cx(nx),cy(ny)];
     tween(1000,p=>{draw(lerp(a[0],b[0],p),lerp(a[1],b[1],p));$(clkId).textContent='⏱ 걸린 시간 '+(steps+p).toFixed(1)+'초';},()=>{

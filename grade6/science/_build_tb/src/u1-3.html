@@ -40,7 +40,7 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"산","bl2":"성"}}]
     <text x="300" y="30" text-anchor="middle" font-family="Jua" font-size="18" fill="#7a5a10">식초 (산성 용액)</text>
     <text x="470" y="110" text-anchor="middle" font-family="Jua" font-size="40" fill="#b9a46c">?</text>
   </svg>
-  <p class="jua" style="font-size:1.05rem">식초에 달걀을 일주일쯤 담가 두면 어떻게 될지 내 생각을 골라요.</p>
+  <p class="jua" style="font-size:1.05rem" data-glue="1">식초에 달걀을 일주일쯤 담가 두면 어떻게 될지 내 생각을 골라요.</p>
   <div class="pick" id="a3Pred">
     <button data-v="달걀 껍데기에서 거품이 나면서 녹을 것">달걀 껍데기에서 거품이 나면서 녹을 것 같아요</button>
     <button data-v="아무 변화가 없을 것">아무 변화가 없을 것 같아요</button>
@@ -53,7 +53,7 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"산","bl2":"성"}}]
   <h2>산성 용액과 염기성 용액에 여러 가지 물질을 넣어요</h2>
   <p>① 단추로 용액을 넣고, 핀셋을 고른 뒤 홈을 눌러 물질을 넣어요. 용액이 섞이지 않게 <b>줄마다 다른 핀셋</b>을 써요. (<b id="a3N">0</b>/8)</p>
   <div class="a3-steps" data-glue="1">
-    <button class="main" id="a3Fill">① 표시된 홈에 용액을 ⅔ 정도씩 넣기</button>
+    <button class="main" id="a3Fill">① 표시된 홈에 용액 넣기</button>
     <button id="a3T1" disabled>🥢 핀셋 ① (묽은 염산 줄)</button>
     <button id="a3T2" disabled>🥢 핀셋 ② (묽은 수산화 나트륨 용액 줄)</button>
   </div>
@@ -218,7 +218,7 @@ function drawLab(){$('#a3Base').innerHTML=plates(st,0.4);}
   c.setAttribute('cx',x);c.setAttribute('cy',y);c.setAttribute('r',40);c.setAttribute('fill','transparent');c.setAttribute('class','hit');c.onclick=()=>put(r,k);$('#a3Hit').appendChild(c);}));
 drawLab();
 $('#a3Fill').onclick=()=>{st.fill=true;drawLab();$('#a3Fill').disabled=true;$('#a3Fill').classList.remove('main');['#a3T1','#a3T2'].forEach(s=>$(s).disabled=false);
-  fb('#a3LabFb','실험 도움판 ②에 표시된 홈에 묽은 염산과 묽은 수산화 나트륨 용액을 ⅔ 정도씩 넣었어요. 이제 핀셋을 골라요.','info');};
+  fb('#a3LabFb','실험 도움판 ②에 표시된 홈에 묽은 염산과 묽은 수산화 나트륨 용액을 넣었어요. 이제 핀셋을 골라요.','info');};
 [['#a3T1',1],['#a3T2',2]].forEach(([s,v])=>$(s).onclick=()=>{tool=v;['#a3T1','#a3T2'].forEach(x=>$(x).classList.toggle('sel',x===s));});
 function put(r,k){if(!st.fill){fb('#a3LabFb','먼저 ① 단추로 용액을 넣어요.','info');return;}if(!tool){fb('#a3LabFb','핀셋을 먼저 골라요.','info');return;}
   if(tool!==r+1){fb('#a3LabFb','⚠️ 이 줄에 쓰는 핀셋이 아니에요! 핀셋 하나로 두 용액을 함께 쓰면 용액이 섞여요. 줄에 맞는 핀셋을 골라요.',false);return;}

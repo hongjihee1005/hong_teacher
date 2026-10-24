@@ -464,7 +464,7 @@ ccSet('#g7Path','잘했어요! 물은 뿌리 → 줄기 → 잎으로, 양분은
       fb('#g7Fb',`${w}이(가) 먼저 모두 도착했어요! 놀이 끝. 물은 뿌리 → 줄기 → 잎으로, 양분은 잎 → 줄기 → 열매·뿌리로 이동했어요. 둘 다 줄기를 지났지요?`,true);doneNav('s5');}}
   $$('#g7Cpu button').forEach(b=>b.onclick=()=>{if(!st||st.over)return;const me=+b.dataset.h,cp=Math.floor(Math.random()*3);const em=['✌️','✊','✋'];
     $('#g7Rps').textContent=`나 ${em[me]}  :  ${em[cp]} 컴퓨터`;if(me===cp){$('#g7Cap').textContent='비겼어요! 다시 가위바위보!';return;}
-    const meWin=(me+2)%3===cp?false:(me===(cp+1)%3);/* 바위>가위, 보>바위, 가위>보 */const win=meWin?role:(role==='w'?'n':'w');move(win,[3,2,1][meWin?me:cp],meWin?me:cp);});
+    const meWin=me===(cp+1)%3;/* 바위>가위, 보>바위, 가위>보 */const win=meWin?role:(role==='w'?'n':'w');move(win,[3,2,1][meWin?me:cp],meWin?me:cp);});
   $$('#g7Pair button').forEach(b=>b.onclick=()=>{if(!st||st.over)return;const h=+b.dataset.h;$('#g7Rps').textContent=(b.dataset.w==='w'?'💧 물':'🟡 양분')+' 승리 '+['✌️','✊','✋'][h];move(b.dataset.w,[3,2,1][h],h);});
   $('#g7Start').onclick=()=>{st={wi:0,wp:0,ni:0,np:0,wDone:[],nDone:[],over:false};$('#g7Setup').hidden=true;$('#g7Play').hidden=false;$('#g7Cpu').hidden=mode!=='cpu';$('#g7Pair').hidden=mode==='cpu';score();draw();
     fb('#g7Fb',mode==='cpu'?`나는 ${role==='w'?'💧 물':'🟡 양분'} 역할이에요. 가위바위보 단추를 눌러요!`:'짝과 실제로 가위바위보를 하고, 이긴 사람의 단추를 눌러요.','info');};

@@ -161,7 +161,7 @@ img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radiu
     <path d="M240 140 h120 q-6 30 -60 30 q-54 0 -60 -30z" fill="#fff" stroke="#9fb3bf" stroke-width="4"/>
     <text x="300" y="70" text-anchor="middle" font-family="Jua" font-size="34" fill="#b8452f">?</text>
   </svg>
-  <p class="jua" style="font-size:1.05rem">소금과 설탕을 섞으면 어떤 맛이 날까요?</p>
+  <p class="jua" style="font-size:1.05rem">내 생각을 골라요.</p>
   <div class="pick" id="r1P1">
     <button data-a="1" data-m="맞아요! 짠맛과 단맛이 함께 나요. 소금과 설탕을 섞어도 소금과 설탕의 성질은 그대로예요.">소금의 짠맛과 설탕의 단맛이 함께 나요</button>
     <button data-a="0" data-m="섞어도 새로운 맛이 생기지는 않아요. 짠맛과 단맛이 그대로 날 거예요.">짠맛도 단맛도 아닌 새로운 맛이 나요</button>
@@ -180,7 +180,7 @@ img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radiu
     <button id="r1S3" disabled>③ 식초가 든 삼각 플라스크에 고무풍선 씌우기</button>
     <button id="r1S4" disabled>④ 고무풍선 두 개를 동시에 세우기</button>
   </div>
-  <svg id="r1Lab" class="scene" viewBox="0 0 720 300" style="max-height:36vh" data-glue="1" role="img" aria-label="식초가 든 삼각 플라스크 두 개와 가루 물질을 넣은 고무풍선"></svg>
+  <svg id="r1Lab" class="scene" viewBox="0 -50 720 350" style="max-height:38vh" data-glue="1" role="img" aria-label="식초가 든 삼각 플라스크 두 개와 가루 물질을 넣은 고무풍선"></svg>
   <div class="fb" id="r1LabFb"></div>
   <p class="tip">⚠️ 실험복·보안경·실험용 장갑 착용 · 유리 기구가 깨지지 않게 조심해요 · 분말 깔때기로 넣을 때 가루를 흘리거나 고무풍선이 찢어지지 않게 해요 · 가루 물질마다 다른 약숟가락을 써요 · 정해진 양만 넣어요(너무 많으면 고무풍선이 터질 수 있어요) · 약품을 맛보거나 피부에 닿지 않게 하고, 실험 뒤에는 환기해요 · 사용한 물질은 선생님의 안내에 따라 버려요.</p>
 </section>
@@ -346,13 +346,13 @@ function flask(x,k,st,t){let h='';
     if(st.fill[k])h+=`<g fill="${pw}">${[0,1,2,3].map(i=>`<circle cx="${x+s*(18+i*6)}" cy="${112+(i%2)*4}" r="3"/>`).join('')}</g>`;
     h+=`<text x="${x}" y="80" text-anchor="middle" font-family="Jua" font-size="14" fill="#333">${name}</text>`;}
   else{/* 세움 */
-    const ry=k===1?24+50*Math.min(1,t):24,rx=k===1?ry*0.82:16;
+    const ry=k===1?24+46*Math.min(1,t):24,rx=k===1?ry*0.82:16;
     h+=`<rect x="${x-12}" y="102" width="24" height="12" rx="4" fill="${col}"/><ellipse cx="${x}" cy="${104-ry}" rx="${rx}" ry="${ry}" fill="${col}"/><path d="M${x-rx*0.5} ${104-ry*1.5} q${rx*0.3} -${ry*0.25} ${rx*0.6} -${ry*0.1}" stroke="#fff" stroke-width="3" fill="none" opacity=".6"/>`;
     if(k===0&&t<0.4)h+=`<g fill="${pw}">${[0,1,2,3].map(i=>`<circle cx="${x-4+i*3}" cy="${118+t*300+(i%2)*6}" r="3"/>`).join('')}</g>`;
-    h+=`<text x="${x+(k===1?-150:-110)}" y="40" font-family="Jua" font-size="14" fill="#333">${name}</text>`;}
+    h+=k===0?`<text x="${x-26}" y="70" text-anchor="end" font-family="Jua" font-size="15" fill="#333">${name}</text>`:`<text x="${x+66}" y="60" font-family="Jua" font-size="15" fill="#333">${name}</text>`;}
   return h;}
 const st={fill:[0,0],on:false,up:false};let at=0,raf=0;
-function draw(){$('#r1Lab').innerHTML='<rect width="720" height="300" fill="#fbf7ee"/><rect y="266" width="720" height="34" fill="#e6d6b2"/>'+FX.map((x,k)=>flask(x,k,st,at)).join('');}
+function draw(){$('#r1Lab').innerHTML='<rect y="-50" width="720" height="350" fill="#fbf7ee"/><rect y="266" width="720" height="34" fill="#e6d6b2"/>'+FX.map((x,k)=>flask(x,k,st,at)).join('');}
 draw();
 let n=0;function stepDone(i,msg){n++;$('#r1N').textContent=n;$('#r1S'+i).disabled=true;$('#r1S'+i).classList.remove('main');const nx=$('#r1S'+(i+1));if(nx){nx.disabled=false;nx.classList.add('main');}fb('#r1LabFb',msg,'info');draw();}
 $('#r1S1').onclick=()=>{st.fill[0]=1;stepDone(1,'분말 깔때기에 고무풍선을 끼우고 밀가루를 두 숟가락 넣었어요.');};

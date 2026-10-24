@@ -1,0 +1,716 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>물질이 탈 때 어떤 현상이 나타날까?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#b8452f;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+.r2-safe{display:flex;flex-wrap:wrap;gap:8px;margin:4px 0}
+.r2-safe button{font-size:.86rem;min-height:2.2rem;padding:.1em .7em;border-width:2px}
+.r2-tools{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0;align-items:center}
+.r2-tools button{font-size:.86rem;min-height:2.2rem;padding:.1em .7em}
+.r2-tools button[disabled]{opacity:.45}
+.r2-tools label{font-size:.86rem;display:flex;align-items:center;gap:6px}
+.r2-tools input[type=range]{width:9rem;accent-color:#b8452f}
+.r2-lab{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);gap:10px;align-items:start}
+.r2-obs{list-style:none;margin:0;padding:0;font-size:.88rem}
+.r2-obs li{border:2px dashed var(--line);border-radius:10px;padding:4px 8px;margin-bottom:5px;color:var(--muted)}
+.r2-obs li.on{border-style:solid;border-color:#1F8060;color:var(--ink);background:#e6f6ee}
+.r2-tab td,.r2-tab th{padding:5px 6px;text-align:center;font-size:.86rem}
+.r2-tab th{background:#fbe4dc}
+.r2-tab td button{font-size:.84rem;min-height:2.1rem;padding:.1em .5em;border-width:2px;width:100%}
+.r2-tab td button.bad{border-color:var(--bad);background:#fbd0cb}
+.r2-multi{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.r2-multi button{font-size:.9rem;min-height:2.4rem}
+.sg-pool{display:flex;flex-wrap:wrap;gap:8px;min-height:2.8rem;padding:6px;border:2px dashed var(--line);border-radius:12px}
+.sg-bins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-top:8px}
+.sg-bin{border:3px solid var(--navy);border-radius:14px;padding:6px 8px;min-height:4.4rem;cursor:pointer;background:var(--paper)}
+.sg-bin>b{display:block;font-family:Jua,sans-serif;font-weight:400;color:var(--navy);font-size:.92rem}
+.sg-in{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.sg-card{font-size:.86rem;min-height:2.2rem;padding:.1em .7em;border-width:2px}
+@media (max-width:640px){.r2-lab,.sg-bins,.r2-multi{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M43 10 C52 26 66 34 62 54 a19 19 0 0 1 -38 0 C24 42 34 36 34 24 C40 30 42 34 43 10z" fill="#e2573f" stroke="#fff" stroke-width="3"/><path d="M43 44 c6 6 9 10 6 16 a7 7 0 0 1 -12 0 c-2 -6 3 -10 6 -16z" fill="#ffd23f"/></svg>
+  <div><h1>물질이 탈 때 어떤 현상이 나타날까?</h1><p>6학년 2학기 과학 · 2단원 물질의 연소 · 3/11차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">양초 관찰</a><a href="#s3">알코올 관찰</a><a href="#s4">불 끄기</a><a href="#s5">결과 비교</a><a href="#s6">공통점</a><a href="#s7">빛과 열 이용</a><a href="#s8">한눈에 쏙</a><a href="#s9">형성 평가</a><a href="#s10">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>양초와 알코올이 탈 때 나타나는 현상을 관찰할 수 있어요.<br>물질이 탈 때 나타나는 공통적인 현상을 설명할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 40쪽</span>
+  <h2>케이크용 초에 불을 붙이면 주변이 어떻게 될까요?</h2>
+  <svg class="scene" viewBox="0 0 600 210" style="max-height:26vh" role="img" aria-label="불을 붙인 케이크용 초가 꽂힌 생일 케이크">
+    <defs><radialGradient id="r2g1"><stop offset="0" stop-color="#fff3b0" stop-opacity=".9"/><stop offset="1" stop-color="#fff3b0" stop-opacity="0"/></radialGradient></defs>
+    <rect width="600" height="210" fill="#2c2a3a"/>
+    <circle cx="300" cy="70" r="150" fill="url(#r2g1)"/>
+    <rect y="186" width="600" height="24" fill="#5a4a3a"/>
+    <rect x="200" y="120" width="200" height="66" rx="10" fill="#f6d7e1"/><rect x="200" y="120" width="200" height="16" rx="8" fill="#fff"/>
+    <g>
+      <rect x="250" y="84" width="8" height="38" fill="#7cc4e8"/><rect x="296" y="80" width="8" height="42" fill="#f0a35a"/><rect x="342" y="84" width="8" height="38" fill="#9ad08a"/>
+      <path d="M254 66 q-6 10 0 16 q6 -6 0 -16z" fill="#ffc83d"/><path d="M300 62 q-6 10 0 16 q6 -6 0 -16z" fill="#ffc83d"/><path d="M346 66 q-6 10 0 16 q6 -6 0 -16z" fill="#ffc83d"/>
+    </g>
+  </svg>
+  <p class="jua" style="font-size:1.05rem">초에 불을 붙이고 전등을 끄면 어떻게 될까요?</p>
+  <div class="pick" id="r2P1">
+    <button data-a="1" data-m="맞아요! 초에서 빛이 나서 주변이 환하고, 불꽃 주변이 따뜻해져요.">주변이 환해지고 따뜻해져요</button>
+    <button data-a="0" data-m="불을 붙인 초 주변은 어둡지 않아요. 생일 케이크 촛불을 떠올려 봐요.">주변이 어두워지고 차가워져요</button>
+  </div>
+  <div class="fb"></div>
+  <p>양초와 알코올을 태워 물질이 탈 때 나타나는 현상을 관찰해 봐요.</p>
+</section>
+
+<section id="s2" data-nav="양초 관찰">
+  <span class="stage">실험해요 · 「실험관찰」 24쪽</span>
+  <h2>양초가 탈 때 나타나는 현상을 관찰해요</h2>
+  <p style="margin:0">① 불을 붙이기 전에 안전 수칙을 모두 눌러 확인해요.</p>
+  <div class="r2-safe" id="r2SafeA" data-glue="1"><button>🧤 면장갑·보안경·실험복 착용</button><button>🧯 비상구·소화기·모래 보관함 위치 확인</button><button>🧹 주변의 탈 수 있는 물체 치우기</button></div>
+  <div class="r2-tools" id="r2ToolsA" data-glue="1"><button class="main" data-t="fire" disabled>🔥 점화기로 불 붙이기</button><button data-t="zoom" disabled>🔍 불꽃 자세히 보기</button><label>🌡️ 열 변색 종이 거리 <input type="range" min="0" max="100" value="100" data-t="heat" disabled></label><button data-t="dark" disabled>💡 교실 전등 끄기</button><button data-t="time" disabled>⏩ 시간이 지나면</button></div>
+  <div class="r2-lab" data-glue="1">
+    <svg id="r2LabA" class="scene" viewBox="0 0 480 300" style="max-height:38vh" role="img" aria-label="촛대에 꽂은 양초가 타는 모습"></svg>
+    <ul class="r2-obs" id="r2ObsA"></ul>
+  </div>
+  <div class="fb" id="r2FbA"></div>
+  <p class="tip">⚠️ 불을 다룰 때는 반드시 면장갑을 끼고 화상에 주의해요 · 불꽃이나 뜨거운 촛농에 몸이 닿지 않게 해요 · 불꽃의 윗부분은 매우 뜨거우니 위에서 들여다보지 않아요 · 환기가 잘되는 곳에서 실험해요 · 화상을 입으면 바로 찬물로 식히고 선생님께 알려요.</p>
+</section>
+
+<section id="s3" data-nav="알코올 관찰">
+  <span class="stage">실험해요 · 「실험관찰」 25쪽</span>
+  <h2>알코올이 탈 때 나타나는 현상을 관찰해요</h2>
+  <p style="margin:0">① 알코올램프를 평평한 곳에 두고, 안전 수칙을 모두 눌러 확인해요. (알코올램프 사용법은 「과학」 104쪽)</p>
+  <div class="r2-safe" id="r2SafeB" data-glue="1"><button>🧤 면장갑·보안경·실험복 착용</button><button>🧹 주변의 탈 수 있는 물체 치우기</button><button>📏 평평한 곳에 두고 뚜껑 열기</button></div>
+  <div class="r2-tools" id="r2ToolsB" data-glue="1"><button class="main" data-t="fire" disabled>🔥 점화기로 불 붙이기</button><button data-t="zoom" disabled>🔍 불꽃 자세히 보기</button><label>🌡️ 열 변색 종이 거리 <input type="range" min="0" max="100" value="100" data-t="heat" disabled></label><button data-t="dark" disabled>💡 교실 전등 끄기</button><button data-t="time" disabled>⏩ 시간이 지나면</button></div>
+  <div class="r2-lab" data-glue="1">
+    <svg id="r2LabB" class="scene" viewBox="0 0 480 300" style="max-height:38vh" role="img" aria-label="알코올램프에서 알코올이 타는 모습"></svg>
+    <ul class="r2-obs" id="r2ObsB"></ul>
+  </div>
+  <div class="fb" id="r2FbB"></div>
+  <p class="tip">⚠️ 알코올램프의 불은 입으로 불지 말고, 면장갑을 낀 손으로 뚜껑을 옆에서 살며시 덮어 꺼요 · 알코올램프가 넘어져 불이 나면 물을 뿌리지 말고 선생님께 바로 알려요 · 관찰한 뒤에는 환기해요.</p>
+</section>
+
+<section id="s4" data-nav="불 끄기">
+  <span class="stage">실험해요 · 알코올램프 사용법</span>
+  <h2>알코올램프의 불은 어떻게 끌까요?</h2>
+  <svg class="scene" viewBox="0 0 600 170" style="max-height:22vh" role="img" aria-label="알코올램프의 불을 끄는 두 가지 방법">
+    <rect width="600" height="170" fill="#fbf7ee"/>
+    <g transform="translate(150 0)"><ellipse cx="0" cy="140" rx="50" ry="10" fill="#d9c49a"/><path d="M-40 140 q-8 -50 26 -62 h28 q34 12 26 62z" fill="#e6f2fa" stroke="#8fb1c6" stroke-width="3"/><rect x="-10" y="64" width="20" height="16" fill="#bbb"/><path d="M0 64 q-8 -14 0 -30 q8 16 0 30z" fill="#7aa8ff"/><path d="M-20 30 q20 -30 40 -8" stroke="#888" stroke-width="3" fill="none"/><text x="0" y="20" text-anchor="middle" font-family="Jua" font-size="15" fill="#4a3a20">㉮</text></g>
+    <g transform="translate(450 0)"><ellipse cx="0" cy="140" rx="50" ry="10" fill="#d9c49a"/><path d="M-40 140 q-8 -50 26 -62 h28 q34 12 26 62z" fill="#e6f2fa" stroke="#8fb1c6" stroke-width="3"/><rect x="-10" y="64" width="20" height="16" fill="#bbb"/><path d="M-60 40 q30 -18 46 6 l-4 18 h-30z" fill="#cfd8de" stroke="#8fb1c6" stroke-width="3"/><path d="M-80 70 h20" stroke="#f3d3b0" stroke-width="14" stroke-linecap="round"/><text x="0" y="20" text-anchor="middle" font-family="Jua" font-size="15" fill="#4a3a20">㉯</text></g>
+  </svg>
+  <div class="pick" id="r2P4">
+    <button data-a="0" data-m="입으로 불면 불이 옮겨붙거나 알코올램프 안의 증기에 불이 붙을 수 있어 위험해요.">㉮ 입으로 세게 불어서 꺼요</button>
+    <button data-a="1" data-m="맞아요! 면장갑을 낀 손으로 뚜껑을 옆에서 살며시 덮어 꺼요. 잠시 뒤 뚜껑을 살짝 열었다가 다시 덮어요.">㉯ 뚜껑을 옆에서 살며시 덮어서 꺼요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s5" data-nav="결과 비교">
+  <span class="stage">정리해요 · 「실험관찰」 24~25쪽</span>
+  <h2>양초와 알코올이 탈 때의 관찰 결과를 비교해요</h2>
+  <p>칸을 누를 때마다 기록이 바뀌어요.</p>
+  <table class="r2-tab" id="r2Tab" data-glue="1"></table>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="r2TabChk">기록 확인하기</button></div>
+  <div class="fb" id="r2TabFb"></div>
+</section>
+
+<section id="s6" data-nav="공통점">
+  <span class="stage">정리해요 · 「과학」 41쪽</span>
+  <h2>양초와 알코올이 탈 때 나타나는 공통적인 현상은 무엇인가요?</h2>
+  <p>공통적인 현상을 <b>모두</b> 골라 누른 뒤 확인해요.</p>
+  <div class="r2-multi" id="r2Multi" data-glue="1">
+    <button data-a="1">빛이 나서 불꽃 주변이 밝아져요</button>
+    <button data-a="1">열이 나서 불꽃 주변이 따뜻해져요</button>
+    <button data-a="1">타는 물질의 양이 줄어들어요</button>
+    <button data-a="0">불꽃의 색깔이 노란색으로 같아요</button>
+    <button data-a="0">촛농이 녹아 흘러내려요</button>
+    <button data-a="0">불꽃 주변이 차가워져요</button>
+  </div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="r2MultiChk">확인하기</button></div>
+  <div class="fb" id="r2MultiFb"></div>
+  <p class="tip">💡 물질이 탈 때에는 <b>빛과 열</b>이 발생해요. 양초, 알코올, 나무처럼 탈 물질이 탈 때 나는 빛으로 어두운 곳을 밝히고, 열로 주변을 따뜻하게 하거나 음식을 조리해요.</p>
+</section>
+
+<section id="s7" data-nav="빛과 열 이용">
+  <span class="stage">생각+ · 「과학」 41쪽</span>
+  <h2>물질이 탈 때 발생하는 빛과 열을 이용하는 예</h2>
+  <p>카드를 누른 뒤 알맞은 칸을 눌러 넣어요.</p>
+  <div id="r2Sort" data-glue="1"></div>
+</section>
+
+<section id="s8" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 양초와 알코올이 탈 때 <span class="blank"><span id="bl1">ㅂ</span></span>과/와 열이 발생합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <div id="r2Q2" hidden>
+    <p class="jua" style="font-size:1.05rem;margin-top:8px">2. 💭 정전이 되었을 때 촛불을 켜는 것은 무엇을 이용한 것일까요?</p>
+    <div class="pick" id="r2P8">
+      <button data-a="1" data-m="맞아요! 물질이 탈 때 발생하는 빛으로 주위를 환하게 밝혀요.">물질이 탈 때 발생하는 빛</button>
+      <button data-a="0" data-m="촛불은 주로 어두운 곳을 밝히는 데 써요. 가스나 기름을 태워 난방하는 것이 열을 이용하는 예예요.">물질이 탈 때 발생하는 열</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s9" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1rem">1. 양초와 알코올이 탈 때 나타나는 현상으로 옳지 <u>않은</u> 것은?</p>
+  <div class="pick" id="r2F1">
+    <button data-a="0" data-m="양초가 타면서 촛농이 흘렀어요. 옳은 설명이에요.">① 양초가 타면서 촛농이 흘러요.</button>
+    <button data-a="0" data-m="양초의 불꽃은 계속 흔들렸어요. 옳은 설명이에요.">② 양초가 탈 때 불꽃이 흔들려요.</button>
+    <button data-a="0" data-m="양초가 타면서 길이가 점점 짧아졌어요. 옳은 설명이에요.">③ 양초가 타면서 길이가 줄어들어요.</button>
+    <button data-a="0" data-m="알코올램프의 불꽃은 위아래로 길쭉했어요. 옳은 설명이에요.">④ 알코올램프의 불꽃은 위로 길쭉해요.</button>
+    <button data-a="1" data-m="정답! 알코올이 타는 동안 알코올의 양은 점점 줄어들어요.">⑤ 알코올이 타는 동안 알코올의 양은 변하지 않아요.</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1rem;margin-top:8px">2. ✏️ 서술형: 물질이 탈 때 나타나는 어떤 현상을 이용한 것인지 각각 써요.</p>
+  <p style="margin:0;font-size:.92rem">⑴ 가스레인지로 요리를 할 때</p>
+  <textarea id="r2F2a" rows="1" data-glue="1" placeholder="예: 물질이 탈 때 발생하는 … 을 이용하여 …"></textarea>
+  <p style="margin:4px 0 0;font-size:.92rem" data-glue="1">⑵ 정전이 되어 촛불을 켤 때</p>
+  <textarea id="r2F2b" rows="1" data-glue="1" placeholder="예: 물질이 탈 때 발생하는 … 을 이용하여 …"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="r2F2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="r2F2Fb"></div>
+</section>
+
+<section id="s10" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 25쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>양초와 알코올이 탈 때 나타나는 공통적인 현상을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>양초와 알코올이 탈 때 나타나는 여러 가지 현상을 관찰하고 기록할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>양초와 알코올이 탈 때 나타나는 현상에 흥미와 관심을 가졌어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 40~41쪽 · 「실험관찰」 24~25쪽 · 지도서 196~203쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+function needAll(n,sec){const s=new Set();return k=>{s.add(k);if(s.size>=n)doneNav(sec);};}
+function sortGame(id,items,bins,done,msg){const R=$('#'+id);let sel=null;
+  R.innerHTML=`<div class="sg-pool"></div><div class="sg-bins">${bins.map((b,i)=>`<div class="sg-bin" data-i="${i}"><b>${b}</b><div class="sg-in"></div></div>`).join('')}</div><div class="row" style="margin-top:6px"><button class="main sg-chk">확인하기</button></div><div class="fb"></div>`;
+  const pool=R.querySelector('.sg-pool');
+  items.forEach((it,k)=>{const c=document.createElement('button');c.className='sg-card';c.textContent=it.n;c.dataset.k=k;
+    c.onclick=()=>{if(c.classList.contains('right'))return;sel=sel===c?null:c;R.querySelectorAll('.sg-card').forEach(x=>x.classList.toggle('sel',x===sel));};pool.appendChild(c);});
+  pool.onclick=e=>{if(sel&&!e.target.closest('.sg-card')){pool.appendChild(sel);sel.classList.remove('sel');sel=null;}};
+  R.querySelectorAll('.sg-bin').forEach(b=>b.onclick=e=>{if(!sel||e.target.closest('.sg-card'))return;b.querySelector('.sg-in').appendChild(sel);sel.classList.remove('sel','wrong');sel=null;});
+  R.querySelector('.sg-chk').onclick=()=>{const out=R.querySelector('.fb');if(pool.querySelector('.sg-card')){fb(out,'아직 넣지 않은 카드가 있어요. 카드를 누르고 칸을 눌러요.','info');return;}let bad=0;
+    R.querySelectorAll('.sg-bin').forEach(b=>b.querySelectorAll('.sg-card').forEach(c=>{const ok=items[c.dataset.k].b==b.dataset.i;c.classList.toggle('right',ok);
+      if(!ok){bad++;c.classList.add('wrong');setTimeout(()=>{c.classList.remove('wrong');pool.appendChild(c);},700);}}));
+    if(bad)fb(out,`${bad}개가 알맞은 칸에 있지 않아요. 다시 넣어 봐요.`,false);else{fb(out,msg||'모두 맞았어요!',true);if(done)done();}};}
+
+pickOne('#r2P1','','','s1');
+
+/* 타는 모습 실험실 (양초 A · 알코올 B) */
+function burnLab(o){
+  const S={lit:false,zoom:false,heat:100,dark:false,time:0,used:new Set()};let ph=0;
+  const svg=$('#'+o.svg),ob=$('#'+o.obs);
+  ob.innerHTML=o.items.map((it,i)=>`<li data-t="${it[0]}">${it[0]==='heat'?'🌡️':it[0]==='dark'?'💡':it[0]==='time'?'⏩':'🔍'} <span>?</span></li>`).join('');
+  function reveal(t){S.used.add(t);$$('#'+o.obs+' li').forEach((li,i)=>{if(li.dataset.t===t){li.classList.add('on');li.querySelector('span').textContent=o.items[i][1];}});
+    if(['zoom','heat','dark','time'].every(k=>S.used.has(k))&&!S.fin){S.fin=1;fb('#'+o.fb,o.done,true);doneNav(o.sec);}}
+  function flame(cx,by,w,hgt,c1,c2,c3){const sw=Math.sin(ph*7)*w*0.18,sh=Math.sin(ph*11)*hgt*0.05;const H=hgt+sh;
+    return `<path d="M${cx} ${by-H} q${w*0.9+sw} ${H*0.55} ${w*0.45} ${H*0.9} q-${w*0.45} ${H*0.16} -${w*0.9} 0 q-${w*0.45} -${H*0.35} ${w*0.45} -${H*0.9}z" fill="${c1}" opacity=".55"/>`+
+      `<path d="M${cx+sw*0.5} ${by-H*0.8} q${w*0.55} ${H*0.45} ${w*0.28} ${H*0.72} q-${w*0.28} ${H*0.12} -${w*0.56} 0 q-${w*0.28} -${H*0.27} ${w*0.28} -${H*0.72}z" fill="${c2}"/>`+
+      `<ellipse cx="${cx}" cy="${by-H*0.12}" rx="${w*0.14}" ry="${H*0.14}" fill="${c3}" opacity=".8"/>`;}
+  function draw(){let h=`<defs><radialGradient id="${o.svg}g"><stop offset="0" stop-color="#fff2a8" stop-opacity=".95"/><stop offset="1" stop-color="#fff2a8" stop-opacity="0"/></radialGradient></defs>`;
+    h+=`<rect width="480" height="300" fill="${S.dark?'#23222f':'#fbf7ee'}"/><rect y="262" width="480" height="38" fill="${S.dark?'#3b342c':'#e6d6b2'}"/>`;
+    const fx=200,fy=o.kind==='c'?120-S.time*40:132;
+    if(S.lit&&S.dark)h+=`<circle cx="${fx}" cy="${fy-24}" r="170" fill="url(#${o.svg}g)"/>`;
+    h+=o.body(S);
+    if(S.lit)h+=o.kind==='c'?flame(fx,fy,15,58,'#ff9a3c','#ffd23f','#5a5a7a'):flame(fx,fy,15,56,'#5b8fe8','#c7d8ff','#f08a5a');
+    /* 열 변색 종이 */
+    if(S.used.has('heat')||S.heat<100){const d=36+S.heat*1.9,tx=fx+d,hot=S.lit?Math.max(0,1-S.heat/100):0;const col=hot>0.66?'#c0392b':hot>0.33?'#e67e22':hot>0.05?'#f1c40f':'#7fb3d5';
+      h+=`<rect x="${tx}" y="${fy-60}" width="16" height="70" rx="4" fill="${col}" stroke="#555" stroke-width="2"/><text x="${tx+8}" y="${fy+30}" text-anchor="middle" font-family="Jua" font-size="13" fill="${S.dark?'#fff':'#333'}">${!S.lit?'그대로':hot>0.66?'뜨거움':hot>0.33?'따뜻함':hot>0.05?'조금 따뜻':'그대로'}</text>`;}
+    if(S.zoom&&S.lit){h+=`<g transform="translate(330 16)"><rect width="140" height="150" rx="12" fill="#fff" stroke="#b8452f" stroke-width="3"/><g transform="translate(70 128) scale(2)">${o.kind==='c'?flame(0,0,15,52,'#ff9a3c','#ffd23f','#5a5a7a'):flame(0,0,15,52,'#5b8fe8','#c7d8ff','#f08a5a')}${o.kind==='c'?'<rect x="-2" y="-6" width="4" height="10" fill="#333"/>':'<rect x="-3" y="-4" width="6" height="8" fill="#eee" stroke="#aaa"/>'}</g><text x="70" y="146" text-anchor="middle" font-family="Jua" font-size="12" fill="#b8452f">🔍 확대</text></g>`;}
+    svg.innerHTML=h;}
+  function loop(){ph+=0.02;if(S.lit)draw();requestAnimationFrame(loop);}
+  draw();requestAnimationFrame(loop);
+  /* 안전 */
+  const safe=new Set();$$('#'+o.safe+' button').forEach((b,i)=>b.onclick=()=>{safe.add(i);b.classList.add('right');
+    if(safe.size===3){$$('#'+o.tools+' [data-t]').forEach(x=>{if(x.dataset.t==='fire')x.disabled=false;});fb('#'+o.fb,'안전 수칙을 모두 확인했어요. 이제 점화기로 불을 붙여요.','info');}});
+  const T=t=>$('#'+o.tools+` [data-t="${t}"]`);
+  T('fire').onclick=()=>{S.lit=true;T('fire').disabled=true;T('fire').classList.remove('main');['zoom','heat','dark','time'].forEach(k=>T(k).disabled=false);draw();fb('#'+o.fb,o.litMsg,'info');};
+  T('zoom').onclick=()=>{S.zoom=!S.zoom;T('zoom').classList.toggle('sel',S.zoom);draw();if(S.zoom)reveal('zoom');};
+  T('heat').oninput=e=>{S.heat=+e.target.value;S.used.add('heatShow');draw();if(S.heat<=20)reveal('heat');else if(S.heat<100)fb('#'+o.fb,'열 변색 종이를 불꽃에 더 가까이 가져가 봐요. (불꽃에 직접 닿지 않게!)','info');};
+  T('dark').onclick=()=>{S.dark=!S.dark;T('dark').classList.toggle('sel',S.dark);T('dark').textContent=S.dark?'💡 교실 전등 켜기':'💡 교실 전등 끄기';draw();if(S.dark)reveal('dark');};
+  T('time').onclick=()=>{if(S.time>=1)return;T('time').disabled=true;const t0=performance.now();const go=now=>{S.time=Math.min(1,(now-t0)/3000);draw();if(S.time<1)requestAnimationFrame(go);else reveal('time');};requestAnimationFrame(go);};
+}
+/* 양초 */
+burnLab({svg:'r2LabA',obs:'r2ObsA',fb:'r2FbA',safe:'r2SafeA',tools:'r2ToolsA',sec:'s2',kind:'c',
+  items:[['zoom','불꽃 모양은 위아래로 길쭉하고, 색깔은 노란색·붉은색 등이에요. 불꽃이 계속 흔들려요.'],['heat','불꽃 주변이 따뜻해지고, 불꽃에 가까울수록 더 따뜻해요.'],['dark','불꽃 주변이 밝아져요.'],['time','양초가 녹아 심지 아래에 고이고, 촛농이 흘러내려요. 양초의 길이가 점점 짧아져요.']],
+  litMsg:'양초에 불을 붙였어요. 아래 도구를 모두 써서 불꽃의 모양·색깔, 밝기, 따뜻한 정도, 시간에 따른 변화를 관찰해요.',
+  done:'🎉 양초가 탈 때의 현상을 모두 관찰했어요!',
+  body(S){const t=S.time,top=128-t*40;let h=`<ellipse cx="200" cy="258" rx="70" ry="12" fill="#b08d57"/><path d="M168 256 l8 -22 h48 l8 22z" fill="#c9a66b"/><rect x="186" y="${top}" width="28" height="${236-top}" fill="#fbf3e2" stroke="#e2d2b0" stroke-width="2"/>`;
+    if(S.lit&&t>0.05)h+=`<ellipse cx="200" cy="${top+3}" rx="12" ry="4" fill="#fff8dc" stroke="#e8d8a8"/><path d="M188 ${top+4} q-5 ${20+t*40} 2 ${30+t*50} q4 -8 2 -${30+t*48}z" fill="#fbf3e2" stroke="#e2d2b0"/><path d="M213 ${top+6} q5 ${12+t*24} 0 ${18+t*30}" stroke="#e2d2b0" stroke-width="4" fill="none"/>`;
+    h+=`<rect x="198" y="${top-8}" width="4" height="10" fill="${S.lit?'#222':'#555'}"/><text x="90" y="290" font-family="Jua" font-size="14" fill="${S.dark?'#fff':'#4a3a20'}">양초와 촛대</text>`;return h;}});
+/* 알코올 */
+burnLab({svg:'r2LabB',obs:'r2ObsB',fb:'r2FbB',safe:'r2SafeB',tools:'r2ToolsB',sec:'s3',kind:'a',
+  items:[['zoom','불꽃 모양은 위아래로 길쭉하고, 색깔은 푸른색·붉은색 등이에요. 불꽃이 흔들려요.'],['heat','불꽃 주변이 따뜻해지고, 불꽃에 가까울수록 더 따뜻해요.'],['dark','불꽃 주변이 밝아져요.'],['time','시간이 지날수록 알코올의 양이 점점 줄어들어요.']],
+  litMsg:'점화기 불꽃으로 심지를 스치듯 옆으로 지나가며 불을 붙였어요. 도구를 모두 써서 관찰해요.',
+  done:'🎉 알코올이 탈 때의 현상을 모두 관찰했어요!',
+  body(S){const lv=232-(1-S.time*0.45)*70;let h=`<ellipse cx="200" cy="258" rx="74" ry="10" fill="#c9b48a"/><path d="M140 256 q-14 -76 40 -96 h40 q54 20 40 96z" fill="#eaf4fa" fill-opacity=".85" stroke="#8fb1c6" stroke-width="4"/>`;
+    h+=`<clipPath id="r2clip"><path d="M140 256 q-14 -76 40 -96 h40 q54 20 40 96z"/></clipPath><rect x="120" y="${lv}" width="160" height="${260-lv}" fill="#d6ecf7" clip-path="url(#r2clip)"/><path d="M144 ${lv} h112" stroke="#9fc7de" stroke-width="2"/>`;
+    h+=`<rect x="186" y="140" width="28" height="22" rx="3" fill="#c9cdd1" stroke="#9aa1a8" stroke-width="2"/><rect x="197" y="124" width="6" height="${Math.max(38,lv-124)}" fill="#f2efe6"/>`;
+    if(!S.lit)h+=`<path d="M300 250 q-6 -30 18 -36 h20 q24 6 18 36z" fill="#cfd8de" stroke="#8fb1c6" stroke-width="3"/><text x="328" y="276" text-anchor="middle" font-family="Jua" font-size="12" fill="#555">뚜껑</text>`;
+    h+=`<text x="90" y="290" font-family="Jua" font-size="14" fill="${S.dark?'#fff':'#4a3a20'}">알코올램프</text><text x="200" y="${Math.min(250,lv+22)}" text-anchor="middle" font-family="Jua" font-size="12" fill="#3b5566">알코올</text>`;return h;}});
+
+pickOne('#r2P4','','','s4');
+
+/* 결과 비교 표 */
+const ROWS=[['불꽃의 색깔',['?','노란색·붉은색 등','푸른색·붉은색 등'],[1,2]],['불꽃의 모양',['?','위아래로 길쭉하다','옆으로 납작하다'],[1,1]],['밝기',['?','불꽃 주변이 밝아진다','변화 없다'],[1,1]],['따뜻한 정도',['?','주변이 따뜻해진다','주변이 차가워진다'],[1,1]],['타는 물질의 양',['?','점점 줄어든다','점점 늘어난다'],[1,1]]];
+const rec=ROWS.map(()=>[0,0]);
+function tab(){let h='<tr><th>구분</th><th>양초</th><th>알코올</th></tr>';
+  ROWS.forEach(([n,o],r)=>{h+=`<tr><th>${n}</th>`+[0,1].map(c=>`<td><button data-r="${r}" data-c="${c}">${o[rec[r][c]]}</button></td>`).join('')+'</tr>';});
+  $('#r2Tab').innerHTML=h;$$('#r2Tab button').forEach(b=>b.onclick=()=>{const r=+b.dataset.r,c=+b.dataset.c;rec[r][c]=rec[r][c]%(ROWS[r][1].length-1)+1;tab();});}
+tab();
+$('#r2TabChk').onclick=()=>{let bad=0,empty=0;rec.forEach((row,r)=>row.forEach((v,c)=>{if(!v)empty++;else if(v!==ROWS[r][2][c])bad++;}));
+  if(empty){fb('#r2TabFb',`아직 기록하지 않은 칸이 ${empty}개 있어요.`,'info');return;}
+  $$('#r2Tab button').forEach(b=>b.classList.toggle('bad',rec[b.dataset.r][b.dataset.c]!==ROWS[b.dataset.r][2][b.dataset.c]));
+  if(bad)fb('#r2TabFb',`${bad}칸이 관찰 결과와 달라요. 관찰한 내용을 다시 떠올려 고쳐요.`,false);
+  else{fb('#r2TabFb','정확히 기록했어요! 불꽃의 색깔은 조금 달랐지만, 둘 다 불꽃 주변이 밝아지고 따뜻해지며 타는 물질의 양이 줄어들었어요.',true);doneNav('s5');}};
+
+/* 공통점 고르기 */
+$$('#r2Multi button').forEach(b=>b.onclick=()=>{b.classList.toggle('sel');b.classList.remove('wrong','right');});
+$('#r2MultiChk').onclick=()=>{const bs=$$('#r2Multi button');let miss=0,wrong=0;
+  bs.forEach(b=>{const s=b.classList.contains('sel'),a=b.dataset.a==='1';if(s&&!a){wrong++;b.classList.add('wrong');}else if(!s&&a)miss++;else if(s&&a)b.classList.add('right');});
+  if(wrong)fb('#r2MultiFb','빨간 것은 양초와 알코올 중 한쪽에서만 나타나거나 관찰되지 않은 현상이에요. 다시 골라요.',false);
+  else if(miss)fb('#r2MultiFb',`공통적인 현상이 ${miss}가지 더 있어요.`,'info');
+  else{fb('#r2MultiFb','맞아요! 물질이 탈 때에는 빛과 열이 발생해요. 그리고 타는 물질의 양이 줄어들어요.',true);doneNav('s6');}};
+
+/* 빛과 열 이용 */
+sortGame('r2Sort',[{n:'강물 위의 유등',b:0},{n:'막대 폭죽의 불꽃',b:0},{n:'청사초롱',b:0},{n:'정전 때 켠 촛불',b:0},{n:'벽난로의 장작불',b:1},{n:'가스레인지의 불꽃',b:1},{n:'숯불 구이',b:1},{n:'석유난로',b:1}],
+  ['💡 주로 빛을 이용해요','🔥 주로 열을 이용해요'],()=>doneNav('s7'),'모두 맞았어요! 유등·폭죽·초롱·촛불은 빛으로 밝히고, 벽난로·가스레인지·숯불·석유난로는 열로 난방이나 조리를 해요.');
+
+/* 한눈에 쏙 */
+{const d=needAll(2,'s8');$('#blReveal').onclick=()=>{$('#r2Q2').hidden=false;fb('#blFb','물질이 탈 때에는 빛과 열이 발생해요.',true);d(1);};pickOne('#r2P8','','',null,()=>d(2));}
+
+/* 형성 평가 */
+{const d=needAll(2,'s9');pickOne('#r2F1','','',null,()=>d(1));
+$('#r2F2Btn').onclick=()=>{const a=$('#r2F2a').value.trim(),b=$('#r2F2b').value.trim();if(!a||!b){fb('#r2F2Fb','⑴과 ⑵를 모두 써 보세요.',false);return;}
+  const ok1=/열/.test(a)&&!/빛/.test(a.replace(/빛과\s*열|열과\s*빛/,'')),ok2=/빛|밝/.test(b);
+  if(ok1&&ok2){fb('#r2F2Fb','잘 썼어요! 예시 답: ⑴ 물질이 탈 때 발생하는 열을 이용하여 음식을 익혀요. ⑵ 물질이 탈 때 발생하는 빛을 이용하여 주위를 밝혀요.',true);d(2);}
+  else fb('#r2F2Fb',(ok1?'⑴은 잘 썼어요. ':'⑴ 요리를 할 때는 빛과 열 중 무엇이 필요할까요? ')+(ok2?'⑵는 잘 썼어요.':'⑵ 정전 때 촛불을 켜는 까닭을 생각해 봐요.'),ok1||ok2?'info':false);};}
+
+faces('s10','잘했어요! 다음 시간에는 물질이 타려면 무엇이 필요한지 알아봐요.','어려웠던 부분은 양초·알코올 관찰 화면을 다시 봐요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"빛"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>
