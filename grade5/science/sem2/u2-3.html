@@ -135,7 +135,9 @@ img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radiu
 .w3-temp{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .w3-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px}
 .w3-two svg{width:100%;height:auto;max-height:30vh;border:3px solid var(--navy);border-radius:14px;background:#fff}
-.g2-it.w3-it .tx svg{width:130px;height:auto;border-radius:8px}
+.g2-it.w3-it .tx svg{width:110px;height:auto;border-radius:8px}
+#w3Sort7{grid-template-columns:1fr 1fr}#w3Sort7 .bs button{font-size:.85rem;min-height:2.2rem;padding:.1em .5em;border-width:2px}
+@media (max-width:640px){#w3Sort7{grid-template-columns:1fr}}
 #w3H{writing-mode:vertical-lr;direction:rtl;height:13rem;accent-color:var(--sky)}
 .w3-hgt{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:10px;align-items:center}
 @media (max-width:640px){.w3-two{grid-template-columns:1fr}}
@@ -224,8 +226,7 @@ img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radiu
 <section id="s6" data-nav="이슬과 안개">
   <span class="stage">정리해요</span>
   <h2>자연에서 이슬과 안개가 생기는 과정</h2>
-  <p>차가운 음료수 캔의 표면에 물방울이 맺히는 것은 <b>이슬</b>이 만들어지는 것과 같아요. 집기병 안이 뿌옇게 흐려지는 것은 <b>안개</b>가 만들어지는 것과 같아요.</p>
-  <p class="jua" style="font-size:1.05rem" data-glue="1">설명에 알맞은 것을 골라요.</p>
+  <p class="jua" style="font-size:1.05rem">실험 결과를 바탕으로 자연에서 이슬과 안개가 생기는 과정을 생각해 봐요. 각 설명은 이슬과 안개 중 무엇에 알맞을까요?</p>
   <div class="g2-sort" id="w3Sort6"></div>
   <div class="fb"></div>
 </section>
@@ -424,12 +425,12 @@ function jar(fogA,smokeA,bag,water,lbl){let s=`<rect x="-70" y="-120" width="140
   if(bag)s+=`<rect x="-62" y="-176" width="124" height="40" rx="10" fill="#d6eef8" stroke="#7fb8d8" stroke-width="2" opacity=".95"/><rect x="-44" y="-170" width="24" height="22" fill="#fff" stroke="#9fd3ee"/><rect x="-10" y="-168" width="24" height="22" fill="#fff" stroke="#9fd3ee"/><rect x="22" y="-170" width="24" height="22" fill="#fff" stroke="#9fd3ee"/>`;
   if(lbl)s+=`<text x="0" y="96" text-anchor="middle" font-family="Jua" font-size="16" fill="#0f3b5c">${lbl}</text>`;
   return s;}
-function jarDraw(){let s=`<rect width="800" height="300" fill="#fbf4e6"/><rect y="256" width="800" height="44" fill="#c9a77a"/>`+
+function jarDraw(){let s=`<rect width="800" height="300" fill="#fbf4e6"/><rect x="300" y="14" width="200" height="242" fill="#2c3e50"/><text x="490" y="34" text-anchor="end" font-family="Jua" font-size="13" fill="#9fb3c2">검은 종이</text><rect y="256" width="800" height="44" fill="#c9a77a"/>`+
   `<g transform="translate(400 190)">${jar(JS.fog,JS.smoke,JS.bag,JS.water,'')}</g>`;
   s+=`<g transform="translate(640 200)"><rect x="-50" y="0" width="100" height="56" fill="#e2c48f" stroke="#a87b4f" stroke-width="3"/><text x="0" y="36" text-anchor="middle" font-family="Jua" font-size="15" fill="#6b5030">모래 상자</text>${JS.inc?'<line x1="-10" y1="4" x2="14" y2="-22" stroke="#8a5a2b" stroke-width="4"/>':''}</g>`;
   if(!JS.inc)s+=`<g transform="translate(170 220)"><line x1="0" y1="0" x2="0" y2="-80" stroke="#8a5a2b" stroke-width="4"/>${JS.smoke>0?'<circle cx="0" cy="-82" r="4" fill="#e74c3c"/>':''}<text x="0" y="24" text-anchor="middle" font-family="Jua" font-size="15" fill="#6b5030">향</text></g>`;
   if(JS.gear)s+=`<g transform="translate(90 70)"><path d="M-40 0 h80 v14 q-20 18 -40 4 q-20 14 -40 -4z" fill="#bfe6fb" stroke="#555" stroke-width="2"/><text x="0" y="44" text-anchor="middle" font-family="Jua" font-size="15" fill="#555">보안경</text></g>`;
-  if(JS.water)s+=`<text x="490" y="250" font-family="Jua" font-size="15" fill="#0f3b5c">미지근한 물(${JS.water} °C)</text>`;
+  if(JS.water)s+=`<text x="400" y="284" text-anchor="middle" font-family="Jua" font-size="16" fill="#fff">미지근한 물(${JS.water} °C)</text>`;
   $('#w3Jar').innerHTML=s;}
 jarDraw();
 const jSt=[0,0,0,0,0,0];
@@ -465,7 +466,7 @@ sorter('#w3Sort6',[
  {t:'공기 중의 수증기가 지표면 가까이에서 응결해 물방울로 떠 있는 것',k:'f'},
  {t:'차가운 음료수 캔의 표면에 물방울이 맺힌 것과 같은 과정',k:'d'},
  {t:'집기병 안이 뿌옇게 흐려진 것과 같은 과정',k:'f'}],
- [{k:'d',n:'💧 이슬'},{k:'f',n:'🌫️ 안개'}],'모두 맞혔어요! 이슬은 물체 표면에 맺히고, 안개는 지표면 가까이에 떠 있어요.','s6');
+ [{k:'d',n:'💧 이슬'},{k:'f',n:'🌫️ 안개'}],'모두 맞혔어요! 차가운 음료수 캔의 표면에 물방울이 맺히는 것은 이슬이, 집기병 안이 뿌옇게 흐려지는 것은 안개가 만들어지는 것과 같아요. 이슬은 물체 표면에 맺히고, 안개는 지표면 가까이에 떠 있어요.','s6');
 
 /* ---------- 카드 분류 ---------- */
 function card(k){let s=`<svg viewBox="0 0 120 80">`;

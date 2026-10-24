@@ -1,0 +1,450 @@
+<!--
+title: 섞이지 않는 액체 혼합물을 분리해 볼까?
+unit: 1
+lesson: 4
+total: 11
+goal: 섞이지 않는 액체 혼합물을 분리할 수 있어요.<br>섞이지 않는 액체 혼합물의 분리 방법을 설명할 수 있어요.
+pages: 「과학」 18~19쪽 · 「실험관찰」 10~11쪽 · 지도서 128~137쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"기","bl2":"름"}}]
+-->
+<style>
+/* 1단원 혼합물의 분리 교과서 버전 공통 */
+.lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.lab svg{display:block;width:100%;margin:0 auto}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,18px)}
+.rtable{table-layout:fixed}
+.rtable td,.rtable th{text-align:center;padding:5px 4px;font-size:.88rem;word-break:keep-all}
+.rtable th{background:var(--bg)}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:10px 14px;font-size:.95rem}
+.big{font-size:1.1rem}
+.ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:2px dashed var(--line);padding:6px 0}
+.ox button{min-width:3rem}
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3ord{display:flex;flex-direction:column;gap:6px}
+.t3ord button{text-align:left}
+.t3ord .t3dn{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.t3seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+.t3cnt{font-family:"Jua",sans-serif;color:var(--muted);font-size:.95rem}
+.qz>div{margin-bottom:6px}
+/* 단계 단추 */
+.mxctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.mxctl button{font-size:.92rem}
+.mxctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.mxctl button[disabled]{opacity:.45}
+.mxq{margin-top:8px;border:2px dashed var(--sky);border-radius:14px;padding:8px 12px}
+/* 붙임딱지 */
+.stks{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.stks button{display:flex;align-items:center;gap:6px;font-size:.95rem;min-height:2.4rem;padding:.2em .7em;border-width:2px;border-style:dashed}
+.stks button svg{width:2rem;height:2rem}
+.stks button.used{visibility:hidden}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.slot{border:2px solid var(--line);border-radius:14px;padding:6px;background:var(--paper);text-align:center;font-family:"Jua",sans-serif;font-size:.95rem}
+.slot svg{max-height:15vh;margin:0 auto}
+.slot .dz{margin-top:4px;min-height:2.6rem;border:3px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:2px 6px}
+.slot .dz.ready{border-color:var(--sun);background:#fff8dc}
+.slot .dz.ok{border-style:solid;border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.slot .dz svg{width:1.8rem;height:1.8rem;margin:0}
+.slot .ar{color:var(--muted);font-size:.85rem}
+@media (max-width:640px){.two,.t3sort,.t3match{grid-template-columns:1fr}.slots{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#st6 .it .bs button{font-size:.82rem;padding:.1em .45em}
+.m3leg{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;font-size:.9rem;margin-top:4px}
+.m3leg span::before{content:"";display:inline-block;width:1em;height:1em;border-radius:3px;margin-right:4px;vertical-align:-2px;background:var(--c)}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 18쪽</span>
+  <h2>간장에 참기름을 너무 많이 부었을 때 어떻게 덜어 낼 수 있을까요?</h2>
+  <div class="lab"><svg id="dish" viewBox="0 0 800 230" role="img" aria-label="간장이 담긴 종지에 참기름을 붓는 그림" style="max-height:27vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="oilGo">🫗 간장에 참기름 붓기</button></div>
+  <div class="fb" id="dishFb"></div>
+  <div id="ask1" hidden data-glue="1">
+    <p class="jua big">너무 많이 부은 참기름을 어떻게 덜어 낼 수 있을까요? 내 생각을 골라요.</p>
+    <div class="pick" id="p1">
+      <button data-m="좋은 생각이에요! 위에 뜬 참기름만 숟가락으로 떠낼 수 있어요.">숟가락으로 위에 뜬 참기름을 떠내요</button>
+      <button data-m="좋은 생각이에요! 주방 휴지에 위에 뜬 참기름이 스며들게 해서 걷어 낼 수 있어요.">주방 휴지로 위에 뜬 참기름을 걷어 내요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s2" data-nav="관찰해요">
+  <span class="stage">실험해요 1 · 「실험관찰」 10쪽</span>
+  <h2>비커에 담긴 물과 기름의 혼합물을 관찰해요</h2>
+  <p class="tip">준비물: 물과 기름의 혼합물이 담긴 비커 2개, 비커(100 mL), 스포이트, 흡착포, 핀셋, 페트리 접시, 실험복, 보안경, 실험용 장갑 · 기름은 물과 색깔로 구별되는 식용유예요. 물 80 mL에 기름 20 mL 이하를 넣은 것은 지도서의 <b>예시</b>예요.</p>
+  <div class="lab"><svg id="bk2" viewBox="0 0 800 250" role="img" aria-label="물과 기름이 담긴 비커" style="max-height:28vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button id="shk1">🤲 살살 흔들어 보기</button><button id="shk2">💪 세게 흔들어 보기</button></div>
+  <div class="fb" id="bk2Fb"></div>
+  <div id="ask2" hidden data-glue="1">
+    <div class="pick" id="p2">
+      <button data-a="1" data-m="맞아요! 물과 기름은 골고루 섞이지 않고, 기름은 위쪽에, 물은 아래쪽에 위치해요.">기름은 위쪽에, 물은 아래쪽에 있어요</button>
+      <button data-a="0" data-m="비커를 다시 봐요. 노란 기름은 어디에 있나요?">물은 위쪽에, 기름은 아래쪽에 있어요</button>
+      <button data-a="0" data-m="흔든 뒤 조금 기다리면 어떻게 되었나요?">물과 기름이 골고루 섞여요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s3" data-nav="분리 방법">
+  <span class="stage">실험해요 2 · 「실험관찰」 10쪽</span>
+  <h2>물과 기름의 혼합물을 분리하는 방법을 이야기해요</h2>
+  <div class="pick" id="p3">
+    <button data-a="1" data-m="맞아요! 물과 기름이 골고루 섞이지 않고 층을 이루므로, 물 위에 있는 기름을 떠내어 분리할 수 있어요.">물 위에 있는 기름을 떠내어 분리해요</button>
+    <button data-a="0" data-m="물과 기름은 둘 다 액체라서 체의 눈을 모두 빠져나가요.">체로 걸러서 분리해요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="스포이트로">
+  <span class="stage">실험해요 3 · 「실험관찰」 10쪽</span>
+  <h2>비커 한 개의 물과 기름 혼합물을 스포이트로 분리해요</h2>
+  <div class="lab"><svg id="bk4" viewBox="0 0 800 270" role="img" aria-label="스포이트로 위에 뜬 기름을 뽑아 빈 비커로 옮기는 가상 실험" style="max-height:30vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="dp1">💧 기름층에 살짝 넣어 뽑아 옮기기 (<span id="dpN">0</span>)</button><button id="dp2">스포이트를 깊게 넣어 뽑기</button></div>
+  <div class="fb" id="dpFb"></div>
+  <div id="ask4" hidden data-glue="1">
+    <div class="pick" id="p4">
+      <button data-a="1" data-m="맞아요! 스포이트로 위에 있는 기름을 뽑아 옮기는 과정을 여러 번 반복하면 물과 기름을 분리할 수 있어요.">위에 있는 기름을 뽑아 옮기는 과정을 여러 번 반복해요</button>
+      <button data-a="0" data-m="스포이트를 깊게 넣으면 물도 함께 뽑혀 올라와요.">스포이트를 바닥까지 깊게 넣어 한 번에 뽑아요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 유리 기구가 깨지지 않도록 조심해요. 실험에 사용하는 물질은 맛보지 않아요. 기름은 미끄러우니 흘리지 않게 주의하고, 기름이 묻은 도구가 손에서 미끄러지지 않게 해요. 스포이트는 비커에 넣기 전에 닦아요.</p>
+</section>
+
+<section id="s5" data-nav="흡착포로">
+  <span class="stage">실험해요 4 · 「실험관찰」 11쪽</span>
+  <h2>다른 비커 한 개의 물과 기름 혼합물을 흡착포로 분리해요</h2>
+  <p class="tip">흡착포: 기름을 흡수하는 종이로, 바다에 유출된 기름을 제거하는 데 이용해요.</p>
+  <div class="lab"><svg id="bk5" viewBox="0 0 800 260" role="img" aria-label="핀셋으로 흡착포를 기름 위에 대어 기름을 흡수하는 가상 실험" style="max-height:29vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="pad">🧻 핀셋으로 흡착포를 가볍게 대기 (<span id="padN">0</span>/4)</button></div>
+  <div class="fb" id="padFb"></div>
+  <div id="ask5" hidden data-glue="1">
+    <div class="pick" id="p5">
+      <button data-a="1" data-m="맞아요! 물 위의 기름이 흡착포에 흡수되고, 여러 번 반복하면 기름이 분리된 물을 얻을 수 있어요.">물 위의 기름이 흡착포에 흡수돼요</button>
+      <button data-a="0" data-m="흡착포가 노랗게 변한 까닭을 생각해 봐요.">물이 흡착포에 흡수돼요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s6" data-nav="장단점">
+  <span class="stage">실험해요 5 · 「실험관찰」 11쪽</span>
+  <h2>스포이트와 흡착포를 사용할 때의 장단점을 정리해요</h2>
+  <p>설명마다 알맞은 칸을 눌러요.</p>
+  <div class="t3sort" id="st6" data-glue="1"></div>
+  <div class="fb"></div>
+  <p class="tip">♻️ 실험에 사용한 물과 기름은 환경이 오염되지 않도록 선생님의 안내에 따라 폐수통에 나누어 버리고, 기름을 흡수한 흡착포는 폐기물 처리통에 버려요.</p>
+</section>
+
+<section id="s7" data-nav="정리해요">
+  <span class="stage">정리해요 · 「실험관찰」 11쪽</span>
+  <h2>섞이지 않는 액체 혼합물의 분리 방법</h2>
+  <div class="pick" id="p7">
+    <button data-a="1" data-m="맞아요! 골고루 섞이지 않는 액체 혼합물은 위에 위치한 액체 부분만 떠내어 분리할 수 있어요. 아래에 있는 액체만 빼내어 분리할 수도 있어요.">위에 위치한 액체만 떠내어 분리해요</button>
+    <button data-a="0" data-m="섞이지 않는 두 액체는 층을 이루어요. 이 성질을 이용해요.">물에 녹여 체로 걸러요</button>
+  </div>
+  <div class="fb"></div>
+  <h3 data-glue="1">🤔 생각 바로잡기: 물과 기름을 아주 세게 흔들면 골고루 섞일까요?</h3>
+  <div class="pick" id="p7b" data-glue="1">
+    <button data-a="0" data-m="세게 흔들면 뿌옇게 섞인 것처럼 보이지만, 시간이 지나면 다시 층을 이루어요.">네, 세게 흔들면 골고루 섞여요</button>
+    <button data-a="1" data-m="맞아요! 세게 흔들면 잠깐 뿌옇게 섞인 것처럼 보여도, 시간이 지나면 다시 층을 이루므로 골고루 섞이지 않아요.">아니요, 시간이 지나면 다시 층을 이루어요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="생활 속 예">
+  <span class="stage">개념 · 「과학」 19쪽</span>
+  <h2>섞이지 않는 액체 혼합물을 분리하는 예</h2>
+  <svg id="ex8" viewBox="0 0 720 150" style="max-height:18vh;max-width:640px;margin:0 auto" role="img" aria-label="국 위에 뜬 기름을 국자로 떠내는 모습과 바다에 유출된 기름을 흡착포로 제거하는 모습"></svg>
+  <p class="jua big">섞이지 않는 액체 혼합물을 분리하는 예를 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p8" data-glue="1">
+    <button data-a="1" data-m="맞아요! 국이나 찌개 위에 뜬 기름을 숟가락이나 국자로 떠내어 제거해요.">국 위에 뜬 기름 떠내기</button>
+    <button data-a="1" data-m="맞아요! 바다에 기름이 유출되면 흡착포를 던져 물에 뜬 기름을 제거해요.">바다에 유출된 기름을 흡착포로 제거하기</button>
+    <button data-a="0" data-m="모래와 자갈은 고체 혼합물이고, 알갱이의 크기 차이를 이용해 체로 분리해요.">체로 모래와 자갈 분리하기</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s9" data-nav="더 알아보기">
+  <span class="stage">더 알아보기 · 분별 깔때기</span>
+  <h2>분별 깔때기로 물과 기름을 분리해 봐요</h2>
+  <p>꼭지를 열면 아래층의 물이 먼저 빠져나와요. <b>물이 다 빠져나가 경계면이 꼭지에 가까워지면</b> 꼭지를 잠가요.</p>
+  <div class="lab"><svg id="sep" viewBox="0 0 800 300" role="img" aria-label="스탠드에 꽂힌 분별 깔때기와 비커" style="max-height:32vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="tap">🔓 꼭지 열기</button><button id="sepR">🔄 처음부터</button></div>
+  <div class="fb" id="sepFb"></div>
+  <p class="tip">⚠️ 유리 기구가 깨지지 않도록 조심하고, 기름이 묻은 분별 깔때기를 다룰 때 미끄러지지 않게 주의해요. 기름이 묻은 유리 기구는 씻어서 보관해요.</p>
+</section>
+
+<section id="s10" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua big">1. 물과 기름의 혼합물은 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span></span>이 위쪽에, 물이 아래쪽에 위치하는 것을 이용해 분리합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua big" style="margin-top:10px" data-glue="1">2. 💭 마블링 작품은 어떻게 만들까요?</p>
+  <div class="pick" id="p10" data-glue="1">
+    <button data-a="1" data-m="맞아요! 마블링은 물과 기름이 섞이지 않고 기름이 물에 뜨는 성질을 이용해요. 기름 성분인 마블링 물감을 물에 풀고, 물 위에 뜬 물감을 도화지에 찍어 내어 말려요.">물 위에 뜬 기름 성분의 물감을 종이에 찍어 내요</button>
+    <button data-a="0" data-m="마블링 물감은 기름 성분이라 물에 녹지 않고 물 위에 떠요.">물감을 물에 완전히 녹여 종이를 담가요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s11" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div class="qz" id="qz11"></div>
+  <p class="jua big" style="margin-top:12px">✏️ 서술형: 바다에 기름이 유출되는 사고가 생겼어요. 기름을 제거하는 데 사용하는 도구와 방법을 혼합물의 분리와 관련지어 써 봐요.</p>
+  <textarea id="wr11" rows="2" placeholder="○○을/를 사용해 …" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wr11B">내 답 살펴보기</button></div>
+  <div class="fb" id="wr11Fb"></div>
+</section>
+
+<section id="s12" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 11쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>골고루 섞이지 않는 액체 혼합물의 분리 방법을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>물과 기름의 혼합물을 스포이트와 흡착포로 각각 분리할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>실험에 사용한 물질을 환경이 오염되지 않도록 분리배출했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 1단원 혼합물의 분리 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+const rnd=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+function el(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
+/* 여러 활동을 다 해야 섹션 완료: const s3=need('s3',2); pickOne(…, s3('a')); s3('b')(); — 같은 활동은 한 번만 셈 */
+function need(sec,n){const got=new Set();return key=>()=>{if(got.has(key))return;got.add(key);if(got.size===n)doneNav(sec);};}
+/* 여러 개 고르기 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb&&!b.dataset.cbd){b.dataset.cbd=1;cb();}}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;let first=true;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb&&first){first=false;cb(b);}});}
+/* 고르기 문제 여러 개: items [{q,o:[…],a,e,h}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);const was=ok.size;ok.add(k);if(ok.size===items.length&&was<items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* ○× 문제: ox('#box', [{t, a:true|false, e}], cb) */
+function oxQuiz(box,items,cb){const B=$(box),out=B.nextElementSibling,ok=new Set();
+  items.forEach((it,k)=>{const d=document.createElement('div');d.className='ox';d.innerHTML='<span>'+it.t+'</span>';
+    [['○',true],['×',false]].forEach(([s,v])=>{const b=document.createElement('button');b.textContent=s;b.setAttribute('aria-label',v?'맞아요':'틀려요');
+      b.onclick=()=>{if(ok.has(k))return;$$('button',d).forEach(x=>x.classList.remove('wrong'));
+        if(v===it.a){b.classList.add('right');ok.add(k);fb(out,(ok.size===items.length?'모두 맞혔어요! ':'맞아요! ')+it.e,ok.size===items.length?true:'info');if(ok.size===items.length&&cb)cb();}
+        else{b.classList.add('wrong');fb(out,'다시 생각해 봐요. '+(it.h||''),false);}};d.appendChild(b);});
+    B.appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례 맞히기: orderer('#box', [단계…], 다 맞힘 글, 섹션, each(i), cb) */
+function orderer(box,steps,okMsg,sec,each,cb){const B=$(box),out=B.nextElementSibling;let k=0;
+  const seq=document.createElement('div');seq.className='t3seq';B.before(seq);
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.classList.contains('t3dn'))return;
+    if(i===k){b.classList.add('t3dn');b.disabled=true;const sp=document.createElement('span');sp.textContent=(k+1)+'. '+s;seq.appendChild(sp);if(each)each(k);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은 무엇일까요? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그 일은 조금 뒤에 해요. 지금 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 붙임딱지: stickers('#stk', '#slots', 다 맞힘 글, 섹션, cb) — 딱지 button[data-k], 칸 .dz[data-want] */
+function stickers(stk,slots,okMsg,sec,cb){const S=$(stk),Z=$(slots),out=Z.nextElementSibling;let cur=null,n=0;const zs=$$('.dz',Z);
+  $$('button',S).forEach(b=>b.onclick=()=>{if(b.classList.contains('used'))return;$$('button',S).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b;zs.forEach(z=>{if(!z.classList.contains('ok'))z.classList.add('ready');});fb(out,'붙일 칸을 눌러요.','info');});
+  zs.forEach(z=>{z.setAttribute('role','button');z.setAttribute('tabindex','0');const go=()=>{if(z.classList.contains('ok'))return;if(!cur){fb(out,'먼저 위의 붙임딱지를 하나 골라요.','info');return;}
+      if(cur.dataset.k===z.dataset.want){z.innerHTML=cur.innerHTML;z.classList.remove('ready');z.classList.add('ok');cur.classList.remove('sel');cur.classList.add('used');cur=null;n++;zs.forEach(x=>x.classList.remove('ready'));
+        if(n===zs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(z.dataset.m||'맞아요!')+' ('+n+'/'+zs.length+')','info');}
+      else fb(out,z.dataset.h||'이 칸에 알맞은 붙임딱지가 아니에요. 다시 생각해 봐요.',false);};
+    z.onclick=go;z.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기 */
+function tap(e,f){e.classList.add('hs');e.setAttribute('tabindex','0');e.setAttribute('role','button');e.addEventListener('click',f);e.addEventListener('keydown',v=>{if(v.key==='Enter'||v.key===' '){v.preventDefault();f();}});}
+/* 단계 단추: steps('#ctl', [함수…]) — 차례대로 하나씩 열림, 함수가 false를 돌려주면 그 단계에 머묾 */
+function steps(box,fns,cb){const bs=$$(box+' button');bs.forEach((b,i)=>{b.disabled=i>0;b.onclick=()=>{if(fns[i]()===false)return;b.classList.add('done');b.disabled=true;if(bs[i+1]){bs[i+1].disabled=false;bs[i+1].focus({preventScroll:true});}else if(cb)cb();};});}
+
+const WC='#cfe9f8',OC='#f5c842',OCD='#c99a12';
+/* 비커 그리기: beaker(g,x,y,w,h,{water,oil,cloud,label,ml}) — water·oil은 높이(px) */
+function beaker(g,x,y,w,h,o){o=o||{};const bot=y+h;
+  if(o.water>0)el('rect',{x:x+3,y:bot-o.water,width:w-6,height:o.water-3,fill:WC},g);
+  if(o.oil>0)el('rect',{x:x+3,y:bot-o.water-o.oil,width:w-6,height:o.oil,fill:OC,opacity:.92},g);
+  if(o.cloud)for(let i=0;i<46;i++)el('circle',{cx:x+8+rnd(i,1)*(w-16),cy:bot-6-rnd(i,2)*(o.water+o.oil-10),r:2+rnd(i,3)*3,fill:i%2?OC:'#fff',opacity:o.cloud},g);
+  el('path',{d:`M${x} ${y} v${h-8} q0 8 8 8 h${w-16} q8 0 8 -8 v${-h+8}`,fill:'none',stroke:'#7aa7bd','stroke-width':4},g);
+  el('path',{d:`M${x-6} ${y} h12 M${x+w-6} ${y} h12`,stroke:'#7aa7bd','stroke-width':4},g);
+  if(o.label){const t=el('text',{x:x+w/2,y:bot+22,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#15313d'},g);t.textContent=o.label;}}
+
+/* ===== 도입 ===== */
+(function(){const S=$('#dish');let oil=0,busy=false;
+  function draw(pour){S.innerHTML='<rect width="800" height="230" fill="#fdf6e3"/><rect y="200" width="800" height="30" fill="#e6cfa8"/>';
+    el('path',{d:'M290 120 q110 100 220 0z',fill:'#f4f1e8',stroke:'#8a8174','stroke-width':4},S);
+    el('path',{d:`M302 ${130} q98 74 196 0z`,fill:'#5a2e12'},S);
+    if(oil>0)el('path',{d:`M300 ${126} q100 ${8+oil*.4} 200 0 q-100 ${-6} -200 0z`,fill:OC,opacity:.95},S);
+    if(oil>0)el('ellipse',{cx:400,cy:127,rx:100,ry:3+oil*.12,fill:OC},S);
+    if(pour){el('path',{d:'M470 30 l40 -10 l20 40 l-30 20z',fill:'#e9d9a8',stroke:'#8a6a3a','stroke-width':3},S);el('path',{d:'M478 66 q-20 20 -40 56',stroke:OC,'stroke-width':6,fill:'none'},S);}
+    [['간장',330,180,'#5a2e12'],['참기름',560,60,'#8a6a3a']].forEach(([s,x,y,c])=>{const t=el('text',{x,y,'font-size':17,'font-family':'Jua',fill:c},S);t.textContent=s;});
+    if(oil>0){el('line',{x1:500,y1:127,x2:600,y2:127,stroke:'#8a6a3a','stroke-width':2},S);const t=el('text',{x:606,y:132,'font-size':16,'font-family':'Jua',fill:'#8a6a3a'},S);t.textContent='위에 뜬 참기름';}}
+  draw(false);let n=0;
+  $('#oilGo').onclick=()=>{if(busy)return;busy=true;tween(1000,p=>{oil=Math.min(40,(n*14)+p*14);draw(p<.95);},()=>{busy=false;n++;draw(false);
+    if(n>=2){fb('#dishFb','참기름을 너무 많이 부었어요! 참기름은 간장과 골고루 섞이지 않고 간장 위에 떠 있어요.','info');$('#ask1').hidden=false;$('#oilGo').disabled=true;}
+    else fb('#dishFb','참기름이 간장 위에 떴어요. 한 번 더 부어 봐요.','info');});};})();
+pickIdea('#p1','s1');
+
+/* ===== 관찰해요 ===== */
+(function(){const S=$('#bk2');let busy=false,did={a:0,b:0};
+  function draw(cl){S.innerHTML='<rect width="800" height="250" fill="#fffdf8"/><rect y="226" width="800" height="24" fill="#d9e4ea"/>';const g=el('g',{},S);
+    if(cl>0)beaker(g,330,40,140,186,{water:0,oil:0});
+    const mixH=150;if(cl>0){el('rect',{x:333,y:226-mixH,width:134,height:mixH-3,fill:'#e8eecf'},g);for(let i=0;i<70;i++)el('circle',{cx:338+rnd(i,1)*124,cy:226-6-rnd(i,2)*(mixH-12),r:2+rnd(i,3)*4,fill:OC,opacity:cl},g);}
+    else beaker(g,330,40,140,186,{water:120,oil:30});
+    beaker(g,330,40,140,186,{});
+    const t=el('text',{x:400,y:30,'text-anchor':'middle','font-size':16,'font-family':'Jua',fill:'#15313d'},g);t.textContent=cl>0?'흔드는 중…':'물과 기름의 혼합물';
+    if(cl<=0){[['기름',76+40],['물',76+110]].forEach(([s,y])=>{el('line',{x1:470,y1:y,x2:530,y2:y,stroke:'#555','stroke-width':2},g);const tt=el('text',{x:538,y:y+6,'font-size':17,'font-family':'Jua',fill:'#15313d'},g);tt.textContent=s;});}}
+  draw(0);
+  function shake(hard){if(busy)return;busy=true;const dur=hard?4200:2200;
+    tween(dur,p=>{const cl=p<.25?1:(1-(p-.25)/.75)*(hard?1:.8);S.style.transform=p<.25?`rotate(${Math.sin(p*80)*(hard?3:1.5)}deg)`:'';draw(p>=.999?0:Math.max(.02,cl));},()=>{S.style.transform='';busy=false;draw(0);
+      if(hard){did.b=1;fb('#bk2Fb','세게 흔들었더니 잠깐 뿌옇게 섞인 것처럼 보였지만, 시간이 지나자 다시 두 층으로 나뉘었어요.','info');}
+      else{did.a=1;fb('#bk2Fb','살살 흔들어 섞었지만, 조금 지나자 다시 두 층으로 나뉘었어요.','info');}
+      $('#ask2').hidden=false;});}
+  $('#shk1').onclick=()=>shake(false);$('#shk2').onclick=()=>shake(true);})();
+pickOne('#p2','','','s2');
+
+/* ===== 분리 방법 ===== */
+pickOne('#p3','','','s3');
+
+/* ===== 스포이트 ===== */
+function dropper(g,x,y,fill){el('rect',{x:x-7,y,width:14,height:110,rx:6,fill:'#eef8fd',stroke:'#7aa7bd','stroke-width':3},g);
+  if(fill)el('rect',{x:x-4,y:y+110-fill.h,width:8,height:fill.h-3,fill:fill.c},g);
+  el('path',{d:`M${x-12} ${y} q0 -34 12 -34 q12 0 12 34z`,fill:'#e2573f',stroke:'#a0302a','stroke-width':2},g);}
+(function(){const S=$('#bk4');let oil=30,water=120,got=0,gotW=0,busy=false,n=0;
+  function draw(dx,dy,f){S.innerHTML='<rect width="800" height="270" fill="#fffdf8"/><rect y="246" width="800" height="24" fill="#d9e4ea"/>';const g=el('g',{},S);
+    beaker(g,200,60,140,186,{water,oil,label:'물과 기름의 혼합물'});
+    beaker(g,480,120,110,126,{water:gotW,oil:got,label:'비커(100 mL)'});
+    dropper(g,dx,dy,f);}
+  draw(270,20);
+  function move(down,cb){tween(450,p=>draw(270,lerp(20,down,p)),cb);}
+  $('#dp1').onclick=()=>{if(busy||oil<=0)return;busy=true;const top=246-water-oil;move(top-96,()=>{const take=Math.min(6,oil);oil-=take;
+      tween(700,p=>{const x=lerp(270,535,p),y=lerp(top-96,30,Math.min(1,p*2));draw(x,y,{h:28,c:OC});},()=>{got+=take;n++;$('#dpN').textContent=n;draw(270,20);busy=false;
+        if(oil<=0){$('#dp1').disabled=true;fb('#dpFb','기름을 거의 다 옮겼어요! 기름과 물의 경계면에 남은 액체는 따로 모아 버리면 더 깔끔하게 분리할 수 있어요.',true);$('#ask4').hidden=false;}
+        else fb('#dpFb','위에 떠 있는 기름을 뽑아 빈 비커로 옮겼어요. 기름이 다 없어질 때까지 반복해요.','info');});});};
+  $('#dp2').onclick=()=>{if(busy)return;busy=true;move(200,()=>{tween(700,p=>draw(lerp(270,535,p),lerp(200,30,Math.min(1,p*2)),{h:60,c:WC}),()=>{gotW+=3;water-=3;draw(270,20);busy=false;
+      fb('#dpFb','스포이트를 너무 깊게 넣었더니 아래의 물이 뽑혀 올라왔어요. 기름층에만 살짝 넣어 뽑아요.',false);});});};})();
+pickOne('#p4','','','s4');
+
+/* ===== 흡착포 ===== */
+(function(){const S=$('#bk5');let oil=30,n=0,busy=false;const pads=[];
+  function draw(px,py,pc){S.innerHTML='<rect width="800" height="260" fill="#fffdf8"/><rect y="236" width="800" height="24" fill="#d9e4ea"/>';const g=el('g',{},S);
+    beaker(g,220,50,140,186,{water:120,oil,label:'물과 기름의 혼합물'});
+    el('ellipse',{cx:560,cy:226,rx:90,ry:14,fill:'#eef8fd',stroke:'#7aa7bd','stroke-width':3},g);const t=el('text',{x:560,y:258,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#15313d'},g);t.textContent='페트리 접시';
+    pads.forEach((c,i)=>el('rect',{x:500+i*28,y:210,width:34,height:12,fill:OC,stroke:OCD,transform:`rotate(${i*8-10} ${517+i*28} 216)`},g));
+    if(px!=null){el('rect',{x:px-30,y:py,width:60,height:10,fill:pc,stroke:pc===OC?OCD:'#bbb'},g);
+      el('path',{d:`M${px} ${py+2} l40 -90 M${px+6} ${py+2} l44 -88`,stroke:'#59636e','stroke-width':4},g);}}
+  draw(290,20,'#fff');
+  $('#pad').onclick=()=>{if(busy||n>=4)return;busy=true;const top=236-120-oil;
+    tween(500,p=>draw(290,lerp(20,top-8,p),'#fff'),()=>{oil=Math.max(0,oil-8);
+      tween(800,p=>draw(lerp(290,500+n*28,p),lerp(top-8,lerp(60,200,p),p),OC),()=>{pads.push(1);n++;$('#padN').textContent=n;draw(290,20,'#fff');busy=false;
+        if(n>=4){$('#pad').disabled=true;fb('#padFb','흡착포를 여러 번 대었더니 물 위의 기름이 거의 없어졌어요. 기름이 분리된 물을 얻었어요!',true);$('#ask5').hidden=false;}
+        else fb('#padFb','흡착포가 기름을 흡수해 노랗게 되었어요. 페트리 접시에 옮기고 새 흡착포로 다시 해 봐요.','info');});});};})();
+pickOne('#p5','','','s5');
+
+/* ===== 장단점 ===== */
+sorter('#st6',[{t:'분리한 기름을 다시 사용할 수 있어요.',k:'da'},{t:'기름이 물 위에 얇게 퍼져 있을 때는 분리하기 어려워요.',k:'db'},
+  {t:'기름이 물 위에 얇게 퍼져 있을 때 더 편리하게 분리할 수 있어요.',k:'pa'},{t:'분리한 기름을 다시 사용하기 어려워요.',k:'pb'}],
+  [{k:'da',n:'스포이트 장점'},{k:'db',n:'스포이트 단점'},{k:'pa',n:'흡착포 장점'},{k:'pb',n:'흡착포 단점'}],
+  '모두 맞혔어요! 스포이트는 분리한 기름을 다시 쓸 수 있지만 얇게 퍼진 기름은 분리하기 어렵고, 흡착포는 얇게 퍼진 기름을 분리하기 편리하지만 흡수한 기름은 다시 쓰기 어려워요.','s6');
+
+/* ===== 정리해요 ===== */
+const s7=need('s7',2);pickOne('#p7','','',null,s7('k5'));pickOne('#p7b','','',null,s7('k6'));
+
+/* ===== 생활 속 예 ===== */
+(function(){const g=$('#ex8');g.innerHTML='<rect width="720" height="150" fill="#fffdf8"/>'+
+  '<path d="M60 70 q120 110 240 0z" fill="#f4f1e8" stroke="#8a8174" stroke-width="4"/><ellipse cx="180" cy="74" rx="116" ry="10" fill="#e07b39"/>'+[...Array(9)].map((_,i)=>`<ellipse cx="${100+rnd(i,1)*160}" cy="${73+rnd(i,2)*4}" rx="${6+rnd(i,3)*6}" ry="3" fill="${OC}"/>`).join('')+'<path d="M300 20 l-90 48" stroke="#8a8174" stroke-width="6"/><ellipse cx="206" cy="70" rx="18" ry="8" fill="#c9d1d9" stroke="#59636e" stroke-width="3"/><text x="180" y="140" text-anchor="middle" font-size="15" font-family="Jua" fill="#15313d">국 위에 뜬 기름 떠내기</text>'+
+  '<rect x="380" y="10" width="330" height="120" rx="10" fill="#3d8bd4"/><path d="M420 70 q60 -20 140 4 q60 16 110 -6 l0 26 q-120 20 -250 0z" fill="#3a3326" opacity=".8"/>'+[0,1,2,3].map(i=>`<rect x="${430+i*60}" y="${60+(i%2)*10}" width="40" height="12" fill="#fff" stroke="#bbb" transform="rotate(${i*12-14} ${450+i*60} 66)"/>`).join('')+'<path d="M600 20 h60 l-10 28 h-40z" fill="#e2573f"/><text x="545" y="145" text-anchor="middle" font-size="15" font-family="Jua" fill="#15313d">바다 기름 유출 → 흡착포</text>';})();
+pickAll('#p8','모두 찾았어요! 섞이지 않는 액체 혼합물은 위층의 액체만 걷어 내거나 뽑아내어 분리할 수 있어요.','','s8');
+
+/* ===== 분별 깔때기 ===== */
+(function(){const S=$('#sep');let W0=100,O0=40,w,o,out1,out2,open=false,raf=0,last=0,done=false,mixed=false;
+  function reset(){w=W0;o=O0;out1=0;out2=0;open=false;mixed=false;cancelAnimationFrame(raf);$('#tap').textContent='🔓 꼭지 열기';$('#tap').disabled=false;draw();fb('#sepFb','꼭지를 열어 아래층의 물을 비커에 받아요.','info');}
+  function draw(){S.innerHTML='<rect width="800" height="300" fill="#fffdf8"/><rect y="280" width="800" height="20" fill="#d9e4ea"/>';const g=el('g',{},S);
+    el('rect',{x:150,y:20,width:12,height:260,fill:'#8a96a3'},g);el('rect',{x:110,y:268,width:120,height:12,fill:'#59636e'},g);el('path',{d:'M156 120 h170',stroke:'#59636e','stroke-width':6},g);
+    // 깔때기: 위 둥근 몸통(y 40~180) → 아래 관
+    const top=40,bot=180,cx=330;const tot=w+o;const lvl=bot-tot*1.2;
+    el('clipPath',{id:'fc'},g).innerHTML=`<path d="M${cx-60} ${top} q-20 60 50 ${bot-top} h20 q70 -${bot-top-60} 50 -${bot-top}z"/>`;
+    const cg=el('g',{'clip-path':'url(#fc)'},g);
+    el('rect',{x:cx-90,y:bot-w*1.2,width:180,height:w*1.2+40,fill:WC},cg);el('rect',{x:cx-90,y:lvl,width:180,height:o*1.2,fill:OC},cg);
+    el('path',{d:`M${cx-60} ${top} q-20 60 50 ${bot-top} h20 q70 -${bot-top-60} 50 -${bot-top}z`,fill:'none',stroke:'#7aa7bd','stroke-width':4},g);
+    el('rect',{x:cx-6,y:bot,width:12,height:70,fill:w>0||o<O0?(w>0?WC:OC):'#eef8fd',stroke:'#7aa7bd','stroke-width':3},g);
+    el('rect',{x:cx-18,y:bot+20,width:36,height:12,rx:4,fill:open?'#3fa36b':'#c2332c'},g);
+    const tt=el('text',{x:cx+28,y:bot+31,'font-size':14,'font-family':'Jua',fill:'#15313d'},g);tt.textContent=open?'꼭지 열림':'꼭지';
+    if(open)el('line',{x1:cx,y1:bot+70,x2:cx,y2:262-Math.max(out1+out2,0)*.6,stroke:w>0?'#7fc1e8':OC,'stroke-width':4},g);
+    beaker(g,cx-50,180,100,100,{water:out1*.6+3,oil:out2*.6,label:''});
+    [['기름',lvl+o*.6],['물',bot-w*.6]].forEach(([s,y])=>{if((s==='물'&&w>2)||(s==='기름'&&o>2)){el('line',{x1:cx+70,y1:y,x2:cx+130,y2:y,stroke:'#555','stroke-width':2},g);const t=el('text',{x:cx+136,y:y+6,'font-size':16,'font-family':'Jua',fill:'#15313d'},g);t.textContent=s;}});
+    const r=el('g',{},g);beaker(r,560,200,100,80,{water:mixed?0:0,oil:0,label:'기름을 받을 비커'});}
+  function loop(n){if(!open)return;const dt=Math.min(.05,(n-last)/1000);last=n;
+    if(w>0){const d=Math.min(w,(w<25?10:26)*dt);w-=d;out1+=d;}else{const d=Math.min(o,20*dt);o-=d;out2+=d;mixed=true;}
+    draw();if(w<=0&&out2>4&&!done){open=false;draw();$('#tap').textContent='🔓 꼭지 열기';fb('#sepFb','앗! 물이 다 빠져나간 뒤에도 꼭지를 열어 두어 기름이 물 비커에 섞여 나왔어요. ‘처음부터’를 눌러 경계면이 꼭지에 가까워지면 잠가 봐요.',false);return;}
+    if(o<=0){open=false;draw();return;}
+    raf=requestAnimationFrame(loop);}
+  $('#tap').onclick=()=>{open=!open;$('#tap').textContent=open?'🔒 꼭지 잠그기':'🔓 꼭지 열기';
+    if(open){last=performance.now();raf=requestAnimationFrame(loop);fb('#sepFb','아래층의 물이 빠져나오고 있어요. 경계면을 잘 지켜봐요!','info');}
+    else{cancelAnimationFrame(raf);draw();
+      if(w<=15&&out2<=4){done=true;$('#tap').disabled=true;fb('#sepFb','성공! 아래층의 물을 먼저 분리했어요. 경계면 가까이의 액체는 따로 모으고, 남은 위층의 기름은 다른 비커에 모으면 물과 기름을 따로 얻을 수 있어요.',true);doneNav('s9');}
+      else if(w>15)fb('#sepFb','아직 물이 많이 남아 있어요. 다시 꼭지를 열어요.','info');}};
+  $('#sepR').onclick=reset;reset();})();
+
+/* ===== 한눈에 쏙 ===== */
+const s10=need('s10',2);
+$('#blReveal').onclick=()=>{fb('#blFb','물과 기름의 혼합물은 기름이 위쪽에, 물이 아래쪽에 위치하는 것을 이용해 분리해요.',true);s10('k3')();};
+pickOne('#p10','','',null,s10('k4'));
+
+/* ===== 형성 평가 ===== */
+const s11=need('s11',2);
+quiz('#qz11',[{q:'1. 섞이지 않는 액체 혼합물은 어느 것일까요?',o:['물과 식초의 혼합물','물과 식용유의 혼합물','물과 탄산음료의 혼합물','올리브유와 참기름의 혼합물'],a:1,e:'물과 식용유는 골고루 섞이지 않고, 식용유가 물 위에 떠요.',h:'생활에서 위에 둥둥 뜨는 것을 떠올려 봐요.'},
+  {q:'2. 시험관에 들어 있는 섞이지 않는 두 액체 혼합물에서 위쪽의 액체를 뽑아내어 분리할 때 쓰기 알맞은 도구는?',o:['스포이트','흡착포','체'],a:0,e:'좁은 시험관에서는 스포이트로 위쪽 액체를 뽑아내요. 분리한 기름도 다시 쓸 수 있어요.',h:'좁은 입구에도 넣을 수 있는 도구를 생각해 봐요.'}],s11('k2'));
+$('#wr11B').onclick=()=>{const t=$('#wr11').value.trim();if(!t){fb('#wr11Fb','먼저 답을 써 보세요.',false);return;}
+  const a=/흡착포/.test(t),b=/뜬|떠 ?있|위/.test(t)||/흡수|분리|제거|걷/.test(t);
+  if(a&&b){fb('#wr11Fb','잘 썼어요! 예시 답: 흡착포를 사용해 바닷물 위에 떠 있는 기름을 분리한다.',true);if(!$('#wr11B').dataset.ok){$('#wr11B').dataset.ok=1;s11('k1')();}}
+  else if(a)fb('#wr11Fb','도구는 잘 썼어요. 흡착포로 무엇을 어떻게 분리하는지도 써 봐요.','info');
+  else fb('#wr11Fb','바다에 유출된 기름을 제거할 때 오늘 실험의 어떤 도구를 쓰는지 떠올려 봐요.',false);};
+
+faces('s12','잘했어요! 다음 시간에는 섞여 있는 소금과 모래를 분리해 봐요.','어려웠던 부분은 스포이트와 흡착포 실험을 다시 해 봐요.');
+</script>

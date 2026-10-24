@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>빛에 의해 열이 이동할 수 있을까?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#c2332c;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+[hidden]{display:none!important}
+.k5-steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.k5-steps button{font-size:.9rem;min-height:2.3rem;border-width:2px}
+.k5-steps button[disabled]{opacity:.45}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:3px solid #ffd23f}
+.k5-tbl td,.k5-tbl th{text-align:center;padding:4px 6px}
+.k5-tbl td{font-family:"Jua",sans-serif}
+.k5-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.k5-cards button{min-height:3.2rem;font-size:.92rem}
+.k5-exp{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.k5-ex{border:3px solid var(--line);border-radius:14px;padding:8px 10px}
+.k5-ex.ok{border-color:#2e9d5b;background:#eaf7ea}
+.k5-ex p{margin:0 0 6px;font-size:.9rem}
+.k5-ex .k5-steps button{font-size:.85rem;min-height:2rem}
+@media (max-width:640px){.k5-cards,.k5-exp{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M43 10 C52 26 66 34 62 54 a19 19 0 0 1 -38 0 C24 42 34 36 34 24 C40 30 42 34 43 10z" fill="#e2573f" stroke="#fff" stroke-width="3"/><path d="M43 44 c6 6 9 10 6 16 a7 7 0 0 1 -12 0 c-2 -6 3 -10 6 -16z" fill="#ffd23f"/></svg>
+  <div><h1>빛에 의해 열이 이동할 수 있을까?</h1><p>5학년 2학기 과학 · 3단원 열과 우리 생활 · 7/13차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">실험해요</a><a href="#s3">여러 장소</a><a href="#s4">정리해요</a><a href="#s5">복사의 예</a><a href="#s6">체험 더하기</a><a href="#s7">한눈에 쏙</a><a href="#s8">형성 평가</a><a href="#s9">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>빛에 의해 열이 이동하는 현상을 관찰할 수 있어요.<br>빛에 의해 열이 이동하는 방식을 설명할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 70쪽</span>
+  <h2>햇빛이 강한 날은 왜 더울까요?</h2>
+  <svg class="scene" viewBox="0 0 640 220" style="max-height:25vh" role="img" aria-label="햇빛이 내리쬐는 운동장과 건물 그늘에 있는 학생">
+    <rect width="640" height="220" fill="#dff1fb"/><rect y="160" width="640" height="60" fill="#e8c98f"/>
+    <circle cx="106" cy="10" r="14" fill="#ffd23f"/><path d="M116 17 L330 160 M116 17 L520 160" stroke="#ffd23f" stroke-width="3" stroke-dasharray="6 6"/>
+    <rect x="20" y="50" width="150" height="110" fill="#c9b9a6" stroke="#8a7a66" stroke-width="3"/><path d="M170 160 L330 160 L170 50z" fill="#000" opacity=".12"/><rect x="170" y="160" width="160" height="16" fill="#000" opacity=".15"/>
+    <g><circle cx="230" cy="122" r="12" fill="#ffd9b0"/><rect x="220" y="134" width="20" height="26" rx="6" fill="#4a6fa5"/><text x="230" y="102" text-anchor="middle" font-size="14" font-family="Jua" fill="#1c6fa8">시원해</text></g>
+    <g><circle cx="430" cy="122" r="12" fill="#ffd9b0"/><rect x="420" y="134" width="20" height="26" rx="6" fill="#e2573f"/><text x="430" y="102" text-anchor="middle" font-size="14" font-family="Jua" fill="#c0392b">더워</text></g>
+    <text x="100" y="196" text-anchor="middle" font-size="14" font-family="Jua" fill="#5a4a36">그늘(햇빛이 비치지 않는 곳)</text><text x="460" y="196" text-anchor="middle" font-size="14" font-family="Jua" fill="#5a4a36">햇빛이 비치는 곳</text>
+  </svg>
+  <div class="pick" id="k5P1">
+    <button data-a="1" data-m="좋은 생각이에요! 햇빛이 열의 이동과 관련 있는 것 같아요. 햇빛이 비치는 곳과 비치지 않는 곳의 온도를 측정해 확인해 봐요.">햇빛이 열의 이동과 관련 있는 것 같아요</button>
+    <button data-a="0" data-m="같은 날, 같은 운동장인데 그늘로 가면 시원해요. 무엇이 다를까요?">햇빛과는 관계없이 그날 바람이 없어서예요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="실험해요">
+  <span class="stage">실험해요 1~3 · 「실험관찰」 44쪽</span>
+  <h2>햇빛이 비치는 곳과 비치지 않는 곳에서 검은색 판의 온도 비교하기</h2>
+  <p style="font-size:.9rem;margin:0">준비물: 검은색 판 2장, 적외선 온도계, 초시계, 햇빛 보안경</p>
+  <svg id="k5Lab" class="scene" viewBox="0 0 640 250" style="max-height:30vh" role="img" aria-label="운동장의 그늘과 햇빛이 비치는 곳, 검은색 판 두 장" data-glue="1"></svg>
+  <div class="k5-steps" data-glue="1"><button class="main" id="k5S1">① 그늘에서 두 판의 온도 재기</button><button id="k5S2" disabled>② 판 한 장은 햇빛이 비치는 곳에서 들기</button><button id="k5S3" disabled>③ ⏱️ 1분 기다리기</button><button id="k5S4" disabled>④ 두 판의 온도 재기</button></div>
+  <p class="tip" id="k5Hint" hidden>그림에서 판을 눌러 적외선 온도계로 온도를 재요.</p>
+  <div class="fb" id="k5LabFb"></div>
+  <div id="k5Ask" hidden>
+    <p class="jua" style="font-size:1.05rem;margin:6px 0">1분 뒤 햇빛이 비치는 곳에서 든 검은색 판의 온도는 햇빛이 비치지 않는 곳에서 든 판의 온도보다 더 ( ? ).</p>
+    <div class="pick" id="k5P2"><button data-a="1" data-m="맞아요! 26.7 °C가 17.8 °C보다 더 높아요.">높습니다</button><button data-a="0" data-m="두 판의 온도를 다시 비교해 봐요.">낮습니다</button></div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 햇빛을 직접 바라보지 않도록 주의하고 햇빛 보안경을 써요. 적외선 온도계의 레이저 빛이 사람의 눈을 향하지 않게 해요. 교실 안과 밖으로 이동할 때는 모둠끼리 질서 있게 움직여요. 내 그림자가 검은색 판을 가리지 않게 들어요. 온도는 지도서의 <b>예시 값</b>이에요.</p>
+</section>
+
+<section id="s3" data-nav="여러 장소">
+  <span class="stage">실험해요 4 · 「실험관찰」 45쪽</span>
+  <h2>여러 장소에서 햇빛이 비치는 곳과 비치지 않는 곳의 온도를 비교해요</h2>
+  <svg id="k5Pl" class="scene" viewBox="0 0 660 230" style="max-height:28vh" role="img" aria-label="운동장 바닥, 계단, 건물 벽의 햇빛이 비치는 곳과 그늘" data-glue="1"></svg>
+  <table class="k5-tbl" id="k5Tbl" data-glue="1">
+    <tr><th>구분</th><th>햇빛이 비치는 곳의 온도(°C)</th><th>햇빛이 비치지 않는 곳의 온도(°C)</th></tr>
+    <tr><th>운동장 바닥</th><td id="k5v00">?</td><td id="k5v01">?</td></tr>
+    <tr><th>계단</th><td id="k5v10">?</td><td id="k5v11">?</td></tr>
+    <tr><th>건물 벽</th><td id="k5v20">?</td><td id="k5v21">?</td></tr>
+  </table>
+  <div class="fb" id="k5PlFb"></div>
+  <div id="k5PlAsk" hidden>
+    <p class="jua" style="font-size:1.05rem;margin:6px 0">같은 장소에서 햇빛이 비치는 곳의 온도는 햇빛이 비치지 않는 곳의 온도보다 더 ( ? ).</p>
+    <div class="pick" id="k5P3"><button data-a="0" data-m="표의 두 칸을 장소마다 비교해 봐요.">낮습니다</button><button data-a="1" data-m="맞아요! 세 장소 모두 햇빛이 비치는 곳의 온도가 더 높았어요.">높습니다</button></div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 여러 장소로 옮겨 다닐 때 뛰어다니거나 위험한 곳에 들어가지 않아요. 측정 시각이나 거리에 따라 모둠마다 온도가 다를 수 있으니, 잰 값을 그대로 기록해요. 표의 값은 지도서의 <b>예시 값</b>이에요.</p>
+</section>
+
+<section id="s4" data-nav="정리해요">
+  <span class="stage">정리해요 · 「과학」 71쪽</span>
+  <h2>실험 결과로 알 수 있는 열이 이동하는 방식을 추리해요</h2>
+  <div class="pick" id="k5P4a">
+    <button data-a="1" data-m="맞아요! 햇빛이 비치는 곳의 온도가 더 높은 것으로 보아 햇빛에 의해 열이 이동한다는 것을 추리할 수 있어요.">햇빛이 비치는 곳의 온도가 더 높으므로 햇빛에 의해 열이 이동해요</button>
+    <button data-a="0" data-m="두 판은 같은 운동장, 같은 공기 속에 있었어요. 다른 점은 햇빛뿐이었어요.">땅이 뜨거워서 판으로 열이 이동했을 뿐이에요</button>
+  </div>
+  <div class="fb"></div>
+  <p style="margin-top:10px">햇빛을 받으면 그늘에 있을 때보다 몸이 더 따뜻해집니다. 이것은 햇빛에 의해 열이 이동했기 때문입니다. 이처럼 빛에 의해 열이 이동하는 방식을 <b>복사</b>라고 합니다.</p>
+  <p class="jua" style="font-size:1.05rem">🤔 생각 바로잡기: 전도·대류와 복사는 무엇이 다를까요?</p>
+  <div class="pick" id="k5P4b">
+    <button data-a="0" data-m="복사는 고체·액체·기체가 직접 움직이거나 열을 전해 주는 방식이 아니에요.">복사도 공기(기체)가 움직이면서 열이 이동하는 방식이에요</button>
+    <button data-a="1" data-m="맞아요! 전도와 대류는 고체·액체·기체와 같은 물질을 통해 열이 이동하지만, 복사는 그런 물질 없이 빛에 의해 열이 이동해요.">전도·대류는 물질을 통해, 복사는 물질 없이 빛에 의해 열이 이동해요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s5" data-nav="복사의 예">
+  <span class="stage">복사로 열이 이동하는 예 · 「과학」 71쪽</span>
+  <h2>복사로 열이 이동하는 예를 모두 골라요 (<b id="k5CN">0</b>/4)</h2>
+  <div class="k5-cards" id="k5Cards" data-glue="1">
+    <button data-a="1" data-m="햇빛이 비치면 햇빛이 비치지 않을 때보다 따뜻해져요.">☀️ 햇빛이 비친 곳이 따뜻해져요</button>
+    <button data-a="0" data-m="뜨거운 국의 열이 숟가락(고체)을 따라 이동하는 것은 전도예요.">🥄 국에 담근 숟가락 손잡이가 뜨거워져요</button>
+    <button data-a="1" data-m="보온 등을 켜면 음식이 일정 시간 동안 따뜻하게 유지돼요.">💡 보온 등 아래 음식이 따뜻하게 유지돼요</button>
+    <button data-a="0" data-m="물이 돌며(순환하며) 물 전체가 뜨거워지는 것은 대류예요.">🫖 주전자의 물 전체가 끓어요</button>
+    <button data-a="1" data-m="난로 앞에 가면 따뜻해지는 것은 복사로 열이 이동하기 때문이에요.">🔥 난로 앞에 가면 따뜻해요</button>
+    <button data-a="1" data-m="모닥불의 빛에 의해 열이 이동해 따뜻함이 느껴져요.">🏕️ 모닥불 근처에 가면 따뜻해요</button>
+  </div>
+  <div class="fb" id="k5CFb"></div>
+  <h3 style="margin-top:10px">💡 비가 와서 운동장에 나가기 어려울 때: 열 전구로 실험하기</h3>
+  <svg id="k5Bulb" class="scene" viewBox="0 0 640 200" style="max-height:22vh" role="img" aria-label="열 전구 아래의 검은색 판과 떨어진 곳의 검은색 판" data-glue="1"></svg>
+  <div class="k5-steps" data-glue="1"><button class="main" id="k5BGo">💡 열 전구를 켜고 1분 뒤 온도 재기</button></div>
+  <div class="fb" id="k5BFb"></div>
+  <p class="tip">⚠️ 열 전구의 빛이 나오는 부분을 맨눈으로 오랫동안 쳐다보지 않아요. 안전 장갑을 껴요. 온도는 지도서 참고 자료의 <b>예시 값</b>이에요.</p>
+</section>
+
+<section id="s6" data-nav="체험 더하기">
+  <span class="stage">체험 더하기 · 「과학」 72~73쪽</span>
+  <h2>지능형 과학실 ON과 과학관에서 열의 이동 방식을 알아봐요</h2>
+  <p style="font-size:.92rem">지능형 과학실 ON(누리집 science-on.kosac.re.kr → 학습 자료실 → ‘눈으로 확인하는 열의 이동’ 검색 → 시뮬레이션 콘텐츠 보기)과 과학관에서는 실험하는 것처럼 열의 이동을 체험할 수 있어요. 체험마다 어떤 방식의 열의 이동인지 골라요.</p>
+  <div class="k5-exp" id="k5Exp" data-glue="1"></div>
+  <div class="fb" id="k5ExpFb"></div>
+</section>
+
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 복사는 <span class="blank"><span id="bl1">ㅂ</span></span>에 의해 열이 이동하는 방식입니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">2. 💭 열 전구의 빛이 비치는 부분이 따뜻해지는 까닭은?</p>
+  <div class="pick" id="k5P7">
+    <button data-a="0" data-m="열 전구와 판 사이에서 공기가 순환하는 것을 본 것이 아니에요. 빛이 비치는 곳만 따뜻해졌어요.">열 전구 주변 공기가 대류로 순환했기 때문이에요</button>
+    <button data-a="1" data-m="맞아요! 열 전구의 빛에 의해 열이 이동했기 때문이에요(복사).">열 전구의 빛에 의해 열이 이동했기 때문이에요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 복사에 관한 설명으로 <b>옳은 것 두 가지</b>를 골라요. (<b id="k5FN">0</b>/2)</p>
+  <div class="pick" id="k5F1" style="grid-template-columns:1fr!important">
+    <button data-a="0" data-m="고체에서 고체 물질을 따라 열이 이동하는 것은 전도예요.">① 복사는 고체에 의해 열이 이동하는 방식이다.</button>
+    <button data-a="0" data-m="액체에서 열이 이동하는 방식은 대류예요.">② 복사는 액체에 의해 열이 이동하는 방식이다.</button>
+    <button data-a="0" data-m="기체에서 열이 이동하는 방식은 대류예요.">③ 복사는 기체에 의해 열이 이동하는 방식이다.</button>
+    <button data-a="1" data-m="맞아요! 복사는 빛에 의해 열이 이동하는 방식이에요.">④ 복사는 빛에 의해 열이 이동하는 방식이다.</button>
+    <button data-a="1" data-m="맞아요! 햇빛이 비친 곳이 따뜻해지는 것은 복사의 예예요.">⑤ 햇빛이 비친 곳이 따뜻해지는 것은 복사로 열이 이동한 예이다.</button>
+  </div>
+  <div class="fb" id="k5F1Fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:10px">2. ✏️ 서술형: 모닥불 근처에 가면 따뜻함이 느껴지는 까닭을 써 봐요.</p>
+  <textarea id="k5F2" rows="2" placeholder="모닥불의 …에 의해 …" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="k5F2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="k5F2Fb"></div>
+</section>
+
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 45쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>검은색 판의 온도 변화를 빛에 의한 열의 이동으로 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>온도계를 사용하여 실험 결과를 올바르게 측정하고 기록할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>안전에 유의하며 실험에 적극적으로 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 70~73쪽 · 「실험관찰」 44~45쪽 · 지도서 296~303쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+const NS='http://www.w3.org/2000/svg';
+function E(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function T(p,x,y,s,o){const e=E('text',Object.assign({x,y,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#0f3b5c'},o||{}),p);e.textContent=s;return e;}
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+function need(sec,n){const s=new Set();return k=>{if(s.has(k))return;s.add(k);if(s.size===n)doneNav(sec);};}
+function step(prev,next){prev.disabled=true;prev.classList.remove('main');if(next){next.disabled=false;next.classList.add('main');}}
+function sun(g,x,y,r){E('circle',{cx:x,cy:y,r,fill:'#ffd23f'},g);for(let k=0;k<8;k++){const a=k*Math.PI/4;E('line',{x1:x+Math.cos(a)*(r+5),y1:y+Math.sin(a)*(r+5),x2:x+Math.cos(a)*(r+13),y2:y+Math.sin(a)*(r+13),stroke:'#ffd23f','stroke-width':4,'stroke-linecap':'round'},g);}}
+function irGun(g,x,y,disp){const G=E('g',{transform:`translate(${x} ${y})`},g);E('path',{d:'M0 0 h56 l8 -8 h8 v24 h-8 l-8 -5 h-22 l-6 40 h-18 l6 -40 h-16z',fill:'#f2c94c',stroke:'#7a5a12','stroke-width':2},G);
+  E('rect',{x:4,y:3,width:30,height:13,rx:2,fill:'#d9f0d0',stroke:'#333'},G);if(disp)T(G,19,14,disp,{'font-size':10,'font-family':'sans-serif'});return G;}
+
+/* 도입 */
+pickOne('#k5P1','','','s1');
+
+/* 실험 1~3 */
+let st=0,pos=[0,0],temp=[null,null],meas=new Set(),sunI=null,tmr=0;
+function drawLab(laser){const s=$('#k5Lab');s.innerHTML='';E('rect',{width:640,height:250,fill:'#dff1fb'},s);E('rect',{y:150,width:640,height:100,fill:'#e8c98f'},s);
+  E('rect',{x:0,y:30,width:120,height:120,fill:'#c9b9a6',stroke:'#8a7a66','stroke-width':3},s);E('path',{d:'M120 30 L120 150 L370 150z',fill:'#000',opacity:.1},s);E('path',{d:'M120 150 L370 150 L370 250 L0 250 L0 150z',fill:'#000',opacity:.16},s);
+  sun(s,70,6,10);E('path',{d:'M70 6 L370 150 M70 6 L520 150',stroke:'#ffd23f','stroke-width':3,'stroke-dasharray':'6 6',opacity:.8},s);
+  T(s,210,240,'햇빛이 비치지 않는 곳(그늘)',{'font-size':13,fill:'#5a4a36'});T(s,500,240,'햇빛이 비치는 곳',{'font-size':13,fill:'#5a4a36'});
+  [0,1].forEach(i=>{const x=pos[i]?470:(i?250:170),y=160;const g=E('g',{'data-i':i},s);E('rect',{x:x-28,y:y-30,width:56,height:44,rx:3,fill:'#1d1d1d',stroke:'#555','stroke-width':2},g);
+    T(g,x,y+34,i?'판 ㄴ':'판 ㄱ',{'font-size':13});if(temp[i]!=null){E('rect',{x:x-30,y:y-58,width:60,height:22,rx:6,fill:'#fff',stroke:'#c0392b'},g);T(g,x,y-42,temp[i].toFixed(1)+' °C',{'font-size':13,fill:'#c0392b'});}
+    tap(g,()=>plateTap(i));});
+  if(laser!=null){const x=pos[laser]?470:(laser?250:170);irGun(s,x-120,70,temp[laser]!=null?temp[laser].toFixed(1):'');E('line',{x1:x-48,y1:70,x2:x,y2:145,stroke:'#e2241b','stroke-width':2},s);E('circle',{cx:x,cy:145,r:4,fill:'#e2241b'},s);}
+  if(st===3||st===4){E('circle',{cx:330,cy:60,r:24,fill:'#fff',stroke:'#0f3b5c','stroke-width':3},s);const a=(tmr/60)*Math.PI*2;E('line',{x1:330,y1:60,x2:330+18*Math.sin(a),y2:60-18*Math.cos(a),stroke:'#c0392b','stroke-width':3},s);T(s,330,100,tmr+'초',{'font-size':13});}}
+drawLab();
+function plateTap(i){
+  if(st===1){if(meas.has(i))return;meas.add(i);temp[i]=17.5;drawLab(i);fb('#k5LabFb',`그늘에서 판 ${i?'ㄴ':'ㄱ'}의 온도: 17.5 °C`,'info');if(meas.size===2){step($('#k5S1'),$('#k5S2'));$('#k5Hint').hidden=true;fb('#k5LabFb','그늘에서 두 판의 온도는 모두 17.5 °C로 같아요. 이제 판 한 장을 햇빛이 비치는 곳으로 옮겨요.','info');}}
+  else if(st===2){if(sunI!=null)return;sunI=i;pos[i]=1;temp=[null,null];drawLab();step($('#k5S2'),$('#k5S3'));fb('#k5LabFb',`판 ${i?'ㄴ':'ㄱ'}은 햇빛이 비치는 곳에서, 다른 판은 그늘에서 들었어요. 초시계로 1분을 재요.`,'info');}
+  else if(st===4){if(meas.has(i))return;meas.add(i);temp[i]=pos[i]?26.7:17.8;drawLab(i);fb('#k5LabFb',`${pos[i]?'햇빛이 비치는 곳':'그늘'}에서 든 판의 온도: ${temp[i].toFixed(1)} °C`,'info');
+    if(meas.size===2){step($('#k5S4'));$('#k5Hint').hidden=true;fb('#k5LabFb','1분 뒤 햇빛이 비치는 곳의 판: 26.7 °C, 그늘의 판: 17.8 °C',true);$('#k5Ask').hidden=false;}}}
+$('#k5S1').onclick=()=>{st=1;$('#k5S1').disabled=true;$('#k5Hint').hidden=false;fb('#k5LabFb','그늘에 있는 판 ㄱ과 판 ㄴ을 하나씩 눌러 온도를 재요.','info');};
+$('#k5S2').onclick=()=>{st=2;$('#k5S2').disabled=true;fb('#k5LabFb','햇빛이 비치는 곳으로 옮길 판을 그림에서 눌러요. 내 그림자가 판을 가리지 않게 해요.','info');};
+$('#k5S3').onclick=()=>{st=3;$('#k5S3').disabled=true;const iv=setInterval(()=>{tmr=Math.min(60,tmr+5);drawLab();if(tmr>=60){clearInterval(iv);st=4;meas=new Set();step($('#k5S3'),$('#k5S4'));fb('#k5LabFb','1분이 지났어요! 이제 두 판의 온도를 재요.','info');}},120);};
+$('#k5S4').onclick=()=>{$('#k5S4').disabled=true;$('#k5Hint').hidden=false;fb('#k5LabFb','두 판을 하나씩 눌러 온도를 재요.','info');};
+pickOne('#k5P2','','','s2');
+
+/* 여러 장소 */
+const PL=[['운동장 바닥',25.1,17.3],['계단',26.3,17.7],['건물 벽',25.4,17.5]];let pd=new Set();
+(function(){const s=$('#k5Pl');E('rect',{width:660,height:230,fill:'#dff1fb'},s);
+  PL.forEach(([n,a,b],i)=>{const x0=20+i*215,g=E('g',{},s);T(g,x0+100,24,n,{'font-size':15});
+    if(i===0){E('rect',{x:x0,y:60,width:200,height:130,fill:'#e8c98f'},g);}
+    if(i===1){for(let k=0;k<4;k++)E('rect',{x:x0+k*50,y:60+k*30,width:200-k*50,height:30,fill:k%2?'#c9b48f':'#d8c39e',stroke:'#a58c62'},g);E('rect',{x:x0,y:180,width:200,height:10,fill:'#d8c39e'},g);}
+    if(i===2){E('rect',{x:x0,y:40,width:200,height:150,fill:'#d9cbb8',stroke:'#9a8a76'},g);for(let k=0;k<5;k++)E('line',{x1:x0,y1:60+k*28,x2:x0+200,y2:60+k*28,stroke:'#bfae98'},g);}
+    E('rect',{x:x0,y:40,width:100,height:150,fill:'#000',opacity:.18},g);
+    [[0,x0+150,a,'햇빛'],[1,x0+50,b,'그늘']].forEach(([k,cx,v,lab])=>{const hg=E('g',{},g);E('circle',{cx,cy:125,r:24,fill:'#fff',opacity:.55,stroke:'#0f3b5c','stroke-dasharray':'4 3','stroke-width':2},hg);T(hg,cx,130,lab,{'font-size':13});
+      tap(hg,()=>{const id='#k5v'+i+k;if($(id).textContent!=='?')return;$(id).textContent=v.toFixed(1);pd.add(i+'-'+k);hg.querySelector('circle').setAttribute('fill','#ffd23f');
+        E('line',{x1:cx-50,y1:210,x2:cx,y2:135,stroke:'#e2241b','stroke-width':2},s);
+        fb('#k5PlFb',`${n} ${lab==='햇빛'?'햇빛이 비치는 곳':'햇빛이 비치지 않는 곳'}: ${v.toFixed(1)} °C`+(pd.size===6?' — 표를 모두 채웠어요!':''),pd.size===6?true:'info');if(pd.size===6)$('#k5PlAsk').hidden=false;});});});
+  sun(s,640,20,10);})();
+pickOne('#k5P3','','','s3');
+
+/* 정리해요 */
+const d4=need('s4',2);pickOne('#k5P4a','','',null,()=>d4('a'));pickOne('#k5P4b','','',null,()=>d4('b'));
+
+/* 복사의 예 + 열 전구 */
+const d5=need('s5',2);
+(function(){const got=new Set();$$('#k5Cards button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b.textContent);$('#k5CN').textContent=got.size;
+  fb('#k5CFb',got.size===4?'모두 찾았어요! 햇빛, 보온 등, 난로, 모닥불은 빛에 의해 열이 이동하는 복사의 예예요.':b.dataset.m,got.size===4?true:'info');if(got.size===4)d5('c');}
+  else{b.classList.add('wrong');fb('#k5CFb',b.dataset.m,false);}});})();
+function drawBulb(on,v){const s=$('#k5Bulb');s.innerHTML='';E('rect',{width:640,height:200,fill:'#f4f1ea'},s);E('rect',{y:160,width:640,height:40,fill:'#d9cbb8'},s);
+  E('path',{d:'M150 20 h60 v18 h-60z',fill:'#888'},s);E('path',{d:'M140 38 h80 l-14 30 h-52z',fill:on?'#ffb35c':'#ddd',stroke:'#a0673a','stroke-width':2},s);
+  if(on)E('path',{d:'M146 68 L110 160 L250 160 L214 68z',fill:'#ffb35c',opacity:.28},s);
+  [[180,'열 전구를 비춘 판',v?v[0]:'23.4'],[460,'열 전구를 비추지 않는 판',v?v[1]:'23.4']].forEach(([x,n,t])=>{E('rect',{x:x-40,y:140,width:80,height:20,fill:'#1d1d1d'},s);T(s,x,186,n,{'font-size':12});
+    E('rect',{x:x-34,y:100,width:68,height:24,rx:6,fill:'#fff',stroke:'#c0392b'},s);T(s,x,117,t+' °C',{'font-size':13,fill:'#c0392b'});});
+  T(s,330,40,on?'켜고 1분 뒤':'처음',{'font-size':15});}
+drawBulb(false);
+$('#k5BGo').onclick=()=>{step($('#k5BGo'));drawBulb(true,['23.4','23.4']);let k=0;const iv=setInterval(()=>{k++;const v=(23.4+(41.9-23.4)*k/12).toFixed(1);drawBulb(true,[k>=12?'41.9':v,'23.4']);if(k>=12){clearInterval(iv);
+  fb('#k5BFb','1분 뒤 열 전구의 빛이 비치는 곳에 놓은 판은 23.4 → 41.9 °C, 빛이 비치지 않는 곳의 판은 23.4 °C 그대로예요. 열 전구의 빛에 의해 열이 이동했어요.',true);d5('b');}},110);};
+
+/* 체험 더하기 */
+(function(){const X=[
+  ['지능형 과학실 ON: 다양한 모양의 구리판에 열 변색 붙임딱지·초콜릿·적외선 온도계를 올려 관찰해요.','전도'],
+  ['지능형 과학실 ON: 시험관·비커·U자형 관에 열 변색 잉크나 톱밥을 넣어 관찰해요.','대류'],
+  ['국립과천과학관: 금속 도장을 손바닥에 찍고 열화상 사진기로 확인해요.','전도'],
+  ['부산과학체험관: 수조 안의 금속관을 가열하면 데워진 물이 아지랑이처럼 위로 올라가요.','대류']];
+  const ok=new Set();X.forEach(([t,a],i)=>{const d=document.createElement('div');d.className='k5-ex';d.innerHTML=`<p>${t}</p>`;const r=document.createElement('div');r.className='k5-steps';
+    ['전도','대류','복사'].forEach(w=>{const b=document.createElement('button');b.textContent=w;b.onclick=()=>{if(ok.has(i))return;if(w===a){b.classList.add('right');d.classList.add('ok');ok.add(i);
+      fb('#k5ExpFb',ok.size===4?'모두 맞혔어요! 과학관에서도 전도·대류·복사 현상을 체험할 수 있어요. 체험할 때는 안전 수칙을 잘 지켜요.':`맞아요, ${a}예요!`,ok.size===4?true:'info');if(ok.size===4)doneNav('s6');}
+      else{b.classList.add('wrong');fb('#k5ExpFb','고체를 따라 이동하면 전도, 액체·기체가 움직이면 대류, 빛에 의해서면 복사예요.',false);}};r.appendChild(b);});d.appendChild(r);$('#k5Exp').appendChild(d);});})();
+
+/* 한눈에 쏙 */
+const d7=need('s7',2);
+$('#blReveal').onclick=()=>{fb('#blFb','복사는 빛에 의해 열이 이동하는 방식이에요.',true);d7('b');};
+pickOne('#k5P7','','',null,()=>d7('p'));
+
+/* 형성 평가 */
+const d8=need('s8',2);
+(function(){const got=new Set();$$('#k5F1 button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b.textContent);$('#k5FN').textContent=got.size;
+  fb('#k5F1Fb',got.size===2?'정답! ④, ⑤예요. 복사는 빛에 의해 열이 이동하는 방식이에요.':b.dataset.m,got.size===2?true:'info');if(got.size===2)d8('1');}
+  else{b.classList.add('wrong');fb('#k5F1Fb',b.dataset.m,false);}});})();
+$('#k5F2Btn').onclick=()=>{const t=$('#k5F2').value.trim();if(!t){fb('#k5F2Fb','먼저 답을 써 보세요.',false);return;}
+  const a=/빛/.test(t),b=/열/.test(t)&&/이동|전해|옮겨/.test(t);
+  if(a&&b){fb('#k5F2Fb','잘 썼어요! 예시 답: 모닥불의 빛에 의해 열이 이동했기 때문이에요.',true);d8('2');}
+  else if(b)fb('#k5F2Fb','열이 이동했다는 것은 맞아요. 무엇에 의해 이동했는지(모닥불의 빛) 함께 써 봐요.','info');
+  else fb('#k5F2Fb','‘빛’, ‘열’, ‘이동’이라는 말을 넣어 써 봐요.',false);};
+
+faces('s9','잘했어요! 다음 시간에는 여러 방식으로 이동하는 열의 특징을 비교해 봐요.','어려웠던 부분은 검은색 판 실험을 다시 해 봐요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"빛"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>

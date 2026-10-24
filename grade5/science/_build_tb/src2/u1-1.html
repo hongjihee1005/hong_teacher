@@ -241,8 +241,8 @@ function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(
 const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
 const rnd=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
 function el(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
-/* 여러 활동을 다 해야 섹션 완료: const s3=need('s3',2); … s3(); */
-function need(sec,n){let k=0;return()=>{if(++k===n)doneNav(sec);};}
+/* 여러 활동을 다 해야 섹션 완료: const s3=need('s3',2); pickOne(…, s3('a')); s3('b')(); — 같은 활동은 한 번만 셈 */
+function need(sec,n){const got=new Set();return key=>()=>{if(got.has(key))return;got.add(key);if(got.size===n)doneNav(sec);};}
 /* 여러 개 고르기 */
 function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
   bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
@@ -389,7 +389,7 @@ stickers('#stk4','#sl4','모두 붙였어요! 바닷물에서 소금, 금광석�
       r.appendChild(a);res.appendChild(r);});};ch.appendChild(b);});})();
 
 /* ===== 정리해요 ===== */
-const s6=need('s6',2);pickOne('#p6','','',null,s6);pickOne('#p6b','','',null,s6);
+const s6=need('s6',2);pickOne('#p6','','',null,s6('k5'));pickOne('#p6b','','',null,s6('k6'));
 
 /* ===== 얻은 물질 이용 ===== */
 (function(){const g=$('#use7');const L=[['사탕수수','설탕'],['목화','목화솜'],['콩','콩기름']];
@@ -418,17 +418,17 @@ pickOne('#p8','','','s8');
 
 /* ===== 한눈에 쏙 ===== */
 const s9=need('s9',2);
-$('#blReveal').onclick=()=>{fb('#blFb','두 가지 이상의 물질이 각각의 성질이 변하지 않은 채 섞여 있는 것을 혼합물이라고 해요.',true);s9();};
-pickAll('#p9','모두 찾았어요! 사탕수수에서 분리해 얻은 설탕으로 사탕, 초콜릿, 과자 등 단맛이 나는 여러 가지 음식을 만들어요.','',null,s9);
+$('#blReveal').onclick=()=>{fb('#blFb','두 가지 이상의 물질이 각각의 성질이 변하지 않은 채 섞여 있는 것을 혼합물이라고 해요.',true);s9('k3')();};
+pickAll('#p9','모두 찾았어요! 사탕수수에서 분리해 얻은 설탕으로 사탕, 초콜릿, 과자 등 단맛이 나는 여러 가지 음식을 만들어요.','',null,s9('k4'));
 
 /* ===== 형성 평가 ===== */
 const s10=need('s10',2);
 oxQuiz('#ox10',[{t:'⑴ 혼합물은 두 가지 이상의 물질이 섞여 있다.',a:true,e:'혼합물은 두 가지 이상의 물질이 섞여 있어요.'},
   {t:'⑵ 혼합물은 섞여 있는 각각의 성분 물질로 분리할 수 있다.',a:true,e:'혼합물은 각각의 성분 물질로 분리할 수 있어요.'},
-  {t:'⑶ 혼합물을 분리하면 섞여 있는 각각의 물질의 성질이 바뀐다.',a:false,e:'혼합물 속 물질은 성질이 변하지 않은 채 섞여 있어서, 분리해도 성질이 그대로예요.',h:'소금물에서 소금을 분리하면 소금의 성질이 어떻게 될까요?'}],s10);
+  {t:'⑶ 혼합물을 분리하면 섞여 있는 각각의 물질의 성질이 바뀐다.',a:false,e:'혼합물 속 물질은 성질이 변하지 않은 채 섞여 있어서, 분리해도 성질이 그대로예요.',h:'소금물에서 소금을 분리하면 소금의 성질이 어떻게 될까요?'}],s10('k2'));
 $('#wr10B').onclick=()=>{const t=$('#wr10').value.trim();if(!t){fb('#wr10Fb','먼저 답을 써 보세요.',false);return;}
   const why=/필요|원하는|얻|쓰|사용|이용/.test(t),ex=/바닷물|소금|사탕수수|설탕|금광석|금|고무|목화|콩|꿀|향|과즙|마스크|먼지|공기 청정기|재활용/.test(t);
-  if(why&&ex){fb('#wr10Fb','잘 썼어요! 예시 답: ⑴ 혼합물을 분리하여 필요한 물질을 얻을 수 있기 때문이다. ⑵ 바닷물을 분리하여 소금을 얻는다.',true);if(!$('#wr10B').dataset.ok){$('#wr10B').dataset.ok=1;s10();}}
+  if(why&&ex){fb('#wr10Fb','잘 썼어요! 예시 답: ⑴ 혼합물을 분리하여 필요한 물질을 얻을 수 있기 때문이다. ⑵ 바닷물을 분리하여 소금을 얻는다.',true);if(!$('#wr10B').dataset.ok){$('#wr10B').dataset.ok=1;s10('k1')();}}
   else if(why)fb('#wr10Fb','까닭은 잘 썼어요. 혼합물을 분리하는 예(예: 바닷물에서 소금 얻기)도 한 가지 써 봐요.','info');
   else if(ex)fb('#wr10Fb','예는 잘 썼어요. 왜 분리하는지(무엇을 얻으려고) 까닭도 써 봐요.','info');
   else fb('#wr10Fb','혼합물을 분리하면 무엇을 얻을 수 있는지 생각해 봐요. 오늘 붙인 붙임딱지를 떠올려 봐요.',false);};

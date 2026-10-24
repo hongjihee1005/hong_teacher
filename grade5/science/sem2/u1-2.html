@@ -364,8 +364,8 @@ function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(
 const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
 const rnd=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
 function el(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
-/* 여러 활동을 다 해야 섹션 완료: const s3=need('s3',2); … s3(); */
-function need(sec,n){let k=0;return()=>{if(++k===n)doneNav(sec);};}
+/* 여러 활동을 다 해야 섹션 완료: const s3=need('s3',2); pickOne(…, s3('a')); s3('b')(); — 같은 활동은 한 번만 셈 */
+function need(sec,n){const got=new Set();return key=>()=>{if(got.has(key))return;got.add(key);if(got.size===n)doneNav(sec);};}
 /* 여러 개 고르기 */
 function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
   bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
@@ -476,21 +476,21 @@ function stone(g,x,y,r,c,k){const n=6+(k%3),pts=[];for(let i=0;i<n;i++){const a=
   const fill=(w)=>{if(w==='s'){$('#oS1').textContent='둥근 모양, 세모 모양, 네모 모양 등 여러 가지';$('#oS2').textContent='갈색, 노란색, 회색, 검정색 등';}
     else{$('#oG1').textContent='둥근 모양, 세모 모양, 네모 모양 등 여러 가지';$('#oG2').textContent='갈색, 회색, 검정색 등';}};
   const done=need('s2',4);
-  $('#lkS').onclick=()=>{zoom('s');fill('s');if(!seen.s){seen.s=true;done();}fb('#obsFb','모래 알갱이는 모양과 색이 여러 가지예요. 이제 크기를 비교해 표의 크기 칸을 골라요.','info');};
-  $('#lkG').onclick=()=>{zoom('g');fill('g');if(!seen.g){seen.g=true;done();}fb('#obsFb','자갈 알갱이도 모양과 색이 여러 가지예요. 크기는 어떤가요?','info');};
+  $('#lkS').onclick=()=>{zoom('s');fill('s');if(!seen.s){seen.s=true;done('k5')();}fb('#obsFb','모래 알갱이는 모양과 색이 여러 가지예요. 이제 크기를 비교해 표의 크기 칸을 골라요.','info');};
+  $('#lkG').onclick=()=>{zoom('g');fill('g');if(!seen.g){seen.g=true;done('k6')();}fb('#obsFb','자갈 알갱이도 모양과 색이 여러 가지예요. 크기는 어떤가요?','info');};
   $$('.m2c').forEach(c=>{let ok=false;$$('button',c).forEach(b=>b.onclick=()=>{if(ok)return;$$('button',c).forEach(x=>x.classList.remove('wrong'));
-    if(b.dataset.v==='1'){b.classList.add('right');ok=true;done();fb('#obsFb',seen.s&&seen.g?'맞아요! 모래는 자갈보다 알갱이의 크기가 작아요.':'맞아요! 돋보기로 모래와 자갈을 모두 살펴봐요.','info');}
+    if(b.dataset.v==='1'){b.classList.add('right');ok=true;done('c'+c.dataset.w)();fb('#obsFb',seen.s&&seen.g?'맞아요! 모래는 자갈보다 알갱이의 크기가 작아요.':'맞아요! 돋보기로 모래와 자갈을 모두 살펴봐요.','info');}
     else{b.classList.add('wrong');fb('#obsFb','돋보기로 본 모래와 자갈의 크기를 비교해 봐요.',false);}});});})();
 
 /* ===== 분리 방법 ===== */
-const s3=need('s3',2);pickOne('#p3','','',null,s3);pickOne('#p3b','','',null,s3);
+const s3=need('s3',2);pickOne('#p3','','',null,s3('k3'));pickOne('#p3b','','',null,s3('k4'));
 
 /* ===== 체 고르기 ===== */
 function sieve(g,x,y,w,hole){el('rect',{x:x-6,y:y-6,width:w+12,height:w*.55+12,rx:10,fill:'#c9d1d9',stroke:'#59636e','stroke-width':3},g);
   el('rect',{x,y,width:w,height:w*.55,fill:'#fff'},g);const step=hole+3;for(let a=x;a<=x+w;a+=step)el('line',{x1:a,y1:y,x2:a,y2:y+w*.55,stroke:'#59636e','stroke-width':1.6},g);
   for(let b=y;b<=y+w*.55;b+=step)el('line',{x1:x,y1:b,x2:x+w,y2:b,stroke:'#59636e','stroke-width':1.6},g);}
 [['#sv1',2],['#sv2',8],['#sv3',26]].forEach(([id,h])=>{const g=$(id);el('rect',{width:160,height:100,fill:'#fffdf8'},g);sieve(g,20,14,120,h);});
-const s4=need('s4',2);pickOne('#p4a','','',null,s4);pickOne('#p4b','','',null,()=>{$$('#ineq span').forEach(s=>s.classList.add('on'));s4();});
+const s4=need('s4',2);pickOne('#p4a','','',null,s4('k9'));pickOne('#p4b','','',null,()=>{$$('#ineq span').forEach(s=>s.classList.add('on'));s4('k8')();});
 
 /* ===== 체로 분리하기 ===== */
 (function(){const S=$('#sv');S.innerHTML='<rect width="800" height="300" fill="#fffdf8"/><rect x="200" y="250" width="400" height="26" rx="8" fill="#9fb6c2" stroke="#59636e" stroke-width="3"/><text x="400" y="296" text-anchor="middle" font-size="15" font-family="Jua" fill="#33414a">쟁반</text>'+
@@ -515,7 +515,7 @@ const s4=need('s4',2);pickOne('#p4a','','',null,s4);pickOne('#p4b','','',null,()
 pickOne('#p5','','','s5');
 
 /* ===== 정리해요 ===== */
-const s6=need('s6',2);pickOne('#p6','','',null,s6);pickOne('#p6b','','',null,s6);
+const s6=need('s6',2);pickOne('#p6','','',null,s6('k10'));pickOne('#p6b','','',null,s6('k11'));
 
 /* ===== 생활 속 예 ===== */
 (function(){const g=$('#ex7');g.innerHTML='<rect width="720" height="150" fill="#fffdf8"/>'+
@@ -528,13 +528,13 @@ pickAll('#p7','모두 찾았어요! 알갱이의 크기가 다른 고체 혼합�
   function grain(g,x,y,k,i){if(k==='z')el('circle',{cx:x,cy:y,r:2.2,fill:'#f2c94c',stroke:'#b8901e','stroke-width':.6},g);
     else if(k==='r')el('ellipse',{cx:x,cy:y,rx:5,ry:3,fill:'#fffaf0',stroke:'#c9bfa8','stroke-width':1,transform:`rotate(${rnd(i,9)*180} ${x} ${y})`},g);
     else el('ellipse',{cx:x,cy:y,rx:7,ry:5,fill:'#9b2d2d',stroke:'#5a1414','stroke-width':1},g);}
-  function bowl(g,x,y,set,label){el('path',{d:`M${x-80} ${y} q80 70 160 0z`,fill:'#e8d6b8',stroke:'#8a6a3a','stroke-width':3},g);
-    let i=0;set.forEach(k=>{const n=k==='z'?40:k==='r'?22:12;for(let j=0;j<n;j++){i++;grain(g,x-60+rnd(i,k.charCodeAt(0))*120,y+6+rnd(i,3)*24,k,i);}});
+  function bowl(g,x,y,set,label,w=80){el('path',{d:`M${x-w} ${y} q${w} ${w*.85} ${w*2} 0z`,fill:'#e8d6b8',stroke:'#8a6a3a','stroke-width':3},g);
+    let i=0;set.forEach(k=>{const n=(k==='z'?40:k==='r'?22:12)*(w<80?.6:1);for(let j=0;j<n;j++){i++;grain(g,x-w*.72+rnd(i,k.charCodeAt(0))*w*1.44,y+5+rnd(i,3)*w*.28,k,i);}});
     const t=el('text',{x,y:y+60,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#15313d'},g);t.textContent=label;}
   function draw(){S.innerHTML='<rect width="800" height="250" fill="#fffdf8"/>';const g=el('g',{},S);
     if(mix.length)bowl(g,140,120,mix,mix.length>1?'섞여 있는 혼합물':'');
     K.forEach((q,i)=>{const x=380+i*150;el('rect',{x:x-62,y:40,width:124,height:150,rx:12,fill:sep.includes(q.k)?'#e9f9ef':'#f4f7f9',stroke:sep.includes(q.k)?'#16804a':'#bcd9e4','stroke-width':3,'stroke-dasharray':sep.includes(q.k)?'':'6 6'},g);
-      if(sep.includes(q.k))bowl(g,x,110,[q.k],'');const t=el('text',{x,y:70,'text-anchor':'middle','font-size':17,'font-family':'Jua',fill:'#15313d'},g);t.textContent=q.n+(sep.includes(q.k)?' ✔':'');});}
+      if(sep.includes(q.k))bowl(g,x,105,[q.k],'',52);const t=el('text',{x,y:70,'text-anchor':'middle','font-size':17,'font-family':'Jua',fill:'#15313d'},g);t.textContent=q.n+(sep.includes(q.k)?' ✔':'');});}
   function reset(){mix=['z','r','p'];sep=[];draw();fb('#grFb','어떤 체를 먼저 쓸까요?','info');}
   reset();let done=false,orders=new Set();
   function go(big){if(mix.length<2){fb('#grFb','이미 모두 분리했어요. ‘다시 섞기’로 다른 차례도 해 봐요.','info');return;}
@@ -554,10 +554,10 @@ $('#blReveal').onclick=()=>{fb('#blFb','모래와 자갈의 혼합물은 알갱�
 /* ===== 형성 평가 ===== */
 const s10=need('s10',2);
 quiz('#qz10',[{q:'1. 모래와 자갈에 관한 설명으로 옳지 <b>않은</b> 것은?',o:['자갈 알갱이는 둥근 모양, 세모 모양 등 여러 가지이다.','모래 알갱이의 색은 갈색, 노란색 등 여러 가지이다.','모래는 자갈보다 알갱이의 크기가 크다.','자갈 알갱이의 색은 갈색, 회색 등 여러 가지이다.'],a:2,e:'모래는 자갈보다 알갱이의 크기가 작아요.',h:'모래와 자갈을 관찰한 결과를 떠올려 봐요.'},
-  {q:'2. 모래와 자갈의 혼합물을 분리할 때 사용할 수 <b>있는</b> 체는?',o:['㉠ 눈의 크기가 자갈보다 큰 체','㉡ 눈의 크기가 모래보다 작은 체','㉢ 눈의 크기가 모래보다 크고 자갈보다 작은 체'],a:2,e:'㉠은 모래와 자갈이 모두 빠져나가고, ㉡은 모두 체에 남아 분리할 수 없어요.',h:'모래 하나만 체를 빠져나가야 분리할 수 있어요.'}],s10);
+  {q:'2. 모래와 자갈의 혼합물을 분리할 때 사용할 수 <b>있는</b> 체는?',o:['㉠ 눈의 크기가 자갈보다 큰 체','㉡ 눈의 크기가 모래보다 작은 체','㉢ 눈의 크기가 모래보다 크고 자갈보다 작은 체'],a:2,e:'㉠은 모래와 자갈이 모두 빠져나가고, ㉡은 모두 체에 남아 분리할 수 없어요.',h:'모래 하나만 체를 빠져나가야 분리할 수 있어요.'}],s10('k2'));
 $('#wr10B').onclick=()=>{const t=$('#wr10').value.trim();if(!t){fb('#wr10Fb','먼저 답을 써 보세요.',false);return;}
   const a=/크기/.test(t),b=/모래.*(크|보다 큰)/.test(t)&&/자갈.*작/.test(t);
-  if(a&&b){fb('#wr10Fb','잘 썼어요! 예시 답: ⑴ 모래와 자갈의 알갱이 크기 차이를 이용한다. ⑵ 눈 크기가 모래 알갱이보다 크고 자갈 알갱이보다 작은 체를 사용한다.',true);if(!$('#wr10B').dataset.ok){$('#wr10B').dataset.ok=1;s10();}}
+  if(a&&b){fb('#wr10Fb','잘 썼어요! 예시 답: ⑴ 모래와 자갈의 알갱이 크기 차이를 이용한다. ⑵ 눈 크기가 모래 알갱이보다 크고 자갈 알갱이보다 작은 체를 사용한다.',true);if(!$('#wr10B').dataset.ok){$('#wr10B').dataset.ok=1;s10('k1')();}}
   else if(a)fb('#wr10Fb','이용할 성질은 잘 썼어요. 체의 눈 크기를 모래, 자갈과 비교해서 써 봐요. (모래보다 ~, 자갈보다 ~)','info');
   else fb('#wr10Fb','모래와 자갈의 가장 큰 차이는 무엇이었나요? 그 차이와 체의 눈 크기를 함께 써 봐요.',false);};
 

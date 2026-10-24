@@ -1,0 +1,875 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>섞이지 않는 액체 혼합물을 분리해 볼까?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#6a4fa3;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+/* 1단원 혼합물의 분리 교과서 버전 공통 */
+.lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.lab svg{display:block;width:100%;margin:0 auto}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,18px)}
+.rtable{table-layout:fixed}
+.rtable td,.rtable th{text-align:center;padding:5px 4px;font-size:.88rem;word-break:keep-all}
+.rtable th{background:var(--bg)}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:10px 14px;font-size:.95rem}
+.big{font-size:1.1rem}
+.ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:2px dashed var(--line);padding:6px 0}
+.ox button{min-width:3rem}
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3ord{display:flex;flex-direction:column;gap:6px}
+.t3ord button{text-align:left}
+.t3ord .t3dn{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.t3seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+.t3cnt{font-family:"Jua",sans-serif;color:var(--muted);font-size:.95rem}
+.qz>div{margin-bottom:6px}
+/* 단계 단추 */
+.mxctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.mxctl button{font-size:.92rem}
+.mxctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.mxctl button[disabled]{opacity:.45}
+.mxq{margin-top:8px;border:2px dashed var(--sky);border-radius:14px;padding:8px 12px}
+/* 붙임딱지 */
+.stks{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.stks button{display:flex;align-items:center;gap:6px;font-size:.95rem;min-height:2.4rem;padding:.2em .7em;border-width:2px;border-style:dashed}
+.stks button svg{width:2rem;height:2rem}
+.stks button.used{visibility:hidden}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.slot{border:2px solid var(--line);border-radius:14px;padding:6px;background:var(--paper);text-align:center;font-family:"Jua",sans-serif;font-size:.95rem}
+.slot svg{max-height:15vh;margin:0 auto}
+.slot .dz{margin-top:4px;min-height:2.6rem;border:3px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:2px 6px}
+.slot .dz.ready{border-color:var(--sun);background:#fff8dc}
+.slot .dz.ok{border-style:solid;border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.slot .dz svg{width:1.8rem;height:1.8rem;margin:0}
+.slot .ar{color:var(--muted);font-size:.85rem}
+@media (max-width:640px){.two,.t3sort,.t3match{grid-template-columns:1fr}.slots{grid-template-columns:repeat(2,minmax(0,1fr))}}
+#st6 .it .bs button{font-size:.82rem;padding:.1em .45em}
+.m3leg{display:flex;flex-wrap:wrap;gap:10px;justify-content:center;font-size:.9rem;margin-top:4px}
+.m3leg span::before{content:"";display:inline-block;width:1em;height:1em;border-radius:3px;margin-right:4px;vertical-align:-2px;background:var(--c)}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M26 12 h34 M30 12 v24 L16 70 a6 6 0 0 0 6 6 h42 a6 6 0 0 0 6 -6 L56 36 v-24" fill="#eaf6fb" stroke="#fff" stroke-width="3"/><path d="M22 58 h42 l4 10 a6 6 0 0 1 -6 6 h-38 a6 6 0 0 1 -6 -6z" fill="#6ec3f0"/><circle cx="38" cy="64" r="3" fill="#fff"/><circle cx="50" cy="62" r="2" fill="#fff"/></svg>
+  <div><h1>섞이지 않는 액체 혼합물을 분리해 볼까?</h1><p>5학년 2학기 과학 · 1단원 혼합물의 분리 · 4/11차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">관찰해요</a><a href="#s3">분리 방법</a><a href="#s4">스포이트로</a><a href="#s5">흡착포로</a><a href="#s6">장단점</a><a href="#s7">정리해요</a><a href="#s8">생활 속 예</a><a href="#s9">더 알아보기</a><a href="#s10">한눈에 쏙</a><a href="#s11">형성 평가</a><a href="#s12">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>섞이지 않는 액체 혼합물을 분리할 수 있어요.<br>섞이지 않는 액체 혼합물의 분리 방법을 설명할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 18쪽</span>
+  <h2>간장에 참기름을 너무 많이 부었을 때 어떻게 덜어 낼 수 있을까요?</h2>
+  <div class="lab"><svg id="dish" viewBox="0 0 800 230" role="img" aria-label="간장이 담긴 종지에 참기름을 붓는 그림" style="max-height:27vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="oilGo">🫗 간장에 참기름 붓기</button></div>
+  <div class="fb" id="dishFb"></div>
+  <div id="ask1" hidden data-glue="1">
+    <p class="jua big">너무 많이 부은 참기름을 어떻게 덜어 낼 수 있을까요? 내 생각을 골라요.</p>
+    <div class="pick" id="p1">
+      <button data-m="좋은 생각이에요! 위에 뜬 참기름만 숟가락으로 떠낼 수 있어요.">숟가락으로 위에 뜬 참기름을 떠내요</button>
+      <button data-m="좋은 생각이에요! 주방 휴지에 위에 뜬 참기름이 스며들게 해서 걷어 낼 수 있어요.">주방 휴지로 위에 뜬 참기름을 걷어 내요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s2" data-nav="관찰해요">
+  <span class="stage">실험해요 1 · 「실험관찰」 10쪽</span>
+  <h2>비커에 담긴 물과 기름의 혼합물을 관찰해요</h2>
+  <p class="tip">준비물: 물과 기름의 혼합물이 담긴 비커 2개, 비커(100 mL), 스포이트, 흡착포, 핀셋, 페트리 접시, 실험복, 보안경, 실험용 장갑 · 기름은 물과 색깔로 구별되는 식용유예요. 물 80 mL에 기름 20 mL 이하를 넣은 것은 지도서의 <b>예시</b>예요.</p>
+  <div class="lab"><svg id="bk2" viewBox="0 0 800 250" role="img" aria-label="물과 기름이 담긴 비커" style="max-height:28vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button id="shk1">🤲 살살 흔들어 보기</button><button id="shk2">💪 세게 흔들어 보기</button></div>
+  <div class="fb" id="bk2Fb"></div>
+  <div id="ask2" hidden data-glue="1">
+    <div class="pick" id="p2">
+      <button data-a="1" data-m="맞아요! 물과 기름은 골고루 섞이지 않고, 기름은 위쪽에, 물은 아래쪽에 위치해요.">기름은 위쪽에, 물은 아래쪽에 있어요</button>
+      <button data-a="0" data-m="비커를 다시 봐요. 노란 기름은 어디에 있나요?">물은 위쪽에, 기름은 아래쪽에 있어요</button>
+      <button data-a="0" data-m="흔든 뒤 조금 기다리면 어떻게 되었나요?">물과 기름이 골고루 섞여요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s3" data-nav="분리 방법">
+  <span class="stage">실험해요 2 · 「실험관찰」 10쪽</span>
+  <h2>물과 기름의 혼합물을 분리하는 방법을 이야기해요</h2>
+  <div class="pick" id="p3">
+    <button data-a="1" data-m="맞아요! 물과 기름이 골고루 섞이지 않고 층을 이루므로, 물 위에 있는 기름을 떠내어 분리할 수 있어요.">물 위에 있는 기름을 떠내어 분리해요</button>
+    <button data-a="0" data-m="물과 기름은 둘 다 액체라서 체의 눈을 모두 빠져나가요.">체로 걸러서 분리해요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="스포이트로">
+  <span class="stage">실험해요 3 · 「실험관찰」 10쪽</span>
+  <h2>비커 한 개의 물과 기름 혼합물을 스포이트로 분리해요</h2>
+  <div class="lab"><svg id="bk4" viewBox="0 0 800 270" role="img" aria-label="스포이트로 위에 뜬 기름을 뽑아 빈 비커로 옮기는 가상 실험" style="max-height:30vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="dp1">💧 기름층에 살짝 넣어 뽑아 옮기기 (<span id="dpN">0</span>)</button><button id="dp2">스포이트를 깊게 넣어 뽑기</button></div>
+  <div class="fb" id="dpFb"></div>
+  <div id="ask4" hidden data-glue="1">
+    <div class="pick" id="p4">
+      <button data-a="1" data-m="맞아요! 스포이트로 위에 있는 기름을 뽑아 옮기는 과정을 여러 번 반복하면 물과 기름을 분리할 수 있어요.">위에 있는 기름을 뽑아 옮기는 과정을 여러 번 반복해요</button>
+      <button data-a="0" data-m="스포이트를 깊게 넣으면 물도 함께 뽑혀 올라와요.">스포이트를 바닥까지 깊게 넣어 한 번에 뽑아요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 유리 기구가 깨지지 않도록 조심해요. 실험에 사용하는 물질은 맛보지 않아요. 기름은 미끄러우니 흘리지 않게 주의하고, 기름이 묻은 도구가 손에서 미끄러지지 않게 해요. 스포이트는 비커에 넣기 전에 닦아요.</p>
+</section>
+
+<section id="s5" data-nav="흡착포로">
+  <span class="stage">실험해요 4 · 「실험관찰」 11쪽</span>
+  <h2>다른 비커 한 개의 물과 기름 혼합물을 흡착포로 분리해요</h2>
+  <p class="tip">흡착포: 기름을 흡수하는 종이로, 바다에 유출된 기름을 제거하는 데 이용해요.</p>
+  <div class="lab"><svg id="bk5" viewBox="0 0 800 260" role="img" aria-label="핀셋으로 흡착포를 기름 위에 대어 기름을 흡수하는 가상 실험" style="max-height:29vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="pad">🧻 핀셋으로 흡착포를 가볍게 대기 (<span id="padN">0</span>/4)</button></div>
+  <div class="fb" id="padFb"></div>
+  <div id="ask5" hidden data-glue="1">
+    <div class="pick" id="p5">
+      <button data-a="1" data-m="맞아요! 물 위의 기름이 흡착포에 흡수되고, 여러 번 반복하면 기름이 분리된 물을 얻을 수 있어요.">물 위의 기름이 흡착포에 흡수돼요</button>
+      <button data-a="0" data-m="흡착포가 노랗게 변한 까닭을 생각해 봐요.">물이 흡착포에 흡수돼요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s6" data-nav="장단점">
+  <span class="stage">실험해요 5 · 「실험관찰」 11쪽</span>
+  <h2>스포이트와 흡착포를 사용할 때의 장단점을 정리해요</h2>
+  <p>설명마다 알맞은 칸을 눌러요.</p>
+  <div class="t3sort" id="st6" data-glue="1"></div>
+  <div class="fb"></div>
+  <p class="tip">♻️ 실험에 사용한 물과 기름은 환경이 오염되지 않도록 선생님의 안내에 따라 폐수통에 나누어 버리고, 기름을 흡수한 흡착포는 폐기물 처리통에 버려요.</p>
+</section>
+
+<section id="s7" data-nav="정리해요">
+  <span class="stage">정리해요 · 「실험관찰」 11쪽</span>
+  <h2>섞이지 않는 액체 혼합물의 분리 방법</h2>
+  <div class="pick" id="p7">
+    <button data-a="1" data-m="맞아요! 골고루 섞이지 않는 액체 혼합물은 위에 위치한 액체 부분만 떠내어 분리할 수 있어요. 아래에 있는 액체만 빼내어 분리할 수도 있어요.">위에 위치한 액체만 떠내어 분리해요</button>
+    <button data-a="0" data-m="섞이지 않는 두 액체는 층을 이루어요. 이 성질을 이용해요.">물에 녹여 체로 걸러요</button>
+  </div>
+  <div class="fb"></div>
+  <h3 data-glue="1">🤔 생각 바로잡기: 물과 기름을 아주 세게 흔들면 골고루 섞일까요?</h3>
+  <div class="pick" id="p7b" data-glue="1">
+    <button data-a="0" data-m="세게 흔들면 뿌옇게 섞인 것처럼 보이지만, 시간이 지나면 다시 층을 이루어요.">네, 세게 흔들면 골고루 섞여요</button>
+    <button data-a="1" data-m="맞아요! 세게 흔들면 잠깐 뿌옇게 섞인 것처럼 보여도, 시간이 지나면 다시 층을 이루므로 골고루 섞이지 않아요.">아니요, 시간이 지나면 다시 층을 이루어요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="생활 속 예">
+  <span class="stage">개념 · 「과학」 19쪽</span>
+  <h2>섞이지 않는 액체 혼합물을 분리하는 예</h2>
+  <svg id="ex8" viewBox="0 0 720 150" style="max-height:18vh;max-width:640px;margin:0 auto" role="img" aria-label="국 위에 뜬 기름을 국자로 떠내는 모습과 바다에 유출된 기름을 흡착포로 제거하는 모습"></svg>
+  <p class="jua big">섞이지 않는 액체 혼합물을 분리하는 예를 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p8" data-glue="1">
+    <button data-a="1" data-m="맞아요! 국이나 찌개 위에 뜬 기름을 숟가락이나 국자로 떠내어 제거해요.">국 위에 뜬 기름 떠내기</button>
+    <button data-a="1" data-m="맞아요! 바다에 기름이 유출되면 흡착포를 던져 물에 뜬 기름을 제거해요.">바다에 유출된 기름을 흡착포로 제거하기</button>
+    <button data-a="0" data-m="모래와 자갈은 고체 혼합물이고, 알갱이의 크기 차이를 이용해 체로 분리해요.">체로 모래와 자갈 분리하기</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s9" data-nav="더 알아보기">
+  <span class="stage">더 알아보기 · 분별 깔때기</span>
+  <h2>분별 깔때기로 물과 기름을 분리해 봐요</h2>
+  <p>꼭지를 열면 아래층의 물이 먼저 빠져나와요. <b>물이 다 빠져나가 경계면이 꼭지에 가까워지면</b> 꼭지를 잠가요.</p>
+  <div class="lab"><svg id="sep" viewBox="0 0 800 300" role="img" aria-label="스탠드에 꽂힌 분별 깔때기와 비커" style="max-height:32vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button class="main" id="tap">🔓 꼭지 열기</button><button id="sepR">🔄 처음부터</button></div>
+  <div class="fb" id="sepFb"></div>
+  <p class="tip">⚠️ 유리 기구가 깨지지 않도록 조심하고, 기름이 묻은 분별 깔때기를 다룰 때 미끄러지지 않게 주의해요. 기름이 묻은 유리 기구는 씻어서 보관해요.</p>
+</section>
+
+<section id="s10" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua big">1. 물과 기름의 혼합물은 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span></span>이 위쪽에, 물이 아래쪽에 위치하는 것을 이용해 분리합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua big" style="margin-top:10px" data-glue="1">2. 💭 마블링 작품은 어떻게 만들까요?</p>
+  <div class="pick" id="p10" data-glue="1">
+    <button data-a="1" data-m="맞아요! 마블링은 물과 기름이 섞이지 않고 기름이 물에 뜨는 성질을 이용해요. 기름 성분인 마블링 물감을 물에 풀고, 물 위에 뜬 물감을 도화지에 찍어 내어 말려요.">물 위에 뜬 기름 성분의 물감을 종이에 찍어 내요</button>
+    <button data-a="0" data-m="마블링 물감은 기름 성분이라 물에 녹지 않고 물 위에 떠요.">물감을 물에 완전히 녹여 종이를 담가요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s11" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div class="qz" id="qz11"></div>
+  <p class="jua big" style="margin-top:12px">✏️ 서술형: 바다에 기름이 유출되는 사고가 생겼어요. 기름을 제거하는 데 사용하는 도구와 방법을 혼합물의 분리와 관련지어 써 봐요.</p>
+  <textarea id="wr11" rows="2" placeholder="○○을/를 사용해 …" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wr11B">내 답 살펴보기</button></div>
+  <div class="fb" id="wr11Fb"></div>
+</section>
+
+<section id="s12" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 11쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>골고루 섞이지 않는 액체 혼합물의 분리 방법을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>물과 기름의 혼합물을 스포이트와 흡착포로 각각 분리할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>실험에 사용한 물질을 환경이 오염되지 않도록 분리배출했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 18~19쪽 · 「실험관찰」 10~11쪽 · 지도서 128~137쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+/* ===== 1단원 혼합물의 분리 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+const rnd=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+function el(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
+/* 여러 활동을 다 해야 섹션 완료: const s3=need('s3',2); pickOne(…, s3('a')); s3('b')(); — 같은 활동은 한 번만 셈 */
+function need(sec,n){const got=new Set();return key=>()=>{if(got.has(key))return;got.add(key);if(got.size===n)doneNav(sec);};}
+/* 여러 개 고르기 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb&&!b.dataset.cbd){b.dataset.cbd=1;cb();}}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;let first=true;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb&&first){first=false;cb(b);}});}
+/* 고르기 문제 여러 개: items [{q,o:[…],a,e,h}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);const was=ok.size;ok.add(k);if(ok.size===items.length&&was<items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* ○× 문제: ox('#box', [{t, a:true|false, e}], cb) */
+function oxQuiz(box,items,cb){const B=$(box),out=B.nextElementSibling,ok=new Set();
+  items.forEach((it,k)=>{const d=document.createElement('div');d.className='ox';d.innerHTML='<span>'+it.t+'</span>';
+    [['○',true],['×',false]].forEach(([s,v])=>{const b=document.createElement('button');b.textContent=s;b.setAttribute('aria-label',v?'맞아요':'틀려요');
+      b.onclick=()=>{if(ok.has(k))return;$$('button',d).forEach(x=>x.classList.remove('wrong'));
+        if(v===it.a){b.classList.add('right');ok.add(k);fb(out,(ok.size===items.length?'모두 맞혔어요! ':'맞아요! ')+it.e,ok.size===items.length?true:'info');if(ok.size===items.length&&cb)cb();}
+        else{b.classList.add('wrong');fb(out,'다시 생각해 봐요. '+(it.h||''),false);}};d.appendChild(b);});
+    B.appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례 맞히기: orderer('#box', [단계…], 다 맞힘 글, 섹션, each(i), cb) */
+function orderer(box,steps,okMsg,sec,each,cb){const B=$(box),out=B.nextElementSibling;let k=0;
+  const seq=document.createElement('div');seq.className='t3seq';B.before(seq);
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.classList.contains('t3dn'))return;
+    if(i===k){b.classList.add('t3dn');b.disabled=true;const sp=document.createElement('span');sp.textContent=(k+1)+'. '+s;seq.appendChild(sp);if(each)each(k);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은 무엇일까요? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그 일은 조금 뒤에 해요. 지금 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 붙임딱지: stickers('#stk', '#slots', 다 맞힘 글, 섹션, cb) — 딱지 button[data-k], 칸 .dz[data-want] */
+function stickers(stk,slots,okMsg,sec,cb){const S=$(stk),Z=$(slots),out=Z.nextElementSibling;let cur=null,n=0;const zs=$$('.dz',Z);
+  $$('button',S).forEach(b=>b.onclick=()=>{if(b.classList.contains('used'))return;$$('button',S).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b;zs.forEach(z=>{if(!z.classList.contains('ok'))z.classList.add('ready');});fb(out,'붙일 칸을 눌러요.','info');});
+  zs.forEach(z=>{z.setAttribute('role','button');z.setAttribute('tabindex','0');const go=()=>{if(z.classList.contains('ok'))return;if(!cur){fb(out,'먼저 위의 붙임딱지를 하나 골라요.','info');return;}
+      if(cur.dataset.k===z.dataset.want){z.innerHTML=cur.innerHTML;z.classList.remove('ready');z.classList.add('ok');cur.classList.remove('sel');cur.classList.add('used');cur=null;n++;zs.forEach(x=>x.classList.remove('ready'));
+        if(n===zs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(z.dataset.m||'맞아요!')+' ('+n+'/'+zs.length+')','info');}
+      else fb(out,z.dataset.h||'이 칸에 알맞은 붙임딱지가 아니에요. 다시 생각해 봐요.',false);};
+    z.onclick=go;z.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기 */
+function tap(e,f){e.classList.add('hs');e.setAttribute('tabindex','0');e.setAttribute('role','button');e.addEventListener('click',f);e.addEventListener('keydown',v=>{if(v.key==='Enter'||v.key===' '){v.preventDefault();f();}});}
+/* 단계 단추: steps('#ctl', [함수…]) — 차례대로 하나씩 열림, 함수가 false를 돌려주면 그 단계에 머묾 */
+function steps(box,fns,cb){const bs=$$(box+' button');bs.forEach((b,i)=>{b.disabled=i>0;b.onclick=()=>{if(fns[i]()===false)return;b.classList.add('done');b.disabled=true;if(bs[i+1]){bs[i+1].disabled=false;bs[i+1].focus({preventScroll:true});}else if(cb)cb();};});}
+
+const WC='#cfe9f8',OC='#f5c842',OCD='#c99a12';
+/* 비커 그리기: beaker(g,x,y,w,h,{water,oil,cloud,label,ml}) — water·oil은 높이(px) */
+function beaker(g,x,y,w,h,o){o=o||{};const bot=y+h;
+  if(o.water>0)el('rect',{x:x+3,y:bot-o.water,width:w-6,height:o.water-3,fill:WC},g);
+  if(o.oil>0)el('rect',{x:x+3,y:bot-o.water-o.oil,width:w-6,height:o.oil,fill:OC,opacity:.92},g);
+  if(o.cloud)for(let i=0;i<46;i++)el('circle',{cx:x+8+rnd(i,1)*(w-16),cy:bot-6-rnd(i,2)*(o.water+o.oil-10),r:2+rnd(i,3)*3,fill:i%2?OC:'#fff',opacity:o.cloud},g);
+  el('path',{d:`M${x} ${y} v${h-8} q0 8 8 8 h${w-16} q8 0 8 -8 v${-h+8}`,fill:'none',stroke:'#7aa7bd','stroke-width':4},g);
+  el('path',{d:`M${x-6} ${y} h12 M${x+w-6} ${y} h12`,stroke:'#7aa7bd','stroke-width':4},g);
+  if(o.label){const t=el('text',{x:x+w/2,y:bot+22,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#15313d'},g);t.textContent=o.label;}}
+
+/* ===== 도입 ===== */
+(function(){const S=$('#dish');let oil=0,busy=false;
+  function draw(pour){S.innerHTML='<rect width="800" height="230" fill="#fdf6e3"/><rect y="200" width="800" height="30" fill="#e6cfa8"/>';
+    el('path',{d:'M290 120 q110 100 220 0z',fill:'#f4f1e8',stroke:'#8a8174','stroke-width':4},S);
+    el('path',{d:`M302 ${130} q98 74 196 0z`,fill:'#5a2e12'},S);
+    if(oil>0)el('path',{d:`M300 ${126} q100 ${8+oil*.4} 200 0 q-100 ${-6} -200 0z`,fill:OC,opacity:.95},S);
+    if(oil>0)el('ellipse',{cx:400,cy:127,rx:100,ry:3+oil*.12,fill:OC},S);
+    if(pour){el('path',{d:'M470 30 l40 -10 l20 40 l-30 20z',fill:'#e9d9a8',stroke:'#8a6a3a','stroke-width':3},S);el('path',{d:'M478 66 q-20 20 -40 56',stroke:OC,'stroke-width':6,fill:'none'},S);}
+    [['간장',330,180,'#5a2e12'],['참기름',560,60,'#8a6a3a']].forEach(([s,x,y,c])=>{const t=el('text',{x,y,'font-size':17,'font-family':'Jua',fill:c},S);t.textContent=s;});
+    if(oil>0){el('line',{x1:500,y1:127,x2:600,y2:127,stroke:'#8a6a3a','stroke-width':2},S);const t=el('text',{x:606,y:132,'font-size':16,'font-family':'Jua',fill:'#8a6a3a'},S);t.textContent='위에 뜬 참기름';}}
+  draw(false);let n=0;
+  $('#oilGo').onclick=()=>{if(busy)return;busy=true;tween(1000,p=>{oil=Math.min(40,(n*14)+p*14);draw(p<.95);},()=>{busy=false;n++;draw(false);
+    if(n>=2){fb('#dishFb','참기름을 너무 많이 부었어요! 참기름은 간장과 골고루 섞이지 않고 간장 위에 떠 있어요.','info');$('#ask1').hidden=false;$('#oilGo').disabled=true;}
+    else fb('#dishFb','참기름이 간장 위에 떴어요. 한 번 더 부어 봐요.','info');});};})();
+pickIdea('#p1','s1');
+
+/* ===== 관찰해요 ===== */
+(function(){const S=$('#bk2');let busy=false,did={a:0,b:0};
+  function draw(cl){S.innerHTML='<rect width="800" height="250" fill="#fffdf8"/><rect y="226" width="800" height="24" fill="#d9e4ea"/>';const g=el('g',{},S);
+    if(cl>0)beaker(g,330,40,140,186,{water:0,oil:0});
+    const mixH=150;if(cl>0){el('rect',{x:333,y:226-mixH,width:134,height:mixH-3,fill:'#e8eecf'},g);for(let i=0;i<70;i++)el('circle',{cx:338+rnd(i,1)*124,cy:226-6-rnd(i,2)*(mixH-12),r:2+rnd(i,3)*4,fill:OC,opacity:cl},g);}
+    else beaker(g,330,40,140,186,{water:120,oil:30});
+    beaker(g,330,40,140,186,{});
+    const t=el('text',{x:400,y:30,'text-anchor':'middle','font-size':16,'font-family':'Jua',fill:'#15313d'},g);t.textContent=cl>0?'흔드는 중…':'물과 기름의 혼합물';
+    if(cl<=0){[['기름',76+40],['물',76+110]].forEach(([s,y])=>{el('line',{x1:470,y1:y,x2:530,y2:y,stroke:'#555','stroke-width':2},g);const tt=el('text',{x:538,y:y+6,'font-size':17,'font-family':'Jua',fill:'#15313d'},g);tt.textContent=s;});}}
+  draw(0);
+  function shake(hard){if(busy)return;busy=true;const dur=hard?4200:2200;
+    tween(dur,p=>{const cl=p<.25?1:(1-(p-.25)/.75)*(hard?1:.8);S.style.transform=p<.25?`rotate(${Math.sin(p*80)*(hard?3:1.5)}deg)`:'';draw(p>=.999?0:Math.max(.02,cl));},()=>{S.style.transform='';busy=false;draw(0);
+      if(hard){did.b=1;fb('#bk2Fb','세게 흔들었더니 잠깐 뿌옇게 섞인 것처럼 보였지만, 시간이 지나자 다시 두 층으로 나뉘었어요.','info');}
+      else{did.a=1;fb('#bk2Fb','살살 흔들어 섞었지만, 조금 지나자 다시 두 층으로 나뉘었어요.','info');}
+      $('#ask2').hidden=false;});}
+  $('#shk1').onclick=()=>shake(false);$('#shk2').onclick=()=>shake(true);})();
+pickOne('#p2','','','s2');
+
+/* ===== 분리 방법 ===== */
+pickOne('#p3','','','s3');
+
+/* ===== 스포이트 ===== */
+function dropper(g,x,y,fill){el('rect',{x:x-7,y,width:14,height:110,rx:6,fill:'#eef8fd',stroke:'#7aa7bd','stroke-width':3},g);
+  if(fill)el('rect',{x:x-4,y:y+110-fill.h,width:8,height:fill.h-3,fill:fill.c},g);
+  el('path',{d:`M${x-12} ${y} q0 -34 12 -34 q12 0 12 34z`,fill:'#e2573f',stroke:'#a0302a','stroke-width':2},g);}
+(function(){const S=$('#bk4');let oil=30,water=120,got=0,gotW=0,busy=false,n=0;
+  function draw(dx,dy,f){S.innerHTML='<rect width="800" height="270" fill="#fffdf8"/><rect y="246" width="800" height="24" fill="#d9e4ea"/>';const g=el('g',{},S);
+    beaker(g,200,60,140,186,{water,oil,label:'물과 기름의 혼합물'});
+    beaker(g,480,120,110,126,{water:gotW,oil:got,label:'비커(100 mL)'});
+    dropper(g,dx,dy,f);}
+  draw(270,20);
+  function move(down,cb){tween(450,p=>draw(270,lerp(20,down,p)),cb);}
+  $('#dp1').onclick=()=>{if(busy||oil<=0)return;busy=true;const top=246-water-oil;move(top-96,()=>{const take=Math.min(6,oil);oil-=take;
+      tween(700,p=>{const x=lerp(270,535,p),y=lerp(top-96,30,Math.min(1,p*2));draw(x,y,{h:28,c:OC});},()=>{got+=take;n++;$('#dpN').textContent=n;draw(270,20);busy=false;
+        if(oil<=0){$('#dp1').disabled=true;fb('#dpFb','기름을 거의 다 옮겼어요! 기름과 물의 경계면에 남은 액체는 따로 모아 버리면 더 깔끔하게 분리할 수 있어요.',true);$('#ask4').hidden=false;}
+        else fb('#dpFb','위에 떠 있는 기름을 뽑아 빈 비커로 옮겼어요. 기름이 다 없어질 때까지 반복해요.','info');});});};
+  $('#dp2').onclick=()=>{if(busy)return;busy=true;move(200,()=>{tween(700,p=>draw(lerp(270,535,p),lerp(200,30,Math.min(1,p*2)),{h:60,c:WC}),()=>{gotW+=3;water-=3;draw(270,20);busy=false;
+      fb('#dpFb','스포이트를 너무 깊게 넣었더니 아래의 물이 뽑혀 올라왔어요. 기름층에만 살짝 넣어 뽑아요.',false);});});};})();
+pickOne('#p4','','','s4');
+
+/* ===== 흡착포 ===== */
+(function(){const S=$('#bk5');let oil=30,n=0,busy=false;const pads=[];
+  function draw(px,py,pc){S.innerHTML='<rect width="800" height="260" fill="#fffdf8"/><rect y="236" width="800" height="24" fill="#d9e4ea"/>';const g=el('g',{},S);
+    beaker(g,220,50,140,186,{water:120,oil,label:'물과 기름의 혼합물'});
+    el('ellipse',{cx:560,cy:226,rx:90,ry:14,fill:'#eef8fd',stroke:'#7aa7bd','stroke-width':3},g);const t=el('text',{x:560,y:258,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#15313d'},g);t.textContent='페트리 접시';
+    pads.forEach((c,i)=>el('rect',{x:500+i*28,y:210,width:34,height:12,fill:OC,stroke:OCD,transform:`rotate(${i*8-10} ${517+i*28} 216)`},g));
+    if(px!=null){el('rect',{x:px-30,y:py,width:60,height:10,fill:pc,stroke:pc===OC?OCD:'#bbb'},g);
+      el('path',{d:`M${px} ${py+2} l40 -90 M${px+6} ${py+2} l44 -88`,stroke:'#59636e','stroke-width':4},g);}}
+  draw(290,20,'#fff');
+  $('#pad').onclick=()=>{if(busy||n>=4)return;busy=true;const top=236-120-oil;
+    tween(500,p=>draw(290,lerp(20,top-8,p),'#fff'),()=>{oil=Math.max(0,oil-8);
+      tween(800,p=>draw(lerp(290,500+n*28,p),lerp(top-8,lerp(60,200,p),p),OC),()=>{pads.push(1);n++;$('#padN').textContent=n;draw(290,20,'#fff');busy=false;
+        if(n>=4){$('#pad').disabled=true;fb('#padFb','흡착포를 여러 번 대었더니 물 위의 기름이 거의 없어졌어요. 기름이 분리된 물을 얻었어요!',true);$('#ask5').hidden=false;}
+        else fb('#padFb','흡착포가 기름을 흡수해 노랗게 되었어요. 페트리 접시에 옮기고 새 흡착포로 다시 해 봐요.','info');});});};})();
+pickOne('#p5','','','s5');
+
+/* ===== 장단점 ===== */
+sorter('#st6',[{t:'분리한 기름을 다시 사용할 수 있어요.',k:'da'},{t:'기름이 물 위에 얇게 퍼져 있을 때는 분리하기 어려워요.',k:'db'},
+  {t:'기름이 물 위에 얇게 퍼져 있을 때 더 편리하게 분리할 수 있어요.',k:'pa'},{t:'분리한 기름을 다시 사용하기 어려워요.',k:'pb'}],
+  [{k:'da',n:'스포이트 장점'},{k:'db',n:'스포이트 단점'},{k:'pa',n:'흡착포 장점'},{k:'pb',n:'흡착포 단점'}],
+  '모두 맞혔어요! 스포이트는 분리한 기름을 다시 쓸 수 있지만 얇게 퍼진 기름은 분리하기 어렵고, 흡착포는 얇게 퍼진 기름을 분리하기 편리하지만 흡수한 기름은 다시 쓰기 어려워요.','s6');
+
+/* ===== 정리해요 ===== */
+const s7=need('s7',2);pickOne('#p7','','',null,s7('k5'));pickOne('#p7b','','',null,s7('k6'));
+
+/* ===== 생활 속 예 ===== */
+(function(){const g=$('#ex8');g.innerHTML='<rect width="720" height="150" fill="#fffdf8"/>'+
+  '<path d="M60 70 q120 110 240 0z" fill="#f4f1e8" stroke="#8a8174" stroke-width="4"/><ellipse cx="180" cy="74" rx="116" ry="10" fill="#e07b39"/>'+[...Array(9)].map((_,i)=>`<ellipse cx="${100+rnd(i,1)*160}" cy="${73+rnd(i,2)*4}" rx="${6+rnd(i,3)*6}" ry="3" fill="${OC}"/>`).join('')+'<path d="M300 20 l-90 48" stroke="#8a8174" stroke-width="6"/><ellipse cx="206" cy="70" rx="18" ry="8" fill="#c9d1d9" stroke="#59636e" stroke-width="3"/><text x="180" y="140" text-anchor="middle" font-size="15" font-family="Jua" fill="#15313d">국 위에 뜬 기름 떠내기</text>'+
+  '<rect x="380" y="10" width="330" height="120" rx="10" fill="#3d8bd4"/><path d="M420 70 q60 -20 140 4 q60 16 110 -6 l0 26 q-120 20 -250 0z" fill="#3a3326" opacity=".8"/>'+[0,1,2,3].map(i=>`<rect x="${430+i*60}" y="${60+(i%2)*10}" width="40" height="12" fill="#fff" stroke="#bbb" transform="rotate(${i*12-14} ${450+i*60} 66)"/>`).join('')+'<path d="M600 20 h60 l-10 28 h-40z" fill="#e2573f"/><text x="545" y="145" text-anchor="middle" font-size="15" font-family="Jua" fill="#15313d">바다 기름 유출 → 흡착포</text>';})();
+pickAll('#p8','모두 찾았어요! 섞이지 않는 액체 혼합물은 위층의 액체만 걷어 내거나 뽑아내어 분리할 수 있어요.','','s8');
+
+/* ===== 분별 깔때기 ===== */
+(function(){const S=$('#sep');let W0=100,O0=40,w,o,out1,out2,open=false,raf=0,last=0,done=false,mixed=false;
+  function reset(){w=W0;o=O0;out1=0;out2=0;open=false;mixed=false;cancelAnimationFrame(raf);$('#tap').textContent='🔓 꼭지 열기';$('#tap').disabled=false;draw();fb('#sepFb','꼭지를 열어 아래층의 물을 비커에 받아요.','info');}
+  function draw(){S.innerHTML='<rect width="800" height="300" fill="#fffdf8"/><rect y="280" width="800" height="20" fill="#d9e4ea"/>';const g=el('g',{},S);
+    el('rect',{x:150,y:20,width:12,height:260,fill:'#8a96a3'},g);el('rect',{x:110,y:268,width:120,height:12,fill:'#59636e'},g);el('path',{d:'M156 120 h170',stroke:'#59636e','stroke-width':6},g);
+    // 깔때기: 위 둥근 몸통(y 40~180) → 아래 관
+    const top=40,bot=180,cx=330;const tot=w+o;const lvl=bot-tot*1.2;
+    el('clipPath',{id:'fc'},g).innerHTML=`<path d="M${cx-60} ${top} q-20 60 50 ${bot-top} h20 q70 -${bot-top-60} 50 -${bot-top}z"/>`;
+    const cg=el('g',{'clip-path':'url(#fc)'},g);
+    el('rect',{x:cx-90,y:bot-w*1.2,width:180,height:w*1.2+40,fill:WC},cg);el('rect',{x:cx-90,y:lvl,width:180,height:o*1.2,fill:OC},cg);
+    el('path',{d:`M${cx-60} ${top} q-20 60 50 ${bot-top} h20 q70 -${bot-top-60} 50 -${bot-top}z`,fill:'none',stroke:'#7aa7bd','stroke-width':4},g);
+    el('rect',{x:cx-6,y:bot,width:12,height:70,fill:w>0||o<O0?(w>0?WC:OC):'#eef8fd',stroke:'#7aa7bd','stroke-width':3},g);
+    el('rect',{x:cx-18,y:bot+20,width:36,height:12,rx:4,fill:open?'#3fa36b':'#c2332c'},g);
+    const tt=el('text',{x:cx+28,y:bot+31,'font-size':14,'font-family':'Jua',fill:'#15313d'},g);tt.textContent=open?'꼭지 열림':'꼭지';
+    if(open)el('line',{x1:cx,y1:bot+70,x2:cx,y2:262-Math.max(out1+out2,0)*.6,stroke:w>0?'#7fc1e8':OC,'stroke-width':4},g);
+    beaker(g,cx-50,180,100,100,{water:out1*.6+3,oil:out2*.6,label:''});
+    [['기름',lvl+o*.6],['물',bot-w*.6]].forEach(([s,y])=>{if((s==='물'&&w>2)||(s==='기름'&&o>2)){el('line',{x1:cx+70,y1:y,x2:cx+130,y2:y,stroke:'#555','stroke-width':2},g);const t=el('text',{x:cx+136,y:y+6,'font-size':16,'font-family':'Jua',fill:'#15313d'},g);t.textContent=s;}});
+    const r=el('g',{},g);beaker(r,560,200,100,80,{water:mixed?0:0,oil:0,label:'기름을 받을 비커'});}
+  function loop(n){if(!open)return;const dt=Math.min(.05,(n-last)/1000);last=n;
+    if(w>0){const d=Math.min(w,(w<25?10:26)*dt);w-=d;out1+=d;}else{const d=Math.min(o,20*dt);o-=d;out2+=d;mixed=true;}
+    draw();if(w<=0&&out2>4&&!done){open=false;draw();$('#tap').textContent='🔓 꼭지 열기';fb('#sepFb','앗! 물이 다 빠져나간 뒤에도 꼭지를 열어 두어 기름이 물 비커에 섞여 나왔어요. ‘처음부터’를 눌러 경계면이 꼭지에 가까워지면 잠가 봐요.',false);return;}
+    if(o<=0){open=false;draw();return;}
+    raf=requestAnimationFrame(loop);}
+  $('#tap').onclick=()=>{open=!open;$('#tap').textContent=open?'🔒 꼭지 잠그기':'🔓 꼭지 열기';
+    if(open){last=performance.now();raf=requestAnimationFrame(loop);fb('#sepFb','아래층의 물이 빠져나오고 있어요. 경계면을 잘 지켜봐요!','info');}
+    else{cancelAnimationFrame(raf);draw();
+      if(w<=15&&out2<=4){done=true;$('#tap').disabled=true;fb('#sepFb','성공! 아래층의 물을 먼저 분리했어요. 경계면 가까이의 액체는 따로 모으고, 남은 위층의 기름은 다른 비커에 모으면 물과 기름을 따로 얻을 수 있어요.',true);doneNav('s9');}
+      else if(w>15)fb('#sepFb','아직 물이 많이 남아 있어요. 다시 꼭지를 열어요.','info');}};
+  $('#sepR').onclick=reset;reset();})();
+
+/* ===== 한눈에 쏙 ===== */
+const s10=need('s10',2);
+$('#blReveal').onclick=()=>{fb('#blFb','물과 기름의 혼합물은 기름이 위쪽에, 물이 아래쪽에 위치하는 것을 이용해 분리해요.',true);s10('k3')();};
+pickOne('#p10','','',null,s10('k4'));
+
+/* ===== 형성 평가 ===== */
+const s11=need('s11',2);
+quiz('#qz11',[{q:'1. 섞이지 않는 액체 혼합물은 어느 것일까요?',o:['물과 식초의 혼합물','물과 식용유의 혼합물','물과 탄산음료의 혼합물','올리브유와 참기름의 혼합물'],a:1,e:'물과 식용유는 골고루 섞이지 않고, 식용유가 물 위에 떠요.',h:'생활에서 위에 둥둥 뜨는 것을 떠올려 봐요.'},
+  {q:'2. 시험관에 들어 있는 섞이지 않는 두 액체 혼합물에서 위쪽의 액체를 뽑아내어 분리할 때 쓰기 알맞은 도구는?',o:['스포이트','흡착포','체'],a:0,e:'좁은 시험관에서는 스포이트로 위쪽 액체를 뽑아내요. 분리한 기름도 다시 쓸 수 있어요.',h:'좁은 입구에도 넣을 수 있는 도구를 생각해 봐요.'}],s11('k2'));
+$('#wr11B').onclick=()=>{const t=$('#wr11').value.trim();if(!t){fb('#wr11Fb','먼저 답을 써 보세요.',false);return;}
+  const a=/흡착포/.test(t),b=/뜬|떠 ?있|위/.test(t)||/흡수|분리|제거|걷/.test(t);
+  if(a&&b){fb('#wr11Fb','잘 썼어요! 예시 답: 흡착포를 사용해 바닷물 위에 떠 있는 기름을 분리한다.',true);if(!$('#wr11B').dataset.ok){$('#wr11B').dataset.ok=1;s11('k1')();}}
+  else if(a)fb('#wr11Fb','도구는 잘 썼어요. 흡착포로 무엇을 어떻게 분리하는지도 써 봐요.','info');
+  else fb('#wr11Fb','바다에 유출된 기름을 제거할 때 오늘 실험의 어떤 도구를 쓰는지 떠올려 봐요.',false);};
+
+faces('s12','잘했어요! 다음 시간에는 섞여 있는 소금과 모래를 분리해 봐요.','어려웠던 부분은 스포이트와 흡착포 실험을 다시 해 봐요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"기","bl2":"름"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>
