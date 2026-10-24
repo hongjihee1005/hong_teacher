@@ -41,6 +41,7 @@ svg .org:focus-visible>*{stroke:#b58400!important;stroke-width:4px}
 .b4-hold{user-select:none;-webkit-user-select:none;touch-action:none}
 .cc{display:inline-flex;gap:4px;vertical-align:middle;margin:2px}
 .cc button{min-height:2.1rem;padding:.1em .6em;font-size:.92rem;border-width:2px}
+svg .org.ok>[fill="transparent"]{stroke:none!important}
 
 #e5Map .b4-bins{grid-template-columns:repeat(3,minmax(0,1fr))}
 @media(max-width:700px){#e5Map .b4-bins{grid-template-columns:1fr}}
@@ -283,7 +284,7 @@ sorter('#e5Map',[['강낭콩 모양, 등허리 좌우에 한 개씩',0],['혈액
     for(let k=0;k<5;k++){const f=(t*0.25+k/5)%1;const [x,y]=at(VEN,LV,f);s+=`<circle cx="${x}" cy="${y}" r="7" fill="#6fa3e0" stroke="#fff" stroke-width="1.5"/>`;}
     if(run)for(let k=0;k<3;k++){const f=(t*0.4+k/3)%1;const [x,y]=at(URE,LU,f);s+=`<circle cx="${x}" cy="${y}" r="4.5" fill="#d4a017"/>`;}
     if(out>0)s+=`<g fill="#f1cf62">`+[0,1,2].map(i=>`<ellipse cx="350" cy="${360+((out*40+i*12)%30)}" rx="3" ry="5"/>`).join('')+`</g>`;
-    s+=`<g font-family="Jua" font-size="17" fill="#0f3b5c"><text x="380" y="112">노폐물이 많은 혈액</text><text x="380" y="232">노폐물이 걸러진 혈액</text><text x="150" y="172" fill="#fff">콩팥</text><text x="228" y="300">오줌관</text><text x="404" y="336">방광</text></g>`;
+    s+=`<g font-family="Jua" font-size="17" fill="#0f3b5c"><text x="306" y="104">노폐물이 많은 혈액</text><text x="380" y="232">노폐물이 걸러진 혈액</text><text x="150" y="172" fill="#fff">콩팥</text><text x="228" y="300">오줌관</text><text x="404" y="336">방광</text></g>`;
     s+=`<g font-family="Jua" font-size="14"><circle cx="24" cy="24" r="7" fill="#ff6b5e"/><circle cx="31" cy="18" r="3.5" fill="#d4a017"/><text x="42" y="29">혈액(노란 점: 노폐물)</text></g>`;
     $('#e5Flow').innerHTML=s;}
   draw();function loop(n){if(!run)return;const dt=last?(n-last)/1000:0;last=n;t+=dt;lv=Math.min(1,lv+dt*0.18);if(lv>=1&&!$('#e5Out').dataset.full){$('#e5Out').dataset.full=1;$('#e5Out').disabled=false;fb('#e5FlowFb','방광에 오줌이 가득 모였어요. 이제 몸 밖으로 내보내요.','info');}draw();requestAnimationFrame(loop);}

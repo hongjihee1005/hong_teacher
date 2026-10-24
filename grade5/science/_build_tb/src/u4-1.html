@@ -41,6 +41,7 @@ svg .org:focus-visible>*{stroke:#b58400!important;stroke-width:4px}
 .b4-hold{user-select:none;-webkit-user-select:none;touch-action:none}
 .cc{display:inline-flex;gap:4px;vertical-align:middle;margin:2px}
 .cc button{min-height:2.1rem;padding:.1em .6em;font-size:.92rem;border-width:2px}
+svg .org.ok>[fill="transparent"]{stroke:none!important}
 
 .a1-slide{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:6px}
 .a1-slide input{width:100%;accent-color:var(--sky);height:2rem}
@@ -78,7 +79,7 @@ svg .org:focus-visible>*{stroke:#b58400!important;stroke-width:4px}
       <p class="b4-q">뼈가 하는 일을 모두 골라요.</p>
       <div class="pick" id="a1Bone"><button data-a="1">몸의 형태를 만들어요</button><button data-a="1">몸을 지탱해요</button><button data-a="1">심장, 폐, 뇌 등 몸속 기관을 보호해요</button><button data-a="0" data-m="뼈는 스스로 움직이지 못해요. 뼈에 연결된 근육이 뼈를 움직여요.">스스로 움직여 몸을 움직여요</button></div>
       <div class="fb"></div>
-      <p class="tip">💡 <b>기관</b>: 우리가 살아가는 데 필요한 일을 하는 몸속 부분이에요. 갈비뼈는 심장과 폐를, 머리뼈는 뇌를 감싸 보호해요.</p>
+      <p class="tip">💡 <b>기관</b>: 우리가 살아가는 데 필요한 일을 하는 몸속 부분(심장, 폐, 뇌 등)이에요.</p>
       <p class="b4-q" data-glue="1">근육은 뼈와 어떻게 이어져 있나요?</p>
       <div class="pick" id="a1Mus" data-glue="1"><button data-a="1" data-m="맞아요! 근육은 뼈에 연결되어 있고, 몸의 부위에 따라 근육의 모양과 크기가 달라요.">근육은 뼈에 연결되어 있어요</button><button data-a="0" data-m="그림을 다시 봐요. 근육 끝이 뼈에 붙어 있어요.">근육과 뼈는 떨어져 있어요</button></div>
       <div class="fb"></div>
@@ -320,7 +321,7 @@ function ccSet(root,okMsg,sec,cb,hint){const R=$(root),cs=$$('[data-ans]',R),out
   m+=`<g stroke="#f4efe2" stroke-width="5" stroke-linecap="round" fill="none"><path d="M86 160 L70 290"/><path d="M234 160 L250 290"/><path d="M130 340 L128 450"/><path d="M190 340 L192 450"/></g>`;
   m+=`<rect x="-50" y="10" width="160" height="34" rx="10" fill="#0f3b5c"/><text x="30" y="33" text-anchor="middle" font-size="16" font-family="Jua" fill="#fff">빨간 부분: 근육</text>`;
   $('#a1Mu').innerHTML=m;
-  let b1=0,b2=0;pickAll('#a1Bone','잘했어요! 뼈는 몸의 형태를 만들고 몸을 지탱하며, 심장·폐·뇌 등 몸속 기관을 보호해요.','다시 생각해 봐요.',null,()=>{b1=1;if(b2)doneNav('s3');});
+  let b1=0,b2=0;pickAll('#a1Bone','잘했어요! 뼈는 몸의 형태를 만들고 몸을 지탱하며, 심장·폐·뇌 등 몸속 기관을 보호해요. 갈비뼈는 심장과 폐를, 머리뼈는 뇌를 감싸요.','다시 생각해 봐요.',null,()=>{b1=1;if(b2)doneNav('s3');});
   pickOne('#a1Mus','','다시 봐요.',null,()=>{b2=1;if(b1)doneNav('s3');});
 })();
 
@@ -352,8 +353,8 @@ mkPlayer({root:'#a1Pl',end:22,ch:[[0,'준비물','뼈와 근육 도안과 똑딱
 
 /* ---------- 모형 관찰 ---------- */
 (function(){let pulled=0,pushed=0;const draw=()=>{const v=+$('#a1Pull').value/100;$('#a1Arm').innerHTML=armDraw(20+110*v,{lbl:true});
-    if(v>=.95&&!pulled){pulled=1;fb('#a1PullFb','손잡이를 잡아당기니 안쪽 근육이 짧아지고 아래팔뼈가 올라갔어요. 이제 다시 밀어 봐요.','info');}
-    if(v<=.05&&pulled&&!pushed){pushed=1;fb('#a1PullFb','손잡이를 미니 안쪽 근육은 길어지고 아래팔뼈가 내려갔어요. 아래 표를 채워요.','info');$('#a1Tbl').hidden=false;}};
+    if(v>=.95&&!pulled){pulled=1;fb('#a1PullFb','손잡이를 끝까지 잡아당겼어요. 근육 도안과 아래팔뼈 도안이 어떻게 변했나요? 이제 다시 끝까지 밀어 봐요.','info');}
+    if(v<=.05&&pulled&&!pushed){pushed=1;fb('#a1PullFb','손잡이를 끝까지 밀었어요. 관찰한 변화로 아래 표를 채워요.','info');$('#a1Tbl').hidden=false;}};
   $('#a1Pull').oninput=draw;draw();
   ccSet('#a1Tbl','표를 완성했어요! 손잡이를 잡아당기면 안쪽 근육은 줄어들고 바깥쪽 근육은 늘어나 아래팔뼈가 올라가요. 밀면 반대로 돼요.','s5',null,'모형 그림에서 근육의 길이와 굵기를 살펴봐요.');})();
 

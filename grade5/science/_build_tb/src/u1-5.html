@@ -1,0 +1,429 @@
+<!--
+title: 화석이 어떻게 만들어지는지 알아보자!
+unit: 1
+lesson: 6~7
+total: 12
+goal: 화석이 만들어지는 과정을 모형으로 설명할 수 있어요.<br>화석 모형으로 화석이 만들어지는 과정을 추리할 수 있어요.
+pages: 「과학」 24~27쪽 · 「실험관찰」 14~15쪽 · 지도서 148~157쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"퇴","bl2":"적","bl3":"물"}}]
+-->
+<style>
+/* 1단원 교과서 버전 공통 */
+.lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.lab svg{display:block;width:100%}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,18px)}
+.two .photo{margin:0}
+.rtable{table-layout:fixed}
+.rtable td,.rtable th{text-align:center;padding:5px 4px;font-size:.88rem;word-break:keep-all}
+.rtable th{background:var(--bg)}
+.rtable td.q{background:var(--bg);font-family:"Jua",sans-serif}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:10px 14px;font-size:.95rem}
+.big{font-size:1.1rem}
+.ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:2px dashed var(--line);padding:6px 0}
+.ox button{min-width:3rem}
+/* 나누기 카드: 카드마다 칸 단추 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+/* 차례 맞히기 */
+.t3ord{display:flex;flex-direction:column;gap:6px}
+.t3ord button{text-align:left}
+.t3ord .t3dn{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.t3seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+/* 그림 속 누르기 */
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+.t3cnt{font-family:"Jua",sans-serif;color:var(--muted);font-size:.95rem}
+#quiz>div{margin-bottom:6px}
+@media (max-width:600px){.two,.t3sort,.t3match{grid-template-columns:1fr}}
+.m5ctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.m5ctl button{font-size:.9rem}
+.m5ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.m5q{margin-top:8px;border:2px dashed var(--sky);border-radius:14px;padding:8px 12px}
+#st4{grid-template-columns:repeat(3,minmax(0,1fr))}
+@media (max-width:600px){#st4{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 24쪽</span>
+  <h2>기념 손 찍기는 어떻게 만들까요?</h2>
+  <div class="lab"><svg id="hand" viewBox="0 0 800 260" role="img" aria-label="반죽에 손을 눌러 손 모양 자국을 만드는 그림" style="max-height:30vh"></svg></div>
+  <div class="row" style="margin-top:6px"><button id="handBtn">✋ 반죽에 손 찍기</button></div>
+  <div id="ask1" hidden>
+    <p class="jua big">기념 손 찍기는 어떻게 만들까요?</p>
+    <div class="pick" id="p1"><button data-a="1" data-m="맞아요! 손으로 반죽을 눌러서 생긴 손 모양 자국을 굳혀 만들어요. 옛날 생물의 모습과 흔적은 어떻게 화석으로 남을까요?">반죽을 손으로 눌러 생긴 자국을 굳혀요</button><button data-a="0" data-m="그림을 다시 봐요. 손 모양은 어떻게 생겼나요?">반죽에 손 모양을 그림으로 그려요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s2" data-nav="실험해요">
+  <span class="stage">실험해요 · 「실험관찰」 14쪽</span>
+  <h2>화석 모형 만들기</h2>
+  <p>준비물: 투명한 그릇, 비닐봉지, 찰흙, 조개껍데기, 물, 석고 가루, 조개 화석 표본, 실험복, 보안경, 실험용 장갑 · 단추를 차례대로 눌러 가상 실험을 해요.</p>
+  <div class="lab"><svg id="lab" viewBox="0 0 800 330" role="img" aria-label="화석 모형을 만드는 가상 실험 그림" style="max-height:42vh;margin:0 auto"></svg></div>
+  <div class="m5ctl" id="steps" data-glue="1">
+    <button data-s="0">① 비닐봉지를 펴고 찰흙 넣기</button>
+    <button data-s="1" disabled>② 조개껍데기를 눌렀다 떼기</button>
+    <button data-s="2" disabled>③ 물 붓기</button>
+    <button data-s="3" disabled>④ 석고 가루 넣기</button>
+    <button data-s="4" disabled>⑤ 굳으면 꺼내기</button>
+    <button data-s="5" disabled>⑥ 떼어 내어 관찰하기</button>
+  </div>
+  <div class="fb" id="labFb"></div>
+  <div class="m5q" id="q2" hidden>
+    <p class="jua">🤔 조개껍데기를 떼어 내는 까닭은 무엇일까요?</p>
+    <div class="pick" id="pq2"><button data-a="1" data-m="맞아요! 실제 자연에서는 오랜 시간이 지나면 조개껍데기가 없어져도 그 흔적이 남을 수 있어요.">자연에서는 오랜 시간이 지나면 조개껍데기가 없어지고 흔적이 남기 때문이에요</button><button data-a="0" data-m="조개껍데기를 다시 쓰려는 것이 아니에요. 실제 자연에서 일어나는 일을 생각해 봐요.">조개껍데기를 다시 쓰려고요</button></div>
+    <div class="fb"></div>
+  </div>
+  <div class="m5q" id="q4" hidden>
+    <p class="jua">🤔 석고 가루는 실제 자연에서 무엇을 나타낼까요?</p>
+    <div class="pick" id="pq4"><button data-a="1" data-m="맞아요! 석고 가루는 물에 의해 운반되어 생물의 흔적 위로 쌓이는 퇴적물을 나타내요.">물에 의해 운반된 퇴적물</button><button data-a="0" data-m="생물의 흔적 위로 쌓이는 것은 무엇이었나요?">옛날에 살았던 생물</button></div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 보안경과 실험용 장갑을 끼고, 석고 가루를 만질 때는 선생님의 안내와 지시에 따라요. 실험이 끝나면 주변을 깨끗이 정리하고, 찰흙과 화석 모형은 선생님의 안내에 따라 처리해요. 💡 물에 소금을 조금 넣으면 석고가 굳는 시간을 줄일 수 있어요(약 15분). 손으로 석고를 살짝 눌러 보면 굳었는지 알 수 있어요.</p>
+</section>
+
+<section id="s3" data-nav="관찰해요">
+  <span class="stage">실험해요 6 · 「실험관찰」 14쪽</span>
+  <h2>찰흙에 찍힌 자국과 석고로 만든 조개껍데기</h2>
+  <div class="lab"><svg id="res" viewBox="0 0 800 240" role="img" aria-label="찰흙에 찍힌 조개 자국과 석고로 만든 조개 모양" style="max-height:30vh"></svg></div>
+  <p class="jua big" style="margin-top:8px">찰흙에 찍힌 조개껍데기 자국과 석고로 만든 조개껍데기는 모두 화석 모형일까요?</p>
+  <div class="pick" id="p3" data-glue="1">
+    <button data-a="1" data-m="맞아요! 생물의 몸체와 생물이 남긴 흔적 모두 화석이 될 수 있으므로 둘 다 화석 모형이에요.">둘 다 화석 모형이에요</button>
+    <button data-a="0" data-m="찰흙에 남은 것은 흔적이에요. 생물의 흔적도 화석이 될 수 있었나요?">석고로 만든 것만 화석 모형이에요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="모형과 실제">
+  <span class="stage">정리해요 1 · 「실험관찰」 15쪽</span>
+  <h2>조개 화석 모형과 실제 조개 화석 비교하기</h2>
+  <div class="lab" style="max-width:640px;margin:0 auto"><svg id="cmp" viewBox="0 0 640 170" role="img" aria-label="조개 화석 모형과 실제 조개 화석" style="max-height:22vh"></svg></div>
+  <p>설명마다 공통점인지 차이점인지 골라요.</p>
+  <div class="t3sort" id="st4" data-glue="1"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s5" data-nav="모형 ↔ 실제">
+  <span class="stage">정리해요 2 · 「실험관찰」 15쪽</span>
+  <h2>화석 모형으로 실제 화석이 만들어지는 과정을 추리해요</h2>
+  <p>왼쪽의 화석 모형 만들기 과정을 고른 다음, 실제 자연에서 일어나는 일을 눌러 이어요.</p>
+  <div class="t3match" id="m5"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="만들어지는 과정">
+  <span class="stage">개념 · 「과학」 26~27쪽</span>
+  <h2>화석이 만들어지는 과정</h2>
+  <div class="player" id="pl1">
+    <svg id="fosV" class="scene" viewBox="0 0 800 340" role="img" aria-label="생물이 화석이 되어 발견되기까지의 과정"></svg>
+    <div class="ctl"><button class="main pBtn" aria-label="재생">▶</button><input type="range" class="pRng" min="0" step="0.02" value="0" aria-label="영상 시간"><span class="jua pClk">0초</span></div>
+    <div class="row chapters"></div>
+    <p class="cap"></p>
+  </div>
+  <div class="fb" id="plFb"></div>
+</section>
+
+<section id="s7" data-nav="차례 정리">
+  <span class="stage">개념 · 「과학」 26~27쪽</span>
+  <h2>화석이 만들어져 발견되기까지 차례대로 눌러요</h2>
+  <div class="t3ord" id="ord7"></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="생각+">
+  <span class="stage">생각이 한눈에 2 · 「과학」 27쪽</span>
+  <h2>어떤 생물이 화석으로 만들어지기 쉬울까요?</h2>
+  <p class="jua big">화석이 만들어지기 쉬운 경우를 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p8a">
+    <button data-a="1" data-m="맞아요! 퇴적물이 빠르게 쌓여야 생물의 몸체나 흔적이 남을 수 있어요.">생물의 몸체나 흔적 위로 퇴적물이 빠르게 쌓일 때</button>
+    <button data-a="1" data-m="맞아요! 뼈, 이빨, 껍데기처럼 단단한 부분이 있으면 화석이 되기 쉬워요.">뼈, 이빨, 껍데기처럼 단단한 부분이 있을 때</button>
+    <button data-a="1" data-m="맞아요! 식물의 줄기나 잎처럼 질긴 부분도 화석이 되기 쉬워요.">식물의 줄기, 잎처럼 질긴 부분이 있을 때</button>
+    <button data-a="0" data-m="땅 위에 오래 드러나 있으면 썩거나 부서져 없어지기 쉬워요.">죽은 생물이 오랫동안 땅 위에 드러나 있을 때</button>
+  </div>
+  <div class="fb"></div>
+  <div class="lab" style="max-width:420px;margin:8px auto 0" data-glue="1"><svg id="worm" viewBox="0 0 200 110" role="img" aria-label="벌레가 기어간 자국 화석" style="max-height:18vh"></svg></div>
+  <p class="jua big" data-glue="1">벌레가 기어간 자국은 어떻게 화석이 되었을까요?</p>
+  <div class="pick" id="p8b" data-glue="1">
+    <button data-a="1" data-m="맞아요! 오래전 벌레가 강이나 호수 근처의 무른 땅에 흔적을 남겼고, 그 위로 퇴적물이 쌓여 화석이 되었어요.">무른 땅에 남은 자국 위로 퇴적물이 쌓여 화석이 되었어요</button>
+    <button data-a="0" data-m="벌레는 몸이 말랑말랑해요. 이 화석에 남은 것은 몸이 아니라 무엇인가요?">벌레의 단단한 뼈가 그대로 남았어요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s9" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="big">생물의 몸체나 흔적 위로 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span><span id="bl3">?</span></span>이/가 빠르게 쌓여 지층이 만들어지고, 지층 속 생물은 화석이 됩니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div><div class="fb" id="blFb"></div>
+</section>
+
+<section id="s10" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="tip">화석이 만들어지는 과정: 생물의 몸체나 흔적 등이 바다나 호수에 가라앉는다. → 그 위로 ( ㉠ )이/가 빠르게 쌓인다. → 오랜 시간에 걸쳐 ( ㉠ )이/가 계속 쌓여 ( ㉡ )이/가 만들어진다. → ( ㉡ ) 속에 묻힌 생물은 ( ㉢ )이/가 되고, ( ㉡ )이/가 점점 깎이면서 ( ㉢ )이/가 발견된다.</p>
+  <div id="quiz"></div>
+  <p class="jua big" style="margin-top:14px">✏️ 서술형: 화석 모형과 실제 화석은 어떤 차이점이 있는지 써 봐요.</p>
+  <textarea id="wr" rows="2" placeholder="화석 모형은 ~, 실제 화석은 ~" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wrB">내 답 살펴보기</button></div><div class="fb" id="wrFb"></div>
+</section>
+
+<section id="s11" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>화석이 어떻게 만들어지는지 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>화석이 만들어지는 과정을 모형으로 표현하고 추리할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>화석이 만들어지는 과정에 흥미를 느끼고 관심을 가지게 되었어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 1단원 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기: 고르면 그 단추의 data-m을 보여 줌 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick'+(it.one?' one':'')+'"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t:'글',k:'칸',m:'풀이'}], [{k,n}], 다 맞힘 글, 섹션) — 카드마다 칸 단추 */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach((it,i)=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 설명을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽 낱말을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례 맞히기: orderer('#box', [단계…(맞는 차례)], 다 맞힘 글, 섹션, 단계마다 cb(i)) */
+function orderer(box,steps,okMsg,sec,each,cb){const B=$(box),out=B.nextElementSibling;let k=0;
+  const seq=document.createElement('div');seq.className='t3seq';B.before(seq);
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.classList.contains('t3dn'))return;
+    if(i===k){b.classList.add('t3dn');b.disabled=true;const sp=document.createElement('span');sp.textContent=(k+1)+'. '+s;seq.appendChild(sp);if(each)each(k);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은 무엇일까요? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그 일은 조금 뒤에 해요. 지금 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 요소에 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+
+/* ===== 1단원 지층 그리기: strata({x,y,w,h,layers:[{c,k:'g|s|m',t}],shape:'flat|fold|fault|tilt',amp,waves,ph,d,fx,tilt,pen,id}) ===== */
+let _sid=0;
+function strata(o){
+  const w=o.w||300,h=o.h||200,id=o.id||('st'+(++_sid)),L=o.layers,sh=o.shape||'flat',amp=o.amp||0,d=sh==='fault'?(o.d||0):0;
+  const off=x=>sh==='fold'?amp*Math.sin((x/w)*Math.PI*2*(o.waves||1)+(o.ph||0)):sh==='tilt'?(o.tilt||0)*(x-w/2):0;
+  let mn=1e9,mx=-1e9;for(let x=0;x<=w;x+=5){const v=off(x);mn=Math.min(mn,v);mx=Math.max(mx,v);}
+  const start=-mx-Math.abs(d)-2,end=h-mn+Math.abs(d)+2,tot=L.reduce((a,l)=>a+(l.t||1),0),sc=(end-start)/tot;
+  const cum=[0];L.forEach(l=>cum.push(cum[cum.length-1]+(l.t||1)));
+  const by=(i,x)=>start+cum[i]*sc+off(x);
+  let defs=`<clipPath id="${id}c"><rect width="${w}" height="${h}"/></clipPath>`;
+  const pats={};
+  L.forEach((l,i)=>{const k=l.k||'m',pid=id+'p'+i;pats[i]=pid;let p='';
+    if(k==='g'){p=`<pattern id="${pid}" width="34" height="26" patternUnits="userSpaceOnUse"><rect width="34" height="26" fill="${l.c}"/><ellipse cx="8" cy="8" rx="6" ry="4.5" fill="#fff" opacity=".28" stroke="#000" stroke-opacity=".25"/><ellipse cx="25" cy="18" rx="7" ry="5" fill="#000" opacity=".16"/><circle cx="22" cy="5" r="2" fill="#000" opacity=".2"/><circle cx="6" cy="20" r="1.6" fill="#fff" opacity=".4"/></pattern>`;}
+    else if(k==='s'){p=`<pattern id="${pid}" width="12" height="10" patternUnits="userSpaceOnUse"><rect width="12" height="10" fill="${l.c}"/><circle cx="3" cy="3" r="1.1" fill="#000" opacity=".22"/><circle cx="9" cy="7" r="1.1" fill="#fff" opacity=".35"/></pattern>`;}
+    else{p=`<pattern id="${pid}" width="40" height="8" patternUnits="userSpaceOnUse"><rect width="40" height="8" fill="${l.c}"/><path d="M0 4 H22" stroke="#000" stroke-opacity=".1" stroke-width="1"/></pattern>`;}
+    defs+=p;});
+  function block(shift){let s='';
+    L.forEach((l,i)=>{let dd='M0 '+(by(i,0)+shift).toFixed(1);for(let x=0;x<=w;x+=6)dd+=' L'+x+' '+(by(i,x)+shift).toFixed(1);dd+=' L'+w+' '+(by(i,w)+shift).toFixed(1);
+      for(let x=w;x>=0;x-=6)dd+=' L'+x+' '+(by(i+1,x)+shift).toFixed(1);dd+=' L0 '+(by(i+1,0)+shift).toFixed(1)+'Z';
+      s+=`<path d="${dd}" fill="url(#${pats[i]})"/>`;});
+    if(o.pen!=null){for(let i=1;i<L.length;i++){let dd='M0 '+(by(i,0)+shift).toFixed(1);for(let x=6;x<=w;x+=6)dd+=' L'+x+' '+(by(i,x)+shift).toFixed(1);
+      s+=`<path class="penline" d="${dd}" fill="none" stroke="#1d2b8f" stroke-width="3.5" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100-100*o.pen}"/>`;}}
+    return s;}
+  let body;
+  if(sh==='fault'){const fx=o.fx||w*.5,fs=o.fs==null?h*.25:o.fs;
+    defs+=`<clipPath id="${id}L"><path d="M-5 -5 L${fx+fs} -5 L${fx-fs} ${h+5} L-5 ${h+5}Z"/></clipPath><clipPath id="${id}R"><path d="M${fx+fs} -5 L${w+5} -5 L${w+5} ${h+5} L${fx-fs} ${h+5}Z"/></clipPath>`;
+    body=`<g clip-path="url(#${id}L)">${block(0)}</g><g clip-path="url(#${id}R)">${block(d)}</g><path d="M${fx+fs} 0 L${fx-fs} ${h}" stroke="#2b1a0c" stroke-width="4"/>`;}
+  else body=block(0);
+  return `<g transform="translate(${o.x||0} ${o.y||0})"><defs>${defs}</defs><g clip-path="url(#${id}c)">${body}</g>${o.frame===false?'':`<rect width="${w}" height="${h}" fill="none" stroke="#3b2a1a" stroke-width="3" rx="4"/>`}</g>`;}
+/* ===== 1단원 화석 그림: fossil(종류, x, y, 크기 k) — 200×150 판 기준 ===== */
+const FS={stone:'#b9b2a4',dark:'#5e554a',mid:'#8a8174',lite:'#d8d2c4'};
+function slab(w,h,c){ return `<rect width="${w}" height="${h}" rx="14" fill="${c||FS.stone}" stroke="#7d7465" stroke-width="3"/><path d="M14 ${h*.7} q40 -8 80 4 M${w*.55} 20 q30 6 60 -4" stroke="#a49b8c" stroke-width="2" fill="none"/>`; }
+const FOSSIL={
+  trilobite:()=>{ let s='<path d="M100 22 C60 22 52 50 56 62 L144 62 C148 50 140 22 100 22Z" fill="#7a7062" stroke="#4a4239" stroke-width="2.5"/>';
+    s+='<path d="M60 62 C62 110 84 132 100 134 C116 132 138 110 140 62Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/>';
+    for(let i=0;i<9;i++){ const y=68+i*7, w=40-i*2.6; s+=`<path d="M${100-w-2} ${y} Q100 ${y+3} ${100+w+2} ${y}" stroke="#4a4239" stroke-width="2" fill="none"/>`; }
+    s+='<path d="M88 62 C86 100 92 126 100 132 C108 126 114 100 112 62" fill="#9a9184" stroke="#4a4239" stroke-width="2"/><circle cx="80" cy="46" r="5" fill="#4a4239"/><circle cx="120" cy="46" r="5" fill="#4a4239"/>'; return s; },
+  fern:()=>{ let s='<path d="M60 140 Q100 80 150 14" stroke="#4a4239" stroke-width="4" fill="none"/>';
+    for(let i=0;i<9;i++){ const t=i/9, x=60+t*90-((1-t)*6), y=140-t*126+ (t*t*10); const L=26*(1-t*.6);
+      s+=`<path d="M${x} ${y} q${-L*.6} ${-L*.2} ${-L} ${-L*.6} q${L*.5} ${L*.1} ${L} ${L*.6}Z" fill="#6d6457" stroke="#4a4239" stroke-width="1.5"/><path d="M${x} ${y} q${L*.7} ${L*.05} ${L*1.1} ${-L*.3} q${-L*.5} ${-L*.2} ${-L*1.1} ${L*.3}Z" fill="#6d6457" stroke="#4a4239" stroke-width="1.5"/>`; } return s; },
+  fish:()=>{ let s='<path d="M30 76 C60 40 130 42 158 72 C130 104 60 108 30 76Z" fill="#9a9184" stroke="#4a4239" stroke-width="2.5"/><path d="M156 72 L188 46 L182 74 L188 102Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/>';
+    s+='<path d="M40 76 H160" stroke="#3d362f" stroke-width="3.5"/>'; for(let i=0;i<12;i++){ const x=58+i*8; s+=`<path d="M${x} 76 l-6 -${18-Math.abs(i-5)} M${x} 76 l-6 ${18-Math.abs(i-5)}" stroke="#4a4239" stroke-width="1.6"/>`; }
+    s+='<circle cx="44" cy="70" r="5" fill="#3d362f"/><path d="M96 44 l14 -14 l6 16Z M100 106 l12 12 l4 -14Z" fill="#8a8174" stroke="#4a4239" stroke-width="2"/>'; return s; },
+  ammonite:()=>{ let d='M100 75'; for(let a=0;a<=4*Math.PI*2.2;a+=.2){ const r=3+a*4.4; d+=` L${(100+Math.cos(a)*r).toFixed(1)} ${(75+Math.sin(a)*r).toFixed(1)}`; }
+    let s=`<circle cx="100" cy="75" r="62" fill="#8a8174" stroke="#4a4239" stroke-width="3"/><path d="${d}" fill="none" stroke="#4a4239" stroke-width="3"/>`;
+    for(let i=0;i<36;i++){ const a=i/36*Math.PI*2; s+=`<path d="M${100+Math.cos(a)*44} ${75+Math.sin(a)*44} L${100+Math.cos(a)*60} ${75+Math.sin(a)*60}" stroke="#4a4239" stroke-width="2"/>`; } return s; },
+  ginkgo:()=>{ let s='<path d="M100 132 L100 92" stroke="#4a4239" stroke-width="4"/><path d="M100 94 C66 92 36 64 42 30 C70 18 130 18 158 30 C164 64 134 92 100 94Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/><path d="M100 30 L100 60" stroke="#b9b2a4" stroke-width="4"/>';
+    for(let i=0;i<11;i++){ const a=Math.PI*(1.12+i*.076); s+=`<path d="M100 94 L${100+Math.cos(a)*68} ${94+Math.sin(a)*68}" stroke="#4a4239" stroke-width="1.2" opacity=".7"/>`; } return s; },
+  bird:()=>{ let s=''; [[50,110,-10],[95,70,10],[140,32,-8]].forEach(([x,y,r])=>{ s+=`<g transform="translate(${x} ${y}) rotate(${r+25})" stroke="#4a4239" stroke-width="5" stroke-linecap="round" fill="none"><path d="M0 0 L0 -26 M0 0 L-18 -18 M0 0 L18 -18 M0 0 L0 8"/></g>`; }); return s; },
+  pine:()=>{ let s='<ellipse cx="100" cy="78" rx="42" ry="58" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/>';
+    for(let r=0;r<8;r++) for(let c=0;c<5;c++){ const y=32+r*12, x=72+c*14+(r%2)*7; if(Math.hypot((x-100)/40,(y-78)/56)<1) s+=`<path d="M${x-6} ${y} Q${x} ${y-8} ${x+6} ${y} Q${x} ${y+5} ${x-6} ${y}Z" fill="#6d6457" stroke="#4a4239" stroke-width="1"/>`; } return s; },
+  bone:()=>{ const b=(x,y,l,r)=>`<g transform="translate(${x} ${y}) rotate(${r})"><rect x="${-l/2}" y="-6" width="${l}" height="12" rx="6" fill="#e9e1cf" stroke="#6b5f4c" stroke-width="2"/><circle cx="${-l/2}" cy="-6" r="8" fill="#e9e1cf" stroke="#6b5f4c" stroke-width="2"/><circle cx="${-l/2}" cy="6" r="8" fill="#e9e1cf" stroke="#6b5f4c" stroke-width="2"/><circle cx="${l/2}" cy="-6" r="8" fill="#e9e1cf" stroke="#6b5f4c" stroke-width="2"/><circle cx="${l/2}" cy="6" r="8" fill="#e9e1cf" stroke="#6b5f4c" stroke-width="2"/></g>`;
+    return b(70,60,80,-20)+b(130,95,90,15)+b(110,40,50,60)+'<path d="M40 120 q20 -10 40 0 q20 10 40 0" stroke="#e9e1cf" stroke-width="9" fill="none"/>'; },
+  dinofoot:()=>`<g transform="translate(100 80)" fill="#6d6457" stroke="#4a4239" stroke-width="3"><path d="M-14 30 C-24 10 -20 -6 -8 -10 L0 -60 L8 -10 C20 -6 24 10 14 30Z"/><path d="M-8 -6 L-46 -40 L-34 -46 L-2 -14Z"/><path d="M8 -6 L46 -40 L34 -46 L2 -14Z"/></g>`,
+  dung:()=>'<path d="M48 96 C40 70 70 58 90 66 C104 46 140 50 146 72 C166 76 168 104 146 110 C120 124 66 122 48 96Z" fill="#7a6a52" stroke="#4a3e2e" stroke-width="3"/><circle cx="90" cy="88" r="4" fill="#5a4c38"/><circle cx="122" cy="80" r="3" fill="#5a4c38"/><circle cx="110" cy="102" r="3.5" fill="#5a4c38"/>',
+  coral:()=>{ let s=''; for(let i=0;i<7;i++){ const x=40+i*20; s+=`<rect x="${x}" y="${30+(i%3)*8}" width="13" height="${100-(i%3)*8}" rx="6" fill="#8a8174" stroke="#4a4239" stroke-width="2"/><circle cx="${x+6.5}" cy="${36+(i%3)*8}" r="4" fill="#4a4239"/>`; for(let k=0;k<4;k++) s+=`<path d="M${x} ${55+k*18+(i%3)*8} h13" stroke="#4a4239" stroke-width="1.4"/>`; } return s; },
+  egg:()=>{ let s=''; [[66,62],[104,52],[140,66],[84,100],[124,104]].forEach(([x,y])=>{ s+=`<ellipse cx="${x}" cy="${y}" rx="20" ry="17" fill="#cfc6b4" stroke="#6b5f4c" stroke-width="2.5"/><path d="M${x-10} ${y-4} l6 4 l5 -5 l6 6" stroke="#6b5f4c" stroke-width="1.5" fill="none"/>`; }); return s; },
+  lizard:()=>{ let s=''; [[50,100,1],[80,76,-1],[110,100,1],[140,76,-1]].forEach(([x,y,f])=>{ s+=`<g transform="translate(${x} ${y}) scale(${f} 1)" stroke="#4a4239" stroke-width="3" stroke-linecap="round" fill="none"><path d="M0 0 L-8 -14 M0 0 L-2 -16 M0 0 L5 -14 M0 0 L10 -9 M0 0 L10 3"/></g>`; }); return s+'<path d="M30 112 Q100 90 170 70" stroke="#6d6457" stroke-width="2" stroke-dasharray="4 6" fill="none"/>'; },
+  wood:()=>'<path d="M30 60 L170 44 L176 86 L34 104Z" fill="#8a7a62" stroke="#4a3e2e" stroke-width="3"/><path d="M40 70 L168 54 M42 84 L170 68 M44 96 L172 80" stroke="#5e5040" stroke-width="2"/><ellipse cx="172" cy="65" rx="8" ry="21" fill="#a49274" stroke="#4a3e2e" stroke-width="3"/>',
+};
+function fossil(kind,o){ o=o||{}; const w=o.w||200,h=o.h||150; return (o.slab===false?'':slab(w,h,o.c))+`<g transform="scale(${w/200} ${h/150})">${FOSSIL[kind]()}</g>`; }
+
+/* ---------- 조개 모양 ---------- */
+function shell(cx,cy,w,o){ o=o||{}; const h=w*.82; let s=`<g transform="translate(${cx} ${cy})">`;
+  s+=`<path d="M0 ${-h*.5} C${w*.55} ${-h*.5} ${w*.6} ${h*.3} ${w*.18} ${h*.5} L${-w*.18} ${h*.5} C${-w*.6} ${h*.3} ${-w*.55} ${-h*.5} 0 ${-h*.5}Z" fill="${o.fill||'#f3e6cf'}" stroke="${o.st||'#a08460'}" stroke-width="${o.sw||2.5}"/>`;
+  for(let i=-3;i<=3;i++) s+=`<path d="M0 ${-h*.46} Q${i*w*.08} 0 ${i*w*.11} ${h*.48}" stroke="${o.st||'#a08460'}" stroke-width="1.6" fill="none"/>`;
+  s+=`<rect x="${-w*.22}" y="${h*.44}" width="${w*.44}" height="${h*.12}" rx="3" fill="${o.fill||'#f3e6cf'}" stroke="${o.st||'#a08460'}" stroke-width="2"/></g>`; return s; }
+
+/* ---------- 도입: 손 찍기 ---------- */
+let handDone=false;
+function drawHand(p){ let s='<rect width="800" height="260" fill="#fdf6ec"/><ellipse cx="400" cy="190" rx="220" ry="46" fill="#e6d3b2" stroke="#b49a72" stroke-width="3"/>';
+  if(p>=1){ s+='<g transform="translate(400 182)" fill="#cdb48c" stroke="#a88b60" stroke-width="2"><ellipse cx="0" cy="10" rx="52" ry="22"/>'+[-44,-20,4,28].map((x,i)=>`<rect x="${x}" y="${-38+(i===0||i===3?10:0)}" width="16" height="44" rx="8"/>`).join('')+'<rect x="40" y="0" width="38" height="14" rx="7" transform="rotate(-25 40 0)"/></g>'; }
+  const hy=lerp(10,120,Math.min(1,p*2))-(p>.5?lerp(0,110,(p-.5)*2):0);
+  if(p<1) s+=`<g transform="translate(400 ${hy})" fill="#ffd9b0" stroke="#d29a62" stroke-width="2"><ellipse cx="0" cy="10" rx="50" ry="26"/>${[-44,-20,4,28].map((x,i)=>`<rect x="${x}" y="${-48+(i===0||i===3?10:0)}" width="16" height="50" rx="8"/>`).join('')}<rect x="40" y="0" width="40" height="16" rx="8" transform="rotate(-25 40 0)"/><rect x="-26" y="30" width="52" height="40" fill="#3a86c8" stroke="none"/></g>`;
+  s+=`<text x="400" y="40" text-anchor="middle" font-family="Jua" font-size="22" fill="#6b4a22">${p>=1?'반죽에 손 모양 자국이 생겼어요':'부드러운 반죽'}</text>`;
+  $('#hand').innerHTML=s; }
+drawHand(0);
+$('#handBtn').onclick=()=>{ if(handDone) return; tween(1600,drawHand,()=>{ drawHand(1); handDone=true; $('#ask1').hidden=false; $('#handBtn').disabled=true; }); };
+pickOne('#p1','','다시 생각해 봐요.','s1');
+
+/* ---------- 가상 실험 ---------- */
+const S5={bag:0,clay:0,press:-1,imp:0,water:0,plaster:0,hard:0,lift:0,split:0};
+function drawLab(){ const o=S5; let s='<rect width="800" height="330" fill="#f4fbff"/><rect y="300" width="800" height="30" fill="#d9c7ad"/>';
+  const bx=230,bw=340,by=110,bb=300; const lift=o.lift*150;
+  if(o.split<=0){
+    s+=`<g transform="translate(0 ${-lift})">`;
+    if(o.bag) s+=`<path d="M${bx-14} ${by-30} L${bx+10} ${bb-4} L${bx+bw-10} ${bb-4} L${bx+bw+14} ${by-30}" fill="#e9f4fb" fill-opacity=".5" stroke="#9fb7c4" stroke-width="2" opacity="${o.bag}"/>`;
+    const ct=bb-70*o.clay; if(o.clay>0){ s+=`<rect x="${bx+14}" y="${ct}" width="${bw-28}" height="${bb-6-ct}" fill="#9a7b5c"/>`;
+      if(o.imp) s+=`<path d="M${400-38} ${ct} Q400 ${ct+26} ${400+38} ${ct}Z" fill="#7f6449"/>`; }
+    const wt=ct-36*o.water; if(o.water>0) s+=`<rect x="${bx+14}" y="${wt}" width="${bw-28}" height="${ct-wt}" fill="#8cc8ec" opacity="${.6*(1-o.hard)}"/>`;
+    if(o.plaster>0){ const pt=ct-40*o.plaster; s+=`<rect x="${bx+14}" y="${pt}" width="${bw-28}" height="${ct-pt}" fill="#f2f2ee" opacity="${.5+o.hard*.5}"/>`; if(o.imp) s+=`<path d="M${400-38} ${ct} Q400 ${ct+26} ${400+38} ${ct}Z" fill="#f2f2ee" opacity="${o.plaster}"/>`;
+      if(o.plaster<1) for(let j=0;j<30;j++) s+=`<circle cx="${300+(j*37)%200}" cy="${40+((j*53+o.plaster*400)%(pt-40))}" r="2.5" fill="#fff" stroke="#bbb"/>`; }
+    s+='</g>';
+    if(o.press>=0){ const yy=lerp(30,bb-70-14,Math.sin(Math.min(1,o.press)*Math.PI)); s+=shell(400,yy,70)+`<g transform="translate(400 ${yy-48})"><rect x="-14" y="-30" width="28" height="34" rx="10" fill="#ffd9b0" stroke="#d29a62" stroke-width="2"/></g>`; }
+    s+=`<path d="M${bx} ${by} L${bx+12} ${bb} L${bx+bw-12} ${bb} L${bx+bw} ${by}" fill="none" stroke="#7a8c96" stroke-width="5"/><text x="${bx+bw/2}" y="${by-36}" text-anchor="middle" font-family="Jua" font-size="20" fill="#0f3b5c">투명한 그릇</text>`;
+    if(o.hard>0&&o.hard<1){ s+=`<g transform="translate(680 100)"><circle r="38" fill="#fff" stroke="#0f3b5c" stroke-width="4"/><path d="M0 0 V-26 M0 0 L${22*Math.cos(o.hard*12)} ${22*Math.sin(o.hard*12)}" stroke="#0f3b5c" stroke-width="4" stroke-linecap="round"/></g><text x="680" y="170" text-anchor="middle" font-family="Jua" font-size="18" fill="#0f3b5c">석고가 굳기를 기다려요</text>`; }
+  } else { const d=o.split*60;
+    s+=`<g transform="translate(${-d} 0)"><rect x="210" y="200" width="200" height="60" rx="8" fill="#9a7b5c" stroke="#6e5640" stroke-width="2"/>${shell(310,214,60,{fill:'#7f6449',st:'#5e4834'})}<text x="310" y="290" text-anchor="middle" font-family="Jua" font-size="18" fill="#0f3b5c">찰흙: 오목한 자국</text></g>`;
+    s+=`<g transform="translate(${d} 0)"><rect x="390" y="${200-o.split*40}" width="200" height="50" rx="8" fill="#f2f2ee" stroke="#aaa" stroke-width="2"/>${shell(490,190-o.split*40,60,{fill:'#ffffff',st:'#8d8d8d'})}<text x="490" y="290" text-anchor="middle" font-family="Jua" font-size="18" fill="#0f3b5c">석고: 볼록한 조개 모양</text></g>`; }
+  $('#lab').innerHTML=s; }
+drawLab();
+let st5=0, waitQ=false; const MSG=['찰흙을 평평하게 폈어요.','조개껍데기 자국이 생겼어요. 아래 물음에 답하면 다음 단계를 할 수 있어요.','조개껍데기 자국이 모두 덮이도록 물을 부었어요.','물 표면이 보이지 않을 정도로 석고 가루를 넣었어요. 아래 물음에 답해요.','석고가 굳어서 비닐봉지째 들어 올려 꺼냈어요.','찰흙과 석고를 떼어 냈어요. 조개 화석 모형을 관찰해요!'];
+$$('#steps button').forEach(b=>b.onclick=()=>{ const k=+b.dataset.s; if(k!==st5||waitQ) return; b.disabled=true;
+  const fin=()=>{ b.classList.add('done'); fb('#labFb',MSG[k],k===5?true:'info'); st5++;
+    if(k===1){ waitQ=true; $('#q2').hidden=false; } else if(k===3){ waitQ=true; $('#q4').hidden=false; }
+    else if(k===5){ doneNav('s2'); drawRes(); }
+    else $(`#steps button[data-s="${st5}"]`).disabled=false; };
+  if(k===0) tween(1200,p=>{S5.bag=Math.min(1,p*2);S5.clay=Math.max(0,p*2-1);drawLab();},fin);
+  if(k===1) tween(1800,p=>{S5.press=p;if(p>.5)S5.imp=1;drawLab();},()=>{S5.press=-1;drawLab();fin();});
+  if(k===2) tween(1200,p=>{S5.water=p;drawLab();},fin);
+  if(k===3) tween(1800,p=>{S5.plaster=p;drawLab();},fin);
+  if(k===4) tween(2400,p=>{S5.hard=Math.min(1,p*1.5);S5.lift=Math.max(0,(p-.66)*3);drawLab();},fin);
+  if(k===5) tween(1400,p=>{S5.split=p;drawLab();},fin); });
+pickOne('#pq2','','다시 생각해 봐요.',null,()=>{ waitQ=false; $(`#steps button[data-s="2"]`).disabled=false; });
+pickOne('#pq4','','다시 생각해 봐요.',null,()=>{ waitQ=false; $(`#steps button[data-s="4"]`).disabled=false; });
+
+/* ---------- 관찰 결과 ---------- */
+function drawRes(){ let s='<rect width="800" height="240" fill="#fdfaf3"/>';
+  s+='<rect x="90" y="60" width="260" height="120" rx="10" fill="#9a7b5c" stroke="#6e5640" stroke-width="3"/>'+shell(220,118,90,{fill:'#7f6449',st:'#5e4834'});
+  s+='<rect x="450" y="60" width="260" height="120" rx="10" fill="#f2f2ee" stroke="#aaa" stroke-width="3"/>'+shell(580,118,90,{fill:'#ffffff',st:'#8d8d8d'});
+  s+='<g font-family="Jua" font-size="19" fill="#0f3b5c" text-anchor="middle"><text x="220" y="40">찰흙에 찍힌 조개껍데기 자국</text><text x="580" y="40">석고로 만든 조개껍데기</text><text x="220" y="210">오목하게 패어 있고 줄무늬가 있어요</text><text x="580" y="210">볼록하고 줄무늬가 있어요</text></g>';
+  $('#res').innerHTML=s; }
+$('#res').innerHTML='<rect width="800" height="240" fill="#eef6fb"/><text x="400" y="125" text-anchor="middle" font-family="Jua" font-size="22" fill="#48646f">가상 실험을 끝까지 하면 여기에 결과가 보여요</text>';
+pickOne('#p3','','다시 생각해 봐요.','s3');
+
+/* ---------- 비교 ---------- */
+$('#cmp').innerHTML='<rect width="640" height="170" fill="#fdfaf3"/><rect x="40" y="30" width="230" height="110" rx="10" fill="#f2f2ee" stroke="#aaa" stroke-width="3"/>'+shell(155,84,80,{fill:'#fff',st:'#8d8d8d'})+
+  '<rect x="370" y="30" width="230" height="110" rx="10" fill="#9b9384" stroke="#6e665a" stroke-width="3"/>'+shell(485,84,80,{fill:'#c8bfae',st:'#5e574c'})+
+  '<g font-family="Jua" font-size="18" fill="#0f3b5c" text-anchor="middle"><text x="155" y="162">조개 화석 모형</text><text x="485" y="162">실제 조개 화석</text></g>';
+sorter('#st4',[{t:'생김새(모양과 무늬)가 비슷해요',k:'same'},{t:'색깔이 서로 달라요',k:'diff'},{t:'모형은 만드는 데 오랜 시간이 걸리지 않지만, 실제 화석은 만들어지기까지 오랜 시간이 걸려요',k:'diff'},{t:'모형은 실내에서 만들지만, 실제 화석은 자연환경에서 만들어져요',k:'diff'}],
+  [{k:'same',n:'공통점'},{k:'diff',n:'차이점'}],'모두 맞혔어요! 화석 모형과 실제 화석은 생김새가 비슷하지만, 실제 화석은 자연에서 오랜 시간에 걸쳐 만들어져요.','s4');
+matcher('#m5',[['찰흙 위에 조개껍데기를 눌렀다 떼어 남은 자국','무른 땅에 남은 생물의 흔적'],['자국 위로 붓는 물과 석고 가루','생물의 흔적 위로 쌓이는 퇴적물'],
+  ['찰흙과 굳은 석고','화석이 발견된 지층'],['찰흙에 남은 자국과 석고로 만든 조개껍데기','실제 조개 화석']],
+  '모두 이었어요! 화석 모형을 만드는 과정으로 실제 화석이 만들어지는 과정을 추리할 수 있어요.','s5');
+
+/* ---------- 화석이 만들어지는 과정 영상 ---------- */
+const FC5=['#c9a46c','#a7896b','#d9b98a','#8a6a4c','#e8cf8a','#b9a382'];
+function drawFos(t){ const sm=x=>Math.max(0,Math.min(1,x));
+  const sink=sm(t/3), bury=sm((t-3)/3), nL=t<3?1:t<6?1+bury*2:t<10?3+sm((t-6)/3)*3:6, hard=sm((t-7)/3), up=sm((t-10)/3), er1=sm((t-11.5)/2.5), er2=sm((t-14)/3);
+  const sea=110+up*60; let s='<rect width="800" height="340" fill="#cfe9f7"/>';
+  s+=`<rect y="${sea}" width="800" height="${340-sea}" fill="#5b9fd4" opacity=".7"/>`;
+  const base=320-up*120; const lh=24; const top=base-lh*nL;
+  const fyEnd=base-lh*.5-11, c1=top+er1*lh*2, dep=Math.max(0,(fyEnd-6)-c1)*er2;
+  s+=`<defs><clipPath id="er5"><path d="M0 ${c1} L230 ${c1} Q300 ${c1} 330 ${c1+dep} L470 ${c1+dep} Q500 ${c1} 570 ${c1} L800 ${c1} V340 H0Z"/></clipPath></defs><g clip-path="url(#er5)">`;
+  for(let i=0;i<Math.ceil(nL);i++){ const h=lh*Math.min(1,nL-i); s+=`<rect x="0" y="${base-lh*i-h}" width="800" height="${h}" fill="${FC5[i%6]}" opacity="${.8+hard*.2}"/>`; if(hard>.3) s+=`<line x1="0" x2="800" y1="${base-lh*i-h}" y2="${base-lh*i-h}" stroke="#3b2a1a" stroke-opacity=".35"/>`; }
+  s+=`<rect y="${base}" width="800" height="${340-base}" fill="#6e5a44"/>`;
+  const fy=lerp(sea+20,fyEnd,sink); const fishX=400;
+  s+=`<g transform="translate(${fishX-55} ${fy-30}) scale(.55)" opacity="${1}">${t<3?'<path d="M30 76 C60 40 130 42 158 72 C130 104 60 108 30 76Z" fill="#e6a050" stroke="#a0602a" stroke-width="3"/><path d="M156 72 L188 46 L182 74 L188 102Z" fill="#e6a050" stroke="#a0602a" stroke-width="3"/><circle cx="48" cy="70" r="5" fill="#333"/>':FOSSIL.fish().replace(/#9a9184|#8a8174/g,hard>.5?'#7d7466':'#e9e1cf')}</g>`;
+  s+='</g>';
+  if(t>=3&&t<6){ for(let j=0;j<16;j++){ const u=((t*0.7+j/16)%1); s+=`<circle cx="${250+(j*41)%300}" cy="${sea+u*(top-sea)}" r="3" fill="${FC5[j%4]}" stroke="#5f5242"/>`; } }
+  if(t>=7&&t<10){ s+=`<g transform="translate(640 60)"><circle r="32" fill="#fff" stroke="#0f3b5c" stroke-width="4"/><path d="M0 0 V-22 M0 0 L${16*Math.cos(t*3)} ${16*Math.sin(t*3)}" stroke="#0f3b5c" stroke-width="4" stroke-linecap="round"/></g><text x="640" y="116" text-anchor="middle" font-family="Jua" font-size="20" fill="#0f3b5c">오랜 시간</text>`; }
+  if(er2>.7){ s+=`<g transform="translate(560 ${c1})"><circle cy="-46" r="9" fill="#ffd9b0"/><rect x="-8" y="-36" width="16" height="22" rx="5" fill="#e2573f"/><path d="M-5 -14 l-3 14 M5 -14 l3 14" stroke="#3a3a3a" stroke-width="4"/><path d="M-8 -30 L-40 -8" stroke="#ffd9b0" stroke-width="5"/></g>`; }
+  const ti=t<3?'① 생물이 바다나 호수에 가라앉아요':t<6?'② 그 위로 퇴적물이 빠르게 쌓여요':t<10?'③ 지층이 만들어지고 생물은 화석이 돼요':t<14?'④ 물 밖으로 드러난 지층이 깎여요':'⑤ 지층 속 화석이 발견돼요';
+  s+=`<rect x="12" y="12" width="${ti.length*18+22}" height="38" rx="12" fill="#0f3b5c" opacity=".88"/><text x="24" y="38" font-size="20" font-family="Jua" fill="#fff">${ti}</text>`;
+  $('#fosV').innerHTML=s; }
+mkPlayer({root:'#pl1',end:17.5,
+  ch:[[0,'① 가라앉음','생물의 몸체나 흔적 등이 바다나 호수에 가라앉아요.'],[3,'② 빠르게 쌓임','그 위로 퇴적물이 빠르게 쌓여요.'],
+      [6,'③ 화석이 됨','오랜 시간에 걸쳐 퇴적물이 계속 쌓여 지층이 만들어지고, 지층 속 생물은 화석이 돼요.'],[10,'④ 깎임','물 밖으로 드러난 지층이 점점 깎여요.'],
+      [14,'⑤ 발견','지층이 더 많이 깎이면서 지층 속에 있던 화석이 발견돼요.']],
+  draw:drawFos, done(){ fb('#plFb','끝까지 봤어요. 화석이 만들어져 우리에게 발견되기까지는 오랜 시간이 걸려요.',true); doneNav('s6'); } });
+orderer('#ord7',['생물의 몸체나 흔적 등이 바다나 호수에 가라앉아요.','그 위로 퇴적물이 빠르게 쌓여요.','오랜 시간에 걸쳐 퇴적물이 계속 쌓여 지층이 만들어지고, 지층 속 생물은 화석이 돼요.','물 밖으로 드러난 지층이 점점 깎여요.','지층이 더 많이 깎이면서 지층 속에 있던 화석이 발견돼요.'],
+  '차례대로 정리했어요! 화석이 만들어지려면 생물의 몸체나 흔적 위로 퇴적물이 빠르게 쌓여야 해요.','s7');
+
+$('#worm').innerHTML=slab(200,110)+'<path d="M20 70 C50 30 70 100 100 60 S150 30 180 64" stroke="#5e554a" stroke-width="7" fill="none" stroke-linecap="round"/><path d="M20 70 C50 30 70 100 100 60 S150 30 180 64" stroke="#8a8174" stroke-width="3" fill="none" stroke-dasharray="3 5"/>';
+let a8=0; const f8=()=>{ if(++a8===2) doneNav('s8'); };
+pickAll('#p8a','모두 찾았어요! 생물의 몸체나 흔적 위로 퇴적물이 빠르게 쌓이고, 단단하거나 질긴 부분이 있으면 화석이 만들어지기 쉬워요.','다시 생각해 봐요.',null,f8);
+pickOne('#p8b','','다시 생각해 봐요.',null,f8);
+$('#blReveal').onclick=()=>{ fb('#blFb','생물의 몸체나 흔적 위로 퇴적물이 빠르게 쌓여 지층이 만들어지고, 지층 속 생물은 화석이 돼요.',true); doneNav('s9'); };
+
+let q10=false,w10=false;
+quiz('#quiz',[
+  {q:'1. ㉠에 알맞은 말은?',o:['퇴적물','화석','용암'],a:0,e:'생물의 몸체나 흔적 위로 퇴적물이 빠르게 쌓여요.',h:'석고 가루가 나타낸 것을 떠올려 봐요.'},
+  {q:'2. ㉡에 알맞은 말은?',o:['지층','바다','화석'],a:0,e:'퇴적물이 계속 쌓여 지층이 만들어져요.',h:'퇴적물이 오랜 시간 쌓여 굳어진 것은?'},
+  {q:'3. ㉢에 알맞은 말은?',o:['퇴적물','지층','화석'],a:2,e:'지층 속에 묻힌 생물은 화석이 되고, 지층이 깎이면서 화석이 발견돼요.',h:'지층 속에 묻힌 생물은 무엇이 되나요?'}],()=>{q10=true;if(w10)doneNav('s10');});
+keyCheck('#wr','#wrB','#wrFb',[[/모형/,'화석 모형'],[/(오랜|오래|긴)\s*시간|오래 걸|짧은 시간|금방/,'걸리는 시간'],[/(실제|자연)/,'실제 화석']],2,null,'‘화석 모형은 만드는 데 오랜 시간이 걸리지 않지만, 실제 화석은 ~’처럼 써 봐요.');
+$('#wrB').addEventListener('click',()=>{ if($('#wrFb').classList.contains('ok')){ w10=true; if(q10) doneNav('s10'); } });
+faces('s11','멋져요! 다음 시간에는 화석이 알려 주는 지구의 비밀을 찾아봐요.','어려웠던 부분은 화석 모형 만들기 과정과 실제 화석이 만들어지는 과정을 다시 이어 봐요.');
+</script>
