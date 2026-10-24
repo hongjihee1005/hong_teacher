@@ -23,6 +23,7 @@ body.ov .pick.c3{grid-template-columns:repeat(3,minmax(0,1fr))}
 .pick.c3{grid-template-columns:repeat(auto-fill,minmax(150px,1fr))}
 body.ov .pick.c1{grid-template-columns:minmax(0,1fr)}
 #e5Bar{height:min(29vh,232px)}
+.e5-lock{filter:blur(6px);opacity:.3;pointer-events:none;user-select:none}
 @media (max-width:640px){.m2-two svg{height:auto;width:100%}.m2-lab svg,svg.m2-fig{height:auto;width:100%}#e5Bar{height:auto}}
 .m2-sort{display:grid;gap:8px}
 .m2-sort.c2{grid-template-columns:repeat(2,minmax(0,1fr))}
@@ -164,7 +165,7 @@ svg .hs:focus-visible rect{stroke:var(--sun);stroke-width:4}
   <p class="jua" style="font-size:1.05rem">1. 2시간 동안 100 km를 이동한 자동차의 속력을 구하고 바르게 읽어 봐요.</p>
   <p class="jua" data-glue="1">속력: <input class="m2-num" id="e5F1" inputmode="decimal" aria-label="자동차의 속력"> km/h <button id="e5F1b">확인</button></p>
   <div class="fb" id="e5F1f"></div>
-  <div id="quiz" hidden></div>
+  <div id="quiz" class="e5-lock" aria-hidden="true"></div>
   <p class="jua" style="font-size:1.05rem">4. ✏️ 서술형: 치타는 “50 m를 10초에 달릴 수 있어.”, 호랑이는 “100 m를 25초에 달릴 수 있어.”라고 말했어요. 두 동물의 속력을 구해 빠르기를 비교해 봐요.</p>
   <textarea id="e5W" rows="2" placeholder="예: 치타의 속력은 … m/s이고, 호랑이의 속력은 … m/s이므로 …"></textarea>
   <div class="row" style="margin-top:8px"><button class="main" id="e5WBtn">내 답 살펴보기</button></div>
@@ -327,8 +328,9 @@ pickOne('#e5Q4','맞아요! 계기판의 속력을 보고 빠르기를 조절해
 
 /* ---------- 형성 평가 ---------- */
 let q0=0,q1=0,q2=0;const c7=()=>{if(q0&&q1&&q2)doneNav('s7');};
+fb('#e5F1f','1번을 풀면 아래 문제가 열려요.','info');
 $('#e5F1b').onclick=()=>{const el=$('#e5F1');if(!el.value.trim()){fb('#e5F1f','속력을 써요.','info');return;}
-  if(numOk(el,50)){fb('#e5F1f','정답! 100 km ÷ 2 h = 50 km/h예요.',true);$('#quiz').hidden=false;q0=1;c7();}else fb('#e5F1f','이동 거리를 걸린 시간으로 나누어요.',false);};
+  if(numOk(el,50)){fb('#e5F1f','정답! 100 km ÷ 2 h = 50 km/h예요.',true);$('#quiz').classList.remove('e5-lock');$('#quiz').removeAttribute('aria-hidden');q0=1;c7();}else fb('#e5F1f','이동 거리를 걸린 시간으로 나누어요.',false);};
 quiz('#quiz',[
  {q:'2. 50 km/h를 바르게 읽은 것은?',o:['오십 킬로미터 매 시','오십 킬로미터 매 초','오십 미터 매 시'],a:0,e:'km는 킬로미터, /h는 ‘매 시’라고 읽어요.',h:'km와 h를 각각 어떻게 읽는지 떠올려 봐요.'},
  {q:'3. 속력의 단위가 같을 때 속력을 나타내는 숫자가 클수록 더 빠르다. (○, ×)',o:['○ 옳아요','× 옳지 않아요'],a:0,e:'단위가 같으면 숫자가 클수록 더 빨라요. 단위가 다르면 숫자만 보고 비교할 수 없어요.'}],()=>{q1=1;c7();});
