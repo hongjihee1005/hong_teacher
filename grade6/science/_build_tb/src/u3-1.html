@@ -1,0 +1,385 @@
+<!--
+title: 세포가 궁금해!
+unit: 3
+lesson: 2
+total: 12
+goal: 생물이 세포로 이루어졌음을 알고 세포의 특징을 설명할 수 있어요.<br>현미경으로 식물 세포를 관찰할 수 있어요.
+pages: 「과학」 62~63쪽 · 「실험관찰」 36~37쪽 · 지도서 266~273쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"세","bl2":"포"}}]
+-->
+<style>
+[hidden]{display:none!important}
+.p3-fit{width:min(100%,calc(var(--h,48vh)*var(--ar,1.6)));margin:0 auto}
+.p3-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:700px){.p3-two{grid-template-columns:1fr}}
+.p3-q{font-family:"Jua",sans-serif;font-size:1.08rem;margin:10px 0 6px}
+.p3-chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.p3-chips button{min-height:2.3rem;padding:.2em .8em}
+.p3-mt{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px}
+.p3-mt>div{display:flex;flex-direction:column;gap:8px}
+.p3-mt button{font-size:.95rem;min-height:2.4rem;text-align:left}
+.p3-mt>div:first-child button{text-align:center}
+.p3-ox{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:6px 0;padding:6px 10px;border:2px solid var(--line);border-radius:12px}
+.p3-ox .q{flex:1 1 60%}
+.p3-ox button{min-width:3.2rem}
+.p3-seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;min-height:2.2rem}
+.p3-seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 12px;font-family:"Jua",sans-serif}
+.p3-seq span+span::before{content:"→ ";}
+.p3-ord{display:flex;flex-wrap:wrap;gap:8px}
+.p3-ord button{font-size:.95rem;text-align:left}
+.p3-bins{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:8px;margin-top:8px}
+.p3-bins .bin{border:3px dashed var(--line);border-radius:14px;padding:8px;min-height:4.2rem;cursor:pointer;background:var(--paper)}
+.p3-bins .bin b{display:block;font-family:"Jua",sans-serif;font-weight:400;margin-bottom:4px}
+.p3-bins .bin span{display:inline-block;background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:2px 10px;margin:2px;font-size:.88rem}
+.p3-bins .bin.hot{border-color:var(--sun)}
+@media(max-width:700px){.p3-bins{grid-template-columns:repeat(2,minmax(0,1fr))}}
+svg .org{cursor:pointer}
+svg .org:hover>*{filter:brightness(1.08)}
+svg .org.ok>*{stroke:#16804a!important;stroke-width:3px}
+svg .org.ok>[fill="transparent"]{stroke:none!important}
+svg .org:focus{outline:none}
+svg .org:focus-visible>*{stroke:#b58400!important;stroke-width:4px}
+.p3-tbl td,.p3-tbl th{text-align:center;font-size:.92rem;padding:5px 6px}
+.p3-tbl th{background:#e3f3e6;color:#15313d}
+.cc{display:inline-flex;gap:4px;vertical-align:middle;margin:2px}
+.cc button{min-height:2.1rem;padding:.1em .6em;font-size:.92rem;border-width:2px}
+.p3-card{border:3px solid var(--navy);border-radius:16px;padding:10px 14px;background:#fbfff6;color:#15313d}
+.p3-num{font-family:"Jua",sans-serif;background:#2f7d4a;color:#fff;border-radius:999px;padding:1px 10px;margin-right:6px}
+
+.c1-ms{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.1fr);gap:14px;align-items:start}
+@media(max-width:760px){.c1-ms{grid-template-columns:1fr}}
+.c1-ctl{display:flex;flex-direction:column;gap:8px}
+.c1-ctl label{font-family:"Jua",sans-serif;display:flex;align-items:center;gap:8px}
+.c1-ctl input[type=range]{flex:1;accent-color:#2f7d4a;height:1.8rem}
+.c1-ctl .row button{min-height:2.2rem;padding:.1em .7em;font-size:.92rem;border-width:2px}
+.c1-mag{font-family:"Jua",sans-serif;background:#e3f3e6;color:#123b2a;border-radius:12px;padding:6px 10px}
+.c1-got{display:flex;gap:6px;flex-wrap:wrap}
+.c1-got span{border-radius:999px;padding:2px 10px;font-size:.88rem;background:#eee;color:#555}
+.c1-got span.on{background:#bdf0cf;color:#0d5a31}
+#c1View{max-height:min(46vh,340px)}
+@keyframes c1shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.c1-shake{animation:c1shake .3s 2}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 62쪽</span>
+  <h2>첨성대는 어떻게 만들어졌을까요?</h2>
+  <svg id="c1Tower" class="scene p3-fit" style="--ar:1.7;--h:34vh" viewBox="0 0 560 330" role="img" aria-label="돌을 한 단씩 쌓아 만든 첨성대 그림"></svg>
+  <div class="pick" id="c1P1"><button data-a="1" data-m="맞아요! 첨성대는 작은 돌을 차곡차곡 쌓아 만들었어요. 그런데 첨성대 전체 모양은 돌 하나의 모양과 달라요.">작은 돌을 여러 개 차곡차곡 쌓아 만들었어요</button><button data-a="0" data-m="그림을 확대해 보세요. 한 덩어리가 아니라 줄마다 돌이 보여요.">커다란 바위 하나를 깎아 만들었어요</button></div>
+  <div class="fb"></div>
+  <p class="tip" data-glue="1">💡 첨성대가 돌로 이루어진 것처럼, 생물은 크기와 생김새가 각각 다르지만 모두 <b>세포</b>라는 기본 단위로 이루어져 있어요. 세포는 대부분 크기가 매우 작아 현미경을 사용해야 관찰할 수 있어요.</p>
+</section>
+
+<section id="s2" data-nav="현미경 살펴보기">
+  <span class="stage">실험해요 1 · 「실험관찰」 36쪽</span>
+  <h2>광학 현미경의 구조와 기능을 살펴봐요</h2>
+  <div class="p3-two">
+    <div><svg id="c1Ms" class="scene" viewBox="0 0 420 430" role="img" aria-label="광학 현미경 그림"></svg></div>
+    <div><p class="p3-q">이름 카드를 고르고 현미경 그림에서 그 부분을 눌러요.</p>
+      <div class="p3-chips" id="c1Chips"><button data-k="eye">접안렌즈</button><button data-k="rev">회전판</button><button data-k="obj">대물렌즈</button><button data-k="stg">재물대</button><button data-k="dia">조리개</button><button data-k="lamp">조명</button><button data-k="crs">조동 나사</button><button data-k="fin">미동 나사</button></div>
+      <div class="fb"></div></div>
+  </div>
+  <p class="p3-q" data-glue="1">각 부분이 하는 일을 짝지어요.</p>
+  <div id="c1Fn" data-glue="1"></div><div class="fb"></div>
+</section>
+
+<section id="s3" data-nav="사용 방법">
+  <span class="stage">실험해요 1 · 「과학」 112쪽</span>
+  <h2>광학 현미경은 어떤 차례로 사용할까요?</h2>
+  <p>단추를 사용하는 차례대로 눌러요.</p>
+  <div id="c1Ord"></div><div class="fb"></div>
+  <p class="tip">⚠️ 현미경을 옮길 때는 한 손으로 손잡이를 잡고 다른 손으로 바닥을 받쳐요. 평평한 곳에 두고 써요. 현미경 렌즈는 손으로 만지지 않아요. 배율을 높일 때는 대물렌즈가 현미경표본에 닿지 않도록 재물대를 <b>옆에서 직접 보면서</b> 조절해요.</p>
+</section>
+
+<section id="s4" data-nav="표본 만들기">
+  <span class="stage">실험해요 2 · 「실험관찰」 36쪽</span>
+  <h2>사철나무잎으로 표피세포 현미경표본을 만들어요</h2>
+  <div class="player" id="c1Pl">
+    <svg id="c1PrV" class="scene" viewBox="0 0 800 320" role="img" aria-label="사철나무잎 뒷면에 투명 매니큐어를 바르고 셀로판테이프로 떼어 받침 유리에 붙이는 과정"></svg>
+    <div class="ctl"><button class="main pBtn" aria-label="재생">▶</button><input type="range" class="pRng" min="0" step="0.02" value="0" aria-label="영상 시간"><span class="jua pClk">0초</span></div>
+    <div class="row chapters"></div>
+    <p class="cap"></p>
+  </div>
+  <div id="c1PrQ" hidden data-glue="1">
+    <p class="p3-q">투명 매니큐어가 <b>완전히 마른 뒤에</b> 셀로판테이프를 붙이는 까닭은 무엇일까요?</p>
+    <div class="pick" id="c1P4"><button data-a="1" data-m="맞아요! 매니큐어가 다 마르지 않으면 세포가 매니큐어에 고정되지 않아요. 매니큐어는 최대한 얇게 바르고, 셀로판테이프는 지문이 묻지 않은 깨끗한 부분을 써요.">세포 모양이 매니큐어에 잘 고정되게 하려고요</button><button data-a="0" data-m="색깔과는 관계없어요. 투명 매니큐어는 잎 표면의 모양을 본뜨는 역할을 해요.">잎의 색깔이 진해지게 하려고요</button></div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 투명 매니큐어를 바를 때 냄새를 맡지 않도록 하고, 창문을 열어 환기해요. 받침 유리의 모서리에 손을 다치지 않도록 조심하고, 현미경표본이 깨지지 않도록 주의해요. 마스크·실험복·보안경·실험용 장갑을 착용해요.</p>
+</section>
+
+<section id="s5" data-nav="현미경으로 관찰">
+  <span class="stage">실험해요 3·4 · 「실험관찰」 37쪽</span>
+  <h2>가상 현미경으로 식물 세포를 관찰해요</h2>
+  <div class="c1-ms">
+    <svg id="c1View" class="scene" viewBox="0 0 320 320" role="img" aria-label="현미경으로 본 모습"></svg>
+    <div class="c1-ctl">
+      <div class="row" id="c1Spec"><button data-s="0" class="sel">사철나무잎 표피세포 표본</button><button data-s="1">양파 표피세포 영구표본</button></div>
+      <div class="row" id="c1Obj"><span class="jua">대물렌즈</span><button data-o="4" class="sel">4×</button><button data-o="10">10×</button><button data-o="40">40×</button></div>
+      <label>조동 나사 <input type="range" id="c1Crs" min="0" max="100" step="1" value="20" aria-label="조동 나사"></label>
+      <label>미동 나사 <input type="range" id="c1Fin" min="-50" max="50" step="1" value="0" aria-label="미동 나사"></label>
+      <div class="c1-mag" id="c1Mag"></div>
+      <div class="c1-got"><span id="c1G0">사철나무잎 관찰 전</span><span id="c1G1">양파 관찰 전</span></div>
+    </div>
+  </div>
+  <div class="fb" id="c1VFb"></div>
+  <p class="tip" data-glue="1">💡 배율이 가장 낮은 대물렌즈로 먼저 전체 모습을 찾고, 조동 나사로 대략 → 미동 나사로 뚜렷하게 맞춰요. 두 표본을 <b>100배 이상</b>에서 뚜렷하게 보면 관찰 완료!</p>
+</section>
+
+<section id="s6" data-nav="관찰 결과">
+  <span class="stage">실험해요 3·4 · 「실험관찰」 37쪽</span>
+  <h2>관찰한 식물 세포를 글로 나타내요</h2>
+  <p class="p3-q">① 접안렌즈 10배, 대물렌즈 40배로 관찰했어요. 현미경 배율은?</p>
+  <div class="pick" id="c1Q1"><button data-a="1" data-m="맞아요! 현미경 배율 = 접안렌즈 배율 × 대물렌즈 배율이에요. 10 × 40 = 400배.">400배</button><button data-a="0" data-m="두 배율을 더하는 것이 아니라 곱해요.">50배</button></div>
+  <div class="fb"></div>
+  <p class="p3-q">② 양파 표피세포를 관찰한 모습으로 알맞은 것은?</p>
+  <div class="pick" id="c1Q2"><button data-a="1" data-m="맞아요! 양파 표피세포는 비교적 각진 모양의 세포가 여러 개 붙어 있고, 안쪽에 둥근 점(핵)이 있으며 세포 경계가 뚜렷해요.">각진 모양의 세포가 여러 개 붙어 있고, 안쪽에 둥근 점이 있어요</button><button data-a="0" data-m="관찰한 모습을 다시 봐요. 세포 사이에 경계가 뚜렷하게 보였어요.">세포의 경계가 보이지 않고 한 덩어리예요</button></div>
+  <div class="fb"></div>
+  <p class="p3-q">③ 사철나무잎 표피세포에서는 핵이 잘 보이지 않았어요. 왜 그럴까요?</p>
+  <div class="pick" id="c1Q3"><button data-a="1" data-m="맞아요! 양파 표피세포 영구표본은 핵을 염색해서 핵이 뚜렷하게 보여요. 사철나무잎 표본은 염색하지 않았어요. 사철나무잎에서는 각진 세포 사이에 강낭콩 모양의 세포 두 개가 마주 보는 모습도 보였어요.">사철나무잎 표본은 핵을 염색하지 않았기 때문이에요</button><button data-a="0" data-m="식물 세포에는 핵이 있어요. 두 표본을 만든 방법의 차이를 떠올려 봐요.">사철나무잎 세포에는 핵이 없기 때문이에요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="세포의 구조">
+  <span class="stage">정리해요 · 「과학」 63쪽</span>
+  <h2>식물 세포는 어떻게 생겼을까요?</h2>
+  <div class="p3-two">
+    <div><svg id="c1Cell" class="scene" viewBox="0 0 400 300" role="img" aria-label="식물 세포의 구조 그림"></svg></div>
+    <div><div class="p3-chips" id="c1CChips"><button data-k="wall">세포벽</button><button data-k="mem">세포막</button><button data-k="nuc">핵</button></div><div class="fb"></div>
+      <p class="tip" data-glue="1">세포는 세포막으로 둘러싸여 있고, 그 안에는 둥근 핵이 있어요. 식물 세포는 세포벽이 세포막의 바깥쪽을 둘러싸고 있어요.</p></div>
+  </div>
+  <p class="p3-q" data-glue="1">양파 표피세포의 가장자리가 뚜렷하게 보이는 까닭은?</p>
+  <div class="pick" id="c1Q4" data-glue="1"><button data-a="1" data-m="맞아요! 양파 표피세포 가장자리에 세포벽이 있어 가장자리가 뚜렷하게 보여요.">가장자리에 세포벽이 있기 때문이에요</button><button data-a="0" data-m="핵은 세포 안쪽에 있는 둥근 부분이에요. 가장자리를 둘러싼 것은 무엇일까요?">가장자리에 핵이 있기 때문이에요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="더 알아보기">
+  <span class="stage">더 알아보기</span>
+  <h2>세포의 크기와 모양은 모두 같을까요?</h2>
+  <div id="c1Ox">
+    <div class="p3-ox" data-a="x" data-m="맞아요! 하나의 생물을 이루는 세포는 종류에 따라 크기와 모양이 다양해요. 사철나무잎과 양파의 세포 모양도 달랐어요." data-h="사철나무잎 세포와 양파 세포의 모양을 떠올려 봐요."><span class="q">⑴ 한 생물을 이루는 세포는 크기와 모양이 모두 같다.</span></div>
+    <div class="p3-ox" data-a="x" data-m="맞아요! 대부분의 세포는 작아 현미경으로 관찰해야 하지만, 달걀이나 타조알 같은 알은 하나의 세포인데도 영양물질을 저장하고 있어 맨눈으로 볼 수 있을 만큼 커요." data-h="달걀을 떠올려 봐요. 알은 하나의 세포예요."><span class="q">⑵ 모든 세포는 맨눈으로 볼 수 없다.</span></div>
+    <div class="p3-ox" data-a="o" data-m="맞아요! 식물은 세포로 이루어져 있어요."><span class="q">⑶ 식물은 세포로 이루어져 있다.</span></div>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s9" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">대부분의 생물은 모양과 크기가 다양한 <span class="blank"><span id="bl1">ㅅ</span><span id="bl2">ㅍ</span></span>(으)로 이루어져 있습니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="tip">세포는 세포막으로 둘러싸여 있고, 그 안에는 둥근 핵이 있어요. 식물 세포는 세포벽이 세포막의 바깥쪽을 둘러싸고 있어요. 하나의 생물을 구성하는 세포는 종류에 따라 크기와 모양이 다양해요.</p>
+</section>
+
+<section id="s10" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="c1F1">
+    <p class="p3-q">1. 생물을 이루는 기본 단위를 설명한 글이에요. 알맞은 말을 골라요.</p>
+    <p class="p3-card">생물은 크기와 생김새가 각각 다르지만 모두 <span data-ans="세포" data-o="세포|핵|돌"></span>(이)라는 기본 단위로 이루어져 있다. 세포는 종류에 따라 크기와 모양이 <span data-ans="다양하다" data-o="모두 같다|다양하다" data-h="사철나무잎 세포와 양파 세포의 모양이 같았나요?"></span>.</p>
+    <div class="fb"></div>
+  </div>
+  <p class="p3-q" style="margin-top:12px">2. ✏️ 서술형: 광학 현미경으로 관찰한 양파 표피세포의 모습을 바탕으로 식물 세포의 특징을 한 가지 써 봐요.</p>
+  <textarea id="c1W" rows="2" placeholder="식물 세포는 ~"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="c1WBtn">내 답 살펴보기</button></div>
+  <div class="fb" id="c1WFb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p>
+</section>
+
+<section id="s11" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>식물 세포의 생김새를 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>식물 세포 현미경표본을 만들어 광학 현미경으로 식물 세포를 관찰할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>식물 세포를 관찰하는 활동으로 식물 세포에 흥미와 호기심을 느꼈어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 이 단원 공통 도우미 ===== */
+function tween(ms,f){return new Promise(res=>{const t0=performance.now();(function st(n){const p=Math.min(1,Math.max(0,(n-t0)/ms));f(p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2,p);if(p<1)requestAnimationFrame(st);else res();})(t0);});}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tap(el,f){el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 한 섹션에 활동이 여럿일 때: const g=gate('s3',3); 활동이 끝날 때마다 g('이름') */
+function gate(sec,n){const got=new Set();return k=>{got.add(k);if(got.size>=n)doneNav(sec);};}
+/* 여러 개 고르기: data-a="1"인 것을 모두 */
+function pickAll(box,okMsg,noMsg,sec,after){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(after)after();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+`좋아요! 더 있어요. (${got.size}/${need})`,'info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 짝 맞추기: 왼쪽 → 오른쪽 */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.classList.add('p3-mt');B.innerHTML='';
+  const L=document.createElement('div'),R=document.createElement('div');B.append(L,R);let sel=null,n=0;
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.onclick=()=>{if(b.disabled)return;$$('button',L).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=i;};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p[1],i])).forEach(([r,i])=>{const b=document.createElement('button');b.textContent=r;b.onclick=()=>{if(b.disabled)return;
+    if(sel==null){fb(out,'왼쪽에서 먼저 하나를 골라요.','info');return;}
+    if(i===sel){b.classList.add('right');b.disabled=true;const lb=L.children[sel];lb.classList.remove('sel');lb.classList.add('right');lb.disabled=true;sel=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${n}/${pairs.length})`,'info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,(pairs[sel][2]||'다시 생각해 봐요.'),false);}};R.appendChild(b);});}
+/* 차례 맞히기 */
+function orderer(box,steps,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;let k=0;const seq=document.createElement('div');seq.className='p3-seq';B.before(seq);B.innerHTML='';B.classList.add('p3-ord');
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.disabled)return;
+    if(i===k){b.classList.add('right');b.disabled=true;const sp=document.createElement('span');sp.textContent=s;seq.appendChild(sp);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그건 조금 뒤예요. 지금 차례를 찾아봐요.',false);}};B.appendChild(b);});}
+/* O/X: 행마다 data-a="o"/"x" */
+function oxList(box,okMsg,sec,cb){const rows=$$(box+' .p3-ox'),out=$(box).nextElementSibling,ok=new Set();
+  rows.forEach((r,i)=>{['⭕','❌'].forEach((t,j)=>{const b=document.createElement('button');b.textContent=t;b.setAttribute('aria-label',j?'틀려요':'맞아요');
+    b.onclick=()=>{if(ok.has(i))return;const good=(r.dataset.a==='o')===(j===0);if(good){b.classList.add('right');ok.add(i);fb(out,(r.dataset.m||'맞아요!')+(ok.size<rows.length?` (${ok.size}/${rows.length})`:''),ok.size<rows.length?'info':true);
+      if(ok.size===rows.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}}else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,r.dataset.h||'다시 생각해 봐요.',false);}};r.appendChild(b);});});}
+/* 나누어 담기: 낱말 카드 → 상자 */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='';const ch=document.createElement('div');ch.className='p3-chips';const bx=document.createElement('div');bx.className='p3-bins';bx.style.setProperty('--n',bins.length);B.append(ch,bx);
+  let sel=null,n=0;const bs=bins.map((t,i)=>{const d=document.createElement('div');d.className='bin';d.innerHTML='<b>'+t+'</b>';tap(d,()=>put(i));bx.appendChild(d);return d;});
+  shuffle(items).forEach(it=>{const b=document.createElement('button');b.textContent=it[0];b.onclick=()=>{if(b.disabled)return;$$('button',ch).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=[b,it];bs.forEach(d=>d.classList.add('hot'));};ch.appendChild(b);});
+  function put(i){if(!sel){fb(out,'위의 낱말 카드를 먼저 골라요.','info');return;}const [b,it]=sel;
+    if(it[1]===i){const s=document.createElement('span');s.textContent=it[0];bs[i].appendChild(s);b.remove();sel=null;n++;bs.forEach(d=>d.classList.remove('hot'));
+      if(n===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${n}/${items.length})`,'info');}
+    else fb(out,it[2]||'다른 상자에 어울려요. 다시 생각해 봐요.',false);}}
+/* 그림 속 이름 붙이기: 이름 카드(data-k) 고르고 그림(data-k) 누르기 → 이름표(data-for) 보이기 */
+function namer(svg,chips,okMsg,sec,cb){const S=$(svg),C=$(chips),out=C.nextElementSibling,ks=$$('button',C);let sel=null,n=0;
+  ks.forEach(b=>b.onclick=()=>{if(b.disabled)return;ks.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=b;});
+  $$('.org[data-k]',S).forEach(g=>tap(g,()=>{const k=g.dataset.k;if(g.classList.contains('ok'))return;
+    if(!sel){fb(out,'아래 이름 카드를 먼저 고르고 그림을 눌러요.','info');return;}
+    if(sel.dataset.k===k){$$('.org[data-k="'+k+'"]',S).forEach(x=>x.classList.add('ok'));sel.classList.remove('sel');sel.classList.add('right');sel.disabled=true;
+      $$('[data-for="'+k+'"]',S).forEach(x=>x.style.display='');sel=null;n++;
+      if(n===ks.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${n}/${ks.length})`,'info');}
+    else fb(out,'그곳은 '+sel.textContent+'이(가) 아니에요. 생김새와 자리를 다시 봐요.',false);}));}
+/* 이름표: lab(키, 선 시작 x,y, 글 x,y, 글, 'start'|'end') */
+function lab(k,x1,y1,x2,y2,t,anchor,show){const a=anchor||'start';const w=t.length*15+16;const rx=a==='end'?x2-w:x2;
+  return `<g data-for="${k}" ${show?'':'style="display:none"'} pointer-events="none"><line x1="${x1}" y1="${y1}" x2="${a==='end'?x2:x2}" y2="${y2}" stroke="#123b2a" stroke-width="1.8"/><rect x="${rx}" y="${y2-13}" width="${w}" height="26" rx="8" fill="#123b2a"/><text x="${rx+w/2}" y="${y2+6}" text-anchor="middle" font-size="16" font-family="Jua" fill="#fff">${t}</text></g>`;}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 고르는 칸: span[data-ans][data-o="가|나"] → 단추 */
+function ccSet(root,okMsg,sec,cb,hint){const R=$(root),cs=$$('[data-ans]',R),out=[...R.querySelectorAll('.fb')].pop()||R.nextElementSibling;const got=new Set();
+  cs.forEach((c,i)=>{c.classList.add('cc');c.dataset.o.split('|').forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{if(got.has(i))return;
+    if(t===c.dataset.ans){b.classList.add('right');got.add(i);$$('button',c).forEach(x=>{if(x!==b)x.remove();});
+      if(got.size===cs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${got.size}/${cs.length})`,'info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,c.dataset.h||hint||'다시 생각해 봐요.',false);}};c.appendChild(b);});});}
+/* 서술형: keyCheck가 '잘 썼어요'를 내면 cb */
+function keyDone(btn,out,cb){$(btn).addEventListener('click',()=>{if($(out).classList.contains('ok'))cb();});}
+const lerp=(a,b,p)=>a+(b-a)*p;
+
+
+/* ---------- 첨성대 ---------- */
+(function(){let s='<rect width="560" height="330" fill="#eaf6fb"/><rect y="290" width="560" height="40" fill="#cfe6b8"/>';
+  s+='<rect x="190" y="268" width="180" height="24" fill="#c9b79a" stroke="#8a7656" stroke-width="2"/><rect x="200" y="252" width="160" height="18" fill="#d4c3a4" stroke="#8a7656" stroke-width="2"/>';
+  const N=24,top=46,bot=252,h=(bot-top)/N;
+  for(let i=0;i<N;i++){const y0=bot-(i+1)*h,f=i/(N-1),r=lerp(72,40,Math.pow(f,1.2));const n=Math.max(4,Math.round(r/11)),w=2*r/n;
+    s+=`<rect x="${(280-r).toFixed(1)}" y="${y0.toFixed(1)}" width="${(2*r).toFixed(1)}" height="${h.toFixed(1)}" fill="${i%2?'#dccba8':'#d3bf96'}" stroke="#8a7656" stroke-width="1.2"/>`;
+    for(let j=1;j<n+(i%2);j++){const x=280-r+j*w-(i%2?w/2:0);if(x>280-r+2&&x<280+r-2)s+=`<line x1="${x.toFixed(1)}" y1="${y0.toFixed(1)}" x2="${x.toFixed(1)}" y2="${(y0+h).toFixed(1)}" stroke="#8a7656" stroke-width="1.2"/>`;}}
+  s+='<rect x="264" y="150" width="32" height="30" fill="#4a3d2c"/>';
+  s+='<rect x="236" y="32" width="88" height="16" fill="#c9b79a" stroke="#8a7656" stroke-width="2"/><rect x="246" y="20" width="68" height="14" fill="#d4c3a4" stroke="#8a7656" stroke-width="2"/>';
+  s+='<defs><clipPath id="c1Zc"><circle r="60"/></clipPath></defs><g transform="translate(440 110)"><g clip-path="url(#c1Zc)"><rect x="-60" y="-60" width="120" height="120" fill="#d3bf96"/>';
+  for(let i=0;i<5;i++)for(let j=0;j<4;j++)s+=`<rect x="${-74+j*36+(i%2?18:0)}" y="${-60+i*24}" width="36" height="24" fill="${(i+j)%2?'#dccba8':'#cdb98f'}" stroke="#8a7656" stroke-width="1.5"/>`;
+  s+='</g><circle r="60" fill="none" stroke="#2f7d4a" stroke-width="4"/></g><path d="M314 150 L382 124" stroke="#2f7d4a" stroke-width="3" stroke-dasharray="6 5"/><circle cx="302" cy="156" r="14" fill="none" stroke="#2f7d4a" stroke-width="3"/>';
+  s+='<text x="440" y="196" text-anchor="middle" font-family="Jua" font-size="18" fill="#123b2a">가까이에서 본 돌</text><text x="280" y="318" text-anchor="middle" font-family="Jua" font-size="18" fill="#123b2a">첨성대</text>';
+  $('#c1Tower').innerHTML=s;})();
+pickOne('#c1P1','','다시 생각해 봐요.','s1');
+
+/* ---------- 현미경 그림 ---------- */
+function msSVG(tag){/* tag=true면 누르는 부분(data-k) */const G=(k,inner)=>tag?`<g class="org" data-k="${k}">${inner}</g>`:`<g>${inner}</g>`;
+  let s='<rect width="420" height="430" fill="#f3faf4"/>';
+  s+='<rect x="90" y="378" width="230" height="34" rx="12" fill="#e8eef2" stroke="#5c6b74" stroke-width="3"/>';
+  s+='<path d="M258 380 L268 300 Q292 220 270 150 L254 118 L222 128 L236 164 Q252 222 232 300 L228 380Z" fill="#e8eef2" stroke="#5c6b74" stroke-width="3"/>';
+  s+='<path d="M150 118 L262 96 L268 132 L170 152Z" fill="#e8eef2" stroke="#5c6b74" stroke-width="3"/>';
+  s+=G('eye','<path d="M168 120 L128 46 L150 36 L192 112Z" fill="#cfd8de" stroke="#5c6b74" stroke-width="3"/><rect x="118" y="26" width="40" height="20" rx="5" transform="rotate(-28 138 36)" fill="#3c4950" stroke="#22292e" stroke-width="2"/>');
+  s+=G('rev','<ellipse cx="178" cy="160" rx="40" ry="12" fill="#b8c4cb" stroke="#5c6b74" stroke-width="3"/>');
+  s+=G('obj','<rect x="146" y="166" width="14" height="30" rx="3" fill="#cfd8de" stroke="#5c6b74" stroke-width="2"/><rect x="172" y="168" width="14" height="42" rx="3" fill="#cfd8de" stroke="#5c6b74" stroke-width="2"/><rect x="198" y="166" width="14" height="22" rx="3" fill="#cfd8de" stroke="#5c6b74" stroke-width="2"/><rect x="172" y="200" width="14" height="5" fill="#d9443a"/>');
+  s+=G('stg','<rect x="96" y="232" width="168" height="16" rx="3" fill="#3c4950" stroke="#22292e" stroke-width="2"/><rect x="146" y="226" width="64" height="8" fill="#d9f0ff" stroke="#5c8fb0" stroke-width="1.5"/>');
+  s+=G('dia','<rect x="152" y="252" width="56" height="12" rx="3" fill="#7e8b93" stroke="#3f4a50" stroke-width="2"/><path d="M208 258 L226 262" stroke="#3f4a50" stroke-width="4" stroke-linecap="round"/>');
+  s+=G('lamp','<rect x="160" y="350" width="40" height="28" fill="#e8eef2" stroke="#5c6b74" stroke-width="2"/><circle cx="180" cy="352" r="12" fill="#ffe27a" stroke="#c99a00" stroke-width="2"/>');
+  s+='<path d="M180 340 L180 266" stroke="#ffe27a" stroke-width="6" opacity=".6"/>';
+  s+=G('crs','<circle cx="266" cy="290" r="22" fill="#5c6b74" stroke="#22292e" stroke-width="2"/><circle cx="266" cy="290" r="9" fill="#9aa7af"/>');
+  s+=G('fin','<circle cx="272" cy="338" r="13" fill="#8c99a1" stroke="#22292e" stroke-width="2"/>');
+  if(tag){s+=lab('eye',140,40,22,40,'접안렌즈','start')+lab('rev',218,160,300,170,'회전판')+lab('obj',160,190,22,190,'대물렌즈','start')+lab('stg',100,240,22,240,'재물대','start')+lab('dia',156,258,22,290,'조리개','start')+lab('lamp',168,360,22,345,'조명','start')+lab('crs',288,290,312,262,'조동 나사')+lab('fin',285,338,312,370,'미동 나사');}
+  return s;}
+$('#c1Ms').innerHTML=msSVG(true);
+const g2=gate('s2',2);
+namer('#c1Ms','#c1Chips','잘했어요! 광학 현미경의 여러 부분을 모두 찾았어요.',null,()=>g2('a'));
+matcher('#c1Fn',[['접안렌즈','눈으로 보는 렌즈로, 관찰 대상의 모습을 확대해요'],['대물렌즈','관찰 대상 가까이에서 모습을 확대해요'],['회전판','돌려서 대물렌즈의 배율을 바꿔요'],['재물대','현미경표본을 올려놓는 곳이에요'],['조동 나사','초점을 대략 맞춰요'],['미동 나사','초점을 정확히 맞춰요'],['조리개','빛의 양을 조절해요']],'잘했어요! 각 부분이 하는 일을 모두 알았어요.',null,()=>g2('b'));
+
+/* ---------- 사용 순서 ---------- */
+orderer('#c1Ord',['회전판을 돌려 배율이 가장 낮은 대물렌즈가 중앙에 오게 해요','전원을 켜고 조리개로 빛의 양을 조절한 뒤, 표본을 재물대 가운데에 고정해요','옆에서 보면서 조동 나사로 재물대를 올려 표본과 대물렌즈를 최대한 가깝게 해요','접안렌즈를 보며 조동 나사로 재물대를 천천히 내리면서 세포의 상을 찾아요','미동 나사로 상을 뚜렷하게 맞추어 관찰해요','회전판을 돌려 높은 배율로 바꾸고 미동 나사로 다시 뚜렷하게 맞춰요'],'잘했어요! 낮은 배율에서 먼저 찾고, 높은 배율로 바꾸어 자세히 관찰해요.','s3');
+
+/* ---------- 표본 만들기 영상 ---------- */
+(function(){const leaf=(x,y,sc,back)=>`<g transform="translate(${x} ${y}) scale(${sc})"><path d="M0 -70 C46 -52 52 22 0 70 C-52 22 -46 -52 0 -70Z" fill="${back?'#8fbf6a':'#3f8f3a'}" stroke="#2c6a2a" stroke-width="3"/><path d="M0 -66 V66" stroke="${back?'#cfe8b6':'#2c6a2a'}" stroke-width="3"/>${[-40,-14,12,36].map(v=>`<path d="M0 ${v} l26 -16 M0 ${v} l-26 -16" stroke="${back?'#cfe8b6':'#2c6a2a'}" stroke-width="2"/>`).join('')}</g>`;
+  function draw(t){let s='<rect width="800" height="320" fill="#fbf8ef"/><rect y="250" width="800" height="70" fill="#e6dccb"/>';
+    s+=`<text x="20" y="34" font-family="Jua" font-size="20" fill="#123b2a">사철나무잎 (뒷면)</text>`;
+    s+=leaf(170,160,1.4,true);
+    if(t<5){const p=Math.min(1,t/4);/* 매니큐어 바르기 */s+=`<path d="M140 ${200-120*p} L200 ${200-120*p}" stroke="#fff" stroke-width="40" opacity=".55" stroke-linecap="round"/>`;
+      s+=`<g transform="translate(${230} ${190-120*p}) rotate(-35)"><rect x="-6" y="-60" width="12" height="60" fill="#c0392b"/><rect x="-14" y="-110" width="28" height="52" rx="6" fill="#f2b6c6" stroke="#8a2a4a" stroke-width="2"/><rect x="-4" y="0" width="8" height="12" fill="#eee" stroke="#999"/></g>`;}
+    else s+='<rect x="128" y="70" width="84" height="140" rx="20" fill="#fff" opacity=".45"/>';
+    if(t>=5&&t<8){const p=Math.min(1,(t-5)/2);s+=`<text x="260" y="140" font-family="Jua" font-size="22" fill="#2f7d4a">완전히 마를 때까지 기다려요</text><circle cx="290" cy="190" r="26" fill="#fff" stroke="#2f7d4a" stroke-width="3"/><path d="M290 190 L${290+20*Math.sin(p*6.28)} ${190-20*Math.cos(p*6.28)}" stroke="#2f7d4a" stroke-width="4" stroke-linecap="round"/>`;}
+    if(t>=8&&t<13){const p=Math.min(1,(t-8)/3);s+=`<rect x="${120}" y="${100}" width="${100*p}" height="80" fill="#fffbd0" opacity=".75" stroke="#c9b24a" stroke-width="2"/>`;if(p>=1){const q=Math.min(1,(t-11)/2);s+=`<path d="M130 ${130+8*Math.sin(q*12)} h80" stroke="#c98b6a" stroke-width="10" stroke-linecap="round" opacity=".6"/>`;}}
+    if(t>=13){const p=Math.min(1,(t-13)/3);const x=lerp(120,470,p),y=lerp(100,170,p);s+=`<rect x="${x}" y="${y}" width="100" height="80" fill="#fffbd0" opacity=".85" stroke="#c9b24a" stroke-width="2"/>`;
+      s+='<rect x="420" y="160" width="220" height="100" rx="4" fill="#e6f6ff" stroke="#5c8fb0" stroke-width="3"/><text x="530" y="290" text-anchor="middle" font-family="Jua" font-size="18" fill="#123b2a">받침 유리</text>';
+      if(p<1)s+=`<rect x="${x}" y="${y}" width="100" height="80" fill="#fffbd0" opacity=".85" stroke="#c9b24a" stroke-width="2"/>`;
+      if(p>=1)s+='<text x="530" y="120" text-anchor="middle" font-family="Jua" font-size="22" fill="#2f7d4a">현미경표본 완성!</text>';}
+    $('#c1PrV').innerHTML=s;}
+  mkPlayer({root:'#c1Pl',end:17,ch:[[0,'① 매니큐어 바르기','① 사철나무잎 뒷면에 투명 매니큐어를 얇게 발라요.'],[5,'② 말리기','② 투명 매니큐어가 완전히 마를 때까지 기다려요.'],[8,'③ 테이프 붙이기','③ 그 위에 셀로판테이프를 붙여 문질러요.'],[13,'④ 받침 유리에','④ 셀로판테이프를 떼어 낸 뒤 받침 유리에 붙여요.']],draw,done:()=>{$('#c1PrQ').hidden=false;}});
+  pickOne('#c1P4','','','s4');})();
+
+/* ---------- 가상 현미경 ---------- */
+(function(){const V=$('#c1View');let spec=0,obj=4,crs=20,fin=0;const seen=[0,0];
+  const TOUCH={4:92,10:82,40:66},FOC={4:70,10:70.6,40:63.5},TOL={4:7,10:3,40:1.2},SC={4:1,10:2.5,40:10};
+  /* 세포 무늬 미리 만들기 */
+  let onion='',sach='';(function(){let o='';const w=9,h=30;for(let r=-1;r<12;r++){const off=(r%2)*w*0.5;for(let c=-1;c<38;c++){const x=c*w+off+(Math.sin(r*3+c)*1.2),y=r*h;o+=`<rect x="${x.toFixed(1)}" y="${y}" width="${w}" height="${h}" fill="#f6dbe8" stroke="#8c3a6b" stroke-width="1.6" vector-effect="non-scaling-stroke"/><ellipse cx="${(x+w/2+Math.sin(c*7+r)*1.5).toFixed(1)}" cy="${(y+h*(.35+.3*((c*5+r*3)%7)/7)).toFixed(1)}" rx="1.9" ry="2.3" fill="#a3245e"/>`;}}onion=o;
+    let p='';const g=10,J=(a,b)=>Math.sin(a*12.9898+b*78.233)*43758.5453%1;const pt=(i,j)=>[i*g+((J(i,j)+1)%1-.5)*5,j*g+((J(j,i)+1)%1-.5)*5];
+    for(let j=-1;j<33;j++)for(let i=-1;i<33;i++){const a=pt(i,j),b=pt(i+1,j),c=pt(i+1,j+1),d=pt(i,j+1);p+=`<polygon points="${[a,b,c,d].map(q=>q.map(v=>v.toFixed(1)).join(',')).join(' ')}" fill="#eef3e6" stroke="#6b7a5a" stroke-width="1.3" vector-effect="non-scaling-stroke"/>`;}
+    [[60,70],[200,60],[130,150],[250,190],[80,250],[190,270],[300,110],[30,160]].forEach(([x,y])=>{p+=`<g transform="translate(${x} ${y}) rotate(${(x*7)%60-30})"><ellipse cx="-3.2" cy="0" rx="3.4" ry="7" fill="#dfe9cf" stroke="#4f6140" stroke-width="1.4" vector-effect="non-scaling-stroke"/><ellipse cx="3.2" cy="0" rx="3.4" ry="7" fill="#dfe9cf" stroke="#4f6140" stroke-width="1.4" vector-effect="non-scaling-stroke"/><ellipse cx="0" cy="0" rx=".9" ry="4.5" fill="#55634a"/></g>`;});sach=p;})();
+  function h(){return crs+fin*0.1;}
+  function draw(){const H=h(),blur=Math.min(9,Math.abs(H-FOC[obj])/TOL[obj]*1.2);const sc=SC[obj];
+    let s=`<defs><clipPath id="c1Clip"><circle cx="160" cy="160" r="150"/></clipPath><filter id="c1Bl" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="${blur.toFixed(2)}"/></filter></defs><rect width="320" height="320" fill="#1d2326"/>`;
+    s+=`<g clip-path="url(#c1Clip)"><rect width="320" height="320" fill="${spec?'#fbeef4':'#f6f8f1'}"/><g filter="url(#c1Bl)"><g transform="translate(160 160) scale(${sc}) translate(-160 -160)">${spec?onion:sach}</g></g></g>`;
+    s+='<circle cx="160" cy="160" r="150" fill="none" stroke="#000" stroke-width="6"/>';
+    if(H>TOUCH[obj]-1)s+='<rect x="40" y="136" width="240" height="48" rx="12" fill="#c2332c" opacity=".9"/><text x="160" y="167" text-anchor="middle" font-family="Jua" font-size="18" fill="#fff">렌즈가 표본에 닿아요!</text>';
+    V.innerHTML=s;
+    const mag=10*obj;$('#c1Mag').textContent=`배율: 접안렌즈 10배 × 대물렌즈 ${obj}배 = ${mag}배 · ${blur<.35?'상이 뚜렷해요 👍':blur<2?'조금 흐려요 → 미동 나사':'흐려요 → 조동 나사로 상을 찾아요'}`;
+    if(blur<.35&&obj>=10&&!seen[spec]){seen[spec]=1;$('#c1G'+spec).classList.add('on');$('#c1G'+spec).textContent=(spec?'양파':'사철나무잎')+' 관찰 완료 ✓';
+      fb('#c1VFb',spec?'양파 표피세포가 뚜렷하게 보여요. 각진 세포들이 붙어 있고 둥근 핵이 잘 보여요.':'사철나무잎 표피세포가 뚜렷하게 보여요. 각진 세포들 사이에 강낭콩 모양 세포 두 개가 마주 보는 것도 보여요.',true);
+      if(seen[0]&&seen[1]){fb('#c1VFb','두 표본을 모두 관찰했어요! 세포의 모양이 서로 달랐나요?',true);doneNav('s5');}}}
+  $$('#c1Spec button').forEach(b=>b.onclick=()=>{$$('#c1Spec button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');spec=+b.dataset.s;setObj(4);crs=20;fin=0;$('#c1Crs').value=20;$('#c1Fin').value=0;fb('#c1VFb','표본을 바꾸었어요. 가장 낮은 배율부터 다시 찾아요.','info');draw();});
+  function setObj(o){obj=o;$$('#c1Obj button').forEach(x=>x.classList.toggle('sel',+x.dataset.o===o));}
+  $$('#c1Obj button').forEach(b=>b.onclick=()=>{const o=+b.dataset.o;if(o>obj&&Math.abs(h()-FOC[obj])/TOL[obj]>1){fb('#c1VFb','먼저 지금 배율에서 상을 뚜렷하게 찾은 뒤에 높은 배율로 바꿔요.','info');return;}
+    setObj(o);if(h()>TOUCH[o]-1){crs=Math.round(TOUCH[o]-4);$('#c1Crs').value=crs;}fb('#c1VFb',o>4?'높은 배율로 바꾸었어요. 미동 나사로 다시 뚜렷하게 맞춰요.':'낮은 배율이에요. 조동 나사로 상을 찾아요.','info');draw();});
+  $('#c1Crs').oninput=e=>{let v=+e.target.value;if(v+fin*0.1>TOUCH[obj]-1){v=Math.floor(TOUCH[obj]-1-fin*0.1);e.target.value=v;V.classList.remove('c1-shake');void V.offsetWidth;V.classList.add('c1-shake');fb('#c1VFb','⚠️ 대물렌즈가 표본에 닿을 뻔했어요! 재물대를 올릴 때는 옆에서 보면서 조절해요.',false);}crs=v;draw();};
+  $('#c1Fin').oninput=e=>{let v=+e.target.value;if(crs+v*0.1>TOUCH[obj]-1){v=Math.floor((TOUCH[obj]-1-crs)*10);e.target.value=v;}fin=v;draw();};
+  draw();})();
+
+/* ---------- 관찰 결과 ---------- */
+const g6=gate('s6',3);pickOne('#c1Q1','','',null,()=>g6(1));pickOne('#c1Q2','','',null,()=>g6(2));pickOne('#c1Q3','','',null,()=>g6(3));
+
+/* ---------- 세포 구조 ---------- */
+(function(){let s='<rect width="400" height="300" fill="#f6fbf2"/>';
+  s+='<g class="org" data-k="wall"><path d="M60 50 L330 40 L350 250 L70 262Z" fill="#cfe6a8" stroke="#5c8a2e" stroke-width="12" stroke-linejoin="round"/></g>';
+  s+='<g class="org" data-k="mem"><path d="M74 62 L320 54 L337 238 L83 249Z" fill="#eaf6d8" stroke="#e08a2e" stroke-width="4" stroke-linejoin="round"/></g>';
+  s+='<g class="org" data-k="nuc"><ellipse cx="170" cy="150" rx="32" ry="26" fill="#b78ad6" stroke="#6a3d8f" stroke-width="3"/></g>';
+  s+=lab('wall',345,120,352,26,'세포벽','end')+lab('mem',320,180,388,280,'세포막','end')+lab('nuc',190,140,260,110,'핵');
+  $('#c1Cell').innerHTML=s;})();
+const g7=gate('s7',2);
+namer('#c1Cell','#c1CChips','잘했어요! 식물 세포는 세포벽, 세포막, 핵이 있어요.',null,()=>g7('a'));
+pickOne('#c1Q4','','',null,()=>g7('b'));
+
+oxList('#c1Ox','모두 맞혔어요! 세포는 종류에 따라 크기와 모양이 다양해요.','s8');
+
+$('#blReveal').onclick=()=>{$('#bl1').textContent='세';$('#bl2').textContent='포';fb('#blFb','대부분의 생물은 모양과 크기가 다양한 세포로 이루어져 있어요.',true);doneNav('s9');};
+
+const g10=gate('s10',2);
+ccSet('#c1F1','잘했어요! 생물은 세포로 이루어져 있고, 세포는 종류에 따라 크기와 모양이 다양해요.',null,()=>g10(1));
+keyCheck('#c1W','#c1WBtn','#c1WFb',[[/핵/,'둥근 핵이 있어요'],[/세포벽/,'세포벽이 있어요'],[/경계|가장자리|테두리/,'세포의 경계가 뚜렷해요'],[/각진|붙어/,'각진 세포가 붙어 있어요']],1,null,'관찰한 양파 표피세포의 모습(핵, 세포벽, 경계 등)을 떠올려 써 봐요.');
+keyDone('#c1WBtn','#c1WFb',()=>g10(2));
+
+faces('s11','멋져요! 다음 시간에는 뿌리의 생김새와 하는 일을 알아봐요.','어려웠던 부분은 가상 현미경을 다시 써 보고, 선생님께 질문해도 좋아요!');
+</script>
