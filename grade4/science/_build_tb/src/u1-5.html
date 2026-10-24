@@ -12,7 +12,7 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"자","bl2":"석"}}]
 .m5-comic svg{width:100%;height:auto;border:3px solid var(--navy);border-radius:14px;background:#fff}
 .m5-tbl td,.m5-tbl th{text-align:center;padding:4px 6px;font-size:.9rem}
 .m5-tbl th{background:#e1f0fb}
-.m5-tbl button{min-height:2.2rem;padding:.1em .6em;font-size:.88rem;border-width:2px}
+.m5-tbl button{min-height:2.1rem;padding:.05em .6em;font-size:.88rem;border-width:2px;white-space:nowrap}
 .m5-tbl td.run button{background:var(--sky);border-color:var(--sky);color:#fff}
 #m5Lab{touch-action:none}
 #m5Mag{cursor:grab}
@@ -67,9 +67,9 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"자","bl2":"석"}}]
     <rect x="34" y="30" width="380" height="36" rx="12" fill="#0f3b5c" opacity=".88"/><text id="m5LabT" x="48" y="55" font-size="18" font-family="Jua" fill="#fff">나침반 바늘이 멈출 때까지 기다려요</text>
     <text x="760" y="300" text-anchor="end" font-size="14" fill="#8a7550" font-family="Jua">↑ 화면 위쪽이 북쪽</text>
   </svg>
-  <div class="row" style="margin-top:6px"><button id="m5Flip">🔄 막대자석 돌리기</button><button id="m5Away">막대자석 멀리 치우기</button></div>
-  <table class="m5-tbl" style="margin-top:6px" data-glue="1"><tr><th>실험</th><th></th><th>나침반 바늘의 빨간색 부분이 가리키는 곳</th></tr><tbody id="m5Rows"></tbody></table>
+  <table class="m5-tbl" style="margin-top:6px" data-glue="1"><tr><th>실험 (눌러서 해 보기)</th><th>빨간색 부분이 가리키는 곳</th></tr><tbody id="m5Rows"></tbody></table>
   <div class="fb" id="m5LabFb"></div>
+  <div class="row"><span class="tip">자유롭게 해 보기:</span><button id="m5Flip">🔄 막대자석 돌리기</button><button id="m5Away">막대자석 멀리 치우기</button></div>
   <p class="tip">⚠️ 나침반을 떨어뜨리지 않아요. 주변에 다른 자석이나 철로 만든 물체가 있으면 멀리 떨어뜨려 놓아요. 💡 바늘은 자석의 극을 정확히 직선으로 가리키지 않을 수도 있어요. 빨간색 부분이 자석 쪽인지 반대쪽인지를 봐요.</p>
 </section>
 
@@ -150,9 +150,9 @@ requestAnimationFrame(loop);
 const settled=()=>new Promise(res=>{const t0=performance.now();(function w(){if(Math.abs(lab.vel)<0.05&&Math.abs(((target()-lab.ang+540)%360)-180)<2||performance.now()-t0>3500)res();else setTimeout(w,100);})();});
 /* 바늘의 빨간 끝이 자석 쪽인가? */
 function towardMag(){const r=lab.ang*Math.PI/180,vx=Math.sin(r),vy=-Math.cos(r),dx=lab.mx-lab.cx,dy=lab.my-lab.cy;return vx*dx+vy*dy>0;}
-const CASES=[{t:'막대자석의 N극을 나침반에 천천히 가까이',a:'away'},{t:'막대자석의 S극을 나침반에 천천히 가까이',a:'toward'},{t:'나침반을 막대자석의 N극에 가까이',a:'away'},{t:'나침반을 막대자석의 S극에 가까이',a:'toward'}];
+const CASES=[{t:'막대자석의 N극을 나침반에 천천히 가까이',s:'N극을 나침반에',a:'away'},{t:'막대자석의 S극을 나침반에 천천히 가까이',s:'S극을 나침반에',a:'toward'},{t:'나침반을 막대자석의 N극에 가까이',s:'나침반을 N극에',a:'away'},{t:'나침반을 막대자석의 S극에 가까이',s:'나침반을 S극에',a:'toward'}];
 const ran=new Set(),ok=new Set();
-$('#m5Rows').innerHTML=CASES.map((c,i)=>`<tr><td>${i+1}. ${c.t}</td><td class="run"><button data-run="${i}">▶ 해 보기</button></td><td><span class="pick" style="display:flex;gap:6px;justify-content:center" data-i="${i}"><button data-v="toward" disabled>자석 쪽</button><button data-v="away" disabled>자석의 반대쪽</button></span></td></tr>`).join('');
+$('#m5Rows').innerHTML=CASES.map((c,i)=>`<tr><td class="run"><button data-run="${i}" title="${c.t}">▶ ${i+1}. ${c.s}</button></td><td><span class="pick" style="display:flex;gap:6px;justify-content:center" data-i="${i}"><button data-v="toward" disabled>자석 쪽</button><button data-v="away" disabled>자석의 반대쪽</button></span></td></tr>`).join('');
 async function run(i){if(lab.busy)return;lab.busy=true;$('#m5LabT').textContent=CASES[i].t+' 해요';
   if(i<2){lab.on=false;lab.cx=300;lab.cy=190;lab.ma=i===0?0:180;lab.mx=760;lab.my=190;await sleep(200);lab.on=true;
     await tween(1800,p=>{lab.mx=760-(760-(300+66+20+90))*p;});}

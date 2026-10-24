@@ -24,7 +24,7 @@ const SIZES = [[1280, 800], [1366, 768], [390, 844]];
         const over = await p.evaluate(() => document.documentElement.scrollHeight - innerHeight);
         if (w >= 1000 && over > 4) tall.push(k + '쪽 +' + over + 'px');
         if (shots && w === 1280) { fs.mkdirSync(shots, { recursive: true }); await p.screenshot({ path: path.join(shots, `${name}-${String(k).padStart(2, '0')}.png`) }); }
-        if (k < n) { await p.click('#ovNext').catch(() => {}); await p.waitForTimeout(250); }
+        if (k < n) { if (w < 1000) break; await p.click('#ovNext', { timeout: 3000 }).catch(() => {}); await p.waitForTimeout(250); }
       }
       if (tall.length) info.push('세로 넘침 ' + tall.join(', '));
       if (errs.length) info.push('JS 오류: ' + errs.join(' | '));

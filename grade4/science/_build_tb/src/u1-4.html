@@ -33,8 +33,8 @@ blanks: [{"btn":"blReveal","ans":{"bl1":"밀","bl2":"어","bl3":"끌","bl4":"어
   <span class="stage">실험해요 1 · 「실험관찰」 12쪽</span>
   <h2>막대자석의 극 찾기</h2>
   <p>알루미늄 포일로 감싼 막대자석이 있어요. 어느 쪽이 N극일까요? 막대자석의 <b>N극</b>을 포일 자석의 양쪽 끝에 차례로 가까이 해 봐요.</p>
-  <svg id="m4Foil" class="scene" viewBox="0 0 800 260" role="img" aria-label="알루미늄 포일로 감싼 막대자석과 막대자석">
-    <rect width="800" height="260" fill="#f4fbff"/><rect y="200" width="800" height="60" fill="#d9c49a"/>
+  <svg id="m4Foil" class="scene" viewBox="0 0 800 210" role="img" aria-label="알루미늄 포일로 감싼 막대자석과 막대자석">
+    <rect width="800" height="210" fill="#f4fbff"/><rect y="160" width="800" height="50" fill="#d9c49a"/>
     <g id="m4FoilM"></g><g id="m4Probe"></g>
     <rect x="12" y="12" width="420" height="38" rx="12" fill="#0f3b5c" opacity=".88"/><text id="m4FoilT" x="26" y="38" font-size="19" font-family="Jua" fill="#fff">어느 쪽 끝부터 해 볼까요?</text>
   </svg>
@@ -149,15 +149,15 @@ function bar(right,w=180,h=44,label=true){const left=right==='N'?'S':'N';return 
   const res={},peeled={};let busy=false,fx=400;
   function foil(){let s=`<rect x="-100" y="-24" width="200" height="48" rx="6" fill="#d3d9de" stroke="#9aa6b0" stroke-width="2"/><path d="M-90 -10 l30 8 l25 -6 l30 10 l30 -8 l40 6 l20 -4" stroke="#eef2f5" stroke-width="3" fill="none"/>`;
     ['L','R'].forEach(e=>{if(peeled[e]){const p=endPole[e],x=e==='L'?-100:60;s+=`<rect x="${x}" y="-24" width="40" height="48" rx="6" fill="${C[p]}"/><text x="${x+20}" y="9" text-anchor="middle" font-size="24" fill="#fff" font-family="Jua">${p}</text>`;}});
-    $('#m4FoilM').innerHTML=s;tr($('#m4FoilM'),fx,140);}
+    $('#m4FoilM').innerHTML=s;tr($('#m4FoilM'),fx,115);}
   foil();
   async function test(e){if(busy)return;busy=true;fx=400;foil();const pole=endPole[e],dir=e==='L'?-1:1;
     /* 막대자석: N극이 포일 자석 쪽을 향함 */
     $('#m4Probe').innerHTML=bar(e==='L'?'N':'S');const start=400+dir*360,near=400+dir*(100+90+50);
     $('#m4FoilT').textContent=(e==='L'?'왼쪽':'오른쪽')+' 끝에 N극을 가까이 해요';
-    await tween(900,p=>tr($('#m4Probe'),start+(near-start)*p,140));
-    if(pole==='S'){await tween(220,p=>tr($('#m4Probe'),near-dir*50*p,140));$('#m4FoilT').textContent='서로 달라붙었어요!';res[e]='서로 달라붙어요';}
-    else{await tween(700,p=>{tr($('#m4Probe'),near-dir*20*p,140);fx=400-dir*70*p;tr($('#m4FoilM'),fx,140);});$('#m4FoilT').textContent='포일 자석이 밀려났어요!';res[e]='서로 밀어 내요';}
+    await tween(900,p=>tr($('#m4Probe'),start+(near-start)*p,115));
+    if(pole==='S'){await tween(220,p=>tr($('#m4Probe'),near-dir*50*p,115));$('#m4FoilT').textContent='서로 달라붙었어요!';res[e]='서로 달라붙어요';}
+    else{await tween(700,p=>{tr($('#m4Probe'),near-dir*20*p,115);fx=400-dir*70*p;tr($('#m4FoilM'),fx,115);});$('#m4FoilT').textContent='포일 자석이 밀려났어요!';res[e]='서로 밀어 내요';}
     $('#m4F'+e).textContent=res[e];$('#m4Peel'+e).disabled=false;
     fb('#m4FoilFb',Object.keys(res).length===2?'양쪽 끝을 모두 해 봤어요. 이제 포일을 한쪽씩 벗겨 어떤 극인지 확인해요.':'다른 쪽 끝에도 N극을 가까이 해 봐요.','info');busy=false;}
   $$('#s2 .row button[data-e]').forEach(b=>b.onclick=()=>test(b.dataset.e));

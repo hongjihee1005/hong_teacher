@@ -66,13 +66,17 @@ grade1/ … grade6/
 - 실험·탐구 중심 26차시. **HTML을 직접 고치지 마세요.** 원본은 `grade3/science/_build_hong2/lessons_uN.py`이고 `python3 build.py [sci32-uN-lM…]` → `python3 index_build.py` → 루트에서 `apply_content_theme.py`·`apply_theme.py`로 다시 만듭니다. 규칙은 `_build_hong2/README.md`, `BRIEF_WRITER.md`.
 - **사고전략 칸별 예시(2026-10-03):** 쓰는 칸마다 제목 옆 `💡 예시` 단추를 누르면 그 칸의 예시 문장 2개가 팝업으로 뜹니다(차시 핵심 질문과 이어지게). 문장은 `_build_hong2/examples_uN.py`(단계 이름으로 연결), 점검은 `python3 ex_check.py N`. 고르기만 하는 단계에는 넣지 않습니다.
 
-### 4학년 1학기 과학 홍지희 선생님 버전 (`grade4/science/sem1/`, 2026-10-24)
+### 4학년 1학기 과학 — 교과서 버전 `sem1/` · 홍지희 선생님 버전 `sem1-hong/` (2026-10-24)
 
-- 3학년 2학기 홍지희 버전 틀(실험 설계 → 예상 표 → 실험 → 우리 반 자료판 → 예상과 결과 비교 → 근거로 결론)을 그대로 씀. 1단원 자석의 이용 7개 · 2단원 물의 상태 변화 6개 · 3단원 땅의 변화 8개 = 21개 파일(2차시~창의가 팡팡). **4단원은 지도서 PDF(`[과학]4-1-4_지도서.pdf`, 33MB)에서 글자를 뽑을 수 없어 '준비 중'** — 10MB 이하로 나눠 받으면 같은 방식으로 만듦.
-  4학년은 교과서 버전이 따로 없어 이 폴더가 1학기 자료 목록입니다(과학방 1학기 카드 → `sem1/index.html`, 옛 `sem1.html`은 안내 페이지).
-- **HTML을 직접 고치지 마세요.** 원본 `grade4/science/_build/lessons_uN.py`(+`examples_uN.py`), `python3 build.py [sci41-uN-lM…]` → `python3 index_build.py` → 루트에서 `apply_content_theme.py`·`apply_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 작성 규칙 `_build/BRIEF_WRITER.md`(3학년 안내서 + 4학년에서 달라지는 것).
-- 이 환경에서 위키미디어를 받을 수 없어(2026-10-24) **사진 대신 직접 그린 SVG 그림**을 씁니다: `photos`에 `{'svg': '<svg…>', 'name': …}`(build.py가 이미지로 넣고 출처는 '직접 그림'). `_build/wmcache`에 있는 사진은 `{'f': 'File:…'}`로 쓸 수 있음.
-- 단원마다 작성자가 지도서와 대조해 쓰고, 다른 검토자가 다시 대조해 고침(사실·정답·쪽수·유의점·안전·답이 미리 보이는 곳). 지도서 글은 저작물이라 저장소에 넣지 않습니다.
+- 3학년과 같은 짜임: 과학방(`grade4/science/index.html`) 카드 두 장 → `sem1/index.html`(교과서 버전 앱 28개) · `sem1-hong/index.html`(홍지희 버전 수업 28개). 4단원(다양한 생물과 우리 생활)까지 모두 열림(4단원 지도서는 선생님이 PDF를 두 개로 나눠 올려 주심).
+  홍지희 버전은 처음(같은 날) `sem1/`에 두었다가 `sem1-hong/`으로 옮겼고, `sem1/u?-l*.html` 21개는 새 주소로 넘기는 안내 페이지입니다. 지우지 마세요.
+- **홍지희 버전**: 3학년 2학기 홍지희 버전 틀(실험 설계 → 예상 표 → 실험 → 우리 반 자료판 → 예상과 결과 비교 → 근거로 결론). HTML을 직접 고치지 말고 원본 `grade4/science/_build/lessons_uN.py`(+`examples_uN.py`), `python3 build.py [sci41-uN-lM…]` → `python3 index_build.py`. 작성 규칙 `_build/BRIEF_WRITER.md`.
+- **교과서 버전**: 3학년 교과서 버전 앱과 같은 모양(도입 → 실험·가상 실험·영상처럼 보기 → 정리 → 한눈에 쏙 빈칸 → 형성 평가 → 스스로 평가, 한 화면 모드). 3학년 앱은 빌드 원본이 없어서, 4학년은 `grade4/science/_build_tb/`에 빌드를 새로 만듦:
+  원본 `src/uN-M.html`(머리 주석 title·unit·lesson·total·goal·pages·blanks + 앱 CSS + `section[data-nav]` + 앱 script), 공통 틀 `parts/head_css.html`·`parts/tail.html`(3학년 2학기 앱에서 떼어 옴: 한 화면 엔진(data-glue 포함)·빈칸 쓰기·홈 단추·연락처 줄), 도우미 `$ $$ fb doneNav pickOne faces keyCheck`는 `build.py`가 넣음. 사진은 `src="@wm:File:…"`(`_build/wmcache`) 또는 직접 그린 SVG.
+  **`sem1/u?-?.html`을 직접 고치지 마세요.** `cd grade4/science/_build_tb && python3 build.py [uN-M…] && python3 index_build.py`, 루트에서 `apply_theme.py`(목록)·`apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 점검 `python3 build.py check`, `node check.js ../sem1/u1-1.html … [--shots 폴더]`(덮개 입히기 전 파일 기준). 작성 규칙 `_build_tb/BRIEF_TB.md`.
+  `total`(단원 차시 수)은 지도서 차시 구성(과학이 톡톡 포함) 그대로: 1단원 11 · 2단원 11 · 3단원 13 · 4단원 12.
+- 이 환경에서 위키미디어를 받을 수 없어(2026-10-24) **사진 대신 직접 그린 SVG 그림**이 대부분입니다(캐시에 있던 한라산·지리산·낙동강·빙하 등 몇 장만 사진).
+- 두 버전 모두 단원마다 작성자가 지도서와 대조해 쓰고, 다른 검토자가 다시 대조해 고침. 지도서 글은 저작물이라 저장소에 넣지 않습니다. 지도서 397쪽 '곰팡이가 사라지면 요구르트도 못 만든다'는 지도서 오류(요구르트는 세균)라 옮기지 않음.
 
 ### 과학 교과서 버전 '한 화면' 쪽 나눔 (`grade3/science/sem1/`·`sem2/` 53개 앱, 2026-10-09)
 
