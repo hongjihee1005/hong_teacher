@@ -91,10 +91,10 @@ grade1/ … grade6/
 - **2학기 앱 25개(2026-10-24)**: 1단원 혼합물의 분리 6 · 2단원 날씨와 우리 생활 6 · 3단원 열과 우리 생활 8 · 4단원 자원과 에너지 5. 원본 `src2/uN-M.html`, `SEM=2 python3 build.py …`. 옛 `sem2.html`은 `sem2/index.html` 안내 페이지.
 - 단원마다 작성자가 지도서와 대조해 쓰고 다른 검토자가 다시 대조해 고침. 사진 대신 직접 그린 SVG.
 
-### 6학년 과학 교과서 버전 (`grade6/science/sem1/`, 2026-10-25)
+### 6학년 과학 교과서 버전 (`grade6/science/sem1/`·`sem2/`, 2026-10-25)
 
 - 5학년과 같은 빌드를 `grade6/science/_build_tb/`에 복사해 씀(단원 이름·색·그림 `units.py`, 작성 규칙 `BRIEF_TB.md`, 그림 이름 `star` 추가). 1학기 앱 28개: 1단원 산과 염기 7 · 2단원 물체의 운동 7 · 3단원 식물의 구조와 기능 8 · 4단원 지구의 운동 6. 원본 `src/uN-M.html`, **HTML 직접 고치지 말 것.** `SEM=1 python3 build.py [uN-M…]` → `python3 index_build.py` → 루트에서 `apply_theme.py`·`apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 옛 `sem1.html`은 `sem1/index.html` 안내 페이지.
-- 2학기(`src2/`)는 작업 중: 1단원 계절의 변화 · 2단원 물질의 연소 · 4단원 과학과 나의 진로. **3단원은 지도서 PDF(62MB)를 읽지 못해** 나눠 받으면 만듦(`_build/sciplan/PLAN.md`).
+- **2학기 앱 17개(2026-10-25)**: 1단원 계절의 변화 6 · 2단원 물질의 연소 6 · 4단원 과학과 나의 진로 5. 원본 `src2/uN-M.html`, `SEM=2 python3 build.py …`. 옛 `sem2.html`은 `sem2/index.html` 안내 페이지. **3단원은 지도서 PDF(62MB)를 읽지 못해 '곧 열려요'** — 10MB 이하로 나눠 받으면 같은 방식으로 만들고 `units.py`의 `UNITS2[3]` 단원 이름을 채움(`_build/sciplan/PLAN.md`).
 - 4단원 태양 관찰(u4-1)은 3~9월엔 오늘 날짜, 그 밖의 달엔 6월 10일 하늘로 계산함(가을·겨울 아침 태양이 남동쪽이라 교과서 결과와 헷갈리지 않게).
 - 단원마다 작성자가 지도서와 대조해 쓰고 다른 검토자가 다시 대조해 고침. 사진 대신 직접 그린 SVG.
 
