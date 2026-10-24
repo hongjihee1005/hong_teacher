@@ -485,12 +485,13 @@ function drawOrbitS(){let s='<rect width="800" height="400" fill="#0b1636"/>';
     const names=Object.keys(CST).filter(k=>CST[k].s===g).map(k=>CST[k].n);
     s+='<rect x="'+(x-70)+'" y="'+(y-30)+'" width="140" height="60" rx="12" fill="'+(st==='vis'?'#ffe680':st==='hid'?'#3a3a4a':'#26335f')+'" stroke="#fff" stroke-opacity=".5"/>';
     s+=tx(x,y-10,SNAME[g]+'철 별자리',{s:15,c:st==='vis'?'#3a2a00':st==='hid'?'#999':'#fff'})+tx(x,y+8,names.slice(0,2).join('·'),{s:12,c:st==='vis'?'#3a2a00':st==='hid'?'#999':'#cfe0ff'})+tx(x,y+23,names[2],{s:12,c:st==='vis'?'#3a2a00':st==='hid'?'#999':'#cfe0ff'});
-    if(st==='hid') s+=tx(x,y+48,'태양 빛 때문에 안 보여요',{s:13,c:'#ffb0a0'});}
+    if(st==='hid') s+=tx(x,y<200?y-38:y+48,'태양 빛 때문에 안 보여요',{s:13,c:'#ffb0a0'});}
   s+='<circle cx="400" cy="200" r="40" fill="#ffd23f" opacity=".3"/><circle cx="400" cy="200" r="28" fill="#ffd23f"/>'+tx(400,206,'태양',{s:16,c:'#7a4a00'});
   for(const g in EARTH){const a=ang(EARTH[g]),x=400+ER[0]*Math.cos(a),y=200-ER[1]*Math.sin(a),on=seasonAt===g;
     s+='<g class="ep" data-g="'+g+'"><circle cx="'+x+'" cy="'+y+'" r="26" fill="#000" opacity="0"/><circle cx="'+x+'" cy="'+y+'" r="'+(on?16:12)+'" fill="#1d2f52" stroke="'+(on?'#ffe680':'#4fa3e0')+'" stroke-width="3"/>';
     const sx=400-x,sy=200-y,L=Math.hypot(sx,sy),ux=sx/L,uy=sy/L,r=on?16:12;
-    s+='<path d="M'+(x-uy*r)+' '+(y+ux*r)+' A'+r+' '+r+' 0 0 '+(1)+' '+(x+uy*r)+' '+(y-ux*r)+'Z" fill="#4fa3e0"/>';
+    /* 태양을 향한 반쪽을 밝게(화면에서 시계 반대 방향 호) */
+    s+='<path d="M'+(x-uy*r)+' '+(y+ux*r)+' A'+r+' '+r+' 0 0 0 '+(x+uy*r)+' '+(y-ux*r)+'Z" fill="#4fa3e0"/>';
     s+=tx(x-ux*34,y-uy*34+5,SNAME[g],{s:15,c:'#fff'})+'</g>';
     if(on) s+='<line x1="'+x+'" y1="'+y+'" x2="'+(x-ux*120)+'" y2="'+(y-uy*120)+'" stroke="#ffe680" stroke-width="3" stroke-dasharray="6 5"/>';}
   s+=tx(12,24,'북쪽에서 내려다본 지구의 공전',{s:15,c:'#cfe6f2',a:'start'})+tx(12,44,'밤이 되는 쪽 = 태양 반대쪽',{s:13,c:'#ffe680',a:'start'});

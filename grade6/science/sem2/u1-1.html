@@ -453,7 +453,7 @@ orderer('#o3',['우드록의 한쪽에 양면테이프로 자를 붙여요','수
 let o3ok=false,pl3ok=false;
 function protG(cx,cy,r,o){/* 반원 각도기: 곧은 쪽이 아래 */o=o||{};let s='<path d="M'+(cx-r)+' '+cy+' A'+r+' '+r+' 0 0 1 '+(cx+r)+' '+cy+'Z" fill="#e8f6ff" fill-opacity=".8" stroke="#1c6fa8" stroke-width="2.5"/>';
   for(let a=0;a<=180;a+=10){const c=Math.cos(a*RAD),sn=Math.sin(a*RAD),l=a%30?7:12;s+='<line x1="'+(cx+(r-l)*c).toFixed(1)+'" y1="'+(cy-(r-l)*sn).toFixed(1)+'" x2="'+(cx+r*c).toFixed(1)+'" y2="'+(cy-r*sn).toFixed(1)+'" stroke="#1c6fa8" stroke-width="1.6"/>';
-    if(o.lab&&a%30===0){s+=tx((cx+(r-22)*c).toFixed(1),(cy-(r-22)*sn+5).toFixed(1),180-a,{s:12,c:'#0d4a7a'});s+=tx((cx+(r+11)*c).toFixed(1),(cy-(r+11)*sn+4).toFixed(1),a,{s:10,c:'#7aa6c6'});}}
+    if(o.lab&&a%30===0){const B=o.big?1.35:1;s+=tx((cx+(r-24*B)*c).toFixed(1),(cy-(r-24*B)*sn+5*B).toFixed(1),180-a,{s:12*B,c:'#0d4a7a'});s+=tx((cx+(r+11*B)*c).toFixed(1),(cy-(r+11*B)*sn+4).toFixed(1),a,{s:10*B,c:'#7aa6c6'});}}
   s+='<circle cx="'+cx+'" cy="'+cy+'" r="4" fill="#fff" stroke="#1c6fa8" stroke-width="2"/>';return s;}
 function boardG(x0,x1,y){return '<path d="M'+x0+' '+y+' l26 -18 h'+(x1-x0)+' l-26 18z" fill="#fbfaf6" stroke="#9aa9b4" stroke-width="2"/><rect x="'+x0+'" y="'+y+'" width="'+(x1-x0)+'" height="16" fill="#eef1f3" stroke="#9aa9b4" stroke-width="2"/>';}
 function rulerG(x0,x1,y,op){let s='<g opacity="'+op+'"><rect x="'+x0+'" y="'+(y-9)+'" width="'+(x1-x0)+'" height="9" fill="#ffe27a" stroke="#b8860b" stroke-width="1.5"/>';
@@ -476,19 +476,19 @@ mkPlayer({root:'#pl3',end:19,ch:[[0,'① 자','우드록의 한쪽에 양면테�
 /* ---------- 측정기로 재 보기 ---------- */
 const TR=[{A:35,when:'오전 9시 30분 무렵',o:[35,145,55]},{A:52,when:'오후 12시 30분 무렵',o:[52,128,42]}];
 let ti=0,stp=0,anim={rot:28,pp:0,sp:0};
-function drawMs(){const T=TR[ti],A=T.A,Y=250,X0=150,H=110,L=H/Math.tan(A*RAD),TX=X0+L;
+function drawMs(){const T=TR[ti],A=T.A,Y=250,X0=130,H=150,L=H/Math.tan(A*RAD),TX=X0+L;
   let s='<rect width="680" height="320" fill="#f6fbff"/>';
   /* 햇빛 */
   for(let k=-2;k<=3;k++){const bx=X0+k*46,by=Y-H;s+='<line x1="'+(bx-260*Math.cos(A*RAD)).toFixed(1)+'" y1="'+(by-260*Math.sin(A*RAD)).toFixed(1)+'" x2="'+(bx-70*Math.cos(A*RAD)).toFixed(1)+'" y2="'+(by-70*Math.sin(A*RAD)).toFixed(1)+'" stroke="#f0a020" stroke-width="2" stroke-dasharray="8 6" opacity=".7"/>';}
-  s+=sunG(X0-125*Math.cos(A*RAD),Y-H-125*Math.sin(A*RAD),20);
-  s+=boardG(40,470,Y);s+=rulerG(X0,X0+300,Y,1);
+  s+=sunG(X0-80*Math.cos(A*RAD),Y-H-80*Math.sin(A*RAD),20);
+  s+=boardG(30,500,Y);s+=rulerG(X0,X0+348,Y,1);
   s+='<polygon points="'+X0+','+(Y-9)+' '+TX.toFixed(1)+','+(Y-9)+' '+(TX-6).toFixed(1)+','+(Y-3)+' '+X0+','+(Y-3)+'" fill="#555" opacity=".55"/>';
   s+='<rect x="'+(X0-6)+'" y="'+(Y-9-H)+'" width="12" height="'+H+'" rx="4" fill="#9ccc65" stroke="#4e7a1e" stroke-width="2"/>';
   const PX=lerp(TX+120,TX,anim.pp);
-  s+=protG(PX,Y-9,84,{lab:true});
-  const ex=lerp(X0+20,TX,anim.sp),ey=lerp(Y-9-H+60,Y-9,anim.sp);
+  s+=protG(PX,Y-9,110,{lab:true,big:true});
+  const ex=lerp(X0+20,TX,anim.sp),ey=lerp(Y-9-H+80,Y-9,anim.sp);
   s+='<line x1="'+X0+'" y1="'+(Y-9-H)+'" x2="'+ex.toFixed(1)+'" y2="'+ey.toFixed(1)+'" stroke="#c2332c" stroke-width="2.5"/>';
-  if(anim.sp>=1){const rr=84;s+='<circle cx="'+(TX-rr*Math.cos(A*RAD)).toFixed(1)+'" cy="'+(Y-9-rr*Math.sin(A*RAD)).toFixed(1)+'" r="6" fill="#c2332c" stroke="#fff" stroke-width="2"/>';}
+  if(anim.sp>=1){const rr=110;s+='<circle cx="'+(TX-rr*Math.cos(A*RAD)).toFixed(1)+'" cy="'+(Y-9-rr*Math.sin(A*RAD)).toFixed(1)+'" r="6" fill="#c2332c" stroke="#fff" stroke-width="2"/>';}
   s+=tx((X0+TX)/2,Y+34,'그림자',{s:15,c:'#333'})+tx(X0-12,Y-9-H/2,'수수깡',{s:14,c:'#4e7a1e',a:'end'});
   /* 위에서 본 작은 그림 */
   s+='<rect x="500" y="14" width="168" height="132" rx="10" fill="#fff" stroke="#c9861a" stroke-width="2"/>'+tx(584,34,'위에서 본 모습',{s:14,c:'#7a4a00'});
