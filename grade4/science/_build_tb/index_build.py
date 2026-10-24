@@ -6,10 +6,10 @@ import html, os, re, sys
 
 B = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, B)
-from build import parse, keys, UNITS_BY, SRC as SRCDIR  # noqa: E402
+from build import parse, keys, UNITS_BY, SRC as SRCDIR, GRADE  # noqa: E402
 
 TPL = os.path.join(B, '..', '..', '..', 'grade3', 'science', 'sem1', 'index.html')
-EMO_BY = {1: {1: '🧲', 2: '💧', 3: '🌋', 4: '🍄'}, 2: {1: '🔬', 2: '🌿', 3: '🎈', 4: '🌍'}}
+from units import EMO_BY  # noqa: E402
 HONG = ('<p class="sub" style="margin-top:-4px">🧑‍🏫 실험·탐구 중심 수업은 '
         '<a href="../sem{s}-hong/index.html">{s}학기 · 홍지희 선생님 버전</a>에 있어요.</p>')
 
@@ -19,10 +19,10 @@ def main(sem=1):
     OUT = os.path.join(B, '..', 'sem%d' % sem, 'index.html')
     s = open(TPL, encoding='utf-8').read()
     s = re.sub(r'<!--hj-theme-js-->.*?<!--/hj-theme-js-->', '', s, flags=re.S)
-    s = s.replace('>3학년</a>', '>4학년</a>')
-    s = re.sub(r'<title>[^<]*</title>', '<title>4학년 %d학기 과학</title>' % sem, s)
+    s = s.replace('>3학년</a>', '>%d학년</a>' % GRADE)
+    s = re.sub(r'<title>[^<]*</title>', '<title>%d학년 %d학기 과학</title>' % (GRADE, sem), s)
     s = s.replace('aria-current="page">1학기<', 'aria-current="page">%d학기<' % sem).replace('과학방 · 1학기', '과학방 · %d학기' % sem)
-    s = s.replace('3학년 1학기 과학 · 차시에 맞는 앱을 눌러 탐구해 보세요.', '4학년 %d학기 과학 · 차시에 맞는 앱을 눌러 탐구해 보세요.' % sem)
+    s = s.replace('3학년 1학기 과학 · 차시에 맞는 앱을 눌러 탐구해 보세요.', '%d학년 %d학기 과학 · 차시에 맞는 앱을 눌러 탐구해 보세요.' % (GRADE, sem))
     by = {}
     for k in keys(sem):
         meta = parse(os.path.join(B, SRCDIR[sem], k + '.html'))[0]

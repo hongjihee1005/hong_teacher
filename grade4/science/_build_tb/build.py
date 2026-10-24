@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""4학년 과학 교과서 버전 앱 만들기 (1학기 src/ → ../sem1/, 2학기 src2/ → ../sem2/).
+"""과학 교과서 버전 앱 만들기(이 폴더가 있는 학년) (1학기 src/ → ../sem1/, 2학기 src2/ → ../sem2/).
 
 src/uN-M.html (머리 주석 + 앱 CSS + section들 + 앱 script) → ../sem1/uN-M.html
 공통 틀(parts/head_css.html, parts/tail.html)은 3학년 2학기 교과서 버전 앱에서 떼어 온 것
@@ -16,20 +16,10 @@ B = os.path.dirname(os.path.abspath(__file__))
 WM = os.environ.get('WM_CACHE') or os.path.join(B, '..', '..', '..', '_build', 'wmcache')
 SRC = {1: 'src', 2: 'src2'}
 
-UNITS1 = {
-    1: ('1단원 자석의 이용', '#b8452f', 'magnet'),
-    2: ('2단원 물의 상태 변화', '#1c6fa8', 'drop'),
-    3: ('3단원 땅의 변화', '#8a5a2b', 'volcano'),
-    4: ('4단원 다양한 생물과 우리 생활', '#2f7d4a', 'mushroom'),
-}
-UNITS2 = {
-    1: ('1단원', '#6a4fa3', 'leaf'),  # 지도서(PDF 83MB)를 아직 읽지 못함 — 받으면 단원 이름을 채움
-    2: ('2단원 생물과 환경', '#2f7d4a', 'leaf'),
-    3: ('3단원 여러 가지 기체', '#1c6fa8', 'balloon'),
-    4: ('4단원 기후변화와 우리 생활', '#b8452f', 'globe'),
-}
-UNITS_BY = {1: UNITS1, 2: UNITS2}
-UNITS = UNITS1  # 옛 이름(목록 빌더 호환)
+sys.path.insert(0, B)
+from units import UNITS_BY  # noqa: E402  학년마다 단원 이름·색·그림 (units.py)
+GRADE = int(re.search(r'grade(\d)', B).group(1))
+UNITS = UNITS_BY[1]
 
 ICON = {
     'magnet': '<svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M20 18 v28 a23 23 0 0 0 46 0 v-28 h-14 v28 a9 9 0 0 1 -18 0 v-28 z" fill="#e2573f" stroke="#fff" stroke-width="3"/><rect x="20" y="12" width="14" height="10" fill="#dfe7ee" stroke="#fff" stroke-width="3"/><rect x="52" y="12" width="14" height="10" fill="#dfe7ee" stroke="#fff" stroke-width="3"/></svg>',
@@ -159,7 +149,7 @@ def build(key, write=True, sem=1):
     if credits:
         cred = '<details class="credits"><summary>📷 사진 출처 (위키미디어 공용 자유 이용 사진)</summary><ul>%s</ul></details>' % ''.join(credits)
     lesson = meta['lesson']
-    sub = '4학년 %d학기 과학 · %s · %s/%s차시' % (sem, uname, lesson, meta['total'])
+    sub = '%d학년 %d학기 과학 · %s · %s/%s차시' % (GRADE, sem, uname, lesson, meta['total'])
     head = open(os.path.join(B, 'parts', 'head_css.html'), encoding='utf-8').read()
     head = head.replace('--navy:#0f3b5c;', '--navy:%s;' % col, 1)
     tail = open(os.path.join(B, 'parts', 'tail.html'), encoding='utf-8').read()

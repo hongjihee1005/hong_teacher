@@ -14,6 +14,11 @@ GitHub Pages로 게시되는 정적 사이트입니다. 학생이 주소를 열�
 **새 세션을 열면 먼저 `_build/mathplan/PLAN.md`를 읽고, 선생님이 다른 일을 시키지 않았으면 거기 적힌 다음 일부터 바로 이어서 하세요.**
 (선생님 요청: 사용량이 다 차서 멈추면 다음 세션에서 곧바로 이어서, 수학 3~6학년을 모두 완성.) 작업 중인 파일은 작업 브랜치 `claude/gracious-gauss-9aljc9`에 있습니다(PLAN.md의 현황 표 참고).
 
+## ⏩ 진행 중인 큰 작업 — 과학 교과서 버전 4~6학년 (2026-10-24~)
+
+**새 세션을 열면 `_build/sciplan/PLAN.md`도 읽고, 선생님이 다른 일을 시키지 않았으면 거기 적힌 '다음 할 일'부터 이어서 하세요.**
+(선생님 요청: 한도가 다 되면 다시 가능할 때 이어서. 차례 4-2 → 5-1 → 5-2 → 6-1 → 6-2.) 작업 브랜치 `claude/science-experiment-materials-review-sitgfe`.
+
 ## 자동 보완 — 한곳(main)에 올리면 나머지는 저절로 (2026-10-04)
 
 **어느 대화·어느 기기에서든 main에 올리면** GitHub Actions(`.github/workflows/auto-fix.yml`)가 `python3 _build/auto/run_all.py`를 돌려
