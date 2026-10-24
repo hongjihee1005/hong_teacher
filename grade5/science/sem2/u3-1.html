@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>온도계로 물체의 온도를 측정하라!</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#c2332c;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+.k1-cups{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.k1-cups button{min-height:3rem}
+.k1-steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.k1-steps button{font-size:.92rem;min-height:2.4rem;border-width:2px}
+.k1-steps button[disabled]{opacity:.45}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:3px solid #ffd23f}
+.k1-tbl td,.k1-tbl th{text-align:center;padding:4px 6px}
+.k1-tbl td.k1-v{font-family:"Jua",sans-serif;color:#0f3b5c}
+.k1-match{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:6px}
+.k1-card{border:3px solid var(--line);border-radius:14px;padding:8px;text-align:center;font-size:.9rem}
+.k1-card.ok{border-color:#2e9d5b;background:#eaf7ea}
+.k1-card select{font:inherit;font-size:.88rem;width:100%;margin-top:4px;padding:.2em;border-radius:8px;border:2px solid var(--line)}
+.k1-card svg{max-height:12vh;margin:0 auto}
+@media (max-width:640px){.k1-match{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M43 10 C52 26 66 34 62 54 a19 19 0 0 1 -38 0 C24 42 34 36 34 24 C40 30 42 34 43 10z" fill="#e2573f" stroke="#fff" stroke-width="3"/><path d="M43 44 c6 6 9 10 6 16 a7 7 0 0 1 -12 0 c-2 -6 3 -10 6 -16z" fill="#ffd23f"/></svg>
+  <div><h1>온도계로 물체의 온도를 측정하라!</h1><p>5학년 2학기 과학 · 3단원 열과 우리 생활 · 2/13차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">손으로 느끼기</a><a href="#s3">탐침 온도계</a><a href="#s4">온도 읽기</a><a href="#s5">알코올·적외선</a><a href="#s6">여러 온도계</a><a href="#s7">정리해요</a><a href="#s8">생활 속 온도계</a><a href="#s9">한눈에 쏙</a><a href="#s10">형성 평가</a><a href="#s11">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>물체의 따뜻하거나 차가운 정도를 온도로 나타낸다는 것을 설명할 수 있어요.<br>온도계의 사용법을 알고 온도계를 이용하여 온도를 측정할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 62쪽</span>
+  <h2>누구의 말이 맞을까요?</h2>
+  <svg class="scene" viewBox="0 0 640 230" style="max-height:26vh" role="img" aria-label="같은 곳에서 펭귄은 시원하다고 하고 사막여우는 춥다고 말하는 그림">
+    <rect width="640" height="230" fill="#e9f5fc"/><rect y="185" width="640" height="45" fill="#f4f7fa"/>
+    <g transform="translate(170 0)"><ellipse cx="0" cy="140" rx="42" ry="52" fill="#22313f"/><ellipse cx="0" cy="150" rx="28" ry="40" fill="#fff"/><circle cx="0" cy="82" r="28" fill="#22313f"/><circle cx="-9" cy="78" r="5" fill="#fff"/><circle cx="9" cy="78" r="5" fill="#fff"/><circle cx="-9" cy="79" r="2.4" fill="#222"/><circle cx="9" cy="79" r="2.4" fill="#222"/><path d="M-7 90 l7 8 l7 -8z" fill="#f4a33a"/><path d="M-20 190 h16 l-4 -8z M4 190 h16 l-4 -8z" fill="#f4a33a"/>
+      <rect x="-70" y="14" width="140" height="36" rx="16" fill="#fff" stroke="#7aa7bd" stroke-width="2"/><text x="0" y="38" text-anchor="middle" font-size="17" font-family="Jua" fill="#1c6fa8">아, 시원해.</text></g>
+    <g transform="translate(470 0)"><path d="M-30 110 l-26 -54 l40 30z M30 110 l26 -54 l-40 30z" fill="#e8c27a" stroke="#b9873f" stroke-width="2"/><ellipse cx="0" cy="118" rx="36" ry="30" fill="#f1d39a"/><ellipse cx="0" cy="166" rx="30" ry="26" fill="#f1d39a"/><circle cx="-12" cy="112" r="4" fill="#222"/><circle cx="12" cy="112" r="4" fill="#222"/><circle cx="0" cy="128" r="4" fill="#5a3b22"/>
+      <path d="M-26 160 q-14 6 -10 22 M26 160 q14 6 10 22" stroke="#b9873f" stroke-width="3" fill="none"/>
+      <rect x="-64" y="14" width="128" height="36" rx="16" fill="#fff" stroke="#c0392b" stroke-width="2"/><text x="0" y="38" text-anchor="middle" font-size="17" font-family="Jua" fill="#c0392b">으, 추워!</text></g>
+  </svg>
+  <div class="pick" id="k1P1">
+    <button data-a="1" data-m="맞아요! 펭귄과 사막여우는 덥거나 추운 정도를 서로 다르게 느껴요. 그래서 둘 다 맞는 말이에요.">둘 다 맞아요. 서로 다르게 느끼기 때문이에요</button>
+    <button data-a="0" data-m="펭귄만 맞는 걸까요? 사막여우는 정말 춥게 느낄 수 있어요.">펭귄의 말만 맞아요</button>
+    <button data-a="0" data-m="사막여우만 맞는 걸까요? 펭귄은 정말 시원하게 느낄 수 있어요.">사막여우의 말만 맞아요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">끓는 물은 뜨겁고 얼음물은 차가워요. 물체의 따뜻하거나 차가운 정도는 무엇으로 나타낼까요?</p>
+  <div class="pick" id="k1P1b">
+    <button data-a="1" data-m="맞아요! 물체의 따뜻하거나 차가운 정도를 온도로 나타내며, 온도의 단위는 °C(섭씨도)를 사용해요.">온도 · 단위는 °C(섭씨도)</button>
+    <button data-a="0" data-m="무게는 무거운 정도예요. 따뜻하거나 차가운 정도는 무엇일까요?">무게 · 단위는 g(그램)</button>
+    <button data-a="0" data-m="길이는 긴 정도예요. 따뜻하거나 차가운 정도는 무엇일까요?">길이 · 단위는 cm(센티미터)</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="손으로 느끼기">
+  <span class="stage">활동해요 1 · 「실험관찰」 36쪽</span>
+  <h2>물과 주스가 든 컵을 각각 만져 봐요</h2>
+  <svg id="k1Cups" class="scene" viewBox="0 0 600 220" style="max-height:25vh" role="img" aria-label="따뜻한 물이 든 컵과 시원한 주스가 든 컵" data-glue="1">
+    <rect width="600" height="220" fill="#fdf6e3"/><rect y="186" width="600" height="34" fill="#e6cfa8"/>
+    <g id="k1CupW"><path d="M140 70 l12 116 h76 l12 -116z" fill="#f4fbff" stroke="#7aa7bd" stroke-width="4"/><path d="M146 96 l9 88 h70 l9 -88z" fill="#cfe9f8"/><path d="M168 60 q-6 -12 0 -22 M190 58 q-6 -12 0 -22 M212 60 q-6 -12 0 -22" stroke="#e2a3a3" stroke-width="3" fill="none"/><text x="190" y="212" text-anchor="middle" font-size="16" font-family="Jua" fill="#0f3b5c">물</text></g>
+    <g id="k1CupJ"><path d="M360 70 l12 116 h76 l12 -116z" fill="#f4fbff" stroke="#7aa7bd" stroke-width="4"/><path d="M366 96 l9 88 h70 l9 -88z" fill="#f5a35a"/><rect x="384" y="104" width="16" height="16" rx="3" fill="#e9f7ff" stroke="#9fc9e6" transform="rotate(14 392 112)"/><rect x="412" y="118" width="14" height="14" rx="3" fill="#e9f7ff" stroke="#9fc9e6"/><text x="410" y="212" text-anchor="middle" font-size="16" font-family="Jua" fill="#0f3b5c">주스</text></g>
+    <g id="k1Hand" opacity="0"><path d="M0 0 q-6 -30 6 -34 q10 -2 10 14 v-30 q2 -10 10 -8 q8 2 8 12 v28 q2 -8 10 -6 q8 2 6 12 v20 q-2 30 -26 34 h-14 q-14 -4 -10 -42z" fill="#ffd9b0" stroke="#d8a77a" stroke-width="2"/></g>
+  </svg>
+  <div class="k1-cups" data-glue="1"><button id="k1TW">✋ 물이 든 컵 만지기</button><button id="k1TJ">✋ 주스가 든 컵 만지기</button></div>
+  <div class="fb" id="k1TFb"></div>
+  <div id="k1TAsk" hidden>
+    <p class="jua" style="font-size:1.05rem">손으로 만져서 물과 주스가 각각 몇 °C인지 정확하게 말할 수 있나요?</p>
+    <div class="pick" id="k1P2">
+      <button data-a="1" data-m="맞아요! 손으로 만지면 따뜻한지 차가운지는 말할 수 있지만 정확한 온도는 알기 어려워요. 그래서 온도계를 사용해요.">아니요, 따뜻하고 차가운 정도만 어림할 수 있어요</button>
+      <button data-a="0" data-m="손으로 만져서 ‘30 °C’처럼 정확한 숫자를 말할 수 있을까요? 사람마다 다르게 느낄 수도 있어요.">네, 손으로도 정확하게 알 수 있어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 사용한 액체는 맛보지 않고 장난을 치지도 않아요.</p>
+</section>
+
+<section id="s3" data-nav="탐침 온도계">
+  <span class="stage">활동해요 2·3 · 「실험관찰」 36쪽</span>
+  <h2>탐침 온도계로 물과 주스의 온도를 측정해요</h2>
+  <svg id="k1Pr" class="scene" viewBox="0 0 640 250" style="max-height:28vh" role="img" aria-label="탐침 온도계와 물, 주스가 든 컵" data-glue="1"></svg>
+  <div class="k1-steps" data-glue="1"><button class="main" id="k1S1">① 뚜껑 열고 전원 켜기</button><button id="k1S2" disabled>② 물에 탐침 넣기</button><button id="k1S3" disabled>③ 주스에 탐침 넣기</button></div>
+  <div id="k1Pos" hidden data-glue="1">
+    <p class="jua" style="margin:6px 0 2px">탐침을 어디까지 넣을까요? 알맞은 자리를 골라요.</p>
+    <div class="pick" id="k1PosP">
+      <button data-a="0" data-m="탐침이 컵 바닥에 닿으면 컵 바닥의 온도가 섞여 측정될 수 있어요.">컵 바닥에 닿게 꾹 눌러요</button>
+      <button data-a="0" data-m="탐침이 컵 벽면에 닿지 않도록 해요.">컵 벽면에 기대어 놓아요</button>
+      <button data-a="1" data-m="맞아요! 탐침을 측정하려는 물체에 충분히 넣고, 컵 벽면이나 바닥에 닿지 않게 해요.">벽면·바닥에 닿지 않게 액체 속에 충분히 넣어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div class="fb" id="k1PrFb"></div>
+  <p class="tip">⚠️ 탐침 온도계의 뾰족한 부분이 사람을 향하지 않도록 주의해요. 사용한 뒤에는 전원을 끄고 물기를 닦아 말린 뒤 뚜껑을 닫아 보관해요. 화면의 온도는 지도서의 <b>예시 값</b>이에요. 실제 측정값은 모둠마다 달라요.</p>
+</section>
+
+<section id="s4" data-nav="온도 읽기">
+  <span class="stage">활동해요 · 온도 읽는 법</span>
+  <h2>온도는 어떻게 읽을까요?</h2>
+  <p>온도 표시 창의 숫자 뒤에 ‘°C’가 붙어 있어요. 예를 들어 20.5 °C는 ‘섭씨 이십 점 오 도’라고 읽어요.</p>
+  <p class="jua" style="font-size:1.05rem">1. 물의 온도 <b>30.1 °C</b>는 어떻게 읽을까요?</p>
+  <div class="pick" id="k1R1">
+    <button data-a="0" data-m="°C는 ‘섭씨도’예요. 숫자 앞에 ‘섭씨’, 뒤에 ‘도’를 붙여 읽어요.">삼십 점 일 센티미터</button>
+    <button data-a="1" data-m="맞아요! 30.1 °C는 ‘섭씨 삼십 점 일 도’라고 읽어요.">섭씨 삼십 점 일 도</button>
+    <button data-a="0" data-m="소수점은 ‘점’이라고 읽어요.">섭씨 삼백일 도</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">2. ‘섭씨 십삼 점 오 도’를 기호로 쓰면?</p>
+  <div class="pick" id="k1R2">
+    <button data-a="1" data-m="맞아요! 주스의 온도 13.5 °C예요.">13.5 °C</button>
+    <button data-a="0" data-m="‘점’은 소수점이에요. 십삼 점 오 → 13.5">135 °C</button>
+    <button data-a="0" data-m="숫자 뒤에 단위 °C를 써요.">13.5 cm</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s5" data-nav="알코올·적외선">
+  <span class="stage">활동해요 4 · 「실험관찰」 37쪽</span>
+  <h2>알코올 온도계와 적외선 온도계의 사용법을 알아봐요</h2>
+  <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px" data-glue="1">
+    <div>
+      <p class="jua" style="margin:0">🌡️ 알코올 온도계 (과학실 벽에 걸린 것)</p>
+      <svg id="k1Al" viewBox="0 0 300 260" style="max-height:28vh;margin:0 auto" role="img" aria-label="벽걸이 알코올 온도계와 눈 위치"></svg>
+      <div class="k1-steps"><button class="main" id="k1AlGo">① 액체 기둥이 멈출 때까지 기다리기</button></div>
+      <div class="k1-steps" id="k1Eye" hidden><button data-e="0">눈 위에서 보기</button><button data-e="1">눈높이 맞추기</button><button data-e="2">눈 아래에서 보기</button></div>
+      <div class="fb" id="k1AlFb"></div>
+    </div>
+    <div>
+      <p class="jua" style="margin:0">🔫 적외선 온도계 (복도 계단)</p>
+      <svg id="k1Ir" viewBox="0 0 300 260" style="max-height:28vh;margin:0 auto" role="img" aria-label="적외선 온도계로 복도 계단의 온도를 재는 그림"></svg>
+      <div class="k1-steps"><button class="main" id="k1IrOn">① 전원 켜기</button></div>
+      <p class="tip" id="k1IrHint" hidden>② 온도 측정 단추를 누른 채로 레이저 빛을 맞힐 곳을 그림에서 눌러요.</p>
+      <div class="fb" id="k1IrFb"></div>
+    </div>
+  </div>
+  <p class="tip">⚠️ 적외선 온도계의 레이저 빛이 사람의 눈을 향하지 않도록 주의해요. 오늘 쓰는 적외선 온도계는 체온용이 아니에요(체온용 적외선 온도계가 따로 있어요). 금속·거울처럼 빛을 반사하는 물체는 적외선 온도계로 재기 어려워요.</p>
+</section>
+
+<section id="s6" data-nav="여러 온도계">
+  <span class="stage">활동해요 5 · 「실험관찰」 37쪽</span>
+  <h2>여러 가지 온도계로 온도를 측정해요</h2>
+  <p>재려는 대상에 알맞은 온도계를 골라 표를 채워요. 탐침은 찔러 넣을 수 있는 곳, 알코올 온도계는 걸어 두고 공기의 온도, 적외선 온도계는 물체의 표면을 재요.</p>
+  <table class="k1-tbl" id="k1Tbl" data-glue="1">
+    <tr><th>장소나 물체</th><th>온도계 고르기</th><th>온도(°C)</th></tr>
+    <tr data-k="0"><td>화단 흙</td><td class="k1-sel"></td><td class="k1-v">?</td></tr>
+    <tr data-k="1"><td>과학실(공기)</td><td class="k1-sel"></td><td class="k1-v">?</td></tr>
+    <tr data-k="2"><td>복도 계단(표면)</td><td class="k1-sel"></td><td class="k1-v">?</td></tr>
+  </table>
+  <div class="fb" id="k1TblFb"></div>
+  <p class="tip">온도가 제대로 측정되지 않으면 여러 번 재어 가장 많이 나온 값을 써요. 표의 값은 지도서의 <b>예시 값</b>이에요.</p>
+</section>
+
+<section id="s7" data-nav="정리해요">
+  <span class="stage">정리해요 · 「실험관찰」 37쪽</span>
+  <h2>온도계로 온도를 측정해야 하는 까닭을 써 봐요</h2>
+  <textarea id="k1W" rows="2" placeholder="손으로 만졌을 때는 … 온도계로 측정하면 …"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="k1WBtn">내 답 살펴보기</button></div>
+  <div class="fb" id="k1WFb"></div>
+</section>
+
+<section id="s8" data-nav="생활 속 온도계">
+  <span class="stage">온도와 온도계 · 「과학」 63쪽</span>
+  <h2>온도계로 온도를 측정하는 예</h2>
+  <p>그림마다 알맞은 온도계를 골라요.</p>
+  <div class="k1-match" id="k1Mt" data-glue="1"></div>
+  <div class="fb" id="k1MtFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">🤔 생각 바로잡기: 한 물체의 온도는 한 종류의 온도계로만 측정할 수 있을까요?</p>
+  <div class="pick" id="k1Mis">
+    <button data-a="0" data-m="체온을 떠올려 봐요. 체온용 적외선 온도계로도, 귀 체온계로도 잴 수 있어요.">네, 한 가지 온도계로만 잴 수 있어요</button>
+    <button data-a="1" data-m="맞아요! 예를 들어 체온은 체온용 적외선 온도계뿐만 아니라 귀 체온계로도 측정할 수 있어요. 상황에 맞게 골라 쓰면 생활이 더 편리하고 안전해요.">아니요, 여러 종류의 온도계로 잴 수 있어요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s9" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. <span class="blank"><span id="bl1">ㅇ</span><span id="bl2">ㄷ</span></span>은/는 물체의 따뜻하거나 차가운 정도를 나타내고, 온도계를 사용하여 측정합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">2. 💭 온도계를 계속 설치해 두면 편리한 곳은 어디일까요? 두 곳을 골라요. (<b id="k1PlN">0</b>/2)</p>
+  <div class="pick" id="k1Pl">
+    <button data-a="1" data-m="목욕탕에 온도계를 설치해 두면 물의 온도를 정확하게 알 수 있어 편리해요.">목욕탕</button>
+    <button data-a="1" data-m="냉장고에 온도계를 설치해 두면 식재료를 알맞은 온도로 보관할 수 있어 편리해요.">냉장고</button>
+    <button data-a="0" data-m="필통 속 온도를 계속 알아야 할 까닭이 있을까요?">필통 속</button>
+  </div>
+  <div class="fb" id="k1PlFb"></div>
+</section>
+
+<section id="s10" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 온도와 온도계에 관한 설명으로 <b>옳지 않은 것</b>은?</p>
+  <div class="pick" id="k1F1" style="grid-template-columns:1fr!important">
+    <button data-a="0" data-m="옳은 설명이에요. 온도의 단위는 °C(섭씨도)예요.">① 온도의 단위는 °C(섭씨도)를 사용한다.</button>
+    <button data-a="0" data-m="옳은 설명이에요.">② 물체의 따뜻하거나 차가운 정도를 온도로 나타낸다.</button>
+    <button data-a="0" data-m="옳은 설명이에요.">③ 온도계를 사용하면 온도를 정확하게 측정할 수 있다.</button>
+    <button data-a="0" data-m="옳은 설명이에요.">④ 온도계는 탐침 온도계, 적외선 온도계, 알코올 온도계 등이 있다.</button>
+    <button data-a="1" data-m="정답! 손으로는 따뜻하고 차가운 정도만 어림할 수 있고 정확한 온도는 알기 어려워요.">⑤ 온도계가 없을 때 손으로 온도를 측정해도 정확하게 측정할 수 있다.</button>
+  </div>
+  <div class="fb"></div>
+  <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;margin-top:10px">
+    <svg viewBox="0 0 120 150" style="width:96px" role="img" aria-label="탐침이 달린 디지털 온도계 그림"><rect x="30" y="8" width="60" height="70" rx="10" fill="#f4f7fa" stroke="#0f3b5c" stroke-width="3"/><rect x="38" y="18" width="44" height="22" rx="3" fill="#d9f0d0" stroke="#0f3b5c"/><text x="60" y="34" text-anchor="middle" font-size="13" font-family="Jua" fill="#0f3b5c">00.0</text><circle cx="60" cy="58" r="7" fill="#e2573f"/><path d="M57 78 h6 l-1 64 l-2 6 l-2 -6z" fill="#b8c2cc" stroke="#6b7a88"/></svg>
+    <p class="jua" style="font-size:1.05rem;margin:0">2. ✏️ 서술형: 그림과 같은 온도계의 이름을 쓰고, 일상생활에서 이 온도계로 온도를 측정하는 예를 써 봐요.</p>
+  </div>
+  <textarea id="k1F2" rows="2" placeholder="이 온도계의 이름은 … 이고, …할 때 사용해요." data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="k1F2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="k1F2Fb"></div>
+</section>
+
+<section id="s11" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 37쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>온도계의 사용법을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>온도계를 이용하여 온도를 측정할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>온도를 측정하면서 온도와 온도계에 흥미와 호기심을 느꼈어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 62~63쪽 · 「실험관찰」 36~37쪽 · 지도서 256~263쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+const NS='http://www.w3.org/2000/svg';
+function E(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function T(p,x,y,s,o){const e=E('text',Object.assign({x,y,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#0f3b5c'},o||{}),p);e.textContent=s;return e;}
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+function need(sec,n){const s=new Set();return k=>{if(s.has(k))return;s.add(k);if(s.size===n)doneNav(sec);};}
+function step(prev,next){prev.disabled=true;prev.classList.remove('main');if(next){next.disabled=false;next.classList.add('main');}}
+
+/* 도입 */
+const d1=need('s1',2);pickOne('#k1P1','','',null,()=>d1('a'));pickOne('#k1P1b','','',null,()=>d1('b'));
+
+/* 손으로 느끼기 */
+const touched=new Set();
+function touch(k){const h=$('#k1Hand');h.setAttribute('opacity',1);h.setAttribute('transform',k==='w'?'translate(250 150)':'translate(470 150)');touched.add(k);
+  fb('#k1TFb',k==='w'?'물이 든 컵은 약간 따뜻해요.':'주스가 든 컵은 차가워요.','info');
+  if(touched.size===2){setTimeout(()=>fb('#k1TFb','물이 든 컵은 약간 따뜻하고, 주스가 든 컵은 차가워요.','info'),900);$('#k1TAsk').hidden=false;}}
+$('#k1TW').onclick=()=>touch('w');$('#k1TJ').onclick=()=>touch('j');
+tap($('#k1CupW'),()=>touch('w'));tap($('#k1CupJ'),()=>touch('j'));
+pickOne('#k1P2','','','s2');
+
+/* 탐침 온도계 */
+let pr={on:false,in:null,val:null,done:{}};let posOk=false,curCup=null;
+function drawPr(){const s=$('#k1Pr');s.innerHTML='';E('rect',{width:640,height:250,fill:'#fdf6e3'},s);E('rect',{y:214,width:640,height:36,fill:'#e6cfa8'},s);
+  [[300,'물','#cfe9f8'],[470,'주스','#f5a35a']].forEach(([x,n,c])=>{E('path',{d:`M${x} 110 l10 104 h80 l10 -104z`,fill:'#f4fbff',stroke:'#7aa7bd','stroke-width':4},s);E('path',{d:`M${x+5} 130 l8 82 h74 l8 -82z`,fill:c},s);T(s,x+50,240,n);});
+  /* 온도계 몸체 */
+  let bx=60,by=40;if(pr.in==='w'){bx=320;by=10;}if(pr.in==='j'){bx=490;by=10;}
+  E('rect',{x:bx,y:by,width:70,height:80,rx:12,fill:'#f4f7fa',stroke:'#0f3b5c','stroke-width':3},s);
+  E('rect',{x:bx+8,y:by+10,width:54,height:26,rx:4,fill:pr.on?'#d9f0d0':'#9aa6b0',stroke:'#0f3b5c'},s);
+  T(s,bx+35,by+29,pr.on?(pr.val||'--.-'):'',{'font-size':16});E('circle',{cx:bx+35,cy:by+56,r:8,fill:'#e2573f'},s);
+  if(pr.on){const pl=pr.in?175:110;E('path',{d:`M${bx+31} ${by+80} h8 l-1 ${pl} l-3 7 l-3 -7z`,fill:'#b8c2cc',stroke:'#6b7a88'},s);}
+  else{E('rect',{x:bx+26,y:by+80,width:18,height:70,rx:6,fill:'#e2573f'},s);T(s,bx+35,by+168,'뚜껑',{'font-size':12});}
+  T(s,90,232,'탐침 온도계',{'font-size':13});}
+drawPr();
+$('#k1S1').onclick=()=>{pr.on=true;drawPr();step($('#k1S1'),$('#k1S2'));fb('#k1PrFb','뚜껑을 열고 전원을 켰어요. 이제 물에 탐침을 넣어요.','info');};
+$('#k1S2').onclick=()=>{curCup='w';$('#k1Pos').hidden=false;$('#k1S2').disabled=true;fb('#k1PrFb','탐침을 어떻게 넣을지 먼저 골라요.','info');};
+$('#k1S3').onclick=()=>{curCup='j';measure();};
+function measure(){pr.in=curCup;pr.val=null;drawPr();fb('#k1PrFb','온도 표시 창의 숫자가 바뀌다가 멈출 때까지 기다려요…','info');
+  const target=curCup==='w'?30.1:13.5;let v=22.0,k=0;const iv=setInterval(()=>{k++;v=v+(target-v)*0.35;pr.val=(k>=8?target:v).toFixed(1);drawPr();
+    if(k>=8){clearInterval(iv);pr.done[curCup]=target;
+      if(curCup==='w'){fb('#k1PrFb','물의 온도: 30.1 °C (섭씨 삼십 점 일 도). 이제 주스의 온도를 재요.',true);step($('#k1S2'),$('#k1S3'));}
+      else{fb('#k1PrFb','주스의 온도: 13.5 °C. 물(30.1 °C)이 주스(13.5 °C)보다 온도가 높아요. 손으로 느낀 것과 같은지 비교해 봐요!',true);step($('#k1S3'));doneNav('s3');}}},180);}
+pickOne('#k1PosP','','',null,()=>{if(posOk)return;posOk=true;setTimeout(measure,500);});
+
+/* 온도 읽기 */
+const d4=need('s4',2);pickOne('#k1R1','','',null,()=>d4('a'));pickOne('#k1R2','','',null,()=>d4('b'));
+
+/* 알코올·적외선 */
+const d5=need('s5',2);let alH=0,alDone=false;
+function drawAl(eye){const s=$('#k1Al');s.innerHTML='';E('rect',{width:300,height:260,fill:'#f7f1e4'},s);
+  E('rect',{x:110,y:14,width:60,height:232,rx:12,fill:'#fff',stroke:'#a0673a','stroke-width':3},s);
+  E('rect',{x:136,y:30,width:8,height:190,rx:4,fill:'#eef3f6',stroke:'#b8c2cc'},s);E('circle',{cx:140,cy:226,r:10,fill:'#d63c32'},s);
+  for(let t=0;t<=40;t+=5){const y=210-t*4.5;E('line',{x1:146,y1:y,x2:t%10?154:160,y2:y,stroke:'#333','stroke-width':1.5},s);if(t%10===0)T(s,128,y+4,t,{'font-size':10,'text-anchor':'end',fill:'#333','font-family':'sans-serif'});}
+  for(let t=0;t<=40;t++){const y=210-t*4.5;E('line',{x1:146,y1:y,x2:150,y2:y,stroke:'#666','stroke-width':.7},s);}
+  const top=210-alH*4.5;E('rect',{x:137,y:top,width:6,height:226-top,fill:'#d63c32'},s);
+  if(eye!=null){const ey=[top-50,top,top+50][eye];E('circle',{cx:250,cy:ey,r:13,fill:'#ffd9b0',stroke:'#d8a77a'},s);E('circle',{cx:245,cy:ey,r:3,fill:'#222'},s);
+    E('line',{x1:237,y1:ey,x2:150,y2:top,stroke:eye===1?'#2e9d5b':'#c0392b','stroke-width':2,'stroke-dasharray':'5 4'},s);}
+  T(s,250,24,'°C',{'font-size':14});}
+drawAl();
+$('#k1AlGo').onclick=()=>{const b=$('#k1AlGo');b.disabled=true;let k=0;const iv=setInterval(()=>{k++;alH=Math.min(21.5,alH+(21.5-alH)*0.3+0.4);if(k>=14)alH=21.5;drawAl();if(k>=14){clearInterval(iv);b.classList.remove('main');
+  fb('#k1AlFb','빨간색 액체 기둥이 멈추었어요. 이제 눈을 어디에 두고 눈금을 읽을까요?','info');$('#k1Eye').hidden=false;}},120);};
+$$('#k1Eye button').forEach(b=>b.onclick=()=>{const e=+b.dataset.e;drawAl(e);$$('#k1Eye button').forEach(x=>x.classList.remove('right','wrong'));
+  if(e===1){b.classList.add('right');fb('#k1AlFb','맞아요! 액체 기둥이 닿은 부분에 눈높이를 맞추어 읽어요. 과학실의 온도: 21.5 °C',true);if(!alDone){alDone=true;d5('al');}}
+  else{b.classList.add('wrong');fb('#k1AlFb','눈금을 비스듬히 보면 실제와 다르게 읽혀요. 액체 기둥 끝과 눈높이를 맞춰요.',false);}});
+let irOn=false,irDone=false;
+function drawIr(hit){const s=$('#k1Ir');s.innerHTML='';E('rect',{width:300,height:260,fill:'#eef3f6'},s);
+  const st=E('g',{id:'k1Stair'},s);for(let i=0;i<4;i++)E('rect',{x:120+i*40,y:110+i*36,width:180-i*40,height:36,fill:i%2?'#c9b48f':'#d8c39e',stroke:'#a58c62'},st);
+  T(s,230,104,'복도 계단',{'font-size':13});
+  const g=E('g',{transform:'translate(20 150)'},s);E('path',{d:'M0 0 h70 l10 -10 h10 v30 h-10 l-10 -6 h-28 l-8 50 h-22 l8 -50 h-20z',fill:'#f2c94c',stroke:'#7a5a12','stroke-width':2.5},g);
+  E('rect',{x:6,y:4,width:26,height:14,rx:2,fill:irOn?'#d9f0d0':'#9aa6b0',stroke:'#333'},g);if(irOn&&hit)T(g,19,15,'19.8',{'font-size':10});
+  E('rect',{x:40,y:24,width:8,height:12,rx:2,fill:'#e2573f'},g);
+  if(hit)E('line',{x1:110,y1:150,x2:hit[0],y2:hit[1],stroke:'#e2241b','stroke-width':2.5},s),E('circle',{cx:hit[0],cy:hit[1],r:5,fill:'#e2241b'},s);
+  if(irOn&&!irDone)tap(st,ev=>{const r=s.getBoundingClientRect(),vb=s.viewBox.baseVal;const x=(ev.clientX-r.left)/r.width*vb.width,y=(ev.clientY-r.top)/r.height*vb.height;shoot([x||220,y||170]);});}
+function shoot(p){irDone=true;drawIr(p);fb('#k1IrFb','레이저 빛을 계단 표면에 맞혔어요. 온도 표시 창: 19.8 °C (복도 계단의 온도)',true);d5('ir');}
+drawIr();
+$('#k1IrOn').onclick=()=>{irOn=true;step($('#k1IrOn'));$('#k1IrHint').hidden=false;drawIr();fb('#k1IrFb','전원을 켰어요. 레이저 빛은 사람의 눈을 향하지 않게 하고, 계단을 향해요.','info');};
+
+/* 여러 온도계 */
+(function(){const opt=['탐침 온도계','알코올 온도계','적외선 온도계'],ans=[0,1,2],val=['20.7','21.5','19.8'],ok=new Set();
+  const why=['흙에 찔러 넣어 속의 온도를 재기 좋아요.','벽에 걸어 두고 공기의 온도를 재기 좋아요.','레이저 빛을 맞혀 물체 표면의 온도를 재요.'];
+  $$('#k1Tbl tr[data-k]').forEach(tr=>{const k=+tr.dataset.k,td=tr.querySelector('.k1-sel');const sel=document.createElement('select');sel.setAttribute('aria-label','온도계 고르기');
+    sel.innerHTML='<option value="">고르기</option>'+opt.map((o,i)=>`<option value="${i}">${o}</option>`).join('');td.appendChild(sel);
+    sel.onchange=()=>{if(sel.value==='')return;if(+sel.value===ans[k]){tr.querySelector('.k1-v').textContent=val[k];sel.disabled=true;ok.add(k);
+        fb('#k1TblFb',ok.size===3?'표 완성! 화단 흙 20.7 °C, 과학실 21.5 °C, 복도 계단 19.8 °C(예시 값). 온도계마다 측정하는 대상이 다를 수 있어요.':opt[k]+': '+why[k],ok.size===3?true:'info');if(ok.size===3)doneNav('s6');}
+      else fb('#k1TblFb','이 대상에는 다른 온도계가 더 알맞아요. 무엇을 재는지(속·공기·표면) 생각해 봐요.',false);};});})();
+
+/* 정리해요 */
+keyCheck('#k1W','#k1WBtn','#k1WFb',[[/손|만져|만지/,'손으로 만질 때'],[/정확/,'정확한 온도'],[/어렵|모르|알 수 없|다르게/,'손으로는 알기 어려움']],2,'s7','손으로 만졌을 때와 온도계로 측정했을 때를 비교해 써요. 예: 손으로 만졌을 때는 정확히 알기 어렵지만 온도계로 측정하면 정확한 온도를 알 수 있어요.');
+
+/* 생활 속 온도계 */
+(function(){const C=[
+  {t:'음식을 조리할 때 알맞은 온도 확인',a:'탐침 온도계',svg:'<svg viewBox="0 0 120 80"><rect width="120" height="80" fill="#fff6e0"/><ellipse cx="60" cy="56" rx="40" ry="12" fill="#c98b4f"/><path d="M72 10 l-12 44" stroke="#6b7a88" stroke-width="3"/><rect x="66" y="2" width="20" height="14" rx="3" fill="#f4f7fa" stroke="#0f3b5c"/></svg>'},
+  {t:'식물이 자라기 알맞은 온실 속 온도 확인',a:'알코올 온도계',svg:'<svg viewBox="0 0 120 80"><rect width="120" height="80" fill="#eaf7ea"/><path d="M20 70 v-30 l40 -26 l40 26 v30z" fill="#dff3ff" stroke="#7aa7bd" stroke-width="2"/><path d="M40 70 q0 -18 10 -24 M60 70 q0 -20 -8 -26" stroke="#2f7d4a" stroke-width="3" fill="none"/><rect x="84" y="36" width="8" height="30" rx="4" fill="#fff" stroke="#a0673a"/><rect x="87" y="48" width="2" height="16" fill="#d63c32"/></svg>'},
+  {t:'체온을 측정해 건강 상태 확인',a:'체온용 적외선 온도계',svg:'<svg viewBox="0 0 120 80"><rect width="120" height="80" fill="#fde9ef"/><circle cx="40" cy="40" r="22" fill="#ffd9b0"/><circle cx="34" cy="36" r="2.5" fill="#222"/><path d="M70 30 h30 v12 h-14 l-4 20 h-8 l4 -20 h-8z" fill="#fff" stroke="#0f3b5c" stroke-width="2"/></svg>'},
+  {t:'여러 물체의 온도를 색깔과 숫자로 확인',a:'열화상 사진기',svg:'<svg viewBox="0 0 120 80"><defs><linearGradient id="k1g" x1="0" x2="1"><stop offset="0" stop-color="#2b3fbf"/><stop offset=".5" stop-color="#e8e43a"/><stop offset="1" stop-color="#e2241b"/></linearGradient></defs><rect width="120" height="80" fill="#1a1d3a"/><rect x="14" y="14" width="92" height="52" rx="6" fill="url(#k1g)"/><circle cx="76" cy="40" r="12" fill="#fff6b0" opacity=".8"/></svg>'}];
+  const opts=['탐침 온도계','알코올 온도계','체온용 적외선 온도계','열화상 사진기'];const ok=new Set();
+  C.forEach((c,i)=>{const d=document.createElement('div');d.className='k1-card';d.innerHTML=c.svg+'<div>'+c.t+'</div>';const sel=document.createElement('select');sel.setAttribute('aria-label',c.t+' 온도계 고르기');
+    sel.innerHTML='<option value="">고르기</option>'+opts.map(o=>`<option>${o}</option>`).join('');d.appendChild(sel);$('#k1Mt').appendChild(d);
+    sel.onchange=()=>{if(!sel.value)return;if(sel.value===c.a){d.classList.add('ok');sel.disabled=true;ok.add(i);
+      fb('#k1MtFb',ok.size===4?'모두 맞혔어요! 다양한 온도계를 상황에 맞게 사용하면 생활이 더 편리하고 안전해요.':'맞아요!',ok.size===4?true:'info');if(ok.size===4)d8('m');}
+    else fb('#k1MtFb','다시 생각해 봐요. 찔러 넣기·걸어 두기·몸에 대기·색깔로 보기 중 무엇이 알맞을까요?',false);};});})();
+const d8=need('s8',2);pickOne('#k1Mis','','',null,()=>d8('x'));
+
+/* 한눈에 쏙 */
+const d9=need('s9',2);
+$('#blReveal').onclick=()=>{fb('#blFb','온도는 물체의 따뜻하거나 차가운 정도를 나타내고, 온도계를 사용하여 측정해요.',true);d9('b');};
+(function(){const got=new Set();$$('#k1Pl button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b.textContent);$('#k1PlN').textContent=got.size;
+  fb('#k1PlFb',got.size===2?'좋아요! 목욕탕은 물의 온도를 정확히 알 수 있고, 냉장고는 식재료를 알맞은 온도로 보관할 수 있어 편리해요.':b.dataset.m,got.size===2?true:'info');if(got.size===2)d9('p');}
+  else{b.classList.add('wrong');fb('#k1PlFb',b.dataset.m,false);}});})();
+
+/* 형성 평가 */
+const d10=need('s10',2);pickOne('#k1F1','','',null,()=>d10('1'));
+$('#k1F2Btn').onclick=()=>{const t=$('#k1F2').value.trim();if(!t){fb('#k1F2Fb','먼저 답을 써 보세요.',false);return;}
+  const a=/탐침/.test(t),b=/조리|요리|음식|흙|국|고기|빵|물/.test(t);
+  if(a&&b){fb('#k1F2Fb','잘 썼어요! 예시 답: 탐침 온도계, 탐침 온도계로 음식을 조리할 때 알맞은 온도를 확인해요.',true);d10('2');}
+  else if(a)fb('#k1F2Fb','온도계 이름은 맞아요. 탐침을 찔러 넣어 재는 예(음식 조리 등)도 써 봐요.','info');
+  else fb('#k1F2Fb','뾰족한 탐침이 달린 온도계예요. 이름과 쓰이는 예를 함께 써 봐요.',false);};
+
+faces('s11','잘했어요! 다음 시간에는 온도가 다른 두 물체가 만나면 온도가 어떻게 변하는지 측정해 봐요.','어려웠던 온도계 사용법은 활동해요 2~5를 다시 해 봐요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"온","bl2":"도"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>

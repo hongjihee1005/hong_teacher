@@ -285,7 +285,7 @@ function vessels(){let s='';LOOPS.forEach(([r,b])=>{s+=`<polyline points="${r.jo
     drops.forEach(d=>{s+=`<ellipse cx="530" cy="${d}" rx="5" ry="8" fill="#c62f24"/>`;});
     s+=`<g font-family="Jua" font-size="18" fill="#0f3b5c"><text x="186" y="92" text-anchor="middle">물에 잠긴 호스</text><text x="600" y="92" text-anchor="middle">물에 잠기지 않은 호스</text><text x="370" y="160" text-anchor="middle">펌프 ${sq>.5?'(쥠)':'(폄)'}</text><text x="380" y="300" text-anchor="middle" fill="#fff">붉은 색소 물</text></g>`;
     if(sq>.05)s+=`<g transform="translate(370 ${110-ry-6})"><path d="M-40 0 q40 -30 80 0" fill="#f6d9c0" stroke="#d9a888" stroke-width="3"/></g>`;
-    s+=`<rect x="10" y="10" width="300" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text x="22" y="37" font-family="Jua" font-size="18" fill="#fff">${msg}</text>`;
+    if(msg)s+=`<rect x="10" y="10" width="300" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text x="22" y="37" font-family="Jua" font-size="18" fill="#fff">${msg}</text>`;
     $('#c3Pump').innerHTML=s;}
   async function cycle(ms){/* 쥐기: 펌프와 그 뒤쪽 점이 앞으로, 펴기: 펌프 앞쪽 점이 펌프로 */
     const d0=dots.slice();msg='펌프를 쥐어요';await tween(ms,p=>{sq=p;dots=d0.map(d=>d>=cum[BS]?d+60*p:d);drops=dots.filter(d=>d>TOT).map(d=>196+(d-TOT)*1.2);draw();});

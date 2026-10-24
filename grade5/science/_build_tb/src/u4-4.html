@@ -263,13 +263,13 @@ function ccSet(root,okMsg,sec,cb,hint){const R=$(root),cs=$$('[data-ans]',R),out
   matcher('#r4Fn',[['코','공기가 드나드는 곳'],['숨관','공기가 이동하는 통로'],['숨관가지','숨관과 폐를 연결하며, 공기가 이동하는 통로'],['폐','산소를 받아들이고, 이산화 탄소를 몸 밖으로 내보냄']],'잘했어요! 코, 숨관, 숨관가지, 폐가 함께 호흡을 해요.',null,()=>{b=1;if(a)doneNav('s2');});})();
 
 /* ---------- 가슴 변화 ---------- */
-(function(){let v=0,busy=false;function draw(p){const sc=1+0.1*p;let s=`<rect x="40" y="10" width="240" height="280" fill="#fff6ef"/>`;
+(function(){let v=0,busy=false,acted=false;function draw(p){const sc=1+0.1*p;let s=`<rect x="40" y="10" width="240" height="280" fill="#fff6ef"/>`;
     s+=`<g transform="translate(160 200) scale(${1+0.05*p} ${1+0.03*p}) translate(-160 -200)">`+bodyBase({nose:1})+`<g transform="translate(160 176) scale(${sc}) translate(-160 -176)">${ORG.lungL}${ORG.lungR}</g>${ORG.bronchi}${ORG.trachea}</g>`;
     const hy=172-12*p;s+=`<g fill="#f6d9c0" stroke="#c9906a" stroke-width="2.5"><rect x="${104-6*p}" y="${hy}" width="50" height="30" rx="14"/><rect x="${166+6*p}" y="${hy}" width="50" height="30" rx="14"/></g>`;
     if(p>.05)s+=`<g stroke="#3f84ad" stroke-width="3" fill="none"><path d="M160 30 v20 m-6 -8 l6 8 l6 -8"/></g>`;
-    s+=`<text x="160" y="282" text-anchor="middle" font-family="Jua" font-size="16" fill="#0f3b5c">${p>.5?'숨을 들이마셨어요':'숨을 내쉬었어요'}</text>`;
+    s+=`<text x="160" y="282" text-anchor="middle" font-family="Jua" font-size="16" fill="#0f3b5c">${!acted?'가슴에 양손을 얹어요':p>.5?'숨을 들이마셨어요':'숨을 내쉬었어요'}</text>`;
     $('#r4Chest').innerHTML=s;}
-  draw(0);const go=to=>{if(busy)return;busy=true;const f=v;tween(1100,p=>{v=f+(to-f)*p;draw(v);}).then(()=>busy=false);};
+  draw(0);const go=to=>{if(busy)return;busy=true;acted=true;const f=v;tween(1100,p=>{v=f+(to-f)*p;draw(v);}).then(()=>busy=false);};
   $('#r4In').onclick=()=>go(1);$('#r4Out').onclick=()=>go(0);
   ccSet('#r4Tb','맞아요! 숨을 들이마시면 가슴이 부풀어 오르고, 내쉬면 가슴이 원래의 위치로 돌아가요.','s3');})();
 
