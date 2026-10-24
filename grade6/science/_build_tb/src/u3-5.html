@@ -55,9 +55,11 @@ body.ov #t5Lab{max-height:min(44vh,340px);width:auto}
   <svg id="t5House" class="scene p3-fit" style="--ar:2;--h:30vh" viewBox="0 0 640 320" role="img" aria-label="식물이 많은 유리 온실과 바깥"></svg>
   <div class="pick" id="t5P1"><button data-a="1" data-m="맞아요! 식물이 많은 온실 안은 온실 밖보다 더 습해요.">온실 안이 더 습해요</button><button data-a="0" data-m="식물원 온실에 들어가 본 경험을 떠올려 봐요. 안경에 김이 서린 적이 있나요?">온실 안이 더 건조해요</button></div>
   <div class="fb"></div>
-  <p class="p3-q" data-glue="1">온실 안이 더 습한 까닭은 무엇일까요?</p>
-  <div class="pick" id="t5P1b" data-glue="1"><button data-a="1" data-m="좋은 생각이에요! 오늘은 잎에 도달한 물이 어떻게 되는지 실험으로 알아봐요.">온실 안의 많은 식물에서 수증기가 나오기 때문인 것 같아요</button><button data-a="0" data-m="온실 바닥에 물을 붓지 않았어요. 온실 안에 많은 것은 무엇이었나요?">온실 바닥에 물을 많이 부었기 때문이에요</button></div>
+  <div id="t5Q1b" hidden data-glue="1">
+  <p class="p3-q">온실 안이 더 습한 까닭은 무엇일까요?</p>
+  <div class="pick" id="t5P1b"><button data-a="1" data-m="좋은 생각이에요! 오늘은 잎에 도달한 물이 어떻게 되는지 실험으로 알아봐요.">온실 안의 많은 식물에서 수증기가 나오기 때문인 것 같아요</button><button data-a="0" data-m="온실 바닥에 물을 붓지 않았어요. 온실 안에 많은 것은 무엇이었나요?">온실 바닥에 물을 많이 부었기 때문이에요</button></div>
   <div class="fb"></div>
+  </div>
 </section>
 
 <section id="s2" data-nav="염화 코발트 종이">
@@ -109,7 +111,7 @@ body.ov #t5Lab{max-height:min(44vh,340px);width:auto}
       <div class="pick one" id="t5P5"><button data-a="1" data-m="맞아요! 잎 표면의 작은 구멍을 기공이라고 해요. 잎에 도달한 물의 일부는 증산 작용으로 기공을 통해 식물 밖으로 빠져나가요. 기공은 대부분 잎의 뒷면에 있어요.">기공</button><button data-a="0" data-m="핵은 세포 안에 있는 둥근 부분이에요. 세포와 세포 사이의 구멍은 따로 부르는 이름이 있어요.">핵</button><button data-a="0" data-m="세포벽은 식물 세포의 바깥을 둘러싼 부분이에요.">세포벽</button></div>
       <div class="fb"></div></div>
   </div>
-  <p class="tip" data-glue="1">💡 기공이 대부분 잎의 뒷면에 있어서, 실험할 때 염화 코발트 종이를 잎 뒷면에 붙였어요.</p>
+  <p class="tip" data-glue="1" id="t5T5" hidden>💡 기공이 대부분 잎의 뒷면에 있어서, 실험할 때 염화 코발트 종이를 잎 뒷면에 붙였어요.</p>
 </section>
 
 <section id="s6" data-nav="물의 이동">
@@ -270,7 +272,7 @@ function plantG(x,y,sc,nLeaf){let s=`<g transform="translate(${x} ${y}) scale(${
   s+='<g transform="translate(440 120)"><rect width="150" height="90" rx="12" fill="#fff" stroke="#7aa7c4" stroke-width="3"/><text x="75" y="30" text-anchor="middle" font-family="Jua" font-size="18" fill="#123b2a">온실 밖</text><text x="75" y="64" text-anchor="middle" font-family="Jua" font-size="16" fill="#555">바깥 공기</text></g>';
   s+='<rect x="140" y="236" width="140" height="28" rx="10" fill="#123b2a"/><text x="210" y="256" text-anchor="middle" font-family="Jua" font-size="16" fill="#fff">식물이 많은 온실</text>';
   $('#t5House').innerHTML=s;})();
-const g1=gate('s1',2);pickOne('#t5P1','','',null,()=>g1(1));pickOne('#t5P1b','','',null,()=>g1(2));
+const g1=gate('s1',2);pickOne('#t5P1','','',null,()=>{g1(1);$('#t5Q1b').hidden=false;});pickOne('#t5P1b','','',null,()=>g1(2));
 
 /* ---------- 염화 코발트 종이 ---------- */
 (function(){let wet=0;function draw(){let s='<rect width="560" height="280" fill="#fbf8ef"/><rect x="170" y="140" width="220" height="110" rx="6" fill="'+BLUE+'" stroke="#2b4f99" stroke-width="3"/>';
@@ -306,7 +308,7 @@ const g4=gate('s4',3);ccSet('#t5Res','맞아요! 잎 뒷면에 붙인 종이만 
   s+='<g transform="translate(160 165)"><path d="M-40 -60 C-90 -40 -90 40 -40 60 C-8 70 0 40 -4 0 C0 -40 -8 -70 -40 -60Z" fill="#cfe2b0" stroke="#4f6140" stroke-width="3"/><path d="M40 -60 C90 -40 90 40 40 60 C8 70 0 40 4 0 C0 -40 8 -70 40 -60Z" fill="#cfe2b0" stroke="#4f6140" stroke-width="3"/><ellipse cx="0" cy="0" rx="10" ry="42" fill="#26301f"/></g>';
   s+='</g><circle cx="160" cy="160" r="150" fill="none" stroke="#000" stroke-width="6"/><rect x="10" y="280" width="130" height="30" rx="10" fill="#123b2a"/><text x="75" y="301" text-anchor="middle" font-family="Jua" font-size="15" fill="#fff">잎 표면 (1,000배)</text>';
   $('#t5Sto').innerHTML=s;})();
-pickOne('#t5P5','','','s5');
+pickOne('#t5P5','','','s5',()=>{$('#t5T5').hidden=false;});
 
 /* ---------- 물의 이동 영상 ---------- */
 (function(){const P=[[400,320],[400,300],[400,120],[480,90]];/* 뿌리→줄기→잎 */
