@@ -1,0 +1,292 @@
+<!--
+title: 물에 녹을까, 녹지 않을까?
+unit: 3
+lesson: 2
+total: 12
+goal: 물질이 물에 녹는 현상으로 용해와 용액을 설명할 수 있어요.<br>여러 가지 물질이 물에 녹는 현상을 관찰할 수 있어요.
+pages: 「과학」 66~67쪽 · 「실험관찰」 36~37쪽 · 지도서 264~271쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"용","bl2":"해"}}]
+-->
+<style>
+.d1-tbl td,.d1-tbl th{text-align:center;font-size:.9rem}
+.d1-tbl button{min-height:2.2rem;padding:.1em .5em;border-width:2px;font-size:.85rem;min-width:8.5em}
+.d1-pred{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.d1-pred div{border:2px solid var(--line);border-radius:14px;padding:8px;text-align:center}
+.d1-pred b{display:block;margin-bottom:4px}
+.d1-pred button{font-size:.85rem;min-height:2.1rem;padding:.1em .5em;margin:2px;border-width:2px}
+.d1-steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.d1-steps button[disabled]{opacity:.45}
+.d1-lbl{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.d1-lbl button{border-width:2px;min-height:2.3rem}
+.d1-bins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
+.d1-bin{border:3px dashed var(--line);border-radius:16px;padding:8px;min-height:90px;cursor:pointer}
+.d1-bin h3{margin:0 0 6px;font-size:1rem;text-align:center}
+.d1-bin.ready{border-color:var(--sun);background:#fff8dc}
+.d1-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.d1-cards button,.d1-bin button{font-size:.88rem;min-height:2.3rem;padding:.2em .5em;border-width:2px}
+.d1-bin button{margin:3px;width:auto}
+@media (max-width:640px){.d1-pred{grid-template-columns:1fr}.d1-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.d1-bins{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 66쪽</span>
+  <h2>물에 소금과 후춧가루를 넣으면 어떻게 될까요?</h2>
+  <p>어묵탕을 끓일 때 소금과 후춧가루를 넣는 모습을 본 적이 있나요? 아래 컵에 넣어 보고 저어 봐요.</p>
+  <svg id="d1Cup" class="scene" viewBox="0 0 600 260" style="max-height:32vh" role="img" aria-label="물이 담긴 투명한 컵 두 개">
+    <rect width="600" height="260" fill="#fdf6e3"/><rect y="226" width="600" height="34" fill="#e6cfa8"/>
+    <g><path d="M90 60 l14 166 h112 l14 -166z" fill="#f4fbff" stroke="#7aa7bd" stroke-width="4"/><path d="M96 96 l10 128 h108 l10 -128z" fill="#bfe3f6" opacity=".8"/>
+      <g id="d1Salt"></g><text x="160" y="50" text-anchor="middle" font-size="18" font-family="Jua" fill="#0f3b5c">소금을 넣은 물</text></g>
+    <g><path d="M370 60 l14 166 h112 l14 -166z" fill="#f4fbff" stroke="#7aa7bd" stroke-width="4"/><path d="M376 96 l10 128 h108 l10 -128z" fill="#bfe3f6" opacity=".8"/>
+      <g id="d1Pep"></g><text x="440" y="50" text-anchor="middle" font-size="18" font-family="Jua" fill="#0f3b5c">후춧가루를 넣은 물</text></g>
+  </svg>
+  <div class="row" style="margin-top:6px"><button id="d1AddS">🧂 소금 넣기</button><button id="d1AddP">⚫ 후춧가루 넣기</button><button class="main" id="d1Stir">🥄 저어 보기</button></div>
+  <div class="fb" id="d1CupFb"></div>
+  <div id="d1Ask1" hidden>
+    <p class="jua" style="font-size:1.05rem">무엇을 알 수 있나요?</p>
+    <div class="pick" id="d1P1">
+      <button data-a="1" data-m="맞아요! 소금은 물에 녹아 보이지 않고, 후춧가루는 물에 녹지 않고 물 위에 떠 있어요. 오늘은 여러 가지 물질을 물에 넣어 보아요.">소금은 물에 녹고, 후춧가루는 물에 녹지 않아요</button>
+      <button data-a="0" data-m="컵을 다시 보세요. 후춧가루가 사라졌나요?">소금과 후춧가루가 모두 물에 녹아요</button>
+      <button data-a="0" data-m="컵을 다시 보세요. 소금 알갱이가 남아 있나요?">소금과 후춧가루가 모두 물에 녹지 않아요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s2" data-nav="예상해요">
+  <span class="stage">실험해요 ① · 「실험관찰」 36쪽</span>
+  <h2>여러 가지 물질을 물에 넣었을 때의 변화 예상하기</h2>
+  <p>준비물: 물, 설탕, 가루 바이타민, 탄산 칼슘, 유리병 3개, 약숟가락 3개, 초시계, 이름 붙임딱지, 유성펜, 실험복, 보안경, 실험용 장갑</p>
+  <p class="tip">💡 탄산 칼슘은 달걀 껍데기·조개껍데기·분필을 주로 이루는 흰색 가루 물질이에요(달걀 껍데기 가루로 대신할 수 있어요).</p>
+  <p class="jua" style="font-size:1.05rem">설탕, 가루 바이타민, 탄산 칼슘을 같은 양의 물에 넣고 섞으면 어떻게 될까요? 내 예상을 골라요.</p>
+  <div class="d1-pred" id="d1Pred">
+    <div data-k="sugar"><b>설탕</b><button data-v="녹을 것">녹을 것 같아요</button><button data-v="녹지 않을 것">녹지 않을 것 같아요</button></div>
+    <div data-k="vit"><b>가루 바이타민</b><button data-v="녹을 것">녹을 것 같아요</button><button data-v="녹지 않을 것">녹지 않을 것 같아요</button></div>
+    <div data-k="ca"><b>탄산 칼슘</b><button data-v="녹을 것">녹을 것 같아요</button><button data-v="녹지 않을 것">녹지 않을 것 같아요</button></div>
+  </div>
+  <div class="fb" id="d1PredFb"></div>
+</section>
+
+<section id="s3" data-nav="실험해요">
+  <span class="stage">실험해요 ② · 「실험관찰」 36~37쪽</span>
+  <h2>유리병에 넣고 흔든 뒤 관찰하기</h2>
+  <p>단추를 차례대로 눌러 실험해요.</p>
+  <svg id="d1Lab" class="scene" viewBox="0 0 720 300" style="max-height:38vh" role="img" aria-label="이름표를 붙인 유리병 세 개">
+    <rect width="720" height="300" fill="#fdf6e3"/><rect y="262" width="720" height="38" fill="#d9c49a"/>
+    <g id="d1Jars"></g>
+    <rect x="12" y="12" width="300" height="34" rx="10" fill="#0f3b5c" opacity=".88"/><text id="d1LabT" x="24" y="36" font-size="18" font-family="Jua" fill="#fff">유리병 세 개를 준비했어요</text>
+  </svg>
+  <div class="d1-steps">
+    <button class="main" id="d1S1">① 물을 2/3씩 넣기</button>
+    <button id="d1S2" disabled>② 한 숟가락씩 넣기</button>
+    <button id="d1S3" disabled>③ 뚜껑 닫고 흔들기</button>
+    <button id="d1S4" disabled>④ 내려놓고 5분 기다리기</button>
+  </div>
+  <div class="fb" id="d1LabFb"></div>
+  <p class="tip">⚠️ 실험복·보안경·실험용 장갑을 착용해요. 유리병이 깨지지 않게 뚜껑을 잘 닫고 조심히 흔들어요. 실험에 쓰는 물질은 맛보거나 맨손으로 만지지 않아요. 물질이 섞이지 않게 약숟가락을 따로 쓰고, 물이 튀지 않게 살살 넣어요.</p>
+</section>
+
+<section id="s4" data-nav="기록해요">
+  <span class="stage">실험해요 ③ · 「실험관찰」 37쪽</span>
+  <h2>5분 뒤 관찰한 결과를 기록해요</h2>
+  <p>칸을 누를 때마다 말이 바뀌어요. 실험 그림을 떠올려 알맞게 골라요.</p>
+  <table class="d1-tbl" id="d1T">
+    <tr><th>구분</th><th>설탕</th><th>가루 바이타민</th><th>탄산 칼슘</th></tr>
+    <tr><th>물의 모습</th><td><button data-a="0" data-k="0">?</button></td><td><button data-a="1" data-k="0">?</button></td><td><button data-a="2" data-k="0">?</button></td></tr>
+    <tr><th>뜨거나 가라앉는 것</th><td><button data-a="0" data-k="1">?</button></td><td><button data-a="0" data-k="1">?</button></td><td><button data-a="1" data-k="1">?</button></td></tr>
+  </table>
+  <div class="row" style="margin-top:6px"><button class="main" id="d1TChk">확인하기</button></div>
+  <div class="fb" id="d1TFb"></div>
+  <div id="d1Sum" hidden>
+    <p class="jua" style="font-size:1.05rem;margin-top:8px">정리해요: 각 유리병 안의 변화를 비교하면?</p>
+    <div class="pick" id="d1P4">
+      <button data-a="1" data-m="맞아요! 설탕과 가루 바이타민은 물에 녹고, 탄산 칼슘은 물에 녹지 않아요.">설탕과 가루 바이타민은 물에 녹고, 탄산 칼슘은 물에 녹지 않아요</button>
+      <button data-a="0" data-m="탄산 칼슘을 넣은 병의 바닥을 다시 떠올려 봐요.">세 가지 물질이 모두 물에 녹아요</button>
+      <button data-a="0" data-m="가루 바이타민을 넣은 물은 투명한 노란색이었고 가라앉는 것이 없었어요.">설탕만 녹고, 나머지 두 가지는 녹지 않아요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s5" data-nav="용해와 용액">
+  <span class="stage">정리해요 · 「과학」 67쪽</span>
+  <h2>용해, 용매, 용질, 용액</h2>
+  <p>낱말 카드를 하나 누른 뒤, 그림에서 알맞은 곳(점선 상자)을 눌러 붙여요. (<b id="d1LN">0</b>/4)</p>
+  <div class="d1-lbl" id="d1Lbl"><button data-w="용질">용질</button><button data-w="용해">용해</button><button data-w="용액">용액</button><button data-w="용매">용매</button></div>
+  <svg id="d1Word" class="scene" viewBox="0 0 760 270" style="max-height:34vh" role="img" aria-label="설탕과 물이 섞여 설탕물이 되는 그림">
+    <rect width="760" height="270" fill="#fdf6e3"/>
+    <g><rect x="40" y="70" width="90" height="70" rx="10" fill="#fff" stroke="#c9b48a" stroke-width="3"/><g fill="#fff" stroke="#d6c7a6"><rect x="58" y="88" width="16" height="16"/><rect x="80" y="92" width="16" height="16"/><rect x="100" y="86" width="16" height="16"/><rect x="66" y="110" width="16" height="16"/><rect x="90" y="112" width="16" height="16"/></g><text x="85" y="160" text-anchor="middle" font-size="16" font-family="Jua" fill="#333">설탕</text></g>
+    <text x="160" y="115" font-size="34" font-family="Jua" fill="#b4610f">+</text>
+    <g><path d="M200 60 l10 110 h80 l10 -110z" fill="#bfe3f6" stroke="#7aa7bd" stroke-width="3"/><text x="250" y="190" text-anchor="middle" font-size="16" font-family="Jua" fill="#333">물</text></g>
+    <g><path d="M330 112 h110" stroke="#b4610f" stroke-width="5"/><path d="M440 112 l-14 -10 v20z" fill="#b4610f"/></g>
+    <g><path d="M480 50 l12 130 h110 l12 -130z" fill="#cfe9f8" stroke="#7aa7bd" stroke-width="3"/><text x="547" y="200" text-anchor="middle" font-size="16" font-family="Jua" fill="#333">설탕물</text></g>
+    <g class="d1-slot" data-w="용질"><rect x="35" y="214" width="100" height="36" rx="8" fill="#fff" stroke="#b4610f" stroke-width="2" stroke-dasharray="6 4"/><text x="85" y="238" text-anchor="middle" font-size="17" font-family="Jua" fill="#999">?</text></g>
+    <g class="d1-slot" data-w="용매"><rect x="200" y="214" width="100" height="36" rx="8" fill="#fff" stroke="#b4610f" stroke-width="2" stroke-dasharray="6 4"/><text x="250" y="238" text-anchor="middle" font-size="17" font-family="Jua" fill="#999">?</text></g>
+    <g class="d1-slot" data-w="용해"><rect x="335" y="66" width="100" height="36" rx="8" fill="#fff" stroke="#b4610f" stroke-width="2" stroke-dasharray="6 4"/><text x="385" y="90" text-anchor="middle" font-size="17" font-family="Jua" fill="#999">?</text></g>
+    <g class="d1-slot" data-w="용액"><rect x="497" y="214" width="100" height="36" rx="8" fill="#fff" stroke="#b4610f" stroke-width="2" stroke-dasharray="6 4"/><text x="547" y="238" text-anchor="middle" font-size="17" font-family="Jua" fill="#999">?</text></g>
+  </svg>
+  <div class="fb" id="d1LFb"></div>
+  <div id="d1Def" hidden style="padding:12px 14px;border-radius:14px;background:#e1f0fb">
+    <p style="margin:0">💡 <b>용해</b>: 설탕이 물에 녹는 것처럼 어떤 물질이 다른 물질에 녹아 골고루 섞이는 현상<br>💡 <b>용매</b>: 물처럼 다른 물질을 녹이는 물질 · <b>용질</b>: 설탕처럼 용매에 녹는 물질<br>💡 <b>용액</b>: 설탕물처럼 용매와 용질이 골고루 섞여 있는 물질 — 색깔이나 맛 등의 성질이 일정하고, 뜨거나 가라앉는 것이 없어요.</p>
+  </div>
+</section>
+
+<section id="s6" data-nav="용액 찾기">
+  <span class="stage">생각해요 · 생활 속 용액</span>
+  <h2>용액인 것과 용액이 아닌 것을 나누어요</h2>
+  <p>카드를 하나 누른 다음, 알맞은 상자를 눌러 옮겨요. (<b id="d1SN">0</b>/8)</p>
+  <div class="d1-cards" id="d1Cards"></div>
+  <div class="d1-bins">
+    <div class="d1-bin" data-b="1" role="button" tabindex="0"><h3>용액이에요</h3></div>
+    <div class="d1-bin" data-b="0" role="button" tabindex="0"><h3>용액이 아니에요</h3></div>
+  </div>
+  <div class="fb" id="d1SFb"></div>
+  <h3 data-glue="1">🤔 생각 바로잡기: 용액은 모두 액체일까요?</h3>
+  <div class="pick" id="d1Mis" data-glue="1">
+    <button data-a="0" data-m="용액은 두 가지 이상의 물질이 고르게 섞여 있는 것이에요. 액체가 아닌 용액도 있어요.">네, 용액은 모두 액체예요</button>
+    <button data-a="1" data-m="맞아요! 두 가지 이상의 물질이 고르게 섞여 있으면 용액이에요. 여러 기체가 고르게 섞여 있는 공기도 용액이에요. (이 단원에서는 물에 가루 물질을 녹인 용액을 주로 다뤄요.)">아니요, 공기처럼 기체로 된 용액도 있어요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 어떤 물질이 다른 물질에 녹아 골고루 섞이는 현상을 <span class="blank"><span id="bl1">ㅇ</span><span id="bl2">ㅎ</span></span>(이)라고 합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">2. 💭 비가 온 뒤 고인 흙탕물은 용액일까요?</p>
+  <svg viewBox="0 0 300 110" style="max-width:300px;max-height:13vh" role="img" aria-label="비 온 뒤 고인 흙탕물 웅덩이"><rect width="300" height="110" fill="#e9f2df"/><ellipse cx="150" cy="70" rx="120" ry="28" fill="#a97c50"/><ellipse cx="150" cy="66" rx="104" ry="20" fill="#c49a6c"/><g fill="#7a5230"><circle cx="110" cy="74" r="4"/><circle cx="170" cy="78" r="5"/><circle cx="200" cy="70" r="3"/></g></svg>
+  <div class="pick" id="d1P7">
+    <button data-a="1" data-m="맞아요! 흙탕물은 시간이 지나면 흙이 물에 녹지 않고 바닥에 가라앉아요. 그래서 용액이 아니에요.">용액이 아니에요. 시간이 지나면 흙이 바닥에 가라앉기 때문이에요</button>
+    <button data-a="0" data-m="용액은 뜨거나 가라앉는 것이 없어요. 흙탕물을 가만히 두면 어떻게 되나요?">용액이에요. 물과 흙이 섞여 있기 때문이에요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 설탕물과 같이 녹는 물질과 녹이는 물질이 골고루 섞이는 현상을 ㉠(이)라고 하고, 설탕물은 ㉡(이)라고 합니다. ㉠과 ㉡을 바르게 짝 지은 것은?</p>
+  <div class="pick" id="d1F1">
+    <button data-a="0" data-m="설탕물은 용매가 아니라, 용매와 용질이 골고루 섞여 있는 물질이에요.">㉠ 용해 · ㉡ 용매</button>
+    <button data-a="1" data-m="정답! 녹아 골고루 섞이는 현상은 용해, 설탕물은 용액이에요.">㉠ 용해 · ㉡ 용액</button>
+    <button data-a="0" data-m="용질은 설탕처럼 녹는 물질이에요.">㉠ 용질 · ㉡ 용액</button>
+    <button data-a="0" data-m="물이 용매예요. 현상의 이름을 떠올려 봐요.">㉠ 용매 · ㉡ 용질</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:12px">2. ✏️ 서술형: 여름철 시원하게 만들어 먹는 미숫가루를 탄 물이 용액이 아닌 까닭을 써 봐요.</p>
+  <textarea id="d1F2" rows="2" placeholder="예: 시간이 지나면 미숫가루가 …"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="d1F2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="d1F2Fb"></div>
+</section>
+
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 37쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>여러 가지 물질을 물에 넣었을 때의 변화를 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>관찰한 결과를 그림과 글로 나타낼 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>물에 녹는 현상을 과학적으로 이해하려는 태도를 가졌어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+const NS1='http://www.w3.org/2000/svg';const r1=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+function el1(tag,at,par){const e=document.createElementNS(NS1,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
+
+/* 도입: 소금·후춧가루 */
+(function(){let s=0,p=0,stir=0;
+  function draw(){const S=$('#d1Salt'),P=$('#d1Pep');S.innerHTML='';P.innerHTML='';
+    if(s){for(let i=0;i<26;i++){const y=stir?0:120+r1(i,1)*100;if(stir)continue;el1('rect',{x:110+r1(i,2)*95,y:y,width:5,height:5,fill:'#fff',stroke:'#9aa'},S);}}
+    if(p){for(let i=0;i<40;i++){const top=stir?98+r1(i,3)*6:98+r1(i,3)*4;el1('circle',{cx:385+r1(i,4)*110,cy:top,r:1.8+r1(i,5)*1.5,fill:'#3a3028'},P);}
+      if(stir){for(let i=0;i<6;i++)el1('circle',{cx:400+r1(i,6)*80,cy:214+r1(i,7)*6,r:2,fill:'#3a3028'},P);}}}
+  $('#d1AddS').onclick=()=>{s=1;stir=0;draw();fb('#d1CupFb','소금을 넣었어요. 알갱이가 바닥으로 내려가요.','info');};
+  $('#d1AddP').onclick=()=>{p=1;stir=0;draw();fb('#d1CupFb','후춧가루를 넣었어요. 물 위에 떠 있어요.','info');};
+  $('#d1Stir').onclick=()=>{if(!s||!p){fb('#d1CupFb','먼저 소금과 후춧가루를 모두 넣어요.','info');return;}stir=1;draw();
+    fb('#d1CupFb','저었더니 소금은 보이지 않게 되었고, 후춧가루는 여전히 물 위에 떠 있어요(몇 알갱이는 바닥에).','info');$('#d1Ask1').hidden=false;};})();
+pickOne('#d1P1','','','s1');
+
+/* 예상 */
+(function(){const pr={};$$('#d1Pred div').forEach(d=>$$('button',d).forEach(b=>b.onclick=()=>{$$('button',d).forEach(x=>x.classList.toggle('sel',x===b));pr[d.dataset.k]=b.dataset.v;
+  if(Object.keys(pr).length===3){fb('#d1PredFb','예상을 모두 골랐어요! 설탕은 '+pr.sugar+', 가루 바이타민은 '+pr.vit+', 탄산 칼슘은 '+pr.ca+' 같다고 했어요. 실험으로 확인해 봐요.',true);doneNav('s2');}}));})();
+
+/* 실험실 */
+const JAR=[{n:'설탕',x:60,c:'#ffffff'},{n:'가루 바이타민',x:290,c:'#f6d44a'},{n:'탄산 칼슘',x:520,c:'#ffffff'}];
+let d1st=0;
+function drawJars(sh){const g=$('#d1Jars');g.innerHTML='';
+  JAR.forEach((j,i)=>{const x=j.x+(sh?Math.sin(performance.now()/40+i)*6:0);const G=el1('g',{},g);
+    el1('path',{d:`M${x+10} 90 h120 v160 q0 12 -12 12 h-96 q-12 0 -12 -12z`,fill:'#f4fbff','fill-opacity':.7,stroke:'#7aa7bd','stroke-width':4},G);
+    el1('rect',{x:x+30,y:74,width:80,height:18,rx:4,fill:d1st>=3?'#5c6b73':'none',stroke:d1st>=3?'#5c6b73':'none'},G);
+    el1('rect',{x:x+30,y:150,width:80,height:24,rx:4,fill:'#fff',stroke:'#c9a'},G);const t=el1('text',{x:x+70,y:167,'text-anchor':'middle','font-size':12,'font-family':'Jua',fill:'#b4610f'},G);t.textContent=j.n;
+    if(d1st>=1){let col='#cfe9f8',op=.8;
+      if(d1st>=3&&i===1){col='#f3d23a';op=.55;} if(d1st===3&&i===2){col='#e9edf0';op=.95;} if(d1st>=4&&i===2){col='#dff0f8';op=.8;}
+      el1('rect',{x:x+12,y:140-(d1st>=1?0:0),width:116,height:118,rx:8,fill:col,opacity:op},G);
+      el1('rect',{x:x+30,y:150,width:80,height:24,rx:4,fill:'#fff',stroke:'#c9a'},G);const t2=el1('text',{x:x+70,y:167,'text-anchor':'middle','font-size':12,'font-family':'Jua',fill:'#b4610f'},G);t2.textContent=j.n;}
+    if(d1st===2){for(let k=0;k<14;k++)el1('circle',{cx:x+30+r1(k,i)*80,cy:238+r1(k,i+5)*16,r:3,fill:j.c,stroke:i===1?'#c9a400':'#bbb'},G);}
+    if(d1st===3&&i===2){for(let k=0;k<30;k++)el1('circle',{cx:x+20+r1(k,9)*100,cy:150+r1(k,8)*100,r:1.6,fill:'#fff'},G);}
+    if(d1st>=4&&i===2){el1('path',{d:`M${x+14} 248 q56 -14 112 0 v6 q0 4 -4 4 h-104 q-4 0 -4 -4z`,fill:'#fff',stroke:'#ccc'},G);
+      const tt=el1('text',{x:x+70,y:282,'text-anchor':'middle','font-size':13,'font-family':'Jua',fill:'#0f3b5c'},G);tt.textContent='바닥에 흰색 물질';}
+  });}
+drawJars(false);
+function stepBtn(n){['#d1S1','#d1S2','#d1S3','#d1S4'].forEach((s,i)=>{$(s).disabled=i!==n;$(s).classList.toggle('main',i===n);});}
+$('#d1S1').onclick=()=>{d1st=1;drawJars();$('#d1LabT').textContent='① 물을 2/3씩 넣었어요';fb('#d1LabFb','넘치지 않을 정도로 비슷한 양의 물을 넣었어요.','info');stepBtn(1);};
+$('#d1S2').onclick=()=>{d1st=2;drawJars();$('#d1LabT').textContent='② 한 숟가락씩 넣었어요';fb('#d1LabFb','약숟가락에 담는 양을 최대한 같게 하고, 숟가락을 따로 썼어요. 가루가 바닥에 가라앉아 있어요.','info');stepBtn(2);};
+$('#d1S3').onclick=()=>{d1st=3;$('#d1LabT').textContent='③ 뚜껑을 닫고 흔드는 중…';stepBtn(-1);const t0=performance.now();
+  const step=now=>{drawJars(true);if(now-t0<1600)requestAnimationFrame(step);else{drawJars(false);$('#d1LabT').textContent='③ 흔든 직후';
+    fb('#d1LabFb','흔든 직후: 설탕은 금방 녹아 보이지 않아요. 가루 바이타민은 녹으면서 물이 노란색으로 변해요. 탄산 칼슘을 넣은 물은 뿌옇게 흐려졌어요.','info');stepBtn(3);}};requestAnimationFrame(step);};
+$('#d1S4').onclick=()=>{d1st=4;drawJars();$('#d1LabT').textContent='④ 5분 뒤';stepBtn(-1);
+  fb('#d1LabFb','5분 뒤: 설탕물은 투명하고, 바이타민 물은 투명한 노란색이에요. 둘 다 뜨거나 가라앉는 것이 없어요. 탄산 칼슘은 흰색 물질이 바닥에 가라앉았어요.',true);doneNav('s3');};
+stepBtn(0);
+
+/* 기록표 */
+const T1=[['투명해요','투명한 노란색이에요','뿌옇다가 흰색 물질이 가라앉아요'],['없어요','바닥에 가라앉아요']];
+$$('#d1T td button').forEach(b=>{b.dataset.v=-1;b.onclick=()=>{const L=T1[+b.dataset.k];b.dataset.v=(+b.dataset.v+1)%L.length;b.textContent=L[b.dataset.v];b.classList.remove('right','wrong');};});
+$('#d1TChk').onclick=()=>{const bs=$$('#d1T td button');if(bs.some(b=>b.dataset.v==-1)){fb('#d1TFb','여섯 칸을 모두 골라요.','info');return;}
+  let ok=0;bs.forEach(b=>{const r=b.dataset.v===b.dataset.a;b.classList.add(r?'right':'wrong');ok+=r;});
+  if(ok===6){fb('#d1TFb','잘 기록했어요! 설탕물과 바이타민 물은 투명하고 뜨거나 가라앉는 것이 없지만, 탄산 칼슘은 바닥에 가라앉았어요.',true);$('#d1Sum').hidden=false;}
+  else fb('#d1TFb','빨간 칸을 다시 생각해 봐요. 앞의 실험 단추를 다시 눌러 봐도 좋아요.',false);};
+pickOne('#d1P4','','','s4');
+
+/* 낱말 붙이기 */
+(function(){let sel=null,n=0;const MSG={용질:'설탕처럼 용매에 녹는 물질은 용질이에요.',용매:'물처럼 다른 물질을 녹이는 물질은 용매예요.',용해:'녹아 골고루 섞이는 현상은 용해예요.',용액:'설탕물처럼 용매와 용질이 골고루 섞여 있는 물질은 용액이에요.'};
+  $$('#d1Lbl button').forEach(b=>b.onclick=()=>{if(b.classList.contains('right'))return;$$('#d1Lbl button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=b;});
+  $$('#d1Word .d1-slot').forEach(g=>{g.style.cursor='pointer';g.addEventListener('click',()=>{if(g.dataset.done)return;if(!sel){fb('#d1LFb','먼저 위의 낱말 카드를 하나 골라요.','info');return;}
+    if(sel.dataset.w===g.dataset.w){g.dataset.done=1;const t=g.querySelector('text');t.textContent=sel.dataset.w;t.setAttribute('fill','#1f8060');g.querySelector('rect').setAttribute('stroke','#1f8060');
+      sel.classList.remove('sel');sel.classList.add('right');sel=null;n++;$('#d1LN').textContent=n;fb('#d1LFb','맞아요! '+MSG[g.dataset.w],true);
+      if(n===4){$('#d1Def').hidden=false;fb('#d1LFb','🎉 모두 붙였어요! 용매인 물에 용질인 설탕이 용해되어 용액인 설탕물이 돼요.',true);doneNav('s5');}}
+    else fb('#d1LFb','다시 생각해 봐요. '+MSG[sel.dataset.w],false);});});})();
+
+/* 분류 */
+function sorter(cardsSel,binSel,items,cntSel,fbSel,onAll,allMsg){let sel=null,n=0;
+  items.forEach(it=>{const b=document.createElement('button');b.textContent=it.t;b.onclick=()=>{if(b.closest(binSel))return;$$(cardsSel+' button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel={b,it};$$(binSel).forEach(x=>x.classList.add('ready'));};$(cardsSel).appendChild(b);});
+  $$(binSel).forEach(bin=>{const go=()=>{if(!sel){fb(fbSel,'먼저 카드를 하나 골라요.','info');return;}
+    if(+bin.dataset.b===sel.it.b){sel.b.classList.remove('sel');sel.b.classList.add('right');bin.appendChild(sel.b);n++;$(cntSel).textContent=n;
+      fb(fbSel,n===items.length?allMsg:'맞아요! '+(sel.it.w||''),true);if(n===items.length)onAll();}
+    else{fb(fbSel,sel.it.h||'다시 생각해 봐요.',false);return;}
+    sel=null;$$(binSel).forEach(x=>x.classList.remove('ready'));};bin.onclick=go;bin.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};});}
+let s6n=0;const s6d=()=>{if(++s6n===2)doneNav('s6');};
+sorter('#d1Cards','.d1-bin',[
+  {t:'설탕물',b:1,w:'설탕이 물에 골고루 섞여 있어요.'},{t:'흙탕물',b:0,w:'시간이 지나면 흙이 가라앉아요.'},
+  {t:'소금물',b:1,w:'소금이 물에 골고루 녹아 있어요.'},{t:'미숫가루를 탄 물',b:0,w:'미숫가루가 뜨거나 가라앉아요.'},
+  {t:'바이타민 용액',b:1,w:'투명한 노란색이고 가라앉는 것이 없어요.'},{t:'탄산 칼슘을 넣은 물',b:0,w:'흰색 물질이 바닥에 가라앉아요.'},
+  {t:'식초',b:1,w:'식초는 성분이 고르게 섞여 있는 용액이에요.'},{t:'후춧가루를 넣은 물',b:0,w:'후춧가루가 물 위에 떠 있어요.'}].map(x=>Object.assign(x,{h:'용액은 색깔이나 맛 등의 성질이 일정하고, 뜨거나 가라앉는 것이 없어요. 다시 생각해 봐요.'})),
+  '#d1SN','#d1SFb',s6d,'🎉 모두 나누었어요! 뜨거나 가라앉는 것이 있으면 용액이 아니에요.');
+pickOne('#d1Mis','','',null,s6d);
+
+/* 한눈에 쏙 */
+let s7n=0;const s7d=()=>{if(++s7n===2)doneNav('s7');};
+$('#blReveal').onclick=()=>{fb('#blFb','어떤 물질이 다른 물질에 녹아 골고루 섞이는 현상을 용해라고 해요.',true);s7d();};
+pickOne('#d1P7','','',null,s7d);
+
+/* 형성 평가 */
+let f1=0;const fd=()=>{if(++f1===2)doneNav('s8');};
+pickOne('#d1F1','','',null,fd);
+$('#d1F2Btn').onclick=()=>{const t=$('#d1F2').value.trim();if(!t){fb('#d1F2Fb','먼저 답을 써 보세요.',false);return;}
+  const a=/가라앉|떠|뜨|뜬/.test(t),b=/녹지\s*않|용해되지\s*않|섞이지\s*않/.test(t);
+  if(a){fb('#d1F2Fb','잘 썼어요! 예시 답: 시간이 지나도 미숫가루가 물에 녹지 않고 떠 있거나 바닥에 가라앉기 때문이에요. 용액은 뜨거나 가라앉는 것이 없어요.',true);fd();}
+  else if(b)fb('#d1F2Fb','‘녹지 않는다’는 좋아요. 시간이 지나면 미숫가루가 어떻게 되는지(뜨거나 가라앉는지)도 써 봐요.','info');
+  else fb('#d1F2Fb','용액의 특징(뜨거나 가라앉는 것이 없음)을 떠올려 다시 써 봐요.',false);};
+
+faces('s9','잘했어요! 다음 시간에는 물에 녹은 물질이 어떻게 되는지 알아봐요.','어려웠던 부분은 실험 단추와 낱말 붙이기를 다시 해 봐요.');
+</script>
