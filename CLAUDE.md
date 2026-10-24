@@ -75,6 +75,8 @@ grade1/ … grade6/
   원본 `src/uN-M.html`(머리 주석 title·unit·lesson·total·goal·pages·blanks + 앱 CSS + `section[data-nav]` + 앱 script), 공통 틀 `parts/head_css.html`·`parts/tail.html`(3학년 2학기 앱에서 떼어 옴: 한 화면 엔진(data-glue 포함)·빈칸 쓰기·홈 단추·연락처 줄), 도우미 `$ $$ fb doneNav pickOne faces keyCheck`는 `build.py`가 넣음. 사진은 `src="@wm:File:…"`(`_build/wmcache`) 또는 직접 그린 SVG.
   **`sem1/u?-?.html`을 직접 고치지 마세요.** `cd grade4/science/_build_tb && python3 build.py [uN-M…] && python3 index_build.py`, 루트에서 `apply_theme.py`(목록)·`apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음). 점검 `python3 build.py check`, `node check.js ../sem1/u1-1.html … [--shots 폴더]`(덮개 입히기 전 파일 기준). 작성 규칙 `_build_tb/BRIEF_TB.md`.
   `total`(단원 차시 수)은 지도서 차시 구성(과학이 톡톡 포함) 그대로: 1단원 11 · 2단원 11 · 3단원 13 · 4단원 12.
+- **2학기 교과서 버전 `sem2/`(2026-10-24)**: 같은 빌드로 원본 `_build_tb/src2/uN-M.html` → `../sem2/`(명령 앞에 `SEM=2`, 인자 없이 `build.py`면 두 학기 모두). 2단원 생물과 환경 7 · 3단원 여러 가지 기체 6 · 4단원 기후변화와 우리 생활 5 = 18개.
+  **1단원은 지도서 PDF(`4_2_과학_1_지도서.pdf`, 83MB)를 읽지 못해 '곧 열려요'** — 10MB 이하로 나눠 받으면 같은 방식으로 만들고 `build.py`의 `UNITS2[1]` 단원 이름을 채움. 2학기 홍지희 버전은 아직 없음. 옛 `sem2.html`은 `sem2/index.html` 안내 페이지.
 - 이 환경에서 위키미디어를 받을 수 없어(2026-10-24) **사진 대신 직접 그린 SVG 그림**이 대부분입니다(캐시에 있던 한라산·지리산·낙동강·빙하 등 몇 장만 사진).
 - 두 버전 모두 단원마다 작성자가 지도서와 대조해 쓰고, 다른 검토자가 다시 대조해 고침. 지도서 글은 저작물이라 저장소에 넣지 않습니다. 지도서 397쪽 '곰팡이가 사라지면 요구르트도 못 만든다'는 지도서 오류(요구르트는 세균)라 옮기지 않음.
 
