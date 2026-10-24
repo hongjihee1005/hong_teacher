@@ -140,7 +140,7 @@ def build(key, write=True):
     def img(m):
         data, info, name = wm_img(m.group(1))
         credits.append('<li>%s — %s, %s, <a href="https://commons.wikimedia.org/wiki/%s" target="_blank" rel="noopener">%s</a></li>' % (
-            html.escape(info.get('title', name)), html.escape(info.get('artist', '')), html.escape(info.get('lic', '')),
+            html.escape(info.get('title', name).replace('File:', '')), html.escape(info.get('artist', '')), html.escape(info.get('license') or info.get('lic', '')),
             html.escape(name.replace(' ', '_')), html.escape(name.replace('File:', ''))))
         return 'src="%s"' % data
     body = re.sub(r'src="@wm:([^"]+)"', img, body)
