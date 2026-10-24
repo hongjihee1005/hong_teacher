@@ -1,0 +1,796 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>액체와 기체에서는 열이 어떻게 이동할까?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#c2332c;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+[hidden]{display:none!important}
+.k4-steps{display:flex;flex-wrap:wrap;gap:8px;margin-top:6px}
+.k4-steps button{font-size:.9rem;min-height:2.3rem;border-width:2px}
+.k4-arw{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.k4-arw button{padding:4px}
+.k4-arw svg{width:100%;max-height:13vh}
+.k4-room{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:12px;align-items:start}
+.k4-room .k4-steps button.sel{background:var(--sun);border-color:#b58400}
+@media (max-width:640px){.k4-arw,.k4-room{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M43 10 C52 26 66 34 62 54 a19 19 0 0 1 -38 0 C24 42 34 36 34 24 C40 30 42 34 43 10z" fill="#e2573f" stroke="#fff" stroke-width="3"/><path d="M43 44 c6 6 9 10 6 16 a7 7 0 0 1 -12 0 c-2 -6 3 -10 6 -16z" fill="#ffd23f"/></svg>
+  <div><h1>액체와 기체에서는 열이 어떻게 이동할까?</h1><p>5학년 2학기 과학 · 3단원 열과 우리 생활 · 5~6/13차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">실험 1 준비</a><a href="#s3">실험 1 관찰</a><a href="#s4">실험 1 정리</a><a href="#s5">실험 2 기체</a><a href="#s6">대류</a><a href="#s7">방 안의 대류</a><a href="#s8">더 알아보기</a><a href="#s9">한눈에 쏙</a><a href="#s10">형성 평가</a><a href="#s11">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>액체와 기체에서 열의 이동으로 나타나는 현상을 관찰할 수 있어요.<br>액체와 기체에서 열이 이동하는 방식을 설명할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 68쪽</span>
+  <h2>찜기 안의 만두가 골고루 잘 익을 수 있는 까닭은 무엇일까요?</h2>
+  <svg class="scene" viewBox="0 0 600 210" style="max-height:24vh" role="img" aria-label="여러 층으로 쌓인 찜기 안에서 만두가 익는 그림">
+    <rect width="600" height="210" fill="#fdf6e3"/><rect x="190" y="176" width="220" height="26" rx="6" fill="#555"/><path d="M240 176 q10 -16 20 0 M290 176 q10 -18 20 0 M340 176 q10 -16 20 0" fill="#f08a24"/>
+    <rect x="210" y="130" width="180" height="46" rx="8" fill="#9aa6b0" stroke="#5a6570" stroke-width="3"/><text x="300" y="160" text-anchor="middle" font-size="14" font-family="Jua" fill="#fff">물</text>
+    <g fill="#e8c27a" stroke="#a5651e" stroke-width="3"><rect x="214" y="90" width="172" height="40" rx="6"/><rect x="214" y="50" width="172" height="40" rx="6"/><path d="M214 50 q86 -40 172 0z"/></g>
+    <g fill="#fffaf0" stroke="#d9c7a7" stroke-width="2"><ellipse cx="260" cy="118" rx="18" ry="10"/><ellipse cx="300" cy="118" rx="18" ry="10"/><ellipse cx="340" cy="118" rx="18" ry="10"/><ellipse cx="270" cy="78" rx="18" ry="10"/><ellipse cx="320" cy="78" rx="18" ry="10"/></g>
+    <path d="M300 22 q-8 -10 0 -18 M286 26 q-8 -10 0 -18 M314 26 q-8 -10 0 -18" stroke="#c9d3da" stroke-width="3" fill="none"/>
+  </svg>
+  <div class="pick" id="k4P1">
+    <button data-a="1" data-m="좋은 생각이에요! 찜기의 아랫부분을 가열하면 아래에서 수증기가 올라와 여러 층으로 쌓인 찜기 전체가 뜨거워져요.">아래에서 데워진 수증기가 위로 올라와 찜기 전체가 뜨거워지기 때문이에요</button>
+    <button data-a="0" data-m="불은 맨 아래에만 있어요. 그런데 맨 위층 만두도 익어요. 열은 어떻게 위층까지 갔을까요?">불이 찜기의 모든 층을 똑같이 직접 가열하기 때문이에요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">주전자의 바닥만 가열해도 물 전체가 끓는 까닭은?</p>
+  <div class="pick" id="k4P1b">
+    <button data-a="1" data-m="맞아요! 물에서도 열이 이동하기 때문이에요. 액체와 기체에서는 열이 어떻게 이동하는지 알아봐요.">물에서도 열이 이동하기 때문이에요</button>
+    <button data-a="0" data-m="물 윗부분은 불에 닿지 않는데도 뜨거워져요. 열은 어떻게 그곳까지 갔을까요?">바닥 쪽 물만 끓고 위쪽 물은 차가워요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="실험 1 준비">
+  <span class="stage">실험해요 1 · 액체 · 「실험관찰」 42쪽</span>
+  <h2>액체에서 열이 이동하는 방식 알아보기</h2>
+  <p style="font-size:.9rem;margin:0">준비물: 투명한 사각 통, 컵 3개, 필름 2장, 물, 뜨거운 물, 스포이트, 잉크, 실험복, 보안경, 안전 장갑</p>
+  <svg id="k4Set" class="scene" viewBox="0 0 640 250" style="max-height:28vh" role="img" aria-label="컵 받침대 위의 물이 든 투명한 사각 통" data-glue="1"></svg>
+  <div class="k4-steps" data-glue="1"><button class="main" id="k4A1">① 필름 위에 컵 두 개를 뒤집어 받침대 만들기</button><button id="k4A2" disabled>② 사각 통에 물을 3/4 정도 넣고 받침대에 올리기</button><button id="k4A3" disabled>③ 스포이트로 바닥 한가운데에 잉크 조금 넣기</button></div>
+  <div class="fb" id="k4SetFb"></div>
+  <div id="k4PredBox" hidden>
+    <p class="jua" style="font-size:1.05rem;margin:6px 0">예상해요: 잉크 바로 아래에 뜨거운 물이 든 컵을 밀어 넣으면 잉크는 처음에 어느 쪽으로 움직일까요?</p>
+    <div class="pick" id="k4Pred"><button data-v="위">㉠ 위로</button><button data-v="옆">㉡ 옆으로</button><button data-v="아래">㉢ 아래로(그대로)</button></div>
+    <div class="fb" id="k4PredFb"></div>
+  </div>
+  <p class="tip">⚠️ 잉크가 눈이나 피부에 튀지 않게 조심하고, 튀었을 때는 흐르는 물로 충분히 씻어요. 뜨거운 물(60~70 °C)을 다룰 때는 화상을 입지 않도록 안전 장갑을 껴요. 물을 쏟지 않게 조심해요. 잉크는 물에서 열이 이동하는 모습을 보려고 넣는 것이므로 조금만 넣고, 물이 흔들리지 않을 때까지 기다린 뒤 넣어요.</p>
+</section>
+
+<section id="s3" data-nav="실험 1 관찰">
+  <span class="stage">실험해요 1 · 영상처럼 보기</span>
+  <h2>뜨거운 물이 든 컵을 밀어 넣고 잉크의 움직임을 관찰해요</h2>
+  <div class="player" id="k4PL" data-glue="1">
+    <svg id="k4Liq" class="scene" viewBox="0 0 640 300" role="img" aria-label="사각 통 속 잉크가 움직이는 모습"></svg>
+    <div class="ctl"><button class="main pBtn" aria-label="재생">▶</button><input type="range" class="pRng" min="0" step="0.02" value="0" aria-label="영상 시간"><span class="jua pClk">0초</span></div>
+    <div class="row chapters"></div>
+    <p class="cap"></p>
+  </div>
+  <div id="k4LAsk" hidden>
+    <p class="jua" style="font-size:1.05rem;margin:6px 0">잉크가 움직이는 모습을 화살표로 나타낸 것은?</p>
+    <div class="k4-arw" id="k4LArw" data-glue="1"></div>
+    <div class="fb" id="k4LArwFb"></div>
+  </div>
+</section>
+
+<section id="s4" data-nav="실험 1 정리">
+  <span class="stage">실험해요 1 · 「실험관찰」 42쪽</span>
+  <h2>잉크의 움직임을 보고 물에서 열이 어떻게 이동하는지 정리해요</h2>
+  <p class="jua" style="font-size:1.1rem">온도가 높아진 물이 ( ㉠ ) 온도가 낮은 물이 ( ㉡ ) 물 전체로 열이 이동합니다.</p>
+  <div class="pick" id="k4P4">
+    <button data-a="1" data-m="맞아요! 온도가 높아진 물이 위로 올라가고, 온도가 낮은 물이 아래로 밀려 내려오면서 물 전체로 열이 이동해요.">㉠ 위로 올라가고 · ㉡ 아래로 밀려 내려오면서</button>
+    <button data-a="0" data-m="잉크는 뜨거운 물 컵 바로 위에서 어느 쪽으로 움직였나요?">㉠ 아래로 내려가고 · ㉡ 위로 밀려 올라가면서</button>
+  </div>
+  <div class="fb"></div>
+  <p id="k4Cmp" style="padding:10px 12px;border-radius:12px;background:#fdecea;margin-top:8px">📝 내 예상과 비교: 먼저 실험 1에서 예상을 골라 봐요.</p>
+</section>
+
+<section id="s5" data-nav="실험 2 기체">
+  <span class="stage">실험해요 2 · 기체 · 「실험관찰」 43쪽</span>
+  <h2>기체에서 열이 이동하는 방식 알아보기</h2>
+  <p style="font-size:.9rem;margin:0">고온용 열 변색 붙임딱지를 접어, 구멍 뚫린 아크릴 통의 안쪽 벽에 닿지 않도록 끝부분만 붙였어요. 통 안에는 공기(기체)가 들어 있어요.</p>
+  <div class="player" id="k4PG" data-glue="1">
+    <svg id="k4Gas" class="scene" viewBox="0 0 640 300" role="img" aria-label="구멍 뚫린 아크릴 통 한가운데에 촛불을 둔 모습"></svg>
+    <div class="ctl"><button class="main pBtn" aria-label="재생">▶</button><input type="range" class="pRng" min="0" step="0.02" value="0" aria-label="영상 시간"><span class="jua pClk">0초</span></div>
+    <div class="row chapters"></div>
+    <p class="cap"></p>
+  </div>
+  <div id="k4GAsk" hidden>
+    <p class="jua" style="font-size:1.05rem;margin:6px 0">붙임딱지의 색깔 변화로 알 수 있는 공기의 움직임은? 온도가 높아진 공기가 ( ㉠ ) 온도가 낮은 공기가 ( ㉡ ) 통 안의 공기 전체로 열이 이동합니다.</p>
+    <div class="pick" id="k4P5" data-glue="1">
+      <button data-a="1" data-m="맞아요! 촛불 주변에서 온도가 높아진 공기가 위로 올라가고, 온도가 낮은 공기가 아래로 밀려 내려오면서 통 안의 공기 전체로 열이 이동해요. 그래서 윗부분의 붙임딱지 색깔이 먼저 변했어요.">㉠ 위로 올라가고 · ㉡ 아래로 밀려 내려오면서</button>
+      <button data-a="0" data-m="어느 쪽 붙임딱지의 색깔이 먼저 변했나요?">㉠ 아래로 내려가고 · ㉡ 위로 밀려 올라가면서</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 실험복·보안경·안전 장갑을 착용해요. 불을 다룰 때는 화재와 화상에 주의하고, 환기가 잘되는 곳에서 실험해요. 아크릴 통의 구멍은 막지 않고, 촛불이 한가운데에 오게 한 뒤 통을 움직이지 않아요. 사용한 촛불은 반드시 꺼요.</p>
+</section>
+
+<section id="s6" data-nav="대류">
+  <span class="stage">정리해요 · 「과학」 69쪽</span>
+  <h2>액체와 기체에서 열이 이동하는 방식</h2>
+  <p>액체나 기체와 같은 물질을 가열할 때, 온도가 높아진 물질이 위로 올라가고 온도가 낮은 물질이 아래로 내려가면서 열이 이동하는 방식을 <b>대류</b>라고 합니다. 물을 끓일 때 대류로 물이 순환하면서 물 전체가 뜨거워집니다.</p>
+  <p class="jua" style="font-size:1.05rem">1. 액체와 기체에서 열은 어떻게 이동할까요?</p>
+  <div class="pick" id="k4P6a">
+    <button data-a="1" data-m="맞아요! 온도가 높아진 액체와 기체가 위로 올라가면서 열이 이동하고, 온도가 낮은 액체와 기체는 아래로 내려가요. 이 과정을 반복해요.">온도가 높아진 액체·기체가 위로 올라가고, 온도가 낮은 것은 아래로 내려가는 과정을 반복해요</button>
+    <button data-a="0" data-m="그것은 고체에서 열이 이동하는 방식(전도)이에요. 액체와 기체는 직접 움직였어요.">고체처럼 물질을 따라 제자리에서 열만 전해져요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">2. 🤔 생각 바로잡기: 실험에서 본 잉크의 움직임과 붙임딱지의 색깔 변화가 바로 ‘열’일까요?</p>
+  <div class="pick" id="k4P6b">
+    <button data-a="0" data-m="열은 눈에 보이지 않아요. 잉크와 붙임딱지는 열의 이동을 눈으로 볼 수 있게 도와준 거예요.">네, 잉크와 붙임딱지 색깔이 바로 열이에요</button>
+    <button data-a="1" data-m="맞아요! 열은 눈에 보이지 않아요. 잉크와 열 변색 붙임딱지는 액체와 기체에서 열의 이동을 눈으로 볼 수 있게 도와주는 역할을 해요.">아니요, 열은 눈에 보이지 않고 잉크와 붙임딱지는 열의 이동을 보여 주는 도구예요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="방 안의 대류">
+  <span class="stage">생활 속 대류 · 「과학」 69쪽</span>
+  <h2>난방기와 냉방기는 어디에 두면 좋을까요?</h2>
+  <div class="k4-room" data-glue="1">
+    <svg id="k4Room" viewBox="0 0 420 300" style="max-height:38vh" role="img" aria-label="방 안 공기의 움직임"></svg>
+    <div>
+      <p class="jua" style="margin:0">🔥 전기난로를 놓을 곳</p>
+      <div class="k4-steps" id="k4Heat"><button data-p="low">바닥 가까이</button><button data-p="high">천장 가까이</button></div>
+      <p class="jua" style="margin:10px 0 0">❄️ 냉방기를 설치할 곳</p>
+      <div class="k4-steps" id="k4Cool"><button data-p="high">위쪽</button><button data-p="low">아래쪽</button></div>
+      <div class="fb" id="k4RoomFb"></div>
+    </div>
+  </div>
+  <p class="tip">그림의 색은 방 안의 따뜻하고 차가운 정도를 나타낸 어림 그림이에요(측정값 아님).</p>
+</section>
+
+<section id="s8" data-nav="더 알아보기">
+  <span class="stage">더 알아보기 · 뜨거운 물과 차가운 물</span>
+  <h2>한쪽엔 뜨거운 물, 다른 쪽엔 차가운 물을 두면 잉크는?</h2>
+  <p style="font-size:.92rem">사각 통 아래 한쪽에는 뜨거운 물(60~70 °C) 컵, 다른 쪽에는 차가운 물(5~10 °C) 컵을 두고, 바닥 양 끝에 색깔이 다른 잉크(빨간색·보라색)를 조금씩 넣었어요.</p>
+  <svg id="k4Two" class="scene" viewBox="0 0 640 260" style="max-height:28vh" role="img" aria-label="뜨거운 물 쪽과 차가운 물 쪽 잉크의 움직임" data-glue="1"></svg>
+  <div class="k4-steps" data-glue="1"><button class="main" id="k4TwoGo">▶ 관찰하기</button></div>
+  <div id="k4TwoAsk" hidden>
+    <p class="jua" style="font-size:1.05rem;margin:6px 0">두 잉크의 움직임으로 알맞은 것은?</p>
+    <div class="pick" id="k4P8">
+      <button data-a="1" data-m="맞아요! 뜨거운 물 쪽의 잉크는 위로 올라가고, 차가운 물 쪽의 잉크는 바닥에서 뜨거운 물 쪽으로 천천히 움직여요. 온도가 높아진 물이 위로 올라가고 온도가 낮은 물이 아래로 밀려 내려오며 순환해요.">빨간 잉크(뜨거운 쪽)는 위로, 보라 잉크(차가운 쪽)는 바닥을 따라 뜨거운 쪽으로 움직여요</button>
+      <button data-a="0" data-m="차가운 물 쪽 잉크도 위로 올라갔나요? 다시 관찰해 봐요.">두 잉크 모두 똑같이 위로 올라가요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">지도서 참고 자료의 활동을 화면으로 옮긴 거예요. 실제로 할 때는 안전 장갑을 끼고 잉크가 튀지 않게 조심해요.</p>
+</section>
+
+<section id="s9" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 액체나 기체에서 열이 이동하는 방식을 <span class="blank"><span id="bl1">ㄷ</span><span id="bl2">ㄹ</span></span>(이)라고 합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">2. 💭 냉방기를 위쪽에 설치하는 까닭은?</p>
+  <div class="pick" id="k4P9">
+    <button data-a="1" data-m="맞아요! 냉방기 주변에서 온도가 낮아진 공기는 아래로 내려가고 온도가 높은 공기는 위로 올라가면서 방 안 전체의 온도가 낮아져요.">온도가 낮아진 공기는 아래로 내려가고 높은 공기는 위로 올라가며 방 전체가 시원해지기 때문이에요</button>
+    <button data-a="0" data-m="차가워진 공기는 위와 아래 중 어느 쪽으로 움직였나요?">차가워진 공기가 위로 올라가 천장부터 시원해지기 때문이에요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s10" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 기체에서 열이 이동하는 방식에 관한 설명으로 <b>옳지 않은 것</b>은?</p>
+  <div class="pick" id="k4F1" style="grid-template-columns:1fr!important">
+    <button data-a="0" data-m="옳은 설명이에요.">① 온도가 높은 기체는 위로 올라간다.</button>
+    <button data-a="0" data-m="옳은 설명이에요.">② 온도가 낮은 기체는 아래로 내려간다.</button>
+    <button data-a="0" data-m="옳은 설명이에요.">③ 기체에서도 액체와 같이 대류로 열이 이동한다.</button>
+    <button data-a="1" data-m="정답! 전기난로 주위에서 따뜻해진 공기는 위로 올라가요.">④ 방 안에서 전기난로를 켜면 따뜻한 공기가 계속 아래로 내려간다.</button>
+    <button data-a="0" data-m="옳은 설명이에요. 대류로 공기가 순환해요.">⑤ 방 안에서 전기난로를 켜고 시간이 지나면 방 안 전체의 온도가 높아진다.</button>
+  </div>
+  <div class="fb"></div>
+  <div style="display:grid;grid-template-columns:auto minmax(0,1fr);gap:12px;align-items:center;margin-top:10px">
+    <svg viewBox="0 0 160 130" style="width:130px" role="img" aria-label="잉크 위아래와 옆으로 표시된 화살표 ㉠ ㉡ ㉢"><rect x="10" y="10" width="140" height="96" fill="#dff1fb" stroke="#7aa7bd" stroke-width="3"/><circle cx="80" cy="94" r="7" fill="#7d4fb3"/>
+      <path d="M80 84 v-40" stroke="#c0392b" stroke-width="3"/><path d="M80 38 l-6 10 h12z" fill="#c0392b"/><text x="90" y="46" font-size="14" font-family="Jua" fill="#c0392b">㉠</text>
+      <path d="M90 94 h36" stroke="#1c6fa8" stroke-width="3"/><path d="M132 94 l-10 -6 v12z" fill="#1c6fa8"/><text x="120" y="84" font-size="14" font-family="Jua" fill="#1c6fa8">㉡</text>
+      <path d="M68 94 h-36" stroke="#2f7d4a" stroke-width="3"/><path d="M26 94 l10 -6 v12z" fill="#2f7d4a"/><text x="30" y="84" font-size="14" font-family="Jua" fill="#2f7d4a">㉢</text>
+      <rect x="62" y="108" width="36" height="18" fill="#f7b2a5" stroke="#c0392b"/><text x="80" y="122" text-anchor="middle" font-size="9" font-family="Jua">뜨거운 물</text></svg>
+    <p class="jua" style="font-size:1.05rem;margin:0">2. 사각 통 바닥 한가운데 잉크 바로 아래에 뜨거운 물이 든 컵을 밀어 넣었어요. 잉크가 처음 움직이는 방향은?</p>
+  </div>
+  <div class="pick" id="k4F2"><button data-a="1" data-m="정답! 온도가 높아진 물이 위로 올라가므로 잉크가 위로 올라가요.">㉠</button><button data-a="0" data-m="뜨거운 물 바로 위의 물은 온도가 높아져 어디로 움직일까요?">㉡</button><button data-a="0" data-m="뜨거운 물 바로 위의 물은 온도가 높아져 어디로 움직일까요?">㉢</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:10px">3. ✏️ 서술형: 냄비에 든 물을 끓이려면 냄비의 어느 부분을 가열해야 하는지 쓰고, 그 까닭을 써 봐요.</p>
+  <textarea id="k4F3" rows="2" placeholder="냄비의 …을 가열해요. 왜냐하면 …" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="k4F3Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="k4F3Fb"></div>
+</section>
+
+<section id="s11" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 43쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>액체와 기체에서 열이 어떻게 이동하는지 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>액체와 기체에서 열이 이동하는 방식을 관찰할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>액체와 기체에서 열이 이동하는 방식을 과학적인 방법으로 탐구하려는 태도를 가졌어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 68~69쪽 · 「실험관찰」 42~43쪽 · 지도서 284~295쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+const NS='http://www.w3.org/2000/svg';
+function E(t,a,p){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);if(p)p.appendChild(e);return e;}
+function T(p,x,y,s,o){const e=E('text',Object.assign({x,y,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#0f3b5c'},o||{}),p);e.textContent=s;return e;}
+function need(sec,n){const s=new Set();return k=>{if(s.has(k))return;s.add(k);if(s.size===n)doneNav(sec);};}
+function step(prev,next){prev.disabled=true;prev.classList.remove('main');if(next){next.disabled=false;next.classList.add('main');}}
+const rr=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+function mkPlayer(root,o){const P=$(root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 순환 길을 따라 움직이는 점: path=[[x,y]…], s=간 거리 */
+function along(path,s){let L=0;const seg=[];for(let i=1;i<path.length;i++){const d=Math.hypot(path[i][0]-path[i-1][0],path[i][1]-path[i-1][1]);seg.push(d);L+=d;}
+  s=((s%L)+L)%L;for(let i=0;i<seg.length;i++){if(s<=seg[i]){const f=s/seg[i];return [path[i][0]+(path[i+1][0]-path[i][0])*f,path[i][1]+(path[i+1][1]-path[i][1])*f];}s-=seg[i];}return path[path.length-1];}
+function arrowPath(g,d,col){E('path',{d,fill:'none',stroke:col,'stroke-width':3.5,'stroke-linecap':'round'},g);}
+function head(g,x,y,ang,col){const a=ang*Math.PI/180,s=8;E('path',{d:`M${x} ${y} L${x-s*Math.cos(a)+s*.6*Math.sin(a)} ${y-s*Math.sin(a)-s*.6*Math.cos(a)} L${x-s*Math.cos(a)-s*.6*Math.sin(a)} ${y-s*Math.sin(a)+s*.6*Math.cos(a)}z`,fill:col},g);}
+/* 대류 고리 화살표(가운데 위로 → 위에서 양옆 → 벽을 따라 아래) */
+function loops(g,cx,top,bot,lft,rgt,col){arrowPath(g,`M${cx} ${bot} V${top+14}`,col);head(g,cx,top+10,-90,col);
+  [[lft,-1],[rgt,1]].forEach(([w,s])=>{arrowPath(g,`M${cx+s*10} ${top} H${w-s*12}`,col);head(g,w-s*8,top,s>0?0:180,col);arrowPath(g,`M${w} ${top+10} V${bot-14}`,col);head(g,w,bot-8,90,col);arrowPath(g,`M${w-s*8} ${bot} H${cx+s*18}`,col);head(g,cx+s*14,bot,s>0?180:0,col);});}
+
+/* 도입 */
+const d1=need('s1',2);pickOne('#k4P1','','',null,()=>d1('a'));pickOne('#k4P1b','','',null,()=>d1('b'));
+
+/* 실험 1 준비 */
+let sst=0,pred=null;
+function tank(s,o){/* o:{x,y,w,h,water:0..1,cup:bool,ink:bool} */
+  const {x,y,w,h}=o;E('rect',{x:x-20,y:y+h+44,width:w+40,height:6,fill:'#cfd8dc'},s);
+  if(o.stand){[[x+14,0],[x+w-74,0]].forEach(([cx])=>{E('path',{d:`M${cx} ${y+h+44} l6 -44 h48 l6 44z`,fill:'#e9f4fb',stroke:'#7aa7bd','stroke-width':2.5},s);});T(s,x+w/2,y+h+64,'필름',{'font-size':12,fill:'#777'});}
+  if(o.cup){E('path',{d:`M${x+w/2-34} ${y+h+44} l5 -42 h58 l5 42z`,fill:'#f7b2a5',stroke:'#c0392b','stroke-width':2.5},s);T(s,x+w/2,y+h+30,'뜨거운 물',{'font-size':11,fill:'#a5281b'});
+    for(let k=0;k<3;k++)E('path',{d:`M${x+w/2-14+k*14} ${y+h+12} q-4 -6 0 -10`,stroke:'#e2a3a3','stroke-width':2,fill:'none'},s);}
+  if(o.tank){E('rect',{x,y,width:w,height:h,fill:'#f4fbff','fill-opacity':.5,stroke:'#7aa7bd','stroke-width':4},s);if(o.water)E('rect',{x:x+3,y:y+h*(1-o.water),width:w-6,height:h*o.water-3,fill:'#cfe9f8',opacity:.8},s);}}
+function drawSet(){const s=$('#k4Set');s.innerHTML='';E('rect',{width:640,height:250,fill:'#fdf6e3'},s);
+  tank(s,{x:180,y:40,w:280,h:130,stand:sst>=1,tank:sst>=2,water:sst>=2?.75:0});
+  if(sst>=3){E('ellipse',{cx:320,cy:162,rx:10,ry:6,fill:'#7d4fb3'},s);E('path',{d:'M320 60 v96',stroke:'#888','stroke-width':4},s);E('rect',{x:312,y:40,width:16,height:24,rx:6,fill:'#e2573f'},s);T(s,350,58,'스포이트',{'font-size':12,'text-anchor':'start'});}}
+drawSet();
+$('#k4A1').onclick=()=>{sst=1;drawSet();step($('#k4A1'),$('#k4A2'));fb('#k4SetFb','필름 위에 컵 두 개를 뒤집어 놓아 받침대를 만들었어요. 필름을 깔면 뜨거운 물이 든 컵을 쉽게 밀어 넣을 수 있어요.','info');};
+$('#k4A2').onclick=()=>{sst=2;drawSet();step($('#k4A2'),$('#k4A3'));fb('#k4SetFb','물을 3/4 정도 넣었어요. 물의 높이가 너무 낮으면 잉크가 양옆으로 퍼져 관찰하기 어려워요.','info');};
+$('#k4A3').onclick=()=>{sst=3;drawSet();step($('#k4A3'));$('#k4PredBox').hidden=false;fb('#k4SetFb','물이 흔들리지 않을 때 스포이트를 바닥 한가운데에 깊숙이 넣고 천천히 눌러 잉크를 조금 넣었어요.',true);};
+$$('#k4Pred button').forEach(b=>b.onclick=()=>{$$('#k4Pred button').forEach(x=>x.classList.toggle('sel',x===b));pred=b.dataset.v;fb('#k4PredFb','“'+pred+'”(으)로 예상했어요. 다음 쪽에서 확인해요.',true);doneNav('s2');
+  $('#k4Cmp').textContent='📝 내 예상(‘'+pred+'’)과 비교: 잉크는 처음에 위로 올라갔어요. '+(pred==='위'?'예상한 대로예요!':'예상과 달랐어요. 관찰 결과를 바탕으로 생각을 고쳐요.');});
+
+/* 실험 1 관찰 (영상처럼) */
+const LX=180,LY=40,LW=280,LH=170,WT=LY+LH*.25,BT=LY+LH-6,CX=LX+LW/2;
+const pathR=[[CX,BT],[CX,WT+10],[LX+LW-16,WT+10],[LX+LW-16,BT-4],[CX+10,BT]],pathL=pathR.map(([x,y])=>[2*CX-x,y]);
+function drawLiq(t){const s=$('#k4Liq');s.innerHTML='';E('rect',{width:640,height:300,fill:'#fdf6e3'},s);
+  tank(s,{x:LX,y:LY,w:LW,h:LH,stand:true,tank:true,water:.75,cup:t>=2});
+  const g=E('g',{},s);
+  if(t<2.5){E('ellipse',{cx:CX,cy:BT-2,rx:12,ry:6,fill:'#7d4fb3'},g);}
+  else{const tt=t-2.5,N=46;for(let i=0;i<N;i++){const rel=i*0.22;if(tt<rel)continue;const sp=46,dist=(tt-rel)*sp,path=i%2?pathR:pathL;const [x,y]=along(path,dist);const j=(rr(i,1)-.5)*14;
+      E('circle',{cx:x+(Math.abs(y-BT)<20?0:j*(Math.abs(x-CX)<20?.5:0.2)),cy:y+(Math.abs(x-CX)<20?0:j),r:5+rr(i,2)*3,fill:'#7d4fb3',opacity:Math.max(.25,.85-dist/1400)},g);}
+    E('ellipse',{cx:CX,cy:BT-2,rx:9,ry:5,fill:'#7d4fb3',opacity:.7},g);}
+  if(t>=13){const a=E('g',{opacity:.9},s);loops(a,CX,WT+10,BT-2,LX+18,LX+LW-18,'#c0392b');}
+  T(s,LX+LW+60,LY+40,t>=2?'뜨거운 물 컵을':'',{'font-size':13});T(s,LX+LW+60,LY+58,t>=2?'밀어 넣었어요':'',{'font-size':13});}
+let liqDone=false;
+mkPlayer('#k4PL',{end:16,draw:drawLiq,ch:[[0,'① 잉크 넣기','사각 통 바닥 한가운데에 잉크를 조금 넣었어요.'],[2,'② 컵 밀어 넣기','잉크 바로 아래에 뜨거운 물이 든 컵을 밀어 넣어요.'],[3,'③ 잉크가 위로','잉크가 위로 올라가요! 뜨거운 물 위에서 온도가 높아진 물이 위로 올라가기 때문이에요.'],[6,'④ 위에서 옆으로','위로 올라간 잉크가 물 윗부분에서 양옆으로 퍼져요.'],[9,'⑤ 옆에서 아래로','양옆으로 간 잉크가 통의 벽을 따라 아래로 내려오고, 다시 가운데로 모여 올라가요.'],[13,'⑥ 화살표로','잉크의 움직임을 화살표로 나타내면 이런 모양이에요. 물이 돌고 돌며(순환하며) 물 전체로 열이 이동해요.']],
+  done(){if(!liqDone){liqDone=true;$('#k4LAsk').hidden=false;}}});
+(function(){const D=[[0,'down'],[1,'loops'],[0,'side']];
+  D.forEach(([ok,k])=>{const b=document.createElement('button');const s=E('svg',{viewBox:'0 0 200 120'},null);E('rect',{x:20,y:10,width:160,height:100,fill:'#dff1fb',stroke:'#7aa7bd','stroke-width':3},s);
+    E('rect',{x:84,y:110,width:32,height:8,fill:'#f7b2a5'},s);
+    if(k==='loops')loops(s,100,24,102,32,168,'#7d4fb3');
+    else if(k==='down'){arrowPath(s,'M100 24 V96','#7d4fb3');head(s,100,100,90,'#7d4fb3');}
+    else{[[1],[-1]].forEach(([d])=>{arrowPath(s,`M${100+d*8} 102 H${100+d*66}`,'#7d4fb3');head(s,100+d*70,102,d>0?0:180,'#7d4fb3');});}
+    b.appendChild(s);b.setAttribute('aria-label',{loops:'가운데에서 위로, 위에서 양옆으로, 벽을 따라 아래로 도는 화살표',down:'위에서 아래로 내려가는 화살표',side:'바닥에서 양옆으로만 퍼지는 화살표'}[k]);
+    b.onclick=()=>{$$('#k4LArw button').forEach(x=>x.classList.remove('right','wrong'));if(ok){b.classList.add('right');fb('#k4LArwFb','맞아요! 잉크는 가운데에서 위로 올라가 양옆으로 퍼진 뒤, 벽을 따라 아래로 내려왔어요.',true);doneNav('s3');}
+      else{b.classList.add('wrong');fb('#k4LArwFb','영상을 다시 보며 잉크가 처음 어느 쪽으로 움직였는지 확인해요.',false);}};$('#k4LArw').appendChild(b);});})();
+pickOne('#k4P4','','','s4');
+
+/* 실험 2 기체 */
+const GX0=230,GW=180,GY0=40,GH=230,GCX=GX0+GW/2;
+function drawGas(t){const s=$('#k4Gas');s.innerHTML='';E('rect',{width:640,height:300,fill:'#fdf6e3'},s);E('rect',{y:272,width:640,height:28,fill:'#e6cfa8'},s);
+  /* 초 */
+  E('rect',{x:GCX-10,y:232,width:20,height:40,fill:'#f4e6cf',stroke:'#d9c7a7'},s);
+  if(t>=1){E('path',{d:`M${GCX} 230 q-9 -12 0 -26 q9 14 0 26z`,fill:'#f08a24'},s);E('path',{d:`M${GCX} 229 q-4 -7 0 -13 q4 7 0 13z`,fill:'#ffd23f'},s);}
+  else E('line',{x1:GCX,y1:232,x2:GCX,y2:224,stroke:'#333','stroke-width':2},s);
+  /* 공기 움직임 점 */
+  if(t>=2){const path=[[GCX,215],[GCX,GY0+18],[GX0+GW-24,GY0+18],[GX0+GW-24,250],[GCX+14,250]],pathL=path.map(([x,y])=>[2*GCX-x,y]);
+    for(let i=0;i<26;i++){const rel=i*.32;if(t-2<rel)continue;const [x,y]=along(i%2?path:pathL,(t-2-rel)*52);E('circle',{cx:x,cy:y,r:3,fill:'#9aa6b0',opacity:.7},s);}}
+  /* 붙임딱지(⊓ 모양) — 윗부분부터 색깔 변화 */
+  const top=GY0+34,legTop=top,legBot=GY0+170,lx=GX0+22,rx=GX0+GW-30,COLD='#5b3f8c',HOTC='#f6c445';
+  const fTop=t<5?0:Math.min(1,(t-5)/2),fLeg=t<7?0:Math.min(.6,(t-7)/8);
+  E('rect',{x:lx,y:top,width:rx-lx+8,height:8,fill:fTop>0?HOTC:COLD},s);
+  if(fTop>0&&fTop<1){E('rect',{x:GCX-(rx-lx)*fTop/2,y:top,width:(rx-lx)*fTop,height:8,fill:HOTC},s);E('rect',{x:lx,y:top,width:(rx-lx+8)*(1-fTop)/2,height:8,fill:COLD},s);E('rect',{x:rx+8-(rx-lx+8)*(1-fTop)/2,y:top,width:(rx-lx+8)*(1-fTop)/2,height:8,fill:COLD},s);}
+  [lx,rx].forEach(x=>{E('rect',{x,y:legTop,width:8,height:legBot-legTop,fill:COLD},s);if(fLeg>0)E('rect',{x,y:legTop,width:8,height:(legBot-legTop)*fLeg,fill:HOTC},s);});
+  /* 아크릴 통 */
+  E('rect',{x:GX0,y:GY0,width:GW,height:GH,rx:6,fill:'#eef7fc','fill-opacity':.35,stroke:'#7aa7bd','stroke-width':4},s);
+  for(let k=0;k<4;k++){E('circle',{cx:GX0+20+k*46,cy:GY0+GH-14,r:6,fill:'#fdf6e3',stroke:'#7aa7bd'},s);}
+  T(s,GX0+GW+70,GY0+30,'아크릴 통',{'font-size':13});T(s,GX0+GW+70,GY0+GH-10,'구멍',{'font-size':12,fill:'#777'});T(s,GX0-70,top+6,'붙임딱지',{'font-size':13});E('path',{d:`M${GX0-40} ${top+4} H${lx-4}`,stroke:'#999','stroke-dasharray':'3 3'},s);
+  if(t>=13){loops(s,GCX,GY0+18,200,GX0+42,GX0+GW-42,'#c0392b');}}
+let gasDone=false;
+mkPlayer('#k4PG',{end:16,draw:drawGas,ch:[[0,'① 준비','붙임딱지를 접어 통 안쪽 벽에 닿지 않게 끝부분만 붙이고, 통을 움직여 한가운데에 초를 두었어요.'],[1,'② 촛불 켜기','점화기로 촛불을 켰어요. 통을 움직이지 않고 관찰해요.'],[2,'③ 공기가 위로','촛불 주변의 공기가 데워져 위로 올라가요(공기는 눈에 보이지 않아 회색 점으로 나타냈어요).'],[5,'④ 윗부분 색깔 변화','아크릴 통 윗부분의 붙임딱지 색깔이 먼저 변해요.'],[8,'⑤ 아래쪽으로','윗부분부터 점점 아래쪽으로 붙임딱지 색깔이 변해요. 온도가 낮은 공기는 아래로 밀려 내려와요.'],[13,'⑥ 화살표로','공기의 움직임을 화살표로 나타내면 이런 모양이에요. 통 안의 공기 전체로 열이 이동해요.']],
+  done(){if(!gasDone){gasDone=true;$('#k4GAsk').hidden=false;}}});
+pickOne('#k4P5','','','s5');
+
+/* 대류 */
+const d6=need('s6',2);pickOne('#k4P6a','','',null,()=>d6('a'));pickOne('#k4P6b','','',null,()=>d6('b'));
+
+/* 방 안의 대류 */
+let heat=null,cool=null,rk=0,raf7=0;const ok7=new Set();
+function drawRoom(){const s=$('#k4Room');s.innerHTML='';const W=420,H=300;
+  /* 방 칸 색 */
+  const rows=6;for(let r=0;r<rows;r++){let c='#eef3f6';
+    if(heat==='low')c=['#f9c9b5','#f9cdb9','#fad2be','#fad6c3','#fbdac8','#fbdecc'][r];
+    else if(heat==='high')c=r<2?'#f7b2a5':r<3?'#f8d6c8':'#dfe9f2';
+    if(cool==='high')c=['#cfe6f7','#cce4f6','#c9e2f5','#c6e0f4','#c3def3','#c0dcf2'][r];
+    else if(cool==='low')c=r>=4?'#a9d4f2':r>=3?'#d6e8f4':'#f3e6dc';
+    E('rect',{x:20,y:20+r*40,width:380,height:40,fill:c},s);}
+  E('rect',{x:20,y:20,width:380,height:240,fill:'none',stroke:'#7a5a3a','stroke-width':6},s);E('rect',{x:20,y:260,width:380,height:24,fill:'#c9a77c'},s);
+  if(heat){const y=heat==='low'?220:40;E('rect',{x:46,y,width:44,height:36,rx:6,fill:'#e2573f',stroke:'#7a1f14','stroke-width':2},s);T(s,68,y+24,'난로',{'font-size':12,fill:'#fff'});}
+  if(cool){const y=cool==='high'?32:220;E('rect',{x:300,y,width:80,height:30,rx:6,fill:'#fff',stroke:'#1c6fa8','stroke-width':2},s);T(s,340,y+20,'냉방기',{'font-size':12,fill:'#1c6fa8'});}
+  const g=E('g',{id:'k4RA'},s);}
+function roomAnim(){cancelAnimationFrame(raf7);const t0=performance.now();const go=n=>{const t=(n-t0)/1000;const g=$('#k4RA');if(!g)return;g.innerHTML='';
+  const src=heat?[heat,'#c0392b',1]:[cool,'#1c6fa8',-1];const [pos,col,dir]=src;
+  if((heat==='low')||(cool==='high')){const sx=heat?68:340,cyc=[[sx,heat?210:66],[sx,heat?50:230],[heat?380:40,heat?50:230],[heat?380:40,heat?230:50],[sx+(heat?20:-20),heat?230:50]];
+    for(let i=0;i<14;i++){const [x,y]=along(cyc,(t*80+i*70));E('circle',{cx:x,cy:y,r:4,fill:col,opacity:.75},g);}}
+  else{const sx=heat?68:340,y0=heat?40:250;for(let i=0;i<8;i++){const ph=(t*40+i*30)%120;E('circle',{cx:sx+60+ph*1.4*(heat?1:-1)*(i%2?1:-.4),cy:y0+(heat?6:-6)+Math.sin(i)*6,r:4,fill:col,opacity:.7},g);}}
+  if(t<60)raf7=requestAnimationFrame(go);};raf7=requestAnimationFrame(go);}
+drawRoom();
+$$('#k4Heat button').forEach(b=>b.onclick=()=>{heat=b.dataset.p;cool=null;$$('#k4Heat button,#k4Cool button').forEach(x=>x.classList.toggle('sel',x===b));drawRoom();roomAnim();
+  if(heat==='low'){ok7.add('h');fb('#k4RoomFb','바닥 가까이: 난로 주위에서 따뜻해진 공기가 위로 올라가고, 차가운 공기는 아래로 내려오며 순환해 방 안 전체가 따뜻해져요.'+(ok7.size===2?' 냉방기도 알아봤어요!':' 이번엔 냉방기 자리도 골라 봐요.'),true);}
+  else fb('#k4RoomFb','천장 가까이: 따뜻해진 공기는 위에 머물러 아래쪽은 잘 따뜻해지지 않아요. 다른 자리도 골라 봐요.',false);if(ok7.size===2)doneNav('s7');});
+$$('#k4Cool button').forEach(b=>b.onclick=()=>{cool=b.dataset.p;heat=null;$$('#k4Heat button,#k4Cool button').forEach(x=>x.classList.toggle('sel',x===b));drawRoom();roomAnim();
+  if(cool==='high'){ok7.add('c');fb('#k4RoomFb','위쪽: 냉방기 주변에서 차가워진 공기가 아래로 내려가고, 따뜻한 공기는 위로 올라가며 순환해 방 안 전체가 시원해져요.'+(ok7.size===2?' 난로도 알아봤어요!':' 이번엔 난로 자리도 골라 봐요.'),true);}
+  else fb('#k4RoomFb','아래쪽: 차가워진 공기가 바닥에 머물러 위쪽은 잘 시원해지지 않아요. 다른 자리도 골라 봐요.',false);if(ok7.size===2)doneNav('s7');});
+
+/* 더 알아보기: 두 가지 잉크 */
+function drawTwo(t){const s=$('#k4Two');s.innerHTML='';E('rect',{width:640,height:260,fill:'#fdf6e3'},s);
+  const x=150,y=30,w=340,h=150;E('rect',{x:x-20,y:y+h+48,width:w+40,height:6,fill:'#cfd8dc'},s);
+  E('path',{d:`M${x+130} ${y+h+48} l6 -46 h68 l6 46z`,fill:'#e9f4fb',stroke:'#7aa7bd','stroke-width':2.5},s);T(s,x+170,y+h+40,'뒤집은 컵',{'font-size':11,fill:'#777'});
+  E('path',{d:`M${x+10} ${y+h+48} l5 -46 h70 l5 46z`,fill:'#f7b2a5',stroke:'#c0392b','stroke-width':2.5},s);T(s,x+50,y+h+36,'뜨거운 물',{'font-size':12,fill:'#a5281b'});
+  E('path',{d:`M${x+w-90} ${y+h+48} l5 -46 h70 l5 46z`,fill:'#a9d4f2',stroke:'#1c6fa8','stroke-width':2.5},s);T(s,x+w-50,y+h+36,'차가운 물',{'font-size':12,fill:'#1c4f7a'});
+  E('rect',{x,y,width:w,height:h,fill:'#f4fbff','fill-opacity':.5,stroke:'#7aa7bd','stroke-width':4},s);E('rect',{x:x+3,y:y+h*.25,width:w-6,height:h*.75-3,fill:'#cfe9f8',opacity:.8},s);
+  const r=Math.min(1,t/6);
+  for(let i=0;i<14;i++){const f=Math.max(0,r-i*.04);E('circle',{cx:x+50+(rr(i,3)-.5)*14+f*f*60,cy:y+h-10-f*(h*.62),r:5,fill:'#d63c32',opacity:.8},s);}
+  for(let i=0;i<10;i++){const f=Math.max(0,r-i*.05);E('circle',{cx:x+w-50-f*120-i*3,cy:y+h-8+(rr(i,4)-.5)*4,r:5,fill:'#7d4fb3',opacity:.8},s);}
+  if(t>=6){arrowPath(s,`M${x+50} ${y+h-20} V${y+h*.35}`,'#d63c32');head(s,x+50,y+h*.32,-90,'#d63c32');arrowPath(s,`M${x+w-60} ${y+h-8} H${x+w-190}`,'#7d4fb3');head(s,x+w-196,y+h-8,180,'#7d4fb3');}}
+drawTwo(0);
+$('#k4TwoGo').onclick=()=>{step($('#k4TwoGo'));const t0=performance.now();const go=n=>{const t=(n-t0)/1000;drawTwo(Math.min(7,t*1.4));if(t*1.4<7)requestAnimationFrame(go);else $('#k4TwoAsk').hidden=false;};requestAnimationFrame(go);};
+pickOne('#k4P8','','','s8');
+
+/* 한눈에 쏙 */
+const d9=need('s9',2);
+$('#blReveal').onclick=()=>{fb('#blFb','액체나 기체에서 열이 이동하는 방식을 대류라고 해요.',true);d9('b');};
+pickOne('#k4P9','','',null,()=>d9('p'));
+
+/* 형성 평가 */
+const d10=need('s10',3);pickOne('#k4F1','','',null,()=>d10('1'));pickOne('#k4F2','','',null,()=>d10('2'));
+$('#k4F3Btn').onclick=()=>{const t=$('#k4F3').value.trim();if(!t){fb('#k4F3Fb','먼저 답을 써 보세요.',false);return;}
+  const a=/아랫|아래|바닥|밑/.test(t),b=/대류|순환|위로 올라|올라가/.test(t);
+  if(a&&b){fb('#k4F3Fb','잘 썼어요! 예시 답: 냄비의 아랫부분을 가열해요. 아랫부분을 가열해야 대류로 물이 순환하면서 물 전체가 뜨거워지기 때문이에요.',true);d10('3');}
+  else if(a)fb('#k4F3Fb','가열할 곳(아랫부분)은 맞아요. 까닭을 대류(온도가 높아진 물이 위로 올라가며 순환)와 관련지어 써 봐요.','info');
+  else fb('#k4F3Fb','냄비의 위쪽과 아래쪽 중 어디를 가열해야 물이 돌며(순환하며) 전체가 뜨거워질까요?',false);};
+
+faces('s11','잘했어요! 다음 시간에는 빛에 의해 열이 이동할 수 있는지 알아봐요.','어려웠던 부분은 실험 1·2 영상을 다시 돌려 봐요.');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"대","bl2":"류"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>

@@ -1,0 +1,430 @@
+<!--
+title: 알갱이의 크기가 다른 고체 혼합물을 분리해 볼까?
+unit: 1
+lesson: 3
+total: 11
+goal: 알갱이의 크기가 다른 고체 혼합물을 분리할 수 있어요.<br>알갱이의 크기가 다른 고체 혼합물의 분리 방법을 설명할 수 있어요.
+pages: 「과학」 16~17쪽 · 「실험관찰」 8~9쪽 · 지도서 118~127쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"크","bl2":"기"}}]
+-->
+<style>
+/* 1단원 혼합물의 분리 교과서 버전 공통 */
+.lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.lab svg{display:block;width:100%;margin:0 auto}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,18px)}
+.rtable{table-layout:fixed}
+.rtable td,.rtable th{text-align:center;padding:5px 4px;font-size:.88rem;word-break:keep-all}
+.rtable th{background:var(--bg)}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:10px 14px;font-size:.95rem}
+.big{font-size:1.1rem}
+.ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:2px dashed var(--line);padding:6px 0}
+.ox button{min-width:3rem}
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3ord{display:flex;flex-direction:column;gap:6px}
+.t3ord button{text-align:left}
+.t3ord .t3dn{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.t3seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+.t3cnt{font-family:"Jua",sans-serif;color:var(--muted);font-size:.95rem}
+.qz>div{margin-bottom:6px}
+/* 단계 단추 */
+.mxctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.mxctl button{font-size:.92rem}
+.mxctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.mxctl button[disabled]{opacity:.45}
+.mxq{margin-top:8px;border:2px dashed var(--sky);border-radius:14px;padding:8px 12px}
+/* 붙임딱지 */
+.stks{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.stks button{display:flex;align-items:center;gap:6px;font-size:.95rem;min-height:2.4rem;padding:.2em .7em;border-width:2px;border-style:dashed}
+.stks button svg{width:2rem;height:2rem}
+.stks button.used{visibility:hidden}
+.slots{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.slot{border:2px solid var(--line);border-radius:14px;padding:6px;background:var(--paper);text-align:center;font-family:"Jua",sans-serif;font-size:.95rem}
+.slot svg{max-height:15vh;margin:0 auto}
+.slot .dz{margin-top:4px;min-height:2.6rem;border:3px dashed var(--line);border-radius:12px;display:flex;align-items:center;justify-content:center;gap:4px;cursor:pointer;padding:2px 6px}
+.slot .dz.ready{border-color:var(--sun);background:#fff8dc}
+.slot .dz.ok{border-style:solid;border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+.slot .dz svg{width:1.8rem;height:1.8rem;margin:0}
+.slot .ar{color:var(--muted);font-size:.85rem}
+@media (max-width:640px){.two,.t3sort,.t3match{grid-template-columns:1fr}.slots{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.m2obs td button{font-size:.85rem;min-height:2rem;padding:.1em .5em;border-width:2px;margin:2px}
+.pick.m2sv{grid-template-columns:repeat(3,minmax(0,1fr))!important}
+.m2sv button{display:flex;flex-direction:column;align-items:center;gap:2px;font-size:.9rem;padding:.3em}
+.m2sv button svg{width:100%;max-height:13vh}
+.m2ineq{display:flex;flex-wrap:wrap;gap:6px;align-items:center;justify-content:center;font-family:"Jua",sans-serif;font-size:1.05rem;margin:6px 0}
+.m2ineq span{border:2px solid var(--line);border-radius:10px;padding:2px 10px;background:var(--paper)}
+.m2ineq span.on{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+@media (max-width:640px){.pick.m2sv{grid-template-columns:1fr!important}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 16쪽</span>
+  <h2>황사가 심하거나 먼지가 많은 날 쓰는 마스크는 어떤 역할을 할까요?</h2>
+  <div class="lab"><svg id="mask" viewBox="0 0 800 260" role="img" aria-label="먼지가 날아오는 쪽에서 마스크를 쓴 얼굴" style="max-height:30vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button id="mkOn">😷 마스크 쓰기</button><button class="main" id="mkGo">🌬️ 먼지바람 불기</button></div>
+  <div class="fb" id="mkFb"></div>
+  <div id="ask1" hidden data-glue="1">
+    <div class="pick" id="p1">
+      <button data-a="1" data-m="맞아요! 마스크는 촘촘한 체와 같아서, 구멍보다 큰 황사나 먼지를 걸러 줘요. 오늘은 알갱이의 크기를 이용해 섞여 있는 고체를 분리해 봐요.">공기 중의 황사나 먼지를 걸러 줘요</button>
+      <button data-a="0" data-m="마스크를 쓰면 먼지가 어떻게 되었나요? 다시 해 봐요.">먼지를 더 많이 들이마시게 해요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s2" data-nav="관찰해요">
+  <span class="stage">실험해요 1 · 「실험관찰」 8쪽</span>
+  <h2>모래와 자갈을 관찰하고 모양, 색깔, 크기를 비교해요</h2>
+  <p class="tip">준비물: 모래와 자갈의 혼합물, 돋보기, 눈 크기가 다른 두 종류의 체, 쟁반, 실험복, 보안경, 실험용 장갑 · 실험하기 전에 모래와 자갈을 섞어 혼합물을 만들어요.</p>
+  <div class="lab"><svg id="obs" viewBox="0 0 800 230" role="img" aria-label="쟁반 위 모래와 자갈의 혼합물과 돋보기로 본 모습" style="max-height:22vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button id="lkS">🔍 돋보기로 모래 보기</button><button id="lkG">🔍 돋보기로 자갈 보기</button></div>
+  <table class="rtable m2obs" data-glue="1" style="margin-top:6px">
+    <tr><th style="width:22%">구분</th><th>모래</th><th>자갈</th></tr>
+    <tr><th>모양</th><td id="oS1">?</td><td id="oG1">?</td></tr>
+    <tr><th>색깔</th><td id="oS2">?</td><td id="oG2">?</td></tr>
+    <tr><th>크기</th><td id="oS3">자갈보다 <span class="m2c" data-w="s"><button data-v="1">작아요</button><button data-v="0">커요</button></span></td><td id="oG3">모래보다 <span class="m2c" data-w="g"><button data-v="0">작아요</button><button data-v="1">커요</button></span></td></tr>
+  </table>
+  <div class="fb" id="obsFb"></div>
+</section>
+
+<section id="s3" data-nav="분리 방법">
+  <span class="stage">실험해요 2 · 「실험관찰」 8쪽</span>
+  <h2>모래와 자갈의 혼합물을 어떻게 분리할까요?</h2>
+  <p class="jua big">모래와 자갈의 혼합물은 알갱이의 무엇의 차이를 이용해 분리할 수 있을까요?</p>
+  <div class="pick" id="p3">
+    <button data-a="0" data-m="모래와 자갈은 모두 둥근 모양, 세모 모양, 네모 모양 등 여러 가지 모양이라 모양으로는 나누기 어려워요.">모양</button>
+    <button data-a="0" data-m="모래와 자갈은 모두 갈색, 회색, 검정색 등 여러 가지 색이라 색깔로는 나누기 어려워요.">색깔</button>
+    <button data-a="1" data-m="맞아요! 관찰 결과에서 가장 큰 차이는 알갱이의 크기예요. 크기 차이를 이용해 분리할 수 있어요.">크기</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua big" data-glue="1">혼합물의 양이 아주 많다면 어떻게 분리하는 것이 좋을까요?</p>
+  <div class="pick" id="p3b" data-glue="1">
+    <button data-a="0" data-m="양이 적으면 손으로 골라낼 수도 있지만, 양이 많으면 시간이 아주 오래 걸려요.">자갈을 하나씩 손으로 골라내요</button>
+    <button data-a="1" data-m="맞아요! 체와 같은 도구를 사용하면 많은 양의 혼합물도 쉽고 빠르게 분리할 수 있어요.">체와 같은 도구를 사용해요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="체 고르기">
+  <span class="stage">실험해요 3 · 「실험관찰」 9쪽</span>
+  <h2>모래와 자갈의 혼합물을 분리할 때 이용할 체를 골라요</h2>
+  <p class="jua">① 체의 어떤 성질을 이용할까요?</p>
+  <div class="pick" id="p4a">
+    <button data-a="1" data-m="맞아요! 체의 눈 크기보다 큰 알갱이는 체에 남고, 체의 눈 크기보다 작은 알갱이는 체를 빠져나가요.">눈 크기보다 큰 알갱이는 체에 남고, 작은 알갱이는 빠져나가요</button>
+    <button data-a="0" data-m="체의 눈(구멍)보다 큰 알갱이가 구멍을 빠져나갈 수 있을까요?">눈 크기보다 큰 알갱이는 빠져나가고, 작은 알갱이는 체에 남아요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" data-glue="1">② 어떤 체를 쓸까요? 체를 눌러 골라요.</p>
+  <div class="pick m2sv" id="p4b" data-glue="1">
+    <button data-a="0" data-m="눈이 모래 알갱이보다 작아서 모래와 자갈이 모두 체에 남아요. 분리되지 않아요."><svg viewBox="0 0 160 100" aria-hidden="true" id="sv1"></svg>눈이 아주 작은 체</button>
+    <button data-a="1" data-m="맞아요! 눈 크기가 모래 알갱이보다 크고 자갈 알갱이보다 작은 체를 쓰면, 모래만 빠져나가고 자갈은 체에 남아요."><svg viewBox="0 0 160 100" aria-hidden="true" id="sv2"></svg>눈이 중간인 체</button>
+    <button data-a="0" data-m="눈이 자갈 알갱이보다 커서 모래와 자갈이 모두 빠져나가요. 분리되지 않아요."><svg viewBox="0 0 160 100" aria-hidden="true" id="sv3"></svg>눈이 아주 큰 체</button>
+  </div>
+  <div class="fb"></div>
+  <div class="m2ineq" id="ineq" data-glue="1"><span>모래 알갱이의 크기</span>＜<span>체의 눈 크기</span>＜<span>자갈 알갱이의 크기</span></div>
+</section>
+
+<section id="s5" data-nav="체로 분리하기">
+  <span class="stage">실험해요 3 · 「실험관찰」 9쪽</span>
+  <h2>체를 써서 모래와 자갈의 혼합물을 분리해요</h2>
+  <div class="lab"><svg id="sv" viewBox="0 0 800 300" role="img" aria-label="쟁반 위의 체에 모래와 자갈의 혼합물을 붓고 흔드는 가상 실험" style="max-height:33vh"></svg></div>
+  <div class="mxctl" id="ctl5" data-glue="1"><button>① 혼합물을 체에 천천히 붓기</button><button>② 체 흔들기 (<span id="shk">0</span>/3)</button></div>
+  <div class="fb" id="svFb"></div>
+  <div id="ask5" hidden data-glue="1">
+    <div class="pick" id="p5">
+      <button data-a="1" data-m="맞아요! 알갱이가 체의 눈보다 작은 모래는 체를 빠져나가 쟁반에 쌓이고, 체의 눈보다 큰 자갈은 체에 남아요.">모래는 체를 빠져나가고, 자갈은 체에 남아요</button>
+      <button data-a="0" data-m="쟁반에 쌓인 것과 체에 남은 것을 다시 살펴봐요.">자갈은 체를 빠져나가고, 모래는 체에 남아요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <p class="tip">⚠️ 실험복·보안경·실험용 장갑을 착용해요. 모래와 자갈이 떨어지거나 튀지 않게 조심하고, 혼합물은 먼지가 날리지 않게 천천히 부어요. 실험이 끝나면 주변을 깨끗이 정리하고, 모래와 자갈은 선생님의 안내에 따라 정리한 뒤 손을 씻어요.</p>
+</section>
+
+<section id="s6" data-nav="정리해요">
+  <span class="stage">정리해요 · 「실험관찰」 9쪽</span>
+  <h2>알갱이의 크기가 다른 고체 혼합물을 분리하는 방법</h2>
+  <div class="pick" id="p6">
+    <button data-a="1" data-m="맞아요! 알갱이의 크기 차이를 이용해요. 체를 사용하면 체의 눈보다 큰 알갱이는 체에 남고, 작은 알갱이는 체를 빠져나가 쉽게 분리할 수 있어요.">알갱이의 크기 차이를 이용해 체로 분리해요</button>
+    <button data-a="0" data-m="고체 알갱이의 크기가 다를 때는 무엇을 이용했나요?">물에 넣어 녹여서 분리해요</button>
+  </div>
+  <div class="fb"></div>
+  <h3 data-glue="1">🤔 생각 바로잡기: 혼합물을 분리해 얻은 모래와 자갈은 이제 혼합물이 아닐까요?</h3>
+  <div class="pick" id="p6b" data-glue="1">
+    <button data-a="0" data-m="모래 알갱이도 여러 가지 색과 모양의 알갱이가 섞여 있었지요? 분리해 얻은 물질도 혼합물일 수 있어요.">네, 분리한 것은 모두 한 가지 물질이에요</button>
+    <button data-a="1" data-m="맞아요! 혼합물을 한 번 분리해 얻은 모래와 자갈도 여러 가지 알갱이가 섞여 있는 혼합물이에요. 여러 번 분리해야 한 가지 물질을 얻는 경우도 있어요.">아니요, 모래와 자갈도 여전히 혼합물이에요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="생활 속 예">
+  <span class="stage">개념 · 「과학」 17쪽</span>
+  <h2>고체 혼합물을 체로 분리하는 예</h2>
+  <svg id="ex7" viewBox="0 0 720 150" style="max-height:18vh;max-width:640px;margin:0 auto" role="img" aria-label="체로 모래와 조개를 분리하는 모습과 해변 쓰레기 수거 장비"></svg>
+  <p class="jua big">체(거르는 도구)로 크기 차이를 이용해 분리하는 예를 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p7" data-glue="1">
+    <button data-a="1" data-m="맞아요! 강에서 모래 속에 있는 작은 조개를 잡을 때 체를 사용해 모래와 조개를 분리해요.">체로 모래와 조개 분리하기</button>
+    <button data-a="1" data-m="맞아요! 해변 쓰레기 수거 장비는 체를 사용해 모래와 쓰레기를 분리해요.">해변 쓰레기 수거 장비로 모래와 쓰레기 분리하기</button>
+    <button data-a="1" data-m="맞아요! 마스크는 크기가 큰 황사를 걸러 내고 공기는 통과시켜요.">마스크로 황사 걸러 내기</button>
+    <button data-a="0" data-m="이것은 알갱이의 크기 차이를 이용하는 것이 아니에요.">설탕을 물에 녹이기</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="생각+">
+  <span class="stage">생각이 한눈에 2 · 「과학」 17쪽</span>
+  <h2>좁쌀, 쌀, 팥이 섞인 혼합물을 분리해 봐요</h2>
+  <p>알갱이의 크기: <b>좁쌀 ＜ 쌀 ＜ 팥</b> · 체를 골라 그릇의 혼합물을 걸러요. 세 가지를 모두 따로 모으면 성공!</p>
+  <div class="lab"><svg id="gr" viewBox="0 0 800 250" role="img" aria-label="좁쌀, 쌀, 팥 혼합물과 체 두 개" style="max-height:29vh"></svg></div>
+  <div class="row" style="margin-top:6px" data-glue="1"><button id="gS">눈이 작은 체 (좁쌀＜눈＜쌀)로 거르기</button><button id="gB">눈이 큰 체 (쌀＜눈＜팥)로 거르기</button><button id="gR">🔄 다시 섞기</button></div>
+  <div class="fb" id="grFb"></div>
+  <p class="tip">⚠️ 곡식이 튀거나 굴러다니지 않게 조심해서 다뤄요.</p>
+</section>
+
+<section id="s9" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua big">모래와 자갈의 혼합물은 알갱이의 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span></span> 차이를 이용해 분리할 수 있습니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+</section>
+
+<section id="s10" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div class="qz" id="qz10"></div>
+  <p class="jua big" style="margin-top:12px">✏️ 서술형: 모래와 자갈의 혼합물 분리에 이용할 수 있는 성질과, 사용할 수 있는 체의 눈 크기를 써 봐요.</p>
+  <textarea id="wr10" rows="2" placeholder="성질: … / 체의 눈 크기: …" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wr10B">내 답 살펴보기</button></div>
+  <div class="fb" id="wr10Fb"></div>
+</section>
+
+<section id="s11" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 9쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>알갱이의 크기가 다른 고체 혼합물의 분리 방법을 설명했어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>체를 이용해 모래와 자갈의 혼합물을 분리했어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>알갱이 크기가 다른 혼합물 분리에 도구를 활용하는 것이 유용하다고 느꼈어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 1단원 혼합물의 분리 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+const rnd=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+function el(tag,at,par){const e=document.createElementNS(NS,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
+/* 여러 활동을 다 해야 섹션 완료: const s3=need('s3',2); … s3(); */
+function need(sec,n){let k=0;return()=>{if(++k===n)doneNav(sec);};}
+/* 여러 개 고르기 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb&&!b.dataset.cbd){b.dataset.cbd=1;cb();}}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;let first=true;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb&&first){first=false;cb(b);}});}
+/* 고르기 문제 여러 개: items [{q,o:[…],a,e,h}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);const was=ok.size;ok.add(k);if(ok.size===items.length&&was<items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* ○× 문제: ox('#box', [{t, a:true|false, e}], cb) */
+function oxQuiz(box,items,cb){const B=$(box),out=B.nextElementSibling,ok=new Set();
+  items.forEach((it,k)=>{const d=document.createElement('div');d.className='ox';d.innerHTML='<span>'+it.t+'</span>';
+    [['○',true],['×',false]].forEach(([s,v])=>{const b=document.createElement('button');b.textContent=s;b.setAttribute('aria-label',v?'맞아요':'틀려요');
+      b.onclick=()=>{if(ok.has(k))return;$$('button',d).forEach(x=>x.classList.remove('wrong'));
+        if(v===it.a){b.classList.add('right');ok.add(k);fb(out,(ok.size===items.length?'모두 맞혔어요! ':'맞아요! ')+it.e,ok.size===items.length?true:'info');if(ok.size===items.length&&cb)cb();}
+        else{b.classList.add('wrong');fb(out,'다시 생각해 봐요. '+(it.h||''),false);}};d.appendChild(b);});
+    B.appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례 맞히기: orderer('#box', [단계…], 다 맞힘 글, 섹션, each(i), cb) */
+function orderer(box,steps,okMsg,sec,each,cb){const B=$(box),out=B.nextElementSibling;let k=0;
+  const seq=document.createElement('div');seq.className='t3seq';B.before(seq);
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.classList.contains('t3dn'))return;
+    if(i===k){b.classList.add('t3dn');b.disabled=true;const sp=document.createElement('span');sp.textContent=(k+1)+'. '+s;seq.appendChild(sp);if(each)each(k);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은 무엇일까요? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그 일은 조금 뒤에 해요. 지금 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 붙임딱지: stickers('#stk', '#slots', 다 맞힘 글, 섹션, cb) — 딱지 button[data-k], 칸 .dz[data-want] */
+function stickers(stk,slots,okMsg,sec,cb){const S=$(stk),Z=$(slots),out=Z.nextElementSibling;let cur=null,n=0;const zs=$$('.dz',Z);
+  $$('button',S).forEach(b=>b.onclick=()=>{if(b.classList.contains('used'))return;$$('button',S).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=b;zs.forEach(z=>{if(!z.classList.contains('ok'))z.classList.add('ready');});fb(out,'붙일 칸을 눌러요.','info');});
+  zs.forEach(z=>{z.setAttribute('role','button');z.setAttribute('tabindex','0');const go=()=>{if(z.classList.contains('ok'))return;if(!cur){fb(out,'먼저 위의 붙임딱지를 하나 골라요.','info');return;}
+      if(cur.dataset.k===z.dataset.want){z.innerHTML=cur.innerHTML;z.classList.remove('ready');z.classList.add('ok');cur.classList.remove('sel');cur.classList.add('used');cur=null;n++;zs.forEach(x=>x.classList.remove('ready'));
+        if(n===zs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(z.dataset.m||'맞아요!')+' ('+n+'/'+zs.length+')','info');}
+      else fb(out,z.dataset.h||'이 칸에 알맞은 붙임딱지가 아니에요. 다시 생각해 봐요.',false);};
+    z.onclick=go;z.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기 */
+function tap(e,f){e.classList.add('hs');e.setAttribute('tabindex','0');e.setAttribute('role','button');e.addEventListener('click',f);e.addEventListener('keydown',v=>{if(v.key==='Enter'||v.key===' '){v.preventDefault();f();}});}
+/* 단계 단추: steps('#ctl', [함수…]) — 차례대로 하나씩 열림, 함수가 false를 돌려주면 그 단계에 머묾 */
+function steps(box,fns,cb){const bs=$$(box+' button');bs.forEach((b,i)=>{b.disabled=i>0;b.onclick=()=>{if(fns[i]()===false)return;b.classList.add('done');b.disabled=true;if(bs[i+1]){bs[i+1].disabled=false;bs[i+1].focus({preventScroll:true});}else if(cb)cb();};});}
+
+/* ===== 도입: 마스크 ===== */
+(function(){const S=$('#mask');let on=false,busy=false;
+  S.innerHTML='<rect width="800" height="260" fill="#f6ead2"/><text x="20" y="30" font-size="18" font-family="Jua" fill="#8a6a3a">황사 바람 →</text>'+
+    '<g id="face"><circle cx="640" cy="130" r="80" fill="#ffd9b0" stroke="#c9905a" stroke-width="3"/><circle cx="610" cy="105" r="7" fill="#333"/><path d="M580 80 q14 -10 28 0" stroke="#333" stroke-width="3" fill="none"/><path d="M640 40 q60 -10 90 40 q-40 -30 -90 -10z" fill="#4a3a2a"/></g>'+
+    '<g id="mk" opacity="0"><path d="M566 132 q4 -22 30 -22 h40 q30 0 34 22 v34 q-4 30 -40 30 h-30 q-30 0 -34 -30z" fill="#fff" stroke="#9fb6c2" stroke-width="3"/><path d="M570 140 h96 M570 156 h96 M572 172 h92" stroke="#cfdde4" stroke-width="2"/><path d="M670 132 q40 -10 50 -2" stroke="#9fb6c2" stroke-width="3" fill="none"/></g>'+
+    '<g id="dust"></g>';
+  const D=$('#dust');const P=[];for(let i=0;i<34;i++){const r=i%3===0?7:i%3===1?5:4;P.push({x:20+rnd(i,1)*300,y:70+rnd(i,2)*130,r});}
+  function draw(t){D.innerHTML='';P.forEach((q,i)=>{let x=q.x+t*(560-q.x+rnd(i,3)*30);let y=q.y+Math.sin(t*6+i)*6;
+      if(on&&x>548-q.r)x=548-q.r+rnd(i,4)*6; else if(!on&&x>560){x=560+(x-560)*.4;}
+      el('circle',{cx:x,cy:y,r:q.r,fill:['#a0673a','#c9a06a','#8a6a3a'][i%3],opacity:.85},D);});}
+  draw(0);
+  $('#mkOn').onclick=()=>{on=!on;$('#mk').setAttribute('opacity',on?1:0);$('#mkOn').textContent=on?'😶 마스크 벗기':'😷 마스크 쓰기';draw(0);};
+  let tried={on:false,off:false};
+  $('#mkGo').onclick=()=>{if(busy)return;busy=true;tween(1800,draw,()=>{busy=false;
+    if(on){tried.on=true;fb('#mkFb','마스크를 썼더니 황사와 먼지가 마스크에 걸려 들어오지 못했어요.','info');}
+    else{tried.off=true;fb('#mkFb','마스크를 쓰지 않았더니 황사와 먼지가 그대로 코와 입으로 들어갔어요.','info');}
+    if(tried.on&&tried.off){$('#ask1').hidden=false;fb('#mkFb','마스크를 썼을 때와 쓰지 않았을 때를 비교했어요. 마스크는 어떤 역할을 할까요?','info');}
+    else fb('#mkFb',$('#mkFb').textContent+' 이번에는 마스크를 '+(on?'벗고':'쓰고')+' 다시 바람을 불어 봐요.','info');});};})();
+pickOne('#p1','','','s1');
+
+/* ===== 모래·자갈 그리기 도우미 ===== */
+const SANDC=['#c9a06a','#e1c48a','#9a8f84','#555','#b07a4a'],GRAVC=['#8a7765','#9a9a9a','#5a524a','#a0673a'];
+function stone(g,x,y,r,c,k){const n=6+(k%3),pts=[];for(let i=0;i<n;i++){const a=i/n*Math.PI*2,rr=r*(.72+rnd(k,i)*.4);pts.push((x+Math.cos(a)*rr).toFixed(1)+','+(y+Math.sin(a)*rr*.82).toFixed(1));}
+  return el('polygon',{points:pts.join(' '),fill:c,stroke:'#3b2f25','stroke-width':Math.max(.6,r/10)},g);}
+
+/* ===== 관찰해요 ===== */
+(function(){const S=$('#obs');S.innerHTML='<rect width="800" height="230" fill="#fffdf8"/><ellipse cx="200" cy="150" rx="170" ry="60" fill="#d9e4ea" stroke="#9fb6c2" stroke-width="3"/><g id="mix"></g><g id="zoom"></g>';
+  const M=$('#mix');for(let i=0;i<160;i++)el('circle',{cx:70+rnd(i,1)*260,cy:122+rnd(i,2)*56,r:1.6,fill:SANDC[i%5]},M);
+  for(let i=0;i<16;i++)stone(M,80+rnd(i,3)*240,125+rnd(i,4)*48,9+rnd(i,5)*5,GRAVC[i%4],i);
+  const Z=$('#zoom');let seen={s:false,g:false};
+  function zoom(w){Z.innerHTML='';el('line',{x1:330,y1:150,x2:470,y2:120,stroke:'#555','stroke-width':3,'stroke-dasharray':'6 6'},Z);
+    el('circle',{cx:600,cy:115,r:105,fill:'#fff',stroke:'#33414a','stroke-width':8},Z);el('rect',{x:668,y:186,width:26,height:70,rx:8,fill:'#8a5a2b',transform:'rotate(-40 680 220)'},Z);
+    const t=el('text',{x:600,y:30,'text-anchor':'middle','font-size':16,'font-family':'Jua',fill:'#15313d'},Z);
+    if(w==='s'){t.textContent='돋보기로 본 모래';for(let i=0;i<22;i++){const x=530+rnd(i,6)*140,y=60+rnd(i,7)*110;if(Math.hypot(x-600,y-115)<92)stone(Z,x,y,7+rnd(i,8)*3,SANDC[i%5],i+40);}}
+    else{t.textContent='돋보기로 본 자갈';[[565,90],[635,95],[575,150],[640,150],[605,120]].forEach(([x,y],i)=>stone(Z,x,y,26+rnd(i,9)*8,GRAVC[i%4],i+70));}}
+  const fill=(w)=>{if(w==='s'){$('#oS1').textContent='둥근 모양, 세모 모양, 네모 모양 등 여러 가지';$('#oS2').textContent='갈색, 노란색, 회색, 검정색 등';}
+    else{$('#oG1').textContent='둥근 모양, 세모 모양, 네모 모양 등 여러 가지';$('#oG2').textContent='갈색, 회색, 검정색 등';}};
+  const done=need('s2',4);
+  $('#lkS').onclick=()=>{zoom('s');fill('s');if(!seen.s){seen.s=true;done();}fb('#obsFb','모래 알갱이는 모양과 색이 여러 가지예요. 이제 크기를 비교해 표의 크기 칸을 골라요.','info');};
+  $('#lkG').onclick=()=>{zoom('g');fill('g');if(!seen.g){seen.g=true;done();}fb('#obsFb','자갈 알갱이도 모양과 색이 여러 가지예요. 크기는 어떤가요?','info');};
+  $$('.m2c').forEach(c=>{let ok=false;$$('button',c).forEach(b=>b.onclick=()=>{if(ok)return;$$('button',c).forEach(x=>x.classList.remove('wrong'));
+    if(b.dataset.v==='1'){b.classList.add('right');ok=true;done();fb('#obsFb',seen.s&&seen.g?'맞아요! 모래는 자갈보다 알갱이의 크기가 작아요.':'맞아요! 돋보기로 모래와 자갈을 모두 살펴봐요.','info');}
+    else{b.classList.add('wrong');fb('#obsFb','돋보기로 본 모래와 자갈의 크기를 비교해 봐요.',false);}});});})();
+
+/* ===== 분리 방법 ===== */
+const s3=need('s3',2);pickOne('#p3','','',null,s3);pickOne('#p3b','','',null,s3);
+
+/* ===== 체 고르기 ===== */
+function sieve(g,x,y,w,hole){el('rect',{x:x-6,y:y-6,width:w+12,height:w*.55+12,rx:10,fill:'#c9d1d9',stroke:'#59636e','stroke-width':3},g);
+  el('rect',{x,y,width:w,height:w*.55,fill:'#fff'},g);const step=hole+3;for(let a=x;a<=x+w;a+=step)el('line',{x1:a,y1:y,x2:a,y2:y+w*.55,stroke:'#59636e','stroke-width':1.6},g);
+  for(let b=y;b<=y+w*.55;b+=step)el('line',{x1:x,y1:b,x2:x+w,y2:b,stroke:'#59636e','stroke-width':1.6},g);}
+[['#sv1',2],['#sv2',8],['#sv3',26]].forEach(([id,h])=>{const g=$(id);el('rect',{width:160,height:100,fill:'#fffdf8'},g);sieve(g,20,14,120,h);});
+const s4=need('s4',2);pickOne('#p4a','','',null,s4);pickOne('#p4b','','',null,()=>{$$('#ineq span').forEach(s=>s.classList.add('on'));s4();});
+
+/* ===== 체로 분리하기 ===== */
+(function(){const S=$('#sv');S.innerHTML='<rect width="800" height="300" fill="#fffdf8"/><rect x="200" y="250" width="400" height="26" rx="8" fill="#9fb6c2" stroke="#59636e" stroke-width="3"/><text x="400" y="296" text-anchor="middle" font-size="15" font-family="Jua" fill="#33414a">쟁반</text>'+
+  '<g id="svB"></g><g id="svT"></g><g id="svP"></g><g id="cup"></g>';
+  const SB=$('#svB'),P=$('#svP'),T=$('#svT');let st=0,shake=0,off=0;
+  const sand=[...Array(140)].map((_,i)=>({x:280+rnd(i,1)*240,r:1.8,c:SANDC[i%5],fall:rnd(i,2)})),grav=[...Array(14)].map((_,i)=>({x:290+rnd(i,3)*220,y:126+rnd(i,4)*10,r:9+rnd(i,5)*5,c:GRAVC[i%4],k:i}));
+  function draw(){SB.innerHTML='';const g=el('g',{transform:`translate(${off} 0)`},SB);
+    el('path',{d:'M236 70 h328 l-24 80 h-280z',fill:'#eef3f6',stroke:'#59636e','stroke-width':4},g);
+    for(let a=262;a<=540;a+=10)el('line',{x1:a,y1:140,x2:a,y2:154,stroke:'#59636e','stroke-width':1.4},g);
+    el('path',{d:'M260 148 h280',stroke:'#59636e','stroke-width':6,'stroke-dasharray':'2 6'},g);
+    el('rect',{x:228,y:62,width:344,height:12,rx:5,fill:'#9aa3ad',stroke:'#59636e','stroke-width':3},g);
+    const t=el('text',{x:620,y:110,'font-size':15,'font-family':'Jua',fill:'#33414a'},SB);t.textContent='체(눈이 중간인 체)';
+    P.innerHTML='';if(st<1)return;const pg=el('g',{transform:`translate(${off} 0)`},P);
+    const lim=shake/3;sand.forEach((s,i)=>{if(s.fall<lim){el('circle',{cx:s.x+(rnd(i,6)-.5)*40,cy:246-rnd(i,7)*(10+lim*10),r:s.r,fill:s.c},P);}else el('circle',{cx:s.x,cy:128+rnd(i,8)*14,r:s.r,fill:s.c},pg);});
+    grav.forEach(q=>stone(pg,q.x,q.y,q.r,q.c,q.k));}
+  draw();
+  steps('#ctl5',[()=>{const C=$('#cup');tween(900,p=>{C.innerHTML='';const x=lerp(120,230,p),y=lerp(40,60,p);el('path',{d:`M${x} ${y} h70 l-6 50 h-58z`,fill:'#d9e4ea',stroke:'#59636e','stroke-width':3,transform:`rotate(${lerp(0,55,p)} ${x+35} ${y+25})`},C);},()=>{C.innerHTML='';st=1;draw();});
+      fb('#svFb','혼합물을 체에 천천히 부었어요. 이제 체를 흔들어 봐요.','info');},
+    ()=>{shake++;$('#shk').textContent=shake;tween(600,p=>{off=Math.sin(p*Math.PI*6)*14;draw();},()=>{off=0;draw();});
+      if(shake<3){fb('#svFb',shake===1?'모래 알갱이가 체의 눈을 빠져나가 쟁반에 떨어지고 있어요. 더 흔들어 봐요.':'거의 다 빠져나갔어요. 한 번 더!','info');return false;}
+      fb('#svFb','모래는 모두 체를 빠져나가 쟁반에 쌓였고, 자갈은 체에 남았어요. 결과를 정리해요.',true);$('#ask5').hidden=false;}]);})();
+pickOne('#p5','','','s5');
+
+/* ===== 정리해요 ===== */
+const s6=need('s6',2);pickOne('#p6','','',null,s6);pickOne('#p6b','','',null,s6);
+
+/* ===== 생활 속 예 ===== */
+(function(){const g=$('#ex7');g.innerHTML='<rect width="720" height="150" fill="#fffdf8"/>'+
+  '<rect x="10" y="10" width="340" height="130" rx="10" fill="#cfe9f8"/><rect x="10" y="100" width="340" height="40" fill="#e1c48a"/><ellipse cx="180" cy="80" rx="70" ry="14" fill="#fff" stroke="#59636e" stroke-width="3"/>'+[...Array(6)].map((_,i)=>`<path d="M${135+i*16} 78 q6 -10 12 0z" fill="#f4e6cf" stroke="#8a6a3a"/>`).join('')+'<path d="M110 80 l-30 -50 M250 80 l30 -50" stroke="#8a5a2b" stroke-width="5"/>'+[...Array(18)].map((_,i)=>`<circle cx="${150+rnd(i,1)*60}" cy="${96+rnd(i,2)*20}" r="1.6" fill="#a0673a"/>`).join('')+'<text x="180" y="30" text-anchor="middle" font-size="15" font-family="Jua" fill="#15313d">체로 모래와 조개 분리</text>'+
+  '<rect x="370" y="10" width="340" height="130" rx="10" fill="#eaf6fb"/><rect x="370" y="104" width="340" height="36" fill="#e1c48a"/><rect x="440" y="58" width="150" height="40" rx="8" fill="#f08a24" stroke="#8a4a10" stroke-width="3"/><path d="M590 64 h40 l20 30 h-60z" fill="#c9d1d9" stroke="#59636e" stroke-width="3"/>'+[...Array(6)].map((_,i)=>`<line x1="${598+i*8}" y1="66" x2="${606+i*8}" y2="92" stroke="#59636e"/>`).join('')+'<circle cx="470" cy="104" r="12" fill="#333"/><circle cx="560" cy="104" r="12" fill="#333"/><rect x="660" y="96" width="14" height="8" fill="#3d8bd4"/><path d="M640 98 l8 -6 l6 8z" fill="#e2573f"/><text x="540" y="30" text-anchor="middle" font-size="15" font-family="Jua" fill="#15313d">해변 쓰레기 수거 장비</text>';})();
+pickAll('#p7','모두 찾았어요! 알갱이의 크기가 다른 고체 혼합물은 체를 사용해 분리할 수 있어요.','','s7');
+
+/* ===== 생각+: 좁쌀·쌀·팥 ===== */
+(function(){const S=$('#gr');const K=[{k:'z',n:'좁쌀',s:0},{k:'r',n:'쌀',s:1},{k:'p',n:'팥',s:2}];let mix,sep;
+  function grain(g,x,y,k,i){if(k==='z')el('circle',{cx:x,cy:y,r:2.2,fill:'#f2c94c',stroke:'#b8901e','stroke-width':.6},g);
+    else if(k==='r')el('ellipse',{cx:x,cy:y,rx:5,ry:3,fill:'#fffaf0',stroke:'#c9bfa8','stroke-width':1,transform:`rotate(${rnd(i,9)*180} ${x} ${y})`},g);
+    else el('ellipse',{cx:x,cy:y,rx:7,ry:5,fill:'#9b2d2d',stroke:'#5a1414','stroke-width':1},g);}
+  function bowl(g,x,y,set,label){el('path',{d:`M${x-80} ${y} q80 70 160 0z`,fill:'#e8d6b8',stroke:'#8a6a3a','stroke-width':3},g);
+    let i=0;set.forEach(k=>{const n=k==='z'?40:k==='r'?22:12;for(let j=0;j<n;j++){i++;grain(g,x-60+rnd(i,k.charCodeAt(0))*120,y+6+rnd(i,3)*24,k,i);}});
+    const t=el('text',{x,y:y+60,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#15313d'},g);t.textContent=label;}
+  function draw(){S.innerHTML='<rect width="800" height="250" fill="#fffdf8"/>';const g=el('g',{},S);
+    if(mix.length)bowl(g,140,120,mix,mix.length>1?'섞여 있는 혼합물':'');
+    K.forEach((q,i)=>{const x=380+i*150;el('rect',{x:x-62,y:40,width:124,height:150,rx:12,fill:sep.includes(q.k)?'#e9f9ef':'#f4f7f9',stroke:sep.includes(q.k)?'#16804a':'#bcd9e4','stroke-width':3,'stroke-dasharray':sep.includes(q.k)?'':'6 6'},g);
+      if(sep.includes(q.k))bowl(g,x,110,[q.k],'');const t=el('text',{x,y:70,'text-anchor':'middle','font-size':17,'font-family':'Jua',fill:'#15313d'},g);t.textContent=q.n+(sep.includes(q.k)?' ✔':'');});}
+  function reset(){mix=['z','r','p'];sep=[];draw();fb('#grFb','어떤 체를 먼저 쓸까요?','info');}
+  reset();let done=false,orders=new Set();
+  function go(big){if(mix.length<2){fb('#grFb','이미 모두 분리했어요. ‘다시 섞기’로 다른 차례도 해 봐요.','info');return;}
+    const pass=mix.filter(k=>big?k!=='p':k==='z'),stay=mix.filter(k=>!pass.includes(k));const nm=k=>K.find(q=>q.k===k).n;
+    if(!pass.length||!stay.length){fb('#grFb',(pass.length?'모두 체를 빠져나가':'모두 체에 남아')+' 분리되지 않아요. 다른 체를 써 봐요.',false);return;}
+    const msg='체를 빠져나간 것: '+pass.map(nm).join(', ')+' · 체에 남은 것: '+stay.map(nm).join(', ')+'.';
+    [pass,stay].forEach(p=>{if(p.length===1)sep.push(p[0]);});mix=pass.length>1?pass:stay.length>1?stay:[];
+    if(sep.length===3){orders.add(big?'B':'S');draw();
+      if(!done){done=true;doneNav('s8');}
+      fb('#grFb',msg+' 🎉 세 가지를 모두 분리했어요! '+(orders.size<2?'‘다시 섞기’를 누르고 다른 체를 먼저 써도 분리될까요?':'눈이 작은 체를 먼저 쓰면 좁쌀이 먼저, 눈이 큰 체를 먼저 쓰면 팥이 먼저 분리돼요. 어느 차례로도 분리할 수 있어요.'),true);}
+    else{draw();fb('#grFb',msg+' 남은 혼합물은 어떤 체로 거를까요?','info');}}
+  $('#gS').onclick=()=>go(false);$('#gB').onclick=()=>go(true);$('#gR').onclick=reset;})();
+
+/* ===== 한눈에 쏙 ===== */
+$('#blReveal').onclick=()=>{fb('#blFb','모래와 자갈의 혼합물은 알갱이의 크기 차이를 이용해 분리할 수 있어요.',true);doneNav('s9');};
+
+/* ===== 형성 평가 ===== */
+const s10=need('s10',2);
+quiz('#qz10',[{q:'1. 모래와 자갈에 관한 설명으로 옳지 <b>않은</b> 것은?',o:['자갈 알갱이는 둥근 모양, 세모 모양 등 여러 가지이다.','모래 알갱이의 색은 갈색, 노란색 등 여러 가지이다.','모래는 자갈보다 알갱이의 크기가 크다.','자갈 알갱이의 색은 갈색, 회색 등 여러 가지이다.'],a:2,e:'모래는 자갈보다 알갱이의 크기가 작아요.',h:'모래와 자갈을 관찰한 결과를 떠올려 봐요.'},
+  {q:'2. 모래와 자갈의 혼합물을 분리할 때 사용할 수 <b>있는</b> 체는?',o:['㉠ 눈의 크기가 자갈보다 큰 체','㉡ 눈의 크기가 모래보다 작은 체','㉢ 눈의 크기가 모래보다 크고 자갈보다 작은 체'],a:2,e:'㉠은 모래와 자갈이 모두 빠져나가고, ㉡은 모두 체에 남아 분리할 수 없어요.',h:'모래 하나만 체를 빠져나가야 분리할 수 있어요.'}],s10);
+$('#wr10B').onclick=()=>{const t=$('#wr10').value.trim();if(!t){fb('#wr10Fb','먼저 답을 써 보세요.',false);return;}
+  const a=/크기/.test(t),b=/모래.*(크|보다 큰)/.test(t)&&/자갈.*작/.test(t);
+  if(a&&b){fb('#wr10Fb','잘 썼어요! 예시 답: ⑴ 모래와 자갈의 알갱이 크기 차이를 이용한다. ⑵ 눈 크기가 모래 알갱이보다 크고 자갈 알갱이보다 작은 체를 사용한다.',true);if(!$('#wr10B').dataset.ok){$('#wr10B').dataset.ok=1;s10();}}
+  else if(a)fb('#wr10Fb','이용할 성질은 잘 썼어요. 체의 눈 크기를 모래, 자갈과 비교해서 써 봐요. (모래보다 ~, 자갈보다 ~)','info');
+  else fb('#wr10Fb','모래와 자갈의 가장 큰 차이는 무엇이었나요? 그 차이와 체의 눈 크기를 함께 써 봐요.',false);};
+
+faces('s11','잘했어요! 다음 시간에는 섞이지 않는 액체 혼합물을 분리해 봐요.','어려웠던 부분은 ‘체 고르기’와 ‘체로 분리하기’를 다시 해 봐요.');
+</script>

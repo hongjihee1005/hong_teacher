@@ -1,0 +1,310 @@
+<!--
+title: 고기압과 저기압에서의 날씨가 궁금해!
+unit: 2
+lesson: 6
+total: 11
+goal: 고기압과 저기압의 분포에 따른 날씨의 특징을 기상 요소로 설명할 수 있어요.
+pages: 「과학」 44~45쪽 · 「실험관찰」 28~29쪽 · 지도서 206~215쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"고","bl2":"저"}}]
+-->
+<style>
+.g2-lab{margin:8px 0}
+.g2-lab svg,svg.g2-fig{width:100%;height:auto;max-height:34vh;display:block;margin:0 auto;border-radius:14px;border:3px solid var(--navy);background:#fff}
+.g2-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:8px 0}
+.g2-ctl label{display:flex;align-items:center;gap:6px;font-family:"Jua",sans-serif;flex:1 1 15rem}
+.g2-ctl input[type=range]{flex:1;accent-color:var(--sky);height:2rem;min-width:6rem}
+.g2-sort{display:grid;gap:8px}
+.g2-it{display:flex;flex-wrap:wrap;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--paper)}
+.g2-it .tx{flex:1 1 12rem;display:flex;align-items:center;gap:8px}
+.g2-it .tx svg{width:90px;height:auto;flex:none}
+.g2-it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.g2-it.g2-ok{border-color:var(--good);background:#eefaf2}
+.g2-match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px}
+.g2-match .col{display:grid;gap:8px;align-content:start}
+.g2-match button.g2-pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:4px solid var(--sun)}
+.pick button svg{width:100%;max-width:12rem;height:auto;display:block;margin:0 auto 4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .g2-it.g2-ok{background:#163b28}}
+:root[data-theme="dark"] .g2-it.g2-ok{background:#163b28}
+@media (max-width:640px){.g2-match{grid-template-columns:1fr 1fr}}
+[hidden]{display:none!important}
+
+.w4-sat{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.w4-sat figure{margin:0;border:3px solid var(--navy);border-radius:14px;overflow:hidden;background:#0b1a2e}
+.w4-sat svg{width:100%;height:auto;max-height:36vh;display:block;margin:0 auto}
+.w4-sat figcaption{background:var(--paper);padding:4px 8px;font-family:"Jua",sans-serif;text-align:center}
+.w4-sat .row{justify-content:center;gap:6px;padding:4px 0 6px;background:var(--paper)}
+.w4-sat .fb{margin:0 6px 6px}
+.w4-pm{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.w4-pm>div{border:2px solid var(--line);border-radius:14px;padding:8px}
+.w4-pm svg{width:100%;height:auto;max-height:28vh}
+.w4-tbl td,.w4-tbl th{text-align:center;padding:5px}
+.w4-tbl th{background:#e6f2fa}
+.w4-tbl td.k{font-family:"Jua",sans-serif;background:#f6fbfe}
+.w4-tbl .hide{color:transparent;background:repeating-linear-gradient(45deg,#eef3f6,#eef3f6 6px,#e2eaef 6px,#e2eaef 12px)}
+.w4-tbl td .row{justify-content:center;gap:4px}.w4-tbl td .row button{min-height:2rem;padding:.05em .5em;border-width:2px;font-size:.9rem}
+.w4-now{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:12px}
+.w4-now>div{border:3px solid var(--navy);border-radius:14px;padding:8px 12px}
+@media (max-width:640px){.w4-sat,.w4-pm,.w4-now{grid-template-columns:1fr}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .w4-tbl th{background:#173543}:root:not([data-theme="light"]) .w4-tbl td.k{background:#16323c}}
+:root[data-theme="dark"] .w4-tbl th{background:#173543}:root[data-theme="dark"] .w4-tbl td.k{background:#16323c}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입</span>
+  <h2>어떤 기상 요소가 다를까요?</h2>
+  <div class="g2-lab"><svg id="w4Two" viewBox="0 0 800 280" role="img" aria-label="한 지역은 맑아 사람들이 산책하고, 다른 지역은 구름이 많고 비가 내려 우산을 쓴 모습"></svg></div>
+  <p class="jua" style="font-size:1.05rem" data-glue="1">두 지역의 날씨에서 다른 기상 요소를 <b>모두</b> 골라요.</p>
+  <div class="pick" id="w4Q1"><button data-a="1">구름의 양</button><button data-a="1">강수량</button><button data-a="1">습도</button><button data-a="1">기온</button><button data-a="0" data-m="지역의 이름은 날씨를 나타내는 기상 요소가 아니에요.">지역의 이름</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="기압이란?">
+  <span class="stage">도입 · 「과학」 44쪽</span>
+  <h2>기압, 고기압과 저기압</h2>
+  <p>일정한 넓이에 작용하는 공기의 무게를 <b>기압</b>이라고 해요. 기압은 지역이나 시간에 따라 달라져요. 주변보다 상대적으로 기압이 높은 곳을 <b>고기압</b>, 주변보다 상대적으로 기압이 낮은 곳을 <b>저기압</b>이라고 해요.</p>
+  <p class="jua" style="font-size:1.05rem" data-glue="1">두 지도에서 ‘가’ 지역의 기압은 똑같이 1012예요(단위 hPa, 헥토파스칼). ‘가’ 지역은 각각 고기압일까요, 저기압일까요?</p>
+  <div class="w4-pm" data-glue="1">
+    <div><svg id="w4PmA" viewBox="0 0 300 200" role="img" aria-label="가 지역 1012, 주변 지역은 1004~1006"></svg><div class="row" id="w4PA"><button data-a="1">고기압</button><button data-a="0" data-m="주변의 숫자와 비교해 봐요. ‘가’가 주변보다 높나요, 낮나요?">저기압</button></div><div class="fb"></div></div>
+    <div><svg id="w4PmB" viewBox="0 0 300 200" role="img" aria-label="가 지역 1012, 주변 지역은 1018~1020"></svg><div class="row" id="w4PB"><button data-a="0" data-m="주변의 숫자와 비교해 봐요. ‘가’가 주변보다 높나요, 낮나요?">고기압</button><button data-a="1">저기압</button></div><div class="fb"></div></div>
+  </div>
+  <div id="w4PmAsk" hidden data-glue="1">
+    <p class="jua" style="font-size:1.05rem">고기압과 저기압을 나누는 기준은 무엇일까요?</p>
+    <div class="pick" id="w4Q2"><button data-a="1">주변보다 기압이 높은지 낮은지예요</button><button data-a="0" data-m="같은 1012인데도 한쪽은 고기압, 한쪽은 저기압이었어요. 정해진 기준값은 없어요.">정해진 숫자보다 높은지 낮은지예요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s3" data-nav="기상 위성 사진">
+  <span class="stage">조사해요 1·2 · 「실험관찰」 28쪽</span>
+  <h2>기상 위성 사진 관찰하기</h2>
+  <p class="tip">우리나라 낮 12시에 찍은 기상 위성 사진을 본떠 그린 그림이에요. 흰색은 구름이에요. 우리나라를 중심으로 고기압과 저기압을 한 곳씩만 표시했어요.</p>
+  <div class="w4-sat" data-glue="1">
+    <figure><svg id="w4Sat1" viewBox="0 0 400 300" role="img" aria-label="2024년 10월 12일 기상 위성 사진: 우리나라 위에 구름이 거의 없음"></svg><figcaption>기상 위성 사진(2024년 10월 12일)</figcaption>
+      <div class="row" id="w4S1"><span class="jua">우리나라에 위치한 것:</span><button data-a="1">고기압</button><button data-a="0" data-m="우리나라 위에 구름이 많은가요, 적은가요? ‘고’와 ‘저’ 글자의 위치도 살펴봐요.">저기압</button></div><div class="fb"></div></figure>
+    <figure><svg id="w4Sat2" viewBox="0 0 400 300" role="img" aria-label="2024년 10월 22일 기상 위성 사진: 우리나라 위에 구름이 많음"></svg><figcaption>기상 위성 사진(2024년 10월 22일)</figcaption>
+      <div class="row" id="w4S2"><span class="jua">우리나라에 위치한 것:</span><button data-a="0" data-m="우리나라 위에 구름이 많은가요, 적은가요? ‘고’와 ‘저’ 글자의 위치도 살펴봐요.">고기압</button><button data-a="1">저기압</button></div><div class="fb"></div></figure>
+  </div>
+  <p class="jua" style="font-size:1.05rem">기상 위성 사진에서 볼 수 있는 것을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="w4Q3"><button data-a="1">구름의 위치와 구름의 양</button><button data-a="1">육지와 바다의 모습</button><button data-a="0" data-m="위성 사진에는 숫자로 된 기온이 나타나지 않아요.">지역마다의 기온 숫자</button><button data-a="0" data-m="위성 사진은 하늘 높은 곳에서 찍은 것이라 사람은 보이지 않아요.">우산을 쓴 사람들</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem">기상 위성 사진을 보고 알 수 있는 기상 요소는 무엇일까요?</p>
+  <div class="pick" id="w4Q4"><button data-a="1">구름의 양</button><button data-a="0" data-m="습도는 위성 사진에 숫자로 나타나지 않아요. 사진에서 흰색으로 보이는 것을 생각해 봐요.">습도</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s4" data-nav="날씨 비교">
+  <span class="stage">조사해요 3 · 「실험관찰」 29쪽</span>
+  <h2>고기압일 때와 저기압일 때 우리 지역의 날씨</h2>
+  <p class="tip">‘기상청 날씨누리’ → 현재 날씨 → 육상 → 과거 관측 → 일별 자료에서 찾은 서울의 기상 요소예요. 날짜를 눌러 자료를 확인하고, 기압과 날씨를 골라요. (평균 운량: 하루 평균 구름의 양, 0~10)</p>
+  <div class="row" data-glue="1"><button id="w4D1">📅 2024년 10월 12일 자료 보기</button><button id="w4D2">📅 2024년 10월 22일 자료 보기</button></div>
+  <table class="w4-tbl" id="w4Tbl" data-glue="1">
+    <tr><th>서울</th><th>2024년 10월 12일</th><th>2024년 10월 22일</th></tr>
+    <tr><td class="k">평균 기온</td><td class="hide c1">18.3 °C</td><td class="hide c2">15.5 °C</td></tr>
+    <tr><td class="k">최고 / 최저 기온</td><td class="hide c1">24.7 °C / 13.4 °C</td><td class="hide c2">16.6 °C / 14.9 °C</td></tr>
+    <tr><td class="k">습도</td><td class="hide c1">60.6 %</td><td class="hide c2">90.8 %</td></tr>
+    <tr><td class="k">구름의 양(평균 운량)</td><td class="hide c1">0</td><td class="hide c2">10</td></tr>
+    <tr><td class="k">강수량</td><td class="hide c1">0 mm</td><td class="hide c2">20.6 mm</td></tr>
+    <tr><td class="k">기압</td><td><div class="row" id="w4P1"><button data-v="고">고기압</button><button data-v="저">저기압</button></div></td><td><div class="row" id="w4P2"><button data-v="고">고기압</button><button data-v="저">저기압</button></div></td></tr>
+    <tr><td class="k">날씨의 표현</td><td><div class="row" id="w4W1"><button data-v="맑">맑다</button><button data-v="비">흐리고 비가 온다</button></div></td><td><div class="row" id="w4W2"><button data-v="맑">맑다</button><button data-v="비">흐리고 비가 온다</button></div></td></tr>
+  </table>
+  <div class="fb" id="w4TblFb" data-glue="1">먼저 두 날짜의 자료를 확인해요.</div>
+</section>
+
+<section id="s5" data-nav="우리 지역은?">
+  <span class="stage">조사해요 4 · 「실험관찰」 29쪽</span>
+  <h2>지금 우리 지역은 어떤 기압의 영향을 받을까요?</h2>
+  <p class="tip">‘기상청 날씨누리’에서 현재 우리 지역의 날씨를 기상 요소로 표현하고, 기상 위성 사진을 찾아 어떤 기압의 영향을 받는지 이야기해요. 아래는 지도서에 실린 예시예요.</p>
+  <div class="w4-now" data-glue="1">
+    <div><p class="jua" style="margin:0">예시 ① 서울, 2024년 10월 3일 12시</p><p style="margin:4px 0">기온 21.1 °C · 바람: 남동풍 · 습도 46 % · 구름의 양 1 · 비가 오지 않는 맑은 날씨</p><div class="row" id="w4N1"><button data-a="1">고기압의 영향</button><button data-a="0" data-m="구름이 거의 없고 맑은 날씨예요.">저기압의 영향</button></div><div class="fb"></div></div>
+    <div><p class="jua" style="margin:0">예시 ② 서울, 2024년 10월 13일 12시</p><p style="margin:4px 0">기온 18.4 °C · 바람: 북동풍 · 습도 84 % · 구름의 양 10 · 비가 내리고 있음</p><div class="row" id="w4N2"><button data-a="0" data-m="구름이 많고 비가 내리고 있어요.">고기압의 영향</button><button data-a="1">저기압의 영향</button></div><div class="fb"></div></div>
+  </div>
+  <p class="tip">⚠️ 스마트 기기로는 탐구 활동에 필요한 것만 검색해요. 고기압이 위치해도 항상 맑은 것은 아니고, 저기압이 위치해도 항상 비가 오는 것은 아니에요. ‘대체로’ 그렇다는 것을 기억해요.</p>
+</section>
+
+<section id="s6" data-nav="정리해요">
+  <span class="stage">정리해요</span>
+  <h2>고기압과 저기압이 위치할 때 날씨의 특징</h2>
+  <p>고기압이 위치한 지역은 저기압이 위치한 지역보다 대체로 구름이 없거나 적고 날씨가 맑아요. 저기압이 위치한 지역은 고기압이 위치한 지역보다 대체로 구름이 많아 비나 눈이 내릴 수 있어요. 또 습도가 높게 나타날 수 있어요.</p>
+  <p class="jua" style="font-size:1.05rem" data-glue="1">1. 대체로 구름이 많거나 비나 눈이 내리는 지역에 위치한 것은?</p>
+  <div class="pick" id="w4Q6a"><button data-a="0" data-m="고기압이 위치하면 대체로 날씨가 맑아요.">고기압</button><button data-a="1">저기압</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem">2. 대체로 구름이 없거나 적어서 날씨가 맑은 지역에 위치한 것은?</p>
+  <div class="pick" id="w4Q6b"><button data-a="1">고기압</button><button data-a="0" data-m="저기압이 위치하면 대체로 구름이 많아요.">저기압</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.1rem">1. 주변보다 상대적으로 기압이 높은 곳을 <span class="blank"><span id="bl1">ㄱ</span></span>기압, 주변보다 상대적으로 기압이 낮은 곳을 <span class="blank"><span id="bl2">ㅈ</span></span>기압이라고 합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem">2. 기상 위성 사진에서 비가 올 수 있는 곳을 어떻게 알 수 있을까요? <b>모두</b> 골라요.</p>
+  <div class="pick" id="w4Q7"><button data-a="1">구름이 많이 낀 지역을 찾아요</button><button data-a="1">기압이 주변보다 낮은 지역(저기압)을 살펴봐요</button><button data-a="0" data-m="구름이 없는 곳은 비가 올 가능성이 낮아요.">구름이 하나도 없는 지역을 찾아요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <div data-glue="1"><p class="jua" style="font-size:1.05rem">5. ✏️ 서술형: 기상 위성 사진을 보고, 우리나라에 위치한 기압과 날씨를 써 봐요.</p>
+  <svg id="w4Sat3" viewBox="0 0 400 300" style="max-height:26vh;margin:0 auto 8px;border:3px solid var(--navy);border-radius:12px" role="img" aria-label="우리나라 위에 구름이 많은 기상 위성 사진"></svg>
+  <textarea id="w4W" rows="2" placeholder="예: 우리나라에는 …이/가 위치하고 있다. 날씨는 …"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="w4WBtn">내 답 살펴보기</button></div>
+  <div class="fb" id="w4WFb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p></div>
+</section>
+
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>고기압과 저기압의 위치에 따른 날씨의 특징을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>기상 위성 사진과 기상 자료를 조사해 날씨를 기상 요소로 표현할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>우리 지역의 날씨를 기상 요소로 표현하는 활동에 적극적으로 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 2단원 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+const DEG=Math.PI/180;
+/* 여러 개 고르기: data-a="1"이 정답 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 고르기 문제 묶음: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua" style="font-size:1.05rem;margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.innerHTML=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='g2-it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('g2-ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.classList.add('g2-match');B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('g2-pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 짝이 되는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('g2-pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('g2-pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('g2-pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 끝내야 할 일 여러 개를 모두 마치면 섹션 완료 */
+function need(sec,n,msgEl,msg){let k=new Set();return id=>{k.add(id);if(k.size>=n){doneNav(sec);if(msgEl)fb(msgEl,msg,true);}};}
+
+/* ---------- 그림 조각 ---------- */
+function sunSvg(x,y,r){let s=`<circle cx="${x}" cy="${y}" r="${r}" fill="#ffd23f"/>`;for(let i=0;i<8;i++){const a=i*45*DEG;s+=`<line x1="${x+Math.cos(a)*(r+5)}" y1="${y+Math.sin(a)*(r+5)}" x2="${x+Math.cos(a)*(r+14)}" y2="${y+Math.sin(a)*(r+14)}" stroke="#f2b705" stroke-width="4" stroke-linecap="round"/>`;}return s;}
+function cloudSvg(x,y,k,c){k=k||1;c=c||'#fff';return `<g transform="translate(${x} ${y}) scale(${k})" fill="${c}"><circle cx="0" cy="0" r="18"/><circle cx="22" cy="-8" r="22"/><circle cx="46" cy="2" r="16"/><rect x="0" y="0" width="46" height="16"/></g>`;}
+function man(x,y,c,umb){return `<g transform="translate(${x} ${y})"><circle cx="0" cy="-46" r="10" fill="#ffd9b0"/><rect x="-10" y="-35" width="20" height="26" rx="6" fill="${c}"/><rect x="-8" y="-10" width="6" height="12" fill="#34495e"/><rect x="2" y="-10" width="6" height="12" fill="#34495e"/>`+(umb?`<line x1="12" y1="-30" x2="12" y2="-68" stroke="#555" stroke-width="2.5"/><path d="M-16 -66 a28 18 0 0 1 56 0z" fill="${umb}"/>`:'')+`</g>`;}
+
+/* ---------- 도입 ---------- */
+(function(){let s=`<rect width="800" height="280" fill="#fff"/><rect x="8" y="8" width="388" height="264" rx="14" fill="#bfe6fb"/><rect x="8" y="210" width="388" height="62" fill="#9fd08a"/>`+sunSvg(320,60,24)+
+  man(110,240,'#e67e22')+man(170,244,'#16a085')+man(250,240,'#8e44ad')+`<text x="24" y="40" font-family="Jua" font-size="22" fill="#0f3b5c">ㄱ 지역</text>`;
+  s+=`<rect x="404" y="8" width="388" height="264" rx="14" fill="#8e9aa6"/><rect x="404" y="210" width="388" height="62" fill="#7aa36b"/>`+cloudSvg(430,60,1.4,'#5d6d7e')+cloudSvg(560,48,1.6,'#566573')+cloudSvg(690,70,1.2,'#5d6d7e');
+  for(let i=0;i<34;i++){const x=414+(i*47)%370,y=100+(i*31)%110;s+=`<line x1="${x}" y1="${y}" x2="${x-4}" y2="${y+13}" stroke="#d6eaf8" stroke-width="2.5"/>`;}
+  s+=man(520,244,'#2c3e50','#e74c3c')+man(650,240,'#c0392b','#2980b9')+`<text x="420" y="40" font-family="Jua" font-size="22" fill="#fff">ㄴ 지역</text>`;
+  $('#w4Two').innerHTML=s;})();
+pickAll('#w4Q1','잘 골랐어요! 두 지역은 구름의 양, 강수량, 습도, 기온 등이 달라요. 오늘은 고기압과 저기압이 위치할 때 날씨의 특징을 알아봐요.','다시 생각해 봐요.','s1');
+
+/* ---------- 기압이란 ---------- */
+function pmap(id,around){const P=[[60,50],[240,50],[60,150],[240,150]];let s=`<rect width="300" height="200" rx="10" fill="#f3fbff"/>`;
+  P.forEach((p,i)=>{s+=`<line x1="150" y1="100" x2="${p[0]}" y2="${p[1]}" stroke="#cfe0ea" stroke-width="3"/><circle cx="${p[0]}" cy="${p[1]}" r="28" fill="#fff" stroke="#9cc3d8" stroke-width="2"/><text x="${p[0]}" y="${p[1]+6}" text-anchor="middle" font-family="Jua" font-size="17" fill="#48646f">${around[i]}</text>`;});
+  s+=`<circle cx="150" cy="100" r="36" fill="#fff4cc" stroke="#f2b705" stroke-width="3"/><text x="150" y="94" text-anchor="middle" font-family="Jua" font-size="16" fill="#7a4f00">가</text><text x="150" y="116" text-anchor="middle" font-family="Jua" font-size="19" fill="#15313d">1012</text>`;
+  $(id).innerHTML=s;}
+pmap('#w4PmA',[1006,1004,1005,1006]);pmap('#w4PmB',[1018,1020,1019,1020]);
+const d2=need('s2',3);let pa=0;
+const pmDone=()=>{pa++;if(pa===2)$('#w4PmAsk').hidden=false;};
+pickOne('#w4PA','맞아요! ‘가’는 주변(1004~1006)보다 기압이 높으니 고기압이에요.','다시 생각해 봐요.',null,()=>{pmDone();d2('a');});
+pickOne('#w4PB','맞아요! ‘가’는 주변(1018~1020)보다 기압이 낮으니 저기압이에요.','다시 생각해 봐요.',null,()=>{pmDone();d2('b');});
+pickOne('#w4Q2','맞아요! 고기압과 저기압은 정해진 기준값이 없고, 주변보다 기압이 높으면 고기압, 낮으면 저기압이에요.','다시 생각해 봐요.',null,()=>d2('c'));
+
+/* ---------- 기상 위성 사진 ---------- */
+const LAND='M0 0 L262 0 L262 20 L250 55 L240 80 L225 95 L232 120 L240 150 L245 180 L240 205 L225 220 L205 225 L185 222 L175 205 L180 185 L170 170 L178 150 L165 135 L172 115 L160 100 L150 85 L130 95 L120 120 L125 150 L105 175 L100 210 L90 260 L70 300 L0 300Z';
+const JAPAN='M290 232 L312 214 L332 198 L350 170 L372 148 L400 112 L400 150 L382 176 L362 200 L336 226 L310 246 L292 252Z';
+function sat(id,clouds,H,L){let s=`<defs><filter id="${id}b" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="9"/></filter></defs><rect width="400" height="300" fill="#0b1a2e"/>`+
+  `<path d="${LAND}" fill="#3b4a3c"/><path d="${JAPAN}" fill="#3b4a3c"/><ellipse cx="205" cy="252" rx="10" ry="5" fill="#3b4a3c"/><path d="M150 85 L130 95" stroke="#55654f"/>`+
+  
+  `<g fill="#fff" filter="url(#${id}b)" opacity=".93">${clouds.map(c=>`<ellipse cx="${c[0]}" cy="${c[1]}" rx="${c[2]}" ry="${c[3]}"/>`).join('')}</g>`+
+  `<text x="300" y="120" font-family="Jua" font-size="16" fill="#9fc3dd">동해</text>`+
+  `<g font-family="Jua" font-size="24" text-anchor="middle"><circle cx="${H[0]}" cy="${H[1]}" r="18" fill="#1f6fd1" stroke="#fff" stroke-width="2"/><text x="${H[0]}" y="${H[1]+8}" fill="#fff">고</text><circle cx="${L[0]}" cy="${L[1]}" r="18" fill="#d63a2f" stroke="#fff" stroke-width="2"/><text x="${L[0]}" y="${L[1]+8}" fill="#fff">저</text></g>`;
+  $('#'+id).innerHTML=s;}
+sat('w4Sat1',[[330,30,60,22],[380,70,30,40],[40,40,30,14],[360,270,50,18],[90,280,40,10]],[205,150],[328,40]);
+sat('w4Sat2',[[200,150,90,70],[150,110,50,40],[260,190,60,40],[230,90,40,30],[300,230,45,25],[120,200,30,30]],[70,90],[200,160]);
+sat('w4Sat3',[[200,150,90,70],[150,110,50,40],[260,190,60,40],[230,90,40,30],[300,230,45,25],[120,200,30,30]],[70,90],[200,160]);
+const d3=need('s3',4);
+pickOne('#w4S1','맞아요! 10월 12일에는 우리나라에 고기압이 위치해 구름이 거의 없어요.','다시 생각해 봐요.',null,()=>d3('a'));
+pickOne('#w4S2','맞아요! 10월 22일에는 우리나라에 저기압이 위치해 구름이 많아요.','다시 생각해 봐요.',null,()=>d3('b'));
+pickAll('#w4Q3','잘 골랐어요! 기상 위성 사진으로 구름의 위치와 양, 육지와 바다의 모습을 볼 수 있어요.','다시 생각해 봐요.',null,()=>d3('c'));
+pickOne('#w4Q4','맞아요! 기상 위성 사진을 통해 구름의 양을 알 수 있어요.','다시 생각해 봐요.',null,()=>d3('d'));
+
+/* ---------- 날씨 비교 표 ---------- */
+const seen={1:0,2:0},ans={P1:'고',P2:'저',W1:'맑',W2:'비'},got={};
+['1','2'].forEach(k=>{$('#w4D'+k).onclick=()=>{$$('#w4Tbl .c'+k).forEach(td=>td.classList.remove('hide'));$('#w4D'+k).classList.add('right');seen[k]=1;
+  fb('#w4TblFb',k==='1'?'10월 12일: 구름의 양 0, 강수량 0 mm예요. 이날 우리나라에 위치한 기압과 날씨를 골라요.':'10월 22일: 구름의 양 10, 습도 90.8 %, 강수량 20.6 mm예요. 이날 우리나라에 위치한 기압과 날씨를 골라요.','info');};});
+Object.keys(ans).forEach(id=>{$$('#w4'+id+' button').forEach(b=>b.onclick=()=>{const k=id.slice(1);
+  if(!seen[k]){fb('#w4TblFb','먼저 그 날짜의 자료를 확인해요.',false);return;}
+  $$('#w4'+id+' button').forEach(x=>x.classList.remove('right','wrong'));
+  if(b.dataset.v===ans[id]){b.classList.add('right');got[id]=1;}else{b.classList.add('wrong');delete got[id];fb('#w4TblFb',id[0]==='P'?'기상 위성 사진을 떠올려 봐요. 이날 우리나라 위에 구름이 많았나요?':'구름의 양과 강수량을 다시 살펴봐요.',false);return;}
+  if(Object.keys(got).length===4){fb('#w4TblFb','모두 맞혔어요! 고기압이 위치한 10월 12일은 구름이 없고 맑았고, 저기압이 위치한 10월 22일은 구름이 많고 습도가 높으며 비가 왔어요.',true);doneNav('s4');}
+  else fb('#w4TblFb','좋아요! ('+Object.keys(got).length+'/4)','info');});});
+
+/* ---------- 우리 지역 ---------- */
+const d5=need('s5',2);
+pickOne('#w4N1','맞아요! 구름이 거의 없고 맑으니 고기압의 영향을 받고 있는 것 같아요.','다시 생각해 봐요.',null,()=>d5('a'));
+pickOne('#w4N2','맞아요! 구름이 많고 비가 내리니 저기압의 영향을 받고 있는 것 같아요.','다시 생각해 봐요.',null,()=>d5('b'));
+
+/* ---------- 정리해요 ---------- */
+const d6=need('s6',2);
+pickOne('#w4Q6a','맞아요! 저기압이 위치한 지역은 대체로 구름이 많아 비나 눈이 내릴 수 있어요.','다시 생각해 봐요.',null,()=>d6('a'));
+pickOne('#w4Q6b','맞아요! 고기압이 위치한 지역은 대체로 구름이 없거나 적어 날씨가 맑아요.','다시 생각해 봐요.',null,()=>d6('b'));
+
+/* ---------- 한눈에 쏙 ---------- */
+const d7=need('s7',2);
+$('#blReveal').onclick=()=>{fb('#blFb','주변보다 상대적으로 기압이 높은 곳은 고기압, 낮은 곳은 저기압이에요.',true);d7('a');};
+pickAll('#w4Q7','잘 골랐어요! 구름이 많이 낀 지역, 주변보다 기압이 낮은 지역은 비가 올 가능성이 높아요.','다시 생각해 봐요.',null,()=>d7('b'));
+
+/* ---------- 형성 평가 ---------- */
+let q1=0,q2=0;const c8=()=>{if(q1&&q2)doneNav('s8');};
+quiz('#quiz',[
+ {q:'1. 일정한 넓이에 작용하는 공기의 무게를 무엇이라고 할까요?',o:['기온','기압','습도'],a:1,e:'일정한 넓이에 작용하는 공기의 무게를 기압이라고 해요.'},
+ {q:'2. 주변보다 상대적으로 기압이 높은 곳을 무엇이라고 할까요?',o:['고기압','저기압'],a:0,e:'주변보다 상대적으로 기압이 높은 곳은 고기압이에요.'},
+ {q:'3. 고기압과 저기압을 나누는 정해진 기준값이 있다. (○, ×)',o:['○ 옳아요','× 옳지 않아요'],a:1,e:'고기압과 저기압은 주변 기압과 비교해 정해요. 정해진 기준값은 없어요.'},
+ {q:'4. 저기압이 위치한 지역의 날씨로 알맞은 것은 어느 것일까요?',o:['대체로 구름이 없고 맑다','대체로 구름이 많고 비나 눈이 올 수 있다','항상 기온이 매우 높다'],a:1,e:'저기압이 위치한 지역은 대체로 구름이 많아 흐리고, 비나 눈이 올 수 있어요.'}],()=>{q1=1;c8();});
+keyCheck('#w4W','#w4WBtn','#w4WFb',[[/저기압/,'저기압이 위치함'],[/구름|흐/,'구름이 많고 흐림'],[/비|눈/,'비나 눈이 올 수 있음']],2,null,'우리나라 위의 구름과, ‘고’·‘저’ 중 어떤 글자가 있었는지 떠올려 써 봐요.');
+$('#w4WBtn').addEventListener('click',()=>{if($('#w4WFb').classList.contains('ok')){$('#w4WFb').textContent+=' 예시 답: 우리나라에는 저기압이 위치하고 있다. 날씨는 대체로 구름이 많고 흐리며, 비나 눈이 올 가능성이 높다.';q2=1;c8();}});
+
+faces('s9','잘했어요! 다음 시간에는 바람이 어느 방향으로 부는지 실험해요.','어려웠던 부분은 기상 위성 사진과 기상 자료를 다시 비교해 보고, 선생님께 질문해도 좋아요!');
+</script>

@@ -1,0 +1,308 @@
+<!--
+title: 우리 생활에 영향을 주는 날씨
+unit: 2
+lesson: 3
+total: 11
+goal: 날씨가 우리 생활에 주는 영향을 조사하고 설명할 수 있어요.<br>날씨가 우리 생활에 주는 영향을 만화로 표현할 수 있어요.
+pages: 「과학」 38~39쪽 · 「실험관찰」 22~23쪽 · 지도서 186~191쪽
+-->
+<style>
+.g2-lab{margin:8px 0}
+.g2-lab svg,svg.g2-fig{width:100%;height:auto;max-height:34vh;display:block;margin:0 auto;border-radius:14px;border:3px solid var(--navy);background:#fff}
+.g2-ctl{display:flex;flex-wrap:wrap;gap:8px 14px;align-items:center;margin:8px 0}
+.g2-ctl label{display:flex;align-items:center;gap:6px;font-family:"Jua",sans-serif;flex:1 1 15rem}
+.g2-ctl input[type=range]{flex:1;accent-color:var(--sky);height:2rem;min-width:6rem}
+.g2-sort{display:grid;gap:8px}
+.g2-it{display:flex;flex-wrap:wrap;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:6px 10px;background:var(--paper)}
+.g2-it .tx{flex:1 1 12rem;display:flex;align-items:center;gap:8px}
+.g2-it .tx svg{width:90px;height:auto;flex:none}
+.g2-it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.g2-it.g2-ok{border-color:var(--good);background:#eefaf2}
+.g2-match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px}
+.g2-match .col{display:grid;gap:8px;align-content:start}
+.g2-match button.g2-pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:4px solid var(--sun)}
+.pick button svg{width:100%;max-width:12rem;height:auto;display:block;margin:0 auto 4px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .g2-it.g2-ok{background:#163b28}}
+:root[data-theme="dark"] .g2-it.g2-ok{background:#163b28}
+@media (max-width:640px){.g2-match{grid-template-columns:1fr 1fr}}
+
+.w2-cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.w2-cards button{display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px}
+.w2-cards button svg{width:100%;max-width:9rem;height:auto}
+.w2-fc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:12px;align-items:center}
+.w2-fc .card{border:3px solid var(--navy);border-radius:14px;padding:8px 12px;background:#f3fbff}
+.w2-fc .card svg{width:100%;max-height:22vh}
+.w2-items{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.w2-steps{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px}
+.w2-steps span{border:2px solid var(--line);border-radius:999px;padding:2px 12px;font-family:"Jua",sans-serif}
+.w2-steps span.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.w2-steps span.ok{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.w2-comic{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.w2-comic .pn{border:3px solid var(--navy);border-radius:10px;overflow:hidden;cursor:pointer;background:#fff;position:relative}
+.w2-comic .pn.cur{outline:4px solid var(--sun)}
+.w2-comic .pn svg{width:100%;height:auto;display:block}
+.w2-comic .pn b{position:absolute;left:6px;top:4px;font-family:"Jua",sans-serif;color:#0f3b5c}
+.w2-ed{display:grid;grid-template-columns:auto minmax(0,1fr);gap:6px 10px;align-items:center;margin-top:8px}
+.w2-ed .row{gap:6px}.w2-ed .row button{min-height:2.2rem;padding:.1em .6em;border-width:2px;font-size:.92rem}
+.w2-ed input{font:inherit;padding:4px 10px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink);min-width:0;width:100%}
+@media (max-width:640px){.w2-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.w2-fc{grid-template-columns:1fr}.w2-items{grid-template-columns:repeat(2,minmax(0,1fr))}.w2-comic{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .w2-fc .card{background:#173543}}
+:root[data-theme="dark"] .w2-fc .card{background:#173543}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입</span>
+  <h2>왜 곤란한 표정을 짓고 있을까요?</h2>
+  <div class="g2-lab"><svg id="w2Room" viewBox="0 0 800 320" role="img" aria-label="농구공을 든 아이가 창밖에 비가 내리는 모습을 보며 곤란한 표정을 짓고 있는 그림"></svg></div>
+  <p class="jua" style="font-size:1.05rem" data-glue="1">그림 속 친구는 왜 곤란한 표정을 짓고 있을까요?</p>
+  <div class="pick" id="w2Q0"><button data-a="1">비가 와서 농구를 하러 밖에 나갈 수 없기 때문이에요</button><button data-a="0" data-m="창밖을 보세요. 하늘과 날씨가 어떤가요?">농구공이 터졌기 때문이에요</button><button data-a="0" data-m="창밖의 날씨를 살펴봐요.">날씨가 너무 맑기 때문이에요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="경험한 날씨">
+  <span class="stage">활동해요 1 · 「실험관찰」 22쪽</span>
+  <h2>내가 경험했던 다양한 날씨</h2>
+  <p class="jua" style="font-size:1.05rem">내가 경험했던 날씨를 모두 골라요. 고르면 그날의 경험 예시를 보여 줘요. (2가지 이상)</p>
+  <div class="w2-cards" id="w2Exp"></div>
+  <div class="fb" id="w2ExpFb"></div>
+  <p class="tip">💡 날씨 때문에 불편했던 경험, 즐거웠던 경험, 날씨와 관련된 직업 등을 자유롭게 떠올려 봐요. 정답이 있는 것이 아니에요.</p>
+</section>
+
+<section id="s3" data-nav="생활 모습 조사">
+  <span class="stage">활동해요 2 · 「실험관찰」 22쪽</span>
+  <h2>날씨가 우리 생활에 주는 영향 조사하기</h2>
+  <p class="jua" style="font-size:1.05rem">조사한 생활 모습이 어떤 날씨와 관련 있는지 골라요.</p>
+  <div class="g2-sort" id="w2Sort"></div>
+  <div class="fb"></div>
+  <p class="tip">⚠️ 스마트 기기로 조사할 때에는 정해진 주제만 찾고, 믿을 만한 정보인지 확인해요. 스마트 기기에서 냄새가 나거나 열이 나면 즉시 사용을 멈추고 선생님께 알려요.</p>
+</section>
+
+<section id="s4" data-nav="날씨 정보 활용">
+  <span class="stage">활동해요 2</span>
+  <h2>날씨 예보를 보고 미리 준비해요</h2>
+  <p class="tip">우리는 편리하고 안전한 생활을 위해 날씨 정보를 자주 활용해요. 예보를 보고 알맞은 준비를 <b>모두</b> 골라요.</p>
+  <div class="w2-steps" id="w2Steps" data-glue="1"><span>① 비 오는 날</span><span>② 무더운 날</span><span>③ 바람이 강한 날</span></div>
+  <div class="w2-fc" data-glue="1"><div class="card"><svg id="w2FcSvg" viewBox="0 0 300 160" role="img" aria-label="일기 예보 카드"></svg><p class="jua" id="w2FcT" style="margin:4px 0 0"></p></div>
+    <div><div class="w2-items" id="w2Items"></div><div class="fb" id="w2FcFb"></div><div class="row" style="margin-top:6px"><button class="main" id="w2FcNext" hidden>이어서 ▶</button></div></div></div>
+</section>
+
+<section id="s5" data-nav="만화 그리기">
+  <span class="stage">활동해요 3 · 「실험관찰」 23쪽</span>
+  <h2>날씨가 우리 생활에 주는 영향을 만화로 표현하기</h2>
+  <p class="tip">칸을 누르고 아래에서 날씨, 생활 모습, 말풍선을 정해요. 한 컷~네 컷으로 자유롭게 만들어요. 날씨와 생활 모습이 잘 드러나게 해요.</p>
+  <div class="w2-comic" id="w2Comic" data-glue="1"></div>
+  <div class="w2-ed" data-glue="1">
+    <span class="jua">날씨</span><div class="row" id="w2EdW"></div>
+    <span class="jua">생활 모습</span><div class="row" id="w2EdA"></div>
+    <span class="jua">말풍선</span><input id="w2EdT" maxlength="24" placeholder="예: 오늘은 더운 날! 밖에서 노는 것은 쉬어야지.">
+  </div>
+  <div class="row" style="margin-top:8px" data-glue="1"><button id="w2Ex">예시 보기</button><button class="main" id="w2Done">📖 만화 완성</button></div>
+  <div class="fb" id="w2ComicFb"></div>
+</section>
+
+<section id="s6" data-nav="정리해요">
+  <span class="stage">정리해요</span>
+  <h2>날씨와 우리 생활의 관계</h2>
+  <p>날씨에 따라 야외 활동을 할지 정하기도 하고, 추워진 날씨로 체온이 급격하게 떨어지지 않게 옷차림에 주의하기도 해요. 농작물을 재배할 때는 바람이나 기온 변화 등의 예보에 따라 시설물을 고정하거나 수확하는 시기를 조절해 피해를 예방하기도 해요. 이처럼 날씨는 우리 생활과 밀접한 관계가 있어요.</p>
+  <p class="jua" style="font-size:1.05rem" data-glue="1">1. 날씨에 따라 우리가 생활하는 모습은 ( 달라집니다 , 달라지지 않습니다 ).</p>
+  <div class="pick" id="w2Q6a"><button data-a="1">달라집니다</button><button data-a="0" data-m="비가 오는 날과 맑은 날의 생활 모습을 떠올려 봐요.">달라지지 않습니다</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem">2. 날씨 정보를 미리 알면 좋은 점을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="w2Q6b"><button data-a="1">옷차림과 활동을 날씨에 맞게 준비할 수 있어요</button><button data-a="1">태풍, 폭염 같은 자연재해에 대비할 수 있어요</button><button data-a="0" data-m="날씨 정보는 날씨를 미리 알려 줄 뿐, 날씨를 바꾸지는 못해요.">내가 원하는 날씨로 바꿀 수 있어요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <div id="quiz"></div>
+  <div data-glue="1"><p class="jua" style="font-size:1.05rem">5. ✏️ 서술형: 날씨에 따라 상품 판매량이 달라지는 것을 두 가지 써 봐요.</p>
+  <textarea id="w2W" rows="2" placeholder="예: 비가 오는 날에는 …이/가 많이 팔려요."></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="w2WBtn">내 답 살펴보기</button></div>
+  <div class="fb" id="w2WFb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p></div>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>날씨가 우리 생활에 주는 영향을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>날씨가 우리 생활에 주는 영향을 조사하여 그림으로 표현했어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>편리하고 안전한 생활을 위해 날씨 정보가 중요하다는 생각을 가지게 되었어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 2단원 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+const DEG=Math.PI/180;
+/* 여러 개 고르기: data-a="1"이 정답 */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 고르기 문제 묶음: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua" style="font-size:1.05rem;margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.innerHTML=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션, cb) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='g2-it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('g2-ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션, cb) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.classList.add('g2-match');B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('g2-pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 짝이 되는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('g2-pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽에서 하나를 골라요.','info');return;}
+    if(cur===i){b.classList.add('g2-pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('g2-pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 끝내야 할 일 여러 개를 모두 마치면 섹션 완료 */
+function need(sec,n,msgEl,msg){let k=new Set();return id=>{k.add(id);if(k.size>=n){doneNav(sec);if(msgEl)fb(msgEl,msg,true);}};}
+
+/* ---------- 그림 조각 ---------- */
+function sunSvg(x,y,r){let s=`<circle cx="${x}" cy="${y}" r="${r}" fill="#ffd23f"/>`;for(let i=0;i<8;i++){const a=i*45*DEG;s+=`<line x1="${x+Math.cos(a)*(r+5)}" y1="${y+Math.sin(a)*(r+5)}" x2="${x+Math.cos(a)*(r+13)}" y2="${y+Math.sin(a)*(r+13)}" stroke="#f2b705" stroke-width="4" stroke-linecap="round"/>`;}return s;}
+function cloudSvg(x,y,k,c){k=k||1;c=c||'#fff';return `<g transform="translate(${x} ${y}) scale(${k})" fill="${c}"><circle cx="0" cy="0" r="18"/><circle cx="22" cy="-8" r="22"/><circle cx="46" cy="2" r="16"/><rect x="0" y="0" width="46" height="16"/></g>`;}
+/* 날씨 배경: 너비 200, 높이 150 */
+function bg(w){const sky={sun:'#bfe6fb',rain:'#9fb0bf',snow:'#dfe7ee',wind:'#cfe0ea',hot:'#ffe7a8',cold:'#d9e9f7',hum:'#c9d6dc'}[w]||'#eef3f6';
+  let s=`<rect width="200" height="150" fill="${sky}"/><rect y="118" width="200" height="32" fill="${w==='snow'||w==='cold'?'#f4f8fb':'#9fd08a'}"/>`;
+  if(w==='sun')s+=sunSvg(165,30,13);
+  if(w==='hot')s+=sunSvg(165,30,17)+`<path d="M20 60 q6 -8 0 -16 q-6 -8 0 -16 M40 60 q6 -8 0 -16 q-6 -8 0 -16" stroke="#e67e22" stroke-width="2.5" fill="none"/>`;
+  if(w==='rain'||w==='hum')s+=cloudSvg(20,24,.9,'#7f8c99')+cloudSvg(110,20,.9,'#8e9aa6');
+  if(w==='rain')for(let i=0;i<16;i++){const x=(i*37)%200,y=40+(i*23)%70;s+=`<line x1="${x}" y1="${y}" x2="${x-4}" y2="${y+12}" stroke="#2e6da4" stroke-width="2"/>`;}
+  if(w==='hum')s+=`<g fill="#5dade2" opacity=".7">${[0,1,2,3,4].map(i=>`<circle cx="${20+i*38}" cy="${60+(i%2)*14}" r="4"/>`).join('')}</g>`;
+  if(w==='snow'||w==='cold'){s+=cloudSvg(20,24,.9,'#c3ccd4');if(w==='snow')for(let i=0;i<18;i++){const x=(i*41)%200,y=40+(i*29)%76;s+=`<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="#b9c6d0"/>`;}}
+  if(w==='cold')s+=`<path d="M170 20 l0 26 M157 33 l26 0 M161 24 l18 18 M179 24 l-18 18" stroke="#3b82c4" stroke-width="3"/>`;
+  if(w==='wind')s+=[0,1,2].map(i=>`<path d="M10 ${40+i*24} q40 -14 80 0 t80 0" stroke="#5b7f99" stroke-width="3" fill="none"/>`).join('')+`<g transform="translate(165 98) rotate(14)"><rect x="-2" y="-30" width="4" height="40" fill="#7a5a3a"/><path d="M0 -30 q20 -14 26 6 q-20 -6 -26 8z" fill="#2f9e44"/></g>`;
+  return s;}
+/* 사람 + 생활 모습 소품 */
+function person(a,x,y){x=x||100;y=y||118;const coat=a==='coat'||a==='snowman',col=coat?'#2f6fae':a==='walk'?'#27ae60':'#f4a261';
+  let s=`<g transform="translate(${x} ${y})"><circle cx="0" cy="-58" r="13" fill="#ffd9b0"/><path d="M-10 -62 q10 -12 20 0" fill="#3a2a1a"/><rect x="-14" y="-44" width="28" height="${coat?40:32}" rx="8" fill="${col}"/>`+
+    `<rect x="-11" y="${coat?-4:-12}" width="8" height="${coat?4:12}" fill="#34495e"/><rect x="3" y="${coat?-4:-12}" width="8" height="${coat?4:12}" fill="#34495e"/>`;
+  if(coat)s+=`<path d="M-10 -44 h20" stroke="#c0392b" stroke-width="5"/><rect x="-16" y="-73" width="32" height="8" rx="4" fill="#c0392b"/>`;
+  if(a==='umbrella')s+=`<line x1="16" y1="-40" x2="16" y2="-86" stroke="#555" stroke-width="3"/><path d="M-22 -84 a38 26 0 0 1 76 0z" fill="#e74c3c"/>`;
+  if(a==='fan')s+=`<g transform="translate(20 -50) rotate(-20)"><path d="M0 0 l-15 -22 a27 27 0 0 1 30 0z" fill="#e74c3c"/><line x1="0" y1="0" x2="0" y2="12" stroke="#8a6a3e" stroke-width="3"/></g><circle cx="-14" cy="-62" r="2.5" fill="#3498db"/>`;
+  if(a==='snowman')s+=`<g transform="translate(46 0)"><circle cx="0" cy="-14" r="15" fill="#fff" stroke="#9fb3c2"/><circle cx="0" cy="-38" r="10" fill="#fff" stroke="#9fb3c2"/><circle cx="-3" cy="-40" r="1.6"/><circle cx="3" cy="-40" r="1.6"/><path d="M0 -37 l7 2 l-7 1z" fill="#e67e22"/></g>`;
+  if(a==='walk')s+=`<g transform="translate(-44 0)"><ellipse cx="0" cy="-12" rx="14" ry="9" fill="#a0522d"/><circle cx="12" cy="-20" r="7" fill="#a0522d"/><rect x="-10" y="-6" width="3" height="8" fill="#a0522d"/><rect x="6" y="-6" width="3" height="8" fill="#a0522d"/></g><path d="M-14 -40 q-18 10 -30 22" stroke="#555" stroke-width="1.5" fill="none"/>`;
+  if(a==='indoor')s=`<rect x="0" y="0" width="200" height="150" fill="#f6ead2"/><rect x="120" y="14" width="66" height="54" fill="${'#9fb0bf'}" stroke="#8a6a3e" stroke-width="4"/><line x1="153" y1="14" x2="153" y2="68" stroke="#8a6a3e" stroke-width="3"/><rect x="20" y="96" width="90" height="10" fill="#a87b4f"/>`+`<g transform="translate(${x} ${y})">`+`<circle cx="-30" cy="-58" r="13" fill="#ffd9b0"/><path d="M-40 -62 q10 -12 20 0" fill="#3a2a1a"/><rect x="-44" y="-44" width="28" height="32" rx="8" fill="#8e44ad"/><rect x="-56" y="-26" width="50" height="10" fill="#fff" stroke="#999"/><text x="-52" y="-18" font-size="8" fill="#555">책 읽기</text>`;
+  return s+'</g>';}
+
+/* ---------- 도입 ---------- */
+(function(){let s=`<rect width="800" height="320" fill="#f6ead2"/><rect x="430" y="30" width="320" height="200" fill="#7f8c99" stroke="#8a6a3e" stroke-width="10"/><line x1="590" y1="30" x2="590" y2="230" stroke="#8a6a3e" stroke-width="6"/>`+
+  cloudSvg(450,70,1.2,'#5d6d7e')+cloudSvg(600,60,1.3,'#566573');
+  for(let i=0;i<40;i++){const x=440+(i*53)%300,y=90+(i*37)%130;s+=`<line x1="${x}" y1="${y}" x2="${x-5}" y2="${y+16}" stroke="#d6eaf8" stroke-width="2.5"/>`;}
+  s+=`<rect x="0" y="270" width="800" height="50" fill="#c9a77a"/>`+
+   `<g transform="translate(260 270)"><circle cx="0" cy="-150" r="34" fill="#ffd9b0"/><path d="M-30 -160 q30 -36 60 0" fill="#3a2a1a"/><circle cx="-12" cy="-150" r="3.5"/><circle cx="12" cy="-150" r="3.5"/><path d="M-12 -130 q12 -8 24 0" stroke="#333" stroke-width="3" fill="none"/><path d="M-20 -162 l10 4 M20 -162 l-10 4" stroke="#333" stroke-width="3"/>`+
+   `<rect x="-36" y="-114" width="72" height="80" rx="16" fill="#e67e22"/><text x="-14" y="-70" font-family="Jua" font-size="22" fill="#fff">7</text><rect x="-28" y="-34" width="22" height="34" fill="#34495e"/><rect x="6" y="-34" width="22" height="34" fill="#34495e"/>`+
+   `<circle cx="70" cy="-90" r="30" fill="#e67e22" stroke="#7a3d00" stroke-width="3"/><path d="M40 -90 h60 M70 -120 v60 M48 -110 q22 20 0 40 M92 -110 q-22 20 0 40" stroke="#7a3d00" stroke-width="3" fill="none"/></g>`+
+   `<path d="M330 90 q60 -40 120 -20" stroke="#888" stroke-width="2" stroke-dasharray="6 6" fill="none"/><text x="300" y="70" font-family="Jua" font-size="22" fill="#0f3b5c">언제 그치지…?</text>`;
+  $('#w2Room').innerHTML=s;})();
+pickOne('#w2Q0','맞아요! 짙은 구름이 끼고 비가 와서 농구를 하러 나갈 수 없어 속상한 거예요. 날씨는 우리 생활에 어떤 영향을 줄까요?','다시 생각해 봐요.','s1');
+
+/* ---------- 경험한 날씨 ---------- */
+const EXP=[['sun','맑은 날','친구와 공원에서 산책하고 운동했어요.'],['wind','바람이 강하게 부는 날','바람이 강하게 불어서 창문이 많이 흔들렸어요.'],['hum','습도가 높은 날','빨래가 잘 마르지 않아 제습기를 틀었어요.'],['rain','비가 오는 날','학교에 가는 도중 비가 내려 우산을 썼어요.'],
+  ['snow','눈이 오는 날','눈이 많이 오는 날 친구와 함께 눈사람을 만들었어요.'],['hot','아주 더운 날','여름철 밤에 너무 더워서 잠들기 어려웠어요.'],['cold','아주 추운 날','날씨가 추워져서 창문이 얼어붙었어요.'],['fog','안개가 낀 날','안개가 자욱해서 멀리 있는 건물이 잘 보이지 않았어요.']];
+$('#w2Exp').innerHTML=EXP.map((e,i)=>`<button data-i="${i}"><svg viewBox="0 0 200 150">${e[0]==='fog'?bg('sun').replace('#bfe6fb','#dde3e7')+'<rect width="200" height="150" fill="#fff" opacity=".55"/>':bg(e[0])}</svg>${e[1]}</button>`).join('');
+$$('#w2Exp button').forEach(b=>b.onclick=()=>{b.classList.toggle('sel');const sel=$$('#w2Exp button.sel');
+  const e=EXP[+b.dataset.i];
+  if(b.classList.contains('sel'))fb('#w2ExpFb','예: '+e[2]+' ('+sel.length+'개 고름)',sel.length>=2?true:'info');else fb('#w2ExpFb',sel.length+'개 고름','info');
+  if(sel.length>=2)doneNav('s2');});
+
+/* ---------- 생활 모습 조사 ---------- */
+sorter('#w2Sort',[
+ {t:'산책이나 운동 등 야외 활동을 많이 해요',k:'sun'},{t:'색안경이나 모자를 쓰고 외출해요',k:'sun'},
+ {t:'시설물이 날아가지 않도록 단단히 고정해요',k:'wind',h:'시설물을 날아가게 하는 것은 무엇일까요?'},
+ {t:'빨래가 잘 마르지 않아 제습기를 사용해요',k:'hum',h:'공기 중에 수증기가 많은 날을 생각해 봐요.'},
+ {t:'우산을 쓰거나 비옷을 입어요',k:'rain'},{t:'눈놀이를 즐기고, 제설차가 눈을 치워요',k:'snow'}],
+ [{k:'sun',n:'☀️ 맑음'},{k:'wind',n:'🍃 강한 바람'},{k:'hum',n:'💧 높은 습도'},{k:'rain',n:'🌧️ 비'},{k:'snow',n:'❄️ 눈'}],
+ '모두 알맞게 골랐어요! 날씨에 따라 옷차림, 실내외 활동, 안전한 생활 등 생활 모습이 달라져요.','s3');
+
+/* ---------- 날씨 정보 활용 ---------- */
+const FC=[{w:'rain',t:'내일: 하루 종일 비, 강수량 많음',it:[['☂️ 우산',1],['👢 장화나 비옷',1],['🕶️ 색안경',0],['🏊 야외 수영장 가기',0],['🚌 일찍 나서기(길이 막힐 수 있어요)',1],['🪁 연날리기',0]],m:'비가 오면 우산·비옷을 챙기고, 교통이 혼잡할 수 있어 일찍 나서요.'},
+ {w:'hot',t:'내일: 맑음, 최고 기온 34 °C (폭염)',it:[['🧢 모자',1],['💧 물병',1],['🧥 두꺼운 외투',0],['🏃 한낮에 오래 달리기',0],['🧴 자외선 차단제',1],['🧤 털장갑',0]],m:'무더운 날에는 모자·물·자외선 차단제를 챙기고, 한낮의 야외 활동은 자제해요.'},
+ {w:'wind',t:'내일: 바람이 매우 강하게 붊 (강풍 주의)',it:[['🏠 비닐하우스·간판 단단히 고정하기',1],['🌾 농작물 수확 시기 조절하기',1],['🪟 창문 단단히 닫기',1],['⛺ 바닷가에서 캠핑하기',0],['🎈 풍선 날리기 행사',0],['🏖️ 모래성 쌓기',0]],m:'바람이 강하다는 예보가 있으면 시설물을 고정하고 수확 시기를 조절해 피해를 예방해요.'}];
+let fci=0;
+function showFc(){const f=FC[fci];$$('#w2Steps span').forEach((x,i)=>{x.classList.toggle('on',i===fci);x.classList.toggle('ok',i<fci);});
+  $('#w2FcSvg').innerHTML=`<svg x="0" y="0" width="300" height="160" viewBox="0 0 200 150" preserveAspectRatio="xMidYMid slice">${bg(f.w)}</svg>`;$('#w2FcT').textContent='📢 '+f.t;
+  const need=f.it.filter(x=>x[1]).length,got=new Set();$('#w2FcNext').hidden=true;fb('#w2FcFb','알맞은 준비를 모두 골라요. (0/'+need+')','info');
+  $('#w2Items').innerHTML=shuffle(f.it).map(x=>`<button data-a="${x[1]}">${x[0]}</button>`).join('');
+  $$('#w2Items button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb('#w2FcFb','잘 준비했어요! '+f.m,true);if(fci<FC.length-1)$('#w2FcNext').hidden=false;else{$$('#w2Steps span').forEach(x=>{x.classList.remove('on');x.classList.add('ok');});doneNav('s4');fb('#w2FcFb','잘 준비했어요! '+f.m+' 날씨 정보를 미리 알면 편리하고 안전하게 생활할 수 있어요.',true);}}
+      else fb('#w2FcFb','좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb('#w2FcFb','이 날씨에 알맞을까요? 예보를 다시 읽어 봐요.',false);}});}
+$('#w2FcNext').onclick=()=>{fci++;showFc();};
+showFc();
+
+/* ---------- 만화 그리기 ---------- */
+const WS=[['sun','☀️ 맑음'],['rain','🌧️ 비'],['snow','❄️ 눈'],['wind','🍃 강한 바람'],['hot','🥵 더위'],['cold','🥶 추위'],['hum','💧 높은 습도']];
+const AS=[['walk','🐕 산책'],['umbrella','☂️ 우산 쓰기'],['fan','💨 부채질'],['coat','🧥 두꺼운 옷'],['snowman','⛄ 눈사람'],['indoor','🏠 실내 활동']];
+const FIT={sun:['walk'],rain:['umbrella','indoor'],snow:['snowman','coat'],wind:['indoor','coat'],hot:['fan','indoor'],cold:['coat','indoor'],hum:['indoor','fan']};
+const P=[{},{},{},{}];let cur=0;
+function panel(i){const p=P[i];let s=p.a==='indoor'?'':bg(p.w||'');s+=p.a?person(p.a):(p.w?'':`<text x="100" y="80" text-anchor="middle" font-family="Jua" font-size="16" fill="#8aa">칸을 눌러 꾸며요</text>`);
+  if(p.t){const t=p.t.length>12?[p.t.slice(0,12),p.t.slice(12)]:[p.t];s+=`<rect x="6" y="20" width="${Math.min(188,Math.max(...t.map(x=>x.length))*13+16)}" height="${t.length*18+10}" rx="10" fill="#fff" stroke="#333"/>`+t.map((x,k)=>`<text x="14" y="${38+k*18}" font-size="13" fill="#15313d">${x.replace(/[<>&]/g,'')}</text>`).join('');}
+  return `<svg viewBox="0 0 200 150">${s}</svg><b>${i+1}</b>`;}
+function drawComic(){$('#w2Comic').innerHTML=P.map((p,i)=>`<div class="pn${i===cur?' cur':''}" data-i="${i}">${panel(i)}</div>`).join('');
+  $$('#w2Comic .pn').forEach(el=>tap(el,()=>{cur=+el.dataset.i;syncEd();drawComic();}));}
+function syncEd(){const p=P[cur];$$('#w2EdW button').forEach(b=>b.classList.toggle('sel',b.dataset.k===p.w));$$('#w2EdA button').forEach(b=>b.classList.toggle('sel',b.dataset.k===p.a));$('#w2EdT').value=p.t||'';}
+$('#w2EdW').innerHTML=WS.map(w=>`<button data-k="${w[0]}">${w[1]}</button>`).join('');
+$('#w2EdA').innerHTML=AS.map(w=>`<button data-k="${w[0]}">${w[1]}</button>`).join('');
+$$('#w2EdW button').forEach(b=>b.onclick=()=>{P[cur].w=b.dataset.k;syncEd();drawComic();});
+$$('#w2EdA button').forEach(b=>b.onclick=()=>{P[cur].a=b.dataset.k;syncEd();drawComic();});
+$('#w2EdT').oninput=()=>{P[cur].t=$('#w2EdT').value;drawComic();};
+$('#w2Ex').onclick=()=>{P[0]={w:'hot',a:'fan',t:'오늘은 더운 날!'};P[1]={w:'hot',a:'indoor',t:'날씨가 더우면 야외 활동을 자제해요.'};cur=1;syncEd();drawComic();fb('#w2ComicFb','교과서의 예시예요. 나머지 칸에 내 경험을 넣어 이어 그려 봐요.','info');};
+$('#w2Done').onclick=()=>{const full=P.filter(p=>p.w&&p.a&&(p.t||'').trim());
+  if(!full.length){fb('#w2ComicFb','적어도 한 칸에 날씨, 생활 모습, 말풍선을 모두 넣어요.',false);return;}
+  const bad=full.filter(p=>!FIT[p.w].includes(p.a));
+  if(bad.length){fb('#w2ComicFb','날씨와 생활 모습이 잘 어울리는지 다시 살펴봐요. (예: 비가 오는 날 → 우산 쓰기)',false);return;}
+  fb('#w2ComicFb','만화를 완성했어요! ('+full.length+'컷) 날씨에 따라 달라지는 생활 모습이 잘 드러나요. 친구들에게 소개해 봐요.',true);doneNav('s5');};
+drawComic();syncEd();
+
+/* ---------- 정리해요 ---------- */
+const d6=need('s6',2);
+pickOne('#w2Q6a','맞아요! 날씨에 따라 우리가 생활하는 모습은 달라져요.','다시 생각해 봐요.',null,()=>d6('a'));
+pickAll('#w2Q6b','잘 골랐어요! 날씨 정보를 미리 알면 옷차림과 활동을 준비하고, 자연재해에 대비할 수 있어요.','다시 생각해 봐요.',null,()=>d6('b'));
+
+/* ---------- 형성 평가 ---------- */
+let q1=0,q2=0;const c7=()=>{if(q1&&q2)doneNav('s7');};
+quiz('#quiz',[
+ {q:'1. 날씨에 따른 우리 생활 모습으로 알맞지 <u>않은</u> 것은 어느 것일까요?',o:['비가 오는 날은 우산을 쓴다.','맑은 날 색안경과 양산을 쓴다.','습도가 높은 날에는 빨래를 한다.','추운 날에는 두꺼운 외투를 입는다.','무더운 날에는 야외 활동을 자제한다.'],a:2,e:'습도가 높은 날에는 빨래가 잘 마르지 않아요.',h:'빨래가 잘 마르지 않는 날을 떠올려 봐요.'},
+ {q:'2. 바람이 강하게 분다는 예보가 있으면 어떻게 하는 것이 좋을까요?',o:['시설물이 날아가지 않도록 단단히 고정한다.','창문을 활짝 열어 둔다.','바닷가에 놀러 간다.'],a:0,e:'바람에 시설물이 날아가지 않도록 단단히 고정해 피해를 예방해요.'},
+ {q:'3. 날씨는 우리 생활과 밀접한 관계가 있다. (○, ×)',o:['○ 옳아요','× 옳지 않아요'],a:0,e:'날씨에 따라 옷차림, 활동, 건강, 안전한 생활 등이 달라져요.'},
+ {q:'4. 스마트 기기에서 열이 나면 어떻게 해야 할까요?',o:['계속 사용한다.','즉시 사용을 멈추고 선생님께 알린다.','물을 부어 식힌다.'],a:1,e:'냄새가 나거나 열이 나면 즉시 사용을 멈추고 선생님께 알려요.'}],()=>{q1=1;c7();});
+keyCheck('#w2W','#w2WBtn','#w2WFb',[[/우산|우비|비옷|장화/,'비 오는 날 우산·비옷'],[/모자|자외선|선크림|양산|색안경|선글라스/,'맑고 더운 날 모자·자외선 차단제'],[/아이스크림|음료|빙수|선풍기|에어컨|부채/,'더운 날 시원한 물건'],[/외투|패딩|장갑|핫팩|목도리|난로|호빵/,'추운 날 따뜻한 물건'],[/제습기/,'습한 날 제습기'],[/눈삽|염화|제설|썰매/,'눈 오는 날 물건']],2,null,'날씨와 그날 많이 팔리는 물건을 짝지어 두 가지 써 봐요.');
+$('#w2WBtn').addEventListener('click',()=>{if($('#w2WFb').classList.contains('ok')){$('#w2WFb').textContent+=' 예시 답: 비가 오는 날에는 우산이 많이 팔려요. 맑고 더운 날에는 모자나 자외선 차단제가 많이 팔려요.';q2=1;c7();}});
+
+faces('s8','잘했어요! 다음 시간에는 이슬, 안개, 구름을 비교해 봐요.','어려웠던 부분은 날씨에 따른 생활 모습을 다시 살펴보고, 선생님께 질문해도 좋아요!');
+</script>

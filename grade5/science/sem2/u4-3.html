@@ -1,0 +1,756 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>에너지를 지속가능하게 이용하려면?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<style>
+:root{
+  --bg:#e8f5fb; --paper:#fff; --ink:#15313d; --muted:#48646f; --line:#bcd9e4;
+  --sky:#1c6fa8; --sky2:#a9d9f2; --sun:#ffc93c; --good:#16804a; --bad:#c2332c; --navy:#2f7d4a;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+}
+:root[data-theme="dark"]{--bg:#0e2129;--paper:#16323c;--ink:#e7f3f5;--muted:#a6c2cb;--line:#2c4f5b;--sky2:#2b6b8f;--navy:#0a2738}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Gowun Dodum","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-size:1rem;line-height:1.6}
+h1,h2,h3,.jua,button{font-family:"Jua","Apple SD Gothic Neo","Malgun Gothic",sans-serif;font-weight:400}
+h1{font-size:1.8rem;margin:0;line-height:1.25}
+h2{font-size:1.35rem;margin:0 0 8px}
+p{margin:0 0 10px}
+.wrap{max-width:960px;margin:0 auto;padding:16px}
+header{background:var(--navy);color:#fff}
+header .wrap{display:flex;gap:18px;align-items:center;flex-wrap:wrap;padding-top:20px;padding-bottom:20px}
+header p{color:#cfe6f2;margin:4px 0 0}
+nav{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:2px solid var(--line)}
+nav .wrap{display:flex;gap:8px;overflow-x:auto;padding-top:10px;padding-bottom:10px}
+nav a{white-space:nowrap;text-decoration:none;color:var(--ink);font-family:"Jua",sans-serif;font-size:0.95rem;padding:6px 14px;border-radius:999px;border:2px solid var(--line);background:var(--paper)}
+nav a.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+section{background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:20px;margin:18px 0;scroll-margin-top:70px}
+.stage{display:inline-block;background:var(--sky);color:#fff;border-radius:999px;padding:2px 14px;font-family:"Jua",sans-serif;margin-bottom:8px}
+.goal{border-left:8px solid var(--sun);background:var(--paper);padding:12px 16px;border-radius:0 12px 12px 0;margin:16px 0 0}
+button{font-size:1rem;min-height:2.6rem;padding:.4em .9em;border-radius:14px;border:3px solid var(--navy);background:var(--paper);color:var(--ink);cursor:pointer}
+button:hover{background:var(--sky2)}
+button:focus-visible,textarea:focus-visible{outline:4px solid var(--sun);outline-offset:2px}
+button.main{background:var(--sky);border-color:var(--sky);color:#fff}
+button.sel{background:var(--sun);border-color:#b58400;color:#15313d}
+button.right{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+button.wrong{background:#fbd0cb;border-color:var(--bad);color:#8a1f19}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.pick{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:10px}
+.fb{margin-top:10px;padding:10px 14px;border-radius:12px}
+.fb:empty{display:none}
+.fb.ok{background:#dcf5e5;color:#0d5a31}.fb.no{background:#fde2df;color:#8a1f19}.fb.info{background:#e1f0fb;color:#12466b}
+svg{display:block;max-width:100%;height:auto}
+.scene{width:100%;border-radius:16px;border:3px solid var(--navy)}
+.tip{font-size:0.85rem;color:var(--muted)}
+.found{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+.found span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:4px 12px;font-size:0.9rem}
+textarea{font:inherit;font-size:1rem;width:100%;padding:12px;border-radius:12px;border:2px solid var(--line);background:var(--paper);color:var(--ink)}
+.blank{display:inline-flex;gap:6px;vertical-align:middle}
+.blank span{width:2.4rem;height:2.4rem;border:3px solid var(--sky);border-radius:10px;display:grid;place-items:center;font-family:"Jua",sans-serif;font-size:1.3rem;background:var(--paper)}
+table{border-collapse:collapse;width:100%}
+td,th{border:2px solid var(--line);padding:8px;text-align:left;font-size:0.95rem}
+td.face{text-align:center;white-space:nowrap}
+td.face button{min-height:2.4rem;padding:4px 10px;font-size:1.3rem}
+.hit{cursor:pointer}
+@keyframes spin{to{transform:rotate(360deg)}}
+@keyframes rain{from{transform:translateY(-8px);opacity:1}to{transform:translateY(34px);opacity:0}}
+@keyframes wob{0%,100%{transform:rotate(0)}30%{transform:rotate(-9deg)}60%{transform:rotate(7deg)}}
+@keyframes blow{from{opacity:1;transform:translate(0,0)}to{opacity:0;transform:translate(40px,16px)}}
+@keyframes glow{0%,100%{opacity:.55}50%{opacity:1}}
+@keyframes pop{from{stroke-dashoffset:260}to{stroke-dashoffset:0}}
+@media (prefers-reduced-motion: reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition:none!important}}
+
+/* ===== 화면 비율 자동 맞춤 + 줄바꿈 ===== */
+html{font-size:clamp(16px, 11px + 0.85vw, 26px)}
+body{font-size:1rem;word-break:keep-all;overflow-wrap:break-word;line-break:strict}
+p,li,td,th,.fb,label,.tip,.ds,.pl,.cm,.warn{text-wrap:pretty}
+h1,h2,h3,.jua,button,.nm,summary{text-wrap:balance;word-break:keep-all}
+.wrap{max-width:none!important;margin:0!important;padding:clamp(10px,2vw,40px)!important}
+header .wrap,nav .wrap{padding-top:clamp(8px,1.2vw,22px)!important;padding-bottom:clamp(8px,1.2vw,22px)!important}
+header svg{width:4.3rem;height:auto}
+section{padding:clamp(12px,1.8vw,34px);border-radius:clamp(14px,1.6vw,28px)}
+button{min-width:0}
+
+.pick{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+.player{width:min(100%,92vh);margin:0 auto}
+.player .ctl{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:.6rem;align-items:center;margin-top:8px}
+.player input[type=range]{width:100%;accent-color:var(--sky);height:2rem}
+.chapters{margin-top:6px;gap:6px}.chapters button{font-size:.85rem;min-height:2.2rem;padding:.1em .6em;border-width:2px}
+.chapters button.on,#glass.on{background:var(--sun);border-color:#b58400;color:#15313d}
+.cap{background:#0f3b5c;color:#fff;border-radius:12px;padding:10px 14px;margin:8px 0;min-height:3.4em}
+td.face{width:30%}
+
+/* ===== 실제 사진 (위키미디어 공용) ===== */
+.photo{margin:14px 0 4px;border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);overflow:hidden;background:var(--paper)}
+.photo img{display:block;width:100%;height:auto;aspect-ratio:3/2;object-fit:cover}
+.photo.wide img{aspect-ratio:16/7}
+.photo figcaption{padding:.4rem .7rem;font-size:.95rem;line-height:1.45;text-wrap:pretty}
+.photo .cr{display:block;font-size:.7rem;color:var(--muted);margin-top:2px}
+.photo .cr a{color:inherit}
+.gallery{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(8px,1vw,16px)}
+.gallery .photo{margin:0}
+@media (max-width:640px){.gallery{grid-template-columns:repeat(2,minmax(0,1fr))}}
+img.ph{display:block;width:100%;aspect-ratio:16/11;object-fit:cover;border-radius:10px}
+.credits{margin-top:18px;font-size:.8rem;color:var(--muted)}
+.credits summary{cursor:pointer;font-family:"Jua",sans-serif;font-size:.95rem;color:var(--ink)}
+.credits li{margin:2px 0;word-break:break-all}
+.credits a{color:inherit}
+</style>
+<style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
+
+<style>
+/* 4단원(2학기) 자원과 에너지 · 교과서 버전 공통 */
+[hidden]{display:none!important}
+.r4-fit{width:min(100%,calc(var(--h,48vh)*var(--ar,1.6)));margin:0 auto;display:block}
+.r4-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+.r4-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;align-items:stretch}
+@media(max-width:700px){.r4-two,.r4-three{grid-template-columns:1fr}}
+.r4-q{font-family:"Jua",sans-serif;font-size:1.08rem;margin:10px 0 6px}
+.r4-chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.r4-chips button{min-height:2.3rem;padding:.2em .8em}
+.r4-mt{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px}
+.r4-mt>div{display:flex;flex-direction:column;gap:8px}
+.r4-mt button{font-size:.95rem;min-height:2.4rem;text-align:left}
+.r4-mt>div:first-child button{text-align:center}
+.r4-ox{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:6px 0;padding:6px 10px;border:2px solid var(--line);border-radius:12px}
+.r4-ox .q{flex:1 1 60%}
+.r4-ox button{min-width:3.2rem}
+.r4-bins{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:8px;margin-top:8px}
+.r4-bins .bin{border:3px dashed var(--line);border-radius:14px;padding:8px;min-height:4.2rem;cursor:pointer;background:var(--paper)}
+.r4-bins .bin b{display:block;font-family:"Jua",sans-serif;font-weight:400;margin-bottom:4px}
+.r4-bins .bin span{display:inline-block;background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:2px 10px;margin:2px;font-size:.88rem}
+.r4-bins .bin.hot{border-color:var(--sun)}
+svg .org{cursor:pointer}
+svg .org:hover>*{filter:brightness(1.06)}
+svg .org.ok .hl{stroke:#16804a!important;stroke-width:4px}
+svg .org:focus{outline:none}
+svg .org:focus-visible .hl{stroke:#b58400!important;stroke-width:5px}
+.r4-card{border:3px solid var(--navy);border-radius:16px;padding:10px 14px;background:#fffaf0;color:#15313d}
+.r4-card h3{margin:0 0 4px;font-size:1.08rem}
+.r4-card .src{font-size:.82rem;color:#5d6b70;margin:4px 0 0}
+.r4-tbl td,.r4-tbl th{text-align:center;font-size:.92rem;padding:5px 6px}
+.r4-tbl th{background:#e1f0fb;color:#15313d}
+.cc{display:inline-flex;gap:4px;vertical-align:middle;margin:2px}
+.cc button{min-height:2.1rem;padding:.1em .6em;font-size:.92rem;border-width:2px}
+.r4-box{border:3px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--paper)}
+.r4-note{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:8px 12px;font-size:.95rem;margin:8px 0}
+.r4-tabs{display:flex;flex-wrap:wrap;gap:8px;margin:6px 0}
+.r4-tabs button{min-height:2.4rem}
+.r4-tabs button.r4-done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.r4-in{font:inherit;font-size:1rem;padding:8px 10px;border-radius:10px;border:2px solid var(--line);background:var(--paper);color:var(--ink);min-width:0;width:100%}
+.r4-lbl{font-family:"Jua",sans-serif;font-size:.95rem;color:var(--muted)}
+
+.c3-room{display:block;width:100%;max-height:44vh;border:3px solid var(--navy);border-radius:16px;background:#fff}
+.c3-def{border:3px solid #2f7d4a;border-radius:14px;padding:8px 12px;background:#effaf2;color:#15313d}
+.c3-def b{color:#1f6b3d}
+.c3-exp{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.c3-exp button.on{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.c3-game{display:grid;grid-template-columns:1fr;gap:8px}
+@media(max-width:700px){.c3-game{grid-template-columns:1fr}}
+.c3-game svg{display:block;width:100%;max-height:34vh;border:3px solid var(--navy);border-radius:14px;background:#fffdf6}
+.c3-side{display:grid;grid-template-columns:auto auto auto minmax(0,1fr);gap:10px;align-items:center}
+@media(max-width:700px){.c3-side{grid-template-columns:1fr 1fr}}
+.c3-turn{font-family:"Jua",sans-serif;font-size:1.1rem}
+.c3-die{font-size:2rem;min-width:5rem;line-height:1;text-align:center;border:3px solid var(--line);border-radius:14px;padding:6px;background:var(--paper)}
+.c3-ev{border:3px solid #e2b13c;border-radius:14px;padding:8px 10px;background:#fff8e6;color:#15313d}
+.c3-ev .row{margin-top:6px}
+.c3-ev .row button{font-size:.92rem}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+  <svg width="86" height="86" viewBox="0 0 86 86" aria-hidden="true"><path d="M48 8 L20 48 h20 l-6 30 L66 34 h-20z" fill="#ffd23f" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg>
+  <div><h1>에너지를 지속가능하게 이용하려면?</h1><p>5학년 2학기 과학 · 4단원 자원과 에너지 · 5/11차시</p></div>
+</div></header>
+<nav><div class="wrap" id="nav">
+  <a href="#s1">도입</a><a href="#s2">에너지 이용 경험</a><a href="#s3">에너지 이용 놀이</a><a href="#s4">분류해요</a><a href="#s5">토의해요 ①</a><a href="#s6">토의해요 ②</a><a href="#s7">한눈에 쏙</a><a href="#s8">형성 평가</a><a href="#s9">스스로 평가</a>
+</div></nav>
+
+<main class="wrap">
+<p class="goal">🎯 <b>학습 목표</b><br>에너지를 지속가능하게 이용해야 하는 까닭을 설명할 수 있어요.<br>에너지를 지속가능하게 이용할 방법을 토의할 수 있어요.</p>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 92쪽</span>
+  <h2>사람이 없는 교실의 전기 기구를 꺼야 하는 까닭은 무엇일까요?</h2>
+  <p>모두 이동 수업을 가서 교실이 비었어요. 켜져 있는 전기 기구를 눌러 꺼 봐요.</p>
+  <svg id="c3Room" class="c3-room" viewBox="0 0 760 300" role="img" aria-label="아무도 없는 교실에 켜져 있는 전등, 컴퓨터, 텔레비전, 선풍기"></svg>
+  <div class="fb" id="c3RoomFb"></div>
+  <div id="c3Why" hidden>
+    <p class="r4-q">사람이 없는 교실의 전기 기구를 꺼야 하는 까닭은 무엇일까요?</p>
+    <div class="pick" id="c3P1"><button data-a="1" data-m="맞아요! 불필요한 에너지 사용을 줄여야 해요. 미래 세대도 계속 에너지를 쓸 수 있도록 지금부터 아껴야 해요.">불필요한 에너지 사용을 줄여야 하기 때문이에요</button><button data-a="0" data-m="전기 기구를 끄는 까닭은 에너지와 관련이 있어요. 아무도 쓰지 않는데 켜져 있으면 에너지가 어떻게 될까요?">교실을 어둡게 해야 하기 때문이에요</button></div>
+    <div class="fb"></div>
+    <p class="c3-def">📖 <b>지속가능</b>: 현재 세대의 필요를 충족하면서도 미래 세대가 사용할 에너지를 보존하는 것 (「과학」 93쪽)</p>
+  </div>
+</section>
+
+<section id="s2" data-nav="에너지 이용 경험">
+  <span class="stage">활동해요 ① · 「실험관찰」 58쪽</span>
+  <h2>일상생활에서 에너지를 이용한 경험을 이야기해요</h2>
+  <p>내가 에너지를 이용한 경험을 <b>세 가지 이상</b> 골라요. 다른 경험이 있으면 써서 더해요.</p>
+  <div class="c3-exp" id="c3Exp"></div>
+  <div class="r4-two" style="grid-template-columns:minmax(0,1fr) auto"><input class="r4-in" id="c3New" maxlength="30" placeholder="예: 스마트 기기를 충전했어요"><button id="c3Add">＋ 더하기</button></div>
+  <div class="row" style="margin-top:8px"><button class="main" id="c3ExpOk">다 골랐어요</button><span class="jua" id="c3Cnt">고른 것 0개</span></div>
+  <div class="fb" id="c3ExpFb"></div>
+</section>
+
+<section id="s3" data-nav="에너지 이용 놀이">
+  <span class="stage">활동해요 ② · 「실험관찰」 58쪽 · 83쪽 놀이판</span>
+  <h2>친구와 함께 에너지 이용 놀이를 해요</h2>
+  <p>번갈아 주사위를 굴려 나온 수만큼 말을 옮겨요. 도착한 칸이 <b>에너지를 지속가능하게 이용한 예</b>이면 🪜 사다리를 타고 올라가고, <b>에너지를 낭비하거나 함부로 이용한 예</b>이면 🛝 미끄럼틀을 타고 내려가요. 두 친구가 모두 도착하면 끝나요.</p>
+  <div class="c3-game">
+    <svg id="c3Board" viewBox="0 0 1000 300" role="img" aria-label="30칸 에너지 이용 놀이판"></svg>
+    <div class="c3-side">
+      <div class="c3-turn" id="c3Turn">🔵 나의 차례예요</div>
+      <div class="c3-die" id="c3Die" aria-live="polite">🎲</div>
+      <button class="main" id="c3Roll">🎲 주사위 굴리기</button>
+      <div class="fb" id="c3GameFb" style="margin:0"></div>
+    </div>
+    <div class="c3-ev" id="c3Ev" hidden></div>
+  </div>
+  <p class="tip">⚠️ 실제 놀이판으로 할 때는 주사위를 너무 높이 던지거나 바닥에 굴리지 않아요. 지나치게 경쟁하지 말고, 아직 도착하지 못한 친구를 기다려 주어요.</p>
+</section>
+
+<section id="s4" data-nav="분류해요">
+  <span class="stage">활동해요 ③ · 「실험관찰」 59쪽</span>
+  <h2>지속가능하게 이용하는 예와 그렇지 않은 예로 나누어요</h2>
+  <p>놀이판의 칸을 하나 고른 다음 알맞은 상자를 눌러요.</p>
+  <div id="c3Sort"></div>
+  <div class="fb"></div>
+  <div id="c3Rs" hidden>
+    <p class="r4-q">이렇게 나눈 까닭으로 알맞은 것을 모두 골라요.</p>
+    <div class="pick" id="c3P4"><button data-a="1">걷거나 자전거를 이용하고 친환경 제품을 쓰면 에너지를 절약할 수 있어요</button><button data-a="1">재생 에너지는 태양, 바람처럼 재생 가능한 자원에서 에너지를 얻어요</button><button data-a="1">쓰지 않는 전기 기구를 켜 두면 불필요한 에너지가 쓰여요</button><button data-a="0" data-m="석유로 에너지를 얻으면 이산화 탄소가 생겨요. 지속가능한 예가 아니에요.">석유로 에너지를 얻으면 환경에 좋아요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s5" data-nav="토의해요 ①">
+  <span class="stage">토의해요 ① · 「과학」 93쪽 · 「실험관찰」 59쪽</span>
+  <h2>에너지를 지속가능하게 이용해야 하는 까닭은 무엇일까요?</h2>
+  <p class="r4-q">1. 우리가 생활에서 에너지를 이용하는 모습에는 어떤 문제점이 있을까요? 모두 골라요.</p>
+  <div class="pick" id="c3Pb"><button data-a="1">자원은 한정되어 있는데 에너지를 이용하는 곳이 많아요</button><button data-a="1">석탄, 석유로 얻은 에너지는 환경오염과 기후변화 등의 문제를 일으켜요</button><button data-a="0" data-m="에너지는 우리 생활에 꼭 필요해요. 문제는 에너지를 얻고 쓰는 방법이에요.">에너지는 우리 생활에 전혀 필요하지 않아요</button></div>
+  <div class="fb"></div>
+  <p class="r4-q" data-glue="1">2. 에너지를 지속가능하게 이용해야 하는 까닭을 모두 골라요.</p>
+  <div class="pick" id="c3Why2" data-glue="1"><button data-a="1">재생 에너지는 재생 가능한 자원에서 얻어 고갈될 위험이 적어요</button><button data-a="1">에너지 부족 문제, 환경오염 문제를 해결하는 데 도움이 돼요</button><button data-a="1">미래 세대도 깨끗한 에너지를 쓰고, 기후변화에 대응할 수 있어요</button><button data-a="0" data-m="석탄, 석유는 쓸수록 줄어들어요. 그래서 지속가능하게 이용하는 방법이 필요해요.">석탄과 석유는 아무리 써도 줄어들지 않아요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="토의해요 ②">
+  <span class="stage">토의해요 ② · 「과학」 93쪽 · 「실험관찰」 59쪽</span>
+  <h2>에너지를 지속가능하게 이용할 방법을 토의해요</h2>
+  <p>「과학」 93쪽 그림처럼 세 가지 방법으로 나누어 담아요.</p>
+  <div id="c3Way"></div>
+  <div class="fb"></div>
+  <p class="r4-note" id="c3WayNote" hidden>🌏 에너지를 지속가능하게 이용하려고 우리는 태양 빛, 바람, 물 등 재생 가능한 자원으로부터 재생 에너지를 얻고, 환경을 덜 오염시키고 에너지 사용량을 줄이는 친환경 기술을 개발해요. 또 일상생활에서 불필요한 에너지 사용을 줄이도록 노력해야 해요.</p>
+</section>
+
+<section id="s7" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.12rem">재생 에너지를 사용하고 에너지를 절약하는 것은 에너지를 <span class="blank"><span id="bl1">ㅈ</span><span id="bl2">ㅅ</span><span id="bl3">ㄱ</span><span id="bl4">ㄴ</span></span>하게 이용하는 방법입니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="r4-q" data-glue="1">💭 에너지를 지속가능하게 이용하는 방법 가운데 <b>학교에서 실천할 수 있는 방법</b>을 써 봐요.</p>
+  <textarea id="c3Sch" rows="2" placeholder="예: 이동 수업을 할 때 ~" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="c3SchBtn">다 썼어요</button></div>
+  <div class="fb" id="c3SchFb"></div>
+</section>
+
+<section id="s8" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="r4-q">1. 에너지를 지속가능하게 이용하는 방법으로 옳지 <u>않은</u> 것은 어느 것일까요?</p>
+  <div class="pick" id="c3Q1" style="grid-template-columns:1fr!important;gap:6px"><button data-a="0" data-m="불필요한 에너지 사용을 줄이는 것은 지속가능한 방법이에요.">① 불필요한 에너지 사용을 줄인다.</button><button data-a="0" data-m="적정 온도를 지키면 에너지를 아낄 수 있어요.">② 냉난방을 할 때 적정 온도를 지킨다.</button><button data-a="0" data-m="재생 에너지 이용은 지속가능한 방법이에요.">③ 태양 에너지, 풍력 등 재생 에너지를 이용한다.</button><button data-a="0" data-m="환경오염 물질을 적게 내는 것은 지속가능한 방법이에요.">④ 환경오염 물질을 적게 배출하는 에너지 자원을 이용한다.</button><button data-a="1" data-m="맞아요! 전기 기구를 쓰지 않을 때도 플러그를 꽂아 두면 불필요한 전기가 쓰일 수 있어요. 쓰지 않을 때는 플러그를 뽑아요.">⑤ 전기 기구를 사용하지 않을 때는 항상 콘센트에 플러그를 꽂아 둔다.</button></div>
+  <div class="fb"></div>
+  <p class="r4-q" style="margin-top:12px">2. ✏️ 서술형: 지속가능한 에너지 이용이 필요한 까닭을 두 가지 써 봐요.</p>
+  <textarea id="c3Q2" rows="2" placeholder="첫째, ~ 때문이에요. 둘째, ~ 때문이에요."></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="c3Q2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="c3Q2Fb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p>
+</section>
+
+<section id="s9" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 59쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>일상생활에서 에너지를 지속가능하게 이용하는 방법을 설명했나요?</td><td class="face" data-r="0"></td></tr>
+    <tr><td>에너지를 지속가능하게 이용할 방법을 토의했나요?</td><td class="face" data-r="1"></td></tr>
+    <tr><td>에너지를 지속가능하게 이용해야 하는 까닭에 관심을 갖게 되었나요?</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<p class="tip" style="text-align:center">「과학」 92~93쪽 · 「실험관찰」 58~59쪽 · 지도서 364~371쪽 바탕</p>
+</main>
+
+<script>
+var $=(s,r=document)=>r.querySelector(s), $$=(s,r=document)=>[...r.querySelectorAll(s)];
+function fb(el,msg,ok){if(typeof el==='string')el=$(el);if(!el)return;el.textContent=msg;el.className='fb '+(ok===true?'ok':ok===false?'no':'info');}
+function doneNav(id){const a=$(`nav a[href="#${id}"]`); if(a) a.classList.add('done');}
+/* 고르기 묶음: pickOne('#box', 맞을 때 글, 틀릴 때 글, 섹션id) — 버튼의 data-a="1"이 정답 */
+function pickOne(box,okMsg,noMsg,sec,after){const bs=$$(box+' button');const out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');fb(out,b.dataset.m||okMsg,true);if(sec)doneNav(sec);if(after)after(b);}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 스스로 평가: 섹션 안 td.face[data-r] 칸에 얼굴 단추, 다 고르면 글 */
+function faces(sec,goodMsg,lowMsg){const fs=['😀','🙂','😐'],rate=[];const tds=$$('#'+sec+' td.face');
+  tds.forEach(td=>{const r=+td.dataset.r;fs.forEach((f,i)=>{const b=document.createElement('button');b.textContent=f;b.setAttribute('aria-label',['잘함','보통','노력 필요'][i]);
+    b.onclick=()=>{$$('button',td).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');rate[r]=i;
+      if(tds.every(t=>rate[+t.dataset.r]!=null)){const low=rate.some(x=>x===2);fb($('#'+sec+' .fb:last-of-type')||$('#selfFb'),low?lowMsg:goodMsg,low?'info':true);doneNav(sec);}};
+    td.appendChild(b);});});}
+/* 글쓰기 확인: keyCheck('#ta','#btn','#fb',[[/정규식/,'이름'],…],필요 수,섹션id,힌트) */
+function keyCheck(ta,btn,out,keys,need,sec,hint){$(btn).onclick=()=>{const t=$(ta).value.trim();if(!t){fb(out,'먼저 답을 써 보세요.',false);return;}
+  const hits=keys.filter(([r])=>r.test(t)).map(x=>x[1]);
+  if(hits.length>=need){fb(out,'잘 썼어요! 찾은 내용: '+hits.join(', ')+'.',true);if(sec)doneNav(sec);}
+  else if(hits.length)fb(out,'찾은 내용: '+hits.join(', ')+'. '+(hint||'조금 더 자세히 써 볼까요?'),'info');
+  else fb(out,hint||'오늘 배운 낱말을 넣어 다시 써 봐요.',false);};}
+
+
+/* ===== 이 단원 공통 도우미 ===== */
+function tween(ms,f){return new Promise(res=>{const t0=performance.now();(function st(n){const p=Math.min(1,Math.max(0,(n-t0)/ms));f(p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2,p);if(p<1)requestAnimationFrame(st);else res();})(t0);});}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tap(el,f){el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+function esc(t){return String(t).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));}
+/* 한 섹션 안 활동을 모두 끝내야 초록: const g=gate('s3',2); g('a'); g('b'); */
+function gate(sec,n,cb){const s=new Set();let fired=false;return id=>{s.add(id);if(s.size>=n&&!fired){fired=true;doneNav(sec);if(cb)cb();}};}
+/* keyCheck 결과가 맞으면 부르기 */
+function onOk(btn,out,f){$(btn).addEventListener('click',()=>{const o=$(out);if(o&&o.classList.contains('ok'))f();});}
+/* 여러 개 고르기: data-a="1"인 것을 모두 */
+function pickAll(box,okMsg,noMsg,sec,after){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(got.size===need)return;if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(after)after();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+`좋아요! 더 있어요. (${got.size}/${need})`,'info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 짝 맞추기: 왼쪽 → 오른쪽 */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.classList.add('r4-mt');B.innerHTML='';
+  const L=document.createElement('div'),R=document.createElement('div');B.append(L,R);let sel=null,n=0;
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.onclick=()=>{if(b.disabled)return;$$('button',L).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=i;};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p[1],i])).forEach(([r,i])=>{const b=document.createElement('button');b.textContent=r;b.onclick=()=>{if(b.disabled)return;
+    if(sel==null){fb(out,'왼쪽에서 먼저 하나를 골라요.','info');return;}
+    if(i===sel){b.classList.add('right');b.disabled=true;const lb=L.children[sel];lb.classList.remove('sel');lb.classList.add('right');lb.disabled=true;sel=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${n}/${pairs.length})`,'info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,(pairs[sel][2]||'다시 생각해 봐요.'),false);}};R.appendChild(b);});}
+/* O/X: 행마다 data-a="o"/"x" */
+function oxList(box,okMsg,sec,cb){const rows=$$(box+' .r4-ox'),out=$(box).nextElementSibling,ok=new Set();
+  rows.forEach((r,i)=>{['⭕','❌'].forEach((t,j)=>{const b=document.createElement('button');b.textContent=t;b.setAttribute('aria-label',j?'틀려요':'맞아요');
+    b.onclick=()=>{if(ok.has(i))return;const good=(r.dataset.a==='o')===(j===0);if(good){b.classList.add('right');ok.add(i);fb(out,(r.dataset.m||'맞아요!')+(ok.size<rows.length?` (${ok.size}/${rows.length})`:''),ok.size<rows.length?'info':true);
+      if(ok.size===rows.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}}else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,r.dataset.h||'다시 생각해 봐요.',false);}};r.appendChild(b);});});}
+/* 나누어 담기: 낱말 카드 → 상자 */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='';const ch=document.createElement('div');ch.className='r4-chips';const bx=document.createElement('div');bx.className='r4-bins';bx.style.setProperty('--n',bins.length);B.append(ch,bx);
+  let sel=null,n=0;const bs=bins.map((t,i)=>{const d=document.createElement('div');d.className='bin';d.innerHTML='<b>'+t+'</b>';tap(d,()=>put(i));bx.appendChild(d);return d;});
+  shuffle(items).forEach(it=>{const b=document.createElement('button');b.textContent=it[0];b.onclick=()=>{if(b.disabled)return;$$('button',ch).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=[b,it];bs.forEach(d=>d.classList.add('hot'));};ch.appendChild(b);});
+  function put(i){if(!sel){fb(out,'위의 카드를 먼저 골라요.','info');return;}const [b,it]=sel;
+    if(it[1]===i){const s=document.createElement('span');s.textContent=it[0];bs[i].appendChild(s);b.remove();sel=null;n++;bs.forEach(d=>d.classList.remove('hot'));
+      if(n===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it[3]?it[3]+' ':'맞아요! ')+`(${n}/${items.length})`,'info');}
+    else fb(out,it[2]||'다른 상자에 어울려요. 다시 생각해 봐요.',false);}}
+/* 그림 속 이름 붙이기: 이름 카드(data-k) 고르고 그림(.org[data-k]) 누르기 → 이름표(data-for) 보이기, info[k]는 설명 */
+function namer(svg,chips,okMsg,sec,cb,info){const S=$(svg),C=$(chips),out=C.nextElementSibling,ks=$$('button',C);let sel=null,n=0;
+  ks.forEach(b=>b.onclick=()=>{if(b.disabled)return;ks.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=b;});
+  $$('.org[data-k]',S).forEach(g=>tap(g,()=>{const k=g.dataset.k;if(g.classList.contains('ok')){if(info&&info[k])fb(out,info[k],'info');return;}
+    if(!sel){fb(out,'아래 이름 카드를 먼저 고르고 그림을 눌러요.','info');return;}
+    if(sel.dataset.k===k){g.classList.add('ok');sel.classList.remove('sel');sel.classList.add('right');sel.disabled=true;
+      $$('[data-for="'+k+'"]',S).forEach(x=>x.style.display='');sel=null;n++;
+      if(n===ks.length){fb(out,(info&&info[k]?info[k]+' ':'')+okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(info&&info[k]?info[k]+' ':'맞아요! ')+`(${n}/${ks.length})`,'info');}
+    else fb(out,'그곳은 '+sel.textContent.replace(/^\S+\s/,'')+'이(가) 아니에요. 그림을 다시 살펴봐요.',false);}));}
+/* 영상처럼 보기 */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 고르는 칸: span.cc[data-ans][data-o="가|나"] → 단추 */
+function ccSet(root,okMsg,sec,cb,hint){const R=$(root),cs=$$('[data-ans]',R),out=[...R.querySelectorAll('.fb')].pop();const got=new Set();
+  cs.forEach((c,i)=>{c.classList.add('cc');c.dataset.o.split('|').forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{if(got.has(i))return;
+    if(t===c.dataset.ans){b.classList.add('right');got.add(i);$$('button',c).forEach(x=>{if(x!==b)x.remove();});
+      if(got.size===cs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${got.size}/${cs.length})`,'info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,c.dataset.h||hint||'다시 생각해 봐요.',false);}};c.appendChild(b);});});}
+
+/* ---------- 도입: 빈 교실 ---------- */
+(function(){const S=$('#c3Room');const on={light:1,pc:1,tv:1,fan:1};
+  function draw(){let s='<rect width="760" height="300" fill="'+(on.light?'#fffbe8':'#e9edf2')+'"/><rect y="240" width="760" height="60" fill="#d8c3a0"/>';
+    s+='<rect x="40" y="60" width="200" height="110" rx="6" fill="#2f5d48" stroke="#8a5a2b" stroke-width="6"/><text x="140" y="125" text-anchor="middle" font-family="Jua" font-size="22" fill="#fff">이동 수업 중</text>';
+    s+=`<g class="org" data-k="light"><rect class="hl" x="270" y="2" width="220" height="44" rx="10" fill="transparent" stroke="none"/><rect x="280" y="10" width="90" height="16" rx="6" fill="${on.light?'#fff3b0':'#cfd5dd'}" stroke="#8a93a3"/><rect x="390" y="10" width="90" height="16" rx="6" fill="${on.light?'#fff3b0':'#cfd5dd'}" stroke="#8a93a3"/>${on.light?'<path d="M300 30 l-10 14 M325 30 v16 M350 30 l10 14 M410 30 l-10 14 M435 30 v16 M460 30 l10 14" stroke="#f0c24b" stroke-width="3"/>':''}</g>`;
+    s+=`<g class="org" data-k="pc"><rect class="hl" x="270" y="140" width="130" height="104" rx="10" fill="transparent" stroke="none"/><rect x="280" y="210" width="110" height="30" fill="#c9965f"/><rect x="296" y="150" width="78" height="54" rx="4" fill="${on.pc?'#5fb4ea':'#2f2f36'}" stroke="#2f2f36" stroke-width="4"/><rect x="330" y="204" width="10" height="8" fill="#555"/></g>`;
+    s+=`<g class="org" data-k="tv"><rect class="hl" x="520" y="54" width="200" height="130" rx="10" fill="transparent" stroke="none"/><rect x="530" y="62" width="180" height="110" rx="6" fill="${on.tv?'#9fd8ff':'#2f2f36'}" stroke="#2f2f36" stroke-width="6"/>${on.tv?'<circle cx="620" cy="112" r="22" fill="#ffd23f"/><path d="M560 160 Q620 120 690 160" fill="#7fbf6a"/>':''}</g>`;
+    s+=`<g class="org" data-k="fan"><rect class="hl" x="430" y="150" width="80" height="96" rx="10" fill="transparent" stroke="none"/><path d="M470 196 V240 M450 240 h40" stroke="#6f778a" stroke-width="5"/><circle cx="470" cy="180" r="26" fill="#eef2f5" stroke="#6f778a" stroke-width="3"/><g transform="translate(470 180)">${on.fan?'<g><animateTransform attributeName="transform" type="rotate" from="0" to="360" dur=".8s" repeatCount="indefinite"/>':'<g>'}<path d="M0 0 Q6 -20 0 -22 Q-6 -20 0 0 M0 0 Q20 6 22 0 Q20 -6 0 0 M0 0 Q-6 20 0 22 Q6 20 0 0 M0 0 Q-20 -6 -22 0 Q-20 6 0 0" fill="#7fb8d6"/></g></g></g>`;
+    s+='<g fill="#c9965f"><rect x="60" y="200" width="70" height="10"/><rect x="150" y="200" width="70" height="10"/></g>';
+    S.innerHTML=s;
+    $$('.org',S).forEach(g=>tap(g,()=>{const k=g.dataset.k;if(!on[k])return;on[k]=0;draw();const n=Object.values(on).filter(Boolean).length;
+      if(n)fb('#c3RoomFb',`껐어요! 아직 켜진 전기 기구가 ${n}개 있어요.`,'info');else{fb('#c3RoomFb','아무도 없는 교실의 전기 기구를 모두 껐어요!',true);$('#c3Why').hidden=false;}}));}
+  draw();pickOne('#c3P1','','','s1');})();
+
+/* ---------- 에너지 이용 경험 ---------- */
+(function(){const E=['💡 밤에 전등을 켰어요','🍲 전자레인지로 음식을 데웠어요','🚌 버스를 타고 여행을 갔어요','💻 컴퓨터로 조사 학습을 했어요','👕 다리미로 옷을 다렸어요','🔥 난방을 위해 보일러를 켰어요','❄️ 에어컨을 켰어요','📱 스마트 기기를 충전했어요'];
+  const box=$('#c3Exp');const sel=new Set();
+  function add(t){const b=document.createElement('button');b.textContent=t;b.onclick=()=>{b.classList.toggle('on');b.classList.contains('on')?sel.add(t):sel.delete(t);$('#c3Cnt').textContent='고른 것 '+sel.size+'개';};box.appendChild(b);return b;}
+  E.forEach(add);
+  $('#c3Add').onclick=()=>{const t=$('#c3New').value.trim();if(!t){fb('#c3ExpFb','더할 경험을 먼저 써요.','info');return;}add('✏️ '+t).click();$('#c3New').value='';};
+  $('#c3New').addEventListener('keydown',e=>{if(e.key==='Enter'){e.preventDefault();$('#c3Add').click();}});
+  $('#c3ExpOk').onclick=()=>{if(sel.size<3){fb('#c3ExpFb','에너지를 이용한 경험을 세 가지 이상 골라요. 지금 '+sel.size+'개예요.','info');return;}
+    fb('#c3ExpFb',`${sel.size}가지나 골랐어요! 우리는 편리한 생활을 위해 생활 곳곳에서 많은 양의 에너지를 쓰고 있어요.`,true);doneNav('s2');};})();
+
+/* ---------- 놀이판 카드(「실험관찰」 83쪽) ---------- */
+const GOOD=['냉난방을 할 때 적정 온도를 유지해요.','태양 에너지를 이용해요.','에너지 절약 캠페인에 참여해요.','수력, 풍력과 같은 재생 에너지를 이용해요.','자원과 에너지를 절약할 수 있는 친환경 제품을 이용해요.','여러 나라가 협력해 에너지 문제를 해결해요.','가까운 곳을 갈 때는 걷거나 자전거를 이용해요.'];
+const BAD=['창문을 열고 난방을 해서 에너지를 낭비해요.','석유로 에너지를 얻어 이산화 탄소가 발생해요.','빈방에 조명을 켜서 에너지를 낭비해요.','가까운 거리도 항상 자동차를 타고 가요.','공장에서 에너지를 많이 소모하는 기계를 사용해요.','보지 않는 텔레비전을 켜 두어 에너지를 낭비해요.'];
+
+/* ---------- 에너지 이용 놀이 ---------- */
+(function(){const S=$('#c3Board');const N=30,END=29;
+  const LAD={2:8,6:13,11:17,15:22,19:25,23:27,24:29},SLD={9:3,14:7,18:10,21:12,26:16,28:20};
+  const gTxt=shuffle(GOOD),bTxt=shuffle(BAD);const TXT={};Object.keys(LAD).forEach((c,i)=>TXT[c]=gTxt[i]);Object.keys(SLD).forEach((c,i)=>TXT[c]=bTxt[i]);
+  const pos=[0,0],names=['🔵 나','🔴 친구'],cols=['#2b6fb8','#c9463b'];let turn=0,busy=false,ev=null;
+  function xy(c){const r=Math.floor(c/10),k=c%10,col=r%2?9-k:k;return [50+col*100,250-r*100];}
+  function draw(){let s='';
+    for(let c=0;c<N;c++){const [x,y]=xy(c);const t=LAD[c]!=null?'#e3f6e8':SLD[c]!=null?'#fdebe3':'#fffdf6';
+      s+=`<rect x="${x-48}" y="${y-48}" width="96" height="96" rx="10" fill="${c===0?'#e1f0fb':c===END?'#fff1c9':t}" stroke="#c9b48a" stroke-width="2"/>`;
+      s+=`<text x="${x-40}" y="${y-30}" font-family="Jua" font-size="15" fill="#7a6a50">${c===0?'출발':c===END?'도착':c}</text>`;
+      if(LAD[c]!=null)s+=`<text x="${x+44}" y="${y-30}" text-anchor="end" font-family="Jua" font-size="16" fill="#1f6b3d">→${LAD[c]}</text><g transform="translate(${x} ${y+2})" stroke="#2f9e5a" stroke-width="3" stroke-linecap="round"><path d="M-10 -18 V18 M10 -18 V18 M-10 -10 H10 M-10 0 H10 M-10 10 H10"/></g>`;
+      if(SLD[c]!=null)s+=`<text x="${x+44}" y="${y-30}" text-anchor="end" font-family="Jua" font-size="16" fill="#b5501f">→${SLD[c]}</text><g transform="translate(${x} ${y+2})" fill="none" stroke="#e07a3c" stroke-width="4" stroke-linecap="round"><path d="M-16 -16 Q-4 -16 0 0 Q4 14 18 16"/><path d="M-16 -16 V16" stroke-width="2.5"/></g>`;}
+    pos.forEach((p,i)=>{const [x,y]=xy(p);s+=`<circle cx="${x+(i?16:-16)}" cy="${y+26}" r="15" fill="${cols[i]}" stroke="#fff" stroke-width="3"/><text x="${x+(i?16:-16)}" y="${y+32}" text-anchor="middle" font-family="Jua" font-size="15" fill="#fff">${i?'친':'나'}</text>`;});
+    S.innerHTML=s;}
+  function next(){if(pos[0]===END&&pos[1]===END){$('#c3Roll').disabled=true;$('#c3Turn').textContent='🏁 두 친구 모두 도착!';fb('#c3GameFb','놀이 끝! 에너지를 지속가능하게 이용하면 사다리를 타고 올라갔고, 낭비하면 미끄럼틀을 타고 내려갔어요.',true);doneNav('s3');return;}
+    turn=1-turn;if(pos[turn]===END)turn=1-turn;$('#c3Turn').textContent=names[turn]+'의 차례예요';}
+  function move(i,to){return tween(500,()=>{}).then(()=>{pos[i]=to;draw();});}
+  $('#c3Roll').onclick=async()=>{if(busy||ev)return;busy=true;const d=1+Math.floor(Math.random()*6);
+    for(let k=0;k<6;k++){$('#c3Die').textContent=['⚀','⚁','⚂','⚃','⚄','⚅'][Math.floor(Math.random()*6)];await tween(60,()=>{});}
+    $('#c3Die').textContent=['⚀','⚁','⚂','⚃','⚄','⚅'][d-1]+' '+d;
+    const i=turn,to=Math.min(END,pos[i]+d);await move(i,to);busy=false;
+    if(TXT[to]){ev={i,c:to};const good=LAD[to]!=null;const E=$('#c3Ev');E.hidden=false;
+      E.innerHTML=`<b>${i?'친구의 말':'내 말'}이 도착한 칸</b><br>“${TXT[to]}”<div class="row"><button data-g="1" data-a="${good?1:0}">🪜 지속가능하게 이용해요</button><button data-g="0" data-a="${good?0:1}">🛝 낭비하거나 함부로 이용해요</button></div>`;
+      fb('#c3GameFb','이 칸은 어떤 예일까요? 골라요.','info');
+      $$('button',E).forEach(b=>b.onclick=async()=>{if(!ev)return;if(b.dataset.a!=='1'){b.classList.add('wrong');fb('#c3GameFb','다시 생각해 봐요. 에너지를 아끼거나 재생 에너지를 쓰는 일인가요, 낭비하는 일인가요?',false);return;}
+        b.classList.add('right');const c=ev.c,j=ev.i;ev=null;
+        fb('#c3GameFb',good?'맞아요! 지속가능하게 이용한 예라 사다리를 타고 올라가요. 🪜':'맞아요! 에너지를 낭비한 예라 미끄럼틀을 타고 내려가요. 🛝',good?true:'info');
+        await move(j,good?LAD[c]:SLD[c]);E.hidden=true;next();});}
+    else next();};
+  draw();})();
+
+/* ---------- 분류 ---------- */
+(function(){const g=gate('s4',2);
+  sorter('#c3Sort',GOOD.map(t=>[t,0,'이 일은 에너지를 아끼거나 재생 에너지를 쓰는 일이에요.']).concat(BAD.map(t=>[t,1,'이 일은 에너지를 낭비하거나 환경을 오염시켜요.'])),['🪜 에너지를 지속가능하게 이용하는 예','🛝 에너지를 지속가능하게 이용하지 않은 예'],'모두 나누었어요!',null,()=>{g('s');$('#c3Rs').hidden=false;});
+  pickAll('#c3P4','맞아요! 에너지를 절약하거나 재생 에너지를 쓰면 지속가능하게 이용하는 거예요.','다시 생각해 봐요.',null,()=>g('p'));})();
+
+/* ---------- 토의 ① ---------- */
+(function(){const g=gate('s5',2);
+  pickAll('#c3Pb','맞아요! 자원은 한정되어 있고, 석탄·석유로 얻은 에너지는 환경 문제를 일으켜요.','다시 생각해 봐요.',null,()=>g('a'));
+  pickAll('#c3Why2','잘 찾았어요! 화석연료로 에너지를 얻을 때의 문제점과 재생 에너지의 좋은 점을 연결해 생각했어요.','다시 생각해 봐요.',null,()=>g('b'));})();
+
+/* ---------- 토의 ② ---------- */
+sorter('#c3Way',[
+  ['☀️ 집 지붕에 태양 전지판을 설치해요',0],['🌬️ 바람이 많이 부는 곳에서 풍력으로 에너지를 얻어요',0],
+  ['🚗 수소차, 전기차를 개발해요',1,'수소차, 전기차는 환경오염에 영향을 적게 미치는 친환경 기술이에요.'],['🏭 환경오염 물질을 적게 내는 기술을 개발해요',1],
+  ['💡 불필요한 전등을 꺼요',2],['🌡️ 냉난방을 할 때 적정 온도를 유지해요',2],['🔌 쓰지 않는 전기 기구의 플러그를 뽑아요',2]
+],['🌱 재생 에너지 얻기','🔧 친환경 기술 개발','🙋 생활 속 에너지 절약'],'잘 나누었어요!','s6',()=>{$('#c3WayNote').hidden=false;});
+
+/* ---------- 한눈에 쏙 ---------- */
+(function(){const g=gate('s7',2);
+  $('#blReveal').onclick=()=>{fb('#blFb','맞아요! 재생 에너지 사용과 에너지 절약은 에너지를 지속가능하게 이용하는 방법이에요.',true);g('b');};
+  keyCheck('#c3Sch','#c3SchBtn','#c3SchFb',[[/전등|불|조명/,'전등 끄기'],[/문|창문/,'문 닫기'],[/플러그|콘센트|멀티탭/,'플러그 뽑기'],[/온도|냉방|난방|에어컨/,'적정 온도'],[/끄|꺼|절약|아끼|아껴/,'에너지 절약']],1,null,'교실에서 에너지를 아낄 수 있는 행동을 구체적으로 써 봐요.');
+  onOk('#c3SchBtn','#c3SchFb',()=>{g('w');fb('#c3SchFb','좋아요! 예: 이동 수업을 할 때 교실의 전등을 꺼요. 겨울철에 교실의 열이 빠져나가지 않게 문을 닫아요. 쓰지 않는 전기 기구는 플러그를 뽑아 둬요. 오늘부터 실천해 봐요!',true);});})();
+
+/* ---------- 형성 평가 ---------- */
+(function(){const g=gate('s8',2);
+  pickOne('#c3Q1','','',null,()=>g('1'));
+  keyCheck('#c3Q2','#c3Q2Btn','#c3Q2Fb',[[/고갈|바닥|계속|재생|줄어들지|없어지지|한정/,'고갈될 염려가 적음'],[/환경|오염|기후|깨끗/,'환경을 덜 오염시킴'],[/미래|후손|다음\s*세대/,'미래 세대']],2,null,'에너지가 바닥날 걱정, 환경에 미치는 영향 두 가지를 떠올려 써 봐요.');
+  onOk('#c3Q2Btn','#c3Q2Fb',()=>{g('2');fb('#c3Q2Fb','잘 썼어요! 예시 답: 재생 에너지와 같은 지속가능한 에너지는 고갈될 염려가 적기 때문이에요. 환경을 덜 오염시키기 때문이에요.',true);});})();
+
+faces('s9','멋져요! 지속가능한 미래를 위해 오늘 정한 방법을 학교와 집에서 실천해요.','친구들과 토의한 내용을 다시 읽어 보며 정리해 봐요!');
+
+</script>
+
+<style id="ovCss">
+body.ov{overflow:auto}
+body.ov header{display:none}
+body.ov nav{position:sticky;top:0;z-index:20}
+body.ov nav .wrap{padding-top:5px;padding-bottom:5px}
+body.ov main{padding-top:4px;max-width:1040px;margin:0 auto}
+body.ov .fitbox{transform-origin:top center;will-change:transform}
+body.ov nav .wrap{max-width:1040px;margin:0 auto}
+body.ov .pick{grid-template-columns:repeat(2,minmax(0,1fr))}
+body.ov .pick.one{grid-template-columns:minmax(0,1fr)}
+body.ov main>p.goal,body.ov main>p.tip,body.ov .credits{display:none}
+body.ov main>section{display:none;margin:6px 0}
+body.ov main>section.cur{display:block}
+body.ov .ovhide{display:none!important}
+body.ov .lab svg,body.ov .scene,body.ov svg.scene,body.ov canvas{max-height:220px;width:auto;max-width:100%;margin:0 auto;display:block}
+body.ov .photo img,body.ov figure img{max-height:min(300px,42vh);object-fit:contain;width:100%;background:#f7f4ee;aspect-ratio:auto}
+body.ov .photo{width:100%;max-width:none}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(200px,28vh)}
+body.ov .photo,body.ov figure{overflow:visible}
+body.ov .photo figcaption{overflow:visible}
+body.ov img.ph{max-height:120px;object-fit:contain;background:#f7f4ee}
+body.ov h2{font-size:1.15rem;margin-bottom:2px}
+body.ov h3{font-size:1.05rem;margin:6px 0 4px}
+body.ov p{margin-bottom:6px}
+body.ov section{padding:8px clamp(8px,1vw,18px)}
+body.ov .cap,body.ov .fb{margin:6px 0}
+#ovBar{display:none;gap:8px;justify-content:center;align-items:center;flex-wrap:wrap;
+  width:fit-content;max-width:100%;margin:10px auto 4px;padding:7px 12px;border:3px solid var(--line);border-radius:999px;background:var(--paper);box-shadow:0 2px 8px rgba(0,0,0,.06)}
+body.ov #ovBar{display:flex}
+#ovBar button{min-height:2.4rem;padding:.2em .9em;font-size:.95rem;border-width:2px;border-radius:999px}
+#ovBar #ovNext{background:var(--acc,#1c6fa8);border-color:var(--acc,#1c6fa8);color:#fff}
+#ovBar .pos{font-family:"Jua",sans-serif;font-size:.95rem;white-space:nowrap;padding:0 4px}
+#ovMade{text-align:center;font-size:.75rem;color:var(--muted);margin:2px 0 6px}
+body.ov #ovMade{display:none}
+#ovNavMade{margin-left:auto;flex:none;font-family:"Jua",sans-serif;font-size:.8rem;color:var(--muted);white-space:nowrap;padding:0 4px;align-self:center}
+#ovHomeBox{position:fixed;inset:0;z-index:50;background:rgba(0,0,0,.45);display:none;align-items:center;justify-content:center;padding:14px}
+#ovHomeBox.open{display:flex}
+#ovHomeBox .hb{background:var(--paper);border:3px solid var(--acc,#1c6fa8);border-radius:22px;padding:16px;max-width:46rem;width:100%;max-height:86vh;overflow:auto}
+#ovList{display:grid;grid-template-columns:repeat(auto-fit,minmax(11rem,1fr));gap:8px}
+#ovList button{text-align:left;font-size:.9rem;min-height:3.2rem;border-width:2px}
+#ovList button.done{background:#bdf0cf;border-color:var(--good)}
+#ovList small{color:var(--muted);font-size:.75rem}
+</style>
+<div id="ovBar">
+  <button id="ovHome" title="활동 목록">🏠 목록</button>
+  <button id="ovPrev">◀ 이전</button>
+  <span class="pos" id="ovPos"></span>
+  <button id="ovNext">다음 ▶</button>
+  <button id="ovFull" title="전체를 이어서 보기">📜 전체</button>
+</div>
+<p id="ovMade">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p>
+<div id="ovHomeBox"><div class="hb"><h2 class="jua">활동 목록</h2><div id="ovList"></div>
+  <div class="row" style="justify-content:center;margin-top:12px;gap:8px"><button id="ovStart">⏮ 처음부터</button><button id="ovRoom" onclick="location.href='index.html'">🔬 2학기 과학방으로</button><button id="ovClose" class="main">✖ 닫기</button></div>
+  <p style="text-align:center;font-size:.8rem;color:var(--muted);margin:8px 0 0">만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></div></div>
+<script>
+(function(){
+  const main=document.querySelector('main'); if(!main) return;
+  const secs=[...main.querySelectorAll(':scope > section')]; if(!secs.length) return;
+  const bar=document.getElementById('ovBar'), made=document.getElementById('ovMade'), dlg=document.getElementById('ovHomeBox');
+  main.appendChild(bar); main.appendChild(made);
+  let on=true, si=0;
+  /* 활동을 작은 화면으로 나눈다: 소제목 + 내용 높이 기준 */
+  const steps=[]; let TARGET=640;
+  function buildSteps(){
+    steps.length=0;
+    { const nv=document.querySelector('nav'); TARGET=Math.max(280, Math.min(900, innerHeight-((nv&&nv.offsetHeight)||0)-250)); }
+    secs.forEach(sec=>{ const kids=[...box(sec).children].filter(e=>e.id!=='ovBar'&&e.id!=='ovMade');
+      /* 묶음(unit) 만들기: 그림(lab)과 바로 뒤의 조작 단추는 함께 둔다 */
+      const units=[]; let i=0;
+      const isStart=e=>!(e.dataset&&e.dataset.glue)&&isStart0(e), isStart0=e=>e.tagName==='H3'||(e.tagName==='P'&&!e.classList.contains('tip'))||e.tagName==='DETAILS'||(e.tagName==='DIV'&&/\b(lab|gallery|warn)\b/.test(e.className)&&e.offsetHeight>0)||(e.tagName==='LABEL'&&e.offsetHeight>100)||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo'))||(e.matches&&e.matches('figure.photo'));
+      while(i<kids.length){ const el=kids[i];
+        if(!el.dataset.alwaysSet && (el.tagName==='H2'||el.classList.contains('stage'))){ el.dataset.always='1'; el.dataset.alwaysSet='1'; i++; continue; }
+        const u=[el]; i++;
+        while(i<kids.length && !isStart(kids[i])){ u.push(kids[i]); i++; }
+        units.push(u); }
+      /* 소제목(h3)만 화면 끝에 남지 않게 바로 뒤 묶음과 붙인다 */
+      for(let ui=units.length-2; ui>=0; ui--){ if(units[ui].length===1&&units[ui][0].tagName==='H3'){ units.splice(ui,2,units[ui].concat(units[ui+1])); } }
+      /* 문제 여러 개가 한 칸에 모인 곳(형성·수행 평가)은 문제마다 나눈다 */
+      box(sec).querySelectorAll('[data-deep]>*').forEach(e=>{ delete e.dataset.part; e.classList.remove('ovhide'); });
+      for(let ui=units.length-1; ui>=0; ui--){ const u=units[ui], k=u.findIndex(e=>e.matches&&e.matches('#quiz,#perf,#dex.cards,#surf.cards')), c=u[k];
+        if(c && c.children.length>=2 && c.getBoundingClientRect().height>TARGET*0.6){
+          c.dataset.deep='1'; delete c.dataset.part; const pre=u.slice(0,k), post=u.slice(k+1), ch=[...c.children].map(x=>[x]);
+          if(pre.length) ch[0]=pre.concat(ch[0]); if(post.length) ch[ch.length-1]=ch[ch.length-1].concat(post);
+          units.splice(ui,1,...ch); } }
+      /* 묶음을 높이 기준으로 담기 */
+      let part=0, acc=0, first=true;
+      units.forEach(u=>{ const h=u.reduce((a,e)=>a+(e.getBoundingClientRect().height||0),0);
+        const isHead=u[0].tagName==='H3';
+        if(!first && ((isHead && acc>180) || (acc>160 && acc+h>TARGET))){ part++; acc=0; }
+        u.forEach(e=>e.dataset.part=part); acc+=h; first=false; });
+      const nums=[...kids,...box(sec).querySelectorAll('[data-deep]>*')].filter(e=>e.dataset.part!==undefined).map(e=>+e.dataset.part);
+      const maxp=nums.length?Math.max(...nums):0;
+      for(let p=0;p<=maxp;p++) steps.push({sec,p}); });
+  }
+  buildSteps();
+  /* 내용이 짧으면 화면 높이에 맞춰 키운다 */
+  function box(sec){ let d=sec.querySelector(':scope > .fitbox'); if(d) return d;
+    d=document.createElement('div'); d.className='fitbox';
+    const keep=[...sec.children]; keep.forEach(e=>d.appendChild(e)); sec.appendChild(d); return d; }
+  function grow(){ const st=steps[si]; if(!st) return; const sec=st.sec, b=box(sec);
+    if(!on){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height=''; return; }
+    b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; sec.style.height='';
+    const top=sec.getBoundingClientRect().top;
+    const barH=(document.getElementById('ovBar')||{offsetHeight:0}).offsetHeight;
+    const avail=window.innerHeight - top - barH - 26;
+    const MIN=b.querySelector(':scope>[data-glue]:not(.ovhide)')?0.7:0.85; let h=b.offsetHeight; if(h<20||avail<160) return;
+    let k=Math.min(1.5, Math.max(MIN, avail/h));
+    for(let pass=0; pass<4 && Math.abs(k-1)>0.02; pass++){
+      b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.marginRight='0'; b.style.transform='scale('+k+')';
+      const vis=b.offsetHeight*k;
+      if(vis<=avail) break;
+      k=Math.max(MIN, k*avail/vis); if(k<1&&vis<=avail) break;
+    }
+    if(Math.abs(k-1)>0.02){ b.style.width=(100/k)+'%'; b.style.marginLeft=((1-1/k)*50)+'%'; b.style.transform='scale('+k+')'; sec.style.height=(b.offsetHeight*k+14)+'px'; sec.style.overflow='visible'; }
+    else { b.style.width='100%'; b.style.marginLeft=''; b.style.transform='none'; sec.style.height=''; }
+  }
+  addEventListener('resize',()=>setTimeout(grow,80));
+  addEventListener('load',()=>setTimeout(grow,150));
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(grow,150));
+  function label(st){ const h3=[...box(st.sec).children].find(e=>e.tagName==='H3'&&+e.dataset.part===st.p);
+    const h2=st.sec.querySelector('h2'); return h3?h3.textContent.trim():(h2?h2.textContent.trim():''); }
+  function show(i){ si=Math.max(0,Math.min(steps.length-1,i)); const st=steps[si];
+    secs.forEach(s=>s.classList.toggle('cur',s===st.sec));
+    [...box(st.sec).children].forEach(el=>{ if(el.dataset.always) return;
+      el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p); });
+    box(st.sec).querySelectorAll('[data-deep]>*').forEach(el=>el.classList.toggle('ovhide', el.dataset.part!==undefined && +el.dataset.part!==st.p));
+    document.getElementById('ovPos').textContent=(si+1)+' / '+steps.length;
+    document.getElementById('ovPrev').disabled=si===0;
+    document.getElementById('ovNext').disabled=si===steps.length-1;
+    const a=document.querySelector('nav a[href="#'+st.sec.id+'"]');
+    document.querySelectorAll('nav a').forEach(x=>x.style.outline='');
+    if(a){ a.style.outline='3px solid var(--sun)'; a.scrollIntoView({block:'nearest',inline:'center'}); }
+    window.scrollTo(0,0); grow(); setTimeout(grow,150);
+  }
+  function setOn(v){ on=v; document.body.classList.toggle('ov',on);
+    document.getElementById('ovFull').textContent=on?'📜 전체':'🖥️ 한 화면';
+    if(on) show(si);
+    else secs.forEach(s=>{ s.classList.remove('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(el=>el.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(el=>el.classList.remove('ovhide')); } }); }
+  function buildList(){ const L=document.getElementById('ovList'); L.innerHTML='';
+    steps.forEach((st,n)=>{ const b=document.createElement('button'); const stg=st.sec.querySelector('.stage');
+      b.innerHTML='<small>'+(stg?stg.textContent:'')+'</small><br>'+(n+1)+'. '+label(st);
+      const a=document.querySelector('nav a[href="#'+st.sec.id+'"]'); if(a&&a.classList.contains('done')) b.classList.add('done');
+      b.onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(n); };
+      L.appendChild(b); }); }
+  document.getElementById('ovHome').onclick=()=>{ buildList(); dlg.classList.add('open'); };
+  document.getElementById('ovClose').onclick=()=>dlg.classList.remove('open');
+  document.getElementById('ovStart').onclick=()=>{ dlg.classList.remove('open'); if(!on) setOn(true); show(0); };
+  dlg.addEventListener('click',e=>{ if(e.target===dlg) dlg.classList.remove('open'); });
+  document.getElementById('ovPrev').onclick=()=>show(si-1);
+  document.getElementById('ovNext').onclick=()=>show(si+1);
+  document.getElementById('ovFull').onclick=()=>setOn(!on);
+  document.querySelectorAll('nav a').forEach(a=>a.addEventListener('click',e=>{ if(!on) return;
+    const id=a.getAttribute('href').slice(1); const n=steps.findIndex(x=>x.sec.id===id); if(n>=0){ e.preventDefault(); show(n); } }));
+  addEventListener('keydown',e=>{ if(!on||/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) return;
+    if(e.key==='ArrowRight') show(si+1); if(e.key==='ArrowLeft') show(si-1); });
+  const nw=document.querySelector('nav .wrap');
+  if(nw && !document.getElementById('ovNavMade')){ const sp=document.createElement('span'); sp.id='ovNavMade'; sp.textContent='만든 사람: 초등교사 홍지희'; nw.appendChild(sp); var hc=document.querySelector('.hj-contact'); if(hc) nw.appendChild(hc.cloneNode(true)); }
+  const hp=document.querySelector('header .wrap p');
+  if(hp && !/홍지희/.test(hp.textContent)) hp.insertAdjacentHTML('beforeend',' · 만든 사람: 초등교사 홍지희');
+  function rebuild(){ const cur=steps[si], sec=cur?cur.sec:null;
+    secs.forEach(s=>{ s.classList.add('cur'); s.style.height=''; const b=s.querySelector(':scope > .fitbox'); if(b){ b.style.transform='none'; b.style.width='100%'; b.style.marginLeft=''; [...b.children].forEach(e=>e.classList.remove('ovhide')); b.querySelectorAll('[data-deep]>*').forEach(e=>e.classList.remove('ovhide')); } });
+    buildSteps();
+    let n=sec?steps.findIndex(x=>x.sec===sec):0; if(n<0) n=0; show(n); }
+  if(document.fonts&&document.fonts.ready) document.fonts.ready.then(()=>setTimeout(rebuild,60));
+  addEventListener('load',()=>setTimeout(rebuild,100));
+  /* 한 화면 보기에서는 폭 제한을 풀어 사진을 크게 본다 */
+  secs.forEach(sec=>sec.querySelectorAll('[style*="width:min("]').forEach(el=>{ el.dataset.ovw=el.getAttribute('style'); }));
+  function widen(v){ secs.forEach(sec=>sec.querySelectorAll('[data-ovw]').forEach(el=>{
+      el.setAttribute('style', v ? el.dataset.ovw.replace(/width:min\([^)]*\)/,'width:100%') : el.dataset.ovw); })); }
+  const _setOn=setOn; setOn=function(v){ widen(v); _setOn(v); };
+  setOn(true);
+})();
+</script>
+
+<style id="biCss">
+.bw{white-space:nowrap;display:inline-block;vertical-align:middle}
+.bw input{font-family:"Jua",sans-serif;font-size:1.25em;text-align:center;padding:.05em .3em;margin:0 .15em;border:3px solid var(--sea,#1c6fa8);border-radius:10px;background:var(--paper,#fff);color:var(--ink,#222);min-height:2.1em;vertical-align:middle}
+.bw input::placeholder{color:#9aa9b2;opacity:1}
+.bw input.ok{border-color:#16804a;background:#dcf5e5;color:#0d5a31}
+.bw input.no{border-color:#c2332c;background:#fde2df}
+.biShow{margin-left:8px}
+</style>
+<script>
+/* 한눈에 쏙 빈칸: 학생이 직접 써넣고 확인하기 */
+(function(){
+  const CFG=[{"btn":"blReveal","ans":{"bl1":"지","bl2":"속","bl3":"가","bl4":"능"}}];
+  const CHO='ㄱㄲㄴㄷㄸㄹㅁㅂㅃㅅㅆㅇㅈㅉㅊㅋㅌㅍㅎ';
+  const cho=w=>[...w].map(c=>{const k=c.charCodeAt(0)-44032; return k>=0&&k<11172?CHO[Math.floor(k/588)]:c;}).join('');
+  const norm=v=>v.replace(/\s/g,'').replace(/[.。!?]/g,'');
+  CFG.forEach(cfg=>{
+    const btn=document.getElementById(cfg.btn); if(!btn||btn.dataset.bi) return; btn.dataset.bi='1';
+    const orig=btn.onclick;
+    /* 빈칸 상자 모으기, 붙어 있는 상자는 한 낱말로 */
+    const items=Object.keys(cfg.ans).map(id=>{const el=document.getElementById(id); return el?{box:el.closest('.blank')||el,a:cfg.ans[id]}:null;}).filter(Boolean);
+    const groups=[];
+    items.forEach(it=>{ const g=groups[groups.length-1];
+      if(g && (g.boxes.includes(it.box))){ g.a+=it.a; return; }
+      if(g){ let n=g.boxes[g.boxes.length-1].nextSibling; while(n&&n.nodeType===3&&!n.textContent.trim()) n=n.nextSibling;
+        if(n===it.box){ g.boxes.push(it.box); g.a+=it.a; return; } }
+      groups.push({boxes:[it.box],a:it.a}); });
+    groups.forEach(g=>{
+      const alt=(cfg.alt||{})[g.a]; g.ok=v=>{ v=norm(v); return v===g.a || (alt&&new RegExp(alt).test(v)); };
+      const w=document.createElement('span'); w.className='bw';
+      const inp=document.createElement('input'); inp.type='text'; inp.autocomplete='off'; inp.setAttribute('aria-label','빈칸에 알맞은 낱말');
+      inp.placeholder=cho(g.a); inp.style.width=(Math.max(2,g.a.length)*1.15+1.2)+'em';
+      w.appendChild(inp); g.boxes[0].before(w); g.boxes.forEach(b=>b.style.display='none'); g.inp=inp;
+      const tail=g.boxes[g.boxes.length-1].nextSibling;
+      if(tail&&tail.nodeType===3){ const m=tail.textContent.match(/^\S+/); if(m){ w.appendChild(document.createTextNode(m[0])); tail.textContent=tail.textContent.slice(m[0].length); } }
+      inp.addEventListener('keydown',e=>{ if(e.key==='Enter'){ e.preventDefault(); btn.click(); } });
+      inp.addEventListener('input',()=>inp.classList.remove('no'));
+    });
+    const row=btn.closest('.row')||btn.parentNode;
+    let fbEl=row.nextElementSibling; if(!(fbEl&&fbEl.classList.contains('fb'))) fbEl=null;
+    const say=(m,cls)=>{ if(!fbEl) return; fbEl.textContent=m; fbEl.className='fb '+cls; };
+    let tries=0, solved=false;
+    const showBtn=document.createElement('button'); showBtn.textContent='👀 정답 보기'; showBtn.className='biShow'; showBtn.hidden=true; btn.after(showBtn);
+    function finish(){ solved=true; groups.forEach(g=>{ g.inp.readOnly=true; g.inp.classList.remove('no'); g.inp.classList.add('ok'); });
+      btn.disabled=true; showBtn.hidden=true; if(orig) orig.call(btn); }
+    btn.textContent='✅ 확인하기';
+    btn.onclick=()=>{ if(solved) return;
+      if(groups.some(g=>!g.inp.value.trim())){ say('빈칸에 알맞은 낱말을 써 보세요. 칸 안의 글자는 첫소리 힌트예요.','info'); (groups.find(g=>!g.inp.value.trim()).inp).focus(); return; }
+      const bad=groups.filter(g=>!g.ok(g.inp.value));
+      groups.forEach(g=>g.inp.classList.toggle('ok',g.ok(g.inp.value)));
+      if(!bad.length){ finish(); return; }
+      tries++; bad.forEach(g=>g.inp.classList.add('no'));
+      say((groups.length>1?'빨간 칸을 ':'')+'다시 생각해 봐요. 첫소리 힌트: '+bad.map(g=>cho(g.a)).join(', ')+(tries>=2?' · 어려우면 ‘정답 보기’를 눌러요.':''),'no');
+      if(tries>=2) showBtn.hidden=false; };
+    showBtn.onclick=()=>{ groups.forEach(g=>g.inp.value=g.a); finish(); };
+  });
+})();
+</script>
+
+<style id="ovFit">
+/* 크롬북 가로 화면: 큰 그림은 화면 높이에 맞춰 줄이기 */
+body.ov .fitbox>svg,body.ov .fitbox>div:not(.lab)>svg,body.ov .mapBox svg{max-height:min(42vh,360px)}
+body.ov .photo img,body.ov figure img{max-height:min(240px,34vh)}
+body.ov .two>.photo img,body.ov .gal .photo img{max-height:min(180px,26vh)}
+body.ov .gal img,body.ov .cards img.ph{max-height:min(110px,15vh)}
+body.ov .gallery .photo img{max-height:min(150px,20vh)!important}
+body.ov .gallery{grid-template-columns:repeat(3,minmax(0,1fr))}
+</style>
+<style id="ovPair">
+.pair{display:contents}
+@media (min-width:760px) and (orientation:landscape){
+  body.ov .pair{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:center;margin:4px 0}
+  body.ov .pair>*{margin:0!important;min-width:0}
+  body.ov .pair>svg{max-height:min(46vh,380px)!important;width:100%!important;height:auto}
+  body.ov .pair .photo img,body.ov .pair figure img{max-height:min(46vh,380px)!important}
+  body.ov .pair>div[style*="width"]{width:100%!important}
+  body.ov .player{width:100%!important;display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr);column-gap:16px;align-items:center}
+  body.ov .player>*{grid-column:2}
+  body.ov .player>svg{grid-column:1;grid-row:1/span 6;max-height:min(58vh,460px)!important;width:100%!important;height:auto}
+}
+</style>
+<script>
+/* 크롬북 가로 화면: 그림과 사진(또는 목록·표)을 나란히 */
+(function(){
+  const isPhoto=e=>e&&((e.matches('figure.photo'))||(e.tagName==='DIV'&&e.children.length===1&&e.firstElementChild.matches('figure.photo')));
+  const okNext=e=>e&&(isPhoto(e)||e.tagName==='UL'||e.matches('table.rtable'));
+  document.querySelectorAll('main>section').forEach(sec=>{
+    const box=sec.querySelector(':scope>.fitbox')||sec;
+    [...box.children].forEach(el=>{
+      const a=el.tagName==='svg'&&!el.closest('.lab');
+      const b=el.matches('div.lab')&&el.offsetHeight>0;
+      const nx=el.nextElementSibling;
+      if(!(a&&okNext(nx)) && !(b&&isPhoto(nx))) return;
+      if(el.parentNode.classList.contains('pair')) return;
+      const w=document.createElement('div'); w.className='pair'; el.before(w); w.appendChild(el); w.appendChild(nx);
+    });
+  });
+  window.dispatchEvent(new Event('resize'));
+})();
+</script>
+<style id="ovStick">
+/* 답이 늘어나도 아래 메뉴가 늘 보이게 */
+body.ov #ovBar{position:sticky;bottom:max(8px,env(safe-area-inset-bottom,0px));z-index:15}
+</style>
+<script>
+/* 피드백 글이 나타나거나 숨은 내용이 열리면 한 화면 크기를 다시 맞춘다 */
+(function(){ const m=document.querySelector('main'); if(!m||!window.MutationObserver) return;
+  let tm=0; const kick=()=>{ clearTimeout(tm); tm=setTimeout(()=>window.dispatchEvent(new Event('resize')),60); };
+  new MutationObserver(kick).observe(m,{subtree:true,childList:true,characterData:true,attributes:true,attributeFilter:['hidden','open']});
+})();
+</script>
+<a id="hj-home" href="../../../index.html" aria-label="첫 화면으로 가기" hidden><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><style>#hj-home{position:fixed;left:max(14px,env(safe-area-inset-left,0px));bottom:max(14px,env(safe-area-inset-bottom,0px));z-index:40;display:inline-flex;align-items:center;gap:6px;height:44px;padding:0 16px 0 13px;border-radius:999px;text-decoration:none;font:700 16px/1 "Pretendard Variable",Pretendard,-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;letter-spacing:-.01em;color:#5A4A3F;background:rgba(255,251,246,.94);border:1.5px solid #E6D9CB;box-shadow:0 2px 4px rgba(80,55,30,.06),0 10px 22px -12px rgba(80,55,30,.35);-webkit-backdrop-filter:blur(6px);backdrop-filter:blur(6px);transition:transform .15s,background .15s}#hj-home[hidden]{display:none}#hj-home:hover{background:#FBEDE3;transform:translateY(-1px)}#hj-home:focus-visible{outline:3px solid #D58A5E;outline-offset:2px}@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}}:root[data-theme="dark"] #hj-home{background:rgba(43,38,33,.94);color:#F2EBE3;border-color:#4C4239}@media print{#hj-home{display:none!important}}</style><script>(function(){var h=location.hostname,a=document.getElementById("hj-home");if(a&&(location.protocol==="file:"||/github\.io$/.test(h)||h==="localhost"||h==="127.0.0.1"))a.hidden=false})();</script>
+
+</body>
+</html>
