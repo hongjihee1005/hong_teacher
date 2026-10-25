@@ -233,10 +233,10 @@ class S4Ep23(EpisodeScene):
     # ── 생각이 쑥: 분해자가 사라지면 ──
     def floor(self, cx, on):
         GY = -0.65
-        box = K.R(6.0, 3.9, "#E8F2DC", cx, 0.3, rad=0.2, stroke=SOFT, sw=3)
+        box = K.R(6.0, 3.8, "#E8F2DC", cx, 0.2, rad=0.2, stroke=SOFT, sw=3)
         soil = Rectangle(width=5.9, height=0.95, fill_color="#9A6A3A", fill_opacity=1, stroke_width=0).move_to([cx, GY - 0.5, 0])
         tr = K.pic("갈참나무", 1.6, 2.1).move_to([cx - 2.0, GY + 1.05, 0])
-        title = M(f"{pu('분해자')}가 있을 때" if on else f"{r('분해자')}가 사라지면", 34).move_to([cx, 2.65, 0])
+        title = M(f"{pu('분해자')}가 있을 때" if on else f"{r('분해자')}가 사라지면", 34).move_to([cx, 2.48, 0])
         g_ = VGroup(box, soil, tr, title)
         if on:
             g_.add(K.pic("버섯", 0.6, 0.6).move_to([cx + 2.2, GY + 0.3, 0]), K.pic("곰팡이", 0.65, 0.65).move_to([cx + 1.3, GY + 1.6, 0]))
