@@ -84,6 +84,9 @@ def play_ray(scene, r, run_time=1.2):
         scene.play(*anims, run_time=max(0.15, run_time * l_ / tot))
         if len(h):
             scene.add(h)
+    # 한 덩어리로 다시 넣기(나중에 FadeOut(빛)·Transform이 조각마다 남지 않게)
+    scene.remove(*r.segs, *[h for h in r.heads if len(h)])
+    scene.add(r)
 
 
 def to_box(p, d, box):
