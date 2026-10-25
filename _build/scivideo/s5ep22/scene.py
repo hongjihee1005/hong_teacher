@@ -68,8 +68,8 @@ class S5Ep22(EpisodeScene):
         for it, d in zip(items, dest):
             x = bins[d].get_center()[0] + (cnt[d] - 0.5 * (dest.count(d) - 1)) * 0.55
             cnt[d] += 1
-            mv.append(it.animate.scale(0.5).move_to([x, -0.1, 0]))
-        self.play(*mv, run_time=1.6, lag_ratio=0.15)
+            mv.append(it[0].animate.scale(0.6).move_to([x, -0.15, 0]))
+        self.play(*mv, *[FadeOut(it[1]) for it in items], run_time=1.6)
         res = K.text_card([f"{o('필요한 물질')}을 얻을 수 있어요", f"다시 써서 {g('환경오염을 줄일')} 수 있어요"],
                           size=34).move_to([0, 2.0, 0])
         self.say(f"필요한 물질을 얻고, 다시 써서 {g('환경오염을 줄여요')}",
@@ -82,7 +82,7 @@ class S5Ep22(EpisodeScene):
     def what(self):
         self.section("혼합물이란?")
         card = K.text_card([f"두 가지 이상의 물질이 {o('각각의 성질이 변하지 않은 채')}",
-                            f"섞여 있는 것을 {g('혼합물')}이라고 해요."], w=12.0, size=40).move_to([0, 1.9, 0])
+                            f"섞여 있는 것을 {g('혼합물')}이라고 해요."], w=11.6, size=38).move_to([0.4, 1.5, 0])
         self.say(f"두 가지 이상의 물질이 섞여 있는 것 → {g('혼합물')}",
                  "두 가지 이상의 물질이 각각의 성질이 변하지 않은 채 섞여 있는 것을 혼합물이라고 해요.")
         self.play(FadeIn(card, scale=0.95), run_time=0.8)
@@ -91,7 +91,7 @@ class S5Ep22(EpisodeScene):
                                                 color=["#6EC3F0", "#F08A24", "#9C88FF"][i % 3]) for i in range(30)]),
                                  "공기", 2.9, 2.2),
                       K.pic_card(K.cane_pic(), "사탕수수", 2.9, 2.2))
-        pics.arrange(RIGHT, buff=0.4).move_to([0, -0.85, 0])
+        pics.arrange(RIGHT, buff=0.4).move_to([0, -1.1, 0])
         self.say(f"소금물, 설탕물 같은 {o('용액')}이나 공기, 사탕수수도 혼합물이에요",
                  "혼합물의 예에는 소금물, 설탕물과 같은 용액이나 공기, 사탕수수 등이 있어요. 용해와 용액에서 배운 용액도 용질과 용매가 골고루 섞여 있는 혼합물이에요.")
         self.play(FadeIn(pics, lag_ratio=0.2), run_time=1.0)
@@ -104,7 +104,7 @@ class S5Ep22(EpisodeScene):
         items = [("소금물", 1), ("금관", 0), ("공기", 1), ("산소", 0), ("탄산음료", 1),
                  ("못", 0), ("유성 물감", 1), ("얼음", 0), ("반짝이 풀", 1), ("바닷가 흙", 1)]
         cards = VGroup(*[K.word_card(t, 2.4, 0.78, INK, 28) for t, _ in items])
-        cards.arrange_in_grid(rows=2, cols=5, buff=(0.22, 0.2)).move_to([0, 2.0, 0])
+        cards.arrange_in_grid(rows=2, cols=5, buff=(0.22, 0.2)).move_to([0, 1.75, 0])
         self.say("한 가지 물질일까요, 혼합물일까요?",
                  "한 가지 물질로만 이루어져 있는지, 두 가지 이상의 물질이 섞여 있는지 나누어 볼까요?")
         self.play(FadeIn(cards, lag_ratio=0.06), run_time=1.0)
@@ -144,7 +144,7 @@ class S5Ep22(EpisodeScene):
             sp.next_to(ar, RIGHT, buff=0.1)
             col.add(sp)
             cols.add(col)
-        cols.arrange(RIGHT, buff=0.35).move_to([0, 0.35, 0])
+        cols.arrange(RIGHT, buff=0.35).move_to([0, 0.2, 0])
         self.say("혼합물을 분리하면 무엇을 얻을 수 있을까요?",
                  "바닷물, 금광석, 고무나무, 사탕수수는 모두 혼합물이에요. 분리하면 어떤 물질을 얻을 수 있을까요?")
         self.play(FadeIn(VGroup(*[c[0] for c in cols]), lag_ratio=0.15), run_time=1.0)
@@ -170,13 +170,14 @@ class S5Ep22(EpisodeScene):
                  "혼합물에는 여러 가지 물질이 섞여 있어서, 분리해야 필요한 물질을 얻을 수 있기 때문이에요.")
         self.play(FadeIn(ans, shift=UP * 0.2), run_time=0.7)
         self.settle()
+        clear_stage(self)
         self.section("생각 바로잡기")
-        mq = T("소금물에서 소금을 분리하면 소금의 성질이 바뀔까요?", 36).move_to([0, -0.75, 0])
+        mq = T("소금물에서 소금을 분리하면 소금의 성질이 바뀔까요?", 42).move_to([0, 2.0, 0])
         self.say("소금물에서 분리한 소금은 성질이 바뀔까요?",
                  "소금물에서 소금을 분리하면 소금의 성질이 바뀔까요?")
         self.play(FadeIn(mq), run_time=0.5)
         ma = K.text_card([f"아니요, {g('소금의 성질은 그대로예요')}.", "혼합물 속 물질은 성질이 변하지 않은 채 섞여 있어요."],
-                         w=12.0, size=34).move_to([0, -1.75, 0])
+                         w=12.0, size=38).move_to([0, 0.4, 0])
         self.say(f"아니요, {g('소금의 성질은 그대로')}예요",
                  "아니요, 소금의 성질은 그대로예요. 혼합물 속 물질은 성질이 변하지 않은 채 섞여 있어서, 분리해도 성질이 그대로예요.")
         self.play(FadeIn(ma, shift=UP * 0.2), run_time=0.7)
@@ -220,11 +221,11 @@ class S5Ep22(EpisodeScene):
             grp.add(VGroup(a, b))
         grp.arrange(DOWN, buff=0.3, aligned_edge=LEFT).move_to([0, 1.0, 0])
         self.say("옛날 사람들도 농기구로 혼합물을 분리했어요",
-                 "옛날 사람들은 혼합물을 어떻게 분리했을까요? 도리깨, 풍구, 키 같은 농기구를 썼어요.")
+                 "옛날 사람들은 도리깨, 풍구, 키 같은 농기구로 혼합물을 분리했어요.")
         self.play(FadeIn(grp, lag_ratio=0.25), run_time=1.2)
         note = T("쭉정이: 껍질만 있고 속에 알맹이가 들지 않은 곡식", 26, SOFT).next_to(grp, DOWN, buff=0.35)
         self.say(f"섞여 있는 것에서 {o('필요한 곡식만')} 골라냈어요",
-                 "옛날 농기구도 섞여 있는 것에서 필요한 곡식만 분리해 얻으려고 사용했어요. 쭉정이는 껍질만 있고 속에 알맹이가 들지 않은 곡식이에요.")
+                 "옛날 농기구도 섞여 있는 것에서 필요한 곡식만 분리해 얻으려고 사용했어요.")
         self.play(FadeIn(note), run_time=0.5)
         self.settle()
         clear_stage(self)

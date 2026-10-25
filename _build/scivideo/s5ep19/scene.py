@@ -146,26 +146,26 @@ class S5Ep19(EpisodeScene):
         prep = K.text_card(["준비물", "종이봉투 2장, 주름 빨대 2개", "셀로판테이프, 호흡기관 붙임딱지"], w=6.4, size=32).move_to([3.4, 1.6, 0])
         self.say("종이봉투와 주름 빨대로 호흡기관 모형을 만들어요",
                  "종이봉투 두 장, 주름 빨대 두 개, 셀로판테이프, 호흡기관 붙임딱지로 호흡기관 모형을 만들어요.")
-        bm0 = K.bag_model(0, 1.15, stickers=False).move_to([-3.2, 0.1, 0])
+        bm0 = K.bag_model(0, 1.15, stickers=False).move_to([-3.2, 0.5, 0])
         self.play(FadeIn(prep), FadeIn(bm0), run_time=0.7)
         steps = K.text_card(["① 빨대 두 개의 긴 쪽을 테이프로 감아요", "② 짧은 쪽을 각각 종이봉투 안에 넣고 감아요",
                              "③ 붙임딱지를 각 기관의 위치에 붙여요"], w=7.0, size=30).move_to([3.4, -1.0, 0])
-        bm1 = K.bag_model(0, 1.15, stickers=True).move_to([-3.2, 0.1, 0])
+        bm1 = K.bag_model(0, 1.15, stickers=True).move_to([-3.2, 0.5, 0])
         self.say("빨대를 봉투에 넣어 테이프로 감고, 붙임딱지를 붙여요",
                  "빨대 두 개의 긴 쪽을 테이프로 감고, 짧은 쪽을 각각 종이봉투 안에 넣어 감아요. 그리고 호흡기관 붙임딱지를 붙여요.")
         self.play(FadeIn(steps), FadeOut(bm0), FadeIn(bm1), run_time=0.8)
         top = bm1.get_top()
         names = VGroup(T("코·숨관", 28, AIRB).next_to(top, LEFT, buff=0.2).shift(DOWN * 0.3),
-                       T("숨관가지", 28, AIRB).move_to([-5.45, 0.75, 0]),
-                       T("폐", 30, "#b25c68").move_to(bm1.get_bottom() + DOWN * 0.55 + LEFT * 1.45),
-                       T("폐", 30, "#b25c68").move_to(bm1.get_bottom() + DOWN * 0.55 + RIGHT * 1.45))
+                       T("숨관가지", 28, AIRB).move_to([-5.45, 1.15, 0]),
+                       T("폐", 30, "#b25c68").move_to(bm1.get_bottom() + DOWN * 0.32 + LEFT * 1.45),
+                       T("폐", 30, "#b25c68").move_to(bm1.get_bottom() + DOWN * 0.32 + RIGHT * 1.45))
         self.play(FadeIn(names), run_time=0.5)
         self.say("빨대에 공기를 불어 넣으면 어떻게 될까요?", "빨대에 천천히 공기를 불어 넣어요. 종이봉투는 어떻게 될까요?")
         self.settle()
         self.pause_screen(5, "종이봉투는 어떻게 될까요?")
         self.play(FadeOut(VGroup(prep, steps)), run_time=0.3)
         p = ValueTracker(0)
-        bm = always_redraw(lambda: K.bag_model(p.get_value(), 1.15, stickers=True).move_to([-3.2, 0.1, 0]))
+        bm = always_redraw(lambda: K.bag_model(p.get_value(), 1.15, stickers=True).move_to([-3.2, 0.5, 0]))
         self.remove(bm1)
         self.add(bm)
         air = VGroup(*[Dot(radius=0.07, color=AIRB) for _ in range(6)])

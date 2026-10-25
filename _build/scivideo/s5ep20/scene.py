@@ -105,17 +105,17 @@ class S5Ep20(EpisodeScene):
             'ure': K.pointer(P(176, 284), P(176, 284) + RIGHT * 2.0 + DOWN * 0.05, "오줌관", URI, 32),
             'bla': K.pointer(P(170, 322), P(170, 322) + RIGHT * 1.9 + DOWN * 0.5, "방광", URI, 32),
         }
-        items = [('kid', [f"{o('콩팥')}: 강낭콩 모양, 등허리 좌우에", "혈액 속의 노폐물을 걸러 내어", "오줌을 만들어요"],
+        items = [('kid', [f"{o('콩팥')}: 강낭콩 모양, 등허리 좌우", "노폐물을 걸러 오줌을 만들어요"],
                   f"{o('콩팥')}: 혈액 속의 노폐물을 걸러 내어 오줌을 만들어요",
                   "콩팥은 강낭콩 모양이고 등허리 좌우에 한 개씩 있어요. 혈액 속의 노폐물을 걸러 내어 오줌을 만들어요."),
                  ('ure', [f"{o('오줌관')}: 두 개의 긴 관 모양", "오줌이 이동하는 통로예요"],
                   f"{o('오줌관')}: 오줌이 이동하는 통로예요",
                   "오줌관은 두 개의 긴 관 모양이에요. 오줌이 이동하는 통로예요."),
-                 ('bla', [f"{o('방광')}: 작은 공 모양", "오줌을 모아 두었다가", "몸 밖으로 내보내요"],
+                 ('bla', [f"{o('방광')}: 작은 공 모양", "오줌을 모았다가 내보내요"],
                   f"{o('방광')}: 오줌을 모아 두었다가 몸 밖으로 내보내요",
                   "방광은 오줌관에 연결된 작은 공 모양이에요. 오줌을 모아 두었다가 몸 밖으로 내보내요.")]
         for i, (k, lines, sub, narr) in enumerate(items):
-            card = K.text_card(lines, w=5.8, size=34).move_to([3.5, [2.05, 0.25, -1.6][i], 0])
+            card = K.text_card(lines, w=5.6, size=32, pad=0.25).move_to([3.6, [1.85, 0.15, -1.55][i], 0])
             self.say(sub, narr)
             self.play(FadeIn(labs[k]), FadeIn(card, shift=LEFT * 0.2), run_time=0.6)
         self.settle()
@@ -124,7 +124,7 @@ class S5Ep20(EpisodeScene):
     # ── 배설 경로 ──
     def route(self):
         self.section("배설 경로")
-        kf = K.kidney_flow(h=5.0).move_to([-1.6, 0.25, 0])
+        kf = K.kidney_flow(h=5.0).move_to([-2.3, 0.25, 0])
         t = ValueTracker(0)
         lv = ValueTracker(0)
         run = {"uri": False}
@@ -151,8 +151,8 @@ class S5Ep20(EpisodeScene):
         tx = VGroup(T("콩팥", 32, PAPER).move_to(P(180, 168)),
                     K.label("오줌관", URI, 28).move_to(P(250, 300)),
                     K.label("방광", URI, 28).move_to(P(440, 326)),
-                    M(f"<span foreground='{K.ART}'>노폐물이 많은 혈액</span>", 26).move_to(P(318, 92)),
-                    M(f"<span foreground='{K.VEN}'>노폐물이 걸러진 혈액</span>", 26).move_to(P(410, 232)))
+                    K.label("노폐물이 많은 혈액", K.ART, 26).move_to(P(380, 88)),
+                    K.label("노폐물이 걸러진 혈액", K.VEN, 26).move_to(P(400, 234)))
         leg = VGroup(VGroup(Dot(radius=0.11, color="#ff6b5e"), Dot(radius=0.06, color=K.WASTE)).arrange(RIGHT, buff=0.02),
                      M(f"혈액 (<span foreground='{K.WASTE}'>노란 점</span>: 노폐물)", 26)).arrange(RIGHT, buff=0.15).move_to([3.4, 2.75, 0])
         self.say("혈액 속의 노폐물은 어떻게 몸 밖으로 나갈까요?",
@@ -162,7 +162,7 @@ class S5Ep20(EpisodeScene):
         run["uri"] = True
         steps = VGroup(*[K.label(s, URI if i else KID, 28) for i, s in enumerate(["① 콩팥: 노폐물을 걸러 오줌", "② 오줌관을 지나요",
                                                                                    "③ 방광에 모여요", "④ 몸 밖으로 나가요"])])
-        steps.arrange(DOWN, buff=0.22, aligned_edge=LEFT).move_to([4.6, 0.75, 0])
+        steps.arrange(DOWN, buff=0.22, aligned_edge=LEFT).move_to([4.3, 0.75, 0])
         self.say(f"{o('콩팥')}이 노폐물을 걸러 오줌을 만들고, 오줌은 오줌관을 지나요",
                  "혈액 속의 노폐물이 콩팥을 거치면서 걸러져 오줌이 돼요. 오줌은 오줌관을 지나요.")
         self.play(FadeIn(steps[0]), FadeIn(steps[1]), t.animate.set_value(5), lv.animate.set_value(0.5), run_time=3.5, rate_func=linear)

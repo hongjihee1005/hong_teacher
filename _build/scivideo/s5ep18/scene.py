@@ -184,19 +184,19 @@ class S5Ep18(EpisodeScene):
         rows = [("붉은 색소 물", "혈액"), ("호스", "혈관"), ("펌프", "심장")]
         grp = VGroup()
         for i, (a, b_) in enumerate(rows):
-            y = 1.75 - i * 1.1
+            y = 1.95 - i * 1.1
             la = K.label(a, BLUE, 38).move_to([-2.2, y, 0])
             lb = K.label(b_, K.ART, 38).move_to([3.6, y, 0])
             ar = Arrow(la.get_right(), lb.get_left(), buff=0.25, color=ORANGE, stroke_width=7)
             grp.add(VGroup(la, ar, lb))
-        hd = VGroup(T("모형", 32, BLUE).move_to([-2.2, 2.6, 0]), T("우리 몸", 32, K.ART).move_to([3.6, 2.6, 0]))
+        hd = VGroup(T("모형", 32, BLUE).move_to([-2.2, 2.8, 0]), T("우리 몸", 32, K.ART).move_to([3.6, 2.8, 0]))
         self.say("모형의 각 부분은 우리 몸의 어떤 부분과 같을까요?",
                  "모형의 각 부분은 우리 몸의 어떤 부분과 같은 역할을 할까요?")
         self.play(FadeIn(hd), *[FadeIn(r_[0]) for r_ in grp], run_time=0.6)
         self.say(f"붉은 색소 물은 {red('혈액')}, 호스는 {red('혈관')}, 펌프는 {red('심장')}이에요",
                  "붉은 색소 물은 혈액, 호스는 혈관, 펌프는 심장과 같은 역할을 해요.")
         self.play(LaggedStart(*[AnimationGroupSafe(r_) for r_ in grp], lag_ratio=0.5), run_time=1.8)
-        dif = K.text_card([f"우리 몸의 혈관은 {o('온몸')}에 퍼져 있고,", f"심장은 {o('스스로 쉬지 않고')} 뛰어요"], w=9.0, size=34).move_to([0.7, -2.0, 0])
+        dif = K.text_card([f"우리 몸의 혈관은 {o('온몸')}에 퍼져 있고,", f"심장은 {o('스스로 쉬지 않고')} 뛰어요"], w=9.0, size=34).move_to([0.7, -1.65, 0])
         self.say(f"다른 점: 혈관은 온몸에, 심장은 {o('스스로 쉬지 않고')} 뛰어요",
                  "모형과 다른 점도 있어요. 실제 몸의 혈관은 온몸에 퍼져 있고, 심장은 스스로 쉬지 않고 뛰어요.")
         self.play(FadeIn(dif), run_time=0.6)

@@ -174,10 +174,10 @@ class Sieve:
         rim = rect(w + 0.2, 0.16, "#9AA3AD", x, y + h + 0.04, STEEL, 3, r=0.05)
         return VGroup(back, side, mesh, rim)
 
-    def inside(self, n_sand=110, n_grav=13, seed=1):
+    def inside(self, n_sand=110, n_grav=13, seed=1, rg=(0.11, 0.17)):
         x, y, w = self.x, self.y, self.w
         s = sand_dots(x - w / 2 + 0.55, x + w / 2 - 0.55, y + 0.06, y + 0.3, n_sand, seed)
-        gr = gravel(x - w / 2 + 0.7, x + w / 2 - 0.7, y + 0.18, y + 0.36, n_grav, seed + 4)
+        gr = gravel(x - w / 2 + 0.7, x + w / 2 - 0.7, y + 0.2 + rg[0], y + 0.25 + rg[1], n_grav, seed + 4, rg[0], rg[1])
         return s, gr
 
 
@@ -384,17 +384,19 @@ class EvapDish:
 
     def body(self):
         x, y, w = self.x, self.y, self.w
-        return S([(x - w / 2, y + 0.62), (x - w * 0.36, y + 0.15), (x, y), (x + w * 0.36, y + 0.15),
-                  (x + w / 2, y + 0.62)], "#FFFFFF", DISH, 5, close=False).set_fill("#FFFFFF", 1)
+        k = w / 2.6
+        return S([(x - w / 2, y + 0.62 * k), (x - w * 0.36, y + 0.15 * k), (x, y), (x + w * 0.36, y + 0.15 * k),
+                  (x + w / 2, y + 0.62 * k)], "#FFFFFF", DISH, 5, close=False).set_fill("#FFFFFF", 1)
 
     def water(self, k=1.0):
         """k: 물의 양(1 = 접시 절반쯤)"""
         x, y, w = self.x, self.y, self.w
         if k <= 0.02:
             return VGroup()
-        top = y + 0.06 + 0.34 * k
+        hk = w / 2.6
+        top = y + (0.06 + 0.34 * k) * hk
         half = w * (0.18 + 0.2 * k)
-        return S([(x - half, top), (x - half * 0.6, y + 0.1), (x, y + 0.06), (x + half * 0.6, y + 0.1), (x + half, top)],
+        return S([(x - half, top), (x - half * 0.6, y + 0.1 * hk), (x, y + 0.06 * hk), (x + half * 0.6, y + 0.1 * hk), (x + half, top)],
                  WATER, WATER_D, 0, close=True).set_fill(WATER, 0.95)
 
     def salt(self, n=40, seed=3):
@@ -403,8 +405,9 @@ class EvapDish:
         for i in range(n):
             u = 2 * rnd(i, seed) - 1
             px = x + u * w * 0.34
-            py = y + 0.08 + 0.26 * u * u + 0.07 * rnd(i, seed + 1)
-            g.add(Square(side_length=0.07, fill_color=SALT, fill_opacity=1, stroke_color=SALT_E, stroke_width=1.5).move_to(
+            hk = w / 2.6
+            py = y + (0.08 + 0.26 * u * u + 0.07 * rnd(i, seed + 1)) * hk
+            g.add(Square(side_length=0.04 * hk + 0.03, fill_color=SALT, fill_opacity=1, stroke_color=SALT_E, stroke_width=1.5).move_to(
                 [px, py, 0]).rotate(rnd(i, seed + 2)))
         return g
 

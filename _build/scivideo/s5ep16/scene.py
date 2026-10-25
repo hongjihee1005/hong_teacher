@@ -163,14 +163,14 @@ class S5Ep16(EpisodeScene):
                  "모형의 손잡이를 잡아당기면 근육 도안과 아래팔뼈 도안은 어떻게 될까요?")
         self.settle()
         self.pause_screen(6, "손잡이를 당기면 안쪽 근육은?")
-        rows = K.text_card([f"{self.accent_b('손잡이를 당기면')}", f"안쪽 근육 {o('줄어든다')}", f"바깥쪽 근육 {o('늘어난다')}",
-                            f"아래팔뼈 {g('올라간다')}"], w=4.6, size=30).move_to([4.4, 1.7, 0])
+        rows = K.text_card([f"{self.accent_b('손잡이를 당기면')}", f"안쪽 근육 {o('줄어든다')} · 바깥쪽 근육 {o('늘어난다')}",
+                            f"아래팔뼈 {g('올라간다')}"], w=5.6, size=30, pad=0.25).move_to([3.9, 1.5, 0])
         self.say(f"안쪽 근육이 {o('줄어들고')} 바깥쪽 근육이 {o('늘어나')} 아래팔뼈가 {g('올라가요')}",
                  "손잡이를 잡아당기면 안쪽 근육은 줄어들고, 바깥쪽 근육은 늘어나요. 그러면 아래팔뼈가 따라 올라가요.")
         self.play(ph.animate.set_value(130), run_time=2.0)
         self.play(FadeIn(rows), run_time=0.5)
-        rows2 = K.text_card([f"{self.accent_b('손잡이를 밀면')}", f"안쪽 근육 {o('늘어난다')}", f"바깥쪽 근육 {o('줄어든다')}",
-                             f"아래팔뼈 {g('내려간다')}"], w=4.6, size=30).move_to([4.4, -1.1, 0])
+        rows2 = K.text_card([f"{self.accent_b('손잡이를 밀면')}", f"안쪽 근육 {o('늘어난다')} · 바깥쪽 근육 {o('줄어든다')}",
+                             f"아래팔뼈 {g('내려간다')}"], w=5.6, size=30, pad=0.25).move_to([3.9, -1.15, 0])
         self.say(f"밀면 반대로, 아래팔뼈가 {g('내려가요')}",
                  "손잡이를 밀면 반대로 안쪽 근육은 늘어나고 바깥쪽 근육은 줄어들어, 아래팔뼈가 내려가요.")
         self.play(ph.animate.set_value(20), run_time=2.0)
@@ -193,12 +193,12 @@ class S5Ep16(EpisodeScene):
         self.add(arm)
         self.play(FadeIn(lab), run_time=0.4)
         c1 = K.text_card([f"{self.accent_b('팔을 구부릴 때')}", f"안쪽 근육 {o('줄어들고')}", f"바깥쪽 근육 {o('늘어나요')}"],
-                         w=4.6, size=34).move_to([4.4, 1.3, 0])
+                         w=4.6, size=34).move_to([4.4, 1.25, 0])
         self.say(f"팔을 구부리면 안쪽 근육이 {o('줄어들고')} 바깥쪽 근육이 {o('늘어나요')}",
                  "내 팔도 같아요. 팔을 구부리면 팔 안쪽 근육이 줄어들고 바깥쪽 근육이 늘어나면서, 아래팔뼈가 따라 올라가요.")
         self.play(ph.animate.set_value(130), FadeIn(c1), run_time=1.8)
         c2 = K.text_card([f"{self.accent_b('팔을 펼 때')}", f"바깥쪽 근육 {o('줄어들고')}", f"안쪽 근육 {o('늘어나요')}"],
-                         w=4.6, size=34).move_to([4.4, -1.1, 0])
+                         w=4.6, size=34).move_to([4.4, -1.25, 0])
         self.say(f"팔을 펴면 바깥쪽 근육이 {o('줄어들고')} 안쪽 근육이 {o('늘어나요')}",
                  "팔을 펴면 바깥쪽 근육이 줄어들고 안쪽 근육이 늘어나면서, 아래팔뼈가 따라 내려가요. 팔을 굽혔다 펴며 직접 만져 봐요.")
         self.play(ph.animate.set_value(20), FadeIn(c2), run_time=1.8)

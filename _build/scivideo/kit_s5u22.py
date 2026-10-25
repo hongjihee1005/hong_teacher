@@ -14,7 +14,7 @@
 import numpy as np
 from manim import (DOWN, LEFT, ORIGIN, RIGHT, UP, PI, TAU, WHITE,
                    Arc, Arrow, Circle, Dot, Ellipse, Line, Polygon, Rectangle, RoundedRectangle, VGroup, VMobject,
-                   DashedVMobject)
+                   DashedVMobject, Intersection)
 
 from series_style import BLUE, GREEN, INK, ORANGE, PAPER, SOFT, T, M
 from scikit import RED, BROWN, BROWN_DARK, SKIN
@@ -195,7 +195,7 @@ def day_chart(W=12.4, H=4.9):
         return base + (v - 15) / 20 * (top - base)
 
     def HY(h):  # 습도 0~100 %
-        return base + h / 100 * (top - base) * 0.62
+        return base + h / 100 * (top - base) * 0.5
     cols = VGroup()
     for i, d in enumerate(DAYS):
         c = R(dx - 0.1, H - 0.05, "#EEF3F8" if d[1] == "rain" else "#FFFDF3", X[i], 0, rad=0.1, sw=0)
@@ -231,6 +231,7 @@ def day_chart(W=12.4, H=4.9):
                         T("습도", 20, "#1F6F7D")).arrange(RIGHT, buff=0.1)).arrange(RIGHT, buff=0.4)
     leg.move_to([0, H / 2 + 0.3, 0])
     g.add(leg)
+    g.leg = leg
     g.cols, g.bars, g.labels, g.X, g.Y = cols, bars, labels, X, Y
 
     def gap(i, col="#7A4F00"):
@@ -361,9 +362,9 @@ def sky_heights(kind="all", W=12.6, H=5.0):
     g.add(ax, T("높은 곳", 24, "#0F3B5C").move_to([-W / 2 + 1.35, H / 2 - 0.45, 0]),
           T("지표면", 24, "#0F3B5C").move_to([-W / 2 + 1.25, base + 0.25, 0]))
     gr = VGroup()
-    for i in range(10):
-        x = -3.6 + i * 1.05
-        gr.add(dew_grass().scale(0.45).move_to([x, base + 0.05, 0]))
+    for i in range(7):
+        x = -3.9 + i * 1.6
+        gr.add(dew_grass().scale(0.75).move_to([x, base + 0.15, 0]))
     g.add(gr)
     g.dew = VGroup(*[sub[1] for sub in gr])
     g.fog = rect(W - 0.1, 1.5, WHITE, 0, base + 0.55, sw=0, op=0.75)
@@ -455,6 +456,7 @@ def satellite(day="oct12", W=5.6):
 
     def P(x, y):
         return [(x - 200) * k, -(y - 150) * k, 0]
+    frame = Rectangle(width=W, height=Hh)
     g = VGroup(Rectangle(width=W, height=Hh, fill_color="#0B1A2E", fill_opacity=1, stroke_color="#55657A", stroke_width=4))
     g.add(Polygon(*[P(x, y) for x, y in _LAND], fill_color="#3B4A3C", fill_opacity=1, stroke_width=0))
     g.add(Polygon(*[P(x, y) for x, y in _JAPAN], fill_color="#3B4A3C", fill_opacity=1, stroke_width=0))
@@ -463,8 +465,9 @@ def satellite(day="oct12", W=5.6):
     cl = VGroup()
     for cx, cy, rx, ry in d["clouds"]:
         for f, op in ((1.25, 0.22), (1.0, 0.45), (0.75, 0.75)):
-            e = Ellipse(width=2 * rx * k * f, height=2 * ry * k * f, fill_color=WHITE, fill_opacity=op, stroke_width=0)
-            cl.add(e.move_to(P(cx, cy)))
+            e = Ellipse(width=2 * rx * k * f, height=2 * ry * k * f).move_to(P(cx, cy))
+            e = Intersection(e, frame, fill_color=WHITE, fill_opacity=op, stroke_width=0)
+            cl.add(e)
     # 화면 밖으로 번지지 않게 사진 틀 안으로
     g.add(cl)
     g.add(T("동해", 22, "#9FC3DD").move_to(P(312, 115)))
@@ -494,8 +497,7 @@ def beach_windsock(W=12.4, H=4.8):
     land = poly([(-0.4, -0.6), (W / 2 - 0.02, -0.45), (W / 2 - 0.02, -H / 2 + 0.02), (0.0, -H / 2 + 0.02)], LAND, LAND, 0)
     s = sun_hot(0.42).move_to([0, H / 2 - 0.85, 0])
     ws = windsock(1.0)
-    ws.move_to([2.6, -0.6 + 1.2, 0], aligned_edge=DOWN)
-    ws.shift(RIGHT * (ws.get_center()[0] - ws[0].get_center()[0]))
+    ws.shift(np.array([2.6, -0.52, 0]) - ws[0].get_bottom())
     g = VGroup(bg, sea, land, s, ws,
                T("바다", 34, WHITE).move_to([-3.8, -1.5, 0]), T("육지", 34, "#8A6A3E").move_to([4.0, -1.6, 0]),
                T("바람자루", 26, "#0F3B5C").next_to(ws[0], UP, buff=0.12))
@@ -519,8 +521,7 @@ class WindBox:
         tube = Rectangle(width=18 * k, height=44 * k, fill_color="#111111", fill_opacity=1, stroke_color="#666666",
                          stroke_width=2).move_to(self.P(x, y - 18))
         liq = Rectangle(width=11 * k, height=34 * k, fill_color=col, fill_opacity=1, stroke_width=0).move_to(self.P(x, y - 18))
-        t = T(f"{v} °C", 26, WHITE).move_to(self.P(x, y - 58))
-        return VGroup(tube, liq, t)
+        return VGroup(tube, liq)
 
     def box(self):
         k = self.k
@@ -540,8 +541,8 @@ class WindBox:
         wat = Polygon(P(484, 246), P(646, 246), P(639, 294), P(491, 294), fill_color="#5DADE2", fill_opacity=1, stroke_width=0)
         t1 = self.therm(176, 284, 20, "#3B82C4")
         t2 = self.therm(626, 284, 34, "#E74C3C")
-        n1 = T("모래", 28, "#F3D9A8").move_to(P(250, 275))
-        n2 = T("따뜻한 물", 28, WHITE).move_to(P(560, 275))
+        n1 = T("모래 20 °C", 30, "#6B5030").move_to(P(235, 345))
+        n2 = T("따뜻한 물 34 °C", 30, "#1C6FA8").move_to(P(565, 345))
         g = VGroup(sand, sand_b, wat, wat_b, t1, t2, n1, n2)
         g.sand, g.water = VGroup(sand, sand_b), VGroup(wat, wat_b)
         return g

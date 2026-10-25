@@ -148,20 +148,20 @@ class S5Ep21(EpisodeScene):
             ticks.add(Line([ox - 0.1, y, 0], [ox, y, 0], stroke_color=RED, stroke_width=3), T(str(v), 24, RED).move_to([ox - 0.45, y, 0]))
             if v:
                 ticks.add(Line([ox, y, 0], [ox + W, y, 0], stroke_color=SOFT, stroke_width=1.5, stroke_opacity=0.5))
-        for tv in (36.0, 36.5, 37.0):
-            y = oy + (tv - 36.0) / 1.0 * H
+        for tv in (36.0, 36.5, 37.0, 37.5):
+            y = oy + (tv - 36.0) / 1.5 * H
             ticks.add(Line([ox + W, y, 0], [ox + W + 0.1, y, 0], stroke_color=ORANGE, stroke_width=3), T(f"{tv}", 24, ORANGE).move_to([ox + W + 0.5, y, 0]))
         yl = T("맥박 수(회)", 26, RED).move_to([ox + 0.3, oy + H + 0.3, 0])
-        yr = T("체온(℃)", 26, ORANGE).move_to([ox + W - 0.1, oy + H + 0.3, 0])
+        yr = T("체온(℃)", 26, ORANGE).move_to([ox + W - 0.9, oy + H + 0.3, 0])
         xs = [ox + W * (k + 0.5) / 3 for k in range(3)]
         xl = VGroup(*[T(c, 28).move_to([x, oy - 0.35, 0]) for x, c in zip(xs, COLS)])
         bars = VGroup(*[Rectangle(width=1.1, height=PULSE[k] / 120 * H, fill_color="#F08A8A", fill_opacity=0.9, stroke_color=RED,
                                   stroke_width=3).move_to([xs[k], oy + PULSE[k] / 120 * H / 2, 0]) for k in range(3)])
-        bnum = VGroup(*[T(str(PULSE[k]), 26, RED).next_to(bars[k], UP, buff=0.08).shift(LEFT * 0.3) for k in range(3)])
-        pts = [np.array([xs[k], oy + (TEMP[k] - 36.0) * H, 0]) for k in range(3)]
+        bnum = VGroup(*[T(str(PULSE[k]), 28, RED).next_to(bars[k], UP, buff=0.08) for k in range(3)])
+        pts = [np.array([xs[k], oy + (TEMP[k] - 36.0) / 1.5 * H, 0]) for k in range(3)]
         line = VGroup(Line(pts[0], pts[1], stroke_color=ORANGE, stroke_width=6), Line(pts[1], pts[2], stroke_color=ORANGE, stroke_width=6))
         dots = VGroup(*[Dot(p, radius=0.11, color=ORANGE).set_stroke(PAPER, 3) for p in pts])
-        tnum = VGroup(*[T(str(TEMP[k]), 24, ORANGE).next_to(pts[k], RIGHT, buff=0.12).shift(DOWN * 0.28) for k in range(3)])
+        tnum = VGroup(*[K.label(str(TEMP[k]), ORANGE, 24).next_to(pts[k], RIGHT, buff=0.12) for k in range(3)])
         self.say("측정 결과를 그래프로 나타내요. 막대는 맥박 수, 선은 체온이에요",
                  "측정 결과를 그래프로 나타내 봐요. 막대는 맥박 수, 점과 선은 체온이에요.")
         self.play(Create(ax), FadeIn(ticks), FadeIn(yl), FadeIn(yr), FadeIn(xl), run_time=0.8)
@@ -211,21 +211,21 @@ class S5Ep21(EpisodeScene):
     # ── 왜 그럴까요? ──
     def why(self):
         self.section("왜 그럴까요?")
-        q1 = K.text_card(["운동을 하면 호흡이 빨라지는 까닭은?"], w=8.4, size=36).move_to([0, 2.2, 0])
+        q1 = K.text_card(["운동을 하면 호흡이 빨라지는 까닭은?"], w=8.4, size=34, pad=0.22).move_to([0, 2.35, 0])
         self.say("운동을 하면 왜 호흡이 빨라질까요?", "운동을 하면 호흡이 빨라지는 까닭은 무엇일까요?")
         self.play(FadeIn(q1), run_time=0.5)
         self.pause_screen(4, "호흡기관이 하는 일을 떠올려 봐요")
-        a1 = M(f"뼈와 근육이 많이 움직이려면 {o('산소')}가 많이 필요해요 → 산소를 많이 흡수", 32).move_to([0, 1.25, 0])
+        a1 = M(f"뼈와 근육이 많이 움직이려면 {o('산소')}가 많이 필요해요 → 산소를 많이 흡수", 30).move_to([0, 1.6, 0])
         self.say(f"{o('산소')}를 많이 흡수하기 위해서예요",
                  "뼈와 근육이 많이 움직이려면 산소가 많이 필요해요. 그래서 산소를 많이 흡수하기 위해 호흡이 빨라져요.")
         self.play(FadeIn(a1), run_time=0.6)
-        q2 = K.text_card(["운동을 하면 심장이 빠르게 뛰는 까닭은?"], w=8.4, size=36).move_to([0, 0.05, 0])
-        a2 = M(f"{o('산소')}와 {o('영양소')}를 온몸에 빠르게 운반하기 위해서예요", 32).move_to([0, -0.9, 0])
+        q2 = K.text_card(["운동을 하면 심장이 빠르게 뛰는 까닭은?"], w=8.4, size=34, pad=0.22).move_to([0, 0.8, 0])
+        a2 = M(f"{o('산소')}와 {o('영양소')}를 온몸에 빠르게 운반하기 위해서예요", 30).move_to([0, 0.05, 0])
         self.say(f"산소와 영양소를 온몸에 {o('빠르게 운반')}하기 위해서예요",
                  "운동을 하면 심장이 빠르게 뛰는 까닭은, 순환기관이 산소와 영양소를 온몸에 빠르게 운반하기 위해서예요.")
         self.play(FadeIn(q2), FadeIn(a2), run_time=0.7)
         a3 = K.text_card([f"운동을 하면 체온이 {o('올라가고')} 땀이 나기도 해요.",
-                          f"콧구멍을 넓혀 주는 밴드: 공기가 잘 드나들어 {g('호흡하기 쉬워져요')}"], w=11.6, size=32).move_to([0, -2.0, 0])
+                          f"콧구멍을 넓혀 주는 밴드: 공기가 잘 드나들어 {g('호흡하기 쉬워져요')}"], w=11.6, size=30, pad=0.25).move_to([0, -1.3, 0])
         self.say(f"체온이 올라가 땀이 나기도 하고, 콧구멍 밴드는 {g('호흡')}을 도와요",
                  "운동을 하면 체온이 올라가고 땀이 나기도 해요. 운동할 때 콧구멍을 넓혀 주는 밴드를 붙이면 공기가 잘 드나들어 호흡하기 쉬워져요.")
         self.play(FadeIn(a3), run_time=0.6)
