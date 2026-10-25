@@ -76,7 +76,7 @@ class S4Ep29(EpisodeScene):
         df = K.text_card([f"{g('압력')}: 일정한 넓이에 작용하는 힘"], w=8.4, size=36, stroke=GREEN).move_to([0, 2.3, 0])
         self.play(FadeIn(df), run_time=0.5)
         self.say(f"일정한 넓이에 작용하는 힘을 {g('압력')}이라고 해요",
-                 "공기가 든 것을 누르면 크기가 달라져요. 기체에 작용하는 압력이 변했기 때문이에요. 일정한 넓이에 작용하는 힘을 압력이라고 해요.")
+                 "눌린 것은 공기에 작용하는 압력이 변했기 때문이에요. 일정한 넓이에 작용하는 힘을 압력이라고 해요.")
         self.settle()
         clear_stage(self)
 
@@ -113,10 +113,10 @@ class S4Ep29(EpisodeScene):
         self.say("손을 떼면 피스톤이 다시 밀려 나와요", "손을 떼니 피스톤이 다시 밀려 나와 공기의 부피가 원래대로 돌아왔어요.")
         self.play(V.animate.set_value(40), run_time=1.4, rate_func=rate_functions.smooth)
         self.settle()
-        res = K.text_card([f"피스톤을 누르면 {r('압력이 높아져')} 공기의 {bl('부피가 줄어요')}"], w=11.0, size=34, stroke=GREEN).move_to([0, -0.6, 0])
+        res = K.text_card([f"피스톤을 누르면 {r('압력이 높아져')} 공기의 {bl('부피가 줄어요')}"], w=11.0, size=34, stroke=GREEN).move_to([0, -1.35, 0])
         self.play(FadeOut(vt), FadeIn(res), run_time=0.5)
         self.say(f"압력이 높아지면 기체의 부피가 {bl('줄어들어요')}",
-                 "피스톤을 누르면 주사기 속 공기에 작용하는 압력이 높아져요. 압력이 높아지면 기체의 부피가 줄어들어요.")
+                 "피스톤을 누르면 공기에 작용하는 압력이 높아져요. 압력이 높아지면 기체의 부피가 줄어들어요.")
         self.settle()
         sy.clear_updaters()
         clear_stage(self)
@@ -131,7 +131,7 @@ class S4Ep29(EpisodeScene):
         pump = K.hand_pump(1.1)
         pump.move_to([-1.6, 0, 0]).shift(UP * (jar.lid.get_top()[1] - pump.get_bottom()[1]))
         self.say("공기를 넣고 묶은 고무풍선을 용기에 넣고 뚜껑을 닫아요",
-                 "공기를 조금 넣고 클립으로 묶은 고무풍선을 공기를 빼는 장치의 용기에 넣고 뚜껑을 닫았어요.")
+                 "공기를 넣고 묶은 고무풍선을 공기를 빼는 장치의 용기에 넣고 뚜껑을 닫았어요.")
         self.play(FadeIn(jar), run_time=0.5)
         self.add(ball)
         self.play(FadeIn(pump), run_time=0.4)
@@ -142,12 +142,12 @@ class S4Ep29(EpisodeScene):
             self.play(pump.top.animate.shift(DOWN * 0.3), run_time=0.18)
             self.play(pump.top.animate.shift(UP * 0.3), rr.animate.set_value(1 + (i + 1) * 0.075), run_time=0.25)
         info = K.text_card([f"공기를 빼면 고무풍선에 작용하는 {bl('압력이 낮아져요')}",
-                            f"→ 고무풍선 속 공기의 {r('부피가 늘어나요')}"], w=7.4, size=28).move_to([3.4, 0.5, 0])
-        self.say(f"고무풍선이 {r('커졌어요')}", "고무풍선이 커졌어요. 용기 속 공기를 빼내면 고무풍선에 작용하는 압력이 낮아져서, 고무풍선 속 공기의 부피가 늘어나요.")
+                            f"→ 고무풍선 속 공기의 {r('부피가 늘어나요')}"], w=6.3, size=28).move_to([3.7, 0.5, 0])
+        self.say(f"고무풍선이 {r('커졌어요')}", "고무풍선이 커졌어요. 공기를 빼내면 고무풍선에 작용하는 압력이 낮아져, 풍선 속 공기의 부피가 늘어나요.")
         self.play(FadeIn(info), run_time=0.5)
         self.settle()
         self.say(f"{o('뚜껑 가운데 단추')}를 누르면 처음 크기로 돌아와요",
-                 "뚜껑 가운데 단추를 누르니 공기가 다시 들어가 압력이 처음과 같아졌고, 고무풍선이 처음 크기로 돌아왔어요.")
+                 "뚜껑 가운데 단추를 누르면 공기가 다시 들어가 고무풍선이 처음 크기로 돌아와요.")
         self.play(FadeOut(pump), Indicate(jar.btn, color=RED, scale_factor=1.6), run_time=0.6)
         self.play(rr.animate.set_value(1.0), run_time=1.0)
         safe = K.safety_note("뚜껑은 가운데 단추를 누른 뒤에 열어요(억지로 열면 다칠 수 있어요).", w=11.6, size=26).move_to([0.4, 2.25, 0])
@@ -158,7 +158,7 @@ class S4Ep29(EpisodeScene):
         m = ValueTracker(1.0)
         mm = always_redraw(lambda: K.marshmallow(m.get_value()).scale(1.6, about_point=np.array([0, 0, 0])).shift([-1.6, -2.2 + 0.18, 0]))
         self.add(mm)
-        mt = T("마시멜로로도 해 봐요", 34).move_to([3.4, 0.5, 0])
+        mt = T("마시멜로로도 해 봐요", 34).move_to([3.6, 0.5, 0])
         self.play(FadeIn(mt), run_time=0.4)
         self.play(m.animate.set_value(1.45), run_time=1.6)
         self.say(f"마시멜로도 {r('부풀어 올라요')}. 마시멜로 속에도 공기가 있어요",
@@ -182,13 +182,13 @@ class S4Ep29(EpisodeScene):
     # ── 생활 속 예 ──
     def life(self):
         self.section("생활 속 예")
-        mt = K.mountain_bag(False)[:3].scale(1.25).move_to([-1.0, -0.4, 0])
+        mt = K.mountain_bag(False)[:3].scale(1.2).move_to([-1.0, -0.15, 0])
         t = ValueTracker(0.0)
         A = mt[0].get_vertices()[0] + np.array([0.9, 0.55, 0])
         B = mt[0].get_vertices()[1] + np.array([0.75, -0.25, 0])
         bag = always_redraw(lambda: K.fit(K.snack_bag(t.get_value(), label=False), 0.6 + 0.2 * t.get_value(), 0.75)
                             .move_to(A + (B - A) * t.get_value()))
-        lo = T("산 아래", 28).move_to(A + np.array([0, -0.75, 0]))
+        lo = T("산 아래", 28).move_to(A + np.array([-1.3, 0.1, 0]))
         hi = T("산 정상", 28).next_to(mt, UP, buff=0.05).shift(RIGHT * 1.6 + DOWN * 0.4)
         self.say("과자 봉지를 들고 산에 올라가요", "과자 봉지를 들고 높은 산에 올라가 볼게요.")
         self.play(FadeIn(mt), FadeIn(lo), FadeIn(hi), run_time=0.6)
@@ -202,29 +202,30 @@ class S4Ep29(EpisodeScene):
         self.settle()
         bag.clear_updaters()
         clear_stage(self)
-        items = [(K.gym_ball(1.0), "큰 공 위에 앉아 누르면", False, "공이 작아져요"),
-                 (K.sneaker(True), "운동화 공기 주머니가 땅에 닿으면", False, "주머니가 작아져요"),
-                 (K.rise_balloon(), "고무풍선이 하늘로 올라가면", True, "점점 커지다가 터져요"),
-                 (K.diver_bubbles(), "잠수부가 내뿜은 공기 방울", True, "올라갈수록 커져요")]
+        press = VGroup(K.gym_ball(1.0), Arrow([0, 1.6, 0], [0, 0.75, 0], buff=0, color=RED, stroke_width=10))
+        items = [(press, "큰 공 위에 앉아\n힘을 주어 누르면", False, "공이 작아져요"),
+                 (K.sneaker(True), "운동화 공기 주머니가\n땅에 닿으면", False, "주머니가 작아져요"),
+                 (K.rise_balloon(), "고무풍선이\n하늘로 올라가면", True, "점점 커지다가 터져요"),
+                 (K.diver_bubbles(), "잠수부가 내뿜은\n공기 방울", True, "올라갈수록 커져요")]
         cards = VGroup()
         tags = VGroup()
         for i, (pic, q, up, res) in enumerate(items):
             x = -4.9 + 3.27 * i
             box = K.R(3.05, 3.9, PAPER, x, 0.4, rad=0.16, stroke=SOFT, sw=4)
-            qt = T(q, 22).move_to([x, 1.95, 0])
+            qt = VGroup(*[T(l, 24) for l in q.split("\n")]).arrange(DOWN, buff=0.08).move_to([x, 1.85, 0])
             if qt.width > 2.85:
                 qt.scale_to_fit_width(2.85)
-            K.fit(pic, 2.2, 2.0).move_to([x, 0.45, 0])
+            K.fit(pic, 2.2, 1.7).move_to([x, 0.3, 0])
             cards.add(VGroup(box, qt, pic))
             lab = VGroup(T(res, 22, RED if up else BLUE),
                          T("압력↓ 부피↑" if up else "압력↑ 부피↓", 24, RED if up else BLUE)).arrange(DOWN, buff=0.1).move_to([x, -0.95, 0])
             tags.add(lab)
         self.say("우리 주변에서 압력에 따라 부피가 변하는 예를 찾아요",
-                 "우리 주변에서 압력에 따라 기체의 부피가 변하는 예를 더 찾아봐요. 압력이 높아졌을까요, 낮아졌을까요?")
+                 "우리 주변에서 압력에 따라 기체의 부피가 변하는 예를 더 찾아봐요.")
         self.play(FadeIn(cards, lag_ratio=0.15), run_time=1.0)
-        self.pause_screen(5, "압력이 높아졌을까요, 낮아졌을까요?")
+        self.pause_screen(5, "압력은 어떻게 변했을까요?")
         self.say(f"누르면 {r('압력↑')} {bl('부피↓')}, 위로 올라가면 {bl('압력↓')} {r('부피↑')}",
-                 "큰 공을 누르거나 운동화 공기 주머니가 땅에 닿으면 압력이 높아져 부피가 줄어들어요. 고무풍선이 하늘로 올라가거나 공기 방울이 물 위로 올라갈수록 압력이 낮아져 부피가 늘어나요.")
+                 "큰 공을 누르거나 운동화 공기 주머니가 땅에 닿으면 압력이 높아져 부피가 줄어요. 고무풍선이 하늘로, 공기 방울이 물 위로 올라갈수록 압력이 낮아져 부피가 늘어나요.")
         for c, tg, (_, _, up, _) in zip(cards, tags, items):
             self.play(FadeIn(tg), c[0].animate.set_stroke(RED if up else BLUE, 5), run_time=0.5)
             self.wait(0.8)

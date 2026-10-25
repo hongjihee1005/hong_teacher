@@ -30,7 +30,8 @@ def bl(s):
     return f'<span foreground="{BLUE}">{s}</span>'
 
 
-JS = 0.8   # 집기병 크기
+JS = 0.8   # 집기병 크기(정리 화면)
+JL = 0.95  # 실험 화면
 
 
 class S4Ep28(EpisodeScene):
@@ -87,12 +88,12 @@ class S4Ep28(EpisodeScene):
         base = -2.3
         hot = K.tank("hot").move_to([-3.6, base, 0], aligned_edge=DOWN)
         ice = K.tank("ice").move_to([3.6, base, 0], aligned_edge=DOWN)
-        hl = T("뜨거운 물", 32, RED).next_to(hot, UP, buff=1.1)
-        il = T("얼음물", 32, BLUE).next_to(ice, UP, buff=1.1)
+        hl = T("뜨거운 물", 34, RED).move_to([-3.6, 1.4, 0])
+        il = T("얼음물", 34, BLUE).move_to([3.6, 1.4, 0])
         k = ValueTracker(0.0)
         jx = ValueTracker(0.0)
         jy = ValueTracker(-1.2)
-        jar = always_redraw(lambda: K.jar_balloon(k.get_value()).scale(JS, about_point=np.array([0, 0, 0]))
+        jar = always_redraw(lambda: K.jar_balloon(k.get_value()).scale(JL, about_point=np.array([0, 0, 0]))
                             .shift([jx.get_value(), jy.get_value(), 0]))
         self.say("집기병 입구에 고무풍선을 씌우고 고무줄로 고정해요",
                  "집기병 입구에 고무풍선을 씌우고 고무줄로 고정했어요.")
@@ -128,14 +129,14 @@ class S4Ep28(EpisodeScene):
         self.section("정리해요")
         def jar_dots(kk, x, n=22):
             j = K.jar_balloon(kk).scale(JS, about_point=np.array([0, 0, 0]))
-            top = 2.4 * JS + (0.12 + 1.15 * kk) * JS * 0.7 if kk > 0 else 2.4 * JS - 0.4 * (-kk) * JS
+            top = 2.4 * JS + (0.12 + 0.85 * kk) * JS * 0.7 if kk > 0 else 2.4 * JS - 0.4 * (-kk) * JS
             d = K.air_in(-0.48, 0.48, 0.12, max(1.4, top), n=n, seed=9)
             return VGroup(j, d).shift([x, -2.2, 0])
-        A = jar_dots(1.0, -3.4)
-        B = jar_dots(-1.0, 3.4)
-        ta = M(f"온도가 높아지면 → 부피가 {r('늘어나요')}", 34).move_to([-3.4, 1.9, 0])
-        tb = M(f"온도가 낮아지면 → 부피가 {bl('줄어들어요')}", 34).move_to([3.4, 1.9, 0])
-        note = T("집기병과 고무풍선 안에는 일정한 양의 공기가 들어 있어요", 30, SOFT).move_to([0, 2.65, 0])
+        A = jar_dots(1.0, -4.3)
+        B = jar_dots(-1.0, 4.3)
+        ta = VGroup(T("온도가 높아지면", 34), M(f"부피가 {r('늘어나요')}", 34)).arrange(DOWN, buff=0.15).move_to([-4.3, 1.25, 0])
+        tb = VGroup(T("온도가 낮아지면", 34), M(f"부피가 {bl('줄어들어요')}", 34)).arrange(DOWN, buff=0.15).move_to([4.3, 1.25, 0])
+        note = T("집기병과 고무풍선 안에는 일정한 양의 공기가 들어 있어요", 30, SOFT).move_to([0.4, 2.3, 0])
         self.say("고무풍선의 변화는 집기병 속 공기의 부피 변화를 보여 줘요",
                  "집기병과 고무풍선 안에는 일정한 양의 공기가 들어 있어요. 고무풍선의 변화는 그 공기의 부피 변화를 보여 줘요.")
         self.play(FadeIn(A), FadeIn(B), FadeIn(note), run_time=0.7)
@@ -145,7 +146,7 @@ class S4Ep28(EpisodeScene):
         self.play(FadeIn(tb), run_time=0.5)
         self.settle()
         cond = K.text_card([f"다르게 한 조건: {o('공기의 온도')}",
-                            "같게 한 조건: 집기병·고무풍선·공기의 양"], w=8.4, size=30).move_to([0, -0.3, 0])
+                            "같게 한 조건: 집기병·고무풍선·공기의 양"], w=6.2, size=26).move_to([0, -0.9, 0])
         self.play(FadeIn(cond), run_time=0.5)
         self.say(f"이 실험에서 다르게 한 조건은 {o('공기의 온도')}예요",
                  "이 실험에서는 공기의 온도만 다르게 하고, 집기병, 고무풍선, 공기의 양은 같게 했어요.")

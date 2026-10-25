@@ -229,8 +229,8 @@ def jar_balloon(k=0.0):
     neck = R(0.6, 0.2, GLASS, 0, 2.3, rad=0.03, stroke=GLASS_D, sw=4, op=0.75)
     band = R(0.66, 0.08, "#C9A227", 0, 2.32, rad=0.02, sw=0)
     if k >= 0:
-        hgt = 0.12 + 1.15 * k
-        wid = 0.62 + 0.55 * k
+        hgt = 0.12 + 0.85 * k
+        wid = 0.62 + 0.75 * k
         # 위 반타원(아래 반은 병목 안)
         up = VMobject(fill_color=RUB, fill_opacity=1, stroke_color=RUB_D, stroke_width=3)
         ts = np.linspace(0, PI, 40)
@@ -245,14 +245,14 @@ def jar_balloon(k=0.0):
     return g
 
 
-def tank(kind="hot", w=3.0, h=1.4):
+def tank(kind="hot", w=3.2, h=1.4):
     """수조(아래 가운데가 (0,0)). kind='hot' 뜨거운 물 / 'ice' 얼음물"""
     col = HOT if kind == "hot" else WATER
     water = R(w - 0.12, h * 0.78, col, 0, h * 0.39 + 0.04, rad=0.05, sw=0, op=0.55)
     glass = R(w, h, GLASS, 0, h / 2, rad=0.1, stroke=GLASS_D, sw=5, op=0.25)
     g = VGroup(water, glass)
     if kind == "hot":
-        for x in (-0.9, 0.0, 0.9):
+        for x in (-w / 2 + 0.3, -w / 2 + 0.65, w / 2 - 0.65, w / 2 - 0.3):
             g.add(S([(x, h + 0.1), (x + 0.12, h + 0.35), (x - 0.08, h + 0.6), (x + 0.06, h + 0.85)], "#C9C3BE", 4))
     else:
         for (x, y) in [(-1.0, 0.95), (-0.45, 0.85), (0.6, 0.92), (1.05, 0.8), (0.15, 0.7)]:
@@ -480,9 +480,13 @@ def o2_maker():
 
 
 def airbag():
-    wheel = Circle(radius=0.65, stroke_color=INK, stroke_width=10)
-    bag = E(1.6, 1.3, PAPER, 0.15, 0.1, stroke=GRAY, sw=3)
-    return VGroup(wheel, bag)
+    """운전대 앞에 부푼 에어백"""
+    dash = P([(-1.3, -0.9), (1.3, -0.9), (1.3, -0.55), (-1.3, -0.35)], "#5B6B78", None, 0)
+    col = L((-0.6, -0.5), (-0.35, 0.0), INK, 10)
+    wheel = Circle(radius=0.55, stroke_color=INK, stroke_width=10).move_to([-0.35, 0.05, 0])
+    bag = E(1.5, 1.25, PAPER, 0.45, 0.35, stroke=GRAY, sw=3)
+    folds = VGroup(S([(0.0, 0.6), (0.3, 0.45), (0.55, 0.65)], LGRAY, 3), S([(0.2, 0.05), (0.5, 0.2), (0.85, 0.05)], LGRAY, 3))
+    return VGroup(dash, col, wheel, bag, folds)
 
 
 def h2_car():
