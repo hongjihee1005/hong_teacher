@@ -422,7 +422,32 @@ def window_drops():
     return VGroup(fr, cross, ds)
 
 
-def safety_note(text_markup, w=12.8, size=30):
+def dehumidifier():
+    body = rect(1.3, 1.9, "#F4F4F4", stroke="#7AA7BD", r=0.15)
+    vents = VGroup(*[L((-0.45, y), (0.45, y), "#9AA5AD", 4) for y in (0.7, 0.55, 0.4)])
+    tank = rect(1.0, 0.65, WATER, 0, -0.5, stroke=WATER_D, sw=3, r=0.08)
+    return VGroup(body, vents, tank)
+
+
+def snow_maker():
+    hill = poly([(-1.2, -0.6), (1.2, -0.6), (1.2, -0.1), (-1.2, 0.3)], WHITE, "#C9DBE6", 3)
+    gun = VGroup(rect(0.7, 0.35, "#E2573F", -0.75, 0.75, sw=3, r=0.08), L((-0.75, 0.55), (-0.75, -0.0), INK, 6))
+    flakes = VGroup(*[Dot([x, y, 0], radius=0.05, color="#8FB8D0") for x, y in
+                      ((-0.2, 0.9), (0.1, 0.75), (0.4, 0.95), (0.25, 0.5), (0.6, 0.65), (0.0, 0.35), (0.8, 0.4))])
+    return VGroup(hill, gun, flakes)
+
+
+def kettle():
+    body = Ellipse(width=2.0, height=1.5, fill_color="#C6CED6", fill_opacity=1, stroke_color=INK, stroke_width=4)
+    base = rect(1.6, 0.18, "#9AA6B0", 0, -0.7, sw=3)
+    spout = poly([(0.75, -0.1), (1.55, 0.65), (1.7, 0.55), (0.95, -0.35)], "#C6CED6", INK, 4)
+    handle = Arc(radius=0.55, start_angle=0.2, angle=PI - 0.4, stroke_color=INK, stroke_width=8).move_to([0, 0.95, 0])
+    g = VGroup(spout, body, base, handle)
+    g.tip = np.array([1.63, 0.62, 0])
+    return g
+
+
+def safety_note(text_markup, w=11.6, size=30):
     """안전 띠(빨간 테두리) — 가열·소금 섞은 얼음 실험의 앱 안전 안내"""
     t = M(f'<span foreground="{RED}">안전</span>  ' + text_markup, size)
     if t.width > w - 0.5:
