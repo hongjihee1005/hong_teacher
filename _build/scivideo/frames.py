@@ -12,7 +12,7 @@ video = os.path.join(here, ep, f"{ep}_{mode}.mp4")
 tl = json.load(open(os.path.join(here, ep, "timeline.json"), encoding="utf-8"))
 files = []
 for i, x in enumerate(tl):
-    t = max(x["t"] + 0.5, x["end"] - 0.6)
+    t = x["t"] + 0.6 * (x["end"] - x["t"])   # 자막 시간의 60% 지점(지우기 전 장면)
     f = os.path.join(out, f"f{i:02d}.png")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.2f}", "-i", video,
                     "-frames:v", "1", f], stdin=subprocess.DEVNULL, check=True)

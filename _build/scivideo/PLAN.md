@@ -38,6 +38,9 @@
 ### 만든 편
 | 폴더 | 화 코드 | 제목 | 상태 |
 |---|---|---|---|
+| s3ep01 | 3-1-1-a | 무거운 물체를 밀 때 힘이 더 들까? (2분 26초) | ✅ |
 
 ## 다음 할 일
-- s3ep01(3-1-1-a 무거운 물체를 밀 때 힘이 더 들까?)부터 차례로.
+- s3ep02(3-1-1-b 수평 잡기로 무게를 비교해요)부터 차례로.
+- 부품: `scikit.py`(사람 `person`·상자 `box`·복사용지 묶음 `bundle`·힘 화살표 `force_arrow`·막대 `force_bar`·책가방·카트·아령·그네·이름표 `tag`·`clear_stage`).
+- 제작 환경 주의: Pillow 12 이상이면 Manim이 'Invalid mode for data type' 오류 → `/opt/manimenv/bin/pip install "pillow<12"`.

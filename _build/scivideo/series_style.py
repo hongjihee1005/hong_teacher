@@ -330,6 +330,7 @@ class EpisodeScene(Scene):
         t0 = self.now()
         self._section = "마무리"
         self.clear_sub()
+        self.hide_chip()
         head = T("오늘의 핵심", 64, GREEN)
         body = M(summary_markup, 58)
         if body.width > 12.4:
