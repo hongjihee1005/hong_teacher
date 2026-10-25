@@ -100,7 +100,7 @@ class S3Ep33(EpisodeScene):
         self.play(FadeIn(opts), run_time=0.5)
         self.pause_screen(4, "무엇을 통해 전달될까요?")
         self.say(f"새소리는 {o('공기')}를 통해 우리 귀까지 전달돼요",
-                 "새소리는 공기를 통해 우리 귀까지 전달돼요. 다른 물질로도 소리가 전달되는지 알아봐요.")
+                 "새소리는 공기를 통해 우리 귀까지 전달돼요.")
         self.play(Indicate(opts[0], color=ORANGE, scale_factor=1.15), FadeOut(opts[1]), FadeOut(opts[2]), run_time=0.8)
         self.settle()
         self.clear()
@@ -115,7 +115,7 @@ class S3Ep33(EpisodeScene):
         rin = K.rings(jar.spk_pt, sh, rmax=1.6, n=3, start=-0.5, span=1.0, ref=0.3)
         rout = K.rings(np.array([-1.0, 0.4, 0]), sh, rmax=5.2, n=5, start=-0.25, span=0.5, ref=0.3)
         self.say("통 안에 탈지면을 깔고 스피커를 넣은 뒤 뚜껑을 닫아요",
-                 "공기를 빼는 장치 안에 탈지면을 깔고 스피커를 넣은 뒤 뚜껑을 닫아요.")
+                 "공기를 빼는 장치에 스피커를 넣고 뚜껑을 닫아요.")
         self.play(FadeIn(jar), FadeIn(er), run_time=0.6)
         st = T("", 40)
         lab = tag("공기 있음 — 잘 들려요", GREEN, 36).move_to([2.6, 2.4, 0])
@@ -138,10 +138,10 @@ class S3Ep33(EpisodeScene):
         self.say(f"공기를 다시 넣으면 {g('다시 잘 들려요')}", "공기를 다시 넣으면 소리가 다시 잘 들려요.")
         self.play(air.animate.set_value(1.0), sh.amp.animate.set_value(0.3), FadeOut(lab2), FadeIn(lab3), run_time=1.0)
         self.settle()
-        res = M(f"스피커 소리는 {o('공기(기체)')}를 통해 전달돼요", 44).move_to([1.3, -2.0, 0])
-        note = T("※ 실제 장치로는 공기를 완전히 뺄 수 없어 아주 작게라도 들려요", 26, SOFT).move_to([0, -2.55, 0])
+        res = M(f"소리는 {o('공기(기체)')}를 통해 전달돼요", 40).move_to([2.6, -1.1, 0])
+        note = T("※ 실제 장치로는 공기를 완전히 뺄 수 없어요", 26, SOFT).move_to([2.6, -1.8, 0])
         self.say(f"소리는 {o('공기(기체)')}를 통해 전달돼요",
-                 "스피커 소리는 공기, 곧 기체를 통해 전달돼요. 실제 장치로는 공기를 완전히 뺄 수 없어서 소리가 아주 작게라도 들려요.")
+                 "스피커 소리는 공기, 곧 기체를 통해 전달돼요. 실제로는 공기를 다 뺄 수 없어 아주 작게라도 들려요.")
         self.play(FadeIn(res), FadeIn(note), run_time=0.5)
         self.settle()
         self.clear()
@@ -156,7 +156,7 @@ class S3Ep33(EpisodeScene):
         rw = K.rings(np.array([-2.0, -1.0, 0]), sh, rmax=1.8, n=4, start=-0.4, span=1.6, col=K.WATER_D, ref=0.3)
         ra = K.rings(np.array([0.7, -0.2, 0]), sh, rmax=4.6, n=5, start=-0.15, span=0.7, ref=0.3)
         er = K.ear(1.2, face=LEFT).move_to([5.2, 0.1, 0])
-        self.say("수조의 물속에서 캐스터네츠를 부딪쳐요", "이번에는 수조의 물속에서 캐스터네츠를 “딱딱” 부딪쳐 봐요. 물 밖에서 소리가 들릴까요?")
+        self.say("수조의 물속에서 캐스터네츠를 부딪쳐요", "수조의 물속에서 캐스터네츠를 부딪쳐요. 물 밖에서 소리가 들릴까요?")
         self.play(FadeIn(tk), FadeIn(cs), FadeIn(hand_), FadeIn(er), run_time=0.6)
         self.pause_screen(4, "물 밖에서 들릴까요?")
         self.add(rw, ra)
@@ -170,9 +170,6 @@ class S3Ep33(EpisodeScene):
                  "소리가 물, 곧 액체를 통해 전달된 뒤 공기를 거쳐 귀까지 왔어요. 소리는 물을 통해서도 전달돼요.")
         self.play(FadeOut(word), FadeIn(path, shift=UP * 0.2), run_time=0.5)
         self.settle()
-        warn = T("캐스터네츠가 수조 벽에 부딪치지 않게, 물이 튀지 않게 조심해요", 28, RED).move_to([0, -2.45, 0])
-        self.play(FadeIn(warn), run_time=0.3)
-        self.wait(1.5)
         self.clear()
 
     # ── 탐구 3: 나무(책상) ──
@@ -209,13 +206,13 @@ class S3Ep33(EpisodeScene):
         for _ in range(3):
             self.play(pc.animate.shift(DOWN * 0.25 + RIGHT * 0.15), run_time=0.15)
             self.play(pc.animate.shift(UP * 0.25 + LEFT * 0.15), sh.amp.animate.set_value(0.3), run_time=0.2)
-        cnt = T("3번!", 50, GREEN).move_to([-1.6, d1.top_y + 1.5, 0])
+        cnt = T("3번!", 50, GREEN).move_to([-0.3, d1.top_y + 1.3, 0])
         self.say(f"같은 책상에서는 소리가 {g('또렷하게')} 들려요", "같은 책상에서는 두드리는 소리가 또렷하게 들려요. 세 번이에요!")
         self.play(FadeIn(cnt), run_time=0.3)
         self.settle()
-        res = M(f"소리는 {o('나무(고체)')}를 통해 전달돼요", 44).move_to([0, -2.2, 0])
+        res = M(f"소리는 {o('나무(고체)')}를 통해 전달돼요", 44).move_to([0, 2.5, 0])
         self.say(f"소리는 {o('나무(고체)')}를 통해 전달돼요", "같은 책상에서 더 잘 들렸어요. 소리는 나무, 곧 고체를 통해 전달돼요.")
-        self.play(FadeIn(res), run_time=0.4)
+        self.play(FadeOut(t2), FadeIn(res), run_time=0.4)
         self.settle()
         self.clear()
 
@@ -231,7 +228,7 @@ class S3Ep33(EpisodeScene):
         a1 = K.head(0.8).flip().move_to([-5.6, 0.95, 0])
         a2 = K.head(0.8).move_to([5.6, 0.95, 0])
         word = T("“여보세요~”", 40, ORANGE).move_to([-3.3, 2.5, 0])
-        self.say("실 전화기로 이야기해요", "같은 주제의 다른 탐구예요. 실로 연결된 컵, 실 전화기로 이야기해 봐요.")
+        self.say("실 전화기로 이야기해요", "실 전화기로 이야기해 봐요.")
         self.play(FadeIn(a1), FadeIn(a2), FadeIn(c1), FadeIn(c2), FadeIn(ln), run_time=0.6)
         t1 = tag("실을 팽팽하게", GREEN, 36).move_to([0, -1.2, 0])
         self.say(f"실을 팽팽하게 하면 {g('소리가 잘 전달돼요')}", "실을 팽팽하게 하고 “여보세요~” 말해요. 실이 떨리며 소리가 건너편 컵까지 전달돼요.")
@@ -263,7 +260,7 @@ class S3Ep33(EpisodeScene):
         self.say("여러 가지 예를 고체·액체·기체로 나눠 봐요",
                  "여러 가지 예에서 소리를 전달한 물질을 고체, 액체, 기체 중에서 골라 봐요.")
         self.play(FadeIn(tb), run_time=0.6)
-        self.pause_screen(5, "소리를 전달한 물질은?")
+        self.pause_screen(4, "소리를 전달한 물질은?")
         cols = {"기체": BLUE, "액체": "#3B86C0", "고체": ORANGE}
         anims = []
         for i in range(1, 6):
@@ -287,18 +284,17 @@ class S3Ep33(EpisodeScene):
         sky = K.R(13.0, 4.6, "#1E2440", 0, 0.45, stroke="#1E2440", sw=0, r=0.3)
         stars = VGroup(*[Dot([x, y, 0], radius=0.04, color=PAPER) for x, y in
                          np.c_[np.random.RandomState(2).uniform(-6.2, 6.2, 40), np.random.RandomState(4).uniform(-1.6, 2.5, 40)]])
-        a1 = rocket_suit(1.2).move_to([-2.0, 0.3, 0])
-        a2 = rocket_suit(1.2).flip().move_to([2.0, 0.3, 0])
+        a1 = rocket_suit(1.2).move_to([-2.0, 0.65, 0])
+        a2 = rocket_suit(1.2).flip().move_to([2.0, 0.65, 0])
         q = T("우주에서는 소리가 들릴까?", 46, PAPER).move_to([0, 2.1, 0])
         self.say("우주에서는 소리가 들릴까요?", "우주에서는 소리가 들릴까요?")
         self.play(FadeIn(sky), FadeIn(stars), FadeIn(a1), FadeIn(a2), FadeIn(q), run_time=0.7)
-        self.pause_screen(4, "우주에서는 소리가 들릴까요?")
-        t1 = T("공기가 거의 없어요", 40, "#F2C230").move_to([0, -1.2, 0])
+        t1 = T("공기가 거의 없어요", 40, "#F2C230").move_to([0, -1.4, 0])
         self.say(f"우주에는 소리를 전달할 {o('공기가 거의 없어요')}",
                  "우주에는 소리를 전달할 공기가 거의 없어요. 그래서 우주 비행사들은 가까이 있어도 무선 통신 장치로 이야기해요.")
         self.play(FadeIn(t1), run_time=0.4)
         self.settle()
         self.say("공기를 뺀 장치에서 소리가 작아진 것과 같은 까닭이에요",
-                 "공기를 뺀 장치에서 소리가 아주 작아진 것과 같은 까닭이에요.")
+                 "공기를 뺀 장치와 같은 까닭이에요.")
         self.settle()
         self.clear()
