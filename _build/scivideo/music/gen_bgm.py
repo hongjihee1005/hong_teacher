@@ -365,6 +365,9 @@ def write_midi(events, path):
     mid.save(path)
 
 
+MID_OUT = None   # 악보를 남길 곳(--out과 같은 이름의 .mid)
+
+
 def compose_piano(seconds, seed=1):
     """실제 피아노를 녹음한 음원(sf2)이 있으면 그 소리로, 없으면 합성한 피아노 소리로.
     반환: (소리, 잔향을 더 넣어야 하는지)"""
@@ -378,7 +381,7 @@ def compose_piano(seconds, seed=1):
             mpath, wpath = os.path.join(d, "bgm.mid"), os.path.join(d, "bgm.wav")
             write_midi(events, mpath)
             here = os.path.dirname(os.path.abspath(__file__))
-            write_midi(events, os.path.join(here, f"bgm_piano_{int(round(seconds))}s.mid"))   # 악보도 남김
+            write_midi(events, MID_OUT or os.path.join(here, f"bgm_piano_{int(round(seconds))}s.mid"))   # 악보도 남김
             subprocess.run(["fluidsynth", "-ni", "-q", "-F", wpath, "-r", str(SR), "-g", "0.6",
                             "-o", "synth.reverb.active=1", "-o", "synth.chorus.active=0",
                             "-o", "synth.reverb.room-size=0.45", "-o", "synth.reverb.level=0.6",
@@ -418,7 +421,10 @@ def main():
     secs = float(sys.argv[1]) if len(sys.argv) > 1 else 169
     seed = int(sys.argv[sys.argv.index("--seed") + 1]) if "--seed" in sys.argv else 1
     style = sys.argv[sys.argv.index("--style") + 1] if "--style" in sys.argv else "marimba"
-    global SUBJECT
+    global SUBJECT, MID_OUT
+    out_arg = sys.argv[sys.argv.index("--out") + 1] if "--out" in sys.argv else None
+    if out_arg:
+        MID_OUT = os.path.splitext(out_arg)[0] + ".mid"
     SUBJECT = sys.argv[sys.argv.index("--subject") + 1] if "--subject" in sys.argv else "math"
     if style == "piano":
         x, more = compose_piano(secs, seed)
@@ -432,7 +438,7 @@ def main():
     x[-fade:] *= np.linspace(1, 0, fade)[:, None]
     x *= 10 ** (-3 / 20) / np.abs(x).max()
     here = os.path.dirname(os.path.abspath(__file__))
-    out = os.path.join(here, f"bgm_{style}_{int(round(secs))}s.wav")
+    out = out_arg or os.path.join(here, f"bgm_{style}_{int(round(secs))}s.wav")
     with wave.open(out, "wb") as w:
         w.setnchannels(2)
         w.setsampwidth(2)
