@@ -82,9 +82,10 @@ class S4Ep09(EpisodeScene):
         arr = Arrow(wl.get_left(), [bk.get_right()[0] - 0.4, bk.get_top()[1] - 0.05, 0], buff=0.1, color=SOFT, stroke_width=5)
         self.play(Create(arr), FadeIn(wl), run_time=0.5)
         rec = VGroup(T("처음 무게", 32), T("10분 뒤 무게", 32)).arrange(DOWN, buff=0.45, aligned_edge=LEFT).move_to([3.6, 0.3, 0])
-        v0 = T("263.1 g", 34, ORANGE).next_to(rec[0], RIGHT, buff=0.35)
-        v1 = T("263.4 g", 34, ORANGE).next_to(rec[1], RIGHT, buff=0.35)
-        v1.align_to(v0, LEFT)
+        rec.shift(LEFT * 0.5)
+        vx = rec.get_right()[0] + 0.35
+        v0 = T("263.1 g", 34, ORANGE).move_to([vx, rec[0].get_center()[1], 0], aligned_edge=LEFT)
+        v1 = T("263.4 g", 34, ORANGE).move_to([vx, rec[1].get_center()[1], 0], aligned_edge=LEFT)
         self.say(f"물방울이 맺히기 전에 처음 무게: {o('263.1 g')}",
                  "페트리 접시에 올린 채로 영점을 맞추고, 물방울이 맺히기 전에 처음 무게를 재요. 263.1그램이에요. 이 값은 예시 값이에요.")
         self.play(Transform(sc.num, T("263.1 g", 34, "#7CF2A4").move_to(sc.scr)), FadeIn(rec[0]), FadeIn(v0), run_time=0.6)
@@ -114,17 +115,17 @@ class S4Ep09(EpisodeScene):
     # ── 정리해요 ──
     def organize(self):
         self.section("정리해요")
-        bk = K.ice_beaker_wrap(2).move_to([-3.8, -0.6, 0])
+        bk = K.ice_beaker_wrap(2).scale(0.85).move_to([-4.3, 0.55, 0])
         opts = VGroup(*[T(s, 32) for s in ("① 비커 안의 얼음이 녹은 물이 새어 나왔어요",
                                             "② 공기 중의 수증기가 차가운 비커 표면에서 물로 변했어요",
                                             "③ 비커가 차가워서 비커에서 물이 생겨났어요")]).arrange(DOWN, buff=0.4, aligned_edge=LEFT)
         if opts.width > 8.6:
             opts.scale_to_fit_width(8.6)
-        opts.move_to([2.2, 0.5, 0])
+        opts.move_to([1.9, 0.75, 0])
         self.say("비커의 바깥 면에 물방울이 생긴 까닭은?", "비커의 바깥 면에 물방울이 생긴 까닭은 무엇일까요? 입구는 랩으로 막혀 있었어요.")
         self.play(FadeIn(bk), FadeIn(opts, lag_ratio=0.2), run_time=0.9)
         self.pause_screen(5, "물방울은 어디에서 왔을까요?")
-        dots = K.vapor_dots(-6.3, -1.3, -2.0, 1.8, 26, seed=4, r=0.06)
+        dots = K.vapor_dots(-6.5, -2.2, -1.0, 2.0, 26, seed=4, r=0.06)
         self.add(dots)
         self.say(f"공기 중의 {o('수증기')}가 차가운 비커 표면에 닿아 물로",
                  "공기 중의 눈에 보이지 않는 수증기가 차가운 비커 표면에 닿아 물로 변해 맺힌 거예요. 그래서 무게도 늘었어요.")
@@ -142,7 +143,9 @@ class S4Ep09(EpisodeScene):
         self.section("응결이 일어날 때")
         cans = VGroup(*[K.cold_can(i, 1.15) for i in (1, 2, 3)]).arrange(RIGHT, buff=2.6).move_to([0, 0.6, 0])
         labs = ["① 표면이 뿌옇게 돼요", "② 물방울이 점점 커져요", "③ 흘러내려 바닥도 축축해요"]
-        ls = VGroup(*[T(t, 30).next_to(c, DOWN, buff=0.35) for t, c in zip(labs, cans)])
+        two = ["① 표면이\n뿌옇게 돼요", "② 물방울이\n점점 커져요", "③ 흘러내려\n바닥도 축축해요"]
+        ls = VGroup(*[VGroup(*[T(x, 30) for x in t.split("\n")]).arrange(DOWN, buff=0.1).next_to(c, DOWN, buff=0.35)
+                      for t, c in zip(two, cans)])
         arrs = VGroup(*[Arrow(cans[i].get_right(), cans[i + 1].get_left(), buff=0.35, color=SOFT, stroke_width=6) for i in range(2)])
         self.say("차가운 캔 표면에서 일어나는 일을 차례대로 봐요",
                  "차가운 캔 표면에서는 어떤 차례로 응결이 일어날까요?")
