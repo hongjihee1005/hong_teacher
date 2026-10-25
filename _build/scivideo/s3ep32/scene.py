@@ -244,7 +244,7 @@ class S3Ep32(EpisodeScene):
         top = -0.2
         desk = K.R(4.6, 1.2, K.WOOD, -3.8, top - 0.6, stroke=K.WOOD_D, sw=4, r=0.05)
         ruler = K.R(4.0, 0.22, "#F7E7A6", -1.0, top + 0.11, stroke=INK, sw=3, r=0.02)
-        hand_ = K.hand(0.6).rotate(PI).move_to([-2.5, top + 0.45, 0])
+        hand_ = K.hand(0.6).rotate(PI).move_to([-1.9, top + 0.5, 0])
         q = T("자를 더 길게 내밀고 튕기면?", 40, INK).move_to([3.6, 1.2, 0])
         self.say("생각+ 책상 모서리의 자를 더 길게 내밀면?",
                  "책상 모서리에 내민 플라스틱 자를 더 길게 내밀고 튕기면 소리가 어떻게 달라질까요?")

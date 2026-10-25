@@ -206,12 +206,12 @@ class S3Ep38(EpisodeScene):
     # ── 예방 다짐문 ──
     def pledge(self):
         self.section("예방 다짐문")
-        paper = RoundedRectangle(corner_radius=0.3, width=6.0, height=4.6, fill_color="#FFFDF5", fill_opacity=1,
-                                 stroke_color=self.accent, stroke_width=6).move_to([-3.4, 0.35, 0])
-        ttl = T("감염병 예방 다짐문", 38, INK).move_to([-3.4, 2.2, 0])
+        paper = RoundedRectangle(corner_radius=0.3, width=6.0, height=4.4, fill_color="#FFFDF5", fill_opacity=1,
+                                 stroke_color=self.accent, stroke_width=6).move_to([-3.4, 0.5, 0])
+        ttl = T("감염병 예방 다짐문", 38, INK).move_to([-3.4, 2.3, 0])
         body = VGroup(T("저 지우는 건강한 생활을 위해", 28, INK), T("다음을 지킬 것을 다짐합니다.", 28, INK),
                       T("· 손 씻기", 32, ORANGE), T("· 기침 예절", 32, ORANGE), T("· 환기하기", 32, ORANGE))
-        body.arrange(DOWN, buff=0.18, aligned_edge=LEFT).move_to([-3.4, 0.1, 0])
+        body.arrange(DOWN, buff=0.18, aligned_edge=LEFT).move_to([-3.4, 0.25, 0])
         self.say(f"일주일 동안 지킬 수칙을 {o('3가지')} 골라 다짐해요",
                  "일주일 동안 지킬 예방 수칙을 세 가지 골라 다짐문을 써요. 친구의 다짐문에는 응원 댓글을 달아 줘요.")
         self.play(FadeIn(paper), FadeIn(ttl), LaggedStart(*[FadeIn(b) for b in body], lag_ratio=0.2), run_time=1.2)
@@ -227,7 +227,7 @@ class S3Ep38(EpisodeScene):
         self.say("다짐문에서 잘못된 부분은 어디일까요?", "이 다짐문에서 잘못된 부분은 어디일까요?")
         self.play(FadeIn(q, shift=LEFT * 0.2), run_time=0.6)
         self.pause_screen(4, "잘못된 부분은 몇 번?")
-        fix = text_card([f"③ → 손은 {g('어디에서나, 필요할 때마다')} 씻어요"], size=30).move_to([3.4, -1.75, 0])
+        fix = text_card([f"③ → 손은 {g('어디에서나, 필요할 때마다')} 씻어요"], size=28).move_to([3.4, -2.15, 0]).to_edge(RIGHT, buff=0.3)
         self.say(f"③번! 손은 학교에서만이 아니라 {g('어디에서나')} 씻어요",
                  "③번이에요. 손은 학교에서만이 아니라 어디에서나, 필요할 때마다 씻어야 해요.")
         self.play(Indicate(q[3], color=RED), FadeIn(fix, shift=UP * 0.2), run_time=0.8)
