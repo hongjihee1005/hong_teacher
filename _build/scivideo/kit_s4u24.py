@@ -515,3 +515,8 @@ def green_wall(w=6.0):
     belt.shift(DOWN * 0.15)
     s = sun_hot(0.25).move_to([w / 2 - 0.6, 0.45, 0])
     return VGroup(desert, dunes, s, belt)
+
+
+def lines(text, size=26, col=INK, bold=True, buff=0.12):
+    """줄바꿈(\\n)이 있는 글을 줄마다 따로 만들어 가운데 맞춤(Text의 줄 간격이 좁아 글자가 겹치는 것을 피함)"""
+    return VGroup(*[T(s, size, col, bold=bold) for s in text.split("\n")]).arrange(DOWN, buff=buff)

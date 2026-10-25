@@ -101,8 +101,8 @@ class S4Ep31(EpisodeScene):
                    M(f"한 지역에서 보통 {o('30년 이상')}의 오랜 기간에\n나타나는 날씨의 평균적인 상태", 30)).arrange(DOWN, buff=0.3)
         bw = K.R(5.6, 4.2, PAPER, rad=0.2, stroke=BLUE, sw=5)
         bc = K.R(7.0, 4.2, PAPER, rad=0.2, stroke=ORANGE, sw=5)
-        if c.width > 6.6:
-            c.scale_to_fit_width(6.6)
+        if c.width > 6.3:
+            c.scale_to_fit_width(6.3)
         gw, gc = VGroup(bw, w), VGroup(bc, c)
         w.move_to(bw)
         c.move_to(bc)
@@ -208,7 +208,7 @@ class S4Ep31(EpisodeScene):
             box = K.R(2.45, 3.3, PAPER, rad=0.18, stroke=SOFT, sw=4)
             pic = K.weather_pic(n, 1.7).move_to(box.get_top() + DOWN * 0.95)
             t = T(n, 38).next_to(pic, DOWN, buff=0.2)
-            dd = T(d, 23, INK, bold=False)
+            dd = K.lines(d, 23, INK, bold=False, buff=0.1)
             if dd.width > 2.25:
                 dd.scale_to_fit_width(2.25)
             dd.next_to(t, DOWN, buff=0.15)

@@ -74,7 +74,7 @@ class S4Ep32(EpisodeScene):
         self.section("궁금해요")
         road = K.R(13.0, 0.6, "#C9C3B8", 0, -1.55, rad=0.05, stroke=SOFT, sw=2)
         school = K.house(2.0, "#F1E1C6", "#B8452F").move_to([5.0, 0.05, 0])
-        st = T("학교", 30).move_to(school[0])
+        st = T("학교", 30).next_to(school, UP, buff=0.15)
         kids = VGroup(*[K.kid(c).scale(1.1) for c in ("#E2573F", "#2E9E5B", "#6B3FA0")]).arrange(RIGHT, buff=0.3)
         kids.move_to([0.3, -1.25 + 0.5 * 1.1, 0], aligned_edge=DOWN).align_to(road, DOWN).shift(UP * 0.3)
         car = K.car(K.COLD, 2.0, exhaust=True).move_to([-4.3, -0.95, 0])
@@ -85,10 +85,10 @@ class S4Ep32(EpisodeScene):
         self.play(kids.animate.shift(RIGHT * 1.2), run_time=1.2)
         self.say(f"걸으면 기후변화에 {o('어떤 영향')}을 줄 수 있을까요?",
                  "가까운 거리를 걸으면 기후변화에 어떤 영향을 줄 수 있을까요?")
-        self.pause_screen(5, "걸으면 기후변화에 어떤 영향을 줄까요?")
+        self.pause_screen(5, "걸으면 어떤 영향을 줄까요?")
         ans = K.text_card([f"자동차를 탈 때 나오는 {g('매연을 줄일')} 수 있어요",
-                           f"자동차를 타지 않으면 {g('에너지 사용을 줄일')} 수 있어요"], size=34, stroke=GREEN).move_to([-0.6, 2.2, 0])
-        self.play(FadeIn(ans), run_time=0.6)
+                           f"자동차를 타지 않으면 {g('에너지 사용을 줄일')} 수 있어요"], size=32, stroke=GREEN).move_to([-1.3, 2.05, 0])
+        self.play(FadeIn(ans), FadeOut(st), run_time=0.6)
         self.say(f"{g('매연')}과 {g('에너지 사용')}을 줄일 수 있어요",
                  "매연을 줄이고 에너지 사용을 줄일 수 있어요. 우리의 생활이 기후변화와 이어져 있다는 뜻이에요.")
         self.settle()
@@ -101,9 +101,10 @@ class S4Ep32(EpisodeScene):
         l2 = T("최근 100여 년", 32, RED).move_to([3.7, -0.5, 0])
         br = Line([2.0, -0.15, 0], [5.6, -0.15, 0], stroke_color=RED, stroke_width=8)
         ax = T("기후의 변화", 26, SOFT).move_to([-4.6, 2.4, 0])
+        note = T("※ 뜻을 나타낸 그림이에요(실제 자료가 아님)", 22, SOFT).move_to([0, -1.6, 0])
         self.say("기후는 자연적으로도 조금씩 변해 왔어요",
                  "기후는 자연적으로도 변해 왔어요.")
-        self.play(Create(line), FadeIn(ax), Create(slow), FadeIn(l1), run_time=1.0)
+        self.play(Create(line), FadeIn(ax), FadeIn(note), Create(slow), FadeIn(l1), run_time=1.0)
         self.settle()
         self.play(Create(fast), Create(br), FadeIn(l2), run_time=1.0)
         self.say(f"인간의 활동이 많아진 {r('최근 100여 년')} 동안 급격하게 변해요",
@@ -129,16 +130,19 @@ class S4Ep32(EpisodeScene):
         self.settle()
         self.pause_screen(5, "오늘날에는 어떻게 바뀌었을까요?")
         # 왼쪽: 공장
-        fac = K.factory().scale(1.05).move_to([-4.2, bl + 1.15, 0])
-        road = K.R(5.6, 0.32, "#666666", pl.get_center()[0], bl + 0.1, rad=0.04, stroke=INK, sw=2)
-        cars = VGroup(K.car(K.HOT, 0.9, exhaust=True), K.car(K.COLD, 0.9, exhaust=True)).arrange(RIGHT, buff=0.8).move_to([-2.5, bl + 0.45, 0])
-        box_ = K.boxes(6).scale(0.8).move_to([-1.55, bl + 1.3, 0])
+        fac = K.factory().scale(0.9)
+        fac.shift([-4.75 - fac[0].get_center()[0], bl + 0.3 - fac[0].get_bottom()[1], 0])
+        road = K.R(5.6, 0.3, "#666666", pl.get_center()[0], bl + 0.1, rad=0.04, stroke=INK, sw=2)
+        cars = VGroup(K.car(K.HOT, 0.9, exhaust=True), K.car(K.COLD, 0.9, exhaust=True)).arrange(RIGHT, buff=0.7)
+        cars.move_to([-2.0, bl + 0.25, 0], aligned_edge=DOWN)
+        box_ = K.boxes(6).scale(0.8).move_to([-1.75, bl + 1.45, 0])
         t_new = panel("산업 활동 · 오늘날").move_to(pl)[1]
         self.play(FadeOut(old_l), Transform(pl[1], t_new), run_time=0.5)
         self.play(FadeIn(fac), FadeIn(road), FadeIn(cars), FadeIn(box_), run_time=0.8)
+        self.bring_to_front(pl[1])
         self.say(f"공장이 많아져 물건을 많이 생산하고 {r('매연')}이 생겨요",
                  "농업에서 공업으로 산업이 변했어요. 공장에서 물건을 많이 생산하고 매연이 생겨요.")
-        self.play(fac.smoke.animate.shift(UP * 0.15).set_opacity(0.6), run_time=1.0)
+        self.play(fac.smoke.animate.set_opacity(0.55), run_time=1.0)
         self.settle()
         # 오른쪽: 숲이 줄어요
         t_new2 = panel("산림 · 오늘날").move_to(pr)[1]
@@ -174,7 +178,7 @@ class S4Ep32(EpisodeScene):
         cards = VGroup(*[act_card(p, t) for p, t in pics]).arrange_in_grid(rows=2, cols=3, buff=(0.3, 0.3)).move_to([0, 0.3, 0])
         self.say("우리 생활에서는 어떤 활동이 영향을 줄까요?",
                  "우리 생활 속에서는 어떤 활동이 기후변화에 영향을 줄까요? 그림 속에 여섯 가지가 숨어 있어요.")
-        self.pause_screen(5, "기후변화에 영향을 주는 생활 속 활동은?")
+        self.pause_screen(5, "어떤 활동이 영향을 줄까요?")
         narr = ["창문을 열어 놓고 난방 기구를 켜요.", "수돗물을 틀어 놓고 양치해요.", "빈방에 텔레비전과 전등을 켜 놓아요.",
                 "필요 없는 물건을 많이 사요.", "쓰레기를 분리배출하지 않고 함부로 버려요.", "자동차, 비행기 같은 교통수단을 많이 이용해요."]
         for i, c in enumerate(cards):
@@ -194,13 +198,9 @@ class S4Ep32(EpisodeScene):
                            "친구 2 · 에너지를 낭비하는 활동으로 기후변화가 심각해지고 있어요",
                            "친구 3 · 자동차, 비행기 같은 교통수단을 많이 이용하는 것도 영향을 줘요"], w=12.8, size=30).move_to([0, -0.15, 0])
         self.say("친구들은 어떻게 생각했을까요?", "가운데 질문에 대해 친구들은 이렇게 의견을 냈어요.")
-        self.play(FadeIn(q), run_time=0.5)
+        self.play(FadeIn(q), FadeIn(ops[0]), run_time=0.5)
         for t in ops[1]:
             self.play(FadeIn(t, shift=RIGHT * 0.2), run_time=0.4)
-        self.play(FadeIn(ops[0]), run_time=0.3)
-        self.settle()
-        self.say("친구의 의견을 존중하며 내 의견도 말해 봐요",
-                 "토의할 때는 친구의 의견을 존중하며 내 의견도 말해 봐요.")
         self.settle()
         clear_stage(self)
 
@@ -246,9 +246,12 @@ class S4Ep32(EpisodeScene):
                 (K.boxes(2), "꼭 필요한 물건만\n사요"), (K.tumbler(), "장바구니·다회용 컵을\n써요")]
         cards = VGroup()
         for p, t in good:
-            box = K.R(3.0, 3.1, PAPER, rad=0.18, stroke=GREEN, sw=5)
+            box = K.R(3.15, 3.1, PAPER, rad=0.18, stroke=GREEN, sw=5)
             pp = K.fit(p, 2.0, 1.4).move_to(box.get_top() + DOWN * 1.0)
-            tt = T(t, 26).next_to(pp, DOWN, buff=0.3)
+            tt = K.lines(t, 26)
+            if tt.width > 2.85:
+                tt.scale_to_fit_width(2.85)
+            tt.next_to(pp, DOWN, buff=0.3)
             cards.add(VGroup(box, pp, tt))
         cards.arrange(RIGHT, buff=0.3).move_to([0, 0.35, 0])
         self.say(f"반대로 이런 행동은 {g('기후변화를 줄이는 데')} 도움이 돼요",
