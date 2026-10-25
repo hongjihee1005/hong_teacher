@@ -19,7 +19,7 @@
 
 ## 만들고 확인하기
 1. (선택) 저화질: `MEDIA=media_p ./render.sh s3ep05 preview` → `/opt/manimenv/bin/python frames.py s3ep05 preview media_p/frames/s3ep05` → 사진 확인.
-2. 최종: `./make_final.sh s3ep05` (1920×1080, 배경음악, 장면 사진 `media/frames/s3ep05/sheet*.png`).
+2. 최종: `./make_final.sh s3ep05` (렌더링 임시 폴더는 편마다 `media_r/<편>`이라 동시에 돌려도 됨) (1920×1080, 배경음악, 장면 사진 `media/frames/s3ep05/sheet*.png`).
 3. 장면 사진을 **모두** 열어 봅니다: 글자·그림 겹침, 화면 밖으로 잘림, 자막 띠(아래)·왼쪽 위 이름표·오른쪽 위 로고와 겹침, 틀린 내용. 고칠 것이 있으면 고쳐 2를 다시.
 4. 보고: 만든 편(폴더·제목·길이), 앱과 다르게 하거나 빼서 확인이 필요한 곳, 공통에 넣으면 좋을 부품.
 

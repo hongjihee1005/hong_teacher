@@ -14,7 +14,8 @@ if [ "$MODE" = "final" ]; then
 else
   Q=(-ql --fps 15); OUT="${EP}_preview.mp4"
 fi
-"$MANIM" "${Q[@]}" --media_dir "${MEDIA:-media}" --disable_caching -o "$OUT" "$EP/scene.py" "$SCENE"
-F=$(find "${MEDIA:-media}"/videos -name "$OUT" -newer "$EP/scene.py" | head -1)
+MEDIA=${MEDIA:-media_r/$EP}   # 편마다 다른 임시 폴더(동시에 만들 때 SVG 캐시가 섞이지 않게)
+"$MANIM" "${Q[@]}" --media_dir "$MEDIA" --disable_caching -o "$OUT" "$EP/scene.py" "$SCENE"
+F=$(find "$MEDIA"/videos -name "$OUT" -newer "$EP/scene.py" | head -1)
 cp "$F" "$EP/$OUT"
 echo "완성: $EP/$OUT"
