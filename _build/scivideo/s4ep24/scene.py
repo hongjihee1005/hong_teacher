@@ -105,11 +105,11 @@ class S4Ep24(EpisodeScene):
         self.play(FadeIn(nd['개구리'], scale=0.8), run_time=0.5)
         a2 = K.arrow(nd['메뚜기'], nd['개구리'], GREEN, 8)
         self.play(GrowArrow(a2), run_time=0.6)
-        lab = tag("먹이사슬", GREEN, 38).move_to([5.0, xy('개구리')[1], 0])
+        lab = tag("먹이사슬", GREEN, 38).move_to([5.45, xy('개구리')[1], 0])
         self.say(f"먹고 먹히는 관계가 사슬처럼 이어진 것을 {g('먹이사슬')}이라고 해요",
                  "이처럼 생물이 서로 먹고 먹히는 관계가 사슬처럼 한 방향으로 연결된 것을 먹이사슬이라고 해요.")
         self.play(FadeIn(lab, shift=LEFT * 0.3), run_time=0.5)
-        note = M(f"화살표: {g('먹이가 되는 생물')} → {r('먹는 생물')}", 32).move_to([0, -2.2, 0])
+        note = M(f"화살표: {g('먹이가 되는 생물')} → {r('먹는 생물')}", 34).move_to([0, 1.6, 0])
         self.say("화살표는 먹이에서 먹는 생물 쪽으로 그려요",
                  "화살표는 먹이가 되는 생물에서 먹는 생물 쪽으로 그려요. 방향을 반대로 그리지 않게 조심해요.")
         self.play(FadeIn(note), run_time=0.5)
@@ -123,7 +123,7 @@ class S4Ep24(EpisodeScene):
         self.play(FadeIn(nd['매'], scale=0.8), FadeIn(nd['족제비'], scale=0.8), run_time=0.5)
         a5, a6 = K.arrow(nd['오리'], nd['매']), K.arrow(nd['오리'], nd['족제비'])
         self.play(GrowArrow(a5), GrowArrow(a6), run_time=0.6)
-        lab2 = tag("먹이그물", ORANGE, 38).move_to([5.0, xy('오리')[1], 0])
+        lab2 = tag("먹이그물", ORANGE, 38).move_to([5.3, xy('오리')[1], 0])
         self.say(f"여러 먹이사슬이 그물처럼 얽힌 것을 {r('먹이그물')}이라고 해요",
                  "여러 개의 먹이사슬이 그물처럼 복잡하게 얽혀 있는 것을 먹이그물이라고 해요.")
         self.play(FadeIn(lab2, shift=LEFT * 0.3), run_time=0.5)

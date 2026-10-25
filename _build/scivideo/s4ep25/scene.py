@@ -79,7 +79,7 @@ class S4Ep25(EpisodeScene):
         fish2 = K.pic("붕어", 0.9, 0.45).move_to([0.9, -1.3, 0])
         bird = K.pic("갈매기", 1.1, 0.75).move_to([-1.5, 2.3, 0])
         self.say("바다에 유출된 기름은 생태계에 어떤 영향을 미칠까요?",
-                 "바다에 유출된 기름은 생태계에 어떤 영향을 미칠까요? 영상처럼 살펴봐요.")
+                 "바다에 유출된 기름은 생태계에 어떤 영향을 미칠까요?")
         self.add(sea)
         self.play(FadeIn(sun), FadeIn(rays), FadeIn(ship), FadeIn(weeds), FadeIn(fish1), FadeIn(fish2), FadeIn(bird), run_time=1.0)
         self.say("사고가 난 배에서 기름이 새어 나와요", "사고가 난 배에서 기름이 바다로 새어 나와요.")
@@ -111,9 +111,12 @@ class S4Ep25(EpisodeScene):
                 ("미세 플라스틱", "크기가 5 mm 이하인 작은 플라스틱", BLUE)]
         grp = VGroup()
         for k, (w, d, col) in enumerate(rows):
-            lab = chip(w, col, 34, 3.4)
-            dd = T(d, 32).next_to(lab, RIGHT, buff=0.45)
-            grp.add(VGroup(lab, dd).move_to([0, 1.9 - k * 1.45, 0]).align_to([-6.0, 0, 0], LEFT))
+            lab = chip(w, col, 32, 3.0)
+            dd = T(d, 32)
+            if dd.width > 9.0:
+                dd.scale_to_fit_width(9.0)
+            dd.next_to(lab, RIGHT, buff=0.4)
+            grp.add(VGroup(lab, dd).move_to([0, 1.9 - k * 1.45, 0]).align_to([-6.3, 0, 0], LEFT))
         narr = ["인간의 활동으로 환경이 더러워지거나 훼손되는 현상을 환경오염이라고 해요.",
                 "서식지는 생물이 일정하게 자리 잡고 사는 곳이에요.",
                 "미세 플라스틱은 크기가 5밀리미터 이하인 작은 플라스틱이에요."]
@@ -129,7 +132,7 @@ class S4Ep25(EpisodeScene):
     def bins(self):
         out = {}
         for key, nm, col, x in (("air", "대기오염", AIRC, -4.5), ("water", "수질오염", WATERC, 0.0), ("soil", "토양오염", SOILC, 4.5)):
-            out[key] = K.bin_box(nm, 4.3, 4.9, col, 38).move_to([x, 0.45, 0])
+            out[key] = K.bin_box(nm, 4.3, 4.6, col, 38).move_to([x, 0.22, 0])
         return out
 
     def causes(self):
@@ -140,7 +143,7 @@ class S4Ep25(EpisodeScene):
              ("지나친 농약 사용", "soil"), ("쓰레기 배출", "soil"), ("플라스틱의 과도한 사용", "soil")]
         cols = {"air": AIRC, "water": WATERC, "soil": SOILC}
         self.say("환경오염의 원인을 대기·수질·토양오염으로 나누어 봐요",
-                 "환경오염의 원인을 대기오염, 수질오염, 토양오염으로 나누어 봐요. 무엇이 오염되는지, 공기인지 물인지 흙인지 생각해요.")
+                 "환경오염의 원인을 대기오염, 수질오염, 토양오염으로 나누어 봐요.")
         self.play(FadeIn(VGroup(*bx.values())), run_time=0.6)
         self.pause_screen(5, "공기, 물, 흙 중 무엇이 오염될까요?")
         cnt = {"air": 0, "water": 0, "soil": 0}
@@ -151,7 +154,7 @@ class S4Ep25(EpisodeScene):
             groups[key].add(c)
         subs = {"air": f"매연과 연기는 {o('대기오염')}", "water": f"하수·폐수·기름 유출은 {o('수질오염')}",
                 "soil": f"농약·쓰레기·플라스틱은 {o('토양오염')}"}
-        narr = {"air": "자동차 매연, 공장 매연, 쓰레기를 태울 때 나오는 연기는 공기를 더럽히는 대기오염의 원인이에요.",
+        narr = {"air": "자동차 매연, 공장 매연, 쓰레기를 태울 때 나오는 연기는 대기오염의 원인이에요.",
                 "water": "가정의 생활 하수, 공장 폐수, 축산 폐수, 기름 유출은 수질오염의 원인이에요.",
                 "soil": "지나친 농약 사용, 쓰레기 배출, 플라스틱의 과도한 사용은 토양오염의 원인이에요."}
         for key in ("air", "water", "soil"):
@@ -159,7 +162,7 @@ class S4Ep25(EpisodeScene):
             self.play(FadeIn(groups[key], lag_ratio=0.2, shift=DOWN * 0.2), run_time=0.9)
         note = T("큰 소음, 밤의 밝은 조명도 생활 환경에 나쁜 영향을 주면 환경오염이에요", 26, SOFT).move_to([0, -2.3, 0])
         self.say("큰 소음이나 밝은 조명도 환경오염이 될 수 있어요",
-                 "공사할 때 생기는 큰 소음이나 밤에 밝게 밝힌 조명처럼, 생활 환경에 나쁜 영향을 주는 것도 환경오염이에요.")
+                 "큰 소음이나 밤의 밝은 조명처럼 생활 환경에 나쁜 영향을 주는 것도 환경오염이에요.")
         self.play(FadeIn(note), run_time=0.4)
         self.settle()
         clear_stage(self)
@@ -175,7 +178,9 @@ class S4Ep25(EpisodeScene):
         grp = VGroup()
         for key, lst in E_.items():
             for k, t in enumerate(lst):
-                lines = VGroup(*[T(s, 27) for s in t.split("\n")]).arrange(DOWN, buff=0.1)
+                lines = VGroup(*[T(s, 26) for s in t.split("\n")]).arrange(DOWN, buff=0.1)
+                if lines.width > 3.6:
+                    lines.scale_to_fit_width(3.6)
                 b = K.R(3.95, lines.height + 0.4, PAPER, rad=0.14, stroke=cols[key], sw=4)
                 lines.move_to(b)
                 grp.add(VGroup(b, lines).move_to(bx[key].box.get_top() + DOWN * (1.5 + k * 1.55)))
@@ -183,7 +188,7 @@ class S4Ep25(EpisodeScene):
         self.play(FadeIn(VGroup(*bx.values())), run_time=0.5)
         self.play(FadeIn(grp, lag_ratio=0.15), run_time=1.8)
         self.say(f"생물이 병에 걸리고 {r('서식지가 파괴')}돼 생물이 줄어들 수 있어요",
-                 "환경이 오염되면 생물이 잘 자라지 못하거나 병에 걸리고, 서식지가 파괴되어 생물의 종류와 수가 줄어들거나 사라질 수 있어요.")
+                 "환경이 오염되면 생물이 병에 걸리고 서식지가 파괴되어, 생물의 종류와 수가 줄어들 수 있어요.")
         self.settle()
         clear_stage(self)
 
@@ -197,11 +202,11 @@ class S4Ep25(EpisodeScene):
         lr = T("합성 세제 용액", 34).move_to([3.2, -1.05, 0])
         dt = always_redraw(lambda: M(f"{o(str(int(round(day.get_value()))))}일째", 40).move_to([0, 2.45, 0]))
         self.say("합성 세제가 식물에 미치는 영향을 알아봐요",
-                 "합성 세제가 식물에 미치는 영향도 알아봐요. 페트리 접시 두 개에 탈지면을 깔고, 한쪽에는 합성 세제 용액을, 다른 쪽에는 같은 양의 물을 넣어요.")
+                 "합성 세제가 식물에 미치는 영향도 알아봐요. 탈지면을 깐 접시 한쪽에는 합성 세제 용액을, 다른 쪽에는 같은 양의 물을 넣어요.")
         self.add(dl, dr)
         self.play(FadeIn(ll), FadeIn(lr), run_time=0.6)
         self.say(f"같은 수({o('20개')})의 무씨를 놓고 일주일 동안 관찰해요",
-                 "핀셋으로 같은 수인 무씨 스무 개를 놓고, 일주일 동안 세제 용액과 물을 각각 주며 싹 튼 무씨를 세어요.")
+                 "같은 수인 무씨 스무 개를 놓고, 일주일 동안 싹 튼 무씨를 세어요.")
         self.add(dt)
         self.pause_screen(5, "어느 접시에서 더 많이 싹 틀까요?")
         self.play(day.animate.set_value(7), run_time=5.0, rate_func=linear)
@@ -231,7 +236,7 @@ class S4Ep25(EpisodeScene):
         self.play(FadeIn(rows, lag_ratio=0.1), run_time=1.2)
         self.pause_screen(5, "환경오염을 일으키는 행동은?")
         self.say(f"음식물 남기기, 함부로 버리기, 일회용품 많이 쓰기 등 {r('5가지')}예요",
-                 "음식물 남기기, 쓰레기 함부로 버리기, 합성 세제 많이 쓰기, 가까운 거리 자동차 타기, 일회용품 많이 쓰기는 환경오염을 일으킬 수 있어요.")
+                 "빨간 테두리 다섯 가지 행동은 환경오염을 일으킬 수 있어요. 장바구니 쓰기와 걸어가기는 환경을 지키는 행동이에요.")
         self.play(*[row[0].animate.set_stroke(RED, 6) for row, (_, bad) in zip(rows, L) if bad],
                   *[row[0].animate.set_stroke(GREEN, 6) for row, (_, bad) in zip(rows, L) if not bad], run_time=0.8)
         self.settle()

@@ -87,7 +87,7 @@ class S4Ep07(EpisodeScene):
         bt = VGroup(b.outline(), b.fill(W_H), b.mark(W_H, BLACK))
         pen = T("부피: 유성펜으로 높이 표시", 34).move_to([-2.1, b.y + 0.05 + W_H + 0.4, 0], aligned_edge=LEFT)
         sc = e_scale("0.0").scale(1.3, about_point=np.zeros(3)).shift([4.3, -2.0, 0])
-        scl = T("무게: 전자저울", 34).move_to([4.3, -0.5, 0])
+        scl = T("무게: 전자저울", 34).move_to([4.3, 0.45, 0])
         self.play(FadeIn(bt), FadeIn(pen), run_time=0.6)
         self.play(FadeIn(sc), FadeIn(scl), run_time=0.6)
         self.settle()

@@ -471,8 +471,9 @@ def eco_bridge(w=3.6):
 
 def road(w=13.6, y=-1.9):
     g = VGroup(Rectangle(width=w, height=0.9, fill_color="#5A5E66", fill_opacity=1, stroke_width=0).move_to([0, y, 0]))
-    for k in range(9):
-        g.add(Rectangle(width=0.7, height=0.08, fill_color=PAPER, fill_opacity=1, stroke_width=0).move_to([-6 + k * 1.5, y, 0]))
+    n = max(1, int(w / 1.5))
+    for k in range(n):
+        g.add(Rectangle(width=0.7, height=0.08, fill_color=PAPER, fill_opacity=1, stroke_width=0).move_to([-w / 2 + 0.75 + k * 1.5, y, 0]))
     return g
 
 

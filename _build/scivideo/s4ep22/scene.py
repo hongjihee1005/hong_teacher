@@ -90,7 +90,7 @@ class S4Ep22(EpisodeScene):
         bl = K.bin_box("생물 요소", 6.0, 1.5, GREEN, 40).move_to([-3.3, 2.15, 0])
         br = K.bin_box("비생물 요소", 6.0, 1.5, ORANGE, 40).move_to([3.3, 2.15, 0])
         tl = T("동물, 식물처럼 살아 있는 것", 28).move_to(bl.box.get_center() + DOWN * 0.28)
-        tr = T("햇빛, 물, 공기, 흙처럼 살아 있지 않은 것", 28).move_to(br.box.get_center() + DOWN * 0.28)
+        tr = T("햇빛, 물, 공기, 흙처럼 살아 있지 않은 것", 25).move_to(br.box.get_center() + DOWN * 0.28)
         strip = VGroup(*[K.item(sp[0], 0.95, 0.7, 24) for sp in self.spots]).arrange(RIGHT, buff=0.22).move_to([0, -1.3, 0])
         self.play(FadeOut(self.ground), *[it.animate.become(nw) for it, nw in zip(self.its, strip)], run_time=0.9)
         self.say(f"살아 있는 것은 {g('생물 요소')}예요",
