@@ -7,7 +7,7 @@ EP=${1:?화 폴더 이름 (예: s3ep01)}
 PY=${PY:-/opt/manimenv/bin/python}
 ./render.sh "$EP" final
 DUR=$(ffprobe -v error -show_entries format=duration -of csv=p=0 "$EP/${EP}_final.mp4")
-"$PY" music/gen_bgm.py "$DUR" --style piano --seed "$(echo -n "$EP" | cksum | cut -c1-4)"
+"$PY" music/gen_bgm.py "$DUR" --style piano --subject science --seed "$(echo -n "$EP" | cksum | cut -c1-4)"
 WAV=$(ls -t music/bgm_piano_*s.wav | head -1)
 MID=${WAV%.wav}.mid
 ffmpeg -v error -y -i "$WAV" -c:a libmp3lame -b:a 192k "music/bgm_${EP}_piano.mp3"

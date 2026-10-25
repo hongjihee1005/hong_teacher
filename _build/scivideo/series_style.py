@@ -159,8 +159,14 @@ class EpisodeScene(Scene):
 
     # ── 준비 ──
     def setup(self):
-        self.bg, self.chip_color = THEMES.get((self.GRADE or 3, self.SEM or 1), (BG, INK))
+        import sci_theme
+        self.st = sci_theme.style(self.GRADE)             # 학년별 꾸밈(sci_theme.py) — 수학과 다른 과학 색
+        self.bg = self.st["bg"][self.SEM or 1]
+        self.chip_color = self.st["accent"]
+        self.accent = self.st["accent"]
         self.camera.background_color = self.bg
+        self._bgpat = sci_theme.background(self.st)
+        self.add(self._bgpat)
         self._sub = None
         self._chip = None
         self._log = []          # (시각, 구역, 자막, 나레이션)
@@ -183,12 +189,14 @@ class EpisodeScene(Scene):
     # ── 왼쪽 위 구역 이름표 ──
     def section(self, name):
         self._section = name
-        chip_txt = T(name, 34, PAPER)
-        box = RoundedRectangle(corner_radius=0.22, width=chip_txt.width + 0.6,
-                               height=chip_txt.height + 0.36,
-                               fill_color=self.chip_color, fill_opacity=1, stroke_width=0)
-        chip = VGroup(box, chip_txt).to_corner(UL, buff=0.32)
-        chip_txt.move_to(box)
+        import sci_theme
+        chip_txt = T(name, 34, sci_theme.chip_text_color(self.st))
+        box = sci_theme.chip_box(self.st, chip_txt.width + 0.4, chip_txt.height + 0.36, self.bg)
+        chip = VGroup(box, chip_txt)
+        chip_txt.move_to(box[0] if isinstance(box, VGroup) else box)
+        if self.st["chip"] in ("stripe", "tag"):
+            chip_txt.shift(RIGHT * 0.12)
+        chip.to_corner(UL, buff=0.32)
         if self._chip is None:
             self.play(FadeIn(chip, shift=RIGHT * 0.3), run_time=0.5)
         else:
@@ -205,11 +213,12 @@ class EpisodeScene(Scene):
         txt = M(markup, SUB_SIZE)
         if txt.width > 12.9:
             txt.scale_to_fit_width(12.9)
-        band = RoundedRectangle(corner_radius=0.25, width=13.7, height=SUB_H,
-                                fill_color=PAPER, fill_opacity=0.96,
-                                stroke_color=SOFT, stroke_width=2)
+        import sci_theme
+        band = sci_theme.sub_band(self.st, 13.7, SUB_H, PAPER, SOFT)
         band.move_to([0, SUB_Y, 0])
-        txt.move_to(band)
+        txt.move_to([0, SUB_Y, 0])
+        if self.st["band"] == "leftbar":
+            txt.shift(RIGHT * 0.12)
         return VGroup(band, txt)
 
     def say(self, markup, narration=None, wait=0.0):
@@ -264,7 +273,8 @@ class EpisodeScene(Scene):
         return grp
 
     def icon(self, r):
-        return self.magnifier(r) if self.KIND == "ep" else self.mindmap_icon(r)
+        import sci_theme
+        return sci_theme.icon(self.st, r, self.KIND)
 
     # ── 오프닝 (5초) ──
     def ep_label(self):
@@ -277,18 +287,19 @@ class EpisodeScene(Scene):
         mag = self.icon(0.95).move_to([-4.6, 1.15, 0])
         series = T(f"「{self.SERIES}」", 86).next_to(mag, RIGHT, buff=0.5)
         VGroup(mag, series).move_to([0, 1.3, 0])
-        ep = M(f"{o(self.ep_label())}  {self.EP_TITLE}", 62)
+        ep = M(f'<span foreground="{self.accent}">{self.ep_label()}</span>  {self.EP_TITLE}', 62)
         if ep.width > 13:
             ep.scale_to_fit_width(13)
         ep.move_to([0, -0.9, 0])
-        bar = Line(LEFT * 5.5, RIGHT * 5.5, stroke_color=BLUE, stroke_width=8).move_to([0, 0.05, 0])
+        bar = Line(LEFT * 5.5, RIGHT * 5.5, stroke_color=self.accent, stroke_width=8).move_to([0, 0.05, 0])
+        kind = T(f"{self.GRADE}학년 · {self.st['name']}", 34, self.accent).next_to(bar, DOWN, buff=1.45)
         self._log.append((t0, "오프닝", f"「{self.SERIES}」 {self.ep_label()}: {self.EP_TITLE}",
                           f"{self.SERIES}, {self.ep_label()}. {self.EP_TITLE}"))
         self.play(FadeIn(mag, scale=0.6), run_time=0.8)
         self.play(Write(series), Create(bar), run_time=1.2)
-        self.play(FadeIn(ep, shift=UP * 0.3), run_time=0.8)
+        self.play(FadeIn(ep, shift=UP * 0.3), FadeIn(kind), run_time=0.8)
         self.wait(max(0.0, 5.0 - 0.6 - (self.now() - t0)))
-        self.play(FadeOut(VGroup(mag, series, ep, bar)), run_time=0.6)
+        self.play(FadeOut(VGroup(mag, series, ep, bar, kind)), run_time=0.6)
 
     # ── 생각해 보세요 멈춤 화면 ──
     def pause_screen(self, seconds=5, msg="잠시 멈추고 이야기해 보세요"):
@@ -297,12 +308,12 @@ class EpisodeScene(Scene):
                           "잠시 멈추고, 옆 친구와 이야기해 보세요."))
         cover = Rectangle(width=16, height=9, fill_color=self.bg, fill_opacity=0.93, stroke_width=0)
         icon = VGroup(
-            RoundedRectangle(corner_radius=0.12, width=0.42, height=1.5, fill_color=GREEN, fill_opacity=1, stroke_width=0),
-            RoundedRectangle(corner_radius=0.12, width=0.42, height=1.5, fill_color=GREEN, fill_opacity=1, stroke_width=0),
+            RoundedRectangle(corner_radius=0.12, width=0.42, height=1.5, fill_color=self.accent, fill_opacity=1, stroke_width=0),
+            RoundedRectangle(corner_radius=0.12, width=0.42, height=1.5, fill_color=self.accent, fill_opacity=1, stroke_width=0),
         ).arrange(RIGHT, buff=0.4)
-        ring = Circle(radius=1.25, stroke_color=GREEN, stroke_width=10)
+        ring = Circle(radius=1.25, stroke_color=self.accent, stroke_width=10)
         icon.move_to(ring)
-        top = T("생각해 보세요", 80, GREEN)
+        top = T("생각해 보세요", 80, self.accent)
         text = T(msg, 64)
         grp = VGroup(top, VGroup(ring, icon), text).arrange(DOWN, buff=0.5).move_to([0, 0.15, 0])
         c = ring.get_center()
@@ -315,7 +326,7 @@ class EpisodeScene(Scene):
 
         def count_text():
             n = max(1, int(np.ceil(left.get_value() * seconds - 1e-6)))
-            return T(str(n), 64, GREEN).move_to(num_pos)
+            return T(str(n), 64, self.accent).move_to(num_pos)
         num = always_redraw(count_text)
         fade = 0.4
         self.play(FadeIn(cover), FadeIn(grp, scale=0.9), run_time=fade)
@@ -331,17 +342,17 @@ class EpisodeScene(Scene):
         self._section = "마무리"
         self.clear_sub()
         self.hide_chip()
-        head = T("오늘의 핵심", 64, GREEN)
+        head = T("오늘의 핵심", 64, self.accent)
         body = M(summary_markup, 58)
         if body.width > 12.4:
             body.scale_to_fit_width(12.4)
         card = RoundedRectangle(corner_radius=0.35, width=13.2, height=body.height + 1.3,
-                                fill_color=PAPER, fill_opacity=1, stroke_color=GREEN, stroke_width=6)
+                                fill_color=PAPER, fill_opacity=1, stroke_color=self.accent, stroke_width=6)
         body.move_to(card)
         box = VGroup(card, body)
         VGroup(head, box).arrange(DOWN, buff=0.45).move_to([0, 1.1, 0])
         nxt_txt = next_preview if next_preview else "                "
-        nxt = M(f"{o('다음 영상')}   {nxt_txt}", 46)
+        nxt = M(f'<span foreground="{self.accent}">다음 영상</span>   {nxt_txt}', 46)
         if nxt.width > 12.4:
             nxt.scale_to_fit_width(12.4)
         nxt.move_to([0, -2.1, 0])

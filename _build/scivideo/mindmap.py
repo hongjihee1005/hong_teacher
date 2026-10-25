@@ -42,12 +42,10 @@ def row_ys(n):
     return [Y_TOP - i * (Y_TOP - Y_BOT) / (n - 1) for i in range(n)]
 
 
-def chip(text, col, size=LEAF_SIZE):
-    from manim import Text
-    t = T(text, size, INK)
-    box = RoundedRectangle(corner_radius=0.16, width=t.width + 0.36, height=t.height + 0.28,
-                           fill_color=col, fill_opacity=0.12, stroke_color=col, stroke_width=3)
-    t.move_to(box)
+def chip(text, col, st, size=LEAF_SIZE):
+    import sci_theme
+    t = T(text, size, INK).move_to(ORIGIN)
+    box = sci_theme.mm_leaf_box(st, t.width + 0.36, t.height + 0.28, col).move_to(ORIGIN)
     return VGroup(box, t)
 
 
@@ -69,12 +67,12 @@ class MindMapScene(EpisodeScene):
 
     # ── 가운데 ──
     def center_node(self):
-        from manim import Circle
+        import sci_theme
         t = VGroup(*[T(line, 38, PAPER) for line in self.CENTER.split("\n")]).arrange(DOWN, buff=0.12)
         if t.width > CENTER_R * 1.55:
             t.scale_to_fit_width(CENTER_R * 1.55)
-        c = Circle(radius=CENTER_R, fill_color=INK, fill_opacity=1, stroke_width=0).move_to(CENTER_POS)
-        t.move_to(c)
+        c = sci_theme.mm_center(self.st, CENTER_R, INK).move_to(CENTER_POS)
+        t.move_to(CENTER_POS)
         return VGroup(c, t)
 
     def build_map(self):
@@ -86,6 +84,7 @@ class MindMapScene(EpisodeScene):
         self.say(*intro)
         self.play(GrowFromCenter(cn), run_time=0.8)
         self.map = VGroup(cn)
+        import sci_theme
         ys = row_ys(len(self.BRANCHES))
         for i, (label, leaves, narr, leaf_narr) in enumerate(self.BRANCHES):
             col = PALETTE[i % len(PALETTE)]
@@ -94,12 +93,12 @@ class MindMapScene(EpisodeScene):
             ang = np.arctan2(y - CENTER_POS[1], 1.6)
             start = CENTER_POS + CENTER_R * np.array([np.cos(ang), np.sin(ang), 0])
             end = node[0].get_left()
-            curve = CubicBezier(start, start + RIGHT * 0.7, end - RIGHT * 0.7, end, stroke_color=col, stroke_width=12)
+            curve = sci_theme.mm_link(self.st, start, end, col)
             self.say(f"{label}", narr)
             self.play(Create(curve), run_time=0.6)
             self.play(FadeIn(node, scale=0.8), run_time=0.4)
             grp = VGroup(curve, node)
-            chips = VGroup(*[chip(lf, col) for lf in leaves]).arrange(RIGHT, buff=0.28)
+            chips = VGroup(*[chip(lf, col, self.st) for lf in leaves]).arrange(RIGHT, buff=0.28)
             room = LEAF_X1 - LEAF_X0
             if chips.width > room:
                 if room / chips.width < 0.85:
@@ -123,8 +122,8 @@ class MindMapScene(EpisodeScene):
         t = T(label, 34, PAPER)
         if t.width > 2.45:
             t.scale_to_fit_width(2.45)
-        box = RoundedRectangle(corner_radius=0.22, width=t.width + 0.4, height=t.height + 0.34,
-                               fill_color=col, fill_opacity=1, stroke_width=0)
+        import sci_theme
+        box = sci_theme.mm_branch_node_box(self.st, t.width + 0.4, t.height + 0.34, col)
         box.move_to([NODE_X0, y, 0], aligned_edge=LEFT)
         t.move_to(box)
         return VGroup(box, t)
@@ -135,7 +134,7 @@ class MindMapScene(EpisodeScene):
         self.hide_chip()
         self._section = "완성"
         self._log.append((self.now(), "완성", "완성된 마인드맵", "마인드맵이 완성되었어요. 가지를 따라가며 배운 내용을 다시 읽어 보세요."))
-        head = T("완성!", 48, GREEN).to_edge(DOWN, buff=0.45)
+        head = T("완성!", 48, self.accent).to_edge(DOWN, buff=0.45)
         self.play(self.map.animate.scale(1.0), FadeIn(head), run_time=0.6)
         for g_ in self.map[1:]:
             self.play(Indicate(g_[1], scale_factor=1.12), run_time=0.45)
@@ -151,8 +150,8 @@ class MindMapScene(EpisodeScene):
         msg = "잠시 멈추고, 마인드맵을 보며 배운 내용을 말해 보세요"
         self._log.append((self.now(), "완성", msg, "잠시 멈추고, 마인드맵을 보며 배운 내용을 친구에게 말해 보세요."))
         band = RoundedRectangle(corner_radius=0.25, width=13.7, height=SUB_H, fill_color=PAPER, fill_opacity=0.97,
-                                stroke_color=GREEN, stroke_width=5).move_to([0, SUB_Y, 0])
-        txt = T(msg, 38, GREEN).move_to(band).shift(LEFT * 0.55)
+                                stroke_color=self.accent, stroke_width=5).move_to([0, SUB_Y, 0])
+        txt = T(msg, 38, self.accent).move_to(band).shift(LEFT * 0.55)
         left = ValueTracker(float(seconds))
         num = always_redraw(lambda: T(str(max(1, int(np.ceil(left.get_value() - 1e-6)))), 52, ORANGE)
                             .move_to([6.25, SUB_Y, 0]))

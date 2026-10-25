@@ -18,7 +18,7 @@ GROUND = "#9C8F7E"
 
 def clear_stage(scene, run_time=0.6, keep=()):
     """자막·로고·구역 이름표를 뺀 모든 그림을 지움"""
-    keep = set(keep) | {scene._mark}
+    keep = set(keep) | {scene._mark, getattr(scene, "_bgpat", None)}
     if scene._sub is not None:
         keep |= {scene._sub, *scene._sub}
     if scene._chip is not None:

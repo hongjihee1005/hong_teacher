@@ -1,10 +1,13 @@
-"""「수학 원리 돋보기」 배경음악 — 이 파일이 직접 짓고 합성하는 곡(남의 곡·녹음을 쓰지 않음)
+"""「과학 원리 돋보기」·「과학 마인드맵」 배경음악 (수학 영상 배경음악 생성기를 가져와 과목 색을 더함) — 이 파일이 직접 짓고 합성하는 곡(남의 곡·녹음을 쓰지 않음)
 
     python music/gen_bgm.py 169            → music/bgm_169s.wav (169초에 맞춰 끝나는 곡)
     python music/gen_bgm.py 169 --seed 2   → 같은 짜임에 다른 가락
     python music/gen_bgm.py 169 --style piano → 발랄하고 경쾌한 피아노 곡(1분에 약 120박, 쿵짝 반주 + 끊어 치는 가락)
       실제 피아노를 녹음한 음원(sf2)으로 연주: FluidSynth + FluidR3_GM(MIT 라이선스) 또는 music/piano.sf2
       (리눅스: apt install fluidsynth fluid-soundfont-gm). 없으면 합성한 소리로 만듦. 악보 .mid도 함께 남김
+    python music/gen_bgm.py 169 --style piano --subject science
+      → 과학판(선생님 요청 2026-10-25 '음악도 과목별로 약간 다르게, 분위기는 똑같이'): 빠르기·반주·가락 짜임은 수학과 같고,
+        조를 사장조로(5도 아래로 옮김), 가락 위에 글로켄슈필(GM 9번, 맑은 종소리)을 한 옥타브 위로 작게 겹침
 
 - 다장조, 1분에 약 96박(영상 길이에 맞춰 조금 고침), 4/4박자. 화음 진행 C–G–Am–F / C–F–G–C 를 되풀이
 - 소리: 마림바(가락), 오르골(가락 겹침, 작게), 부드러운 베이스, 잔잔한 패드(화음), 아주 작은 셰이커
@@ -321,6 +324,21 @@ def piano_events(seconds, seed=1):
     return [(max(0.0, t), d, m, v) for t, d, m, v in ev]
 
 
+SUBJECT = "math"
+
+
+def subject_events(ev):
+    """과목별 음색: 과학은 사장조 + 가락에 글로켄슈필(채널 1)을 작게 겹침. (시작, 길이, 음, 세기, 채널)"""
+    if SUBJECT != "science":
+        return [(t, d, m, v, 0) for t, d, m, v in ev]
+    out = []
+    for t, d, m, v in ev:
+        out.append((t, d, m - 5, v, 0))
+        if m >= 62 and v >= 0.45 and d < 1.5:        # 가락 음(반주·마침 화음 제외)
+            out.append((t, min(d, 0.6), m - 5 + 12, v * 0.42, 1))
+    return out
+
+
 def write_midi(events, path):
     import mido
     tpb = 480
@@ -330,13 +348,14 @@ def write_midi(events, path):
     mid.tracks.append(tr)
     tr.append(mido.MetaMessage("set_tempo", tempo=tempo, time=0))
     tr.append(mido.Message("program_change", program=0, channel=0, time=0))   # 0번 = 어쿠스틱 그랜드 피아노
+    tr.append(mido.Message("program_change", program=9, channel=1, time=0))   # 9번 = 글로켄슈필(과학판)
     msgs = []
-    for t, d, m, v in events:
+    for t, d, m, v, ch in events:
         on = int(round(t / BEAT * tpb))
         off = int(round((t + d) / BEAT * tpb))
         vel = int(np.clip(30 + v * 95, 1, 127))
-        msgs.append((on, 1, mido.Message("note_on", note=int(m), velocity=vel, channel=0)))
-        msgs.append((off, 0, mido.Message("note_off", note=int(m), velocity=0, channel=0)))
+        msgs.append((on, 1, mido.Message("note_on", note=int(m), velocity=vel, channel=ch)))
+        msgs.append((off, 0, mido.Message("note_off", note=int(m), velocity=0, channel=ch)))
     msgs.sort(key=lambda x: (x[0], x[1]))
     last = 0
     for tick, _, msg in msgs:
@@ -352,7 +371,7 @@ def compose_piano(seconds, seed=1):
     import shutil
     import subprocess
     import tempfile
-    events = piano_events(seconds, seed)
+    events = subject_events(piano_events(seconds, seed))
     sf2 = find_sf2()
     if sf2 and shutil.which("fluidsynth"):
         with tempfile.TemporaryDirectory() as d:
@@ -374,8 +393,8 @@ def compose_piano(seconds, seed=1):
         return x[:n], False
     rng = np.random.default_rng(seed)
     buf = np.zeros((int(SR * (seconds + 1)), 2))
-    for t, d, m, v in events:
-        add(buf, t, piano(m, d, v, rng), 0.2 if m >= 60 else -0.2)
+    for t, d, m, v, ch in events:
+        add(buf, t, piano(m, d, v, rng) if ch == 0 else musicbox(m, d, v), 0.2 if m >= 60 else -0.2)
     print("피아노 음원이 없어 합성한 소리로 만듦(fluidsynth와 sf2 음원을 설치하면 실제 피아노 소리)")
     return buf[: int(SR * seconds)], True
 
@@ -399,6 +418,8 @@ def main():
     secs = float(sys.argv[1]) if len(sys.argv) > 1 else 169
     seed = int(sys.argv[sys.argv.index("--seed") + 1]) if "--seed" in sys.argv else 1
     style = sys.argv[sys.argv.index("--style") + 1] if "--style" in sys.argv else "marimba"
+    global SUBJECT
+    SUBJECT = sys.argv[sys.argv.index("--subject") + 1] if "--subject" in sys.argv else "math"
     if style == "piano":
         x, more = compose_piano(secs, seed)
         if more:
