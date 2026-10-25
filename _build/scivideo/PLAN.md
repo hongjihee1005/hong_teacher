@@ -41,8 +41,9 @@
 | s3ep01 | 3-1-1-a | 무거운 물체를 밀 때 힘이 더 들까? (2분 26초) | ✅ |
 | s3ep02 | 3-1-1-b | 수평 잡기로 무게를 비교해요 (2분 33초) | ✅ |
 | s3ep03 | 3-1-1-c | 무게를 정확히 비교하려면? 용수철저울 (2분 58초) | ✅ |
+| s3ep04 | 3-1-1-d | 작은 힘으로 들어 올리는 도구의 비밀 (2분 36초) | ✅ |
 
 ## 다음 할 일
-- s3ep04(3-1-1-d 작은 힘으로 들어 올리는 도구의 비밀)부터 차례로.
+- s3mm01(3-1-1-M 힘과 우리 생활 마인드맵)부터 차례로.
 - 부품: `scikit.py`(사람 `person`·상자 `box`·복사용지 묶음 `bundle`·힘 화살표 `force_arrow`·막대 `force_bar`·책가방·카트·아령·그네·이름표 `tag`·`clear_stage`, 수평 잡기 판 `Board`(put·lift·tilt_to)·블록 `sq_block`·과일 `fruit`, 용수철저울 `SpringScale`·눈금 크게 보기 `zoom_reading`·전자저울 `e_scale`).
 - 제작 환경 주의: Pillow 12 이상이면 Manim이 'Invalid mode for data type' 오류 → `/opt/manimenv/bin/pip install "pillow<12"`.
