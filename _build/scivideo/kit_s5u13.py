@@ -17,7 +17,7 @@ from manim import (DOWN, LEFT, ORIGIN, RIGHT, UP, PI, TAU,
 
 from series_style import BLUE, GREEN, INK, ORANGE, PAPER, SOFT, T, M
 from scikit import RED, e_scale  # noqa: F401
-from kit_s5u11 import label, text_card, fit, ox_mark, bin_box, rnd  # noqa: F401
+from kit_s5u11 import label, text_card, fit, ox_mark, bin_box, rnd, rect  # noqa: F401
 from kit_s4u12 import safety_note  # noqa: F401
 
 SW = 4
@@ -94,11 +94,9 @@ class Glass:
 
     def pile(self, hh=0.25, col=CAL, stroke="#B8BEC2"):
         x, y, hb = self.x, self.y, self._half(0) - 0.08
-        m = VMobject(fill_color=col, fill_opacity=1, stroke_color=stroke, stroke_width=3)
-        xs = np.linspace(-hb, hb, 13)
-        top = [[x + xx, y + 0.06 + hh * (1 - (xx / hb) ** 2) ** 0.7, 0] for xx in xs]
-        m.set_points_smoothly(top + [[x + hb, y + 0.06, 0], [x - hb, y + 0.06, 0], top[0]])
-        return m
+        xs = np.linspace(-hb, hb, 25)
+        top = [[x + xx, y + 0.06 + hh * max(0.0, 1 - (xx / hb) ** 2) ** 0.7, 0] for xx in xs]
+        return Polygon(*top, fill_color=col, fill_opacity=1, stroke_color=stroke, stroke_width=3)
 
     def grains(self, n=14, col=SUGAR, stroke=SUGAR_E, seed=1, r=0.06, square=True, y_span=0.22):
         x, y, hb = self.x, self.y, self._half(0) - 0.15
@@ -123,7 +121,7 @@ class Glass:
         return VGroup(*[Dot([x - hb + 2 * hb * rnd(i, seed), y + level - 0.04 - 0.06 * rnd(i, seed + 1), 0],
                             radius=r * (0.8 + 0.6 * rnd(i, seed + 2)), color=col) for i in range(n)])
 
-    def name(self, text, size=26, col=ORANGE_D if False else "#B4610F", yy=None):
+    def name(self, text, size=26, col="#B4610F", yy=None):
         t = T(text, size, col)
         box = RoundedRectangle(corner_radius=0.06, width=max(t.width + 0.24, 0.8), height=t.height + 0.2,
                                fill_color=PAPER, fill_opacity=1, stroke_color="#CC99AA", stroke_width=2)
@@ -222,8 +220,8 @@ def cotton_candy(s=1.0):
 def bowl_water(w=3.0, h=1.0):
     b = Arc(radius=w / 2, start_angle=PI, angle=PI, stroke_color=GLASS, stroke_width=6)
     b.stretch_to_fit_height(h)
-    water = Polygon(*[[w / 2 * 0.95 * np.cos(a), -h * 0.95 * np.sin(-a) if False else h * np.sin(a) * 0.95, 0]
-                      for a in np.linspace(PI, TAU, 24)], fill_color=WATER, fill_opacity=0.9, stroke_width=0)
+    water = Polygon(*[[w / 2 * 0.95 * np.cos(a), h * 0.95 * np.sin(a), 0] for a in np.linspace(PI, TAU, 24)],
+                    fill_color=WATER, fill_opacity=0.9, stroke_width=0)
     g = VGroup(water, b)
     g.top_y = 0.0
     return g

@@ -153,7 +153,7 @@ class S5Ep08(EpisodeScene):
         self.settle()
         # 도화지를 세워 보기
         self.remove(bm, lo)
-        self.play(FadeOut(marks), FadeOut(line), run_time=0.3)
+        self.play(*[FadeOut(m) for m in marks], FadeOut(line), run_time=0.3)
         bot = -2.05
         board = Rectangle(width=5.6, height=HY - 0.06 - bot, fill_color="#222222", fill_opacity=1, stroke_width=0).move_to([0.2, (HY - 0.06 + bot) / 2, 0])
         s_ = (HY - bot) * k

@@ -217,7 +217,7 @@ class S5Ep09(EpisodeScene):
         lm = Polygon([-6.15, gy, 0], [-4.0, 1.5, 0], [-1.6, gy, 0], fill_color="#6B8F5A", fill_opacity=1, stroke_width=0)
         rm = Polygon([1.4, gy, 0], [3.8, 1.8, 0], [6.15, 0.3, 0], [6.15, gy, 0], fill_color="#5D7F4D", fill_opacity=1, stroke_width=0)
         gnd = Rectangle(width=12.3, height=0.25, fill_color="#7AA35F", fill_opacity=1, stroke_width=0).move_to([0, gy - 0.1, 0])
-        sun_c = np.array([5.5, 2.3])
+        sun_c = np.array([5.25, 2.05])
         sun = K.sun_s(0.38).move_to([sun_c[0], sun_c[1], 0])
         peak = np.array([3.8, 1.8])
         dsh = K.unit(peak - sun_c)
@@ -274,16 +274,16 @@ class S5Ep09(EpisodeScene):
     def summary(self):
         self.section("한눈에 쏙")
         card = K.text_card([f"우리가 물체를 볼 수 있는 까닭은 물체가 {g('반사')}한 빛이",
-                            "우리 눈에 들어오기 때문입니다."], w=12.0, size=34).move_to([0, 2.0, 0])
+                            "우리 눈에 들어오기 때문입니다."], w=11.4, size=34).move_to([0.5, 1.85, 0])
         self.say(f"물체가 {g('반사')}한 빛이 눈에 들어와 물체를 볼 수 있어요",
                  "우리가 물체를 볼 수 있는 까닭은 물체가 반사한 빛이 우리 눈에 들어오기 때문입니다.")
         self.play(FadeIn(card, scale=0.95), run_time=0.6)
         self.settle()
         items = [("꺼진 스마트 기기 화면에 얼굴이 비쳐요", True), ("잔잔한 호수에 주변 경치가 비쳐요", True),
                  ("매끄러운 자동차 표면에 얼굴이 비쳐요", True), ("햇빛을 받은 나무 뒤에 그림자가 생겨요", False)]
-        cards = VGroup(*[K.text_card([t], w=6.3, size=25) for t, _ in items]).arrange_in_grid(2, 2, buff=(0.3, 0.3)).move_to([0, -0.55, 0])
+        cards = VGroup(*[K.text_card([t], w=6.3, size=24) for t, _ in items]).arrange_in_grid(2, 2, buff=(0.3, 0.3)).move_to([0, -0.7, 0])
         for c in cards:
-            c[1].shift(LEFT * 0.25)
+            c[1].shift(LEFT * 0.3)
         self.say("거울처럼 빛의 반사가 일어나는 것을 골라 봐요",
                  "거울처럼 빛의 반사가 일어나는 현상을 모두 골라 봐요.")
         self.play(FadeIn(cards, lag_ratio=0.1), run_time=0.8)

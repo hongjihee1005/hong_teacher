@@ -150,7 +150,7 @@ class S5Ep10(EpisodeScene):
         # 오목 렌즈
         ccv = K.Lens("cc", 0.6, y0, H=1.6, R=3.2)
         lens2 = ccv.shape(op=0.6)
-        self.play(FadeOut(ghosts), Transform(lens, lens2), Transform(name, T("오목 렌즈", 30, PAPER).move_to(name)),
+        self.play(*[FadeOut(m) for m in ghosts], Transform(lens, lens2), Transform(name, T("오목 렌즈", 30, PAPER).move_to(name)),
                   Transform(lz, laser_at((x0, y0 + 1.2), 0)), run_time=0.7)
         self.say("이번에는 오목 렌즈의 가장자리에 비춰요", "이번에는 오목 렌즈의 가장자리에 비추어 봐요.")
         self.settle()
