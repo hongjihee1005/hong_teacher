@@ -71,7 +71,7 @@ class S4Ep23(EpisodeScene):
         self.say("우리는 필요한 양분을 어떻게 얻을까요?", "우리는 살아가는 데 필요한 양분을 어떻게 얻고 있을까요?")
         self.play(FadeIn(kid), FadeIn(ap), run_time=0.6)
         self.say(f"우리는 {o('음식을 먹어서')} 양분을 얻어요",
-                 "우리는 음식을 먹어서 필요한 양분을 얻어요. 우리처럼 다른 생물을 먹고 살아가는 동물이 있어요.")
+                 "우리는 음식을 먹어서 필요한 양분을 얻어요.")
         self.play(ap.animate.move_to(kid.get_top() + DOWN * 0.45 + RIGHT * 0.3).scale(0.5), run_time=0.8)
         self.play(FadeOut(ap), run_time=0.3)
         sun = K.pic("햇빛", 1.3, 1.3).move_to([1.6, 2.0, 0])
@@ -84,7 +84,7 @@ class S4Ep23(EpisodeScene):
         rays = VGroup(*[Arrow(sun.get_center() + np.array([0.5, -0.4 - 0.25 * k, 0]), plant.get_top() + np.array([-0.5 + 0.4 * k, -0.3, 0]),
                               color="#F2A900", stroke_width=6, buff=0.05) for k in range(3)])
         self.say(f"{g('식물')}은 햇빛 등을 이용해 스스로 양분을 만들어요",
-                 "식물은 햇빛 등을 이용해 스스로 양분을 만들어요. 생물마다 양분을 얻는 방법이 달라요.")
+                 "식물은 햇빛 등을 이용해 스스로 양분을 만들어요.")
         self.play(FadeOut(q), Create(rays, lag_ratio=0.2), Indicate(plant, color=GREEN), run_time=1.2)
         self.settle()
         clear_stage(self)
@@ -92,13 +92,6 @@ class S4Ep23(EpisodeScene):
     # ── 역할 세 가지 ──
     def roles(self):
         self.section("조사해요")
-        cards = VGroup(*[K.node(n, 1.75, 1.35, 28, stroke=SOFT) for n, _ in CARD]).arrange_in_grid(rows=2, buff=(0.3, 0.35))
-        cards.move_to([0, 0.35, 0])
-        self.say("생물 카드 12장의 뒷면을 살펴봐요",
-                 "생물 카드 열두 장의 뒷면을 살펴봐요. 뒷면에는 그 생물이 양분을 얻는 방법이 적혀 있어요.")
-        self.play(FadeIn(cards, lag_ratio=0.06), run_time=1.4)
-        self.settle()
-        self.play(FadeOut(cards), run_time=0.4)
         rows = [("p", "생산자", "햇빛 등을 이용해 스스로 양분을 만들어요.", "괭이밥"),
                 ("c", "소비자", "다른 생물을 먹이로 하여 살아가요.", "토끼"),
                 ("d", "분해자", "죽은 생물체나 배출물을 분해해 양분을 얻고\n다른 생물이 이용할 수 있게 해요.", "버섯")]
@@ -112,9 +105,9 @@ class S4Ep23(EpisodeScene):
             lab.move_to([-3.75, 1.85 - k * 1.75, 0])
             dd.next_to(lab, RIGHT, buff=0.5)
             grp.add(row)
-        narr = ["괭이밥처럼 햇빛 등을 이용해 스스로 양분을 만드는 생물을 생산자라고 해요.",
-                "토끼처럼 다른 생물을 먹이로 하여 살아가는 생물을 소비자라고 해요.",
-                "버섯처럼 주로 죽은 생물체나 배출물을 분해해 양분을 얻고, 다른 생물이 이용할 수 있게 하는 생물을 분해자라고 해요."]
+        narr = ["괭이밥처럼 스스로 양분을 만드는 생물을 생산자라고 해요.",
+                "토끼처럼 다른 생물을 먹이로 하는 생물은 소비자예요.",
+                "버섯처럼 죽은 생물체나 배출물을 분해해 양분을 얻는 생물은 분해자예요."]
         subs = [f"스스로 양분을 만들면 {g('생산자')}", f"다른 생물을 먹이로 하면 {o('소비자')}",
                 f"죽은 생물체·배출물을 분해하면 {pu('분해자')}"]
         for k in range(3):
@@ -151,16 +144,14 @@ class S4Ep23(EpisodeScene):
                 x, y = xs[key], 0.1
             tgt = K.node(n, 1.25, 1.05, 24, stroke=COL[key]).move_to([x, y, 0])
             anims.append(Transform(c, tgt))
-        self.say(f"생산자: 괭이밥, 개나리, 갈참나무", "생산자는 스스로 양분을 만드는 괭이밥, 개나리, 갈참나무예요.")
+        self.say(f"생산자: 괭이밥, 개나리, 갈참나무", "생산자는 괭이밥, 개나리, 갈참나무예요.")
         self.play(*[a for a, (n, k) in zip(anims, CARD) if k == "p"], run_time=1.0)
         self.say(f"소비자: 토끼, 개구리, 뱀, 달팽이, 박새, 잠자리",
-                 "소비자는 다른 생물을 먹는 토끼, 개구리, 뱀, 달팽이, 박새, 잠자리예요.")
+                 "소비자는 토끼, 개구리, 뱀, 달팽이, 박새, 잠자리예요.")
         self.play(*[a for a, (n, k) in zip(anims, CARD) if k == "c"], run_time=1.0)
         self.say(f"분해자: 버섯, 곰팡이, 세균",
-                 "분해자는 죽은 생물체나 배출물을 분해해 양분을 얻는 버섯, 곰팡이, 세균이에요.")
+                 "분해자는 버섯, 곰팡이, 세균이에요.")
         self.play(*[a for a, (n, k) in zip(anims, CARD) if k == "d"], run_time=1.0)
-        self.say("이름을 외우기보다 양분을 얻는 방법으로 나누어요",
-                 "이름을 외우기보다 양분을 얻는 방법을 생각하며 나누어요.")
         self.settle()
         clear_stage(self)
 
@@ -176,37 +167,37 @@ class S4Ep23(EpisodeScene):
         p2 = K.pic("개망초", 1.6, 1.9)
         p2.move_to([-1.0, GY + p2.height / 2 - 0.05, 0])
         self.say(f"괭이밥과 개망초는 스스로 양분을 만들어요: {g('생산자')}",
-                 "숲속 이야기를 영상처럼 봐요. 괭이밥과 개망초는 햇빛 등을 이용해 스스로 양분을 만들어요. 생산자예요.")
+                 "괭이밥과 개망초는 햇빛 등을 이용해 스스로 양분을 만드는 생산자예요.")
         self.play(FadeIn(ground), FadeIn(sun), FadeIn(p1), FadeIn(p2), run_time=0.8)
         rays = VGroup(*[Arrow(sun.get_center() + np.array([0.4, -0.4, 0]), p.get_top() + DOWN * 0.2, color="#F2A900",
                               stroke_width=6, buff=0.1) for p in (p1, p2)])
-        t1 = tag("생산자", GREEN).next_to(p1, DOWN, buff=0.25).shift(RIGHT * 1.1)
+        t1 = tag("생산자", GREEN).move_to([-2.2, -2.05, 0])
         self.play(Create(rays), run_time=0.7)
         self.play(FadeIn(t1), run_time=0.4)
         cat = K.pic("애벌레", 1.3, 0.4).move_to([3.0, GY + 0.22, 0])
-        self.say(f"애벌레는 잎을 먹어요: {o('소비자')}", "애벌레는 잎을 먹어요. 다른 생물을 먹이로 하여 살아가는 소비자예요.")
+        self.say(f"애벌레는 잎을 먹어요: {o('소비자')}", "애벌레는 잎을 먹는 소비자예요.")
         self.play(FadeIn(cat), FadeOut(rays), run_time=0.5)
         self.play(cat.animate.move_to([-0.2, GY + 0.22, 0]), run_time=1.6, rate_func=linear)
         bird = K.pic("박새", 1.4, 1.0).move_to([4.8, 2.2, 0])
         t2 = tag("소비자", ORANGE).move_to([1.6, -2.05, 0])
-        self.say(f"박새는 애벌레를 먹어요: 박새도 {o('소비자')}", "박새는 애벌레를 먹어요. 박새도 다른 생물을 먹이로 하는 소비자예요.")
+        self.say(f"박새는 애벌레를 먹어요: 박새도 {o('소비자')}", "박새는 애벌레를 먹어요. 박새도 소비자예요.")
         self.play(FadeIn(bird), FadeIn(t2), run_time=0.5)
         self.play(bird.animate.move_to(cat.get_center() + UP * 0.45), run_time=1.3)
         self.play(FadeOut(cat), bird.animate.move_to([3.0, 2.0, 0]), run_time=1.0)
         leaves = VGroup(*[K.leaf().rotate(k * 0.5).move_to([2.2 + k * 0.55, 2.6 - (k % 2) * 0.3, 0]) for k in range(5)])
-        self.say("낙엽과 죽은 생물체가 떨어져 쌓여요", "시간이 지나 낙엽과 죽은 생물체가 땅에 떨어져 쌓여요.")
+        self.say("낙엽과 죽은 생물체가 떨어져 쌓여요", "낙엽과 죽은 생물체가 땅에 쌓여요.")
         self.play(FadeIn(leaves), FadeOut(bird), run_time=0.5)
         self.play(*[lf.animate.move_to([2.2 + k * 0.55, GY + 0.15, 0]) for k, lf in enumerate(leaves)], run_time=1.4)
         mu = K.pic("버섯", 0.9, 0.9).move_to([3.0, GY + 0.55, 0])
         mo = K.pic("곰팡이", 1.0, 1.0).move_to([4.7, GY + 0.95, 0])
         t3 = tag("분해자", PURPLE).move_to([4.0, -2.05, 0])
         self.say(f"버섯과 곰팡이가 낙엽을 분해해요: {pu('분해자')}",
-                 "버섯과 곰팡이가 낙엽과 죽은 생물체를 분해해 양분을 얻어요. 분해자예요.")
+                 "버섯과 곰팡이가 낙엽을 분해해 양분을 얻어요. 분해자예요.")
         self.play(FadeIn(mu), FadeIn(mo), FadeIn(t3), run_time=0.6)
         self.play(*[lf.animate.scale(0.25).set_opacity(0.4) for lf in leaves], run_time=1.6)
         dots = VGroup(*[Dot([2.3 + k * 0.4, GY - 0.45 - 0.15 * (k % 2), 0], radius=0.09, color="#FFE46B").set_stroke("#A47A00", 2) for k in range(7)])
         self.say(f"분해된 양분은 다른 생물이 {g('다시 이용')}해요",
-                 "분해자가 분해한 양분은 땅속으로 들어가 다른 생물이 다시 이용할 수 있어요.")
+                 "분해된 양분은 다른 생물이 다시 이용할 수 있어요.")
         self.play(FadeIn(dots), run_time=0.4)
         self.play(*[d.animate.move_to([p1.get_x() + (k - 3) * 0.12 if k % 2 else p2.get_x() + (k - 3) * 0.12, GY - 0.35, 0])
                     for k, d in enumerate(dots)], run_time=1.6)
@@ -216,12 +207,12 @@ class S4Ep23(EpisodeScene):
     # ── 생각 바로잡기 ──
     def tricky(self):
         self.section("생각 바로잡기")
-        w = K.item("지렁이", 2.4, 1.0, 36).move_to([-3.4, 0.8, 0])
-        m = K.item("버섯", 1.8, 1.6, 36).move_to([3.4, 0.8, 0])
+        w = K.item("지렁이", 2.4, 1.0, 36).move_to([-3.4, 1.5, 0])
+        m = K.item("버섯", 1.8, 1.6, 36).move_to([3.4, 1.5, 0])
         q1 = T("썩은 나뭇잎 등을 먹어요", 28, SOFT).next_to(w, DOWN, buff=0.25)
         q2 = T("식물처럼 땅에서 자라요", 28, SOFT).next_to(m, DOWN, buff=0.25)
         self.say("지렁이와 버섯은 생산자, 소비자, 분해자 중 무엇일까요?",
-                 "헷갈리기 쉬운 생물을 생각해 봐요. 썩은 나뭇잎 등을 먹는 지렁이와, 식물처럼 땅에서 자라는 버섯은 무엇일까요?")
+                 "썩은 나뭇잎을 먹는 지렁이와, 땅에서 자라는 버섯은 무엇일까요?")
         self.play(FadeIn(w), FadeIn(m), FadeIn(q1), FadeIn(q2), run_time=0.8)
         self.pause_screen(5, "지렁이와 버섯은?")
         a1 = tag("소비자", ORANGE, 36).next_to(q1, DOWN, buff=0.3)
@@ -230,29 +221,29 @@ class S4Ep23(EpisodeScene):
                  "지렁이는 썩은 나뭇잎 같은 다른 생물을 먹고 살아가므로 소비자예요.")
         self.play(FadeIn(a1, scale=0.8), run_time=0.5)
         self.say(f"버섯은 스스로 양분을 만들지 못하는 {pu('분해자')}예요",
-                 "버섯은 식물처럼 보여도 스스로 양분을 만들지 못해요. 낙엽이나 죽은 생물체를 분해해 양분을 얻는 분해자예요.")
+                 "버섯은 스스로 양분을 만들지 못하고, 죽은 생물체를 분해해 양분을 얻는 분해자예요.")
         self.play(FadeIn(a2, scale=0.8), run_time=0.5)
         note = T("세균 중에는 스스로 양분을 만드는 것도 있어서, 분해자는 '일부 세균'이라고 말해요", 26, SOFT).move_to([0, -2.1, 0])
         self.say("분해자는 '일부 세균'이라고 말해요",
-                 "세균 중에는 식물처럼 스스로 양분을 만드는 것도 있어서, 분해자는 일부 세균이라고 말해요.")
+                 "세균 중에는 스스로 양분을 만드는 것도 있어서, 분해자는 일부 세균이라고 말해요.")
         self.play(FadeIn(note), run_time=0.4)
         self.settle()
         clear_stage(self)
 
     # ── 생각이 쑥: 분해자가 사라지면 ──
     def floor(self, cx, on):
-        GY = -0.6
-        box = K.R(6.0, 4.2, "#E8F2DC", cx, 0.55, rad=0.2, stroke=SOFT, sw=3)
-        soil = Rectangle(width=6.0, height=1.2, fill_color="#9A6A3A", fill_opacity=1, stroke_width=0).move_to([cx, GY - 0.6, 0])
+        GY = -0.65
+        box = K.R(6.0, 3.9, "#E8F2DC", cx, 0.3, rad=0.2, stroke=SOFT, sw=3)
+        soil = Rectangle(width=5.9, height=0.95, fill_color="#9A6A3A", fill_opacity=1, stroke_width=0).move_to([cx, GY - 0.5, 0])
         tr = K.pic("갈참나무", 1.6, 2.1).move_to([cx - 2.0, GY + 1.05, 0])
-        title = M(f"{pu('분해자')}가 있을 때" if on else f"{r('분해자')}가 사라지면", 34).move_to([cx, 3.1, 0])
+        title = M(f"{pu('분해자')}가 있을 때" if on else f"{r('분해자')}가 사라지면", 34).move_to([cx, 2.65, 0])
         g_ = VGroup(box, soil, tr, title)
         if on:
             g_.add(K.pic("버섯", 0.6, 0.6).move_to([cx + 2.2, GY + 0.3, 0]), K.pic("곰팡이", 0.65, 0.65).move_to([cx + 1.3, GY + 1.6, 0]))
         return g_
 
     def pile(self, cx, n):
-        GY = -0.6
+        GY = -0.65
         g_ = VGroup()
         for i in range(n):
             x = cx - 1.0 + (i * 0.53) % 2.6
@@ -276,7 +267,7 @@ class S4Ep23(EpisodeScene):
         for mob in (month, lp, rp):
             mob.clear_updaters()
         self.say(f"죽은 생물체와 배출물이 분해되지 않고 {r('계속 쌓여요')}",
-                 "분해자가 사라지면 죽은 생물체와 배출물이 분해되지 않고 계속 쌓여요. 분해자는 생태계에서 꼭 필요해요.")
+                 "분해자가 사라지면 죽은 생물체와 배출물이 분해되지 않고 계속 쌓여요.")
         self.play(Circumscribe(rp, color=RED), run_time=1.0)
         self.settle()
         clear_stage(self)
