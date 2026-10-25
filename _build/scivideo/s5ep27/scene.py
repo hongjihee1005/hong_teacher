@@ -157,10 +157,10 @@ class S5Ep27(EpisodeScene):
         clock.clear_updaters()
         self.settle()
         card = K.text_card([f"공기 중의 수증기가 {o('응결')}해 {o('작은 물방울')}로 떠 있어요 → {g('안개')}와 비슷",
-                            f"향 연기는 수증기의 응결이 잘 일어나게 도와줘요"], w=12.2, size=28).move_to([0, 2.15, 0])
+                            f"향 연기는 수증기의 응결이 잘 일어나게 도와줘요"], w=12.2, size=28).move_to([0, 1.95, 0])
         self.say(f"수증기가 응결해 작은 물방울로 떠 있어요 → {g('안개')}와 비슷",
                  "실험한 집기병은 계속 뿌예요. 공기 중의 수증기가 응결해 작은 물방울로 떠 있기 때문이에요. 안개가 생기는 모습과 비슷해요.")
-        self.play(FadeOut(clock), VGroup(a, b, ta, tb).animate.scale(0.66).shift(DOWN * 0.75), run_time=0.6)
+        self.play(FadeOut(clock), VGroup(a, b, ta, tb).animate.scale(0.66).shift(DOWN * 0.95), run_time=0.6)
         self.play(FadeIn(card, shift=DOWN * 0.2), run_time=0.5)
         self.settle()
         clear_stage(self)
@@ -192,7 +192,7 @@ class S5Ep27(EpisodeScene):
         self.play(FadeIn(fog), FadeIn(l2), run_time=1.0)
         self.bring_to_front(l1, l2)
         self.settle()
-        l3 = K.label("구름 (높은 곳)", "#2F6FD6", 30).move_to([-4.3, 1.2, 0])
+        l3 = K.label("구름 (높은 곳)", "#2F6FD6", 30).move_to([-4.65, 1.05, 0])
         self.say(f"{o('구름')}: 높은 곳에서 응결해 떠 있어요",
                  "구름은 공기 중의 수증기가 응결해 지표면으로부터 높은 곳에 작은 물방울로 떠 있는 거예요. 구름에서는 비나 눈이 내릴 수 있어요.")
         self.play(FadeIn(clouds, shift=DOWN * 0.2), FadeIn(l3), run_time=1.0)
