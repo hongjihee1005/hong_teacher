@@ -149,7 +149,7 @@ class S3Ep37(EpisodeScene):
         arr = Arrow([-4.6, 0.6, 0], [-3.4, 0.6, 0], buff=0.05, color=RED, stroke_width=6)
         card = text_card([f"형광 로션이 친구 손에 닿는 것", f"= 병원체가 {o('손을 통해')} 옮겨 가는 것",
                           f"씻지 않은 손으로 {r('눈·코·입')}을 만지면", "병원체가 몸속으로 들어올 수 있어요"], size=32)
-        card.move_to([3.6, 0.5, 0])
+        card.move_to([0, 0.5, 0]).to_edge(RIGHT, buff=0.3)
         self.say(f"병원체도 {o('손을 통해')} 다른 사람에게 옮겨 가요",
                  "형광 로션을 병원체라고 하면, 병원체가 손을 통해 다른 사람에게 옮겨 간 거예요. 씻지 않은 손으로 눈, 코, 입을 만지면 병원체가 몸속으로 들어올 수 있어요.")
         self.play(FadeIn(hd), FadeIn(fc), Create(arr), FadeIn(card, shift=LEFT * 0.2), run_time=0.8)
@@ -248,7 +248,7 @@ class S3Ep37(EpisodeScene):
                     K.germ("dots", K.GERM_O, 0.3).move_to([-3.5, -0.9, 0]))
         card = text_card([f"병원체는 접촉이나 비말, {o('공기')}, 물, 침 등을 통해",
                           "사람에게 옮겨 가 감염병을 일으켜요.",
-                          f"병원체가 {o('눈, 코, 입')}으로 들어오면", "감염병에 걸릴 수 있어요."], size=34).move_to([2.5, 0.5, 0])
+                          f"병원체가 {o('눈, 코, 입')}으로 들어오면", "감염병에 걸릴 수 있어요."], size=34).move_to([0, 0.5, 0]).to_edge(RIGHT, buff=0.3)
         self.say(f"접촉·비말·{o('공기')}·물·침으로 옮겨 가요",
                  "정리해요. 병원체는 접촉이나 비말, 공기, 물, 침 등을 통해 사람에게 옮겨 가 감염병을 일으켜요.")
         self.play(FadeIn(f), FadeIn(gs, lag_ratio=0.2), FadeIn(card, shift=LEFT * 0.2), run_time=0.8)
