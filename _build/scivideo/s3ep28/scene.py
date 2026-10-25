@@ -83,7 +83,7 @@ class S3Ep28(EpisodeScene):
         a = rock_panel(True, "사진 ㉮").scale(0.95).move_to([-3.3, 0.15, 0])
         b = rock_panel(False, "사진 ㉯").scale(0.95).move_to([3.3, 0.15, 0])
         self.say("같은 바닷가를 서로 다른 때에 본 모습이에요",
-                 "두 그림은 같은 바닷가를 바닷물이 높을 때와 낮을 때 본 모습이에요. 캐나다 호프웰 록스 바닷가예요.")
+                 "두 그림은 캐나다 호프웰 록스 바닷가를 서로 다른 때에 본 모습이에요.")
         self.play(FadeIn(a, shift=UP * 0.2), FadeIn(b, shift=UP * 0.2), run_time=0.8)
         self.say("바위와 물을 비교해 보세요. 무엇이 달라졌나요?", "바위와 물을 잘 비교해 보세요. 무엇이 달라졌나요?")
         self.pause_screen(4, "무엇이 달라졌을까요?")
@@ -107,7 +107,7 @@ class S3Ep28(EpisodeScene):
         lab_pole = T("눈금 기둥", 28, INK).move_to([-0.3, 0.55, 0])
         lab_road = T("바닷길", 28, INK).move_to([0.8, -2.2, 0])
         self.say("하루 동안 같은 바닷가를 지켜봐요",
-                 "하루 동안 같은 바닷가를 지켜봐요. 바닷물의 높이, 섬으로 가는 바닷길, 배, 눈금 기둥을 살펴보세요.")
+                 "아침 6시부터 같은 바닷가를 지켜봐요. 바닷물의 높이, 섬으로 가는 바닷길, 배, 눈금 기둥을 살펴보세요.")
         self.play(FadeIn(pic), FadeIn(clock), FadeIn(lab_isl), FadeIn(lab_pole), run_time=0.8)
         self.add(cnt)
         self.wait(0.5)
@@ -115,7 +115,6 @@ class S3Ep28(EpisodeScene):
         def run(t1, rt):
             self.play(tm.animate.set_value(t1), lv.animate.set_value(K.tide_level(t1)), run_time=rt, rate_func=linear)
 
-        self.say("시간이 흐르면 바닷물의 높이는 어떻게 될까요?", "시간이 흐르면 바닷물의 높이는 어떻게 변할까요? 아침 6시부터 지켜봐요.")
         run(9.2, 2.5)
         self.play(FadeIn(lab_road), run_time=0.3)
         self.say(f"9시쯤: 바닷물이 가장 낮아요 — {o('바닷길')}이 드러나고 배가 땅에 얹혀요",
@@ -149,7 +148,7 @@ class S3Ep28(EpisodeScene):
         xlabs = VGroup(*[T(f"{t}시", 30, INK).move_to([x0 + i * dx, y0 - 0.38, 0]) for i, t in enumerate(times)])
         ttl = T("잠긴 눈금 수(칸)", 30, RED).move_to([x0 + 0.6, y0 + 6 * dy + 0.45, 0])
         self.say("시각마다 물에 잠긴 빨간 눈금의 수를 기록해요",
-                 "시각마다 눈금 기둥에서 물에 잠긴 빨간 눈금의 수를 세어 기록하고, 그래프로 나타내요.")
+                 "시각마다 물에 잠긴 빨간 눈금의 수를 세어 그래프로 나타내요.")
         self.play(Create(axes), FadeIn(grid), FadeIn(ylabs), FadeIn(xlabs), FadeIn(ttl), run_time=0.8)
         pts = [np.array([x0 + i * dx, y0 + v * dy, 0]) for i, v in enumerate(vals)]
         dots = VGroup(*[Dot(p, radius=0.11, color=BLUE) for p in pts])
@@ -188,7 +187,7 @@ class S3Ep28(EpisodeScene):
         self.play(FadeIn(rb), run_time=0.4)
         self.play(LaggedStart(*[FadeIn(x, shift=LEFT * 0.2) for x in ri[:2]], lag_ratio=0.3), run_time=0.8)
         self.say("밀물 때는 바닷길이 잠기고 배가 떠올라요, 썰물 때는?",
-                 "밀물 때는 바닷길이 물에 잠기고 배가 떠올라요. 썰물 때는 잠겼던 갯벌이 드러나고, 배가 땅에 얹혀요.")
+                 "밀물 때는 바닷길이 잠기고 배가 떠올라요. 썰물 때는 갯벌이 드러나고 배가 땅에 얹혀요.")
         self.play(LaggedStart(*[FadeIn(x, shift=RIGHT * 0.2) for x in li[2:]], lag_ratio=0.3), run_time=0.8)
         self.play(LaggedStart(*[FadeIn(x, shift=LEFT * 0.2) for x in ri[2:]], lag_ratio=0.3), run_time=0.8)
         self.settle()
@@ -234,7 +233,7 @@ class S3Ep28(EpisodeScene):
         self.settle()
         warn = T("바닷길·갯벌은 꼭 어른과 함께! 밀물은 생각보다 빠르게 들어와요", 32, RED).move_to([0, -1.8, 0])
         self.say(f"{r('안전')}: 꼭 어른과 함께, 정해진 시각보다 일찍 나와요",
-                 "바닷길이나 갯벌에 들어갈 때는 꼭 어른과 함께 가요. 알림판과 안내 방송을 확인하고, 정해진 시각보다 일찍 나와요.")
+                 "바닷길이나 갯벌에는 꼭 어른과 함께 가고, 정해진 시각보다 일찍 나와요.")
         self.play(FadeIn(warn), run_time=0.4)
         self.settle()
         clear_stage(self)

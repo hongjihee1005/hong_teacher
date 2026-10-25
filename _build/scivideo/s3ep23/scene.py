@@ -70,7 +70,7 @@ class S3Ep23(EpisodeScene):
         self.play(FadeIn(pot), FadeIn(cup_o), run_time=0.7)
         tip = pot.get_right() + UP * 0.6 + LEFT * 0.1
         stream = K.smooth([tuple(tip[:2]), (tip[0] + 0.9, tip[1] - 0.2), (2.6, -0.4)], K.TEA, 10)
-        liq = Rectangle(width=1.25, height=0.02, fill_color=K.TEA, fill_opacity=0.85, stroke_width=0).move_to(cup_o.get_bottom() + UP * 0.08)
+        liq = Rectangle(width=1.1, height=0.02, fill_color=K.TEA, fill_opacity=0.85, stroke_width=0).move_to(cup_o.get_bottom() + UP * 0.08)
         self.add(liq)
         self.bring_to_front(cup_o)
         # 주전자 안 찻물 높이를 낮춤(같은 비율로 맞춰 넣기)
@@ -81,7 +81,7 @@ class S3Ep23(EpisodeScene):
         self.play(FadeOut(stream), run_time=0.3)
         t1 = VGroup(T("레몬 껍질", 32), st_tag("고체", 30)).arrange(RIGHT, buff=0.2).move_to([-2.6, -1.25, 0])
         t2 = VGroup(T("찻물", 32), st_tag("액체", 30)).arrange(RIGHT, buff=0.2).next_to(cup_o, UP, buff=0.35)
-        t3 = VGroup(T("빈 곳의 공기", 32), st_tag("기체", 30)).arrange(RIGHT, buff=0.2).move_to([-2.6, 2.75, 0])
+        t3 = VGroup(T("빈 곳의 공기", 32), st_tag("기체", 30)).arrange(RIGHT, buff=0.2).move_to([0.9, 2.2, 0])
         self.say(f"레몬 껍질은 {o('고체')}, 빈 곳에는 {g('공기')}가 있어요",
                  "레몬 껍질은 고체라서 주전자 안에 남았어요. 찻물은 액체, 주전자 안의 빈 곳에는 기체인 공기가 있어요.")
         self.play(FadeIn(t1), run_time=0.4)
@@ -194,7 +194,7 @@ class S3Ep23(EpisodeScene):
         self.play(FadeIn(tanks), FadeIn(heads), *[FadeIn(c) for c in cups], run_time=0.8)
         self.say("한 컵은 구멍을 테이프로 막고, 한 컵은 막지 않아요", "한 컵은 구멍을 셀로판테이프로 막고, 다른 컵은 막지 않아요. 공기는 점으로 나타냈어요.")
         self.play(*[FadeIn(d) for d in dots], Indicate(cups[0].tape, color=ORANGE, scale_factor=1.4), run_time=0.8)
-        self.pause_screen(5, "물속에 넣으면 물휴지는 어떻게 될까요?")
+        self.pause_screen(5, "물휴지는 어떻게 될까요?")
         down = 1.15 - (-1.62)
         # ① 막은 컵
         self.say(f"① 막은 컵: 물이 들어오지 않아 {g('물휴지가 그대로')}예요",
@@ -221,7 +221,7 @@ class S3Ep23(EpisodeScene):
         self.play(FadeOut(bubbles, shift=UP * 0.5), run_time=0.4)
         self.say(f"물이 들어와 물휴지가 {b_('젖어서 커져요')}", "그러자 물이 컵 안으로 들어와 압축 물휴지가 물에 젖어 커졌어요. 수조 물 높이는 거의 그대로예요.")
         tis = cups[1].tissue
-        self.play(tis.animate.stretch(1.5, 0).stretch(2.2, 1).set_fill(K.GLASS, opacity=1), run_time=0.8)
+        self.play(tis.animate.stretch(1.6, 0).stretch(3.0, 1).shift(DOWN * 0.15).set_fill("#C9D3DA", opacity=1), run_time=0.8)
         self.say(f"기체는 {g('공간을 차지하고, 이동할 수 있어요')}", "이 실험으로 기체는 공간을 차지하고, 이동할 수 있다는 것을 알 수 있어요.")
         self.settle()
         clear_stage(self)

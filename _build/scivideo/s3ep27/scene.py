@@ -76,8 +76,9 @@ class S3Ep27(EpisodeScene):
         words = ["바닷가 지형", "우주 정거장", "해변", "바닷가 동굴", "사막 낙타", "바닷가 절벽", "놀이공원", "바닷가 지형 360도"]
         good = {"바닷가 지형", "해변", "바닷가 동굴", "바닷가 절벽", "바닷가 지형 360도"}
         tags = VGroup(*[tag(w, INK, 36) for w in words])
-        for i, t in enumerate(tags):
-            t.move_to([-4.4 + (i % 4) * 2.95, 1.3 - (i // 4) * 1.3, 0])
+        rows = [VGroup(*tags[0:3]), VGroup(*tags[3:6]), VGroup(*tags[6:8])]
+        for k, row in enumerate(rows):
+            row.arrange(RIGHT, buff=0.6).move_to([0, 1.55 - k * 1.35, 0])
         self.say("바닷가 지형을 조사하려면 어떤 검색어가 좋을까요?",
                  "바닷가 지형을 조사하려면 어떤 검색어로 영상이나 사진을 찾으면 좋을까요?")
         self.play(LaggedStart(*[FadeIn(t, scale=0.8) for t in tags], lag_ratio=0.1), run_time=1.2)
@@ -103,7 +104,7 @@ class S3Ep27(EpisodeScene):
             if d.width > 4.1:
                 d.scale_to_fit_width(4.1)
             grp = VGroup(c, d)
-            grp.move_to([-4.5 + (i % 3) * 4.5, 1.35 - (i // 3) * 2.75, 0])
+            grp.move_to([-4.5 + (i % 3) * 4.5, 1.5 - (i // 3) * 2.75, 0])
             cards.add(grp)
         self.cards = cards
         self.say("바닷가에는 어떤 지형이 있는지 살펴봐요", "영상과 사진으로 바닷가에 어떤 지형이 있는지 살펴봐요.")
