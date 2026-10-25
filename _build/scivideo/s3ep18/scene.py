@@ -114,7 +114,7 @@ class S3Ep18(EpisodeScene):
     # ── 사마귀 ──
     def mantis_part(self):
         self.section("알을 낳는 동물 · 사마귀")
-        top = [ootheca(1.0), mantis(0.55), mantis(1.0)]
+        top = [ootheca(1.0), mantis(0.5), mantis(0.82)]
         items, arrows = chain(top, ["알(알집)", "애벌레", "다 자란 사마귀"], y=1.75, x0=-3.3, x1=4.6)
         items[1][0].shift(DOWN * 0.15)
         name1 = tag("사마귀", GREEN, 32).move_to([-5.9, 1.75, 0])
@@ -181,16 +181,17 @@ class S3Ep18(EpisodeScene):
         boxes = VGroup()
         for x, nm, col in ((-3.5, "알을 낳는 동물", ORANGE), (3.5, "새끼를 낳는 동물", BLUE)):
             b_ = RoundedRectangle(corner_radius=0.25, width=6.4, height=4.2, fill_color=PAPER, fill_opacity=0.85,
-                                  stroke_color=col, stroke_width=5).move_to([x, 0.0, 0])
-            b_.stretch_to_fit_height(4.4)
+                                  stroke_color=col, stroke_width=5).move_to([x, -0.15, 0])
+            b_.stretch_to_fit_height(4.6)
             h = T(nm, 38, col).move_to([x, 1.75, 0])
             boxes.add(VGroup(b_, h))
         self.say("알을 낳는 동물과 새끼를 낳는 동물로 나누어요", "여러 동물을 알을 낳는 동물과 새끼를 낳는 동물로 나누어 봐요.")
         self.play(FadeIn(boxes), run_time=0.5)
         eggs = ["오리", "개구리", "바다거북", "사마귀", "배추흰나비", "닭", "메추라기", "사슴벌레"]
         babies = ["토끼", "코끼리", "개"]
-        ec = VGroup(*[tag(t, ORANGE, 32) for t in eggs]).arrange_in_grid(rows=4, cols=2, buff=(0.3, 0.22)).move_to([-3.5, -0.45, 0])
-        bc = VGroup(*[tag(t, BLUE, 32) for t in babies]).arrange(DOWN, buff=0.22).move_to([3.5, 0.3, 0])
+        ec = VGroup(*[tag(t, ORANGE, 30) for t in eggs]).arrange_in_grid(rows=4, cols=2, buff=(0.3, 0.2)).move_to([-3.5, -0.45, 0])
+        bc = VGroup(*[tag(t, BLUE, 30) for t in babies]).arrange(DOWN, buff=0.2)
+        bc.move_to([3.5, 0, 0]).align_to(np.array([0, 1.3, 0]), UP)
         self.play(LaggedStart(*[FadeIn(c, shift=DOWN * 0.15) for c in ec], lag_ratio=0.12), run_time=1.2)
         self.play(LaggedStart(*[FadeIn(c, shift=DOWN * 0.15) for c in bc], lag_ratio=0.2), run_time=0.7)
         q = tag("돌고래", BLUE, 36).move_to([0, 2.75, 0])
@@ -199,7 +200,7 @@ class S3Ep18(EpisodeScene):
         self.pause_screen(4, "돌고래는 어느 쪽일까요?")
         self.say(f"돌고래는 물속에 살지만 {o('새끼를 낳아요')}",
                  "돌고래는 물속에 살지만 새끼를 낳아요. 새끼는 어미젖을 먹으며 자라요.")
-        self.play(q.animate.scale(32 / 36).next_to(bc, DOWN, buff=0.22), run_time=0.8)
+        self.play(q.animate.scale(30 / 36).next_to(bc, DOWN, buff=0.2), run_time=0.8)
         self.settle()
         clear_stage(self)
 

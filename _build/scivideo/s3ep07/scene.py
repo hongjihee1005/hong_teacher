@@ -169,7 +169,7 @@ class S3Ep07(EpisodeScene):
         self.say("실험 결과를 정리해요", "실험 결과를 정리해 볼게요.")
         self.play(FadeIn(lines), FadeIn(rows, lag_ratio=0.2), run_time=1.0)
         c = K.text_card([f"발에 {o('물갈퀴')}가 있으면 물을 {o('더 많이 밀어 내')}",
-                         f"물속에서 {g('빠르게')} 움직일 수 있어요"], size=42).move_to([0, -0.3, 0])
+                         f"물속에서 {g('빠르게')} 움직일 수 있어요"], size=42).move_to([0, -1.0, 0])
         self.say(f"물갈퀴가 있으면 물을 {o('더 많이 밀어 내')} {g('빠르게')} 움직여요",
                  "발에 물갈퀴가 있으면 물을 더 많이 밀어 내서 물속에서 빠르게 움직일 수 있어요.")
         self.play(FadeIn(c, shift=UP * 0.2), run_time=0.7)

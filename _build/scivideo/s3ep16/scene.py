@@ -98,7 +98,10 @@ class S3Ep16(EpisodeScene):
         chips.arrange_in_grid(rows=3, cols=2, buff=(0.3, 0.3), col_alignments="ll")
         if chips.width > 8.0:
             chips.scale_to_fit_width(8.0)
-        scol = VGroup(same_h, chips).arrange(DOWN, buff=0.4).move_to([2.4, 0.4, 0])
+        scol = VGroup(same_h, chips).arrange(DOWN, buff=0.4)
+        if scol.height > 4.0:
+            scol.scale_to_fit_height(4.0)
+        scol.move_to([2.4, 0, 0]).align_to(np.array([0, 1.8, 0]), UP)
         self.say(f"{r('다르게 할 조건')}은 물의 양 하나뿐이에요",
                  "한쪽 컵에는 물을 주고, 다른 쪽 컵에는 물을 주지 않아요. 그래서 다르게 할 조건은 물의 양이에요.")
         self.play(FadeIn(dcol, shift=UP * 0.2), run_time=0.6)
