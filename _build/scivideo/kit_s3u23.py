@@ -68,6 +68,22 @@ class Shake:
     def a(self):
         return self.amp.get_value()
 
+    def live(self, scene, speed=7.0, decay=0.0):
+        """장면에 넣어 기다리는 동안에도 저절로 떨리게 함. decay: 1초마다 줄어드는 정도(0이면 그대로)"""
+        self.speed, self.decay = speed, decay
+        self.ph.clear_updaters()
+        self.amp.clear_updaters()
+        self.ph.add_updater(lambda m, dt: m.increment_value(TAU * self.speed * dt))
+        self.amp.add_updater(lambda m, dt: m.set_value(m.get_value() * np.exp(-self.decay * dt)) if self.decay else None)
+        scene.add(self.ph, self.amp)
+        return self
+
+    def stop(self, scene):
+        self.ph.clear_updaters()
+        self.amp.clear_updaters()
+        self.amp.set_value(0)
+        scene.remove(self.ph, self.amp)
+
     def run(self, seconds, a0=None, a1=None, speed=7.0):
         """play(*sh.run(…), run_time=초, rate_func=linear)에 넣는 애니메이션 목록.
         a0: 시작 크기(바로 바꿈), a1: 끝 크기(없으면 그대로)"""
@@ -150,23 +166,27 @@ def hand(s=1.0, col=SKIN):
     return VGroup(fingers, thumb, palm).scale(s)
 
 
-def fork(sh, s=1.0, x=0.0, y=0.0):
-    """소리굽쇠(U 자 + 손잡이). 가지 끝이 sh에 따라 안팎으로 떨림. 바닥(손잡이 끝)이 (x, y−1.6s)"""
+def fork(sh, s=1.0, x=0.0, y=0.0, down=False):
+    """소리굽쇠(U 자 + 손잡이). 가지 끝이 sh에 따라 안팎으로 떨림.
+    U 자 바닥이 (x, y), 가지 끝이 (x, y+1.7s). down=True면 거꾸로(가지 끝이 (x, y−1.7s))"""
+    sg = -1 if down else 1
+
+    def P_(lx, ly):
+        return np.array([x + lx, y + sg * ly, 0])
+
     def draw():
         d = sh.val() * s
         gap = 0.26 * s
         top = 1.7 * s
-        base_y = 0.0
         prongs = VGroup()
         for side in (-1, 1):
             m = VMobject(stroke_color=METAL_D, stroke_width=16 * s)
-            pts = [np.array([x + side * gap + side * d * (k / 6) ** 2, y + base_y + top * k / 6, 0]) for k in range(7)]
-            m.set_points_smoothly(pts)
+            m.set_points_smoothly([P_(side * gap + side * d * (k / 6) ** 2, top * k / 6) for k in range(7)])
             prongs.add(m)
-        bottom = Arc(radius=gap, start_angle=PI, angle=PI, arc_center=[x, y + base_y, 0],
-                     stroke_color=METAL_D, stroke_width=16 * s)
-        stem = Line([x, y - gap, 0], [x, y - 1.0 * s, 0], stroke_color=METAL_D, stroke_width=16 * s)
-        grip = R(0.26 * s, 0.6 * s, "#3C3C46", x, y - 1.25 * s, stroke=INK, sw=2, r=0.08)
+        bottom = VMobject(stroke_color=METAL_D, stroke_width=16 * s)
+        bottom.set_points_smoothly([P_(gap * np.cos(a), gap * np.sin(a)) for a in np.linspace(PI, 2 * PI, 9)])
+        stem = Line(P_(0, -gap), P_(0, -1.0 * s), stroke_color=METAL_D, stroke_width=16 * s)
+        grip = R(0.26 * s, 0.6 * s, "#3C3C46", x, y + sg * (-1.25 * s), stroke=INK, sw=2, r=0.08)
         return VGroup(stem, grip, bottom, prongs)
     return always_redraw(draw)
 
@@ -537,3 +557,24 @@ def table(rows, widths, h=0.78, size=32, head_fill="#FCE9D2", x=0.0, y=0.0):
         cells.append(line)
     grp.cells = cells
     return grp
+
+
+def splash(c, sh, n=9, h=0.9, ref=0.08, col=WATER_D):
+    """c(물 표면)에서 물방울이 튀어 오름 — sh 떨림 크기에 따라"""
+    c = np.array(c, dtype=float)
+    angs = np.linspace(0.45, PI - 0.45, n)
+    offs = np.random.RandomState(5).uniform(0, 1, n)
+
+    def draw():
+        g = VGroup()
+        k = min(1.0, sh.a() / ref)
+        if k < 0.05:
+            return g
+        t = sh.ph.get_value() / TAU * 0.35
+        for i, a in enumerate(angs):
+            f = (t + offs[i]) % 1.0
+            dist = h * k * (0.6 + 0.4 * ((i * 7) % 3) / 2)
+            p = c + np.array([np.cos(a) * dist * f, np.sin(a) * dist * 4 * f * (1 - f), 0])
+            g.add(Dot(p, radius=0.07, color=col).set_opacity(0.4 + 0.6 * (1 - f)))
+        return g
+    return always_redraw(draw)
