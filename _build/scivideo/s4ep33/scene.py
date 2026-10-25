@@ -258,7 +258,7 @@ class S4Ep33(EpisodeScene):
         self.settle()
         hope = K.text_card([f"기후변화는 심각한 문제이지만,",
                             f"여러 사람에게 {g('알리고')} 대응하기 위한 {g('실천을 계속')}하면",
-                            f"{g('문제를 해결할 수 있어요')}"], w=11.6, size=34, stroke=GREEN).move_to([0, -0.85, 0])
+                            f"{g('문제를 해결할 수 있어요')}"], w=11.6, size=32, stroke=GREEN).move_to([0, -1.05, 0])
         self.play(FadeIn(hope, shift=UP * 0.2), run_time=0.6)
         self.say(f"알리고 실천하면 {g('문제를 해결할 수 있어요')}",
                  "기후변화는 전 세계적으로 심각한 문제이지만, 여러 사람에게 알리고 대응하기 위한 실천을 계속한다면 문제를 해결할 수 있어요.")

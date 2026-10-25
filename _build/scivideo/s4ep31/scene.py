@@ -83,8 +83,8 @@ class S4Ep31(EpisodeScene):
         self.say(f"우리나라에서도 {o('열대 과일')}을 기를 수 있게 된 까닭은?",
                  "우리나라에서도 열대 과일을 기를 수 있게 된 까닭은 무엇일까요?")
         self.pause_screen(5, "열대 과일을 기를 수 있게 된 까닭은?")
-        ans = K.text_card([f"기후변화로 {g('평균 기온이 높아졌기')} 때문이에요"], size=36, stroke=GREEN).move_to([0, 2.55, 0])
-        self.play(cards.animate.shift(DOWN * 0.35), FadeIn(ans), run_time=0.6)
+        ans = K.text_card([f"기후변화로 {g('평균 기온이 높아졌기')} 때문이에요"], size=34, stroke=GREEN).move_to([0.6, 2.35, 0])
+        self.play(cards.animate.shift(DOWN * 0.55), FadeIn(ans), run_time=0.6)
         self.say(f"기후변화로 {g('평균 기온')}이 높아졌기 때문이에요",
                  "기후변화로 평균 기온이 높아졌기 때문이에요. 어제 하루 더웠던 것과는 달라요.")
         self.settle()
@@ -248,12 +248,12 @@ class S4Ep31(EpisodeScene):
     def summary(self):
         self.section("한눈에 쏙")
         card = K.text_card([f"최근에 가뭄, 폭설, 폭염, 한파, 홍수 등과 같은",
-                            f"{g('기후변화')} 현상이 많이 나타나고 있습니다."], w=12.4, size=44).move_to([0, 1.3, 0])
+                            f"{g('기후변화')} 현상이 많이 나타나고 있습니다."], w=12.4, size=44).move_to([0, 1.55, 0])
         self.say(f"이런 {g('기후변화')} 현상이 많이 나타나고 있어요",
                  "최근에 가뭄, 폭설, 폭염, 한파, 홍수 등과 같은 기후변화 현상이 많이 나타나고 있어요.")
         self.play(FadeIn(card, scale=0.95), run_time=0.7)
         self.settle()
-        more = K.text_card([f"예전보다 {o('더 자주')} 일어나고, 정도도 {o('심해지고')} 있어요"], size=36).move_to([0, -0.3, 0])
+        more = K.text_card([f"예전보다 {o('더 자주')} 일어나고, 정도도 {o('심해지고')} 있어요"], size=36).move_to([0, -0.35, 0])
         self.play(FadeIn(more), run_time=0.5)
         self.say(f"예전보다 {o('더 자주')}, 더 {o('심하게')} 일어나요",
                  "이런 현상은 예전보다 더 자주 일어나고, 정도도 심해지고 있어요.")

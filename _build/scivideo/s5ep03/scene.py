@@ -75,7 +75,7 @@ class S5Ep03(EpisodeScene):
         base_y = -1.9
         water = K.rect(11.6, 4.6, K.WATER, y=0.4, stroke=K.WATER, sw=0, op=0.55)
         floor = K.rect(11.6, 0.25, "#B9A382", y=base_y - 0.125, stroke="#6B5235", sw=3)
-        fl = T("바다나 호수 밑바닥", 26, "#6B5235").move_to([-4.6, base_y + 0.25, 0])
+        fl = T("바다나 호수 밑바닥", 24, "#6B5235").move_to([-4.95, base_y + 0.25, 0])
         note = T("퇴적물 알갱이를 크게 그린 그림", 26, SOFT).move_to([0, 2.45, 0])
         self.add(water)
         self.play(FadeIn(water), FadeIn(floor), FadeIn(fl), FadeIn(note), run_time=0.6)
