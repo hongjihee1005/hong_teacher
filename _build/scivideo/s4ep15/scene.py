@@ -116,7 +116,7 @@ class S4Ep15(EpisodeScene):
 
         def show(mg, sub, narr, ampv, fall=False):
             nonlocal meter
-            new = M(f"규모 {o(str(mg))}", 46).move_to([-4.6, 2.55, 0])
+            new = M(f"규모 {o(str(mg))}", 46).move_to([-4.6, 2.25, 0])
             self.say(sub, narr)
             self.play(FadeOut(meter), FadeIn(new), run_time=0.3)
             meter = new
@@ -146,7 +146,7 @@ class S4Ep15(EpisodeScene):
         self.settle()
         clear_stage(self)
         # 큰 지진이 일어나면
-        items = [("땅이 갈라져요", self.crack()), ("산사태가 일어나요", self.slide()), ("바다에서 일어나면 지진 해일이 생기기도 해요", self.wave())]
+        items = [("땅이 갈라져요", self.crack()), ("산사태가 일어나요", self.slide()), ("지진 해일이 생기기도 해요", self.wave())]
         grp = VGroup()
         for i, (t, pic) in enumerate(items):
             K.fit(pic, 3.6, 2.0)
@@ -189,21 +189,20 @@ class S4Ep15(EpisodeScene):
               ("산", "산사태, 절벽이 무너지는 것에 주의하고\n안전한 곳으로 대피해요.")]
         cards = VGroup()
         for i, (nm, body) in enumerate(P_):
-            box = RoundedRectangle(corner_radius=0.18, width=4.35, height=2.25, fill_color=PAPER, fill_opacity=1,
+            box = RoundedRectangle(corner_radius=0.18, width=4.35, height=2.35, fill_color=PAPER, fill_opacity=1,
                                    stroke_color=self.accent, stroke_width=4)
             t = K.label(nm, self.accent, 28).next_to(box.get_top(), DOWN, buff=0.12)
-            bt = VGroup(*[T(l, 21, bold=False) for l in body.split("\n")]).arrange(DOWN, buff=0.08)
+            bt = VGroup(*[T(l, 25, bold=False) for l in body.split("\n")]).arrange(DOWN, buff=0.08)
             if bt.width > 4.1:
                 bt.scale_to_fit_width(4.1)
             bt.next_to(t, DOWN, buff=0.14)
-            cards.add(VGroup(box, t, bt).move_to([(i % 3 - 1) * 4.5, 1.35 - (i // 3) * 2.45, 0]))
-        self.say("장소에 따라 어떻게 대처해야 할까요?", "지진이 났을 때 장소에 따라 어떻게 대처해야 할까요?")
-        subs = ["집 안: 탁자 아래로 들어가 몸을 보호해요", "학교: 책상 아래에서 책상 다리를 꼭 잡아요",
-                "건물 안: 승강기 대신 계단을 이용해요", "집 밖: 머리를 보호하고 넓은 곳으로 대피해요",
-                "바닷가: 지진 해일이 발생하면 높은 곳으로", "산: 산사태, 절벽이 무너지는 것에 주의해요"]
-        for i, (nm, body) in enumerate(P_):
-            self.say(subs[i], f"{nm}에서는 " + body.replace("\n", " ") if i != 2 else "건물 안에서는 " + body.replace("\n", " "))
-            self.play(FadeIn(cards[i], shift=UP * 0.2), run_time=0.5)
+            cards.add(VGroup(box, t, bt).move_to([(i % 3 - 1) * 4.5, 1.4 - (i // 3) * 2.5, 0]))
+        self.say("장소에 따라 어떻게 대처해야 할까요?",
+                 "지진이 났을 때 장소에 따라 어떻게 대처해야 할까요? 집 안에서는 탁자 아래로, 학교에서는 책상 아래로 들어가 몸을 보호해요. 건물 안에서는 승강기 대신 계단을 이용해요.")
+        self.play(FadeIn(cards[:3], lag_ratio=0.3, shift=UP * 0.2), run_time=1.2)
+        self.say("집 밖은 넓은 곳으로, 바닷가는 높은 곳으로",
+                 "집 밖에서는 머리를 보호하고 넓은 곳으로 대피해요. 바닷가에서 지진 해일이 발생하면 높은 곳으로 이동하고, 산에서는 산사태와 절벽이 무너지는 것에 주의해요.")
+        self.play(FadeIn(cards[3:], lag_ratio=0.3, shift=UP * 0.2), run_time=1.2)
         self.settle()
         clear_stage(self)
 
@@ -234,7 +233,6 @@ class S4Ep15(EpisodeScene):
                 "흔들림이 멈추면 가방이나 손으로 머리를 보호하며 나와요.",
                 "승강기 대신 계단으로, 뛰지 않고 질서 있게 운동장으로 대피해요."]
         self.say("학교에서 지진이 나면 어떤 순서로 행동할까요?", "학교에서 지진이 나면 어떤 순서로 행동할까요?")
-        self.pause_screen(5, "무엇부터 할까요?")
         for i in range(4):
             self.say(f"{i + 1}. " + steps[i].replace("\n", " "), narr[i])
             anims = [FadeIn(cols[i], shift=UP * 0.2)]

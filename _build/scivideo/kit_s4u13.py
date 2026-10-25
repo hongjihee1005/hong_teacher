@@ -426,7 +426,7 @@ def zoom_view(kind="granite", R=1.4, pink=False, holes=True):
             g.add(Dot([x, y, 0], radius=R * (0.008 + rnd(k, 23) * 0.012),
                       color=["#2B2C2F", "#55585D", "#46484C", "#1F2022"][k % 4]))
         if holes:
-            for k in range(6):
+            for k in range(6 if holes is True else int(holes)):
                 x, y = (-0.6 + rnd(k, 24) * 1.2) * R, (-0.6 + rnd(k, 25) * 1.2) * R
                 rx = R * (0.1 + rnd(k, 26) * 0.1)
                 g.add(Ellipse(width=rx * 2, height=rx * 1.4, fill_color="#111214", fill_opacity=1,
@@ -594,8 +594,8 @@ def shelf_room():
 
 def phone_msg(lines=("긴급 재난 문자",), w=1.9, h=3.0):
     g = VGroup(rect(w, h, "#222222", sw=0, r=0.25), rect(w - 0.2, h - 0.45, "#FFFFFF", sw=0, r=0.08))
-    box = rect(w - 0.4, 1.3, "#FDE2DF", y=0.45, stroke=RED, sw=3, r=0.12)
-    txt = VGroup(*[T(l, 22 if i else 24, RED if i == 0 else INK) for i, l in enumerate(lines)]).arrange(DOWN, buff=0.1)
+    box = rect(w - 0.4, 1.5, "#FDE2DF", y=0.45, stroke=RED, sw=3, r=0.12)
+    txt = VGroup(*[T(l, 30 if i else 32, RED if i == 0 else INK) for i, l in enumerate(lines)]).arrange(DOWN, buff=0.1)
     if txt.width > w - 0.6:
         txt.scale_to_fit_width(w - 0.6)
     txt.move_to(box)

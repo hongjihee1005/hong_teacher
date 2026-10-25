@@ -96,7 +96,7 @@ class S4Ep13(EpisodeScene):
         prev = None
         for i in range(4):
             n, kind, pink, holes = ROCKS[i]
-            zv = K.zoom_view(kind, 1.75, pink, holes=holes > 0).move_to([3.6, 0.5, 0])
+            zv = K.zoom_view(kind, 1.75, pink, holes=(6 if holes > 10 else 2) if holes else False).move_to([3.6, 0.5, 0])
             cap = T(f"암석 {n} · 디지털 현미경", 28).next_to(zv, DOWN, buff=0.15)
             ring = SurroundingRectangle(rks[i], buff=0.08, color=RED, corner_radius=0.15)
             self.say(f"암석 {n}: {notes[i]}", narr[i])
@@ -130,8 +130,8 @@ class S4Ep13(EpisodeScene):
         self.say(f"알갱이가 큰 암석도 ①, ③! {o('나눈 무리가 같아요')}",
                  "알갱이가 큰 암석은 1번과 3번, 작은 암석은 2번과 4번이에요. 두 기준으로 나눈 무리가 같아요!")
         self.settle()
-        n1 = M(o("화강암") + ": 색깔이 밝고, 알갱이가 커요", 28).move_to([yes.get_x(), -0.95, 0])
-        n2 = M(f'<span foreground="{BLUE}">현무암</span>' + ": 색깔이 어둡고, 알갱이가 작아요", 28).move_to([no.get_x(), -0.95, 0])
+        n1 = M(o("화강암") + ": 색깔이 밝고, 알갱이가 커요", 26).move_to([yes.get_x(), -0.95, 0])
+        n2 = M(f'<span foreground="{BLUE}">현무암</span>' + ": 색깔이 어둡고, 알갱이가 작아요", 26).move_to([no.get_x(), -0.95, 0])
         self.say(f"①, ③은 {o('화강암')}, ②, ④는 {BLUEs('현무암')}이에요",
                  "색깔이 밝고 알갱이가 큰 1번과 3번은 화강암이에요. 색깔이 어둡고 알갱이가 작은 2번과 4번은 현무암이에요.")
         self.play(FadeIn(n1), FadeIn(n2), run_time=0.6)

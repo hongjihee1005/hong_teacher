@@ -70,7 +70,7 @@ class S4Ep12(EpisodeScene):
         m = K.halla().scale(1.25).move_to([0, 0.2, 0])
         lab = K.label("제주도 한라산(그림)", INK, 30).move_to([0, -1.85, 0])
         self.say("한라산 꼭대기는 움푹 파여 있고, 물이 고여 있어요",
-                 "제주도 한라산의 꼭대기예요. 움푹 파인 곳에 물이 고여 있어요. 이곳을 백록담이라고 해요.")
+                 "제주도 한라산의 꼭대기예요. 움푹 파인 곳에 물이 고여 있어요.")
         self.play(FadeIn(m), FadeIn(lab), run_time=0.8)
         ring = SurroundingRectangle(m[1], buff=0.15, color=ORANGE, corner_radius=0.2)
         self.play(Create(ring), run_time=0.6)
@@ -138,8 +138,7 @@ class S4Ep12(EpisodeScene):
                  "땅속 깊은 곳에는 암석이 녹은 물질인 마그마가 있어요. 마그마가 지표면의 약한 부분으로 올라와요.")
         self.play(FadeIn(mg), t.animate.set_value(3.9), run_time=3.5, rate_func=linear)
         self.play(FadeOut(mg), run_time=0.3)
-        self.say("꼭대기에서 무엇이 나오는지 살펴봐요",
-                 "꼭대기에서 무엇이 나오는지, 색깔과 움직임을 살펴봐요.")
+        self.say("꼭대기에서 연기처럼 생긴 것이 피어올라요", "꼭대기에서 연기처럼 생긴 것이 피어올라요.")
         self.play(t.animate.set_value(8.0), run_time=3.0, rate_func=linear)
         self.say("회색 가루가 하늘 높이 퍼져요", "회색 가루가 하늘 높이 퍼져 주변이 뿌옇게 돼요.")
         self.play(t.animate.set_value(12.0), run_time=3.0, rate_func=linear)
@@ -209,7 +208,7 @@ class S4Ep12(EpisodeScene):
             self.play(Create(arr), run_time=0.5)
             self.play(FadeIn(row), run_time=0.4)
         self.say(f"분화구에 물이 고여 호수가 생기기도 해요. {o('백록담')}처럼요",
-                 "분화구에 물이 고여 호수가 생기기도 해요. 한라산의 백록담이 그런 곳이에요. 처음 궁금했던 움푹 파인 곳이 바로 분화구였어요.")
+                 "분화구에 물이 고여 호수가 생기기도 해요. 한라산의 백록담이 그런 곳이에요.")
         self.settle()
         clear_stage(self)
 
@@ -217,7 +216,7 @@ class S4Ep12(EpisodeScene):
     def islands(self):
         self.section("생각+")
         self.say("우리나라에서 화산 활동으로 만들어진 섬은 어디일까요?",
-                 "화산 활동으로 바다에 화산섬이 생기거나, 육지에 화산이 생기기도 해요. 우리나라에서 화산 활동으로 만들어진 섬은 어디일까요?")
+                 "우리나라에서 화산 활동으로 만들어진 섬은 어디일까요?")
         isl = VGroup(*[K.island(n, 1.8) for n in ("제주도", "울릉도", "독도", "강화도")]).arrange(RIGHT, buff=0.55).move_to([0, 0.4, 0])
         self.play(FadeIn(isl, lag_ratio=0.15), run_time=1.0)
         self.pause_screen(5, "화산섬을 모두 골라요")
