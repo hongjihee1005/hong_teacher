@@ -383,8 +383,8 @@ PLACES = {"hosp": ("병원", _hosp), "lib": ("도서관", _lib), "shop": ("가�
 def place_card(kind, epi=False, w=2.3, h=2.1):
     name, fn = PLACES[kind]
     box = R(w, h, "#EEF2F3" if epi else WHITE, rad=0.25, stroke=GRAY if epi else GREEN, sw=4)
-    pic = fit(fn(), w * 0.6, h * 0.45).move_to([0, h * 0.1, 0])
-    t = T(name, 30, INK).move_to([0, -h * 0.34, 0])
+    pic = fit(fn(), w * 0.6, h * 0.42).move_to([0, h * 0.14, 0])
+    t = T(name, 28, INK).move_to([0, -h * 0.3, 0])
     g = VGroup(box, pic, t)
     if epi:
         g.add(germ("ball", GERM_G, 0.38).move_to([w * 0.36, h * 0.36, 0]))
@@ -427,10 +427,12 @@ def dish(day=0, washed=False, R_=1.25):
 def cobalt_board(w=5.6, h=2.2):
     """흰 도화지에 붙인 푸른색 염화 코발트 종이 24장(8×3)"""
     g = VGroup(R(w, h, WHITE, rad=0.08, stroke="#BBBBBB", sw=4))
+    cw, rh = (w - 0.3) / 8, (h - 0.3) / 3
+    sq = min(cw, rh) * 0.78
     for i in range(24):
-        x = -w / 2 + 0.3 + (i % 8) * (w - 0.6) / 7.6 + 0.23
-        y = h / 2 - 0.5 - (i // 8) * 0.62
-        g.add(Rectangle(width=0.46, height=0.46, fill_color=COBALT, fill_opacity=1, stroke_width=0).move_to([x, y, 0]))
+        x = -w / 2 + 0.15 + (i % 8 + 0.5) * cw
+        y = h / 2 - 0.15 - (i // 8 + 0.5) * rh
+        g.add(Rectangle(width=sq, height=sq, fill_color=COBALT, fill_opacity=1, stroke_width=0).move_to([x, y, 0]))
     return g
 
 
@@ -443,3 +445,41 @@ def cobalt_dots(board, n, spread, seed=1):
     cy = board.get_center()[1]
     return VGroup(*[Dot([x0 + rng.uniform(0, spread) * W, cy + rng.uniform(-H / 2, H / 2), 0],
                         radius=rng.uniform(0.04, 0.11), color=COBALT_R).set_opacity(0.9) for _ in range(n)])
+
+
+# ══════════════ 고르기 카드 ══════════════
+def choice_grid(items, cols=2, size=32, w=5.6, h=0.72, dx=None, dy=0.9, top=1.6, cx=0.0):
+    """보기 카드 묶음. items = [(글, 맞음?)]. 카드마다 .ok, .mark(○/×, 아직 안 보임)"""
+    from kit_s3u12 import ox_mark
+    dx = dx or (w + 0.4)
+    g = VGroup()
+    n = len(items)
+    rows = (n + cols - 1) // cols
+    for i, (txt, ok) in enumerate(items):
+        rr, cc = divmod(i, cols)
+        k = min(cols, n - rr * cols)
+        x = cx + (cc - (k - 1) / 2) * dx
+        y = top - rr * dy
+        box = R(w, h, WHITE, x, y, rad=0.18, stroke=SOFT, sw=3)
+        t = T(txt, size, INK)
+        if t.width > w - 1.0:
+            t.scale_to_fit_width(w - 1.0)
+        t.move_to([x - 0.25, y, 0])
+        m = ox_mark(ok, 0.22).move_to([x + w / 2 - 0.42, y, 0])
+        card = VGroup(box, t)
+        card.ok, card.mark, card.box = ok, m, box
+        g.add(card)
+    return g
+
+
+def reveal_marks(cards):
+    """맞는 카드는 초록 테두리, 틀린 카드는 흐리게 + ○/× 표시 애니메이션 목록"""
+    anims = []
+    from manim import FadeIn
+    for c in cards:
+        anims.append(FadeIn(c.mark, scale=0.6))
+        if c.ok:
+            anims.append(c.box.animate.set_stroke(GREEN, 6))
+        else:
+            anims.append(c[1].animate.set_opacity(0.45))
+    return anims
