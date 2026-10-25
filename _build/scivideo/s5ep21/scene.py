@@ -102,8 +102,8 @@ class S5Ep21(EpisodeScene):
 
     def measure(self):
         self.section("측정해요")
-        tb = self.table().move_to([0, 1.55, 0])
-        note = M("맥박: 심장의 박동이 목이나 팔목 등에서 느껴지는 것", 30).move_to([0, 2.85, 0])
+        tb = self.table().move_to([0, 1.15, 0])
+        note = M(f"{o('맥박')}: 심장의 박동이 목이나 팔목 등에서 느껴지는 것", 30).move_to([0.9, 2.75, 0])
         self.say("운동 전과 후에 체온과 1분 동안의 맥박 수를 재요",
                  "운동하기 전과 운동한 후에 체온과 1분 동안의 맥박 수를 재어 봐요. 맥박은 심장의 박동이 목이나 팔목 등에서 느껴지는 것이에요.")
         self.play(FadeIn(note), FadeIn(tb), run_time=0.8)
@@ -137,8 +137,8 @@ class S5Ep21(EpisodeScene):
     # ── 그래프 ──
     def graph(self):
         self.section("그래프로 나타내요")
-        ox, oy = -4.4, -2.0
-        W, H = 7.6, 4.3
+        ox, oy = -5.7, -2.0
+        W, H = 6.9, 4.3
         ax = VGroup(Line([ox, oy, 0], [ox + W, oy, 0], stroke_color=INK, stroke_width=4),
                     Line([ox, oy, 0], [ox, oy + H, 0], stroke_color=RED, stroke_width=4),
                     Line([ox + W, oy, 0], [ox + W, oy + H, 0], stroke_color=ORANGE, stroke_width=4))
@@ -161,14 +161,14 @@ class S5Ep21(EpisodeScene):
         pts = [np.array([xs[k], oy + (TEMP[k] - 36.0) * H, 0]) for k in range(3)]
         line = VGroup(Line(pts[0], pts[1], stroke_color=ORANGE, stroke_width=6), Line(pts[1], pts[2], stroke_color=ORANGE, stroke_width=6))
         dots = VGroup(*[Dot(p, radius=0.11, color=ORANGE).set_stroke(PAPER, 3) for p in pts])
-        tnum = VGroup(*[T(str(TEMP[k]), 24, ORANGE).next_to(pts[k], RIGHT, buff=0.12).shift(UP * 0.2) for k in range(3)])
+        tnum = VGroup(*[T(str(TEMP[k]), 24, ORANGE).next_to(pts[k], RIGHT, buff=0.12).shift(DOWN * 0.28) for k in range(3)])
         self.say("측정 결과를 그래프로 나타내요. 막대는 맥박 수, 선은 체온이에요",
                  "측정 결과를 그래프로 나타내 봐요. 막대는 맥박 수, 점과 선은 체온이에요.")
         self.play(Create(ax), FadeIn(ticks), FadeIn(yl), FadeIn(yr), FadeIn(xl), run_time=0.8)
         self.play(LaggedStart(*[GrowFromEdge(b_, DOWN) for b_ in bars], lag_ratio=0.3), FadeIn(bnum), run_time=1.2)
         self.play(FadeIn(dots), Create(line), FadeIn(tnum), run_time=1.0)
         card = K.text_card([f"운동할 때 {r('맥박')}이 빨라져요", f"운동할 때 {o('체온')}이 올라가요", f"쉬고 나면 운동 전과 {g('비슷해져요')}"],
-                           w=4.6, size=30).move_to([4.9, 0.3, 0])
+                           w=4.5, size=30).move_to([4.6, 0.3, 0])
         self.say(f"운동하면 {r('맥박이 빨라지고')} {o('체온이 올라가요')}",
                  "그래프를 보면 운동할 때 맥박이 빨라지고 체온이 올라가요.")
         self.play(FadeIn(card[0]), FadeIn(card[1][0]), FadeIn(card[1][1]), Indicate(bars[1]), Indicate(dots[1]), run_time=0.9)
@@ -181,7 +181,7 @@ class S5Ep21(EpisodeScene):
     # ── 각 기관이 하는 일 ──
     def organs(self):
         self.section("함께 일하는 기관")
-        mp = K.organ_map(10.4).move_to([0, 0.35, 0])
+        mp = K.organ_map(9.0).move_to([0, 0.2, 0])
         self.say("몸을 움직이기 위해 각 기관은 어떤 일을 할까요?",
                  "몸을 움직이기 위해 우리 몸의 각 기관은 어떤 일을 할까요?")
         self.play(FadeIn(VGroup(*mp.box.values()), lag_ratio=0.15), run_time=1.2)

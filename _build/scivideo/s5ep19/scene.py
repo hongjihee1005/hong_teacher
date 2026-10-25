@@ -64,7 +64,7 @@ class S5Ep19(EpisodeScene):
         puff = VGroup(*[Arc(radius=0.15 + 0.12 * j, start_angle=-0.6, angle=1.2, stroke_color=SOFT, stroke_width=5).move_to([0.75 + 0.2 * j, 0.05, 0]) for j in range(3)])
         self.play(FadeIn(puff, lag_ratio=0.3), run_time=0.6)
         self.pause_screen(5, "얼굴을 물 위로 내미는 까닭은?")
-        a = K.text_card([f"물속에서는 숨을 쉴 수 없어", f"{o('공기')}를 들이마셔야 해요"], w=6.0, size=36).move_to([3.7, 2.2, 0])
+        a = K.text_card([f"물속에서는 숨을 쉴 수 없어", f"{o('공기')}를 들이마셔야 해요"], w=5.6, size=36).move_to([3.4, 1.95, 0])
         self.say(f"물속에서는 숨을 쉴 수 없어 {o('공기')}를 들이마셔야 해요",
                  "사람은 물속에서 숨을 쉴 수 없어요. 그래서 얼굴을 물 위로 내밀어 코로 공기를 들이마셔야 해요.")
         self.play(FadeIn(a), run_time=0.6)
@@ -81,7 +81,7 @@ class S5Ep19(EpisodeScene):
     # ── 호흡기관 ──
     def organs(self):
         self.section("호흡기관")
-        b = K.body(K.RESP, h=5.8).move_to([-3.7, 0.1, 0])
+        b = K.body(K.RESP, h=5.8).move_to([-4.3, 0.1, 0])
         self.say("호흡기관에는 무엇이 있을까요?", "호흡기관 그림을 보며 이름을 붙여 봐요.")
         self.play(FadeIn(b), run_time=0.6)
         P = lambda x, y: K.vpt(b, x, y)
@@ -92,7 +92,7 @@ class S5Ep19(EpisodeScene):
             'lung': VGroup(K.pointer(P(116, 196), P(116, 196) + LEFT * 1.0 + DOWN * 0.5, "폐", "#b25c68", 32),
                            K.pointer(P(206, 205), P(206, 205) + RIGHT * 1.3 + DOWN * 0.5, "폐", "#b25c68", 32)),
         }
-        items = [('nose', f"{o('코')}: 공기가 드나드는 곳", "코는 공기가 드나드는 곳이에요."),
+        items = [('nose', f"{o('코')}: 공기가 드나드는 곳", "코는 공기가 드나드는 곳이에요."),  # noqa
                  ('trachea', f"{o('숨관')}: 공기가 이동하는 통로", "숨관은 공기가 이동하는 통로예요."),
                  ('bronchi', f"{o('숨관가지')}: 숨관과 폐를 연결하는 통로",
                   "숨관가지는 여러 갈래로 갈라져 숨관과 폐를 연결하며, 공기가 이동하는 통로예요."),
@@ -100,7 +100,14 @@ class S5Ep19(EpisodeScene):
                   "폐는 가슴의 좌우에 하나씩 있어요. 산소를 받아들이고, 이산화 탄소를 몸 밖으로 내보내요.")]
         cards = VGroup()
         for i, (k, sub, narr) in enumerate(items):
-            line = K.text_card([sub], w=6.6, size=32).move_to([3.55, 2.2 - i * 1.25, 0])
+            parts = sub.split(", ") if k == 'lung' else sub.split(": ")
+            if k == 'lung':
+                parts = [sub.split(": ")[0] + ": " + parts[0].split(": ")[1] + ",", parts[1]]
+            elif k == 'bronchi':
+                parts = [sub.split(": ")[0] + ":", sub.split(": ")[1]]
+            else:
+                parts = [sub]
+            line = K.text_card(parts, w=5.8, size=32, pad=0.22).move_to([3.95, [2.37, 1.36, 0.03, -1.62][i], 0])
             cards.add(line)
             self.say(sub, narr)
             self.play(FadeIn(labs[k]), FadeIn(line, shift=LEFT * 0.2), run_time=0.6)
@@ -149,9 +156,9 @@ class S5Ep19(EpisodeScene):
         self.play(FadeIn(steps), FadeOut(bm0), FadeIn(bm1), run_time=0.8)
         top = bm1.get_top()
         names = VGroup(T("코·숨관", 28, AIRB).next_to(top, LEFT, buff=0.2).shift(DOWN * 0.3),
-                       T("숨관가지", 28, AIRB).move_to([-3.2, 0.05, 0]).shift(UP * 0.55),
-                       T("폐", 30, "#b25c68").move_to(bm1.get_bottom() + DOWN * 0.3 + LEFT * 1.45),
-                       T("폐", 30, "#b25c68").move_to(bm1.get_bottom() + DOWN * 0.3 + RIGHT * 1.45))
+                       T("숨관가지", 28, AIRB).move_to([-5.45, 0.75, 0]),
+                       T("폐", 30, "#b25c68").move_to(bm1.get_bottom() + DOWN * 0.55 + LEFT * 1.45),
+                       T("폐", 30, "#b25c68").move_to(bm1.get_bottom() + DOWN * 0.55 + RIGHT * 1.45))
         self.play(FadeIn(names), run_time=0.5)
         self.say("빨대에 공기를 불어 넣으면 어떻게 될까요?", "빨대에 천천히 공기를 불어 넣어요. 종이봉투는 어떻게 될까요?")
         self.settle()

@@ -517,7 +517,7 @@ MAP_BOX = {'bone': (120, 80, '뼈와 근육', '#8a5a2b'), 'resp': (580, 80, '호
 MAP_ARR = [((500, 138), (446, 178), '산소', '#3f84ad', (512, 182)),
            ((430, 158), (488, 114), '이산화 탄소', '#48646f', (404, 108)),
            ((204, 296), (256, 252), '영양소', '#b5654f', (190, 256)),
-           ((266, 170), (212, 126), '산소·영양소', '#c2332c', (282, 124)),
+           ((266, 170), (212, 126), '산소·영양소', '#c2332c', (196, 184)),
            ((440, 244), (494, 288), '노폐물', '#a8842e', (506, 250))]
 
 
@@ -568,14 +568,12 @@ def organ_map(w=10.0):
 def bean(kind="kidney", s=1.0):
     """강낭콩(붉은 무늬) · 팥(작고 탁한 붉은색)"""
     if kind == "kidney":
-        pts = [(-0.7, 0.05), (-0.55, 0.35), (-0.15, 0.42), (0.1, 0.3), (0.35, 0.42), (0.65, 0.3), (0.72, -0.05),
-               (0.5, -0.38), (0.0, -0.42), (-0.5, -0.35)]
-        m = VMobject(fill_color="#B5543E", fill_opacity=1, stroke_color="#6E2A20", stroke_width=4)
-        P_ = [np.array([x, y, 0]) for x, y in pts]
-        m.set_points_smoothly(P_ + [P_[0]])
-        spots = VGroup(*[Ellipse(width=0.22, height=0.1, fill_color="#E8C7B4", fill_opacity=0.8, stroke_width=0)
-                         .move_to([x, y, 0]).rotate(a) for x, y, a in ((-0.3, 0.05, 0.4), (0.2, -0.15, -0.3), (0.45, 0.1, 0.6))])
-        return VGroup(m, spots).scale(s)
+        m = vb_svg('<path d="M200 70 Q110 74 112 170 Q116 270 206 262 Q262 254 254 210 Q240 176 262 150 Q280 70 200 70Z" fill="#B5543E" stroke="#6E2A20" stroke-width="5"/>'
+                   '<ellipse cx="160" cy="130" rx="22" ry="10" fill="#E8C7B4" fill-opacity=".8" transform="rotate(-30 160 130)"/>'
+                   '<ellipse cx="180" cy="215" rx="20" ry="9" fill="#E8C7B4" fill-opacity=".8" transform="rotate(20 180 215)"/>'
+                   '<ellipse cx="215" cy="100" rx="16" ry="7" fill="#E8C7B4" fill-opacity=".8"/>',
+                   (105, 65, 165, 205), 1.0)
+        return m.rotate(-1.35).scale(s)
     g = VGroup(*[Ellipse(width=0.42, height=0.32, fill_color="#7A2630", fill_opacity=1, stroke_color="#4A1418", stroke_width=3)
                  .move_to([dx, dy, 0]) for dx, dy in ((-0.25, 0), (0.22, 0.05), (0, -0.28))])
     for e in list(g):

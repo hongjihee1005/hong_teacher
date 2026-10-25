@@ -39,7 +39,7 @@ NAME = {'mouth': '입', 'eso': '식도', 'stomach': '위', 'small': '작은창�
 # 이름표: (가리키는 점(앱 좌표), 이름표 쪽 (dx, dy))
 LAB = {'mouth': ((150, 84), (-2.0, 0.3)), 'eso': ((160, 118), (-2.3, -0.15)), 'stomach': ((214, 206), (1.9, 0.55)),
        'small': ((186, 286), (2.0, -0.35)), 'large': ((122, 285), (-1.6, -0.3)), 'anus': ((161, 338), (1.7, -0.75)),
-       'liver': ((110, 196), (-1.6, 0.35)), 'gall': ((150, 218), (-2.6, -0.45)), 'pancreas': ((210, 233), (2.0, -0.05))}
+       'liver': ((110, 196), (-1.6, -0.05)), 'gall': ((150, 218), (-2.6, -0.6)), 'pancreas': ((210, 233), (2.0, -0.05))}
 
 
 class S5Ep17(EpisodeScene):
@@ -206,7 +206,7 @@ class S5Ep17(EpisodeScene):
                  "음식물은 입, 식도, 위, 작은창자, 큰창자를 거치며 소화되고, 남은 찌꺼기는 항문으로 나가요.")
         for i in range(6):
             self.play(FadeIn(chain[i], shift=RIGHT * 0.2), *( [Create(arrs[i - 1])] if i else []), run_time=0.4)
-        b = K.body(K.DIGEST, h=4.4).move_to([-3.4, -0.65, 0])
+        b = K.body(K.DIGEST, h=4.4).move_to([-2.8, -0.65, 0])
         hl = VGroup(*[self.lab(b, k, 26, "#2E7D4F") for k in ('liver', 'gall', 'pancreas')])
         card = K.text_card([f"{g('간 · 쓸개 · 이자')}", "음식물이 지나가지는 않지만", "소화를 돕는 소화기관이에요"],
                            w=6.0, size=34).move_to([3.6, -0.75, 0])
