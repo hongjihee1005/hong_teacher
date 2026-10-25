@@ -173,3 +173,78 @@ def tag(text, color=INK, size=36, fill=PAPER):
                          fill_color=fill, fill_opacity=1, stroke_color=color, stroke_width=3)
     t.move_to(r)
     return VGroup(r, t)
+
+
+# ── 수평 잡기 판 ─────────────────────────────────────────────
+class Board:
+    """받침대 위 숫자 판(가운데 받침점, 양쪽 1~5번 칸). 판 위 물체는 판과 함께 기울어짐.
+        bd = Board(center=[0, -0.6, 0]); scene.add(bd.stand, bd.plank)
+        obj = bd.put(sq_block(), "L", 2)          # 왼쪽 2번 칸에 올림(판 그룹에 들어감)
+        scene.play(bd.tilt_to(-0.18))            # 왼쪽이 내려감(+ 는 오른쪽이 내려감)
+    """
+
+    def __init__(self, center=(0, -0.6, 0), half=4.8, slots=5, numbers=True):
+        from manim import Triangle
+        self.c = np.array(center, dtype=float)
+        self.half = half
+        self.step = half / (slots + 0.5)
+        self.angle = 0.0
+        self.counts = {}
+        plank = Rectangle(width=2 * half, height=0.2, fill_color="#D9B47A", fill_opacity=1,
+                          stroke_color=BROWN_DARK, stroke_width=3).move_to(self.c + UP * 0.1)
+        marks = VGroup()
+        if numbers:
+            for side in (-1, 1):
+                for n in range(1, slots + 1):
+                    x = self.c[0] + side * n * self.step
+                    marks.add(Line([x, self.c[1], 0], [x, self.c[1] + 0.2, 0], stroke_color=BROWN_DARK, stroke_width=2))
+                    marks.add(T(str(n), 26, BROWN_DARK).move_to([x, self.c[1] - 0.22, 0]))
+        self.plank = VGroup(plank, marks)
+        tri = Triangle(fill_color=SOFT, fill_opacity=1, stroke_width=0).scale(0.55)
+        tri.move_to(self.c + DOWN * (tri.height / 2))
+        base = Rectangle(width=2.2, height=0.14, fill_color=SOFT, fill_opacity=1, stroke_width=0).next_to(tri, DOWN, buff=0)
+        self.stand = VGroup(tri, base)
+        self.pivot = self.c + DOWN * 0.0
+
+    def x_of(self, side, n):
+        return self.c[0] + (-1 if side == "L" else 1) * n * self.step
+
+    def put(self, mob, side, n):
+        """물체를 칸 위에 올리고(쌓이면 위로) 판 그룹에 넣음 — 판이 수평일 때 부를 것"""
+        k = self.counts.get((side, n), 0)
+        top = self.c[1] + 0.2
+        h = mob.height
+        mob.move_to([self.x_of(side, n), top + h / 2 + k * h, 0])
+        self.counts[(side, n)] = k + 1
+        mob.slot = (side, n)
+        self.plank.add(mob)
+        return mob
+
+    def lift(self, mob):
+        """판 그룹에서 빼기(옮기기 전에)"""
+        self.counts[mob.slot] -= 1
+        self.plank.remove(mob)
+
+    def tilt_to(self, angle, run_time=1.0):
+        from manim import Rotate
+        d = angle - self.angle
+        self.angle = angle
+        return Rotate(self.plank, -d, about_point=self.pivot, run_time=run_time)
+
+
+def sq_block(color=ORANGE, s=0.55):
+    """나무 블록(같은 무게 물체)"""
+    return RoundedRectangle(corner_radius=0.06, width=s, height=s, fill_color=color, fill_opacity=1,
+                            stroke_color=INK, stroke_width=3)
+
+
+def fruit(kind="apple", s=1.0):
+    """귤·사과 그림(가운데가 (0,0))"""
+    if kind == "apple":
+        body = Circle(radius=0.36 * s, fill_color=RED, fill_opacity=1, stroke_color="#8E2A22", stroke_width=3)
+        leaf = Ellipse(width=0.22 * s, height=0.12 * s, fill_color=GREEN, fill_opacity=1, stroke_width=0).move_to([0.12 * s, 0.4 * s, 0])
+        stem = Line([0, 0.3 * s, 0], [0.02 * s, 0.45 * s, 0], stroke_color=BROWN_DARK, stroke_width=4)
+        return VGroup(body, stem, leaf)
+    body = Circle(radius=0.28 * s, fill_color=ORANGE, fill_opacity=1, stroke_color="#B25E08", stroke_width=3)
+    dot = Dot([0, 0.24 * s, 0], radius=0.04 * s, color=GREEN)
+    return VGroup(body, dot)
