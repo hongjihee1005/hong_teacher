@@ -114,16 +114,16 @@ class S4Ep08(EpisodeScene):
     def beaker_days(self):
         self.section("실험해요 2")
         sun = VGroup(K.C(0.45, "#F7B733", 0, 0, stroke="#E0A020")).move_to([-5.6, 2.2, 0])
-        bk = K.Beaker(-2.6, -2.1, 2.0, 2.6)
+        bk = K.Beaker(-2.6, -2.1, 2.0, 2.75)
         H = {0: 100, 0.05: 100, 1: 80, 2: 62, 3: 46}
-        w = bk.water(H[0] * PX * 1.6)
+        w = bk.water(H[0] * PX * 2.2)
         g_ = bk.glass()
         lab = T("처음", 38).move_to([2.6, 1.6, 0])
         self.say("물을 반 정도 넣은 비커를 햇볕이 잘 드는 곳에 두어요",
                  "물을 반 정도 넣고 높이를 표시한 비커를 햇볕이 잘 드는 곳에 두고, 날마다 같은 시간에 관찰해요.")
-        mk0 = bk.mark(H[0] * PX * 1.6)
+        mk0 = bk.mark(H[0] * PX * 2.2)
         self.play(FadeIn(sun), FadeIn(w), FadeIn(g_), FadeIn(lab), run_time=0.6)
-        t0 = T("처음", 26).move_to([bk.x + bk.w / 2 + 0.2, bk.y + H[0] * PX * 1.6, 0], aligned_edge=LEFT)
+        t0 = T("처음", 26).move_to([bk.x + bk.w / 2 + 0.2, bk.y + H[0] * PX * 2.2, 0], aligned_edge=LEFT)
         self.play(Create(mk0), FadeIn(t0), run_time=0.4)
         self.pause_screen(5, "며칠 뒤 물의 높이는?")
         self.say("5분 뒤에는 거의 그대로예요", "5분 뒤에는 물의 높이가 거의 그대로예요.")
@@ -131,9 +131,9 @@ class S4Ep08(EpisodeScene):
         self.say(f"날이 갈수록 물의 높이가 {o('점점 낮아졌어요')}", "1일 뒤, 2일 뒤, 3일 뒤. 날이 갈수록 물의 높이가 점점 낮아졌어요.")
         marks = VGroup()
         for d in (1, 2, 3):
-            h = H[d] * PX * 1.6
+            h = H[d] * PX * 2.2
             m = bk.mark(h)
-            t = T(f"{d}일 뒤", 26).move_to([bk.x + bk.w / 2 + 0.2, bk.y + h, 0], aligned_edge=LEFT)
+            t = T(f"{d}일 뒤", 24).move_to([bk.x + bk.w / 2 + 0.2, bk.y + h, 0], aligned_edge=LEFT)
             self.play(Transform(w, bk.water(h)), Transform(lab, T(f"{d}일 뒤", 38).move_to(lab)), run_time=0.8)
             self.play(Create(m), FadeIn(t), run_time=0.3)
             marks.add(m, t)
