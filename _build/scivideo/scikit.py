@@ -248,3 +248,113 @@ def fruit(kind="apple", s=1.0):
     body = Circle(radius=0.28 * s, fill_color=ORANGE, fill_opacity=1, stroke_color="#B25E08", stroke_width=3)
     dot = Dot([0, 0.24 * s, 0], radius=0.04 * s, color=GREEN)
     return VGroup(body, dot)
+
+
+# ── 저울 ─────────────────────────────────────────────────────
+class SpringScale:
+    """세로 용수철저울(눈금 0~gmax g, 큰 눈금 big g, 작은 눈금 small g).
+        sc = SpringScale(x=-3); scene.add(sc.group())        # 손잡이·통·눈금·용수철·표시 자·고리(용수철은 always_redraw)
+        scene.play(sc.w.animate.set_value(160))               # 무게만큼 표시 자가 내려감
+        sc.hook_point()                                       # 지금 고리 끝(물체를 매달 곳)
+    """
+
+    def __init__(self, x=0.0, y0=2.3, per_g=0.009, gmax=250, big=25, small=5, label_every=50):
+        from manim import ValueTracker
+        self.x, self.y0, self.k, self.gmax = x, y0, per_g, gmax
+        self.big, self.small, self.label_every = big, small, label_every
+        self.w = ValueTracker(0.0)
+        self.top = y0 + 0.7
+        self.bot = y0 - gmax * per_g - 0.25
+
+    def y_of(self, g):
+        return self.y0 - g * self.k
+
+    def group(self):
+        from manim import always_redraw
+        x = self.x
+        ring = Circle(radius=0.22, stroke_color=INK, stroke_width=6).move_to([x, self.top + 0.42, 0])
+        stem = Line([x, self.top + 0.2, 0], [x, self.top, 0], stroke_color=INK, stroke_width=6)
+        tube = RoundedRectangle(corner_radius=0.12, width=0.95, height=self.top - self.bot,
+                                fill_color="#EAF2FA", fill_opacity=1, stroke_color=INK, stroke_width=4)
+        tube.move_to([x, (self.top + self.bot) / 2, 0])
+        ticks = VGroup()
+        for g in range(0, self.gmax + 1, self.small):
+            L = 0.32 if g % self.big == 0 else 0.16
+            ticks.add(Line([x - 0.47, self.y_of(g), 0], [x - 0.47 + L, self.y_of(g), 0], stroke_color=INK,
+                           stroke_width=3 if g % self.big == 0 else 1.6))
+            if g % self.label_every == 0:
+                ticks.add(T(str(g), 26, INK).next_to([x - 0.47, self.y_of(g), 0], LEFT, buff=0.1))
+        knob = VGroup(Rectangle(width=0.3, height=0.14, fill_color=SOFT, fill_opacity=1, stroke_width=0)
+                      .move_to([x, self.top - 0.12, 0]))
+        sc = self
+
+        def spring():
+            yp = sc.y_of(sc.w.get_value())
+            ya = sc.top - 0.22
+            n = 14
+            pts = [[x, ya, 0]]
+            for i in range(1, n):
+                pts.append([x + (0.2 if i % 2 else -0.2) + 0.12, ya + (yp - ya) * i / n, 0])
+            pts.append([x + 0.12, yp, 0])
+            m = VMobject(stroke_color="#7A8691", stroke_width=4)
+            m.set_points_as_corners([np.array(p) for p in pts])
+            return m
+
+        def mover():
+            yp = sc.y_of(sc.w.get_value())
+            pointer = Polygon([x - 0.47, yp, 0], [x - 0.2, yp + 0.09, 0], [x - 0.2, yp - 0.09, 0],
+                              fill_color=RED, fill_opacity=1, stroke_width=0)
+            bar = Line([x - 0.2, yp, 0], [x + 0.32, yp, 0], stroke_color=RED, stroke_width=5)
+            rod = Line([x + 0.12, yp, 0], [x + 0.12, sc.hook_y(), 0], stroke_color=INK, stroke_width=5)
+            hook = Arc(radius=0.14, start_angle=PI / 2, angle=-1.6 * PI, stroke_color=INK, stroke_width=5)
+            hook.move_to([x + 0.12, sc.hook_y() - 0.12, 0])
+            return VGroup(rod, hook, bar, pointer)
+
+        self._spring = always_redraw(spring)
+        self._mover = always_redraw(mover)
+        self.parts = {"ring": ring, "tube": tube, "ticks": ticks, "knob": knob}
+        return VGroup(ring, stem, tube, ticks, knob, self._spring, self._mover)
+
+    def hook_y(self):
+        return self.y_of(self.w.get_value()) - (self.y0 - self.bot) - 0.2
+
+    def hook_point(self):
+        return np.array([self.x + 0.12, self.hook_y() - 0.28, 0])
+
+
+def zoom_reading(g, big=25, small=5, center=(4.2, 0.5), span=40, per_g=0.055, label=True):
+    """눈금 g 둘레를 크게 본 그림(돋보기 창): 큰 눈금·작은 눈금과 표시 자"""
+    cx, cy = center
+    box_ = RoundedRectangle(corner_radius=0.2, width=3.4, height=span * per_g * 2 + 0.4, fill_color=PAPER,
+                            fill_opacity=1, stroke_color=SOFT, stroke_width=3).move_to([cx, cy, 0])
+    grp = VGroup(box_)
+    lo = int((g - span) // small * small) + small
+    for v in range(lo, int(g + span), small):
+        y = cy - (v - g) * per_g
+        if abs(y - cy) > span * per_g:
+            continue
+        L = 0.9 if v % big == 0 else 0.45
+        grp.add(Line([cx - 0.9, y, 0], [cx - 0.9 + L, y, 0], stroke_color=INK, stroke_width=5 if v % big == 0 else 3))
+        if v % big == 0 and label:
+            grp.add(T(str(v), 36, INK).next_to([cx - 0.9, y, 0], LEFT, buff=0.12))
+    ptr = VGroup(Polygon([cx - 0.9, cy, 0], [cx - 0.35, cy + 0.17, 0], [cx - 0.35, cy - 0.17, 0],
+                         fill_color=RED, fill_opacity=1, stroke_width=0),
+                 Line([cx - 0.35, cy, 0], [cx + 1.3, cy, 0], stroke_color=RED, stroke_width=6))
+    grp.add(ptr)
+    return grp
+
+
+def e_scale(display="0.0", w=3.2):
+    """전자저울(아래 가운데가 (0,0)). .screen 글자를 바꿔 씀"""
+    base = RoundedRectangle(corner_radius=0.18, width=w, height=0.75, fill_color="#DDE3E8", fill_opacity=1,
+                            stroke_color=INK, stroke_width=4).move_to([0, 0.375, 0])
+    plate = RoundedRectangle(corner_radius=0.08, width=w * 0.8, height=0.14, fill_color="#B9C3CC", fill_opacity=1,
+                             stroke_color=INK, stroke_width=3).move_to([0, 0.82, 0])
+    scr = RoundedRectangle(corner_radius=0.06, width=1.5, height=0.42, fill_color="#20323F", fill_opacity=1,
+                           stroke_width=0).move_to([-0.35, 0.36, 0])
+    num = T(display + " g", 30, "#7CF2A4").move_to(scr)
+    pw = Circle(radius=0.12, fill_color=RED, fill_opacity=1, stroke_width=0).move_to([0.85, 0.36, 0])
+    zero = Circle(radius=0.12, fill_color=BLUE, fill_opacity=1, stroke_width=0).move_to([1.2, 0.36, 0])
+    g = VGroup(base, plate, scr, num, pw, zero)
+    g.num, g.scr, g.top_y = num, scr, 0.89
+    return g
