@@ -152,8 +152,8 @@ class S4Ep04(EpisodeScene):
     # ── 실험해요 2: 두 막대자석 ──
     def pair(self, a, b, y):
         """a: 왼쪽 자석의 오른쪽 끝 극, b: 오른쪽 자석의 왼쪽 끝 극"""
-        A = K.bar_magnet("S" if a == "N" else "N", 2.2, 0.55).move_to([-3.7, y, 0])
-        B = K.bar_magnet(b, 2.2, 0.55).move_to([1.6, y, 0])
+        A = K.bar_magnet("S" if a == "N" else "N", 2.2, 0.55).move_to([-2.9, y, 0])
+        B = K.bar_magnet(b, 2.2, 0.55).move_to([2.4, y, 0])
         self.play(FadeIn(A), FadeIn(B), run_time=0.3)
         self.play(B.animate.shift(LEFT * 1.6), run_time=0.7)
         if a == b:
@@ -167,19 +167,19 @@ class S4Ep04(EpisodeScene):
             self.play(B.animate.shift(LEFT * (B.get_left()[0] - A.get_right()[0])), run_time=0.25)
             res = T("서로 끌어당겨요", 34, GREEN)
             extra = VGroup()
-        res.move_to([4.6, y, 0])
+        res.move_to([5.2, y, 0])
         self.play(FadeIn(res), run_time=0.3)
         return VGroup(A, B, extra, res)
 
     def pairs(self):
         self.section("실험해요 2")
         self.say("같은 극과 다른 극을 가까이 하면?", "이번에는 막대자석 두 개로, 같은 극끼리와 다른 극끼리를 가까이 해 볼게요.")
-        self.pause_screen(5, "같은 극끼리, 다른 극끼리 어떻게 될까요?")
+        self.pause_screen(5, "같은 극끼리, 다른 극끼리는?")
         heads = VGroup()
         rows = [("N", "N", 1.9, f"{n_('N극')}과 {n_('N극')}"), ("S", "S", 0.2, f"{s_('S극')}과 {s_('S극')}"),
                 ("N", "S", -1.5, f"{n_('N극')}과 {s_('S극')}")]
         for a, b, y, txt in rows:
-            hd = M(txt, 32).move_to([-6.0, y, 0])
+            hd = M(txt, 32).move_to([-5.55, y, 0])
             heads.add(hd)
             self.say(f"{txt}을 가까이 하면?", f"{plain_pole(a)}과 {plain_pole(b)}을 가까이 해 봐요.")
             self.play(FadeIn(hd), run_time=0.3)
@@ -214,8 +214,8 @@ class S4Ep04(EpisodeScene):
             top = rg.top_pole
             bot = "S" if top == "N" else "N"
             anims += [rg[0].animate.set_fill(K.POLE[top]), rg[1].animate.set_fill(K.POLE[bot])]
-            labs.add(T(top, 20, PAPER).move_to(rg[0].get_center() + RIGHT * 0.5),
-                     T(bot, 20, PAPER).move_to(rg[1].get_center() + RIGHT * 0.5))
+            labs.add(T(top, 26, K.POLE[top]).move_to(rg[0].get_center() + RIGHT * 1.15),
+                     T(bot, 26, K.POLE[bot]).move_to(rg[1].get_center() + RIGHT * 1.15))
         self.play(*anims, run_time=0.8)
         self.play(FadeIn(labs), run_time=0.3)
         self.say(f"마주 보는 면이 {o('같은 극')}이라 서로 {r('밀어 내기')} 때문이에요",
@@ -229,8 +229,8 @@ class S4Ep04(EpisodeScene):
         self.section("생각+")
         tbl = K.rect(12.6, 0.1, "#C9B27A", y=-1.6, sw=0)
         car = K.toy_car().move_to([1.6, -1.6 + 0.62, 0])
-        coin = K.rect(0.22, 0.5, K.NC, sw=3).next_to(car[0], LEFT, buff=0)
-        cl = T("N", 20, PAPER).move_to(coin)
+        coin = K.rect(0.34, 0.6, K.NC, sw=3).next_to(car[0], LEFT, buff=0)
+        cl = T("N", 26, PAPER).move_to(coin)
         cg = VGroup(car, coin, cl)
         bar = K.bar_magnet("S", 2.6, 0.6).move_to([-4.6, coin.get_center()[1], 0])
         self.say("자동차 뒤에 동전 모양 자석을 붙여요", "장난감 자동차 뒤에 동전 모양 자석을 붙였어요.")
