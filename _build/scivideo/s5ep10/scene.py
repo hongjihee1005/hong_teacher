@@ -2,7 +2,7 @@
 
 바탕: grade5/science/sem1/u2-4.html(원본 _build_tb/src/u2-4.html) — 도입(돋보기로 보면 크게 확대되어 보임, 돋보기에는 렌즈),
 알아봐요(렌즈: 투명한 유리나 플라스틱으로 빛이 통과할 때 방향이 변하도록 한 기구, 볼록 렌즈: 가운데가 볼록하고 가장자리로 갈수록 얇음,
-오목 렌즈: 가운데가 오목하고 가장자리로 갈수록 두꺼움, 여섯 가지 렌즈 모양 나누기), 실험해요 1(레이저 지시기를 좌우로 움직이며 렌즈에
+오목 렌즈: 가운데가 오목하고 가장자리로 갈수록 두꺼움 — 여섯 가지 렌즈 모양 나누기는 길이 때문에 뺌), 실험해요 1(레이저 지시기를 좌우로 움직이며 렌즈에
 비추기(위에서 본 모습): 볼록 렌즈 가장자리 → 가운데 쪽으로 꺾임, 오목 렌즈 가장자리 → 바깥쪽으로 꺾임, 가운데 → 거의 꺾이지 않음,
 안전: 렌즈가 깨지지 않게·볼록 렌즈로 태양을 보지 않기·레이저 빛을 눈에 비추지 않기), 실험해요 2(우유 4~5방울을 탄 물, 공기에서 물로
 비스듬히 → 꺾임, 수직 → 꺾이지 않음, '곧게 갔다면?' 점선, 앞쪽에 물을 뿌려 공기 중의 빛도 봄, 안전: 맛보지 않기·쏟지 않기),
@@ -103,34 +103,6 @@ class S5Ep10(EpisodeScene):
                  "볼록 렌즈는 가운데가 볼록하고 가장자리로 갈수록 얇아요. 오목 렌즈는 가운데가 오목하고 가장자리로 갈수록 두꺼워요.")
         self.settle()
         clear_stage(self)
-        # 여섯 가지 모양 나누기
-        kinds = ["bi", "pc", "me", "bc", "pl", "mc"]
-        conv = {"bi": True, "pl": True, "me": True, "bc": False, "pc": False, "mc": False}
-        names = "가나다라마바"
-        icons = VGroup(*[VGroup(K.lens_icon(k, 1.5), T(f"렌즈 {names[i]}", 26)).arrange(DOWN, buff=0.15) for i, k in enumerate(kinds)])
-        icons.arrange(RIGHT, buff=0.75).move_to([0, 1.6, 0])
-        b1 = K.bin_box("볼록 렌즈", 5.6, 2.6, BLUE).move_to([-3.1, -0.9, 0])
-        b2 = K.bin_box("오목 렌즈", 5.6, 2.6, ORANGE).move_to([3.1, -0.9, 0])
-        self.say("여러 가지 렌즈를 옆에서 자른 모양이에요. 나누어 봐요",
-                 "여러 가지 렌즈를 옆에서 자른 모양이에요. 볼록 렌즈와 오목 렌즈로 나누어 봐요.")
-        self.play(FadeIn(icons, lag_ratio=0.1), FadeIn(b1), FadeIn(b2), run_time=0.9)
-        self.settle()
-        self.pause_screen(4, "가운데가 두꺼울까, 얇을까?")
-        nL = nR = 0
-        anims = []
-        for i, k in enumerate(kinds):
-            if conv[k]:
-                tgt = [-4.7 + nL * 1.6, -1.15, 0]
-                nL += 1
-            else:
-                tgt = [1.5 + nR * 1.6, -1.15, 0]
-                nR += 1
-            anims.append(icons[i].animate.move_to(tgt))
-        self.play(*anims, run_time=1.2)
-        self.say(f"모양은 달라도 가운데가 두꺼우면 {o('볼록')}, 얇으면 {o('오목')} 렌즈예요",
-                 "모양은 달라도 가운데가 가장자리보다 두꺼우면 볼록 렌즈, 가운데가 얇으면 오목 렌즈예요.")
-        self.settle()
-        clear_stage(self)
 
     # ── 실험해요 1: 렌즈에 비추기 ──
     def lens_lab(self):
@@ -150,7 +122,7 @@ class S5Ep10(EpisodeScene):
                              w=12.6, size=25).move_to([0, -2.25, 0])
         self.play(FadeIn(safe), run_time=0.4)
         self.say(f"{r('볼록 렌즈로 태양을 바라보지 않아요')}",
-                 "렌즈가 깨지지 않게 조심하고, 볼록 렌즈로 태양을 바라보지 않아요. 레이저 지시기의 빛을 눈에 비추지 않아요.")
+                 "렌즈가 깨지지 않게 조심하고, 볼록 렌즈로 태양을 바라보지 않아요.")
         self.settle()
         self.play(FadeOut(safe), run_time=0.3)
         x0 = -5.25
@@ -159,7 +131,7 @@ class S5Ep10(EpisodeScene):
         mid = K.ray(cvx.trace(0.0, x0, BOX), col=K.LASER, sw=6)
         K.play_ray(self, mid, 1.0)
         self.say(f"렌즈의 {o('가운데')}를 지난 빛은 거의 꺾이지 않아요",
-                 "레이저 지시기를 좌우로 움직이며 비추어 봐요. 렌즈의 가운데를 지난 빛은 거의 꺾이지 않아요.")
+                 "렌즈의 가운데를 지난 빛은 거의 꺾이지 않아요.")
         self.settle()
         self.play(mid.animate.set_opacity(0.3), Transform(lz, laser_at((x0, y0 + 1.2), 0)), run_time=0.5)
         self.pause_screen(5, "가장자리를 지난 빛은 어떻게 될까요?")
@@ -169,7 +141,7 @@ class S5Ep10(EpisodeScene):
                  "볼록 렌즈의 가장자리를 지난 빛은 렌즈의 가운데 쪽으로 꺾여요.")
         self.settle()
         ghosts = VGroup(mid, edge)
-        for h in (-1.2, 0.6, -0.6):
+        for h in (-1.2, 0.6):
             self.play(ghosts.animate.set_opacity(0.3), Transform(lz, laser_at((x0, y0 + h), 0)), run_time=0.4)
             rr = K.ray(cvx.trace(h, x0, BOX), col=K.LASER, sw=6)
             K.play_ray(self, rr, 0.6)
@@ -221,7 +193,7 @@ class S5Ep10(EpisodeScene):
         pn = K.panel(12.4, 4.5, K.NIGHT, 0, 0.45)
         tk = K.tank(-4.6, 4.6, 0.1, -1.7, 1.6)
         self.say("우유를 몇 방울 탄 물에 레이저 지시기의 빛을 비춰요",
-                 "물이 든 투명한 통에 우유를 스포이트로 4~5방울 떨어뜨리고 저었어요. 옆에서 본 모습이에요.")
+                 "물이 든 통에 우유를 4~5방울 떨어뜨리고 저었어요. 옆에서 본 모습이에요.")
         self.play(FadeIn(pn), FadeIn(tk), run_time=0.7)
         self.settle()
         safe = K.safety_note("실험에 사용하는 물질은 맛보지 않아요. 물을 쏟지 않게 조심해요.", w=10.4, size=27).move_to([0, -2.25, 0])
@@ -252,7 +224,7 @@ class S5Ep10(EpisodeScene):
         gh = self.tank_ray(40, True, True)
         self.play(Transform(cur, gh), run_time=0.6)
         self.say(f"빛이 물 표면에서 {g('꺾여')} 나아가요",
-                 "곧게 갔다면 점선처럼 나아갔을 거예요. 빛이 공기에서 물로 비스듬히 들어갈 때는 물 표면에서 꺾여 나아가요.")
+                 "곧게 갔다면 점선처럼 나아갔을 거예요. 빛이 물 표면에서 꺾여 나아가요.")
         self.settle()
         self.play(Transform(cur, self.tank_ray(0, True, True)), run_time=0.9)
         self.say(f"물 표면에 {o('수직으로')} 들어간 빛은 꺾이지 않아요",
@@ -264,9 +236,9 @@ class S5Ep10(EpisodeScene):
     def refraction(self):
         self.section("정리해요")
         card = K.text_card([f"빛이 직진하다가 서로 다른 물질의 경계에서", f"꺾여 나아가는 성질 = {g('빛의 굴절')}"],
-                           w=11.2, size=40).move_to([0, 1.75, 0])
+                           w=11.2, size=36).move_to([0, 2.05, 0])
         self.say(f"이런 성질을 {g('빛의 굴절')}이라고 해요",
-                 "빛을 렌즈에 비추거나, 공기 중에서 물로 비스듬히 비추면 빛이 꺾여요. 빛이 직진하다가 서로 다른 물질의 경계에서 꺾여 나아가는 성질을 빛의 굴절이라고 해요.")
+                 "빛이 직진하다가 서로 다른 물질의 경계에서 꺾여 나아가는 성질을 빛의 굴절이라고 해요.")
         self.play(FadeIn(card, scale=0.95), run_time=0.6)
         self.settle()
 
@@ -285,10 +257,10 @@ class S5Ep10(EpisodeScene):
             return g_
         labs = [("직진", "곧게 나아가요"), ("반사", "거울에서 방향이 바뀌어요"), ("굴절", "경계에서 꺾여요")]
         cards = VGroup(*[VGroup(mini(k), T(a, 32, GREEN), T(b, 24)).arrange(DOWN, buff=0.12)
-                         for k, (a, b) in zip(("st", "re", "rf"), labs)]).arrange(RIGHT, buff=0.45).move_to([0, -0.75, 0])
+                         for k, (a, b) in zip(("st", "re", "rf"), labs)]).arrange(RIGHT, buff=0.45).move_to([0, -0.95, 0])
         self.play(FadeIn(cards, lag_ratio=0.2), run_time=0.9)
         self.say(f"빛은 {o('직진')}하고, 거울에서 {o('반사')}하고, 경계에서 {o('굴절')}해요",
-                 "지금까지 배운 빛의 성질이에요. 빛은 곧게 나아가고, 거울에서 방향이 바뀌고, 서로 다른 물질의 경계에서 꺾여요.")
+                 "빛은 곧게 나아가고, 거울에서 방향이 바뀌고, 서로 다른 물질의 경계에서 꺾여요.")
         self.settle()
         clear_stage(self)
 
@@ -307,7 +279,7 @@ class S5Ep10(EpisodeScene):
         endp = P_ + K.unit(out) * 2.3
         ghost = K.dashed(P_, P_ + d * 2.2, col=PAPER, sw=3, op=0.7)
         self.say("물에서 공기로 비스듬히 비추면 빛은 어떻게 나아갈까요?",
-                 "이번에는 레이저 지시기의 빛을 물에서 공기로 나아가도록 수조 아래쪽에서 비스듬히 비추면 어떻게 될까요?")
+                 "이번에는 물에서 공기로 나아가도록 수조 아래쪽에서 비스듬히 비추면 어떻게 될까요?")
         self.play(FadeIn(pn), FadeIn(water), FadeIn(la), FadeIn(lw), run_time=0.6)
         first = K.ray([start, P_], col=K.LASER, sw=6)
         K.play_ray(self, first, 0.6)
