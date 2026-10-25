@@ -180,7 +180,7 @@ class S4Ep32(EpisodeScene):
         for i, c in enumerate(cards):
             self.play(FadeIn(c, scale=0.9), run_time=0.45)
             if i % 2 == 1:
-                self.say(f"{plain_(pics[i - 1][1])} · {plain_(pics[i][1])}"[:0] + f"찾았어요! {o(str(i + 1))}/6",
+                self.say(f"찾았어요! {o(str(i + 1) + ' / 6')}",
                          narr[i - 1] + " " + narr[i])
         self.settle()
         self.say(f"물과 {o('에너지를 낭비')}하는 활동이 기후변화에 영향을 줘요",
@@ -260,6 +260,3 @@ class S4Ep32(EpisodeScene):
         self.settle()
         clear_stage(self)
 
-
-def plain_(s):
-    return s
