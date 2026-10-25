@@ -200,7 +200,7 @@ class S5Ep10(EpisodeScene):
         HP = np.array([-1.2, 0.1])
         d, dw = K.water_dir(i_deg)
         dw = K.unit(dw)
-        Lp = HP - d * 2.3
+        Lp = HP - d * (1.9 if i_deg > 1 else 1.4)
         lz = laser_at(Lp, np.degrees(np.arctan2(d[1], d[0])))
         by = -1.7
         E = HP + dw * ((by - HP[1]) / dw[1])
@@ -231,7 +231,7 @@ class S5Ep10(EpisodeScene):
         self.play(FadeOut(safe), run_time=0.3)
         HP = np.array([-1.2, 0.1])
         d, _ = K.water_dir(40)
-        lz0 = laser_at(HP - d * 2.3, np.degrees(np.arctan2(d[1], d[0])))
+        lz0 = laser_at(HP - d * 1.9, np.degrees(np.arctan2(d[1], d[0])))
         self.play(FadeIn(lz0), run_time=0.4)
         self.say("공기에서 물로 비스듬히 비추면 빛은 어떻게 될까요?",
                  "레이저 지시기의 빛이 공기에서 물로 비스듬히 들어가도록 비추면, 빛은 어떻게 나아갈까요?")
