@@ -45,7 +45,6 @@ class S6Ep02(EpisodeScene):
         self.phenol()
         self.table()
         self.cabbage()
-        self.life()
         self.summary()
         self.closing(f"지시약의 색깔 변화로 용액을\n{r('산성 용액')}과 {b('염기성 용액')}으로 분류할 수 있어요",
                      next_preview="6학년 3화 · 산성 용액과 염기성 용액의 성질")
@@ -65,15 +64,15 @@ class S6Ep02(EpisodeScene):
     def intro(self):
         self.section("궁금해요")
         bots = VGroup(*[K.dropper_bottle(None, 1.3, col=K.CLEAR, op=0.5) for _ in range(3)]).arrange(RIGHT, buff=1.4)
-        bots.move_to([0, 0.9, 0])
+        bots.move_to([0, 1.35, 0])
         qs = VGroup(*[T("?", 60, SOFT).move_to(b_[0]) for b_ in bots])
         self.say("색깔이 없고 투명한 용액은 어떻게 분류할까요?",
-                 "색깔이 없고 투명해서 겉보기로 구별하기 어려운 용액은 어떻게 분류할 수 있을까요?")
+                 "겉보기로 구별하기 어려운 용액은 어떻게 분류할까요?")
         self.play(FadeIn(bots, lag_ratio=0.15), FadeIn(qs), run_time=0.9)
         card = K.text_card([f"{o('지시약')}: 어떤 용액을 만났을 때 그 용액의 성질에 따라",
-                            "색깔이 변하는 물질"], w=12.4, size=34).move_to([0, -1.3, 0])
+                            "색깔이 변하는 물질"], w=12.4, size=34).move_to([0, -1.4, 0])
         self.say(f"용액의 성질에 따라 색깔이 변하는 물질, {o('지시약')}",
-                 "용액의 성질에 따라 색깔이 변하는 물질을 넣어 봐요. 이런 물질을 지시약이라고 해요.")
+                 "용액의 성질에 따라 색깔이 변하는 물질을 지시약이라고 해요.")
         self.play(FadeIn(card, shift=UP * 0.2), run_time=0.7)
         self.settle()
         clear_stage(self)
@@ -83,16 +82,16 @@ class S6Ep02(EpisodeScene):
         self.section("실험해요 ①")
         P_ = self.plate()
         self.say("홈판의 각 홈에 용액을 ⅓ 정도씩 넣어요",
-                 "홈판의 각 홈에 여섯 가지 용액을 3분의 1 정도씩 넣어요. 용액이 다른 홈에 들어가지 않게 조심해요.")
+                 "홈판의 각 홈에 용액을 3분의 1 정도씩 넣어요.")
         self.play(FadeIn(P_.group), FadeIn(P_.names), run_time=0.7)
         self.play(*self.fill(P_), run_time=0.8)
         blue = VGroup(*[K.litmus(K.LIT_B).rotate(-0.2).move_to(P_.center(i) + [-0.2, 0.3, 0]) for i in range(6)])
         red = VGroup(*[K.litmus(K.LIT_R).rotate(0.2).move_to(P_.center(i) + [0.2, 0.3, 0]) for i in range(6)])
         self.say(f"{b('푸른색')}과 {r('붉은색')} 리트머스 시험지를 넣어요",
-                 "리트머스 시험지를 반으로 잘라, 푸른색과 붉은색 리트머스 시험지를 핀셋으로 각 홈에 넣어요.")
+                 "반으로 자른 푸른색과 붉은색 리트머스 시험지를 핀셋으로 넣어요.")
         self.play(LaggedStart(*[FadeIn(x, shift=DOWN * 0.4) for x in blue], lag_ratio=0.1), run_time=1.0)
         self.play(LaggedStart(*[FadeIn(x, shift=DOWN * 0.4) for x in red], lag_ratio=0.1), run_time=1.0)
-        self.pause_screen(5, "리트머스 시험지의 색깔은 어떻게 변할까요?")
+        self.pause_screen(5, "시험지 색깔은 어떻게 변할까요?")
         acid = [i for i, s_ in enumerate(K.SOL) if s_["acid"]]
         base = [i for i, s_ in enumerate(K.SOL) if not s_["acid"]]
         self.say(f"식초·레몬즙·묽은 염산: 푸른색 리트머스 → {r('붉은색')}",
@@ -113,7 +112,7 @@ class S6Ep02(EpisodeScene):
         self.play(FadeIn(P_.group), FadeIn(P_.names), *[l.animate.set_fill(s_["c"], opacity=max(0.6, s_["op"]))
                                                          for l, s_ in zip(P_.liq, K.SOL)], run_time=0.7)
         self.say("색깔이 없는 페놀프탈레인 용액을 한두 방울씩",
-                 "이번에는 각 홈에 페놀프탈레인 용액을 한두 방울씩 떨어뜨려요. 페놀프탈레인 용액은 색깔이 없고 투명해요.")
+                 "이번에는 색깔이 없고 투명한 페놀프탈레인 용액을 한두 방울씩 떨어뜨려요.")
         drops = VGroup(*[K.drop("#F4FBFF", 0.2).move_to(P_.center(i) + UP * 1.9) for i in range(6)])
         self.play(FadeIn(drops), run_time=0.3)
         self.play(*[d.animate.move_to(P_.center(i)) for i, d in enumerate(drops)], run_time=0.7)
@@ -121,11 +120,11 @@ class S6Ep02(EpisodeScene):
         self.pause_screen(5, "어느 용액의 색깔이 변할까요?")
         base = [i for i, s_ in enumerate(K.SOL) if not s_["acid"]]
         self.say(f"빨랫비누 물·석회수·수산화 나트륨만 {pk('붉은색')}으로 변해요",
-                 "빨랫비누 물, 석회수, 묽은 수산화 나트륨 용액에서만 페놀프탈레인 용액이 붉은색으로 변했어요. 식초, 레몬즙, 묽은 염산은 변화가 없어요.")
+                 "빨랫비누 물, 석회수, 묽은 수산화 나트륨 용액에서만 붉은색으로 변했어요.")
         self.play(*[P_.liq[i].animate.set_fill(K.PINK, opacity=0.9) for i in base], run_time=1.4)
         self.settle()
         self.say(f"리트머스로 나눈 무리와 {o('같은 무리')}로 나뉘어요",
-                 "리트머스 시험지와 페놀프탈레인 용액의 색깔 변화는 서로 달라도, 나뉘는 용액의 무리는 같아요.")
+                 "색깔 변화는 달라도, 나뉘는 용액의 무리는 리트머스 시험지와 같아요.")
         self.play(*[Indicate(P_.names[i], color=ORANGE) for i in base], run_time=0.9)
         self.settle()
         clear_stage(self)
@@ -137,15 +136,15 @@ class S6Ep02(EpisodeScene):
         rows = [["푸른색 리트머스 시험지", r("붉은색"), "변화 없음"],
                 ["붉은색 리트머스 시험지", "변화 없음", b("푸른색")],
                 ["페놀프탈레인 용액", "변화 없음", pk("붉은색")],
-                ["용액", "식초·레몬즙·묽은 염산", "빨랫비누 물·석회수·\n묽은 수산화 나트륨 용액"]]
-        tab = K.result_table(head, rows, [4.2, 4.2, 4.6], row_h=0.9, size=30).move_to([0, 0.35, 0])
-        self.say(f"{r('산성 용액')}과 {b('염기성 용액')}", "이렇게 지시약의 색깔 변화로 용액을 산성 용액과 염기성 용액으로 나눌 수 있어요.")
+                ["용액", "식초·레몬즙·묽은 염산", "빨랫비누 물·석회수·묽은 수산화 나트륨 용액"]]
+        tab = K.result_table(head, rows, [3.9, 3.7, 5.5], row_h=0.8, size=30).move_to([0, 0.3, 0])
+        self.say(f"{r('산성 용액')}과 {b('염기성 용액')}", "지시약의 색깔 변화로 산성 용액과 염기성 용액으로 나눠요.")
         self.play(FadeIn(tab), run_time=0.8)
         self.say(f"산성 용액: 푸른색 리트머스 → {r('붉은색')}, 페놀프탈레인 → 변화 없음",
-                 "산성 용액은 푸른색 리트머스 시험지를 붉은색으로 바꾸고, 페놀프탈레인 용액의 색깔은 변하지 않아요. 식초, 레몬즙, 묽은 염산이 산성 용액이에요.")
+                 "산성 용액은 푸른색 리트머스 시험지를 붉은색으로 바꾸고, 페놀프탈레인 용액은 변하지 않아요.")
         self.play(Indicate(VGroup(*[tab.cells[k][1] for k in range(5)]), color=RED, scale_factor=1.05), run_time=1.0)
         self.say(f"염기성 용액: 붉은색 리트머스 → {b('푸른색')}, 페놀프탈레인 → {pk('붉은색')}",
-                 "염기성 용액은 붉은색 리트머스 시험지를 푸른색으로, 페놀프탈레인 용액을 붉은색으로 바꿔요. 빨랫비누 물, 석회수, 묽은 수산화 나트륨 용액이 염기성 용액이에요.")
+                 "염기성 용액은 붉은색 리트머스 시험지를 푸른색으로, 페놀프탈레인 용액을 붉은색으로 바꿔요.")
         self.play(Indicate(VGroup(*[tab.cells[k][2] for k in range(5)]), color=BLUE, scale_factor=1.05), run_time=1.0)
         self.settle()
         clear_stage(self)
@@ -157,7 +156,7 @@ class S6Ep02(EpisodeScene):
         cards = VGroup(*[K.word_card(s_, 3.0, 0.85, INK, 30) for s_ in steps]).arrange(RIGHT, buff=0.2).move_to([0, 2.1, 0])
         bot = K.dropper_bottle(None, 1.2, col=K.CAB_SOL, op=0.9).move_to([0, 0.2, 0])
         self.say("붉은 양배추 용액도 지시약으로 쓸 수 있어요",
-                 "붉은 양배추를 잘게 잘라 뜨거운 물을 붓고, 식힌 뒤 걸러 점적병에 담으면 지시약으로 쓸 수 있어요. 뜨거운 물은 선생님과 함께 다뤄요.")
+                 "붉은 양배추를 잘게 잘라 뜨거운 물을 붓고, 식힌 뒤 걸러 점적병에 담아요. 뜨거운 물은 선생님과 함께 다뤄요.")
         self.play(LaggedStart(*[FadeIn(c, shift=DOWN * 0.2) for c in cards], lag_ratio=0.25), run_time=1.4)
         self.play(FadeIn(bot, scale=0.8), run_time=0.6)
         self.settle()
@@ -183,10 +182,10 @@ class S6Ep02(EpisodeScene):
         bar = K.color_bar(11.0, 0.55).move_to([0, -1.55, 0])
         self.play(P_.all().animate.shift(UP * 0.55), FadeIn(bar), run_time=0.7)
         self.say(f"산성은 {r('붉은색 계열')}, 염기성은 {b('푸른색')}이나 노란색 계열",
-                 "붉은 양배추 용액은 산성 용액에서는 붉은색 계열, 염기성 용액에서는 푸른색이나 노란색 계열로 변해요. 색깔은 조금씩 다를 수 있어서 비슷한 계열의 색깔로 분류해요.")
+                 "산성 용액에서는 붉은색 계열, 염기성 용액에서는 푸른색이나 노란색 계열로 변해요. 색깔이 조금씩 달라도 비슷한 계열로 분류해요.")
         self.settle()
         self.say(f"리트머스·페놀프탈레인으로 분류한 결과와 {g('같아요')}",
-                 "붉은 양배추 용액으로 분류한 결과는 리트머스 시험지, 페놀프탈레인 용액으로 분류한 결과와 같아요.")
+                 "이 결과는 리트머스 시험지, 페놀프탈레인 용액으로 분류한 결과와 같아요.")
         self.settle()
         clear_stage(self)
 
@@ -197,8 +196,8 @@ class S6Ep02(EpisodeScene):
         B = ["욕실 청소용 표백제", "하수구 세정제", "제빵 소다 용액", "손 세정제"]
         bins = VGroup(K.bin_box("산성 용액", 6.5, 4.2, RED, 34), K.bin_box("염기성 용액", 6.5, 4.2, BLUE, 34))
         bins.arrange(RIGHT, buff=0.2).move_to([0, 0.45, 0])
-        ca = VGroup(*[K.word_card(t, 4.6, 0.72, INK, 28) for t in A]).arrange(DOWN, buff=0.14).move_to(bins[0].box.get_center() + DOWN * 0.25)
-        cb = VGroup(*[K.word_card(t, 4.6, 0.72, INK, 28) for t in B]).arrange(DOWN, buff=0.14).move_to(bins[1].box.get_center() + DOWN * 0.25)
+        ca = VGroup(*[K.word_card(t, 4.6, 0.72, INK, 28) for t in A]).arrange(DOWN, buff=0.14).move_to(bins[0].box.get_center() + DOWN * 0.45)
+        cb = VGroup(*[K.word_card(t, 4.6, 0.72, INK, 28) for t in B]).arrange(DOWN, buff=0.14).move_to(bins[1].box.get_center() + DOWN * 0.45)
         self.say("지시약으로 알아본 우리 주변의 용액",
                  "지시약으로 알아보면 오렌지주스, 구연산 용액, 콜라, 탄산수는 산성 용액이고, 욕실 청소용 표백제, 하수구 세정제, 제빵 소다 용액, 손 세정제는 염기성 용액이에요.")
         self.play(FadeIn(bins), run_time=0.5)
