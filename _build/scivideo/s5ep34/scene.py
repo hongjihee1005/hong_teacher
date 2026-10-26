@@ -181,7 +181,7 @@ class S5Ep34(EpisodeScene):
                  "열 전구를 켜고 1분 뒤, 빛이 비치는 곳의 판은 41.9도로 올라갔고, 빛이 비치지 않는 곳의 판은 23.4도 그대로예요. 열 전구의 빛에 의해 열이 이동했어요.")
         self.play(Transform(ta, ta2), run_time=0.8)
         safe = K.safety_note("열 전구의 빛이 나오는 부분을 맨눈으로 오래 쳐다보지 않아요. 안전 장갑을 껴요.",
-                             w=12.0, size=26).move_to([0.6, 2.6, 0])
+                             w=9.6, size=24).move_to([1.7, 2.6, 0])
         self.play(FadeIn(safe), run_time=0.4)
         self.settle()
         clear_stage(self)
