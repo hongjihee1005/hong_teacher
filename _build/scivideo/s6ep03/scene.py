@@ -48,16 +48,16 @@ class S6Ep03(EpisodeScene):
     # ── 궁금해요 ──
     def intro(self):
         self.section("궁금해요")
-        G = K.Glass(0, -1.6, 2.6, 2.9, "beaker")
+        G = K.Glass(-3.2, -1.9, 2.6, 2.9, "beaker")
         liq = G.liquid(2.1, "#F2C94C", 0.5)
         egg = K.Ellipse(width=1.0, height=1.3, fill_color="#F5EBD7", fill_opacity=1, stroke_color="#B9A48A",
-                        stroke_width=4).move_to([0, -0.9, 0])
+                        stroke_width=4).move_to([-3.2, -1.2, 0])
         nm = T("식초", 32).next_to(G.top(), UP, buff=0.25)
         self.say("달걀을 식초에 넣으면 어떻게 될까요?",
                  "식초에 달걀을 일주일쯤 담가 두면 어떻게 될까요?")
         self.play(FadeIn(VGroup(liq, G.glass(), nm)), FadeIn(egg, shift=DOWN * 0.5), run_time=0.9)
         note = K.text_card([f"레몬즙은 신맛, 제빵 소다 용액은 미끈미끈", f"{r('과학실의 용액은 맛보거나 맨손으로 만지지 않아요')}"],
-                           w=8.0, size=28).move_to([0, 2.3, 0])
+                           w=7.0, size=28).move_to([3.0, 0.4, 0])
         self.say("산성 용액과 염기성 용액은 서로 다른 성질이 있어요",
                  "레몬즙은 신맛이 나고 제빵 소다 용액은 미끈미끈한 것처럼, 산성 용액과 염기성 용액은 서로 다른 성질이 있어요. 과학실의 용액은 맛보거나 맨손으로 만지지 않아요.")
         self.play(FadeIn(note), run_time=0.6)
@@ -67,17 +67,15 @@ class S6Ep03(EpisodeScene):
     # ── 실험해요 ──
     def experiment(self):
         self.section("실험해요")
-        P_ = K.SpotPlate(4, 2, gap=2.45, r=0.72, center=(1.0, 0.55), names=MATN, size=26, row_gap=1.75,
+        P_ = K.SpotPlate(4, 2, gap=2.45, r=0.72, center=(1.0, 0.35), names=MATN, size=26, row_gap=1.75,
                          row_names=["묽은 염산", "묽은 수산화\n나트륨 용액"])
         self.P = P_
-        safe = K.safety_note("조금 더 진한 용액 · 보안경·장갑 · 환기 · 줄마다 다른 핀셋으로 살살", w=12.4, size=26).move_to([0.5, 2.6, 0])
         self.say("묽은 염산과 묽은 수산화 나트륨 용액에 네 가지 물질을 넣어요",
                  "홈판 첫째 줄에는 묽은 염산, 둘째 줄에는 묽은 수산화 나트륨 용액을 넣고, 네 가지 물질을 넣어요.")
         self.play(FadeIn(P_.group), FadeIn(P_.names), FadeIn(P_.rnames), run_time=0.7)
         self.play(*[P_.liq[i].animate.set_fill(K.CLEAR, opacity=0.9) for i in range(8)], run_time=0.5)
         self.say("이번 실험은 용액이 조금 더 진해서 더 조심해요",
                  "이번 실험은 조금 더 진한 용액을 써서 더 조심해요. 환기가 잘 되는 곳에서, 줄마다 다른 핀셋으로 살살 넣어요.")
-        self.play(FadeIn(safe), run_time=0.5)
         mats = VGroup()
         for j in range(2):
             for i in range(4):
@@ -85,7 +83,6 @@ class S6Ep03(EpisodeScene):
         self.play(LaggedStart(*[FadeIn(m, shift=DOWN * 0.4) for m in mats], lag_ratio=0.08), run_time=1.4)
         self.mats = mats
         self.settle()
-        self.play(FadeOut(safe), run_time=0.3)
         bub = VGroup(*[K.bubbles(P_.center(i, 0)[0] - 0.4, P_.center(i, 0)[0] + 0.4, P_.center(i, 0)[1] - 0.3,
                                  P_.center(i, 0)[1] + 0.5, n=9, seed=i + 2, rmin=0.04, rmax=0.08) for i in (0, 1)])
         self.say(f"넣은 직후: 묽은 염산 속 껍데기에서 {o('기포')}가 발생해요",
@@ -116,14 +113,14 @@ class S6Ep03(EpisodeScene):
     # ── 결과 ──
     def result(self):
         self.section("정리해요")
-        A, N, S_ = r("기포가 발생하며 녹는다"), "변화 없다", b("흐물흐물해진다(녹는다)")
+        A, N, S_ = r("기포가 발생하며\n녹는다"), "변화 없다", b("흐물흐물해진다\n(녹는다)")
         head = [""] + MATN
-        rows = [["묽은 염산", A, A, N, N], ["묽은 수산화 나트륨 용액", N, N, S_, S_]]
-        tab = K.result_table(head, rows, [3.6, 2.4, 2.4, 2.4, 2.4], row_h=0.95, size=26).move_to([0, 1.55, 0])
+        rows = [["묽은 염산", A, A, N, N], ["묽은 수산화\n나트륨 용액", N, N, S_, S_]]
+        tab = K.result_table(head, rows, [3.4, 2.45, 2.45, 2.45, 2.45], row_h=1.0, size=26).move_to([0, 1.2, 0])
         self.say("관찰한 결과를 정리해요", "관찰한 결과를 표로 정리해요.")
         self.play(FadeIn(tab), run_time=0.8)
-        c1 = K.text_card([f"달걀 껍데기·조개껍데기", f"주요 성분: {o('탄산 칼슘')}"], w=6.3, size=30).move_to([-3.3, -1.4, 0])
-        c2 = K.text_card([f"삶은 달걀흰자·닭 가슴살", f"주요 성분: {g('단백질')}"], w=6.3, size=30).move_to([3.3, -1.4, 0])
+        c1 = K.text_card([f"달걀 껍데기·조개껍데기", f"주요 성분: {o('탄산 칼슘')}"], w=6.3, size=30).move_to([-3.3, -1.5, 0])
+        c2 = K.text_card([f"삶은 달걀흰자·닭 가슴살", f"주요 성분: {g('단백질')}"], w=6.3, size=30).move_to([3.3, -1.5, 0])
         self.say(f"껍데기는 {o('탄산 칼슘')}, 흰자·닭 가슴살은 {g('단백질')}",
                  "달걀 껍데기와 조개껍데기의 주요 성분은 탄산 칼슘이고, 삶은 달걀흰자와 닭 가슴살의 주요 성분은 단백질이에요.")
         self.play(FadeIn(c1, shift=UP * 0.2), FadeIn(c2, shift=UP * 0.2), run_time=0.7)
