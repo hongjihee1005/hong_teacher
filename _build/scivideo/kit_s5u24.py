@@ -25,6 +25,7 @@ from kit_s4u23 import kid, h2_car  # noqa: F401
 from kit_s5u13 import word_card, result_table  # noqa: F401
 from kit_s5u21 import ore_pic, recycle_item  # noqa: F401
 from kit_s3u21 import bubble_wrap  # noqa: F401
+from kit_s4u14 import fuel_can  # noqa: F401
 import kit_s3u22 as A22
 
 SW = 4
@@ -543,3 +544,28 @@ def night_city(lights=True, W=6.0):
 
 def arrow_lr(x0, x1, y, col=INK, sw=8):
     return Arrow([x0, y, 0], [x1, y, 0], buff=0, stroke_color=col, stroke_width=sw, max_tip_length_to_length_ratio=0.2)
+
+
+def bus(w=2.4):
+    body = R(w, w * 0.42, "#F2B33D", 0, 0, rad=0.14, stroke=INK, sw=3)
+    wins = VGroup(*[R(w * 0.16, w * 0.13, "#CFE8F7", -w * 0.33 + i * w * 0.2, w * 0.07, rad=0.03, stroke=INK, sw=2) for i in range(4)])
+    wh = VGroup(C(w * 0.08, "#333333", -w * 0.3, -w * 0.21, sw=2), C(w * 0.08, "#333333", w * 0.3, -w * 0.21, sw=2))
+    return VGroup(body, wins, wh)
+
+
+def phone_charge():
+    ph = R(0.7, 1.3, "#2F2F36", 0, 0, rad=0.1, stroke=INK, sw=3)
+    scr = R(0.56, 1.0, "#9CD3F2", 0, 0.05, rad=0.05, stroke=None, sw=0)
+    bat = VGroup(R(0.3, 0.5, WHITE, 0, 0.05, rad=0.04, stroke=INK, sw=2), R(0.22, 0.3, GREEN, 0, -0.03, rad=0.02, stroke=None, sw=0))
+    cord = smooth([(0, -0.65), (0.1, -0.95), (0.6, -1.0), (0.9, -0.7)], INK, 4)
+    return VGroup(ph, scr, bat, cord)
+
+
+def heater_door(closed=True):
+    """교실 문을 닫아 열이 빠져나가지 않게"""
+    frame = R(1.3, 2.0, "#E9DDC8", 0, 0, rad=0.02, stroke=BROWN_DARK, sw=3)
+    door = R(1.1, 1.85, "#C9965F", 0, -0.05, rad=0.02, stroke=BROWN_DARK, sw=3)
+    knob = C(0.06, "#E2B13C", 0.38, -0.1, stroke=None, sw=0)
+    win = R(0.5, 0.45, "#CFE7F2", 0, 0.45, rad=0.02, stroke=BROWN_DARK, sw=2)
+    heat = VGroup(*[smooth([(x, -0.6), (x - 0.08, -0.4), (x + 0.08, -0.2), (x, 0.0)], HOT, 4) for x in (-1.1, -0.8)])
+    return VGroup(frame, door, knob, win, heat)

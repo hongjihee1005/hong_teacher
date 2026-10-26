@@ -95,7 +95,7 @@ class AlcoholThermo(VGroup):
         super().__init__(**kw)
         self.h, self.vmax = h, vmax
         self.y0 = -h / 2 + 0.55          # 0 °C 높이
-        self.y1 = h / 2 - 0.3            # vmax 높이
+        self.y1 = h / 2 - 0.5            # vmax 높이
         frame = R(1.1, h, PAPER, 0, 0, rad=0.2, stroke="#A0673A", sw=4)
         tube = R(0.16, h - 0.5, "#EEF3F6", -0.15, 0.05, rad=0.08, stroke="#B8C2CC", sw=2)
         bulb = C(0.17, "#D63C32", -0.15, -h / 2 + 0.32, stroke="#D63C32", sw=1)
@@ -108,7 +108,7 @@ class AlcoholThermo(VGroup):
                 nums.add(T(str(t), 18, INK, bold=False).move_to([0.36, y, 0]))
         self.frame = frame
         self.col = self.col_for(c)
-        unit = T("°C", 20, INK).move_to([0.32, h / 2 - 0.12, 0])
+        unit = T("°C", 20, INK).move_to([0.3, h / 2 - 0.2, 0])
         self.add(frame, tube, self.col, bulb, ticks, nums, unit)
 
     def _o(self):
@@ -255,6 +255,14 @@ def temp_graph(hot=HOT_T, cold=COLD_T, W=7.6, H=4.2, vmax=50, legend=True):
     g.hot = series(hot, HOT)
     g.cold = series(cold, COLD)
     g.gx, g.gy = gx, gy
+
+    def place(pos):
+        d = np.array(pos, dtype=float) - bg.get_center()
+        g.shift(d)
+        g.hot.shift(d)
+        g.cold.shift(d)
+        return g
+    g.place = place
     if legend:
         lg = VGroup(VGroup(L((0, 0), (0.45, 0), HOT, 6), T("원통에 든 물", 22, HOT)).arrange(RIGHT, buff=0.12),
                     VGroup(L((0, 0), (0.45, 0), COLD, 6), T("알루미늄 캔에 든 물", 22, COLD)).arrange(RIGHT, buff=0.12)
@@ -362,7 +370,7 @@ def hot_cup(w=1.1, h=0.75, txt="뜨거운 물", col="#F7B2A5", line="#C0392B"):
 
 
 def along(path, s):
-    pts = [np.array(p, dtype=float) for p in path]
+    pts = [np.array([p[0], p[1], 0.0]) for p in path]
     segs = [np.linalg.norm(pts[i + 1] - pts[i]) for i in range(len(pts) - 1)]
     Ltot = sum(segs)
     s = s % Ltot
@@ -451,7 +459,7 @@ def iron():
     plate = poly([(-1.0, 0), (1.1, 0), (1.1, 0.15), (-1.0, 0.15)], "#C0C6CC", stroke=INK, sw=3)
     body = VMobject(fill_color="#E2573F", fill_opacity=1, stroke_color="#7A1F14", stroke_width=3)
     body.set_points_smoothly([[-0.95, 0.15, 0], [-0.6, 0.7, 0], [0.4, 0.85, 0], [1.05, 0.85, 0], [1.05, 0.15, 0]])
-    body.add_line_to([-0.95, 0.15, 0])
+    body.add_line_to(np.array([-0.95, 0.15, 0.0]))
     handle = Arc(radius=0.5, start_angle=0.2, angle=2.7, stroke_color=INK, stroke_width=7).move_to([0.2, 1.05, 0])
     cloth = rect(2.6, 0.18, "#8BB0D6", 0, -0.09, stroke=INK, sw=2)
     return VGroup(cloth, body, plate, handle)
@@ -508,7 +516,7 @@ def mitt(col="#E2573F"):
     m = VMobject(fill_color=col, fill_opacity=1, stroke_color=INK, stroke_width=3)
     m.set_points_smoothly([[-0.45, -0.8, 0], [-0.5, 0.2, 0], [-0.2, 0.75, 0], [0.25, 0.7, 0], [0.4, 0.1, 0],
                            [0.75, 0.3, 0], [0.7, -0.1, 0], [0.4, -0.8, 0]])
-    m.add_line_to([-0.45, -0.8, 0])
+    m.add_line_to(np.array([-0.45, -0.8, 0.0]))
     return m
 
 
@@ -558,6 +566,13 @@ def ondol(W=10.0):
     g.add(T("방", 26, INK).move_to(rm.get_top() + DOWN * 0.3))
     g.add(T("구들장", 22, PAPER).move_to(stone))
     g.add(T("아궁이", 22, INK).next_to(agu, DOWN, buff=0.1))
-    g.add(T("굴뚝", 20, INK).next_to(chim, UP, buff=0.08))
+    g.add(T("굴뚝", 22, INK).next_to(chim, RIGHT, buff=0.1).align_to(chim, UP))
     g.rm, g.stone = rm, stone
     return g
+
+
+def rect_loop(x0, x1, y0, y1, col=HOT, sw=7):
+    """시계 방향 순환 화살표: 왼쪽 위로 → 위쪽 오른쪽으로 → 오른쪽 아래로 → 아래쪽 왼쪽으로"""
+    m = 0.12
+    return VGroup(heat_arrow((x0, y0 + m), (x0, y1 - m), col, sw), heat_arrow((x0 + m, y1), (x1 - m, y1), col, sw),
+                  heat_arrow((x1, y1 - m), (x1, y0 + m), col, sw), heat_arrow((x1 - m, y0), (x0 + m, y0), col, sw))

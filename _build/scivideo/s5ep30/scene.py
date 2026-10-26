@@ -47,14 +47,14 @@ class S5Ep30(EpisodeScene):
     # ── 궁금해요 ──
     def intro(self):
         self.section("궁금해요")
-        pot = K.cup("#F7B2A5", "끓는 물", steam=True).move_to([-2.6, 0.7, 0])
-        ice = K.cup("#A9D4F2", "얼음물", ice=True).move_to([2.6, 0.7, 0])
+        pot = K.cup("#F7B2A5", "끓는 물", steam=True).move_to([-2.6, 0.2, 0], aligned_edge=DOWN)
+        ice = K.cup("#A9D4F2", "얼음물", ice=True).move_to([2.6, 0.2, 0], aligned_edge=DOWN)
         self.say("끓는 물은 뜨겁고 얼음물은 차가워요",
                  "끓는 물은 뜨겁고 얼음물은 차가워요. 물체의 따뜻하거나 차가운 정도는 무엇으로 나타낼까요?")
         self.play(FadeIn(pot, shift=RIGHT * 0.3), FadeIn(ice, shift=LEFT * 0.3), run_time=0.8)
         self.pause_screen(4, "따뜻하거나 차가운 정도는 무엇으로?")
         card = K.text_card([f"물체의 따뜻하거나 차가운 정도 → {o('온도')}",
-                            f"온도의 단위: {o('°C')} (섭씨도)"], size=38).move_to([0, -1.35, 0])
+                            f"온도의 단위: {o('°C')} (섭씨도)"], size=38).move_to([0, -1.5, 0])
         self.say(f"따뜻하거나 차가운 정도는 {o('온도')}, 단위는 {o('°C(섭씨도)')}",
                  "물체의 따뜻하거나 차가운 정도를 온도로 나타내요. 온도의 단위는 섭씨도를 사용해요.")
         self.play(FadeIn(card, shift=UP * 0.2), run_time=0.6)
@@ -124,7 +124,7 @@ class S5Ep30(EpisodeScene):
     # ── 알코올·적외선 온도계 ──
     def alcohol_ir(self):
         self.section("알코올·적외선 온도계")
-        al = K.alcohol_thermo(0.0, h=4.6).move_to([-4.6, 0.3, 0])
+        al = K.alcohol_thermo(0.0, h=4.2).move_to([-4.6, 0.5, 0])
         n1 = T("알코올 온도계", 30, INK).next_to(al, RIGHT, buff=0.3).shift(UP * 1.8)
         self.say("알코올 온도계는 액체 기둥이 멈출 때까지 기다려요",
                  "과학실 벽에 걸린 알코올 온도계예요. 빨간색 액체 기둥이 움직이다가 멈출 때까지 기다려요.")
@@ -150,12 +150,12 @@ class S5Ep30(EpisodeScene):
         hit = [4.8, -0.95, 0]
         laser = Line(gun.muzzle(), hit, stroke_color="#E2241B", stroke_width=4)
         self.say(f"적외선 온도계는 {o('레이저 빛')}을 맞혀 물체 표면의 온도를 재요",
-                 "적외선 온도계는 전원을 켜고, 온도 측정 단추를 누른 채로 레이저 빛을 맞혀 물체 표면의 온도를 재요. 복도 계단의 온도는 19.8도예요.")
+                 "적외선 온도계는 측정 단추를 누른 채로 레이저 빛을 맞혀 물체 표면의 온도를 재요. 복도 계단은 19.8도예요.")
         self.play(FadeIn(stairs), FadeIn(sname), FadeIn(gun), FadeIn(n2), run_time=0.6)
         self.play(Create(laser), FadeIn(Dot(hit, radius=0.08, color="#E2241B")), run_time=0.6)
         self.settle()
         safe = K.safety_note("레이저 빛이 사람의 눈을 향하지 않게 해요. 오늘 쓰는 적외선 온도계는 체온용이 아니에요.",
-                             w=12.6, size=26).move_to([0, 2.55, 0])
+                             w=12.6, size=26).move_to([0, -2.2, 0])
         self.say(f"레이저 빛이 {r('사람의 눈')}을 향하지 않게 주의해요",
                  "적외선 온도계의 레이저 빛이 사람의 눈을 향하지 않도록 주의해요. 금속이나 거울처럼 빛을 반사하는 물체는 적외선 온도계로 재기 어려워요.")
         self.play(FadeIn(safe), run_time=0.5)
@@ -180,7 +180,7 @@ class S5Ep30(EpisodeScene):
             row = boxes[(i + 1) * 3:(i + 2) * 3]
             cells.add(T(a, 30, ORANGE).move_to(row[1]), T(b, 30, ORANGE).move_to(row[2]))
         self.say(f"흙 속은 {o('탐침')}, 공기는 {o('알코올')}, 표면은 {o('적외선')} 온도계",
-                 "흙에 찔러 넣어 속의 온도를 잴 때는 탐침 온도계, 벽에 걸어 공기의 온도를 잴 때는 알코올 온도계, 레이저 빛을 맞혀 표면의 온도를 잴 때는 적외선 온도계가 알맞아요.")
+                 "흙 속 온도는 찔러 넣는 탐침 온도계, 공기의 온도는 벽에 거는 알코올 온도계, 표면의 온도는 적외선 온도계가 알맞아요.")
         self.play(FadeIn(cells, lag_ratio=0.2), run_time=1.2)
         note = T("표의 값은 지도서의 예시 값이에요", 24, SOFT).next_to(tb, DOWN, buff=0.25)
         self.play(FadeIn(note), run_time=0.3)
@@ -208,14 +208,14 @@ class S5Ep30(EpisodeScene):
             if nm.width > 3.1:
                 nm.scale_to_fit_width(3.1)
             cards.add(VGroup(c, nm))
-        cards.arrange(RIGHT, buff=0.3).move_to([0, 0.9, 0])
+        cards.arrange(RIGHT, buff=0.3).move_to([0, 1.0, 0])
         self.say("생활 속에서도 여러 가지 온도계를 사용해요",
-                 "음식을 조리할 때는 탐침 온도계, 온실 속 온도는 알코올 온도계, 체온은 체온용 적외선 온도계로 재요. 열화상 사진기로는 여러 물체의 온도를 색깔과 숫자로 확인해요.")
+                 "음식을 조리할 때는 탐침 온도계, 온실은 알코올 온도계, 체온은 체온용 적외선 온도계를 써요. 열화상 사진기는 온도를 색깔과 숫자로 보여 줘요.")
         self.play(FadeIn(cards, lag_ratio=0.2), run_time=1.2)
         self.settle()
         mis = K.text_card([f"한 물체의 온도는 한 종류의 온도계로만 잴 수 있을까요?",
                            f"→ {g('아니요')}, 체온은 체온용 적외선 온도계로도, 귀 체온계로도 재요"],
-                          w=12.8, size=30).move_to([0, -1.5, 0])
+                          w=12.8, size=30).move_to([0, -1.85, 0])
         self.say(f"한 물체의 온도도 {g('여러 종류의 온도계')}로 잴 수 있어요",
                  "생각 바로잡기! 한 물체의 온도도 여러 종류의 온도계로 잴 수 있어요. 상황에 맞게 골라 쓰면 생활이 더 편리하고 안전해요.")
         self.play(FadeIn(mis, shift=UP * 0.2), run_time=0.6)
@@ -235,7 +235,8 @@ class S5Ep30(EpisodeScene):
 
     def p_body(self):
         head = K.C(0.55, "#FFD9B0", -0.5, 0, stroke="#D8A77A", sw=3)
-        gun = K.ir_gun("36.5").scale(0.6).rotate(3.14159).move_to([0.8, 0.1, 0])
+        head.move_to([0.9, 0, 0])
+        gun = K.ir_gun("36.5").scale(0.6).move_to([-0.6, -0.1, 0])
         return VGroup(head, gun)
 
     def p_cam(self):
@@ -247,15 +248,10 @@ class S5Ep30(EpisodeScene):
     # ── 한눈에 쏙 ──
     def summary(self):
         self.section("한눈에 쏙")
-        card = K.text_card([f"{o('온도')}은/는 물체의 따뜻하거나 차가운 정도를 나타내고,",
+        card = K.text_card([f"{o('온도')}는 물체의 따뜻하거나 차가운 정도를 나타내고,",
                             "온도계를 사용하여 측정합니다."], w=12.0, size=40).move_to([0, 1.0, 0])
         self.say(f"{o('온도')}는 따뜻하거나 차가운 정도, 온도계로 측정해요",
                  "온도는 물체의 따뜻하거나 차가운 정도를 나타내고, 온도계를 사용하여 측정해요.")
         self.play(FadeIn(card, scale=0.95), run_time=0.8)
-        self.settle()
-        more = K.text_card([f"온도계를 계속 설치해 두면 편리한 곳: {g('목욕탕')}, {g('냉장고')}"], size=34).move_to([0, -1.1, 0])
-        self.say(f"목욕탕과 냉장고에 온도계가 있으면 {g('편리해요')}",
-                 "목욕탕에 온도계를 설치해 두면 물의 온도를 정확하게 알 수 있고, 냉장고에 설치해 두면 식재료를 알맞은 온도로 보관할 수 있어 편리해요.")
-        self.play(FadeIn(more, shift=UP * 0.2), run_time=0.6)
         self.settle()
         clear_stage(self)
