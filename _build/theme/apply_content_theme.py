@@ -9,6 +9,8 @@
 import pathlib, re, sys
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CSS = (pathlib.Path(__file__).with_name('content.css')).read_text(encoding='utf-8')
+# 수업 스튜디오 껍데기 v4(2026-10-27): 덮개 뒤에 붙여 덮개보다 우선
+CSS += '\n' + (pathlib.Path(__file__).with_name('shell.css')).read_text(encoding='utf-8')
 BLOCK = f'<!--hj-ctheme--><style id="hj-ctheme">{CSS}</style><!--/hj-ctheme-->'
 JS = (pathlib.Path(__file__).with_name('content.js')).read_text(encoding='utf-8')
 # 이모지 자리 선 아이콘(content.js hj-eicons): 메뉴 icons.js의 길 가운데 지도에 쓰인 것만 넣음(2026-10-27)
@@ -19,6 +21,7 @@ _map = JS.split('/*HJ_EI_MAP*/')[1].split('/*/HJ_EI_MAP*/')[0]
 _used = sorted(set(re.findall(r"m\('(\w+)'", _map)))
 assert all(k in _PATHS for k in _used), [k for k in _used if k not in _PATHS]
 JS = JS.replace('/*HJ_ICONS*/{}', _json.dumps({k: _PATHS[k] for k in _used}, ensure_ascii=False))
+JS += '\n' + (pathlib.Path(__file__).with_name('shell.js')).read_text(encoding='utf-8')
 JBLOCK = f'<!--hj-cicons--><script>{JS}</script><!--/hj-cicons-->'
 
 EMO = re.compile(r'[\U0001F000-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF\u2300-\u23FF\uFE0F\u200D]+')
