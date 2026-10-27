@@ -441,6 +441,77 @@ html main>.hjfoot a:focus-visible{outline:3px solid #9DBBFF;outline-offset:2px}
 @media print{html .hj-top{display:none}html .hj-hero{background:none;color:#000;margin:0 0 16px;padding:0}html .hj-hero::before,html .hj-hero::after{display:none}
  html .hj-hero h1,html .hj-hero .sub,html .hj-hero .crumb .c-link{color:#000}html main>.hjfoot{background:none;color:#000;margin:24px 0 0;padding:12px 0}}
 @media (prefers-reduced-motion:reduce){html .card,html a.card:hover{transition:none;transform:none}html .hj-ddm{animation:none}}
+
+/* ───────── 판 안의 항목 (2026-10-27 선생님 피드백: '나열된 느낌·네모 상자'를 덜어 냄) ─────────
+   묶음마다 넓은 판 하나, 그 안의 방은 테두리 없는 항목(둥근 아이콘 + 이름 + 한 줄 설명). 마우스를 올리면 옅은 바탕. */
+html main .grid:has(>.card,>.rw){background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:10px;gap:4px;
+ box-shadow:0 1px 2px rgba(15,28,51,.04),0 24px 48px -32px rgba(15,28,51,.28)}
+html main .grid>.card,html main .grid>.rw>.card{border:0;border-radius:16px;box-shadow:none;background-color:transparent;background-image:none;transform:none}
+html main .grid>a.card:hover,html main .grid>.rw>a.card:hover,html main .grid>.rw.open>a.card{background-color:color-mix(in srgb,var(--acc) 7%,var(--bg));box-shadow:none;transform:none;border:0}
+html main .grid .room{padding:20px 20px 20px;gap:8px}
+html main .grid .room .ico{width:48px;height:48px;border-radius:50%;margin:0 0 4px;background:color-mix(in srgb,var(--acc) 13%,var(--paper))}
+html main .grid .room .ico .hj-li{width:46%;height:46%}
+html main .grid .room .nm{font-size:clamp(21px,2vw,24px);line-height:1.35}
+html main .grid .room small,html main .grid .card .de{font-size:clamp(16px,1.4vw,17.5px);line-height:1.6;color:var(--soft)}
+html main .grid a.room::after{width:32px;height:32px;top:20px;right:16px;background:transparent;opacity:0;transform:translateX(-4px);transition:opacity .18s,transform .18s,background .18s}
+html main .grid a.room::before{top:28px;right:24px;opacity:0;transform:translateX(-4px);transition:opacity .18s,transform .18s;background:var(--ink)}
+html main .grid a.room:hover::after,html main .grid a.room:focus-visible::after{opacity:1;transform:none;background:var(--paper);box-shadow:var(--sh-s)}
+html main .grid a.room:hover::before,html main .grid a.room:focus-visible::before{opacity:1;transform:none;background:var(--ink)}
+html main .grid .room.wait,html main .grid .room.wait:hover{background:transparent;border:0}
+html main .grid .room.wait .nm,html main .grid .room.wait small{color:color-mix(in srgb,var(--soft) 70%,var(--paper))}
+html main .grid .r-tg{width:36px;height:36px;top:18px;right:14px;border:0;background:transparent;color:var(--soft)}
+html main .grid .r-tg:hover{background:var(--paper);color:var(--ink);box-shadow:var(--sh-s)}
+html main .grid .r-tg[aria-expanded="true"]{background:var(--sel-bg);color:var(--sel-ink)}
+/* 넓은 학기 카드(한 줄씩): 판 안에서 가는 줄로 나눔 */
+html main .grid:has(>.room.wide,>.rw>.room.wide){padding:6px 10px}
+html main .grid>.room.wide+.room.wide,html main .grid>.rw+.rw,html main .grid>.room.wide+.rw,html main .grid>.rw+.room.wide{position:relative}
+html main .grid>.room.wide+.room.wide::before,html main .grid>.room.wide+.rw::after{content:none}
+html main .grid:has(>.room.wide,>.rw>.room.wide)>*+*{border-top:1px solid var(--line);border-radius:0}
+html main .grid .room.wide{padding:22px 14px}
+html main .grid .room.wide .head .ico{width:48px;height:48px}
+html main .grid .room.wide .u-chip{background:transparent}
+/* 단원 접기: 상자 대신 가는 줄 */
+html main .u-toggle{background:transparent;border:0;border-bottom:1px solid var(--line);border-radius:0;box-shadow:none;padding:18px 6px;margin:0}
+html main .u-toggle:hover,html main .u-toggle[aria-expanded="true"]{background:transparent;border-color:var(--line2)}
+html main .u-toggle .u-cnt{background:var(--bg2)}
+html main .u-chev{background:transparent;border:1px solid var(--line)}
+html main .u-toggle+*:not([hidden]){margin:14px 0 18px}
+/* 첫 화면 학년: 큰 숫자 띠 */
+html main .grid.six:has(>.rw,>.card){gap:0;padding:8px}
+html main .grid.six>*+*{border-left:1px solid var(--line)}
+html main .grid.six>.rw>.card,html main .grid.six>.card{border-radius:16px;padding:18px 16px 18px;align-items:flex-start}
+html main .grid.six .room .ico{width:auto;height:auto;background:none;border-radius:0;margin:0;font-size:clamp(40px,4.4vw,56px);color:var(--acc-ink)}
+html main .grid.six .room .ico .hj-gn{font-size:1em;font-weight:800;letter-spacing:-.05em;color:color-mix(in srgb,var(--acc) 78%,var(--ink))}
+html main .grid.six .room .nm{font-size:clamp(17px,1.5vw,19px);font-weight:700;color:var(--soft)}
+html main .grid.six .room small{font-size:14.5px}
+@media (max-width:980px){html main .grid.six>*+*{border-left:0}html main .grid.six>*:nth-child(n+4){border-top:1px solid var(--line)}html main .grid.six>*:nth-child(3n+2),html main .grid.six>*:nth-child(3n+3){border-left:1px solid var(--line)}}
+@media (max-width:560px){html main .grid.six>*:nth-child(n){border-left:0;border-top:0}html main .grid.six>*:nth-child(2n){border-left:1px solid var(--line)}html main .grid.six>*:nth-child(n+3){border-top:1px solid var(--line)}}
+/* 첫 화면: 특색교육과 기타를 나란히 */
+html main .duo{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:0 28px;align-items:start}
+html main .duo>section>h2{margin-top:clamp(38px,4.2vw,56px)}
+html main .duo .grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+html main .duo>section:first-child .grid{grid-template-columns:1fr!important}
+@media (max-width:860px){html main .duo{grid-template-columns:1fr}}
+@media (max-width:560px){html main .duo .grid{grid-template-columns:1fr!important}}
+@media (prefers-reduced-motion:reduce){html main .grid a.room::after,html main .grid a.room::before{transition:none}}
+html main .duo>section>h2{display:flex;align-items:center;gap:12px;font-size:clamp(23px,2.3vw,28px);font-weight:800;letter-spacing:-.025em;margin:clamp(38px,4.2vw,56px) 0 16px}
+html main .duo>section>h2::before{content:"";flex:none;width:5px;height:.95em;border-radius:3px;background:var(--ink)}
+html main .duo>section>h2::after{content:"";flex:1;height:1px;background:var(--line);margin-left:6px}
+/* 메뉴 카드는 이름만(2026-10-27 선생님 피드백: 설명이 많아 이상함). 설명은 HTML에 그대로 두고 화면에서만 숨김 — 제목 띠의 한 줄 소개와 수 표시(cnt-b·tag)는 남김 */
+html main .grid .room>small,html main .grid .room .sum,html main .grid .room .units,html main .grid .room .info{display:none}
+html main .grid .room{gap:12px;padding:18px 20px}
+html main .grid .room .ico{margin:0}
+html main .grid:not(:has(>.room.wide,>.rw>.room.wide)) .room{flex-direction:row;align-items:center;min-height:84px;padding-right:56px}
+html main .grid:not(:has(>.room.wide,>.rw>.room.wide)) .room .nm{font-size:clamp(19px,1.8vw,22px)}
+html main .grid:not(:has(>.room.wide,>.rw>.room.wide)) a.room::after{top:50%;margin-top:-16px}
+html main .grid:not(:has(>.room.wide,>.rw>.room.wide)) a.room::before{top:50%;margin-top:-8px}
+html main .grid:not(:has(>.room.wide,>.rw>.room.wide)) .r-tg{top:50%;margin-top:-18px}
+html main .grid .room.wide{padding:16px 14px}
+html main .grid.six .room{flex-direction:column;align-items:flex-start;min-height:0;padding-right:16px}
+/* 첫 화면 학년 띠: 큰 숫자 + '학년'만(이름 '1학년'은 화면 읽기용으로 남김) */
+html main .grid.six .room{flex-direction:row;align-items:baseline;gap:4px}
+html main .grid.six .room .nm{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+html main .grid.six .room .ico .hj-gn::after{content:"학년";font-size:.36em;font-weight:700;letter-spacing:-.02em;margin-left:4px;color:var(--soft)}
 </style><!--/hj-theme--></head>
 <body><!--hj-top--><header class="hj-top"><div class="hj-top-in"><a class="hj-brand" href="../../../index.html"><span class="hj-mark" aria-hidden="true">홍</span><span class="hj-bt"><b>초등교사 홍지희</b><small>수업 자료실</small></span></a><nav class="hj-gnav" id="hj-gnav" aria-label="주 메뉴"><div class="hj-dd"><button class="hj-ddb is-on" type="button" aria-expanded="false" aria-controls="hj-ddm">학년별<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="hj-ddm" id="hj-ddm" hidden><a href="../../../grade1/index.html">1학년</a><a href="../../../grade2/index.html">2학년</a><a href="../../../grade3/index.html">3학년</a><a href="../../../grade4/index.html">4학년</a><a href="../../../grade5/index.html">5학년</a><a href="../../index.html" aria-current="true">6학년</a></div></div><a href="../../../class/index.html">우리 반 교실</a><a href="../../../common/index.html">공통</a><a href="../../../break/index.html">쉬는 시간</a><a href="../../../special/index.html">특색교육</a><a href="../../../project/index.html">기타</a></nav><button class="hj-mbtn" type="button" aria-expanded="false" aria-controls="hj-gnav" aria-label="메뉴 열기"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>메뉴</span></button></div></header><!--/hj-top--><main>
 <!--hj-hero--><div class="hj-hero"><div class="hj-hero-in"><nav class="crumb" aria-label="현재 위치"><a class="c-link c-home" href="../../../index.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../../index.html">6학년</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../index.html">수학방</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../sem2/index.html">2학기 교과서 차시 버전</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><span class="c-link c-cur" aria-current="page">2학기 · 홍지희 버전</span></nav>
