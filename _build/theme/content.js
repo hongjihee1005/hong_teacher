@@ -76,6 +76,66 @@ wrap(document.body);
 var q=new Set(),raf=0;new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')q.add(m.target);else m.addedNodes.forEach(function(x){q.add(x)})});
  if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)wrap(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true});
 })();
+/* hj-eicons · 수업 자료 속 '기능 이모지'(이름표·제목·안내·단추의 맨 앞)를 메뉴와 같은 선 아이콘(24×24, 선 1.8)으로.
+   반드시 '이모지를 단색 아이콘 글꼴로' 묶음(.hj-em으로 감싸는 부분) 바로 뒤에 둡니다. 여러 번 돌아도 안전합니다. */
+(function(){
+var P=/*HJ_ICONS*/{};                       // apply_content_theme.py가 icons.js의 P 중 아래 지도에 쓰인 것만 채움
+if(!document.body||!Object.keys(P).length)return;
+var EM={},RT={};function m(k,s,o){s.split(' ').forEach(function(c){(o||EM)[c]=k})}
+/*HJ_EI_MAP*/
+m('eye','👀');m('eyeoff','🙈');m('thought','💭 🤔');m('help','❓ ❔');m('search','🔍 🔎');m('check','✅ ☑ ✔');m('ocircle','⭕');m('xcircle','❌');
+m('bulb','💡');m('msg','💬 🗨');m('talk','🗣');m('layers','📑 📜');m('link','🔗');m('sparkle','✨ 🌟');m('star','⭐');m('target','🎯');m('warn','⚠');
+m('pin','📌 📍');m('clipboard','📋');m('file','📝 📄');m('book','📖');m('books','📚');m('pencil','✏ ✍ 🖊');m('printer','🖨');m('vol','🔊 🔈 🔉 📢');
+m('mic','🎙 🎤');m('headphones','🎧');m('timer','⏱ ⏲');m('clock','⏰ 🕰');m('hourglass','⏳ ⌛');m('calendar','📅 📆 🗓');m('refresh','🔄 🔁');
+m('key','🔑');m('lock','🔒 🔐');m('unlock','🔓');m('dice','🎲');m('house','🏠');m('school','🏫');m('person','🙋');m('pair','👫');m('group','👨‍👩‍👧');
+m('users','👥 🧑‍🤝‍🧑 🤝');m('rows','🪑');m('listnum','🔢');m('chart','📊 📈');m('monitor','🖥');m('laptop','💻');m('video','🎬 📺');m('camera','📷 📸');
+m('image','🖼');m('folder','🗂');m('wrench','🛠');m('gear','⚙');m('save','💾');m('robot','🤖');m('thumb','👍');m('party','🎉');m('trophy','🏆');
+m('medal','🏅');m('puzzle','🧩');m('flask','🔬 🧪');m('scale','⚖');m('orb','🔮');m('compass','🧭');m('map','🗺');m('globe','🌏 🌍 🌎');m('palette','🎨');
+m('ruler','📏 📐');m('erase','🧽');m('backspace','⌫');m('rewind','⏮');m('basket','🧺 🛒');m('box','📦');m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('music','🎵 🎶');m('news','📰');
+m('sprout','🌱',RT);m('summit','🧗',RT);m('hand','✋',RT);   /* 자연·몸짓 그림은 사고 루틴 칸 제목에서만 아이콘(다른 곳에선 내용일 수 있음) */
+/*/HJ_EI_MAP*/
+var ROUT='.sthead .routine,.col>h3,.mcol>h3,.pane h3,.hintt';
+var TITLE='#cover h1.title,.cvin h1.title';
+var SLOT=[ROUT,TITLE,
+ '.bq>small,.qpick>b,.evbox>b,.expq>b,.ask2>b,.prev>b,.sumbox>b,.gb-ask>b,.hj-qlab,#cover .lead,.qbox,.after,#body>p.hd,#body>p.lead,.fillbox>.fl,#turnLine',
+ '.tip,.warn,.safe,.notice,.zoomhint,figcaption,.hj-guide,.hj-task,p.goal,details>summary,[class$="-rules"]>li,.tl-how li,.tl-ideas li',
+ '.fb,.feedback',
+ 'main h1,main h2,main h3,section>h2,section>h3,.fitbox>h3,.lg-box>h3,.tl-head .tl-ico,.mp-head .mp-ico',
+ '.seg>button,.big-btn,.mid-btn,button.main,button.ghost,button.tool,a.tolist,.tl-btn,.mu-b,.rd-b,.cr-btn,.ar-b,.cs-btn,.lg-btn,.og-btn,.bd-tab,.nm-mode,.bk-mode,nav.mu-toc>a,[class*="tabs"]>button,.hj-wg button,.scores>.chip,.rd-stat>span,.rd-tag'
+].join(',');
+/* 내용(문제·보기·답·그림 카드·게임판)은 절대 건드리지 않음 */
+var NO='.pick,.cards,.bin,.chips,.r4-chips,.k6-chips,.k6-cards,.ox,.b4-ox,.r4-ox,.face,.pic,.card1,.hj-mp,.book,.prob,.way,.mrow,.mz-q,.stks,.bs,.f,.ec,.slot,.e,.opt,.opts,.choices,.lf-q,.tt-palette,.es-pad,.b2-pad,table,[data-a],[data-s],[data-n],[data-v],[role=radio],[role=option],textarea,input,select,svg,[contenteditable],.hj-contact';
+var SP=/^[\s ⁠​]*$/;
+function blockish(e){var d=getComputedStyle(e).display;return d!=='inline'&&d!=='inline-block'&&d!=='inline-flex'&&d!=='contents'&&d!=='none'}
+/* 1: 줄 맨 앞(칸 시작, <br>·블록 요소 바로 뒤)  2: 바로 앞이 이미 바꾼 아이콘(겹친 이모지)  0: 문장 가운데 */
+function lead(sp,slot){for(var n=sp;n&&n!==slot;n=n.parentNode){for(var s=n.previousSibling;s;s=s.previousSibling){
+  if(s.nodeType===3){if(SP.test(s.nodeValue))continue;return 0}
+  if(s.nodeType!==1)continue;
+  if(s.tagName==='BR')return 1;
+  if(s.classList.contains('hj-em'))return s.dataset.ei==='1'?2:0;
+  if(s.tagName.toLowerCase()==='svg')return 0;           /* 앞 묶음(LEAD)이 이미 아이콘을 넣은 단추 */
+  if(blockish(s))return 1;
+  if(!SP.test(s.textContent))return 0}}
+ return 1}
+function norm(t){return t.replace(/[️\u{1F3FB}-\u{1F3FF}]/gu,'')}
+function conv(sp){if(sp.dataset.ei)return;sp.dataset.ei='0';
+ var slot=sp.closest(SLOT);if(!slot||sp.closest(NO))return;
+ var L=lead(sp,slot);if(!L)return;
+ var e=norm(sp.textContent),k=EM[e]||(slot.matches(ROUT)&&RT[e]);
+ if(L===2){if(k)sp.classList.add('hj-ei-dup');return}      /* '📊 ⏳ 자료실'의 ⏳ */
+ if(!k||!P[k]){if(slot.matches(TITLE))sp.classList.add('hj-ei-off');return}   /* 첫 화면 제목의 장식 이모지(🍂 🌕 …) */
+ sp.dataset.ei='1';sp.dataset.k=k;sp.classList.add('hj-ei');sp.setAttribute('aria-hidden','true');
+ var t=document.createElement('span');t.className='hj-ei-t';t.textContent=sp.textContent;   /* 글자는 남겨 textContent가 그대로(앱 코드·복사 안전) */
+ sp.innerHTML='<svg class="hj-eis" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+P[k]+'</svg>';
+ sp.appendChild(t)}
+function run(x){if(!x||x.nodeType!==1||!x.isConnected)return;if(x.closest('.hj-ei'))return;
+ if(x.classList.contains('hj-em'))conv(x);else x.querySelectorAll('.hj-em:not([data-ei])').forEach(conv)}
+run(document.body);
+var q=new Set(),raf=0;
+new MutationObserver(function(ms){ms.forEach(function(r){r.addedNodes.forEach(function(x){if(x.nodeType===1)q.add(x)})});
+ if(q.size&&!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(run)})}).observe(document.body,{childList:true,subtree:true});
+})();
+
 /* 교사 안내 창: 인쇄·PDF 저장 / 구글 문서로 복사 / 선생님께 이메일 */
 (function(){var tn=document.getElementById('tn'),pn=tn&&tn.querySelector('.panel'),B=document.getElementById('tnB'),T=document.getElementById('tnT');if(!pn||!B||pn.querySelector('.hj-tbar'))return;
 var I={print:'<path d="M7 8.5V3.8h10v4.7"/><rect x="3.8" y="8.5" width="16.4" height="7.5" rx="2"/><path d="M7 13.5h10v6.7H7Z"/>',

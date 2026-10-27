@@ -847,6 +847,224 @@ html body .frameline{display:flex!important;flex-wrap:wrap;justify-content:cente
  html body :is(.topbar,.hj-navbar):has(.hj-nav) a.hj-homemini,html:has(.hj-navbar .hj-nav) body a.hj-homemini{display:none!important}
  html body .topbar:has([data-hjfirst]) .hj-nav .hj-nl{display:none!important}
 }
+
+/* ===== 수업 앱 안쪽 통일 규격 (2026-10-27, 구성 검토 반영): 선 1/1.5/2px, 둥글기 12·16·20·999, 그림자 둘, 흐름=과목색·활동=잉크 ===== */
+@media screen{
+html[data-hjsubj]{
+ --hj-line-2:color-mix(in srgb,var(--ink) 24%,var(--line));
+ --hj-sh-1:0 1px 2px rgba(15,28,51,.05);
+ --hj-sh-2:0 1px 2px rgba(15,28,51,.05),0 12px 28px -22px rgba(15,28,51,.28);
+ --hj-ok:#1F8A5B;--hj-no:#C8463B;--hj-warn:#B7791F;
+ --hj-ok-soft:color-mix(in srgb,var(--hj-ok) 11%,var(--paper));
+ --hj-no-soft:color-mix(in srgb,var(--hj-no) 9%,var(--paper));
+ --hj-warn-soft:color-mix(in srgb,var(--hj-warn) 9%,var(--paper));
+ --hj-act:#141A26;
+}
+@media (prefers-color-scheme:dark){html[data-hjsubj]:not([data-theme="light"]){--hj-act:#E8ECF3}}
+html[data-hjsubj][data-theme="dark"]{--hj-act:#E8ECF3}
+}
+
+@media screen{
+/* 분류 단추: 원색 덩어리 → 그 색 옅은 바탕 + 진한 글자. 테두리 대신 안쪽 선(크기 그대로) */
+html[data-hjsubj]:not(:has(#ovBar)) body .bin{background:color-mix(in srgb,var(--cc,#888) 14%,var(--paper))!important;color:color-mix(in srgb,var(--cc,#888) 62%,var(--ink))!important;
+ box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--cc,#888) 38%,var(--paper)),var(--hj-sh-1)!important;border-radius:20px!important}
+html[data-hjsubj]:not(:has(#ovBar)) body .bin:hover:not(:disabled){background:color-mix(in srgb,var(--cc,#888) 22%,var(--paper))!important;filter:none!important}
+html[data-hjsubj]:not(:has(#ovBar)) body .bin:active{transform:translateY(1px)!important}
+html[data-hjsubj]:not(:has(#ovBar)) body .bin:disabled{transform:none!important;opacity:.45}
+html[data-hjsubj]:not(:has(#ovBar)) body .bin.lit{outline:3px solid var(--cc,#888)!important;outline-offset:3px!important}
+/* 기억 카드 앞면 같은 톤 */
+html[data-hjsubj] body .rc .front{background:color-mix(in srgb,var(--cc,#888) 14%,var(--paper))!important;color:color-mix(in srgb,var(--cc,#888) 62%,var(--ink))!important;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--cc,#888) 35%,var(--paper))}
+/* 피드백 띠 안 '다음': 단단한 그림자 → 퍼짐 */
+html[data-hjsubj] body .fb.on :is(#nx,button){box-shadow:0 8px 18px -10px color-mix(in srgb,var(--hjs) 75%,transparent)!important}
+/* 점수: 검정 큰 알약 → 과목색 옅은 알약 */
+html[data-hjsubj] body .scores .chip{background:var(--paper)!important;color:var(--soft)!important;border:1px solid var(--line)!important;box-shadow:none!important}
+html[data-hjsubj] body .scores .chip:is(.now,.win){background:var(--hjs-soft)!important;color:var(--hjs-ink)!important;border-color:transparent!important;font-weight:800}
+}
+
+@media screen{
+html[data-hjsubj] body :is(.card1,.book,.pw,.oi,.mw,.mm,.way,.opt2,.choose button,.rec,.lkrow){border-width:1.5px!important;border-color:var(--line)!important;box-shadow:var(--hj-sh-1)!important}
+html[data-hjsubj] body :is(.card1,.book,.prob){box-shadow:var(--hj-sh-2)!important}
+html[data-hjsubj] body :is(.way,.opt2,.choose button):hover:not(:disabled){border-color:var(--hj-line-2)!important}
+/* 상태(뜻 그대로) */
+html[data-hjsubj] body :is(.way[aria-pressed="true"],.pw.lit){border-color:var(--hjs)!important;background:var(--hjs-soft)!important;box-shadow:inset 0 0 0 1px var(--hjs)!important}
+html[data-hjsubj] body :is(.way,.opt2).right{border-color:var(--hj-ok)!important;background:var(--hj-ok-soft)!important}
+html[data-hjsubj] body :is(.way.miss,.opt2.wrong){border-color:var(--hj-no)!important;background:var(--hj-no-soft)!important}
+/* 말풍선 줄: 14px 무지개 띠 → 6px */
+html[data-hjsubj] body .talk .q{border-left-width:6px!important}
+/* 사진 카드 위 12px 띠 → 4px, 사진 테두리 1px */
+html[data-hjsubj] body .ec{border-top-width:4px!important;box-shadow:var(--hj-sh-2)}
+html[data-hjsubj] body :is(.ec img,.card1 img.cphoto){border-width:1px!important;border-color:var(--line)!important}
+/* 이야기 상자(노랑 4px) → 흰 바탕 + 왼쪽 띠 */
+html[data-hjsubj] body .expq{background:var(--paper)!important;color:var(--ink)!important;border:1px solid var(--line)!important;box-shadow:inset 5px 0 0 var(--hj-warn),var(--hj-sh-2)!important}
+html[data-hjsubj] body .expq>b{color:var(--hj-warn)}
+/* '이렇게 해 봐요'(보라 3px) → 보조 단추 */
+html[data-hjsubj] body .howbtn{border:1.5px solid var(--line)!important;color:var(--ink)!important;background:var(--paper)!important;border-radius:999px!important;font-weight:700;box-shadow:var(--hj-sh-1)}
+html[data-hjsubj] body .howbtn .hj-i{color:var(--soft)}
+/* 문제 상자 5px → 1.5px */
+html[data-hjsubj] body .prob{border-width:1.5px!important;border-color:color-mix(in srgb,var(--pc2,var(--hjs)) 40%,var(--paper))!important}
+html[data-hjsubj] body .rc .back2{border-width:2px!important}
+/* 예시 상자 점선 3px → 1.5px */
+html[data-hjsubj] body :is(.exbox,.ex-model,.ex){border-width:1.5px!important}
+html[data-hjsubj] body .bin2{border-width:2px!important}
+/* 피드백 띠: 2px+8px → 1px+5px */
+html[data-hjsubj] body .fb.on{border-width:1px!important;border-left-width:5px!important;box-shadow:var(--hj-sh-2)!important}
+}
+
+@media screen{
+html[data-hjsubj] body #lesson :is(.pic,.task label,.evi button,.evbox,.opt,.dc,.mini .m){border-width:1.5px!important;border-color:var(--line)!important}
+html[data-hjsubj] body #lesson :is(.pic,.mini .m){box-shadow:var(--hj-sh-1)}
+/* 사고 칸: 위 10px 띠 → 4px, 제목은 칸색을 잉크 쪽으로 */
+html[data-hjsubj] body #lesson .col{border:1px solid var(--line);border-top:4px solid var(--cc)!important;box-shadow:var(--hj-sh-1)}
+html[data-hjsubj] body #lesson .col h3{color:color-mix(in srgb,var(--cc) 78%,var(--ink))!important}
+/* 입력 + 붙이기: 회색 3px 칸 → 흰 1.5px, 붙이기는 연한 칸색 */
+html[data-hjsubj] body #lesson :is(.add input,.claim textarea,.qpick select,.qadd select,.qadd input,.qi){background:var(--paper)!important;border:1.5px solid var(--line)!important;border-radius:12px!important}
+html[data-hjsubj] body #lesson .add button{background:color-mix(in srgb,var(--cc) 13%,var(--paper))!important;color:color-mix(in srgb,var(--cc) 72%,var(--ink))!important;box-shadow:inset 0 0 0 1.5px color-mix(in srgb,var(--cc) 35%,var(--paper));border-radius:12px!important;font-weight:700}
+/* 예시 단추: 원색 테두리 → 중립 */
+html[data-hjsubj] body .hintbtn{border:1px solid var(--line)!important;color:var(--soft)!important;background:var(--paper)!important}
+html[data-hjsubj] body .hintbtn[aria-expanded="true"]{background:color-mix(in srgb,var(--cc) 14%,var(--paper))!important;color:color-mix(in srgb,var(--cc) 72%,var(--ink))!important;border-color:transparent!important}
+html[data-hjsubj] body .hintpop{border-width:1.5px!important;box-shadow:var(--hj-sh-2),0 18px 40px -20px rgba(15,28,51,.35)!important}
+/* 함께 답할 질문(주황 4px) → 질문 상자 */
+html[data-hjsubj] body #lesson .qpick{border:0!important;background:var(--hjs-soft)!important}
+/* 안전 */
+html[data-hjsubj] body #lesson .safe{background:var(--hj-no-soft)!important;color:var(--ink)!important;border:1px solid color-mix(in srgb,var(--hj-no) 25%,var(--paper))!important;box-shadow:inset 5px 0 0 var(--hj-no)}
+/* 기록 표: 단계색 원색 머리 → 옅은 과목색 */
+html[data-hjsubj] body #lesson table.rec :is(th,td){border-width:1px!important}
+html[data-hjsubj] body #lesson table.rec thead th{background:var(--hjs-soft)!important;color:var(--hjs-ink)!important;font-weight:800}
+html[data-hjsubj] body #lesson table.rec input{border-width:1.5px!important}
+/* 상태 */
+html[data-hjsubj] body #lesson :is(.dc[aria-pressed="true"],.evi button[aria-pressed="true"]){border-color:var(--hjs)!important;background:var(--hjs-soft)!important;color:var(--hjs-ink)!important}
+html[data-hjsubj] body #lesson .opt.right{border-color:var(--hj-ok)!important;background:var(--hj-ok-soft)!important}
+html[data-hjsubj] body #lesson .opt.wrong{border-color:var(--hj-no)!important;background:var(--hj-no-soft)!important}
+html[data-hjsubj] body #lesson .task label.done{border-color:var(--hj-ok)!important}
+/* 위 도구·아래 이전: 원색·진한 선 → 중립 */
+html[data-hjsubj] body #lesson .topbar .tool.qb{border-color:var(--line)!important;color:var(--ink)!important}
+html[data-hjsubj] body #lesson .topbar .tool .n{background:var(--hjs)!important;color:#fff!important}
+html[data-hjsubj] body #lesson .foot #prev{border-color:var(--line)!important;color:var(--ink)!important;background:var(--paper)!important}
+/* 첫 화면 지도: 위 띠 3px 유지, 판이 덜 붐비게 */
+html[data-hjsubj] body #cMap .mcol{box-shadow:none}
+}
+
+@media screen{
+html[data-hjsubj="math"]{--ring:var(--hjs);--ring-soft:var(--hjs-soft);--tent:var(--hjs)}
+/* 로고: 흰 바늘이 흰 머리줄에서 사라짐 → 과목색 */
+html[data-hjsubj="math"] body header.top .brand>svg circle:first-child{stroke:var(--hjs)!important}
+html[data-hjsubj="math"] body header.top .brand>svg line{stroke:var(--hjs)!important}
+html[data-hjsubj="math"] body header.top .brand>svg circle:last-child{fill:var(--hjs)!important}
+/* 첫 화면 */
+html[data-hjsubj="math"] body .gate-card{border-width:1px!important;border-radius:24px!important}
+html[data-hjsubj="math"] body .gate-card h1{font-weight:800!important;letter-spacing:-.03em}
+/* 엔진의 font-family:"Jua"(일반 글꼴 없음) — 글꼴을 못 받으면 명조로 보임(번호판·차시 카드 '1차시' 등) */
+html[data-hjsubj="math"] body :is(.nums button,.site .n,.site .t,.stair .k,.seq .opt .no,.stepname,.q,.fb,.big,.optbox>summary,.pane h3,.ansbox .anh,.hlpop .exh){font-family:"Jua","Malgun Gothic","Apple SD Gothic Neo",sans-serif!important}
+html[data-hjsubj="math"] body .nums button{border-width:1.5px!important;border-radius:12px!important;box-shadow:var(--hj-sh-1)}
+html[data-hjsubj="math"] body .nums button:hover:not(.on){border-color:var(--hj-line-2)!important}
+html[data-hjsubj="math"] body main.gate .big{background:var(--hjs)!important;box-shadow:0 8px 18px -10px color-mix(in srgb,var(--hjs) 75%,transparent)!important}
+html[data-hjsubj="math"] body main.gate .big[disabled]{background:color-mix(in srgb,var(--hjs) 35%,#fff)!important;box-shadow:none!important}
+html[data-hjsubj="math"] body :is(.big,.ghost)[disabled]:active{transform:none}
+/* 계단: 회색 동그라미 대비 고침, 지금 계단 과목색 */
+html[data-hjsubj="math"] body .stair{border-width:1px!important;box-shadow:none}
+html[data-hjsubj="math"] body .stair:not(.cur):not(.ok):not(.chal):not(.passed) .k{background:var(--bg)!important;color:var(--soft)!important;box-shadow:inset 0 0 0 1px var(--line)}
+html[data-hjsubj="math"] body .stair.cur{background:var(--hjs-soft)!important;border-color:var(--hjs)!important;box-shadow:none!important}
+/* 판·질문·보기 */
+html[data-hjsubj="math"] body :is(.work,.tbl-wrap){border-width:1px!important;box-shadow:var(--hj-sh-2)}
+html[data-hjsubj="math"] body .stage svg{border-width:1px!important}
+html[data-hjsubj="math"] body .q{background:var(--hjs-soft)!important;color:var(--ink)!important}
+html[data-hjsubj="math"] body .opt{border-width:1.5px!important;border-radius:14px!important;box-shadow:var(--hj-sh-1)}
+html[data-hjsubj="math"] body .opt:hover:not(.on):not(.good):not(.bad){border-color:var(--hj-line-2)!important}
+html[data-hjsubj="math"] body .opt.good{border-color:var(--hj-ok)!important;background:var(--hj-ok-soft)!important}
+html[data-hjsubj="math"] body .opt.bad{border-color:var(--hj-no)!important;background:var(--hj-no-soft)!important}
+html[data-hjsubj="math"] body :is(.site,.wordbank .word,.tools button,.ghost){border-width:1.5px!important}
+html[data-hjsubj="math"] body .story{border-left-width:5px!important}
+html[data-hjsubj="math"] body .hintbox{border-left-width:5px!important}
+html[data-hjsubj="math"] body :is(.copybox,.optbox){border-width:1.5px!important}
+/* 사고 칸: 3px 칸색 테두리 → 1px + 위 4px 띠(안쪽 그림자), 제목 밑줄 1px */
+html[data-hjsubj="math"] body .pane0{--hjpc:#2B7BD6}html[data-hjsubj="math"] body .pane1{--hjpc:#6A4FC9}
+html[data-hjsubj="math"] body .pane2{--hjpc:#D9731A}html[data-hjsubj="math"] body .pane3{--hjpc:#2F6B57}
+html[data-hjsubj="math"] body .pane{border:1px solid var(--line)!important;border-radius:16px!important;box-shadow:inset 0 4px 0 var(--hjpc,var(--hjs)),var(--hj-sh-1)!important}
+html[data-hjsubj="math"] body .pane h3{border-bottom:1px solid var(--line)!important;color:color-mix(in srgb,var(--hjpc,var(--hjs)) 78%,var(--ink))!important}
+html[data-hjsubj="math"] body :is(.pane .exb,.hlpb){border:1px solid var(--line)!important;color:var(--soft)!important;background:var(--paper)!important}
+html[data-hjsubj="math"] body :is(.pane .exb,.hlpb)[aria-expanded="true"]{background:color-mix(in srgb,var(--hjpc,var(--hjs)) 14%,var(--paper))!important;color:color-mix(in srgb,var(--hjpc,var(--hjs)) 72%,var(--ink))!important;border-color:transparent!important}
+html[data-hjsubj="math"] body :is(.pane .expop,.hlpop,.ansbox){border-width:1.5px!important}
+html[data-hjsubj="math"] body :is(input[type=text],input[type=number],textarea,.prow input){border-width:1.5px!important;border-radius:12px!important}
+}
+
+@media screen{
+/* 3px 회색 테두리 → 겉보기 1px: 테두리는 투명(자리 그대로), 안쪽 선은 outline */
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov section :is(.lab,.scene,.card2,.links a){border-color:transparent!important;background-clip:padding-box;outline:1px solid var(--line);outline-offset:-3px}
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov section .card2.open{outline:2px solid var(--hjs);background-color:var(--hjs-soft)!important}
+/* 표 머리: 복숭아·하늘색 → 옅은 과목색, 칸 선 연하게(굵기 그대로) */
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov section th{background:var(--hjs-soft)!important;color:var(--ink)!important}
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov section :is(td,th){border-color:var(--line)!important}
+/* 피드백: 색 바탕 → 같은 크기의 띠(안쪽 4px 그림자) */
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov .fb.ok{background:var(--hj-ok-soft)!important;color:color-mix(in srgb,var(--hj-ok) 72%,var(--ink))!important;box-shadow:inset 4px 0 0 var(--hj-ok)}
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov .fb.no{background:var(--hj-no-soft)!important;color:color-mix(in srgb,var(--hj-no) 72%,var(--ink))!important;box-shadow:inset 4px 0 0 var(--hj-no)}
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov .fb.info{background:var(--hjs-soft)!important;color:var(--ink)!important;box-shadow:inset 4px 0 0 var(--hjs)}
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov .warn{background:var(--hj-warn-soft)!important;color:var(--ink)!important;border-color:color-mix(in srgb,var(--hj-warn) 35%,var(--paper))!important}
+/* 맞음·틀림 색(굵기는 content.css의 2px 그대로) */
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov section button.right{background:var(--hj-ok-soft)!important;border-color:var(--hj-ok)!important;color:color-mix(in srgb,var(--hj-ok) 70%,var(--ink))!important}
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov section button.wrong{background:var(--hj-no-soft)!important;border-color:var(--hj-no)!important;color:color-mix(in srgb,var(--hj-no) 70%,var(--ink))!important}
+/* 안쪽 주요 단추(예상 끝!): 각진 14px·가는 글자 → 알약·굵게 */
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov section button.main{border-radius:999px!important;font-weight:700!important}
+/* 아래 막대 '이전·다음' 글자 굵게(막대는 고정 위치라 쪽 나눔과 무관) */
+html.hj-scmenu #ovBar :is(.hj-pn button,#ovNext,#hjEnd){font-weight:700!important}
+html.hj-scmenu #ovBar .hj-pn button:not(#ovNext):not(#hjEnd){border-color:var(--line)!important}
+/* 놓는 칸 점선 색만 */
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov section .bin{border-color:var(--hj-line-2)!important}
+/* 입력 포커스: 그림자 고리(크기 그대로) */
+html[data-hjsubj]:not(#hjz):not(#hjz):has(#ovBar) body.ov section :is(input[type=text],textarea,select):focus-visible{outline:0;border-color:var(--hjs)!important;box-shadow:0 0 0 3px color-mix(in srgb,var(--hjs) 22%,transparent)}
+}
+
+@media screen{
+/* P2-a 흐름 = 과목색, 활동 = 잉크(국어 '읽기 방법 뽑기'와 같은 규칙). 크기 그대로 */
+html[data-hjsubj]:not(#hjz):not(#hjz):not(#hjz) body #lesson .body .big-btn,
+html[data-hjsubj]:not(#hjz):not(#hjz):not(#hjz) body #stage #body :is(.big-btn,.mid-btn),
+html[data-hjsubj]:not(#hjz):not(#hjz):not(#hjz):has(#ovBar) body.ov section button.main{background:var(--hj-act)!important;color:var(--paper)!important;border-color:transparent!important;box-shadow:0 8px 18px -12px rgba(15,28,51,.55)!important}
+/* P2-b 단추 안 이모지 숨김(선 아이콘이 없는 '🔎 생각 확인하기'·'✔️ 기록하기' 등). 너비만 줄어듦 — 과학 한 화면은 한 줄 단추라 높이 그대로이나 쪽 점검 권장 */
+
+/* 국어 말풍선마다 되풀이되는 💬 숨김(너비만 변함) */
+html[data-hjsubj] body .talk .q>.hj-em:first-child,html[data-hjsubj] body .talk .q .qt>.hj-em:first-child{display:none!important}
+/* P2-c 진행 화면 나가기 자리 통일: 과학·수학도 [자료 목록][홈]을 오른쪽 끝에(국어·사회·홍지희와 같게). 순서만 바뀜, nav 높이 그대로 */
+html.hj-scmenu body>nav .wrap>.hj-sctools{order:2}
+html.hj-scmenu body>nav .wrap>.hj-nav{order:3;flex-direction:row-reverse;margin:0 0 0 6px!important}
+html[data-hjsubj="math"] body header.top>.who{order:8}
+html[data-hjsubj="math"] body header.top>.hj-nav{order:9;flex-direction:row-reverse;margin:0 0 0 10px!important}
+}
+
+/* ===== 과감한 층 (2026-10-27 선생님: 투박·유치, 배치 들쭉날쭉, 이모지 조잡, 메뉴와 다름) =====
+   국어·사회 덱(#stage)과 홍지희(#lesson) 진행 화면 본문을 메뉴의 흰 판 하나로, 제목·안내 글 무게와 크기를 한 규칙으로, 머리·단추의 꾸밈 이모지를 걷음. */
+@media screen{
+ /* 판은 '확대되지 않는 틀'에: 덱(#stage)은 #bodyWrap(앱이 그 안의 #body를 화면에 맞게 확대함), 홍지희(#lesson)는 #body를 내용 높이만큼만 */
+ html[data-hjsubj] body section#stage.screen.on>#bodyWrap,html[data-hjsubj] body section#lesson.screen.on #body.body{background:var(--paper);border:1px solid var(--line);border-radius:24px;
+  box-shadow:0 1px 2px rgba(15,28,51,.04),0 24px 48px -32px rgba(15,28,51,.28)}
+ html[data-hjsubj] body section#stage.screen.on>#bodyWrap{padding:clamp(12px,1.6vw,22px) clamp(14px,2vw,28px)!important;margin:0 clamp(0px,1vw,12px)}
+ html[data-hjsubj] body section#lesson.screen.on>.foot{margin-top:auto!important}
+ html[data-hjsubj] body section#lesson.screen.on #body.body{flex:0 1 auto!important;padding:clamp(18px,2.2vw,30px) clamp(18px,2.4vw,34px)!important}
+ html[data-hjsubj] body section:is(#stage,#lesson) .hd{font-weight:800!important;letter-spacing:-.03em!important;color:var(--ink)!important;font-size:clamp(26px,2.5vw,38px)!important;line-height:1.3!important;text-wrap:balance}
+ html[data-hjsubj] body section:is(#stage,#lesson) :is(.ask,.inst,.lead,p.goal){color:var(--soft)!important;font-weight:600!important}
+ html[data-hjsubj] body :is(.hd,.ask,.inst,.qbox,.hq .qt,.dq,#body h2,#body h3,.big-btn,.mid-btn,.howbtn,button.main,main.lesson .big,.hj-gonext,.hj-head2 h2)>.hj-em:first-child{display:none!important}
+}
+
+/* ===== 이모지 자리 선 아이콘 (2026-10-27): 메뉴 icons.js와 같은 24×24·선 1.8, 기능 이모지 111종을 정해진 자리에서만 ===== */
+/* 수업 자료 선 아이콘(이모지 자리, content.js hj-eicons) — 메뉴(icons.js)와 같은 24×24·선 1.8 */
+html body .hj-em.hj-ei{display:inline-block;position:relative;width:1.12em;height:1.12em;line-height:0;vertical-align:-.2em;margin-inline-end:.08em;flex:none;color:inherit;font-size:inherit}
+html body .hj-ei>.hj-eis{display:block;width:100%;height:100%;overflow:visible;stroke-width:var(--hj-sw,1.8)}
+html body .hj-ei>.hj-ei-t{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap;pointer-events:none}
+html body .hj-ei-off,html body .hj-ei-dup{display:none!important}
+/* 플렉스 안(단추·막대)에서는 가운데 맞춤, 글자와 간격은 gap이 맡음 */
+html body :is(.hj-ic,.seg>button,.bd-tab,.tl-btn,.mu-b,.rd-b,.ar-b,.cs-btn)>.hj-ei{align-self:center;margin-inline-end:0}
+/* 굵기: 작은 글(안내·사진 설명·태그)은 조금 굵게, 큰 제목은 조금 가늘게 → 화면에서 선 두께가 비슷해 보이게 */
+html body :is(.tip,.warn,.safe,.notice,figcaption,.zoomhint,.rd-tag,.rd-stat,.scores,.hj-qlab,.bq>small,[class$="-rules"]>li) .hj-ei{--hj-sw:2.05}
+html body :is(h1,.title,.tl-ico,.mp-ico) .hj-ei,html body :is(.tl-ico,.mp-ico)>.hj-ei{--hj-sw:1.6}
+/* 자리별 크기·색 */
+html body :is(.sthead .routine,.col>h3,.pane h3,.hintt) .hj-ei,html body :is(.sthead .routine,.col>h3)>.hj-ei{width:1.05em;height:1.05em;vertical-align:-.17em;color:var(--cc,currentColor)}
+html body :is(#cover h1.title,.cvin h1.title)>.hj-ei{width:.9em;height:.9em;vertical-align:-.08em;margin-inline-end:.18em;color:var(--hjs,currentColor)}
+html body :is(.tl-head .tl-ico,.mp-head .mp-ico)>.hj-ei{width:1em;height:1em;vertical-align:0}
+html body :is(.warn,.safe)>.hj-ei{color:var(--hj-warn,#B4530F)}
+:root[data-theme="dark"]{--hj-warn:#F0A35E}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--hj-warn:#F0A35E}}
+html body #segTeam .seg button>.hj-ei{width:20px;height:20px;vertical-align:-4px}
+/* 바꾸기 전 한두 프레임 단색 이모지가 번쩍이지 않게(이름표 자리만) */
+html body :is(.sthead .routine,.col>h3,.hintt,.pane h3 .pe,#segTeam .seg>button)>.hj-em:not([data-ei]){visibility:hidden}
+@media print{html body .hj-ei{--hj-sw:1.8}}
 </style><meta name="hj-next" content="u1-4.html" data-t="용수철저울로 무게를 비교하라!" data-tag="5차시"><meta name="hj-list" content="[[&quot;u1-1.html&quot;, &quot;밀거나 당기며 느끼는 힘&quot;, &quot;2차시&quot;], [&quot;u1-2.html&quot;, &quot;오르락내리락, 어느 것이 더 무거울까?&quot;, &quot;3차시&quot;], [&quot;u1-3.html&quot;, &quot;도전, 무게를 정확히 비교하라!&quot;, &quot;4차시&quot;], [&quot;u1-4.html&quot;, &quot;용수철저울로 무게를 비교하라!&quot;, &quot;5차시&quot;], [&quot;u1-5.html&quot;, &quot;작은 힘으로 물체를 들어 올리는 도구의 비밀&quot;, &quot;6차시&quot;], [&quot;u1-6.html&quot;, &quot;일상생활에서 이용하는 도구를 찾아라!&quot;, &quot;7~8차시&quot;], [&quot;u1-7.html&quot;, &quot;창의가 팡팡 · 나를 소개하는 모빌 만들기&quot;, &quot;9~10차시&quot;], [&quot;u2-1.html&quot;, &quot;동물 탐험대, 동물을 분류하라!&quot;, &quot;2차시&quot;], [&quot;u2-2.html&quot;, &quot;우리 주변에는 어떤 동물이 살까?&quot;, &quot;3~4차시&quot;], [&quot;u2-3.html&quot;, &quot;물에는 어떤 동물이 살까?&quot;, &quot;5차시&quot;], [&quot;u2-4.html&quot;, &quot;극지방이나 사막에는 어떤 동물이 살까?&quot;, &quot;6차시&quot;], [&quot;u2-5.html&quot;, &quot;동물의 특징을 이용한 생활용품을 찾아라!&quot;, &quot;7차시&quot;], [&quot;u2-6.html&quot;, &quot;창의가 팡팡 · 동물의 특징을 이용한 생활용품 설계하기&quot;, &quot;8~9차시&quot;], [&quot;u3-1.html&quot;, &quot;식물 탐험대, 식물을 분류하라!&quot;, &quot;2차시&quot;], [&quot;u3-2.html&quot;, &quot;우리 주변에는 어떤 식물이 살까?&quot;, &quot;3차시&quot;], [&quot;u3-3.html&quot;, &quot;물에는 어떤 식물이 살까?&quot;, &quot;4차시&quot;], [&quot;u3-4.html&quot;, &quot;사막이나 높은 산에는 어떤 식물이 살까?&quot;, &quot;5차시&quot;], [&quot;u3-5.html&quot;, &quot;우리가 만든 식물원에 놀러 오세요&quot;, &quot;6~7차시&quot;], [&quot;u3-6.html&quot;, &quot;식물의 특징을 이용한 생활용품을 찾아라!&quot;, &quot;8차시&quot;], [&quot;u3-7.html&quot;, &quot;창의가 팡팡 · 식물의 특징을 이용한 생활용품 설계하기&quot;, &quot;9차시&quot;], [&quot;u4-1.html&quot;, &quot;나는야 배추흰나비 사육사!&quot;, &quot;2차시&quot;], [&quot;u4-2.html&quot;, &quot;배추흰나비의 한살이를 관찰해 볼까?&quot;, &quot;3~4차시&quot;], [&quot;u4-3.html&quot;, &quot;배추흰나비 한살이 포트폴리오를 만들어 볼까?&quot;, &quot;5차시&quot;], [&quot;u4-4.html&quot;, &quot;씨가 싹 트려면 어떤 조건이 필요할까?&quot;, &quot;6차시&quot;], [&quot;u4-5.html&quot;, &quot;식물이 쑥쑥 잘 자라게 하려면?&quot;, &quot;7차시&quot;], [&quot;u4-6.html&quot;, &quot;다양한 동물의 한살이를 알아볼까?&quot;, &quot;8차시&quot;], [&quot;u4-7.html&quot;, &quot;다양한 식물의 한살이를 알아볼까?&quot;, &quot;9차시&quot;], [&quot;u4-8.html&quot;, &quot;창의가 팡팡 · 다양한 생물의 한살이 소개하기&quot;, &quot;10~11차시&quot;]]"><!--/hj-ctheme--></head>
 <body>
 <header><div class="wrap">
@@ -1600,6 +1818,66 @@ wrap(document.body);
 var q=new Set(),raf=0;new MutationObserver(function(ms){ms.forEach(function(m){if(m.type==='characterData')q.add(m.target);else m.addedNodes.forEach(function(x){q.add(x)})});
  if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)wrap(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true});
 })();
+/* hj-eicons · 수업 자료 속 '기능 이모지'(이름표·제목·안내·단추의 맨 앞)를 메뉴와 같은 선 아이콘(24×24, 선 1.8)으로.
+   반드시 '이모지를 단색 아이콘 글꼴로' 묶음(.hj-em으로 감싸는 부분) 바로 뒤에 둡니다. 여러 번 돌아도 안전합니다. */
+(function(){
+var P={"backspace": "<path d=\"M8.6 5.4h10.6a1.8 1.8 0 0 1 1.8 1.8v9.6a1.8 1.8 0 0 1-1.8 1.8H8.6L3 12Z\"/><path d=\"m11.4 9.6 4.8 4.8M16.2 9.6l-4.8 4.8\"/>", "basket": "<path d=\"M4 9h16l-2 10H6Z\"/><path d=\"M8 9 11 4M16 9l-3-5M9 13v3M12 13v3M15 13v3\"/>", "book": "books", "books": "<rect x=\"4\" y=\"4\" width=\"4.2\" height=\"16\" rx=\"1\"/><rect x=\"8.2\" y=\"6.5\" width=\"4.2\" height=\"13.5\" rx=\"1\"/><path d=\"m13.6 7.4 3.9-1.1 3.2 12.6-3.9 1.1Z\"/>", "box": "<path d=\"m12 3.6 7.8 4.2v8.4L12 20.4l-7.8-4.2V7.8Z\"/><path d=\"m4.2 7.8 7.8 4.3 7.8-4.3M12 12.1v8.3\"/>", "bulb": "<path d=\"M9 17.2h6M10 20.5h4M12 3.5a6 6 0 0 0-3.6 10.8c.4.3.6.8.6 1.3v1.6h6v-1.6c0-.5.2-1 .6-1.3A6 6 0 0 0 12 3.5Z\"/>", "calendar": "<rect x=\"3.8\" y=\"5.3\" width=\"16.4\" height=\"14.9\" rx=\"2.2\"/><path d=\"M3.8 9.8h16.4M8.2 3.5v3.6M15.8 3.5v3.6\"/>", "camera": "<path d=\"M4 8.6a2 2 0 0 1 2-2h2l1.5-2h5l1.5 2h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z\"/><circle cx=\"12\" cy=\"12.8\" r=\"3.3\"/>", "chart": "<path d=\"M4 20h16M7 16.5v-5M12 16.5V6.8M17 16.5v-8\"/>", "check": "<circle cx=\"12\" cy=\"12\" r=\"8.4\"/><path d=\"m8.4 12.2 2.4 2.4 4.8-4.9\"/>", "clipboard": "<rect x=\"5.2\" y=\"5\" width=\"13.6\" height=\"15.2\" rx=\"2\"/><path d=\"M9 3.8h6v2.6H9ZM8.8 11.2h6.4M8.8 14.8h4.4\"/>", "clock": "<circle cx=\"12\" cy=\"12\" r=\"8.4\"/><path d=\"M12 7.6V12l2.9 1.9\"/>", "compass": "<circle cx=\"12\" cy=\"12\" r=\"8.4\"/><path d=\"m15.4 8.6-2 4.8-4.8 2 2-4.8Z\"/>", "dice": "<rect x=\"4\" y=\"4\" width=\"16\" height=\"16\" rx=\"3.4\"/><path d=\"M8.6 8.6h.01M15.4 8.6h.01M12 12h.01M8.6 15.4h.01M15.4 15.4h.01\" stroke-width=\"2.7\"/>", "erase": "<path d=\"m8.2 20.2-4.4-4.4a1.6 1.6 0 0 1 0-2.3l9.4-9.4a1.6 1.6 0 0 1 2.3 0l4.6 4.6a1.6 1.6 0 0 1 0 2.3l-8.9 9.2Z\"/><path d=\"M8.2 20.2h12M9.4 9.4l5.4 5.4\"/>", "eye": "<path d=\"M2.8 12s3.4-6.2 9.2-6.2 9.2 6.2 9.2 6.2-3.4 6.2-9.2 6.2S2.8 12 2.8 12Z\"/><circle cx=\"12\" cy=\"12\" r=\"2.7\"/>", "eyeoff": "<path d=\"M3.5 3.5l17 17M10.2 6a9.6 9.6 0 0 1 1.8-.2c5.8 0 9.2 6.2 9.2 6.2a16 16 0 0 1-2.6 3.4M6.6 7.4C4.2 9 2.8 12 2.8 12s3.4 6.2 9.2 6.2c1.6 0 3-.4 4.2-1.1\"/><path d=\"M10 10.1a2.7 2.7 0 0 0 3.9 3.8\"/>", "file": "<path d=\"M14 3.8H7a1.8 1.8 0 0 0-1.8 1.8v12.8A1.8 1.8 0 0 0 7 20.2h10a1.8 1.8 0 0 0 1.8-1.8V8.6Z\"/><path d=\"M14 3.8v4.8h4.8M9 13h6M9 16.4h4\"/>", "flask": "<path d=\"M9.3 3.5h5.4M10.5 3.5v5.4l-5.4 9.3a1.5 1.5 0 0 0 1.3 2.3h11.2a1.5 1.5 0 0 0 1.3-2.3l-5.4-9.3V3.5\"/><path d=\"M7.6 14.3h8.8\"/>", "folder": "<path d=\"M3.8 7a2 2 0 0 1 2-2h3.9l2 2.2h6.5a2 2 0 0 1 2 2v8.6a2 2 0 0 1-2 2H5.8a2 2 0 0 1-2-2Z\"/><path d=\"M3.8 10.6h16.4\"/>", "gear": "<circle cx=\"12\" cy=\"12\" r=\"2.8\"/><circle cx=\"12\" cy=\"12\" r=\"6.3\"/><path d=\"M12 3.4v2.3M12 18.3v2.3M3.4 12h2.3M18.3 12h2.3M5.9 5.9l1.6 1.6M16.5 16.5l1.6 1.6M5.9 18.1l1.6-1.6M16.5 7.5l1.6-1.6\"/>", "globe": "<circle cx=\"12\" cy=\"12\" r=\"8.4\"/><path d=\"M3.6 12h16.8M12 3.6c2.3 2.3 3.4 5.1 3.4 8.4s-1.1 6.1-3.4 8.4c-2.3-2.3-3.4-5.1-3.4-8.4S9.7 5.9 12 3.6Z\"/>", "group": "<circle cx=\"12\" cy=\"6.9\" r=\"2.5\"/><circle cx=\"5.6\" cy=\"10.4\" r=\"2.1\"/><circle cx=\"18.4\" cy=\"10.4\" r=\"2.1\"/><path d=\"M8 19.8v-1.6a4 4 0 0 1 8 0v1.6M2.5 19.8v-.9a3.3 3.3 0 0 1 4.6-3M21.5 19.8v-.9a3.3 3.3 0 0 0-4.6-3\"/>", "hand": "<path d=\"M8 12.5V6.2a1.5 1.5 0 0 1 3 0v5M11 11V4.8a1.5 1.5 0 0 1 3 0V11M14 11V6.2a1.5 1.5 0 0 1 3 0v6.6c0 4.2-2.6 7.4-6.3 7.4-2.4 0-3.9-1-5.2-3l-2.3-3.6a1.5 1.5 0 0 1 2.4-1.8L8 14\"/>", "headphones": "<path d=\"M4 15.6V13a8 8 0 0 1 16 0v2.6\"/><rect x=\"3.6\" y=\"14\" width=\"4.2\" height=\"6.2\" rx=\"1.6\"/><rect x=\"16.2\" y=\"14\" width=\"4.2\" height=\"6.2\" rx=\"1.6\"/>", "help": "<circle cx=\"12\" cy=\"12\" r=\"8.4\"/><path d=\"M9.6 9.6a2.5 2.5 0 0 1 4.8.8c0 1.7-2.4 2.2-2.4 3.7M12 17h.01\"/>", "hourglass": "<path d=\"M6.5 3.8h11M6.5 20.2h11M7.8 3.8c0 4.2 4.2 5.3 4.2 8.2S7.8 16 7.8 20.2M16.2 3.8c0 4.2-4.2 5.3-4.2 8.2s4.2 4 4.2 8.2\"/>", "house": "<path d=\"M3.5 10.5 12 3.8l8.5 6.7M5.5 9.2V20h13V9.2M10 20v-5.5h4V20\"/>", "image": "<rect x=\"3.8\" y=\"4.5\" width=\"16.4\" height=\"15\" rx=\"2.2\"/><circle cx=\"9\" cy=\"9.6\" r=\"1.6\"/><path d=\"m20.2 15.4-4.3-4.3-8.6 8.4\"/>", "key": "<circle cx=\"8\" cy=\"15.6\" r=\"3.8\"/><path d=\"m10.8 12.8 8.4-8.4M16.6 7l2.4 2.4M14.4 9.2l1.8 1.8\"/>", "laptop": "<rect x=\"5\" y=\"5\" width=\"14\" height=\"10\" rx=\"1.6\"/><path d=\"M3 18.8h18\"/>", "layers": "<path d=\"m12 4 8.4 4.4L12 12.8 3.6 8.4Z\"/><path d=\"m3.6 12.6 8.4 4.4 8.4-4.4M3.6 16.4 12 20.8l8.4-4.4\"/>", "link": "<path d=\"M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1\"/><path d=\"M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1\"/>", "listnum": "<path d=\"M4.6 5.4 6.4 4.2v6.2M4.4 10.4h4\"/><path d=\"M6.4 14v6.2M4.2 18l2.2 2.2 2.2-2.2\"/><path d=\"M11.6 6h8.6M11.6 12h8.6M11.6 18h5.6\"/>", "lock": "<rect x=\"5\" y=\"10.5\" width=\"14\" height=\"9.7\" rx=\"2\"/><path d=\"M8.2 10.5V7.8a3.8 3.8 0 0 1 7.6 0v2.7\"/>", "map": "<path d=\"M9 4.5 3.8 6.4v13.1L9 17.6l6 1.9 5.2-1.9V4.5L15 6.4 9 4.5Z\"/><path d=\"M9 4.5v13.1M15 6.4v13.1\"/>", "medal": "<path d=\"M8.2 3.6 11 9.4M15.8 3.6 13 9.4M8.2 3.6h7.6\"/><circle cx=\"12\" cy=\"15\" r=\"5.2\"/><circle cx=\"12\" cy=\"15\" r=\"2.1\"/>", "mic": "<rect x=\"9\" y=\"3.5\" width=\"6\" height=\"11\" rx=\"3\"/><path d=\"M5.8 11.5a6.2 6.2 0 0 0 12.4 0M12 17.7v2.8\"/>", "monitor": "<rect x=\"3.6\" y=\"4.4\" width=\"16.8\" height=\"11.4\" rx=\"1.8\"/><path d=\"M9 20h6M12 15.8V20\"/>", "msg": "<path d=\"M4.2 6.3a2 2 0 0 1 2-2h11.6a2 2 0 0 1 2 2v8.4a2 2 0 0 1-2 2H10l-4.5 3.6v-3.6h.7a2 2 0 0 1-2-2Z\"/>", "music": "music", "news": "<rect x=\"3.8\" y=\"4.6\" width=\"16.4\" height=\"14.8\" rx=\"2\"/><path d=\"M7.4 8.6h9.2M7.4 12h4.2M7.4 15.4h4.2M14.6 12h2v3.4h-2Z\"/>", "ocircle": "<circle cx=\"12\" cy=\"12\" r=\"7.4\" stroke-width=\"2.3\"/>", "orb": "<circle cx=\"12\" cy=\"10\" r=\"7\"/><path d=\"M6 20h12M8 17.5l-1 2.5M16 17.5l1 2.5M9 8a3 3 0 0 1 3-2\"/>", "pair": "<circle cx=\"8\" cy=\"8.4\" r=\"2.7\"/><circle cx=\"16\" cy=\"8.4\" r=\"2.7\"/><path d=\"M3.3 19.8v-.9a4.7 4.7 0 0 1 9.4 0v.9M11.3 19.8v-.9a4.7 4.7 0 0 1 9.4 0v.9\"/>", "palette": "<path d=\"M12 3.8a8.2 8.2 0 0 0 0 16.4c1 0 1.6-.8 1.6-1.6 0-1.3-1-1.6-1-2.6 0-.9.7-1.6 1.6-1.6h2.1a3.8 3.8 0 0 0 3.9-3.8c0-3.7-3.7-6.8-8.2-6.8Z\"/><path d=\"M7.8 11h.01M10 7.6h.01M14.3 7.6h.01\" stroke-width=\"2.6\"/>", "party": "<path d=\"M4 20 8.4 8.6l7 7Z\"/><path d=\"M13.6 6.2c.6-1.3.4-2.3-.4-3M17.8 10.4c1.3-.6 2.3-.4 3 .4M15.6 8.4l3.2-3.2\"/><path d=\"M11 4.4h.01M20.2 13.6h.01M19 3.6h.01\" stroke-width=\"2.6\"/>", "pencil": "<path d=\"M15.6 4.6a2 2 0 0 1 2.8 0l1 1a2 2 0 0 1 0 2.8L8.6 19.2l-4.4 1 1-4.4Z\"/><path d=\"m13.6 6.6 3.8 3.8\"/>", "person": "<circle cx=\"12\" cy=\"7.9\" r=\"3.3\"/><path d=\"M5.6 20.2v-1.1a6.4 6.4 0 0 1 12.8 0v1.1\"/>", "pin": "<path d=\"M12 21v-6\"/><path d=\"M8 4h8l-1 6 3 3H6l3-3Z\"/>", "printer": "<path d=\"M7 8.5V3.8h10v4.7\"/><rect x=\"3.8\" y=\"8.5\" width=\"16.4\" height=\"7.5\" rx=\"2\"/><path d=\"M7 13.5h10v6.7H7Z\"/>", "puzzle": "<path d=\"M9 4.5h3.2v1.6a1.8 1.8 0 1 0 3.6 0V4.5H19v3.7h-1.4a1.8 1.8 0 1 0 0 3.6H19v7.7H5v-7.7h1.4a1.8 1.8 0 1 0 0-3.6H5V4.5Z\"/>", "refresh": "<path d=\"M19.5 12a7.5 7.5 0 0 1-13.2 4.9M4.5 12a7.5 7.5 0 0 1 13.2-4.9\"/><path d=\"M18 3.8v3.6h-3.6M6 20.2v-3.6h3.6\"/>", "rewind": "<path d=\"M18.6 5.4v13.2L9.4 12Z\"/><path d=\"M5.6 5.4v13.2\"/>", "robot": "<rect x=\"4.6\" y=\"8\" width=\"14.8\" height=\"11\" rx=\"2.8\"/><path d=\"M12 8V5M2.8 12.4v3.2M21.2 12.4v3.2M9.8 16.2h4.4\"/><circle cx=\"12\" cy=\"4\" r=\"1\"/><path d=\"M9.4 12.6h.01M14.6 12.6h.01\" stroke-width=\"2.6\"/>", "rows": "<rect x=\"3.6\" y=\"4.4\" width=\"5\" height=\"3.6\" rx=\"1\"/><rect x=\"15.4\" y=\"4.4\" width=\"5\" height=\"3.6\" rx=\"1\"/><rect x=\"3.6\" y=\"10.9\" width=\"5\" height=\"3.6\" rx=\"1\"/><rect x=\"15.4\" y=\"10.9\" width=\"5\" height=\"3.6\" rx=\"1\"/><path d=\"M3.6 18.8h5M15.4 18.8h5\"/><path d=\"M12 4v16.2\" stroke-dasharray=\"1.4 2.6\"/>", "ruler": "<path d=\"m3.8 15.6 11.8-11.8 4.6 4.6L8.4 20.2Z\"/><path d=\"m7.6 11.8 1.8 1.8M10.4 9l1.2 1.2M13.2 6.2l1.8 1.8\"/>", "save": "<path d=\"M5 3.8h11.2L19.2 6.8v11.4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z\"/><path d=\"M8.2 3.8v4.4h6.6V3.8M8 20.2v-5.4h8v5.4\"/>", "scale": "<path d=\"M12 4v16M8 20h8M5 7.3h14M12 4.6l-.01 0\"/><path d=\"M5 7.3 2.8 13a3 3 0 0 0 4.4 0Zm14 0L16.8 13a3 3 0 0 0 4.4 0Z\"/>", "school": "<path d=\"M3.5 20.5h17M5.5 20.5v-8.8L12 7.3l6.5 4.4v8.8M12 7.3V3.5h3.6M10 20.5v-4h4v4\"/><circle cx=\"12\" cy=\"12.3\" r=\"1.5\"/>", "search": "<circle cx=\"10.8\" cy=\"10.8\" r=\"6.3\"/><path d=\"m15.5 15.5 4.7 4.7\"/>", "sparkle": "<path d=\"M11 3.8l1.7 4.9 4.9 1.7-4.9 1.7-1.7 4.9-1.7-4.9-4.9-1.7 4.9-1.7Z\"/><path d=\"M18 14.8l.7 1.8 1.8.7-1.8.7-.7 1.8-.7-1.8-1.8-.7 1.8-.7Z\"/>", "sprout": "<path d=\"M12 20.5v-8.3\"/><path d=\"M12 12.2C12 8.7 9.6 6.4 5.6 6.4c0 3.5 2.4 5.8 6.4 5.8Z\"/><path d=\"M12 10.2c0-3.2 2.3-5.4 6.4-5.4 0 3.2-2.3 5.4-6.4 5.4Z\"/>", "star": "<path d=\"m12 3.9 2.5 5.1 5.6.8-4.1 4 1 5.6-5-2.7-5 2.7 1-5.6-4.1-4 5.6-.8Z\"/>", "summit": "<path d=\"M3 19.8 9.4 9.2l3.3 5.1 2.2-3.1 6.1 8.6Z\"/><path d=\"M14.9 11.2V4.2l3.8 1.6-3.8 1.6\"/>", "talk": "<path d=\"M4.2 6.3a2 2 0 0 1 2-2h11.6a2 2 0 0 1 2 2v8.4a2 2 0 0 1-2 2H10l-4.5 3.6v-3.6h.7a2 2 0 0 1-2-2Z\"/><path d=\"M8.4 9.2h7.2M8.4 12.4h4.4\"/>", "target": "<circle cx=\"12\" cy=\"12\" r=\"8.5\"/><circle cx=\"12\" cy=\"12\" r=\"5\"/><circle cx=\"12\" cy=\"12\" r=\"1.4\" fill=\"currentColor\"/>", "teacher": "<circle cx=\"7.6\" cy=\"8.2\" r=\"2.6\"/><path d=\"M3.6 19.8v-1.6a4 4 0 0 1 8 0v1.6\"/><path d=\"M11.2 4.5h9.3v9.2h-6\"/><path d=\"M12.2 11.6l3.4-3\"/>", "thought": "<path d=\"M6.8 15.2h10.4a3.7 3.7 0 0 0 .5-7.4 5.4 5.4 0 0 0-10.2-.5 4 4 0 0 0-.7 7.9Z\"/><circle cx=\"6.6\" cy=\"18.6\" r=\"1.3\"/><circle cx=\"3.9\" cy=\"20.7\" r=\".8\"/>", "thumb": "<path d=\"M7.6 10.6v9.2H4.6a1 1 0 0 1-1-1v-7.2a1 1 0 0 1 1-1Z\"/><path d=\"M7.6 10.6 11 4.3a1.9 1.9 0 0 1 3.5 1.4l-.8 3.7h5a2 2 0 0 1 2 2.4l-1.4 6.4a2 2 0 0 1-2 1.6H7.6\"/>", "timer": "<circle cx=\"12\" cy=\"13.3\" r=\"7.2\"/><path d=\"M12 9.6v3.7l2.2 1.6M9.6 3.5h4.8\"/>", "trophy": "<path d=\"M7.5 4h9v5a4.5 4.5 0 0 1-9 0Z\"/><path d=\"M7.5 6H4.5a3 3 0 0 0 3 4M16.5 6h3a3 3 0 0 1-3 4M12 13.5v3.5M8.5 20h7M9.5 17h5\"/>", "unlock": "<rect x=\"5\" y=\"10.5\" width=\"14\" height=\"9.7\" rx=\"2\"/><path d=\"M8.2 10.5V7.8a3.8 3.8 0 0 1 7.3-1.5\"/>", "users": "<circle cx=\"9\" cy=\"8.3\" r=\"3\"/><path d=\"M3.8 19.5v-1.2a5.2 5.2 0 0 1 10.4 0v1.2M15.6 5.6a3 3 0 0 1 0 5.6M17.6 13.6a5 5 0 0 1 2.6 4.6v1.3\"/>", "video": "<rect x=\"3.5\" y=\"5\" width=\"17\" height=\"14\" rx=\"3\"/><path d=\"M10.2 9.2v5.6l4.8-2.8Z\"/>", "vol": "<path d=\"M4.5 9.5h3l4.5-4v13l-4.5-4h-3Z\"/><path d=\"M15.8 9a4.2 4.2 0 0 1 0 6M18.4 6.4a8 8 0 0 1 0 11.2\"/>", "warn": "<path d=\"M10.3 4.7 3 17.3a2 2 0 0 0 1.7 3h14.6a2 2 0 0 0 1.7-3L13.7 4.7a2 2 0 0 0-3.4 0Z\"/><path d=\"M12 9.6v4.1M12 16.9h.01\"/>", "wrench": "<path d=\"M14.8 3.8a4.6 4.6 0 0 0-4.3 6.3l-6.1 6.1a2 2 0 0 0 2.8 2.8l6.1-6.1A4.6 4.6 0 0 0 19.8 8.8l-2.8 2.8-2.7-.6-.6-2.7 2.8-2.8a4.6 4.6 0 0 0-1.7-.7Z\"/>", "xcircle": "<circle cx=\"12\" cy=\"12\" r=\"8.4\"/><path d=\"m9.2 9.2 5.6 5.6M14.8 9.2l-5.6 5.6\"/>"};                       // apply_content_theme.py가 icons.js의 P 중 아래 지도에 쓰인 것만 채움
+if(!document.body||!Object.keys(P).length)return;
+var EM={},RT={};function m(k,s,o){s.split(' ').forEach(function(c){(o||EM)[c]=k})}
+/*HJ_EI_MAP*/
+m('eye','👀');m('eyeoff','🙈');m('thought','💭 🤔');m('help','❓ ❔');m('search','🔍 🔎');m('check','✅ ☑ ✔');m('ocircle','⭕');m('xcircle','❌');
+m('bulb','💡');m('msg','💬 🗨');m('talk','🗣');m('layers','📑 📜');m('link','🔗');m('sparkle','✨ 🌟');m('star','⭐');m('target','🎯');m('warn','⚠');
+m('pin','📌 📍');m('clipboard','📋');m('file','📝 📄');m('book','📖');m('books','📚');m('pencil','✏ ✍ 🖊');m('printer','🖨');m('vol','🔊 🔈 🔉 📢');
+m('mic','🎙 🎤');m('headphones','🎧');m('timer','⏱ ⏲');m('clock','⏰ 🕰');m('hourglass','⏳ ⌛');m('calendar','📅 📆 🗓');m('refresh','🔄 🔁');
+m('key','🔑');m('lock','🔒 🔐');m('unlock','🔓');m('dice','🎲');m('house','🏠');m('school','🏫');m('person','🙋');m('pair','👫');m('group','👨‍👩‍👧');
+m('users','👥 🧑‍🤝‍🧑 🤝');m('rows','🪑');m('listnum','🔢');m('chart','📊 📈');m('monitor','🖥');m('laptop','💻');m('video','🎬 📺');m('camera','📷 📸');
+m('image','🖼');m('folder','🗂');m('wrench','🛠');m('gear','⚙');m('save','💾');m('robot','🤖');m('thumb','👍');m('party','🎉');m('trophy','🏆');
+m('medal','🏅');m('puzzle','🧩');m('flask','🔬 🧪');m('scale','⚖');m('orb','🔮');m('compass','🧭');m('map','🗺');m('globe','🌏 🌍 🌎');m('palette','🎨');
+m('ruler','📏 📐');m('erase','🧽');m('backspace','⌫');m('rewind','⏮');m('basket','🧺 🛒');m('box','📦');m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('music','🎵 🎶');m('news','📰');
+m('sprout','🌱',RT);m('summit','🧗',RT);m('hand','✋',RT);   /* 자연·몸짓 그림은 사고 루틴 칸 제목에서만 아이콘(다른 곳에선 내용일 수 있음) */
+/*/HJ_EI_MAP*/
+var ROUT='.sthead .routine,.col>h3,.mcol>h3,.pane h3,.hintt';
+var TITLE='#cover h1.title,.cvin h1.title';
+var SLOT=[ROUT,TITLE,
+ '.bq>small,.qpick>b,.evbox>b,.expq>b,.ask2>b,.prev>b,.sumbox>b,.gb-ask>b,.hj-qlab,#cover .lead,.qbox,.after,#body>p.hd,#body>p.lead,.fillbox>.fl,#turnLine',
+ '.tip,.warn,.safe,.notice,.zoomhint,figcaption,.hj-guide,.hj-task,p.goal,details>summary,[class$="-rules"]>li,.tl-how li,.tl-ideas li',
+ '.fb,.feedback',
+ 'main h1,main h2,main h3,section>h2,section>h3,.fitbox>h3,.lg-box>h3,.tl-head .tl-ico,.mp-head .mp-ico',
+ '.seg>button,.big-btn,.mid-btn,button.main,button.ghost,button.tool,a.tolist,.tl-btn,.mu-b,.rd-b,.cr-btn,.ar-b,.cs-btn,.lg-btn,.og-btn,.bd-tab,.nm-mode,.bk-mode,nav.mu-toc>a,[class*="tabs"]>button,.hj-wg button,.scores>.chip,.rd-stat>span,.rd-tag'
+].join(',');
+/* 내용(문제·보기·답·그림 카드·게임판)은 절대 건드리지 않음 */
+var NO='.pick,.cards,.bin,.chips,.r4-chips,.k6-chips,.k6-cards,.ox,.b4-ox,.r4-ox,.face,.pic,.card1,.hj-mp,.book,.prob,.way,.mrow,.mz-q,.stks,.bs,.f,.ec,.slot,.e,.opt,.opts,.choices,.lf-q,.tt-palette,.es-pad,.b2-pad,table,[data-a],[data-s],[data-n],[data-v],[role=radio],[role=option],textarea,input,select,svg,[contenteditable],.hj-contact';
+var SP=/^[\s ⁠​]*$/;
+function blockish(e){var d=getComputedStyle(e).display;return d!=='inline'&&d!=='inline-block'&&d!=='inline-flex'&&d!=='contents'&&d!=='none'}
+/* 1: 줄 맨 앞(칸 시작, <br>·블록 요소 바로 뒤)  2: 바로 앞이 이미 바꾼 아이콘(겹친 이모지)  0: 문장 가운데 */
+function lead(sp,slot){for(var n=sp;n&&n!==slot;n=n.parentNode){for(var s=n.previousSibling;s;s=s.previousSibling){
+  if(s.nodeType===3){if(SP.test(s.nodeValue))continue;return 0}
+  if(s.nodeType!==1)continue;
+  if(s.tagName==='BR')return 1;
+  if(s.classList.contains('hj-em'))return s.dataset.ei==='1'?2:0;
+  if(s.tagName.toLowerCase()==='svg')return 0;           /* 앞 묶음(LEAD)이 이미 아이콘을 넣은 단추 */
+  if(blockish(s))return 1;
+  if(!SP.test(s.textContent))return 0}}
+ return 1}
+function norm(t){return t.replace(/[️\u{1F3FB}-\u{1F3FF}]/gu,'')}
+function conv(sp){if(sp.dataset.ei)return;sp.dataset.ei='0';
+ var slot=sp.closest(SLOT);if(!slot||sp.closest(NO))return;
+ var L=lead(sp,slot);if(!L)return;
+ var e=norm(sp.textContent),k=EM[e]||(slot.matches(ROUT)&&RT[e]);
+ if(L===2){if(k)sp.classList.add('hj-ei-dup');return}      /* '📊 ⏳ 자료실'의 ⏳ */
+ if(!k||!P[k]){if(slot.matches(TITLE))sp.classList.add('hj-ei-off');return}   /* 첫 화면 제목의 장식 이모지(🍂 🌕 …) */
+ sp.dataset.ei='1';sp.dataset.k=k;sp.classList.add('hj-ei');sp.setAttribute('aria-hidden','true');
+ var t=document.createElement('span');t.className='hj-ei-t';t.textContent=sp.textContent;   /* 글자는 남겨 textContent가 그대로(앱 코드·복사 안전) */
+ sp.innerHTML='<svg class="hj-eis" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+P[k]+'</svg>';
+ sp.appendChild(t)}
+function run(x){if(!x||x.nodeType!==1||!x.isConnected)return;if(x.closest('.hj-ei'))return;
+ if(x.classList.contains('hj-em'))conv(x);else x.querySelectorAll('.hj-em:not([data-ei])').forEach(conv)}
+run(document.body);
+var q=new Set(),raf=0;
+new MutationObserver(function(ms){ms.forEach(function(r){r.addedNodes.forEach(function(x){if(x.nodeType===1)q.add(x)})});
+ if(q.size&&!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(run)})}).observe(document.body,{childList:true,subtree:true});
+})();
+
 /* 교사 안내 창: 인쇄·PDF 저장 / 구글 문서로 복사 / 선생님께 이메일 */
 (function(){var tn=document.getElementById('tn'),pn=tn&&tn.querySelector('.panel'),B=document.getElementById('tnB'),T=document.getElementById('tnT');if(!pn||!B||pn.querySelector('.hj-tbar'))return;
 var I={print:'<path d="M7 8.5V3.8h10v4.7"/><rect x="3.8" y="8.5" width="16.4" height="7.5" rx="2"/><path d="M7 13.5h10v6.7H7Z"/>',
