@@ -15,17 +15,22 @@ tg.forEach(function(b){b.addEventListener('click',function(e){e.preventDefault()
 document.addEventListener('click',function(e){if(!e.target.closest('.rw'))close()});
 document.addEventListener('keydown',function(e){if(e.key==='Escape')close()});})();
 (function(){/* 단원 제목만 보이고, 누르면 그 단원 자료가 펼쳐짐 */
-var hs=[].slice.call(document.querySelectorAll('main h2, main h3.unit')).filter(function(h){return /^[^0-9가-힣A-Za-z]*\d+\s*단원/.test(h.textContent.trim())});
+var LK='hj-lastunit:'+location.pathname;var hs=[].slice.call(document.querySelectorAll('main h2, main h3.unit')).filter(function(h){return /^[^0-9가-힣A-Za-z]*\d+\s*단원/.test(h.textContent.trim())});
 var CH='<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>';
 hs.forEach(function(h,i){var items=[],n=h.nextElementSibling;
  while(n&&!/^H[23]$/.test(n.tagName)&&!(n.classList&&(n.classList.contains('unit')||n.classList.contains('ugrp')||n.classList.contains('hjfoot')))){items.push(n);n=n.nextElementSibling}
  var cnt=0;items.forEach(function(e){cnt+=e.querySelectorAll('a.card').length});if(!cnt)return;
  var id='ub'+i;items.forEach(function(e){e.hidden=true;e.setAttribute('data-ub',id)});
- h.classList.add('u-toggle');h.setAttribute('role','button');h.setAttribute('tabindex','0');h.setAttribute('aria-expanded','false');
+ h.classList.add('u-toggle');h.setAttribute('data-ubh',id);h.setAttribute('role','button');h.setAttribute('tabindex','0');h.setAttribute('aria-expanded','false');
  var old=h.querySelector('small');if(old)old.remove();
  h.insertAdjacentHTML('beforeend','<span class="u-cnt">'+cnt+'개</span><span class="u-chev">'+CH+'</span>');
  function t(){var o=h.getAttribute('aria-expanded')==='true';h.setAttribute('aria-expanded',o?'false':'true');items.forEach(function(e){e.hidden=o})}
- h.addEventListener('click',t);h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}});});
+ h.addEventListener('click',t);h.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();t()}});
+ items.forEach(function(e){e.addEventListener('click',function(ev){if(ev.target.closest('a.card')){try{localStorage.setItem(LK,String(i))}catch(_){}}})});});
+/* 지난번 단원: 이 기기에서 마지막으로 연 차시의 단원만 펼쳐 두고 '지난번' 표시(스크롤은 하지 않음, 주소에 #가 있으면 그쪽을 따름) */
+if(hs.length&&!location.hash){var last=null;try{last=localStorage.getItem(LK)}catch(_){}
+ var hd=last!==null&&document.querySelector('.u-toggle[data-ubh="ub'+last+'"]');
+ if(hd){hd.click();var uc=hd.querySelector('.u-cnt');(uc||hd).insertAdjacentHTML(uc?'beforebegin':'beforeend','<span class="u-last">지난번</span>')}}
 })();
 (function(){/* 단원 단추로 한 단원만 고르면 그 단원을 바로 펼침 */
 document.querySelectorAll('.ubtn').forEach(function(b){b.addEventListener('click',function(){if(b.dataset.u==='0')return;

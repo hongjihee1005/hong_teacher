@@ -132,6 +132,7 @@ function serial(el){var c=el.closest('a.card,div.card,.r-item');if(!c)return '';
  var keys={},dup=false;num.forEach(function(x){var i=x.querySelector('.ico,.r-ico');var e=i&&(i.dataset.em||i.textContent).match(RX);var k=e?E[key(e[0])]||'dot':'dot';if(keys[k])dup=true;keys[k]=1});
  return dup?m[1]+(m[2]||''):''}
 function tile(el){if(el.dataset.li)return;var raw=el.textContent.trim(),g=grade(el)||serial(el);el.dataset.li='1';el.dataset.em=raw;
+ if(g&&/학년$/.test(nmOf(el.closest('a.card,div.card,.r-item')||el))&&grade(el)){var nn2=(el.closest('a.card,div.card,.r-item')||{}).querySelector&&el.closest('a.card,div.card,.r-item').querySelector('.nm');if(nn2&&/^\s*\d학년\s*$/.test(nn2.textContent))nn2.textContent='학년'}
  if(g){el.innerHTML='<b class="hj-gn'+(g.length>1&&!/학년$/.test(g)&&!/^\d+$/.test(g)?' hj-gn-s':'')+'">'+g+'</b>';return}
  var sec=el.closest('#event,#quote,#art,#music,#book'),TD={event:'calendar',quote:'msg',art:'image',music:'music',book:'books'};
  if(sec&&el.classList.contains('td-ico')){el.innerHTML=svg(TD[sec.id]);return}
