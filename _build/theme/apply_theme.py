@@ -40,7 +40,9 @@ def crumb(m, rel):
         if href == root_rel or '초등교사 홍지희' in lab:
             out.append(f'<a class="c-link c-home" href="{href}">{HOME_SVG}<span>홈</span></a>')
         else:
-            out.append(f'<a class="c-link" href="{href}">{clean(lab)}</a>')
+            lab = clean(lab); lab = RENAME.get(lab, lab)
+            if href.endswith('special/index.html'): href = href[:-len('special/index.html')] + 'project/index.html'
+            out.append(f'<a class="c-link" href="{href}">{lab}</a>')
     mm = re.match(r'grade\d/\w+/sem(\d)(?:-(\w+))?/index\.html$', rel.replace('\\', '/'))
     if mm and out:
         suf = {'hong': ' · 홍지희 버전', 'soop': ' · 홍지희 버전', 'inquiry': ' · 탐구 버전'}.get(mm.group(2) or '', '')
@@ -80,7 +82,7 @@ def submenus(s, f):
     n = [0]
     def one(m):
         cls, attrs = m.group(1), m.group(2)
-        if 'wait' in cls: return m.group(0)
+        if 'wait' in cls or 'nosub' in cls: return m.group(0)
         href = re.search(r'href="([^"]+)"', attrs)
         if not href or href.group(1).startswith(('http', '#')): return m.group(0)
         tgt = (f.parent / href.group(1).split('#')[0]).resolve()
@@ -114,8 +116,22 @@ FB_RE = re.compile(r'<!--hj-fb-->.*?<!--/hj-fb-->', re.S)
 HERO_OFF = re.compile(r'<!--hj-hero--><div class="hj-hero"><div class="hj-hero-in">(.*?)</div></div><!--/hj-hero-->', re.S)
 HERO_ON = re.compile(r'(<main[^>]*>)(\s*)((?:<nav class="crumb".*?</nav>\s*)?<h1[ >].*?</h1>'
                      r'(?:\s*(?:<!--hj-today-->.*?<!--/hj-today-->|<p class="sub">.*?</p>))?)', re.S)
-GNAV = [('우리 반 교실', 'class/index.html'), ('공통', 'common/index.html'), ('쉬는 시간', 'break/index.html'),
-        ('특색교육', 'special/index.html'), ('기타', 'project/index.html')]
+# 주 메뉴(2026-10-27 선생님 요청으로 묶고 이름 지음): 학년별 수업 · 기초 학습 · 교육 프로그램 · 교실 도구 · 쉬는 시간
+GRADES = [(f'{n}학년', f'grade{n}/index.html') for n in range(1, 7)]
+TOOLS = [('우리 반 교실', 'class/index.html'), ('오늘의 교실 산책', 'today/index.html'), ('도장 만들기', 'project/stamp/index.html')]
+GNAV = [('dd', '학년별 수업', GRADES), ('a', '기초 학습', 'common/index.html'), ('a', '교육 프로그램', 'project/index.html'),
+        ('dd', '교실 도구', TOOLS), ('a', '쉬는 시간', 'break/index.html')]
+# 위치 표시줄에 보이는 묶음 이름도 새 이름으로(폴더·파일 이름은 그대로). 특색교육은 교육 프로그램에 합침.
+RENAME = {'공통': '기초 학습', '기타': '교육 프로그램', '특색교육': '교육 프로그램'}
+
+def section(rel):
+    """rel이 주 메뉴의 어느 묶음에 드는지"""
+    if re.match(r'grade\d/', rel): return '학년별 수업'
+    if rel.startswith(('class/', 'today/', 'project/stamp/')): return '교실 도구'
+    if rel.startswith('common/'): return '기초 학습'
+    if rel.startswith(('project/', 'special/')): return '교육 프로그램'
+    if rel.startswith('break/'): return '쉬는 시간'
+    return ''
 DOWN = ('<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
         '<path d="m6 9 6 6 6-6"/></svg>')
 BURGER = ('<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">'
@@ -134,16 +150,17 @@ def hero(s):
 def topbar(rel):
     d = posixpath.dirname(rel) or '.'
     r = lambda p: posixpath.relpath(p, d)
-    head = rel.split('/')[0]
-    g = re.match(r'grade(\d)$', head)
-    grades = ''.join(f'<a href="{r(f"grade{n}/index.html")}"' + (' aria-current="true"' if g and g.group(1) == str(n) else '')
-                     + f'>{n}학년</a>' for n in range(1, 7))
-    links = ''.join(f'<a href="{r(p)}"' + (' class="is-on"' if head == p.split('/')[0] else '') + f'>{t}</a>' for t, p in GNAV)
+    sec = section(rel); items = []
+    for i, (kind, name, tgt) in enumerate(GNAV):
+        on = ' is-on' if sec == name else ''
+        if kind == 'a':
+            items.append(f'<a class="hj-gl{on}" href="{r(tgt)}">{name}</a>'); continue
+        links = ''.join(f'<a href="{r(p)}"' + (' aria-current="true"' if rel.startswith(p.rsplit('/', 1)[0] + '/') else '') + f'>{t}</a>' for t, p in tgt)
+        items.append(f'<div class="hj-dd"><button class="hj-ddb{on}" type="button" aria-expanded="false" aria-controls="hj-ddm{i}">{name}{DOWN}</button>'
+                     f'<div class="hj-ddm{" hj-ddm-g" if tgt is GRADES else ""}" id="hj-ddm{i}" hidden>{links}</div></div>')
     return ('<!--hj-top--><header class="hj-top"><div class="hj-top-in">'
             f'<a class="hj-brand" href="{r("index.html")}">{MARK}<span class="hj-bt"><b>초등교사 홍지희</b><small>수업 자료실</small></span></a>'
-            '<nav class="hj-gnav" id="hj-gnav" aria-label="주 메뉴">'
-            f'<div class="hj-dd"><button class="hj-ddb{" is-on" if g else ""}" type="button" aria-expanded="false" aria-controls="hj-ddm">학년별{DOWN}</button>'
-            f'<div class="hj-ddm" id="hj-ddm" hidden>{grades}</div></div>{links}</nav>'
+            '<nav class="hj-gnav" id="hj-gnav" aria-label="주 메뉴">' + ''.join(items) + '</nav>'
             f'<button class="hj-mbtn" type="button" aria-expanded="false" aria-controls="hj-gnav" aria-label="메뉴 열기">{BURGER}<span>메뉴</span></button>'
             '</div></header><!--/hj-top-->')
 

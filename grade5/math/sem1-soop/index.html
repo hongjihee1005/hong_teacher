@@ -512,8 +512,69 @@ html main .grid.six .room{flex-direction:column;align-items:flex-start;min-heigh
 html main .grid.six .room{flex-direction:row;align-items:baseline;gap:4px}
 html main .grid.six .room .nm{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 html main .grid.six .room .ico .hj-gn::after{content:"학년";font-size:.36em;font-weight:700;letter-spacing:-.02em;margin-left:4px;color:var(--soft)}
+
+/* ───────── 차분한 한 가지 색 (2026-10-27 선생님 피드백: 조잡한 느낌 없애기) ─────────
+   메뉴 항목의 무지개색을 걷고, 아이콘·숫자·수 표시를 남색 한 가지 계열로. 과목 색은 제목 띠 아래 줄에만. */
+html:root{--tint:color-mix(in srgb,#2B4A7C 7%,var(--paper));--tint2:color-mix(in srgb,#2B4A7C 12%,var(--paper));--mark:#24406E}
+@media (prefers-color-scheme:dark){html:root:not([data-theme="light"]){--tint:color-mix(in srgb,#8AB0FF 9%,var(--paper));--tint2:color-mix(in srgb,#8AB0FF 15%,var(--paper));--mark:#A9C2F0}}
+html:root[data-theme="dark"]{--tint:color-mix(in srgb,#8AB0FF 9%,var(--paper));--tint2:color-mix(in srgb,#8AB0FF 15%,var(--paper));--mark:#A9C2F0}
+html main .grid .room .ico,html main .grid .room.wide .head .ico,html .r-ico{background:var(--tint);color:var(--mark)}
+html main .grid>a.card:hover,html main .grid>.rw>a.card:hover,html main .grid>.rw.open>a.card{background-color:var(--tint)}
+html main .grid>a.card:hover .ico,html main .grid>.rw>a.card:hover .ico{background:var(--paper);box-shadow:inset 0 0 0 1px var(--line)}
+html .tag,html .card .tag,html .cnt-b,html .legend span,html .card .legend span{background:var(--bg2);color:var(--soft)}
+html .u-chip b{background:var(--tint2);color:var(--mark)}
+html .u-toggle{border-left:0}
+html .u-cnt{color:var(--soft)}
+html .hj-gn-s{font-size:.78em;letter-spacing:-.06em}
+html main .grid .r-tg{opacity:.55}
+html main .grid .rw:hover .r-tg,html main .grid .r-tg:focus-visible,html main .grid .r-tg[aria-expanded="true"]{opacity:1}
+html .r-item{background:var(--paper)}
+html .r-ico{color:var(--mark)}
+/* 묶음 제목: 가늘고 단정하게 */
+html main>h2:not(.u-toggle),html main>.sec-h,html main .duo>section>h2{font-size:clamp(20px,1.9vw,23px);font-weight:750;letter-spacing:-.02em;margin:clamp(34px,3.8vw,52px) 0 14px;gap:10px}
+html main>h2:not(.u-toggle)::before,html main>.sec-h::before,html main .duo>section>h2::before{width:4px;height:.9em;background:var(--mark)}
+html main .grid:has(>.card,>.rw){box-shadow:0 1px 2px rgba(15,28,51,.04),0 16px 36px -28px rgba(15,28,51,.22)}
+/* 첫 화면 학년: 한 가지 색 큰 숫자 */
+html main .grid.six .room .ico .hj-gn{color:var(--ink)}
+html main .grid.six>a.card:hover .ico .hj-gn{color:var(--mark)}
+html main .grid.six>a.card:hover .ico{background:none;box-shadow:none}
+/* 첫 화면 묶음 칸 수 */
+html main .grid.hm5{grid-template-columns:repeat(5,minmax(0,1fr))}
+html main .grid.hm4{grid-template-columns:repeat(4,minmax(0,1fr))}
+html main .grid.hm2{grid-template-columns:repeat(2,minmax(0,1fr))}
+html main .grid.hm1{grid-template-columns:1fr}
+html main .duo{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr)}
+html main .duo .grid.hm1{grid-template-columns:1fr!important}
+@media (max-width:1100px){html main .grid.hm5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:860px){html main .grid.hm4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){html main .grid.hm5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:440px){html main .grid.hm5,html main .grid.hm4,html main .duo .grid.hm2{grid-template-columns:1fr!important}}
+html main .grid.hm5 .room,html main .grid.hm4 .room{padding-right:20px}
+/* 머리 막대 '교실 도구' 펼침은 한 줄 목록 */
+html .hj-ddm:not(.hj-ddm-g){grid-template-columns:1fr;width:236px;left:0;transform:none}
+html .hj-ddm:not(.hj-ddm-g) a{justify-content:flex-start;background:none;border-color:transparent}
+html .hj-ddm:not(.hj-ddm-g) a:hover{background:var(--bg2)}
+html .hj-ddm:not(.hj-ddm-g) a[aria-current]{background:var(--bg2);color:var(--ink);border-color:transparent}
+@media (max-width:1000px){html .hj-top.open .hj-ddm:not(.hj-ddm-g){grid-template-columns:repeat(3,minmax(0,1fr))}
+ html .hj-top.open .hj-ddm:not(.hj-ddm-g) a{justify-content:center;background:var(--bg);border-color:var(--line)}
+ html .hj-top.open .hj-dd+.hj-dd::before{content:"교실 도구";display:block;font-size:13px;font-weight:700;color:var(--soft);margin:6px 2px 6px}
+ html .hj-top.open .hj-dd:first-child::before{content:"학년별 수업";display:block;font-size:13px;font-weight:700;color:var(--soft);margin:6px 2px 6px}}
+html main .grid .room .ico{flex:none}
+html .hj-gn-s{font-size:.62em!important;letter-spacing:-.04em}
+/* 첫 화면 기초 학습(5칸): 아이콘 위, 이름 아래 */
+html main .grid.hm5.hm5 .room{flex-direction:column!important;align-items:flex-start!important;gap:12px;min-height:0;padding:20px!important}
+html main .grid.hm5 .room .nm{font-size:clamp(18px,1.6vw,20px)}
+html main .grid.hm5 a.room::after{top:18px;margin-top:0}
+html main .grid.hm5 a.room::before{top:26px;margin-top:0}
+html main .grid.six>.card,html main .grid.six>.rw>.card{border-radius:0}
+html main .grid.six>.card:first-child{border-radius:16px 0 0 16px}html main .grid.six>.card:last-child{border-radius:0 16px 16px 0}
+@media (max-width:980px){html main .grid.six>.card{border-radius:12px!important}}
+@media (max-width:980px){html main .grid.six>.card,html main .grid.six>.card:nth-child(n){border:0!important}}
+@media (max-width:640px){html main .grid.hm5.hm5 .room{flex-direction:row!important;align-items:center!important;padding:16px 18px!important}}
+@media (max-width:860px){html main .duo{grid-template-columns:1fr}}
+html main .grid>*{min-width:0}
 </style><!--/hj-theme--></head>
-<body><!--hj-top--><header class="hj-top"><div class="hj-top-in"><a class="hj-brand" href="../../../index.html"><span class="hj-mark" aria-hidden="true">홍</span><span class="hj-bt"><b>초등교사 홍지희</b><small>수업 자료실</small></span></a><nav class="hj-gnav" id="hj-gnav" aria-label="주 메뉴"><div class="hj-dd"><button class="hj-ddb is-on" type="button" aria-expanded="false" aria-controls="hj-ddm">학년별<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="hj-ddm" id="hj-ddm" hidden><a href="../../../grade1/index.html">1학년</a><a href="../../../grade2/index.html">2학년</a><a href="../../../grade3/index.html">3학년</a><a href="../../../grade4/index.html">4학년</a><a href="../../index.html" aria-current="true">5학년</a><a href="../../../grade6/index.html">6학년</a></div></div><a href="../../../class/index.html">우리 반 교실</a><a href="../../../common/index.html">공통</a><a href="../../../break/index.html">쉬는 시간</a><a href="../../../special/index.html">특색교육</a><a href="../../../project/index.html">기타</a></nav><button class="hj-mbtn" type="button" aria-expanded="false" aria-controls="hj-gnav" aria-label="메뉴 열기"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>메뉴</span></button></div></header><!--/hj-top--><main>
+<body><!--hj-top--><header class="hj-top"><div class="hj-top-in"><a class="hj-brand" href="../../../index.html"><span class="hj-mark" aria-hidden="true">홍</span><span class="hj-bt"><b>초등교사 홍지희</b><small>수업 자료실</small></span></a><nav class="hj-gnav" id="hj-gnav" aria-label="주 메뉴"><div class="hj-dd"><button class="hj-ddb is-on" type="button" aria-expanded="false" aria-controls="hj-ddm0">학년별 수업<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="hj-ddm hj-ddm-g" id="hj-ddm0" hidden><a href="../../../grade1/index.html">1학년</a><a href="../../../grade2/index.html">2학년</a><a href="../../../grade3/index.html">3학년</a><a href="../../../grade4/index.html">4학년</a><a href="../../index.html" aria-current="true">5학년</a><a href="../../../grade6/index.html">6학년</a></div></div><a class="hj-gl" href="../../../common/index.html">기초 학습</a><a class="hj-gl" href="../../../project/index.html">교육 프로그램</a><div class="hj-dd"><button class="hj-ddb" type="button" aria-expanded="false" aria-controls="hj-ddm3">교실 도구<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="hj-ddm" id="hj-ddm3" hidden><a href="../../../class/index.html">우리 반 교실</a><a href="../../../today/index.html">오늘의 교실 산책</a><a href="../../../project/stamp/index.html">도장 만들기</a></div></div><a class="hj-gl" href="../../../break/index.html">쉬는 시간</a></nav><button class="hj-mbtn" type="button" aria-expanded="false" aria-controls="hj-gnav" aria-label="메뉴 열기"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>메뉴</span></button></div></header><!--/hj-top--><main>
 <!--hj-hero--><div class="hj-hero"><div class="hj-hero-in"><nav class="crumb" aria-label="현재 위치"><a class="c-link c-home" href="../../../index.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../../index.html">5학년</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../index.html">수학방</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../sem1/index.html">1학기 교과서 차시 버전</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><span class="c-link c-cur" aria-current="page">1학기 · 홍지희 버전</span></nav>
 <h1>5학년 1학기 수학 · 홍지희 선생님 버전</h1>
 <p class="sub">2022 개정 교육과정 · <b>우리 학교·학급 상황으로 다시 짠 이야기 수업</b>입니다.<br>교과서 차시 버전과 배우는 것은 같고, 단원마다 이야기 하나로 이어집니다.</p></div></div><!--/hj-hero-->
@@ -667,10 +728,17 @@ monitor:'<rect x="3.6" y="4.4" width="16.8" height="11.4" rx="1.8"/><path d="M9 
 box:'<path d="m12 3.6 7.8 4.2v8.4L12 20.4l-7.8-4.2V7.8Z"/><path d="m4.2 7.8 7.8 4.3 7.8-4.3M12 12.1v8.3"/>',
 layers:'<path d="m12 4 8.4 4.4L12 12.8 3.6 8.4Z"/><path d="m3.6 12.6 8.4 4.4 8.4-4.4M3.6 16.4 12 20.8l8.4-4.4"/>',
 info:'<circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.9h.01"/>',
+plus:'<path d="M12 5.5v13M5.5 12h13"/>',
+minus:'<path d="M5.5 12h13"/>',
+times:'<path d="m7 7 10 10M17 7 7 17"/>',
+divide:'<path d="M5.5 12h13"/><circle cx="12" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="17" r="1.3" fill="currentColor" stroke="none"/>',
+decimal:'<path d="M5.5 8.2a2.4 3 0 0 1 4.8 0v7.6a2.4 3 0 0 1-4.8 0Z"/><path d="M12.6 18.4h.01" stroke-width="2.8"/><path d="M15.6 7.4 17.8 5.6v13"/>',
+hanja:'<rect x="3.8" y="3.8" width="16.4" height="16.4" rx="3"/><path d="M8 7.2h8M12 7.2v3.2M7.4 10.6h9.2M9 13.4h6l-1.6 2M12 13.4v5.2l-1.2-.8"/>',
+quote:'<path d="M5 17.5v-4.2c0-3 1.4-5.3 4.2-6.8M13.4 17.5v-4.2c0-3 1.4-5.3 4.2-6.8"/><path d="M5 13h3.6v4.5H5ZM13.4 13h3.6v4.5h-3.6Z"/>',
 dot:'<circle cx="12" cy="12" r="3.2"/>'};
 var E={};function m(k,s){s.split(' ').forEach(function(c){E[c]=k})}
-m('book','📖 📕 📒 📓 📗 📘 📙');m('math','🔢 🧮 ➕ ➖ ➗ ✖ 🔟');m('pie','🍕 🍰');m('trophy','🏆 🏅');m('map','🗺 🧭');m('flask','🔬 🧪 ⚗');m('sprout','🌸 🌱 🌼 🌿 🪴 🌳 🌾 🍃 🐣 🦋');m('leaf','🍂 🍁');
-m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('clock','🚧 ⏰ 🕰');m('apple','🍎 🍏');m('school','🏫 🏢 🎓');m('sparkle','🌟 ✨ 💫 🌈 🚀');m('star','⭐ ★');m('calendar','📅 📆 🗓');
+m('book','📖 📕 📒 📓 📗 📘 📙');m('math','🔢 🧮 🔟');m('plus','➕');m('minus','➖');m('times','✖');m('divide','➗');m('decimal','🔸');m('hanja','🈷');m('quote','📜');m('pie','🍕 🍰');m('trophy','🏆 🏅');m('map','🗺 🧭');m('flask','🔬 🧪 ⚗');m('sprout','🌸 🌱 🌼 🌿 🪴 🌳 🌾 🍃 🐣 🦋');m('leaf','🍂 🍁');
+m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('clock','⏰ 🕰');m('hourglass','🚧');m('apple','🍎 🍏');m('school','🏫 🏢 🎓');m('sparkle','🌟 ✨ 💫 🌈 🚀');m('star','⭐ ★');m('calendar','📅 📆 🗓');
 m('image','🖼');m('music','🎵 🎶 🎼');m('books','📚');m('chart','📊 📈');m('dice','🎲 🃏 🁫');m('house','🏠 🏡 🏘');m('bulb','💡');m('laptop','💻');m('monitor','🖥');m('video','🎬 📺');
 m('printer','🖨');m('file','📄 📃 📝');m('layers','📑');m('lock','🔒 🔐');m('check','✅ ☑ ✔');m('help','❓ ❔');m('timer','⏱ ⏲');m('hourglass','⏳ ⌛');m('msg','💬 🗨');
 m('search','🔎 🔍');m('pencil','✏ ✍ 🖊 🖍');m('mic','🎙 🎤');m('vol','🔈 🔉 🔊 📢');m('scale','⚖');m('ruler','📏 📐');m('puzzle','🧩 🧵');m('users','🤝 👥 🧑‍🤝‍🧑');
@@ -680,8 +748,21 @@ function key(e){return e.replace(/[️\u{1F3FB}-\u{1F3FF}]/gu,'')}
 function svg(k,c){return '<svg class="'+(c||'hj-li')+'" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+P[k]+'</svg>'}
 var TILE='.ico,.h-ico,.r-ico,.ts-chip>i,.td-ico',STRIP='.card:not(.room) .nm,main h2:not(.td-h),main h3';
 function grade(el){var c=el.closest('a,h1,.r-item')||el.parentNode,t=(c.querySelector('.nm')||c).textContent;var g=t.replace(RX,'').trim().match(/^(\d)학년$/);return g?g[1]:''}
-function tile(el){if(el.dataset.li)return;var raw=el.textContent.trim(),g=grade(el);el.dataset.li='1';
- if(g){el.innerHTML='<b class="hj-gn">'+g+'</b>';return}
+var SER2=null;function nmOf(c){var n=c&&(c.querySelector('.nm')||c.querySelector('span:not(.r-ico)'));return n?n.textContent.replace(RX,'').trim():''}
+function serial(el){var c=el.closest('a.card,div.card,.r-item');if(!c)return '';var t=nmOf(c);
+ var b=t.match(/\((\d)·(\d)학년\)/);if(b)return b[1]+'·'+b[2];
+ var m=t.match(/^(\d{1,2})(?:급\s*(Ⅱ))?(?=[.\s·급마]|학년|$)/);if(!m)return '';
+ if(SER2===null)SER2=[].filter.call(document.querySelectorAll('main .card .nm'),function(n){return /^\D*\d{2}\.\s/.test(n.textContent)}).length>=3;
+ if(SER2&&/^\d{2}\.\s/.test(t)){
+  var nn=c.querySelector('.nm');if(nn&&!nn.dataset.cut){nn.dataset.cut='1';var w=document.createTreeWalker(nn,NodeFilter.SHOW_TEXT),x;while(x=w.nextNode()){if(/\d{2}\.\s*/.test(x.nodeValue)){x.nodeValue=x.nodeValue.replace(/\d{2}\.\s*/,'');break}}}
+  return m[1]}
+ var box=c.classList.contains('r-item')?c.parentNode:(c.parentNode.classList.contains('rw')?c.parentNode.parentNode:c.parentNode);
+ var sib=[].slice.call(box.querySelectorAll(':scope>a.card,:scope>div.card,:scope>.rw>a.card,:scope>.r-item'));
+ var num=sib.filter(function(x){return /^\d/.test(nmOf(x))});if(num.length<3)return '';
+ var keys={},dup=false;num.forEach(function(x){var i=x.querySelector('.ico,.r-ico');var e=i&&(i.dataset.em||i.textContent).match(RX);var k=e?E[key(e[0])]||'dot':'dot';if(keys[k])dup=true;keys[k]=1});
+ return dup?m[1]+(m[2]||''):''}
+function tile(el){if(el.dataset.li)return;var raw=el.textContent.trim(),g=grade(el)||serial(el);el.dataset.li='1';el.dataset.em=raw;
+ if(g){el.innerHTML='<b class="hj-gn'+(g.length>1&&!/학년$/.test(g)&&!/^\d+$/.test(g)?' hj-gn-s':'')+'">'+g+'</b>';return}
  var sec=el.closest('#event,#quote,#art,#music,#book'),TD={event:'calendar',quote:'msg',art:'image',music:'music',book:'books'};
  if(sec&&el.classList.contains('td-ico')){el.innerHTML=svg(TD[sec.id]);return}
  var ms=raw.match(RX);el.innerHTML=svg(ms&&E[key(ms[0])]||'dot');}
@@ -732,15 +813,16 @@ document.querySelectorAll('.ubtn').forEach(function(b){b.addEventListener('click
  var pane=b.closest('.pane')||document;setTimeout(function(){pane.querySelectorAll('.ugrp[data-u="'+b.dataset.u+'"] .u-toggle[aria-expanded="false"]').forEach(function(t){t.click()})},0)})});})();
 (function(){var WJ='⁠';var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){return n.parentElement&&!n.parentElement.closest('script,style,svg,input,textarea')?1:2}}),a=[],n;while(n=w.nextNode())a.push(n);
 a.forEach(function(n){var v=n.nodeValue;if(!/[·\-–\/()]/.test(v)||/^https?:|@/.test(v.trim()))return;var t=v.replace(/\S+/g,function(k){return k.length>7?k.replace(/(\S)([·‧])/g,'$1'+WJ+'$2'):k.replace(/(\S)([·‧–\/])(?=\S)/g,'$1'+WJ+'$2'+WJ)}).replace(/([가-힣A-Za-z0-9])-(?=[가-힣A-Za-z0-9])/g,'$1'+WJ+'-'+WJ).replace(/(\S)\((?=\S)/g,'$1'+WJ+'(').replace(/\)(?=[가-힣])/g,')'+WJ);if(t!==v)n.nodeValue=t})})();
-(function(){/* 위 머리 막대: 학년별 펼침 · 좁은 화면 메뉴 · 내리면 그림자 */
+(function(){/* 위 머리 막대: 펼침 메뉴(학년별 수업·교실 도구) · 좁은 화면 메뉴 · 내리면 그림자 */
 var top=document.querySelector('.hj-top');if(!top)return;
-var dd=top.querySelector('.hj-ddb'),dm=top.querySelector('.hj-ddm'),mb=top.querySelector('.hj-mbtn');
-function setDD(o){if(!dd)return;dd.setAttribute('aria-expanded',o?'true':'false');dm.hidden=!o}
+var dds=[].slice.call(top.querySelectorAll('.hj-ddb')),mb=top.querySelector('.hj-mbtn');
+function setDD(b,o){b.setAttribute('aria-expanded',o?'true':'false');document.getElementById(b.getAttribute('aria-controls')).hidden=!o}
+function closeAll(ex){dds.forEach(function(b){if(b!==ex)setDD(b,false)})}
 function setM(o){top.classList.toggle('open',o);if(mb){mb.setAttribute('aria-expanded',o?'true':'false');mb.setAttribute('aria-label',o?'메뉴 닫기':'메뉴 열기')}}
-if(dd)dd.addEventListener('click',function(e){e.stopPropagation();setDD(dd.getAttribute('aria-expanded')!=='true')});
+dds.forEach(function(b){b.addEventListener('click',function(e){e.stopPropagation();var o=b.getAttribute('aria-expanded')!=='true';closeAll(b);setDD(b,o)})});
 if(mb)mb.addEventListener('click',function(e){e.stopPropagation();setM(!top.classList.contains('open'))});
-document.addEventListener('click',function(e){if(!e.target.closest('.hj-dd'))setDD(false);if(!e.target.closest('.hj-top'))setM(false)});
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){setDD(false);setM(false)}});
+document.addEventListener('click',function(e){if(!e.target.closest('.hj-dd'))closeAll();if(!e.target.closest('.hj-top'))setM(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeAll();setM(false)}});
 var on=null;function sc(){var v=(window.scrollY||0)>4;if(v!==on){on=v;top.classList.toggle('scrolled',v)}}
 window.addEventListener('scroll',sc,{passive:true});sc();})();
 </script><!--/hj-theme-js--></body></html>

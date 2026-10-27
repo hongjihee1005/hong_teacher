@@ -474,3 +474,64 @@ html main .grid.six .room{flex-direction:column;align-items:flex-start;min-heigh
 html main .grid.six .room{flex-direction:row;align-items:baseline;gap:4px}
 html main .grid.six .room .nm{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 html main .grid.six .room .ico .hj-gn::after{content:"학년";font-size:.36em;font-weight:700;letter-spacing:-.02em;margin-left:4px;color:var(--soft)}
+
+/* ───────── 차분한 한 가지 색 (2026-10-27 선생님 피드백: 조잡한 느낌 없애기) ─────────
+   메뉴 항목의 무지개색을 걷고, 아이콘·숫자·수 표시를 남색 한 가지 계열로. 과목 색은 제목 띠 아래 줄에만. */
+html:root{--tint:color-mix(in srgb,#2B4A7C 7%,var(--paper));--tint2:color-mix(in srgb,#2B4A7C 12%,var(--paper));--mark:#24406E}
+@media (prefers-color-scheme:dark){html:root:not([data-theme="light"]){--tint:color-mix(in srgb,#8AB0FF 9%,var(--paper));--tint2:color-mix(in srgb,#8AB0FF 15%,var(--paper));--mark:#A9C2F0}}
+html:root[data-theme="dark"]{--tint:color-mix(in srgb,#8AB0FF 9%,var(--paper));--tint2:color-mix(in srgb,#8AB0FF 15%,var(--paper));--mark:#A9C2F0}
+html main .grid .room .ico,html main .grid .room.wide .head .ico,html .r-ico{background:var(--tint);color:var(--mark)}
+html main .grid>a.card:hover,html main .grid>.rw>a.card:hover,html main .grid>.rw.open>a.card{background-color:var(--tint)}
+html main .grid>a.card:hover .ico,html main .grid>.rw>a.card:hover .ico{background:var(--paper);box-shadow:inset 0 0 0 1px var(--line)}
+html .tag,html .card .tag,html .cnt-b,html .legend span,html .card .legend span{background:var(--bg2);color:var(--soft)}
+html .u-chip b{background:var(--tint2);color:var(--mark)}
+html .u-toggle{border-left:0}
+html .u-cnt{color:var(--soft)}
+html .hj-gn-s{font-size:.78em;letter-spacing:-.06em}
+html main .grid .r-tg{opacity:.55}
+html main .grid .rw:hover .r-tg,html main .grid .r-tg:focus-visible,html main .grid .r-tg[aria-expanded="true"]{opacity:1}
+html .r-item{background:var(--paper)}
+html .r-ico{color:var(--mark)}
+/* 묶음 제목: 가늘고 단정하게 */
+html main>h2:not(.u-toggle),html main>.sec-h,html main .duo>section>h2{font-size:clamp(20px,1.9vw,23px);font-weight:750;letter-spacing:-.02em;margin:clamp(34px,3.8vw,52px) 0 14px;gap:10px}
+html main>h2:not(.u-toggle)::before,html main>.sec-h::before,html main .duo>section>h2::before{width:4px;height:.9em;background:var(--mark)}
+html main .grid:has(>.card,>.rw){box-shadow:0 1px 2px rgba(15,28,51,.04),0 16px 36px -28px rgba(15,28,51,.22)}
+/* 첫 화면 학년: 한 가지 색 큰 숫자 */
+html main .grid.six .room .ico .hj-gn{color:var(--ink)}
+html main .grid.six>a.card:hover .ico .hj-gn{color:var(--mark)}
+html main .grid.six>a.card:hover .ico{background:none;box-shadow:none}
+/* 첫 화면 묶음 칸 수 */
+html main .grid.hm5{grid-template-columns:repeat(5,minmax(0,1fr))}
+html main .grid.hm4{grid-template-columns:repeat(4,minmax(0,1fr))}
+html main .grid.hm2{grid-template-columns:repeat(2,minmax(0,1fr))}
+html main .grid.hm1{grid-template-columns:1fr}
+html main .duo{grid-template-columns:minmax(0,1fr) minmax(0,1.6fr)}
+html main .duo .grid.hm1{grid-template-columns:1fr!important}
+@media (max-width:1100px){html main .grid.hm5{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:860px){html main .grid.hm4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:640px){html main .grid.hm5{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:440px){html main .grid.hm5,html main .grid.hm4,html main .duo .grid.hm2{grid-template-columns:1fr!important}}
+html main .grid.hm5 .room,html main .grid.hm4 .room{padding-right:20px}
+/* 머리 막대 '교실 도구' 펼침은 한 줄 목록 */
+html .hj-ddm:not(.hj-ddm-g){grid-template-columns:1fr;width:236px;left:0;transform:none}
+html .hj-ddm:not(.hj-ddm-g) a{justify-content:flex-start;background:none;border-color:transparent}
+html .hj-ddm:not(.hj-ddm-g) a:hover{background:var(--bg2)}
+html .hj-ddm:not(.hj-ddm-g) a[aria-current]{background:var(--bg2);color:var(--ink);border-color:transparent}
+@media (max-width:1000px){html .hj-top.open .hj-ddm:not(.hj-ddm-g){grid-template-columns:repeat(3,minmax(0,1fr))}
+ html .hj-top.open .hj-ddm:not(.hj-ddm-g) a{justify-content:center;background:var(--bg);border-color:var(--line)}
+ html .hj-top.open .hj-dd+.hj-dd::before{content:"교실 도구";display:block;font-size:13px;font-weight:700;color:var(--soft);margin:6px 2px 6px}
+ html .hj-top.open .hj-dd:first-child::before{content:"학년별 수업";display:block;font-size:13px;font-weight:700;color:var(--soft);margin:6px 2px 6px}}
+html main .grid .room .ico{flex:none}
+html .hj-gn-s{font-size:.62em!important;letter-spacing:-.04em}
+/* 첫 화면 기초 학습(5칸): 아이콘 위, 이름 아래 */
+html main .grid.hm5.hm5 .room{flex-direction:column!important;align-items:flex-start!important;gap:12px;min-height:0;padding:20px!important}
+html main .grid.hm5 .room .nm{font-size:clamp(18px,1.6vw,20px)}
+html main .grid.hm5 a.room::after{top:18px;margin-top:0}
+html main .grid.hm5 a.room::before{top:26px;margin-top:0}
+html main .grid.six>.card,html main .grid.six>.rw>.card{border-radius:0}
+html main .grid.six>.card:first-child{border-radius:16px 0 0 16px}html main .grid.six>.card:last-child{border-radius:0 16px 16px 0}
+@media (max-width:980px){html main .grid.six>.card{border-radius:12px!important}}
+@media (max-width:980px){html main .grid.six>.card,html main .grid.six>.card:nth-child(n){border:0!important}}
+@media (max-width:640px){html main .grid.hm5.hm5 .room{flex-direction:row!important;align-items:center!important;padding:16px 18px!important}}
+@media (max-width:860px){html main .duo{grid-template-columns:1fr}}
+html main .grid>*{min-width:0}

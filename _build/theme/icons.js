@@ -98,10 +98,17 @@ monitor:'<rect x="3.6" y="4.4" width="16.8" height="11.4" rx="1.8"/><path d="M9 
 box:'<path d="m12 3.6 7.8 4.2v8.4L12 20.4l-7.8-4.2V7.8Z"/><path d="m4.2 7.8 7.8 4.3 7.8-4.3M12 12.1v8.3"/>',
 layers:'<path d="m12 4 8.4 4.4L12 12.8 3.6 8.4Z"/><path d="m3.6 12.6 8.4 4.4 8.4-4.4M3.6 16.4 12 20.8l8.4-4.4"/>',
 info:'<circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.9h.01"/>',
+plus:'<path d="M12 5.5v13M5.5 12h13"/>',
+minus:'<path d="M5.5 12h13"/>',
+times:'<path d="m7 7 10 10M17 7 7 17"/>',
+divide:'<path d="M5.5 12h13"/><circle cx="12" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="17" r="1.3" fill="currentColor" stroke="none"/>',
+decimal:'<path d="M5.5 8.2a2.4 3 0 0 1 4.8 0v7.6a2.4 3 0 0 1-4.8 0Z"/><path d="M12.6 18.4h.01" stroke-width="2.8"/><path d="M15.6 7.4 17.8 5.6v13"/>',
+hanja:'<rect x="3.8" y="3.8" width="16.4" height="16.4" rx="3"/><path d="M8 7.2h8M12 7.2v3.2M7.4 10.6h9.2M9 13.4h6l-1.6 2M12 13.4v5.2l-1.2-.8"/>',
+quote:'<path d="M5 17.5v-4.2c0-3 1.4-5.3 4.2-6.8M13.4 17.5v-4.2c0-3 1.4-5.3 4.2-6.8"/><path d="M5 13h3.6v4.5H5ZM13.4 13h3.6v4.5h-3.6Z"/>',
 dot:'<circle cx="12" cy="12" r="3.2"/>'};
 var E={};function m(k,s){s.split(' ').forEach(function(c){E[c]=k})}
-m('book','📖 📕 📒 📓 📗 📘 📙');m('math','🔢 🧮 ➕ ➖ ➗ ✖ 🔟');m('pie','🍕 🍰');m('trophy','🏆 🏅');m('map','🗺 🧭');m('flask','🔬 🧪 ⚗');m('sprout','🌸 🌱 🌼 🌿 🪴 🌳 🌾 🍃 🐣 🦋');m('leaf','🍂 🍁');
-m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('clock','🚧 ⏰ 🕰');m('apple','🍎 🍏');m('school','🏫 🏢 🎓');m('sparkle','🌟 ✨ 💫 🌈 🚀');m('star','⭐ ★');m('calendar','📅 📆 🗓');
+m('book','📖 📕 📒 📓 📗 📘 📙');m('math','🔢 🧮 🔟');m('plus','➕');m('minus','➖');m('times','✖');m('divide','➗');m('decimal','🔸');m('hanja','🈷');m('quote','📜');m('pie','🍕 🍰');m('trophy','🏆 🏅');m('map','🗺 🧭');m('flask','🔬 🧪 ⚗');m('sprout','🌸 🌱 🌼 🌿 🪴 🌳 🌾 🍃 🐣 🦋');m('leaf','🍂 🍁');
+m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('clock','⏰ 🕰');m('hourglass','🚧');m('apple','🍎 🍏');m('school','🏫 🏢 🎓');m('sparkle','🌟 ✨ 💫 🌈 🚀');m('star','⭐ ★');m('calendar','📅 📆 🗓');
 m('image','🖼');m('music','🎵 🎶 🎼');m('books','📚');m('chart','📊 📈');m('dice','🎲 🃏 🁫');m('house','🏠 🏡 🏘');m('bulb','💡');m('laptop','💻');m('monitor','🖥');m('video','🎬 📺');
 m('printer','🖨');m('file','📄 📃 📝');m('layers','📑');m('lock','🔒 🔐');m('check','✅ ☑ ✔');m('help','❓ ❔');m('timer','⏱ ⏲');m('hourglass','⏳ ⌛');m('msg','💬 🗨');
 m('search','🔎 🔍');m('pencil','✏ ✍ 🖊 🖍');m('mic','🎙 🎤');m('vol','🔈 🔉 🔊 📢');m('scale','⚖');m('ruler','📏 📐');m('puzzle','🧩 🧵');m('users','🤝 👥 🧑‍🤝‍🧑');
@@ -111,8 +118,21 @@ function key(e){return e.replace(/[️\u{1F3FB}-\u{1F3FF}]/gu,'')}
 function svg(k,c){return '<svg class="'+(c||'hj-li')+'" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+P[k]+'</svg>'}
 var TILE='.ico,.h-ico,.r-ico,.ts-chip>i,.td-ico',STRIP='.card:not(.room) .nm,main h2:not(.td-h),main h3';
 function grade(el){var c=el.closest('a,h1,.r-item')||el.parentNode,t=(c.querySelector('.nm')||c).textContent;var g=t.replace(RX,'').trim().match(/^(\d)학년$/);return g?g[1]:''}
-function tile(el){if(el.dataset.li)return;var raw=el.textContent.trim(),g=grade(el);el.dataset.li='1';
- if(g){el.innerHTML='<b class="hj-gn">'+g+'</b>';return}
+var SER2=null;function nmOf(c){var n=c&&(c.querySelector('.nm')||c.querySelector('span:not(.r-ico)'));return n?n.textContent.replace(RX,'').trim():''}
+function serial(el){var c=el.closest('a.card,div.card,.r-item');if(!c)return '';var t=nmOf(c);
+ var b=t.match(/\((\d)·(\d)학년\)/);if(b)return b[1]+'·'+b[2];
+ var m=t.match(/^(\d{1,2})(?:급\s*(Ⅱ))?(?=[.\s·급마]|학년|$)/);if(!m)return '';
+ if(SER2===null)SER2=[].filter.call(document.querySelectorAll('main .card .nm'),function(n){return /^\D*\d{2}\.\s/.test(n.textContent)}).length>=3;
+ if(SER2&&/^\d{2}\.\s/.test(t)){
+  var nn=c.querySelector('.nm');if(nn&&!nn.dataset.cut){nn.dataset.cut='1';var w=document.createTreeWalker(nn,NodeFilter.SHOW_TEXT),x;while(x=w.nextNode()){if(/\d{2}\.\s*/.test(x.nodeValue)){x.nodeValue=x.nodeValue.replace(/\d{2}\.\s*/,'');break}}}
+  return m[1]}
+ var box=c.classList.contains('r-item')?c.parentNode:(c.parentNode.classList.contains('rw')?c.parentNode.parentNode:c.parentNode);
+ var sib=[].slice.call(box.querySelectorAll(':scope>a.card,:scope>div.card,:scope>.rw>a.card,:scope>.r-item'));
+ var num=sib.filter(function(x){return /^\d/.test(nmOf(x))});if(num.length<3)return '';
+ var keys={},dup=false;num.forEach(function(x){var i=x.querySelector('.ico,.r-ico');var e=i&&(i.dataset.em||i.textContent).match(RX);var k=e?E[key(e[0])]||'dot':'dot';if(keys[k])dup=true;keys[k]=1});
+ return dup?m[1]+(m[2]||''):''}
+function tile(el){if(el.dataset.li)return;var raw=el.textContent.trim(),g=grade(el)||serial(el);el.dataset.li='1';el.dataset.em=raw;
+ if(g){el.innerHTML='<b class="hj-gn'+(g.length>1&&!/학년$/.test(g)&&!/^\d+$/.test(g)?' hj-gn-s':'')+'">'+g+'</b>';return}
  var sec=el.closest('#event,#quote,#art,#music,#book'),TD={event:'calendar',quote:'msg',art:'image',music:'music',book:'books'};
  if(sec&&el.classList.contains('td-ico')){el.innerHTML=svg(TD[sec.id]);return}
  var ms=raw.match(RX);el.innerHTML=svg(ms&&E[key(ms[0])]||'dot');}
