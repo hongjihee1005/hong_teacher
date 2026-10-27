@@ -99,6 +99,18 @@
  if(A&&ib)new MutationObserver(function(){var m=/scale\(([\d.]+)\)/.exec(ib.style.transform),g=m?+m[1]:1,v=g>1?(100/g).toFixed(3)+'%':'';
   if(v&&(ib.style.getPropertyValue('width')!==v||ib.style.getPropertyPriority('width')!=='important'))ib.style.setProperty('width',v,'important')}).observe(ib,{attributes:true,attributeFilter:['style']});
 
+ /* 교과서 덱(사회 등): 한 화면 활동이 무대보다 조금 길면 본문을 80%까지 줄여 스크롤 없이 한눈에(앱이 스스로 키우는 국어는 빼고, 휴대폰은 스크롤 그대로) */
+ var sto=0,sb0=body;
+ function kids(){return [].filter.call(sb0.children,function(c){return !c.classList.contains('hs-moved')&&c.offsetParent!==null||c.style.zoom})}
+ function shrink(){if(!A||!sb0)return;if(ib&&/scale\(/.test(ib.style.transform||''))return;
+  var inner=sb0.id==='bodyWrap'?[ib]:kids();inner.forEach(function(c){c.style.zoom=''});
+  if(innerWidth<=900)return;var ch=sb0.clientHeight,sh=sb0.scrollHeight;if(sh-ch<=8||ch<200)return;
+  var cs=getComputedStyle(sb0),pad=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
+  var z=Math.max(.8,Math.floor((ch-pad-6)/(sh-pad)*100)/100);inner.forEach(function(c){c.style.zoom=z});
+  for(var t=0;t<3&&z>.8&&sb0.scrollHeight-sb0.clientHeight>8;t++){z=Math.max(.8,Math.floor(z*(sb0.clientHeight-pad-6)/(sb0.scrollHeight-pad)*100)/100);inner.forEach(function(c){c.style.zoom=z})}}
+ function shrinkSoon(){clearTimeout(sto);sto=setTimeout(shrink,140)}
+ if(A&&sb0){new MutationObserver(function(ms){if(ms.some(function(m){return m.type==='childList'}))shrinkSoon()}).observe(sb0,{childList:true,subtree:true});addEventListener('resize',shrinkSoon);sb0.addEventListener('load',shrinkSoon,true);if(D.fonts)D.fonts.ready.then(shrinkSoon);shrinkSoon()}
+
  /* 큰 화면은 1280×800 틀을 통째로 키움. 국어 덱은 무대 크기가 바뀌면 앱이 다시 맞추도록 resize를 한 번 알림 */
  function kick(){setTimeout(function(){dispatchEvent(new Event('resize'))},30)}
  function fit(){if(H.style.zoom)H.style.zoom='';/* 앱이 html을 키우는 것(사회 홍지희 버전)은 끄고 껍데기 확대 하나만 */var w=innerWidth,h=innerHeight,z=w<=900?1:Math.max(.8,Math.min(w/1280,h/800));H.style.setProperty('--hs-z',z.toFixed(3))}
@@ -225,3 +237,21 @@
 
 /* 과학 '한 화면' 앱: 색과 모양만 껍데기에 맞춤(크기는 그대로 — 쪽 나눔 불변) */
 (function(){if(document.getElementById('ovBar')&&!document.documentElement.classList.contains('hs'))document.documentElement.classList.add('hs-sci')})();
+
+/* 그 밖의 앱: 덮개가 본문 맨 위에 둔 [홈 · 자료 목록](.hj-navbar)을 남색 앱 막대로(맨 위 전체 폭) + 제목 */
+(function(){var H=document.documentElement,D=document;
+ var SKIP=/^(초등교사 홍지희|기타|프로젝트|공통|수학게임|특색교육)$/;
+ function parts(){var t=(D.title||'').split(/\s*·\s*/).filter(function(x){return x&&!SKIP.test(x)});return t}
+ function go(){var w=D.querySelector('.hj-navbar');
+  if(!w){var tb=D.querySelector('section.screen.on>.topbar>.hj-nav');if(tb&&!H.classList.contains('hs')){H.classList.add('hs-et');return true}return false}
+  if(!w.querySelector('.hj-nav'))return false;
+  if(H.classList.contains('hs')||H.classList.contains('hs-math')||H.classList.contains('hs-sci'))return true;
+  H.classList.add('hs-e');w.classList.add('hs-ebar');
+  if(w.parentNode!==D.body||D.body.firstElementChild!==w)D.body.insertBefore(w,D.body.firstChild);
+  if(!w.querySelector('.hs-ettl')){var p=parts(),t=D.createElement('div');t.className='hs-ettl';
+   var b=D.createElement('b');b.textContent=(p[0]||'').replace(/^\d+\.\s*/,'');t.appendChild(b);
+   if(p.length>1){var s=D.createElement('span');s.textContent=p.slice(1).join(' · ');t.appendChild(s)}
+   w.appendChild(t)}
+  return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>40)clearInterval(iv)},100)}
+})();

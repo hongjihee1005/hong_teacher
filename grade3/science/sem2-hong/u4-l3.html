@@ -1440,7 +1440,7 @@ html body :is(.sthead .routine,.col>h3,.hintt,.pane h3 .pe,#segTeam .seg>button)
    디자인팀 두 시안 + 교육자팀 검토를 합친 최종 시안 C2의 짜임: 남색 앱 막대 · 단계 길 · 무대('지금 할 일' 머리띠) · 오른쪽 '이 단계 안내' 판(도구 · 이전/다음).
    shell.js가 엔진 요소(#steps·#hd·#ask·#body·#prev·#next…)를 그릇째 새 자리로 옮기고 html.hs를 붙인 쪽에만 적용. 화면만(@media screen) — 인쇄는 원래대로. */
 @media screen{
-html:is(.hs,.hs-sci){--hs-bg:#F3EEE5;--hs-paper:#FFFDF8;--hs-paper2:#F7F2E9;--hs-paper3:#EFE8DC;--hs-ink:#172033;--hs-ink2:#434D61;--hs-ink3:#5F687B;--hs-line:#E2D9C9;--hs-track:#8A8376;--hs-navy:#13213B;
+html:is(.hs,.hs-sci,.hs-e,.hs-et){--hs-bg:#F3EEE5;--hs-paper:#FFFDF8;--hs-paper2:#F7F2E9;--hs-paper3:#EFE8DC;--hs-ink:#172033;--hs-ink2:#434D61;--hs-ink3:#5F687B;--hs-line:#E2D9C9;--hs-track:#8A8376;--hs-navy:#13213B;
  --hs-s1:0 1px 2px rgba(19,33,59,.06),0 4px 12px rgba(19,33,59,.06);--hs-s2:0 1px 2px rgba(19,33,59,.05),0 12px 32px rgba(19,33,59,.09);
  --hs-a:#2B6FB8;--hs-ai:#1E5A9A;--hs-ad:#1B4F88;--hs-as:#E6EFF9;--hs-at:#CFE0F3;
  --hs-t-now:28px;--hs-t-q:34px;--hs-z:1}
@@ -1797,7 +1797,31 @@ html.hs-sci:not(#hsz):not(#hsz) #hj-scover .hj-goRow{order:4;padding:8px 28px 26
 html.hs-sci:not(#hsz):not(#hsz):not(#hsz) #hj-scover .hj-sc-go{background:var(--hs-a)!important;color:#fff!important;border-radius:16px!important;height:64px;padding:0 40px!important;font:800 22px/1 'Pretendard',sans-serif!important;box-shadow:0 6px 16px color-mix(in srgb,var(--hs-a) 30%,transparent)!important}
 @media (prefers-reduced-motion:reduce){html.hs:not(#hsz) .hs-tab.lk.hold::after{animation:none}}
 }
-@media print{.hs-bar,.hs-side{display:none!important}}
+
+/* ===== 그 밖의 앱(도구·게임·읽을거리): 같은 남색 앱 막대만(본문은 그대로) — shell.js가 .hj-navbar를 body 맨 앞으로 옮기고 제목을 넣음 ===== */
+html.hs-e:not(#hsz) body>.hj-navbar.hs-ebar{position:relative!important;display:flex!important;align-items:center;gap:16px;max-width:none!important;width:auto!important;margin:0 0 4px!important;
+ padding:10px max(20px,calc((100vw - 1240px) / 2))!important;min-height:68px;box-sizing:border-box;background:var(--hs-navy)!important;color:#fff;border:0!important;box-shadow:none!important;border-radius:0!important}
+html.hs-e:not(#hsz):not([data-hjsubj]) body>.hj-navbar.hs-ebar::before{display:none}
+html.hs-e:not(#hsz) body>.hj-navbar.hs-ebar::before{content:"";position:absolute;left:0;right:0;top:0;height:4px;background:var(--hs-a)}
+html.hs-e:not(#hsz) .hs-ebar .hj-nav{display:flex!important;gap:8px;flex:none;margin:0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+html.hs-e:not(#hsz) .hs-ebar .hj-nav>a{height:44px!important;min-height:0!important;padding:0 16px!important;border-radius:999px!important;display:inline-flex!important;align-items:center;gap:6px;font:700 16px/1 'Pretendard',sans-serif!important;
+ background:rgba(255,255,255,.09)!important;color:#E8ECF4!important;border:0!important;box-shadow:none!important;white-space:nowrap;text-decoration:none!important;margin:0!important}
+html.hs-e:not(#hsz) .hs-ebar .hj-nav>a:hover{background:rgba(255,255,255,.17)!important}
+html.hs-e:not(#hsz) .hs-ebar .hj-nav svg{width:18px!important;height:18px!important;color:inherit!important;stroke:currentColor!important}
+html.hs-e:not(#hsz) .hs-ebar .hs-ettl{display:flex;flex-direction:column;gap:2px;min-width:0;flex:1}
+html.hs-e:not(#hsz) .hs-ebar .hs-ettl b{font:800 20px/1.25 'Pretendard',sans-serif;letter-spacing:-.01em;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+html.hs-e:not(#hsz) .hs-ebar .hs-ettl span{font:600 15px/1.2 'Pretendard',sans-serif;color:#B4BED0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+@media (max-width:640px){html.hs-e:not(#hsz) body>.hj-navbar.hs-ebar{padding:8px 12px!important;gap:10px;min-height:60px}
+ html.hs-e:not(#hsz) .hs-ebar .hj-nav>a{padding:0 12px!important;height:40px!important}
+ html.hs-e:not(#hsz) .hs-ebar .hj-nav>a.hj-nl span{display:none}
+ html.hs-e:not(#hsz) .hs-ebar .hs-ettl b{font-size:17px}html.hs-e:not(#hsz) .hs-ebar .hs-ettl span{font-size:13px}}
+/* 사회 자료실처럼 제목 줄(.topbar)이 따로 있는 앱: 크기는 그대로, 제목 줄만 남색 띠로 */
+html.hs-et:not(#hsz) section.screen.on>.topbar{position:relative;background:var(--hs-navy)!important;box-shadow:0 0 0 100vmax var(--hs-navy)!important;clip-path:inset(-200px -100vmax 0 -100vmax);color:#fff;margin-bottom:10px!important}
+html.hs-et:not(#hsz) section.screen.on>.topbar h1{color:#fff!important}
+html.hs-et:not(#hsz) section.screen.on>.topbar .hj-nav>a{background:rgba(255,255,255,.09)!important;color:#E8ECF4!important;border:0!important;box-shadow:none!important}
+html.hs-et:not(#hsz) section.screen.on>.topbar .hj-nav>a:hover{background:rgba(255,255,255,.17)!important}
+html.hs-et:not(#hsz):not(#hsz):not(#hsz) body section.screen.on>.topbar>.tools>.tool{background:rgba(255,255,255,.09)!important;color:#E8ECF4!important;border-color:transparent!important}
+@media print{.hs-bar,.hs-side,.hs-ebar{display:none!important}}
 </style><meta name="hj-next" content="u4-l4.html" data-t="감염병에는 어떻게 걸릴까?" data-tag="O 개념 구축 · 4차시"><meta name="hj-list" content="[[&quot;u1-l2.html&quot;, &quot;네 가지 막대의 성질을 비교하라!&quot;, &quot;S 개념 찾기 · 2차시&quot;], [&quot;u1-l3.html&quot;, &quot;같은 물질로 이루어진 물체를 찾아라!&quot;, &quot;O 개념 구축 · 3차시&quot;], [&quot;u1-l4.html&quot;, &quot;물질의 세 가지 상태를 알아볼까?&quot;, &quot;S 개념 찾기 · 4차시&quot;], [&quot;u1-l56.html&quot;, &quot;고체, 액체, 기체는 어떻게 다를까?&quot;, &quot;O 개념 구축 · 5~6차시&quot;], [&quot;u1-l7.html&quot;, &quot;물질의 상태를 나타내는 사진을 찾아라!&quot;, &quot;O 탐구 정리 · 7차시&quot;], [&quot;u1-l89.html&quot;, &quot;쓰임새에 맞는 물질로 물체 설계하기&quot;, &quot;P 발표 · 8~9차시&quot;], [&quot;u2-l2.html&quot;, &quot;지구를 둘러싼 기체, 대기&quot;, &quot;S 개념 찾기 · 2차시&quot;], [&quot;u2-l34.html&quot;, &quot;구석구석 지구 표면을 탐험하라!&quot;, &quot;S 개념 찾기 · 3~4차시&quot;], [&quot;u2-l5.html&quot;, &quot;바닷물은 육지의 물과 어떻게 다를까?&quot;, &quot;O 개념 구축 · 5차시&quot;], [&quot;u2-l6.html&quot;, &quot;바닷가에는 어떤 지형이 있을까?&quot;, &quot;O 개념 구축 · 6차시&quot;], [&quot;u2-l7.html&quot;, &quot;밀물과 썰물은 무엇일까?&quot;, &quot;O 개념 구축 · 7차시&quot;], [&quot;u2-l8.html&quot;, &quot;살아 숨 쉬는 자연의 보물 창고, 갯벌&quot;, &quot;O 탐구 정리 · 8차시&quot;], [&quot;u2-l910.html&quot;, &quot;창의가 팡팡 · 소중한 갯벌을 지켜라!&quot;, &quot;P 발표 · 9~10차시&quot;], [&quot;u3-l2.html&quot;, &quot;소리가 나는 물체의 비밀을 찾아라!&quot;, &quot;S 개념 찾기 · 2차시&quot;], [&quot;u3-l3.html&quot;, &quot;큰 소리와 작은 소리를 재어 보자!&quot;, &quot;O 개념 구축 · 3차시&quot;], [&quot;u3-l4.html&quot;, &quot;높은 소리와 낮은 소리를 재어 보자!&quot;, &quot;O 개념 구축 · 4차시&quot;], [&quot;u3-l5.html&quot;, &quot;카드대로 소리를 내 보자!&quot;, &quot;O 탐구 정리 · 5차시&quot;], [&quot;u3-l67.html&quot;, &quot;소리가 지나가는 길을 찾아라!&quot;, &quot;O 개념 구축 · 6~7차시&quot;], [&quot;u3-l8.html&quot;, &quot;소음을 줄이는 방법을 찾아 실천하자!&quot;, &quot;O 탐구 정리 · 8차시&quot;], [&quot;u3-l910.html&quot;, &quot;도전, 나도 소리 예술가!&quot;, &quot;P 발표 · 9~10차시&quot;], [&quot;u4-l2.html&quot;, &quot;생활 속 감염병을 찾아라!&quot;, &quot;S 개념 찾기 · 2차시&quot;], [&quot;u4-l3.html&quot;, &quot;감염병은 왜 위험할까?&quot;, &quot;S 개념 찾기 · 3차시&quot;], [&quot;u4-l4.html&quot;, &quot;감염병에는 어떻게 걸릴까?&quot;, &quot;O 개념 구축 · 4차시&quot;], [&quot;u4-l56.html&quot;, &quot;감염병에 걸릴 수 있는 생활 습관을 표현해 볼까?&quot;, &quot;O 탐구 정리 · 5~6차시&quot;], [&quot;u4-l78.html&quot;, &quot;건강을 지키는 감염병 예방 수칙&quot;, &quot;O 개념 구축 · 7~8차시&quot;], [&quot;u4-l910.html&quot;, &quot;감염병 예방 홍보 노래 만들기&quot;, &quot;P 발표 · 9~10차시&quot;]]"><!--/hj-ctheme--></head><body>
 
 <section id="cover" class="screen on">
@@ -2825,6 +2849,18 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
  if(A&&ib)new MutationObserver(function(){var m=/scale\(([\d.]+)\)/.exec(ib.style.transform),g=m?+m[1]:1,v=g>1?(100/g).toFixed(3)+'%':'';
   if(v&&(ib.style.getPropertyValue('width')!==v||ib.style.getPropertyPriority('width')!=='important'))ib.style.setProperty('width',v,'important')}).observe(ib,{attributes:true,attributeFilter:['style']});
 
+ /* 교과서 덱(사회 등): 한 화면 활동이 무대보다 조금 길면 본문을 80%까지 줄여 스크롤 없이 한눈에(앱이 스스로 키우는 국어는 빼고, 휴대폰은 스크롤 그대로) */
+ var sto=0,sb0=body;
+ function kids(){return [].filter.call(sb0.children,function(c){return !c.classList.contains('hs-moved')&&c.offsetParent!==null||c.style.zoom})}
+ function shrink(){if(!A||!sb0)return;if(ib&&/scale\(/.test(ib.style.transform||''))return;
+  var inner=sb0.id==='bodyWrap'?[ib]:kids();inner.forEach(function(c){c.style.zoom=''});
+  if(innerWidth<=900)return;var ch=sb0.clientHeight,sh=sb0.scrollHeight;if(sh-ch<=8||ch<200)return;
+  var cs=getComputedStyle(sb0),pad=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
+  var z=Math.max(.8,Math.floor((ch-pad-6)/(sh-pad)*100)/100);inner.forEach(function(c){c.style.zoom=z});
+  for(var t=0;t<3&&z>.8&&sb0.scrollHeight-sb0.clientHeight>8;t++){z=Math.max(.8,Math.floor(z*(sb0.clientHeight-pad-6)/(sb0.scrollHeight-pad)*100)/100);inner.forEach(function(c){c.style.zoom=z})}}
+ function shrinkSoon(){clearTimeout(sto);sto=setTimeout(shrink,140)}
+ if(A&&sb0){new MutationObserver(function(ms){if(ms.some(function(m){return m.type==='childList'}))shrinkSoon()}).observe(sb0,{childList:true,subtree:true});addEventListener('resize',shrinkSoon);sb0.addEventListener('load',shrinkSoon,true);if(D.fonts)D.fonts.ready.then(shrinkSoon);shrinkSoon()}
+
  /* 큰 화면은 1280×800 틀을 통째로 키움. 국어 덱은 무대 크기가 바뀌면 앱이 다시 맞추도록 resize를 한 번 알림 */
  function kick(){setTimeout(function(){dispatchEvent(new Event('resize'))},30)}
  function fit(){if(H.style.zoom)H.style.zoom='';/* 앱이 html을 키우는 것(사회 홍지희 버전)은 끄고 껍데기 확대 하나만 */var w=innerWidth,h=innerHeight,z=w<=900?1:Math.max(.8,Math.min(w/1280,h/800));H.style.setProperty('--hs-z',z.toFixed(3))}
@@ -2951,4 +2987,22 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
 
 /* 과학 '한 화면' 앱: 색과 모양만 껍데기에 맞춤(크기는 그대로 — 쪽 나눔 불변) */
 (function(){if(document.getElementById('ovBar')&&!document.documentElement.classList.contains('hs'))document.documentElement.classList.add('hs-sci')})();
+
+/* 그 밖의 앱: 덮개가 본문 맨 위에 둔 [홈 · 자료 목록](.hj-navbar)을 남색 앱 막대로(맨 위 전체 폭) + 제목 */
+(function(){var H=document.documentElement,D=document;
+ var SKIP=/^(초등교사 홍지희|기타|프로젝트|공통|수학게임|특색교육)$/;
+ function parts(){var t=(D.title||'').split(/\s*·\s*/).filter(function(x){return x&&!SKIP.test(x)});return t}
+ function go(){var w=D.querySelector('.hj-navbar');
+  if(!w){var tb=D.querySelector('section.screen.on>.topbar>.hj-nav');if(tb&&!H.classList.contains('hs')){H.classList.add('hs-et');return true}return false}
+  if(!w.querySelector('.hj-nav'))return false;
+  if(H.classList.contains('hs')||H.classList.contains('hs-math')||H.classList.contains('hs-sci'))return true;
+  H.classList.add('hs-e');w.classList.add('hs-ebar');
+  if(w.parentNode!==D.body||D.body.firstElementChild!==w)D.body.insertBefore(w,D.body.firstChild);
+  if(!w.querySelector('.hs-ettl')){var p=parts(),t=D.createElement('div');t.className='hs-ettl';
+   var b=D.createElement('b');b.textContent=(p[0]||'').replace(/^\d+\.\s*/,'');t.appendChild(b);
+   if(p.length>1){var s=D.createElement('span');s.textContent=p.slice(1).join(' · ');t.appendChild(s)}
+   w.appendChild(t)}
+  return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>40)clearInterval(iv)},100)}
+})();
 </script><!--/hj-cicons--></body></html>
