@@ -287,12 +287,160 @@ html a.room:hover::after{background:var(--acc-mid)}
 /* 위치 표시줄: 지금 있는 곳(학기)은 진하게, 누르지 않는 글자 */
 html .crumb .c-cur{color:var(--ink);font-weight:700;cursor:default}
 html .crumb .c-cur:hover{background:none}
-</style><!--/hj-theme--></head><body><main>
-<nav class="crumb" aria-label="현재 위치"><a class="c-link c-home" href="../../index.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../index.html">5학년</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="index.html">사회방</a></nav>
+
+/* ───────── 정돈된 사이트 틀 (2026-10-27) ─────────
+   위 머리 막대(.hj-top) · 남색 제목 띠(.hj-hero) · 차분한 카드 · 남색 꼬리말. 짜임은 apply_theme.py의 chrome()이 넣음. */
+html:root{--bg:#F6F5F1;--bg2:#EEECE6;--paper:#FFFFFF;--ink:#141A26;--soft:#4B5465;--line:#E3E0D8;--line2:#CFCBC1;--focus:#2563EB;
+ --navy:#0F1C33;--navy2:#1A2E50;--on-navy:#F4F6FA;--on-navy2:#BAC5D8;--sel-bg:#0F1C33;--sel-ink:#FFFFFF;
+ --sh-s:0 1px 2px rgba(15,28,51,.05),0 2px 6px -2px rgba(15,28,51,.05);--sh-m:0 2px 4px rgba(15,28,51,.04),0 20px 38px -20px rgba(15,28,51,.32)}
+@media (prefers-color-scheme:dark){html:root:not([data-theme="light"]){--bg:#0E131B;--bg2:#18202C;--paper:#151C27;--ink:#E8ECF3;--soft:#A7B1C2;--line:#253042;--line2:#354259;--focus:#8AB0FF;
+ --navy:#0A1120;--navy2:#13213A;--sel-bg:#E8ECF3;--sel-ink:#0E131B;--sh-s:0 1px 2px rgba(0,0,0,.3);--sh-m:0 22px 40px -20px rgba(0,0,0,.7)}}
+html:root[data-theme="dark"]{--bg:#0E131B;--bg2:#18202C;--paper:#151C27;--ink:#E8ECF3;--soft:#A7B1C2;--line:#253042;--line2:#354259;--focus:#8AB0FF;
+ --navy:#0A1120;--navy2:#13213A;--sel-bg:#E8ECF3;--sel-ink:#0E131B;--sh-s:0 1px 2px rgba(0,0,0,.3);--sh-m:0 22px 40px -20px rgba(0,0,0,.7)}
+html body{background:var(--bg);overflow-x:clip}
+html main{max-width:1180px;padding:0 clamp(16px,3vw,40px)}
+html main:not(:has(>.hj-hero)){padding-top:clamp(18px,3.2vw,44px)}
+html main:not(:has(>.hjfoot)){padding-bottom:72px}
+
+/* 위 머리 막대 */
+html .hj-top{position:sticky;top:0;z-index:60;background:color-mix(in srgb,var(--paper) 90%,transparent);
+ -webkit-backdrop-filter:saturate(1.5) blur(14px);backdrop-filter:saturate(1.5) blur(14px);border-bottom:1px solid var(--line);transition:box-shadow .2s}
+html .hj-top.scrolled{box-shadow:0 10px 24px -18px rgba(15,28,51,.45)}
+html .hj-top-in{position:relative;max-width:1180px;margin:0 auto;padding:0 clamp(16px,3vw,40px);height:68px;display:flex;align-items:center;gap:16px}
+html .hj-brand,html .hj-fb{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--ink);flex:none;min-width:0}
+html .hj-mark{flex:none;display:grid;place-items:center;width:38px;height:38px;border-radius:11px;color:#fff;font-weight:800;font-size:18px;letter-spacing:-.04em;
+ background:linear-gradient(150deg,#2B4A7C,#0F1C33);box-shadow:inset 0 0 0 1px rgba(255,255,255,.1),0 2px 6px -2px rgba(15,28,51,.4)}
+html .hj-bt{display:flex;flex-direction:column;line-height:1.15;min-width:0}
+html .hj-bt b{font-size:17.5px;font-weight:800;letter-spacing:-.025em;white-space:nowrap}
+html .hj-bt small{font-size:12.5px;font-weight:600;color:var(--soft);letter-spacing:.04em;white-space:nowrap}
+html .hj-gnav{margin-left:auto;display:flex;align-items:center;gap:2px}
+html .hj-gnav>a,html .hj-ddb{position:relative;display:inline-flex;align-items:center;gap:5px;height:44px;padding:0 13px;border-radius:10px;font:inherit;
+ font-size:16.5px;font-weight:600;line-height:1;color:var(--soft);text-decoration:none;background:none;border:0;cursor:pointer;white-space:nowrap;transition:background .15s,color .15s}
+html .hj-gnav>a:hover,html .hj-ddb:hover,html .hj-ddb[aria-expanded="true"]{background:var(--bg2);color:var(--ink)}
+html .hj-gnav>a.is-on,html .hj-ddb.is-on{color:var(--ink);font-weight:750}
+html .hj-gnav>a.is-on::after,html .hj-ddb.is-on::after{content:"";position:absolute;left:13px;right:13px;bottom:3px;height:2.5px;border-radius:2px;background:var(--ink)}
+html .hj-ddb svg{width:16px;height:16px;transition:transform .2s}
+html .hj-ddb[aria-expanded="true"] svg{transform:rotate(180deg)}
+html .hj-gnav>a:focus-visible,html .hj-ddb:focus-visible,html .hj-brand:focus-visible,html .hj-mbtn:focus-visible,html .hj-ddm a:focus-visible{outline:3px solid var(--focus);outline-offset:2px}
+html .hj-dd{position:relative}
+html .hj-ddm{position:absolute;top:calc(100% + 10px);left:50%;transform:translateX(-50%);display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;
+ width:340px;padding:10px;background:var(--paper);border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh-m);animation:hjdrop .16s ease-out}
+html .hj-ddm[hidden]{display:none}
+html .hj-ddm a{display:flex;align-items:center;justify-content:center;min-height:46px;padding:8px 10px;border-radius:12px;text-decoration:none;color:var(--ink);
+ font-weight:700;font-size:16.5px;background:var(--bg);border:1px solid var(--line);transition:background .15s,border-color .15s}
+html .hj-ddm a:hover{background:var(--paper);border-color:var(--line2)}
+html .hj-ddm a[aria-current]{background:var(--sel-bg);border-color:var(--sel-bg);color:var(--sel-ink)}
+html .hj-mbtn{display:none;margin-left:auto;align-items:center;gap:6px;height:44px;padding:0 14px;border-radius:10px;border:1px solid var(--line);
+ background:var(--paper);color:var(--ink);font:inherit;font-size:16px;font-weight:700;cursor:pointer}
+html .hj-mbtn svg{width:20px;height:20px}
+@media (max-width:1000px){
+ html .hj-mbtn{display:inline-flex}
+ html .hj-gnav{display:none}
+ html .hj-top.open .hj-gnav{display:flex;flex-direction:column;align-items:stretch;gap:2px;position:absolute;left:0;right:0;top:100%;margin:0;
+  padding:12px clamp(16px,3vw,40px) 18px;background:var(--paper);border-bottom:1px solid var(--line);box-shadow:0 18px 30px -20px rgba(15,28,51,.45)}
+ html .hj-top.open .hj-ddb{display:none}
+ html .hj-top.open .hj-ddm{display:grid!important;position:static;transform:none;width:auto;padding:0 0 8px;margin-bottom:6px;border:0;border-bottom:1px solid var(--line);
+  border-radius:0;box-shadow:none;animation:none}
+ html .hj-top.open .hj-gnav>a{height:48px;font-size:17px}
+ html .hj-top.open .hj-gnav>a.is-on::after{left:0;right:auto;top:12px;bottom:12px;width:3px;height:auto}
+}
+@media (max-width:420px){html .hj-bt small{display:none}html .hj-ddm{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* 남색 제목 띠: 위치 표시줄 · 제목 · 한 줄 소개 */
+html .hj-hero{position:relative;isolation:isolate;overflow:hidden;color:var(--on-navy);margin:0 calc(50% - 50vw) clamp(26px,3.2vw,40px);
+ padding:clamp(24px,3vw,36px) calc(50vw - 50%) clamp(32px,3.8vw,50px);
+ background:radial-gradient(820px 320px at 96% -30%,color-mix(in srgb,var(--acc) 42%,transparent),transparent 68%),
+  radial-gradient(640px 280px at -8% 130%,rgba(76,125,214,.26),transparent 62%),linear-gradient(180deg,var(--navy2),var(--navy))}
+html .hj-hero::before{content:"";position:absolute;inset:0;z-index:-1;pointer-events:none;
+ background-image:linear-gradient(rgba(255,255,255,.05) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.05) 1px,transparent 1px);background-size:44px 44px;
+ -webkit-mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 90%);mask-image:linear-gradient(180deg,rgba(0,0,0,.9),transparent 90%)}
+html .hj-hero::after{content:"";position:absolute;left:0;right:0;bottom:0;height:3px;background:linear-gradient(90deg,var(--acc),color-mix(in srgb,var(--acc) 35%,transparent) 70%,transparent)}
+html .hj-hero-in{position:relative}
+html .hj-hero .crumb{margin:0 0 20px}
+html .hj-hero .crumb .c-link{color:var(--on-navy2);min-height:38px;padding:5px 11px}
+html .hj-hero .crumb .c-link:hover{background:rgba(255,255,255,.09);color:#fff}
+html .hj-hero .crumb .c-home{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);color:#fff}
+html .hj-hero .crumb .c-sep{color:rgba(255,255,255,.36)}
+html .hj-hero .crumb .c-cur{color:#fff}
+html .hj-hero .crumb .c-cur:hover{background:none}
+html .hj-hero .crumb :focus-visible,html .hj-hero a:focus-visible{outline-color:#9DBBFF}
+html .hj-hero h1{color:#fff;font-size:clamp(31px,3.9vw,48px);font-weight:800;letter-spacing:-.03em;margin:0}
+html .hj-hero .h-ico{background:rgba(255,255,255,.08);box-shadow:inset 0 0 0 1px rgba(255,255,255,.16);border-radius:16px;
+ color:color-mix(in srgb,var(--acc) 55%,#fff)}
+html .hj-hero .sub{color:var(--on-navy2);margin:14px 0 0;max-width:48em}
+html .hj-hero .sub b{color:#fff}
+html .hj-hero .sub a{color:#fff}
+/* 첫 화면: 오늘의 한 줄도 띠 안에 */
+html .hj-hero .today-strip{margin:26px 0 0}
+html .hj-hero .ts-main,html .hj-hero .ts-chip{background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.15);color:#fff;box-shadow:none}
+html .hj-hero .ts-main:hover,html .hj-hero .ts-chip:hover{background:rgba(255,255,255,.11);border-color:rgba(255,255,255,.28)}
+html .hj-hero .ts-lab{color:color-mix(in srgb,var(--acc) 50%,#fff)}
+html .hj-hero .ts-go,html .hj-hero .ts-chip small{color:var(--on-navy2)}
+html .hj-hero .ts-chip>i{background:rgba(255,255,255,.1);color:color-mix(in srgb,var(--acc) 50%,#fff)}
+
+/* 묶음 제목 */
+html main>h2:not(.u-toggle),html main>.sec-h{display:flex;align-items:center;gap:12px;font-size:clamp(23px,2.3vw,28px);font-weight:800;letter-spacing:-.025em;
+ margin:clamp(38px,4.2vw,56px) 0 16px}
+html main>h2:not(.u-toggle)::before,html main>.sec-h::before{content:"";flex:none;width:5px;height:.95em;border-radius:3px;background:var(--ink)}
+html main>h2:not(.u-toggle)::after,html main>.sec-h::after{content:"";flex:1;height:1px;background:var(--line);margin-left:6px}
+html main>.hj-hero+h2,html main>.hj-hero+.sec-h{margin-top:6px}
+
+/* 카드 */
+html .card{border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh-s);
+ background-image:linear-gradient(var(--acc),var(--acc));background-repeat:no-repeat;background-position:0 0;background-size:0 3px;
+ transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease,background-size .3s ease}
+html a.card:hover{border-color:color-mix(in srgb,var(--acc) 40%,var(--line));box-shadow:var(--sh-m);transform:translateY(-3px);background-size:100% 3px}
+html .room,html a.room:hover{border-top:1px solid var(--line)}
+html .room{box-shadow:var(--sh-s);padding:22px}
+html a.room:hover{box-shadow:var(--sh-m);border-color:color-mix(in srgb,var(--acc) 40%,var(--line))}
+html .room .ico{width:54px;height:54px;border-radius:14px;margin-top:2px;background:color-mix(in srgb,var(--acc) 11%,var(--paper));color:color-mix(in srgb,var(--acc) 72%,var(--ink))}
+html .room .nm,html .card .nm{font-weight:800;letter-spacing:-.03em}
+html a.room::after{background:var(--bg2);transition:background .18s}
+html a.room:hover::after{background:var(--sel-bg)}
+html a.room:hover::before{background:var(--sel-ink)}
+html .room.wait,html .room.wait:hover{background:transparent;border:1px dashed var(--line2);box-shadow:none;transform:none}
+html .room.wait .ico{background:var(--bg2);color:color-mix(in srgb,var(--soft) 60%,var(--bg))}
+html .r-tg{width:40px;height:40px;top:20px;border:1px solid var(--line);background:var(--paper)}
+html .r-tg[aria-expanded="true"]{background:var(--sel-bg);border-color:var(--sel-bg);color:var(--sel-ink)}
+html .r-sub{border:1px solid var(--line);border-radius:16px;box-shadow:var(--sh-m);gap:6px;padding:12px}
+html .r-item{background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:12px;--acc-soft:color-mix(in srgb,var(--acc) 12%,var(--paper))}
+html a.r-item:hover{border-color:color-mix(in srgb,var(--acc) 45%,var(--line));background:var(--paper)}
+html .r-ico{background:var(--acc-soft);color:color-mix(in srgb,var(--acc) 72%,var(--ink));border-radius:9px}
+html .r-wait{background:transparent;border-style:dashed;color:var(--soft)}
+html .u-chip{background:var(--bg);border:1px solid var(--line)}
+html .tab{border:1px solid var(--line);border-radius:12px}
+html .tab[aria-selected="true"]{background:var(--sel-bg);border-color:var(--sel-bg);color:var(--sel-ink)}
+html .tab[aria-selected="true"] .cnt{background:color-mix(in srgb,var(--sel-ink) 18%,transparent);color:var(--sel-ink)}
+html .ubtn{border:1px solid var(--line)}
+html .ubtn[aria-pressed="true"]{background:var(--sel-bg);border-color:var(--sel-bg);color:var(--sel-ink)}
+html .u-toggle{border:1px solid var(--line);border-left:4px solid var(--acc-mid);border-radius:14px;box-shadow:var(--sh-s)}
+html .u-toggle:hover{background:var(--paper);border-color:color-mix(in srgb,var(--acc) 40%,var(--line))}
+html .u-toggle[aria-expanded="true"]{background:var(--paper);border-color:color-mix(in srgb,var(--acc) 45%,var(--line))}
+html .u-toggle[aria-expanded="true"] .u-chev{background:var(--sel-bg);color:var(--sel-ink)}
+html .empty{border:1px dashed var(--line2)}
+
+/* 남색 꼬리말 */
+html main>.hjfoot{width:auto;margin:clamp(56px,6vw,88px) calc(50% - 50vw) 0;padding:40px calc(50vw - 50%) 46px;background:var(--navy);color:var(--on-navy2);
+ border:0;text-align:left;display:grid;grid-template-columns:minmax(220px,auto) 1fr;column-gap:48px;row-gap:4px;align-items:start;font-size:15.5px;line-height:1.7}
+html main>.hjfoot .hj-fb{grid-column:1;grid-row:1/span 6;color:#fff}
+html main>.hjfoot .hj-fb .hj-mark{background:rgba(255,255,255,.1);box-shadow:inset 0 0 0 1px rgba(255,255,255,.18)}
+html main>.hjfoot .hj-bt small{color:var(--on-navy2)}
+html main>.hjfoot>:not(.hj-fb){grid-column:2}
+html main>.hjfoot p{margin:0;text-align:left;color:inherit}
+html main>.hjfoot .hj-contact{justify-content:flex-start;margin:12px 0 0}
+html main>.hjfoot .hj-contact a{background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.18);color:#fff}
+html main>.hjfoot .hj-contact a:hover{background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.32)}
+html main>.hjfoot a:focus-visible{outline:3px solid #9DBBFF;outline-offset:2px}
+@media (max-width:720px){html main>.hjfoot{grid-template-columns:1fr}html main>.hjfoot .hj-fb{grid-row:auto;margin-bottom:14px}html main>.hjfoot>:not(.hj-fb){grid-column:1}}
+@media print{html .hj-top{display:none}html .hj-hero{background:none;color:#000;margin:0 0 16px;padding:0}html .hj-hero::before,html .hj-hero::after{display:none}
+ html .hj-hero h1,html .hj-hero .sub,html .hj-hero .crumb .c-link{color:#000}html main>.hjfoot{background:none;color:#000;margin:24px 0 0;padding:12px 0}}
+@media (prefers-reduced-motion:reduce){html .card,html a.card:hover{transition:none;transform:none}html .hj-ddm{animation:none}}
+</style><!--/hj-theme--></head><body><!--hj-top--><header class="hj-top"><div class="hj-top-in"><a class="hj-brand" href="../../index.html"><span class="hj-mark" aria-hidden="true">홍</span><span class="hj-bt"><b>초등교사 홍지희</b><small>수업 자료실</small></span></a><nav class="hj-gnav" id="hj-gnav" aria-label="주 메뉴"><div class="hj-dd"><button class="hj-ddb is-on" type="button" aria-expanded="false" aria-controls="hj-ddm">학년별<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="hj-ddm" id="hj-ddm" hidden><a href="../../grade1/index.html">1학년</a><a href="../../grade2/index.html">2학년</a><a href="../../grade3/index.html">3학년</a><a href="../../grade4/index.html">4학년</a><a href="../index.html" aria-current="true">5학년</a><a href="../../grade6/index.html">6학년</a></div></div><a href="../../class/index.html">우리 반 교실</a><a href="../../common/index.html">공통</a><a href="../../break/index.html">쉬는 시간</a><a href="../../special/index.html">특색교육</a><a href="../../project/index.html">기타</a></nav><button class="hj-mbtn" type="button" aria-expanded="false" aria-controls="hj-gnav" aria-label="메뉴 열기"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>메뉴</span></button></div></header><!--/hj-top--><main>
+<!--hj-hero--><div class="hj-hero"><div class="hj-hero-in"><nav class="crumb" aria-label="현재 위치"><a class="c-link c-home" href="../../index.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../index.html">5학년</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="index.html">사회방</a></nav>
 <h1><span class="h-ico" aria-hidden="true">🗺️</span>5학년 2학기 사회</h1>
-<p class="sub">이 방은 아직 준비하고 있어요.</p>
+<p class="sub">이 방은 아직 준비하고 있어요.</p></div></div><!--/hj-hero-->
 <div class="empty"><span class="ico">🚧</span>자료가 만들어지면 여기에 모일 거예요.</div>
-<footer class="hjfoot"><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer>
+<footer class="hjfoot"><!--hj-fb--><div class="hj-fb"><span class="hj-mark" aria-hidden="true">홍</span><span class="hj-bt"><b>초등교사 홍지희</b><small>수업 자료실</small></span></div><!--/hj-fb--><p>2022 개정 교육과정, 지도서, 교과서를 바탕으로 만든 학습 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer>
 </main><!--hj-theme-js--><script>(function(){/* 메뉴 페이지 이모지 → 같은 굵기의 선 아이콘(직접 그린 24×24, 선 1.8) */
 var P={
 dove:'<path d="M3.5 13.5c3 .4 5.6-.6 7.4-3l2.6-3.4a3 3 0 0 1 5.2 1.6l2.3 1-2.4 1c-.6 4.6-4.3 7.6-9.4 7.3l-2.7 2.3v-2.9c-1.6-.9-2.6-2.2-3-3.9Z"/><path d="M16.4 8.2h.01" stroke-width="2.6"/>',
@@ -458,4 +606,15 @@ document.querySelectorAll('.ubtn').forEach(function(b){b.addEventListener('click
  var pane=b.closest('.pane')||document;setTimeout(function(){pane.querySelectorAll('.ugrp[data-u="'+b.dataset.u+'"] .u-toggle[aria-expanded="false"]').forEach(function(t){t.click()})},0)})});})();
 (function(){var WJ='⁠';var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){return n.parentElement&&!n.parentElement.closest('script,style,svg,input,textarea')?1:2}}),a=[],n;while(n=w.nextNode())a.push(n);
 a.forEach(function(n){var v=n.nodeValue;if(!/[·\-–\/()]/.test(v)||/^https?:|@/.test(v.trim()))return;var t=v.replace(/\S+/g,function(k){return k.length>7?k.replace(/(\S)([·‧])/g,'$1'+WJ+'$2'):k.replace(/(\S)([·‧–\/])(?=\S)/g,'$1'+WJ+'$2'+WJ)}).replace(/([가-힣A-Za-z0-9])-(?=[가-힣A-Za-z0-9])/g,'$1'+WJ+'-'+WJ).replace(/(\S)\((?=\S)/g,'$1'+WJ+'(').replace(/\)(?=[가-힣])/g,')'+WJ);if(t!==v)n.nodeValue=t})})();
+(function(){/* 위 머리 막대: 학년별 펼침 · 좁은 화면 메뉴 · 내리면 그림자 */
+var top=document.querySelector('.hj-top');if(!top)return;
+var dd=top.querySelector('.hj-ddb'),dm=top.querySelector('.hj-ddm'),mb=top.querySelector('.hj-mbtn');
+function setDD(o){if(!dd)return;dd.setAttribute('aria-expanded',o?'true':'false');dm.hidden=!o}
+function setM(o){top.classList.toggle('open',o);if(mb){mb.setAttribute('aria-expanded',o?'true':'false');mb.setAttribute('aria-label',o?'메뉴 닫기':'메뉴 열기')}}
+if(dd)dd.addEventListener('click',function(e){e.stopPropagation();setDD(dd.getAttribute('aria-expanded')!=='true')});
+if(mb)mb.addEventListener('click',function(e){e.stopPropagation();setM(!top.classList.contains('open'))});
+document.addEventListener('click',function(e){if(!e.target.closest('.hj-dd'))setDD(false);if(!e.target.closest('.hj-top'))setM(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){setDD(false);setM(false)}});
+var on=null;function sc(){var v=(window.scrollY||0)>4;if(v!==on){on=v;top.classList.toggle('scrolled',v)}}
+window.addEventListener('scroll',sc,{passive:true});sc();})();
 </script><!--/hj-theme-js--></body></html>

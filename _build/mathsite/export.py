@@ -15,6 +15,8 @@
 import pathlib, posixpath, re, shutil, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / '_build/theme'))
+from apply_theme import unchrome, hero   # 메뉴의 위 머리 막대·제목 띠·꼬리말 상표(2026-10-27): 잘라 쓰기 전에 걷고, 제목 띠만 다시 씌움(원래 자료실로 가는 머리 막대는 넣지 않음)
 MAIN = 'https://hongjihee1005.github.io/hong_teacher/'
 NAME = '초등 수학 게임'
 SITE = 'https://hongjihee1005.github.io/math-game/'
@@ -127,7 +129,7 @@ def fix_text(s):
 
 def grid(o):
     """메뉴 페이지 o의 카드 묶음 → (grid 클래스, 새 첫 화면 기준으로 주소를 고친 카드들)."""
-    s = (ROOT / o).read_text(encoding='utf-8')
+    s = unchrome((ROOT / o).read_text(encoding='utf-8'))
     a = s.index('<div class="grid'); cls = re.match(r'<div class="([^"]*)"', s[a:]).group(1); a = s.index('>', a) + 1
     b = s.index('<footer', a); b = s.rindex('</div>', a, b)
     g = relink(s[a:b].strip(), o, 'index.html')
@@ -138,6 +140,7 @@ def home():
     """첫 화면 = 원래 자료실 '기타 › 수학게임' 메뉴와 같은 카드(선생님 요청 2026-10-07, 게임이 많아져서 방 메뉴로 정리).
     모음 메뉴면 그 메뉴의 카드(곧 열려요 카드·펼침 메뉴 포함)를, 모음이 아닌 수학 방이면 기타 메뉴의 그 방 카드를 놓습니다."""
     s = (ROOT / 'project/math/index.html' if (ROOT / 'project/math/index.html').exists() else ROOT / 'project/creative/index.html').read_text(encoding='utf-8')   # 메뉴 디자인이 입혀진 틀
+    s = unchrome(s)
     a = s.index('<nav class="crumb"'); b = s.index('<footer', a)
     parts, cls = [], 'grid g3 two'
     for t in TOPS:
@@ -155,7 +158,7 @@ def home():
     s = re.sub(r'<meta name="description"[^>]*>\n?', '', s)
     s = re.sub(r'<title>[^<]*</title>', lambda m: f'<title>{NAME}</title>\n' + HEAD, s, count=1)
     s = re.sub(r'<footer class="hjfoot"><p>[^<]*</p>(<p>만든 사람)', r'<footer class="hjfoot">\1', s)
-    return s
+    return hero(s)
 
 def esc(t):
     return t.replace('&', '&amp;').replace('"', '&quot;').replace('<', '&lt;')
@@ -192,7 +195,9 @@ def main(out):
             t = f.read_text(encoding='utf-8')
             if 'http-equiv="refresh"' in t:   # 원래 자료실의 옛 주소 안내 페이지는 주소만 고쳐 그대로
                 dst.write_text(relink(t, o, n), encoding='utf-8'); continue
+            had = '<!--hj-hero-->' in t; t = unchrome(t)
             t = share(fix_text(relink(crumb(t, o), o, n)), SITE + n)
+            if had: t = hero(t)
             dst.write_text(t, encoding='utf-8')
     (out / 'index.html').write_text(share(home(), SITE), encoding='utf-8')
     (out / '.nojekyll').write_text('', encoding='utf-8')

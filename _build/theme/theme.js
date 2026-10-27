@@ -31,3 +31,14 @@ document.querySelectorAll('.ubtn').forEach(function(b){b.addEventListener('click
  var pane=b.closest('.pane')||document;setTimeout(function(){pane.querySelectorAll('.ugrp[data-u="'+b.dataset.u+'"] .u-toggle[aria-expanded="false"]').forEach(function(t){t.click()})},0)})});})();
 (function(){var WJ='⁠';var w=document.createTreeWalker(document.body,NodeFilter.SHOW_TEXT,{acceptNode:function(n){return n.parentElement&&!n.parentElement.closest('script,style,svg,input,textarea')?1:2}}),a=[],n;while(n=w.nextNode())a.push(n);
 a.forEach(function(n){var v=n.nodeValue;if(!/[·\-–\/()]/.test(v)||/^https?:|@/.test(v.trim()))return;var t=v.replace(/\S+/g,function(k){return k.length>7?k.replace(/(\S)([·‧])/g,'$1'+WJ+'$2'):k.replace(/(\S)([·‧–\/])(?=\S)/g,'$1'+WJ+'$2'+WJ)}).replace(/([가-힣A-Za-z0-9])-(?=[가-힣A-Za-z0-9])/g,'$1'+WJ+'-'+WJ).replace(/(\S)\((?=\S)/g,'$1'+WJ+'(').replace(/\)(?=[가-힣])/g,')'+WJ);if(t!==v)n.nodeValue=t})})();
+(function(){/* 위 머리 막대: 학년별 펼침 · 좁은 화면 메뉴 · 내리면 그림자 */
+var top=document.querySelector('.hj-top');if(!top)return;
+var dd=top.querySelector('.hj-ddb'),dm=top.querySelector('.hj-ddm'),mb=top.querySelector('.hj-mbtn');
+function setDD(o){if(!dd)return;dd.setAttribute('aria-expanded',o?'true':'false');dm.hidden=!o}
+function setM(o){top.classList.toggle('open',o);if(mb){mb.setAttribute('aria-expanded',o?'true':'false');mb.setAttribute('aria-label',o?'메뉴 닫기':'메뉴 열기')}}
+if(dd)dd.addEventListener('click',function(e){e.stopPropagation();setDD(dd.getAttribute('aria-expanded')!=='true')});
+if(mb)mb.addEventListener('click',function(e){e.stopPropagation();setM(!top.classList.contains('open'))});
+document.addEventListener('click',function(e){if(!e.target.closest('.hj-dd'))setDD(false);if(!e.target.closest('.hj-top'))setM(false)});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){setDD(false);setM(false)}});
+var on=null;function sc(){var v=(window.scrollY||0)>4;if(v!==on){on=v;top.classList.toggle('scrolled',v)}}
+window.addEventListener('scroll',sc,{passive:true});sc();})();

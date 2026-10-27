@@ -7,7 +7,7 @@
 여러 번 실행해도 안전합니다(표시 사이를 새 내용으로 바꿉니다).
 theme.css / theme.js 를 고친 뒤 다시 실행하면 전체에 반영됩니다.
 """
-import pathlib, re, sys, os
+import pathlib, posixpath, re, sys, os
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 HERE = pathlib.Path(__file__).resolve().parent
@@ -106,9 +106,60 @@ def submenus(s, f):
                 + ''.join(items) + '</div></div>')
     return CARD.sub(one, s)
 
+# ───────── 사이트 틀(2026-10-27): 위 머리 막대 · 제목 띠 · 꼬리말 상표 ─────────
+# 메뉴 페이지마다 같은 짜임이 되게 apply()가 넣습니다. 다른 스크립트가 메뉴 HTML을 잘라 쓸 때는
+# unchrome()으로 먼저 걷어 내고(원래 짜임: main 바로 아래 crumb → h1 → p.sub), 다 만든 뒤 hero()로 제목 띠만 다시 씌웁니다.
+TOP_RE = re.compile(r'<!--hj-top-->.*?<!--/hj-top-->', re.S)
+FB_RE = re.compile(r'<!--hj-fb-->.*?<!--/hj-fb-->', re.S)
+HERO_OFF = re.compile(r'<!--hj-hero--><div class="hj-hero"><div class="hj-hero-in">(.*?)</div></div><!--/hj-hero-->', re.S)
+HERO_ON = re.compile(r'(<main[^>]*>)(\s*)((?:<nav class="crumb".*?</nav>\s*)?<h1[ >].*?</h1>'
+                     r'(?:\s*(?:<!--hj-today-->.*?<!--/hj-today-->|<p class="sub">.*?</p>))?)', re.S)
+GNAV = [('우리 반 교실', 'class/index.html'), ('공통', 'common/index.html'), ('쉬는 시간', 'break/index.html'),
+        ('특색교육', 'special/index.html'), ('기타', 'project/index.html')]
+DOWN = ('<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round">'
+        '<path d="m6 9 6 6 6-6"/></svg>')
+BURGER = ('<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round">'
+          '<path d="M4 7h16M4 12h16M4 17h16"/></svg>')
+MARK = '<span class="hj-mark" aria-hidden="true">홍</span>'
+
+def unchrome(s):
+    s = TOP_RE.sub('', s); s = FB_RE.sub('', s)
+    return HERO_OFF.sub(lambda m: m.group(1), s)
+
+def hero(s):
+    if '<!--hj-hero-->' in s: return s
+    return HERO_ON.sub(lambda m: m.group(1) + m.group(2) + '<!--hj-hero--><div class="hj-hero"><div class="hj-hero-in">'
+                       + m.group(3) + '</div></div><!--/hj-hero-->', s, count=1)
+
+def topbar(rel):
+    d = posixpath.dirname(rel) or '.'
+    r = lambda p: posixpath.relpath(p, d)
+    head = rel.split('/')[0]
+    g = re.match(r'grade(\d)$', head)
+    grades = ''.join(f'<a href="{r(f"grade{n}/index.html")}"' + (' aria-current="true"' if g and g.group(1) == str(n) else '')
+                     + f'>{n}학년</a>' for n in range(1, 7))
+    links = ''.join(f'<a href="{r(p)}"' + (' class="is-on"' if head == p.split('/')[0] else '') + f'>{t}</a>' for t, p in GNAV)
+    return ('<!--hj-top--><header class="hj-top"><div class="hj-top-in">'
+            f'<a class="hj-brand" href="{r("index.html")}">{MARK}<span class="hj-bt"><b>초등교사 홍지희</b><small>수업 자료실</small></span></a>'
+            '<nav class="hj-gnav" id="hj-gnav" aria-label="주 메뉴">'
+            f'<div class="hj-dd"><button class="hj-ddb{" is-on" if g else ""}" type="button" aria-expanded="false" aria-controls="hj-ddm">학년별{DOWN}</button>'
+            f'<div class="hj-ddm" id="hj-ddm" hidden>{grades}</div></div>{links}</nav>'
+            f'<button class="hj-mbtn" type="button" aria-expanded="false" aria-controls="hj-gnav" aria-label="메뉴 열기">{BURGER}<span>메뉴</span></button>'
+            '</div></header><!--/hj-top-->')
+
+def footbrand():
+    return ('<!--hj-fb--><div class="hj-fb">' + MARK +
+            '<span class="hj-bt"><b>초등교사 홍지희</b><small>수업 자료실</small></span></div><!--/hj-fb-->')
+
+def chrome(s, rel):
+    s = re.sub(r'(<body[^>]*>)', lambda m: m.group(1) + topbar(rel), s, count=1)
+    s = s.replace('<footer class="hjfoot">', '<footer class="hjfoot">' + footbrand(), 1)
+    return hero(s)
+
 def apply(f):
     s = f.read_text(encoding='utf-8'); o = s
     if not is_menu(f, s): return False
+    s = unchrome(s)
     rel = f.relative_to(ROOT).as_posix()
     css = (HERE / 'theme.css').read_text(encoding='utf-8')
     js = (HERE / 'icons.js').read_text(encoding='utf-8') + (HERE / 'theme.js').read_text(encoding='utf-8')
@@ -124,6 +175,7 @@ def apply(f):
     k = subj(rel)
     if k and not re.search(r'<html[^>]*data-subj=', s):
         s = re.sub(r'<html([^>]*)>', lambda m: f'<html{m.group(1)} data-subj="{k}">', s, count=1)
+    s = chrome(s, rel)
     if s != o: f.write_text(s, encoding='utf-8'); return True
     return False
 
