@@ -108,6 +108,66 @@ def submenus(s, f):
                 + ''.join(items) + '</div></div>')
     return CARD.sub(one, s)
 
+
+# ───────── 학년 수업 길잡이(2026-10-27 선생님: '배열도 다시 설계'): 과목마다 교과서 1·2학기 / 홍지희 버전 1·2학기 / 더 보기를 한눈에 ─────────
+# 학년 쪽(gradeN/index.html)과 첫 화면(학년 단추 → 그 학년 길잡이)에 apply()가 넣습니다. 표시 <!--hj-gdir-->.
+GDIR_RE = re.compile(r'<!--hj-gdir-->.*?<!--/hj-gdir-->', re.S)
+SUBJ_NM = {'korean': '국어', 'math': '수학', 'social': '사회', 'science': '과학'}
+ARROW = ('<svg class="hd-arr" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" '
+         'stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>')
+
+def gdir(g, pre):
+    """g학년 길잡이 HTML. pre: 이 쪽에서 gradeN/ 폴더까지의 앞 경로('' 또는 'gradeN/')."""
+    gi = ROOT / f'grade{g}' / 'index.html'
+    cols, more = [], []
+    for c in children(gi):
+        h = c['href']; key = h.split('/')[0]
+        if key not in SUBJ_NM or c['wait']:
+            if not c['wait']: more.append(c)
+            continue
+        kids = children(ROOT / f'grade{g}' / h)
+        base = posixpath.dirname(h)
+        tb, hong, ext = {}, {}, []
+        for k in kids:
+            lab = k['label']; sem = '1' if '1학기' in lab else '2' if '2학기' in lab else ''
+            url = pre + posixpath.normpath(base + '/' + k['href'])
+            it = dict(k, url=url)
+            if sem and '홍지희' in lab: hong[sem] = it
+            elif sem and lab.replace('·', '').strip().startswith(f'{sem}학기') and len(lab) <= 6: tb[sem] = it
+            else: ext.append(it)
+        def sems(d, name):
+            if not d: return ''
+            cells = []
+            for n in '12':
+                it = d.get(n)
+                if not it: cells.append(f'<span class="hd-sem hd-none">{n}학기</span>')
+                elif it['wait']: cells.append(f'<span class="hd-sem hd-wait">{n}학기<small>준비 중</small></span>')
+                else: cells.append(f'<a class="hd-sem" href="{it["url"]}">{n}학기</a>')
+            return f'<div class="hd-row"><span class="hd-lab">{name}</span><div class="hd-sems">{"".join(cells)}</div></div>'
+        rows = sems(tb, '교과서') + sems(hong, '홍지희 선생님 버전')
+        ex = ''.join(f'<a class="hd-ext" href="{e["url"]}"><span class="r-ico" aria-hidden="true">{e["ico"]}</span><span>{e["label"]}</span></a>'
+                     for e in ext if not e['wait'])
+        if ex: ex = f'<div class="hd-exts">{ex}</div>'
+        acc = f' style="--acc:{c["acc"]}"' if c['acc'] else ''
+        cols.append(f'<section class="hd-col" data-k="{key}"{acc}><a class="hd-head" href="{pre}{h}">'
+                    f'<span class="r-ico" aria-hidden="true">{c["ico"]}</span><span class="hd-nm">{SUBJ_NM[key]}</span>{ARROW}</a>{rows}{ex}</section>')
+    foot = ''.join(f'<a class="hd-ext hd-wide" href="{pre}{posixpath.normpath(m["href"])}"><span class="r-ico" aria-hidden="true">{m["ico"]}</span><span>{m["label"]}</span></a>' for m in more)
+    return (f'<div class="hj-gdir" data-g="{g}" style="--n:{max(1, len(cols))}"><div class="hd-cols">{"".join(cols)}</div>'
+            + (f'<div class="hd-foot">{foot}</div>' if foot else '') + '</div>')
+
+def put_gdir(s, rel):
+    s = GDIR_RE.sub('', s)
+    m = re.fullmatch(r'grade(\d)/index\.html', rel)
+    if m:
+        blk = '<!--hj-gdir-->' + gdir(int(m.group(1)), '') + '<!--/hj-gdir-->'
+        return s.replace('<div class="grid">', blk + '<div class="grid hj-gold">', 1).replace('<div class="grid hj-gold hj-gold">', '<div class="grid hj-gold">')
+    if rel == 'index.html':
+        tabs = ''.join(f'<a class="hd-tab" href="grade{g}/index.html" data-g="{g}" role="tab"><b>{g}</b>학년</a>' for g in range(1, 7))
+        pan = ''.join(gdir(g, f'grade{g}/') for g in range(1, 7))
+        blk = f'<!--hj-gdir--><div class="hj-ghub"><div class="hd-tabs" role="tablist" aria-label="학년 고르기">{tabs}</div>{pan}</div><!--/hj-gdir-->'
+        return re.sub(r'(<div class="grid[^"]*\bsix\b[^"]*")', blk + r'\1', s, count=1)
+    return s
+
 # ───────── 사이트 틀(2026-10-27): 위 머리 막대 · 제목 띠 · 꼬리말 상표 ─────────
 # 메뉴 페이지마다 같은 짜임이 되게 apply()가 넣습니다. 다른 스크립트가 메뉴 HTML을 잘라 쓸 때는
 # unchrome()으로 먼저 걷어 내고(원래 짜임: main 바로 아래 crumb → h1 → p.sub), 다 만든 뒤 hero()로 제목 띠만 다시 씌웁니다.
@@ -189,6 +249,7 @@ def apply(f):
     s = re.sub(r'<nav class="crumb"[^>]*>(.*?)</nav>', lambda m: crumb(m, rel), s, count=1, flags=re.S)
     s = re.sub(r'<h1>([^\w\s가-힣<&]+)\s*', lambda m: f'<h1><span class="h-ico" aria-hidden="true">{m.group(1)}</span>', s, count=1)
     s = submenus(s, f)
+    s = put_gdir(s, rel)
     k = subj(rel)
     s = re.sub(r'(<html[^>]*?) data-subj="\w+"', r'\1', s, count=1)
     if k:

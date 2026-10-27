@@ -49,3 +49,10 @@ document.addEventListener('click',function(e){if(!e.target.closest('.hj-dd'))clo
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeAll();setM(false)}});
 var on=null;function sc(){var v=(window.scrollY||0)>4;if(v!==on){on=v;top.classList.toggle('scrolled',v)}}
 window.addEventListener('scroll',sc,{passive:true});sc();})();
+/* 첫 화면 학년 단추(2026-10-27): 누르면 그 학년 길잡이, 이 기기에 기억(hj-grade). 스크립트가 없으면 단추는 학년 쪽 링크 */
+(function(){var hub=document.querySelector('.hj-ghub');if(!hub)return;var K='hj-grade',tabs=[].slice.call(hub.querySelectorAll('.hd-tab'));
+function pick(g,save){tabs.forEach(function(t){var on=t.dataset.g===g;t.setAttribute('aria-selected',on?'true':'false');t.tabIndex=on?0:-1});
+ [].forEach.call(hub.querySelectorAll('.hj-gdir'),function(p){p.classList.toggle('on',p.dataset.g===g)});if(save)try{localStorage.setItem(K,g)}catch(e){}}
+var g0='3';try{g0=localStorage.getItem(K)||'3'}catch(e){}pick(g0,false);
+tabs.forEach(function(t,i){t.addEventListener('click',function(e){e.preventDefault();pick(t.dataset.g,true)});
+ t.addEventListener('keydown',function(e){var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(!d)return;e.preventDefault();var n=tabs[(i+d+tabs.length)%tabs.length];n.focus();pick(n.dataset.g,true)})})})();

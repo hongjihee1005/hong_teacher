@@ -702,6 +702,92 @@ html main>p.sub:has(>a.card){max-width:none}
 html main>p.sub:has(>a.card){max-width:none}
 html main .u-toggle .u-last{flex:none;font-size:14px;font-weight:700;color:var(--subj-ink,var(--mark));background:var(--subj-soft,var(--tint));border-radius:999px;padding:2px 10px;margin-left:auto}
 html main .u-toggle .u-last+.u-cnt{margin-left:8px}
+
+/* ===== 학년 수업 길잡이(2026-10-27 선생님: '메뉴 배열도 재디자인') =====
+   학년 쪽·첫 화면: 과목마다 한 칸 — 교과서 1·2학기 / 홍지희 선생님 버전 1·2학기 단추를 바로 보이게, 그 밖의 방은 아래 줄로.
+   (그 전엔 학년 → 과목 → 학기 세 번 눌러야 했음) 원래 카드 묶음(.hj-gold)은 펼침 메뉴·옛 스크립트용으로 남기고 숨김. */
+main .grid.hj-gold{display:none!important}
+.hj-ghub~.grid.six{display:none!important}
+.hj-gdir{margin:0}
+.hj-gdir .hd-cols{display:grid;grid-template-columns:repeat(min(var(--n),4),minmax(0,1fr));gap:16px;align-items:stretch}
+.hj-gdir .hd-col{display:flex;flex-direction:column;gap:14px;background:var(--paper,#fff);border:1px solid var(--line);border-radius:24px;padding:18px 18px 16px;
+ box-shadow:0 1px 2px rgba(15,28,51,.04),0 18px 40px -30px rgba(15,28,51,.35);min-width:0}
+.hj-gdir .hd-col{--a:var(--acc,#1E2D4A);--a-ink:color-mix(in srgb,var(--a) 72%,#141A26);--a-soft:color-mix(in srgb,var(--a) 9%,var(--paper,#fff))}
+.hj-gdir .hd-col[data-k="korean"]{--a:#C9463B}.hj-gdir .hd-col[data-k="math"]{--a:#B4610F}.hj-gdir .hd-col[data-k="social"]{--a:#2B6FB8}.hj-gdir .hd-col[data-k="science"]{--a:#1F8060}
+.hj-gdir .hd-head{display:flex;align-items:center;gap:12px;text-decoration:none;color:var(--ink);padding:2px 2px 12px;border-bottom:1px solid var(--line)}
+.hj-gdir .hd-head .r-ico{flex:none;width:46px;height:46px;border-radius:14px;display:grid;place-items:center;background:var(--a-soft);color:var(--a-ink);font-size:24px}
+.hj-gdir .hd-head .r-ico svg{width:24px;height:24px}
+.hj-gdir .hd-nm{flex:1;font-size:clamp(21px,1.9vw,25px);font-weight:800;letter-spacing:-.035em}
+.hj-gdir .hd-arr{width:20px;height:20px;color:var(--muted,#8A93A3);transition:transform .15s,color .15s}
+.hj-gdir .hd-head:hover .hd-arr{transform:translateX(3px);color:var(--a-ink)}
+.hj-gdir .hd-row{display:flex;flex-direction:column;gap:7px}
+.hj-gdir .hd-lab{font-size:13px;font-weight:700;color:var(--soft);letter-spacing:-.01em}
+.hj-gdir .hd-sems{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.hj-gdir .hd-sem{display:flex;align-items:center;justify-content:center;gap:6px;min-height:50px;border-radius:14px;text-decoration:none;font-size:17px;font-weight:800;letter-spacing:-.02em;
+ background:var(--a-soft);color:var(--a-ink);border:1px solid transparent;transition:background .15s,color .15s,box-shadow .15s,transform .1s}
+.hj-gdir a.hd-sem:hover{background:var(--a);color:#fff;box-shadow:0 10px 20px -12px var(--a)}
+.hj-gdir a.hd-sem:active{transform:scale(.98)}
+.hj-gdir .hd-sem.hd-none{background:transparent;border:1px dashed var(--line);color:color-mix(in srgb,var(--soft) 55%,transparent);font-weight:600}
+.hj-gdir .hd-sem.hd-wait{background:transparent;border:1px dashed var(--line);color:color-mix(in srgb,var(--soft) 70%,transparent);font-weight:700;flex-direction:column;gap:0;line-height:1.2}
+.hj-gdir .hd-sem small{font-size:11.5px;font-weight:600}
+.hj-gdir .hd-exts{display:flex;flex-direction:column;margin-top:auto;border-top:1px solid var(--line);padding-top:6px}
+.hj-gdir .hd-ext{display:flex;align-items:center;gap:10px;padding:8px 4px;border-radius:10px;text-decoration:none;color:var(--ink);font-size:15px;font-weight:600;line-height:1.35}
+.hj-gdir .hd-ext:hover{background:var(--a-soft,color-mix(in srgb,var(--ink) 5%,transparent))}
+.hj-gdir .hd-ext .r-ico{flex:none;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;background:color-mix(in srgb,var(--ink) 5%,var(--paper,#fff));color:var(--soft);font-size:15px}
+.hj-gdir .hd-ext .r-ico svg{width:16px;height:16px}
+.hj-gdir .hd-foot{display:flex;flex-wrap:wrap;gap:10px;margin-top:16px}
+.hj-gdir .hd-foot .hd-ext{background:var(--paper,#fff);border:1px solid var(--line);border-radius:999px;padding:8px 18px 8px 8px;font-weight:700}
+.hj-gdir .hd-foot .hd-ext:hover{border-color:color-mix(in srgb,var(--ink) 25%,var(--line));background:var(--paper,#fff)}
+@media (max-width:980px){.hj-gdir .hd-cols{grid-template-columns:repeat(min(var(--n),2),minmax(0,1fr))}}
+@media (max-width:560px){.hj-gdir .hd-cols{grid-template-columns:1fr}}
+/* 첫 화면: 학년 단추 → 그 학년 길잡이 */
+.hj-ghub{display:flex;flex-direction:column;gap:18px}
+.hj-ghub .hd-tabs{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:6px;padding:6px;background:var(--paper,#fff);border:1px solid var(--line);border-radius:20px;
+ box-shadow:0 1px 2px rgba(15,28,51,.04),0 18px 40px -30px rgba(15,28,51,.35)}
+.hj-ghub .hd-tab{display:flex;align-items:baseline;justify-content:center;gap:2px;padding:12px 6px;border-radius:14px;text-decoration:none;color:var(--soft);font-size:16px;font-weight:700;transition:background .15s,color .15s}
+.hj-ghub .hd-tab b{font-size:clamp(26px,2.6vw,34px);font-weight:800;letter-spacing:-.05em;color:var(--ink);line-height:1}
+.hj-ghub .hd-tab:hover{background:color-mix(in srgb,var(--ink) 5%,transparent)}
+.hj-ghub .hd-tab[aria-selected="true"]{background:#0F1C33;color:#C9D3E4}
+.hj-ghub .hd-tab[aria-selected="true"] b{color:#fff}
+.hj-ghub>.hj-gdir{display:none}
+.hj-ghub>.hj-gdir.on{display:block;animation:hdIn .22s ease-out}
+@keyframes hdIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+@media (max-width:560px){.hj-ghub .hd-tabs{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .hj-ghub .hd-tab[aria-selected="true"]{background:#E8ECF3;color:#4B5465}:root:not([data-theme="light"]) .hj-ghub .hd-tab[aria-selected="true"] b{color:#0E131B}}
+:root[data-theme="dark"] .hj-ghub .hd-tab[aria-selected="true"]{background:#E8ECF3;color:#4B5465}:root[data-theme="dark"] .hj-ghub .hd-tab[aria-selected="true"] b{color:#0E131B}
+@media (prefers-reduced-motion:reduce){.hj-ghub>.hj-gdir.on{animation:none}}
+
+/* ===== 첫 화면 아래 네 묶음: 한 판 네 칸(2026-10-27 재배치) — 묶음마다 흰 카드 하나, 제목 줄에 '전체 보기', 안은 아이콘 + 이름 줄 ===== */
+html main .hj-bento{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:16px;margin-top:clamp(40px,4.4vw,60px)}
+html main .hj-bento>.bn-c{order:3}html main .hj-bento>.bn-d{order:4}
+html main .hj-bento>.bn-c{grid-column:auto}
+@media (min-width:861px){html main .hj-bento{grid-template-columns:repeat(12,minmax(0,1fr))}
+ html main .hj-bento>.bn-a{grid-column:span 7}html main .hj-bento>.bn-b{grid-column:span 5}
+ html main .hj-bento>.bn-c{grid-column:span 5}html main .hj-bento>.bn-d{grid-column:span 7}}
+@media (max-width:860px){html main .hj-bento{grid-template-columns:1fr}}
+html main .hj-bento>.bn{display:flex;flex-direction:column;background:var(--paper,#fff);border:1px solid var(--line);border-radius:24px;padding:18px 18px 12px;
+ box-shadow:0 1px 2px rgba(15,28,51,.04),0 18px 40px -30px rgba(15,28,51,.35);min-width:0}
+html main .hj-bento .bn-h{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:2px 4px 12px;border-bottom:1px solid var(--line);margin-bottom:6px}
+html main .hj-bento .bn-h>h2.sec-h.sec-h{margin:0!important;padding:0!important;font-size:clamp(19px,1.7vw,22px)!important;font-weight:800;letter-spacing:-.03em}
+html main .hj-bento .bn-h>h2::before,html main .hj-bento .bn-h>h2::after{content:none!important}
+html main .hj-bento .bn-all{display:inline-flex;align-items:center;gap:4px;font-size:14px;font-weight:700;color:var(--soft);text-decoration:none;padding:6px 10px;border-radius:999px}
+html main .hj-bento .bn-all::after{content:"→";font-weight:700}
+html main .hj-bento .bn-all:hover{background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink)}
+html main .hj-bento .grid.grid.grid{display:grid!important;grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:2px 8px!important;padding:0!important;margin:0!important;
+ background:transparent!important;border:0!important;box-shadow:none!important;border-radius:0!important}
+html main .hj-bento .bn-b .grid.grid.grid,html main .hj-bento .bn-c .grid.grid.grid{grid-template-columns:1fr!important}
+@media (min-width:861px){html main .hj-bento .bn-a .grid.grid.grid,html main .hj-bento .bn-d .grid.grid.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}
+ html main .hj-bento .bn-b .grid.grid.grid{grid-template-columns:repeat(2,minmax(0,1fr))!important}}
+html main .hj-bento .grid>*{border:0!important}
+html main .hj-bento .grid .room.room.room{flex-direction:row!important;align-items:center!important;gap:12px!important;min-height:0!important;padding:10px 10px!important;border-radius:14px!important;
+ background:transparent!important;border:0!important;box-shadow:none!important}
+html main .hj-bento .grid .room.room.room:hover{background:color-mix(in srgb,var(--ink) 4.5%,transparent)!important}
+html main .hj-bento .grid .room .ico.ico{width:40px!important;height:40px!important;flex:none;border-radius:12px!important;background:color-mix(in srgb,var(--ink) 5%,var(--paper,#fff))!important;margin:0!important}
+html main .hj-bento .grid .room .nm.nm{font-size:clamp(16px,1.35vw,18px)!important;font-weight:700!important;white-space:normal!important;letter-spacing:-.02em}
+html main .hj-bento .grid a.room::before,html main .hj-bento .grid a.room::after{display:none!important}
+html main .hj-ghub{margin-top:0}
+@media (min-width:1100px){html main .hj-bento .bn-a .grid.grid.grid,html main .hj-bento .bn-d .grid.grid.grid{grid-template-columns:repeat(3,minmax(0,1fr))!important}}
+@media (max-width:560px){html main .hj-bento .grid.grid.grid{grid-template-columns:1fr!important}}
 </style><!--/hj-theme--></head><body><!--hj-top--><header class="hj-top"><div class="hj-top-in"><a class="hj-brand" href="../../index.html"><span class="hj-mark" aria-hidden="true">홍</span><span class="hj-bt"><b>초등교사 홍지희</b><small>수업 자료실</small></span></a><nav class="hj-gnav" id="hj-gnav" aria-label="주 메뉴"><div class="hj-dd"><button class="hj-ddb is-on" type="button" aria-expanded="false" aria-controls="hj-ddm0">학년별 수업<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="hj-ddm hj-ddm-g" id="hj-ddm0" hidden><a href="../index.html" aria-current="true">1학년</a><a href="../../grade2/index.html">2학년</a><a href="../../grade3/index.html">3학년</a><a href="../../grade4/index.html">4학년</a><a href="../../grade5/index.html">5학년</a><a href="../../grade6/index.html">6학년</a></div></div><a class="hj-gl" href="../../common/index.html">기초 학습</a><a class="hj-gl" href="../../project/index.html">교육 프로그램</a><div class="hj-dd"><button class="hj-ddb" type="button" aria-expanded="false" aria-controls="hj-ddm3">교실 도구<svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg></button><div class="hj-ddm" id="hj-ddm3" hidden><a href="../../class/index.html">우리 반 교실</a><a href="../../today/index.html">오늘의 교실 산책</a><a href="../../project/stamp/index.html">도장 만들기</a></div></div><a class="hj-gl" href="../../break/index.html">쉬는 시간</a></nav><button class="hj-mbtn" type="button" aria-expanded="false" aria-controls="hj-gnav" aria-label="메뉴 열기"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><path d="M4 7h16M4 12h16M4 17h16"/></svg><span>메뉴</span></button></div></header><!--/hj-top--><main>
 <!--hj-hero--><div class="hj-hero"><div class="hj-hero-in"><nav class="crumb" aria-label="현재 위치"><a class="c-link c-home" href="../../index.html"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 10.5 12 3.8l8.5 6.7"/><path d="M5.5 9.2V20h13V9.2"/><path d="M10 20v-5.5h4V20"/></svg><span>홈</span></a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="../index.html">1학년</a><svg class="c-sep" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m9 6 6 6-6 6"/></svg><a class="c-link" href="index.html">국어방</a></nav>
 <h1><span class="h-ico" aria-hidden="true">📖</span>1학년 2학기 국어</h1>
@@ -940,4 +1026,11 @@ document.addEventListener('click',function(e){if(!e.target.closest('.hj-dd'))clo
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){closeAll();setM(false)}});
 var on=null;function sc(){var v=(window.scrollY||0)>4;if(v!==on){on=v;top.classList.toggle('scrolled',v)}}
 window.addEventListener('scroll',sc,{passive:true});sc();})();
+/* 첫 화면 학년 단추(2026-10-27): 누르면 그 학년 길잡이, 이 기기에 기억(hj-grade). 스크립트가 없으면 단추는 학년 쪽 링크 */
+(function(){var hub=document.querySelector('.hj-ghub');if(!hub)return;var K='hj-grade',tabs=[].slice.call(hub.querySelectorAll('.hd-tab'));
+function pick(g,save){tabs.forEach(function(t){var on=t.dataset.g===g;t.setAttribute('aria-selected',on?'true':'false');t.tabIndex=on?0:-1});
+ [].forEach.call(hub.querySelectorAll('.hj-gdir'),function(p){p.classList.toggle('on',p.dataset.g===g)});if(save)try{localStorage.setItem(K,g)}catch(e){}}
+var g0='3';try{g0=localStorage.getItem(K)||'3'}catch(e){}pick(g0,false);
+tabs.forEach(function(t,i){t.addEventListener('click',function(e){e.preventDefault();pick(t.dataset.g,true)});
+ t.addEventListener('keydown',function(e){var d=e.key==='ArrowRight'?1:e.key==='ArrowLeft'?-1:0;if(!d)return;e.preventDefault();var n=tabs[(i+d+tabs.length)%tabs.length];n.focus();pick(n.dataset.g,true)})})})();
 </script><!--/hj-theme-js--></body></html>
