@@ -24,9 +24,9 @@ def is_menu(f, s):
     return rel == 'index.html' or 'class="crumb"' in s
 
 def subj(rel):
-    for k in ('korean', 'math', 'social', 'science'):
-        if f'/{k}/' in '/' + rel: return k
-    return ''
+    """과목 색은 학년 안의 과목 폴더에만(project/math/ 같은 수학게임 모음에는 붙이지 않음)"""
+    m = re.match(r'grade\d/(korean|math|social|science)/', rel)
+    return m.group(1) if m else ''
 
 def clean(label):
     label = re.sub(r'<[^>]+>', '', label).strip()
@@ -190,7 +190,8 @@ def apply(f):
     s = re.sub(r'<h1>([^\w\s가-힣<&]+)\s*', lambda m: f'<h1><span class="h-ico" aria-hidden="true">{m.group(1)}</span>', s, count=1)
     s = submenus(s, f)
     k = subj(rel)
-    if k and not re.search(r'<html[^>]*data-subj=', s):
+    s = re.sub(r'(<html[^>]*?) data-subj="\w+"', r'\1', s, count=1)
+    if k:
         s = re.sub(r'<html([^>]*)>', lambda m: f'<html{m.group(1)} data-subj="{k}">', s, count=1)
     s = chrome(s, rel)
     if s != o: f.write_text(s, encoding='utf-8'); return True

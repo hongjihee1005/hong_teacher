@@ -1,6 +1,7 @@
 (function(){/* 메뉴 칸마다 파스텔 색: 노랑·연두·초록·하늘·연보라·분홍·주황·파랑 */
 var PAL=['#E9B730','#98C54A','#4DB283','#55B2E0','#9F86E3','#E784AF','#F0985A','#5C8EE6'];
 document.querySelectorAll('main .grid').forEach(function(g){var i=0;[].forEach.call(g.children,function(c){var a=c.matches('a.card.room')?c:c.querySelector(':scope>a.card.room');if(!a)return;
+ if(/^(\.\.\/)*(korean|math|social|science)\//.test(a.getAttribute('href')||''))return;/* 과목 카드는 과목 색(theme.css)이 칠함 */
  var col=PAL[i++%PAL.length];a.style.setProperty('--acc',col);if(c!==a)c.style.setProperty('--acc',col);
  var sub=c.querySelector('.r-sub');if(sub){var j=0;sub.querySelectorAll('.r-item').forEach(function(r){r.style.setProperty('--acc',PAL[j++%PAL.length])})}})});
 var ts=document.querySelector('.ts-main');if(ts){ts.style.setProperty('--acc',PAL[0]);['#55B2E0','#9F86E3','#E784AF','#4DB283'].forEach(function(c,k){var ch=document.querySelectorAll('.ts-chip')[k];if(ch)ch.style.setProperty('--acc',c)})}
