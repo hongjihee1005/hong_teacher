@@ -84,7 +84,7 @@ if(!document.body||!Object.keys(P).length)return;
 var EM={},RT={};function m(k,s,o){s.split(' ').forEach(function(c){(o||EM)[c]=k})}
 /*HJ_EI_MAP*/
 m('eye','👀');m('eyeoff','🙈');m('thought','💭 🤔');m('help','❓ ❔');m('search','🔍 🔎');m('check','✅ ☑ ✔');m('ocircle','⭕');m('xcircle','❌');
-m('bulb','💡');m('msg','💬 🗨');m('talk','🗣');m('layers','📑 📜');m('link','🔗');m('sparkle','✨ 🌟');m('star','⭐');m('target','🎯');m('warn','⚠');
+m('bulb','💡');m('msg','💬 🗨');m('talk','🗣');m('layers','📑');m('scroll','📜');m('link','🔗');m('sparkle','✨ 🌟');m('star','⭐');m('target','🎯');m('warn','⚠');
 m('pin','📌 📍');m('clipboard','📋');m('file','📝 📄');m('book','📖');m('books','📚');m('pencil','✏ ✍ 🖊');m('printer','🖨');m('vol','🔊 🔈 🔉 📢');
 m('mic','🎙 🎤');m('headphones','🎧');m('timer','⏱ ⏲');m('clock','⏰ 🕰');m('hourglass','⏳ ⌛');m('calendar','📅 📆 🗓');m('refresh','🔄 🔁');
 m('key','🔑');m('lock','🔒 🔐');m('unlock','🔓');m('dice','🎲');m('house','🏠');m('school','🏫');m('person','🙋');m('pair','👫');m('group','👨‍👩‍👧');
@@ -93,7 +93,7 @@ m('image','🖼');m('folder','🗂');m('wrench','🛠');m('gear','⚙');m('save'
 m('medal','🏅');m('puzzle','🧩');m('flask','🔬 🧪');m('scale','⚖');m('orb','🔮');m('compass','🧭');m('map','🗺');m('globe','🌏 🌍 🌎');m('palette','🎨');
 m('ruler','📏 📐');m('erase','🧽');m('backspace','⌫');m('rewind','⏮');m('basket','🧺 🛒');m('box','📦');m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('music','🎵 🎶');m('news','📰');
 m('sprout','🌱',RT);m('summit','🧗',RT);m('hand','✋',RT);   /* 자연·몸짓 그림은 사고 루틴 칸 제목에서만 아이콘(다른 곳에선 내용일 수 있음) */
-m('smile','🙂');m('grin','😀');m('neutral','😐');m('drop','💧');m('tree','🌳');m('grain','🌾');m('play','▶');m('hospital','🏥');m('sprout','🌱');m('fire','🔥');m('sun','☀');
+m('smile','🙂');m('grin','😀');m('neutral','😐');m('drop','💧');m('tree','🌳');m('grain','🌾');m('play','▶');m('hospital','🏥');m('sprout','🌱');m('fire','🔥');m('sun','☀');m('rainbow','🌈');m('crayon','🖍');m('house','🏡');m('leaf','🌿');m('rain','🌧');m('baby','👶');m('village','🏘');m('nope','🙅');m('phone','📱');m('landmark','🏛');m('snow','❄');m('building','🏢');m('hand','✋');
 /*/HJ_EI_MAP*/
 var ROUT='.sthead .routine,.col>h3,.mcol>h3,.pane h3,.hintt';
 var TITLE='#cover h1.title,.cvin h1.title';
@@ -119,7 +119,7 @@ function lead(sp,slot){for(var n=sp;n&&n!==slot;n=n.parentNode){for(var s=n.prev
   if(!SP.test(s.textContent))return 0}}
  return 1}
 function norm(t){return t.replace(/[️\u{1F3FB}-\u{1F3FF}]/gu,'')}
-var ANY=new Set('🙂 😀 😐 ✏ 💭 ❌ ⭕ ⚠ 💧 🔎 🌳 ⏱ 💡 🌱 ▶ 🔍 🔥 ❓ 🖥 📚 🌾 ☀ 🏫 📺 🗣 ✅ 🏠 📰 🏥 🤝'.split(' '));   /* 2026-10-28 선생님이 고른 30가지: 자리와 상관없이 선 아이콘 */
+var ANY=new Set('🙂 😀 😐 ✏ 💭 ❌ ⭕ ⚠ 💧 🔎 🌳 ⏱ 💡 🌱 ▶ 🔍 🔥 ❓ 🖥 📚 🌾 ☀ 🏫 📺 🗣 ✅ 🏠 📰 🏥 🤝 ✔ 🎨 📝 📏 🖼 🌈 ✋ 🖍 📖 🏡 🌿 ⚖ 🌧 👍 👶 🎬 🏘 🛠 🙅 📱 📜 💬 📷 📍 🏛 ❄ 🎤 📄 📅 🏢'.split(' '));   /* 2026-10-28 다음 30가지(시안 2)도 */   /* 2026-10-28 선생님이 고른 30가지: 자리와 상관없이 선 아이콘 */
 var HARD='textarea,input,select,svg,[contenteditable],.hj-contact,option';
 function put(sp,k){sp.dataset.ei='1';sp.dataset.k=k;sp.classList.add('hj-ei');sp.setAttribute('aria-hidden','true');
  var t=document.createElement('span');t.className='hj-ei-t';t.textContent=sp.textContent;
