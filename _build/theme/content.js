@@ -88,11 +88,12 @@ m('bulb','💡');m('msg','💬 🗨');m('talk','🗣');m('layers','📑 📜');m
 m('pin','📌 📍');m('clipboard','📋');m('file','📝 📄');m('book','📖');m('books','📚');m('pencil','✏ ✍ 🖊');m('printer','🖨');m('vol','🔊 🔈 🔉 📢');
 m('mic','🎙 🎤');m('headphones','🎧');m('timer','⏱ ⏲');m('clock','⏰ 🕰');m('hourglass','⏳ ⌛');m('calendar','📅 📆 🗓');m('refresh','🔄 🔁');
 m('key','🔑');m('lock','🔒 🔐');m('unlock','🔓');m('dice','🎲');m('house','🏠');m('school','🏫');m('person','🙋');m('pair','👫');m('group','👨‍👩‍👧');
-m('users','👥 🧑‍🤝‍🧑 🤝');m('rows','🪑');m('listnum','🔢');m('chart','📊 📈');m('monitor','🖥');m('laptop','💻');m('video','🎬 📺');m('camera','📷 📸');
+m('users','👥 🧑‍🤝‍🧑 🤝');m('rows','🪑');m('listnum','🔢');m('chart','📊 📈');m('monitor','🖥');m('laptop','💻');m('video','🎬');m('tv','📺');m('camera','📷 📸');
 m('image','🖼');m('folder','🗂');m('wrench','🛠');m('gear','⚙');m('save','💾');m('robot','🤖');m('thumb','👍');m('party','🎉');m('trophy','🏆');
 m('medal','🏅');m('puzzle','🧩');m('flask','🔬 🧪');m('scale','⚖');m('orb','🔮');m('compass','🧭');m('map','🗺');m('globe','🌏 🌍 🌎');m('palette','🎨');
 m('ruler','📏 📐');m('erase','🧽');m('backspace','⌫');m('rewind','⏮');m('basket','🧺 🛒');m('box','📦');m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('music','🎵 🎶');m('news','📰');
 m('sprout','🌱',RT);m('summit','🧗',RT);m('hand','✋',RT);   /* 자연·몸짓 그림은 사고 루틴 칸 제목에서만 아이콘(다른 곳에선 내용일 수 있음) */
+m('smile','🙂');m('grin','😀');m('neutral','😐');m('drop','💧');m('tree','🌳');m('grain','🌾');m('play','▶');m('hospital','🏥');m('sprout','🌱');m('fire','🔥');m('sun','☀');
 /*/HJ_EI_MAP*/
 var ROUT='.sthead .routine,.col>h3,.mcol>h3,.pane h3,.hintt';
 var TITLE='#cover h1.title,.cvin h1.title';
@@ -118,16 +119,19 @@ function lead(sp,slot){for(var n=sp;n&&n!==slot;n=n.parentNode){for(var s=n.prev
   if(!SP.test(s.textContent))return 0}}
  return 1}
 function norm(t){return t.replace(/[️\u{1F3FB}-\u{1F3FF}]/gu,'')}
+var ANY=new Set('🙂 😀 😐 ✏ 💭 ❌ ⭕ ⚠ 💧 🔎 🌳 ⏱ 💡 🌱 ▶ 🔍 🔥 ❓ 🖥 📚 🌾 ☀ 🏫 📺 🗣 ✅ 🏠 📰 🏥 🤝'.split(' '));   /* 2026-10-28 선생님이 고른 30가지: 자리와 상관없이 선 아이콘 */
+var HARD='textarea,input,select,svg,[contenteditable],.hj-contact,option';
+function put(sp,k){sp.dataset.ei='1';sp.dataset.k=k;sp.classList.add('hj-ei');sp.setAttribute('aria-hidden','true');
+ var t=document.createElement('span');t.className='hj-ei-t';t.textContent=sp.textContent;
+ sp.innerHTML='<svg class="hj-eis" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+P[k]+'</svg>';sp.appendChild(t)}
 function conv(sp){if(sp.dataset.ei)return;sp.dataset.ei='0';
+ var e0=norm(sp.textContent);if(ANY.has(e0)&&EM[e0]&&P[EM[e0]]&&!sp.closest(HARD)){put(sp,EM[e0]);return}
  var slot=sp.closest(SLOT);if(!slot||sp.closest(NO))return;
  var L=lead(sp,slot);if(!L)return;
  var e=norm(sp.textContent),k=EM[e]||(slot.matches(ROUT)&&RT[e]);
  if(L===2){if(k)sp.classList.add('hj-ei-dup');return}      /* '📊 ⏳ 자료실'의 ⏳ */
  if(!k||!P[k]){if(slot.matches(TITLE))sp.classList.add('hj-ei-off');return}   /* 첫 화면 제목의 장식 이모지(🍂 🌕 …) */
- sp.dataset.ei='1';sp.dataset.k=k;sp.classList.add('hj-ei');sp.setAttribute('aria-hidden','true');
- var t=document.createElement('span');t.className='hj-ei-t';t.textContent=sp.textContent;   /* 글자는 남겨 textContent가 그대로(앱 코드·복사 안전) */
- sp.innerHTML='<svg class="hj-eis" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">'+P[k]+'</svg>';
- sp.appendChild(t)}
+ put(sp,k)}   /* 글자는 남겨 textContent가 그대로(앱 코드·복사 안전) */
 function run(x){if(!x||x.nodeType!==1||!x.isConnected)return;if(x.closest('.hj-ei'))return;
  if(x.classList.contains('hj-em'))conv(x);else x.querySelectorAll('.hj-em:not([data-ei])').forEach(conv)}
 run(document.body);
