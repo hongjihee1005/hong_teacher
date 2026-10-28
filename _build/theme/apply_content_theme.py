@@ -18,7 +18,8 @@ JS = (pathlib.Path(__file__).with_name('content.js')).read_text(encoding='utf-8'
 import emfont as _emfont  # 이모지 한 가지 색 글꼴을 쪽마다 잘라 넣음
 import json as _json
 _ICONS = (pathlib.Path(__file__).with_name('icons.js')).read_text(encoding='utf-8')
-_PATHS = dict(re.findall(r"(\w+):'(.*?)'(?=,\s*\w+:'|\};)", _ICONS, re.S))
+_PBLK = _ICONS.split('var P={', 1)[1].split('\nvar E={}', 1)[0]   # P 객체 안만 읽음(뒤쪽 m() 지도의 같은 이름이 덮어쓰지 않게)
+_PATHS = dict(re.findall(r"(\w+):'(.*?)'(?=,\s*\w+:'|\};)", _PBLK, re.S))
 _map = JS.split('/*HJ_EI_MAP*/')[1].split('/*/HJ_EI_MAP*/')[0]
 _used = sorted(set(re.findall(r"m\('(\w+)'", _map)))
 assert all(k in _PATHS for k in _used), [k for k in _used if k not in _PATHS]
