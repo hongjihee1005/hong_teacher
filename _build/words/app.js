@@ -42,7 +42,7 @@
     var h = '';
     LV.forEach(function (L, i) {
       var r = st[W.area][L.no] || {}, n = 0; for (var m in MODE) if (r[m] === L.items.length) n++;
-      h += '<button type="button" data-l="' + i + '" aria-pressed="' + (i === lv ? 'true' : 'false') + '"' + (n === 3 ? ' class="full"' : '') + '>' + L.no + '급' + (n ? '<i>' + '★'.repeat(n) + '</i>' : '') + '</button>';
+      h += '<button type="button" data-l="' + i + '" aria-pressed="' + (i === lv ? 'true' : 'false') + '"' + (n === 3 ? ' class="full"' : '') + '>' + L.no + '<small>단계</small>' + (n ? '<i>' + '★'.repeat(n) + '</i>' : '') + '</button>';
     });
     $('wdLv').innerHTML = h;
   }
@@ -53,7 +53,7 @@
     document.querySelectorAll('#wdTabs [data-t]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.t === tab ? 'true' : 'false') });
     $('t-learn').hidden = tab !== 'learn'; $('t-quiz').hidden = !MODE[tab]; $('t-print').hidden = tab !== 'print';
     var L = LV[lv];
-    $('wdTitle').textContent = W.name + ' ' + L.no + '급' + (MODE[tab] ? ' · ' + MODE[tab] : '') + ' (' + (L.from + 1) + '~' + (L.from + L.items.length) + '번)';
+    $('wdTitle').textContent = W.name + ' ' + L.no + '단계' + (MODE[tab] ? ' · ' + MODE[tab] : '') + ' (' + (L.from + 1) + '~' + (L.from + L.items.length) + '번)';
     if (tab === 'learn') learn(); else if (MODE[tab]) play(); else $('prView').innerHTML = sheet(lv, 'sheet');
     history.replaceState(null, '', '#' + L.no + (tab === 'learn' ? '' : '-' + tab));
   }
@@ -69,7 +69,7 @@
   function chars(it) {
     if (!it.c) return '';
     return '<div class="wd-chars">' + it.c.map(function (c) {
-      var inner = '<b>' + esc(c[0]) + '</b>' + esc(c[1]) + (c[2] ? '<i>' + esc(c[2]) + '</i>' : '');
+      var inner = '<b>' + esc(c[0]) + '</b>' + esc(c[1]) + (c[2] ? '<i>한자 ' + esc(c[2]) + '</i>' : '');
       return c[3] ? '<a href="../hanja/' + c[3] + '" title="' + esc(c[2]) + ' 한자 익히기">' + inner + '</a>' : '<span>' + inner + '</span>';
     }).join('') + '</div>';
   }
@@ -116,7 +116,7 @@
   function sheet(i, kind) {
     var L = LV[i], key = kind === 'key', Q = quiz(L, 'mean'), P = quiz(L, 'pair');
     var right = shuffle(L.items.map(function (it, k) { return k }), rng(W.area + ':' + L.no + ':line'));
-    var h = '<div class="wd-sheet"><div class="sh-hd"><div><b>' + esc(W.name) + ' ' + L.no + '급 학습지' + (key ? ' · 정답' : '') + '</b><span>' + (L.from + 1) + '~' + (L.from + L.items.length) + '번</span></div>' +
+    var h = '<div class="wd-sheet"><div class="sh-hd"><div><b>' + esc(W.name) + ' ' + L.no + '단계 학습지' + (key ? ' · 정답' : '') + '</b><span>' + (L.from + 1) + '~' + (L.from + L.items.length) + '번</span></div>' +
       (key ? '' : '<div class="sh-nm">이름: <i></i> 맞은 개수: <i class="s"></i> / ' + (L.items.length * 2) + '</div>') + '</div>';
     h += '<p class="sh-sec">① 알맞은 뜻을 골라 ○표 해요.</p><ol class="sh-q2">';
     Q.forEach(function (q) { h += '<li><b>' + esc(q.q) + '</b>' + (key ? ' → <b style="color:#C8402F">' + '①②③④'[q.ans] + ' ' + esc(q.ops[q.ans]) + '</b>' : '<br>' + q.ops.map(function (o, j) { return '<span class="o">' + '①②③④'[j] + ' ' + esc(o) + '</span>' }).join('')) + '</li>' });
