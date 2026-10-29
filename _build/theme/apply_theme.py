@@ -160,7 +160,8 @@ def put_gdir(s, rel):
     m = re.fullmatch(r'grade(\d)/index\.html', rel)
     if m:
         blk = '<!--hj-gdir-->' + gdir(int(m.group(1)), '') + '<!--/hj-gdir-->'
-        return s.replace('<div class="grid">', blk + '<div class="grid hj-gold">', 1).replace('<div class="grid hj-gold hj-gold">', '<div class="grid hj-gold">')
+        # 원래 카드 묶음은 처음엔 'grid', 한 번 적용한 뒤엔 'grid hj-gold' — 둘 다 찾아야 다시 돌려도 길잡이가 남음(2026-10-29 학년 쪽이 비던 일)
+        return re.sub(r'<div class="grid(?: hj-gold)?">', lambda m: blk + '<div class="grid hj-gold">', s, count=1)
     if rel == 'index.html':
         tabs = ''.join(f'<a class="hd-tab" href="grade{g}/index.html" data-g="{g}" role="tab"><b>{g}</b>학년</a>' for g in range(1, 7))
         pan = ''.join(gdir(g, f'grade{g}/') for g in range(1, 7))
