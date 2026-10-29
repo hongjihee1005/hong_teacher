@@ -14,7 +14,7 @@ button{font:inherit;color:inherit;cursor:pointer}
 h1{font-family:var(--display);font-weight:400;font-size:clamp(30px,4.2vw,46px);margin:0;line-height:1.15}
 h2{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.4vw,26px);margin:0 0 6px;color:var(--acc)}
 .tl-gnav{display:flex;flex-wrap:wrap;gap:6px;margin:0 0 12px}
-.tl-gnav a{display:inline-flex;align-items:center;min-height:36px;padding:3px 13px;border-radius:999px;border:2px solid var(--line);background:var(--paper);color:var(--soft);text-decoration:none;font-family:var(--display);font-size:16px}
+.tl-gnav a{display:inline-flex;align-items:center;gap:5px;min-height:36px;padding:3px 13px;border-radius:999px;border:2px solid var(--line);background:var(--paper);color:var(--soft);text-decoration:none;font-family:var(--display);font-size:16px}
 .tl-gnav a[aria-current="page"]{background:var(--acc);border-color:var(--acc);color:#fff}
 .tl-head{display:flex;flex-wrap:wrap;align-items:center;gap:10px 16px}
 .tl-head>div{flex:1 1 260px;min-width:0}
@@ -112,6 +112,14 @@ h2{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.4vw,26px);m
  #cpSheet .bg-pg{justify-content:space-around}
 }
 
+/* 휴대폰 머리 줄이기(2026-10-29 디자인팀) */
+@media (max-width:600px){
+ .tl-ico{width:44px;height:44px;border-radius:13px;font-size:24px}
+ h1{font-size:28px}
+ .tl-head{gap:6px 12px}
+ .tl-head .sub{font-size:15px;display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;overflow:hidden}
+ .tl-gnav{gap:5px}.tl-gnav a{min-height:30px;padding:2px 10px;font-size:13.5px}
+}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로(CDN이 막히면 기기의 고딕), 바탕·글자색을 메뉴와 같은 값으로(2026-10-27) */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1146,6 +1154,11 @@ html body :is(.sthead .routine,.col>h3,.hintt,.pane h3 .pe,#segTeam .seg>button)
 /* 기초 학습 추천 학년 꼬리표(2026-10-29, 참고용) */
 html body .hj-grtag{display:inline-flex;align-items:center;gap:6px;margin-left:6px;padding:2px 10px;border-radius:999px;background:color-mix(in srgb,var(--acc,#0F1C33) 12%,var(--paper,#fff));color:var(--ink);font-size:14px;font-weight:700;vertical-align:2px;white-space:nowrap}
 html body .hj-grtag small{font-size:12px;font-weight:600;color:var(--soft)}
+
+/* 수학게임 방 강조색 하나(2026-10-29) — 수학 과목 글자색 */
+@media screen{html.hj-mroom{--acc:#9A520C!important}
+@media (prefers-color-scheme:dark){html.hj-mroom:not([data-theme="light"]){--acc:#E39B55!important}}
+html.hj-mroom[data-theme="dark"]{--acc:#E39B55!important}}
 
 /* ===== 수업 스튜디오 껍데기 v4 (2026-10-27 선생님: '디자인 구성 자체를 다시') =====
    디자인팀 두 시안 + 교육자팀 검토를 합친 최종 시안 C2의 짜임: 남색 앱 막대 · 단계 길 · 무대('지금 할 일' 머리띠) · 오른쪽 '이 단계 안내' 판(도구 · 이전/다음).
@@ -2434,6 +2447,8 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
   if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)run(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
 /* 과목 색: 주소에서 과목을 읽어 html에 표시 */
 (function(){var m=location.pathname.match(/\/(korean|math|social|science)\//);if(m)document.documentElement.setAttribute('data-hjsubj',m[1])})();
+/* 수학게임 방은 강조색 하나로(2026-10-29 디자인팀: 방마다 색이 달라 한 제품처럼 안 보임) */
+(function(){if(/\/project\/(creative|mathgame|thinking|mathpeople|mathtools|classgraph|magic|mathdict|mathplay|escape|mathart|estimate|lifemath|quizshow|coding|daily|mathboard)\/|\/break\/board\//.test(location.pathname))document.documentElement.classList.add('hj-mroom')})();
 /* 과학 한 화면 보기: 글의 위계 정리
    - '활동 이름표 + 큰 제목'을 한 줄로
    - 안내 글(상황 설명)은 작게, 마지막 '~골라요/~써 봐요' 같은 할 일 문장은 크게 따로 */

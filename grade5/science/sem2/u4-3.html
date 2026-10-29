@@ -1197,6 +1197,11 @@ html body :is(.sthead .routine,.col>h3,.hintt,.pane h3 .pe,#segTeam .seg>button)
 html body .hj-grtag{display:inline-flex;align-items:center;gap:6px;margin-left:6px;padding:2px 10px;border-radius:999px;background:color-mix(in srgb,var(--acc,#0F1C33) 12%,var(--paper,#fff));color:var(--ink);font-size:14px;font-weight:700;vertical-align:2px;white-space:nowrap}
 html body .hj-grtag small{font-size:12px;font-weight:600;color:var(--soft)}
 
+/* 수학게임 방 강조색 하나(2026-10-29) — 수학 과목 글자색 */
+@media screen{html.hj-mroom{--acc:#9A520C!important}
+@media (prefers-color-scheme:dark){html.hj-mroom:not([data-theme="light"]){--acc:#E39B55!important}}
+html.hj-mroom[data-theme="dark"]{--acc:#E39B55!important}}
+
 /* ===== 수업 스튜디오 껍데기 v4 (2026-10-27 선생님: '디자인 구성 자체를 다시') =====
    디자인팀 두 시안 + 교육자팀 검토를 합친 최종 시안 C2의 짜임: 남색 앱 막대 · 단계 길 · 무대('지금 할 일' 머리띠) · 오른쪽 '이 단계 안내' 판(도구 · 이전/다음).
    shell.js가 엔진 요소(#steps·#hd·#ask·#body·#prev·#next…)를 그릇째 새 자리로 옮기고 html.hs를 붙인 쪽에만 적용. 화면만(@media screen) — 인쇄는 원래대로. */
@@ -2894,6 +2899,8 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
   if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)run(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
 /* 과목 색: 주소에서 과목을 읽어 html에 표시 */
 (function(){var m=location.pathname.match(/\/(korean|math|social|science)\//);if(m)document.documentElement.setAttribute('data-hjsubj',m[1])})();
+/* 수학게임 방은 강조색 하나로(2026-10-29 디자인팀: 방마다 색이 달라 한 제품처럼 안 보임) */
+(function(){if(/\/project\/(creative|mathgame|thinking|mathpeople|mathtools|classgraph|magic|mathdict|mathplay|escape|mathart|estimate|lifemath|quizshow|coding|daily|mathboard)\/|\/break\/board\//.test(location.pathname))document.documentElement.classList.add('hj-mroom')})();
 /* 과학 한 화면 보기: 글의 위계 정리
    - '활동 이름표 + 큰 제목'을 한 줄로
    - 안내 글(상황 설명)은 작게, 마지막 '~골라요/~써 봐요' 같은 할 일 문장은 크게 따로 */
