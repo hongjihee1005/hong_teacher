@@ -93,7 +93,7 @@ m('image','🖼');m('folder','🗂');m('wrench','🛠');m('gear','⚙');m('save'
 m('medal','🏅');m('puzzle','🧩');m('flask','🔬 🧪');m('scale','⚖');m('orb','🔮');m('compass','🧭');m('map','🗺');m('globe','🌏 🌍 🌎');m('palette','🎨');
 m('ruler','📏 📐');m('erase','🧽');m('backspace','⌫');m('rewind','⏮');m('basket','🧺 🛒');m('box','📦');m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('music','🎵 🎶');m('news','📰');
 m('sprout','🌱',RT);m('summit','🧗',RT);m('hand','✋',RT);   /* 자연·몸짓 그림은 사고 루틴 칸 제목에서만 아이콘(다른 곳에선 내용일 수 있음) */
-m('smile','🙂');m('grin','😀');m('neutral','😐');m('drop','💧');m('tree','🌳');m('grain','🌾');m('play','▶');m('hospital','🏥');m('sprout','🌱');m('fire','🔥');m('sun','☀');m('rainbow','🌈');m('crayon','🖍');m('house','🏡');m('leaf','🌿');m('rain','🌧');m('baby','👶');m('village','🏘');m('nope','🙅');m('phone','📱');m('landmark','🏛');m('snow','❄');m('building','🏢');m('hand','✋');
+m('smile','🙂');m('grin','😀');m('neutral','😐');m('drop','💧');m('tree','🌳');m('grain','🌾');m('play','▶');m('hospital','🏥');m('sprout','🌱');m('fire','🔥');m('sun','☀');m('rainbow','🌈');m('crayon','🖍');m('house','🏡');m('leaf','🌿');m('rain','🌧');m('baby','👶');m('village','🏘');m('nope','🙅');m('phone','📱');m('landmark','🏛');m('snow','❄');m('building','🏢');m('hand','✋');m('knight','♞');
 /*/HJ_EI_MAP*/
 var ROUT='.sthead .routine,.col>h3,.mcol>h3,.pane h3,.hintt';
 var TITLE='#cover h1.title,.cvin h1.title';
@@ -119,7 +119,7 @@ function lead(sp,slot){for(var n=sp;n&&n!==slot;n=n.parentNode){for(var s=n.prev
   if(!SP.test(s.textContent))return 0}}
  return 1}
 function norm(t){return t.replace(/[️\u{1F3FB}-\u{1F3FF}]/gu,'')}
-var ANY=new Set('🙂 😀 😐 ✏ 💭 ❌ ⭕ ⚠ 💧 🔎 🌳 ⏱ 💡 🌱 ▶ 🔍 🔥 ❓ 🖥 📚 🌾 ☀ 🏫 📺 🗣 ✅ 🏠 📰 🏥 🤝 ✔ 🎨 📝 📏 🖼 🌈 ✋ 🖍 📖 🏡 🌿 ⚖ 🌧 👍 👶 🎬 🏘 🛠 🙅 📱 📜 💬 📷 📍 🏛 ❄ 🎤 📄 📅 🏢'.split(' '));   /* 2026-10-28 다음 30가지(시안 2)도 */   /* 2026-10-28 선생님이 고른 30가지: 자리와 상관없이 선 아이콘 */
+var ANY=new Set('♞ 🙂 😀 😐 ✏ 💭 ❌ ⭕ ⚠ 💧 🔎 🌳 ⏱ 💡 🌱 ▶ 🔍 🔥 ❓ 🖥 📚 🌾 ☀ 🏫 📺 🗣 ✅ 🏠 📰 🏥 🤝 ✔ 🎨 📝 📏 🖼 🌈 ✋ 🖍 📖 🏡 🌿 ⚖ 🌧 👍 👶 🎬 🏘 🛠 🙅 📱 📜 💬 📷 📍 🏛 ❄ 🎤 📄 📅 🏢'.split(' '));   /* 2026-10-28 다음 30가지(시안 2)도 */   /* 2026-10-28 선생님이 고른 30가지: 자리와 상관없이 선 아이콘 */
 var HARD='textarea,input,select,svg,[contenteditable],.hj-contact,option';
 function put(sp,k){sp.dataset.ei='1';sp.dataset.k=k;sp.classList.add('hj-ei');sp.setAttribute('aria-hidden','true');
  var t=document.createElement('span');t.className='hj-ei-t';t.textContent=sp.textContent;
