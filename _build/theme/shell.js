@@ -298,6 +298,9 @@
    var b=D.createElement('b');b.textContent=(p[0]||'').replace(/^\d+\.\s*/,'');t.appendChild(b);
    if(p.length>1){var s=D.createElement('span');s.textContent=p.slice(1).join(' · ');t.appendChild(s)}
    w.appendChild(t)}
+  /* 같은 방의 다른 쪽 단추 줄(tl-gnav 등)을 남색 막대 안으로(2026-10-29 선생님: 화면을 많이 차지) */
+  if(!w.querySelector('.hs-egnav')){var g=D.querySelector('main nav.tl-gnav,main nav.cr-gnav,main nav.mg-gnav,main nav.mp-gnav');
+   if(g&&g.querySelectorAll('a').length>1){g.classList.add('hs-egnav');w.appendChild(g)}}
   return true}
  if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>40)clearInterval(iv)},100)}
 })();

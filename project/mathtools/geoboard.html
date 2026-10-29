@@ -1762,6 +1762,17 @@ html.hs-math.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):n
 html.hs:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) #lesson .body.hs-body{zoom:1!important}
 /* 인쇄: 위 남색 앱 막대(.hs-ebar)가 함께 찍혀 한 장짜리 학습지·시험지가 두 쪽으로 밀리던 것(2026-10-29 교육자팀 PDF 확인) */
 @media print{html.hs-e:not(#hsz):not(#hsz) body>.hj-navbar.hs-ebar,html body .hs-ebar,.hs-srail,.hs-stitle{display:none!important}}
+
+/* 남색 막대 안의 같은 방 쪽 단추(2026-10-29) — 자리가 모자라면 막대 안 다음 줄로 */
+html.hs-e:not(#hsz) body>.hj-navbar.hs-ebar:has(.hs-egnav){flex-wrap:wrap;row-gap:8px}
+html.hs-e:not(#hsz) .hs-ebar .hs-ettl{flex:0 1 auto;max-width:34ch}
+html.hs-e:not(#hsz) .hs-ebar nav.hs-egnav{display:flex!important;flex-wrap:wrap;gap:6px!important;margin:0 0 0 auto!important;flex:1 1 360px;justify-content:flex-end;padding:0!important;background:none!important;border:0!important}
+html.hs-e:not(#hsz) .hs-ebar nav.hs-egnav a{display:inline-flex!important;align-items:center;gap:5px;min-height:32px!important;height:auto!important;padding:2px 12px!important;border-radius:999px!important;border:1px solid rgba(255,255,255,.22)!important;background:rgba(255,255,255,.07)!important;color:#DCE3EF!important;font:600 14px/1.2 'Pretendard',sans-serif!important;text-decoration:none!important;white-space:nowrap;box-shadow:none!important}
+html.hs-e:not(#hsz) .hs-ebar nav.hs-egnav a:hover{background:rgba(255,255,255,.17)!important;color:#fff!important}
+html.hs-e:not(#hsz) .hs-ebar nav.hs-egnav a[aria-current="page"],html.hs-e:not(#hsz) .hs-ebar nav.hs-egnav a.on{background:#fff!important;border-color:#fff!important;color:#0F1C33!important;font-weight:800!important}
+html.hs-e:not(#hsz) .hs-ebar nav.hs-egnav svg,html.hs-e:not(#hsz) .hs-ebar nav.hs-egnav .hj-em{color:inherit!important}
+@media (max-width:640px){html.hs-e:not(#hsz) .hs-ebar nav.hs-egnav{flex-basis:100%;justify-content:flex-start;gap:5px!important}
+ html.hs-e:not(#hsz) .hs-ebar nav.hs-egnav a{min-height:28px!important;padding:1px 9px!important;font-size:13px!important}}
 </style><!--/hj-ctheme--><!--hj-emfont--><style id="hj-emfont">@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAW8AA8AAAAACJAAAAViAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgCBDBEICookiRwBNgIkAxQLDgAEIAU4ByAXJBgOG/UGAB6prX4w+ZTPP27694XUEqiIckqNVSx1wesyczphZQZzZyZeBb64sgYEyCoY////vdNf9NeggNvIWUBj3vZ+54O0FgXUCWlNanM0jweOmRNbj+kCtNQ8X6eAXwABwMAX/iD5heVy2IIGgDcAAIBmPMk6DLCKt9qOiP/ewTOji3LmO1hRhEeojS8GToG2xcaiqqoiZAcK3thMtPCBhZPfVCCAAJuJxoGwAwGBrQS41vqCmtPdM9OUQYGHRoqsQ9TNZ4oBkUCoDeXkIyTxwAg0hGCt1xJQgQKLw/dxAH34G/k14mAkH3Q2vHSeQ9qWpcIh1UCB/LY/E3g6vEDuJXDCOvIGDADAuusaL4A8AigdegfBDrOwg1USQ9P+tO9EPsOnx+QAfpgj38NZfdxENKbBE42ZZ/VGHovHrYosVJ65ELHnxBgd7HjFuehenUn5ymguGx9XEhUmkyno0JkmKG+bVIp95zJqjxlZvVlUf+dCsMo4zsnPjncR1jajcssOotnJ6t1GXuGqrUrPdtjm+nK87aTyjvDrpokMAarz764HrB7G5aeSo2d8nAKrN/Jx209J5liT8l5GsXs/elI2bQOjggk+6oLoxR2iOe/vcfYlo1OOM7rXE9x2nYVbJcfOgbzJYCaaPYyuhlfsNTtMKtwMu+zJ09TqefOJAG3ECXNHZP68HZwv5+iOE6Ixs6z+ATT1RmDxPXb3UaZNf4dobjO6m3BLLZH/dLYDkPFjVk9hpcqdNmIxyZ8oTaYOSDFPY7JjjC4TM3bNre+WdNS4tWsVLWpNlurOsgUrsHifUH7zYysIqO6wh8oGpbhDvimF5Ga6FMSVFgzWry44P1fb8/G1o781rVolLbrlCmvn+q2xuwZL45wLKhutPu8W1xRsqF9bYOiZUf/QsNEsGRiQFt1ioxm9BYbryRtU4jmfJ+ysb2kiudUrXFe4VyK3tan+CmeJ4KyzucJ6LjOk/xDnkvh3iUcFcqshDE1MdQ1bEpSdowkKWz9X4OpZDZLrWVGS+HfIIe5gE7exi6tl1o9Evrv1S1f73x3YfMcn4es3PBCVyRmH3+1dzUeej4iiQgXNrFYU2898mJMS4vnDU5ecvaJ1OdGGsEptsuskp4JIcaGAtQx1Bm1L0aliI0qzUgK3dQ5ZGHv8RKRTgdukZG1l+MbonMh1e51zrv3vGZKd8uE/+lgRX8tvFrMSvlac5XbPv8DdI/J43Kd+7jERkghJjFv0p9nXIz3cC/1GrLJ6PPe2j34vqAsTvu8YKBb5TPPKvhryg+ciUZ1QWCfS0+855HstkUqRONDxfWFYbje8ZLD+uTkb2q7y/fLqx9WPfpHskxTt/1PhBwm6BYau6n3Vafg1ZgH8Zh+VGCR2yHcMym9uyQ8NHg4maTJZmgQyvaGRziDHfAfNn34rfIXC74/4bsNDP5/z7fcdbU8bJIkZ0sWfzF2ydofXpTYuUdLwrKXziy/nXLpSNOuc5f7s+Lu7jw2uWflPR6umdeDczOKsddb56qG2ts7OIXVuYmKOeqizu7V9dGFu/IB27H/pQcOcffuH3Fa4De3fN8dwUPo/N/vjjPyrV+M52dfLpk+dOmnpd0rfn52u3VCkyb9dOfUenL7smypp7sDrjk4bvd9vaZE4vl7S3NrWsfCFY7Un9hIMJ7iWR1Z2q+usmx24321ZWwDA+8bEbr2W2FpO2gVaFxVtQVU6/rfDjDADJ7bjbMG0aN5X6MEVjJCaSnkTWxAA1sQVbKfh6KbgDx4IbWfl7QFCBODTRik60Y1ZmIhWTIcKA3qptgczwQOYSfo9DGKEOD6zeTSh7UJBKgkjpGpshidJaAAAAA==) format('woff2');unicode-range:U+1f4a1,U+1f4cb,U+1f4cc}</style><!--/hj-emfont--></head><body>
 <main>
 <nav class="tl-gnav" aria-label="다른 교구"><a href="base10.html">수 모형</a><a href="fracbar.html">분수 막대</a><a href="geoboard.html" aria-current="page">지오보드</a><a href="pattern.html">패턴 블록</a><a href="angle.html">각도기</a><a href="clock.html">시계</a><a href="numline.html">수직선</a><a href="dice.html">주사위·동전</a></nav>
@@ -2748,6 +2759,9 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
    var b=D.createElement('b');b.textContent=(p[0]||'').replace(/^\d+\.\s*/,'');t.appendChild(b);
    if(p.length>1){var s=D.createElement('span');s.textContent=p.slice(1).join(' · ');t.appendChild(s)}
    w.appendChild(t)}
+  /* 같은 방의 다른 쪽 단추 줄(tl-gnav 등)을 남색 막대 안으로(2026-10-29 선생님: 화면을 많이 차지) */
+  if(!w.querySelector('.hs-egnav')){var g=D.querySelector('main nav.tl-gnav,main nav.cr-gnav,main nav.mg-gnav,main nav.mp-gnav');
+   if(g&&g.querySelectorAll('a').length>1){g.classList.add('hs-egnav');w.appendChild(g)}}
   return true}
  if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>40)clearInterval(iv)},100)}
 })();
