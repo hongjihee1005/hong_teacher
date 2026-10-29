@@ -24,7 +24,7 @@
 
   app.innerHTML =
     '<details class="rd-how"><summary>💡 이 목록은 이렇게 골랐어요</summary>' + D.how + '</details>' +
-    '<div class="rd-stat"><span>모두 ' + B.length + '권</span><span class="g">⭐ 두 곳 이상이 함께 추천 ' + multi + '권</span><span>추천 기관 ' + orgs.length + '곳</span><span id="rdDone"></span></div>' +
+    '<div class="rd-stat"><span>모두 <b>' + B.length + '</b>권</span><span>두 곳 이상 추천 <b>' + multi + '</b>권</span><span>추천 기관 <b>' + orgs.length + '</b>곳</span><span id="rdDone"></span></div>' +
     '<div class="rd-ctl"><input type="search" id="rdQ" placeholder="🔍 책 제목·지은이·내용으로 찾기" aria-label="책 찾기">' +
     '<select id="rdOrg" aria-label="추천 기관으로 고르기"><option value="">🏛️ 모든 추천 기관</option>' + orgs.map(function (o) { return '<option value="' + esc(o) + '">' + esc(o) + ' (' + cntOrg(o) + ')</option>' }).join('') + '</select>' +
     '<button type="button" class="rd-b" id="rdPrint">🖨️ 독서 기록표 인쇄</button></div>' +
@@ -33,16 +33,16 @@
 
   function chips() {
     var h = '';
-    if (bands.length > 1) h += chipRow('band', '전체 학년', bands.map(function (b) { return [b, BAND[b] || b] }));
-    if (subjs.length > 1) h += chipRow('subj', '모두', subjs.map(function (s) { return [s, s] }));
-    if (kinds.length > 1) h += chipRow('kind', '모든 갈래', kinds.map(function (k) { return [k, k] }));
-    h += '<button type="button" class="rd-b" data-f="only" data-v="todo" aria-pressed="' + (st.only === 'todo') + '">아직 안 읽은 책만</button>';
+    if (bands.length > 1) h += chipRow('band', '학년', '전체', bands.map(function (b) { return [b, BAND[b] || b] }));
+    if (subjs.length > 1) h += chipRow('subj', '교과', '모두', subjs.map(function (s) { return [s, s] }));
+    if (kinds.length > 1) h += chipRow('kind', '갈래', '모두', kinds.map(function (k) { return [k, k] }));
+    h += '<div class="rd-frow"><span class="rd-fl">보기</span><button type="button" class="rd-b" data-f="only" data-v="todo" aria-pressed="' + (st.only === 'todo') + '">아직 안 읽은 책만</button></div>';
     $('rdChips').innerHTML = h;
   }
-  function chipRow(f, all, items) {
-    return '<button type="button" class="rd-b" data-f="' + f + '" data-v="" aria-pressed="' + (!st[f]) + '">' + all + '</button>' +
+  function chipRow(f, lab, all, items) {
+    return '<div class="rd-frow"><span class="rd-fl">' + lab + '</span><button type="button" class="rd-b" data-f="' + f + '" data-v="" aria-pressed="' + (!st[f]) + '">' + all + '</button>' +
       items.map(function (it) { return '<button type="button" class="rd-b" data-f="' + f + '" data-v="' + esc(it[0]) + '" aria-pressed="' + (st[f] === it[0]) + '">' + esc(it[1]) + '</button>' }).join('') +
-      '<span style="flex-basis:100%;height:0"></span>';
+      '</div>';
   }
   function match(b) {
     if (st.kind && b.kind !== st.kind) return false;
@@ -65,9 +65,9 @@
       (D.showSubj ? b.subjects.map(function (s) { return '<span class="rd-tag">' + esc(s) + '</span>' }).join('') : '') + '</div>' +
       (b.desc ? '<p class="rd-desc">' + esc(b.desc) + '</p>' : '') +
       (b.link ? '<p class="rd-link"><b>이어지는 공부</b> · ' + esc(b.link) + '</p>' : '') +
-      '<div class="rd-recs"><span class="h">추천한 곳 (누르면 확인한 출처가 열려요)</span>' + b.recs.map(function (x) {
+      '<details class="rd-recs"><summary>추천한 곳 ' + r + '곳 · 출처 보기</summary>' + b.recs.map(function (x) {
         return x.url ? '<a href="' + esc(x.url) + '" target="_blank" rel="noopener"><b>' + esc(x.org) + '</b> <i>' + esc(x.detail) + '</i></a>' : '<span class="o"><b>' + esc(x.org) + '</b> <i>' + esc(x.detail) + '</i></span>';
-      }).join('') + '</div>' +
+      }).join('') + '</details>' +
       (b.awards && b.awards.length ? '<p class="rd-aw">🏅 ' + b.awards.map(esc).join(' · ') + '</p>' : '') +
       '<label class="rd-chk"><input type="checkbox" data-read="' + esc(b.id) + '"' + (store.read[b.id] ? ' checked' : '') + '> 읽었어요</label>' +
       '</article>';
