@@ -1659,6 +1659,49 @@ html.hs:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):no
  html.hs-math.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) main.lesson.hs-ml>section.work{flex-direction:column!important}
  html.hs-math.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) .hs-bot>.hs-dock{flex-direction:column!important;align-items:stretch!important}
 }
+
+/* ───────── v6 과학 교과서 '한 화면' 앱: 왼쪽 수업 길 (2026-10-29) ─────────
+   본문(최대 1080px) 폭을 바꾸지 않는 자리에서만 씀 → 쪽 나눔 그대로. 1340px~ 펼침 248px(접으면 64px), 1150~1339px 접힌 64px(펼치면 떠서 열림), 그보다 좁거나 첫 화면이면 없음 */
+html.hs-sci.hs-srl{--srw:248px;--srpad:248px}
+html.hs-sci.hs-srl.hs-rc{--srw:64px;--srpad:64px}
+html.hs-sci.hs-srl:not(.hs-swide){--srpad:64px}
+html.hs-sci .hs-srail{position:fixed;left:0;top:var(--hj-navh,47px);bottom:0;width:var(--srw);box-sizing:border-box;z-index:25;display:flex;flex-direction:column;gap:12px;
+ padding:14px 12px 96px 14px;overflow:auto;background:var(--hs-paper);border-right:1px solid var(--hs-line);font-family:'Pretendard',sans-serif;transition:width .18s}
+html.hs-sci.hs-srl:not(.hs-swide):not(.hs-rc) .hs-srail{box-shadow:12px 0 32px -12px rgba(15,28,51,.3)}
+html.hs-sci:is(.hs-snone,.hj-sc-on) .hs-srail{display:none!important}
+@media screen{
+ html.hs-sci.hs-srl:not(.hs-snone):not(.hj-sc-on) body{padding-left:var(--srpad)!important;box-sizing:border-box}
+ html.hs-sci.hs-srl:not(.hs-snone):not(.hj-sc-on) body>nav .wrap>a[href^="#s"]{visibility:hidden!important}
+ html.hs-sci.hs-srl:not(.hs-snone):not(.hj-sc-on) body>nav{margin-left:calc(-1 * var(--srpad))!important;width:auto!important}
+}
+html.hs-sci .hs-srail .hs-fold{flex:none;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;height:34px!important;min-height:0!important;margin:0!important;padding:0 11px 0 8px!important;box-shadow:none!important;border-radius:10px;border:1px solid var(--hs-line);background:var(--hs-bg);color:var(--hs-ink2);font:700 13.5px/1 'Pretendard',sans-serif;cursor:pointer}
+html.hs-sci .hs-srail .hs-fold .hs-ico{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+html.hs-sci .hs-sgoal{padding:12px 14px;border-radius:14px;background:var(--hs-as)}
+html.hs-sci .hs-sgoal small{display:block;font:800 12.5px/1.2 'Pretendard',sans-serif;color:var(--hs-ai)}
+html.hs-sci .hs-sgoal p{margin:5px 0 0;font:700 15px/1.5 'Pretendard',sans-serif;color:var(--hs-ink)}
+html.hs-sci .hs-slist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+html.hs-sci .hs-sst{width:100%;margin:0!important;box-shadow:none!important;display:flex;align-items:center;gap:10px;min-height:42px;padding:5px 8px;border:0;border-radius:11px;background:transparent;cursor:pointer;text-align:left;font:650 15px/1.35 'Pretendard',sans-serif;color:var(--hs-ink2)}
+html.hs-sci .hs-sst:hover{background:var(--hs-paper2)}
+html.hs-sci .hs-sst i{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:800 13px/1 'Pretendard',sans-serif;font-style:normal;background:var(--hs-bg);box-shadow:inset 0 0 0 1.5px var(--hs-track);color:var(--hs-ink3)}
+html.hs-sci .hs-sst.done i{background:var(--hs-a);box-shadow:none;color:#fff}
+html.hs-sci .hs-sst.now{background:var(--hs-as);color:var(--hs-ink);font-weight:800}
+html.hs-sci .hs-sst.now i{background:var(--hs-a);color:#fff;box-shadow:0 0 0 2px var(--hs-paper),0 0 0 4px var(--hs-a)}
+html.hs-sci .hs-sst:focus-visible,html.hs-sci .hs-srail .hs-fold:focus-visible{outline:3px solid var(--hs-a);outline-offset:2px}
+html.hs-sci.hs-rc .hs-srail{padding:12px 8px 96px;align-items:center}
+html.hs-sci.hs-rc .hs-srail :is(.hs-sgoal,.hs-fold span,.hs-sst b){display:none!important}
+html.hs-sci.hs-rc .hs-srail .hs-fold{align-self:center;padding:0 8px!important}
+html.hs-sci.hs-rc .hs-sst{justify-content:center;padding:5px}
+@media print{html.hs-sci .hs-srail{display:none!important}html.hs-sci body{padding-left:0!important}}
+/* 덱 본문의 카드 묶음: 칸(1fr)이 카드 속 내용의 최소 폭 때문에 줄지 못해 무대 밖으로 넘치던 것(국어 3-2 1단원 9~10차시 등) — 칸이 무대 폭에 맞춰 줄게 */
+html.hs:not(#hsz):not(#hsz) .hs-sb>.hs-body :is(.recall,.bins,.pickways,.grid2,.grid3,.cols,.gal,.split)>*{min-width:0}
+html.hs:not(#hsz):not(#hsz) .hs-sb>.hs-body .rc{max-width:100%}
+/* 아래 막대를 낮게(68→58px), 무대 위 여백 14→10px — 교과서 덱 한 화면에 더 들어가게 */
+@media (min-width:901px){
+ html.hs.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) .hs-bot{height:58px}
+ html.hs.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) section.hs-root:has(>.hs-rail)>.hs-main{padding-top:10px!important}
+ html.hs.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) .hs-bot .hs-tools>button{height:40px!important}
+ html.hs.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) .hs-bot .hs-acts>:is(.hs-prev,.hs-next){height:44px!important}
+}
 </style><!--/hj-ctheme--><!--hj-emfont--><style id="hj-emfont">@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAKgAA8AAAAABKwAAAJJAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgCBFBEICoJAgi4BNgIkAxILDAAEIAU4ByAXJBgMG4sDCC4KbGP5oIlwGgUL56J77lZ/JopEn0QQjbXZu3tDvJlH0SgWvcSPSCU1SiNRolqoUMGgMXe/eTJpHuqSiKBt4pbAk1USJVszydDoIw8C4HL3/41JET9Q+ZoE2yhOwzDAPSAXN9wu8CiWxAKnPh+azgy4HL+NCf62lsgj3Y9JU/9LsC3QNnxsYWlAUaiBQbpNh0FXpsiO4dXZBwRaDBgSWw7fJlgK/AMoLbI4laSyULkkhuJGvpdJ/DYOnUKohBLkjCoZUfdvdveCTphGiv+km+uC1JrkDwHUmoARDSHUBfoEBqTzbK5FgCQjSXFKugYFGRMoOEYVmJC14BjNLOrqEiNFzdUDZ/P+c4qsBEC3YdeUZRBfUmAaQyXzRyGJ3/hVihD/yIEKaDHiiLj0QoGlpN6VhX2J9BXp/btgOL/PDw9u9S9ucoNmo7//9TsF8/P/nT94fo9mh8+jc/D9Pwfz0++V2398DmbH73O2OdgeYhD9Lt8a7PQxiIvXR9Z43ArGXSUes5ZDWBeiNjDuy7G4zZOIrNZlXP1g82t8NdSL+9xuONj53XbEgbGb6v3grOazwf2mooMB/fCszgH4zOqqS9VtrrhYoGj3BzO103l/gtVvZkq2SoLq7qkud6NQJz9UXf4+AIEce6t5shDl6H7rxQK8buP9SUJbL7NTfQB1CQRfVbXMSCShbasjKUr+lZPKIoJUsYa1I+BRMiSLwkbSAfutBNp0OJSW1VYS17AjLS8rp4UKlBdL2BZdT/uJPIRp2mW+lFAD) format('woff2');unicode-range:U+25b6,U+1f535}@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,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) format('woff2');unicode-range:U+1f451,U+1f4a1,U+1f4cb}@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAMEAA8AAAAABaAAAAKsAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgBsEQgKhGCEOAE2AiQDDgsKAAQgBTgHIBckGAobZwRRlM3FV4gfiXGswiYoiEQ3GsTDd+a83Y1Y+KyCTq6wk8L+EpRUQP6z4lST9vQ3n7NwAbaNIwu7d160QOYWLvBIsnnePi+gD/LFJ311E+njZygz0jxegABm8hKCVKhUowFGNID/AADNrMl0dKDLr1sAEoIONUh7xW116BRRRQGECNjIbIDKtWtXpsw/x3+Grv+sYOgqXwABaNwOhGFCEIwIkBUB8qIM6NCxrwAoqICCItNB2QeABqhA1HEqoCIXVzGjGmFxDQ0BCSAZlk8IAFYA4nBZgQACB0F+VrarAErD+A/z4ufBCNiB0yDpMIRoNWCIspotVqMuKlemDpoYcLb4g0Fvw2shfNevWybVbPEHAh7vdRnf4I/2qP5ledbXoJ7Xog2eJOI3TwRfw4nVxG+xTIJTntbioqXHK3Yaejo7OjXobO3UqnETW8cFemvxonTFPPFUXL2DQY44abBBAxvbTqj/sUG/8zsNl8zLPNnLP+Dh5UWjcxr1yr5pdNsD3f2jA/dGjB0XHmlMwN+93YHNY3pnMxud4/KigQ9H9so8uWTehYbD/05LzGc8rGxG3kNzKnXUH3WEhFUMDQkJrRhWPq3GxJMh4afCQ05O3NIqdurZvGfjpjrrPe5epWeVR93fBIZu9xTYUNeWreviao3mOnevmpPz8Zh9KOL3LJmPBu/5+H1jgr/S+Rc8qX8rjp9WpUbttgXifakJr37aZzaPSK/bvnnlSs2GNGxcs26OOo5IkbsJAAigyoQrBaKKtXCU+Gq0GAG4e71gh3RC8f3bsF5/DjCiPARfRjLHEWDFV2XE86r6go5AQhAIjS4YagQbUghBRTQTCnYoX6uAFTv1aEcH+tGVVvTGSzs60YGO9EUFAO0OozBFnGIFiSaaKQqJizlOyTRcIgAAAA==) format('woff2');unicode-range:U+1f947,U+1f948}@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAMAAA8AAAAABMQAAAKnAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgCBABEICoJwgm0BNgIkAxALCgAEIAU4ByAXJBgKG7IDKB4HuWn0bkQRFJY3qIJ/UI58P8lJLkBMva3CBk+CJ2JgnI4RQGJUBVGXhENOEEOiQ2QU6ut/4HQ8uwLz4dhG5z3AexIskgDHnU8BTy1ASLeJHT6R7VCGmEf0tQECfIknETVoZHQCvHEA/wMAzjdCa/AAjzKPDaBEO2HvMMiE+gd5GFkZA+cAGlBvvmrc2qIB1EmG/e814p8/eI3QF0AAbHsgGR+E8EZAOALiMZMHRzNAAIMFDEZrwBwDwAEWSEflFqKKYhZf+BBHNuCJQ5jkgH9B/0PoP/mizwjA/qAVUGyR2yBC/wXhMOhzicq9VP8rAIDuHY9PBo5Dzq+V3JC8kKnNt5p7B89o7u1O1zd9lz1/3enuhd/yZx3vHrinbjWsvn/Z4ebWLebcnHZ7u9MWcO7ubOdWx77B8Jmpy7vy7RbVWOk8deu77OndDrfPnXWzw8ie+S2/0/mYwpw556b3D0Xd3eHYwGTEYJW/qMOM52OHLlGFlJrTQ1yXszGhBbovzCDHtIUptnTr4XE9Djb1SvJ2T+dVTZuq3fin7dK9dkGIR9bNkzNwv8lJo4Tn0WcHni/eG3vjO7L5Q7tSyNgs1ES0f4k33aqV5LHNYiyow5ZEr+rVYfE3lT5kLj3lVW39k5/T6kMPbqynklON217Dmx2vK8/q3D7le/3pMsfYy/vkmaOOHQQzg9mPvtc/z92t1JDjwhKaIjyK7rYZEpkqq5cPacj5+OCCEVWWy1uMiQAAEGC1tOCpZSaCqPHV288bgEe3Kg4Olzb92+OzyPMi4I2BLvd/lm92BWTTPm+Ac/YtQ+CrRAGOybgDQi4ZErHI+WAIBPJbBf4E0o6BDGYiI+jLODozkKEMZggTsADgHjIfCRX8MCk5OZ90VJdvtunidXU6cgAA) format('woff2');unicode-range:U+1f331}</style><!--/hj-emfont--></head><body>
 <main>
 <nav class="tl-gnav" aria-label="다른 어림 놀이"><a href="length.html">길이 어림</a><a href="angle.html">각도 어림</a><a href="count.html" aria-current="page">개수 어림</a><a href="time.html">시간 어림</a><a href="calc.html">어림셈</a></nav>
@@ -2595,7 +2638,30 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
 })();
 
 /* 과학 '한 화면' 앱: 색과 모양만 껍데기에 맞춤(크기는 그대로 — 쪽 나눔 불변) */
-(function(){if(document.getElementById('ovBar')&&!document.documentElement.classList.contains('hs'))document.documentElement.classList.add('hs-sci')})();
+(function(){var D=document,H=D.documentElement;if(!D.getElementById('ovBar')||H.classList.contains('hs'))return;H.classList.add('hs-sci');
+ /* v6 왼쪽 '수업 길'(2026-10-29 선생님: 과학 교과서도 같은 배치) — 쪽 나눔이 바뀌지 않게 본문 폭(1080px)을 줄이지 않는 자리에서만:
+    넓은 화면(1340px~)은 펼치거나 접기(기기에 기억 hj-rail), 1150~1339px은 접힌 64px(펼치면 본문 위에 떠서 열림), 그보다 좁으면 없음(위 단계 탭 그대로).
+    단계는 위 막대의 단계 탭을 그대로 누름(탭은 높이를 지키려고 감추기만 함) */
+ var tabs=[].slice.call(D.querySelectorAll('body>nav .wrap>a[href^="#s"]'));if(!tabs.length)return;
+ var NS='http://www.w3.org/2000/svg';function ico(d){var v=D.createElementNS(NS,'svg');v.setAttribute('viewBox','0 0 24 24');v.setAttribute('class','hs-ico');v.setAttribute('aria-hidden','true');var q=D.createElementNS(NS,'path');q.setAttribute('d',d);v.appendChild(q);return v}
+ function el(t,c,x){var e=D.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+ var rail=el('aside','hs-srail'),fold=el('button','hs-fold');fold.type='button';rail.setAttribute('aria-label','수업 길');
+ var goal=D.querySelector('main p.goal'),gt='';if(goal){var tmp=el('div');tmp.innerHTML=goal.innerHTML.replace(/<br\s*\/?>/gi,' ');gt=tmp.textContent.replace(/\s+/g,' ').replace(/^\s*🎯?\s*학습 목표\s*/,'').trim()}
+ rail.appendChild(fold);
+ if(gt){var g=el('div','hs-sgoal');g.appendChild(el('small','','학습 목표'));g.appendChild(el('p','',gt));rail.appendChild(g)}
+ var list=el('ol','hs-slist'),items=tabs.map(function(a,i){var li=el('li'),b=el('button','hs-sst');b.type='button';b.title=(a.title||a.textContent).trim();
+  b.appendChild(el('i','',String(i+1)));b.appendChild(el('b','',(a.title||a.textContent.replace(/^[①-⑳\d.\s]+/,'')).trim()));
+  b.onclick=function(){if(!H.classList.contains('hs-swide')&&!H.classList.contains('hs-rc'))setR(true,false);a.click()};li.appendChild(b);list.appendChild(li);return b});
+ rail.appendChild(list);D.body.appendChild(rail);H.classList.add('hs-srl');
+ function sync(){var cur=tabs.findIndex(function(a){return a.classList.contains('hj-cur')});items.forEach(function(b,i){b.classList.toggle('now',i===cur);b.classList.toggle('done',cur>-1&&i<cur);if(i===cur)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')})}
+ new MutationObserver(sync).observe(D.querySelector('body>nav'),{attributes:true,subtree:true,attributeFilter:['class']});sync();
+ function setR(c,save){H.classList.toggle('hs-rc',c);fold.setAttribute('aria-expanded',c?'false':'true');fold.title=c?'수업 길 펼치기':'수업 길 접기';fold.innerHTML='';fold.appendChild(ico(c?'M9 6l6 6-6 6':'M15 6l-6 6 6 6'));fold.appendChild(el('span','',c?'수업 길 펼치기':'수업 길 접기'));if(save)try{localStorage.setItem('hj-rail',c?'c':'')}catch(e){}}
+ fold.onclick=function(){setR(!H.classList.contains('hs-rc'),H.classList.contains('hs-swide'))};
+ function fit(){var w=innerWidth;H.classList.toggle('hs-swide',w>=1340);H.classList.toggle('hs-snone',w<1150);
+  if(w<1340){if(!H.classList.contains('hs-rc'))setR(true,false)}else{var c=false;try{c=localStorage.getItem('hj-rail')==='c'}catch(e){}setR(c,false)}}
+ addEventListener('resize',fit);fit();
+ D.addEventListener('click',function(e){if(!H.classList.contains('hs-swide')&&!H.classList.contains('hs-rc')&&!e.target.closest('.hs-srail'))setR(true,false)});
+})();
 
 /* 그 밖의 앱: 덮개가 본문 맨 위에 둔 [홈 · 자료 목록](.hj-navbar)을 남색 앱 막대로(맨 위 전체 폭) + 제목 */
 (function(){var H=document.documentElement,D=document;

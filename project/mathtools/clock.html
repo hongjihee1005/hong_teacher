@@ -1656,6 +1656,49 @@ html.hs:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):no
  html.hs-math.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) main.lesson.hs-ml>section.work{flex-direction:column!important}
  html.hs-math.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) .hs-bot>.hs-dock{flex-direction:column!important;align-items:stretch!important}
 }
+
+/* ───────── v6 과학 교과서 '한 화면' 앱: 왼쪽 수업 길 (2026-10-29) ─────────
+   본문(최대 1080px) 폭을 바꾸지 않는 자리에서만 씀 → 쪽 나눔 그대로. 1340px~ 펼침 248px(접으면 64px), 1150~1339px 접힌 64px(펼치면 떠서 열림), 그보다 좁거나 첫 화면이면 없음 */
+html.hs-sci.hs-srl{--srw:248px;--srpad:248px}
+html.hs-sci.hs-srl.hs-rc{--srw:64px;--srpad:64px}
+html.hs-sci.hs-srl:not(.hs-swide){--srpad:64px}
+html.hs-sci .hs-srail{position:fixed;left:0;top:var(--hj-navh,47px);bottom:0;width:var(--srw);box-sizing:border-box;z-index:25;display:flex;flex-direction:column;gap:12px;
+ padding:14px 12px 96px 14px;overflow:auto;background:var(--hs-paper);border-right:1px solid var(--hs-line);font-family:'Pretendard',sans-serif;transition:width .18s}
+html.hs-sci.hs-srl:not(.hs-swide):not(.hs-rc) .hs-srail{box-shadow:12px 0 32px -12px rgba(15,28,51,.3)}
+html.hs-sci:is(.hs-snone,.hj-sc-on) .hs-srail{display:none!important}
+@media screen{
+ html.hs-sci.hs-srl:not(.hs-snone):not(.hj-sc-on) body{padding-left:var(--srpad)!important;box-sizing:border-box}
+ html.hs-sci.hs-srl:not(.hs-snone):not(.hj-sc-on) body>nav .wrap>a[href^="#s"]{visibility:hidden!important}
+ html.hs-sci.hs-srl:not(.hs-snone):not(.hj-sc-on) body>nav{margin-left:calc(-1 * var(--srpad))!important;width:auto!important}
+}
+html.hs-sci .hs-srail .hs-fold{flex:none;align-self:flex-start;display:inline-flex;align-items:center;gap:6px;height:34px!important;min-height:0!important;margin:0!important;padding:0 11px 0 8px!important;box-shadow:none!important;border-radius:10px;border:1px solid var(--hs-line);background:var(--hs-bg);color:var(--hs-ink2);font:700 13.5px/1 'Pretendard',sans-serif;cursor:pointer}
+html.hs-sci .hs-srail .hs-fold .hs-ico{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+html.hs-sci .hs-sgoal{padding:12px 14px;border-radius:14px;background:var(--hs-as)}
+html.hs-sci .hs-sgoal small{display:block;font:800 12.5px/1.2 'Pretendard',sans-serif;color:var(--hs-ai)}
+html.hs-sci .hs-sgoal p{margin:5px 0 0;font:700 15px/1.5 'Pretendard',sans-serif;color:var(--hs-ink)}
+html.hs-sci .hs-slist{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px}
+html.hs-sci .hs-sst{width:100%;margin:0!important;box-shadow:none!important;display:flex;align-items:center;gap:10px;min-height:42px;padding:5px 8px;border:0;border-radius:11px;background:transparent;cursor:pointer;text-align:left;font:650 15px/1.35 'Pretendard',sans-serif;color:var(--hs-ink2)}
+html.hs-sci .hs-sst:hover{background:var(--hs-paper2)}
+html.hs-sci .hs-sst i{flex:none;width:26px;height:26px;border-radius:50%;display:grid;place-items:center;font:800 13px/1 'Pretendard',sans-serif;font-style:normal;background:var(--hs-bg);box-shadow:inset 0 0 0 1.5px var(--hs-track);color:var(--hs-ink3)}
+html.hs-sci .hs-sst.done i{background:var(--hs-a);box-shadow:none;color:#fff}
+html.hs-sci .hs-sst.now{background:var(--hs-as);color:var(--hs-ink);font-weight:800}
+html.hs-sci .hs-sst.now i{background:var(--hs-a);color:#fff;box-shadow:0 0 0 2px var(--hs-paper),0 0 0 4px var(--hs-a)}
+html.hs-sci .hs-sst:focus-visible,html.hs-sci .hs-srail .hs-fold:focus-visible{outline:3px solid var(--hs-a);outline-offset:2px}
+html.hs-sci.hs-rc .hs-srail{padding:12px 8px 96px;align-items:center}
+html.hs-sci.hs-rc .hs-srail :is(.hs-sgoal,.hs-fold span,.hs-sst b){display:none!important}
+html.hs-sci.hs-rc .hs-srail .hs-fold{align-self:center;padding:0 8px!important}
+html.hs-sci.hs-rc .hs-sst{justify-content:center;padding:5px}
+@media print{html.hs-sci .hs-srail{display:none!important}html.hs-sci body{padding-left:0!important}}
+/* 덱 본문의 카드 묶음: 칸(1fr)이 카드 속 내용의 최소 폭 때문에 줄지 못해 무대 밖으로 넘치던 것(국어 3-2 1단원 9~10차시 등) — 칸이 무대 폭에 맞춰 줄게 */
+html.hs:not(#hsz):not(#hsz) .hs-sb>.hs-body :is(.recall,.bins,.pickways,.grid2,.grid3,.cols,.gal,.split)>*{min-width:0}
+html.hs:not(#hsz):not(#hsz) .hs-sb>.hs-body .rc{max-width:100%}
+/* 아래 막대를 낮게(68→58px), 무대 위 여백 14→10px — 교과서 덱 한 화면에 더 들어가게 */
+@media (min-width:901px){
+ html.hs.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) .hs-bot{height:58px}
+ html.hs.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) section.hs-root:has(>.hs-rail)>.hs-main{padding-top:10px!important}
+ html.hs.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) .hs-bot .hs-tools>button{height:40px!important}
+ html.hs.hs-rl:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) .hs-bot .hs-acts>:is(.hs-prev,.hs-next){height:44px!important}
+}
 </style><!--/hj-ctheme--><!--hj-emfont--><style id="hj-emfont">@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,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) format('woff2');unicode-range:U+23f0,U+1f4a1,U+1f4cb}@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAWsAA8AAAAACFwAAAVUAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgB4EQgKihCJJwE2AiQDDgsKAAQgBTgHIBckGAob4gZRlM1Ri+DnYWwsbbqwYnXyvFKVK5L8oUjzzY3Kk+zBTf8ekBRIKmr2RSfTSVU2H5siwm4SAOYQBKEfiiA+uMkMsaps1lNxsM7qvgyVSVZkupBP0OCEFwD//+dWEYsWCjTR2AmNdP/bBvw9VJJ2zhJWEi0RTdJolGAlVcztxzN17eOBNMa1LgOfQX+9AQRAhBETFBWTlAUeHAAsFgAAcCJHqwxA4ilZB5n0B+xz1DAaclUJQywx3QrqTR5yMzY1NRZhCtXFKjUp5EDw0L8miAIUpWdGwDDmU9aqa0aY3tq6LrqXWekxtEqLZ9ZqAGnJCskoY7IACxGVzRidy2kNNbTozwosF6sXmc5Sqo8Bgf7O03RU3l/YpAEtdrOihOdaDLfSQZjdEFbs0CDo8aKaGs+5mpRrc/wLePqaKSnJyR09KcZpVuPbAn5uOwgqt+5ksESXPg9Fu4gnldSzHEQ+zUaRlFRiFSM4KyCueAIh4igk5gmDFwf2UyaZK4f0oyACVXBytwraRiZBLqiGSzqIbD0I0gmJPGfH5S17VME0Ucm5c5+uMUEobQ2RzAPLRNFlhR9tvaM9c1JOpkrfz1rrTf6rGX7t9PQZZJI3deH1WyH8DoNtvm3bcnjEE/QSipP2jhhdJPdcc8g9J/vnoUcuVDvbiOjnslqSS1/ox8+fP3tFfk1//iz7j8+evgSX+PAhh/+Cfv6a/Ip69knMB+LJC/DIpx9zsaHlCpqFzr1UkTDxlrkHk1IhJSEhTn0avXMQ1oBUPA4wWXo++PczzlIGjUR3pkWLi6pcWJfinskgdcWlSRUFafGj2oox2rLW1j5Zpg4C5SmaCSryA4XGnWM6TJNY/fT1mSKDnZGJCtu6apYVY61ypMvwmVvDVaLPYpteJGxbT3kwNDu3ra/icfOeI5kvB/njgwPMoqyU7JzYKxt3nU5KyytqqM1Fx8cHznEt5YLq/Yx+bmj5827BbS7GPqI0KEDvRr6EEvsi2jFVBcYspSc+qUnPXK1Far+r88WlybXgco8gkzcj9Gs8EQW6hwLPO9a9bGWdmvdJql050kr8syOeXuhsIVd8iU2ofWpoxzbXGg9N0dSTypE+AT5lBYHeERnpEczC+HjUw+X0RfXdOHpEhEtdK7RreaGva3amh6+rr5W5WaezV0puoML2yyeUcy0nE/dWtXQOGyIFnr7MnIptnGtEYkKYWaTeoz5/DS0nayaHZTcQxP0fWey+tbA0sS7KIs7QyyLzlYmThKvmRXWvL8YRkRGFavVacbEJyW62MZbfZEkGUiYfzpUpOiiPSFVTdpubhckblTCVjVjGi6PeOtqW5n6KmfqLS7pbWP7AxC5TPk6jNTedkfQ7a1Y9Tujgo3+DESdO+LTbC/xB49iODpE5/1oVpuLamY1CWX+2X3jVarr7cIHJiZ+ft2E5JohAqNU9h3Iw4MwJWSOX16v2PHjQIz25vkL65kPVWzfhEYGAkSEHY2Yds+tz/akjWZ+XLMn+cvr0p4a5To8IBIwMOZhdcyfwo4bGB3iu6X6sdnV5SLVzCTbzcBQzyw5mZR8Q6JrGoyca1HmyQaodEmS79C+yIDc+oSAnMtJXE+LRrPWweWzMdrXfj2Vx3j269TY2D3d7T2VsY1yofapJjN7E+96kwvGuAgAQAJbm/ykqKVUN+s/LeADA26fetfHyI8UeIUd6BwAPZlj9squiHQWDbOKxM7LsD9QBpIdsaNAAjnSgIZtAXf3KpYl5iRM8UFHRkAC53ctANWrRjSaUowO5UNZbrw5dtLLLyL3BJDqktnBWxBEnWIEKRIyYPKUHFAAA) format('woff2');unicode-range:U+1f389,U+1f3af}</style><!--/hj-emfont--></head><body>
 <main>
 <nav class="tl-gnav" aria-label="다른 교구"><a href="base10.html">수 모형</a><a href="fracbar.html">분수 막대</a><a href="geoboard.html">지오보드</a><a href="pattern.html">패턴 블록</a><a href="angle.html">각도기</a><a href="clock.html" aria-current="page">시계</a><a href="numline.html">수직선</a><a href="dice.html">주사위·동전</a></nav>
@@ -2599,7 +2642,30 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
 })();
 
 /* 과학 '한 화면' 앱: 색과 모양만 껍데기에 맞춤(크기는 그대로 — 쪽 나눔 불변) */
-(function(){if(document.getElementById('ovBar')&&!document.documentElement.classList.contains('hs'))document.documentElement.classList.add('hs-sci')})();
+(function(){var D=document,H=D.documentElement;if(!D.getElementById('ovBar')||H.classList.contains('hs'))return;H.classList.add('hs-sci');
+ /* v6 왼쪽 '수업 길'(2026-10-29 선생님: 과학 교과서도 같은 배치) — 쪽 나눔이 바뀌지 않게 본문 폭(1080px)을 줄이지 않는 자리에서만:
+    넓은 화면(1340px~)은 펼치거나 접기(기기에 기억 hj-rail), 1150~1339px은 접힌 64px(펼치면 본문 위에 떠서 열림), 그보다 좁으면 없음(위 단계 탭 그대로).
+    단계는 위 막대의 단계 탭을 그대로 누름(탭은 높이를 지키려고 감추기만 함) */
+ var tabs=[].slice.call(D.querySelectorAll('body>nav .wrap>a[href^="#s"]'));if(!tabs.length)return;
+ var NS='http://www.w3.org/2000/svg';function ico(d){var v=D.createElementNS(NS,'svg');v.setAttribute('viewBox','0 0 24 24');v.setAttribute('class','hs-ico');v.setAttribute('aria-hidden','true');var q=D.createElementNS(NS,'path');q.setAttribute('d',d);v.appendChild(q);return v}
+ function el(t,c,x){var e=D.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+ var rail=el('aside','hs-srail'),fold=el('button','hs-fold');fold.type='button';rail.setAttribute('aria-label','수업 길');
+ var goal=D.querySelector('main p.goal'),gt='';if(goal){var tmp=el('div');tmp.innerHTML=goal.innerHTML.replace(/<br\s*\/?>/gi,' ');gt=tmp.textContent.replace(/\s+/g,' ').replace(/^\s*🎯?\s*학습 목표\s*/,'').trim()}
+ rail.appendChild(fold);
+ if(gt){var g=el('div','hs-sgoal');g.appendChild(el('small','','학습 목표'));g.appendChild(el('p','',gt));rail.appendChild(g)}
+ var list=el('ol','hs-slist'),items=tabs.map(function(a,i){var li=el('li'),b=el('button','hs-sst');b.type='button';b.title=(a.title||a.textContent).trim();
+  b.appendChild(el('i','',String(i+1)));b.appendChild(el('b','',(a.title||a.textContent.replace(/^[①-⑳\d.\s]+/,'')).trim()));
+  b.onclick=function(){if(!H.classList.contains('hs-swide')&&!H.classList.contains('hs-rc'))setR(true,false);a.click()};li.appendChild(b);list.appendChild(li);return b});
+ rail.appendChild(list);D.body.appendChild(rail);H.classList.add('hs-srl');
+ function sync(){var cur=tabs.findIndex(function(a){return a.classList.contains('hj-cur')});items.forEach(function(b,i){b.classList.toggle('now',i===cur);b.classList.toggle('done',cur>-1&&i<cur);if(i===cur)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')})}
+ new MutationObserver(sync).observe(D.querySelector('body>nav'),{attributes:true,subtree:true,attributeFilter:['class']});sync();
+ function setR(c,save){H.classList.toggle('hs-rc',c);fold.setAttribute('aria-expanded',c?'false':'true');fold.title=c?'수업 길 펼치기':'수업 길 접기';fold.innerHTML='';fold.appendChild(ico(c?'M9 6l6 6-6 6':'M15 6l-6 6 6 6'));fold.appendChild(el('span','',c?'수업 길 펼치기':'수업 길 접기'));if(save)try{localStorage.setItem('hj-rail',c?'c':'')}catch(e){}}
+ fold.onclick=function(){setR(!H.classList.contains('hs-rc'),H.classList.contains('hs-swide'))};
+ function fit(){var w=innerWidth;H.classList.toggle('hs-swide',w>=1340);H.classList.toggle('hs-snone',w<1150);
+  if(w<1340){if(!H.classList.contains('hs-rc'))setR(true,false)}else{var c=false;try{c=localStorage.getItem('hj-rail')==='c'}catch(e){}setR(c,false)}}
+ addEventListener('resize',fit);fit();
+ D.addEventListener('click',function(e){if(!H.classList.contains('hs-swide')&&!H.classList.contains('hs-rc')&&!e.target.closest('.hs-srail'))setR(true,false)});
+})();
 
 /* 그 밖의 앱: 덮개가 본문 맨 위에 둔 [홈 · 자료 목록](.hj-navbar)을 남색 앱 막대로(맨 위 전체 폭) + 제목 */
 (function(){var H=document.documentElement,D=document;
