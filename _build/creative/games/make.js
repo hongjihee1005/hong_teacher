@@ -1,6 +1,7 @@
 /* 창의수학게임 › 목표 수 만들기: 카드 두 장과 셈을 골라 한 장으로 합치기를 되풀이해 마지막 한 장을 목표 수로
    뺄셈은 큰 수에서 작은 수를(0은 됨), 나눗셈은 나누어떨어질 때만. 완성하면 괄호가 든 식으로 보여 줌 */
 (function () {
+  function jo(w, a, b) { var s = String(w), c = s.charCodeAt(s.length - 1), m = s.match(/\d+$/), f; if (m) { var n = m[0], t = n.replace(/0+$/, ''); f = n.length > t.length || '013678'.indexOf(t.slice(-1)) >= 0 } else f = c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 > 0; return s + (f ? a : b) } // 받침에 따라 조사(2026-10-29)
   'use strict';
   var SYM = { '+': '+', '-': '−', 'x': '×', '/': '÷' }, PR = { '+': 1, '-': 1, 'x': 2, '/': 2 };
   var P, ctx, host, cards, hist, selA, selOp, solved, timer = null, seq = 0;
@@ -58,7 +59,7 @@
     selA = null; selOp = null; ctx.msg(''); paint(C.id);
     if (cards.length === 1) {
       if (r === P.t) { solved = true; paint(C.id); ctx.done('<b>' + C.e + ' = ' + P.t + '</b> — 목표 수를 만들었어요!') }
-      else ctx.msg(r + '이(가) 되었어요. 목표는 ' + P.t + '! ‘한 단계 되돌리기’로 다른 방법을 찾아보세요.', 'bad');
+      else ctx.msg(jo(r, '이', '가') + ' 되었어요. 목표는 ' + P.t + '! ‘한 단계 되돌리기’로 다른 방법을 찾아보세요.', 'bad');
     }
     return true;
   }

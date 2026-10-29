@@ -11,12 +11,14 @@
 import pathlib, re, sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(ROOT / '_build/theme'))
+from apply_theme import unchrome, hero   # 메뉴 틀(2026-10-27)을 걷고 잘라 쓴 뒤 제목 띠만 다시 씌움
 HOST = 'https://hongjihee1005.github.io/'
 NAVER = 'f2909b036dad06e0260e48b85281cadd0a734a9f'
 DESC = '초등교사 홍지희의 수업 자료실과 초등 수학 게임'
 
 def page():
-    s = (ROOT / 'project/creative/index.html').read_text(encoding='utf-8')   # 메뉴 디자인이 입혀진 틀
+    s = unchrome((ROOT / 'project/creative/index.html').read_text(encoding='utf-8'))   # 메뉴 디자인이 입혀진 틀
     a = s.index('<nav class="crumb"'); b = s.index('<footer', a)
     body = ('<h1><span class="h-ico" aria-hidden="true">🍎</span>초등교사 홍지희</h1>\n'
             '<p class="sub">수업 자료와 수학 게임을 골라 열어 보세요.</p>\n'
@@ -33,7 +35,7 @@ def page():
     s = re.sub(r'<meta name="description"[^>]*>\n?', '', s)
     s = re.sub(r'<title>[^<]*</title>\n?', lambda m: head, s, count=1)
     s = re.sub(r'<footer class="hjfoot"><p>[^<]*</p>(<p>만든 사람)', r'<footer class="hjfoot">\1', s)
-    return s
+    return hero(s)
 
 def main(out):
     out = pathlib.Path(out); out.mkdir(parents=True, exist_ok=True)

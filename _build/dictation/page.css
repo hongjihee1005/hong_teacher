@@ -142,3 +142,44 @@ button,select{font:inherit;color:inherit;cursor:pointer}
  .sh-list.key li{font-size:14pt;padding:1.6mm 0}
  .hm-grid ol{font-size:9pt}
 }
+/* 단계 고르기(2026-10-29 교육자·디자인팀): 묶음 탭 4개 → 그 묶음의 단계만, 다음에 할 단계(.nx) 강조 */
+.dt-lv{display:block;margin:10px 0 14px}
+.dt-kinds{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:0 0 10px}
+.dt-kinds button{display:flex;flex-direction:column;align-items:flex-start;gap:2px;min-height:58px;padding:8px 14px;border:2px solid var(--line);border-radius:14px;background:var(--paper);text-align:left;color:var(--ink);cursor:pointer}
+.dt-kinds button b{font-size:18px;font-weight:800}
+.dt-kinds button small{font-size:14px;color:var(--soft);font-weight:600}
+.dt-kinds button[aria-selected="true"]{border-color:var(--acc);background:var(--acc2);box-shadow:inset 0 -3px 0 var(--acc)}
+.dt-kinds button[aria-selected="true"] b{color:var(--acc)}
+.dt-steps{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px}
+.dt-steps button{position:relative;min-height:52px;border:2px solid var(--line);background:var(--paper);border-radius:12px;font-weight:800;font-size:19px;padding:2px 4px;display:flex;align-items:baseline;justify-content:center;gap:2px;color:var(--ink)}
+.dt-steps button small{font-size:12px;font-weight:600;color:var(--soft)}
+.dt-steps button i{position:absolute;top:-8px;right:-6px;font-style:normal;font-size:12px;background:var(--soft);color:#fff;border-radius:99px;padding:0 6px;line-height:18px}
+.dt-steps button.full i{background:var(--okc)}
+.dt-steps button.nx{border-color:var(--acc);border-style:dashed}
+.dt-steps button[aria-pressed="true"]{background:var(--acc);border-color:var(--acc);border-style:solid;color:#fff}
+.dt-steps button[aria-pressed="true"] small{color:#fff;opacity:.85}
+@media (max-width:700px){
+ .dt-kinds{grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}.dt-kinds button{min-height:48px;padding:6px 8px;align-items:center;text-align:center}.dt-kinds button b{font-size:15px}.dt-kinds button small{font-size:11.5px}
+ .dt-steps{grid-template-columns:repeat(5,minmax(0,1fr))}.dt-steps button{min-height:44px;font-size:17px}
+}
+/* 인쇄 단추 세 묶음 */
+.dt-pgrp{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px;margin:8px 0}
+.dt-pg{background:var(--paper);border:2px solid var(--line);border-radius:16px;padding:12px 14px}
+.dt-pg>b{display:block;font-size:15px;color:var(--soft);margin:0 0 8px}
+.dt-pg .dt-bar{margin:0}
+/* 익히기: 넓은 화면은 2열 */
+@media (min-width:1200px){.dt-learn{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* 휴대폰: 단계 단추를 숫자만, 한 줄 10칸으로 작게(2026-10-29 선생님: 차지하는 범위가 너무 큼) */
+@media (max-width:700px){
+ .dt-kinds button{min-height:40px;padding:4px 4px}.dt-kinds button b{font-size:14px}.dt-kinds button small{font-size:10.5px}
+ .dt-steps{grid-template-columns:repeat(10,minmax(0,1fr));gap:3px}
+ .dt-steps button{min-height:34px;font-size:14px;border-width:1.5px;border-radius:9px;padding:0}
+ .dt-steps button small{display:none}
+ .dt-steps button i{top:-6px;right:-3px;font-size:9px;line-height:13px;padding:0 3px}
+}
+@media (max-width:700px){
+ .dt-lv .dt-steps button{min-width:0}
+ .dt-gr{display:grid!important;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px!important}
+ .dt-gr>*{min-width:0!important;padding:4px 0!important;font-size:13.5px!important;text-align:center;justify-content:center}
+ .dt-tabs{flex-wrap:nowrap!important;gap:0!important}.dt-tabs button{padding-left:7px!important;padding-right:7px!important;white-space:nowrap;flex:1 1 auto;font-size:15px!important}
+}

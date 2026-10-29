@@ -7,10 +7,24 @@
 원본: _build/theme/content.css (Jua·Gowun Dodum 이름에 Pretendard 글꼴을 연결하고, 바탕·글자색 변수를 밝고 따뜻하게 덮어씀)
 """
 import pathlib, re, sys
+sys.path.insert(0, str(pathlib.Path(__file__).parent))
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 CSS = (pathlib.Path(__file__).with_name('content.css')).read_text(encoding='utf-8')
+# 수업 스튜디오 껍데기 v4(2026-10-27): 덮개 뒤에 붙여 덮개보다 우선
+CSS += '\n' + (pathlib.Path(__file__).with_name('shell.css')).read_text(encoding='utf-8')
 BLOCK = f'<!--hj-ctheme--><style id="hj-ctheme">{CSS}</style><!--/hj-ctheme-->'
 JS = (pathlib.Path(__file__).with_name('content.js')).read_text(encoding='utf-8')
+# 이모지 자리 선 아이콘(content.js hj-eicons): 메뉴 icons.js의 길 가운데 지도에 쓰인 것만 넣음(2026-10-27)
+import emfont as _emfont  # 이모지 한 가지 색 글꼴을 쪽마다 잘라 넣음
+import json as _json
+_ICONS = (pathlib.Path(__file__).with_name('icons.js')).read_text(encoding='utf-8')
+_PBLK = _ICONS.split('var P={', 1)[1].split('\nvar E={}', 1)[0]   # P 객체 안만 읽음(뒤쪽 m() 지도의 같은 이름이 덮어쓰지 않게)
+_PATHS = dict(re.findall(r"(\w+):'(.*?)'(?=,\s*\w+:'|\};)", _PBLK, re.S))
+_map = JS.split('/*HJ_EI_MAP*/')[1].split('/*/HJ_EI_MAP*/')[0]
+_used = sorted(set(re.findall(r"m\('(\w+)'", _map)))
+assert all(k in _PATHS for k in _used), [k for k in _used if k not in _PATHS]
+JS = JS.replace('/*HJ_ICONS*/{}', _json.dumps({k: _PATHS[k] for k in _used}, ensure_ascii=False))
+JS += '\n' + (pathlib.Path(__file__).with_name('shell.js')).read_text(encoding='utf-8')
 JBLOCK = f'<!--hj-cicons--><script>{JS}</script><!--/hj-cicons-->'
 
 EMO = re.compile(r'[\U0001F000-\U0001FAFF\u2600-\u27BF\u2B00-\u2BFF\u2300-\u23FF\uFE0F\u200D]+')
@@ -68,6 +82,14 @@ def apply(f):
     lst = list_of(f)
     if lst: meta += '<meta name="hj-list" content="' + _html.escape(_json.dumps(lst, ensure_ascii=False), quote=True) + '">'
     blk = BLOCK.replace('<!--/hj-ctheme-->', meta + '<!--/hj-ctheme-->')
+    # 이모지 글꼴: 덮개를 걷은 본문에 쓰인 글자만(글꼴 도구가 없는 곳에서는 있던 블록을 그대로 둠)
+    bare = re.sub(r'<!--hj-(emfont|cicons)-->.*?<!--/hj-\1-->', '', s, flags=re.S)
+    eb = _emfont.block(bare)
+    if eb is not None:
+        s = re.sub(r'<!--hj-emfont-->.*?<!--/hj-emfont-->', '', s, flags=re.S); blk += eb
+    else:
+        m = re.search(r'<!--hj-emfont-->.*?<!--/hj-emfont-->', s, flags=re.S)
+        if m: s = s.replace(m.group(0), ''); blk += m.group(0)
     i = s.find('</head>'); s = s[:i] + blk + s[i:]
     s = re.sub(r'<!--hj-cicons-->.*?<!--/hj-cicons-->', '', s, flags=re.S)
     j = s.rfind('</body>')

@@ -1,5 +1,32 @@
 (function(){/* 메뉴 페이지 이모지 → 같은 굵기의 선 아이콘(직접 그린 24×24, 선 1.8) */
 var P={
+cloudsun:'<path d="M8 3.6v1.4M3.6 8H5M4.9 4.9l1 1M11.1 4.9l-1 1"/><path d="M5.6 10.6A3 3 0 0 1 10.6 7.6"/><path d="M8.6 19.6h8.8a3.4 3.4 0 0 0 .5-6.8 4.6 4.6 0 0 0-8.8-.7 3.8 3.8 0 0 0-.5 7.5Z"/>',
+bowl:'<path d="M3.5 11.5h17a8.5 8.5 0 0 1-17 0Z"/><path d="M8.5 20h7M9.5 8.5c0-1.4 1-2 1-3.5M13.5 8.5c0-1.4 1-2 1-3.5"/>',
+traffic:'<rect x="7.5" y="2.8" width="9" height="18.4" rx="3"/><circle cx="12" cy="7.3" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="12" cy="16.7" r="1.6"/>',
+ballot:'<path d="M4 12.5h16v7.7H4Z"/><path d="M8.5 12.5V3.8h7v8.7M7 15.6h10"/><path d="M10.3 7.4l1.3 1.3 2.3-2.5"/>',
+qr:'<rect x="3.8" y="3.8" width="6.4" height="6.4" rx="1.2"/><rect x="13.8" y="3.8" width="6.4" height="6.4" rx="1.2"/><rect x="3.8" y="13.8" width="6.4" height="6.4" rx="1.2"/><path d="M13.8 13.8h2.6v2.6M20.2 13.8v.01M13.8 20.2v.01M17.4 17.4h2.8v2.8h-2.8Z"/>',
+broom:'<path d="M19 3.5 12.4 10.1"/><path d="M13.2 9.4 9.4 8.4 4 13.8l6.2 6.2 5.4-5.4Z"/><path d="M6.6 16.6l2.6-2.6M8.6 18.4l2.6-2.6"/>',
+thermo:'<path d="M10 4.6a2 2 0 0 1 4 0v9.3a4 4 0 1 1-4 0Z"/><path d="M12 9v7.4M17 6h2M17 9h2M17 12h2"/>',
+cake:'<path d="M4 20.2h16M5.2 20.2v-6.6a1.6 1.6 0 0 1 1.6-1.6h10.4a1.6 1.6 0 0 1 1.6 1.6v6.6"/><path d="M5.2 16c1.1 0 1.1.9 2.2.9s1.1-.9 2.2-.9 1.1.9 2.2.9 1.1-.9 2.2-.9 1.1.9 2.2.9 1.1-.9 2.2-.9M8.5 12V9.2M12 12V9.2M15.5 12V9.2"/><path d="M8.5 6.4h.01M12 6.4h.01M15.5 6.4h.01" stroke-width="2.6"/>',
+
+rainbow:'<path d="M3 17.5a9 9 0 0 1 18 0M6.2 17.5a5.8 5.8 0 0 1 11.6 0M9.4 17.5a2.6 2.6 0 0 1 5.2 0"/>',
+crayon:'<path d="M5 19.5l1-4.2L16.2 5.1l3.2 3.2L9.2 18.5zM14 7.3l3.2 3.2M6 15.3l3.2 3.2"/>',
+rain:'<path d="M7.2 14.5a3.9 3.9 0 0 1-.4-7.8 5.4 5.4 0 0 1 10.5 1.3 3.3 3.3 0 0 1-.3 6.5zM8.5 17.5l-1 2.5M12.5 17.5l-1 2.5M16.5 17.5l-1 2.5"/>',
+baby:'<path d="M12 3.5a8.5 8.5 0 1 0 0 17a8.5 8.5 0 1 0 0-17zM12 3.5c-1.6 1.6-.8 3.6 1 3.3M9.5 11.2v1M14.5 11.2v1M9.8 15.2c1.3 1 3.1 1 4.4 0"/>',
+village:'<path d="M2.5 20.5h19M4 20.5v-7.3l4-3.4 4 3.4v7.3M12 20.5V11l4-3.4 4 3.4v9.5M7 20.5v-3h2v3M15 20.5v-3h2v3"/>',
+nope:'<path d="M12 3.5a8.5 8.5 0 1 0 0 17a8.5 8.5 0 1 0 0-17zM6 6l12 12"/>',
+snow:'<path d="M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.6 4.6 12 7l2.4-2.4M9.6 19.4 12 17l2.4 2.4"/>',
+building:'<path d="M5 21V3.5h10V21M15 9h4v12M3 21h18M8 7h1.2M11 7h1.2M8 10.5h1.2M11 10.5h1.2M8 14h1.2M11 14h1.2"/>',
+scroll:'<path d="M7 5.2a1.9 1.9 0 0 0-3.8 0V7h3.8M7 5.2V18a2 2 0 0 0 2 2h9.2M7 5.2a1.9 1.9 0 0 1 1.9-1.9h9.3v14.4M18.2 17.7a1.9 1.9 0 0 0 0 2.3 1.9 1.9 0 0 0 1.9-2.3zM10.3 8h4.6M10.3 11.3h4.6M10.3 14.6h3"/>',
+smile:'<path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM8.3 14.2c.9 1.5 2.2 2.3 3.7 2.3s2.8-.8 3.7-2.3M9 8.8v1.6M15 8.8v1.6"/>',
+grin:'<path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM7.6 12.8h8.8c-.4 2.6-2.1 4.2-4.4 4.2s-4-1.6-4.4-4.2zM9 8.6v1.6M15 8.6v1.6"/>',
+neutral:'<path d="M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18zM8.5 15.2h7M9 8.8v1.6M15 8.8v1.6"/>',
+drop:'<path d="M12 3.5c-3.2 4.2-5.6 7.2-5.6 10.1a5.6 5.6 0 0 0 11.2 0c0-2.9-2.4-5.9-5.6-10.1zM9.4 14.2a2.6 2.6 0 0 0 2.4 2.6"/>',
+tree:'<path d="M12 21v-7M9.5 21h5M7.6 14a3.6 3.6 0 0 1-.7-7.1 5.1 5.1 0 0 1 10.2-.3A3.7 3.7 0 0 1 16.4 14z"/>',
+grain:'<path d="M12 21V4.5M12 8.5 9.2 6.2M12 8.5l2.8-2.3M12 12.5 9.2 10.2M12 12.5l2.8-2.3M12 16.5 9.2 14.2M12 16.5l2.8-2.3"/>',
+play:'<path d="M8 5.5v13l10.5-6.5z"/>',
+hospital:'<path d="M4.5 21V7.5h15V21M3 21h18M12 10.5v6M9 13.5h6M9 7.5V4h6v3.5"/>',
+tv:'<path d="M3.5 7.5h17v11h-17zM8.5 3.5l3.5 4 3.5-4M8.5 21h7"/>',
 dove:'<path d="M3.5 13.5c3 .4 5.6-.6 7.4-3l2.6-3.4a3 3 0 0 1 5.2 1.6l2.3 1-2.4 1c-.6 4.6-4.3 7.6-9.4 7.3l-2.7 2.3v-2.9c-1.6-.9-2.6-2.2-3-3.9Z"/><path d="M16.4 8.2h.01" stroke-width="2.6"/>',
 hand:'<path d="M8 12.5V6.2a1.5 1.5 0 0 1 3 0v5M11 11V4.8a1.5 1.5 0 0 1 3 0V11M14 11V6.2a1.5 1.5 0 0 1 3 0v6.6c0 4.2-2.6 7.4-6.3 7.4-2.4 0-3.9-1-5.2-3l-2.3-3.6a1.5 1.5 0 0 1 2.4-1.8L8 14"/>',
 teddy:'<circle cx="12" cy="13.2" r="6.6"/><circle cx="6.2" cy="6.6" r="2.3"/><circle cx="17.8" cy="6.6" r="2.3"/><path d="M9.6 12.2h.01M14.4 12.2h.01" stroke-width="2.6"/><path d="M10.2 15.6q1.8 1.5 3.6 0"/>',
@@ -98,10 +125,45 @@ monitor:'<rect x="3.6" y="4.4" width="16.8" height="11.4" rx="1.8"/><path d="M9 
 box:'<path d="m12 3.6 7.8 4.2v8.4L12 20.4l-7.8-4.2V7.8Z"/><path d="m4.2 7.8 7.8 4.3 7.8-4.3M12 12.1v8.3"/>',
 layers:'<path d="m12 4 8.4 4.4L12 12.8 3.6 8.4Z"/><path d="m3.6 12.6 8.4 4.4 8.4-4.4M3.6 16.4 12 20.8l8.4-4.4"/>',
 info:'<circle cx="12" cy="12" r="8.4"/><path d="M12 11v5.2M12 7.9h.01"/>',
+plus:'<path d="M12 5.5v13M5.5 12h13"/>',
+minus:'<path d="M5.5 12h13"/>',
+times:'<path d="m7 7 10 10M17 7 7 17"/>',
+divide:'<path d="M5.5 12h13"/><circle cx="12" cy="7" r="1.3" fill="currentColor" stroke="none"/><circle cx="12" cy="17" r="1.3" fill="currentColor" stroke="none"/>',
+decimal:'<path d="M5.5 8.2a2.4 3 0 0 1 4.8 0v7.6a2.4 3 0 0 1-4.8 0Z"/><path d="M12.6 18.4h.01" stroke-width="2.8"/><path d="M15.6 7.4 17.8 5.6v13"/>',
+hanja:'<rect x="3.8" y="3.8" width="16.4" height="16.4" rx="3"/><path d="M8 7.2h8M12 7.2v3.2M7.4 10.6h9.2M9 13.4h6l-1.6 2M12 13.4v5.2l-1.2-.8"/>',
+quote:'<path d="M5 17.5v-4.2c0-3 1.4-5.3 4.2-6.8M13.4 17.5v-4.2c0-3 1.4-5.3 4.2-6.8"/><path d="M5 13h3.6v4.5H5ZM13.4 13h3.6v4.5h-3.6Z"/>',
+eye:'<path d="M2.8 12s3.4-6.2 9.2-6.2 9.2 6.2 9.2 6.2-3.4 6.2-9.2 6.2S2.8 12 2.8 12Z"/><circle cx="12" cy="12" r="2.7"/>',
+eyeoff:'<path d="M3.5 3.5l17 17M10.2 6a9.6 9.6 0 0 1 1.8-.2c5.8 0 9.2 6.2 9.2 6.2a16 16 0 0 1-2.6 3.4M6.6 7.4C4.2 9 2.8 12 2.8 12s3.4 6.2 9.2 6.2c1.6 0 3-.4 4.2-1.1"/><path d="M10 10.1a2.7 2.7 0 0 0 3.9 3.8"/>',
+thought:'<path d="M6.8 15.2h10.4a3.7 3.7 0 0 0 .5-7.4 5.4 5.4 0 0 0-10.2-.5 4 4 0 0 0-.7 7.9Z"/><circle cx="6.6" cy="18.6" r="1.3"/><circle cx="3.9" cy="20.7" r=".8"/>',
+talk:'<path d="M4.2 6.3a2 2 0 0 1 2-2h11.6a2 2 0 0 1 2 2v8.4a2 2 0 0 1-2 2H10l-4.5 3.6v-3.6h.7a2 2 0 0 1-2-2Z"/><path d="M8.4 9.2h7.2M8.4 12.4h4.4"/>',
+person:'<circle cx="12" cy="7.9" r="3.3"/><path d="M5.6 20.2v-1.1a6.4 6.4 0 0 1 12.8 0v1.1"/>',
+pair:'<circle cx="8" cy="8.4" r="2.7"/><circle cx="16" cy="8.4" r="2.7"/><path d="M3.3 19.8v-.9a4.7 4.7 0 0 1 9.4 0v.9M11.3 19.8v-.9a4.7 4.7 0 0 1 9.4 0v.9"/>',
+group:'<circle cx="12" cy="6.9" r="2.5"/><circle cx="5.6" cy="10.4" r="2.1"/><circle cx="18.4" cy="10.4" r="2.1"/><path d="M8 19.8v-1.6a4 4 0 0 1 8 0v1.6M2.5 19.8v-.9a3.3 3.3 0 0 1 4.6-3M21.5 19.8v-.9a3.3 3.3 0 0 0-4.6-3"/>',
+rows:'<rect x="3.6" y="4.4" width="5" height="3.6" rx="1"/><rect x="15.4" y="4.4" width="5" height="3.6" rx="1"/><rect x="3.6" y="10.9" width="5" height="3.6" rx="1"/><rect x="15.4" y="10.9" width="5" height="3.6" rx="1"/><path d="M3.6 18.8h5M15.4 18.8h5"/><path d="M12 4v16.2" stroke-dasharray="1.4 2.6"/>',
+listnum:'<path d="M4.6 5.4 6.4 4.2v6.2M4.4 10.4h4"/><path d="M6.4 14v6.2M4.2 18l2.2 2.2 2.2-2.2"/><path d="M11.6 6h8.6M11.6 12h8.6M11.6 18h5.6"/>',
+warn:'<path d="M10.3 4.7 3 17.3a2 2 0 0 0 1.7 3h14.6a2 2 0 0 0 1.7-3L13.7 4.7a2 2 0 0 0-3.4 0Z"/><path d="M12 9.6v4.1M12 16.9h.01"/>',
+link:'<path d="M10 14a4 4 0 0 0 5.7 0l3-3a4 4 0 0 0-5.7-5.7l-1 1"/><path d="M14 10a4 4 0 0 0-5.7 0l-3 3a4 4 0 0 0 5.7 5.7l1-1"/>',
+summit:'<path d="M3 19.8 9.4 9.2l3.3 5.1 2.2-3.1 6.1 8.6Z"/><path d="M14.9 11.2V4.2l3.8 1.6-3.8 1.6"/>',
+party:'<path d="M4 20 8.4 8.6l7 7Z"/><path d="M13.6 6.2c.6-1.3.4-2.3-.4-3M17.8 10.4c1.3-.6 2.3-.4 3 .4M15.6 8.4l3.2-3.2"/><path d="M11 4.4h.01M20.2 13.6h.01M19 3.6h.01" stroke-width="2.6"/>',
+xcircle:'<circle cx="12" cy="12" r="8.4"/><path d="m9.2 9.2 5.6 5.6M14.8 9.2l-5.6 5.6"/>',
+ocircle:'<circle cx="12" cy="12" r="7.4" stroke-width="2.3"/>',
+key:'<circle cx="8" cy="15.6" r="3.8"/><path d="m10.8 12.8 8.4-8.4M16.6 7l2.4 2.4M14.4 9.2l1.8 1.8"/>',
+unlock:'<rect x="5" y="10.5" width="14" height="9.7" rx="2"/><path d="M8.2 10.5V7.8a3.8 3.8 0 0 1 7.3-1.5"/>',
+robot:'<rect x="4.6" y="8" width="14.8" height="11" rx="2.8"/><path d="M12 8V5M2.8 12.4v3.2M21.2 12.4v3.2M9.8 16.2h4.4"/><circle cx="12" cy="4" r="1"/><path d="M9.4 12.6h.01M14.6 12.6h.01" stroke-width="2.6"/>',
+gear:'<circle cx="12" cy="12" r="2.8"/><circle cx="12" cy="12" r="6.3"/><path d="M12 3.4v2.3M12 18.3v2.3M3.4 12h2.3M18.3 12h2.3M5.9 5.9l1.6 1.6M16.5 16.5l1.6 1.6M5.9 18.1l1.6-1.6M16.5 7.5l1.6-1.6"/>',
+save:'<path d="M5 3.8h11.2L19.2 6.8v11.4a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2Z"/><path d="M8.2 3.8v4.4h6.6V3.8M8 20.2v-5.4h8v5.4"/>',
+wrench:'<path d="M14.8 3.8a4.6 4.6 0 0 0-4.3 6.3l-6.1 6.1a2 2 0 0 0 2.8 2.8l6.1-6.1A4.6 4.6 0 0 0 19.8 8.8l-2.8 2.8-2.7-.6-.6-2.7 2.8-2.8a4.6 4.6 0 0 0-1.7-.7Z"/>',
+folder:'<path d="M3.8 7a2 2 0 0 1 2-2h3.9l2 2.2h6.5a2 2 0 0 1 2 2v8.6a2 2 0 0 1-2 2H5.8a2 2 0 0 1-2-2Z"/><path d="M3.8 10.6h16.4"/>',
+thumb:'<path d="M7.6 10.6v9.2H4.6a1 1 0 0 1-1-1v-7.2a1 1 0 0 1 1-1Z"/><path d="M7.6 10.6 11 4.3a1.9 1.9 0 0 1 3.5 1.4l-.8 3.7h5a2 2 0 0 1 2 2.4l-1.4 6.4a2 2 0 0 1-2 1.6H7.6"/>',
+headphones:'<path d="M4 15.6V13a8 8 0 0 1 16 0v2.6"/><rect x="3.6" y="14" width="4.2" height="6.2" rx="1.6"/><rect x="16.2" y="14" width="4.2" height="6.2" rx="1.6"/>',
+medal:'<path d="M8.2 3.6 11 9.4M15.8 3.6 13 9.4M8.2 3.6h7.6"/><circle cx="12" cy="15" r="5.2"/><circle cx="12" cy="15" r="2.1"/>',
+backspace:'<path d="M8.6 5.4h10.6a1.8 1.8 0 0 1 1.8 1.8v9.6a1.8 1.8 0 0 1-1.8 1.8H8.6L3 12Z"/><path d="m11.4 9.6 4.8 4.8M16.2 9.6l-4.8 4.8"/>',
+erase:'<path d="m8.2 20.2-4.4-4.4a1.6 1.6 0 0 1 0-2.3l9.4-9.4a1.6 1.6 0 0 1 2.3 0l4.6 4.6a1.6 1.6 0 0 1 0 2.3l-8.9 9.2Z"/><path d="M8.2 20.2h12M9.4 9.4l5.4 5.4"/>',
+rewind:'<path d="M18.6 5.4v13.2L9.4 12Z"/><path d="M5.6 5.4v13.2"/>',
 dot:'<circle cx="12" cy="12" r="3.2"/>'};
 var E={};function m(k,s){s.split(' ').forEach(function(c){E[c]=k})}
-m('book','📖 📕 📒 📓 📗 📘 📙');m('math','🔢 🧮 ➕ ➖ ➗ ✖ 🔟');m('pie','🍕 🍰');m('trophy','🏆 🏅');m('map','🗺 🧭');m('flask','🔬 🧪 ⚗');m('sprout','🌸 🌱 🌼 🌿 🪴 🌳 🌾 🍃 🐣 🦋');m('leaf','🍂 🍁');
-m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('clock','🚧 ⏰ 🕰');m('apple','🍎 🍏');m('school','🏫 🏢 🎓');m('sparkle','🌟 ✨ 💫 🌈 🚀');m('star','⭐ ★');m('calendar','📅 📆 🗓');
+m('book','📖 📕 📒 📓 📗 📘 📙');m('math','🔢 🧮 🔟');m('plus','➕');m('minus','➖');m('times','✖');m('divide','➗');m('decimal','🔸');m('hanja','🈷');m('quote','📜');m('pie','🍕 🍰');m('trophy','🏆 🏅');m('map','🗺 🧭');m('flask','🔬 🧪 ⚗');m('sprout','🌸 🌱 🌼 🌿 🪴 🌳 🌾 🍃 🐣 🦋');m('leaf','🍂 🍁');
+m('teacher','🧑‍🏫 👩‍🏫 👨‍🏫');m('clock','⏰ 🕰');m('hourglass','🚧');m('apple','🍎 🍏');m('school','🏫 🏢 🎓');m('sparkle','🌟 ✨ 💫 🌈 🚀');m('star','⭐ ★');m('calendar','📅 📆 🗓');
 m('image','🖼');m('music','🎵 🎶 🎼');m('books','📚');m('chart','📊 📈');m('dice','🎲 🃏 🁫');m('house','🏠 🏡 🏘');m('bulb','💡');m('laptop','💻');m('monitor','🖥');m('video','🎬 📺');
 m('printer','🖨');m('file','📄 📃 📝');m('layers','📑');m('lock','🔒 🔐');m('check','✅ ☑ ✔');m('help','❓ ❔');m('timer','⏱ ⏲');m('hourglass','⏳ ⌛');m('msg','💬 🗨');
 m('search','🔎 🔍');m('pencil','✏ ✍ 🖊 🖍');m('mic','🎙 🎤');m('vol','🔈 🔉 🔊 📢');m('scale','⚖');m('ruler','📏 📐');m('puzzle','🧩 🧵');m('users','🤝 👥 🧑‍🤝‍🧑');
@@ -111,8 +173,22 @@ function key(e){return e.replace(/[️\u{1F3FB}-\u{1F3FF}]/gu,'')}
 function svg(k,c){return '<svg class="'+(c||'hj-li')+'" viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">'+P[k]+'</svg>'}
 var TILE='.ico,.h-ico,.r-ico,.ts-chip>i,.td-ico',STRIP='.card:not(.room) .nm,main h2:not(.td-h),main h3';
 function grade(el){var c=el.closest('a,h1,.r-item')||el.parentNode,t=(c.querySelector('.nm')||c).textContent;var g=t.replace(RX,'').trim().match(/^(\d)학년$/);return g?g[1]:''}
-function tile(el){if(el.dataset.li)return;var raw=el.textContent.trim(),g=grade(el);el.dataset.li='1';
- if(g){el.innerHTML='<b class="hj-gn">'+g+'</b>';return}
+var SER2=null;function nmOf(c){var n=c&&(c.querySelector('.nm')||c.querySelector('span:not(.r-ico)'));return n?n.textContent.replace(RX,'').trim():''}
+function serial(el){var c=el.closest('a.card,div.card,.r-item');if(!c)return '';var t=nmOf(c);
+ var b=t.match(/\((\d)·(\d)학년\)/);if(b)return b[1]+'·'+b[2];
+ var m=t.match(/^(\d{1,2})(?:급\s*(Ⅱ))?(?=[.\s·급마]|학년|$)/);if(!m)return '';
+ if(SER2===null)SER2=[].filter.call(document.querySelectorAll('main .card .nm'),function(n){return /^\D*\d{2}\.\s/.test(n.textContent)}).length>=3;
+ if(SER2&&/^\d{2}\.\s/.test(t)){
+  var nn=c.querySelector('.nm');if(nn&&!nn.dataset.cut){nn.dataset.cut='1';var w=document.createTreeWalker(nn,NodeFilter.SHOW_TEXT),x;while(x=w.nextNode()){if(/\d{2}\.\s*/.test(x.nodeValue)){x.nodeValue=x.nodeValue.replace(/\d{2}\.\s*/,'');break}}}
+  return m[1]}
+ var box=c.classList.contains('r-item')?c.parentNode:(c.parentNode.classList.contains('rw')?c.parentNode.parentNode:c.parentNode);
+ var sib=[].slice.call(box.querySelectorAll(':scope>a.card,:scope>div.card,:scope>.rw>a.card,:scope>.r-item'));
+ var num=sib.filter(function(x){return /^\d/.test(nmOf(x))});if(num.length<3)return '';
+ var keys={},dup=false;num.forEach(function(x){var i=x.querySelector('.ico,.r-ico');var e=i&&(i.dataset.em||i.textContent).match(RX);var k=e?E[key(e[0])]||'dot':'dot';if(keys[k])dup=true;keys[k]=1});
+ return dup?m[1]+(m[2]||''):''}
+function tile(el){if(el.dataset.li)return;var raw=el.textContent.trim(),g=grade(el)||serial(el);el.dataset.li='1';el.dataset.em=raw;
+ if(g&&/학년$/.test(nmOf(el.closest('a.card,div.card,.r-item')||el))&&grade(el)){var nn2=(el.closest('a.card,div.card,.r-item')||{}).querySelector&&el.closest('a.card,div.card,.r-item').querySelector('.nm');if(nn2&&/^\s*\d학년\s*$/.test(nn2.textContent))nn2.textContent='학년'}
+ if(g){el.innerHTML='<b class="hj-gn'+(g.length>1&&!/학년$/.test(g)&&!/^\d+$/.test(g)?' hj-gn-s':'')+'">'+g+'</b>';return}
  var sec=el.closest('#event,#quote,#art,#music,#book'),TD={event:'calendar',quote:'msg',art:'image',music:'music',book:'books'};
  if(sec&&el.classList.contains('td-ico')){el.innerHTML=svg(TD[sec.id]);return}
  var ms=raw.match(RX);el.innerHTML=svg(ms&&E[key(ms[0])]||'dot');}

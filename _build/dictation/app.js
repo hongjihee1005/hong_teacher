@@ -1,4 +1,4 @@
-/* 공통 › 받아쓰기·맞춤법 급수 화면 (2026-10-05)
+/* 공통 › 받아쓰기·맞춤법 화면 (2026-10-05)
    학년마다 35급(10개씩): 낱말 → 어절 → 문장 → 문장 부호
    📖 익히기 · 🎧 받아쓰기(화면에 쓰기 / 공책에 쓰기) · ✅ 맞춤법 고르기 · 🖨️ 인쇄(시험지·정답·급수표)
    읽어 주기는 브라우저의 한국어 음성(speechSynthesis), 기록은 그 기기 localStorage('hj-dict-v1')에만. */
@@ -28,16 +28,23 @@
   }
   document.addEventListener('click', function (e) { var b = e.target.closest('[data-say]'); if (b) say(b.dataset.say, b.dataset.slow === '1') });
 
-  /* ── 급 고르기 ── */
+  /* ── 단계 고르기(2026-10-29 교육자팀: 35개를 늘어놓지 않고) — 묶음(낱말·어절·문장·문장 부호) 탭 → 그 묶음의 단계만 ── */
   function lvBar() {
-    var h = '';
-    LV.forEach(function (L, i) {
-      if (L.first) h += '<span class="dt-lk">' + L.kind + '</span>';
-      var r = st[D.g][L.no];
-      h += '<button type="button" data-l="' + i + '" aria-pressed="' + (i === lv ? 'true' : 'false') + '"' + (r === 10 ? ' class="full"' : '') + '>' + L.no + '급' + (r != null ? '<i>' + r + '</i>' : '') + '</button>';
+    var cur = LV[lv].kind, h = '<div class="dt-kinds" role="tablist" aria-label="묶음">';
+    KIND.forEach(function (k) {
+      var a = LV.filter(function (L) { return L.kind === k }), done = a.filter(function (L) { return st[D.g][L.no] === 10 }).length;
+      h += '<button type="button" role="tab" data-k="' + k + '" aria-selected="' + (k === cur ? 'true' : 'false') + '"><b>' + k + '</b><small>' + a[0].no + '~' + a[a.length - 1].no + '단계' + (done ? ' · ⭐' + done : '') + '</small></button>';
     });
-    $('dtLv').innerHTML = h;
+    h += '</div><div class="dt-steps">';
+    var nextSet = false;
+    LV.forEach(function (L, i) {
+      if (L.kind !== cur) return;
+      var r = st[D.g][L.no], nx = !nextSet && r !== 10; if (nx) nextSet = true;
+      h += '<button type="button" data-l="' + i + '" aria-pressed="' + (i === lv ? 'true' : 'false') + '" class="' + (r === 10 ? 'full' : '') + (nx ? ' nx' : '') + '">' + L.no + '<small>단계</small>' + (r != null ? '<i>' + r + '</i>' : '') + '</button>';
+    });
+    $('dtLv').innerHTML = h + '</div>';
   }
+  $('dtLv').addEventListener('click', function (e) { var g = e.target.closest('[data-k]'); if (!g) return; var k = g.dataset.k, a = LV.map(function (L, i) { return [L, i] }).filter(function (x) { return x[0].kind === k }), f = a.filter(function (x) { return st[D.g][x[0].no] !== 10 })[0] || a[0]; lv = f[1]; show() });
   $('dtLv').onclick = function (e) { var b = e.target.closest('[data-l]'); if (b) { lv = +b.dataset.l; show() } };
   $('dtTabs').onclick = function (e) { var b = e.target.closest('[data-t]'); if (b) { tab = b.dataset.t; show() } };
 
@@ -47,7 +54,7 @@
     document.querySelectorAll('#dtTabs [data-t]').forEach(function (b) { b.setAttribute('aria-selected', b.dataset.t === tab ? 'true' : 'false') });
     ['learn', 'dict', 'pick', 'print'].forEach(function (t) { $('t-' + t).hidden = t !== tab });
     var L = LV[lv];
-    $('dtTitle').textContent = D.name + ' ' + L.no + '급 · ' + L.kind + ' 10개';
+    $('dtTitle').textContent = D.name + ' ' + L.no + '단계 · ' + L.kind + ' 10개';
     if (tab === 'learn') learn(); else if (tab === 'dict') dictSetup(); else if (tab === 'pick') pick(); else printSetup();
     history.replaceState(null, '', '#' + L.no + (tab === 'learn' ? '' : '-' + tab));
   }
@@ -137,7 +144,7 @@
   function dEnd() {
     $('dcBar').style.width = '100%'; $('dcScreen').hidden = true; $('dcEnd').hidden = false;
     var L = LV[lv], best = st[D.g][L.no], nb = best == null || ok > best; if (nb) { st[D.g][L.no] = ok; save(); lvBar() }
-    var h = '<p class="big">' + (ok === 10 ? '🌟 100점! ' + L.no + '급 통과!' : ok >= 8 ? '⭐ 잘했어요!' : '💪 틀린 것을 다시 익혀 봐요.') + '</p><p>10개 중 <b>' + ok + '개</b>를 한 번에 맞혔어요' + (nb && ok ? ' · 🏅 새 기록' : '') + '</p>';
+    var h = '<p class="big">' + (ok === 10 ? '🌟 100점! ' + L.no + '단계 통과!' : ok >= 8 ? '⭐ 잘했어요!' : '💪 틀린 것을 다시 익혀 봐요.') + '</p><p>10개 중 <b>' + ok + '개</b>를 한 번에 맞혔어요' + (nb && ok ? ' · 🏅 새 기록' : '') + '</p>';
     if (wrong.length) { h += '<h3>다시 볼 것</h3><ol class="dt-wr">'; wrong.forEach(function (w) { h += '<li><b>' + esc(w[0][0]) + '</b> <button type="button" class="dt-b" data-say="' + esc(rd(w[0])) + '" aria-label="듣기">🔊</button><span class="pt">💡 ' + pt(w[0][1]) + '</span></li>' }); h += '</ol>' }
     $('dcRes').innerHTML = h; $('dcNextLv').hidden = lv === LV.length - 1;
   }
@@ -197,7 +204,7 @@
     var one = pk ? 26 : paper === 'cell' ? rows * Math.min(14, Math.floor(1800 / per) / 10) + 7 : (two ? 30 : 18);
     var parts = kind === 'test' && one * 10 > 228 ? [L.items.slice(0, 5), L.items.slice(5)] : [L.items];
     return parts.map(function (items, pi) {
-      var h = '<div class="dt-sheet"><div class="sh-hd"><div><b>' + esc(D.name) + ' 받아쓰기 ' + L.no + '급' + (parts.length > 1 ? ' (' + (pi + 1) + '/' + parts.length + ')' : '') + '</b><span>' + L.kind + ' 10개' + (kind === 'key' ? ' · 정답' : '') + '</span></div>' +
+      var h = '<div class="dt-sheet"><div class="sh-hd"><div><b>' + esc(D.name) + ' 받아쓰기 ' + L.no + '단계' + (parts.length > 1 ? ' (' + (pi + 1) + '/' + parts.length + ')' : '') + '</b><span>' + L.kind + ' 10개' + (kind === 'key' ? ' · 정답' : '') + '</span></div>' +
         (kind === 'key' || pi ? '' : '<div class="sh-nm">이름: <i></i> 점수: <i class="s"></i> / 100</div>') + '</div><ol class="sh-list ' + kind + (kind === 'test' ? ' ' + paper : '') + '" start="' + (pi * 5 + 1) + '">';
       items.forEach(function (it) {
         if (pk && kind !== 'key') h += '<li><span class="sh-q">' + esc(strip(it[0])) + '</span><span class="dt-ln"></span></li>';
@@ -205,14 +212,14 @@
         else if (paper === 'cell') { h += '<li>'; for (var r = 0; r < rows; r++) h += cells(per); h += '</li>' }
         else h += '<li><span class="dt-ln"></span>' + (two ? '<span class="dt-ln"></span>' : '') + '</li>';
       });
-      return h + '</ol><p class="sh-ft">받아쓰기·맞춤법 급수 · 초등교사 홍지희</p></div>';
+      return h + '</ol><p class="sh-ft">받아쓰기·맞춤법 · 초등교사 홍지희</p></div>';
     }).join('');
   }
   function home() {   // 가정 학습용 급수표: 15급 전체
-    var rg = KIND.map(function (k) { var a = LV.filter(function (L) { return L.kind === k }); return a[0].no + '~' + a[a.length - 1].no + '급 ' + k }).join(' · ');
-    var h = '<div class="dt-sheet home"><div class="sh-hd"><div><b>' + esc(D.name) + ' 받아쓰기 급수표</b><span>집에서 미리 읽고 써 보세요 · ' + rg + '</span></div></div><div class="hm-grid">';
-    LV.forEach(function (L) { h += '<section><h4>' + L.no + '급 <small>' + L.kind + '</small></h4><ol>'; L.items.forEach(function (it) { h += '<li>' + esc(it[0]) + '</li>' }); h += '</ol></section>' });
-    return h + '</div><p class="sh-ft">받아쓰기·맞춤법 급수 · 초등교사 홍지희</p></div>';
+    var rg = KIND.map(function (k) { var a = LV.filter(function (L) { return L.kind === k }); return a[0].no + '~' + a[a.length - 1].no + '단계 ' + k }).join(' · ');
+    var h = '<div class="dt-sheet home"><div class="sh-hd"><div><b>' + esc(D.name) + ' 받아쓰기 단계표</b><span>집에서 미리 읽고 써 보세요 · ' + rg + '</span></div></div><div class="hm-grid">';
+    LV.forEach(function (L) { h += '<section><h4>' + L.no + '단계 <small>' + L.kind + '</small></h4><ol>'; L.items.forEach(function (it) { h += '<li>' + esc(it[0]) + '</li>' }); h += '</ol></section>' });
+    return h + '</div><p class="sh-ft">받아쓰기·맞춤법 · 초등교사 홍지희</p></div>';
   }
   $('prTest').onclick = function () { out(sheet(lv, 'test')) };
   $('prKey').onclick = function () { out(sheet(lv, 'key')) };

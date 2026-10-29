@@ -32,11 +32,47 @@
   document.querySelectorAll('.hz-tabs button').forEach(function (b) { b.onclick = function () { tab(b.dataset.tab); if (b.dataset.tab === 'exam') closeExam(true) } });
 
   /* ── 한자 익히기 ── */
+  /* 목록: 뜻(부수) 묶음 제목 + 하루 5자 표시, 묶음마다 '확인 5문제'(2026-10-29 교육자팀) */
+  function card(i, day) { var x = L[i]; return '<button type="button" class="hz-card" data-i="' + i + '">' + (day ? '<span class="hz-day">' + day + '일</span>' : '') + '<span class="h han">' + esc(x[0]) + '</span><span class="m">' + he(x[1][0][0][0], x[1][0][1][0]) + '</span></button>' }
   function cards(list) {
-    $('hzGrid').innerHTML = list.map(function (i) { var x = L[i]; return '<button type="button" class="hz-card" data-i="' + i + '"><span class="h han">' + esc(x[0]) + '</span><span class="m">' + he(x[1][0][0][0], x[1][0][1][0]) + '</span></button>' }).join('');
-    $('hzCount').textContent = list.length === L.length ? '이 급에서 새로 나오는 한자 ' + L.length + '자' : list.length + '자 찾음';
+    var h = '';
+    if (list.length === L.length && D.groups) {
+      var p = 0;
+      D.groups.forEach(function (g, gi) {
+        h += '<div class="hz-gh"><b>' + esc(g[0]) + '</b><small>' + g[1] + '자</small><button type="button" class="hz-gq" data-g="' + gi + '">확인 ' + Math.min(5, g[1]) + '문제</button></div>';
+        for (var k = 0; k < g[1]; k++, p++) h += card(p, p % 5 === 0 ? p / 5 + 1 : 0);
+      });
+    } else h = list.map(function (i) { return card(i, 0) }).join('');
+    $('hzGrid').innerHTML = h;
+    $('hzCount').textContent = list.length === L.length ? '새로 나오는 한자 ' + L.length + '자 · 하루 5자씩 ' + Math.ceil(L.length / 5) + '일' : list.length + '자 찾음';
   }
-  function detail(i) {
+  /* 묶음 확인: 글자를 보고 훈음 고르기(보기 4개, 같은 급 글자에서) */
+  function gquiz(gi) {
+    var s0 = 0; for (var k = 0; k < gi; k++) s0 += D.groups[k][1];
+    var idx = []; for (k = 0; k < D.groups[gi][1]; k++) idx.push(s0 + k);
+    idx.sort(function () { return Math.random() - .5 }); idx = idx.slice(0, 5);
+    var qi = 0, ok = 0, box = document.createElement('div'); box.className = 'hz-qz'; document.body.appendChild(box);
+    function hunOf(i) { var x = L[i]; return x[1][0][0][0] + ' ' + x[1][0][1][0] }
+    function close() { box.remove() }
+    function q() {
+      if (qi >= idx.length) { box.innerHTML = '<div class="hz-qzc"><p class="hz-qzt">' + esc(D.groups[gi][0]) + ' 확인</p><p class="hz-qzr">' + idx.length + '문제 중 <b>' + ok + '</b>개 맞혔어요' + (ok === idx.length ? ' 🌟' : '') + '</p><div class="hz-bar"><button type="button" class="hz-btn" data-x="again">다시 하기</button><button type="button" class="hz-btn go" data-x="close">닫기</button></div></div>'; return }
+      var a = idx[qi], opts = [a], pool = L.map(function (x, i) { return i }).filter(function (i) { return i !== a && hunOf(i) !== hunOf(a) });
+      pool.sort(function () { return Math.random() - .5 }); opts = opts.concat(pool.slice(0, 3)).sort(function () { return Math.random() - .5 });
+      box.innerHTML = '<div class="hz-qzc"><p class="hz-qzt">' + esc(D.groups[gi][0]) + ' 확인 <small>' + (qi + 1) + ' / ' + idx.length + '</small></p><div class="hz-qzh">' + hn(L[a][0]) + '</div><p class="hz-qzp">알맞은 훈(뜻)과 음(소리)을 골라요.</p><div class="hz-qzo">' +
+        opts.map(function (o) { return '<button type="button" data-o="' + o + '">' + heStr(hunOf(o)) + '</button>' }).join('') + '</div><button type="button" class="hz-qzx" data-x="close" aria-label="닫기">✕</button></div>';
+    }
+    box.onclick = function (e) {
+      var x = e.target.closest('[data-x]'); if (x) { if (x.dataset.x === 'close') close(); else { qi = 0; ok = 0; q() } return }
+      if (e.target === box) return close();
+      var b = e.target.closest('[data-o]'); if (!b || box.querySelector('[data-o].ok,[data-o].no')) return;
+      var right = +b.dataset.o === idx[qi]; if (right) ok++;
+      b.classList.add(right ? 'ok' : 'no'); if (!right) box.querySelector('[data-o="' + idx[qi] + '"]').classList.add('ok');
+      setTimeout(function () { qi++; q() }, right ? 600 : 1300);
+    };
+    q();
+  }
+  $('hzGrid').addEventListener('click', function (e) { var g = e.target.closest('.hz-gq'); if (g) { e.stopPropagation(); gquiz(+g.dataset.g) } }, true);
+  function detail(i, quiet) {
     var x = L[i];
     $('hzDet').innerHTML = '<div class="hz-big">' + hn(x[0]) + '</div><div class="hz-info"><h3>' + heAll(x) + '</h3><dl><dt>부수</dt><dd>' + hn(x[2]) + '</dd><dt>총획</dt><dd>' + x[3] + '획</dd><dt>급수</dt><dd>' + esc(D.name) + '</dd></dl>' +
       (x[4].length ? '<div>이 한자가 든 낱말</div><div class="hz-words">' + x[4].map(function (w) { return '<span>' + hn(w[0]) + ' ' + esc(w[1]) + '</span>' }).join('') + '</div>' : '') +
@@ -48,7 +84,7 @@
     $('hzDet').hidden = false;
     document.querySelectorAll('.hz-card.on').forEach(function (c) { c.classList.remove('on') });
     var c = document.querySelector('.hz-card[data-i="' + i + '"]'); if (c) c.classList.add('on');
-    $('hzDet').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (!quiet) $('hzDet').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
   var timer = null;
   function play(svg) {
@@ -66,6 +102,8 @@
     })();
   }
   cards(L.map(function (x, i) { return i }));
+  /* 처음 열면 첫 글자를 바로 보여 줌(빈 화면 대신) */
+  if (L.length) detail(0, true);
   $('hzGrid').onclick = function (e) { var c = e.target.closest('.hz-card'); if (c) detail(+c.dataset.i) };
   $('hzDet').onclick = function (e) { var b = e.target.closest('[data-go]'); if (b) detail(+b.dataset.go) };
   $('hzFind').oninput = function () {

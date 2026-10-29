@@ -189,3 +189,10 @@
   var h = location.hostname, ok = location.protocol === 'file:' || /github\.io$/.test(h) || /^localhost$/.test(h) || h === '127.0.0.1';
   if (ok) document.querySelectorAll('.tolist').forEach(function (e) { e.classList.add('on') });
 })();
+// 차례 막대: 지금 보고 있는 부분 표시(2026-10-29)
+(function () {
+  var as = [].slice.call(document.querySelectorAll('.mu-toc a')); if (!as.length || !window.IntersectionObserver) return;
+  var on = function (id) { as.forEach(function (a) { var m = a.getAttribute('href') === '#' + id; a.classList.toggle('on', m); if (m && a.scrollIntoView && a.parentNode.scrollWidth > a.parentNode.clientWidth) a.parentNode.scrollLeft = a.offsetLeft - 20 }) };
+  var io = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) on(e.target.id) }) }, { rootMargin: '-30% 0px -60% 0px' });
+  as.forEach(function (a) { var s = document.querySelector(a.getAttribute('href')); if (s) io.observe(s) });
+})();

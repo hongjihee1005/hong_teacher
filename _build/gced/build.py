@@ -48,6 +48,19 @@ def check():
     if len({t['slug'] for t in TOPICS}) != len(TOPICS): print('slug 겹침'); bad += 1
     return bad
 
+def allnav(i):
+    """모든 주제 목록(영역별) — 덮개가 넓은 화면 왼쪽 메뉴바에 보여 줌(2026-10-29). 화면 본문에서는 숨김"""
+    import html as _h
+    out, area = ['<nav class="mu-all" hidden aria-label="모든 주제">'], None
+    for j, t in enumerate(TOPICS):
+        if t['area'] != area:
+            if area is not None: out.append('</div>')
+            area = t['area']; out.append(f'<div class="mu-ag"><b>{_h.escape(area)}</b>')
+        cur = ' aria-current="page"' if j == i else ''
+        out.append(f'<a href="{fname(t)}"{cur}><span>{t["no"]:02d}</span>{_h.escape(t["title"])}</a>')
+    out.append('</div></nav>')
+    return ''.join(out)
+
 def build(i):
     t = TOPICS[i]; rd = lambda p: p.read_text(encoding='utf-8')
     prev = f'<a href="{fname(TOPICS[i - 1])}">← {TOPICS[i - 1]["no"]}. {TOPICS[i - 1]["title"]}</a>' if i else '<a href="index.html">← 세계시민교육 목록</a>'
@@ -62,6 +75,7 @@ def build(i):
     for k in ('{CSS}', '{HEADSNIP}', '{FOOT}', '{APP}', '{HOMEFRAG}', '{PREV}', '{NEXT}', '{NO}', '{TITLE}', '{GOAL}', '{AREA}', '{ICO}'):
         s = s.replace(k, rep[k])
     s = s.replace('{DATA}', data)
+    s = s.replace('<nav class="mu-pn">', allnav(i) + '<nav class="mu-pn">', 1)
     out = ROOT / 'project' / 'global' / fname(t)
     out.parent.mkdir(parents=True, exist_ok=True)
     old = out.read_text(encoding='utf-8') if out.exists() else ''

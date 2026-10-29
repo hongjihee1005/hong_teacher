@@ -355,23 +355,30 @@ function a2Maker(body, api, opt) {
     top.append(svgEl("circle", { cx: a2F(P[0]), cy: a2F(P[1]), r: 16, fill: TENT, stroke: "#fff", "stroke-width": 3, style: "cursor:grab" }));
     const I = it();
     askEl.textContent = (opt.items.length > 1 ? `(${k + 1}/${opt.items.length}) ` : "") + (I.ask || (I.target != null ? `${I.target}°인 각을 만들어 보세요.` : `${I.kind}을 만들어 보세요.`));
-    out.textContent = opt.show || revealed ? `지금 각도: ${ang}°` : "지금 각도: ?";
+    out.textContent = opt.show || revealed ? `지금 각도: ${Math.abs(ang)}°` : "지금 각도: ?";
   };
   dragOn(svg, p => {
     const P = a2Pt(V, d1 + ang, L); if (a2D([p.x, p.y], P) > 60 && a2D([p.x, p.y], V) > L + 40) return false; return true;
   }, p => {
     let a = a2N(a2Dir(V, [p.x, p.y]) - d1);
     const maxA = opt.max || 180;
+    if (opt.both) { if (a > 180) a -= 360; a = Math.max(-maxA, Math.min(maxA, a)); a = Math.round(a / sn) * sn; ang = a; revealed = false; draw(); return; }
     if (a > maxA) a = a > (maxA + 360) / 2 ? 0 : maxA;
     a = Math.round(a / sn) * sn; ang = Math.max(opt.min != null ? opt.min : 1, a); revealed = false; draw();
   });
-  const nudge = d => { ang = Math.max(opt.min != null ? opt.min : 1, Math.min(opt.max || 180, ang + d)); revealed = false; draw(); };
+  const nudge = d => { ang = Math.max(opt.both ? -(opt.max || 180) : opt.min != null ? opt.min : 1, Math.min(opt.max || 180, ang + d)); revealed = false; draw(); };
   const tools = h("div", { class: "tools" }, h("button", { onclick: () => nudge(sn) }, `⟲ ${sn}°`), h("button", { onclick: () => nudge(-sn) }, `⟳ ${sn}°`),
     opt.toggleProt ? h("button", { onclick: e => { showProt = !showProt; e.currentTarget.classList.toggle("on", showProt); draw(); } }, "각도기 대 보기") : null);
   const done = [];
   api.provide({ words: opt.words || ["직각", "예각", "둔각"], answers: [opt.items.map(I => I.target != null ? `${I.target}°` : I.kind).join(", ")] });
   const check = h("button", { class: "big", onclick: () => {
     const I = it(); api.tryOnce(); let good, why;
+    if (opt.both && I.target != null) {
+      const m = Math.abs(ang); good = Math.abs(m - I.target) <= 1;
+      if (!good) why = `${I.target}°가 되게 ${m < I.target ? "조금 더 기울여" : "조금 덜 기울여"} 봐요. 지금은 ${m}°예요.`;
+      if (!good) return api.fail(why, `${m}°`);
+      done.push(`${m}°`); draw(); return api.done(done.join(", "), opt.ok || "각을 알맞게 만들었어요!");
+    }
     if (I.target != null) {
       const tol = I.est ? I.est : 1; good = Math.abs(ang - I.target) <= tol;
       if (!good) why = I.est ? `조금 더 ${ang < I.target ? "벌려" : "좁혀"} 봐요. 삼각자의 ${I.target < 45 ? "30°와 45°" : I.target < 60 ? "45°와 60°" : I.target < 90 ? "60°와 90°" : "90°"}를 떠올려요.` : `${I.target}°가 되게 ${ang < I.target ? "조금 더 벌려" : "조금 좁혀"} 봐요. 각도기 눈금을 0에서부터 읽어요.`;
@@ -998,8 +1005,8 @@ const LESSONS = [
   question: "숲 놀이터를 만들 때 지안이와 친구들은 각을 어떻게 이용했을까요?",
   summary: "우리 주변의 의자, 오두막, 놀이기구, 계단과 오르막길에는 여러 가지 각이 있어요. 한 점에서 그은 두 반직선으로 이루어진 도형을 각이라고 해요. 이 단원에서는 각의 크기를 비교하고, 각도기로 재고, 어림하고, 각도를 더하고 빼는 방법을 배워요.",
   steps: [
-    { name: "만져 보기", inst: "이탈리아에 있는 피사의 사탑은 땅이 단단하지 않아서 5도 정도 기울어졌대요. 주황 동그라미를 왼쪽으로 끌어 탑을 5°만큼 기울여 보세요.", hints: ["파란 점선은 똑바로 선 탑의 방향이에요.", "아주 조금만 기울이면 돼요. ⟲ 1° 단추를 다섯 번 눌러도 돼요."],
-      render: (b, a) => a2Maker(b, a, { W: 560, H: 520, V: [280, 470], d1: 90, L: 330, skin: "tower", show: true, start: 0, min: 0, max: 30, items: [{ target: 5, ask: "탑을 5°만큼 기울여 보세요." }],
+    { name: "만져 보기", inst: "이탈리아에 있는 피사의 사탑은 땅이 단단하지 않아서 5도 정도 기울어졌대요. 주황 동그라미를 끌어 탑을 5°만큼 기울여 보세요(왼쪽, 오른쪽 어느 쪽이든 괜찮아요).", hints: ["파란 점선은 똑바로 선 탑의 방향이에요.", "아주 조금만 기울이면 돼요. ⟲ 1° 단추를 다섯 번 눌러도 돼요."],
+      render: (b, a) => a2Maker(b, a, { W: 560, H: 520, V: [280, 470], d1: 90, L: 330, skin: "tower", show: true, start: 0, min: 0, max: 30, both: true, items: [{ target: 5, ask: "탑을 5°만큼 기울여 보세요." }],
         deco: g => g.append(svgEl("rect", { x: 0, y: 470, width: 560, height: 50, fill: "#D8EBC8" })), tip: "주황 동그라미를 끌어 탑을 기울여요.", ok: "5° 기울어진 피사의 사탑이에요. 기울어진 정도도 각의 크기로 나타낼 수 있어요." }) },
     { name: "찾아 보기", inst: "지안이와 친구들이 만든 숲 놀이터예요. 그림에서 각을 볼 수 있는 것을 모두 눌러 보세요.", hints: ["곧은 선 두 개가 한 점에서 만나는 곳을 찾아요.", "동그란 모양에는 각이 없어요."],
       render: (b, a) => a2Pick(b, a, Object.assign({ tip: "각을 볼 수 있는 것을 모두 눌러 골라요.", ok: "기린 모양 의자, 책 모양 오두막, 미끄럼틀에서 각을 볼 수 있어요." }, A2_SCENE)) },

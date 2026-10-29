@@ -302,7 +302,7 @@
           (pc ? '<i class="rec">합격 ' + pc + '회 / ' + E.rounds + '회' + (pc === E.rounds ? ' 🏆' : '') + '</i>' : '') + '</button>';
       });
       $('rkList').innerHTML = h;
-      $('rkInfo').textContent = '12급(1학년 수준)부터 1급(6학년 수준)까지 12단계예요. 급마다 시험이 ' + E.rounds + '회 있고, 한 회는 ' + E.n + '문제, ' + E.pass + '문제 이상 맞히면 합격이에요. 급수와 합격 기준은 이 자료에서 연습용으로 정한 것이에요.';
+      $('rkInfo').textContent = '한 회 ' + E.n + '문제 중 ' + E.pass + '문제 이상 맞히면 합격이에요. 급수와 합격 기준은 이 자료에서 연습용으로 정한 것이에요.';
     }
     $('rkList').onclick = function (e) { var b = e.target.closest('[data-l]'); if (b) { level(+b.dataset.l); scrollTo(0, 0) } };
     function level(id) {

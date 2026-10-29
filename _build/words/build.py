@@ -21,10 +21,12 @@ ROOT = HERE.parents[1]
 OG = ROOT / '_build' / 'origami'
 N = 150
 AREAS = [  # (id, 파일, 이름, 아이콘, 색, 소개)
-    ('proverb', 'proverb.html', '속담', '💬', '#C0503A', '옛날부터 전해 오는, 삶의 지혜가 담긴 짧은 말이에요. 150개를 쉬운 것부터 10개씩 15급으로 나누었어요.'),
-    ('idiom', 'idiom.html', '관용어', '👥', '#2F74E0', '낱말 뜻을 그대로 더한 것과 다른, 새로운 뜻으로 굳어진 말이에요(예: 발이 넓다). 150개를 쉬운 것부터 10개씩 15급으로 나누었어요.'),
-    ('saja', 'saja.html', '사자성어', '📚', '#1C8C7A', '한자 네 글자로 이루어진 말이에요. 글자마다 훈음과 한자 급수가 나오고, 누르면 그 급의 한자 익히기로 가요. 150개를 10개씩 15급으로 나누었어요.'),
+    ('proverb', 'proverb.html', '속담', '💬', '#C0503A', '옛날부터 전해 오는, 삶의 지혜가 담긴 짧은 말이에요. 150개를 쉬운 것부터 10개씩 15단계로 나누었어요.'),
+    ('idiom', 'idiom.html', '관용어', '👥', '#2F74E0', '낱말 뜻을 그대로 더한 것과 다른, 새로운 뜻으로 굳어진 말이에요(예: 발이 넓다). 150개를 쉬운 것부터 10개씩 15단계로 나누었어요.'),
+    ('saja', 'saja.html', '사자성어', '📚', '#1C8C7A', '한자 네 글자로 이루어진 말이에요. 글자마다 훈음과 한자 급수가 나오고, 누르면 그 급의 한자 익히기로 가요. 150개를 10개씩 15단계로 나누었어요.'),
 ]
+# 추천 학년(2026-10-29 교육자팀, 이 자료에서 정한 참고용) — 관용어는 국어 5~6학년군 관용 표현과 이어짐
+GRTAG = {'proverb': '추천 3~6학년', 'idiom': '추천 5~6학년 · 국어 관용 표현', 'saja': '추천 5~6학년 · 한자 8~5급과 함께'}
 CREDIT = '뜻은 국립국어원 「표준국어대사전」 뜻풀이를 어린이 말로 쉽게 다듬은 것이에요. 예문은 이 자료를 위해 새로 지었어요.'
 HZ_FONT = '<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@500&family=Noto+Serif+JP:wght@500&family=Noto+Serif+TC:wght@500&display=swap" rel="stylesheet">'
 
@@ -140,6 +142,7 @@ def build(area, its):
     rd = lambda p: p.read_text(encoding='utf-8')
     nav = ''.join(f'<a href="{f}"' + (' aria-current="page"' if k == area else '') + f'>{i} {n}</a>' for k, f, n, i, *_ in AREAS)
     data = json.dumps({'area': area, 'name': name, 'items': its}, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
+    intro = intro + ' <span class="hj-grtag">' + GRTAG[area] + ' <small>참고용</small></span>'
     rep = {'NAME': name, 'ICO': ico, 'INTRO': intro, 'NAV': nav, 'CREDIT': CREDIT + (' 한자 훈음·급수는 한국어문회 배정한자 기준이에요.' if area == 'saja' else ''),
            'FONT': HZ_FONT if area == 'saja' else '', 'CSS': rd(HERE / 'page.css').replace('{ACC}', acc), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '초등학생이 알아 두면 좋은 속담·관용어·사자성어 자료입니다.'),

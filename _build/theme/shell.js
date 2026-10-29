@@ -1,0 +1,466 @@
+/* ===== 수업 스튜디오 껍데기 v4 (2026-10-27) — 짜임은 shell.css 맨 위 설명 =====
+   엔진이 innerHTML로 다시 그리는 그릇(단계 막대·본문)과 글만 바꾸는 요소(질문·안내·다음 단추)는 노드째 옮기므로 엔진 코드·이벤트는 그대로.
+   단계 이름·다음 단계·세부 차례는 단계 막대와 엔진 글을 보고 따라 적음.
+   - 홍지희 버전(section#lesson): #steps · #rt · #hd · #ask · #body · .foot #prev #next #tn
+   - 국어·사회 교과서 덱(section#stage): #bar · #turnLine · #bodyWrap(국어, 앱이 화면에 맞춰 키움) 또는 #body · .foot #btnPrev #btnNext(2) #tOpen · #stepNo */
+(function(){
+ var D=document,H=D.documentElement,$=function(i){return D.getElementById(i)};
+ var B=$('lesson')&&$('steps')&&$('hd')&&$('body')&&$('next'),A=!B&&$('stage')&&$('bar')&&$('body')&&$('btnPrev');
+ if(!B&&!A)return;
+ var R=B?$('lesson'):$('stage');if(R.querySelector('.hs-bar'))return;
+ var steps=B?$('steps'):$('bar'),body=B?$('body'):($('bodyWrap')||$('body')),prev=B?$('prev'):$('btnPrev'),next=B?$('next'):($('btnNext2')||$('btnNext')),tn=B?$('tn'):$('tOpen');
+ if(!steps||!body||!prev||!next)return;
+ var NS='http://www.w3.org/2000/svg';
+ var P={play:'M8 5.5v13l10.5-6.5z',board:'M4 5h16v10H4zM8 19h8M12 15v4',lock:'M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3',pen:'M4 20l4-1L19 8l-3-3L5 16zM14 6l3 3',
+  compass:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM15.5 8.5l-2 5-5 2 2-5z',flag:'M5 21V4M5 4h11l-2 4 2 4H5',expand:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',chevl:'M15 6l-6 6 6 6',chevr:'M9 6l6 6-6 6',shrink:'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5'};
+ function ico(k){var s=D.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','hs-ico');s.setAttribute('aria-hidden','true');var p=D.createElementNS(NS,'path');p.setAttribute('d',P[k]);s.appendChild(p);return s}
+ function el(t,c,txt){var e=D.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e}
+ function clean(t){return (t||'').replace(/[\u{1F000}-\u{1FAFF}☀-➿⬀-⯿⌀-⏿️‍]/gu,'').replace(/\s+/g,' ').trim()}
+ function txt(s){var e=D.querySelector(s);return e?clean(e.textContent):''}
+ H.classList.add('hs');R.classList.add('hs-root');
+
+ /* 앱 막대: 홈 · 자료 목록 / 제목 / 수업 · 우리 반 판 · 선생님(길게 눌러 열기) */
+ var bar=el('div','hs-bar'),nav=el('div','hs-nav'),tools=R.querySelector('.topbar .tools');
+ var homeA=tools&&tools.querySelector('a.hj-homemini'),list=tools&&tools.querySelector('.hj-lbtn');
+ if(list)nav.appendChild(list);
+ if(homeA){nav.appendChild(homeA);homeA.addEventListener('click',function(e){if(!confirm('수업을 나가 첫 화면으로 갈까요?'))e.preventDefault()})}
+ var ttl=el('div','hs-ttl');
+ ttl.appendChild(el('b','',txt('#cover h1')||clean(D.title.split('·')[0])));ttl.appendChild(el('span','',txt('#cSub')||txt('#cvSub')||txt('#cover .lead')));
+ var tabs=el('div','hs-tabs');tabs.setAttribute('role','tablist');
+ var tLes=el('button','hs-tab on');tLes.type='button';tLes.appendChild(ico('play'));tLes.appendChild(D.createTextNode('수업'));tabs.appendChild(tLes);
+ var qb=$('qbBtn');
+ if(qb){var tQ=el('button','hs-tab');tQ.type='button';tQ.appendChild(ico('board'));tQ.appendChild(D.createTextNode('우리 반 판'));tQ.onclick=function(){qb.click()};tabs.appendChild(tQ)}
+ if(tn){var tT=el('button','hs-tab lk');tT.type='button';tT.title='선생님: 길게 눌러 열어요';tT.appendChild(ico('lock'));tT.appendChild(D.createTextNode('선생님'));
+  var tm=0;function up(){clearTimeout(tm);tT.classList.remove('hold')}
+  tT.addEventListener('pointerdown',function(){tT.classList.add('hold');tm=setTimeout(function(){up();tn.click()},700)});['pointerup','pointerleave','pointercancel'].forEach(function(k){tT.addEventListener(k,up)});
+  tT.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tn.click()}});tabs.appendChild(tT)}
+ bar.appendChild(nav);bar.appendChild(ttl);bar.appendChild(tabs);
+
+ /* 왼쪽: 단계 길 + 무대(지금 할 일 머리띠 · 질문 · 활동) */
+ var main=el('div','hs-main'),path=el('div','hs-path');steps.classList.add('hs-steps');path.appendChild(steps);
+ var stage=el('div','hs-stage'),now=el('div','hs-now'),tag=el('span','tag');tag.appendChild(ico('pen'));tag.appendChild(D.createTextNode('지금 할 일'));
+ var ask,q=null;
+ if(B){ask=$('ask');q=$('hd');q.classList.add('hs-q')}else{ask=el('p','')}
+ ask.classList.add('hs-ask');
+ var alt=el('p','alt');now.appendChild(tag);now.appendChild(ask);now.appendChild(alt);
+ var sb=el('div','hs-sb');if(q)sb.appendChild(q);body.classList.add('hs-body');sb.appendChild(body);
+ stage.appendChild(now);stage.appendChild(sb);main.appendChild(path);main.appendChild(stage);
+
+ /* 오른쪽: 이 단계 안내 — 단계 이름 · 활동 방법 · 세부 차례 · 학습 문제 · 다음 단계, 아래에 도구와 이전/다음 */
+ var side=el('div','hs-side'),pan=el('div','hs-panel');
+ var pe=el('div','hs-pe');pe.appendChild(ico('compass'));pe.appendChild(D.createTextNode('이 단계 안내'));
+ var pt=el('div','hs-pt'),meta=el('div','hs-meta');
+ var rt=B?$('rt'):$('turnLine');if(rt){rt.classList.add('hs-rt');meta.appendChild(rt)}
+ var score=$('score');if(score)meta.appendChild(score);
+ var cnt=el('div','hs-cnt hs-hidden'),gn=el('div','gn'),gt=el('div','gt'),pips=el('div','hs-pips'),gl=el('span','');gt.appendChild(gl);gt.appendChild(pips);cnt.appendChild(gn);cnt.appendChild(gt);
+ var goalT=txt('#cover .qbox .hj-qtxt')||txt('#cover .goalbox .hj-qtxt')||txt('#cvGoal')||txt('#cGoal .hj-qtxt');
+ R.querySelectorAll(':scope>p.goal:not(#turnLine)').forEach(function(g){if(!goalT)goalT=clean(g.textContent);g.classList.add('hs-hidden')});
+ var goal=el('div','hs-goal');if(goalT){goal.appendChild(el('small','',B?'학습 문제':'학습 목표'));goal.appendChild(el('p','',goalT))}else goal.classList.add('hs-hidden');
+ var upn=el('div','hs-up');
+ var dock=el('div','hs-dock'),tg=el('div','hs-tools'),acts=el('div','hs-acts');
+ if(tools)[].slice.call(tools.children).forEach(function(b){if(b.tagName==='BUTTON')tg.appendChild(b)});
+ var full=tg.querySelector('[data-full]');if(full)full.classList.add('hs-hidden');
+ var snd=tg.querySelector('[data-sound]');if(snd&&!snd.textContent.trim())snd.appendChild(D.createTextNode('소리'));
+ var brd=el('button','hs-brd');brd.type='button';
+ function setB(on){H.classList.toggle('hs-board',on);brd.classList.toggle('on',on);brd.innerHTML='';brd.appendChild(ico(on?'shrink':'expand'));brd.appendChild(D.createTextNode(on?'칠판 보기 끄기':'칠판 보기'));try{localStorage.setItem('hj-board',on?'1':'')}catch(e){}fit();kick()}
+ brd.onclick=function(){setB(!H.classList.contains('hs-board'))};brd.appendChild(ico('expand'));brd.appendChild(D.createTextNode('칠판 보기'));tg.appendChild(brd);
+ prev.classList.add('hs-prev');next.classList.add('hs-next');acts.appendChild(prev);acts.appendChild(next);
+ var stepNo=$('stepNo');if(stepNo)stepNo.classList.add('hs-hidden');
+ R.querySelectorAll(':scope>.foot button').forEach(function(b){if(b!==tn&&!acts.contains(b))b.classList.add('hs-hidden')});
+ if(tn){tn.classList.add('hs-hidden');dock.appendChild(tn)}
+ dock.appendChild(tg);dock.appendChild(acts);
+ [pe,pt,meta,cnt,goal,upn,dock].forEach(function(x){pan.appendChild(x)});side.appendChild(pan);
+ R.insertBefore(bar,R.firstChild);R.insertBefore(main,bar.nextSibling);R.insertBefore(side,main.nextSibling);
+ /* v6 왼쪽 '수업 길'(2026-10-29 선생님과 정함): 학습 문제 + 단계 목록(실제 단계 단추를 옮김) · 접기/펼치기(기기에 기억, 칠판 보기에서는 접힘)
+    도구와 이전/다음은 무대 아래 막대, 활동 방법·시간은 '지금 할 일' 줄로. 오른쪽 안내 판은 숨김(겹치는 정보) */
+ var rail=el('aside','hs-rail'),fold=el('button','hs-fold');fold.type='button';
+ function setR(c,save){H.classList.toggle('hs-rc',c);fold.setAttribute('aria-expanded',c?'false':'true');fold.title=c?'수업 길 펼치기':'수업 길 접기';
+  fold.innerHTML='';fold.appendChild(ico(c?'chevr':'chevl'));fold.appendChild(el('span','',c?'수업 길 펼치기':'수업 길 접기'));
+  if(save){try{localStorage.setItem('hj-rail',c?'c':'')}catch(e){}kick()}}
+ fold.onclick=function(){setR(!H.classList.contains('hs-rc'),true)};
+ rail.appendChild(fold);rail.appendChild(goal);rail.appendChild(path);R.insertBefore(rail,main);
+ var bot=el('div','hs-bot');dock.insertBefore(cnt,acts);bot.appendChild(dock);main.appendChild(bot);now.appendChild(meta);
+ H.classList.add('hs-rl');var rc=false;try{rc=localStorage.getItem('hj-rail')==='c'}catch(e){}setR(rc,false);
+
+ /* 단계가 바뀔 때마다: 진행 줄 · 단계 이름 · 다음 단계 · 머리띠 · 세부 차례 */
+ function nm(b){return b?clean(b.title||(b.querySelector('.hj-stt')||b).textContent).replace(/^(\d+\.|[\u2460-\u2473\u2776-\u277F])\s*/,''):''}
+ function label(b){if(b.querySelector('.hj-stt')&&!b.querySelector('.hj-stn'))return;var t=nm(b);b.dataset.hjst='1';b.title=t;b.innerHTML='';b.appendChild(el('span','hj-stt',t))}
+ var busy=false;
+ function sync(){if(busy)return;busy=true;
+  [].forEach.call(steps.querySelectorAll('.st'),label);
+  var all=[].slice.call(steps.querySelectorAll('.st')),i=all.findIndex(function(b){return b.classList.contains('now')||b.classList.contains('on')}),n=all.length;
+  steps.style.setProperty('--hs-p',n>1&&i>0?i/(n-1):0);steps.style.setProperty('--hs-pl',(100/(2*Math.max(n,1)))+'%');
+  pt.textContent=nm(all[i])||(q?clean(q.textContent):'');
+  var nx=all[i+1];upn.innerHTML='';if(nx){upn.appendChild(D.createTextNode('다음 단계'));upn.appendChild(el('b','',(i+2)+'. '+nm(nx)))}else upn.appendChild(el('b','','마지막 단계예요'));
+  if(A){var h=body.querySelector('p.hd');var t=h?clean(h.textContent):'';if(ask.textContent!==t)ask.textContent=t;if(h&&!h.classList.contains('hs-moved')){h.classList.add('hs-moved');kick()}}
+  var a=clean(ask.textContent);now.classList.toggle('noask',!a);alt.textContent=a?'':(nm(all[i])+' — 선생님과 함께 해요');
+  if(rt)meta.classList.toggle('hs-hidden',!clean(rt.textContent)&&!(score&&score.style.display!=='none'));
+  var m=stepNo&&stepNo.textContent.match(/(\d+)\s*\/\s*(\d+)/);
+  if(m&&+m[2]>1){cnt.classList.remove('hs-hidden');gn.innerHTML='';gn.appendChild(D.createTextNode(m[1]));gn.appendChild(el('small','','/ '+m[2]));gl.textContent='이 단계의 차례';
+   pips.innerHTML='';for(var k=1;k<=+m[2];k++)pips.appendChild(el('i',k<+m[1]?'d':k==+m[1]?'o':''))}else cnt.classList.add('hs-hidden');
+  busy=false}
+ var mo=new MutationObserver(function(){requestAnimationFrame(sync)});
+ mo.observe(steps,{childList:true,subtree:true,attributes:true,attributeFilter:['class']});
+ mo.observe(B?ask:$('body'),{childList:true,characterData:true,subtree:true});
+ if(stepNo)mo.observe(stepNo,{childList:true,characterData:true,subtree:true});
+ sync();
+ /* 국어 덱: 앱이 본문을 키울 때(scale>1) 폭을 그만큼 줄여야 무대 밖으로 넘치지 않음(덮개의 고정 폭 규칙보다 앞서게 inline important) */
+ var ib=$('bodyWrap')&&$('body');
+ if(A&&ib)new MutationObserver(function(){var m=/scale\(([\d.]+)\)/.exec(ib.style.transform),g=m?+m[1]:1,v=g>1?(100/g).toFixed(3)+'%':'';
+  if(v&&(ib.style.getPropertyValue('width')!==v||ib.style.getPropertyPriority('width')!=='important'))ib.style.setProperty('width',v,'important')}).observe(ib,{attributes:true,attributeFilter:['style']});
+
+ /* 교과서 덱(사회 등): 한 화면 활동이 무대보다 조금 길면 본문을 80%까지 줄여 스크롤 없이 한눈에(앱이 스스로 키우는 국어는 빼고, 휴대폰은 스크롤 그대로) */
+ var sto=0,sb0=body;
+ function kids(){return [].filter.call(sb0.children,function(c){return !c.classList.contains('hs-moved')&&c.offsetParent!==null||c.style.zoom})}
+ function shrink(){if(!A||!sb0)return;if(ib&&/scale\(/.test(ib.style.transform||''))return;
+  var inner=sb0.id==='bodyWrap'?[ib]:kids();inner.forEach(function(c){c.style.zoom=''});
+  if(innerWidth<=900)return;var ch=sb0.clientHeight,sh=sb0.scrollHeight;if(sh-ch<=8||ch<200)return;
+  var cs=getComputedStyle(sb0),pad=parseFloat(cs.paddingTop)+parseFloat(cs.paddingBottom);
+  var z=Math.max(.8,Math.floor((ch-pad-6)/(sh-pad)*100)/100);inner.forEach(function(c){c.style.zoom=z});
+  for(var t=0;t<3&&z>.8&&sb0.scrollHeight-sb0.clientHeight>8;t++){z=Math.max(.8,Math.floor(z*(sb0.clientHeight-pad-6)/(sb0.scrollHeight-pad)*100)/100);inner.forEach(function(c){c.style.zoom=z})}}
+ function shrinkSoon(){clearTimeout(sto);sto=setTimeout(shrink,140)}
+ if(A&&sb0){new MutationObserver(function(ms){if(ms.some(function(m){return m.type==='childList'}))shrinkSoon()}).observe(sb0,{childList:true,subtree:true});addEventListener('resize',shrinkSoon);sb0.addEventListener('load',shrinkSoon,true);if(D.fonts)D.fonts.ready.then(shrinkSoon);shrinkSoon()}
+
+ /* 큰 화면은 1280×800 틀을 통째로 키움. 국어 덱은 무대 크기가 바뀌면 앱이 다시 맞추도록 resize를 한 번 알림 */
+ function kick(){setTimeout(function(){dispatchEvent(new Event('resize'))},30)}
+ function fit(){if(H.style.zoom)H.style.zoom='';/* 앱이 html을 키우는 것(사회 홍지희 버전)은 끄고 껍데기 확대 하나만 */var w=innerWidth,h=innerHeight,z=w<=900?1:Math.max(.8,Math.min(w/1280,h/800));H.style.setProperty('--hs-z',z.toFixed(3))}
+ new MutationObserver(function(){if(H.style.zoom)H.style.zoom=''}).observe(H,{attributes:true,attributeFilter:['style']});
+ addEventListener('resize',fit);fit();
+ try{if(localStorage.getItem('hj-board')==='1')setB(true)}catch(e){}
+ kick();
+})();
+
+/* ===== 수업 표지(첫 화면)도 같은 껍데기로 (2026-10-27) =====
+   남색 앱 막대 · 무대('오늘 배울 것' 머리띠 + 제목 · 학습 문제 · 핵심 질문 · 수업 흐름 카드 — 흐름은 한 번만) · 오른쪽 '오늘의 수업'(시간·단계 수 · 활동 단위 · 도구 · 사진 출처 · 수업 시작).
+   엔진은 표지 요소를 id로 찾아 글만 바꾸므로(cTitle·cGoal·cPlan·plan·cvGoal…) 노드째 옮김. */
+(function(){
+ var D=document,H=D.documentElement,$=function(i){return D.getElementById(i)};
+ var C=$('cover');if(!C||!H.classList.contains('hs')||C.querySelector('.hs-bar'))return;
+ var cv=C.classList.contains('hj-cv')?C:C.querySelector('.hj-cv');if(!cv)return;
+ var go=C.querySelector('#btnGo,#go');if(!go)return;
+ var NS='http://www.w3.org/2000/svg';
+ var P={play:'M8 5.5v13l10.5-6.5z',board:'M4 5h16v10H4zM8 19h8M12 15v4',lock:'M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3',spark:'M12 3v4M12 17v4M3 12h4M17 12h4M5.6 5.6l2.8 2.8M15.6 15.6l2.8 2.8M5.6 18.4l2.8-2.8M15.6 8.4l2.8-2.8',
+  book:'M4 5.5A2.5 2.5 0 0 1 6.5 3H20v15H6.5A2.5 2.5 0 0 0 4 20.5zM4 20.5A2.5 2.5 0 0 0 6.5 23H20',clock:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM12 7v5l3 2',users:'M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM2 21c0-3.9 3.1-7 7-7s7 3.1 7 7M16 3.2a4 4 0 0 1 0 7.6M22 21c0-3.2-2-5.9-5-6.7',flow:'M5 6h14M5 12h14M5 18h9'};
+ function ico(k){var s=D.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','hs-ico');s.setAttribute('aria-hidden','true');var p=D.createElementNS(NS,'path');p.setAttribute('d',P[k]);s.appendChild(p);return s}
+ function el(t,c,txt){var e=D.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e}
+ function clean(t){return (t||'').replace(/[\u{1F000}-\u{1FAFF}☀-➿⬀-⯿⌀-⏿️‍]/gu,'').replace(/\s+/g,' ').trim()}
+ function lab(k,t){var d=el('div','hs-sec');d.appendChild(ico(k));d.appendChild(D.createTextNode(t));return d}
+ C.classList.add('hs-root','hs-cover');
+
+ /* 앱 막대 */
+ var bar=el('div','hs-bar'),navBox=el('div','hs-nav');bar.appendChild(navBox);
+ function takeNav(){var n=C.querySelector('.hj-cvtop .hj-nav');if(!n)return false;while(n.firstChild)navBox.appendChild(n.firstChild);n.remove();return true}
+ if(!takeNav()){var no=new MutationObserver(function(){if(takeNav())no.disconnect()});no.observe(C,{childList:true,subtree:true});setTimeout(function(){no.disconnect()},5000)}
+ var h1=cv.querySelector('h1');
+ var ttl=el('div','hs-ttl');ttl.appendChild(el('b','',clean(h1?h1.textContent:D.title)));
+ var sub=C.querySelector('#cSub,#cvSub')||cv.querySelector(':scope>p.lead');ttl.appendChild(el('span','',clean(sub?sub.textContent:'')));
+ var tabs=el('div','hs-tabs'),tLes=el('button','hs-tab on');tLes.type='button';tLes.appendChild(ico('play'));tLes.appendChild(D.createTextNode('수업'));tabs.appendChild(tLes);
+ var qb=$('qb0');if(qb){var tQ=el('button','hs-tab');tQ.type='button';tQ.appendChild(ico('board'));tQ.appendChild(D.createTextNode('우리 반 판'));tQ.onclick=function(){qb.click()};tabs.appendChild(tQ)}
+ var tn=C.querySelector('#tOpen0,#tn0');
+ if(tn){var tT=el('button','hs-tab lk');tT.type='button';tT.title='선생님: 길게 눌러 열어요';tT.appendChild(ico('lock'));tT.appendChild(D.createTextNode('선생님'));
+  var tm=0;function up(){clearTimeout(tm);tT.classList.remove('hold')}
+  tT.addEventListener('pointerdown',function(){tT.classList.add('hold');tm=setTimeout(function(){up();tn.click()},700)});['pointerup','pointerleave','pointercancel'].forEach(function(k){tT.addEventListener(k,up)});
+  tT.addEventListener('keydown',function(e){if(e.key==='Enter'||e.key===' '){e.preventDefault();tn.click()}});tabs.appendChild(tT)}
+ bar.appendChild(ttl);bar.appendChild(tabs);
+
+ /* 무대 */
+ var main=el('div','hs-main'),stage=el('div','hs-stage'),now=el('div','hs-now'),tag=el('span','tag');tag.appendChild(ico('spark'));tag.appendChild(D.createTextNode('오늘 배울 것'));
+ now.appendChild(tag);if(h1){h1.classList.add('hs-ctitle');now.appendChild(h1)}
+ var sb=el('div','hs-sb hs-csb');
+ var badge=$('cBadge');if(badge){badge.classList.add('hs-badge');sb.appendChild(badge)}
+ var goal=C.querySelector('#cGoal,#cvGoal')||cv.querySelector('.hj-cvpanel>.qbox');if(goal){goal.classList.add('hs-cgoal');sb.appendChild(goal)}
+ var bq=$('cBq');if(bq){bq.classList.add('hs-cbq');sb.appendChild(bq)}
+ var plan=C.querySelector('#plan,#cPlan');
+ if(plan){var pw=el('div','hs-cflow');pw.appendChild(lab('flow','수업 흐름'));plan.classList.add('hs-plan');pw.appendChild(plan);sb.appendChild(pw)}
+ var ml=cv.querySelector('.hj-maplab'),map=$('cMap');if(map){var mw=el('div','hs-cmap');if(ml)mw.appendChild(ml);mw.appendChild(map);sb.appendChild(mw)}
+ stage.appendChild(now);stage.appendChild(sb);main.appendChild(stage);
+
+ /* 오른쪽: 오늘의 수업 */
+ var side=el('div','hs-side'),pan=el('div','hs-panel');
+ var pe=el('div','hs-pe');pe.appendChild(ico('book'));pe.appendChild(D.createTextNode('오늘의 수업'));pan.appendChild(pe);
+ var mins=0,nst=0;if(plan)[].forEach.call(plan.querySelectorAll('.st'),function(b){nst++;var m=/(\d+)\s*분/.exec(b.textContent);if(m)mins+=+m[1]});
+ var facts=el('div','hs-facts');
+ if(mins){var f1=el('div','hs-fact');f1.appendChild(el('b','',mins+'분'));f1.appendChild(el('span','','수업 시간'));facts.appendChild(f1)}
+ if(nst){var f2=el('div','hs-fact');f2.appendChild(el('b','',nst+'단계'));f2.appendChild(el('span','','수업 단계'));facts.appendChild(f2)}
+ if(facts.children.length)pan.appendChild(facts);
+ var seg=$('segTeam');if(seg){var sw=el('div','hs-cseg');sw.appendChild(lab('users','활동 단위 · 선생님이 골라요'));sw.appendChild(seg);pan.appendChild(sw)}
+ var pj=$('pjCard');if(pj){pj.classList.add('hs-cpj');pan.appendChild(pj)}
+ var dock=el('div','hs-dock'),tg=el('div','hs-tools');
+ [].forEach.call(cv.querySelectorAll('.hj-cvtools>button,.hj-cvtop>a.tolist'),function(b){if(b!==tn&&b!==qb)tg.appendChild(b)});
+ if(tn){tn.classList.add('hs-hidden');dock.appendChild(tn)}if(qb){qb.classList.add('hs-hidden');dock.appendChild(qb)}
+ if(tg.children.length)dock.appendChild(tg);
+ var phc=$('phc');if(phc){phc.classList.add('hs-phc');dock.appendChild(phc)}
+ var acts=el('div','hs-acts');go.classList.add('hs-next','hs-go');acts.appendChild(go);dock.appendChild(acts);
+ pan.appendChild(dock);side.appendChild(pan);
+ C.insertBefore(bar,C.firstChild);C.insertBefore(main,bar.nextSibling);C.insertBefore(side,main.nextSibling);
+ if(cv!==C)cv.classList.add('hs-hidden');
+})();
+
+/* ===== 수학 앱(교과서·이야기 버전, #app) — 같은 껍데기 (2026-10-27) =====
+   엔진이 화면마다 #app을 통째로 다시 그리므로(mount), 그릴 때마다 차시 화면(main.lesson)을 다시 배치:
+   위 머리줄 = 남색 앱 막대(CSS) · 개념 계단 = 위 단계 길 · 작업 = 무대('지금 할 일' 머리띠 = 안내 글, 질문 = 계단 이름)
+   · 오른쪽 '이 계단 안내'(계단 이름 · S.O.O.P. · 탐구 질문 · 이야기 · 차시 지도로/주소 복사 · 도움 · 다음 계단 · 맞음/틀림 알림). */
+(function(){
+ var D=document,H=D.documentElement,app=D.getElementById('app');
+ if(!app||H.getAttribute('data-hjsubj')!=='math'||H.classList.contains('hs'))return;
+ var NS='http://www.w3.org/2000/svg';
+ var P={pen:'M4 20l4-1L19 8l-3-3L5 16zM14 6l3 3',stairs:'M4 20h5v-5h5v-5h6V5',chevl:'M15 6l-6 6 6 6',chevr:'M9 6l6 6-6 6',expand:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',shrink:'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5'};
+ function ico(k){var s=D.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','hs-ico');s.setAttribute('aria-hidden','true');var p=D.createElementNS(NS,'path');p.setAttribute('d',P[k]);s.appendChild(p);return s}
+ function el(t,c,txt){var e=D.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e}
+ function clean(t){return (t||'').replace(/[\u{1F000}-\u{1FAFF}☀-➿⬀-⯿⌀-⏿️‍]/gu,'').replace(/\s+/g,' ').trim()}
+ H.classList.add('hs','hs-math');
+ function arrange(){var M=app.querySelector('main.lesson');if(!M||M.classList.contains('hs-ml'))return;
+  var stairs=M.querySelector('nav.stairs'),work=M.querySelector('section.work');if(!stairs||!work)return;
+  M.classList.add('hs-ml');
+  var path=el('div','hs-mpath');[].forEach.call(stairs.querySelectorAll('.stair'),function(b){var l=b.querySelector('.lbl');if(l){b.title=clean(l.textContent);l.textContent=clean(l.textContent).split(/\s+[—–-]\s+/)[0]}path.appendChild(b)});
+  var n=path.children.length,cur=[].findIndex.call(path.children,function(b){return b.classList.contains('cur')});
+  path.style.setProperty('--hs-p',n>1&&cur>0?cur/(n-1):0);path.style.setProperty('--hs-pl',(100/(2*Math.max(n,1)))+'%');
+  /* 무대 */
+  var stage=el('div','hs-stage'),now=el('div','hs-now'),tag=el('span','tag');tag.appendChild(ico('pen'));tag.appendChild(D.createTextNode('지금 할 일'));now.appendChild(tag);
+  var inst=work.querySelector(':scope>p.inst'),sh=work.querySelector(':scope>.stephead'),h2=sh&&sh.querySelector('h2');
+  var nm=h2?clean(h2.textContent).replace(/^(\d+|★)\.\s*/,''):'';
+  if(inst){inst.classList.add('hs-ask');now.appendChild(inst)}else now.appendChild(el('p','hs-ask',nm+' — 차례대로 해 봐요'));
+  var sb=el('div','hs-sb hs-msb');if(sh){sh.classList.add('hs-mhead');sb.appendChild(sh)}
+  /* 오른쪽 */
+  var side=el('div','hs-side'),pan=el('div','hs-panel'),pe=el('div','hs-pe');pe.appendChild(ico('stairs'));pe.appendChild(D.createTextNode('이 계단 안내'));pan.appendChild(pe);
+  pan.appendChild(el('div','hs-pt',nm));
+  var meta=el('div','hs-meta'),sp=stairs.querySelector('.soopb');if(sp){sp.classList.add('hs-rt');meta.appendChild(sp)}pan.appendChild(meta);
+  var q=work.querySelector(':scope>.q');if(q){var gq=el('div','hs-goal');gq.appendChild(el('small','','탐구 질문'));gq.appendChild(el('p','',clean(q.textContent).replace(/^탐구 질문\s*·\s*/,'')));pan.appendChild(gq);q.classList.add('hs-hidden')}
+  var sc=work.querySelector(':scope>.scene');if(sc){sc.classList.add('hs-mscene');pan.appendChild(sc)}
+  var ttl=stairs.querySelector('.title');if(ttl){var up=el('div','hs-up');up.appendChild(D.createTextNode('이 차시'));up.appendChild(el('b','',clean(ttl.textContent)));pan.appendChild(up)}
+  var dock=el('div','hs-dock'),tg=el('div','hs-tools');
+  [].forEach.call(stairs.querySelectorAll('button.back'),function(b){tg.appendChild(b)});
+  var acts=work.querySelector(':scope>.actions');
+  dock.appendChild(tg);if(acts){acts.classList.add('hs-macts');dock.appendChild(acts)}
+  /* v6 왼쪽 '수업 길'(2026-10-29): 탐구 질문·개념 정리·이 차시 + 세로 계단 목록(실제 계단 단추), 아래 막대 = 도구 · 이전/다음 계단 */
+  var rail=el('aside','hs-rail hs-mrail'),fold=el('button','hs-fold');fold.type='button';fold.onclick=function(){setR(!H.classList.contains('hs-rc'),true)};rail.appendChild(fold);
+  [].forEach.call(pan.querySelectorAll(':scope>.hs-goal,:scope>.hs-mscene,:scope>.hs-up'),function(x){rail.appendChild(x)});
+  if(meta.childNodes.length)now.appendChild(meta);
+  var bot=el('div','hs-bot');bot.appendChild(dock);
+  side.appendChild(pan);
+  while(work.firstChild)sb.appendChild(work.firstChild);
+  if(sh&&sh.parentNode!==sb)sb.insertBefore(sh,sb.firstChild);
+  stage.appendChild(now);stage.appendChild(sb);work.appendChild(stage);work.appendChild(bot);
+  stairs.innerHTML='';rail.insertBefore(path,rail.querySelector('.hs-mscene')||rail.querySelector('.hs-up'));stairs.classList.add('hs-hidden');
+  M.insertBefore(rail,M.firstChild);H.classList.add('hs-rl');setR(H.classList.contains('hs-rc'),false);
+ }
+ function setR(c,save){H.classList.toggle('hs-rc',c);[].forEach.call(D.querySelectorAll('.hs-fold'),function(f){f.setAttribute('aria-expanded',c?'false':'true');f.title=c?'수업 길 펼치기':'수업 길 접기';
+   f.innerHTML='';f.appendChild(ico(c?'chevr':'chevl'));f.appendChild(el('span','',c?'수업 길 펼치기':'수업 길 접기'))});if(save)try{localStorage.setItem('hj-rail',c?'c':'')}catch(e){}}
+ try{if(localStorage.getItem('hj-rail')==='c')H.classList.add('hs-rc')}catch(e){}
+ new MutationObserver(arrange).observe(app,{childList:true,subtree:true});arrange();
+ /* 큰 화면: 앱 막대·단계 길·머리띠·오른쪽 판을 1280 기준으로 비례해 키움(활동은 앱이 스스로 맞춤) */
+ function fit(){var w=innerWidth,h=innerHeight,z=w<=900?1:Math.max(1,Math.min(w/1280,h/800));H.style.setProperty('--hs-z',z.toFixed(3))}
+ addEventListener('resize',fit);fit();
+})();
+
+/* 과학 '한 화면' 앱: 색과 모양만 껍데기에 맞춤(크기는 그대로 — 쪽 나눔 불변) */
+(function(){var D=document,H=D.documentElement;if(!D.getElementById('ovBar')||H.classList.contains('hs'))return;H.classList.add('hs-sci');
+ /* v6 왼쪽 '수업 길'(2026-10-29 선생님: 과학 교과서도 같은 배치) — 쪽 나눔이 바뀌지 않게 본문 폭(1080px)을 줄이지 않는 자리에서만:
+    넓은 화면(1340px~)은 펼치거나 접기(기기에 기억 hj-rail), 1150~1339px은 접힌 64px(펼치면 본문 위에 떠서 열림), 그보다 좁으면 없음(위 단계 탭 그대로).
+    단계는 위 막대의 단계 탭을 그대로 누름(탭은 높이를 지키려고 감추기만 함) */
+ var tabs=[].slice.call(D.querySelectorAll('body>nav .wrap>a[href^="#s"]'));if(!tabs.length)return;
+ var NS='http://www.w3.org/2000/svg';function ico(d){var v=D.createElementNS(NS,'svg');v.setAttribute('viewBox','0 0 24 24');v.setAttribute('class','hs-ico');v.setAttribute('aria-hidden','true');var q=D.createElementNS(NS,'path');q.setAttribute('d',d);v.appendChild(q);return v}
+ function el(t,c,x){var e=D.createElement(t);if(c)e.className=c;if(x!=null)e.textContent=x;return e}
+ var rail=el('aside','hs-srail'),fold=el('button','hs-fold');fold.type='button';rail.setAttribute('aria-label','수업 길');
+ var goal=D.querySelector('main p.goal'),gt='';if(goal){var tmp=el('div');tmp.innerHTML=goal.innerHTML.replace(/<br\s*\/?>/gi,' ');gt=tmp.textContent.replace(/\s+/g,' ').replace(/^\s*🎯?\s*학습 목표\s*/,'').trim()}
+ rail.appendChild(fold);
+ if(gt){var g=el('div','hs-sgoal');g.appendChild(el('small','','학습 목표'));g.appendChild(el('p','',gt));rail.appendChild(g)}
+ var list=el('ol','hs-slist'),items=tabs.map(function(a,i){var li=el('li'),b=el('button','hs-sst');b.type='button';b.title=(a.title||a.textContent).trim();
+  b.appendChild(el('i','',String(i+1)));b.appendChild(el('b','',(a.title||a.textContent.replace(/^[①-⑳\d.\s]+/,'')).trim()));
+  b.onclick=function(){if(!H.classList.contains('hs-swide')&&!H.classList.contains('hs-rc'))setR(true,false);a.click()};li.appendChild(b);list.appendChild(li);return b});
+ rail.appendChild(list);D.body.appendChild(rail);H.classList.add('hs-srl');
+ function sync(){var cur=tabs.findIndex(function(a){return a.classList.contains('hj-cur')});items.forEach(function(b,i){b.classList.toggle('now',i===cur);b.classList.toggle('done',cur>-1&&i<cur);if(i===cur)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')})}
+ new MutationObserver(sync).observe(D.querySelector('body>nav'),{attributes:true,subtree:true,attributeFilter:['class']});sync();
+ function setR(c,save){H.classList.toggle('hs-rc',c);fold.setAttribute('aria-expanded',c?'false':'true');fold.title=c?'수업 길 펼치기':'수업 길 접기';fold.innerHTML='';fold.appendChild(ico(c?'M9 6l6 6-6 6':'M15 6l-6 6 6 6'));fold.appendChild(el('span','',c?'수업 길 펼치기':'수업 길 접기'));if(save)try{localStorage.setItem('hj-rail',c?'c':'')}catch(e){}}
+ fold.onclick=function(){setR(!H.classList.contains('hs-rc'),H.classList.contains('hs-swide'))};
+ function fit(){var w=innerWidth;H.classList.toggle('hs-swide',w>=1150);H.classList.toggle('hs-snone',w<1150);
+  if(w<1150){if(!H.classList.contains('hs-rc'))setR(true,false)}else{var c=false;try{c=localStorage.getItem('hj-rail')==='c'}catch(e){}setR(c,false)}}
+ /* 위 막대 제목(2026-10-29: 다른 교과처럼 막대 왼쪽에 수업 제목 + 학년·단원 한 줄) — 숨긴 단계 탭 자리에 겹쳐 놓아 막대 높이·쪽 나눔은 그대로 */
+ var nav=D.querySelector('body>nav'),tt=(D.title||'').split(/\s+·\s+/)[0].replace(/^\d+\.\s*/,'').trim();
+ if(nav&&tt){var ttl=el('div','hs-stitle');ttl.appendChild(el('b','',tt));var info=D.querySelector('.hj-sc-info');if(info)ttl.appendChild(el('small','',info.textContent.replace(/⁠/g,'').trim()));nav.appendChild(ttl);
+  /* 홈·자료 목록은 다른 쪽처럼 막대 왼쪽 맨 앞(2026-10-29 선생님: 메뉴 배치 통일) — CSS가 절대 위치로 옮기고, 제목은 그 뒤에서 시작 */
+  var room=function(){var r=nav.getBoundingClientRect(),hn=nav.querySelector('.wrap>.hj-nav'),t=nav.querySelector('.hj-sctools');
+   var L=24;if(hn&&H.classList.contains('hs-srl')&&getComputedStyle(hn).position==='absolute')L=hn.getBoundingClientRect().right-r.left+16;ttl.style.left=L+'px';
+   ttl.style.maxWidth=Math.max(120,(t?t.getBoundingClientRect().left:r.right)-r.left-L-16)+'px'};
+  addEventListener('resize',room);setTimeout(room,0);setTimeout(room,600)}
+ addEventListener('resize',fit);fit();
+ D.addEventListener('click',function(e){if(!H.classList.contains('hs-swide')&&!H.classList.contains('hs-rc')&&!e.target.closest('.hs-srail'))setR(true,false)});
+})();
+
+/* 그 밖의 앱: 덮개가 본문 맨 위에 둔 [홈 · 자료 목록](.hj-navbar)을 남색 앱 막대로(맨 위 전체 폭) + 제목 */
+(function(){var H=document.documentElement,D=document;
+ var SKIP=/^(초등교사 홍지희|기타|프로젝트|공통|수학게임|특색교육)$/;
+ function parts(){var t=(D.title||'').split(/\s+·\s+/).filter(function(x){return x&&!SKIP.test(x)});return t}
+ function go(){var w=D.querySelector('.hj-navbar');
+  if(!w){var tb=D.querySelector('section.screen.on>.topbar>.hj-nav');if(tb&&!H.classList.contains('hs')){H.classList.add('hs-et');return true}return false}
+  if(!w.querySelector('.hj-nav'))return false;
+  if(H.classList.contains('hs')||H.classList.contains('hs-math')||H.classList.contains('hs-sci'))return true;
+  H.classList.add('hs-e');w.classList.add('hs-ebar');
+  if(w.parentNode!==D.body||D.body.firstElementChild!==w)D.body.insertBefore(w,D.body.firstChild);
+  if(!w.querySelector('.hs-ettl')){var p=parts(),t=D.createElement('div');t.className='hs-ettl';
+   /* 본문 제목(h1)과 같으면 막대에는 방 이름만(2026-10-30 선생님: 제목이 세 번 반복) */
+   var h1=D.querySelector('main h1'),T=(p[0]||'').replace(/^\d+\.\s*/,'');
+   var same=h1&&h1.offsetParent&&h1.textContent.replace(/[\s\u2060]+/g,'').indexOf(T.replace(/[\s\u2060]+/g,''))>=0;if(same){T=p.length>1?p[p.length-1]:'';p=[T]}
+   if(T){var b=D.createElement('b');b.textContent=T;t.appendChild(b)}
+   if(p.length>1){var s=D.createElement('span');s.textContent=p.slice(1).join(' · ');t.appendChild(s)}
+   w.appendChild(t)}
+  /* 같은 방의 다른 쪽 단추 줄(tl-gnav 등)을 남색 막대 안으로(2026-10-29 선생님: 화면을 많이 차지) */
+  if(!w.querySelector('.hs-egnav')){var g=D.querySelector('main nav.tl-gnav,main nav.cr-gnav,main nav.mg-gnav,main nav.mp-gnav,main nav.dt-gr,main nav.wd-gr,main nav.hz-gr,main nav.ar-nav');
+   if(g&&(g.querySelectorAll('a').length>1||g.id==='arNav')){g.classList.add('hs-egnav');w.appendChild(g);var c=g.querySelector('a[aria-current],a.on');if(c&&g.scrollWidth>g.clientWidth)g.scrollLeft=c.offsetLeft-g.offsetLeft-(g.clientWidth-c.offsetWidth)/2}}
+  return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>40)clearInterval(iv)},100)}
+})();
+
+/* 왼쪽 차례 메뉴바(2026-10-29 선생님: 다른 교과 '수업 길'처럼) — 차례 막대(nav.mu-toc)가 있는 쪽(음악이론·세계시민교육).
+   넓은 화면(1200px 이상)에서만 왼쪽에 고정, 좁으면 원래 위 차례 막대 그대로 */
+(function(){var D=document,H=D.documentElement;
+ function go(){var toc=D.querySelector('main nav.mu-toc');if(!toc||D.querySelector('.hs-trail'))return !!toc;
+  var r=D.createElement('aside');r.className='hs-trail';r.setAttribute('aria-label','이 주제 차례');
+  var area=D.querySelector('main>.mu-area'),h1=D.querySelector('main>h1');
+  var h='<div class="hs-trh">'+(area?'<span class="hs-tra">'+area.textContent.trim()+'</span>':'')+'<b>'+(h1?h1.textContent.trim():'')+'</b></div><ol class="hs-trs">';
+  [].forEach.call(toc.querySelectorAll('a'),function(a,i){h+='<li><a href="'+a.getAttribute('href')+'"><span class="hs-trn">'+(i+1)+'</span><span>'+a.textContent.replace(/^\s*\S+\s+/,'').trim()+'</span></a></li>'});
+  h+='</ol>';var pn=D.querySelector('main nav.mu-pn'),all=D.querySelector('main nav.mu-all');
+  if(all){h+='<div class="hs-trall"><span class="hs-trk">모든 주제</span>'+all.innerHTML+'</div>';pn=null}
+  if(pn){h+='<div class="hs-trp">';[].forEach.call(pn.querySelectorAll('a'),function(a,i){h+='<a href="'+a.getAttribute('href')+'">'+(i?'다음 주제':'앞 주제')+'<small>'+a.textContent.replace(/[←→]/g,'').trim()+'</small></a>'});h+='</div>'}
+  r.innerHTML=h;D.body.appendChild(r);H.classList.add('hs-trailon');
+  var cur=r.querySelector('.hs-trall a[aria-current]'),box=r.querySelector('.hs-trall');if(cur)setTimeout(function(){box.scrollTop=cur.offsetTop-box.clientHeight/2},50);
+  var as=[].slice.call(r.querySelectorAll('.hs-trs a'));
+  function on(id){as.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+id)})}
+  if(window.IntersectionObserver){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)on(e.target.id)})},{rootMargin:'-30% 0px -60% 0px'});
+   as.forEach(function(a){var s=D.querySelector(a.getAttribute('href'));if(s)io.observe(s)})}
+  on('s1');
+  /* 위 남색 막대가 스크롤로 올라가면 메뉴바도 맨 위까지 */
+  var bar=D.querySelector('.hs-ebar');function fit(){var b=bar?bar.getBoundingClientRect().bottom:0;r.style.top=Math.max(0,b)+'px'}
+  fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>40)clearInterval(iv)},100)}
+})();
+
+/* 기초연산 왼쪽 메뉴바(2026-10-29 선생님 요청) — 넓은 화면에서 '이 쪽 차례'(영역·학년 묶음) + 다른 학년·영역 단추.
+   단추 줄(#arNav)은 넓은 화면에선 메뉴바 안으로, 좁으면 남색 막대 안 그대로 */
+(function(){var D=document,H=D.documentElement;if(H.getAttribute('data-hjbasic')!=='arith')return;
+ var r,list,navBox,bar,mq=window.matchMedia('(min-width:1200px)');
+ function heads(){return [].filter.call(D.querySelectorAll('#arPick h2.ar-gh,#rkPick h2'),function(h){return h.textContent.trim()})}
+ function draw(){if(!r)return;var hs=heads(),h='';
+  hs.forEach(function(x,i){x.id=x.id||('ar-sec'+i);h+='<li><a href="#'+x.id+'"><span class="hs-trn">'+(i+1)+'</span><span>'+x.textContent.replace(/^[^\w가-힣]+/,'').replace(/⁠/g,'').trim()+'</span></a></li>'});
+  list.innerHTML=h;list.hidden=!hs.length;spy()}
+ var io=null;function spy(){if(io)io.disconnect();if(!window.IntersectionObserver)return;var as=[].slice.call(list.querySelectorAll('a'));
+  io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)as.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)})})},{rootMargin:'-20% 0px -70% 0px'});
+  as.forEach(function(a){var s=D.getElementById(a.getAttribute('href').slice(1));if(s)io.observe(s)});if(as[0])as[0].classList.add('on')}
+ function place(){var nav=D.getElementById('arNav');if(!nav)return;
+  if(mq.matches){if(nav.parentNode!==navBox)navBox.appendChild(nav)}else{var eb=D.querySelector('.hs-ebar');if(eb&&nav.parentNode!==eb)eb.appendChild(nav)}}
+ function go(){var nav=D.getElementById('arNav'),h1=D.querySelector('main>h1');if(!nav||!h1||!D.querySelector('.hs-ebar'))return false;
+  r=D.createElement('aside');r.className='hs-trail hs-artrail';r.setAttribute('aria-label','기초연산 차례');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">기초연산</span><b>'+h1.textContent.trim()+'</b></div><ol class="hs-trs"></ol><div class="hs-arnav"><span class="hs-trk">다른 쪽</span></div>';
+  D.body.appendChild(r);H.classList.add('hs-trailon');list=r.querySelector('.hs-trs');navBox=r.querySelector('.hs-arnav');bar=D.querySelector('.hs-ebar');
+  list.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var pick=D.getElementById('arPick')||D.getElementById('rkPick');
+   if(pick&&pick.hidden){e.preventDefault();var bk=D.getElementById('skBack')||D.getElementById('lvBack');if(bk)bk.click();setTimeout(function(){var t=D.getElementById(a.getAttribute('href').slice(1));if(t)t.scrollIntoView()},60)}});
+  draw();place();(mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));
+  var tgt=D.getElementById('arList')||D.getElementById('rkList');if(tgt&&window.MutationObserver)new MutationObserver(function(){draw()}).observe(tgt,{childList:true});
+  function fit(){var b=bar?bar.getBoundingClientRect().bottom:0;r.style.top=Math.max(0,b)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);
+  return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
+})();
+
+/* 교과수학게임 왼쪽 메뉴바(2026-10-29 선생님: 다른 방과 디자인 통일) — 넓은 화면에서 '무엇을 연습할까요'와 다른 학년을 기초연산처럼 왼쪽에 */
+(function(){var D=document,H=D.documentElement,mq=window.matchMedia('(min-width:1200px)'),r,sec,home,gn,gnHome;
+ function place(){if(!r)return;if(mq.matches){if(sec.parentNode!==r.querySelector('.hs-mgbody'))r.querySelector('.hs-mgbody').appendChild(sec);if(gn&&gn.parentNode!==r.querySelector('.hs-arnav'))r.querySelector('.hs-arnav').appendChild(gn);H.classList.add('hs-trailon')}
+  else{if(sec.parentNode!==home.p)home.p.insertBefore(sec,home.n);if(gn&&gnHome&&gn.parentNode!==gnHome)gnHome.appendChild(gn);H.classList.remove('hs-trailon')}}
+ function go(){var u=D.getElementById('mgUnits'),bar=D.querySelector('.hs-ebar');if(!u||!bar)return !!(u&&D.readyState==='complete'&&!bar);
+  sec=u.closest('.mg-sec');home={p:sec.parentNode,n:sec.nextSibling};gn=D.querySelector('nav.mg-gnav');gnHome=gn&&gn.parentNode;
+  var h1=D.querySelector('main>h1');r=D.createElement('aside');r.className='hs-trail hs-artrail hs-mgrail';r.setAttribute('aria-label','무엇을 연습할까요');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">교과수학게임</span><b>'+(h1?h1.textContent.trim():'')+'</b></div><div class="hs-mgbody"></div><div class="hs-arnav"><span class="hs-trk">다른 학년</span></div>';
+  D.body.appendChild(r);place();(mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));
+  function fit(){var b=bar.getBoundingClientRect().bottom;r.style.top=Math.max(0,b)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
+ if(!/\/project\/mathgame\/g\d\.html$/.test(location.pathname))return;
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
+})();
+
+/* 추천도서 왼쪽 메뉴바(2026-10-29 선생님 요청) — 넓은 화면에서 거르기(학년·갈래·보기) + 이 목록 묶음 차례 + 다른 목록 */
+(function(){var D=document,H=D.documentElement;if(!/\/project\/reading\/[^\/]+\.html$/.test(location.pathname)||/index\.html$/.test(location.pathname))return;
+ var mq=window.matchMedia('(min-width:1200px)'),r,chips,home,list,io;
+ function heads(){return [].slice.call(D.querySelectorAll('#rdList h2.rd-grp'))}
+ function draw(){if(!r)return;var hs=heads(),h='';hs.forEach(function(x,i){x.id='rd-sec'+i;var t=x.cloneNode(true),sm=t.querySelector('small'),n=sm?sm.textContent.trim():'';if(sm)sm.remove();
+   h+='<li><a href="#'+x.id+'"><span class="hs-trn">'+(i+1)+'</span><span>'+t.textContent.replace(/^[^\w가-힣]+/,'').trim()+(n?' <small>'+n+'</small>':'')+'</span></a></li>'});
+  list.innerHTML=h;list.hidden=!hs.length;if(io)io.disconnect();if(!window.IntersectionObserver)return;var as=[].slice.call(list.querySelectorAll('a'));
+  io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)as.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)})})},{rootMargin:'-20% 0px -70% 0px'});
+  hs.forEach(function(x){io.observe(x)});if(as[0])as[0].classList.add('on')}
+ function place(){if(!r||!chips)return;var box=r.querySelector('.hs-rdf');
+  if(mq.matches){if(chips.parentNode!==box)box.appendChild(chips);H.classList.add('hs-trailon')}else{if(chips.parentNode!==home.p)home.p.insertBefore(chips,home.n);H.classList.remove('hs-trailon')}}
+ function go(){var bar=D.querySelector('.hs-ebar'),h1=D.querySelector('main>h1');if(!bar||!h1)return false;
+  chips=D.getElementById('rdChips');if(chips)home={p:chips.parentNode,n:chips.nextSibling};var all=D.querySelector('main nav.rd-all');
+  r=D.createElement('aside');r.className='hs-trail hs-rdrail';r.setAttribute('aria-label','추천도서 차례');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">독서교육</span><b>'+h1.textContent.trim()+'</b></div>'+(chips?'<div class="hs-rdf"><span class="hs-trk">고르기</span></div>':'')+
+   '<ol class="hs-trs"></ol>'+(all?'<div class="hs-trall"><span class="hs-trk">다른 목록</span>'+all.innerHTML+'</div>':'');
+  D.body.appendChild(r);list=r.querySelector('.hs-trs');draw();place();(mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));
+  var tg=D.getElementById('rdList');if(tg&&window.MutationObserver)new MutationObserver(draw).observe(tg,{childList:true});
+  function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
+})();
+
+/* 쉬는 시간 학년 쪽 왼쪽 메뉴바(2026-10-29 선생님 요청) — 미로찾기·종이접기·컬러링·틀린 그림 찾기·스도쿠의 g1~g6.
+   목록 화면에서만 보임(문제·작품을 열면 판을 넓게 쓰려고 숨김). 항목: 쉬움·보통·도전 묶음(종이접기는 작품 이름), 다른 학년 */
+(function(){var D=document,H=D.documentElement,m=location.pathname.match(/\/break\/(maze|origami|coloring|spot|sudoku)\/g(\d)\.html$/);if(!m)return;
+ var NM={maze:'미로찾기',origami:'종이접기',coloring:'컬러링',spot:'틀린 그림 찾기',sudoku:'스도쿠'}[m[1]],G=+m[2],mq=window.matchMedia('(min-width:1200px)'),r,list,bar,io,sig='';
+ function items(){var hs=[].filter.call(D.querySelectorAll('main h3'),function(h){var g=h.nextElementSibling;return g&&/grid|list/.test(g.className)&&(h.offsetParent||(h.classList.contains('hs-broff')&&h.parentNode.offsetParent))&&!h.closest('.hs-trail')});
+  if(hs.length)return hs.map(function(h,i){h.id=h.id||('br-sec'+i);var t=h.cloneNode(true),sm=t.querySelector('small,span');var full=h.textContent.replace(/⁠/g,'').trim();var a=full.split(/\s*·\s*/);return {id:h.id,t:a[0],s:a.slice(1).join(' · ')}});
+  return [].filter.call(D.querySelectorAll('main .og-card'),function(c){return c.offsetParent}).map(function(c,i){c.id=c.id||('br-card'+i);var n=c.querySelector('.nm');return {id:c.id,t:n?n.textContent.trim():'',s:''}})}
+ function draw(){var it=items(),k=it.map(function(x){return x.id+x.t}).join('|');
+  var pk=D.getElementById('sdPick'),listView=m[1]==='sudoku'?!!(pk&&pk.offsetParent):it.length>0;
+  H.classList.toggle('hs-trailon',mq.matches&&listView);r.hidden=!(mq.matches&&listView);if(k===sig)return;sig=k;
+  list.innerHTML=it.map(function(x,i){return '<li><a href="#'+x.id+'"><span class="hs-trn">'+(i+1)+'</span><span>'+x.t+(x.s?'<small>'+x.s+'</small>':'')+'</span></a></li>'}).join('');list.hidden=!it.length;
+  if(io)io.disconnect();if(!window.IntersectionObserver)return;var as=[].slice.call(list.querySelectorAll('a'));
+  io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)as.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)})})},{rootMargin:'-20% 0px -70% 0px'});
+  it.forEach(function(x){var el=D.getElementById(x.id);if(el)io.observe(el)});if(as[0])as[0].classList.add('on');one()}
+ /* (2026-10-30 선생님: '쉬움' 같은 같은 묶음 단추가 한 화면에 다 보이게) 메뉴바가 있으면 고른 묶음(h3) 하나만 보이고, 작은 칸으로 촘촘히 */
+ var cur=null;
+ function one(){var hs=[].filter.call(D.querySelectorAll('main h3'),function(h){return !h.closest('.hs-trail')&&(h.nextElementSibling&&/grid|list/.test(h.nextElementSibling.className))});
+  hs=hs.filter(function(h){return h.offsetParent||(h.classList.contains('hs-broff')&&h.parentNode.offsetParent)});var on=mq.matches&&hs.length>1&&!r.hidden;H.classList.toggle('hs-brone',on);
+  if(!cur||!D.getElementById(cur))cur=hs[0]&&hs[0].id;
+  if(on)[].forEach.call(D.querySelectorAll('main :is(.mz-q,.sd-q):not([title])'),function(q){var sp=q.querySelector('span');if(sp)q.title=sp.textContent.trim()});
+  hs.forEach(function(h){var off=on&&h.id!==cur;h.classList.toggle('hs-broff',off);h.nextElementSibling.classList.toggle('hs-broff',off)});
+  if(list)[].forEach.call(list.querySelectorAll('a'),function(a){if(on)a.classList.toggle('on',a.getAttribute('href')==='#'+cur)})}
+ D.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.hs-brlist a');if(!a||!H.classList.contains('hs-brone'))return;e.preventDefault();cur=a.getAttribute('href').slice(1);one();scrollTo(0,0)});
+ function go(){bar=D.querySelector('.hs-ebar');if(!bar||!D.querySelector('main'))return false;
+  var gn='';for(var g=1;g<=6;g++)gn+='<a href="g'+g+'.html"'+(g===G?' aria-current="page"':'')+'>'+g+'학년</a>';
+  r=D.createElement('aside');r.className='hs-trail hs-artrail hs-brrail hs-br-'+m[1];r.setAttribute('aria-label',NM+' 차례');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">쉬는 시간 · '+NM+'</span><b>'+G+'학년 '+NM+'</b></div><ol class="hs-trs hs-brlist"></ol><div class="hs-arnav"><span class="hs-trk">다른 학년</span><nav class="hs-brg">'+gn+'</nav><a class="hs-brup" href="'+'index.html">'+NM+' 처음으로</a></div>';
+  D.body.appendChild(r);list=r.querySelector('.hs-trs');draw();setInterval(function(){draw();one()},500);(mq.addEventListener?mq.addEventListener('change',draw):mq.addListener(draw));
+  function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
+})();
+
+/* 받아쓰기·속담 왼쪽 메뉴바(2026-10-29 선생님 요청) — 넓은 화면에서 '단계 고르기'(종류·단계)와 다른 학년·영역을 왼쪽에 */
+(function(){var D=document,H=D.documentElement,m=location.pathname.match(/\/common\/(dictation)\/g(\d)\.html$|\/common\/(words)\/(proverb|idiom|saja)\.html$/);if(!m)return;
+ var dict=!!m[1],mq=window.matchMedia('(min-width:1200px)'),r,lv,lvHome,gn,gnHome,bar;
+ function place(){if(!r)return;var a=r.querySelector('.hs-dtlv'),b=r.querySelector('.hs-arnav');
+  if(mq.matches){if(lv&&lv.parentNode!==a)a.appendChild(lv);if(gn&&gn.parentNode!==b)b.appendChild(gn);H.classList.add('hs-trailon');r.hidden=false}
+  else{if(lv&&lv.parentNode!==lvHome.p)lvHome.p.insertBefore(lv,lvHome.n);if(gn&&gnHome&&gn.parentNode!==gnHome)gnHome.appendChild(gn);H.classList.remove('hs-trailon');r.hidden=true}}
+ function go(){bar=D.querySelector('.hs-ebar');lv=D.getElementById(dict?'dtLv':'wdLv');gn=D.querySelector(dict?'nav.dt-gr':'nav.wd-gr');if(!bar||!lv||!lv.children.length)return false;
+  lvHome={p:lv.parentNode,n:lv.nextSibling};gnHome=gn&&gn.parentNode;var h1=D.querySelector('main>h1');
+  r=D.createElement('aside');r.className='hs-trail hs-artrail hs-dtrail';r.setAttribute('aria-label','단계 고르기');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">'+(dict?'받아쓰기·맞춤법':'속담·관용어·사자성어')+'</span><b>'+(h1?h1.textContent.trim():'')+'</b></div><div class="hs-dtlv"><span class="hs-trk">단계 고르기</span></div><div class="hs-arnav"><span class="hs-trk">'+(dict?'다른 학년':'다른 영역')+'</span></div>';
+  D.body.appendChild(r);place();(mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));
+  function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
+ var n=0,iv=setInterval(function(){if(go()||++n>60)clearInterval(iv)},100);
+})();
+
+/* 체스 학습관 마당 쪽 왼쪽 메뉴바(2026-10-30 선생님 요청) — 단원 목록(누르면 그 단원으로), 차시·시험 화면에서는 판을 넓게 쓰려고 숨김 */
+(function(){var D=document,H=D.documentElement,m=location.pathname.match(/\/special\/chess\/m(\d)\.html$/);if(!m)return;
+ var mq=window.matchMedia('(min-width:1200px)'),r,list,bar,sig='';
+ function secs(){return [].filter.call(D.querySelectorAll('main section.cs-unit'),function(s){return s.querySelector('h2.cs-uh')})}
+ function draw(){var ss=secs(),vis=ss.some(function(s){return s.offsetParent})&&!D.body.classList.contains('cs-inlesson');
+  var on=mq.matches&&vis;H.classList.toggle('hs-trailon',on);r.hidden=!on;if(!on)return;
+  var k=ss.length+'';if(k!==sig){sig=k;list.innerHTML=ss.map(function(s,i){s.id=s.id||('cs-u'+i);var h=s.querySelector('h2.cs-uh'),tag=h.querySelector('span,small,em,b'),t=h.textContent.trim();
+   var nums=[].map.call(s.querySelectorAll('.cs-no'),function(x){return +x.textContent}).filter(function(n){return n>0&&n<200});
+   var sub=nums.length?(Math.min.apply(null,nums)+'~'+Math.max.apply(null,nums)+'차시'):'';
+   var nm=t.replace(/^(\d+단원|마무리)\s*/,'');var lab=(t.match(/^(\d+단원|마무리)/)||[''])[0];
+   return '<li><a href="#'+s.id+'"><span class="hs-trn">'+(lab.match(/\d+/)?lab.match(/\d+/)[0]:'✓')+'</span><span>'+nm+(sub?'<small>'+sub+'</small>':'')+'</span></a></li>'}).join('')}
+  var as=[].slice.call(list.querySelectorAll('a')),cur=null;ss.forEach(function(s,i){if(s.getBoundingClientRect().top<innerHeight*0.35)cur=i});if(cur===null)cur=0;
+  as.forEach(function(a,i){a.classList.toggle('on',i===cur)})}
+ function go(){bar=D.querySelector('.hs-ebar');if(!bar||!secs().length)return false;
+  r=D.createElement('aside');r.className='hs-trail hs-artrail hs-brrail hs-cstrail';r.setAttribute('aria-label','단원 차례');
+  r.innerHTML='<ol class="hs-trs hs-brlist"></ol><div class="hs-arnav"><a class="hs-brup" href="'+'index.html">체스 학습관 처음으로</a></div>';
+  D.body.appendChild(r);list=r.querySelector('.hs-trs');list.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;e.preventDefault();var t=D.getElementById(a.getAttribute('href').slice(1));if(t)scrollTo({top:t.getBoundingClientRect().top+scrollY-bar.getBoundingClientRect().bottom-12,behavior:'smooth'})});draw();setInterval(draw,400);addEventListener('scroll',draw,{passive:true});
+  function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',function(){fit();draw()});return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
+})();
