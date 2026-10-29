@@ -91,7 +91,7 @@ footer.hjfoot{display:block;width:100%;margin:40px 0 0;padding:16px 0 4px;border
 .hjfoot p{margin:2px 0}
 
 /* 창 */
-#win{position:fixed;inset:0;z-index:50;background:var(--bg);display:flex;flex-direction:column}
+#win{position:fixed;inset:0;z-index:70;background:var(--bg);display:flex;flex-direction:column}
 #win[hidden]{display:none}
 .wbar{display:flex;align-items:center;gap:.6rem;padding:.45rem clamp(10px,1.6vw,22px);border-bottom:1.5px solid var(--line);background:var(--soft-acc)}
 .wbar h2{margin:0;font-size:1.5rem;display:flex;align-items:center;gap:.5rem;min-width:0}
@@ -202,10 +202,52 @@ canvas{touch-action:none;display:block}
 .dsp div{font-size:1.35rem;font-family:var(--display);padding:.45rem .6rem;border-bottom:1px dashed var(--line);display:flex;gap:.6rem;align-items:center}
 .dsp div small{color:var(--soft);font-size:.8rem;width:1.8rem}
 .dsp.show i{color:#c2453b;font-style:normal;font-weight:800}
+
+/* ───── 메뉴와 같은 틀(2026-10-29 선생님 요청): 위 머리 막대 · 남색 제목 띠 · 판 안의 항목 · 남색 꼬리말 ─────
+   머리 막대·제목 띠·꼬리말 모양은 build.py가 메뉴 덮개(theme.css)에서 그대로 가져와 아래 자리에 넣음 */
+/*SITECSS*/
+html main{max-width:1180px;margin:0 auto;padding:0 clamp(16px,3vw,40px)}
+html.m-tv main,html.m-tv .hj-top-in{max-width:1500px}
+.hj-hero .bar{position:static;z-index:auto;display:flex;align-items:center;gap:.6rem;flex-wrap:wrap;margin:24px 0 0;padding:0;background:none;border:0;-webkit-backdrop-filter:none;backdrop-filter:none}
+.hj-hero .bar .clock{color:#fff;font-family:var(--body);font-weight:800;letter-spacing:-.03em;font-size:clamp(2.3rem,4.2vw,3.4rem)}
+.hj-hero .bar .date{color:var(--on-navy2);font-family:var(--body);font-weight:600;margin-right:.4rem}
+.hj-hero .bar .date b{color:#fff;font-weight:700}
+.hj-hero .chip{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;font-family:var(--body);font-weight:600}
+.hj-hero button.chip:hover{background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.32)}
+.hj-hero .chip.now{background:color-mix(in srgb,var(--acc) 30%,transparent);border-color:color-mix(in srgb,var(--acc) 60%,transparent);font-weight:700}
+.hj-hero .chip.next{color:var(--on-navy2)}
+.hj-hero .chip.next b{color:#fff}
+.hj-hero .chip.timer{background:#FDE7DA;border-color:#F0B48F;color:#3B2414}
+.hj-hero .chip :focus-visible,.hj-hero .chip:focus-visible{outline-color:#9DBBFF}
+body.teacher .hj-hero .tbtn{background:#fff;color:var(--navy);border-color:#fff}
+.hj-hero .sub{margin:12px 0 0}
+#bar>.hj-nav,#hj-home{display:none!important}
+/* 오늘 한눈에 · 메뉴 판 */
+.widgets{gap:16px;margin-bottom:8px}
+.wg{border:1px solid var(--line);border-radius:18px;box-shadow:var(--sh-s);padding:1rem 1.15rem}
+.wg.notice{background:var(--paper);border-top:3px solid var(--acc)}
+.bday{border-radius:16px;border:1px solid var(--line);box-shadow:var(--sh-s)}
+.grp{margin:0}
+.grp>h2{display:flex;align-items:center;gap:12px;font-family:var(--body);font-weight:800;letter-spacing:-.025em;font-size:clamp(1.15rem,1.9vw,1.45rem);margin:clamp(30px,3.6vw,46px) 0 14px}
+.grp>h2::before{content:"";flex:none;width:5px;height:.95em;border-radius:3px;background:var(--ink)}
+.grp>h2::after{content:"";flex:1;height:1px;background:var(--line);margin-left:6px}
+.icons{background:var(--paper);border:1px solid var(--line);border-radius:24px;padding:10px;gap:4px;
+ box-shadow:0 1px 2px rgba(15,28,51,.04),0 24px 48px -32px rgba(15,28,51,.28)}
+.ic{border:0;border-radius:16px;background:transparent;padding:.9rem .4rem .8rem}
+.ic:hover{transform:none;border:0;box-shadow:none;background:color-mix(in srgb,var(--acc) 8%,var(--bg))}
+.ic .e{border-radius:50%;width:3.1rem;height:3.1rem}
+.ic .n{font-family:var(--body);font-weight:700;letter-spacing:-.02em}
+.ic.off::after{background:var(--bg2);color:var(--soft)}
+@media (max-width:640px){.hj-hero .bar .clock{font-size:2.1rem}}
+@media print{.hj-hero,.hj-top{display:none!important}}
 </style>
 <style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}@media print{.hj-contact a{border:0;padding:0}}</style>
 </head><body class="mix">
-<header class="bar mix" id="bar">
+<!--HJTOP-->
+<main>
+ <div class="hj-hero"><div class="hj-hero-in">
+  <h1 id="title">우리 반 교실</h1><p class="sub" id="hello">오늘도 반가워요!</p>
+  <header class="bar" id="bar">
  <div class="clock" id="clk">--:--</div>
  <div class="date" id="dt"></div>
  <span class="chip now" id="nowc"></span>
@@ -215,8 +257,7 @@ canvas{touch-action:none;display:block}
  <button class="chip" id="fsb" type="button" aria-label="전체 화면">⛶ 전체 화면</button>
  <button class="chip tbtn" id="tb" type="button">🔒 선생님</button>
 </header>
-<main>
- <div class="hello"><h1 id="title">우리 반 교실</h1><p id="hello">오늘도 반가워요!</p></div>
+ </div></div>
  <button class="bday" id="bday" type="button" data-open="birthday" hidden></button>
  <section class="widgets" aria-label="오늘 한눈에">
   <div class="wg notice"><h2>📢 오늘의 안내<button class="btn sm ed t-only" data-edit="notice" type="button">✏️ 고치기</button></h2><div class="body" id="w-notice"></div>
@@ -226,7 +267,7 @@ canvas{touch-action:none;display:block}
   <div class="wg"><h2>✅ 할 일 · 준비물<button class="btn sm ed t-only" data-edit="todo" type="button">✏️</button></h2><div id="w-todo"></div></div>
  </section>
  <div id="groups"></div>
- <footer class="hjfoot"><p>교실 화면과 학생 기기에서 함께 쓰는 우리 반 바탕화면입니다. 적은 내용은 이 기기에만 저장돼요.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer>
+ <footer class="hjfoot"><!--HJFB--><p>교실 화면과 학생 기기에서 함께 쓰는 우리 반 바탕화면입니다. 적은 내용은 이 기기에만 저장돼요.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer>
 </main>
 <section id="win" class="mix" hidden role="dialog" aria-modal="true" aria-labelledby="wt">
  <div class="wbar"><h2 id="wt"></h2><span class="sp"></span><span class="wclock" id="wclk"></span>
@@ -240,4 +281,5 @@ canvas{touch-action:none;display:block}
 <script>
 /*APPJS*/
 </script>
+<script>/*TOPJS*/</script>
 </body></html>
