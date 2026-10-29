@@ -313,9 +313,11 @@
   var area=D.querySelector('main>.mu-area'),h1=D.querySelector('main>h1');
   var h='<div class="hs-trh">'+(area?'<span class="hs-tra">'+area.textContent.trim()+'</span>':'')+'<b>'+(h1?h1.textContent.trim():'')+'</b></div><ol class="hs-trs">';
   [].forEach.call(toc.querySelectorAll('a'),function(a,i){h+='<li><a href="'+a.getAttribute('href')+'"><span class="hs-trn">'+(i+1)+'</span><span>'+a.textContent.replace(/^\s*\S+\s+/,'').trim()+'</span></a></li>'});
-  h+='</ol>';var pn=D.querySelector('main nav.mu-pn');
+  h+='</ol>';var pn=D.querySelector('main nav.mu-pn'),all=D.querySelector('main nav.mu-all');
+  if(all){h+='<div class="hs-trall"><span class="hs-trk">모든 주제</span>'+all.innerHTML+'</div>';pn=null}
   if(pn){h+='<div class="hs-trp">';[].forEach.call(pn.querySelectorAll('a'),function(a,i){h+='<a href="'+a.getAttribute('href')+'">'+(i?'다음 주제':'앞 주제')+'<small>'+a.textContent.replace(/[←→]/g,'').trim()+'</small></a>'});h+='</div>'}
   r.innerHTML=h;D.body.appendChild(r);H.classList.add('hs-trailon');
+  var cur=r.querySelector('.hs-trall a[aria-current]'),box=r.querySelector('.hs-trall');if(cur)setTimeout(function(){box.scrollTop=cur.offsetTop-box.clientHeight/2},50);
   var as=[].slice.call(r.querySelectorAll('.hs-trs a'));
   function on(id){as.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+id)})}
   if(window.IntersectionObserver){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)on(e.target.id)})},{rootMargin:'-30% 0px -60% 0px'});
@@ -325,4 +327,30 @@
   var bar=D.querySelector('.hs-ebar');function fit(){var b=bar?bar.getBoundingClientRect().bottom:0;r.style.top=Math.max(0,b)+'px'}
   fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
  if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>40)clearInterval(iv)},100)}
+})();
+
+/* 기초연산 왼쪽 메뉴바(2026-10-29 선생님 요청) — 넓은 화면에서 '이 쪽 차례'(영역·학년 묶음) + 다른 학년·영역 단추.
+   단추 줄(#arNav)은 넓은 화면에선 메뉴바 안으로, 좁으면 남색 막대 안 그대로 */
+(function(){var D=document,H=D.documentElement;if(H.getAttribute('data-hjbasic')!=='arith')return;
+ var r,list,navBox,bar,mq=window.matchMedia('(min-width:1200px)');
+ function heads(){return [].filter.call(D.querySelectorAll('#arPick h2.ar-gh,#rkPick h2'),function(h){return h.textContent.trim()})}
+ function draw(){if(!r)return;var hs=heads(),h='';
+  hs.forEach(function(x,i){x.id=x.id||('ar-sec'+i);h+='<li><a href="#'+x.id+'"><span class="hs-trn">'+(i+1)+'</span><span>'+x.textContent.replace(/^[^\w가-힣]+/,'').replace(/⁠/g,'').trim()+'</span></a></li>'});
+  list.innerHTML=h;list.hidden=!hs.length;spy()}
+ var io=null;function spy(){if(io)io.disconnect();if(!window.IntersectionObserver)return;var as=[].slice.call(list.querySelectorAll('a'));
+  io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)as.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)})})},{rootMargin:'-20% 0px -70% 0px'});
+  as.forEach(function(a){var s=D.getElementById(a.getAttribute('href').slice(1));if(s)io.observe(s)});if(as[0])as[0].classList.add('on')}
+ function place(){var nav=D.getElementById('arNav');if(!nav)return;
+  if(mq.matches){if(nav.parentNode!==navBox)navBox.appendChild(nav)}else{var eb=D.querySelector('.hs-ebar');if(eb&&nav.parentNode!==eb)eb.appendChild(nav)}}
+ function go(){var nav=D.getElementById('arNav'),h1=D.querySelector('main>h1');if(!nav||!h1||!D.querySelector('.hs-ebar'))return false;
+  r=D.createElement('aside');r.className='hs-trail hs-artrail';r.setAttribute('aria-label','기초연산 차례');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">기초연산</span><b>'+h1.textContent.trim()+'</b></div><ol class="hs-trs"></ol><div class="hs-arnav"><span class="hs-trk">다른 쪽</span></div>';
+  D.body.appendChild(r);H.classList.add('hs-trailon');list=r.querySelector('.hs-trs');navBox=r.querySelector('.hs-arnav');bar=D.querySelector('.hs-ebar');
+  list.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;var pick=D.getElementById('arPick')||D.getElementById('rkPick');
+   if(pick&&pick.hidden){e.preventDefault();var bk=D.getElementById('skBack')||D.getElementById('lvBack');if(bk)bk.click();setTimeout(function(){var t=D.getElementById(a.getAttribute('href').slice(1));if(t)t.scrollIntoView()},60)}});
+  draw();place();(mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));
+  var tgt=D.getElementById('arList')||D.getElementById('rkList');if(tgt&&window.MutationObserver)new MutationObserver(function(){draw()}).observe(tgt,{childList:true});
+  function fit(){var b=bar?bar.getBoundingClientRect().bottom:0;r.style.top=Math.max(0,b)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);
+  return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
 })();

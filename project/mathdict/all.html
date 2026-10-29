@@ -1146,6 +1146,9 @@ html body .hj-grtag small{font-size:12px;font-weight:600;color:var(--soft)}
 @media screen{html.hj-mroom{--acc:#9A520C!important}
 @media (prefers-color-scheme:dark){html.hj-mroom:not([data-theme="light"]){--acc:#E39B55!important}}
 html.hj-mroom[data-theme="dark"]{--acc:#E39B55!important}}
+/* 소개 글 줄바꿈(2026-10-29 선생님: 마지막 줄에 한두 낱말만 떨어지는 것) — 폭 제한을 풀고 마지막 줄이 짧지 않게 */
+@media screen{html body main p.sub,html body main .tl-head .sub,html body main .sub{max-width:none!important;text-wrap:pretty}
+html body main h1,html body main h2,html body main h3{text-wrap:balance}}
 
 /* ===== 수업 스튜디오 껍데기 v4 (2026-10-27 선생님: '디자인 구성 자체를 다시') =====
    디자인팀 두 시안 + 교육자팀 검토를 합친 최종 시안 C2의 짜임: 남색 앱 막대 · 단계 길 · 무대('지금 할 일' 머리띠) · 오른쪽 '이 단계 안내' 판(도구 · 이전/다음).
@@ -1880,6 +1883,28 @@ html.hj-basic .dt-kinds{grid-template-columns:repeat(4,minmax(0,1fr))!important}
 html.hj-basic .dt-kinds button{flex-direction:column!important;gap:0!important;padding:5px 7px!important}
 html.hj-basic .dt-kinds button b{font-size:14px!important}html.hj-basic .dt-kinds button small{font-size:11px!important}
 }
+/* 왼쪽 차례 메뉴바(음악이론·세계시민교육, 2026-10-29) — 1200px 이상에서만 */
+.hs-trail{display:none}
+@media screen and (min-width:1200px){
+html.hs-trailon body{padding-left:272px!important}
+html.hs-trailon .hs-trail{display:flex;flex-direction:column;gap:12px;position:fixed;left:0;top:68px;bottom:0;width:256px;z-index:30;overflow:auto;padding:20px 14px 20px 18px;background:var(--paper,#fff);border-right:1px solid var(--line,#E3E0D8);box-sizing:border-box;font-family:'Pretendard',sans-serif}
+html.hs-e.hs-trailon:not(#hsz):not(#hsz) body>.hj-navbar.hs-ebar{margin-left:-272px!important;width:calc(100% + 272px)!important;max-width:none!important}
+html.hs-trailon main nav.mu-toc{display:none!important}
+.hs-trh{display:flex;flex-direction:column;gap:3px;padding:0 4px 12px;border-bottom:1px solid var(--line,#E3E0D8)}
+.hs-tra{font-size:13px;font-weight:700;color:var(--acc,#0F1C33)}
+.hs-trh b{font-size:17px;line-height:1.35;color:var(--ink,#141A26);word-break:keep-all}
+.hs-trs{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:2px;position:relative}
+.hs-trs a{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:12px;text-decoration:none;color:var(--soft,#4B5465);font-weight:700;font-size:15.5px}
+.hs-trs a:hover{background:var(--bg,#F6F5F1);color:var(--ink,#141A26)}
+.hs-trn{flex:none;display:grid;place-items:center;width:26px;height:26px;border-radius:50%;border:2px solid var(--line,#E3E0D8);font-size:13px;font-weight:800;background:var(--paper,#fff)}
+.hs-trs a.on{background:color-mix(in srgb,var(--acc,#0F1C33) 10%,var(--paper,#fff));color:var(--ink,#141A26)}
+.hs-trs a.on .hs-trn{background:var(--acc,#0F1C33);border-color:var(--acc,#0F1C33);color:#fff}
+.hs-trp{margin-top:auto;display:flex;flex-direction:column;gap:6px;padding-top:12px;border-top:1px solid var(--line,#E3E0D8)}
+.hs-trp a{display:flex;flex-direction:column;gap:1px;padding:8px 10px;border-radius:12px;border:1px solid var(--line,#E3E0D8);text-decoration:none;color:var(--soft,#4B5465);font-size:12.5px;font-weight:700}
+.hs-trp a small{font-size:14px;color:var(--ink,#141A26);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.hs-trp a:hover{border-color:var(--acc,#0F1C33)}
+}
+@media print{.hs-trail{display:none!important}html.hs-trailon body{padding-left:0!important}}
 </style><!--/hj-ctheme--><!--hj-emfont--><style id="hj-emfont">@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAANMAA8AAAAABWwAAAL1AAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgBcEQgKhCyDYwE2AiQDFgsQAAQgBTgHIBckGBAbEARRVA02AH4e2Ma0Bw8klhnZrJWRUAvUouGUi8vGR/hj+BcPT/t9O3ferIk0S+54NUteqbStZEInESJdPBIK9S8y4RYkF+f8/79/emtMIaeSQUn/bJ06gV7F91Pi7O0oxzi5e6KNF1oE//tbgVb0xzsPspCOE/+ziqImTBMtlD/RcQLtxREt4OqqG+sTfSTYu2uHgG4QqNarX2ztHF1TKcPlPyBXd8WFUjZX9p7oXwvFF6nJsLahLEURaTFvsX9pMrl7erprbVCnpKf2rKQNspH4BgKYOzCoSgiVAq0CvdKbh49eBiApkKS4IH3CAw5aW1T5G9ke6lVKygfrxj5yernewpA/vf/DfeO/b3yuk6/WNpcviOCZEpd3j1WAelThAxGAjH1EkoXUWDTVNtXPthqnnGO4QlWDXKtKhqCi/lKzsqjwzhvMqrosC6mYA4ydn9nFyM6GeFpeJduZF1Timlhw+STUH1Vh44TY/oIG0aK7RushcNyLsLLSDOTCwiKkpEzQCRhDUB9cXIKJS96pJhZaWnxZgb183CjR7ecr6fn9Guqv3p4iZfKAFBpwpIldIqhHk6NBooQEERAXJ8SLcvwhnYgTA+Wi+ASxZ2Lg19actBzkERfnYdJkXtpjXZiT4/5mpcnEIzbO0+KMzWKw2QYXkWGtj7J6gf/HY+qp2r10ib0dQ4pr3QqM6Fn3w3jV0OHHx8nXwtLRz7tPKu7CJz2ofYMs5QVIXLta4oRE5M8nSzbag3w93TprDy+rfP1X19la4C8RaQySdH/VfwrqEozK+qmU/nIc9Zfl3t6EUHk/hYIRznvwQLqcrLuLHRmJva+rfZpGhu9ja2s9eIDaOi4bef84BECgiHcLaV+cnv1/aVWCX8hi7UBBuTRpVvlnoFKqjH5nXD2poCL3VQqOXPyTLlZa62M4slAqLMkDwbaSfoXIVZJ69v81qFXvivseeuWZ25676b7HHnrkpQLIPzWxvmj8ajfRjurJdKvidNJBuRgZAA==) format('woff2');unicode-range:U+25b6,U+26a0,U+274c,U+2b55}@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,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) format('woff2');unicode-range:U+1f4a1,U+1f4cb,U+1f4d8,U+1f517,U+1f5a8}</style><!--/hj-emfont--></head><body>
 <main>
 <nav class="tl-gnav" aria-label="그림 수학 사전 안의 쪽"><a href="num.html">수와 연산</a><a href="shape.html">도형과 측정</a><a href="reldata.html">규칙·자료와 가능성</a><a href="all.html" aria-current="page">모든 낱말</a><a href="quiz.html">낱말 퀴즈</a></nav>
@@ -3005,6 +3030,28 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
   if(!w.querySelector('.hs-egnav')){var g=D.querySelector('main nav.tl-gnav,main nav.cr-gnav,main nav.mg-gnav,main nav.mp-gnav,main nav.dt-gr,main nav.wd-gr,main nav.hz-gr,main nav.ar-nav');
    if(g&&(g.querySelectorAll('a').length>1||g.id==='arNav')){g.classList.add('hs-egnav');w.appendChild(g);var c=g.querySelector('a[aria-current],a.on');if(c&&g.scrollWidth>g.clientWidth)g.scrollLeft=c.offsetLeft-g.offsetLeft-(g.clientWidth-c.offsetWidth)/2}}
   return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>40)clearInterval(iv)},100)}
+})();
+
+/* 왼쪽 차례 메뉴바(2026-10-29 선생님: 다른 교과 '수업 길'처럼) — 차례 막대(nav.mu-toc)가 있는 쪽(음악이론·세계시민교육).
+   넓은 화면(1200px 이상)에서만 왼쪽에 고정, 좁으면 원래 위 차례 막대 그대로 */
+(function(){var D=document,H=D.documentElement;
+ function go(){var toc=D.querySelector('main nav.mu-toc');if(!toc||D.querySelector('.hs-trail'))return !!toc;
+  var r=D.createElement('aside');r.className='hs-trail';r.setAttribute('aria-label','이 주제 차례');
+  var area=D.querySelector('main>.mu-area'),h1=D.querySelector('main>h1');
+  var h='<div class="hs-trh">'+(area?'<span class="hs-tra">'+area.textContent.trim()+'</span>':'')+'<b>'+(h1?h1.textContent.trim():'')+'</b></div><ol class="hs-trs">';
+  [].forEach.call(toc.querySelectorAll('a'),function(a,i){h+='<li><a href="'+a.getAttribute('href')+'"><span class="hs-trn">'+(i+1)+'</span><span>'+a.textContent.replace(/^\s*\S+\s+/,'').trim()+'</span></a></li>'});
+  h+='</ol>';var pn=D.querySelector('main nav.mu-pn');
+  if(pn){h+='<div class="hs-trp">';[].forEach.call(pn.querySelectorAll('a'),function(a,i){h+='<a href="'+a.getAttribute('href')+'">'+(i?'다음 주제':'앞 주제')+'<small>'+a.textContent.replace(/[←→]/g,'').trim()+'</small></a>'});h+='</div>'}
+  r.innerHTML=h;D.body.appendChild(r);H.classList.add('hs-trailon');
+  var as=[].slice.call(r.querySelectorAll('.hs-trs a'));
+  function on(id){as.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+id)})}
+  if(window.IntersectionObserver){var io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)on(e.target.id)})},{rootMargin:'-30% 0px -60% 0px'});
+   as.forEach(function(a){var s=D.querySelector(a.getAttribute('href'));if(s)io.observe(s)})}
+  on('s1');
+  /* 위 남색 막대가 스크롤로 올라가면 메뉴바도 맨 위까지 */
+  var bar=D.querySelector('.hs-ebar');function fit(){var b=bar?bar.getBoundingClientRect().bottom:0;r.style.top=Math.max(0,b)+'px'}
+  fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
  if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>40)clearInterval(iv)},100)}
 })();
 </script><!--/hj-cicons--></body></html>
