@@ -115,8 +115,8 @@ def build():
     b = ['<nav class="crumb"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a> '
          f'<a class="back" href="../../index.html">{G}학년</a> <a class="back" href="../index.html">수학</a></nav>',
          '<h1>🎬 수학 원리 돋보기</h1>',
-         f'<p class="sub">{G}학년 수학 개념·계산 원리를 움직이는 그림으로 설명하는 영상 {total}편(편마다 {getattr(V, "MINUTES", "2~3")}분). '
-         f'단원을 고르면 그 단원 영상이 차시 차례로 나와요. 누르면 새 창에서 유튜브가 열려요.</p>',
+         f'<p class="sub">{G}학년 수학 개념·계산 원리를 그림으로 설명하는 영상 {total}편(편마다 {getattr(V, "MINUTES", "2~3")}분)이에요. '
+         f'단원을 고르면 차시 차례로 나와요.</p>',
          '<div class="vx-cont" id="vxCont" aria-label="이어서 보기"></div>',
          '<div class="vx-top"><div class="vx-seg" role="tablist" aria-label="학기">'
          '<button type="button" role="tab" data-sem="1">1학기</button><button type="button" role="tab" data-sem="2">2학기</button></div>'

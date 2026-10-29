@@ -118,7 +118,7 @@ def menu(g, d):
     url = f'../../../common/dictation/g{g}.html'
     body = (f'<nav class="crumb" aria-label="현재 위치"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a> <a class="back" href="../../index.html">{g}학년</a> <a class="back" href="../index.html">국어방</a></nav>\n'
             f'<h1>✏️ {g}학년 받아쓰기·맞춤법</h1>\n'
-            f'<p class="sub">{INTRO[g]} 35단계를 낱말 · 어절 · 문장 · 문장 부호로 나누었어요. 단계를 누르면 📖 익히기 · 🎧 받아쓰기 · ✅ 맞춤법 고르기 · 🖨️ 인쇄가 있는 단계 페이지가 열려요.</p>\n'
+            f'<p class="sub">{INTRO[g]}</p>\n'
             f'<div class="grid g3 three"><a class="card room" href="{url}"><span class="ico">📚</span><span class="nm">35단계 모두 보기</span><small>단계표 · 전체 단계 시험지와 정답 인쇄</small></a></div>\n')
     lv = 0
     for k in KINDS:
