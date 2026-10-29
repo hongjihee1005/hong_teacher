@@ -123,8 +123,10 @@ function mealHTML(o,full){if(!o)return `<div class="small">급식표가 아직 �
 
 /* ===== 메뉴 목록 ===== */
 const G=[
- {id:'day',nm:'하루 시작',acc:'#E07A6E'},{id:'tool',nm:'수업 도구',acc:'#E39A4E'},{id:'learn',nm:'학습 연결',acc:'#5E95CB'},{id:'life',nm:'학급 생활',acc:'#4FA987'},
- {id:'heart',nm:'마음 · 소통',acc:'#D97BA6'},{id:'play',nm:'쉬는 시간 · 틈새 활동',acc:'#9A7BD0'},{id:'safe',nm:'안전',acc:'#D9A93A'},{id:'teach',nm:'선생님 전용',acc:'#8C7B6E',t:1}];
+ {id:'class',nm:'수업 중',acc:'#E39A4E'},{id:'day',nm:'아침 · 종례',acc:'#E07A6E'},{id:'life',nm:'학급 생활 · 마음',acc:'#4FA987'},
+ {id:'play',nm:'쉬는 시간 · 안전',acc:'#9A7BD0'},{id:'teach',nm:'선생님 전용',acc:'#8C7B6E',t:1}];
+/* 모둠·청소·룰렛 칸 색(예전 묶음 7색) */
+const PAL7=['#E07A6E','#E39A4E','#5E95CB','#4FA987','#D97BA6','#9A7BD0','#D9A93A'];
 const A={};const ORDER=[];
 function app(id,g,ico,nm,render,o={}){A[id]=Object.assign({id,g,ico,nm,render},o);ORDER.push(id)}
 
@@ -305,7 +307,7 @@ app('groups','tool','👨‍👩‍👧','모둠 짜기 · 발표 순서',b=>{
  let res=null,order=null,oi=0,mode='g';
  const draw=()=>{b.innerHTML=`<div class="tabs"><button class="btn ${mode==='g'?'on':''}" data-m="g" type="button">👨‍👩‍👧 모둠 짜기</button><button class="btn ${mode==='o'?'on':''}" data-m="o" type="button">🔢 발표 순서</button><button class="btn" id="ab" type="button">😷 오늘 결석</button></div>`+
   (mode==='g'?`<div class="row"><label class="row">모둠 수 <input class="inp" id="gn" type="number" min="2" max="12" value="${DB.gN||6}" style="width:5rem"></label><button class="btn pri big" id="go" type="button">🔀 섞어서 짜기</button></div>
-   <div class="cols">${res?res.map((g,i)=>`<div class="card mix" style="--acc:${G[i%7].acc}"><div class="mid" style="color:var(--ink-acc)">${i+1}모둠</div><div class="disp" style="font-size:1.5rem">${g.map(label).join(' · ')}</div></div>`).join(''):'<div class="small">모둠 수를 정하고 섞어서 짜기를 눌러요. 결석한 친구는 빠져요.</div>'}</div>`
+   <div class="cols">${res?res.map((g,i)=>`<div class="card mix" style="--acc:${PAL7[i%7]}"><div class="mid" style="color:var(--ink-acc)">${i+1}모둠</div><div class="disp" style="font-size:1.5rem">${g.map(label).join(' · ')}</div></div>`).join(''):'<div class="small">모둠 수를 정하고 섞어서 짜기를 눌러요. 결석한 친구는 빠져요.</div>'}</div>`
   :`<div class="center">${order?`<div class="huge">${esc(label(order[oi]))}</div><div class="mid">${oi+1}번째 / ${order.length}명</div><div class="row c"><button class="btn big" id="pv" type="button">◀ 앞</button><button class="btn big pri" id="nx" type="button">다음 ▶</button></div>
    <div class="row c">${order.map((n,i)=>`<span class="chip" style="${i===oi?'background:#FFE2B8':i<oi?'opacity:.45':''}">${i+1}. ${esc(label(n))}</span>`).join('')}</div>`:''}
    <button class="btn big ${order?'':'pri'}" id="mk" type="button">🔀 발표 순서 새로 정하기</button></div>`);
@@ -313,7 +315,7 @@ app('groups','tool','👨‍👩‍👧','모둠 짜기 · 발표 순서',b=>{
   if(mode==='g')$('#go',b).onclick=()=>{const k=Math.max(2,Math.min(12,+$('#gn',b).value||6));DB.gN=k;save();const s=shuffle(present());res=Array.from({length:k},()=>[]);s.forEach((n,i)=>res[i%k].push(n));res.forEach(g=>g.sort((a,c)=>a-c));draw()};
   else{$('#mk',b).onclick=()=>{order=shuffle(present());oi=0;draw()};if(order){$('#nx',b).onclick=()=>{if(oi<order.length-1){oi++;draw()}};$('#pv',b).onclick=()=>{if(oi>0){oi--;draw()}}}}};draw()});
 app('score','tool','🏆','모둠 점수판',b=>{
- const S=DB.score;const draw=()=>{const mx=Math.max(...S.pts);b.innerHTML=`<div class="cols" style="grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))">${S.teams.map((t,i)=>`<div class="card mix" style="--acc:${G[i%7].acc};text-align:center;${S.pts[i]===mx&&mx>0?'border-color:#E3B23C;border-width:4px':''}">
+ const S=DB.score;const draw=()=>{const mx=Math.max(...S.pts);b.innerHTML=`<div class="cols" style="grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))">${S.teams.map((t,i)=>`<div class="card mix" style="--acc:${PAL7[i%7]};text-align:center;${S.pts[i]===mx&&mx>0?'border-color:#E3B23C;border-width:4px':''}">
   <div class="mid">${S.pts[i]===mx&&mx>0?'👑 ':''}${esc(t)}</div><div class="huge" style="font-size:clamp(3rem,10vmin,6rem)">${S.pts[i]}</div>
   <div class="row c"><button class="btn" data-i="${i}" data-v="-1" type="button">−1</button><button class="btn pri" data-i="${i}" data-v="1" type="button">+1</button><button class="btn" data-i="${i}" data-v="5" type="button">+5</button></div></div>`).join('')}</div>
   <div class="row"><label class="row">모둠 수 <input class="inp" id="n" type="number" min="2" max="10" value="${S.teams.length}" style="width:5rem"></label><button class="btn" id="nm" type="button">✏️ 모둠 이름</button><button class="btn" id="rs" type="button">🔄 점수 0으로</button></div>`;
@@ -345,7 +347,7 @@ app('dice','tool','🎲','주사위 · 룰렛 · 동전',b=>{
   else{const items=lines(DB.roulette);st.innerHTML=`<div style="position:relative"><canvas id="wh" width="440" height="440" style="width:min(440px,70vmin);height:min(440px,70vmin)"></canvas><div style="position:absolute;top:-6px;left:50%;transform:translateX(-50%);font-size:2.4rem">🔻</div></div>
    <div class="big" id="rr"></div><div class="row c"><button class="btn big pri" id="go" type="button">🎡 돌리기</button><button class="btn" id="e" type="button">✏️ 칸 바꾸기</button></div>`;
    const cv=$('#wh',st),x=cv.getContext('2d'),k=Math.max(1,items.length);
-   const paint=()=>{x.clearRect(0,0,440,440);for(let i=0;i<k;i++){const a0=ang+i*2*Math.PI/k-Math.PI/2,a1=a0+2*Math.PI/k;x.beginPath();x.moveTo(220,220);x.arc(220,220,210,a0,a1);x.fillStyle=G[i%7].acc;x.globalAlpha=i%2?.75:1;x.fill();x.globalAlpha=1;
+   const paint=()=>{x.clearRect(0,0,440,440);for(let i=0;i<k;i++){const a0=ang+i*2*Math.PI/k-Math.PI/2,a1=a0+2*Math.PI/k;x.beginPath();x.moveTo(220,220);x.arc(220,220,210,a0,a1);x.fillStyle=PAL7[i%7];x.globalAlpha=i%2?.75:1;x.fill();x.globalAlpha=1;
     x.save();x.translate(220,220);x.rotate((a0+a1)/2);x.fillStyle='#fff';x.font='bold 24px Jua, sans-serif';x.textAlign='right';x.fillText((items[i]||'').slice(0,8),195,8);x.restore()}
     x.beginPath();x.arc(220,220,24,0,7);x.fillStyle='#fff';x.fill()};paint();
    $('#e',st).onclick=()=>editText('룰렛 칸 (한 줄에 하나, 2~16개)',DB.roulette,v=>{DB.roulette=lines(v).slice(0,16).join('\n')});
@@ -473,7 +475,7 @@ app('seats','life','🪑','자리 배치표',b=>{
   const rc=()=>{S.rows=Math.max(1,Math.min(10,+$('#r',b).value));S.cols=Math.max(1,Math.min(10,+$('#c',b).value));S.order=[];save();draw()};$('#r',b).onchange=rc;$('#c',b).onchange=rc;$('#pr',b).onclick=()=>window.print()};draw()});
 app('clean','life','🧽','청소 당번표',b=>{
  const draw=()=>{const Ar=lines(DB.clean.areas),P=rotate(null,DB.clean.shift+weekNo()),k=Math.max(1,Ar.length),g=Ar.map(()=>[]);P.forEach((n,i)=>g[i%k].push(n));
-  b.innerHTML=`<div class="mid">이번 주 청소 구역 · 매주 자동으로 바뀌어요</div><div class="cols">${Ar.map((a,i)=>`<div class="card mix" style="--acc:${G[i%7].acc}"><div class="mid" style="color:var(--ink-acc)">🧹 ${esc(a)}</div><div class="disp" style="font-size:1.35rem">${g[i].sort((x,y)=>x-y).map(label).join(' · ')}</div></div>`).join('')}</div>
+  b.innerHTML=`<div class="mid">이번 주 청소 구역 · 매주 자동으로 바뀌어요</div><div class="cols">${Ar.map((a,i)=>`<div class="card mix" style="--acc:${PAL7[i%7]}"><div class="mid" style="color:var(--ink-acc)">🧹 ${esc(a)}</div><div class="disp" style="font-size:1.35rem">${g[i].sort((x,y)=>x-y).map(label).join(' · ')}</div></div>`).join('')}</div>
   <div class="row t-only"><button class="btn" id="nx" type="button">⏭ 한 칸 돌리기</button><button class="btn" id="e" type="button">✏️ 청소 구역</button></div>`;
   $('#nx',b).onclick=()=>{DB.clean.shift+=Math.ceil(N()/k);save();draw()};$('#e',b).onclick=()=>editText('청소 구역 (한 줄에 하나)',DB.clean.areas,v=>DB.clean.areas=v)};draw();return draw});
 function bdayList(){return lines(DB.bdays).map(l=>{const m=/^(.*?)[\s,]+(\d{1,2})[-./월\s]+(\d{1,2})/.exec(l);return m?{who:m[1].trim(),m:+m[2],d:+m[3]}:null}).filter(Boolean)}
@@ -657,10 +659,31 @@ app('settings','teach','⚙️','선생님 설정',b=>{
    const la=parseFloat($('#la',b).value),lo=parseFloat($('#lo',b).value);if(isFinite(la)&&isFinite(lo)){if(la!==DB.loc.lat||lo!==DB.loc.lon)WX.t=0;DB.loc={name:$('#ln',b).value.trim()||'우리 동네',lat:la,lon:lo}}
    Object.assign(DB.neis,{grade:$('#gr',b).value.trim(),cls:$('#cl',b).value.trim(),key:$('#ky',b).value.trim()});save();toast('저장했어요');refresh();loadWx()}};draw()},{t:1});
 
+/* ===== 첫 화면 배치(2026-10-29 디자이너·교육자·개발자 의견을 합침) =====
+   맨 위 '자주 쓰는 도구'(수업 중 한 손으로 바로 누르는 8개, 자리 고정) → 하루 흐름대로 묶은 판 4개(판 안은 메뉴 쪽과 같은 가로 항목).
+   ICN은 메뉴와 같은 선 아이콘 이름(_build/theme/icons.js의 P, build.py가 window.HJ_P로 넣음) — 없으면 이모지. */
+const PIN=['board','pick','timer','done','signal','noise','groups','curtain'];
+const LAYOUT={class:[...PIN,'score','vote','dice','qr','goal','links','drill','reading'],
+ day:['notice','weather','timetable','meal','todo','calendar','homework','birthday'],
+ life:['roles','rules','seats','clean','thermo','mood','praise','ask','conflict'],
+ play:['brain','quiz','twenty','wordchain','puzzle','wash','safety'],teach:['settings']};
+const ICN={notice:'clipboard',weather:'cloudsun',timetable:'listnum',meal:'bowl',todo:'check',calendar:'calendar',homework:'file',birthday:'cake',
+ board:'pencil',pick:'sparkle',timer:'timer',done:'hand',signal:'traffic',noise:'vol',groups:'group',curtain:'eyeoff',
+ score:'trophy',vote:'ballot',dice:'dice',qr:'qr',goal:'target',links:'books',drill:'math',reading:'book',
+ roles:'broom',rules:'scroll',seats:'rows',clean:'erase',thermo:'thermo',mood:'rainbow',praise:'mail',ask:'msg',conflict:'dove',
+ brain:'brain',quiz:'help',twenty:'search',wordchain:'link',puzzle:'puzzle',wash:'drop',safety:'warn',settings:'gear'};
+(()=>{const all=[];Object.entries(LAYOUT).forEach(([g,ids])=>ids.forEach(id=>{if(A[id]){A[id].g=g;all.push(id)}}));
+ ORDER.filter(id=>!all.includes(id)).forEach(id=>all.push(id));ORDER.splice(0,ORDER.length,...all)})();
+function icoHTML(id){const P=window.HJ_P||{},k=ICN[id];return P[k]?`<svg class="cl-li" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">${P[k]}</svg>`:A[id].ico}
+
 /* ===== 바탕화면 그리기 ===== */
-function renderGroups(){const el=$('#groups');el.innerHTML=G.map(g=>{const ids=ORDER.filter(id=>A[id].g===g.id);
- return `<section class="grp mix ${g.t?'t-only':''}" style="--acc:${g.acc}"><h2>${g.nm}</h2><div class="icons">${ids.map(id=>{const a=A[id],off=DB.hidden[id];
-  return `<button class="ic mix ${off?'off t-only':''} ${a.t?'t-only':''}" style="--acc:${g.acc}" data-open="${id}" type="button"><span class="e" aria-hidden="true">${a.ico}</span><span class="n">${a.nm}</span></button>`}).join('')}</div></section>`}).join('')}
+function renderGroups(){const el=$('#groups');
+ const item=(id,g)=>{const a=A[id],off=DB.hidden[id];
+  return `<button class="ic mix ${off?'off t-only':''} ${a.t?'t-only':''}" style="--acc:${g.acc}" data-open="${id}" type="button" title="${esc(a.nm)}"><span class="e" aria-hidden="true">${icoHTML(id)}</span><span class="n">${a.nm}</span></button>`};
+ const gc=G.find(g=>g.id==='class');
+ el.innerHTML=`<section class="cl-fav mix" style="--acc:${gc.acc}" aria-labelledby="cl-fav-h"><h2 class="cl-h" id="cl-fav-h">자주 쓰는 도구</h2><div class="icons">${PIN.map(id=>item(id,gc)).join('')}</div></section>
+ <div class="cl-bento">${G.map(g=>{const ids=ORDER.filter(id=>A[id].g===g.id&&!PIN.includes(id));if(!ids.length)return '';
+  return `<section class="grp mix ${g.t?'t-only':''}" style="--acc:${g.acc}"><h2 class="cl-h">${g.nm}</h2><div class="icons">${ids.map(id=>item(id,g)).join('')}</div></section>`}).join('')}</div>`}
 async function renderHome(){document.title=DB.title;$('#title').textContent=DB.title;
  $('#w-notice').textContent=DB.notice||'';
  const ni=nowInfo(),B=bells().filter(x=>x.p),wd=new Date().getDay(),m=new Date().getHours()*60+new Date().getMinutes();
