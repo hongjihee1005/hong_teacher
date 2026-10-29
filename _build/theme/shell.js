@@ -354,3 +354,17 @@
   return true}
  if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
 })();
+
+/* 교과수학게임 왼쪽 메뉴바(2026-10-29 선생님: 다른 방과 디자인 통일) — 넓은 화면에서 '무엇을 연습할까요'와 다른 학년을 기초연산처럼 왼쪽에 */
+(function(){var D=document,H=D.documentElement,mq=window.matchMedia('(min-width:1200px)'),r,sec,home,gn,gnHome;
+ function place(){if(!r)return;if(mq.matches){if(sec.parentNode!==r.querySelector('.hs-mgbody'))r.querySelector('.hs-mgbody').appendChild(sec);if(gn&&gn.parentNode!==r.querySelector('.hs-arnav'))r.querySelector('.hs-arnav').appendChild(gn);H.classList.add('hs-trailon')}
+  else{if(sec.parentNode!==home.p)home.p.insertBefore(sec,home.n);if(gn&&gnHome&&gn.parentNode!==gnHome)gnHome.appendChild(gn);H.classList.remove('hs-trailon')}}
+ function go(){var u=D.getElementById('mgUnits'),bar=D.querySelector('.hs-ebar');if(!u||!bar)return !!(u&&D.readyState==='complete'&&!bar);
+  sec=u.closest('.mg-sec');home={p:sec.parentNode,n:sec.nextSibling};gn=D.querySelector('nav.mg-gnav');gnHome=gn&&gn.parentNode;
+  var h1=D.querySelector('main>h1');r=D.createElement('aside');r.className='hs-trail hs-artrail hs-mgrail';r.setAttribute('aria-label','무엇을 연습할까요');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">교과수학게임</span><b>'+(h1?h1.textContent.trim():'')+'</b></div><div class="hs-mgbody"></div><div class="hs-arnav"><span class="hs-trk">다른 학년</span></div>';
+  D.body.appendChild(r);place();(mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));
+  function fit(){var b=bar.getBoundingClientRect().bottom;r.style.top=Math.max(0,b)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
+ if(!/\/project\/mathgame\/g\d\.html$/.test(location.pathname))return;
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
+})();
