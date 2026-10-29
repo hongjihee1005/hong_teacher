@@ -1,5 +1,6 @@
 /* 곱셈 사목 판 그리기·누르기 (window.VIEW). 위 6×6 곱 판, 아래 1~9 줄과 집게 ㄱ(위)·ㄴ(아래) */
 window.VIEW = (function () {
+  function jo(w, a, b) { var s = String(w), c = s.charCodeAt(s.length - 1), m = s.match(/\d+$/), f; if (m) { var n = m[0], t = n.replace(/0+$/, ''); f = n.length > t.length || '013678'.indexOf(t.slice(-1)) >= 0 } else f = c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 > 0; return s + (f ? a : b) } // 받침에 따라 조사(2026-10-29)
   var S = 70, BX = 30, BY = 14, SW = 48, SX = 24, SY = 486, SH = 56, W = 480, seen = null, CL = ['ㄱ', 'ㄴ'];
   function sx(v) { return SX + SW * (v - 1) }
   function reach(st, E, legal, sel) { var o = {}; legal.forEach(function (m) { if (sel != null && ((m / 10) | 0) !== sel) return; var p = E.cellOf(st.c, m); if (p >= 0) o[p] = 1 }); return o }
@@ -45,8 +46,8 @@ window.VIEW = (function () {
       if (st.b[p]) return { msg: '이미 칠해진 칸이에요.' };
       var ok = ui.legal.filter(function (m) { return E.cellOf(st.c, m) === p && (ui.sel == null || ((m / 10) | 0) === ui.sel) });
       if (ok.length === 1) return { mv: ok[0] };
-      if (ok.length > 1) return { msg: '집게 ㄱ, ㄴ 어느 것을 옮겨도 ' + E.P[p] + '이(가) 돼요. 옮길 집게를 먼저 누르세요.' };
-      return { msg: '⚠️ 집게 하나만 옮겨서는 ' + E.P[p] + '을(를) 만들 수 없어요. 지금 집게는 ' + st.c[0] + '와(과) ' + st.c[1] + '이에요.' };
+      if (ok.length > 1) return { msg: '집게 ㄱ, ㄴ 어느 것을 옮겨도 ' + jo(E.P[p], '이', '가') + ' 돼요. 옮길 집게를 먼저 누르세요.' };
+      return { msg: '⚠️ 집게 하나만 옮겨서는 ' + jo(E.P[p], '을', '를') + ' 만들 수 없어요. 지금 집게는 ' + jo(st.c[0], '과', '와') + ' ' + jo(st.c[1], '이에요', '예요') + '.' };
     },
     status: function (st) { return ['', '', st.c[0] && st.c[1] ? '집게 ' + st.c[0] + ' × ' + st.c[1] + ' = ' + st.c[0] * st.c[1] : ''] },
     note: function (st) { return st.n === 0 ? '처음 사람은 집게 ㄱ만 놓아요(칸은 칠하지 않아요).' : st.n === 1 ? '집게 ㄴ을 놓으면 두 수의 곱 칸을 칠해요.' : '' }

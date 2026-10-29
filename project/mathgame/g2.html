@@ -2827,6 +2827,7 @@ window.MG={"g":2,"units":[{"id":"u1","nm":"받아올림이 있는 덧셈","k":["
   'use strict';
   var D = window.MG, AR = window.AR, MGC = window.MGC, KEY = 'hj-mgame-v1';
   var $ = function (id) { return document.getElementById(id) };
+  function jo(w, a, b) { var s = String(w), c = s.charCodeAt(s.length - 1), m = s.match(/\d+$/), f; if (m) { var n = m[0], t = n.replace(/0+$/, ''); f = n.length > t.length || '013678'.indexOf(t.slice(-1)) >= 0 } else f = c >= 0xAC00 && c <= 0xD7A3 && (c - 0xAC00) % 28 > 0; return s + (f ? a : b) } // 받침에 따라 조사(2026-10-29)
   function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] }) }
   function load(k, d) { try { var v = localStorage.getItem(k); return v === null ? d : JSON.parse(v) } catch (e) { return d } }
   function save(k, v) { try { localStorage.setItem(k, JSON.stringify(v)) } catch (e) {} }
@@ -3926,7 +3927,7 @@ window.MG={"g":2,"units":[{"id":"u1","nm":"받아올림이 있는 덧셈","k":["
         if (!S || S.over) return;
         if (k++ < 9) { $('mgDv').innerHTML = dieSvg(1 + Math.floor(Math.random() * 6)); setTimeout(spin, 70); return }
         self.die = d; $('mgDv').innerHTML = dieSvg(d); sfx('go');
-        $('mgLmsg').innerHTML = '<b style="color:' + TEAM[self.turn].d + '">' + d + '</b>이(가) 나왔어요! 문제를 맞히면 ' + d + '칸 가요.';
+        $('mgLmsg').innerHTML = '<b style="color:' + TEAM[self.turn].d + '">' + d + '</b>' + jo(d, '이', '가').slice(String(d).length) + ' 나왔어요! 문제를 맞히면 ' + d + '칸 가요.';
         setTimeout(function () { if (S && !S.over) self.ask() }, 650);
       })();
     },
