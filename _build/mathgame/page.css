@@ -545,3 +545,60 @@ button{font:inherit;color:inherit;cursor:pointer}
 @media (max-width:760px){.mg-ldwrap{flex-direction:column}.mg-ldside{width:auto;flex-direction:row;flex-wrap:wrap;align-items:stretch}.mg-lpls{flex-direction:row;flex-wrap:wrap;flex:1 1 100%}.mg-lpl{flex:1}.mg-ldmsg{flex:1;min-height:0}.mg-dice{margin-top:0;flex-direction:row;padding:8px 14px}}
 /* 휴대폰: '게임 시작' 막대 얇게(2026-10-29 디자인팀) */
 @media (max-width:600px){.mg-gobar{padding:6px;gap:6px;bottom:8px;border-radius:18px}.mg-sel{display:none}.mg-start{width:100%;font-size:21px;padding:8px 18px}}
+/* ===== 디자인 다시(2026-10-29 선생님 요청) — 머리 작게, 넓은 화면은 왼쪽 '무엇을' · 오른쪽 '어떤 게임', 계산 칩은 눌러야 펼침, 게임 카드는 그림·이름·기록만 ===== */
+@media screen{
+h1{font-size:clamp(26px,2.4vw,34px);display:flex;align-items:center;gap:10px;margin:0}
+.sub{font-size:clamp(15px,1.2vw,17px);margin:4px 0 14px}
+.mg-sec{margin:0}
+.mg-h{font-size:clamp(18px,1.5vw,21px);margin:0 0 10px;gap:8px}
+.mg-no{width:1.45em;height:1.45em;font-size:.78em}
+.mg-units{gap:6px;padding:0 0 8px}
+.mg-unit{border-width:2px;padding:5px 12px 5px 7px}
+.mg-un{font-size:clamp(15px,1.2vw,17px)}
+.mg-skills{padding:8px 12px;border-radius:14px}
+.mg-sk-h{display:flex;flex-wrap:wrap;align-items:center;gap:4px 10px;margin:0;font-size:15px}
+.mg-skn{color:var(--soft);font-size:14px}
+.mg-skt{margin-left:auto;border:1.5px solid var(--line);background:var(--paper);border-radius:999px;padding:3px 12px;font-weight:700;font-size:14px;color:var(--ink);cursor:pointer}
+.mg-skt::after{content:" ▾";font-size:.85em}
+.mg-skills.open .mg-skt::after{content:" ▴"}
+.mg-skills .mg-chips{display:none;margin-top:8px}
+.mg-skills.open .mg-chips{display:flex}
+.mg-chip{font-size:13.5px;padding:3px 9px 3px 6px}
+.mg-gh{font-size:clamp(17px,1.4vw,19px);margin:14px 0 8px}
+.mg-gh small{font-size:13.5px}
+.mg-ghi{width:28px;height:28px}.mg-ghi svg{width:18px;height:18px}
+.mg-games{grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.mg-game{gap:4px;padding:8px;border-width:2px;border-radius:16px}
+.mg-thumb>svg{border-radius:11px}
+.mg-pl{font-size:13px;padding:1px 8px 1px 5px;left:6px;top:6px}
+.mg-thumb .mg-pl svg{width:14px;height:14px}
+.mg-gn{font-size:clamp(16px,1.25vw,18px);line-height:1.25}
+.mg-gd{display:none}
+.mg-best{font-size:12.5px;font-weight:600;color:var(--soft)}
+.mg-game[aria-pressed="true"] .mg-best{color:color-mix(in srgb,var(--acc) 75%,var(--ink))}
+.mg-how{margin-top:16px;padding:8px 16px}.mg-how summary{font-size:17px}
+}
+/* 넓은 화면: 두 칸 */
+@media screen and (min-width:1100px){
+.mg-lay{display:grid;grid-template-columns:minmax(280px,340px) minmax(0,1fr);gap:22px;align-items:start}
+.mg-lay>.mg-sec:first-child{position:sticky;top:12px;background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:14px}
+.mg-lay .mg-units{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.mg-lay .mg-unit{justify-content:flex-start;white-space:normal;text-align:left;border-radius:12px;min-height:40px}
+.mg-lay .mg-unit.all{grid-column:1/-1;justify-content:center}
+.mg-lay .mg-skills{background:var(--bg);border:0;padding:8px 10px}
+.mg-lay .mg-games{grid-template-columns:repeat(auto-fill,minmax(160px,1fr))}
+main{max-width:min(1500px,calc(100vw - 48px))!important}
+}
+@media (max-width:640px){
+h1{font-size:23px}.sub{font-size:14px}
+.mg-games{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.mg-gn{font-size:15px}
+}
+@media screen{
+.mg-best{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mg-gn{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+.mg-gobar{padding:6px 6px 6px 18px;margin-top:14px}
+.mg-start{font-size:clamp(19px,1.7vw,23px);padding:8px 28px}
+.mg-sel{font-size:15px}
+}
+@media (max-width:1099px){.mg-lay>.mg-sec+.mg-sec{margin-top:16px}}

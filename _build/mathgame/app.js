@@ -190,13 +190,16 @@
   function kList() { return uSel.k.filter(function (k) { return kOn[k] }) }
   function recKey(game) { var ks = kList(); return D.g + '|' + uSel.id + (ks.length < uSel.k.length ? ':' + ks.join(',') : '') + '|' + game }
 
+  var skOpen = false;   // 계산 고르기 칩은 눌러야 펼침(2026-10-29 디자인 다시)
   function drawUnits() {   // 단원은 한 줄 알약(짧은 이름), 고른 단원의 온이름은 아래 칸 제목에
     $('mgUnits').innerHTML = units.map(function (u) {
       var on = u === uSel, tag = u.ss || (u.sem && u.sem.indexOf('학기') < 0 ? u.sem : '');
       return '<button type="button" class="mg-unit' + (u.id === 'all' ? ' all' : '') + '" data-u="' + u.id + '" aria-pressed="' + on + '" title="' + esc((u.sem ? u.sem + ' · ' : '') + u.nm + ' (계산 ' + u.k.length + '가지)') + '">' +
         (tag ? '<span class="mg-sem">' + esc(tag) + '</span>' : '') + '<span class="mg-un">' + esc(u.sh || u.nm) + '</span></button>';
     }).join('');
-    $('mgSkills').innerHTML = '<p class="mg-sk-h"><b>' + esc((uSel.sem ? uSel.sem + ' ' : uSel.id === 'all' ? D.g + '학년 ' : '') + uSel.nm) + '</b> · 나오는 계산 ' + uSel.k.length + '가지 <small>(누르면 빼거나 넣을 수 있어요)</small></p><div class="mg-chips">' + uSel.k.map(function (k) {
+    var nOn = uSel.k.filter(function (k) { return kOn[k] }).length;
+    $('mgSkills').classList.toggle('open', skOpen);
+    $('mgSkills').innerHTML = '<p class="mg-sk-h"><b>' + esc((uSel.sem ? uSel.sem + ' ' : uSel.id === 'all' ? D.g + '학년 ' : '') + uSel.nm) + '</b><span class="mg-skn">계산 ' + (nOn < uSel.k.length ? nOn + ' / ' : '') + uSel.k.length + '가지</span><button type="button" class="mg-skt" aria-expanded="' + skOpen + '">' + (skOpen ? '접기' : '계산 고르기') + '</button></p><div class="mg-chips">' + uSel.k.map(function (k) {
       var s = AR.BY[k], eg = AR.gen(k, 'mg-eg-' + k);
       var egt = (eg.txt || eg.q).map(function (t) { return typeof t === 'string' ? t : t.k === 'n' ? t.v : t.k === 'd' ? AR.dstr(t.v, t.p) : t.k === 'f' ? (t.w ? t.w + ' ' : '') + t.n + '/' + t.d : '□' }).join(' ');
       return '<button type="button" class="mg-chip" data-k="' + k + '" aria-pressed="' + !!kOn[k] + '" title="' + esc(s.de + ' · 예: ' + egt) + '"><span class="mg-ck" aria-hidden="true"></span><span>' + esc(s.nm) + '</span></button>';
@@ -206,15 +209,15 @@
   var PICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2" fill="currentColor"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6Z" fill="currentColor"/><circle cx="17" cy="9" r="2.6" fill="currentColor" opacity=".55"/><path d="M15.5 14.3c3 .2 5.5 2.4 5.5 5.7h-4.4" fill="currentColor" opacity=".55"/></svg>';
   function gameCard(x) {
     var b = rec[recKey(x.id)], no = !ksFor(x.id).length;
-    return '<button type="button" class="mg-game' + (no ? ' no' : '') + '" data-game="' + x.id + '" aria-pressed="' + (x.id === gSel) + '"><span class="mg-thumb">' + THUMB[x.id] + '<span class="mg-pl">' + PICO + pl(x) + '</span></span>' +
+    return '<button type="button" class="mg-game' + (no ? ' no' : '') + '" data-game="' + x.id + '" aria-pressed="' + (x.id === gSel) + '" title="' + esc(x.de) + '"><span class="mg-thumb">' + THUMB[x.id] + '<span class="mg-pl">' + PICO + pl(x) + '</span></span>' +
       '<span class="mg-gn">' + esc(x.nm) + '</span><span class="mg-gd">' + esc(x.de) + '</span>' +
       (no ? '<span class="mg-best">' + esc(x.noTxt || '이 내용에서는 할 수 없어요') + '</span>' : x.two ? '<span class="mg-best">' + esc(x.how) + '</span>' : '<span class="mg-best">' + (b ? '최고 기록 ' + b + '점' : '아직 기록이 없어요') + '</span>') + '</button>';
   }
   function drawGames() {
     var solo = GAMES.filter(function (x) { return !x.two }), team = GAMES.filter(function (x) { return x.two });
     $('mgGames').innerHTML =
-      '<h3 class="mg-gh"><span class="mg-ghi">' + PICO.replace('opacity=".55"', 'opacity="0"').replace('opacity=".55"', 'opacity="0"') + '</span>혼자서 <small>내 점수와 최고 기록에 도전해요 · 1명</small></h3><div class="mg-games">' + solo.map(gameCard).join('') + '</div>' +
-      '<h3 class="mg-gh"><span class="mg-ghi">' + PICO + '</span>함께 <small>한 화면에서 여럿이 겨뤄요 · 전자칠판·태블릿</small></h3><div class="mg-games">' + team.map(gameCard).join('') + '</div>';
+      '<h3 class="mg-gh"><span class="mg-ghi">' + PICO.replace('opacity=".55"', 'opacity="0"').replace('opacity=".55"', 'opacity="0"') + '</span>혼자서 <small>1명 · 내 최고 기록에 도전</small></h3><div class="mg-games">' + solo.map(gameCard).join('') + '</div>' +
+      '<h3 class="mg-gh"><span class="mg-ghi">' + PICO + '</span>함께 <small>2~4명 · 한 화면에서 겨루기</small></h3><div class="mg-games">' + team.map(gameCard).join('') + '</div>';
     var G = GBY[gSel], np = '';
     if (G.pl[0] < G.pl[1]) { np = '<span class="mg-npl">몇 명?</span>'; for (var k = G.pl[0]; k <= G.pl[1]; k++) np += '<button type="button" data-np="' + k + '" aria-pressed="' + (k === Math.min(G.pl[1], Math.max(G.pl[0], nPl))) + '">' + k + '명</button>' }
     $('mgNp').innerHTML = np; $('mgNp').hidden = !np;
@@ -226,9 +229,10 @@
     uSel = units.filter(function (u) { return u.id === b.dataset.u })[0]; resetK(); drawUnits(); drawGames(); remember();
   });
   $('mgSkills').addEventListener('click', function (e) {
+    if (e.target.closest('.mg-skt')) { skOpen = !skOpen; drawUnits(); return }
     var b = e.target.closest('.mg-chip'); if (!b) return; var k = b.dataset.k;
     if (kOn[k] && kList().length === 1) { b.classList.add('mg-nope'); setTimeout(function () { b.classList.remove('mg-nope') }, 500); return }
-    kOn[k] = kOn[k] ? 0 : 1; b.setAttribute('aria-pressed', !!kOn[k]); drawGames(); remember();
+    kOn[k] = kOn[k] ? 0 : 1; drawUnits(); drawGames(); remember();
   });
   $('mgGames').addEventListener('click', function (e) {
     var b = e.target.closest('.mg-game'); if (!b) return; gSel = b.dataset.game; drawGames(); remember();
