@@ -1748,7 +1748,7 @@ html.hs:not(#hsz):not(#hsz) .hs-sb .bars .bl{font-size:clamp(10.5px,6.2cqi,17px)
 /* 자료 카드 제목이 줄이 바뀔 때 한 글자만 다음 줄로 남지 않게(우리나라의 외국인 이주민 / 수) */
 html.hs:not(#hsz):not(#hsz) .hs-sb :is(.pic>b,.pic b,h3,h4,figcaption){text-wrap:balance}
 /* 과학 '한 화면' 앱 — 넓은 화면(왼쪽 수업 길이 보이는 1340px 이상)에서는 본문을 남는 폭까지 넓히고, 짧은 쪽은 1.3배까지 키워 화면을 채움(2026-10-29 선생님: 안쪽 화면을 꽉 차게) */
-@media screen and (min-width:1340px){html.hs-sci.hs-srl.hs-swide:not(.hj-sc-on) body.ov main.wrap{max-width:min(1600px,calc(100vw - var(--srpad) - 56px))!important}}
+@media screen and (min-width:1150px){html.hs-sci.hs-srl.hs-swide:not(.hj-sc-on) body.ov main.wrap{max-width:min(1600px,calc(100vw - var(--srpad) - 56px))!important}}
 /* 수업 표지: 오른쪽 '오늘의 수업' 판을 없애고 한 판으로(2026-10-29 선생님: 오른쪽에 메뉴가 남아 있음) — 제목·학습 문제·수업 흐름 카드 아래에
    수업 시간·단계 | 활동 단위 | 자료·수업 시작을 가로 한 줄로 */
 @media (min-width:901px){
@@ -1987,6 +1987,24 @@ html.hs-trailon main .og-card .de,html.hs-trailon main .og-card .og-meta+.og-met
 html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!important}
 /* 종이접기는 작품 카드가 한 화면에 다 보여 메뉴바의 작품 목록은 같은 것의 반복 — 숨기고 다른 학년만 */
 .hs-br-origami .hs-brlist{display:none!important}
+/* ===== 과학 '한 화면' 앱을 다른 교과와 같게(2026-10-30 선생님: 크기·배치·색 모두) =====
+   위 막대 56px·제목 크기, 수업 길 1150px부터 펼침, 단계 머리를 흰 줄(왼쪽 과목색 띠 + 이름표 + 왼쪽 정렬 제목)로, 아래 이전/다음 단추를 다른 교과 크기로.
+   쪽 나눔이 바뀌므로 옛 판과 data-part 경계를 견줘 활동이 갈라지지 않았는지 확인함 */
+@media screen{
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz) body>nav{min-height:56px!important;box-sizing:border-box}
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz) body>nav .wrap{min-height:56px;align-items:center}
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz) body>nav :is(.hj-nav>a,.hj-sctools>button,.hj-sctools>a){height:40px!important;min-height:40px!important;font:700 15px/1 'Pretendard',sans-serif!important;padding:0 14px!important;border-radius:999px!important}
+ html.hs-sci .hs-stitle b{font-size:20px!important}
+ html.hs-sci .hs-stitle small{font-size:13.5px!important}
+ html.hs-sci .hs-srail{top:var(--hj-navh,56px)}
+ /* 단계 머리: 초록 띠 → 흰 줄 */
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz) body.ov section.cur .hj-head{background:var(--hs-paper)!important;box-shadow:inset 6px 0 0 var(--hs-a),0 1px 0 var(--hs-line)!important;color:var(--hs-ink)!important;justify-content:flex-start!important;text-align:left!important;padding:10px 16px 10px 22px!important;border-radius:0!important}
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz) body.ov section.cur .hj-head h2{color:var(--hs-ink)!important;text-align:left!important}
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz) body.ov section.cur .hj-head .stage{background:var(--hs-as)!important;color:var(--hs-ai)!important;border-color:transparent!important;font-family:'Pretendard',sans-serif!important;font-weight:800!important}
+ /* 아래 막대 단추: 다른 교과처럼 크게, 다음은 넓게 */
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz):not(#hsz) #ovBar :is(#ovNext,#ovPrev,#hjEnd){height:52px!important;min-height:52px!important;font:800 19px/1 'Pretendard',sans-serif!important;padding:0 22px!important;border-radius:14px!important}
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz):not(#hsz) #ovBar #ovNext{min-width:180px}
+}
 </style><!--/hj-ctheme--><!--hj-emfont--><style id="hj-emfont">@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,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) format('woff2');unicode-range:U+1f4a1,U+1f4be,U+1f4cb,U+1f5a8}@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAOAAA8AAAAABbgAAAMnAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgCBABEICoRkhFkBNgIkAxALCgAEIAU4ByAXJBgKG54EKB6FcZuTEApOzvyphOVaPHyO6ftJOkD2bJGdmWWnWc74sVG92fUnu7cX04MI2Al8VAWrghbdpT2i218W/weX039bI/C1QUKOxlz3/NoCjAsosnpqTpCxzPOs1T0cUpZxuqYxNsTTBwSajBgTW+m5CDQVqAWgNJnFVqhQWazsAzG2zMjvmpNxi4GaspKKkjIwDrCEajBx97QgAxIn9BQ1OmVdZhmlPwhgXwcwoVEIDQI9AiPSZUvroBIgyUhSbAXpDaAgY4ZIR1REKLImXtXCojpFSBOtcnstaJo3/kRVANGCWhLOpnfFBPVvoCOJ6lrEc5WoHVCodQ1oxCdA7AJoP8wat3R1zSvxLXJjq4QiUVRiVNyPZhaUSJLOGt69X4lNQDEVIAK311SMEzDCuzi44nlUnPUkgnntVZHw/MTaaSV2iqifgKuTeO0+cg+5c/1dLIrknaTEyAtBZ00q4IETinieUKKNRtckKqhSRDk+BiKRJJokNCVpr/LocJQR4c9FnaKIkYAw7oYwLb16b28dsScPiXqDKrGL5aPzVQmJ6acqdpLRVvOjrPZuj6Zh/WVvthAztLE021zja29vWFN6/NB4k3XPpQ2arQ+OR7LGUDk1NM+9X3KdvjNzMw3Dhp6au8dYqzkZ3VmRdiox8XyV5SPkUtX7tDmRJtBnzWqP780V5pXywYQF9G/U9xC48mDzsOre5P2leVZp5QsB2dl9sLxN5pXy4F7ZfX9z0O2CBI/CwuqhxgNbhm+z1NG0sTvcoM8nZyt5MauOowmHY5La1C409R7VaFTE3LwflnMUV+dv8k0POKVGfBtmTrf7bftUJrX5cacbfNXIqbSAzb751abTdiacKdBs7Dl6wa/b1GLWEw5TLqtOXnS2+mTy+7/mFrI52YLC5eEXykEPLTRn4dsdvgNAIMeKxcOc2BqD2D/NZk2AXyGspTnsinxGa1D9OdAggeCvJZsWHAxe+2kCdEr+oJXPtQ0Un6A1IGBRMiaLogVJG0RUAi3jn7zQpMWQTnX6UU3atGg1SAUoP+YAheh4sUOhqqSq5SqCoSGVarze0qEKAAA=) format('woff2');unicode-range:U+1f338}</style><!--/hj-emfont--></head><body>
 <main>
 <nav class="tl-gnav" aria-label="다른 미술 활동"><a href="mirror.html">대칭 그림</a><a href="mandala.html" aria-current="page">각도 만다라</a><a href="tile.html">무늬 만들기(테셀레이션)</a><a href="string.html">실 그림·곱셈 원</a></nav>
@@ -2986,8 +3004,8 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
  new MutationObserver(sync).observe(D.querySelector('body>nav'),{attributes:true,subtree:true,attributeFilter:['class']});sync();
  function setR(c,save){H.classList.toggle('hs-rc',c);fold.setAttribute('aria-expanded',c?'false':'true');fold.title=c?'수업 길 펼치기':'수업 길 접기';fold.innerHTML='';fold.appendChild(ico(c?'M9 6l6 6-6 6':'M15 6l-6 6 6 6'));fold.appendChild(el('span','',c?'수업 길 펼치기':'수업 길 접기'));if(save)try{localStorage.setItem('hj-rail',c?'c':'')}catch(e){}}
  fold.onclick=function(){setR(!H.classList.contains('hs-rc'),H.classList.contains('hs-swide'))};
- function fit(){var w=innerWidth;H.classList.toggle('hs-swide',w>=1340);H.classList.toggle('hs-snone',w<1150);
-  if(w<1340){if(!H.classList.contains('hs-rc'))setR(true,false)}else{var c=false;try{c=localStorage.getItem('hj-rail')==='c'}catch(e){}setR(c,false)}}
+ function fit(){var w=innerWidth;H.classList.toggle('hs-swide',w>=1150);H.classList.toggle('hs-snone',w<1150);
+  if(w<1150){if(!H.classList.contains('hs-rc'))setR(true,false)}else{var c=false;try{c=localStorage.getItem('hj-rail')==='c'}catch(e){}setR(c,false)}}
  /* 위 막대 제목(2026-10-29: 다른 교과처럼 막대 왼쪽에 수업 제목 + 학년·단원 한 줄) — 숨긴 단계 탭 자리에 겹쳐 놓아 막대 높이·쪽 나눔은 그대로 */
  var nav=D.querySelector('body>nav'),tt=(D.title||'').split(/\s+·\s+/)[0].replace(/^\d+\.\s*/,'').trim();
  if(nav&&tt){var ttl=el('div','hs-stitle');ttl.appendChild(el('b','',tt));var info=D.querySelector('.hj-sc-info');if(info)ttl.appendChild(el('small','',info.textContent.replace(/⁠/g,'').trim()));nav.appendChild(ttl);
