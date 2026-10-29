@@ -390,3 +390,41 @@
   function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
  if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
 })();
+
+/* 쉬는 시간 학년 쪽 왼쪽 메뉴바(2026-10-29 선생님 요청) — 미로찾기·종이접기·컬러링·틀린 그림 찾기·스도쿠의 g1~g6.
+   목록 화면에서만 보임(문제·작품을 열면 판을 넓게 쓰려고 숨김). 항목: 쉬움·보통·도전 묶음(종이접기는 작품 이름), 다른 학년 */
+(function(){var D=document,H=D.documentElement,m=location.pathname.match(/\/break\/(maze|origami|coloring|spot|sudoku)\/g(\d)\.html$/);if(!m)return;
+ var NM={maze:'미로찾기',origami:'종이접기',coloring:'컬러링',spot:'틀린 그림 찾기',sudoku:'스도쿠'}[m[1]],G=+m[2],mq=window.matchMedia('(min-width:1200px)'),r,list,bar,io,sig='';
+ function items(){var hs=[].filter.call(D.querySelectorAll('main h3'),function(h){return h.offsetParent&&!h.closest('.hs-trail')});
+  if(hs.length)return hs.map(function(h,i){h.id=h.id||('br-sec'+i);var t=h.cloneNode(true),sm=t.querySelector('small,span');var full=h.textContent.replace(/⁠/g,'').trim();var a=full.split(/\s*·\s*/);return {id:h.id,t:a[0],s:a.slice(1).join(' · ')}});
+  return [].filter.call(D.querySelectorAll('main .og-card'),function(c){return c.offsetParent}).map(function(c,i){c.id=c.id||('br-card'+i);var n=c.querySelector('.nm');return {id:c.id,t:n?n.textContent.trim():'',s:''}})}
+ function draw(){var it=items(),k=it.map(function(x){return x.id+x.t}).join('|');
+  var pk=D.getElementById('sdPick'),listView=m[1]==='sudoku'?!!(pk&&pk.offsetParent):it.length>0;
+  H.classList.toggle('hs-trailon',mq.matches&&listView);r.hidden=!(mq.matches&&listView);if(k===sig)return;sig=k;
+  list.innerHTML=it.map(function(x,i){return '<li><a href="#'+x.id+'"><span class="hs-trn">'+(i+1)+'</span><span>'+x.t+(x.s?'<small>'+x.s+'</small>':'')+'</span></a></li>'}).join('');list.hidden=!it.length;
+  if(io)io.disconnect();if(!window.IntersectionObserver)return;var as=[].slice.call(list.querySelectorAll('a'));
+  io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)as.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)})})},{rootMargin:'-20% 0px -70% 0px'});
+  it.forEach(function(x){var el=D.getElementById(x.id);if(el)io.observe(el)});if(as[0])as[0].classList.add('on')}
+ function go(){bar=D.querySelector('.hs-ebar');if(!bar||!D.querySelector('main'))return false;
+  var gn='';for(var g=1;g<=6;g++)gn+='<a href="g'+g+'.html"'+(g===G?' aria-current="page"':'')+'>'+g+'학년</a>';
+  r=D.createElement('aside');r.className='hs-trail hs-artrail hs-brrail';r.setAttribute('aria-label',NM+' 차례');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">쉬는 시간 · '+NM+'</span><b>'+G+'학년 '+NM+'</b></div><ol class="hs-trs hs-brlist"></ol><div class="hs-arnav"><span class="hs-trk">다른 학년</span><nav class="hs-brg">'+gn+'</nav><a class="hs-brup" href="index.html">'+NM+' 처음으로</a></div>';
+  D.body.appendChild(r);list=r.querySelector('.hs-trs');draw();setInterval(draw,500);(mq.addEventListener?mq.addEventListener('change',draw):mq.addListener(draw));
+  function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
+})();
+
+/* 받아쓰기·속담 왼쪽 메뉴바(2026-10-29 선생님 요청) — 넓은 화면에서 '단계 고르기'(종류·단계)와 다른 학년·영역을 왼쪽에 */
+(function(){var D=document,H=D.documentElement,m=location.pathname.match(/\/common\/(dictation)\/g(\d)\.html$|\/common\/(words)\/(proverb|idiom|saja)\.html$/);if(!m)return;
+ var dict=!!m[1],mq=window.matchMedia('(min-width:1200px)'),r,lv,lvHome,gn,gnHome,bar;
+ function place(){if(!r)return;var a=r.querySelector('.hs-dtlv'),b=r.querySelector('.hs-arnav');
+  if(mq.matches){if(lv&&lv.parentNode!==a)a.appendChild(lv);if(gn&&gn.parentNode!==b)b.appendChild(gn);H.classList.add('hs-trailon');r.hidden=false}
+  else{if(lv&&lv.parentNode!==lvHome.p)lvHome.p.insertBefore(lv,lvHome.n);if(gn&&gnHome&&gn.parentNode!==gnHome)gnHome.appendChild(gn);H.classList.remove('hs-trailon');r.hidden=true}}
+ function go(){bar=D.querySelector('.hs-ebar');lv=D.getElementById(dict?'dtLv':'wdLv');gn=D.querySelector(dict?'nav.dt-gr':'nav.wd-gr');if(!bar||!lv||!lv.children.length)return false;
+  lvHome={p:lv.parentNode,n:lv.nextSibling};gnHome=gn&&gn.parentNode;var h1=D.querySelector('main>h1');
+  r=D.createElement('aside');r.className='hs-trail hs-artrail hs-dtrail';r.setAttribute('aria-label','단계 고르기');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">'+(dict?'받아쓰기·맞춤법':'속담·관용어·사자성어')+'</span><b>'+(h1?h1.textContent.trim():'')+'</b></div><div class="hs-dtlv"><span class="hs-trk">단계 고르기</span></div><div class="hs-arnav"><span class="hs-trk">'+(dict?'다른 학년':'다른 영역')+'</span></div>';
+  D.body.appendChild(r);place();(mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));
+  function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
+ var n=0,iv=setInterval(function(){if(go()||++n>60)clearInterval(iv)},100);
+})();
