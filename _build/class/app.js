@@ -564,20 +564,45 @@ app('wordchain','play','🔤','끝말잇기',b=>{
    else if(last&&!dueum(last).includes(w[0]))msg=`❌ 「${last}」(으)로 시작해야 해요`;else{W.push(w);msg=`⭕ 좋아요! ${W.length}개째`;beep([[880,.1]],.12)}draw();$('#w',b).focus()};
   $('#ok',b).onclick=go;$('#w',b).onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)go()};$('#rs',b).onclick=()=>{W=[];msg='첫 낱말을 적어요';draw()};$('#w',b).focus()};draw()});
 const FILL='가나다라마바사아자차카타파하고노도로모보소오조초코토포호구누두루무부수우주추쿠투푸후기니디리미비시이지치키티피히';
+/* 낱말 찾기 퍼즐 낱말 묶음(2026-10-30 선생님 요청: '새 퍼즐'마다 낱말도 바뀌게) — 주제마다 어린이가 아는 2~5글자 낱말 */
+const PZB={
+ school:['🏫 학교',['교실','운동장','도서관','급식실','보건실','칠판','책상','의자','사물함','연필','지우개','공책','필통','가방','크레파스','색종이','풀','가위','자','선생님','친구','짝꿍','숙제','방학','시간표','실내화','교과서','받아쓰기','줄넘기','체육관']],
+ animal:['🐾 동물',['강아지','고양이','토끼','다람쥐','호랑이','사자','기린','코끼리','하마','원숭이','펭귄','거북이','돌고래','고래','상어','악어','여우','늑대','곰','판다','캥거루','얼룩말','낙타','부엉이','독수리','참새','오리','닭','병아리','개구리','나비','잠자리','개미','꿀벌','달팽이']],
+ fruit:['🍎 과일·채소',['사과','바나나','포도','딸기','수박','참외','복숭아','자두','귤','오렌지','키위','망고','체리','레몬','감','배','블루베리','토마토','오이','당근','감자','고구마','양파','배추','무','호박','옥수수','시금치','브로콜리','파프리카','버섯','마늘']],
+ food:['🍚 음식',['김밥','떡볶이','라면','비빔밥','불고기','된장국','김치','만두','잡채','냉면','짜장면','피자','햄버거','샌드위치','카레','볶음밥','계란말이','미역국','송편','떡국','과자','빵','우유','주스','아이스크림','팥빙수','붕어빵','호떡','도넛','케이크']],
+ season:['🌸 계절·날씨',['봄','여름','가을','겨울','벚꽃','개나리','진달래','장마','소나기','무지개','태풍','단풍','낙엽','허수아비','눈사람','눈싸움','고드름','썰매','햇볕','바람','구름','안개','천둥','번개','우산','장화','부채','선풍기','난로','목도리','장갑']],
+ nature:['⛰️ 자연',['하늘','바다','강','산','들판','숲','나무','꽃','풀잎','바위','모래','조개','파도','섬','호수','폭포','시냇물','계곡','동굴','해','달','별','지구','우주','은하수','화산','사막','빙하','새싹','열매','뿌리','씨앗']],
+ job:['🚒 직업',['의사','간호사','소방관','경찰관','요리사','농부','어부','화가','가수','작가','기자','판사','변호사','약사','군인','조종사','과학자','발명가','건축가','디자이너','미용사','제빵사','우체부','택배기사','운동선수','선생님','사진작가','수의사','프로그래머','아나운서']],
+ ride:['🚌 탈것·장소',['자동차','버스','택시','기차','지하철','비행기','헬리콥터','배','자전거','오토바이','트럭','소방차','구급차','경찰차','유모차','킥보드','로켓','시장','병원','약국','은행','우체국','공원','놀이터','박물관','미술관','영화관','동물원','수영장','정류장','공항','항구']],
+ body:['🧍 몸·마음',['머리','얼굴','눈썹','코','입술','귀','어깨','팔꿈치','손가락','무릎','발가락','배꼽','심장','기쁨','슬픔','화남','걱정','설렘','용기','감사','사랑','우정','배려','친절','약속','인사','미소','웃음','눈물','하품']],
+ home:['🏠 집·물건',['거실','부엌','욕실','침대','이불','베개','냉장고','세탁기','텔레비전','시계','거울','창문','현관','신발','양말','모자','칫솔','치약','수건','비누','숟가락','젓가락','그릇','컵','냄비','전화기','열쇠','화분','달력','사진']],
+ sport:['⚽ 운동·놀이',['축구','야구','농구','배구','피구','탁구','수영','달리기','줄다리기','태권도','씨름','스케이트','스키','배드민턴','줄넘기','훌라후프','숨바꼭질','술래잡기','윷놀이','제기차기','팽이','연날리기','공기놀이','딱지','그네','미끄럼틀','시소','보물찾기','퍼즐','종이접기']],
+ korea:['🏯 우리나라',['한글','태극기','무궁화','한복','김치','세종대왕','이순신','훈민정음','거북선','경복궁','석굴암','첨성대','독도','한라산','백두산','제주도','서울','부산','설날','추석','윷놀이','탈춤','판소리','아리랑','가야금','장구','부채춤','한옥','온돌','장독대']]
+};
 app('puzzle','play','🧩','낱말 찾기 퍼즐',b=>{
- let g=[],sz=8,words=[],found=[],placed=[],a=null,ans=false;
- const make=()=>{words=lines(DB.words).map(w=>w.replace(/\s/g,'')).filter(w=>w.length>=2&&w.length<=8);sz=Math.max(8,...words.map(w=>w.length));g=Array.from({length:sz*sz},()=>'');placed=[];found=[];
-  for(const w of shuffle(words).sort((x,y)=>y.length-x.length)){for(let t=0;t<200;t++){const d=rnd(2),r=rnd(d?sz-w.length+1:sz),c=rnd(d?sz:sz-w.length+1);let ok=true;
+ let g=[],sz=8,found=[],placed=[],a=null,ans=false;
+ if(!DB.pz)DB.pz={t:'mix',n:8};
+ const pool=()=>{const t=DB.pz.t;if(t==='mine')return lines(DB.words);if(PZB[t])return PZB[t][1];return Object.values(PZB).flatMap(x=>x[1])};
+ const pick=()=>{const all=[...new Set(pool().map(w=>w.replace(/\s/g,'')).filter(w=>w.length>=2&&w.length<=8))];
+  if(DB.pz.t==='mine')return all;const out=[];for(const w of shuffle(all)){if(out.length>=DB.pz.n)break;if(out.some(o=>o.includes(w)||w.includes(o)))continue;out.push(w)}return out};
+ const make=()=>{const words=pick();const L=words.reduce((s,w)=>s+w.length,0);
+  sz=Math.min(12,Math.max(8,...words.map(w=>w.length),Math.ceil(Math.sqrt(L*1.9))));g=Array.from({length:sz*sz},()=>'');placed=[];found=[];a=null;
+  for(const w of shuffle(words).sort((x,y)=>y.length-x.length)){for(let t=0;t<300;t++){const d=rnd(2),r=rnd(d?sz-w.length+1:sz),c=rnd(d?sz:sz-w.length+1);let ok=true;
     for(let k=0;k<w.length;k++){const i=(r+(d?k:0))*sz+c+(d?0:k);if(g[i]&&g[i]!==w[k]){ok=false;break}}
     if(ok){const cells=[];for(let k=0;k<w.length;k++){const i=(r+(d?k:0))*sz+c+(d?0:k);g[i]=w[k];cells.push(i)}placed.push({w,cells});break}}}
   g=g.map(x=>x||FILL[rnd(FILL.length)])};
- const draw=()=>{const fc=new Set(placed.filter(p=>found.includes(p.w)||ans).flatMap(p=>p.cells));
-  b.innerHTML=`<div class="row" style="justify-content:space-between"><div class="mid">찾은 낱말 ${found.length} / ${placed.length} · 첫 글자와 끝 글자를 차례로 눌러요 (→ ↓)</div><div class="row"><button class="btn" id="nw" type="button">🔀 새 퍼즐</button><button class="btn" id="an" type="button">${ans?'🙈 정답 숨기기':'👀 정답 보기'}</button><button class="btn t-only" id="e" type="button">✏️ 낱말 바꾸기</button></div></div>
-  <div style="display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;align-items:flex-start"><div class="ws" style="grid-template-columns:repeat(${sz},1fr);width:min(92vw,66vh,640px)">${g.map((ch,i)=>`<button type="button" data-i="${i}" class="${fc.has(i)?'f':''} ${a===i?'a':''}">${ch}</button>`).join('')}</div>
-  <ul class="list" style="min-width:10rem">${placed.map(p=>`<li style="${found.includes(p.w)?'text-decoration:line-through;opacity:.6':''}"><span class="disp" style="font-size:1.3rem">${esc(p.w)}</span>${found.includes(p.w)?' ✔':''}</li>`).join('')}</ul></div>`;
+ const draw=()=>{const fc=new Set(placed.filter(p=>found.includes(p.w)||ans).flatMap(p=>p.cells)),t=DB.pz.t;
+  b.innerHTML=`<div class="row" style="flex-wrap:wrap;gap:.35rem">${[['mix','🔀 모두 섞기'],...Object.entries(PZB).map(([k,v])=>[k,v[0]]),['mine','✏️ 우리 반 낱말']].map(([k,n])=>`<button class="btn sm ${t===k?'on':''}" data-pt="${k}" type="button">${n}</button>`).join('')}</div>
+  <div class="row" style="justify-content:space-between"><div class="mid">찾은 낱말 ${found.length} / ${placed.length} · 첫 글자와 끝 글자를 차례로 눌러요 (→ ↓)</div><div class="row">${t==='mine'?'':`<label class="row small">낱말 수 <select class="inp" id="pn">${[6,8,10,12].map(n=>`<option ${DB.pz.n===n?'selected':''}>${n}</option>`).join('')}</select></label>`}<button class="btn" id="nw" type="button">🔀 새 퍼즐</button><button class="btn" id="an" type="button">${ans?'🙈 정답 숨기기':'👀 정답 보기'}</button>${t==='mine'?'<button class="btn t-only" id="e" type="button">✏️ 낱말 바꾸기</button>':''}</div></div>
+  <div style="display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;align-items:flex-start"><div class="ws" style="grid-template-columns:repeat(${sz},1fr);width:min(92vw,62vh,640px)">${g.map((ch,i)=>`<button type="button" data-i="${i}" class="${fc.has(i)?'f':''} ${a===i?'a':''}">${ch}</button>`).join('')}</div>
+  <ul class="list" style="min-width:10rem;display:grid;grid-template-columns:repeat(${placed.length>6?2:1},minmax(8rem,1fr));gap:.4rem;align-content:start">${placed.map(p=>`<li style="margin:0;${found.includes(p.w)?'text-decoration:line-through;opacity:.6':''}"><span class="disp" style="font-size:1.25rem">${esc(p.w)}</span>${found.includes(p.w)?' ✔':''}</li>`).join('')}</ul></div>
+  <div class="note">${t==='mine'?'선생님이 적은 낱말로 만들어요. 새 퍼즐을 누르면 자리가 바뀌어요.':'새 퍼즐을 누를 때마다 고른 주제에서 낱말을 새로 뽑아요.'}</div>`;
   $$('.ws button',b).forEach(x=>x.onclick=()=>{const i=+x.dataset.i;if(a===null){a=i;draw();return}const hit=placed.find(p=>!found.includes(p.w)&&((p.cells[0]===a&&p.cells[p.cells.length-1]===i)||(p.cells[0]===i&&p.cells[p.cells.length-1]===a)));
    a=null;if(hit){found.push(hit.w);beep([[988,.1],[1318,.18]],.12);if(found.length===placed.length)confetti()}draw()});
-  $('#nw',b).onclick=()=>{make();ans=false;draw()};$('#an',b).onclick=()=>{ans=!ans;draw()};$('#e',b).onclick=()=>editText('찾을 낱말 (한 줄에 하나, 2~8글자)',DB.words,v=>{DB.words=v;make()})};
+  $$('[data-pt]',b).forEach(x=>x.onclick=()=>{DB.pz.t=x.dataset.pt;save();make();ans=false;draw()});
+  const pn=$('#pn',b);if(pn)pn.onchange=()=>{DB.pz.n=+pn.value;save();make();ans=false;draw()};
+  $('#nw',b).onclick=()=>{make();ans=false;draw()};$('#an',b).onclick=()=>{ans=!ans;draw()};
+  const e=$('#e',b);if(e)e.onclick=()=>editText('찾을 낱말 (한 줄에 하나, 2~8글자)',DB.words,v=>{DB.words=v;make()})};
  make();draw();return draw});
 
 /* --- 안전 --- */
