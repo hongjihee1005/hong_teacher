@@ -18,11 +18,16 @@ from topics_b import T as B
 from topics_c import T as C
 TOPICS = A + B + C
 
+# 추천 학년(참고용, 2026-10-29) — 초등 음악 교과서에서 주로 다루는 때를 대강 맞춘 것
+GR = {1: '3~4', 2: '3~6', 3: '3~4', 4: '3~4', 5: '3~4', 6: '3~4', 7: '3~6', 8: '3~6', 9: '3~4', 10: '5~6', 11: '5~6',
+      12: '5~6', 13: '5~6', 14: '5~6', 15: '3~4', 16: '3~6', 17: '3~6', 18: '5~6', 19: '3~6', 20: '5~6', 21: '3~6', 22: '5~6'}
+
 def fname(t): return f"t{t['no']:02d}-{t['slug']}.html"
 
 def check():
     bad = 0
     for i, t in enumerate(TOPICS):
+        if t['no'] not in GR: print(t['no'], '추천 학년 없음'); bad += 1
         if t['no'] != i + 1: print('번호 차례', t['no']); bad += 1
         for k in ('learn', 'act', 'quiz', 'music', 'sheet', 'sum'):
             if not t.get(k): print(t['no'], k, '비어 있음'); bad += 1
@@ -38,13 +43,13 @@ def build(i):
     nxt = f'<a href="{fname(TOPICS[i + 1])}">{TOPICS[i + 1]["no"]}. {TOPICS[i + 1]["title"]} →</a>' if i + 1 < len(TOPICS) else '<a href="index.html">음악이론 목록 →</a>'
     d = dict(t); d['no'] = f"{t['no']:02d}"
     data = json.dumps(d, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
-    rep = {'{NO}': d['no'], '{TITLE}': t['title'], '{GOAL}': t['goal'], '{AREA}': t['area'], '{ICO}': t['ico'], '{PREV}': prev, '{NEXT}': nxt,
+    rep = {'{NO}': d['no'], '{TITLE}': t['title'], '{GOAL}': t['goal'], '{AREA}': t['area'], '{ICO}': t['ico'], '{GRTAG}': f'<span class="hj-grtag">추천 {GR[t["no"]]}학년 <small>참고용</small></span>', '{PREV}': prev, '{NEXT}': nxt,
            '{CSS}': rd(HERE / 'page.css'), '{HEADSNIP}': rd(OG / 'head_snip.html'),
            '{FOOT}': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '초등 음악 교과서의 음악 개념을 주제별로 정리한 자료입니다.'),
            '{GLYPHS}': rd(HERE / 'glyphs.json').strip(), '{ENGINE}': rd(HERE / 'engine.js'), '{APP}': rd(HERE / 'app.js'),
            '{HOMEFRAG}': rd(OG / 'home.html').replace('{HOME}', '../../index.html')}
     s = rd(HERE / 'page.html')
-    for k in ('{CSS}', '{HEADSNIP}', '{FOOT}', '{GLYPHS}', '{ENGINE}', '{APP}', '{HOMEFRAG}', '{PREV}', '{NEXT}', '{NO}', '{TITLE}', '{GOAL}', '{AREA}', '{ICO}'):
+    for k in ('{CSS}', '{HEADSNIP}', '{FOOT}', '{GLYPHS}', '{ENGINE}', '{APP}', '{HOMEFRAG}', '{PREV}', '{NEXT}', '{NO}', '{TITLE}', '{GOAL}', '{GRTAG}', '{AREA}', '{ICO}'):
         s = s.replace(k, rep[k])
     s = s.replace('{DATA}', data)
     out = ROOT / 'common' / 'music' / fname(t)
