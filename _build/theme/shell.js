@@ -368,3 +368,25 @@
  if(!/\/project\/mathgame\/g\d\.html$/.test(location.pathname))return;
  if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
 })();
+
+/* 추천도서 왼쪽 메뉴바(2026-10-29 선생님 요청) — 넓은 화면에서 거르기(학년·갈래·보기) + 이 목록 묶음 차례 + 다른 목록 */
+(function(){var D=document,H=D.documentElement;if(!/\/project\/reading\/[^\/]+\.html$/.test(location.pathname)||/index\.html$/.test(location.pathname))return;
+ var mq=window.matchMedia('(min-width:1200px)'),r,chips,home,list,io;
+ function heads(){return [].slice.call(D.querySelectorAll('#rdList h2.rd-grp'))}
+ function draw(){if(!r)return;var hs=heads(),h='';hs.forEach(function(x,i){x.id='rd-sec'+i;var t=x.cloneNode(true),sm=t.querySelector('small'),n=sm?sm.textContent.trim():'';if(sm)sm.remove();
+   h+='<li><a href="#'+x.id+'"><span class="hs-trn">'+(i+1)+'</span><span>'+t.textContent.replace(/^[^\w가-힣]+/,'').trim()+(n?' <small>'+n+'</small>':'')+'</span></a></li>'});
+  list.innerHTML=h;list.hidden=!hs.length;if(io)io.disconnect();if(!window.IntersectionObserver)return;var as=[].slice.call(list.querySelectorAll('a'));
+  io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)as.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)})})},{rootMargin:'-20% 0px -70% 0px'});
+  hs.forEach(function(x){io.observe(x)});if(as[0])as[0].classList.add('on')}
+ function place(){if(!r||!chips)return;var box=r.querySelector('.hs-rdf');
+  if(mq.matches){if(chips.parentNode!==box)box.appendChild(chips);H.classList.add('hs-trailon')}else{if(chips.parentNode!==home.p)home.p.insertBefore(chips,home.n);H.classList.remove('hs-trailon')}}
+ function go(){var bar=D.querySelector('.hs-ebar'),h1=D.querySelector('main>h1');if(!bar||!h1)return false;
+  chips=D.getElementById('rdChips');if(chips)home={p:chips.parentNode,n:chips.nextSibling};var all=D.querySelector('main nav.rd-all');
+  r=D.createElement('aside');r.className='hs-trail hs-rdrail';r.setAttribute('aria-label','추천도서 차례');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">독서교육</span><b>'+h1.textContent.trim()+'</b></div>'+(chips?'<div class="hs-rdf"><span class="hs-trk">고르기</span></div>':'')+
+   '<ol class="hs-trs"></ol>'+(all?'<div class="hs-trall"><span class="hs-trk">다른 목록</span>'+all.innerHTML+'</div>':'');
+  D.body.appendChild(r);list=r.querySelector('.hs-trs');draw();place();(mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));
+  var tg=D.getElementById('rdList');if(tg&&window.MutationObserver)new MutationObserver(draw).observe(tg,{childList:true});
+  function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
+})();

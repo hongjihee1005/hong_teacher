@@ -153,7 +153,21 @@ def fill(title, area, sub, data, prev, nxt):
     s = rd('page.html')
     for k in ('{CSS}', '{HEADSNIP}', '{FOOT}', '{APP}', '{HOMEFRAG}', '{PREV}', '{NEXT}', '{TITLE}', '{AREA}', '{SUB}', '{DESC}'):
         s = s.replace(k, rep[k])
+    s = s.replace('<nav class="rd-pn">', allnav(title) + '<nav class="rd-pn">', 1)
     return s.replace('{DATA}', js)
+
+
+def allnav(cur):
+    """다른 추천도서 목록(학년별·교과별) — 덮개가 넓은 화면 왼쪽 메뉴바에 보여 줌(2026-10-29), 본문에서는 숨김"""
+    import html as _h
+    out, area = ['<nav class="rd-all" hidden aria-label="다른 추천도서 목록">'], None
+    for f, t, a, *_ in PAGES:
+        if a != area:
+            if area is not None: out.append('</div>')
+            area = a; out.append(f'<div class="mu-ag"><b>{_h.escape(a)}</b>')
+        out.append(f'<a href="{f}"' + (' aria-current="page"' if t == cur else '') + f'>{_h.escape(t.replace(" 추천도서", ""))}</a>')
+    out.append('</div><div class="mu-ag"><b>더 보기</b><a href="orgs.html"' + (' aria-current="page"' if '기관' in cur else '') + '>추천 기관과 출처</a></div></nav>')
+    return ''.join(out)
 
 
 def write(name, s):
