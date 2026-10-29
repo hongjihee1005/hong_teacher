@@ -443,6 +443,8 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
 /* 과목 색: 주소에서 과목을 읽어 html에 표시 */
 (function(){var m=location.pathname.match(/\/(korean|math|social|science)\//);if(m)document.documentElement.setAttribute('data-hjsubj',m[1])})();
 /* 수학게임 방은 강조색 하나로(2026-10-29 디자인팀: 방마다 색이 달라 한 제품처럼 안 보임) */
+/* 기초 학습 방 표시(2026-10-29 기초 학습관 다시 손보기) */
+(function(){var m=location.pathname.match(/\/common\/(hanja|music|arith|dictation|words)\/(?!index\.html)[^\/]+\.html$/);if(m){document.documentElement.classList.add('hj-basic');document.documentElement.setAttribute('data-hjbasic',m[1])}})();
 (function(){if(/\/project\/(creative|mathgame|thinking|mathpeople|mathtools|classgraph|magic|mathdict|mathplay|escape|mathart|estimate|lifemath|quizshow|coding|daily|mathboard)\/|\/break\/board\//.test(location.pathname))document.documentElement.classList.add('hj-mroom')})();
 /* 과학 한 화면 보기: 글의 위계 정리
    - '활동 이름표 + 큰 제목'을 한 줄로

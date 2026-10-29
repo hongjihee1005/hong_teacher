@@ -299,8 +299,8 @@
    if(p.length>1){var s=D.createElement('span');s.textContent=p.slice(1).join(' · ');t.appendChild(s)}
    w.appendChild(t)}
   /* 같은 방의 다른 쪽 단추 줄(tl-gnav 등)을 남색 막대 안으로(2026-10-29 선생님: 화면을 많이 차지) */
-  if(!w.querySelector('.hs-egnav')){var g=D.querySelector('main nav.tl-gnav,main nav.cr-gnav,main nav.mg-gnav,main nav.mp-gnav');
-   if(g&&g.querySelectorAll('a').length>1){g.classList.add('hs-egnav');w.appendChild(g);var c=g.querySelector('a[aria-current],a.on');if(c&&g.scrollWidth>g.clientWidth)g.scrollLeft=c.offsetLeft-g.offsetLeft-(g.clientWidth-c.offsetWidth)/2}}
+  if(!w.querySelector('.hs-egnav')){var g=D.querySelector('main nav.tl-gnav,main nav.cr-gnav,main nav.mg-gnav,main nav.mp-gnav,main nav.dt-gr,main nav.wd-gr,main nav.hz-gr,main nav.ar-nav');
+   if(g&&(g.querySelectorAll('a').length>1||g.id==='arNav')){g.classList.add('hs-egnav');w.appendChild(g);var c=g.querySelector('a[aria-current],a.on');if(c&&g.scrollWidth>g.clientWidth)g.scrollLeft=c.offsetLeft-g.offsetLeft-(g.clientWidth-c.offsetWidth)/2}}
   return true}
  if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>40)clearInterval(iv)},100)}
 })();

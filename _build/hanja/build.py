@@ -56,7 +56,8 @@ def build(i):
     for x in d['learn']: x.append(STROKES.get(x[0], 0))
     order(d)
     data = json.dumps(d, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/')
-    rep = {'{NAME}': d['name'], '{INTRO}': intro(d), '{CSS}': rd(HERE / 'page.css').replace('{ACC}', ACC),
+    nav = ''.join(f'<a href="{fname(L[0])}"' + (' aria-current="page"' if L[0] == d['id'] else '') + f'>{L[1]}</a>' for L in gen.LEVELS)
+    rep = {'{LVNAV}': nav, '{NAME}': d['name'], '{INTRO}': intro(d), '{CSS}': rd(HERE / 'page.css').replace('{ACC}', ACC),
            '{HEADSNIP}': rd(OG / 'head_snip.html'), '{FOOT}': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '한국어문회 한자능력검정시험 급수별 배정한자로 만든 연습 자료입니다.'),
            '{APP}': rd(HERE / 'app.js'), '{HOMEFRAG}': rd(OG / 'home.html').replace('{HOME}', '../../index.html')}
     s = rd(HERE / 'page.html')
