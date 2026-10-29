@@ -442,6 +442,8 @@ document.addEventListener('copy',function(e){try{var t=String(getSelection());if
   if(!raf)raf=requestAnimationFrame(function(){raf=0;var a=Array.from(q);q.clear();a.forEach(function(x){if(x.isConnected)run(x)})})}).observe(document.body,{childList:true,subtree:true,characterData:true})})();
 /* 과목 색: 주소에서 과목을 읽어 html에 표시 */
 (function(){var m=location.pathname.match(/\/(korean|math|social|science)\//);if(m)document.documentElement.setAttribute('data-hjsubj',m[1])})();
+/* 수학게임 방은 강조색 하나로(2026-10-29 디자인팀: 방마다 색이 달라 한 제품처럼 안 보임) */
+(function(){if(/\/project\/(creative|mathgame|thinking|mathpeople|mathtools|classgraph|magic|mathdict|mathplay|escape|mathart|estimate|lifemath|quizshow|coding|daily|mathboard)\/|\/break\/board\//.test(location.pathname))document.documentElement.classList.add('hj-mroom')})();
 /* 과학 한 화면 보기: 글의 위계 정리
    - '활동 이름표 + 큰 제목'을 한 줄로
    - 안내 글(상황 설명)은 작게, 마지막 '~골라요/~써 봐요' 같은 할 일 문장은 크게 따로 */
