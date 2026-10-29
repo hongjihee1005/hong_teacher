@@ -1,18 +1,19 @@
 #!/usr/bin/env python3
-"""3학년 수학 영상 메뉴(grade3/math/videos/index.html)를 만듭니다.
+"""3~6학년 수학 영상 메뉴(gradeN/math/videos/index.html)를 만듭니다.
 
     python3 _build/video3/build.py          # 만들고 메뉴 디자인(apply_theme)까지
     python3 _build/video3/build.py check    # 점검만
 
-영상 목록·유튜브 주소는 videos.py. 메뉴 HTML을 직접 고치지 마세요.
+영상 목록·유튜브 주소는 videos.py(3학년)·videos4.py·videos5.py·videos6.py. 메뉴 HTML을 직접 고치지 마세요.
 """
 import html, pathlib, re, subprocess, sys, urllib.parse
 HERE = pathlib.Path(__file__).resolve().parent
 ROOT = HERE.parents[1]
 sys.path.insert(0, str(HERE))
-import videos as V
-
-OUT = ROOT / 'grade3/math/videos/index.html'
+import importlib
+GRADES = {3: 'videos', 4: 'videos4', 5: 'videos5', 6: 'videos6'}
+V = None; G = 3
+OUT = None
 YT = re.compile(r'^https://(youtu\.be/[\w-]{11}|www\.youtube\.com/(watch\?v=[\w-]{11}|playlist\?list=[\w-]+|@[\w.-]+(/playlists)?))([?&][\w=&.-]*)?$')
 
 def unit(code):
@@ -90,7 +91,7 @@ html:not(.vx-js) .vx-units,html:not(.vx-js) .vx-seg{display:none}
 :root[data-theme="dark"] .vx-ep.seen .vx-tt small::after{color:#7FD3A6}
 </style>"""
 
-JS = r"""<script>(function(){var H=document.documentElement,K='hj-video3',S={};try{S=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}S.seen=S.seen||{};
+JS = r"""<script>(function(){var H=document.documentElement,K='__KEY__',S={};try{S=JSON.parse(localStorage.getItem(K)||'{}')}catch(e){}S.seen=S.seen||{};
  function save(){try{localStorage.setItem(K,JSON.stringify(S))}catch(e){}}
  var units=[].slice.call(document.querySelectorAll('.vx-unit')),ubtn=[].slice.call(document.querySelectorAll('.vx-units button')),sbtn=[].slice.call(document.querySelectorAll('.vx-seg button'));
  if(!units.length)return;H.classList.add('vx-js');
@@ -112,9 +113,9 @@ JS = r"""<script>(function(){var H=document.documentElement,K='hj-video3',S={};t
 def build():
     total = len(V.EPISODES); up = sum(1 for e in V.EPISODES if e[1] in V.LINKS)
     b = ['<nav class="crumb"><a class="back" href="../../../index.html">🏠 초등교사 홍지희</a> '
-         '<a class="back" href="../../index.html">3학년</a> <a class="back" href="../index.html">수학</a></nav>',
+         f'<a class="back" href="../../index.html">{G}학년</a> <a class="back" href="../index.html">수학</a></nav>',
          '<h1>🎬 수학 원리 돋보기</h1>',
-         f'<p class="sub">3학년 수학 개념·계산 원리를 움직이는 그림으로 설명하는 영상 {total}편(편마다 2~3분). '
+         f'<p class="sub">{G}학년 수학 개념·계산 원리를 움직이는 그림으로 설명하는 영상 {total}편(편마다 {getattr(V, "MINUTES", "2~3")}분). '
          f'단원을 고르면 그 단원 영상이 차시 차례로 나와요. 누르면 새 창에서 유튜브가 열려요.</p>',
          '<div class="vx-cont" id="vxCont" aria-label="이어서 보기"></div>',
          '<div class="vx-top"><div class="vx-seg" role="tablist" aria-label="학기">'
@@ -131,14 +132,22 @@ def build():
                         f'<ol class="vx-eps">' + ''.join(ep_html(e) for e in eps) + '</ol></section>')
     b.append('<div class="vx-units" aria-label="단원">' + ''.join(ub) + '</div>')
     b.append('<div class="vx-list">' + ''.join(secs) + '</div>')
-    head = (HERE / 'head.html').read_text(encoding='utf-8').replace('{TITLE}', '수학 원리 돋보기 · 3학년 수학 · 초등교사 홍지희').replace('</head>', CSS + '</head>', 1)
-    foot = (HERE / 'foot.html').read_text(encoding='utf-8').replace('{FOOT}', '3학년 수학 개념을 설명하는 영상 모음입니다. 영상은 유튜브 @hongjihee1005 채널에 있습니다.').replace('</main>', '</main>' + JS, 1)
+    head = (HERE / 'head.html').read_text(encoding='utf-8').replace('{TITLE}', f'수학 원리 돋보기 · {G}학년 수학 · 초등교사 홍지희').replace('</head>', CSS + '</head>', 1)
+    foot = (HERE / 'foot.html').read_text(encoding='utf-8').replace('{FOOT}', f'{G}학년 수학 개념을 설명하는 영상 모음입니다. 영상은 유튜브 @hongjihee1005 채널에 있습니다.').replace('</main>', '</main>' + JS.replace('__KEY__', f'hj-video{G}'), 1)
     OUT.parent.mkdir(parents=True, exist_ok=True)
     OUT.write_text(head + '\n'.join(b) + '\n' + foot, encoding='utf-8')
     subprocess.run([sys.executable, str(ROOT / '_build/theme/apply_theme.py'), str(OUT)], check=True)
     print(f'{OUT.relative_to(ROOT)}: {total}편 (영상 주소 {up}편, 나머지는 채널 검색)')
 
+def use(g):
+    global V, G, OUT
+    G = g; V = importlib.import_module(GRADES[g]); OUT = ROOT / f'grade{g}/math/videos/index.html'
+
 if __name__ == '__main__':
-    ok = check()
+    ok = True
+    for g in GRADES:
+        use(g)
+        if not check(): print(f'  ({g}학년)'); ok = False
     if not ok: sys.exit(1)
-    if sys.argv[1:] != ['check']: build()
+    if sys.argv[1:] != ['check']:
+        for g in GRADES: use(g); build()
