@@ -275,6 +275,11 @@
  fold.onclick=function(){setR(!H.classList.contains('hs-rc'),H.classList.contains('hs-swide'))};
  function fit(){var w=innerWidth;H.classList.toggle('hs-swide',w>=1340);H.classList.toggle('hs-snone',w<1150);
   if(w<1340){if(!H.classList.contains('hs-rc'))setR(true,false)}else{var c=false;try{c=localStorage.getItem('hj-rail')==='c'}catch(e){}setR(c,false)}}
+ /* 위 막대 제목(2026-10-29: 다른 교과처럼 막대 왼쪽에 수업 제목 + 학년·단원 한 줄) — 숨긴 단계 탭 자리에 겹쳐 놓아 막대 높이·쪽 나눔은 그대로 */
+ var nav=D.querySelector('body>nav'),tt=(D.title||'').split(/\s*·\s*/)[0].replace(/^\d+\.\s*/,'').trim();
+ if(nav&&tt){var ttl=el('div','hs-stitle');ttl.appendChild(el('b','',tt));var info=D.querySelector('.hj-sc-info');if(info)ttl.appendChild(el('small','',info.textContent.replace(/⁠/g,'').trim()));nav.appendChild(ttl);
+  var room=function(){var r=nav.getBoundingClientRect().right,t=nav.querySelector('.hj-sctools')||nav.querySelector('.hj-nav');ttl.style.maxWidth=Math.max(120,(t?t.getBoundingClientRect().left:r)-24-16)+'px'};
+  addEventListener('resize',room);setTimeout(room,0);setTimeout(room,600)}
  addEventListener('resize',fit);fit();
  D.addEventListener('click',function(e){if(!H.classList.contains('hs-swide')&&!H.classList.contains('hs-rc')&&!e.target.closest('.hs-srail'))setR(true,false)});
 })();
