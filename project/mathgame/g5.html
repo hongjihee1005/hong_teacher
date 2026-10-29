@@ -3578,7 +3578,7 @@ window.MG={"g":5,"units":[{"id":"u1","sem":"1학기 1단원","nm":"자연수의 
       var self = this;
       $('mgAns').querySelectorAll('.mg-cmp button').forEach(function (b) { tap(b, function () { self.submit(b.dataset.v) }) });
       var ins = $('mgAns').querySelectorAll('.mg-in');
-      ins.forEach(function (x, i) { x.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); self.submit() } else if (e.key === 'Tab') { e.preventDefault(); (ins[i + 1] || ins[0]).focus() } }) });
+      ins.forEach(function (x, i) { x.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); self.submit() } else if (e.key === 'Tab' && !e.shiftKey && ins[i + 1]) { e.preventDefault(); ins[i + 1].focus() } }) });
       if (ins.length) ins[a.t === 'f' ? 1 : 0].focus();
     },
     field: function () { var a = document.activeElement; return a && a.classList && a.classList.contains('mg-in') ? a : $('mgAns').querySelector('.mg-in') },

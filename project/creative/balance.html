@@ -1859,7 +1859,7 @@ html.hs:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) #lesson .bod
       }).join('') + '</div><div class="bl-pad">';
     for (var d = 1; d <= 9; d++) h += '<button type="button" class="bl-num" data-d="' + d + '">' + d + '</button>';
     h += '<button type="button" class="bl-num" data-d="0">0</button><button type="button" class="bl-num bl-del" data-d="x">지우기</button></div>'
-      + '<p class="bl-tip">모양 칸을 누르고 수를 눌러 무게를 써요. 키보드 숫자·Backspace·Tab(다음 칸)도 돼요.</p>';
+      + '<p class="bl-tip">모양 칸을 누르고 수를 눌러 무게를 써요. 키보드 숫자·Backspace·방향키(다른 칸)도 돼요.</p>';
     host.innerHTML = h; paint();
   }
   function paint() {
@@ -1887,7 +1887,7 @@ html.hs:not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz):not(#hsz) #lesson .bod
     if (/INPUT|TEXTAREA|SELECT/.test((e.target || {}).tagName || '')) return;
     if (/^[0-9]$/.test(e.key)) type(e.key);
     else if (e.key === 'Backspace' || e.key === 'Delete') type('x');
-    else if (e.key === 'Tab' || e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); sel = (sel + (e.key === 'ArrowUp' || e.shiftKey ? P.k - 1 : 1)) % P.k; paint() }
+    else if (e.key === 'ArrowDown' || e.key === 'ArrowUp' || e.key === 'ArrowRight' || e.key === 'ArrowLeft') { e.preventDefault(); sel = (sel + (e.key === 'ArrowUp' || e.key === 'ArrowLeft' ? P.k - 1 : 1)) % P.k; paint() }
   });
   window.CRG = {
     render: function (h, p, c) {

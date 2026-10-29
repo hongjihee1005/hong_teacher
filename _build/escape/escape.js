@@ -23,7 +23,7 @@ window.TOOL = function (host, api) {
         + '<div class="es-in"><span class="es-disp" aria-live="polite"></span></div><div class="es-pad">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, '지움', 0, '열기'].map(function (d) { return '<button type="button" class="es-k' + (d === '열기' ? ' es-open' : '') + '" data-k="' + d + '">' + (d === '열기' ? '🔓 열기' : d) + '</button>' }).join('') + '</div>'
         + '<div class="tl-row"><button type="button" class="tl-btn" data-a="hint">💡 힌트 보기</button><button type="button" class="tl-btn" data-a="ans">🔑 정답 보기(선생님)</button></div><div class="es-hints"></div><p class="tl-msg" aria-live="polite"></p></div>';
     }
-    host.innerHTML = h; timer(); api.bar('🔐 ' + R.title + (st.done ? ' · 탈출!' : ' · ' + (st.k >= N ? '마지막 문' : (st.k + 1) + '번 자물쇠')));
+    host.innerHTML = h; timer(); var dp = host.querySelector('.es-disp'); if (dp) dp.textContent = typed; api.bar('🔐 ' + R.title + (st.done ? ' · 탈출!' : ' · ' + (st.k >= N ? '마지막 문' : (st.k + 1) + '번 자물쇠')));
     var hs = host.querySelector('.es-hints'); if (hs) { var arr = st.k >= N ? [R.final.hint] : R.locks[st.k].hints; hs.innerHTML = arr.slice(0, st.shown[st.k] || 0).map(function (t, i) { return '<p>💡 ' + (i + 1) + '. ' + frac(t) + '</p>' }).join('') }
   }
   var typed = '';
@@ -45,7 +45,7 @@ window.TOOL = function (host, api) {
     if (b.dataset.a === 'hint') { var arr = st.k >= N ? [R.final.hint] : R.locks[st.k].hints, s = st.shown[st.k] || 0; if (s < arr.length) { st.shown[st.k] = s + 1; st.hints++ } draw() }
     if (b.dataset.a === 'ans' && confirm('정답을 볼까요? (선생님 확인용)')) { var mm = host.querySelector('.tl-msg'); mm.innerHTML = '정답: <b>' + want() + '</b>' + (st.k < N ? ' — ' + frac(R.locks[st.k].sol) : ''); mm.style.color = '' }
   });
-  document.addEventListener('keydown', function (e) { if (!host.querySelector('.es-pad') || /INPUT|SELECT/.test(e.target.tagName)) return; if (/^[0-9]$/.test(e.key) && typed.length < 6) typed += e.key; else if (e.key === 'Backspace') typed = typed.slice(0, -1); else if (e.key === 'Enter') { tryOpen(); return } else return; host.querySelector('.es-disp').textContent = typed });
+  document.addEventListener('keydown', function (e) { if (!host.querySelector('.es-pad') || /INPUT|SELECT/.test(e.target.tagName)) return; if (/^[0-9]$/.test(e.key) && typed.length < 6) typed += e.key; else if (e.key === 'Backspace') typed = typed.slice(0, -1); else if (e.key === 'Enter') { e.preventDefault(); tryOpen(); return } else return; host.querySelector('.es-disp').textContent = typed });
   document.getElementById('esPrint').onclick = function () { document.documentElement.classList.add('es-printing'); var off = function () { document.documentElement.classList.remove('es-printing'); window.removeEventListener('afterprint', off) }; window.addEventListener('afterprint', off); setTimeout(function () { window.print() }, 80) };
   reset();
 };
