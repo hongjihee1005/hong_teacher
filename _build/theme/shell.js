@@ -298,7 +298,10 @@
   H.classList.add('hs-e');w.classList.add('hs-ebar');
   if(w.parentNode!==D.body||D.body.firstElementChild!==w)D.body.insertBefore(w,D.body.firstChild);
   if(!w.querySelector('.hs-ettl')){var p=parts(),t=D.createElement('div');t.className='hs-ettl';
-   var b=D.createElement('b');b.textContent=(p[0]||'').replace(/^\d+\.\s*/,'');t.appendChild(b);
+   /* 본문 제목(h1)과 같으면 막대에는 방 이름만(2026-10-30 선생님: 제목이 세 번 반복) */
+   var h1=D.querySelector('main h1'),T=(p[0]||'').replace(/^\d+\.\s*/,'');
+   var same=h1&&h1.offsetParent&&h1.textContent.replace(/[\s\u2060]+/g,'').indexOf(T.replace(/[\s\u2060]+/g,''))>=0;if(same){T=p.length>1?p[p.length-1]:'';p=[T]}
+   if(T){var b=D.createElement('b');b.textContent=T;t.appendChild(b)}
    if(p.length>1){var s=D.createElement('span');s.textContent=p.slice(1).join(' · ');t.appendChild(s)}
    w.appendChild(t)}
   /* 같은 방의 다른 쪽 단추 줄(tl-gnav 등)을 남색 막대 안으로(2026-10-29 선생님: 화면을 많이 차지) */
@@ -398,7 +401,7 @@
    목록 화면에서만 보임(문제·작품을 열면 판을 넓게 쓰려고 숨김). 항목: 쉬움·보통·도전 묶음(종이접기는 작품 이름), 다른 학년 */
 (function(){var D=document,H=D.documentElement,m=location.pathname.match(/\/break\/(maze|origami|coloring|spot|sudoku)\/g(\d)\.html$/);if(!m)return;
  var NM={maze:'미로찾기',origami:'종이접기',coloring:'컬러링',spot:'틀린 그림 찾기',sudoku:'스도쿠'}[m[1]],G=+m[2],mq=window.matchMedia('(min-width:1200px)'),r,list,bar,io,sig='';
- function items(){var hs=[].filter.call(D.querySelectorAll('main h3'),function(h){return h.offsetParent&&!h.closest('.hs-trail')});
+ function items(){var hs=[].filter.call(D.querySelectorAll('main h3'),function(h){var g=h.nextElementSibling;return g&&/grid|list/.test(g.className)&&(h.offsetParent||(h.classList.contains('hs-broff')&&h.parentNode.offsetParent))&&!h.closest('.hs-trail')});
   if(hs.length)return hs.map(function(h,i){h.id=h.id||('br-sec'+i);var t=h.cloneNode(true),sm=t.querySelector('small,span');var full=h.textContent.replace(/⁠/g,'').trim();var a=full.split(/\s*·\s*/);return {id:h.id,t:a[0],s:a.slice(1).join(' · ')}});
   return [].filter.call(D.querySelectorAll('main .og-card'),function(c){return c.offsetParent}).map(function(c,i){c.id=c.id||('br-card'+i);var n=c.querySelector('.nm');return {id:c.id,t:n?n.textContent.trim():'',s:''}})}
  function draw(){var it=items(),k=it.map(function(x){return x.id+x.t}).join('|');
@@ -407,12 +410,21 @@
   list.innerHTML=it.map(function(x,i){return '<li><a href="#'+x.id+'"><span class="hs-trn">'+(i+1)+'</span><span>'+x.t+(x.s?'<small>'+x.s+'</small>':'')+'</span></a></li>'}).join('');list.hidden=!it.length;
   if(io)io.disconnect();if(!window.IntersectionObserver)return;var as=[].slice.call(list.querySelectorAll('a'));
   io=new IntersectionObserver(function(es){es.forEach(function(e){if(e.isIntersecting)as.forEach(function(a){a.classList.toggle('on',a.getAttribute('href')==='#'+e.target.id)})})},{rootMargin:'-20% 0px -70% 0px'});
-  it.forEach(function(x){var el=D.getElementById(x.id);if(el)io.observe(el)});if(as[0])as[0].classList.add('on')}
+  it.forEach(function(x){var el=D.getElementById(x.id);if(el)io.observe(el)});if(as[0])as[0].classList.add('on');one()}
+ /* (2026-10-30 선생님: '쉬움' 같은 같은 묶음 단추가 한 화면에 다 보이게) 메뉴바가 있으면 고른 묶음(h3) 하나만 보이고, 작은 칸으로 촘촘히 */
+ var cur=null;
+ function one(){var hs=[].filter.call(D.querySelectorAll('main h3'),function(h){return !h.closest('.hs-trail')&&(h.nextElementSibling&&/grid|list/.test(h.nextElementSibling.className))});
+  hs=hs.filter(function(h){return h.offsetParent||(h.classList.contains('hs-broff')&&h.parentNode.offsetParent)});var on=mq.matches&&hs.length>1&&!r.hidden;H.classList.toggle('hs-brone',on);
+  if(!cur||!D.getElementById(cur))cur=hs[0]&&hs[0].id;
+  if(on)[].forEach.call(D.querySelectorAll('main :is(.mz-q,.sd-q):not([title])'),function(q){var sp=q.querySelector('span');if(sp)q.title=sp.textContent.trim()});
+  hs.forEach(function(h){var off=on&&h.id!==cur;h.classList.toggle('hs-broff',off);h.nextElementSibling.classList.toggle('hs-broff',off)});
+  if(list)[].forEach.call(list.querySelectorAll('a'),function(a){if(on)a.classList.toggle('on',a.getAttribute('href')==='#'+cur)})}
+ D.addEventListener('click',function(e){var a=e.target.closest&&e.target.closest('.hs-brlist a');if(!a||!H.classList.contains('hs-brone'))return;e.preventDefault();cur=a.getAttribute('href').slice(1);one();scrollTo(0,0)});
  function go(){bar=D.querySelector('.hs-ebar');if(!bar||!D.querySelector('main'))return false;
   var gn='';for(var g=1;g<=6;g++)gn+='<a href="g'+g+'.html"'+(g===G?' aria-current="page"':'')+'>'+g+'학년</a>';
-  r=D.createElement('aside');r.className='hs-trail hs-artrail hs-brrail';r.setAttribute('aria-label',NM+' 차례');
-  r.innerHTML='<div class="hs-trh"><span class="hs-tra">쉬는 시간 · '+NM+'</span><b>'+G+'학년 '+NM+'</b></div><ol class="hs-trs hs-brlist"></ol><div class="hs-arnav"><span class="hs-trk">다른 학년</span><nav class="hs-brg">'+gn+'</nav><a class="hs-brup" href="index.html">'+NM+' 처음으로</a></div>';
-  D.body.appendChild(r);list=r.querySelector('.hs-trs');draw();setInterval(draw,500);(mq.addEventListener?mq.addEventListener('change',draw):mq.addListener(draw));
+  r=D.createElement('aside');r.className='hs-trail hs-artrail hs-brrail hs-br-'+m[1];r.setAttribute('aria-label',NM+' 차례');
+  r.innerHTML='<div class="hs-trh"><span class="hs-tra">쉬는 시간 · '+NM+'</span><b>'+G+'학년 '+NM+'</b></div><ol class="hs-trs hs-brlist"></ol><div class="hs-arnav"><span class="hs-trk">다른 학년</span><nav class="hs-brg">'+gn+'</nav><a class="hs-brup" href="'+'index.html">'+NM+' 처음으로</a></div>';
+  D.body.appendChild(r);list=r.querySelector('.hs-trs');draw();setInterval(function(){draw();one()},500);(mq.addEventListener?mq.addEventListener('change',draw):mq.addListener(draw));
   function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
  if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
 })();
@@ -430,4 +442,25 @@
   D.body.appendChild(r);place();(mq.addEventListener?mq.addEventListener('change',place):mq.addListener(place));
   function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',fit);return true}
  var n=0,iv=setInterval(function(){if(go()||++n>60)clearInterval(iv)},100);
+})();
+
+/* 체스 학습관 마당 쪽 왼쪽 메뉴바(2026-10-30 선생님 요청) — 단원 목록(누르면 그 단원으로), 차시·시험 화면에서는 판을 넓게 쓰려고 숨김 */
+(function(){var D=document,H=D.documentElement,m=location.pathname.match(/\/special\/chess\/m(\d)\.html$/);if(!m)return;
+ var mq=window.matchMedia('(min-width:1200px)'),r,list,bar,sig='';
+ function secs(){return [].filter.call(D.querySelectorAll('main section.cs-unit'),function(s){return s.querySelector('h2.cs-uh')})}
+ function draw(){var ss=secs(),vis=ss.some(function(s){return s.offsetParent})&&!D.body.classList.contains('cs-inlesson');
+  var on=mq.matches&&vis;H.classList.toggle('hs-trailon',on);r.hidden=!on;if(!on)return;
+  var k=ss.length+'';if(k!==sig){sig=k;list.innerHTML=ss.map(function(s,i){s.id=s.id||('cs-u'+i);var h=s.querySelector('h2.cs-uh'),tag=h.querySelector('span,small,em,b'),t=h.textContent.trim();
+   var nums=[].map.call(s.querySelectorAll('.cs-no'),function(x){return +x.textContent}).filter(function(n){return n>0&&n<200});
+   var sub=nums.length?(Math.min.apply(null,nums)+'~'+Math.max.apply(null,nums)+'차시'):'';
+   var nm=t.replace(/^(\d+단원|마무리)\s*/,'');var lab=(t.match(/^(\d+단원|마무리)/)||[''])[0];
+   return '<li><a href="#'+s.id+'"><span class="hs-trn">'+(lab.match(/\d+/)?lab.match(/\d+/)[0]:'✓')+'</span><span>'+nm+(sub?'<small>'+sub+'</small>':'')+'</span></a></li>'}).join('')}
+  var as=[].slice.call(list.querySelectorAll('a')),cur=null;ss.forEach(function(s,i){if(s.getBoundingClientRect().top<innerHeight*0.35)cur=i});if(cur===null)cur=0;
+  as.forEach(function(a,i){a.classList.toggle('on',i===cur)})}
+ function go(){bar=D.querySelector('.hs-ebar');if(!bar||!secs().length)return false;
+  r=D.createElement('aside');r.className='hs-trail hs-artrail hs-brrail hs-cstrail';r.setAttribute('aria-label','단원 차례');
+  r.innerHTML='<ol class="hs-trs hs-brlist"></ol><div class="hs-arnav"><a class="hs-brup" href="'+'index.html">체스 학습관 처음으로</a></div>';
+  D.body.appendChild(r);list=r.querySelector('.hs-trs');list.addEventListener('click',function(e){var a=e.target.closest('a');if(!a)return;e.preventDefault();var t=D.getElementById(a.getAttribute('href').slice(1));if(t)scrollTo({top:t.getBoundingClientRect().top+scrollY-bar.getBoundingClientRect().bottom-12,behavior:'smooth'})});draw();setInterval(draw,400);addEventListener('scroll',draw,{passive:true});
+  function fit(){r.style.top=Math.max(0,bar.getBoundingClientRect().bottom)+'px'}fit();addEventListener('scroll',fit,{passive:true});addEventListener('resize',function(){fit();draw()});return true}
+ if(!go()){var n=0,iv=setInterval(function(){if(go()||++n>50)clearInterval(iv)},100)}
 })();
