@@ -12,7 +12,7 @@
  if(!steps||!body||!prev||!next)return;
  var NS='http://www.w3.org/2000/svg';
  var P={play:'M8 5.5v13l10.5-6.5z',board:'M4 5h16v10H4zM8 19h8M12 15v4',lock:'M6 11h12v9H6zM8.5 11V8a3.5 3.5 0 0 1 7 0v3',pen:'M4 20l4-1L19 8l-3-3L5 16zM14 6l3 3',
-  compass:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM15.5 8.5l-2 5-5 2 2-5z',flag:'M5 21V4M5 4h11l-2 4 2 4H5',expand:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',shrink:'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5'};
+  compass:'M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zM15.5 8.5l-2 5-5 2 2-5z',flag:'M5 21V4M5 4h11l-2 4 2 4H5',expand:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',chevl:'M15 6l-6 6 6 6',chevr:'M9 6l6 6-6 6',shrink:'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5'};
  function ico(k){var s=D.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','hs-ico');s.setAttribute('aria-hidden','true');var p=D.createElementNS(NS,'path');p.setAttribute('d',P[k]);s.appendChild(p);return s}
  function el(t,c,txt){var e=D.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e}
  function clean(t){return (t||'').replace(/[\u{1F000}-\u{1FAFF}☀-➿⬀-⯿⌀-⏿️‍]/gu,'').replace(/\s+/g,' ').trim()}
@@ -71,6 +71,16 @@
  dock.appendChild(tg);dock.appendChild(acts);
  [pe,pt,meta,cnt,goal,upn,dock].forEach(function(x){pan.appendChild(x)});side.appendChild(pan);
  R.insertBefore(bar,R.firstChild);R.insertBefore(main,bar.nextSibling);R.insertBefore(side,main.nextSibling);
+ /* v6 왼쪽 '수업 길'(2026-10-29 선생님과 정함): 학습 문제 + 단계 목록(실제 단계 단추를 옮김) · 접기/펼치기(기기에 기억, 칠판 보기에서는 접힘)
+    도구와 이전/다음은 무대 아래 막대, 활동 방법·시간은 '지금 할 일' 줄로. 오른쪽 안내 판은 숨김(겹치는 정보) */
+ var rail=el('aside','hs-rail'),fold=el('button','hs-fold');fold.type='button';
+ function setR(c,save){H.classList.toggle('hs-rc',c);fold.setAttribute('aria-expanded',c?'false':'true');fold.title=c?'수업 길 펼치기':'수업 길 접기';
+  fold.innerHTML='';fold.appendChild(ico(c?'chevr':'chevl'));fold.appendChild(el('span','',c?'수업 길 펼치기':'수업 길 접기'));
+  if(save){try{localStorage.setItem('hj-rail',c?'c':'')}catch(e){}kick()}}
+ fold.onclick=function(){setR(!H.classList.contains('hs-rc'),true)};
+ rail.appendChild(fold);rail.appendChild(goal);rail.appendChild(path);R.insertBefore(rail,main);
+ var bot=el('div','hs-bot');dock.insertBefore(cnt,acts);bot.appendChild(dock);main.appendChild(bot);now.appendChild(meta);
+ H.classList.add('hs-rl');var rc=false;try{rc=localStorage.getItem('hj-rail')==='c'}catch(e){}setR(rc,false);
 
  /* 단계가 바뀔 때마다: 진행 줄 · 단계 이름 · 다음 단계 · 머리띠 · 세부 차례 */
  function nm(b){return b?clean(b.title||(b.querySelector('.hj-stt')||b).textContent).replace(/^(\d+\.|[\u2460-\u2473\u2776-\u277F])\s*/,''):''}
@@ -194,7 +204,7 @@
  var D=document,H=D.documentElement,app=D.getElementById('app');
  if(!app||H.getAttribute('data-hjsubj')!=='math'||H.classList.contains('hs'))return;
  var NS='http://www.w3.org/2000/svg';
- var P={pen:'M4 20l4-1L19 8l-3-3L5 16zM14 6l3 3',stairs:'M4 20h5v-5h5v-5h6V5',expand:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',shrink:'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5'};
+ var P={pen:'M4 20l4-1L19 8l-3-3L5 16zM14 6l3 3',stairs:'M4 20h5v-5h5v-5h6V5',chevl:'M15 6l-6 6 6 6',chevr:'M9 6l6 6-6 6',expand:'M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5',shrink:'M9 4v5H4M15 4v5h5M9 20v-5H4M15 20v-5h5'};
  function ico(k){var s=D.createElementNS(NS,'svg');s.setAttribute('viewBox','0 0 24 24');s.setAttribute('class','hs-ico');s.setAttribute('aria-hidden','true');var p=D.createElementNS(NS,'path');p.setAttribute('d',P[k]);s.appendChild(p);return s}
  function el(t,c,txt){var e=D.createElement(t);if(c)e.className=c;if(txt!=null)e.textContent=txt;return e}
  function clean(t){return (t||'').replace(/[\u{1F000}-\u{1FAFF}☀-➿⬀-⯿⌀-⏿️‍]/gu,'').replace(/\s+/g,' ').trim()}
@@ -222,13 +232,21 @@
   [].forEach.call(stairs.querySelectorAll('button.back'),function(b){tg.appendChild(b)});
   var acts=work.querySelector(':scope>.actions');
   dock.appendChild(tg);if(acts){acts.classList.add('hs-macts');dock.appendChild(acts)}
-  pan.appendChild(dock);side.appendChild(pan);
+  /* v6 왼쪽 '수업 길'(2026-10-29): 탐구 질문·개념 정리·이 차시 + 세로 계단 목록(실제 계단 단추), 아래 막대 = 도구 · 이전/다음 계단 */
+  var rail=el('aside','hs-rail hs-mrail'),fold=el('button','hs-fold');fold.type='button';fold.onclick=function(){setR(!H.classList.contains('hs-rc'),true)};rail.appendChild(fold);
+  [].forEach.call(pan.querySelectorAll(':scope>.hs-goal,:scope>.hs-mscene,:scope>.hs-up'),function(x){rail.appendChild(x)});
+  if(meta.childNodes.length)now.appendChild(meta);
+  var bot=el('div','hs-bot');bot.appendChild(dock);
+  side.appendChild(pan);
   while(work.firstChild)sb.appendChild(work.firstChild);
   if(sh&&sh.parentNode!==sb)sb.insertBefore(sh,sb.firstChild);
-  stage.appendChild(now);stage.appendChild(sb);work.appendChild(stage);
-  stairs.innerHTML='';stairs.appendChild(path);
-  M.appendChild(side);
+  stage.appendChild(now);stage.appendChild(sb);work.appendChild(stage);work.appendChild(bot);
+  stairs.innerHTML='';rail.insertBefore(path,rail.querySelector('.hs-mscene')||rail.querySelector('.hs-up'));stairs.classList.add('hs-hidden');
+  M.insertBefore(rail,M.firstChild);H.classList.add('hs-rl');setR(H.classList.contains('hs-rc'),false);
  }
+ function setR(c,save){H.classList.toggle('hs-rc',c);[].forEach.call(D.querySelectorAll('.hs-fold'),function(f){f.setAttribute('aria-expanded',c?'false':'true');f.title=c?'수업 길 펼치기':'수업 길 접기';
+   f.innerHTML='';f.appendChild(ico(c?'chevr':'chevl'));f.appendChild(el('span','',c?'수업 길 펼치기':'수업 길 접기'))});if(save)try{localStorage.setItem('hj-rail',c?'c':'')}catch(e){}}
+ try{if(localStorage.getItem('hj-rail')==='c')H.classList.add('hs-rc')}catch(e){}
  new MutationObserver(arrange).observe(app,{childList:true,subtree:true});arrange();
  /* 큰 화면: 앱 막대·단계 길·머리띠·오른쪽 판을 1280 기준으로 비례해 키움(활동은 앱이 스스로 맞춤) */
  function fit(){var w=innerWidth,h=innerHeight,z=w<=900?1:Math.max(1,Math.min(w/1280,h/800));H.style.setProperty('--hs-z',z.toFixed(3))}
