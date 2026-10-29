@@ -231,6 +231,24 @@ body.kp-on main{padding-bottom:440px}
  .sh-ps .ar-box{min-width:2.8em;height:1.45em;border-width:1.2pt}
  .sh-ps .ar-box.fbx{min-width:3.6em;height:2.1em}
 }
+/* 단계 카드의 글 문제 예시(.ar-q.tx)가 카드 글 칸(.ar-sk .tx: 세로 flex)과 이름이 겹쳐 낱말마다 줄이 바뀌던 것(2026-10-29 교육자팀) — 한 문장으로, 두 줄까지 */
+.ar-sk .eg .ar-q.tx{display:-webkit-box!important;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden;white-space:normal;font-size:15px;line-height:1.45;color:var(--ink)}
+.ar-sk .eg .ar-q.tx>*{display:inline!important}
+/* 휴대폰: 카드를 덜 크게(2026-10-29 선생님 '숫자가 너무 크고 자리를 많이 차지') */
+@media (max-width:620px){
+ .ar-sl{gap:7px}
+ .ar-sk{gap:10px;padding:9px 11px;border-radius:14px}
+ .ar-sk .no{width:30px;height:30px;font-size:15px;border-radius:9px}
+ .ar-sk b{font-size:16px}
+ .ar-sk small{font-size:13px}
+ .ar-sk .eg{margin-top:2px}
+ .ar-sk .eg .ar-q{font-size:16px}
+ .ar-lvs{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+ .ar-lv{padding:9px 11px;border-radius:14px;border-top-width:5px}
+ .ar-lv b{font-size:24px}
+ .ar-lv .lv{font-size:14px}
+ .ar-lv small{font-size:12.5px}
+}
 </style><style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style><style id="hjfoot-css">.hjfoot{display:block;width:100%;flex-basis:100%;margin:40px 0 0;padding:16px 0 4px;border:0;border-top:3px solid var(--line,#CAD6E4);text-align:center;color:var(--soft,#4F5B75);font-family:var(--body,inherit);font-size:17px;line-height:1.7;word-break:keep-all;opacity:1}.hjfoot p{margin:2px 0;padding:0;border:0;background:none;font-size:inherit;color:inherit;text-align:center}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로(CDN이 막히면 기기의 고딕), 바탕·글자색을 메뉴와 같은 값으로(2026-10-27) */
 @font-face{font-family:'Jua';font-style:normal;font-weight:100 900;font-display:swap;
@@ -1262,6 +1280,9 @@ html body :is(.sthead .routine,.col>h3,.hintt,.pane h3 .pe,#segTeam .seg>button)
  html[data-hjsubj="math"]:not(#hjz) body .stairs .stair:not(.cur){background:transparent!important;border-color:transparent!important;box-shadow:none!important}
  html[data-hjsubj="math"]:not(#hjz) body .stairs .stair.cur{background:var(--paper)!important;border-color:color-mix(in srgb,var(--line) 70%,transparent)!important;box-shadow:var(--v3-sh)!important}
 }
+/* 기초 학습 추천 학년 꼬리표(2026-10-29, 참고용) */
+html body .hj-grtag{display:inline-flex;align-items:center;gap:6px;margin-left:6px;padding:2px 10px;border-radius:999px;background:color-mix(in srgb,var(--acc,#0F1C33) 12%,var(--paper,#fff));color:var(--ink);font-size:14px;font-weight:700;vertical-align:2px;white-space:nowrap}
+html body .hj-grtag small{font-size:12px;font-weight:600;color:var(--soft)}
 
 /* ===== 수업 스튜디오 껍데기 v4 (2026-10-27 선생님: '디자인 구성 자체를 다시') =====
    디자인팀 두 시안 + 교육자팀 검토를 합친 최종 시안 C2의 짜임: 남색 앱 막대 · 단계 길 · 무대('지금 할 일' 머리띠) · 오른쪽 '이 단계 안내' 판(도구 · 이전/다음).
@@ -2638,7 +2659,7 @@ window.ARP={"daily": 3};
           (pc ? '<i class="rec">합격 ' + pc + '회 / ' + E.rounds + '회' + (pc === E.rounds ? ' 🏆' : '') + '</i>' : '') + '</button>';
       });
       $('rkList').innerHTML = h;
-      $('rkInfo').textContent = '12급(1학년 수준)부터 1급(6학년 수준)까지 12단계예요. 급마다 시험이 ' + E.rounds + '회 있고, 한 회는 ' + E.n + '문제, ' + E.pass + '문제 이상 맞히면 합격이에요. 급수와 합격 기준은 이 자료에서 연습용으로 정한 것이에요.';
+      $('rkInfo').textContent = '한 회 ' + E.n + '문제 중 ' + E.pass + '문제 이상 맞히면 합격이에요. 급수와 합격 기준은 이 자료에서 연습용으로 정한 것이에요.';
     }
     $('rkList').onclick = function (e) { var b = e.target.closest('[data-l]'); if (b) { level(+b.dataset.l); scrollTo(0, 0) } };
     function level(id) {
