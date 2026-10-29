@@ -36,7 +36,7 @@
     $('hzGrid').innerHTML = list.map(function (i) { var x = L[i]; return '<button type="button" class="hz-card" data-i="' + i + '"><span class="h han">' + esc(x[0]) + '</span><span class="m">' + he(x[1][0][0][0], x[1][0][1][0]) + '</span></button>' }).join('');
     $('hzCount').textContent = list.length === L.length ? '이 급에서 새로 나오는 한자 ' + L.length + '자' : list.length + '자 찾음';
   }
-  function detail(i) {
+  function detail(i, quiet) {
     var x = L[i];
     $('hzDet').innerHTML = '<div class="hz-big">' + hn(x[0]) + '</div><div class="hz-info"><h3>' + heAll(x) + '</h3><dl><dt>부수</dt><dd>' + hn(x[2]) + '</dd><dt>총획</dt><dd>' + x[3] + '획</dd><dt>급수</dt><dd>' + esc(D.name) + '</dd></dl>' +
       (x[4].length ? '<div>이 한자가 든 낱말</div><div class="hz-words">' + x[4].map(function (w) { return '<span>' + hn(w[0]) + ' ' + esc(w[1]) + '</span>' }).join('') + '</div>' : '') +
@@ -48,7 +48,7 @@
     $('hzDet').hidden = false;
     document.querySelectorAll('.hz-card.on').forEach(function (c) { c.classList.remove('on') });
     var c = document.querySelector('.hz-card[data-i="' + i + '"]'); if (c) c.classList.add('on');
-    $('hzDet').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (!quiet) $('hzDet').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
   var timer = null;
   function play(svg) {
@@ -66,6 +66,8 @@
     })();
   }
   cards(L.map(function (x, i) { return i }));
+  /* 처음 열면 첫 글자를 바로 보여 줌(빈 화면 대신) */
+  if (L.length) detail(0, true);
   $('hzGrid').onclick = function (e) { var c = e.target.closest('.hz-card'); if (c) detail(+c.dataset.i) };
   $('hzDet').onclick = function (e) { var b = e.target.closest('[data-go]'); if (b) detail(+b.dataset.go) };
   $('hzFind').oninput = function () {

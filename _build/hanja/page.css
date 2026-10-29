@@ -163,3 +163,28 @@ svg.hzan text{font:700 7px sans-serif;fill:#D0342C;transition:opacity .2s}
  .ho-anim,.hz-order{display:none}
 }
 .hz-credit{text-align:center;font-size:13px;margin-top:22px}.hz-credit a{color:inherit}
+
+/* 한자 익히기 배치(2026-10-29 선생님: '배치가 이게 최선인가?') — 넓은 화면은 왼쪽 글자 목록(고정, 안에서 스크롤) + 오른쪽 한자 카드,
+   카드는 큰 글자 | 훈음·부수·낱말 | 획순을 한 줄로. 좁은 화면은 카드 → 목록 차례로 쌓음 */
+.hz-learn{display:flex;flex-direction:column;gap:16px}
+.hz-main .hz-det{margin:0}
+@media (min-width:1000px){
+ .hz-learn{display:grid;grid-template-columns:minmax(0,1fr) minmax(300px,360px);gap:20px;align-items:start}
+ .hz-main{position:sticky;top:88px}
+ .hz-side{position:sticky;top:88px;display:flex;flex-direction:column;max-height:calc(100vh - 104px);background:var(--paper);border:2px solid var(--line);border-radius:22px;padding:14px}
+ .hz-side .hz-find{margin:0 0 10px}
+ .hz-side .hz-find .hz-note{font-size:13px}
+ .hz-side .hz-grid{overflow:auto;grid-template-columns:repeat(auto-fill,minmax(62px,1fr));gap:6px;padding:2px 4px 2px 2px;overscroll-behavior:contain}
+ .hz-side .hz-card{border-radius:12px;padding:4px 2px}
+ .hz-side .hz-card .h{font-size:32px;line-height:1.25}
+ .hz-side .hz-card .m{font-size:12px}
+ .hz-det{grid-template-columns:minmax(0,210px) minmax(0,1fr) minmax(0,250px);align-items:start;gap:18px 22px;padding:20px}
+ .hz-det .hz-order{grid-column:auto;border-top:0;border-left:2px dashed var(--line);padding:0 0 0 20px}
+ .hz-det .ho-wrap{display:flex;flex-direction:column;gap:10px}
+ .hz-det .hz-words{flex-wrap:wrap}
+}
+@media (min-width:1000px) and (max-width:1250px){
+ .hz-det{grid-template-columns:minmax(0,190px) minmax(0,1fr)}
+ .hz-det .hz-order{grid-column:1/-1;border-left:0;border-top:2px dashed var(--line);padding:12px 0 0}
+ .hz-det .ho-wrap{flex-direction:row;flex-wrap:wrap}
+}
