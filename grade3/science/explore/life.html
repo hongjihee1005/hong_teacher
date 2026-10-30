@@ -100,7 +100,9 @@ html body .lb-bar .hj-nav a:hover{background:#26385A!important}
 /* 진행 화면 */
 .lb-run{display:grid;grid-template-columns:15rem minmax(0,1fr);min-height:0}
 .lb-rail{background:var(--lb-paper);border-right:1px solid var(--lb-line);padding:.9rem .7rem .8rem;overflow:auto;display:flex;flex-direction:column;min-height:0}
-.lb-rail h2{font-size:.84rem;font-weight:800;color:var(--lb-ink);margin:.1rem .5rem .1rem;line-height:1.35}
+.lb-rail h2{font-size:.9rem;font-weight:800;color:var(--lb-ink);margin:0 .5rem .2rem;line-height:1.35;text-wrap:balance}
+.lb-rk{margin:.1rem .5rem 0;font-size:.74rem;font-weight:700;color:var(--lb-sci-ink)}
+.lb-rwrap{display:flex;flex-direction:column;min-height:100%}
 .lb-rail .lb-rq{font-size:.78rem;color:var(--lb-sub);margin:.15rem .5rem .3rem;line-height:1.4}
 .lb-grp{font-size:.72rem;font-weight:700;color:var(--lb-sub);margin:.4rem .55rem .1rem;display:flex;align-items:center;gap:.4rem}
 .lb-grp::after{content:"";flex:1;height:1px;background:var(--lb-line)}
@@ -158,7 +160,8 @@ html body .lb-bar .hj-nav a:hover{background:#26385A!important}
 .lb-clip{width:2.1rem;height:2.1rem;border-radius:.6rem;background:var(--lb-sci-soft);color:var(--lb-sci-ink);display:flex;align-items:center;justify-content:center;flex:none}.lb-clip .lb-ic{width:1.2rem;height:1.2rem}
 .lb-card-h b{font-size:1.02rem;display:block}
 .lb-card-h span{display:block;font-size:.78rem;color:var(--lb-sub)}
-.lb-card-b{padding:.7rem 1rem .8rem;display:flex;flex-direction:column;gap:.55rem;overflow:auto;min-height:0}
+.lb-card-b{padding:.7rem 1rem .8rem;overflow:auto;min-height:0}
+.lb-fit{display:flex;flex-direction:column;gap:.55rem}
 .lb-q{font-size:.98rem;font-weight:700;margin:0}
 .lb-hint{font-size:.8rem;color:var(--lb-sub);margin:-.35rem 0 0}
 
@@ -197,9 +200,9 @@ html body .lb-bar .hj-nav a:hover{background:#26385A!important}
 .lb-input::placeholder{color:var(--lb-sub);opacity:1}
 
 /* 관찰 */
-.lb-todo{display:flex;flex-direction:column;gap:.35rem;margin:0;padding:0;list-style:none}
-.lb-todo li{display:flex;align-items:center;gap:.55rem;font-size:.84rem;padding:.26rem .55rem;border-radius:.65rem;background:var(--lb-bg)}
-.lb-todo li i{font-style:normal;width:1.4rem;height:1.4rem;border-radius:50%;display:grid;place-items:center;font-size:.74rem;font-weight:800;border:1.5px solid var(--lb-line2);color:var(--lb-sub);flex:none}
+.lb-todo{display:flex;flex-wrap:wrap;gap:.3rem;margin:0;padding:0;list-style:none}
+.lb-todo li{border-radius:999px!important;display:flex;align-items:center;gap:.35rem;font-size:.78rem;padding:.2rem .5rem .2rem .25rem;border-radius:.65rem;background:var(--lb-bg)}
+.lb-todo li i{font-style:normal;width:1.25rem;height:1.25rem;border-radius:50%;display:grid;place-items:center;font-size:.74rem;font-weight:800;border:1.5px solid var(--lb-line2);color:var(--lb-sub);flex:none}
 .lb-todo li i .lb-ic{width:.85rem;height:.85rem;stroke-width:3}
 .lb-todo li.lb-ok i{background:var(--lb-sci);border-color:var(--lb-sci);color:var(--lb-onsci)}
 .lb-todo li.lb-ok{color:var(--lb-sub)}
@@ -396,7 +399,7 @@ html:not(.lb-inrun) .lb-bar{position:sticky;top:0}
  .lb-card-b{overflow:visible}
  .lb-notes{grid-template-columns:1fr;order:3}
  .lb-foot{position:sticky;bottom:0;background:var(--lb-bg);padding:.6rem 1rem;border-top:1px solid var(--lb-line);z-index:5;gap:.5rem;flex-wrap:wrap}
- .lb-fmid .lb-prog,.lb-fmid>span{display:none}
+ .lb-fmid .lb-prog,.lb-fmid>span:not(.lb-picks){display:none}
  .lb-fmid:not(:has(.lb-doit)){display:none}
  .lb-fmid:has(.lb-doit){flex:1 1 100%;order:-1}
  .lb-doit{width:100%;justify-content:center;font-size:.92rem}
@@ -423,6 +426,7 @@ html:not(.lb-inrun) .lb-bar{position:sticky;top:0}
  .lb-sheet{box-shadow:none!important;border-radius:0!important;padding:0!important;overflow:visible!important;height:269mm!important;min-height:0!important;display:flex!important;flex-direction:column!important;gap:3.2mm!important;font-size:11.5pt!important;break-inside:avoid}
  .lb-sh-grid{grid-template-columns:1fr 1fr!important;gap:3mm 6mm!important}
  .lb-sh-h h2{font-size:15pt}
+ .lb-sh-in{display:contents!important;zoom:1!important}
  .lb-sh-po{display:flex!important;flex-direction:column;gap:1mm}
  .lb-sh-fill{flex:1!important}
  .lb-sh-grid{flex:none!important}
@@ -431,6 +435,53 @@ html:not(.lb-inrun) .lb-bar{position:sticky;top:0}
  .lb-sh-lines{display:flex!important;flex-direction:column;justify-content:flex-start;flex:1}
  .lb-sh-lines .lb-ln{flex:1;min-height:8mm}
  .lb-sheet *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+}
+
+/* 2차 고침 */
+.lb-flash{position:fixed;left:50%;top:4.2rem;transform:translateX(-50%);z-index:60;background:var(--lb-navy);color:var(--lb-onnavy);padding:.5rem 1rem;border-radius:999px;font-size:.9rem;font-weight:700;box-shadow:0 6px 18px rgba(0,0,0,.25)}
+.lb-flash[hidden]{display:none}
+.lb-toast2{bottom:auto;top:3.4rem;background:var(--lb-bad-soft);color:var(--lb-ink);border:2px solid var(--lb-bad);white-space:normal;max-width:90%;text-align:center}
+.lb-ask{position:absolute;left:50%;top:.75rem;transform:translateX(-50%);z-index:3;display:inline-flex;align-items:center;gap:.45rem;background:var(--lb-paper);color:var(--lb-ink);border:2px solid var(--lb-sci);border-radius:999px;padding:.35rem 1rem;font-weight:800;font-size:.95rem;white-space:nowrap;box-shadow:var(--lb-shadow)}
+.lb-ask .lb-ic{color:var(--lb-sci-ink)}
+.lb-picks{display:flex;gap:.5rem;flex-wrap:wrap;justify-content:center}
+.lb-pk{padding:0 .9rem;font-size:.92rem}
+.lb-leg{display:none}
+.lb-km{width:100%;border-collapse:collapse;table-layout:fixed;font-size:.8rem}
+.lb-km th{font-weight:700;color:var(--lb-sub);text-align:left;padding:.15rem .1rem;font-size:.76rem;width:4.1rem}
+.lb-km thead th{text-align:center;width:auto}.lb-km thead th:first-child{width:4.1rem}
+.lb-km thead .lb-pin{margin:0 auto;width:1.4rem;height:1.4rem}
+.lb-km td{padding:.18rem .12rem}
+.lb-kseg{display:flex;width:100%}
+.lb-kseg button{flex:1;min-width:0;padding:0 .1rem;height:2.4rem;font-size:.72rem;line-height:1.1;white-space:nowrap;letter-spacing:-.02em}
+.lb-kseg.lb-wrongc{border-color:var(--lb-bad);box-shadow:0 0 0 2px var(--lb-bad)}
+.lb-ktbl td{font-size:.72rem;line-height:1.25}
+.lb-ktbl tr.lb-now td,.lb-ktbl tr.lb-now th{background:var(--lb-sci-soft)}
+.lb-lenst{display:flex;gap:.4rem}.lb-lenst button{flex:1;min-height:2.6rem;border-radius:.6rem;border:1.5px solid var(--lb-line2);background:var(--lb-paper);font-weight:700}
+.lb-lenst button[aria-pressed="true"]{background:var(--lb-sci);border-color:var(--lb-sci);color:var(--lb-onsci)}
+.lb-hb.lb-holding{background:linear-gradient(90deg,var(--lb-sci) 0,var(--lb-sci) 100%) no-repeat left/0% 100%,var(--lb-navy2);animation:lb-hold 1s linear forwards}
+@keyframes lb-hold{to{background-size:100% 100%,auto}}
+.lb-a-lift{animation-name:lb-lift;animation-duration:3.2s;animation-timing-function:ease-in-out}
+@keyframes lb-lift{0%{transform:translateY(0)}12%,82%{transform:translateY(-170px);opacity:.75}100%{transform:translateY(0);opacity:1}}
+.lb-sheet{counter-reset:lbsec}
+.lb-sh-sec h3 i::before{counter-increment:lbsec;content:counter(lbsec)}
+.lb-sh-in{display:flex;flex-direction:column;gap:.45rem}
+.lb-sh-col{display:flex;flex-direction:column;gap:.5rem;min-width:0}
+.lb-sheet .lb-chart{max-height:none;max-width:24rem}
+.lb-sheet tr.lb-grpstart th,.lb-sheet tr.lb-grpstart td{border-top:1.5px solid #B9B2A4}
+.lb-sheet .lb-tbl th.lb-ca{color:#24548F}.lb-sheet .lb-tbl th.lb-cb{color:#8C4514}
+.lb-hb{height:2.5rem}
+@media (max-width:820px){
+ .lb-rwrap{display:none}
+ .lb-rail.lb-open .lb-rwrap{display:block;padding-top:.4rem}
+ .lb-rail.lb-open .lb-rwrap>:not(.lb-rlist){display:none}
+ .lb-rail.lb-open .lb-rlist{display:block}
+ .lb-leg{display:flex;flex-wrap:wrap;gap:.35rem;order:1;margin-top:-.35rem}
+ .lb-lg{display:inline-flex;align-items:center;gap:.3rem;font-size:.82rem;font-weight:700;background:var(--lb-paper);border:1px solid var(--lb-line);border-radius:999px;padding:.2rem .6rem .2rem .25rem}
+ .lb-lg:not(:has(.lb-pin)){padding-left:.6rem}
+ .lb-lg .lb-pin{width:1.35rem;height:1.35rem;font-size:.72rem}
+ .lb-scene{height:min(86vw,330px)}
+ .lb-ask{white-space:normal;width:max-content;max-width:92%;font-size:.85rem;top:.5rem}
+ .lb-picks{width:100%}.lb-pk{flex:1 1 30%;font-size:.82rem;padding:0 .4rem;white-space:normal;line-height:1.15}
 }
 
 </style>
@@ -2403,6 +2454,7 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
   </div>
  </header>
  <main id="lbMain" class="lb-homewrap"></main>
+ <div class="lb-flash" id="lbFlash" role="status" hidden></div>
 </div>
 <footer class="lb-footer">
  <a class="tolist lb-btn" href="index.html">자료 목록으로</a>
@@ -2413,82 +2465,103 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
 </footer>
 <script>
 (function(){'use strict';
-/* ───────── 실험 모형 (지난 판 life.html 실험실 모형 그대로) ───────── */
+/* ───────── 실험 모형 (지난 판 life.html 실험실 모형을 바탕으로) ───────── */
 /* 씨마다 싹 트는 날(물이 있고 온도가 알맞을 때). 같은 조건이면 언제나 같은 결과 */
 const SEEDDAY=[3,3,3,4,3,3,4,3,3,3];
 /* 씨의 모습: 0 마른 씨 · 1 물을 머금고 부풂 · 2 껍질이 벗겨지고 뿌리 · 3 싹 · 4~5 싹이 자람 */
 function seedStage(c,i,d){if(!c.water||!c.temp)return 0;const sd=SEEDDAY[i];if(d>=sd)return Math.min(5,3+(d-sd));if(d>=sd-1)return 2;if(d>=1)return 1;return 0}
 function sproutCount(c,d){let n=0;for(let i=0;i<10;i++)if(seedStage(c,i,d)>=3)n++;return n}
-/* 케일: 잎 수(장)·잎 색(pale)·줄기 굵기(thin)·시듦(wilt)·키(cm) — 지난 판에서 정한 값. 키는 결론의 근거로 쓰지 않고, 어느 조건에서도 줄지 않음 */
-function kaleAt(c,d){let h=10,n=6,wilt=0,pale=0,thin=0;
- if(c.water&&c.light){h=10+.5*d;n=6+Math.floor(d/5)}
+/* 케일: 잎 수(그림)·잎 색(pale)·줄기 굵기(thin)·시듦(wilt)·키(cm, 그림만)·잎 크기(size, 그림).
+   교과서 근거는 '잎의 크기와 색깔, 줄기의 굵기'. 키는 근거로 쓰지 않고, 어느 조건에서도 줄지 않음.
+   물을 주지 않으면 5일째쯤 뚜렷하게 시들도록(잎이 처지고 누렇게, 줄기가 약해짐) — 이 자료에서 정한 빠르기 */
+function kaleAt(c,d){let h=10,n=6,wilt=0,pale=0,thin=0,size=1;
+ if(c.water&&c.light){h=10+.5*d;n=6+Math.floor(d/5);size=1+.024*d}
  else if(c.water){h=10+.52*d;n=6+Math.floor(d/10);pale=Math.min(1,d/10);thin=Math.min(1,d/10)}
- else{h=10+(c.light?.3:.15)*Math.min(d,3);wilt=Math.min(1,Math.max(0,(d-3)/8));if(!c.light){pale=Math.min(1,d/10);thin=Math.min(1,d/10)}}
- /* 잎의 크기(그림): 물과 햇빛을 모두 받으면 커지고, 그 밖에는 조금만 커지거나 그대로(줄지 않음) — 이 자료에서 정한 값 */
- const size=c.water&&c.light?1+.024*d:c.water?1+.01*d:1;
+ else{h=10+(c.light?.3:.15)*Math.min(d,3);wilt=Math.min(1,Math.max(0,(d-1)/6));thin=wilt*.8;if(!c.light){pale=Math.min(1,d/10);thin=Math.max(thin,Math.min(1,d/10))}}
  return {h:Math.round(h*10)/10,n,wilt,pale,thin,size}}
 const KDAYS=[0,5,10,14];
 const SDAYS=[0,1,2,3,4,5];
-function kaleLook(V,k){return V.cond==='water'?(k.wilt>0?0:1):(k.pale>0?0:1)}
+/* 케일 관찰 항목: [열쇠, 이름, [보기0, 보기1]] — 보기0이 '잘 자람' 쪽 */
+/* [열쇠, 이름, 결과표 글, 고르기 단추 글(짧게)] */
+const KATTR=[['size','잎의 크기',['커졌어요','그대로예요'],['커졌어요','그대로']],['color','잎의 색깔',['진한 초록','연한 초록·노란빛'],['진한 초록','연한·노란']],['stem','줄기',['굵어요','가늘어요'],['굵어요','가늘어요']],['wilt','시듦',['싱싱해요','시들었어요'],['싱싱해요','시들어요']]];
+function kAttrs(v){return v.cond==='water'?KATTR:KATTR.slice(0,3)}
+function kaleTruth(v,c,d){const k=kaleAt(c,d),t={size:k.size>1.04?0:1,color:(k.pale>.3||k.wilt>.3)?1:0,stem:k.thin>.3?1:0,wilt:k.wilt>.3?1:0};
+ const o={};kAttrs(v).forEach(a=>{o[a[0]]=t[a[0]]});return o}
 
 /* 받침에 따라 조사 */
 function jo(w,a,b){const s=String(w||'').trim();const c=s.charCodeAt(s.length-1);if(c>=0xAC00&&c<=0xD7A3)return s+((c-0xAC00)%28?a:b);return s+b}
 
-/* ───────── 실험과 단계 ───────── */
+/* ───────── 실험과 단계 ─────────
+   cA = 알아보는 조건이 '있는' 쪽(물을 줌·따뜻함·빛·햇빛), cB = '없는' 쪽.
+   어느 컵(화분)이 cA가 될지는 학생이 준비 단계(dec)에서 고름 → r.p(0 가 · 1 나). */
 const GROUPS=['계획','준비','예상과 관찰','정리'];
 const VARS={
  'seed-water':{exp:'seed',cond:'water',name:'물',sub:'교과서 실험',
   title:'씨가 싹 트는 데 필요한 조건',q:'씨가 싹 트는 데 물이 필요할까요?',
   cA:{water:1,temp:1,light:1},cB:{water:0,temp:1,light:1},
-  lab:['물을 담은 컵','물을 담지 않은 컵'],short:['물 담음','물 안 담음'],
+  lab:['물을 담은 컵','물을 담지 않은 컵'],short:['물 담음','물 안 담음'],dec:'water',
   plan:[['water','큰 컵에 담는 물','drop',1],['temp','온도','thermo',0],['seedkind','씨의 종류(무씨)','seed',0],['size','컵과 부직포의 크기','cup',0],['place','컵을 놓는 곳','place',0]],
   steps:['plan','tools','wick','felt','water','nest','seed','place','pred','obs','concl','sheet'],
-  pred:['물을 담은 컵의 무씨만 싹이 틀 것 같아요.','두 컵의 무씨 모두 싹이 틀 것 같아요.','두 컵의 무씨 모두 싹이 트지 않을 것 같아요.'],predTrue:0,
-  frame:['{0} 컵의 무씨만 씨의 껍질이 벗겨지고 싹이 텄어요. 씨가 싹 트려면 {1} 필요해요.'],ans:['가','물'],jo:{1:['이','가']},chips:['가','나','물','빛','온도'],
-  book:'씨가 싹 트려면 물이 필요해요.',result:'물을 담은 컵의 무씨는 씨의 껍질이 벗겨지고 싹이 텄어요. 물을 담지 않은 컵의 무씨는 그대로였어요.'},
+  pred:['물을 담은 컵의 무씨만 싹이 틀 것 같아요.','두 컵의 무씨 모두 싹이 틀 것 같아요.','두 컵의 무씨 모두 싹이 트지 않을 것 같아요.'],
+  frame:'{0} 컵의 무씨만 씨의 껍질이 벗겨지고 싹이 텄어요. 씨가 싹 트려면 {1} 필요해요.',ans:['@P','물'],jo:{1:['이','가']},chips:['가','나','물','빛','온도'],
+  hint:['기록표에서 싹 튼 씨가 있는 컵을 찾아봐요.','두 컵에서 다르게 한 조건은 무엇이었나요?'],
+  book:'씨가 싹 트려면 물이 필요해요.'},
  'seed-temp':{exp:'seed',cond:'temp',name:'온도',sub:'같은 주제 다른 탐구',
   title:'씨가 싹 트는 데 필요한 조건',q:'씨가 싹 트는 데 알맞은 온도가 필요할까요?',
   cA:{water:1,temp:1,light:0},cB:{water:1,temp:0,light:0},
-  lab:['냉장고 밖','냉장고 안'],short:['냉장고 밖','냉장고 안'],
-  plan:[['temp','온도(냉장고 안·밖)','thermo',1],['water','큰 컵에 담는 물','drop',0],['light','빛(두 컵 모두 어둠상자)','box',0],['seedkind','씨의 종류(무씨)','seed',0],['size','컵과 부직포의 크기','cup',0]],
+  lab:['냉장고 밖','냉장고 안'],short:['냉장고 밖','냉장고 안'],dec:'fridge',
+  plan:[['temp','컵을 두는 곳의 온도','thermo',1],['water','큰 컵에 담는 물','drop',0],['light','빛(상자 씌우기)','box',0],['seedkind','씨의 종류(무씨)','seed',0],['size','컵과 부직포의 크기','cup',0]],
   steps:['plan','tools','wick','felt','water','nest','seed','boxes','fridge','pred','obs','concl','sheet'],
-  pred:['냉장고 밖 컵의 무씨만 싹이 틀 것 같아요.','두 컵의 무씨 모두 싹이 틀 것 같아요.','냉장고 안 컵의 무씨만 싹이 틀 것 같아요.'],predTrue:0,
-  frame:['{0}에 둔 무씨만 싹이 텄어요. 씨가 싹 트려면 {1} 필요해요.'],ans:['냉장고 밖','알맞은 온도'],jo:{1:['이','가']},chips:['냉장고 안','냉장고 밖','알맞은 온도','빛','물'],
-  book:'씨가 싹 트려면 알맞은 온도가 필요해요.',result:'냉장고 밖 어둠상자 속 무씨는 싹이 텄어요. 냉장고 안 어둠상자 속 무씨는 싹이 트지 않았어요.'},
- 'seed-light':{exp:'seed',cond:'light',name:'빛',sub:'빛이 꼭 필요할까?',
+  pred:['냉장고 밖 컵의 무씨만 싹이 틀 것 같아요.','두 컵의 무씨 모두 싹이 틀 것 같아요.','냉장고 안 컵의 무씨만 싹이 틀 것 같아요.'],
+  frame:'{0}에 둔 무씨만 싹이 텄어요. 씨가 싹 트려면 {1} 필요해요.',ans:['냉장고 밖','알맞은 온도'],jo:{1:['이','가']},chips:['냉장고 안','냉장고 밖','알맞은 온도','빛','물'],
+  hint:['기록표에서 싹 튼 씨가 있는 컵은 어디에 두었나요?','두 컵에서 다르게 한 조건은 무엇이었나요?'],
+  book:'씨가 싹 트려면 알맞은 온도가 필요해요.'},
+ 'seed-light':{exp:'seed',cond:'light',name:'빛',sub:'더 알아보기 · 빛이 꼭 필요할까?',
   title:'씨가 싹 트는 데 필요한 조건',q:'씨가 싹 트는 데 빛이 꼭 필요할까요?',
   cA:{water:1,temp:1,light:1},cB:{water:1,temp:1,light:0},
-  lab:['밝은 곳','어둠상자 안'],short:['밝은 곳','어둠상자'],
-  plan:[['light','빛(밝은 곳·어둠상자)','sun',1],['water','큰 컵에 담는 물','drop',0],['temp','온도','thermo',0],['seedkind','씨의 종류(무씨)','seed',0],['size','컵과 부직포의 크기','cup',0]],
+  lab:['밝은 곳','어둠상자 안'],short:['밝은 곳','어둠상자'],dec:'darkbox',
+  plan:[['light','빛(상자 씌우기)','sun',1],['water','큰 컵에 담는 물','drop',0],['temp','온도','thermo',0],['seedkind','씨의 종류(무씨)','seed',0],['size','컵과 부직포의 크기','cup',0]],
   steps:['plan','tools','wick','felt','water','nest','seed','darkbox','pred','obs','concl','sheet'],
-  pred:['밝은 곳 컵의 무씨만 싹이 틀 것 같아요.','두 컵의 무씨 모두 싹이 틀 것 같아요.','어둠상자 속 무씨만 싹이 틀 것 같아요.'],predTrue:1,
-  frame:['밝은 곳과 어둠상자 안의 무씨가 {0} 싹이 텄어요. 씨가 싹 트는 데 {1} 꼭 필요하지는 않아요.'],ans:['모두','빛'],jo:{1:['이','가']},chips:['모두','한쪽만','빛','물','온도'],
-  book:'씨가 싹 트는 데 빛이 꼭 필요하지는 않아요.',result:'밝은 곳의 무씨와 어둠상자 속 무씨가 모두 싹이 텄어요.'},
+  pred:['밝은 곳 컵의 무씨만 싹이 틀 것 같아요.','두 컵의 무씨 모두 싹이 틀 것 같아요.','어둠상자 속 무씨만 싹이 틀 것 같아요.'],
+  frame:'밝은 곳과 어둠상자 안의 무씨가 {0} 싹이 텄어요. 무씨는 {1} 없어도 싹이 터요.',ans:['모두','빛'],jo:{1:['이','가']},chips:['모두','한쪽만','빛','물','온도'],
+  hint:['기록표에서 두 컵의 싹 튼 씨를 견주어 봐요.','두 컵에서 다르게 한 조건은 무엇이었나요?'],
+  book:'무씨는 빛이 없어도 싹이 터요.',bookLabel:'지도서 오개념 바로잡기'},
  'kale-water':{exp:'kale',cond:'water',name:'물',sub:'물을 줄 때와 주지 않을 때',
   title:'식물이 잘 자라는 데 필요한 조건',q:'식물이 잘 자라는 데 물이 필요할까요?',
   cA:{water:1,light:1},cB:{water:0,light:1},
-  lab:['물을 준 케일','물을 주지 않은 케일'],short:['물 줌','물 안 줌'],
+  lab:['물을 준 케일','물을 주지 않은 케일'],short:['물 줌','물 안 줌'],dec:'kwater',
   plan:[['water','물 주기','drop',1],['light','햇빛','sun',0],['kind','식물의 종류(케일)','leaf',0],['size','처음 크기','ruler',0],['place','화분을 놓는 곳','place',0]],
   steps:['plan','ktools','kplace','ktag','kwater','pred','obs','concl','sheet'],
-  pred:['물을 준 케일이 더 잘 자랄 것 같아요.','두 케일 모두 똑같이 자랄 것 같아요.','물을 주지 않은 케일이 더 잘 자랄 것 같아요.'],predTrue:0,
-  looks:['시들었어요','싱싱해요'],
-  frame:['물을 주지 않은 케일은 잎과 줄기가 {0}. 식물이 잘 자라려면 {1} 필요해요.'],ans:['시들었어요','물'],jo:{1:['이','가']},chips:['시들었어요','싱싱해요','물','햇빛'],
-  book:'식물이 잘 자라려면 적당한 양의 물이 필요해요.',result:'물을 준 케일은 잎이 커지고 싱싱했어요. 물을 주지 않은 케일은 잎과 줄기가 시들었어요.'},
+  pred:['물을 준 케일이 더 잘 자랄 것 같아요.','두 케일 모두 똑같이 자랄 것 같아요.','물을 주지 않은 케일이 더 잘 자랄 것 같아요.'],
+  frame:'물을 주지 않은 케일은 잎과 줄기가 {0}. 식물이 잘 자라려면 {1} 필요해요.',ans:['시들었어요','물'],jo:{1:['이','가']},chips:['시들었어요','싱싱해요','물','햇빛'],
+  hint:['기록표에서 물을 주지 않은 케일의 모습을 찾아봐요.','두 화분에서 다르게 한 조건은 무엇이었나요?'],
+  book:'식물이 잘 자라려면 적당한 양의 물이 필요해요.'},
  'kale-light':{exp:'kale',cond:'light',name:'햇빛',sub:'햇빛을 받을 때와 받지 못할 때',
   title:'식물이 잘 자라는 데 필요한 조건',q:'식물이 잘 자라는 데 햇빛이 필요할까요?',
   cA:{water:1,light:1},cB:{water:1,light:0},
-  lab:['햇빛을 받은 케일','햇빛 차단 장치'],short:['햇빛 받음','햇빛 차단'],
+  lab:['햇빛을 받은 케일','햇빛을 받지 못한 케일'],short:['햇빛 받음','햇빛 못 받음'],dec:'kshade',
   plan:[['light','햇빛','sun',1],['water','물 주기','drop',0],['kind','식물의 종류(케일)','leaf',0],['size','처음 크기','ruler',0],['place','화분을 놓는 곳','place',0]],
   steps:['plan','ktools','kplace','ktag','kshade','kwater2','pred','obs','concl','sheet'],
-  pred:['햇빛을 받은 케일이 더 잘 자랄 것 같아요.','두 케일 모두 똑같이 자랄 것 같아요.','햇빛을 받지 못한 케일이 더 잘 자랄 것 같아요.'],predTrue:0,
-  looks:['연한 잎·가는 줄기','진한 잎·굵은 줄기'],
-  frame:['햇빛을 받지 못한 케일은 잎이 {0} 초록색이고 줄기가 {1}. 식물이 잘 자라려면 {2} 필요해요.'],ans:['연한','가늘어요','햇빛'],jo:{2:['이','가']},chips:['연한','진한','가늘어요','굵어요','햇빛','물'],
-  book:'식물이 잘 자라려면 햇빛이 필요해요.',result:'햇빛을 받은 케일은 잎이 크고 진한 초록색이었어요. 햇빛 차단 장치를 씌운 케일은 잎이 연한 초록색이고 줄기가 가늘었어요.'}
+  pred:['햇빛을 받은 케일이 더 잘 자랄 것 같아요.','두 케일 모두 똑같이 자랄 것 같아요.','햇빛을 받지 못한 케일이 더 잘 자랄 것 같아요.'],
+  frame:'햇빛을 받지 못한 케일은 잎이 {0} 초록색이고 줄기가 {1}. 식물이 잘 자라려면 {2} 필요해요.',ans:['연한','가늘어요','햇빛'],jo:{2:['이','가']},chips:['연한','진한','가늘어요','굵어요','햇빛','물'],
+  hint:['기록표에서 햇빛을 받지 못한 케일의 잎 색깔을 봐요.','기록표에서 줄기의 굵기를 봐요.','두 화분에서 다르게 한 조건은 무엇이었나요?'],
+  book:'식물이 잘 자라려면 햇빛이 필요해요.'}
 };
 
-/* 단계 글: 한 문장 한 생각. care: [제목 종류, 글] — '조심해요'(안전) 또는 '알아 두어요' */
-function stepDef(V,id){const W=V.cond==='water',T=V.cond==='temp',L=V.cond==='light',K=V.exp==='kale';
- const pot=K?'화분':'컵';
+/* 준비 단계에서 학생이 고르는 것: p = 조건이 '있는' 쪽, q = '없는' 쪽(냉장고·상자·장치) */
+function decOpts(v,id){const pot=v.exp==='kale'?'화분':'컵',big=v.exp==='kale'?'화분':'큰 컵';
+ const both={t:'두 '+pot+' 모두'},A={t:'가 '+big+'에만'},B={t:'나 '+big+'에만'};
+ if(id==='water'&&v.cond==='water')return [Object.assign({},A,{p:0}),Object.assign({},B,{p:1}),Object.assign({},both,{bad:'계획에서 물은 \'다르게\' 하기로 했어요.'})];
+ if(id==='water')return [Object.assign({},both,{ok:1}),Object.assign({},A,{bad:'계획에서 물은 \'같게\' 하기로 했어요.'}),Object.assign({},B,{bad:'계획에서 물은 \'같게\' 하기로 했어요.'})];
+ if(id==='fridge')return [{t:'가 컵을 냉장고에',p:1},{t:'나 컵을 냉장고에',p:0},{t:'두 컵 모두 냉장고에',bad:'계획에서 온도는 \'다르게\' 하기로 했어요.'}];
+ if(id==='darkbox')return [{t:'가 컵에 씌우기',p:1},{t:'나 컵에 씌우기',p:0},{t:'두 컵 모두',bad:'계획에서 빛은 \'다르게\' 하기로 했어요.'}];
+ if(id==='kwater')return [Object.assign({},A,{p:0}),Object.assign({},B,{p:1}),Object.assign({},both,{bad:'계획에서 물 주기는 \'다르게\' 하기로 했어요.'})];
+ if(id==='kshade')return [{t:'가 화분에 씌우기',p:1},{t:'나 화분에 씌우기',p:0},{t:'두 화분 모두',bad:'계획에서 햇빛은 \'다르게\' 하기로 했어요.'}];
+ if(id==='kwater2')return [Object.assign({},both,{ok:1}),Object.assign({},A,{bad:'계획에서 물 주기는 \'같게\' 하기로 했어요.'}),Object.assign({},B,{bad:'계획에서 물 주기는 \'같게\' 하기로 했어요.'})];
+ return null}
+
+/* 단계 글: 한 문장 한 생각. n0 = 계획을 세우기 전에 보이는 이름(답을 미리 알리지 않게) */
+function stepDef(V,id){const W=V.cond==='water',L=V.cond==='light',K=V.exp==='kale';
  const D={
   plan:{g:0,n:'알아볼 조건 정하기',t:'무엇을 다르게 하고, 무엇을 같게 할까요?',k:'plan',
    why:'한 가지만 다르게 해야 무엇 때문인지 알 수 있어요.',care:['know','모두 고른 뒤에 계획을 확인해요.']},
@@ -2498,48 +2571,49 @@ function stepDef(V,id){const W=V.cond==='water',T=V.cond==='temp',L=V.cond==='li
    why:'심지가 큰 컵의 물을 위로 빨아올려요.',care:['care','심지를 끼울 때 손을 다치지 않게 조심해요.']},
   felt:{g:1,n:'원 모양 부직포 올리기',t:'심지를 옆으로 눕히고 원 모양 부직포를 올려요',act:'부직포 올리기',k:'scene',dur:1800,
    why:'부직포가 젖으면 무씨가 물을 받을 수 있어요.',care:['know','두 컵의 부직포 크기를 같게 해요.']},
-  water:W?{g:1,n:'한 컵에만 물 담기',t:'한쪽 큰 컵에만 물을 담아요',act:'가 큰 컵에 물 담기',k:'scene',dur:2100,
+  water:W?{g:1,n:'한 컵에만 물 담기',n0:'큰 컵에 물 담기',t:'한쪽 큰 컵에만 물을 담아요',ask:'어느 큰 컵에 물을 담을까요?',k:'scene',dur:2100,
    why:'물만 다르게 해야 물이 필요한지 알 수 있어요.',care:['care','물을 흘리지 않게 천천히 부어요.']}
-   :{g:1,n:'두 컵에 물 담기',t:'두 큰 컵에 물을 똑같이 담아요',act:'두 컵에 물 담기',k:'scene',dur:2100,
+   :{g:1,n:'두 컵에 물 담기',n0:'큰 컵에 물 담기',t:'큰 컵에 물을 담아요',ask:'어느 큰 컵에 물을 담을까요?',k:'scene',dur:2100,
    why:'물은 같게 할 조건이에요.',care:['care','물을 흘리지 않게 천천히 부어요.']},
   nest:{g:1,n:'작은 컵 끼우기',t:'심지를 아래로 두고 작은 컵을 큰 컵에 끼워요',act:'작은 컵 끼우기',k:'scene',dur:2400,
-   why:'심지 끝이 물에 닿아야 부직포가 젖어요.',care:['know',W?'물이 없는 나 컵의 부직포는 마른 채로 있어요.':'두 컵의 부직포가 모두 젖었어요.']},
+   why:'심지 끝이 물에 닿아야 부직포가 젖어요.',care:['know',W?'물이 없는 큰 컵의 부직포는 마른 채로 있어요.':'두 컵의 부직포가 모두 젖었어요.']},
   seed:{g:1,n:'무씨 올리기',t:'원 모양 부직포 위에 무씨를 골고루 올려요',act:'무씨 올리기',k:'scene',dur:2400,
    why:'두 컵에 같은 수를 올려야 견주기 쉬워요.',care:['know','이 실험관에서는 세기 쉽게 10개씩 올려요.']},
   place:{g:1,n:'같은 곳에 두기',t:'두 컵을 같은 곳에 두어요',act:'같은 곳에 두기',k:'scene',dur:1500,
    why:'온도와 빛을 같게 하려고 같은 곳에 두어요.',care:['care','물을 담은 큰 컵에 물이 늘 있는지 확인해요.']},
-  darkbox:{g:1,n:'한 컵에만 어둠상자',t:'같은 곳에 두고, 나 컵에만 어둠상자를 씌워요',act:'어둠상자 씌우기',k:'scene',dur:1500,
+  darkbox:{g:1,n:'한 컵에만 어둠상자',n0:'어둠상자 씌우기',t:'같은 곳에 두고, 한 컵에만 어둠상자를 씌워요',ask:'어느 컵에 어둠상자를 씌울까요?',k:'scene',dur:1500,
    why:'빛만 다르게 하려고 두 컵을 같은 곳에 두어요.',care:['know','어둠상자 안에는 빛이 들지 않아요.']},
-  boxes:{g:1,n:'두 컵 모두 어둠상자',t:'두 컵 모두 어둠상자로 덮어요',act:'어둠상자 씌우기',k:'scene',dur:1500,
+  boxes:{g:1,n:'두 컵 모두 어둠상자',n0:'어둠상자 씌우기',t:'두 컵 모두 어둠상자로 덮어요',act:'어둠상자 씌우기',k:'scene',dur:1500,
    why:'냉장고 안은 어두워요. 빛을 같게 하려고 둘 다 덮어요.',care:['know','어둠상자 안에는 빛이 들지 않아요.']},
-  fridge:{g:1,n:'한 컵은 냉장고에',t:'나 컵은 냉장고 냉장실에, 가 컵은 냉장고 밖에 두어요',act:'냉장고에 넣기',k:'scene',dur:2900,
+  fridge:{g:1,n:'한 컵은 냉장고에',n0:'컵 두기',t:'한 컵은 냉장고 냉장실에, 다른 컵은 냉장고 밖에 두어요',ask:'어느 컵을 냉장고에 넣을까요?',k:'scene',dur:2900,
    why:'온도만 다르게 하려는 거예요.',care:['know','냉장고 냉장실 안은 온도가 낮아요.']},
   ktools:{g:1,n:'준비물 살펴보기',t:'준비물을 살펴봐요',act:'준비물 꺼내기',k:'scene',dur:1700,
    why:'비슷한 크기로 자란 케일 두 화분으로 견주어요.',care:['care','실험 준비물을 가지고 장난치지 않아요.']},
   kplace:{g:1,n:'같은 곳에 놓기',t:'두 화분을 같은 장소에 놓아요',act:'같은 곳에 놓기',k:'scene',dur:1500,
    why:L?'온도와 바람을 같게 하려고 같은 곳에 놓아요.':'햇빛과 온도를 같게 하려고 같은 곳에 놓아요.',care:['know','두 화분은 비슷한 크기로 자란 케일이에요.']},
   ktag:{g:1,n:'이름표 붙이기',t:'가 화분과 나 화분에 이름표를 붙여요',act:'이름표 붙이기',k:'scene',dur:1200,
-   why:'어느 화분인지 헷갈리지 않게 해요.',care:['know','가는 '+V.lab[0]+', 나는 '+V.lab[1]+'예요.']},
-  kwater:{g:1,n:'가 화분에만 물 주기',t:'가 화분에만 물을 줘요',act:'가 화분에 물 주기',k:'scene',dur:2100,
+   why:'어느 화분인지 헷갈리지 않게 해요.',care:['know','관찰한 것을 적을 때도 가와 나로 적어요.']},
+  kwater:{g:1,n:'한 화분에만 물 주기',n0:'물 주기',t:'한 화분에만 물을 줘요',ask:'어느 화분에 물을 줄까요?',k:'scene',dur:2100,
    why:'물만 다르게 해야 물이 필요한지 알 수 있어요.',care:['care','물을 너무 많이 주면 뿌리가 썩을 수 있어요.']},
-  kshade:{g:1,n:'햇빛 차단 장치 씌우기',t:'나 화분에 햇빛 차단 장치를 씌워요',act:'햇빛 차단 장치 씌우기',k:'scene',dur:1500,
+  kshade:{g:1,n:'햇빛 차단 장치 씌우기',t:'한 화분에 햇빛 차단 장치를 씌워요',ask:'어느 화분에 장치를 씌울까요?',k:'scene',dur:1500,
    why:'햇빛만 다르게 해요. 흰 장치에는 바람 구멍이 있어요.',care:['know','물을 줄 때만 잠깐 들어 올려요.']},
-  kwater2:{g:1,n:'두 화분에 물 주기',t:'두 화분에 물을 똑같이 줘요',act:'두 화분에 물 주기',k:'scene',dur:3000,
+  kwater2:{g:1,n:'두 화분에 물 주기',n0:'물 주기',t:'화분에 물을 줘요',ask:'어느 화분에 물을 줄까요?',k:'scene',dur:3200,
    why:'물은 같게 할 조건이에요.',care:['care','물을 너무 많이 주면 뿌리가 썩을 수 있어요.']},
   pred:{g:2,n:'결과 예상하기',t:K?'두 케일은 어떻게 자랄까요?':'며칠 뒤 두 컵의 무씨는 어떻게 될까요?',k:'pred',
    why:'예상은 맞히기가 아니에요. 내 생각을 남겨요.',care:['know','예상은 틀려도 괜찮아요.']},
   obs:K?{g:2,n:'며칠마다 관찰하기',t:'케일을 돌보며 잎과 줄기를 살펴요',k:'obs',
-   why:'잎의 수와 색깔, 줄기의 굵기로 견주어요.',care:L?['know','관찰할 때만 장치를 잠깐 들어 올려요.']:['care','물을 너무 많이 주지 않아요.']}
+   why:'잎의 크기와 색깔, 줄기의 굵기를 견주어요.',care:L?['know','관찰할 때만 장치를 잠깐 들어 올려요.']:['care','물을 너무 많이 주지 않아요.']}
    :{g:2,n:'날마다 관찰하기',t:'날마다 살펴보고 싹 튼 씨를 세어요',k:'obs',
    why:'날마다 같은 방법으로 세어야 견줄 수 있어요.',care:['care',W?'물을 담은 큰 컵에 물이 늘 있는지 확인해요.':'두 큰 컵에 물이 늘 있는지 확인해요.']},
   concl:{g:3,n:'결론 쓰기',t:'기록을 보고 결론을 써요',k:'concl',
-   why:'결론은 내 관찰 기록에서 나와요.',care:['know',K?'실험이 끝나면 두 화분 모두 물과 햇빛을 줘요.':'젖은 부직포와 심지는 선생님 안내에 따라 버려요.']},
+   why:'결론은 내 관찰 기록에서 나와요.',care:['know',K?'실험이 끝나면 두 화분 모두 물과 햇빛을 줘요.':L?'상추처럼 싹 틀 때 빛이 꼭 필요한 씨도 있어요.':'젖은 부직포와 심지는 선생님 안내에 따라 버려요.']},
   sheet:{g:3,n:'결과 한 장',t:'실험 결과를 한 장으로 정리해요',k:'sheet',why:'',care:null}
  };
- return Object.assign({id},D[id])}
+ const s=Object.assign({id},D[id]);const o=decOpts(V,id);if(o)s.opts=o;return s}
 
 /* ───────── 그림: 실험대(앞에서 본 모습) — 모두 직접 그린 SVG ───────── */
 const BY=436;           /* 물건이 놓이는 높이 */
+let NAR=false,LEG=[];   /* 좁은 화면: 작은 그림 글자는 HTML(LEG)로 */
 const A_COL='var(--lb-a)',B_COL='var(--lb-b)';
 function an(cls,delay,extra){return ' class="lb-a '+cls+'" style="animation-delay:'+(delay||0)+'s'+(extra?';'+extra:'')+'"'}
 function bg(o){o=o||{};let g='<rect x="-3000" y="-3000" width="7000" height="3416" fill="var(--w-wall)"/><rect x="-3000" y="330" width="7000" height="86" fill="var(--w-wall2)"/><rect x="-3000" y="326" width="7000" height="5" fill="var(--w-rail)"/>'+
@@ -2555,11 +2629,11 @@ function bg(o){o=o||{};let g='<rect x="-3000" y="-3000" width="7000" height="341
  return g}
 function defs(){return '<defs><linearGradient id="lbSky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--w-sky1)"/><stop offset="1" stop-color="var(--w-sky2)"/></linearGradient></defs>'}
 function svg(inner,label,vb){return '<svg viewBox="'+(vb||'0 0 960 540')+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+label+'">'+defs()+inner+'</svg>'}
-function plate(cx,letter,txt,y){y=y||470;const w=Math.max(120,txt.length*19+76),col=letter==='가'?A_COL:B_COL;
+function plate(cx,letter,txt,y){if(NAR){LEG.push([letter,txt]);return ''}y=y||470;const w=Math.max(120,txt.length*19+76),col=letter==='가'?A_COL:B_COL;
  return '<g><rect x="'+(cx-w/2)+'" y="'+y+'" width="'+w+'" height="48" rx="12" fill="var(--w-label)" stroke="'+col+'" stroke-width="2.5"/>'+
  '<circle cx="'+(cx-w/2+27)+'" cy="'+(y+24)+'" r="15" fill="'+col+'"/><text x="'+(cx-w/2+27)+'" y="'+(y+30.5)+'" text-anchor="middle" font-size="18" font-weight="800" fill="var(--w-label)">'+letter+'</text>'+
  '<text x="'+(cx-w/2+50)+'" y="'+(y+31)+'" font-size="19" font-weight="700" fill="var(--w-labeltx)">'+txt+'</text></g>'}
-function bubble(x,y,t,col){const w=t.length*18+30;return '<g><rect x="'+(x-w/2)+'" y="'+(y-22)+'" width="'+w+'" height="40" rx="20" fill="var(--w-label)" stroke="'+(col||'var(--w-felt-s)')+'" stroke-width="2"/><text x="'+x+'" y="'+(y+5)+'" text-anchor="middle" font-size="18" font-weight="700" fill="var(--w-labeltx)">'+t+'</text></g>'}
+function bubble(x,y,t,col){if(NAR){LEG.push([null,t]);return ''}const w=t.length*18+30;return '<g><rect x="'+(x-w/2)+'" y="'+(y-22)+'" width="'+w+'" height="40" rx="20" fill="var(--w-label)" stroke="'+(col||'var(--w-felt-s)')+'" stroke-width="2"/><text x="'+x+'" y="'+(y+5)+'" text-anchor="middle" font-size="18" font-weight="700" fill="var(--w-labeltx)">'+t+'</text></g>'}
 function qmark(x,y,col){return '<g'+an('lb-a-pop',.2)+'><circle cx="'+x+'" cy="'+y+'" r="28" fill="var(--w-label)" stroke="'+col+'" stroke-width="3" stroke-dasharray="6 5"/><text x="'+x+'" y="'+(y+12)+'" text-anchor="middle" font-size="34" font-weight="800" fill="'+col+'">?</text></g>'}
 
 /* 무씨 하나(옆모습, 작게) */
@@ -2604,23 +2678,23 @@ function rig(cx,o){o=o||{};const Y=o.Y||BY,rim=Y-172,g=[];
  g.push('<path d="M'+(cx-82)+' '+rim+' A82 11 0 0 0 '+(cx+82)+' '+rim+'" fill="none" stroke="var(--w-rim)" stroke-width="2.6"/>');
  g.push('<path d="M'+(cx-74)+' '+(rim+22)+' L'+(cx-60)+' '+(Y-24)+'" stroke="#fff" stroke-opacity=".5" stroke-width="5" stroke-linecap="round"/>');
  return g.join('')}
-function darkBox(cx,Y,anim){Y=Y||BY;const x=cx-106,t=Y-304;
+function darkBox(cx,Y,anim,notext){Y=Y||BY;const x=cx-106,t=Y-304;
  return '<g'+(anim?an('lb-a-down',anim,'--from:-260px'):'')+'><path d="M'+x+' '+(t+14)+' L'+(x+22)+' '+t+' H'+(x+234)+' L'+(x+212)+' '+(t+14)+'Z" fill="var(--w-box2)"/>'+
  '<rect x="'+x+'" y="'+(t+14)+'" width="212" height="'+(Y-t-12)+'" rx="5" fill="var(--w-box)"/><path d="M'+(x+212)+' '+(t+14)+' L'+(x+234)+' '+t+' V'+(Y-16)+' L'+(x+212)+' '+(Y+2)+'Z" fill="var(--w-box2)"/>'+
  '<rect x="'+(x+92)+'" y="'+(t+14)+'" width="28" height="'+(Y-t-12)+'" fill="#000" opacity=".1"/>'+
- '<text x="'+(x+106)+'" y="'+(t+150)+'" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-boxtx)">어둠상자</text></g>'}
-function fridge(open,anim){const x=690,y=40,w=220,h=508;let g='';
+ (NAR||notext?'':'<text x="'+(x+106)+'" y="'+(t+150)+'" text-anchor="middle" font-size="24" font-weight="800" fill="var(--w-boxtx)">어둠상자</text>')+'</g>'}
+function fridge(){const x=690,y=36,w=220,h=420;let g='';
  g+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="16" fill="var(--w-fr)" stroke="var(--w-fr-s)" stroke-width="3"/>';
- g+='<rect x="'+(x+14)+'" y="'+(y+14)+'" width="'+(w-28)+'" height="'+(h-28)+'" rx="8" fill="var(--w-fr2)"/>';
- g+='<path d="M'+(x+14)+' 186 H'+(x+w-14)+'M'+(x+14)+' 439 H'+(x+w-14)+'" stroke="var(--w-fr-s)" stroke-width="5"/>';
- g+='<text x="'+(x+w/2)+'" y="'+(y+46)+'" text-anchor="middle" font-size="17" font-weight="800" fill="#2F4050">냉장실</text>';
- g+='<g opacity=".8">'+[0,1,2,3,4].map(i=>'<path d="M'+(x+40+i*36)+' '+(212+(i%2)*14)+' l6 6 M'+(x+46+i*36)+' '+(212+(i%2)*14)+' l-6 6" stroke="#fff" stroke-width="2"/>').join('')+'</g>';
+ g+='<rect x="'+(x+12)+'" y="'+(y+12)+'" width="'+(w-24)+'" height="'+(h-24)+'" rx="8" fill="var(--w-fr2)"/>';
+ g+='<path d="M'+(x+12)+' 150 H'+(x+w-12)+'M'+(x+12)+' 440 H'+(x+w-12)+'" stroke="var(--w-fr-s)" stroke-width="5"/>';
+ if(!NAR)g+='<text x="'+(x+w/2)+'" y="'+(y+42)+'" text-anchor="middle" font-size="21" font-weight="800" fill="#2F4050">냉장실</text>';
+ g+='<g opacity=".8">'+[0,1,2,3,4].map(i=>'<path d="M'+(x+40+i*36)+' '+(84+(i%2)*14)+' l6 6 M'+(x+46+i*36)+' '+(84+(i%2)*14)+' l-6 6" stroke="#fff" stroke-width="2"/>').join('')+'</g>';
  return g}
-function fridgeDoor(cls){const x=690,y=40,w=220,h=508;
- return '<g'+(cls||'')+'><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="16" fill="var(--w-fr)" stroke="var(--w-fr-s)" stroke-width="3"/><path d="M'+x+' 190 H'+(x+w)+'" stroke="var(--w-fr-s)" stroke-width="3"/>'+
- '<rect x="'+(x+18)+'" y="110" width="8" height="60" rx="4" fill="var(--w-fr-s)"/><rect x="'+(x+18)+'" y="220" width="8" height="90" rx="4" fill="var(--w-fr-s)"/>'+
- '<text x="'+(x+w/2)+'" y="300" text-anchor="middle" font-size="22" font-weight="800" fill="#2F4050">냉장고</text></g>'}
-function fridgeDoorOpen(cls){return '<g'+(cls||'')+'><path d="M910 40 L952 64 V522 L910 548Z" fill="var(--w-fr)" stroke="var(--w-fr-s)" stroke-width="3"/><path d="M920 120 v60" stroke="var(--w-fr-s)" stroke-width="6" stroke-linecap="round"/></g>'}
+function fridgeDoor(cls){const x=690,y=36,w=220,h=420;
+ return '<g'+(cls||'')+'><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="16" fill="var(--w-fr)" stroke="var(--w-fr-s)" stroke-width="3"/><path d="M'+x+' 150 H'+(x+w)+'" stroke="var(--w-fr-s)" stroke-width="3"/>'+
+ '<rect x="'+(x+18)+'" y="80" width="8" height="54" rx="4" fill="var(--w-fr-s)"/><rect x="'+(x+18)+'" y="176" width="8" height="90" rx="4" fill="var(--w-fr-s)"/>'+
+ (NAR?'':'<text x="'+(x+w/2)+'" y="300" text-anchor="middle" font-size="22" font-weight="800" fill="#2F4050">냉장고</text>')+'</g>'}
+function fridgeDoorOpen(cls){return '<g'+(cls||'')+'><path d="M910 36 L952 60 V432 L910 456Z" fill="var(--w-fr)" stroke="var(--w-fr-s)" stroke-width="3"/><path d="M920 110 v60" stroke="var(--w-fr-s)" stroke-width="6" stroke-linecap="round"/></g>'}
 
 /* 비커(물 붓기) */
 function pitcher(x,y,anim,rot){return '<g transform="translate('+x+' '+y+')"><g'+(anim?an('lb-a-tilt',0,'--rot:'+(rot||-40)+'deg'):' opacity="0"')+'>'+
@@ -2632,7 +2706,7 @@ function stream(d,delay){return '<path d="'+d+'" stroke="var(--w-water-s)" strok
 function packet(x,y,delay){return '<g transform="translate('+x+' '+y+')"><g'+an('lb-a-shake',delay||0)+'>'+
  '<rect x="-30" y="-42" width="60" height="84" rx="5" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="1.6"/><rect x="-30" y="-42" width="60" height="13" fill="var(--w-kraft-s)" opacity=".55"/>'+
  '<rect x="-22" y="-20" width="44" height="34" rx="6" fill="#fff"/><ellipse cx="-7" cy="-4" rx="5" ry="3.6" fill="#7A4A2C"/><ellipse cx="6" cy="3" rx="5" ry="3.6" fill="#7A4A2C"/><ellipse cx="9" cy="-9" rx="4" ry="3" fill="#7A4A2C"/>'+
- '<text x="0" y="33" text-anchor="middle" font-size="14" font-weight="800" fill="#3B2A16">무씨</text></g></g>'}
+ (NAR?'':'<text x="0" y="33" text-anchor="middle" font-size="16" font-weight="800" fill="#3B2A16">무씨</text>')+'</g></g>'}
 
 /* 화분 + 케일 */
 function mixHex(a,b,t){t=Math.max(0,Math.min(1,t));const p=s=>[1,3,5].map(i=>parseInt(s.slice(i,i+2),16));const A=p(a),B=p(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
@@ -2646,27 +2720,27 @@ function pot(cx,o){o=o||{};const Y=BY;let g='<ellipse cx="'+cx+'" cy="'+(Y+3)+'"
  return g}
 const LEAFSIDE=[-1,1,-1,1,-1,1,-1,1,-1,1];
 function kale(cx,sy,k){const stemH=30+(k.h-10)*8,sw=12-5.5*k.thin;
- const base=mixHex('#3E7D33','#A9C774',k.pale),leaf=mixHex(base,'#B5A54C',k.wilt*.55),edge=mixHex(mixHex('#24501E','#5E8A3A',k.pale),'#6E5E22',k.wilt*.5),vein=mixHex('#A6D184','#EEF5D0',k.pale);
- const lean=k.wilt*8,n=k.n,tx=cx+lean,ty=sy-stemH;let g='';
+ const base=mixHex('#3E7D33','#A9C774',k.pale),leaf=mixHex(base,'#C2B04E',k.wilt*.85),edge=mixHex(mixHex('#24501E','#5E8A3A',k.pale),'#6E5E22',k.wilt*.5),vein=mixHex('#A6D184','#EEF5D0',k.pale);
+ const lean=k.wilt*22,n=k.n,tx=cx+lean,ty=sy-stemH;let g='';
  g+='<path d="M'+cx+' '+sy+' Q'+(cx+2)+' '+(sy-stemH*.6)+' '+tx+' '+ty+'" stroke="'+mixHex('#7FA85A','#C9DB98',k.pale)+'" stroke-width="'+sw+'" fill="none" stroke-linecap="round"/>';
  /* 잎은 부채꼴로 하나씩 떨어져 펼쳐져 셀 수 있게(바깥 잎부터 그림) */
  const order=[...Array(n).keys()].sort((a,b)=>Math.abs(b-(n-1)/2)-Math.abs(a-(n-1)/2));
  order.forEach(i=>{const t=n>1?i/(n-1):.5,c=Math.abs(t-.5)*2,side=t<.5?-1:1;
-  let ang=-80+160*t;ang+=side*k.wilt*38*c+(c<.2?k.wilt*20:0);
+  let ang=-80+160*t;ang+=side*k.wilt*62*c+(c<.2?k.wilt*45:0);
   const ay=ty+c*stemH*.45,ax=tx;
-  const L=(104-30*c)*k.size*(1-.06*k.pale),p=L*.4,w=L*.27;
-  let pts=[];for(let s=0;s<=20;s++){const u=s/20,r=Math.pow(Math.sin(Math.PI*u),.85)*(1+.1*Math.sin(u*Math.PI*9));pts.push([w*r,-(p+(L-p)*u)])}
-  let d='M0 0 L0 '+(-p);pts.forEach(q=>{d+=' L'+q[0].toFixed(1)+' '+q[1].toFixed(1)});for(let s=pts.length-1;s>=0;s--)d+=' L'+(-pts[s][0]).toFixed(1)+' '+pts[s][1].toFixed(1);d+='Z';
-  const bend=k.wilt*20*(side||1);
+  const L=(104-30*c)*k.size*(1-.06*k.pale)*(1-.18*k.wilt),p=L*.4,w=L*.27*(1-.25*k.wilt);
+  let pts=[];for(let s=0;s<=20;s++){const u=s/20,r=Math.pow(Math.sin(Math.PI*u),.85)*(1+.1*Math.sin(u*Math.PI*9)),cu=k.wilt*u*u*L*.35*(side||1);pts.push([w*r,-(p+(L-p)*u)+k.wilt*u*u*L*.12,cu])}
+  let d='M0 0 L0 '+(-p);pts.forEach(q=>{d+=' L'+(q[0]+q[2]).toFixed(1)+' '+q[1].toFixed(1)});for(let s=pts.length-1;s>=0;s--)d+=' L'+(-pts[s][0]+pts[s][2]).toFixed(1)+' '+pts[s][1].toFixed(1);d+='Z';
+  const bend=k.wilt*34*(side||1);
   g+='<g transform="translate('+ax.toFixed(1)+' '+ay.toFixed(1)+') rotate('+ang.toFixed(1)+')"><g transform="skewX('+bend.toFixed(1)+')"><path d="'+d+'" fill="'+leaf+'" stroke="'+edge+'" stroke-width="2.6" stroke-linejoin="round"/>'+
    '<path d="M0 0 V'+(-L*.92).toFixed(1)+'" stroke="'+vein+'" stroke-width="2.2"/>'+
    '<path d="M0 '+(-L*.48).toFixed(1)+' l'+(w*.5).toFixed(1)+' '+(-L*.12).toFixed(1)+' M0 '+(-L*.66).toFixed(1)+' l'+(-w*.46).toFixed(1)+' '+(-L*.12).toFixed(1)+'" stroke="'+vein+'" stroke-width="1.5" opacity=".85"/></g></g>'});
  return g}
 function shade(cx,o){o=o||{};const x=cx-114,t=BY-330;
- let g='<g'+(o.anim?an('lb-a-down',o.anim,'--from:-280px'):'')+(o.dx?' transform="translate('+o.dx+' 0)"':'')+'><rect x="'+x+'" y="'+t+'" width="228" height="'+(BY-t+2)+'" rx="10" fill="var(--w-shade)" stroke="var(--w-shade-s)" stroke-width="2.5"/>';
+ let g='<g'+(o.anim?an('lb-a-down',o.anim,'--from:-280px'):o.lift?an('lb-a-lift',o.lift):'')+(o.dx?' transform="translate('+o.dx+' 0)"':'')+'><rect x="'+x+'" y="'+t+'" width="228" height="'+(BY-t+2)+'" rx="10" fill="var(--w-shade)" stroke="var(--w-shade-s)" stroke-width="2.5"/>';
  for(let i=0;i<6;i++)g+='<circle cx="'+(x+34+i*32)+'" cy="'+(t+26)+'" r="6" fill="#5E6B78"/>';
  for(let i=0;i<6;i++)g+='<circle cx="'+(x+34+i*32)+'" cy="'+(BY-26)+'" r="6" fill="#5E6B78"/>';
- g+='<text x="'+cx+'" y="'+(t+176)+'" text-anchor="middle" font-size="19" font-weight="800" fill="#2F3A46">햇빛 차단</text><text x="'+cx+'" y="'+(t+202)+'" text-anchor="middle" font-size="19" font-weight="800" fill="#2F3A46">장치</text></g>';return g}
+ if(!NAR)g+='<text x="'+cx+'" y="'+(t+176)+'" text-anchor="middle" font-size="19" font-weight="800" fill="#2F3A46">햇빛 차단</text><text x="'+cx+'" y="'+(t+202)+'" text-anchor="middle" font-size="19" font-weight="800" fill="#2F3A46">장치</text>';return g+'</g>'}
 function can(x,y,anim,delay){return '<g transform="translate('+x+' '+y+')"><g'+(anim?an('lb-a-tilt',delay||0,'--rot:-34deg'):' opacity="0"')+'>'+
  '<path d="M-6 -30 L-70 -70" stroke="#5B9BC4" stroke-width="9" stroke-linecap="round"/><ellipse cx="-74" cy="-73" rx="9" ry="6" fill="#4A88B0" transform="rotate(-35 -74 -73)"/>'+
  '<path d="M-10 -46 h74 l-6 66 a8 8 0 0 1 -8 7 h-46 a8 8 0 0 1 -8 -7z" fill="#6FB2DA" stroke="#3F7EA6" stroke-width="2.5"/>'+
@@ -2675,27 +2749,32 @@ function tag(cx,letter,anim){const col=letter==='가'?A_COL:B_COL;return '<g'+(a
 
 /* 돋보기: 위에서 본 부직포(싹 튼 씨 세기) */
 const TP=[[-70,-48],[-12,-66],[46,-52],[84,-2],[-92,10],[-34,-6],[24,8],[-58,58],[4,66],[62,50]];
-function seedTop(x,y,st,i){let g='';
+function seedTop(x,y,st,i,dark){let g='';
  if(st>=2)g+='<path d="M'+(x+8)+' '+(y+5)+' q14 8 10 24" stroke="var(--w-root)" stroke-width="4" fill="none" stroke-linecap="round"/>';
  if(st>=3){const s=st===3?1.3:st===4?1.55:1.75;
+  if(dark){/* 어둠 속 싹: 떡잎이 노랗고 줄기가 길게 웃자람 */const L=[0,0,0,16,26,34][st],lx=x-L*.7,ly=y-L;
+   g+='<path d="M'+x+' '+y+' Q'+(x-4)+' '+(y-L*.5)+' '+lx+' '+ly+'" stroke="#F3EBC4" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M'+x+' '+y+' Q'+(x-4)+' '+(y-L*.5)+' '+lx+' '+ly+'" stroke="#C9BC7A" stroke-width="1.2" fill="none"/>'+
+   '<ellipse cx="'+(x+7)+'" cy="'+(y+5)+'" rx="5" ry="3.2" fill="var(--w-seed2)" transform="rotate(30 '+(x+7)+' '+(y+5)+')" opacity=".85"/>'+
+   '<g transform="translate('+lx+' '+ly+') scale('+(s*.85)+')"><path d="M0 0 c-13 -2 -16 -12 -6 -15 c5 0 7 7 6 15z" fill="#EDE59A" stroke="#A99A3A" stroke-width="1.2"/><path d="M0 0 c13 -2 16 -12 6 -15 c-5 0 -7 7 -6 15z" fill="#E4DA86" stroke="#A99A3A" stroke-width="1.2"/></g>';return g}
   g+='<g transform="translate('+x+' '+y+') scale('+s+')"><ellipse cx="8" cy="6" rx="5" ry="3.2" fill="var(--w-seed2)" transform="rotate(30 8 6)" opacity=".85"/><path d="M0 0 c-14 -2 -18 -14 -7 -17 c6 0 8 8 7 17z" fill="var(--w-leaf)" stroke="var(--w-leafs)" stroke-width="1.1"/><path d="M0 0 c14 -2 18 -14 7 -17 c-6 0 -8 8 -7 17z" fill="var(--w-leaf2)" stroke="var(--w-leafs)" stroke-width="1.1"/></g>'}
  else{const r=st>=1?11:9;g+='<ellipse cx="'+x+'" cy="'+y+'" rx="'+r+'" ry="'+(r*.72)+'" fill="'+(st>=1?'var(--w-seed2)':'var(--w-seed)')+'" stroke="#4A3220" stroke-width="1" transform="rotate('+((i*37)%180)+' '+x+' '+y+')"/><ellipse cx="'+(x-3)+'" cy="'+(y-2)+'" rx="3" ry="1.6" fill="var(--w-hl)" opacity=".8"/>';
   if(st===2)g+='<path d="M'+(x-6)+' '+(y-3)+' l5 7" stroke="#E8DCC0" stroke-width="2"/>'}
  return g}
-function lens(cx,cy,c,d,cup,o){o=o||{};const wet=!!c.water,R=128;
+function lens(cx,cy,c,d,cup,o){o=o||{};const wet=!!c.water,R=128,dark=!c.light;
  let g='<circle cx="'+cx+'" cy="'+(cy+6)+'" r="'+(R+4)+'" fill="var(--w-shadow)"/><circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="var(--w-lens)" stroke="var(--w-lens-s)" stroke-width="7"/>'+
  '<circle cx="'+cx+'" cy="'+cy+'" r="'+(R-14)+'" fill="'+(wet?'var(--w-feltw)':'var(--w-felt)')+'" stroke="'+(wet?'var(--w-feltw-s)':'var(--w-felt-s)')+'" stroke-width="1.5"/>';
  for(let i=0;i<6;i++)g+='<path d="M'+(cx-84+i*10)+' '+(cy-70+i*28)+' q40 -8 '+(150-i*14)+' 6" stroke="rgba(110,100,80,.13)" stroke-width="2.5" fill="none"/>';
  const marks=o.marks||[];
  TP.forEach((p,i)=>{const st=seedStage(c,i,d),x=cx+p[0],y=cy+p[1],m=marks.indexOf(i);
   const grow=o.grow&&st>=3&&seedStage(c,i,d-1)<3;
-  let s='<g'+(grow?an('lb-a-grow',.1+i*.05):'')+'>'+seedTop(x,y,st,i)+'</g>';
-  if(m>=0)s+='<g'+an('lb-a-pop',0)+'><circle cx="'+(x+16)+'" cy="'+(y-24)+'" r="12" fill="'+(cup?B_COL:A_COL)+'" stroke="var(--w-label)" stroke-width="2.5"/><text x="'+(x+16)+'" y="'+(y-19)+'" text-anchor="middle" font-size="14" font-weight="800" fill="var(--w-label)">'+(m+1)+'</text></g>';
-  if(o.count&&st>=3)s='<g class="lb-hit" role="button" tabindex="0" data-seed="'+cup+':'+i+'" aria-label="'+(cup?'나':'가')+' 컵 싹 튼 씨'+(m>=0?', '+(m+1)+'번으로 셌어요':', 누르면 번호를 붙여요')+'"><circle class="lb-hitc" cx="'+x+'" cy="'+(y-6)+'" r="27" fill="transparent" stroke="'+(m>=0?'transparent':'var(--lb-sci)')+'" stroke-width="2" stroke-dasharray="5 5"/>'+s+'</g>';
+  let s='<g'+(grow?an('lb-a-grow',.1+i*.05):'')+'>'+seedTop(x,y,st,i,dark)+'</g>';
+  if(o.hint===i)s+='<circle cx="'+x+'" cy="'+(y-6)+'" r="30" fill="none" stroke="var(--lb-sci)" stroke-width="4" class="lb-a-pulse"/>';
+  if(m>=0)s+='<g'+(o.pop===i?an('lb-a-pop',0):'')+'><circle cx="'+(x+17)+'" cy="'+(y-25)+'" r="14" fill="'+(cup?B_COL:A_COL)+'" stroke="var(--w-label)" stroke-width="2.5"/><text x="'+(x+17)+'" y="'+(y-19.5)+'" text-anchor="middle" font-size="16" font-weight="800" fill="var(--w-label)">'+(m+1)+'</text></g>';
+  if(o.count)s='<g class="lb-hit" role="button" tabindex="0" data-seed="'+cup+':'+i+'" aria-pressed="'+(m>=0)+'" aria-label="'+(cup?'나':'가')+' 컵 씨 '+(i+1)+(m>=0?', '+(m+1)+'번으로 셌어요':'')+'"><circle class="lb-hitc" cx="'+x+'" cy="'+(y-6)+'" r="27" fill="transparent" stroke="none"/>'+s+'</g>';
   g+=s});
  if(o.care)g+='<g'+an('lb-a-drip',.1)+'><path d="M'+(cx+R-10)+' '+(cy-R+4)+' c-9 12 -11 19 0 23 c11 -4 9 -11 0 -23z" fill="var(--w-water)" stroke="var(--w-water-s)" stroke-width="2"/></g>';
  return g}
-const STAGETXT=['그대로예요','씨가 물을 머금고 부풀었어요','껍질이 벗겨지고 뿌리가 나왔어요','싹이 텄어요'];
+const STAGETXT=['그대로예요','씨가 부풀었어요','뿌리가 나왔어요','싹이 텄어요'];
 function seedTxt(c,d){let m=0;for(let i=0;i<10;i++)m=Math.max(m,seedStage(c,i,d));return STAGETXT[Math.min(3,m)]}
 
 /* 준비물 카드 */
@@ -2706,18 +2785,18 @@ function itemArt(k){const cup=(x,y,w,h,hole)=>'<path d="M'+(x-w/2)+' '+y+' L'+(x
   wick:'<rect x="-22" y="-42" width="13" height="84" rx="6" fill="var(--w-felt)" stroke="var(--w-felt-s)" stroke-width="2"/><rect x="8" y="-38" width="13" height="84" rx="6" fill="var(--w-felt)" stroke="var(--w-felt-s)" stroke-width="2"/>',
   felt:'<ellipse cx="0" cy="16" rx="56" ry="17" fill="var(--w-felt)" stroke="var(--w-felt-s)" stroke-width="2"/><ellipse cx="0" cy="-2" rx="56" ry="17" fill="var(--w-felt)" stroke="var(--w-felt-s)" stroke-width="2"/>',
   water:'<g transform="translate(-24 -42)"><path d="M0 0 h48 v76 a6 6 0 0 1 -6 6 h-36 a6 6 0 0 1 -6 -6z" fill="var(--w-glass)" stroke="var(--w-glass-s)" stroke-width="2.4"/><path d="M2 26 h44 v50 a4 4 0 0 1 -4 4 h-36 a4 4 0 0 1 -4 -4z" fill="var(--w-water)"/></g>',
-  seeds:'<rect x="-28" y="-44" width="56" height="84" rx="5" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="2"/><text x="0" y="-14" text-anchor="middle" font-size="15" font-weight="800" fill="#4A2F18">무씨</text>'+[-14,-4,6,14,-9,1,11].map((x,k)=>'<ellipse cx="'+x+'" cy="'+(10+(k>3?12:0))+'" rx="3.8" ry="2.7" fill="#7A4A2C"/>').join(''),
+  seeds:'<rect x="-28" y="-44" width="56" height="84" rx="5" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="2"/>'+[-14,-4,6,14,-9,1,11].map((x,k)=>'<ellipse cx="'+x+'" cy="'+(10+(k>3?12:0))+'" rx="3.8" ry="2.7" fill="#7A4A2C"/>').join(''),
   box:'<path d="M-46 -30 L-34 -40 H54 L42 -30Z" fill="var(--w-box2)"/><rect x="-46" y="-30" width="88" height="72" rx="4" fill="var(--w-box)"/><path d="M42 -30 L54 -40 V30 L42 42Z" fill="var(--w-box2)"/>',
-  tag:'<rect x="-34" y="-30" width="30" height="30" rx="6" fill="var(--w-label)" stroke="var(--lb-a)" stroke-width="3"/><text x="-19" y="-8" text-anchor="middle" font-size="17" font-weight="800" fill="var(--lb-a)">가</text><rect x="4" y="-6" width="30" height="30" rx="6" fill="var(--w-label)" stroke="var(--lb-b)" stroke-width="3"/><text x="19" y="16" text-anchor="middle" font-size="17" font-weight="800" fill="var(--lb-b)">나</text>',
+  tag:'<rect x="-40" y="-36" width="36" height="36" rx="6" fill="var(--w-label)" stroke="var(--lb-a)" stroke-width="3"/><rect x="4" y="-6" width="36" height="36" rx="6" fill="var(--w-label)" stroke="var(--lb-b)" stroke-width="3"/>'+(NAR?'':'<text x="-22" y="-10" text-anchor="middle" font-size="22" font-weight="800" fill="var(--lb-a)">가</text><text x="22" y="20" text-anchor="middle" font-size="22" font-weight="800" fill="var(--lb-b)">나</text>'),
   can:'<g transform="translate(-6 30)"><path d="M-6 -30 L-48 -58" stroke="#5B9BC4" stroke-width="8" stroke-linecap="round"/><path d="M-10 -46 h62 l-5 56 a7 7 0 0 1 -7 6 h-38 a7 7 0 0 1 -7 -6z" fill="#6FB2DA" stroke="#3F7EA6" stroke-width="2.5"/><path d="M6 -46 q16 -28 34 0" stroke="#3F7EA6" stroke-width="5" fill="none"/></g>',
   shade:'<rect x="-40" y="-44" width="80" height="88" rx="6" fill="var(--w-shade)" stroke="var(--w-shade-s)" stroke-width="2.5"/>'+[0,1,2,3].map(i=>'<circle cx="'+(-24+i*16)+'" cy="-32" r="3.5" fill="#5E6B78"/>').join('')};
  return A[k]||''}
 function kaleArt(){return '<g transform="translate(0 -6) scale(.36) translate(0 -330)">'+pot(0,{})+kale(0,338,{n:6,h:10,wilt:0,pale:0,thin:0,size:1})+'</g>'}
-function toolsScene(list,anim){let b='';const n=list.length,cols=n<=4?n:n<=6?3:4,rows=Math.ceil(n/cols),cw=200,ch=176,gx=18,gy=18;
+function toolsScene(list,anim){let b='';if(NAR)list.forEach(it=>LEG.push([null,it[1]]));const n=list.length,cols=n<=4?n:n<=6?3:4,rows=Math.ceil(n/cols),cw=200,ch=176,gx=18,gy=18;
  const W=cols*cw+(cols-1)*gx,H=rows*ch+(rows-1)*gy,x0=480-W/2,y0=Math.max(30,240-H/2);
  list.forEach((it,i)=>{const c=i%cols,r=Math.floor(i/cols),x=x0+c*(cw+gx),y=y0+r*(ch+gy),cx=x+cw/2;
   b+='<g'+(anim?an('lb-a-pop',.3+i*.17):'')+'><rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+ch+'" rx="16" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/>'+
-  '<g transform="translate('+cx+' '+(y+74)+')">'+(it[0]==='kale'?kaleArt():itemArt(it[0]))+'</g><text x="'+cx+'" y="'+(y+ch-18)+'" text-anchor="middle" font-size="17" font-weight="800" fill="var(--w-labeltx)">'+it[1]+'</text></g>'});
+  '<g transform="translate('+cx+' '+(y+74)+')">'+(it[0]==='kale'?kaleArt():itemArt(it[0]))+'</g>'+(NAR?'':'<text x="'+cx+'" y="'+(y+ch-18)+'" text-anchor="middle" font-size="20" font-weight="800" fill="var(--w-labeltx)">'+it[1]+'</text>')+'</g>'});
  return b}
 
 /* ───────── 아이콘 ───────── */
@@ -2757,22 +2836,31 @@ const RM=matchMedia('(prefers-reduced-motion: reduce)').matches;
 /* ───────── 기록(이 기기에만) ───────── */
 const KEY='hj-life-v2';
 function blank(){return {v:2,runs:{},cur:null,ui:{open:false,big:false},name:''}}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.v===2&&s.runs)return Object.assign(blank(),s)}catch(e){}return blank()}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.v===2&&s.runs){const o=Object.assign(blank(),s);
+ Object.keys(o.runs).forEach(k=>{const r=o.runs[k];if(!VARS[k]||!r||r.planChk!==undefined||(k.startsWith('kale')&&Object.values(r.rec||{}).some(x=>x&&x[0]&&x[0].n!=null)))o.runs[k]=newRun();else o.runs[k]=Object.assign(newRun(),r)});return o}}catch(e){}return blank()}
 let DB=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
-function newRun(){return {step:0,max:0,done:{},plan:{},planChk:false,planOk:false,pred:null,why:'',dk:0,care:{},rec:{},tries:{},bl:[],cmp:false,fin:false}}
+function newRun(){return {step:0,max:0,done:{},plan:{},planLast:null,planOk:false,p:null,pred:null,why:'',dk:0,care:{},rec:{},tries:{},last:{},bl:[],clast:null,ctry:0,cmp:false,fin:false}}
 
 /* ───────── 화면 상태(저장 안 함) ───────── */
-const UI={anim:null,nonce:0,timer:0,marks:[[],[]],cnt:[0,0],look:[null,null],fb:null,focus:0,tween:null,grow:false,care:false,menu:false,rail:false,speaking:false,toast:''};
-function resetUI(){clearTimeout(UI.timer);UI.anim=null;UI.marks=[[],[]];UI.cnt=[0,0];UI.look=[null,null];UI.fb=null;UI.focus=0;UI.tween=null;UI.grow=false;UI.care=false;UI.rail=false;stopSay()}
+const UI={anim:null,nonce:0,timer:0,marks:[[],[]],cnt:[0,0],km:[{},{}],fb:null,hint:null,kwrong:null,focus:0,tween:null,grow:false,care:false,menu:false,rail:false,speaking:false,toast:'',lens:0};
+function resetUI(){clearTimeout(UI.timer);UI.pop=null;UI.anim=null;UI.marks=[[],[]];UI.cnt=[0,0];UI.km=[{},{}];UI.fb=null;UI.hint=null;UI.kwrong=null;UI.focus=0;UI.tween=null;UI.grow=false;UI.care=false;UI.rail=false;UI.toast='';UI.lens=0;stopSay()}
 const V=()=>VARS[DB.cur],R=()=>DB.runs[DB.cur];
 const days=v=>v.exp==='kale'?KDAYS:SDAYS;
-function cOf(v,cup){return cup?v.cB:v.cA}
+const narrow=()=>innerWidth<=820;
+function pIdx(){const r=R();return r&&r.p!=null?r.p:0}
+function cOf(v,cup){return cup===pIdx()?v.cA:v.cB}
+function labOf(v,cup){const r=R();return r.p==null?'?':v.lab[cup===r.p?0:1]}
+function shortOf(v,cup){const r=R();return r.p==null?'':v.short[cup===r.p?0:1]}
+function ansOf(v,i){const a=v.ans[i];return a==='@P'?(pIdx()?'나':'가'):a}
+const L2=c=>c?'나':'가';
+function endP(t){t=String(t).trim();return /[.?!]$/.test(t)?t:t+'.'}
 
 /* ───────── 단계 판단 ───────── */
 function stepOf(i){const v=V();return stepDef(v,v.steps[i])}
-function has(id){const v=V(),r=R(),k=v.steps.indexOf(id);if(k<0)return false;return k<r.step||(k===r.step&&(!!r.done[id]||UI.anim===id))}
-function isDone(i){const v=V(),r=R(),s=stepOf(i);
+function idxOf(id){return V().steps.indexOf(id)}
+function has(id){const r=R(),k=idxOf(id);if(k<0)return false;return k<r.step||(k===r.step&&(!!r.done[id]||UI.anim===id))}
+function isDone(i){const r=R(),s=stepOf(i);
  if(s.k==='scene')return !!r.done[s.id];
  if(s.k==='plan')return r.planOk;
  if(s.k==='pred')return r.pred!=null;
@@ -2784,174 +2872,196 @@ function canGo(i){const r=R();return i>=0&&i<V().steps.length&&(i<=r.max||DB.ui.
 function go(i,focusHead){if(!canGo(i))return;const r=R();r.step=i;r.max=Math.max(r.max,i);resetUI();enterStep();save();render();if(focusHead!==false){const h=$('#lbH1');if(h)h.focus({preventScroll:true})}}
 function enterStep(){const v=V(),r=R(),s=stepOf(r.step);
  if(s.k==='obs'&&v.exp==='seed'&&!r.rec[0])r.rec[0]=[0,0];
- if(s.k==='sheet'){r.fin=true}
+ if(s.k==='sheet')r.fin=!!(r.cmp&&r.done.obs);
  if(s.k==='concl'&&!r.bl.length)r.bl=v.ans.map(()=>'');
  if(s.k==='concl')UI.focus=Math.max(0,r.bl.findIndex(x=>!x))}
+function predLocked(){const r=R(),k=idxOf('obs');return r.max>=k&&(Object.keys(r.rec).length>1||r.dk>0||(V().exp==='kale'&&!!r.rec[0]))}
 
 /* ───────── 장면 ───────── */
 function seedPos(v){return v.cond==='temp'?[290,530]:[420,720]}
+function vb(desk,nar){return NAR?nar:desk}
 function sceneSVG(){const v=V(),r=R(),s=stepOf(r.step),id=s.id,A=UI.anim===id;
  if(v.exp==='kale')return kaleScene(v,r,s,A);
+ const known=r.p!=null&&has(v.dec);
  if(id==='tools'){const L=[['small','작은 컵 2개'],['wick','부직포 심지 2개'],['felt','원 모양 부직포 2개'],['big','큰 컵 2개'],['water','물'],['seeds','무씨']];
   if(v.cond!=='water')L.push(['box',v.cond==='temp'?'어둠상자 2개':'어둠상자 1개']);
-  const done=r.done.tools||A;
-  if(!done)return svg(bg({win:v.cond!=='temp',sun:false})+'<g transform="translate(480 300)"><path d="M-130 -60 L-100 -96 H150 L120 -60Z" fill="var(--w-kraft-s)"/><rect x="-130" y="-60" width="250" height="196" rx="8" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="2"/><path d="M120 -60 L150 -96 V100 L120 136Z" fill="var(--w-kraft-s)"/><rect x="-60" y="-10" width="110" height="44" rx="8" fill="var(--w-label)"/><text x="-5" y="20" text-anchor="middle" font-size="20" font-weight="800" fill="var(--w-labeltx)">준비물</text></g>','준비물 상자');
+  if(!(r.done.tools||A))return svg(bg({win:v.cond!=='temp',sun:false})+boxArt(480),'준비물 상자');
   return svg(bg({win:false})+toolsScene(L,A),'준비물: '+L.map(x=>x[1]).join(', '))}
  if(s.k==='obs'||s.k==='concl'){const d=s.k==='concl'?5:days(v)[r.dk];let g=bg({});
-  [0,1].forEach(cup=>{const cx=cup?690:270,c=cOf(v,cup);
-   g+=lens(cx,212,c,d,cup,{marks:s.k==='obs'?UI.marks[cup]:[],count:s.k==='obs'&&!r.rec[r.dk],grow:UI.grow,care:UI.care&&!!c.water});
-   g+=plate(cx,cup?'나':'가',v.lab[cup],364);
-   g+=bubble(cx,454,seedTxt(c,d))});
-  return svg(g,d+'일째 두 컵의 무씨를 돋보기로 본 모습','110 64 740 420')}
- const [xa,xb0]=seedPos(v);const fr=has('fridge'),xb=v.cond==='temp'&&(fr||A&&id==='fridge')?800:xb0;
+  const cups=NAR?[UI.lens]:[0,1];
+  cups.forEach(cup=>{const cx=cup?690:270,c=cOf(v,cup);
+   g+=lens(cx,212,c,d,cup,{marks:s.k==='obs'?UI.marks[cup]:[],count:s.k==='obs'&&!r.rec[r.dk],grow:UI.grow,care:UI.care&&!!c.water,hint:UI.hint&&UI.hint[0]===cup?UI.hint[1]:null,pop:UI.pop&&UI.pop[0]===cup?UI.pop[1]:null});
+   g+=plate(cx,L2(cup),labOf(v,cup),364);
+   g+=bubble(cx,446,seedTxt(c,d))});
+  const cx=UI.lens?690:270;
+  return svg(g,d+'일째 두 컵의 무씨를 돋보기로 본 모습',NAR?(cx-150)+' 66 300 300':'110 64 740 420')}
+ const [xa,xb0]=seedPos(v),q=1-pIdx();
+ const inFr=v.cond==='temp'&&(has('fridge'));
  let g=bg({win:v.cond!=='temp',sx1:300,sx2:840});
  if(v.cond==='temp')g+=fridge();
- const planned=r.planOk||r.step>0;
- [0,1].forEach(cup=>{const cx=cup?xb:xa,c=cOf(v,cup),wc=!!c.water;
-  const pv=s.k==='plan';const o={wick:pv||has('wick'),lie:pv||has('felt'),felt:pv||has('felt'),water:has('water')&&wc,nest:pv||has('nest'),seeds:has('seed')?10:0};
+ const pv=s.k==='plan';
+ [0,1].forEach(cup=>{let cx=cup?xb0:xa;const c=cOf(v,cup),wc=!!c.water;
+  const o={wick:pv||has('wick'),lie:pv||has('felt'),felt:pv||has('felt'),water:has('water')&&wc,nest:pv||has('nest'),seeds:has('seed')?10:0};
+  if(v.cond==='water'&&!known)o.water=false;
   o.wet=o.nest&&o.water;
-  if(A){if(id==='wick')o.aWick=1;if(id==='felt')o.aFelt=1;if(id==='water'&&wc)o.aWater=.75;if(id==='nest'){o.aNest=1;if(o.wet)o.aWet=1.5}if(id==='seed')o.aSeed=1}
-  if(id==='water'&&r.step===v.steps.indexOf('water'))o.small=false;
+  if(A){if(id==='wick')o.aWick=1;if(id==='felt')o.aFelt=1;if(id==='water'&&o.water)o.aWater=.75;if(id==='nest'){o.aNest=1;if(o.wet)o.aWet=1.5}if(id==='seed')o.aSeed=1}
+  if(id==='water'&&r.step===idxOf('water'))o.small=false;
+  const fr=inFr&&cup===q;
+  if(fr)cx=800;
   let inner=rig(cx,o);
-  const boxed=(v.cond==='light'&&cup===1&&has('darkbox'))||(v.cond==='temp'&&has('boxes'));
-  if(boxed)inner+=darkBox(cx,BY,A&&(id==='darkbox'||id==='boxes')?.15:0);
-  let grp=inner;
-  if(A&&id==='place')grp='<g'+an('lb-a-slide',0,'--dx:'+(cup?140:-140)+'px')+'>'+inner+'</g>';
-  if(A&&id==='fridge'&&cup===1)grp='<g'+an('lb-a-move',0,'--dx:-270px')+'>'+inner+'</g>';
-  g+=grp});
+  const boxed=(v.cond==='light'&&cup===q&&known)||(v.cond==='temp'&&has('boxes'));
+  if(boxed)inner+=darkBox(cx,BY,A&&(id==='darkbox'||id==='boxes')?.15:0,fr);
+  if(fr)inner='<g transform="translate('+cx+' 438) scale(.74) translate('+(-cx-8)+' -436)">'+inner+'</g>';
+  if(A&&id==='place')inner='<g'+an('lb-a-slide',0,'--dx:'+(cup?140:-140)+'px')+'>'+inner+'</g>';
+  if(A&&id==='fridge'&&fr)inner='<g'+an('lb-a-move',0,'--dx:'+((cup?xb0:xa)-800)+'px')+'>'+inner+'</g>';
+  g+=inner});
  if(v.cond==='temp'){if(A&&id==='fridge')g+=fridgeDoorOpen(an('lb-a-doorB',0))+fridgeDoor(an('lb-a-doorA',0));else g+=fridgeDoor()}
- [0,1].forEach(cup=>{g+=plate(cup?xb:xa,cup?'나':'가',planned?v.lab[cup]:'?')});
- if(A&&id==='water'){[0,1].forEach(cup=>{const cx=cup?xb:xa;if(!cOf(v,cup).water)return;g+=pitcher(cx+92,150,true,-42)+stream('M'+(cx+46)+' 118 Q'+(cx+20)+' 190 '+(cx+6)+' '+(BY-70),0)})}
- if(A&&id==='seed')[xa,xb].forEach(cx=>{g+=packet(cx+40,120,0)});
- if((id==='place'||id==='darkbox')&&(A||r.done[id]))g+='<g'+(A?an('lb-a-pop',.9):'')+'>'+bubble(570,62,v.cond==='light'?'같은 곳 · 같은 온도':'같은 곳 · 같은 온도와 빛','var(--lb-sci)')+'</g>';
- if(s.k==='plan')g+=qmark(xa,200,A_COL)+qmark(xb,200,B_COL);
- if(s.k==='pred')g+=qmark(xa,96,A_COL)+qmark(xb,v.cond==='temp'?96:96,B_COL);
- if(id==='wick'&&(A||r.done.wick))g+='<g'+(A?an('lb-a-fade',.9):'')+'>'+bubble(xa,40,'구멍에 심지를 끼워요')+'</g>';
- return svg(g,s.t,v.cond==='temp'?'150 26 810 516':'190 26 760 500')}
-function kaleScene(v,r,s,A){const id=s.id,L=v.cond==='light';
+ [0,1].forEach(cup=>{const cx=inFr&&cup===q?800:cup?xb0:xa;g+=plate(cx,L2(cup),known?labOf(v,cup):'?')});
+ if(A&&id==='water'){[0,1].forEach(cup=>{const cx=cup?xb0:xa;if(!cOf(v,cup).water)return;g+=pitcher(cx+92,150,true,-42)+stream('M'+(cx+46)+' 118 Q'+(cx+20)+' 190 '+(cx+6)+' '+(BY-70),0)})}
+ if(A&&id==='seed')[xa,xb0].forEach(cx=>{g+=packet(cx+40,120,0)});
+ if((id==='place'||id==='darkbox')&&(A||r.done[id]))g+='<g'+(A?an('lb-a-pop',.9):'')+'>'+bubble(570,80,v.cond==='light'?'같은 곳 · 같은 온도':'같은 곳 · 같은 온도와 빛','var(--lb-sci)')+'</g>';
+ if(pv)g+=qmark(xa,200,A_COL)+qmark(xb0,200,B_COL);
+ if(s.k==='pred')g+=qmark(xa,96,A_COL)+qmark(inFr&&q===1?800:xb0,96,B_COL);
+ if(id==='wick'&&(A||r.done.wick))g+='<g'+(A?an('lb-a-fade',.9):'')+'>'+bubble(xa,60,'구멍에 심지를 끼워요')+'</g>';
+ return svg(g,s.t,v.cond==='temp'?vb('150 26 810 516','170 30 790 440'):vb('190 26 760 500','290 40 580 440'))}
+function boxArt(x){return '<g transform="translate('+x+' 300)"><path d="M-130 -60 L-100 -96 H150 L120 -60Z" fill="var(--w-kraft-s)"/><rect x="-130" y="-60" width="250" height="196" rx="8" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="2"/><path d="M120 -60 L150 -96 V100 L120 136Z" fill="var(--w-kraft-s)"/>'+(NAR?'':'<rect x="-60" y="-10" width="110" height="44" rx="8" fill="var(--w-label)"/><text x="-5" y="20" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-labeltx)">준비물</text>')+'</g>'}
+function kaleScene(v,r,s,A){const id=s.id,L=v.cond==='light',known=r.p!=null&&has(v.dec),q=1-pIdx(),p=pIdx();
  if(id==='ktools'){const it=[['kale','케일 화분 2개'],['tag','이름표'],['can','물뿌리개']];if(L)it.push(['shade','햇빛 차단 장치']);
-  if(!(r.done.ktools||A))return svg(bg({win:true,sun:false})+'<g transform="translate(560 300)"><path d="M-130 -60 L-100 -96 H150 L120 -60Z" fill="var(--w-kraft-s)"/><rect x="-130" y="-60" width="250" height="196" rx="8" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="2"/><path d="M120 -60 L150 -96 V100 L120 136Z" fill="var(--w-kraft-s)"/><rect x="-60" y="-10" width="110" height="44" rx="8" fill="var(--w-label)"/><text x="-5" y="20" text-anchor="middle" font-size="20" font-weight="800" fill="var(--w-labeltx)">준비물</text></g>','준비물 상자');
+  if(!(r.done.ktools||A))return svg(bg({win:true,sun:false})+boxArt(560),'준비물 상자');
   return svg(bg({win:false})+toolsScene(it,A),'준비물: '+it.map(x=>x[1]).join(', '))}
- const xa=380,xb=650;
+ const xs=[370,660];
  let d=0;if(s.k==='obs')d=UI.tween?UI.tween.d:KDAYS[r.dk];if(s.k==='concl')d=14;
  let g=bg({win:true,sx1:260,sx2:820});
  const placed=has('kplace'),tags=has('ktag');
- [0,1].forEach(cup=>{const cx=cup?xb:xa,c=cOf(v,cup),k=kaleAt(c,d);
-  let inner=pot(cx,{dry:!c.water&&d>=3,wetA:(A&&(id==='kwater'&&cup===0||id==='kwater2'))?(cup?1.9:.9):0})+kale(cx,338,k);
-  if(tags)inner+=tag(cx,cup?'나':'가',A&&id==='ktag'?.2+cup*.25:0);
+ const canAt=(x,dl)=>can(x+150,190,true,dl)+stream('M'+(x+66)+' 150 Q'+(x+40)+' 220 '+(x+14)+' 330',dl);
+ [0,1].forEach(cup=>{const cx=xs[cup],c=cOf(v,cup),k=kaleAt(c,d);
+  const wA=A&&((id==='kwater'&&cup===p)||id==='kwater2')?(id==='kwater2'?(cup?1.9:.9):.9):0;
+  let inner=pot(cx,{dry:!c.water&&d>=3,wetA:wA})+kale(cx,338,k);
+  if(tags)inner+=tag(cx,L2(cup),A&&id==='ktag'?.2+cup*.25:0);
   if(!placed&&id==='kplace'&&!A)inner='<g transform="translate('+(cup?150:-150)+' 0)">'+inner+'</g>';
   if(A&&id==='kplace')inner='<g'+an('lb-a-slide',0,'--dx:'+(cup?150:-150)+'px')+'>'+inner+'</g>';
   g+=inner;
-  if(tags||s.k==='plan')g+=plate(cx,cup?'나':'가',r.planOk||r.step>0?v.lab[cup]:'?')});
- if(L&&has('kshade')){if(s.k==='obs'||s.k==='concl')g+=bubble(xb,140,'장치를 잠깐 들었어요','var(--w-shade-s)');else g+=shade(xb,{anim:A&&id==='kshade'?.15:0})}
- if(A&&id==='kwater'){g+=can(xa+150,190,true,0)+stream('M'+(xa+66)+' 150 Q'+(xa+40)+' 220 '+(xa+14)+' 330',0)}
- if(A&&id==='kwater2'){g+=can(xa+150,190,true,0)+stream('M'+(xa+66)+' 150 Q'+(xa+40)+' 220 '+(xa+14)+' 330',0)+can(xb+150,190,true,1)+stream('M'+(xb+66)+' 150 Q'+(xb+40)+' 220 '+(xb+14)+' 330',1)}
- if(s.k==='obs'&&UI.care){const both=v.cond==='light';g+=can(xa+150,190,true,0)+stream('M'+(xa+66)+' 150 Q'+(xa+40)+' 220 '+(xa+14)+' 330',0);if(both)g+=can(xb+150,190,true,.9)+stream('M'+(xb+66)+' 150 Q'+(xb+40)+' 220 '+(xb+14)+' 330',.9)}
- if((id==='kplace')&&(A||r.done.kplace))g+='<g'+(A?an('lb-a-pop',.9):'')+'>'+bubble(515,62,L?'같은 곳 · 같은 온도와 바람':'같은 곳 · 같은 햇빛과 온도','var(--lb-sci)')+'</g>';
- if(s.k==='plan')g+=qmark(xa,80,A_COL)+qmark(xb,80,B_COL);
- if(s.k==='pred')g+=qmark(xa,90,A_COL)+qmark(xb,90,B_COL);
- return svg(g,s.k==='obs'?Math.round(d)+'일째 두 케일의 모습':s.t,'220 70 620 470')}
+  if(tags||s.k==='plan')g+=plate(cx,L2(cup),known?labOf(v,cup):'?')});
+ if(L&&known&&s.k!=='obs'&&s.k!=='concl')g+=shade(xs[q],{anim:A&&id==='kshade'?.15:0,lift:A&&id==='kwater2'?.01:0});
+ if(A&&id==='kwater')g+=canAt(xs[p],0);
+ if(A&&id==='kwater2')g+=canAt(xs[0],0)+canAt(xs[1],1.1);
+ if(s.k==='obs'&&UI.care){if(v.cond==='light')g+=canAt(xs[0],0)+canAt(xs[1],1);else g+=canAt(xs[p],0)}
+ if(id==='kplace'&&(A||r.done.kplace))g+='<g'+(A?an('lb-a-pop',.9):'')+'>'+bubble(515,112,L?'같은 곳 · 같은 온도와 바람':'같은 곳 · 같은 햇빛과 온도','var(--lb-sci)')+'</g>';
+ if(s.k==='plan')g+=qmark(xs[0],120,A_COL)+qmark(xs[1],120,B_COL);
+ if(s.k==='pred')g+=qmark(xs[0],120,A_COL)+qmark(xs[1],120,B_COL);
+ return svg(g,s.k==='obs'?Math.round(d)+'일째 두 케일의 모습':s.t,vb('220 70 620 470','230 90 600 400'))}
 
 /* ───────── 오른쪽 카드 ───────── */
 function cardHead(t,s){return '<div class="lb-card-h"><span class="lb-clip">'+ic('clip')+'</span><div><b>'+t+'</b><span>'+s+'</span></div></div>'}
-function planCard(){const v=V(),r=R();let h=cardHead('실험 계획','다르게 할 조건 · 같게 할 조건')+'<div class="lb-card-b"><p class="lb-q">'+esc(v.q)+'</p><p class="lb-hint">조건마다 \'다르게\'나 \'같게\'를 골라요.</p><div role="group" aria-label="조건 고르기">';
+function wrapB(h){return '<div class="lb-card-b"><div class="lb-fit">'+h+'</div></div>'}
+function planChanged(r){if(!r.planLast)return true;return V().plan.some(p=>r.plan[p[0]]!==r.planLast[p[0]])}
+function planCard(){const v=V(),r=R();let h='<p class="lb-q">'+esc(v.q)+'</p><p class="lb-hint">조건마다 \'다르게\'나 \'같게\'를 골라요.</p><div role="group" aria-label="조건 고르기">';
  v.plan.forEach(([k,n,icn,isVar])=>{const c=r.plan[k];let cls='',msg='';
-  if(r.planChk&&c){const ok=(isVar?'d':'s')===c;cls=ok?' lb-ok':' lb-no';
-   msg=ok?(isVar?'알아보려는 조건이라 두 '+(v.exp==='kale'?'화분':'컵')+'에서 달라요.':'같게 해야 견줄 수 있어요.'):(isVar?jo(n.replace(/\(.*\)/,''),'은','는')+' 알아보려는 조건이에요. 다르게 해요.':'이것도 다르면 무엇 때문인지 알 수 없어요.');
-   msg=ok?'':'<p>'+ic('x')+'<span>'+msg+'</span></p>'}
+  if(r.planLast&&c&&r.planLast[k]===c){const ok=(isVar?'d':'s')===c;cls=ok?' lb-ok':' lb-no';
+   if(!ok)msg='<p>'+ic('x')+'<span>'+(isVar?jo(n.replace(/\(.*\)/,''),'은','는')+' 알아보려는 조건이에요.':'이것도 다르면 무엇 때문인지 알 수 없어요.')+'</span></p>'}
   h+='<div class="lb-crow'+cls+'"><span>'+ic(icn)+esc(n)+'</span><span class="lb-seg" role="group" aria-label="'+esc(n)+'"><button type="button" class="lb-d" data-f="p'+k+'d" data-plan="'+k+':d" aria-pressed="'+(c==='d')+'">다르게</button><button type="button" class="lb-s" data-f="p'+k+'s" data-plan="'+k+':s" aria-pressed="'+(c==='s')+'">같게</button></span>'+msg+'</div>'});
  h+='</div>';
- if(r.planChk){const nd=v.plan.filter(p=>r.plan[p[0]]==='d').length;let m;
+ if(r.planLast&&!planChanged(r)){const nd=v.plan.filter(p=>r.plan[p[0]]==='d').length;let m;
   if(r.planOk){const vn=v.plan.find(p=>p[3])[1].replace(/\(.*\)/,'');m='<div class="lb-msg lb-good">'+ic('check')+'<span>좋아요. '+jo(vn,'만','만')+' 다르게 하고 나머지는 같게 해요.</span></div>'}
   else if(nd===0)m='<div class="lb-msg lb-try">'+ic('info')+'<span>모두 같게 하면 비교할 수 없어요. 한 가지를 다르게 해요.</span></div>';
   else if(nd>1)m='<div class="lb-msg lb-try">'+ic('info')+'<span>두 가지 넘게 다르면 무엇 때문인지 알 수 없어요.</span></div>';
   else m='<div class="lb-msg lb-try">'+ic('info')+'<span>빨간 줄을 다시 생각해 봐요.</span></div>';
   h+='<div aria-live="polite">'+m+'</div>'}
- return h+'</div>'}
-function predCard(){const v=V(),r=R();let h=cardHead('내 예상','고른 예상은 결과 한 장에 남아요')+'<div class="lb-card-b"><p class="lb-q">'+esc(stepOf(r.step).t)+'</p><div class="lb-opts" role="group" aria-label="예상 고르기">';
- v.pred.forEach((t,i)=>{h+='<button type="button" class="lb-opt" data-f="o'+i+'" data-pred="'+i+'" aria-pressed="'+(r.pred===i)+'"><i>'+(r.pred===i?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>'});
- h+='</div><div><label class="lb-label" for="lbWhy">그렇게 생각한 까닭 (쓰고 싶으면)</label><input id="lbWhy" class="lb-input" maxlength="60" placeholder="왜냐하면 ~ 때문이에요." value="'+esc(r.why)+'"></div>';
- if(r.pred!=null)h+='<div class="lb-msg lb-plain" aria-live="polite">'+ic('info')+'<span>예상을 남겼어요. 맞히기가 아니라 내 생각이에요.</span></div>';
- return h+'</div>'}
+ return cardHead('실험 계획','다르게 할 조건 · 같게 할 조건')+wrapB(h)}
+function predCard(){const v=V(),r=R(),lock=predLocked();let h='<p class="lb-q">'+esc(stepOf(r.step).t)+'</p><div class="lb-opts" role="group" aria-label="예상 고르기">';
+ v.pred.forEach((t,i)=>{h+='<button type="button" class="lb-opt" data-f="o'+i+'" data-pred="'+i+'" aria-pressed="'+(r.pred===i)+'"'+(lock?' disabled':'')+'><i>'+(r.pred===i?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>'});
+ h+='</div><div><label class="lb-label" for="lbWhy">그렇게 생각한 까닭 (쓰고 싶으면)</label><input id="lbWhy" class="lb-input" maxlength="60" placeholder="왜냐하면 ~ 때문이에요." value="'+esc(r.why)+'"'+(lock?' readonly':'')+'></div>';
+ if(lock)h+='<div class="lb-msg lb-plain">'+ic('lock')+'<span>관찰을 시작해서 예상을 바꿀 수 없어요.</span></div>';
+ else if(r.pred!=null)h+='<div class="lb-msg lb-plain" aria-live="polite">'+ic('info')+'<span>예상을 남겼어요. 맞히기가 아니라 내 생각이에요.</span></div>';
+ return cardHead('내 예상','고른 예상은 결과 한 장에 남아요')+wrapB(h)}
 function obsCard(){const v=V(),r=R(),D=days(v),k=r.dk,d=D[k],rec=r.rec[k],last=k===D.length-1,K=v.exp==='kale';
  const dn=d===0?'시작한 날':d+'일째';
- let h=cardHead(dn+' 관찰',K?'잎의 수 · 잎 색깔과 줄기':'싹 튼 씨의 수')+'<div class="lb-card-b">';
- const careT=careLabel(v);
- h+='<ol class="lb-todo">';
- const t1=rec?'lb-ok':'lb-cur',t2=!rec?'':(last?'':(r.care[k]?'lb-ok':'lb-cur')),t3=rec&&!last&&r.care[k]?'lb-cur':'';
- h+='<li class="'+t1+'"><i>'+(rec?ic('check'):1)+'</i>'+(K?'잎을 세고 모습을 골라 기록하기':'싹 튼 씨를 세어 기록하기')+'</li>';
- if(!last){h+='<li class="'+t2+'"><i>'+(r.care[k]?ic('check'):2)+'</i>'+careT+'</li><li class="'+t3+'"><i>3</i>'+advLabel(v)+'</li>'}
- else h+='<li class="'+(rec?'lb-cur':'')+'"><i>2</i>관찰 끝 · 결론 쓰기로</li>';
+ let h='<ol class="lb-todo" aria-label="오늘 할 일">';
+ const st1=rec?'lb-ok':'lb-cur',st2=!rec||last?'':(r.care[k]?'lb-ok':'lb-cur'),st3=rec&&!last&&r.care[k]?'lb-cur':'';
+ h+='<li class="'+st1+'"><i>'+(rec?ic('check'):1)+'</i>'+(K&&d===0?'처음 모습 보기':'기록하기')+'</li>';
+ if(!last)h+='<li class="'+st2+'"><i>'+(r.care[k]?ic('check'):2)+'</i>'+(K?'물 주기':'물 살피기')+'</li><li class="'+st3+'"><i>3</i>'+advLabel(v)+'</li>';
+ else h+='<li class="'+(rec?'lb-cur':'')+'"><i>2</i>결론 쓰기로</li>';
  h+='</ol>';
  if(!rec){
-  h+=K?'':'<p class="lb-hint" style="margin:0">떡잎이 보이면 싹 튼 씨예요. 그림 속 씨를 누르면 번호가 붙어요.</p>';
-  [0,1].forEach(cup=>{const L=cup?'나':'가',cl=cup?'lb-b':'lb-a',val=UI.cnt[cup];
-   h+='<div class="lb-count '+cl+'"><i class="lb-pin">'+L+'</i><span>'+(K?'잎':'싹 튼 씨')+'</span><span class="lb-step"><button type="button" data-f="m'+cup+'" data-cnt="'+cup+':-1" aria-label="'+L+' '+(K?'잎':'싹 튼 씨')+' 하나 빼기"'+(val<=0?' disabled':'')+'>'+ic('minus')+'</button><output aria-live="polite" aria-label="'+L+' '+(K?'잎 수':'싹 튼 씨의 수')+'">'+val+'</output><button type="button" data-f="p'+cup+'" data-cnt="'+cup+':1" aria-label="'+L+' '+(K?'잎':'싹 튼 씨')+' 하나 더하기"'+(val>=(K?12:10)?' disabled':'')+'>'+ic('plus')+'</button></span>';
-   if(K)h+='<div class="lb-looks" role="group" aria-label="'+L+' 화분 모습">'+v.looks.map((t,i)=>'<button type="button" class="lb-look" data-f="l'+cup+i+'" data-look="'+cup+':'+i+'" aria-pressed="'+(UI.look[cup]===i)+'">'+t+'</button>').join('')+'</div>';
-   h+='</div>'});
-  const ready=!K||UI.look[0]!=null&&UI.look[1]!=null;
-  h+='<button type="button" class="lb-rec-btn" data-f="rec" data-act="rec"'+(ready?'':' disabled')+'>'+ic('check')+'기록하기</button>'}
+  if(K&&d===0){h+='<p class="lb-hint" style="margin:0">두 케일의 처음 모습을 잘 봐 두어요. 잎의 크기와 색깔, 줄기의 굵기가 비슷해요.</p><button type="button" class="lb-rec-btn" data-f="rec" data-act="base">'+ic('eye')+'처음 모습을 봤어요</button>'}
+  else if(K){const A=kAttrs(v);
+   h+='<p class="lb-hint" style="margin:0">처음 모습과 견주어 골라요.</p><table class="lb-km"><thead><tr><th scope="col"><span class="lb-sr">항목</span></th><th scope="col"><i class="lb-pin lb-a">가</i></th><th scope="col"><i class="lb-pin lb-b">나</i></th></tr></thead><tbody>';
+   A.forEach(([key,n,full,opts])=>{h+='<tr><th scope="row">'+n+'</th>'+[0,1].map(cup=>{const val=UI.km[cup][key];const wr=UI.kwrong&&UI.kwrong.indexOf(cup+':'+key)>=0;
+    return '<td><span class="lb-seg lb-kseg'+(wr?' lb-wrongc':'')+'" role="group" aria-label="'+L2(cup)+' '+n+'">'+opts.map((o,i)=>'<button type="button" aria-label="'+L2(cup)+' '+n+': '+full[i]+'" data-f="k'+cup+key+i+'" data-km="'+cup+':'+key+':'+i+'" aria-pressed="'+(val===i)+'" class="'+(i?'lb-d':'lb-s')+'">'+o+'</button>').join('')+'</span></td>'}).join('')+'</tr>'});
+   h+='</tbody></table>';
+   const ready=[0,1].every(cup=>A.every(a=>UI.km[cup][a[0]]!=null));
+   h+='<button type="button" class="lb-rec-btn" data-f="rec" data-act="rec"'+(ready?'':' disabled')+'>'+ic('check')+'기록하기</button>'}
+  else{h+='<p class="lb-hint" style="margin:0">떡잎이 보이면 싹 튼 씨예요. 그림 속 씨를 누르면 번호가 붙어요.</p>';
+   if(narrow())h+='<div class="lb-lenst" role="group" aria-label="볼 컵">'+[0,1].map(c=>'<button type="button" data-f="ln'+c+'" data-lens="'+c+'" aria-pressed="'+(UI.lens===c)+'">'+L2(c)+' 컵 보기</button>').join('')+'</div>';
+   [0,1].forEach(cup=>{const Lt=L2(cup),cl=cup?'lb-b':'lb-a',val=UI.cnt[cup];
+    h+='<div class="lb-count '+cl+'"><i class="lb-pin">'+Lt+'</i><span>싹 튼 씨</span><span class="lb-step"><button type="button" data-f="m'+cup+'" data-cnt="'+cup+':-1" aria-label="'+Lt+' 싹 튼 씨 하나 빼기"'+(val<=0?' disabled':'')+'>'+ic('minus')+'</button><output aria-live="polite" aria-label="'+Lt+' 싹 튼 씨의 수">'+val+'</output><button type="button" data-f="p'+cup+'" data-cnt="'+cup+':1" aria-label="'+Lt+' 싹 튼 씨 하나 더하기"'+(val>=10?' disabled':'')+'>'+ic('plus')+'</button></span></div>'});
+   h+='<button type="button" class="lb-rec-btn" data-f="rec" data-act="rec">'+ic('check')+'기록하기</button>'}}
  if(UI.fb)h+='<div class="lb-msg '+(UI.fb[0]?'lb-good':'lb-try')+'" role="status">'+ic(UI.fb[0]?'check':'info')+'<span>'+UI.fb[1]+'</span></div>';
- h+=recTable(v,r,k);
- return h+'</div>'}
-function careLabel(v){if(v.exp==='kale')return v.cond==='water'?'가 화분에만 물 주기':'두 화분에 물 주기';return v.cond==='water'?'가 큰 컵 물 살피기':'두 큰 컵 물 살피기'}
+ if(!K||rec)h+=recTable(v,r,k);
+ return cardHead(dn+' 관찰',K?'잎의 크기 · 잎의 색깔 · 줄기':'싹 튼 씨의 수')+wrapB(h)}
+function careLabel(v){const P=L2(pIdx());if(v.exp==='kale')return v.cond==='water'?P+' 화분에만 물 주기':'두 화분에 물 주기';return v.cond==='water'?P+' 큰 컵 물 살피기':'두 큰 컵 물 살피기'}
 function advLabel(v){const r=R(),D=days(v),k=r.dk;if(k>=D.length-1)return '하루 지나기';const n=D[k+1]-D[k];return n===1?'하루 지나기':n+'일 지나기'}
-function lookShort(v,i){return v.cond==='water'?['시듦','싱싱'][i]:['연한·가늚','진한·굵음'][i]}
+function kShort(v,x,cup){if(x==='base')return '처음';const o=x[cup];return kAttrs(v).map(a=>a[3][o[a[0]]]).join(' · ')}
 function recTable(v,r,cur){const D=days(v),K=v.exp==='kale';
- let h='<table class="lb-tbl"><caption class="lb-sr">관찰 기록표</caption><thead><tr><th scope="col">날</th>'+D.map((d,i)=>'<th scope="col"'+(i===cur?' class="lb-now"':'')+'>'+(d===0?'시작':d+(K?'일':''))+'</th>').join('')+'</tr></thead><tbody>';
- [0,1].forEach(cup=>{h+='<tr><th scope="row"><span class="lb-dot '+(cup?'lb-b':'lb-a')+'"></span>'+(cup?'나':'가')+'</th>'+D.map((d,i)=>{const x=r.rec[i];const c=i===cur?' class="lb-now"':'';
-  if(!x)return '<td'+(i===cur?' class="lb-now lb-na"':' class="lb-na"')+'>·</td>';
-  return '<td'+c+'>'+(K?x[cup].n+'<br><small>'+lookShort(v,x[cup].look)+'</small>':x[cup])+'</td>'}).join('')+'</tr>'});
+ if(K){let h='<table class="lb-tbl lb-ktbl"><caption class="lb-sr">관찰 기록표</caption><thead><tr><th scope="col">날</th><th scope="col">가</th><th scope="col">나</th></tr></thead><tbody>';
+  D.forEach((d,i)=>{const x=r.rec[i];h+='<tr'+(i===cur?' class="lb-now"':'')+'><th scope="row">'+(d===0?'시작':d+'일')+'</th>'+[0,1].map(c=>'<td>'+(x?kShort(v,x,c):'·')+'</td>').join('')+'</tr>'});
+  return h+'</tbody></table>'}
+ let h='<table class="lb-tbl"><caption class="lb-sr">관찰 기록표</caption><thead><tr><th scope="col">날</th>'+D.map((d,i)=>'<th scope="col"'+(i===cur?' class="lb-now"':'')+'>'+(d===0?'시작':d)+'</th>').join('')+'</tr></thead><tbody>';
+ [0,1].forEach(cup=>{h+='<tr><th scope="row"><span class="lb-dot '+(cup?'lb-b':'lb-a')+'"></span>'+L2(cup)+'</th>'+D.map((d,i)=>{const x=r.rec[i];
+  if(!x)return '<td class="'+(i===cur?'lb-now ':'')+'lb-na">·</td>';return '<td'+(i===cur?' class="lb-now"':'')+'>'+x[cup]+'</td>'}).join('')+'</tr>'});
  return h+'</tbody></table>'}
-function frameHTML(v,bl,mode){/* mode: 'edit' | 'sheet' */let t=esc(v.frame[0]);
+function cWrong(v,r,i){return !!(r.clast&&r.bl[i]&&r.bl[i]===r.clast[i]&&r.bl[i]!==ansOf(v,i))}
+function cChanged(r){return !r.clast||r.bl.some((w,i)=>w!==r.clast[i])}
+function frameHTML(v,bl,mode){const r=R();let t=esc(v.frame);
  return t.replace(/\{(\d)\}/g,(m,i)=>{i=+i;const w=bl[i]||'',J=v.jo[i];
-  let s;if(mode==='edit'){const st=w?' lb-fill':'';const f=UI.focus===i?' lb-focus':'';const wr=R().cmp&&w&&w!==v.ans[i]?' lb-wrong':'';
-   s='<button type="button" class="lb-blank'+st+f+wr+'" data-f="b'+i+'" data-blank="'+i+'" aria-label="빈칸 '+(i+1)+(w?': '+w:': 비어 있음')+'">'+(w?esc(w):'&#8203;')+'</button>'}
+  let s;if(mode==='edit'){const st=w?' lb-fill':'';const f=UI.focus===i?' lb-focus':'';const wr=cWrong(v,r,i)?' lb-wrong':'';
+   s='<button type="button" class="lb-blank'+st+f+wr+'" data-f="b'+i+'" data-blank="'+i+'" aria-label="빈칸 '+(i+1)+(w?': '+w:': 비어 있음')+(wr?', 다시 생각해 봐요':'')+'">'+(w?esc(w):'&#8203;')+'</button>'}
   else s=w?'<mark>'+esc(w)+'</mark>':'<span class="lb-sh-gap">______</span>';
   if(J)s+=w?(jo(w,J[0],J[1]).slice(w.length)):J[0]+'('+J[1]+')';return s})}
-function conclCard(){const v=V(),r=R();let h=cardHead('결론 쓰기','빈칸에 낱말을 넣어요')+'<div class="lb-card-b">';
+function conclCard(){const v=V(),r=R();let h='';
  if(r.pred!=null)h+='<div class="lb-mine"><b>내 예상</b> '+esc(v.pred[r.pred])+'</div>';
  h+='<p class="lb-frame">'+frameHTML(v,r.bl,'edit')+'</p>';
  h+='<div class="lb-chips" role="group" aria-label="낱말 카드">'+v.chips.map((c,i)=>'<button type="button" class="lb-chip" data-f="c'+i+'" data-chip="'+i+'">'+esc(c)+'</button>').join('')+'</div>';
- if(r.cmp){const ok=r.bl.every((w,i)=>w===v.ans[i]);
-  h+='<div class="lb-cmp" role="status"><b>'+ic('flask')+'교과서 결론</b>'+esc(v.book)+'</div>';
-  h+='<div class="lb-msg '+(ok?'lb-good':'lb-try')+'">'+ic(ok?'check':'info')+'<span>'+(ok?'내 결론이 교과서 결론과 같아요.':'빨간 빈칸을 기록과 다시 견주어 봐요. 고쳐도 돼요.')+'</span></div>'}
- return h+'</div>'}
+ if(r.cmp){h+='<div class="lb-cmp" role="status"><b>'+ic('flask')+esc(v.bookLabel||'교과서 결론')+'</b>'+esc(v.book)+'</div><div class="lb-msg lb-good">'+ic('check')+'<span>내 결론이 기록과 맞아요.</span></div>'}
+ else if(r.clast&&!cChanged(r)){const wr=r.bl.map((w,i)=>i).filter(i=>cWrong(v,r,i));
+  h+='<div class="lb-msg lb-try" role="status">'+ic('info')+'<span>빨간 빈칸을 기록과 다시 견주어 봐요.'+(r.ctry>=2&&wr.length?' '+wr.map(i=>esc(v.hint[i])).join(' '):'')+'</span></div>'}
+ return cardHead('결론 쓰기','빈칸에 낱말을 넣어요')+wrapB(h)}
 
 /* ───────── 결과 한 장 ───────── */
-function chartSVG(v,r){const D=days(v),K=v.exp==='kale',W=320,H=170,l=30,rr=10,t=12,b=30,max=10;
+function chartSVG(v,r){const D=days(v),W=320,H=168,l=30,rr=12,t=12,b=34,max=10;
  const x=i=>l+i*(W-l-rr)/(D.length-1),y=val=>t+(max-val)*(H-t-b)/max;
- let g='<svg class="lb-chart" viewBox="0 0 '+W+' '+(H+18)+'" role="img" aria-label="'+(K?'잎의 수':'싹 튼 씨의 수')+' 꺾은선그래프">';
- for(let q=0;q<=max;q+=2)g+='<path d="M'+l+' '+y(q)+' H'+(W-rr)+'" stroke="#E3E0D8"/><text x="'+(l-6)+'" y="'+(y(q)+4)+'" text-anchor="end" font-size="10" fill="#4B5465">'+q+'</text>';
- D.forEach((d,i)=>{g+='<text x="'+x(i)+'" y="'+(H-12)+'" text-anchor="middle" font-size="10" fill="#4B5465">'+(d===0?'시작':d+'일')+'</text>'});
- [0,1].forEach(cup=>{const col=cup?'#A9541A':'#2F68B0';let pts=[];D.forEach((d,i)=>{const e=r.rec[i];if(e)pts.push([x(i),y(K?e[cup].n:e[cup])])});
+ let g='<svg class="lb-chart" viewBox="0 0 '+W+' '+(H+20)+'" role="img" aria-label="싹 튼 씨의 수 꺾은선그래프">';
+ for(let q=0;q<=max;q+=2)g+='<path d="M'+l+' '+y(q)+' H'+(W-rr)+'" stroke="#E3E0D8"/><text x="'+(l-6)+'" y="'+(y(q)+4.5)+'" text-anchor="end" font-size="13" fill="#4B5465">'+q+'</text>';
+ D.forEach((d,i)=>{g+='<text x="'+x(i)+'" y="'+(H-12)+'" text-anchor="middle" font-size="13" fill="#4B5465">'+(d===0?'시작':d+'일')+'</text>'});
+ [0,1].forEach(cup=>{const col=cup?'#A9541A':'#2F68B0';let pts=[];D.forEach((d,i)=>{const e=r.rec[i];if(e)pts.push([x(i),y(e[cup])])});
   if(pts.length)g+='<path d="M'+pts.map(p=>p.join(' ')).join(' L')+'" fill="none" stroke="'+col+'" stroke-width="2.5"'+(cup?' stroke-dasharray="6 4"':'')+'/>'+pts.map(p=>cup?'<rect x="'+(p[0]-4)+'" y="'+(p[1]-4)+'" width="8" height="8" fill="'+col+'"/>':'<circle cx="'+p[0]+'" cy="'+p[1]+'" r="4.2" fill="'+col+'"/>').join('')});
- g+='<circle cx="'+(l+6)+'" cy="'+(H+8)+'" r="4" fill="#2F68B0"/><text x="'+(l+14)+'" y="'+(H+12)+'" font-size="10.5" fill="#141A26">가 · '+esc(v.short[0])+'</text><rect x="'+(l+120)+'" y="'+(H+4)+'" width="8" height="8" fill="#A9541A"/><text x="'+(l+132)+'" y="'+(H+12)+'" font-size="10.5" fill="#141A26">나 · '+esc(v.short[1])+'</text>';
+ g+='<circle cx="'+(l+6)+'" cy="'+(H+9)+'" r="4.5" fill="#2F68B0"/><text x="'+(l+15)+'" y="'+(H+14)+'" font-size="13" fill="#141A26">가 · '+esc(shortOf(v,0))+'</text><rect x="'+(l+150)+'" y="'+(H+4.5)+'" width="9" height="9" fill="#A9541A"/><text x="'+(l+164)+'" y="'+(H+14)+'" font-size="13" fill="#141A26">나 · '+esc(shortOf(v,1))+'</text>';
  return g+'</svg>'}
 function sheetTable(v,r){const D=days(v),K=v.exp==='kale';
- let h='<table class="lb-tbl"><caption class="lb-sr">관찰 기록</caption><thead><tr><th scope="col">'+(K?'관찰한 날':'관찰한 날')+'</th>'+D.map(d=>'<th scope="col">'+(d===0?'시작':d+'일째')+'</th>').join('')+'</tr></thead><tbody>';
- if(!K)[0,1].forEach(cup=>{h+='<tr><th scope="row">'+(cup?'나':'가')+' 싹 튼 씨</th>'+D.map((d,i)=>{const e=r.rec[i];return '<td class="'+(cup?'lb-cb':'lb-ca')+'">'+(e?e[cup]+'개':'—')+'</td>'}).join('')+'</tr>'});
- else [0,1].forEach(cup=>{h+='<tr><th scope="row">'+(cup?'나':'가')+' 잎 수</th>'+D.map((d,i)=>{const e=r.rec[i];return '<td class="'+(cup?'lb-cb':'lb-ca')+'">'+(e?e[cup].n+'장':'—')+'</td>'}).join('')+'</tr><tr><th scope="row">'+(cup?'나':'가')+' 모습</th>'+D.map((d,i)=>{const e=r.rec[i];return '<td>'+(e?lookShort(v,e[cup].look):'—')+'</td>'}).join('')+'</tr>'});
+ let h='<table class="lb-tbl"><caption class="lb-sr">관찰 기록</caption><thead><tr><th scope="col">관찰한 날</th>'+D.map(d=>'<th scope="col">'+(d===0?'시작':d+'일째')+'</th>').join('')+'</tr></thead><tbody>';
+ if(!K)[0,1].forEach(cup=>{h+='<tr><th scope="row">'+L2(cup)+' 싹 튼 씨</th>'+D.map((d,i)=>{const e=r.rec[i];return '<td class="'+(cup?'lb-cb':'lb-ca')+'">'+(e?e[cup]+'개':'—')+'</td>'}).join('')+'</tr>'});
+ else [0,1].forEach(cup=>{kAttrs(v).forEach(([key,n,opts],j)=>{h+='<tr'+(j===0?' class="lb-grpstart"':'')+'><th scope="row" class="'+(cup?'lb-cb':'lb-ca')+'">'+L2(cup)+' '+n+'</th>'+D.map((d,i)=>{const e=r.rec[i];return '<td>'+(!e?'—':e==='base'?'처음':opts[e[cup][key]])+'</td>'}).join('')+'</tr>'})});
  return h+'</tbody></table>'}
 function sheetHTML(){const v=V(),r=R();const same=v.plan.filter(p=>!p[3]).map(p=>p[1]);const dv=v.plan.find(p=>p[3])[1];
- const done=v.steps.map((id,i)=>stepDef(v,id)).filter(s=>s.k==='scene'&&s.id!=='tools'&&s.id!=='ktools');
+ const done=v.steps.map(id=>stepDef(v,id)).filter(s=>s.k==='scene'&&s.id!=='tools'&&s.id!=='ktools');
  const today=new Date();const ds=today.getFullYear()+'. '+(today.getMonth()+1)+'. '+today.getDate()+'.';
- let h='<article class="lb-sheet" id="lbSheet" aria-label="실험 결과 한 장"><header class="lb-sh-h"><div><h2>실험 결과 한 장 · '+esc(v.title)+'</h2><span>탐구 실험관 · 3학년 1학기 과학 · 4. 생물의 한살이 · '+ds+'</span></div><div class="lb-sh-name">이름 <u>'+(esc(DB.name)||'&nbsp;')+'</u></div></header><div class="lb-sh-grid"><div class="lb-sh-sec">';
- h+='<h3><i>1</i>실험 문제</h3><p><b>'+esc(v.q)+'</b></p><div class="lb-sh-tags"><span class="lb-sh-tag lb-d">다르게 한 조건: '+esc(dv)+'</span>'+same.map(s=>'<span class="lb-sh-tag">같게: '+esc(s)+'</span>').join('')+'</div>';
- h+='<h3><i>2</i>내 예상</h3><p>'+(r.pred!=null?esc(v.pred[r.pred]):'(고르지 않았어요)')+(r.why?'<br>까닭: '+esc(r.why):'')+'</p>';
- h+='<div class="lb-sh-po"><h3><i>5</i>실험한 차례</h3><div class="lb-sh-steps">'+done.map((s,i)=>'<div><b>'+(i+1)+'.</b> '+esc(s.t)+'</div>').join('')+'</div></div>';
- h+='</div><div class="lb-sh-sec"><h3><i>3</i>관찰 기록</h3>'+sheetTable(v,r)+chartSVG(v,r);
- h+='<h3><i>4</i>내 결론</h3><div class="lb-sh-box"><p class="lb-sh-concl">'+frameHTML(v,r.bl,'sheet')+'</p><p class="lb-sh-book">교과서 결론: '+esc(v.book)+'</p></div>';
- h+='</div></div><div class="lb-sh-sec lb-sh-po lb-sh-fill"><h3><i>6</i>새로 알게 된 것 · 더 알고 싶은 것</h3><div class="lb-sh-lines">'+'<div class="lb-ln"></div>'.repeat(9)+'</div></div>';
- h+='<footer class="lb-sh-f"><span>아주 단순하게 만든 모형의 결과예요. 실제로는 '+(v.exp==='kale'?'자라는 모습':'싹 트는 수와 날')+'이 조금씩 달라요.</span><span>만든 사람: 초등교사 홍지희</span></footer></article>';
+ const who=v.exp==='kale'?'화분':'컵';
+ let h='<article class="lb-sheet" id="lbSheet" aria-label="실험 결과 한 장"><div class="lb-sh-in"><header class="lb-sh-h"><div><h2>실험 결과 한 장 · '+esc(v.title)+'</h2><span>탐구 실험관 · 3학년 1학기 과학 · 4. 생물의 한살이 · '+ds+'</span></div><div class="lb-sh-name">이름 <u>'+(esc(DB.name)||'&nbsp;')+'</u></div></header><div class="lb-sh-grid"><div class="lb-sh-col">';
+ h+='<section class="lb-sh-sec"><h3><i></i>실험 문제</h3><p><b>'+esc(v.q)+'</b></p><div class="lb-sh-tags"><span class="lb-sh-tag lb-d">다르게 한 조건: '+esc(dv)+'</span>'+same.map(s=>'<span class="lb-sh-tag">같게: '+esc(s)+'</span>').join('')+'</div>'+(r.p!=null?'<p>가 '+who+': '+esc(labOf(v,0))+' · 나 '+who+': '+esc(labOf(v,1))+'</p>':'')+'</section>';
+ h+='<section class="lb-sh-sec lb-sh-po"><h3><i></i>실험한 차례</h3><div class="lb-sh-steps">'+done.map((s,i)=>'<div><b>'+(i+1)+'.</b> '+esc(s.t)+'</div>').join('')+'</div></section>';
+ h+='<section class="lb-sh-sec"><h3><i></i>내 예상</h3><p>'+(r.pred!=null?esc(v.pred[r.pred]):'(고르지 않았어요)')+(r.why?'<br>까닭: '+esc(r.why):'')+'</p></section>';
+ h+='</div><div class="lb-sh-col"><section class="lb-sh-sec"><h3><i></i>관찰 기록</h3>'+sheetTable(v,r)+(v.exp==='seed'?chartSVG(v,r):'')+'</section>';
+ h+='<section class="lb-sh-sec"><h3><i></i>내 결론</h3><div class="lb-sh-box"><p class="lb-sh-concl">'+frameHTML(v,r.bl,'sheet')+'</p>'+(r.cmp?'<p class="lb-sh-book">'+esc(v.bookLabel||'교과서 결론')+': '+esc(v.book)+'</p>':'')+'</div></section>';
+ h+='</div></div><section class="lb-sh-sec lb-sh-po lb-sh-fill"><h3><i></i>새로 알게 된 것 · 더 알고 싶은 것</h3><div class="lb-sh-lines">'+'<div class="lb-ln"></div>'.repeat(9)+'</div></section>';
+ h+='<footer class="lb-sh-f"><span>아주 단순하게 만든 모형의 결과예요. 실제로는 '+(v.exp==='kale'?'자라는 모습':'싹 트는 수와 날')+'이 조금씩 달라요.</span><span>만든 사람: 초등교사 홍지희</span></footer></div></article>';
  return h}
 function sheetBody(){return '<div class="lb-sheetwrap"><div class="lb-sheetside"><div class="lb-sideinfo"><label class="lb-label" for="lbName" style="margin:0">이름</label><input id="lbName" class="lb-input" maxlength="12" autocomplete="off" placeholder="이름을 써요" value="'+esc(DB.name)+'"><span>이름은 이 기기에만 저장돼요.</span></div>'+
  '<button type="button" class="lb-btn" data-act="print" data-f="print">'+ic('print')+'인쇄하기</button><div class="lb-sideinfo"><span><b>A4 한 장</b>으로 인쇄돼요. 공책에 붙여도 좋아요.</span><span>실제 실험 결과와 견주어 봐요.</span></div></div>'+sheetHTML()+'</div>'}
 
 /* ───────── 그리기 ───────── */
-function set(el,h){if(!el||el._h===h)return false;const a=document.activeElement,f=a&&el.contains(a)&&a.dataset?a.dataset.f:null;el.innerHTML=h;el._h=h;if(f){const n=el.querySelector('[data-f="'+f+'"]');if(n&&!n.disabled)n.focus({preventScroll:true});else{const p=el.closest('.lb-card');if(p)p.focus&&0}}return true}
+function set(el,h){if(!el||el._h===h)return false;const a=document.activeElement,f=a&&el.contains(a)&&a.dataset?a.dataset.f:null;el.innerHTML=h;el._h=h;if(f){const n=el.querySelector('[data-f="'+f+'"]');if(n&&!n.disabled)n.focus({preventScroll:true})}return true}
 function render(){const H=document.documentElement;H.classList.toggle('lb-big',!!DB.ui.big);
- $('#lbOpenMi')&&$('#lbOpenMi').setAttribute('aria-pressed',!!DB.ui.open);$('#lbBigMi')&&$('#lbBigMi').setAttribute('aria-pressed',!!DB.ui.big);
+ $('#lbOpenMi').setAttribute('aria-pressed',!!DB.ui.open);$('#lbBigMi').setAttribute('aria-pressed',!!DB.ui.big);
  const main=$('#lbMain');
  if(!DB.cur||!VARS[DB.cur]){H.classList.remove('lb-inrun');$('#lbSub').textContent='3학년 1학기 과학 · 4단원 생물의 한살이';$('#lbChoose').hidden=true;$('#lbClearMi').hidden=true;
   if(main.dataset.mode!=='home'){main.dataset.mode='home';main.className='lb-homewrap';main.innerHTML='';main._h=null}
@@ -2965,54 +3075,65 @@ function render(){const H=document.documentElement;H.classList.toggle('lb-big',!
  set($('#lbHead'),'<div><div class="lb-kick"><em>'+(r.step+1)+'단계</em>'+GROUPS[s.g]+'</div><h1 id="lbH1" tabindex="-1">'+esc(s.t)+'</h1></div>'+(s.k==='sheet'?'':'<button class="lb-say" type="button" data-act="say" data-f="say" aria-pressed="'+UI.speaking+'">'+ic('speak')+'<span>'+(UI.speaking?'멈추기':'읽어 주기')+'</span></button>'));
  const body=$('#lbBody');
  if(s.k==='sheet'){if(body.dataset.k!=='sheet'){body.dataset.k='sheet';body._h=null}set(body,sheetBody())}
- else{if(body.dataset.k!=='main'){body.dataset.k='main';body._h=null;body.innerHTML='<div class="lb-col"><div class="lb-scene" id="lbScene"></div><div class="lb-notes" id="lbNotes"></div></div><aside class="lb-card" id="lbCard" tabindex="-1" aria-label="기록 카드"></aside>';body._h='x'}
+ else{if(body.dataset.k!=='main'){body.dataset.k='main';body._h=null;body.innerHTML='<div class="lb-col"><div class="lb-scene" id="lbScene"></div><div class="lb-leg" id="lbLeg"></div><div class="lb-notes" id="lbNotes"></div></div><aside class="lb-card" id="lbCard" tabindex="-1" aria-label="기록 카드"></aside>';body._h='x'}
   renderScene();
   set($('#lbNotes'),notesHTML(s));
   const card=$('#lbCard');const ch=s.k==='plan'?planCard():s.k==='pred'?predCard():s.k==='obs'?obsCard():s.k==='concl'?conclCard():'';card.hidden=!ch;set(card,ch)}
- set($('#lbFoot'),footHTML(v,r,s))}
+ set($('#lbFoot'),footHTML(v,r,s));
+ fitAll();clearTimeout(render.ft);render.ft=setTimeout(fitAll,350)}
+/* 넓은 화면에서 카드·단계 목록이 넘치면 조금 줄여 스크롤 없이 */
+function fitBox(box,inner,min){if(!box||!inner)return;inner.style.zoom='';if(narrow()||!box.clientHeight)return;if(box.scrollHeight<=box.clientHeight+1)return;let z=Math.max(min,box.clientHeight/box.scrollHeight);inner.style.zoom=z.toFixed(3);let n=0;while(box.scrollHeight>box.clientHeight+1&&z>min&&n++<12){z=Math.max(min,z-.02);inner.style.zoom=z.toFixed(3)}}
+function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.7);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.7)}
 function renderScene(){const v=V(),r=R(),s=stepOf(r.step),el=$('#lbScene');if(!el)return;
+ NAR=narrow();LEG=[];
  let over='';
+ const pick=s.opts&&!r.done[s.id]&&UI.anim!==s.id;
  if(s.k==='scene'&&r.done[s.id]&&UI.anim!==s.id)over+='<button type="button" class="lb-replay" data-act="replay" data-f="replay">'+ic('replay')+'처음부터 보기</button>';
+ if(pick)over+='<div class="lb-ask">'+ic('hand')+esc(s.ask)+'</div>';
  if(s.k==='obs'){const D=days(v);over+='<div class="lb-days" aria-hidden="true">'+D.map((d,i)=>{const c=i===r.dk?' lb-today':r.rec[i]?' lb-rec':'';return '<span class="lb-day'+c+'">'+(r.rec[i]&&i!==r.dk?ic('check'):'')+(d===0?'시작':d+'일째')+'</span>'}).join('')+'</div>';
   if(UI.tween)over+='<div class="lb-toast" role="status">'+Math.floor(UI.tween.d)+'일째 · 날마다 돌보는 중</div>'}
- if(UI.toast)over+='<div class="lb-toast" role="status">'+esc(UI.toast)+'</div>';
- const key=UI.nonce+'|'+over;const sv=sceneSVG();
- set(el,over+sv)}
+ if(UI.toast)over+='<div class="lb-toast lb-toast2" role="status">'+esc(UI.toast)+'</div>';
+ const sv=sceneSVG();NAR=false;
+ set(el,over+sv);
+ const lg=$('#lbLeg');if(lg)set(lg,LEG.length?LEG.map(x=>'<span class="lb-lg">'+(x[0]?'<i class="lb-pin '+(x[0]==='나'?'lb-b':'lb-a')+'">'+x[0]+'</i>':'')+esc(x[1])+'</span>').join(''):'')}
 function notesHTML(s){if(!s.why&&!s.care)return '';let h='<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
  if(s.care)h+=s.care[0]==='care'?'<div class="lb-note lb-care">'+ic('care')+'<div><b>조심해요</b>'+esc(s.care[1])+'</div></div>':'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.care[1])+'</div></div>';
  return h}
-function railHTML(){const v=V(),r=R(),N=v.steps.length;let h='<div class="lb-mtop"><b>'+(r.step+1)+'/'+N+' · '+esc(stepOf(r.step).n)+'</b><span class="lb-mbar" aria-hidden="true">'+v.steps.map((x,i)=>'<i class="'+(i<=r.step?'lb-d':'')+'"></i>').join('')+'</span><button type="button" class="lb-mlist" data-act="rail" data-f="mlist" aria-expanded="'+UI.rail+'">'+ic('list')+'단계 목록</button></div>';
- h+='<h2>실험 '+(v.exp==='seed'?1:2)+' · '+esc(v.title)+'</h2><p class="lb-rq">'+esc(v.q)+'</p><div class="lb-rlist">';
+function stepName(s){return !R().planOk&&s.n0?s.n0:s.n}
+function railHTML(){const v=V(),r=R(),N=v.steps.length;let h='<div class="lb-mtop"><b>'+(r.step+1)+'/'+N+' · '+esc(stepName(stepOf(r.step)))+'</b><span class="lb-mbar" aria-hidden="true">'+v.steps.map((x,i)=>'<i class="'+(i<=r.step?'lb-d':'')+'"></i>').join('')+'</span><button type="button" class="lb-mlist" data-act="rail" data-f="mlist" aria-expanded="'+UI.rail+'">'+ic('list')+'단계 목록</button></div>';
+ h+='<div class="lb-rwrap"><p class="lb-rk">실험 '+(v.exp==='seed'?1:2)+' · '+esc(v.name)+'</p><h2>'+esc(v.title)+'</h2><div class="lb-rlist">';
  let g=-1;v.steps.forEach((id,i)=>{const s=stepOf(i);if(s.g!==g){g=s.g;h+='<div class="lb-grp">'+GROUPS[g]+'</div>'}
   const done=isDone(i)&&i!==r.step,now=i===r.step,ok=canGo(i);
-  h+='<button type="button" class="lb-rs'+(now?' lb-now':done?' lb-done':'')+'" data-go="'+i+'" data-f="g'+i+'"'+(now?' aria-current="step"':'')+(ok?'':' disabled')+'><i>'+(done?ic('check'):i+1)+'</i>'+esc(s.n)+(s.k==='obs'&&(now||r.max>i)?'<small>'+(days(v)[r.dk]===0?'시작':days(v)[r.dk]+'일째')+'</small>':'')+'<span class="lb-sr">'+(done?' (끝냄)':now?' (지금 단계)':ok?'':' (아직)')+'</span></button>'});
- h+='</div><div class="lb-rail-note"><p>아주 단순하게 만든 모형이에요. 실제로는 '+(v.exp==='kale'?'자라는 모습':'싹 트는 수')+'가 조금씩 달라요.</p><p>만든 사람: 초등교사 홍지희</p></div>';
+  h+='<button type="button" class="lb-rs'+(now?' lb-now':done?' lb-done':'')+'" data-go="'+i+'" data-f="g'+i+'"'+(now?' aria-current="step"':'')+(ok?'':' disabled')+'><i>'+(done?ic('check'):i+1)+'</i>'+esc(stepName(s))+(s.k==='obs'&&(now||r.max>i)?'<small>'+(days(v)[r.dk]===0?'시작':days(v)[r.dk]+'일째')+'</small>':'')+'<span class="lb-sr">'+(done?' (끝냄)':now?' (지금 단계)':ok?'':' (아직)')+'</span></button>'});
+ h+='</div><div class="lb-rail-note"><p>아주 단순하게 만든 모형이에요. 실제로는 '+(v.exp==='kale'?'자라는 모습':'싹 트는 수')+'가 조금씩 달라요.</p><p>만든 사람: 초등교사 홍지희</p></div></div>';
  return h}
-function footHTML(v,r,s){const N=v.steps.length,last=r.step===N-1;
+function footHTML(v,r,s){const N=v.steps.length;
  let h='<button type="button" class="lb-btn" data-act="prev" data-f="prev"'+(r.step===0?' disabled':'')+'>'+ic('left')+'이전</button><div class="lb-fmid">';
  const dots='<span class="lb-prog" aria-hidden="true">'+v.steps.map((x,i)=>'<i class="'+(i<r.step?'lb-d':i===r.step?'lb-n':'')+'"></i>').join('')+'</span>';
  let mid='',pri='이어서',priOn=canNext(),priAct='next';
- if(s.k==='scene'){if(!r.done[s.id]||UI.anim===s.id)mid='<button type="button" class="lb-doit" data-act="doit" data-f="doit"'+(UI.anim?' disabled':'')+'>'+ic('hand')+esc(s.act)+'</button>';else mid='<span>잘했어요. 이어서 가요.</span>'+dots}
- else if(s.k==='plan'){const all=v.plan.every(p=>r.plan[p[0]]);if(!r.planOk)mid='<button type="button" class="lb-doit" data-act="check" data-f="doit"'+(all?'':' disabled')+'>'+ic('check')+'계획 확인하기</button>';else mid='<span>계획을 세웠어요.</span>'+dots;
-  if(!all&&!r.planOk)mid+='<span class="lb-sr">조건을 모두 골라요</span>'}
+ if(s.k==='scene'){if(s.opts&&!r.done[s.id]&&UI.anim!==s.id)mid='<span class="lb-picks" role="group" aria-label="'+esc(s.ask)+'">'+s.opts.map((o,i)=>'<button type="button" class="lb-doit lb-pk" data-act="pick" data-i="'+i+'" data-f="pk'+i+'">'+esc(o.t)+'</button>').join('')+'</span>';
+  else if(!r.done[s.id]||UI.anim===s.id)mid='<button type="button" class="lb-doit" data-act="doit" data-f="doit"'+(UI.anim?' disabled':'')+'>'+ic('hand')+esc(s.act||'보는 중')+'</button>';else mid='<span>잘했어요. 이어서 가요.</span>'+dots}
+ else if(s.k==='plan'){const all=v.plan.every(p=>r.plan[p[0]]);if(!r.planOk)mid='<button type="button" class="lb-doit" data-act="check" data-f="doit"'+(all&&planChanged(r)?'':' disabled')+'>'+ic('check')+'계획 확인하기</button>';else mid='<span>계획을 세웠어요.</span>'+dots}
  else if(s.k==='pred'){mid=r.pred==null?'<span>예상을 하나 골라요.</span>'+dots:'<span>예상을 남겼어요.</span>'+dots}
  else if(s.k==='obs'){const D=days(v),k=r.dk,rec=r.rec[k],lastD=k===D.length-1;
   if(rec&&!lastD&&!r.care[k])mid='<button type="button" class="lb-doit" data-act="care" data-f="doit"'+(UI.care||UI.tween?' disabled':'')+'>'+ic('drop')+careLabel(v)+'</button>';
-  else if(!rec)mid='<span>'+(v.exp==='kale'?'잎을 세고 모습을 골라요.':'싹 튼 씨를 세어요.')+'</span>';
+  else if(!rec)mid='<span>'+(v.exp==='kale'?(D[k]===0?'처음 모습을 봐요.':'잎과 줄기를 살펴 골라요.'):'싹 튼 씨를 세어요.')+'</span>';
   else if(lastD)mid='<span>관찰을 마쳤어요.</span>'+dots;
-  else mid='<span>'+advLabel(v)+'를 눌러요.</span>';
+  else mid='<span>'+jo(advLabel(v),'을','를')+' 눌러요.</span>';
   if(!lastD){pri=advLabel(v);priOn=!!rec&&!!r.care[k]&&!UI.care&&!UI.tween;priAct='adv'}}
- else if(s.k==='concl'){const all=r.bl.length&&r.bl.every(x=>x);mid='<button type="button" class="lb-doit" data-act="cmp" data-f="doit"'+(all?'':' disabled')+'>'+ic('flask')+'교과서 결론과 견주기</button>'}
- else if(s.k==='sheet'){mid='<span>실험을 마쳤어요.</span>'+dots;pri='실험 고르기로';priOn=true;priAct='home'}
+ else if(s.k==='concl'){const all=r.bl.length&&r.bl.every(x=>x);if(!r.cmp)mid='<button type="button" class="lb-doit" data-act="cmp" data-f="doit"'+(all&&cChanged(r)?'':' disabled')+'>'+ic('flask')+'기록과 견주기</button>';else mid='<span>결론을 썼어요.</span>'+dots}
+ else if(s.k==='sheet'){mid='<span>'+(r.fin?'실험을 마쳤어요.':'아직 끝내지 않은 단계가 있어요.')+'</span>'+dots;pri='실험 고르기로';priOn=true;priAct='home'}
  h+=mid+'</div><button type="button" class="lb-btn lb-pri" data-act="'+priAct+'" data-f="pri"'+(priOn?'':' disabled')+'>'+esc(pri)+ic('right')+'</button>';
  return h}
 
 /* ───────── 실험 고르기 ───────── */
-function homeArt(exp){if(exp==='seed'){let g=bg({win:true,sx1:300,sx2:840});const st=i=>seedStage({water:1,temp:1},i,5);
-  g+=rig(420,{wick:1,lie:1,felt:1,water:1,wet:1,nest:1,seeds:10,stage:st})+rig(720,{wick:1,lie:1,felt:1,nest:1,seeds:10});
-  g+=plate(420,'가','?')+plate(720,'나','?');return svg(g,'싹 틔우기 장치 두 개','150 80 720 450')}
- let g=bg({win:true,sx1:260,sx2:820});g+=pot(380,{})+kale(380,338,kaleAt({water:1,light:1},10))+pot(650,{})+kale(650,338,kaleAt({water:1,light:0},10))+plate(380,'가','?')+plate(650,'나','?');
- return svg(g,'케일 화분 두 개','120 80 720 450')}
+function homeArt(exp){NAR=true;LEG=[];let s;
+ if(exp==='seed'){let g=bg({win:true,sx1:300,sx2:840});
+  g+=rig(420,{wick:1,lie:1,felt:1,nest:1,seeds:10})+rig(720,{wick:1,lie:1,felt:1,nest:1,seeds:10});
+  s=svg(g,'똑같이 꾸민 싹 틔우기 장치 두 개','150 80 720 420')}
+ else{const k=kaleAt({water:1,light:1},0);let g=bg({win:true,sx1:260,sx2:820});g+=pot(380,{})+kale(380,338,k)+pot(650,{})+kale(650,338,k);
+  s=svg(g,'비슷한 크기의 케일 화분 두 개','120 70 720 420')}
+ NAR=false;LEG=[];return s}
 function pickBtn(key,icn){const v=VARS[key],r=DB.runs[key];let st='';
  if(r){if(r.fin)st=ic('check')+'끝냄 · 결과 보기';else st=(r.step+1)+'단계 이어서'}
  return '<button type="button" class="lb-pickb" data-pick="'+key+'" data-f="k'+key+'"><i>'+ic(icn)+'</i><span><b>'+esc(v.name)+'</b><span>'+esc(v.sub)+'</span></span>'+(st?'<small>'+st+'</small>':'<small>'+ic('right')+'</small>')+'</button>'}
@@ -3022,80 +3143,120 @@ function homeHTML(){return '<div class="lb-home"><div class="lb-home-h"><div cla
  '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 실제로는 조금씩 달라요. 가상 실험은 실제 실험을 대신하지 않아요.</span></p></div>'}
 
 /* ───────── 동작 ───────── */
-function doAnim(id,ms){UI.anim=id;UI.nonce++;render();clearTimeout(UI.timer);UI.timer=setTimeout(()=>{UI.anim=null;const r=R();if(r)r.done[id]=true;save();render();const p=$('#lbFoot [data-act="next"]');if(p&&!p.disabled&&document.activeElement===document.body)p.focus({preventScroll:true})},RM?150:ms)}
+function doAnim(id,ms){UI.anim=id;UI.nonce++;UI.toast='';render();clearTimeout(UI.timer);UI.timer=setTimeout(()=>{UI.anim=null;const r=R();if(r)r.done[id]=true;save();render();const p=$('#lbFoot [data-act="next"]');if(p&&!p.disabled&&(document.activeElement===document.body||!document.activeElement||!document.activeElement.isConnected))p.focus({preventScroll:true})},RM?150:ms)}
 function act(a,el){const v=V(),r=R();
  if(a==='prev'){if(r.step>0)go(r.step-1);return}
  if(a==='next'){if(canNext())go(r.step+1);return}
- if(a==='home'){DB.cur=null;resetUI();save();render();const m=$('#lbMain');m.scrollTop=0;return}
+ if(a==='home'){DB.cur=null;resetUI();save();render();scrollTo(0,0);return}
  if(a==='doit'){const s=stepOf(r.step);if(UI.anim)return;doAnim(s.id,s.dur||1500);return}
+ if(a==='pick'){const s=stepOf(r.step),o=s.opts[+el.dataset.i];if(UI.anim||!o)return;
+  if(o.bad){flash(o.bad);return}
+  if(o.p!=null)r.p=o.p;doAnim(s.id,s.dur||1500);return}
  if(a==='replay'){const s=stepOf(r.step);doAnim(s.id,s.dur||1500);return}
- if(a==='check'){if(!v.plan.every(p=>r.plan[p[0]]))return;r.planChk=true;r.planOk=v.plan.every(p=>r.plan[p[0]]===(p[3]?'d':'s'));save();render();return}
+ if(a==='check'){if(!v.plan.every(p=>r.plan[p[0]])||!planChanged(r))return;r.planLast=Object.assign({},r.plan);r.planOk=v.plan.every(p=>r.plan[p[0]]===(p[3]?'d':'s'));save();render();return}
  if(a==='care'){UI.care=true;render();clearTimeout(UI.timer);UI.timer=setTimeout(()=>{UI.care=false;r.care[r.dk]=true;save();render();const p=$('#lbFoot [data-act="adv"]');if(p&&!p.disabled)p.focus({preventScroll:true})},RM?150:(v.exp==='kale'?(v.cond==='light'?2900:2000):1300));return}
  if(a==='adv'){advance();return}
  if(a==='rec'){record();return}
- if(a==='cmp'){if(!r.bl.every(x=>x))return;r.cmp=true;save();render();return}
+ if(a==='base'){r.rec[r.dk]='base';UI.fb=[1,'처음 모습을 봐 두었어요.'];save();render();const p=$('#lbFoot [data-act="care"]');if(p)p.focus({preventScroll:true});return}
+ if(a==='cmp'){if(!r.bl.every(x=>x)||!cChanged(r))return;
+  if(r.bl.every((w,i)=>w===ansOf(v,i))){r.cmp=true;r.clast=r.bl.slice()}else{r.ctry=(r.ctry||0)+1;r.clast=r.bl.slice()}
+  save();render();return}
  if(a==='print'){window.print();return}
  if(a==='say'){toggleSay();return}
  if(a==='rail'){UI.rail=!UI.rail;render();return}}
 function advance(){const v=V(),r=R(),D=days(v),k=r.dk;if(k>=D.length-1||!r.rec[k]||!r.care[k]||UI.tween)return;
- UI.marks=[[],[]];UI.cnt=[0,0];UI.look=[null,null];UI.fb=null;
+ UI.marks=[[],[]];UI.cnt=[0,0];UI.km=[{},{}];UI.fb=null;UI.hint=null;UI.kwrong=null;
  if(v.exp==='seed'){r.dk=k+1;UI.grow=true;save();render();clearTimeout(UI.timer);UI.timer=setTimeout(()=>{UI.grow=false;renderScene()},1300);return}
  const from=D[k],to=D[k+1],t0=performance.now(),dur=RM?10:1800;UI.tween={d:from};render();
  const step=now=>{const f=Math.min(1,(now-t0)/dur);UI.tween.d=from+(to-from)*f;renderScene();if(f<1)requestAnimationFrame(step);else{UI.tween=null;r.dk=k+1;save();render()}};requestAnimationFrame(step)}
-function record(){const v=V(),r=R(),k=r.dk,d=days(v)[k],K=v.exp==='kale';if(r.rec[k])return;
- const truth=[0,1].map(cup=>{const c=cOf(v,cup);if(!K)return sproutCount(c,d);const q=kaleAt(c,d);return {n:q.n,look:kaleLook(v,q)}});
- const bad=[0,1].filter(cup=>K?(UI.cnt[cup]!==truth[cup].n||UI.look[cup]!==truth[cup].look):UI.cnt[cup]!==truth[cup]);
- if(!bad.length){r.rec[k]=truth;UI.fb=[1,K?'맞게 세고 골랐어요. 기록표에 적었어요.':'맞게 셌어요. 기록표에 적었어요.']}
- else{r.tries[k]=(r.tries[k]||0)+1;
-  if(r.tries[k]>=2){r.rec[k]=truth;UI.fb=[0,'기록표에는 바른 값을 적었어요. '+[0,1].map(c=>(c?'나':'가')+' '+(K?truth[c].n+'장, '+v.looks[truth[c].look]:truth[c]+'개')).join(' · ')+(K?'':'. 떡잎이 보이는 씨만 세요.')]}
-  else{const who=bad.map(c=>c?'나':'가').join('와 ');UI.fb=[0,jo(who+' '+(K?'화분':'컵'),'은','는')+' 한 번 더 살펴봐요. '+(K?'잎은 하나씩, 모습은 색깔과 줄기를 봐요.':'떡잎이 보이는 씨만 세요.')]}}
+/* 기록: 앱이 값을 대신 적지 않음. 같은 값으로 다시 누르면 세지 않고, 서로 다른 두 번째 틀림부터 실마리 */
+function record(){const v=V(),r=R(),k=r.dk,d=days(v)[k],K=v.exp==='kale';if(r.rec[k])return;UI.pop=null;
+ if(!K){const truth=[0,1].map(cup=>sproutCount(cOf(v,cup),d));const cur=UI.cnt.slice(),key=cur.join(',');
+  if(cur[0]===truth[0]&&cur[1]===truth[1]){r.rec[k]=cur;UI.fb=[1,'맞게 셌어요. 기록표에 적었어요.'];UI.hint=null}
+  else if(r.last[k]===key){UI.fb=[0,'수가 그대로예요. 그림을 다시 세어 봐요.']}
+  else{r.last[k]=key;r.tries[k]=(r.tries[k]||0)+1;const bad=[0,1].filter(c=>cur[c]!==truth[c]);
+   const rootMarked=bad.some(c=>UI.marks[c].some(i=>seedStage(cOf(v,c),i,d)<3));
+   let m=jo(bad.map(L2).join('와 ')+' 컵','은','는')+' 다시 세어 봐요. ';
+   m+=rootMarked?'뿌리만 나온 씨는? 떡잎이 보여야 싹 튼 씨예요.':'떡잎이 보이는 씨만 세요.';
+   if(r.tries[k]>=2){const c=bad[0],cc=cOf(v,c);let hi=-1;
+    if(cur[c]<truth[c])hi=TP.findIndex((p,i)=>seedStage(cc,i,d)>=3&&UI.marks[c].indexOf(i)<0);
+    if(hi<0)hi=UI.marks[c].find(i=>seedStage(cc,i,d)<3);if(hi==null||hi<0)hi=TP.findIndex((p,i)=>seedStage(cc,i,d)>=3);
+    if(hi>=0){UI.hint=[c,hi];if(narrow())UI.lens=c;m+=' '+L2(c)+' 컵의 반짝이는 씨를 살펴봐요. '+(seedStage(cc,hi,d)>=3?'떡잎이 보이지요?':'떡잎이 없으면 싹 튼 씨가 아니에요.')}}
+   UI.fb=[0,m]}}
+ else{const A=kAttrs(v),truth=[0,1].map(cup=>kaleTruth(v,cOf(v,cup),d));const key=JSON.stringify(UI.km);
+  const wrong=[];[0,1].forEach(c=>A.forEach(a=>{if(UI.km[c][a[0]]!==truth[c][a[0]])wrong.push(c+':'+a[0])}));
+  if(!wrong.length){r.rec[k]=[Object.assign({},UI.km[0]),Object.assign({},UI.km[1])];UI.fb=[1,'잘 살펴보았어요. 기록표에 적었어요.'];UI.kwrong=null}
+  else if(r.last[k]===key){UI.fb=[0,'고른 것이 그대로예요. 그림을 다시 살펴봐요.']}
+  else{r.last[k]=key;r.tries[k]=(r.tries[k]||0)+1;const pots=[...new Set(wrong.map(w=>+w[0]))];
+   if(r.tries[k]>=2){UI.kwrong=wrong;UI.fb=[0,'빨간 칸을 그림에서 다시 살펴봐요. 처음 모습과 견주어요.']}
+   else UI.fb=[0,jo(pots.map(L2).join('와 ')+' 화분','을','를')+' 다시 살펴봐요. 잎의 크기와 색깔, 줄기를 봐요.']}}
  if(r.rec[k]&&k===days(v).length-1)r.done.obs=true;
- save();render();const p=$('#lbFoot [data-act="care"]')||$('#lbFoot .lb-pri:not(:disabled)');if(p)p.focus({preventScroll:true})}
+ save();render();
+ if(r.rec[k]){const p=$('#lbFoot [data-act="care"]')||$('#lbFoot .lb-pri:not(:disabled)');if(p)p.focus({preventScroll:true})}}
 
-/* ───────── 읽어 주기 ───────── */
-function sayText(){const v=V(),r=R(),s=stepOf(r.step);let t=s.t+'. ';if(s.why)t+='왜 그렇게 할까요? '+s.why+' ';if(s.care)t+=(s.care[0]==='care'?'조심해요. ':'알아 두어요. ')+s.care[1];return t}
+/* ───────── 읽어 주기: 단계 글 + 카드 내용 ───────── */
+function sayText(){const v=V(),r=R(),s=stepOf(r.step),out=[endP(s.t)];
+ if(s.opts&&!r.done[s.id])out.push(endP(s.ask),s.opts.map((o,i)=>(i+1)+'번, '+o.t+'.').join(' '));
+ if(s.k==='plan'){out.push(endP(v.q),'조건마다 다르게나 같게를 골라요.',v.plan.map(p=>p[1].replace(/\((.*)\)/,' $1')+'.').join(' '))}
+ if(s.k==='pred'){out.push(v.pred.map((t,i)=>(i+1)+'번, '+t).join(' '));if(predLocked())out.push('관찰을 시작해서 예상을 바꿀 수 없어요.')}
+ if(s.k==='obs'){const d=days(v)[r.dk];out.push((d===0?'시작한 날':d+'일째')+' 관찰이에요.');
+  if(v.exp==='seed')out.push('떡잎이 보이면 싹 튼 씨예요. 그림 속 씨를 누르면 번호가 붙어요. 가 컵과 나 컵의 싹 튼 씨를 세어 기록해요.');
+  else out.push(d===0?'두 케일의 처음 모습을 잘 봐 두어요.':'잎의 크기, 잎의 색깔, 줄기의 굵기를 처음 모습과 견주어 골라요.')}
+ if(s.k==='concl'){out.push(v.frame.replace(/\{(\d)\}/g,(m,i)=>{i=+i;const w=r.bl[i];const J=v.jo[i];return w?(J?jo(w,J[0],J[1]):w):'빈칸'}));out.push('낱말 카드: '+v.chips.join(', ')+'.')}
+ if(s.why)out.push('왜 그렇게 할까요? '+endP(s.why));if(s.care)out.push((s.care[0]==='care'?'조심해요. ':'알아 두어요. ')+endP(s.care[1]));
+ return out.join(' ')}
 function pickVoice(){const ss=window.speechSynthesis;if(!ss)return null;const vs=ss.getVoices().filter(x=>/^ko/i.test(x.lang));if(!vs.length)return null;return vs.find(x=>/Natural|Online/i.test(x.name))||vs.find(x=>/Google/i.test(x.name))||vs[0]}
 function toggleSay(){const ss=window.speechSynthesis;if(UI.speaking){stopSay();render();return}
  if(!ss||typeof SpeechSynthesisUtterance==='undefined'){flash('이 기기에서는 읽어 주기를 쓸 수 없어요.');return}
  try{const u=new SpeechSynthesisUtterance(sayText());u.lang='ko-KR';const vo=pickVoice();if(vo)u.voice=vo;else if(ss.getVoices().length)flash('한국어 목소리가 없을 수 있어요.');u.rate=.95;
   u.onend=u.onerror=()=>{UI.speaking=false;render()};ss.cancel();ss.speak(u);UI.speaking=true;render()}catch(e){flash('이 기기에서는 읽어 주기를 쓸 수 없어요.')}}
 function stopSay(){UI.speaking=false;try{window.speechSynthesis&&speechSynthesis.cancel()}catch(e){}}
-function flash(t){UI.toast=t;renderScene();setTimeout(()=>{UI.toast='';renderScene()},2600)}
+let flashT=0;
+function flash(t){const f=$('#lbFlash');if(DB.cur&&$('#lbScene')){UI.toast=t;renderScene();clearTimeout(flashT);flashT=setTimeout(()=>{UI.toast='';renderScene()},3200)}else if(f){f.textContent=t;f.hidden=false;clearTimeout(flashT);flashT=setTimeout(()=>{f.hidden=true},2600)}}
+
+/* ───────── 선생님 메뉴: 1초 동안 누르기(키보드는 확인 창) ───────── */
+function openMenu(o){UI.menu=o;$('#lbMenu').hidden=!o;$('#lbTeach').setAttribute('aria-expanded',o);if(o){const b=$('#lbMenu button:not([hidden])');if(b)b.focus()}}
+(function(){const b=$('#lbTeach');let t=0,held=false;
+ const stop=()=>{clearTimeout(t);b.classList.remove('lb-holding')};
+ b.addEventListener('pointerdown',e=>{if(UI.menu)return;held=false;b.classList.add('lb-holding');t=setTimeout(()=>{held=true;b.classList.remove('lb-holding');openMenu(true)},1000)});
+ ['pointerup','pointerleave','pointercancel'].forEach(n=>b.addEventListener(n,stop));
+ b.addEventListener('contextmenu',e=>e.preventDefault());
+ b.addEventListener('click',e=>{if(UI.menu){if(!held)openMenu(false);held=false;return}if(held){held=false;return}
+  if(e.detail===0){if(confirm('선생님 메뉴를 열까요?'))openMenu(true);return}
+  flash('선생님 단추는 1초 동안 꾹 눌러요.')})})();
 
 /* ───────── 입력 연결 ───────── */
 document.addEventListener('click',e=>{const t=e.target.closest('button,[data-seed]');
- const menu=$('#lbMenu');if(UI.menu&&!e.target.closest('#lbMenu,#lbTeach')){UI.menu=false;menu.hidden=true;$('#lbTeach').setAttribute('aria-expanded','false')}
- if(!t)return;const r=DB.cur?R():null;
- if(t.id==='lbTeach'){UI.menu=!UI.menu;menu.hidden=!UI.menu;t.setAttribute('aria-expanded',UI.menu);if(UI.menu)$('#lbMenu button:not([hidden])').focus();return}
+ if(UI.menu&&!e.target.closest('#lbMenu,#lbTeach'))openMenu(false);
+ if(!t||t.id==='lbTeach')return;const r=DB.cur?R():null;
  if(t.id==='lbOpenMi'){DB.ui.open=!DB.ui.open;save();render();return}
  if(t.id==='lbBigMi'){DB.ui.big=!DB.ui.big;save();render();return}
  if(t.id==='lbChoose'){act('home');return}
- if(t.id==='lbClearMi'){if(DB.cur&&confirm('이 실험의 기록을 지울까요?')){DB.runs[DB.cur]=newRun();resetUI();save();render()}return}
- if(t.id==='lbClearAll'){if(confirm('이 기기에 저장한 모든 실험 기록을 지울까요?')){const ui=DB.ui;DB=blank();DB.ui=ui;resetUI();save();render()}return}
- if(t.dataset.pick){DB.cur=t.dataset.pick;if(!DB.runs[DB.cur])DB.runs[DB.cur]=newRun();resetUI();enterStep();save();render();const h=$('#lbH1');if(h)h.focus({preventScroll:true});return}
+ if(t.id==='lbClearMi'){if(DB.cur&&confirm('이 실험의 기록을 지울까요?')){DB.runs[DB.cur]=newRun();resetUI();save();openMenu(false);render()}return}
+ if(t.id==='lbClearAll'){if(confirm('이 기기에 저장한 모든 실험 기록을 지울까요?')){const ui=DB.ui;DB=blank();DB.ui=ui;resetUI();save();openMenu(false);render()}return}
+ if(t.dataset.pick){DB.cur=t.dataset.pick;if(!DB.runs[DB.cur])DB.runs[DB.cur]=newRun();resetUI();enterStep();save();render();scrollTo(0,0);const h=$('#lbH1');if(h)h.focus({preventScroll:true});return}
  if(!r)return;
  if(t.dataset.go!=null){UI.rail=false;go(+t.dataset.go);return}
  if(t.dataset.act){act(t.dataset.act,t);return}
- if(t.dataset.plan){const [k,c]=t.dataset.plan.split(':');r.plan[k]=c;if(r.planOk&&!V().plan.every(p=>r.plan[p[0]]===(p[3]?'d':'s')))r.planOk=false;r.planChk=false;save();render();return}
- if(t.dataset.pred!=null){r.pred=+t.dataset.pred;save();render();return}
- if(t.dataset.cnt){const [c,dlt]=t.dataset.cnt.split(':').map(Number);UI.cnt[c]=Math.max(0,Math.min(V().exp==='kale'?12:10,UI.cnt[c]+dlt));UI.fb=null;render();return}
- if(t.dataset.look){const [c,i]=t.dataset.look.split(':').map(Number);UI.look[c]=i;UI.fb=null;render();return}
- if(t.dataset.seed){const [c,i]=t.dataset.seed.split(':').map(Number);const m=UI.marks[c],p=m.indexOf(i);if(p>=0)m.splice(p,1);else m.push(i);UI.cnt[c]=m.length;UI.fb=null;render();
+ if(t.dataset.plan){const [k,c]=t.dataset.plan.split(':');r.plan[k]=c;if(r.planOk&&planChanged(r))r.planOk=false;save();render();return}
+ if(t.dataset.pred!=null){if(predLocked())return;r.pred=+t.dataset.pred;save();render();return}
+ if(t.dataset.lens!=null){UI.lens=+t.dataset.lens;render();return}
+ if(t.dataset.cnt){const [c,dlt]=t.dataset.cnt.split(':').map(Number);UI.cnt[c]=Math.max(0,Math.min(10,UI.cnt[c]+dlt));render();return}
+ if(t.dataset.km){const [c,key,i]=t.dataset.km.split(':');UI.km[+c][key]=+i;if(UI.kwrong)UI.kwrong=UI.kwrong.filter(w=>w!==c+':'+key);render();return}
+ if(t.dataset.seed){const [c,i]=t.dataset.seed.split(':').map(Number);const m=UI.marks[c],p=m.indexOf(i);if(p>=0){m.splice(p,1);UI.pop=null}else{m.push(i);UI.pop=[c,i]}UI.cnt[c]=m.length;if(UI.hint&&UI.hint[0]===c&&UI.hint[1]===i)UI.hint=null;render();
   const n=$('[data-seed="'+c+':'+i+'"]');if(n)n.focus({preventScroll:true});return}
- if(t.dataset.blank!=null){const i=+t.dataset.blank;if(UI.focus===i&&r.bl[i]){r.bl[i]='';r.cmp=false;save()}UI.focus=i;render();return}
- if(t.dataset.chip!=null){const w=V().chips[+t.dataset.chip];r.bl[UI.focus]=w;r.cmp=false;const nx=r.bl.findIndex(x=>!x);if(nx>=0)UI.focus=nx;save();render();return}
+ if(t.dataset.blank!=null){const i=+t.dataset.blank;if(UI.focus===i&&r.bl[i]&&!r.cmp){r.bl[i]='';save()}UI.focus=i;render();return}
+ if(t.dataset.chip!=null){const w=V().chips[+t.dataset.chip];r.bl[UI.focus]=w;if(r.cmp&&r.bl.some((x,i)=>x!==ansOf(V(),i)))r.cmp=false;const nx=r.bl.findIndex(x=>!x);if(nx>=0)UI.focus=nx;save();render();return}
 });
-document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(UI.menu){UI.menu=false;$('#lbMenu').hidden=true;$('#lbTeach').setAttribute('aria-expanded','false');$('#lbTeach').focus()}else if(UI.rail){UI.rail=false;render()}return}
+document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(UI.menu){openMenu(false);$('#lbTeach').focus()}else if(UI.rail){UI.rail=false;render()}return}
  const tg=e.target;if(tg.closest&&tg.closest('input,textarea,select'))return;
- if((e.key==='Enter'||e.key===' ')&&tg.dataset&&tg.dataset.seed){e.preventDefault();tg.click();return}
+ if((e.key==='Enter'||e.key===' ')&&tg.dataset&&tg.dataset.seed){e.preventDefault();tg.dispatchEvent(new MouseEvent('click',{bubbles:true}));return}
  if(!DB.cur||e.altKey||e.ctrlKey||e.metaKey)return;
  if(e.key==='ArrowLeft'&&!tg.closest('.lb-seg')){if(R().step>0){e.preventDefault();go(R().step-1)}}
  if(e.key==='ArrowRight'&&!tg.closest('.lb-seg')){if(canNext()){e.preventDefault();go(R().step+1)}}});
-document.addEventListener('input',e=>{if(e.target.id==='lbWhy'){R().why=e.target.value;save()}
+document.addEventListener('input',e=>{if(e.target.id==='lbWhy'&&!predLocked()){R().why=e.target.value;save()}
  if(e.target.id==='lbName'){DB.name=e.target.value;save();const u=$('#lbSheet .lb-sh-name u');if(u)u.textContent=DB.name||' '}});
-addEventListener('beforeprint',()=>{const b=$('#lbBody');if(b&&b.dataset.k==='sheet'){const u=$('#lbSheet .lb-sh-name u');if(u)u.textContent=DB.name||' '}});
-if(window.speechSynthesis&&speechSynthesis.addEventListener)try{speechSynthesis.addEventListener('voiceschanged',()=>{})}catch(e){}
-
+let rzT=0,wasN=narrow();addEventListener('resize',()=>{clearTimeout(rzT);rzT=setTimeout(()=>{const n=narrow();if(n!==wasN){wasN=n;const s=$('#lbScene');if(s)s._h=null;const c=$('#lbCard');if(c)c._h=null}if(DB.cur)render();else fitAll()},150)});
 if(DB.cur&&VARS[DB.cur]){if(!DB.runs[DB.cur])DB.runs[DB.cur]=newRun();enterStep()}
 render();
 
