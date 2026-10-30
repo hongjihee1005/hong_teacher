@@ -287,22 +287,36 @@ app('signal','tool','🚦','활동 신호등',b=>{
   <div class="row c">${L.map((x,j)=>`<button class="btn big ${i===j?'on':''}" data-i="${j}" type="button" style="${i===j?`background:${x[3]};color:#fff;border-color:${x[3]}`:''}">${x[0]} ${j} ${x[1]}</button>`).join('')}</div>`;
   $$('[data-i]',b).forEach(x=>x.onclick=()=>{DB.signal=+x.dataset.i;save();draw()})};draw()});
 app('noise','tool','🔊','소음 측정기',b=>{
- let stream=null,raf=0,ctx=null,loud=0,cnt=0;
+ /* (2026-10-30 선생님 요청) 시작·끝 시각과 시끄러웠던 시각을 기록 — 마지막 기록은 이 기기에 남김(DB.noiseLog) */
+ let stream=null,raf=0,ctx=null,loud=0,cnt=0,log=null;
+ const hm=t=>{const d=new Date(t),h=d.getHours();return(h<12?'오전 ':'오후 ')+((h+11)%12+1)+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')};
  b.innerHTML=`<div class="center"><div class="huge" id="f">🎤</div><div style="width:min(900px,92%);height:3rem;background:var(--bg2);border-radius:999px;overflow:hidden;position:relative">
   <div id="lv" style="height:100%;width:0;background:#4FA987;transition:width .1s"></div><div id="th" style="position:absolute;top:0;bottom:0;width:4px;background:#D2574B"></div></div>
   <div class="mid" id="msg">'시작'을 누르면 마이크로 교실 소리 크기를 봐요</div>
   <label class="row">기준 크기 <input type="range" id="rg" min="10" max="95" value="${DB.noiseTh||60}" style="width:14rem"></label>
-  <div class="row c"><button class="btn big pri" id="go" type="button">🎤 시작</button></div><div class="small" id="ct"></div>
-  <div class="note">소리는 녹음하거나 저장하지 않아요. 크기만 잽니다. 처음 한 번 마이크 사용을 허락해야 해요.</div></div>`;
+  <div class="row c"><button class="btn big pri" id="go" type="button">🎤 시작</button><button class="btn big" id="st" type="button" disabled>⏹ 끝</button></div><div class="small" id="ct"></div>
+  <div id="lg" style="width:min(640px,92%);text-align:left"></div>
+  <div class="note">소리는 녹음하거나 저장하지 않아요. 크기와 시각만 기록합니다. 처음 한 번 마이크 사용을 허락해야 해요.</div></div>`;
  const th=$('#th',b),rg=$('#rg',b);const setTh=()=>{th.style.left=rg.value+'%';DB.noiseTh=+rg.value;save()};rg.oninput=setTh;setTh();
+ const show=L=>{const el=$('#lg',b);if(!L){el.innerHTML='';return}
+  el.innerHTML=`<div class="card" style="padding:.8rem 1rem;margin-top:.4rem"><div class="mid" style="margin-bottom:.3rem">📝 소리 기록${L.end?'':' (재는 중)'}</div>
+   <div class="small">시작 ${hm(L.start)}${L.end?' · 끝 '+hm(L.end):''}</div>
+   <div class="small" style="margin-top:.3rem">${L.loud.length?'시끄러웠던 시각 ('+L.loud.length+'번): '+L.loud.map(hm).join(', '):'시끄러웠던 때가 없었어요. 잘했어요!'}</div>
+   ${L.end?'<div class="row" style="margin-top:.4rem"><button class="btn" id="lgx" type="button">기록 지우기</button></div>':''}</div>`;
+  const x=$('#lgx',b);if(x)x.onclick=()=>{DB.noiseLog=null;save();show(null)}};
+ show(DB.noiseLog||null);
+ const stop=()=>{cancelAnimationFrame(raf);stream&&stream.getTracks().forEach(t=>t.stop());ctx&&ctx.close();stream=null;ctx=null;
+  if(log&&!log.end){log.end=Date.now();DB.noiseLog=log;save();show(log)}$('#go',b).disabled=false;$('#st',b).disabled=true;$('#lv',b).style.width='0';$('#f',b).textContent='🎤';$('#msg',b).textContent="기록을 마쳤어요. '시작'을 누르면 새로 기록해요"};
+ $('#st',b).onclick=stop;
  $('#go',b).onclick=async()=>{if(stream)return;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});ctx=new (window.AudioContext||window.webkitAudioContext)();const an=ctx.createAnalyser();an.fftSize=1024;ctx.createMediaStreamSource(stream).connect(an);
-  const buf=new Uint8Array(an.fftSize);$('#go',b).disabled=true;let sm=0;
+  const buf=new Uint8Array(an.fftSize);$('#go',b).disabled=true;$('#st',b).disabled=false;let sm=0;loud=0;cnt=0;$('#ct',b).textContent='';
+  log={start:Date.now(),end:0,loud:[]};DB.noiseLog=log;save();show(log);
   const loop=()=>{an.getByteTimeDomainData(buf);let s=0;for(const v of buf){const x=(v-128)/128;s+=x*x}const lv=Math.min(100,Math.sqrt(s/buf.length)*400);sm=sm*.8+lv*.2;
    $('#lv',b).style.width=sm+'%';const over=sm>+rg.value;$('#lv',b).style.background=over?'#D2574B':sm>rg.value*.7?'#E39A4E':'#4FA987';
-   if(over){loud++;if(loud===30){cnt++;$('#ct',b).textContent=`조금 시끄러웠던 때: ${cnt}번`}}else loud=0;
+   if(over){loud++;if(loud===30){cnt++;$('#ct',b).textContent=`조금 시끄러웠던 때: ${cnt}번`;log.loud.push(Date.now());DB.noiseLog=log;save();show(log)}}else loud=0;
    $('#f',b).textContent=over?'🙉':sm>rg.value*.7?'🙂':'😊';$('#msg',b).textContent=over?'목소리를 조금 낮춰 볼까요?':'좋아요! 이 크기를 지켜요';raf=requestAnimationFrame(loop)};loop()}
   catch(e){$('#msg',b).textContent='마이크를 쓸 수 없어요. 마이크 허락을 확인해 주세요.'}};
- return ()=>{cancelAnimationFrame(raf);stream&&stream.getTracks().forEach(t=>t.stop());ctx&&ctx.close()}});
+ return ()=>{if(stream)stop()}});
 app('groups','tool','👨‍👩‍👧','모둠 짜기 · 발표 순서',b=>{
  let res=null,order=null,oi=0,mode='g';
  const draw=()=>{b.innerHTML=`<div class="tabs"><button class="btn ${mode==='g'?'on':''}" data-m="g" type="button">👨‍👩‍👧 모둠 짜기</button><button class="btn ${mode==='o'?'on':''}" data-m="o" type="button">🔢 발표 순서</button><button class="btn" id="ab" type="button">😷 오늘 결석</button></div>`+
