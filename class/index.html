@@ -2672,7 +2672,7 @@ app('board','tool','✍️','판서',b=>{
  const ro=new ResizeObserver(fit);ro.observe(cw);return ()=>ro.disconnect()},{wide:1});
 app('pick','tool','🎯','뽑기',b=>{
  /* (2026-10-30 선생님 요청) 대상: 개별·남학생·여학생·모둠, 한 번에 뽑는 수 1~6(모둠은 1~4) — 남학생 번호는 DB.boys, 모둠은 모둠 짜기의 마지막 결과(DB.grpLast) 또는 1~DB.gN모둠 */
- const MODES=[['all','🙋 개별'],['m','👦 남학생'],['f','👧 여학생'],['g','👨‍👩‍👧 모둠'],['gn','🔢 모둠 안 번호']];
+ const MODES=[['all','🙋 개별'],['m','👦 남학생'],['f','👧 여학생'],['g','👥 모둠'],['gn','🔢 모둠 안 번호']];
  /* 모둠 안 번호(2026-10-30): '각 모둠의 N번'을 뽑음 — 모둠 짜기 결과가 있으면 모둠마다 그 번호 친구(모둠 안 작은 번호부터 1번)를 보여 줌, 없으면 DB.gSize(기본 4)명까지 */
  const gSize=()=>{const L=DB.grpLast;return L&&L.length?Math.max(...L.map(g=>g.length)):(DB.gSize||4)};
  const boys=()=>DB.boys||[];
@@ -2684,14 +2684,19 @@ app('pick','tool','🎯','뽑기',b=>{
   if(!DB.pickedG)DB.pickedG=[];if(!DB.pickedGN)DB.pickedGN=[];
   const left=isN?Array.from({length:gSize()},(_,i)=>i+1).filter(k=>!DB.pickedGN.includes(k)).length:isG?groups().filter(g=>!DB.pickedG.includes(g.k)).length:pool0().filter(n=>!DB.picked.includes(n)).length;
   const maxN=isN?Math.min(3,gSize()):isG?4:6;
-  b.innerHTML=`<div class="center"><div class="tabs" style="justify-content:center">${MODES.map(([k,t])=>`<button class="btn ${md===k?'on':''}" data-pm="${k}" type="button">${t}</button>`).join('')}</div>
-  <div id="r" class="huge" style="display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;justify-content:center;max-width:94%">❓</div>
-  <div class="row c"><label class="row">한 번에 <select class="inp" id="pn" style="width:auto">${Array.from({length:maxN},(_,i)=>`<option value="${i+1}" ${Math.min(cnt,maxN)===i+1?'selected':''}>${i+1}${isN?'개 번호':isG?'모둠':'명'}</option>`).join('')}</select></label>
-   <button class="btn big pri" id="go" type="button">🎯 뽑기</button><label class="row"><input type="checkbox" id="ex" ${ex?'checked':''}> 뽑힌 ${isN?'번호':isG?'모둠':'친구'} 빼기</label></div>
+  /* (2026-10-30 선생님: 메뉴 정리) 위: 대상 한 줄(붙은 단추) + 한 번에·빼기 / 가운데: 결과·뽑기 단추 크게 / 아래: 뽑힌 기록 · 설정 단추 작게 */
+  b.innerHTML=`<style>.pk-seg{display:inline-flex;flex-wrap:wrap;justify-content:center;background:var(--bg2);border-radius:999px;padding:4px;gap:2px}.pk-seg .btn{border:0;background:transparent;border-radius:999px;min-height:44px}.pk-seg .btn.on{background:var(--paper);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  .pk-opt{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;justify-content:center;align-items:center;font-size:1rem}.pk-sub{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}.pk-sub .btn{font-size:.95rem;min-height:40px;padding:.3rem .9rem}</style>
+  <div class="center" style="gap:1rem">
+  <div class="pk-seg" role="tablist">${MODES.map(([k,t])=>`<button class="btn ${md===k?'on':''}" data-pm="${k}" type="button">${t}</button>`).join('')}</div>
+  <div class="pk-opt"><label class="row">한 번에 <select class="inp" id="pn" style="width:auto">${Array.from({length:maxN},(_,i)=>`<option value="${i+1}" ${Math.min(cnt,maxN)===i+1?'selected':''}>${i+1}${isN?'개 번호':isG?'모둠':'명'}</option>`).join('')}</select></label>
+   <label class="row"><input type="checkbox" id="ex" ${ex?'checked':''}> 뽑힌 ${isN?'번호':isG?'모둠':'친구'} 빼기</label></div>
+  <div id="r" class="huge" style="display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;justify-content:center;max-width:94%;min-height:1.2em">❓</div>
   <div id="rd" class="row c" style="gap:.5rem"></div>
+  <button class="btn big pri" id="go" type="button" style="min-width:12rem">🎯 뽑기</button>
   <div class="small">${isN?`남은 번호 ${left}개 (1~${gSize()}번)${DB.grpLast&&DB.grpLast.length?' · 모둠 짜기 결과의 모둠 안 차례(번호가 작은 친구부터 1번)':' · 모둠 짜기를 하면 모둠마다 누구인지 보여요'}`:isG?`남은 모둠 ${left}개${DB.grpLast&&DB.grpLast.length?' · 모둠 짜기 결과 그대로':' · 모둠 짜기를 하면 모둠 친구 이름도 보여요'}`:`남은 ${md==='m'?'남학생':md==='f'?'여학생':'친구'} ${left}명`} · 오늘 결석 ${absentToday().length?absentToday().join(', ')+'번':'없음'}${(md==='m'||md==='f')&&!boys().length?' · 먼저 남학생 번호를 정해 주세요':''}</div>
   <div class="row c" id="hist">${(isN?DB.pickedGN.map(k=>'각 모둠 '+k+'번'):isG?DB.pickedG.map(k=>k+'모둠'):DB.picked.map(label)).map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>
-  <div class="row c"><button class="btn" id="rs" type="button">처음부터 다시</button><button class="btn" id="ab" type="button">😷 오늘 결석 정하기</button><button class="btn" id="bo" type="button">👦 남학생 번호 정하기</button></div></div>`;
+  <div class="pk-sub"><button class="btn" id="rs" type="button">처음부터 다시</button><button class="btn" id="ab" type="button">😷 오늘 결석</button><button class="btn" id="bo" type="button">👦 남학생 번호</button></div></div>`;
   $$('[data-pm]',b).forEach(x=>x.onclick=()=>{DB.pickMode=x.dataset.pm;save();draw()});
   $('#pn',b).onchange=e=>{DB.pickN=+e.target.value;save()};
   $('#ex',b).onchange=e=>{DB.pickEx=e.target.checked;save()};
