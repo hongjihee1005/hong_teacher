@@ -654,7 +654,7 @@ def render_rec(s, lv, rec, st):
 def h_sequence(s, lv, rec, st):
     for c in rec['cards']:
         s.text(c)
-    s.ask('놀이 차례대로 기호를 써 보세요.')
+    s.ask('놀이 차례대로 기호를 써 보세요.' if lv == '기본형' else '차례에 맞게 기호를 늘어놓아 보세요.')
     return ' → '.join(rec['cards'][i][0] for i in rec['order'])
 
 
@@ -713,7 +713,8 @@ def h_paint(s, lv, rec, st):
     put_fig(s, rec['show'])
     figs = [(grid_svg(it['rows'], it['cols'], it['kind']), it['title']) for it in rec['items']]
     if any(it['kind'] == 'up' for it in rec['items']):
-        s.text('칸을 색칠해 그려요. 앞·옆에서 본 모양은 굵은 바닥 선 위에 바닥부터 칠해요.')
+        s.text('칸을 색칠해 그려요. 앞·옆에서 본 모양은 굵은 바닥 선 위에 바닥부터 칠해요.' if lv == '기본형'
+               else '앞·옆에서 본 모양은 굵은 선을 바닥으로 하여 아래 칸부터 색칠해요.')
     put_figs(s, figs)
     out = ' · '.join(paint_ans(it) for it in rec['items'])
     return ask_after(s, lv, rec, out)
@@ -724,7 +725,9 @@ def h_nums(s, lv, rec, st):
     H = rec['H']
     only = [[1 if v else 0 for v in r] for r in H]
     put_figs(s, [(grid_svg(len(H), len(H[0]), 'top', nums=H if rec['given'] else None, only=only), rec['title'] or '위에서 본 모양')])
-    if rec['total']:
+    if rec['total'] and lv == '도전형':
+        s.ask('%s (        )개 필요해요.' % (rec['totalQ'] or '똑같은 모양으로 만들려면 쌓기나무가 모두'), blank=False)
+    elif rec['total']:
         s.ask(('%s ' % rec['totalQ'] if rec['totalQ'] else '똑같은 모양으로 만드는 데 필요한 쌓기나무는 ') + '(        )개예요.', blank=False)
     out = num_txt(H) + (' → %d개' % rec['sum'] if rec['total'] else '')
     return ask_after(s, lv, rec, out)
@@ -774,7 +777,16 @@ def h_figs(s, lv, rec, st):
 
 CAPS = {'tb': {'turn': '시청 모양', 'layers': '호텔 모양'}, 'st': {'turn': '강당 모형', 'layers': '별관 모형'}}
 
-HANDLERS = {'figs': h_figs, 'sequence': h_sequence, 'sp6Pick': h_pick, 'sp6Build': h_build, 'sp6Paint': h_paint, 'sp6Nums': h_nums,
+def h_hard_game(s, lv, rec, st):
+    """도전형 맞히기 놀이 기록표(쌓기나무 6개)"""
+    s.text('내가 만든 모양을 위에서 본 모양에 수로 몰래 적어 두고, 짝이 맞히면 몇 점인지 기록해요.')
+    put_figs(s, [(grid_svg(4, 4, 'top'), '내가 만든 모양(수 쓰기)'), (grid_svg(4, 4, 'up'), '앞에서 본 모양'), (grid_svg(4, 4, 'up'), '옆에서 본 모양')])
+    s.table([['차례', '보여 준 모양', '짝이 쌓은 개수', '얻은 점수']] + [[str(i), '', '', ''] for i in range(1, 6)],
+            header=True, col_mm=[24, 64, 46, 46], row_h=2268)
+    return '(놀이) 쌓기나무 6개로 만든 모양 — 위만 보고 맞히면 3점, 위·앞 2점, 위·앞·옆 1점, 12점을 먼저 모으면 이겨요.'
+
+
+HANDLERS = {'hardGame': h_hard_game, 'figs': h_figs, 'sequence': h_sequence, 'sp6Pick': h_pick, 'sp6Build': h_build, 'sp6Paint': h_paint, 'sp6Nums': h_nums,
             'sp6Turn': h_turn, 'sp6Layers': h_layers, 'sp6Scene': h_scene, 'sp6Guess': h_guess}
 
 PAPER = [('지도에서 사진기를 끌어 돌리거나 단추를 눌러 가, 나, 다 방향에서 학교 입구를 모두 보세요.', '지도에서 가, 나, 다 방향에 서서 학교 입구를 본다고 생각해 보세요.'),
@@ -836,22 +848,462 @@ WHY = {
 }
 
 
+
+# ================================================================ 도전형 새 문제(2026-10-30)
+# 도전형 ①~⑤는 기본형과 다른 쌓기나무 모양·상황으로 새로 씁니다(_build/sheets_hard/BRIEF.md).
+# 새 모양의 그림은 앱의 그리기 코드(sp6Iso·sp6View)를 node에서 그대로 불러 그리고, 숨은 쌓기나무가 있을 때
+# 가능한 개수는 앱의 sp6Possible로 셉니다. 답(층별 개수·세 방향 모양·수를 쓴 모양)은 파이썬 views()·layers()로 계산합니다.
+_DRAW = _EX[:_EX.index('function findTag(')] + r'''
+const REQ = JSON.parse(fs.readFileSync(process.argv[4], 'utf8'));
+const res = REQ.map(q => {
+  const H = q.H, V = H ? sp6Views(H) : null;
+  if (q.f === 'iso') return String(sp6Iso(H, { maxW: '9em' }));
+  if (q.f === 'topnums') return String(sp6View('top', H, { nums: true }));
+  if (q.f === 'top') return String(sp6View('top', V.top));
+  if (q.f === 'front') return String(sp6View('front', V.front, { rows: sp6Max(H) }));
+  if (q.f === 'side') return String(sp6View('side', V.side, { rows: sp6Max(H) }));
+  if (q.f === 'layer') return String(sp6View('layer', sp6Layer(H, q.k), { frame: true, cell: 26 }));
+  if (q.f === 'turn') { const M = sp6Max(H); return { iso: String(sp6Iso(H, { side: true, maxW: '17em' })), views: ['위', '앞', '뒤', '왼쪽', '오른쪽'].map(d => {
+      const dv = sp6DirView(H, d); return { d, v: dv.v, svg: String(sp6View(dv.kind, dv.v, { rows: M, cell: 28, frontLabel: d === '위' })) }; }) }; }
+  if (q.f === 'poss') { const P = sp6Possible(H, q.opt || {}); return [...new Set(P.map(sp6Sum))].sort((a, b) => a - b); }
+  if (q.f === 'look') { const L = sp6Look(H); return [L.gone.length, L.part.length]; }
+  throw new Error('모르는 그림 ' + q.f);
+});
+process.stdout.write(JSON.stringify(res));
+'''
+
+
+class _X:
+    """새 모양 그리기·세기(두 번 돎: 처음엔 필요한 것만 모으고, node 한 번으로 구한 뒤 다시 만듦)"""
+    def __init__(self, src):
+        self.src, self.want, self.got = src, [], None
+
+    def _q(self, **q):
+        key = json.dumps(q, sort_keys=True)
+        if self.got is None:
+            self.want.append(key)
+            return {'iso': '<svg viewBox="0 0 10 10"></svg>', 'poss': [0], 'look': [0, 0],
+                    'turn': {'iso': '<svg viewBox="0 0 10 10"></svg>', 'views': []}}.get(q['f'], '<svg viewBox="0 0 10 10"></svg>')
+        return self.got[key]
+
+    def run(self):
+        keys = sorted(set(self.want))
+        req = os.path.join(WORK, 'draw_req.json')
+        with open(req, 'w', encoding='utf-8') as f:
+            json.dump([json.loads(k) for k in keys], f)
+        js = os.path.join(WORK, 'draw.js')
+        with open(js, 'w', encoding='utf-8') as f:
+            f.write(_DRAW)
+        r = subprocess.run(['node', js, self.src, FONT, req], capture_output=True, text=True)
+        if r.returncode:
+            raise RuntimeError(r.stderr[-3000:])
+        self.got = dict(zip(keys, json.loads(r.stdout)))
+
+    def iso(self, H):
+        return self._q(f='iso', H=H)
+
+    def topnums(self, H):
+        return self._q(f='topnums', H=H)
+
+    def top(self, H):
+        return self._q(f='top', H=H)
+
+    def front(self, H):
+        return self._q(f='front', H=H)
+
+    def side(self, H):
+        return self._q(f='side', H=H)
+
+    def layer(self, H, k):
+        return self._q(f='layer', H=H, k=k)
+
+    def turn(self, H):
+        return self._q(f='turn', H=H)
+
+    def poss(self, H, **opt):
+        return self._q(f='poss', H=H, opt=opt)
+
+    def look(self, H):
+        return self._q(f='look', H=H)
+
+
+def _P(*parts):
+    """물음 줄 조각: 글 → {'s'}, 수 → {'n'}, (보기, 정답 번호) → 고르기"""
+    out = []
+    for p in parts:
+        if isinstance(p, str):
+            out.append({'s': p})
+        elif isinstance(p, tuple):
+            out.append({'o': p[0], 'a': p[1], 'multi': False})
+        else:
+            out.append({'n': p})
+    return out
+
+
+def _fig(*pairs):
+    return {'figs': [{'svg': s, 'cap': c} for s, c in pairs]}
+
+
+def _ask(*items, title=None):
+    """items: (물음|None, 그림|None, 줄 조각)"""
+    return {'t': 'ask', 'items': [{'q': q, 'fig': f, 'o': None, 'parts': p} for q, f, p in items], 'opts': {'title': title} if title else {}}
+
+
+def _quiz(*items):
+    return {'t': 'quiz', 'items': [{'q': q, 'fig': None, 'o': o, 'a': a, 'parts': None} for q, o, a in items], 'opts': {}}
+
+
+def _blanks(*parts):
+    return {'t': 'blanks', 'parts': _P(*parts), 'opts': {}}
+
+
+def _write(*items):
+    return {'t': 'write', 'items': [{'q': q, 'tag': None, 'ph': '예) ' + a, 'help': None, 'ans': a} for q, a in items]}
+
+
+def _chain(*parts):
+    return {'t': 'chain', 'parts': [{'title': t, 'recs': r} for t, r in parts]}
+
+
+def _lay(H, k):
+    return [[1 if v >= k else 0 for v in r] for r in H]
+
+
+def _upm(V):
+    M = max(V)
+    return [[1 if V[q] >= M - r else 0 for q in range(len(V))] for r in range(M)]
+
+
+def _paint(H, kinds, show=None, ask=()):
+    R, C = len(H), len(H[0])
+    top, front, side = views(H)
+    items = []
+    for k in kinds:
+        if k == 'top':
+            items.append({'title': '위에서 본 모양', 'kind': 'top', 'rows': R + 1, 'cols': C + 1, 'ans': top, 'exact': False})
+        elif k in ('front', 'side'):
+            V = front if k == 'front' else side
+            items.append({'title': '앞에서 본 모양' if k == 'front' else '옆에서 본 모양', 'kind': 'up', 'rows': max(V) + 1, 'cols': len(V) + 1, 'ans': _upm(V), 'exact': False})
+        else:
+            n = int(k[1:])
+            items.append({'title': '%d층 모양' % n, 'kind': 'layer', 'rows': R, 'cols': C, 'ans': _lay(H, n), 'exact': True})
+    return {'t': 'sp6Paint', 'show': show, 'items': items, 'ask': list(ask), 'tip': None}
+
+
+def _nums(H, show=None, total=True, totalQ=None, title=None, given=False, ask=()):
+    return {'t': 'sp6Nums', 'H': H, 'given': given, 'total': total, 'totalQ': totalQ, 'title': title, 'show': show, 'ask': list(ask), 'sum': sum(map(sum, H))}
+
+
+def _layers(X, H, names=None, ask=()):
+    n = max(map(max, H))
+    return {'t': 'sp6Layers', 'H': H, 'names': names, 'iso': X.iso(H),
+            'layers': [{'k': k, 'svg': X.layer(H, k), 'cnt': layers(H)[k - 1]} for k in range(1, n + 1)], 'ask': list(ask)}
+
+
+def _turn(X, H, ask=()):
+    T = X.turn(H)
+    return {'t': 'sp6Turn', 'H': H, 'iso': T['iso'], 'views': T['views'], 'ask': list(ask)}
+
+
+def _pick(show, q, items, a):
+    return {'t': 'sp6Pick', 'show': show, 'q': q, 'items': [{'name': n, 'fig': {'figs': [{'svg': s, 'cap': None}]}} for n, s in items], 'a': a, 'ask': []}
+
+
+def _lay_parts(H):
+    """'1층 (n)개, 2층 (n)개, … → 모두 (n)개'"""
+    L = [c for c in layers(H) if c]
+    out = []
+    for k, c in enumerate(L):
+        out += ['%s%d층 ' % (' + ' if k else '', k + 1), c, '개']
+    return out + [' = 모두 ', sum(L), '개']
+
+
+def _seq(pre, vals, post):
+    out = [pre]
+    for k, v in enumerate(vals):
+        out += ([', '] if k else []) + [v]
+    return out + [post]
+
+
+def _contains(big, small):
+    d = [[b - s for b, s in zip(rb, rs)] for rb, rs in zip(big, small)]
+    return all(v >= 0 for r in d for v in r) and sum(map(sum, d)) == sum(map(sum, big)) - sum(map(sum, small))
+
+
+def _uniq(X, H, **opt):
+    P = X.poss(H, **opt)
+    assert X.got is None or P == [sum(map(sum, H))], ('답이 하나가 아니에요', H, opt, P)
+    return P
+
+
+def _range(X, H, **opt):
+    P = X.poss(H, **opt)
+    assert X.got is None or (len(P) >= 2 and sum(map(sum, H)) in P), ('개수가 여러 가지가 아니에요', H, opt, P)
+    return P[0], P[-1]
+
+
+def _seen(X, H):
+    L = X.look(H)
+    assert X.got is None or L == [0, 0], ('숨은 쌓기나무가 있어요', H)
+
+
+# ---------------------------------------------------------------- 두 버전에 쓰는 새 모양(버전마다 다른 수)
+U3 = {
+    'tb': dict(who=('규진', '시연'), bld=('발전소', '시청', '식물원', '호텔'),
+               iso_rng=[[0, 1, 1], [1, 2, 2], [0, 1, 1]], simple=[[2, 1, 1], [1, 1, 0], [1, 0, 0]],
+               a3=[[1, 1, 0], [1, 2, 3], [1, 0, 0]], b3=[[1, 1, 1], [1, 2, 1], [0, 1, 1]], c3=[[1, 0, 0], [1, 1, 1], [1, 3, 1]],
+               d3a=[[1, 1, 0], [3, 2, 1], [2, 0, 0]], d3b=[[2, 1, 3], [0, 2, 3], [0, 1, 0]],
+               turn=[[2, 1, 1], [1, 2, 1], [1, 1, 1]], p4=[[3, 1, 0], [2, 1, 1], [1, 0, 0]], r4=[[2, 1, 2], [1, 1, 0], [1, 2, 1]], u4=[[0, 2, 0], [1, 3, 3], [1, 1, 1]],
+               i5=[[0, 0, 2], [2, 0, 1], [2, 1, 1]], t5=[[1, 3, 1], [2, 1, 0], [1, 0, 0]], c5=([[2, 2, 1], [1, 1, 1], [0, 1, 1]], [[0, 1, 0], [3, 3, 0], [1, 1, 3]]),
+               e5=[[2, 3, 1], [1, 0, 2], [1, 1, 0]],
+               a6=[[3, 2, 1], [2, 1, 0]], b6=[[1, 2, 3], [1, 0, 2], [2, 1, 0]], c6=[[2, 1, 3], [1, 1, 2], [0, 1, 0]], d6=[[3, 1, 0], [2, 2, 1], [1, 0, 1]],
+               A7=[[0, 0, 0], [0, 2, 0], [1, 1, 0]], A7c=[[[0, 1, 0], [0, 2, 0], [1, 1, 0]], [[0, 0, 0], [0, 2, 0], [1, 1, 1]], [[0, 0, 0], [0, 1, 0], [1, 2, 1]]],
+               B7=[[0, 0, 0], [1, 2, 0], [0, 1, 1]], B7c=[[[0, 1, 0], [1, 2, 0], [0, 1, 2]], [[0, 0, 0], [2, 1, 1], [0, 1, 2]], [[0, 0, 0], [1, 3, 1], [0, 1, 1]], [[0, 0, 0], [1, 2, 0], [2, 2, 0]]],
+               card1=[[1, 1, 1], [1, 2, 1], [1, 1, 1]], card2=[[2, 1, 3], [1, 1, 0]],
+               g10a=[[1, 2, 0], [2, 1, 2], [1, 1, 1]], g10b=[[0, 3, 1], [2, 1, 1], [1, 3, 0]], p10=[[2, 1, 1], [0, 1, 1], [2, 1, 1]],
+               n10=[[2, 1, 1], [2, 1, 1], [1, 1, 0]], n10x=([[2, 1, 1], [1, 2, 1], [1, 1, 0]], [[1, 1, 2], [2, 1, 1], [1, 1, 0]]),
+               l10=[[3, 0, 0], [2, 2, 0], [2, 1, 2]], s10=[[0, 1, 0, 0], [2, 1, 3, 1], [0, 1, 0, 0]]),
+    'st': dict(who=('하준', '서윤'), bld=('본관', '강당', '도서관', '별관'),
+               iso_rng=[[0, 1, 0], [1, 2, 0], [1, 2, 1]], simple=[[0, 1, 0], [1, 1, 0], [2, 1, 1]],
+               a3=[[1, 1, 2], [1, 3, 1], [1, 0, 1]], b3=[[0, 1, 2], [2, 1, 2], [1, 1, 0]], c3=[[0, 1, 1], [1, 1, 1], [0, 3, 2]],
+               d3a=[[1, 1, 2], [1, 1, 2], [0, 1, 1]], d3b=[[1, 1, 1], [0, 1, 3], [1, 2, 2]],
+               turn=[[2, 1, 1], [2, 1, 1], [1, 1, 0]], p4=[[0, 1, 2], [1, 1, 1], [2, 1, 1]], r4=[[1, 1, 2], [2, 1, 1], [2, 1, 1]], u4=[[1, 3, 1], [1, 1, 1], [1, 2, 1]],
+               i5=[[1, 1, 1], [2, 0, 1], [2, 0, 2]], t5=[[2, 1, 0], [3, 1, 2], [0, 1, 0]], c5=([[2, 2, 2], [1, 1, 1], [1, 1, 1]], [[1, 1, 1], [0, 1, 1], [1, 2, 1]]),
+               e5=[[1, 2, 3], [2, 0, 1], [0, 1, 1]],
+               a6=[[2, 3, 1], [1, 2, 0]], b6=[[3, 2, 1], [1, 2, 2], [0, 1, 0]], c6=[[3, 1, 1], [2, 2, 0], [1, 0, 0]], d6=[[1, 2, 3], [1, 1, 2], [0, 0, 1]],
+               A7=[[0, 0, 0], [1, 2, 0], [1, 0, 0]], A7c=[[[0, 0, 0], [1, 2, 1], [1, 0, 0]], [[0, 0, 0], [1, 1, 0], [1, 1, 1]], [[0, 0, 0], [2, 2, 0], [1, 0, 0]]],
+               B7=[[0, 1, 0], [1, 2, 1], [0, 0, 0]], B7c=[[[0, 1, 0], [1, 2, 1], [1, 1, 0]], [[0, 2, 0], [1, 3, 1], [0, 0, 0]], [[0, 1, 0], [2, 1, 2], [0, 1, 0]], [[0, 1, 0], [1, 1, 1], [1, 1, 1]]],
+               card1=[[1, 1, 2], [3, 1, 2], [0, 1, 0]], card2=[[1, 3, 2], [2, 1, 0]],
+               g10a=[[2, 1, 2], [1, 1, 0], [1, 2, 1]], g10b=[[1, 1, 1], [1, 1, 0], [2, 3, 1]], p10=[[1, 1, 1], [2, 0, 1], [0, 1, 2]],
+               n10=[[1, 1, 1], [1, 1, 1], [3, 1, 1]], n10x=([[1, 1, 1], [1, 1, 1], [1, 1, 3]], [[3, 1, 1], [1, 1, 1], [1, 1, 1]]),
+               l10=[[0, 1, 0], [3, 3, 0], [1, 1, 3]], s10=[[0, 0, 1, 0], [1, 2, 1, 3], [0, 0, 1, 0]]),
+}
+
+
+def hard_u3(X, v):
+    """버전 v(tb|st)의 도전형 새 계단: 차시 번호 → [(안내 글, [앱 기록 꼴])]"""
+    d = U3[v]
+    p1, p2 = d['who']
+    b1, b2, b3, b4 = d['bld']
+    out = {}
+    H = d['iso_rng']
+    lo, hi = _range(X, H, M=3)
+    S = d['simple']
+    _seen(X, S)
+    out['1'] = [
+        ('주변 물건을 여러 방향에서 본다고 생각하며 물음에 답해 보세요.',
+         [_quiz(('둥근 컵을 바로 위에서 내려다본 모양으로 알맞은 것은?', ['원', '직사각형', '삼각형'], 0),
+                ('직육면체 모양 상자를 바로 앞에서 본 모양으로 알맞은 것은?', ['삼각형', '직사각형', '원'], 1))]),
+        ('%s와 %s의 영상 촬영 이야기를 떠올리며 물음에 답해 보세요.' % (p1, p2) if v == 'tb' else '%s와 %s의 전시회 준비 이야기를 떠올리며 물음에 답해 보세요.' % (p1, p2),
+         [_quiz(('같은 건물을 여러 방향에서 찍으면 좋은 점은?', ['건물의 여러 면을 볼 수 있어요', '건물이 더 커져요', '건물의 색이 바뀌어요'], 0),
+                ('쌓기나무 모양을 한 방향에서만 보면 알 수 없는 것은?', ['쌓기나무의 모양이 정육면체인 것', '뒤쪽에 숨은 쌓기나무가 있는지', '쌓기나무의 색'], 1))]),
+        ('그림과 똑같아 보이게 쌓기나무를 쌓으려고 해요. 한 자리에 3개까지 쌓을 수 있다면 쌓기나무는 몇 개가 필요할까요?',
+         [_ask((None, _fig((X.iso(H), '쌓기나무로 만든 모양')), _P('가장 적으면 ', lo, '개, 가장 많으면 ', hi, '개예요.')),
+               ('개수가 한 가지로 정해지지 않는 까닭은 무엇일까요?', None, _P((['쌓기나무의 크기가 달라서', '그림에서 보이지 않는 자리가 있어서'], 1))))]),
+        ('이 단원에서 하게 될 활동을 모두 골라 보세요.',
+         [_quiz(('이 단원에서 하게 될 활동을 모두 골라 보세요.', ['위에서 본 모양에 수를 써서 개수 구하기', '층별 모양을 보고 쌓기나무로 만들기',
+                                                 '쌓기나무의 무게 재기', '앞과 옆에서 본 모양 그리기', '도형의 넓이 구하기'], [0, 1, 3]))]),
+        ('쌓기나무로 만든 모양을 보고 물음에 답해 보세요. (숨은 쌓기나무는 없어요.)',
+         [_ask(('쌓기나무 몇 개로 만든 모양인가요?', _fig((X.iso(S), None)), _P(*_lay_parts(S))),
+               ('가장 높은 곳은 몇 층인가요?', None, _P(max(map(max, S)), '층')))]),
+    ]
+    obj = ('철봉', '그네', '미끄럼틀') if v == 'tb' else ('교명석', '국기 게양대', '은행나무')
+    O3 = list(obj)
+    out['2'] = [
+        ('%s 앞쪽(남쪽)이 가 방향, 오른쪽(동쪽)이 나 방향, 뒤쪽(북쪽)이 다 방향이에요. 가 방향에서 보면 왼쪽부터 %s, %s, %s가 한 줄로 보여요.'
+         % ('운동장' if v == 'tb' else '교문', obj[0], obj[1], obj[2]),
+         [_ask((None, None, _P('다 방향에서 보면 왼쪽부터 ', (O3, 2), ', ', (O3, 1), ', ', (O3, 0), ' 차례로 보여요.')))]),
+        ('보는 방향에 따라 보이는 차례와 모습을 말해 보세요.',
+         [_ask((None, None, _P('나 방향에서 보면 가장 가까이 보이는 것은 ', (O3, 2), '예요.')),
+               (None, None, _P('왼쪽부터 %s, %s, %s 차례로 보이는 것은 ' % (obj[2], obj[1], obj[0]), (['가', '나', '다'], 2), ' 방향에서 본 모습이에요.')))]),
+        ('곰 인형을 탁자 가운데 놓았어요. 지호가 선 쪽을 앞이라고 하면 곰 인형의 얼굴이 지호를 보고 있어요. 민아는 지호의 맞은편, 태오는 지호의 왼쪽, 수아는 지호의 오른쪽에 서서 곰 인형을 찍었어요.',
+         [_ask((None, None, _P('㉠ 곰 인형의 등만 보임: ', (['지호', '민아', '태오', '수아'], 1), ' · ㉡ 곰 인형의 얼굴이 보임: ', (['지호', '민아', '태오', '수아'], 0))),
+               (None, None, _P('㉢ 곰 인형의 오른쪽 옆모습: ', (['지호', '민아', '태오', '수아'], 2), ' · ㉣ 곰 인형의 왼쪽 옆모습: ', (['지호', '민아', '태오', '수아'], 3))))]),
+        ('여러 방향에서 본 모습을 다른 말로 정리해 보세요.',
+         [_blanks('맞은편에서 보면 보이는 차례가 ', (['반대로', '똑같이'], 0), ' 보여요. 같은 물체라도 ', (['보는 방향', '물체의 크기'], 0),
+                  '에 따라 보이는 모습이 달라서, 사진을 보고 찍은 곳을 찾을 때는 가장 ', (['가까이', '멀리'], 0), ' 보이는 것부터 살펴보면 편리해요.')]),
+        ('탁자 위에 왼쪽부터 컵, 접시, 병을 한 줄로 놓고 앞에서 보았어요. 물음에 답해 보세요.',
+         [_ask((None, None, _P('뒤에서 보면 왼쪽부터 ', (['컵', '접시', '병'], 2), ', ', (['컵', '접시', '병'], 1), ', ', (['컵', '접시', '병'], 0), ' 차례로 보여요.'))),
+          _write(('왼쪽에서 볼 때 가장 가까이 보이는 물건과 그 까닭을 써 보세요.', '컵이에요. 왼쪽 끝에 놓여 있어서 왼쪽에서 볼 때 가장 가까이 있기 때문이에요.'))]),
+    ]
+    A, B_, C_ = d['a3'], d['b3'], d['c3']
+    alo, ahi = _range(X, A, M=3)
+    _uniq(X, B_, top=True)
+    clo, chi = _range(X, C_, top=True)
+    Da, Db = d['d3a'], d['d3b']
+    _uniq(X, Da, top=True)
+    dlo, dhi = _range(X, Db, top=True)
+    out['3'] = [
+        ('%s 모양을 그림만 보고 쌓으려고 해요. 한 자리에 3개까지 쌓는다면 쌓기나무는 몇 개 필요할까요?' % b1,
+         [_ask((None, _fig((X.iso(A), '%s 모양' % b1)), _P('가장 적으면 ', alo, '개, 가장 많으면 ', ahi, '개예요.')),
+               ('개수를 하나로 정하려면 무엇을 더 알아야 할까요?', None, _P((['쌓기나무의 색깔', '만든 모양을 위에서 본 모양', '쌓기나무의 무게'], 1))))]),
+        ('만든 모양과 위에서 본 모양을 함께 보고 필요한 쌓기나무의 개수를 구해 보세요.',
+         [_ask((None, _fig((X.iso(B_), '쌓기나무로 만든 모양'), (X.top(B_), '위에서 본 모양')), _P(*_lay_parts(B_))),
+               ('그림에서 윗면이 보이지 않는 자리는 몇 군데인가요?', None, _P(sum(X.look(B_)), '군데')))]),
+        ('만든 모양과 위에서 본 모양이에요. 똑같은 모양으로 만들 때 쌓기나무의 수가 여러 가지일 수 있어요. 한 자리에 4개까지 쌓는다면 몇 개일까요?',
+         [_ask((None, _fig((X.iso(C_), '쌓기나무로 만든 모양'), (X.top(C_), '위에서 본 모양')), _P('가장 적으면 ', clo, '개, 가장 많으면 ', chi, '개예요.')))]),
+        ('위에서 본 모양으로 숨은 쌓기나무를 찾는 방법을 다른 말로 정리해 보세요.',
+         [_blanks('위에서 본 모양의 칸 수는 ', (['1층', '2층'], 0), '에 있는 쌓기나무의 수와 같아요. 위에서 본 모양에는 칸이 있는데 그림에서 윗면이 보이지 않는 자리에는 쌓기나무가 ',
+                  (['1개 이상', '0개'], 0), ' 있어요.')]),
+        ('두 모양을 똑같이 만드는 데 필요한 쌓기나무는 몇 개인지 구해 보세요. (한 자리에 4개까지)',
+         [_ask(('가', _fig((X.iso(Da), '쌓기나무로 만든 모양'), (X.top(Da), '위에서 본 모양')), _P(*_lay_parts(Da))),
+               ('나', _fig((X.iso(Db), '쌓기나무로 만든 모양'), (X.top(Db), '위에서 본 모양')), _P('가장 적으면 ', dlo, '개, 가장 많으면 ', dhi, '개')))]),
+    ]
+    T4, P4, R4, U4 = d['turn'], d['p4'], d['r4'], d['u4']
+    _seen(X, T4)
+    _seen(X, P4)
+    rlo, rhi = _range(X, R4, views=True)
+    _uniq(X, U4, views=True)
+    out['4'] = [
+        ('%s 모양을 위, 앞, 오른쪽에서 본 모양이에요. 살펴보고 물음에 답해 보세요.' % b2,
+         [_turn(X, T4, ask=[{'q': '앞에서 본 모양과 뒤에서 본 모양은 어떤 관계인가요?', 'fig': None, 'o': None,
+                            'parts': _P((['위아래로 뒤집으면 같아요', '좌우로 뒤집으면 같아요'], 1), '.')}])]),
+        ('쌓기나무로 만든 모양을 보고 위, 앞, 옆에서 본 모양을 각각 칸에 칠해 그려 보세요. (숨은 쌓기나무는 없고, 옆은 오른쪽이에요.)',
+         [_paint(P4, ['top', 'front', 'side'], show=_fig((X.iso(P4), '쌓기나무로 만든 모양')))]),
+        ('위, 앞, 옆에서 본 모양만 보고 쌓으면 쌓기나무의 수가 여러 가지일 수 있어요. 세 모양이 똑같이 되도록 쌓는다면 몇 개일까요?',
+         [_ask((None, _fig((X.top(R4), '위에서 본 모양'), (X.front(R4), '앞에서 본 모양'), (X.side(R4), '옆에서 본 모양')),
+                _P('가장 적으면 ', rlo, '개, 가장 많으면 ', rhi, '개예요.')))]),
+        ('앞과 옆에서 본 모양을 그리는 방법을 다른 말로 정리해 보세요.',
+         [_blanks('앞에서 본 모양의 칸 수는 앞에서 볼 때 각 줄의 ', (['가장 높은 층의 수', '쌓기나무 수의 합'], 0), '를 왼쪽부터 나타낸 것이에요. 옆(오른쪽)에서 볼 때 왼쪽에 보이는 줄은 ',
+                  (['맨 앞줄', '맨 뒷줄'], 0), '이에요.')]),
+        ('위, 앞, 옆에서 본 모양이에요. 똑같은 모양으로 만드는 데 필요한 쌓기나무는 몇 개인지 구해 보세요.',
+         [_ask((None, _fig((X.top(U4), '위에서 본 모양'), (X.front(U4), '앞에서 본 모양'), (X.side(U4), '옆에서 본 모양')),
+                _P('필요한 쌓기나무는 ', sum(map(sum, U4)), '개예요.'))),
+          _nums(U4, title='위에서 본 모양에 수 쓰기', total=False)]),
+    ]
+    I5, T5, E5 = d['i5'], d['t5'], d['e5']
+    C5a, C5b = d['c5']
+    for h_ in (I5, C5a, C5b):
+        _seen(X, h_)
+    out['5'] = [
+        ('%s 모양을 보고 위에서 본 모양의 각 자리에 쌓기나무의 수를 써 보세요. (숨은 쌓기나무는 없어요.)' % b3,
+         [_nums(I5, show=_fig((X.iso(I5), '%s 모양' % b3)))]),
+        ('위에서 본 모양에 수를 쓴 것이에요. 쌓기나무로 쌓았다고 생각하고 물음에 답해 보세요.',
+         [_ask((None, _fig((X.topnums(T5), '위에서 본 모양에 수를 쓴 것')), _P(*_lay_parts(T5))),
+               ('앞에서 본 모양은 왼쪽부터 몇 층인가요?', None, _P(*_seq('왼쪽부터 ', views(T5)[1], '층'))))]),
+        ('두 모양을 보고 위에서 본 모양에 수를 쓰고, 필요한 쌓기나무의 개수를 구해 보세요. (숨은 쌓기나무는 없어요.)',
+         [_chain(('①', [_nums(C5a, show=_fig((X.iso(C5a), None)))]), ('②', [_nums(C5b, show=_fig((X.iso(C5b), None)))]))]),
+        ('위에서 본 모양에 수를 쓰는 방법을 다른 말로 정리해 보세요.',
+         [_blanks('위에서 본 모양에 쓴 수가 모두 같은 줄(앞에서 볼 때 세로줄)에서 앞에서 본 모양의 높이는 그 줄의 ', (['가장 큰 수', '모든 수의 합'], 0),
+                  '예요. 수를 쓰면 숨은 쌓기나무도 알 수 있어서 모양이 ', (['한 가지로', '여러 가지로'], 0), ' 정해져요.')]),
+        ('위에서 본 모양에 수를 쓴 것만 보고 쌓기나무의 개수를 구하고, 앞과 옆에서 본 모양을 그려 보세요.',
+         [_ask((None, _fig((X.topnums(E5), '위에서 본 모양에 수를 쓴 것')), _P('쌓기나무는 모두 ', sum(map(sum, E5)), '개예요.'))),
+          _paint(E5, ['front', 'side'])]),
+    ]
+    A6, B6, C6, D6 = d['a6'], d['b6'], d['c6'], d['d6']
+    _seen(X, B6)
+    names = ['식당', '운동 시설', '숙소'] if v == 'tb' else ['과학실', '음악실', '미술실']
+    out['6'] = [
+        ('%s 모양을 층별로 살펴보고 물음에 답해 보세요.' % b4,
+         [_layers(X, A6, names, ask=[{'q': '각 층의 쌓기나무 수와 전체 개수를 구해 보세요.', 'fig': None, 'o': None, 'parts': _P(*_lay_parts(A6))},
+                                     {'q': '3층까지 쌓인 자리는 몇 군데인가요?', 'fig': None, 'o': None, 'parts': _P(sum(1 for r in A6 for x in r if x >= 3), '군데')}])]),
+        ('쌓기나무로 만든 모양을 층별로 위에서 본 모양을 칸에 칠해 그려 보세요. (숨은 쌓기나무는 없어요. 아래쪽이 앞이에요.)',
+         [_paint(B6, ['L1', 'L2', 'L3'], show=_fig((X.iso(B6), '쌓기나무로 만든 모양')))]),
+        ('층별 모양을 보고 위에서 본 모양의 각 자리에 쌓기나무의 수를 써 보세요.',
+         [_nums(C6, show=_fig(*[(X.layer(C6, k), '%d층' % k) for k in range(1, max(map(max, C6)) + 1)]))]),
+        ('층별로 나타내는 방법을 다른 말로 정리해 보세요.',
+         [_blanks('2층 모양의 칸은 모두 ', (['1층 모양', '3층 모양'], 0), '에도 칠해져 있어야 해요. 위에서 본 모양의 한 자리에 쓴 수는 그 자리가 칠해진 ',
+                  (['층의 수', '칸의 수'], 0), '와 같아요.')]),
+        ('층별 모양이에요. 쌓기나무의 개수를 구하고, 위, 앞, 옆에서 본 모양을 그려 보세요.',
+         [_ask((None, _fig(*[(X.layer(D6, k), '%d층' % k) for k in range(1, max(map(max, D6)) + 1)]), _P(*_lay_parts(D6)))),
+          _paint(D6, ['top', 'front', 'side'])]),
+    ]
+    A7, B7 = d['A7'], d['B7']
+    ka = [i for i, Cc in enumerate(d['A7c']) if _contains(Cc, A7)]
+    kb = [i for i, Cc in enumerate(d['B7c']) if _contains(Cc, B7)]
+    assert sum(map(sum, A7)) + 1 == sum(map(sum, d['A7c'][0])) and len(ka) == 2 and len(kb) == 2, (ka, kb)
+    pick_b = d['B7c'][kb[0]]
+    pick_a = d['A7c'][ka[0]]
+    g7 = '가 모양' if v == 'tb' else '가 모형'
+    n7 = '나 모양' if v == 'tb' else '나 모형'
+    out['7~8'] = [
+        ('%s(쌓기나무 %d개)에 쌓기나무 1개를 더 붙인 모양을 모두 찾아보세요.' % (g7, sum(map(sum, A7))),
+         [_pick(_fig((X.iso(A7), g7)), '%s에 1개를 더 붙인 모양을 모두 찾아 기호를 써 보세요.' % g7, [('㉠㉡㉢'[i], X.iso(Cc)) for i, Cc in enumerate(d['A7c'])], ka)]),
+        ('%s(쌓기나무 %d개)에 쌓기나무 2개를 더 붙인 모양을 모두 찾아보세요.' % (n7, sum(map(sum, B7))),
+         [_pick(_fig((X.iso(B7), n7)), '%s에 2개를 더 붙인 모양을 모두 찾아 기호를 써 보세요.' % n7, [('㉠㉡㉢㉣'[i], X.iso(Cc)) for i, Cc in enumerate(d['B7c'])], kb)]),
+        ('찾은 모양 가운데 %s을 위, 앞, 옆에서 본 모양으로 나타내 보세요.' % '㉠㉡㉢㉣'[kb[0]],
+         [_paint(pick_b, ['top', 'front', 'side'], show=_fig((X.iso(pick_b), '%s 모양' % '㉠㉡㉢㉣'[kb[0]])))]),
+        ('%s에서 찾은 %s을 위에서 본 모양에 수를 쓴 것과 층별 모양으로 나타내 보세요.' % (g7, '㉠㉡㉢'[ka[0]]),
+         [_nums(pick_a, show=_fig((X.iso(pick_a), '%s 모양' % '㉠㉡㉢'[ka[0]])), total=False),
+          _paint(pick_a, ['L1', 'L2'])]),
+        ('쌓기나무로 만든 모양을 나타내는 방법을 견주어 보세요.',
+         [_quiz(('숨은 쌓기나무가 있어도 개수를 정확히 알 수 있는 방법을 모두 골라 보세요.', ['만든 모양 그림만 보기', '위에서 본 모양에 수 쓰기', '층별로 나타내기', '앞에서 본 모양만 보기'], [1, 2]),
+                ('앞에서 본 모양을 가장 빨리 그릴 수 있는 방법은?', ['층별 모양의 칸 수 세기', '위에서 본 모양에 쓴 수에서 각 줄의 가장 큰 수 찾기'], 1))]),
+    ]
+    K1, K2 = d['card1'], d['card2']
+    _uniq(X, K1, top=True)
+    out['9'] = [
+        ('놀이 방법 카드의 순서가 섞였어요. 차례대로 기호를 써 보세요. (문장을 바꾸어 썼어요.)',
+         [{'t': 'sequence', 'cards': ['㉠ 모두가 만드는 역할을 한 번씩 맡으면 놀이를 마쳐요.',
+                                      '㉡ 만드는 사람은 등을 돌리고, 다음 사람이 카드 한 장을 다른 두 사람에게만 보여 줘요.',
+                                      '㉢ 만드는 사람은 세 사람이 그린 층별 모양만 보고 쌓기나무로 만들어요.',
+                                      '㉣ 카드를 본 세 사람이 1층, 2층, 3층 모양을 하나씩 나누어 그려요.'], 'order': [1, 3, 2, 0], 'opts': {}}]),
+        ('1번 카드는 만든 모양과 위에서 본 모양이에요. 1층, 2층, 3층 모양을 그려 보세요.',
+         [_paint(K1, ['L1', 'L2', 'L3'], show=_fig((X.iso(K1), '쌓기나무로 만든 모양'), (X.top(K1), '위에서 본 모양')))]),
+        ('2번 카드는 위에서 본 모양에 수를 쓴 카드예요. 층별 모양을 그려 보세요.',
+         [_paint(K2, ['L1', 'L2', 'L3'], show=_fig((X.topnums(K2), '2번 카드')))]),
+        ('짝과 함께 맞히기 놀이를 해요. 이번에는 쌓기나무 6개로 만들고, 위에서 본 모양만 보고 맞히면 3점, 위·앞을 보고 맞히면 2점, 위·앞·옆을 보고 맞히면 1점이에요. 12점을 먼저 모으면 이겨요.',
+         [{'t': 'hardGame'}]),
+        ('놀이를 하며 느낀 점을 정리해 보세요.',
+         [_write(('위에서 본 모양만 보고 맞히기 어려웠던 까닭을 써 보세요.', '위에서 본 모양만으로는 각 자리에 몇 개씩 쌓았는지 알 수 없어서 여러 가지로 만들 수 있었기 때문이에요.'),
+                 ('친구가 맞히기 쉽게 하려면 앞에서 본 모양을 그릴 때 무엇에 주의해야 하나요?', '각 줄에서 가장 높은 층의 수만큼 바닥부터 빈칸 없이 칠해야 해요.'))]),
+    ]
+    Ga, Gb, P10, N10, L10, S10 = d['g10a'], d['g10b'], d['p10'], d['n10'], d['l10'], d['s10']
+    _uniq(X, Ga, top=True)
+    glo, ghi = _range(X, Gb, top=True)
+    _seen(X, P10)
+    _seen(X, L10)
+    _seen(X, N10)
+    cands = [d['n10x'][0], N10, d['n10x'][1]]
+    assert len({json.dumps(c) for c in cands}) == 3 and all(views(c)[0] == views(N10)[0] for c in cands)
+    top10, front10, side10 = views(S10)
+    assert all(sum(1 for y in range(len(S10)) if S10[y][x]) == 1 or front10[x] == 1 for x in range(len(S10[0])))
+    out['10'] = [
+        ('탁자 위에 왼쪽부터 꽃병, 시계, 액자를 한 줄로 놓았어요. 오른쪽에서 보면 가장 가까이 보이는 것은 무엇일까요?',
+         [_ask((None, None, _P((['꽃병', '시계', '액자'], 2), '가 가장 가까이 보여요.')),
+               (None, None, _P('뒤에서 보면 가장 왼쪽에 보이는 것은 ', (['꽃병', '시계', '액자'], 2), '예요.')))]),
+        ('만든 모양과 위에서 본 모양을 보고 필요한 쌓기나무의 개수를 구해 보세요. (한 자리에 4개까지)',
+         [_ask(('①', _fig((X.iso(Ga), '쌓기나무로 만든 모양'), (X.top(Ga), '위에서 본 모양')), _P(*_lay_parts(Ga))),
+               ('②', _fig((X.iso(Gb), '쌓기나무로 만든 모양'), (X.top(Gb), '위에서 본 모양')), _P('가장 적으면 ', glo, '개, 가장 많으면 ', ghi, '개')))]),
+        ('쌓기나무 %d개로 만든 모양이에요. 위, 앞, 옆에서 본 모양을 각각 그려 보세요. (숨은 쌓기나무는 없어요.)' % sum(map(sum, P10)),
+         [_paint(P10, ['top', 'front', 'side'], show=_fig((X.iso(P10), '쌓기나무 %d개로 만든 모양' % sum(map(sum, P10)))))]),
+        ('위에서 본 모양에 수를 쓴 것을 보고 어떤 모양인지 찾고, 만든 모양과 1층 모양을 보고 2층과 3층 모양을 그려 보세요.',
+         [_chain(('4번', [_pick(_fig((X.topnums(N10), '위에서 본 모양에 수를 쓴 것')), '어느 모양을 위에서 보고 수를 쓴 것인가요?',
+                                [('가', X.iso(cands[0])), ('나', X.iso(cands[1])), ('다', X.iso(cands[2]))], 1)]),
+                 ('5번', [_paint(L10, ['L2', 'L3'], show=_fig((X.iso(L10), '만든 모양'), (X.layer(L10, 1), '1층 모양')))]))]),
+        ('위와 앞에서 본 모양이에요. 위에서 본 모양에 수를 써 보고, 옆에서 본 모양을 그려 보세요.',
+         [_chain(('위에서 본 모양에 수 쓰기', [_nums(S10, show=_fig((X.top(S10), '위에서 본 모양'), (X.front(S10), '앞에서 본 모양')), totalQ='쌓기나무는 모두')]),
+                 ('옆에서 본 모양 그리기', [_paint(S10, ['side'])]))]),
+    ]
+    if v == 'st':
+        out['10'].append(('이 단원에서 배운 것을 떠올리며 1차시에 궁금했던 것에 답해 보세요.',
+                          [_write(('위, 앞, 옆에서 본 모양만으로는 개수를 하나로 정할 수 없을 때, 개수를 정확히 알려 주려면 어떻게 나타내면 좋을지 써 보세요.',
+                                   '위에서 본 모양에 각 자리의 쌓기나무 수를 쓰거나 층별 모양으로 나타내면 숨은 쌓기나무까지 정확히 알 수 있어요.'))]))
+    return out
+
+
+
 def paper(t):
     for a, b in PAPER + (PAPER_ST if MODE['v'] == 'st' else []):
         t = t.replace(a, b)
     return t
 
 
-def lesson(s, lv, L, story=None):
+def lesson(s, lv, L, story=None, hard=None):
     s.lesson(L['no'], L['soop'], L['title'], L['question'])
     if story:
         s.scene(None, story)
     out = []
+    assert hard is None or len(hard) == len(L['steps']), ('도전형 새 문제 수가 계단 수와 달라요', L['no'])
     for i, st in enumerate(L['steps']):
         if MODE['v'] == 'st' and ' — ' in st['name']:       # 이야기 버전 계단 이름 '만져 보기 — 교문 둘러보기'
             s.step('%s %s' % (NUM[i], st['name'].split(' — ')[0]), st['name'].split(' — ', 1)[1])
         else:
             s.step('%s %s' % (NUM[i], st['name']))
+        if hard:                                             # 도전형 ①~⑤는 새 문제
+            s.text(hard[i][0])
+            out.append(NUM[i] + ' ' + '; '.join(x for x in (render_rec(s, lv, r, st) for r in hard[i][1]) if x))
+            continue
         inst = paper(st['inst'])
         s.text(inst.strip())
         if lv == '기본형' and st['hints'] and st['recs'][0]['t'] not in ('write', 'sp6Guess'):
@@ -876,15 +1328,22 @@ def lesson(s, lv, L, story=None):
 def build(D, label, short, outdir, lv, ver='tb'):
     MODE['v'] = ver
     s = Sheet(unit_label=label, level=lv, grade_label='6학년')
+    HARD = {}
+    if lv == '도전형':
+        X = _X(SRC_TB if ver == 'tb' else SRC_ST)
+        hard_u3(X, ver)
+        X.run()
+        HARD = hard_u3(X, ver)
+        assert set(HARD) == {str(L['no']) for L in D['lessons']}, sorted(HARD)
     if ver == 'tb':
-        lines = [lesson(s, lv, L) for L in D['lessons']]
+        lines = [lesson(s, lv, L, hard=HARD.get(str(L['no']))) for L in D['lessons']]
         tail = '쌓기나무 그림은 지도서의 답이 그대로 나오도록 앱에서 새로 그린 모양입니다.'
     else:
         nos = [str(L['no']) for L in D['lessons']]
         assert nos == ST, ('이야기 버전 차시가 원본과 달라요', nos, ST)
         assert set(WHY_ST) == set(ST)
         story = D['story']['lines'][:2]
-        lines = [lesson(s, lv, L, story if i == 0 else None) for i, L in enumerate(D['lessons'])]
+        lines = [lesson(s, lv, L, story if i == 0 else None, hard=HARD.get(str(L['no']))) for i, L in enumerate(D['lessons'])]
         tail = '쌓기나무 배치는 이야기 버전에서 새로 설계한 것으로, 앱과 같은 그림입니다. 글쓰기 칸의 답은 모범 답의 한 예입니다.'
     s.answers('【교사용】 3. 공간과 입체(%s) 활동지 정답 (%s)' % (short, lv), lines,
               note='※ 이 활동지는 앱 u3-space.html과 차시 번호가 같습니다. 수를 쓴 모양 [ ]은 뒷줄부터 앞줄 차례, 왼쪽부터이고 ‘-’는 빈자리, ■는 칠할 칸입니다. ' + tail)

@@ -235,17 +235,46 @@ app('board','tool','✍️','판서',b=>{
  $('#bg',b).onchange=e=>setBg(e.target.value);setBg('white');
  const ro=new ResizeObserver(fit);ro.observe(cw);return ()=>ro.disconnect()},{wide:1});
 app('pick','tool','🎯','뽑기',b=>{
- const draw=()=>{const left=present().filter(n=>!DB.picked.includes(n));
-  b.innerHTML=`<div class="center"><div class="huge" id="r">❓</div><div class="mid" id="rn"></div>
-  <div class="row c"><button class="btn big pri" id="go" type="button">🎯 뽑기</button><label class="row"><input type="checkbox" id="ex" ${DB.pickEx!==false?'checked':''}> 뽑힌 친구 빼기</label></div>
-  <div class="small">남은 친구 ${left.length}명 · 오늘 결석 ${absentToday().length?absentToday().join(', ')+'번':'없음'}</div>
-  <div class="row c" id="hist">${DB.picked.map(n=>`<span class="chip">${esc(label(n))}</span>`).join('')}</div>
-  <div class="row c"><button class="btn" id="rs" type="button">처음부터 다시</button><button class="btn" id="ab" type="button">😷 오늘 결석 정하기</button></div></div>`;
+ /* (2026-10-30 선생님 요청) 대상: 개별·남학생·여학생·모둠, 한 번에 뽑는 수 1~6(모둠은 1~4) — 남학생 번호는 DB.boys, 모둠은 모둠 짜기의 마지막 결과(DB.grpLast) 또는 1~DB.gN모둠 */
+ const MODES=[['all','🙋 개별'],['m','👦 남학생'],['f','👧 여학생'],['g','👥 모둠'],['gn','🔢 모둠 안 번호']];
+ /* 모둠 안 번호(2026-10-30): '각 모둠의 N번'을 뽑음 — 모둠 짜기 결과가 있으면 모둠마다 그 번호 친구(모둠 안 작은 번호부터 1번)를 보여 줌, 없으면 DB.gSize(기본 4)명까지 */
+ const gSize=()=>{const L=DB.grpLast;return L&&L.length?Math.max(...L.map(g=>g.length)):(DB.gSize||4)};
+ const boys=()=>DB.boys||[];
+ const groups=()=>{const L=DB.grpLast;if(L&&L.length)return L.map((g,i)=>({k:i+1,mem:g}));return Array.from({length:DB.gN||6},(_,i)=>({k:i+1,mem:null}))};
+ const gLabel=g=>g.k+'모둠'+(g.mem?' ('+g.mem.map(label).join(' · ')+')':'');
+ const pool0=()=>{const md=DB.pickMode||'all',P=present();
+  if(md==='m')return P.filter(n=>boys().includes(n));if(md==='f')return P.filter(n=>!boys().includes(n));return P};
+ const draw=()=>{const md=DB.pickMode||'all',isG=md==='g',isN=md==='gn',ex=DB.pickEx!==false,cnt=DB.pickN||1;
+  if(!DB.pickedG)DB.pickedG=[];if(!DB.pickedGN)DB.pickedGN=[];
+  const left=isN?Array.from({length:gSize()},(_,i)=>i+1).filter(k=>!DB.pickedGN.includes(k)).length:isG?groups().filter(g=>!DB.pickedG.includes(g.k)).length:pool0().filter(n=>!DB.picked.includes(n)).length;
+  const maxN=isN?Math.min(3,gSize()):isG?4:6;
+  /* (2026-10-30 선생님: 메뉴 정리) 위: 대상 한 줄(붙은 단추) + 한 번에·빼기 / 가운데: 결과·뽑기 단추 크게 / 아래: 뽑힌 기록 · 설정 단추 작게 */
+  b.innerHTML=`<style>.pk-seg{display:inline-flex;flex-wrap:wrap;justify-content:center;background:var(--bg2);border-radius:999px;padding:4px;gap:2px}.pk-seg .btn{border:0;background:transparent;border-radius:999px;min-height:44px}.pk-seg .btn.on{background:var(--paper);box-shadow:0 1px 3px rgba(0,0,0,.15)}
+  .pk-opt{display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;justify-content:center;align-items:center;font-size:1rem}.pk-sub{display:flex;flex-wrap:wrap;gap:.5rem;justify-content:center}.pk-sub .btn{font-size:.95rem;min-height:40px;padding:.3rem .9rem}</style>
+  <div class="center" style="gap:1rem">
+  <div class="pk-seg" role="tablist">${MODES.map(([k,t])=>`<button class="btn ${md===k?'on':''}" data-pm="${k}" type="button">${t}</button>`).join('')}</div>
+  <div class="pk-opt"><label class="row">한 번에 <select class="inp" id="pn" style="width:auto">${Array.from({length:maxN},(_,i)=>`<option value="${i+1}" ${Math.min(cnt,maxN)===i+1?'selected':''}>${i+1}${isN?'개 번호':isG?'모둠':'명'}</option>`).join('')}</select></label>
+   <label class="row"><input type="checkbox" id="ex" ${ex?'checked':''}> 뽑힌 ${isN?'번호':isG?'모둠':'친구'} 빼기</label></div>
+  <div id="r" class="huge" style="display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;justify-content:center;max-width:94%;min-height:1.2em">❓</div>
+  <div id="rd" class="row c" style="gap:.5rem"></div>
+  <button class="btn big pri" id="go" type="button" style="min-width:12rem">🎯 뽑기</button>
+  <div class="small">${isN?`남은 번호 ${left}개 (1~${gSize()}번)${DB.grpLast&&DB.grpLast.length?' · 모둠 짜기 결과의 모둠 안 차례(번호가 작은 친구부터 1번)':' · 모둠 짜기를 하면 모둠마다 누구인지 보여요'}`:isG?`남은 모둠 ${left}개${DB.grpLast&&DB.grpLast.length?' · 모둠 짜기 결과 그대로':' · 모둠 짜기를 하면 모둠 친구 이름도 보여요'}`:`남은 ${md==='m'?'남학생':md==='f'?'여학생':'친구'} ${left}명`} · 오늘 결석 ${absentToday().length?absentToday().join(', ')+'번':'없음'}${(md==='m'||md==='f')&&!boys().length?' · 먼저 남학생 번호를 정해 주세요':''}</div>
+  <div class="row c" id="hist">${(isN?DB.pickedGN.map(k=>'각 모둠 '+k+'번'):isG?DB.pickedG.map(k=>k+'모둠'):DB.picked.map(label)).map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>
+  <div class="pk-sub"><button class="btn" id="rs" type="button">처음부터 다시</button><button class="btn" id="ab" type="button">😷 오늘 결석</button><button class="btn" id="bo" type="button">👦 남학생 번호</button></div></div>`;
+  $$('[data-pm]',b).forEach(x=>x.onclick=()=>{DB.pickMode=x.dataset.pm;save();draw()});
+  $('#pn',b).onchange=e=>{DB.pickN=+e.target.value;save()};
   $('#ex',b).onchange=e=>{DB.pickEx=e.target.checked;save()};
-  $('#rs',b).onclick=()=>{DB.picked=[];save();draw()};$('#ab',b).onclick=()=>setAbsent(draw);
-  $('#go',b).onclick=()=>{const ex=DB.pickEx!==false;let pool=ex?present().filter(n=>!DB.picked.includes(n)):present();if(!pool.length){toast('모두 뽑았어요! 처음부터 다시 해요');return}
-   const r=$('#r',b);let k=0;const iv=setInterval(()=>{r.textContent=label(pool[rnd(pool.length)]);beep([[400+rnd(400),.04]],.08);if(++k>18){clearInterval(iv);const n=pool[rnd(pool.length)];r.textContent=label(n);r.classList.add('pulse');beep();
-    if(ex)DB.picked.push(n);save();setTimeout(()=>{r.classList.remove('pulse');const t=r.textContent;draw();$('#r',b).textContent=t},1400)}},70)}};draw()});
+  $('#rs',b).onclick=()=>{DB.picked=[];DB.pickedG=[];DB.pickedGN=[];save();draw()};$('#ab',b).onclick=()=>setAbsent(draw);
+  $('#bo',b).onclick=()=>askText('남학생 번호 (쉼표로) — 나머지는 여학생',v=>{DB.boys=(v.match(/\d+/g)||[]).map(Number).filter(n=>n>=1&&n<=N());save();draw()},{val:boys().join(', '),hint:'한 번 정하면 이 기기에 남아요.'});
+  $('#go',b).onclick=()=>{const k=+$('#pn',b).value||1;
+   let items=isN?Array.from({length:gSize()},(_,i)=>({id:i+1,t:'각 모둠 '+(i+1)+'번',s:(i+1)+'번'})):isG?groups().map(g=>({id:g.k,t:gLabel(g),s:g.k+'모둠'})):pool0().map(n=>({id:n,t:label(n),s:label(n)}));
+   const used=isN?DB.pickedGN:isG?DB.pickedG:DB.picked;if(ex)items=items.filter(x=>!used.includes(x.id));
+   if(!items.length){toast((md==='m'||md==='f')&&!boys().length?'먼저 남학생 번호를 정해 주세요':'모두 뽑았어요! 처음부터 다시 해요');return}
+   const pick=shuffle(items).slice(0,Math.min(k,items.length));
+   const r=$('#r',b),show=a=>{r.innerHTML=a.map(x=>`<span>${esc(x)}</span>`).join('');r.style.fontSize=isG||isN||a.length>2?'clamp(2rem,5vw,4rem)':''};let t=0;
+   const iv=setInterval(()=>{show(shuffle(items).slice(0,pick.length).map(x=>x.s));beep([[400+rnd(400),.04]],.08);if(++t>18){clearInterval(iv);show(pick.map(x=>x.t));r.classList.add('pulse');beep();
+    const det=isN&&DB.grpLast&&DB.grpLast.length?DB.grpLast.map((g,i)=>`<span class="chip">${i+1}모둠: ${pick.map(x=>g[x.id-1]?esc(label(g[x.id-1])):'(없음)').join(', ')}</span>`).join(''):'';$('#rd',b).innerHTML=det;
+    if(ex)pick.forEach(x=>used.push(x.id));save();const h=r.innerHTML,fs=r.style.fontSize;setTimeout(()=>{r.classList.remove('pulse');draw();const r2=$('#r',b);r2.innerHTML=h;r2.style.fontSize=fs;$('#rd',b).innerHTML=det},1400)}},70)}};draw()});
 function setAbsent(cb){askText('오늘 결석한 번호 (쉼표로)',v=>{DB.absent={d:ymd(),list:(v.match(/\d+/g)||[]).map(Number).filter(n=>n>=1&&n<=N())};save();cb&&cb()},{val:absentToday().join(', '),hint:'뽑기·모둠 짜기·다했어요에서 빠져요. 오늘만 적용돼요.'})}
 app('done','tool','🙋','다했어요',b=>{
  if(DB.done.d!==ymd())DB.done={d:ymd(),task:DB.done.task||'',list:[]};
@@ -287,22 +316,36 @@ app('signal','tool','🚦','활동 신호등',b=>{
   <div class="row c">${L.map((x,j)=>`<button class="btn big ${i===j?'on':''}" data-i="${j}" type="button" style="${i===j?`background:${x[3]};color:#fff;border-color:${x[3]}`:''}">${x[0]} ${j} ${x[1]}</button>`).join('')}</div>`;
   $$('[data-i]',b).forEach(x=>x.onclick=()=>{DB.signal=+x.dataset.i;save();draw()})};draw()});
 app('noise','tool','🔊','소음 측정기',b=>{
- let stream=null,raf=0,ctx=null,loud=0,cnt=0;
+ /* (2026-10-30 선생님 요청) 시작·끝 시각과 시끄러웠던 시각을 기록 — 마지막 기록은 이 기기에 남김(DB.noiseLog) */
+ let stream=null,raf=0,ctx=null,loud=0,cnt=0,log=null;
+ const hm=t=>{const d=new Date(t),h=d.getHours();return(h<12?'오전 ':'오후 ')+((h+11)%12+1)+':'+String(d.getMinutes()).padStart(2,'0')+':'+String(d.getSeconds()).padStart(2,'0')};
  b.innerHTML=`<div class="center"><div class="huge" id="f">🎤</div><div style="width:min(900px,92%);height:3rem;background:var(--bg2);border-radius:999px;overflow:hidden;position:relative">
   <div id="lv" style="height:100%;width:0;background:#4FA987;transition:width .1s"></div><div id="th" style="position:absolute;top:0;bottom:0;width:4px;background:#D2574B"></div></div>
   <div class="mid" id="msg">'시작'을 누르면 마이크로 교실 소리 크기를 봐요</div>
   <label class="row">기준 크기 <input type="range" id="rg" min="10" max="95" value="${DB.noiseTh||60}" style="width:14rem"></label>
-  <div class="row c"><button class="btn big pri" id="go" type="button">🎤 시작</button></div><div class="small" id="ct"></div>
-  <div class="note">소리는 녹음하거나 저장하지 않아요. 크기만 잽니다. 처음 한 번 마이크 사용을 허락해야 해요.</div></div>`;
+  <div class="row c"><button class="btn big pri" id="go" type="button">🎤 시작</button><button class="btn big" id="st" type="button" disabled>⏹ 끝</button></div><div class="mid" id="stt"></div><div class="small" id="ct"></div>
+  <div id="lg" style="width:min(640px,92%);text-align:left"></div>
+  <div class="note">소리는 녹음하거나 저장하지 않아요. 크기와 시각만 기록합니다. 처음 한 번 마이크 사용을 허락해야 해요.</div></div>`;
  const th=$('#th',b),rg=$('#rg',b);const setTh=()=>{th.style.left=rg.value+'%';DB.noiseTh=+rg.value;save()};rg.oninput=setTh;setTh();
+ const show=L=>{const el=$('#lg',b);if(!L){el.innerHTML='';return}
+  el.innerHTML=`<div class="card" style="padding:.8rem 1rem;margin-top:.4rem"><div class="mid" style="margin-bottom:.3rem">📝 소리 기록${L.end?'':' (재는 중)'}</div>
+   <div class="small">시작 ${hm(L.start)}${L.end?' · 끝 '+hm(L.end):''}</div>
+   <div class="small" style="margin-top:.3rem">${L.loud.length?'시끄러웠던 시각 ('+L.loud.length+'번): '+L.loud.map(hm).join(', '):'시끄러웠던 때가 없었어요. 잘했어요!'}</div>
+   ${L.end?'<div class="row" style="margin-top:.4rem"><button class="btn" id="lgx" type="button">기록 지우기</button></div>':''}</div>`;
+  const x=$('#lgx',b);if(x)x.onclick=()=>{DB.noiseLog=null;save();show(null)}};
+ show(DB.noiseLog||null);
+ const stop=()=>{cancelAnimationFrame(raf);stream&&stream.getTracks().forEach(t=>t.stop());ctx&&ctx.close();stream=null;ctx=null;
+  if(log&&!log.end){log.end=Date.now();DB.noiseLog=log;save();show(log);$('#stt',b).textContent='⏱ '+hm(log.start)+' ~ '+hm(log.end)}$('#go',b).disabled=false;$('#st',b).disabled=true;$('#lv',b).style.width='0';$('#f',b).textContent='🎤';$('#msg',b).textContent="기록을 마쳤어요. '시작'을 누르면 새로 기록해요"};
+ $('#st',b).onclick=stop;
  $('#go',b).onclick=async()=>{if(stream)return;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});ctx=new (window.AudioContext||window.webkitAudioContext)();const an=ctx.createAnalyser();an.fftSize=1024;ctx.createMediaStreamSource(stream).connect(an);
-  const buf=new Uint8Array(an.fftSize);$('#go',b).disabled=true;let sm=0;
+  const buf=new Uint8Array(an.fftSize);$('#go',b).disabled=true;$('#st',b).disabled=false;let sm=0;loud=0;cnt=0;$('#ct',b).textContent='';
+  log={start:Date.now(),end:0,loud:[]};DB.noiseLog=log;save();show(log);$('#stt',b).textContent='⏱ 시작한 시각 '+hm(log.start);
   const loop=()=>{an.getByteTimeDomainData(buf);let s=0;for(const v of buf){const x=(v-128)/128;s+=x*x}const lv=Math.min(100,Math.sqrt(s/buf.length)*400);sm=sm*.8+lv*.2;
    $('#lv',b).style.width=sm+'%';const over=sm>+rg.value;$('#lv',b).style.background=over?'#D2574B':sm>rg.value*.7?'#E39A4E':'#4FA987';
-   if(over){loud++;if(loud===30){cnt++;$('#ct',b).textContent=`조금 시끄러웠던 때: ${cnt}번`}}else loud=0;
+   if(over){loud++;if(loud===30){cnt++;$('#ct',b).textContent=`조금 시끄러웠던 때: ${cnt}번`;log.loud.push(Date.now());DB.noiseLog=log;save();show(log)}}else loud=0;
    $('#f',b).textContent=over?'🙉':sm>rg.value*.7?'🙂':'😊';$('#msg',b).textContent=over?'목소리를 조금 낮춰 볼까요?':'좋아요! 이 크기를 지켜요';raf=requestAnimationFrame(loop)};loop()}
   catch(e){$('#msg',b).textContent='마이크를 쓸 수 없어요. 마이크 허락을 확인해 주세요.'}};
- return ()=>{cancelAnimationFrame(raf);stream&&stream.getTracks().forEach(t=>t.stop());ctx&&ctx.close()}});
+ return ()=>{if(stream)stop()}});
 app('groups','tool','👨‍👩‍👧','모둠 짜기 · 발표 순서',b=>{
  let res=null,order=null,oi=0,mode='g';
  const draw=()=>{b.innerHTML=`<div class="tabs"><button class="btn ${mode==='g'?'on':''}" data-m="g" type="button">👨‍👩‍👧 모둠 짜기</button><button class="btn ${mode==='o'?'on':''}" data-m="o" type="button">🔢 발표 순서</button><button class="btn" id="ab" type="button">😷 오늘 결석</button></div>`+
@@ -312,7 +355,7 @@ app('groups','tool','👨‍👩‍👧','모둠 짜기 · 발표 순서',b=>{
    <div class="row c">${order.map((n,i)=>`<span class="chip" style="${i===oi?'background:#FFE2B8':i<oi?'opacity:.45':''}">${i+1}. ${esc(label(n))}</span>`).join('')}</div>`:''}
    <button class="btn big ${order?'':'pri'}" id="mk" type="button">🔀 발표 순서 새로 정하기</button></div>`);
   $$('[data-m]',b).forEach(x=>x.onclick=()=>{mode=x.dataset.m;draw()});$('#ab',b).onclick=()=>setAbsent(draw);
-  if(mode==='g')$('#go',b).onclick=()=>{const k=Math.max(2,Math.min(12,+$('#gn',b).value||6));DB.gN=k;save();const s=shuffle(present());res=Array.from({length:k},()=>[]);s.forEach((n,i)=>res[i%k].push(n));res.forEach(g=>g.sort((a,c)=>a-c));draw()};
+  if(mode==='g')$('#go',b).onclick=()=>{const k=Math.max(2,Math.min(12,+$('#gn',b).value||6));DB.gN=k;save();const s=shuffle(present());res=Array.from({length:k},()=>[]);s.forEach((n,i)=>res[i%k].push(n));res.forEach(g=>g.sort((a,c)=>a-c));DB.grpLast=res;DB.pickedG=[];save();draw()};
   else{$('#mk',b).onclick=()=>{order=shuffle(present());oi=0;draw()};if(order){$('#nx',b).onclick=()=>{if(oi<order.length-1){oi++;draw()}};$('#pv',b).onclick=()=>{if(oi>0){oi--;draw()}}}}};draw()});
 app('score','tool','🏆','모둠 점수판',b=>{
  const S=DB.score;const draw=()=>{const mx=Math.max(...S.pts);b.innerHTML=`<div class="cols" style="grid-template-columns:repeat(auto-fit,minmax(12rem,1fr))">${S.teams.map((t,i)=>`<div class="card mix" style="--acc:${PAL7[i%7]};text-align:center;${S.pts[i]===mx&&mx>0?'border-color:#E3B23C;border-width:4px':''}">
@@ -564,20 +607,45 @@ app('wordchain','play','🔤','끝말잇기',b=>{
    else if(last&&!dueum(last).includes(w[0]))msg=`❌ 「${last}」(으)로 시작해야 해요`;else{W.push(w);msg=`⭕ 좋아요! ${W.length}개째`;beep([[880,.1]],.12)}draw();$('#w',b).focus()};
   $('#ok',b).onclick=go;$('#w',b).onkeydown=e=>{if(e.key==='Enter'&&!e.isComposing)go()};$('#rs',b).onclick=()=>{W=[];msg='첫 낱말을 적어요';draw()};$('#w',b).focus()};draw()});
 const FILL='가나다라마바사아자차카타파하고노도로모보소오조초코토포호구누두루무부수우주추쿠투푸후기니디리미비시이지치키티피히';
+/* 낱말 찾기 퍼즐 낱말 묶음(2026-10-30 선생님 요청: '새 퍼즐'마다 낱말도 바뀌게) — 주제마다 어린이가 아는 2~5글자 낱말 */
+const PZB={
+ school:['🏫 학교',['교실','운동장','도서관','급식실','보건실','칠판','책상','의자','사물함','연필','지우개','공책','필통','가방','크레파스','색종이','풀','가위','자','선생님','친구','짝꿍','숙제','방학','시간표','실내화','교과서','받아쓰기','줄넘기','체육관']],
+ animal:['🐾 동물',['강아지','고양이','토끼','다람쥐','호랑이','사자','기린','코끼리','하마','원숭이','펭귄','거북이','돌고래','고래','상어','악어','여우','늑대','곰','판다','캥거루','얼룩말','낙타','부엉이','독수리','참새','오리','닭','병아리','개구리','나비','잠자리','개미','꿀벌','달팽이']],
+ fruit:['🍎 과일·채소',['사과','바나나','포도','딸기','수박','참외','복숭아','자두','귤','오렌지','키위','망고','체리','레몬','감','배','블루베리','토마토','오이','당근','감자','고구마','양파','배추','무','호박','옥수수','시금치','브로콜리','파프리카','버섯','마늘']],
+ food:['🍚 음식',['김밥','떡볶이','라면','비빔밥','불고기','된장국','김치','만두','잡채','냉면','짜장면','피자','햄버거','샌드위치','카레','볶음밥','계란말이','미역국','송편','떡국','과자','빵','우유','주스','아이스크림','팥빙수','붕어빵','호떡','도넛','케이크']],
+ season:['🌸 계절·날씨',['봄','여름','가을','겨울','벚꽃','개나리','진달래','장마','소나기','무지개','태풍','단풍','낙엽','허수아비','눈사람','눈싸움','고드름','썰매','햇볕','바람','구름','안개','천둥','번개','우산','장화','부채','선풍기','난로','목도리','장갑']],
+ nature:['⛰️ 자연',['하늘','바다','강','산','들판','숲','나무','꽃','풀잎','바위','모래','조개','파도','섬','호수','폭포','시냇물','계곡','동굴','해','달','별','지구','우주','은하수','화산','사막','빙하','새싹','열매','뿌리','씨앗']],
+ job:['🚒 직업',['의사','간호사','소방관','경찰관','요리사','농부','어부','화가','가수','작가','기자','판사','변호사','약사','군인','조종사','과학자','발명가','건축가','디자이너','미용사','제빵사','우체부','택배기사','운동선수','선생님','사진작가','수의사','프로그래머','아나운서']],
+ ride:['🚌 탈것·장소',['자동차','버스','택시','기차','지하철','비행기','헬리콥터','배','자전거','오토바이','트럭','소방차','구급차','경찰차','유모차','킥보드','로켓','시장','병원','약국','은행','우체국','공원','놀이터','박물관','미술관','영화관','동물원','수영장','정류장','공항','항구']],
+ body:['🧍 몸·마음',['머리','얼굴','눈썹','코','입술','귀','어깨','팔꿈치','손가락','무릎','발가락','배꼽','심장','기쁨','슬픔','화남','걱정','설렘','용기','감사','사랑','우정','배려','친절','약속','인사','미소','웃음','눈물','하품']],
+ home:['🏠 집·물건',['거실','부엌','욕실','침대','이불','베개','냉장고','세탁기','텔레비전','시계','거울','창문','현관','신발','양말','모자','칫솔','치약','수건','비누','숟가락','젓가락','그릇','컵','냄비','전화기','열쇠','화분','달력','사진']],
+ sport:['⚽ 운동·놀이',['축구','야구','농구','배구','피구','탁구','수영','달리기','줄다리기','태권도','씨름','스케이트','스키','배드민턴','줄넘기','훌라후프','숨바꼭질','술래잡기','윷놀이','제기차기','팽이','연날리기','공기놀이','딱지','그네','미끄럼틀','시소','보물찾기','퍼즐','종이접기']],
+ korea:['🏯 우리나라',['한글','태극기','무궁화','한복','김치','세종대왕','이순신','훈민정음','거북선','경복궁','석굴암','첨성대','독도','한라산','백두산','제주도','서울','부산','설날','추석','윷놀이','탈춤','판소리','아리랑','가야금','장구','부채춤','한옥','온돌','장독대']]
+};
 app('puzzle','play','🧩','낱말 찾기 퍼즐',b=>{
- let g=[],sz=8,words=[],found=[],placed=[],a=null,ans=false;
- const make=()=>{words=lines(DB.words).map(w=>w.replace(/\s/g,'')).filter(w=>w.length>=2&&w.length<=8);sz=Math.max(8,...words.map(w=>w.length));g=Array.from({length:sz*sz},()=>'');placed=[];found=[];
-  for(const w of shuffle(words).sort((x,y)=>y.length-x.length)){for(let t=0;t<200;t++){const d=rnd(2),r=rnd(d?sz-w.length+1:sz),c=rnd(d?sz:sz-w.length+1);let ok=true;
+ let g=[],sz=8,found=[],placed=[],a=null,ans=false;
+ if(!DB.pz)DB.pz={t:'mix',n:8};
+ const pool=()=>{const t=DB.pz.t;if(t==='mine')return lines(DB.words);if(PZB[t])return PZB[t][1];return Object.values(PZB).flatMap(x=>x[1])};
+ const pick=()=>{const all=[...new Set(pool().map(w=>w.replace(/\s/g,'')).filter(w=>w.length>=2&&w.length<=8))];
+  if(DB.pz.t==='mine')return all;const out=[];for(const w of shuffle(all)){if(out.length>=DB.pz.n)break;if(out.some(o=>o.includes(w)||w.includes(o)))continue;out.push(w)}return out};
+ const make=()=>{const words=pick();const L=words.reduce((s,w)=>s+w.length,0);
+  sz=Math.min(12,Math.max(8,...words.map(w=>w.length),Math.ceil(Math.sqrt(L*1.9))));g=Array.from({length:sz*sz},()=>'');placed=[];found=[];a=null;
+  for(const w of shuffle(words).sort((x,y)=>y.length-x.length)){for(let t=0;t<300;t++){const d=rnd(2),r=rnd(d?sz-w.length+1:sz),c=rnd(d?sz:sz-w.length+1);let ok=true;
     for(let k=0;k<w.length;k++){const i=(r+(d?k:0))*sz+c+(d?0:k);if(g[i]&&g[i]!==w[k]){ok=false;break}}
     if(ok){const cells=[];for(let k=0;k<w.length;k++){const i=(r+(d?k:0))*sz+c+(d?0:k);g[i]=w[k];cells.push(i)}placed.push({w,cells});break}}}
   g=g.map(x=>x||FILL[rnd(FILL.length)])};
- const draw=()=>{const fc=new Set(placed.filter(p=>found.includes(p.w)||ans).flatMap(p=>p.cells));
-  b.innerHTML=`<div class="row" style="justify-content:space-between"><div class="mid">찾은 낱말 ${found.length} / ${placed.length} · 첫 글자와 끝 글자를 차례로 눌러요 (→ ↓)</div><div class="row"><button class="btn" id="nw" type="button">🔀 새 퍼즐</button><button class="btn" id="an" type="button">${ans?'🙈 정답 숨기기':'👀 정답 보기'}</button><button class="btn t-only" id="e" type="button">✏️ 낱말 바꾸기</button></div></div>
-  <div style="display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;align-items:flex-start"><div class="ws" style="grid-template-columns:repeat(${sz},1fr);width:min(92vw,66vh,640px)">${g.map((ch,i)=>`<button type="button" data-i="${i}" class="${fc.has(i)?'f':''} ${a===i?'a':''}">${ch}</button>`).join('')}</div>
-  <ul class="list" style="min-width:10rem">${placed.map(p=>`<li style="${found.includes(p.w)?'text-decoration:line-through;opacity:.6':''}"><span class="disp" style="font-size:1.3rem">${esc(p.w)}</span>${found.includes(p.w)?' ✔':''}</li>`).join('')}</ul></div>`;
+ const draw=()=>{const fc=new Set(placed.filter(p=>found.includes(p.w)||ans).flatMap(p=>p.cells)),t=DB.pz.t;
+  b.innerHTML=`<div class="row" style="flex-wrap:wrap;gap:.35rem">${[['mix','🔀 모두 섞기'],...Object.entries(PZB).map(([k,v])=>[k,v[0]]),['mine','✏️ 우리 반 낱말']].map(([k,n])=>`<button class="btn sm ${t===k?'on':''}" data-pt="${k}" type="button">${n}</button>`).join('')}</div>
+  <div class="row" style="justify-content:space-between"><div class="mid">찾은 낱말 ${found.length} / ${placed.length} · 첫 글자와 끝 글자를 차례로 눌러요 (→ ↓)</div><div class="row">${t==='mine'?'':`<label class="row small">낱말 수 <select class="inp" id="pn">${[6,8,10,12].map(n=>`<option ${DB.pz.n===n?'selected':''}>${n}</option>`).join('')}</select></label>`}<button class="btn" id="nw" type="button">🔀 새 퍼즐</button><button class="btn" id="an" type="button">${ans?'🙈 정답 숨기기':'👀 정답 보기'}</button>${t==='mine'?'<button class="btn t-only" id="e" type="button">✏️ 낱말 바꾸기</button>':''}</div></div>
+  <div style="display:flex;gap:1.2rem;flex-wrap:wrap;justify-content:center;align-items:flex-start"><div class="ws" style="grid-template-columns:repeat(${sz},1fr);width:min(92vw,62vh,640px)">${g.map((ch,i)=>`<button type="button" data-i="${i}" class="${fc.has(i)?'f':''} ${a===i?'a':''}">${ch}</button>`).join('')}</div>
+  <ul class="list" style="min-width:10rem;display:grid;grid-template-columns:repeat(${placed.length>6?2:1},minmax(8rem,1fr));gap:.4rem;align-content:start">${placed.map(p=>`<li style="margin:0;${found.includes(p.w)?'text-decoration:line-through;opacity:.6':''}"><span class="disp" style="font-size:1.25rem">${esc(p.w)}</span>${found.includes(p.w)?' ✔':''}</li>`).join('')}</ul></div>
+  <div class="note">${t==='mine'?'선생님이 적은 낱말로 만들어요. 새 퍼즐을 누르면 자리가 바뀌어요.':'새 퍼즐을 누를 때마다 고른 주제에서 낱말을 새로 뽑아요.'}</div>`;
   $$('.ws button',b).forEach(x=>x.onclick=()=>{const i=+x.dataset.i;if(a===null){a=i;draw();return}const hit=placed.find(p=>!found.includes(p.w)&&((p.cells[0]===a&&p.cells[p.cells.length-1]===i)||(p.cells[0]===i&&p.cells[p.cells.length-1]===a)));
    a=null;if(hit){found.push(hit.w);beep([[988,.1],[1318,.18]],.12);if(found.length===placed.length)confetti()}draw()});
-  $('#nw',b).onclick=()=>{make();ans=false;draw()};$('#an',b).onclick=()=>{ans=!ans;draw()};$('#e',b).onclick=()=>editText('찾을 낱말 (한 줄에 하나, 2~8글자)',DB.words,v=>{DB.words=v;make()})};
+  $$('[data-pt]',b).forEach(x=>x.onclick=()=>{DB.pz.t=x.dataset.pt;save();make();ans=false;draw()});
+  const pn=$('#pn',b);if(pn)pn.onchange=()=>{DB.pz.n=+pn.value;save();make();ans=false;draw()};
+  $('#nw',b).onclick=()=>{make();ans=false;draw()};$('#an',b).onclick=()=>{ans=!ans;draw()};
+  const e=$('#e',b);if(e)e.onclick=()=>editText('찾을 낱말 (한 줄에 하나, 2~8글자)',DB.words,v=>{DB.words=v;make()})};
  make();draw();return draw});
 
 /* --- 안전 --- */

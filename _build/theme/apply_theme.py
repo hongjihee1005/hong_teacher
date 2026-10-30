@@ -151,7 +151,7 @@ def gdir(g, pre):
         acc = f' style="--acc:{c["acc"]}"' if c['acc'] else ''
         cols.append(f'<section class="hd-col" data-k="{key}"{acc}><a class="hd-head" href="{pre}{h}">'
                     f'<span class="r-ico" aria-hidden="true">{c["ico"]}</span><span class="hd-nm">{SUBJ_NM[key]}</span>{ARROW}</a>{rows}{ex}</section>')
-    foot = ''.join(f'<a class="hd-ext hd-wide" href="{pre}{posixpath.normpath(m["href"])}"><span class="r-ico" aria-hidden="true">{m["ico"]}</span><span>{m["label"]}</span></a>' for m in more)
+    foot = ''.join(f'<a class="hd-ext hd-wide" href="{pre}{posixpath.normpath(m["href"])}"><span class="r-ico" aria-hidden="true">{m["ico"]}</span><span class="hd-wnm">{g}학년 {m["label"]}</span>{ARROW}</a>' for m in more)
     return (f'<div class="hj-gdir" data-g="{g}" style="--n:{max(1, len(cols))}"><div class="hd-cols">{"".join(cols)}</div>'
             + (f'<div class="hd-foot">{foot}</div>' if foot else '') + '</div>')
 
