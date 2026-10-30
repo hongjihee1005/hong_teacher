@@ -62,25 +62,24 @@
       '<div class="rd-top"><span class="rd-no">' + n + '</span><div class="rd-tt"><b>' + esc(b.title) + '</b><span class="rd-by">' + esc(b.author) + ' · ' + esc(b.publisher) + '</span></div></div>' +
       '<div class="rd-tags"><span class="rd-tag n' + (r >= 3 ? ' top' : '') + '">' + (r >= 2 ? '⭐ ' : '') + r + '곳 추천</span><span class="rd-tag k">' + esc(b.kind) + '</span>' +
       (D.showGrade ? '<span class="rd-tag">' + (b.grade ? b.grade + '학년' : BAND[b.band]) + '</span>' : '') +
-      (D.showSubj ? b.subjects.map(function (s) { return '<span class="rd-tag">' + esc(s) + '</span>' }).join('') : '') + '</div>' +
+      (D.showSubj ? b.subjects.map(function (s) { return '<span class="rd-tag">' + esc(s) + '</span>' }).join('') : '') + '<label class="rd-chk" title="읽었어요"><input type="checkbox" aria-label="' + esc(b.title) + ' 읽었어요" data-read="' + esc(b.id) + '"' + (store.read[b.id] ? ' checked' : '') + '> 읽었어요</label>' + '</div>' +
       (b.desc ? '<p class="rd-desc">' + esc(b.desc) + '</p>' : '') +
       (b.link ? '<p class="rd-link"><b>이어지는 공부</b> · ' + esc(b.link) + '</p>' : '') +
-      '<details class="rd-recs"><summary>추천한 곳 ' + r + '곳 · 출처 보기</summary>' + b.recs.map(function (x) {
+      '<div class="rd-foot"><details class="rd-recs"><summary>추천한 곳 ' + r + '곳 · 출처 보기</summary>' + b.recs.map(function (x) {
         return x.url ? '<a href="' + esc(x.url) + '" target="_blank" rel="noopener"><b>' + esc(x.org) + '</b> <i>' + esc(x.detail) + '</i></a>' : '<span class="o"><b>' + esc(x.org) + '</b> <i>' + esc(x.detail) + '</i></span>';
       }).join('') + '</details>' +
-      (b.awards && b.awards.length ? '<p class="rd-aw">🏅 ' + b.awards.map(esc).join(' · ') + '</p>' : '') +
-      '<label class="rd-chk"><input type="checkbox" data-read="' + esc(b.id) + '"' + (store.read[b.id] ? ' checked' : '') + '> 읽었어요</label>' +
+      (b.awards && b.awards.length ? '<p class="rd-aw">🏅 ' + b.awards.map(esc).join(' · ') + '</p>' : '') + 
+      '</div>' +
       '</article>';
   }
   var GR = [[3, '⭐ 세 곳 이상이 함께 추천한 책'], [2, '⭐ 두 곳이 함께 추천한 책'], [1, '한 곳이 추천한 책']];
   function shown() { return B.filter(match) }
   function render() {
     var L = shown(), h = '', n = 0;
-    GR.forEach(function (g, i) {
-      var part = L.filter(function (b) { var c = b.recs.length; return i === 0 ? c >= 3 : c === g[0] });
-      if (!part.length) return;
-      h += '<h2 class="rd-grp">' + g[1] + ' <small>' + part.length + '권</small></h2><div class="rd-list">' + part.map(function (b) { return card(b, ++n) }).join('') + '</div>';
-    });
+    /* (2026-10-30 선생님: 한 화면에) 묶음 제목을 빼고 한 목록으로 이어 붙임 — 추천 기관이 많은 책부터, 몇 곳인지는 카드 아래 '추천한 곳 N곳' */
+    var part = [];
+    GR.forEach(function (g, i) { part = part.concat(L.filter(function (b) { var c = b.recs.length; return i === 0 ? c >= 3 : c === g[0] })) });
+    if (part.length) h = '<div class="rd-list">' + part.map(function (b) { return card(b, ++n) }).join('') + '</div>';
     $('rdList').innerHTML = h || '<p class="rd-empty">고른 조건에 맞는 책이 없어요. 조건을 바꿔 보세요.</p>';
     $('rdCnt').textContent = L.length === B.length ? '추천 기관이 많은 책부터 놓았어요.' : '조건에 맞는 책 ' + L.length + '권';
     done();
