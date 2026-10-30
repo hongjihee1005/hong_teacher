@@ -2750,7 +2750,7 @@ app('noise','tool','🔊','소음 측정기',b=>{
   <div id="lv" style="height:100%;width:0;background:#4FA987;transition:width .1s"></div><div id="th" style="position:absolute;top:0;bottom:0;width:4px;background:#D2574B"></div></div>
   <div class="mid" id="msg">'시작'을 누르면 마이크로 교실 소리 크기를 봐요</div>
   <label class="row">기준 크기 <input type="range" id="rg" min="10" max="95" value="${DB.noiseTh||60}" style="width:14rem"></label>
-  <div class="row c"><button class="btn big pri" id="go" type="button">🎤 시작</button><button class="btn big" id="st" type="button" disabled>⏹ 끝</button></div><div class="small" id="ct"></div>
+  <div class="row c"><button class="btn big pri" id="go" type="button">🎤 시작</button><button class="btn big" id="st" type="button" disabled>⏹ 끝</button></div><div class="mid" id="stt"></div><div class="small" id="ct"></div>
   <div id="lg" style="width:min(640px,92%);text-align:left"></div>
   <div class="note">소리는 녹음하거나 저장하지 않아요. 크기와 시각만 기록합니다. 처음 한 번 마이크 사용을 허락해야 해요.</div></div>`;
  const th=$('#th',b),rg=$('#rg',b);const setTh=()=>{th.style.left=rg.value+'%';DB.noiseTh=+rg.value;save()};rg.oninput=setTh;setTh();
@@ -2762,11 +2762,11 @@ app('noise','tool','🔊','소음 측정기',b=>{
   const x=$('#lgx',b);if(x)x.onclick=()=>{DB.noiseLog=null;save();show(null)}};
  show(DB.noiseLog||null);
  const stop=()=>{cancelAnimationFrame(raf);stream&&stream.getTracks().forEach(t=>t.stop());ctx&&ctx.close();stream=null;ctx=null;
-  if(log&&!log.end){log.end=Date.now();DB.noiseLog=log;save();show(log)}$('#go',b).disabled=false;$('#st',b).disabled=true;$('#lv',b).style.width='0';$('#f',b).textContent='🎤';$('#msg',b).textContent="기록을 마쳤어요. '시작'을 누르면 새로 기록해요"};
+  if(log&&!log.end){log.end=Date.now();DB.noiseLog=log;save();show(log);$('#stt',b).textContent='⏱ '+hm(log.start)+' ~ '+hm(log.end)}$('#go',b).disabled=false;$('#st',b).disabled=true;$('#lv',b).style.width='0';$('#f',b).textContent='🎤';$('#msg',b).textContent="기록을 마쳤어요. '시작'을 누르면 새로 기록해요"};
  $('#st',b).onclick=stop;
  $('#go',b).onclick=async()=>{if(stream)return;try{stream=await navigator.mediaDevices.getUserMedia({audio:true});ctx=new (window.AudioContext||window.webkitAudioContext)();const an=ctx.createAnalyser();an.fftSize=1024;ctx.createMediaStreamSource(stream).connect(an);
   const buf=new Uint8Array(an.fftSize);$('#go',b).disabled=true;$('#st',b).disabled=false;let sm=0;loud=0;cnt=0;$('#ct',b).textContent='';
-  log={start:Date.now(),end:0,loud:[]};DB.noiseLog=log;save();show(log);
+  log={start:Date.now(),end:0,loud:[]};DB.noiseLog=log;save();show(log);$('#stt',b).textContent='⏱ 시작한 시각 '+hm(log.start);
   const loop=()=>{an.getByteTimeDomainData(buf);let s=0;for(const v of buf){const x=(v-128)/128;s+=x*x}const lv=Math.min(100,Math.sqrt(s/buf.length)*400);sm=sm*.8+lv*.2;
    $('#lv',b).style.width=sm+'%';const over=sm>+rg.value;$('#lv',b).style.background=over?'#D2574B':sm>rg.value*.7?'#E39A4E':'#4FA987';
    if(over){loud++;if(loud===30){cnt++;$('#ct',b).textContent=`조금 시끄러웠던 때: ${cnt}번`;log.loud.push(Date.now());DB.noiseLog=log;save();show(log)}}else loud=0;
