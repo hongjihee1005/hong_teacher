@@ -2759,6 +2759,26 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
 }
 /* 휴대폰(600px 이하): 정리 카드 두 칸(.sum)이 나란히 남아 글이 한 줄에 두세 글자씩 끊기던 것 → 한 칸씩 위아래로 */
 @media (max-width:600px){html.hs:not(#hsz):not(#hsz):not(#hsz) .hs-sb .sum{grid-template-columns:minmax(0,1fr)!important}}
+/* 과학 '한 화면' 앱, 휴대폰(600px 이하): 칸 안의 내용이 가장 긴 글 폭만큼 버텨 화면 밖으로 밀려나던 것(보기 단추 줄·두 칸 판·비교 표) → 칸 폭 안에서 줄바꿈, 넓은 표는 표 안에서 옆으로 넘김. 넓은 화면은 그대로(쪽 나눔 불변) */
+@media screen and (max-width:600px){
+ html.hs-sci:not(#hsz):not(#hsz) body section :is(div,figure,p,ul,ol,li,label,button,span){min-width:0;max-width:100%}
+ html.hs-sci:not(#hsz):not(#hsz) body section button{white-space:normal!important;word-break:keep-all;overflow-wrap:break-word}
+ html.hs-sci:not(#hsz):not(#hsz) body section table:not(.cmp){display:block;max-width:100%;overflow-x:auto}
+ html.hs-sci:not(#hsz):not(#hsz) body section :is(img,svg,canvas,video){max-width:100%;height:auto}
+ html.hs-sci:not(#hsz):not(#hsz) body section .lab{padding-left:10px!important;padding-right:10px!important;box-sizing:border-box}
+}
+/* 과학 '한 화면' 앱(모든 화면): 두 칸 판 안의 입력 칸·표·단추가 칸보다 넓어 카드 밖으로 삐져나가던 것 → 칸 폭 안으로 */
+@media screen{
+ html.hs-sci:not(#hsz):not(#hsz) body section div{min-width:0}
+ html.hs-sci:not(#hsz):not(#hsz) body section :is(input,select,textarea){max-width:100%;box-sizing:border-box}
+ html.hs-sci:not(#hsz):not(#hsz) body section table{max-width:100%}
+ html.hs-sci:not(#hsz):not(#hsz) body section td>button{max-width:100%;white-space:normal}
+ html.hs-sci:not(#hsz):not(#hsz) body section table.cmp td{white-space:normal}
+ html.hs-sci:not(#hsz):not(#hsz) body section table.cmp{table-layout:fixed}
+ html.hs-sci:not(#hsz):not(#hsz) body section table.cmp tr>:first-child{width:22%}
+ html.hs-sci:not(#hsz):not(#hsz) body section label>:is(input[type=text],input:not([type]),textarea){width:100%;min-width:0}
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz) body section table td.slot{min-width:5rem}
+}
 </style><!--/hj-ctheme--><!--hj-emfont--><style id="hj-emfont">@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAI4AA8AAAAABCQAAAHiAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgBUEQgKgXCBbQE2AiQDFAsOAAQgBTgHIBckGA4bDgMAhuBhHd+83f0HwxWKzJegaNarxN/O1y6qR+EXNJeAoi5L30UaWIr7/Gm08/kQBjab3hCPTwuWlBsE8qmgkujRa8AIeWTw/z8gy1c2jsghp3nOUaJSdKTPzUqKFSick0QaScAW9ow8TvUePLi3LlUK/iuce8G/AuReEF8Q0PkFVJFXCHkESghUkKyePWdFQCJFIokjJJdBghQlpAIlZLqggDwSWZWCNS/VvF67xL/C//8jc++/vBr4qseLj/FZQFEIxoeUD+QCBZCDrlgOyACQSESRtEhafua+Z7F+6/P86/c/tXbLk3zrli9ry1W5l6zFUetOhbPn+cvIietv5Rc9taXLmidnh3efOrW7XM96TJ3SfeEQPaZO7iHX8+5TpvboN23Y5ysY0chzmNyDT5lCn4nGQzc8TrOqI/qtGV2qZ4nmt8806Nxx1pyOnfqtGVu617WOXXb8/DC+Wdsuczp3mtdl8O9hrYb1Gg0E0ti7uVXFZ5MLd/iaJ38e8PZpy9l27Ne/i3kb5bqDPBIQPDTlq8NgfrXyACdLP5hjNl+dyCLzSyCX8psqOpSoJBVZXolC1BgU8Lc0zEyzrbTAVMuMNtNcs82xQgpkb2xnOYrc7BVZZHlriBBTTMbkfoAQGQ==) format('woff2');unicode-range:U+25b6,U+25c0,U+2714}@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAUgAA8AAAAAB8QAAATGAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgCBIBEICohEh3UBNgIkAxQLDgAEIAU4ByAXJBgOG2IGUVRN7gE8Pjx/qz/39YK2gbjkGA8DVQOhWdfs55IKH2b9zzHTzbKtcK06oP/+opoqrAKoUDqA9nzPD/DEDxBOt+FNrE6Ha1OjDvAvgACQwQs+IAlJGQwkoAHAZgMAALTMjbwOISCcIlwPEJ/5GYEF1ZSDQiWkiIBQiqSDEoUYSHA0OTs7GTF+SptN3GhVAA+J/CYGAdgQN+r6QQoCAgkXcLrkBaqnpraTAAAFwRWjyOsiugSARAMjwSBgG9McpHEFkLFpTPyNBBJQgJ8yZL1VZbOhwQ9/e7ue/AoC5VBQMANkF2YbLQmEFrKeBAHNqlIABfLbQ0WABvldhuubCIjNBpwHINpB4gyQyiSVAkWjYczcIoUoIsJOYWdH00/zVbgqJiqd3fqK9phnV3DF5skagdYSX8Srn/LFykJTppYtuM6qqQojU8hozhmDCjTyYgvP8pyF1xLNDvN4nmPMXJGswMhwDHvI6FcBtYllWN7EFhvMZjJqscjHTCbojEZuzOJqMcsMRuhMLEZBQQaZlL+8bWCgr58ooSH26MW+/r65u9/GDAcIE+SOm0V5zATorsuf3CfTjF0lo1dkhkvQXR4wfPIJZ37nnZfEW1Z9/DFrevtt6Iy9ZsXmeFOZrTSYuf1j8byFRITVGRMMc+mkkGOVv/YFwQDP1so14wB/fOPhvUFMTQ5wOx3FXU7c2rMfgBIs5L4PxZqCcXMMPWlM8mf887+K85gkNv/7r1kSkOCb7691FxwSvSzS2iIx69Kd/fOqTDTF6XiW1n//viX1dExi4M46xvjFrwEvRD7iH+vxl3++V7bJN67dTRPz3+NVKx//F9vkVJPg9zLe92FU3fdPrB2Gtya+t/rGm/ziG51q413elSuL9fuE7Ltxvi+Tmx2q45of/beyL1cv6HA3VGYOp6UNZ2ZZmENFTM3KLKZx3d0s0zh2GfNB97WOjutd3R3XWNTddb0DGHxQWjsT9R8vWfKxXm+B7HpM/siw6qMlcM+H6OfyGDznMrYzOXdybv+Suy03efufrN+WS+3KndU523Jm49cYkO03/NY0/0mqBDv/hPKKhKCAZwFkdn7+bGsjwx4UafW3S1CN/um93MsQvf+hXuswUNHRoGoOevCKfv2aDyf0uLR0LoiJiW1rUtR7X1s8uubNj+YPRXY39fTOOXZc4/Og7dRG/fmA6rh57tULL5zc8LBZ67GwKOcEr+YayhvOsDOiaq6VVKsbh44kbfDcUJQl0/rtz9y9+HRlS3FVSFBGeLx6ZTnLZ67JWTAhJyK1uKpAfXbZi4IhtxnJS1weZh4ZKdKU1/zaNM03Pub4f8fcJiRraxMnes//eU9y0fadU3PXpLgf962o3324slr5xvNx6S8cHEt2J+r6Uzfxc3bMjQ2KzIs8wi2u+PTI/i/LlsW/5n7XIznRc4tH6hqq/sbVRutKNWXiVQAACAAB0fcdmP1DuWru7xK5BADwvmlazXz/e9ZD0gyRFYAE1ErjT9IrC8sg4b15EigFWvAVaoGZOoSmPPAeiFyE1yFdQEDXKPhAAEJLQWEcgHMEULQ/Mg9VqEEXGqFGO3hUoQ41qEUnBAAA0O9hEcoUsTuzfi8ILQ0CsZJolioQP9MkQvvxAgAAAA==) format('woff2');unicode-range:U+2699,U+1f4cb,U+1f50a}</style><!--/hj-emfont--></head>
 <body>
 <div class="gx-app">

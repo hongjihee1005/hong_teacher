@@ -2067,6 +2067,26 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
 }
 /* 휴대폰(600px 이하): 정리 카드 두 칸(.sum)이 나란히 남아 글이 한 줄에 두세 글자씩 끊기던 것 → 한 칸씩 위아래로 */
 @media (max-width:600px){html.hs:not(#hsz):not(#hsz):not(#hsz) .hs-sb .sum{grid-template-columns:minmax(0,1fr)!important}}
+/* 과학 '한 화면' 앱, 휴대폰(600px 이하): 칸 안의 내용이 가장 긴 글 폭만큼 버텨 화면 밖으로 밀려나던 것(보기 단추 줄·두 칸 판·비교 표) → 칸 폭 안에서 줄바꿈, 넓은 표는 표 안에서 옆으로 넘김. 넓은 화면은 그대로(쪽 나눔 불변) */
+@media screen and (max-width:600px){
+ html.hs-sci:not(#hsz):not(#hsz) body section :is(div,figure,p,ul,ol,li,label,button,span){min-width:0;max-width:100%}
+ html.hs-sci:not(#hsz):not(#hsz) body section button{white-space:normal!important;word-break:keep-all;overflow-wrap:break-word}
+ html.hs-sci:not(#hsz):not(#hsz) body section table:not(.cmp){display:block;max-width:100%;overflow-x:auto}
+ html.hs-sci:not(#hsz):not(#hsz) body section :is(img,svg,canvas,video){max-width:100%;height:auto}
+ html.hs-sci:not(#hsz):not(#hsz) body section .lab{padding-left:10px!important;padding-right:10px!important;box-sizing:border-box}
+}
+/* 과학 '한 화면' 앱(모든 화면): 두 칸 판 안의 입력 칸·표·단추가 칸보다 넓어 카드 밖으로 삐져나가던 것 → 칸 폭 안으로 */
+@media screen{
+ html.hs-sci:not(#hsz):not(#hsz) body section div{min-width:0}
+ html.hs-sci:not(#hsz):not(#hsz) body section :is(input,select,textarea){max-width:100%;box-sizing:border-box}
+ html.hs-sci:not(#hsz):not(#hsz) body section table{max-width:100%}
+ html.hs-sci:not(#hsz):not(#hsz) body section td>button{max-width:100%;white-space:normal}
+ html.hs-sci:not(#hsz):not(#hsz) body section table.cmp td{white-space:normal}
+ html.hs-sci:not(#hsz):not(#hsz) body section table.cmp{table-layout:fixed}
+ html.hs-sci:not(#hsz):not(#hsz) body section table.cmp tr>:first-child{width:22%}
+ html.hs-sci:not(#hsz):not(#hsz) body section label>:is(input[type=text],input:not([type]),textarea){width:100%;min-width:0}
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz) body section table td.slot{min-width:5rem}
+}
 </style><!--/hj-ctheme--><!--hj-emfont--><style id="hj-emfont">@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAXEAA8AAAAACOgAAAVrAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgCBGBEICopsiUIBNgIkAxYLEAAEIAU4ByAXJBgQGysHCB6prX4w+ZT/QNvq/WGoGTBRsSljxWKN4nbBTGIje7aMK9iOIC46tQEBogrG//+trcqSxGbfJjJJvERKpZQZ/C8i2vA2Q4kQi/lZulDNU7iQ66noRmaIdhZMbp4BBIBDDOJApeW1NsjAAkAXAABgOTUtwwBxlng9orjhiMiPEUyIIlDMkIiYQbYQMgYqGfZWNDRUwKJRdknHdSqATka/6UAAD+k4Rw3kIBBkAqBiY8DMHDlqGgFlBiIUGVpm05fwrDRAo4YU1JZhKgUROJ5FMkhCmsBolJ2BXfCh+eFv9Cv1TRQKqGohipf6pAyk6gw0AQP6bXsxiEJ4AOeHAFjQ7796r5RQpwvcGzlciwAAiQBdA5g96AuByV/kwUEOWS7HsnFszDgFp2AnhXhFgEfyFC8TDvio1acQtfoR7/YiLPQQ1U52HD1JvcvSnAtePMTxtNEun+Ox11/j8TjIiQk0EcNcvu6OKz6nfdvxV3rv9/Juv7Hv1ZM6p9djth3zjCglQ5bUr9lArRt5d9hzk2hY602sh3WqR54hlzU2JF7wtc2d8c4TlrnJu8FjO7widTQ6g0PwAmWuPyz4M3zS60X75u16In/VOvDauRmNk8aHVwP6RFzEsUecy+GRd3zSPWzTMbhctf842Abs9FPrFs61Ddm3+n0xZaIfNqWODxeE2XPkStkUEjBLqpTMGXSCMGeWDynlbPCTBaGrxBAKXoZmU3BArnAdIGr187z7pjJ3e4GF1/kPsY8b4r5KrVc41yW4PHuOVKiyhc+aLQxpmSyZJZ7DCjQHE10PqPUh776PhfdmC+JZJNCsvlOcfr9zssdjszssN+TG+VTcI7Qss7qsve/ishOzOkZ9fH7fbwMWLZJY4VSiYxYj/F7t1ZkhZfX9xZ+PNPUqW9F3adnOUVP73tq50t80d67EIU4lpo5mhP8jrHCaZn6evbHvoAFU3PiG6o3wehQPHtD3rLkzySyxmMv7mnvox+42h+b8XRVRh+JGJBtyClQJbVqLtVWbUKAqU6kbQcXquqqcv/W7zbsGmFeOMPfmlj9PeXftl6qA3wP50qC7ictX3DTW2LjA3wNU/r0PnhtTDcqBfIcxYyz3oTVfr/7hXqh1q3GZNW1nQn1Hnmp8cFmKqVzJdz4drl2X73JmJFX3zNesG/60kwswlacEl4WNz+uoT1yZZk1ZtjXEev5/td6S/+E/7gyjokMx0MQ3KTpMPcOux5WFR6QcyPw0Njw9qSmpKT0s7VPLhZSI8PLY5+Keo9Rbh774XtknIfn9II3JGD050nJO/4N6gbFPcnIfo3rBe4GlkZboyUaTJuj95ARlH4haINO0Icg0E7bFrk5aXZ6ds8CCnMrnOTVJNZWfvJ5k5zVPFAYB0jNBk379PVtjmbY2LRk3TE+BZHsSyuNz5xKEyJbmzwMt6I/Vbrc13mm8/UvTtqaK7X/ae2gCq9w5onFbYyF+5RjwW+pOOVpTYGmQtnTgoFKD7pmOCltaCiVQKxoorQ0qDWz9M/aNmCkXOydmHW61WY7/fF9Sf76fab2dP/kMuFM3+OTrh90U90tMr/UoMJ0qLMh8+2C47MLBUaWGWJUq1qAPCmHTlrHQuSV4mdgCgt9yuWJy/s0htvVPXoxLkkkFzcf3e61/s/TvyPLlFz4cW9y8f1jG9c+qtiEAIAAienPQwu8sAwPNv8t4GQDgfW/OyPAKYjsPyQ2SRwBkYDb7fvsEl7xIRuw0GSZmrOgrjAJZLGMmGTBRJAfppaQCP4MAlkEcRCBWnqgEAGWTAEW5txnDMRLTMQ6DMQVOFDC6ZEZhGkQAJm7Z99COaRT0cFegUeKSmV7SZ62KWAAA) format('woff2');unicode-range:U+1f4a1,U+1f4ca,U+1f4cb,U+1f5f3}</style><!--/hj-emfont--></head><body>
 <main>
 <nav class="tl-gnav" aria-label="우리 반 그래프 안의 쪽"><a href="survey.html" aria-current="page">우리 반 설문하기</a><a href="graph.html">그래프 만들기</a><a href="sheet.html">빈 그래프 활동지</a></nav>

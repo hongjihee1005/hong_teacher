@@ -926,3 +926,23 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
 }
 /* 휴대폰(600px 이하): 정리 카드 두 칸(.sum)이 나란히 남아 글이 한 줄에 두세 글자씩 끊기던 것 → 한 칸씩 위아래로 */
 @media (max-width:600px){html.hs:not(#hsz):not(#hsz):not(#hsz) .hs-sb .sum{grid-template-columns:minmax(0,1fr)!important}}
+/* 과학 '한 화면' 앱, 휴대폰(600px 이하): 칸 안의 내용이 가장 긴 글 폭만큼 버텨 화면 밖으로 밀려나던 것(보기 단추 줄·두 칸 판·비교 표) → 칸 폭 안에서 줄바꿈, 넓은 표는 표 안에서 옆으로 넘김. 넓은 화면은 그대로(쪽 나눔 불변) */
+@media screen and (max-width:600px){
+ html.hs-sci:not(#hsz):not(#hsz) body section :is(div,figure,p,ul,ol,li,label,button,span){min-width:0;max-width:100%}
+ html.hs-sci:not(#hsz):not(#hsz) body section button{white-space:normal!important;word-break:keep-all;overflow-wrap:break-word}
+ html.hs-sci:not(#hsz):not(#hsz) body section table:not(.cmp){display:block;max-width:100%;overflow-x:auto}
+ html.hs-sci:not(#hsz):not(#hsz) body section :is(img,svg,canvas,video){max-width:100%;height:auto}
+ html.hs-sci:not(#hsz):not(#hsz) body section .lab{padding-left:10px!important;padding-right:10px!important;box-sizing:border-box}
+}
+/* 과학 '한 화면' 앱(모든 화면): 두 칸 판 안의 입력 칸·표·단추가 칸보다 넓어 카드 밖으로 삐져나가던 것 → 칸 폭 안으로 */
+@media screen{
+ html.hs-sci:not(#hsz):not(#hsz) body section div{min-width:0}
+ html.hs-sci:not(#hsz):not(#hsz) body section :is(input,select,textarea){max-width:100%;box-sizing:border-box}
+ html.hs-sci:not(#hsz):not(#hsz) body section table{max-width:100%}
+ html.hs-sci:not(#hsz):not(#hsz) body section td>button{max-width:100%;white-space:normal}
+ html.hs-sci:not(#hsz):not(#hsz) body section table.cmp td{white-space:normal}
+ html.hs-sci:not(#hsz):not(#hsz) body section table.cmp{table-layout:fixed}
+ html.hs-sci:not(#hsz):not(#hsz) body section table.cmp tr>:first-child{width:22%}
+ html.hs-sci:not(#hsz):not(#hsz) body section label>:is(input[type=text],input:not([type]),textarea){width:100%;min-width:0}
+ html.hs-sci:not(#hsz):not(#hsz):not(#hsz) body section table td.slot{min-width:5rem}
+}
