@@ -236,36 +236,40 @@ app('board','tool','✍️','판서',b=>{
  const ro=new ResizeObserver(fit);ro.observe(cw);return ()=>ro.disconnect()},{wide:1});
 app('pick','tool','🎯','뽑기',b=>{
  /* (2026-10-30 선생님 요청) 대상: 개별·남학생·여학생·모둠, 한 번에 뽑는 수 1~6(모둠은 1~4) — 남학생 번호는 DB.boys, 모둠은 모둠 짜기의 마지막 결과(DB.grpLast) 또는 1~DB.gN모둠 */
- const MODES=[['all','🙋 개별'],['m','👦 남학생'],['f','👧 여학생'],['g','👨‍👩‍👧 모둠']];
+ const MODES=[['all','🙋 개별'],['m','👦 남학생'],['f','👧 여학생'],['g','👨‍👩‍👧 모둠'],['gn','🔢 모둠 안 번호']];
+ /* 모둠 안 번호(2026-10-30): '각 모둠의 N번'을 뽑음 — 모둠 짜기 결과가 있으면 모둠마다 그 번호 친구(모둠 안 작은 번호부터 1번)를 보여 줌, 없으면 DB.gSize(기본 4)명까지 */
+ const gSize=()=>{const L=DB.grpLast;return L&&L.length?Math.max(...L.map(g=>g.length)):(DB.gSize||4)};
  const boys=()=>DB.boys||[];
  const groups=()=>{const L=DB.grpLast;if(L&&L.length)return L.map((g,i)=>({k:i+1,mem:g}));return Array.from({length:DB.gN||6},(_,i)=>({k:i+1,mem:null}))};
  const gLabel=g=>g.k+'모둠'+(g.mem?' ('+g.mem.map(label).join(' · ')+')':'');
  const pool0=()=>{const md=DB.pickMode||'all',P=present();
   if(md==='m')return P.filter(n=>boys().includes(n));if(md==='f')return P.filter(n=>!boys().includes(n));return P};
- const draw=()=>{const md=DB.pickMode||'all',isG=md==='g',ex=DB.pickEx!==false,cnt=DB.pickN||1;
-  if(!DB.pickedG)DB.pickedG=[];
-  const left=isG?groups().filter(g=>!DB.pickedG.includes(g.k)).length:pool0().filter(n=>!DB.picked.includes(n)).length;
-  const maxN=isG?4:6;
+ const draw=()=>{const md=DB.pickMode||'all',isG=md==='g',isN=md==='gn',ex=DB.pickEx!==false,cnt=DB.pickN||1;
+  if(!DB.pickedG)DB.pickedG=[];if(!DB.pickedGN)DB.pickedGN=[];
+  const left=isN?Array.from({length:gSize()},(_,i)=>i+1).filter(k=>!DB.pickedGN.includes(k)).length:isG?groups().filter(g=>!DB.pickedG.includes(g.k)).length:pool0().filter(n=>!DB.picked.includes(n)).length;
+  const maxN=isN?Math.min(3,gSize()):isG?4:6;
   b.innerHTML=`<div class="center"><div class="tabs" style="justify-content:center">${MODES.map(([k,t])=>`<button class="btn ${md===k?'on':''}" data-pm="${k}" type="button">${t}</button>`).join('')}</div>
   <div id="r" class="huge" style="display:flex;flex-wrap:wrap;gap:.6rem 1.4rem;justify-content:center;max-width:94%">❓</div>
-  <div class="row c"><label class="row">한 번에 <select class="inp" id="pn" style="width:auto">${Array.from({length:maxN},(_,i)=>`<option value="${i+1}" ${Math.min(cnt,maxN)===i+1?'selected':''}>${i+1}${isG?'모둠':'명'}</option>`).join('')}</select></label>
-   <button class="btn big pri" id="go" type="button">🎯 뽑기</button><label class="row"><input type="checkbox" id="ex" ${ex?'checked':''}> 뽑힌 ${isG?'모둠':'친구'} 빼기</label></div>
-  <div class="small">${isG?`남은 모둠 ${left}개${DB.grpLast&&DB.grpLast.length?' · 모둠 짜기 결과 그대로':' · 모둠 짜기를 하면 모둠 친구 이름도 보여요'}`:`남은 ${md==='m'?'남학생':md==='f'?'여학생':'친구'} ${left}명`} · 오늘 결석 ${absentToday().length?absentToday().join(', ')+'번':'없음'}${(md==='m'||md==='f')&&!boys().length?' · 먼저 남학생 번호를 정해 주세요':''}</div>
-  <div class="row c" id="hist">${(isG?DB.pickedG.map(k=>k+'모둠'):DB.picked.map(label)).map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>
+  <div class="row c"><label class="row">한 번에 <select class="inp" id="pn" style="width:auto">${Array.from({length:maxN},(_,i)=>`<option value="${i+1}" ${Math.min(cnt,maxN)===i+1?'selected':''}>${i+1}${isN?'개 번호':isG?'모둠':'명'}</option>`).join('')}</select></label>
+   <button class="btn big pri" id="go" type="button">🎯 뽑기</button><label class="row"><input type="checkbox" id="ex" ${ex?'checked':''}> 뽑힌 ${isN?'번호':isG?'모둠':'친구'} 빼기</label></div>
+  <div id="rd" class="row c" style="gap:.5rem"></div>
+  <div class="small">${isN?`남은 번호 ${left}개 (1~${gSize()}번)${DB.grpLast&&DB.grpLast.length?' · 모둠 짜기 결과의 모둠 안 차례(번호가 작은 친구부터 1번)':' · 모둠 짜기를 하면 모둠마다 누구인지 보여요'}`:isG?`남은 모둠 ${left}개${DB.grpLast&&DB.grpLast.length?' · 모둠 짜기 결과 그대로':' · 모둠 짜기를 하면 모둠 친구 이름도 보여요'}`:`남은 ${md==='m'?'남학생':md==='f'?'여학생':'친구'} ${left}명`} · 오늘 결석 ${absentToday().length?absentToday().join(', ')+'번':'없음'}${(md==='m'||md==='f')&&!boys().length?' · 먼저 남학생 번호를 정해 주세요':''}</div>
+  <div class="row c" id="hist">${(isN?DB.pickedGN.map(k=>'각 모둠 '+k+'번'):isG?DB.pickedG.map(k=>k+'모둠'):DB.picked.map(label)).map(t=>`<span class="chip">${esc(t)}</span>`).join('')}</div>
   <div class="row c"><button class="btn" id="rs" type="button">처음부터 다시</button><button class="btn" id="ab" type="button">😷 오늘 결석 정하기</button><button class="btn" id="bo" type="button">👦 남학생 번호 정하기</button></div></div>`;
   $$('[data-pm]',b).forEach(x=>x.onclick=()=>{DB.pickMode=x.dataset.pm;save();draw()});
   $('#pn',b).onchange=e=>{DB.pickN=+e.target.value;save()};
   $('#ex',b).onchange=e=>{DB.pickEx=e.target.checked;save()};
-  $('#rs',b).onclick=()=>{DB.picked=[];DB.pickedG=[];save();draw()};$('#ab',b).onclick=()=>setAbsent(draw);
+  $('#rs',b).onclick=()=>{DB.picked=[];DB.pickedG=[];DB.pickedGN=[];save();draw()};$('#ab',b).onclick=()=>setAbsent(draw);
   $('#bo',b).onclick=()=>askText('남학생 번호 (쉼표로) — 나머지는 여학생',v=>{DB.boys=(v.match(/\d+/g)||[]).map(Number).filter(n=>n>=1&&n<=N());save();draw()},{val:boys().join(', '),hint:'한 번 정하면 이 기기에 남아요.'});
   $('#go',b).onclick=()=>{const k=+$('#pn',b).value||1;
-   let items=isG?groups().map(g=>({id:g.k,t:gLabel(g),s:g.k+'모둠'})):pool0().map(n=>({id:n,t:label(n),s:label(n)}));
-   const used=isG?DB.pickedG:DB.picked;if(ex)items=items.filter(x=>!used.includes(x.id));
+   let items=isN?Array.from({length:gSize()},(_,i)=>({id:i+1,t:'각 모둠 '+(i+1)+'번',s:(i+1)+'번'})):isG?groups().map(g=>({id:g.k,t:gLabel(g),s:g.k+'모둠'})):pool0().map(n=>({id:n,t:label(n),s:label(n)}));
+   const used=isN?DB.pickedGN:isG?DB.pickedG:DB.picked;if(ex)items=items.filter(x=>!used.includes(x.id));
    if(!items.length){toast((md==='m'||md==='f')&&!boys().length?'먼저 남학생 번호를 정해 주세요':'모두 뽑았어요! 처음부터 다시 해요');return}
    const pick=shuffle(items).slice(0,Math.min(k,items.length));
-   const r=$('#r',b),show=a=>{r.innerHTML=a.map(x=>`<span>${esc(x)}</span>`).join('');r.style.fontSize=isG||a.length>2?'clamp(2rem,5vw,4rem)':''};let t=0;
+   const r=$('#r',b),show=a=>{r.innerHTML=a.map(x=>`<span>${esc(x)}</span>`).join('');r.style.fontSize=isG||isN||a.length>2?'clamp(2rem,5vw,4rem)':''};let t=0;
    const iv=setInterval(()=>{show(shuffle(items).slice(0,pick.length).map(x=>x.s));beep([[400+rnd(400),.04]],.08);if(++t>18){clearInterval(iv);show(pick.map(x=>x.t));r.classList.add('pulse');beep();
-    if(ex)pick.forEach(x=>used.push(x.id));save();const h=r.innerHTML,fs=r.style.fontSize;setTimeout(()=>{r.classList.remove('pulse');draw();const r2=$('#r',b);r2.innerHTML=h;r2.style.fontSize=fs},1400)}},70)}};draw()});
+    const det=isN&&DB.grpLast&&DB.grpLast.length?DB.grpLast.map((g,i)=>`<span class="chip">${i+1}모둠: ${pick.map(x=>g[x.id-1]?esc(label(g[x.id-1])):'(없음)').join(', ')}</span>`).join(''):'';$('#rd',b).innerHTML=det;
+    if(ex)pick.forEach(x=>used.push(x.id));save();const h=r.innerHTML,fs=r.style.fontSize;setTimeout(()=>{r.classList.remove('pulse');draw();const r2=$('#r',b);r2.innerHTML=h;r2.style.fontSize=fs;$('#rd',b).innerHTML=det},1400)}},70)}};draw()});
 function setAbsent(cb){askText('오늘 결석한 번호 (쉼표로)',v=>{DB.absent={d:ymd(),list:(v.match(/\d+/g)||[]).map(Number).filter(n=>n>=1&&n<=N())};save();cb&&cb()},{val:absentToday().join(', '),hint:'뽑기·모둠 짜기·다했어요에서 빠져요. 오늘만 적용돼요.'})}
 app('done','tool','🙋','다했어요',b=>{
  if(DB.done.d!==ymd())DB.done={d:ymd(),task:DB.done.task||'',list:[]};
