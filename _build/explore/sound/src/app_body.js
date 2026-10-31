@@ -20,7 +20,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
 const UI={fx:null,nonce:0,timers:[],draft:{},inp:{},sort:{},wrong:{},fb:{},focus:0,menu:false,rail:false,speaking:false,toast:'',hold:false,holdT:0,slow:false,spk:false,spkT:0,play:null,prep:false,key:null,deskMode:'dd',mq:{},noted:false};
 function clearTimers(){UI.timers.forEach(t=>clearTimeout(t));UI.timers=[]}
 function later(fn,ms){const t=setTimeout(fn,RM?Math.min(ms,120):ms);UI.timers.push(t);return t}
-function resetUI(){clearTimers();UI.fx=null;UI.draft={};UI.inp={};UI.sort={};UI.wrong={};UI.fb={};UI.focus=0;UI.rail=false;UI.toast='';UI.hold=false;UI.slow=false;UI.play=null;UI.prep=false;UI.key=null;UI.mq={};spkStop();stopSay();AU.stopAll()}
+function resetUI(){clearTimers();UI.attn=false;UI.fx=null;UI.draft={};UI.inp={};UI.sort={};UI.wrong={};UI.fb={};UI.focus=0;UI.rail=false;UI.toast='';UI.hold=false;UI.slow=false;UI.play=null;UI.prep=false;UI.key=null;UI.mq={};spkStop();stopSay();AU.stopAll()}
 const V=()=>EXPS[DB.cur],R=()=>DB.runs[DB.cur];
 const narrow=()=>innerWidth<=820;
 function endP(t){t=String(t).trim();return /[.?!]$/.test(t)?t:t+'.'}
@@ -48,14 +48,18 @@ const AU={ctx:null,master:null,fail:false,live:[],
  stopAll(){this.live.forEach(h=>h.stop&&h.stop(.06));this.live=[]}};
 /* 스피커(실험 4): 같은 크기·같은 높이의 '삐-'를 1초 켜짐·1초 꺼짐으로, 20초가 지나면 저절로 멈춤 */
 const SPK={h:null,
- sched(g,t0,from,vol){/* 하나의 크기 노드에 1초 켜짐·1초 꺼짐을 t0부터 20초까지 */for(let k=0;k<10;k++){const a=t0+k*2;if(a+1.06<from)continue;const s=Math.max(a,from);g.gain.setValueAtTime(a<from&&from<a+1?vol:0,s);if(a>=from)g.gain.linearRampToValueAtTime(vol,a+.06);g.gain.setValueAtTime(vol,Math.max(s,a+1));g.gain.linearRampToValueAtTime(0,a+1.06)}},
+ sched(g,t0,from,vol,cur){/* 하나의 크기 노드에 1초 켜짐·1초 꺼짐을 t0부터 20초까지, 바꿀 때도 늘 50 ms 이상 천천히 */cur=cur||0;for(let k=0;k<10;k++){const a=t0+k*2;if(a+1.06<=from)continue;
+  if(from<=a){g.gain.setValueAtTime(0,a);g.gain.linearRampToValueAtTime(vol,a+.06);g.gain.setValueAtTime(vol,a+1);g.gain.linearRampToValueAtTime(0,a+1.06)}
+  else if(from<a+1){g.gain.setValueAtTime(cur,from);g.gain.linearRampToValueAtTime(vol,from+.05);if(a+1>from+.05)g.gain.setValueAtTime(vol,a+1);g.gain.linearRampToValueAtTime(0,Math.max(a+1.06,from+.1))}
+  else{g.gain.setValueAtTime(cur,from);g.gain.linearRampToValueAtTime(0,from+.05)}}},
  start(loud){const c=AU.ready();if(!c)return;this.stop();const t=c.currentTime+.01;const osc=c.createOscillator();osc.type='triangle';osc.frequency.value=523;const g=c.createGain();g.gain.setValueAtTime(0,t);
   this.sched(g,t,t,Math.min(.25,.25*loud));osc.connect(g);g.connect(AU.master);osc.start(t);osc.stop(t+20);this.h={osc,g,c,t0:t}},
- loud(v){if(!this.h)return;const {c,g,t0}=this.h,n=c.currentTime;try{g.gain.cancelScheduledValues(n);this.sched(g,t0,n,Math.min(.25,.25*v))}catch(e){}},
- stop(){if(!this.h)return;const c=this.h.c,n=c.currentTime;try{this.h.g.gain.cancelScheduledValues(n);this.h.g.gain.setValueAtTime(0,n+.02);this.h.osc.stop(n+.05)}catch(e){}this.h=null}};
-function spkOn(){const r=R();UI.spk=true;SPK.start(loudOf(r.air));clearTimeout(UI.spkT);UI.spkT=setTimeout(()=>{UI.spk=false;SPK.stop();if(DB.cur)render()},RM?20000:20000);markSpk()}
+ loud(v){if(!this.h)return;const {c,g,t0}=this.h,n=c.currentTime;try{const cur=g.gain.value;g.gain.cancelScheduledValues(n);this.sched(g,t0,n,Math.min(.25,.25*v),cur)}catch(e){}},
+ stop(){if(!this.h)return;const c=this.h.c,n=c.currentTime,g=this.h.g;try{const cur=g.gain.value;g.gain.cancelScheduledValues(n);g.gain.setValueAtTime(cur,n);g.gain.linearRampToValueAtTime(0,n+.06);this.h.osc.stop(Math.min(n+.08,this.h.t0+20))}catch(e){}this.h=null}};
+function spkOn(){const r=R();UI.spk=true;SPK.start(loudOf(r.air));clearTimeout(UI.spkT);UI.spkT=setTimeout(()=>{UI.spk=false;SPK.stop();if(DB.cur)render()},19800);markSpk()}
 function spkStop(){UI.spk=false;clearTimeout(UI.spkT);SPK.stop()}
-function markSpk(){const r=R();if(!r||!UI.spk)return;if(r.pulls===0&&r.air>=.99&&!r.seen.lowdone)r.seen.first=1;if(r.pulls>=5)r.seen.low=1,r.seen.lowdone=1;if(r.seen.refilled&&r.air>=.99)r.seen.back=1}
+function markSpk(){const r=R();if(!r||!UI.spk)return;const rep=curStep().id==='repeat';if(!rep){if(r.pulls===0&&r.air>=.99&&!r.seen.lowdone)r.seen.first=1;if(r.pulls>=5)r.seen.low=1,r.seen.lowdone=1;if(r.seen.refilled&&r.air>=.99)r.seen.back=1}
+ else{if((r.repPulls||0)>=5&&r.air<.99)r.seen.again=1;if(r.seen.again&&r.rep2&&r.air>=.99)r.seen.again2=1}}
 
 /* ───────── 단계 판단 ───────── */
 function stepOf(i){const v=V();return stepDef(v,v.steps[i])}
@@ -66,7 +70,7 @@ function isDone(i){const r=R(),s=stepOf(i);
  if(s.k==='scene')return !!r.done[s.id];
  if(s.k==='plan')return r.planOk;
  if(s.k==='pred')return V().pred.every((q,j)=>r.pred[j]!=null);
- if(s.k==='meas')return s.id==='repeat'?r.cyc>=2:s.rows.every(rowDone);
+ if(s.k==='meas')return s.rows.every(rowDone);
  if(s.k==='more')return true;
  if(s.k==='concl')return !!r.cmp;
  return !!r.fin}
@@ -78,11 +82,15 @@ function enterStep(){const v=V(),r=R(),s=stepOf(r.step);
  if(s.k==='concl'&&!r.bl.length)r.bl=v.ans.map(()=>'');
  if(s.k==='concl')UI.focus=Math.max(0,r.bl.findIndex(x=>!x));
  if(s.id==='desk')UI.deskMode=rowDone('dd')&&!rowDone('ds')?'ds':'dd'}
-function predLocked(){const r=R();return Object.keys(r.seen).length>0||Object.keys(r.rec).length>0||Object.keys(r.pend).length>0}
+function predLocked(){const r=R();return Object.keys(r.seen).length>0||Object.keys(r.rec).length>0||Object.keys(r.pend).length>0||!!r.done.kscan}
 function planChanged(r){if(!r.planLast)return true;return JSON.stringify(r.plan)!==JSON.stringify(r.planLast)}
 
 /* ───────── 장면 ───────── */
 function fxOn(id){return UI.fx&&UI.fx.id===id}
+/* 측정기·앱 화면: 지금 적고 있는 줄의 숫자를 늘 다시 보여 줌(새로 고쳐도 기록 줄에 남아 있음) */
+function disp(){const r=R(),rows=curStep().rows||[];let row=UI.mq.row&&rows.indexOf(UI.mq.row)>=0?UI.mq.row:null;
+ if(!row||(r.pend[row]==null&&UI.mq.val==null))row=rows.find(k=>r.pend[k]!=null)||row;
+ if(!row)return {row:null,val:null};return {row,val:r.pend[row]!=null?r.pend[row]:(UI.mq.row===row?UI.mq.val:null)}}
 function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  const T=(g,l,vb)=>svg(g,l||s.t,vb);
  if(id==='tools'){if(!(r.done.tools||fxOn('tools')))return T(bg({win:true})+boxArt(480),'준비물 상자');return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '))}
@@ -94,30 +102,31 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
   if(id==='water'){const on=fxOn('wateron'),off=fxOn('wateroff');return T(bg({})+tank(480,{splash:on,ripple:on})+'<g transform="translate(480 186) rotate(180)">'+fork(0,0,{ring:on})+'</g>','소리굽쇠를 물에 대는 모습','140 20 680 520')}}
  if(no===2){const x0=360;
   if(s.k==='plan'||s.k==='pred'||s.k==='concl')return T(bg({})+glock(380,{})+meter(780,300,{})+(s.k!=='concl'?qmark(380,230)+qmark(780,140):''));
-  if(id==='place'){const cm=fxOn('place')||r.done.place?5:null;const mx=cm==null?900:572+5*31.6;
-   return T(bg({})+glock(300,{})+ruler(560,440,340,cm)+'<g'+(fxOn('place')?an('lb-a-slide',0,'--dx:'+(900-mx)+'px'):'')+'>'+meter(mx,320,{})+'</g>','자로 재어 측정기를 놓는 모습')}
+  if(id==='place'){const on=fxOn('place')||r.done.place,mx=on?490+220:880;
+   return T(bg({})+glock(300,{})+ruler(490,450,44,10,on?5:null)+'<g'+(fxOn('place')?an('lb-a-slide',0,'--dx:170px'):'')+'>'+meter(mx,290,{})+'</g>','자로 재어 측정기를 놓는 모습')}
   if(id==='quiet')return T(bg({})+classroom(!!r.done.quiet&&!fxOn('quiet'),fxOn('quiet')),'교실이 조용해지는 모습');
   if(id==='glock'||id==='band2'){const f=UI.fx,row=f&&ROWS[f.id]?f.id:null,big=row?ROWS[row].lt===0:true;
-   const disp=UI.mq.val;let g=bg({});
+   const D=disp(),dv=D.val;let g=bg({});const edge=id==='glock'?520:506;
    g+=id==='glock'?glock(330,{bar:3,stick:1,hit:!!row,big}):boxBand(330,{pull:row?(big?'high':'low'):null,pluck:!!row,big});
-   g+=meter(800,300,{val:disp,anim:!!row,hold:disp!=null,hl:UI.mq.hl});
-   g+=bars(700,470,disp==null?0:Math.max(1,Math.min(5,Math.round((disp-60)/10))));
+   g+=ruler(edge,450,44,6,5)+meter(edge+220,290,{val:dv,anim:!!row,hold:dv!=null,hl:UI.mq.hl});
+   if(D.row)g+=plate(edge+220,ROWS[D.row].n,64);
    return T(g,id==='glock'?'글로켄슈필을 치고 측정기로 재는 모습':'고무줄을 튕기고 측정기로 재는 모습')}
   if(id==='more'){const f=UI.fx;return T(bg({})+drum(420,{hit:!!(f&&/drum/.test(f.id)),big:f&&f.id==='drumS'}),'작은북 위 스타이로폼 공')}}
  if(no===3){
   if(s.k==='plan'||s.k==='pred'||s.k==='concl')return T(bg({})+kalimba(480,{})+(s.k!=='concl'?qmark(480,120):''));
-  if(id==='place'){const cm=fxOn('place')||r.done.place?5:null;const mx=cm==null?900:572+5*31.6;
-   return T(bg({})+kalimba(300,{})+ruler(560,440,340,cm)+'<g'+(fxOn('place')?an('lb-a-slide',0,'--dx:'+(900-mx)+'px'):'')+'>'+phone(mx,320,{})+'</g>','자로 재어 기기를 놓는 모습')}
-  if(id==='kscan')return T(bg({})+kalimba(480,{key:UI.key,pluck:UI.key!=null}),'칼림바 건반을 차례로 튕기는 모습');
-  if(id==='kal'){const f=UI.fx,row=f&&ROWS[f.id]?f.id:null;return T(bg({})+kalimba(340,{key:row==='ks'?6:row==='kl'?0:null,pluck:!!row})+phone(800,300,{val:UI.mq.val,hl:UI.mq.hl}),'칼림바와 소리 높이 앱')}
-  if(id==='uke'){const f=UI.fx,row=f&&ROWS[f.id]?f.id:UI.mq.row||null;return T(bg({})+uke(470,{hold:row==='us'?'short':row==='ul'?'long':null,pluck:!!(f&&ROWS[f.id])})+phone(860,300,{val:UI.mq.val,hl:UI.mq.hl}),'우쿨렐레와 소리 높이 앱','60 60 900 450')}
-  if(id==='more')return T(bg({})+twoSpk({play:UI.fx&&UI.fx.id==='hlA'?0:UI.fx&&UI.fx.id==='hlB'?1:null}),'가 소리와 나 소리')}
+  if(id==='place'){const on=fxOn('place')||r.done.place,mx=on?470+220:880;
+   return T(bg({})+kalimba(300,{})+ruler(470,450,44,10,on?5:null)+'<g'+(fxOn('place')?an('lb-a-slide',0,'--dx:190px'):'')+'>'+phone(mx,290,{})+'</g>','자로 재어 기기를 놓는 모습')}
+  if(id==='kscan')return T(bg({})+kalimba(340,{key:UI.key,pluck:UI.key!=null})+ruler(510,450,44,6,5)+phone(730,290,{val:UI.key!=null?KF[UI.key]:null}),'칼림바 건반을 차례로 튕기는 모습');
+  if(id==='kal'||id==='kone'){const f=UI.fx,D=disp(),row=f&&ROWS[f.id]?f.id:D.row;const one=id==='kone',on1=one&&(fxOn('kone')||r.done.kone);
+   return T(bg({})+kalimba(340,{key:one?3:row==='ks'?6:row==='kl'?0:null,pluck:one?fxOn('kone'):!!(f&&ROWS[f.id])})+ruler(510,450,44,6,5)+phone(730,290,{val:one?(on1?KF[3]:null):D.val,hl:UI.mq.hl})+(!one&&D.row?plate(730,ROWS[D.row].n,58):''),'칼림바와 소리 높이 앱')}
+  if(id==='uke'){const f=UI.fx,D=disp(),row=f&&ROWS[f.id]?f.id:D.row;return T(bg({})+uke(440,{hold:row==='us'?'short':row==='ul'?'long':null,pluck:!!(f&&ROWS[f.id])})+ruler(680,450,44,6,5)+phone(900,290,{val:D.val,hl:UI.mq.hl})+(D.row?plate(830,ROWS[D.row].n,58):''),'우쿨렐레와 소리 높이 앱','40 40 940 470')}
+  if(id==='more')return T(bg({})+twoSpk({play:UI.fx&&UI.fx.id==='hlA'?0:UI.fx&&UI.fx.id==='hlB'?1:null,nums:[UI.mq.hlA?784:null,UI.mq.hlB?261:null]}),'가 소리와 나 소리')}
  if(no===4){const cot=s.k==='plan'||has('cotton'),spk=s.k==='plan'||has('lid'),lid=spk;
   let g=bg({});
   if(s.k==='plan'||s.k==='pred'||s.k==='concl')return T(g+jar(400,{cotton:1,speaker:1,lid:1,air:1})+(s.k==='pred'?qmark(400,90):''));
   g+=jar(400,{cotton:cot||fxOn('cotton'),aCotton:fxOn('cotton'),speaker:spk||fxOn('lid'),lid:lid&&!fxOn('lid'),aLid:fxOn('lid'),on:UI.spk,air:r.air,pump:fxOn('pump'),btn:fxOn('refill'),aBtn:fxOn('refill')});
   if(s.k==='meas'){const L=UI.spk?Math.max(1,Math.round(loudOf(r.air)*5)):0;g+=bars(760,420,L);
-   if(UI.spk&&!AU.ok())g+=bubble(800,250,r.air>.9?'잘 들려요':loudOf(r.air)<.15?'아주 작게 들려요':'조금 작게 들려요')}
+}
   return T(g,'공기를 빼는 장치와 스피커','120 40 780 470')}
  if(no===5){
   if(s.k==='plan'||s.k==='pred'||s.k==='concl')return T(bg({})+tank(320,{full:1})+castanet(320,250,1.2)+desk(560,330)+(s.k!=='concl'?qmark(320,120)+qmark(725,220):''));
@@ -127,7 +136,7 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
   if(id==='desk'){const m=UI.play?UI.play.row:UI.deskMode,same=m==='ds';let g=bg({});
    g+=same?desk(120,720):desk(90,360)+desk(510,360);g+=headOnDesk(230,{closed:UI.prep,cover:UI.prep});
    g+='<g transform="translate(720 0)"><g'+(UI.play?an('lb-a-tap',0,'animation-iteration-count:'+ROWS[m].taps):'')+'><path d="M0 230 L40 300" stroke="#F2C94C" stroke-width="12" stroke-linecap="round"/><path d="M40 300 L44 308" stroke="#3A3A3A" stroke-width="8"/></g>'+hand(-14,220,-60,.8)+'</g>';
-   if(UI.play){const R0=ROWS[m];for(let i=0;i<R0.taps;i++)g+=tok(330+i*56,170,i,R0.heard)}
+   if(UI.play){const R0=ROWS[m];g+=deskTrail(748,same?250:520,R0.taps,!same);for(let i=0;i<R0.taps;i++)g+=tok(330+i*56,150,i,R0.heard)}
    g+=plate(480,same?'같은 책상':'다른 책상(떨어져 있어요)',470);return T(g,same?'같은 책상에서 듣는 모습':'다른 책상에서 듣는 모습')}
   if(id==='more'){const f=UI.fx;return T(bg({})+stringPhone({taut:!f||f.id==='taut',play:!!f}),'실 전화기')}}
  return T(bg({}))}
@@ -181,13 +190,14 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
    return '<label class="lb-trial'+(cur&&pend!=null?' lb-tcur':'')+'"><span>'+(i+1)+'번</span>'+(got?'<b>'+vals[i]+'</b>':'<input class="lb-num" inputmode="numeric" maxlength="4" autocomplete="off" data-f="in'+row+i+'" data-in="'+row+'" aria-label="'+esc(R0.n)+' '+(i+1)+'번 숫자" value="'+(cur?esc(UI.inp[row]||''):'')+'"'+(cur&&pend!=null?'':' disabled')+'>')+'</label>'}).join('')+
    (vals.length<3?'<button type="button" class="lb-mini" data-act="trial" data-row="'+row+'" data-f="tr'+row+'"'+(pend!=null?'':' disabled')+'>'+ic('check')+'적기</button>':'')+'</div>';
   if(vals.length<3&&pend==null)h+='<p class="lb-hint2">아래 단추를 눌러 '+(vals.length+1)+'번째로 재어요.</p>';
+  if(pend!=null)h+='<p class="lb-hint2">'+(V().no===2?'측정기':'앱')+' 화면의 숫자를 보고 써요. 화면이 비면 그 단추를 다시 눌러요.</p>';
   if(vals.length===3){const vv=done?x:D;const order=UI.sort[row]?vals.map((v,i)=>[v,i]).sort((a,b)=>a[0]-b[0]):vals.map((v,i)=>[v,i]);
    h+='<div class="lb-midrow"><span class="lb-cl">가운데 숫자</span><span class="lb-seg lb-kseg'+(wr.indexOf('mid')>=0?' lb-wrongc':'')+'" role="group" aria-label="가운데 숫자 고르기">'+order.map(([v,i])=>'<button type="button" data-f="'+row+'m'+i+'" data-dr="'+row+':mid:'+i+'" aria-pressed="'+(vv.mid===i)+'"'+(done?' disabled':'')+'>'+v+'</button>').join('')+'</span>'+(done?'':'<button type="button" class="lb-mini" data-act="sort" data-row="'+row+'" data-f="so'+row+'" aria-pressed="'+!!UI.sort[row]+'">작은 것부터</button>')+'</div>';
    h+='<div class="lb-cells"><span class="lb-cl">'+(V().no===2?'떨림':'높낮이')+'</span>'+seg('look',R0.lk,vv.look,done,R0.n+' '+(V().no===2?'떨림':'높낮이'))+'</div>';
    if(!done)h+='<button type="button" class="lb-rec-btn" data-act="rowrec" data-row="'+row+'" data-f="rr'+row+'"'+(vv.mid!=null&&vv.look!=null?'':' disabled')+'>'+ic('check')+'기록하기</button>'}}
  if(R0.t==='hear'){const sn=!!r.seen[row];const vv=done?x:D;
   h+='<div class="lb-cells lb-c1">'+seg('v',R0.o,vv.v,done||!sn,R0.n)+'</div>';
-  if(!done&&!sn)h+='<p class="lb-hint2">'+(row==='first'?'스피커를 켜고 들어요.':row==='low'?'스피커를 켠 채 손잡이를 다섯 번 넘게 당겨요. ('+r.pulls+'번)':'스피커를 켠 채 공기를 다시 넣어요.')+'</p>';
+  if(!done&&!sn)h+='<p class="lb-hint2">'+(row==='first'?'스피커를 켜고 들어요.':row==='low'?'스피커를 켠 채 손잡이를 다섯 번 넘게 당겨요. ('+r.pulls+'번)':row==='again'?'스피커를 켠 채 손잡이를 다섯 번 넘게 당겨요. ('+(r.repPulls||0)+'번)':row==='again2'?'먼저 위 줄을 적고, 스피커를 켠 채 공기를 다시 넣어요.':'스피커를 켠 채 공기를 다시 넣어요.')+'</p>';
   if(!done)h+='<button type="button" class="lb-rec-btn" data-act="rowrec" data-row="'+row+'" data-f="rr'+row+'"'+(vv.v!=null?'':' disabled')+'>'+ic('check')+'기록하기</button>'}
  if(R0.t==='count'){const sn=!!r.seen[row];const vv=done?x:D;const n=vv.n==null?0:vv.n;
   h+='<div class="lb-cells lb-cnt">'+seg('heard',['들렸어요','안 들렸어요'],vv.heard==null?null:(vv.heard?0:1),done||!sn,R0.n+' 들렸나요')+'<span class="lb-step"><button type="button" data-f="'+row+'-" data-cn="'+row+':-1" aria-label="'+esc(R0.n)+' 들은 수 하나 빼기"'+(done||!sn||n<=0?' disabled':'')+'>'+ic('minus')+'</button><output aria-label="들은 수">'+n+'번</output><button type="button" data-f="'+row+'+" data-cn="'+row+':1" aria-label="'+esc(R0.n)+' 들은 수 하나 더하기"'+(done||!sn||n>=9?' disabled':'')+'>'+ic('plus')+'</button></span></div>';
@@ -197,9 +207,9 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
  if(UI.fb[row])h+='<div class="lb-msg '+(UI.fb[row][0]?'lb-good':'lb-try')+'" role="status">'+ic(UI.fb[row][0]?'check':'info')+'<span>'+UI.fb[row][1]+'</span></div>';
  return h+'</div>'}
 function measCard(){const v=V(),r=R(),s=curStep();let h='';
- if(s.id==='repeat')h+='<p class="lb-q">손잡이를 다섯 번 넘게 당긴 뒤, 공기를 다시 넣어요.</p><ol class="lb-todo"><li class="'+(r.cyc>=1?'lb-ok':'lb-cur')+'"><i>'+(r.cyc>=1?ic('check'):1)+'</i>공기 빼기 ('+Math.min(r.pulls,5)+'/5)</li><li class="'+(r.cyc>=2?'lb-ok':r.cyc>=1?'lb-cur':'')+'"><i>'+(r.cyc>=2?ic('check'):2)+'</i>공기 다시 넣기</li></ol>'+(r.cyc>=2?'<div class="lb-msg lb-good">'+ic('check')+'<span>한 번 더 해도 같았어요.</span></div>':'');
+ if(s.id==='repeat')h+='<p class="lb-q">스피커를 켠 채 공기를 빼고, 다시 넣으며 들어요.</p>';
  s.rows.forEach(row=>{h+=rowUI(row)});
- return cardHead('기록하기',s.id==='repeat'?'한 번 더 확인':'내가 보고 듣고 잰 것을 적어요')+wrapB(h)}
+ return cardHead('기록하기',s.id==='repeat'?'한 번 더 하고 들은 것을 적어요':'내가 보고 듣고 잰 것을 적어요')+wrapB(h)}
 function moreCard(){const v=V(),r=R(),Q={2:['공이 더 높이 튄 것은?',['세게 칠 때','약하게 칠 때'],0,'세게 치면 북이 크게 떨려 공이 높이 튀어요.'],3:['더 높은 소리는?',['가 소리','나 소리'],0,'모기는 높고 작은 소리, 천둥은 낮고 큰 소리예요. 높낮이와 세기는 달라요.'],5:['소리가 잘 들린 것은?',['실이 팽팽할 때','실이 느슨할 때'],0,'실이 팽팽할 때 떨림이 실을 따라 잘 전달돼요.']}[v.no];
  const ans=r.more.a;let h='<p class="lb-q">'+Q[0]+'</p><p class="lb-hint">아래 단추를 눌러 두 가지를 모두 해 보고 골라요.</p><div class="lb-opts">'+Q[1].map((t,i)=>'<button type="button" class="lb-opt lb-optsm" data-f="mq'+i+'" data-mq="'+i+'" aria-pressed="'+(ans===i)+'"'+(UI.mq.both?'':' disabled')+'><i>'+(ans===i?ic('check'):'')+'</i><span>'+t+'</span></button>').join('')+'</div>';
  if(ans!=null)h+='<div class="lb-msg '+(ans===Q[2]?'lb-good':'lb-try')+'">'+ic(ans===Q[2]?'check':'info')+'<span>'+(ans===Q[2]?Q[3]:'다시 들어 보고 견주어 봐요.')+'</span></div>';
@@ -234,8 +244,8 @@ function sheetTable(v,r){const t=ROWS[v.rows[0]].t;let h='<table class="lb-tbl">
  if(t==='hear')h+='<th scope="col">들린 정도</th></tr></thead><tbody>'+v.rows.map(k=>{const x=r.rec[k],R0=ROWS[k];return '<tr><th scope="row">'+esc(R0.n)+'</th>'+cell(x&&x.ok?R0.o[x.v]:null)+'</tr>'}).join('');
  if(t==='count')h+='<th scope="col">들렸나요</th><th scope="col">들은 수</th></tr></thead><tbody>'+v.rows.map(k=>{const x=r.rec[k],R0=ROWS[k];return '<tr><th scope="row">'+esc(R0.n)+'</th>'+cell(x&&x.ok?(x.heard?'들렸어요':'안 들렸어요'):null)+cell(x&&x.ok?x.n+'번':null)+'</tr>'}).join('');
  return h+'</tbody></table>'}
-function planSummary(v,r){const P=v.plan;if(P.type==='pick'){const w=r.plan.w||{};return '<p>'+P.ways.filter((x,i)=>w[i]).map(x=>esc(x[0])).join(' · ')+'</p>'}
- return '<div class="lb-sh-tags">'+P.rows.filter(x=>x[0]!=='#').map(x=>'<span class="lb-sh-tag'+(x[3]?' lb-d':'')+'">'+(x[3]?'다르게: ':'같게: ')+esc(x[1])+'</span>').join('')+'</div>'}
+function planSummary(v,r){const P=v.plan;if(!r.planOk)return '<p>(계획을 건너뛰었어요)</p>';if(P.type==='pick'){const w=r.plan.w||{},sn=r.plan.s||{};return '<p>'+P.ways.filter((x,i)=>w[i]).map(x=>esc(x[0])).join(' · ')+'<br>감각: '+P.senses.filter((x,i)=>sn[i]).map(x=>x[0]).join(', ')+'</p>'}
+ return '<div class="lb-sh-tags">'+P.rows.filter(x=>x[0]!=='#').map(x=>{const d=r.plan[x[0]]==='d';return '<span class="lb-sh-tag'+(d?' lb-d':'')+'">'+(d?'다르게: ':'같게: ')+esc(x[1])+'</span>'}).join('')+'</div>'}
 function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id)).filter(s=>(s.k==='scene'||s.k==='meas')&&s.id!=='tools');
  const today=new Date();const ds=today.getFullYear()+'. '+(today.getMonth()+1)+'. '+today.getDate()+'.';
  let h='<article class="lb-sheet" id="lbSheet" aria-label="실험 결과 한 장"><div class="lb-sh-in"><header class="lb-sh-h"><div><h2>실험 결과 한 장 · '+esc(v.title)+'</h2><span>탐구 실험관 · 3학년 2학기 과학 · 3. 소리의 성질 · '+ds+'</span></div><div class="lb-sh-name">이름 <u>'+(esc(DB.name)||'&nbsp;')+'</u></div></header><div class="lb-sh-grid"><div class="lb-sh-col">';
@@ -273,7 +283,7 @@ function render(){const H=document.documentElement;H.classList.toggle('lb-big',!
  set($('#lbFoot'),footHTML(v,r,s));
  fitAll();clearTimeout(render.ft);render.ft=setTimeout(fitAll,350)}
 function fitBox(box,inner,min){if(!box||!inner)return;inner.style.zoom='';if(narrow()||!box.clientHeight)return;if(box.scrollHeight<=box.clientHeight+1)return;let z=Math.max(min,box.clientHeight/box.scrollHeight);inner.style.zoom=z.toFixed(3);let n=0;while(box.scrollHeight>box.clientHeight+1&&z>min&&n++<12){z=Math.max(min,z-.02);inner.style.zoom=z.toFixed(3)}}
-function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.6);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.66)}
+function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.6);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.56)}
 function renderScene(){const v=V(),r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NAR=narrow();LEG=[];
  let over='';const pick=s.opts&&!r.done[s.id]&&!fxOn(s.id);
  if(s.k==='scene'&&r.done[s.id]&&!fxOn(s.id))over+='<button type="button" class="lb-replay" data-act="replay" data-f="replay">'+ic('replay')+'처음부터 보기</button>';
@@ -283,19 +293,20 @@ function renderScene(){const v=V(),r=R(),s=curStep(),el=$('#lbScene');if(!el)ret
  if(UI.toast)over+='<div class="lb-toast '+(UI.toastK==='info'?'lb-toast3':'lb-toast2')+'" role="status">'+esc(UI.toast)+'</div>';
  const sv=sceneSVG();NAR=false;set(el,over+sv);
  const lg=$('#lbLeg');if(lg)set(lg,LEG.length?LEG.map(x=>'<span class="lb-lg">'+esc(x[1])+'</span>').join(''):'')}
-function notesHTML(s){if(!s.why&&!s.care)return '';let h='<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
+function notesHTML(s){if(!s.why&&!s.care)return '';const hideWhy=s.k==='more'&&R().more.a==null;let h=hideWhy?'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>두 가지를 모두 해 보고 골라요.</div></div>':'<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
  if(s.care)h+=s.care[0]==='care'?'<div class="lb-note lb-care">'+ic('care')+'<div><b>조심해요</b>'+esc(s.care[1])+'</div></div>':'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.care[1])+'</div></div>';
  return h}
-function railHTML(){const v=V(),r=R(),N=v.steps.length;let h='<div class="lb-mtop"><b>'+(r.step+1)+'/'+N+' · '+esc(stepOf(r.step).n)+'</b><span class="lb-mbar" aria-hidden="true">'+v.steps.map((x,i)=>'<i class="'+(i<=r.step?'lb-d':'')+'"></i>').join('')+'</span><button type="button" class="lb-mlist" data-act="rail" data-f="mlist" aria-expanded="'+UI.rail+'">'+ic('list')+'단계 목록</button></div>';
+function stepName(s){return !R().planOk&&s.n0?s.n0:s.n}
+function railHTML(){const v=V(),r=R(),N=v.steps.length;let h='<div class="lb-mtop"><b>'+(r.step+1)+'/'+N+' · '+esc(stepName(stepOf(r.step)))+'</b><span class="lb-mbar" aria-hidden="true">'+v.steps.map((x,i)=>'<i class="'+(i<=r.step?'lb-d':'')+'"></i>').join('')+'</span><button type="button" class="lb-mlist" data-act="rail" data-f="mlist" aria-expanded="'+UI.rail+'">'+ic('list')+'단계 목록</button></div>';
  h+='<div class="lb-rwrap"><p class="lb-rk">실험 '+v.no+'</p><h2>'+esc(v.name)+'</h2><div class="lb-rlist">';
  let g=-1;v.steps.forEach((id,i)=>{const s=stepOf(i);if(s.g!==g){g=s.g;h+='<div class="lb-grp">'+GROUPS[g]+'</div>'}
   const done=isDone(i)&&i!==r.step&&(s.k!=='more'||r.max>i),now=i===r.step,ok=canGo(i);
-  h+='<button type="button" class="lb-rs'+(now?' lb-now':done?' lb-done':'')+'" data-go="'+i+'" data-f="g'+i+'"'+(now?' aria-current="step"':'')+(ok?'':' disabled')+'><i>'+(done?ic('check'):i+1)+'</i>'+esc(s.n)+(s.k==='more'?'<small>선택</small>':'')+'<span class="lb-sr">'+(done?' (끝냄)':now?' (지금 단계)':ok?'':' (아직)')+'</span></button>'});
+  h+='<button type="button" class="lb-rs'+(now?' lb-now':done?' lb-done':'')+'" data-go="'+i+'" data-f="g'+i+'"'+(now?' aria-current="step"':'')+(ok?'':' disabled')+'><i>'+(done?ic('check'):i+1)+'</i>'+esc(stepName(s))+(s.k==='more'?'<small>선택</small>':'')+'<span class="lb-sr">'+(done?' (끝냄)':now?' (지금 단계)':ok?'':' (아직)')+'</span></button>'});
  h+='</div><div class="lb-rail-note"><p>아주 단순하게 만든 모형이에요. 실제로는 숫자가 조금씩 달라요.</p><p>만든 사람: 초등교사 홍지희</p></div></div>';
  return h}
 /* 이 단계의 행동 단추 */
 function actsOf(s){const r=R(),A=[],busy=!!UI.fx||!!UI.play;
- const rowAct=(row,label)=>{const x=r.rec[row]||{},n=(x.v||[]).length;A.push({id:row,label,dis:busy||r.pend[row]!=null||n>=3})};
+ const rowAct=(row,label)=>{const x=r.rec[row]||{},n=(x.v||[]).length;A.push({id:row,label:r.pend[row]!=null?label+' (다시 보기)':label,dis:busy||n>=3})};
  const spk={id:'spk',label:UI.spk?'스피커 멈추기':'스피커 켜기',icon:'speak',pressed:UI.spk};
  switch(s.id){
   case 'neck':A.push({id:'neck',label:'누르고 있으면 "아~"',hold:1,icon:'hand'});break;
@@ -309,7 +320,7 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx||!!UI.play;
   case 'on':A.push(spk);break;
   case 'pull':A.push({id:'pump',label:'손잡이 당기기 ('+r.pulls+'번)',dis:!!UI.fx},spk);break;
   case 'refill':A.push({id:'refill',label:'공기 넣기',dis:!!UI.fx||r.air>=.99},spk);break;
-  case 'repeat':A.push({id:'pump',label:'손잡이 당기기 ('+r.pulls+'번)',dis:!!UI.fx||r.cyc>=2},{id:'refill',label:'공기 넣기',dis:!!UI.fx||r.air>=.99},spk);break;
+  case 'repeat':A.push({id:'pump',label:'손잡이 당기기 ('+(r.repPulls||0)+'번)',dis:!!UI.fx},{id:'refill',label:'공기 넣기',dis:!!UI.fx||r.air>=.99},spk);break;
   case 'cast':A.push({id:'co',label:'물 밖에서 부딪치기',dis:busy||rowDone('co')},{id:'ci',label:'물속에서 부딪치기',dis:busy||rowDone('ci')});break;
   case 'desk':A.push({id:'prep',label:'귀 대고 눈 감고 귀 막기',pressed:UI.prep,dis:busy||UI.prep},{id:'dd',label:'두드려요 · 다른 책상',dis:busy||!UI.prep||rowDone('dd')},{id:'ds',label:'두드려요 · 같은 책상',dis:busy||!UI.prep||rowDone('ds')});break;
   case 'more':if(V().no===2)A.push({id:'drumS',label:'세게 치기',dis:busy},{id:'drumW',label:'약하게 치기',dis:busy});if(V().no===3)A.push({id:'hlA',label:'가 소리 듣기',dis:busy},{id:'hlB',label:'나 소리 듣기',dis:busy});if(V().no===5)A.push({id:'taut',label:'팽팽하게 하고 듣기',dis:busy},{id:'loose',label:'느슨하게 하고 듣기',dis:busy});break}
@@ -321,7 +332,7 @@ function footHTML(v,r,s){let h='<button type="button" class="lb-btn" data-act="p
   else if(!r.done[s.id]||fxOn(s.id))mid='<button type="button" class="lb-doit" data-act="doit" data-f="doit"'+(UI.fx?' disabled':'')+'>'+ic('hand')+esc(s.act||'보는 중')+'</button>';else mid='<span>잘했어요. 이어서 가요.</span>'+dots}
  else if(s.k==='plan'){const all=v.plan.type==='pick'?Object.values(r.plan.w||{}).some(Boolean):v.plan.rows.filter(x=>x[0]!=='#').every(p=>r.plan[p[0]]);if(!r.planOk)mid='<button type="button" class="lb-doit" data-act="check" data-f="doit"'+(all&&planChanged(r)?'':' disabled')+'>'+ic('check')+'계획 확인하기</button>';else mid='<span>계획을 세웠어요.</span>'+dots}
  else if(s.k==='pred'){mid=isDone(r.step)?'<span>예상을 남겼어요.</span>'+dots:'<span>예상을 골라요.</span>'+dots}
- else if(s.k==='meas'||s.k==='more'){const A=actsOf(s);mid='<span class="lb-picks" role="group" aria-label="실험하기">'+A.map(a=>'<button type="button" class="lb-doit lb-pk'+(a.hold?' lb-hold':'')+'"'+(a.hold?' data-hold="'+a.id+'"':' data-act="x" data-x="'+a.id+'"')+' data-f="x'+a.id+'"'+(a.pressed!=null?' aria-pressed="'+!!a.pressed+'"':'')+(a.dis?' disabled':'')+'>'+(a.icon?ic(a.icon):'')+esc(a.label)+'</button>').join('')+'</span>'}
+ else if(s.k==='meas'||s.k==='more'){const A=actsOf(s);mid='<span class="lb-picks" role="group" aria-label="실험하기">'+A.map(a=>'<button type="button" class="lb-doit lb-pk'+(a.hold?' lb-hold':'')+(UI.attn?' lb-attn':'')+'"'+(a.hold?' data-hold="'+a.id+'"':' data-act="x" data-x="'+a.id+'"')+' data-f="x'+a.id+'"'+(a.pressed!=null?' aria-pressed="'+!!a.pressed+'"':'')+(a.dis?' disabled':'')+'>'+(a.icon?ic(a.icon):'')+esc(a.label)+'</button>').join('')+'</span>'}
  else if(s.k==='concl'){const all=r.bl.length&&r.bl.every(x=>x);if(!r.cmp)mid='<button type="button" class="lb-doit" data-act="cmp" data-f="doit"'+(all&&cChanged(r)?'':' disabled')+'>'+ic('flask')+'기록과 견주기</button>';else mid='<span>결론을 썼어요.</span>'+dots}
  else if(s.k==='sheet'){mid='<span>'+(r.fin?'실험을 마쳤어요.':'아직 끝내지 않은 단계가 있어요.')+'</span>'+dots;pri='실험 고르기로';priOn=true;priAct='home'}
  return h+mid+'</div><button type="button" class="lb-btn lb-pri" data-act="'+priAct+'" data-f="pri"'+(priOn?'':' disabled')+'>'+esc(pri)+ic('right')+'</button>'}
@@ -329,13 +340,13 @@ function footHTML(v,r,s){let h='<button type="button" class="lb-btn" data-act="p
 /* ───────── 실험 고르기 ───────── */
 function homeArt(no){NAR=true;LEG=[];let g=bg({}),vb='120 70 720 420';
  if(no===1)g+=boxBand(330,{})+fork(690,290,{});
- if(no===2)g+=glock(380,{})+meter(790,300,{});
+ if(no===2)g+=glock(360,{})+meter(730,300,{});
  if(no===3)g+=kalimba(480,{});
  if(no===4){g+=jar(470,{air:1});vb='160 60 720 420'}
  if(no===5)g+=tank(360,{full:1})+castanet(360,250,1.2)+desk(560,330);
  const s=svg(g,'실험 '+no+' 처음 모습',vb);NAR=false;LEG=[];return s}
-function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fin?'끝냄 · 결과 보기':(r.step+1)+'단계 이어서'):'시작하기';
- return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','hand','speak','music','air','water'][v.no])+'</i><span><b>'+esc(v.title)+'</b><span>교과서 실험</span></span><small>'+(r&&r.fin?ic('check'):'')+st+'</small></button></div></section>'};
+function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fin?'끝냄 · 결과 보기':(r.step+1)+'단계부터 이어서'):'실험 시작하기';
+ return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','hand','speak','music','air','water'][v.no])+'</i><span><b>'+st+'</b><span>교과서 실험</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
  return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>3학년 2학기 과학</em>3. 소리의 성질</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 봐요. 소리는 단추를 누를 때만 나요.</p></div>'+
  '<div class="lb-ex lb-ex5">'+['e1','e2','e3','e4','e5'].map(card).join('')+'</div>'+
  '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 실제로는 숫자가 조금씩 달라요. 소리는 이 자료가 직접 만든 소리예요.</span></p></div>'}
@@ -347,9 +358,9 @@ function act(a,el){const v=V(),r=R();
  if(a==='prev'){if(r.step>0)go(r.step-1);return}
  if(a==='next'){if(canNext())go(r.step+1);return}
  if(a==='home'){DB.cur=null;resetUI();save();render();scrollTo(0,0);return}
- if(a==='doit'){const s=curStep();if(UI.fx)return;if(s.id==='kscan'){kscan();return}doAnim(s.id,s.dur||1500);return}
+ if(a==='doit'){const s=curStep();if(UI.fx)return;if(s.id==='kscan'){kscan();return}if(s.id==='kone')AU.tone({f:KF[3],peak:.18,dec:1});doAnim(s.id,s.dur||1500);return}
  if(a==='pick'){const s=curStep(),o=s.opts[+el.dataset.i];if(UI.fx||!o)return;if(o.bad){flash(o.bad);return}doAnim(s.id,s.dur||1500);return}
- if(a==='replay'){const s=curStep();if(s.id==='kscan'){kscan();return}doAnim(s.id,s.dur||1500);return}
+ if(a==='replay'){const s=curStep();if(s.id==='kscan'){kscan();return}if(s.id==='kone')AU.tone({f:KF[3],peak:.18,dec:1});doAnim(s.id,s.dur||1500);return}
  if(a==='check'){if(!planChanged(r))return;r.planLast=JSON.parse(JSON.stringify(r.plan));r.planOk=planGood(v,r);save();render();return}
  if(a==='x'){doX(el.dataset.x);return}
  if(a==='trial'){trial(el.dataset.row);return}
@@ -362,8 +373,8 @@ function act(a,el){const v=V(),r=R();
  if(a==='rail'){UI.rail=!UI.rail;render();return}}
 function planGood(v,r){const P=v.plan;if(P.type==='pick')return P.ways.every((x,i)=>!!(r.plan.w||{})[i]===!!x[1])&&P.senses.every((x,i)=>!!(r.plan.s||{})[i]===!!x[1]);
  return P.rows.filter(x=>x[0]!=='#').every(x=>r.plan[x[0]]===(x[3]?'d':'s'))}
-function kscan(){if(UI.fx)return;const order=[6,5,4,3,2,1,0],F=[784,698,659,587,523,440,392];UI.fx={id:'kscan',n:++UI.nonce};
- order.forEach((k,i)=>later(()=>{UI.key=k;AU.tone({f:F[i],type:'sine',peak:.18,dec:.7});renderScene()},i*480));
+function kscan(){if(UI.fx)return;const order=[6,5,4,3,2,1,0];UI.fx={id:'kscan',n:++UI.nonce};
+ order.forEach((k,i)=>later(()=>{UI.key=k;AU.tone({f:KF[k],type:'sine',peak:.18,dec:.7});renderScene()},i*480));
  later(()=>{UI.key=null;UI.fx=null;R().done.kscan=true;save();render()},order.length*480+400);render()}
 /* 실험 단계의 행동 */
 function doX(id){const v=V(),r=R();
@@ -373,13 +384,13 @@ function doX(id){const v=V(),r=R();
  if(id==='forkoff'){if(UI.forkH)UI.forkH.stop(.08);AU.stopAll();r.seen['fork:off']=1;fx('forkoff',1200);return}
  if(id==='wateron'){AU.tone({f:440,peak:.18,dec:1.6});r.seen['water:on']=1;fx('wateron',1900);return}
  if(id==='wateroff'){r.seen['water:off']=1;fx('wateroff',1200);return}
- if(ROWS[id]&&ROWS[id].t==='num3'){const R0=ROWS[id],x=r.rec[id]=r.rec[id]||{v:[]};x.v=x.v||[];const n=x.v.length;if(n>=3||r.pend[id]!=null)return;const val=R0.v[n];
+ if(ROWS[id]&&ROWS[id].t==='num3'){const R0=ROWS[id],x=r.rec[id]=r.rec[id]||{v:[]};x.v=x.v||[];const n=x.v.length;if(n>=3)return;const val=r.pend[id]!=null?r.pend[id]:R0.v[n];
   if(v.no===2){const strong=R0.lt===0;if(id[0]==='g')AU.tone({f:1568,peak:strong?.3:.09,dec:1.4});else AU.tone({f:180,type:'triangle',peak:strong?.26:.09,dec:.8})}
   else AU.tone({f:R0.f,type:id[0]==='u'?'triangle':'sine',peak:.18,dec:1.1,lp:id[0]==='u'?2400:0});
-  UI.mq={val,row:id,hl:false};r.pend[id]=val;UI.inp[id]='';fx(id,1300,()=>{const n2=$('[data-in="'+id+'"]:not([disabled])');if(n2)n2.focus()});return}
+  UI.mq={val,row:id,hl:false};r.pend[id]=val;fx(id,1300,()=>{const n2=$('[data-in="'+id+'"]:not([disabled])');if(n2)n2.focus()});return}
  if(id==='spk'){if(UI.spk)spkStop();else spkOn();save();render();return}
- if(id==='pump'){if(UI.fx)return;AU.noise({dur:.25,peak:.08,ft:'highpass',ff:1200});r.pulls++;r.air=airAfter(r.pulls);SPK.loud(loudOf(r.air));if(curStep().id==='repeat'&&r.pulls>=5&&r.cyc<1)r.cyc=1;markSpk();fx('pump',700);return}
- if(id==='refill'){if(UI.fx)return;const a0=r.air;r.air=1;r.pulls=0;[1,2,3,4].forEach(k=>later(()=>SPK.loud(loudOf(a0+(1-a0)*k/4)),k*500));if(r.seen.lowdone||rowDone('low'))r.seen.refilled=1;if(curStep().id==='repeat'&&r.cyc===1)r.cyc=2;fx('refill',2000,()=>{markSpk()});return}
+ if(id==='pump'){if(UI.fx)return;AU.noise({dur:.25,peak:.08,ft:'highpass',ff:1200});r.pulls++;r.air=airAfter(r.pulls);SPK.loud(loudOf(r.air));if(curStep().id==='repeat')r.repPulls=(r.repPulls||0)+1;markSpk();fx('pump',700);return}
+ if(id==='refill'){if(UI.fx)return;const a0=r.air;r.air=1;r.pulls=0;[1,2,3,4].forEach(k=>later(()=>SPK.loud(loudOf(a0+(1-a0)*k/4)),k*500));if(r.seen.lowdone||rowDone('low'))r.seen.refilled=1;if(curStep().id==='repeat'&&r.seen.again)r.rep2=1;fx('refill',2000,()=>{markSpk()});return}
  if(ROWS[id]&&ROWS[id].t==='count'){const R0=ROWS[id];UI.play={row:id};if(curStep().id==='desk')UI.deskMode=id;
   for(let i=0;i<R0.taps;i++)later(()=>{if(id==='co')AU.noise({dur:.06,peak:.25,ff:2600});if(id==='ci')AU.noise({dur:.08,peak:.1,ft:'lowpass',ff:600});if(id==='ds')AU.noise({dur:.05,peak:.2,ff:800})},i*550+200);
   render();later(()=>{UI.play=null;r.seen[id]=1;save();render()},R0.taps*550+700);return}
@@ -387,27 +398,27 @@ function doX(id){const v=V(),r=R();
  if(id==='drumS'||id==='drumW'){AU.tone({f:120,peak:id==='drumS'?.28:.1,dec:.35});UI.mq[id]=1;if(UI.mq.drumS&&UI.mq.drumW)UI.mq.both=1;fx(id,1400);return}
  if(id==='hlA'||id==='hlB'){if(id==='hlA')AU.tone({f:784,peak:.05,dec:1.2});else AU.tone({f:261,peak:.28,dec:1.2});UI.mq[id]=1;if(UI.mq.hlA&&UI.mq.hlB)UI.mq.both=1;fx(id,1400);return}
  if(id==='taut'||id==='loose'){if(id==='taut')AU.tone({f:300,type:'triangle',peak:.15,dec:.9,lp:1500});UI.mq[id]=1;if(UI.mq.taut&&UI.mq.loose)UI.mq.both=1;fx(id,2000);return}}
-function hold(on){const r=R();if(on){if(UI.hold)return;UI.hold=true;UI.holdH=AU.tone({f:200,type:'sawtooth',peak:.12,lp:900,hold:1,att:.04});UI.holdT=Date.now();clearTimeout(UI.holdTm);UI.holdTm=setTimeout(()=>{if(UI.hold){r.seen['neck:on']=1;save()}},400);renderScene()}
- else{if(!UI.hold)return;UI.hold=false;if(UI.holdH)UI.holdH.stop(.08);if(Date.now()-UI.holdT>=400){r.seen['neck:on']=1;r.seen['neck:off']=1}save();render()}}
+function hold(on){const r=R();if(on){if(UI.hold)return;UI.hold=true;UI.holdH=AU.tone({f:200,type:'sawtooth',peak:.12,lp:900,hold:1,att:.04});UI.holdT=Date.now();clearTimeout(UI.holdTm);UI.holdTm=setTimeout(()=>{if(UI.hold){r.seen['neck:on']=1;save()}},400);clearTimeout(UI.holdCap);UI.holdCap=setTimeout(()=>{if(UI.hold){hold(false);flash('5초가 지나 소리를 멈췄어요.','info')}},5000);renderScene()}
+ else{if(!UI.hold)return;UI.hold=false;clearTimeout(UI.holdCap);if(UI.holdH)UI.holdH.stop(.08);if(Date.now()-UI.holdT>=400){r.seen['neck:on']=1;r.seen['neck:off']=1}save();render()}}
 /* 숫자 적기: 화면 숫자와 같은지만 알려 줌. 같은 값으로 다시 누르면 세지 않음 */
 function tryKey(k,val){const r=R();if(r.last[k]===val)return -1;r.last[k]=val;r.tries[k]=(r.tries[k]||0)+1;return r.tries[k]}
 function trial(row){const r=R(),x=r.rec[row],pend=r.pend[row];if(pend==null)return;const txt=String(UI.inp[row]||'').trim(),n=+txt;
  if(!txt||!/^\d+$/.test(txt)){UI.fb[row]=[0,'숫자로 써요.'];render();return}
- if(n===pend){x.v.push(n);delete r.pend[row];UI.inp[row]='';UI.mq.hl=false;UI.fb[row]=[1,(x.v.length<3?x.v.length+'번째 숫자를 적었어요.':'세 번 다 적었어요. 가운데 숫자를 골라요.')];save();render();return}
+ if(n===pend){x.v.push(n);delete r.pend[row];UI.inp[row]='';UI.mq={row,val:n,hl:false};UI.fb[row]=[1,(x.v.length<3?x.v.length+'번째 숫자를 적었어요.':'세 번 다 적었어요. 가운데 숫자를 골라요.')];save();render();return}
  const t=tryKey(row+':t'+x.v.length,txt);
  if(t===-1)UI.fb[row]=[0,'숫자가 그대로예요. 화면의 숫자를 다시 봐요.'];
- else if(t>=2){UI.mq.hl=true;UI.fb[row]=[0,'반짝이는 화면의 숫자를 한 자리씩 견주어 써요.']}
+ else if(t>=2){UI.mq={row,val:pend,hl:true};UI.fb[row]=[0,'반짝이는 화면의 숫자를 한 자리씩 견주어 써요.']}
  else UI.fb[row]=[0,'화면의 숫자와 달라요. 다시 봐요.'];save();render()}
 function rowRec(row){const r=R(),R0=ROWS[row],D=UI.draft[row]||{};let ok,wrong=[],key,msg='';
  if(R0.t==='onoff'){ok=D.on===0&&D.off===1;if(D.on!==0)wrong.push('on');if(D.off!==1)wrong.push('off');key=D.on+','+D.off}
  if(R0.t==='num3'){const x=r.rec[row];const mv=D.mid!=null?x.v[D.mid]:null;const okm=mv===med3(x.v),okl=D.look===R0.lt;ok=okm&&okl;if(!okm)wrong.push('mid');if(!okl)wrong.push('look');key=D.mid+','+D.look;msg=!okm?'가운데 숫자는 작은 것부터 늘어놓았을 때 가운데에 오는 숫자예요.':''}
  if(R0.t==='hear'){ok=R0.ok.indexOf(D.v)>=0;if(!ok)wrong.push('v');key=''+D.v}
  if(R0.t==='count'){const h=D.heard,n=D.n||0;ok=h===R0.heard&&n===(R0.heard?R0.taps:0);if(h!==R0.heard)wrong.push('heard');key=h+','+n;msg=h===R0.heard&&!ok?'들은 수를 다시 세어 봐요. 다시 들어도 돼요.':''}
- if(ok){if(R0.t==='num3')Object.assign(r.rec[row],{mid:D.mid,look:D.look,ok:1});else r.rec[row]=Object.assign({},D,{ok:1});UI.fb[row]=[1,'잘 살펴보고 적었어요.'];UI.wrong[row]=[];
+ if(ok){UI.attn=false;if(R0.t==='num3')Object.assign(r.rec[row],{mid:D.mid,look:D.look,ok:1});else r.rec[row]=Object.assign({},D,{ok:1});UI.fb[row]=[1,'잘 살펴보고 적었어요.'];UI.wrong[row]=[];
   if(R0.t==='count'&&!R0.heard)r.reveal[row]=0;save();render();const p=$('#lbFoot [data-act="next"]:not(:disabled)');if(p&&isDone(R().step))p.focus({preventScroll:true});return}
  const t=tryKey(row+':r',key);
  if(t===-1){UI.fb[row]=[0,'고른 것이 그대로예요. 다시 살펴봐요.'];render();return}
- if(t>=2){UI.wrong[row]=wrong;UI.fb[row]=[0,'빨간 칸을 다시 살펴봐요. '+msg]}else{UI.wrong[row]=[];UI.fb[row]=[0,(msg||'다시 살펴보고 골라요.')+(R0.t==='count'?' 다시 들어도 돼요.':'')]}
+ UI.wrong[row]=[];if(t>=2){UI.attn=true;UI.fb[row]=[0,(R0.t==='num3'&&msg?msg+' ':'')+'그 장면을 다시 보고 골라요. 아래 반짝이는 단추를 눌러 다시 '+(R0.t==='count'||R0.t==='hear'?'들어요.':'봐요.')]}else{UI.fb[row]=[0,(msg||'다시 살펴보고 골라요.')+(R0.t==='count'?' 다시 들어도 돼요.':'')]}
  if(R0.t==='count'&&ROWS[row])r.seen[row]=1;save();render()}
 
 /* ───────── 읽어 주기 ───────── */
@@ -425,7 +436,7 @@ function toggleSay(){const ss=window.speechSynthesis;if(UI.speaking){stopSay();r
  try{const u=new SpeechSynthesisUtterance(sayText());u.lang='ko-KR';const vo=pickVoice();if(vo)u.voice=vo;u.rate=.95;u.onend=u.onerror=()=>{UI.speaking=false;render()};ss.cancel();ss.speak(u);UI.speaking=true;render()}catch(e){flash('이 기기에서는 읽어 주기를 쓸 수 없어요.')}}
 function stopSay(){UI.speaking=false;try{window.speechSynthesis&&speechSynthesis.cancel()}catch(e){}}
 let flashT=0;
-function flash(t,kind){const f=$('#lbFlash');if(DB.cur&&$('#lbScene')){UI.toast=t;UI.toastK=kind||'';renderScene();clearTimeout(flashT);flashT=setTimeout(()=>{UI.toast='';renderScene()},3200)}else if(f){f.textContent=t;f.hidden=false;clearTimeout(flashT);flashT=setTimeout(()=>{f.hidden=true},2600)}}
+function flash(t,kind){const f=$('#lbFlash');if(kind!=='info'&&DB.cur&&$('#lbScene')){UI.toast=t;UI.toastK=kind||'';renderScene();clearTimeout(flashT);flashT=setTimeout(()=>{UI.toast='';renderScene()},3200)}else if(f){f.textContent=t;f.hidden=false;clearTimeout(flashT);flashT=setTimeout(()=>{f.hidden=true},2600)}}
 
 /* ───────── 선생님 메뉴: 1초 동안 누르기(키보드는 확인 창) ───────── */
 function openMenu(o){UI.menu=o;$('#lbMenu').hidden=!o;$('#lbTeach').setAttribute('aria-expanded',o);if(o){const b=$('#lbMenu button:not([hidden])');if(b)b.focus()}}

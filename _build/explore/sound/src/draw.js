@@ -1,3 +1,5 @@
+/* 칼림바 건반 소리 높이: 0 = 가장 긴 건반(낮은 소리) … 6 = 가장 짧은 건반 */
+const KF=[261,294,330,392,440,523,587];
 /* ───────── 그림: 실험대 장면 — 모두 직접 그린 SVG ───────── */
 const BY=436;
 let NAR=false,LEG=[];   /* 좁은 화면: 작은 그림 글자는 HTML(LEG)로 */
@@ -93,10 +95,11 @@ function phone(x,y,o){o=o||{};let g='<g transform="translate('+x+' '+y+')"><rect
  g+='<text x="0" y="12" text-anchor="middle" font-size="40" font-weight="800" fill="#1B2A45" font-family="ui-monospace,Menlo,Consolas,monospace">'+(o.val==null?'- - -':o.val)+'</text>';
  if(o.hl)g+='<rect x="-58" y="-26" width="116" height="56" rx="10" fill="none" stroke="var(--lb-sci)" stroke-width="5" class="lb-a-pulse"/>';
  return g+'</g>'}
-/* 자(5 cm 표시) */
-function ruler(x,y,w,mark){let g='<g><rect x="'+x+'" y="'+y+'" width="'+w+'" height="30" rx="4" fill="#F3D27A" stroke="#B4902F" stroke-width="2"/>';
- for(let k=0;k<=10;k++){const tx=x+12+k*(w-24)/10;g+='<path d="M'+tx+' '+y+' v'+(k%5?10:18)+'" stroke="#6B551A" stroke-width="2"/>'}
- if(mark!=null&&!NAR){const tx=x+12+mark*(w-24)/10;g+='<path d="M'+tx+' '+(y-6)+' v42" stroke="var(--lb-sci)" stroke-width="4"/><text x="'+tx+'" y="'+(y+60)+'" text-anchor="middle" font-size="20" font-weight="800" fill="var(--lb-sci-ink)">'+mark+' cm</text>'}
+/* 자: 눈금 0이 악기 끝(edge)에 맞음, cmPx = 1 cm 길이 */
+function ruler(edge,y,cmPx,maxCm,mark){const w=cmPx*maxCm;let g='<g><rect x="'+(edge-8)+'" y="'+y+'" width="'+(w+16)+'" height="30" rx="4" fill="#F3D27A" stroke="#B4902F" stroke-width="2"/>';
+ for(let k=0;k<=maxCm;k++){const tx=edge+k*cmPx;g+='<path d="M'+tx+' '+y+' v'+(k%5?11:19)+'" stroke="#6B551A" stroke-width="2"/>'}
+ if(!NAR)g+='<text x="'+edge+'" y="'+(y-8)+'" text-anchor="middle" font-size="25" font-weight="800" fill="var(--w-labeltx)">0</text>';
+ if(mark!=null){const tx=edge+mark*cmPx;g+='<path d="M'+tx+' '+(y-6)+' v42" stroke="var(--lb-sci)" stroke-width="4"/>';if(!NAR)g+='<text x="'+tx+'" y="'+(y+60)+'" text-anchor="middle" font-size="22" font-weight="800" fill="var(--lb-sci-ink)">'+mark+' cm</text>'}
  return g+'</g>'}
 
 /* 실험 3: 칼림바 */
@@ -145,11 +148,19 @@ function ear(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+
 function tok(x,y,i,heard,soft){if(!heard)return '';return '<g'+an('lb-tok',i*.55)+'><circle cx="'+x+'" cy="'+y+'" r="'+(soft?16:22)+'" fill="var(--w-label)" stroke="'+(soft?'var(--w-water-s)':'var(--lb-sci)')+'" stroke-width="3"/><path d="M'+(x-8)+' '+(y-6)+' l8 6 l8 -6 M'+(x-8)+' '+(y+4)+' l8 6 l8 -6" stroke="'+(soft?'var(--w-water-s)':'var(--lb-sci)')+'" stroke-width="3" fill="none" stroke-linecap="round"/></g>'}
 /* 책상 */
 function desk(x,w){return '<g><rect x="'+x+'" y="300" width="'+w+'" height="26" rx="4" fill="#C9A06A" stroke="#8A6537" stroke-width="2.5"/><rect x="'+(x+14)+'" y="326" width="16" height="130" fill="#8A6537"/><rect x="'+(x+w-30)+'" y="326" width="16" height="130" fill="#8A6537"/></g>'}
-function headOnDesk(x,o){o=o||{};let g='<g><ellipse cx="'+x+'" cy="250" rx="62" ry="54" fill="#F2C6A0" stroke="#B9875F" stroke-width="2.5"/><path d="M'+(x-62)+' 250 Q'+(x-60)+' 190 '+x+' 194 Q'+(x+60)+' 196 '+(x+62)+' 240 Q'+(x+30)+' 214 '+(x-10)+' 222Z" fill="#3B2A22"/>';
- g+=o.closed?'<path d="M'+(x+18)+' 252 q10 6 20 0" stroke="#2B2B2B" stroke-width="3.5" fill="none" stroke-linecap="round"/>':'<circle cx="'+(x+28)+'" cy="250" r="5" fill="#2B2B2B"/>';
- g+=ear(x-20,282,.55);
- if(o.cover)g+='<g'+an('lb-a-fade',0)+'><ellipse cx="'+(x+4)+'" cy="214" rx="26" ry="16" fill="#F2C6A0" stroke="#B9875F" stroke-width="2.4"/></g>';
+/* 옆으로 엎드린 머리: 아래쪽 귀가 책상에 닿고, 다른 손이 위쪽 귀를 막음 */
+function headOnDesk(x,o){o=o||{};let g='<g><path d="M'+(x-150)+' 300 Q'+(x-140)+' 262 '+(x-60)+' 268 L'+(x-30)+' 300Z" fill="#5C8FCB" stroke="#3D6A9C" stroke-width="2.4"/>';
+ g+='<ellipse cx="'+x+'" cy="252" rx="66" ry="48" fill="#F2C6A0" stroke="#B9875F" stroke-width="2.5"/><path d="M'+(x-66)+' 250 Q'+(x-62)+' 200 '+(x-6)+' 204 Q'+(x+40)+' 206 '+(x+48)+' 222 Q'+(x+8)+' 214 '+(x-30)+' 232 Q'+(x-50)+' 246 '+(x-66)+' 262Z" fill="#3B2A22"/>';
+ g+=o.closed?'<path d="M'+(x+26)+' 248 q10 6 20 0" stroke="#2B2B2B" stroke-width="3.5" fill="none" stroke-linecap="round"/>':'<circle cx="'+(x+34)+'" cy="248" r="5" fill="#2B2B2B"/>';
+ /* 책상에 닿은 귀 */
+ g+='<path d="M'+(x-18)+' 300 Q'+(x-20)+' 280 '+(x)+' 280 Q'+(x+20)+' 280 '+(x+18)+' 300Z" fill="#E9B48C" stroke="#B9875F" stroke-width="2.5"/><path d="M'+(x-8)+' 298 Q'+(x-6)+' 288 '+x+' 288 Q'+(x+6)+' 288 '+(x+8)+' 298" stroke="#B9875F" stroke-width="2.2" fill="none"/>';
+ /* 위쪽 귀를 덮은 손과 팔 */
+ if(o.cover)g+='<g'+an('lb-a-fade',0)+'><path d="M'+(x-10)+' 196 Q'+(x-60)+' 150 '+(x-120)+' 140 L'+(x-130)+' 168 Q'+(x-70)+' 176 '+(x-26)+' 214Z" fill="#5C8FCB" stroke="#3D6A9C" stroke-width="2.4"/><ellipse cx="'+(x+2)+'" cy="210" rx="30" ry="18" fill="#F2C6A0" stroke="#B9875F" stroke-width="2.4"/><path d="M'+(x+10)+' 196 v-10 M'+(x+20)+' 198 v-9 M'+(x+28)+' 202 v-7" stroke="#B9875F" stroke-width="2.4" stroke-linecap="round"/></g>';
+ else g+='<path d="M'+(x-4)+' 214 Q'+(x+14)+' 206 '+(x+22)+' 220 Q'+(x+14)+' 234 '+(x)+' 228" fill="#E9B48C" stroke="#B9875F" stroke-width="2.4"/>';
  return g+'</g>'}
+/* 책상을 따라 전해지는 '톡' 표시 (from → to, gap이면 틈에서 멈춤) */
+function deskTrail(from,to,taps,stop){let g='';const n=Math.max(2,Math.round(Math.abs(from-to)/46));for(let t=0;t<taps;t++)for(let i=0;i<n;i++){const xx=from-(from-to)*i/(n-1);const last=i===n-1;g+='<g'+an('lb-tok',t*.55+i*.05)+'><path d="M'+(xx+6)+' 290 q-10 10 0 20" stroke="'+(stop&&last?'var(--w-water-s)':'var(--lb-sci)')+'" stroke-width="4" fill="none" stroke-linecap="round" opacity="'+(stop?Math.max(.25,1-i/(n-1)*.75):1)+'"/></g>'}
+ return g}
 /* 준비물 카드 */
 function itemArt(k){const A={
   box:'<path d="M-50 -20 L50 -20 L44 30 L-44 30Z" fill="#CFE3F1" stroke="#7D9CB5" stroke-width="2.5"/><path d="M-46 -26 H48" stroke="#C0563A" stroke-width="4"/>',
@@ -198,4 +209,5 @@ function stringPhone(o){o=o||{};let g='';const taut=o.taut;
 /* 두 소리(가·나) — 높고 작은 소리, 낮고 큰 소리 */
 function twoSpk(o){o=o||{};let g='';[[300,'가',1],[660,'나',0]].forEach(([x,l,hi],i)=>{g+='<rect x="'+(x-60)+'" y="240" width="120" height="150" rx="20" fill="#2F3B4A" stroke="#18212B" stroke-width="3"/><circle cx="'+x+'" cy="315" r="40" fill="#55606B" stroke="#1B232D" stroke-width="3"/>';
   if(o.play===i){const rings=hi?6:2,big=hi?.7:1.6;for(let k=0;k<rings;k++)g+='<circle cx="'+x+'" cy="315" r="'+(50+k*(hi?14:40))+'" fill="none" stroke="var(--lb-sci)" stroke-width="'+(hi?2:6)+'" opacity="'+(hi?.6:.85)+'"'+an('lb-wave',k*(hi?.12:.4))+'/>'}
+  if(o.nums&&o.nums[i]!=null){g+='<rect x="'+(x-80)+'" y="150" width="160" height="68" rx="14" fill="var(--w-label)" stroke="var(--lb-sci)" stroke-width="3"/><text x="'+x+'" y="198" text-anchor="middle" font-size="40" font-weight="800" fill="var(--lb-sci-ink)">'+o.nums[i]+'</text>'}
   g+=plate(x,l+' 소리',430)});return g}
