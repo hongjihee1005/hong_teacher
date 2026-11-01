@@ -475,3 +475,39 @@ html:not(.lb-inrun) .lb-bar{position:sticky;top:0}
  .lb-ask{white-space:normal;width:max-content;max-width:92%;font-size:.85rem;top:.5rem}
  .lb-picks{width:100%}.lb-pk{flex:1 1 30%;font-size:.82rem;padding:0 .4rem;white-space:normal;line-height:1.15}
 }
+
+
+/* 결과 한 장 고침(2026-11-01): 관찰 그림 · 화면 여백 · 이미지로 복사 · 튼튼한 인쇄 */
+.lb-sheet,.lb-shimg{ --lb-bg:#F6F5F1;--lb-paper:#FFFFFF;--lb-ink:#141A26;--lb-sub:#4B5465;--lb-line:#E3E0D8;--lb-line2:#C9C3B6; --lb-navy:#0F1C33;--lb-navy2:#1B2A45;--lb-onnavy:#E9EEF6;--lb-onnavy2:#B4C0D3; --lb-sci:#1F8060;--lb-sci-ink:#1A6E52;--lb-sci-soft:#E3F1EA;--lb-onsci:#FFFFFF; --lb-onab:#FFFFFF;--lb-a:#2F68B0;--lb-a-soft:#E7EFF9;--lb-a-ink:#24548F; --lb-b:#A9541A;--lb-b-soft:#F9ECE1;--lb-b-ink:#8C4514; --lb-warn:#FFF4DE;--lb-warn-ink:#7A4400;--lb-warn-line:#F0D7A6; --lb-why:#EEF5F1;--lb-bad:#B3261E;--lb-bad-soft:#FBE9E7; --lb-shadow:0 1px 2px rgba(20,26,38,.06),0 6px 20px rgba(20,26,38,.07); --w-wall:#F2ECE1;--w-wall2:#ECE4D6;--w-rail:#E2D8C6;--w-top:#DDBF92;--w-edge:#C9A574;--w-front:#B98E5E;--w-grain:#A97E50; --w-win:#C8A77A;--w-sky1:#CFE6F3;--w-sky2:#EEF6FA;--w-glass:rgba(214,232,242,.42);--w-glass-s:#7F9BAB;--w-rim:#93ADBB; --w-felt:#F4F0E6;--w-felt-s:#BDB4A2;--w-feltw:#C9DEEA;--w-feltw-s:#8FB3C6;--w-water:#8DC8E8;--w-water-s:#5E9CC0; --w-seed:#7A4A2C;--w-seed2:#9B6644;--w-hl:#C99A72;--w-root:#F3EFDF;--w-leaf:#8BC45A;--w-leaf2:#6DB04A;--w-leafs:#3F7A27; --w-paper:#FFFDF8;--w-kraft:#E7D3AC;--w-kraft-s:#B99E6E;--w-shadow:rgba(60,40,20,.14);--w-label:#FFFFFF;--w-labeltx:#141A26; --w-box:#8A6239;--w-box2:#6E4D2C;--w-boxtx:#FFF7EA;--w-fr:#EEF3F6;--w-fr2:#DCE8F0;--w-fr-s:#90A6B4; --w-pot:#C7764B;--w-pot2:#A95E37;--w-soil:#6B4A33;--w-soilw:#4B3221;--w-soild:#9C7B5E;--w-shade:#FAFBFC;--w-shade-s:#A9B4BE; --w-lens:#FFFFFF;--w-lens-s:#2A3342;color-scheme:light}
+.lb-sheet{padding:1.15rem 1.5rem 1rem}
+.lb-sh-pics{display:grid;grid-template-columns:repeat(var(--n,4),minmax(0,1fr));gap:.45rem}
+.lb-sh-pic{margin:0;border:1px solid #E3E0D8;border-radius:.45rem;background:#fff;overflow:hidden;display:flex;flex-direction:column;min-width:0}
+.lb-sh-pic svg{display:block;width:100%;height:4.6rem}
+.lb-sh-pic figcaption{font-size:.72rem;font-weight:700;line-height:1.25;text-align:center;padding:.2rem .25rem;color:#141A26;border-top:1px solid #E3E0D8;word-break:keep-all}
+.lb-sh-pics *{animation:none!important;transition:none!important}
+.lb-shimg{position:fixed;left:-30000px;top:0;width:52rem;pointer-events:none;z-index:-1}
+.lb-shimg .lb-sheet{overflow:visible;height:auto;min-height:0;box-shadow:none;border-radius:0;padding:2rem 2.3rem 1.6rem;flex:none;font-size:.95rem}
+.lb-shimg .lb-sh-grid{grid-template-columns:1fr 1fr;gap:.9rem 1.6rem}
+.lb-shimg .lb-sh-po{display:flex}
+.lb-shimg .lb-sh-lines{flex:none;min-height:0}
+.lb-shimg .lb-sh-lines .lb-ln{flex:none;height:2rem;min-height:0}
+.lb-shimg .lb-sh-lines .lb-ln:nth-child(n+6){display:none}
+.lb-shimg .lb-sh-pic svg{height:7rem}
+.lb-shimg .lb-sh-pic figcaption{font-size:.8rem}
+@media (max-width:820px){.lb-sheet{padding:1.1rem 1.1rem 1rem}.lb-sh-pics{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@page{size:A4;margin:7mm}
+@media print{
+ html,body,.lb-app,.lb-run,.lb-stage,.lb-body,.lb-sheetwrap{width:auto!important;min-width:0!important;max-width:none!important;zoom:1!important;transform:none!important;position:static!important;left:auto!important;top:auto!important;margin:0!important}
+ .lb-shimg,.lb-flash,#lbFlash,.lb-toast{display:none!important}
+ .lb-sheet{background:#fff!important}
+ .lb-sheet{width:auto!important;max-width:100%!important;box-sizing:border-box!important;padding:7mm 8mm 6mm!important;height:262mm!important;overflow:hidden!important;margin:0!important;gap:2.6mm!important}
+ .lb-sheet *{max-width:100%}
+ .lb-sh-grid{grid-template-columns:minmax(0,1fr) minmax(0,1fr)!important}
+ .lb-sh-name u{min-width:32mm!important}
+ .lb-sh-pics{grid-template-columns:repeat(var(--n,4),minmax(0,1fr))!important;gap:2.5mm!important}
+ .lb-sh-pic svg{height:25mm!important}
+ .lb-sh-pic figcaption{font-size:8.5pt!important;padding:.6mm 1mm!important}
+ .lb-sh-lines{min-height:30mm!important}
+ .lb-sh-lines .lb-ln{min-height:7mm!important}
+ .lb-sh-lines .lb-ln:nth-child(n+8){display:none!important}
+}

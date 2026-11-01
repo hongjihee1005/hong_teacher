@@ -254,11 +254,59 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
  h+='<section class="lb-sh-sec"><h3><i></i>내 예상</h3><p>'+v.pred.map((q,j)=>(v.pred.length>1?esc(q.q)+' ':'')+(r.pred[j]!=null?esc(q.o[r.pred[j]]):'(고르지 않았어요)')).join('<br>')+(r.why?'<br>까닭: '+esc(r.why):'')+'</p></section>';
  h+='</div><div class="lb-sh-col"><section class="lb-sh-sec"><h3><i></i>관찰 기록</h3>'+sheetTable(v,r)+(ROWS[v.rows[0]].t==='num3'?barChart(v,r):'')+'</section>';
  h+='<section class="lb-sh-sec"><h3><i></i>내 결론</h3><div class="lb-sh-box"><p class="lb-sh-concl">'+frameHTML(v,r.bl,'sheet')+'</p>'+(r.cmp?'<p class="lb-sh-book">교과서 결론: '+esc(v.book)+'</p>':'')+'</div></section>';
- h+='</div></div><section class="lb-sh-sec lb-sh-po lb-sh-fill"><h3><i></i>새로 알게 된 것 · 더 알고 싶은 것</h3><div class="lb-sh-lines">'+'<div class="lb-ln"></div>'.repeat(9)+'</div></section>';
+ h+='</div></div>'+picsHTML(snapList(v,r))+'<section class="lb-sh-sec lb-sh-po lb-sh-fill"><h3><i></i>새로 알게 된 것 · 더 알고 싶은 것</h3><div class="lb-sh-lines">'+'<div class="lb-ln"></div>'.repeat(9)+'</div></section>';
  h+='<footer class="lb-sh-f"><span>아주 단순하게 만든 모형의 결과예요. 실제 교실에서는 숫자와 소리가 조금씩 달라요.</span><span>만든 사람: 초등교사 홍지희</span></footer></div></article>';
  return h}
+const LABNAME='sound';
+function snapsOf(v,r){const L=[],no=v.no,rec=k=>r.rec[k]||{},S=(g,vb,cap,al)=>L.push([svg(g,al||cap,vb),cap]),VB='0 0 960 540';
+ const sn=k=>ROWS[k].n.split(' · ').pop();
+ if(no===1){const c=k=>{const x=rec(k),R0=ROWS[k];return R0.n+' · '+(x.ok?R0.o[x.on]:'—')};
+  S(bg({win:true})+person(440,{on:true}),'170 60 540 410',c('neck'));
+  S(bg({win:true})+boxBand(480,{pluck:true}),'200 110 560 410',c('band'));
+  S(bg({})+fork(440,290,{ring:true,touch:true}),'190 40 520 470',c('fork'));
+  S(bg({})+tank(480,{splash:true,ripple:true})+'<g transform="translate(480 186) rotate(180)">'+fork(0,0,{ring:true})+'</g>','220 40 520 460',c('water'))}
+ if(no===2||no===3)v.rows.forEach(k=>{const x=rec(k),R0=ROWS[k],val=x.ok?x.v[x.mid]:null,cap=R0.n+' · '+(val==null?'—':val);let g=bg({});
+  if(no===2){const gl=k[0]==='g',big=R0.lt===0,edge=gl?520:506;g+=gl?glock(330,{bar:3,stick:1,hit:true,big}):boxBand(330,{pull:big?'high':'low',pluck:true,big});g+=ruler(edge,450,44,6,5)+meter(edge+220,290,{val,hold:val!=null});S(g,'110 150 760 400',cap)}
+  else if(k[0]==='k'){g+=kalimba(340,{key:k==='ks'?6:0,pluck:true})+ruler(510,450,44,6,5)+phone(730,290,{val});S(g,'140 150 700 380',cap)}
+  else{g+=uke(440,{hold:k==='us'?'short':'long',pluck:true})+ruler(680,450,44,6,5)+phone(900,290,{val});S(g,'40 150 940 380',cap)}});
+ if(no===4)['first','low','back'].forEach(k=>{const x=rec(k),R0=ROWS[k],air=k==='low'?airAfter(5):1;const lv=Math.max(1,Math.round(loudOf(air)*5));
+  S(bg({})+jar(400,{cotton:1,speaker:1,lid:1,on:true,air})+bars(760,420,lv),'120 60 780 440',R0.n+' · '+(x.ok?R0.o[x.v]:'—'))});
+ if(no===5)v.rows.forEach(k=>{const x=rec(k),R0=ROWS[k],cap=sn(k)+' · '+(x.ok?(x.heard?x.n+'번 들림':'안 들림'):'—');let g=bg({});
+  if(k==='co'||k==='ci'){const inW=k==='ci';g+=tank(380,{full:1,ripple:inW})+hand(510,inW?380:220,180,1)+castanet(444,inW?380:220,1.3)+ear(800,240,1.1);for(let i=0;i<R0.taps;i++)g+=tok(870,140+i*52,i,1,inW);S(g,'190 60 760 430',cap)}
+  else{const same=k==='ds';g+=same?desk(120,720):desk(90,360)+desk(510,360);g+=headOnDesk(230,{closed:1,cover:1});
+   g+='<g transform="translate(720 0)"><path d="M0 230 L40 300" stroke="#F2C94C" stroke-width="12" stroke-linecap="round"/><path d="M40 300 L44 308" stroke="#3A3A3A" stroke-width="8"/>'+hand(-14,220,-60,.8)+'</g>';
+   g+=deskTrail(748,same?250:520,1,!same);if(R0.heard)for(let i=0;i<R0.taps;i++)g+=tok(330+i*56,150,i,1);S(g,'60 90 840 420',cap)}});
+ return L}
+/* ───────── 결과 한 장: 관찰 그림 · 이미지로 복사/저장 ───────── */
+function picsHTML(list){if(!list||!list.length)return '';
+ return '<section class="lb-sh-sec lb-sh-picsec"><h3><i></i>관찰 그림</h3><div class="lb-sh-pics" style="--n:'+list.length+'">'+list.map(p=>'<figure class="lb-sh-pic">'+p[0]+'<figcaption>'+esc(p[1])+'</figcaption></figure>').join('')+'</div></section>'}
+function snapList(v,r){const n0=NAR,l0=LEG;NAR=true;LEG=[];let L=[];try{L=snapsOf(v,r)}catch(e){L=[]}NAR=n0;LEG=l0;return L}
+const SH_SKIP=/^(animation|transition|will-change|cursor|caret|scroll|overscroll|touch-action|user-select|-webkit-user|pointer-events|view-transition|content-visibility|contain-intrinsic)/;
+function shInline(src,dst){const cs=getComputedStyle(src);let t='';
+ if(src instanceof SVGElement){if(src.tagName.toLowerCase()==='svg'&&src.parentNode&&!(src.parentNode instanceof SVGElement)){for(const p of ['width','height','display','margin','vertical-align','max-width','max-height','box-sizing'])t+=p+':'+cs.getPropertyValue(p)+';'}
+  for(const p of ['fill','fill-opacity','stroke','stroke-width','stroke-opacity','stroke-dasharray','stroke-linecap','stroke-linejoin','opacity','font-size','font-weight','font-family','text-anchor','dominant-baseline','paint-order','visibility','display','color'])t+=p+':'+cs.getPropertyValue(p)+';'}
+ else{for(let i=0;i<cs.length;i++){const p=cs[i];if(SH_SKIP.test(p))continue;t+=p+':'+cs.getPropertyValue(p)+';'}}
+ t+='animation:none;transition:none;';dst.setAttribute('style',t);dst.removeAttribute('class');
+ for(let i=0;i<src.children.length;i++)if(dst.children[i])shInline(src.children[i],dst.children[i])}
+function sheetBlob(){return new Promise((ok,no)=>{const box=document.createElement('div');box.className='lb-shimg';box.setAttribute('aria-hidden','true');
+ box.innerHTML=sheetHTML().replace('id="lbSheet"','');document.body.appendChild(box);
+ const run=()=>{try{const el=box.firstElementChild;const w=Math.ceil(el.offsetWidth),h=Math.ceil(el.offsetHeight);const cl=el.cloneNode(true);const hi=[...el.querySelectorAll('.lb-sh-sec h3 i')],ci=[...cl.querySelectorAll('.lb-sh-sec h3 i')];let nn=0;hi.forEach((e,i)=>{if(e.getClientRects().length)ci[i].textContent=++nn});shInline(el,cl);
+  cl.style.margin='0';const xml=new XMLSerializer().serializeToString(cl);
+  const sv='<svg xmlns="http://www.w3.org/2000/svg" width="'+w+'" height="'+h+'"><foreignObject x="0" y="0" width="'+w+'" height="'+h+'">'+xml+'</foreignObject></svg>';
+  box.remove();const img=new Image();img.onload=()=>{try{const k=2,c=document.createElement('canvas');c.width=w*k;c.height=h*k;const x=c.getContext('2d');x.fillStyle='#fff';x.fillRect(0,0,c.width,c.height);x.scale(k,k);x.drawImage(img,0,0);c.toBlob(b=>b?ok(b):no(new Error('blob')),'image/png')}catch(e){no(e)}};img.onerror=()=>no(new Error('img'));
+  img.src='data:image/svg+xml;charset=utf-8,'+encodeURIComponent(sv)}catch(e){box.remove();no(e)}};
+ (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(()=>requestAnimationFrame(()=>requestAnimationFrame(run)))})}
+function imgName(){const d=new Date(),p=n=>String(n).padStart(2,'0');return 'lab-'+LABNAME+'-'+DB.cur+'-'+d.getFullYear()+p(d.getMonth()+1)+p(d.getDate())+'.png'}
+function saveImg(blob){const go=b=>{const u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download=imgName();document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(u),4000)};
+ return (blob?Promise.resolve(blob):sheetBlob()).then(go)}
+function copyImg(){const p=sheetBlob();
+ if(!(navigator.clipboard&&navigator.clipboard.write&&window.ClipboardItem)){p.then(b=>saveImg(b)).then(()=>flash('이 브라우저는 이미지 복사를 못 해서 파일로 저장했어요.','info'),()=>flash('이미지를 만들지 못했어요. 인쇄하기를 써 주세요.','info'));return}
+ let it;try{it=new ClipboardItem({'image/png':p})}catch(e){it=null}
+ (it?navigator.clipboard.write([it]):p.then(b=>navigator.clipboard.write([new ClipboardItem({'image/png':b})])))
+  .then(()=>flash('결과 한 장을 이미지로 복사했어요. 붙여 넣기 하면 돼요.','info'))
+  .catch(()=>p.then(b=>saveImg(b)).then(()=>flash('복사가 안 되어 이미지 파일로 저장했어요.','info'),()=>flash('이미지를 만들지 못했어요. 인쇄하기를 써 주세요.','info')))}
 function sheetBody(){return '<div class="lb-sheetwrap"><div class="lb-sheetside"><div class="lb-sideinfo"><label class="lb-label" for="lbName" style="margin:0">이름</label><input id="lbName" class="lb-input" maxlength="12" autocomplete="off" placeholder="이름을 써요" value="'+esc(DB.name)+'"><span>이름은 이 기기에만 저장돼요.</span></div>'+
- '<button type="button" class="lb-btn" data-act="print" data-f="print">'+ic('print')+'인쇄하기</button><div class="lb-sideinfo"><span><b>A4 한 장</b>으로 인쇄돼요. 공책에 붙여도 좋아요.</span><span>실제 실험 결과와 견주어 봐요.</span></div></div>'+sheetHTML()+'</div>'}
+ '<button type="button" class="lb-btn" data-act="print" data-f="print">'+ic('print')+'인쇄하기</button><button type="button" class="lb-btn" data-act="copyimg" data-f="copyimg">'+ic('copy')+'이미지로 복사</button><button type="button" class="lb-btn" data-act="saveimg" data-f="saveimg">'+ic('image')+'이미지로 저장</button><div class="lb-sideinfo"><span><b>A4 한 장</b>으로 인쇄돼요. 공책에 붙여도 좋아요.</span><span>실제 실험 결과와 견주어 봐요.</span></div></div>'+sheetHTML()+'</div>'}
 
 /* ───────── 그리기 ───────── */
 function set(el,h){if(!el||el._h===h)return false;const a=document.activeElement,f=a&&el.contains(a)&&a.dataset?a.dataset.f:null;const sel=a&&a.tagName==='INPUT'?[a.selectionStart,a.selectionEnd]:null;el.innerHTML=h;el._h=h;if(f){const n=el.querySelector('[data-f="'+f+'"]');if(n&&!n.disabled){n.focus({preventScroll:true});if(sel&&n.setSelectionRange)try{n.setSelectionRange(sel[0],sel[1])}catch(e){}}}return true}
@@ -368,7 +416,7 @@ function act(a,el){const v=V(),r=R();
  if(a==='rowrec'){rowRec(el.dataset.row);return}
  if(a==='reveal'){r.reveal[el.dataset.row]=1;save();render();return}
  if(a==='cmp'){if(!r.bl.every(x=>x)||!cChanged(r))return;if(r.bl.every((w,i)=>w===v.ans[i])){r.cmp=true;r.clast=r.bl.slice()}else{r.ctry=(r.ctry||0)+1;r.clast=r.bl.slice()}save();render();return}
- if(a==='print'){window.print();return}
+ if(a==='copyimg'){copyImg();return}if(a==='saveimg'){saveImg().catch(()=>flash('이미지를 만들지 못했어요. 인쇄하기를 써 주세요.','info'));return}if(a==='print'){window.print();return}
  if(a==='say'){toggleSay();return}
  if(a==='rail'){UI.rail=!UI.rail;render();return}}
 function planGood(v,r){const P=v.plan;if(P.type==='pick')return P.ways.every((x,i)=>!!(r.plan.w||{})[i]===!!x[1])&&P.senses.every((x,i)=>!!(r.plan.s||{})[i]===!!x[1]);
@@ -488,3 +536,5 @@ let rzT=0,wasN=narrow();addEventListener('resize',()=>{clearTimeout(rzT);rzT=set
 addEventListener('pagehide',()=>{spkStop();AU.stopAll()});
 if(DB.cur&&EXPS[DB.cur]){if(!DB.runs[DB.cur])DB.runs[DB.cur]=newRun();enterStep()}
 render();
+
+addEventListener('beforeprint',()=>{const s=$('#lbSheet .lb-sh-in');if(s)s.style.zoom=''});addEventListener('afterprint',()=>{try{fitAll()}catch(e){}});

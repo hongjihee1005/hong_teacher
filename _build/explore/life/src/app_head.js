@@ -15,7 +15,7 @@ const I={
  ruler:'<path d="M4 17 17 4l3 3L7 20z"/><path d="M8 13l1.5 1.5M10.5 10.5l1.5 1.5M13 8l1.5 1.5"/>',
  sprout:'<path d="M12 21v-8"/><path d="M12 13C12 9 9 6.5 4.5 6.5 4.5 10.5 7.5 13 12 13z"/><path d="M12 11c0-3.5 2.5-6 7.5-6 0 4-3 6-7.5 6z"/>',
  pot:'<path d="M6 12h12l-1.5 8h-9z"/><path d="M12 12V7M12 8c-2-3-5-3-6-1 2 2 4 2 6 1zM12 9c2-3 5-3 6-1-2 2-4 2-6 1z"/>',
- print:'<path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="2"/><path d="M7 14h10v6.5H7z"/>',
+ copy:'<rect x="8.5" y="8.5" width="12" height="12" rx="2"/><path d="M15.5 8.5V5a1.5 1.5 0 0 0-1.5-1.5H5A1.5 1.5 0 0 0 3.5 5v9A1.5 1.5 0 0 0 5 15.5h3.5"/>',image:'<rect x="3.5" y="4.5" width="17" height="15" rx="2"/><circle cx="9" cy="10" r="1.8"/><path d="M20.5 16l-5-5-8.5 8.5"/>',print:'<path d="M7 9V3.5h10V9"/><rect x="3.5" y="9" width="17" height="8" rx="2"/><path d="M7 14h10v6.5H7z"/>',
  replay:'<path d="M4 12a8 8 0 1 0 2.3-5.6"/><path d="M4 4v4.5h4.5"/>',
  hand:'<path d="M8 13V5.5a1.5 1.5 0 013 0V11"/><path d="M11 10.5V4a1.5 1.5 0 013 0v6.5"/><path d="M14 10.5V5.5a1.5 1.5 0 013 0V14c0 4-2.5 7-6.5 7S5 18.5 4 16l-1-2.5a1.5 1.5 0 012.6-1.4L8 15"/>',
  clip:'<rect x="5" y="4.5" width="14" height="16.5" rx="2"/><path d="M9 4.5V3h6v1.5M8.5 10h7M8.5 14h7M8.5 18h4"/>',
