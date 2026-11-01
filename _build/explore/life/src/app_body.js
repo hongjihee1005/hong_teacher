@@ -1,9 +1,9 @@
 
 /* ───────── 기록(이 기기에만) ───────── */
 const KEY='hj-life-v2';
-function blank(){return {v:2,runs:{},cur:null,ui:{open:false,big:false},name:''}}
+function blank(){return {v:2,sv:2,runs:{},cur:null,ui:{open:false,big:false},name:''}}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&s.v===2&&s.runs){const o=Object.assign(blank(),s);
- Object.keys(o.runs).forEach(k=>{const r=o.runs[k];if(!VARS[k]||!r||r.planChk!==undefined||(k.startsWith('kale')&&Object.values(r.rec||{}).some(x=>x&&x[0]&&x[0].n!=null)))o.runs[k]=newRun();else o.runs[k]=Object.assign(newRun(),r)});return o}}catch(e){}return blank()}
+ const shift=!s.sv;o.sv=2;Object.keys(o.runs).forEach(k=>{const r=o.runs[k];if(shift&&r&&typeof r.step==='number'){r.step++;r.max=(r.max||0)+1}if(!VARS[k]||!r||r.planChk!==undefined||(k.startsWith('kale')&&Object.values(r.rec||{}).some(x=>x&&x[0]&&x[0].n!=null)))o.runs[k]=newRun();else o.runs[k]=Object.assign(newRun(),r)});return o}}catch(e){}return blank()}
 let DB=load();
 function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
 function newRun(){return {step:0,max:0,done:{},plan:{},planLast:null,planOk:false,p:null,pred:null,why:'',dk:0,care:{},rec:{},tries:{},last:{},bl:[],clast:null,ctry:0,cmp:false,fin:false}}
@@ -27,6 +27,7 @@ function stepOf(i){const v=V();return stepDef(v,v.steps[i])}
 function idxOf(id){return V().steps.indexOf(id)}
 function has(id){const r=R(),k=idxOf(id);if(k<0)return false;return k<r.step||(k===r.step&&(!!r.done[id]||UI.anim===id))}
 function isDone(i){const r=R(),s=stepOf(i);
+ if(s.k==='intro')return true;
  if(s.k==='scene')return !!r.done[s.id];
  if(s.k==='plan')return r.planOk;
  if(s.k==='pred')return r.pred!=null;
@@ -41,7 +42,7 @@ function enterStep(){const v=V(),r=R(),s=stepOf(r.step);
  if(s.k==='sheet')r.fin=!!(r.cmp&&r.done.obs);
  if(s.k==='concl'&&!r.bl.length)r.bl=v.ans.map(()=>'');
  if(s.k==='concl')UI.focus=Math.max(0,r.bl.findIndex(x=>!x))}
-function predLocked(){const r=R(),k=idxOf('obs');return r.max>=k&&(Object.keys(r.rec).length>1||r.dk>0||(V().exp==='kale'&&!!r.rec[0]))}
+function predLocked(){const r=R(),k=idxOf('obs');return r.max>=k&&(Object.keys(r.rec).length>1||r.dk>0||!!r.care[0]||(V().exp==='kale'&&!!r.rec[0]))}
 
 /* ───────── 장면 ───────── */
 function seedPos(v){return v.cond==='temp'?[290,530]:[420,720]}
@@ -133,38 +134,50 @@ function planCard(){const v=V(),r=R();let h='<p class="lb-q">'+esc(v.q)+'</p><p 
   else if(nd>1)m='<div class="lb-msg lb-try">'+ic('info')+'<span>두 가지 넘게 다르면 무엇 때문인지 알 수 없어요.</span></div>';
   else m='<div class="lb-msg lb-try">'+ic('info')+'<span>빨간 줄을 다시 생각해 봐요.</span></div>';
   h+='<div aria-live="polite">'+m+'</div>'}
- return cardHead('실험 계획','다르게 할 조건 · 같게 할 조건')+wrapB(h)}
+ if(!r.planOk)h+='<button type="button" class="lb-act" data-act="check" data-f="doit"'+(v.plan.every(p=>r.plan[p[0]])&&planChanged(r)?'':' disabled')+'>'+ic('check')+'<span>계획 확인하기</span></button>';
+ return cardHead('실험 계획','다르게 할 것 · 같게 할 것')+wrapB(h)}
 function predCard(){const v=V(),r=R(),lock=predLocked();let h='<p class="lb-q">'+esc(stepOf(r.step).t)+'</p><div class="lb-opts" role="group" aria-label="예상 고르기">';
  v.pred.forEach((t,i)=>{h+='<button type="button" class="lb-opt" data-f="o'+i+'" data-pred="'+i+'" aria-pressed="'+(r.pred===i)+'"'+(lock?' disabled':'')+'><i>'+(r.pred===i?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>'});
  h+='</div><div><label class="lb-label" for="lbWhy">그렇게 생각한 까닭 (쓰고 싶으면)</label><input id="lbWhy" class="lb-input" maxlength="60" placeholder="왜냐하면 ~ 때문이에요." value="'+esc(r.why)+'"'+(lock?' readonly':'')+'></div>';
  if(lock)h+='<div class="lb-msg lb-plain">'+ic('lock')+'<span>관찰을 시작해서 예상을 바꿀 수 없어요.</span></div>';
  else if(r.pred!=null)h+='<div class="lb-msg lb-plain" aria-live="polite">'+ic('info')+'<span>예상을 남겼어요. 맞히기가 아니라 내 생각이에요.</span></div>';
  return cardHead('내 예상','고른 예상은 결과 한 장에 남아요')+wrapB(h)}
-function obsCard(){const v=V(),r=R(),D=days(v),k=r.dk,d=D[k],rec=r.rec[k],last=k===D.length-1,K=v.exp==='kale';
- const dn=d===0?'시작한 날':d+'일째';
- let h='<ol class="lb-todo" aria-label="오늘 할 일">';
- const st1=rec?'lb-ok':'lb-cur',st2=!rec||last?'':(r.care[k]?'lb-ok':'lb-cur'),st3=rec&&!last&&r.care[k]?'lb-cur':'';
- h+='<li class="'+st1+'"><i>'+(rec?ic('check'):1)+'</i>'+(K&&d===0?'처음 모습 보기':'기록하기')+'</li>';
- if(!last)h+='<li class="'+st2+'"><i>'+(r.care[k]?ic('check'):2)+'</i>'+(K?'물 주기':'물 살피기')+'</li><li class="'+st3+'"><i>3</i>'+advLabel(v)+'</li>';
- else h+='<li class="'+(rec?'lb-cur':'')+'"><i>2</i>결론 쓰기로</li>';
- h+='</ol>';
+/* ───────── 할 일 카드: ① 해 보기 → ② 살펴보기 (→ ③ 기록하기 → ④ 하루 지나기) ───────── */
+function gPart(n,t,st,body){return '<li class="lb-gp lb-'+st+'"'+(st==='wait'?' inert aria-disabled="true"':'')+'><div class="lb-gh"><i>'+(st==='ok'?ic('check'):n)+'</i><b>'+t+'</b></div>'+(body?'<div class="lb-gb">'+body+'</div>':'')+'</li>'}
+function sceneTask(s){const r=R(),dn=!!r.done[s.id],A=UI.anim===s.id;let b1;
+ const hint=A?s.look:dn?'잘했어요. 이어서 가요.':s.opts?s.ask:'① '+jo(s.act,'을','를')+' 눌러요.';
+ if(s.opts&&!dn&&!A)b1='<div class="lb-acts" role="group" aria-label="'+esc(s.ask)+'">'+s.opts.map((o,i)=>'<button type="button" class="lb-act lb-act2" data-act="pick" data-i="'+i+'" data-f="pk'+i+'">'+ic('hand')+'<span>'+esc(o.t)+'</span></button>').join('')+'</div>';
+ else if(!dn||A)b1='<div class="lb-acts"><button type="button" class="lb-act" data-act="doit" data-f="doit"'+(UI.anim?' disabled':'')+'>'+ic('hand')+'<span>'+esc(s.act||'하는 중')+'</span></button></div>';
+ else b1='<div class="lb-acts"><button type="button" class="lb-act lb-act3" data-act="replay" data-f="replay">'+ic('replay')+'<span>처음부터 보기</span></button></div>';
+ let h='<p class="lb-stat'+(dn&&!A?' lb-statok':'')+'" role="status">'+ic(dn&&!A?'check':'info')+'<span>'+esc(hint)+'</span></p><ol class="lb-guide">';
+ h+=gPart(1,'해 보기',dn?'ok':'cur',b1)+gPart(2,'살펴보기',dn?'ok':A?'cur':'wait','<p>'+esc(s.look||'')+'</p>');
+ return cardHead('할 일',stepName(s))+wrapB(h+'</ol>')}
+function obsCard(){const v=V(),r=R(),D=days(v),k=r.dk,d=D[k],rec=r.rec[k],last=k===D.length-1,K=v.exp==='kale',cared=!!r.care[k];
+ const dn=d===0?'시작한 날':d+'일째',fin=!!(rec&&last&&cared);
+ const hint=UI.tween?'날마다 돌보는 중이에요.':UI.care?(K?'물 주는 모습을 봐요.':'큰 컵의 물을 봐요.'):!cared?'① '+jo(careLabel(v),'을','를')+' 눌러요.':!rec?(K?(d===0?'③ 처음 모습을 잘 봐 두어요.':'③ 잎과 줄기를 살펴 골라요.'):'③ 싹 튼 씨를 세어 적어요.'):last?'관찰을 마쳤어요. 이어서 가요.':'④ '+jo(advLabel(v),'을','를')+' 눌러요.';
+ let h='<p class="lb-stat'+(fin?' lb-statok':'')+'" role="status">'+ic(fin?'check':'info')+'<span>'+esc(hint)+'</span></p><ol class="lb-guide">';
+ h+=gPart(1,cared?'해 보기 · '+careLabel(v):'해 보기',cared?'ok':'cur',cared?'':'<div class="lb-acts"><button type="button" class="lb-act'+(cared?' lb-act3':'')+'" data-act="care" data-f="care"'+(cared||UI.care||UI.tween?' disabled':'')+'>'+ic('drop')+'<span>'+esc(careLabel(v))+'</span></button></div>');
+ h+=gPart(2,'살펴보기',!cared?'wait':rec?'ok':'cur',rec?'':'<p>'+(K?(d===0?'두 케일의 처음 모습을 봐요.':'잎의 크기와 색깔, 줄기의 굵기를 봐요.'):'돋보기로 씨를 봐요. 떡잎이 보이면 싹 튼 씨예요.')+'</p>');
+ let b='';
  if(!rec){
-  if(K&&d===0){h+='<p class="lb-hint" style="margin:0">두 케일의 처음 모습을 잘 봐 두어요. 잎의 크기와 색깔, 줄기의 굵기가 비슷해요.</p><button type="button" class="lb-rec-btn" data-f="rec" data-act="base">'+ic('eye')+'처음 모습을 봤어요</button>'}
+  if(K&&d===0)b+='<button type="button" class="lb-rec-btn" data-f="rec" data-act="base">'+ic('eye')+'처음 모습을 봤어요</button>';
   else if(K){const A=kAttrs(v);
-   h+='<p class="lb-hint" style="margin:0">처음 모습과 견주어 골라요.</p><table class="lb-km"><thead><tr><th scope="col"><span class="lb-sr">항목</span></th><th scope="col"><i class="lb-pin lb-a">가</i></th><th scope="col"><i class="lb-pin lb-b">나</i></th></tr></thead><tbody>';
-   A.forEach(([key,n,full,opts])=>{h+='<tr><th scope="row">'+n+'</th>'+[0,1].map(cup=>{const val=UI.km[cup][key];const wr=UI.kwrong&&UI.kwrong.indexOf(cup+':'+key)>=0;
+   b+='<p class="lb-hint" style="margin:0">처음 모습과 견주어 골라요.</p><table class="lb-km"><thead><tr><th scope="col"><span class="lb-sr">항목</span></th><th scope="col"><i class="lb-pin lb-a">가</i></th><th scope="col"><i class="lb-pin lb-b">나</i></th></tr></thead><tbody>';
+   A.forEach(([key,n,full,opts])=>{b+='<tr><th scope="row">'+n+'</th>'+[0,1].map(cup=>{const val=UI.km[cup][key];const wr=UI.kwrong&&UI.kwrong.indexOf(cup+':'+key)>=0;
     return '<td><span class="lb-seg lb-kseg'+(wr?' lb-wrongc':'')+'" role="group" aria-label="'+L2(cup)+' '+n+'">'+opts.map((o,i)=>'<button type="button" aria-label="'+L2(cup)+' '+n+': '+full[i]+'" data-f="k'+cup+key+i+'" data-km="'+cup+':'+key+':'+i+'" aria-pressed="'+(val===i)+'" class="'+(i?'lb-d':'lb-s')+'">'+o+'</button>').join('')+'</span></td>'}).join('')+'</tr>'});
-   h+='</tbody></table>';
+   b+='</tbody></table>';
    const ready=[0,1].every(cup=>A.every(a=>UI.km[cup][a[0]]!=null));
-   h+='<button type="button" class="lb-rec-btn" data-f="rec" data-act="rec"'+(ready?'':' disabled')+'>'+ic('check')+'기록하기</button>'}
-  else{h+='<p class="lb-hint" style="margin:0">떡잎이 보이면 싹 튼 씨예요. 그림 속 씨를 누르면 번호가 붙어요.</p>';
-   if(narrow())h+='<div class="lb-lenst" role="group" aria-label="볼 컵">'+[0,1].map(c=>'<button type="button" data-f="ln'+c+'" data-lens="'+c+'" aria-pressed="'+(UI.lens===c)+'">'+L2(c)+' 컵 보기</button>').join('')+'</div>';
+   b+='<button type="button" class="lb-rec-btn" data-f="rec" data-act="rec"'+(ready?'':' disabled')+'>'+ic('check')+'기록하기</button>'}
+  else{if(narrow())b+='<div class="lb-lenst" role="group" aria-label="볼 컵">'+[0,1].map(c=>'<button type="button" data-f="ln'+c+'" data-lens="'+c+'" aria-pressed="'+(UI.lens===c)+'">'+L2(c)+' 컵 보기</button>').join('')+'</div>';
+   b+='<p class="lb-hint" style="margin:0">그림 속 씨를 누르면 번호가 붙어요.</p>';
    [0,1].forEach(cup=>{const Lt=L2(cup),cl=cup?'lb-b':'lb-a',val=UI.cnt[cup];
-    h+='<div class="lb-count '+cl+'"><i class="lb-pin">'+Lt+'</i><span>싹 튼 씨</span><span class="lb-step"><button type="button" data-f="m'+cup+'" data-cnt="'+cup+':-1" aria-label="'+Lt+' 싹 튼 씨 하나 빼기"'+(val<=0?' disabled':'')+'>'+ic('minus')+'</button><output aria-live="polite" aria-label="'+Lt+' 싹 튼 씨의 수">'+val+'</output><button type="button" data-f="p'+cup+'" data-cnt="'+cup+':1" aria-label="'+Lt+' 싹 튼 씨 하나 더하기"'+(val>=10?' disabled':'')+'>'+ic('plus')+'</button></span></div>'});
-   h+='<button type="button" class="lb-rec-btn" data-f="rec" data-act="rec">'+ic('check')+'기록하기</button>'}}
- if(UI.fb)h+='<div class="lb-msg '+(UI.fb[0]?'lb-good':'lb-try')+'" role="status">'+ic(UI.fb[0]?'check':'info')+'<span>'+UI.fb[1]+'</span></div>';
- if(!K||rec)h+=recTable(v,r,k);
- return cardHead(dn+' 관찰',K?'잎의 크기 · 잎의 색깔 · 줄기':'싹 튼 씨의 수')+wrapB(h)}
+    b+='<div class="lb-count '+cl+'"><i class="lb-pin">'+Lt+'</i><span>싹 튼 씨</span><span class="lb-step"><button type="button" data-f="m'+cup+'" data-cnt="'+cup+':-1" aria-label="'+Lt+' 싹 튼 씨 하나 빼기"'+(val<=0?' disabled':'')+'>'+ic('minus')+'</button><output aria-live="polite" aria-label="'+Lt+' 싹 튼 씨의 수">'+val+'</output><button type="button" data-f="p'+cup+'" data-cnt="'+cup+':1" aria-label="'+Lt+' 싹 튼 씨 하나 더하기"'+(val>=10?' disabled':'')+'>'+ic('plus')+'</button></span></div>'});
+   b+='<button type="button" class="lb-rec-btn" data-f="rec" data-act="rec">'+ic('check')+'기록하기</button>'}}
+ if(UI.fb)b+='<div class="lb-msg '+(UI.fb[0]?'lb-good':'lb-try')+'" role="status">'+ic(UI.fb[0]?'check':'info')+'<span>'+UI.fb[1]+'</span></div>';
+ if(!K||rec)b+=recTable(v,r,k);
+ h+=gPart(3,'기록하기',!cared?'wait':rec?'ok':'cur',b);
+ if(!last)h+=gPart(4,advLabel(v),!rec||!cared?'wait':'cur','<div class="lb-acts"><button type="button" class="lb-act" data-act="adv" data-f="adv"'+(UI.tween||UI.care||!rec||!cared?' disabled':'')+'>'+ic('cal')+'<span>'+esc(advLabel(v))+'</span></button></div>');
+ return cardHead(dn+' 관찰',K?'잎의 크기 · 잎의 색깔 · 줄기':'싹 튼 씨의 수')+wrapB(h+'</ol>')}
 function careLabel(v){const P=L2(pIdx());if(v.exp==='kale')return v.cond==='water'?P+' 화분에만 물 주기':'두 화분에 물 주기';return v.cond==='water'?P+' 큰 컵 물 살피기':'두 큰 컵 물 살피기'}
 function advLabel(v){const r=R(),D=days(v),k=r.dk;if(k>=D.length-1)return '하루 지나기';const n=D[k+1]-D[k];return n===1?'하루 지나기':n+'일 지나기'}
 function kShort(v,x,cup){if(x==='base')return '처음';const o=x[cup];return kAttrs(v).map(a=>a[3][o[a[0]]]).join(' · ')}
@@ -188,10 +201,11 @@ function conclCard(){const v=V(),r=R();let h='';
  if(r.pred!=null)h+='<div class="lb-mine"><b>내 예상</b> '+esc(v.pred[r.pred])+'</div>';
  h+='<p class="lb-frame">'+frameHTML(v,r.bl,'edit')+'</p>';
  h+='<div class="lb-chips" role="group" aria-label="낱말 카드">'+v.chips.map((c,i)=>'<button type="button" class="lb-chip" data-f="c'+i+'" data-chip="'+i+'">'+esc(c)+'</button>').join('')+'</div>';
+ if(!r.cmp)h+='<button type="button" class="lb-act" data-act="cmp" data-f="doit"'+(r.bl.length&&r.bl.every(x=>x)&&cChanged(r)?'':' disabled')+'>'+ic('flask')+'<span>기록과 견주기</span></button>';
  if(r.cmp){h+='<div class="lb-cmp" role="status"><b>'+ic('flask')+esc(v.bookLabel||'교과서 결론')+'</b>'+esc(v.book)+'</div><div class="lb-msg lb-good">'+ic('check')+'<span>내 결론이 기록과 맞아요.</span></div>'}
  else if(r.clast&&!cChanged(r)){const wr=r.bl.map((w,i)=>i).filter(i=>cWrong(v,r,i));
   h+='<div class="lb-msg lb-try" role="status">'+ic('info')+'<span>빨간 빈칸을 기록과 다시 견주어 봐요.'+(r.ctry>=2&&wr.length?' '+wr.map(i=>esc(v.hint[i])).join(' '):'')+'</span></div>'}
- return cardHead('결론 쓰기','빈칸에 낱말을 넣어요')+wrapB(h)}
+ return cardHead('결론 쓰기','빈칸을 누르고 낱말 카드를 골라요')+wrapB(h)}
 
 /* ───────── 결과 한 장 ───────── */
 function chartSVG(v,r){const D=days(v),W=320,H=168,l=30,rr=12,t=12,b=34,max=10;
@@ -278,10 +292,11 @@ function render(){const H=document.documentElement;H.classList.toggle('lb-big',!
  set($('#lbHead'),'<div><div class="lb-kick"><em>'+(r.step+1)+'단계</em>'+GROUPS[s.g]+'</div><h1 id="lbH1" tabindex="-1">'+esc(s.t)+'</h1></div>'+(s.k==='sheet'?'':'<button class="lb-say" type="button" data-act="say" data-f="say" aria-pressed="'+UI.speaking+'">'+ic('speak')+'<span>'+(UI.speaking?'멈추기':'읽어 주기')+'</span></button>'));
  const body=$('#lbBody');
  if(s.k==='sheet'){if(body.dataset.k!=='sheet'){body.dataset.k='sheet';body._h=null}set(body,sheetBody())}
+ else if(s.k==='intro'){if(body.dataset.k!=='intro'){body.dataset.k='intro';body._h=null}set(body,introBody())}
  else{if(body.dataset.k!=='main'){body.dataset.k='main';body._h=null;body.innerHTML='<div class="lb-col"><div class="lb-scene" id="lbScene"></div><div class="lb-leg" id="lbLeg"></div><div class="lb-notes" id="lbNotes"></div></div><aside class="lb-card" id="lbCard" tabindex="-1" aria-label="기록 카드"></aside>';body._h='x'}
   renderScene();
   set($('#lbNotes'),notesHTML(s));
-  const card=$('#lbCard');const ch=s.k==='plan'?planCard():s.k==='pred'?predCard():s.k==='obs'?obsCard():s.k==='concl'?conclCard():'';card.hidden=!ch;set(card,ch)}
+  const card=$('#lbCard');const ch=s.k==='plan'?planCard():s.k==='pred'?predCard():s.k==='obs'?obsCard():s.k==='scene'?sceneTask(s):s.k==='concl'?conclCard():'';card.hidden=!ch;set(card,ch)}
  set($('#lbFoot'),footHTML(v,r,s));
  fitAll();clearTimeout(render.ft);render.ft=setTimeout(fitAll,350)}
 /* 넓은 화면에서 카드·단계 목록이 넘치면 조금 줄여 스크롤 없이 */
@@ -291,8 +306,6 @@ function renderScene(){const v=V(),r=R(),s=stepOf(r.step),el=$('#lbScene');if(!e
  NAR=narrow();LEG=[];
  let over='';
  const pick=s.opts&&!r.done[s.id]&&UI.anim!==s.id;
- if(s.k==='scene'&&r.done[s.id]&&UI.anim!==s.id)over+='<button type="button" class="lb-replay" data-act="replay" data-f="replay">'+ic('replay')+'처음부터 보기</button>';
- if(pick)over+='<div class="lb-ask">'+ic('hand')+esc(s.ask)+'</div>';
  if(s.k==='obs'){const D=days(v);over+='<div class="lb-days" aria-hidden="true">'+D.map((d,i)=>{const c=i===r.dk?' lb-today':r.rec[i]?' lb-rec':'';return '<span class="lb-day'+c+'">'+(r.rec[i]&&i!==r.dk?ic('check'):'')+(d===0?'시작':d+'일째')+'</span>'}).join('')+'</div>';
   if(UI.tween)over+='<div class="lb-toast" role="status">'+Math.floor(UI.tween.d)+'일째 · 날마다 돌보는 중</div>'}
  if(UI.toast)over+='<div class="lb-toast lb-toast2" role="status">'+esc(UI.toast)+'</div>';
@@ -311,25 +324,27 @@ function railHTML(){const v=V(),r=R(),N=v.steps.length;let h='<div class="lb-mto
  h+='</div><div class="lb-rail-note"><p>아주 단순하게 만든 모형이에요. 실제로는 '+(v.exp==='kale'?'자라는 모습':'싹 트는 수')+'가 조금씩 달라요.</p><p>만든 사람: 초등교사 홍지희</p></div></div>';
  return h}
 function footHTML(v,r,s){const N=v.steps.length;
- let h='<button type="button" class="lb-btn" data-act="prev" data-f="prev"'+(r.step===0?' disabled':'')+'>'+ic('left')+'이전</button><div class="lb-fmid">';
- const dots='<span class="lb-prog" aria-hidden="true">'+v.steps.map((x,i)=>'<i class="'+(i<r.step?'lb-d':i===r.step?'lb-n':'')+'"></i>').join('')+'</span>';
- let mid='',pri='이어서',priOn=canNext(),priAct='next';
- if(s.k==='scene'){if(s.opts&&!r.done[s.id]&&UI.anim!==s.id)mid='<span class="lb-picks" role="group" aria-label="'+esc(s.ask)+'">'+s.opts.map((o,i)=>'<button type="button" class="lb-doit lb-pk" data-act="pick" data-i="'+i+'" data-f="pk'+i+'">'+esc(o.t)+'</button>').join('')+'</span>';
-  else if(!r.done[s.id]||UI.anim===s.id)mid='<button type="button" class="lb-doit" data-act="doit" data-f="doit"'+(UI.anim?' disabled':'')+'>'+ic('hand')+esc(s.act||'보는 중')+'</button>';else mid='<span>잘했어요. 이어서 가요.</span>'+dots}
- else if(s.k==='plan'){const all=v.plan.every(p=>r.plan[p[0]]);if(!r.planOk)mid='<button type="button" class="lb-doit" data-act="check" data-f="doit"'+(all&&planChanged(r)?'':' disabled')+'>'+ic('check')+'계획 확인하기</button>';else mid='<span>계획을 세웠어요.</span>'+dots}
- else if(s.k==='pred'){mid=r.pred==null?'<span>예상을 하나 골라요.</span>'+dots:'<span>예상을 남겼어요.</span>'+dots}
- else if(s.k==='obs'){const D=days(v),k=r.dk,rec=r.rec[k],lastD=k===D.length-1;
-  if(rec&&!lastD&&!r.care[k])mid='<button type="button" class="lb-doit" data-act="care" data-f="doit"'+(UI.care||UI.tween?' disabled':'')+'>'+ic('drop')+careLabel(v)+'</button>';
-  else if(!rec)mid='<span>'+(v.exp==='kale'?(D[k]===0?'처음 모습을 봐요.':'잎과 줄기를 살펴 골라요.'):'싹 튼 씨를 세어요.')+'</span>';
-  else if(lastD)mid='<span>관찰을 마쳤어요.</span>'+dots;
-  else mid='<span>'+jo(advLabel(v),'을','를')+' 눌러요.</span>';
-  if(!lastD){pri=advLabel(v);priOn=!!rec&&!!r.care[k]&&!UI.care&&!UI.tween;priAct='adv'}}
- else if(s.k==='concl'){const all=r.bl.length&&r.bl.every(x=>x);if(!r.cmp)mid='<button type="button" class="lb-doit" data-act="cmp" data-f="doit"'+(all&&cChanged(r)?'':' disabled')+'>'+ic('flask')+'기록과 견주기</button>';else mid='<span>결론을 썼어요.</span>'+dots}
- else if(s.k==='sheet'){mid='<span>'+(r.fin?'실험을 마쳤어요.':'아직 끝내지 않은 단계가 있어요.')+'</span>'+dots;pri='실험 고르기로';priOn=true;priAct='home'}
- h+=mid+'</div><button type="button" class="lb-btn lb-pri" data-act="'+priAct+'" data-f="pri"'+(priOn?'':' disabled')+'>'+esc(pri)+ic('right')+'</button>';
- return h}
+ let h='<button type="button" class="lb-btn" data-act="prev" data-f="prev"'+(r.step===0?' disabled':'')+'>'+ic('left')+'이전</button>';
+ h+='<div class="lb-fmid"><span class="lb-pgn">'+(r.step+1)+' / '+N+'</span><span class="lb-prog" aria-hidden="true">'+v.steps.map((x,i)=>'<i class="'+(i<r.step?'lb-d':i===r.step?'lb-n':'')+'"></i>').join('')+'</span></div>';
+ let pri='이어서',priOn=canNext(),priAct='next';if(s.k==='sheet'){pri='실험 고르기로';priOn=true;priAct='home'}
+ return h+'<button type="button" class="lb-btn lb-pri'+(priOn&&priAct==='next'?' lb-go':'')+'" data-act="'+priAct+'" data-f="pri"'+(priOn?'':' disabled')+'>'+esc(pri)+ic('right')+'</button>'}
 
 /* ───────── 실험 고르기 ───────── */
+/* ───────── 오늘의 실험: 탐구 문제 · 이렇게 해요 · 이것을 살펴봐요 (결과는 보여 주지 않음) ───────── */
+function introPic(k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0 960 540';const K0=kaleAt({water:1,light:1},0);
+ if(k==='wick'){g+=rig(480,{wick:1,lie:1,felt:1});vb='370 60 220 390'}
+ else if(k==='nest'){g+=rig(480,{wick:1,lie:1,felt:1,nest:1});vb='370 230 220 220'}
+ else if(k==='seed'){g+=rig(480,{wick:1,lie:1,felt:1,nest:1,seeds:10})+packet(540,250,0);vb='370 200 240 250'}
+ else if(k==='obs'){g+=lens(480,212,{water:1,temp:1,light:1},0,0,{});vb='330 70 300 290'}
+ else if(k==='pots'){g=bg({win:true,sx1:260,sx2:820})+pot(380,{})+kale(380,338,K0)+pot(600,{})+kale(600,338,K0);vb='260 140 460 320'}
+ else if(k==='tag'){g+=pot(480,{})+kale(480,338,K0)+tag(480,'가',0);vb='370 160 220 290'}
+ else if(k==='care'){g+=pot(440,{})+kale(440,338,K0)+can(590,190,true);vb='330 110 380 340'}
+ else if(k==='look'){g+=kale(480,338,K0);vb='360 150 240 220'}
+ const s=svg(g,'',vb).replace(' role="img" aria-label=""',' aria-hidden="true"');NAR=n0;LEG=l0;return s}
+function introBody(){const v=V();
+ return '<div class="lb-intro"><div class="lb-iq"><span class="lb-itag">'+ic('flask')+'탐구 문제</span><p>'+esc(v.q)+'</p></div>'+
+ '<section class="lb-isec" aria-labelledby="lbIh1"><h2 id="lbIh1">'+ic('hand')+'이렇게 해요</h2><ol class="lb-isteps">'+v.how.map((x,i)=>'<li><div class="lb-ipic">'+introPic(x[0])+'</div><p><b>'+(i+1)+'</b><span>'+esc(x[1])+'</span></p></li>').join('')+'</ol></section>'+
+ '<section class="lb-isec lb-ilook" aria-labelledby="lbIh2"><h2 id="lbIh2">'+ic('eye')+'이것을 살펴봐요</h2><ul>'+v.look.map(t=>'<li>'+ic('check')+'<span>'+esc(t)+'</span></li>').join('')+'</ul></section></div>'}
 function homeArt(exp){NAR=true;LEG=[];let s;
  if(exp==='seed'){let g=bg({win:true,sx1:300,sx2:840});
   g+=rig(420,{wick:1,lie:1,felt:1,nest:1,seeds:10})+rig(720,{wick:1,lie:1,felt:1,nest:1,seeds:10});
@@ -357,10 +372,10 @@ function act(a,el){const v=V(),r=R();
   if(o.p!=null)r.p=o.p;doAnim(s.id,s.dur||1500);return}
  if(a==='replay'){const s=stepOf(r.step);doAnim(s.id,s.dur||1500);return}
  if(a==='check'){if(!v.plan.every(p=>r.plan[p[0]])||!planChanged(r))return;r.planLast=Object.assign({},r.plan);r.planOk=v.plan.every(p=>r.plan[p[0]]===(p[3]?'d':'s'));save();render();return}
- if(a==='care'){UI.care=true;render();clearTimeout(UI.timer);UI.timer=setTimeout(()=>{UI.care=false;r.care[r.dk]=true;save();render();const p=$('#lbFoot [data-act="adv"]');if(p&&!p.disabled)p.focus({preventScroll:true})},RM?150:(v.exp==='kale'?(v.cond==='light'?2900:2000):1300));return}
+ if(a==='care'){if(r.care[r.dk]||UI.care||UI.tween)return;UI.care=true;render();clearTimeout(UI.timer);UI.timer=setTimeout(()=>{UI.care=false;r.care[r.dk]=true;save();render();const p=$('#lbCard [data-act="rec"]:not(:disabled)')||$('#lbCard [data-act="adv"]:not(:disabled)')||$('#lbCard [data-act="base"]');if(p)p.focus({preventScroll:true})},RM?150:(v.exp==='kale'?(v.cond==='light'?2900:2000):1300));return}
  if(a==='adv'){advance();return}
  if(a==='rec'){record();return}
- if(a==='base'){r.rec[r.dk]='base';UI.fb=[1,'처음 모습을 봐 두었어요.'];save();render();const p=$('#lbFoot [data-act="care"]');if(p)p.focus({preventScroll:true});return}
+ if(a==='base'){if(!r.care[r.dk])return;r.rec[r.dk]='base';UI.fb=[1,'처음 모습을 봐 두었어요.'];save();render();const p=$('#lbCard [data-act="adv"]:not(:disabled)');if(p)p.focus({preventScroll:true});return}
  if(a==='cmp'){if(!r.bl.every(x=>x)||!cChanged(r))return;
   if(r.bl.every((w,i)=>w===ansOf(v,i))){r.cmp=true;r.clast=r.bl.slice()}else{r.ctry=(r.ctry||0)+1;r.clast=r.bl.slice()}
   save();render();return}
@@ -373,7 +388,7 @@ function advance(){const v=V(),r=R(),D=days(v),k=r.dk;if(k>=D.length-1||!r.rec[k
  const from=D[k],to=D[k+1],t0=performance.now(),dur=RM?10:1800;UI.tween={d:from};render();
  const step=now=>{const f=Math.min(1,(now-t0)/dur);UI.tween.d=from+(to-from)*f;renderScene();if(f<1)requestAnimationFrame(step);else{UI.tween=null;r.dk=k+1;save();render()}};requestAnimationFrame(step)}
 /* 기록: 앱이 값을 대신 적지 않음. 같은 값으로 다시 누르면 세지 않고, 서로 다른 두 번째 틀림부터 실마리 */
-function record(){const v=V(),r=R(),k=r.dk,d=days(v)[k],K=v.exp==='kale';if(r.rec[k])return;UI.pop=null;
+function record(){const v=V(),r=R(),k=r.dk,d=days(v)[k],K=v.exp==='kale';if(r.rec[k]||!r.care[k])return;UI.pop=null;
  if(!K){const truth=[0,1].map(cup=>sproutCount(cOf(v,cup),d));const cur=UI.cnt.slice(),key=cur.join(',');
   if(cur[0]===truth[0]&&cur[1]===truth[1]){r.rec[k]=cur;UI.fb=[1,'맞게 셌어요. 기록표에 적었어요.'];UI.hint=null}
   else if(r.last[k]===key){UI.fb=[0,'수가 그대로예요. 그림을 다시 세어 봐요.']}
@@ -395,16 +410,19 @@ function record(){const v=V(),r=R(),k=r.dk,d=days(v)[k],K=v.exp==='kale';if(r.re
    else UI.fb=[0,jo(pots.map(L2).join('와 ')+' 화분','을','를')+' 다시 살펴봐요. 잎의 크기와 색깔, 줄기를 봐요.']}}
  if(r.rec[k]&&k===days(v).length-1)r.done.obs=true;
  save();render();
- if(r.rec[k]){const p=$('#lbFoot [data-act="care"]')||$('#lbFoot .lb-pri:not(:disabled)');if(p)p.focus({preventScroll:true})}}
+ if(r.rec[k]){const p=$('#lbCard [data-act="adv"]:not(:disabled)')||$('#lbFoot .lb-pri:not(:disabled)');if(p)p.focus({preventScroll:true})}}
 
 /* ───────── 읽어 주기: 단계 글 + 카드 내용 ───────── */
 function sayText(){const v=V(),r=R(),s=stepOf(r.step),out=[endP(s.t)];
+ if(s.k==='intro'){out.push('탐구 문제. '+endP(v.q),'이렇게 해요. '+v.how.map((x,i)=>(i+1)+'번, '+x[1]).join(' '),'이것을 살펴봐요. '+v.look.join(' '));return out.join(' ')}
  if(s.opts&&!r.done[s.id])out.push(endP(s.ask),s.opts.map((o,i)=>(i+1)+'번, '+o.t+'.').join(' '));
- if(s.k==='plan'){out.push(endP(v.q),'조건마다 다르게나 같게를 골라요.',v.plan.map(p=>p[1].replace(/\((.*)\)/,' $1')+'.').join(' '))}
+ else if(s.k==='scene'&&!r.done[s.id])out.push(jo(s.act,'을','를')+' 눌러요.');
+ if(s.k==='scene'&&s.look)out.push('살펴보기. '+endP(s.look));
+ if(s.k==='plan'){out.push(endP(v.q),'조건마다 다르게나 같게를 골라요.',v.plan.map(p=>p[1].replace(/\((.*)\)/,' ')+'.').join(' '))}
  if(s.k==='pred'){out.push(v.pred.map((t,i)=>(i+1)+'번, '+t).join(' '));if(predLocked())out.push('관찰을 시작해서 예상을 바꿀 수 없어요.')}
- if(s.k==='obs'){const d=days(v)[r.dk];out.push((d===0?'시작한 날':d+'일째')+' 관찰이에요.');
-  if(v.exp==='seed')out.push('떡잎이 보이면 싹 튼 씨예요. 그림 속 씨를 누르면 번호가 붙어요. 가 컵과 나 컵의 싹 튼 씨를 세어 기록해요.');
-  else out.push(d===0?'두 케일의 처음 모습을 잘 봐 두어요.':'잎의 크기, 잎의 색깔, 줄기의 굵기를 처음 모습과 견주어 골라요.')}
+ if(s.k==='obs'){const d=days(v)[r.dk];out.push((d===0?'시작한 날':d+'일째')+' 관찰이에요.','1번, '+careLabel(v)+'.');
+  if(v.exp==='seed')out.push('2번, 돋보기로 씨를 봐요. 떡잎이 보이면 싹 튼 씨예요. 3번, 가 컵과 나 컵의 싹 튼 씨를 세어 기록해요.');
+  else out.push(d===0?'2번, 두 케일의 처음 모습을 잘 봐 두어요.':'2번, 잎의 크기, 잎의 색깔, 줄기의 굵기를 처음 모습과 견주어 골라요.')}
  if(s.k==='concl'){out.push(v.frame.replace(/\{(\d)\}/g,(m,i)=>{i=+i;const w=r.bl[i];const J=v.jo[i];return w?(J?jo(w,J[0],J[1]):w):'빈칸'}));out.push('낱말 카드: '+v.chips.join(', ')+'.')}
  if(s.why)out.push('왜 그렇게 할까요? '+endP(s.why));if(s.care)out.push((s.care[0]==='care'?'조심해요. ':'알아 두어요. ')+endP(s.care[1]));
  return out.join(' ')}
