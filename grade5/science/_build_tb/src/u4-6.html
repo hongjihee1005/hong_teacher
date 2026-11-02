@@ -1,0 +1,326 @@
+<!--
+title: 운동할 때 우리 몸에서 어떤 변화가 일어날까?
+unit: 4
+lesson: 7
+total: 12
+goal: 운동할 때 우리 몸에서 일어나는 변화를 관찰할 수 있어요.<br>우리 몸의 여러 기관이 서로 관련되어 있음을 설명할 수 있어요.
+pages: 「과학」 102~103쪽 · 「실험관찰」 61쪽 · 지도서 378~383쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"호","bl2":"흡","bl3":"심","bl4":"장"}}]
+-->
+<style>
+[hidden]{display:none!important}
+.b4-fit{width:min(100%,calc(var(--h,48vh)*var(--ar,1.6)));margin:0 auto}
+.b4-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px;align-items:start}
+@media(max-width:700px){.b4-two{grid-template-columns:1fr}}
+.b4-q{font-family:"Jua",sans-serif;font-size:1.08rem;margin:10px 0 6px}
+.b4-chips{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.b4-chips button{min-height:2.3rem;padding:.2em .8em}
+.b4-mt{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.2fr);gap:10px}
+.b4-mt>div{display:flex;flex-direction:column;gap:8px}
+.b4-mt button{font-size:.95rem;min-height:2.4rem;text-align:left}
+.b4-mt>div:first-child button{text-align:center}
+.b4-ox{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;margin:6px 0;padding:6px 10px;border:2px solid var(--line);border-radius:12px}
+.b4-ox .q{flex:1 1 60%}
+.b4-ox button{min-width:3.2rem}
+.b4-seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0;min-height:2.2rem}
+.b4-seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 12px;font-family:"Jua",sans-serif}
+.b4-seq span+span::before{content:"→ ";}
+.b4-bins{display:grid;grid-template-columns:repeat(var(--n,2),minmax(0,1fr));gap:8px;margin-top:8px}
+.b4-bins .bin{border:3px dashed var(--line);border-radius:14px;padding:8px;min-height:4.2rem;cursor:pointer;background:var(--paper)}
+.b4-bins .bin b{display:block;font-family:"Jua",sans-serif;font-weight:400;margin-bottom:4px}
+.b4-bins .bin span{display:inline-block;background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:2px 10px;margin:2px;font-size:.88rem}
+.b4-bins .bin.hot{border-color:var(--sun)}
+svg .org{cursor:pointer}
+svg .org:hover>*{filter:brightness(1.08)}
+svg .org.ok>*{stroke:#16804a!important;stroke-width:3px}
+svg .org:focus{outline:none}
+svg .org:focus-visible>*{stroke:#b58400!important;stroke-width:4px}
+.b4-card{border:3px solid var(--navy);border-radius:16px;padding:10px 14px;background:#fffaf0;color:#15313d}
+.b4-tbl td,.b4-tbl th{text-align:center;font-size:.92rem;padding:5px 6px}
+.b4-tbl th{background:#e1f0fb;color:#15313d}
+.b4-hold{user-select:none;-webkit-user-select:none;touch-action:none}
+.cc{display:inline-flex;gap:4px;vertical-align:middle;margin:2px}
+.cc button{min-height:2.1rem;padding:.1em .6em;font-size:.92rem;border-width:2px}
+svg .org.ok>[fill="transparent"]{stroke:none!important}
+
+.x6-ms{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-top:8px}
+.x6-ms button{min-height:2.6rem;font-size:.95rem}
+.x6-ms button:disabled{opacity:.45;cursor:default}
+@media(max-width:700px){.x6-ms{grid-template-columns:repeat(2,minmax(0,1fr))}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 102쪽</span>
+  <h2>달리기를 하기 전과 후, 친구의 모습은 어떤 점이 다를까요?</h2>
+  <p>달린 뒤의 친구 그림에서 달라진 곳을 눌러 찾아요. 모두 <b>3</b>곳이에요.</p>
+  <svg id="x6Run" class="scene b4-fit" style="--ar:2;--h:34vh" viewBox="0 0 640 320" role="img" aria-label="달리기 전과 후의 친구 모습"></svg>
+  <div class="found" id="x6Found"></div>
+  <div class="fb" id="x6RunFb"></div>
+</section>
+
+<section id="s2" data-nav="측정해요">
+  <span class="stage">활동해요 · 「실험관찰」 61쪽</span>
+  <h2>운동하기 전과 운동한 후의 체온과 1분 동안의 맥박 수 측정하기</h2>
+  <p>준비물: 스마트 기기(맥박 수 측정 애플리케이션), 체온계 · 단추를 차례대로 눌러요. <b>맥박</b>은 심장의 박동이 목이나 팔목 등에서 느껴지는 것이에요.</p>
+  <div class="b4-two">
+    <svg id="x6Lab" class="scene" viewBox="0 0 420 300" role="img" aria-label="체온과 맥박 수를 재는 모습"></svg>
+    <div><table class="b4-tbl"><tr><th>구분</th><th>운동 전</th><th>운동 직후</th><th>5분 휴식 후</th></tr>
+      <tr><th>체온(°C)</th><td id="x6T0">?</td><td id="x6T1">?</td><td id="x6T2">?</td></tr>
+      <tr><th>1분 동안의 맥박 수(회)</th><td id="x6P0">?</td><td id="x6P1">?</td><td id="x6P2">?</td></tr></table>
+      <p class="tip">※ 표의 값은 「실험관찰」의 예시 값이에요. 실제 값은 사람마다 달라요.</p></div>
+  </div>
+  <div class="x6-ms" id="x6Steps"><button class="main" data-i="0">① 운동 전 측정</button><button data-i="1" disabled>② 제자리 뛰기</button><button data-i="2" disabled>③ 운동 직후 측정</button><button data-i="3" disabled>④ 5분 쉰 뒤 측정</button></div>
+  <div class="fb" id="x6LabFb"></div>
+  <p class="tip">⚠️ 운동을 시작하기 전에 간단한 준비 운동을 해요. 친구와 부딪히지 않게 주변을 살피고, 팔이나 발목을 다치지 않게 조심해요. 몸이 아프거나 불편하면 무리하지 않아요. 운동 직후에 바로 재고, 충분히 쉰 뒤 한 번 더 재요.</p>
+</section>
+
+<section id="s3" data-nav="그래프">
+  <span class="stage">활동해요 · 「실험관찰」 61쪽</span>
+  <h2>측정 결과를 그래프로 나타내요</h2>
+  <p>그래프의 칸을 눌러 운동 전 → 운동 직후 → 5분 휴식 후 차례로 결과를 나타내요. (막대: 맥박 수, 점과 선: 체온)</p>
+  <svg id="x6Gr" class="scene b4-fit" style="--ar:1.8;--h:36vh" viewBox="0 0 560 310" role="img" aria-label="체온과 맥박 수 그래프"></svg>
+  <div class="fb" id="x6GrFb"></div>
+  <div id="x6GrQ" hidden data-glue="1">
+    <p class="b4-q">그래프를 보고 알게 된 점을 모두 골라요.</p>
+    <div class="pick" id="x6Know"><button data-a="1">운동할 때 맥박이 빨라져요</button><button data-a="1">운동할 때 체온이 올라가요</button><button data-a="1">쉬고 나면 운동 전과 비슷해져요</button><button data-a="0" data-m="체온 선을 다시 봐요. 운동 직후에 올라갔어요.">운동할 때 체온이 내려가요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s4" data-nav="각 기관이 하는 일">
+  <span class="stage">전개 · 「과학」 103쪽</span>
+  <h2>몸을 움직이기 위해 각 기관이 하는 일</h2>
+  <svg id="x6Map" class="scene b4-fit" style="--ar:1.67;--h:38vh" viewBox="0 0 700 420" role="img" aria-label="뼈와 근육, 소화·순환·호흡·배설기관이 주고받는 것"></svg>
+  <div id="x6Fn" data-glue="1" style="margin-top:8px"></div><div class="fb"></div>
+</section>
+
+<section id="s5" data-nav="정리해요">
+  <span class="stage">정리해요 · 「과학」 103쪽</span>
+  <h2>운동할 때 몸에서 일어나는 변화를 여러 기관과 관련지어요</h2>
+  <div id="x6Why">
+    <p class="b4-q">운동을 하면 호흡이 빨라지는 까닭은?</p>
+    <div class="pick" id="x6W1"><button data-a="1" data-m="맞아요! 뼈와 근육이 많이 움직이려면 산소가 많이 필요해요.">산소를 많이 흡수하기 위해서</button><button data-a="0" data-m="호흡기관이 하는 일을 떠올려 봐요.">음식물을 빨리 소화하기 위해서</button></div><div class="fb"></div>
+    <p class="b4-q" data-glue="1">운동을 하면 심장이 빠르게 뛰는 까닭은?</p>
+    <div class="pick" id="x6W2" data-glue="1"><button data-a="1" data-m="맞아요! 순환기관이 산소와 영양소를 온몸에 빠르게 운반해요.">산소와 영양소를 온몸에 빠르게 운반하기 위해서</button><button data-a="0" data-m="심장은 혈액을 온몸으로 보내는 일을 해요.">오줌을 빨리 만들기 위해서</button></div><div class="fb"></div>
+  </div>
+  <div id="x6Cc" data-glue="1"><p class="b4-q">운동을 하면 호흡이 <span data-ans="빨라지고" data-o="빨라지고|느려지고"></span>, 심장이 <span data-ans="빠르게" data-o="빠르게|느리게"></span> 뜁니다. 또 체온이 <span data-ans="올라가고" data-o="올라가고|내려가고"></span> 땀이 나기도 합니다.</p><div class="fb"></div></div>
+  <p class="b4-q" data-glue="1">운동할 때 콧구멍을 넓혀 주는 밴드를 붙이면 어떤 점이 좋을까요?</p>
+  <div class="pick" id="x6Band" data-glue="1"><button data-a="1" data-m="맞아요! 콧구멍이 넓어지면 공기가 잘 드나들어 숨쉬기 편해져요.">호흡하기 쉬워져 운동할 때 도움이 돼요</button><button data-a="0" data-m="콧구멍은 호흡기관이에요. 공기와 관련지어 생각해 봐요.">음식물을 더 잘 소화해요</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">운동을 하면 산소를 많이 흡수하기 위해 <span class="blank"><span id="bl1">ㅎ</span><span id="bl2">ㅎ</span></span>이 빨라지고, 산소와 영양소를 온몸에 빠르게 운반하기 위해 <span class="blank"><span id="bl3">ㅅ</span><span id="bl4">ㅈ</span></span>이 빠르게 뜁니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="tip">뼈와 근육이 움직일 때는 산소와 영양소가 필요해요. 운동을 하면 체온이 올라가고 땀이 나기도 해요. 이처럼 우리 몸의 각 기관은 서로 영향을 주고받으며 작용해요.</p>
+</section>
+
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="b4-q">1. 운동할 때 우리 몸에서 일어나는 변화로 옳지 <b>않은</b> 것은?</p>
+  <div class="pick" id="x6Q1"><button data-a="0" data-m="운동하면 땀이 나요.">땀이 난다</button><button data-a="0" data-m="운동하면 숨이 차요.">숨이 찬다</button><button data-a="0" data-m="운동하면 호흡이 빨라져요.">호흡이 빨라진다</button><button data-a="1" data-m="정답! 운동하면 체온은 올라가요.">체온이 내려간다</button><button data-a="0" data-m="운동하면 심장이 빨리 뛰어요.">심장이 빨리 뛴다</button></div>
+  <div class="fb"></div>
+  <p class="b4-q" style="margin-top:12px">2. ✏️ 서술형: 몸을 움직이기 위해 각 기관이 하는 일을 두 가지 이상 써 봅시다.</p>
+  <textarea id="x6W" rows="2" placeholder="예: 소화기관은 ~. 호흡기관은 ~."></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="x6WBtn">내 답 살펴보기</button></div>
+  <div class="fb" id="x6WFb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p>
+</section>
+
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>운동할 때 우리 몸에서 일어나는 변화를 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>운동할 때 우리 몸에서 일어나는 변화를 체온, 맥박 수 등으로 측정할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>우리 몸의 여러 기관이 서로 관련되어 있음에 관심이 생겼어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 이 단원 공통 도우미 ===== */
+function tween(ms,f){return new Promise(res=>{const t0=performance.now();(function st(n){const p=Math.min(1,Math.max(0,(n-t0)/ms));f(p<.5?2*p*p:1-Math.pow(-2*p+2,2)/2,p);if(p<1)requestAnimationFrame(st);else res();})(t0);});}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tap(el,f){el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 여러 개 고르기: data-a="1"인 것을 모두 */
+function pickAll(box,okMsg,noMsg,sec,after){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(after)after();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+`좋아요! 더 있어요. (${got.size}/${need})`,'info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 짝 맞추기: 왼쪽 → 오른쪽 */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.classList.add('b4-mt');B.innerHTML='';
+  const L=document.createElement('div'),R=document.createElement('div');B.append(L,R);let sel=null,n=0;
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.onclick=()=>{if(b.disabled)return;$$('button',L).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=i;};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p[1],i])).forEach(([r,i])=>{const b=document.createElement('button');b.textContent=r;b.onclick=()=>{if(b.disabled)return;
+    if(sel==null){fb(out,'왼쪽에서 먼저 하나를 골라요.','info');return;}
+    if(i===sel){b.classList.add('right');b.disabled=true;const lb=L.children[sel];lb.classList.remove('sel');lb.classList.add('right');lb.disabled=true;sel=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${n}/${pairs.length})`,'info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,(pairs[sel][2]||'다시 생각해 봐요.'),false);}};R.appendChild(b);});}
+/* 차례 맞히기 */
+function orderer(box,steps,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;let k=0;const seq=document.createElement('div');seq.className='b4-seq';B.before(seq);B.innerHTML='';
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.disabled)return;
+    if(i===k){b.classList.add('right');b.disabled=true;const sp=document.createElement('span');sp.textContent=s;seq.appendChild(sp);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그건 조금 뒤예요. 지금 차례를 찾아봐요.',false);}};B.appendChild(b);});}
+/* O/X: 행마다 data-a="o"/"x" */
+function oxList(box,okMsg,sec,cb){const rows=$$(box+' .b4-ox'),out=$(box).nextElementSibling,ok=new Set();
+  rows.forEach((r,i)=>{['⭕','❌'].forEach((t,j)=>{const b=document.createElement('button');b.textContent=t;b.setAttribute('aria-label',j?'틀려요':'맞아요');
+    b.onclick=()=>{if(ok.has(i))return;const good=(r.dataset.a==='o')===(j===0);if(good){b.classList.add('right');ok.add(i);fb(out,(r.dataset.m||'맞아요!')+(ok.size<rows.length?` (${ok.size}/${rows.length})`:''),ok.size<rows.length?'info':true);
+      if(ok.size===rows.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}}else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,r.dataset.h||'다시 생각해 봐요.',false);}};r.appendChild(b);});});}
+/* 나누어 담기: 낱말 카드 → 상자 */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='';const ch=document.createElement('div');ch.className='b4-chips';const bx=document.createElement('div');bx.className='b4-bins';bx.style.setProperty('--n',bins.length);B.append(ch,bx);
+  let sel=null,n=0;const bs=bins.map((t,i)=>{const d=document.createElement('div');d.className='bin';d.innerHTML='<b>'+t+'</b>';tap(d,()=>put(i));bx.appendChild(d);return d;});
+  shuffle(items).forEach(it=>{const b=document.createElement('button');b.textContent=it[0];b.onclick=()=>{if(b.disabled)return;$$('button',ch).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=[b,it];bs.forEach(d=>d.classList.add('hot'));};ch.appendChild(b);});
+  function put(i){if(!sel){fb(out,'위의 낱말 카드를 먼저 골라요.','info');return;}const [b,it]=sel;
+    if(it[1]===i){const s=document.createElement('span');s.textContent=it[0];bs[i].appendChild(s);b.remove();sel=null;n++;bs.forEach(d=>d.classList.remove('hot'));
+      if(n===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${n}/${items.length})`,'info');}
+    else fb(out,it[2]||'다른 상자에 어울려요. 다시 생각해 봐요.',false);}}
+/* 그림 속 기관 이름 붙이기: 이름 카드(data-k) 고르고 그림(data-k) 누르기 → 이름표(data-for) 보이기 */
+function namer(svg,chips,okMsg,sec,cb){const S=$(svg),C=$(chips),out=C.nextElementSibling,ks=$$('button',C);let sel=null,n=0;
+  ks.forEach(b=>b.onclick=()=>{if(b.disabled)return;ks.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel=b;});
+  $$('[data-k]',S).forEach(g=>tap(g,()=>{const k=g.dataset.k;if(g.classList.contains('ok'))return;
+    if(!sel){fb(out,'아래 이름 카드를 먼저 고르고 그림을 눌러요.','info');return;}
+    if(sel.dataset.k===k){$$('[data-k="'+k+'"]',S).forEach(x=>x.classList.add('ok'));sel.classList.remove('sel');sel.classList.add('right');sel.disabled=true;
+      $$('[data-for="'+k+'"]',S).forEach(x=>x.style.display='');sel=null;n++;
+      if(n===ks.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${n}/${ks.length})`,'info');}
+    else fb(out,'그곳은 '+sel.textContent+'이(가) 아니에요. 생김새와 자리를 다시 봐요.',false);}));}
+/* 영상처럼 보기 */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* ===== 몸 그림 (viewBox 0 0 320 470, 사람이 우리를 바라보는 모습: 그림의 오른쪽 = 몸의 왼쪽) ===== */
+const SKIN='#f6d9c0',SKL='#d9a888';
+function bodyBase(o){o=o||{};let s='';
+  s+=`<g fill="none" stroke="${SKIN}" stroke-linecap="round"><path d="M92 146 L66 296" stroke-width="28"/><path d="M228 146 L254 296" stroke-width="28"/><path d="M130 326 L126 462" stroke-width="40"/><path d="M190 326 L194 462" stroke-width="40"/></g>`;
+  s+=`<g fill="none" stroke="${SKL}" stroke-width="2" opacity=".55"><path d="M78 140 L52 294"/><path d="M106 152 L80 298"/><path d="M242 140 L268 294"/><path d="M214 152 L240 298"/><path d="M110 330 L106 462"/><path d="M160 340 L146 462 M160 340 L174 462"/><path d="M210 330 L214 462"/></g>`;
+  s+=`<path d="M92 132 Q160 116 228 132 Q244 140 240 172 L236 214 Q232 276 222 334 L98 334 Q88 276 84 214 L80 172 Q76 140 92 132Z" fill="${SKIN}" stroke="${SKL}" stroke-width="2.5"/>`;
+  s+=`<rect x="144" y="98" width="32" height="34" fill="${SKIN}"/><path d="M144 98 V128 M176 98 V128" stroke="${SKL}" stroke-width="2.5"/>`;
+  s+=`<ellipse cx="160" cy="62" rx="40" ry="46" fill="${SKIN}" stroke="${SKL}" stroke-width="2.5"/>`;
+  s+=`<path d="M120 58 Q118 14 160 14 Q204 14 200 58 Q196 34 160 32 Q128 32 120 58Z" fill="#5a4334"/>`;
+  if(!o.noFace) s+=`<circle cx="146" cy="58" r="3.4" fill="#4a3a30"/><circle cx="174" cy="58" r="3.4" fill="#4a3a30"/>`+(o.mouth?'':`<path d="M150 84 Q160 91 170 84" stroke="#b5654f" stroke-width="2.5" fill="none" stroke-linecap="round"/>`)+(o.nose?'':`<path d="M160 64 Q157 72 162 73" stroke="${SKL}" stroke-width="2" fill="none"/>`);
+  return s;}
+function G(k,inner,tapme){return tapme===false?`<g>${inner}</g>`:`<g class="org" data-k="${k}">${inner}</g>`;}
+const ORG={
+  mouth:'<ellipse cx="160" cy="84" rx="12" ry="6.5" fill="#c4544a" stroke="#8a2f28" stroke-width="2"/><path d="M151 84 h18" stroke="#fff" stroke-width="2"/>',
+  eso:'<path d="M160 90 L160 128 Q162 160 176 184" fill="none" stroke="#e48d78" stroke-width="10" stroke-linecap="round"/><path d="M160 90 L160 128 Q162 160 176 184" fill="none" stroke="#f6c2b2" stroke-width="3" stroke-linecap="round"/>',
+  liver:'<path d="M96 190 Q118 170 180 176 Q190 186 180 196 Q152 214 112 214 Q94 208 96 190Z" fill="#a8473a" stroke="#6e2a20" stroke-width="2"/>',
+  gall:'<ellipse cx="150" cy="216" rx="8" ry="6" fill="#77a94e" stroke="#3f6a26" stroke-width="2"/>',
+  stomach:'<path d="M172 182 Q164 202 178 218 Q196 236 216 222 Q232 206 224 188 Q218 176 206 182 Q198 196 188 192 Q180 188 178 180Z" fill="#f2a27f" stroke="#a85a3c" stroke-width="2"/>',
+  pancreas:'<path d="M164 232 Q190 224 220 230 Q212 240 170 240Z" fill="#f2c66a" stroke="#a8842e" stroke-width="2"/>',
+  large:'<path d="M122 308 L120 256 Q120 247 129 247 L197 247 Q206 247 206 256 L206 300 Q206 314 182 318 L163 320" fill="none" stroke="#c97a4f" stroke-width="15" stroke-linecap="round" stroke-linejoin="round"/><path d="M122 308 L120 256 Q120 247 129 247 L197 247 Q206 247 206 256 L206 300 Q206 314 182 318 L163 320" fill="none" stroke="#e6a77f" stroke-width="5" stroke-dasharray="3 6"/>',
+  small:'<path d="M138 262 H186 A6 6 0 0 1 186 274 H138 A6 6 0 0 0 138 286 H186 A6 6 0 0 1 186 298 H140" fill="none" stroke="#e7a08d" stroke-width="8" stroke-linecap="round"/><rect x="128" y="254" width="66" height="54" fill="transparent"/>',
+  anus:'<path d="M163 318 L161 334" stroke="#c97a4f" stroke-width="8" stroke-linecap="round"/><circle cx="161" cy="338" r="5" fill="#7a3f24"/>',
+  nose:'<path d="M152 70 Q160 50 168 70 Q164 76 160 74 Q156 76 152 70Z" fill="#f0b896" stroke="#b5654f" stroke-width="2"/>',
+  trachea:'<rect x="153" y="92" width="14" height="56" rx="5" fill="#cfe7f2" stroke="#5f9cc0" stroke-width="2"/><path d="M155 102 h10 M155 112 h10 M155 122 h10 M155 132 h10 M155 142 h10" stroke="#5f9cc0" stroke-width="1.6"/>',
+  bronchi:'<path d="M160 148 Q150 156 138 160 M138 160 L126 176 M138 160 L132 190 M160 148 Q170 156 182 160 M182 160 L194 176 M182 160 L188 190" fill="none" stroke="#3f84ad" stroke-width="5" stroke-linecap="round"/>',
+  lungL:'<path d="M150 138 Q120 130 106 160 Q98 198 112 220 Q134 226 152 214 Z" fill="#f3a9b2" stroke="#b25c68" stroke-width="2"/>',
+  lungR:'<path d="M170 138 Q200 130 214 160 Q222 198 208 220 Q186 226 168 214 Z" fill="#f3a9b2" stroke="#b25c68" stroke-width="2"/>',
+  heart:'<path d="M160 170 Q150 192 168 208 Q180 216 192 198 Q200 180 186 166 Q172 158 160 170Z" fill="#d9443a" stroke="#8a1f19" stroke-width="2"/><path d="M168 168 Q170 150 184 150 M178 164 Q182 156 194 158" fill="none" stroke="#d9443a" stroke-width="6" stroke-linecap="round"/>',
+  kidL:'<path d="M126 228 Q108 232 110 252 Q112 274 130 272 Q140 268 136 258 Q130 250 137 242 Q140 230 126 228Z" fill="#9b3c3c" stroke="#5e1f1f" stroke-width="2"/>',
+  kidR:'<path d="M194 224 Q212 228 210 248 Q208 270 190 268 Q180 264 184 254 Q190 246 183 238 Q180 226 194 224Z" fill="#9b3c3c" stroke="#5e1f1f" stroke-width="2"/>',
+  ureter:'<path d="M134 262 Q146 290 152 312 M186 258 Q174 290 168 312" fill="none" stroke="#e0b84e" stroke-width="5" stroke-linecap="round"/>',
+  bladder:'<ellipse cx="160" cy="318" rx="17" ry="13" fill="#f1cf62" stroke="#a8842e" stroke-width="2"/><path d="M160 331 V340" stroke="#e0b84e" stroke-width="4"/>',
+};
+function lab(k,x1,y1,x2,y2,t,anchor){const a=anchor||(x2<160?'end':'start');const w=t.length*15+14;const rx=a==='end'?x2-w:x2;
+  return `<g data-for="${k}" style="display:none" pointer-events="none"><line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#0f3b5c" stroke-width="1.8"/><rect x="${rx}" y="${y2-13}" width="${w}" height="26" rx="8" fill="#0f3b5c"/><text x="${rx+w/2}" y="${y2+6}" text-anchor="middle" font-size="16" font-family="Jua" fill="#fff">${t}</text></g>`;}
+/* 고르는 칸: span.cc[data-ans][data-o="가|나"] → 단추 */
+function ccSet(root,okMsg,sec,cb,hint){const R=$(root),cs=$$('[data-ans]',R),out=[...R.querySelectorAll('.fb')].pop();const got=new Set();
+  cs.forEach((c,i)=>{c.classList.add('cc');c.dataset.o.split('|').forEach(t=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{if(got.has(i))return;
+    if(t===c.dataset.ans){b.classList.add('right');got.add(i);$$('button',c).forEach(x=>{if(x!==b)x.remove();});
+      if(got.size===cs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,`맞아요! (${got.size}/${cs.length})`,'info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,c.dataset.h||hint||'다시 생각해 봐요.',false);}};c.appendChild(b);});});}
+
+/* ---------- 도입: 달리기 전과 후 ---------- */
+(function(){const kid=(x,after)=>{let s=`<g transform="translate(${x} 0)"><rect x="-40" y="150" width="80" height="90" rx="20" fill="#7fb3d5"/><rect x="-34" y="238" width="26" height="62" rx="10" fill="#3d5a80"/><rect x="8" y="238" width="26" height="62" rx="10" fill="#3d5a80"/>`;
+    s+=`<circle cx="0" cy="104" r="46" fill="#f6d9c0" stroke="#d9a888" stroke-width="2.5"/><path d="M-46 96 Q-44 52 0 52 Q46 52 46 96 Q38 70 0 70 Q-36 70 -46 96Z" fill="#5a4334"/><circle cx="-16" cy="100" r="4" fill="#4a3a30"/><circle cx="16" cy="100" r="4" fill="#4a3a30"/>`;
+    if(!after)s+=`<path d="M-12 124 Q0 132 12 124" stroke="#b5654f" stroke-width="3" fill="none" stroke-linecap="round"/>`;
+    else{s+=`<g class="org" data-k="cheek"><circle cx="-26" cy="118" r="10" fill="#f28b82" opacity=".75"/><circle cx="26" cy="118" r="10" fill="#f28b82" opacity=".75"/><rect x="-40" y="106" width="80" height="24" fill="transparent"/></g>`;
+      s+=`<g class="org" data-k="breath"><ellipse cx="0" cy="128" rx="9" ry="11" fill="#8a2f28"/><path d="M14 128 q22 -6 34 4 M16 138 q20 4 30 14" stroke="#9ec9e6" stroke-width="4" fill="none" stroke-linecap="round"/><rect x="-12" y="114" width="64" height="44" fill="transparent"/></g>`;
+      s+=`<g class="org" data-k="sweat"><path d="M34 70 q8 12 0 18 q-8 -6 0 -18z M-38 80 q7 10 0 15 q-7 -5 0 -15z M40 96 q6 9 0 13 q-6 -4 0 -13z" fill="#7cc4ef" stroke="#3f84ad" stroke-width="1.5"/><rect x="-50" y="62" width="100" height="18" fill="transparent"/><rect x="28" y="62" width="24" height="52" fill="transparent"/><rect x="-50" y="76" width="22" height="24" fill="transparent"/></g>`;}
+    return s+'</g>';};
+  let s=`<rect width="640" height="320" fill="#f2f8ee"/><rect y="290" width="640" height="30" fill="#d9c49a"/>`+kid(160,0)+kid(480,1);
+  s+=`<g font-family="Jua" font-size="22" fill="#0f3b5c" text-anchor="middle"><text x="160" y="34">달리기를 하기 전</text><text x="480" y="34">달리기를 한 후</text></g><path d="M290 190 h60 m-14 -12 l14 12 l-14 12" stroke="#c2332c" stroke-width="5" fill="none"/>`;
+  $('#x6Run').innerHTML=s;const N={cheek:'얼굴이 빨개졌어요',breath:'숨이 가빠졌어요',sweat:'땀이 났어요'},got=new Set();
+  $$('#x6Run [data-k]').forEach(g=>tap(g,()=>{const k=g.dataset.k;if(got.has(k))return;got.add(k);g.classList.add('ok');const sp=document.createElement('span');sp.textContent=N[k];$('#x6Found').appendChild(sp);
+    if(got.size===3){fb('#x6RunFb','모두 찾았어요! 운동을 하면 숨이 차고, 땀이 나고, 얼굴이 빨개지기도 해요. 우리 몸속에서는 어떤 일이 일어날까요?',true);doneNav('s1');}else fb('#x6RunFb',`(${got.size}/3) 더 찾아봐요.`,'info');}));
+})();
+
+/* ---------- 측정 ---------- */
+const DATA={T:[36.5,36.8,36.6],P:[65,103,68]};let stepDone=0;
+(function(){let bpm=65,beatT=0,jump=0,thermo='--.-',pulse='---',run=false,last=0;
+  function draw(){const b=1+0.1*Math.max(0,Math.sin(beatT*Math.PI*2*bpm/60))**8;let s=`<rect width="420" height="300" fill="#fff6ef"/><rect y="270" width="420" height="30" fill="#e6d3ad"/>`;
+    const y=-40*Math.abs(Math.sin(jump*Math.PI));s+=`<g transform="translate(110 ${y})"><rect x="-30" y="150" width="60" height="70" rx="16" fill="#7fb3d5"/><rect x="-26" y="218" width="20" height="52" rx="8" fill="#3d5a80"/><rect x="6" y="218" width="20" height="52" rx="8" fill="#3d5a80"/><circle cx="0" cy="116" r="34" fill="#f6d9c0" stroke="#d9a888" stroke-width="2"/><path d="M-34 110 Q-32 78 0 78 Q34 78 34 110 Q28 92 0 92 Q-28 92 -34 110Z" fill="#5a4334"/><circle cx="-11" cy="114" r="3" fill="#4a3a30"/><circle cx="11" cy="114" r="3" fill="#4a3a30"/></g>`;
+    s+=`<g transform="translate(240 40)"><rect width="150" height="96" rx="14" fill="#fff" stroke="#8aa1b1" stroke-width="3"/><text x="75" y="28" text-anchor="middle" font-family="Jua" font-size="16" fill="#48646f">체온계</text><text x="75" y="76" text-anchor="middle" font-family="Jua" font-size="34" fill="#0f3b5c">${thermo}°C</text></g>`;
+    s+=`<g transform="translate(240 152)"><rect width="150" height="110" rx="14" fill="#1f2a33"/><text x="75" y="26" text-anchor="middle" font-family="Jua" font-size="15" fill="#cfe6f2">맥박 수 측정</text><g transform="translate(40 66) scale(${b})"><path d="M0 12 C-24 -6 -14 -26 0 -12 C14 -26 24 -6 0 12Z" fill="#e2573f"/></g><text x="100" y="76" text-anchor="middle" font-family="Jua" font-size="30" fill="#fff">${pulse}</text><text x="100" y="98" text-anchor="middle" font-family="Jua" font-size="13" fill="#cfe6f2">회/1분</text></g>`;
+    $('#x6Lab').innerHTML=s;}
+  function loop(n){if(!run)return;const dt=last?(n-last)/1000:0;last=n;beatT+=dt;draw();requestAnimationFrame(loop);}
+  run=true;requestAnimationFrame(loop);draw();
+  const bs=$$('#x6Steps button');let busy=false;
+  async function measure(i){thermo='--.-';pulse='---';bpm=DATA.P[i];fb('#x6LabFb','재는 중…','info');
+    await tween(1600,p=>{thermo=(35+(DATA.T[i]-35)*p).toFixed(1);pulse=Math.round(DATA.P[i]*p);});thermo=DATA.T[i].toFixed(1);pulse=DATA.P[i];
+    $('#x6T'+i).textContent=DATA.T[i];$('#x6P'+i).textContent=DATA.P[i];}
+  bs.forEach(b=>b.onclick=async()=>{if(busy||b.disabled)return;busy=true;const i=+b.dataset.i;
+    if(i===0){await measure(0);fb('#x6LabFb','운동 전 체온과 맥박 수를 적었어요. 이제 제자리 뛰기를 해요.','info');}
+    if(i===1){fb('#x6LabFb','제자리 뛰기를 해요. 하나, 둘, 하나, 둘!','info');bpm=100;await tween(3200,p=>{jump=p*8;});jump=0;fb('#x6LabFb','운동을 마쳤어요. 바로 재요!','info');}
+    if(i===2){await measure(1);fb('#x6LabFb','운동 직후의 값을 적었어요. 이제 5분 동안 쉬어요.','info');}
+    if(i===3){fb('#x6LabFb','5분 동안 쉬는 중…','info');await tween(1200,()=>{});await measure(2);fb('#x6LabFb','표를 다 채웠어요! 운동 전, 운동 직후, 5분 휴식 후의 값을 견주어 봐요.',true);doneNav('s2');}
+    b.disabled=true;b.classList.remove('main');if(bs[i+1]){bs[i+1].disabled=false;bs[i+1].classList.add('main');}stepDone=i+1;busy=false;});
+})();
+
+/* ---------- 그래프 ---------- */
+(function(){const X=[150,300,450],shown=[0,0,0];const yP=v=>270-(v-60)*4.2,yT=v=>270-(v-36)*180;
+  function draw(){let s=`<rect width="560" height="310" fill="#fff"/>`;
+    for(let v=60;v<=110;v+=10){s+=`<line x1="70" y1="${yP(v)}" x2="510" y2="${yP(v)}" stroke="#e3edf2"/><text x="516" y="${yP(v)+5}" font-size="13" font-family="Jua" fill="#c2332c">${v}</text>`;}
+    s+=`<text x="40" y="${yT(37)+5}" font-size="13" font-family="Jua" fill="#1c6fa8">37</text><text x="40" y="${yT(36.5)+5}" font-size="13" font-family="Jua" fill="#1c6fa8">36.5</text><text x="40" y="${yT(36)+5}" font-size="13" font-family="Jua" fill="#1c6fa8">36</text>`;
+    s+=`<line x1="70" y1="270" x2="510" y2="270" stroke="#48646f" stroke-width="2"/><line x1="70" y1="30" x2="70" y2="270" stroke="#1c6fa8" stroke-width="2"/><line x1="510" y1="30" x2="510" y2="270" stroke="#c2332c" stroke-width="2"/>`;
+    s+=`<text x="12" y="22" font-size="14" font-family="Jua" fill="#1c6fa8">체온(°C)</text><text x="430" y="22" font-size="14" font-family="Jua" fill="#c2332c">1분 동안의 맥박 수(회)</text>`;
+    ['운동 전','운동 직후','5분 휴식 후'].forEach((t,i)=>{s+=`<text x="${X[i]}" y="292" text-anchor="middle" font-size="15" font-family="Jua" fill="#0f3b5c">${t}</text>`;
+      if(shown[i])s+=`<rect x="${X[i]-28}" y="${yP(DATA.P[i])}" width="56" height="${270-yP(DATA.P[i])}" fill="#f4a6a0" stroke="#c2332c" stroke-width="2"/><text x="${X[i]}" y="${yP(DATA.P[i])-6}" text-anchor="middle" font-size="14" font-family="Jua" fill="#c2332c">${DATA.P[i]}</text>`;
+      else s+=`<rect class="org" data-k="${i}" x="${X[i]-50}" y="30" width="100" height="240" fill="#e1f0fb" opacity=".55" stroke="#1c6fa8" stroke-dasharray="6 5"/><text x="${X[i]}" y="150" text-anchor="middle" font-size="15" font-family="Jua" fill="#1c6fa8" pointer-events="none">눌러요</text>`;});
+    const pts=X.map((x,i)=>shown[i]?[x,yT(DATA.T[i])]:null);let d='';pts.forEach((p,i)=>{if(p&&(i===0||pts[i-1]))d+=(d?' L':'M')+p.join(' ');else if(p)d+=' M'+p.join(' ');});
+    s+=`<path d="${d}" fill="none" stroke="#1c6fa8" stroke-width="3"/>`+pts.filter(Boolean).map(p=>`<circle cx="${p[0]}" cy="${p[1]}" r="7" fill="#1c6fa8" stroke="#fff" stroke-width="2"/>`).join('');
+    $('#x6Gr').innerHTML=s;$$('#x6Gr [data-k]').forEach(g=>tap(g,()=>{const i=+g.dataset.k;if(stepDone<4){fb('#x6GrFb','먼저 앞 쪽에서 측정을 모두 마쳐요.','info');return;}
+      const k=shown.indexOf(0);if(i!==k){fb('#x6GrFb','차례대로 나타내요: 운동 전 → 운동 직후 → 5분 휴식 후','info');return;}shown[i]=1;draw();
+      if(shown.every(Boolean)){fb('#x6GrFb','그래프를 완성했어요! 서로 다른 색으로 그리니 구분하기 쉬워요.',true);$('#x6GrQ').hidden=false;}}));}
+  draw();
+  pickAll('#x6Know','잘했어요! 운동할 때 맥박이 빨라지고 체온이 올라가며, 쉬고 나면 다시 원래와 비슷해져요.','다시 그래프를 봐요.','s3');
+})();
+
+/* ---------- 각 기관이 하는 일 ---------- */
+(function(){const ic=(x,y,inner,sc,cx,cy)=>`<g transform="translate(${x} ${y}) scale(${sc}) translate(${-cx} ${-cy})">${inner}</g>`;
+  const box=(x,y,t,col)=>`<rect x="${x-90}" y="${y-62}" width="180" height="124" rx="16" fill="#fff" stroke="${col}" stroke-width="3"/><text x="${x}" y="${y+52}" text-anchor="middle" font-family="Jua" font-size="20" fill="${col}">${t}</text>`;
+  const arr=(x1,y1,x2,y2,t,col,tx,ty)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="${col}" stroke-width="4" marker-end="url(#x6ar)"/><text x="${tx}" y="${ty}" text-anchor="middle" font-family="Jua" font-size="18" fill="${col}">${t}</text>`;
+  let s=`<defs><marker id="x6ar" markerWidth="8" markerHeight="8" refX="7" refY="4" orient="auto"><path d="M0 0 L8 4 L0 8Z" fill="#48646f"/></marker></defs><rect width="700" height="420" fill="#fff6ef"/>`;
+  s+=box(120,80,'뼈와 근육','#8a5a2b')+box(580,80,'호흡기관','#3f84ad')+box(350,210,'순환기관','#c2332c')+box(120,340,'소화기관','#b5654f')+box(580,340,'배설기관','#a8842e');
+  s+=`<g transform="translate(120 62)" stroke-linecap="round"><line x1="-34" y1="-26" x2="34" y2="26" stroke="#f4efe2" stroke-width="12"/><circle cx="-36" cy="-28" r="11" fill="#f4efe2"/><circle cx="36" cy="28" r="11" fill="#f4efe2"/><ellipse cx="0" cy="0" rx="36" ry="14" fill="#e2573f" transform="rotate(37)"/></g>`;
+  s+=ic(580,66,ORG.lungL+ORG.lungR+ORG.trachea+ORG.bronchi,.62,160,170)+ic(350,196,ORG.heart,1.4,176,186)+ic(120,322,ORG.stomach+ORG.large+ORG.small,.56,168,258)+ic(580,322,ORG.kidL+ORG.kidR+ORG.ureter+ORG.bladder,.62,160,272);
+  s+=arr(500,138,446,178,'산소','#3f84ad',506,180)+arr(430,158,488,114,'이산화 탄소','#48646f',410,112)+arr(204,296,256,252,'영양소','#b5654f',196,256)+arr(266,170,212,126,'산소·영양소','#c2332c',278,128)+arr(440,244,494,288,'노폐물','#a8842e',500,252);
+  $('#x6Map').innerHTML=s;
+  matcher('#x6Fn',[['뼈와 근육','산소와 영양소를 이용해 몸을 움직여요'],['소화기관','음식물을 소화해 영양소를 흡수해요'],['순환기관','산소와 영양소를 온몸에 운반하고, 이산화 탄소는 호흡기관으로, 노폐물은 배설기관으로 운반해요'],['호흡기관','산소를 받아들이고, 이산화 탄소를 몸 밖으로 내보내요'],['배설기관','혈액 속의 노폐물을 걸러 내어 몸 밖으로 내보내요']],'잘했어요! 우리 몸의 각 기관은 서로 영향을 주고받으며 작용해요.','s4');
+})();
+
+let w1=0,w2=0,w3=0,w4=0;const c5=()=>{if(w1&&w2&&w3&&w4)doneNav('s5');};
+pickOne('#x6W1','','',null,()=>{w1=1;c5();});pickOne('#x6W2','','',null,()=>{w2=1;c5();});
+ccSet('#x6Cc','맞아요! 운동하면 호흡이 빨라지고 심장이 빠르게 뛰며, 체온이 올라가고 땀이 나기도 해요.',null,()=>{w3=1;c5();});
+pickOne('#x6Band','','',null,()=>{w4=1;c5();});
+
+$('#blReveal').onclick=()=>{['호','흡','심','장'].forEach((c,i)=>$('#bl'+(i+1)).textContent=c);fb('#blFb','운동을 하면 호흡이 빨라지고 심장이 빠르게 뛰어요. 각 기관은 서로 영향을 주고받으며 작용해요.',true);doneNav('s6');};
+
+let q1=0,q2=0;const c7=()=>{if(q1&&q2)doneNav('s7');};
+pickOne('#x6Q1','','',null,()=>{q1=1;c7();});
+keyCheck('#x6W','#x6WBtn','#x6WFb',[[/(뼈|근육)[^.]*움직/,'뼈와 근육이 하는 일'],[/소화[^.]*(영양소|흡수)/,'소화기관이 하는 일'],[/(순환|심장)[^.]*(운반|보내|산소)/,'순환기관이 하는 일'],[/(호흡|폐)[^.]*(산소|이산화)/,'호흡기관이 하는 일'],[/(배설|콩팥)[^.]*(노폐물|걸러)/,'배설기관이 하는 일']],2,null,'두 가지 기관을 골라 각각 무엇을 하는지(산소, 영양소, 노폐물 등) 써 봐요.');
+$('#x6WBtn').addEventListener('click',()=>{if($('#x6WFb').classList.contains('ok')){q2=1;c7();}});
+
+faces('s8','멋져요! 다음 시간에는 우리 몸의 여러 기관과 관련 있는 질병을 알아봐요.','어려웠던 부분은 측정과 그래프를 다시 해 보고, 선생님께 질문해도 좋아요!');
+</script>

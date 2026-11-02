@@ -1,0 +1,308 @@
+<!--
+title: 온도가 변하면 기체의 부피는 어떻게 될까?
+unit: 3
+lesson: 3
+total: 12
+goal: 온도에 따른 기체의 부피 변화를 설명할 수 있어요.<br>우리 주변에서 온도에 따른 기체의 부피 변화 예를 찾을 수 있어요.
+pages: 「과학」 68~69쪽 · 「실험관찰」 38~39쪽 · 지도서 270~279쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"온","bl2":"도","bl3":"부","bl4":"피"}}]
+-->
+<style>
+.a2-lab{max-height:44vh}
+.a2-ctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px}
+.a2-ctl button{font-size:.9rem;min-height:2.3rem;padding:.15em .7em;border-width:2px}
+.a2-ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.a2-cards{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:8px}
+.a2-card{border:2px solid var(--line);border-radius:16px;padding:8px;background:var(--paper);display:flex;flex-direction:column;gap:6px}
+.a2-card svg{width:100%;height:auto;max-height:11vh;border-radius:10px;background:#eef7fb}
+.a2-card p{margin:0;font-size:.92rem;line-height:1.35}
+.a2-card .row{gap:6px}.a2-card .row button{font-size:.82rem;min-height:2rem;padding:.1em .45em;border-width:2px;flex:1}
+.a2-card.done{border-color:var(--good);background:#f1fbf4}
+.a2-def{margin-top:10px;padding:10px 14px;border-radius:14px;background:#e1f0fb}
+@media (max-width:900px){.a2-cards{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:560px){.a2-cards{grid-template-columns:1fr}}
+</style>
+
+<!-- 도입 -->
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 68쪽</span>
+  <h2>유리병 입구에 비눗물을 묻히고 병을 따뜻한 손으로 감싸면 어떻게 될까요?</h2>
+  <svg id="a2Jar" class="scene" viewBox="0 0 600 270" style="max-height:30vh" role="img" aria-label="입구에 비눗물 막이 있는 빈 유리병을 손으로 감싸는 그림">
+    <rect width="600" height="270" fill="#fdf6e3"/><rect y="236" width="600" height="34" fill="#d9c49a"/>
+    <path d="M260 236 v-120 q0 -20 20 -30 v-22 h40 v22 q20 10 20 30 v120z" fill="#e6f5fb" fill-opacity=".8" stroke="#7aa7bd" stroke-width="4"/>
+    <path id="a2Film" d="M280 64 Q300 64 320 64" fill="#d9f0ff" fill-opacity=".55" stroke="#b07cf0" stroke-width="3"/>
+    <g id="a2Hands" opacity="0"><path d="M200 230 q-10 -70 50 -100 q20 -6 22 14 q2 16 -16 26 q-12 30 -6 60z" fill="#f2c39b" stroke="#c98f62" stroke-width="3"/><path d="M400 230 q10 -70 -50 -100 q-20 -6 -22 14 q-2 16 16 26 q12 30 6 60z" fill="#f2c39b" stroke="#c98f62" stroke-width="3"/></g>
+    <g id="a2Warm" opacity="0" fill="none" stroke="#e2573f" stroke-width="3" stroke-linecap="round"><path d="M228 150 q-8 -10 0 -20"/><path d="M372 150 q8 -10 0 -20"/><path d="M220 190 q-8 -10 0 -20"/><path d="M380 190 q8 -10 0 -20"/></g>
+    <rect x="12" y="12" width="250" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a2JarT" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">비눗물 막: 평평해요</text>
+  </svg>
+  <div class="row" style="margin-top:8px"><button class="main" id="a2Hold">🤲 따뜻한 손으로 감싸기</button><button id="a2Let">손 떼기</button></div>
+  <div id="a2Q" hidden>
+    <p class="jua" style="font-size:1.05rem;margin-top:8px">비눗물 막이 부풀어 오른 까닭은 무엇일까요?</p>
+    <div class="pick" id="a2P1" data-glue="1">
+      <button data-a="1" data-m="맞아요! 손의 따뜻한 기운으로 병 안 공기의 온도가 높아져 공기가 차지하는 공간이 커졌어요.">병 안 공기의 온도가 높아져 공기의 부피가 늘어났어요</button>
+      <button data-a="0" data-m="병 안에는 무엇이 들어 있을까요? 비어 보여도 공기가 있어요.">손에서 비눗물이 새로 나왔어요</button>
+      <button data-a="0" data-m="부피가 줄어들면 막이 병 안으로 들어가야 해요.">병 안 공기의 부피가 줄어들었어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <p class="a2-def" data-glue="1">💡 기체가 차지하는 공간의 크기를 <b>기체의 부피</b>라고 해요.</p>
+</section>
+
+<!-- 실험해요 -->
+<section id="s2" data-nav="실험해요">
+  <span class="stage">실험해요 · 「실험관찰」 38~39쪽</span>
+  <h2>온도에 따른 기체의 부피 변화 알아보기</h2>
+  <p>준비물: 고무풍선, 가위, 집기병(500 mL), 고무줄, 수조, 뜨거운 물, 얼음물, 수건, 실험복, 보안경, 실험용 장갑 · 단추를 차례대로 눌러요.</p>
+  <svg id="a2Lab" class="scene a2-lab" viewBox="0 0 800 340" role="img" aria-label="고무풍선을 씌운 집기병을 뜨거운 물과 얼음물에 넣는 실험">
+    <rect width="800" height="340" fill="#fdf6e3"/><rect y="300" width="800" height="40" fill="#d9c49a"/>
+    <!-- 뜨거운 물 수조 -->
+    <rect x="70" y="180" width="230" height="120" rx="10" fill="#ffd9cc" fill-opacity=".85" stroke="#c0392b" stroke-width="4"/>
+    <g fill="none" stroke="#e2573f" stroke-width="3" stroke-linecap="round" opacity=".8"><path d="M110 170 q-8 -12 0 -24 q8 -12 0 -24"/><path d="M185 170 q-8 -12 0 -24 q8 -12 0 -24"/><path d="M260 170 q-8 -12 0 -24 q8 -12 0 -24"/></g>
+    <text x="185" y="324" text-anchor="middle" font-size="18" font-family="Jua" fill="#7a2a20">뜨거운 물 (약 45 ℃)</text>
+    <!-- 얼음물 수조 -->
+    <rect x="500" y="180" width="230" height="120" rx="10" fill="#d8f1ff" fill-opacity=".85" stroke="#3a78c8" stroke-width="4"/>
+    <g fill="#f3fbff" stroke="#9fc9e6" stroke-width="2"><rect x="515" y="190" width="30" height="26" rx="5" transform="rotate(-12 530 203)"/><rect x="680" y="196" width="30" height="26" rx="5" transform="rotate(14 695 209)"/><rect x="530" y="250" width="28" height="24" rx="5"/><rect x="690" y="256" width="28" height="24" rx="5" transform="rotate(8 704 268)"/></g>
+    <text x="615" y="324" text-anchor="middle" font-size="18" font-family="Jua" fill="#1b3f66">얼음물</text>
+    <!-- 집기병 -->
+    <g id="a2Bot">
+      <path d="M-46 0 v-110 q0 -14 16 -18 h14 v-20 h32 v20 h14 q16 4 16 18 v110z" fill="#e6f5fb" fill-opacity=".75" stroke="#7aa7bd" stroke-width="4"/>
+      <g id="a2Cap" opacity="0">
+        <path id="a2Mem" d="M-18 -148 Q0 -154 18 -148" fill="#f39c12" fill-opacity=".85" stroke="#c76b00" stroke-width="3"/>
+        <rect x="-19" y="-146" width="38" height="8" rx="3" fill="#7a5230"/>
+      </g>
+      <g id="a2Drops" opacity="0" fill="#6ec3f0"><circle cx="-50" cy="-30" r="4"/><circle cx="50" cy="-60" r="4"/><circle cx="-48" cy="-80" r="3"/></g>
+    </g>
+    <rect x="72" y="200" width="226" height="98" fill="#ffb199" opacity=".35" pointer-events="none"/><rect x="502" y="200" width="226" height="98" fill="#9fd3f5" opacity=".35" pointer-events="none"/>
+    <g id="a2Gear" opacity="0"><rect x="330" y="60" width="140" height="38" rx="12" fill="#bdf0cf" stroke="#16804a" stroke-width="2"/><text x="400" y="86" text-anchor="middle" font-size="17" font-family="Jua" fill="#0d5a31">🧤 장갑 착용</text></g>
+    <rect x="12" y="12" width="420" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a2T" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">먼저 실험복·보안경·장갑을 착용해요</text>
+  </svg>
+  <div class="a2-ctl" id="a2Ctl" data-glue="1">
+    <button data-s="gear">🧤 실험복·보안경·장갑 착용</button>
+    <button data-s="cap">✂️ 풍선 씌우고 고무줄로 고정</button>
+    <button data-s="hot">♨️ 뜨거운 물 수조에 넣기</button>
+    <button data-s="wipe">🧻 꺼내서 바깥 면 닦기</button>
+    <button data-s="ice">🧊 얼음물 수조에 넣기</button>
+  </div>
+  <div class="fb" id="a2LabFb"></div>
+  <p class="tip">⚠️ 뜨거운 물에 데지 않게 조심하고, 실험용 장갑을 꼭 껴요(데었을 때는 바로 찬물에 담가 식히고 치료를 받아요). 유리 기구가 깨지지 않도록 조심하고, 얼음을 맨손으로 만지지 않아요.</p>
+  <div id="a2RecH" hidden>
+    <p class="jua" style="font-size:1.05rem">집기병을 뜨거운 물에 넣었을 때 고무풍선은?</p>
+    <div class="pick" id="a2R1" data-glue="1">
+      <button data-a="1" data-m="맞아요! 고무풍선이 볼록하게 부풀어 올랐어요.">부풀어 올라요</button>
+      <button data-a="0" data-m="영상을 다시 보세요. 풍선이 위로 볼록해졌나요?">쪼그라들어요</button>
+      <button data-a="0">변화가 없어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <div id="a2RecC" hidden>
+    <p class="jua" style="font-size:1.05rem">집기병을 얼음물에 넣었을 때 고무풍선은?</p>
+    <div class="pick" id="a2R2" data-glue="1">
+      <button data-a="0">부풀어 올라요</button>
+      <button data-a="1" data-m="맞아요! 고무풍선이 쪼그라들어 집기병 안으로 조금 들어갔어요.">쪼그라들어 집기병 안으로 들어가요</button>
+      <button data-a="0">변화가 없어요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<!-- 정리해요 -->
+<section id="s3" data-nav="정리해요">
+  <span class="stage">정리해요 · 「실험관찰」 39쪽</span>
+  <h2>온도가 변하면 기체의 부피가 어떻게 될까요?</h2>
+  <p class="tip">집기병과 고무풍선 안에는 일정한 양의 공기가 들어 있어요. 고무풍선의 변화는 그 공기의 부피 변화를 보여 줘요.</p>
+  <p class="jua" style="font-size:1.05rem">온도가 높아지면 기체의 부피는?</p>
+  <div class="pick" id="a2S1"><button data-a="1">늘어나요</button><button data-a="0">변하지 않아요</button><button data-a="0">줄어들어요</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:10px">온도가 낮아지면 기체의 부피는?</p>
+  <div class="pick" id="a2S2"><button data-a="0">늘어나요</button><button data-a="0">변하지 않아요</button><button data-a="1">줄어들어요</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:10px">이 실험에서 다르게 한 조건은 무엇일까요?</p>
+  <div class="pick" id="a2S3" data-glue="1">
+    <button data-a="1" data-m="맞아요! 온도만 다르게 하고, 집기병·고무풍선·공기의 양 같은 다른 조건은 같게 했어요.">공기의 온도</button>
+    <button data-a="0" data-m="같은 집기병을 그대로 썼어요.">집기병의 크기</button>
+    <button data-a="0" data-m="집기병 속 공기의 양은 그대로예요.">공기의 양</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<!-- 생활 속 예 -->
+<section id="s4" data-nav="생활 속 예">
+  <span class="stage">전개 2 · 「과학」 69쪽</span>
+  <h2>우리 주변에서 온도에 따라 기체의 부피가 변하는 예를 찾아요</h2>
+  <p>어떻게 될지 골라 그림을 열어 봐요. 여섯 가지를 모두 찾아요. (<b id="a2Cnt">0</b>/6)</p>
+  <div class="a2-cards" id="a2Cards"></div>
+  <div class="fb" id="a2CardsFb"></div>
+  <p class="tip">💻 스마트 기기로 ‘온도에 따른 기체의 부피 변화’를 검색해 더 찾을 수 있어요. 믿을 만한 정보인지 판단하고, 조사한 내용의 출처를 밝혀요.</p>
+</section>
+
+<!-- 더 알아보기 -->
+<section id="s5" data-nav="더 알아보기">
+  <span class="stage">더 알아보기</span>
+  <h2>딸깍딸깍 움직이는 동전</h2>
+  <p>냉장고에 넣어 두었던 차가운 빈 병 입구에 물을 조금 묻힌 동전을 올려놓고, 따뜻한 두 손으로 감싸요.</p>
+  <svg id="a2Coin" class="scene" viewBox="0 0 600 240" style="max-height:28vh" role="img" aria-label="차가운 빈 병 입구의 동전이 손으로 감싸면 들썩이는 그림">
+    <rect width="600" height="240" fill="#eef7fb"/><rect y="210" width="600" height="30" fill="#c9b27a"/>
+    <path d="M270 210 v-110 q0 -16 14 -24 v-26 h32 v26 q14 8 14 24 v110z" fill="#d8f1ff" fill-opacity=".85" stroke="#7aa7bd" stroke-width="4"/>
+    <g id="a2C"><ellipse cx="300" cy="48" rx="24" ry="6" fill="#d4a017" stroke="#8a6a00" stroke-width="2"/></g>
+    <g id="a2CH" opacity="0"><path d="M210 206 q-10 -60 50 -86 q16 -4 18 10 q2 14 -14 22 q-8 26 -4 54z" fill="#f2c39b" stroke="#c98f62" stroke-width="3"/><path d="M390 206 q10 -60 -50 -86 q-16 -4 -18 10 q-2 14 14 22 q8 26 4 54z" fill="#f2c39b" stroke="#c98f62" stroke-width="3"/></g>
+    <text id="a2CT" x="440" y="60" font-size="22" font-family="Jua" fill="#0f3b5c"></text>
+  </svg>
+  <div class="row" style="margin-top:8px"><button class="main" id="a2CoinGo">🤲 두 손으로 감싸기</button></div>
+  <div id="a2CoinQ" hidden>
+    <p class="jua" style="font-size:1.05rem">동전이 딸깍거리며 움직이는 까닭은?</p>
+    <div class="pick" id="a2P5" data-glue="1">
+      <button data-a="1" data-m="맞아요! 병 속 공기가 따뜻해져 부피가 늘어나면서 밖으로 빠져나가려고 동전을 밀어 올려요.">병 속 공기가 따뜻해져 부피가 늘어나 동전을 밀어 올려요</button>
+      <button data-a="0" data-m="동전에 묻힌 물은 병과 동전 사이에서 공기가 새지 않게 막아 주는 역할을 해요.">동전에 묻힌 물이 끓어서 움직여요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<!-- 생각이 한눈에 -->
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙</h2>
+  <p class="jua" style="font-size:1.15rem">기체는
+    <span class="blank"><span id="bl1">ㅇ</span><span id="bl2">ㄷ</span></span>에 따라
+    <span class="blank"><span id="bl3">ㅂ</span><span id="bl4">ㅍ</span></span>가 달라집니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:12px">1. 온도가 높아지면 기체의 부피는 ( ? ), 온도가 낮아지면 기체의 부피는 ( ? ).</p>
+  <div class="pick" id="a2G1" data-glue="1">
+    <button data-a="0">줄어들고 · 늘어납니다</button>
+    <button data-a="1" data-m="맞아요! 온도가 높아지면 기체의 부피는 늘어나고, 온도가 낮아지면 줄어들어요.">늘어나고 · 줄어듭니다</button>
+    <button data-a="0">변하지 않고 · 변하지 않습니다</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:12px">2. 💭 생각: 추운 겨울날 밖에서 들고 다니던 풍선을 따뜻한 집으로 가지고 들어오면 풍선은 어떻게 될지 온도와 기체의 부피 관계를 생각하여 써 봐요.</p>
+  <textarea id="a2G2" rows="2" placeholder="예: 풍선이 ○○○ ○○○. 온도가 ○○○면서 풍선 속 공기의 부피가 ○○○기 때문이에요."></textarea>
+  <div class="row" style="margin-top:6px"><button class="main" id="a2G2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="a2G2Fb"></div>
+</section>
+
+<!-- 형성 평가 -->
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 일상생활 속 온도에 따른 기체의 부피 변화의 예를 설명한 것으로 옳지 <u>않은</u> 것은?</p>
+  <div class="pick" id="a2F1" style="grid-template-columns:1fr!important">
+    <button data-a="0">① 찌그러진 탁구공을 뜨거운 물에 넣으면 탁구공이 펴진다.</button>
+    <button data-a="0">② 물이 조금 남은 페트병을 냉장고 안에 넣어 두면 페트병이 찌그러진다.</button>
+    <button data-a="1" data-m="정답! 얼음물에 넣으면 온도가 낮아져 공기의 부피가 줄어들므로 고무풍선은 쪼그라들어요.">③ 고무풍선을 씌운 집기병을 얼음물에 넣으면 고무풍선이 부풀어 오른다.</button>
+    <button data-a="0">④ 더운 여름날 과자 봉지를 뜨거운 자동차 속에 두면 과자 봉지가 부풀어 오른다.</button>
+    <button data-a="0">⑤ 비닐 랩으로 씌운 따뜻한 음식을 냉장고 속에 넣어 두면 비닐 랩이 오목하게 들어간다.</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:14px">2. ✏️ 서술형: 추운 겨울철에는 여름철보다 자동차 타이어에 공기를 더 많이 넣어요. 그 까닭을 온도와 기체의 부피 관계를 이용해 써 봐요.</p>
+  <textarea id="a2F2" rows="3" placeholder="예: 겨울철에는 온도가 ○○ 타이어 속 공기의 부피가 ○○○○ 때문에 공기를 더 많이 넣어요."></textarea>
+  <div class="row" style="margin-top:6px"><button class="main" id="a2F2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="a2F2Fb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p>
+</section>
+
+<!-- 스스로 평가 -->
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 39쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>온도 변화에 따른 기체의 부피 변화를 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>우리 주변에서 온도에 따른 기체의 부피 변화의 예를 찾을 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>안전 수칙을 지키며 흥미를 갖고 탐구 활동에 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* 도입: 비눗물 막 */
+(function(){let k=0,raf=0,warm=false;const F=$('#a2Film');
+  function draw(){const y=64-k*46;F.setAttribute('d',`M280 64 Q300 ${y} 320 64`);$('#a2JarT').textContent=k<.1?'비눗물 막: 평평해요':k<.7?'비눗물 막: 부풀어 올라요':'비눗물 막: 볼록!';}
+  function loop(){k=Math.max(0,Math.min(1,k+(warm?0.008:-0.006)));draw();if((warm&&k<1)||(!warm&&k>0))raf=requestAnimationFrame(loop);
+    if(warm&&k>=1){$('#a2Q').hidden=false;}}
+  $('#a2Hold').onclick=()=>{warm=true;$('#a2Hands').setAttribute('opacity',1);$('#a2Warm').setAttribute('opacity',1);cancelAnimationFrame(raf);loop();};
+  $('#a2Let').onclick=()=>{warm=false;$('#a2Hands').setAttribute('opacity',0);$('#a2Warm').setAttribute('opacity',0);cancelAnimationFrame(raf);loop();};
+})();
+pickOne('#a2P1','','','s1');
+
+/* 실험해요 */
+(function(){const st={gear:0,cap:0,hot:0,wipe:0,ice:0};let k=.15,target=.15,raf=0,pos='table';const F='#a2LabFb',T=$('#a2T');
+  const P={table:[400,290],hot:[185,286],ice:[615,286],out:[400,290]};
+  function draw(){const [x,y]=P[pos];$('#a2Bot').setAttribute('transform',`translate(${x},${y})`);
+    const ty=-148-k*60;$('#a2Mem').setAttribute('d',`M-18 -148 Q0 ${ty} 18 -148`);}
+  function anim(){k+=(target-k)*0.03;draw();if(Math.abs(target-k)>0.005)raf=requestAnimationFrame(anim);else{k=target;draw();if(after){const f=after;after=null;f();}}}
+  let after=null;function go(t,f){target=t;after=f;cancelAnimationFrame(raf);anim();}
+  const mark=s=>{st[s]=1;$(`#a2Ctl [data-s="${s}"]`).classList.add('done');};
+  $$('#a2Ctl button').forEach(b=>b.onclick=()=>{const s=b.dataset.s;if(st[s])return;
+    if(s==='gear'){mark(s);$('#a2Gear').setAttribute('opacity',1);T.textContent='고무풍선을 집기병 입구에 씌워요';fb(F,'안전 준비 완료! 이제 고무풍선의 중간 부분을 잘라 집기병 입구에 씌우고 고무줄로 고정해요.','info');return;}
+    if(s==='cap'){mark(s);$('#a2Cap').setAttribute('opacity',1);T.textContent='집기병을 뜨거운 물에 넣어요';fb(F,'고무풍선을 씌우고 고무줄로 감았어요. 집기병 안에는 공기가 들어 있어요.','info');return;}
+    if(s==='hot'){if(!st.cap){fb(F,'먼저 집기병 입구에 고무풍선을 씌워요.',false);return;}
+      if(!st.gear){fb(F,'⚠️ 뜨거운 물을 다루기 전에 실험복·보안경·실험용 장갑을 먼저 착용해요!',false);return;}
+      mark(s);pos='hot';T.textContent='뜨거운 물 속 집기병 (1분쯤 지켜봐요)';fb(F,'고무풍선을 잘 지켜봐요…','info');go(1,()=>{T.textContent='고무풍선이 부풀어 올랐어요!';$('#a2RecH').hidden=false;fb(F,'고무풍선이 어떻게 되었는지 아래에 기록해요. 그다음 집기병을 꺼내 바깥 면을 닦아요.','info');});return;}
+    if(s==='wipe'){if(!st.hot){fb(F,'아직 뜨거운 물에 넣지 않았어요.',false);return;}mark(s);pos='out';draw();T.textContent='수건으로 바깥 면을 닦았어요';fb(F,'장갑을 낀 손으로 꺼내 수건으로 바깥 면의 물기를 닦았어요. 이제 얼음물에 넣어요.','info');return;}
+    if(s==='ice'){if(!st.hot){fb(F,'먼저 뜨거운 물에서 관찰해요.',false);return;}if(!st.wipe){fb(F,'집기병을 꺼내어 바깥 면을 먼저 닦아요.',false);return;}
+      mark(s);pos='ice';T.textContent='얼음물 속 집기병 (1~2분 지켜봐요)';fb(F,'얼음은 맨손으로 만지지 않아요. 고무풍선을 지켜봐요…','info');go(-.45,()=>{T.textContent='고무풍선이 쪼그라들었어요!';$('#a2RecC').hidden=false;fb(F,'고무풍선이 집기병 안으로 조금 들어갔어요. 아래에 기록해요.','info');});return;}
+  });
+  draw();
+})();
+let a2r=0;const a2rd=()=>{if(++a2r===2)doneNav('s2');};
+pickOne('#a2R1','','',null,a2rd);pickOne('#a2R2','','',null,a2rd);
+
+/* 정리해요 */
+let a2s=0;const a2sd=()=>{if(++a2s===3)doneNav('s3');};
+pickOne('#a2S1','뜨거운 물에서 고무풍선이 부풀었어요. 온도가 높아지면 기체의 부피는 늘어나요.','뜨거운 물에서 고무풍선이 어떻게 되었나요?',null,a2sd);
+pickOne('#a2S2','얼음물에서 고무풍선이 쪼그라들었어요. 온도가 낮아지면 기체의 부피는 줄어들어요.','얼음물에서 고무풍선이 어떻게 되었나요?',null,a2sd);
+pickOne('#a2S3','','',null,a2sd);
+
+/* 생활 속 예 */
+(function(){
+  const S={
+   pp0:'<svg viewBox="0 0 200 120"><rect x="20" y="70" width="160" height="44" rx="8" fill="#ffd9cc" stroke="#c0392b" stroke-width="3"/><path d="M70 60 a30 30 0 1 1 60 0 q-10 -12 -30 -8 q-20 -4 -30 8z" fill="#fff" stroke="#999" stroke-width="2"/><text x="100" y="20" text-anchor="middle" font-size="14" font-family="Jua" fill="#7a2a20">뜨거운 물</text></svg>',
+   pp1:'<svg viewBox="0 0 200 120"><rect x="20" y="70" width="160" height="44" rx="8" fill="#ffd9cc" stroke="#c0392b" stroke-width="3"/><circle cx="100" cy="62" r="30" fill="#fff" stroke="#999" stroke-width="2"/><text x="100" y="20" text-anchor="middle" font-size="14" font-family="Jua" fill="#7a2a20">동그랗게 펴졌어요</text></svg>',
+   pb0:'<svg viewBox="0 0 200 120"><rect x="40" y="6" width="120" height="110" rx="8" fill="#e6f2f8" stroke="#7aa7bd" stroke-width="3"/><line x1="40" y1="60" x2="160" y2="60" stroke="#7aa7bd" stroke-width="2"/><path d="M88 106 v-34 q0 -8 6 -10 v-6 h12 v6 q6 2 6 10 v34z" fill="#d8f1ff" stroke="#3a78c8" stroke-width="2"/><rect x="88" y="94" width="24" height="12" fill="#6ec3f0"/><text x="100" y="30" text-anchor="middle" font-size="14" font-family="Jua" fill="#1b3f66">냉장고</text></svg>',
+   pb1:'<svg viewBox="0 0 200 120"><rect x="40" y="6" width="120" height="110" rx="8" fill="#e6f2f8" stroke="#7aa7bd" stroke-width="3"/><line x1="40" y1="60" x2="160" y2="60" stroke="#7aa7bd" stroke-width="2"/><path d="M88 106 l4 -16 l-4 -10 q0 -8 6 -10 v-6 h12 v6 q6 2 6 10 l-4 10 l4 16z" fill="#d8f1ff" stroke="#3a78c8" stroke-width="2"/><rect x="89" y="94" width="22" height="12" fill="#6ec3f0"/><text x="100" y="30" text-anchor="middle" font-size="14" font-family="Jua" fill="#1b3f66">찌그러졌어요</text></svg>',
+   bb0:'<svg viewBox="0 0 200 120"><rect width="200" height="120" fill="#fff4c8"/><circle cx="170" cy="22" r="14" fill="#ffd23f"/><rect y="90" width="200" height="30" fill="#f1d38a"/><ellipse cx="100" cy="80" rx="30" ry="14" fill="#e2573f"/><path d="M76 78 q24 -10 48 0" stroke="#fff" stroke-width="5" fill="none"/></svg>',
+   bb1:'<svg viewBox="0 0 200 120"><rect width="200" height="120" fill="#fff4c8"/><circle cx="170" cy="22" r="14" fill="#ffd23f"/><rect y="90" width="200" height="30" fill="#f1d38a"/><circle cx="100" cy="64" r="28" fill="#e2573f"/><path d="M74 60 q26 -14 52 0" stroke="#fff" stroke-width="5" fill="none"/><path d="M78 74 q22 12 44 0" stroke="#ffd23f" stroke-width="5" fill="none"/></svg>',
+   sn0:'<svg viewBox="0 0 200 120"><rect width="200" height="120" fill="#fff4c8"/><circle cx="30" cy="22" r="14" fill="#ffd23f"/><path d="M70 40 h60 l-4 60 h-52z" fill="#3a78c8" opacity=".85"/><text x="100" y="78" text-anchor="middle" font-size="14" font-family="Jua" fill="#fff">과자</text></svg>',
+   sn1:'<svg viewBox="0 0 200 120"><rect width="200" height="120" fill="#fff4c8"/><circle cx="30" cy="22" r="14" fill="#ffd23f"/><path d="M66 40 h68 q14 30 0 60 h-68 q-14 -30 0 -60z" fill="#3a78c8" opacity=".85"/><text x="100" y="78" text-anchor="middle" font-size="14" font-family="Jua" fill="#fff">빵빵!</text></svg>',
+   wr0:'<svg viewBox="0 0 200 120"><rect x="40" y="6" width="120" height="110" rx="8" fill="#e6f2f8" stroke="#7aa7bd" stroke-width="3"/><path d="M62 70 h76 l-8 30 h-60z" fill="#fff" stroke="#999" stroke-width="2"/><path d="M62 70 h76" stroke="#9fc9e6" stroke-width="3"/><g fill="none" stroke="#e2573f" stroke-width="2"><path d="M86 62 q-4 -8 0 -14"/><path d="M110 62 q-4 -8 0 -14"/></g></svg>',
+   wr1:'<svg viewBox="0 0 200 120"><rect x="40" y="6" width="120" height="110" rx="8" fill="#e6f2f8" stroke="#7aa7bd" stroke-width="3"/><path d="M62 70 h76 l-8 30 h-60z" fill="#fff" stroke="#999" stroke-width="2"/><path d="M62 70 Q100 86 138 70" stroke="#3a78c8" stroke-width="3" fill="#d8f1ff" fill-opacity=".6"/></svg>',
+   ba0:'<svg viewBox="0 0 200 120"><rect width="200" height="120" fill="#cfeaf8"/><path d="M70 70 q30 -14 60 0 q0 10 -30 14 q-30 -4 -30 -14z" fill="#e2573f" opacity=".8"/><rect x="88" y="94" width="24" height="18" fill="#8a5a2b"/><line x1="76" y1="74" x2="90" y2="94" stroke="#555"/><line x1="124" y1="74" x2="110" y2="94" stroke="#555"/><path d="M100 92 l-5 -10 h10z" fill="#f39c12"/></svg>',
+   ba1:'<svg viewBox="0 0 200 120"><rect width="200" height="120" fill="#cfeaf8"/><path d="M100 4 a38 38 0 0 1 30 62 l-14 14 h-32 l-14 -14 a38 38 0 0 1 30 -62z" fill="#e2573f"/><path d="M100 4 v76" stroke="#ffd23f" stroke-width="4"/><rect x="88" y="94" width="24" height="18" fill="#8a5a2b"/><line x1="84" y1="80" x2="90" y2="94" stroke="#555"/><line x1="116" y1="80" x2="110" y2="94" stroke="#555"/><path d="M100 92 l-6 -12 h12z" fill="#f39c12"/></svg>'};
+  const IT=[
+   {k:'pp',t:'찌그러진 탁구공을 뜨거운 물에 넣었을 때 탁구공은?',a:0,w:'탁구공이 다시 펴져요. 온도가 높아지면서 탁구공 속 공기의 부피가 늘어나기 때문이에요.'},
+   {k:'pb',t:'물이 조금 남은 페트병을 냉장고에 넣어 두었을 때 페트병은?',a:1,w:'페트병이 찌그러져요. 온도가 낮아지면서 페트병 속 공기의 부피가 줄어들기 때문이에요.'},
+   {k:'bb',t:'비치 볼을 뜨거운 해변에 놓아두면?',a:0,w:'비치 볼이 부풀어 올라요. 온도가 높아지면서 비치 볼 속 공기의 부피가 늘어나요.'},
+   {k:'sn',t:'더운 여름날 과자 봉지를 햇빛이 비치는 곳에 오래 두면?',a:0,w:'과자 봉지가 부풀어 올라요. 온도가 높아지면서 과자 봉지 속 공기의 부피가 늘어나요.'},
+   {k:'wr',t:'뜨거운 음식을 담은 그릇을 비닐 랩으로 싸고 냉장고에 넣어 두면 랩의 윗면은?',a:1,w:'랩의 윗면이 오목하게 들어가요. 온도가 낮아지면서 그릇 속 공기의 부피가 줄어들어요.'},
+   {k:'ba',t:'열기구 속 공기를 가열하면 열기구의 풍선 부분은?',a:0,w:'풍선 부분이 부풀어 올라요. 온도가 높아지면서 공기의 부피가 늘어나요.'}];
+  const OPT=['⬆ 부풀어요·펴져요','⬇ 쪼그라들어요·오목해져요'];let n=0;
+  IT.forEach(it=>{const d=document.createElement('div');d.className='a2-card';d.innerHTML=`<div class="pic">${S[it.k+'0']}</div><p>${it.t}</p><div class="row"></div>`;
+    const row=$('.row',d);OPT.forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>{if(d.classList.contains('done'))return;
+      if(i===it.a){b.classList.add('right');d.classList.add('done');$('.pic',d).innerHTML=S[it.k+'1'];n++;$('#a2Cnt').textContent=n;fb('#a2CardsFb',it.w+(n===6?' 🎉 모두 찾았어요!':''),true);if(n===6)doneNav('s4');}
+      else{b.classList.add('wrong');fb('#a2CardsFb','온도가 높아지는지 낮아지는지 먼저 생각해 봐요. 온도가 높아지면 기체의 부피는 늘어나요.',false);setTimeout(()=>b.classList.remove('wrong'),800);}};row.appendChild(b);});
+    $('#a2Cards').appendChild(d);});
+})();
+
+/* 더 알아보기: 동전 */
+$('#a2CoinGo').onclick=()=>{$('#a2CH').setAttribute('opacity',1);let i=0;$('#a2CT').textContent='딸깍! 딸깍!';
+  const iv=setInterval(()=>{$('#a2C').setAttribute('transform',i%2?'':'translate(0,-6) rotate(-6 300 48)');if(++i>11){clearInterval(iv);$('#a2C').setAttribute('transform','');$('#a2CoinQ').hidden=false;}},240);};
+pickOne('#a2P5','','','s5');
+
+/* 생각이 한눈에 */
+let a2g=0;const a2gd=()=>{if(++a2g===3)doneNav('s6');};
+$('#blReveal').onclick=()=>{fb('#blFb','기체는 온도에 따라 부피가 달라져요. 온도가 높아지면 기체의 부피는 늘어나고, 온도가 낮아지면 기체의 부피는 줄어들어요.',true);a2gd();};
+pickOne('#a2G1','','뜨거운 물과 얼음물에서 고무풍선이 어떻게 되었는지 떠올려 봐요.',null,a2gd);
+(function(){let ok=false;$('#a2G2Btn').onclick=()=>{const t=$('#a2G2').value.trim();if(!t){fb('#a2G2Fb','먼저 답을 써 보세요.',false);return;}
+  const r=/부풀|커|늘어/.test(t),w=/온도|따뜻/.test(t)&&/부피/.test(t);
+  if(r&&w&&!/줄어|쪼그라/.test(t)){fb('#a2G2Fb','잘 썼어요! 따뜻한 집으로 들어오면 온도가 높아지면서 풍선 속 공기의 부피가 늘어나 풍선이 부풀어 올라요.',true);if(!ok){ok=true;a2gd();}}
+  else fb('#a2G2Fb',r?'풍선의 변화는 맞아요. 온도와 공기의 부피가 어떻게 변하는지 까닭도 써 봐요.':'추운 밖에서 따뜻한 집으로 오면 온도가 어떻게 될까요? 그러면 풍선 속 공기의 부피는?','info');};})();
+
+/* 형성 평가 */
+let a2f=0;const a2fd=()=>{if(++a2f===2)doneNav('s7');};
+pickOne('#a2F1','','얼음물에서 고무풍선이 어떻게 되었는지 떠올려 봐요.',null,a2fd);
+(function(){let ok=false;$('#a2F2Btn').onclick=()=>{const t=$('#a2F2').value.trim();if(!t){fb('#a2F2Fb','먼저 답을 써 보세요.',false);return;}
+  const low=/온도.{0,6}(낮|내려)|추워|차가/.test(t),sh=/부피.{0,8}(줄|작아)|줄어/.test(t);
+  if(low&&sh){fb('#a2F2Fb','잘 썼어요! 겨울철에는 온도가 낮아 타이어 속 공기의 부피가 줄어들기 때문에 공기를 더 많이 넣어요.',true);if(!ok){ok=true;a2fd();}}
+  else fb('#a2F2Fb',low?'겨울철 온도는 맞아요. 그러면 타이어 속 공기의 부피는 어떻게 될까요?':'겨울철에는 여름철보다 온도가 어떤가요? 온도와 공기의 부피 관계를 넣어 써 봐요.','info');};})();
+
+faces('s8','오늘도 잘했어요! 다음 시간에는 압력이 변할 때 기체의 부피가 어떻게 되는지 알아봐요.','어려웠던 부분은 실험해요를 한 번 더 해 보고, 선생님께 질문해도 좋아요!');
+</script>

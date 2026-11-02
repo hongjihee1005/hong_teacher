@@ -200,6 +200,14 @@ h1,h2,h3{font-family:var(--display);font-weight:400;margin:0}
 .lsn.hide .ln span{filter:blur(9px);user-select:none}
 /* write */
 .wr{width:min(1150px,96vw);display:grid;gap:10px;grid-template-columns:repeat(auto-fit,minmax(min(100%,440px),1fr))}
+/* 칸별 '💡 도움' (f.help) */
+.wf.hashelp{position:relative}.wf.hashelp label{padding-right:7.5em}
+.hbtn{position:absolute;top:12px;right:14px;font-family:var(--display);font-size:clamp(14px,1.2vw,18px);padding:3px 12px;border-radius:999px;border:2px solid var(--tn);background:var(--paper);color:var(--tn);cursor:pointer;white-space:nowrap}
+.hbtn[aria-expanded="true"]{background:var(--tn);color:#fff}
+.hpop{display:none;position:absolute;z-index:30;left:10px;right:10px;background:var(--paper);border:3px solid var(--tn);border-radius:14px;padding:8px 2.2em 8px 14px;box-shadow:0 8px 22px rgba(0,0,0,.18);text-align:left;word-break:keep-all}
+.hpop.on{display:block}.hpop .hph{margin:0 0 2px;font-family:var(--display);color:var(--tn);font-size:clamp(16px,1.4vw,20px)}
+.hpop ul{margin:0;padding-left:1.2em;font-size:clamp(17px,1.6vw,22px);line-height:1.55;color:var(--ink)}.hpop .hpf{margin:2px 0 0;font-size:clamp(13px,1.1vw,15px);color:var(--soft)}
+.hpop .hpx{position:absolute;top:4px;right:6px;border:0;background:transparent;color:var(--soft);font-size:20px;cursor:pointer;padding:2px 6px}
 .wf.full{grid-column:1/-1}
 .wf{background:var(--paper);border-radius:18px;padding:10px 16px;border:3px solid var(--line);text-align:left}
 .wf label{display:block;font-family:var(--display);font-size:clamp(21px,2.1vw,30px);margin-bottom:4px}
@@ -583,7 +591,7 @@ R.listen=X=>{
 R.write=X=>{
   const key='hj-kor-'+C.id+'-'+X.id;const saved=store.get(key)||{};
   const FULL=X.fields.map(f=>(f.rows||0)>=4||X.fields.length<3||(!f.one&&X.fields.some(g=>(g.rows||0)>=4)));{let i=0;while(i<FULL.length){if(FULL[i]){i++;continue;}if(i+1<FULL.length&&!FULL[i+1]){i+=2;continue;}FULL[i]=true;i++;}}/* 짝 없는 반쪽 칸은 가로 전체로 */
-  $('body').innerHTML=hd(X)+`<div class="wbar"><button class="tool" id="wSpeak">🔈 내 글 듣기</button><button class="tool" id="wStop">⏹</button><button class="tool" id="wCheck">✅ 점검하기</button>${X.model?'<button class="tool" id="wModel">💡 예시 보기</button>':''}<button class="tool" id="wCopy">📋 복사하기</button><button class="tool" id="wClear">🧽 지우기</button><span class="wcount" id="wCount"></span></div><p class="ttsmsg"></p><div class="wr">${X.fields.map((f,i)=>`<div class="wf ${FULL[i]?'full':''}"><label for="w${i}">${hk(f.l.replace(/\s+(\([^()]+\))\s*$/,'<small class="lsub">$1</small>'))}${f.s?` <small>${f.s}</small>`:''}</label>${f.one?`<input id="w${i}" type="text" placeholder="${esc(f.ph||'')}">`:`<textarea id="w${i}" rows="${f.rows||3}" placeholder="${esc(f.ph||'')}"></textarea>`}</div>`).join('')}</div>
+  $('body').innerHTML=hd(X)+`<div class="wbar"><button class="tool" id="wSpeak">🔈 내 글 듣기</button><button class="tool" id="wStop">⏹</button><button class="tool" id="wCheck">✅ 점검하기</button>${X.model?'<button class="tool" id="wModel">💡 예시 보기</button>':''}<button class="tool" id="wCopy">📋 복사하기</button><button class="tool" id="wClear">🧽 지우기</button><span class="wcount" id="wCount"></span></div><p class="ttsmsg"></p><div class="wr">${X.fields.map((f,i)=>`<div class="wf ${FULL[i]?'full':''}${f.help?' hashelp':''}">${f.help?`<button type="button" class="hbtn" data-h="${i}" aria-expanded="false">💡 도움</button>`:''}<label for="w${i}">${hk(f.l.replace(/\s+(\([^()]+\))\s*$/,'<small class="lsub">$1</small>'))}${f.s?` <small>${f.s}</small>`:''}</label>${f.one?`<input id="w${i}" type="text" placeholder="${esc(f.ph||'')}">`:`<textarea id="w${i}" rows="${f.rows||3}" placeholder="${esc(f.ph||'')}"></textarea>`}${f.help?`<div class="hpop" id="hp${i}" role="dialog" aria-label="${esc(f.l.replace(/<[^>]+>/g,''))} 도움"><button type="button" class="hpx" aria-label="닫기">✕</button><p class="hph">이렇게 써 보면 좋아요</p><ul>${f.help.map(x=>`<li>${esc(x)}</li>`).join('')}</ul><p class="hpf">차례대로 생각하며 내 말로 써요.</p></div>`:''}</div>`).join('')}</div>
    
    ${X.model?`<div class="ex-model" id="exModel"><b>💡 예시</b> — 그대로 베끼지 말고 내 경험으로 바꾸어 써요.<br>${X.model}</div>`:''}
    <div class="wcheck" id="wBox"></div>`;
@@ -594,6 +602,12 @@ R.write=X=>{
   $('wSpeak').onclick=()=>{const t=all();if(!t.length){$('wCount').textContent='먼저 글을 써 보세요 ✏️';return;}speak(t.map(x=>({text:x})));};
   $('wStop').onclick=stopSpeak;
   if(X.model)$('wModel').onclick=()=>$('exModel').classList.toggle('on');
+  /* 칸별 '💡 도움'(f.help): 쓰는 차례·넣을 것을 알려 주는 팝업. 입력칸 아래에 뜨고, 바깥을 누르거나 Esc로 닫힘 */
+  const hClose=()=>document.querySelectorAll('.hpop.on').forEach(p=>{p.classList.remove('on');const b=p.parentElement.querySelector('.hbtn');if(b)b.setAttribute('aria-expanded','false')});
+  document.querySelectorAll('.hbtn').forEach(b=>b.onclick=e=>{e.preventDefault();const p=$('hp'+b.dataset.h);const on=!p.classList.contains('on');hClose();if(!on)return;
+    const t=$('w'+b.dataset.h);p.style.top=(t.offsetTop+t.offsetHeight+6)+'px';p.classList.add('on');b.setAttribute('aria-expanded','true');p.scrollIntoView({block:'nearest'});});
+  document.querySelectorAll('.hpop .hpx').forEach(x=>x.onclick=hClose);
+  if(!window.__hpop){window.__hpop=1;document.addEventListener('click',e=>{if(!e.target.closest('.hpop,.hbtn'))hClose()});document.addEventListener('keydown',e=>{if(e.key==='Escape')hClose()});}
   let clr=0;$('wClear').onclick=()=>{if(!clr){clr=1;$('wClear').textContent='🧽 한 번 더 누르면 지워져요';setTimeout(()=>{clr=0;$('wClear').textContent='🧽 지우기';},2500);return;}
     tas.forEach((t,i)=>{t.value='';saved['f'+i]='';});store.set(key,saved);count();clr=0;$('wClear').textContent='🧽 지우기';};
   $('wCopy').onclick=()=>{const txt=`[${C.sub} · ${X.hd.replace(/<[^>]+>/g,'')}]\n`+X.fields.map((f,i)=>`${f.l.replace(/<[^>]+>/g,'')}: ${tas[i].value.trim()}`).join('\n');

@@ -495,7 +495,7 @@ def root_menu():
              '<a class="card room" style="--acc:#8A63D2" href="routines/index.html"><span class="ico">🧩</span><span class="nm">사고전략 23가지</span><small>See-Think-Wonder부터 I Used to Think까지, 전략마다 교사용·학생용 안내와 활동지</small></a>'
              '</div>\n<h2>💡 처음이라면</h2><p class="gsub">사고전략이 무엇인지, 어떻게 시작하는지부터 읽어 보세요.</p><div class="grid">'
              + three_cards('guide.html', '사고전략', '#8A63D2') + '</div>')
-    return menu('사고전략 · 초등교사 홍지희', 1, [], '💡 사고전략',
+    return menu('사고전략 · 초등교사 홍지희', 1, [('../project/index.html', '교육 프로그램')], '💡 사고전략',
                 '하버드 대학교 Project Zero의 사고 루틴(Thinking Routines)을 탐구 단계별·교과별로 정리했어요.<br>모든 자료에 교사용 안내 · 학생용 안내 · 활동지가 있어요.', inner)
 
 def stage_menu():
@@ -510,7 +510,7 @@ def stage_menu():
                   + ''.join(card(f'../routines/{rfile(x)}', x['en'], f'{x["ico"]} {E(x["ko"])}', E(x['one']) + ' — 교사용·학생용·활동지', s['acc']) for x in rs)
                   + '</div></section>\n')
     inner = tabbar(items) + '\n' + panes
-    return menu('탐구 단계별 사고전략', 2, [('../index.html', '💡 사고전략')], '🧭 탐구 단계별 사고전략',
+    return menu('탐구 단계별 사고전략', 2, [('../../project/index.html', '교육 프로그램'), ('../index.html', '💡 사고전략')], '🧭 탐구 단계별 사고전략',
                 '탐구 수업의 흐름에 따라 다섯 단계로 나누었어요. 단계마다 교사용 안내, 학생용 안내, 활동지, 그리고 그 단계에 쓰기 좋은 사고전략이 있어요.<br><small>' + E(STAGE_NOTE) + '</small>',
                 inner, tabs_js=True)
 
@@ -524,7 +524,7 @@ def subj_menu():
                   + ''.join(card(f'../routines/{rfile(BY_ID[i])}', f'{n}단계 · {BY_ID[i]["en"]}', f'{BY_ID[i]["ico"]} {E(BY_ID[i]["ko"])}', E(t), ST[n]['acc']) for n, i, t in j['picks'])
                   + '</div></section>\n')
     inner = tabbar(items) + '\n' + panes
-    return menu('교과별 사고전략', 2, [('../index.html', '💡 사고전략')], '📚 교과별 사고전략',
+    return menu('교과별 사고전략', 2, [('../../project/index.html', '교육 프로그램'), ('../index.html', '💡 사고전략')], '📚 교과별 사고전략',
                 '초등 10개 교과에서 사고전략을 어떻게 쓸 수 있는지 정리했어요. 교과마다 교사용 안내(추천 전략·수업 예시), 학생용 안내, 교과 맞춤 활동지가 있어요.', inner, tabs_js=True)
 
 def routine_menu():
@@ -535,7 +535,7 @@ def routine_menu():
     for s in STAGES:
         panes += (f'<section class="pane" id="{s["id"]}" role="tabpanel"><h2>{s["ico"]} {s["n"]}단계 {E(s["name"])}</h2><p class="gsub">“{E(s["q"])}”</p>'
                   + grid([x for x in R if x['stage'] == s['n']]) + '</section>\n')
-    return menu('사고전략 23가지', 2, [('../index.html', '💡 사고전략')], '🧩 사고전략 23가지',
+    return menu('사고전략 23가지', 2, [('../../project/index.html', '교육 프로그램'), ('../index.html', '💡 사고전략')], '🧩 사고전략 23가지',
                 'Project Zero 사고 루틴 가운데 초등 교실에서 쓰기 좋은 23가지를 골랐어요. 이름 옆 영어는 원래 이름이에요.', tabbar(items) + '\n' + panes, tabs_js=True)
 
 def main():

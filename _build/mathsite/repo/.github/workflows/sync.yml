@@ -1,0 +1,38 @@
+# 원본(hongjihee1005/hong_teacher)의 창의수학게임·교과수학게임을 가져와 이 사이트를 맞춥니다.
+# 한 시간마다 저절로 돌고, Actions 탭 → '원본에서 가져오기' → Run workflow로 바로 돌릴 수도 있습니다.
+# 이 저장소의 파일을 직접 고치지 마세요. 원본에서 고치면 여기로 따라옵니다(만드는 방법: hong_teacher의 _build/mathsite/export.py).
+name: 원본에서 가져오기
+on:
+  schedule:
+    - cron: '17 * * * *'
+  workflow_dispatch:
+  repository_dispatch:
+    types: [sync]
+permissions:
+  contents: write
+concurrency:
+  group: sync
+  cancel-in-progress: false
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 원본 받기
+        run: git clone --depth 1 https://github.com/hongjihee1005/hong_teacher "$RUNNER_TEMP/src"
+      - name: 사이트 만들기
+        run: python3 "$RUNNER_TEMP/src/_build/mathsite/export.py" .
+      - name: 바뀐 것 올리기
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          SRC=$(git -C "$RUNNER_TEMP/src" rev-parse --short HEAD)
+          git add -A
+          if git diff --cached --quiet; then
+            # 바뀐 것이 오래 없으면 GitHub가 예약 실행을 멈추므로(60일), 50일마다 기록 한 줄을 올립니다.
+            last=$(git log -1 --format=%ct); now=$(date +%s)
+            if [ $(( (now - last) / 86400 )) -lt 50 ]; then echo "바뀐 것 없음 — 이미 맞습니다."; exit 0; fi
+            date -u +"%Y-%m-%d 확인 (원본 $SRC)" > last-sync.txt; git add last-sync.txt
+          fi
+          git commit -q -m "원본에서 가져오기 (hong_teacher $SRC)"
+          git push origin HEAD:main

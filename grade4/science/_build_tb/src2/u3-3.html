@@ -1,0 +1,313 @@
+<!--
+title: 압력이 변하면 기체의 부피는 어떻게 될까?
+unit: 3
+lesson: 4
+total: 12
+goal: 압력에 따른 기체의 부피 변화를 설명할 수 있어요.<br>우리 주변에서 압력에 따른 기체의 부피 변화 예를 찾을 수 있어요.
+pages: 「과학」 70~71쪽 · 「실험관찰」 40~41쪽 · 지도서 280~291쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"압","bl2":"력"}}]
+-->
+<style>
+.a3-lab{max-height:40vh}
+.a3-ctl{display:flex;flex-wrap:wrap;gap:8px;margin-top:8px;align-items:center}
+.a3-ctl button{font-size:.9rem;min-height:2.3rem;padding:.15em .7em;border-width:2px}
+.a3-ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.a3-slide{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;margin-top:8px}
+.a3-slide input{width:100%;height:2rem;accent-color:var(--sky)}
+.a3-def{margin-top:10px;padding:10px 14px;border-radius:14px;background:#e1f0fb}
+.a3-rep td{vertical-align:top}
+.a3-rep th{background:#e1f0fb;font-family:"Jua",sans-serif;font-weight:400;font-size:.95rem}
+.a3-ch{display:flex;flex-wrap:wrap;gap:6px;margin-top:4px}
+.a3-ch button{font-size:.85rem;min-height:2rem;padding:.1em .6em;border-width:2px}
+.a3-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.a3-card{border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.a3-card p{margin:0 0 6px;font-size:.93rem;line-height:1.35}
+.a3-card .row{gap:6px}.a3-card .row button{font-size:.82rem;min-height:2rem;padding:.1em .5em;border-width:2px;flex:1}
+.a3-card.done{border-color:var(--good);background:#f1fbf4}
+.a3-match{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:6px;align-items:center;margin:4px 0}
+.a3-match button{font-size:.85rem;min-height:2.2rem;padding:.1em .4em}
+@media (max-width:640px){.a3-cards{grid-template-columns:1fr}.a3-match{grid-template-columns:1fr}}
+</style>
+
+<!-- 도입 -->
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 70쪽</span>
+  <h2>힘을 주어 뛰면 풍선 놀이기구 속 공기의 부피는 어떻게 될까요?</h2>
+  <svg id="a3Bounce" class="scene" viewBox="0 0 640 260" style="max-height:30vh" role="img" aria-label="공기를 넣은 풍선 놀이기구 위에서 아이가 뛰는 그림">
+    <rect width="640" height="260" fill="#e9f6fc"/><rect y="230" width="640" height="30" fill="#9ccf7a"/>
+    <path d="M120 230 v-110 q0 -20 20 -20 h20 v-30 h40 v30 h240 v-30 h40 v30 h20 q20 0 20 20 v110z" fill="#ff9f43" stroke="#c76b00" stroke-width="4"/>
+    <path id="a3Floor" d="M140 200 Q320 200 500 200" fill="none" stroke="#c76b00" stroke-width="10" stroke-linecap="round"/>
+    <path d="M140 200 v24 M500 200 v24" stroke="#c76b00" stroke-width="6"/>
+    <g id="a3Kid"><circle cx="0" cy="-68" r="14" fill="#f2c39b"/><rect x="-11" y="-54" width="22" height="30" rx="8" fill="#3a78c8"/><path d="M-6 -24 l-6 22 M6 -24 l6 22" stroke="#2c333a" stroke-width="6" stroke-linecap="round"/><path d="M-11 -48 l-14 -14 M11 -48 l14 -14" stroke="#f2c39b" stroke-width="5" stroke-linecap="round"/></g>
+    <rect x="12" y="12" width="300" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a3BT" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">뛰기 단추를 눌러 봐요</text>
+  </svg>
+  <div class="row" style="margin-top:8px"><button class="main" id="a3Jump">🦘 힘을 주어 뛰기</button></div>
+  <div id="a3Q1" hidden>
+    <p class="jua" style="font-size:1.05rem;margin-top:8px">발로 누른 부분이 안으로 들어갈 때 풍선 놀이기구 속 공기의 부피는?</p>
+    <div class="pick" id="a3P1" data-glue="1">
+      <button data-a="0">늘어나요</button>
+      <button data-a="1" data-m="맞아요! 힘을 주어 뛰면 발로 밟은 부분이 눌려 들어가면서 풍선 놀이기구 속 공기의 부피가 줄어들어요.">줄어들어요</button>
+      <button data-a="0" data-m="눌린 부분이 안으로 들어갔어요. 공기가 차지하는 공간은 어떻게 되었을까요?">변하지 않아요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+  <p class="a3-def" data-glue="1">💡 공기가 들어 있는 공을 누르면 공의 크기가 달라져요. 공 속 기체에 작용하는 압력이 변했기 때문이에요. 일정한 넓이에 작용하는 힘을 <b>압력</b>이라고 해요.</p>
+</section>
+
+<!-- 실험해요 1 -->
+<section id="s2" data-nav="실험해요 1">
+  <span class="stage">실험해요 1 · 「실험관찰」 40쪽</span>
+  <h2>압력을 높일 때 기체의 부피 변화 관찰하기</h2>
+  <p>준비물: 주사기, 주사기 마개, 실험복, 보안경, 실험용 장갑 · 주사기에 공기를 3분의 2 정도(40 mL) 넣었어요.</p>
+  <svg id="a3Syr" class="scene a3-lab" viewBox="0 0 800 260" role="img" aria-label="공기가 든 주사기의 피스톤을 누르는 실험">
+    <rect width="800" height="260" fill="#fdf6e3"/>
+    <rect id="a3Air" x="170" y="96" width="300" height="68" fill="#bfe6fb" fill-opacity=".9"/>
+    <rect x="150" y="90" width="510" height="80" rx="8" fill="#fff" fill-opacity=".25" stroke="#5b6b78" stroke-width="4"/>
+    <rect x="110" y="116" width="44" height="28" rx="4" fill="#fff" fill-opacity=".4" stroke="#5b6b78" stroke-width="3"/>
+    <g id="a3Cap" opacity="0"><rect x="86" y="108" width="34" height="44" rx="8" fill="#e2573f" stroke="#7a2a20" stroke-width="3"/><text x="103" y="186" text-anchor="middle" font-size="15" font-family="Jua" fill="#7a2a20">마개</text></g>
+    <g id="a3Scale" font-size="13" font-family="Jua" fill="#5b6b78"></g>
+    <path d="M660 80 v100" stroke="#5b6b78" stroke-width="8" stroke-linecap="round"/>
+    <g id="a3Pis"><rect x="-10" y="98" width="20" height="64" rx="4" fill="#2c333a"/><rect x="10" y="122" width="270" height="16" fill="#9aa5ad"/><rect x="270" y="92" width="16" height="76" rx="6" fill="#2c333a"/></g>
+    <g id="a3Puff" opacity="0" fill="#bfe6fb" stroke="#7aa7bd"><circle cx="90" cy="126" r="9"/><circle cx="70" cy="118" r="7"/><circle cx="56" cy="134" r="6"/></g>
+    <rect x="560" y="200" width="200" height="22" rx="8" fill="#fff" stroke="#5b6b78" stroke-width="2"/><rect id="a3Force" x="562" y="202" width="0" height="18" rx="6" fill="#e2573f"/>
+    <text x="660" y="244" text-anchor="middle" font-size="15" font-family="Jua" fill="#0f3b5c">손에 느껴지는 힘</text>
+    <rect x="12" y="12" width="330" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a3ST" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">공기의 부피: 40 mL</text>
+  </svg>
+  <div class="a3-ctl" data-glue="1"><button id="a3CapBtn">🔒 주사기 마개로 입구 막기</button><button id="a3Rel">✋ 피스톤에서 손 떼기</button></div>
+  <div class="a3-slide" data-glue="1"><span class="jua">누르기 ◀</span><input type="range" id="a3V" min="20" max="40" step="0.5" value="40" aria-label="피스톤 누르기(왼쪽으로 밀수록 많이 누름)"><span class="jua" id="a3VT">40 mL</span></div>
+  <div class="fb" id="a3SyrFb"></div>
+  <p class="tip">⚠️ 주사기의 피스톤을 무리하게 누르지 않아요. 피스톤을 누를 때 마개가 빠지지 않게 조심해요.</p>
+  <div id="a3Ask1" hidden>
+    <p class="jua" style="font-size:1.03rem">① 피스톤을 누르면 주사기 속 공기에 작용하는 압력은?</p>
+    <div class="pick" id="a3R1" data-glue="1"><button data-a="1" data-m="맞아요! 피스톤을 누르면 주사기 속 공기에 작용하는 압력이 높아져요.">높아져요</button><button data-a="0">낮아져요</button></div>
+    <div class="fb"></div>
+    <p class="jua" style="font-size:1.03rem;margin-top:8px">② 압력이 높아지면 피스톤과 주사기 속 공기의 부피는?</p>
+    <div class="pick" id="a3R2" data-glue="1"><button data-a="1" data-m="맞아요! 피스톤은 주사기 속으로 들어가고, 주사기 속 공기의 부피는 줄어들어요.">피스톤이 들어가고 공기의 부피가 줄어요</button><button data-a="0" data-m="눈금을 다시 보세요. 공기가 차지하는 칸이 늘었나요, 줄었나요?">피스톤이 나오고 공기의 부피가 늘어요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<!-- 실험해요 2 -->
+<section id="s3" data-nav="실험해요 2">
+  <span class="stage">실험해요 2 · 「실험관찰」 40쪽</span>
+  <h2>압력을 낮출 때 기체의 부피 변화 관찰하기</h2>
+  <p>준비물: 공기를 빼는 장치, 고무풍선, 공기 주입기, 풍선 클립 · 압력을 제외한 다른 조건은 같게 해요.</p>
+  <svg id="a3Vac" class="scene a3-lab" viewBox="0 0 800 290" role="img" aria-label="공기를 빼는 장치의 용기 안에 넣은 고무풍선이 커지는 실험">
+    <rect width="800" height="290" fill="#fdf6e3"/><rect y="262" width="800" height="28" fill="#d9c49a"/>
+    <rect x="270" y="122" width="220" height="140" rx="16" fill="#e6f5fb" fill-opacity=".8" stroke="#7aa7bd" stroke-width="4"/>
+    <g id="a3Obj"></g>
+    <g id="a3Lid" opacity="0"><rect x="258" y="100" width="244" height="26" rx="9" fill="#3a78c8" stroke="#1b3f66" stroke-width="2"/><circle cx="330" cy="94" r="10" fill="#ffc93c" stroke="#b58400" stroke-width="2"/></g>
+    <g id="a3Pmp" opacity="0"><rect x="366" y="44" width="28" height="58" rx="6" fill="#e2573f"/><rect id="a3PRod" x="375" y="14" width="10" height="34" fill="#9aa5ad"/><rect x="354" y="8" width="52" height="12" rx="5" fill="#2c333a"/></g>
+    <text id="a3VacN" x="640" y="140" text-anchor="middle" font-size="20" font-family="Jua" fill="#0f3b5c"></text>
+    <rect x="12" y="12" width="330" height="40" rx="12" fill="#0f3b5c" opacity=".88"/><text id="a3VT2" x="26" y="40" font-size="20" font-family="Jua" fill="#fff">고무풍선을 준비해요</text>
+  </svg>
+  <div class="a3-ctl" id="a3VCtl" data-glue="1">
+    <button data-s="ball">🎈 풍선에 공기 넣고 클립으로 묶기</button>
+    <button data-s="put">🫙 용기에 넣고 뚜껑 닫기</button>
+    <button data-s="pump" class="main">🔽 펌프로 공기 빼기</button>
+    <button data-s="btn">🔘 뚜껑 가운데 단추 누르기</button>
+    <button data-s="open">뚜껑 열기</button>
+  </div>
+  <div class="fb" id="a3VacFb"></div>
+  <p class="tip">⚠️ 공기를 빼는 장치의 뚜껑을 열 때는 뚜껑의 단추를 누르거나 잡아당긴 뒤에 열어요. 고무풍선은 입구를 2~3번 돌린 뒤 풍선 클립을 끼워 묶어요.</p>
+  <div id="a3Ask2" hidden>
+    <p class="jua" style="font-size:1.03rem">① 펌프로 공기를 빼내면 고무풍선에 작용하는 압력은?</p>
+    <div class="pick" id="a3R3" data-glue="1"><button data-a="0">높아져요</button><button data-a="1" data-m="맞아요! 펌프로 용기 속 공기를 빼내면 공기의 양이 줄어 고무풍선에 작용하는 압력이 낮아져요.">낮아져요</button></div>
+    <div class="fb"></div>
+    <p class="jua" style="font-size:1.03rem;margin-top:8px">② 압력이 낮아지면 고무풍선은?</p>
+    <div class="pick" id="a3R4" data-glue="1"><button data-a="1" data-m="맞아요! 고무풍선이 커져요. 고무풍선 속 공기의 부피가 늘어났어요.">커져요(풍선 속 공기의 부피가 늘어나요)</button><button data-a="0">작아져요(풍선 속 공기의 부피가 줄어요)</button></div>
+    <div class="fb"></div>
+  </div>
+  <div class="row" id="a3MarshRow" hidden style="margin-top:8px"><button id="a3Marsh">🍡 마시멜로로도 해 보기</button><span class="tip">용기에 마시멜로를 넣고 공기를 빼면 어떻게 될까요?</span></div>
+</section>
+
+<!-- 탐구 보고서 -->
+<section id="s4" data-nav="탐구 보고서">
+  <span class="stage">정리해요 · 「실험관찰」 41쪽 탐구 보고서</span>
+  <h2>압력에 따른 기체의 부피 변화 보고서를 완성해요</h2>
+  <table class="a3-rep">
+    <tr><th></th><th>실험 1. 압력을 높일 때 (주사기)</th><th>실험 2. 압력을 낮출 때 (공기를 빼는 장치)</th></tr>
+    <tr><th>탐구 결과</th>
+      <td>피스톤을 누르면 피스톤이 <div class="a3-ch" data-a="0"><button>들어갑니다</button><button>나옵니다</button></div>
+          주사기 속 공기의 부피가 <div class="a3-ch" data-a="2"><button>늘어납니다</button><button>변화가 없습니다</button><button>줄어듭니다</button></div></td>
+      <td>펌프로 공기를 빼내면 용기 속 고무풍선이 <div class="a3-ch" data-a="1"><button>작아집니다</button><button>커집니다</button></div>
+          고무풍선 속 공기의 부피가 <div class="a3-ch" data-a="2"><button>줄어듭니다</button><button>변화가 없습니다</button><button>늘어납니다</button></div></td></tr>
+    <tr><th>알게 된 점</th>
+      <td>압력이 높아지면 기체의 부피는 <div class="a3-ch" data-a="1"><button>늘어난다</button><button>줄어든다</button></div></td>
+      <td>압력이 낮아지면 기체의 부피는 <div class="a3-ch" data-a="0"><button>늘어난다</button><button>줄어든다</button></div></td></tr>
+  </table>
+  <div class="fb" id="a3RepFb"></div>
+</section>
+
+<!-- 생활 속 예 -->
+<section id="s5" data-nav="생활 속 예">
+  <span class="stage">전개 2 · 「과학」 71쪽</span>
+  <h2>우리 주변에서 압력에 따라 기체의 부피가 변하는 예를 찾아요</h2>
+  <p>그림을 열어 보세요: 과자 봉지를 들고 산에 올라가요. 막대를 움직여 봐요.</p>
+  <svg id="a3Mt" class="scene" viewBox="0 0 640 220" style="max-height:24vh" role="img" aria-label="산 아래와 산 정상에서 과자 봉지 크기 비교">
+    <rect width="640" height="220" fill="#e9f6fc"/><path d="M20 210 L300 30 L580 210z" fill="#7fb36a" stroke="#4d7d3c" stroke-width="3"/><path d="M262 54 L300 30 L338 54 q-20 10 -38 0 q-18 10 -38 0z" fill="#fff"/>
+    <g id="a3Bag"><path d="M-22 -26 h44 l-4 52 h-36z" fill="#3a78c8"/><text x="0" y="6" text-anchor="middle" font-size="12" font-family="Jua" fill="#fff">과자</text></g>
+    <text id="a3MtT" x="480" y="50" text-anchor="middle" font-size="18" font-family="Jua" fill="#0f3b5c">산 아래</text>
+  </svg>
+  <div class="a3-slide" data-glue="1"><span class="jua">산 아래</span><input type="range" id="a3H" min="0" max="100" value="0" aria-label="올라간 높이"><span class="jua">산 정상</span></div>
+  <p class="tip" data-glue="1" id="a3MtTip" hidden>💡 높은 산 정상은 산 아래보다 주위의 압력이 낮아 과자 봉지가 부풀어 올라요.</p>
+  <p>카드마다 알맞은 것을 골라요. (<b id="a3Cnt">0</b>/5)</p>
+  <div class="a3-cards" id="a3Cards"></div>
+  <div class="fb" id="a3CardsFb"></div>
+  <p class="tip">💻 스마트 기기로 ‘압력에 따른 기체의 부피 변화’를 검색해 더 찾을 수 있어요. 조사한 내용의 출처를 밝혀요.</p>
+</section>
+
+<!-- 생각이 한눈에 -->
+<section id="s6" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에</span>
+  <h2>한눈에 쏙</h2>
+  <p class="jua" style="font-size:1.15rem">기체는
+    <span class="blank"><span id="bl1">ㅇ</span><span id="bl2">ㄹ</span></span>에 따라 부피가 달라집니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:12px">1. 압력이 낮아지면 기체의 부피는 ( ? ), 압력이 높아지면 기체의 부피는 ( ? ).</p>
+  <div class="pick" id="a3G1" data-glue="1">
+    <button data-a="1" data-m="맞아요! 압력이 낮아지면 기체의 부피는 늘어나고, 압력이 높아지면 줄어들어요.">늘어나고 · 줄어듭니다</button>
+    <button data-a="0">줄어들고 · 늘어납니다</button>
+    <button data-a="0">변하지 않고 · 변하지 않습니다</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:12px">2. 💭 생각: 발로 세게 찬 축구공이 찌그러지는 까닭을 기체의 성질과 관련지어 써 봐요.</p>
+  <textarea id="a3G2" rows="2" placeholder="예: 축구공을 발로 세게 차면 축구공에 가해지는 ○○이 ○○○ 축구공 속 기체의 ○○가 ○○○○ 때문이에요."></textarea>
+  <div class="row" style="margin-top:6px"><button class="main" id="a3G2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="a3G2Fb"></div>
+</section>
+
+<!-- 형성 평가 -->
+<section id="s7" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 다음 현상과 관련된 압력에 따른 기체의 부피 변화를 골라 이어 봐요.</p>
+  <p class="tip">㉠ 압력이 높아져 기체의 부피가 줄어든다. · ㉡ 압력이 낮아져 기체의 부피가 늘어난다.</p>
+  <div id="a3M"></div>
+  <div class="fb" id="a3MFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:14px">2. ✏️ 서술형: 공기를 넣고 입구를 묶은 고무풍선을 공기를 빼는 장치의 용기에 넣고, 펌프로 용기의 공기를 빼냈어요. 고무풍선의 부피 변화와 그 까닭을 써 봐요.</p>
+  <textarea id="a3F2" rows="3" placeholder="예: 고무풍선의 부피가 ○○○○. 용기의 공기를 빼내면 고무풍선에 가해지는 ○○이 ○○○ 고무풍선 속 공기의 부피가 ○○○○ 때문이에요."></textarea>
+  <div class="row" style="margin-top:6px"><button class="main" id="a3F2Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="a3F2Fb"></div>
+  <p class="tip">※ 컴퓨터는 중요한 낱말만 찾아서 알려 줘요. 최종 확인은 선생님과 함께 해요.</p>
+</section>
+
+<!-- 스스로 평가 -->
+<section id="s8" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 41쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>압력 변화에 따른 기체의 부피 변화를 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>우리 주변에서 압력에 따른 기체의 부피 변화의 예를 찾을 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>안전 수칙을 지키며 흥미를 갖고 탐구 활동에 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* 도입: 풍선 놀이기구 */
+(function(){let busy=false,n=0;const kid=$('#a3Kid'),fl=$('#a3Floor');
+  kid.setAttribute('transform','translate(320,198)');
+  $('#a3Jump').onclick=()=>{if(busy)return;busy=true;n++;const t0=performance.now();
+    const step=now=>{const t=(now-t0)/1000;let y,d=0;
+      if(t<.5){y=198-Math.sin(t/.5*Math.PI/2)*90;}else if(t<1){y=108+Math.pow((t-.5)/.5,2)*(90+26);}else if(t<1.5){const f=(t-1)/.5;d=26*(1-f);y=198+d;}else{y=198;}
+      if(t>=.85&&t<1)d=26*((t-.85)/.15);if(t>=1&&t<1.5)d=26*(1-(t-1)/.5);
+      kid.setAttribute('transform',`translate(320,${Math.min(y,198+d)})`);fl.setAttribute('d',`M140 200 Q320 ${200+d*2} 500 200`);
+      $('#a3BT').textContent=d>8?'꾸욱! 바닥이 눌려 들어가요':'풍선 놀이기구';
+      if(t<1.6)requestAnimationFrame(step);else{busy=false;$('#a3Q1').hidden=false;}};requestAnimationFrame(step);};
+})();
+pickOne('#a3P1','','','s1');
+
+/* 실험해요 1: 주사기 */
+(function(){let capped=false,V=40,pushed=false,released=false,raf=0;const F='#a3SyrFb';const X=v=>170+v*7.5;
+  let h='';for(let v=0;v<=60;v+=10){h+=`<line x1="${X(v)}" y1="90" x2="${X(v)}" y2="104" stroke="#5b6b78" stroke-width="2"/><text x="${X(v)}" y="84" text-anchor="middle">${v}</text>`;}$('#a3Scale').innerHTML=h+'<text x="690" y="84">mL</text>';
+  function draw(){$('#a3Air').setAttribute('width',X(V)-170);$('#a3Pis').setAttribute('transform',`translate(${X(V)},0)`);
+    $('#a3Force').setAttribute('width',capped?Math.max(0,(40/V-1)/(40/20-1))*196:0);$('#a3ST').textContent='공기의 부피: '+Math.round(V)+' mL';$('#a3VT').textContent=Math.round(V)+' mL';$('#a3V').value=V;}
+  $('#a3CapBtn').onclick=()=>{capped=true;$('#a3Cap').setAttribute('opacity',1);$('#a3CapBtn').classList.add('done');fb(F,'입구를 마개로 막았어요. 이제 막대를 왼쪽으로 밀어 피스톤을 눌러 봐요.','info');};
+  $('#a3V').oninput=e=>{cancelAnimationFrame(raf);const v=+e.target.value;
+    if(!capped){if(v<40){$('#a3Puff').setAttribute('opacity',1);setTimeout(()=>$('#a3Puff').setAttribute('opacity',0),500);fb(F,'앗, 입구로 공기가 빠져나가요! 먼저 🔒 주사기 마개로 입구를 막아요.',false);V=40;draw();}return;}
+    if(v<23){V=23;draw();fb(F,'⚠️ 그만! 피스톤을 무리하게 누르면 다칠 수 있어요. 손에 느껴지는 힘이 아주 커요.',false);return;}
+    V=v;draw();if(V<=30&&!pushed){pushed=true;fb(F,'피스톤이 주사기 속으로 들어가고 공기의 부피가 줄었어요. 누를수록 손에 느껴지는 힘이 커져요. 이제 ✋ 손을 떼 봐요.','info');}};
+  $('#a3Rel').onclick=()=>{if(V>=40){fb(F,'먼저 피스톤을 눌러 봐요.','info');return;}const go=()=>{V=Math.min(40,V+0.6);draw();if(V<40)raf=requestAnimationFrame(go);else if(pushed&&!released){released=true;fb(F,'손을 떼니 피스톤이 다시 밀려 나와 공기의 부피가 원래대로 돌아왔어요. 관찰한 것을 아래에 골라요.',true);$('#a3Ask1').hidden=false;}};go();};
+  draw();
+})();
+let a3a=0;const a3ad=()=>{if(++a3a===2)doneNav('s2');};
+pickOne('#a3R1','','',null,a3ad);pickOne('#a3R2','','',null,a3ad);
+
+/* 실험해요 2: 공기를 빼는 장치 */
+(function(){const st={};let n=0,marsh=false,raf=0,r=1,tr=1;const F='#a3VacFb',T=$('#a3VT2');
+  function obj(){$('#a3Obj').innerHTML=marsh?`<g transform="translate(380,222) scale(${r})"><rect x="-26" y="-34" width="52" height="40" rx="12" fill="#fff" stroke="#e9b0c8" stroke-width="3"/><ellipse cx="0" cy="-34" rx="26" ry="8" fill="#ffe3ee" stroke="#e9b0c8" stroke-width="3"/></g>`
+    :`<g transform="translate(380,${214-(r-1)*44}) scale(${r})"><ellipse cx="0" cy="-10" rx="30" ry="36" fill="#e2573f" stroke="#7a2a20" stroke-width="2"/><path d="M0 26 l-6 8 h12z" fill="#7a2a20"/><rect x="-8" y="32" width="16" height="6" rx="2" fill="#2f8f5b"/><ellipse cx="-10" cy="-24" rx="6" ry="10" fill="#fff" opacity=".45"/></g>`;
+    $('#a3Obj').setAttribute('opacity',st.ball?1:0);}
+  function anim(){r+=(tr-r)*0.12;obj();if(Math.abs(tr-r)>.004)raf=requestAnimationFrame(anim);else{r=tr;obj();}}
+  const size=t=>{tr=t;cancelAnimationFrame(raf);anim();};
+  const mark=s=>{st[s]=1;$(`#a3VCtl [data-s="${s}"]`).classList.add('done');};
+  $$('#a3VCtl button').forEach(b=>b.onclick=()=>{const s=b.dataset.s;
+    if(s==='ball'){if(st.ball)return;mark(s);obj();T.textContent=marsh?'마시멜로를 준비했어요':'고무풍선을 준비했어요';fb(F,marsh?'마시멜로를 준비했어요.':'공기 주입기로 고무풍선에 공기를 조금 넣고, 입구를 2~3번 돌려 풍선 클립으로 묶었어요.','info');return;}
+    if(s==='put'){if(!st.ball){fb(F,'먼저 고무풍선을 준비해요.',false);return;}if(st.put)return;mark(s);$('#a3Lid').setAttribute('opacity',1);$('#a3Pmp').setAttribute('opacity',1);T.textContent='펌프로 용기 안의 공기를 빼요';fb(F,'용기에 넣고 뚜껑을 닫았어요. 이제 펌프로 공기를 빼내요.','info');return;}
+    if(s==='pump'){if(!st.put){fb(F,'먼저 용기에 넣고 뚜껑을 닫아요.',false);return;}if(st.btn){fb(F,'이미 공기가 다시 들어갔어요.','info');return;}if(n>=8){fb(F,'펌프질이 힘들어요. 공기를 충분히 뺐어요.','info');return;}
+      n++;$('#a3PRod').setAttribute('y',30);setTimeout(()=>$('#a3PRod').setAttribute('y',14),200);size(1+n*0.075);$('#a3VacN').textContent='펌프질 '+n+'번';T.textContent=(marsh?'마시멜로':'고무풍선')+'가 커져요!';
+      if(n>=6&&!st.pump){mark(s);if(!marsh)$('#a3Ask2').hidden=false;fb(F,marsh?'마시멜로도 부풀어 올랐어요! 마시멜로 속에도 공기가 들어 있어요.':'고무풍선이 커졌어요! 이제 🔘 단추를 눌러 공기를 다시 넣어 봐요.','info');}return;}
+    if(s==='btn'){if(!st.pump){fb(F,'먼저 펌프로 공기를 충분히 빼내요.',false);return;}if(st.btn)return;mark(s);size(1);$('#a3VacN').textContent='칙— 공기가 들어가요';T.textContent='처음 크기로 돌아왔어요';fb(F,'단추를 누르니 빼낸 만큼 공기가 다시 들어가 압력이 처음과 같아졌어요. '+(marsh?'마시멜로':'고무풍선')+'가 처음 크기로 돌아왔어요.','info');return;}
+    if(s==='open'){if(!st.put){fb(F,'아직 뚜껑을 닫지 않았어요.','info');return;}if(st.pump&&!st.btn){fb(F,'⚠️ 잠깐! 공기를 뺀 채로 뚜껑을 억지로 열면 다칠 수 있어요. 먼저 뚜껑 가운데 단추를 눌러요.',false);return;}
+      if(!st.btn){fb(F,'아직 실험을 하지 않았어요. 펌프로 공기를 빼 봐요.','info');return;}
+      mark(s);$('#a3Lid').setAttribute('opacity',0);$('#a3Pmp').setAttribute('opacity',0);fb(F,'안전하게 뚜껑을 열었어요. 👍',true);if(!marsh){a3open=true;a3bd(0);}$('#a3MarshRow').hidden=false;}
+  });
+  $('#a3Marsh').onclick=()=>{marsh=true;Object.keys(st).forEach(k=>delete st[k]);n=0;r=tr=1;$$('#a3VCtl button').forEach(b=>b.classList.remove('done'));$('#a3VacN').textContent='';$('#a3Lid').setAttribute('opacity',0);obj();T.textContent='마시멜로를 준비해요';fb(F,'이번에는 고무풍선 대신 마시멜로로 해 봐요. 첫 단추부터 차례대로 눌러요.','info');};
+  obj();
+})();
+let a3open=false,a3b=0;function a3bd(k){if(k)a3b++;if(a3b>=2&&a3open)doneNav('s3');else if(a3b>=2)fb('#a3VacFb','기록 끝! 마지막으로 뚜껑 가운데 단추를 누른 뒤 뚜껑을 열어 정리해요.','info');}
+pickOne('#a3R3','','',null,()=>a3bd(1));pickOne('#a3R4','','',null,()=>a3bd(1));
+
+/* 탐구 보고서 */
+(function(){const gs=$$('.a3-ch');let ok=0;
+  gs.forEach(g=>{const a=+g.dataset.a;$$('button',g).forEach((b,i)=>b.onclick=()=>{if(g.dataset.ok)return;
+    if(i===a){b.classList.add('right');g.dataset.ok=1;ok++;fb('#a3RepFb',ok===gs.length?'보고서 완성! 압력이 높아지면 기체의 부피는 줄어들고, 압력이 낮아지면 기체의 부피는 늘어나요.':'좋아요! ('+ok+'/'+gs.length+')',ok===gs.length?true:'info');if(ok===gs.length)doneNav('s4');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb('#a3RepFb','실험해요 1·2에서 관찰한 것을 다시 떠올려 봐요.',false);}});});
+})();
+
+/* 생활 속 예 */
+(function(){const B=$('#a3Bag');const draw=h=>{const x=110+h*1.9,y=200-h*1.55,s=1+h*0.006;B.setAttribute('transform',`translate(${x},${y-30}) scale(${s*1.15},${s})`);
+    $('#a3MtT').textContent=h<30?'산 아래':h<90?'산 중턱':'산 정상: 과자 봉지가 빵빵!';if(h>=90)$('#a3MtTip').hidden=false;};
+  $('#a3H').oninput=e=>draw(+e.target.value);draw(0);
+  const IT=[
+   {t:'공기가 들어 있는 큰 공 위에 앉아 힘을 주어 누르면 공의 부피가 줄어들어요.',a:0,w:'공을 누르면 공 속 공기에 작용하는 압력이 높아져 공기의 부피가 줄어들어요.'},
+   {t:'과자 봉지는 땅에서보다 높은 산 정상이나 하늘을 나는 비행기 안에서 더 크게 부풀어요.',a:1,w:'높은 곳에서는 땅에서보다 압력이 낮아 과자 봉지 속 기체의 부피가 늘어나요.'},
+   {t:'운동화의 공기 주머니는 발이 땅에 닿을 때 작아져요.',a:0,w:'발이 땅에 닿으면 공기 주머니에 가해지는 압력이 커져 공기의 부피가 줄어들어요.'},
+   {t:'고무풍선이 하늘로 올라가면 점점 커지다가 터져요.',a:1,w:'하늘로 올라갈수록 고무풍선에 작용하는 압력이 낮아져 풍선 속 기체의 부피가 늘어나요.'},
+   {t:'바닷속에서 잠수부가 내뿜은 공기 방울은 물 위로 올라갈수록 커져요.',a:1,w:'물 위로 올라갈수록 공기 방울에 작용하는 압력이 낮아져 공기 방울의 부피가 늘어나요.'}];
+  const OPT=['압력이 높아져 부피가 줄어요','압력이 낮아져 부피가 늘어요'];let n=0;
+  IT.forEach(it=>{const d=document.createElement('div');d.className='a3-card';d.innerHTML=`<p>${it.t}</p><div class="row"></div>`;const row=$('.row',d);
+    OPT.forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>{if(d.classList.contains('done'))return;
+      if(i===it.a){b.classList.add('right');d.classList.add('done');n++;$('#a3Cnt').textContent=n;fb('#a3CardsFb',it.w+(n===5?' 🎉 모두 찾았어요!':''),true);if(n===5)doneNav('s5');}
+      else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),800);fb('#a3CardsFb','기체를 누르는 힘이 커지는지(압력이 높아지는지), 작아지는지 생각해 봐요.',false);}};row.appendChild(b);});
+    $('#a3Cards').appendChild(d);});
+})();
+
+/* 생각이 한눈에 */
+let a3g=0;const a3gd=()=>{if(++a3g===3)doneNav('s6');};
+$('#blReveal').onclick=()=>{fb('#blFb','기체는 압력에 따라 부피가 달라져요. 기체에 가하는 압력이 높아지면 기체의 부피가 줄어들고, 압력이 낮아지면 기체의 부피는 늘어나요.',true);a3gd();};
+pickOne('#a3G1','','주사기와 공기를 빼는 장치 실험을 떠올려 봐요.',null,a3gd);
+(function(){let ok=false;$('#a3G2Btn').onclick=()=>{const t=$('#a3G2').value.trim();if(!t){fb('#a3G2Fb','먼저 답을 써 보세요.',false);return;}
+  const p=/압력|힘/.test(t),v=/부피.{0,8}(줄|작아)|줄어/.test(t);
+  if(p&&v){fb('#a3G2Fb','잘 썼어요! 축구공을 발로 세게 차면 축구공에 가해지는 압력이 높아져 축구공 속 기체의 부피가 줄어들면서 찌그러져요.',true);if(!ok){ok=true;a3gd();}}
+  else fb('#a3G2Fb',p?'압력을 생각한 점이 좋아요. 그때 축구공 속 기체의 부피는 어떻게 될까요?':'발로 세게 차면 축구공에 가해지는 압력은 어떻게 될까요?','info');};})();
+
+/* 형성 평가 1: 잇기 */
+(function(){const M=[['⑴ 고무풍선이 하늘 위로 날아간다.',1],['⑵ 과자 봉지를 가지고 높은 산 정상에 올라간다.',1],['⑶ 바닥에 공기 주머니가 있는 운동화를 신고 뛰었다가 착지한다.',0]];let ok=0;
+  M.forEach(([t,a])=>{const d=document.createElement('div');d.className='a3-match';d.innerHTML=`<span>${t}</span>`;
+    ['㉠ 압력↑ 부피↓','㉡ 압력↓ 부피↑'].forEach((o,i)=>{const b=document.createElement('button');b.textContent=o;b.onclick=()=>{if(d.dataset.ok)return;
+      if(i===a){b.classList.add('right');d.dataset.ok=1;ok++;fb('#a3MFb',ok===3?'모두 맞혔어요! 높이 올라갈수록 주위의 압력이 낮아지고, 착지할 때는 공기 주머니에 가해지는 압력이 높아져요.':'맞아요! ('+ok+'/3)',ok===3?true:'info');if(ok===3)a3fd();}
+      else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb('#a3MFb','높은 곳으로 올라갈 때 주위의 압력, 착지할 때 공기 주머니에 가해지는 압력을 생각해 봐요.',false);}};d.appendChild(b);});
+    $('#a3M').appendChild(d);});
+})();
+let a3f=0;function a3fd(){if(++a3f===2)doneNav('s7');}
+(function(){let ok=false;$('#a3F2Btn').onclick=()=>{const t=$('#a3F2').value.trim();if(!t){fb('#a3F2Fb','먼저 답을 써 보세요.',false);return;}
+  const big=/늘어|커/.test(t),why=/압력.{0,8}(낮|작아|줄)/.test(t);
+  if(big&&why){fb('#a3F2Fb','잘 썼어요! 고무풍선의 부피가 늘어나요. 용기의 공기를 빼내면 고무풍선에 가해지는 압력이 낮아져 고무풍선 속 공기의 부피가 늘어나기 때문이에요.',true);if(!ok){ok=true;a3fd();}}
+  else if(big)fb('#a3F2Fb','부피 변화는 맞아요. 공기를 빼내면 고무풍선에 가해지는 압력이 어떻게 되는지 까닭도 써 봐요.','info');
+  else fb('#a3F2Fb','실험해요 2에서 고무풍선이 어떻게 되었는지 떠올려 봐요.',false);};})();
+
+faces('s8','오늘도 잘했어요! 다음 시간에는 일상생활에서 이용되는 여러 가지 기체를 조사해 봐요.','어려웠던 부분은 주사기와 공기를 빼는 장치 실험을 한 번 더 해 보고, 선생님께 질문해도 좋아요!');
+</script>

@@ -1,0 +1,295 @@
+<!--
+title: 물에 용질을 더 많이 녹이려면?
+unit: 3
+lesson: 4~5
+total: 12
+goal: 물에 녹는 용질의 양에 영향을 미치는 요인을 설명할 수 있어요.<br>물에 녹는 용질의 양에 영향을 미치는 요인에 따라 용해되는 용질의 양을 비교할 수 있어요.
+pages: 「과학」 70~73쪽 · 「실험관찰」 40~43쪽 · 지도서 280~293쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"용","bl2":"질"}}]
+-->
+<style>
+.d3-ctl{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:6px}
+.d3-ctl button{font-size:.9rem;min-height:2.3rem;border-width:2px}
+.d3-ctl button[disabled]{opacity:.45}
+.d3-tbl{font-size:.85rem}
+.d3-tbl td,.d3-tbl th{text-align:center;padding:2px 4px;min-width:1.8em}
+.d3-bins{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.d3-bin{border:3px dashed var(--line);border-radius:16px;padding:8px;min-height:80px;cursor:pointer}
+.d3-bin h3{margin:0 0 6px;font-size:1rem;text-align:center}
+.d3-bin.ready{border-color:var(--sun);background:#fff8dc}
+.d3-cards{display:flex;flex-wrap:wrap;gap:8px}
+.d3-cards button,.d3-bin button{font-size:.88rem;min-height:2.2rem;padding:.2em .6em;border-width:2px}
+.d3-bin button{margin:3px}
+.d3-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:6px}
+.d3-row button[disabled]{opacity:.45}
+@media (max-width:640px){.d3-ctl{grid-template-columns:1fr}.d3-bins{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 70쪽</span>
+  <h2>분말주스를 물에 많이 녹이려면 어떻게 해야 할까요?</h2>
+  <svg class="scene" viewBox="0 0 600 220" style="max-height:24vh" role="img" aria-label="바닥에 분말주스 가루가 남아 있는 컵">
+    <rect width="600" height="220" fill="#fdf6e3"/><rect y="190" width="600" height="30" fill="#e6cfa8"/>
+    <path d="M240 40 l14 150 h92 l14 -150z" fill="#f4fbff" stroke="#7aa7bd" stroke-width="4"/><path d="M245 76 l11 112 h88 l11 -112z" fill="#f5a35a" opacity=".55"/>
+    <path d="M258 176 q42 -14 84 0 v10 h-84z" fill="#f08a24"/>
+    <rect x="390" y="92" width="80" height="60" rx="8" fill="#fff" stroke="#f08a24" stroke-width="3"/><text x="430" y="128" text-anchor="middle" font-size="15" font-family="Jua" fill="#f08a24">분말주스</text>
+    <text x="300" y="30" text-anchor="middle" font-size="16" font-family="Jua" fill="#0f3b5c">가루가 바닥에 남았어요!</text>
+  </svg>
+  <div class="pick" id="d3P1">
+    <button data-a="1" data-m="좋은 생각이에요! 가루의 종류, 물의 양이나 온도를 다르게 하면 녹는 양이 달라질 수 있어요. 오늘은 용질의 종류와 물의 온도를 알아봐요.">가루의 종류를 바꾸거나, 물의 양이나 온도를 다르게 해 봐요</button>
+    <button data-a="0" data-m="정말 그럴까요? 오늘 실험에서 오래 저어도 녹지 않는지 확인해 봐요.">가루가 다 녹을 때까지 아주 오래 저으면 돼요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="용질의 종류">
+  <span class="stage">실험해요 1 · 「실험관찰」 40~41쪽</span>
+  <h2>같은 온도·같은 양의 물에 설탕, 소금, 백반이 용해되는 양 비교하기</h2>
+  <p style="font-size:.95rem">준비물: 물, 설탕, 소금, 백반, 비커(100 mL) 3개, 눈금실린더(100 mL), 약숟가락 3개, 유리 막대 3개, 이름 붙임딱지, 유성펜, 실험복, 보안경, 실험용 장갑 · 상온(약 20 ℃)의 물을 50 mL씩 넣었어요. 백반은 봉숭아 물들이는 데 쓰는 흰색 물질이에요.</p>
+  <p class="jua" style="font-size:1rem">각 비커의 단추를 눌러 한 숟가락씩 넣고 충분히 저어요. 녹지 않고 바닥에 남으면 더 넣지 않아요.</p>
+  <svg id="d3Lab" class="scene" viewBox="0 0 720 250" style="max-height:26vh" role="img" aria-label="검은 도화지 위에 놓인 비커 세 개" data-glue="1">
+    <rect width="720" height="250" fill="#fdf6e3"/><rect x="20" y="214" width="680" height="30" fill="#222"/>
+    <g id="d3Beakers"></g>
+  </svg>
+  <div class="d3-ctl" data-glue="1"><button id="d3B0" data-i="0">설탕 한 숟가락 (<span>0</span>)</button><button id="d3B1" data-i="1">소금 한 숟가락 (<span>0</span>)</button><button id="d3B2" data-i="2">백반 한 숟가락 (<span>0</span>)</button></div>
+  <div class="fb" id="d3LabFb"></div>
+  <p class="tip">⚠️ 실험복·보안경·실험용 장갑 착용 · 유리 기구 조심 · 물질은 맛보지 않고 백반이 피부에 닿지 않게 · 약숟가락은 따로 쓰고 양은 최대한 같게 · 유리 막대는 천천히 원을 그리듯 저어요. 이 화면의 결과는 지도서의 <b>예시</b>를 따른 것이며, 실제 실험 결과는 모둠마다 다를 수 있어요.</p>
+</section>
+
+<section id="s3" data-nav="결과 정리 1">
+  <span class="stage">실험해요 1 · 결과 기록 · 「실험관찰」 41쪽</span>
+  <h2>용해되면 ○, 바닥에 남으면 △</h2>
+  <table class="d3-tbl" id="d3Tbl">
+    <tr><th>용질 \ 숟가락</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th><th>8</th><th>9</th><th>10</th></tr>
+    <tr><th>설탕</th></tr><tr><th>소금</th></tr><tr><th>백반</th></tr>
+  </table>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">온도가 같은 물 50 mL에 가장 많이 용해되는 용질과 가장 적게 용해되는 용질은?</p>
+  <div class="pick" id="d3P3">
+    <button data-a="1" data-m="맞아요! 같은 조건에서 설탕이 가장 많이, 백반이 가장 적게 용해되었어요.">가장 많이: 설탕 · 가장 적게: 백반</button>
+    <button data-a="0" data-m="표에서 △가 가장 늦게 나온 용질과 가장 빨리 나온 용질을 찾아봐요.">가장 많이: 소금 · 가장 적게: 설탕</button>
+    <button data-a="0" data-m="표를 다시 살펴봐요.">가장 많이: 백반 · 가장 적게: 소금</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">정리해요: 같은 온도·같은 양의 물에 용해되는 용질의 양은?</p>
+  <div class="pick" id="d3P3b">
+    <button data-a="1" data-m="맞아요! 물의 온도와 양이 같을 때 용해되는 용질의 양은 용질의 종류에 따라 달라요. 용질의 종류는 용해되는 양에 영향을 미치는 요인이에요.">용질의 종류에 따라 달라요</button>
+    <button data-a="0" data-m="설탕·소금·백반이 녹은 양이 같았나요?">어떤 용질이든 같아요</button>
+  </div>
+  <div class="fb"></div>
+  <svg viewBox="0 0 520 150" style="max-width:520px;max-height:16vh;display:block;margin:6px auto 0" role="img" aria-label="물 60 mL에 설탕 25 g은 모두 녹고 소금 25 g은 바닥에 남은 모습">
+    <rect width="520" height="150" fill="#fdf6e3"/>
+    <g><path d="M70 20 v104 q0 8 8 8 h84 q8 0 8 -8 v-104" fill="#cfe9f8" stroke="#7aa7bd" stroke-width="3"/><text x="120" y="146" text-anchor="middle" font-size="13" font-family="Jua" fill="#333">설탕 25 g + 물 60 mL: 모두 녹음</text></g>
+    <g><path d="M330 20 v104 q0 8 8 8 h84 q8 0 8 -8 v-104" fill="#cfe9f8" stroke="#7aa7bd" stroke-width="3"/><path d="M334 128 q46 -12 92 0 v2 h-92z" fill="#fff" stroke="#bbb"/><text x="380" y="146" text-anchor="middle" font-size="13" font-family="Jua" fill="#333">소금 25 g + 물 60 mL: 바닥에 남음</text></g>
+  </svg>
+</section>
+
+<section id="s4" data-nav="계획해요">
+  <span class="stage">계획해요 · 「실험관찰」 42~43쪽</span>
+  <h2>물의 온도에 따라 백반이 용해되는 양을 비교하는 실험 계획하기</h2>
+  <p class="jua" style="font-size:1rem">① 내 예상: 물의 양이 같을 때 백반이 용해되는 양은 물의 온도에 따라 어떨까요?</p>
+  <div class="pick" id="d3Pred">
+    <button data-v="다를 것">물의 온도에 따라 다를 것 같아요</button><button data-v="같을 것">물의 온도와 관계없이 같을 것 같아요</button>
+  </div>
+  <div class="fb" id="d3PredFb"></div>
+  <p class="jua" style="font-size:1rem;margin-top:6px">② 조건 카드를 하나 누른 뒤 알맞은 상자를 눌러요. (<b id="d3CN">0</b>/5)</p>
+  <div class="d3-cards" id="d3Cards" data-glue="1"></div>
+  <div class="d3-bins" data-glue="1">
+    <div class="d3-bin" data-b="1" role="button" tabindex="0"><h3>다르게 해야 할 조건</h3></div>
+    <div class="d3-bin" data-b="0" role="button" tabindex="0"><h3>같게 해야 할 조건</h3></div>
+  </div>
+  <div class="fb" id="d3CFb"></div>
+</section>
+
+<section id="s5" data-nav="물의 온도">
+  <span class="stage">실험해요 2 · 「실험관찰」 42쪽</span>
+  <h2>차가운 물과 따뜻한 물에 백반을 넣고 비교하기</h2>
+  <p style="font-size:.95rem">실험 과정: 눈금실린더로 비커 두 개에 차가운 물(10 ℃ 이하)과 따뜻한 물(40~50 ℃)을 50 mL씩 담고, 백반을 두 숟가락씩 넣어 유리 막대로 저으며 관찰해요.</p>
+  <svg id="d3T" class="scene" viewBox="0 0 640 250" style="max-height:27vh" role="img" aria-label="차가운 물과 따뜻한 물이 담긴 비커" data-glue="1">
+    <rect width="640" height="250" fill="#fdf6e3"/><rect x="20" y="214" width="600" height="30" fill="#222"/>
+    <g id="d3TB"></g>
+  </svg>
+  <div class="d3-row" data-glue="1"><button class="main" id="d3T1">① 물 50 mL씩 담기</button><button id="d3T2" disabled>② 백반 두 숟가락씩 넣기</button><button id="d3T3" disabled>③ 유리 막대로 젓기 (<span id="d3Stir">0</span>번)</button></div>
+  <div class="fb" id="d3TFb"></div>
+  <p class="tip">⚠️ 따뜻한 물을 다룰 때 화상을 입지 않게 조심해요. 비커가 깨지지 않게 다루고, 백반을 넣을 때 물이 튀지 않게 살살 넣어요. 물질이 피부에 닿거나 눈에 튀면 흐르는 물로 충분히 씻어요.</p>
+  <div id="d3TAsk" hidden>
+    <p class="jua" style="font-size:1.05rem">물의 온도에 따라 백반이 용해되는 양은?</p>
+    <div class="pick" id="d3P5">
+      <button data-a="1" data-m="맞아요! 같은 양의 물에서 차가운 물보다 따뜻한 물에 용해되는 백반의 양이 더 많아요.">차가운 물보다 따뜻한 물에 더 많이 용해돼요</button>
+      <button data-a="0" data-m="두 비커의 바닥을 다시 비교해 봐요.">따뜻한 물보다 차가운 물에 더 많이 용해돼요</button>
+      <button data-a="0" data-m="한쪽 비커에만 백반이 남았어요.">두 비커에 용해되는 양이 같아요</button>
+    </div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s6" data-nav="결과 정리 2">
+  <span class="stage">정리해요 · 「과학」 73쪽</span>
+  <h2>물의 온도와 물에 녹는 용질의 양</h2>
+  <p id="d3Cmp" style="padding:10px 12px;border-radius:12px;background:#e1f0fb">📝 내 예상과 비교: 실험 결과는 ‘물의 온도에 따라 다르다’였어요.</p>
+  <h3>🤔 생각 바로잡기: 차가운 물 바닥에 남은 백반을 아주 오래 저으면 모두 녹을까요?</h3>
+  <div class="pick" id="d3Mis">
+    <button data-a="0" data-m="실험에서 여러 번 저어도 차가운 물의 백반은 바닥에 남았어요. 더 이상 녹지 않고 남은 용질은 오래 저어도 더 녹지 않아요.">네, 오래 저으면 모두 녹아요</button>
+    <button data-a="1" data-m="맞아요! 더 이상 녹지 않고 남은 용질은 오래 저어도 더 녹지 않아요. 물의 온도를 높이거나 물을 더 부으면 더 많이 녹일 수 있어요.">아니요, 물의 온도를 높이거나 물을 더 넣어야 해요</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">일정한 양의 물에 분말주스, 가루 세제 등이 녹지 않고 남아 있을 때 모두 용해하려면?</p>
+  <div class="pick" id="d3P6">
+    <button data-a="1" data-m="맞아요! 대체로 물의 온도가 높을수록 용질이 더 많이 용해돼요. 물의 온도를 높이면 남아 있는 용질을 더 많이 용해할 수 있어요.">물의 온도를 높여요</button>
+    <button data-a="0" data-m="온도가 낮아지면 용해되는 양이 오히려 줄어요.">물을 차갑게 해요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="더 알아보기">
+  <span class="stage">더 알아보기 · 백반 결정 키우기</span>
+  <h2>따뜻한 백반 용액을 천천히 식히면 어떻게 될까요?</h2>
+  <p>따뜻한 물에 백반을 더 녹지 않을 때까지 녹인 용액에, 모양을 만든 공예용 철끈(모루)을 매달았어요. 막대를 움직여 용액을 식혀 봐요.</p>
+  <svg id="d3X" class="scene" viewBox="0 0 600 260" style="max-height:28vh" role="img" aria-label="철끈을 매단 백반 용액 비커" data-glue="1">
+    <rect width="600" height="260" fill="#fdf6e3"/><line x1="200" y1="30" x2="400" y2="30" stroke="#a0673a" stroke-width="8"/>
+    <path d="M220 50 v180 q0 10 10 10 h140 q10 0 10 -10 v-180" fill="#f4fbff" stroke="#7aa7bd" stroke-width="4"/><rect x="223" y="80" width="154" height="158" fill="#cfe9f8" opacity=".85"/>
+    <line x1="300" y1="30" x2="300" y2="110" stroke="#888" stroke-width="2"/><path d="M300 110 l-24 30 l24 30 l24 -30z" fill="none" stroke="#c0392b" stroke-width="3"/>
+    <g id="d3XC"></g><g id="d3XB"></g>
+    <rect x="420" y="70" width="150" height="40" rx="10" fill="#0f3b5c" opacity=".88"/><text id="d3XT" x="495" y="96" text-anchor="middle" font-size="18" font-family="Jua" fill="#fff">약 50 ℃</text>
+  </svg>
+  <div class="ctl" data-glue="1"><span class="jua">따뜻해요</span><input type="range" id="d3XR" min="0" max="100" value="0" aria-label="식히기" style="flex:1"><span class="jua">식었어요</span></div>
+  <div class="fb" id="d3XFb"></div>
+  <p class="tip">⚠️ 따뜻한 물을 다룰 때 화상에 조심하고(면장갑), 물질은 맛보거나 맨손으로 만지지 않아요. 온도는 이 그림을 위한 어림값이에요.</p>
+</section>
+
+<section id="s8" data-nav="한눈에 쏙">
+  <span class="stage">정리</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="jua" style="font-size:1.15rem">1. 물의 양이 같을 때 물에 용해되는 용질의 양에 영향을 주는 요인은 <span class="blank"><span id="bl1">ㅇ</span><span id="bl2">ㅈ</span></span>의 종류, 물의 온도입니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div>
+  <div class="fb" id="blFb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:8px">2. 💭 세탁을 마친 옷이나 신발에 남아 있는 가루 세제를 물에 모두 녹이려면?</p>
+  <div class="pick" id="d3P8">
+    <button data-a="1" data-m="맞아요! 따뜻한 물을 쓰면 가루 세제를 더 많이 녹일 수 있어요.">따뜻한 물을 사용해요</button>
+    <button data-a="0" data-m="차가운 물에서는 녹는 양이 더 적어요.">얼음물을 사용해요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s9" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua" style="font-size:1.05rem">1. 물의 온도와 양이 같을 때 용질이 물에 용해되는 양은 용질의 종류에 따라 ( ).</p>
+  <div class="pick" id="d3F1"><button data-a="0" data-m="설탕·소금·백반의 결과를 떠올려 봐요.">같다</button><button data-a="1" data-m="정답! 용질의 종류에 따라 다르다.">다르다</button></div>
+  <div class="fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:10px">2. 설탕·소금·백반 실험(한 숟가락 → 두 숟가락 → 아홉 숟가락)을 보고 친구들이 말했어요. <b>잘못 설명한 친구 두 명</b>을 골라요. (<b id="d3FN">0</b>/2)</p>
+  <div class="pick d3-multi" id="d3F2">
+    <button data-a="0" data-m="친구 1은 맞아요. 같은 조건에서 설탕이 소금보다 더 많이 용해되었어요.">친구 1: 같은 조건의 물에서 설탕은 소금보다 더 잘 용해돼.</button>
+    <button data-a="0" data-m="친구 2는 맞아요. 아홉 숟가락에서도 설탕은 모두 용해되었으니 여섯 숟가락도 모두 용해되었을 거예요.">친구 2: 설탕을 여섯 숟가락 넣었을 때에도 모두 용해되었을 거야.</button>
+    <button data-a="1" data-m="맞아요, 친구 3이 틀렸어요. 가장 적게 용해된 것은 소금이 아니라 백반이에요.">친구 3: 용해되는 양은 설탕이 가장 많고 소금이 가장 적어.</button>
+    <button data-a="1" data-m="맞아요, 친구 4가 틀렸어요. 같은 조건의 물에 용해되는 양은 용질의 종류에 따라 달라요.">친구 4: 같은 조건의 물에서 모든 용질은 같은 양만큼 용해돼.</button>
+  </div>
+  <div class="fb" id="d3F2Fb"></div>
+  <p class="jua" style="font-size:1.05rem;margin-top:10px">3. ✏️ 서술형: 따뜻한 물에 백반을 최대한 녹인 용액을 비커에 담아 얼음이 든 차가운 물에 넣었어요. 어떤 변화가 나타날지 물의 온도와 관련지어 써 봐요.</p>
+  <textarea id="d3F3" rows="2" placeholder="예: 용액의 온도가 낮아지면 …"></textarea>
+  <div class="row" style="margin-top:8px"><button class="main" id="d3F3Btn">내 답 살펴보기</button></div>
+  <div class="fb" id="d3F3Fb"></div>
+</section>
+
+<section id="s10" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 41·43쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>물에 용해되는 용질의 양이 용질의 종류와 물의 온도에 따라 달라짐을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>같게 할 조건과 다르게 할 조건을 정해 실험을 계획하고 수행할 수 있어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>실험 결과를 사실 그대로 기록하고, 안전 수칙을 지키며 참여했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+const NS3='http://www.w3.org/2000/svg';const r3=(i,k)=>{const x=Math.sin(i*127.1+k*311.7)*43758.5453;return x-Math.floor(x);};
+function el3(tag,at,par){const e=document.createElementNS(NS3,tag);for(const k in at)e.setAttribute(k,at[k]);if(par)par.appendChild(e);return e;}
+function beaker(g,x,lbl,water,left,swirl,cloud){el3('path',{d:`M${x} 60 v140 q0 10 10 10 h120 q10 0 10 -10 v-140`,fill:'#f4fbff','fill-opacity':.6,stroke:'#7aa7bd','stroke-width':4},g);
+  if(water){el3('rect',{x:x+3,y:100,width:134,height:108,fill:'#cfe9f8',opacity:.85},g);}
+  if(cloud){for(let k=0;k<26;k++)el3('circle',{cx:x+10+r3(k,x)*120,cy:110+r3(k,x+1)*90,r:1.8,fill:'#fff'},g);}
+  if(left>0){const h=Math.min(16,4+left*3);el3('path',{d:`M${x+6} 208 q64 ${-h*1.6} 128 0z`,fill:'#fff',stroke:'#ccc'},g);}
+  if(swirl){el3('path',{d:`M${x+40} 150 q30 -16 60 0 q-30 16 -60 0`,fill:'none',stroke:'#7aa7bd','stroke-width':2,'stroke-dasharray':'4 4'},g);}
+  el3('rect',{x:x+30,y:74,width:80,height:20,rx:4,fill:'#fff',stroke:'#c9a'},g);const t=el3('text',{x:x+70,y:89,'text-anchor':'middle','font-size':13,'font-family':'Jua',fill:'#b4610f'},g);t.textContent=lbl;}
+
+/* 도입 */
+pickOne('#d3P1','','','s1');
+
+/* 실험 1: 용질의 종류 (지도서 예시: 백반 2숟가락, 소금 9숟가락째 남음, 설탕 10숟가락 모두 녹음) */
+const SOL=[{n:'설탕',lim:99},{n:'소금',lim:9},{n:'백반',lim:2}];const cnt=[0,0,0],rec=[[],[],[]];let s2done=false;
+function drawLab(sw){const g=$('#d3Beakers');g.innerHTML='';SOL.forEach((s,i)=>{const left=cnt[i]>=s.lim?cnt[i]-s.lim+1:0;beaker(g,60+i*220,s.n,true,left,sw===i,false);
+  const t=el3('text',{x:130+i*220,y:50,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:'#0f3b5c'},g);t.textContent=cnt[i]?cnt[i]+'숟가락':'물 50 mL';});}
+function drawTbl(){const rows=$$('#d3Tbl tr').slice(1);rows.forEach((tr,i)=>{[...tr.querySelectorAll('td')].forEach(td=>td.remove());for(let k=0;k<10;k++){const td=document.createElement('td');td.textContent=rec[i][k]||'';if(rec[i][k]==='△')td.style.color='#c0392b';tr.appendChild(td);}});}
+drawLab();drawTbl();
+$$('.d3-ctl button').forEach(b=>b.onclick=()=>{const i=+b.dataset.i,s=SOL[i];if(cnt[i]>=10)return;cnt[i]++;const ok=cnt[i]<s.lim;rec[i].push(ok?'○':'△');
+  b.querySelector('span').textContent=cnt[i];drawLab(i);setTimeout(()=>drawLab(),700);drawTbl();
+  if(!ok){b.disabled=true;fb('#d3LabFb',`${s.n}: ${cnt[i]}숟가락째에 충분히 저어도 녹지 않고 바닥에 남았어요. 더 넣지 않아요.`,'info');}
+  else if(cnt[i]>=10){b.disabled=true;fb('#d3LabFb',`${s.n}: 열 숟가락을 넣어도 모두 용해되었어요!`,'info');}
+  else fb('#d3LabFb',`${s.n} ${cnt[i]}숟가락: 충분히 저었더니 모두 용해되었어요.`,'info');
+  if(SOL.every((x,j)=>$('#d3B'+j).disabled)&&!s2done){s2done=true;fb('#d3LabFb','실험 끝! 백반은 두 숟가락째, 소금은 아홉 숟가락째에 바닥에 남았고, 설탕은 열 숟가락도 모두 용해되었어요. 다음 쪽 표를 확인해요.',true);doneNav('s2');}});
+
+/* 결과 정리 1 */
+let s3n=0;const s3d=()=>{if(++s3n===2)doneNav('s3');};
+pickOne('#d3P3','','',null,s3d);pickOne('#d3P3b','','',null,s3d);
+
+/* 계획 */
+let pred=null,s4n=0;const s4d=()=>{if(++s4n===2)doneNav('s4');};
+$$('#d3Pred button').forEach(b=>b.onclick=()=>{$$('#d3Pred button').forEach(x=>x.classList.toggle('sel',x===b));const first=pred===null;pred=b.dataset.v;
+  fb('#d3PredFb','“'+pred+'”이라고 예상했어요. 이제 조건을 정해요.',true);if(first)s4d();
+  $('#d3Cmp').textContent='📝 내 예상(‘'+pred+'’)과 비교: 실험 결과는 온도가 높은 따뜻한 물에서 백반이 더 많이 녹았어요. '+(pred==='다를 것'?'예상한 대로예요!':'예상과 달랐어요. 결과를 바탕으로 생각을 고쳐요.');});
+(function(){let sel=null,n=0;const items=[{t:'물의 온도',b:1},{t:'물의 양',b:0},{t:'용질의 종류(백반)',b:0},{t:'넣는 백반의 양',b:0},{t:'비커의 크기',b:0}];
+  items.forEach(it=>{const b=document.createElement('button');b.textContent=it.t;b.onclick=()=>{if(b.closest('.d3-bin'))return;$$('#d3Cards button').forEach(x=>x.classList.remove('sel'));b.classList.add('sel');sel={b,it};$$('.d3-bin').forEach(x=>x.classList.add('ready'));};$('#d3Cards').appendChild(b);});
+  $$('.d3-bin').forEach(bin=>{const go=()=>{if(!sel){fb('#d3CFb','먼저 카드를 하나 골라요.','info');return;}
+    if(+bin.dataset.b===sel.it.b){sel.b.classList.remove('sel');sel.b.classList.add('right');bin.appendChild(sel.b);n++;$('#d3CN').textContent=n;
+      fb('#d3CFb',n===5?'🎉 계획 완성! 물의 온도만 다르게 하고 나머지 조건은 모두 같게 해요.':'맞아요!',true);if(n===5)s4d();}
+    else{fb('#d3CFb','물의 온도에 따른 차이를 알아보려면 무엇만 다르게 해야 할까요?',false);return;}
+    sel=null;$$('.d3-bin').forEach(x=>x.classList.remove('ready'));};bin.onclick=go;bin.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}};});})();
+
+/* 실험 2: 물의 온도 */
+let tst=0,stir=0;
+function drawT(sw){const g=$('#d3TB');g.innerHTML='';const water=tst>=1;
+  const coldLeft=tst>=2?(stir>=1?1:3):0, warmLeft=tst>=2?(stir>=2?0:stir===1?1:3):0;
+  beaker(g,130,'차가운 물',water,coldLeft,sw,false);beaker(g,370,'따뜻한 물',water,warmLeft,sw,false);
+  if(water){[[200,'10 ℃ 이하','#2f86c6'],[440,'40~50 ℃','#c0392b']].forEach(([x,t,c])=>{const e=el3('text',{x,y:46,'text-anchor':'middle','font-size':15,'font-family':'Jua',fill:c},g);e.textContent=t;});
+    for(let k=0;k<3;k++)el3('path',{d:`M${487+k*8} 98 q-4 -8 0 -16`,fill:'none',stroke:'#e2a3a3','stroke-width':2},g);}}
+drawT();
+$('#d3T1').onclick=()=>{tst=1;drawT();$('#d3T1').disabled=true;$('#d3T1').classList.remove('main');$('#d3T2').disabled=false;$('#d3T2').classList.add('main');fb('#d3TFb','눈금실린더로 50 mL씩 재어 담았어요.','info');};
+$('#d3T2').onclick=()=>{tst=2;drawT();$('#d3T2').disabled=true;$('#d3T2').classList.remove('main');$('#d3T3').disabled=false;$('#d3T3').classList.add('main');fb('#d3TFb','백반을 두 숟가락씩 넣었어요. 이제 저어 봐요.','info');};
+$('#d3T3').onclick=()=>{stir++;$('#d3Stir').textContent=stir;drawT(true);setTimeout(()=>drawT(),600);
+  if(stir===1)fb('#d3TFb','조금 녹았어요. 한 번 더 저어 봐요.','info');
+  else if(stir===2)fb('#d3TFb','따뜻한 물: 백반이 모두 녹아 투명한 용액이 되었어요. 차가운 물: 어느 정도 녹다가 더 이상 녹지 않고 바닥에 남았어요. 더 저어 봐도 될까요?','info');
+  else fb('#d3TFb',`${stir}번 저었지만 차가운 물의 백반은 여전히 바닥에 남아 있어요. 오래 저어도 더 녹지 않아요.`,'info');
+  if(stir>=2)$('#d3TAsk').hidden=false;};
+pickOne('#d3P5','','','s5');
+
+/* 정리 2 */
+let s6n=0;const s6d=()=>{if(++s6n===2)doneNav('s6');};
+pickOne('#d3Mis','','',null,s6d);pickOne('#d3P6','','',null,s6d);
+
+/* 백반 결정 */
+$('#d3XR').oninput=e=>{const v=+e.target.value;const T=Math.round(50-v*0.3);$('#d3XT').textContent='약 '+T+' ℃';const C=$('#d3XC'),B=$('#d3XB');C.innerHTML='';B.innerHTML='';
+  const n=Math.floor(v/100*16),bn=Math.floor(v/100*20);const pts=[[300,110],[276,140],[300,170],[324,140]];
+  for(let k=0;k<n;k++){const p=pts[k%4],q=pts[(k+1)%4],f=r3(k,3);const x=p[0]+(q[0]-p[0])*f,y=p[1]+(q[1]-p[1])*f;const s=3+v/100*5*r3(k,4);
+    el3('path',{d:`M${x} ${y-s} l${s} ${s} l${-s} ${s} l${-s} ${-s}z`,fill:'#fff',stroke:'#9fc9e6','stroke-width':1.5},C);}
+  for(let k=0;k<bn;k++){const s=2+r3(k,6)*4;el3('path',{d:`M${230+r3(k,5)*140} ${236-s} l${s} ${s} l${-s} ${s} l${-s} ${-s}z`,fill:'#fff',stroke:'#9fc9e6'},B);}
+  if(v>=95){fb('#d3XFb','온도가 낮아지면서 녹아 있던 백반이 더 이상 녹아 있지 못하고 바닥에 가라앉거나 철끈에 달라붙어 결정이 커졌어요. 물의 온도에 따라 용해되는 양이 다르기 때문이에요!',true);doneNav('s7');}
+  else if(v>20)fb('#d3XFb','온도가 낮아지고 있어요. 무슨 일이 생기나요?','info');};
+
+/* 한눈에 쏙 */
+let s8n=0;const s8d=()=>{if(++s8n===2)doneNav('s8');};
+$('#blReveal').onclick=()=>{fb('#blFb','물의 양이 같을 때 용해되는 용질의 양에 영향을 주는 요인은 용질의 종류와 물의 온도예요.',true);s8d();};
+pickOne('#d3P8','','',null,s8d);
+
+/* 형성 평가 */
+let f3=0;const fd=()=>{if(++f3===3)doneNav('s9');};
+pickOne('#d3F1','','',null,fd);
+(function(){const ok=new Set();$$('#d3F2 button').forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');const was=ok.size;ok.add(b.textContent);$('#d3FN').textContent=ok.size;
+  fb('#d3F2Fb',ok.size===2?'정답! 친구 3·4가 틀렸어요. 같은 조건에서 용해되는 양은 설탕이 가장 많고 백반이 가장 적으며, 용질의 종류에 따라 달라요.':b.dataset.m,ok.size===2?true:'info');if(ok.size===2&&was===1)fd();}
+  else{b.classList.add('wrong');fb('#d3F2Fb',b.dataset.m,false);}});})();
+$('#d3F3Btn').onclick=()=>{const t=$('#d3F3').value.trim();if(!t){fb('#d3F3Fb','먼저 답을 써 보세요.',false);return;}
+  const a=/백반|결정|알갱이|고체/.test(t),b=/가라앉|생기|생긴|나타|바닥|붙/.test(t),c=/온도|차가|낮아|식/.test(t);
+  if(a&&b&&c){if(!$('#d3F3Btn').dataset.ok){$('#d3F3Btn').dataset.ok=1;fd();}fb('#d3F3Fb','잘 썼어요! 예시 답: 용액의 온도가 낮아지면 물에 용해되는 백반의 양이 줄어들므로, 더 이상 녹아 있지 못하는 백반의 일부가 비커 바닥에 가라앉아요.',true);}
+  else if(a&&b)fb('#d3F3Fb','백반이 생긴다는 것은 맞아요. 왜 그런지 물(용액)의 온도와 관련지어 써 봐요.','info');
+  else fb('#d3F3Fb','‘더 알아보기’의 백반 결정 실험을 떠올려 봐요. 온도가 낮아지면 녹아 있던 백반은 어떻게 될까요?',false);};
+
+faces('s10','잘했어요! 다음 시간에는 용액의 진하기를 비교하는 방법을 알아봐요.','어려웠던 부분은 두 실험(용질의 종류, 물의 온도)을 다시 해 봐요.');
+</script>

@@ -1,0 +1,380 @@
+<!--
+title: 지구의 자전을 알아볼까?
+unit: 4
+lesson: 4
+total: 11
+goal: 역할놀이로 지구의 자전을 이해할 수 있어요.<br>지구의 자전을 설명할 수 있어요.
+pages: 「과학」 92~93쪽 · 「실험관찰」 56~57쪽 · 지도서 360~367쪽
+blanks: [{"btn":"blReveal","ans":{"bl1":"자","bl2":"전"}}]
+-->
+<style>
+/* 4단원 지구의 운동 · 교과서 버전 공통 */
+[hidden]{display:none!important}
+.e4-lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.e4-lab svg{display:block;width:100%;height:auto;margin:0 auto}
+/* 그림을 화면 높이에 맞추되 옆 빈틈 없이: style="--h:40vh;--ar:2.1" (가로/세로) */
+svg.e4-fit,.e4-lab svg.e4-fit{width:min(100%,calc(var(--h,40vh)*var(--ar,2)));height:auto;max-height:none}
+.e4-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:clamp(8px,1vw,16px);align-items:start}
+.e4-two>*{min-width:0}
+@media(max-width:700px){.e4-two{grid-template-columns:1fr}}
+.e4-ctl{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:8px}
+.e4-ctl button{font-size:.92rem;min-height:2.3rem;padding:.2em .8em}
+.e4-ctl button.done{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.e4-ctl button[disabled]{opacity:.45;cursor:default}
+.e4-ctl .jua{font-size:.98rem}
+.e4-q{font-family:"Jua",sans-serif;font-size:1.06rem;margin:10px 0 6px}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:8px 12px;font-size:.95rem}
+.big{font-size:1.08rem}
+.e4-rp{display:flex;flex-wrap:wrap;gap:6px 10px;align-items:center;padding:6px 0;border-bottom:2px dashed var(--line)}
+.e4-rp .q{flex:1 1 40%;font-family:"Jua",sans-serif;min-width:10em}
+.e4-rp button{min-height:2.3rem;padding:.15em .8em;font-size:.95rem}
+.e4-note{font-size:.88rem;color:var(--muted);margin:4px 0 0}
+/* 나누기 카드 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+#quiz>div{margin-bottom:6px}
+@media (max-width:600px){.t3sort,.t3match{grid-template-columns:1fr}}
+.r2-sim{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:10px;align-items:start}
+.r2-sim>div{min-width:0}
+.r2-sim .cap2{font-family:"Jua",sans-serif;font-size:.95rem;text-align:center;margin:2px 0 4px;color:var(--muted)}
+@media(max-width:700px){.r2-sim{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 92쪽</span>
+  <h2>팽이는 무엇을 중심으로 돌고 있나요?</h2>
+  <div class="e4-lab"><svg id="top" class="e4-fit" style="--h:26vh;--ar:2.4" viewBox="0 0 600 250" role="img" aria-label="가운데 축을 중심으로 빙글빙글 도는 팽이"></svg></div>
+  <div class="pick" id="p1" data-glue="1">
+    <button data-a="1" data-m="맞아요! 팽이는 가운데 축을 중심으로 제자리에서 돌아요.">팽이의 가운데 축</button>
+    <button data-a="0" data-m="팽이를 잘 봐요. 무늬가 돌고 있는 한가운데에 무엇이 있나요?">팽이 바깥의 바닥</button>
+  </div>
+  <div class="fb"></div>
+  <p class="e4-q" data-glue="1">팽이처럼 제자리에서 회전하는 것을 모두 골라요.</p>
+  <div class="pick" id="p1b" data-glue="1">
+    <button data-a="1">제자리에서 회전하는 발레리나</button>
+    <button data-a="1">제자리에서 회전하는 놀이 기구</button>
+    <button data-a="0" data-m="미끄럼틀은 위에서 아래로 미끄러져 내려와요. 제자리에서 회전하지 않아요.">미끄럼틀을 타는 친구</button>
+  </div>
+  <div class="fb"></div>
+  <p class="warn" id="def1" hidden data-glue="1">💡 천체가 스스로 고정된 축을 중심으로 회전하는 것을 <b>자전</b>이라고 해요. 지구도 자전을 하고 있어요. 역할놀이로 알아봐요.</p>
+</section>
+
+<section id="s2" data-nav="실험 준비">
+  <span class="stage">실험해요 1~4 · 「실험관찰」 56쪽</span>
+  <h2>지구의 자전 역할놀이를 준비해요</h2>
+  <p>준비물: 붙임쪽지, 필기도구, 갓 없는 전등, 면장갑 · 붙임쪽지에 ‘지구’, ‘별’, ‘동’, ‘서’를 쓰고 역할을 정해요.</p>
+  <div class="e4-two">
+    <div class="e4-lab"><svg id="setup" class="e4-fit" style="--h:33vh;--ar:1.2" viewBox="0 0 360 300" role="img" aria-label="전등, 지구 역할, 별 역할이 한 줄로 선 모습을 위에서 본 그림"></svg></div>
+    <div>
+      <p class="e4-q">③ 지구 역할을 맡은 사람의 <b>왼손</b>에 붙일 붙임쪽지는?</p>
+      <div class="pick" id="p2a"><button data-a="1" data-m="맞아요! 지구 역할은 남쪽을 바라보므로 왼손이 동쪽이에요. 왼손에 ‘동’, 오른손에 ‘서’를 붙여요.">동</button><button data-a="0" data-m="지구 역할이 바라보는 쪽은 남쪽이에요. 남쪽을 바라볼 때 왼쪽은 어느 쪽일까요?">서</button></div>
+      <div class="fb"></div>
+      <p class="e4-q">④ 지구 역할을 맡은 사람은 어디에 서나요?</p>
+      <div class="pick" id="p2b"><button data-a="1" data-m="맞아요! 전등과 별 역할 사이에 서서 팔을 벌려요. 전등은 태양 역할을 해요.">전등과 별 역할을 맡은 사람 사이</button><button data-a="0" data-m="별 역할은 전등을 향해 서고, 지구 역할은 그 사이에 서요.">전등 바로 옆</button></div>
+      <div class="fb"></div>
+    </div>
+  </div>
+  <p class="tip">⚠️ 전등을 떨어뜨리지 않게 조심해요. 불이 켜진 전등을 오랫동안 보거나 맨손으로 만지지 않아요. 회전할 때 주변 물체에 부딪히지 않게 넓은 곳에서 해요.</p>
+</section>
+
+<section id="s3" data-nav="역할놀이">
+  <span class="stage">실험해요 5 · 「실험관찰」 57쪽</span>
+  <h2>제자리에서 서쪽에서 동쪽(시계 반대 방향)으로 천천히 돌아요</h2>
+  <p>‘↺ 돌기’를 여러 번 눌러 <b>한 바퀴</b> 돌면서, 지구 역할의 눈에 전등과 별이 어디에 보이는지 관찰해요.</p>
+  <div class="r2-sim">
+    <div><p class="cap2">위에서 내려다본 모습</p><div class="e4-lab"><svg id="rTop" class="e4-fit" style="--h:34vh;--ar:1.2" viewBox="0 0 360 300" role="img" aria-label="역할놀이를 위에서 본 그림"></svg></div></div>
+    <div><p class="cap2">지구 역할의 눈에 보이는 모습</p><div class="e4-lab"><svg id="rView" class="e4-fit" style="--h:24vh;--ar:1.8" viewBox="0 0 360 200" role="img" aria-label="지구 역할이 바라보는 앞쪽 모습. 왼쪽이 동쪽, 가운데가 남쪽, 오른쪽이 서쪽"></svg></div>
+      <div class="e4-ctl"><button class="main" id="rTurn">↺ 서쪽에서 동쪽으로 돌기</button><span class="jua" id="rCnt">0 / 360°</span></div></div>
+  </div>
+  <div class="fb" id="rFb"></div>
+  <p class="tip">⚠️ 지구 역할은 제자리에서 천천히 돌아요. 바라보는 방향의 왼쪽(왼손)이 동쪽, 오른쪽(오른손)이 서쪽이에요.</p>
+</section>
+
+<section id="s4" data-nav="결과 정리">
+  <span class="stage">실험해요 5 · 정리해요 · 「실험관찰」 57쪽</span>
+  <h2>관찰한 것을 정리해요</h2>
+  <div id="rp4">
+    <div class="e4-rp"><span class="q">지구 역할을 맡은 사람이 회전하는 방향</span><button data-a="1" data-m="맞아요! 서쪽에서 동쪽으로(시계 반대 방향) 돌았어요.">서쪽 → 동쪽</button><button data-a="0" data-m="‘서쪽에서 동쪽으로(시계 반대 방향)’ 돌았어요.">동쪽 → 서쪽</button></div>
+    <div class="e4-rp"><span class="q">전등의 위치 변화</span><button data-a="0" data-m="전등은 처음에 왼손(동) 쪽에 보였어요. 그다음엔 어디로 갔나요?">서쪽 → 동쪽</button><button data-a="1" data-m="맞아요! 전등은 동쪽에서 서쪽으로 위치가 달라졌어요.">동쪽 → 서쪽</button></div>
+    <div class="e4-rp"><span class="q">별 역할을 맡은 사람의 위치 변화</span><button data-a="1" data-m="맞아요! 별 역할도 동쪽에서 서쪽으로 위치가 달라졌어요.">동쪽 → 서쪽</button><button data-a="0" data-m="별도 처음에는 어느 손 쪽에서 보였나요?">서쪽 → 동쪽</button></div>
+  </div>
+  <div class="fb"></div>
+  <p class="e4-q" data-glue="1">태양과 별의 위치 변화를 지구의 자전과 관련지어 말하면?</p>
+  <div class="pick" id="p4" data-glue="1">
+    <button data-a="1" data-m="맞아요! 지구가 서쪽에서 동쪽으로 자전하기 때문에 하루 동안 태양과 별은 동쪽에서 서쪽으로 위치가 달라져요.">지구가 서쪽에서 동쪽으로 자전하기 때문에 태양과 별은 동쪽에서 서쪽으로 위치가 달라져요</button>
+    <button data-a="0" data-m="역할놀이에서 움직인 것은 전등과 별이 아니라 지구 역할이었어요.">태양과 별이 스스로 동쪽에서 서쪽으로 움직이기 때문이에요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s5" data-nav="지구의 자전">
+  <span class="stage">지구의 자전 · 「과학」 93쪽</span>
+  <h2>지구의 자전을 알아봐요</h2>
+  <p>▶를 누르거나 시간 막대를 움직여 영상처럼 봐요.</p>
+  <div class="player" id="pl5">
+    <svg id="earthV" class="scene" viewBox="0 0 800 360" role="img" aria-label="기울어진 자전축을 중심으로 서쪽에서 동쪽으로 자전하는 지구"></svg>
+    <div class="ctl"><button class="main pBtn" aria-label="재생">▶</button><input type="range" class="pRng" min="0" step="0.02" value="0" aria-label="영상 시간"><span class="jua pClk">0초</span></div>
+    <div class="row chapters"></div>
+    <p class="cap"></p>
+  </div>
+  <div class="fb" id="plFb"></div>
+</section>
+
+<section id="s6" data-nav="정리해요">
+  <span class="stage">정리해요 · 「과학」 93쪽</span>
+  <h2>낱말과 뜻을 이어요</h2>
+  <div class="t3match" id="m6"></div>
+  <div class="fb"></div>
+  <p class="e4-q" data-glue="1">지구의 자전 방향을 바르게 말한 친구는?</p>
+  <div class="pick" id="p6" data-glue="1">
+    <button data-a="0" data-m="왼쪽과 오른쪽은 관측자의 위치와 바라보는 방향에 따라 달라져요. 동서남북 방위로 말해야 해요.">“지구는 왼쪽에서 오른쪽으로 자전해.”</button>
+    <button data-a="1" data-m="맞아요! 방위를 써서 ‘서쪽에서 동쪽으로’라고 말해야 해요. 북극 위에서 내려다보면 시계 반대 방향이에요.">“지구는 서쪽에서 동쪽으로 자전해.”</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s7" data-nav="생각+">
+  <span class="stage">생각이 한눈에 2 · 「과학」 93쪽</span>
+  <h2>만약 지구가 동쪽에서 서쪽으로 자전한다면?</h2>
+  <p>이번에는 반대로, 동쪽에서 서쪽(시계 방향)으로 돌아 봐요.</p>
+  <div class="r2-sim">
+    <div class="e4-lab"><svg id="xTop" class="e4-fit" style="--h:26vh;--ar:1.2" viewBox="0 0 360 300" role="img" aria-label="반대로 도는 역할놀이를 위에서 본 그림"></svg></div>
+    <div><div class="e4-lab"><svg id="xView" class="e4-fit" style="--h:22vh;--ar:1.8" viewBox="0 0 360 200" role="img" aria-label="반대로 돌 때 보이는 모습"></svg></div>
+      <div class="e4-ctl"><button class="main" id="xTurn">↻ 동쪽에서 서쪽으로 돌기</button><span class="jua" id="xCnt">0 / 360°</span></div></div>
+  </div>
+  <div class="fb" id="xFb"></div>
+  <div id="x7" hidden data-glue="1">
+    <p class="e4-q">하루 동안 태양과 별의 위치는 어떻게 달라질까요?</p>
+    <div class="pick" id="p7"><button data-a="1" data-m="맞아요! 지구가 동쪽에서 서쪽으로 자전한다면 하루 동안 태양과 별은 서쪽에서 동쪽으로 위치가 달라질 거예요.">서쪽에서 동쪽으로 위치가 달라져요</button><button data-a="0" data-m="방금 돌아 볼 때 전등이 처음 보인 쪽을 떠올려 봐요.">지금처럼 동쪽에서 서쪽으로 달라져요</button></div>
+    <div class="fb"></div>
+  </div>
+</section>
+
+<section id="s8" data-nav="한눈에 쏙">
+  <span class="stage">생각이 한눈에 1</span>
+  <h2>한눈에 쏙 생각이 쑥</h2>
+  <p class="big">지구가 자전축을 중심으로 하루에 한 바퀴씩 서쪽에서 동쪽으로 회전하는 것을 지구의 <span class="blank"><span id="bl1">?</span><span id="bl2">?</span></span>(이)라고 합니다.</p>
+  <div class="row"><button class="main" id="blReveal">정답 확인</button></div><div class="fb" id="blFb"></div>
+</section>
+
+<section id="s9" data-nav="형성 평가">
+  <span class="stage">형성 평가</span>
+  <h2>확인해 봐요</h2>
+  <p class="jua big">1. 지구의 자전에 관한 설명으로 옳으면 ○, 옳지 않으면 ×를 골라요.</p>
+  <div id="ox9" data-glue="1">
+    <div class="e4-rp"><span class="q">⑴ 지구의 자전 방향은 동쪽에서 서쪽이다.</span><button data-a="0" data-m="지구는 서쪽에서 동쪽으로 자전해요.">○</button><button data-a="1" data-m="맞아요! 서쪽에서 동쪽이에요.">×</button></div>
+    <div class="e4-rp"><span class="q">⑵ 지구는 자전축을 중심으로 하루에 한 바퀴씩 회전한다.</span><button data-a="1" data-m="맞아요!">○</button><button data-a="0" data-m="지구는 하루에 한 바퀴씩 자전해요.">×</button></div>
+    <div class="e4-rp"><span class="q">⑶ 지구의 북극과 남극을 이은 가상의 직선을 지구의 자전축이라고 한다.</span><button data-a="1" data-m="맞아요!">○</button><button data-a="0" data-m="자전축의 뜻을 다시 떠올려 봐요.">×</button></div>
+  </div>
+  <div class="fb"></div>
+  <p class="jua big" style="margin-top:12px">2. 하루 동안 태양과 별이 동쪽에서 서쪽으로 위치가 달라지는 까닭을 지구의 운동과 관련지어 써 봐요.</p>
+  <textarea id="wr" rows="3" placeholder="지구가 ~을/를 중심으로 하루에 한 바퀴씩 ~쪽에서 ~쪽으로 …" data-glue="1"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wrB">내 답 살펴보기</button></div><div class="fb" id="wrFb"></div>
+</section>
+
+<section id="s10" data-nav="스스로 평가">
+  <span class="stage">스스로 평가하기 · 「실험관찰」 57쪽</span>
+  <h2>오늘 공부를 되돌아봐요</h2>
+  <table>
+    <tr><td>지구의 자전을 설명할 수 있어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>역할놀이를 하면서 지구의 자전 방향을 관찰했어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>지구의 자전을 알아보는 활동을 할 때 친구들과 협력하고 적극적으로 탐구했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+</section>
+
+<script>
+/* ===== 4단원 지구의 운동 · 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg', RAD=Math.PI/180;
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 줄마다 고르기: 상자 안 .e4-rp 줄의 단추 중 data-a="1"이 정답. 모든 줄을 맞히면 끝 */
+function rowsPick(box,okMsg,sec,cb){const rows=$$(box+' .e4-rp'),out=$(box).nextElementSibling,ok=new Set();
+  rows.forEach((r,k)=>{const bs=$$('button',r);bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('right','wrong'));
+    if(b.dataset.a==='1'){b.classList.add('right');ok.add(k);if(ok.size===rows.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m||'맞아요!')+' ('+ok.size+'/'+rows.length+')','info');}
+    else{b.classList.add('wrong');ok.delete(k);fb(out,b.dataset.m||'다시 생각해 봐요.',false);}});});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h,img}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t,k,m,h}], [{k,n}], 다 맞힘 글, 섹션) */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach(it=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 것을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root, end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기(키보드도) */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+/* 형성 평가: 고르기와 글쓰기가 모두 끝나야 섹션 완료 */
+function twoDone(sec){let a=false,b=false;return{q(){a=true;if(b)doneNav(sec);},w(){b=true;if(a)doneNav(sec);}};}
+function watchWrite(btn,out,f){$(btn).addEventListener('click',()=>{if($(out).classList.contains('ok'))f();});}
+/* 그림 그리기 도우미 */
+const sv=(tag,a,inner)=>'<'+tag+' '+Object.entries(a).map(([k,v])=>k+'="'+v+'"').join(' ')+(inner==null?'/>':'>'+inner+'</'+tag+'>');
+const tx=(x,y,t,o)=>'<text x="'+x+'" y="'+y+'" font-family="Jua" font-size="'+((o&&o.s)||18)+'" fill="'+((o&&o.c)||'#0f3b5c')+'" text-anchor="'+((o&&o.a)||'middle')+'"'+((o&&o.w)?' font-weight="700"':'')+'>'+t+'</text>';
+/* ---------- 도입: 도는 팽이 ---------- */
+(function(){const el=$('#top');let ph=0;
+  function draw(){ph+=0.06;let s='<rect width="600" height="250" fill="#f4fbff"/><ellipse cx="300" cy="232" rx="120" ry="10" fill="#cfe0ea"/>';
+    s+='<path d="M190 112 Q205 170 300 222 Q395 170 410 112Z" fill="#f2a33a" stroke="#8a4a10" stroke-width="3"/>';
+    for(let i=0;i<8;i++){const a=ph+i*Math.PI/4,sx=Math.sin(a);if(Math.cos(a)<0)continue;s+='<path d="M'+(300+110*sx)+' '+(112+26*Math.cos(a)*0)+' Q'+(300+70*sx)+' 175 300 222" stroke="'+(i%2?'#e2573f':'#1c6fa8')+'" stroke-width="7" fill="none" opacity=".85"/>';}
+    s+='<ellipse cx="300" cy="112" rx="110" ry="26" fill="#ffd27a" stroke="#8a4a10" stroke-width="3"/>';
+    for(let i=0;i<6;i++){const a=ph+i*Math.PI/3;s+='<line x1="300" y1="112" x2="'+(300+100*Math.cos(a))+'" y2="'+(112+22*Math.sin(a))+'" stroke="#e2573f" stroke-width="4" opacity=".6"/>';}
+    s+='<rect x="292" y="40" width="16" height="74" rx="5" fill="#8a4a10"/><line x1="300" y1="22" x2="300" y2="240" stroke="#c2332c" stroke-width="3" stroke-dasharray="7 6"/>';
+    s+='<path d="M262 62 A40 12 0 1 0 338 62" fill="none" stroke="#16804a" stroke-width="4"/><path d="M338 62 l-12 -8 l2 13z" fill="#16804a"/>';
+    s+=tx(318,34,'가운데 축',{s:20,c:'#c2332c',a:'start'})+tx(120,60,'빙글빙글',{s:22,c:'#16804a'});
+    el.innerHTML=s;requestAnimationFrame(draw);}
+  draw();})();
+pickOne('#p1','','',null,()=>{p1ok=true;if(p1bok){$('#def1').hidden=false;doneNav('s1');}});
+let p1ok=false,p1bok=false;
+pickAll('#p1b','맞아요! 발레리나와 회전하는 놀이 기구는 팽이처럼 제자리에서 회전해요.','',null,()=>{p1bok=true;if(p1ok){$('#def1').hidden=false;doneNav('s1');}});
+
+/* ---------- 역할놀이 그리기 ---------- */
+function lampG(x,y,s){s=s||1;let g='<g transform="translate('+x+' '+y+') scale('+s+')">';for(let i=0;i<10;i++){const a=i*Math.PI/5;g+='<line x1="'+(26*Math.cos(a))+'" y1="'+(26*Math.sin(a))+'" x2="'+(36*Math.cos(a))+'" y2="'+(36*Math.sin(a))+'" stroke="#f0a020" stroke-width="4" stroke-linecap="round"/>';}
+  return g+'<circle r="20" fill="#ffe27a" stroke="#d08a00" stroke-width="3"/>'+tx(0,6,'전등',{s:14,c:'#7a4a00'})+'</g>';}
+function starG(x,y,s){s=s||1;return '<g transform="translate('+x+' '+y+') scale('+s+')"><circle r="22" fill="#6ec3f0" stroke="#1c6fa8" stroke-width="3"/><path d="M0 -14 L4 -4 L14 -4 L6 3 L9 13 L0 7 L-9 13 L-6 3 L-14 -4 L-4 -4Z" fill="#fff59a" stroke="#b8860b" stroke-width="1.5"/>'+tx(0,40,'별 역할',{s:14,c:'#0f3b5c'})+'</g>';}
+function personTop(cx,cy,th,lab){/* th: 바라보는 쪽(화면 위쪽에서 시계 방향 각도) */
+  return '<g transform="translate('+cx+' '+cy+') rotate('+th+')"><path d="M0 -30 v-16" stroke="#16804a" stroke-width="4"/><path d="M-9 -44 L0 -58 L9 -44Z" fill="#16804a"/>'+
+   '<path d="M-34 0 h-30 M34 0 h30" stroke="#ffd9b0" stroke-width="9" stroke-linecap="round"/><ellipse rx="34" ry="15" fill="#e2573f" stroke="#7a2a1f" stroke-width="3"/><circle r="14" fill="#5a3a22"/>'+
+   '<g transform="translate(-72 0) rotate('+(-th)+')"><rect x="-15" y="-13" width="30" height="26" rx="5" fill="#ffe680" stroke="#b8860b" stroke-width="2"/>'+tx(0,7,lab?lab[0]:'동',{s:17})+'</g>'+
+   '<g transform="translate(72 0) rotate('+(-th)+')"><rect x="-15" y="-13" width="30" height="26" rx="5" fill="#ffe680" stroke="#b8860b" stroke-width="2"/>'+tx(0,7,lab?lab[1]:'서',{s:17})+'</g>'+
+   '<g transform="translate(0 -70) rotate('+(-th)+')">'+tx(0,6,'남',{s:16,c:'#16804a'})+'</g></g>';}
+(function(){let s='<rect width="360" height="300" fill="#f7f3ea"/>'+lampG(180,46)+starG(180,252)+personTop(180,162,0,['?','서']);
+  s+=tx(252,200,'오른손',{s:14,c:'#7a2a1f'})+tx(108,200,'왼손',{s:14,c:'#7a2a1f'})+tx(206,128,'지구 역할',{s:14,c:'#7a2a1f',a:'start'});
+  $('#setup').innerHTML=s;})();
+let ok2a=false,ok2b=false;
+pickOne('#p2a','','',null,()=>{ok2a=true;if(ok2b)doneNav('s2');});
+pickOne('#p2b','','',null,()=>{ok2b=true;if(ok2a)doneNav('s2');});
+
+/* ---------- 역할놀이 가상 실험: dir +1 = 서쪽에서 동쪽(위에서 보면 시계 반대 방향) ---------- */
+function mkRole(o){let th=90,turned=0,busy=false;const trail=[];
+  const norm=a=>{a=((a%360)+360)%360;return a>180?a-360:a;};
+  function rel(b){return norm(b-th);}
+  function draw(){let s='<rect width="360" height="300" fill="#f7f3ea"/>'+lampG(180,46)+starG(180,252)+personTop(180,160,th);
+    /* 위에서 본 회전 방향 화살표: 아래쪽 호에서 왼→오른쪽이면 시계 반대 방향 */
+    s+=o.dir>0?'<path d="M128 196 A70 70 0 0 0 232 196" fill="none" stroke="#1c6fa8" stroke-width="3" stroke-dasharray="5 4"/><path d="M232 196 l-14 2 l10 12z" fill="#1c6fa8"/>'
+              :'<path d="M232 196 A70 70 0 0 1 128 196" fill="none" stroke="#1c6fa8" stroke-width="3" stroke-dasharray="5 4"/><path d="M128 196 l14 2 l-10 12z" fill="#1c6fa8"/>';
+    s+='<rect x="6" y="6" width="150" height="24" rx="7" fill="#fff"/>'+tx(12,24,o.dir>0?'↺ 시계 반대 방향':'↻ 시계 방향',{s:15,c:'#1c6fa8',a:'start'});
+    $(o.top).innerHTML=s;
+    let v='<defs><linearGradient id="'+o.id+'g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#dff1fb"/><stop offset="1" stop-color="#fffdf5"/></linearGradient></defs><rect width="360" height="200" fill="url(#'+o.id+'g)"/><rect y="150" width="360" height="50" fill="#d9c7ad"/>';
+    v+='<line x1="30" x2="330" y1="150" y2="150" stroke="#8a765c" stroke-width="2"/>';
+    [[30,'동'],[180,'남'],[330,'서']].forEach(([x,n])=>{v+='<rect x="'+(x-18)+'" y="160" width="36" height="28" rx="7" fill="#fff" stroke="#0f3b5c" stroke-width="2"/>'+tx(x,182,n,{s:19});});
+    v+=tx(30,140,'왼손 쪽',{s:12,c:'#7a2a1f'})+tx(330,140,'오른손 쪽',{s:12,c:'#7a2a1f'});
+    trail.forEach(t=>{v+='<circle cx="'+t.x+'" cy="'+t.y+'" r="5" fill="'+(t.k==='L'?'#f0a020':'#1c6fa8')+'" opacity=".45"/>';});
+    const rl=rel(0),rs=rel(180);let seen=[];
+    if(Math.abs(rl)<=90){v+=lampG(180+rl/90*150,92,.9);seen.push('전등');}
+    if(Math.abs(rs)<=90){v+=starG(180+rs/90*150,90,.9);seen.push('별 역할');}
+    v+='<rect x="8" y="6" width="344" height="26" rx="8" fill="#fff" opacity=".85"/>'+tx(180,25,seen.length?'앞에 보여요: '+seen.join(', '):'앞에 아무것도 없어요',{s:15});
+    $(o.view).innerHTML=v;}
+  function mark(){const rl=rel(0),rs=rel(180);if(Math.abs(rl)<=90)trail.push({k:'L',x:180+rl/90*150,y:92});if(Math.abs(rs)<=90)trail.push({k:'S',x:180+rs/90*150,y:90});}
+  function where(r){return r<-30?'동쪽(왼손 쪽)':r>30?'서쪽(오른손 쪽)':'남쪽(앞쪽)';}
+  $(o.btn).onclick=()=>{if(busy)return;busy=true;const a0=th;tween(700,p=>{th=a0-o.dir*45*p;draw();},()=>{th=a0-o.dir*45;turned+=45;mark();draw();busy=false;
+    $(o.cnt).textContent=Math.min(turned,360)+' / 360°';
+    const rl=rel(0),rs=rel(180);let m=[];if(Math.abs(rl)<=90)m.push('전등은 '+where(rl));if(Math.abs(rs)<=90)m.push('별 역할은 '+where(rs));
+    if(turned>=360&&!o.fired){o.fired=true;o.full();return;}
+    fb(o.fb,(m.length?m.join(', ')+'에 보여요. ':'전등도 별 역할도 앞에 보이지 않아요. ')+'계속 돌아요.','info');});};
+  mark();draw();
+  fb(o.fb,o.start,'info');}
+mkRole({id:'r',top:'#rTop',view:'#rView',btn:'#rTurn',cnt:'#rCnt',fb:'#rFb',dir:1,start:'처음에는 전등이 왼손(동) 쪽에 보이도록 서 있어요. ‘돌기’를 눌러요.',
+  full(){fb('#rFb','한 바퀴 돌았어요! 흐린 점은 전등(주황)과 별 역할(파랑)이 보였던 자리예요. 전등과 별은 모두 동쪽(왼손 쪽)에서 남쪽을 지나 서쪽(오른손 쪽)으로 위치가 달라졌어요.',true);doneNav('s3');}});
+mkRole({id:'x',top:'#xTop',view:'#xView',btn:'#xTurn',cnt:'#xCnt',fb:'#xFb',dir:-1,start:'이번에도 전등이 왼손(동) 쪽에 보이는 데서 시작해요. 반대 방향으로 돌아 봐요.',
+  full(){fb('#xFb','반대로 한 바퀴 돌았어요. 전등과 별 역할은 어느 쪽에서 어느 쪽으로 위치가 달라졌나요?',true);$('#x7').hidden=false;}});
+
+rowsPick('#rp4','모두 맞혔어요! 지구 역할이 서쪽에서 동쪽으로 회전하니 전등과 별 역할은 동쪽에서 서쪽으로 위치가 달라졌어요.',null,()=>{r4a=true;if(r4b)doneNav('s4');});
+let r4a=false,r4b=false;
+pickOne('#p4','','',null,()=>{r4b=true;if(r4a)doneNav('s4');});
+
+/* ---------- 지구의 자전 영상 ---------- */
+const LAND=[[50,10,26],[40,60,30],[20,100,20],[60,90,22],[37,127,9,'k'],[-10,-60,24],[30,-100,26],[0,20,24],[-25,135,20],[55,-40,14],[-20,-50,16],[10,-10,12]];
+function drawEarth(t){const rot=t*60*RAD,tilt=23.5;let s='<rect width="800" height="360" fill="#0b1636"/>';
+  for(let i=0;i<60;i++){s+='<circle cx="'+((i*137)%800)+'" cy="'+((i*71)%360)+'" r="'+(i%5?1:1.8)+'" fill="#fff" opacity=".6"/>';}
+  /* 옆에서 본 지구 */
+  const cx=245,cy=185,R=118;
+  s+='<g transform="translate('+cx+' '+cy+') rotate('+tilt+')"><circle r="'+R+'" fill="#2f7fc4"/>';
+  LAND.forEach(([la,lo,sz,k])=>{const a=(lo*RAD)+rot,x=R*Math.cos(la*RAD)*Math.sin(a),z=Math.cos(la*RAD)*Math.cos(a),y=-R*Math.sin(la*RAD);if(z<=0.05)return;
+    if(k) s+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="7" fill="#ff4d4d" stroke="#fff" stroke-width="2"/>'+(z>.3?'<g transform="translate('+(x+10).toFixed(1)+' '+(y-8).toFixed(1)+') rotate('+(-tilt)+')">'+tx(0,0,'우리나라',{s:15,c:'#fff',a:'start'})+'</g>':'');
+    else s+='<ellipse cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" rx="'+(sz*z).toFixed(1)+'" ry="'+(sz*.7).toFixed(1)+'" fill="#5cb85c" opacity=".95"/>';});
+  s+='<ellipse rx="'+R+'" ry="16" fill="none" stroke="#ffffff" stroke-opacity=".35" stroke-dasharray="4 5"/>';
+  s+='<line x1="0" y1="'+(-R-48)+'" x2="0" y2="'+(R+48)+'" stroke="#ffd23f" stroke-width="4"/><circle cy="'+(-R)+'" r="5" fill="#fff"/><circle cy="'+R+'" r="5" fill="#fff"/>';
+  if(t>=10&&t<15||t>=20){s+='<path d="M'+(-R*.75)+' 52 Q0 92 '+(R*.75)+' 52" fill="none" stroke="#ffe680" stroke-width="5"/><path d="M'+(R*.75)+' 52 l-18 -2 l8 15z" fill="#ffe680"/>';
+    s+='<g transform="translate('+(-R-24)+' 30) rotate('+(-tilt)+')">'+tx(0,0,'서',{s:22,c:'#ffe680'})+'</g><g transform="translate('+(R+24)+' 30) rotate('+(-tilt)+')">'+tx(0,0,'동',{s:22,c:'#ffe680'})+'</g>';}
+  s+='<g transform="translate(0 '+(-R-58)+') rotate('+(-tilt)+')">'+tx(0,0,'북극',{s:17,c:'#fff'})+'</g><g transform="translate(0 '+(R+70)+') rotate('+(-tilt)+')">'+tx(0,0,'남극',{s:17,c:'#fff'})+'</g></g>';
+  if(t<5) s+='<path d="M'+(cx+86)+' 50 L'+(cx+58)+' 74" stroke="#ffd23f" stroke-width="3"/>'+tx(cx+92,46,'자전축(기울어져 있어요)',{s:18,c:'#ffd23f',a:'start'});
+  /* 북극 위에서 본 지구 */
+  if(t>=15){const px=620,py=185,PR=105;s+='<circle cx="'+px+'" cy="'+py+'" r="'+PR+'" fill="#2f7fc4"/>';
+    LAND.forEach(([la,lo,sz,k])=>{if(la<0)return;const r=PR*(90-la)/90,a=lo*RAD+rot;
+      /* 북극 위에서 내려다보면 동쪽 = 시계 반대 방향: 경도가 커질수록 각도가 시계 반대 방향으로 */
+      const X=px+r*Math.cos(a),Y=py-r*Math.sin(a);
+      if(k) s+='<circle cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" r="7" fill="#ff4d4d" stroke="#fff" stroke-width="2"/>';
+      else s+='<ellipse cx="'+X.toFixed(1)+'" cy="'+Y.toFixed(1)+'" rx="'+(sz*.8)+'" ry="'+(sz*.55)+'" fill="#5cb85c"/>';});
+    s+='<circle cx="'+px+'" cy="'+py+'" r="6" fill="#fff"/>'+tx(px,py-12,'북극',{s:14,c:'#fff'});
+    s+='<path d="M'+(px+PR+18)+' '+py+' A'+(PR+18)+' '+(PR+18)+' 0 0 0 '+px+' '+(py-PR-18)+'" fill="none" stroke="#ffe680" stroke-width="5"/><path d="M'+px+' '+(py-PR-18)+' l14 -9 l0 18z" fill="#ffe680"/>';
+    s+=tx(px,48,'북극 위에서 내려다본 지구',{s:18,c:'#fff'})+tx(px,py+PR+38,'시계 반대 방향으로 돌아요',{s:18,c:'#ffe680'});}
+  else if(t>=5){s+=tx(600,150,'하루에',{s:30,c:'#fff'})+tx(600,200,'한 바퀴',{s:40,c:'#ffe680'});}
+  if(t>=20) s+='<rect x="430" y="300" width="360" height="50" rx="12" fill="#ffe680"/>'+tx(610,333,'그래서 태양과 별은 동 → 서로 보여요',{s:19,c:'#0f3b5c'});
+  $('#earthV').innerHTML=s;}
+mkPlayer({root:'#pl5',end:26,ch:[[0,'① 자전축','지구의 북극과 남극을 이은 가상의 직선을 자전축이라고 해요. 지구의 자전축은 기울어져 있어요.'],
+  [5,'② 하루에 한 바퀴','지구는 자전축을 중심으로 하루에 한 바퀴씩 회전해요.'],
+  [10,'③ 서쪽 → 동쪽','지구는 서쪽에서 동쪽으로 회전해요. 이것을 지구의 자전이라고 해요.'],
+  [15,'④ 북극 위에서 보면','북극 위에서 내려다보면 지구는 시계 반대 방향으로 자전해요.'],
+  [20,'⑤ 태양과 별','지구가 서쪽에서 동쪽으로 자전하기 때문에 하루 동안 태양과 별은 동쪽에서 서쪽으로 위치가 달라져요.']],
+  draw:drawEarth,done(){fb('#plFb','끝까지 봤어요. 지구는 기울어진 자전축을 중심으로 하루에 한 바퀴씩 서쪽에서 동쪽으로 자전해요.',true);doneNav('s5');}});
+
+let m6a=false,m6b=false;
+matcher('#m6',[['자전축','지구의 북극과 남극을 이은 가상의 직선'],['지구의 자전','지구가 자전축을 중심으로 하루에 한 바퀴씩 서쪽에서 동쪽으로 회전하는 것'],['북극 위에서 본 자전 방향','시계 반대 방향']],
+  '모두 이었어요!',null,()=>{m6a=true;if(m6b)doneNav('s6');});
+pickOne('#p6','','',null,()=>{m6b=true;if(m6a)doneNav('s6');});
+pickOne('#p7','','','s7');
+$('#blReveal').onclick=()=>{fb('#blFb','지구가 자전축을 중심으로 하루에 한 바퀴씩 서쪽에서 동쪽으로 회전하는 것을 지구의 자전이라고 합니다.',true);doneNav('s8');};
+
+const T9=twoDone('s9');
+rowsPick('#ox9','모두 맞혔어요!',null,()=>T9.q());
+keyCheck('#wr','#wrB','#wrFb',[[/자전/,'지구의 자전'],[/(서쪽에서 동쪽|서에서 동|서 ?→ ?동)/,'서쪽에서 동쪽으로 회전'],[/(하루|한 바퀴)/,'하루에 한 바퀴'],[/축/,'자전축을 중심으로']],2,null,'‘지구가 자전축을 중심으로 하루에 한 바퀴씩 서쪽에서 동쪽으로 자전하기 때문에 ~’처럼 써 봐요.');
+watchWrite('#wrB','#wrFb',()=>T9.w());
+faces('s10','멋져요! 다음 시간에는 낮과 밤이 생기는 까닭을 알아봐요.','어려웠던 부분은 역할놀이를 다시 해 보며 정리해 봐요.');
+</script>

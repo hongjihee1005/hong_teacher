@@ -1,0 +1,280 @@
+<!--
+title: 창의가 팡팡 · 우리나라 지층과 화석 관광 지도 만들기
+unit: 1
+lesson: 9~10
+total: 12
+goal: 우리나라에서 볼 수 있는 다양한 지층과 화석을 찾아 관광 지도를 만들어 소개할 수 있어요.
+pages: 「과학」 32~33쪽 · 「실험관찰」 18~19쪽 · 지도서 168~173쪽
+-->
+<style>
+/* 1단원 교과서 버전 공통 */
+.lab{border:3px solid var(--navy);border-radius:clamp(12px,1.4vw,22px);background:#fffdf8;overflow:hidden}
+.lab svg{display:block;width:100%}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(8px,1vw,18px)}
+.two .photo{margin:0}
+.rtable{table-layout:fixed}
+.rtable td,.rtable th{text-align:center;padding:5px 4px;font-size:.88rem;word-break:keep-all}
+.rtable th{background:var(--bg)}
+.rtable td.q{background:var(--bg);font-family:"Jua",sans-serif}
+.warn{background:#fff4d6;color:#6b4a00;border:2px solid #f0c24b;border-radius:12px;padding:10px 14px;font-size:.95rem}
+.big{font-size:1.1rem}
+.ox{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:8px;align-items:center;border-bottom:2px dashed var(--line);padding:6px 0}
+.ox button{min-width:3rem}
+/* 나누기 카드: 카드마다 칸 단추 */
+.t3sort{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.t3sort .it{display:flex;flex-direction:column;gap:6px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--paper)}
+.t3sort .it .tx{font-family:"Jua",sans-serif;font-size:.98rem;line-height:1.35}
+.t3sort .it .bs{display:flex;gap:6px;flex-wrap:wrap}
+.t3sort .it .bs button{min-height:2.2rem;padding:.15em .7em;font-size:.9rem;border-width:2px}
+.t3sort .it.t3ok{border-color:var(--good);background:#e9f9ef;color:#0d5a31}
+/* 짝 잇기 */
+.t3match{display:grid;grid-template-columns:minmax(0,.8fr) minmax(0,1.4fr);gap:8px 14px;align-items:stretch}
+.t3match .col{display:flex;flex-direction:column;gap:8px}
+.t3match button{text-align:left;min-height:2.6rem}
+.t3match button.t3pr{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+/* 차례 맞히기 */
+.t3ord{display:flex;flex-direction:column;gap:6px}
+.t3ord button{text-align:left}
+.t3ord .t3dn{background:#bdf0cf;border-color:var(--good);color:#0d5a31}
+.t3seq{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0}
+.t3seq span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+/* 그림 속 누르기 */
+.hs{cursor:pointer}
+.hs:focus-visible{outline:none}
+.hs:focus-visible>*{stroke:#ffc93c;stroke-width:5}
+.t3cnt{font-family:"Jua",sans-serif;color:var(--muted);font-size:.95rem}
+#quiz>div{margin-bottom:6px}
+@media (max-width:600px){.two,.t3sort,.t3match{grid-template-columns:1fr}}
+.k7wrap{display:grid;grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:10px;align-items:start}
+.k7card{border:2px solid var(--line);border-radius:14px;padding:10px 12px;background:var(--paper);min-height:9rem}
+.k7card h3{margin:0 0 4px;font-size:1.05rem}
+.k7card .tg{display:inline-block;border-radius:999px;padding:1px 10px;font-size:.8rem;color:#fff;margin-right:4px}
+.k7pin{cursor:pointer}
+.k7mine{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}
+.k7mine span{background:#bdf0cf;color:#0d5a31;border-radius:999px;padding:3px 10px;font-size:.88rem}
+.k7post{border:2px solid var(--line);border-radius:14px;padding:8px 12px;background:#fffdf3;margin-bottom:8px;font-size:.92rem}
+.k7post b{color:var(--navy)}
+@media (max-width:600px){.k7wrap{grid-template-columns:1fr}}
+</style>
+
+<section id="s1" data-nav="도입">
+  <span class="stage">도입 · 「과학」 32쪽</span>
+  <h2>지층과 화석을 보려면 어디로 가야 할까요?</h2>
+  <p>우리나라는 여러 지역에서 지층과 화석을 볼 수 있어요. 특히 바닷가에서 여러 모습의 지층과 공룡 발자국 화석이 많이 발견되었어요.</p>
+  <p class="jua big">지층과 화석을 본 경험이나 알고 있는 것을 골라요.</p>
+  <div class="pick" id="p1">
+    <button data-m="좋아요! 도로를 만들려고 깎은 산비탈에서도 지층을 볼 수 있어요.">가족여행 중 도로 옆 깎은 산에서 지층을 봤어요</button>
+    <button data-m="좋아요! 바닷가 절벽은 지층을 보기 좋은 곳이에요.">바닷가 절벽에서 지층을 봤어요</button>
+    <button data-m="좋아요! 자연사 박물관에는 공룡 뼈 화석과 여러 가지 과거 생물의 화석이 전시되어 있어요.">자연사 박물관에서 화석을 봤어요</button>
+    <button data-m="괜찮아요! 오늘 관광 지도를 만들며 가 보고 싶은 곳을 찾아봐요.">아직 본 적이 없어요</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s2" data-nav="계획하기">
+  <span class="stage">계획하기 · 「실험관찰」 18쪽</span>
+  <h2>어떤 관광 지도를 만들까요?</h2>
+  <p class="jua">① 모둠에서 지층과 화석 중 하나를 정해요.</p>
+  <div class="pick" id="pT"><button data-k="지층" data-m="지층 관광 지도를 만들어요. 여러 가지 모양의 지층과 지층을 이루는 퇴적암을 볼 수 있는 곳을 찾아봐요.">🪨 지층</button><button data-k="화석" data-m="화석 관광 지도를 만들어요. 공룡 발자국, 공룡알 같은 화석을 볼 수 있는 곳을 찾아봐요.">🦕 화석</button></div>
+  <div class="fb"></div>
+  <p class="jua" data-glue="1">② 조사할 주제를 골라요.</p>
+  <div class="pick" id="pS" data-glue="1"><button data-m="주제: 아름다운 지층">아름다운 지층</button><button data-m="주제: 신기한 화석">신기한 화석</button><button data-m="주제: 우리 고장과 가까운 지층·화석">우리 고장과 가까운 곳</button><button data-m="주제: 공룡의 흔적을 찾아서">공룡의 흔적을 찾아서</button></div>
+  <div class="fb"></div>
+  <p class="jua" data-glue="1">③ 내가 맡을 역할을 골라요.</p>
+  <div class="pick" id="pR" data-glue="1"><button data-m="소개할 지층이나 화석의 내용을 정리하는 역할이에요.">소개하는 내용 정리하기</button><button data-m="관련 사진을 조사하는 역할이에요. 출처를 꼭 밝혀요.">사진 조사하기</button><button data-m="장소의 자세한 위치와 이용 시간을 조사하는 역할이에요.">위치와 이용 시간 조사하기</button><button data-m="모둠이 정리한 자료를 지도로 된 공유 게시판에 올리는 역할이에요.">공유 게시판에 올리기</button></div>
+  <div class="fb"></div>
+</section>
+
+<section id="s3" data-nav="해 보기">
+  <span class="stage">해 보기 · 「실험관찰」 18~19쪽</span>
+  <h2>지도에서 지층과 화석을 볼 수 있는 곳을 찾아요</h2>
+  <p>지도의 표시를 눌러 조사한 내용을 읽고, 우리 모둠 주제(<b id="topicName">지층 또는 화석</b>)에 맞는 곳을 <b>📌 우리 지도에 넣기</b>로 3곳 이상 모아요.</p>
+  <div class="k7wrap">
+    <div class="lab"><svg id="map" viewBox="0 0 360 420" role="img" aria-label="우리나라 지도와 지층·화석을 볼 수 있는 곳" style="max-height:52vh;margin:0 auto"></svg></div>
+    <div>
+      <div class="k7card" id="pc"><h3>지도에서 표시를 눌러요</h3><p class="tip">🟤 지층 · 🟢 화석</p></div>
+      <div class="row" style="margin-top:6px"><button id="addPin" disabled>📌 우리 지도에 넣기</button></div>
+      <div class="k7mine" id="mine"></div>
+    </div>
+  </div>
+  <div class="fb" id="mapFb"></div>
+  <p class="tip">⚠️ 스마트 기기로 조사할 때는 올바른 정보인지 확인하고 출처를 밝혀요. 스마트 기기에서 냄새가 나거나 열이 나면 바로 쓰지 말고 선생님께 알려요. 🗺️ 지도와 장소 표시는 대강의 위치예요.</p>
+</section>
+
+<section id="s4" data-nav="소개 글">
+  <span class="stage">해 보기 3 · 「실험관찰」 19쪽</span>
+  <h2>관광 지도를 소개하는 글을 써요</h2>
+  <p>조사한 내용을 그대로 옮기기보다, 읽는 사람이 가 보고 싶어지도록 써 봐요. 예) “다양한 모양의 지층과 퇴적암을 볼 수 있는 곳, 퇴적암과 바닷물이 만든 자연 속 예술 작품을 보러 오세요.”</p>
+  <textarea id="wr" rows="3" placeholder="○○에서는 ~을/를 볼 수 있어요. ~ 보러 오세요!"></textarea>
+  <div class="row" style="margin-top:8px" data-glue="1"><button class="main" id="wrB">내 글 살펴보기</button></div><div class="fb" id="wrFb"></div>
+  <div id="board" hidden data-glue="1"></div>
+</section>
+
+<section id="s5" data-nav="나누기">
+  <span class="stage">나누기 · 「실험관찰」 19쪽</span>
+  <h2>다른 모둠의 관광 지도에 칭찬 댓글을 달아요</h2>
+  <div class="k7post"><b>1모둠 · 아름다운 지층</b><br>경상남도 고성군 상족암, 전북특별자치도 부안군 채석강 — “여러 겹으로 쌓인 층을 볼 수 있어요.”</div>
+  <div class="k7post"><b>2모둠 · 신기한 화석</b><br>경기도 화성시 고정리 화석 산지(공룡알 화석), 경상남도 진주시 가진리 화석 산지(새 발자국 화석)</div>
+  <p class="jua big">바르고 고운 말로 쓴 칭찬 댓글을 <b>모두</b> 골라요.</p>
+  <div class="pick" id="p5">
+    <button data-a="1" data-m="좋은 댓글이에요! 잘한 점을 구체적으로 칭찬했어요.">우리나라 어디에서 공룡 발자국 화석을 볼 수 있는지 한눈에 알아볼 수 있어요.</button>
+    <button data-a="1" data-m="좋은 댓글이에요! 자료가 잘 정리된 점을 칭찬했어요.">조사한 자료가 잘 정리되어 있어서 알아보기 쉬웠어요.</button>
+    <button data-a="0" data-m="다른 사람의 작품을 깎아내리는 말은 바르고 고운 말이 아니에요. 잘한 점을 찾아 칭찬해요.">별로 재미없어요. 우리 모둠이 더 잘했어요.</button>
+    <button data-a="0" data-m="까닭 없이 짧게 쓴 말은 도움이 되지 않아요. 무엇을 잘했는지 구체적으로 써요.">ㅋㅋㅋ</button>
+  </div>
+  <div class="fb"></div>
+  <p class="jua big" data-glue="1">다른 모둠의 지도에서 더 알아보고 싶은 것을 골라요.</p>
+  <div class="pick" id="p5b" data-glue="1">
+    <button data-m="좋은 질문이에요! 직접 가 보고 싶은 마음이 생겼군요.">지층을 보러 가는 교통수단</button>
+    <button data-m="좋은 질문이에요! 채석강에서 볼 수 있는 퇴적암을 더 알아봐요.">채석강에서 주로 볼 수 있는 퇴적암</button>
+    <button data-m="좋은 질문이에요! 우리나라에 살았던 공룡을 조사해 봐요.">우리나라에 살았던 공룡의 종류</button>
+    <button data-m="좋은 질문이에요! 지구의 과거 환경을 알려 주는 지층과 화석을 소중히 보전해요.">지층과 화석을 잘 보존하는 방법</button>
+  </div>
+  <div class="fb"></div>
+</section>
+
+<section id="s6" data-nav="스스로 평가">
+  <span class="stage">평가하기 · 「실험관찰」 19쪽</span>
+  <h2>오늘 활동을 되돌아봐요</h2>
+  <table>
+    <tr><td>우리나라 지층과 화석에 관한 특징을 옳게 설명했어요.</td><td class="face" data-r="0"></td></tr>
+    <tr><td>지층과 화석 관광 지도 만들기에 필요한 정보를 정확하게 조사하고 지도를 만들었어요.</td><td class="face" data-r="1"></td></tr>
+    <tr><td>지층과 화석 관광 지도를 만들 때 모둠원과 소통하고 협력했어요.</td><td class="face" data-r="2"></td></tr>
+  </table>
+  <div class="fb" id="selfFb"></div>
+  <p class="tip">🌏 지구의 과거 환경을 알려 주는 지층과 화석을 소중히 보전해요.</p>
+</section>
+
+<script>
+/* ===== 1단원 교과서 버전 공통 도우미 ===== */
+const NS='http://www.w3.org/2000/svg';
+function shuffle(a){a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function tween(d,f,cb){const t0=performance.now();const st=n=>{const p=Math.min(1,(n-t0)/d);f(p);if(p<1)requestAnimationFrame(st);else if(cb)cb();};requestAnimationFrame(st);}
+const lerp=(a,b,p)=>a+(b-a)*Math.max(0,Math.min(1,p));
+/* 여러 개 고르기: data-a="1"이 정답, 결과는 상자 바로 다음 .fb */
+function pickAll(box,okMsg,noMsg,sec,cb){const bs=$$(box+' button'),need=bs.filter(b=>b.dataset.a==='1').length,got=new Set(),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{if(b.dataset.a==='1'){b.classList.add('right');got.add(b);
+      if(got.size===need){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(b.dataset.m?b.dataset.m+' ':'')+'좋아요! ('+got.size+'/'+need+')','info');}
+    else{b.classList.add('wrong');fb(out,b.dataset.m||noMsg,false);}});}
+/* 무엇을 골라도 괜찮은 생각 묻기: 고르면 그 단추의 data-m을 보여 줌 */
+function pickIdea(box,sec,cb){const bs=$$(box+' button'),out=$(box).nextElementSibling;
+  bs.forEach(b=>b.onclick=()=>{bs.forEach(x=>x.classList.remove('sel'));b.classList.add('sel');fb(out,b.dataset.m||'좋은 생각이에요. 오늘 공부하며 확인해 봐요.','info');if(sec)doneNav(sec);if(cb)cb(b);});}
+/* 형성 평가 고르기 문제: items [{q,o:[…],a,e,h}] */
+function quiz(box,items,cb){const ok=new Set();items.forEach((it,k)=>{const d=document.createElement('div');
+  d.innerHTML='<p class="jua big" style="margin:10px 0 6px">'+it.q+'</p>'+(it.img||'')+'<div class="pick'+(it.one?' one':'')+'"></div><div class="fb"></div>';
+  it.o.forEach((t,i)=>{const b=document.createElement('button');b.textContent=t;b.onclick=()=>{$$('button',$('.pick',d)).forEach(x=>x.classList.remove('right','wrong'));
+    if(i===it.a){b.classList.add('right');fb($('.fb',d),'정답! '+it.e,true);ok.add(k);if(ok.size===items.length&&cb)cb();}
+    else{b.classList.add('wrong');fb($('.fb',d),'다시 생각해 봐요. '+(it.h||''),false);}};$('.pick',d).appendChild(b);});
+  $(box).appendChild(d);});}
+/* 나누기: sorter('#box', [{t:'글',k:'칸',m:'풀이'}], [{k,n}], 다 맞힘 글, 섹션) — 카드마다 칸 단추 */
+function sorter(box,items,bins,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling,done=new Set();
+  shuffle(items).forEach((it,i)=>{const d=document.createElement('div');d.className='it';
+    d.innerHTML='<span class="tx">'+it.t+'</span><span class="bs"></span>';
+    bins.forEach(bn=>{const b=document.createElement('button');b.textContent=bn.n;b.onclick=()=>{if(done.has(it))return;
+      $$('button',d).forEach(x=>x.classList.remove('wrong'));
+      if(bn.k===it.k){b.classList.add('right');d.classList.add('t3ok');done.add(it);
+        if(done.size===items.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,(it.m||'맞아요!')+' ('+done.size+'/'+items.length+')','info');}
+      else{b.classList.add('wrong');fb(out,it.h||'다시 생각해 봐요.',false);}};$('.bs',d).appendChild(b);});
+    B.appendChild(d);});}
+/* 짝 잇기: matcher('#box', [[왼쪽, 오른쪽, 풀이]…], 다 맞힘 글, 섹션) */
+function matcher(box,pairs,okMsg,sec,cb){const B=$(box),out=B.nextElementSibling;B.innerHTML='<div class="col L"></div><div class="col R"></div>';
+  let cur=null,n=0;const L=$('.L',B),R=$('.R',B);
+  pairs.forEach((p,i)=>{const b=document.createElement('button');b.textContent=p[0];b.dataset.i=i;b.onclick=()=>{if(b.classList.contains('t3pr'))return;$$('.L button',B).forEach(x=>x.classList.remove('sel'));b.classList.add('sel');cur=i;fb(out,'‘'+p[0]+'’과 이어지는 설명을 오른쪽에서 골라요.','info');};L.appendChild(b);});
+  shuffle(pairs.map((p,i)=>[p,i])).forEach(([p,i])=>{const b=document.createElement('button');b.textContent=p[1];b.onclick=()=>{if(b.classList.contains('t3pr'))return;
+    if(cur===null){fb(out,'먼저 왼쪽 낱말을 골라요.','info');return;}
+    if(cur===i){b.classList.add('t3pr');const lb=$('.L button[data-i="'+i+'"]',B);lb.classList.remove('sel');lb.classList.add('t3pr');cur=null;n++;
+      if(n===pairs.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! '+(p[2]||'')+' ('+n+'/'+pairs.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'다시 생각해 봐요.',false);}};R.appendChild(b);});}
+/* 차례 맞히기: orderer('#box', [단계…(맞는 차례)], 다 맞힘 글, 섹션, 단계마다 cb(i)) */
+function orderer(box,steps,okMsg,sec,each,cb){const B=$(box),out=B.nextElementSibling;let k=0;
+  const seq=document.createElement('div');seq.className='t3seq';B.before(seq);
+  shuffle(steps.map((s,i)=>[s,i])).forEach(([s,i])=>{const b=document.createElement('button');b.textContent=s;b.onclick=()=>{if(b.classList.contains('t3dn'))return;
+    if(i===k){b.classList.add('t3dn');b.disabled=true;const sp=document.createElement('span');sp.textContent=(k+1)+'. '+s;seq.appendChild(sp);if(each)each(k);k++;
+      if(k===steps.length){fb(out,okMsg,true);if(sec)doneNav(sec);if(cb)cb();}else fb(out,'맞아요! 그다음은 무엇일까요? ('+k+'/'+steps.length+')','info');}
+    else{b.classList.add('wrong');setTimeout(()=>b.classList.remove('wrong'),700);fb(out,'그 일은 조금 뒤에 해요. 지금 할 일을 찾아봐요.',false);}};B.appendChild(b);});}
+/* 영상처럼 보기: mkPlayer({root:'#pl', end, ch:[[시작초,'단추','자막']…], draw(t), done()}) */
+function mkPlayer(o){const P=$(o.root);let t=0,pl=false,raf=0,fired=false;
+  const btn=$('.pBtn',P),rng=$('.pRng',P),clk=$('.pClk',P),chs=$('.chapters',P),cap=$('.cap',P);rng.max=o.end;
+  o.ch.forEach(c=>{const b=document.createElement('button');b.textContent=c[1];b.onclick=()=>{stop();t=c[0]+0.01;r();};chs.appendChild(b);});
+  function r(){const ci=o.ch.reduce((a,c,i)=>t>=c[0]?i:a,0);cap.textContent=o.ch[ci][2];$$('button',chs).forEach((b,i)=>b.classList.toggle('on',i===ci));
+    rng.value=t;clk.textContent=Math.floor(t)+'초';o.draw(t);if(t>=o.end-0.05&&!fired){fired=true;if(o.done)o.done();}}
+  function stop(){pl=false;cancelAnimationFrame(raf);btn.textContent='▶';btn.setAttribute('aria-label','재생');}
+  btn.onclick=()=>{if(pl){stop();return;}if(t>=o.end)t=0;pl=true;btn.textContent='⏸';btn.setAttribute('aria-label','멈춤');let last=performance.now();
+    const st=n=>{if(!pl)return;t=Math.min(o.end,t+(n-last)/1000);last=n;r();if(t>=o.end){stop();return;}raf=requestAnimationFrame(st);};raf=requestAnimationFrame(st);};
+  rng.oninput=()=>{stop();t=+rng.value;r();};r();return{seek(x){stop();t=x;r();}};}
+/* 그림 속 누르기: 요소에 키보드도 */
+function tap(el,f){el.classList.add('hs');el.setAttribute('tabindex','0');el.setAttribute('role','button');el.addEventListener('click',f);el.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f();}});}
+
+/* ===== 1단원 지층 그리기: strata({x,y,w,h,layers:[{c,k:'g|s|m',t}],shape:'flat|fold|fault|tilt',amp,waves,ph,d,fx,tilt,pen,id}) ===== */
+let _sid=0;
+function strata(o){
+  const w=o.w||300,h=o.h||200,id=o.id||('st'+(++_sid)),L=o.layers,sh=o.shape||'flat',amp=o.amp||0,d=sh==='fault'?(o.d||0):0;
+  const off=x=>sh==='fold'?amp*Math.sin((x/w)*Math.PI*2*(o.waves||1)+(o.ph||0)):sh==='tilt'?(o.tilt||0)*(x-w/2):0;
+  let mn=1e9,mx=-1e9;for(let x=0;x<=w;x+=5){const v=off(x);mn=Math.min(mn,v);mx=Math.max(mx,v);}
+  const start=-mx-Math.abs(d)-2,end=h-mn+Math.abs(d)+2,tot=L.reduce((a,l)=>a+(l.t||1),0),sc=(end-start)/tot;
+  const cum=[0];L.forEach(l=>cum.push(cum[cum.length-1]+(l.t||1)));
+  const by=(i,x)=>start+cum[i]*sc+off(x);
+  let defs=`<clipPath id="${id}c"><rect width="${w}" height="${h}"/></clipPath>`;
+  const pats={};
+  L.forEach((l,i)=>{const k=l.k||'m',pid=id+'p'+i;pats[i]=pid;let p='';
+    if(k==='g'){p=`<pattern id="${pid}" width="34" height="26" patternUnits="userSpaceOnUse"><rect width="34" height="26" fill="${l.c}"/><ellipse cx="8" cy="8" rx="6" ry="4.5" fill="#fff" opacity=".28" stroke="#000" stroke-opacity=".25"/><ellipse cx="25" cy="18" rx="7" ry="5" fill="#000" opacity=".16"/><circle cx="22" cy="5" r="2" fill="#000" opacity=".2"/><circle cx="6" cy="20" r="1.6" fill="#fff" opacity=".4"/></pattern>`;}
+    else if(k==='s'){p=`<pattern id="${pid}" width="12" height="10" patternUnits="userSpaceOnUse"><rect width="12" height="10" fill="${l.c}"/><circle cx="3" cy="3" r="1.1" fill="#000" opacity=".22"/><circle cx="9" cy="7" r="1.1" fill="#fff" opacity=".35"/></pattern>`;}
+    else{p=`<pattern id="${pid}" width="40" height="8" patternUnits="userSpaceOnUse"><rect width="40" height="8" fill="${l.c}"/><path d="M0 4 H22" stroke="#000" stroke-opacity=".1" stroke-width="1"/></pattern>`;}
+    defs+=p;});
+  function block(shift){let s='';
+    L.forEach((l,i)=>{let dd='M0 '+(by(i,0)+shift).toFixed(1);for(let x=0;x<=w;x+=6)dd+=' L'+x+' '+(by(i,x)+shift).toFixed(1);dd+=' L'+w+' '+(by(i,w)+shift).toFixed(1);
+      for(let x=w;x>=0;x-=6)dd+=' L'+x+' '+(by(i+1,x)+shift).toFixed(1);dd+=' L0 '+(by(i+1,0)+shift).toFixed(1)+'Z';
+      s+=`<path d="${dd}" fill="url(#${pats[i]})"/>`;});
+    if(o.pen!=null){for(let i=1;i<L.length;i++){let dd='M0 '+(by(i,0)+shift).toFixed(1);for(let x=6;x<=w;x+=6)dd+=' L'+x+' '+(by(i,x)+shift).toFixed(1);
+      s+=`<path class="penline" d="${dd}" fill="none" stroke="#1d2b8f" stroke-width="3.5" stroke-linecap="round" pathLength="100" stroke-dasharray="100" stroke-dashoffset="${100-100*o.pen}"/>`;}}
+    return s;}
+  let body;
+  if(sh==='fault'){const fx=o.fx||w*.5,fs=o.fs==null?h*.25:o.fs;
+    defs+=`<clipPath id="${id}L"><path d="M-5 -5 L${fx+fs} -5 L${fx-fs} ${h+5} L-5 ${h+5}Z"/></clipPath><clipPath id="${id}R"><path d="M${fx+fs} -5 L${w+5} -5 L${w+5} ${h+5} L${fx-fs} ${h+5}Z"/></clipPath>`;
+    body=`<g clip-path="url(#${id}L)">${block(0)}</g><g clip-path="url(#${id}R)">${block(d)}</g><path d="M${fx+fs} 0 L${fx-fs} ${h}" stroke="#2b1a0c" stroke-width="4"/>`;}
+  else body=block(0);
+  return `<g transform="translate(${o.x||0} ${o.y||0})"><defs>${defs}</defs><g clip-path="url(#${id}c)">${body}</g>${o.frame===false?'':`<rect width="${w}" height="${h}" fill="none" stroke="#3b2a1a" stroke-width="3" rx="4"/>`}</g>`;}
+
+/* ---------- 계획하기 ---------- */
+let topic=''; let aT=0; const fT=()=>{ if(++aT===3) doneNav('s2'); }; const gT={};
+['#pT','#pS','#pR'].forEach(id=>pickIdea(id,null,b=>{ if(id==='#pT'){ topic=b.dataset.k; $('#topicName').textContent=topic; drawMap(); } if(!gT[id]){ gT[id]=1; fT(); } }));
+pickIdea('#p1','s1');
+
+/* ---------- 지도 ---------- */
+const LON0=125.9,LON1=129.8,LAT0=33.0,LAT1=38.7;
+const P=(lon,lat)=>[((lon-LON0)/(LON1-LON0)*340+10).toFixed(1),((LAT1-lat)/(LAT1-LAT0)*400+10).toFixed(1)];
+const COAST=[[125.9,38.75],[128.42,38.75],[128.6,38.2],[129.0,37.7],[129.4,37.0],[129.45,36.4],[129.55,36.0],[129.4,35.5],[129.2,35.2],[128.6,35.0],[128.1,34.85],[127.6,34.7],[127.3,34.5],[126.8,34.4],[126.4,34.3],[126.25,34.6],[126.4,35.0],[126.45,35.6],[126.7,35.95],[126.5,36.4],[126.2,36.7],[126.5,37.0],[126.8,37.2],[126.6,37.45],[126.1,37.75],[125.9,37.85]];
+const SITES=[
+  {n:'채석강',w:'전북특별자치도 부안군',k:'지층',lon:126.47,lat:35.68,t:'퇴적물이 쌓여 여러 겹으로 층을 이룬 것을 볼 수 있어요. 역암, 사암, 이암 등으로 이루어진 퇴적암과 수평인 지층, 끊어진 지층 등 다양한 모양의 지층을 볼 수 있어요.'},
+  {n:'상족암',w:'경상남도 고성군',k:'지층',lon:128.30,lat:34.93,t:'바닷가 절벽에서 수평으로 쌓인 지층을 볼 수 있어요. 이곳의 암반에서는 공룡 발자국 화석도 볼 수 있어요.',k2:'화석'},
+  {n:'말도',w:'전북특별자치도 군산시',k:'지층',lon:126.25,lat:35.98,t:'섬의 서쪽 바닷가에서 물결처럼 휘어진 지층을 볼 수 있어요.'},
+  {n:'사도',w:'전라남도 여수시',k:'지층',lon:127.55,lat:34.58,t:'끊어진 지층과 물결 자국이 남은 지층 등 여러 가지 지층을 볼 수 있어요. 공룡 발자국 화석과 식물 화석도 발견되었어요.',k2:'화석'},
+  {n:'고정리 화석 산지',w:'경기도 화성시',k:'화석',lon:126.73,lat:37.18,t:'공룡알 화석이 많이 발견된 곳이에요. 방문자 센터에서 우리나라에서 처음 발견된 공룡의 뼈 화석 모형도 볼 수 있어요.'},
+  {n:'가진리 화석 산지',w:'경상남도 진주시',k:'화석',lon:128.10,lat:35.13,t:'새 발자국 화석이 발견된 곳이에요.'},
+  {n:'우항리 화석 산지',w:'전라남도 해남군',k:'화석',lon:126.42,lat:34.62,t:'공룡, 익룡, 새 발자국 화석이 한꺼번에 발견된 곳이에요. 과거 생물의 생활 모습과 자연환경을 짐작할 수 있어요.'}];
+let cur=-1; const mine=new Set();
+function drawMap(){ let s='<rect width="360" height="420" fill="#cfe9f7"/>';
+  s+='<path d="M'+COAST.map(c=>P(...c).join(' ')).join(' L')+' Z" fill="#cfe2b5" stroke="#7e9a62" stroke-width="2"/>';
+  const [jx,jy]=P(126.55,33.38); s+=`<ellipse cx="${jx}" cy="${jy}" rx="26" ry="11" fill="#cfe2b5" stroke="#7e9a62" stroke-width="2"/>`;
+  SITES.forEach((o,i)=>{ const [x,y]=P(o.lon,o.lat); const fit=!topic||o.k===topic||o.k2===topic; const c=o.k==='지층'?'#8a5a2b':'#16804a';
+    s+=`<g class="k7pin" data-i="${i}" opacity="${fit?1:.45}"><path d="M${x} ${y} l-11 -22 a12 12 0 1 1 22 0z" fill="${mine.has(i)?'#ffc93c':c}" stroke="#fff" stroke-width="2.5"/><circle cx="${x}" cy="${y-26}" r="4.5" fill="#fff"/>${i===cur?`<circle cx="${x}" cy="${y-26}" r="17" fill="none" stroke="#c2332c" stroke-width="3"/>`:''}</g>`; });
+  s+='<text x="350" y="410" text-anchor="end" font-family="Jua" font-size="13" fill="#48646f">🟤 지층 · 🟢 화석 · 🟡 우리 지도</text>';
+  $('#map').innerHTML=s; $$('#map .k7pin').forEach(g=>tap(g,()=>showSite(+g.dataset.i))); }
+function showSite(i){ cur=i; const o=SITES[i]; drawMap();
+  const tg=[o.k,o.k2].filter(Boolean).map(k=>`<span class="tg" style="background:${k==='지층'?'#8a5a2b':'#16804a'}">${k}</span>`).join('');
+  $('#pc').innerHTML=`<h3>${o.n}</h3><p class="tip" style="margin:0 0 4px">${o.w} ${tg}</p><p style="margin:0">${o.t}</p>`; $('#addPin').disabled=mine.has(i); }
+$('#addPin').onclick=()=>{ if(cur<0) return; const o=SITES[cur];
+  if(topic&&o.k!==topic&&o.k2!==topic){ fb('#mapFb','이곳은 우리 모둠 주제('+topic+')와 맞지 않아요. '+topic+' 표시를 찾아봐요.',false); return; }
+  mine.add(cur); $('#addPin').disabled=true; drawMap(); $('#mine').innerHTML=[...mine].map(i=>`<span>📌 ${SITES[i].n}</span>`).join('');
+  if(mine.size>=3){ fb('#mapFb','우리 모둠 관광 지도에 '+mine.size+'곳을 넣었어요! 이제 소개하는 글을 써 봐요.',true); doneNav('s3'); }
+  else fb('#mapFb','우리 지도에 '+mine.size+'곳을 넣었어요. 3곳 이상 모아 봐요.','info'); };
+drawMap();
+
+/* ---------- 소개 글 ---------- */
+keyCheck('#wr','#wrB','#wrFb',[[/(지층|화석|퇴적암|발자국|공룡알)/,'지층·화석'],[/(채석강|상족암|말도|사도|화성|진주|해남|고성|부안|군산|여수|고정리|가진리|우항리|박물관|화석 산지)/,'소개할 장소'],[/(볼 수|보러|오세요|관찰|구경|만나)/,'가 보고 싶게 하는 말']],3,null,'‘○○에서는 ~을/를 볼 수 있어요. ~ 보러 오세요!’처럼 장소와 볼거리를 넣어 써 봐요.');
+$('#wrB').addEventListener('click',()=>{ if($('#wrFb').classList.contains('ok')){ doneNav('s4');
+  $('#board').hidden=false; $('#board').innerHTML='<div class="k7post"><b>📋 우리 모둠 · '+(topic||'지층과 화석')+' 관광 지도</b><br>'+([...mine].map(i=>SITES[i].w+' '+SITES[i].n).join(', ')||'(지도에 넣은 곳)')+'<br>“'+$('#wr').value.trim().replace(/[<>&]/g,'')+'”</div><p class="tip">공유 게시판에 올린 모습이에요. 실제 수업에서는 지도로 된 공유 게시판에 사진과 함께 올려요.</p>'; } });
+pickAll('#p5','모두 골랐어요! 칭찬 댓글은 잘한 점을 구체적으로, 바르고 고운 말로 써요.','다시 생각해 봐요.','s5');
+pickIdea('#p5b',null);
+faces('s6','멋져요! 우리나라의 다양한 지층과 화석을 소개하는 관광 지도를 완성했어요.','어려웠던 부분은 지도의 장소를 다시 눌러 보며 조사한 내용을 읽어 봐요.');
+</script>
