@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """사고전략 메뉴(thinking/)를 만듭니다.
 
-    python3 _build/thinking/build.py
+    python3 _build/strategy/build.py
     python3 _build/theme/apply_theme.py && python3 _build/theme/apply_content_theme.py
 
 내용은 data_routines.py(사고전략 23개), data_more.py(탐구 5단계·교과 10개·첫 안내)에 있습니다.

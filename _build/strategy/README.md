@@ -3,7 +3,7 @@
 하버드 Project Zero 사고 루틴을 **탐구 단계별 · 교과별**로 정리한 메뉴입니다. `thinking/` 안의 HTML은 직접 고치지 말고 여기서 다시 만듭니다.
 
 ```bash
-python3 _build/thinking/build.py
+python3 _build/strategy/build.py
 python3 _build/theme/apply_theme.py && python3 _build/theme/apply_content_theme.py
 ```
 
