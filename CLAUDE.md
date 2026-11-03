@@ -679,6 +679,12 @@ grade1/ … grade6/
 - 고친 뒤: `python3 _build/today/build.py && python3 _build/theme/apply_theme.py`
 - 넣을 때는 날짜·인물·작품 정보를 꼭 확인하고, 어린이에게 알맞은 내용만 씁니다. 노래 가사·책 본문은 싣지 않습니다.
 
+### 사고전략 (`thinking/`, 2026-10-03)
+
+- 첫 화면 '교육 프로그램' 묶음과 `project/index.html`의 '💡 사고전략' 카드. 하버드 Project Zero 사고 루틴 23개를 탐구 5단계(`stage/`)·교과 10개(`subject/`)·전체 목록(`routines/`)으로 정리했습니다. 모든 자료는 교사용 안내·학생용 안내·활동지 세 탭입니다.
+- **`thinking/` 안의 HTML을 직접 고치지 마세요.** 원본은 `_build/strategy/`(`data_routines.py`, `data_more.py`, `build.py`)이고 `python3 _build/strategy/build.py && python3 _build/theme/apply_theme.py && python3 _build/theme/apply_content_theme.py`로 다시 만듭니다. 자세한 것은 `_build/strategy/README.md`.
+- PZ 원문은 CC BY-NC-ND 4.0이라 번역해 싣지 않고 새로 쓴 안내 + 원문 링크만 둡니다.
+
 ## 기초 학습·수학게임 다시 보기 (2026-10-29, 교육팀 → 개발팀 → 디자인팀 차례로 따름)
 
 - **한자 급수:** 익히기 차례는 뜻 묶음(8급~6급 300자, `_build/hanja/groups.py` — 글자를 빠뜨리거나 겹치면 빌드가 멈춤, CSV 호환 한자라 NFC로 맞춤) · 5급Ⅱ부터는 부수로 저절로 묶음, 다섯 자마다 'N일' 표시, 묶음마다 '확인 5문제'(훈음 고르기). 넓은 화면은 글자 목록이 왼쪽. 급 소개 옆 '추천 N학년 · 참고용'(`build.py`의 `GRADE`, 꼬리표 모양 `content.css`의 `.hj-grtag`).
