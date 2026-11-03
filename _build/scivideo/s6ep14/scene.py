@@ -102,7 +102,7 @@ class S6Ep14(EpisodeScene):
         self.settle()
         diff = K.text_card(["다르게 할 조건", f"· {o('뿌리가 있는지 없는지')}"], w=4.9, size=28, stroke=ORANGE).move_to([4.2, 1.95, 0])
         same = K.text_card(["같게 할 조건", "· 눈금실린더의 크기", "· 처음 물의 양", "· 파의 크기", "· 놓아두는 곳(햇빛)", "· 관찰하는 날짜"],
-                           w=4.9, size=26).move_to([4.2, -0.75, 0])
+                           w=4.9, size=24).move_to([4.2, -0.8, 0])
         self.say(f"{o('뿌리')}만 다르게 하고 나머지 조건은 모두 같게 해요",
                  "뿌리가 있는지 없는지만 다르게 하고, 눈금실린더의 크기, 처음 물의 양, 파의 크기, 놓아두는 곳, 관찰하는 날짜는 모두 같게 해요.")
         self.play(FadeIn(diff), run_time=0.5)

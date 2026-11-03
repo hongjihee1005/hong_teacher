@@ -87,14 +87,14 @@ class S6Ep20(EpisodeScene):
     # ── 관찰 준비 ──
     def prepare(self):
         self.section("관찰 준비")
-        ground = RoundedRectangle(corner_radius=0.2, width=5.6, height=4.9, fill_color="#EEF7E6", fill_opacity=1,
-                                  stroke_color=SOFT, stroke_width=3).move_to([-3.3, 0.25, 0])
+        ground = RoundedRectangle(corner_radius=0.2, width=5.6, height=4.4, fill_color="#EEF7E6", fill_opacity=1,
+                                  stroke_color=SOFT, stroke_width=3).move_to([-3.3, 0.55, 0])
         c = ground.get_center()
-        dirs = VGroup(T("북", 32).move_to(c + UP * 2.05), T("남", 32).move_to(c + DOWN * 2.05),
+        dirs = VGroup(T("북", 32).move_to(c + UP * 1.85), T("남", 32).move_to(c + DOWN * 1.85),
                       T("서", 32).move_to(c + LEFT * 2.45), T("동", 32).move_to(c + RIGHT * 2.45))
         kid = K.person_top(th=np.pi, s=1.0).move_to(c + UP * 0.15)
-        comp = K.compass(0.42).move_to(c + np.array([1.8, 1.55, 0]))
-        look = T("바라보는 쪽", 22, GREEN).move_to(c + np.array([0, -1.25, 0]))
+        comp = K.compass(0.42).move_to(c + np.array([1.8, 1.4, 0]))
+        look = T("바라보는 쪽", 22, GREEN).move_to(c + np.array([0, -1.15, 0]))
         self.say("나침반으로 방위를 확인하고 남쪽을 바라보고 서요",
                  "나침반으로 방위를 확인하고 남쪽을 바라보고 서요.")
         self.play(FadeIn(ground), FadeIn(dirs), FadeIn(comp), run_time=0.7)
@@ -109,7 +109,7 @@ class S6Ep20(EpisodeScene):
                  "왼쪽이 동쪽, 오른쪽이 서쪽이에요. 앞으로는 동쪽, 서쪽이라고 말해요.")
         self.play(Indicate(left_tag, color=ORANGE, scale_factor=1.4), FadeIn(ans), run_time=0.9)
         self.settle()
-        safe = K.safety_note("태양은 맨눈으로 절대 보지 않고 반드시 태양 관측 안경을 써요", w=12.6, size=30).move_to([0, -2.0, 0])
+        safe = K.safety_note("태양은 맨눈으로 절대 보지 않고 반드시 태양 관측 안경을 써요", w=12.6, size=30).move_to([0, -2.15, 0])
         self.say(f"태양은 {r('맨눈·선글라스로 보지 않고')} {g('태양 관측 안경')}으로 잠깐만",
                  "태양은 맨눈이나 선글라스로 보면 눈을 다쳐요. 반드시 태양 관측 안경을 쓰고 잠깐만 봐요.")
         self.play(FadeIn(safe, shift=UP * 0.2), run_time=0.6)
@@ -159,7 +159,7 @@ class S6Ep20(EpisodeScene):
         tags.arrange(RIGHT, buff=0.5).move_to([3.6, 2.4, 0])
         self.say(f"다른 날짜에도 {o('동쪽에서 서쪽으로')} 위치가 달라져요",
                  "다른 날짜에는 자리가 조금 다르지만, 동쪽에서 서쪽으로 달라지는 것은 같아요.")
-        self.play(FadeOut(stk), FadeOut(path), run_time=0.4)
+        self.play(FadeOut(stk), FadeOut(path), FadeOut(date), run_time=0.4)
         self.play(*[Create(l_) for l_ in lines], FadeIn(tags), run_time=1.5)
         self.settle()
         clear_stage(self)
@@ -193,8 +193,8 @@ class S6Ep20(EpisodeScene):
         pa, ga = marks(K.ALTAIR, K.ALT_C, range(10))
         la = path_through(pa, K.ALT_C, sw=3, dashed=False)
         self.play(FadeOut(alt0), Create(la), FadeIn(ga, lag_ratio=0.3), run_time=2.6)
-        t0 = T("오후 7시", 22, K.ALT_C).next_to(ga[0], LEFT, buff=0.12)
-        t1 = T("오전 4시", 22, K.ALT_C).next_to(ga[-1], DOWN, buff=0.12)
+        t0 = T("오후 7시", 22, "#FFB8B8").next_to(ga[0], LEFT, buff=0.12)
+        t1 = T("오전 4시", 22, "#FFB8B8").next_to(ga[-1], DOWN, buff=0.12)
         self.play(FadeIn(t0), FadeIn(t1), run_time=0.4)
         self.settle()
         pb, gb = marks(K.ANTARES, K.ANT_C, range(10))
@@ -219,11 +219,11 @@ class S6Ep20(EpisodeScene):
     def compare(self):
         self.section("정리해요")
         rows = [["태양", f"{o('동쪽')} → {o('서쪽')}"], ["별", f"{o('동쪽')} → {o('서쪽')}"]]
-        tab = K.result_table(["", "하루 동안 위치 변화"], rows, [2.6, 5.6], row_h=1.0, size=36).move_to([0, 1.0, 0])
+        tab = K.result_table(["", "하루 동안 위치 변화"], rows, [2.6, 5.6], row_h=0.9, size=36).move_to([0, 1.45, 0])
         self.say("태양과 별의 위치 변화를 비교해요")
         self.play(FadeIn(tab), run_time=0.7)
         rule = K.text_card([f"규칙성: 태양과 별은 모두 {g('동쪽에서 서쪽으로')}", "위치가 달라져요. 다른 날짜에 관찰해도 같아요."],
-                           w=11.6, size=36).move_to([0, -1.35, 0])
+                           w=11.6, size=36).move_to([0, -1.5, 0])
         self.say(f"방향이 {g('서로 같아요')} — 다른 날짜에 관찰해도 같아요",
                  "방향이 서로 같아요. 태양과 별은 모두 동쪽에서 서쪽으로 위치가 달라져요.")
         self.play(FadeIn(rule, shift=UP * 0.2), run_time=0.7)

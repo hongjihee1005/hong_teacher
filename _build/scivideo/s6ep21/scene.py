@@ -46,7 +46,7 @@ class RolePlay:
         lp = K.lamp(0.9).move_to(c + UP * 1.85)
         st = K.star_role(0.8).move_to(c + DOWN * 1.75)
         arrow = K.curved_arrow(1.45, -2.4, -0.75, "#1C6FA8", 5, center=c, cw=cw)
-        tag = K.label("↺ 시계 반대 방향" if not cw else "↻ 시계 방향", "#1C6FA8", 22).move_to(c + np.array([-1.35, -2.15, 0]))
+        tag = K.label("↺ 시계 반대 방향" if not cw else "↻ 시계 방향", "#1C6FA8", 22).move_to(c + np.array([1.78, -2.2, 0]))
         self.top = VGroup(floor, lp, st, arrow, tag)
         self.person = always_redraw(lambda: K.person_top(self.th.get_value(), 0.85).move_to(c))
         v = np.array([3.3, 0.25, 0])
@@ -211,7 +211,7 @@ class S6Ep21(EpisodeScene):
         self.section("결과 정리")
         rows = [["지구 역할이 회전하는 방향", f"{g('서쪽 → 동쪽')}"], ["전등의 위치 변화", f"{o('동쪽 → 서쪽')}"],
                 ["별 역할의 위치 변화", f"{o('동쪽 → 서쪽')}"]]
-        tab = K.result_table(["", "관찰한 것"], rows, [5.6, 4.0], row_h=0.8, size=32).move_to([0.6, 0.95, 0])
+        tab = K.result_table(["", "관찰한 것"], rows, [5.6, 4.0], row_h=0.75, size=32).move_to([0.6, 1.2, 0])
         self.say(f"지구 역할은 {g('서→동')}, 전등과 별은 {o('동→서')}",
                  "지구 역할은 서쪽에서 동쪽으로 돌고, 전등과 별은 동쪽에서 서쪽으로 달라졌어요.")
         self.play(FadeIn(tab), run_time=0.7)
@@ -229,7 +229,7 @@ class S6Ep21(EpisodeScene):
         rot = ValueTracker(0.0)
         c = np.array([-3.3, 0.15, 0])
         earth = always_redraw(lambda: K.earth_side(1.55, rot.get_value(), korea=True).move_to(c))
-        ax_lab = K.label("자전축(기울어져 있어요)", "#B8860B", 24).move_to(c + np.array([2.9, 1.9, 0]))
+        ax_lab = K.label("자전축(기울어져 있어요)", "#B8860B", 24).move_to(c + np.array([3.25, 1.75, 0]))
         self.add(earth)
         self.say(f"북극과 남극을 이은 가상의 직선 = {o('자전축')}",
                  "지구의 북극과 남극을 이은 가상의 직선을 자전축이라고 해요. 지구의 자전축은 기울어져 있어요.")
@@ -264,9 +264,9 @@ class S6Ep21(EpisodeScene):
                  ("북극 위에서 본 자전 방향", "시계 반대 방향")]
         rows = VGroup()
         for a, b in pairs:
-            ra = K.word_card(a, 4.0, 0.85, size=28, col=self.accent)
-            rb = K.word_card(b, 7.6, 0.85, size=26)
-            rows.add(VGroup(ra, rb).arrange(RIGHT, buff=0.5))
+            ra = K.word_card(a, 4.4, 0.85, size=28, col=self.accent)
+            rb = K.word_card(b, 8.0, 0.85, size=25)
+            rows.add(VGroup(ra, rb).arrange(RIGHT, buff=0.4))
         rows.arrange(DOWN, buff=0.28).move_to([0, 1.05, 0])
         self.say("낱말과 뜻을 이어요")
         self.play(FadeIn(rows, lag_ratio=0.2), run_time=1.0)
@@ -319,7 +319,7 @@ class S6Ep21(EpisodeScene):
                  ("⑶ 지구의 북극과 남극을 이은 가상의 직선을 자전축이라고 한다.", True)]
         cards = VGroup()
         for t_, _ in items:
-            cards.add(K.word_card(t_, 11.4, 0.95, size=30))
+            cards.add(K.word_card(t_, 11.4, 0.95, size=28))
         cards.arrange(DOWN, buff=0.3).move_to([0.5, 0.9, 0])
         self.say("옳으면 ○, 옳지 않으면 ×", "옳으면 동그라미, 옳지 않으면 가위표를 골라요.")
         self.play(FadeIn(cards, lag_ratio=0.15), run_time=0.8)

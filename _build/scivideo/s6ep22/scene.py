@@ -175,8 +175,8 @@ class S6Ep22(EpisodeScene):
         globe = always_redraw(lambda: K.globe_top(1.65, phi=phi.get_value() * K.RAD, sun_dir=PI, obs_label="").move_to(gc))
         arr = K.curved_arrow(1.95, -0.2, 1.25, "#9FE3A5", 5, center=gc)
         cap = T("북극 위에서 내려다본 지구본", 24, PAPER).move_to([-3.25, 2.4, 0])
-        lit_t = VGroup(T("빛을 받는 쪽", 19, PAPER).move_to(gc + np.array([-1.25, -2.0, 0])),
-                       T("빛을 받지 못하는 쪽", 19, PAPER).move_to(gc + np.array([1.2, -2.0, 0])))
+        lit_t = VGroup(T("빛을 받는 쪽", 19, PAPER).move_to(gc + np.array([-1.3, -2.0, 0])),
+                       T("빛을 받지 못하는 쪽", 19, PAPER).move_to(gc + np.array([0.95, -2.0, 0])))
         scr = always_redraw(lambda: cam_screen(phi.get_value()).move_to([3.6, 0.15, 0]))
         cnt = always_redraw(lambda: T(f"{int(round(phi.get_value()))} / 360°", 26, K.NAVY).move_to([3.6, -2.05, 0]))
         self.say(f"주변을 어둡게 하고 지구본을 {o('서쪽에서 동쪽으로')} 돌려요",
@@ -191,7 +191,9 @@ class S6Ep22(EpisodeScene):
             self.play(phi.animate.increment_value(30), run_time=0.5, rate_func=linear)
             if k == 5:
                 self.say(f"카메라가 전등을 향할 때: {o('밝아요')}", "카메라가 전등을 향하면 전등 빛을 받아 화면이 밝아요.")
-                self.wait(0.6)
+                self.settle()
+            elif k == 11:
+                self.say(f"다시 전등 반대편을 향하면: {o('어두워요')}", "한 바퀴 돌아 다시 전등 반대편을 향하면 화면이 어두워요.")
             else:
                 self.wait(0.15)
         self.settle()
@@ -206,7 +208,7 @@ class S6Ep22(EpisodeScene):
         self.section("결과 정리")
         head = ["카메라가 향하는 곳", "전등 빛", "화면", ""]
         rows = [["전등 쪽", "받아요", "밝아요", g("낮")], ["전등 반대편", r("받지 못해요"), "어두워요", o("밤")]]
-        tab = K.result_table(head, rows, [4.2, 2.8, 2.4, 1.4], row_h=0.95, size=32).move_to([0.6, 0.9, 0])
+        tab = K.result_table(head, rows, [4.8, 2.7, 2.3, 1.2], row_h=0.95, size=32).move_to([0.6, 0.9, 0])
         self.say(f"전등 빛을 받으면 밝아서 {g('낮')}, 받지 못하면 어두워서 {o('밤')}",
                  "카메라가 전등을 향하면 빛을 받아 화면이 밝으니 낮이에요. 전등 반대편을 향하면 빛을 받지 못해 어두우니 밤이에요.")
         self.play(FadeIn(tab), run_time=0.7)
@@ -223,7 +225,7 @@ class S6Ep22(EpisodeScene):
         self.section("낮과 밤")
         ph = ValueTracker(180.0)
         sun = VGroup(Circle(radius=1.2, fill_color=K.SUN_Y, fill_opacity=0.25, stroke_width=0),
-                     Circle(radius=0.9, fill_color=K.SUN_Y, fill_opacity=1, stroke_width=0), T("태양", 30, "#7A4A00")).move_to([-5.9, 0.3, 0])
+                     Circle(radius=0.9, fill_color=K.SUN_Y, fill_opacity=1, stroke_width=0), T("태양", 30, "#7A4A00")).move_to([-5.65, 0.3, 0])
         gc = np.array([-1.2, 0.3, 0])
         globe = always_redraw(lambda: K.globe_top(1.75, phi=ph.get_value() * K.RAD, sun_dir=PI, obs_label="").move_to(gc))
         kor = always_redraw(lambda: T("우리나라", 22, "#FF4D4D").move_to(
@@ -241,8 +243,8 @@ class S6Ep22(EpisodeScene):
                  "지구가 서쪽에서 동쪽으로 자전하면서 우리나라가 태양 반대편 쪽으로 돌아가면 태양 빛을 받지 못해 밤이 돼요.")
         self.play(ph.animate.set_value(360.0), run_time=5.0, rate_func=linear)
         self.settle()
-        self.say(f"다시 태양 쪽을 향하면 아침 — {g('하루에 한 번씩')} 번갈아요",
-                 "계속 자전해서 다시 태양 쪽을 향하면 아침이 와요. 지구가 하루에 한 바퀴씩 자전하므로 낮과 밤은 하루에 한 번씩 번갈아 나타나요.")
+        self.say(f"다시 태양 쪽으로 오면 {o('낮')} — {g('하루에 한 번씩')} 번갈아요",
+                 "계속 자전해서 다시 태양 쪽으로 오면 아침이 지나 다시 낮이 돼요. 지구가 하루에 한 바퀴씩 자전하므로 낮과 밤은 하루에 한 번씩 번갈아 나타나요.")
         self.play(ph.animate.set_value(540.0), run_time=5.0, rate_func=linear)
         self.settle()
         for m in (globe, kor, scr, word):
