@@ -113,7 +113,7 @@ class S6Ep15(EpisodeScene):
     def cut(self):
         self.section("줄기 단면")
         c, l, lc, ll = self.sections(0.0)
-        warn = K.safety_note("줄기는 유리판 위에서 자르고, 안전 장갑을 껴요", w=8.6, size=28).move_to([0, 2.65, 0])
+        warn = K.safety_note("줄기는 유리판 위에서 자르고, 안전 장갑을 껴요", w=8.6, size=28).move_to([1.2, 2.65, 0])
         self.say("백합 줄기를 가로와 세로로 잘라 봐요", "백합 줄기를 가로와 세로로 잘라 단면을 관찰해요.")
         self.play(FadeIn(warn), FadeIn(c), FadeIn(l), FadeIn(lc), FadeIn(ll), run_time=0.8)
         self.say(f"가로 단면은 {o('흰색 점')}, 세로 단면은 {o('흰색 선')}이 보여요",
@@ -176,7 +176,10 @@ class S6Ep15(EpisodeScene):
             box = RoundedRectangle(corner_radius=0.2, width=3.1, height=4.6, fill_color=PAPER, fill_opacity=1, stroke_color=SOFT, stroke_width=4)
             K.fit(p, 2.4, 2.2).move_to(box.get_center() + UP * 0.85)
             nt = T(n, 34).move_to(box.get_center() + DOWN * 0.65)
-            jt = K.name_text(j, 26, self.accent).move_to(box.get_center() + DOWN * 1.55)
+            jt = K.name_text(j, 26, self.accent)
+            if jt.width > 2.8:
+                jt.scale_to_fit_width(2.8)
+            jt.move_to(box.get_center() + DOWN * 1.55)
             cards.add(VGroup(box, p, nt, jt))
         cards.arrange(RIGHT, buff=0.3).move_to([0, 0.25, 0])
         self.say("식물마다 줄기의 생김새와 하는 일이 달라요",
@@ -195,7 +198,7 @@ class S6Ep15(EpisodeScene):
         self.section("생각 바로잡기")
         sp = K.sweet_potato(2.4).move_to([-3.2, 0.5, 0])
         po = K.potato(2.0).move_to([3.2, 0.5, 0])
-        q = T("감자는 고구마처럼 뿌리일까요?", 44).move_to([0, 2.5, 0])
+        q = T("감자는 고구마처럼 뿌리일까요?", 44).move_to([1.0, 2.5, 0])
         self.say("감자는 고구마처럼 식물의 뿌리일까요?", "감자는 고구마처럼 식물의 뿌리일까요?")
         self.play(FadeIn(q), FadeIn(sp), FadeIn(po), run_time=0.7)
         ls = T("고구마 = 뿌리", 40, ORANGE).next_to(sp, DOWN, buff=0.45)

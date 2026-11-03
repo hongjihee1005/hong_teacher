@@ -51,7 +51,7 @@ class S6Ep14(EpisodeScene):
     def intro(self):
         self.section("궁금해요")
         soil = soil_band(0.3, -3.0, 3.0, 2.6)
-        ca = K.carrot(2.3).move_to([0, -0.2, 0])
+        ca = K.carrot(3.0).move_to([0, -0.2, 0])
         ca.shift([0, 0.3 - ca[2].get_top()[1], 0])
         self.say("우리가 먹는 당근은 식물의 어느 부분일까요?", "우적우적! 우리가 먹는 당근은 식물의 어느 부분일까요?")
         self.play(FadeIn(soil), FadeIn(ca), run_time=0.8)
@@ -66,9 +66,9 @@ class S6Ep14(EpisodeScene):
 
     def observe(self):
         self.section("관찰해요")
-        paper = Rectangle(width=5.4, height=4.6, fill_color="#26292E", fill_opacity=1, stroke_width=0).move_to([-2.6, 0.35, 0])
+        paper = Rectangle(width=5.4, height=4.3, fill_color="#26292E", fill_opacity=1, stroke_width=0).move_to([-2.6, 0.35, 0])
         on = K.green_onion(3.4, n_root=13).move_to([-2.6, 0.5, 0])
-        lab = T("검은색 종이 위의 파 뿌리", 28).next_to(paper, UP, buff=0.12)
+        lab = T("검은색 종이 위의 파 뿌리", 28).next_to(paper, DOWN, buff=0.15)
         self.say("파 뿌리를 검은색 종이 위에 놓고 돋보기로 봐요", "파 뿌리를 검은색 종이 위에 놓고 돋보기로 관찰해요.")
         self.play(FadeIn(paper), FadeIn(on), FadeIn(lab), run_time=0.8)
         ring = Circle(radius=0.75, stroke_color=ORANGE, stroke_width=6).move_to(on.roots.get_center())
@@ -80,29 +80,29 @@ class S6Ep14(EpisodeScene):
         self.settle()
         clear_stage(self)
 
-    def two_onions(self, xs=(-3.0, 3.0), level=0.62):
-        cyls = [K.Cylinder(x, -2.25, 2.9, 0.95, level) for x in xs]
+    def two_onions(self, xs=(-3.6, 3.6), level=0.62):
+        cyls = [K.Cylinder(x, -2.45, 4.6, 1.3, level) for x in xs]
         ons = []
         for i, c in enumerate(cyls):
-            o_ = K.green_onion(2.3, root=(i == 1), cut_leaf=True, n_root=11)
+            o_ = K.green_onion(3.4, root=(i == 1), cut_leaf=True, n_root=11)
             o_.shift([c.x, c.y_of(0.32), 0])
             ons.append(o_)
-        cots = [K.cotton(0.7).move_to([c.x, c.top - 0.05, 0]) for c in cyls]
+        cots = [K.cotton(0.9).move_to([c.x, c.top - 0.05, 0]) for c in cyls]
         return cyls, ons, cots
 
     def plan(self):
         self.section("실험 계획")
-        a = K.green_onion(2.6, root=False).move_to([-3.6, 0.6, 0])
-        b = K.green_onion(2.6, root=True).move_to([0.0, 0.6, 0])
+        a = K.green_onion(3.6, root=False).move_to([-4.6, 0.8, 0])
+        b = K.green_onion(3.6, root=True).move_to([-1.2, 0.6, 0])
         la = T("잎과 뿌리를 자른 파", 30).next_to(a, DOWN, buff=0.25).set_y(-1.6)
         lb = T("잎만 자른 파", 30).next_to(b, DOWN, buff=0.25).set_y(-1.6)
         self.say(f"한 개는 {o('잎과 뿌리')}를, 다른 한 개는 {o('잎만')} 잘라요",
                  "파 한 개는 잎과 뿌리를 자르고, 다른 한 개는 잎만 잘라 각각 물이 든 눈금실린더에 넣어 두어요.")
         self.play(FadeIn(a), FadeIn(b), FadeIn(la), FadeIn(lb), run_time=0.8)
         self.settle()
-        diff = K.text_card([f"다르게 할 조건: {o('뿌리가 있는지 없는지')}"], size=30, stroke=ORANGE).move_to([4.2, 1.9, 0])
+        diff = K.text_card(["다르게 할 조건", f"· {o('뿌리가 있는지 없는지')}"], w=4.9, size=28, stroke=ORANGE).move_to([4.3, 1.75, 0])
         same = K.text_card(["같게 할 조건", "· 눈금실린더의 크기", "· 처음 물의 양", "· 파의 크기", "· 놓아두는 곳(햇빛)", "· 관찰하는 날짜"],
-                           size=27).move_to([4.6, -0.6, 0])
+                           w=4.9, size=27).move_to([4.3, -0.85, 0])
         self.say(f"{o('뿌리')}만 다르게 하고 나머지 조건은 모두 같게 해요",
                  "뿌리가 있는지 없는지만 다르게 하고, 눈금실린더의 크기, 처음 물의 양, 파의 크기, 놓아두는 곳, 관찰하는 날짜는 모두 같게 해요.")
         self.play(FadeIn(diff), run_time=0.5)
@@ -113,7 +113,7 @@ class S6Ep14(EpisodeScene):
     def experiment(self):
         self.section("실험해요")
         cyls, ons, cots = self.two_onions()
-        heads = [T(t, 30).move_to([c.x, 2.75, 0]) for t, c in zip(("뿌리를 자른 파", "뿌리를 자르지 않은 파"), cyls)]
+        heads = [T(t, 30).move_to([c.x + (0.6 if c.x < 0 else 0), 2.75, 0]) for t, c in zip(("뿌리를 자른 파", "뿌리를 자르지 않은 파"), cyls)]
         self.say(f"탈지면으로 감싸 {o('같은 양의 물')}에 넣고 물 높이를 표시해요",
                  "파를 탈지면으로 감싸 같은 양의 물이 든 두 눈금실린더에 넣고, 물의 높이를 유성펜으로 표시해요.")
         self.play(*[FadeIn(c.group) for c in cyls], *[FadeIn(o_) for o_ in ons], *[FadeIn(c_) for c_ in cots],
@@ -124,7 +124,8 @@ class S6Ep14(EpisodeScene):
         sn = K.sun(0.42).move_to([0, 1.6, 0])
         day = T("3일 뒤", 40, self.accent).move_to([0, 0.4, 0])
         self.say("햇빛이 잘 드는 곳에 3일 동안 놓아두어요", "햇빛이 잘 드는 곳에 놓아두고, 3일 동안 물의 높이가 어떻게 변하는지 봐요.")
-        self.play(FadeIn(sn), Rotate(sn, 1.2), run_time=1.2)
+        self.play(FadeIn(sn), run_time=0.4)
+        self.play(Rotate(sn, 1.2), run_time=0.8)
         self.play(FadeIn(day), run_time=0.4)
         self.pause_screen(5, "어느 쪽 물이 더 많이 줄어들까요?")
         nw = [cyls[0].water_at(0.56), cyls[1].water_at(0.38)]
@@ -133,7 +134,7 @@ class S6Ep14(EpisodeScene):
         self.play(Transform(cyls[0].water, nw[0]), Transform(cyls[1].water, nw[1]), run_time=1.6)
         self.play(Indicate(heads[1], color=ORANGE), run_time=0.7)
         self.settle()
-        card = K.text_card([f"뿌리가 물을 {o('흡수')}해요"], size=40, stroke=ORANGE).move_to([0, -0.6, 0])
+        card = K.text_card([f"뿌리가 물을 {o('흡수')}해요"], size=38, stroke=ORANGE).move_to([0, -0.9, 0])
         self.say(f"뿌리가 물을 {o('흡수')}한다는 것을 알 수 있어요",
                  "뿌리가 있는 쪽의 물이 더 많이 줄어든 것으로 보아, 뿌리가 물을 흡수한다는 것을 알 수 있어요.")
         self.play(FadeOut(day), FadeIn(card), run_time=0.6)
@@ -181,7 +182,7 @@ class S6Ep14(EpisodeScene):
                 ("빛을 받아 양분을 만들어요", False)]
         cards = VGroup()
         for t_, ok in rows:
-            cards.add(K.word_card(t_, 5.6, 0.85, INK, 28))
+            cards.add(K.word_card(t_, 6.0, 0.85, INK, 28))
         cards.arrange(DOWN, buff=0.22).move_to([3.95, 0.4, 0])
         marks = VGroup(*[K.ox_mark(ok, 0.24).next_to(c_, LEFT, buff=0.12) for c_, (_, ok) in zip(cards, rows)])
         self.say("뿌리가 하는 일을 모두 골라 봐요", "뿌리가 하는 일을 모두 골라 봐요.")
@@ -199,7 +200,7 @@ class S6Ep14(EpisodeScene):
         t2 = K.tree_rooted(2.6, False)
         t2.shift([3.0, -0.2 - t2.tree.get_bottom()[1], 0])
         wind = K.wind_lines(-6.6, (1.2, 1.9, 2.5), 1.8)
-        q = M("‘뿌리 깊은 나무는 바람에 흔들리지 않는다.’", 38).move_to([0.6, 2.75, 0])
+        q = M("‘뿌리 깊은 나무는 바람에 흔들리지 않는다.’", 36).move_to([1.3, 2.75, 0])
         self.say("‘뿌리 깊은 나무는 바람에 흔들리지 않는다’", "뿌리 깊은 나무는 바람에 흔들리지 않는다. 이 말을 뿌리가 하는 일과 연관 지어 볼까요?")
         self.play(FadeIn(soil), FadeIn(t1), FadeIn(t2), FadeIn(q), run_time=0.8)
         self.play(FadeIn(wind, shift=RIGHT), run_time=0.5)
@@ -212,11 +213,11 @@ class S6Ep14(EpisodeScene):
 
     def summary(self):
         self.section("한눈에 쏙")
-        on = K.green_onion(2.6).move_to([-4.4, 0.9, 0])
-        ca = K.carrot(2.0).move_to([-1.5, 0.9, 0])
-        tr = K.tree_rooted(1.8, True).move_to([1.6, 0.9, 0])
+        on = K.green_onion(2.6).move_to([-4.4, 1.1, 0])
+        ca = K.carrot(2.4).move_to([-0.9, 1.1, 0])
+        tr = K.fit(K.tree_rooted(2.4, True), 2.4, 2.9).move_to([3.0, 1.1, 0])
         ic = VGroup(T("흡수", 34, ORANGE).next_to(on, DOWN, buff=0.15), T("저장", 34, ORANGE).next_to(ca, DOWN, buff=0.15),
-                    T("지지", 34, ORANGE).next_to(tr, DOWN, buff=0.15))
+                    T("지지", 34, ORANGE).next_to(tr, RIGHT, buff=0.3))
         card = K.text_card([f"식물은 뿌리로 물을 {o('흡수')}합니다."], size=40).move_to([0, -1.6, 0])
         self.say(f"식물은 뿌리로 물을 {o('흡수')}해요",
                  "식물의 뿌리는 물을 흡수해요. 뿌리털이 있어 물을 잘 흡수하고, 식물을 지지하며, 양분을 저장하기도 해요.")

@@ -276,7 +276,7 @@ def green_onion(h=3.0, root=True, cut_leaf=True, n_root=11, seed=2):
             f = (i / (n_root - 1)) - 0.5
             x0 = f * 0.24 * s
             x1 = f * 1.5 * s + rng.uniform(-0.1, 0.1) * s
-            y1 = -(0.9 + rng.uniform(0, 0.35)) * s
+            y1 = -(1.15 + rng.uniform(0, 0.35)) * s
             roots.add(smooth([(x0, 0.02), (x0 + (x1 - x0) * 0.35, y1 * 0.4), (x1, y1)], ROOT_D, 3))
     g.add(roots)
     g.roots, g.stalk = roots, stalk
