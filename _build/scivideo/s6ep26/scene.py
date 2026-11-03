@@ -110,7 +110,7 @@ class S6Ep26(EpisodeScene):
         self.play(FadeIn(gn), FadeIn(steps), run_time=0.8)
         self.play(FadeIn(ln), Indicate(gn.shadow, color=ORANGE), run_time=0.8)
         self.settle()
-        tm = K.text_card([f"기온은 {o('그늘진 곳')}, 높이 {o('1.5 m')} 정도에서"], size=30).move_to([2.6, -0.8, 0])
+        tm = K.text_card([f"기온은 {o('그늘진 곳')}, 높이 {o('1.5 m')} 정도에서"], size=30).move_to([3.4, -0.8, 0])
         self.say(f"기온은 {o('그늘진 곳')}의 높이 1.5 m 정도에서 재요",
                  "기온은 햇빛이 드는 땅바닥이 아니라, 그늘진 곳의 높이 일 점 오 미터 정도에서 온도계로 재요.")
         self.play(FadeIn(tm), run_time=0.6)
@@ -205,18 +205,18 @@ class S6Ep26(EpisodeScene):
     def peak(self):
         self.section("가장 높은 시각")
         ga, gt = self.ga, self.gt
-        ma = K.pointer(self.da[3].get_center(), (-4.35, -1.1), "오후 12시 30분 무렵", K.ALT_COL, 24)
-        mt = K.pointer(self.dt[5].get_center(), (4.65, -1.1), "오후 2시 30분 무렵", K.TMP_COL, 24)
+        ma = K.pointer(self.da[3].get_center(), (-4.35, -1.3), "오후 12시 30분 무렵", K.ALT_COL, 24)
+        mt = K.pointer(self.dt[5].get_center(), (4.65, -1.3), "오후 2시 30분 무렵", K.TMP_COL, 24)
         self.say(f"태양 고도는 {o('12시 30분')}, 기온은 {r('2시 30분')} 무렵에 가장 높아요",
                  "태양 고도가 가장 높은 시각은 오후 열두 시 삼십 분 무렵이고, 기온이 가장 높은 시각은 오후 두 시 삼십 분 무렵이에요.")
         self.play(Flash(self.da[3], color=K.ALT_COL), FadeIn(ma), run_time=0.8)
         self.play(Flash(self.dt[5], color=K.TMP_COL), FadeIn(mt), run_time=0.8)
         self.settle()
         card = K.text_card([f"태양 빛 → {o('지표면')}이 데워지고 → 그 위의 {o('공기')}가 데워져요",
-                            f"데워지는 데 {g('시간이 걸려')} 기온은 조금 늦게 가장 높아요"], size=26).move_to([0, -2.2, 0])
+                            f"데워지는 데 {g('시간이 걸려')} 기온은 조금 늦게 가장 높아요"], size=26).move_to([0, -1.6, 0])
         self.say(f"지표면과 공기가 데워지는 데 {g('시간이 걸리기')} 때문이에요",
                  "태양 빛을 받은 지표면이 데워지고, 그 위의 공기가 데워지는 데 시간이 걸리기 때문이에요.")
-        self.play(FadeIn(card, shift=UP * 0.2), run_time=0.7)
+        self.play(FadeOut(ma), FadeOut(mt), FadeIn(card, shift=UP * 0.2), run_time=0.7)
         self.settle()
         clear_stage(self)
 
