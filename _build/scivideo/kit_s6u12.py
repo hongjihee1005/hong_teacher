@@ -148,7 +148,7 @@ def gauge(val=60, vmax=120, r=1.4):
         g.add(Line(c + u * r * 0.85, c + u * r * 1.0, stroke_color=PAPER, stroke_width=3))
         g.add(T(str(k), int(13 * r), PAPER, bold=False).move_to(c + u * r * 0.68))
     a = PI * (1 - val / vmax)
-    g.add(Line(c, c + np.array([np.cos(a), np.sin(a), 0]) * r * 0.82, stroke_color=RED, stroke_width=7))
+    g.add(Line(c, c + np.array([np.cos(a), np.sin(a), 0]) * r * 0.5, stroke_color=RED, stroke_width=7))
     g.add(Dot(c, radius=0.08 * r, color=RED))
     g.add(T(f"{val} km/h", int(22 * r), "#BDF0CF").move_to(c + DOWN * 0.3 * r))
     return g
@@ -312,7 +312,7 @@ def guard_rail(w=2.4):
 def seatbelt():
     seat = R(1.2, 1.5, "#5B6F8F", 0, 0, rad=0.2, stroke=INK, sw=3)
     head = C(0.22, "#F1C7A1", 0, 0.5, sw=2)
-    belt = VGroup(L((-0.4, 0.3), (0.35, -0.65), RED, 9), C(0.07, "#BBBBBB", 0.35, -0.65, sw=2))
+    belt = VGroup(L((-0.4, 0.3), (0.35, -0.65), "#E3E7EC", 10), C(0.08, "#8A94A0", 0.35, -0.65, sw=2))
     return VGroup(seat, head, belt)
 
 

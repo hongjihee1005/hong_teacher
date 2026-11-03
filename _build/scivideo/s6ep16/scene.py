@@ -120,7 +120,7 @@ class S6Ep16(EpisodeScene):
         bk = K.beaker(2.2, 1.9, K.WATER, 0.7, steam=True).move_to([-3.4, -1.3, 0])
         tt = K.test_tube(1.9, 0.5, "#DDEFC0", 0.6).move_to([-3.4, -1.15, 0])
         lv = VGroup(*[K.E(0.16, 0.5, K.PALE_LEAF, -3.4 + dx, -1.4, stroke=K.LEAF_EDGE, sw=2) for dx in (-0.08, 0.08)])
-        card = K.text_card([f"에탄올에 넣어 두면 잎의 {o('초록색 색소')}가 빠져나와", "잎의 색이 연해져요"], size=30).move_to([2.4, -1.2, 0])
+        card = K.text_card([f"에탄올에 넣어 두면 잎의 {o('초록색 색소')}가 빠져나와", "잎의 색이 연해져요"], size=28).move_to([2.35, -1.2, 0])
         self.say(f"에탄올에서 잎의 {o('초록색 색소')}가 빠져 색이 연해져요",
                  "에탄올이 든 시험관을 뜨거운 물에 10분쯤 담가 두면 잎의 초록색 색소가 빠져나와 잎의 색이 연해져요.")
         self.play(FadeIn(bk), FadeIn(tt), FadeIn(lv), FadeIn(card), Indicate(st.cards[2], color=ORANGE), run_time=0.9)
@@ -149,7 +149,7 @@ class S6Ep16(EpisodeScene):
         r2 = T("변화 없음", 34, SOFT).next_to(n2, DOWN, buff=0.12)
         self.play(FadeIn(r1), FadeIn(r2), run_time=0.5)
         self.settle()
-        tip = K.text_card([f"아이오딘-아이오딘화 칼륨 용액은 {o('녹말')}과 반응하면 {blue('청람색')}"], size=30).move_to([0.2, 2.7, 0])
+        tip = K.text_card([f"아이오딘-아이오딘화 칼륨 용액은 {o('녹말')}과 반응하면 {blue('청람색')}"], size=28).move_to([0.6, 2.45, 0])
         self.say(f"햇빛을 받은 잎에서 {o('녹말')}이 만들어졌어요",
                  "이 용액은 녹말과 반응하면 청람색으로 변해요. 그러니까 햇빛을 받은 잎에서 녹말이 만들어졌어요. 양분이 만들어지려면 빛이 필요해요.")
         self.play(FadeIn(tip), run_time=0.5)

@@ -80,7 +80,7 @@ class S6Ep11(EpisodeScene):
         for km, h in ((0, 0), (60, 1), (120, 2)):
             x = x0 + km * k
             ticks.add(Line([x, -1.0, 0], [x, -0.2, 0], stroke_color=INK, stroke_width=3),
-                      T(f"{km} km", 26).move_to([x, -1.25, 0]), T(f"{h}시간", 26, BLUE).move_to([x, 0.05, 0]))
+                      T(f"{km} km", 26).move_to([x, -1.25, 0]), T(f"{h}시간", 26, BLUE).move_to([x, 0.2, 0]))
         car = K.car_side(K.CAR_RED, 1.1).move_to([x0, -0.45, 0])
         self.say(f"자동차가 {o('2시간')} 동안 {o('120 km')}를 달렸어요", "자동차가 2시간 동안 120 킬로미터를 달렸어요.")
         self.play(FadeIn(road), FadeIn(ticks), FadeIn(car), run_time=0.6)

@@ -275,7 +275,7 @@ class S6Ep20(EpisodeScene):
         self.say("오후 1시의 태양이에요. 오후 3시에는 어디에 있을까요?",
                  "오후 1시의 태양이에요. 오후 3시에는 어디에 있을까요?")
         self.play(FadeIn(base), Create(arc), FadeIn(dirs), FadeIn(marks), FadeIn(sun), FadeIn(lab), run_time=1.0)
-        self.pause_screen(4, "오후 3시의 태양은 ㉠~㉣ 중 어디일까요?")
+        self.pause_screen(4, "오후 3시의 태양은 어디일까요?")
         ring = Circle(radius=0.42, stroke_color=GREEN, stroke_width=8).move_to(marks[3])
         self.say(f"{g('㉣')} — 시간이 지나면 태양은 더 {o('서쪽')}으로",
                  "답은 ㉣. 시간이 지나면 태양은 더 서쪽으로 가요.")

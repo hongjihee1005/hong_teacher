@@ -175,8 +175,8 @@ class S6Ep22(EpisodeScene):
         globe = always_redraw(lambda: K.globe_top(1.65, phi=phi.get_value() * K.RAD, sun_dir=PI, obs_label="").move_to(gc))
         arr = K.curved_arrow(1.95, -0.2, 1.25, "#9FE3A5", 5, center=gc)
         cap = T("북극 위에서 내려다본 지구본", 24, PAPER).move_to([-3.25, 2.4, 0])
-        lit_t = VGroup(T("빛을 받는 쪽", 20, PAPER).move_to(gc + np.array([-1.35, -1.98, 0])),
-                       T("빛을 받지 못하는 쪽", 20, PAPER).move_to(gc + np.array([1.25, -1.98, 0])))
+        lit_t = VGroup(T("빛을 받는 쪽", 19, PAPER).move_to(gc + np.array([-1.25, -2.0, 0])),
+                       T("빛을 받지 못하는 쪽", 19, PAPER).move_to(gc + np.array([1.2, -2.0, 0])))
         scr = always_redraw(lambda: cam_screen(phi.get_value()).move_to([3.6, 0.15, 0]))
         cnt = always_redraw(lambda: T(f"{int(round(phi.get_value()))} / 360°", 26, K.NAVY).move_to([3.6, -2.05, 0]))
         self.say(f"주변을 어둡게 하고 지구본을 {o('서쪽에서 동쪽으로')} 돌려요",
@@ -206,12 +206,12 @@ class S6Ep22(EpisodeScene):
         self.section("결과 정리")
         head = ["카메라가 향하는 곳", "전등 빛", "화면", ""]
         rows = [["전등 쪽", "받아요", "밝아요", g("낮")], ["전등 반대편", r("받지 못해요"), "어두워요", o("밤")]]
-        tab = K.result_table(head, rows, [4.2, 2.8, 2.4, 1.4], row_h=0.95, size=32).move_to([0.6, 1.1, 0])
+        tab = K.result_table(head, rows, [4.2, 2.8, 2.4, 1.4], row_h=0.95, size=32).move_to([0.6, 0.9, 0])
         self.say(f"전등 빛을 받으면 밝아서 {g('낮')}, 받지 못하면 어두워서 {o('밤')}",
                  "카메라가 전등을 향하면 빛을 받아 화면이 밝으니 낮이에요. 전등 반대편을 향하면 빛을 받지 못해 어두우니 밤이에요.")
         self.play(FadeIn(tab), run_time=0.7)
         card = K.text_card([f"지구가 {o('자전')}하면서 태양 빛을 받는 지역은 {g('낮')},", f"태양 빛을 받지 못한 지역은 {g('밤')}이 돼요"],
-                           w=11.6, size=36).move_to([0, -1.35, 0])
+                           w=11.6, size=36).move_to([0, -1.55, 0])
         self.say(f"태양이 지구 주위를 도는 게 {r('아니라')} 지구가 {o('자전')}하기 때문이에요",
                  "실험에서 전등은 그대로 있고 지구본만 돌렸어요. 낮과 밤은 지구가 자전하기 때문에 생겨요.")
         self.play(FadeIn(card, shift=UP * 0.2), run_time=0.7)
@@ -286,7 +286,7 @@ class S6Ep22(EpisodeScene):
         self.section("확인해요")
         lines = ["친구 1: 지구에서 태양 빛을 받는 지역은 낮이야.", "친구 2: 밤은 태양이 진 뒤부터 다음 날 다시 뜨기 전까지의 동안이야.",
                  "친구 3: 낮과 밤은 하루에 두 번씩 번갈아 나타나.", "친구 4: 낮과 밤이 생기는 것은 지구의 자전과 관련이 있어."]
-        cards = VGroup(*[K.word_card(t_, 11.6, 0.8, size=28) for t_ in lines]).arrange(DOWN, buff=0.22).move_to([0.6, 0.75, 0])
+        cards = VGroup(*[K.word_card(t_, 11.6, 0.8, size=28) for t_ in lines]).arrange(DOWN, buff=0.22).move_to([0.6, 0.5, 0])
         self.say("옳지 않게 말한 친구는 누구일까요?", "지구의 낮과 밤에 관해 옳지 않게 말한 친구는 누구일까요?")
         self.play(FadeIn(cards, lag_ratio=0.15), run_time=0.8)
         self.pause_screen(4, "옳지 않게 말한 친구는?")

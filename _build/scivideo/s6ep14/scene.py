@@ -100,9 +100,9 @@ class S6Ep14(EpisodeScene):
                  "파 한 개는 잎과 뿌리를 자르고, 다른 한 개는 잎만 잘라 각각 물이 든 눈금실린더에 넣어 두어요.")
         self.play(FadeIn(a), FadeIn(b), FadeIn(la), FadeIn(lb), run_time=0.8)
         self.settle()
-        diff = K.text_card(["다르게 할 조건", f"· {o('뿌리가 있는지 없는지')}"], w=4.9, size=28, stroke=ORANGE).move_to([4.3, 2.05, 0])
+        diff = K.text_card(["다르게 할 조건", f"· {o('뿌리가 있는지 없는지')}"], w=4.9, size=28, stroke=ORANGE).move_to([4.2, 1.95, 0])
         same = K.text_card(["같게 할 조건", "· 눈금실린더의 크기", "· 처음 물의 양", "· 파의 크기", "· 놓아두는 곳(햇빛)", "· 관찰하는 날짜"],
-                           w=4.9, size=27).move_to([4.3, -0.6, 0])
+                           w=4.9, size=26).move_to([4.2, -0.75, 0])
         self.say(f"{o('뿌리')}만 다르게 하고 나머지 조건은 모두 같게 해요",
                  "뿌리가 있는지 없는지만 다르게 하고, 눈금실린더의 크기, 처음 물의 양, 파의 크기, 놓아두는 곳, 관찰하는 날짜는 모두 같게 해요.")
         self.play(FadeIn(diff), run_time=0.5)
@@ -200,7 +200,7 @@ class S6Ep14(EpisodeScene):
         t2 = K.tree_rooted(2.6, False)
         t2.shift([3.0, -0.2 - t2.tree.get_bottom()[1], 0])
         wind = K.wind_lines(-6.6, (1.2, 1.9, 2.5), 1.8)
-        q = M("‘뿌리 깊은 나무는 바람에 흔들리지 않는다.’", 36).move_to([1.3, 2.75, 0])
+        q = M("‘뿌리 깊은 나무는 바람에 흔들리지 않는다.’", 30).move_to([1.9, 2.88, 0])
         self.say("‘뿌리 깊은 나무는 바람에 흔들리지 않는다’", "뿌리 깊은 나무는 바람에 흔들리지 않는다. 이 말을 뿌리가 하는 일과 연관 지어 볼까요?")
         self.play(FadeIn(soil), FadeIn(t1), FadeIn(t2), FadeIn(q), run_time=0.8)
         self.play(FadeIn(wind, shift=RIGHT), run_time=0.5)
@@ -213,7 +213,7 @@ class S6Ep14(EpisodeScene):
 
     def summary(self):
         self.section("한눈에 쏙")
-        on = K.green_onion(2.6).move_to([-4.4, 1.3, 0])
+        on = K.green_onion(2.5).move_to([-4.2, 1.1, 0])
         ca = K.carrot(2.2).move_to([-0.9, 1.35, 0])
         tr = K.fit(K.tree_rooted(2.4, True), 2.4, 2.9).move_to([3.0, 1.1, 0])
         ic = VGroup(T("흡수", 34, ORANGE).next_to(on, DOWN, buff=0.15), T("저장", 34, ORANGE).next_to(ca, DOWN, buff=0.15),

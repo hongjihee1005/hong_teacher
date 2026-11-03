@@ -108,7 +108,7 @@ class S6Ep17(EpisodeScene):
         self.play(p2.animate.set_fill(K.CO_RED), run_time=1.4)
         self.settle()
         card = K.text_card([f"잎을 통해 물이 식물 {o('밖으로')} 빠져나가요"], size=36, stroke=ORANGE).move_to([0, -2.35 + 0.0, 0]).shift(UP * 0.0)
-        card.move_to([0, 2.55, 0])
+        card.scale(0.92).move_to([0.9, 2.68, 0])
         self.say(f"접시 종이는 {o('비교용')} — 공기 중의 물 때문이 아니에요",
                  "페트리 접시에도 종이를 붙인 것은 잎에 붙인 종이와 비교하려고예요. 공기 중의 물 때문에 색이 변한 것이 아님을 알 수 있어요.")
         self.play(FadeOut(sn), Indicate(p1, color=K.CO_BLUE, scale_factor=1.2), run_time=0.8)

@@ -198,7 +198,7 @@ class S6Ep21(EpisodeScene):
             rp.step()
             self.wait(0.2)
         self.settle()
-        self.pause_screen(5, "전등과 별은 어느 쪽에서 어느 쪽으로?")
+        self.pause_screen(5, "전등과 별은 어떻게 달라졌나요?")
         self.say(f"전등과 별 모두 {o('동쪽')} → 남쪽 → {o('서쪽')}으로 달라졌어요",
                  "전등과 별은 모두 동쪽에서 남쪽을 지나 서쪽으로 위치가 달라졌어요.")
         self.play(Indicate(rp.trail, color=ORANGE, scale_factor=1.3), run_time=1.0)
@@ -211,12 +211,12 @@ class S6Ep21(EpisodeScene):
         self.section("결과 정리")
         rows = [["지구 역할이 회전하는 방향", f"{g('서쪽 → 동쪽')}"], ["전등의 위치 변화", f"{o('동쪽 → 서쪽')}"],
                 ["별 역할의 위치 변화", f"{o('동쪽 → 서쪽')}"]]
-        tab = K.result_table(["", "관찰한 것"], rows, [5.6, 4.0], row_h=0.8, size=32).move_to([0.6, 1.15, 0])
+        tab = K.result_table(["", "관찰한 것"], rows, [5.6, 4.0], row_h=0.8, size=32).move_to([0.6, 0.95, 0])
         self.say(f"지구 역할은 {g('서→동')}, 전등과 별은 {o('동→서')}",
                  "지구 역할은 서쪽에서 동쪽으로 돌고, 전등과 별은 동쪽에서 서쪽으로 달라졌어요.")
         self.play(FadeIn(tab), run_time=0.7)
         card = K.text_card([f"지구가 {g('서쪽에서 동쪽으로 자전')}하기 때문에", f"태양과 별은 {o('동쪽에서 서쪽으로')} 위치가 달라져요"],
-                           w=11.6, size=36).move_to([0, -1.5, 0])
+                           w=11.6, size=36).move_to([0, -1.65, 0])
         self.say(f"지구가 자전하기 때문이지, 태양과 별이 {r('스스로')} 움직여서가 아니에요",
                  "지구가 서쪽에서 동쪽으로 자전하기 때문에 태양과 별이 동쪽에서 서쪽으로 위치가 달라져요.")
         self.play(FadeIn(card, shift=UP * 0.2), run_time=0.7)
@@ -267,13 +267,13 @@ class S6Ep21(EpisodeScene):
             ra = K.word_card(a, 4.0, 0.85, size=28, col=self.accent)
             rb = K.word_card(b, 7.6, 0.85, size=26)
             rows.add(VGroup(ra, rb).arrange(RIGHT, buff=0.5))
-        rows.arrange(DOWN, buff=0.28).move_to([0, 1.25, 0])
+        rows.arrange(DOWN, buff=0.28).move_to([0, 1.05, 0])
         self.say("낱말과 뜻을 이어요")
         self.play(FadeIn(rows, lag_ratio=0.2), run_time=1.0)
         self.settle()
         f1 = K.word_card("“지구는 왼쪽에서 오른쪽으로 자전해.”", 6.2, 0.85, size=26)
         f2 = K.word_card("“지구는 서쪽에서 동쪽으로 자전해.”", 6.2, 0.85, size=26)
-        fr = VGroup(f1, f2).arrange(RIGHT, buff=0.3).move_to([0, -1.55, 0])
+        fr = VGroup(f1, f2).arrange(RIGHT, buff=0.3).move_to([0, -1.7, 0])
         self.say("자전 방향을 바르게 말한 친구는?")
         self.play(FadeIn(fr), run_time=0.6)
         self.settle()
