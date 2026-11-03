@@ -63,8 +63,8 @@ class S6Ep24(EpisodeScene):
     # ── 궁금해요: 백조자리 ──
     def intro(self):
         self.section("궁금해요")
-        panel = RoundedRectangle(corner_radius=0.2, width=6.0, height=4.6, fill_color=K.NIGHT, fill_opacity=1,
-                                 stroke_color=INK, stroke_width=3).move_to([-3.3, 0.35, 0])
+        panel = RoundedRectangle(corner_radius=0.2, width=6.0, height=4.3, fill_color=K.NIGHT, fill_opacity=1,
+                                 stroke_color=INK, stroke_width=3).move_to([-3.3, 0.55, 0])
         k = 0.115
         r0, d0 = 20.3, 40
 
@@ -73,12 +73,12 @@ class S6Ep24(EpisodeScene):
         lines = VGroup(*[Line(P(CYG[u]), P(CYG[v]), stroke_color="#7FA8E8", stroke_width=4)
                          for u, v in (e.split('-') for e in 'a-g g-h h-b g-d d-i i-k g-e e-z'.split())])
         dots = VGroup(*[Dot(P(v), radius=0.05 * v[2] + 0.03, color=K.STAR_W) for v in CYG.values()])
-        bg = K.bg_stars(-6.0, -0.6, -1.7, 2.4, n=28, seed=8, op=0.4)
+        bg = K.bg_stars(-6.0, -0.6, -1.4, 2.5, n=28, seed=8, op=0.4)
         self.say("이 별들을 보고 어떤 동물이 떠오르나요?", "밤하늘의 별을 이어 보았어요. 어떤 동물이 떠오르나요?")
         self.play(FadeIn(panel), FadeIn(bg), FadeIn(dots), run_time=0.7)
         self.play(Create(lines), run_time=1.2)
         self.settle()
-        name = K.label("백조자리", INK, 34).move_to([-3.3, -2.25, 0])
+        name = K.label("백조자리", INK, 34).move_to([-3.3, -2.05, 0])
         card = K.text_card(["옛날 사람들은 무리 지어 있는 별을 이어", "인물·동물·물건 등의 이름을 붙였어요", f"→ {o('별자리')}"],
                            w=6.6, size=30).move_to([3.4, 0.9, 0])
         self.say(f"날개를 편 백조 모양 — {o('백조자리')}, 여름철에 볼 수 있어요",
@@ -150,8 +150,8 @@ class S6Ep24(EpisodeScene):
     def orbit_pic(self):
         g_ = VGroup()
         g_.add(Ellipse(width=4.2, height=2.3, stroke_color="#9FB3C0", stroke_width=3).move_to(OC))
-        g_.add(Circle(radius=0.55, fill_color=K.SUN_Y, fill_opacity=1, stroke_color=K.SUN_O, stroke_width=3).move_to(OC),
-               T("태양", 24, "#7A4A00").move_to(OC))
+        g_.add(Circle(radius=0.42, fill_color=K.SUN_Y, fill_opacity=1, stroke_color=K.SUN_O, stroke_width=3).move_to(OC),
+               T("태양", 20, "#7A4A00").move_to(OC))
         arr = K.curved_arrow(1.0, -0.5, 0.5, GREEN, 5, center=OC + RIGHT * 1.1)
         g_.add(arr)
         return g_
@@ -222,7 +222,7 @@ class S6Ep24(EpisodeScene):
         self.section("정리해요")
         rows = [["같은 시각에 보이는 별자리는", f"계절에 따라 {g('달라져요')}"], ["그 까닭은 지구가", f"{o('공전')}하기 때문"],
                 ["일 년 동안 달라지는 것은", f"지구의 {o('위치')}"]]
-        tab = K.result_table(rows[0], rows[1:], [5.2, 4.8], row_h=0.9, size=32).move_to([0, 1.2, 0])
+        tab = K.result_table(rows[0], rows[1:], [5.8, 4.8], row_h=0.9, size=32).move_to([0, 1.2, 0])
         self.say(f"지구가 {o('공전')}해서 {o('위치')}가 달라지면 보이는 별자리가 달라져요",
                  "같은 시각에 보이는 별자리는 계절에 따라 달라져요. 지구가 공전하기 때문에 일 년 동안 지구의 위치가 달라지기 때문이에요.")
         self.play(FadeIn(tab), run_time=0.7)

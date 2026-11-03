@@ -116,7 +116,7 @@ class S6Ep23(EpisodeScene):
                  "지구본을 가, 나, 다, 라 위치로 옮기며 관측자 모형 앞에 보이는 것을 관찰해요.")
         self.play(FadeIn(rm), run_time=0.8)
         arr = K.curved_arrow(104 * rm.k, 0.35, 1.15, "#1C6FA8", 5, center=rm.center_pt)
-        dir_t = T("공전 방향", 20, "#1C6FA8").move_to(rm.center_pt + np.array([0.75, 0.55, 0]))
+        dir_t = T("공전 방향", 20, "#1C6FA8").move_to(rm.center_pt + np.array([0.0, -0.45, 0]))
         self.play(Create(arr), FadeIn(dir_t), run_time=0.6)
         seen = VGroup()
         gl = None
@@ -134,7 +134,7 @@ class S6Ep23(EpisodeScene):
             gl = new
             row = M(f"{o(key + ' 위치')}: {K.CLASS_SEE[key]}", 34)
             seen.add(row)
-            seen.arrange(DOWN, buff=0.3, aligned_edge=LEFT).move_to([3.3, 0.6, 0]).align_to([1.2, 0, 0], LEFT)
+            seen.arrange(DOWN, buff=0.3, aligned_edge=LEFT).move_to([3.3, 0.85, 0]).align_to([1.2, 0, 0], LEFT)
             if i == 0:
                 self.say(f"가 위치: {o('칠판, 시계, 시간표')}가 보여요", "가 위치에서는 칠판, 시계, 시간표가 보여요.")
             elif i == 1:
@@ -144,10 +144,10 @@ class S6Ep23(EpisodeScene):
             else:
                 self.say("라 위치: 창문, 출입문", "라 위치에서는 창문과 출입문이 보여요.")
             self.play(FadeIn(row), run_time=0.4)
-            self.wait(0.5)
+            self.settle()
         self.settle()
         self.pause_screen(5, "보이는 모습은 어땠나요?")
-        card = K.text_card([f"지구본의 {o('위치')}에 따라", f"보이는 모습이 {g('달라져요')}"], w=5.6, size=34).move_to([3.3, -1.55, 0])
+        card = K.text_card([f"지구본의 {o('위치')}에 따라", f"보이는 모습이 {g('달라져요')}"], w=5.6, size=34).move_to([3.3, -1.75, 0])
         self.say(f"위치에 따라 보이는 모습이 {g('달라져요')}",
                  "위치에 따라 보이는 모습이 달라요. 지구도 공전하면서 위치가 달라지면 밤하늘에 보이는 모습이 달라져요.")
         self.play(FadeIn(card), run_time=0.6)
@@ -162,6 +162,8 @@ class S6Ep23(EpisodeScene):
         bg = VGroup()
         for i in range(60):
             a = i * 6 * K.RAD
+            if 0.9 < cx + 6.6 * math.cos(a) and cy + 2.75 * math.sin(a) < -2.1:
+                continue          # 아래 오른쪽 '크기·거리' 알림 글과 겹치는 별은 뺌
             bg.add(Dot([cx + 6.6 * math.cos(a), cy + 2.75 * math.sin(a), 0], radius=0.035 if i % 4 else 0.055, color=SOFT))
         orbit = Ellipse(width=2 * RX, height=2 * RY, stroke_color="#7FA7BF", stroke_width=3).move_to([cx, cy, 0])
         sun = VGroup(Circle(radius=0.75, fill_color=K.SUN_Y, fill_opacity=0.3, stroke_width=0),
@@ -228,12 +230,12 @@ class S6Ep23(EpisodeScene):
                       K.bin_box("공전", 4.2, 3.6, GREEN, 34)).arrange(RIGHT, buff=0.25).move_to([0, 0.5, 0])
         rot = ["자전축을 중심으로", "하루에 한 바퀴", "낮과 밤이 번갈아"]
         rev = ["태양을 중심으로", "일 년에 한 바퀴", "위치에 따라 밤하늘이 달라짐"]
-        def col(lst, bx, w):
-            c_ = VGroup(*[K.word_card(t_, w, 0.72, size=24) for t_ in lst]).arrange(DOWN, buff=0.18)
+        def col(lst, bx, w, sz=24):
+            c_ = VGroup(*[K.word_card(t_, w, 0.72, size=sz) for t_ in lst]).arrange(DOWN, buff=0.18)
             return c_.move_to(bx.box.get_center() + DOWN * 0.3)
         a = col(rot, bins[0], 3.8)
         b_ = col(["서쪽에서 동쪽으로", "회전해요"], bins[1], 3.2)
-        c = col(rev, bins[2], 3.8)
+        c = col(rev, bins[2], 3.9, 22)
         self.say("자전일까요, 공전일까요?")
         self.play(FadeIn(bins), run_time=0.5)
         self.play(FadeIn(a, lag_ratio=0.2), run_time=0.8)
