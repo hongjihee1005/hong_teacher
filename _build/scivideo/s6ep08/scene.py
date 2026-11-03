@@ -103,8 +103,8 @@ class S6Ep08(EpisodeScene):
         bee = K.fit(K.bee(), 0.62, 0.5)
         start = G.pt(1, -1)
         bee.move_to(start + UP * 0.12)
-        sw = K.stopwatch(0.62).move_to([2.0, -1.0, 0])
-        num = T("0초", 34, INK).scale_to_fit_height(sw.disp.height * 0.62).move_to(sw.disp)
+        sw = K.stopwatch(0.85).move_to([2.0, -1.0, 0])
+        num = T("0초", 34, INK).scale_to_fit_height(sw.disp.height * 0.75).move_to(sw.disp)
         cap = T("걸린 시간", 28, INK).next_to(sw, RIGHT, buff=0.3)
         self.say(f"꿀벌을 {g('진달래꽃')}에서 {bl('유채꽃')}까지 움직여요",
                  "이번에는 진달래꽃 위의 꿀벌을 유채꽃까지 움직여요. 꿀벌은 한 칸씩 움직이고, 한 칸 이동하는 데 1초가 걸려요.")
@@ -118,7 +118,7 @@ class S6Ep08(EpisodeScene):
         for k in range(1, len(path)):
             a, b_ = G.pt(*path[k - 1]), G.pt(*path[k])
             seg = DashedLine(a, b_, stroke_color=RED, stroke_width=5, dash_length=0.1)
-            new = T(f"{k}초", 34, INK).scale_to_fit_height(sw.disp.height * 0.62).move_to(sw.disp)
+            new = T(f"{k}초", 34, INK).scale_to_fit_height(sw.disp.height * 0.75).move_to(sw.disp)
             self.play(bee.animate.move_to(b_ + UP * 0.12), Create(seg), Transform(num, new), run_time=0.75)
             trail.add(seg)
         self.settle()

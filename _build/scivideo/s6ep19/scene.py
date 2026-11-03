@@ -75,7 +75,7 @@ class S6Ep19(EpisodeScene):
 
     def organs(self):
         self.section("식물의 기관")
-        h = K.herb(6.0).move_to([-2.9, 0.2, 0])
+        h = K.herb(5.5).move_to([-2.9, -0.05, 0])
         L = [("fruit", "열매", (-6.2, 2.3)), ("flower", "꽃", (0.6, 2.4)), ("leaf", "잎", (-6.3, 0.2)),
              ("stem", "줄기", (0.6, 0.6)), ("root", "뿌리", (0.6, -1.9))]
         ps = VGroup(*[K.pointer(h.pt(k), at, t, INK, 32) for k, t, at in L])
@@ -95,7 +95,7 @@ class S6Ep19(EpisodeScene):
 
     def paths(self):
         self.section("물과 양분의 이동")
-        h = K.herb(6.0).move_to([-2.6, 0.2, 0])
+        h = K.herb(5.5).move_to([-3.0, -0.05, 0])
         self.play(FadeIn(h), run_time=0.6)
         wp = h.water_paths()
         dots, anims = VGroup(), []
@@ -105,7 +105,7 @@ class S6Ep19(EpisodeScene):
             d = Dot(pth[0], radius=0.08, color=K.WATER_C).set_stroke("#FFFFFF", 1.5)
             dots.add(d)
             anims.append(MoveAlongPath(d, v))
-        wcard = K.text_card([f"{wb('물')}: 뿌리 → 줄기 → 잎", "→ 일부는 기공을 통해 밖으로"], w=5.4, size=30).move_to([4.0, 1.4, 0])
+        wcard = K.text_card([f"{wb('물')}: 뿌리 → 줄기 → 잎", "→ 일부는 기공을 통해 밖으로"], w=6.4, size=30).move_to([3.75, 1.4, 0])
         self.say(f"{wb('물')}은 뿌리에서 흡수되어 {o('줄기')}를 통해 이동해요",
                  "뿌리에서 흡수된 물은 줄기를 통해 식물의 각 부분으로 이동하여 사용되고, 물의 일부는 잎의 기공을 통해 식물 밖으로 빠져나가요.")
         self.play(LaggedStart(*anims, lag_ratio=0.12), FadeIn(wcard), run_time=2.6)
@@ -120,7 +120,7 @@ class S6Ep19(EpisodeScene):
             s_ = Square(0.16, fill_color=K.FOOD_C, fill_opacity=1, stroke_color="#A87A00", stroke_width=2).move_to(pth[0])
             sq.add(s_)
             anims.append(MoveAlongPath(s_, v))
-        fcard = K.text_card([f"{fy('양분')}: 잎 → 줄기 → 식물 전체", "→ 남은 양분은 뿌리·줄기·열매 등에 저장"], w=5.4, size=30).move_to([4.0, -0.9, 0])
+        fcard = K.text_card([f"{fy('양분')}: 잎 → 줄기 → 식물 전체", "→ 남은 양분은 뿌리·줄기·열매 등에 저장"], w=6.4, size=30).move_to([3.75, -0.9, 0])
         self.say(f"{fy('양분')}은 잎에서 만들어져 {o('줄기')}를 통해 이동해요",
                  "잎에서 광합성으로 만들어진 양분은 줄기를 통해 식물의 각 부분으로 이동하여 사용되고, 남은 양분은 뿌리나 줄기, 열매 등에 저장돼요.")
         self.play(FadeOut(puffs), LaggedStart(*anims, lag_ratio=0.12), FadeIn(fcard), run_time=2.8)
@@ -136,8 +136,8 @@ class S6Ep19(EpisodeScene):
         self.section("생각해요")
         h = K.herb(5.0).move_to([-3.4, 0.2, 0])
         g1 = K.gear(0.55, 10, "#F2C94C").move_to([1.4, 1.2, 0])
-        g2 = K.gear(0.42, 8, "#7FB3E0").move_to([2.43, 1.2, 0])
-        g3 = K.gear(0.42, 8, "#9CC56B").move_to([3.37, 1.2, 0])
+        g2 = K.gear(0.42, 8, "#7FB3E0").move_to([2.55, 1.2, 0])
+        g3 = K.gear(0.42, 8, "#9CC56B").move_to([3.57, 1.2, 0])
         q = T("한 기관에 문제가 생긴다면?", 40).move_to([2.4, 2.65, 0])
         self.say("식물의 한 기관에 문제가 생긴다면 어떻게 될까요?", "식물의 기관 중 한 기관에 문제가 생긴다면 식물은 어떻게 될까요?")
         self.play(FadeIn(h), FadeIn(q), FadeIn(VGroup(g1, g2, g3)), run_time=0.7)
@@ -161,7 +161,10 @@ class S6Ep19(EpisodeScene):
             box = RoundedRectangle(corner_radius=0.2, width=4.1, height=4.3, fill_color=PAPER, fill_opacity=1, stroke_color=SOFT, stroke_width=4)
             K.fit(p, 1.6, 1.4).move_to(box.get_center() + UP * 1.1)
             nt = T(n, 36, self.accent).move_to(box.get_center() + DOWN * 0.15)
-            tt = K.name_text(t_, 28).move_to(box.get_center() + DOWN * 1.2)
+            tt = K.name_text(t_, 28)
+            if tt.width > 3.75:
+                tt.scale_to_fit_width(3.75)
+            tt.move_to(box.get_center() + DOWN * 1.2)
             cards.add(VGroup(box, p, nt, tt))
         cards.arrange(RIGHT, buff=0.35).move_to([0, 0.3, 0])
         self.say("식물마다 구조와 특징이 서로 달라요 — 우리 반 식물도감",

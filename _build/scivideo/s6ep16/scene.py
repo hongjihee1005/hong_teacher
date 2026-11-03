@@ -149,7 +149,7 @@ class S6Ep16(EpisodeScene):
         r2 = T("변화 없음", 34, SOFT).next_to(n2, DOWN, buff=0.12)
         self.play(FadeIn(r1), FadeIn(r2), run_time=0.5)
         self.settle()
-        tip = K.text_card([f"아이오딘-아이오딘화 칼륨 용액은 {o('녹말')}과 반응하면 {blue('청람색')}"], size=30).move_to([0.9, 2.7, 0])
+        tip = K.text_card([f"아이오딘-아이오딘화 칼륨 용액은 {o('녹말')}과 반응하면 {blue('청람색')}"], size=30).move_to([0.2, 2.7, 0])
         self.say(f"햇빛을 받은 잎에서 {o('녹말')}이 만들어졌어요",
                  "이 용액은 녹말과 반응하면 청람색으로 변해요. 그러니까 햇빛을 받은 잎에서 녹말이 만들어졌어요. 양분이 만들어지려면 빛이 필요해요.")
         self.play(FadeIn(tip), run_time=0.5)

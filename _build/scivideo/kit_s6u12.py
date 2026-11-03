@@ -15,7 +15,7 @@ from manim import (DOWN, LEFT, ORIGIN, RIGHT, UP, PI, TAU,
 
 from series_style import BLUE, GREEN, INK, ORANGE, PAPER, SOFT, T, M
 from scikit import RED, person  # noqa: F401
-from kit_s5u13 import word_card, result_table  # noqa: F401
+from kit_s5u13 import word_card, result_table, pic_card  # noqa: F401
 from kit_s5u11 import label, text_card, fit, ox_mark, bin_box  # noqa: F401
 from kit_s5u24 import bus, arrow_lr  # noqa: F401
 from kit_s6u11 import tree, name_text, arrow_right  # noqa: F401
@@ -146,7 +146,7 @@ def gauge(val=60, vmax=120, r=1.4):
         a = PI * (1 - k / vmax)
         u = np.array([np.cos(a), np.sin(a), 0])
         g.add(Line(c + u * r * 0.85, c + u * r * 1.0, stroke_color=PAPER, stroke_width=3))
-        g.add(T(str(k), int(18 * r), PAPER, bold=False).move_to(c + u * r * 0.66))
+        g.add(T(str(k), int(13 * r), PAPER, bold=False).move_to(c + u * r * 0.68))
     a = PI * (1 - val / vmax)
     g.add(Line(c, c + np.array([np.cos(a), np.sin(a), 0]) * r * 0.82, stroke_color=RED, stroke_width=7))
     g.add(Dot(c, radius=0.08 * r, color=RED))
@@ -312,7 +312,7 @@ def guard_rail(w=2.4):
 def seatbelt():
     seat = R(1.2, 1.5, "#5B6F8F", 0, 0, rad=0.2, stroke=INK, sw=3)
     head = C(0.22, "#F1C7A1", 0, 0.5, sw=2)
-    belt = VGroup(L((-0.45, 0.25), (0.45, -0.6), RED, 9), L((-0.45, -0.3), (0.45, -0.3), RED, 8))
+    belt = VGroup(L((-0.4, 0.3), (0.35, -0.65), RED, 9), C(0.07, "#BBBBBB", 0.35, -0.65, sw=2))
     return VGroup(seat, head, belt)
 
 

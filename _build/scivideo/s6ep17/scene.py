@@ -138,7 +138,7 @@ class S6Ep17(EpisodeScene):
 
     def flow(self):
         self.section("증산 작용")
-        h = K.herb(5.6).move_to([-3.0, 0.15, 0])
+        h = K.herb(5.4).move_to([-3.7, 0.15, 0])
         self.say(f"뿌리에서 흡수한 물은 {o('줄기')}를 거쳐 잎에 도달해요",
                  "뿌리에서 물을 흡수해요. 흡수한 물은 줄기를 거쳐 잎에 도달해요.")
         self.play(FadeIn(h), run_time=0.7)
@@ -156,13 +156,13 @@ class S6Ep17(EpisodeScene):
         tips = h.leaf_tips()
         puffs = VGroup(*[K.vapor_puffs(t + np.array([0, 0.05, 0]), 3) for t in tips])
         card = K.text_card([f"잎에 도달한 물의 일부가 {o('수증기')}가 되어", f"{o('기공')}을 통해 식물 밖으로 빠져나가요",
-                            f"→ {g('증산 작용')}"], size=32).move_to([3.4, 1.2, 0])
+                            f"→ {g('증산 작용')}"], w=6.6, size=32).move_to([3.55, 1.35, 0])
         self.say(f"물의 일부는 {o('수증기')}가 되어 기공으로 나가요 — {g('증산 작용')}",
                  "잎에 도달한 물의 일부는 수증기가 되어 잎의 기공을 통해 식물 밖으로 빠져나가요. 이것을 증산 작용이라고 해요.")
         self.play(FadeOut(dots), FadeIn(puffs, shift=UP * 0.3, lag_ratio=0.1), FadeIn(card), run_time=1.0)
         self.settle()
         jobs = K.text_card([f"증산 작용이 하는 일", f"· 뿌리에서 흡수된 물이 {o('잎까지 도달')}하게 해요",
-                            f"· 식물의 {o('온도를 조절')}해요"], size=30).move_to([3.4, -1.15, 0])
+                            f"· 식물의 {o('온도를 조절')}해요"], w=6.6, size=30).move_to([3.55, -1.05, 0])
         self.say(f"물을 {o('잎까지 끌어올리고')}, 식물의 {o('온도를 조절')}해요",
                  "증산 작용은 뿌리에서 흡수된 물이 잎까지 도달하게 하고, 식물의 온도를 조절해요. 양분을 만들거나 흙 속의 물을 흡수하는 일은 아니에요.")
         self.play(FadeIn(jobs, shift=UP * 0.2), run_time=0.6)
@@ -188,12 +188,12 @@ class S6Ep17(EpisodeScene):
 
     def desert(self):
         self.section("생각해요")
-        sn = K.sun(0.5).move_to([-5.2, 2.0, 0])
+        sn = K.sun(0.45).move_to([-5.6, 1.4, 0])
         dune = K.poly([(-6.6, -1.8), (-3.0, -0.9), (0.2, -1.5), (0.2, -2.2), (-6.6, -2.2)], "#F0D9A0", stroke="#C9A35A", sw=3)
         pl = VGroup(K.L((-3.2, -1.0), (-3.2, 0.9), K.STEM, 6),
                     *[K.E(0.12, 0.85, K.LEAF_FILL, -3.2 + sg * 0.25, y, stroke=K.LEAF_EDGE, sw=2).rotate(-sg * 0.5)
                       for sg, y in ((1, 0.6), (-1, 0.2), (1, -0.2), (-1, 0.75))])
-        q = T("사막 식물의 잎이 좁으면 좋은 점은?", 40).move_to([0.8, 2.6, 0])
+        q = T("사막 식물의 잎이 좁으면 좋은 점은?", 40).move_to([1.4, 2.6, 0])
         self.say("사막에 사는 식물의 잎이 좁으면 어떤 점이 좋을까요?", "사막에 사는 식물의 잎이 좁아 유리한 점은 무엇일까요?")
         self.play(FadeIn(q), FadeIn(sn), FadeIn(dune), FadeIn(pl), run_time=0.8)
         card = K.text_card([f"잎이 좁으면 증산 작용으로", f"빠져나가는 물이 {o('적어')}", f"물을 {g('아낄 수 있어요')}"], size=34).move_to([3.6, 0.0, 0])

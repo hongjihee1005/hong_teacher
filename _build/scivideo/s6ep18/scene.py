@@ -112,7 +112,7 @@ class S6Ep18(EpisodeScene):
         pol = VGroup(*[Dot(st + np.array([0.06 * k - 0.1, 0.1 + 0.03 * (k % 2), 0]), radius=0.05, color="#F2C230").set_stroke("#B88A00", 1) for k in range(5)])
         self.play(FadeIn(pol), run_time=0.3)
         self.play(b.animate.move_to(pi + UP * 0.4), pol.animate.move_to(pi + UP * 0.05), run_time=1.1)
-        card = K.text_card([f"수술의 {o('꽃가루')}가 암술에 옮겨 붙는 것", f"= {g('꽃가루받이')}"], size=34).move_to([3.6, -0.6, 0])
+        card = K.text_card([f"수술의 {o('꽃가루')}가 암술에 옮겨 붙는 것", f"= {g('꽃가루받이')}"], w=5.9, size=32).move_to([3.75, -0.6, 0])
         self.say(f"꽃가루가 암술에 옮겨 붙는 것을 {g('꽃가루받이')}라고 해요",
                  "수술에 있는 꽃가루가 곤충 등의 도움으로 암술에 옮겨 붙어요. 이것을 꽃가루받이라고 해요.")
         self.play(FadeIn(card), run_time=0.6)
@@ -143,10 +143,13 @@ class S6Ep18(EpisodeScene):
         for p, t_ in zip(pics, texts):
             box = RoundedRectangle(corner_radius=0.2, width=2.7, height=3.4, fill_color=PAPER, fill_opacity=1, stroke_color=self.accent, stroke_width=4)
             K.fit(p, 1.9, 1.7).move_to(box.get_center() + UP * 0.55)
-            tt = K.name_text(t_, 27).move_to(box.get_center() + DOWN * 1.05)
+            tt = K.name_text(t_, 27)
+            if tt.width > 2.45:
+                tt.scale_to_fit_width(2.45)
+            tt.move_to(box.get_center() + DOWN * 1.05)
             cards.add(VGroup(box, p, tt))
-        cards.arrange(RIGHT, buff=0.55).move_to([0, 0.55, 0])
-        arrs = VGroup(*[K.arrow_right(cards[i].get_right()[0] + 0.06, cards[i + 1].get_left()[0] - 0.06, 0.55, self.accent, 7) for i in range(3)])
+        cards.arrange(RIGHT, buff=0.55).move_to([0, 0.8, 0])
+        arrs = VGroup(*[K.arrow_right(cards[i].get_right()[0] + 0.06, cards[i + 1].get_left()[0] - 0.06, 0.8, self.accent, 7) for i in range(3)])
         self.say("복숭아꽃이 열매가 되는 과정을 봐요", "복숭아꽃이 열매가 되는 과정을 살펴봐요.")
         self.play(FadeIn(cards[0]), run_time=0.5)
         self.say(f"꽃가루받이가 되면 암술 속에 {o('씨')}가 생겨요",
@@ -157,7 +160,7 @@ class S6Ep18(EpisodeScene):
         self.play(Create(arrs[1]), FadeIn(cards[2]), run_time=0.6)
         self.play(Create(arrs[2]), FadeIn(cards[3]), run_time=0.6)
         self.settle()
-        job = K.text_card([f"열매는 {o('씨를 보호')}하고, 씨가 익으면 {o('멀리 퍼지게')} 해요"], size=34).move_to([0, -1.75, 0])
+        job = K.text_card([f"열매는 {o('씨를 보호')}하고, 씨가 익으면 {o('멀리 퍼지게')} 해요"], size=34).move_to([0, -1.85, 0])
         self.say(f"열매는 씨를 {o('보호')}하고, 익으면 멀리 {o('퍼지게')} 해요",
                  "열매는 씨를 보호하고, 씨가 익으면 멀리 퍼지게 해요. 꽃이 씨를 만들고 열매가 씨를 퍼뜨리면서 식물은 세대를 이어 가요.")
         self.play(FadeIn(job, shift=UP * 0.2), run_time=0.6)
@@ -167,7 +170,8 @@ class S6Ep18(EpisodeScene):
     def misc(self):
         self.section("생각 바로잡기")
         bx = RoundedRectangle(corner_radius=0.16, width=12.0, height=1.1, fill_color=PAPER, fill_opacity=1, stroke_color=INK, stroke_width=4).move_to([0, 1.8, 0])
-        tt = T("모든 꽃은 암술, 수술, 꽃잎, 꽃받침을 모두 가지고 있다.", 34).move_to(bx).shift(RIGHT * 0.4)
+        tt = T("모든 꽃은 암술, 수술, 꽃잎, 꽃받침을 모두 가지고 있다.", 34)
+        tt.scale_to_fit_width(min(tt.width, 10.4)).move_to(bx).shift(RIGHT * 0.5)
         mk = K.ox_mark(False, 0.3).move_to(bx.get_left() + RIGHT * 0.55)
         self.say("모든 꽃에 네 부분이 다 있을까요?", "모든 꽃은 암술, 수술, 꽃잎, 꽃받침을 모두 가지고 있을까요?")
         self.play(FadeIn(bx), FadeIn(tt), run_time=0.6)

@@ -52,20 +52,20 @@ class S6Ep10(EpisodeScene):
     # ── 궁금해요: 수영 경기 ──
     def intro(self):
         self.section("궁금해요")
-        pool = K.R(12.4, 4.2, "#4FB3E0", 0, 0.45, stroke=None)
-        ends = VGroup(K.R(0.5, 4.2, "#E9EEF2", -6.0, 0.45, stroke=None), K.R(0.5, 4.2, "#E9EEF2", 6.0, 0.45, stroke=None))
-        lanes = VGroup(*[DashedLine([-5.75, 0.45 - 2.1 + k * 1.05, 0], [5.75, 0.45 - 2.1 + k * 1.05, 0], stroke_color=PAPER,
+        pool = K.R(12.4, 3.6, "#4FB3E0", 0, 0.3, stroke=None)
+        ends = VGroup(K.R(0.5, 3.6, "#E9EEF2", -6.0, 0.3, stroke=None), K.R(0.5, 3.6, "#E9EEF2", 6.0, 0.3, stroke=None))
+        lanes = VGroup(*[DashedLine([-5.75, 0.3 - 1.8 + k * 0.9, 0], [5.75, 0.3 - 1.8 + k * 0.9, 0], stroke_color=PAPER,
                                     stroke_width=4, dash_length=0.2) for k in range(1, 4)])
-        st = T("출발", 26).move_to([-6.0, 2.85, 0])
-        fi = T("결승", 26).move_to([6.0, 2.85, 0])
+        st = T("출발", 26).move_to([-5.2, 2.4, 0])
+        fi = T("결승", 26).move_to([5.2, 2.4, 0])
         caps = ["#E2573F", "#FFD23F", "#2ECC71", "#8E44AD"]
-        sws = VGroup(*[swimmer(c).move_to([-5.0, 0.45 + 1.575 - k * 1.05, 0]) for k, c in enumerate(caps)])
+        sws = VGroup(*[swimmer(c).move_to([-5.0, 0.3 + 1.35 - k * 0.9, 0]) for k, c in enumerate(caps)])
         self.say("수영 경기는 순위를 어떻게 정할까요?", "수영 경기는 순위를 어떻게 결정할까요?")
         self.play(FadeIn(VGroup(pool, ends, lanes, st, fi)), FadeIn(sws), run_time=0.8)
         ends_x = [4.9, 5.5, 5.2, 4.6]
         self.play(*[s_.animate.move_to([x, s_.get_y(), 0]) for s_, x in zip(sws, ends_x)], run_time=2.5, rate_func=lambda t: t)
         self.settle()
-        card = K.text_card([f"출발선에서 결승선까지 {o('걸린 시간')}이 {g('짧은 순서')}대로 정해요"], size=36).move_to([0, -2.2, 0])
+        card = K.text_card([f"출발선에서 결승선까지 {o('걸린 시간')}이 {g('짧은 순서')}대로 정해요"], size=34).move_to([0, -2.05, 0])
         self.say(f"같은 거리를 헤엄쳐 {o('걸린 시간')}이 {g('짧은 순서')}로 정해요",
                  "선수들은 모두 같은 거리를 헤엄쳐요. 그래서 출발선에서 결승선까지 이동하는 데 걸린 시간이 짧은 순서대로 순위를 정해요.")
         self.play(FadeIn(card, shift=UP * 0.2), run_time=0.6)
@@ -77,16 +77,16 @@ class S6Ep10(EpisodeScene):
         self.section("실험해요")
         x0, pc = -5.2, 0.092
         xf = x0 + 100 * pc
-        floor = K.R(13.0, 3.0, "#EFE6D6", 0, 0.0, rad=0.12, stroke=SOFT, sw=3)
-        sl = Line([x0, -1.2, 0], [x0, 1.2, 0], stroke_color="#2E86C1", stroke_width=8)
-        fl = Line([xf, -1.2, 0], [xf, 1.2, 0], stroke_color=RED, stroke_width=8)
+        floor = K.R(13.0, 2.8, "#EFE6D6", 0, -0.15, rad=0.12, stroke=SOFT, sw=3)
+        sl = Line([x0, -1.3, 0], [x0, 1.0, 0], stroke_color="#2E86C1", stroke_width=8)
+        fl = Line([xf, -1.3, 0], [xf, 1.0, 0], stroke_color=RED, stroke_width=8)
         slt = T("출발선", 26, "#1C6FA8").next_to(sl, UP, buff=0.12)
         flt = T("결승선", 26, RED).next_to(fl, UP, buff=0.12)
         dist = VGroup(K.arrow_lr(x0, xf, -1.85, INK, 5), K.arrow_lr(xf, x0, -1.85, INK, 5),
                       K.label("100 cm", INK, 28).move_to([(x0 + xf) / 2, -1.85, 0]))
-        sw = K.stopwatch(0.7).move_to([5.75, 1.85, 0])
+        sw = K.stopwatch(0.8).move_to([0, 1.9, 0])
         tt = ValueTracker(0.0)
-        disp = always_redraw(lambda: T(f"{tt.get_value():.1f}초", 32, INK).move_to(sw.disp))
+        disp = always_redraw(lambda: T(f"{tt.get_value():.1f}초", 32, INK).scale_to_fit_height(sw.disp.height * 0.75).move_to(sw.disp))
         self.say(f"같은 거리 {o('100 cm')}를 이동하는 데 걸린 시간을 재요",
                  "이번에는 태엽 자동차가 같은 거리, 100 센티미터를 이동하는 데 걸린 시간을 재요.")
         self.play(FadeIn(VGroup(floor, sl, fl, slt, flt, dist)), FadeIn(sw), FadeIn(disp), run_time=0.8)
@@ -95,18 +95,18 @@ class S6Ep10(EpisodeScene):
                  "초시계를 든 친구가 출발을 외치며 시작 단추를 누르고, 자동차 앞부분이 결승선에 닿는 순간 멈춤 단추를 눌러요. 정확하게 재려고 자동차를 한 대씩 출발시켜요.")
         self.settle()
         res = {}
-        for name, col, T_, y in (("초록색", K.CAR_GREEN, 4.2, 0.0), ("노란색", K.CAR_YEL, 5.8, 0.0)):
+        for name, col, T_, y in (("초록색", K.CAR_GREEN, 4.2, -0.15), ("노란색", K.CAR_YEL, 5.8, -0.15)):
             car = K.car_top(col, 1.1).shift([x0, y, 0])
             self.play(FadeIn(car), tt.animate.set_value(0.0), run_time=0.4)
             self.play(car.animate.shift(RIGHT * 100 * pc), tt.animate.set_value(T_), run_time=T_, rate_func=lambda t: t)
             res[name] = K.label(f"{name}: {T_}초", INK, 30)
             self.play(FadeOut(car), run_time=0.4)
             if name == "초록색":
-                res[name].move_to([0, 2.55, 0]).shift(LEFT * 2.0)
+                res[name].move_to([-2.6, 2.1, 0])
                 self.add(res[name])
                 self.say("다음은 노란색 자동차예요", "초록색 자동차를 쟀어요. 다음은 노란색 자동차예요.")
             else:
-                res[name].move_to([0, 2.55, 0]).shift(RIGHT * 2.0)
+                res[name].move_to([2.6, 2.1, 0])
                 self.add(res[name])
         self.settle()
         self.pause_screen(5, "어느 자동차가 더 빠를까요?")
@@ -131,15 +131,15 @@ class S6Ep10(EpisodeScene):
     def run50(self):
         self.section("더 알아보기")
         x0, xf = -5.2, 4.0
-        track = K.R(12.6, 3.9, "#C86B4A", 0, 0.45, stroke=None)
-        ls = VGroup(*[Line([-6.3, 0.45 - 1.95 + k * 1.3, 0], [6.3, 0.45 - 1.95 + k * 1.3, 0], stroke_color=PAPER, stroke_width=4)
+        track = K.R(12.6, 3.6, "#C86B4A", 0, 0.2, stroke=None)
+        ls = VGroup(*[Line([-6.3, 0.2 - 1.8 + k * 1.2, 0], [6.3, 0.2 - 1.8 + k * 1.2, 0], stroke_color=PAPER, stroke_width=4)
                       for k in range(4)])
-        sl = Line([x0, -1.5, 0], [x0, 2.4, 0], stroke_color=PAPER, stroke_width=7)
-        fl = Line([xf, -1.5, 0], [xf, 2.4, 0], stroke_color=PAPER, stroke_width=7)
+        sl = Line([x0, -1.6, 0], [x0, 2.0, 0], stroke_color=PAPER, stroke_width=7)
+        fl = Line([xf, -1.6, 0], [xf, 2.0, 0], stroke_color=PAPER, stroke_width=7)
         lab = VGroup(T("출발", 26).next_to(sl, UP, buff=0.1), T("도착(50 m)", 26).next_to(fl, UP, buff=0.1))
         R_ = [(10, "#8E44AD"), (8, RED), (9, "#2E86C1")]
         runners = VGroup()
-        ys = [1.45, 0.15, -1.15]
+        ys = [1.4, 0.2, -1.0]
         for (t_, c), y in zip(R_, ys):
             p = person(1.0, c).move_to([x0, y, 0])
             runners.add(p)
@@ -176,8 +176,8 @@ class S6Ep10(EpisodeScene):
         no = ["스포츠 클라이밍 리드", "양궁", "높이뛰기"]
         b1 = K.bin_box("걸린 시간을 비교해요", 6.2, 4.6, ORANGE).move_to([-3.25, 0.15, 0])
         b2 = K.bin_box("아니에요", 6.2, 4.6, BLUE).move_to([3.25, 0.15, 0])
-        c1 = VGroup(*[K.word_card(t, 4.4, 0.62, size=30) for t in yes]).arrange(DOWN, buff=0.14).move_to([-3.25, -0.1, 0])
-        c2 = VGroup(*[K.word_card(t, 4.4, 0.62, size=30) for t in no]).arrange(DOWN, buff=0.14).move_to([3.25, 0.3, 0])
+        c1 = VGroup(*[K.word_card(t, 4.4, 0.6, size=30) for t in yes]).arrange(DOWN, buff=0.12).move_to([-3.25, -0.3, 0])
+        c2 = VGroup(*[K.word_card(t, 4.6, 0.6, size=30) for t in no]).arrange(DOWN, buff=0.12).move_to([3.25, 0.3, 0])
         self.say("같은 거리를 이동한 시간을 비교하는 운동 종목은?",
                  "같은 거리를 이동하는 데 걸린 시간을 비교하는 운동 종목을 찾아봐요.")
         self.play(FadeIn(b1), FadeIn(b2), run_time=0.5)

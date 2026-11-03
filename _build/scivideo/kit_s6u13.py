@@ -715,7 +715,7 @@ def herb(h=5.0):
                               stroke_color="#5A8A2E", stroke_width=2).move_to(P(x, y + 2))
         rr.rotate(-(i - 1) * np.radians(25))
         fruits.add(rr)
-    g.add(soil, gl, root, stem, leaves, fruits, flowers)
+    g.add(soil, gl, root, stem, leaves, flowers, fruits)
     g.parts = dict(root=root, stem=stem, leaf=leaves, flower=flowers, fruit=fruits)
     g.P = P
     anchor = dict(root=(232, 372), stem=(210, 200), leaf=(118, 245), flower=(254, 64), fruit=(150, 50))

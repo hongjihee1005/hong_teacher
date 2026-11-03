@@ -100,9 +100,9 @@ class S6Ep14(EpisodeScene):
                  "파 한 개는 잎과 뿌리를 자르고, 다른 한 개는 잎만 잘라 각각 물이 든 눈금실린더에 넣어 두어요.")
         self.play(FadeIn(a), FadeIn(b), FadeIn(la), FadeIn(lb), run_time=0.8)
         self.settle()
-        diff = K.text_card(["다르게 할 조건", f"· {o('뿌리가 있는지 없는지')}"], w=4.9, size=28, stroke=ORANGE).move_to([4.3, 1.75, 0])
+        diff = K.text_card(["다르게 할 조건", f"· {o('뿌리가 있는지 없는지')}"], w=4.9, size=28, stroke=ORANGE).move_to([4.3, 2.05, 0])
         same = K.text_card(["같게 할 조건", "· 눈금실린더의 크기", "· 처음 물의 양", "· 파의 크기", "· 놓아두는 곳(햇빛)", "· 관찰하는 날짜"],
-                           w=4.9, size=27).move_to([4.3, -0.85, 0])
+                           w=4.9, size=27).move_to([4.3, -0.6, 0])
         self.say(f"{o('뿌리')}만 다르게 하고 나머지 조건은 모두 같게 해요",
                  "뿌리가 있는지 없는지만 다르게 하고, 눈금실린더의 크기, 처음 물의 양, 파의 크기, 놓아두는 곳, 관찰하는 날짜는 모두 같게 해요.")
         self.play(FadeIn(diff), run_time=0.5)
@@ -213,12 +213,12 @@ class S6Ep14(EpisodeScene):
 
     def summary(self):
         self.section("한눈에 쏙")
-        on = K.green_onion(2.6).move_to([-4.4, 1.1, 0])
-        ca = K.carrot(2.4).move_to([-0.9, 1.1, 0])
+        on = K.green_onion(2.6).move_to([-4.4, 1.3, 0])
+        ca = K.carrot(2.2).move_to([-0.9, 1.35, 0])
         tr = K.fit(K.tree_rooted(2.4, True), 2.4, 2.9).move_to([3.0, 1.1, 0])
         ic = VGroup(T("흡수", 34, ORANGE).next_to(on, DOWN, buff=0.15), T("저장", 34, ORANGE).next_to(ca, DOWN, buff=0.15),
                     T("지지", 34, ORANGE).next_to(tr, RIGHT, buff=0.3))
-        card = K.text_card([f"식물은 뿌리로 물을 {o('흡수')}합니다."], size=40).move_to([0, -1.6, 0])
+        card = K.text_card([f"식물은 뿌리로 물을 {o('흡수')}합니다."], size=38).move_to([0, -1.85, 0])
         self.say(f"식물은 뿌리로 물을 {o('흡수')}해요",
                  "식물의 뿌리는 물을 흡수해요. 뿌리털이 있어 물을 잘 흡수하고, 식물을 지지하며, 양분을 저장하기도 해요.")
         self.play(FadeIn(on), FadeIn(ca), FadeIn(tr), FadeIn(ic), run_time=0.8)

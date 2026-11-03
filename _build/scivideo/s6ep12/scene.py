@@ -126,7 +126,7 @@ class S6Ep12(EpisodeScene):
         self.tl = K.traffic_light(False, 1.2).move_to([px(633), 1.85, 0])
         lab = K.label("빗길 · 30 km/h", INK, 30).move_to([-4.3, 1.75, 0])
         dry = K.car_side(K.CAR_RED, 1.4).move_to([px(420 + 30) - 0.7, 0.15, 0]).set_opacity(0.3)
-        dryt = T("마른 길", 24, SOFT).next_to(dry, UP, buff=0.15)
+        dryt = K.label("마른 길에서 멈춘 곳", SOFT, 22).next_to(dry, DOWN, buff=0.55)
         self.say("길이 미끄러우면 어떨까요?", "비가 와서 길이 미끄러우면 어떨까요? 같은 시속 30 킬로미터로 달려 봐요.")
         self.play(FadeIn(road), FadeIn(self.tl), FadeIn(lab), FadeIn(dry), FadeIn(dryt), run_time=0.7)
         self.drive(30, True)
@@ -142,7 +142,7 @@ class S6Ep12(EpisodeScene):
         c1 = K.text_card([f"자동차의 속력이 빠르면 갑자기 속력을 줄일 수 없어 {r('더 큰 사고')}가 날 수 있어요"], w=13.0, size=30).move_to([0, 0.9, 0])
         c2 = K.text_card([f"계단에서 뛰어다니면 다른 사람과 부딪히거나 {r('넘어져 다칠 수')} 있어요"], w=13.0, size=30).move_to([0, -0.4, 0])
         self.say("속력이 빠를 때 생길 수 있는 위험 상황",
-                 "속력이 빠를 때 생길 수 있는 위험 상황이에요. 자동차가 빠르면 갑자기 속력을 줄일 수 없어 더 큰 사고가 나고, 계단에서 뛰면 부딪히거나 넘어져 다칠 수 있어요.")
+                 "자동차가 빠르면 갑자기 속력을 줄일 수 없어 더 큰 사고가 나고, 계단에서 뛰면 부딪히거나 넘어져 다칠 수 있어요.")
         self.play(FadeIn(c1, shift=UP * 0.2), run_time=0.5)
         self.play(FadeIn(c2, shift=UP * 0.2), run_time=0.5)
         self.settle()
@@ -158,7 +158,7 @@ class S6Ep12(EpisodeScene):
                 ["골목에서 나올 때", "잠깐 멈추고 좌우를 살펴요"]]
         tab = K.result_table(["상황", "속력과 관련된 안전 수칙"], rows, [4.2, 8.4], row_h=0.66, size=28).move_to([0, 0.4, 0])
         self.say("상황마다 지켜야 할 안전 수칙을 조사해요",
-                 "상황마다 지켜야 할 속력과 관련된 안전 수칙을 조사해 정리해요. 횡단보도를 건널 때는 자전거나 킥보드에서 내려서 좌우를 살피며 건너요.")
+                 "상황마다 지켜야 할 속력과 관련된 안전 수칙을 조사해 정리해요.")
         self.play(FadeIn(tab), run_time=0.8)
         self.settle()
         clear_stage(self)
@@ -229,7 +229,7 @@ class S6Ep12(EpisodeScene):
                              row_h=0.8, size=26).move_to([0, 0.75, 0])
         title = T("우리 모둠 교통안전 실천 점검표", 34).next_to(tab, UP, buff=0.25)
         self.say("교통안전 수칙을 습관으로 만들어요",
-                 "교통안전 수칙을 습관으로 만들려면 어떻게 할까요? 실천할 수 있는 수칙을 3개에서 5개 정해 실천 점검표를 만들어요.")
+                 "실천할 수 있는 교통안전 수칙을 3개에서 5개 정해 실천 점검표를 만들어요.")
         self.play(FadeIn(title), FadeIn(tab), run_time=0.8)
         self.settle()
         marks = VGroup()
@@ -240,7 +240,7 @@ class S6Ep12(EpisodeScene):
                     x, y = tab.cells[0][j + 1].get_x(), tab.cells[i + 1][0].get_y()
                     marks.add(T("○", 30, GREEN).move_to([x, y, 0]))
         self.say(f"일주일 동안 실천한 날에 표시하며 {g('꾸준히')} 지켜요",
-                 "일주일 동안 실천한 날에 표시하며 꾸준히 지켜요. 잘 지키지 못한 날이 있어도 괜찮아요. 꾸준히 노력해 습관이 되게 해요.")
+                 "일주일 동안 실천한 날에 표시하며 꾸준히 지켜 습관이 되게 해요.")
         self.play(FadeIn(marks, lag_ratio=0.08), run_time=1.5)
         self.settle()
         clear_stage(self)
