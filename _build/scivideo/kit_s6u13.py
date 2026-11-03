@@ -624,7 +624,7 @@ def dalmaji_parts():
                        Ellipse(width=0.12, height=0.38, fill_color="#F2C230", fill_opacity=1, stroke_color="#B88A00", stroke_width=1.5).move_to([x, 0.5, 0])))
     pet = VGroup()
     for i in range(4):
-        x = -0.98 + i * 0.66
+        x = -1.65 + i * 1.1     # 꽃잎 4장이 '각각 떨어져' 보이게 사이를 띄움
         p = VGroup(Ellipse(width=0.6, height=0.8, fill_color="#FFE45C", fill_opacity=1, stroke_color="#C9A300", stroke_width=2.5).move_to([x - 0.14, 0.15, 0]),
                    Ellipse(width=0.6, height=0.8, fill_color="#FFE45C", fill_opacity=1, stroke_color="#C9A300", stroke_width=2.5).move_to([x + 0.14, 0.15, 0]))
         p.add(Polygon([x - 0.38, 0.0, 0], [x + 0.38, 0.0, 0], [x, -0.5, 0], fill_color="#FFE45C", fill_opacity=1, stroke_width=0))

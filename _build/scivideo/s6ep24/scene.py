@@ -114,7 +114,10 @@ class S6Ep24(EpisodeScene):
                 xx = x + (az - 180) / 120 * (6.7 / 2 - 0.15)
                 sky.add(T(n, 20, "#DDE6F0").move_to([xx, hor - 0.21, 0]))
             tag = K.label(f"{K.SEASON_KO[s_]} · {K.SEASON_DAY[s_][1]}월 {K.SEASON_DAY[s_][2]}일", K.SEASON_COL[s_], 20)
-            tag.move_to([x - 3.35 + tag.width / 2 + 0.1, top - 0.25, 0])
+            if s_ == 'winter':   # 겨울은 왼쪽 위에 쌍둥이자리 이름표가 있어 오른쪽 위에 둠
+                tag.move_to([x + 3.35 - tag.width / 2 - 0.1, top - 0.25, 0])
+            else:
+                tag.move_to([x - 3.35 + tag.width / 2 + 0.1, top - 0.25, 0])
             grp = VGroup(sky, tag)
             skies.add(grp)
             self.play(FadeIn(grp), run_time=0.6)
@@ -158,16 +161,19 @@ class S6Ep24(EpisodeScene):
         p = OC + np.array([4.9 * math.cos(a), 2.2 * math.sin(a), 0])
         fill = {"vis": "#FFE680", "hid": "#C8CCD4"}.get(state, "#26335F")
         tc = {"vis": "#3A2A00", "hid": "#7A7F88"}.get(state, PAPER)
-        box = RoundedRectangle(corner_radius=0.15, width=3.3, height=1.05, fill_color=fill, fill_opacity=1,
-                               stroke_color=K.SEASON_COL[season], stroke_width=4).move_to(p)
         names = K.cst_names(season)
         t1 = T(f"{K.SEASON_KO[season]}철 별자리", 24, tc)
         t2 = T("·".join(names), 18, tc)
+        box = RoundedRectangle(corner_radius=0.15, width=max(3.3, t2.width + 0.35), height=1.05, fill_color=fill, fill_opacity=1,
+                               stroke_color=K.SEASON_COL[season], stroke_width=4).move_to(p)
         tt = VGroup(t1, t2).arrange(DOWN, buff=0.08).move_to(box)
         gg = VGroup(box, tt)
         if state == "hid":
             note = T("태양 빛 때문에 안 보여요", 20, RED)
-            note.next_to(box, DOWN if p[1] > OC[1] else UP, buff=0.08)
+            if p[1] > OC[1] + 1.5:      # 위쪽(겨울) 상자는 궤도와 겹치지 않게 오른쪽에
+                note.next_to(box, RIGHT, buff=0.15)
+            else:
+                note.next_to(box, DOWN if p[1] > OC[1] else UP, buff=0.08)
             gg.add(note)
         return gg
 
@@ -177,7 +183,9 @@ class S6Ep24(EpisodeScene):
         out = math.atan2(p[1] - OC[1], p[0] - OC[0])
         e = K.globe_top(0.28 if on else 0.2, phi=out, sun_dir=out + PI, land=False, show_obs=False).move_to(p)
         gg = VGroup(e)
-        lab = T(K.SEASON_KO[season], 22, K.SEASON_COL[season]).move_to(p + 0.45 * np.array([math.cos(out), math.sin(out), 0]) * (-1))
+        lab = T(K.SEASON_KO[season], 22, K.SEASON_COL[season])
+        dd = 0.42 + 0.3 * abs(math.cos(out)) + (0.08 if on else 0)
+        lab.move_to(p - dd * np.array([math.cos(out), math.sin(out), 0]))
         gg.add(lab)
         if on:
             u = np.array([math.cos(out), math.sin(out), 0])
@@ -187,7 +195,7 @@ class S6Ep24(EpisodeScene):
     def why(self):
         self.section("까닭 알기")
         orb = self.orbit_pic()
-        cap = T("북쪽에서 내려다본 지구의 공전", 22, K.NAVY).move_to([4.5, 2.75, 0])
+        cap = T("북쪽에서 내려다본 지구의 공전", 22, K.NAVY).move_to([4.6, -2.25, 0])
         boxes = {s_: self.grp_box(s_) for s_ in GRP}
         earths = {s_: self.earth_at(s_) for s_ in EARTH}
         self.say("계절마다 지구는 공전 궤도의 다른 위치에 있어요",

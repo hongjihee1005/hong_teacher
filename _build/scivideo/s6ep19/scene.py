@@ -75,7 +75,7 @@ class S6Ep19(EpisodeScene):
 
     def organs(self):
         self.section("식물의 기관")
-        h = K.herb(5.5).move_to([-2.9, -0.05, 0])
+        h = K.herb(5.2).move_to([-2.9, 0.12, 0])
         L = [("fruit", "열매", (-6.2, 2.3)), ("flower", "꽃", (0.6, 2.4)), ("leaf", "잎", (-6.3, 0.2)),
              ("stem", "줄기", (0.6, 0.6)), ("root", "뿌리", (0.6, -1.9))]
         ps = VGroup(*[K.pointer(h.pt(k), at, t, INK, 32) for k, t, at in L])
@@ -95,7 +95,7 @@ class S6Ep19(EpisodeScene):
 
     def paths(self):
         self.section("물과 양분의 이동")
-        h = K.herb(5.5).move_to([-3.0, -0.05, 0])
+        h = K.herb(5.2).move_to([-3.0, 0.12, 0])
         self.play(FadeIn(h), run_time=0.6)
         wp = h.water_paths()
         dots, anims = VGroup(), []
@@ -134,14 +134,14 @@ class S6Ep19(EpisodeScene):
 
     def linked(self):
         self.section("생각해요")
-        h = K.herb(5.0).move_to([-3.4, 0.2, 0])
+        h = K.herb(5.0).move_to([-4.0, 0.2, 0])
         g1 = K.gear(0.55, 10, "#F2C94C").move_to([1.4, 1.2, 0])
         g2 = K.gear(0.42, 8, "#7FB3E0").move_to([2.55, 1.2, 0])
         g3 = K.gear(0.42, 8, "#9CC56B").move_to([3.57, 1.2, 0])
         q = T("한 기관에 문제가 생긴다면?", 40).move_to([2.4, 2.65, 0])
         self.say("식물의 한 기관에 문제가 생긴다면 어떻게 될까요?", "식물의 기관 중 한 기관에 문제가 생긴다면 식물은 어떻게 될까요?")
         self.play(FadeIn(h), FadeIn(q), FadeIn(VGroup(g1, g2, g3)), run_time=0.7)
-        card = K.text_card([f"각 기관은 서로 {o('밀접한 관련')}이 있어서", f"다른 기관에도 {r('영향')}을 주어", "식물이 살아가는 데 문제가 생길 수 있어요"], size=30).move_to([2.6, -0.6, 0])
+        card = K.text_card([f"각 기관은 서로 {o('밀접한 관련')}이 있어서", f"다른 기관에도 {r('영향')}을 주어", "식물이 살아가는 데 문제가 생길 수 있어요"], size=30).move_to([2.75, -0.6, 0])
         self.say(f"다른 기관에도 {r('영향')}을 주어 살아가는 데 문제가 생겨요",
                  "식물의 각 기관은 각자의 역할이 있지만 서로 밀접한 관련이 있어서, 한 기관에 문제가 생기면 다른 기관에도 영향을 주어 생명활동에 문제가 생길 수 있어요.")
         self.play(FadeIn(card, shift=UP * 0.2), h.parts["root"].animate.set_opacity(0.25), run_time=0.8)

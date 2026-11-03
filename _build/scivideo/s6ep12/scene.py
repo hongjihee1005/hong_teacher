@@ -126,7 +126,7 @@ class S6Ep12(EpisodeScene):
         self.tl = K.traffic_light(False, 1.2).move_to([px(633), 1.85, 0])
         lab = K.label("빗길 · 30 km/h", INK, 30).move_to([-4.3, 1.75, 0])
         dry = K.car_side(K.CAR_RED, 1.4).move_to([px(420 + 30) - 0.7, 0.15, 0]).set_opacity(0.3)
-        dryt = K.label("마른 길에서 멈춘 곳", SOFT, 22).next_to(dry, DOWN, buff=0.55)
+        dryt = K.label("마른 길에서 멈춘 곳", SOFT, 22).move_to([0.6, 1.3, 0])
         self.say("길이 미끄러우면 어떨까요?", "비가 와서 길이 미끄러우면 어떨까요? 같은 시속 30 킬로미터로 달려 봐요.")
         self.play(FadeIn(road), FadeIn(self.tl), FadeIn(lab), FadeIn(dry), FadeIn(dryt), run_time=0.7)
         self.drive(30, True)
@@ -226,7 +226,7 @@ class S6Ep12(EpisodeScene):
         rules = ["자동차를 타면 안전띠를 매요.", "골목에서 나올 때 잠깐 멈추고 좌우를 살펴요.", "계단을 오르내릴 때 뛰지 않고 걸어요."]
         days = ["월", "화", "수", "목", "금", "토", "일"]
         tab = K.result_table(["교통안전 수칙"] + days, [[r_] + [""] * 7 for r_ in rules], [7.0] + [0.72] * 7,
-                             row_h=0.8, size=26).move_to([0, 0.75, 0])
+                             row_h=0.8, size=26).move_to([0, 0.4, 0])
         title = T("우리 모둠 교통안전 실천 점검표", 34).next_to(tab, UP, buff=0.25)
         self.say("교통안전 수칙을 습관으로 만들어요",
                  "실천할 수 있는 교통안전 수칙을 3개에서 5개 정해 실천 점검표를 만들어요.")
@@ -250,7 +250,7 @@ class S6Ep12(EpisodeScene):
         self.section("한눈에 쏙")
         pics = VGroup(K.pic_card(K.seatbelt(), "안전띠", 2.4, 2.1, size=24), K.pic_card(K.speed_bump(), "과속 방지턱", 2.4, 2.1, size=24),
                       K.pic_card(K.guard_rail(), "안전 울타리", 2.4, 2.1, size=24)).arrange(RIGHT, buff=0.4).move_to([0, 1.5, 0])
-        card = K.text_card([f"속력이 빠를수록 안전사고의 위험이 커지므로", f"자동차나 도로에는 {o('안전장치')}을/를 설치합니다."],
+        card = K.text_card([f"속력이 빠를수록 안전사고의 위험이 커지므로", f"자동차나 도로에는 {o('안전장치')}를 설치합니다."],
                            w=12.0, size=38).move_to([0, -1.05, 0])
         self.say(f"자동차나 도로에 {o('안전장치')}를 설치해요",
                  "속력이 빠를수록 안전사고의 위험이 커지므로 자동차나 도로에 안전장치를 설치하고, 우리는 안전 수칙을 잘 지켜요.")
