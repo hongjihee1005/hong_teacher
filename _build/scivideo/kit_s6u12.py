@@ -119,7 +119,7 @@ def zoom_tape(d, col, w=5.2, per_cm=0.42, size=24):
         big, half = mm % 10 == 0, mm % 5 == 0
         g.add(Line([x, ty + 0.25, 0], [x, ty + 0.25 - (0.26 if big else 0.17 if half else 0.09), 0],
                    stroke_color=INK, stroke_width=2.4 if big else 1.2))
-        if big:
+        if big and int(round(v)) % 2 == 0:
             g.add(T(str(int(round(v))), size, INK, bold=False).move_to([x, ty - 0.48, 0]))
     fx = x0 + (d - lo) * per_cm
     body = R(2.2, 0.8, col, fx - 1.1, 0.55, rad=0.15, stroke=INK, sw=3)

@@ -164,7 +164,7 @@ def mm_center(st, radius, ink):
     if k == "hex":
         return RegularPolygon(6, fill_color=a, fill_opacity=1, stroke_width=0).scale(radius * 1.08)
     ball = Circle(radius=radius, fill_color=a, fill_opacity=1, stroke_width=0)
-    ring = Ellipse(width=radius * 2.9, height=radius * 0.7, stroke_color=st["accent2"], stroke_width=6).rotate(-0.3)
+    ring = Ellipse(width=radius * 2.3, height=radius * 0.6, stroke_color=st["accent2"], stroke_width=6).rotate(0.3)  # 화면 왼쪽 끝·가지에 닿지 않게(2026-11-03)
     return VGroup(ring, ball)
 
 
