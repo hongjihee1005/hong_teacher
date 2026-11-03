@@ -39,7 +39,7 @@ class S5Ep36(EpisodeScene):
         self.materials()
         self.summary()
         self.closing(f"열의 이동을 막는 것을 {o('단열')}이라고 해요",
-                     next_preview="5학년 마인드맵 7 · 열과 우리 생활")
+                     next_preview="5학년 37화 · 자원을 계속 쓸 수 있을까?")
         self.wait(0.5)
 
     # ── 궁금해요 ──
@@ -120,7 +120,8 @@ class S5Ep36(EpisodeScene):
             if tb.get_right()[0] > 6.9:
                 tb.scale_to_fit_width(7.4).move_to([-0.6, 0, 0], aligned_edge=LEFT)
             lines.add(row)
-        lines.arrange(DOWN, buff=0.34, aligned_edge=LEFT).move_to([0, 0.25, 0])
+        for i, row in enumerate(lines):
+            row.shift(UP * (1.55 - i * 1.0))
         self.say("우리는 단열을 어떻게 이용할까요?",
                  "우리는 생활에서 단열을 어떻게 이용할까요? 무엇의 이동을 막는지 생각해 봐요.")
         self.play(FadeIn(VGroup(*[VGroup(x[0], x[1]) for x in lines]), lag_ratio=0.15), run_time=1.0)
@@ -162,11 +163,11 @@ class S5Ep36(EpisodeScene):
         self.play(FadeIn(a, shift=UP * 0.2), run_time=0.6)
         self.settle()
         clear_stage(self)
-        head = K.C(0.7, "#FFD9B0", -3.0, 0.8, stroke="#D8A77A", sw=3)
-        pack = K.R(1.1, 0.5, "#A9D4F2", -3.0, 1.35, rad=0.2, stroke=K.COLD, sw=3)
-        ar = K.heat_arrow((-3.0, 1.0), (-3.0, 1.75), sw=7)
-        x = K.ox_mark(False, 0.45).move_to([-1.2, 1.0, 0])
-        t = K.lines("열이 날 때 이마에 대는 얼음주머니는\n이마의 열이 얼음주머니로 이동하게 하는 것\n→ 열의 이동을 막는 단열이 아니에요", 30).move_to([2.9, 0.9, 0])
+        head = K.C(0.7, "#FFD9B0", -4.4, 0.8, stroke="#D8A77A", sw=3)
+        pack = K.R(1.1, 0.5, "#A9D4F2", -4.4, 1.35, rad=0.2, stroke=K.COLD, sw=3)
+        ar = K.heat_arrow((-4.4, 1.0), (-4.4, 1.75), sw=7)
+        x = K.ox_mark(False, 0.45).move_to([-2.6, 1.0, 0])
+        t = K.lines("열이 날 때 이마에 대는 얼음주머니는\n이마의 열이 얼음주머니로 이동하게 하는 것\n→ 열의 이동을 막는 단열이 아니에요", 30).move_to([2.2, 0.9, 0])
         self.section("헷갈리기 쉬워요")
         self.say(f"이마에 대는 얼음주머니는 단열이 {r('아니에요')}",
                  "열이 날 때 이마에 대는 얼음주머니는 이마의 열이 얼음주머니로 이동하게 하는 거예요. 열의 이동을 막는 단열이 아니에요.")

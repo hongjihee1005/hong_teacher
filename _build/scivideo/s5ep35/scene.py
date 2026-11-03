@@ -110,7 +110,7 @@ class S5Ep35(EpisodeScene):
                             [[w("전도"), "고체", "접촉한 고체 물질을 따라 열이 이동해요"],
                              [w("대류"), "액체, 기체", "온도가 높아진 액체와 기체가 위로 올라가며 열이 이동해요"],
                              [w("복사"), "빛", "빛에 의해 열이 직접 이동해요"]],
-                            [1.6, 3.2, 8.0], row_h=0.95, size=28).move_to([0, 0.5, 0])
+                            [1.4, 3.5, 8.3], row_h=0.95, size=28).move_to([0, 0.5, 0])
         boxes = [m for m in tb if m.__class__.__name__ == "Rectangle"]
         rows = [VGroup(*boxes[3 * i:3 * i + 3], *[c for c in tb.cells[i] if len(c)]) for i in range(4)]
         self.say("열이 이동하는 세 가지 방식의 특징을 비교해요",
@@ -149,13 +149,13 @@ class S5Ep35(EpisodeScene):
                       for x in (st.get_x() - 1.6, st.get_x() - 0.9)])
         m2 = VGroup(Circle(radius=0.28, fill_color=PAPER, fill_opacity=1, stroke_color=INK, stroke_width=3),
                     T("②", 28)).move_to([st.get_x() - 2.2, st.get_top()[1] + 0.55, 0])
-        x0, x1 = st.get_x() + 0.8, st.get_x() + 2.8
+        x0, x1 = st.get_x() + 0.3, st.get_x() + 2.2
         y0, y1 = st.get_top()[1] + 0.35, rm.get_top()[1] - 0.45
         a3 = K.rect_loop(x0, x1, y0, y1, col=WC["대류"], sw=6)
         m3 = VGroup(Circle(radius=0.28, fill_color=PAPER, fill_opacity=1, stroke_color=INK, stroke_width=3),
-                    T("③", 28)).move_to([x1 + 0.6, (y0 + y1) / 2, 0])
+                    T("③", 28)).move_to([x1 + 0.5, (y0 + y1) / 2, 0])
         b1 = self.badge("전도").next_to(m1, RIGHT, buff=0.15)
-        b2 = self.badge("복사").next_to(m2, LEFT, buff=0.15)
+        b2 = self.badge("복사").next_to(m2, UP, buff=0.12)
         b3 = self.badge("대류").next_to(m3, UP, buff=0.12)
         self.say(f"① 아궁이의 열로 구들장 전체가 뜨거워져요: {w('전도')}",
                  "첫째, 아궁이의 열로 구들장이 달구어지고, 구들장 전체가 뜨거워져요. 전도예요.")

@@ -46,7 +46,7 @@ class S6Ep02(EpisodeScene):
         self.table()
         self.cabbage()
         self.summary()
-        self.closing(f"지시약의 색깔 변화로 용액을\n{r('산성 용액')}과 {b('염기성 용액')}으로 분류할 수 있어요",
+        self.closing(f"지시약의 색깔 변화로 용액을\n{r('산성')}과 {b('염기성')} 용액으로 분류해요",
                      next_preview="6학년 3화 · 산성 용액과 염기성 용액의 성질")
         self.wait(0.5)
 
@@ -81,7 +81,7 @@ class S6Ep02(EpisodeScene):
     def litmus(self):
         self.section("실험해요 ①")
         P_ = self.plate()
-        self.say("홈판의 각 홈에 용액을 ⅓ 정도씩 넣어요",
+        self.say("홈판의 각 홈에 용액을 3분의 1 정도씩 넣어요",
                  "홈판의 각 홈에 용액을 3분의 1 정도씩 넣어요.")
         self.play(FadeIn(P_.group), FadeIn(P_.names), run_time=0.7)
         self.play(*self.fill(P_), run_time=0.8)
@@ -136,8 +136,14 @@ class S6Ep02(EpisodeScene):
         rows = [["푸른색 리트머스 시험지", r("붉은색"), "변화 없음"],
                 ["붉은색 리트머스 시험지", "변화 없음", b("푸른색")],
                 ["페놀프탈레인 용액", "변화 없음", pk("붉은색")],
-                ["용액", "식초·레몬즙·묽은 염산", "빨랫비누 물·석회수·묽은 수산화 나트륨 용액"]]
-        tab = K.result_table(head, rows, [3.9, 3.7, 5.5], row_h=0.8, size=30).move_to([0, 0.3, 0])
+                ["용액", "식초", "빨랫비누 물"]]
+        tab = K.result_table(head, rows, [4.4, 3.4, 5.4], row_h=0.92, size=29).move_to([0, 0.3, 0])
+        for c, txt in ((1, "식초·레몬즙·\n묽은 염산"), (2, "빨랫비누 물·석회수·\n묽은 수산화 나트륨 용액")):
+            old = tab.cells[4][c]
+            new = K.name_text(txt, 25).move_to(old.get_center())
+            tab.remove(old)
+            tab.add(new)
+            tab.cells[4][c] = new
         self.say(f"{r('산성 용액')}과 {b('염기성 용액')}", "지시약의 색깔 변화로 산성 용액과 염기성 용액으로 나눠요.")
         self.play(FadeIn(tab), run_time=0.8)
         self.say(f"산성 용액: 푸른색 리트머스 → {r('붉은색')}, 페놀프탈레인 → 변화 없음",
@@ -153,7 +159,7 @@ class S6Ep02(EpisodeScene):
     def cabbage(self):
         self.section("붉은 양배추 지시약")
         steps = ["① 잘게 자르기", "② 뜨거운 물 붓기", "③ 식힌 뒤 거르기", "④ 점적병에 담기"]
-        cards = VGroup(*[K.word_card(s_, 3.0, 0.85, INK, 30) for s_ in steps]).arrange(RIGHT, buff=0.2).move_to([0, 2.1, 0])
+        cards = VGroup(*[K.word_card(s_, 3.2, 0.85, INK, 27) for s_ in steps]).arrange(RIGHT, buff=0.15).move_to([0, 2.1, 0])
         bot = K.dropper_bottle(None, 1.2, col=K.CAB_SOL, op=0.9).move_to([0, 0.2, 0])
         self.say("붉은 양배추 용액도 지시약으로 쓸 수 있어요",
                  "붉은 양배추를 잘게 잘라 뜨거운 물을 붓고, 식힌 뒤 걸러 점적병에 담아요. 뜨거운 물은 선생님과 함께 다뤄요.")
@@ -209,7 +215,7 @@ class S6Ep02(EpisodeScene):
     # ── 한눈에 쏙 ──
     def summary(self):
         self.section("한눈에 쏙")
-        card = K.text_card([f"산성 용액에 푸른색 리트머스 시험지를 넣으면", f"{r('붉은색')}(으)로 변합니다."],
+        card = K.text_card([f"산성 용액에 푸른색 리트머스 시험지를 넣으면", f"{r('붉은색')}으로 변합니다."],
                            w=12.4, size=40).move_to([0, 1.4, 0])
         self.say(f"산성 용액에 푸른색 리트머스 시험지를 넣으면 {r('붉은색')}",
                  "산성 용액에 푸른색 리트머스 시험지를 넣으면 붉은색으로 변해요.")

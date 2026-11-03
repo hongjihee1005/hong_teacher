@@ -41,7 +41,7 @@ class S6Ep03(EpisodeScene):
         self.result()
         self.more()
         self.summary()
-        self.closing(f"{r('산성 용액')}은 탄산 칼슘을, {b('염기성 용액')}은 단백질을 녹여요",
+        self.closing(f"{r('산성 용액')}은 탄산 칼슘을,\n{b('염기성 용액')}은 단백질을 녹여요",
                      next_preview="6학년 4화 · 둘을 섞으면?")
         self.wait(0.5)
 
@@ -56,8 +56,8 @@ class S6Ep03(EpisodeScene):
         self.say("달걀을 식초에 넣으면 어떻게 될까요?",
                  "식초에 달걀을 일주일쯤 담가 두면 어떻게 될까요?")
         self.play(FadeIn(VGroup(liq, G.glass(), nm)), FadeIn(egg, shift=DOWN * 0.5), run_time=0.9)
-        note = K.text_card([f"레몬즙은 신맛, 제빵 소다 용액은 미끈미끈", f"{r('과학실의 용액은 맛보거나 맨손으로 만지지 않아요')}"],
-                           w=7.0, size=28).move_to([3.0, 0.4, 0])
+        note = K.text_card(["레몬즙은 신맛,", "제빵 소다 용액은 미끈미끈", f"{r('과학실의 용액은 맛보거나')}",
+                            f"{r('맨손으로 만지지 않아요')}"], w=6.6, size=34).move_to([3.0, 0.5, 0])
         self.say("산성 용액과 염기성 용액은 서로 다른 성질이 있어요",
                  "레몬즙은 신맛이 나고 제빵 소다 용액은 미끈미끈한 것처럼, 산성 용액과 염기성 용액은 서로 다른 성질이 있어요. 과학실의 용액은 맛보거나 맨손으로 만지지 않아요.")
         self.play(FadeIn(note), run_time=0.6)
@@ -67,7 +67,7 @@ class S6Ep03(EpisodeScene):
     # ── 실험해요 ──
     def experiment(self):
         self.section("실험해요")
-        P_ = K.SpotPlate(4, 2, gap=2.45, r=0.72, center=(1.0, 0.35), names=MATN, size=26, row_gap=1.75,
+        P_ = K.SpotPlate(4, 2, gap=2.45, r=0.72, center=(1.0, 0.2), names=MATN, size=26, row_gap=1.75,
                          row_names=["묽은 염산", "묽은 수산화\n나트륨 용액"])
         self.P = P_
         self.say("묽은 염산과 묽은 수산화 나트륨 용액에 네 가지 물질을 넣어요",
@@ -90,7 +90,7 @@ class S6Ep03(EpisodeScene):
         self.play(FadeIn(bub, lag_ratio=0.1), run_time=0.8)
         self.settle()
         self.pause_screen(5, "시간이 지나면 어떻게 될까요?")
-        day = K.label("하루 뒤", self.accent, 32).move_to([1.0, 2.55, 0])
+        day = K.label("하루 뒤", self.accent, 32).move_to([1.0, 2.72, 0])
         self.say("하루 뒤: 껍데기들이 기포를 내며 점점 작아져요",
                  "하루 뒤, 달걀 껍데기와 조개껍데기가 기포를 내며 점점 작아져요.")
         self.play(FadeIn(day), mats[0].animate.scale(0.7), mats[1].animate.scale(0.7), run_time=1.2)
@@ -113,10 +113,22 @@ class S6Ep03(EpisodeScene):
     # ── 결과 ──
     def result(self):
         self.section("정리해요")
-        A, N, S_ = r("기포가 발생하며\n녹는다"), "변화 없다", b("흐물흐물해진다\n(녹는다)")
+        A, N, S_ = "A", "변화 없다", "S"
         head = [""] + MATN
         rows = [["묽은 염산", A, A, N, N], ["묽은 수산화\n나트륨 용액", N, N, S_, S_]]
-        tab = K.result_table(head, rows, [3.4, 2.45, 2.45, 2.45, 2.45], row_h=1.0, size=26).move_to([0, 1.2, 0])
+        tab = K.result_table(head, rows, [3.4, 2.45, 2.45, 2.45, 2.45], row_h=1.0, size=26).move_to([0, 1.05, 0])
+        for ri in (1, 2):
+            for ci in range(1, 5):
+                old = tab.cells[ri][ci]
+                txt = {"A": ("기포가 발생하며\n녹는다", K.ACID), "S": ("흐물흐물해진다\n(녹는다)", K.BASE)}.get(rows[ri - 1][ci])
+                if txt:
+                    new = K.name_text(txt[0], 24, txt[1])
+                    if new.width > 2.25:
+                        new.scale_to_fit_width(2.25)
+                    new.move_to(old.get_center())
+                    tab.remove(old)
+                    tab.add(new)
+                    tab.cells[ri][ci] = new
         self.say("관찰한 결과를 정리해요", "관찰한 결과를 표로 정리해요.")
         self.play(FadeIn(tab), run_time=0.8)
         c1 = K.text_card([f"달걀 껍데기·조개껍데기", f"주요 성분: {o('탄산 칼슘')}"], w=6.3, size=30).move_to([-3.3, -1.5, 0])

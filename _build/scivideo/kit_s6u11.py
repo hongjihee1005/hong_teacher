@@ -252,8 +252,8 @@ def plate(w=2.2):
 
 def fish_plate(s=1.0):
     p = plate(2.4)
-    f = A3.fish("#C9B79A", 1.5, fin=False).move_to([-0.1, 0.18, 0])
-    ln = lemon(0.7, slice_=True).move_to([0.85, 0.15, 0])
+    f = A3.fish("#C9B79A", 1.35, fin=False).move_to([-0.35, 0.15, 0])
+    ln = lemon(0.62, slice_=True).move_to([0.86, -0.02, 0])
     return VGroup(p, f, ln).scale(s)
 
 

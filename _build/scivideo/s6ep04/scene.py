@@ -48,16 +48,16 @@ class S6Ep04(EpisodeScene):
     # ── 궁금해요 ──
     def intro(self):
         self.section("궁금해요")
-        a = K.dropper_bottle(K.SOL[2], 1.3, size=30).move_to([-3.6, 0.9, 0])
-        bb = K.dropper_bottle(K.SOL[0], 1.3, size=30).move_to([0, 0.9, 0])
-        plus = T("+", 80, SOFT).move_to([-1.8, 1.1, 0])
-        eq = T("= ?", 80, SOFT).move_to([2.6, 1.1, 0])
+        a = K.dropper_bottle(K.SOL[2], 1.3, size=30).move_to([-3.6, 1.45, 0])
+        bb = K.dropper_bottle(K.SOL[0], 1.3, size=30).move_to([0, 1.45, 0])
+        plus = T("+", 80, SOFT).move_to([-1.8, 1.65, 0])
+        eq = T("= ?", 80, SOFT).move_to([2.6, 1.65, 0])
         self.say("빨랫비누 물에 식초를 섞으면 어떻게 될까요?",
                  "염기성인 빨랫비누 물에 산성인 식초를 섞으면 어떻게 될까요?")
         self.play(FadeIn(a), FadeIn(plus), FadeIn(bb), FadeIn(eq), run_time=0.9)
-        cab = K.dropper_bottle(None, 1.0, col=K.CAB_SOL, op=0.9).move_to([-3.4, -1.5, 0])
+        cab = K.dropper_bottle(None, 0.85, col=K.CAB_SOL, op=0.9).move_to([-5.0, -1.35, 0])
         card = K.text_card([f"섞을 때 용액의 성질 변화는", f"{o('지시약')}(붉은 양배추 용액)의 색깔 변화로 알아봐요"],
-                           w=8.6, size=30).move_to([1.6, -1.45, 0])
+                           w=10.2, size=34).move_to([1.2, -1.35, 0])
         self.say(f"성질 변화는 {o('지시약의 색깔 변화')}로 알아봐요",
                  "섞을 때 용액의 성질 변화는 붉은 양배추 용액 같은 지시약의 색깔 변화로 알아볼 수 있어요.")
         self.play(FadeIn(cab), FadeIn(card), run_time=0.7)
@@ -82,7 +82,7 @@ class S6Ep04(EpisodeScene):
                      "이번에는 용액을 바꿔서, 각 홈에 묽은 수산화 나트륨 용액을 10방울씩 넣고 같은 방법으로 실험해요.")
         self.play(FadeIn(P_.group), FadeIn(P_.names), FadeIn(cap), run_time=0.6)
         self.play(*[l.animate.set_fill(K.CLEAR, opacity=0.9) for l in P_.liq], run_time=0.5)
-        self.say("② 붉은 양배추 용액을 5~6방울씩 떨어뜨려요" if k == 1 else "붉은 양배추 용액을 떨어뜨리면",
+        self.say("② 붉은 양배추 용액을 5~6방울씩 떨어뜨려요" if k == 1 else f"붉은 양배추 용액을 떨어뜨리면 {o('노란색')} 계열",
                  "붉은 양배추 용액을 5방울에서 6방울씩 떨어뜨려요." if k == 1 else "붉은 양배추 용액을 떨어뜨리면 노란색 계열이 돼요.")
         self.play(*[l.animate.set_fill(cols[0], opacity=0.92) for l in P_.liq], run_time=0.8)
         if k == 1:
@@ -131,6 +131,7 @@ class S6Ep04(EpisodeScene):
                          w=12.0, size=34).move_to([0, -0.1, 0])
         self.say("산성 용액과 염기성 용액을 섞으면?",
                  "산성 용액과 염기성 용액을 섞으면 서로의 성질이 약해져요. 계속 넣으면 넣은 용액의 성질로 변해요.")
+        VGroup(c1, c2).arrange(DOWN, buff=0.3).move_to([0, 0.95, 0])
         self.play(FadeIn(c1, shift=UP * 0.2), run_time=0.6)
         self.play(FadeIn(c2, shift=UP * 0.2), run_time=0.6)
         self.settle()

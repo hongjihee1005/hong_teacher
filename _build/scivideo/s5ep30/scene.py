@@ -208,14 +208,14 @@ class S5Ep30(EpisodeScene):
             if nm.width > 3.1:
                 nm.scale_to_fit_width(3.1)
             cards.add(VGroup(c, nm))
-        cards.arrange(RIGHT, buff=0.3).move_to([0, 1.0, 0])
+        cards.arrange(RIGHT, buff=0.3).move_to([0, 1.2, 0])
         self.say("생활 속에서도 여러 가지 온도계를 사용해요",
                  "음식을 조리할 때는 탐침 온도계, 온실은 알코올 온도계, 체온은 체온용 적외선 온도계를 써요. 열화상 사진기는 온도를 색깔과 숫자로 보여 줘요.")
         self.play(FadeIn(cards, lag_ratio=0.2), run_time=1.2)
         self.settle()
         mis = K.text_card([f"한 물체의 온도는 한 종류의 온도계로만 잴 수 있을까요?",
                            f"→ {g('아니요')}, 체온은 체온용 적외선 온도계로도, 귀 체온계로도 재요"],
-                          w=12.8, size=30).move_to([0, -1.85, 0])
+                          w=12.8, size=30).move_to([0, -1.6, 0])
         self.say(f"한 물체의 온도도 {g('여러 종류의 온도계')}로 잴 수 있어요",
                  "생각 바로잡기! 한 물체의 온도도 여러 종류의 온도계로 잴 수 있어요. 상황에 맞게 골라 쓰면 생활이 더 편리하고 안전해요.")
         self.play(FadeIn(mis, shift=UP * 0.2), run_time=0.6)

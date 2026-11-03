@@ -89,7 +89,7 @@ class S5Ep32(EpisodeScene):
         self.settle()
         card = K.text_card([f"온도가 {r('높은')} 부분에서 온도가 {o('낮은')} 부분으로",
                             "구리판을 따라 열이 이동해요"], size=34).move_to([0, -0.55, 0])
-        self.say(f"온도가 높은 부분에서 낮은 부분으로 {g('구리판을 따라')} 열이 이동해요",
+        self.say(f"열은 {g('구리판을 따라')} 높은 곳에서 낮은 곳으로 이동해요",
                  "긴 구리판에서는 온도가 높은 부분에서 온도가 낮은 부분으로 구리판을 따라 열이 이동해요.")
         self.play(FadeOut(safe), FadeOut(cd), FadeIn(card), run_time=0.5)
         self.settle()
@@ -122,7 +122,7 @@ class S5Ep32(EpisodeScene):
         self.play(FadeIn(order), run_time=0.5)
         self.settle()
         card = K.text_card([f"구리판을 {g('따라')} 열이 이동해요",
-                            f"끊어진 부분으로는 {r('이동하지 않아요')}"], w=5.3, size=32).move_to([4.3, -0.5, 0])
+                            f"끊어진 부분으로는 {r('이동하지 않아요')}"], w=5.2, size=32).move_to([4.15, -0.5, 0])
         self.say(f"끊어진 곳 건너편 ㉤은 {r('가장 나중에')} 변했어요",
                  "끊어진 곳 건너편은 가장 나중에 변했어요. 열은 끊어진 부분을 건너뛰지 않고, 가열한 부분에서 구리판을 따라 이동해요.")
         self.play(FadeIn(card, shift=LEFT * 0.2), Indicate(marks[4], scale_factor=1.3), run_time=0.8)

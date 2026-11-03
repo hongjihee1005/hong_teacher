@@ -50,7 +50,7 @@ class S6Ep01(EpisodeScene):
         self.hard()
         self.misc()
         self.summary()
-        self.closing(f"용액의 성질을 관찰하고 {o('분류 기준')}을 세워\n그 기준에 따라 용액을 {g('분류')}해요",
+        self.closing(f"성질을 관찰해 {o('분류 기준')}을 세우고\n그 기준에 따라 용액을 {g('분류')}해요",
                      next_preview="6학년 2화 · 지시약으로 분류하기")
         self.wait(0.5)
 
@@ -178,8 +178,8 @@ class S6Ep01(EpisodeScene):
     def sort_one(self, crit, flags):
         q = M(f"분류 기준: {o(crit)}", 40).move_to([0, 2.5, 0])
         cards = VGroup(*[sol_card(s_, 2.0, 0.95, 24) for s_ in K.SOL]).arrange(RIGHT, buff=0.15).move_to([0, 1.45, 0])
-        bins = VGroup(K.bin_box("그렇다", 6.5, 2.75, GREEN, 32), K.bin_box("그렇지 않다", 6.5, 2.75, RED, 32))
-        bins.arrange(RIGHT, buff=0.2).move_to([0, -0.9, 0])
+        bins = VGroup(K.bin_box("그렇다", 6.5, 3.1, GREEN, 32), K.bin_box("그렇지 않다", 6.5, 3.1, RED, 32))
+        bins.arrange(RIGHT, buff=0.2).move_to([0, -0.75, 0])
         self.play(FadeIn(q), FadeIn(cards, lag_ratio=0.06), FadeIn(bins), run_time=0.9)
         mv = []
         for side, bx in ((True, bins[0]), (False, bins[1])):
@@ -187,7 +187,7 @@ class S6Ep01(EpisodeScene):
             c0 = bx.box.get_center()
             for k, c in enumerate(grp):
                 col, row = k % 2, k // 2
-                mv.append(c.animate.move_to(c0 + [-1.45 if col == 0 else 1.45, 0.22 - 1.02 * row, 0]))
+                mv.append(c.animate.move_to(c0 + [-1.45 if col == 0 else 1.45, 0.05 - 1.05 * row, 0]))
         return q, cards, bins, mv
 
     def sort(self):
@@ -211,6 +211,9 @@ class S6Ep01(EpisodeScene):
         self.section("생각해요")
         names = [K.SOL[3], K.SOL[4], K.SOL[5]]
         bots = VGroup(*[K.dropper_bottle(s_, 1.25, size=28) for s_ in names]).arrange(RIGHT, buff=1.6).move_to([0, 0.45, 0])
+        for b_ in bots:
+            b_.shift(UP * (0.75 - b_[1].get_center()[1]))
+            b_.label.align_to(bots[0].label, UP)
         qs = VGroup(*[T("?", 60, SOFT).move_to(b_[0]) for b_ in bots])
         self.say("겉보기 성질로만 분류할 때 어려운 점은?", "용액을 겉보기 성질로만 분류할 때 어려운 점은 무엇일까요?")
         self.play(FadeIn(bots, lag_ratio=0.15), run_time=0.9)
@@ -245,14 +248,14 @@ class S6Ep01(EpisodeScene):
         steps = ["① 용액의 성질을\n관찰해요", "② 비슷한 점과 다른 점을\n찾아 분류 기준을 세워요", "③ 분류 기준에 따라\n용액을 분류해요"]
         boxes = VGroup()
         for i, s_ in enumerate(steps):
-            b_ = RoundedRectangle(corner_radius=0.2, width=4.1, height=1.6, fill_color=PAPER, fill_opacity=1,
+            b_ = RoundedRectangle(corner_radius=0.2, width=3.8, height=1.6, fill_color=PAPER, fill_opacity=1,
                                   stroke_color=self.accent, stroke_width=5)
             t = K.name_text(s_, 30)
-            if t.width > 3.8:
-                t.scale_to_fit_width(3.8)
+            if t.width > 3.5:
+                t.scale_to_fit_width(3.5)
             t.move_to(b_)
             boxes.add(VGroup(b_, t))
-        boxes.arrange(RIGHT, buff=0.45).move_to([0, 1.3, 0])
+        boxes.arrange(RIGHT, buff=0.8).move_to([0, 1.3, 0])
         arrs = VGroup(*[K.arrow_right(boxes[i].get_right()[0] + 0.08, boxes[i + 1].get_left()[0] - 0.08, 1.3, self.accent)
                         for i in range(2)])
         self.say("용액을 분류하는 차례", "성질을 관찰하고, 비슷한 점과 다른 점으로 분류 기준을 세운 뒤, 기준에 따라 분류해요.")

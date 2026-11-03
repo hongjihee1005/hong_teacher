@@ -242,7 +242,7 @@ def temp_graph(hot=HOT_T, cold=COLD_T, W=7.6, H=4.2, vmax=50, legend=True):
         grid.add(L((gx(t), y0), (gx(t), y1), "#EEF2F5", 2))
         grid.add(T(str(t), 22, INK, bold=False).move_to([gx(t), y0 - 0.28, 0]))
     ax = VGroup(L((x0, y0), (x1 + 0.1, y0), INK, 4), L((x0, y0), (x0, y1 + 0.1), INK, 4))
-    xl = T("시간(분)", 22, INK).move_to([x1 - 0.3, y0 - 0.62, 0])
+    xl = T("시간(분)", 22, INK).move_to([x1 - 0.6, y0 - 0.62, 0])
     yl = T("온도(°C)", 22, INK).move_to([x0 + 0.1, y1 + 0.32, 0])
     bg = R(W, H + 0.9, PAPER, 0, 0.05, rad=0.15, stroke=SOFT, sw=3)
     g.add(bg, grid, ax, xl, yl)
