@@ -20,7 +20,7 @@ from manim import (DOWN, LEFT, ORIGIN, RIGHT, UP, PI, TAU,
 from series_style import BLUE, GREEN, INK, ORANGE, PAPER, SOFT, T, M
 from scikit import RED, BROWN, BROWN_DARK
 from kit_s5u11 import label, text_card, fit, ox_mark, bin_box, rnd  # noqa: F401
-from kit_s5u13 import word_card, result_table, tweezers  # noqa: F401
+from kit_s5u13 import word_card, result_table, tweezers, pic_card  # noqa: F401
 from kit_s4u12 import safety_note  # noqa: F401
 from kit_s3u13 import leaf, tree, sun, small_herb, wind_lines, LEAF_FILL, LEAF_EDGE, STALK  # noqa: F401
 from kit_s3u12 import C, E, L, poly, smooth, bee  # noqa: F401
