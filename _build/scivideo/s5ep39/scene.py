@@ -73,8 +73,8 @@ class S5Ep39(EpisodeScene):
     # ── 에너지 이용 놀이: 사다리 · 미끄럼틀 ──
     def game(self):
         self.section("활동해요")
-        bins = VGroup(K.res_bin("지속가능하게 이용", 6.4, 4.2, GREEN, K.ladder(1.0)),
-                      K.res_bin("낭비하거나 함부로 이용", 6.4, 4.2, SLIDE, K.slide(1.0))).arrange(RIGHT, buff=0.3).move_to([0, 0.7, 0])
+        bins = VGroup(K.res_bin("지속가능하게 이용", 6.4, 4.1, GREEN, K.ladder(1.0)),
+                      K.res_bin("낭비하거나 함부로 이용", 6.4, 4.1, SLIDE, K.slide(1.0))).arrange(RIGHT, buff=0.3).move_to([0, 0.4, 0])
         self.say("에너지 이용 놀이: 칸에 따라 사다리 또는 미끄럼틀",
                  "에너지 이용 놀이를 해요. 도착한 칸이 에너지를 지속가능하게 이용한 예면 사다리를 타고, 낭비하거나 함부로 이용한 예면 미끄럼틀을 타요.")
         self.play(FadeIn(bins), run_time=0.6)
@@ -87,7 +87,7 @@ class S5Ep39(EpisodeScene):
         bc = VGroup(*[K.chip_card(t, SLIDE, 24, w=6.0, h=0.66) for t in bad]).arrange(DOWN, buff=0.14)
         gc.next_to(bins[0].head, DOWN, buff=0.25)
         bc.next_to(bins[1].head, DOWN, buff=0.25)
-        q = VGroup(gc[0].copy(), bc[1].copy()).arrange(RIGHT, buff=0.5).move_to([0, -2.0, 0])
+        q = VGroup(gc[0].copy(), bc[1].copy()).arrange(RIGHT, buff=0.5).move_to([0, -2.1, 0])
         self.say("이 칸들은 어느 쪽일까요?",
                  "냉난방할 때 적정 온도를 유지하는 칸과 빈방에 조명을 켜 두는 칸은 어느 쪽일까요?")
         self.play(FadeIn(q, shift=UP * 0.2), run_time=0.5)
@@ -129,7 +129,9 @@ class S5Ep39(EpisodeScene):
         heads = ["재생 에너지 얻기", "친환경 기술 개발", "생활 속 에너지 절약"]
         pics = [K.solar_panel(1.6), K.h2_car(), K.lamp(False)]
         bins = VGroup(*[K.res_bin(h, 4.4, 4.4, c, p, 30) for h, c, p in zip(heads, cols, pics)]).arrange(RIGHT, buff=0.15)
-        bins.move_to([0, 0.55, 0])
+        bins.move_to([0, 0.35, 0])
+        for b in bins[1:]:   # 제목 높이 맞추기
+            b.head.shift(UP * (bins[0].head[1].get_y() - b.head[1].get_y()))
         items = [["집 지붕에 태양 전지판", "바람이 많은 곳에서 풍력"],
                  ["수소차, 전기차 개발", "오염 물질을 적게 내는 기술"],
                  ["불필요한 전등 끄기", "냉난방 적정 온도 유지", "안 쓰는 플러그 뽑기"]]

@@ -81,6 +81,7 @@ class S5Ep38(EpisodeScene):
     def village(self):
         self.section("조사해요")
         v = K.village(9.4).move_to([0, 0.12, 0])
+        v.spots["bio"].shift(LEFT * 0.5)   # 지열 설비와 겹치지 않게
         self.say("그림에서 재생 에너지를 얻는 곳을 찾아봐요",
                  "재생 에너지 마을 그림이에요. 어디에서 재생 에너지를 얻고 있는지 찾아볼까요?")
         self.play(FadeIn(v), run_time=0.8)
@@ -92,7 +93,7 @@ class S5Ep38(EpisodeScene):
             "water": tagbox("수력").move_to(v.spots["water"].get_top() + UP * 0.25 + RIGHT * 0.3),
             "sea": tagbox("해양 에너지").move_to(v.spots["sea"].get_top() + UP * 0.3 + LEFT * 0.2),
             "geo": tagbox("지열 에너지").move_to(v.spots["geo"].get_bottom() + DOWN * 0.05 + RIGHT * 1.4),
-            "bio": tagbox("바이오 에너지").move_to(v.spots["bio"].get_top() + UP * 0.3 + LEFT * 1.0),
+            "bio": tagbox("바이오 에너지").next_to(v.spots["bio"], DOWN, buff=0.12),
         }
         steps = [
             (("sun", "wind"), f"{o('태양 에너지')}: 태양 빛·태양열  /  {o('풍력')}: 바람으로 발전기",

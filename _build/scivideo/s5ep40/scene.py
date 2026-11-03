@@ -58,7 +58,7 @@ class S5Ep40(EpisodeScene):
         self.eco_house()
         self.summary()
         self.closing(f"자원은 아껴 쓰고 다시 쓰고, 단열이 잘되게 집을 지으면\n{o('에너지 효율')}을 높일 수 있어요",
-                     next_preview="5학년 마인드맵 8 · 자원과 에너지")
+                     next_preview="6학년 1화 · 여러 가지 용액을 분류해 볼까?")
         self.wait(0.5)
 
     # ── 궁금해요: 수도꼭지 ──
@@ -101,8 +101,10 @@ class S5Ep40(EpisodeScene):
         items = [["설거지·양치할 때 물 받아 쓰기", "절수 장치로 사용량 줄이기", "빗물 저금통으로 다시 쓰기"],
                  ["목재 제품 고쳐 다시 쓰기", "이면지 활용하기", "손수건·다회용 컵 쓰기"],
                  ["재활용을 위한 분리배출", "석탄 대신 재생 에너지", "대체 자원 개발하기"]]
-        bins = VGroup(*[K.res_bin(h, 4.4, 4.6, c, p, 32) for h, c, p in zip(heads, cols, pics)]).arrange(RIGHT, buff=0.15)
-        bins.move_to([0, 0.5, 0])
+        bins = VGroup(*[K.res_bin(h, 4.4, 4.3, c, p, 32) for h, c, p in zip(heads, cols, pics)]).arrange(RIGHT, buff=0.15)
+        bins.move_to([0, 0.35, 0])
+        for b in bins[1:]:   # 제목 높이 맞추기
+            b.head.shift(UP * (bins[0].head[1].get_y() - b.head[1].get_y()))
         self.say(f"자원은 {o('아껴 쓰고')}, {o('다시 쓰고')}, {o('재활용')}해요",
                  "자원을 효율적으로 이용하는 방법을 조사해 봐요. 물은 받아서 쓰고 빗물을 다시 쓰고, 종이는 이면지로 활용하고 다회용 컵을 쓰고, 광물 자원은 분리배출해 재활용하고 대체 자원을 개발해요.")
         self.play(FadeIn(bins), run_time=0.5)
@@ -173,7 +175,7 @@ class S5Ep40(EpisodeScene):
         self.settle()
         clear_stage(self)
         # 결과: 그래프 + 변화량
-        gr = K.temp_lines(6.2, 3.4).move_to([-3.0, 0.45, 0])
+        gr = K.temp_lines(6.2, 3.4).move_to([-3.35, 0.45, 0])
         k1 = M(f"{hot('―')} 단열하지 않은 집", 26).move_to([3.9, 2.3, 0])
         k2 = M(f"{cold('―')} 단열을 한 집", 26).next_to(k1, DOWN, buff=0.15, aligned_edge=LEFT)
         note = T("(지도서 예시 결과)", 22, SOFT).next_to(k2, DOWN, buff=0.15, aligned_edge=LEFT)
@@ -183,7 +185,7 @@ class S5Ep40(EpisodeScene):
         self.play(Create(gr.l1), Create(gr.l2), FadeIn(gr.d1), FadeIn(gr.d2), run_time=1.6)
         self.settle()
         res = K.text_card([f"{hot('단열하지 않은 집')}: 29.8 − 25.5 = {hot('4.3 °C')}",
-                           f"{cold('단열을 한 집')}: 29.8 − 27.9 = {cold('1.9 °C')}"], w=5.6, size=28).move_to([3.95, -0.7, 0])
+                           f"{cold('단열을 한 집')}: 29.8 − 27.9 = {cold('1.9 °C')}"], w=5.6, size=28).move_to([4.05, -0.85, 0])
         self.say(f"온도 변화량: {hot('4.3 °C')} 와 {cold('1.9 °C')}",
                  "온도 변화량은 처음 온도에서 5분 뒤의 온도를 빼서 구해요. 단열하지 않은 집 모형은 4.3도, 단열을 한 집 모형은 1.9도 낮아졌어요.")
         self.play(FadeIn(res, shift=LEFT * 0.2), run_time=0.6)

@@ -73,7 +73,9 @@ class S5Ep37(EpisodeScene):
         self.section("조사해요")
         bins = VGroup(K.res_bin("물 자원", 4.3, 3.35, WC, K.water_drop()),
                       K.res_bin("산림 자원", 4.3, 3.35, FC, K.tree(1.0)),
-                      K.res_bin("광물 자원", 4.3, 3.35, MC, K.ore_pic())).arrange(RIGHT, buff=0.2).move_to([0, 1.15, 0])
+                      K.res_bin("광물 자원", 4.3, 3.35, MC, K.ore_pic())).arrange(RIGHT, buff=0.2).move_to([0, 0.85, 0])
+        for b in bins[1:]:   # 제목 높이 맞추기
+            b.head.shift(UP * (bins[0].head[1].get_y() - b.head[1].get_y()))
         self.say("자원의 이용 카드를 세 상자로 나누어 봐요",
                  "자원의 이용 카드를 보고, 어떤 자원을 이용하는지 세 상자로 나누어 봐요.")
         self.play(FadeIn(bins), run_time=0.7)
@@ -81,7 +83,7 @@ class S5Ep37(EpisodeScene):
         items = [
             ["농사를 지을 때", "설거지·빨래할 때", "목이 마를 때 마셔요"],
             ["숲에서 버섯을 얻어요", "종이컵·휴지를 만들어요", "가구를 만들고 집을 지어요"],
-            ["금속으로 스마트 기기를", "석탄으로 에너지를", "석재로 건물을 지어요"],
+            ["금속으로 스마트 기기를 만들어요", "석탄으로 에너지를 생산해요", "석재로 건물을 지어요"],
         ]
         narr = ["농사를 짓고, 설거지나 빨래를 하고, 목이 마를 때 마시는 것은 물 자원이에요.",
                 "숲에서 버섯을 얻고, 종이컵과 휴지, 가구를 만들고 집을 짓는 것은 산림 자원이에요.",
@@ -99,7 +101,7 @@ class S5Ep37(EpisodeScene):
             self.settle()
         note = K.text_card([f"{FC_('산림 자원')}: 숲에서 얻는 목재, 약초 같은 쓸모 있는 자원",
                             f"{MC_('광물 자원')}: 땅속 광물 가운데 공업 원료·건설 재료로 쓸 수 있는 것"], w=12.6, size=28)
-        note.move_to([0, -1.6, 0])
+        note.move_to([0, -1.75, 0])
         self.say("산림 자원은 숲에서, 광물 자원은 땅속에서 얻어요",
                  "산림 자원은 숲에서 얻는 목재, 약초 같은 쓸모 있는 자원이고, 광물 자원은 땅속에 묻힌 광물 가운데 공업 원료나 건설 재료로 쓸 수 있는 것이에요.")
         self.play(FadeIn(note, shift=UP * 0.2), run_time=0.6)
@@ -130,7 +132,12 @@ class S5Ep37(EpisodeScene):
         self.section("계속 쓸 수 있을까?")
         self.say("물, 산림, 광물 자원을 계속 이용할 수 있을까요?",
                  "물 자원, 산림 자원, 광물 자원을 계속 이용할 수 있을까요?")
+        icons = VGroup(*[VGroup(K.fit(p, 1.6, 1.4), T(n, 32, c)).arrange(DOWN, buff=0.25)
+                         for p, n, c in ((K.water_drop(), "물 자원", WC), (K.tree(1.2), "산림 자원", FC),
+                                         (K.ore_pic(), "광물 자원", MC))]).arrange(RIGHT, buff=1.6, aligned_edge=DOWN).move_to([0, 0.8, 0])
+        self.play(FadeIn(icons, lag_ratio=0.2), run_time=0.8)
         self.pause_screen(5, "자원을 계속 이용할 수 있을까요?")
+        self.play(FadeOut(icons), run_time=0.3)
         # 물
         dirty = K.fit(K.dirty_water(), 1.5, 1.6).move_to([-3.6, 0.9, 0])
         clean = K.fit(K.glass_water(), 1.5, 1.6).move_to([3.6, 0.9, 0])
