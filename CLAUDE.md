@@ -684,6 +684,7 @@ grade1/ … grade6/
 - 첫 화면 '교육 프로그램' 묶음과 `project/index.html`의 '💡 사고전략' 카드. 하버드 Project Zero 사고 루틴 23개를 탐구 5단계(`stage/`)·교과 10개(`subject/`)·전체 목록(`routines/`)으로 정리했습니다. 모든 자료는 교사용 안내·학생용 안내·활동지 세 탭입니다.
 - **`thinking/` 안의 HTML을 직접 고치지 마세요.** 원본은 `_build/strategy/`(`data_routines.py`, `data_more.py`, `build.py`)이고 `python3 _build/strategy/build.py && python3 _build/theme/apply_theme.py && python3 _build/theme/apply_content_theme.py`로 다시 만듭니다. 자세한 것은 `_build/strategy/README.md`.
 - PZ 원문은 CC BY-NC-ND 4.0이라 번역해 싣지 않고 새로 쓴 안내 + 원문 링크만 둡니다.
+- **아이용 따로 사이트 '생각 도구'(저장소 `hongjihee1005/thinking-tools`, 주소 https://hongjihee1005.github.io/thinking-tools/, 2026-11-03):** 학생용 안내 + 활동지만(교사용 탭 없음), 자료실로 가는 링크 없음. `python3 _build/strategy/kids.py`가 같은 데이터로 `_build/strategy/standalone/`(40쪽·sitemap·README)을 만들고, thinking-tools의 `sync.yml`(원본 `_build/strategy/repo/`)이 한 시간마다 그 폴더를 통째로 가져갑니다(원본에서 지운 쪽은 거기서도 지움). **thinking-tools의 파일은 직접 고치지 말고, 사고전략 데이터를 고치면 `build.py`와 `kids.py`를 둘 다 돌려 main에 올리세요.**
 
 ## 기초 학습·수학게임 다시 보기 (2026-10-29, 교육팀 → 개발팀 → 디자인팀 차례로 따름)
 
