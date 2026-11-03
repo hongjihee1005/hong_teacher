@@ -148,9 +148,9 @@ class LineGraph(VGroup):
                 y = self.y0 + (v - rmin) / (rmax - rmin) * h
                 self.add(T(r_fmt(v), size, r_col).next_to([self.x1, y, 0], RIGHT, buff=0.12))
             if r_unit:
-                self.add(T(r_unit, size, r_col).next_to([self.x1, self.y1, 0], UP, buff=0.12).shift(RIGHT * 0.3))
+                self.add(T(r_unit, size, r_col).next_to([self.x1, self.y1, 0], UP, buff=0.12).shift(RIGHT * 0.6))
         if unit:
-            self.add(T(unit, size, col).next_to([self.x0, self.y1, 0], UP, buff=0.12).shift(LEFT * 0.3))
+            self.add(T(unit, size, col).next_to([self.x0, self.y1, 0], UP, buff=0.12).shift(LEFT * (0.6 if r_range else 0.3)))
         if title:
             self.add(T(title, tsize, col).next_to(bg, UP, buff=0.12))
 
@@ -183,13 +183,15 @@ LAT = 37.5
 class SkyDome(VGroup):
     """남쪽에서 비스듬히 내려다본 하늘 반구. 지평선은 타원(가로 R, 세로 R*k), 동은 왼쪽, 서는 오른쪽, 남은 앞(아래)."""
 
-    def __init__(self, R=3.6, k=0.3, center=(0, -1.3), labels=True, size=28):
+    def __init__(self, R=3.6, k=0.3, center=(0, -1.3), labels=True, size=28, dome=False):
         super().__init__()
         self.R, self.k, self.c = R, k, np.array([center[0], center[1], 0.0])
         ground = Ellipse(width=2 * R, height=2 * R * k, fill_color=GRASS, fill_opacity=0.9, stroke_color="#4E7A1E",
                          stroke_width=3).move_to(self.c)
         dome = Arc(radius=R, start_angle=0, angle=PI, arc_center=self.c, stroke_color="#8FB3CC", stroke_width=3)
-        self.add(ground, dome)
+        self.add(ground)
+        if dome:
+            self.add(dome)
         self.ground = ground
         if labels:
             for az, n in ((90, "동"), (180, "남"), (270, "서"), (0, "북")):
@@ -444,10 +446,12 @@ def globe_lamp(tau=0.0, shadow=1.4, R=1.35, cx=1.6, cy=0.3, lamp_x=-3.6, k=0.42,
 
 
 def season_card(season, col, lines, w=3.2, size=24, head=32):
-    box = RoundedRectangle(corner_radius=0.2, width=w, height=0.6 + 0.52 * len(lines), fill_color=PAPER, fill_opacity=1,
+    h = T(season, head, col)
+    ls = VGroup(*[M(x, size) for x in lines]).arrange(DOWN, buff=0.16)
+    if ls.width > w - 0.4:
+        ls.scale_to_fit_width(w - 0.4)
+    body = VGroup(h, ls).arrange(DOWN, buff=0.22)
+    box = RoundedRectangle(corner_radius=0.2, width=w, height=body.height + 0.5, fill_color=PAPER, fill_opacity=1,
                            stroke_color=col, stroke_width=5)
-    h = T(season, head, col).next_to(box.get_top(), DOWN, buff=0.14)
-    ls = VGroup(*[M(x, size) for x in lines]).arrange(DOWN, buff=0.16).next_to(h, DOWN, buff=0.16)
-    if ls.width > w - 0.3:
-        ls.scale_to_fit_width(w - 0.3)
-    return VGroup(box, h, ls)
+    body.move_to(box)
+    return VGroup(box, body)
