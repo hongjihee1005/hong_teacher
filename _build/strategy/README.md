@@ -22,3 +22,13 @@ python3 _build/theme/apply_theme.py && python3 _build/theme/apply_content_theme.
 
 저작권: PZ 사고 루틴 원문은 CC BY-NC-ND 4.0(변경 금지)입니다. 원문을 번역해 싣지 말고, 생각을 바탕으로 새로 쓴 글과 원문 링크만 둡니다.
 탐구 5단계는 PZ 공식 분류가 아니라 『Making Thinking Visible』(2011)의 세 묶음을 바탕으로 다시 나눈 것이므로 페이지에 그 사실을 밝혀 둡니다.
+
+## 아이용 따로 사이트 '생각 도구' (2026-11-03)
+
+```bash
+python3 _build/strategy/kids.py      # → _build/strategy/standalone/
+```
+
+- 저장소 `hongjihee1005/thinking-tools`(https://hongjihee1005.github.io/thinking-tools/)가 `repo/.github/workflows/sync.yml`로 한 시간마다 `standalone/`을 가져갑니다.
+- 학생용 안내·활동지만 남기고(교사용 탭 제거), 첫 화면은 과목·탐구 단계에서 도구를 고르는 아이용 화면입니다. 자료실로 가는 링크는 넣지 않습니다(`kids.py`가 점검).
+- 데이터를 고치면 `build.py`와 `kids.py`를 둘 다 돌리세요.
