@@ -76,8 +76,8 @@ class S6Ep06(EpisodeScene):
     # ── 피해 사례 ──
     def topic(self, name, pics, damage, cause, narr_d, narr_c):
         self.section(name)
-        pics.scale(min(5.8 / pics.width, 3.0 / pics.height))
-        pics.move_to([-3.75, 0.8, 0])
+        pics.scale(min(5.8 / pics.width, 2.75 / pics.height))
+        pics.move_to([-3.75, 1.0, 0])
         lst = K.text_card([f"· {d}" for d in damage], w=7.0, size=30).move_to([3.15, 1.0, 0])
         self.say(f"{name}의 피해", narr_d)
         self.play(FadeIn(pics), run_time=0.8)
