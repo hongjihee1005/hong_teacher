@@ -99,8 +99,8 @@ class S6Ep26(EpisodeScene):
     # ── 재는 방법 ──
     def method(self):
         self.section("재는 방법")
-        gn = K.gnomon(40, 1.3, x0=-4.6, y0=-0.9, deg_label="태양 고도", size=26, board_w=3.6, sun_d=2.6)
-        ln = K.label("그림자 길이: 자로", SOFT, 24).move_to([gn.get_center()[0], -1.55, 0])
+        gn = K.gnomon(40, 1.3, x0=-3.9, y0=-1.1, deg_label="태양 고도", size=26, board_w=3.6, sun_d=1.9)
+        ln = K.label("그림자 길이: 자로", SOFT, 24).move_to([gn.get_center()[0] + 0.6, -1.62, 0])
         steps = K.text_card(["① 평평한 곳에 측정기를 놓아요",
                              "② 그림자가 자와 나란하게 해요",
                              "③ 각도기 중심을 그림자 끝에 맞춰 각을 읽어요",
@@ -205,15 +205,15 @@ class S6Ep26(EpisodeScene):
     def peak(self):
         self.section("가장 높은 시각")
         ga, gt = self.ga, self.gt
-        ma = K.pointer(self.da[3].get_center(), (-4.35, -1.25), "오후 12시 30분 무렵", K.ALT_COL, 24)
-        mt = K.pointer(self.dt[5].get_center(), (4.65, -1.25), "오후 2시 30분 무렵", K.TMP_COL, 24)
+        ma = K.pointer(self.da[3].get_center(), (-4.35, -1.1), "오후 12시 30분 무렵", K.ALT_COL, 24)
+        mt = K.pointer(self.dt[5].get_center(), (4.65, -1.1), "오후 2시 30분 무렵", K.TMP_COL, 24)
         self.say(f"태양 고도는 {o('12시 30분')}, 기온은 {r('2시 30분')} 무렵에 가장 높아요",
                  "태양 고도가 가장 높은 시각은 오후 열두 시 삼십 분 무렵이고, 기온이 가장 높은 시각은 오후 두 시 삼십 분 무렵이에요.")
         self.play(Flash(self.da[3], color=K.ALT_COL), FadeIn(ma), run_time=0.8)
         self.play(Flash(self.dt[5], color=K.TMP_COL), FadeIn(mt), run_time=0.8)
         self.settle()
         card = K.text_card([f"태양 빛 → {o('지표면')}이 데워지고 → 그 위의 {o('공기')}가 데워져요",
-                            f"데워지는 데 {g('시간이 걸려')} 기온은 조금 늦게 가장 높아요"], size=28).move_to([0, -2.15, 0])
+                            f"데워지는 데 {g('시간이 걸려')} 기온은 조금 늦게 가장 높아요"], size=26).move_to([0, -2.2, 0])
         self.say(f"지표면과 공기가 데워지는 데 {g('시간이 걸리기')} 때문이에요",
                  "태양 빛을 받은 지표면이 데워지고, 그 위의 공기가 데워지는 데 시간이 걸리기 때문이에요.")
         self.play(FadeIn(card, shift=UP * 0.2), run_time=0.7)
@@ -223,8 +223,8 @@ class S6Ep26(EpisodeScene):
     # ── 관계 ──
     def relation(self):
         self.section("관계 정리")
-        hi = K.gnomon(60, 1.3, x0=-2.7, y0=-0.1, string=False, arc=False, board_w=2.6, sun_d=1.6)
-        lo = K.gnomon(25, 1.3, x0=2.3, y0=-0.1, string=False, arc=False, board_w=3.9, sun_d=2.4)
+        hi = K.gnomon(60, 1.3, x0=-1.6, y0=-0.3, string=False, arc=False, board_w=2.6, sun_d=1.6)
+        lo = K.gnomon(25, 1.3, x0=3.2, y0=-0.3, string=False, arc=False, board_w=3.9, sun_d=2.4)
         th = K.text_card([f"태양 고도 {o('높아지면')}", f"그림자 {o('짧아지고')}", f"기온 {o('높아져요')}"], size=30).move_to([-3.0, -1.65, 0])
         tl = K.text_card([f"태양 고도 {r('낮아지면')}", f"그림자 {r('길어지고')}", f"기온 {r('낮아져요')}"], size=30).move_to([3.3, -1.65, 0])
         self.say(f"태양 고도가 높아지면 그림자는 {o('짧아지고')} 기온은 {o('높아져요')}",

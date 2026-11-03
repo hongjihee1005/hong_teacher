@@ -99,7 +99,7 @@ class S6Ep25(EpisodeScene):
         arc = K._arc_mark(o_, 180 - A, 180, 1.0, RED, 6)
         ang = M(f"{r('태양 고도')}", 34).move_to(o_ + np.array([-2.9, 0.4, 0]))
         surf = T("지표면", 28, INK).next_to(gl, DOWN, buff=0.15).shift(LEFT * 2)
-        side = K.label("옆에서 본 모습", INK, 26).move_to([-2.2, 2.5, 0])
+        side = K.label("옆에서 본 모습", INK, 26).move_to([0.6, 2.5, 0])
         self.say(f"태양이 {o('지표면')}과 이루는 각을 재요", "태양의 높이는 태양이 지표면과 이루는 각으로 나타낼 수 있어요.")
         self.play(FadeIn(side), Create(gl), FadeIn(surf), run_time=0.6)
         self.play(Create(ray), FadeIn(sun), run_time=0.8)
@@ -181,7 +181,7 @@ class S6Ep25(EpisodeScene):
                  "실과 그림자가 이루는 각을 읽으면 그것이 태양 고도예요. 오전 아홉 시 삼십 분 무렵에는 삼십오 도였어요.")
         self.play(Create(arc), FadeIn(res), FadeIn(ex), run_time=0.8)
         self.settle()
-        self.say(f"낮 12시 30분 무렵에는 {o('52°')}로 더 높아요",
+        self.say(f"오후 12시 30분 무렵에는 {o('52°')}로 더 높아요",
                  "오후 열두 시 삼십 분 무렵에 다시 재니 오십이 도로, 태양 고도가 더 높았어요.")
         self.play(Indicate(res[1][1], color=ORANGE), run_time=0.8)
         self.settle()

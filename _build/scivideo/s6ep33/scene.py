@@ -99,7 +99,7 @@ class S6Ep33(EpisodeScene):
         self.play(FadeIn(ar), FadeIn(gas), run_time=0.5)
         self.play(Transform(j, j2), FadeIn(r2), run_time=1.0)
         self.settle()
-        safe = K.safety_note("염화 코발트 종이는 장갑을 낀 손으로 핀셋을 써서 집고, 석회수가 피부에 닿지 않게 해요", w=10.4, size=26).move_to([0.6, 2.6, 0])
+        safe = K.safety_note("염화 코발트 종이는 장갑을 낀 손으로 핀셋을 써서 집고, 석회수가 피부에 닿지 않게 해요", w=10.4, size=26).move_to([0.6, 2.32, 0])
         self.say("안전: 종이는 핀셋으로 집고, 석회수가 피부에 닿지 않게 해요",
                  "푸른색 염화 코발트 종이는 맨손으로 만지지 말고 실험용 장갑을 낀 손으로 핀셋을 써서 집어요. 석회수가 피부에 닿지 않게 조심해요.")
         self.play(FadeOut(VGroup(gas, ar)), FadeIn(safe), run_time=0.5)
@@ -166,7 +166,7 @@ class S6Ep33(EpisodeScene):
                  "무색투명했던 석회수가 뿌옇게 흐려졌어요. 양초가 연소한 후 이산화 탄소가 생겼어요.")
         self.play(Transform(jar, jar3), FadeOut(steps), FadeIn(res), run_time=1.0)
         self.settle()
-        safe = K.safety_note("석회수가 피부에 닿으면 바로 흐르는 물로 충분히 씻어요 · 불이 꺼진 뒤에도 아크릴 통이 뜨거울 수 있어요", w=10.4, size=24).move_to([0.6, 2.6, 0])
+        safe = K.safety_note("석회수가 피부에 닿으면 바로 흐르는 물로 충분히 씻어요 · 불이 꺼진 뒤에도 아크릴 통이 뜨거울 수 있어요", w=10.4, size=24).move_to([0.6, 2.32, 0])
         self.say("안전: 불이 꺼진 뒤에도 아크릴 통이 뜨거울 수 있어요",
                  "석회수가 피부에 닿으면 바로 흐르는 물로 충분히 씻어요. 불이 꺼진 뒤에도 아크릴 통이 뜨거울 수 있어요.")
         self.play(FadeIn(safe), run_time=0.5)

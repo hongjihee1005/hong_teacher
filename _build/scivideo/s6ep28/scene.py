@@ -91,8 +91,8 @@ class S6Ep28(EpisodeScene):
     def experiment(self):
         self.section("실험해요")
         A, B = 80, 30
-        a = K.torch_rig(A, cx=-3.3, y=-0.9)
-        b = K.torch_rig(B, cx=3.3, y=-0.9)
+        a = K.torch_rig(A, cx=-3.3, y=-1.15, R=2.2)
+        b = K.torch_rig(B, cx=3.3, y=-1.15, R=2.2)
         la = M(f"그림자가 {o('짧을')} 때", 30).move_to([-2.6, 2.45, 0])
         lb = M(f"그림자가 {o('길')} 때", 30).move_to([3.3, 2.45, 0])
         self.say("그림자가 짧을 때와 길 때 빛의 세기를 비교해요",
@@ -100,8 +100,8 @@ class S6Ep28(EpisodeScene):
         self.play(FadeIn(a), FadeIn(la), run_time=0.7)
         self.play(FadeIn(b), FadeIn(lb), run_time=0.7)
         self.settle()
-        ka = M(f"각이 {o('커요')}", 28).move_to([-3.3, -1.55, 0])
-        kb = M(f"각이 {o('작아요')}", 28).move_to([3.3, -1.55, 0])
+        ka = M(f"각이 {o('커요')}", 28).move_to([-3.3, -1.8, 0])
+        kb = M(f"각이 {o('작아요')}", 28).move_to([3.3, -1.8, 0])
         self.say(f"그림자가 짧을 때 손전등과 스마트 기기가 이루는 각이 {o('커요')}",
                  "그림자가 짧을 때는 손전등과 스마트 기기가 이루는 각이 크고, 그림자가 길 때는 각이 작아요.")
         self.play(Indicate(a.arc, color=RED), Indicate(b.arc, color=RED), FadeIn(ka), FadeIn(kb), run_time=1.0)
@@ -109,7 +109,7 @@ class S6Ep28(EpisodeScene):
         self.pause_screen(5, "빛의 세기는 언제 더 셀까요?")
         ma = K.light_meter(K.lux(A), w=2.3, h=1.3, size=44).move_to([-1.0, 1.55, 0])
         mb = K.light_meter(K.lux(B), w=2.3, h=1.3, size=44).move_to([5.6, 1.55, 0])
-        ex = T("(화면 숫자는 앱 가상 실험의 예)", 22, SOFT).move_to([0, -2.1, 0])
+        ex = T("(화면 숫자는 앱 가상 실험의 예)", 22, SOFT).move_to([0, -2.35, 0])
         self.say(f"각이 클 때 숫자가 더 커요 — 빛이 더 {o('세요')}",
                  "조도 측정기의 숫자가 클수록 빛이 세요. 각이 클 때 숫자가 더 커서 빛이 더 세요.")
         self.play(FadeIn(ma), FadeIn(mb), FadeIn(ex), run_time=0.8)

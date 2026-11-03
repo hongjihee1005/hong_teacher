@@ -188,10 +188,10 @@ class SkyDome(VGroup):
         self.R, self.k, self.c = R, k, np.array([center[0], center[1], 0.0])
         ground = Ellipse(width=2 * R, height=2 * R * k, fill_color=GRASS, fill_opacity=0.9, stroke_color="#4E7A1E",
                          stroke_width=3).move_to(self.c)
-        dome = Arc(radius=R, start_angle=0, angle=PI, arc_center=self.c, stroke_color="#8FB3CC", stroke_width=3)
+        arc_ = Arc(radius=R, start_angle=0, angle=PI, arc_center=self.c, stroke_color="#8FB3CC", stroke_width=3)
         self.add(ground)
         if dome:
-            self.add(dome)
+            self.add(arc_)
         self.ground = ground
         if labels:
             for az, n in ((90, "동"), (180, "남"), (270, "서"), (0, "북")):

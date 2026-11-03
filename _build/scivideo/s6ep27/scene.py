@@ -136,7 +136,7 @@ class S6Ep27(EpisodeScene):
     def graph(self):
         self.section("꺾은선그래프")
         xs = [f"{m}월" for m in MON]
-        gr = K.LineGraph(xs, 20, 80, 10, w=9.0, h=3.6, center=(0, 0.45), unit="(°)", col=K.ALT_COL, size=24, xsize=24,
+        gr = K.LineGraph(xs, 20, 80, 10, w=9.0, h=3.3, center=(0, 0.6), unit="(°)", col=K.ALT_COL, size=24, xsize=24,
                          r_range=(9, 16, 1), r_unit="(시간)", r_col=K.DAY_COL)
         sea = VGroup()
         for i, (n, c) in enumerate((("봄", "#D6457A"), ("여름", "#3F9A3F"), ("가을", "#E08A00"), ("겨울", "#5A6E86"))):
@@ -156,7 +156,7 @@ class S6Ep27(EpisodeScene):
         self.say(f"두 그래프가 {o('함께')} 오르내려요", "두 그래프는 같은 모양으로 함께 오르내려요.")
         self.play(Indicate(VGroup(la, lb), color=ORANGE, scale_factor=1.03), run_time=1.0)
         self.settle()
-        card = K.text_card([f"태양의 남중 고도가 {o('높을수록')} 낮의 길이가 {o('길어요')}"], size=32).move_to([0, -2.15, 0])
+        card = K.text_card([f"태양의 남중 고도가 {o('높을수록')} 낮의 길이가 {o('길어요')}"], size=30).move_to([0, -2.3, 0])
         self.say(f"남중 고도가 {o('높을수록')} 낮의 길이가 {o('길어요')}",
                  "태양의 남중 고도가 높을수록 낮의 길이가 길어요.")
         self.play(FadeOut(leg), FadeIn(card), run_time=0.6)
@@ -193,7 +193,7 @@ class S6Ep27(EpisodeScene):
         self.say(f"겨울: 남쪽 하늘 {g('낮게')}, 지나는 길이 {g('짧아요')}",
                  "겨울에는 태양이 남쪽 하늘 낮게 지나가요. 남중 고도가 낮고, 지나는 길이 짧아 낮의 길이가 짧아요.")
         self.settle()
-        card = K.text_card([f"여름 → 겨울: 남중 고도 {g('낮아지고')}", f"낮의 길이 {g('짧아져요')}"], size=27).move_to([4.4, -1.85, 0])
+        card = K.text_card([f"여름 → 겨울: 남중 고도 {g('낮아지고')}", f"낮의 길이 {g('짧아져요')}"], size=24).move_to([4.3, -0.4, 0])
         self.say(f"여름에서 겨울로 갈수록 남중 고도는 낮아지고 낮은 {g('짧아져요')}",
                  "여름에서 겨울로 갈수록 태양의 남중 고도는 낮아지고, 낮의 길이는 짧아져요.")
         self.play(FadeIn(card), run_time=0.6)
