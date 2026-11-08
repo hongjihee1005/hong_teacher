@@ -93,7 +93,8 @@ function e2Scene(s){const r=R(),id=s.id;let g=bg({});
  if(id==='center'){const on=r.done.center||fxOn('center');if(!on)return g+fulcrum()+'<g transform="translate(0 -70)">'+plankBoard({l:{},r:{}})+'</g>'+qmark(PX,150);return g+balance({l:{},r:{}},{drop:fxOn('center')})+levelTag({l:{},r:{}})}
  if(s.k==='plan'||s.k==='pred'||s.k==='concl'){const b=s.k==='pred'?{l:{2:2},r:{}}:{l:{2:2},r:{4:1}};g+=balance(b);if(s.k==='pred')g+=qmark(PX+CW*1.5,150)+qmark(PX+CW*4,150);return g}
  const b=boardOf(id),f=UI.fx;g+=balance(b,{anim:!!(f&&f.id==='bd'),a0:UI.a0});
- if(!(f&&f.id==='bd'))g+=levelTag(b);
+ /* 판의 모습 글(수평·기울어요)은 학생이 기록한 뒤에만 — 먼저 보이면 앱이 관찰을 대신 말해 줌 */
+ if(!(f&&f.id==='bd')&&(s.k==='more'?r.more.a!=null:s.k!=='meas'||s.rows.every(rowDone)))g+=levelTag(b);
  return g}
 function e3Scene(s){const r=R(),st=r.st||{},id=s.id;let g=bg({});
  if(id==='flat'){const on=r.done.flat||fxOn('flat');if(!on){g+='<g transform="translate(0 -80)">'+escale(ES.x,{})+'</g>'+qmark(ES.x,120);return g}
@@ -236,7 +237,7 @@ function hintOf(s){const r=R(),A=acted(s),id=s.id,D=isDone(r.step),st=r.st||{};
   const miss=R0.need.find(k=>!r.seen[k]);
   if(V().no===2){if(id==='p2'||id==='p4')return '① 오른쪽 칸을 눌러 물체를 놓고, 수평이 되는 칸을 찾아요.';return '① '+jo(lbl(miss)||'단추','을','를')+' 눌러요.'}
   return '① '+jo(lbl(miss),'을','를')+' 눌러요.'}
- if(R0.t==='num'){if(R0.eye&&r.st.item!==R0.item&&id!=='clay')return '① '+jo(lbl(need),'을','를')+' 눌러요.';if(r.pend[need]!=null){if(R0.eye&&st.eye!=='lv')return '① 눈 위치를 눈높이로 맞춰요.';return '③ '+(R0.u?'화면·눈금의 숫자를 ':'화면의 숫자를 ')+R0.n+' 칸에 써요.'}
+ if(R0.t==='num'){if(R0.eye&&r.st.item!==R0.item&&id!=='clay')return '① '+jo(lbl(need),'을','를')+' 눌러요.';if(r.pend[need]!=null){if(R0.eye&&st.eye!=='lv')return '① 눈 위치를 눈높이로 맞춰요.';return '③ '+(R0.eye?'눈금을 읽어 ':'화면의 숫자를 ')+R0.n+' 칸에 써요.'}
   if(id==='clay'&&st.item!=='clay')return '① 고무찰흙 넣기를 눌러요.';
   return '① '+jo(lbl(need),'을','를')+' 눌러요.'}
  if(R0.t==='order')return '③ 무거운 학용품부터 차례로 눌러요.';
@@ -245,11 +246,11 @@ function hintOf(s){const r=R(),A=acted(s),id=s.id,D=isDone(r.step),st=r.st||{};
 function gPart(n,t,st,body){return '<li class="lb-gp lb-'+st+'"'+(st==='wait'?' inert aria-disabled="true"':'')+'><div class="lb-gh"><i>'+(st==='ok'?ic('check'):n)+'</i><b>'+t+'</b></div>'+(body?'<div class="lb-gb">'+body+'</div>':'')+'</li>'}
 function actBtns(s){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=A.filter(a=>!a.cell);let h='';
  if(rest.length)h+='<div class="lb-acts">'+rest.map(a=>'<button type="button" class="lb-act'+(a.sub?' lb-act2':'')+(UI.attn&&!a.dis?' lb-attn':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'"'+(a.pressed!=null?' aria-pressed="'+!!a.pressed+'"':'')+(a.dis?' disabled':'')+'>'+ic(a.icon||'hand')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div>';
- if(cells.length)h+='<div class="lb-cellrow" role="group" aria-label="'+esc(cells[0].grp)+'"><span class="lb-cl">'+esc(cells[0].grp)+'</span><div>'+cells.map(a=>'<button type="button" class="lb-cellb'+(UI.attn&&!a.dis?' lb-attn':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(cells[0].grp+' '+a.label)+'">'+esc(a.label)+'</button>').join('')+'</div></div>';
+ if(cells.length)h+='<div class="lb-cellrow" role="group" aria-label="'+esc(cells[0].grp)+'"><span class="lb-cl">'+esc(cells[0].grp)+'</span><div style="grid-template-columns:repeat('+cells.length+',1fr)">'+cells.map(a=>'<button type="button" class="lb-cellb'+(UI.attn&&!a.dis?' lb-attn':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(cells[0].grp+' '+a.label)+'">'+esc(a.label)+'</button>').join('')+'</div></div>';
  return h}
 const MOREQ={1:['더 큰 힘이 든 것은?',['물이 가득 찬 물통','빈 물통'],0,'물이 가득 찬 물통이 더 무거워서 밀 때 더 큰 힘이 들어요.'],
- 2:['물체 한 개를 몇 번 칸에 놓았을 때 수평이 되었나요?',['1번','2번','3번','4번'],1,'물체 두 개가 받침점에 더 가까이 있어요. 받침점에 가까운 쪽이 더 무거워요.'],
- 5:['더 작은 힘이 든 것은?',['받침대에서 먼 곳을 누를 때','받침대에서 가까운 곳을 누를 때'],0,'받침대에서 먼 곳을 누를 때 숫자가 더 작았어요. 누르는 곳에 따라 드는 힘이 달라져요.']};
+ 2:['물체 한 개를 몇 번 칸에 놓았을 때 수평이 되었나요?',['1번','2번','3번','4번'],1,'물체 두 개를 1번 칸에 놓으면 물체 한 개는 2번 칸에서 수평이 돼요. 물체 두 개가 받침점에 더 가까이 있어요.'],
+ 5:['더 작은 힘이 든 것은?',['받침대에서 먼 곳을 누를 때','받침대에서 가까운 곳을 누를 때'],0,'받침대에서 먼 곳을 누를 때 화면의 숫자가 더 작았어요.']};
 function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=='more'||r.more.a!=null);
  let h='<p class="lb-stat'+(D?' lb-statok':'')+'" role="status">'+ic(D?'check':'info')+'<span>'+esc(hintOf(s))+'</span></p><ol class="lb-guide">';
  if(s.k==='scene'){let b1;const dn=!!r.done[s.id];
@@ -286,10 +287,14 @@ function conclCard(){const v=V(),r=R();let h='';
  return cardHead('결론 쓰기','빈칸을 누르고 낱말 카드를 골라요')+wrapB(h)}
 
 /* ───────── 결과 한 장 ───────── */
-function barChart(v,r){const rows=v.rows.filter(k=>ROWS[k].t==='num');if(!rows.length)return '';const vals=rows.map(k=>{const x=r.rec[k];return x&&x.ok?x.v:null});const mx=Math.max(1,...vals.filter(x=>x!=null))*1.15;
+function barChart(v,r){let rows=v.rows.filter(k=>ROWS[k].t==='num');if(!rows.length)return '';
+ /* 실험 5: 지레의 숫자와 빗면의 숫자는 서로 견주지 않으므로(지도서 149·151쪽) '직접-지레', '직접-빗면' 두 묶음으로 나눠 그림 */
+ if(v.no===5)rows=['dir','lev',null,'dir','inc'];
+ const valOf=k=>{const x=k&&r.rec[k];return x&&x.ok?x.v:null},vals=rows.map(valOf);const mx=Math.max(1,...vals.filter(x=>x!=null))*1.15;
  const n=rows.length,W=340,H=150,bw=Math.min(64,(W-20)/n-18),gap=(W-n*bw)/(n+1);let g='<svg class="lb-chart" viewBox="0 0 '+W+' '+(H+44)+'" role="img" aria-label="기록한 숫자 막대그래프">';
- rows.forEach((k,i)=>{const x=gap+i*(bw+gap),v0=vals[i],hh=v0==null?0:v0/mx*H,nm=ROWS[k].n.replace(/\(.*\)/,'').replace(' 이용할 때','').replace(' 들어 올릴 때','');
-  g+='<rect x="'+x+'" y="'+(H-hh)+'" width="'+bw+'" height="'+hh+'" fill="'+(i%2?'#A9541A':'#2F68B0')+'"/>'+(v0!=null?'<text x="'+(x+bw/2)+'" y="'+(H-hh-5)+'" text-anchor="middle" font-size="16" font-weight="700" fill="#141A26">'+v0+'</text>':'')+
+ rows.forEach((k,i)=>{const x=gap+i*(bw+gap);if(!k){g+='<path d="M'+(x+bw/2)+' 8 V'+(H+30)+'" stroke="#9E968A" stroke-dasharray="4 4"/>';return}
+  const v0=vals[i],hh=v0==null?0:v0/mx*H,nm=ROWS[k].n.replace(/\(.*\)/,'').replace(' 이용할 때','').replace(' 들어 올릴 때','');const c=v.no===5?(k==='dir'?'#2F68B0':'#A9541A'):(i%2?'#A9541A':'#2F68B0');
+  g+='<rect x="'+x+'" y="'+(H-hh)+'" width="'+bw+'" height="'+hh+'" fill="'+c+'"/>'+(v0!=null?'<text x="'+(x+bw/2)+'" y="'+(H-hh-5)+'" text-anchor="middle" font-size="16" font-weight="700" fill="#141A26">'+v0+'</text>':'')+
   '<text x="'+(x+bw/2)+'" y="'+(H+20)+'" text-anchor="middle" font-size="'+(nm.length>5?12.5:15)+'" fill="#141A26">'+esc(nm)+'</text>'});
  return g+'<path d="M0 '+H+' H'+W+'" stroke="#9E968A"/></svg>'}
 function sheetTable(v,r){let h='<table class="lb-tbl"><caption class="lb-sr">관찰 기록</caption><thead><tr><th scope="col">무엇을</th><th scope="col">내 기록</th></tr></thead><tbody>';
@@ -403,7 +408,7 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx,st=r.st||{},v=V();
   case 'p2':cellActs('p2','오른쪽 판에 놓을 칸');break;
   case 'p3':A.push({id:'l2b',label:'왼쪽 물체 위에 한 개 더 올리기',dis:busy||boardOf('p3').l[2]>=2});break;
   case 'p4':cellActs('p4','오른쪽 물체를 옮길 칸');break;
-  case 'weigh':['cp','sp','bm','ru'].forEach(k=>A.push({id:k,label:ITEM[k]+' 올리기',dis:busy||rowDone(k),pressed:st.item===k}));break;
+  case 'weigh':['cp','sp','bm','ru'].forEach(k=>A.push({id:k,label:ITEM[k],cell:1,grp:'전자저울에 올릴 학용품',dis:busy||rowDone(k),pressed:st.item===k}));break;
   case 'zero':if(v.no===4)A.push({id:'up',label:'나사 돌리기 (표시 자 위로)',dis:busy||rowDone('z1'),icon:'replay'},{id:'dn',label:'나사 돌리기 (표시 자 아래로)',dis:busy||rowDone('z1'),icon:'replay',sub:1});break;
   case 'hook':A.push({id:'cpen',label:'색연필 묶음 걸기',dis:busy||rowDone('cpen'),pressed:st.item==='cpen'},{id:'spen',label:'사인펜 묶음 걸기',dis:busy||rowDone('spen'),pressed:st.item==='spen'});eyeActs(A,busy);break;
   case 'bag':A.push({id:'bagOn',label:'지퍼 백 걸기',dis:busy||!!st.bagOn},{id:'up',label:'나사 돌리기 (표시 자 위로)',dis:busy||!st.bagOn||rowDone('z2'),icon:'replay',sub:1},{id:'dn',label:'나사 돌리기 (표시 자 아래로)',dis:busy||!st.bagOn||rowDone('z2'),icon:'replay',sub:1});break;
@@ -415,7 +420,7 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx,st=r.st||{},v=V();
    if(v.no===2)cellActs('more','오른쪽 판에 놓을 칸');
    if(v.no===5)A.push({id:'pnear',label:'가까운 곳 누르기',dis:busy},{id:'pfar',label:'먼 곳 누르기',dis:busy});break}
  return A}
-function eyeActs(A,busy){const e=R().st.eye;[['up','위에서 보기'],['lv','눈높이에서 보기'],['dn','아래에서 보기']].forEach(([k,t])=>A.push({id:'eye'+k,label:t,icon:'eye',sub:1,pressed:e===k,dis:busy}))}
+function eyeActs(A,busy){const e=R().st.eye;[['up','위에서'],['lv','눈높이에서'],['dn','아래에서']].forEach(([k,t])=>A.push({id:'eye'+k,label:t,cell:1,grp:'눈 위치를 골라 표시 자 보기',pressed:e===k,dis:busy}))}
 /* 아래 막대: 이전 · 진행 · 이어서 */
 function footHTML(v,r,s){const N=v.steps.length;
  let h='<button type="button" class="lb-btn" data-act="prev" data-f="prev"'+(r.step===0?' disabled':'')+'>'+ic('left')+'이전</button>';
@@ -492,7 +497,7 @@ function doX(id){const v=V(),r=R(),s=curStep(),st=r.st;if(UI.fx)return;if(!/^eye
  if(id==='bfull'||id==='bempty'){fx(id,2000,()=>{UI.mq[id]=1;if(UI.mq.bfull&&UI.mq.bempty)UI.mq.both=1});return}
  if(id==='l2'){boardMove('p1',b=>{b.l[2]=1;b.anim=['l',2]},b=>{delete b.anim;r.seen.t1=1});return}
  if(id==='l2b'){boardMove('p3',b=>{b.l[2]=2;b.anim=['l',2]},b=>{delete b.anim;r.seen.t2=1});return}
- if(/^c\d$/.test(id)){const k=+id[1],bid=s.id;boardMove(bid,b=>{b.r={};b.r[k]=1;b.anim=['r',k]},b=>{delete b.anim;if(boardTilt(b)===0){if(bid==='p2')r.seen.b1=1;if(bid==='p4')r.seen.b2=1;if(bid==='more'){UI.mq.both=1;UI.mq.found=k}flash('판이 수평이 되었어요.','info')}else UI.mq.tried=1});return}
+ if(/^c\d$/.test(id)){const k=+id[1],bid=s.id;boardMove(bid,b=>{b.r={};b.r[k]=1;b.anim=['r',k]},b=>{delete b.anim;if(boardTilt(b)===0){if(bid==='p2')r.seen.b1=1;if(bid==='p4')r.seen.b2=1;if(bid==='more'){UI.mq.both=1;UI.mq.found=k}}else UI.mq.tried=1});return}
  if(['cp','sp','bm','ru'].indexOf(id)>=0){st.item=id;UI.mq={hl:false};fx(id,900,()=>{r.pend[id]=ROWS[id].show;const n=$('[data-in="'+id+'"]:not([disabled])');if(n)n.focus({preventScroll:true})});return}
  if(id==='up'||id==='dn'){st.off=(st.off||0)+(id==='up'?-5:5);st.off=Math.max(-25,Math.min(25,st.off));fx('screw',450,()=>{const row=s.id==='bag'?'z2':'z1';if(readNow()===0){r.rec[row]={ok:1};UI.fb[row]=[1,'표시 자를 0에 맞췄어요.'];flash('표시 자가 0에 맞았어요.','info')}});return}
  if(id==='bagOn'){const from=readNow();st.bagOn=1;st.bag=true;st.item='bag';UI.mq.from=from;fx('hang2',1500,()=>{UI.mq.from=null});return}
