@@ -107,8 +107,8 @@ class S6Ep28(EpisodeScene):
         self.play(Indicate(a.arc, color=RED), Indicate(b.arc, color=RED), FadeIn(ka), FadeIn(kb), run_time=1.0)
         self.settle()
         self.pause_screen(5, "빛의 세기는 언제 더 셀까요?")
-        ma = K.light_meter(K.lux(A), w=2.3, h=1.3, size=44).move_to([-1.0, 1.55, 0])
-        mb = K.light_meter(K.lux(B), w=2.3, h=1.3, size=44).move_to([5.6, 1.55, 0])
+        ma = K.light_meter(K.lux(A), w=2.3, h=1.3, size=44).move_to([-1.0, 1.0, 0])
+        mb = K.light_meter(K.lux(B), w=2.3, h=1.3, size=44).move_to([5.6, 1.0, 0])
         ex = T("(화면 숫자는 앱 가상 실험의 예)", 22, SOFT).move_to([0, -2.35, 0])
         self.say(f"각이 클 때 숫자가 더 커요 — 빛이 더 {o('세요')}",
                  "조도 측정기의 숫자가 클수록 빛이 세요. 각이 클 때 숫자가 더 커서 빛이 더 세요.")

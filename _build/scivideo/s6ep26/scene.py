@@ -213,7 +213,8 @@ class S6Ep26(EpisodeScene):
         self.play(Flash(self.dt[5], color=K.TMP_COL), FadeIn(mt), run_time=0.8)
         self.settle()
         card = K.text_card([f"태양 빛 → {o('지표면')}이 데워지고 → 그 위의 {o('공기')}가 데워져요",
-                            f"데워지는 데 {g('시간이 걸려')} 기온은 조금 늦게 가장 높아요"], size=26).move_to([0, -1.6, 0])
+                            f"데워지는 데 {g('시간이 걸려')} 기온은 조금 늦게 가장 높아요"], size=24, pad=0.24)
+        card.move_to([0, -1.1, 0], aligned_edge=UP)   # 그래프 아래 시각 글자(아래 끝 약 −0.9)와 겹치지 않게
         self.say(f"지표면과 공기가 데워지는 데 {g('시간이 걸리기')} 때문이에요",
                  "태양 빛을 받은 지표면이 데워지고, 그 위의 공기가 데워지는 데 시간이 걸리기 때문이에요.")
         self.play(FadeOut(ma), FadeOut(mt), FadeIn(card, shift=UP * 0.2), run_time=0.7)
