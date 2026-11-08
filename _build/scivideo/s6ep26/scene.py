@@ -224,10 +224,10 @@ class S6Ep26(EpisodeScene):
     # ── 관계 ──
     def relation(self):
         self.section("관계 정리")
-        hi = K.gnomon(60, 1.3, x0=-1.6, y0=-0.3, string=False, arc=False, board_w=2.6, sun_d=1.6)
-        lo = K.gnomon(25, 1.3, x0=3.2, y0=-0.3, string=False, arc=False, board_w=3.9, sun_d=2.4)
-        th = K.text_card([f"태양 고도 {o('높아지면')}", f"그림자 {o('짧아지고')}", f"기온 {o('높아져요')}"], size=30).move_to([-3.0, -1.65, 0])
-        tl = K.text_card([f"태양 고도 {r('낮아지면')}", f"그림자 {r('길어지고')}", f"기온 {r('낮아져요')}"], size=30).move_to([3.3, -1.65, 0])
+        hi = K.gnomon(60, 1.3, x0=-1.6, y0=0.1, string=False, arc=False, board_w=2.6, sun_d=1.6)
+        lo = K.gnomon(25, 1.3, x0=3.2, y0=0.1, string=False, arc=False, board_w=3.9, sun_d=2.4)
+        th = K.text_card([f"태양 고도 {o('높아지면')}", f"그림자 {o('짧아지고')}", f"기온 {o('높아져요')}"], size=26).move_to([-3.0, -1.3, 0])
+        tl = K.text_card([f"태양 고도 {r('낮아지면')}", f"그림자 {r('길어지고')}", f"기온 {r('낮아져요')}"], size=26).move_to([3.3, -1.3, 0])
         self.say(f"태양 고도가 높아지면 그림자는 {o('짧아지고')} 기온은 {o('높아져요')}",
                  "태양 고도가 높아지면 그림자 길이는 짧아지고, 기온은 높아져요.")
         self.play(FadeIn(hi), FadeIn(th), run_time=0.8)
