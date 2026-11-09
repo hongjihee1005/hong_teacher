@@ -84,7 +84,7 @@ function scopeScene(key,st,o){o=o||{};const S=st||{};const dy=scHeadY(S);let g=b
  return g}
 function e2Scene(s){const r=R(),id=s.id,st=r.st;
  if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'),true);
- if(id==='parts'){const k=UI.mq.cur;let g=bg({})+scopeArt({},{mark:k});if(k){const P=PARTS.find(p=>p[0]===k);g+=tag(560,40,P[1]+' · '+P[2],20)}else g+=qmark(700,200);return g}
+ if(id==='parts'){const k=UI.mq.cur;let g=bg({})+scopeArt({},{mark:k});if(k){const P=PARTS.find(p=>p[0]===k);g+=tag(480,40,P[1]+' · '+P[2],20)}else g+=qmark(700,200);return g}
  if(id==='slide'){const n=st.sl||0,f=UI.fx&&/^sl/.test(UI.fx.id)?+UI.fx.id[2]:0;let g=bgTop()+capTop(250,290,140)+slideTop();
   if(f===1)g+='<g'+an('lb-a-down',0,'--from:-140px')+'>'+tapeStrip(250,290,0)+'</g>';
   else if(f===2)g+='<g'+an('lb-a-raise',0,'--from:120px')+'>'+tapeStrip(250,170,1)+'</g>';
@@ -379,8 +379,10 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx,st=r.st||{};
   case 'mlens':cells('돋보기로 볼 곳',[['ml1','갓 윗면'],['ml2','뒤집어서 갓 안쪽']]);break;
   case 'mold':A.push({id:'be',label:'뚜껑 닫은 채 맨눈으로 보기',dis:busy},{id:'bl',label:'뚜껑 닫은 채 돋보기로 보기',dis:busy},{id:'smell',label:'냄새 맡아 보기',sub:1,dis:busy});break;
   case 'parts':A.push(...PARTS.map(p=>({id:'pt'+p[0],label:p[1],cell:1,grp:'살펴볼 부분',pressed:UI.mq.cur===p[0]&&!busy,seen:!!r.seen['pt'+p[0]],dis:busy})));break;
-  case 'scope1':case 'scope2':{const k=s.scope;OPS.forEach(o=>A.push({id:k+'_'+o[0],label:o[1],cell:1,grp:'현미경 다루기',pressed:false,seen:!!r.seen[k+'_'+o[0]],dis:busy}));
-   A.push({id:k+'_bad',label:'접안렌즈로 보며 대물렌즈 내리기',sub:1,dis:busy});break}
+  case 'scope1':case 'scope2':{const k=s.scope;
+   /* 잘못된 다루기(접안렌즈로 보며 내리기)도 같은 칸 묶음에 같은 모양으로 섞어 둠 — 따로 큰 단추로 두면 해야 할 일처럼 보임 */
+   const L=OPS.slice();L.splice(3,0,['bad','접안렌즈로 보며 대물렌즈 내리기']);
+   L.forEach(o=>A.push({id:k+'_'+o[0],label:o[1],cell:1,grp:'현미경 다루기',pressed:false,seen:o[0]!=='bad'&&!!r.seen[k+'_'+o[0]],dis:busy}));break}
   case 'alga':A.push({id:'ae',label:'맨눈으로 자세히 보기',dis:busy},{id:'at',label:'장갑 낀 손으로 만져 보기',dis:busy});break;
   case 'alens':A.push({id:'al',label:'돋보기로 보기',dis:busy});break;
   case 'dalga':seqActs(A,'da',['z0','z1','z2','z3'],['해캄 접시를 렌즈 아래에 놓기','초점 휠 돌리기: 60배','초점 휠 돌리기: 250배','초점 휠 돌리기: 1000배'],busy);A.push({id:'dtouch',label:'렌즈를 해캄에 대 보기',sub:1,dis:busy});break;
