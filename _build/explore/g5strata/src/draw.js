@@ -161,13 +161,13 @@ function grains(rk,i,P,cx,cy,hw,hh,sc,nmax){const [a,b]=rk.gs;let g='';
   const rr=(a+rnd(i*31+j,63)*(b-a))*sc*(rnd(j,64+i)<.75&&b>8?.35:1);g+='<ellipse cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" rx="'+rr.toFixed(1)+'" ry="'+(rr*.8).toFixed(1)+'" fill="'+rk.gc[Math.floor(rnd(j,65+i)*rk.gc.length)]+'"'+(rr>4.5?' stroke="#3b3a35" stroke-opacity=".35"':'')+'/>'}}
  else if(!P){for(let j=0;j<260;j++){const x=cx-hw+rnd(i*97+j,66)*hw*2,y=cy-hh+rnd(i*97+j,67)*hh*2;g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="1" fill="'+rk.gc[1]+'" opacity=".75"/>'}}
  return g}
-function rock6(i,cx,cy,r,o){o=o||{};const rk=ROCKS[i],P=rockPoly6(i,cx,cy,r);let g='<path d="'+P2(P)+'" fill="'+rk.bg+'" stroke="#3b3a35" stroke-width="2.5" stroke-linejoin="round"/>'+grains(rk,i,P,cx,cy,r*1.2,r*.9,r/68,300);
+function rock6(i,cx,cy,r,o){o=o||{};const rk=ROCKS[i],P=rockPoly6(i,cx,cy,r);let g='<path d="'+P2(P)+'" fill="'+rk.bg+'" stroke="#3b3a35" stroke-width="2.5" stroke-linejoin="round"/>'+(o.plain?'':grains(rk,i,P,cx,cy,r*1.2,r*.9,r/68,300));
  if(o.hl)g+='<path d="'+P2(rockPoly6(i,cx,cy,r+12))+'" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
  if(o.stk)g+='<g'+(o.stkAnim?an('lb-a-pop',.2+i*.12):'')+'>'+chip(cx-r*.85,cy-r*.62,i+1,Math.max(13,r*.25))+'</g>';
  return g}
 const R6POS=[0,1,2,3,4,5].map(i=>[230+(i%3)*250,200+Math.floor(i/3)*160]);
 function paper6(o){o=o||{};let g=bgTop()+(o.nopaper?'':'<g'+(o.paperAnim?an('lb-a-slide',0,'--dx:-900px'):'')+'><rect x="96" y="108" width="780" height="340" rx="6" fill="var(--w-shadow)"/><rect x="90" y="100" width="780" height="340" rx="6" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2"/></g>');
- R6POS.forEach((p,i)=>{g+=rock6(i,p[0],p[1],64,{stk:o.stk,stkAnim:o.stkAnim,hl:o.hl===i})});return g}
+ R6POS.forEach((p,i)=>{g+=rock6(i,p[0],p[1],64,{stk:o.stk,stkAnim:o.stkAnim,hl:o.hl===i,plain:o.plain})});return g}
 /* 돋보기 속 모습(3배) */
 function loupeView(i,cx,cy,R){const rk=ROCKS[i],id='lp'+i+'r'+R;
  return '<clipPath id="'+id+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+R+'"/></clipPath><circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="'+rk.bg+'"/><g clip-path="url(#'+id+')">'+grains(rk,i+40,null,cx,cy,R,R,2.8,420)+'</g>'+
@@ -209,7 +209,7 @@ function fosAt(i,x,y,s,o){o=o||{};let g='<g transform="translate('+x+' '+y+') sc
  if(o.hl)g+='<rect x="'+(x-10)+'" y="'+(y-10)+'" width="'+(200*s+20)+'" height="'+(150*s+20)+'" rx="16" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';return g}
 function paperF(o){o=o||{};let g=bgTop()+(o.nopaper?'':'<g'+(o.paperAnim?an('lb-a-slide',0,'--dx:-900px'):'')+'><rect x="96" y="98" width="790" height="390" rx="6" fill="var(--w-shadow)"/><rect x="90" y="90" width="790" height="390" rx="6" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2"/></g>');
  if(o.nofos)return g;
- FOS.forEach((f,i)=>{const p=F6POS[i];g+='<g'+(o.anim?an('lb-a-pop',.3+i*.12):'')+'>'+fosAt(i,p[0]+10,p[1],.9,{hl:o.hl===i})+'</g>'+mini(p[0]+100,p[1]+158,f.n,18)});return g}
+ FOS.forEach((f,i)=>{const p=F6POS[i];g+='<g'+(o.anim?an('lb-a-pop',.3+i*.12):'')+'>'+fosAt(i,p[0]+18,p[1]+4,.82,{hl:o.hl===i})+'</g>'+(o.noname?'':mini(p[0]+100,p[1]+150,f.n,17))});return g}
 const F6S=[0,1,2,3,4,5].map(i=>[70+(i%2)*170,80+Math.floor(i/2)*130]);
 function fosLoupe(i,o){o=o||{};let g=bgTop()+'<rect x="50" y="62" width="380" height="410" rx="6" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2"/>';
  F6S.forEach((p,j)=>{g+=fosAt(j,p[0],p[1],.7,{hl:j===i})});

@@ -112,7 +112,7 @@ function jarArt(cx,base,o){o=o||{};const w=JR.w,h=JR.h,top=base-h,m=JR.m;let g=o
  const out='M'+(cx-w)+' '+(base-10)+' Q'+(cx-w)+' '+base+' '+(cx-w+10)+' '+base+' H'+(cx+w-10)+' Q'+(cx+w)+' '+base+' '+(cx+w)+' '+(base-10)+' V'+(top+40)+' Q'+(cx+w)+' '+(top+22)+' '+(cx+m)+' '+(top+16)+' V'+top+' H'+(cx-m)+' V'+(top+16)+' Q'+(cx-w)+' '+(top+22)+' '+(cx-w)+' '+(top+40)+'Z';
  g+='<path d="'+out+'" fill="rgba(222,240,250,.5)"/><path d="'+out+'" fill="none" stroke="'+GLS+'" stroke-width="4" stroke-linejoin="round"/><path d="M'+(cx-w+12)+' '+(top+50)+' V'+(base-22)+'" stroke="#FFFFFF" stroke-width="6" opacity=".6" stroke-linecap="round"/>';
  g+='<rect x="'+(cx-m-6)+'" y="'+(top-6)+'" width="'+(2*m+12)+'" height="12" rx="4" fill="#C7D4DC" stroke="'+GLS+'" stroke-width="2.5"/>';
- if(o.cap){const k=o.k==null?.06:o.k,k0=o.k0;
+ if(o.cap){const k=o.k==null?0:o.k,k0=o.k0;
   let mp='<path d="'+memPath(cx,top,k)+' Z" fill="'+RUB+'" fill-opacity=".8" stroke="'+RUBS+'" stroke-width="5" stroke-linejoin="round">';
   if(k0!=null)mp+='<animate attributeName="d" from="'+memPath(cx,top,k0)+' Z" to="'+memPath(cx,top,k)+' Z" dur="'+(o.dur||2.4)+'s" fill="freeze" calcMode="spline" keySplines=".3 0 .4 1" keyTimes="0;1"/>';
   g+='<g'+(o.capAnim?an('lb-a-down',0,'--from:-80px'):'')+'>'+mp+'</path><rect x="'+(cx-m-9)+'" y="'+(top-10)+'" width="'+(2*m+18)+'" height="26" rx="6" fill="'+RUB+'" stroke="'+RUBS+'" stroke-width="2.5"/><path d="M'+(cx-m-10)+' '+(top+8)+' H'+(cx+m+10)+'" stroke="#6B4A2B" stroke-width="5"'+(o.capAnim?an('lb-a-fade',.9):'')+'/></g>'}

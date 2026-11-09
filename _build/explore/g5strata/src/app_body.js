@@ -61,7 +61,7 @@ function e1Scene(s){const r=R(),id=s.id,se=r.seen;
 /* 실험 2: 지층 모형 */
 const ord=()=>R().st.ord||[];
 function tankSpot(){const i=curI('l');if(i==null)return null;return [480,layerMid(ord(),i),44,2,180,165]}
-function otherSpot(){const i=curI('o');if(i==null)return null;return [480,layerMid(OTHER,i),44,2,180,165]}
+function otherSpot(){const i=curI('o');if(i==null)return null;return [480,layerMid(other(),i),44,2,180,165]}
 function bigCups(o){o=o||{};let g=bg({});MATK.forEach((k,j)=>{g+=cupArt(300+j*180,416,k,{s:2,fill:o.fill,fillAnim:o.fillAnim,water:o.water,waterAnim:o.waterAnim,nolab:1})+mini(300+j*180,450,MAT[k].n,20)});return g}
 function e2Scene(s){const r=R(),id=s.id,st=r.st;
  if(id==='gear')return bg({})+gearArt(2,has('gear'),fxOn('gear'));
@@ -72,9 +72,10 @@ function e2Scene(s){const r=R(),id=s.id,st=r.st;
  if(id==='pour'){const f=UI.fx&&/^p(gs|s|m)$/.test(UI.fx.id)?UI.fx.id.slice(1):null,o=ord().slice();if(f)o.push(f);
   return modelScene({water:.25+.083*o.length,ord:o,grow:!!f,cloud:f,pouring:f})}
  if(id==='layers')return modelScene({water:.5,ord:ord()});
- if(id==='other')return bg({})+tankArt({water:.5,ord:OTHER})+tag(480,470,'다른 모둠 모형',22);
+ if(id==='other')return bg({})+tankArt({water:.5,ord:other()})+tag(480,470,'다른 모둠 모형',22);
  if(id==='real'){const c=UI.mq.cur;let g=bgTop()+'<rect x="76" y="86" width="376" height="290" rx="12" fill="var(--w-wall)"/><rect x="76" y="330" width="376" height="46" fill="var(--w-top)"/>'+tankArt({x:154,w:220,b:338,h:220,water:.5,ord:ord()});
   g+=cliffArt(520,96,360,270)+mini(260,420,'우리 지층 모형',20)+mini(700,420,'실제 지층',20);
+  if(R().seen.rm)g+=mini(264,462,'오늘 부어 만든 모형 · 단단하지 않아요',17);if(R().seen.rr)g+=mini(700,462,'오랜 시간에 걸쳐 단단히 굳은 암석',17);
   if(c==='rm')g+='<rect x="66" y="82" width="390" height="300" rx="14" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
   if(c==='rr')g+='<rect x="506" y="82" width="388" height="298" rx="14" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
   return g}
@@ -82,8 +83,8 @@ function e2Scene(s){const r=R(),id=s.id,st=r.st;
 /* 실험 3: 퇴적암 */
 function e3Scene(s){const r=R(),id=s.id,st=r.st;
  if(id==='gear')return bg({})+gearArt(3,has('gear'),fxOn('gear'));
- if(id==='paper'){const on=has('paper');if(!on)return paper6({nopaper:1});return paper6({stk:1,paperAnim:fxOn('paper'),stkAnim:fxOn('paper')})}
- if(id==='pred')return paper6({stk:1})+qmark(480,62);
+ if(id==='paper'){const on=has('paper');if(!on)return paper6({nopaper:1,plain:1});return paper6({stk:1,plain:1,paperAnim:fxOn('paper'),stkAnim:fxOn('paper')})}
+ if(id==='pred')return paper6({stk:1,plain:1})+qmark(480,62);
  if(id==='touch'){const i=curI('t');let g=paper6({stk:1,hl:i});if(i!=null){const p=R6POS[i];g+='<g'+(UI.fx?an('lb-a-pat',0):'')+'>'+cotton(p[0]+40,p[1]-30,-100,1.1)+'</g>'}return g}
  if(id==='color')return paper6({stk:1,hl:curI('c')});
  if(id==='loupe')return loupeScene(curI('l'),{anim:!!UI.fx});
@@ -95,8 +96,8 @@ function e3Scene(s){const r=R(),id=s.id,st=r.st;
 /* 실험 4: 화석 */
 function e4Scene(s){const r=R(),id=s.id;
  if(id==='gear')return bg({})+gearArt(4,has('gear'),fxOn('gear'));
- if(id==='paper'){const on=has('paper');if(!on)return bgTop()+boxArt(480);return paperF({paperAnim:fxOn('paper'),anim:fxOn('paper')})}
- if(id==='pred')return paperF({})+qmark(480,60);
+ if(id==='paper'){const on=has('paper');if(!on)return bgTop()+boxArt(480);return paperF({noname:1,paperAnim:fxOn('paper'),anim:fxOn('paper')})}
+ if(id==='pred')return paperF({noname:1})+qmark(480,60);
  if(id==='loupe')return fosLoupe(curI('f'),{anim:!!UI.fx});
  if(id==='like')return likeScene(curI('k'),{anim:!!UI.fx});
  if(id==='kind'){const x=r.rec.kind,D=UI.draft.kind;return kindBoxes(x&&x.ok?x.f:D&&D.f?D.f:[],(r.seen.kb||fxOn('kb'))?(fxOn('kb')?'a':1):0)}
@@ -117,6 +118,7 @@ function e5Scene(s){const r=R(),id=s.id,st=r.st,f=UI.fx?UI.fx.id:null;
   if(n<2&&f!=='o2'){const L=n>=1||f==='o1';return bg({})+bowlArt({bag:1,clay:1,imp:1,water:1,plaster:1,hard:1,lift:L,liftAnim:f==='o1'})}
   const c=UI.mq.cur;let g=bgTop()+piecesArt({anim:f==='o2'});if(c==='oc')g+='<rect x="136" y="236" width="308" height="190" rx="16" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';if(c==='op')g+='<rect x="516" y="236" width="308" height="190" rx="16" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';return g}
  if(id==='cmp'){const c=UI.mq.cur;let g=bgTop()+modelShell(130,140,1.5)+realShell(530,140,1.5)+mini(280,420,'화석 모형',20)+mini(680,420,'조개 화석 표본',20);
+  if(R().seen.sm)g+=mini(280,462,'오늘 석고로 만든 모형',17);if(R().seen.sf)g+=mini(680,462,'오랜 시간에 걸쳐 만들어진 화석',17);
   if(c==='sm')g+='<rect x="116" y="126" width="328" height="253" rx="18" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
   if(c==='sf')g+='<rect x="516" y="126" width="328" height="253" rx="18" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';return g}
  return bg({})+bowlArt({bag:1,clay:1})}
@@ -295,7 +297,7 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
 const LABNAME='strata';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
  if(no===1){S(cardsTable({face:()=>1,pen:()=>ok('shape'),noBig:1}),'40 108 512 250',ok('shape')?'층의 경계를 따라 선을 그은 지층 카드':'지층 카드 여섯 장')}
- if(no===2){const o=r.st.ord||[];if(o.length)S(bg({})+tankArt({water:.5,ord:o}),'300 90 360 360','우리 모둠 지층 모형');if(ok('oth'))S(bg({})+tankArt({water:.5,ord:OTHER}),'300 90 360 360','다른 모둠 지층 모형')}
+ if(no===2){const o=r.st.ord||[];if(o.length)S(bg({})+tankArt({water:.5,ord:o}),'300 90 360 360','우리 모둠 지층 모형');if(ok('oth'))S(bg({})+tankArt({water:.5,ord:other()}),'300 90 360 360','다른 모둠 지층 모형')}
  if(no===3){S(paper6({stk:1}),'90 100 780 340','퇴적암 ①~⑥');if(ok('see'))S(bgTop()+loupeView(1,150,150,120)+loupeView(0,430,150,120)+loupeView(2,710,150,120),'10 10 860 290','돋보기로 본 ②, ①, ③')}
  if(no===4){S(paperF({}),'90 90 790 390','여러 가지 화석')}
  if(no===5){if(ok('res'))S(bgTop()+piecesArt({}),'120 220 720 250','떼어 낸 찰흙과 석고');if(ok('cmpf'))S(bgTop()+modelShell(130,140,1.5)+realShell(530,140,1.5)+mini(280,420,'화석 모형',20)+mini(680,420,'조개 화석 표본',20),'100 120 760 330','화석 모형과 실제 조개 화석')}
@@ -354,7 +356,7 @@ function render(){const H=document.documentElement;H.classList.toggle('lb-big',!
  set($('#lbFoot'),footHTML(v,r,s));
  fitAll();clearTimeout(render.ft);render.ft=setTimeout(fitAll,350)}
 function fitBox(box,inner,min){if(!box||!inner)return;inner.style.zoom='';if(narrow()||!box.clientHeight)return;if(box.scrollHeight<=box.clientHeight+1)return;let z=Math.max(min,box.clientHeight/box.scrollHeight);inner.style.zoom=z.toFixed(3);let n=0;while(box.scrollHeight>box.clientHeight+1&&z>min&&n++<12){z=Math.max(min,z-.02);inner.style.zoom=z.toFixed(3)}}
-function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.6);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.56)}
+function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.76);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.56)}
 function renderScene(){const r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NAR=narrow();LEG=[];
  let over='';
  if(UI.toast)over+='<div class="lb-toast '+(UI.toastK==='info'?'lb-toast3':'lb-toast2')+'" role="status">'+esc(UI.toast)+'</div>';

@@ -86,7 +86,7 @@ function e1Scene(s){const r=R(),id=s.id,f=fid();
 function e2Scene(s){const r=R(),id=s.id,f=fid();
  if(id==='close'){const on=has('close');if(!on)return bg({})+vacJar(400,BY,{lidOff:680});return bg({})+vacJar(480,BY,{lid:1,lidAnim:f==='close'})}
  if(id==='w0')return scaleScene('sc',['sp','sz','sb'],'254.8',vacJar(170,BY,{lid:1}),noSh(vacJar(ES.x,330,{lid:1})),{power:1});
- if(id==='w1')return scaleScene('sc1',['pu','z1','b1'],'254.3',(k,f2)=>vacJar(170,BY,{lid:1,pump:k<1||f2==='pu',pumpOut:f2==='pu'}),noSh(vacJar(ES.x,330,{lid:1})),{pre:1});
+ if(id==='w1')return scaleScene('sc1',['z1','b1'],'254.3',vacJar(170,BY,{lid:1}),noSh(vacJar(ES.x,330,{lid:1})));
  if(id==='pred')return bg({})+vacJar(480,BY,{lid:1,pump:1})+qmark(680,170);
  if(id==='pump'){const ids=['lo','v4','v8'],k=seqK('vp',ids),fi=ids.indexOf(f);
   if(k===0)return bg({})+escale(ES.x,{on:1,val:'254.8',item:noSh(vacJar(ES.x,330,{lid:1}))});
@@ -414,9 +414,9 @@ function railHTML(){const v=V(),r=R(),N=v.steps.length;let h='<div class="lb-mto
 function actsOf(s){const r=R(),A=[],busy=!!UI.fx,no=V().no;
  switch(s.id){
   case 'w0':seqActs(A,'sc',['sp','sz','sb'],['저울 전원 켜기','영점 맞추기',no===1?'페트병 올려놓기':'용기 올려놓기'],busy);break;
-  case 'w1':if(no===1)seqActs(A,'sc1',['z1','b1'],['영점 맞추기','페트병 올려놓기'],busy);else seqActs(A,'sc1',['pu','z1','b1'],['펌프 빼기','영점 맞추기','용기 올려놓기'],busy);break;
+  case 'w1':if(no===1)seqActs(A,'sc1',['z1','b1'],['영점 맞추기','페트병 올려놓기'],busy);else seqActs(A,'sc1',['z1','b1'],['영점 맞추기','용기 올려놓기'],busy);break;
   case 'pump':if(no===1)seqActs(A,'pm',['p10','t1'],['마개 10번 누르기','손가락으로 페트병 눌러 보기'],busy);
-   else if(no===2)seqActs(A,'vp',['lo','v4','v8'],['저울에서 내려놓고 펌프 끼우기','펌프질 4번 하기','펌프질 4번 더 하기'],busy);
+   else if(no===2)seqActs(A,'vp',['lo','v4','v8'],['저울에서 내려놓기','펌프질 4번 하기','펌프질 4번 더 하기'],busy);
    else seqActs(A,'bp',['v1','v2'],['펌프질 3번 하기','펌프질 3번 더 하기'],busy);break;
   case 'pump2':seqActs(A,'pm2',['p20','t2'],['마개 10번 더 누르기','손가락으로 페트병 눌러 보기'],busy);break;
   case 'hot':seqActs(A,'hb',['h1','h2'],['뜨거운 물 수조에 넣기','1분쯤 지켜보기'],busy);break;
@@ -513,7 +513,7 @@ function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
  const pendAt=(row,last)=>i=>{if(i===last&&!rowDone(row))r.pend[row]=1};
  switch(s.id){
   case 'w0':seq('sc',['sp','sz','sb'],[1000,1000,1300],pendAt(V().no===1?'m0':'c0',2));return;
-  case 'w1':if(V().no===1)seq('sc1',['z1','b1'],[1000,1300],pendAt('m1',1));else seq('sc1',['pu','z1','b1'],[1100,1000,1300],pendAt('c1',2));return;
+  case 'w1':if(V().no===1)seq('sc1',['z1','b1'],[1000,1300],pendAt('m1',1));else seq('sc1',['z1','b1'],[1000,1300],pendAt('c1',1));return;
   case 'pump':if(V().no===1)seq('pm',['p10','t1'],[2200,1300]);else if(V().no===2)seq('vp',['lo','v4','v8'],[1700,2200,2200]);else seq('bp',['v1','v2'],[2200,2200]);return;
   case 'pump2':seq('pm2',['p20','t2'],[2200,1300]);return;
   case 'hot':seq('hb',['h1','h2'],[1300,2600]);return;
