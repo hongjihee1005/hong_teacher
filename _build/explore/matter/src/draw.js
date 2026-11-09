@@ -107,7 +107,7 @@ function cupInv(top,o){o=o||{};const cx=EF.cx,h=150,wt=46,wb=66,yb=top+h;let g='
  if(o.hands)g+=hand(cx-wb-40,top+72,0,.9,1)+hand(cx+wb+40,top+72,180,.9,1);
  return g}
 /* 물에 넣었을 때 수조 물 높이 (이 자료에서 정한 값: 막은 컵 14 높아짐, 막지 않은 컵 2) */
-const CUPIN={top:286,rise:{cl:14,op:2},inner:{cl:422,op:300}};
+const CUPIN={top:286,rise:{cl:14,op:2},inner:{cl:422,op:286}};
 function bubbles(){let g='';for(let i=0;i<5;i++)g+='<circle cx="'+(EF.cx-10+(i%3)*10)+'" cy="'+(CUPIN.top-10-i*14)+'" r="'+(5-i*.6)+'" fill="none" stroke="#FFFFFF" stroke-width="2"'+an('lb-a-up',.2*i,'--from:30px')+'/>';return g}
 function tankMark(){return '<path d="M'+(EF.tx+EF.tw-30)+' '+EF.wl+' H'+(EF.tx+EF.tw+10)+'" stroke="#222831" stroke-width="4"/>'}
 
@@ -124,7 +124,7 @@ function itemArt(k){const A={
   cupw:glassCup(0,40,.75,WATER,.8),cupj:glassCup(0,40,.75,JUICE,.8),
   balloon:balloon(0,46,.62),
   tray:'<path d="M-62 26 L-50 4 H50 L62 26Z" fill="#A7C4D8" stroke="#5F87A3" stroke-width="2.5"/><rect x="-36" y="-26" width="58" height="26" rx="4" fill="#F4E9D2" stroke="#B99E6E" stroke-width="2"/>',
-  jars:'<g transform="translate(-134 -86) scale(.28)">'+JARS.map((_,j)=>jarArt(j)).join('')+'</g>',
+  jars:'<g transform="translate(-120 -80) scale(.25)">'+JARS.map((_,j)=>jarArt(j)).join('')+'</g>',
   pen:pen(-48,0,-20),
   cup:'<g transform="translate(-264 -151) scale(.55)">'+cupInv(200,{})+'</g>',
   wipe:'<rect x="-22" y="-8" width="44" height="16" rx="4" fill="#FFFFFF" stroke="#9AA6B2" stroke-width="2"/>',
@@ -133,6 +133,12 @@ function itemArt(k){const A={
 function toolsScene(list,anim){let b='';if(NAR)list.forEach(it=>LEG.push([null,it[1]]));const n=list.length,cols=n<=4?n:n<=6?3:4,rows=Math.ceil(n/cols),cw=200,ch=176,gx=18,gy=18;
  const W=cols*cw+(cols-1)*gx,H=rows*ch+(rows-1)*gy,x0=480-W/2,y0=Math.max(30,250-H/2);
  list.forEach((it,i)=>{const c=i%cols,r=Math.floor(i/cols),x=x0+c*(cw+gx),y=y0+r*(ch+gy),cx=x+cw/2;
-  b+='<g'+(anim?an('lb-a-pop',.3+i*.15):'')+'><rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+ch+'" rx="16" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/><g transform="translate('+cx+' '+(y+72)+')">'+itemArt(it[0])+'</g>'+(NAR?'':'<text x="'+cx+'" y="'+(y+ch-18)+'" text-anchor="middle" font-size="'+(it[1].length>12?15:20)+'" font-weight="800" fill="var(--w-labeltx)">'+it[1]+'</text>')+'</g>'});
+  b+='<g'+(anim?an('lb-a-pop',.3+i*.15):'')+'><rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+ch+'" rx="16" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/><g transform="translate('+cx+' '+(y+72)+')">'+itemArt(it[0])+'</g>'+(NAR?'':toolLabel(cx,y+ch-18,it[1]))+'</g>'});
  return b}
+/* 준비물 이름: 길면 두 줄로(글자를 줄이지 않음) */
+function toolLabel(cx,yb,t){const T='<text x="'+cx+'" text-anchor="middle" font-size="19" font-weight="800" fill="var(--w-labeltx)"';
+ if(t.length<=9)return T+' y="'+yb+'">'+t+'</text>';
+ const sp=[...t].map((c,i)=>c===' '?i:-1).filter(i=>i>0);if(!sp.length)return T+' y="'+yb+'" font-size="16">'+t+'</text>';
+ const m=sp.reduce((a,i)=>Math.abs(i-t.length/2)<Math.abs(a-t.length/2)?i:a,sp[0]);
+ return T+' y="'+(yb-21)+'">'+t.slice(0,m)+'</text>'+T+' y="'+yb+'">'+t.slice(m+1)+'</text>'}
 function boxArt(x){return '<g transform="translate('+x+' 300)"><path d="M-130 -60 L-100 -96 H150 L120 -60Z" fill="var(--w-kraft-s)"/><rect x="-130" y="-60" width="250" height="196" rx="8" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="2"/><path d="M120 -60 L150 -96 V100 L120 136Z" fill="var(--w-kraft-s)"/>'+(NAR?'':'<rect x="-60" y="-10" width="110" height="44" rx="8" fill="var(--w-label)"/><text x="-5" y="20" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-labeltx)">준비물</text>')+'</g>'}

@@ -101,7 +101,7 @@ function matArt0(k,mode){const [x,y]=IP[k],f=UI.fx;let g='';
   if(held){g+=puddle(x,TRAY.y+30,col,46)+glassCup(x,y,.5,col,1)+palm(x-6,y-150,.95);if(moving)g+=drops(x,y-120,col);return g}
   if(stk){g+=puddle(x,TRAY.y+30,col,62)+glassCup(x,y,.35,col,1);if(moving)g+='<path d="M'+(x-36)+' '+(y-100)+' q-20 30 -10 80" stroke="'+col+'" stroke-width="10" fill="none" stroke-linecap="round"'+an('lb-a-stream',0,'stroke-dasharray:24 12')+'/>';return g}
   return glassCup(x,y,.75,col,1)}
- if(k==='air'){if(held||stk){g+=balloon(x,y,.55)+palm(x+70,y-70,.8);if(moving)g+=puff(x+10,y-50,1);return g}return balloon(x,y,1)}
+ if(k==='air'){if(held||stk){g+=balloon(x,y,.55)+palm(x+52,y-70,.8);if(moving)g+=puff(x+10,y-50,1);return g}return balloon(x,y,1)}
  return g}
 function e2Scene(s){const r=R(),id=s.id,f=UI.fx;let g=bg({})+trayArt();
  if(id==='tray'){const on=has('tray');if(!on)return g+qmark(480,200);
@@ -136,7 +136,7 @@ function e3Scene(s){const r=R(),st=r.st,id=s.id,f=UI.fx;let g=bg({});
   else g+=qmark(480,150);return g}
  if(id==='water')return g+liqScene('lw',WATER);
  if(id==='juice')return g+liqScene('lj',JUICE);
- g+=jarsBase()+rodV('wood',JARS[0].cx,JB-2,150,26)+liquidIn(1,LVOL,WATER)+qmark(JARS[2].cx,150);return g}
+ g+=jarsBase()+qmark(480,150);return g}
 /* 실험 4 */
 function tankSpot(){return [EF.tx+EF.tw-12,EF.wl,24,2.4,800,130]}
 function cupSpot(){const s=curStep().id,ok=s==='in1'?(R().seen.in1||fxOn('in1')):(R().seen.in2||fxOn('in2'));if(!ok||UI.fx)return null;return [EF.cx,CUPIN.top+24,34,2,320,130]}
@@ -195,7 +195,7 @@ function planCard(){const v=V(),r=R(),P=v.plan;let h='<p class="lb-q">'+esc(v.q)
 function planGood(v,r){return v.plan.rows.every(x=>r.plan[x[0]]===(x[3]?'d':'s'))}
 function predCard(){const v=V(),r=R(),lock=predLocked();let h='';
  if(v.predHint)h+='<p class="lb-hint">'+esc(v.predHint)+'</p>';
- v.pred.forEach((q,j)=>{h+=(v.pred.length>1?'<p class="lb-q">'+esc(q.q)+'</p>':'')+'<div class="lb-opts" role="group" aria-label="'+esc(q.q)+'">';
+ v.pred.forEach((q,j)=>{h+=(v.pred.length>1?'<p class="lb-q">'+esc(q.q)+'</p>':'')+'<div class="lb-opts'+(q.o.length>3&&q.o.every(t=>t.length<=7)?' lb-opts2':'')+'" role="group" aria-label="'+esc(q.q)+'">';
   q.o.forEach((t,i)=>{const on=r.pred[j]===i;h+='<button type="button" class="lb-opt'+(v.pred.length>1?' lb-optsm':'')+'" data-f="o'+j+i+'" data-pred="'+j+':'+i+'" aria-pressed="'+on+'"'+(lock?' disabled':'')+'><i>'+(on?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>'});h+='</div>'});
  h+='<div><label class="lb-label" for="lbWhy">그렇게 생각한 까닭 (쓰고 싶으면)</label><input id="lbWhy" class="lb-input" maxlength="60" placeholder="왜냐하면 ~ 때문이에요." value="'+esc(r.why)+'"'+(lock?' readonly':'')+'></div>';
  if(lock)h+='<div class="lb-msg lb-plain">'+ic('lock')+'<span>관찰을 시작해서 예상을 바꿀 수 없어요.</span></div>';
@@ -204,8 +204,8 @@ function predCard(){const v=V(),r=R(),lock=predLocked();let h='';
 
 /* ───────── 기록 줄(③) ───────── */
 function rowSum(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{};
- if(R0.t==='sel')return R0.f.map((f,i)=>(R0.f.length>1?f.l+' ':'')+f.o[x.f[i]]).join(' · ');
- if(R0.t==='note')return R0.f.map((f,i)=>f.l+': '+((x.t&&x.t[i])||'(쓰지 않았어요)')).join(' · ');
+ if(R0.t==='sel')return R0.f.map((f,i)=>(f.l?f.l+' ':'')+f.o[x.f[i]]).join(' · ');
+ if(R0.t==='note'){const w=R0.f.map((f,i)=>(x.t&&x.t[i])?f.l+': '+x.t[i]:'').filter(Boolean);return w.length?w.join(' · '):'(쓰지 않았어요)'}
  return ''}
 function rowReady(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{};if(x.ok)return true;
  return R0.need.every(k=>r.seen[k])}
@@ -218,8 +218,9 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
  const D=UI.draft[row]=UI.draft[row]||{};const ok=rowReady(row);
  const recB=on=>'<button type="button" class="lb-rec-btn" data-act="rowrec" data-row="'+row+'" data-f="rr'+row+'"'+(on?'':' disabled')+'>'+ic('check')+'기록하기</button>';
  if(R0.t==='sel'){D.f=D.f||[];
-  R0.f.forEach((f,j)=>{const long=f.o.some(t=>t.length>6)||f.o.length>3;
-   h+='<div class="lb-cells lb-c1"><span class="lb-cl">'+esc(f.l)+'</span><span class="lb-seg lb-kseg'+(long?' lb-kwrap':'')+(wr.indexOf(j)>=0?' lb-wrongc':'')+'" role="group" aria-label="'+esc(R0.n+' '+f.l)+'">'+f.o.map((o,i)=>'<button type="button" class="lb-s" data-f="'+row+j+'-'+i+'" data-dr="'+row+':'+j+':'+i+'" aria-pressed="'+(D.f[j]===i)+'"'+(ok?'':' disabled')+'>'+esc(o)+'</button>').join('')+'</span></div>'});
+  const c2=R0.f.every(f=>f.l.length<=7)?' lb-c2':'';
+  R0.f.forEach((f,j)=>{const long=c2?f.o.length>3:f.o.some(t=>t.length>6)||f.o.length>3;
+   h+='<div class="lb-cells lb-c1'+c2+'"><span class="lb-cl">'+esc(f.l)+'</span><span class="lb-seg lb-kseg'+(long?' lb-kwrap':'')+(wr.indexOf(j)>=0?' lb-wrongc':'')+'" role="group" aria-label="'+esc(R0.n+' '+f.l)+'">'+f.o.map((o,i)=>'<button type="button" class="lb-s" data-f="'+row+j+'-'+i+'" data-dr="'+row+':'+j+':'+i+'" aria-pressed="'+(D.f[j]===i)+'"'+(ok?'':' disabled')+'>'+esc(o)+'</button>').join('')+'</span></div>'});
   h+=recB(ok&&R0.f.every((f,j)=>D.f[j]!=null))}
  if(R0.t==='note'){D.t=D.t||[];
   h+='<p class="lb-hint2">쓰고 싶은 것을 짧게 써요. 쓰지 않아도 돼요.</p>'+R0.f.map((f,j)=>'<label class="lb-nrow"><span>'+esc(f.l)+'</span><input class="lb-input lb-ninp" maxlength="30" autocomplete="off" data-f="nt'+row+j+'" data-nt="'+row+':'+j+'" placeholder="'+esc(R0.ph)+'" value="'+esc(D.t[j]||'')+'"'+(ok?'':' disabled')+'></label>').join('');
@@ -235,19 +236,19 @@ function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
  if(D)return '다 했어요. 이어서 가요.';
  if(UI.fx)return s.look;
  const need=s.rows.find(k=>!rowDone(k)),R0=ROWS[need];
- if(rowReady(need))return R0.t==='note'?'③ 살펴본 것을 쓰고 기록해요.':'③ '+R0.n+': 알맞은 것을 골라 기록해요.';
+ if(rowReady(need))return R0.t==='note'?'③ 살펴본 것을 쓰고 기록해요.':'③ '+R0.n+(/\?$/.test(R0.n)?' ':': ')+'알맞은 것을 골라 기록해요.';
  const miss=R0.need.find(k=>!r.seen[k]),A=actsOf(s),a=A.find(b=>b.id===miss);
+ const cur=A.find(b=>b.hide===false&&!b.pressed);if(cur)return '① '+jo(cur.label.replace(/^\d\/5 · /,''),'을','를')+' 눌러요.';
  if(a&&a.cell)return '① '+a.grp+': '+jo(a.label,'을','를')+' 눌러요.';
  return '① '+jo(lbl(miss)||'단추','을','를')+' 눌러요.'}
 function gPart(n,t,st,body){return '<li class="lb-gp lb-'+st+'"'+(st==='wait'?' inert aria-disabled="true"':'')+'><div class="lb-gh"><i>'+(st==='ok'?ic('check'):n)+'</i><b>'+t+'</b></div>'+(body?'<div class="lb-gb">'+body+'</div>':'')+'</li>'}
-function actBtns(s){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=A.filter(a=>!a.cell);let h='';
+function actBtns(s){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=A.filter(a=>!a.cell&&!a.hide);let h='';
+ const seq=A.filter(a=>a.hide!=null);if(seq.length)h+='<ol class="lb-seq" aria-label="차례">'+seq.map((a,i)=>'<li class="'+(a.pressed?'lb-d':!a.hide?'lb-n':'')+'">'+(a.pressed?ic('check'):'<b>'+(i+1)+'</b>')+'<span>'+esc(a.label.replace(/^\d\/5 · /,''))+'</span></li>').join('')+'</ol>';
  if(rest.length)h+='<div class="lb-acts">'+rest.map(a=>'<button type="button" class="lb-act'+(a.sub?' lb-act2':'')+(UI.attn&&!a.dis&&!a.sub?' lb-attn':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'"'+(a.pressed!=null?' aria-pressed="'+!!a.pressed+'"':'')+(a.dis?' disabled':'')+'>'+ic(a.icon||'hand')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div>';
  const grps=[];cells.forEach(a=>{let g=grps.find(x=>x.n===a.grp);if(!g)grps.push(g={n:a.grp,c:[]});g.c.push(a)});
  grps.forEach(G=>{const n=G.c.length,cols=n>4?3:n;h+='<div class="lb-cellrow" role="group" aria-label="'+esc(G.n)+'"><span class="lb-cl">'+esc(G.n)+'</span><div style="grid-template-columns:repeat('+cols+',1fr)">'+G.c.map(a=>'<button type="button" class="lb-cellb'+(UI.attn&&!a.dis?' lb-attn':'')+(a.seen?' lb-seen':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(G.n+' '+a.label)+(a.seen?' (해 봤어요)':'')+'">'+(a.seen?ic('check'):'')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div></div>'});
  return h}
-const MOREQ={1:['더 큰 힘이 든 것은?',['물이 가득 찬 물통','빈 물통'],0,'물이 가득 찬 물통이 더 무거워서 밀 때 더 큰 힘이 들어요.'],
- 2:['물체 한 개를 몇 번 칸에 놓았을 때 수평이 되었나요?',['1번','2번','3번','4번'],1,'물체 두 개를 1번 칸에 놓으면 물체 한 개는 2번 칸에서 수평이 돼요. 물체 두 개가 받침점에 더 가까이 있어요.'],
- 5:['더 작은 힘이 든 것은?',['받침대에서 먼 곳을 누를 때','받침대에서 가까운 곳을 누를 때'],0,'받침대에서 먼 곳을 누를 때 화면의 숫자가 더 작았어요.']};
+const MOREQ={};
 function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=='more'||r.more.a!=null);
  let h='<p class="lb-stat'+(D?' lb-statok':'')+'" role="status">'+ic(D?'check':'info')+'<span>'+esc(hintOf(s))+'</span></p><ol class="lb-guide">';
  if(s.k==='scene'){let b1;const dn=!!r.done[s.id];
@@ -262,9 +263,11 @@ function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=
   h+=gPart(1,'해 보기',both?'ok':'cur',actBtns(s))+gPart(2,'살펴보기',both?'ok':Object.keys(UI.mq).length?'cur':'wait','<p>'+esc(s.look)+'</p>')+gPart(3,'고르기',ans!=null?'ok':both?'cur':'wait',b3);
   return cardHead('더 알아보기','해도 되고 건너뛰어도 돼요')+wrapB(h+'</ol>')}
  const on3=s.rows.some(rowReady)||s.rows.some(k=>ROWS[k].t==='auto'&&acted(s));
- h+=gPart(1,'해 보기',L?'ok':'cur',actBtns(s));
+ /* ①을 모두 해 보면 단추를 접음(본 결과는 그림에 그대로 남음) — 기록 칸이 넓어져 카드 글자가 줄지 않게 */
+ h+=gPart(1,'해 보기',L?'ok':'cur',L&&!UI.fx?'':actBtns(s));
  h+=gPart(2,'살펴보기',!A?'wait':L?'ok':'cur','<p>'+esc(s.look)+'</p>');
- h+=gPart(3,'기록하기',D?'ok':on3?'cur':'wait',s.rows.map(rowUI).join(''));
+ /* ③은 차례가 오면 열림(아직이면 이름만 — 카드 글자가 줄지 않게) */
+ const st3=D?'ok':on3?'cur':'wait';h+=gPart(3,'기록하기',st3,st3==='wait'?'<p class="lb-hint2">해 보기와 살펴보기를 마치면 열려요.</p>':s.rows.filter(k=>rowDone(k)||rowReady(k)).map(rowUI).join('')+(s.rows.some(k=>!rowDone(k)&&!rowReady(k))?'<p class="lb-hint2">남은 것을 해 보면 기록 칸이 더 열려요.</p>':''));
  return cardHead('할 일',stepName(s))+wrapB(h+'</ol>')}
 function cWrong(v,r,i){return !!(r.clast&&r.bl[i]&&r.bl[i]===r.clast[i]&&r.bl[i]!==v.ans[i])}
 function cChanged(r){return !r.clast||r.bl.some((w,i)=>w!==r.clast[i])}
@@ -273,9 +276,15 @@ function frameHTML(v,bl,mode){const r=R();let t=esc(v.frame);
   if(mode==='edit'){const st=w?' lb-fill':'';const f=UI.focus===i?' lb-focus':'';const wr=cWrong(v,r,i)?' lb-wrong':'';
    return '<button type="button" class="lb-blank'+st+f+wr+'" data-f="b'+i+'" data-blank="'+i+'" aria-label="빈칸 '+(i+1)+(w?': '+w:': 비어 있음')+(wr?', 다시 생각해 봐요':'')+'">'+(w?esc(w):'&#8203;')+'</button>'}
   return w?'<mark>'+esc(w)+'</mark>':'<span class="lb-sh-gap">______</span>'})}
-function conclCard(){const v=V(),r=R();let h='';
- if(r.pred.length)h+='<div class="lb-mine"><b>내 예상</b> '+v.pred.map((q,j)=>r.pred[j]!=null?esc(q.o[r.pred[j]]):'').join(' / ')+'</div>';
- h+='<div class="lb-mine"><b>내 기록</b> '+v.rows.filter(rowDone).map(k=>esc(ROWS[k].n)+': '+esc(rowSum(k))).join(' / ')+'</div>';
+/* 결론 쓰기: 왼쪽 그림 자리에 내 예상과 내 기록을 크게(카드에 몰아 넣으면 글자가 작아졌음) */
+function recLines(k){const r=R(),R0=ROWS[k],x=r.rec[k]||{};if(!x.ok)return '—';
+ if(R0.t==='sel')return R0.f.map((f,i)=>'<span>'+(f.l?'<b>'+esc(f.l)+'</b> ':'')+esc(f.o[x.f[i]])+'</span>').join('');
+ const w=R0.f.map((f,i)=>(x.t&&x.t[i])?'<span><b>'+esc(f.l)+'</b> '+esc(x.t[i])+'</span>':'').filter(Boolean);return w.length?w.join(''):'<span>(쓰지 않았어요)</span>'}
+function recPanel(){const v=V(),r=R();let h='<div class="lb-recpanel" tabindex="0" aria-label="내 예상과 내 기록">';
+ h+='<section><h2>'+ic('clip')+'내 기록</h2><table class="lb-rtbl"><tbody>'+v.rows.map(k=>'<tr><th scope="row">'+esc(ROWS[k].n)+'</th><td>'+recLines(k)+'</td></tr>').join('')+'</tbody></table></section>';
+ if(r.pred.length)h+='<section class="lb-rpred"><h2>'+ic('why')+'내 예상</h2><ul>'+v.pred.map((q,j)=>'<li>'+esc(q.q)+' <b>'+(r.pred[j]!=null?esc(q.o[r.pred[j]]):'(고르지 않았어요)')+'</b></li>').join('')+'</ul></section>';
+ return h+'</div>'}
+function conclCard(){const v=V(),r=R();let h='<p class="lb-hint2">'+(narrow()?'위의':'왼쪽의')+' 내 기록을 보고 빈칸을 채워요.</p>';
  h+='<p class="lb-frame">'+frameHTML(v,r.bl,'edit')+'</p><div class="lb-chips" role="group" aria-label="낱말 카드">'+v.chips.map((c,i)=>'<button type="button" class="lb-chip" data-f="c'+i+'" data-chip="'+i+'">'+esc(c)+'</button>').join('')+'</div>';
  const all=r.bl.length&&r.bl.every(x=>x);
  if(!r.cmp)h+='<button type="button" class="lb-act" data-act="cmp" data-f="doit"'+(all&&cChanged(r)?'':' disabled')+'>'+ic('flask')+'<span>기록과 견주기</span></button>';
@@ -301,7 +310,7 @@ function planSummary(v,r){const P=v.plan;if(!P)return '';if(!r.planOk)return '<p
  return '<div class="lb-sh-tags">'+P.rows.map(x=>{const d=r.plan[x[0]]==='d';return '<span class="lb-sh-tag'+(d?' lb-d':'')+'">'+(d?'다르게: ':'같게: ')+esc(x[1])+'</span>'}).join('')+'</div>'}
 function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id)).filter(s=>(s.k==='scene'||s.k==='meas')&&s.id!=='tools');
  const today=new Date();const ds=today.getFullYear()+'. '+(today.getMonth()+1)+'. '+today.getDate()+'.';
- let h='<article class="lb-sheet" id="lbSheet" aria-label="실험 결과 한 장"><div class="lb-sh-in"><header class="lb-sh-h"><div><h2>실험 결과 한 장 · '+esc(v.title)+'</h2><span>탐구 실험관 · 3학년 2학기 과학 · 1. 물체와 물질 · '+ds+'</span></div><div class="lb-sh-name">이름 <u>'+(esc(DB.name)||'&nbsp;')+'</u></div></header><div class="lb-sh-grid"><div class="lb-sh-col">';
+ let h='<article class="lb-sheet lb-sh-e'+v.no+'" id="lbSheet" aria-label="실험 결과 한 장"><div class="lb-sh-in"><header class="lb-sh-h"><div><h2>실험 결과 한 장 · '+esc(v.title)+'</h2><span>탐구 실험관 · 3학년 2학기 과학 · 1. 물체와 물질 · '+ds+'</span></div><div class="lb-sh-name">이름 <u>'+(esc(DB.name)||'&nbsp;')+'</u></div></header><div class="lb-sh-grid"><div class="lb-sh-col">';
  h+='<section class="lb-sh-sec"><h3><i></i>실험 문제</h3><p><b>'+esc(v.q)+'</b></p>'+planSummary(v,r)+'</section>';
  h+='<section class="lb-sh-sec lb-sh-po"><h3><i></i>실험한 차례</h3><div class="lb-sh-steps">'+done.map((s,i)=>'<div><b>'+(i+1)+'.</b> '+esc(s.t)+'</div>').join('')+'</div></section>';
  h+='<section class="lb-sh-sec"><h3><i></i>내 예상</h3><p>'+v.pred.map((q,j)=>(v.pred.length>1?esc(q.q)+' ':'')+(r.pred[j]!=null?esc(q.o[r.pred[j]]):'(고르지 않았어요)')).join('<br>')+(r.why?'<br>까닭: '+esc(r.why):'')+'</p></section>';
@@ -381,7 +390,7 @@ function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.6);fitBox
 function renderScene(){const r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NAR=narrow();LEG=[];
  let over='';
  if(UI.toast)over+='<div class="lb-toast '+(UI.toastK==='info'?'lb-toast3':'lb-toast2')+'" role="status">'+esc(UI.toast)+'</div>';
- const sv=sceneSVG();NAR=false;set(el,over+sv);
+ const sv=s.k==='concl'?recPanel():sceneSVG();NAR=false;set(el,over+sv);
  const lg=$('#lbLeg');if(lg)set(lg,LEG.length?LEG.map(x=>'<span class="lb-lg">'+esc(x[1])+'</span>').join(''):'')}
 function notesHTML(s){if(!s.why&&!s.care)return '';const hideWhy=s.k==='more'&&R().more.a==null;let h=hideWhy?'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>두 가지를 모두 해 보고 골라요.</div></div>':'<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
  if(s.care)h+=s.care[0]==='care'?'<div class="lb-note lb-care">'+ic('care')+'<div><b>조심해요</b>'+esc(s.care[1])+'</div></div>':'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.care[1])+'</div></div>';
@@ -415,8 +424,9 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx,st=r.st||{},v=V();
   case 'in2':A.push({id:'in2',label:'곧게 세운 채 천천히 넣기',dis:busy||!!r.seen.in2},{id:'finger',label:'구멍을 손가락으로 막고 넣기',sub:1,dis:busy||!!r.seen.in2});break;
   case 'side':A.push({id:'side',label:'두 컵 나란히 보기',dis:busy||!!r.seen.side});break}
  return A}
-function liqActs(A,p,nm,busy){const c=R().st[p]||0,L=['용기 ㉮에 '+jo(nm,'을','를')+' 붓기','눈높이를 맞춰 높이 표시하기','용기 ㉯로 옮기기','용기 ㉰로 옮기기','다시 용기 ㉮로 옮기기'];
- L.forEach((t,i)=>A.push({id:p+i,label:(i+1)+'. '+t,dis:busy||i!==c,pressed:i<c}))}
+function liqActs(A,p,nm,busy){const c=R().st[p]||0,L0=['용기 ㉮에 '+jo(nm,'을','를')+' 붓기','눈높이를 맞춰 높이 표시하기','용기 ㉯로 옮기기','용기 ㉰로 옮기기','다시 용기 ㉮로 옮기기'];
+ /* 다섯 차례 가운데 지금 할 것 하나만 큰 단추로(한 일은 단추 위 차례 줄에 표시) */
+ L0.forEach((t,i)=>A.push({id:p+i,label:(i+1)+'/5 · '+t,dis:busy||i!==c,pressed:i<c,hide:i!==Math.min(c,4)}))}
 /* 아래 막대: 이전 · 진행 · 이어서 */
 function footHTML(v,r,s){const N=v.steps.length;
  let h='<button type="button" class="lb-btn" data-act="prev" data-f="prev"'+(r.step===0?' disabled':'')+'>'+ic('left')+'이전</button>';
