@@ -1,8 +1,8 @@
-/* 식물의 생활 실험관에서 더 쓰는 아이콘 */
-Object.assign(I,{bubble:'<circle cx="9" cy="14" r="4"/><circle cx="16" cy="8" r="2.6"/><circle cx="17" cy="16.5" r="1.6"/>'});
+/* 땅의 변화 실험관에서 더 쓰는 아이콘 */
+Object.assign(I,{fire:'<path d="M12 3c1 3.5 5 5.5 5 10a5 5 0 01-10 0c0-2.4 1.2-4 2.4-5 .2 1.8 1 2.8 2 3.2C11 9 11.3 6 12 3z"/>',rock:'<path d="M4 17l2.5-7 5-4 5.5 2.5L20 15l-3 4H7z"/><path d="M9.5 9.5l2 3.5 4-1.5"/>',hill:'<path d="M2.5 19c3-7 6-10 9.5-10s6.5 3 9.5 10z"/><path d="M12 9V5.5h2.5"/>'});
 
 /* ───────── 기록(이 기기에만) ───────── */
-const KEY='hj-plant-v1';
+const KEY='hj-g4land-v1';
 function blank(){return {v:1,runs:{},cur:null,ui:{open:false,big:false},name:''}}
 function newRun(){return {step:0,max:0,done:{},act:{},plan:{},planLast:null,planOk:false,pred:[],why:'',seen:{},rec:{},pend:{},last:{},tries:{},bl:[],clast:null,ctry:0,cmp:false,fin:false,more:{},st:{},obs:0}}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');
@@ -49,82 +49,82 @@ function planChanged(r){if(!r.planLast)return true;return JSON.stringify(r.plan)
 function fxOn(id){return UI.fx&&UI.fx.id===id}
 function has(id){const r=R(),k=idxOf(id);if(k<0)return false;return k<r.step||(k===r.step&&(!!r.done[id]||fxOn(id)))}
 const sn=id=>!!R().seen[id]||fxOn(id);   /* 해 본 행동(또는 지금 하는 중) */
-const LENS1=[668,300];
-
-/* 실험 1: 잎 */
-function leafSpot(t){const k=UI.mq.cur;if(!k||!LEAF[k]||t==='c')return null;const u=LSP[LEAF[k].kind][t],[x,y]=lw(k,u);return [x,y,t==='v'?30:27,t==='v'?4:4.4,LENS1[0],LENS1[1]]}
-function sortRowF(row){const r=R(),x=r.rec[row];if(x&&x.ok)return x.f;const D=UI.draft[row];return D&&D.f?D.f:[]}
-function critArt(c,anim){let g=critCard(c?CRIT[c].t:'',52);const P=[[60,'친구 1','#5C8FCB','A'],[500,'친구 2','#D9577A','B']];
- P.forEach(p=>{const x0=p[0];g+='<rect x="'+x0+'" y="102" width="400" height="318" rx="16" fill="var(--w-paper)" stroke="var(--w-felt-s)" stroke-width="2"/>'+kid(x0+40,170,p[2])+(NAR?'':'<text x="'+(x0+40)+'" y="226" text-anchor="middle" font-size="18" font-weight="800" fill="var(--w-labeltx)">'+p[1]+'</text>');
-  g+=twoBox(x0+80,116,308,290,c?critYes(c,p[3]):null,c?anim:false,!NAR)});
- if(NAR){LEG.push([null,'왼쪽: 친구 1 · 오른쪽: 친구 2']);LEG.push([null,'상자마다 왼쪽 그렇다 · 오른쪽 그렇지 않다'])}
+/* 실험 1: 흙 언덕 */
+function hillSpot(){const c=UI.mq.cur;const i={f1:0,h1:0,c1:0,f2:1,h2:1,f3:2,h3:2,c3:2}[c];if(i==null)return null;return hillSpot0(i,curStep().id==='first'?0:3)}
+const CUPBIG='<g transform="translate(480 300) scale(2.4) translate(-480 -240)">';
+function e1Scene(s){const r=R(),id=s.id,f=UI.fx,st=r.st;
+ if(id==='gear')return bg({})+gearArt(1,has('gear'),fxOn('gear'));
+ if(id==='groove'){const on=has('groove');let g=bgTop()+CUPBIG+paperCup(480,211,{groove:on})+'</g>';
+  if(fxOn('groove'))g+='<g'+an('lb-a-slide',0,'--dx:160px')+'>'+scissors(565,252,180,1.3)+'</g>';else if(!on)g+=scissors(700,330,200,1.3);return g}
+ if(id==='hill'){const on=has('hill');let g=bgField();
+  if(!on)return g+itemArtAt('soil',300,380)+trowel(560,380,-20,1.3)+qmark(480,200);
+  g+='<g'+(fxOn('hill')?' class="lb-a lb-a-hillup"':'')+'>'+hillArt(0)+'</g>';
+  if(fxOn('hill'))g+='<g'+an('lb-a-pat',.9)+'>'+cotton(560,250,200,1.1)+'</g>';return g}
+ if(id==='cupin'){const on=has('cupin');if(!on)return bgField()+hillArt(0)+paperCup(150,GY-120,{groove:1})+arrow(200,280,400,220);
+  return bgField()+'<g'+(fxOn('cupin')?an('lb-a-down',0,'--from:-150px'):'')+'>'+paperCup(CUPX,CUPT,{groove:1})+'</g>'+hillArt(0)}
+ if(id==='coffee'){const on=has('coffee');let g=bgField()+paperCup(CUPX,CUPT,{groove:1})+hillArt(0);
+  if(on)g+=coffeeArt(0,fxOn('coffee'));else g+=itemArtAt('coffee',170,330);return g}
+ if(id==='first')return hillScene({cup:1,coffee:1,tags:1});
+ if(id==='pred')return hillScene({cup:1,coffee:1})+petBottle(170,GY-76,0,.9)+qmark(480,110);
+ if(id==='pour'){const n=st.pw||0,fid=f&&/^pw/.test(f.id)?+f.id[2]:0,k=fid||n;
+  if(fxOn('gush'))return hillScene({cup:1,cupw:1,coffee:1,k:n,ghost:n>0,wet:n>0,pour:1})+'<path d="M'+(CUPX-30)+' '+CUPT+' q-20 10 -22 44 q14 -8 22 -30Z" fill="#4FA3DB" opacity=".9"/><path d="M'+(CUPX+30)+' '+CUPT+' q16 8 14 30" stroke="#4FA3DB" stroke-width="7" fill="none"/>';
+  let g=hillScene({cup:1,cupw:k>0,coffee:1,k,ghost:1,wet:k>0,flow:!!fid,flowAnim:!!fid,pour:!!fid,pourAnim:!!fid});
+  if(!fid&&n<3)g+=petBottle(170,GY-76,0,.9);return g}
+ if(id==='look'||id==='cof')return hillScene({cup:1,cupw:1,coffee:1,k:3,ghost:1,wet:1,tags:1});
+ return hillScene({cup:1})}
+/* 실험 2: 화산 활동 모형 */
+function windowArt(open,anim){let g='<rect x="290" y="60" width="380" height="250" rx="6" fill="var(--w-sky1)" stroke="var(--w-win)" stroke-width="10"/><path d="M300 250 Q380 220 470 250 T660 240 V300 H300Z" fill="var(--w-leaf2)" opacity=".6"/>';
+ g+='<g'+(anim?an('lb-a-slide',0,'--dx:-180px'):'')+'><rect x="'+(open?480:300)+'" y="70" width="180" height="230" fill="var(--w-glass)" stroke="var(--w-glass-s)" stroke-width="5"/></g><rect x="480" y="70" width="180" height="230" fill="var(--w-glass)" stroke="var(--w-glass-s)" stroke-width="5"/>';
+ if(open)g+='<g stroke="var(--lb-sci)" stroke-width="5" fill="none" stroke-linecap="round"'+(anim?an('lb-a-fade',.9):'')+'><path d="M330 140 q40 -16 80 0 t80 0"/><path d="M340 190 q40 -16 80 0 t60 0"/></g>';
  return g}
-function e1Scene(s){const r=R(),id=s.id,f=UI.fx;let g=bgTop();
- if(id==='sticker'){const on=has('sticker');return g+leavesOnPaper({nopaper:1,stk:on,stkAnim:fxOn('sticker')})+(on?'':itemArtAt('sticker',668,300))}
- if(id==='paper'){const on=has('paper');if(!on)return g+leavesOnPaper({nopaper:1,stk:1})+itemArtAt('paper',668,300);return g+leavesOnPaper({stk:1,paperAnim:fxOn('paper')})}
- if(id==='pred')return g+kid(300,300,'#5C8FCB')+kid(660,300,'#D9577A')+'<g transform="translate(380 90) scale(.42)">'+leavesOnPaper({stk:1})+'</g>'+qmark(480,80);
- if(id==='shape'||id==='edge'||id==='stalk'||id==='vein'){const k=UI.mq.cur;g+=leavesOnPaper({stk:1,hl:k,trace:id==='shape'&&f?k:null});
-  if(id==='vein'&&k){const [x,y]=lw(k,LSP[LEAF[k].kind].v);g+='<g'+(f?an('lb-a-slide',0,'--dx:120px'):'')+'>'+magnifier(x,y,.9,0)+'</g>'}
-  else if(!k)g+=qmark(668,300);
+function e2Scene(s){const r=R(),id=s.id,f=UI.fx,st=r.st;
+ if(id==='gear')return bg({})+gearArt(2,has('gear'),fxOn('gear'));
+ if(id==='air')return bg({})+windowArt(has('air'),fxOn('air'));
+ if(id==='fill'){const on=has('fill'),fa=fxOn('fill');let g=bg({});
+  if(!on)return g+kcup(480,400,'full',2)+scissors(690,260,200,1.2)+itemArtAt('mallow',250,330);
+  g+=kcup(480,400,'open',2)+mallows(480,400,2,{anim:fa});
+  g+='<g'+(fa?an('lb-a-down',0,'--from:-130px'):'')+'><path d="M640 404 L644 386 L780 386 L784 404Z" fill="#C6CDD3" stroke="#7D8893" stroke-width="2.5"/></g>';return g}
+ if(id==='add'){const on=has('add'),fa=fxOn('add');let g=bg({})+kcup(480,400,'open',2)+mallows(480,400,2,{tint:on&&!fa});
+  if(fa)g+='<g'+an('lb-a-fade',0)+'>'+spoon(440,220,20,1.4,'#FFFFFF')+'</g><g'+an('lb-a-fade',.8)+'>'+spoon(470,214,20,1.4,'#7CC3EC')+'</g><g'+an('lb-a-fade',1.6)+'>'+'<g transform="translate(560 170) rotate(150) scale(.9)">'+itemArt('color')+'</g><path d="M520 222 v14 M528 226 v14" stroke="#E2503B" stroke-width="5" stroke-linecap="round"/></g>';
+  else if(!on)g+=itemArtAt('soda',200,320)+itemArtAt('water',300,330)+itemArtAt('color',760,320);return g}
+ if(id==='close'){const on=has('close');let g=bg({});if(!on)return g+kcup(480,400,'open',2)+mallows(480,400,2,{tint:1});
+  return g+'<g'+(fxOn('close')?an('lb-a-fade',0):'')+'>'+kcup(480,400,'closed',2,{mouth:1})+'</g>'}
+ if(id==='place'){const on=has('place');let g=bg({})+hotplate(false)+dishArt();
+  if(!on)return g+kcup(190,414,'closed',1,{mouth:1})+arrow(240,330,400,300);
+  return g+'<g'+(fxOn('place')?an('lb-a-down',0,'--from:-120px'):'')+'>'+kcup(KC.cx,KC.b,'closed',1,{mouth:1})+'</g>'}
+ if(id==='pred')return volScene({})+qmark(480,170);
+ if(id==='heat'){const n=st.ht||0,fid=f&&/^ht/.test(f.id)?+f.id[2]:0,m=Math.max(n,fid);
+  const o={on:m>=1&&m<3,smoke:m>=2,smokeAnim:m>=2,lv:m>=3?3:m>=2?1:0,lvAnim:fid===2?1:fid===3?3:0};
+  let g=volScene(o);if(fid===2)g=g.replace('lb-a-grow" style="animation-delay:0s','lb-a-grow" style="animation-delay:1.6s');
+  if(fxOn('near'))g+='<g'+an('lb-a-slide',0,'--dx:-200px')+'><circle cx="610" cy="250" r="40" fill="#F2C6A0" stroke="#B9875F" stroke-width="3"/></g>';return g}
+ if(id==='cool'){const n=st.cl||0,fid=f&&/^cl/.test(f.id)?+f.id[2]:0,m=Math.max(n,fid);
+  let g=volScene({lv:3,cool:m>=1&&fid!==1,smoke:m===0});
+  if(fid===1)g=volScene({lv:3})+'<g'+an('lb-a-fade',.6)+'>'+lava(3,true)+'</g>';
+  if(fxOn('touch'))g+='<g'+an('lb-a-slide',0,'--dx:120px')+'>'+hand(KC.cx+150,KC.b-6,180,.9,1)+'</g>';
   return g}
- if(id==='crit')return g+critArt(UI.mq.cur,f&&/^k/.test(f.id));
- if(id==='sort1'||id==='sort2'){const c=r.st[id==='sort1'?'c1':'c2'];return g+sortArt(c,sortRowF(id))}
- return g+leavesOnPaper({stk:1})}
-/* 실험 2: 부레옥잠 */
-function hySpot(){const k=UI.mq.cur,T=HT;if(k==='bl')return [T.cx+HLEAF[1][0],T.wl+HLEAF[1][1],34,2.4,190,240];if(k==='bs')return [T.cx+HBULB[2],T.wl+4,32,2.5,190,240];if(k==='br')return [T.cx,T.wl+112,42,2,190,240];return null}
-function cutSpot(){const k=UI.mq.cur;if(k==='bx')return [CUTA.cx,CUTA.cy,38,2.3,480,140];if(k==='by')return [CUTB.x+110,CUTB.y+25,36,2.4,480,140];return null}
-function pressSpot(){const st=R().st.bp||0;if(st<2&&!fxOn('bp1'))return null;return [PRS.cx,PRS.cy-50,52,1.75,190,240]}
-function e2Scene(s){const r=R(),id=s.id,f=UI.fx;let g=bg({});
- if(id==='gear')return g+gearArt(has('gear'),fxOn('gear'));
- if(id==='touch'){const on=fxOn('bt');g+=hyTank({squish:on?3:null});const bx=HT.cx+HBULB[3];if(on||sn('bt'))g+='<g'+(on?an('lb-a-slide',0,'--dx:80px'):'')+'>'+hand(bx+60,HT.wl+2,180,.85,1)+'</g>';return g}
- if(id==='cut')return bgTop()+hyCut();
- if(id==='press'){const st=r.st.bp||0,fid=f&&/^bp/.test(f.id)?+f.id[2]:-1;return g+pressArt(fid>=0?fid+1:st,fid>=0)}
- g+=hyTank();if(s.k==='pred')g+=qmark(190,200);return g}
-/* 실험 3: 알로에 */
-function aloeSpot(t){const k=UI.mq.cur;if(t==='d'){if(!sn('ad')||fxOn('as'))return null;const p=aloePt(4,.42,1);return [p[0]+6,p[1]+3,28,2.8,700,200]}
- if(t==='e'){if(!sn('ae'))return null;const p=aloePt(5,.38,1);return [p[0]+4,p[1],26,3,700,200]}
- if(t==='c')return sn('ac')?[AC.cx,AC.cy,40,2.2,480,140]:null;
- if(t==='t')return k==='ah'||(sn('ah')&&k!=='at')?[TIS.x,TIS.y+6,34,2.3,300,150]:null;return null}
-function e3Scene(s){const r=R(),id=s.id,f=UI.fx;let g=bg({});
- if(id==='gear')return g+gearArt(has('gear'),fxOn('gear'));
- if(id==='acut')return bgTop()+aloeCutArt()+(NAR?'':tag(480,268,'선생님이 미리 잘라 두었어요',20));
- if(id==='atouch'){g=bgTop()+aloeCutArt({shine:sn('at')});
-  if(fxOn('at'))g+='<g'+an('lb-a-slide',0,'--dx:90px')+'>'+hand(AC.cx+70,AC.cy-6,180,.8,1)+'</g>';
-  if(fxOn('ah'))g+='<g'+an('lb-a-slope',0,'--dx:'+(AC.cx-TIS.x)+'px;--dy:'+(AC.cy-TIS.y)+'px')+'>'+tissue(TIS.x,TIS.y,true,true)+'</g>';
-  else g+=tissue(TIS.x,TIS.y,sn('ah'));return g}
- g+=aloePot();
- if(id==='thick'&&fxOn('as')){const p=aloePt(3,.5,0);g+='<g'+an('lb-a-rub',0)+'>'+hand(p[0]+70,p[1],180,.75,1)+'</g>'}
- if(id==='aedge'&&f&&f.id==='grab'){const p=aloePt(5,.38,1);g+=hand(p[0]+44,p[1]+10,200,.8,1)}
- if(s.k==='pred')g+=qmark(620,200);
- return g}
-/* 실험 4: 연잎 */
-function lotusSpot(t){const k=UI.mq.cur;if(t==='s')return k==='le'?[LO.cx+30,LO.cy-14,46,2,820,170]:null;
- if(t==='d'){const n=R().st.ld||0;if(!n)return null;const p=DROPS[n-1];return [p[0],p[1],26,2.6,820,170]}
- if(t==='a')return sn('lk')?[MERGE[0]-20,MERGE[1]-50,40,2.1,820,170]:null;return null}
-function drops3(n,anim){let g='';for(let i=0;i<n;i++){const p=DROPS[i];g+=bead(p[0],p[1],16,anim===i?an('lb-a-pop',.55):'')}return g}
-function e4Scene(s){const r=R(),id=s.id,f=UI.fx,st=r.st;
- if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
- let g=bgTop()+lotusArt()+beaker(830,400,.9);
- if(id==='surf'){if(fxOn('lh'))g+='<g'+an('lb-a-rub',0)+'>'+hand(LO.cx+150,LO.cy+40,180,.9,1)+'</g>';return g}
- if(id==='drop'){const n=st.ld||0,fid=f&&/^ld/.test(f.id)?+f.id[2]:0,shown=fid?fid:n;g+=drops3(shown,fid?fid-1:-1);
-  const nx=DROPS[Math.min(fid?fid-1:n,2)];g+=dropper(nx[0],nx[1]-46,1,0);if(fid)g+='<path d="M'+nx[0]+' '+(nx[1]-28)+' q-6 10 0 14 q6 -4 0 -14z" fill="#7CC3EC"'+an('lb-a-drop',0)+'/>';return g}
- if(id==='tilt'){const on=sn('lt'),an1=fxOn('lt');
-  if(!on)return g+drops3(3)+arrow(LO.cx+LO.rx+18,LO.cy+60,LO.cx+LO.rx-10,LO.cy+150);
-  if(an1){DROPS.forEach((p,i)=>{g+=bead(MERGE[0],MERGE[1],16,an('lb-a-slope',0,'--dx:'+(p[0]-MERGE[0])+'px;--dy:'+(p[1]-MERGE[1])+'px'))});g+=bead(MERGE[0],MERGE[1],26,an('lb-a-pop',1.7))}
-  else g+=bead(MERGE[0],MERGE[1],26);
-  return g+arrow(LO.cx+LO.rx+18,LO.cy+60,LO.cx+LO.rx-10,LO.cy+150)}
- if(id==='shake'){const sh=st.sh||0,fid=f&&(f.id==='ls'||f.id==='lk')?f.id:null;
-  if(sh===0&&fid!=='ls')return g+bead(MERGE[0],MERGE[1],26);
-  if(fid==='ls')return g+bead(MERGE[0],MERGE[1],26,an('lb-a-out',.3))+'<g'+an('lb-a-shake2',0)+'>'+hand(LO.cx+LO.rx+30,LO.cy+80,180,.9,1)+'</g>';
-  return g}
- g+=dropper(DROPS[0][0]+120,DROPS[0][1]-40,1,0);if(s.k==='pred')g+=qmark(820,170);return g}
+ if(id==='real'){const c=UI.mq.cur;let g=bg({})+realVolcano(250,290,.8,c==='rv');
+  g+='<g transform="translate(330 30) scale(.85)">'+hotplate(false)+dishArt()+kcup(KC.cx,KC.b,'closed',1,{mouth:1})+lava(3,true)+(c==='rm'?'<rect x="320" y="190" width="320" height="240" rx="18" fill="none" stroke="var(--lb-lens)" stroke-width="6"/>':'')+'</g>';
+  return g+tag(250,470,'실제 화산 활동(그림)',20)+tag(740,470,'우리 모형',20)}
+ return volScene({})}
+/* 실험 3: 암석 */
+function e3Scene(s){const r=R(),id=s.id,f=UI.fx,st=r.st,c=UI.mq.cur;
+ if(id==='gear')return bg({})+gearArt(3,has('gear'),fxOn('gear'));
+ if(id==='paper'){const on=has('paper');if(!on)return rockPaper({nopaper:1});return rockPaper({stk:1,paperAnim:fxOn('paper'),stkAnim:fxOn('paper')})}
+ if(id==='eye')return rockPaper({stk:1,hl:c&&c[0]==='e'?c.slice(1):null});
+ if(id==='pred')return rockPaper({stk:1})+qmark(480,72);
+ if(id==='scope')return microScene(null,{noq:1,off:!has('scope'),anim:fxOn('scope')});
+ if(id==='micro'||id==='hole'){const k=c&&/^[mo]R/.test(c)?c.slice(1):null;return microScene(k,{})}
+ if(id==='sort'){const so=st.so||0,row=rowDone('sortC')&&so>=2?'sortG':'sortC',cc=row==='sortG'?'qG':so>=1?'qC':null;
+  const x=r.rec[row],D=UI.draft[row];return bgTop()+sortArt(cc,x&&x.ok?x.f:D&&D.f?D.f:[])}
+ if(id==='name'){let g=rockPaper({stk:1});const x=r.rec.rname;if(x&&x.ok)ROCKK.forEach((k,i)=>{const p=RPOS[k];g+=mini(p[0],p[1]+108,x.f[i]===0?'화강암':'현무암',20)});return g}
+ return rockPaper({stk:1})}
 function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  const T=(g,l,vb)=>svg(g+lensOf(s,g),l||s.t,vb);
- if(id==='tools'){if(!(r.done.tools||fxOn('tools')))return T(bg({})+boxArt(480),'준비물 상자');return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '))}
- if(no===1)return T(e1Scene(s),s.t,id==='crit'?'40 10 880 430':id==='sort1'||id==='sort2'?'40 0 880 500':id==='pred'?'200 60 560 360':'30 10 800 580');
- if(no===2)return T(e2Scene(s),s.t,id==='gear'?'160 40 640 420':id==='cut'?'190 40 600 410':'60 60 880 400');
- if(no===3)return T(e3Scene(s),s.t,id==='gear'?'160 40 640 420':id==='acut'?'190 40 600 410':id==='atouch'?'200 70 600 380':'90 40 740 400');
- if(no===4)return T(e4Scene(s),s.t,id==='gear'?'160 40 640 420':'100 30 840 440');
+ if(id==='tools'){const big=v.tools.length>8;if(!(r.done.tools||fxOn('tools')))return T(bg({})+boxArt(480),'준비물 상자',big?'-70 0 1100 540':null);return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '),big?'-70 30 1100 470':null)}
+ if(id==='gear')return T(no===1?e1Scene(s):no===2?e2Scene(s):e3Scene(s),s.t,'160 40 640 420');
+ if(no===1)return T(e1Scene(s),s.t,id==='groove'?'250 150 460 300':'60 40 860 440');
+ if(no===2)return T(e2Scene(s),s.t,id==='air'?'230 40 500 300':['fill','add','close'].indexOf(id)>=0?'170 120 620 330':id==='real'?'40 100 880 400':id==='place'?'130 140 640 320':'240 140 480 310');
+ if(no===3)return T(e3Scene(s),s.t,id==='sort'?'40 0 880 450':id==='micro'||id==='hole'||id==='scope'?'40 60 880 420':'60 30 840 450');
  return T(bg({}))}
 
 
@@ -150,7 +150,7 @@ function planCard(){const v=V(),r=R(),P=v.plan;let h='<p class="lb-q">'+esc(v.q)
 function planGood(v,r){return v.plan.rows.every(x=>r.plan[x[0]]===(x[3]?'d':'s'))}
 function predCard(){const v=V(),r=R(),lock=predLocked();let h='';
  if(v.predHint)h+='<p class="lb-hint">'+esc(v.predHint)+'</p>';
- v.pred.forEach((q,j)=>{h+=(v.pred.length>1?'<p class="lb-q">'+esc(q.q)+'</p>':'')+'<div class="lb-opts'+(q.o.length>3&&q.o.every(t=>t.length<=7)?' lb-opts2':'')+'" role="group" aria-label="'+esc(q.q)+'">';
+ v.pred.forEach((q,j)=>{h+=(v.pred.length>1?'<p class="lb-q">'+esc(q.q)+'</p>':'')+'<div class="lb-opts'+(q.o.length>3&&q.o.every(t=>t.length<=7)?' lb-opts2':q.o.length===3&&q.o.every(t=>t.length<=4)?' lb-opts3':'')+'" role="group" aria-label="'+esc(q.q)+'">';
   q.o.forEach((t,i)=>{const on=r.pred[j]===i;h+='<button type="button" class="lb-opt'+(v.pred.length>1?' lb-optsm':'')+'" data-f="o'+j+i+'" data-pred="'+j+':'+i+'" aria-pressed="'+on+'"'+(lock?' disabled':'')+'><i>'+(on?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>'});h+='</div>'});
  h+='<div><label class="lb-label" for="lbWhy">그렇게 생각한 까닭 (쓰고 싶으면)</label><input id="lbWhy" class="lb-input" maxlength="60" placeholder="왜냐하면 ~ 때문이에요." value="'+esc(r.why)+'"'+(lock?' readonly':'')+'></div>';
  if(lock)h+='<div class="lb-msg lb-plain">'+ic('lock')+'<span>관찰을 시작해서 예상을 바꿀 수 없어요.</span></div>';
@@ -159,18 +159,19 @@ function predCard(){const v=V(),r=R(),lock=predLocked();let h='';
 
 /* ───────── 기록 줄(③) ───────── */
 /* 같은 보기를 쓰는 칸이 많으면(잎 여섯 장) 보기별로 묶어서 씀: '톱니 모양: 1, 4, 5번' */
-function groupSum(F,f){const o=F[0].o;if(F.length<4||!F.every(x=>/번 잎$/.test(x.l)&&x.o.join()===o.join()))return null;
- return o.map((t,i)=>t+': '+(F.map((x,j)=>f[j]===i?String(j+1):null).filter(Boolean).join(', ')||'없음')+(F.some((x,j)=>f[j]===i)?'번':'')).join(' · ')}
+function groupSum(F,f){const o=F[0].o,rk=/^암석 /.test(F[0].l);if(F.length<4||!F.every(x=>(rk?/^암석 /:/번 잎$/).test(x.l)&&x.o.join()===o.join()))return null;
+ const nm=j=>rk?'①②③④'[j]:String(j+1),sf=rk?'':'번';
+ return o.map((t,i)=>t+': '+(F.map((x,j)=>f[j]===i?nm(j):null).filter(Boolean).join(', ')||'없음')+(F.some((x,j)=>f[j]===i)?sf:'')).join(' · ')}
 function rowSum(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{};
  if(R0.t==='sel'){const F=fOf(row),pre=R0.crit&&x.c?CRIT[x.c].t+' → ':'',gs=groupSum(F,x.f);if(gs)return pre+gs;return pre+F.map((f,i)=>(f.l?f.l+' ':'')+f.o[x.f[i]]).join(' · ')}
  if(R0.t==='note'){const w=R0.f.map((f,i)=>(x.t&&x.t[i])?f.l.replace(/ 잎$/,'')+': '+x.t[i]:'').filter(Boolean);return w.length?w.join(' · '):'(쓰지 않았어요)'}
  return ''}
-function rowReady(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{};if(x.ok)return true;if(R0.crit&&!r.st[R0.crit])return false;
+function rowReady(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{};if(x.ok)return true;if(R0.crit&&!r.st[R0.crit])return false;if(R0.after&&!rowDone(R0.after))return false;
  return R0.need.every(k=>r.seen[k])}
 function numOpen(){return false}
 function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.wrong[row]||[];
  if(done){let h='<div class="lb-mrow lb-mdone"><div class="lb-mrh"><b>'+esc(R0.n)+'</b><span class="lb-okt">'+ic('check')+'기록했어요</span></div><p class="lb-recsum">'+esc(rowSum(row))+'</p>';
-  if(UI.fb[row])h+='<div class="lb-msg lb-good" role="status">'+ic('check')+'<span>'+UI.fb[row][1]+'</span></div>';
+  if(UI.fb[row]&&curStep().rows.every(rowDone))h+='<div class="lb-msg lb-good" role="status">'+ic('check')+'<span>'+UI.fb[row][1]+'</span></div>';
   return h+'</div>'}
  let h='<div class="lb-mrow"><div class="lb-mrh"><b>'+esc(R0.n)+'</b></div>';
  const D=UI.draft[row]=UI.draft[row]||{};const ok=rowReady(row);
@@ -225,8 +226,11 @@ function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=
   return cardHead('더 알아보기','해도 되고 건너뛰어도 돼요')+wrapB(h+'</ol>')}
  const on3=s.rows.some(rowReady)||s.rows.some(k=>ROWS[k].t==='auto'&&acted(s));
  /* ①을 모두 해 보면 단추를 접음(본 결과는 그림에 그대로 남음) — 기록 칸이 넓어져 카드 글자가 줄지 않게 */
- h+=gPart(1,'해 보기',L?'ok':'cur',L&&!UI.fx?'':actBtns(s));
- h+=gPart(2,'살펴보기',!A?'wait':L?'ok':'cur',L&&s.rows.some(rowReady)?'':'<p>'+esc(s.look)+'</p>');
+ /* 지금 누를 수 있는 단추가 없으면(기록을 먼저 해야 다음 단추가 열림) ① 단추도 접음 */
+ const free=actsOf(s).some(a=>!a.dis&&!a.sub&&a.hide!==true&&!(a.hide===false&&a.pressed));
+ const seenAll=s.rows.every(k=>ROWS[k].need.every(n=>r.seen[n]));
+ h+=gPart(1,'해 보기',L||seenAll?'ok':'cur',(L||seenAll||!free)&&!UI.fx?'':actBtns(s));
+ h+=gPart(2,'살펴보기',!A?'wait':L?'ok':'cur',s.rows.some(rowReady)?'':'<p>'+esc(s.look)+'</p>');
  /* ③은 차례가 오면 열림(아직이면 이름만 — 카드 글자가 줄지 않게) */
  const st3=D?'ok':on3?'cur':'wait';h+=gPart(3,'기록하기',st3,st3==='wait'?'<p class="lb-hint2">해 보기와 살펴보기를 마치면 열려요.</p>':s.rows.filter(k=>rowDone(k)||rowReady(k)).map(rowUI).join('')+(s.rows.some(k=>!rowDone(k)&&!rowReady(k))?'<p class="lb-hint2">남은 것을 해 보면 기록 칸이 더 열려요.</p>':''));
  return cardHead('할 일',stepName(s))+wrapB(h+'</ol>')}
@@ -244,7 +248,7 @@ function recLines(k){const r=R(),R0=ROWS[k],x=r.rec[k]||{};if(!x.ok)return '—'
   return pre+F.map((f,i)=>'<span>'+(f.l?'<b>'+esc(f.l)+'</b> ':'')+esc(f.o[x.f[i]])+'</span>').join('')}
  const w=R0.f.map((f,i)=>(x.t&&x.t[i])?'<span><b>'+esc(f.l)+'</b> '+esc(x.t[i])+'</span>':'').filter(Boolean);return w.length?w.join(''):'<span>(쓰지 않았어요)</span>'}
 function recPanel(){const v=V(),r=R();let h='<div class="lb-recpanel" tabindex="0" aria-label="내 예상과 내 기록">';
- h+='<section><h2>'+ic('clip')+'내 기록</h2><table class="lb-rtbl"><tbody>'+v.rows.map(k=>'<tr><th scope="row">'+esc(ROWS[k].n)+'</th><td>'+recLines(k)+'</td></tr>').join('')+'</tbody></table></section>';
+ h+='<section><h2>'+ic('clip')+'내 기록</h2><table class="lb-rtbl"><tbody>'+v.rows.filter(rowDone).map(k=>'<tr><th scope="row">'+esc(ROWS[k].n)+'</th><td>'+recLines(k)+'</td></tr>').join('')+'</tbody></table></section>';
  if(r.pred.length)h+='<section class="lb-rpred"><h2>'+ic('why')+'내 예상</h2><ul>'+v.pred.map((q,j)=>'<li>'+esc(q.q)+' <b>'+(r.pred[j]!=null?esc(q.o[r.pred[j]]):'(고르지 않았어요)')+'</b></li>').join('')+'</ul></section>';
  return h+'</div>'}
 function conclCard(){const v=V(),r=R();let h='<p class="lb-hint2">'+(narrow()?'위의':'왼쪽의')+' 내 기록을 보고 빈칸을 채워요.</p>';
@@ -273,23 +277,21 @@ function planSummary(v,r){const P=v.plan;if(!P)return '';if(!r.planOk)return '<p
  return '<div class="lb-sh-tags">'+P.rows.map(x=>{const d=r.plan[x[0]]==='d';return '<span class="lb-sh-tag'+(d?' lb-d':'')+'">'+(d?'다르게: ':'같게: ')+esc(x[1])+'</span>'}).join('')+'</div>'}
 function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id)).filter(s=>(s.k==='scene'||s.k==='meas')&&s.id!=='tools');
  const today=new Date();const ds=today.getFullYear()+'. '+(today.getMonth()+1)+'. '+today.getDate()+'.';
- let h='<article class="lb-sheet lb-sh-e'+v.no+'" id="lbSheet" aria-label="실험 결과 한 장"><div class="lb-sh-in"><header class="lb-sh-h"><div><h2>실험 결과 한 장 · '+esc(v.title)+'</h2><span>탐구 실험관 · 3학년 1학기 과학 · 3. 식물의 생활 · '+ds+'</span></div><div class="lb-sh-name">이름 <u>'+(esc(DB.name)||'&nbsp;')+'</u></div></header><div class="lb-sh-grid"><div class="lb-sh-col">';
+ let h='<article class="lb-sheet lb-sh-e'+v.no+'" id="lbSheet" aria-label="실험 결과 한 장"><div class="lb-sh-in"><header class="lb-sh-h"><div><h2>실험 결과 한 장 · '+esc(v.title)+'</h2><span>탐구 실험관 · 4학년 1학기 과학 · 3. 땅의 변화 · '+ds+'</span></div><div class="lb-sh-name">이름 <u>'+(esc(DB.name)||'&nbsp;')+'</u></div></header><div class="lb-sh-grid"><div class="lb-sh-col">';
  h+='<section class="lb-sh-sec"><h3><i></i>실험 문제</h3><p><b>'+esc(v.q)+'</b></p>'+planSummary(v,r)+'</section>';
  h+='<section class="lb-sh-sec lb-sh-po"><h3><i></i>실험한 차례</h3><div class="lb-sh-steps">'+done.map((s,i)=>'<div><b>'+(i+1)+'.</b> '+esc(s.t)+'</div>').join('')+'</div></section>';
  h+='<section class="lb-sh-sec"><h3><i></i>내 예상</h3><p>'+v.pred.map((q,j)=>(v.pred.length>1?esc(q.q)+' ':'')+(r.pred[j]!=null?esc(q.o[r.pred[j]]):'(고르지 않았어요)')).join('<br>')+(r.why?'<br>까닭: '+esc(r.why):'')+'</p></section>';
  h+='</div><div class="lb-sh-col"><section class="lb-sh-sec"><h3><i></i>관찰 기록</h3>'+sheetTable(v,r)+barChart(v,r)+'</section>';
  /* 실험 1은 관찰 기록 줄이 일곱이라 결론을 아래 한 줄 전체로(오른쪽 칸만 길어져 2쪽이 되던 것, 독립 검토 고침) */
- const cs='<section class="lb-sh-sec'+(v.no===1?' lb-sh-wide':'')+'"><h3><i></i>내 결론</h3><div class="lb-sh-box"><p class="lb-sh-concl">'+frameHTML(v,r.bl,'sheet')+'</p>'+(r.cmp?'<p class="lb-sh-book">교과서 결론: '+esc(v.book)+'</p>':'')+'</div></section>';
- h+=(v.no===1?'':cs)+'</div></div>'+(v.no===1?cs:'')+picsHTML(snapList(v,r))+'<section class="lb-sh-sec lb-sh-po lb-sh-fill"><h3><i></i>새로 알게 된 것 · 더 알고 싶은 것</h3><div class="lb-sh-lines">'+'<div class="lb-ln"></div>'.repeat(9)+'</div></section>';
+ const cs='<section class="lb-sh-sec'+(v.rows.length>=6?' lb-sh-wide':'')+'"><h3><i></i>내 결론</h3><div class="lb-sh-box"><p class="lb-sh-concl">'+frameHTML(v,r.bl,'sheet')+'</p>'+(r.cmp?'<p class="lb-sh-book">교과서 결론: '+esc(v.book)+'</p>':'')+'</div></section>';
+ h+=(v.rows.length>=6?'':cs)+'</div></div>'+(v.rows.length>=6?cs:'')+picsHTML(snapList(v,r))+'<section class="lb-sh-sec lb-sh-po lb-sh-fill"><h3><i></i>새로 알게 된 것 · 더 알고 싶은 것</h3><div class="lb-sh-lines">'+'<div class="lb-ln"></div>'.repeat(9)+'</div></section>';
  h+='<footer class="lb-sh-f"><span>아주 단순하게 만든 모형의 결과예요. 실제 교실에서는 결과가 조금 다를 수 있어요.</span><span>만든 사람: 초등교사 홍지희</span></footer></div></article>';
  return h}
-const LABNAME='plant';
+const LABNAME='land';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
- if(no===1){S(bgTop()+leavesOnPaper({stk:1}),'50 20 450 560','번호를 붙인 잎');
-  ['sort1','sort2'].forEach(k=>{const x=r.rec[k];if(x&&x.ok&&x.c)S(bgTop()+sortArt(x.c,x.f),'40 0 880 500',CRIT[x.c].t+' (왼쪽: 그렇다)')})}
- if(no===2){S(bg({})+hyTank(),'310 60 520 400','부레옥잠');if(ok('bIn'))S(bgTop()+hyCut({nolab:1}),'210 290 560 130','자른 잎자루의 속');if(ok('bPress'))S(bg({})+pressArt(2,false),'310 100 520 340','물속에서 누를 때')}
- if(no===3){S(bg({})+aloePot(),'100 60 400 380','알로에');if(ok('aCut'))S(bgTop()+aloeCutArt(),'210 290 560 130','자른 잎의 단면');if(ok('aTouch'))S(bgTop()+tissue(TIS.x,TIS.y,true),'620 180 140 120','단면에 댄 휴지')}
- if(no===4){if(ok('lDrop'))S(bgTop()+lotusArt()+drops3(3),'130 40 540 420','물을 떨어뜨린 연잎');if(ok('lTilt'))S(bgTop()+lotusArt()+bead(MERGE[0],MERGE[1],26),'130 40 540 420','기울인 뒤')}
+ if(no===1){S(hillScene({cup:1,coffee:1}),'60 160 840 290','물을 붓기 전');if(ok('cut'))S(hillScene({cup:1,cupw:1,coffee:1,k:3,ghost:1,wet:1}),'60 160 840 290','물을 흘려 보낸 뒤(점선: 처음 모습)')}
+ if(no===2){if(ok('out'))S(volScene({lv:3,smoke:1}),'250 160 460 270','흘러나온 마시멜로');if(ok('cooled'))S(volScene({lv:3,cool:1}),'250 160 460 270','식은 뒤')}
+ if(no===3){S(rockPaper({stk:1}),'80 100 800 340','암석 ①~④');if(ok('grain'))S(bgTop()+microTex('R1',0,0,300,220)+microTex('R2',320,0,300,220),'0 0 620 220','현미경으로 본 ①(왼쪽)과 ②(오른쪽)')}
  return L}
 /* ───────── 결과 한 장: 관찰 그림 · 이미지로 복사/저장 ───────── */
 function picsHTML(list){if(!list||!list.length)return '';
@@ -327,7 +329,7 @@ function set(el,h){if(!el||el._h===h)return false;const a=document.activeElement
 function render(){const H=document.documentElement;H.classList.toggle('lb-big',!!DB.ui.big);
  $('#lbOpenMi').setAttribute('aria-pressed',!!DB.ui.open);$('#lbBigMi').setAttribute('aria-pressed',!!DB.ui.big);
  const main=$('#lbMain');
- if(!DB.cur||!EXPS[DB.cur]){H.classList.remove('lb-inrun');$('#lbSub').textContent='3학년 1학기 과학 · 3단원 식물의 생활';$('#lbChoose').hidden=true;$('#lbClearMi').hidden=true;
+ if(!DB.cur||!EXPS[DB.cur]){H.classList.remove('lb-inrun');$('#lbSub').textContent='4학년 1학기 과학 · 3단원 땅의 변화';$('#lbChoose').hidden=true;$('#lbClearMi').hidden=true;
   if(main.dataset.mode!=='home'){main.dataset.mode='home';main.className='lb-homewrap';main.innerHTML='';main._h=null}
   set(main,homeHTML());return}
  H.classList.add('lb-inrun');const v=V(),r=R(),s=curStep();
@@ -366,27 +368,20 @@ function railHTML(){const v=V(),r=R(),N=v.steps.length;let h='<div class="lb-mto
 function actsOf(s){const r=R(),A=[],busy=!!UI.fx,st=r.st||{};
  const per=(pre,grp,keys,names)=>keys.forEach((k,i)=>A.push({id:pre+k,label:names[i],cell:1,grp,pressed:UI.mq.cur===k&&!busy,seen:!!r.seen[pre+k],dis:busy}));
  const cells=(grp,list)=>list.forEach(x=>A.push({id:x[0],label:x[1],cell:1,grp,pressed:UI.mq.cur===x[0]&&!busy,seen:!!r.seen[x[0]],dis:busy}));
- const ln=LEAFK.map(k=>LEAF[k].n+'번');
+ const PL=[['1','위쪽'],['2','가운데'],['3','아래쪽']],RK=pre=>ROCKK.map(k=>[pre+k,'①②③④'[ROCK[k].n-1]]);
  switch(s.id){
-  case 'shape':per('p','살펴볼 잎',LEAFK,ln);break;
-  case 'edge':per('e','살펴볼 잎',LEAFK,ln);break;
-  case 'stalk':per('s','살펴볼 잎',LEAFK,ln);break;
-  case 'vein':per('v','돋보기로 볼 잎',LEAFK,ln);break;
-  case 'crit':per('k','두 친구가 쓴 기준',CRITK,CRITK.map(c=>CRIT[c].t));break;
-  case 'sort1':case 'sort2':{const w=s.id==='sort1'?'c1':'c2',done=rowDone(s.id);
-   SORTK.forEach(c=>A.push({id:'q'+c,label:CRIT[c].t,cell:1,grp:'기준 고르기',pressed:st[w]===c,seen:st[w]===c,dis:busy||done||(w==='c2'&&st.c1===c)}));break}
-  case 'look':cells('살펴볼 곳',[['bl','잎'],['bs','잎자루'],['br','뿌리']]);break;
-  case 'touch':A.push({id:'bt',label:'잎자루 살짝 누르기',dis:busy});break;
-  case 'cut':cells('살펴볼 조각',[['bx','가로로 자른 것'],['by','세로로 자른 것']]);break;
-  case 'press':seqActs(A,'bp',['bp0','bp1','bp2'],['자른 잎자루를 물속에 넣기','손가락으로 누르기','손가락 떼기'],busy);break;
-  case 'thick':A.push({id:'ad',label:'옆에서 두께 보기',dis:busy},{id:'as',label:'표면 살살 만지기',dis:busy});break;
-  case 'aedge':A.push({id:'ae',label:'가장자리 가까이 보기',dis:busy},{id:'grab',label:'가장자리 세게 잡기',sub:1,dis:busy});break;
-  case 'acut':A.push({id:'ac',label:'단면 가까이 보기',dis:busy});break;
-  case 'atouch':A.push({id:'at',label:'단면 만져 보기',dis:busy},{id:'ah',label:'단면에 휴지 대 보기',dis:busy});break;
-  case 'surf':A.push({id:'le',label:'눈으로 가까이 보기',dis:busy},{id:'lh',label:'손으로 살살 만지기',dis:busy});break;
-  case 'drop':seqActs(A,'ld',['ld1','ld2','ld3'],['한 방울 떨어뜨리기','한 방울 더 떨어뜨리기','한 방울 더 떨어뜨리기'],busy,-1);A.push({id:'pour',label:'한꺼번에 많이 붓기',sub:1,dis:busy});break;
-  case 'tilt':A.push({id:'lt',label:'연잎 살짝 기울이기',dis:busy||!!r.seen.lt});break;
-  case 'shake':seqActs(A,'sh',['ls','lk'],['물방울 털어 내기','표면 다시 가까이 보기'],busy);break}
+  case 'first':cells('살펴볼 곳',PL.map(p=>['f'+p[0],p[1]]));break;
+  case 'pour':seqActs(A,'pw',['pw1','pw2','pw3'],['물을 천천히 붓기','물을 조금 더 붓기','남은 물을 마저 붓기'],busy);A.push({id:'gush',label:'한꺼번에 쏟기',sub:1,dis:busy});break;
+  case 'look':cells('살펴볼 곳',PL.map(p=>['h'+p[0],p[1]]));break;
+  case 'cof':cells('살펴볼 곳',[['c1','위쪽'],['c3','아래쪽']]);break;
+  case 'heat':seqActs(A,'ht',['ht1','ht2','ht3'],['핫플레이트 전원 켜기','떨어져서 지켜보기','흘러나오면 전원 끄기'],busy);{const q=A.find(a=>a.id==='ht3');if(q&&!rowDone('smoke'))q.dis=true}A.push({id:'near',label:'얼굴 가까이 대고 보기',sub:1,dis:busy});break;
+  case 'cool':seqActs(A,'cl',['cl1','cl2'],['식을 때까지 기다리기','식은 모습 가까이 보기'],busy);A.push({id:'touch',label:'흘러나온 것 바로 만지기',sub:1,dis:busy},{id:'taste',label:'마시멜로 맛보기',sub:1,dis:busy});break;
+  case 'real':cells('살펴볼 그림',[['rv','실제 화산 활동'],['rm','우리 모형']]);break;
+  case 'eye':cells('맨눈으로 볼 암석',RK('e'));break;
+  case 'micro':cells('현미경으로 볼 암석',RK('m'));break;
+  case 'hole':cells('표면을 볼 암석',RK('o'));break;
+  case 'sort':{seqActs(A,'so',['qC','qG'],['\'색깔이 밝은가?\'로 나누기','\'알갱이의 크기가 큰가?\'로 나누기'],busy);const q=A.find(a=>a.id==='qG');if(q&&!rowDone('sortC'))q.dis=true;break}
+  case 'name':A.push({id:'nm',label:'교과서 문장 다시 읽기',dis:busy||!!r.seen.nm});break}
  return A}
 /* 차례대로 하는 행동: 지금 할 것 하나만 큰 단추로(한 일은 단추 위 차례 줄에 표시) */
 function seqActs(A,key,ids,L0,busy){const c=R().st[key]||0,n=ids.length;
@@ -400,20 +395,19 @@ function footHTML(v,r,s){const N=v.steps.length;
 
 /* ───────── 오늘의 실험: 탐구 문제 · 이렇게 해요 · 이것을 살펴봐요 (결과는 보여 주지 않음) ───────── */
 function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0 960 540';
- if(no===1){g=bgTop();
-  if(k==='sticker'){g+=leafAt('L1',{stk:1},300,250,1.9)+itemArtAt('sticker',560,250);vb='160 100 500 300'}
-  if(k==='paper'){g+=paperSheet()+leafAt('L2',{stk:1},170,122)+leafAt('L5',{stk:1},380,122);vb='40 20 470 230'}
-  if(k==='look'){g+=leafAt('L5',{stk:1},300,250,1.9)+magnifier(330,190,1.1,0);vb='160 90 300 300'}
-  if(k==='sort'){g+=LEAFK.map((x,i)=>chip(330+i*60,70,LEAF[x].n)).join('')+twoBox(200,140,560,230,null,false,true)+arrow(480,96,480,132);vb='180 40 600 350'}}
- if(no===2){if(k==='gear'){g+=gearArt(true);vb='160 40 640 420'}if(k==='look'){g+=hyTank();vb='310 60 520 400'}
-  if(k==='cut'){g=bgTop()+hyCut({plain:1,nolab:1});vb='200 230 580 200'}if(k==='press'){g+=pressArt(1,false);vb='310 100 520 340'}}
- if(no===3){if(k==='gear'){g+=gearArt(true);vb='160 40 640 420'}if(k==='look'){g+=aloePot();vb='100 60 400 380'}
-  if(k==='cut'){g=bgTop()+aloeCutArt({closed:1});vb='200 280 580 140'}if(k==='touch'){g=bgTop()+aloeCutArt({closed:1})+tissue(TIS.x,TIS.y,false);vb='200 180 580 240'}}
- if(no===4){if(k==='gear'){g+=gearArt(true);vb='160 40 640 420'}
-  else{g=bgTop()+lotusArt();vb='130 40 540 420';
-   if(k==='surf')g+=hand(LO.cx+150,LO.cy+40,180,1,1);
-   if(k==='drop')g+=dropper(DROPS[1][0],DROPS[1][1]-46,1,0)+'<path d="M'+DROPS[1][0]+' '+(DROPS[1][1]-24)+' q-6 10 0 14 q6 -4 0 -14z" fill="#7CC3EC"/>';
-   if(k==='tilt')g+=arrow(LO.cx+LO.rx-20,LO.cy+20,LO.cx+LO.rx-40,LO.cy+150)}}
+ if(no===1){vb='60 110 860 350';
+  if(k==='groove'){g=bgTop()+CUPBIG+paperCup(480,211,{groove:1})+'</g>'+scissors(565,252,180,1.3);vb='250 150 460 300'}
+  if(k==='hill')g=hillScene({cup:1});
+  if(k==='coffee')g=hillScene({cup:1,coffee:1});
+  if(k==='pour'){g=hillScene({cup:1,coffee:1,pour:1});vb='60 20 860 440'}}
+ if(no===2){if(k==='fill'){g=bg({})+kcup(480,400,'open',2)+mallows(480,400,2);vb='170 120 620 330'}
+  if(k==='add'){g=bg({})+kcup(480,400,'open',2)+mallows(480,400,2)+spoon(440,220,20,1.4,'#FFFFFF');vb='170 120 620 330'}
+  if(k==='close'){g=bg({})+hotplate(false)+dishArt()+kcup(KC.cx,KC.b,'closed',1,{mouth:1});vb='280 200 400 240'}
+  if(k==='heat'){g=volScene({on:true})+'<g transform="translate(180 330)">'+'<circle cx="0" cy="-60" r="26" fill="#F2C6A0" stroke="#B9875F" stroke-width="3"/>'+goggles(0,-64,.6)+'</g>'+arrow(230,250,330,250);vb='110 150 560 300'}}
+ if(no===3){if(k==='paper'){g=rockPaper({stk:1});vb='80 100 800 340'}
+  if(k==='eye'){g=bgTop()+rockArt('R1',360,250,90,{stk:1})+rockArt('R2',600,250,90,{stk:1});vb='230 130 500 240'}
+  if(k==='scope'){g=microScene(null,{noq:1});vb='40 60 880 420'}
+  if(k==='sort'){g=bgTop()+sortArt(null,[]).replace(/<g class="lb-a lb-a-pop"[\s\S]*?<\/g><\/g>/,'');vb='40 180 880 270'}}
  const s=svg(g,'',vb).replace(' role="img" aria-label=""',' aria-hidden="true"');NAR=n0;LEG=l0;return s}
 function introBody(){const v=V();
  return '<div class="lb-intro"><div class="lb-iq"><span class="lb-itag">'+ic('flask')+'탐구 문제</span><p>'+esc(v.q)+'</p></div>'+
@@ -430,16 +424,15 @@ function lensOf(s,g){let sp=s.spot;if(typeof sp==='function')sp=sp();if(!sp||!(a
   '<g clip-path="url(#'+id+')" class="lb-lensin"><rect x="'+(lx-R2)+'" y="'+(ly-R2)+'" width="'+2*R2+'" height="'+2*R2+'" fill="var(--w-wall)"/><g transform="translate('+lx+' '+ly+') scale('+z+') translate('+(-x)+' '+(-y)+')">'+g.replace(/ id="[^"]*"/g,'').replace(/<g class="lb-lens"[\s\S]*$/,'')+'</g></g>'+
   '<circle cx="'+lx+'" cy="'+ly+'" r="'+R2+'" fill="none" stroke="var(--lb-lens)" stroke-width="7"/></g>'}
 function homeArt(no){NAR=true;LEG=[];let g='',vb='120 70 720 420';
- if(no===1){g=bgTop()+leavesOnPaper({stk:1});vb='-180 20 910 560'}
- if(no===2){g=bg({})+hyTank();vb='310 60 520 400'}
- if(no===3){g=bg({})+aloePot();vb='60 40 480 400'}
- if(no===4){g=bgTop()+lotusArt()+dropper(DROPS[1][0],DROPS[1][1]-46,1,0);vb='130 -14 540 470'}
+ if(no===1){g=hillScene({cup:1,coffee:1});vb='60 150 860 330'}
+ if(no===2){g=volScene({});vb='250 170 460 270'}
+ if(no===3){g=rockPaper({stk:1});vb='80 100 800 340'}
  const s=svg(g,'실험 '+no+' 처음 모습',vb);NAR=false;LEG=[];return s}
 function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fin?'끝냄 · 결과 보기':(r.step+1)+'단계부터 이어서'):'실험 시작하기';
- return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','leaf','bubble','pot','drop'][v.no])+'</i><span><b>'+st+'</b><span>교과서 실험</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
- return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>3학년 1학기 과학</em>3. 식물의 생활</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 보고, 내 눈으로 본 것을 기록해요.</p></div>'+
- '<div class="lb-ex lb-ex4">'+['e1','e2','e3','e4'].map(card).join('')+'</div>'+
- '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 관찰 결과는 교과서·지도서 예시와 같고, 실제 식물은 하나하나 조금씩 다를 수 있어요. 잎 여섯 장과 부레옥잠·알로에·연잎의 모양과 크기, 두 친구가 나눈 결과, 물방울 수는 이 실험관에서 정한 모습이에요.</span></p></div>'}
+ return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','hill','fire','rock'][v.no])+'</i><span><b>'+st+'</b><span>교과서 실험</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
+ return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>4학년 1학기 과학</em>3. 땅의 변화</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 보고, 내 눈으로 본 것을 기록해요.</p></div>'+
+ '<div class="lb-ex lb-ex3">'+['e1','e2','e3'].map(card).join('')+'</div>'+
+ '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 관찰 결과는 교과서·지도서 예시와 같고, 실제 실험에서는 조금씩 다를 수 있어요. 흙 언덕의 모양과 깎이고 쌓이는 정도, 커피 찌꺼기 수, 마시멜로가 흘러나오는 모습, 네 암석의 모양·무늬·구멍 수와 현미경 화면은 이 실험관에서 정한 모습이에요. 화산 활동 모형은 가열하는 실험이라 선생님과 함께, 또는 선생님의 대표 실험으로 해요.</span></p></div>'}
 /* ───────── 동작 ───────── */
 function fx(id,ms,after){UI.fx={id,n:++UI.nonce};render();later(()=>{UI.fx=null;if(after)after();save();render()},ms)}
 function doAnim(id,ms){fx(id,ms,()=>{const r=R();if(r)r.done[id]=true;const p=$('#lbFoot [data-act="next"]');if(p&&!p.disabled)p.focus({preventScroll:true})})}
@@ -461,20 +454,19 @@ function act(a,el){const v=V(),r=R();
  if(a==='rail'){UI.rail=!UI.rail;render();return}}
 /* 실험 단계의 행동 */
 function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
- const SUB={grab:'가장자리를 세게 잡으면 가시에 찔릴 수 있어요. 눈으로 가까이 보며 살펴봐요.',pour:'한꺼번에 많이 부으면 물방울 하나하나를 볼 수 없어요. 한 방울씩 떨어뜨려요.'};
- if(SUB[id]){fx(id,1000,()=>flash(SUB[id]));return}
+ const SUB={gush:'한꺼번에 많이 부으면 종이컵에서 물이 넘쳐요. 천천히 일정한 양을 부어요.',near:'가열하면서 나타나는 변화는 안전한 거리를 두고 관찰해요.',touch:SAFE.hot,taste:'실험에 쓰는 물질은 먹거나 맛보지 않아요.'};
+ if(SUB[id]){fx(id,1100,()=>flash(SUB[id]));return}
+ if(id==='ht3'&&!rowDone('smoke')){flash('먼저 컵 입구에서 본 것을 기록해요.','info');return}
+ if(id==='qG'&&!rowDone('sortC')){flash('먼저 \'색깔이 밝은가?\'로 나눈 것을 기록해요.','info');return}
  r.act[s.id]=1;if(idxOf('pred')>=0&&r.step>idxOf('pred'))r.obs=1;
  const done=()=>{r.seen[id]=1};
  const seq=(key,ids,ms)=>{const i=ids.indexOf(id),c=st[key]||0;if(i<0||c!==i)return true;fx(id,ms,()=>{st[key]=i+1;r.seen[id]=1});return true};
- if(/^[pesv]L\d$/.test(id)){UI.mq.cur=id.slice(1);fx(id,id[0]==='p'?1300:1000,done);return}
- if(/^kc[a-z]$/.test(id)){UI.mq.cur=id.slice(1);fx(id,1700,done);return}
- if(/^qc[a-z]$/.test(id)){const row=s.id,w=row==='sort1'?'c1':'c2',c=id.slice(1);if(rowDone(row))return;
-  if(st[w]!==c){st[w]=c;UI.draft[row]={f:[]};UI.wrong[row]=[];UI.fb[row]=null}fx(id,700,()=>{r.seen[w]=1});return}
- if(id==='bp0'||id==='bp1'||id==='bp2'){seq('bp',['bp0','bp1','bp2'],id==='bp1'?2200:1300);return}
- if(/^ld[123]$/.test(id)){seq('ld',['ld1','ld2','ld3'],1100);return}
- if(id==='ls'||id==='lk'){if(id==='lk')UI.mq.cur='lk';seq('sh',['ls','lk'],id==='ls'?1400:900);return}
- if(['bl','bs','br','bx','by','bt','ad','as','ae','ac','at','ah','le','lh'].indexOf(id)>=0){UI.mq.cur=id;fx(id,['bt','as','lh'].indexOf(id)>=0?1500:1100,done);return}
- if(id==='lt'){fx(id,2300,done);return}}
+ if(/^pw[123]$/.test(id)){seq('pw',['pw1','pw2','pw3'],2300);return}
+ if(/^ht[123]$/.test(id)){seq('ht',['ht1','ht2','ht3'],id==='ht1'?1200:2800);return}
+ if(id==='cl1'||id==='cl2'){if(id==='cl2')UI.mq.cur='cl2';seq('cl',['cl1','cl2'],id==='cl1'?2300:1000);return}
+ if(id==='qC'||id==='qG'){seq('so',['qC','qG'],800);return}
+ if(id==='nm'){fx(id,900,done);return}
+ if(/^[fhc][123]$/.test(id)||/^[emo]R\d$/.test(id)||id==='rv'||id==='rm'){UI.mq.cur=id;fx(id,1000,done);return}}
 /* 숫자 적기: 화면 숫자와 같은지만 알려 줌. 같은 값으로 다시 누르면 세지 않음 */
 function tryKey(k,val){const r=R();if(r.last[k]===val)return -1;r.last[k]=val;r.tries[k]=(r.tries[k]||0)+1;return r.tries[k]}
 function trial(){}

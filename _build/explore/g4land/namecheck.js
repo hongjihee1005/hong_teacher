@@ -2,7 +2,7 @@
 const fs=require('fs'),path=require('path');const S=path.join(__dirname,'src');
 const c={};new Function('c','const R=()=>({st:{}});'+fs.readFileSync(path.join(S,'data.js'),'utf8')+';c.EXPS=EXPS;c.stepDef=stepDef;')(c);
 const body=fs.readFileSync(path.join(S,'app_body.js'),'utf8');
-const labels=[...body.matchAll(/label:'([^']+)'/g)].map(m=>m[1]).concat([...body.matchAll(/\[\['([a-z]+)','([^']+)'\]/g)].map(m=>m[2]));
+const labels=[...body.matchAll(/label:'([^']+)'/g)].map(m=>m[1]);
 const out=[];
 for(const k in c.EXPS){const E=c.EXPS[k];
  const names=[E.name,E.title,E.sub].concat(E.steps.map(id=>{const s=c.stepDef(E,id);return [s.n,s.n0||'',s.k==='concl'||s.k==='sheet'?'':s.t,s.act||''].join(' ')})).concat(labels);
