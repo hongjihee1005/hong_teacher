@@ -70,7 +70,7 @@ function prog(){if(!UI.fx||RM)return 1;return Math.max(0,Math.min(1,(performance
 
 /* ───────── 실험 1: 뼈와 근육 모형(원본 u4-1의 armDraw를 옮겨 씀, 520×380 좌표) ───────── */
 const AE={x:300,y:200},AL=150;
-const ARM={tx:150,ty:30,s:1.3,lens:[505,168,790,190]};
+const ARM={tx:45,ty:10,s:1.45,lens:[441,159,770,200]};
 const MCOL={in:['#E2573F','#8A1F19'],out:['#F0A04B','#9A5410']};
 function armPts(phi){const r=phi*DEG,sn=Math.sin(r),cs=Math.cos(r),u={x:-sn,y:cs},n={x:-cs,y:-sn};
  const P=(b,k1,k2)=>({x:b.x+k1*u.x+k2*n.x,y:b.y+k1*u.y+k2*n.y});
@@ -90,8 +90,9 @@ function armArt(phi,o){o=o||{};const Q=armPts(phi),vis=k=>o.part==null||o.part>=
  if(!o.skin&&vis(2))s+='<g transform="translate('+f1(Q.H.x)+' '+f1(Q.H.y)+') rotate('+f1(phi-20)+')"><rect x="-80" y="-12" width="82" height="24" rx="6" fill="#FFD166" stroke="#A8842E" stroke-width="2"/></g>';
  if(!o.skin)[[AE,1],[Q.A,3],[Q.B,2],[Q.H,2],[Q.C,4],[Q.D,4]].forEach(([p,k])=>{if(vis(k))s+='<circle cx="'+f1(p.x)+'" cy="'+f1(p.y)+'" r="7" fill="#7D8A95" stroke="#FFFFFF" stroke-width="2"/>'});
  return s}
-function armLabels(phi,skin){if(NAR)return '';const Q=armPts(phi),m=Q.P(AE,AL*.62,-34),T=(x,y,t,a)=>'<text x="'+f1(x)+'" y="'+f1(y)+'" font-size="17" font-weight="800" text-anchor="'+(a||'start')+'" fill="#3E3423">'+t+'</text>';
- return T(318,30,'위팔뼈')+T(m.x+8,m.y,'아래팔뼈')+T(Q.D.x+30,Q.D.y-40,skin?'팔 바깥쪽 근육':'바깥쪽 근육')+T(Q.A.x-36,Q.A.y+40,skin?'팔 안쪽 근육':'안쪽 근육','end')}
+function armLabels(phi,skin){if(NAR)return '';const Q=armPts(phi),T=(x,y,t,a)=>'<text x="'+f1(x)+'" y="'+f1(y)+'" font-size="15" font-weight="800" text-anchor="'+(a||'start')+'" fill="#3E3423" stroke="var(--w-paper)" stroke-width="4" paint-order="stroke">'+t+'</text>';
+ const mi={x:(Q.A.x+Q.B.x)/2,y:(Q.A.y+Q.B.y)/2},mo={x:(Q.D.x+Q.C.x)/2,y:(Q.D.y+Q.C.y)/2},ri=Math.min(30,3000/Math.hypot(Q.A.x-Q.B.x,Q.A.y-Q.B.y)),ro=Math.min(30,3000/Math.hypot(Q.D.x-Q.C.x,Q.D.y-Q.C.y));
+ return T(312,34,'위팔뼈')+T(Q.tip.x-14,Q.tip.y+(phi>90?-14:22),'아래팔뼈','end')+T(mo.x+ro+12,mo.y+5,skin?'팔 바깥쪽 근육':'바깥쪽 근육')+T(mi.x-ri-12,mi.y+5,skin?'팔 안쪽 근육':'안쪽 근육','end')}
 function armScene(phi,o){o=o||{};let g='<rect x="-3000" y="-3000" width="7000" height="7000" fill="var(--w-wall)"/><rect x="40" y="20" width="880" height="500" rx="18" fill="var(--w-paper)" stroke="var(--w-felt-s)" stroke-width="2"/>';
  g+='<g transform="translate('+ARM.tx+' '+ARM.ty+') scale('+ARM.s+')">';
  if(o.ghost!=null)g+=armArt(o.ghost,{ghost:1});
