@@ -49,6 +49,8 @@ BUILDS = [  # (이름, 원본 폴더, 만들어지는 HTML(손대면 알아챌 �
      [('grade4/science/_build_tb', ['build.py']), ('grade4/science/_build_tb', ['index_build.py'])]),
     ('과학 실험 준비 길잡이', ('_build/labguide/', 'grade3/science/_build_hong/', 'grade3/science/_build_hong2/', '_build/origami/foot.html', '_build/origami/home.html', '_build/origami/head_snip.html'), ['grade3/science/labs.html'], [('.', ['_build/labguide/build.py'])]),
     ('과학 탐구 실험관 · 힘과 우리 생활', '_build/explore/force/', ['grade3/science/explore/force.html'], [('.', ['_build/explore/force/build.py'])]),
+    ('과학 탐구 실험관 · 물체와 물질', '_build/explore/matter/', ['grade3/science/explore/matter.html'], [('.', ['_build/explore/matter/build.py'])]),
+    ('과학 탐구 실험관 · 지구와 바다', '_build/explore/earth/', ['grade3/science/explore/earth.html'], [('.', ['_build/explore/earth/build.py'])]),
     ('국어 3-2', 'grade3/korean/_build/', ['grade3/korean/sem2/u*.html'], [('grade3/korean/_build', ['build.py', '../sem2'])]),
     ('우리 반 교실', '_build/class/', ['class/index.html'], [('.', ['_build/class/build.py'])]),
     ('오늘의 교실 산책', '_build/today/', ['today/index.html', 'index.html'], [('.', ['_build/today/build.py'])]),
