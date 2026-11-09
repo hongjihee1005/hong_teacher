@@ -66,7 +66,7 @@ function stone(x,y,r,c,k){const n=6+(k%3),pts=[];for(let i=0;i<n;i++){const a=i/
 function salt(x,y,r,k){const n=4+(k%3),pts=[];for(let i=0;i<n;i++){const a=i/n*Math.PI*2+rnd(k,9),rr=r*(.75+rnd(k,i)*.35);pts.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr])}
  return '<path d="'+P2(pts)+'" fill="#FBFBF8" stroke="#8C949C" stroke-width="'+Math.max(.6,r/9).toFixed(1)+'" stroke-linejoin="round"/>'}
 /* 그릇에 담긴 알갱이 무더기(옆에서 본 모습). kind: sand gravel mix salt saltsand */
-function pile(cx,b,w,kind,seed){let g='';const h=w*.32,col={sand:'#D9B97F',gravel:'#9C8C78',mix:'#CDAE7A',salt:'#F4F2EC',saltsand:'#D8C4A0'}[kind];
+function pile(cx,b,w,kind,seed,hr){let g='';const h=w*(hr||.32),col={sand:'#D9B97F',gravel:'#9C8C78',mix:'#CDAE7A',salt:'#F4F2EC',saltsand:'#D8C4A0'}[kind];
  g+='<path d="M'+(cx-w/2)+' '+b+' Q'+cx+' '+(b-h*2)+' '+(cx+w/2)+' '+b+'Z" fill="'+col+'" stroke="'+(kind==='salt'?'#A8AEB4':'#8A6E46')+'" stroke-width="2"/>';
  const inP=(x,y)=>{const t=(x-cx)/(w/2);return y<b-2&&y>b-h*(1-t*t)+2};
  if(kind!=='gravel'&&kind!=='salt')for(let i=0;i<70;i++){const x=cx-w/2+rnd(i,seed)*w,y=b-rnd(i,seed+1)*h;if(inP(x,y))g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="1.6" fill="'+SANDC[i%5]+'"/>'}
@@ -116,7 +116,7 @@ function sieveSide(o){o=o||{};const n=o.n||0,an1=o.anim;let g=bg({});
  g+=shadow(480,420,250)+'<path d="M230 392 H730 L716 416 H244Z" fill="#9FB6C2" stroke="#59636E" stroke-width="3"/>';
  const fell=o.poured?[0,.55,1][Math.min(2,n)]:0;
  /* 쟁반에 떨어진 모래 */
- if(fell>0)g+=pile(480,394,280*Math.sqrt(fell),'sand',8);
+ if(fell>0)g+=pile(480,394,380*Math.sqrt(fell),'sand',8,.13);
  /* 체(옆) */
  let sv='<path d="M300 232 H660 L640 310 H320Z" fill="#EEF3F6" fill-opacity=".85" stroke="#59636E" stroke-width="4"/><path d="M322 308 H638" stroke="#59636E" stroke-width="6" stroke-dasharray="2 6"/><rect x="292" y="224" width="376" height="14" rx="5" fill="#9AA3AD" stroke="#59636E" stroke-width="3"/>';
  if(o.poured){const left=1-fell;sv+='<g>'+(left>0?pile(480,306,300*Math.max(.35,Math.sqrt(left)),'sand',9):'')+'</g>';for(let i=0;i<12;i++)sv+=stone(350+rnd(i,3)*260,292-rnd(i,4)*18,9+rnd(i,5)*5,GRAVC[i%4],i)}
@@ -220,15 +220,16 @@ function filtScene(c,act){let g=bg({})+standArt();const done=c>=3&&act!=='f3';
   if(act==='f1')for(let i=0;i<14;i++)inner+=(i%2?salt(mx-40+rnd(i,4)*80,330+rnd(i,5)*40,4,i):stone(mx-40+rnd(i,4)*80,330+rnd(i,5)*40,3,'#A0673A',i)).replace('<path','<path'+an('lb-a-drop',.1+(i%5)*.1,'--from:-60px'));
   if(act==='f2')inner+='<rect x="'+(mx-57)+'" y="'+(416-110)+'" width="114" height="104" fill="#C9A87A" fill-opacity=".55"'+an('lb-a-out',1.2)+'/>';
   g+=beakerS(mx,416,120,150,{water:110,lab:1,inner});
-  if(act==='f2')g+='<g'+an('lb-a-jig',0,'--amp:10px;animation-iteration-count:3')+'>'+rodArt(mx+10,406,8)+'</g>';else g+=rodArt(mx+90,410,20)}
- else g+=beakerS(mx,416,120,150,{water:0,lab:1})+rodArt(mx+90,410,20);
+  if(act==='f2')g+='<g'+an('lb-a-jig',0,'--amp:10px;animation-iteration-count:3')+'>'+rodArt(mx+10,406,8)+'</g>';else g+=rodArt(mx+70,410,14)}
+ else g+=beakerS(mx,416,120,150,{water:0,lab:1})+rodArt(mx+70,410,14);
  return g}
 /* 가열: stage 0 가열 전 · 1 가열하는 동안 · 2 끝나 갈 때 · 'anim' 지켜보는 중. on 가열판 켜짐 */
 function hotplate(on){return shadow(480,420,140)+'<rect x="340" y="350" width="280" height="66" rx="10" fill="#E3E6EA" stroke="#6B7480" stroke-width="3"/><rect x="356" y="340" width="248" height="14" rx="4" fill="#4A515B"/><circle cx="580" cy="388" r="13" fill="#FFFFFF" stroke="#6B7480" stroke-width="3"/><path d="M580 388 L'+(on?'572 378':'580 375')+'" stroke="#2A3342" stroke-width="3" stroke-linecap="round"/><circle cx="380" cy="388" r="7" fill="'+(on?'#E03A2E':'#9AA3AD')+'"/>'}
-function edish(lvl,cry,o){o=o||{};let g='';const cx=480,b=338;
- if(lvl>0)g+='<path d="M'+(cx-88*Math.sqrt(lvl))+' '+(b-38*lvl)+' Q'+cx+' '+(b+4)+' '+(cx+88*Math.sqrt(lvl))+' '+(b-38*lvl)+'Z" fill="#CDEBFA" fill-opacity=".9"/>';
- for(let i=0;i<cry;i++)g+=salt(cx-60+rnd(i,11)*120,b-6-rnd(i,12)*12*(1-Math.abs(rnd(i,11)-.5)),3.2,i);
- g+='<path d="M'+(cx-104)+' '+(b-44)+' Q'+cx+' '+(b+12)+' '+(cx+104)+' '+(b-44)+'" fill="#FAFAF7" fill-opacity=".35" stroke="#9AA3AD" stroke-width="4"/>';
+function edish(lvl,cry,o){let g='';const cx=480,yb=340;
+ g+='<path d="M'+(cx-104)+' '+(yb-28)+' Q'+cx+' '+(yb+28)+' '+(cx+104)+' '+(yb-28)+'Z" fill="#FAFAF7" fill-opacity=".55"/>';
+ if(lvl>0){const w=104*Math.sqrt(lvl),d=28*lvl;g+='<path d="M'+(cx-w).toFixed(1)+' '+(yb-d).toFixed(1)+' Q'+cx+' '+(yb+d).toFixed(1)+' '+(cx+w).toFixed(1)+' '+(yb-d).toFixed(1)+'Z" fill="#CDEBFA" fill-opacity=".9"/>'}
+ for(let i=0;i<cry;i++){const u=-70+rnd(i,11)*140,fl=yb-28*(u/104)*(u/104);g+=salt(cx+u,fl-3-rnd(i,12)*5,3.2,i)}
+ g+='<path d="M'+(cx-104)+' '+(yb-28)+' Q'+cx+' '+(yb+28)+' '+(cx+104)+' '+(yb-28)+'" fill="none" stroke="#9AA3AD" stroke-width="4"/><ellipse cx="'+cx+'" cy="'+(yb-28)+'" rx="104" ry="6" fill="none" stroke="#B9C2CA" stroke-width="2"/>';
  return g}
 function steam(n){let g='';for(let i=0;i<n;i++)g+='<path d="M'+(440+i*28)+' 280 q-10 -20 0 -40 q10 -20 0 -40" stroke="#B9C2CA" stroke-width="4" fill="none" stroke-linecap="round"'+an('lb-a-smoke',(i%3)*.4,'animation-iteration-count:infinite')+'/>';return g}
 function spatter(){let g='';for(let i=0;i<8;i++){const dx=(i%2?1:-1)*(20+i*8);g+='<g'+an('lb-a-splash',(i%4)*.3,'--dx:'+dx+'px;--dy:-'+(30+i*6)+'px;animation-iteration-count:infinite;animation-duration:1.2s')+'>'+salt(480,300,2.6,i)+'</g>'}return g}
@@ -242,12 +243,11 @@ function heatScene(c,act,view){let g=bg({});const on=c>=3&&c<5||act==='h3'||act=
   if(act==='h2')g+='<g'+an('lb-a-fade',0)+'><g transform="translate(600 200) rotate(-58)">'+beakerS(0,0,90,110,{water:60})+'</g></g>'}
  else g+=edish(0,0)+beakerS(760,416,90,110,{water:44,lab:1});
  if(act==='h1')g+='<g'+an('lb-a-pop',0)+'>'+cotton(250,250,-60,1.3)+cotton(720,250,-120,1.3)+'</g>';
- if(stg==='anim'||act==='h4')g+=clockArt(820,160,1);
+ if(stg==='anim'||act==='h4')g+=clockArt(770,200,1);
  return g}
-function moveScene(done,anim){let g=bg({})+hotplate(false);
- if(!done)return g+edish(.1,40)+'<g transform="translate(700 270)"><path d="M0 0 L120 -40 M0 10 L120 -30" stroke="#6B7480" stroke-width="7" stroke-linecap="round"/></g>';
- g+='<g'+(anim?an('lb-a-slide',0,'--dx:-260px'):'')+'><g transform="translate(260 40)">'+edish(.06,44)+'</g><path d="M850 280 L'+(740+40)+' 300 M850 292 L'+(740+40)+' 310" stroke="#6B7480" stroke-width="7" stroke-linecap="round"/></g>';
- return g}
+function moveScene(done,anim){let g=bg({})+hotplate(false);const tg='<path d="M905 300 L862 330 M915 312 L868 338" stroke="#6B7480" stroke-width="7" stroke-linecap="round"/>';
+ if(!done)return g+edish(.1,40)+'<g transform="translate(40 -20)">'+tg+'</g>';
+ return g+'<g'+(anim?an('lb-a-slide',0,'--dx:-300px'):'')+'><g transform="translate(300 76)">'+edish(.06,44)+'</g><g transform="translate(-8 70)">'+tg+'</g></g>'}
 
 /* ───────── 준비물 카드 ───────── */
 function itemArt(k){const A={

@@ -86,7 +86,7 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  if(id==='gear')return T(g,s.t,'160 40 640 420');
  if(no===1)return T(g,s.t,id==='mix'?'120 200 720 280':id==='loupe'?'60 40 860 420':id==='sieve'?'60 20 840 450':'150 110 780 340');
  if(no===2)return T(g,s.t,id==='side'?'130 60 700 420':id==='shake'?'140 40 680 440':'150 40 680 440');
- return T(g,s.t,id==='loupe'?'60 40 860 420':id==='melt'||id==='pred'?'180 110 600 360':id==='setup'?'200 90 720 370':id==='filt'?'200 60 680 400':id==='heat'?'220 100 680 340':'150 120 760 330')}
+ return T(g,s.t,id==='loupe'?'60 40 860 420':id==='melt'||id==='pred'?'180 110 600 360':id==='setup'?'200 90 720 370':id==='filt'?'200 60 680 400':id==='heat'?'250 140 620 310':'150 120 760 330')}
 
 /* ───────── 오른쪽 카드 ───────── */
 function cardHead(t,s){return '<div class="lb-card-h"><span class="lb-clip">'+ic('clip')+'</span><div><b>'+t+'</b><span>'+s+'</span></div></div>'}
@@ -253,8 +253,8 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
 const LABNAME='mixture';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
  if(no===1){if(ok('sz'))S(bgTop()+lookCircle(240,170,140,loupeIn('s',240,170,140))+lookCircle(620,170,140,loupeIn('g',620,170,140)),'80 15 760 330','돋보기로 본 모래(왼쪽)와 자갈(오른쪽)');if(ok('res'))S(sieveSide({poured:1,n:2}),'200 200 560 230','체에 남은 것과 쟁반에 떨어진 것')}
- if(no===2){if(ok('drp'))S(dropScene(4),'230 200 540 230','스포이트로 옮긴 뒤');if(ok('pad'))S(padScene(4),'250 200 540 230','흡착포를 댄 뒤')}
- if(no===3){if(ok('filt'))S(filtScene(3,null),'220 160 640 270','걸러 낸 뒤');if(ok('heat'))S(heatScene(5,null,2),'320 230 320 200','가열이 끝난 증발 접시')}
+ if(no===2){if(ok('drp'))S(dropScene(4),'270 250 500 175','스포이트로 옮긴 뒤');if(ok('pad'))S(padScene(4),'290 260 500 165','흡착포를 댄 뒤')}
+ if(no===3){if(ok('filt'))S(filtScene(3,null),'220 160 640 270','걸러 낸 뒤');if(ok('heat'))S(heatScene(5,null,2),'330 270 300 90','가열이 끝난 증발 접시')}
  return L}
 /* ───────── 결과 한 장: 관찰 그림 · 이미지로 복사/저장 ───────── */
 function picsHTML(list){if(!list||!list.length)return '';

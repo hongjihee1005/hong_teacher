@@ -67,7 +67,7 @@ function e1Scene(s){const r=R(),id=s.id,f=fid();
  if(id==='pred')return g+canArt(CN.x,CN.b,{})+qmark(700,220);
  if(id==='watch'){const v=tView('e1t');g+=canArt(CN.x,CN.b,{d:v?MODEL.drops[v]:0,anim:f===v});
   if(v)g+=mini(CN.x,CN.b+56,tLabel('e1t',v),18);return g}
- if(id==='dab'){const a=sn('dA'),b=sn('dB');return dabScene({a,b,aAnim:f==='dA',bAnim:f==='dB'})}
+ if(id==='dab'){const a=sn('dA'),b=sn('dB');return dabScene({a,b,aAnim:f==='dA',bAnim:f==='dB',can:1})}
  return g}
 /* 실험 2: 집기병 */
 function e2Scene(s){const r=R(),id=s.id,f=fid(),J=(o)=>jarArt(JR.x,JR.b,o);
@@ -122,7 +122,7 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  if(id==='tools'){if(!(r.done.tools||fxOn('tools')))return T(bg({})+boxArt(480),'준비물 상자');return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '))}
  const F=[null,e1Scene,e2Scene,e3Scene][no];
  const VB={1:'100 30 760 500',2:'100 30 800 510',3:'100 60 860 450'}[no];
- const vb=id==='gear'?'160 40 640 420':VB;
+ const vb=id==='gear'?'160 40 640 420':(no===3&&(id==='bowls'||id==='temp'))?'150 120 660 380':(no===1&&id==='dab')?'100 200 760 330':VB;
  return T(F(s),s.t,vb)}
 
 /* ───────── 오른쪽 카드 ───────── */
@@ -282,9 +282,9 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
  return h}
 const LABNAME='g5weather';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
- if(no===1){if(ok('e1b'))S(bg({})+towelArt(CN.x,CN.b,1)+canArt(CN.x,CN.b,{d:1}),'290 200 380 280','더 지나서 캔 표면');if(ok('pB'))S(dabScene({a:1,b:1}),'150 270 660 200','흰 종이에 묻힌 두 가지')}
- if(no===2){if(ok('jf'))S(bg({})+jarArt(JR.x,JR.b,{water:1,fog:1,smoke:.12,bag:1}),'300 110 360 360','얼음 지퍼 백을 올린 집기병');if(ok('cF'))S(cmpArt('c2'),'150 100 660 440','두 집기병 견주기')}
- if(no===3){if(ok('tW'))S(bg({})+bigBowl(WB.sx,WB.b,'sand',{lcd:MODEL.sandT})+bigBowl(WB.wx,WB.b,'water',{lcd:MODEL.waterT}),'150 290 660 170','모래와 따뜻한 물');if(ok('dir'))S(windLab({box:1,small:1,open:1,w:1}),'120 100 720 360','향 연기가 움직인 모습')}
+ if(no===1){if(ok('e1b'))S(bg({})+towelArt(CN.x,CN.b,1)+canArt(CN.x,CN.b,{d:1}),'260 238 440 210','더 지나서 캔 표면');if(ok('pB'))S(dabScene({a:1,b:1}),'100 340 760 150','흰 종이에 묻힌 두 가지')}
+ if(no===2){if(ok('jf'))S(bg({})+jarArt(JR.x,JR.b,{water:1,fog:1,smoke:.12,bag:1}),'240 150 480 300','얼음 지퍼 백을 올린 집기병');if(ok('cF'))S(cmpArt('c2'),'150 170 660 350','두 집기병 견주기')}
+ if(no===3){if(ok('tW'))S(bg({})+bigBowl(WB.sx,WB.b,'sand',{lcd:MODEL.sandT})+bigBowl(WB.wx,WB.b,'water',{lcd:MODEL.waterT}),'150 300 660 150','모래와 따뜻한 물');if(ok('dir'))S(windLab({box:1,small:1,open:1,w:1}),'120 200 720 260','향 연기가 움직인 모습')}
  return L}
 /* ───────── 결과 한 장: 관찰 그림 · 이미지로 복사/저장 ───────── */
 function picsHTML(list){if(!list||!list.length)return '';
@@ -381,10 +381,10 @@ function footHTML(v,r,s){const N=v.steps.length;
 /* ───────── 오늘의 실험: 탐구 문제 · 이렇게 해요 · 이것을 살펴봐요 (결과는 보여 주지 않음) ───────── */
 function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0 960 540';
  if(no===1){vb='240 150 480 330';g+=towelArt(CN.x,CN.b,0);
-  if(k==='put')g+=canArt(CN.x,CN.b,{})+glove(CN.x+70,CN.b-120,1,-90);
+  if(k==='put')g+=canArt(CN.x,CN.b,{})+glove(CN.x+62,CN.b-110,1,-90);
   if(k==='wipe')g+=canArt(CN.x,CN.b,{})+'<g transform="translate(585 300)"><rect x="-40" y="-60" width="70" height="120" rx="12" fill="#F4F0E6" stroke="#BDB4A2" stroke-width="2.5"/>'+glove(18,0,1,-90)+'</g>';
   if(k==='watch')g+=canArt(CN.x,CN.b,{})+eyeArt(660,250);
-  if(k==='dab'){g=dabScene({});vb='160 250 640 220'}}
+  if(k==='dab'){g=dabScene({});vb='100 260 760 260'}}
  if(no===2){vb='280 90 400 400';
   if(k==='water')g+=jarArt(JR.x,JR.b,{water:1});
   if(k==='smoke')g+=jarArt(JR.x,JR.b,{water:1})+incenseArt(480,JR.b-150,true,.9);

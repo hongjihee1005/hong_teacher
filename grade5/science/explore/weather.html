@@ -2897,7 +2897,7 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
    교과서 버전 앱 원본 값: 하루 전 냉장고에 넣어 둔 포도 음료수 캔, 미지근한 물(30~40 °C — 고르기 칸 10·35·90 °C),
    향 3~5개, 향에 불을 붙이고 10초쯤 뒤 연기 모으기, 뚜껑을 열고 약 30초 뒤 연기가 움직이기 시작,
    액정 온도계 모래 20 °C · 따뜻한 물 34 °C.
-   이 실험관에서 정한 값: 관찰 칸('닦은 바로 뒤·조금 지나서·더 지나서' 등 — 시간 숫자는 정하지 않음),
+   이 실험관에서 정한 값: 관찰 칸('처음·조금 지나서·더 지나서' 등 — 시간 숫자는 정하지 않음),
    물방울이 맺히는 모습·안개의 짙기·향 연기가 퍼지는 모습(그림).
    '조심해요' 글은 원본의 안전 문구 그대로. */
 const GROUPS=['시작','준비','예상과 관찰','정리'];
@@ -2905,16 +2905,16 @@ function jo(w,a,b){const s=String(w||'').trim();const c=s.charCodeAt(s.length-1)
 
 /* 누르는 칸(차례대로 열림). 화면 그림은 고른 칸의 모습 */
 const TIMES={
- e1t:[['w0','닦은 바로 뒤'],['w1','조금 지나서'],['w2','더 지나서']],
- e2t:[['j0','올린 바로 뒤'],['j1','조금 지나서'],['j2','더 지나서']],
+ e1t:[['w0','처음'],['w1','조금 지나서'],['w2','더 지나서']],
+ e2t:[['j0','처음'],['j1','조금 지나서'],['j2','더 지나서']],
  e2c:[['c0','처음'],['c1','조금 지나서'],['c2','더 지나서']],
- e3t:[['o1','연 바로 뒤'],['o2','30초쯤 지나서'],['o3','더 지나서']]};
+ e3t:[['o1','연 바로 뒤'],['o2','30초쯤 뒤'],['o3','더 지나서']]};
 /* 모형 값 */
 const MODEL={
  sandT:'20',waterT:'34',                     /* 액정 온도계(교과서 버전 앱 원본 값) */
  drops:{w0:0,w1:.45,w2:1},                    /* 캔 표면 물방울(이 실험관에서 정한 모습) */
  fog:{j0:.1,j1:.6,j2:1},smoke:{j0:.75,j1:.35,j2:.12},
- cmpS:{c0:.8,c1:.4,c2:.06},cmpF:{c0:.9,c1:1,c2:1},
+ cmpS:{c0:.8,c1:.4,c2:0},cmpF:{c0:.9,c1:1,c2:1},
  wind:{o1:.15,o2:.55,o3:1}};
 
 /* 기록 줄. t: sel(고르기 칸 — 다르면 빨간 칸만 알려 줌) · num(숫자 적기). need = 이 기록을 쓰기 전에 꼭 해 봐야 하는 행동 */
@@ -2922,11 +2922,11 @@ const yn=(l,o,ok)=>({l,o,ok});
 const PC=['보라색이에요','색깔 없이 투명해요'];
 const ROWS={
  /* 실험 1 */
- e1a:{n:'조금 지나서 캔 표면',t:'sel',need:['w0','w1'],f:[yn('캔 표면',['작은 물방울이 맺혀요','아무 변화가 없어요','캔이 작게 찌그러져요'],0)]},
- e1b:{n:'더 지나서 캔 표면',t:'sel',need:['w2'],f:[yn('물방울',['커져서 흘러내려요','모두 사라져요','그대로 작아요'],0)]},
+ e1a:{n:'조금 지나서 캔 표면',t:'sel',need:['w0','w1'],f:[yn('캔 표면',['물방울이 맺혀요','변화가 없어요','찌그러져요'],0)]},
+ e1b:{n:'더 지나서 캔 표면',t:'sel',need:['w2'],f:[yn('물방울',['커져서 흘러내려요','모두 사라져요','그대로예요'],0)]},
  e1c:{n:'캔 아래의 마른 수건',t:'sel',need:['w2'],f:[yn('수건',['축축하게 젖었어요','그대로 말라 있어요'],0)]},
- pA:{n:'종이에 묻힌 음료수',t:'sel',need:['dA'],f:[yn('색깔',PC,0)]},
- pB:{n:'종이에 묻힌 캔 표면의 물방울',t:'sel',need:['dB'],f:[yn('색깔',PC,1)]},
+ pA:{n:'종이에 묻힌 음료수',t:'sel',need:['dA'],f:[yn('묻은 자국',PC,0)]},
+ pB:{n:'종이에 묻힌 캔 표면의 물방울',t:'sel',need:['dB'],f:[yn('묻은 자국',PC,1)]},
  /* 실험 2 */
  jf:{n:'얼음 지퍼 백을 올린 집기병 안',t:'sel',need:['j0','j1','j2'],f:[yn('시간이 지나자',['뿌옇게 흐려졌어요','맑고 투명해졌어요','물이 모두 얼었어요'],0)]},
  cS:{n:'향 연기만 넣은 집기병',t:'sel',need:['c0','c1','c2'],f:[yn('시간이 지나자',['연기가 보이지 않게 되었어요','계속 뿌옇게 흐려 있어요'],0)]},
@@ -2934,7 +2934,7 @@ const ROWS={
  /* 실험 3 */
  tS:{n:'모래 쪽 액정 온도계',t:'num',v:MODEL.sandT,u:'°C',lab:'온도'},
  tW:{n:'따뜻한 물 쪽 액정 온도계',t:'num',v:MODEL.waterT,u:'°C',lab:'온도'},
- dir:{n:'향 연기가 움직인 쪽',t:'sel',need:['o1','o2','o3'],f:[yn('',['모래 쪽에서 따뜻한 물 쪽으로','따뜻한 물 쪽에서 모래 쪽으로','양쪽으로 똑같이 퍼졌어요'],0)]}};
+ dir:{n:'뚜껑을 연 뒤 향 연기',t:'sel',need:['o1','o2','o3'],f:[yn('움직인 쪽',['모래 쪽에서 따뜻한 물 쪽으로','따뜻한 물 쪽에서 모래 쪽으로','양쪽으로 똑같이 퍼졌어요'],0)]}};
 function fOf(row){return ROWS[row].f}
 
 const EXPS={
@@ -2969,7 +2969,7 @@ const EXPS={
   pred:[{q:'뚜껑을 열면 향 연기는?',o:['따뜻한 물 쪽으로 움직일 것 같아요','모래 쪽으로 움직일 것 같아요','위로만 올라갈 것 같아요']}],
   rows:['tS','tW','dir'],
   frame:'따뜻한 물 쪽 온도는 모래 쪽보다 {0}. 뚜껑을 열자 향 연기는 온도가 {1} 쪽에서 온도가 {2} 쪽으로 움직였어요.',ans:['높았어요','낮은','높은'],chips:['높았어요','낮았어요','낮은','높은'],
-  hint:['두 액정 온도계 기록을 견줘요.','\'향 연기가 움직인 쪽\' 기록에서 출발한 쪽은 어디인가요?','향 연기가 간 쪽의 온도를 봐요.'],
+  hint:['두 액정 온도계 기록을 견줘요.','\'뚜껑을 연 뒤 향 연기\' 기록에서 출발한 쪽은 어디인가요?','향 연기가 간 쪽의 온도를 봐요.'],
   book:'향 연기는 모래 쪽에서 따뜻한 물 쪽으로 움직여요. 향 연기의 움직임은 눈에 보이지 않는 공기의 움직임을 보여 줘요. 온도가 낮은 모래 위쪽은 공기가 상대적으로 무거워 고기압이 되고, 온도가 높은 따뜻한 물 위쪽은 상대적으로 가벼워 저기압이 돼요. 이처럼 두 지역 사이에 기압 차이가 생기면 공기가 고기압에서 저기압으로 이동하는데, 이것을 바람이라고 해요.'}};
 
 /* 단계 글. k: intro(오늘의 실험) · scene(행동 → 그림) · pred · meas(해 보고 기록) · concl · sheet
@@ -2999,7 +2999,7 @@ function stepDef(E,id){const no=E.no;
   /* 실험 2 */
   water:{g:1,n:'집기병에 물 넣기',t:'집기병에 물을 조금 넣어요',ask:'어떤 물을 넣을까요?',look:'집기병 바닥에 물이 조금 담겼는지 봐요.',k:'scene',dur:1800,
    opts:[{t:'차가운 물 (10 °C)',bad:'차가운 물은 수증기가 잘 생기지 않아요. 미지근한 물(30 °C~40 °C)을 써요.'},{t:'미지근한 물 (35 °C)',ok:1},{t:'뜨거운 물 (90 °C)',bad:'뜨거운 물은 데일 수 있고 김이 나요. 김이 나지 않을 정도의 미지근한 물(30 °C~40 °C)을 써요.'}],
-   why:'김이 나지 않을 정도의 미지근한 물(30 °C~40 °C)을 조금만 넣어요.',care:['care',SAFE.glass]},
+   why:'집기병에는 물을 조금만 넣어요.',care:['care',SAFE.glass]},
   smoke:{g:1,n:'향을 넣었다 빼기',t:'점화기로 향에 불을 붙여 집기병 속에 잠시 넣었다 빼요',act:'향 넣었다 빼기',look:'집기병 안에 향 연기가 들어갔는지 봐요.',k:'scene',dur:2600,
    why:'향을 잠시만 넣어 집기병 안에 향 연기를 조금 넣어요.',care:['care',SAFE.fire]},
   sand:{g:1,n:'향불 끄기',t:'사용한 향불을 모래 상자에 넣어 꺼요',act:'모래 상자에 향불 끄기',look:'향불이 모래 속에서 꺼졌는지 봐요.',k:'scene',dur:1600,
@@ -3024,8 +3024,8 @@ function stepDef(E,id){const no=E.no;
   concl:{g:3,n:'결론 쓰기',t:'기록을 보고 결론을 써요',k:'concl',why:'결론은 내 기록에서 나와요.',care:['know','내 기록을 차례대로 다시 봐요.']},
   sheet:{g:3,n:'결과 한 장',t:'실험 결과를 한 장으로 정리해요',k:'sheet',why:'',care:null}};
  /* 같은 이름을 실험마다 다르게 씀 */
- if(no===2){D.watch={g:2,n:'집기병 안 관찰하기',t:'얼음 지퍼 백을 올린 집기병 안을 관찰해요',k:'meas',rows:['jf'],look:'칸을 차례로 누르며 집기병 안을 봐요.',spot:()=>jarSpot(),
-   why:'올린 바로 뒤부터 차례로 보아야 집기병 안이 어떻게 바뀌는지 알 수 있어요.',care:['care',SAFE.inc]}}
+ if(no===2){D.watch={g:2,n:'집기병 안 관찰하기',t:'얼음 지퍼 백을 올린 집기병 안을 관찰해요',k:'meas',rows:['jf'],look:'칸을 차례로 누르며 집기병 안을 봐요.',
+   why:'올린 뒤 처음부터 차례로 보아야 집기병 안이 어떻게 바뀌는지 알 수 있어요.',care:['care',SAFE.inc]}}
  if(no===3){D.smoke={g:1,n:'향 연기 모으기',t:'향에 불을 붙이고 10초쯤 지난 뒤, 뚜껑을 조금 열어 덮어 연기를 모아요',act:'불 붙이고 연기 모으기',look:'작은 그릇 안에 연기가 모였는지 봐요. 연기가 충분히 모이면 뚜껑을 꼭 덮어요.',k:'scene',dur:2600,
    why:'뚜껑을 조금 열어 두어야 향이 꺼지지 않고 연기가 모여요. 다 모이면 뚜껑을 꼭 덮어요.',care:['care',SAFE.fire3]}}
  return Object.assign({id},D[id])}
@@ -3104,18 +3104,16 @@ function canArt(cx,base,o){o=o||{};const w=CN.w,h=CN.h,x=cx-w/2,y=base-h;let g=s
  g+='<text x="'+cx+'" y="'+(y+134)+'" text-anchor="middle" font-size="19" font-weight="800" fill="#FFFFFF">포도</text>';
  g+='<g'+(o.anim?an('lb-a-fade',0):'')+'>'+canDrops(x+4,y+18,w-8,h-36,o.d||0,7)+'</g>';
  return g}
-function canSpot(){const v=tView('e1t');if(!v)return null;return [CN.x+22,CN.b-100,34,2.4,770,200]}
+function canSpot(){const v=tView('e1t');if(!v)return null;return [CN.x+18,CN.b-118,34,2.4,770,190]}
 /* 흰 종이에 묻히기 */
-function paperDab(cx,y,kind,on,anim){let g='<path d="M'+(cx-110)+' '+(y+60)+' L'+(cx-86)+' '+(y-12)+' H'+(cx+110)+' L'+(cx+86)+' '+(y+60)+'Z" fill="#FFFDF8" stroke="#B9B2A2" stroke-width="2.5"/>';
- if(on){const blob='M'+(cx-36)+' '+(y+20)+' q14 -22 44 -16 q34 4 30 26 q-4 22 -36 22 q-40 0 -38 -32Z';
-  g+='<g'+(anim?an('lb-a-wet',.1):'')+'>'+(kind==='A'?'<path d="'+blob+'" fill="#7D3C98" opacity=".85"/>':'<path d="'+blob+'" fill="#DCEFFA" opacity=".55" stroke="#9CC7E0" stroke-width="2" stroke-dasharray="5 4"/>')+'</g>'}
+function paperDab(cx,y,kind,on,anim){let g='<path d="M'+(cx-130)+' '+(y+70)+' L'+(cx-100)+' '+(y-16)+' H'+(cx+130)+' L'+(cx+100)+' '+(y+70)+'Z" fill="#FFFDF8" stroke="#B9B2A2" stroke-width="2.5"/>';
+ if(on){const blob='M'+(cx-46)+' '+(y+24)+' q16 -28 54 -20 q42 6 38 32 q-4 28 -44 28 q-50 0 -48 -40Z';
+  g+='<g'+(anim?an('lb-a-wet',.1):'')+'>'+(kind==='A'?'<path d="'+blob+'" fill="#7D3C98" opacity=".85"/>':'<path d="'+blob+'" fill="#DCEFFA" opacity=".6" stroke="#8FBDD8" stroke-width="2.2" stroke-dasharray="5 4"/>')+'</g>'}
  return g}
 function dabScene(o){o=o||{};let g=bg({});
- g+=paperDab(300,330,'A',o.a,o.aAnim)+paperDab(660,330,'B',o.b,o.bAnim);
- g+=tag(300,430,'음료수',19)+tag(660,430,'캔 표면의 물방울',19);
- if(o.hand)g+='<g'+an('lb-a-down',0,'--from:-120px')+'>'+glove(o.hand,300,1.1,0)+'</g>';
+ g+=paperDab(250,372,'A',o.a,o.aAnim)+paperDab(710,372,'B',o.b,o.bAnim)+(o.can?canArt(480,CN.b,{d:1}):'');
+ g+=tag(250,486,'음료수',20)+tag(710,486,'캔 표면의 물방울',20);
  return g}
-
 /* ───────── 실험 2: 집기병(앞에서 봄) ───────── */
 const JR={x:480,b:432,w:180,h:210,nw:120};
 function jarPath(cx,b,s){const w=JR.w*s/2,h=JR.h*s,nw=JR.nw*s/2,top=b-h;
@@ -3123,13 +3121,13 @@ function jarPath(cx,b,s){const w=JR.w*s/2,h=JR.h*s,nw=JR.nw*s/2,top=b-h;
 /* o: water, smoke(0~1), fog(0~1), bag(ice 지퍼 백), lid(덮개), s(크기) */
 function jarArt(cx,b,o){o=o||{};const s=o.s||1,w=JR.w*s/2,h=JR.h*s,top=b-h,P=jarPath(cx,b,s);let g=shadow(cx,b+3,w+8);
  const cid='jc'+Math.round(cx)+'_'+Math.round(s*100)+(o.k||'');
- g+='<clipPath id="'+cid+'"><path d="'+P+'Z"/></clipPath><path d="'+P+'Z" fill="rgba(150,180,200,.22)"/>';
+ g+='<clipPath id="'+cid+'"><path d="'+P+'Z"/></clipPath><path d="'+P+'Z" fill="rgba(110,140,160,.30)"/>';
  g+='<g clip-path="url(#'+cid+')">';
  if(o.water)g+='<rect x="'+(cx-w)+'" y="'+(b-26*s)+'" width="'+2*w+'" height="'+26*s+'" fill="var(--w-water)" fill-opacity=".85"/><path d="M'+(cx-w)+' '+(b-26*s)+' H'+(cx+w)+'" stroke="var(--w-water-s)" stroke-width="2.5"/>';
  if(o.smoke>0){let sm='';for(let i=0;i<9;i++)sm+='<circle cx="'+f1(cx-w*.7+rnd(i,41)*w*1.4)+'" cy="'+f1(top+20*s+rnd(i,42)*h*.62)+'" r="'+f1((16+rnd(i,43)*18)*s)+'"/>';
   g+='<g fill="#8E979F" opacity="'+(o.smoke*.75).toFixed(2)+'"'+(o.smokeAnim?an('lb-a-fade',.4):'')+'>'+sm+'</g>'}
- if(o.fog>0){g+='<g'+(o.fogAnim?an('lb-a-fade',0):'')+'><rect x="'+(cx-w)+'" y="'+(top-30*s)+'" width="'+2*w+'" height="'+(h+30*s-26*s)+'" fill="#FFFFFF" opacity="'+(o.fog*.82).toFixed(2)+'"/>';
-  for(let i=0;i<Math.round(o.fog*26);i++)g+='<circle cx="'+f1(cx-w+rnd(i,51)*2*w)+'" cy="'+f1(top-10*s+rnd(i,52)*(h-30*s))+'" r="'+f1((10+rnd(i,53)*16)*s)+'" fill="#F4F7F9" opacity=".7"/>';
+ if(o.fog>0){g+='<g'+(o.fogAnim?an('lb-a-fade',0):'')+'><rect x="'+(cx-w)+'" y="'+(top-30*s)+'" width="'+2*w+'" height="'+(h+30*s-26*s)+'" fill="#FFFFFF" opacity="'+(o.fog*.9).toFixed(2)+'"/>';
+  for(let i=0;i<Math.round(o.fog*22);i++)g+='<ellipse cx="'+f1(cx-w+rnd(i,51)*2*w)+'" cy="'+f1(top-10*s+rnd(i,52)*(h-30*s))+'" rx="'+f1((18+rnd(i,53)*20)*s)+'" ry="'+f1((8+rnd(i,54)*8)*s)+'" fill="#DCE3E8" opacity=".55"/>';
   g+='</g>'}
  g+='</g><path d="'+P+'" fill="none" stroke="var(--w-glass-s)" stroke-width="'+(3.5*s)+'" stroke-linejoin="round"/><path d="M'+(cx-JR.nw*s/2-6*s)+' '+(top-22*s)+' h'+(JR.nw*s+12*s)+'" stroke="var(--w-glass-s)" stroke-width="'+(5*s)+'" stroke-linecap="round"/>';
  g+='<path d="M'+(cx-w+14*s)+' '+(top+56*s)+' v'+(h*.45)+'" stroke="#FFFFFF" stroke-width="'+(6*s)+'" stroke-linecap="round" opacity=".5"/>';
@@ -3173,7 +3171,7 @@ function lidArt(cx,b){return '<rect x="'+(cx-60)+'" y="'+(b-70)+'" width="120" h
 function tbox(anim){const [x1,y1,x2,y2]=WB.box;return '<g'+(anim?an('lb-a-down',0,'--from:-260px'):'')+'><rect x="'+x1+'" y="'+y1+'" width="'+(x2-x1)+'" height="'+(y2-y1)+'" fill="#161B22"/></g>'}
 function tboxFront(anim){const [x1,y1,x2,y2]=WB.box;return '<g'+(anim?an('lb-a-down',0,'--from:-260px'):'')+'><rect x="'+x1+'" y="'+y1+'" width="'+(x2-x1)+'" height="'+(y2-y1)+'" fill="rgba(200,225,240,.06)" stroke="#9FB3C2" stroke-width="5"/><path d="M'+(x1+20)+' '+(y1+30)+' l60 -14" stroke="#FFFFFF" stroke-width="4" opacity=".35" stroke-linecap="round"/></g>'}
 /* 향 연기: w(0~1) 만큼 퍼진 모습 — 바닥 가까이에서 따뜻한 물 쪽으로 가서 물 위에서 올라감 */
-const SMK=[[480,358],[505,350],[532,342],[560,334],[590,326],[620,316],[648,300],[668,280],[680,256],[688,230],[694,204],[698,180]];
+const SMK=[[480,354],[506,349],[534,344],[562,339],[592,334],[622,329],[650,322],[672,311],[688,296],[698,279],[704,262]];
 function smokeFlow(w,anim){let g='';const n=Math.max(1,Math.round(w*SMK.length));
  for(let i=0;i<n;i++){const p=SMK[i],k=i/(SMK.length-1),r=14+k*14+rnd(i,71)*6,op=.75-k*.35;
   g+='<circle cx="'+f1(p[0]+rnd(i,72)*10-5)+'" cy="'+f1(p[1]+rnd(i,73)*10-5)+'" r="'+f1(r)+'" fill="#D5DAE0" opacity="'+f1(op)+'"'+(anim?an('lb-a-fade',i*.08):'')+'/>'}
@@ -3186,7 +3184,8 @@ function windLab(o){o=o||{};let g=bg({});
  if(o.box)g+=tboxFront(o.boxAnim);
  if(!NAR&&o.names){g+=mini(WB.sx,WB.b+40,'모래',18)+mini(WB.wx,WB.b+40,'따뜻한 물',18)}else if(o.names)LEG.push([null,'왼쪽: 모래 · 오른쪽: 따뜻한 물']);
  return g}
-function thermoSpot(){const v=UI.mq.cur==='ts'||UI.mq.cur==='tw'?UI.mq.cur:R().st.tv;if(!v)return null;const cx=v==='ts'?WB.sx:WB.wx;return [cx,WB.b-34,26,3.2,480,150]}
+function lcdX(cx,val){const cw=17,x0=cx-cw*LCD.length/2,i=LCD.findIndex(v=>String(v)===String(val));return x0+i*cw+cw/2}
+function thermoSpot(){const v=UI.mq.cur==='ts'||UI.mq.cur==='tw'?UI.mq.cur:R().st.tv;if(!v)return null;const x=v==='ts'?lcdX(WB.sx,MODEL.sandT):lcdX(WB.wx,MODEL.waterT);return [x,WB.b-34,30,2.8,480,190]}
 
 /* ───────── 준비물 카드 ───────── */
 function itemArt(k){const A={
@@ -3325,7 +3324,7 @@ function e1Scene(s){const r=R(),id=s.id,f=fid();
  if(id==='pred')return g+canArt(CN.x,CN.b,{})+qmark(700,220);
  if(id==='watch'){const v=tView('e1t');g+=canArt(CN.x,CN.b,{d:v?MODEL.drops[v]:0,anim:f===v});
   if(v)g+=mini(CN.x,CN.b+56,tLabel('e1t',v),18);return g}
- if(id==='dab'){const a=sn('dA'),b=sn('dB');return dabScene({a,b,aAnim:f==='dA',bAnim:f==='dB'})}
+ if(id==='dab'){const a=sn('dA'),b=sn('dB');return dabScene({a,b,aAnim:f==='dA',bAnim:f==='dB',can:1})}
  return g}
 /* 실험 2: 집기병 */
 function e2Scene(s){const r=R(),id=s.id,f=fid(),J=(o)=>jarArt(JR.x,JR.b,o);
@@ -3380,7 +3379,7 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  if(id==='tools'){if(!(r.done.tools||fxOn('tools')))return T(bg({})+boxArt(480),'준비물 상자');return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '))}
  const F=[null,e1Scene,e2Scene,e3Scene][no];
  const VB={1:'100 30 760 500',2:'100 30 800 510',3:'100 60 860 450'}[no];
- const vb=id==='gear'?'160 40 640 420':VB;
+ const vb=id==='gear'?'160 40 640 420':(no===3&&(id==='bowls'||id==='temp'))?'150 120 660 380':(no===1&&id==='dab')?'100 200 760 330':VB;
  return T(F(s),s.t,vb)}
 
 /* ───────── 오른쪽 카드 ───────── */
@@ -3540,9 +3539,9 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
  return h}
 const LABNAME='g5weather';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
- if(no===1){if(ok('e1b'))S(bg({})+towelArt(CN.x,CN.b,1)+canArt(CN.x,CN.b,{d:1}),'290 200 380 280','더 지나서 캔 표면');if(ok('pB'))S(dabScene({a:1,b:1}),'150 270 660 200','흰 종이에 묻힌 두 가지')}
- if(no===2){if(ok('jf'))S(bg({})+jarArt(JR.x,JR.b,{water:1,fog:1,smoke:.12,bag:1}),'300 110 360 360','얼음 지퍼 백을 올린 집기병');if(ok('cF'))S(cmpArt('c2'),'150 100 660 440','두 집기병 견주기')}
- if(no===3){if(ok('tW'))S(bg({})+bigBowl(WB.sx,WB.b,'sand',{lcd:MODEL.sandT})+bigBowl(WB.wx,WB.b,'water',{lcd:MODEL.waterT}),'150 290 660 170','모래와 따뜻한 물');if(ok('dir'))S(windLab({box:1,small:1,open:1,w:1}),'120 100 720 360','향 연기가 움직인 모습')}
+ if(no===1){if(ok('e1b'))S(bg({})+towelArt(CN.x,CN.b,1)+canArt(CN.x,CN.b,{d:1}),'260 238 440 210','더 지나서 캔 표면');if(ok('pB'))S(dabScene({a:1,b:1}),'100 340 760 150','흰 종이에 묻힌 두 가지')}
+ if(no===2){if(ok('jf'))S(bg({})+jarArt(JR.x,JR.b,{water:1,fog:1,smoke:.12,bag:1}),'240 150 480 300','얼음 지퍼 백을 올린 집기병');if(ok('cF'))S(cmpArt('c2'),'150 170 660 350','두 집기병 견주기')}
+ if(no===3){if(ok('tW'))S(bg({})+bigBowl(WB.sx,WB.b,'sand',{lcd:MODEL.sandT})+bigBowl(WB.wx,WB.b,'water',{lcd:MODEL.waterT}),'150 300 660 150','모래와 따뜻한 물');if(ok('dir'))S(windLab({box:1,small:1,open:1,w:1}),'120 200 720 260','향 연기가 움직인 모습')}
  return L}
 /* ───────── 결과 한 장: 관찰 그림 · 이미지로 복사/저장 ───────── */
 function picsHTML(list){if(!list||!list.length)return '';
@@ -3639,10 +3638,10 @@ function footHTML(v,r,s){const N=v.steps.length;
 /* ───────── 오늘의 실험: 탐구 문제 · 이렇게 해요 · 이것을 살펴봐요 (결과는 보여 주지 않음) ───────── */
 function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0 960 540';
  if(no===1){vb='240 150 480 330';g+=towelArt(CN.x,CN.b,0);
-  if(k==='put')g+=canArt(CN.x,CN.b,{})+glove(CN.x+70,CN.b-120,1,-90);
+  if(k==='put')g+=canArt(CN.x,CN.b,{})+glove(CN.x+62,CN.b-110,1,-90);
   if(k==='wipe')g+=canArt(CN.x,CN.b,{})+'<g transform="translate(585 300)"><rect x="-40" y="-60" width="70" height="120" rx="12" fill="#F4F0E6" stroke="#BDB4A2" stroke-width="2.5"/>'+glove(18,0,1,-90)+'</g>';
   if(k==='watch')g+=canArt(CN.x,CN.b,{})+eyeArt(660,250);
-  if(k==='dab'){g=dabScene({});vb='160 250 640 220'}}
+  if(k==='dab'){g=dabScene({});vb='100 260 760 260'}}
  if(no===2){vb='280 90 400 400';
   if(k==='water')g+=jarArt(JR.x,JR.b,{water:1});
   if(k==='smoke')g+=jarArt(JR.x,JR.b,{water:1})+incenseArt(480,JR.b-150,true,.9);

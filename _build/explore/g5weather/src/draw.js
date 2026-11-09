@@ -72,18 +72,16 @@ function canArt(cx,base,o){o=o||{};const w=CN.w,h=CN.h,x=cx-w/2,y=base-h;let g=s
  g+='<text x="'+cx+'" y="'+(y+134)+'" text-anchor="middle" font-size="19" font-weight="800" fill="#FFFFFF">포도</text>';
  g+='<g'+(o.anim?an('lb-a-fade',0):'')+'>'+canDrops(x+4,y+18,w-8,h-36,o.d||0,7)+'</g>';
  return g}
-function canSpot(){const v=tView('e1t');if(!v)return null;return [CN.x+22,CN.b-100,34,2.4,770,200]}
+function canSpot(){const v=tView('e1t');if(!v)return null;return [CN.x+18,CN.b-118,34,2.4,770,190]}
 /* 흰 종이에 묻히기 */
-function paperDab(cx,y,kind,on,anim){let g='<path d="M'+(cx-110)+' '+(y+60)+' L'+(cx-86)+' '+(y-12)+' H'+(cx+110)+' L'+(cx+86)+' '+(y+60)+'Z" fill="#FFFDF8" stroke="#B9B2A2" stroke-width="2.5"/>';
- if(on){const blob='M'+(cx-36)+' '+(y+20)+' q14 -22 44 -16 q34 4 30 26 q-4 22 -36 22 q-40 0 -38 -32Z';
-  g+='<g'+(anim?an('lb-a-wet',.1):'')+'>'+(kind==='A'?'<path d="'+blob+'" fill="#7D3C98" opacity=".85"/>':'<path d="'+blob+'" fill="#DCEFFA" opacity=".55" stroke="#9CC7E0" stroke-width="2" stroke-dasharray="5 4"/>')+'</g>'}
+function paperDab(cx,y,kind,on,anim){let g='<path d="M'+(cx-130)+' '+(y+70)+' L'+(cx-100)+' '+(y-16)+' H'+(cx+130)+' L'+(cx+100)+' '+(y+70)+'Z" fill="#FFFDF8" stroke="#B9B2A2" stroke-width="2.5"/>';
+ if(on){const blob='M'+(cx-46)+' '+(y+24)+' q16 -28 54 -20 q42 6 38 32 q-4 28 -44 28 q-50 0 -48 -40Z';
+  g+='<g'+(anim?an('lb-a-wet',.1):'')+'>'+(kind==='A'?'<path d="'+blob+'" fill="#7D3C98" opacity=".85"/>':'<path d="'+blob+'" fill="#DCEFFA" opacity=".6" stroke="#8FBDD8" stroke-width="2.2" stroke-dasharray="5 4"/>')+'</g>'}
  return g}
 function dabScene(o){o=o||{};let g=bg({});
- g+=paperDab(300,330,'A',o.a,o.aAnim)+paperDab(660,330,'B',o.b,o.bAnim);
- g+=tag(300,430,'음료수',19)+tag(660,430,'캔 표면의 물방울',19);
- if(o.hand)g+='<g'+an('lb-a-down',0,'--from:-120px')+'>'+glove(o.hand,300,1.1,0)+'</g>';
+ g+=paperDab(250,372,'A',o.a,o.aAnim)+paperDab(710,372,'B',o.b,o.bAnim)+(o.can?canArt(480,CN.b,{d:1}):'');
+ g+=tag(250,486,'음료수',20)+tag(710,486,'캔 표면의 물방울',20);
  return g}
-
 /* ───────── 실험 2: 집기병(앞에서 봄) ───────── */
 const JR={x:480,b:432,w:180,h:210,nw:120};
 function jarPath(cx,b,s){const w=JR.w*s/2,h=JR.h*s,nw=JR.nw*s/2,top=b-h;
@@ -91,13 +89,13 @@ function jarPath(cx,b,s){const w=JR.w*s/2,h=JR.h*s,nw=JR.nw*s/2,top=b-h;
 /* o: water, smoke(0~1), fog(0~1), bag(ice 지퍼 백), lid(덮개), s(크기) */
 function jarArt(cx,b,o){o=o||{};const s=o.s||1,w=JR.w*s/2,h=JR.h*s,top=b-h,P=jarPath(cx,b,s);let g=shadow(cx,b+3,w+8);
  const cid='jc'+Math.round(cx)+'_'+Math.round(s*100)+(o.k||'');
- g+='<clipPath id="'+cid+'"><path d="'+P+'Z"/></clipPath><path d="'+P+'Z" fill="rgba(150,180,200,.22)"/>';
+ g+='<clipPath id="'+cid+'"><path d="'+P+'Z"/></clipPath><path d="'+P+'Z" fill="rgba(110,140,160,.30)"/>';
  g+='<g clip-path="url(#'+cid+')">';
  if(o.water)g+='<rect x="'+(cx-w)+'" y="'+(b-26*s)+'" width="'+2*w+'" height="'+26*s+'" fill="var(--w-water)" fill-opacity=".85"/><path d="M'+(cx-w)+' '+(b-26*s)+' H'+(cx+w)+'" stroke="var(--w-water-s)" stroke-width="2.5"/>';
  if(o.smoke>0){let sm='';for(let i=0;i<9;i++)sm+='<circle cx="'+f1(cx-w*.7+rnd(i,41)*w*1.4)+'" cy="'+f1(top+20*s+rnd(i,42)*h*.62)+'" r="'+f1((16+rnd(i,43)*18)*s)+'"/>';
   g+='<g fill="#8E979F" opacity="'+(o.smoke*.75).toFixed(2)+'"'+(o.smokeAnim?an('lb-a-fade',.4):'')+'>'+sm+'</g>'}
- if(o.fog>0){g+='<g'+(o.fogAnim?an('lb-a-fade',0):'')+'><rect x="'+(cx-w)+'" y="'+(top-30*s)+'" width="'+2*w+'" height="'+(h+30*s-26*s)+'" fill="#FFFFFF" opacity="'+(o.fog*.82).toFixed(2)+'"/>';
-  for(let i=0;i<Math.round(o.fog*26);i++)g+='<circle cx="'+f1(cx-w+rnd(i,51)*2*w)+'" cy="'+f1(top-10*s+rnd(i,52)*(h-30*s))+'" r="'+f1((10+rnd(i,53)*16)*s)+'" fill="#F4F7F9" opacity=".7"/>';
+ if(o.fog>0){g+='<g'+(o.fogAnim?an('lb-a-fade',0):'')+'><rect x="'+(cx-w)+'" y="'+(top-30*s)+'" width="'+2*w+'" height="'+(h+30*s-26*s)+'" fill="#FFFFFF" opacity="'+(o.fog*.9).toFixed(2)+'"/>';
+  for(let i=0;i<Math.round(o.fog*22);i++)g+='<ellipse cx="'+f1(cx-w+rnd(i,51)*2*w)+'" cy="'+f1(top-10*s+rnd(i,52)*(h-30*s))+'" rx="'+f1((18+rnd(i,53)*20)*s)+'" ry="'+f1((8+rnd(i,54)*8)*s)+'" fill="#DCE3E8" opacity=".55"/>';
   g+='</g>'}
  g+='</g><path d="'+P+'" fill="none" stroke="var(--w-glass-s)" stroke-width="'+(3.5*s)+'" stroke-linejoin="round"/><path d="M'+(cx-JR.nw*s/2-6*s)+' '+(top-22*s)+' h'+(JR.nw*s+12*s)+'" stroke="var(--w-glass-s)" stroke-width="'+(5*s)+'" stroke-linecap="round"/>';
  g+='<path d="M'+(cx-w+14*s)+' '+(top+56*s)+' v'+(h*.45)+'" stroke="#FFFFFF" stroke-width="'+(6*s)+'" stroke-linecap="round" opacity=".5"/>';
@@ -141,7 +139,7 @@ function lidArt(cx,b){return '<rect x="'+(cx-60)+'" y="'+(b-70)+'" width="120" h
 function tbox(anim){const [x1,y1,x2,y2]=WB.box;return '<g'+(anim?an('lb-a-down',0,'--from:-260px'):'')+'><rect x="'+x1+'" y="'+y1+'" width="'+(x2-x1)+'" height="'+(y2-y1)+'" fill="#161B22"/></g>'}
 function tboxFront(anim){const [x1,y1,x2,y2]=WB.box;return '<g'+(anim?an('lb-a-down',0,'--from:-260px'):'')+'><rect x="'+x1+'" y="'+y1+'" width="'+(x2-x1)+'" height="'+(y2-y1)+'" fill="rgba(200,225,240,.06)" stroke="#9FB3C2" stroke-width="5"/><path d="M'+(x1+20)+' '+(y1+30)+' l60 -14" stroke="#FFFFFF" stroke-width="4" opacity=".35" stroke-linecap="round"/></g>'}
 /* 향 연기: w(0~1) 만큼 퍼진 모습 — 바닥 가까이에서 따뜻한 물 쪽으로 가서 물 위에서 올라감 */
-const SMK=[[480,358],[505,350],[532,342],[560,334],[590,326],[620,316],[648,300],[668,280],[680,256],[688,230],[694,204],[698,180]];
+const SMK=[[480,354],[506,349],[534,344],[562,339],[592,334],[622,329],[650,322],[672,311],[688,296],[698,279],[704,262]];
 function smokeFlow(w,anim){let g='';const n=Math.max(1,Math.round(w*SMK.length));
  for(let i=0;i<n;i++){const p=SMK[i],k=i/(SMK.length-1),r=14+k*14+rnd(i,71)*6,op=.75-k*.35;
   g+='<circle cx="'+f1(p[0]+rnd(i,72)*10-5)+'" cy="'+f1(p[1]+rnd(i,73)*10-5)+'" r="'+f1(r)+'" fill="#D5DAE0" opacity="'+f1(op)+'"'+(anim?an('lb-a-fade',i*.08):'')+'/>'}
@@ -154,7 +152,8 @@ function windLab(o){o=o||{};let g=bg({});
  if(o.box)g+=tboxFront(o.boxAnim);
  if(!NAR&&o.names){g+=mini(WB.sx,WB.b+40,'모래',18)+mini(WB.wx,WB.b+40,'따뜻한 물',18)}else if(o.names)LEG.push([null,'왼쪽: 모래 · 오른쪽: 따뜻한 물']);
  return g}
-function thermoSpot(){const v=UI.mq.cur==='ts'||UI.mq.cur==='tw'?UI.mq.cur:R().st.tv;if(!v)return null;const cx=v==='ts'?WB.sx:WB.wx;return [cx,WB.b-34,26,3.2,480,150]}
+function lcdX(cx,val){const cw=17,x0=cx-cw*LCD.length/2,i=LCD.findIndex(v=>String(v)===String(val));return x0+i*cw+cw/2}
+function thermoSpot(){const v=UI.mq.cur==='ts'||UI.mq.cur==='tw'?UI.mq.cur:R().st.tv;if(!v)return null;const x=v==='ts'?lcdX(WB.sx,MODEL.sandT):lcdX(WB.wx,MODEL.waterT);return [x,WB.b-34,30,2.8,480,190]}
 
 /* ───────── 준비물 카드 ───────── */
 function itemArt(k){const A={

@@ -95,7 +95,7 @@ function armLabels(phi,skin){if(NAR)return '';const Q=armPts(phi),m=Q.P(AE,AL*.6
 function armScene(phi,o){o=o||{};let g='<rect x="-3000" y="-3000" width="7000" height="7000" fill="var(--w-wall)"/><rect x="40" y="20" width="880" height="500" rx="18" fill="var(--w-paper)" stroke="var(--w-felt-s)" stroke-width="2"/>';
  g+='<g transform="translate('+ARM.tx+' '+ARM.ty+') scale('+ARM.s+')">';
  if(o.ghost!=null)g+=armArt(o.ghost,{ghost:1});
- g+=armArt(phi,o)+(o.lbl===false?'':armLabels(phi,o.skin))+'</g>';
+ g+=armArt(phi,Object.assign({},o,{ghost:null}))+(o.lbl===false?'':armLabels(phi,o.skin))+'</g>';
  if(o.pull){const H=armPts(phi).H,x=H.x*ARM.s+ARM.tx-100,y=H.y*ARM.s+ARM.ty;g+=hand(x,y,0,1.1,0)+(o.dir?arrow(x-70,y+(o.dir>0?50:-50),x-70,y+(o.dir>0?-10:10),'var(--lb-sci)',6):'')}
  return g}
 /* 모형 부품(만들기 전, 옆에 놓인 모습) */
@@ -194,7 +194,7 @@ function bag(cx,top,p,o){o=o||{};const w=58+40*p,h=150+6*p,b=top+h;
 function lungModel(o){o=o||{};const X=BG4.x,J=BG4.j,p=o.p||0;let g='';
  if(o.bags!==false){if(o.ghost){g+=bag(X-120,J+86,0,{ghost:1})+bag(X+120,J+86,0,{ghost:1})}g+=bag(X-120,J+86,p)+bag(X+120,J+86,p)}
  g+=straws({joined:true});
- if(o.stk){const L=(x,y,t)=>NAR?'':tag(x,y,t,17);g+='<g'+(o.stkAnim?an('lb-a-pop',.3):'')+'>'+L(X,BG4.top-18,'코')+L(X+62,180,'숨관')+L(X-150,J+30,'숨관가지')+L(X+150,J+30,'숨관가지')+L(X-120,J+190,'폐')+L(X+120,J+190,'폐')+'</g>';
+ if(o.stk){const L=(x,y,t)=>NAR?'':tag(x,y,t,17);g+='<g'+(o.stkAnim?an('lb-a-pop',.3):'')+'>'+L(X+58,BG4.top+16,'코')+L(X+62,180,'숨관')+L(X-150,J+30,'숨관가지')+L(X+150,J+30,'숨관가지')+L(X-120,J+190,'폐')+L(X+120,J+190,'폐')+'</g>';
   if(NAR)LEG.push([null,'붙임딱지: 코 · 숨관 · 숨관가지 · 폐'])}
  return g}
 function blowFace(on){const X=BG4.x,T=BG4.top;let g='<circle cx="'+X+'" cy="'+(T-58)+'" r="44" fill="'+SKIN+'" stroke="'+SKL+'" stroke-width="2.5"/><path d="M'+(X-40)+' '+(T-66)+' Q'+(X-40)+' '+(T-108)+' '+X+' '+(T-108)+' Q'+(X+42)+' '+(T-108)+' '+(X+40)+' '+(T-66)+' Q'+(X+30)+' '+(T-90)+' '+X+' '+(T-90)+' Q'+(X-30)+' '+(T-90)+' '+(X-40)+' '+(T-66)+'Z" fill="#5A4334"/><circle cx="'+(X-14)+'" cy="'+(T-62)+'" r="3.4" fill="#4A3A30"/><circle cx="'+(X+14)+'" cy="'+(T-62)+'" r="3.4" fill="#4A3A30"/><ellipse cx="'+X+'" cy="'+(T-28)+'" rx="'+(on?9:7)+'" ry="'+(on?8:4)+'" fill="#C4544A"/>';
@@ -235,7 +235,7 @@ function thermoArt(x,y,v,busy){let g='<rect x="'+(x-130)+'" y="'+(y-62)+'" width
  if(!NAR)g+='<text x="'+x+'" y="'+(y-74)+'" text-anchor="middle" font-size="19" font-weight="800" fill="var(--w-labeltx)">체온계</text>';
  return g}
 function phoneArt(x,y,v,busy){let g='<rect x="'+(x-112)+'" y="'+(y-100)+'" width="224" height="200" rx="26" fill="#2A3342" stroke="#141A26" stroke-width="3"/><rect x="'+(x-98)+'" y="'+(y-86)+'" width="196" height="172" rx="14" fill="#FFFFFF"/>';
- g+='<path d="M'+x+' '+(y-24)+' C'+(x-8)+' '+(y-38)+' '+(x-30)+' '+(y-38)+' '+(x-30)+' '+(y-56)+' C'+(x-30)+' '+(y-72)+' '+(x-8)+' '+(y-74)+' '+x+' '+(y-60)+' C'+(x+8)+' '+(y-74)+' '+(x+30)+' '+(y-72)+' '+(x+30)+' '+(y-56)+' C'+(x+30)+' '+(y-38)+' '+(x+8)+' '+(y-38)+' '+x+' '+(y-24)+'Z" fill="#D9443A"'+(busy!=null&&!RM?' class="lb-beat"':'')+'/>';
+ g+='<path d="M'+x+' '+(y-24)+' C'+(x-8)+' '+(y-38)+' '+(x-30)+' '+(y-38)+' '+(x-30)+' '+(y-56)+' C'+(x-30)+' '+(y-72)+' '+(x-8)+' '+(y-74)+' '+x+' '+(y-60)+' C'+(x+8)+' '+(y-74)+' '+(x+30)+' '+(y-72)+' '+(x+30)+' '+(y-56)+' C'+(x+30)+' '+(y-38)+' '+(x+8)+' '+(y-38)+' '+x+' '+(y-24)+'Z" fill="#D9443A"'+(busy!=null?' transform="translate('+x+' '+(y-48)+') scale('+f1(1+.12*Math.abs(Math.sin(busy*Math.PI*9)))+') translate('+(-x)+' '+(48-y)+')"':'')+'/>';
  g+='<text x="'+x+'" y="'+(y+38)+'" text-anchor="middle" font-size="56" font-weight="800" fill="#141A26">'+(busy!=null?'--':v||'--')+'</text><text x="'+x+'" y="'+(y+70)+'" text-anchor="middle" font-size="19" font-weight="800" fill="#4B5465">회 / 1분</text>';
  if(busy!=null){const a=busy*2*Math.PI,r=20,cx=x+70,cy=y-58;g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+r+'" fill="none" stroke="#E3E0D8" stroke-width="6"/><path d="M'+cx+' '+(cy-r)+' A'+r+' '+r+' 0 '+(busy>.5?1:0)+' 1 '+f1(cx+r*Math.sin(a))+' '+f1(cy-r*Math.cos(a))+'" fill="none" stroke="#2E7D4F" stroke-width="6"/>'}
  if(!NAR)g+='<text x="'+x+'" y="'+(y+126)+'" text-anchor="middle" font-size="19" font-weight="800" fill="var(--w-labeltx)">맥박 수 측정 앱</text>';

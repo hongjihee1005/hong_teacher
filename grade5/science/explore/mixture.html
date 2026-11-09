@@ -2933,7 +2933,8 @@ const ROWS={
  res:{n:'체를 흔든 뒤',t:'sel',need:['s3'],f:[{l:'체에 남은 것',o:['모래','자갈'],ok:1},{l:'쟁반에 떨어진 것',o:['모래','자갈'],ok:0}]},
  /* 실험 2: 물과 기름 */
  pos:{n:'옆에서 본 비커',t:'sel',need:['side'],f:[yn('노란 액체(기름)','위쪽에 있어요','아래쪽에 있어요',0),yn('투명한 액체(물)','위쪽에 있어요','아래쪽에 있어요',1)]},
- shk:{n:'흔들어 본 뒤',t:'sel',need:['soft','hard'],f:[yn('세게 흔든 바로 뒤','뿌옇게 섞인 것처럼 보여요','맑게 나뉘어 있어요',0),yn('살살 흔들고 기다리면','다시 두 층으로 나뉘어요','골고루 섞여 있어요',0),yn('세게 흔들고 기다리면','다시 두 층으로 나뉘어요','골고루 섞여 있어요',0)]},
+ shk1:{n:'세게 흔든 바로 뒤',t:'sel',need:['hard'],f:[yn('비커 속','뿌옇게 섞인 것처럼 보여요','맑게 나뉘어 있어요',0)]},
+ shk:{n:'흔들고 기다린 뒤',t:'sel',need:['soft','hard'],after:'shk1',f:[yn('살살 흔들고 기다리면','다시 두 층으로 나뉘어요','골고루 섞여 있어요',0),yn('세게 흔들고 기다리면','다시 두 층으로 나뉘어요','골고루 섞여 있어요',0)]},
  drp:{n:'스포이트로 옮긴 결과',t:'sel',need:['dp4'],f:[yn('스포이트로 뽑은 것','위에 뜬 기름','아래에 있는 물',0),yn('옮길 때마다 기름층','얇아져요','두꺼워져요',0)]},
  pad:{n:'흡착포로 분리한 결과',t:'sel',need:['pd4'],f:[yn('흡착포에 흡수된 것','기름','물',0),yn('흡착포의 색깔','노랗게 변해요','그대로예요',0),yn('여러 번 대고 나면 물 위의 기름','거의 없어져요','그대로예요',0)]},
  /* 실험 3: 소금과 모래 */
@@ -2963,9 +2964,9 @@ const EXPS={
   steps:['intro','tools','gear','pred','side','shake','drop','pad','concl','sheet'],
   predT:'비커를 흔들어 보기 전에 예상해요',predHint:'물과 기름이 담긴 비커를 보며 하나씩 골라요.',
   pred:[{q:'비커를 세게 흔들면 물과 기름은?',o:['골고루 섞일 것 같아요','시간이 지나면 다시 나뉠 것 같아요']},{q:'흡착포를 대면 흡착포에 스며드는 것은?',o:['기름','물','둘 다']}],
-  rows:['pos','shk','drp','pad'],
+  rows:['pos','shk1','shk','drp','pad'],
   frame:'물과 기름을 흔들어도 시간이 지나면 다시 두 {0} 나뉘어요. 기름은 물의 {1}에 있어요. 그래서 위에 뜬 기름만 스포이트로 뽑아 옮기거나 흡착포에 {2} 분리할 수 있어요.',ans:['층으로','위쪽','흡수시켜'],chips:['층으로','방울로','위쪽','아래쪽','흡수시켜','녹여'],
-  hint:['\'흔들어 본 뒤\' 기록을 봐요.','\'옆에서 본 비커\' 기록에서 노란 액체를 봐요.','\'흡착포로 분리한 결과\' 기록을 봐요.'],
+  hint:['\'흔들고 기다린 뒤\' 기록을 봐요.','\'옆에서 본 비커\' 기록에서 노란 액체를 봐요.','\'흡착포로 분리한 결과\' 기록을 봐요.'],
   book:'물과 기름처럼 골고루 섞이지 않는 액체 혼합물은 흔들어도 시간이 지나면 다시 층을 이룹니다. 물과 기름의 혼합물은 기름이 위쪽에, 물이 아래쪽에 위치하는 것을 이용해 분리합니다. 스포이트로 위에 있는 기름을 뽑아 옮기는 과정을 반복하거나, 흡착포로 물 위의 기름을 흡수시켜 분리할 수 있습니다.'},
  e3:{no:3,name:'소금과 모래 나누기',sub:'소금과 모래의 혼합물 · 거름 장치 · 가열판 · 증발 접시',title:'섞여 있는 소금과 모래를 분리해 보자',q:'소금과 모래의 혼합물은 어떻게 분리할 수 있을까요?',
   tools:[['mix3','소금과 모래의 혼합물'],['loupe','돋보기'],['wbeaker','물이 담긴 비커'],['spoon','약숟가락'],['rod','유리 막대'],['funnel','거름 장치'],['dropper','스포이트'],['hotplate','가열판'],['edish','증발 접시'],['tongs','증발 접시 집게'],['sticker','붙임딱지'],['coat','실험복'],['goggle','보안경'],['lglove','실험용 장갑'],['cglove','면장갑']],
@@ -3015,7 +3016,7 @@ function stepDef(E,id){const no=E.no;
   /* 실험 2: 물과 기름 */
   side:{g:2,n:'옆에서 들여다보기',t:'비커를 눈높이에서 옆으로 들여다봐요',k:'meas',rows:['pos'],look:'노란 액체와 투명한 액체가 비커의 어디에 있는지 봐요.',spot:()=>R().seen.side?[480,LV.oilT+18,40,2.2,200,170]:null,
    why:'옆에서 보아야 두 액체가 나뉜 경계가 잘 보여요.',care:['know','기름은 물과 색깔로 구별되는 식용유를 써요. 혼합물은 물보다 기름을 훨씬 적게 넣어 만들어요.']},
-  shake2:{g:2,n:'흔들고 지켜보기',t:'비커를 살살, 또 세게 흔든 뒤 가만히 두고 지켜봐요',k:'meas',rows:['shk'],look:'흔든 바로 뒤와 조금 기다린 뒤를 견줘요.',
+  shake2:{g:2,n:'흔들고 지켜보기',t:'비커를 살살, 또 세게 흔든 뒤 가만히 두고 지켜봐요',k:'meas',rows:['shk1','shk'],look:'흔든 바로 뒤와 조금 기다린 뒤를 견줘요.',
    why:'흔들어 섞어 보아야 물과 기름이 골고루 섞이는지 알 수 있어요.',care:['care',SAFE.glass2]},
   drop:{g:2,n:'스포이트로 옮기기',t:'한 비커에서 스포이트로 기름을 뽑아 빈 비커로 옮겨요',k:'meas',rows:['drp'],look:'스포이트에 무엇이 들어가는지, 비커 속 기름층이 어떻게 되는지 봐요.',
    why:'스포이트 끝을 기름층에만 살짝 넣어야 아래에 있는 물이 함께 뽑히지 않아요.',care:['care',SAFE.drop+' '+SAFE.oil]},
@@ -3024,7 +3025,7 @@ function stepDef(E,id){const no=E.no;
   /* 실험 3: 소금과 모래 */
   melt:{g:2,n:'따로 물에 넣고 젓기',t:'소금과 모래를 따로 물에 넣고 유리 막대로 저어 봐요',k:'meas',rows:['melt'],look:'저은 뒤 비커 속을 봐요.',
    why:'두 물질이 물에서 어떻게 되는지 알면 분리할 방법을 찾을 수 있어요.',care:['care',SAFE.glass3]},
-  setup:{g:2,n:'거름 장치 꾸미기',t:'거름 장치를 꾸미는 차례대로 눌러요',k:'meas',rows:['fset'],look:'거름종이와 깔때기 끝이 어떻게 놓였는지 봐요.',spot:()=>R().seen.fu3?[FL.x+20,FL.tipY+12,34,2.2,760,160]:null,
+  setup:{g:2,n:'거름 장치 꾸미기',t:'거름 장치를 꾸미는 차례대로 눌러요',k:'meas',rows:['fset'],look:'거름종이와 깔때기 끝이 어떻게 놓였는지 봐요.',spot:()=>R().seen.fu3?[FL.x+2,FL.tipY-14,30,2.4,760,170]:null,
    why:'거름종이에 물을 묻히면 깔때기에 잘 붙고, 깔때기 끝을 비커 옆면에 닿게 하면 액체가 튀지 않고 흘러내려요.',care:['care',SAFE.glass3]},
   filt:{g:2,n:'젓고 걸러 내기',t:'혼합물을 물에 넣어 저은 뒤 거름 장치로 걸러요',k:'meas',rows:['filt'],look:'거름종이에 남는 것과 아래 비커에 모이는 것을 봐요.',
    why:'유리 막대를 타고 천천히 부어야 혼합물이 넘치거나 튀지 않아요.',care:['care',SAFE.pour3]},
@@ -3107,7 +3108,7 @@ function stone(x,y,r,c,k){const n=6+(k%3),pts=[];for(let i=0;i<n;i++){const a=i/
 function salt(x,y,r,k){const n=4+(k%3),pts=[];for(let i=0;i<n;i++){const a=i/n*Math.PI*2+rnd(k,9),rr=r*(.75+rnd(k,i)*.35);pts.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr])}
  return '<path d="'+P2(pts)+'" fill="#FBFBF8" stroke="#8C949C" stroke-width="'+Math.max(.6,r/9).toFixed(1)+'" stroke-linejoin="round"/>'}
 /* 그릇에 담긴 알갱이 무더기(옆에서 본 모습). kind: sand gravel mix salt saltsand */
-function pile(cx,b,w,kind,seed){let g='';const h=w*.32,col={sand:'#D9B97F',gravel:'#9C8C78',mix:'#CDAE7A',salt:'#F4F2EC',saltsand:'#D8C4A0'}[kind];
+function pile(cx,b,w,kind,seed,hr){let g='';const h=w*(hr||.32),col={sand:'#D9B97F',gravel:'#9C8C78',mix:'#CDAE7A',salt:'#F4F2EC',saltsand:'#D8C4A0'}[kind];
  g+='<path d="M'+(cx-w/2)+' '+b+' Q'+cx+' '+(b-h*2)+' '+(cx+w/2)+' '+b+'Z" fill="'+col+'" stroke="'+(kind==='salt'?'#A8AEB4':'#8A6E46')+'" stroke-width="2"/>';
  const inP=(x,y)=>{const t=(x-cx)/(w/2);return y<b-2&&y>b-h*(1-t*t)+2};
  if(kind!=='gravel'&&kind!=='salt')for(let i=0;i<70;i++){const x=cx-w/2+rnd(i,seed)*w,y=b-rnd(i,seed+1)*h;if(inP(x,y))g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="1.6" fill="'+SANDC[i%5]+'"/>'}
@@ -3157,7 +3158,7 @@ function sieveSide(o){o=o||{};const n=o.n||0,an1=o.anim;let g=bg({});
  g+=shadow(480,420,250)+'<path d="M230 392 H730 L716 416 H244Z" fill="#9FB6C2" stroke="#59636E" stroke-width="3"/>';
  const fell=o.poured?[0,.55,1][Math.min(2,n)]:0;
  /* 쟁반에 떨어진 모래 */
- if(fell>0)g+=pile(480,394,280*Math.sqrt(fell),'sand',8);
+ if(fell>0)g+=pile(480,394,380*Math.sqrt(fell),'sand',8,.13);
  /* 체(옆) */
  let sv='<path d="M300 232 H660 L640 310 H320Z" fill="#EEF3F6" fill-opacity=".85" stroke="#59636E" stroke-width="4"/><path d="M322 308 H638" stroke="#59636E" stroke-width="6" stroke-dasharray="2 6"/><rect x="292" y="224" width="376" height="14" rx="5" fill="#9AA3AD" stroke="#59636E" stroke-width="3"/>';
  if(o.poured){const left=1-fell;sv+='<g>'+(left>0?pile(480,306,300*Math.max(.35,Math.sqrt(left)),'sand',9):'')+'</g>';for(let i=0;i<12;i++)sv+=stone(350+rnd(i,3)*260,292-rnd(i,4)*18,9+rnd(i,5)*5,GRAVC[i%4],i)}
@@ -3261,15 +3262,16 @@ function filtScene(c,act){let g=bg({})+standArt();const done=c>=3&&act!=='f3';
   if(act==='f1')for(let i=0;i<14;i++)inner+=(i%2?salt(mx-40+rnd(i,4)*80,330+rnd(i,5)*40,4,i):stone(mx-40+rnd(i,4)*80,330+rnd(i,5)*40,3,'#A0673A',i)).replace('<path','<path'+an('lb-a-drop',.1+(i%5)*.1,'--from:-60px'));
   if(act==='f2')inner+='<rect x="'+(mx-57)+'" y="'+(416-110)+'" width="114" height="104" fill="#C9A87A" fill-opacity=".55"'+an('lb-a-out',1.2)+'/>';
   g+=beakerS(mx,416,120,150,{water:110,lab:1,inner});
-  if(act==='f2')g+='<g'+an('lb-a-jig',0,'--amp:10px;animation-iteration-count:3')+'>'+rodArt(mx+10,406,8)+'</g>';else g+=rodArt(mx+90,410,20)}
- else g+=beakerS(mx,416,120,150,{water:0,lab:1})+rodArt(mx+90,410,20);
+  if(act==='f2')g+='<g'+an('lb-a-jig',0,'--amp:10px;animation-iteration-count:3')+'>'+rodArt(mx+10,406,8)+'</g>';else g+=rodArt(mx+70,410,14)}
+ else g+=beakerS(mx,416,120,150,{water:0,lab:1})+rodArt(mx+70,410,14);
  return g}
 /* 가열: stage 0 가열 전 · 1 가열하는 동안 · 2 끝나 갈 때 · 'anim' 지켜보는 중. on 가열판 켜짐 */
 function hotplate(on){return shadow(480,420,140)+'<rect x="340" y="350" width="280" height="66" rx="10" fill="#E3E6EA" stroke="#6B7480" stroke-width="3"/><rect x="356" y="340" width="248" height="14" rx="4" fill="#4A515B"/><circle cx="580" cy="388" r="13" fill="#FFFFFF" stroke="#6B7480" stroke-width="3"/><path d="M580 388 L'+(on?'572 378':'580 375')+'" stroke="#2A3342" stroke-width="3" stroke-linecap="round"/><circle cx="380" cy="388" r="7" fill="'+(on?'#E03A2E':'#9AA3AD')+'"/>'}
-function edish(lvl,cry,o){o=o||{};let g='';const cx=480,b=338;
- if(lvl>0)g+='<path d="M'+(cx-88*Math.sqrt(lvl))+' '+(b-38*lvl)+' Q'+cx+' '+(b+4)+' '+(cx+88*Math.sqrt(lvl))+' '+(b-38*lvl)+'Z" fill="#CDEBFA" fill-opacity=".9"/>';
- for(let i=0;i<cry;i++)g+=salt(cx-60+rnd(i,11)*120,b-6-rnd(i,12)*12*(1-Math.abs(rnd(i,11)-.5)),3.2,i);
- g+='<path d="M'+(cx-104)+' '+(b-44)+' Q'+cx+' '+(b+12)+' '+(cx+104)+' '+(b-44)+'" fill="#FAFAF7" fill-opacity=".35" stroke="#9AA3AD" stroke-width="4"/>';
+function edish(lvl,cry,o){let g='';const cx=480,yb=340;
+ g+='<path d="M'+(cx-104)+' '+(yb-28)+' Q'+cx+' '+(yb+28)+' '+(cx+104)+' '+(yb-28)+'Z" fill="#FAFAF7" fill-opacity=".55"/>';
+ if(lvl>0){const w=104*Math.sqrt(lvl),d=28*lvl;g+='<path d="M'+(cx-w).toFixed(1)+' '+(yb-d).toFixed(1)+' Q'+cx+' '+(yb+d).toFixed(1)+' '+(cx+w).toFixed(1)+' '+(yb-d).toFixed(1)+'Z" fill="#CDEBFA" fill-opacity=".9"/>'}
+ for(let i=0;i<cry;i++){const u=-70+rnd(i,11)*140,fl=yb-28*(u/104)*(u/104);g+=salt(cx+u,fl-3-rnd(i,12)*5,3.2,i)}
+ g+='<path d="M'+(cx-104)+' '+(yb-28)+' Q'+cx+' '+(yb+28)+' '+(cx+104)+' '+(yb-28)+'" fill="none" stroke="#9AA3AD" stroke-width="4"/><ellipse cx="'+cx+'" cy="'+(yb-28)+'" rx="104" ry="6" fill="none" stroke="#B9C2CA" stroke-width="2"/>';
  return g}
 function steam(n){let g='';for(let i=0;i<n;i++)g+='<path d="M'+(440+i*28)+' 280 q-10 -20 0 -40 q10 -20 0 -40" stroke="#B9C2CA" stroke-width="4" fill="none" stroke-linecap="round"'+an('lb-a-smoke',(i%3)*.4,'animation-iteration-count:infinite')+'/>';return g}
 function spatter(){let g='';for(let i=0;i<8;i++){const dx=(i%2?1:-1)*(20+i*8);g+='<g'+an('lb-a-splash',(i%4)*.3,'--dx:'+dx+'px;--dy:-'+(30+i*6)+'px;animation-iteration-count:infinite;animation-duration:1.2s')+'>'+salt(480,300,2.6,i)+'</g>'}return g}
@@ -3283,12 +3285,11 @@ function heatScene(c,act,view){let g=bg({});const on=c>=3&&c<5||act==='h3'||act=
   if(act==='h2')g+='<g'+an('lb-a-fade',0)+'><g transform="translate(600 200) rotate(-58)">'+beakerS(0,0,90,110,{water:60})+'</g></g>'}
  else g+=edish(0,0)+beakerS(760,416,90,110,{water:44,lab:1});
  if(act==='h1')g+='<g'+an('lb-a-pop',0)+'>'+cotton(250,250,-60,1.3)+cotton(720,250,-120,1.3)+'</g>';
- if(stg==='anim'||act==='h4')g+=clockArt(820,160,1);
+ if(stg==='anim'||act==='h4')g+=clockArt(770,200,1);
  return g}
-function moveScene(done,anim){let g=bg({})+hotplate(false);
- if(!done)return g+edish(.1,40)+'<g transform="translate(700 270)"><path d="M0 0 L120 -40 M0 10 L120 -30" stroke="#6B7480" stroke-width="7" stroke-linecap="round"/></g>';
- g+='<g'+(anim?an('lb-a-slide',0,'--dx:-260px'):'')+'><g transform="translate(260 40)">'+edish(.06,44)+'</g><path d="M850 280 L'+(740+40)+' 300 M850 292 L'+(740+40)+' 310" stroke="#6B7480" stroke-width="7" stroke-linecap="round"/></g>';
- return g}
+function moveScene(done,anim){let g=bg({})+hotplate(false);const tg='<path d="M905 300 L862 330 M915 312 L868 338" stroke="#6B7480" stroke-width="7" stroke-linecap="round"/>';
+ if(!done)return g+edish(.1,40)+'<g transform="translate(40 -20)">'+tg+'</g>';
+ return g+'<g'+(anim?an('lb-a-slide',0,'--dx:-300px'):'')+'><g transform="translate(300 76)">'+edish(.06,44)+'</g><g transform="translate(-8 70)">'+tg+'</g></g>'}
 
 /* ───────── 준비물 카드 ───────── */
 function itemArt(k){const A={
@@ -3436,7 +3437,7 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  if(id==='gear')return T(g,s.t,'160 40 640 420');
  if(no===1)return T(g,s.t,id==='mix'?'120 200 720 280':id==='loupe'?'60 40 860 420':id==='sieve'?'60 20 840 450':'150 110 780 340');
  if(no===2)return T(g,s.t,id==='side'?'130 60 700 420':id==='shake'?'140 40 680 440':'150 40 680 440');
- return T(g,s.t,id==='loupe'?'60 40 860 420':id==='melt'||id==='pred'?'180 110 600 360':id==='setup'?'200 90 720 370':id==='filt'?'200 60 680 400':id==='heat'?'220 100 680 340':'150 120 760 330')}
+ return T(g,s.t,id==='loupe'?'60 40 860 420':id==='melt'||id==='pred'?'180 110 600 360':id==='setup'?'200 90 720 370':id==='filt'?'200 60 680 400':id==='heat'?'250 140 620 310':'150 120 760 330')}
 
 /* ───────── 오른쪽 카드 ───────── */
 function cardHead(t,s){return '<div class="lb-card-h"><span class="lb-clip">'+ic('clip')+'</span><div><b>'+t+'</b><span>'+s+'</span></div></div>'}
@@ -3603,8 +3604,8 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
 const LABNAME='mixture';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
  if(no===1){if(ok('sz'))S(bgTop()+lookCircle(240,170,140,loupeIn('s',240,170,140))+lookCircle(620,170,140,loupeIn('g',620,170,140)),'80 15 760 330','돋보기로 본 모래(왼쪽)와 자갈(오른쪽)');if(ok('res'))S(sieveSide({poured:1,n:2}),'200 200 560 230','체에 남은 것과 쟁반에 떨어진 것')}
- if(no===2){if(ok('drp'))S(dropScene(4),'230 200 540 230','스포이트로 옮긴 뒤');if(ok('pad'))S(padScene(4),'250 200 540 230','흡착포를 댄 뒤')}
- if(no===3){if(ok('filt'))S(filtScene(3,null),'220 160 640 270','걸러 낸 뒤');if(ok('heat'))S(heatScene(5,null,2),'320 230 320 200','가열이 끝난 증발 접시')}
+ if(no===2){if(ok('drp'))S(dropScene(4),'270 250 500 175','스포이트로 옮긴 뒤');if(ok('pad'))S(padScene(4),'290 260 500 165','흡착포를 댄 뒤')}
+ if(no===3){if(ok('filt'))S(filtScene(3,null),'220 160 640 270','걸러 낸 뒤');if(ok('heat'))S(heatScene(5,null,2),'330 270 300 90','가열이 끝난 증발 접시')}
  return L}
 /* ───────── 결과 한 장: 관찰 그림 · 이미지로 복사/저장 ───────── */
 function picsHTML(list){if(!list||!list.length)return '';
