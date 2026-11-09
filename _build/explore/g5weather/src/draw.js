@@ -1,4 +1,4 @@
-/* ───────── 그림: 실험대 장면 — 모두 직접 그린 SVG (빛의 성질) ───────── */
+/* ───────── 그림: 실험대 장면 — 모두 직접 그린 SVG (날씨와 우리 생활) ───────── */
 const BY=436;
 let NAR=false,LEG=[];   /* 좁은 화면: 작은 그림 글자는 HTML(LEG)로 */
 function an(cls,delay,extra){return ' class="lb-a '+cls+'" style="animation-delay:'+(delay||0)+'s'+(extra?';'+extra:'')+'"'}
@@ -44,191 +44,144 @@ function goggles(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s|
 
 const DEG=Math.PI/180;
 const f1=v=>(+v).toFixed(1);
-/* 빛줄기: 그리며 나타남(lb-a-draw) */
-function beam(pts,o){o=o||{};const d='M'+pts.map(p=>f1(p[0])+' '+f1(p[1])).join(' L');const col=o.col||'#FF3B30',w=o.w||4.5,op=o.op==null?1:o.op;
- return (o.glow===false?'':'<path d="'+d+'" stroke="'+col+'" stroke-width="'+(w*3)+'" fill="none" opacity="'+(op*.22).toFixed(2)+'" stroke-linecap="round" stroke-linejoin="round"/>')+
-  '<path d="'+d+'" stroke="'+col+'" stroke-width="'+w+'" fill="none" opacity="'+op+'" stroke-linecap="round" stroke-linejoin="round"'+(o.anim?' pathLength="1" stroke-dasharray="1"'+an('lb-a-draw',o.delay||0):'')+'/>'}
-function dot(x,y,r,col){return '<circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="'+(r*2.2)+'" fill="'+(col||'#FF3B30')+'" opacity=".25"/><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="'+r+'" fill="'+(col||'#FF3B30')+'"/>'}
-function eye(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><path d="M-26 0 Q0 -20 26 0 Q0 20 -26 0Z" fill="#FFFFFF" stroke="#2A3342" stroke-width="3"/><circle r="8" fill="#2A3342"/><circle cx="-3" cy="-3" r="2.5" fill="#FFFFFF"/></g>'}
-/* 밝은 교실 · 어두운 교실(실험대 윗면 y=480) */
-function room(dark){return '<rect x="-3000" y="-3000" width="7000" height="3480" fill="'+(dark?'#141A26':'var(--w-wall)')+'"/><rect x="-3000" y="480" width="7000" height="26" fill="'+(dark?'#3A2F24':'var(--w-top)')+'"/><rect x="-3000" y="506" width="7000" height="3000" fill="'+(dark?'#2A2119':'var(--w-front)')+'"/>'}
-/* 교실 어둡게 하기: 창문·커튼·전등 */
-function roomArt(dark,anim){let g=bg({win:500});
- g+='<rect x="120" y="18" width="240" height="18" rx="7" fill="#DDE3EA" stroke="#9AA6B2" stroke-width="2"/>';
- if(!dark)g+='<path d="M136 36 L90 170 H390 L344 36Z" fill="#FFF6C8" opacity=".45"/>';
- const cl=(x,w,dx)=>'<g'+(anim?an('lb-a-slide',.1,'--dx:'+dx+'px'):'')+'><rect x="'+x+'" y="26" width="'+w+'" height="290" fill="#6F8DB8" stroke="#4E6C96" stroke-width="2"/>'+[1,2,3].map(i=>'<path d="M'+(x+i*w/4)+' 30 V312" stroke="#5A78A3" stroke-width="3"/>').join('')+'</g>';
- g+='<rect x="480" y="16" width="300" height="10" rx="4" fill="#8A6239"/>';
- g+=dark?cl(484,148,-100)+cl(632,148,100):cl(484,40,0)+cl(740,40,0);
- g+='<rect x="410" y="200" width="40" height="60" rx="5" fill="#F4F6F8" stroke="#9AA6B2" stroke-width="2"/><rect x="422" y="'+(dark?232:212)+'" width="16" height="16" rx="3" fill="#7F8C99"/>';
- if(dark)g+='<rect x="-3000" y="-3000" width="7000" height="7000" fill="#0B1020" opacity=".6"'+(anim?an('lb-a-fade',.7):'')+'/>';
- return g}
-
-/* ───────── 실험 1: 어둠상자(앞에서 봄) ───────── */
-const BX={x:170,y:236,w:360,h:200,dx:60,dy:-40};
-const HOLE=[BX.x+90,BX.y+100],LIDH=[BX.x+BX.w/2+BX.dx/2,BX.y+BX.dy/2];
-function bundle(x,y){return '<g><path d="M'+(x-40)+' '+(y+24)+' Q'+(x-46)+' '+(y-30)+' '+x+' '+(y-34)+' Q'+(x+46)+' '+(y-30)+' '+(x+40)+' '+(y+24)+' Q'+x+' '+(y+36)+' '+(x-40)+' '+(y+24)+'Z" fill="#9C6FB0" stroke="#6E4A80" stroke-width="2.5"/><path d="M'+(x-10)+' '+(y-34)+' q10 -14 20 0" stroke="#6E4A80" stroke-width="4" fill="none"/></g>'}
-/* o: open(뚜껑 열림), inner(상자 속으로 들어가는 것), lidAnim */
-function dbox(o){o=o||{};const X=BX.x,Y=BX.y,W=BX.w,H=BX.h,dx=BX.dx,dy=BX.dy;let g=shadow(X+W/2+24,Y+H+4,W/2+44);
- const top='M'+X+' '+Y+' L'+(X+dx)+' '+(Y+dy)+' H'+(X+W+dx)+' L'+(X+W)+' '+Y+'Z';
- const lid='<path d="'+top+'" fill="#F0DFBC" stroke="#7A6440" stroke-width="2.5" stroke-linejoin="round"/><ellipse cx="'+LIDH[0]+'" cy="'+LIDH[1]+'" rx="24" ry="9" fill="#0B0D12" stroke="#5E4B2E" stroke-width="2"/>';
- if(o.open||o.hole)g+='<path d="'+top+'" fill="#2A2116"/>';
- if(o.inner)g+=o.inner;
- g+='<path d="M'+(X+W)+' '+Y+' L'+(X+W+dx)+' '+(Y+dy)+' V'+(Y+H+dy)+' L'+(X+W)+' '+(Y+H)+'Z" fill="var(--w-kraft-s)" stroke="#7A6440" stroke-width="2.5" stroke-linejoin="round"/>';
- g+='<rect x="'+X+'" y="'+Y+'" width="'+W+'" height="'+H+'" fill="var(--w-kraft)" stroke="#7A6440" stroke-width="2.5"/>';
- g+='<circle cx="'+HOLE[0]+'" cy="'+HOLE[1]+'" r="18" fill="#0B0D12" stroke="#5E4B2E" stroke-width="3"/>';
- if(o.open)g+='<g transform="translate(0 -120)">'+lid+'</g>';
- else g+='<g'+(o.lidAnim?an('lb-a-down',o.lidAnim,'--from:-120px'):'')+'>'+lid+'</g>';
- return g}
-/* 손전등(세움, 머리가 아래) */
-function flashV(x,yb,on){let g='<g><rect x="'+(x-19)+'" y="'+(yb-176)+'" width="38" height="140" rx="9" fill="#3F6FB5" stroke="#1D3A66" stroke-width="2.5"/>';
- for(let i=0;i<4;i++)g+='<path d="M'+(x-14)+' '+(yb-160+i*12)+' h28" stroke="#2E5590" stroke-width="3"/>';
- g+='<rect x="'+(x-30)+'" y="'+(yb-40)+'" width="60" height="40" rx="7" fill="#2E5590" stroke="#1D3A66" stroke-width="2.5"/>';
- g+=(on?'<circle cx="'+(x+22)+'" cy="'+(yb-104)+'" r="13" fill="#FFC93C" opacity=".35"/>':'')+'<rect x="'+(x+16)+'" y="'+(yb-116)+'" width="10" height="24" rx="3" fill="'+(on?'#FFC93C':'#B9C2CA')+'" stroke="#1D3A66" stroke-width="1.5"/>';
- return g+'</g>'}
-function flashH(x,y,on){return '<g transform="translate('+x+' '+y+') rotate(-90)">'+flashV(0,0,on)+'</g>'}
-/* 관찰 구멍으로 본 모습: st = none | dark | lit */
-const VW={x:772,y:250,r:150};
-let VCN=0;
-const OBJART=[
- '<ellipse cx="100" cy="128" rx="44" ry="56" fill="#26323B"/><ellipse cx="100" cy="138" rx="29" ry="42" fill="#FFFFFF"/><circle cx="100" cy="72" r="31" fill="#26323B"/><ellipse cx="100" cy="80" rx="20" ry="15" fill="#FFFFFF"/><circle cx="91" cy="72" r="4.5" fill="#26323B"/><circle cx="109" cy="72" r="4.5" fill="#26323B"/><path d="M93 84 L107 84 L100 95Z" fill="#F29A2E"/><ellipse cx="82" cy="184" rx="15" ry="7" fill="#F29A2E"/><ellipse cx="118" cy="184" rx="15" ry="7" fill="#F29A2E"/>',
- '<path d="M28 132 H172 V160 Q172 166 166 166 H34 Q28 166 28 160Z" fill="#2F7FD0"/><path d="M58 132 L80 98 H128 L148 132Z" fill="#2F7FD0"/><path d="M84 104 H102 V128 H70Z" fill="#CFEAFF"/><path d="M108 104 H124 L140 128 H108Z" fill="#CFEAFF"/><circle cx="62" cy="166" r="17" fill="#26323B"/><circle cx="62" cy="166" r="7" fill="#B9C2CA"/><circle cx="140" cy="166" r="17" fill="#26323B"/><circle cx="140" cy="166" r="7" fill="#B9C2CA"/><rect x="160" y="138" width="10" height="8" rx="2" fill="#FFE07A"/>',
- '<path d="M100 72 C62 48 30 88 44 136 C56 176 86 182 100 168 C114 182 144 176 156 136 C170 88 138 48 100 72Z" fill="#D93A32"/><path d="M100 72 Q103 52 114 42" stroke="#6B4A2A" stroke-width="5" fill="none" stroke-linecap="round"/><path d="M108 56 Q130 40 146 54 Q126 66 108 56Z" fill="#4E9A3A"/><ellipse cx="70" cy="104" rx="10" ry="16" fill="#FFFFFF" opacity=".35"/>',
- '<path d="M56 72 H144 L134 178 H66Z" fill="#F1C84B" stroke="#C99A1E" stroke-width="3"/><path d="M142 96 Q178 96 172 130 Q168 154 136 152" stroke="#F1C84B" stroke-width="11" fill="none"/><ellipse cx="100" cy="72" rx="44" ry="9" fill="#FBE6A0" stroke="#C99A1E" stroke-width="3"/>'];
-function objAt(i,cx,cy,s){return '<g transform="translate('+(cx-100*s)+' '+(cy-100*s)+') scale('+s+')">'+(OBJART[i]||'')+'</g>'}
-function viewArt(st,obj,anim){const V=VW,id='lbVc'+(++VCN);let g='<clipPath id="'+id+'"><circle cx="'+V.x+'" cy="'+V.y+'" r="'+V.r+'"/></clipPath><circle cx="'+V.x+'" cy="'+V.y+'" r="'+(V.r+10)+'" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="2"/><g clip-path="url(#'+id+')">';
- if(st==='lit')g+='<rect x="'+(V.x-V.r)+'" y="'+(V.y-V.r)+'" width="'+2*V.r+'" height="'+2*V.r+'" fill="#E6D9BF"/><rect x="'+(V.x-V.r)+'" y="'+(V.y+70)+'" width="'+2*V.r+'" height="90" fill="#D4C3A2"/><ellipse cx="'+V.x+'" cy="'+(V.y-60)+'" rx="120" ry="80" fill="#FFF6D6" opacity=".8"/>'+'<g'+(anim?an('lb-a-fade',.1):'')+'>'+objAt(obj,V.x,V.y+10,1.05)+'</g>';
- else if(st==='dark')g+='<rect x="'+(V.x-V.r)+'" y="'+(V.y-V.r)+'" width="'+2*V.r+'" height="'+2*V.r+'" fill="#050608"'+(anim?an('lb-a-fade',0):'')+'/>';
- else g+='<rect x="'+(V.x-V.r)+'" y="'+(V.y-V.r)+'" width="'+2*V.r+'" height="'+2*V.r+'" fill="var(--w-wall2)"/>'+eye(V.x,V.y-10,1.6)+'<text x="'+V.x+'" y="'+(V.y+52)+'" text-anchor="middle" font-size="20" font-weight="800" fill="var(--w-labeltx)">눈을 대면 보여요</text>';
- g+='</g><circle cx="'+V.x+'" cy="'+V.y+'" r="'+V.r+'" fill="none" stroke="#2A3342" stroke-width="7"/>';
- return g+mini(V.x,V.y+V.r+38,'관찰 구멍으로 본 모습',18)}
-function peek(){return eye(112,HOLE[1],1.15)+'<path d="M146 '+HOLE[1]+' H232" stroke="#2A3342" stroke-width="3" stroke-dasharray="7 6"/>'}
-
-/* ───────── 실험 2: 구멍을 통과한 햇빛(옆에서 봄) ───────── */
-const SN={hy:150,h0:380,h1:440,k:Math.cos(62*DEG)/Math.sin(62*DEG),gy:470};
-function sunBg(){let g='<rect x="-3000" y="-3000" width="7000" height="3470" fill="var(--w-sky1)"/><rect x="-3000" y="'+SN.gy+'" width="7000" height="3000" fill="#9DB86B"/>';
- for(let i=0;i<40;i++){const x=rnd(i,61)*960;g+='<path d="M'+f1(x)+' '+(SN.gy+8+rnd(i,62)*50)+' l4 -10 l4 10" stroke="#6F8F45" stroke-width="2" fill="none"/>'}
- g+='<circle cx="70" cy="44" r="40" fill="#FFC93C"/><g stroke="#FFC93C" stroke-width="5" stroke-linecap="round">'+[0,1,2,3,4,5,6,7].map(i=>{const a=i*Math.PI/4;return '<path d="M'+f1(70+Math.cos(a)*50)+' '+f1(44+Math.sin(a)*50)+' L'+f1(70+Math.cos(a)*62)+' '+f1(44+Math.sin(a)*62)+'"/>'}).join('')+'</g>';
- return g}
-function sunRays(){let g='';for(let x=170;x<=840;x+=46){const x0=x-(SN.hy+30)*SN.k;g+='<path d="M'+f1(x0)+' -30 L'+x+' '+SN.hy+'" stroke="#F2B705" stroke-width="3" opacity=".55"/>'}
- return g+'<path d="M'+f1(SN.h0-(SN.hy+30)*SN.k)+' -30 L'+SN.h0+' '+SN.hy+' M'+f1(SN.h1-(SN.hy+30)*SN.k)+' -30 L'+SN.h1+' '+SN.hy+'" stroke="#F2B705" stroke-width="3" opacity=".55"/>'}
-function topPaper(){const y=SN.hy;return '<rect x="150" y="'+y+'" width="'+(SN.h0-150)+'" height="12" fill="#14161A"/><rect x="'+SN.h1+'" y="'+y+'" width="'+(820-SN.h1)+'" height="12" fill="#14161A"/>'+hand(132,y+6,0,1,0)+hand(838,y+6,180,1,0)}
-function spotX(Y){return SN.h0+(Y-SN.hy-12)*SN.k}
-function lowPaper(Y,spot,anim){let g='<rect x="190" y="'+Y+'" width="640" height="12" fill="#14161A"/>'+hand(172,Y+6,0,1,0)+hand(848,Y+6,180,1,0);
- if(spot){const x=spotX(Y);g+='<g'+(anim?an('lb-a-fade',.4):'')+'><rect x="'+f1(x-6)+'" y="'+(Y-6)+'" width="'+(SN.h1-SN.h0+12)+'" height="22" rx="6" fill="#FFE14D" opacity=".35"/><rect x="'+f1(x)+'" y="'+Y+'" width="'+(SN.h1-SN.h0)+'" height="12" fill="#FFE14D"/></g>'}
- return g}
-function oldSpot(Y){const x=spotX(Y);return '<rect x="'+f1(x)+'" y="'+(Y-1)+'" width="'+(SN.h1-SN.h0)+'" height="14" fill="none" stroke="#C26A00" stroke-width="2.5" stroke-dasharray="6 5"/>'}
-function standPaper(lit,anim){const y0=SN.hy+14,y1=SN.gy,x1=SN.h1+(y1-y0)*SN.k;let g='<rect x="'+(SN.h0-30)+'" y="'+y0+'" width="'+f1(x1-SN.h0+70)+'" height="'+(y1-y0)+'" fill="#14161A"/>';
- if(lit)g+='<polygon points="'+SN.h0+','+y0+' '+SN.h1+','+y0+' '+f1(x1)+','+y1+' '+f1(x1-(SN.h1-SN.h0))+','+y1+'" fill="#FFE14D" opacity=".92"'+(anim?an('lb-a-fade',.4):'')+'/>';
- return g}
-
-/* ───────── 실험 3: 레이저 지시기(옆에서 봄, 어두운 교실) ───────── */
-const L3={x:250,y:400,wall:860};
-function laserDev(x,y,a,on,o){o=o||{};let g='<g transform="rotate('+f1(a)+' '+x+' '+y+')">'+(o.hand?hand(x-62,y+16,0,.9,0):'')+'<rect x="'+(x-140)+'" y="'+(y-11)+'" width="140" height="22" rx="10" fill="#3A3F48" stroke="#22262D" stroke-width="2"/><rect x="'+(x-14)+'" y="'+(y-13)+'" width="16" height="26" rx="4" fill="#5A606B"/><rect x="'+(x-86)+'" y="'+(y-15)+'" width="18" height="6" rx="2" fill="'+(on?'#E74C3C':'#8A9099')+'"/>';
- if(o.fan)g+='<path d="M'+(x-110)+' '+(y+1)+' l10 -7 M'+(x-110)+' '+(y+1)+' l10 0 M'+(x-110)+' '+(y+1)+' l10 7" stroke="#C9D3DA" stroke-width="2" stroke-linecap="round"/>';
- return g+'</g>'}
-function wallY(a){return L3.y+(L3.wall-L3.x)*Math.tan(a*DEG)}
-function cloud(x0,x1,y0,y1,k,anim){let g='';for(let i=0;i<110;i++){const x=x0+rnd(i,71)*(x1-x0),y=y0+rnd(i,72)*(y1-y0);g+='<circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="'+f1(1.4+rnd(i,73)*1.8)+'" fill="#9FB7D6" opacity="'+f1(.55*k)+'"'+(anim?an('lb-a-fade',rnd(i,74)*.5):'')+'/>'}return g}
-function e3Room(dark){return room(dark)+'<rect x="'+L3.wall+'" y="-3000" width="3000" height="3480" fill="'+(dark?'#1E2636':'var(--w-wall2)')+'"/><path d="M'+L3.wall+' -3000 V480" stroke="'+(dark?'#2C3648':'var(--w-rail)')+'" stroke-width="3"/>'}
-/* on: 켜짐, a: 기울기, mist: 물방울 구름(0~1), anim */
-function e3Lab(o){o=o||{};const a=o.a||0;let g=e3Room(o.dark!==false);
- if(o.mist){g+=cloud(410,700,230,470,o.mist,o.anim)}
- if(o.on){const y1=wallY(a);
-  if(o.mist){const t=v=>[v,L3.y+(v-L3.x)*Math.tan(a*DEG)];g+=beam([t(420),t(690)],{op:.9*o.mist,anim:o.anim,delay:.3})}
-  g+=dot(L3.wall-2,y1,7)}
- if(o.spray)g+='<g transform="rotate(-24 760 150)">'+sprayer(760,150,.9)+'</g>';
- return g+laserDev(L3.x,L3.y,a,o.on,{hand:1})}
-
-/* ───────── 실험 4: 평면거울(위에서 봄) ───────── */
-const PP={x0:70,y0:40,x1:890,y1:500};
-function paperTop(dim){return bgTop()+'<rect x="'+(PP.x0+6)+'" y="'+(PP.y0+8)+'" width="'+(PP.x1-PP.x0)+'" height="'+(PP.y1-PP.y0)+'" fill="var(--w-shadow)"/><rect x="'+PP.x0+'" y="'+PP.y0+'" width="'+(PP.x1-PP.x0)+'" height="'+(PP.y1-PP.y0)+'" fill="#FFFDF8" stroke="#D6D0C2" stroke-width="2"/>'+(dim?'<rect x="-3000" y="-3000" width="7000" height="7000" fill="#0B1020" opacity=".3"/>':'')}
-/* 거울: 반사하는 면은 c를 지나는 선(m도 돌림) */
-function mirrorTop(c,h,m,o){o=o||{};return '<g transform="rotate('+f1(m||0)+' '+c[0]+' '+c[1]+')"'+(o.anim?an('lb-a-down',0,'--from:-60px'):'')+'><rect x="'+(c[0]-6)+'" y="'+(c[1]-40)+'" width="34" height="80" rx="6" fill="#8A939C" stroke="#5B6670" stroke-width="2"/><rect x="'+c[0]+'" y="'+(c[1]-h)+'" width="9" height="'+2*h+'" fill="#A9DBF5" stroke="#3E7FA8" stroke-width="2"/><rect x="'+(c[0]+9)+'" y="'+(c[1]-h)+'" width="7" height="'+2*h+'" fill="#5B6670"/></g>'}
-/* 거울 하나에 비춘 빛의 길 [시작, 거울에 닿은 곳, 끝] */
-function edgePt(P,d){let t=1e9;if(d[0]>1e-9)t=Math.min(t,(PP.x1-P[0])/d[0]);if(d[0]<-1e-9)t=Math.min(t,(PP.x0-P[0])/d[0]);if(d[1]>1e-9)t=Math.min(t,(PP.y1-P[1])/d[1]);if(d[1]<-1e-9)t=Math.min(t,(PP.y0-P[1])/d[1]);return [P[0]+d[0]*t,P[1]+d[1]*t]}
-function mirrorPath(P,a,c,h,m){const d=[Math.cos(a*DEG),Math.sin(a*DEG)],mm=(m||0)*DEG,u=[-Math.sin(mm),Math.cos(mm)],n=[Math.cos(mm),Math.sin(mm)];
- const w=[c[0]-P[0],c[1]-P[1]],det=-d[0]*u[1]+u[0]*d[1];if(Math.abs(det)<1e-9)return {pts:[P,edgePt(P,d)],hit:false};
- const s=(-w[0]*u[1]+u[0]*w[1])/det,v=(d[0]*w[1]-d[1]*w[0])/det;
- if(s<=0||Math.abs(v)>h||d[0]*n[0]+d[1]*n[1]<=0)return {pts:[P,edgePt(P,d)],hit:false};
- const Q=[P[0]+d[0]*s,P[1]+d[1]*s],k=d[0]*n[0]+d[1]*n[1],r=[d[0]-2*k*n[0],d[1]-2*k*n[1]];
- return {pts:[P,Q,edgePt(Q,r)],hit:true,r}}
-function laserTop(x,y,a,on){return laserDev(x,y,a,on,{fan:1})}
-const MC=[636,270],MH=150;
-function posMark(x,y,t){return '<circle cx="'+x+'" cy="'+y+'" r="22" fill="none" stroke="#9AA6B2" stroke-width="2.5" stroke-dasharray="5 4"/><text x="'+(x-46)+'" y="'+(y+8)+'" text-anchor="middle" font-size="24" font-weight="800" fill="#4B5465">'+t+'</text>'}
-/* 모양판 */
-const TG=[{k:'tri',x:420,y:130},{k:'sq',x:380,y:453},{k:'ci',x:150,y:234}];
-const MC2=[700,270],LP2=[300,300];
-function target(t,col){let s;if(t.k==='tri')s='<polygon points="'+t.x+','+(t.y-17)+' '+(t.x+17)+','+(t.y+13)+' '+(t.x-17)+','+(t.y+13)+'" fill="'+col+'"/>';
- else if(t.k==='sq')s='<rect x="'+(t.x-14)+'" y="'+(t.y-14)+'" width="28" height="28" fill="'+col+'"/>';else s='<circle cx="'+t.x+'" cy="'+t.y+'" r="15" fill="'+col+'"/>';
- return '<rect x="'+(t.x-27)+'" y="'+(t.y-27)+'" width="54" height="54" rx="6" fill="#FDF2D6" stroke="#C9A85A" stroke-width="2"/>'+s}
-
-/* ───────── 실험 5: 렌즈(위에서 봄, 어두운 교실) ───────── */
-const LN={x:480,y:270,H:170,R:400};
-function lensDef(t){const SAG=LN.R-Math.sqrt(LN.R*LN.R-LN.H*LN.H);if(t==='cv'){const tc=6+2*SAG;return [{c:[LN.x-tc/2+LN.R,LN.y],side:-1},{c:[LN.x+tc/2-LN.R,LN.y],side:1}]}
- const tc=8;return [{c:[LN.x-tc/2-LN.R,LN.y],side:1},{c:[LN.x+tc/2+LN.R,LN.y],side:-1}]}
-function hitSurf(p,d,s){const ox=p[0]-s.c[0],oy=p[1]-s.c[1],b=ox*d[0]+oy*d[1],cc=ox*ox+oy*oy-LN.R*LN.R,disc=b*b-cc;if(disc<0)return null;
- for(const t of [-b-Math.sqrt(disc),-b+Math.sqrt(disc)]){if(t<1e-6)continue;const q=[p[0]+d[0]*t,p[1]+d[1]*t];if(Math.sign(q[0]-s.c[0])===s.side&&Math.abs(q[1]-LN.y)<=LN.H)return q}return null}
-function bend(d,q,s,n1,n2){let N=[(q[0]-s.c[0])/LN.R,(q[1]-s.c[1])/LN.R];let ci=-(N[0]*d[0]+N[1]*d[1]);if(ci<0){N=[-N[0],-N[1]];ci=-ci}
- const e=n1/n2,k=1-e*e*(1-ci*ci);if(k<0)return d;const f=e*ci-Math.sqrt(k);return [e*d[0]+f*N[0],e*d[1]+f*N[1]]}
-function lensRay(t,h){const S=lensDef(t);let p=[96,LN.y+h],d=[1,0];const pts=[p];
- const q1=hitSurf(p,d,S[0]);if(q1){pts.push(q1);d=bend(d,q1,S[0],1,MODEL.glass);const q2=hitSurf(q1,d,S[1]);if(q2){pts.push(q2);d=bend(d,q2,S[1],MODEL.glass,1);p=q2}else p=q1}
- const tx=(950-p[0])/d[0];let e=[p[0]+d[0]*tx,p[1]+d[1]*tx];if(e[1]<8||e[1]>532){const ty=((d[1]<0?8:532)-p[1])/d[1];e=[p[0]+d[0]*ty,p[1]+d[1]*ty]}pts.push(e);return pts}
-function lensShape(t){const S=lensDef(t),a=[],b=[];for(let i=0;i<=30;i++){const y=LN.y-LN.H+i*2*LN.H/30,dy=y-LN.y,w=Math.sqrt(LN.R*LN.R-dy*dy);
- a.push([S[0].c[0]+S[0].side*w,y]);b.push([S[1].c[0]+S[1].side*w,y])}
- return 'M'+a.map(p=>f1(p[0])+' '+f1(p[1])).join(' L')+' L'+b.reverse().map(p=>f1(p[0])+' '+f1(p[1])).join(' L')+'Z'}
-function darkTable(){return '<rect x="-3000" y="-3000" width="7000" height="7000" fill="#1B2230"/>'}
-function lensArt(t,o){o=o||{};return '<g'+(o.anim?an('lb-a-down',0,'--from:-80px'):'')+'><path d="'+lensShape(t)+'" fill="#BFE6FB" fill-opacity=".55" stroke="#9FD8F5" stroke-width="2.5"/><rect x="'+(LN.x-46)+'" y="'+(LN.y+LN.H+2)+'" width="92" height="22" rx="4" fill="#B98B55" stroke="#7E5C33" stroke-width="2"/></g>'}
-
-/* ───────── 실험 6: 물이 든 통(옆에서 봄) ───────── */
-const TK6={x0:210,x1:790,wy:280,by:470,hp:[470,280]};
-function tankArt(o){o=o||{};const T=TK6;let g='';
- g+='<rect x="'+T.x0+'" y="'+T.wy+'" width="'+(T.x1-T.x0)+'" height="'+(T.by-T.wy)+'" fill="'+(o.milk?'#E4EBF1':'#9CCBE6')+'" opacity="'+(o.milk?(o.dark?.2:.75):.45)+'"'+(o.milkAnim?an('lb-a-fade',.9):'')+'/>';
- if(o.milk&&o.milkAnim)g+='<rect x="'+T.x0+'" y="'+T.wy+'" width="'+(T.x1-T.x0)+'" height="'+(T.by-T.wy)+'" fill="#9CCBE6" opacity=".45"'+an('lb-a-out',.9)+'/>';
- g+='<path d="M'+T.x0+' 200 V'+T.by+' H'+T.x1+' V200" fill="none" stroke="'+(o.dark?'#9FB3C8':'#7F9BAB')+'" stroke-width="5" stroke-linejoin="round"/><path d="M'+T.x0+' '+T.wy+' H'+T.x1+'" stroke="'+(o.dark?'#CFE3F5':'#5E9CC0')+'" stroke-width="2.5"/>';
- return g}
-function inc6(i){return [Math.sin(i*DEG),Math.cos(i*DEG)]}
-function ref6(i){const r=Math.asin(Math.sin(i*DEG)/MODEL.water);return [Math.sin(r),Math.cos(r)]}
-function toBottom(P,d){let t=(TK6.by-P[1])/d[1];if(P[0]+d[0]*t>TK6.x1-4)t=(TK6.x1-4-P[0])/d[0];return [P[0]+d[0]*t,P[1]+d[1]*t]}
-function laser6(i,on,anim){const d=inc6(i),H=TK6.hp,tip=[H[0]-d[0]*140,H[1]-d[1]*140],a=Math.atan2(d[1],d[0])/DEG;return laserDev(tip[0],tip[1],a,on)}
-
-/* ───────── 실험복·보안경 ───────── */
+const GLOVE=1;
+/* 보안경(투명) · 면장갑 낀 손 */
 function gog(x,y,s,tint,line){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><rect x="-58" y="-18" width="52" height="36" rx="15" fill="'+tint+'" stroke="'+line+'" stroke-width="4"/><rect x="6" y="-18" width="52" height="36" rx="15" fill="'+tint+'" stroke="'+line+'" stroke-width="4"/><path d="M-6 -2 h12" stroke="'+line+'" stroke-width="5"/><path d="M-58 0 h-14 M58 0 h14" stroke="'+line+'" stroke-width="4"/></g>'}
-const GOG={sun:['rgba(40,44,52,.82)','#1F2328'],las:['rgba(255,140,40,.55)','#B35A12']};
-function gearArt2(kind,on,anim){const G=kind==='sun'?GOG.sun:GOG.las,withCoat=kind==='lasc';
- if(!on)return (withCoat?coat(300,250,1.4):'')+gog(withCoat?560:480,220,1.2,G[0],G[1])+qmark(480,90);
- const body=withCoat?coat(480,262,1.75):'<path d="M400 190 Q480 168 560 190 L580 330 H380Z" fill="#5C8FCB" stroke="#3D6A9C" stroke-width="3"/>';
- return '<g'+(anim?an('lb-a-up',0,'--from:100px'):'')+'><circle cx="480" cy="116" r="38" fill="#F2C6A0" stroke="#B9875F" stroke-width="3"/>'+gog(480,108,.82,G[0],G[1])+body+'</g>'}
+const GOGC=['rgba(200,230,245,.55)','#2F68B0'];
+function glove(x,y,s,rot){return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+') scale('+(s||1)+')"><path d="M-22 30 V-6 q0 -8 7 -8 q7 0 7 8 v-14 q0 -8 7 -8 q7 0 7 8 v4 q0 -8 7 -8 q7 0 7 8 v14 q0 -6 6 -6 q6 0 6 6 v26 q0 22 -24 22 h-8 q-22 0 -22 -22z" fill="#FFFFFF" stroke="#9AA6B2" stroke-width="2.4" stroke-linejoin="round"/><path d="M-22 40 h44" stroke="#C9D0D6" stroke-width="5"/></g>'}
+function gearArt(on,anim){
+ if(!on)return coat(300,250,1.3)+gog(560,200,1.1,GOGC[0],GOGC[1])+glove(520,330,1.2,-8)+glove(640,330,1.2,8)+qmark(480,80);
+ return '<g'+(anim?an('lb-a-up',0,'--from:100px'):'')+'><circle cx="480" cy="112" r="38" fill="#F2C6A0" stroke="#B9875F" stroke-width="3"/>'+gog(480,104,.82,GOGC[0],GOGC[1])+coat(480,262,1.75)+glove(372,346,1,-12)+glove(588,346,1,12)+'</g>'}
+
+/* ───────── 실험 1: 차가운 음료수 캔(앞에서 봄) ───────── */
+const CN={x:480,b:432,w:100,h:180};
+function towelArt(cx,base,wet){let g='<path d="M'+(cx-150)+' '+(base+8)+' L'+(cx-126)+' '+(base-12)+' H'+(cx+150)+' L'+(cx+128)+' '+(base+8)+'Z" fill="#F4F0E6" stroke="#BDB4A2" stroke-width="2"/>';
+ for(let i=1;i<6;i++)g+='<path d="M'+(cx-140+i*48)+' '+(base-10)+' l-10 17" stroke="#DED6C4" stroke-width="2"/>';
+ if(wet)g+='<ellipse cx="'+cx+'" cy="'+(base-1)+'" rx="'+(70+wet*30)+'" ry="9" fill="#AFC6D6" opacity="'+(.35+wet*.45).toFixed(2)+'"'+(wet==='anim'?an('lb-a-wet',0):'')+'/>';
+ return g}
+function canDrops(x,y,w,h,d,seed){if(d<=0)return '';let g='';const n=Math.round(14+d*46),r0=1.3+d*2.6;
+ for(let i=0;i<n;i++){const rx=x+rnd(i,seed)*w,ry=y+rnd(i,seed+1)*h,r=r0*(.55+rnd(i,seed+2)*.9);
+  g+='<circle cx="'+f1(rx)+'" cy="'+f1(ry)+'" r="'+f1(r)+'" fill="#F4FBFF" fill-opacity=".9" stroke="#7FB8D8" stroke-width="1.1"/>'}
+ if(d>.75)for(let k=0;k<5;k++){const sx=x+10+k*(w-20)/4+rnd(k,seed+5)*8,sy=y+30+rnd(k,seed+6)*50,L=(h-(sy-y))*.9*(d-.75)/.25;
+  g+='<path d="M'+f1(sx)+' '+f1(sy)+' v'+f1(L)+'" stroke="#CDE7F6" stroke-width="5" stroke-linecap="round" opacity=".9"/><circle cx="'+f1(sx)+'" cy="'+f1(sy+L)+'" r="4" fill="#F4FBFF" stroke="#7FB8D8" stroke-width="1.2"/>'}
+ return g}
+function canArt(cx,base,o){o=o||{};const w=CN.w,h=CN.h,x=cx-w/2,y=base-h;let g=shadow(cx,base+3,w/2+10);
+ g+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="14" fill="#7D4AA8"/><rect x="'+(x+10)+'" y="'+(y+18)+'" width="14" height="'+(h-36)+'" rx="7" fill="#FFFFFF" opacity=".22"/>';
+ g+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="16" rx="7" fill="#B8C2CC" stroke="#8C98A4" stroke-width="2"/><rect x="'+x+'" y="'+(base-16)+'" width="'+w+'" height="16" rx="7" fill="#B8C2CC" stroke="#8C98A4" stroke-width="2"/>';
+ g+='<circle cx="'+cx+'" cy="'+(y+80)+'" r="24" fill="#5A2E82"/><circle cx="'+(cx-8)+'" cy="'+(y+74)+'" r="7" fill="#9B6BC9"/><circle cx="'+(cx+7)+'" cy="'+(y+76)+'" r="7" fill="#9B6BC9"/><circle cx="'+cx+'" cy="'+(y+89)+'" r="7" fill="#9B6BC9"/><path d="M'+cx+' '+(y+56)+' q6 -8 14 -6" stroke="#6DB04A" stroke-width="4" fill="none"/>';
+ g+='<text x="'+cx+'" y="'+(y+134)+'" text-anchor="middle" font-size="19" font-weight="800" fill="#FFFFFF">포도</text>';
+ g+='<g'+(o.anim?an('lb-a-fade',0):'')+'>'+canDrops(x+4,y+18,w-8,h-36,o.d||0,7)+'</g>';
+ return g}
+function canSpot(){const v=tView('e1t');if(!v)return null;return [CN.x+22,CN.b-100,34,2.4,770,200]}
+/* 흰 종이에 묻히기 */
+function paperDab(cx,y,kind,on,anim){let g='<path d="M'+(cx-110)+' '+(y+60)+' L'+(cx-86)+' '+(y-12)+' H'+(cx+110)+' L'+(cx+86)+' '+(y+60)+'Z" fill="#FFFDF8" stroke="#B9B2A2" stroke-width="2.5"/>';
+ if(on){const blob='M'+(cx-36)+' '+(y+20)+' q14 -22 44 -16 q34 4 30 26 q-4 22 -36 22 q-40 0 -38 -32Z';
+  g+='<g'+(anim?an('lb-a-wet',.1):'')+'>'+(kind==='A'?'<path d="'+blob+'" fill="#7D3C98" opacity=".85"/>':'<path d="'+blob+'" fill="#DCEFFA" opacity=".55" stroke="#9CC7E0" stroke-width="2" stroke-dasharray="5 4"/>')+'</g>'}
+ return g}
+function dabScene(o){o=o||{};let g=bg({});
+ g+=paperDab(300,330,'A',o.a,o.aAnim)+paperDab(660,330,'B',o.b,o.bAnim);
+ g+=tag(300,430,'음료수',19)+tag(660,430,'캔 표면의 물방울',19);
+ if(o.hand)g+='<g'+an('lb-a-down',0,'--from:-120px')+'>'+glove(o.hand,300,1.1,0)+'</g>';
+ return g}
+
+/* ───────── 실험 2: 집기병(앞에서 봄) ───────── */
+const JR={x:480,b:432,w:180,h:210,nw:120};
+function jarPath(cx,b,s){const w=JR.w*s/2,h=JR.h*s,nw=JR.nw*s/2,top=b-h;
+ return 'M'+(cx-nw)+' '+(top-22*s)+' V'+(top+8*s)+' Q'+(cx-w)+' '+(top+12*s)+' '+(cx-w)+' '+(top+40*s)+' V'+(b-12*s)+' Q'+(cx-w)+' '+b+' '+(cx-w+12*s)+' '+b+' H'+(cx+w-12*s)+' Q'+(cx+w)+' '+b+' '+(cx+w)+' '+(b-12*s)+' V'+(top+40*s)+' Q'+(cx+w)+' '+(top+12*s)+' '+(cx+nw)+' '+(top+8*s)+' V'+(top-22*s)}
+/* o: water, smoke(0~1), fog(0~1), bag(ice 지퍼 백), lid(덮개), s(크기) */
+function jarArt(cx,b,o){o=o||{};const s=o.s||1,w=JR.w*s/2,h=JR.h*s,top=b-h,P=jarPath(cx,b,s);let g=shadow(cx,b+3,w+8);
+ const cid='jc'+Math.round(cx)+'_'+Math.round(s*100)+(o.k||'');
+ g+='<clipPath id="'+cid+'"><path d="'+P+'Z"/></clipPath><path d="'+P+'Z" fill="rgba(150,180,200,.22)"/>';
+ g+='<g clip-path="url(#'+cid+')">';
+ if(o.water)g+='<rect x="'+(cx-w)+'" y="'+(b-26*s)+'" width="'+2*w+'" height="'+26*s+'" fill="var(--w-water)" fill-opacity=".85"/><path d="M'+(cx-w)+' '+(b-26*s)+' H'+(cx+w)+'" stroke="var(--w-water-s)" stroke-width="2.5"/>';
+ if(o.smoke>0){let sm='';for(let i=0;i<9;i++)sm+='<circle cx="'+f1(cx-w*.7+rnd(i,41)*w*1.4)+'" cy="'+f1(top+20*s+rnd(i,42)*h*.62)+'" r="'+f1((16+rnd(i,43)*18)*s)+'"/>';
+  g+='<g fill="#8E979F" opacity="'+(o.smoke*.75).toFixed(2)+'"'+(o.smokeAnim?an('lb-a-fade',.4):'')+'>'+sm+'</g>'}
+ if(o.fog>0){g+='<g'+(o.fogAnim?an('lb-a-fade',0):'')+'><rect x="'+(cx-w)+'" y="'+(top-30*s)+'" width="'+2*w+'" height="'+(h+30*s-26*s)+'" fill="#FFFFFF" opacity="'+(o.fog*.82).toFixed(2)+'"/>';
+  for(let i=0;i<Math.round(o.fog*26);i++)g+='<circle cx="'+f1(cx-w+rnd(i,51)*2*w)+'" cy="'+f1(top-10*s+rnd(i,52)*(h-30*s))+'" r="'+f1((10+rnd(i,53)*16)*s)+'" fill="#F4F7F9" opacity=".7"/>';
+  g+='</g>'}
+ g+='</g><path d="'+P+'" fill="none" stroke="var(--w-glass-s)" stroke-width="'+(3.5*s)+'" stroke-linejoin="round"/><path d="M'+(cx-JR.nw*s/2-6*s)+' '+(top-22*s)+' h'+(JR.nw*s+12*s)+'" stroke="var(--w-glass-s)" stroke-width="'+(5*s)+'" stroke-linecap="round"/>';
+ g+='<path d="M'+(cx-w+14*s)+' '+(top+56*s)+' v'+(h*.45)+'" stroke="#FFFFFF" stroke-width="'+(6*s)+'" stroke-linecap="round" opacity=".5"/>';
+ if(o.lid)g+='<rect x="'+(cx-JR.nw*s/2-14*s)+'" y="'+(top-34*s)+'" width="'+(JR.nw*s+28*s)+'" height="'+(10*s)+'" rx="'+(3*s)+'" fill="#9AA6B2" stroke="#6E7A86" stroke-width="2"/>';
+ if(o.bag)g+='<g'+(o.bagAnim?an('lb-a-down',0,'--from:-140px'):'')+'>'+zbag(cx,top-22*s,s,1)+'</g>';
+ return g}
+function zbag(cx,y,s,ice){s=s||1;let g='<path d="M'+(cx-112*s)+' '+y+' Q'+(cx-118*s)+' '+(y-40*s)+' '+(cx-96*s)+' '+(y-46*s)+' H'+(cx+96*s)+' Q'+(cx+118*s)+' '+(y-40*s)+' '+(cx+112*s)+' '+y+'Z" fill="rgba(214,238,248,.92)" stroke="#7FB8D8" stroke-width="'+(2.5*s)+'"/><path d="M'+(cx-96*s)+' '+(y-40*s)+' H'+(cx+96*s)+'" stroke="#4E8FB8" stroke-width="'+(3*s)+'"/>';
+ if(ice)[[-62,-24],[-22,-30],[18,-24],[56,-28]].forEach((p,i)=>{g+='<rect x="'+f1(cx+p[0]*s)+'" y="'+f1(y+p[1]*s)+'" width="'+f1(30*s)+'" height="'+f1(22*s)+'" rx="'+f1(4*s)+'" fill="#FFFFFF" stroke="#9CC7E0" stroke-width="2" transform="rotate('+(i%2?8:-6)+' '+f1(cx+p[0]*s+15*s)+' '+f1(y+p[1]*s+11*s)+')"/>'});
+ return g}
+function incenseArt(x,y,lit,s){s=s||1;return '<g transform="translate('+x+' '+y+') scale('+s+')"><path d="M0 0 L0 -120" stroke="#8A5A2B" stroke-width="5" stroke-linecap="round"/><path d="M0 0 L0 -40" stroke="#5B3A1C" stroke-width="6"/>'+(lit?'<circle cx="0" cy="-122" r="5" fill="#E8492E"/><path d="M0 -128 q-12 -20 4 -36 q14 -14 0 -34" stroke="#AEB5BC" stroke-width="5" fill="none" opacity=".7" stroke-linecap="round"/>':'')+'</g>'}
+function lighterArt(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><rect x="-70" y="-10" width="96" height="20" rx="6" fill="#E06C3C" stroke="#A84A24" stroke-width="2"/><rect x="26" y="-5" width="56" height="10" rx="3" fill="#B8C2CC" stroke="#7C8792" stroke-width="2"/><path d="M-30 10 v10 h22 v-10" fill="none" stroke="#A84A24" stroke-width="3"/></g>'}
+function sandbox(x,y,s,stick){s=s||1;return '<g transform="translate('+x+' '+y+') scale('+s+')"><path d="M-70 -30 H70 L62 20 H-62Z" fill="#B98E5E" stroke="#8A6239" stroke-width="3"/><path d="M-66 -24 H66" stroke="#E2C48F" stroke-width="10"/>'+[...Array(10)].map((_,i)=>'<circle cx="'+(-58+i*13)+'" cy="'+(-24+(i%2?3:-2))+'" r="2" fill="#B08A55"/>').join('')+(stick?'<path d="M-6 -26 L20 -86" stroke="#8A5A2B" stroke-width="5" stroke-linecap="round"/>':'')+'</g>'}
+function jarSpot(){const v=tView('e2t');if(!v)return null;return [JR.x+10,JR.b-120,44,1.9,800,200]}
+/* 두 집기병 견주기 */
+function cmpArt(c){const S=MODEL.cmpS[c]||0,F=MODEL.cmpF[c]||0;let g=bg({});
+ g+=jarArt(290,432,{s:.82,smoke:S,lid:1,k:'a'})+jarArt(670,432,{s:.82,water:1,fog:F,smoke:c==='c0'?.3:0,bag:1,k:'b'});
+ g+=tag(290,500,'향 연기만 넣음',18)+tag(670,500,'물 · 향 연기 · 얼음',18);
+ return g}
+
+/* ───────── 실험 3: 바람 발생 모형실험(앞에서 봄) ───────── */
+const WB={sx:290,wx:670,b:432,w:230,h:120,mx:480,box:[130,118,830,446]};
+function bigBowl(cx,b,fill,o){o=o||{};const w=WB.w/2,h=WB.h,t=b-h;let g=shadow(cx,b+3,w+6);
+ const P='M'+(cx-w)+' '+t+' L'+(cx-w+14)+' '+b+' H'+(cx+w-14)+' L'+(cx+w)+' '+t;
+ if(fill==='sand'){g+='<path d="M'+(cx-w+4)+' '+(t+22)+' L'+(cx-w+14)+' '+(b-3)+' H'+(cx+w-14)+' L'+(cx+w-4)+' '+(t+22)+'Z" fill="#D9B77A"/>';for(let i=0;i<26;i++)g+='<circle cx="'+f1(cx-w+16+rnd(i,61)*(2*w-32))+'" cy="'+f1(t+30+rnd(i,62)*(h-40))+'" r="2" fill="#B08A55"/>'}
+ if(fill==='water')g+='<path d="M'+(cx-w+4)+' '+(t+22)+' L'+(cx-w+14)+' '+(b-3)+' H'+(cx+w-14)+' L'+(cx+w-4)+' '+(t+22)+'Z" fill="var(--w-water)" fill-opacity=".85"/><path d="M'+(cx-w+4)+' '+(t+22)+' H'+(cx+w-4)+'" stroke="var(--w-water-s)" stroke-width="3"/>';
+ g+='<path d="'+P+'" fill="rgba(232,244,250,.25)" stroke="var(--w-glass-s)" stroke-width="3.5" stroke-linejoin="round"/>';
+ if(o.lcd)g+=lcdStrip(cx,b-34,o.lcd,o.hl);
+ return g}
+/* 액정 온도계: 18~36 °C, 지금 온도 칸만 초록으로 보임 */
+const LCD=[18,20,22,24,26,28,30,32,34,36];
+function lcdStrip(cx,y,val,hl){const cw=17,W=cw*LCD.length,x0=cx-W/2;let g='<rect x="'+(x0-6)+'" y="'+(y-14)+'" width="'+(W+12)+'" height="28" rx="5" fill="#1B1F24" stroke="'+(hl?'#F3C623':'#4A525C')+'" stroke-width="'+(hl?4:2)+'"/>';
+ LCD.forEach((v,i)=>{const on=String(v)===String(val),x=x0+i*cw;g+=(on?'<rect x="'+(x+1)+'" y="'+(y-11)+'" width="'+(cw-2)+'" height="22" rx="3" fill="#3FD27A"/>':'')+'<text x="'+(x+cw/2)+'" y="'+(y+4.5)+'" text-anchor="middle" font-size="11" font-weight="800" fill="'+(on?'#0B2414':'#59626C')+'">'+v+'</text>'});
+ return g}
+function smallBowl(cx,b,o){o=o||{};let g=shadow(cx,b+3,60);
+ g+='<path d="M'+(cx-55)+' '+(b-62)+' L'+(cx-48)+' '+b+' H'+(cx+48)+' L'+(cx+55)+' '+(b-62)+'" fill="rgba(232,244,250,.3)" stroke="var(--w-glass-s)" stroke-width="3"/>';
+ if(o.clay){g+='<ellipse cx="'+cx+'" cy="'+(b-14)+'" rx="26" ry="10" fill="#7F8C8D"/>';[-12,0,12].forEach(d=>{g+='<path d="M'+(cx+d)+' '+(b-18)+' V'+(b-50)+'" stroke="#8A5A2B" stroke-width="3.5"/>'+(o.lit?'<circle cx="'+(cx+d)+'" cy="'+(b-51)+'" r="3" fill="#E8492E"/>':'')})}
+ if(o.smoke)g+='<g fill="#C8CED3" opacity=".9"'+(o.smokeAnim?an('lb-a-fade',.6):'')+'><circle cx="'+(cx-16)+'" cy="'+(b-44)+'" r="16"/><circle cx="'+(cx+12)+'" cy="'+(b-48)+'" r="17"/><circle cx="'+cx+'" cy="'+(b-28)+'" r="15"/></g>';
+ if(o.lid!==false)g+='<g'+(o.lidAnim?an(o.lidAnim,0,o.lidVar||''):'')+'>'+lidArt(cx,b)+'</g>';
+ return g}
+function lidArt(cx,b){return '<rect x="'+(cx-60)+'" y="'+(b-70)+'" width="120" height="9" rx="3" fill="#AAB7C4" stroke="#6E7A86" stroke-width="2"/><rect x="'+(cx-8)+'" y="'+(b-78)+'" width="16" height="9" rx="3" fill="#6E7A86"/>'}
+function tbox(anim){const [x1,y1,x2,y2]=WB.box;return '<g'+(anim?an('lb-a-down',0,'--from:-260px'):'')+'><rect x="'+x1+'" y="'+y1+'" width="'+(x2-x1)+'" height="'+(y2-y1)+'" fill="#161B22"/></g>'}
+function tboxFront(anim){const [x1,y1,x2,y2]=WB.box;return '<g'+(anim?an('lb-a-down',0,'--from:-260px'):'')+'><rect x="'+x1+'" y="'+y1+'" width="'+(x2-x1)+'" height="'+(y2-y1)+'" fill="rgba(200,225,240,.06)" stroke="#9FB3C2" stroke-width="5"/><path d="M'+(x1+20)+' '+(y1+30)+' l60 -14" stroke="#FFFFFF" stroke-width="4" opacity=".35" stroke-linecap="round"/></g>'}
+/* 향 연기: w(0~1) 만큼 퍼진 모습 — 바닥 가까이에서 따뜻한 물 쪽으로 가서 물 위에서 올라감 */
+const SMK=[[480,358],[505,350],[532,342],[560,334],[590,326],[620,316],[648,300],[668,280],[680,256],[688,230],[694,204],[698,180]];
+function smokeFlow(w,anim){let g='';const n=Math.max(1,Math.round(w*SMK.length));
+ for(let i=0;i<n;i++){const p=SMK[i],k=i/(SMK.length-1),r=14+k*14+rnd(i,71)*6,op=.75-k*.35;
+  g+='<circle cx="'+f1(p[0]+rnd(i,72)*10-5)+'" cy="'+f1(p[1]+rnd(i,73)*10-5)+'" r="'+f1(r)+'" fill="#D5DAE0" opacity="'+f1(op)+'"'+(anim?an('lb-a-fade',i*.08):'')+'/>'}
+ return '<g class="lb-smk">'+g+'</g>'}
+function windLab(o){o=o||{};let g=bg({});
+ if(o.box)g+=tbox(o.boxAnim);
+ g+=bigBowl(WB.sx,WB.b,'sand',{lcd:MODEL.sandT})+bigBowl(WB.wx,WB.b,'water',{lcd:MODEL.waterT});
+ if(o.small)g+='<g'+(o.smallAnim?an('lb-a-fade',.2):'')+'>'+smallBowl(WB.mx,WB.b,{clay:1,lit:1,smoke:!o.open,lid:!o.open})+'</g>';
+ if(o.open)g+=smokeFlow(o.w||0,o.anim)
+ if(o.box)g+=tboxFront(o.boxAnim);
+ if(!NAR&&o.names){g+=mini(WB.sx,WB.b+40,'모래',18)+mini(WB.wx,WB.b+40,'따뜻한 물',18)}else if(o.names)LEG.push([null,'왼쪽: 모래 · 오른쪽: 따뜻한 물']);
+ return g}
+function thermoSpot(){const v=UI.mq.cur==='ts'||UI.mq.cur==='tw'?UI.mq.cur:R().st.tv;if(!v)return null;const cx=v==='ts'?WB.sx:WB.wx;return [cx,WB.b-34,26,3.2,480,150]}
 
 /* ───────── 준비물 카드 ───────── */
 function itemArt(k){const A={
-  dbox:'<g transform="translate(-129 -104) scale(.34)">'+dbox({}).replace(/<ellipse cx="[^"]*" cy="[^"]*" rx="[^"]*" ry="7"[^>]*\/>/,'')+'</g>',
-  flash:'<g transform="scale(.62)">'+flashH(88,0,false)+'</g>',
-  toys:objAt(2,-40,8,.34)+objAt(1,22,-12,.34)+objAt(3,30,30,.3),
-  hpaper:'<rect x="-58" y="-40" width="116" height="80" rx="3" fill="#14161A"/><rect x="-12" y="-12" width="24" height="24" fill="var(--w-label)"/>',
-  bpaper:'<rect x="-58" y="-40" width="116" height="80" rx="3" fill="#14161A"/>',
-  sung:gog(0,0,.62,GOG.sun[0],GOG.sun[1]),
-  lgog:gog(0,0,.62,GOG.las[0],GOG.las[1]),
-  coat:coat(0,4,.62),
-  laser:'<g transform="translate(64 0) scale(.82)">'+laserDev(0,0,0,false)+'</g>',
-  laserd:'<g transform="translate(64 0) scale(.82)">'+laserDev(0,0,0,false,{fan:1})+'</g>',
-  spray:sprayer(0,-28,.62),
-  water:'<g transform="translate(0 6) scale(.62)">'+beaker2(0,60,{lvl:70}).replace(/<ellipse[^>]*\/>/,'')+'</g>',
-  mirror:'<rect x="-34" y="-46" width="68" height="92" rx="4" fill="#A9DBF5" stroke="#3E7FA8" stroke-width="3"/><path d="M-20 -30 l24 -10 M-20 -14 l34 -14" stroke="#FFFFFF" stroke-width="4" stroke-linecap="round"/>',
-  mstand:'<rect x="-46" y="-14" width="92" height="40" rx="6" fill="#8A939C" stroke="#5B6670" stroke-width="3"/><rect x="-6" y="-14" width="12" height="26" fill="#5B6670"/>',
+  can:'<g transform="scale(.5)">'+canArt(0,90,{}).replace(/<ellipse[^>]*\/>/,'')+'</g>',
+  towel:'<g transform="translate(0 6)"><rect x="-56" y="-30" width="112" height="60" rx="6" fill="#F4F0E6" stroke="#BDB4A2" stroke-width="2.5"/><path d="M-56 -10 H56 M-56 10 H56" stroke="#DED6C4" stroke-width="3"/></g>',
   wpaper:'<rect x="-50" y="-44" width="100" height="88" rx="2" fill="#FFFDF8" stroke="#B9B2A2" stroke-width="2.5"/>',
-  shapes:'<g transform="scale(.72)">'+target({k:'tri',x:-62,y:0},'#5B6B78')+target({k:'sq',x:0,y:0},'#5B6B78')+target({k:'ci',x:62,y:0},'#5B6B78')+'</g>',
-  cvx:'<path d="M0 -50 Q34 0 0 50 Q-34 0 0 -50Z" fill="#BFE6FB" stroke="#2E86C1" stroke-width="3"/>',
-  ccv:'<path d="M-16 -50 H16 Q4 0 16 50 H-16 Q-4 0 -16 -50Z" fill="#BFE6FB" stroke="#2E86C1" stroke-width="3"/>',
-  lstand:'<rect x="-46" y="-14" width="92" height="40" rx="6" fill="#B98B55" stroke="#7E5C33" stroke-width="3"/><rect x="-6" y="-14" width="12" height="26" fill="#7E5C33"/>',
-  tank:'<rect x="-56" y="-40" width="112" height="80" fill="rgba(156,203,230,.45)"/><path d="M-56 -50 V40 H56 V-50" fill="none" stroke="#7F9BAB" stroke-width="4"/>',
-  milk:'<path d="M-24 -44 H24 V44 H-24Z" fill="#FFFFFF" stroke="#7F9BAB" stroke-width="3"/><path d="M-24 -44 L0 -60 L24 -44" fill="#E8F1F8" stroke="#7F9BAB" stroke-width="3"/><rect x="-24" y="-6" width="48" height="24" fill="#5C8FCB"/>',
-  pipet:'<g transform="rotate(-30)"><rect x="-5" y="-30" width="10" height="72" rx="4" fill="rgba(232,244,250,.8)" stroke="#7F9BAB" stroke-width="2.5"/><rect x="-9" y="-58" width="18" height="30" rx="8" fill="#E06C3C"/></g>',
-  rod:'<g transform="rotate(35)"><rect x="-5" y="-58" width="10" height="116" rx="5" fill="rgba(232,244,250,.85)" stroke="#7F9BAB" stroke-width="2.5"/></g>'};
+  gear:'<g transform="translate(-10 -6) scale(.42)">'+coat(-40,10,1)+'</g>'+gog(26,-28,.42,GOGC[0],GOGC[1])+glove(40,22,.7,8),
+  jar:'<g transform="scale(.42)">'+jarArt(0,120,{}).replace(/<ellipse[^>]*\/>/,'')+'</g>',
+  lwater:'<g transform="translate(0 6) scale(.62)">'+beaker2(0,60,{lvl:70}).replace(/<ellipse[^>]*\/>/,'')+'</g>',
+  wwater:'<g transform="translate(0 6) scale(.62)">'+beaker2(0,60,{lvl:80}).replace(/<ellipse[^>]*\/>/,'')+'</g>',
+  incense:'<g transform="rotate(30)">'+incenseArt(0,52,false,.8)+'</g>',
+  lighter:lighterArt(0,0,.9),
+  ice:[[-30,-8],[4,-14],[-12,16],[22,12]].map(p=>'<rect x="'+p[0]+'" y="'+p[1]+'" width="28" height="24" rx="4" fill="#FFFFFF" stroke="#9CC7E0" stroke-width="2.5"/>').join(''),
+  zbag:'<g transform="translate(0 30)">'+zbag(0,0,.5,0)+'</g>',
+  sandbox:sandbox(0,10,.75,false),
+  tbox:'<rect x="-58" y="-44" width="116" height="88" fill="#161B22"/><rect x="-58" y="-44" width="116" height="88" fill="none" stroke="#9FB3C2" stroke-width="4"/>',
+  bowls:('<g transform="scale(.36)">'+bigBowl(-130,60,'')+bigBowl(130,60,'')+'</g>').replace(/<ellipse[^>]*\/>/g,''),
+  lcd:'<g transform="scale(.7)">'+lcdStrip(0,-20,null)+lcdStrip(0,20,null)+'</g>',
+  sand:'<path d="M-56 30 Q-40 -26 0 -30 Q40 -26 56 30Z" fill="#D9B77A" stroke="#B08A55" stroke-width="2.5"/>',
+  sbowl:'<g transform="translate(0 4) scale(.8)">'+smallBowl(0,40,{}).replace(/<ellipse[^>]*\/>/,'')+'</g>',
+  clay:'<ellipse cx="0" cy="34" rx="40" ry="14" fill="#7F8C8D"/>'+[-16,0,16].map(d=>'<path d="M'+d+' 30 V-40" stroke="#8A5A2B" stroke-width="4"/>').join('')};
  return A[k]||''}
 function itemArtAt(k,x,y){return '<g transform="translate('+x+' '+y+') scale(1.4)">'+itemArt(k)+'</g>'}
-function toolsScene(list,anim){let b='';if(NAR)list.forEach(it=>LEG.push([null,it[1]]));const n=list.length,cols=n<=4?n:n<=6?3:4,rows=Math.ceil(n/cols),cw=200,ch=176,gx=18,gy=18;
+function toolsScene(list,anim){let b='';if(NAR)list.forEach(it=>LEG.push([null,it[1]]));const n=list.length,cols=n<=4?n:n<=6?3:n<=8?4:5,rows=Math.ceil(n/cols),cw=n>8?172:200,ch=n>8?168:176,gx=n>8?14:18,gy=18;
  const W=cols*cw+(cols-1)*gx,H=rows*ch+(rows-1)*gy,x0=480-W/2,y0=Math.max(30,250-H/2);
  list.forEach((it,i)=>{const c=i%cols,r=Math.floor(i/cols),x=x0+c*(cw+gx),y=y0+r*(ch+gy),cx=x+cw/2;
-  b+='<g'+(anim?an('lb-a-pop',.3+i*.15):'')+'><rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+ch+'" rx="16" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/><g transform="translate('+cx+' '+(y+72)+')">'+itemArt(it[0])+'</g>'+(NAR?'':toolLabel(cx,y+ch-18,it[1]))+'</g>'});
+  b+='<g'+(anim?an('lb-a-pop',.3+i*.12):'')+'><rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+ch+'" rx="16" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/><g transform="translate('+cx+' '+(y+70)+')">'+itemArt(it[0])+'</g>'+(NAR?'':toolLabel(cx,y+ch-16,it[1]))+'</g>'});
  return b}
 /* 준비물 이름: 길면 두 줄로(글자를 줄이지 않음) */
 function toolLabel(cx,yb,t){const T='<text x="'+cx+'" text-anchor="middle" font-size="19" font-weight="800" fill="var(--w-labeltx)"';

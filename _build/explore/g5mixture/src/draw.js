@@ -1,4 +1,4 @@
-/* ───────── 그림: 실험대 장면 — 모두 직접 그린 SVG (지층과 화석) ───────── */
+/* ───────── 그림: 실험대 장면 — 모두 직접 그린 SVG (혼합물의 분리) ───────── */
 const BY=436;
 let NAR=false,LEG=[];   /* 좁은 화면: 작은 그림 글자는 HTML(LEG)로 */
 function an(cls,delay,extra){return ' class="lb-a '+cls+'" style="animation-delay:'+(delay||0)+'s'+(extra?';'+extra:'')+'"'}
@@ -50,254 +50,226 @@ function goggles(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s|
 function cotton(x,y,rot,s){return hand(x,y,rot,s,1).replace('#FFFFFF','#F4F1EA').replace('#9AA6B2','#B5AE9F')}
 /* 실험용 장갑(파란 고무 장갑) · 보호 장비 입기 */
 function lglove(x,y,r,s){return hand(x,y,r,s,1).replace('#FFFFFF','#BFE0F2').replace('#9AA6B2','#4F82A3')}
-function gearArt(no,on,anim){const gl=no===2||no===5?lglove:cotton;
- if(!on)return coat(330,250,1.4)+(no===5?goggles(520,140,1.3):'')+'<g transform="translate(640 290) scale(1.4)">'+gl(-14,-10,-60,.75)+gl(22,8,-60,.75)+'</g>'+qmark(480,90);
- let g='<g'+(anim?an('lb-a-up',0,'--from:100px'):'')+'><circle cx="480" cy="116" r="38" fill="#F2C6A0" stroke="#B9875F" stroke-width="3"/>';
- if(no===5)g+=goggles(480,108,.92);
- g+=coat(480,262,1.75)+gl(330,240,-70,1.4)+gl(630,240,-110,1.4)+'</g>';
- return g}
-
-/* ───────── 실험 1: 지층 카드 ───────── */
-/* 지층 그리기(원본 u1-1의 strata를 옮김 — id는 같은 그림이면 같은 글이 되도록 정해서 줌). pen: 1 그은 선 · 'a' 긋는 중 */
-function strataSVG(o){const w=o.w,h=o.h,id=o.id,L=o.layers,sh=o.shape||'flat',amp=o.amp||0,d=sh==='fault'?(o.d||0):0;
- const off=x=>sh==='fold'?amp*Math.sin((x/w)*Math.PI*2*(o.waves||1)+(o.ph||0)):0;
- let mn=1e9,mx=-1e9;for(let x=0;x<=w;x+=5){const v=off(x);mn=Math.min(mn,v);mx=Math.max(mx,v)}
- const start=-mx-Math.abs(d)-2,end=h-mn+Math.abs(d)+2,tot=L.reduce((a,l)=>a+(l.t||1),0),sc=(end-start)/tot;
- const cum=[0];L.forEach(l=>cum.push(cum[cum.length-1]+(l.t||1)));
- const by=(i,x)=>start+cum[i]*sc+off(x);
- let defs='<clipPath id="'+id+'c"><rect width="'+w+'" height="'+h+'"/></clipPath>';const pats={};
- L.forEach((l,i)=>{const k=l.k||'m',pid=id+'p'+i;pats[i]=pid;
-  if(k==='g')defs+='<pattern id="'+pid+'" width="34" height="26" patternUnits="userSpaceOnUse"><rect width="34" height="26" fill="'+l.c+'"/><ellipse cx="8" cy="8" rx="6" ry="4.5" fill="#fff" opacity=".28" stroke="#000" stroke-opacity=".25"/><ellipse cx="25" cy="18" rx="7" ry="5" fill="#000" opacity=".16"/><circle cx="22" cy="5" r="2" fill="#000" opacity=".2"/><circle cx="6" cy="20" r="1.6" fill="#fff" opacity=".4"/></pattern>';
-  else if(k==='s')defs+='<pattern id="'+pid+'" width="12" height="10" patternUnits="userSpaceOnUse"><rect width="12" height="10" fill="'+l.c+'"/><circle cx="3" cy="3" r="1.1" fill="#000" opacity=".22"/><circle cx="9" cy="7" r="1.1" fill="#fff" opacity=".35"/></pattern>';
-  else defs+='<pattern id="'+pid+'" width="40" height="8" patternUnits="userSpaceOnUse"><rect width="40" height="8" fill="'+l.c+'"/><path d="M0 4 H22" stroke="#000" stroke-opacity=".1" stroke-width="1"/></pattern>'});
- function block(shift){let s='';
-  L.forEach((l,i)=>{let dd='M0 '+(by(i,0)+shift).toFixed(1);for(let x=0;x<=w;x+=6)dd+=' L'+x+' '+(by(i,x)+shift).toFixed(1);dd+=' L'+w+' '+(by(i,w)+shift).toFixed(1);
-   for(let x=w;x>=0;x-=6)dd+=' L'+x+' '+(by(i+1,x)+shift).toFixed(1);dd+=' L0 '+(by(i+1,0)+shift).toFixed(1)+'Z';s+='<path d="'+dd+'" fill="url(#'+pats[i]+')"/>'});
-  if(o.pen){for(let i=1;i<L.length;i++){let dd='M0 '+(by(i,0)+shift).toFixed(1);for(let x=6;x<=w;x+=6)dd+=' L'+x+' '+(by(i,x)+shift).toFixed(1);
-   s+='<path d="'+dd+'" fill="none" stroke="#1d2b8f" stroke-width="'+(o.pw||3.5)+'" stroke-linecap="round" pathLength="1" stroke-dasharray="1"'+(o.pen==='a'?an('lb-a-draw',.15+i*.12):'')+'/>'}}
-  return s}
- let body;
- if(sh==='fault'){const fx=o.fx||w*.5,fs=o.fs==null?h*.25:o.fs;
-  defs+='<clipPath id="'+id+'L"><path d="M-5 -5 L'+(fx+fs)+' -5 L'+(fx-fs)+' '+(h+5)+' L-5 '+(h+5)+'Z"/></clipPath><clipPath id="'+id+'R"><path d="M'+(fx+fs)+' -5 L'+(w+5)+' -5 L'+(w+5)+' '+(h+5)+' L'+(fx-fs)+' '+(h+5)+'Z"/></clipPath>';
-  body='<g clip-path="url(#'+id+'L)">'+block(0)+'</g><g clip-path="url(#'+id+'R)">'+block(d)+'</g><path d="M'+(fx+fs)+' 0 L'+(fx-fs)+' '+h+'" stroke="#2b1a0c" stroke-width="'+Math.max(2,w/100)+'"/>'}
- else body=block(0);
- return '<g transform="translate('+(o.x||0)+' '+(o.y||0)+')"><defs>'+defs+'</defs><g clip-path="url(#'+id+'c)">'+body+'</g>'+(o.frame===false?'':'<rect width="'+w+'" height="'+h+'" fill="none" stroke="#3b2a1a" stroke-width="2" rx="3"/>')+'</g>'}
-/* 지층 카드 한 장. face: 앞면(지층 그림) · pen: 선 · hl: 고른 카드 */
-function cardArt(i,x,y,w,h,o){o=o||{};const cd=CARDS[i],k=(w-12)/388,br=Math.max(13,w*.06);
- let g='<g transform="translate('+x+' '+y+')"><rect x="4" y="6" width="'+w+'" height="'+h+'" rx="10" fill="var(--w-shadow)"/>';
- if(!o.face){g+='<rect width="'+w+'" height="'+h+'" rx="10" fill="#3E6E8E" stroke="#24475E" stroke-width="3"/><rect x="9" y="9" width="'+(w-18)+'" height="'+(h-18)+'" rx="7" fill="none" stroke="#9CC3DA" stroke-width="2" stroke-dasharray="7 5"/>'+
-  '<circle cx="'+w/2+'" cy="'+h/2+'" r="'+br*1.5+'" fill="#FFFFFF" stroke="#24475E" stroke-width="2.5"/><text x="'+w/2+'" y="'+(h/2+br*.55)+'" text-anchor="middle" font-size="'+br*1.65+'" font-weight="800" fill="#1C3A4F">'+NUM[i]+'</text>'}
- else{g+='<rect width="'+w+'" height="'+h+'" rx="10" fill="#FFFFFF" stroke="#8C8577" stroke-width="2.5"/>'+
-  strataSVG({x:6,y:6,w:w-12,h:h-12,id:'cd'+i+'w'+Math.round(w),layers:cd.layers,shape:cd.shape,amp:(cd.amp||0)*k,waves:cd.waves,ph:cd.ph,d:(cd.d||0)*k,fx:(cd.fx||0)*k,fs:(cd.fs||0)*k,pen:o.pen,pw:w>300?4:2.6})+
-  '<circle cx="'+(br+8)+'" cy="'+(br+8)+'" r="'+br+'" fill="#FFFFFF" stroke="#24475E" stroke-width="2"/><text x="'+(br+8)+'" y="'+(br+8+br*.4)+'" text-anchor="middle" font-size="'+br*1.15+'" font-weight="800" fill="#1C3A4F">'+NUM[i]+'</text>'}
- if(o.hl)g+='<rect x="-9" y="-9" width="'+(w+18)+'" height="'+(h+18)+'" rx="14" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
- return g+'</g>'}
-const CW=150,CH=94,CPOS=[0,1,2,3,4,5].map(i=>[52+(i%3)*166,120+Math.floor(i/3)*126]);
-const BIG={x:578,y:150,w:340,h:213};
-function penArt(x,y,rot,s){return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+') scale('+(s||1)+')"><rect x="-8" y="-70" width="16" height="96" rx="5" fill="#1F2A6E" stroke="#0F1640" stroke-width="2"/><rect x="-9" y="-78" width="18" height="26" rx="5" fill="#2D3C9A" stroke="#0F1640" stroke-width="2"/><path d="M-6 26 L0 40 L6 26Z" fill="#1d2b8f"/><rect x="-5" y="-30" width="10" height="34" rx="2" fill="#FFFFFF" opacity=".75"/></g>'}
-/* 책상 위 카드 여섯 장 + 오른쪽 큰 카드. o: face(i→bool) pen(i→0/1/'a') big(i 또는 null) bigPen hl */
-function cardsTable(o){o=o||{};let g=bgTop();
- CPOS.forEach((p,i)=>{g+='<g'+(o.deal?an('lb-a-pop',.1+i*.12):'')+'>'+cardArt(i,p[0],p[1],CW,CH,{face:o.face&&o.face(i),pen:o.pen&&o.pen(i)?1:0,hl:o.big===i})+'</g>'});
- if(o.noBig)return g;
- const B=BIG;
- if(o.big==null)g+='<rect x="'+B.x+'" y="'+B.y+'" width="'+B.w+'" height="'+B.h+'" rx="12" fill="var(--w-label)" fill-opacity=".55" stroke="var(--w-felt-s)" stroke-width="2.5" stroke-dasharray="10 7"/>'+(NAR?'':'<text x="'+(B.x+B.w/2)+'" y="'+(B.y+B.h/2+8)+'" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-labeltx)">카드를 고르면 크게 보여요</text>');
- else{g+='<g'+(o.flip?an('lb-a-pop',0):'')+'>'+cardArt(o.big,B.x,B.y,B.w,B.h,{face:1,pen:o.bigPen})+'</g>';
-  if(o.bigPen==='a')g+='<g'+an('lb-a-slide',0,'--dx:-300px')+'>'+penArt(B.x+B.w-34,B.y+B.h+26,60,.8)+'</g>';else if(o.penTool)g+=penArt(B.x+B.w-34,B.y+B.h+26,60,.8)}
- return g}
-/* 오늘의 실험 그림용: 아무 무늬 없는 카드(결과를 보여 주지 않음) */
-function blankCard(x,y,w,h){return '<g transform="translate('+x+' '+y+')"><rect x="4" y="6" width="'+w+'" height="'+h+'" rx="10" fill="var(--w-shadow)"/><rect width="'+w+'" height="'+h+'" rx="10" fill="#FFFFFF" stroke="#8C8577" stroke-width="2.5"/><rect x="8" y="8" width="'+(w-16)+'" height="'+(h-16)+'" rx="4" fill="#E9E1D3"/></g>'}
-function trayArt(x,y,lab){return '<g><rect x="'+x+'" y="'+y+'" width="240" height="150" rx="14" fill="var(--w-paper)" stroke="var(--w-felt-s)" stroke-width="2.5"/>'+(lab?'<text x="'+(x+120)+'" y="'+(y+38)+'" text-anchor="middle" font-size="24" font-weight="800" fill="#141A26">'+lab+'</text>':'')+'</g>'}
-
-/* ───────── 실험 2: 지층 모형(옆에서 본 실험대) ───────── */
-const TX=330,TW=300,TY=110,TB=410,TH=TB-TY,LH=.78;
-/* 층 무늬(자갈과 모래: 둥근 자갈과 점 · 모래: 점 · 진흙: 결) */
-function layerFill(k,x,y,w,h,seed){const m=MAT[k];let g='<rect x="'+x+'" y="'+y.toFixed(1)+'" width="'+w+'" height="'+h.toFixed(1)+'" fill="'+m.c+'"/>';
- if(k==='gs'){const n=Math.floor(w/19);for(let j=0;j<n;j++)g+='<ellipse cx="'+(x+10+j*19+rnd(j,seed)*4).toFixed(1)+'" cy="'+(y+h-9-(j%2)*Math.min(12,h*.3)).toFixed(1)+'" rx="'+(7+(j%3))+'" ry="5" fill="#8f7f6a" stroke="#5f5242" stroke-width="1.5"/>'}
- if(k!=='m'){for(let j=0;j<Math.floor(w/7);j++)g+='<circle cx="'+(x+6+(j*37)%(w-10)).toFixed(1)+'" cy="'+(y+3+((j*13)%Math.max(4,(k==='gs'?h*.45:h-5)))).toFixed(1)+'" r="1.4" fill="#7a6040" opacity=".75"/>'}
- else for(let j=0;j<3;j++)g+='<path d="M'+(x+10+j*30)+' '+(y+h*(.3+j*.2)).toFixed(1)+' h'+(w*.4).toFixed(0)+'" stroke="#5c432d" stroke-opacity=".35" stroke-width="1.5"/>';
- return g}
-/* 사각 통. o: water(0~1) ord(아래부터 쌓인 것) grow(마지막 층이 쌓이는 중) x w s(크기) */
-function tankArt(o){o=o||{};const x=o.x==null?TX:o.x,w=o.w||TW,tb=o.b||TB,th=o.h||TH,ty=tb-th;
- let g=shadow(x+w/2,tb+6,w/2+14)+'<rect x="'+x+'" y="'+ty+'" width="'+w+'" height="'+th+'" fill="var(--w-glass)"/>';
- const wl=tb-(o.water||0)*th;
- if(o.water)g+='<g'+(o.waterAnim?' class="lb-a lb-a-hillup"':'')+'><rect x="'+(x+3)+'" y="'+wl.toFixed(1)+'" width="'+(w-6)+'" height="'+(tb-wl).toFixed(1)+'" fill="#9fd3f0" opacity=".6"/><path d="M'+(x+3)+' '+wl.toFixed(1)+' H'+(x+w-3)+'" stroke="#5E9CC0" stroke-width="3"/></g>';
- let y=tb-3;const L=o.ord||[],sc=(o.ls||LH)*th/TH;
- L.forEach((k,i)=>{const h=MAT[k].h*sc;y-=h;const an1=o.grow&&i===L.length-1;
-  g+='<g'+(an1?' class="lb-a lb-a-hillup" style="animation-delay:.55s"':'')+'>'+layerFill(k,x+3,y,w-6,h,i+3)+'</g>'});
- if(o.cloud)g+='<rect x="'+(x+3)+'" y="'+wl.toFixed(1)+'" width="'+(w-6)+'" height="'+Math.max(0,y-wl).toFixed(1)+'" fill="'+MAT[o.cloud].c+'"'+an('lb-a-out2',.2)+' opacity=".45" style="animation-duration:1.8s"/>';
- g+='<rect x="'+x+'" y="'+ty+'" width="'+w+'" height="'+th+'" fill="none" stroke="#5a7d8c" stroke-width="5" rx="4"/><path d="M'+(x+12)+' '+(ty+14)+' V'+(ty+th*.5)+'" stroke="#FFFFFF" stroke-width="5" opacity=".55" stroke-linecap="round"/>';
- return g}
-/* 쌓인 층의 가운데 높이(아래부터 i번째) */
-function layerMid(ord,i,o){o=o||{};const tb=o.b||TB,th=o.h||TH,sc=(o.ls||LH)*th/TH;let y=tb-3;for(let j=0;j<=i;j++){const h=MAT[ord[j]].h*sc;y-=h;if(j===i)return y+h/2}return y}
-/* 투명한 컵. fill(0~1) water(0~1) */
-function cupArt(cx,b,k,o){o=o||{};const s=o.s||1.25,m=MAT[k];let g='<g transform="translate('+cx+' '+b+') scale('+s+')">';
- g+='<path d="M-34 -80 L-28 0 L28 0 L34 -80" fill="#ffffff" fill-opacity=".5" stroke="#7a8c96" stroke-width="3"/>';
- if(o.water){const t=-80*Math.max(o.fill?.5:0,.92);g+='<g'+(o.waterAnim?' class="lb-a lb-a-hillup"':'')+'><path d="M'+(-33)+' '+t+' L-28 0 L28 0 L33 '+t+'Z" fill="#7ec3ea" opacity=".55"/></g>'}
- if(o.fill){const top=-40;g+='<g'+(o.fillAnim?' class="lb-a lb-a-hillup"':'')+'><path d="M-31 '+top+' L-28 0 L28 0 L31 '+top+'Z" fill="'+m.c+'"/>';
-  if(k==='gs')for(let i=0;i<6;i++)g+='<ellipse cx="'+(-20+i*8)+'" cy="'+(-8-(i%2)*8)+'" rx="5" ry="3.5" fill="#8f7f6a" stroke="#5f5242"/>';
-  if(k!=='m')for(let i=0;i<10;i++)g+='<circle cx="'+(-22+i*5)+'" cy="'+(top+6+(i%3)*5)+'" r="1.3" fill="#7a6040"/>';g+='</g>'}
- g+='</g>';if(!o.nolab)g+=mini(cx,b+30,m.n,18);return g}
-const CUPX={gs:130,s:228,m:800};
-function beaker(x,y,rot,s,full){return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+') scale('+(s||1)+')"><path d="M-30 -50 V40 Q-30 50 -20 50 H20 Q30 50 30 40 V-50 L36 -56" fill="#EAF4FB" fill-opacity=".45" stroke="#5F8FA0" stroke-width="3"/>'+(full?'<path d="M-28 -10 H28 V40 Q28 48 20 48 H-20 Q-28 48 -28 40Z" fill="#7CC3EC" fill-opacity=".8"/>':'')+'</g>'}
-/* 붓는 컵(통 위에서 기울임) + 떨어지는 알갱이 */
-function pourArt(k){const m=MAT[k];let g='<g'+an('lb-a-fade',0)+'><g transform="translate('+(TX+TW/2+70)+' '+(TY-6)+') rotate(-118) scale(1.25)"><path d="M-34 -80 L-28 0 L28 0 L34 -80" fill="#ffffff" fill-opacity=".5" stroke="#7a8c96" stroke-width="3"/></g></g>';
- for(let j=0;j<16;j++){const x=TX+TW/2-40+(j*23)%80,y=TY+30+(j*37)%120;g+='<circle cx="'+x+'" cy="'+y+'" r="'+(k==='gs'&&j%3===0?6:3)+'" fill="'+m.c+'" stroke="#6b5235" stroke-width=".8"'+an('lb-a-drop',.1+(j%6)*.12)+'/>'}
- return g}
-function modelScene(o){o=o||{};let g=bg({})+tankArt(o);
- MATK.forEach(k=>{if(o.pouring===k)return;const used=(o.ord||[]).indexOf(k)>=0;g+=cupArt(CUPX[k],416,k,{fill:!used,water:!used})});
- if(o.pouring)g+=pourArt(o.pouring);
- return g}
-/* 실제 지층(절벽 그림) */
-function cliffArt(x,y,w,h){let g='<g transform="translate('+x+' '+y+')"><rect width="'+w+'" height="'+h+'" rx="10" fill="#cfe9f7"/>'+
- strataSVG({x:0,y:h*.16,w,h:h*.68,frame:false,id:'clf'+Math.round(w),shape:'flat',layers:[{c:'#8d8d86',k:'m',t:1.4},{c:'#3f3a35',k:'m',t:.6},{c:'#a8a59a',k:'s',t:1.6},{c:'#5a524a',k:'m',t:.7},{c:'#8d8d86',k:'s',t:1.5},{c:'#3f3a35',k:'m',t:.8}]})+
- '<path d="M0 '+(h*.84)+' Q'+w/2+' '+(h*.8)+' '+w+' '+(h*.85)+' V'+h+' H0Z" fill="#5b8fc4"/><path d="M0 '+(h*.16)+' Q'+(w*.3)+' '+(h*.1)+' '+(w*.55)+' '+(h*.15)+' T'+w+' '+(h*.14)+'" stroke="#6c8f5a" stroke-width="12" fill="none"/><rect width="'+w+'" height="'+h+'" rx="10" fill="none" stroke="#7d7465" stroke-width="3"/></g>';return g}
-
-/* ───────── 실험 3: 퇴적암 ①~⑥(위에서 본 흰 종이) ───────── */
-function rockPoly6(i,cx,cy,r){const pts=[];for(let a=0;a<12;a++){const ang=a/12*Math.PI*2,rr=r*(.82+rnd(a+i*13,51)*.22);pts.push([cx+Math.cos(ang)*rr*1.15,cy+Math.sin(ang)*rr*.82])}return pts}
-function inPoly(x,y,P){let c=false;for(let i=0,j=P.length-1;i<P.length;j=i++){const a=P[i],b=P[j];if((a[1]>y)!==(b[1]>y)&&x<(b[0]-a[0])*(y-a[1])/(b[1]-a[1])+a[0])c=!c}return c}
-/* 알갱이(원본 u1-3 rockSVG의 크기 범위 gs를 따름 — 150칸 그림 기준이라 sc배). hw·hh: 그릴 범위의 반 */
-function grains(rk,i,P,cx,cy,hw,hh,sc,nmax){const [a,b]=rk.gs;let g='';
- if(b>0){const m=(a+b)/2*sc,n=Math.min(nmax||300,Math.round(4*hw*hh*.55/(m*m)));for(let j=0;j<n;j++){const x=cx-hw+rnd(i*977+j,61)*hw*2,y=cy-hh+rnd(i*977+j,62)*hh*2;if(P&&!inPoly(x,y,P))continue;
-  const rr=(a+rnd(i*31+j,63)*(b-a))*sc*(rnd(j,64+i)<.75&&b>8?.35:1);g+='<ellipse cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" rx="'+rr.toFixed(1)+'" ry="'+(rr*.8).toFixed(1)+'" fill="'+rk.gc[Math.floor(rnd(j,65+i)*rk.gc.length)]+'"'+(rr>4.5?' stroke="#3b3a35" stroke-opacity=".35"':'')+'/>'}}
- else if(!P){for(let j=0;j<260;j++){const x=cx-hw+rnd(i*97+j,66)*hw*2,y=cy-hh+rnd(i*97+j,67)*hh*2;g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="1" fill="'+rk.gc[1]+'" opacity=".75"/>'}}
- return g}
-function rock6(i,cx,cy,r,o){o=o||{};const rk=ROCKS[i],P=rockPoly6(i,cx,cy,r);let g='<path d="'+P2(P)+'" fill="'+rk.bg+'" stroke="#3b3a35" stroke-width="2.5" stroke-linejoin="round"/>'+(o.plain?'':grains(rk,i,P,cx,cy,r*1.2,r*.9,r/68,300));
- if(o.hl)g+='<path d="'+P2(rockPoly6(i,cx,cy,r+12))+'" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
- if(o.stk)g+='<g'+(o.stkAnim?an('lb-a-pop',.2+i*.12):'')+'>'+chip(cx-r*.85,cy-r*.62,i+1,Math.max(13,r*.25))+'</g>';
- return g}
-const R6POS=[0,1,2,3,4,5].map(i=>[230+(i%3)*250,200+Math.floor(i/3)*160]);
-function paper6(o){o=o||{};let g=bgTop()+(o.nopaper?'':'<g'+(o.paperAnim?an('lb-a-slide',0,'--dx:-900px'):'')+'><rect x="96" y="108" width="780" height="340" rx="6" fill="var(--w-shadow)"/><rect x="90" y="100" width="780" height="340" rx="6" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2"/></g>');
- R6POS.forEach((p,i)=>{g+=rock6(i,p[0],p[1],64,{stk:o.stk,stkAnim:o.stkAnim,hl:o.hl===i,plain:o.plain})});return g}
-/* 돋보기 속 모습(3배) */
-function loupeView(i,cx,cy,R){const rk=ROCKS[i],id='lp'+i+'r'+R;
- return '<clipPath id="'+id+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+R+'"/></clipPath><circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="'+rk.bg+'"/><g clip-path="url(#'+id+')">'+grains(rk,i+40,null,cx,cy,R,R,2.8,420)+'</g>'+
- '<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="none" stroke="#2B3445" stroke-width="12"/><path d="M'+(cx+R*.72)+' '+(cy+R*.72)+' L'+(cx+R*1.05)+' '+(cy+R*1.05)+'" stroke="#6B4A2B" stroke-width="22" stroke-linecap="round"/>'}
-const R6S=[0,1,2,3,4,5].map(i=>[140+(i%2)*150,130+Math.floor(i/2)*130]);
-function loupeScene(i,o){o=o||{};let g=bgTop()+'<rect x="50" y="62" width="380" height="410" rx="6" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2"/>';
- R6S.forEach((p,j)=>{g+=rock6(j,p[0],p[1],46,{stk:1,hl:j===i})});
- if(i==null)g+='<circle cx="690" cy="260" r="170" fill="var(--w-label)" fill-opacity=".5" stroke="#2B3445" stroke-width="12" stroke-dasharray="18 12"/>'+qmark(690,260);
- else g+='<g'+(o.anim?an('lb-a-pop',0):'')+'>'+loupeView(i,690,255,165)+'</g>'+mini(690,470,RN(i),20);
- return g}
-/* 세 상자로 나누기(f: 퇴적암마다 고른 칸 0 작은 것 · 1 중간인 것 · 2 큰 것) */
-function sortBoxes(f,boxes){let g=bgTop();const B=['작은 것','중간인 것','큰 것'];
- if(boxes){B.forEach((b,j)=>{const x=40+j*300;g+='<rect x="'+x+'" y="230" width="280" height="240" rx="16" fill="var(--w-paper)" stroke="var(--w-felt-s)" stroke-width="2.5"'+(boxes==='a'?an('lb-a-pop',j*.15):'')+'/><text x="'+(x+140)+'" y="268" text-anchor="middle" font-size="26" font-weight="800" fill="#141A26">'+b+'</text>'})}
- const slot=[0,0,0],top=[];ROCKS.forEach((r,i)=>{const v=f?f[i]:null;if(boxes&&v!=null&&v>=0){const n=slot[v]++;g+=rock6(i,40+v*300+55+n*85,380,40,{stk:1})}else top.push(i)});
- top.forEach((i,j)=>{g+=rock6(i,480-(top.length-1)*75+j*150,120,44,{stk:1})});
- return g}
-
-/* ───────── 실험 4: 화석(원본 u1-4의 그림을 옮김) ───────── */
-function slab(w,h,c){return '<rect width="'+w+'" height="'+h+'" rx="14" fill="'+(c||'#b9b2a4')+'" stroke="#7d7465" stroke-width="3"/><path d="M14 '+(h*.7)+' q40 -8 80 4 M'+(w*.55)+' 20 q30 6 60 -4" stroke="#a49b8c" stroke-width="2" fill="none"/>'}
-const FOSSIL={
- trilobite:()=>{let s='<path d="M100 22 C60 22 52 50 56 62 L144 62 C148 50 140 22 100 22Z" fill="#7a7062" stroke="#4a4239" stroke-width="2.5"/><path d="M60 62 C62 110 84 132 100 134 C116 132 138 110 140 62Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/>';
-  for(let i=0;i<9;i++){const y=68+i*7,w=40-i*2.6;s+='<path d="M'+(100-w-2)+' '+y+' Q100 '+(y+3)+' '+(100+w+2)+' '+y+'" stroke="#4a4239" stroke-width="2" fill="none"/>'}
-  return s+'<path d="M88 62 C86 100 92 126 100 132 C108 126 114 100 112 62" fill="#9a9184" stroke="#4a4239" stroke-width="2"/><circle cx="80" cy="46" r="5" fill="#4a4239"/><circle cx="120" cy="46" r="5" fill="#4a4239"/>'},
- fern:()=>{let s='<path d="M60 140 Q100 80 150 14" stroke="#4a4239" stroke-width="4" fill="none"/>';
-  for(let i=0;i<9;i++){const t=i/9,x=60+t*90-((1-t)*6),y=140-t*126+(t*t*10),L=26*(1-t*.6);
-   s+='<path d="M'+x+' '+y+' q'+(-L*.6)+' '+(-L*.2)+' '+(-L)+' '+(-L*.6)+' q'+(L*.5)+' '+(L*.1)+' '+L+' '+(L*.6)+'Z" fill="#6d6457" stroke="#4a4239" stroke-width="1.5"/><path d="M'+x+' '+y+' q'+(L*.7)+' '+(L*.05)+' '+(L*1.1)+' '+(-L*.3)+' q'+(-L*.5)+' '+(-L*.2)+' '+(-L*1.1)+' '+(L*.3)+'Z" fill="#6d6457" stroke="#4a4239" stroke-width="1.5"/>'}return s},
- fish:()=>{let s='<path d="M30 76 C60 40 130 42 158 72 C130 104 60 108 30 76Z" fill="#9a9184" stroke="#4a4239" stroke-width="2.5"/><path d="M156 72 L188 46 L182 74 L188 102Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/><path d="M40 76 H160" stroke="#3d362f" stroke-width="3.5"/>';
-  for(let i=0;i<12;i++){const x=58+i*8;s+='<path d="M'+x+' 76 l-6 -'+(18-Math.abs(i-5))+' M'+x+' 76 l-6 '+(18-Math.abs(i-5))+'" stroke="#4a4239" stroke-width="1.6"/>'}
-  return s+'<circle cx="44" cy="70" r="5" fill="#3d362f"/><path d="M96 44 l14 -14 l6 16Z M100 106 l12 12 l4 -14Z" fill="#8a8174" stroke="#4a4239" stroke-width="2"/>'},
- ammonite:()=>{let d='M100 75';for(let a=0;a<=12.4;a+=.2){const r=3+a*4.4;d+=' L'+(100+Math.cos(a)*r).toFixed(1)+' '+(75+Math.sin(a)*r).toFixed(1)}
-  let s='<circle cx="100" cy="75" r="62" fill="#8a8174" stroke="#4a4239" stroke-width="3"/><path d="'+d+'" fill="none" stroke="#4a4239" stroke-width="3"/>';
-  for(let i=0;i<36;i++){const a=i/36*Math.PI*2;s+='<path d="M'+(100+Math.cos(a)*44).toFixed(1)+' '+(75+Math.sin(a)*44).toFixed(1)+' L'+(100+Math.cos(a)*60).toFixed(1)+' '+(75+Math.sin(a)*60).toFixed(1)+'" stroke="#4a4239" stroke-width="2"/>'}return s},
- ginkgo:()=>{let s='<path d="M100 132 L100 92" stroke="#4a4239" stroke-width="4"/><path d="M100 94 C66 92 36 64 42 30 C70 18 130 18 158 30 C164 64 134 92 100 94Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/><path d="M100 30 L100 60" stroke="#b9b2a4" stroke-width="4"/>';
-  for(let i=0;i<11;i++){const a=Math.PI*(1.12+i*.076);s+='<path d="M100 94 L'+(100+Math.cos(a)*68).toFixed(1)+' '+(94+Math.sin(a)*68).toFixed(1)+'" stroke="#4a4239" stroke-width="1.2" opacity=".7"/>'}return s},
- bird:()=>{let s='';[[50,110,-10],[95,70,10],[140,32,-8]].forEach(([x,y,r])=>{s+='<g transform="translate('+x+' '+y+') rotate('+(r+25)+')" stroke="#4a4239" stroke-width="5" stroke-linecap="round" fill="none"><path d="M0 0 L0 -26 M0 0 L-18 -18 M0 0 L18 -18 M0 0 L0 8"/></g>'});return s}};
-function fossil(kind){return slab(200,150)+FOSSIL[kind]()}
-const F6POS=[0,1,2,3,4,5].map(i=>[150+(i%3)*250,128+Math.floor(i/3)*170]);
-function fosAt(i,x,y,s,o){o=o||{};let g='<g transform="translate('+x+' '+y+') scale('+s+')">'+fossil(FOS[i].k)+'</g>';
- if(o.hl)g+='<rect x="'+(x-10)+'" y="'+(y-10)+'" width="'+(200*s+20)+'" height="'+(150*s+20)+'" rx="16" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';return g}
-function paperF(o){o=o||{};let g=bgTop()+(o.nopaper?'':'<g'+(o.paperAnim?an('lb-a-slide',0,'--dx:-900px'):'')+'><rect x="96" y="98" width="790" height="390" rx="6" fill="var(--w-shadow)"/><rect x="90" y="90" width="790" height="390" rx="6" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2"/></g>');
- if(o.nofos)return g;
- FOS.forEach((f,i)=>{const p=F6POS[i];g+='<g'+(o.anim?an('lb-a-pop',.3+i*.12):'')+'>'+fosAt(i,p[0]+18,p[1]+4,.82,{hl:o.hl===i})+'</g>'+(o.noname?'':mini(p[0]+100,p[1]+150,f.n,17))});return g}
-const F6S=[0,1,2,3,4,5].map(i=>[70+(i%2)*170,80+Math.floor(i/2)*130]);
-function fosLoupe(i,o){o=o||{};let g=bgTop()+'<rect x="50" y="62" width="380" height="410" rx="6" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2"/>';
- F6S.forEach((p,j)=>{g+=fosAt(j,p[0],p[1],.7,{hl:j===i})});
- if(i==null)return g+'<circle cx="690" cy="260" r="170" fill="var(--w-label)" fill-opacity=".5" stroke="#2B3445" stroke-width="12" stroke-dasharray="18 12"/>'+qmark(690,260);
- const id='fl'+i;g+='<g'+(o.anim?an('lb-a-pop',0):'')+'><clipPath id="'+id+'"><circle cx="690" cy="255" r="165"/></clipPath><circle cx="690" cy="255" r="165" fill="#b9b2a4"/><g clip-path="url(#'+id+')"><g transform="translate(690 255) scale(1.9) translate(-100 -75)">'+fossil(FOS[i].k)+'</g></g>'+
-  '<circle cx="690" cy="255" r="165" fill="none" stroke="#2B3445" stroke-width="12"/><path d="M809 374 L863 428" stroke="#6B4A2B" stroke-width="22" stroke-linecap="round"/></g>'+mini(690,470,FOS[i].n+' 화석',20);
- return g}
-/* 오늘날의 생물 그림(화석과 견주어 보는 그림) */
-const LIVE={
- trilobite:()=>'<g transform="translate(100 78)"><ellipse rx="70" ry="44" fill="#8C8A84" stroke="#4E4B45" stroke-width="3"/>'+[...Array(7)].map((_,i)=>'<path d="M'+(-56+i*18)+' -40 Q'+(-52+i*18)+' 0 '+(-56+i*18)+' 40" stroke="#4E4B45" stroke-width="2.5" fill="none"/>').join('')+'<path d="M-70 -6 q-26 -16 -34 -34 M-70 6 q-26 16 -34 34" stroke="#4E4B45" stroke-width="3" fill="none"/>'+[...Array(6)].map((_,i)=>'<path d="M'+(-42+i*16)+' 42 l-4 14 M'+(-42+i*16)+' -42 l-4 -14" stroke="#4E4B45" stroke-width="3"/>').join('')+'</g>',
- fern:()=>FOSSIL.fern().replace(/#6d6457/g,'#6DB04A').replace(/#4a4239/g,'#3F7A27'),
- fish:()=>'<path d="M30 76 C60 40 130 42 158 72 C130 104 60 108 30 76Z" fill="#E6A050" stroke="#A0602A" stroke-width="3"/><path d="M156 72 L188 46 L182 74 L188 102Z" fill="#E6A050" stroke="#A0602A" stroke-width="3"/><circle cx="48" cy="70" r="5" fill="#333"/><path d="M96 44 l14 -14 l6 16Z M100 106 l12 12 l4 -14Z" fill="#D88C3A" stroke="#A0602A" stroke-width="2"/>',
- ammonite:()=>{let d='M120 70';for(let a=0;a<=4*Math.PI*1.6;a+=.2){const r=2+a*3.6;d+=' L'+(120+Math.cos(a)*r).toFixed(1)+' '+(70+Math.sin(a)*r).toFixed(1)}
-  return '<path d="M30 118 Q40 100 70 104 L160 108 Q178 112 172 124 L40 126 Q26 124 30 118Z" fill="#D9B48C" stroke="#8C6A45" stroke-width="3"/><path d="M40 106 q-10 -24 -4 -40 M52 104 q-4 -24 6 -38" stroke="#8C6A45" stroke-width="3" fill="none"/><circle cx="120" cy="70" r="46" fill="#C98A5A" stroke="#7A4E2C" stroke-width="3"/><path d="'+d+'" fill="none" stroke="#7A4E2C" stroke-width="3"/>'},
- ginkgo:()=>FOSSIL.ginkgo().replace(/#8a8174/g,'#F2C94C').replace(/#4a4239/g,'#A57F12').replace(/#b9b2a4/g,'#F7E08A'),
- bird:()=>'<rect width="200" height="150" rx="14" fill="#EBD9AE" stroke="#C9A96A" stroke-width="3"/>'+FOSSIL.bird().replace(/#4a4239/g,'#9C7A3E')};
-function likeScene(i,o){o=o||{};let g=bgTop();if(i==null){g+=fosAt(0,130,150,1.5,{})+'<rect x="530" y="150" width="300" height="225" rx="16" fill="var(--w-label)" fill-opacity=".5" stroke="var(--w-felt-s)" stroke-width="3" stroke-dasharray="12 8"/>'+qmark(680,262);return g}
- const k=FOS[i].k;g+=fosAt(i,130,150,1.5,{})+mini(280,420,FOS[i].n+' 화석',20);
- g+='<g'+(o.anim?an('lb-a-pop',.2):'')+'><rect x="526" y="146" width="308" height="233" rx="18" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2.5"/><g transform="translate(530 150) scale(1.5)">'+LIVE[k]()+'</g></g>'+mini(680,420,'오늘날의 생물',20);
- return g}
-/* 몸인지 자국인지 두 상자 */
-function kindBoxes(f,boxes){let g=bgTop();const B=['생물의 몸','생물이 남긴 자국'];
- if(boxes)B.forEach((b,j)=>{const x=60+j*440;g+='<rect x="'+x+'" y="200" width="400" height="290" rx="16" fill="var(--w-paper)" stroke="var(--w-felt-s)" stroke-width="2.5"'+(boxes==='a'?an('lb-a-pop',j*.15):'')+'/><text x="'+(x+200)+'" y="238" text-anchor="middle" font-size="26" font-weight="800" fill="#141A26">'+b+'</text>'});
- const slot=[0,0],top=[];FOS.forEach((x,i)=>{const v=f?f[i]:null;if(boxes&&v!=null){const n=slot[v]++;g+=fosAt(i,60+v*440+20+(n%3)*124,262+Math.floor(n/3)*104,.56,{})}else top.push(i)});
- top.forEach((i,j)=>{g+=fosAt(i,480-(top.length)*68+j*136,40,.6,{})});
- return g}
-
-/* ───────── 실험 5: 화석 모형(옆에서 본 실험대) ───────── */
-function shell(cx,cy,w,o){o=o||{};const h=w*.86,f=o.fill||'#f3e6cf',st=o.st||'#a08460';let s='<g transform="translate('+cx+' '+cy+')">';
- s+='<rect x="'+(-w*.22)+'" y="'+(h*.3)+'" width="'+(w*.44)+'" height="'+(h*.16)+'" rx="3" fill="'+f+'" stroke="'+st+'" stroke-width="2"/>';
- s+='<path d="M0 '+(h*.42)+' L'+(-w*.48)+' '+(-h*.04)+' Q'+(-w*.52)+' '+(-h*.52)+' 0 '+(-h*.5)+' Q'+(w*.52)+' '+(-h*.52)+' '+(w*.48)+' '+(-h*.04)+'Z" fill="'+f+'" stroke="'+st+'" stroke-width="'+(o.sw||2.5)+'" stroke-linejoin="round"/>';
- for(let i=-3;i<=3;i++){const a=i/3.6,ex=Math.sin(a)*w*.46,ey=-h*.08-Math.cos(a)*h*.4;s+='<path d="M0 '+(h*.4)+' L'+ex.toFixed(1)+' '+ey.toFixed(1)+'" stroke="'+st+'" stroke-width="1.6"/>'}
- return s+'</g>'}
-const BW={x:300,w:360,t:230,b:410},CLAYH=70;
-/* 그릇 속. o: bag clay imp water plaster(0~1) hard lift */
-function bowlArt(o){o=o||{};const x=BW.x,w=BW.w,t=BW.t,b=BW.b,ct=b-CLAYH;let g=shadow(x+w/2,b+6,w/2+10);
- g+='<path d="M'+x+' '+t+' L'+(x+14)+' '+b+' L'+(x+w-14)+' '+b+' L'+(x+w)+' '+t+'" fill="var(--w-glass)"/>';
- let c='';
- if(o.bag)c+='<path d="M'+(x-10)+' '+(t-24)+' L'+(x+16)+' '+(b-3)+' L'+(x+w-16)+' '+(b-3)+' L'+(x+w+10)+' '+(t-24)+'" fill="#e9f4fb" fill-opacity=".45" stroke="#9fb7c4" stroke-width="2"'+(o.bagAnim?an('lb-a-fade',0):'')+'/>';
- if(o.clay){c+='<g'+(o.clayAnim?' class="lb-a lb-a-hillup" style="animation-delay:.6s"':'')+'><path d="M'+(x+18)+' '+ct+' L'+(x+20)+' '+(b-5)+' L'+(x+w-20)+' '+(b-5)+' L'+(x+w-18)+' '+ct+'Z" fill="#9a7b5c"/>';
-  for(let j=0;j<5;j++)c+='<path d="M'+(x+40+j*60)+' '+(ct+16+(j%2)*18)+' q14 -4 28 0" stroke="#7f6449" stroke-width="2" fill="none"/>';c+='</g>'}
- if(o.imp)c+='<path d="M'+(480-40)+' '+ct+' Q480 '+(ct+26)+' '+(480+40)+' '+ct+'Z" fill="#6f563e"'+(o.impAnim?an('lb-a-fade',1):'')+'/>';
- if(o.water){const wt=ct-40;c+='<g'+(o.waterAnim?' class="lb-a lb-a-hillup"':'')+'><rect x="'+(x+16)+'" y="'+wt+'" width="'+(w-32)+'" height="'+(ct-wt)+'" fill="#8cc8ec" opacity="'+(o.plaster?.25:.6)+'"/></g>'}
- if(o.plaster){const pt=ct-44;c+='<g'+(o.plasterAnim?an('lb-a-fade',.8):'')+'><rect x="'+(x+16)+'" y="'+pt+'" width="'+(w-32)+'" height="'+(ct-pt)+'" fill="#f2f2ee" opacity="'+(o.hard?1:.82)+'"/>'+(o.imp?'<path d="M'+(480-40)+' '+ct+' Q480 '+(ct+26)+' '+(480+40)+' '+ct+'Z" fill="#f2f2ee" opacity="'+(o.hard?1:.82)+'"/>':'')+(o.hard?'':'<path d="M'+(x+30)+' '+(pt+8)+' q20 -6 40 0 t40 0 t40 0 t40 0 t40 0 t40 0 t40 0" stroke="#d4d4cc" stroke-width="2" fill="none"/>')+'</g>';
-  if(o.plasterAnim)for(let j=0;j<22;j++)c+='<circle cx="'+(x+60+(j*37)%(w-120))+'" cy="'+(t-60+(j*29)%80)+'" r="3" fill="#FFFFFF" stroke="#BBBBBB"'+an('lb-a-drop',.05+(j%7)*.1)+'/>'}
- g+=o.lift?'<g transform="translate(0 -170)"><g'+(o.liftAnim?an('lb-a-raise',0,'--from:170px'):'')+'>'+c+'</g></g>':c;
- g+='<path d="M'+x+' '+t+' L'+(x+14)+' '+b+' L'+(x+w-14)+' '+b+' L'+(x+w)+' '+t+'" fill="none" stroke="#7a8c96" stroke-width="5"/><path d="M'+(x+14)+' '+(t+14)+' L'+(x+22)+' '+(t+100)+'" stroke="#FFFFFF" stroke-width="5" opacity=".55" stroke-linecap="round"/>';
- return g}
-/* 조개껍데기를 눌렀다 떼기(손가락 + 조개) */
-function pressArt(anim){const ct=BW.b-CLAYH;return '<g'+(anim?an('lb-a-press',0,'--dy:'+(ct-150)+'px'):'')+'>'+shell(480,150-28,80)+'<g transform="translate(480 80)"><rect x="-16" y="-60" width="32" height="64" rx="12" fill="#F2C6A0" stroke="#B9875F" stroke-width="2.5"/></g></g>'}
-/* 떼어 낸 두 조각(위에서 비스듬히 본 모습): 찰흙의 오목한 자국 · 석고의 볼록한 모양 */
-function piecesArt(o){o=o||{};let g='';const A=o.anim;
- g+='<g'+(A?an('lb-a-slide',0,'--dx:120px'):'')+'><rect x="150" y="250" width="280" height="150" rx="12" fill="#9a7b5c" stroke="#6e5640" stroke-width="3"/><rect x="150" y="380" width="280" height="30" rx="8" fill="#7f6449"/>'+
-  shell(290,320,100,{fill:'#6f563e',st:'#4e3a28'})+'<path d="M245 284 Q290 268 335 284" stroke="#4e3a28" stroke-width="5" fill="none" opacity=".7"/></g>';
- g+='<g'+(A?an('lb-a-slide',0,'--dx:-120px'):'')+'><rect x="530" y="250" width="280" height="150" rx="12" fill="#f2f2ee" stroke="#a9a9a2" stroke-width="3"/><rect x="530" y="380" width="280" height="30" rx="8" fill="#dcdcd4"/>'+
-  '<ellipse cx="676" cy="356" rx="54" ry="12" fill="rgba(0,0,0,.18)"/>'+shell(670,316,100,{fill:'#FFFFFF',st:'#8d8d8d'})+'<path d="M626 290 Q670 276 714 290" stroke="#FFFFFF" stroke-width="5" fill="none"/></g>';
- if(!o.nolab)g+=mini(290,452,'찰흙',20)+mini(670,452,'석고',20);
- return g}
-function openSpot(){const c=UI.mq.cur;if(c==='oc')return [290,320,62,1.8,730,140];if(c==='op')return [670,316,62,1.8,230,140];return null}
-/* 조개 화석 표본(실제) */
-function realShell(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')">'+slab(200,150,'#9b9384')+shell(100,75,90,{fill:'#c8bfae',st:'#5e574c'})+'</g>'}
-function modelShell(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><rect width="200" height="150" rx="14" fill="#f2f2ee" stroke="#a9a9a2" stroke-width="3"/><ellipse cx="104" cy="114" rx="46" ry="10" fill="rgba(0,0,0,.16)"/>'+shell(100,75,90,{fill:'#FFFFFF',st:'#8d8d8d'})+'</g>'}
+function gearArt(on,anim){
+ if(!on)return coat(330,250,1.4)+goggles(520,140,1.3)+'<g transform="translate(640 290) scale(1.4)">'+lglove(-14,-10,-60,.75)+lglove(22,8,-60,.75)+'</g>'+qmark(480,90);
+ return '<g'+(anim?an('lb-a-up',0,'--from:100px'):'')+'><circle cx="480" cy="116" r="38" fill="#F2C6A0" stroke="#B9875F" stroke-width="3"/>'+goggles(480,108,.92)+coat(480,262,1.75)+lglove(330,240,-70,1.4)+lglove(630,240,-110,1.4)+'</g>'}
 function clockArt(x,y,anim){return '<g transform="translate('+x+' '+y+')"><circle r="46" fill="#FFFFFF" stroke="#2A3342" stroke-width="5"/>'+[...Array(12)].map((_,i)=>{const a=i/12*Math.PI*2;return '<path d="M'+(Math.sin(a)*36).toFixed(1)+' '+(-Math.cos(a)*36).toFixed(1)+' L'+(Math.sin(a)*41).toFixed(1)+' '+(-Math.cos(a)*41).toFixed(1)+'" stroke="#2A3342" stroke-width="3"/>'}).join('')+
  '<path d="M0 0 V-24" stroke="#2A3342" stroke-width="5" stroke-linecap="round"/><g><path d="M0 0 L0 -34"'+(anim?' class="lb-a lb-a-spin"':'')+' stroke="#C2410C" stroke-width="4" stroke-linecap="round"/></g><circle r="5" fill="#2A3342"/></g>'}
+/* 두 단계로 바뀌는 그림(앞 절반 → 뒤 절반) */
+const PH1=d=>' class="lb-a lb-a-ph1" style="animation-duration:'+(d||1.6)+'s"',PH2=d=>' class="lb-a lb-a-ph2" style="animation-duration:'+(d||1.6)+'s"';
+
+/* ───────── 알갱이(원본 u1-2의 stone을 옮김: 모양이 고르지 않은 다각형) ───────── */
+const SANDC=['#C9A06A','#E1C48A','#9A8F84','#555555','#B07A4A'],GRAVC=['#8A7765','#9A9A9A','#5A524A','#A0673A'];
+function stone(x,y,r,c,k){const n=6+(k%3),pts=[];for(let i=0;i<n;i++){const a=i/n*Math.PI*2,rr=r*(.72+rnd(k,i)*.4);pts.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr*.82])}
+ return '<path d="'+P2(pts)+'" fill="'+c+'" stroke="#3B2F25" stroke-width="'+Math.max(.6,r/10).toFixed(1)+'" stroke-linejoin="round"/>'}
+/* 소금 알갱이(하얀색, 모양이 일정하지 않음) */
+function salt(x,y,r,k){const n=4+(k%3),pts=[];for(let i=0;i<n;i++){const a=i/n*Math.PI*2+rnd(k,9),rr=r*(.75+rnd(k,i)*.35);pts.push([x+Math.cos(a)*rr,y+Math.sin(a)*rr])}
+ return '<path d="'+P2(pts)+'" fill="#FBFBF8" stroke="#8C949C" stroke-width="'+Math.max(.6,r/9).toFixed(1)+'" stroke-linejoin="round"/>'}
+/* 그릇에 담긴 알갱이 무더기(옆에서 본 모습). kind: sand gravel mix salt saltsand */
+function pile(cx,b,w,kind,seed){let g='';const h=w*.32,col={sand:'#D9B97F',gravel:'#9C8C78',mix:'#CDAE7A',salt:'#F4F2EC',saltsand:'#D8C4A0'}[kind];
+ g+='<path d="M'+(cx-w/2)+' '+b+' Q'+cx+' '+(b-h*2)+' '+(cx+w/2)+' '+b+'Z" fill="'+col+'" stroke="'+(kind==='salt'?'#A8AEB4':'#8A6E46')+'" stroke-width="2"/>';
+ const inP=(x,y)=>{const t=(x-cx)/(w/2);return y<b-2&&y>b-h*(1-t*t)+2};
+ if(kind!=='gravel'&&kind!=='salt')for(let i=0;i<70;i++){const x=cx-w/2+rnd(i,seed)*w,y=b-rnd(i,seed+1)*h;if(inP(x,y))g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="1.6" fill="'+SANDC[i%5]+'"/>'}
+ if(kind==='salt'||kind==='saltsand')for(let i=0;i<34;i++){const x=cx-w/2+rnd(i,seed+3)*w,y=b-rnd(i,seed+4)*h;if(inP(x,y))g+=salt(x,y,2.6,i)}
+ if(kind==='gravel'||kind==='mix')for(let i=0;i<(kind==='gravel'?16:9);i++){const x=cx-w*.36+rnd(i,seed+5)*w*.72,y=b-4-rnd(i,seed+6)*h*.75;if(inP(x,y-3)||kind==='gravel')g+=stone(x,y,7+rnd(i,seed+7)*4,GRAVC[i%4],i)}
+ return g}
+/* 유리 그릇(옆에서 본 모습) */
+function bowl(cx,b,w,inner){const h=w*.36;return shadow(cx,b+4,w/2+8)+(inner||'')+'<path d="M'+(cx-w/2-6)+' '+(b-h)+' Q'+(cx-w/2)+' '+b+' '+(cx-w/4)+' '+b+' H'+(cx+w/4)+' Q'+(cx+w/2)+' '+b+' '+(cx+w/2+6)+' '+(b-h)+'" fill="var(--w-glass)" stroke="var(--w-glass-s)" stroke-width="3"/>'}
+
+/* ───────── 실험 1: 모래와 자갈 ───────── */
+function mixScene(o){o=o||{};const done=!!o.done,a=!!o.anim;let g=bg({});
+ g+=bowl(240,410,150,done&&!a?'':'<g'+(a?an('lb-a-out',.5):'')+'>'+pile(240,404,124,'sand',1)+'</g>');
+ g+=bowl(720,410,150,done&&!a?'':'<g'+(a?an('lb-a-out',.5):'')+'>'+pile(720,404,124,'gravel',2)+'</g>');
+ g+=bowl(480,410,200,done?'<g'+(a?an('lb-a-fade',.9):'')+'>'+pile(480,404,170,'mix',3)+'</g>':'');
+ if(a)g+='<g'+an('lb-a-fade',1)+'>'+'<path d="M470 250 L520 360" stroke="#7A5A3A" stroke-width="6" stroke-linecap="round"/></g>';
+ g+=mini(240,452,'모래',18)+mini(720,452,'자갈',18);return g}
+/* 돋보기 속(같은 배율): w 's' 모래 · 'g' 자갈 */
+function loupeIn(w,cx,cy,R){let g='';
+ if(w==='s')for(let i=0;i<60;i++){const x=cx-R+rnd(i,6)*2*R,y=cy-R+rnd(i,7)*2*R;if(Math.hypot(x-cx,y-cy)<R-12)g+=stone(x,y,7+rnd(i,8)*3,SANDC[i%5],i+40)}
+ if(w==='g')[[-52,-40],[30,-46],[-46,42],[40,40],[-4,0]].forEach((p,i)=>{g+=stone(cx+p[0],cy+p[1],26+rnd(i,9)*8,GRAVC[i%4],i+70)});
+ if(w==='salt')for(let i=0;i<40;i++){const x=cx-R+rnd(i,16)*2*R,y=cy-R+rnd(i,17)*2*R;if(Math.hypot(x-cx,y-cy)<R-14)g+=salt(x,y,8+rnd(i,18)*5,i)}
+ if(w==='sand3')for(let i=0;i<40;i++){const x=cx-R+rnd(i,26)*2*R,y=cy-R+rnd(i,27)*2*R;if(Math.hypot(x-cx,y-cy)<R-14)g+=stone(x,y,7+rnd(i,28)*6,['#A0673A','#B07A4A','#8A5A34','#C08A5A'][i%4],i+90)}
+ return g}
+function lookCircle(cx,cy,R,inner,from,cap){const id='lbLp'+cx+'x'+cy;let g='';
+ if(from)g+='<path d="M'+from[0]+' '+from[1]+' L'+(cx-R*.8)+' '+(cy+R*.4)+'" stroke="#56627A" stroke-width="3" stroke-dasharray="7 7"/>';
+ g+='<clipPath id="'+id+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+R+'"/></clipPath><circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="#FFFDF8"/><g clip-path="url(#'+id+')">'+inner+'</g>';
+ g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="none" stroke="#2B3445" stroke-width="9"/><path d="M'+(cx+R*.72)+' '+(cy+R*.72)+' l52 52" stroke="#6B4A2B" stroke-width="18" stroke-linecap="round"/>';
+ if(cap)g+=mini(cx,cy-R-22,cap,19);return g}
+function loupeScene1(w,anim){let g=bg({})+bowl(260,410,200,pile(260,404,170,'mix',3));
+ if(!w)return g+magnifier(560,300,1.6,-20);
+ return g+'<g'+(anim?an('lb-a-pop',0):'')+'>'+lookCircle(640,220,150,loupeIn(w,640,220,150),[300,340],w==='s'?'돋보기로 본 모래':'돋보기로 본 자갈')+'</g>'}
+/* 체(위에서 본 모습): 눈의 간격 sp — ㉮ 4 · ㉯ 11 (이 실험관에서 정한 값) */
+const SV={a:{x:250,sp:4},b:{x:710,sp:11},y:330,r:110};
+function sieveTop(k){const s=SV[k],x=s.x,y=SV.y,r=SV.r,id='lbSv'+k;let g=shadow(x,y+r+10,r);
+ g+='<circle cx="'+x+'" cy="'+y+'" r="'+(r+12)+'" fill="#C9D1D9" stroke="#59636E" stroke-width="4"/><clipPath id="'+id+'"><circle cx="'+x+'" cy="'+y+'" r="'+r+'"/></clipPath><circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#FFFDF8"/><g clip-path="url(#'+id+')" stroke="#59636E" stroke-width="1.5">';
+ for(let a=x-r;a<=x+r;a+=s.sp)g+='<path d="M'+a.toFixed(1)+' '+(y-r)+' V'+(y+r)+'"/>';
+ for(let b=y-r;b<=y+r;b+=s.sp)g+='<path d="M'+(x-r)+' '+b.toFixed(1)+' H'+(x+r)+'"/>';
+ g+='</g>';
+ /* 견주어 보도록 놓은 모래 한 알 · 자갈 한 알 */
+ g+=stone(x-14,y+4,2.2,'#B07A4A',3)+stone(x+16,y+2,9,'#8A7765',5);
+ return g+mini(x,y-r-30,k==='a'?'㉮ 체':'㉯ 체',20)}
+function sieveSpot(){const c=UI.mq.cur;const k=c==='va'?'a':c==='vb'?'b':null;if(!k)return null;return [SV[k].x+2,SV.y+3,30,4,480,150]}
+function sieveScene(){return bgTop()+sieveTop('a')+sieveTop('b')}
+/* 체로 거르기(옆에서): n = 흔든 횟수(0~2), poured 부었는지, anim 지금 하는 행동 */
+function sieveSide(o){o=o||{};const n=o.n||0,an1=o.anim;let g=bg({});
+ /* 쟁반 */
+ g+=shadow(480,420,250)+'<path d="M230 392 H730 L716 416 H244Z" fill="#9FB6C2" stroke="#59636E" stroke-width="3"/>';
+ const fell=o.poured?[0,.55,1][Math.min(2,n)]:0;
+ /* 쟁반에 떨어진 모래 */
+ if(fell>0)g+=pile(480,394,280*Math.sqrt(fell),'sand',8);
+ /* 체(옆) */
+ let sv='<path d="M300 232 H660 L640 310 H320Z" fill="#EEF3F6" fill-opacity=".85" stroke="#59636E" stroke-width="4"/><path d="M322 308 H638" stroke="#59636E" stroke-width="6" stroke-dasharray="2 6"/><rect x="292" y="224" width="376" height="14" rx="5" fill="#9AA3AD" stroke="#59636E" stroke-width="3"/>';
+ if(o.poured){const left=1-fell;sv+='<g>'+(left>0?pile(480,306,300*Math.max(.35,Math.sqrt(left)),'sand',9):'')+'</g>';for(let i=0;i<12;i++)sv+=stone(350+rnd(i,3)*260,292-rnd(i,4)*18,9+rnd(i,5)*5,GRAVC[i%4],i)}
+ sv+=lglove(276,250,-20,1.1)+lglove(684,250,200,1.1);
+ const jig=an1==='s2'||an1==='s3';
+ g+='<g'+(jig?an('lb-a-jig',0):'')+'>'+sv+'</g>';
+ if(jig)for(let j=0;j<18;j++)g+='<circle cx="'+(340+(j*37)%280)+'" cy="'+(330+(j*13)%40)+'" r="2" fill="'+SANDC[j%5]+'"'+an('lb-a-drop',.1+(j%6)*.15,'--from:-40px')+'/>';
+ /* 붓는 그릇 */
+ if(!o.poured&&an1!=='s1')g+=bowl(820,410,150,pile(820,404,124,'mix',3));
+ if(an1==='s1'){g+='<g'+an('lb-a-fade',0)+'><g transform="translate(640 170) rotate(-60)">'+bowl(0,0,150,pile(0,-6,124,'mix',3))+'</g></g>';
+  for(let j=0;j<14;j++)g+='<circle cx="'+(560+(j*23)%80)+'" cy="'+(210+(j*29)%70)+'" r="'+(j%4?2:6)+'" fill="'+(j%4?SANDC[j%5]:GRAVC[j%4])+'"'+an('lb-a-drop',.2+(j%5)*.15,'--from:-50px')+'/>'}
+ return g}
+
+/* ───────── 실험 2: 물과 기름(옆에서 본 비커) ───────── */
+const LV={b:410,wT:290,oilT:260};
+/* 비커: cx 가운데, b 바닥, w 너비, h 높이, water(물 높이 px), oil(기름 두께 px), cloud(0 없음 · 1 살살 · 2 세게), lab 눈금 */
+function beakerS(cx,b,w,h,o){o=o||{};const x=cx-w/2,t=b-h;let g=shadow(cx,b+4,w/2+10);
+ const wt=b-(o.water||0),ot=wt-(o.oil||0);
+ if(o.water)g+='<rect x="'+(x+3)+'" y="'+wt+'" width="'+(w-6)+'" height="'+(b-wt-3)+'" fill="#CDEBFA" fill-opacity=".85"/>';
+ if(o.oil>0)g+='<rect x="'+(x+3)+'" y="'+ot+'" width="'+(w-6)+'" height="'+(o.oil+.5)+'" fill="#F2C94C" fill-opacity=".92"/><path d="M'+(x+3)+' '+wt+' H'+(x+w-3)+'" stroke="#C99A1E" stroke-width="1.5"/>';
+ if(o.cloud){const N=o.cloud===2?46:14;g+='<g>';for(let i=0;i<N;i++){const px=x+10+rnd(i,o.cloud)*(w-20),py=ot+6+rnd(i,o.cloud+3)*((b-ot)-12);g+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="'+(o.cloud===2?2.5+rnd(i,7)*2.5:5+rnd(i,7)*5).toFixed(1)+'" fill="#F2C94C" fill-opacity=".9"/>'}g+='</g>';
+  if(o.cloud===2)g+='<rect x="'+(x+3)+'" y="'+ot+'" width="'+(w-6)+'" height="'+(b-ot-3)+'" fill="#F6E7B0" fill-opacity=".45"/>'}
+ if(o.inner)g+=o.inner;
+ g+='<path d="M'+x+' '+(t-4)+' L'+x+' '+(b-8)+' Q'+x+' '+b+' '+(x+8)+' '+b+' H'+(x+w-8)+' Q'+(x+w)+' '+b+' '+(x+w)+' '+(b-8)+' V'+t+' L'+(x+w+8)+' '+(t-8)+'" fill="var(--w-glass)" stroke="var(--w-glass-s)" stroke-width="3.5"/>';
+ if(o.lab)for(let i=1;i<=4;i++){const yy=b-h*i/5;g+='<path d="M'+(x+w-4)+' '+yy+' h-14" stroke="#7F9BAB" stroke-width="2"/>'}
+ return g}
+function mainBeaker(cx,o){o=o||{};return beakerS(cx,LV.b,150,190,Object.assign({water:LV.b-LV.wT,oil:LV.wT-LV.oilT,lab:1},o))}
+function dropperArt(x,y,o){o=o||{};const fill=o.fill;return '<g transform="translate('+x+' '+y+')"><rect x="-6" y="-112" width="12" height="112" rx="5" fill="rgba(232,244,250,.85)" stroke="#7F9BAB" stroke-width="2.5"/>'+(fill?'<rect x="-4" y="-'+(fill==='w'?50:44)+'" width="8" height="'+(fill==='w'?48:42)+'" fill="'+(fill==='w'?'#9FD3F0':'#F2C94C')+'"/>':'')+'<rect x="-12" y="-150" width="24" height="44" rx="11" fill="#E06C3C" stroke="#A84A24" stroke-width="2"/></g>'}
+function eyeArt(x,y){return '<g transform="translate('+x+' '+y+')"><path d="M-26 0 Q0 -20 26 0 Q0 20 -26 0Z" fill="#FFFFFF" stroke="#2A3342" stroke-width="3"/><circle r="8" fill="#2A3342"/></g>'}
+function sideScene(on){let g=bg({})+mainBeaker(480);if(on)g+=eyeArt(250,LV.oilT+20)+'<path d="M282 '+(LV.oilT+20)+' H392" stroke="#56627A" stroke-width="3" stroke-dasharray="7 7"/>';return g}
+/* 흔들기: w 'soft'|'hard', ph 'anim'(흔드는 중) · 'pair'(바로 뒤 · 기다린 뒤) */
+function shakeScene(w,ph){let g=bg({});const c=w==='hard'?2:1;
+ if(ph==='anim'){g+='<g'+an('lb-a-jig',0,'--amp:'+(c===2?14:5)+'px;animation-iteration-count:'+(c===2?5:3))+'>'+mainBeaker(480,{cloud:c})+lglove(380,330,0,1.2)+'</g>';return g}
+ if(ph==='pair'){g+=mainBeaker(300,{cloud:c})+mainBeaker(660,{})+clockArt(480,180,0);g+=mini(300,452,'흔든 바로 뒤',18)+mini(660,452,'조금 기다린 뒤',18);return g}
+ return g+mainBeaker(480)}
+/* 스포이트로 옮기기: n 옮긴 횟수(0~4) */
+const oilAt=n=>Math.max(3,30*(1-n/4*.9));
+function dropScene(n,act){let g=bg({});const ot=oilAt(n);
+ g+=beakerS(360,LV.b,150,190,{water:LV.b-LV.wT,oil:ot,lab:1});
+ const got=Math.min(4,n)*6.5;g+=beakerS(680,LV.b,110,130,{water:0,oil:got,lab:1});g+=mini(680,452,'빈 비커(100 mL)',17);
+ const top=LV.wT-ot;
+ if(act==='dp'){g+='<g'+PH1(2)+'>'+dropperArt(360,top+12,{fill:'o'})+'</g><g'+PH2(2)+'>'+dropperArt(680,LV.b-150,{fill:'o'})+'<circle cx="680" cy="'+(LV.b-140)+'" r="4" fill="#F2C94C"'+an('lb-a-drop',1.1,'--from:-20px')+'/></g>'}
+ else if(act==='deep')g+='<g'+an('lb-a-down',0,'--from:-90px')+'>'+dropperArt(360,LV.b-20,{fill:'w'})+'</g>';
+ else g+=dropperArt(520,330,{});
+ return g}
+/* 흡착포: n 댄 횟수(0~4) */
+function padArt(x,y,yel,rot){return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+')"><rect x="-30" y="-8" width="60" height="16" rx="3" fill="'+(yel?'#F3D46A':'#FFFFFF')+'" stroke="'+(yel?'#B8901E':'#A8AEB4')+'" stroke-width="2"/></g>'}
+function tweezArt(x,y){return '<g transform="translate('+x+' '+y+')"><path d="M-4 0 L-14 -120 M4 0 L14 -120" stroke="#8C949C" stroke-width="6" stroke-linecap="round"/><path d="M-14 -120 L14 -120" stroke="#8C949C" stroke-width="6" stroke-linecap="round"/></g>'}
+function petri(cx,b,n){let g=shadow(cx,b+3,72)+'<path d="M'+(cx-70)+' '+(b-16)+' V'+b+' H'+(cx+70)+' V'+(b-16)+'" fill="var(--w-glass)" stroke="var(--w-glass-s)" stroke-width="3"/>';
+ for(let i=0;i<n;i++)g+=padArt(cx-30+(i%2)*40,b-6-Math.floor(i/2)*8,1,i%2?6:-5);return g}
+function padScene(n,act){let g=bg({});const ot=oilAt(n);
+ g+=beakerS(380,LV.b,150,190,{water:LV.b-LV.wT,oil:ot,lab:1});g+=petri(700,414,act==='pd'?n:n);g+=mini(700,452,'페트리 접시',17);
+ const top=LV.wT-ot;
+ if(act==='pd')g+='<g'+PH1(2.4)+'><g'+an('lb-a-down',0,'--from:-80px')+'>'+tweezArt(380,top-6)+padArt(380,top-2,0)+'<g'+an('lb-a-fade',.7)+'>'+padArt(380,top-2,1)+'</g></g></g><g'+PH2(2.4)+'>'+tweezArt(700,370)+padArt(700,376,1)+'</g>';
+ else g+=tweezArt(560,300)+padArt(560,306,0);
+ return g}
+
+/* ───────── 실험 3: 소금과 모래 ───────── */
+function loupeScene3(w,anim){let g=bg({})+bowl(260,410,200,pile(260,404,170,'saltsand',4));
+ if(!w)return g+magnifier(560,300,1.6,-20);
+ return g+'<g'+(anim?an('lb-a-pop',0):'')+'>'+lookCircle(640,220,150,loupeIn(w==='l1'?'salt':'sand3',640,220,150),[300,340],w==='l1'?'돋보기로 본 소금':'돋보기로 본 모래')+'</g>'}
+/* 물에 넣고 젓기: a 왼쪽(소금) b 오른쪽(모래) — 0 물만 · 1 넣고 젓는 중 · 2 저은 뒤 */
+function rodArt(x,y,rot){return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+')"><rect x="-4" y="-160" width="8" height="170" rx="4" fill="rgba(232,244,250,.9)" stroke="#7F9BAB" stroke-width="2"/></g>'}
+function meltBeaker(cx,k,st){let inner='';const x=cx-65,b=LV.b;
+ if(k==='salt'&&st===1)for(let i=0;i<16;i++)inner+='<g'+an('lb-a-out',.6+(i%5)*.12)+'>'+salt(x+20+rnd(i,4)*90,b-14-rnd(i,5)*90,4,i)+'</g>';
+ if(k==='sand'&&st>=1){inner+='<path d="M'+(x+4)+' '+(b-3)+' Q'+cx+' '+(b-24)+' '+(x+126)+' '+(b-3)+'Z" fill="#B88A5A"'+(st===1?an('lb-a-fade',.9):'')+'/>';for(let i=0;i<20;i++)inner+='<circle cx="'+(x+18+rnd(i,6)*94).toFixed(1)+'" cy="'+(b-6-rnd(i,7)*8).toFixed(1)+'" r="2.2" fill="'+SANDC[i%5]+'"/>';
+  if(st===1)for(let i=0;i<14;i++)inner+='<circle cx="'+(x+20+rnd(i,8)*90).toFixed(1)+'" cy="'+(b-60-rnd(i,9)*60).toFixed(1)+'" r="2.5" fill="#A0673A"'+an('lb-a-out',.5+(i%5)*.12)+'/>'}
+ let g=beakerS(cx,b,130,170,{water:120,lab:1,inner});
+ if(st===1)g+='<g'+an('lb-a-jig',0,'--amp:10px;animation-iteration-count:3')+'>'+rodArt(cx+10,b-10,8)+'</g>';
+ return g}
+function meltScene(a,b){let g=bg({})+meltBeaker(300,'salt',a)+meltBeaker(660,'sand',b);g+=mini(300,452,'소금을 넣은 물',17)+mini(660,452,'모래를 넣은 물',17);
+ if(!a)g+='<g transform="translate(300 230)"><path d="M-70 0 h50" stroke="#8C949C" stroke-width="6" stroke-linecap="round"/><ellipse cx="-12" cy="0" rx="14" ry="8" fill="#C9D1D9"/></g>';return g}
+/* 거름 장치(옆에서): st 0 거름종이·깔때기 따로 · 1 고깔 · 2 깔때기에 넣고 물 묻힘 · 3 비커 옆면에 닿게 */
+const FL={x:480,top:180,cone:262,tipY:330,bx:528,bw:100,bh:120};
+function standArt(){return '<rect x="240" y="404" width="190" height="14" rx="4" fill="#5C6470"/><rect x="300" y="110" width="10" height="296" fill="#7A828C"/><path d="M305 196 H'+(FL.x-58)+'" stroke="#7A828C" stroke-width="8"/><ellipse cx="'+FL.x+'" cy="200" rx="62" ry="9" fill="none" stroke="#7A828C" stroke-width="6"/>'}
+function funnelArt(o){o=o||{};let g='';
+ if(o.paper)g+='<path d="M'+(FL.x-58)+' '+(FL.top+6)+' L'+FL.x+' '+(FL.cone+10)+' L'+(FL.x+58)+' '+(FL.top+6)+'Z" fill="'+(o.wet?'#E9E4D6':'#FFFFFF')+'" stroke="#B9B2A2" stroke-width="2"/>';
+ if(o.sand)g+='<path d="M'+(FL.x-30)+' '+(FL.cone-26)+' L'+FL.x+' '+(FL.cone+6)+' L'+(FL.x+30)+' '+(FL.cone-26)+'Z" fill="#B88A5A"/>'+[...Array(10)].map((_,i)=>'<circle cx="'+(FL.x-18+rnd(i,3)*36).toFixed(1)+'" cy="'+(FL.cone-20+rnd(i,4)*18).toFixed(1)+'" r="2" fill="'+SANDC[i%5]+'"/>').join('');
+ if(o.liq)g+='<path d="M'+(FL.x-40)+' '+(FL.top+30)+' L'+FL.x+' '+(FL.cone)+' L'+(FL.x+40)+' '+(FL.top+30)+'Z" fill="#CDEBFA" fill-opacity=".7"/>';
+ g+='<path d="M'+(FL.x-66)+' '+FL.top+' L'+(FL.x-6)+' '+FL.cone+' V'+FL.tipY+' L'+(FL.x+6)+' '+(FL.tipY-8)+' V'+FL.cone+' L'+(FL.x+66)+' '+FL.top+'" fill="var(--w-glass)" stroke="var(--w-glass-s)" stroke-width="3.5" stroke-linejoin="round"/>';
+ return g}
+function setupScene(st,act){let g=bg({})+standArt();const n=act?{fu1:1,fu2:2,fu3:3}[act]:st;
+ g+=funnelArt({paper:n>=2,wet:n>=2});
+ if(n<2){/* 책상 위 거름종이 */g+=n===1?'<g'+(act==='fu1'?an('lb-a-pop',0):'')+'><path d="M640 400 L700 330 L760 400Z" fill="#FFFFFF" stroke="#B9B2A2" stroke-width="2"/><path d="M700 330 V400" stroke="#D7D1C2" stroke-width="2"/></g>':'<ellipse cx="700" cy="404" rx="80" ry="14" fill="#FFFFFF" stroke="#B9B2A2" stroke-width="2"/>'}
+ if(act==='fu2')g+='<g'+an('lb-a-down',0,'--from:-60px')+'>'+dropperArt(FL.x+30,FL.top-6,{fill:'w'})+'</g>';
+ /* 아래 비커: 3이면 깔때기 아래(옆면에 닿게), 아니면 옆에 */
+ if(n>=3)g+='<g'+(act==='fu3'?an('lb-a-slide',0,'--dx:300px'):'')+'>'+beakerS(FL.bx,416,FL.bw,FL.bh,{lab:1})+'</g>';
+ else g+=beakerS(830,416,FL.bw,FL.bh,{lab:1});
+ return g}
+/* 젓고 거르기: c 한 행동 수(0~3), act 지금 행동 */
+function filtScene(c,act){let g=bg({})+standArt();const done=c>=3&&act!=='f3';
+ g+=funnelArt({paper:1,wet:1,sand:done,liq:act==='f3'});
+ if(act==='f3')g+='<g'+an('lb-a-fade',1.4)+'>'+funnelArt({paper:1,wet:1,sand:1})+'</g>';
+ const lower=done?44:0;g+=beakerS(FL.bx,416,FL.bw,FL.bh,{water:lower,lab:1,inner:act==='f3'?'<rect x="'+(FL.bx-47)+'" y="'+(416-44)+'" width="94" height="41" fill="#CDEBFA" fill-opacity=".85"'+an('lb-a-rise',.8)+'/>':''});
+ if(act==='f3')g+='<path d="M'+FL.x+' '+FL.tipY+' V'+(416-10)+'" stroke="#9FD3F0" stroke-width="3" stroke-dasharray="20 18"'+an('lb-a-stream',.4)+'/>';
+ /* 혼합물 비커(오른쪽) */
+ const mx=760;
+ if(act==='f3'){g+='<g'+an('lb-a-fade',0)+'><g transform="translate(600 150) rotate(-62)">'+beakerS(0,0,120,150,{water:90,inner:'<rect x="-57" y="-90" width="114" height="87" fill="#D9C29A" fill-opacity=".6"/>'})+'</g>'+rodArt(560,250,-35)+'</g>'}
+ else if(!done){let inner='';
+  if(c>=1||act==='f1')inner+='<path d="M'+(mx-56)+' 413 Q'+mx+' 396 '+(mx+56)+' 413Z" fill="#B88A5A"'+(act==='f1'?an('lb-a-fade',.6):'')+'/>';
+  if(act==='f1')for(let i=0;i<14;i++)inner+=(i%2?salt(mx-40+rnd(i,4)*80,330+rnd(i,5)*40,4,i):stone(mx-40+rnd(i,4)*80,330+rnd(i,5)*40,3,'#A0673A',i)).replace('<path','<path'+an('lb-a-drop',.1+(i%5)*.1,'--from:-60px'));
+  if(act==='f2')inner+='<rect x="'+(mx-57)+'" y="'+(416-110)+'" width="114" height="104" fill="#C9A87A" fill-opacity=".55"'+an('lb-a-out',1.2)+'/>';
+  g+=beakerS(mx,416,120,150,{water:110,lab:1,inner});
+  if(act==='f2')g+='<g'+an('lb-a-jig',0,'--amp:10px;animation-iteration-count:3')+'>'+rodArt(mx+10,406,8)+'</g>';else g+=rodArt(mx+90,410,20)}
+ else g+=beakerS(mx,416,120,150,{water:0,lab:1})+rodArt(mx+90,410,20);
+ return g}
+/* 가열: stage 0 가열 전 · 1 가열하는 동안 · 2 끝나 갈 때 · 'anim' 지켜보는 중. on 가열판 켜짐 */
+function hotplate(on){return shadow(480,420,140)+'<rect x="340" y="350" width="280" height="66" rx="10" fill="#E3E6EA" stroke="#6B7480" stroke-width="3"/><rect x="356" y="340" width="248" height="14" rx="4" fill="#4A515B"/><circle cx="580" cy="388" r="13" fill="#FFFFFF" stroke="#6B7480" stroke-width="3"/><path d="M580 388 L'+(on?'572 378':'580 375')+'" stroke="#2A3342" stroke-width="3" stroke-linecap="round"/><circle cx="380" cy="388" r="7" fill="'+(on?'#E03A2E':'#9AA3AD')+'"/>'}
+function edish(lvl,cry,o){o=o||{};let g='';const cx=480,b=338;
+ if(lvl>0)g+='<path d="M'+(cx-88*Math.sqrt(lvl))+' '+(b-38*lvl)+' Q'+cx+' '+(b+4)+' '+(cx+88*Math.sqrt(lvl))+' '+(b-38*lvl)+'Z" fill="#CDEBFA" fill-opacity=".9"/>';
+ for(let i=0;i<cry;i++)g+=salt(cx-60+rnd(i,11)*120,b-6-rnd(i,12)*12*(1-Math.abs(rnd(i,11)-.5)),3.2,i);
+ g+='<path d="M'+(cx-104)+' '+(b-44)+' Q'+cx+' '+(b+12)+' '+(cx+104)+' '+(b-44)+'" fill="#FAFAF7" fill-opacity=".35" stroke="#9AA3AD" stroke-width="4"/>';
+ return g}
+function steam(n){let g='';for(let i=0;i<n;i++)g+='<path d="M'+(440+i*28)+' 280 q-10 -20 0 -40 q10 -20 0 -40" stroke="#B9C2CA" stroke-width="4" fill="none" stroke-linecap="round"'+an('lb-a-smoke',(i%3)*.4,'animation-iteration-count:infinite')+'/>';return g}
+function spatter(){let g='';for(let i=0;i<8;i++){const dx=(i%2?1:-1)*(20+i*8);g+='<g'+an('lb-a-splash',(i%4)*.3,'--dx:'+dx+'px;--dy:-'+(30+i*6)+'px;animation-iteration-count:infinite;animation-duration:1.2s')+'>'+salt(480,300,2.6,i)+'</g>'}return g}
+function heatScene(c,act,view){let g=bg({});const on=c>=3&&c<5||act==='h3'||act==='h4';
+ g+=hotplate(on&&act!=='h5');
+ const stg=act==='h4'?'anim':view!=null?view:c>=4?2:0;
+ if(c>=2||act==='h2'){if(stg==='anim'){g+='<g'+PH1(4.6)+'>'+edish(.8,0)+steam(3)+'</g><g'+PH2(4.6)+'>'+edish(.12,40)+steam(2)+spatter()+'</g>'}
+  else if(stg===1)g+=edish(.45,14)+steam(3)+spatter();
+  else if(stg===2)g+=edish(.1,40)+(c<5?steam(1):'');
+  else g+=edish(.8,0);
+  if(act==='h2')g+='<g'+an('lb-a-fade',0)+'><g transform="translate(600 200) rotate(-58)">'+beakerS(0,0,90,110,{water:60})+'</g></g>'}
+ else g+=edish(0,0)+beakerS(760,416,90,110,{water:44,lab:1});
+ if(act==='h1')g+='<g'+an('lb-a-pop',0)+'>'+cotton(250,250,-60,1.3)+cotton(720,250,-120,1.3)+'</g>';
+ if(stg==='anim'||act==='h4')g+=clockArt(820,160,1);
+ return g}
+function moveScene(done,anim){let g=bg({})+hotplate(false);
+ if(!done)return g+edish(.1,40)+'<g transform="translate(700 270)"><path d="M0 0 L120 -40 M0 10 L120 -30" stroke="#6B7480" stroke-width="7" stroke-linecap="round"/></g>';
+ g+='<g'+(anim?an('lb-a-slide',0,'--dx:-260px'):'')+'><g transform="translate(260 40)">'+edish(.06,44)+'</g><path d="M850 280 L'+(740+40)+' 300 M850 292 L'+(740+40)+' 310" stroke="#6B7480" stroke-width="7" stroke-linecap="round"/></g>';
+ return g}
 
 /* ───────── 준비물 카드 ───────── */
 function itemArt(k){const A={
-  cards:'<g transform="translate(-58 -38) rotate(-6)">'+cardArt(0,0,0,92,58,{})+'</g><g transform="translate(-30 -18) rotate(5)">'+cardArt(1,0,0,92,58,{})+'</g>',
-  pen:penArt(0,4,35,.85),
-  tank:'<rect x="-52" y="-44" width="104" height="86" fill="var(--w-glass)" stroke="#5a7d8c" stroke-width="4" rx="3"/>',
-  water:beaker(0,0,0,.8,1),
-  cups:[-40,0,40].map(x=>'<path d="M'+(x-16)+' -26 L'+(x-13)+' 26 L'+(x+13)+' 26 L'+(x+16)+' -26" fill="#ffffff" fill-opacity=".5" stroke="#7a8c96" stroke-width="2.5"/>').join(''),
-  gravel:[[-26,10],[0,4],[24,12],[-12,-12],[14,-10],[0,24],[-30,-8]].map(p=>'<ellipse cx="'+p[0]+'" cy="'+p[1]+'" rx="12" ry="9" fill="#8f7f6a" stroke="#5f5242" stroke-width="2"/>').join(''),
-  sand:'<path d="M-56 30 Q-40 -20 0 -24 Q40 -20 56 30Z" fill="#e8cf8a" stroke="#b89a52" stroke-width="2.5"/>'+[...Array(14)].map((_,i)=>'<circle cx="'+(-34+(i*13)%70)+'" cy="'+(-6+(i*7)%30)+'" r="1.8" fill="#7a6040"/>').join(''),
-  mud:'<path d="M-56 30 Q-44 -14 -6 -20 Q40 -22 56 30Z" fill="#8a6a4c" stroke="#5c432d" stroke-width="2.5"/><path d="M-30 8 q14 -4 28 0 M6 16 q14 -4 26 0" stroke="#5c432d" stroke-width="2" fill="none"/>',
-  coat:coat(0,-2,.62),
-  lglove:lglove(-14,-10,-60,.75)+lglove(22,8,-60,.75),
-  cglove:cotton(-14,-10,-60,.75)+cotton(22,8,-60,.75),
-  rocks:rock6(0,-34,-18,20)+rock6(1,30,-18,20)+rock6(2,-34,26,20)+rock6(3,30,26,20),
-  wpaper:'<rect x="-50" y="-36" width="100" height="74" rx="3" fill="#FFFDF8" stroke="#A39B8B" stroke-width="2"/>',
-  sticker:'<rect x="-52" y="-30" width="104" height="60" rx="5" fill="#FFFFFF" stroke="#B9C2CA" stroke-width="2"/>'+[1,2,3,4].map(i=>chip(-36+(i-1)*24,0,i,10)).join(''),
+  mix1:bowl(0,30,110,pile(0,26,90,'mix',3)),
+  mix3:bowl(0,30,110,pile(0,26,90,'saltsand',4)),
   loupe:magnifier(-8,-8,1.1,0),
-  fossils:'<g transform="translate(-62 -44) scale(.42)">'+fossil('ammonite')+'</g><g transform="translate(-4 -12) scale(.36)">'+fossil('fish')+'</g>',
-  bowl:'<path d="M-56 -30 L-46 36 L46 36 L56 -30" fill="var(--w-glass)" stroke="#7a8c96" stroke-width="4"/>',
-  bag:'<path d="M-44 -38 L-40 36 L40 36 L44 -38" fill="#e9f4fb" fill-opacity=".6" stroke="#9fb7c4" stroke-width="2.5"/><path d="M-44 -38 L-30 -26 L-14 -38 L0 -26 L14 -38 L30 -26 L44 -38" stroke="#9fb7c4" stroke-width="2" fill="none"/>',
-  clay:'<rect x="-46" y="-22" width="92" height="52" rx="12" fill="#9a7b5c" stroke="#6e5640" stroke-width="2.5"/><path d="M-30 -4 q14 -4 28 0 M4 10 q14 -4 26 0" stroke="#7f6449" stroke-width="2" fill="none"/>',
-  shell:shell(0,0,70),
-  plaster:'<path d="M-34 -36 H34 V36 Q34 42 28 42 H-28 Q-34 42 -34 36Z" fill="#FFFFFF" stroke="#8C959F" stroke-width="2.5"/><rect x="-34" y="-36" width="68" height="16" fill="#C9D1D9"/><path d="M-20 4 h40 M-20 18 h30" stroke="#B7C0C9" stroke-width="3"/>',
-  sfossil:'<g transform="translate(-60 -45) scale(.6)">'+realShell(0,0,1)+'</g>',
-  safety:coat(-30,4,.5)+goggles(30,-20,.55)+'<g transform="translate(34 26) scale(.55)">'+lglove(0,0,-60,1)+'</g>'};
+  sieves:'<circle cx="-30" cy="0" r="34" fill="#FFFDF8" stroke="#59636E" stroke-width="6"/><circle cx="34" cy="8" r="34" fill="#FFFDF8" stroke="#59636E" stroke-width="6"/>'+[-20,-10,0,10].map(d=>'<path d="M'+(-30+d)+' -26 V26" stroke="#59636E" stroke-width="1.2"/>').join('')+[-14,6,26].map(d=>'<path d="M'+(34+d)+' -20 V36" stroke="#59636E" stroke-width="1.5"/>').join(''),
+  tray:'<path d="M-60 0 H60 L52 20 H-52Z" fill="#9FB6C2" stroke="#59636E" stroke-width="3"/>',
+  coat:coat(0,-2,.62),goggle:goggles(0,0,1),
+  lglove:lglove(-14,-10,-60,.75)+lglove(22,8,-60,.75),cglove:cotton(-14,-10,-60,.75)+cotton(22,8,-60,.75),
+  beakers2:'<g transform="translate(-34 40) scale(.38)">'+mainBeaker(0)+'</g>'+'<g transform="translate(34 40) scale(.38)">'+mainBeaker(0)+'</g>',
+  beaker100:'<g transform="translate(0 40) scale(.5)">'+beakerS(0,0,110,130,{lab:1})+'</g>',
+  wbeaker:'<g transform="translate(0 40) scale(.5)">'+beakerS(0,0,120,150,{water:100,lab:1})+'</g>',
+  dropper:'<g transform="rotate(30)">'+dropperArt(0,60,{}).replace('translate(0 60)','translate(0 60) scale(.8)')+'</g>',
+  pad:padArt(-10,-6,0,-8)+padArt(10,10,0,6),
+  tweezers:'<g transform="rotate(25) translate(0 50)">'+tweezArt(0,0)+'</g>',
+  petri:petri(0,20,0),
+  spoon:'<path d="M-50 10 L30 -10" stroke="#8C949C" stroke-width="6" stroke-linecap="round"/><ellipse cx="38" cy="-12" rx="16" ry="9" fill="#C9D1D9" stroke="#8C949C" stroke-width="2"/>',
+  rod:'<g transform="rotate(60) translate(0 70)">'+rodArt(0,0,0)+'</g>',
+  funnel:'<path d="M-40 -40 L-4 6 V44 L4 38 V6 L40 -40Z" fill="#EAF4FB" fill-opacity=".6" stroke="#5F8FA0" stroke-width="3"/><path d="M-32 -36 L0 2 L32 -36Z" fill="#FFFFFF" stroke="#B9B2A2" stroke-width="2"/>',
+  hotplate:'<rect x="-56" y="-14" width="112" height="40" rx="7" fill="#E3E6EA" stroke="#6B7480" stroke-width="3"/><rect x="-48" y="-20" width="96" height="8" rx="3" fill="#4A515B"/><circle cx="38" cy="6" r="7" fill="#FFFFFF" stroke="#6B7480" stroke-width="2"/>',
+  edish:'<path d="M-52 -10 Q0 40 52 -10" fill="#FAFAF7" stroke="#9AA3AD" stroke-width="4"/>',
+  tongs:'<path d="M-50 20 L40 -14 M-50 30 L44 -2" stroke="#6B7480" stroke-width="6" stroke-linecap="round"/><path d="M-50 20 Q-62 25 -50 30" stroke="#6B7480" stroke-width="6" fill="none"/>',
+  sticker:'<rect x="-52" y="-30" width="104" height="60" rx="5" fill="#FFFFFF" stroke="#B9C2CA" stroke-width="2"/>'+[1,2,3,4].map(i=>chip(-36+(i-1)*24,0,i,10)).join('')};
  return A[k]||''}

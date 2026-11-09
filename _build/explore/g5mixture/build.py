@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""탐구 실험관 · 지층과 화석(5학년 1학기 1단원) — src/ 조각을 합쳐 HTML 한 장으로.
-   python3 build.py [출력 경로]  (기본: 저장소 grade5/science/explore/strata.html)"""
+"""탐구 실험관 · 혼합물의 분리(5학년 2학기 1단원) — src/ 조각을 합쳐 HTML 한 장으로.
+   python3 build.py [출력 경로]  (기본: 저장소 grade5/science/explore/mixture.html)"""
 import os,sys,re
 D=os.path.dirname(os.path.abspath(__file__));S=os.path.join(D,'src')
 r=lambda n:open(os.path.join(S,n),encoding='utf-8').read()
-out=sys.argv[1] if len(sys.argv)>1 else os.path.join(D,'..','..','..','grade5','science','explore','strata.html')
+out=sys.argv[1] if len(sys.argv)>1 else os.path.join(D,'..','..','..','grade5','science','explore','mixture.html')
 ic=lambda body:'<svg class="lb-ic" viewBox="0 0 24 24" aria-hidden="true">'+body+'</svg>'
 page=r('page.html')
 js=r('data.js')+'\n'+r('draw.js')+'\n'+r('app_head.js')+r('app_body.js')
@@ -21,10 +21,11 @@ assert not bad,('emoji',set(bad))
 for w in ['다음','다시 하기']:
     for m in re.finditer(r'<button[^>]*>([^<]*(?:<[^/][^>]*>[^<]*)*)</button>',page):
         assert w not in m.group(1),(w,m.group(0)[:80])
-# 쓰지 않을 말(5학년 1학기 1단원 범위 밖 — 지도서 112~157쪽: 지질 시대 이름·연대 측정·방사성, 습곡·단층·부정합 같은 말, 다져짐·교결·속성 작용,
-# 표준 화석·시상 화석, 변성암·화성암과 그 밖의 암석 이름은 다루지 않음, '변인' 같은 말은 쓰지 않음. 퇴적물·퇴적암·이암·사암·역암·화석은 교과서에 있는 말)
-for w in ['고생대','중생대','신생대','캄브리아','쥐라기','백악기','삼첩기','지질 시대','지질시대','연대 측정','방사성','반감기','습곡','단층','부정합',
-          '다져','교결','속성 작용','압밀','표준 화석','시상 화석','변성암','화성암','화강암','현무암','석회암','셰일','응회암','광물','변인','조건 통제',
+# 쓰지 않을 말(5학년 2학기 1단원 범위 밖 — 교과서 버전 앱 u1-2~u1-4와 지도서 118~147쪽: 체·스포이트·흡착포·거름·증발로 분리하기까지.
+# 끓는점·밀도·녹는 양 같은 성질의 이름, 증류·크로마토그래피·원심 분리 같은 다른 분리 방법, 알갱이의 작은 단위, 자석으로 분리하기(원본에 없음),
+# 실험 조건을 부르는 어려운 말은 쓰지 않음. 거름·증발·혼합물은 교과서에 있는 말)
+for w in ['크로마토그래피','증류','밀도','용해도','분자','입자','원자','원심 분리','끓는점','녹는점','기화','액화','결정','재결정','포화','침전','여과','용질','용매',
+          '자석','철 가루','분별 깔때기','변인','조건 통제',
           '이(가)','을(를)','은(는)','이라고(라고)','(이)라고']:
     assert w not in page,('forbidden',w)
 # 결론 빈칸 답이 실험 이름·단계 이름·행동 단추에 들어가지 않게

@@ -1,4 +1,4 @@
-/* ───────── 그림: 실험대 장면 — 모두 직접 그린 SVG (여러 가지 기체) ───────── */
+/* ───────── 그림: 실험대 장면 — 모두 직접 그린 SVG (용해와 용액) ───────── */
 const BY=436;
 let NAR=false,LEG=[];   /* 좁은 화면: 작은 그림 글자는 HTML(LEG)로 */
 function an(cls,delay,extra){return ' class="lb-a '+cls+'" style="animation-delay:'+(delay||0)+'s'+(extra?';'+extra:'')+'"'}
@@ -61,121 +61,130 @@ function toolLabel(cx,yb,t){const T='<text x="'+cx+'" text-anchor="middle" font-
  return T+' y="'+(yb-21)+'">'+t.slice(0,m)+'</text>'+T+' y="'+yb+'">'+t.slice(m+1)+'</text>'}
 function boxArt(x){return '<g transform="translate('+x+' 300)"><path d="M-130 -60 L-100 -96 H150 L120 -60Z" fill="var(--w-kraft-s)"/><rect x="-130" y="-60" width="250" height="196" rx="8" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="2"/><path d="M120 -60 L150 -96 V100 L120 136Z" fill="var(--w-kraft-s)"/>'+(NAR?'':'<rect x="-60" y="-10" width="110" height="44" rx="8" fill="var(--w-label)"/><text x="-5" y="20" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-labeltx)">준비물</text>')+'</g>'}
 
-/* ───────── 여러 가지 기체: 실험 기구 그림(모두 직접 그린 SVG) ───────── */
-const AIRC='#CFE8F6',GLS='var(--w-glass-s)',RUB='#E2573F',RUBS='#9C3424';
-/* 페트병(500 mL)과 공기 주입 마개. dent = 손가락으로 누른 곳이 들어간 정도(0~1), press = 마개 누르는 움직임 */
-function petBottle(cx,base,o){o=o||{};const w=44,d=(o.dent||0)*30;let g=shadow(cx,base+4,w+10);
- const L=cx-w,R=cx+w;
- const out='M'+L+' '+(base-8)+' Q'+L+' '+base+' '+(L+8)+' '+base+' H'+(R-8)+' Q'+R+' '+base+' '+R+' '+(base-8)+' V'+(base-150)+' Q'+R+' '+(base-182)+' '+(cx+13)+' '+(base-196)+' V'+(base-210)+' H'+(cx-13)+' V'+(base-196)+' Q'+L+' '+(base-182)+' '+L+' '+(base-150)+' V'+(base-122)+' Q'+(L+d)+' '+(base-92)+' '+L+' '+(base-62)+'Z';
- g+='<path d="'+out+'" fill="rgba(222,240,250,.7)"/>';
- [40,116].forEach(y=>{g+='<path d="M'+(L+4)+' '+(base-y)+' H'+(R-4)+'" stroke="#A9C6D6" stroke-width="2"/>'});
- g+='<path d="'+out+'" fill="none" stroke="#5F8DA6" stroke-width="3.5" stroke-linejoin="round"/><path d="M'+(R-12)+' '+(base-140)+' V'+(base-24)+'" stroke="#FFFFFF" stroke-width="5" opacity=".7" stroke-linecap="round"/>';
- if(o.cap!==0){const t=base-210;g+='<rect x="'+(cx-17)+'" y="'+(t-20)+'" width="34" height="22" rx="4" fill="#3A78C8" stroke="#1D4A80" stroke-width="2"/>';
-  g+='<g'+(o.press?' class="lb-a lb-a-press"':'')+'><rect x="'+(cx-8)+'" y="'+(t-42)+'" width="16" height="24" rx="3" fill="#E3E8ED" stroke="#5D6B78" stroke-width="2"/><rect x="'+(cx-14)+'" y="'+(t-48)+'" width="28" height="9" rx="4" fill="#F2B33D" stroke="#9A6B12" stroke-width="2"/>'+(o.press?hand(cx+6,t-60,90,.7,1):'')+'</g>';
-  if(o.press)g+='<g class="lb-a lb-a-pulse">'+[0,1,2].map(i=>'<path d="M'+(cx-6+i*6)+' '+(t+8+i*10)+' v14" stroke="#4E8FB8" stroke-width="3" stroke-linecap="round"/>').join('')+'</g>'}
- if(o.dent)g+=hand(L+d-48,base-92,0,1,1);
- return g}
-/* 공기를 빼는 장치: 투명한 용기 + 뚜껑(가운데 단추) + 손 펌프. o.lid 뚜껑 닫힘 · o.lidOff 뚜껑을 옆에 둠 · o.pump 펌프를 끼움 · o.inner 안에 넣은 것 */
-const VJ={w:96,h:168};
-function vacLid(cx,top,o){o=o||{};return '<g><rect x="'+(cx-VJ.w-8)+'" y="'+(top-22)+'" width="'+(2*VJ.w+16)+'" height="24" rx="6" fill="#4A5563" stroke="#2C333A" stroke-width="2.5"/><rect x="'+(cx-14)+'" y="'+(top-36)+'" width="28" height="16" rx="3" fill="#6B7785" stroke="#2C333A" stroke-width="2"/>'+
- '<circle cx="'+cx+'" cy="'+(top-38)+'" r="9" fill="'+(o.btn?'#9E2A1E':'#E2573F')+'" stroke="#7A2A20" stroke-width="2"/></g>'}
-function vacPump(cx,top,anim){const t=top-38;return '<g><rect x="'+(cx-18)+'" y="'+(t-150)+'" width="36" height="140" rx="7" fill="#3A78C8" stroke="#1D4A80" stroke-width="2.5"/><rect x="'+(cx-8)+'" y="'+(t-12)+'" width="16" height="14" fill="#2C333A"/>'+
- '<g'+(anim?' class="lb-a lb-a-pump"':'')+'><rect x="'+(cx-4)+'" y="'+(t-200)+'" width="8" height="56" fill="#9AA5AD"/><rect x="'+(cx-40)+'" y="'+(t-212)+'" width="80" height="16" rx="7" fill="#2C333A"/></g></g>'}
-function vacJar(cx,base,o){o=o||{};const w=VJ.w,h=VJ.h,top=base-h;let g=shadow(cx,base+4,w+14);
- const out='M'+(cx-w)+' '+top+' V'+(base-10)+' Q'+(cx-w)+' '+base+' '+(cx-w+10)+' '+base+' H'+(cx+w-10)+' Q'+(cx+w)+' '+base+' '+(cx+w)+' '+(base-10)+' V'+top;
- g+='<path d="'+out+'" fill="rgba(222,240,250,.45)"/>';
+/* ───────── 용해와 용액: 실험 기구 그림(모두 직접 그린 SVG) ───────── */
+const WC='#BFE3F5',WS='#6FA9CC',GLS='var(--w-glass-s)',PW='#FFFFFF',PWS='#A9B4BC';
+const VITC='#F2C230',VITS='#B88A10',YSC='#B9762E',YSS='#7E4D18';
+function mixc(a,b,t){const h=x=>[1,3,5].map(i=>parseInt(x.substr(i,2),16));const A=h(a),B=h(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
+/* 가루 알갱이(바닥에 흩어짐). col 색, n 개수, seed */
+function grains(x0,x1,y0,y1,col,st,n,seed,r){let g='';for(let i=0;i<n;i++){const x=x0+rnd(i,seed)*(x1-x0),y=y0+rnd(i,seed+7)*(y1-y0);g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="'+((r||3)*(.7+rnd(i,seed+3)*.5)).toFixed(1)+'" fill="'+col+'" stroke="'+st+'" stroke-width="1"/>'}return g}
+/* 바닥에 남은 더미(높이 hh) */
+function pile(cx,base,hw,hh,col,st){return '<path d="M'+(cx-hw)+' '+base+' Q'+(cx-hw*.5)+' '+(base-hh*1.5)+' '+cx+' '+(base-hh*1.6)+' Q'+(cx+hw*.5)+' '+(base-hh*1.5)+' '+(cx+hw)+' '+base+'Z" fill="'+col+'" stroke="'+st+'" stroke-width="1.5"/>'+grains(cx-hw*.6,cx+hw*.6,base-hh*1.1,base-2,col,st,Math.round(hw/4),hw,2.2)}
+/* 떨어지는 가루(움직임) */
+function fallGrains(cx,top,bottom,col,st,seed){let g='<g'+an('lb-a-drop',0,'animation-duration:.9s')+'>';for(let i=0;i<10;i++)g+='<circle cx="'+(cx-18+rnd(i,seed)*36).toFixed(1)+'" cy="'+(top+rnd(i,seed+2)*(bottom-top)).toFixed(1)+'" r="3" fill="'+col+'" stroke="'+st+'" stroke-width="1"/>';return g+'</g>'}
+/* 이름 붙임딱지 */
+function sticker(cx,y,t,anim){const w=Math.max(70,t.length*15+18);return '<g'+(anim?an('lb-a-pop',.3):'')+'><rect x="'+(cx-w/2)+'" y="'+y+'" width="'+w+'" height="28" rx="4" fill="#FFF4C2" stroke="#B9A04A" stroke-width="2"/>'+(t?'<text x="'+cx+'" y="'+(y+20)+'" text-anchor="middle" font-size="15" font-weight="800" fill="#3A3214">'+t+'</text>':'<path d="M'+(cx-w/2+10)+' '+(y+14)+' h'+(w-20)+'" stroke="#D8C78A" stroke-width="2" stroke-dasharray="4 4"/>')+'</g>'}
+/* 약숟가락(가루를 담은). rot 기울기 */
+function spoonArt(x,y,rot,col,st){return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+')"><rect x="-70" y="-4" width="64" height="8" rx="4" fill="#C9D1D8" stroke="#7F8C99" stroke-width="2"/><ellipse cx="6" cy="0" rx="16" ry="10" fill="#DDE3E8" stroke="#7F8C99" stroke-width="2"/>'+(col?'<ellipse cx="6" cy="-4" rx="12" ry="6" fill="'+col+'" stroke="'+st+'" stroke-width="1.2"/>':'')+'</g>'}
+/* 유리 막대 */
+function rodArt(x,y,len,rot,anim){return '<g'+(anim?an('lb-a-stir',0):'')+'><g transform="translate('+x+' '+y+') rotate('+(rot||0)+')"><rect x="-4" y="0" width="8" height="'+len+'" rx="4" fill="rgba(220,236,246,.85)" stroke="'+GLS+'" stroke-width="2"/></g></g>'}
+/* 젓는 모습(점선 소용돌이) */
+function swirl(cx,y,w){return '<g'+an('lb-a-fade',0)+'><path d="M'+(cx-w)+' '+y+' q'+w+' -18 '+(2*w)+' 0 q'+(-w)+' 18 '+(-2*w)+' 0" fill="none" stroke="'+WS+'" stroke-width="2.5" stroke-dasharray="6 5"/></g>'}
+/* 핀셋 */
+function tweezArt(x,y,rot,item){return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+')"><path d="M-4 -110 L-10 -6 L-4 -4 L2 -108Z" fill="#B9C2CA" stroke="#5D6B78" stroke-width="2"/><path d="M4 -110 L10 -6 L4 -4 L-2 -108Z" fill="#CBD3DB" stroke="#5D6B78" stroke-width="2"/>'+(item||'')+'</g>'}
+/* 각설탕 */
+function cubeArt(x,y,s){s=s||1;const a=18*s;return '<g><path d="M'+(x-a)+' '+(y-a*1.4)+' l'+(a*.5)+' '+(-a*.35)+' h'+(a*2)+' l'+(-a*.5)+' '+(a*.35)+'Z" fill="#F4F6F8" stroke="#B5A787" stroke-width="1.6"/><path d="M'+(x+a)+' '+(y-a*1.4)+' l'+(a*.5)+' '+(-a*.35)+' v'+(a*1.75)+' l'+(-a*.5)+' '+(a*.35)+'Z" fill="#E4E8EC" stroke="#B5A787" stroke-width="1.6"/><rect x="'+(x-a)+'" y="'+(y-a*1.4)+'" width="'+(a*2)+'" height="'+(a*1.4)+'" fill="#FFFFFF" stroke="#B5A787" stroke-width="1.6"/></g>'}
+/* 페트리 접시(옆에서 본 모습). base = 바닥 */
+function dishArt(cx,base,item){return '<g><ellipse cx="'+cx+'" cy="'+(base-2)+'" rx="58" ry="9" fill="rgba(232,244,250,.85)" stroke="#7F9BAB" stroke-width="2.5"/><path d="M'+(cx-58)+' '+(base-2)+' v-10 M'+(cx+58)+' '+(base-2)+' v-10" stroke="#7F9BAB" stroke-width="2.5"/><ellipse cx="'+cx+'" cy="'+(base-12)+'" rx="58" ry="9" fill="none" stroke="#7F9BAB" stroke-width="2"/>'+(item||'')+'</g>'}
+/* 방울토마토 */
+function tomatoArt(x,y,r){r=r||17;return '<g><circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#E2573F" stroke="#9C3424" stroke-width="2"/><ellipse cx="'+(x-r*.35)+'" cy="'+(y-r*.35)+'" rx="'+(r*.22)+'" ry="'+(r*.14)+'" fill="#FFFFFF" opacity=".55"/><path d="M'+(x-8)+' '+(y-r+2)+' l8 5 l8 -5 M'+x+' '+(y-r+6)+' v-9" stroke="#3F8F46" stroke-width="3" fill="none" stroke-linecap="round"/></g>'}
+/* 아지랑이 같은 일렁임 */
+function haze(cx,y,anim){let g='';for(let i=0;i<4;i++)g+='<path d="M'+(cx-24+i*3)+' '+(y-i*20)+' q12 -8 24 0 q12 8 24 0" fill="none" stroke="#7FB2CF" stroke-width="2.4" opacity="'+(1-i*.18)+'"'+(anim?an('lb-a-haze',i*.25):'')+'/>';return g}
+
+/* ── 유리병(뚜껑이 있는 병). o: lv 물 높이(0~1) · tint 물 색 · op · cloud 뿌연 정도 · grains 바닥 가루 색 · pile 바닥에 쌓인 흰 물질 · lid · lidAnim · label · rise · s 크기 ── */
+const JW=58,JH=158;
+function glassJar(cx,base,o){o=o||{};const s=o.s||1,w=JW*s,h=JH*s,top=base-h;let g=o.noShadow?'':shadow(cx,base+4,w+10);
+ const body='M'+(cx-w)+' '+(top+22*s)+' Q'+(cx-w)+' '+top+' '+(cx-w+22*s)+' '+top+' H'+(cx+w-22*s)+' Q'+(cx+w)+' '+top+' '+(cx+w)+' '+(top+22*s)+' V'+(base-12)+' Q'+(cx+w)+' '+base+' '+(cx+w-12)+' '+base+' H'+(cx-w+12)+' Q'+(cx-w)+' '+base+' '+(cx-w)+' '+(base-12)+'Z';
+ g+='<path d="'+body+'" fill="rgba(232,244,250,.45)"/>';
+ if(o.lv){const wy=base-o.lv*(h-30*s);const col=o.tint||WC;
+  g+='<g'+(o.rise?an('lb-a-rise',.2):'')+'><path d="M'+(cx-w+4)+' '+wy.toFixed(1)+' H'+(cx+w-4)+' V'+(base-12)+' Q'+(cx+w-4)+' '+(base-4)+' '+(cx+w-14)+' '+(base-4)+' H'+(cx-w+14)+' Q'+(cx-w+4)+' '+(base-4)+' '+(cx-w+4)+' '+(base-12)+'Z" fill="'+col+'" fill-opacity="'+(o.op||.8)+'"/>';
+  if(o.cloud){g+='<path d="M'+(cx-w+4)+' '+wy.toFixed(1)+' H'+(cx+w-4)+' V'+(base-6)+' H'+(cx-w+4)+'Z" fill="#FFFFFF" fill-opacity="'+(.62*o.cloud).toFixed(2)+'"/>'+grains(cx-w+10,cx+w-10,wy+8,base-10,'#FFFFFF','#D5DCE0',Math.round(26*o.cloud),5,1.6)}
+  g+='<path d="M'+(cx-w+4)+' '+wy.toFixed(1)+' H'+(cx+w-4)+'" stroke="'+(o.tint&&o.tint!==WC?mixc(o.tint,'#806010',.3):WS)+'" stroke-width="3"/></g>'}
+ if(o.grains)g+=grains(cx-w+12,cx+w-12,base-20,base-7,o.grains,o.gst||PWS,16,cx,3);
+ if(o.pile)g+=pile(cx,base-5,w-12,o.pile,'#F8F8F4','#C2C8CC');
  if(o.inner)g+=o.inner;
- g+='<path d="'+out+'" fill="none" stroke="'+GLS+'" stroke-width="4"/><path d="M'+(cx-w+14)+' '+(top+14)+' V'+(base-20)+'" stroke="#FFFFFF" stroke-width="6" opacity=".6" stroke-linecap="round"/><rect x="'+(cx-w-4)+'" y="'+(top-4)+'" width="'+(2*w+8)+'" height="10" rx="4" fill="#B9C6CF" stroke="'+GLS+'" stroke-width="2"/>';
- if(o.lid){g+='<g'+(o.lidAnim?an('lb-a-down',0,'--from:-120px'):o.lidUp?' class="lb-a lb-a-lidup"':'')+'>'+vacLid(cx,top,{btn:o.btn})+'</g>';
-  if(o.pump)g+='<g'+(o.pumpIn?an('lb-a-down',.6,'--from:-140px'):o.pumpOut?an('lb-a-out',0):'')+'>'+vacPump(cx,top,o.pumpAnim)+'</g>'}
- if(o.lidOff)g+='<g transform="translate('+(o.lidOff)+' 0)">'+vacLid(0,BY-2,{})+'</g>';
- if(o.press)g+='<g'+an('lb-a-fade',0)+'>'+hand(cx+48,top-60,200,.85,o.glove)+'</g>';
- if(o.inflow)g+='<g class="lb-a lb-a-pulse">'+arrow(cx-60,top-90,cx-16,top-44,'#4E8FB8',5)+arrow(cx+60,top-90,cx+16,top-44,'#4E8FB8',5)+'</g>';
+ g+='<path d="'+body+'" fill="none" stroke="'+GLS+'" stroke-width="3.5"/><path d="M'+(cx-w+10)+' '+(top+30*s)+' V'+(base-24)+'" stroke="#FFFFFF" stroke-width="4" opacity=".55" stroke-linecap="round"/>';
+ g+='<rect x="'+(cx-w*.72)+'" y="'+(top-8*s)+'" width="'+(w*1.44)+'" height="'+(10*s)+'" rx="3" fill="rgba(232,244,250,.6)" stroke="'+GLS+'" stroke-width="2.5"/>';
+ if(o.lid)g+='<g'+(o.lidAnim?an('lb-a-down',0,'--from:-80px'):'')+'><rect x="'+(cx-w*.82)+'" y="'+(top-24*s)+'" width="'+(w*1.64)+'" height="'+(20*s)+'" rx="5" fill="#4F7FB0" stroke="#2D5582" stroke-width="2.5"/><path d="M'+(cx-w*.7)+' '+(top-14*s)+' h'+(w*1.4)+'" stroke="#6E9CCB" stroke-width="2"/></g>';
+ if(o.label!=null)g+=sticker(cx,top+12*s,o.label,o.labelAnim);
  return g}
-/* 펌프질 힘든 정도(교과서 버전 앱에 있는 막대, 칸 수는 이 실험관에서 정한 값) */
-function effortBar(x,y,L){let g=tag(x+110,y-30,'펌프질 힘든 정도',18);L.forEach(([t,n],r)=>{const yy=y+r*48;g+='<text x="'+(x+34)+'" y="'+(yy+24)+'" text-anchor="end" font-size="19" font-weight="800" fill="var(--w-labeltx)">'+t+'</text>';
-  for(let i=0;i<5;i++)g+='<rect x="'+(x+44+i*34)+'" y="'+yy+'" width="28" height="34" rx="5" fill="'+(i<n?'#E07B2E':'var(--w-label)')+'" stroke="#9A5A20" stroke-width="2"/>'});
+/* ── 비커. o: big(250 mL) · ml 물의 양 · tint · op · pile · fall 떨어지는 가루 색 · stir 젓는 중 · rod · label · cnt 위 이름 · steam · tom 방울토마토 높이(0~1) · film 벽에 남은 용액 ── */
+function bkDim(o){return o.big?{w:78,h:206,k:.8}:{w:62,h:150,k:1.2}}
+function beakerArt(cx,base,o){o=o||{};const D=bkDim(o),w=D.w,h=D.h,top=base-h;let g=o.noShadow?'':shadow(cx,base+4,w+8);
+ const out='M'+(cx-w)+' '+top+' V'+(base-10)+' Q'+(cx-w)+' '+base+' '+(cx-w+10)+' '+base+' H'+(cx+w-10)+' Q'+(cx+w)+' '+base+' '+(cx+w)+' '+(base-10)+' V'+top;
+ g+='<path d="'+out+'" fill="rgba(232,244,250,.45)"/>';
+ const wy=base-(o.ml||0)*D.k;
+ if(o.ml){const col=o.tint||WC;
+  g+='<g'+(o.rise?an('lb-a-rise',.2):'')+'><path d="M'+(cx-w+3)+' '+wy.toFixed(1)+' H'+(cx+w-3)+' V'+(base-10)+' Q'+(cx+w-3)+' '+(base-3)+' '+(cx+w-10)+' '+(base-3)+' H'+(cx-w+10)+' Q'+(cx-w+3)+' '+(base-3)+' '+(cx-w+3)+' '+(base-10)+'Z" fill="'+col+'" fill-opacity="'+(o.op||.8)+'"/><path d="M'+(cx-w+3)+' '+wy.toFixed(1)+' H'+(cx+w-3)+'" stroke="'+(o.tint?mixc(o.tint,'#202020',.25):WS)+'" stroke-width="3"/></g>'}
+ if(o.film)g+=o.film;
+ if(o.pile)g+=pile(cx,base-4,Math.min(w-12,16+o.pile*8),2+o.pile*2.4,o.pcol||'#F8F8F4',o.pst||'#B9C2C8');
+ if(o.grains)g+=grains(cx-w+14,cx+w-14,base-16,base-6,o.grains,o.gst||PWS,14,cx,3);
+ if(o.fall)g+=fallGrains(cx,wy+6,base-10,o.fall,o.fst||PWS,cx);
+ if(o.stir)g+=swirl(cx,(wy+base)/2,w*.55);
+ if(o.tom!=null){const r=17,lo=base-6-r,hi=wy+r*.25,y=lo-o.tom*(lo-hi);g+='<g'+(o.tomAnim?an('lb-a-down',0,'--from:'+(-(y-top+40))+'px'):'')+'>'+tomatoArt(cx,y,r)+'</g>'}
+ if(o.inner)g+=o.inner;
+ g+='<path d="'+out+'" fill="none" stroke="'+GLS+'" stroke-width="3.5"/><path d="M'+(cx-w-9)+' '+top+' h12" stroke="'+GLS+'" stroke-width="3.5"/>';
+ const step=o.big?50:25;for(let m=step;m<=(o.big?250:100);m+=step)g+='<path d="M'+(cx+w-24)+' '+(base-m*D.k)+' h16" stroke="'+GLS+'" stroke-width="2"/>';
+ if(o.rod)g+=rodArt(cx+14,top-56,h+30,12,o.stir);
+ if(o.steam){for(let k=0;k<3;k++)g+='<path d="M'+(cx-20+k*20)+' '+(wy-10)+' q-6 -12 0 -24 q6 -12 0 -24" fill="none" stroke="#E2A3A3" stroke-width="3" stroke-linecap="round"/>'}
+ if(o.label!=null)g+=sticker(cx,top+10,o.label,o.labelAnim);
+ if(o.cnt)g+=mini(cx,top-28,o.cnt,o.cntSz||19);
  return g}
-/* 고무풍선(묶은 것). s 크기, clip 풍선 클립 */
-function balloon(x,bottom,s,o){o=o||{};const ry=36,rx=30;const cy=-(ry+14);
- let g='<g transform="translate('+x+' '+bottom+')"><g'+(o.swell?' class="lb-a lb-a-swell" style="--s0:'+o.swell+'"':'')+'><g transform="scale('+s+')">';
- g+='<ellipse cx="0" cy="'+cy+'" rx="'+rx+'" ry="'+ry+'" fill="'+RUB+'" stroke="'+RUBS+'" stroke-width="2"/><ellipse cx="-11" cy="'+(cy-14)+'" rx="6" ry="11" fill="#FFFFFF" opacity=".45"/><path d="M0 '+(cy+ry)+' l-6 8 h12z" fill="'+RUBS+'"/>';
- g+='<rect x="-9" y="'+(cy+ry+6)+'" width="18" height="7" rx="2" fill="#2F8F5B" stroke="#1E6440" stroke-width="1.5"/>';
- return g+'</g></g></g>'}
-function marsh(x,bottom,s,o){o=o||{};let g='<g transform="translate('+x+' '+bottom+')"><g'+(o.swell?' class="lb-a lb-a-swell" style="--s0:'+o.swell+'"':'')+'><g transform="scale('+s+')">';
- [[-30,0],[30,0],[0,-44]].forEach(([dx,dy])=>{g+='<rect x="'+(dx-24)+'" y="'+(dy-40)+'" width="48" height="40" rx="12" fill="#FFFFFF" stroke="#E9B0C8" stroke-width="3"/><ellipse cx="'+dx+'" cy="'+(dy-40)+'" rx="24" ry="7" fill="#FFE3EE" stroke="#E9B0C8" stroke-width="2.5"/>'});
- return g+'</g></g></g>'}
-/* 집기병(500 mL)과 입구에 씌운 고무풍선. k: 고무풍선 막이 올라온 정도(+ 부풂, − 병 안으로 들어감) */
-const JR={w:58,h:190,m:46};
-function memPath(cx,top,k){const y=top+6,a=k*(k>=0?84:130),m=JR.m,c=(y-a).toFixed(1);return 'M'+(cx-m)+' '+y+' C'+(cx-m*.9)+' '+c+' '+(cx+m*.9)+' '+c+' '+(cx+m)+' '+y}
-function jarArt(cx,base,o){o=o||{};const w=JR.w,h=JR.h,top=base-h,m=JR.m;let g=o.noShadow?'':shadow(cx,base+4,w+8);
- const out='M'+(cx-w)+' '+(base-10)+' Q'+(cx-w)+' '+base+' '+(cx-w+10)+' '+base+' H'+(cx+w-10)+' Q'+(cx+w)+' '+base+' '+(cx+w)+' '+(base-10)+' V'+(top+40)+' Q'+(cx+w)+' '+(top+22)+' '+(cx+m)+' '+(top+16)+' V'+top+' H'+(cx-m)+' V'+(top+16)+' Q'+(cx-w)+' '+(top+22)+' '+(cx-w)+' '+(top+40)+'Z';
- g+='<path d="'+out+'" fill="rgba(222,240,250,.5)"/><path d="'+out+'" fill="none" stroke="'+GLS+'" stroke-width="4" stroke-linejoin="round"/><path d="M'+(cx-w+12)+' '+(top+50)+' V'+(base-22)+'" stroke="#FFFFFF" stroke-width="6" opacity=".6" stroke-linecap="round"/>';
- g+='<rect x="'+(cx-m-6)+'" y="'+(top-6)+'" width="'+(2*m+12)+'" height="12" rx="4" fill="#C7D4DC" stroke="'+GLS+'" stroke-width="2.5"/>';
- if(o.cap){const k=o.k==null?0:o.k,k0=o.k0;
-  let mp='<path d="'+memPath(cx,top,k)+' Z" fill="'+RUB+'" fill-opacity=".8" stroke="'+RUBS+'" stroke-width="5" stroke-linejoin="round">';
-  if(k0!=null)mp+='<animate attributeName="d" from="'+memPath(cx,top,k0)+' Z" to="'+memPath(cx,top,k)+' Z" dur="'+(o.dur||2.4)+'s" fill="freeze" calcMode="spline" keySplines=".3 0 .4 1" keyTimes="0;1"/>';
-  g+='<g'+(o.capAnim?an('lb-a-down',0,'--from:-80px'):'')+'>'+mp+'</path><rect x="'+(cx-m-9)+'" y="'+(top-10)+'" width="'+(2*m+18)+'" height="26" rx="6" fill="'+RUB+'" stroke="'+RUBS+'" stroke-width="2.5"/><path d="M'+(cx-m-10)+' '+(top+8)+' H'+(cx+m+10)+'" stroke="#6B4A2B" stroke-width="5"'+(o.capAnim?an('lb-a-fade',.9):'')+'/></g>'}
+/* 눈금실린더(세워 둠). lv 물 높이 px */
+function cylArt(cx,base,lv,o){o=o||{};const w=17,h=236,top=base-h;let g=shadow(cx,base+4,40)+'<path d="M'+(cx-36)+' '+base+' h72 l-6 -14 h-60z" fill="#DCE6EC" stroke="'+GLS+'" stroke-width="2.5"/>';
+ g+='<rect x="'+(cx-w)+'" y="'+top+'" width="'+(2*w)+'" height="'+(h-14)+'" fill="rgba(232,244,250,.45)"/>';
+ if(lv)g+='<rect x="'+(cx-w+3)+'" y="'+(base-14-lv)+'" width="'+(2*w-6)+'" height="'+lv+'" fill="'+WC+'" fill-opacity=".85"/>';
+ g+='<rect x="'+(cx-w)+'" y="'+top+'" width="'+(2*w)+'" height="'+(h-14)+'" fill="none" stroke="'+GLS+'" stroke-width="3"/>';
+ for(let i=1;i<=10;i++)g+='<path d="M'+(cx-w)+' '+(base-14-i*20)+' h'+(i%5?8:14)+'" stroke="'+GLS+'" stroke-width="1.8"/>';
  return g}
-/* 수조. kind 'hot'(뜨거운 물) | 'ice'(얼음물). inner = 수조 안에 넣은 것 */
-const TKW=170,TKH=150;
-function tankArt(cx,base,kind,inner){const w=TKW,h=TKH,top=base-h,lv=base-110;let g=shadow(cx,base+4,w+10);
- const wc=kind==='hot'?'#F4C3A6':'#A9D6EE';
- g+='<rect x="'+(cx-w)+'" y="'+top+'" width="'+(2*w)+'" height="'+h+'" rx="10" fill="rgba(232,244,250,.35)"/>';
- g+='<rect x="'+(cx-w+4)+'" y="'+lv+'" width="'+(2*w-8)+'" height="'+(base-lv-4)+'" rx="8" fill="'+wc+'" fill-opacity=".55"/>';
- if(inner)g+=inner;
- g+='<rect x="'+(cx-w+4)+'" y="'+lv+'" width="'+(2*w-8)+'" height="'+(base-lv-4)+'" rx="8" fill="'+wc+'" fill-opacity=".5"/><path d="M'+(cx-w+4)+' '+lv+' H'+(cx+w-4)+'" stroke="'+(kind==='hot'?'#C9784B':'#4E8FB8')+'" stroke-width="3"/>';
- if(kind==='ice')[[-130,0],[-80,8],[90,2],[135,10],[-150,26],[120,34]].forEach(([dx,dy],i)=>{const x=cx+dx,y=lv-12+dy;g+='<rect x="'+(x-15)+'" y="'+(y-12)+'" width="30" height="28" rx="6" transform="rotate('+(i*13-20)+' '+x+' '+y+')" fill="#F2F8FB" stroke="#8AB4C8" stroke-width="2"/>'});
- if(kind==='hot')[-110,-40,40,110].forEach(dx=>{g+='<path d="M'+(cx+dx)+' '+(lv-12)+' q-10 -16 0 -32 t0 -32" fill="none" stroke="#E5A06B" stroke-width="4" stroke-linecap="round" opacity=".75"/>'});
- g+='<rect x="'+(cx-w)+'" y="'+top+'" width="'+(2*w)+'" height="'+h+'" rx="10" fill="none" stroke="'+GLS+'" stroke-width="4"/>';
+/* 물을 따르는 눈금실린더(기울임) */
+function pourCyl(x,y,rot,anim){return '<g'+(anim?an('lb-a-fade',0):'')+'><g transform="translate('+x+' '+y+') rotate('+rot+')"><rect x="-15" y="-150" width="30" height="150" fill="rgba(232,244,250,.55)" stroke="'+GLS+'" stroke-width="3"/><rect x="-12" y="-60" width="24" height="57" fill="'+WC+'"/></g></g>'}
+function streamArt(x1,y1,x2,y2){return '<path d="M'+x1+' '+y1+' Q'+(x1+6)+' '+((y1+y2)/2)+' '+x2+' '+y2+'" stroke="'+WC+'" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="12 8"'+an('lb-a-stream',0)+'/>'}
+/* 흰 종이(비커 뒤) */
+function paperBack(x,y,w,h,anim){return '<g'+(anim?an('lb-a-up',0,'--from:60px'):'')+'><rect x="'+(x+6)+'" y="'+(y+8)+'" width="'+w+'" height="'+h+'" rx="6" fill="var(--w-shadow)"/><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6" fill="#FFFFFF" stroke="#C9CFD4" stroke-width="2"/></g>'}
+/* 철끈(모루)으로 만든 모양과 백반 알갱이 */
+function moruArt(cx,cy,n){let g='<path d="M'+cx+' '+(cy-60)+' V'+(cy-34)+'" stroke="#8A8F96" stroke-width="2"/><path d="M'+cx+' '+(cy-34)+' L'+(cx+26)+' '+cy+' L'+cx+' '+(cy+34)+' L'+(cx-26)+' '+cy+'Z" fill="none" stroke="#C0569A" stroke-width="7" stroke-linejoin="round"/>';
+ const P=[[cx,cy-34],[cx+26,cy],[cx,cy+34],[cx-26,cy]];
+ for(let k=0;k<n;k++){const p=P[k%4],q=P[(k+1)%4],f=rnd(k,3),x=p[0]+(q[0]-p[0])*f,y=p[1]+(q[1]-p[1])*f,s=4+rnd(k,4)*5;g+='<path d="M'+x.toFixed(1)+' '+(y-s).toFixed(1)+' l'+s.toFixed(1)+' '+s.toFixed(1)+' l'+(-s).toFixed(1)+' '+s.toFixed(1)+' l'+(-s).toFixed(1)+' '+(-s).toFixed(1)+'z" fill="#FFFFFF" stroke="#8FB9D6" stroke-width="1.5"/>'}
  return g}
-/* 주사기(옆으로 눕힘). V = 주사기 속 공기의 부피(mL), 눈금 0~60 */
-const SY={y:378,x0:232,k:8};
-const SX=v=>SY.x0+v*SY.k;
-function syringe(V,o){o=o||{};const y=SY.y,x1=SX(60)+14;let g='';
- g+='<rect x="168" y="'+(y-9)+'" width="'+(SY.x0-170)+'" height="18" rx="4" fill="rgba(222,240,250,.8)" stroke="'+GLS+'" stroke-width="3"/>';
- g+='<rect x="'+(SY.x0-4)+'" y="'+(y-34)+'" width="'+(x1-SY.x0+4)+'" height="68" rx="8" fill="rgba(222,240,250,.55)" stroke="'+GLS+'" stroke-width="3.5"/>';
- let t='';for(let v=0;v<=60;v+=2){const x=SX(v),big=v%10===0;t+='<path d="M'+x+' '+(y-34)+' v'+(big?18:9)+'" stroke="#3B4650" stroke-width="'+(big?2.6:1.6)+'"/>';if(big)t+='<text x="'+x+'" y="'+(y-44)+'" text-anchor="middle" font-size="20" font-weight="800" fill="var(--w-labeltx)">'+v+'</text>'}
- g+=t+'<text x="'+(x1+30)+'" y="'+(y-44)+'" text-anchor="middle" font-size="18" font-weight="800" fill="var(--w-labeltx)">mL</text>';
- g+='<rect x="'+(x1-2)+'" y="'+(y-58)+'" width="14" height="116" rx="5" fill="#C7D4DC" stroke="'+GLS+'" stroke-width="2.5"/>';
- /* 피스톤(고무 머리 + 막대 + 누르는 판) */
- const pg='<rect x="0" y="'+(y-31)+'" width="18" height="62" rx="4" fill="#2C333A"/><rect x="18" y="'+(y-7)+'" width="246" height="14" fill="#E3E8ED" stroke="#7F8C99" stroke-width="2"/><rect x="262" y="'+(y-46)+'" width="14" height="92" rx="5" fill="#E3E8ED" stroke="#7F8C99" stroke-width="2.5"/>'+(o.push?hand(330,y,180,1.15,1):'');
- g+='<g transform="translate('+SX(V)+' 0)"><g'+(o.from!=null?an('lb-a-slide',0,'--dx:'+((o.from-V)*SY.k)+'px;animation-duration:'+(o.dur||1.6)+'s'):'')+'>'+pg+'</g></g>';
- if(o.cap)g+='<g'+(o.capAnim?an('lb-a-slide',0,'--dx:-90px'):'')+'><rect x="140" y="'+(y-15)+'" width="32" height="30" rx="7" fill="#3A78C8" stroke="#1D4A80" stroke-width="2.5"/></g>';
- if(o.puff)g+='<g class="lb-a lb-a-pulse">'+[[-20,-14],[-28,0],[-20,14]].map(([dx,dy])=>arrow(160,y,160+dx*2.4,y+dy*2.2,'#4E8FB8',4)).join('')+'</g>';
+function crystalsBottom(cx,base,w,n){let g='';for(let k=0;k<n;k++){const s=2.5+rnd(k,6)*4,x=cx-w+rnd(k,5)*2*w;g+='<path d="M'+x.toFixed(1)+' '+(base-s).toFixed(1)+' l'+s.toFixed(1)+' '+s.toFixed(1)+' l'+(-s).toFixed(1)+' '+s.toFixed(1)+' l'+(-s).toFixed(1)+' '+(-s).toFixed(1)+'z" fill="#FFFFFF" stroke="#8FB9D6" stroke-width="1.2"/>'}return g}
+/* 가루를 담은 작은 그릇(준비물·예상 그림) */
+function heap(cx,base,col,st,crys){let g='<path d="M'+(cx-40)+' '+(base-26)+' h80 q-4 26 -40 26 q-36 0 -40 -26z" fill="#E9EEF2" stroke="#8796A3" stroke-width="2.5"/><path d="M'+(cx-34)+' '+(base-26)+' Q'+cx+' '+(base-50)+' '+(cx+34)+' '+(base-26)+'Z" fill="'+col+'" stroke="'+st+'" stroke-width="1.5"/>';
+ if(crys)for(let k=0;k<5;k++){const x=cx-20+k*10,y=base-32-rnd(k,9)*8;g+='<path d="M'+x+' '+(y-4)+' l4 4 l-4 4 l-4 -4z" fill="#FFFFFF" stroke="#9FB4C4" stroke-width="1"/>'}
  return g}
-/* 공기 주입기(풍선용 손 펌프)·풍선 클립·가위·고무줄 */
-function injector(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><rect x="-16" y="-60" width="32" height="96" rx="7" fill="#5BB37A" stroke="#2E7A4C" stroke-width="2.5"/><path d="M-10 36 L-4 58 H4 L10 36Z" fill="#2E7A4C"/><rect x="-4" y="-96" width="8" height="40" fill="#9AA5AD"/><rect x="-26" y="-104" width="52" height="12" rx="5" fill="#2C333A"/></g>'}
-function clipArt(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><rect x="-22" y="-8" width="44" height="16" rx="5" fill="#2F8F5B" stroke="#1E6440" stroke-width="2"/><path d="M-14 0 H14" stroke="#BFE8CF" stroke-width="3"/></g>'}
-function flatBalloon(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><path d="M-12 -40 Q-22 -20 -10 6 L-6 26 H6 L10 6 Q22 -20 12 -40 Q0 -50 -12 -40Z" fill="'+RUB+'" stroke="'+RUBS+'" stroke-width="2"/></g>'}
-function scissors(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+') rotate(-30)"><path d="M-4 -6 L-6 -60 L4 -60 L4 -6Z" fill="#B9C2CA" stroke="#5D6B78" stroke-width="2"/><path d="M4 -6 L18 -56 L24 -52 L10 -4Z" fill="#B9C2CA" stroke="#5D6B78" stroke-width="2"/><circle cx="-10" cy="12" r="13" fill="none" stroke="#E2573F" stroke-width="6"/><circle cx="16" cy="12" r="13" fill="none" stroke="#E2573F" stroke-width="6"/></g>'}
-function bandArt(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><ellipse rx="34" ry="20" fill="none" stroke="#8A5A2B" stroke-width="6"/></g>'}
-/* 더 알아보기: 차가운 빈 병과 동전 */
-function coinBottle(cx,base,o){o=o||{};let g=shadow(cx,base+4,60);const top=base-230;
- const out='M'+(cx-52)+' '+(base-10)+' Q'+(cx-52)+' '+base+' '+(cx-42)+' '+base+' H'+(cx+42)+' Q'+(cx+52)+' '+base+' '+(cx+52)+' '+(base-10)+' V'+(base-130)+' Q'+(cx+52)+' '+(base-170)+' '+(cx+20)+' '+(base-190)+' V'+top+' H'+(cx-20)+' V'+(base-190)+' Q'+(cx-52)+' '+(base-170)+' '+(cx-52)+' '+(base-130)+'Z';
- g+='<path d="'+out+'" fill="rgba(190,225,214,.5)" stroke="#5E9C88" stroke-width="3.5" stroke-linejoin="round"/>';
- if(o.cold)for(let i=0;i<26;i++)g+='<circle cx="'+(cx-44+rnd(i,91)*88).toFixed(1)+'" cy="'+(base-16-rnd(i,92)*110).toFixed(1)+'" r="'+(1.5+rnd(i,93)*1.8).toFixed(1)+'" fill="#FFFFFF" opacity=".8"/>';
- g+='<g'+(o.jiggle?' class="lb-a lb-a-coin"':'')+'><ellipse cx="'+cx+'" cy="'+(top-3)+'" rx="30" ry="8" fill="#E1B94A" stroke="#9A7A1C" stroke-width="2.5"/></g>';
- if(o.hands)g+='<g'+an('lb-a-fade',0)+'>'+[-1,1].map(d=>'<path d="M'+(cx+d*96)+' '+(base-150)+' Q'+(cx+d*40)+' '+(base-150)+' '+(cx+d*30)+' '+(base-100)+' Q'+(cx+d*26)+' '+(base-40)+' '+(cx+d*44)+' '+(base-24)+' L'+(cx+d*96)+' '+(base-30)+'Z" fill="#F2C6A0" stroke="#B9875F" stroke-width="2.5"/>'+[0,1,2].map(i=>'<path d="M'+(cx+d*44)+' '+(base-130+i*26)+' Q'+(cx+d*30)+' '+(base-122+i*26)+' '+(cx+d*36)+' '+(base-110+i*26)+'" fill="none" stroke="#B9875F" stroke-width="2"/>').join('')+'<rect x="'+(d<0?cx-136:cx+96)+'" y="'+(base-158)+'" width="40" height="136" rx="10" fill="#5C8FCB" stroke="#3D6A9C" stroke-width="2"/>').join('')+'</g>';
- return g}
+/* 물이 든 주전자 모양 병(준비물) */
+function waterJug(cx,base){return '<g><path d="M'+(cx-26)+' '+(base-80)+' h52 v68 q0 12 -12 12 h-28 q-12 0 -12 -12z" fill="rgba(232,244,250,.5)" stroke="'+GLS+'" stroke-width="3"/><path d="M'+(cx-23)+' '+(base-52)+' h46 v40 q0 10 -10 10 h-26 q-10 0 -10 -10z" fill="'+WC+'"/><path d="M'+(cx+26)+' '+(base-72)+' q20 4 18 26 q-2 14 -18 16" fill="none" stroke="'+GLS+'" stroke-width="4"/><path d="M'+(cx-26)+' '+(base-80)+' l-10 -8" stroke="'+GLS+'" stroke-width="3"/></g>'}
+
 /* ───────── 준비물 카드 ───────── */
-function itemArt(k){const A={
-  pet:'<g transform="translate(0 60) scale(.42)">'+petBottle(0,0,{}).replace(/<ellipse[^>]*\/>/,'')+'</g>',
-  injcap:'<g transform="translate(0 4) scale(1.5)"><rect x="-17" y="-2" width="34" height="22" rx="4" fill="#3A78C8" stroke="#1D4A80" stroke-width="2"/><rect x="-8" y="-24" width="16" height="24" rx="3" fill="#E3E8ED" stroke="#5D6B78" stroke-width="2"/><rect x="-14" y="-30" width="28" height="9" rx="4" fill="#F2B33D" stroke="#9A6B12" stroke-width="2"/></g>',
-  scale:'<g transform="translate(-50 -96) scale(.32)">'+escale(160,{}).replace(/<ellipse[^>]*\/>/,'')+'</g>',
+function itemArt(k){const sc=(sv,s,y)=>'<g transform="translate(0 '+(y||0)+') scale('+s+')">'+sv.replace(/<ellipse[^>]*fill="var\(--w-shadow\)"[^>]*\/>/,'')+'</g>';
+ const A={
+  water:sc(waterJug(0,0),1.1,52),
+  sugar:sc(heap(0,0,'#FFFFFF','#B8C2CA'),1,40),
+  salt:sc(heap(0,0,'#FBFBFB','#AEB8C0'),1,40),
+  vit:sc(heap(0,0,VITC,VITS),1,40),
+  calc:sc(heap(0,0,'#F6F6F2','#C3C3BA'),1,40),
+  alum:sc(heap(0,0,'#F4F8FB','#A9BCCB',1),1,40),
+  ysugar:sc(heap(0,0,YSC,YSS),1,40),
+  wsugar:sc(heap(0,0,'#FFFFFF','#B8C2CA'),1,40),
+  jar3:sc(glassJar(-46,0,{noShadow:1,s:.62})+glassJar(0,0,{noShadow:1,s:.62})+glassJar(46,0,{noShadow:1,s:.62}),.95,48),
+  jar:sc(glassJar(0,0,{noShadow:1,s:.8}),1,54),
+  spoon3:spoonArt(30,-18,-8)+spoonArt(34,0,-8)+spoonArt(38,18,-8),
+  spoon:spoonArt(32,0,-10),
+  watch:'<g transform="scale(.6)">'+stopwatch(0,10,'00:00',1)+'</g>',
+  sticker:sticker(0,-30,'',0)+sticker(0,4,'',0),
+  pen:pen(0,40,LCOL.k,30),
   gear:coat(-30,4,.5)+goggles(28,-24,.5)+hand(30,26,-60,.55,1),
-  vac:'<g transform="translate(-10 52) scale(.36)">'+vacJar(0,0,{lid:1}).replace(/<ellipse[^>]*\/>/,'')+'</g><g transform="translate(52 56) scale(.36)">'+vacPump(0,0,false)+'</g>',
-  flat:flatBalloon(0,6,1.1),
-  scis:scissors(0,10,.95),
-  jar:'<g transform="translate(0 30) scale(.42)">'+jarArt(0,0,{noShadow:1})+'</g>',
-  band:bandArt(0,0,1),
-  hotTank:'<g transform="translate(0 30) scale(.36)">'+tankArt(0,0,'hot').replace(/<ellipse[^>]*\/>/,'')+'</g>',
-  iceTank:'<g transform="translate(0 30) scale(.36)">'+tankArt(0,0,'ice').replace(/<ellipse[^>]*\/>/,'')+'</g>',
-  towel:towel(0,0),
-  syr:'<g transform="translate(-126 -96) scale(.26)">'+syringe(40,{})+'</g>',
-  scap:'<g transform="scale(1.6)"><rect x="-16" y="-15" width="32" height="30" rx="7" fill="#3A78C8" stroke="#1D4A80" stroke-width="2.5"/></g>',
-  inj:injector(0,24,.8),
-  clip:clipArt(0,0,1.6)};
+  cube:cubeArt(0,22,1.5),
+  dish:dishArt(0,26),
+  scale:'<g transform="translate(-50 -96) scale(.32)">'+escale(160,{}).replace(/<ellipse[^>]*\/>/,'')+'</g>',
+  tweez:tweezArt(0,52,20),
+  beaker3:sc(beakerArt(-50,0,{noShadow:1})+beakerArt(0,0,{noShadow:1})+beakerArt(50,0,{noShadow:1}),.46,50),
+  beaker2:sc(beakerArt(-44,0,{noShadow:1})+beakerArt(44,0,{noShadow:1}),.5,50),
+  cyl:sc(cylArt(0,0,0).replace(/<ellipse[^>]*\/>/,''),.4,50),
+  rod3:rodArt(-14,-50,96,-12)+rodArt(0,-50,96,0)+rodArt(14,-50,96,12),
+  rod2:rodArt(-8,-50,96,-8)+rodArt(8,-50,96,8),
+  cold:sc(beakerArt(0,0,{noShadow:1,ml:60,inner:'<rect x="-30" y="-74" width="22" height="18" rx="3" fill="#EAF6FC" stroke="#8FB9D6" stroke-width="2" transform="rotate(-12 -19 -65)"/><rect x="6" y="-70" width="20" height="16" rx="3" fill="#EAF6FC" stroke="#8FB9D6" stroke-width="2"/>'}),.5,48),
+  warm:sc(beakerArt(0,0,{noShadow:1,ml:60,steam:1}),.5,48),
+  wpaper:'<rect x="-50" y="-58" width="100" height="116" rx="6" fill="#FFFFFF" stroke="#C9CFD4" stroke-width="2.5"/>',
+  tomato:tomatoArt(-16,10,20)+tomatoArt(22,16,20),
+  towel:towel(0,0)};
  return A[k]||''}
-/* 처음 크기(점선) — 바뀐 뒤에 견주어 보도록 */
-function balloonGhost(x,bottom){return '<ellipse cx="'+x+'" cy="'+(bottom-50)+'" rx="30" ry="36" fill="none" stroke="var(--w-labeltx)" stroke-width="2.5" stroke-dasharray="7 6" opacity=".7"/>'}
