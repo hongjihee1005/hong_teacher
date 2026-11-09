@@ -2924,7 +2924,8 @@ const SHAPE_I={flat:0,fold:1,fault:2};
 /* 실험 2: 컵 속의 것(원본 u1-2의 MAT) · 다른 모둠 모형(이 실험관에서 정한 차례: 아래부터) */
 const MAT={gs:{n:'자갈과 모래',c:'#c9a46c',h:52},s:{n:'모래',c:'#e8cf8a',h:42},m:{n:'진흙',c:'#8a6a4c',h:36}};
 const MATK=['gs','s','m'],MATN=MATK.map(k=>MAT[k].n);
-const OTHER=['m','gs','s'];
+/* 다른 모둠 모형: 학생이 부은 차례와 같으면 다른 차례를 보여 줌(같은 조건이면 언제나 같은 결과) */
+function other(){return (R().st.ord||[]).join()==='m,gs,s'?['s','m','gs']:['m','gs','s']}
 
 /* 실험 3: 퇴적암 표본 ①~⑥(원본 u1-3의 ROCKS — k: small 작음 · mid 중간 · big 큼, soft 만졌을 때 부드러움, col 색깔 0 갈색 · 1 노란색 · 2 회색, see 돋보기 0 잘 안 보임 · 1 모래만 함 · 2 큰 것이 섞임) */
 const ROCKS=[
@@ -2955,7 +2956,7 @@ const ROWS={
  shape:{n:'경계 선의 모양',t:'sel',need:[0,1,2,3,4,5].map(i=>'p'+(i+1)),f:CARDS.map((c,i)=>({l:CN(i),o:['수평','휘어짐','끊어짐'],ok:SHAPE_I[c.shape]}))},
  stack:{n:'통 속에 쌓인 차례',t:'sel',need:['pgs','ps','pm'],f:()=>{const o=(R().st.ord||[]);return [['맨 아래층',0],['가운데 층',1],['맨 위층',2]].map(x=>({l:x[0],o:MATN,ok:o[x[1]]!=null?MATK.indexOf(o[x[1]]):-1}))}},
  tcol:{n:'쌓인 층의 모습',t:'sel',need:['l1','l2','l3'],f:[yn('층과 층 사이','경계가 보여요','모두 섞였어요',0),yn('층마다 색깔','서로 달라요','모두 같아요',0)]},
- oth:{n:'다른 모둠 모형의 차례',t:'sel',need:['o1','o2','o3'],f:[['1번째로 쌓인 층',0],['2번째로 쌓인 층',1],['3번째로 쌓인 층',2]].map(x=>({l:x[0],o:MATN,ok:MATK.indexOf(OTHER[x[1]])}))},
+ oth:{n:'다른 모둠 모형의 차례',t:'sel',need:['o1','o2','o3'],f:()=>{const O=other();return [['1번째로 쌓인 층',0],['2번째로 쌓인 층',1],['3번째로 쌓인 층',2]].map(x=>({l:x[0],o:MATN,ok:MATK.indexOf(O[x[1]])}))}},
  cmpr:{n:'모형과 실제 지층',t:'sel',need:['rm','rr'],f:[yn('층층이 쌓인 모습','둘 다 보여요','모형에만 있어요',0),yn('단단한 정도','실제 지층이 더 단단해요','둘 다 같아요',0),yn('만들어지는 데 걸리는 때','실제 지층이 훨씬 오래 걸려요','둘 다 금방 만들어져요',0)]},
  feel:{n:'만졌을 때의 느낌',t:'sel',need:[1,2,3,4,5,6].map(i=>'t'+i),f:ROCKS.map((r,i)=>yn(RN(i),'부드러워요','거칠어요',r.soft?0:1))},
  col:{n:'퇴적암의 색깔',t:'sel',need:[1,2,3,4,5,6].map(i=>'c'+i),f:ROCKS.map((r,i)=>({l:RN(i),o:['갈색','노란색','회색'],ok:r.col}))},
@@ -2990,8 +2991,8 @@ const EXPS={
   predT:'컵 속의 것을 차례대로 부으면 어떻게 쌓일지 예상해요',predHint:'세 컵을 하나씩 차례대로 붓는다고 생각하고 골라요.',
   pred:[{q:'처음 부은 것은 어디에 있게 될까요?',o:['맨 아래에','맨 위에','섞여서 어디에나']},{q:'세 컵을 다 부으면 통 속은?',o:['층이 생길 것 같아요','모두 섞일 것 같아요']}],
   rows:['stack','tcol','oth','cmpr'],
-  frame:'처음 부은 것은 통의 {0} 쌓였고, 나중에 부은 것일수록 위에 쌓였어요. 그래서 지층의 아래에 있는 층은 위에 있는 층보다 {1} 만들어진 것이에요. 실제 지층은 {2} 단단히 굳어져 만들어져요.',ans:['가장 아래에','먼저','오랜 시간에 걸쳐'],chips:['가장 아래에','가장 위에','먼저','나중에','오랜 시간에 걸쳐','하루 만에'],
-  hint:['\'통 속에 쌓인 차례\' 기록에서 처음 부은 것을 찾아봐요.','돌탑을 쌓을 때 아래에 있는 돌은 언제 쌓았을까요?','\'모형과 실제 지층\' 기록을 봐요.'],
+  frame:'처음 부은 것은 통의 {0} 쌓였고, 나중에 부은 것일수록 위에 쌓였어요. 그래서 지층의 아래에 있는 층은 위에 있는 층보다 {1} 만들어진 것이에요.',ans:['가장 아래에','먼저'],chips:['가장 아래에','가장 위에','먼저','나중에'],
+  hint:['\'통 속에 쌓인 차례\' 기록에서 처음 부은 것을 찾아봐요.','돌탑을 쌓을 때 아래에 있는 돌은 언제 쌓았을까요?'],
   book:'흐르는 물이 운반한 자갈, 모래, 진흙 등이 바다나 호수 밑바닥에 쌓이고, 계속 쌓이면 먼저 쌓인 것이 눌립니다. 오랜 시간이 지나면 단단히 굳어져 지층이 만들어지고, 지층이 땅 위로 드러난 뒤 깎이면 지층을 볼 수 있습니다. 지층의 아래에 있는 층은 위에 있는 층보다 먼저 만들어진 것입니다.'},
  e3:{no:3,name:'퇴적암 관찰하기',sub:'퇴적암 표본 6개 · 흰 종이 · 번호 붙임딱지 · 돋보기',title:'퇴적암 여섯 개를 관찰하고 나누어 보자',q:'퇴적암 ①~⑥을 관찰하면 무엇을 기준으로 나눌 수 있을까요?',
   tools:[['rocks','퇴적암 표본 6개'],['wpaper','흰 종이'],['sticker','번호 붙임딱지'],['loupe','돋보기'],['coat','실험복'],['cglove','면장갑']],
@@ -3010,7 +3011,7 @@ const EXPS={
   look:['화석의 생김새를 봐요.','오늘날의 생물과 견줘 봐요.','생물의 몸이 남았는지, 생물이 남긴 자국인지 봐요.'],
   steps:['intro','tools','gear','paper','pred','loupe','like','kind','concl','sheet'],
   predT:'화석을 자세히 보기 전에 예상해요',predHint:'종이 위에 놓인 화석 표본을 보며 하나씩 골라요.',
-  pred:[{q:'여러 화석의 생김새는?',o:['모두 비슷할 것 같아요','여러 가지일 것 같아요']},{q:'오늘날의 생물과 닮은 화석이 있을까요?',o:['있을 것 같아요','없을 것 같아요']}],
+  pred:[{q:'오늘날의 생물과 닮은 화석이 있을까요?',o:['있을 것 같아요','없을 것 같아요']},{q:'생물의 몸이 아닌 것도 화석이 될 수 있을까요?',o:['될 수 있을 것 같아요','몸만 화석이 될 것 같아요']}],
   rows:['fsh','like','kind'],
   frame:'여러 화석은 종류와 생김새가 {0}. 오늘날의 생물과 생김새가 {1} 화석도 있어요. 생물의 몸뿐만 아니라 발자국 같은 생물의 {2}도 화석이 될 수 있어요.',ans:['다양해요','비슷한','흔적'],chips:['다양해요','모두 같아요','비슷한','전혀 다른','흔적','색깔'],
   hint:['\'돋보기로 본 생김새\' 기록을 봐요.','\'닮은 오늘날의 생물\' 기록을 봐요.','새 발자국은 생물의 몸이었나요, 생물이 남긴 것이었나요?'],
@@ -3021,7 +3022,7 @@ const EXPS={
   look:['찰흙에 남은 것을 봐요.','굳은 석고에 생긴 모양을 봐요.','화석 모형과 실제 조개 화석을 견줘요.'],
   steps:['intro','tools','gear','clay','press','water','plaster','pred','wait','open','cmp','concl','sheet'],
   predT:'굳은 석고를 떼어 내면 어떤 모양일지 예상해요',predHint:'찰흙 위로 물과 석고 가루를 넣은 그릇을 보며 하나씩 골라요.',
-  pred:[{q:'찰흙에 남아 있을 것은?',o:['오목한 자국','볼록한 조개 모양','아무것도 없어요']},{q:'굳은 석고에 생길 것은?',o:['볼록한 조개 모양','오목한 자국','평평한 면']}],
+  pred:[{q:'굳은 석고에 생길 것은?',o:['볼록한 조개 모양','오목한 자국','평평한 면']},{q:'석고에 조개껍데기의 줄무늬도 생길까요?',o:['생길 것 같아요','생기지 않을 것 같아요']}],
   rows:['hard','res','cmpf'],
   frame:'찰흙에는 {0} 자국이 남았고, 석고에는 볼록한 조개 모양이 생겼어요. 석고 가루는 생물의 흔적 위로 쌓이는 {1}을 나타내요. 모형과 실제 화석은 생김새가 {2} 만들어지는 때가 달라요.',ans:['오목한','퇴적물','비슷하지만'],chips:['오목한','볼록한','퇴적물','생물','비슷하지만','전혀 다르고'],
   hint:['\'떼어 낸 뒤의 모습\' 기록에서 찰흙을 봐요.','물에 실려 와서 생물 위로 쌓이는 자갈, 모래, 진흙을 무엇이라고 했나요?','\'모형과 실제 조개 화석\' 기록을 봐요.'],
@@ -3274,13 +3275,13 @@ function grains(rk,i,P,cx,cy,hw,hh,sc,nmax){const [a,b]=rk.gs;let g='';
   const rr=(a+rnd(i*31+j,63)*(b-a))*sc*(rnd(j,64+i)<.75&&b>8?.35:1);g+='<ellipse cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" rx="'+rr.toFixed(1)+'" ry="'+(rr*.8).toFixed(1)+'" fill="'+rk.gc[Math.floor(rnd(j,65+i)*rk.gc.length)]+'"'+(rr>4.5?' stroke="#3b3a35" stroke-opacity=".35"':'')+'/>'}}
  else if(!P){for(let j=0;j<260;j++){const x=cx-hw+rnd(i*97+j,66)*hw*2,y=cy-hh+rnd(i*97+j,67)*hh*2;g+='<circle cx="'+x.toFixed(1)+'" cy="'+y.toFixed(1)+'" r="1" fill="'+rk.gc[1]+'" opacity=".75"/>'}}
  return g}
-function rock6(i,cx,cy,r,o){o=o||{};const rk=ROCKS[i],P=rockPoly6(i,cx,cy,r);let g='<path d="'+P2(P)+'" fill="'+rk.bg+'" stroke="#3b3a35" stroke-width="2.5" stroke-linejoin="round"/>'+grains(rk,i,P,cx,cy,r*1.2,r*.9,r/68,300);
+function rock6(i,cx,cy,r,o){o=o||{};const rk=ROCKS[i],P=rockPoly6(i,cx,cy,r);let g='<path d="'+P2(P)+'" fill="'+rk.bg+'" stroke="#3b3a35" stroke-width="2.5" stroke-linejoin="round"/>'+(o.plain?'':grains(rk,i,P,cx,cy,r*1.2,r*.9,r/68,300));
  if(o.hl)g+='<path d="'+P2(rockPoly6(i,cx,cy,r+12))+'" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
  if(o.stk)g+='<g'+(o.stkAnim?an('lb-a-pop',.2+i*.12):'')+'>'+chip(cx-r*.85,cy-r*.62,i+1,Math.max(13,r*.25))+'</g>';
  return g}
 const R6POS=[0,1,2,3,4,5].map(i=>[230+(i%3)*250,200+Math.floor(i/3)*160]);
 function paper6(o){o=o||{};let g=bgTop()+(o.nopaper?'':'<g'+(o.paperAnim?an('lb-a-slide',0,'--dx:-900px'):'')+'><rect x="96" y="108" width="780" height="340" rx="6" fill="var(--w-shadow)"/><rect x="90" y="100" width="780" height="340" rx="6" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2"/></g>');
- R6POS.forEach((p,i)=>{g+=rock6(i,p[0],p[1],64,{stk:o.stk,stkAnim:o.stkAnim,hl:o.hl===i})});return g}
+ R6POS.forEach((p,i)=>{g+=rock6(i,p[0],p[1],64,{stk:o.stk,stkAnim:o.stkAnim,hl:o.hl===i,plain:o.plain})});return g}
 /* 돋보기 속 모습(3배) */
 function loupeView(i,cx,cy,R){const rk=ROCKS[i],id='lp'+i+'r'+R;
  return '<clipPath id="'+id+'"><circle cx="'+cx+'" cy="'+cy+'" r="'+R+'"/></clipPath><circle cx="'+cx+'" cy="'+cy+'" r="'+R+'" fill="'+rk.bg+'"/><g clip-path="url(#'+id+')">'+grains(rk,i+40,null,cx,cy,R,R,2.8,420)+'</g>'+
@@ -3322,7 +3323,7 @@ function fosAt(i,x,y,s,o){o=o||{};let g='<g transform="translate('+x+' '+y+') sc
  if(o.hl)g+='<rect x="'+(x-10)+'" y="'+(y-10)+'" width="'+(200*s+20)+'" height="'+(150*s+20)+'" rx="16" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';return g}
 function paperF(o){o=o||{};let g=bgTop()+(o.nopaper?'':'<g'+(o.paperAnim?an('lb-a-slide',0,'--dx:-900px'):'')+'><rect x="96" y="98" width="790" height="390" rx="6" fill="var(--w-shadow)"/><rect x="90" y="90" width="790" height="390" rx="6" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2"/></g>');
  if(o.nofos)return g;
- FOS.forEach((f,i)=>{const p=F6POS[i];g+='<g'+(o.anim?an('lb-a-pop',.3+i*.12):'')+'>'+fosAt(i,p[0]+10,p[1],.9,{hl:o.hl===i})+'</g>'+mini(p[0]+100,p[1]+158,f.n,18)});return g}
+ FOS.forEach((f,i)=>{const p=F6POS[i];g+='<g'+(o.anim?an('lb-a-pop',.3+i*.12):'')+'>'+fosAt(i,p[0]+18,p[1]+4,.82,{hl:o.hl===i})+'</g>'+(o.noname?'':mini(p[0]+100,p[1]+150,f.n,17))});return g}
 const F6S=[0,1,2,3,4,5].map(i=>[70+(i%2)*170,80+Math.floor(i/2)*130]);
 function fosLoupe(i,o){o=o||{};let g=bgTop()+'<rect x="50" y="62" width="380" height="410" rx="6" fill="#FFFDF8" stroke="#BDB3A2" stroke-width="2"/>';
  F6S.forEach((p,j)=>{g+=fosAt(j,p[0],p[1],.7,{hl:j===i})});
@@ -3511,7 +3512,7 @@ function e1Scene(s){const r=R(),id=s.id,se=r.seen;
 /* 실험 2: 지층 모형 */
 const ord=()=>R().st.ord||[];
 function tankSpot(){const i=curI('l');if(i==null)return null;return [480,layerMid(ord(),i),44,2,180,165]}
-function otherSpot(){const i=curI('o');if(i==null)return null;return [480,layerMid(OTHER,i),44,2,180,165]}
+function otherSpot(){const i=curI('o');if(i==null)return null;return [480,layerMid(other(),i),44,2,180,165]}
 function bigCups(o){o=o||{};let g=bg({});MATK.forEach((k,j)=>{g+=cupArt(300+j*180,416,k,{s:2,fill:o.fill,fillAnim:o.fillAnim,water:o.water,waterAnim:o.waterAnim,nolab:1})+mini(300+j*180,450,MAT[k].n,20)});return g}
 function e2Scene(s){const r=R(),id=s.id,st=r.st;
  if(id==='gear')return bg({})+gearArt(2,has('gear'),fxOn('gear'));
@@ -3522,9 +3523,10 @@ function e2Scene(s){const r=R(),id=s.id,st=r.st;
  if(id==='pour'){const f=UI.fx&&/^p(gs|s|m)$/.test(UI.fx.id)?UI.fx.id.slice(1):null,o=ord().slice();if(f)o.push(f);
   return modelScene({water:.25+.083*o.length,ord:o,grow:!!f,cloud:f,pouring:f})}
  if(id==='layers')return modelScene({water:.5,ord:ord()});
- if(id==='other')return bg({})+tankArt({water:.5,ord:OTHER})+tag(480,470,'다른 모둠 모형',22);
+ if(id==='other')return bg({})+tankArt({water:.5,ord:other()})+tag(480,470,'다른 모둠 모형',22);
  if(id==='real'){const c=UI.mq.cur;let g=bgTop()+'<rect x="76" y="86" width="376" height="290" rx="12" fill="var(--w-wall)"/><rect x="76" y="330" width="376" height="46" fill="var(--w-top)"/>'+tankArt({x:154,w:220,b:338,h:220,water:.5,ord:ord()});
   g+=cliffArt(520,96,360,270)+mini(260,420,'우리 지층 모형',20)+mini(700,420,'실제 지층',20);
+  if(R().seen.rm)g+=mini(264,462,'오늘 부어 만든 모형 · 단단하지 않아요',17);if(R().seen.rr)g+=mini(700,462,'오랜 시간에 걸쳐 단단히 굳은 암석',17);
   if(c==='rm')g+='<rect x="66" y="82" width="390" height="300" rx="14" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
   if(c==='rr')g+='<rect x="506" y="82" width="388" height="298" rx="14" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
   return g}
@@ -3532,8 +3534,8 @@ function e2Scene(s){const r=R(),id=s.id,st=r.st;
 /* 실험 3: 퇴적암 */
 function e3Scene(s){const r=R(),id=s.id,st=r.st;
  if(id==='gear')return bg({})+gearArt(3,has('gear'),fxOn('gear'));
- if(id==='paper'){const on=has('paper');if(!on)return paper6({nopaper:1});return paper6({stk:1,paperAnim:fxOn('paper'),stkAnim:fxOn('paper')})}
- if(id==='pred')return paper6({stk:1})+qmark(480,62);
+ if(id==='paper'){const on=has('paper');if(!on)return paper6({nopaper:1,plain:1});return paper6({stk:1,plain:1,paperAnim:fxOn('paper'),stkAnim:fxOn('paper')})}
+ if(id==='pred')return paper6({stk:1,plain:1})+qmark(480,62);
  if(id==='touch'){const i=curI('t');let g=paper6({stk:1,hl:i});if(i!=null){const p=R6POS[i];g+='<g'+(UI.fx?an('lb-a-pat',0):'')+'>'+cotton(p[0]+40,p[1]-30,-100,1.1)+'</g>'}return g}
  if(id==='color')return paper6({stk:1,hl:curI('c')});
  if(id==='loupe')return loupeScene(curI('l'),{anim:!!UI.fx});
@@ -3545,8 +3547,8 @@ function e3Scene(s){const r=R(),id=s.id,st=r.st;
 /* 실험 4: 화석 */
 function e4Scene(s){const r=R(),id=s.id;
  if(id==='gear')return bg({})+gearArt(4,has('gear'),fxOn('gear'));
- if(id==='paper'){const on=has('paper');if(!on)return bgTop()+boxArt(480);return paperF({paperAnim:fxOn('paper'),anim:fxOn('paper')})}
- if(id==='pred')return paperF({})+qmark(480,60);
+ if(id==='paper'){const on=has('paper');if(!on)return bgTop()+boxArt(480);return paperF({noname:1,paperAnim:fxOn('paper'),anim:fxOn('paper')})}
+ if(id==='pred')return paperF({noname:1})+qmark(480,60);
  if(id==='loupe')return fosLoupe(curI('f'),{anim:!!UI.fx});
  if(id==='like')return likeScene(curI('k'),{anim:!!UI.fx});
  if(id==='kind'){const x=r.rec.kind,D=UI.draft.kind;return kindBoxes(x&&x.ok?x.f:D&&D.f?D.f:[],(r.seen.kb||fxOn('kb'))?(fxOn('kb')?'a':1):0)}
@@ -3567,6 +3569,7 @@ function e5Scene(s){const r=R(),id=s.id,st=r.st,f=UI.fx?UI.fx.id:null;
   if(n<2&&f!=='o2'){const L=n>=1||f==='o1';return bg({})+bowlArt({bag:1,clay:1,imp:1,water:1,plaster:1,hard:1,lift:L,liftAnim:f==='o1'})}
   const c=UI.mq.cur;let g=bgTop()+piecesArt({anim:f==='o2'});if(c==='oc')g+='<rect x="136" y="236" width="308" height="190" rx="16" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';if(c==='op')g+='<rect x="516" y="236" width="308" height="190" rx="16" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';return g}
  if(id==='cmp'){const c=UI.mq.cur;let g=bgTop()+modelShell(130,140,1.5)+realShell(530,140,1.5)+mini(280,420,'화석 모형',20)+mini(680,420,'조개 화석 표본',20);
+  if(R().seen.sm)g+=mini(280,462,'오늘 석고로 만든 모형',17);if(R().seen.sf)g+=mini(680,462,'오랜 시간에 걸쳐 만들어진 화석',17);
   if(c==='sm')g+='<rect x="116" y="126" width="328" height="253" rx="18" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
   if(c==='sf')g+='<rect x="516" y="126" width="328" height="253" rx="18" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';return g}
  return bg({})+bowlArt({bag:1,clay:1})}
@@ -3745,7 +3748,7 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
 const LABNAME='strata';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
  if(no===1){S(cardsTable({face:()=>1,pen:()=>ok('shape'),noBig:1}),'40 108 512 250',ok('shape')?'층의 경계를 따라 선을 그은 지층 카드':'지층 카드 여섯 장')}
- if(no===2){const o=r.st.ord||[];if(o.length)S(bg({})+tankArt({water:.5,ord:o}),'300 90 360 360','우리 모둠 지층 모형');if(ok('oth'))S(bg({})+tankArt({water:.5,ord:OTHER}),'300 90 360 360','다른 모둠 지층 모형')}
+ if(no===2){const o=r.st.ord||[];if(o.length)S(bg({})+tankArt({water:.5,ord:o}),'300 90 360 360','우리 모둠 지층 모형');if(ok('oth'))S(bg({})+tankArt({water:.5,ord:other()}),'300 90 360 360','다른 모둠 지층 모형')}
  if(no===3){S(paper6({stk:1}),'90 100 780 340','퇴적암 ①~⑥');if(ok('see'))S(bgTop()+loupeView(1,150,150,120)+loupeView(0,430,150,120)+loupeView(2,710,150,120),'10 10 860 290','돋보기로 본 ②, ①, ③')}
  if(no===4){S(paperF({}),'90 90 790 390','여러 가지 화석')}
  if(no===5){if(ok('res'))S(bgTop()+piecesArt({}),'120 220 720 250','떼어 낸 찰흙과 석고');if(ok('cmpf'))S(bgTop()+modelShell(130,140,1.5)+realShell(530,140,1.5)+mini(280,420,'화석 모형',20)+mini(680,420,'조개 화석 표본',20),'100 120 760 330','화석 모형과 실제 조개 화석')}
@@ -3804,7 +3807,7 @@ function render(){const H=document.documentElement;H.classList.toggle('lb-big',!
  set($('#lbFoot'),footHTML(v,r,s));
  fitAll();clearTimeout(render.ft);render.ft=setTimeout(fitAll,350)}
 function fitBox(box,inner,min){if(!box||!inner)return;inner.style.zoom='';if(narrow()||!box.clientHeight)return;if(box.scrollHeight<=box.clientHeight+1)return;let z=Math.max(min,box.clientHeight/box.scrollHeight);inner.style.zoom=z.toFixed(3);let n=0;while(box.scrollHeight>box.clientHeight+1&&z>min&&n++<12){z=Math.max(min,z-.02);inner.style.zoom=z.toFixed(3)}}
-function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.6);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.56)}
+function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.76);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.56)}
 function renderScene(){const r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NAR=narrow();LEG=[];
  let over='';
  if(UI.toast)over+='<div class="lb-toast '+(UI.toastK==='info'?'lb-toast3':'lb-toast2')+'" role="status">'+esc(UI.toast)+'</div>';
