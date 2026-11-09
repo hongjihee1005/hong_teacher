@@ -450,10 +450,10 @@ function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0
   if(k==='hot'){g+=tankArt(480,BY,'hot',J);vb='290 150 380 310'}
   if(k==='wipe'){g+=jarArt(440,BY,{cap:1})+towel(560,BY-90);vb='340 180 300 280'}
   if(k==='ice'){g+=tankArt(480,BY,'ice',J);vb='290 150 380 310'}}
- if(no===4){if(k==='fill'){g+=syringe(40,{});vb='130 300 720 140'}
-  if(k==='cap'){g+=syringe(40,{cap:1});vb='130 300 720 140'}
-  if(k==='push'){g+=syringe(40,{cap:1,push:1});vb='130 300 830 140'}
-  if(k==='release'){g+=syringe(40,{cap:1});vb='130 300 720 140'}}
+ if(no===4){if(k==='fill'){g+=syringe(40,{});vb='140 250 600 220'}
+  if(k==='cap'){g+=syringe(40,{cap:1});vb='140 250 600 220'}
+  if(k==='push'){g+=syringe(40,{cap:1,push:1});vb='330 250 600 220'}
+  if(k==='release'){g+=syringe(40,{cap:1});vb='140 250 600 220'}}
  if(no===5){if(k==='ball'){g+=balloon(480,BY,1)+clipArt(560,410,1);vb='400 320 200 140'}
   if(k==='put'||k==='pump'){g+=vacJar(480,BY,{lid:1,pump:1,inner:balloon(480,BY-6,1)});vb='330 0 300 460'}
   if(k==='btn'){g+=vacJar(480,BY,{lid:1,btn:1,press:1,inner:balloon(480,BY-6,1)});vb='330 120 300 340'}}

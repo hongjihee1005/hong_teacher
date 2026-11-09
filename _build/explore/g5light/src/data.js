@@ -61,7 +61,7 @@ const ROWS={
  ccC:{n:'오목 렌즈 · 중심을 지난 빛',t:'sel',need:['c1'],f:[yn('렌즈를 지나며',LC,0)]},
  ccD:{n:'오목 렌즈 · 아래쪽 끝을 지난 빛',t:'sel',need:['c2'],f:[yn('렌즈를 지나며',LO,1)]},
  /* 실험 6 */
- sl:{n:'비스듬히 비춘 빛',t:'sel',need:['i1','i2'],f:[yn('물 표면에서',['꺾여서 나아가요','꺾이지 않고 곧게 나아가요','사라져요'],0)]},
+ sl:{n:'비스듬히 비춘 빛',t:'sel',need:['i1','i2'],f:[yn('물 표면에서',['꺾여서 나아가요','곧게 나아가요','사라져요'],0)]},
  vt:{n:'수직으로 비춘 빛',t:'sel',need:['vt1'],f:[yn('물 표면에서',['꺾이지 않아요','크게 꺾여요'],0)]}};
 function fOf(row){if(ROWS[row].dyn){const o=R().st.obj;return [yn('물체 이름',OBJN,o==null?-1:o)]}return ROWS[row].f}
 
