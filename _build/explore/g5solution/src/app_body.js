@@ -528,10 +528,10 @@ function lensOf(s,g){let sp=s.spot;if(typeof sp==='function')sp=sp();if(!sp||!(a
 function homeArt(no){NAR=true;LEG=[];let g=bg({}),vb='120 70 720 420';
  if(no===1){J1.forEach((x,i)=>{g+=glassJar(x,BY,{label:JN[i],lv:2/3})});vb='170 230 620 240'}
  if(no===2){g+=escale(ES.x,{item:jar2(470,330,{noShadow:1})+CUBE_ON_DISH(610)});vb='340 130 440 330'}
- if(no===3){B3.forEach((x,i)=>{g+=beakerArt(x,BY,{label:BN3[i],ml:50})});vb='170 260 620 210'}
- if(no===4){g+=e4Beakers({});vb='200 200 560 260'}
- if(no===5){g+=e5Beakers({})+heap(820,BY,YSC,YSS);vb='230 210 640 250'}
- if(no===6){g+=e6Beakers({})+tomatoArt(850,BY-20,20);vb='230 210 660 250'}
+ if(no===3){B3.forEach((x,i)=>{g+=beakerArt(x,BY,{label:BN3[i],ml:50})});vb='160 236 640 228'}
+ if(no===4){g+=e4Beakers({});vb='180 200 600 250'}
+ if(no===5){g+=e5Beakers({})+heap(760,BY,YSC,YSS);vb='210 205 620 245'}
+ if(no===6){g+=e6Beakers({})+tomatoArt(762,BY-22,22);vb='210 205 620 245'}
  const s=svg(g,'실험 '+no+' 처음 모습',vb);NAR=false;LEG=[];return s}
 function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fin?'끝냄 · 결과 보기':(r.step+1)+'단계부터 이어서'):'실험 시작하기';
  return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','jar','scl','beaker','thermo','beaker','tomato'][v.no])+'</i><span><b>'+st+'</b><span>교과서 실험</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
