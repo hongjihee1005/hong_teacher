@@ -142,11 +142,16 @@ function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=
   return cardHead('더 알아보기','해도 되고 건너뛰어도 돼요')+wrapB(h+'</ol>')}
  const on3=s.rows.some(rowReady)||s.rows.some(k=>ROWS[k].t==='auto'&&acted(s));
  /* ①을 모두 해 보면 단추를 접음(본 결과는 그림에 그대로 남음) — 기록 칸이 넓어져 카드 글자가 줄지 않게 */
- h+=gPart(1,'해 보기',L?'ok':'cur',L&&!UI.fx?'':actBtns(s));
- h+=gPart(2,'살펴보기',!A?'wait':L?'ok':'cur',L&&s.rows.some(rowReady)?'':'<p>'+esc(s.look)+'</p>');
+ const F=!UI.fx&&(L||!!(s.fold&&s.fold()));   /* 기록할 차례면 ①②를 접어 기록 칸을 넓게 */
+ h+=gPart(1,'해 보기',L?'ok':'cur',F?'':actBtns(s));
+ h+=gPart(2,'살펴보기',!A?'wait':L?'ok':'cur',F&&s.rows.some(rowReady)?'':'<p>'+esc(s.look)+'</p>');
  /* ③은 차례가 오면 열림(아직이면 이름만 — 카드 글자가 줄지 않게) */
- const st3=D?'ok':on3?'cur':'wait';h+=gPart(3,'기록하기',st3,st3==='wait'?'<p class="lb-hint2">해 보기와 살펴보기를 마치면 열려요.</p>':s.rows.filter(k=>rowDone(k)||rowReady(k)).map(rowUI).join('')+(s.rows.some(k=>!rowDone(k)&&!rowReady(k))?'<p class="lb-hint2">남은 것을 해 보면 기록 칸이 더 열려요.</p>':''));
+ const st3=D?'ok':on3?'cur':'wait';h+=gPart(3,'기록하기',st3,st3==='wait'?'<p class="lb-hint2">해 보기와 살펴보기를 마치면 열려요.</p>':rows3(s)+(s.rows.some(k=>!rowDone(k)&&!rowReady(k))&&!F?'<p class="lb-hint2">남은 것을 해 보면 기록 칸이 더 열려요.</p>':''));
  return cardHead('할 일',stepName(s))+wrapB(h+'</ol>')}
+/* 기록 줄이 셋 이상이면 끝낸 줄은 한 줄로 접음(기록 칸 글자가 줄지 않게). 방금 기록한 줄은 그대로 */
+function rows3(s){const L=s.rows.filter(k=>rowDone(k)||rowReady(k));if(s.rows.length<3)return L.map(rowUI).join('');
+ const d=L.filter(k=>rowDone(k)&&!UI.fb[k]),o=L.filter(k=>d.indexOf(k)<0);
+ return (d.length?'<p class="lb-donel">'+ic('check')+'<span>기록했어요: '+d.map(k=>esc(ROWS[k].n)).join(', ')+'</span></p>':'')+o.map(rowUI).join('')}
 function cWrong(v,r,i){return !!(r.clast&&r.bl[i]&&r.bl[i]===r.clast[i]&&r.bl[i]!==v.ans[i])}
 function cChanged(r){return !r.clast||r.bl.some((w,i)=>w!==r.clast[i])}
 function frameHTML(v,bl,mode){const r=R();let t=esc(v.frame);
