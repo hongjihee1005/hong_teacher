@@ -233,7 +233,7 @@ function rowReady(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{};if(x.ok)return 
  return R0.need.every(k=>r.seen[k])}
 function numOpen(row){return R().pend[row]!=null&&!UI.fx}
 function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.wrong[row]||[];
- if(done&&!UI.fb[row]&&curStep().rows&&curStep().rows.length>1)return '<div class="lb-mrow lb-mdone lb-mone" title="'+esc(rowSum(row))+'"><div class="lb-mrh"><b>'+esc(R0.n)+'</b><span class="lb-okt">'+ic('check')+'기록했어요</span></div></div>';
+ if(done&&curStep().rows&&curStep().rows.length>1)return '<div class="lb-mrow lb-mdone lb-mone" title="'+esc(rowSum(row))+'"><div class="lb-mrh"><b>'+esc(R0.n)+'</b><span class="lb-okt">'+ic('check')+'기록했어요</span></div></div>';
  if(done){let h='<div class="lb-mrow lb-mdone"><div class="lb-mrh"><b>'+esc(R0.n)+'</b><span class="lb-okt">'+ic('check')+'기록했어요</span></div><p class="lb-recsum">'+esc(rowSum(row))+'</p>';
   if(UI.fb[row])h+='<div class="lb-msg lb-good" role="status">'+ic('check')+'<span>'+UI.fb[row][1]+'</span></div>';
   return h+'</div>'}
@@ -405,7 +405,7 @@ function render(){const H=document.documentElement;H.classList.toggle('lb-big',!
  set($('#lbFoot'),footHTML(v,r,s));
  fitAll();clearTimeout(render.ft);render.ft=setTimeout(fitAll,350)}
 function fitBox(box,inner,min){if(!box||!inner)return;inner.style.zoom='';if(narrow()||!box.clientHeight)return;if(box.scrollHeight<=box.clientHeight+1)return;let z=Math.max(min,box.clientHeight/box.scrollHeight);inner.style.zoom=z.toFixed(3);let n=0;while(box.scrollHeight>box.clientHeight+1&&z>min&&n++<12){z=Math.max(min,z-.02);inner.style.zoom=z.toFixed(3)}}
-function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.6);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.56)}
+function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.78);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.56)}
 function renderScene(){const r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NAR=narrow();LEG=[];
  let over='';
  if(UI.toast)over+='<div class="lb-toast '+(UI.toastK==='info'?'lb-toast3':'lb-toast2')+'" role="status">'+esc(UI.toast)+'</div>';
@@ -435,7 +435,7 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx,st=r.st||{};
   case 'w3':seqActs(A,'sc3',['s3z','s3b'],['영점 맞추기','병 올려놓기'],busy);break;
   case 'paper':tc('e3p','만져 보고 볼 때');break;
   case 'days':tc('e3d','표시할 때');A.push({id:'dz',label:'물속과 표면 가까이 보기',dis:busy||(st.e3d||0)<4||!!r.seen.dz,pressed:!!r.seen.dz});break;
-  case 'heat':A.push({id:'on',label:'핫플레이트 켜고 초시계 누르기',dis:busy||!!st.on,pressed:!!st.on});A.push({id:'close',label:'얼굴 가까이 대고 보기',sub:1,dis:busy||!st.on});tc('e4','초시계',!!st.on);break;
+  case 'heat':if(!st.on)A.push({id:'on',label:'핫플레이트 켜고 초시계 누르기',dis:busy});else if((st.e4||0)<4)A.push({id:'close',label:'얼굴 가까이 대고 보기',sub:1,dis:busy});tc('e4','초시계',!!st.on);break;
   case 'boil5':seqActs(A,'b5',['b51','b52','b53'],['5분 더 끓이기','핫플레이트 끄기','파란 선과 물 높이 견주기'],busy);break;
   case 'g0':seqActs(A,'g0s',['gp','gz','gb'],['저울 전원 켜기','영점 맞추기','접시째 올려놓기'],busy);break;
   case 'watch5':tc('e5','시간');break;

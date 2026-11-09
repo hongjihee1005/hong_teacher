@@ -432,7 +432,7 @@ function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fi
  return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','hill','fire','rock'][v.no])+'</i><span><b>'+st+'</b><span>교과서 실험</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
  return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>4학년 1학기 과학</em>3. 땅의 변화</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 보고, 내 눈으로 본 것을 기록해요.</p></div>'+
  '<div class="lb-ex lb-ex3">'+['e1','e2','e3'].map(card).join('')+'</div>'+
- '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 관찰 결과는 교과서·지도서 예시와 같고, 실제 실험에서는 조금씩 다를 수 있어요. 흙 언덕의 모양과 깎이고 쌓이는 정도, 커피 찌꺼기 수, 마시멜로가 흘러나오는 모습, 네 암석의 모양·무늬·구멍 수와 현미경 화면은 이 실험관에서 정한 모습이에요. 화산 활동 모형은 가열하는 실험이라 선생님과 함께, 또는 선생님의 대표 실험으로 해요.</span></p></div>'}
+ '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 관찰 결과는 교과서·지도서 예시와 같고, 실제 실험에서는 조금씩 다를 수 있어요. 흙 언덕의 모양과 물을 부은 뒤의 모습, 커피 찌꺼기 수, 가열한 모형의 모습, 네 암석의 모양·무늬·구멍 수와 현미경 화면은 이 실험관에서 정한 모습이에요. 화산 활동 모형은 가열하는 실험이라 선생님과 함께, 또는 선생님의 대표 실험으로 해요.</span></p></div>'}
 /* ───────── 동작 ───────── */
 function fx(id,ms,after){UI.fx={id,n:++UI.nonce};render();later(()=>{UI.fx=null;if(after)after();save();render()},ms)}
 function doAnim(id,ms){fx(id,ms,()=>{const r=R();if(r)r.done[id]=true;const p=$('#lbFoot [data-act="next"]');if(p&&!p.disabled)p.focus({preventScroll:true})})}
