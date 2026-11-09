@@ -157,7 +157,7 @@ function predCard(){const v=V(),r=R(),lock=predLocked();let h='';
 /* ───────── 기록 줄(③) ───────── */
 function okOf(row,j){if(row==='more'){const c=cnts();return c.L>c.S?0:c.L<c.S?1:2}return ROWS[row].f[j].ok}
 function rowSum(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{};
- if(R0.t==='sel')return R0.f.map((f,i)=>f.o[x.f[i]]).join(' · ');
+ if(R0.t==='sel')return R0.f.map((f,i)=>(R0.lab?f.l+' ':'')+f.o[x.f[i]]).join(' · ');
  if(R0.t==='cnt')return x.v+' '+R0.u;
  if(R0.t==='stick')return CELLS.length+'칸 모두 붙였어요';
  return R0.sum||''}
@@ -177,7 +177,7 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
  const recB=on=>'<button type="button" class="lb-rec-btn" data-act="rowrec" data-row="'+row+'" data-f="rr'+row+'"'+(on?'':' disabled')+'>'+ic('check')+'기록하기</button>';
  if(R0.t==='sel'){const ok=rowReady(row);D.f=D.f||[];
   R0.f.forEach((f,j)=>{const long=f.o.some(t=>t.length>6)||f.o.length>3;
-   h+='<div class="lb-cells lb-c1"><span class="lb-cl">'+esc(f.l)+'</span><span class="lb-seg lb-kseg'+(long?' lb-kwrap':'')+(wr.indexOf(j)>=0?' lb-wrongc':'')+'" role="group" aria-label="'+esc(R0.n+' '+f.l)+'">'+f.o.map((o,i)=>'<button type="button" class="lb-s" data-f="'+row+j+'-'+i+'" data-dr="'+row+':'+j+':'+i+'" aria-pressed="'+(D.f[j]===i)+'"'+(ok?'':' disabled')+'>'+esc(o)+'</button>').join('')+'</span></div>'});
+   h+='<div class="lb-cells'+(long||f.l.length>6?' lb-c1':'')+'"><span class="lb-cl">'+esc(f.l)+'</span><span class="lb-seg lb-kseg'+(long?' lb-kwrap':'')+(wr.indexOf(j)>=0?' lb-wrongc':'')+'" role="group" aria-label="'+esc(R0.n+' '+f.l)+'">'+f.o.map((o,i)=>'<button type="button" class="lb-s" data-f="'+row+j+'-'+i+'" data-dr="'+row+':'+j+':'+i+'" aria-pressed="'+(D.f[j]===i)+'"'+(ok?'':' disabled')+'>'+esc(o)+'</button>').join('')+'</span></div>'});
   if(R0.f.some(f=>f.ok===-1))h+='<p class="lb-hint2">냄새는 이 화면에서 맡을 수 없어요. 실제 실험에서 맡은 대로 골라요.</p>';
   h+=recB(ok&&R0.f.every((f,j)=>D.f[j]!=null))}
  if(R0.t==='cnt'){const op=numOpen(row);
@@ -190,6 +190,8 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
   if(t)h+='<p class="lb-hint2">'+t+'</p>'}
  if(UI.fb[row])h+='<div class="lb-msg '+(UI.fb[row][0]?'lb-good':'lb-try')+'" role="status">'+ic(UI.fb[row][0]?'check':'info')+'<span>'+UI.fb[row][1]+'</span></div>';
  return h+'</div>'}
+/* 앞 기록 줄을 다 쓰기 전에는 뒤 줄을 이름만(카드 글자가 줄어들지 않게) */
+function waitRow(row){return '<div class="lb-mrow lb-mwait"><div class="lb-mrh"><b>'+esc(ROWS[row].n)+'</b><span class="lb-mwt">위 칸을 먼저 기록해요</span></div></div>'}
 /* 본 것을 글로(선택) */
 function memoUI(){const r=R();return '<div class="lb-memo"><label class="lb-label" for="lbMemo">본 것을 글로 써요 (쓰고 싶으면)</label><input id="lbMemo" class="lb-input" maxlength="60" placeholder="바닷물 접시에는 ~" value="'+esc(r.memo||'')+'"></div>'}
 
@@ -237,7 +239,7 @@ function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=
  const on3=s.rows.some(rowReady)||s.rows.some(k=>ROWS[k].t==='auto'&&acted(s));
  h+=gPart(1,'해 보기',L?'ok':'cur',actBtns(s));
  h+=gPart(2,'살펴보기',!A?'wait':L?'ok':'cur','<p>'+esc(s.look)+'</p>');
- h+=gPart(3,'기록하기',D?'ok':on3?'cur':'wait',s.rows.filter(k=>k!=='more'||rowReady('more')).map(rowUI).join('')+(s.memo&&s.rows.every(rowDone)?memoUI():''));
+ h+=gPart(3,'기록하기',D?'ok':on3?'cur':'wait',s.rows.filter(k=>k!=='more'||rowReady('more')).map((k,i,a)=>ROWS[k].t==='sel'&&a.slice(0,i).some(j=>ROWS[j].t==='sel'&&!rowDone(j))?waitRow(k):rowUI(k)).join('')+(s.memo&&s.rows.every(rowDone)?memoUI():''));
  return cardHead('할 일',stepName(s))+wrapB(h+'</ol>')}
 function cWrong(v,r,i){return !!(r.clast&&r.bl[i]&&r.bl[i]===r.clast[i]&&r.bl[i]!==v.ans[i])}
 function cChanged(r){return !r.clast||r.bl.some((w,i)=>w!==r.clast[i])}
@@ -248,7 +250,7 @@ function frameHTML(v,bl,mode){const r=R();let t=esc(v.frame);
   return w?'<mark>'+esc(w)+'</mark>':'<span class="lb-sh-gap">______</span>'})}
 function conclCard(){const v=V(),r=R();let h='';
  if(r.pred.length)h+='<div class="lb-mine"><b>내 예상</b> '+v.pred.map((q,j)=>r.pred[j]!=null?esc(q.o[r.pred[j]]):'').join(' / ')+'</div>';
- h+='<div class="lb-mine"><b>내 기록</b> '+v.rows.filter(rowDone).map(k=>esc(ROWS[k].n)+': '+esc(rowSum(k))).join(' / ')+'</div>';
+ h+='<div class="lb-mine"><b>내 기록</b> '+v.rows.filter(k=>rowDone(k)&&ROWS[k].t!=='auto'&&ROWS[k].t!=='stick').map(k=>esc(ROWS[k].n)+': '+esc(rowSum(k))).join(' / ')+'</div>';
  h+='<p class="lb-frame">'+frameHTML(v,r.bl,'edit')+'</p><div class="lb-chips" role="group" aria-label="낱말 카드">'+v.chips.map((c,i)=>'<button type="button" class="lb-chip" data-f="c'+i+'" data-chip="'+i+'">'+esc(c)+'</button>').join('')+'</div>';
  const all=r.bl.length&&r.bl.every(x=>x);
  if(!r.cmp)h+='<button type="button" class="lb-act" data-act="cmp" data-f="doit"'+(all&&cChanged(r)?'':' disabled')+'>'+ic('flask')+'<span>기록과 견주기</span></button>';
@@ -344,11 +346,19 @@ function render(){const H=document.documentElement;H.classList.toggle('lb-big',!
  else if(s.k==='intro'){if(body.dataset.k!=='intro'){body.dataset.k='intro';body._h=null}set(body,introBody())}
  else{if(body.dataset.k!=='main'){body.dataset.k='main';body._h=null;body.innerHTML='<div class="lb-col"><div class="lb-scene" id="lbScene"></div><div class="lb-leg" id="lbLeg"></div><div class="lb-notes" id="lbNotes"></div></div><aside class="lb-card" id="lbCard" tabindex="-1" aria-label="기록 카드"></aside>';body._h='x'}
   renderScene();set($('#lbNotes'),notesHTML(s));
-  const card=$('#lbCard');const ch=s.k==='plan'?planCard():s.k==='pred'?predCard():(s.k==='meas'||s.k==='scene'||s.k==='more')?taskCard(s):s.k==='concl'?conclCard():'';card.hidden=!ch;set(card,ch)}
+  const card=$('#lbCard');const ch=s.k==='plan'?planCard():s.k==='pred'?predCard():(s.k==='meas'||s.k==='scene'||s.k==='more')?taskCard(s):s.k==='concl'?conclCard():'';card.hidden=!ch;
+  /* 같은 단계에서 다시 그릴 때 카드 스크롤 자리를 지킴(고르기 단추를 누를 때마다 맨 위로 가지 않게) */
+  const sid=DB.cur+':'+r.step,ob=card.querySelector('.lb-card-b'),sc=card.dataset.sid===sid&&ob?ob.scrollTop:0;card.dataset.sid=sid;
+  set(card,ch);UI.csc=sc}
  set($('#lbFoot'),footHTML(v,r,s));
- fitAll();clearTimeout(render.ft);render.ft=setTimeout(fitAll,350)}
+ fitAll();cardScroll();clearTimeout(render.ft);render.ft=setTimeout(()=>{const cb=$('#lbCard .lb-card-b');UI.csc=cb?cb.scrollTop:null;fitAll();cardScroll()},350)}
+/* 카드가 넘칠 때: 자리를 되살리고, 새로 '지금 할 차례'가 된 칸이 보이게 */
+function cardScroll(){const cb=$('#lbCard .lb-card-b');if(!cb||narrow())return;if(UI.csc!=null){cb.scrollTop=UI.csc}
+ if(cb.scrollHeight<=cb.clientHeight+1)return;const cur=[...cb.querySelectorAll('.lb-gp.lb-cur')].pop();if(!cur)return;
+ const key=$('#lbCard').dataset.sid+':'+cur.querySelector('.lb-gh b').textContent+':'+cb.querySelectorAll('.lb-mdone').length;if(UI.ckey===key)return;UI.ckey=key;
+ const a=cb.getBoundingClientRect(),c=cur.getBoundingClientRect();if(c.bottom>a.bottom||c.top<a.top)cb.scrollTop+=Math.min(c.top-a.top-6,c.bottom-a.bottom+6);UI.csc=cb.scrollTop}
 function fitBox(box,inner,min){if(!box||!inner)return;inner.style.zoom='';if(narrow()||!box.clientHeight)return;if(box.scrollHeight<=box.clientHeight+1)return;let z=Math.max(min,box.clientHeight/box.scrollHeight);inner.style.zoom=z.toFixed(3);let n=0;while(box.scrollHeight>box.clientHeight+1&&z>min&&n++<12){z=Math.max(min,z-.02);inner.style.zoom=z.toFixed(3)}}
-function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.6);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.56)}
+function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.84);fitBox($('#lbRail'),$('#lbRail .lb-rwrap'),.7);fitBox($('#lbSheet'),$('#lbSheet .lb-sh-in'),.56)}
 function renderScene(){const r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NAR=narrow();LEG=[];
  let over='';
  if(UI.toast)over+='<div class="lb-toast '+(UI.toastK==='info'?'lb-toast3':'lb-toast2')+'" role="status">'+esc(UI.toast)+'</div>';
