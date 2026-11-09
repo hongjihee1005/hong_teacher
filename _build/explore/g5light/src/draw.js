@@ -123,9 +123,8 @@ function standPaper(lit,anim){const y0=SN.hy+14,y1=SN.gy,x1=SN.h1+(y1-y0)*SN.k;l
 
 /* ───────── 실험 3: 레이저 지시기(옆에서 봄, 어두운 교실) ───────── */
 const L3={x:250,y:400,wall:860};
-function laserDev(x,y,a,on,o){o=o||{};let g='<g transform="rotate('+f1(a)+' '+x+' '+y+')"><rect x="'+(x-140)+'" y="'+(y-11)+'" width="140" height="22" rx="10" fill="#3A3F48" stroke="#22262D" stroke-width="2"/><rect x="'+(x-14)+'" y="'+(y-13)+'" width="16" height="26" rx="4" fill="#5A606B"/><rect x="'+(x-86)+'" y="'+(y-15)+'" width="18" height="6" rx="2" fill="'+(on?'#E74C3C':'#8A9099')+'"/>';
+function laserDev(x,y,a,on,o){o=o||{};let g='<g transform="rotate('+f1(a)+' '+x+' '+y+')">'+(o.hand?hand(x-62,y+16,0,.9,0):'')+'<rect x="'+(x-140)+'" y="'+(y-11)+'" width="140" height="22" rx="10" fill="#3A3F48" stroke="#22262D" stroke-width="2"/><rect x="'+(x-14)+'" y="'+(y-13)+'" width="16" height="26" rx="4" fill="#5A606B"/><rect x="'+(x-86)+'" y="'+(y-15)+'" width="18" height="6" rx="2" fill="'+(on?'#E74C3C':'#8A9099')+'"/>';
  if(o.fan)g+='<path d="M'+(x-110)+' '+(y+1)+' l10 -7 M'+(x-110)+' '+(y+1)+' l10 0 M'+(x-110)+' '+(y+1)+' l10 7" stroke="#C9D3DA" stroke-width="2" stroke-linecap="round"/>';
- if(o.hand)g+=hand(x-70,y+4,0,1,0);
  return g+'</g>'}
 function wallY(a){return L3.y+(L3.wall-L3.x)*Math.tan(a*DEG)}
 function cloud(x0,x1,y0,y1,k,anim){let g='';for(let i=0;i<110;i++){const x=x0+rnd(i,71)*(x1-x0),y=y0+rnd(i,72)*(y1-y0);g+='<circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="'+f1(1.4+rnd(i,73)*1.8)+'" fill="#9FB7D6" opacity="'+f1(.55*k)+'"'+(anim?an('lb-a-fade',rnd(i,74)*.5):'')+'/>'}return g}
@@ -141,9 +140,9 @@ function e3Lab(o){o=o||{};const a=o.a||0;let g=e3Room(o.dark!==false);
 
 /* ───────── 실험 4: 평면거울(위에서 봄) ───────── */
 const PP={x0:70,y0:40,x1:890,y1:500};
-function paperTop(dim){return bgTop()+'<rect x="'+(PP.x0+6)+'" y="'+(PP.y0+8)+'" width="'+(PP.x1-PP.x0)+'" height="'+(PP.y1-PP.y0)+'" fill="var(--w-shadow)"/><rect x="'+PP.x0+'" y="'+PP.y0+'" width="'+(PP.x1-PP.x0)+'" height="'+(PP.y1-PP.y0)+'" fill="#FFFDF8" stroke="#D6D0C2" stroke-width="2"/>'+(dim?'<rect x="-3000" y="-3000" width="7000" height="7000" fill="#0B1020" opacity=".42"/>':'')}
+function paperTop(dim){return bgTop()+'<rect x="'+(PP.x0+6)+'" y="'+(PP.y0+8)+'" width="'+(PP.x1-PP.x0)+'" height="'+(PP.y1-PP.y0)+'" fill="var(--w-shadow)"/><rect x="'+PP.x0+'" y="'+PP.y0+'" width="'+(PP.x1-PP.x0)+'" height="'+(PP.y1-PP.y0)+'" fill="#FFFDF8" stroke="#D6D0C2" stroke-width="2"/>'+(dim?'<rect x="-3000" y="-3000" width="7000" height="7000" fill="#0B1020" opacity=".3"/>':'')}
 /* 거울: 반사하는 면은 c를 지나는 선(m도 돌림) */
-function mirrorTop(c,h,m,o){o=o||{};return '<g transform="rotate('+f1(m||0)+' '+c[0]+' '+c[1]+')"'+(o.anim?an('lb-a-down',0,'--from:-60px'):'')+'><rect x="'+c[0]+'" y="'+(c[1]-h)+'" width="9" height="'+2*h+'" fill="#A9DBF5" stroke="#3E7FA8" stroke-width="2"/><rect x="'+(c[0]+9)+'" y="'+(c[1]-h)+'" width="7" height="'+2*h+'" fill="#5B6670"/><rect x="'+(c[0]-12)+'" y="'+(c[1]-34)+'" width="40" height="68" rx="6" fill="#8A939C" stroke="#5B6670" stroke-width="2"/></g>'}
+function mirrorTop(c,h,m,o){o=o||{};return '<g transform="rotate('+f1(m||0)+' '+c[0]+' '+c[1]+')"'+(o.anim?an('lb-a-down',0,'--from:-60px'):'')+'><rect x="'+(c[0]-6)+'" y="'+(c[1]-40)+'" width="34" height="80" rx="6" fill="#8A939C" stroke="#5B6670" stroke-width="2"/><rect x="'+c[0]+'" y="'+(c[1]-h)+'" width="9" height="'+2*h+'" fill="#A9DBF5" stroke="#3E7FA8" stroke-width="2"/><rect x="'+(c[0]+9)+'" y="'+(c[1]-h)+'" width="7" height="'+2*h+'" fill="#5B6670"/></g>'}
 /* 거울 하나에 비춘 빛의 길 [시작, 거울에 닿은 곳, 끝] */
 function edgePt(P,d){let t=1e9;if(d[0]>1e-9)t=Math.min(t,(PP.x1-P[0])/d[0]);if(d[0]<-1e-9)t=Math.min(t,(PP.x0-P[0])/d[0]);if(d[1]>1e-9)t=Math.min(t,(PP.y1-P[1])/d[1]);if(d[1]<-1e-9)t=Math.min(t,(PP.y0-P[1])/d[1]);return [P[0]+d[0]*t,P[1]+d[1]*t]}
 function mirrorPath(P,a,c,h,m){const d=[Math.cos(a*DEG),Math.sin(a*DEG)],mm=(m||0)*DEG,u=[-Math.sin(mm),Math.cos(mm)],n=[Math.cos(mm),Math.sin(mm)];
@@ -226,3 +225,15 @@ function itemArt(k){const A={
   rod:'<g transform="rotate(35)"><rect x="-5" y="-58" width="10" height="116" rx="5" fill="rgba(232,244,250,.85)" stroke="#7F9BAB" stroke-width="2.5"/></g>'};
  return A[k]||''}
 function itemArtAt(k,x,y){return '<g transform="translate('+x+' '+y+') scale(1.4)">'+itemArt(k)+'</g>'}
+function toolsScene(list,anim){let b='';if(NAR)list.forEach(it=>LEG.push([null,it[1]]));const n=list.length,cols=n<=4?n:n<=6?3:4,rows=Math.ceil(n/cols),cw=200,ch=176,gx=18,gy=18;
+ const W=cols*cw+(cols-1)*gx,H=rows*ch+(rows-1)*gy,x0=480-W/2,y0=Math.max(30,250-H/2);
+ list.forEach((it,i)=>{const c=i%cols,r=Math.floor(i/cols),x=x0+c*(cw+gx),y=y0+r*(ch+gy),cx=x+cw/2;
+  b+='<g'+(anim?an('lb-a-pop',.3+i*.15):'')+'><rect x="'+x+'" y="'+y+'" width="'+cw+'" height="'+ch+'" rx="16" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/><g transform="translate('+cx+' '+(y+72)+')">'+itemArt(it[0])+'</g>'+(NAR?'':toolLabel(cx,y+ch-18,it[1]))+'</g>'});
+ return b}
+/* 준비물 이름: 길면 두 줄로(글자를 줄이지 않음) */
+function toolLabel(cx,yb,t){const T='<text x="'+cx+'" text-anchor="middle" font-size="19" font-weight="800" fill="var(--w-labeltx)"';
+ if(t.length<=9)return T+' y="'+yb+'">'+t+'</text>';
+ const sp=[...t].map((c,i)=>c===' '?i:-1).filter(i=>i>0);if(!sp.length)return T+' y="'+yb+'" font-size="16">'+t+'</text>';
+ const m=sp.reduce((a,i)=>Math.abs(i-t.length/2)<Math.abs(a-t.length/2)?i:a,sp[0]);
+ return T+' y="'+(yb-21)+'">'+t.slice(0,m)+'</text>'+T+' y="'+yb+'">'+t.slice(m+1)+'</text>'}
+function boxArt(x){return '<g transform="translate('+x+' 300)"><path d="M-130 -60 L-100 -96 H150 L120 -60Z" fill="var(--w-kraft-s)"/><rect x="-130" y="-60" width="250" height="196" rx="8" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="2"/><path d="M120 -60 L150 -96 V100 L120 136Z" fill="var(--w-kraft-s)"/>'+(NAR?'':'<rect x="-60" y="-10" width="110" height="44" rx="8" fill="var(--w-label)"/><text x="-5" y="20" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-labeltx)">준비물</text>')+'</g>'}

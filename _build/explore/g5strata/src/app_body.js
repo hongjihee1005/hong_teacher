@@ -70,23 +70,24 @@ function e2Scene(s){const r=R(),id=s.id,st=r.st;
  if(id==='wet')return bigCups({fill:1,water:has('wet'),waterAnim:fxOn('wet')});
  if(id==='pred')return modelScene({water:.25})+qmark(480,250);
  if(id==='pour'){const f=UI.fx&&/^p(gs|s|m)$/.test(UI.fx.id)?UI.fx.id.slice(1):null,o=ord().slice();if(f)o.push(f);
-  return modelScene({water:.25+.04*o.length,ord:o,grow:!!f,cloud:f,pouring:f})}
- if(id==='layers')return modelScene({water:.37,ord:ord()});
- if(id==='other')return bg({})+tankArt({water:.37,ord:OTHER})+tag(480,470,'다른 모둠 모형',22);
- if(id==='real'){const c=UI.mq.cur;let g=bgTop()+'<rect x="76" y="86" width="376" height="290" rx="12" fill="var(--w-wall)"/><rect x="76" y="330" width="376" height="46" fill="var(--w-top)"/>'+tankArt({x:154,w:220,b:338,h:220,water:.37,ord:ord()});
+  return modelScene({water:.25+.083*o.length,ord:o,grow:!!f,cloud:f,pouring:f})}
+ if(id==='layers')return modelScene({water:.5,ord:ord()});
+ if(id==='other')return bg({})+tankArt({water:.5,ord:OTHER})+tag(480,470,'다른 모둠 모형',22);
+ if(id==='real'){const c=UI.mq.cur;let g=bgTop()+'<rect x="76" y="86" width="376" height="290" rx="12" fill="var(--w-wall)"/><rect x="76" y="330" width="376" height="46" fill="var(--w-top)"/>'+tankArt({x:154,w:220,b:338,h:220,water:.5,ord:ord()});
   g+=cliffArt(520,96,360,270)+mini(260,420,'우리 지층 모형',20)+mini(700,420,'실제 지층',20);
   if(c==='rm')g+='<rect x="66" y="82" width="390" height="300" rx="14" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
   if(c==='rr')g+='<rect x="506" y="82" width="388" height="298" rx="14" fill="none" stroke="var(--lb-lens)" stroke-width="5" stroke-dasharray="12 8"/>';
   return g}
- return modelScene({water:.37,ord:ord()})}
+ return modelScene({water:.5,ord:ord()})}
 /* 실험 3: 퇴적암 */
 function e3Scene(s){const r=R(),id=s.id,st=r.st;
  if(id==='gear')return bg({})+gearArt(3,has('gear'),fxOn('gear'));
  if(id==='paper'){const on=has('paper');if(!on)return paper6({nopaper:1});return paper6({stk:1,paperAnim:fxOn('paper'),stkAnim:fxOn('paper')})}
  if(id==='pred')return paper6({stk:1})+qmark(480,62);
  if(id==='touch'){const i=curI('t');let g=paper6({stk:1,hl:i});if(i!=null){const p=R6POS[i];g+='<g'+(UI.fx?an('lb-a-pat',0):'')+'>'+cotton(p[0]+40,p[1]-30,-100,1.1)+'</g>'}return g}
+ if(id==='color')return paper6({stk:1,hl:curI('c')});
  if(id==='loupe')return loupeScene(curI('l'),{anim:!!UI.fx});
- if(id==='sort'){const x=r.rec.grp,D=UI.draft.grp;return sortBoxes(x&&x.ok?x.f:D&&D.f?D.f:[],has('sort')&&r.seen.bx?(fxOn('bx')?'a':1):0)}
+ if(id==='sort'){const x=r.rec.grp,D=UI.draft.grp;return sortBoxes(x&&x.ok?x.f:D&&D.f?D.f:[],(r.seen.bx||fxOn('bx'))?(fxOn('bx')?'a':1):0)}
  if(id==='name'){let g=paper6({stk:1});
   if(r.seen.nm||fxOn('nm'))g+='<g'+(fxOn('nm')?an('lb-a-pop',0):'')+'><rect x="560" y="10" width="390" height="84" rx="10" fill="var(--w-label)" stroke="var(--lb-sci)" stroke-width="2.5"/><text x="576" y="38" font-size="17" font-weight="700" fill="var(--w-labeltx)">이암: 매우 작은 알갱이(진흙)</text><text x="576" y="61" font-size="17" font-weight="700" fill="var(--w-labeltx)">사암: 주로 모래</text><text x="576" y="84" font-size="17" font-weight="700" fill="var(--w-labeltx)">역암: 큰 자갈에 모래·진흙이 섞임</text></g>';
   const x=r.rec.rname;if(x&&x.ok)R6POS.forEach((p,i)=>{g+=mini(p[0],p[1]+82,['이암','사암','역암'][x.f[i]],20)});return g}
@@ -98,7 +99,7 @@ function e4Scene(s){const r=R(),id=s.id;
  if(id==='pred')return paperF({})+qmark(480,60);
  if(id==='loupe')return fosLoupe(curI('f'),{anim:!!UI.fx});
  if(id==='like')return likeScene(curI('k'),{anim:!!UI.fx});
- if(id==='kind'){const x=r.rec.kind,D=UI.draft.kind;return kindBoxes(x&&x.ok?x.f:D&&D.f?D.f:[],r.seen.kb?(fxOn('kb')?'a':1):0)}
+ if(id==='kind'){const x=r.rec.kind,D=UI.draft.kind;return kindBoxes(x&&x.ok?x.f:D&&D.f?D.f:[],(r.seen.kb||fxOn('kb'))?(fxOn('kb')?'a':1):0)}
  return paperF({})}
 /* 실험 5: 화석 모형 */
 function e5Scene(s){const r=R(),id=s.id,st=r.st,f=UI.fx?UI.fx.id:null;
@@ -128,8 +129,8 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  if(no===1)return T(g,s.t,'30 80 910 320');
  if(no===2)return T(g,s.t,id==='fill'||id==='wet'?'170 150 620 330':id==='real'?'40 50 880 400':'50 40 860 440');
  if(no===3)return T(g,s.t,id==='loupe'?'30 40 900 470':id==='sort'?'20 40 920 460':id==='name'?'60 0 900 470':'60 50 840 420');
- if(no===4)return T(g,s.t,id==='loupe'?'30 40 900 470':id==='like'?'90 110 790 340':id==='kind'?'40 20 880 490':'70 40 830 470');
- return T(g,s.t,id==='open'&&(R().st.op||0)>=2||id==='cmp'?'90 100 780 360':'160 30 680 430')}
+ if(no===4)return T(g,s.t,id==='loupe'?'30 40 900 470':id==='like'?'90 110 790 360':id==='kind'?'40 20 880 490':'70 40 830 470');
+ return T(g,s.t,id==='open'&&(R().st.op||0)>=2||id==='cmp'?'90 30 780 440':'160 30 680 430')}
 
 /* ───────── 오른쪽 카드 ───────── */
 function cardHead(t,s){return '<div class="lb-card-h"><span class="lb-clip">'+ic('clip')+'</span><div><b>'+t+'</b><span>'+s+'</span></div></div>'}
@@ -180,8 +181,8 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
  const D=UI.draft[row]=UI.draft[row]||{};const ok=rowReady(row);
  const recB=on=>'<button type="button" class="lb-rec-btn" data-act="rowrec" data-row="'+row+'" data-f="rr'+row+'"'+(on?'':' disabled')+'>'+ic('check')+'기록하기</button>';
  if(R0.t==='sel'){D.f=D.f||[];const F=fOf(row);
-  const c2=F.every(f=>f.l.length<=7)?' lb-c2':'';
-  const grid=F.length>=6&&c2;if(grid)h+='<div class="lb-cgrid">';
+  const c2=F.length>=6?' lb-c2 lb-c6':F.every(f=>f.l.length<=7)?' lb-c2':'';
+  const grid=F.length>=6&&c2&&!/c6/.test(c2);if(grid)h+='<div class="lb-cgrid">';
   F.forEach((f,j)=>{const long=c2?f.o.length>3:f.o.some(t=>t.length>6)||f.o.length>3;
    h+='<div class="lb-cells lb-c1'+c2+'"><span class="lb-cl">'+esc(grid?f.l.replace(/ 잎$/,''):f.l)+'</span><span class="lb-seg lb-kseg'+(long?' lb-kwrap':'')+(wr.indexOf(j)>=0?' lb-wrongc':'')+'" role="group" aria-label="'+esc(R0.n+' '+f.l)+'">'+f.o.map((o,i)=>'<button type="button" class="lb-s" data-f="'+row+j+'-'+i+'" data-dr="'+row+':'+j+':'+i+'" aria-pressed="'+(D.f[j]===i)+'"'+(ok?'':' disabled')+'>'+esc(o)+'</button>').join('')+'</span></div>'});if(grid)h+='</div>';
   h+=recB(ok&&F.every((f,j)=>D.f[j]!=null))}
@@ -294,7 +295,7 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
 const LABNAME='strata';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
  if(no===1){S(cardsTable({face:()=>1,pen:()=>ok('shape'),noBig:1}),'40 108 512 250',ok('shape')?'층의 경계를 따라 선을 그은 지층 카드':'지층 카드 여섯 장')}
- if(no===2){const o=r.st.ord||[];if(o.length)S(bg({})+tankArt({water:.37,ord:o}),'300 90 360 360','우리 모둠 지층 모형');if(ok('oth'))S(bg({})+tankArt({water:.37,ord:OTHER}),'300 90 360 360','다른 모둠 지층 모형')}
+ if(no===2){const o=r.st.ord||[];if(o.length)S(bg({})+tankArt({water:.5,ord:o}),'300 90 360 360','우리 모둠 지층 모형');if(ok('oth'))S(bg({})+tankArt({water:.5,ord:OTHER}),'300 90 360 360','다른 모둠 지층 모형')}
  if(no===3){S(paper6({stk:1}),'90 100 780 340','퇴적암 ①~⑥');if(ok('see'))S(bgTop()+loupeView(1,150,150,120)+loupeView(0,430,150,120)+loupeView(2,710,150,120),'10 10 860 290','돋보기로 본 ②, ①, ③')}
  if(no===4){S(paperF({}),'90 90 790 390','여러 가지 화석')}
  if(no===5){if(ok('res'))S(bgTop()+piecesArt({}),'120 220 720 250','떼어 낸 찰흙과 석고');if(ok('cmpf'))S(bgTop()+modelShell(130,140,1.5)+realShell(530,140,1.5)+mini(280,420,'화석 모형',20)+mini(680,420,'조개 화석 표본',20),'100 120 760 330','화석 모형과 실제 조개 화석')}
@@ -382,6 +383,7 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx,st=r.st||{};
   case 'layers':cells('들여다볼 층',L3('l'));break;
   case 'other':cells('들여다볼 층',L3('o'));break;
   case 'real':cells('살펴볼 그림',[['rm','우리 지층 모형'],['rr','실제 지층']]);break;
+  case 'color':cells('살펴볼 퇴적암',N6('c'));break;
   case 'touch':cells('만져 볼 퇴적암',N6('t'));A.push({id:'bump',label:'퇴적암끼리 부딪쳐 보기',sub:1,dis:busy});break;
   case 'loupe':if(V().no===3)cells('돋보기로 볼 퇴적암',N6('l'));else cells('돋보기로 볼 화석',FOS.map((x,i)=>['f'+(i+1),x.n]));break;
   case 'sort':A.push({id:'bx',label:'나눌 상자 세 개 펼치기',icon:'box',dis:busy||!!r.seen.bx});break;
@@ -423,7 +425,7 @@ function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bgTop(),vb='0 
  if(no===4){vb='70 40 830 470';
   if(k==='paper')g=paperF({});
   if(k==='loupe')g=paperF({})+magnifier(480,190,2.4,0);
-  if(k==='like'){g=likeScene(null);vb='90 110 790 340'}
+  if(k==='like'){g=likeScene(null);vb='90 110 790 300'}
   if(k==='kind'){g=kindBoxes([],1);vb='40 180 880 320'}}
  if(no===5){vb='160 30 680 430';g=bg({});
   if(k==='clay')g+=bowlArt({bag:1,clay:1});

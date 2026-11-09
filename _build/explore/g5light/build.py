@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""탐구 실험관 · 물의 상태 변화(4학년 1학기 2단원) — src/ 조각을 합쳐 HTML 한 장으로.
-   python3 build.py [출력 경로]  (기본: 저장소 grade4/science/explore/water.html)"""
+"""탐구 실험관 · 빛의 성질(5학년 1학기 2단원) — src/ 조각을 합쳐 HTML 한 장으로.
+   python3 build.py [출력 경로]  (기본: 저장소 grade5/science/explore/light.html)"""
 import os,sys,re
 D=os.path.dirname(os.path.abspath(__file__));S=os.path.join(D,'src')
 r=lambda n:open(os.path.join(S,n),encoding='utf-8').read()
-out=sys.argv[1] if len(sys.argv)>1 else os.path.join(D,'..','..','..','grade4','science','explore','water.html')
+out=sys.argv[1] if len(sys.argv)>1 else os.path.join(D,'..','..','..','grade5','science','explore','light.html')
 ic=lambda body:'<svg class="lb-ic" viewBox="0 0 24 24" aria-hidden="true">'+body+'</svg>'
 page=r('page.html')
 js=r('data.js')+'\n'+r('draw.js')+'\n'+r('app_head.js')+r('app_body.js')
@@ -21,10 +21,12 @@ assert not bad,('emoji',set(bad))
 for w in ['다음','다시 하기']:
     for m in re.finditer(r'<button[^>]*>([^<]*(?:<[^/][^>]*>[^<]*)*)</button>',page):
         assert w not in m.group(1),(w,m.group(0)[:80])
-# 쓰지 않을 말(4학년 1학기 2단원 범위 밖 — 지도서 190·202·212쪽: 상태가 변하는 까닭은 다루지 않음, 분자·입자, 융해·응고·기화·액화·승화 같은 말은 쓰지 않음,
-# 질량과 무게를 나누어 말하지 않음, 끓는점 숫자·기압·변인 통제는 다루지 않음. 증발·끓음·응결·수증기·고체·액체·기체·부피는 교과서에 있는 말)
-for w in ['기화','액화','응고','융해','승화','분자','입자','끓는점','100 ℃','100℃','100도','기압','변인','조건 통제','질량','에너지','열에너지','포화','습도','이슬점',
-          '이(가)','을(를)','은(는)','이라고(라고)','식물','잎자루','부레옥잠','알로에','연잎']:
+# 쓰지 않을 말(5학년 1학기 2단원 범위 밖 — 교과서 버전 앱 u2-1~u2-4와 지도서 범위: 빛의 직진·반사·굴절, 볼록·오목 렌즈까지.
+# 들어오고 나가는 각의 이름, 꺾이는 정도를 나타내는 수, 렌즈가 빛을 모으는 점과 그 거리, 빛의 파동·알갱이, 빛의 빠르기, 무지개 빛 나눔,
+# 눈의 구조, 실험 조건을 부르는 어려운 말은 쓰지 않음)
+for w in ['입사','반사각','굴절각','굴절률','법선','초점','파장','광자','광선','전반사','프리즘','분산','속력','진공','스넬','수정체','망막',
+          '빛의 속도','볼록 거울','오목 거울','실상','허상','배율','변인','조건 통제','에너지',
+          '이(가)','을(를)','은(는)','이라고(라고)','물의 상태','얼음','수증기','증발','끓음']:
     assert w not in page,('forbidden',w)
 # 결론 빈칸 답이 실험 이름·단계 이름·행동 단추에 들어가지 않게
 import subprocess

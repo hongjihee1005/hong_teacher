@@ -242,7 +242,7 @@ function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
  return '① 단추를 눌러요.'}
 function lj(t){return /\?$/.test(t)?'‘'+t+'’'+jo(t.slice(0,-1),'을','를').slice(-1):jo(t,'을','를')}
 function gPart(n,t,st,body){return '<li class="lb-gp lb-'+st+'"'+(st==='wait'?' inert aria-disabled="true"':'')+'><div class="lb-gh"><i>'+(st==='ok'?ic('check'):n)+'</i><b>'+t+'</b></div>'+(body?'<div class="lb-gb">'+body+'</div>':'')+'</li>'}
-function actBtns(s,cellsOnly){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=cellsOnly?[]:A.filter(a=>!a.cell&&!a.hide);let h='';
+function actBtns(s,cellsOnly){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=cellsOnly?A.filter(a=>a.sub&&!a.cell&&!a.hide):A.filter(a=>!a.cell&&!a.hide);let h='';
  const seq=cellsOnly?[]:A.filter(a=>a.hide!=null);if(seq.length)h+='<ol class="lb-seq" aria-label="차례">'+seq.map((a,i)=>'<li class="'+(a.pressed?'lb-d':!a.hide?'lb-n':'')+'">'+(a.pressed?ic('check'):'<b>'+(i+1)+'</b>')+'<span>'+esc(a.label.replace(/^\d\/\d · /,''))+'</span></li>').join('')+'</ol>';
  if(rest.length)h+='<div class="lb-acts">'+rest.map(a=>'<button type="button" class="lb-act'+(a.sub?' lb-act2':'')+(UI.attn&&!a.dis&&!a.sub?' lb-attn':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'"'+(a.pressed!=null?' aria-pressed="'+!!a.pressed+'"':'')+(a.dis?' disabled':'')+'>'+ic(a.icon||'hand')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div>';
  const grps=[];cells.forEach(a=>{let g=grps.find(x=>x.n===a.grp);if(!g)grps.push(g={n:a.grp,c:[]});g.c.push(a)});
@@ -262,7 +262,7 @@ function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=
  if(s.k==='more'){const Q=MOREQ[V().no],ans=r.more.a,both=!!UI.mq.both||ans!=null;
   let b3='<p class="lb-q">'+esc(Q[0])+'</p><div class="lb-opts">'+Q[1].map((t,i)=>'<button type="button" class="lb-opt lb-optsm" data-f="mq'+i+'" data-mq="'+i+'" aria-pressed="'+(ans===i)+'"'+(both?'':' disabled')+'><i>'+(ans===i?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>').join('')+'</div>';
   if(ans!=null)b3+='<div class="lb-msg '+(ans===Q[2]?'lb-good':'lb-try')+'">'+ic(ans===Q[2]?'check':'info')+'<span>'+(ans===Q[2]?Q[3]:'다시 해 보고 견줘요.')+'</span></div>';
-  h+=gPart(1,'해 보기',both?'ok':'cur',actBtns(s))+gPart(2,'살펴보기',both?'ok':Object.keys(UI.mq).length?'cur':'wait','<p>'+esc(s.look)+'</p>')+gPart(3,'고르기',ans!=null?'ok':both?'cur':'wait',b3);
+  h+=gPart(1,'해 보기',both?'ok':'cur',ans!=null?'':actBtns(s))+gPart(2,'살펴보기',both?'ok':Object.keys(UI.mq).length?'cur':'wait','<p>'+esc(s.look)+'</p>')+gPart(3,'고르기',ans!=null?'ok':both?'cur':'wait',b3);
   return cardHead('더 알아보기','해도 되고 건너뛰어도 돼요')+wrapB(h+'</ol>')}
  const on3=s.rows.some(rowReady)||s.rows.some(k=>ROWS[k].t==='auto'&&acted(s));
  /* ①을 모두 해 보면 단추를 접음(본 결과는 그림에 그대로 남음) — 기록 칸이 넓어져 카드 글자가 줄지 않게 */
@@ -319,12 +319,12 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
  return h}
 const LABNAME='g5light';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k),ob=r.st.obj||0;
- if(no===1){if(ok('r0'))S(viewArt('dark',ob),'612 90 320 340','손전등을 켜기 전');if(ok('r1'))S(viewArt('lit',ob),'612 90 320 340','손전등을 켠 뒤')}
+ if(no===1){if(ok('r0'))S(viewArt('dark',ob),'600 88 344 384','손전등을 켜기 전');if(ok('r1'))S(viewArt('lit',ob),'600 88 344 384','손전등을 켠 뒤')}
  if(no===2){if(ok('spot')){let g=sunBg()+sunRays()+topPaper();TIMES.e2h.forEach(x=>{g+=oldSpot(MODEL.paperY[x[0]])});S(g,'100 100 760 360','햇빛이 닿은 자리')}
   if(ok('stand'))S(sunBg()+sunRays()+topPaper()+standPaper(true),'100 100 760 380','세운 도화지')}
  if(no===3){if(ok('path'))S(e3Lab({on:true,mist:1,spray:1}),'80 120 880 380','물방울 사이로 본 빛')}
  if(no===4){if(ok('mir2')){let g=paperTop(false)+mirrorTop(MC,MH,0);TIMES.e4a.forEach(x=>{const A=MODEL.aim[x[0]];g+=beam(mirrorPath([A[0],A[1]],A[2],MC,MH,0).pts,{w:3.5,glow:false})+laserTop(A[0],A[1],A[2],true)});S(g,'60 30 840 480','거울에 비춘 빛')}}
- if(no===5){const all=t=>{let g=darkTable()+lensArt(t);['v0','v1','v2'].forEach(k=>{g+=beam(lensRay(t,MODEL.lensH[k]),{w:3.5,glow:false})});return g};if(ok('cvE'))S(all('cv'),'60 60 900 420','볼록 렌즈');if(ok('ccE'))S(all('cc'),'60 60 900 420','오목 렌즈')}
+ if(no===5){const all=t=>{let g=darkTable()+lensArt(t);['v0','v1','v2'].forEach(k=>{g+=beam(lensRay(t,MODEL.lensH[k]),{w:3.5,glow:false})});return g};if(ok('cvD'))S(all('cv'),'60 60 900 420','볼록 렌즈');if(ok('ccD'))S(all('cc'),'60 60 900 420','오목 렌즈')}
  if(no===6){if(ok('sl'))S(room(true)+tankArt({milk:1,dark:1})+e6BeamArt(MODEL.tilt.i2,{})+laser6(MODEL.tilt.i2,true),'150 40 700 460','비스듬히 비출 때');
   if(ok('vt'))S(room(true)+tankArt({milk:1,dark:1})+e6BeamArt(0,{})+laser6(0,true),'150 40 700 460','수직으로 비출 때')}
  return L}
@@ -389,7 +389,7 @@ function renderScene(){const r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NA
  const sv=s.k==='concl'?recPanel():sceneSVG();NAR=false;set(el,over+sv);
  const lg=$('#lbLeg');if(lg)set(lg,LEG.length?LEG.map(x=>'<span class="lb-lg">'+esc(x[1])+'</span>').join(''):'')}
 function notesHTML(s){if(!s.why&&!s.care)return '';if(s.know&&!(s.k==='more'&&R().more.a==null))return notesHTML0(s)+'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.know)+'</div></div>';return notesHTML0(s)}
-function notesHTML0(s){const hideWhy=s.k==='more'&&R().more.a==null;let h=hideWhy?'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>두 가지를 모두 해 보고 골라요.</div></div>':'<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
+function notesHTML0(s){const hideWhy=s.k==='more'&&R().more.a==null;let h=hideWhy?'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.pre||'두 가지를 모두 해 보고 골라요.')+'</div></div>':'<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
  if(s.care)h+=s.care[0]==='care'?'<div class="lb-note lb-care">'+ic('care')+'<div><b>조심해요</b>'+esc(s.care[1])+'</div></div>':'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.care[1])+'</div></div>';
  return h}
 function stepName(s){return !R().planOk&&s.n0&&V().plan?s.n0:s.n}
@@ -411,7 +411,7 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx,st=r.st||{};
   case 'on':A.push({id:'lzon',label:'레이저 지시기 켜기',dis:busy,pressed:!!r.seen.lzon});break;
   case 'spray':tc('e3s','레이저를 두고 물 뿌리기');break;
   case 'aim':tc('e4a','레이저를 놓는 곳');break;
-  case 'more':A.push({id:'la-',label:'레이저를 위쪽으로 돌리기',dis:busy||(UI.mq.la||0)<=-20},{id:'la+',label:'레이저를 아래쪽으로 돌리기',dis:busy||(UI.mq.la||0)>=20},{id:'mi-',label:'거울을 시계 반대 방향으로 돌리기',dis:busy||(UI.mq.mi||0)<=-10},{id:'mi+',label:'거울을 시계 방향으로 돌리기',dis:busy||(UI.mq.mi||0)>=10});break;
+  case 'more':A.push({id:'la-',label:'레이저 위쪽으로',dis:busy||(UI.mq.la||0)<=-20},{id:'la+',label:'레이저 아래쪽으로',dis:busy||(UI.mq.la||0)>=20},{id:'mi-',label:'거울 시계 반대 방향으로',dis:busy||(UI.mq.mi||0)<=-10},{id:'mi+',label:'거울 시계 방향으로',dis:busy||(UI.mq.mi||0)>=10});break;
   case 'cvx':tc('e5v','레이저를 비추는 곳');break;
   case 'ccv':if(!st.swap)A.push({id:'swap',label:'오목 렌즈로 바꾸어 끼우기',dis:busy});tc('e5c','레이저를 비추는 곳',!!st.swap);break;
   case 'slant':tc('e6s','비스듬히 비추기');A.push({id:'mist',label:'앞쪽에 물 뿌려 보기',sub:1,dis:busy||!tView('e6s')},{id:'ghost',label:'처음 방향 점선 보기',sub:1,dis:busy||!tView('e6s'),pressed:!!UI.mq.ghost});break;
@@ -506,7 +506,7 @@ function act(a,el){const v=V(),r=R();
 /* 실험 단계의 행동 */
 function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
  if(id==='ghost'){UI.mq.ghost=!UI.mq.ghost;render();return}
- if(id==='mist'){UI.mq.mist=1;fx(id,2400,()=>{UI.mq.mist=0});return}
+ if(id==='mist'){UI.mq.mist=1;fx(id,4000,()=>{UI.mq.mist=0});return}
  if(/^(la|mi)[-+]$/.test(id)){moreMove(id);return}
  r.act[s.id]=1;if(idxOf('pred')>=0&&r.step>idxOf('pred'))r.obs=1;
  for(const key in TIMES){const L=TIMES[key],i=L.findIndex(x=>x[0]===id);if(i<0)continue;const c=st[key]||0;if(i>c)return;

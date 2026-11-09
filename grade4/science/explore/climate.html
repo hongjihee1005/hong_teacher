@@ -848,6 +848,13 @@ html .lb-doit.lb-hold:active{background:var(--lb-sci);color:var(--lb-onsci)}
 .lb-donel{display:flex;gap:.4rem;align-items:flex-start;margin:0 0 .5rem;font-size:.85rem;font-weight:700;color:var(--lb-sci-ink,var(--lb-ink))}
 .lb-donel .lb-ic{width:1.1em;height:1.1em;flex:none;margin-top:.1em}
 
+/* 컵마다 관찰 줄: 이름을 위에, 보기 셋을 칸 전체 폭으로(보기 글이 낱말 가운데서 잘리던 것, 독립 검토 고침) */
+.lb-cells.lb-c1.lb-c2.lb-cwide{grid-template-columns:1fr;gap:.15rem}
+.lb-cells.lb-cwide .lb-cl{font-weight:700}
+.lb-cells.lb-cwide .lb-kseg button{word-break:keep-all;overflow-wrap:normal}
+/* 이름·까닭을 길게 쓰면 꼬리말이 2쪽으로 넘어가던 것(독립 검토 고침, A4 폭에서 288mm → 약 277mm): 쓰는 줄 셋, 관찰 그림 22mm */
+@media print{.lb-sh-e1 .lb-sh-lines .lb-ln:nth-child(n+4){display:none!important}.lb-sh-e1 .lb-sh-pic svg{height:22mm!important}}
+
 </style>
 <style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
 <!--hj-ctheme--><style id="hj-ctheme">/* hj-ctheme · 수업 자료 페이지 공통: 글꼴을 Pretendard로(CDN이 막히면 기기의 고딕), 바탕·글자색을 메뉴와 같은 값으로(2026-10-27) */
@@ -2907,9 +2914,9 @@ const cupF=k=>[{l:'섬 모형',o:OBV.is,ok:k},{l:'집 모형',o:OBV.ho,ok:k},{l:
 
 /* 기록 줄. t: sel(고르기 칸 — 그림과 견주어 빨간 칸만 알려 줌). need = 이 기록을 쓰기 전에 꼭 해 봐야 하는 행동 */
 const ROWS={
- cup1:{n:'물을 한 컵 부었을 때',t:'sel',need:['c1','k1'],f:cupF(0)},
- cup2:{n:'물을 두 컵 부었을 때',t:'sel',need:['c2','k2'],f:cupF(1)},
- cup3:{n:'물을 세 컵 부었을 때',t:'sel',need:['c3','k3'],f:cupF(2)},
+ cup1:{wide:1,n:'물을 한 컵 부었을 때',t:'sel',need:['c1','k1'],f:cupF(0)},
+ cup2:{wide:1,n:'물을 두 컵 부었을 때',t:'sel',need:['c2','k2'],f:cupF(1)},
+ cup3:{wide:1,n:'물을 세 컵 부었을 때',t:'sel',need:['c3','k3'],f:cupF(2)},
  land:{n:'물에 닿지 않는 자갈',t:'sel',need:['v0','v3'],f:[{l:'처음과 견주면 면적이',o:['넓어졌어요','그대로예요','줄어들었어요'],ok:2}]},
  real1:{n:'물과 자갈',t:'sel',need:['rw','rg'],f:[{l:'물',o:['바닷물','육지'],ok:0},{l:'자갈',o:['바닷물','육지'],ok:1}]},
  real2:{n:'섬·집·나무 모형',t:'sel',need:['ri','rh','rt'],f:[{l:'섬 모형',o:['바다 위의 섬','바닷가 마을','생물의 터전'],ok:0},{l:'집 모형',o:['바다 위의 섬','바닷가 마을','생물의 터전'],ok:1},{l:'나무 모형',o:['바다 위의 섬','바닷가 마을','생물의 터전'],ok:2}]}};
@@ -2929,7 +2936,7 @@ const EXPS={
   frame:'물을 한 컵씩 부을수록 물의 높이가 점점 {0}. 섬, 집, 나무 모형은 점점 더 많이 물에 {1}. 물에 닿지 않는 자갈의 면적은 점점 {2}. 모형에서 자갈은 {3} 나타내요.',
   ans:['높아졌어요','잠겼어요','줄어들었어요','육지를'],chips:['높아졌어요','낮아졌어요','잠겼어요','드러났어요','줄어들었어요','넓어졌어요','육지를','바닷물을'],
   hint:['표시한 선이 한 컵마다 어디에 그어졌는지 봐요.','\'물을 세 컵 부었을 때\' 기록을 봐요.','\'물에 닿지 않는 자갈\' 기록을 봐요.','\'물과 자갈\' 기록을 봐요.'],
-  book:'물의 높이가 점점 높아지면서 물에 닿지 않는 자갈의 면적이 점점 줄어들었어요. 실제로는 사람과 동식물이 살 수 있는 육지가 줄어든다는 뜻이에요. 기후변화로 해수면이 상승하면 사람과 동식물이 살 수 있는 육지 면적이 점점 줄어들고, 이동하기 어려운 생물은 더욱 살기 힘들어질 거예요.'}};
+  book:'물의 높이가 점점 높아지면서 물에 닿지 않는 자갈의 면적이 점점 줄어들었어요. 기후변화로 해수면이 상승하면 사람과 동식물이 살 수 있는 육지 면적이 점점 줄어들고, 이동하기 어려운 생물은 더욱 살기 힘들어질 거예요.'}};
 
 /* 단계 글. k: intro(오늘의 실험) · scene(행동 → 그림) · pred · meas(해 보고 기록) · concl · sheet
    look = ② 살펴보기 한 줄, spot = 확대 렌즈 [그림 x, y, 반지름, 배율, 렌즈 x, 렌즈 y] (함수면 그때그때 계산)
@@ -3199,10 +3206,10 @@ function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g='',vb='60 90 9
 function homeArt(no){NAR=true;LEG=[];const g=rig({gravel:1,island:1,level:0,marks:1,house:1})+cupArt(392,118,0);
  const s=svg(g,'모형실험 장치의 처음 모습','40 70 900 400');NAR=false;LEG=[];return s}
 function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fin?'끝냄 · 결과 보기':(r.step+1)+'단계부터 이어서'):'실험 시작하기';
- return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>모형실험</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><p class="lb-exq">'+esc(v.q)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic('wave')+'</i><span><b>'+st+'</b><span>교과서 실험 · 13단계</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
+ return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>모형실험</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><p class="lb-exq">'+esc(v.q)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic('cup')+'</i><span><b>'+st+'</b><span>교과서 실험 · 13단계</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
  return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>4학년 2학기 과학</em>4. 기후변화와 우리 생활</div><h1>모형실험을 해 볼까요?</h1><p>장치를 직접 만들고, 물을 한 컵씩 부으며 내 눈으로 본 것을 기록해요.</p></div>'+
  '<div class="lb-ex lb-ex1">'+['e1'].map(card).join('')+'</div>'+
- '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 한 컵마다 모형이 물에 잠기는 모습은 교과서 예시와 같고, 상자·자갈·모형의 모양과 크기, 처음 물 높이와 한 컵마다 오르는 물 높이는 이 실험관에서 정한 값이에요.</span></p></div>'}
+ '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 컵마다 모형의 모습은 교과서 예시와 같고, 상자·자갈·모형의 모양과 크기, 처음 물 높이와 한 컵마다 오르는 물 높이는 이 실험관에서 정한 값이에요.</span></p></div>'}
 
 /* 기후변화와 우리 생활 실험관에서 더 쓰는 아이콘 */
 Object.assign(I,{wave:'<path d="M3 15c2.5-2 4.5-2 7 0s4.5 2 7 0 3-1.5 4-1"/><path d="M3 19c2.5-2 4.5-2 7 0s4.5 2 7 0 3-1.5 4-1"/><path d="M12 11V3M9 6l3-3 3 3"/>'});
@@ -3302,7 +3309,7 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
   const c2=F.every(f=>f.l.length<=7)?' lb-c2':'';
   const grid=F.length>=6&&c2;if(grid)h+='<div class="lb-cgrid">';
   F.forEach((f,j)=>{const long=c2?f.o.length>3:f.o.some(t=>t.length>6)||f.o.length>3;
-   h+='<div class="lb-cells lb-c1'+c2+'"><span class="lb-cl">'+esc(grid?f.l.replace(/ 잎$/,''):f.l)+'</span><span class="lb-seg lb-kseg'+(long?' lb-kwrap':'')+(wr.indexOf(j)>=0?' lb-wrongc':'')+'" role="group" aria-label="'+esc(R0.n+' '+f.l)+'">'+f.o.map((o,i)=>'<button type="button" class="lb-s" data-f="'+row+j+'-'+i+'" data-dr="'+row+':'+j+':'+i+'" aria-pressed="'+(D.f[j]===i)+'"'+(ok?'':' disabled')+'>'+esc(o)+'</button>').join('')+'</span></div>'});if(grid)h+='</div>';
+   h+='<div class="lb-cells lb-c1'+c2+(R0.wide?' lb-cwide':'')+'"><span class="lb-cl">'+esc(grid?f.l.replace(/ 잎$/,''):f.l)+'</span><span class="lb-seg lb-kseg'+(long?' lb-kwrap':'')+(wr.indexOf(j)>=0?' lb-wrongc':'')+'" role="group" aria-label="'+esc(R0.n+' '+f.l)+'">'+f.o.map((o,i)=>'<button type="button" class="lb-s" data-f="'+row+j+'-'+i+'" data-dr="'+row+':'+j+':'+i+'" aria-pressed="'+(D.f[j]===i)+'"'+(ok?'':' disabled')+'>'+esc(o)+'</button>').join('')+'</span></div>'});if(grid)h+='</div>';
   h+=recB(ok&&F.every((f,j)=>D.f[j]!=null))}
  if(R0.t==='note'){D.t=D.t||[];
   h+='<p class="lb-hint2">쓰고 싶은 것을 짧게 써요. 쓰지 않아도 돼요.</p>'+R0.f.map((f,j)=>'<label class="lb-nrow"><span>'+esc(f.l)+'</span><input class="lb-input lb-ninp" maxlength="20" autocomplete="off" data-f="nt'+row+j+'" data-nt="'+row+':'+j+'" placeholder="'+esc(R0.ph)+'" value="'+esc(D.t[j]||'')+'"'+(ok?'':' disabled')+'></label>').join('');

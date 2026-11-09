@@ -107,7 +107,7 @@ function marsh(x,bottom,s,o){o=o||{};let g='<g transform="translate('+x+' '+bott
  return g+'</g></g></g>'}
 /* 집기병(500 mL)과 입구에 씌운 고무풍선. k: 고무풍선 막이 올라온 정도(+ 부풂, − 병 안으로 들어감) */
 const JR={w:58,h:190,m:46};
-function memPath(cx,top,k){const y=top+6,a=k*(k>=0?130:120),m=JR.m,c=(y-a).toFixed(1);return 'M'+(cx-m)+' '+y+' C'+(cx-m*.55)+' '+c+' '+(cx+m*.55)+' '+c+' '+(cx+m)+' '+y}
+function memPath(cx,top,k){const y=top+6,a=k*(k>=0?84:130),m=JR.m,c=(y-a).toFixed(1);return 'M'+(cx-m)+' '+y+' C'+(cx-m*.9)+' '+c+' '+(cx+m*.9)+' '+c+' '+(cx+m)+' '+y}
 function jarArt(cx,base,o){o=o||{};const w=JR.w,h=JR.h,top=base-h,m=JR.m;let g=o.noShadow?'':shadow(cx,base+4,w+8);
  const out='M'+(cx-w)+' '+(base-10)+' Q'+(cx-w)+' '+base+' '+(cx-w+10)+' '+base+' H'+(cx+w-10)+' Q'+(cx+w)+' '+base+' '+(cx+w)+' '+(base-10)+' V'+(top+40)+' Q'+(cx+w)+' '+(top+22)+' '+(cx+m)+' '+(top+16)+' V'+top+' H'+(cx-m)+' V'+(top+16)+' Q'+(cx-w)+' '+(top+22)+' '+(cx-w)+' '+(top+40)+'Z';
  g+='<path d="'+out+'" fill="rgba(222,240,250,.5)"/><path d="'+out+'" fill="none" stroke="'+GLS+'" stroke-width="4" stroke-linejoin="round"/><path d="M'+(cx-w+12)+' '+(top+50)+' V'+(base-22)+'" stroke="#FFFFFF" stroke-width="6" opacity=".6" stroke-linecap="round"/>';
@@ -130,7 +130,7 @@ function tankArt(cx,base,kind,inner){const w=TKW,h=TKH,top=base-h,lv=base-110;le
  g+='<rect x="'+(cx-w)+'" y="'+top+'" width="'+(2*w)+'" height="'+h+'" rx="10" fill="none" stroke="'+GLS+'" stroke-width="4"/>';
  return g}
 /* 주사기(옆으로 눕힘). V = 주사기 속 공기의 부피(mL), 눈금 0~60 */
-const SY={y:250,x0:232,k:8};
+const SY={y:378,x0:232,k:8};
 const SX=v=>SY.x0+v*SY.k;
 function syringe(V,o){o=o||{};const y=SY.y,x1=SX(60)+14;let g='';
  g+='<rect x="168" y="'+(y-9)+'" width="'+(SY.x0-170)+'" height="18" rx="4" fill="rgba(222,240,250,.8)" stroke="'+GLS+'" stroke-width="3"/>';
@@ -156,7 +156,7 @@ function coinBottle(cx,base,o){o=o||{};let g=shadow(cx,base+4,60);const top=base
  g+='<path d="'+out+'" fill="rgba(190,225,214,.5)" stroke="#5E9C88" stroke-width="3.5" stroke-linejoin="round"/>';
  if(o.cold)for(let i=0;i<26;i++)g+='<circle cx="'+(cx-44+rnd(i,91)*88).toFixed(1)+'" cy="'+(base-16-rnd(i,92)*110).toFixed(1)+'" r="'+(1.5+rnd(i,93)*1.8).toFixed(1)+'" fill="#FFFFFF" opacity=".8"/>';
  g+='<g'+(o.jiggle?' class="lb-a lb-a-coin"':'')+'><ellipse cx="'+cx+'" cy="'+(top-3)+'" rx="30" ry="8" fill="#E1B94A" stroke="#9A7A1C" stroke-width="2.5"/></g>';
- if(o.hands)g+='<g'+an('lb-a-fade',0)+'>'+hand(cx-62,base-80,0,1.2,0)+hand(cx+62,base-80,180,1.2,0)+'</g>';
+ if(o.hands)g+='<g'+an('lb-a-fade',0)+'>'+[-1,1].map(d=>'<path d="M'+(cx+d*96)+' '+(base-150)+' Q'+(cx+d*40)+' '+(base-150)+' '+(cx+d*30)+' '+(base-100)+' Q'+(cx+d*26)+' '+(base-40)+' '+(cx+d*44)+' '+(base-24)+' L'+(cx+d*96)+' '+(base-30)+'Z" fill="#F2C6A0" stroke="#B9875F" stroke-width="2.5"/>'+[0,1,2].map(i=>'<path d="M'+(cx+d*44)+' '+(base-130+i*26)+' Q'+(cx+d*30)+' '+(base-122+i*26)+' '+(cx+d*36)+' '+(base-110+i*26)+'" fill="none" stroke="#B9875F" stroke-width="2"/>').join('')+'<rect x="'+(d<0?cx-136:cx+96)+'" y="'+(base-158)+'" width="40" height="136" rx="10" fill="#5C8FCB" stroke="#3D6A9C" stroke-width="2"/>').join('')+'</g>';
  return g}
 /* ───────── 준비물 카드 ───────── */
 function itemArt(k){const A={
@@ -167,13 +167,15 @@ function itemArt(k){const A={
   vac:'<g transform="translate(-10 52) scale(.36)">'+vacJar(0,0,{lid:1}).replace(/<ellipse[^>]*\/>/,'')+'</g><g transform="translate(52 56) scale(.36)">'+vacPump(0,0,false)+'</g>',
   flat:flatBalloon(0,6,1.1),
   scis:scissors(0,10,.95),
-  jar:'<g transform="translate(0 56) scale(.5)">'+jarArt(0,0,{noShadow:1})+'</g>',
+  jar:'<g transform="translate(0 30) scale(.42)">'+jarArt(0,0,{noShadow:1})+'</g>',
   band:bandArt(0,0,1),
-  hotTank:'<g transform="translate(0 50) scale(.32)">'+tankArt(0,0,'hot').replace(/<ellipse[^>]*\/>/,'')+'</g>',
-  iceTank:'<g transform="translate(0 50) scale(.32)">'+tankArt(0,0,'ice').replace(/<ellipse[^>]*\/>/,'')+'</g>',
+  hotTank:'<g transform="translate(0 30) scale(.36)">'+tankArt(0,0,'hot').replace(/<ellipse[^>]*\/>/,'')+'</g>',
+  iceTank:'<g transform="translate(0 30) scale(.36)">'+tankArt(0,0,'ice').replace(/<ellipse[^>]*\/>/,'')+'</g>',
   towel:towel(0,0),
-  syr:'<g transform="translate(-100 -76) scale(.3)">'+syringe(40,{})+'</g>',
+  syr:'<g transform="translate(-126 -96) scale(.26)">'+syringe(40,{})+'</g>',
   scap:'<g transform="scale(1.6)"><rect x="-16" y="-15" width="32" height="30" rx="7" fill="#3A78C8" stroke="#1D4A80" stroke-width="2.5"/></g>',
   inj:injector(0,24,.8),
   clip:clipArt(0,0,1.6)};
  return A[k]||''}
+/* 처음 크기(점선) — 바뀐 뒤에 견주어 보도록 */
+function balloonGhost(x,bottom){return '<ellipse cx="'+x+'" cy="'+(bottom-50)+'" rx="30" ry="36" fill="none" stroke="var(--w-labeltx)" stroke-width="2.5" stroke-dasharray="7 6" opacity=".7"/>'}

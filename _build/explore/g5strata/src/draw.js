@@ -102,14 +102,14 @@ function cardsTable(o){o=o||{};let g=bgTop();
  const B=BIG;
  if(o.big==null)g+='<rect x="'+B.x+'" y="'+B.y+'" width="'+B.w+'" height="'+B.h+'" rx="12" fill="var(--w-label)" fill-opacity=".55" stroke="var(--w-felt-s)" stroke-width="2.5" stroke-dasharray="10 7"/>'+(NAR?'':'<text x="'+(B.x+B.w/2)+'" y="'+(B.y+B.h/2+8)+'" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-labeltx)">카드를 고르면 크게 보여요</text>');
  else{g+='<g'+(o.flip?an('lb-a-pop',0):'')+'>'+cardArt(o.big,B.x,B.y,B.w,B.h,{face:1,pen:o.bigPen})+'</g>';
-  if(o.bigPen==='a')g+='<g'+an('lb-a-slide',0,'--dx:-300px')+'>'+penArt(B.x+B.w+12,B.y+B.h-30,30,1)+'</g>';else if(o.penTool)g+=penArt(B.x+B.w+14,B.y+B.h+30,30,1)}
+  if(o.bigPen==='a')g+='<g'+an('lb-a-slide',0,'--dx:-300px')+'>'+penArt(B.x+B.w-34,B.y+B.h+26,60,.8)+'</g>';else if(o.penTool)g+=penArt(B.x+B.w-34,B.y+B.h+26,60,.8)}
  return g}
 /* 오늘의 실험 그림용: 아무 무늬 없는 카드(결과를 보여 주지 않음) */
 function blankCard(x,y,w,h){return '<g transform="translate('+x+' '+y+')"><rect x="4" y="6" width="'+w+'" height="'+h+'" rx="10" fill="var(--w-shadow)"/><rect width="'+w+'" height="'+h+'" rx="10" fill="#FFFFFF" stroke="#8C8577" stroke-width="2.5"/><rect x="8" y="8" width="'+(w-16)+'" height="'+(h-16)+'" rx="4" fill="#E9E1D3"/></g>'}
 function trayArt(x,y,lab){return '<g><rect x="'+x+'" y="'+y+'" width="240" height="150" rx="14" fill="var(--w-paper)" stroke="var(--w-felt-s)" stroke-width="2.5"/>'+(lab?'<text x="'+(x+120)+'" y="'+(y+38)+'" text-anchor="middle" font-size="24" font-weight="800" fill="#141A26">'+lab+'</text>':'')+'</g>'}
 
 /* ───────── 실험 2: 지층 모형(옆에서 본 실험대) ───────── */
-const TX=330,TW=300,TY=110,TB=410,TH=TB-TY,LH=1.25;
+const TX=330,TW=300,TY=110,TB=410,TH=TB-TY,LH=.78;
 /* 층 무늬(자갈과 모래: 둥근 자갈과 점 · 모래: 점 · 진흙: 결) */
 function layerFill(k,x,y,w,h,seed){const m=MAT[k];let g='<rect x="'+x+'" y="'+y.toFixed(1)+'" width="'+w+'" height="'+h.toFixed(1)+'" fill="'+m.c+'"/>';
  if(k==='gs'){const n=Math.floor(w/19);for(let j=0;j<n;j++)g+='<ellipse cx="'+(x+10+j*19+rnd(j,seed)*4).toFixed(1)+'" cy="'+(y+h-9-(j%2)*Math.min(12,h*.3)).toFixed(1)+'" rx="'+(7+(j%3))+'" ry="5" fill="#8f7f6a" stroke="#5f5242" stroke-width="1.5"/>'}
@@ -124,7 +124,7 @@ function tankArt(o){o=o||{};const x=o.x==null?TX:o.x,w=o.w||TW,tb=o.b||TB,th=o.h
  let y=tb-3;const L=o.ord||[],sc=(o.ls||LH)*th/TH;
  L.forEach((k,i)=>{const h=MAT[k].h*sc;y-=h;const an1=o.grow&&i===L.length-1;
   g+='<g'+(an1?' class="lb-a lb-a-hillup" style="animation-delay:.55s"':'')+'>'+layerFill(k,x+3,y,w-6,h,i+3)+'</g>'});
- if(o.cloud)g+='<rect x="'+(x+3)+'" y="'+wl.toFixed(1)+'" width="'+(w-6)+'" height="'+(y-wl).toFixed(1)+'" fill="'+MAT[o.cloud].c+'"'+an('lb-a-out2',.2)+' opacity=".45" style="animation-duration:1.8s"/>';
+ if(o.cloud)g+='<rect x="'+(x+3)+'" y="'+wl.toFixed(1)+'" width="'+(w-6)+'" height="'+Math.max(0,y-wl).toFixed(1)+'" fill="'+MAT[o.cloud].c+'"'+an('lb-a-out2',.2)+' opacity=".45" style="animation-duration:1.8s"/>';
  g+='<rect x="'+x+'" y="'+ty+'" width="'+w+'" height="'+th+'" fill="none" stroke="#5a7d8c" stroke-width="5" rx="4"/><path d="M'+(x+12)+' '+(ty+14)+' V'+(ty+th*.5)+'" stroke="#FFFFFF" stroke-width="5" opacity=".55" stroke-linecap="round"/>';
  return g}
 /* 쌓인 층의 가운데 높이(아래부터 i번째) */
@@ -197,7 +197,7 @@ const FOSSIL={
  fish:()=>{let s='<path d="M30 76 C60 40 130 42 158 72 C130 104 60 108 30 76Z" fill="#9a9184" stroke="#4a4239" stroke-width="2.5"/><path d="M156 72 L188 46 L182 74 L188 102Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/><path d="M40 76 H160" stroke="#3d362f" stroke-width="3.5"/>';
   for(let i=0;i<12;i++){const x=58+i*8;s+='<path d="M'+x+' 76 l-6 -'+(18-Math.abs(i-5))+' M'+x+' 76 l-6 '+(18-Math.abs(i-5))+'" stroke="#4a4239" stroke-width="1.6"/>'}
   return s+'<circle cx="44" cy="70" r="5" fill="#3d362f"/><path d="M96 44 l14 -14 l6 16Z M100 106 l12 12 l4 -14Z" fill="#8a8174" stroke="#4a4239" stroke-width="2"/>'},
- ammonite:()=>{let d='M100 75';for(let a=0;a<=4*Math.PI*2.2;a+=.2){const r=3+a*4.4;d+=' L'+(100+Math.cos(a)*r).toFixed(1)+' '+(75+Math.sin(a)*r).toFixed(1)}
+ ammonite:()=>{let d='M100 75';for(let a=0;a<=12.4;a+=.2){const r=3+a*4.4;d+=' L'+(100+Math.cos(a)*r).toFixed(1)+' '+(75+Math.sin(a)*r).toFixed(1)}
   let s='<circle cx="100" cy="75" r="62" fill="#8a8174" stroke="#4a4239" stroke-width="3"/><path d="'+d+'" fill="none" stroke="#4a4239" stroke-width="3"/>';
   for(let i=0;i<36;i++){const a=i/36*Math.PI*2;s+='<path d="M'+(100+Math.cos(a)*44).toFixed(1)+' '+(75+Math.sin(a)*44).toFixed(1)+' L'+(100+Math.cos(a)*60).toFixed(1)+' '+(75+Math.sin(a)*60).toFixed(1)+'" stroke="#4a4239" stroke-width="2"/>'}return s},
  ginkgo:()=>{let s='<path d="M100 132 L100 92" stroke="#4a4239" stroke-width="4"/><path d="M100 94 C66 92 36 64 42 30 C70 18 130 18 158 30 C164 64 134 92 100 94Z" fill="#8a8174" stroke="#4a4239" stroke-width="2.5"/><path d="M100 30 L100 60" stroke="#b9b2a4" stroke-width="4"/>';
@@ -238,10 +238,11 @@ function kindBoxes(f,boxes){let g=bgTop();const B=['생물의 몸','생물이 �
  return g}
 
 /* ───────── 실험 5: 화석 모형(옆에서 본 실험대) ───────── */
-function shell(cx,cy,w,o){o=o||{};const h=w*.82;let s='<g transform="translate('+cx+' '+cy+')">';
- s+='<path d="M0 '+(-h*.5)+' C'+(w*.55)+' '+(-h*.5)+' '+(w*.6)+' '+(h*.3)+' '+(w*.18)+' '+(h*.5)+' L'+(-w*.18)+' '+(h*.5)+' C'+(-w*.6)+' '+(h*.3)+' '+(-w*.55)+' '+(-h*.5)+' 0 '+(-h*.5)+'Z" fill="'+(o.fill||'#f3e6cf')+'" stroke="'+(o.st||'#a08460')+'" stroke-width="'+(o.sw||2.5)+'"/>';
- for(let i=-3;i<=3;i++)s+='<path d="M0 '+(-h*.46)+' Q'+(i*w*.08)+' 0 '+(i*w*.11)+' '+(h*.48)+'" stroke="'+(o.st||'#a08460')+'" stroke-width="1.6" fill="none"/>';
- s+='<rect x="'+(-w*.22)+'" y="'+(h*.44)+'" width="'+(w*.44)+'" height="'+(h*.12)+'" rx="3" fill="'+(o.fill||'#f3e6cf')+'" stroke="'+(o.st||'#a08460')+'" stroke-width="2"/></g>';return s}
+function shell(cx,cy,w,o){o=o||{};const h=w*.86,f=o.fill||'#f3e6cf',st=o.st||'#a08460';let s='<g transform="translate('+cx+' '+cy+')">';
+ s+='<rect x="'+(-w*.22)+'" y="'+(h*.3)+'" width="'+(w*.44)+'" height="'+(h*.16)+'" rx="3" fill="'+f+'" stroke="'+st+'" stroke-width="2"/>';
+ s+='<path d="M0 '+(h*.42)+' L'+(-w*.48)+' '+(-h*.04)+' Q'+(-w*.52)+' '+(-h*.52)+' 0 '+(-h*.5)+' Q'+(w*.52)+' '+(-h*.52)+' '+(w*.48)+' '+(-h*.04)+'Z" fill="'+f+'" stroke="'+st+'" stroke-width="'+(o.sw||2.5)+'" stroke-linejoin="round"/>';
+ for(let i=-3;i<=3;i++){const a=i/3.6,ex=Math.sin(a)*w*.46,ey=-h*.08-Math.cos(a)*h*.4;s+='<path d="M0 '+(h*.4)+' L'+ex.toFixed(1)+' '+ey.toFixed(1)+'" stroke="'+st+'" stroke-width="1.6"/>'}
+ return s+'</g>'}
 const BW={x:300,w:360,t:230,b:410},CLAYH=70;
 /* 그릇 속. o: bag clay imp water plaster(0~1) hard lift */
 function bowlArt(o){o=o||{};const x=BW.x,w=BW.w,t=BW.t,b=BW.b,ct=b-CLAYH;let g=shadow(x+w/2,b+6,w/2+10);
@@ -267,7 +268,7 @@ function piecesArt(o){o=o||{};let g='';const A=o.anim;
   '<ellipse cx="676" cy="356" rx="54" ry="12" fill="rgba(0,0,0,.18)"/>'+shell(670,316,100,{fill:'#FFFFFF',st:'#8d8d8d'})+'<path d="M626 290 Q670 276 714 290" stroke="#FFFFFF" stroke-width="5" fill="none"/></g>';
  if(!o.nolab)g+=mini(290,452,'찰흙',20)+mini(670,452,'석고',20);
  return g}
-function openSpot(){const c=UI.mq.cur;if(c==='oc')return [290,320,62,1.9,780,150];if(c==='op')return [670,316,62,1.9,180,150];return null}
+function openSpot(){const c=UI.mq.cur;if(c==='oc')return [290,320,62,1.8,730,140];if(c==='op')return [670,316,62,1.8,230,140];return null}
 /* 조개 화석 표본(실제) */
 function realShell(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')">'+slab(200,150,'#9b9384')+shell(100,75,90,{fill:'#c8bfae',st:'#5e574c'})+'</g>'}
 function modelShell(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><rect width="200" height="150" rx="14" fill="#f2f2ee" stroke="#a9a9a2" stroke-width="3"/><ellipse cx="104" cy="114" rx="46" ry="10" fill="rgba(0,0,0,.16)"/>'+shell(100,75,90,{fill:'#FFFFFF',st:'#8d8d8d'})+'</g>'}
