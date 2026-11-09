@@ -8,7 +8,7 @@
 - 4학년 1학기 실험관 4개 `grade4/science/explore/`(magnet·water·land·micro, 원본 `_build/explore/g4*/`) — 작업 브랜치에만, main 아님. 메뉴 `grade4/science/explore/index.html`·과학방 카드 있음.
 
 ## 다음 할 일
-- [ ] 1. water(물의 상태 변화) 점검 마무리: 빌드 → 세 화면(1280·1920·390, 밝게·어둡게) 끝까지 눌러 오류·넘침·인쇄 1쪽·카드 배율 0.76↑
+- [x] 1. water(물의 상태 변화) 점검 마무리: 빌드 → 세 화면(1280·1920·390, 밝게·어둡게) 끝까지 눌러 오류·넘침·인쇄 1쪽·카드 배율 0.76↑
 - [ ] 2. 네 실험관 독립 검토(서로 다른 검토자, 원본 lessons_uN.py·교과서 앱 src와 대조) — magnet·land·micro는 2026-11-09 검토 중간에 멈췄음, 처음부터 다시
 - [ ] 3. 메뉴 설명·CLAUDE.md에 4학년 실험관 절 추가, `_build/auto/run_all.py`에 g4 넷 등록
 - [ ] 4. `git fetch origin main && git merge origin/main` → `python3 _build/auto/run_all.py` 문제 0개(무관하게 바뀐 todo.md·common/words/idiom.html은 되돌림) → `git push origin HEAD:main` → 자동 보완 Actions 성공 확인
