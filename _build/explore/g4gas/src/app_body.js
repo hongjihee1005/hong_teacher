@@ -158,7 +158,7 @@ function e5Scene(s){const r=R(),id=s.id,f=fid(),B=MODEL.ball;
  if(id==='btn'){const ids=['bt','op'],k=seqK('bo',ids),fi=ids.indexOf(f);
   if(k===0)return bg({})+vacJar(480,BY,{lid:1,pump:1,inner:inBall(B[6])});
   if(fi===0)return bg({})+vacJar(480,BY,{lid:1,pump:1,btn:1,press:1,inflow:1,inner:inBall(1,{swell:B[6]})});
-  if(k===1)return bg({})+vacJar(480,BY,{lid:1,pump:1,inner:inBall(1)});
+  if(k===1)return bg({})+vacJar(480,BY,{lid:1,pump:1,inner:inBall(1)+balloonGhost(480,BY-6)})+tag(300,150,'점선: 처음 크기',17);
   if(fi===1)return bg({})+vacJar(480,BY,{lid:1,pump:1,lidUp:1,inner:inBall(1)});
   return bg({})+vacJar(400,BY,{lidOff:700,inner:balloon(400,BY-6,1)})}
  if(id==='more'){const go=f==='mm',dn=!!UI.mq.both||r.more.a!=null,m=go||dn?MODEL.marsh:1;
