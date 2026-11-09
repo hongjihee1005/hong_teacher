@@ -84,7 +84,7 @@ function bone(P1,Q,ghost){if(ghost)return '<line x1="'+f1(P1.x)+'" y1="'+f1(P1.y
 function armArt(phi,o){o=o||{};const Q=armPts(phi),vis=k=>o.part==null||o.part>=k;let s='';
  if(o.ghost)return bone({x:300,y:40},AE,1)+bone(AE,Q.tip,1)+band(Q.D,Q.C,0,0,{ghost:1})+band(Q.A,Q.B,0,0,{ghost:1});
  if(o.skin){s+='<path d="M300 -20 L'+AE.x+' '+AE.y+' L'+f1(Q.tip.x)+' '+f1(Q.tip.y)+'" fill="none" stroke="'+SKIN+'" stroke-width="100" stroke-linecap="round" stroke-linejoin="round"/>';const h=Q.P(AE,AL+20,0);s+='<circle cx="'+f1(h.x)+'" cy="'+f1(h.y)+'" r="40" fill="'+SKIN+'"/>'}
- if(vis(1))s+=bone({x:300,y:40},AE)+bone(AE,Q.tip);
+ if(vis(1))s+=bone({x:300,y:40},AE)+bone(Q.D,AE)+bone(AE,Q.tip);
  if(vis(4))s+=band(Q.D,Q.C,MCOL.out[0],MCOL.out[1],o);
  if(vis(2)){const top=vis(3)?Q.A:{x:Q.A.x-30,y:Q.A.y+30};s+=band(top,Q.B,MCOL.in[0],MCOL.in[1],o)}
  if(!o.skin&&vis(2))s+='<g transform="translate('+f1(Q.H.x)+' '+f1(Q.H.y)+')"><rect x="-80" y="-12" width="82" height="24" rx="6" fill="#FFD166" stroke="#A8842E" stroke-width="2"/></g>';
@@ -206,8 +206,8 @@ function blowFace(on){const X=BG4.x,T=BG4.top,C=T-50;
  if(on)g+='<ellipse cx="'+(X-30)+'" cy="'+(C+20)+'" rx="9" ry="6" fill="#F3A9B2" opacity=".8"/><ellipse cx="'+(X+30)+'" cy="'+(C+20)+'" rx="9" ry="6" fill="#F3A9B2" opacity=".8"/>';
  return g+'<ellipse cx="'+X+'" cy="'+(C+30)+'" rx="10" ry="7" fill="#C4544A"/>'}
 /* 숨 쉴 때 가슴(원본 u4-4 가슴 변화 그림): p = 들이마신 정도 */
-function chestArt(p,o){o=o||{};const sc=1+.1*p;let g='<g transform="translate(160 200) scale('+f1(1+.05*p)+' '+f1(1+.03*p)+') translate(-160 -200)">'+bodyBase({})+'<g transform="translate(160 176) scale('+f1(sc)+') translate(-160 -176)">'+ORG.lungL+ORG.lungR+'</g>'+ORG.bronchi+ORG.trachea+'</g>';
- if(o.hands){const hy=172-12*p;g+='<g fill="#F6D9C0" stroke="#C9906A" stroke-width="2.5"><rect x="'+f1(104-6*p)+'" y="'+f1(hy)+'" width="50" height="30" rx="14"/><rect x="'+f1(166+6*p)+'" y="'+f1(hy)+'" width="50" height="30" rx="14"/></g>'}
+function chestArt(p,o){o=o||{};const sc=1+.1*p;let g='<g transform="translate(160 200) scale('+f1(1+.05*p)+' '+f1(1+.03*p)+') translate(-160 -200)">'+bodyBase({noArms:!!o.hands})+'<g transform="translate(160 176) scale('+f1(sc)+') translate(-160 -176)">'+ORG.lungL+ORG.lungR+'</g>'+ORG.bronchi+ORG.trachea+'</g>';
+ if(o.hands){const hy=172-12*p,AR='<path d="M92 146 L68 240 L'+f1(112-6*p)+' '+f1(hy+16)+'"/><path d="M228 146 L252 240 L'+f1(208+6*p)+' '+f1(hy+16)+'"/>';g+='<g fill="none" stroke="'+SKL+'" stroke-width="29" stroke-linecap="round" stroke-linejoin="round">'+AR+'</g><g fill="none" stroke="'+SKIN+'" stroke-width="24" stroke-linecap="round" stroke-linejoin="round">'+AR+'</g><g fill="#F6D9C0" stroke="#C9906A" stroke-width="2.5"><rect x="'+f1(104-6*p)+'" y="'+f1(hy)+'" width="50" height="30" rx="14"/><rect x="'+f1(166+6*p)+'" y="'+f1(hy)+'" width="50" height="30" rx="14"/></g>'}
  return g}
 const TORSO='M92 132 Q160 116 228 132 Q244 140 240 172 L236 214 Q232 276 222 334 L98 334 Q88 276 84 214 L80 172 Q76 140 92 132Z';
 function chestScene(p,o){o=o||{};let g=bg({})+'<g transform="translate(300 10) scale(1.12)">'+chestArt(p,o);
@@ -276,7 +276,7 @@ function itemArt(k){const A={
   handle:'<rect x="-46" y="-14" width="92" height="28" rx="7" fill="#FFD166" stroke="#A8842E" stroke-width="2.5"/>',
   snaps:[0,1,2,3,4,5].map(i=>'<circle cx="'+(-50+(i%3)*50)+'" cy="'+(i<3?-18:24)+'" r="14" fill="#7D8A95" stroke="#FFFFFF" stroke-width="2.5"/>').join(''),
   doan:'<g transform="translate(-50 -66) scale(.31)"><rect x="26" y="4" width="268" height="466" rx="14" fill="#FFFDF8" stroke="#BDB4A2" stroke-width="5"/>'+bodyBase({mouth:1})+ORG.stomach+ORG.large+ORG.small+ORG.eso+'</g>',
-  stick:'<rect x="-16" y="-62" width="32" height="124" rx="5" fill="#E7D3AC" stroke="#B99E6E" stroke-width="2.5"/>'+[0,1,2,3].map(i=>'<circle cx="0" cy="'+(-40+i*28)+'" r="8" fill="'+['#F2C27A','#EFC59A','#E7B77F','#7A4A24'][i]+'"/>').join(''),
+  stick:'<rect x="-16" y="-62" width="32" height="124" rx="5" fill="#E7D3AC" stroke="#B99E6E" stroke-width="2.5"/><rect x="-10" y="-56" width="20" height="12" rx="3" fill="#B99E6E"/>',
   tank:'<rect x="-60" y="-14" width="120" height="54" fill="rgba(141,200,232,.55)"/><path d="M-62 -40 V42 H62 V-40" fill="none" stroke="#7F9BAB" stroke-width="4"/>',
   dye:'<rect x="-18" y="-30" width="36" height="66" rx="8" fill="#D8433A" stroke="#8A1F19" stroke-width="2.5"/><rect x="-10" y="-50" width="20" height="22" rx="4" fill="#FFFFFF" stroke="#8A1F19" stroke-width="2"/>',
   pump:'<path d="M-90 30 Q-80 -20 -46 0 M46 0 Q80 -20 90 30" fill="none" stroke="#9AB4C4" stroke-width="12" stroke-linecap="round"/><ellipse cx="0" cy="0" rx="50" ry="22" fill="#3A3F45" stroke="#20242A" stroke-width="3"/>',

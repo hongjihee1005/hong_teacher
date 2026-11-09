@@ -209,7 +209,7 @@ function actBtns(s,cellsOnly){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=c
  const seq=cellsOnly?[]:A.filter(a=>a.hide!=null);if(seq.length)h+='<ol class="lb-seq" aria-label="차례">'+seq.map((a,i)=>'<li class="'+(a.pressed?'lb-d':!a.hide?'lb-n':'')+'">'+(a.pressed?ic('check'):'<b>'+(i+1)+'</b>')+'<span>'+esc(a.label.replace(/^\d\/\d · /,''))+'</span></li>').join('')+'</ol>';
  if(rest.length)h+='<div class="lb-acts'+(s.k==='more'?' lb-acts2':'')+'">'+rest.map(a=>'<button type="button" class="lb-act'+(a.sub?' lb-act2':'')+(UI.attn&&!a.dis&&!a.sub?' lb-attn':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'"'+(a.pressed!=null?' aria-pressed="'+!!a.pressed+'"':'')+(a.dis?' disabled':'')+'>'+ic(a.icon||'hand')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div>';
  const grps=[];cells.forEach(a=>{let g=grps.find(x=>x.n===a.grp);if(!g)grps.push(g={n:a.grp,c:[]});g.c.push(a)});
- grps.forEach(G=>{const n=G.c.length,mini=cellsOnly&&G.c.every(a=>a.seen&&a.label.length<=3),cols=mini?n:G.c.some(a=>a.label.length>6)?(n>2?2:n):n===8||n===4?4:n>4?3:n;
+ grps.forEach(G=>{const n=G.c.length,mini=cellsOnly&&G.c.every(a=>a.seen&&a.label.length<=3),cols=mini?n:G.c.some(a=>a.label.length>6)?(n>2?2:n):n===8?4:n===4?(G.c.some(a=>a.label.length>3)?2:4):n>4?3:n;
   /* 모두 본 뒤(기록하는 동안)에는 시간 칸을 한 줄로 작게 — 기록 칸이 카드 안에 들어가게 */
   h+='<div class="lb-cellrow'+(mini?' lb-cellmini':'')+'" role="group" aria-label="'+esc(G.n)+'"><span class="lb-cl">'+esc(G.n)+(mini?' · 다시 볼 때 눌러요':'')+'</span><div style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+G.c.map(a=>'<button type="button" class="lb-cellb'+(a.label.length>6?' lb-cellw':'')+(UI.attn&&!a.dis?' lb-attn':'')+(a.seen?' lb-seen':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(G.n+' '+a.label)+(a.seen?' (해 봤어요)':'')+'">'+(a.seen&&!mini?ic('check'):'')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div></div>'});
  return h}
@@ -286,7 +286,7 @@ function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap
  if(no===1){if(ok('pull'))S(armScene(MODEL.armPull,{ghost:MODEL.armRest}),'140 10 640 500','손잡이를 잡아당겼을 때');if(ok('push'))S(armScene(MODEL.armRest,{ghost:MODEL.armPull}),'140 10 640 500','손잡이를 밀었을 때')}
  if(no===2){if(ok('end')){let g='<rect x="0" y="0" width="960" height="240" fill="#FFFFFF"/>';TIMES.e2s.forEach((x,i)=>{const cx=90+i*156;g+='<circle cx="'+cx+'" cy="100" r="74" fill="#2F3E46"/>'+foodPic(x[0],cx,100,66)+'<text x="'+cx+'" y="214" text-anchor="middle" font-size="26" font-weight="800" fill="#141A26">'+x[1]+'</text>'+(i<5?'<path d="M'+(cx+70)+' 100 h12" stroke="#4B5465" stroke-width="4"/>':'')});S(g,'0 0 960 240','구멍으로 본 음식물(입 → 항문)')}}
  if(no===3){if(ok('way'))S(pumpScene({dye:1,hose:1,sq:0,up:0,dn:0,arrow:'dn',lbl:false})+arrow(260,330,260,250,'var(--lb-sci)',6),'150 60 740 430','붉은 색소 물이 이동한 쪽')}
- if(no===4){if(ok('bag'))S(bg({})+lungModel({p:1,stk:1,ghost:1}),'150 50 660 520','공기를 불어 넣었을 때');if(ok('chest'))S(chestScene(1,{hands:1,ghost:0}),'280 60 400 420','숨을 들이마실 때')}
+ if(no===4){if(ok('chest'))S(chestScene(1,{hands:1,ghost:0}),'280 60 400 420','숨을 들이마실 때');if(ok('bag'))S(bg({})+lungModel({p:1,stk:1,ghost:1}),'150 50 660 520','공기를 불어 넣었을 때')}
  if(no===5){const val=k=>rowDone(k)?+R().rec[k].v:null,P=['p0','p1','p2'].map(val),T=['t0','t1','t2'].map(val);if(P.some(x=>x!=null)||T.some(x=>x!=null))S(graphArt(P,T),'0 0 800 520','1분 동안의 맥박 수와 체온')}
  return L}
 /* ───────── 결과 한 장: 관찰 그림 · 이미지로 복사/저장 ───────── */

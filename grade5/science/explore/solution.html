@@ -863,9 +863,11 @@ html .lb-doit.lb-hold:active{background:var(--lb-sci);color:var(--lb-onsci)}
 .lb-a-tip{transform-origin:100% 100%;animation-name:lb-tip;animation-duration:2.3s;animation-timing-function:ease-in-out}
 @keyframes lb-tip{0%,100%{transform:rotate(0)}30%,65%{transform:rotate(var(--rot,-20deg))}}
 .lb-a-haze{animation-name:lb-haze;animation-duration:1.4s;animation-iteration-count:2;animation-timing-function:ease-out}
-@keyframes lb-haze{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-34px);opacity:0}}
+@keyframes lb-haze{0%{transform:translateY(0);opacity:0}30%{opacity:1}100%{transform:translateY(-12px);opacity:0}}
 @media (prefers-reduced-motion:reduce){.lb-a-jig,.lb-a-stir,.lb-a-tip,.lb-a-haze{animation-duration:1ms!important;animation-iteration-count:1!important}}
 @media (min-width:1200px){.lb-ex5.lb-ex6{grid-template-columns:repeat(3,1fr)}.lb-ex5.lb-ex6 .lb-exc-art{height:8.5rem}}
+
+.lb-cfin{display:flex;align-items:center;gap:.35rem;margin:0;font-size:.9rem;color:var(--lb-ink)}.lb-cfin .lb-ic{width:1rem;height:1rem;flex:none;color:var(--lb-sci)}
 
 </style>
 <style id="hj-contact-css">.hj-contact{display:flex;justify-content:center;align-items:center;flex-wrap:wrap;gap:8px 12px;margin:8px 0 0;padding:0}.hj-contact a{display:inline-flex;align-items:center;gap:6px;color:var(--ink,#1F2A44);text-decoration:none;font-size:15px;line-height:1.2;background:var(--paper,#fff);border:2px solid var(--line,#CAD6E4);border-radius:999px;padding:5px 12px;white-space:nowrap}.hj-contact a:hover,.hj-contact a:focus-visible{border-color:var(--ink,#1F2A44);outline:0}.hj-contact svg{flex:none}#ovNavMade+.hj-contact{margin:0 0 0 8px;flex:none;flex-wrap:nowrap;gap:6px}#ovNavMade+.hj-contact a{font-size:13px;padding:3px 9px}@media print{.hj-contact a{border:0;padding:0}}</style>
@@ -2952,7 +2954,7 @@ const ROWS={
  s3:{n:'차가운 물을 더 오래 저은 뒤',t:'sel',need:['r3'],f:[yn('백반',['여전히 바닥에 남아 있어요','모두 녹았어요'],0)]},
  /* 실험 5 */
  ydis:{n:'저어 녹인 뒤',t:'sel',need:['y2'],f:[yn('두 비커의 황설탕',['모두 녹았어요','바닥에 남았어요'],0)]},
- ycol:{n:'흰 종이를 대고 본 색깔',t:'sel',need:['wp'],f:[yn('색깔이 더 진한 것',['비커 1','비커 2'],1)]},
+ ycol:{n:'흰 종이를 대고 본 색깔',t:'sel',need:['wp'],f:[yn('비커 1',['옅은 갈색이에요','짙은 갈색이에요'],0),yn('비커 2',['옅은 갈색이에요','짙은 갈색이에요'],1)]},
  yvis:{n:'기울여 본 모습',t:'sel',need:['tt'],f:[yn('벽에 더 오래 남는 것',['비커 1','비커 2'],1)]},
  /* 실험 6 */
  wlook:{n:'두 용액을 눈으로 본 모습',t:'sel',need:['b2'],f:[yn('색깔',['둘 다 투명해서 구별하기 어려워요','한쪽이 더 진해 보여요'],0)]},
@@ -2979,7 +2981,7 @@ const EXPS={
   predT:'용해되기 전과 후의 무게를 예상해요',predHint:'각설탕이 물에 녹는 모습을 떠올리며 골라요.',
   pred:[{q:'각설탕이 용해된 후의 무게는?',o:['줄어들 것 같아요','같을 것 같아요','늘어날 것 같아요']}],
   rows:['m0','melt1','melt2','m1'],
-  frame:'각설탕이 용해된 후의 무게는 용해되기 전의 무게와 {0}. 각설탕은 물에 녹아 눈에 보이지 않지만 물속에 {1}.',ans:['같아요','있어요'],chips:['같아요','줄었어요','늘었어요','있어요','없어요'],
+  frame:'각설탕이 용해된 후의 무게는 용해되기 전의 무게와 {0}. 무게를 견주어 보면, 각설탕은 물에 녹아 눈에 보이지 않지만 물속에 {1}.',ans:['같아요','있어요'],chips:['같아요','줄었어요','늘었어요','있어요','없어요'],
   hint:['\'용해되기 전 무게\'와 \'용해된 후 무게\' 기록을 견줘 봐요.','무게가 줄지 않았다면 녹은 설탕은 어디에 있을까요?'],
   book:'각설탕이 물에 용해되기 전과 용해된 후의 무게는 같아요. 각설탕은 크기가 점점 작아지며 녹고, 눈에 보이지 않을 정도로 작게 변하여 물속에 골고루 섞여 있기 때문이에요.'},
  e3:{no:3,name:'설탕, 소금, 백반을 한 숟가락씩',sub:'설탕 · 소금 · 백반 · 비커 3개 · 눈금실린더',title:'같은 양의 물에 설탕, 소금, 백반을 넣어 보자',q:'온도와 양이 같은 물에 설탕, 소금, 백반을 넣으면 녹는 양은 어떠할까요?',
@@ -3211,7 +3213,7 @@ function dishArt(cx,base,item){return '<g><ellipse cx="'+cx+'" cy="'+(base-2)+'"
 /* 방울토마토 */
 function tomatoArt(x,y,r){r=r||17;return '<g><circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#E2573F" stroke="#9C3424" stroke-width="2"/><ellipse cx="'+(x-r*.35)+'" cy="'+(y-r*.35)+'" rx="'+(r*.22)+'" ry="'+(r*.14)+'" fill="#FFFFFF" opacity=".55"/><path d="M'+(x-8)+' '+(y-r+2)+' l8 5 l8 -5 M'+x+' '+(y-r+6)+' v-9" stroke="#3F8F46" stroke-width="3" fill="none" stroke-linecap="round"/></g>'}
 /* 아지랑이 같은 일렁임 */
-function haze(cx,y,anim){let g='';for(let i=0;i<4;i++)g+='<path d="M'+(cx-24+i*3)+' '+(y-i*20)+' q12 -8 24 0 q12 8 24 0" fill="none" stroke="#7FB2CF" stroke-width="2.4" opacity="'+(1-i*.18)+'"'+(anim?an('lb-a-haze',i*.25):'')+'/>';return g}
+function haze(cx,y,anim){let g='';for(let i=0;i<4;i++)g+='<path d="M'+(cx-24+i*3)+' '+(y-i*12)+' q12 -8 24 0 q12 8 24 0" fill="none" stroke="#7FB2CF" stroke-width="2.4" opacity="'+(1-i*.18)+'"'+(anim?an('lb-a-haze',i*.25):'')+'/>';return g}
 
 /* ── 유리병(뚜껑이 있는 병). o: lv 물 높이(0~1) · tint 물 색 · op · cloud 뿌연 정도 · grains 바닥 가루 색 · pile 바닥에 쌓인 흰 물질 · lid · lidAnim · label · rise · s 크기 ── */
 const JW=58,JH=158;
@@ -3459,8 +3461,8 @@ function e2Scene(s){const r=R(),id=s.id,f=fid();
   if(k===0)inner='';
   else if(fi===0)inner='<g'+an('lb-a-down',.2,'--from:-170px')+'>'+cubeArt(X,by,1.15)+'</g>';
   else if(k===1)inner=cubeArt(X,by,1.15);
-  else if(fi===1)inner='<g'+an('lb-a-out',1.6,'animation-duration:1s')+'>'+cubeArt(X,by,1.15)+'</g><g'+an('lb-a-fade',1.6,'animation-duration:1s')+'>'+cubeArt(X,by,.7)+grains(X-46,X+46,by-10,by-2,'#FFFFFF','#B5A787',12,4,3)+'</g>'+haze(X,by-50,1);
-  else if(k===2)inner=cubeArt(X,by,.7)+grains(X-46,X+46,by-10,by-2,'#FFFFFF','#B5A787',12,4,3)+haze(X,by-50,0);
+  else if(fi===1)inner='<g'+an('lb-a-out',1.6,'animation-duration:1s')+'>'+cubeArt(X,by,1.15)+'</g><g'+an('lb-a-fade',1.6,'animation-duration:1s')+'>'+cubeArt(X,by,.7)+grains(X-46,X+46,by-10,by-2,'#FFFFFF','#B5A787',12,4,3)+'</g>'+haze(X,by-34,1);
+  else if(k===2)inner=cubeArt(X,by,.7)+grains(X-46,X+46,by-10,by-2,'#FFFFFF','#B5A787',12,4,3)+haze(X,by-34,0);
   else if(fi===2)inner='<g'+an('lb-a-out',.9,'animation-duration:1s')+'>'+cubeArt(X,by,.55)+grains(X-46,X+46,by-10,by-2,'#FFFFFF','#B5A787',12,4,3)+'</g>';
   const jar=glassJar(X,B,{lv:.5,lid:k>=1,lidAnim:fi===0,s,inner});
   g+=fi===2?'<g'+an('lb-a-jig',0)+'>'+jar+'</g>':jar;
@@ -3637,6 +3639,7 @@ function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
  if(rowReady(need)){if(R0.t==='num')return '③ '+(R0.src||'저울 화면의 숫자를')+' ‘'+R0.n+'’ 칸에 써요.';
   return R0.t==='note'?'③ 살펴본 것을 쓰고 기록해요.':'③ '+R0.n+(/\?$/.test(R0.n)?' ':': ')+'알맞은 것을 골라 기록해요.'}
  const A=actsOf(s);
+ if(s.id==='add'&&V().no===3)return '① 비커마다 한 숟가락씩 넣고 저어요. 바닥에 남으면 그만 넣어요.';
  const cur=A.find(b=>b.hide===false&&!b.pressed&&!b.dis);if(cur)return '① '+lj(cur.label.replace(/^\d\/\d · /,''))+' 눌러요.';
  const one=A.find(b=>!b.cell&&!b.sub&&b.hide==null&&!b.dis&&!r.seen[b.id]);if(one)return '① '+lj(one.label)+' 눌러요.';
  const cell=A.find(b=>b.cell&&!b.seen&&!b.dis);if(cell)return '① '+cell.grp+': '+lj(cell.label)+' 눌러요.';
@@ -3647,7 +3650,8 @@ function actBtns(s,cellsOnly){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=c
  const seq=cellsOnly?[]:A.filter(a=>a.hide!=null);if(seq.length)h+='<ol class="lb-seq" aria-label="차례">'+seq.map((a,i)=>'<li class="'+(a.pressed?'lb-d':!a.hide?'lb-n':'')+'">'+(a.pressed?ic('check'):'<b>'+(i+1)+'</b>')+'<span>'+esc(a.label.replace(/^\d\/\d · /,''))+'</span></li>').join('')+'</ol>';
  if(rest.length)h+='<div class="lb-acts">'+rest.map(a=>'<button type="button" class="lb-act'+(a.sub?' lb-act2':'')+(UI.attn&&!a.dis&&!a.sub?' lb-attn':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'"'+(a.pressed!=null?' aria-pressed="'+!!a.pressed+'"':'')+(a.dis?' disabled':'')+'>'+ic(a.icon||'hand')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div>';
  const grps=[];cells.forEach(a=>{let g=grps.find(x=>x.n===a.grp);if(!g)grps.push(g={n:a.grp,c:[]});g.c.push(a)});
- grps.forEach(G=>{const n=G.c.length,mini=cellsOnly&&G.c.every(a=>a.seen&&a.label.length<=3),cols=mini?n:G.c.some(a=>a.label.length>6)?(n>2?2:n):n===8||n===4?4:n>4?3:n;
+ grps.forEach(G=>{if(G.c.every(a=>a.fin)){h+='<p class="lb-cfin">'+ic('check')+'<b>'+esc(G.n)+'</b> '+esc(G.c[0].fin)+'</p>';return}
+  const n=G.c.length,mini=cellsOnly&&G.c.every(a=>a.seen&&a.label.length<=3),cols=mini?n:G.c.some(a=>a.label.length>6)?(n>2?2:n):n===8||n===4?4:n>4?3:n;
   /* 모두 본 뒤(기록하는 동안)에는 시간 칸을 한 줄로 작게 — 기록 칸이 카드 안에 들어가게 */
   h+='<div class="lb-cellrow'+(mini?' lb-cellmini':'')+'" role="group" aria-label="'+esc(G.n)+'"><span class="lb-cl">'+esc(G.n)+(mini?' · 다시 볼 때 눌러요':'')+'</span><div style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+G.c.map(a=>'<button type="button" class="lb-cellb'+(a.label.length>6?' lb-cellw':'')+(UI.attn&&!a.dis?' lb-attn':'')+(a.seen?' lb-seen':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(G.n+' '+a.label)+(a.seen?' (해 봤어요)':'')+'">'+(a.seen&&!mini?ic('check'):'')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div></div>'});
  return h}
@@ -3813,10 +3817,14 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx,no=V().no,st=r.st||{};
   case 'drop':if(no===2)seqActs(A,'dp',['d1','d2'],['핀셋으로 각설탕 넣고 뚜껑 닫기','가까이에서 지켜보기'],busy);
    else seqActs(A,'tm',['t1','t2'],['비커 ㉮에 방울토마토 넣기','비커 ㉯에 방울토마토 넣기'],busy);break;
   case 'w1':seqActs(A,'sc1',['z1','b1'],['영점 확인하기','유리병과 빈 접시 올려놓기'],busy);break;
-  case 'add':if(no===3){const n=st.n||[0,0,0];['aG','aS','aA'].forEach((id,i)=>{const end=n[i]>=MODEL.lim[i];A.push({id,label:end?BN3[i]+': 더 넣지 않아요':BN3[i]+' 한 숟가락 넣고 젓기',dis:busy||end})})}
+  case 'add':if(no===3){/* 바닥에 남았는지는 학생이 그림을 보고 판단해 '그만 넣기'를 누름(앱이 단추를 바꿔 알려 주지 않음, 독립 검토 고침) */
+    const n=st.n||[0,0,0],sp=st.stop||[0,0,0];['aG','aS','aA'].forEach((id,i)=>{const full=n[i]>=10;
+     const fin=sp[i]?'그만 넣었어요 ('+n[i]+'숟가락)':full?'열 숟가락을 다 넣었어요':'';
+     A.push({id,cell:1,grp:BN3[i]+' 비커',label:fin||'한 숟가락 넣고 젓기',dis:busy||!!fin,fin});
+     A.push({id:'q'+id.slice(1),cell:1,grp:BN3[i]+' 비커',label:'바닥에 남아 그만 넣기',dis:busy||!!fin||!n[i],pressed:!!sp[i],seen:!!sp[i],fin})})}
    else if(no===5)seqActs(A,'ad',['y1','y2'],['비커 1에 두 숟가락 넣고 젓기','비커 2에 열 숟가락 넣고 젓기'],busy);
    else if(no===6)seqActs(A,'wa',['b1','b2'],['비커 ㉮에 다섯 숟가락 녹이기','비커 ㉯에 열다섯 숟가락 녹이기'],busy);break;
-  case 'stir':seqActs(A,'st',['r1','r2'],['유리 막대로 두 비커 젓기','두 비커를 한 번 더 젓기'],busy);if((st.st||0)>=2)A.push({id:'r3',label:'차가운 물을 더 오래 젓기',dis:busy,pressed:!!r.seen.r3});break;
+  case 'stir':seqActs(A,'st',['r1','r2'],['유리 막대로 두 비커 젓기','두 비커를 한 번 더 젓기'],busy);if((st.st||0)>=2&&rowDone('s2'))A.push({id:'r3',label:'차가운 물을 더 오래 젓기',dis:busy,pressed:!!r.seen.r3});break;
   case 'paper':seqActs(A,'pp',['wp'],['비커 뒤에 흰 종이 대기'],busy);break;
   case 'tilt':seqActs(A,'tl',['tt'],['두 비커를 살짝 기울이기'],busy);break;
   case 'more':A.push(no===4?{id:'cool',label:'용액을 천천히 식히기',dis:busy}:{id:'m6',label:'비커 ㉮에 백설탕 더 녹이기',dis:busy});break}
@@ -3918,8 +3926,13 @@ function doX(id){const r=R(),s=curStep(),st=r.st,no=V().no;if(UI.fx)return;
   case 'jig':seq('dq',['d3'],2200);return;
   case 'drop':if(no===2)seq('dp',['d1','d2'],[1700,3000]);else seq('tm',['t1','t2'],[1500,1500]);return;
   case 'w1':seq('sc1',['z1','b1'],[1000,1300],pendAt('m1',1));return;
-  case 'add':if(no===3){const i=['aG','aS','aA'].indexOf(id);if(i<0)return;st.n=st.n||[0,0,0];if(st.n[i]>=MODEL.lim[i])return;st.n[i]++;UI.mq.cur=id;
-    fx(id,1200,()=>{r.seen[id]=1;if(st.n[i]>=MODEL.lim[i]){if(i===0)r.seen.gD=1;else{const row=i===1?'lS':'lA';if(!rowDone(row))r.pend[row]=1}}});return}
+  case 'add':if(no===3){st.n=st.n||[0,0,0];st.stop=st.stop||[0,0,0];const look='비커 바닥을 다시 살펴봐요. 녹지 않고 바닥에 남은 것이 있으면 더 넣지 않아요.';
+    const q=['qG','qS','qA'].indexOf(id);
+    if(q>=0){if(st.stop[q]||!st.n[q])return;if(left3(q,st.n[q])>0){st.stop[q]=1;r.seen[id]=1;const row=q===1?'lS':'lA';if(!rowDone(row))r.pend[row]=1;save();render()}else flash(look);return}
+    const i=['aG','aS','aA'].indexOf(id);if(i<0||st.stop[i]||st.n[i]>=10)return;
+    if(left3(i,st.n[i])>0){flash(look);return}   /* 이미 바닥에 남았는데 더 넣으려 할 때만 */
+    st.n[i]++;UI.mq.cur=id;
+    fx(id,1200,()=>{r.seen[id]=1;if(i===0&&st.n[0]>=10)r.seen.gD=1});return}
    if(no===5)seq('ad',['y1','y2'],1500);else seq('wa',['b1','b2'],1500);return;
   case 'stir':if(id==='r3'){if((st.st||0)<2)return;UI.mq.cur=id;fx(id,1600,()=>{r.seen.r3=1});return}seq('st',['r1','r2'],1500);return;
   case 'paper':seq('pp',['wp'],1200);return;

@@ -88,7 +88,7 @@ function dishArt(cx,base,item){return '<g><ellipse cx="'+cx+'" cy="'+(base-2)+'"
 /* 방울토마토 */
 function tomatoArt(x,y,r){r=r||17;return '<g><circle cx="'+x+'" cy="'+y+'" r="'+r+'" fill="#E2573F" stroke="#9C3424" stroke-width="2"/><ellipse cx="'+(x-r*.35)+'" cy="'+(y-r*.35)+'" rx="'+(r*.22)+'" ry="'+(r*.14)+'" fill="#FFFFFF" opacity=".55"/><path d="M'+(x-8)+' '+(y-r+2)+' l8 5 l8 -5 M'+x+' '+(y-r+6)+' v-9" stroke="#3F8F46" stroke-width="3" fill="none" stroke-linecap="round"/></g>'}
 /* 아지랑이 같은 일렁임 */
-function haze(cx,y,anim){let g='';for(let i=0;i<4;i++)g+='<path d="M'+(cx-24+i*3)+' '+(y-i*20)+' q12 -8 24 0 q12 8 24 0" fill="none" stroke="#7FB2CF" stroke-width="2.4" opacity="'+(1-i*.18)+'"'+(anim?an('lb-a-haze',i*.25):'')+'/>';return g}
+function haze(cx,y,anim){let g='';for(let i=0;i<4;i++)g+='<path d="M'+(cx-24+i*3)+' '+(y-i*12)+' q12 -8 24 0 q12 8 24 0" fill="none" stroke="#7FB2CF" stroke-width="2.4" opacity="'+(1-i*.18)+'"'+(anim?an('lb-a-haze',i*.25):'')+'/>';return g}
 
 /* ── 유리병(뚜껑이 있는 병). o: lv 물 높이(0~1) · tint 물 색 · op · cloud 뿌연 정도 · grains 바닥 가루 색 · pile 바닥에 쌓인 흰 물질 · lid · lidAnim · label · rise · s 크기 ── */
 const JW=58,JH=158;
