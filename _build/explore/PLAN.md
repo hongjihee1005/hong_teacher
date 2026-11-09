@@ -5,7 +5,7 @@
 
 ## 현황
 - 3학년 실험관 9개(3-1·3-2 모든 단원) — main에 열림.
-- 4학년 1학기 실험관 4개 `grade4/science/explore/`(magnet·water·land·micro, 원본 `_build/explore/g4*/`) — 작업 브랜치에만, main 아님. 메뉴 `grade4/science/explore/index.html`·과학방 카드 있음.
+- 4학년 1학기 실험관 4개 `grade4/science/explore/`(magnet·water·land·micro, 원본 `_build/explore/g4*/`) — main에 열림(2026-11-09, 자동 보완 성공). 메뉴 `grade4/science/explore/index.html`·과학방 카드 있음.
 
 ## 다음 할 일
 - [x] 1. water(물의 상태 변화) 점검 마무리: 빌드 → 세 화면(1280·1920·390, 밝게·어둡게) 끝까지 눌러 오류·넘침·인쇄 1쪽·카드 배율 0.76↑
