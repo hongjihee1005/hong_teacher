@@ -151,7 +151,10 @@ function e3Scene(s){const r=R(),id=s.id,st=r.st,f=fid();
   return g}
  return g}
 function dayKey(x,y,c){let g='';[['o','처음']].concat(TIMES.e3d.slice(0,c).map(t=>[t[0],t[1]])).forEach((t,i)=>{if(NAR){LEG.push([null,['검은','초록','빨간','파란','보라'][i]+' 선 · '+t[1]]);return}g+='<path d="M'+x+' '+(y+i*32)+' h36" stroke="'+DCOL[t[0]]+'" stroke-width="5"/><text x="'+(x+46)+'" y="'+(y+i*32+7)+'" font-size="19" font-weight="800" fill="var(--w-labeltx)">'+t[1]+'</text>'});return g}
-function dayLens(){if(!(UI.mq.cur==='dz'||fid()==='dz'||(R().seen.dz&&!UI.mq.cur)))return null;const lv=BX3.lv-MODEL.days.d3;return [BX3.cx,BY-lv+16,40,2.1,250,280]}
+function dayLens(){if(!(UI.mq.cur==='dz'||fid()==='dz'||(R().seen.dz&&!UI.mq.cur))){
+  /* 날마다 그은 선과 물 높이를 확대(검토 고침: 선 사이가 좁아 그림만으로는 견주기 어려웠음) */
+  if(!tView('e3d')&&!TIMES.e3d.some(x=>fid()===x[0]))return null;return [BX3.cx-BK.w/2+12,BY-BX3.lv+10,30,2.8,250,280]}
+ const lv=BX3.lv-MODEL.days.d3;return [BX3.cx,BY-lv+16,40,2.1,250,280]}
 /* 실험 4: 가열 */
 function e4Scene(s){const r=R(),id=s.id,st=r.st,f=fid();
  if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'),true);
@@ -277,7 +280,7 @@ function actBtns(s,cellsOnly){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=c
  const grps=[];cells.forEach(a=>{let g=grps.find(x=>x.n===a.grp);if(!g)grps.push(g={n:a.grp,c:[]});g.c.push(a)});
  grps.forEach(G=>{const n=G.c.length,mini=cellsOnly&&G.c.every(a=>a.seen&&a.label.length<=3),cols=mini?n:G.c.some(a=>a.label.length>6)?(n>2?2:n):n===8||n===4?4:n>4?3:n;
   /* 모두 본 뒤(기록하는 동안)에는 시간 칸을 한 줄로 작게 — 기록 칸이 카드 안에 들어가게 */
-  h+='<div class="lb-cellrow'+(mini?' lb-cellmini':'')+'" role="group" aria-label="'+esc(G.n)+'"><span class="lb-cl">'+esc(G.n)+(mini?' · 다시 볼 때 눌러요':'')+'</span><div style="grid-template-columns:repeat('+cols+',1fr)">'+G.c.map(a=>'<button type="button" class="lb-cellb'+(a.label.length>6?' lb-cellw':'')+(UI.attn&&!a.dis?' lb-attn':'')+(a.seen?' lb-seen':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(G.n+' '+a.label)+(a.seen?' (해 봤어요)':'')+'">'+(a.seen&&!mini?ic('check'):'')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div></div>'});
+  h+='<div class="lb-cellrow'+(mini?' lb-cellmini':'')+'" role="group" aria-label="'+esc(G.n)+'"><span class="lb-cl">'+esc(G.n)+(mini?' · 다시 볼 때 눌러요':'')+'</span><div style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+G.c.map(a=>'<button type="button" class="lb-cellb'+(a.label.length>6?' lb-cellw':'')+(UI.attn&&!a.dis?' lb-attn':'')+(a.seen?' lb-seen':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(G.n+' '+a.label)+(a.seen?' (해 봤어요)':'')+'">'+(a.seen&&!mini?ic('check'):'')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div></div>'});
  return h}
 const MOREQ={};
 function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=='more'||r.more.a!=null);

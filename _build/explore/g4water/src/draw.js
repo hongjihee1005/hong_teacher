@@ -124,7 +124,7 @@ function beaker2(cx,base,o){o=o||{};const w=BK.w/2,h=BK.h,lv=o.lvl||0;let g=shad
  g+='<path d="'+out+'" fill="none" stroke="var(--w-glass-s)" stroke-width="3.5"/><path d="M'+(cx-w-9)+' '+(base-h)+' h12" stroke="var(--w-glass-s)" stroke-width="3.5"/>';
  for(let i=1;i<=4;i++)g+='<path d="M'+(cx+w-26)+' '+(base-i*38)+' h18" stroke="var(--w-glass-s)" stroke-width="2"/>';
  if(o.sticker)g+='<g'+(o.sticker==='anim'?an('lb-a-pop',.3):'')+'><rect x="'+(cx-32)+'" y="'+(base-h+18)+'" width="64" height="30" rx="4" fill="#FFF4C2" stroke="#B9A04A" stroke-width="2"/><path d="M'+(cx-22)+' '+(base-h+33)+' h44" stroke="#8A7A3A" stroke-width="3"/></g>';
- (o.marks||[]).forEach((m,i)=>{const y=base-m[0];g+='<path d="M'+(cx-w-6)+' '+y+' H'+(cx-w+30)+'" stroke="'+m[1]+'" stroke-width="5" stroke-linecap="round"'+(m[3]?an('lb-a-fade',.3):'')+'/>'+(m[2]?mini(cx-w-44,y+5,m[2],15):'')});
+ (o.marks||[]).forEach((m,i)=>{const y=base-m[0];g+='<path d="M'+(cx-w-(i?-2:14))+' '+y+' H'+(cx-w+30)+'" stroke="'+m[1]+'" stroke-width="5" stroke-linecap="round"'+(m[3]?an('lb-a-fade',.3):'')+'/>'+(m[2]?mini(cx-w-44,y+5,m[2],15):'')});
  return g}
 const DCOL={o:'#1F2328',d0:'#1E8A4C',d1:'#D2312A',d2:'#1F5FC4',d3:'#7A3FB0'};
 const BX3={cx:560,lv:100};
