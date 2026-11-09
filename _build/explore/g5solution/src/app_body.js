@@ -94,7 +94,7 @@ function e1Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
   if(k>=1&&fi!==0)g+=mini(480,150,'5분 뒤',22);
   return g}
  return g}
-function jarSpot(){const k=seqK('wt',['w5']);if(k<1||UI.fx)return null;return [J1[2],BY-18,34,2,830,180]}
+function jarSpot(){const k=seqK('wt',['w5']);if(k<1||UI.fx)return null;return [J1[2],BY-18,34,2,818,192]}
 
 /* ───── 실험 2: 각설탕 ───── */
 const CUBE_ON_DISH=c=>dishArt(c,330,cubeArt(c,316,1.1));
@@ -120,11 +120,11 @@ function e2Scene(s){const r=R(),id=s.id,f=fid();
   g+=dishArt(700,BY,k===0?cubeArt(700,BY-14,1.1):'');
   if(fi===0)g+='<g'+an('lb-a-fade',0)+'>'+tweezArt(X+40,B-260,18,'')+'</g>';
   if(k===0)g+=tweezArt(780,BY-6,70,'');
-  if(k>=3&&fi!==2)g+=mini(X,110,'다 녹은 뒤',22);
+  if(k>=3&&fi!==2)g+=mini(X,178,'다 녹은 뒤',22);
   return g}
  if(id==='w1')return scaleScene('sc1',['z1','b1'],'91.6',jar2(140,BY,{})+dishArt(275,BY,''),jar2(470,330,{noShadow:1})+dishArt(610,330,''));
  return g}
-function cubeSpot(){const k=seqK('dp',['d1','d2']);if(k<2&&fid()!=='d2')return null;if(k>=3)return null;return [420,BY-30,40,1.9,760,170]}
+function cubeSpot(){const k=seqK('dp',['d1','d2']);if(k<2&&fid()!=='d2')return null;if(k>=3)return null;return [420,BY-30,40,1.9,650,235]}
 
 /* ───── 실험 3: 비커 세 개 ───── */
 const B3=[260,480,700],BN3=['설탕','소금','백반'],BG3=[[PW,PWS],['#FBFBFB','#AEB8C0'],['#F4F8FB','#9FB4C4']];
@@ -176,16 +176,16 @@ function filmArt(x,base,thick){/* 기울였다 세운 뒤 비커 벽에 남은 �
 function e5Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
  if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
  let g=bg({});
- if(id==='water'){const on=has('water'),a=f==='water';if(!on)return g+e5Beakers({ml:0})+cylArt(850,BY,100);return g+e5Beakers({rise:a})+(a?pourCyl(850,BY-230,-40,1):'')}
- if(id==='pred')return g+e5Beakers({})+heap(850,BY,YSC,YSS)+qmark(480,100);
+ if(id==='water'){const on=has('water'),a=f==='water';if(!on)return g+e5Beakers({ml:0})+cylArt(745,BY,100);return g+e5Beakers({rise:a})+(a?pourCyl(735,BY-240,-40,1):'')}
+ if(id==='pred')return g+e5Beakers({})+heap(752,BY,YSC,YSS)+qmark(480,200);
  const add=seqK('ad',['y1','y2']),fa=['y1','y2'].indexOf(f);
  const n=[add>=1&&fa!==0?MODEL.ys[0]:0,add>=2&&fa!==1?MODEL.ys[1]:0];
  if(id==='add')return g+e5Beakers({n,cnt:1,each:i=>fa===i?{fall:YSC,fst:YSS,stir:1,rod:1}:{}})+(fa>=0?'<g'+an('lb-a-fade',0)+'>'+spoonArt(B5[fa]-30,BY-250,-20,YSC,YSS)+'</g>':'');
  const N=MODEL.ys;
- if(id==='paper'){const on=seqK('pp',['wp'])>=1;return g+(on?paperBack(210,96,540,330,f==='wp'):'')+e5Beakers({n:N,cnt:1})}
+ if(id==='paper'){const on=seqK('pp',['wp'])>=1;return g+(on?paperBack(232,150,496,272,f==='wp'):'')+e5Beakers({n:N,cnt:1})}
  if(id==='tilt'){const k=seqK('tl',['tt']),go=f==='tt';let b='';
   B5.forEach((x,i)=>{const one=beakerArt(x,BY,{big:1,ml:150,label:'비커 '+(i+1),tint:ycol(N[i]),op:.92,film:k>=1&&!go?filmArt(x,BY,i===1):''});b+=go?'<g'+an('lb-a-tip',0,'--rot:-24deg')+'>'+one+'</g>':one});
-  return g+paperBack(210,96,540,330,0)+b+(k>=1&&!go?mini(480,72,'기울였다가 세운 뒤',20):'')}
+  return g+paperBack(232,150,496,272,0)+b+(k>=1&&!go?mini(480,170,'기울였다가 세운 뒤',20):'')}
  return g}
 function tiltSpot(){const k=seqK('tl',['tt']);if(k<1||UI.fx)return null;return null}
 
@@ -196,16 +196,16 @@ function e6Beakers(o){o=o||{};let g='';B6.forEach((x,i)=>{g+=beakerArt(x,BY,Obje
 function e6Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
  if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
  let g=bg({});
- if(id==='water'){const on=has('water'),a=f==='water';if(!on)return g+e6Beakers({ml:0})+cylArt(850,BY,100);return g+e6Beakers({rise:a})+(a?pourCyl(850,BY-230,-40,1):'')}
+ if(id==='water'){const on=has('water'),a=f==='water';if(!on)return g+e6Beakers({ml:0})+cylArt(745,BY,100);return g+e6Beakers({rise:a})+(a?pourCyl(735,BY-240,-40,1):'')}
  const add=seqK('wa',['b1','b2']),fa=['b1','b2'].indexOf(f),W=MODEL.ws;
  if(id==='add'){const c=[add>=1&&fa!==0?W[0]:0,add>=2&&fa!==1?W[1]:0];return g+e6Beakers({cnt:c,each:i=>fa===i?{fall:PW,fst:PWS,stir:1,rod:1}:{}})+(fa>=0?'<g'+an('lb-a-fade',0)+'>'+spoonArt(B6[fa]-30,BY-250,-20,PW,PWS)+'</g>':'')}
- if(id==='pred')return g+e6Beakers({cnt:W})+tomatoArt(860,BY-20,20)+tomatoArt(900,BY-18,20)+qmark(480,90);
+ if(id==='pred')return g+e6Beakers({cnt:W})+tomatoArt(752,BY-22,22)+tomatoArt(800,BY-20,22)+qmark(480,200);
  if(id==='drop'){const k=seqK('tm',['t1','t2']),ft=['t1','t2'].indexOf(f);
   g+=e6Beakers({cnt:W,each:i=>(i<k&&ft!==i)||ft===i?{tom:tomLevel(W[i]),tomAnim:ft===i}:{}});
   if(ft>=0)g+='<g'+an('lb-a-fade',0)+'>'+tweezArt(B6[ft]+40,BY-250,18,'')+'</g>';
-  if(k<2)g+=tomatoArt(860,BY-20,20)+(k<1?tomatoArt(900,BY-18,20):'');
+  if(k<2)g+=tomatoArt(752,BY-22,22)+(k<1?tomatoArt(800,BY-20,22):'');
   return g}
- if(id==='more'){const go=f==='m6',dn=go||!!UI.mq.both||r.more.a!=null;const a=W[0]+(dn?MODEL.more6:0),hiLo=(BY-23)-(BY-120+17*.25);
+ if(id==='more'){const go=f==='m6',dn=go||!!UI.mq.both||r.more.a!=null;const a=W[0]+(dn?MODEL.more6:0),hiLo=(BY-28)-(BY-120+22*.3);
   return g+e6Beakers({cnt:[a,W[1]],each:i=>i===0?{tom:tomLevel(a),tomFrom:go?(tomLevel(a)-tomLevel(W[0]))*hiLo:null,fall:go?PW:null,fst:PWS,stir:go,rod:go}:{tom:tomLevel(W[1])}})+(go?'<g'+an('lb-a-fade',0)+'>'+spoonArt(B6[0]-30,BY-250,-20,PW,PWS)+'</g>':'')}
  return g}
 
@@ -213,8 +213,8 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  const T=(g,l,vb)=>svg(g+lensOf(s,g),l||s.t,vb);
  if(id==='tools'){if(!(r.done.tools||fxOn('tools')))return T(bg({})+boxArt(480),'준비물 상자');return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '),v.tools.length>8?'0 10 960 600':null)}
  const F={1:e1Scene,2:e2Scene,3:e3Scene,4:e4Scene,5:e5Scene,6:e6Scene}[no];
- const VB={1:'150 100 750 360',2:'40 20 900 470',3:'170 160 700 300',4:'150 150 680 310',5:'100 20 760 470',6:'100 20 760 470'}[no];
- return T(F(s),s.t,id==='gear'?'160 40 640 420':VB)}
+ const VB={1:'150 100 750 360',2:'40 20 900 470',3:'170 160 700 300',4:'150 150 680 310',5:'200 136 620 334',6:'200 136 640 334'}[no];
+ return T(F(s),s.t,id==='gear'?'160 40 640 420':no===2&&(id==='drop'||id==='jig')?'250 140 560 330':VB)}
 
 
 /* ───────── 오른쪽 카드 ───────── */
@@ -380,7 +380,7 @@ function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap
   if(ok('m1'))S(bg({})+escale(ES.x,{on:1,val:'91.6',item:jar2(470,330,{noShadow:1})+dishArt(610,330,'')}),'370 140 380 310','용해된 후')}
  if(no===3){const n=r.st.n||[0,0,0];if(ok('lA')||ok('lS')||ok('lG')){let g=bg({});B3.forEach((x,i)=>{g+=beakerArt(x,BY,{label:BN3[i],ml:50,cnt:n[i]+'숟가락',pile:left3(i,n[i])})});S(g,'170 240 620 220','넣고 저은 뒤')}}
  if(no===4){if(ok('s2'))S(bg({})+e4Beakers({each:i=>({pile:(i?MODEL.warm:MODEL.cold)[2]})}),'190 205 580 255','두 번 저은 뒤')}
- if(no===5){if(ok('ycol'))S(bg({})+paperBack(210,96,540,330,0)+e5Beakers({n:MODEL.ys,cnt:1}),'190 80 580 380','흰 종이를 대고 본 모습')}
+ if(no===5){if(ok('ycol'))S(bg({})+paperBack(232,150,496,272,0)+e5Beakers({n:MODEL.ys,cnt:1}),'210 130 540 330','흰 종이를 대고 본 모습')}
  if(no===6){if(ok('tom'))S(bg({})+e6Beakers({cnt:MODEL.ws,each:i=>({tom:tomLevel(MODEL.ws[i])})}),'220 175 520 285','방울토마토를 넣은 뒤')}
  return L}
 /* ───────── 결과 한 장: 관찰 그림 · 이미지로 복사/저장 ───────── */
@@ -493,7 +493,7 @@ function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0
   if(k==='shake'){g+=glassJar(440,BY,{lv:2/3,lid:1})+'<g transform="translate(600 330) scale(.6)">'+stopwatch(0,0,'05:00',1)+'</g>';vb='350 220 330 240'}}
  if(no===2){if(k==='fill'){g+=glassJar(480,BY,{lv:.5,lid:1});vb='380 240 200 220'}
   if(k==='weigh'){g+=escale(ES.x,{item:jar2(470,330,{noShadow:1})+CUBE_ON_DISH(610)});vb='360 140 400 320'}
-  if(k==='drop'){g+=glassJar(470,BY,{lv:.5})+tweezArt(500,BY-196,18,'')+cubeArt(480,BY-286,.8);vb='370 120 230 340'}
+  if(k==='drop'){g+=glassJar(470,BY,{lv:.5})+tweezArt(500,BY-176,18,'')+cubeArt(500,BY-170,.7);vb='370 150 230 310'}
   if(k==='weigh2'){g+=escale(ES.x,{item:jar2(470,330,{noShadow:1})+dishArt(610,330,'')});vb='360 140 400 320'}}
  if(no===3){if(k==='label'){g+=beakerArt(400,BY,{label:'설탕'})+beakerArt(560,BY,{label:''});vb='310 260 340 200'}
   if(k==='cyl'){g+=beakerArt(420,BY,{ml:50})+cylArt(560,BY,100);vb='330 180 300 280'}
@@ -504,7 +504,7 @@ function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0
   if(k==='stir'){g+=e4Beakers({each:()=>({rod:1})});vb='200 180 560 280'}}
  if(no===5){const bk=o=>e5Beakers(o||{});if(k==='water'){g+=bk();vb='230 210 500 250'}
   if(k==='add'){g+=bk()+spoonArt(B5[0]-30,BY-250,-20,YSC,YSS);vb='230 160 500 300'}
-  if(k==='paper'){g+=paperBack(210,96,540,330,0)+bk();vb='190 80 580 380'}
+  if(k==='paper'){g+=paperBack(232,150,496,272,0)+bk();vb='210 130 540 330'}
   if(k==='tilt'){g+='<g transform="rotate(-14 408 436)">'+beakerArt(330,BY,{big:1,ml:150,label:'비커 1'})+'</g>'+'<g transform="rotate(-14 708 436)">'+beakerArt(630,BY,{big:1,ml:150,label:'비커 2'})+'</g>';vb='200 150 560 310'}}
  if(no===6){const bk=()=>e6Beakers({});if(k==='water'){g+=bk();vb='230 210 500 250'}
   if(k==='add'){g+=bk()+spoonArt(B6[0]-30,BY-250,-20,PW,PWS);vb='230 160 500 300'}

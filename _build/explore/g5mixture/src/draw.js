@@ -134,7 +134,8 @@ function sieveSide(o){o=o||{};const n=o.n||0,an1=o.anim;let g=bg({});
 const LV={b:410,wT:290,oilT:260};
 /* 비커: cx 가운데, b 바닥, w 너비, h 높이, water(물 높이 px), oil(기름 두께 px), cloud(0 없음 · 1 살살 · 2 세게), lab 눈금 */
 function beakerS(cx,b,w,h,o){o=o||{};const x=cx-w/2,t=b-h;let g=shadow(cx,b+4,w/2+10);
- const wt=b-(o.water||0),ot=wt-(o.oil||0);
+ /* 흔든 바로 뒤에는 기름 일부가 방울이 되어 물속에 퍼지므로 위의 기름층이 얇아짐(전체 높이는 그대로) */
+ const ot=b-(o.water||0)-(o.oil||0),oilV=o.cloud&&o.oil>0?o.oil*(o.cloud===2?.3:.7):(o.oil||0),wt=ot+oilV;o=Object.assign({},o,{oil:oilV});
  if(o.water)g+='<rect x="'+(x+3)+'" y="'+wt+'" width="'+(w-6)+'" height="'+(b-wt-3)+'" fill="#CDEBFA" fill-opacity=".85"/>';
  if(o.oil>0)g+='<rect x="'+(x+3)+'" y="'+ot+'" width="'+(w-6)+'" height="'+(o.oil+.5)+'" fill="#F2C94C" fill-opacity=".92"/><path d="M'+(x+3)+' '+wt+' H'+(x+w-3)+'" stroke="#C99A1E" stroke-width="1.5"/>';
  if(o.cloud){const N=o.cloud===2?46:14;g+='<g>';for(let i=0;i<N;i++){const px=x+10+rnd(i,o.cloud)*(w-20),py=ot+6+rnd(i,o.cloud+3)*((b-ot)-12);g+='<circle cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" r="'+(o.cloud===2?2.5+rnd(i,7)*2.5:5+rnd(i,7)*5).toFixed(1)+'" fill="#F2C94C" fill-opacity=".9"/>'}g+='</g>';
@@ -243,7 +244,7 @@ function heatScene(c,act,view){let g=bg({});const on=c>=3&&c<5||act==='h3'||act=
   if(act==='h2')g+='<g'+an('lb-a-fade',0)+'><g transform="translate(600 200) rotate(-58)">'+beakerS(0,0,90,110,{water:60})+'</g></g>'}
  else g+=edish(0,0)+beakerS(760,416,90,110,{water:44,lab:1});
  if(act==='h1')g+='<g'+an('lb-a-pop',0)+'>'+cotton(250,250,-60,1.3)+cotton(720,250,-120,1.3)+'</g>';
- if(stg==='anim'||act==='h4')g+=clockArt(770,200,1);
+ if(stg==='anim'||act==='h4')g+=clockArt(305,205,1);
  return g}
 function moveScene(done,anim){let g=bg({})+hotplate(false);const tg='<path d="M905 300 L862 330 M915 312 L868 338" stroke="#6B7480" stroke-width="7" stroke-linecap="round"/>';
  if(!done)return g+edish(.1,40)+'<g transform="translate(40 -20)">'+tg+'</g>';

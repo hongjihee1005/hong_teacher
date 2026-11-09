@@ -10,9 +10,9 @@ function bg(o){o=o||{};let g='<rect x="-3000" y="-3000" width="7000" height="341
  return g}
 function defs(){return ''}
 function svg(inner,label,vb){return '<svg viewBox="'+(vb||'0 0 960 540')+'" preserveAspectRatio="xMidYMid meet" role="img" aria-label="'+label+'">'+defs()+inner+'</svg>'}
-function tag(x,y,t,sz){sz=sz||20;if(NAR){LEG.push([null,t]);return ''}const w=t.length*sz*.95+24;return '<g><rect x="'+(x-w/2)+'" y="'+(y-sz*.95)+'" width="'+w+'" height="'+(sz*1.5)+'" rx="'+(sz*.5)+'" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/><text x="'+x+'" y="'+(y+sz*.3)+'" text-anchor="middle" font-size="'+sz+'" font-weight="800" fill="var(--w-labeltx)">'+t+'</text></g>'}
+function tag(x,y,t,sz){sz=sz||20;if(NAR){LEG.push([null,t]);return ''}const w=t.length*sz*.95+24;return '<g><rect x="'+(x-w/2)+'" y="'+(y-sz*.95)+'" width="'+w+'" height="'+(sz*1.5)+'" rx="'+(sz*.5)+'" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/><text x="'+x+'" y="'+(y+sz*.2)+'" text-anchor="middle" font-size="'+sz+'" font-weight="800" fill="var(--w-labeltx)">'+t+'</text></g>'}
 /* 그림 속 짧은 이름(좁은 화면에서도 그림 안에 둠 — 시간·선 이름처럼 꼭 필요한 것만) */
-function mini(x,y,t,sz){sz=sz||20;const w=t.length*sz*.95+16;return '<g><rect x="'+(x-w/2)+'" y="'+(y-sz*.95)+'" width="'+w+'" height="'+(sz*1.4)+'" rx="'+(sz*.45)+'" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/><text x="'+x+'" y="'+(y+sz*.28)+'" text-anchor="middle" font-size="'+sz+'" font-weight="800" fill="var(--w-labeltx)">'+t+'</text></g>'}
+function mini(x,y,t,sz){sz=sz||20;const w=t.length*sz*.95+16;return '<g><rect x="'+(x-w/2)+'" y="'+(y-sz*.95)+'" width="'+w+'" height="'+(sz*1.4)+'" rx="'+(sz*.45)+'" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/><text x="'+x+'" y="'+(y+sz*.17)+'" text-anchor="middle" font-size="'+sz+'" font-weight="800" fill="var(--w-labeltx)">'+t+'</text></g>'}
 function qmark(x,y,col){return '<g'+an('lb-a-pop',.2)+'><circle cx="'+x+'" cy="'+y+'" r="28" fill="var(--w-label)" stroke="'+(col||'var(--lb-sci)')+'" stroke-width="3" stroke-dasharray="6 5"/><text x="'+x+'" y="'+(y+12)+'" text-anchor="middle" font-size="34" font-weight="800" fill="'+(col||'var(--lb-sci-ink)')+'">?</text></g>'}
 function hand(x,y,rot,s,glove){const sk=glove?'#FFFFFF':'#F2C6A0',ss=glove?'#9AA6B2':'#B9875F';return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+') scale('+(s||1)+')"><path d="M-30 -14 Q-8 -24 18 -18 L40 -16 Q48 -15 47 -9 Q46 -4 38 -4 L22 -4 Q30 2 26 9 Q22 15 10 13 L-30 14Z" fill="'+sk+'" stroke="'+ss+'" stroke-width="2.2" stroke-linejoin="round"/><path d="M-30 -14 L-62 -14 L-62 14 L-30 14Z" fill="#5C8FCB" stroke="#3D6A9C" stroke-width="2"/></g>'}
 function arrow(x1,y1,x2,y2,col,w){col=col||'var(--lb-sci)';w=w||7;const a=Math.atan2(y2-y1,x2-x1),L=18;
@@ -89,13 +89,13 @@ function jarPath(cx,b,s){const w=JR.w*s/2,h=JR.h*s,nw=JR.nw*s/2,top=b-h;
 /* o: water, smoke(0~1), fog(0~1), bag(ice 지퍼 백), lid(덮개), s(크기) */
 function jarArt(cx,b,o){o=o||{};const s=o.s||1,w=JR.w*s/2,h=JR.h*s,top=b-h,P=jarPath(cx,b,s);let g=shadow(cx,b+3,w+8);
  const cid='jc'+Math.round(cx)+'_'+Math.round(s*100)+(o.k||'');
- g+='<clipPath id="'+cid+'"><path d="'+P+'Z"/></clipPath><path d="'+P+'Z" fill="rgba(110,140,160,.30)"/>';
+ g+='<clipPath id="'+cid+'"><path d="'+P+'Z"/></clipPath><path d="'+P+'Z" fill="rgba(150,185,205,.16)"/>';
  g+='<g clip-path="url(#'+cid+')">';
  if(o.water)g+='<rect x="'+(cx-w)+'" y="'+(b-26*s)+'" width="'+2*w+'" height="'+26*s+'" fill="var(--w-water)" fill-opacity=".85"/><path d="M'+(cx-w)+' '+(b-26*s)+' H'+(cx+w)+'" stroke="var(--w-water-s)" stroke-width="2.5"/>';
  if(o.smoke>0){let sm='';for(let i=0;i<9;i++)sm+='<circle cx="'+f1(cx-w*.7+rnd(i,41)*w*1.4)+'" cy="'+f1(top+20*s+rnd(i,42)*h*.62)+'" r="'+f1((16+rnd(i,43)*18)*s)+'"/>';
   g+='<g fill="#8E979F" opacity="'+(o.smoke*.75).toFixed(2)+'"'+(o.smokeAnim?an('lb-a-fade',.4):'')+'>'+sm+'</g>'}
  if(o.fog>0){g+='<g'+(o.fogAnim?an('lb-a-fade',0):'')+'><rect x="'+(cx-w)+'" y="'+(top-30*s)+'" width="'+2*w+'" height="'+(h+30*s-26*s)+'" fill="#FFFFFF" opacity="'+(o.fog*.9).toFixed(2)+'"/>';
-  for(let i=0;i<Math.round(o.fog*22);i++)g+='<ellipse cx="'+f1(cx-w+rnd(i,51)*2*w)+'" cy="'+f1(top-10*s+rnd(i,52)*(h-30*s))+'" rx="'+f1((18+rnd(i,53)*20)*s)+'" ry="'+f1((8+rnd(i,54)*8)*s)+'" fill="#DCE3E8" opacity=".55"/>';
+  for(let i=0;i<Math.round(o.fog*22);i++)g+='<ellipse cx="'+f1(cx-w+rnd(i,51)*2*w)+'" cy="'+f1(top-10*s+rnd(i,52)*(h-30*s))+'" rx="'+f1((18+rnd(i,53)*20)*s)+'" ry="'+f1((8+rnd(i,54)*8)*s)+'" fill="#C3CDD5" opacity=".6"/>';
   g+='</g>'}
  g+='</g><path d="'+P+'" fill="none" stroke="var(--w-glass-s)" stroke-width="'+(3.5*s)+'" stroke-linejoin="round"/><path d="M'+(cx-JR.nw*s/2-6*s)+' '+(top-22*s)+' h'+(JR.nw*s+12*s)+'" stroke="var(--w-glass-s)" stroke-width="'+(5*s)+'" stroke-linecap="round"/>';
  g+='<path d="M'+(cx-w+14*s)+' '+(top+56*s)+' v'+(h*.45)+'" stroke="#FFFFFF" stroke-width="'+(6*s)+'" stroke-linecap="round" opacity=".5"/>';

@@ -419,7 +419,7 @@ function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fi
  return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','drop','cloud','wind'][v.no])+'</i><span><b>'+st+'</b><span>교과서 실험</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
  return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>5학년 2학기 과학</em>2. 날씨와 우리 생활</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 보고, 내 눈으로 본 것을 기록해요.</p></div>'+
  '<div class="lb-ex lb-ex5 lb-ex3">'+['e1','e2','e3'].map(card).join('')+'</div>'+
- '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 물방울이 맺히는 모습, 집기병 안이 흐려지는 정도, 향 연기가 퍼지는 모습과 관찰하는 때(\'조금 지나서\' 등)는 이 실험관에서 정한 것이에요. 액정 온도계의 온도(모래 20 °C, 따뜻한 물 34 °C)는 교과서 자료의 예시 값이에요. 실제로는 기구와 교실의 온도에 따라 조금 달라요.</span></p></div>'}
+ '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 캔 표면과 집기병 안, 향 연기를 그린 모습과 관찰하는 때(\'조금 지나서\' 등)는 이 실험관에서 정한 것이에요. 액정 온도계의 온도는 교과서 자료의 예시 값이에요. 실제로는 기구와 교실의 온도에 따라 조금 달라요.</span></p></div>'}
 /* ───────── 동작 ───────── */
 function fx(id,ms,after){UI.fx={id,n:++UI.nonce};render();later(()=>{UI.fx=null;if(after)after();save();render()},ms)}
 function doAnim(id,ms){fx(id,ms,()=>{const r=R();if(r)r.done[id]=true;const p=$('#lbFoot [data-act="next"]');if(p&&!p.disabled)p.focus({preventScroll:true})})}

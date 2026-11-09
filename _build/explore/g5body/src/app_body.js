@@ -59,8 +59,8 @@ function e1Scene(s){const r=R(),id=s.id,f=fid(),p=ease(prog()),RS=MODEL.armRest,
   if(!on)return armScene(RS,{part:k-1,lbl:false})+partsArt(['bihos','ihs','s','os'][k-1]);
   return armScene(RS,{part:k,lbl:k===4})+(f===id?'<g'+an('lb-a-pop',.2)+'>'+hand(ARM.tx+330*ARM.s+40,ARM.ty+210*ARM.s,180,1,0)+'</g>':'')}
  if(id==='pred')return armScene(RS,{pull:1})+qmark(330,170);
- if(id==='pull'){const go=f==='pl',sn0=!!r.seen.pl,phi=go?RS+(PL-RS)*p:sn0?PL:RS;return armScene(phi,{ghost:go||sn0?RS:null,pull:1,dir:go||sn0?1:0})}
- if(id==='push'){const go=f==='ps',sn0=!!r.seen.ps,phi=go?PL+(RS-PL)*p:sn0?RS:PL;return armScene(phi,{ghost:go||sn0?PL:null,pull:1,dir:go||sn0?-1:0})}
+ if(id==='pull'){const go=f==='pl',sn0=!!r.seen.pl,phi=go?RS+(PL-RS)*p:sn0?PL:RS;return armScene(phi,{ghost:go||sn0?RS:null,pull:1,from:sn0&&!go?RS:null})}
+ if(id==='push'){const go=f==='ps',sn0=!!r.seen.ps,phi=go?PL+(RS-PL)*p:sn0?RS:PL;return armScene(phi,{ghost:go||sn0?PL:null,pull:1,from:sn0&&!go?PL:null})}
  if(id==='arm'){const c=r.st.ar||0;let phi=c===1?PL:RS;if(f==='bd')phi=RS+(PL-RS)*p;if(f==='sr')phi=PL+(RS-PL)*p;
   const Q=armPts(phi);return armScene(phi,{skin:1})+(c>=1||f?hand(ARM.tx+250*ARM.s,ARM.ty+110*ARM.s,0,1.1,0):'')}
  return armScene(RS,{})}
@@ -123,7 +123,7 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  const T=(g,l,vb)=>svg(g+lensOf(s,g),l||s.t,vb);
  if(id==='tools'){if(!(r.done.tools||fxOn('tools')))return T(bg({})+boxArt(480),'준비물 상자');return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '))}
  const F=[null,e1Scene,e2Scene,e3Scene,e4Scene,e5Scene][no];
- const VB={1:'40 10 880 520',2:'0 -70 960 600',3:'130 40 760 470',4:'100 -40 760 580',5:'0 0 960 540'}[no];
+ const VB={1:'40 10 880 520',2:'110 -60 780 600',3:'130 40 760 470',4:'100 -40 760 580',5:'0 0 960 540'}[no];
  const vb=id==='gear'?'160 40 640 420':id==='chest'?'200 -40 560 580':VB;
  return T(F(s),s.t,vb)}
 /* ───────── 오른쪽 카드 ───────── */

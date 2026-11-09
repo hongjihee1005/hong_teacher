@@ -70,7 +70,7 @@ function prog(){if(!UI.fx||RM)return 1;return Math.max(0,Math.min(1,(performance
 
 /* ───────── 실험 1: 뼈와 근육 모형(원본 u4-1의 armDraw를 옮겨 씀, 520×380 좌표) ───────── */
 const AE={x:300,y:200},AL=150;
-const ARM={tx:45,ty:10,s:1.45,lens:[441,159,770,200]};
+const ARM={tx:45,ty:10,s:1.45,lens:[441,170,190,385]};
 const MCOL={in:['#E2573F','#8A1F19'],out:['#F0A04B','#9A5410']};
 function armPts(phi){const r=phi*DEG,sn=Math.sin(r),cs=Math.cos(r),u={x:-sn,y:cs},n={x:-cs,y:-sn};
  const P=(b,k1,k2)=>({x:b.x+k1*u.x+k2*n.x,y:b.y+k1*u.y+k2*n.y});
@@ -87,7 +87,7 @@ function armArt(phi,o){o=o||{};const Q=armPts(phi),vis=k=>o.part==null||o.part>=
  if(vis(1))s+=bone({x:300,y:40},AE)+bone(AE,Q.tip);
  if(vis(4))s+=band(Q.D,Q.C,MCOL.out[0],MCOL.out[1],o);
  if(vis(2)){const top=vis(3)?Q.A:{x:Q.A.x-30,y:Q.A.y+30};s+=band(top,Q.B,MCOL.in[0],MCOL.in[1],o)}
- if(!o.skin&&vis(2))s+='<g transform="translate('+f1(Q.H.x)+' '+f1(Q.H.y)+') rotate('+f1(phi-20)+')"><rect x="-80" y="-12" width="82" height="24" rx="6" fill="#FFD166" stroke="#A8842E" stroke-width="2"/></g>';
+ if(!o.skin&&vis(2))s+='<g transform="translate('+f1(Q.H.x)+' '+f1(Q.H.y)+')"><rect x="-80" y="-12" width="82" height="24" rx="6" fill="#FFD166" stroke="#A8842E" stroke-width="2"/></g>';
  if(!o.skin)[[AE,1],[Q.A,3],[Q.B,2],[Q.H,2],[Q.C,4],[Q.D,4]].forEach(([p,k])=>{if(vis(k))s+='<circle cx="'+f1(p.x)+'" cy="'+f1(p.y)+'" r="7" fill="#7D8A95" stroke="#FFFFFF" stroke-width="2"/>'});
  return s}
 function armLabels(phi,skin){if(NAR)return '';const Q=armPts(phi),T=(x,y,t,a)=>'<text x="'+f1(x)+'" y="'+f1(y)+'" font-size="15" font-weight="800" text-anchor="'+(a||'start')+'" fill="#3E3423" stroke="var(--w-paper)" stroke-width="4" paint-order="stroke">'+t+'</text>';
@@ -97,7 +97,9 @@ function armScene(phi,o){o=o||{};let g='<rect x="-3000" y="-3000" width="7000" h
  g+='<g transform="translate('+ARM.tx+' '+ARM.ty+') scale('+ARM.s+')">';
  if(o.ghost!=null)g+=armArt(o.ghost,{ghost:1});
  g+=armArt(phi,Object.assign({},o,{ghost:null}))+(o.lbl===false?'':armLabels(phi,o.skin))+'</g>';
- if(o.pull){const H=armPts(phi).H,x=H.x*ARM.s+ARM.tx-100,y=H.y*ARM.s+ARM.ty;g+=hand(x,y,0,1.1,0)+(o.dir?arrow(x-70,y+(o.dir>0?50:-50),x-70,y+(o.dir>0?-10:10),'var(--lb-sci)',6):'')}
+ if(o.pull){const E=q=>{const H=armPts(q).H;return [(H.x-66)*ARM.s+ARM.tx,H.y*ARM.s+ARM.ty]},e=E(phi);
+  g+=hand(e[0],e[1],0,1.05,0);
+  if(o.from!=null){const b=E(o.from),d=Math.hypot(e[0]-b[0],e[1]-b[1]),ux=(e[0]-b[0])/d,uy=(e[1]-b[1])/d;g+=arrow(f1(b[0]-uy*60),f1(b[1]+ux*60),f1(e[0]-uy*60-ux*20),f1(e[1]+ux*60-uy*20),'var(--lb-sci)',6)}}
  return g}
 /* 모형 부품(만들기 전, 옆에 놓인 모습) */
 function partsArt(which){let g='';const B=(x,y,h)=>'<rect x="'+x+'" y="'+y+'" width="30" height="'+h+'" rx="14" fill="#F7F0DC" stroke="#A89A78" stroke-width="3"/>';
@@ -193,20 +195,23 @@ function bag(cx,top,p,o){o=o||{};const w=58+40*p,h=150+6*p,b=top+h;
  g+='<rect x="'+(cx-24)+'" y="'+(top-6)+'" width="48" height="16" rx="3" fill="rgba(255,255,230,.8)" stroke="#C9B98A" stroke-width="1.5"/>';
  return g}
 function lungModel(o){o=o||{};const X=BG4.x,J=BG4.j,p=o.p||0;let g='';
- if(o.bags!==false){if(o.ghost){g+=bag(X-120,J+86,0,{ghost:1})+bag(X+120,J+86,0,{ghost:1})}g+=bag(X-120,J+86,p)+bag(X+120,J+86,p)}
+ if(o.bags!==false){g+=bag(X-120,J+86,p)+bag(X+120,J+86,p);if(o.ghost){g+=bag(X-120,J+86,0,{ghost:1})+bag(X+120,J+86,0,{ghost:1})}}
  g+=straws({joined:true});
  if(o.stk){const L=(x,y,t)=>NAR?'':tag(x,y,t,17);g+='<g'+(o.stkAnim?an('lb-a-pop',.3):'')+'>'+L(X+58,BG4.top+16,'코')+L(X+62,180,'숨관')+L(X-150,J+30,'숨관가지')+L(X+150,J+30,'숨관가지')+L(X-120,J+190,'폐')+L(X+120,J+190,'폐')+'</g>';
   if(NAR)LEG.push([null,'붙임딱지: 코 · 숨관 · 숨관가지 · 폐'])}
  return g}
-function blowFace(on){const X=BG4.x,T=BG4.top;let g='<circle cx="'+X+'" cy="'+(T-58)+'" r="44" fill="'+SKIN+'" stroke="'+SKL+'" stroke-width="2.5"/><path d="M'+(X-40)+' '+(T-66)+' Q'+(X-40)+' '+(T-108)+' '+X+' '+(T-108)+' Q'+(X+42)+' '+(T-108)+' '+(X+40)+' '+(T-66)+' Q'+(X+30)+' '+(T-90)+' '+X+' '+(T-90)+' Q'+(X-30)+' '+(T-90)+' '+(X-40)+' '+(T-66)+'Z" fill="#5A4334"/><circle cx="'+(X-14)+'" cy="'+(T-62)+'" r="3.4" fill="#4A3A30"/><circle cx="'+(X+14)+'" cy="'+(T-62)+'" r="3.4" fill="#4A3A30"/><ellipse cx="'+X+'" cy="'+(T-28)+'" rx="'+(on?9:7)+'" ry="'+(on?8:4)+'" fill="#C4544A"/>';
- return g}
+function blowFace(on){const X=BG4.x,T=BG4.top,C=T-50;
+ let g='<path d="M'+X+' '+(T-20)+' V'+(T+2)+'" stroke="#7FB3D9" stroke-width="13" stroke-linecap="round"/><path d="M'+X+' '+(T-20)+' V'+(T+2)+'" stroke="#E8F4FA" stroke-width="7" stroke-linecap="round"/>';
+ g+='<circle cx="'+X+'" cy="'+C+'" r="42" fill="'+SKIN+'" stroke="'+SKL+'" stroke-width="2.5"/><path d="M'+(X-40)+' '+(C-6)+' Q'+(X-40)+' '+(C-48)+' '+X+' '+(C-48)+' Q'+(X+42)+' '+(C-48)+' '+(X+40)+' '+(C-6)+' Q'+(X+30)+' '+(C-30)+' '+X+' '+(C-30)+' Q'+(X-30)+' '+(C-30)+' '+(X-40)+' '+(C-6)+'Z" fill="#5A4334"/><circle cx="'+(X-14)+'" cy="'+(C-2)+'" r="3.4" fill="#4A3A30"/><circle cx="'+(X+14)+'" cy="'+(C-2)+'" r="3.4" fill="#4A3A30"/>';
+ if(on)g+='<ellipse cx="'+(X-30)+'" cy="'+(C+20)+'" rx="9" ry="6" fill="#F3A9B2" opacity=".8"/><ellipse cx="'+(X+30)+'" cy="'+(C+20)+'" rx="9" ry="6" fill="#F3A9B2" opacity=".8"/>';
+ return g+'<ellipse cx="'+X+'" cy="'+(C+30)+'" rx="10" ry="7" fill="#C4544A"/>'}
 /* 숨 쉴 때 가슴(원본 u4-4 가슴 변화 그림): p = 들이마신 정도 */
 function chestArt(p,o){o=o||{};const sc=1+.1*p;let g='<g transform="translate(160 200) scale('+f1(1+.05*p)+' '+f1(1+.03*p)+') translate(-160 -200)">'+bodyBase({})+'<g transform="translate(160 176) scale('+f1(sc)+') translate(-160 -176)">'+ORG.lungL+ORG.lungR+'</g>'+ORG.bronchi+ORG.trachea+'</g>';
  if(o.hands){const hy=172-12*p;g+='<g fill="#F6D9C0" stroke="#C9906A" stroke-width="2.5"><rect x="'+f1(104-6*p)+'" y="'+f1(hy)+'" width="50" height="30" rx="14"/><rect x="'+f1(166+6*p)+'" y="'+f1(hy)+'" width="50" height="30" rx="14"/></g>'}
  return g}
-function chestScene(p,o){o=o||{};let g=bg({})+'<g transform="translate(300 10) scale(1.12)">';
- if(o.ghost!=null){const q=o.ghost,hy=172-12*q;g+='<g fill="none" stroke="#6B7686" stroke-width="2.5" stroke-dasharray="7 6" opacity=".8"><rect x="'+f1(104-6*q)+'" y="'+f1(hy)+'" width="50" height="30" rx="14"/><rect x="'+f1(166+6*q)+'" y="'+f1(hy)+'" width="50" height="30" rx="14"/></g>'}
- g+=chestArt(p,o);
+const TORSO='M92 132 Q160 116 228 132 Q244 140 240 172 L236 214 Q232 276 222 334 L98 334 Q88 276 84 214 L80 172 Q76 140 92 132Z';
+function chestScene(p,o){o=o||{};let g=bg({})+'<g transform="translate(300 10) scale(1.12)">'+chestArt(p,o);
+ if(o.ghost!=null){const q=o.ghost,hy=172-12*q;g+='<g fill="none" stroke="#3E4A5C" stroke-width="2.5" stroke-dasharray="7 6" opacity=".85"><path d="'+TORSO+'" transform="translate(160 200) scale('+f1(1+.05*q)+' '+f1(1+.03*q)+') translate(-160 -200)"/><rect x="'+f1(104-6*q)+'" y="'+f1(hy)+'" width="50" height="30" rx="14"/><rect x="'+f1(166+6*q)+'" y="'+f1(hy)+'" width="50" height="30" rx="14"/></g>'}
  if(o.air==='in')g+=arrow(160,-30,160,40,'#3F84AD',5);
  if(o.air==='out')g+=arrow(160,40,160,-30,'#3F84AD',5);
  return g+'</g>'}
@@ -230,7 +235,7 @@ function kid(x,yb,o){o=o||{};const hy=o.legs==='sit'?yb-200:yb-262;let g='';
  return g}
 /* 체온계 화면 · 맥박 수 측정 앱 화면. v: 보이는 숫자(없으면 --), busy: 재는 중(0~1) */
 function thermoArt(x,y,v,busy){let g='<rect x="'+(x-130)+'" y="'+(y-62)+'" width="260" height="124" rx="22" fill="#FFFFFF" stroke="#9AA6B2" stroke-width="3"/><rect x="'+(x-112)+'" y="'+(y-44)+'" width="224" height="88" rx="10" fill="#DDEFE3" stroke="#7FA38C" stroke-width="2"/>';
- g+='<text x="'+(x+30)+'" y="'+(y+22)+'" text-anchor="middle" font-size="58" font-weight="800" fill="#17331F">'+(busy!=null?'--.-':v||'--.-')+'</text><text x="'+(x+92)+'" y="'+(y+20)+'" text-anchor="middle" font-size="22" font-weight="800" fill="#17331F">°C</text>';
+ g+='<text x="'+(x+16)+'" y="'+(y+22)+'" text-anchor="middle" font-size="58" font-weight="800" fill="#17331F">'+(busy!=null?'--.-':v||'--.-')+'</text><text x="'+(x+92)+'" y="'+(y+20)+'" text-anchor="middle" font-size="22" font-weight="800" fill="#17331F">°C</text>';
  g+='<path d="M'+(x-96)+' '+(y-24)+' v44 a8 8 0 1 0 12 0 v-44 a6 6 0 0 0 -12 0Z" fill="none" stroke="#17331F" stroke-width="2.5"/>';
  if(busy!=null)g+='<rect x="'+(x-60)+'" y="'+(y+30)+'" width="'+f1(150*busy)+'" height="6" rx="3" fill="#2E7D4F"/>';
  if(!NAR)g+='<text x="'+x+'" y="'+(y-74)+'" text-anchor="middle" font-size="19" font-weight="800" fill="var(--w-labeltx)">체온계</text>';

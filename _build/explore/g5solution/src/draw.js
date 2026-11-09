@@ -116,11 +116,11 @@ function beakerArt(cx,base,o){o=o||{};const D=bkDim(o),w=D.w,h=D.h,top=base-h;le
  if(o.ml){const col=o.tint||WC;
   g+='<g'+(o.rise?an('lb-a-rise',.2):'')+'><path d="M'+(cx-w+3)+' '+wy.toFixed(1)+' H'+(cx+w-3)+' V'+(base-10)+' Q'+(cx+w-3)+' '+(base-3)+' '+(cx+w-10)+' '+(base-3)+' H'+(cx-w+10)+' Q'+(cx-w+3)+' '+(base-3)+' '+(cx-w+3)+' '+(base-10)+'Z" fill="'+col+'" fill-opacity="'+(o.op||.8)+'"/><path d="M'+(cx-w+3)+' '+wy.toFixed(1)+' H'+(cx+w-3)+'" stroke="'+(o.tint?mixc(o.tint,'#202020',.25):WS)+'" stroke-width="3"/></g>'}
  if(o.film)g+=o.film;
- if(o.pile)g+=pile(cx,base-4,Math.min(w-12,16+o.pile*8),2+o.pile*2.4,o.pcol||'#F8F8F4',o.pst||'#B9C2C8');
+ if(o.pile)g+=pile(cx,base-4,Math.min(w-12,20+o.pile*9),4+o.pile*3,o.pcol||'#FAFAF6',o.pst||'#9AA6AF');
  if(o.grains)g+=grains(cx-w+14,cx+w-14,base-16,base-6,o.grains,o.gst||PWS,14,cx,3);
  if(o.fall)g+=fallGrains(cx,wy+6,base-10,o.fall,o.fst||PWS,cx);
  if(o.stir)g+=swirl(cx,(wy+base)/2,w*.55);
- if(o.tom!=null){const r=17,lo=base-6-r,hi=wy+r*.25,y=lo-o.tom*(lo-hi);g+='<g'+(o.tomAnim?an('lb-a-down',0,'--from:'+(-(y-top+40))+'px'):'')+'>'+tomatoArt(cx,y,r)+'</g>'}
+ if(o.tom!=null){const r=22,lo=base-6-r,hi=wy+r*.3,y=lo-o.tom*(lo-hi);g+='<g'+(o.tomAnim?an('lb-a-down',0,'--from:'+(-(y-top+40))+'px'):'')+'>'+tomatoArt(cx,y,r)+'</g>'}
  if(o.inner)g+=o.inner;
  g+='<path d="'+out+'" fill="none" stroke="'+GLS+'" stroke-width="3.5"/><path d="M'+(cx-w-9)+' '+top+' h12" stroke="'+GLS+'" stroke-width="3.5"/>';
  const step=o.big?50:25;for(let m=step;m<=(o.big?250:100);m+=step)g+='<path d="M'+(cx+w-24)+' '+(base-m*D.k)+' h16" stroke="'+GLS+'" stroke-width="2"/>';
@@ -141,9 +141,9 @@ function pourCyl(x,y,rot,anim){return '<g'+(anim?an('lb-a-fade',0):'')+'><g tran
 function streamArt(x1,y1,x2,y2){return '<path d="M'+x1+' '+y1+' Q'+(x1+6)+' '+((y1+y2)/2)+' '+x2+' '+y2+'" stroke="'+WC+'" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="12 8"'+an('lb-a-stream',0)+'/>'}
 /* 흰 종이(비커 뒤) */
 function paperBack(x,y,w,h,anim){return '<g'+(anim?an('lb-a-up',0,'--from:60px'):'')+'><rect x="'+(x+6)+'" y="'+(y+8)+'" width="'+w+'" height="'+h+'" rx="6" fill="var(--w-shadow)"/><rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="6" fill="#FFFFFF" stroke="#C9CFD4" stroke-width="2"/></g>'}
-/* 철끈(모루)으로 만든 모양과 백반 알갱이 */
-function moruArt(cx,cy,n){let g='<path d="M'+cx+' '+(cy-60)+' V'+(cy-34)+'" stroke="#8A8F96" stroke-width="2"/><path d="M'+cx+' '+(cy-34)+' L'+(cx+26)+' '+cy+' L'+cx+' '+(cy+34)+' L'+(cx-26)+' '+cy+'Z" fill="none" stroke="#C0569A" stroke-width="7" stroke-linejoin="round"/>';
- const P=[[cx,cy-34],[cx+26,cy],[cx,cy+34],[cx-26,cy]];
+/* 철끈(모루)으로 만든 모양과 거기에 붙은 백반 알갱이 */
+function moruArt(cx,cy){return '<path d="M'+cx+' '+(cy-60)+' V'+(cy-34)+'" stroke="#8A8F96" stroke-width="2"/><path d="M'+cx+' '+(cy-34)+' L'+(cx+26)+' '+cy+' L'+cx+' '+(cy+34)+' L'+(cx-26)+' '+cy+'Z" fill="none" stroke="#C0569A" stroke-width="7" stroke-linejoin="round"/>'}
+function moruCrys(cx,cy,n){let g='';const P=[[cx,cy-34],[cx+26,cy],[cx,cy+34],[cx-26,cy]];
  for(let k=0;k<n;k++){const p=P[k%4],q=P[(k+1)%4],f=rnd(k,3),x=p[0]+(q[0]-p[0])*f,y=p[1]+(q[1]-p[1])*f,s=4+rnd(k,4)*5;g+='<path d="M'+x.toFixed(1)+' '+(y-s).toFixed(1)+' l'+s.toFixed(1)+' '+s.toFixed(1)+' l'+(-s).toFixed(1)+' '+s.toFixed(1)+' l'+(-s).toFixed(1)+' '+(-s).toFixed(1)+'z" fill="#FFFFFF" stroke="#8FB9D6" stroke-width="1.5"/>'}
  return g}
 function crystalsBottom(cx,base,w,n){let g='';for(let k=0;k<n;k++){const s=2.5+rnd(k,6)*4,x=cx-w+rnd(k,5)*2*w;g+='<path d="M'+x.toFixed(1)+' '+(base-s).toFixed(1)+' l'+s.toFixed(1)+' '+s.toFixed(1)+' l'+(-s).toFixed(1)+' '+s.toFixed(1)+' l'+(-s).toFixed(1)+' '+(-s).toFixed(1)+'z" fill="#FFFFFF" stroke="#8FB9D6" stroke-width="1.2"/>'}return g}
