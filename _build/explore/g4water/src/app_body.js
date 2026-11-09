@@ -106,7 +106,7 @@ function e2Scene(s){const r=R(),id=s.id,st=r.st,f=fid(),B=bState();
   if(!on)return g+bottle(420,BY,{nocap:1})+'<rect x="530" y="404" width="48" height="26" rx="4" fill="#2F68B0" stroke="#1D4A80" stroke-width="2"/>'+beaker2(700,BY,{lvl:150});
   return g+bottle(420,BY,{fill:'water',rise:f==='fill'})+beaker2(700,BY,{lvl:f==='fill'?60:60})}
  if(id==='mark0'){const on=has('mark0');g+=bottle(480,BY,{fill:'water',lines:on?{k:B.lines.k||[LCOL.k,LV.water],anim:f==='mark0'?'k':null}:null});
-  g+=eyeArt(300,BY-LV.water)+'<path d="M330 '+(BY-LV.water)+' H410" stroke="#2A3342" stroke-width="2.5" stroke-dasharray="6 6"/>';
+  if(on)g+=eyeArt(300,BY-LV.water)+'<path d="M330 '+(BY-LV.water)+' H410" stroke="#2A3342" stroke-width="2.5" stroke-dasharray="6 6"/>';
   return g+(f==='mark0'?'<g'+an('lb-a-slide',0,'--dx:-80px')+'>'+pen(560,BY-LV.water+2,LCOL.k,-60)+'</g>':on?'':pen(660,BY-60,LCOL.k,-20))}
  if(id==='w1')return scaleScene('sc',Object.assign(['sp','sz','sb'],{key:'w1'}),'30.1',bottle(180,BY,{fill:'water',lines:B.lines}),bottleOnScale({fill:'water',lines:B.lines}));
  if(id==='w2')return scaleScene('sc2',Object.assign(['s2z','s2b'],{key:'w2'}),'30.1',bottle(180,BY,{fill:'ice',lines:B.lines}),bottleOnScale({fill:'ice',lines:B.lines}));
