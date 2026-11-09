@@ -163,7 +163,7 @@ function groupSum(F,f){const o=F[0].o,rk=/^암석 /.test(F[0].l);if(F.length<4||
  const nm=j=>rk?'①②③④'[j]:String(j+1),sf=rk?'':'번';
  return o.map((t,i)=>t+': '+(F.map((x,j)=>f[j]===i?nm(j):null).filter(Boolean).join(', ')||'없음')+(F.some((x,j)=>f[j]===i)?sf:'')).join(' · ')}
 function rowSum(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{};
- if(R0.t==='sel'){const F=fOf(row),pre=R0.crit&&x.c?CRIT[x.c].t+' → ':'',gs=groupSum(F,x.f);if(gs)return pre+gs;return pre+F.map((f,i)=>(f.l?f.l+' ':'')+f.o[x.f[i]]).join(' · ')}
+ if(R0.t==='sel'){const F=fOf(row),pre=R0.crit&&x.c?CRIT[x.c].t+' → ':'',gs=groupSum(F,x.f);if(gs)return pre+gs;return pre+F.map((f,i)=>(f.l?f.l+': ':'')+f.o[x.f[i]]).join(' · ')}
  if(R0.t==='note'){const w=R0.f.map((f,i)=>(x.t&&x.t[i])?f.l.replace(/ 잎$/,'')+': '+x.t[i]:'').filter(Boolean);return w.length?w.join(' · '):'(쓰지 않았어요)'}
  return ''}
 function rowReady(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{};if(x.ok)return true;if(R0.crit&&!r.st[R0.crit])return false;if(R0.after&&!rowDone(R0.after))return false;
