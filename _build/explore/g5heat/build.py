@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""탐구 실험관 · 용해와 용액(5학년 1학기 3단원) — src/ 조각을 합쳐 HTML 한 장으로.
+"""탐구 실험관 · 열과 우리 생활(5학년 2학기 3단원) — src/ 조각을 합쳐 HTML 한 장으로.
    python3 build.py [출력 경로]  (기본: 저장소 grade5/science/explore/solution.html)"""
 import os,sys,re
 D=os.path.dirname(os.path.abspath(__file__));S=os.path.join(D,'src')
 r=lambda n:open(os.path.join(S,n),encoding='utf-8').read()
-out=sys.argv[1] if len(sys.argv)>1 else os.path.join(D,'..','..','..','grade5','science','explore','solution.html')
+out=sys.argv[1] if len(sys.argv)>1 else os.path.join(D,'..','..','..','grade5','science','explore','heat.html')
 ic=lambda body:'<svg class="lb-ic" viewBox="0 0 24 24" aria-hidden="true">'+body+'</svg>'
 page=r('page.html')
 js=r('data.js')+'\n'+r('draw.js')+'\n'+r('app_head.js')+r('app_body.js')
@@ -21,11 +21,13 @@ assert not bad,('emoji',set(bad))
 for w in ['다음','다시 하기']:
     for m in re.finditer(r'<button[^>]*>([^<]*(?:<[^/][^>]*>[^<]*)*)</button>',page):
         assert w not in m.group(1),(w,m.group(0)[:80])
-# 쓰지 않을 말(5학년 1학기 3단원 범위 밖 — 지도서 264~301쪽: 용해를 입자로 설명하지 않음, 포화·용해도·농도(퍼센트)·밀도·부력 같은 말은 쓰지 않음,
-# 질량과 무게를 나누어 말하지 않음, '변인' 같은 말은 쓰지 않음. 용해·용매·용질·용액·진하기·결정(백반 결정)은 교과서에 있는 말)
-for w in ['분자','입자','포화','용해도','농도','퍼센트','밀도','부력','질량','변인','조건 통제','과포화','이온','침전','혼합물','염도',
+# 쓰지 않을 말(5학년 2학기 3단원 범위 밖 — 지도서 256~319쪽: 열을 입자로 설명하지 않음, 열평형·비열·열량·칼로리·열전도율·팽창·밀도 같은 말은 쓰지 않음,
+# '변인' 같은 말은 쓰지 않음). 전도·대류·복사는 교과서 결론(book) 문장에서만 — book 글과 '이미지로 복사' 단추 글을 빼고 찾음.
+chk=re.sub(r"book:'[^']*'","",page)
+chk=re.sub(r"이미지로 복사|이미지 복사|복사했어요|복사가 |복사/저장","",chk)
+for w in ['분자','입자','열평형','비열','열량','칼로리','열전도','팽창','밀도','변인','조건 통제','열에너지','전자기','전도','대류','복사','단열',
           '이(가)','을(를)','은(는)','이라고(라고)']:
-    assert w not in page,('forbidden',w)
+    assert w not in chk,('forbidden',w,chk[max(0,chk.find(w)-60):chk.find(w)+30])
 # 결론 빈칸 답이 실험 이름·단계 이름·행동 단추에 들어가지 않게
 import subprocess
 nc=subprocess.run(['node',os.path.join(D,'namecheck.js')],capture_output=True,text=True)

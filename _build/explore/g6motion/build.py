@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""탐구 실험관 · 용해와 용액(5학년 1학기 3단원) — src/ 조각을 합쳐 HTML 한 장으로.
-   python3 build.py [출력 경로]  (기본: 저장소 grade5/science/explore/solution.html)"""
+"""탐구 실험관 · 물체의 운동(6학년 1학기 2단원) — src/ 조각을 합쳐 HTML 한 장으로.
+   python3 build.py [출력 경로]  (기본: 저장소 grade6/science/explore/motion.html)"""
 import os,sys,re
 D=os.path.dirname(os.path.abspath(__file__));S=os.path.join(D,'src')
 r=lambda n:open(os.path.join(S,n),encoding='utf-8').read()
-out=sys.argv[1] if len(sys.argv)>1 else os.path.join(D,'..','..','..','grade5','science','explore','solution.html')
+out=sys.argv[1] if len(sys.argv)>1 else os.path.join(D,'..','..','..','grade6','science','explore','motion.html')
 ic=lambda body:'<svg class="lb-ic" viewBox="0 0 24 24" aria-hidden="true">'+body+'</svg>'
 page=r('page.html')
 js=r('data.js')+'\n'+r('draw.js')+'\n'+r('app_head.js')+r('app_body.js')
@@ -21,9 +21,9 @@ assert not bad,('emoji',set(bad))
 for w in ['다음','다시 하기']:
     for m in re.finditer(r'<button[^>]*>([^<]*(?:<[^/][^>]*>[^<]*)*)</button>',page):
         assert w not in m.group(1),(w,m.group(0)[:80])
-# 쓰지 않을 말(5학년 1학기 3단원 범위 밖 — 지도서 264~301쪽: 용해를 입자로 설명하지 않음, 포화·용해도·농도(퍼센트)·밀도·부력 같은 말은 쓰지 않음,
-# 질량과 무게를 나누어 말하지 않음, '변인' 같은 말은 쓰지 않음. 용해·용매·용질·용액·진하기·결정(백반 결정)은 교과서에 있는 말)
-for w in ['분자','입자','포화','용해도','농도','퍼센트','밀도','부력','질량','변인','조건 통제','과포화','이온','침전','혼합물','염도',
+# 쓰지 않을 말(6학년 1학기 2단원 범위 밖 — 지도서 188~231쪽: 빠르기는 이동 거리·걸린 시간·속력으로만 비교하고,
+# 속도·가속도·등속·관성·뉴턴·마찰력·평균 속력·순간 속력·변위·변인 같은 말은 쓰지 않음)
+for w in ['속도','가속','등속','관성','뉴턴','마찰','평균','순간 속력','변위','벡터','운동 에너지','변인','조건 통제',
           '이(가)','을(를)','은(는)','이라고(라고)']:
     assert w not in page,('forbidden',w)
 # 결론 빈칸 답이 실험 이름·단계 이름·행동 단추에 들어가지 않게

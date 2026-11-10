@@ -141,8 +141,9 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  const T=(g,l,vb)=>svg(g+lensOf(s,g),l||s.t,vb);
  if(id==='tools'){if(!(r.done.tools||fxOn('tools')))return T(bg({})+boxArt(480),'준비물 상자');return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '),v.tools.length>4?'0 10 960 520':null)}
  const F={1:e1Scene,2:e2Scene,3:e3Scene,4:e4Scene}[no];
- let vb={1:'0 30 960 470',2:'0 64 960 386',3:'0 50 960 360',4:'110 70 740 440'}[no];
+ let vb={1:'0 30 960 470',2:'0 64 960 386',3:'0 22 960 390',4:'110 70 740 440'}[no];
  if(no===1&&id==='park')vb='20 90 920 340';
+ if(no===1&&id==='shot'&&seqK('ph',['p1','p2'])>=2&&fid()!=='p2')vb='20 110 920 250';
  if(no===2&&id==='read')vb='0 10 960 460';
  return T(F(s),s.t,vb)}
 /* ───────── 오른쪽 카드 ───────── */
@@ -176,7 +177,7 @@ function predCard(){const v=V(),r=R(),lock=predLocked();let h='';
 
 /* ───────── 기록 줄(③) ───────── */
 function rowSum(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{};
- if(R0.t==='sel'){const F=fOf(row);return F.map((f,i)=>(f.l?f.l+' ':'')+f.o[x.f[i]]).join(' · ')}
+ if(R0.t==='sel'){const F=fOf(row);return F.map((f,i)=>(f.l?f.l+' ':'')+(R0.sh?R0.sh[x.f[i]]:f.o[x.f[i]])).join(' · ')}
  if(R0.t==='num')return x.v+' '+R0.u;
  if(R0.t==='note'){const w=R0.f.map((f,i)=>(x.t&&x.t[i])?x.t[i]:'').filter(Boolean);return w.length?w.join(' · '):'(쓰지 않았어요)'}
  return ''}
@@ -201,8 +202,8 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
   h+='<p class="lb-hint2">쓰고 싶은 것을 짧게 써요. 쓰지 않아도 돼요.</p>'+R0.f.map((f,j)=>'<label class="lb-nrow"><span>'+esc(f.l)+'</span><input class="lb-input lb-ninp" maxlength="20" autocomplete="off" data-f="nt'+row+j+'" data-nt="'+row+':'+j+'" placeholder="'+esc(R0.ph)+'" value="'+esc(D.t[j]||'')+'"'+(ok?'':' disabled')+'></label>').join('');
   h+=recB(ok)}
  if(R0.t==='num'){const op=numOpen(row);
-  h+='<div class="lb-trials"><label class="lb-trial'+(op?' lb-tcur':'')+'"><span>'+esc(R0.lab||'무게')+'</span><input class="lb-num lb-numw" inputmode="'+(R0.dec?'decimal':'numeric')+'" maxlength="6" autocomplete="off" data-f="in'+row+'" data-in="'+row+'" aria-label="'+esc(R0.n)+' 숫자" value="'+esc(UI.inp[row]||'')+'"'+(op?'':' disabled')+'><span>'+R0.u+'</span></label><button type="button" class="lb-mini" data-act="trial" data-row="'+row+'" data-f="tr'+row+'"'+(op?'':' disabled')+'>'+ic('check')+'적기</button></div>';
-  if(R0.u==='숟가락째')h+='<p class="lb-hint2">처음으로 바닥에 남았을 때 넣은 숟가락 수를 써요.</p>'}
+  h+='<div class="lb-trials"><label class="lb-trial'+(op?' lb-tcur':'')+'"><span>'+esc(R0.lab||'')+'</span><input class="lb-num lb-numw" inputmode="'+(R0.dec?'decimal':'numeric')+'" maxlength="6" autocomplete="off" data-f="in'+row+'" data-in="'+row+'" aria-label="'+esc(R0.n)+' 숫자" value="'+esc(UI.inp[row]||'')+'"'+(op?'':' disabled')+'><span>'+R0.u+'</span></label><button type="button" class="lb-mini" data-act="trial" data-row="'+row+'" data-f="tr'+row+'"'+(op?'':' disabled')+'>'+ic('check')+'적기</button></div>';
+  if(R0.tip)h+='<p class="lb-hint2">'+esc(R0.tip)+'</p>'}
  if(UI.fb[row])h+='<div class="lb-msg '+(UI.fb[row][0]?'lb-good':'lb-try')+'" role="status">'+ic(UI.fb[row][0]?'check':'info')+'<span>'+UI.fb[row][1]+'</span></div>';
  return h+'</div>'}
 /* ───────── 할 일 카드: ① 해 보기 → ② 살펴보기 → ③ 기록하기 ───────── */
@@ -235,7 +236,7 @@ function actBtns(s,cellsOnly){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=c
   h+='<div class="lb-cellrow'+(mini?' lb-cellmini':'')+'" role="group" aria-label="'+esc(G.n)+'"><span class="lb-cl">'+esc(G.n)+(mini?' · 다시 볼 때 눌러요':'')+'</span><div style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+G.c.map(a=>'<button type="button" class="lb-cellb'+(a.label.length>6?' lb-cellw':'')+(UI.attn&&!a.dis?' lb-attn':'')+(a.seen?' lb-seen':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(G.n+' '+a.label)+(a.seen?' (해 봤어요)':'')+'">'+(a.seen&&!mini?ic('check'):'')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div></div>'});
  return h}
 function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=='more'||r.more.a!=null);
- let h='<p class="lb-stat'+(D?' lb-statok':'')+'" role="status">'+ic(D?'check':'info')+'<span>'+esc(hintOf(s))+'</span></p><ol class="lb-guide">';
+ let h='<p class="lb-stat'+(D?' lb-statok':'')+'" role="status">'+ic(D?'check':'info')+'<span>'+esc(hintOf(s))+'</span></p>'+(UI.runMsg?'<div class="lb-msg lb-try" role="status">'+ic('info')+'<span>'+esc(UI.runMsg)+'</span></div>':'')+'<ol class="lb-guide">';
  if(s.k==='scene'){let b1;const dn=!!r.done[s.id];
   if(s.opts&&!dn&&!fxOn(s.id))b1='<div class="lb-acts" role="group" aria-label="'+esc(s.ask)+'">'+s.opts.map((o,i)=>'<button type="button" class="lb-act lb-act2" data-act="pick" data-i="'+i+'" data-f="pk'+i+'">'+ic('place')+'<span>'+esc(o.t)+'</span></button>').join('')+'</div>';
   else if(!dn||fxOn(s.id))b1='<div class="lb-acts"><button type="button" class="lb-act" data-act="doit" data-f="doit"'+(UI.fx?' disabled':'')+'>'+ic('hand')+'<span>'+esc(s.act||'놓는 중')+'</span></button></div>';
@@ -413,7 +414,7 @@ function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g='',vb='0 0 960
   if(k==='read'){g=bg({})+photo5(240,90,.5)+'<g fill="none" stroke="var(--lb-sci)" stroke-width="6"><circle cx="330" cy="200" r="46"/><path d="M364 234 L410 280" stroke-linecap="round"/></g>';vb='220 70 520 260'}}
  if(no===3){if(k==='line'){g=track3({line:1});vb='40 110 620 270'}
   if(k==='finish'){g=track3({line:1,fin:1});vb='40 110 900 300'}
-  if(k==='go'){g=track3({line:1,fin:1,k:'G',key:0,sw:'00.00',swOn:1});vb='40 50 920 360'}
+  if(k==='go'){g=track3({line:1,fin:1,k:'G',key:0,sw:'00.00',swOn:1});vb='40 22 920 390'}
   if(k==='stop'){g=track3({line:1,fin:1,k:'G',pos:100});vb='40 110 900 300'}}
  if(no===4){if(k==='table'){g=bgTop()+speedTable({rows:1});vb='120 80 720 340'}
   if(k==='calc'){g=bgTop()+cardTxt(480,180,560,['속력 =','이동 거리 ÷ 걸린 시간']);vb='180 150 600 180'}
@@ -451,7 +452,7 @@ function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap
  if(no===1){if(ok('c1')||ok('c2'))S(bg({})+photoArt(40,150,420,197,roomIn(0,420),'처음')+photoArt(500,150,420,197,roomIn(5,420),'5초 뒤'),'20 110 920 250','교실 사진 두 장');
   if(ok('k1')||ok('k2'))S(bg({})+photoArt(40,140,420,280,park(0),'처음')+photoArt(500,140,420,280,park(1),'얼마 뒤'),'20 100 920 330','공원 그림')}
  if(no===2){if(ok('dR')||ok('dB'))S(track2({line:1,tape:true,pos:DIST,key:0}),'40 90 860 320','5초 뒤 사진')}
- if(no===3){['G','Y'].forEach(k=>{if(ok('t'+k)){const cs=r.st.sw[k];S(track3({line:1,fin:1,k,pos:100,sw:swTxt(cs),swOn:0}),'40 50 920 330',(k==='G'?'초록색':'노란색')+' 자동차 · 초시계 '+swTxt(cs)+'초')}})}
+ if(no===3){['G','Y'].forEach(k=>{if(ok('t'+k)){const cs=r.st.sw[k];S(track3({line:1,fin:1,k,pos:100,sw:swTxt(cs),swOn:0}),'40 22 920 380',(k==='G'?'초록색':'노란색')+' 자동차 · 초시계 '+swTxt(cs)+'초')}})}
  if(no===4){if(ok('sR')||ok('sG'))S(bgTop()+speedTable({rows:1,sp:spOf()}),'120 80 720 340','속력 표')}
  return L}
 /* ───────── 동작 ───────── */

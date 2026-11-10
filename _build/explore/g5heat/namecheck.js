@@ -4,7 +4,8 @@
 // 한 글자 답('두')은 빈칸 뒤 낱말과 함께('두 무리'), '두 가지'도 찾음. 답 끝의 조사(와·과·을·를·고·며·요 …)는 떼고 찾음.
 const fs=require('fs'),path=require('path');const S=path.join(__dirname,'src');
 const c={};new Function('c','const R=()=>({st:{}});'+fs.readFileSync(path.join(S,'data.js'),'utf8')+';c.EXPS=EXPS;c.stepDef=stepDef;c.ROWS=ROWS;')(c);
-const body=fs.readFileSync(path.join(S,'app_body.js'),'utf8');
+/* 더 알아보기 질문(MOREQ)은 결론 뒤에만 나와서 뺌 */
+const body=fs.readFileSync(path.join(S,'app_body.js'),'utf8').replace(/const MOREQ=\{[\s\S]*?\};\n/,'');
 const labels=[...body.matchAll(/label:'([^']+)'/g)].map(m=>m[1]).concat([...body.matchAll(/\[(?:'[^']*',?)+\]/g)].flatMap(m=>[...m[0].matchAll(/'([^']{4,})'/g)].map(x=>x[1])).filter(t=>/[가-힣]/.test(t)));
 const flat=o=>typeof o==='string'?[o]:Array.isArray(o)?o.flatMap(flat):o&&typeof o==='object'?Object.values(o).flatMap(flat):[];
 const neutral=t=>/가운데/.test(t)||(/위쪽/.test(t)&&/아래쪽/.test(t));

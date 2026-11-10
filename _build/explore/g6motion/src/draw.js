@@ -131,7 +131,7 @@ function park(t){let s='<rect width="420" height="280" fill="#d8eefb"/><rect y="
 const T2={x0:110,px:4.6,yR:172,yT:250,yB:328,top:110,bot:390};
 /* o: line · lineA · tape(펼친 길이 cm, true=150) · tri · triA · key(태엽 각도) · pos{R,B} cm · clock 초 · snap 찰칵 */
 function track2(o){o=o||{};const X=T2.x0,PX=T2.px;let g=bgTop();
- if(o.line)g+=tapeLine(X,T2.top,T2.bot,'#2E86C1',o.lineA)+(NAR?'':'<text x="'+X+'" y="'+(T2.top-12)+'" font-size="17" text-anchor="middle" font-weight="800" fill="#123A5C">출발선</text>');
+ if(o.line)g+=tapeLine(X,T2.top,T2.bot,'#2E86C1',o.lineA)+mini(X,T2.top-14,'출발선',16);
  else if(o.roll)g+=tapeRoll(X,T2.top+40,1);
  if(o.tape!=null&&o.tape!==false)g+=rulerStrip(X,T2.yT,PX,150,o.tape===true?150:o.tape);
  else if(o.rolled)g+=rolledTape(860,T2.yT,1);
@@ -155,15 +155,15 @@ function zoom2(x,y,W,H,d,k){const id='lbClp'+(++CID),U=28,L=Math.floor(d)-8;cons
 const T3={x0:120,px:5.4,y:240,top:150,bot:330};
 /* o: line · lineA · fin · finA · tape(펼친 길이) · k 자동차 · pos cm · ghost cm · sw 초시계 글 · swOn · key */
 function track3(o){o=o||{};const X=T3.x0,PX=T3.px,F=X+100*PX;let g=bgTop();
- if(o.line)g+=tapeLine(X,T3.top,T3.bot,'#2E86C1',o.lineA)+(NAR?'':'<text x="'+X+'" y="'+(T3.top-12)+'" font-size="17" text-anchor="middle" font-weight="800" fill="#123A5C">출발선</text>');
+ if(o.line)g+=tapeLine(X,T3.top,T3.bot,'#2E86C1',o.lineA)+mini(X,T3.top-14,'출발선',16);
  else g+=tapeRoll(X,T3.top+30,1);
  if(o.tape!=null&&o.tape!==false)g+=rulerStrip(X,T3.bot+34,PX,110,o.tape);
- if(o.fin){g+=tapeLine(F,T3.top,T3.bot,'#C0392B',o.finA)+(NAR?'':'<text x="'+F+'" y="'+(T3.top-12)+'" font-size="17" text-anchor="middle" font-weight="800" fill="#7A1F14">결승선</text>');
+ if(o.fin){g+=tapeLine(F,T3.top,T3.bot,'#C0392B',o.finA)+mini(F,T3.top-14,'결승선',16);
   if(o.tape==null||o.tape===false)g+='<g><path d="M'+X+' '+(T3.bot+30)+' H'+F+'" stroke="#2A3342" stroke-width="2.5"/><path d="M'+X+' '+(T3.bot+22)+' v16 M'+F+' '+(T3.bot+22)+' v16" stroke="#2A3342" stroke-width="2.5"/></g>'+mini((X+F)/2,T3.bot+38,'100 cm',18)+rolledTape(880,T3.bot+30,.8)}
  else if(o.tape==null||o.tape===false)g+=rolledTape(880,T3.bot+30,.8);
  if(o.ghost!=null)g+=carTop(X+o.ghost*PX,T3.y,o.k,{ghost:1});
  if(o.k)g+=carTop(X+(o.pos||0)*PX,T3.y,o.k,{key:o.key});
- if(o.sw!=null)g+='<g transform="translate(860 105) scale(.62)">'+stopwatch(0,0,o.sw,o.swOn)+'</g>';
+ if(o.sw!=null)g+='<g transform="translate(850 98) scale(.9)">'+stopwatch(0,0,o.sw,o.swOn)+'</g>';
  return g}
 function swTxt(cs){cs=Math.max(0,Math.floor(cs));const s=Math.floor(cs/100),c=cs%100;return (s<10?'0':'')+s+'.'+(c<10?'0':'')+c}
 

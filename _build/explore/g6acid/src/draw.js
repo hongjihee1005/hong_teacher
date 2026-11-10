@@ -142,7 +142,7 @@ function plate1(wells,o){o=o||{};let g=shadow(480,BY+4,340)+'<rect x="148" y="'+
 /* 리트머스 시험지(홈에 꽂힌 모습). col 처음 색 · to 바뀐 색(늦게 나타남) */
 function stripIn(x,y,col,dx,rot,o){o=o||{};const r='<rect x="-6" y="-56" width="12" height="60" rx="2" fill="'+col+'" stroke="#FFFFFF" stroke-width="1.5"/>';
  let g='<g transform="translate('+(x+dx)+' '+(y+4)+') rotate('+rot+')">'+r;
- if(o.to)g+='<g'+(o.later!=null?an('lb-a-fade',o.later,'animation-duration:1s'):'')+'><rect x="-6" y="-56" width="12" height="60" rx="2" fill="'+o.to+'" stroke="#FFFFFF" stroke-width="1.5"/></g>';
+ if(o.to)g+='<g'+(o.later!=null?an('lb-a-fade',o.later,'animation-duration:1s'):'')+'><rect x="-6" y="-26" width="12" height="30" rx="2" fill="'+o.to+'" stroke="#FFFFFF" stroke-width="1.5"/></g>';
  g+='</g>';return o.fall?'<g'+an('lb-a-down',o.fall,'--from:-120px')+'>'+g+'</g>':g}
 /* ── 홈판(두 줄, 실험 4) ── */
 const WX4=[330,450,570,690],WYB=BY-108,WYF=BY-46;
@@ -211,3 +211,4 @@ function itemArt(k){const sc=(sv,s,y)=>'<g transform="translate(0 '+(y||0)+') sc
   rod:rodArt(0,-60,120,20),
   crayon:PAL.map((p,i)=>crayonArt(-50+i*20,10,p[0],-8+i*3)).join('')};
  return A[k]||''}
+function streamArt(x1,y1,x2,y2){return '<path d="M'+x1+' '+y1+' Q'+(x1+6)+' '+((y1+y2)/2)+' '+x2+' '+y2+'" stroke="'+WC+'" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="12 8"'+an('lb-a-stream',0)+'/>'}

@@ -148,7 +148,7 @@ function canArt(cx,base,o){o=o||{};const w=46,h=o.inTube?190:170,top=base-h;let 
  if(!o.inTube)g+=mini(cx,top-18,'알루미늄 캔',16);
  return g}
 /* 원통에 든 물 · 캔에 든 물 온도계(구멍에 꽂음) */
-function e2Probes(hv,cv,o){o=o||{};const top=BY-TUBE.h;return probeTherm(TUBE.x-92,top-150,{on:1,val:hv,len:200,tag:'원통에 든 물',hl:o.hl})+probeTherm(TUBE.x+10,top-150,{on:1,val:cv,len:220,tag:'캔에 든 물',hl:o.hl})}
+function e2Probes(hv,cv,o){o=o||{};const top=BY-TUBE.h;return probeTherm(TUBE.x-92,top-150,{on:1,val:hv,len:200,tag:'원통',hl:o.hl})+probeTherm(TUBE.x+10,top-150,{on:1,val:cv,len:220,tag:'캔',hl:o.hl})}
 
 /* ── 실험 3: 구리판과 열 변색 붙임딱지 ── */
 const CU='#C8763A',CUS='#8C4E22',SCOLD='#5B3F8C',SHOT='#F6C445';
@@ -194,7 +194,7 @@ function candleArt(cx,base,o){o=o||{};const h=Math.max(40,o.h||60);let g='<rect 
 function lighterArt(x,y,rot){return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+')"><rect x="-80" y="-10" width="120" height="20" rx="8" fill="#5D7FB0" stroke="#2D4C78" stroke-width="2"/><rect x="40" y="-5" width="60" height="10" rx="3" fill="#B8C2CA" stroke="#7F8C99" stroke-width="2"/><rect x="-40" y="10" width="26" height="12" rx="3" fill="#2D4C78"/></g>'}
 
 /* ── 실험 4: 사각 통과 잉크 ── */
-const TK={x:250,y:170,w:460,h:190};   /* 사각 통(바닥 = 받침 컵 위) */
+const TK={x:250,y:180,w:460,h:190};   /* 사각 통(바닥 = 받침 컵 위) */
 const INK='#7D4FB3';
 function tankStand(o){o=o||{};let g='';const B=BY;
  if(o.film)g+='<rect x="'+(TK.x-30)+'" y="'+(B-4)+'" width="'+(TK.w+60)+'" height="8" rx="2" fill="#E6EEF2" stroke="#9FB4C4" stroke-width="1.5"/>';
@@ -243,12 +243,12 @@ function plateBlack(cx,y,lab,o){o=o||{};let g='<rect x="'+(cx-50)+'" y="'+y+'" w
  if(o.val)g+='<g'+an('lb-a-pop',0)+'>'+mini(cx,y+108,o.val+' °C',19)+'</g>';
  return g}
 /* 운동장 장면: 건물 그림자(왼쪽) · 햇빛(오른쪽). sunX 햇빛이 닿는 경계 */
-const SHX=520;
-function yardBg(){let g=bgOut();g+=sunArt(70,40,30);
- g+='<rect x="-3000" y="60" width="3180" height="360" fill="#C9B9A6" stroke="#8A7A66" stroke-width="3"/>';for(let i=0;i<4;i++)g+='<rect x="'+(30+i*40)+'" y="'+(100+i%2*120)+'" width="26" height="40" fill="#9FB8C8" stroke="#7A8C98" stroke-width="2"/>';
- g+='<path d="M180 60 L'+SHX+' 420 L-3000 420 L-3000 60Z" fill="#000" opacity=".12"/><path d="M180 420 L'+SHX+' 420 L'+(SHX+120)+' 3000 L-3000 3000 L-3000 420Z" fill="#000" opacity=".16"/>';
- g+='<path d="M95 60 L'+(SHX+40)+' 430 M110 50 L'+(SHX+260)+' 430" stroke="#FFD23F" stroke-width="3" stroke-dasharray="8 8" opacity=".85"/>';
- if(!NAR){g+=mini(330,505,'그늘',18);g+=mini(760,505,'햇빛이 비치는 곳',18)}
+const SHX=600;   /* 건물 위 모서리(180,120)와 해(60,34)를 잇는 선이 땅에 닿는 곳 */
+function yardBg(){let g=bgOut();g+=sunArt(60,34,26);
+ g+='<rect x="-3000" y="120" width="3180" height="300" fill="#C9B9A6" stroke="#8A7A66" stroke-width="3"/>';for(let i=0;i<4;i++)g+='<rect x="'+(30+i*40)+'" y="'+(160+i%2*120)+'" width="26" height="40" fill="#9FB8C8" stroke="#7A8C98" stroke-width="2"/>';
+ g+='<path d="M180 120 L'+SHX+' 420 L180 420Z" fill="#000" opacity=".1"/><path d="M180 420 L'+SHX+' 420 L'+(SHX+80)+' 3000 L-3000 3000 L-3000 420Z" fill="#000" opacity=".16"/>';
+ g+='<path d="M60 34 L'+SHX+' 420 M60 34 L820 420" stroke="#E8A514" stroke-width="3" stroke-dasharray="8 8" opacity=".85"/>';
+ if(!NAR){g+=mini(330,505,'그늘',18);g+=mini(780,505,'햇빛이 비치는 곳',18)}
  return g}
 /* 열 전구 */
 function lampArt(cx,y,on){let g='<path d="M'+(cx-10)+' 20 V'+(y-30)+'" stroke="#666" stroke-width="4"/><path d="M'+(cx-60)+' '+(y-30)+' h100 l-16 40 h-68z" fill="'+(on?'#FFB35C':'#D7D7D7')+'" stroke="#A0673A" stroke-width="3"/>';
