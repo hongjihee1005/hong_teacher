@@ -399,7 +399,7 @@ function e4Scene(s){const r=R(),id=s.id,f=fid();let g=bg({});
 function e5Scene(s){const r=R(),id=s.id,f=fid();let g=bg({});
  const dishP=(col,anim)=>dishArt(280,BY-50,150,cobaltPaper(280,BY-52,90,50,col,{tape:1,anim}));
  if(id==='paper'){const k=seqK('paper',['pk','wd']);
-  if(k>=1)g+='<g'+(f==='pk'?an('lb-a-down',0,'--from:-80px'):'')+'>'+cobaltPaper(480,BY-20,160,40,null,{spot:k>=2?40:0,delay:.9})+'</g>';else g+=cobaltPaper(780,BY-60,120,40,null);
+  if(k>=1)g+='<g'+(f==='pk'?an('lb-a-down',0,'--from:-80px'):'')+'>'+cobaltPaper(480,BY-28,170,56,null,{spot:k>=2?28:0,delay:.9})+'</g>';else g+=cobaltPaper(780,BY-28,170,56,null);
   if(f==='pk')g+='<g'+an('lb-a-fade',0)+'>'+tweezArt(540,BY-34,30,'')+'</g>';
   if(f==='wd')g+='<g'+an('lb-a-fade',0)+'>'+dropperArt(480,BY-130,WC,0)+'</g>'+dropFall(480,BY-120,BY-26,'#9FD3F5',1,.1);
   return g+(k>=1?mini(480,BY+30,'푸른색 염화 코발트 종이',17):'')}
