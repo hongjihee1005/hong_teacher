@@ -57,6 +57,8 @@ const noSh=s=>s.replace(/<ellipse[^>]*\/>/,'');
 const recV=row=>rowDone(row)?R().rec[row].v:null;
 
 /* ───── 실험 1: 여러 가지 온도계 ───── */
+/* 알코올 온도계: 방금 걸어 둔 온도계의 처음 액체 기둥 높이(이 실험관에서 정한 값 — 0 °C에서 올라가지 않게) */
+const ALC0=16;
 const C1=[360,600];   /* 물 · 주스 컵 */
 const CUPC=[WC,'#F5A35A'];
 function cups1(o){o=o||{};return C1.map((x,i)=>cupArt(x,BY,{col:CUPC[i],lv:.72})+(o.lab===false?'':mini(x,BY+40,i?'주스':'물',18))).join('')}
@@ -76,8 +78,8 @@ function e1Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;let g=bg({});
   const at=k>=2||fi===1?1:0,busy=fi>=0;const val=busy?'':at?MODEL.t1.juice:MODEL.t1.water,showV=k>=1||busy;
   g+='<g'+(fi===1?an('lb-a-slide',0,'--dx:-240px'):'')+'>'+probeAt(at,{val:showV?val:'',blink:busy,hl:UI.mq.hl&&!busy})+'</g>';
   return g}
- if(id==='alc'){const k=seqK('al',['aw']),go=f==='aw',x=420,top=60;const v=k>=1?21.5:0;
-  g+=alcTherm(x,top,v,{anim:go});if(!NAR)g+=mini(x,40,'과학실 벽',17);
+ if(id==='alc'){const k=seqK('al',['aw']),go=f==='aw',x=420,top=60;const v=k>=1||go?21.5:ALC0;
+  g+=alcTherm(x,top,v,{anim:go,from:ALC0});if(!NAR)g+=mini(x,40,k>=1||go?'과학실 벽':'과학실 벽에 방금 건 온도계',17);
   const tp=top+AB-21.5*AK;if(st.eye!=null&&!go){const ey=[tp-70,tp,tp+70][st.eye];g+=eyeLine(600,ey,x+4,tp,st.eye===1)}
   return g}
  if(id==='ir'){const k=seqK('ir',['i1','i2']),fi=['i1','i2'].indexOf(f);g+=stairsArt(480,BY);if(!NAR)g+=mini(690,190,'복도 계단',18);
@@ -123,7 +125,7 @@ function otherTable(anim){const L=['처음','1분 뒤','2분 뒤','3분 뒤','4�
  return g+'</g>'}
 
 /* ───── 실험 3: 구리판 ───── */
-const LF=[-1,6,16,28],UF=[-1,.3,.65,1.12].map(x=>x<0?-1:Math.round(x*UD.max));
+const LF=[-1,6,16,28],UF=[-1,.3,.65,.97].map(x=>x<0?-1:Math.round(x*UD.max));
 const TLAB=['','1분쯤','3분쯤','5분쯤'];
 function e3Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
  if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
@@ -522,7 +524,7 @@ function eyeArt(x,y){return '<g transform="translate('+x+' '+y+')"><path d="M-26
 function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0 960 540';
  if(no===1){if(k==='touch'){g+=cups1({lab:false})+hand(C1[0]-74,BY-60,0,1.1,0);vb='230 270 480 190'}
   if(k==='probe'){g+=cups1({lab:false})+probeTherm(C1[0],186,{on:1,len:120});vb='250 170 460 290'}
-  if(k==='alc'){g+=alcTherm(480,60,0);vb='330 40 300 420'}
+  if(k==='alc'){g+=alcTherm(480,60,ALC0);vb='330 40 300 420'}
   if(k==='ir'){g+=stairsArt(480,BY)+irGun(330,300,{});vb='150 200 760 260'}}
  if(no===2){if(k==='fill'){g+=tubeArt({hot:MODEL.hot[0]})+canArt(CANX,BY,{t:MODEL.cold[0]});vb='230 160 640 300'}
   if(k==='t0'){g+=tubeArt({hot:MODEL.hot[0]})+canArt(CANX,BY,{t:MODEL.cold[0]})+probeTherm(330,50,{on:1,len:210})+probeTherm(CANX,40,{on:1,len:200});vb='230 20 640 440'}

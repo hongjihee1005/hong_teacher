@@ -104,7 +104,7 @@ function alcTherm(x,top,v,o){o=o||{};let g='<rect x="'+(x-46)+'" y="'+top+'" wid
  g+='<rect x="'+(x-6)+'" y="'+(top+14)+'" width="12" height="'+(AB-0)+'" rx="6" fill="#F4F8FA" stroke="#8A97A2" stroke-width="2"/><circle cx="'+x+'" cy="'+(top+AB+26)+'" r="13" fill="#D63C32" stroke="#8E2A22" stroke-width="2"/>';
  for(let t=0;t<=40;t++){const y=top+AB-t*AK;const L=t%10===0?20:t%5===0?14:8;g+='<path d="M'+(x+8)+' '+y.toFixed(1)+' h'+L+'" stroke="#2A2A2A" stroke-width="'+(t%5===0?1.8:1.1)+'"/>';
   if(t%10===0)g+='<text x="'+(x-12)+'" y="'+(y+5).toFixed(1)+'" text-anchor="end" font-size="14" font-weight="800" fill="#2A2A2A">'+t+'</text>'}
- const tp=top+AB-v*AK;g+='<rect x="'+(x-3)+'" y="'+tp.toFixed(1)+'" width="6" height="'+(top+AB+16-tp).toFixed(1)+'" fill="#D63C32"'+(o.anim?an('lb-a-rise',0,'animation-duration:2s'):'')+'/>';
+ const tp=top+AB-v*AK;g+='<rect x="'+(x-3)+'" y="'+tp.toFixed(1)+'" width="6" height="'+(top+AB+16-tp).toFixed(1)+'" fill="#D63C32"'+(o.anim?an('lb-a-rise lb-a-rise2',0,'animation-duration:2s;--s0:'+(o.from!=null?((o.from*AK+16)/(v*AK+16)).toFixed(3):0)):'')+'/>';
  g+='<text x="'+(x+30)+'" y="'+(top+12+14)+'" font-size="14" font-weight="800" fill="#2A2A2A">°C</text>';
  return g}
 /* 눈과 보는 선 */

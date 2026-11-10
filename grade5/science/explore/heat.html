@@ -345,6 +345,8 @@ html:not(.lb-inrun) .lb-bar{position:sticky;top:0}
 .lb-a-slide{animation-name:lb-slide;animation-duration:1.2s}
 @keyframes lb-slide{from{transform:translateX(var(--dx,-60px))}to{transform:translateX(0)}}
 .lb-a-rise{transform-origin:50% 100%;animation-name:lb-rise;animation-duration:1.4s;animation-timing-function:ease-out}
+.lb-a-rise.lb-a-rise2{animation-name:lb-rise2}
+@keyframes lb-rise2{from{transform:scaleY(var(--s0,0))}to{transform:scaleY(1)}}
 @keyframes lb-rise{from{transform:scaleY(0)}to{transform:scaleY(1)}}
 .lb-a-tilt{transform-origin:80% 80%;animation-name:lb-tilt;animation-duration:2s;animation-timing-function:ease-in-out}
 @keyframes lb-tilt{0%{transform:rotate(0deg);opacity:0}12%{opacity:1}30%,75%{transform:rotate(var(--rot,-38deg))}100%{transform:rotate(0deg);opacity:0}}
@@ -2919,7 +2921,7 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
      실험 4 — 사각 통에 물 4분의 3, 뜨거운 물 60~70 °C, 차가운 물 5~10 °C(더 알아보기).
      실험 6 — 그늘에서 두 판 17.5 °C, 1분 뒤 햇빛 26.7 °C · 그늘 17.8 °C, 운동장 바닥 25.1/17.3 · 계단 26.3/17.7 · 건물 벽 25.4/17.5 °C, 열 전구 23.4 → 41.9 °C(빛이 비치지 않는 판 23.4 °C).
    이 실험관에서 정한 값: 물·공기의 색(온도를 나타낸 어림 그림), 붙임딱지 색깔이 번져 가는 빠르기(구리판을 따라 잰 거리에 비례),
-     잉크가 퍼져 가는 모양과 때, 아크릴 통 붙임딱지 색깔이 아래로 내려가는 빠르기, 숫자가 멈추기까지 걸리는 때 — 같은 조건이면 언제나 같은 결과.
+     잉크가 퍼져 가는 모양과 때, 아크릴 통 붙임딱지 색깔이 아래로 내려가는 빠르기, 숫자가 멈추기까지 걸리는 때, 알코올 온도계의 처음 액체 기둥 높이(16 °C쯤, 방금 걸어 둔 온도계) — 같은 조건이면 언제나 같은 결과.
    쓰지 않는 말은 build.py의 금지 목록(5학년 교육과정 범위 밖)에 있음. 열이 이동하는 방식의 이름은 교과서 결론(book) 문장에서만. */
 const GROUPS=['시작','준비','예상과 관찰','정리'];
 function jo(w,a,b){const s=String(w||'').trim();const c=s.charCodeAt(s.length-1);if(c>=0xAC00&&c<=0xD7A3)return s+((c-0xAC00)%28?a:b);return s+b}
@@ -3016,7 +3018,7 @@ const EXPS={
   predT:'잉크가 어느 쪽으로 움직일지 예상해요',predHint:'잉크 바로 아래에 뜨거운 물이 든 컵을 밀어 넣는다고 생각하고 골라요.',
   pred:[{q:'잉크는 처음에 어느 쪽으로 움직일까요?',o:['위로','옆으로','아래로(그대로)']}],
   rows:['i1','i2','i3'],
-  frame:'잉크는 뜨거운 물 컵 바로 위에서 처음에 {0} 움직였어요. 물 윗부분에서 양옆으로 퍼진 잉크는 벽을 따라 내려왔어요. 온도가 높아진 물이 {1} 온도가 낮은 물이 {2} 물 전체로 열이 이동해요.',ans:['위로','위로 올라가고','아래로 밀려 내려오면서'],chips:['위로','옆으로','위로 올라가고','아래로 내려가고','아래로 밀려 내려오면서','위로 밀려 올라가면서'],
+  frame:'잉크는 뜨거운 물 컵 바로 위에서 처음에 {0} 움직였어요. 온도가 높아진 물이 {1} 온도가 낮은 물이 {2} 물 전체로 열이 이동해요.',ans:['위로','위로 올라가고','아래로 밀려 내려오면서'],chips:['위로','옆으로','위로 올라가고','아래로 내려가고','아래로 밀려 내려오면서','위로 밀려 올라가면서'],
   hint:['\'잉크가 처음 움직인 쪽\' 기록을 봐요.','뜨거운 물 컵 바로 위의 물은 어느 쪽으로 움직였나요?','벽을 따라 움직인 잉크를 떠올려 봐요.'],
   book:'온도가 높아진 물이 위로 올라가고 온도가 낮은 물이 아래로 밀려 내려오면서 물 전체로 열이 이동해요. 액체나 기체와 같은 물질을 가열할 때, 온도가 높아진 물질이 위로 올라가고 온도가 낮은 물질이 아래로 내려가면서 열이 이동하는 방식을 대류라고 해요.'},
  e5:{no:5,name:'아크릴 통 속 붙임딱지 지켜보기',sub:'구멍 뚫린 아크릴 통 · 열 변색 붙임딱지 · 초',title:'촛불 위 아크릴 통 속 붙임딱지를 지켜보자',q:'기체에서는 열이 어떻게 이동할까요?',
@@ -3028,7 +3030,7 @@ const EXPS={
   pred:[{q:'붙임딱지에서 색깔이 먼저 변할 곳은?',o:['윗부분','아랫부분','모든 곳이 한꺼번에']}],
   rows:['g1','g2'],
   frame:'촛불을 켜고 지켜보니 아크릴 통 {0}의 붙임딱지 색깔이 먼저 변하고, 점점 {1}으로 변했어요. 촛불로 온도가 높아진 공기가 {2} 온도가 낮은 공기가 아래로 밀려 내려오면서 통 안의 공기 전체로 열이 이동해요.',ans:['윗부분','아래쪽','위로 올라가고'],chips:['윗부분','아랫부분','아래쪽','위쪽','위로 올라가고','아래로 내려가고'],
-  hint:['\'색깔이 먼저 변한 곳\' 기록을 봐요.','\'그 뒤 색깔이 변해 간 쪽\' 기록을 봐요.','촛불 바로 위의 공기는 어느 쪽으로 가서 윗부분을 먼저 데웠을까요?'],
+  hint:['\'색깔이 먼저 변한 곳\' 기록을 봐요.','\'그 뒤 색깔이 변해 간 쪽\' 기록을 봐요.','촛불 바로 위에서 온도가 높아진 공기는 어느 쪽으로 움직였을까요?'],
   book:'촛불로 온도가 높아진 공기가 위로 올라가고 온도가 낮은 공기가 아래로 밀려 내려오면서 통 안의 공기 전체로 열이 이동해요. 액체나 기체와 같은 물질을 가열할 때, 온도가 높아진 물질이 위로 올라가고 온도가 낮은 물질이 아래로 내려가면서 열이 이동하는 방식을 대류라고 해요.'},
  e6:{no:6,name:'햇빛과 그늘의 검은색 판',sub:'검은색 판 2장 · 적외선 온도계 · 초시계 · 햇빛 보안경',title:'햇빛이 비치는 곳과 그늘에서 검은색 판의 온도를 재 보자',q:'햇빛이 비치는 곳과 비치지 않는 곳에서 검은색 판의 온도는 어떻게 다를까요?',
   tools:[['black2','검은색 판 2장'],['ir','적외선 온도계'],['watch','초시계'],['sung','햇빛 보안경']],
@@ -3256,7 +3258,7 @@ function alcTherm(x,top,v,o){o=o||{};let g='<rect x="'+(x-46)+'" y="'+top+'" wid
  g+='<rect x="'+(x-6)+'" y="'+(top+14)+'" width="12" height="'+(AB-0)+'" rx="6" fill="#F4F8FA" stroke="#8A97A2" stroke-width="2"/><circle cx="'+x+'" cy="'+(top+AB+26)+'" r="13" fill="#D63C32" stroke="#8E2A22" stroke-width="2"/>';
  for(let t=0;t<=40;t++){const y=top+AB-t*AK;const L=t%10===0?20:t%5===0?14:8;g+='<path d="M'+(x+8)+' '+y.toFixed(1)+' h'+L+'" stroke="#2A2A2A" stroke-width="'+(t%5===0?1.8:1.1)+'"/>';
   if(t%10===0)g+='<text x="'+(x-12)+'" y="'+(y+5).toFixed(1)+'" text-anchor="end" font-size="14" font-weight="800" fill="#2A2A2A">'+t+'</text>'}
- const tp=top+AB-v*AK;g+='<rect x="'+(x-3)+'" y="'+tp.toFixed(1)+'" width="6" height="'+(top+AB+16-tp).toFixed(1)+'" fill="#D63C32"'+(o.anim?an('lb-a-rise',0,'animation-duration:2s'):'')+'/>';
+ const tp=top+AB-v*AK;g+='<rect x="'+(x-3)+'" y="'+tp.toFixed(1)+'" width="6" height="'+(top+AB+16-tp).toFixed(1)+'" fill="#D63C32"'+(o.anim?an('lb-a-rise lb-a-rise2',0,'animation-duration:2s;--s0:'+(o.from!=null?((o.from*AK+16)/(v*AK+16)).toFixed(3):0)):'')+'/>';
  g+='<text x="'+(x+30)+'" y="'+(top+12+14)+'" font-size="14" font-weight="800" fill="#2A2A2A">°C</text>';
  return g}
 /* 눈과 보는 선 */
@@ -3533,6 +3535,8 @@ const noSh=s=>s.replace(/<ellipse[^>]*\/>/,'');
 const recV=row=>rowDone(row)?R().rec[row].v:null;
 
 /* ───── 실험 1: 여러 가지 온도계 ───── */
+/* 알코올 온도계: 방금 걸어 둔 온도계의 처음 액체 기둥 높이(이 실험관에서 정한 값 — 0 °C에서 올라가지 않게) */
+const ALC0=16;
 const C1=[360,600];   /* 물 · 주스 컵 */
 const CUPC=[WC,'#F5A35A'];
 function cups1(o){o=o||{};return C1.map((x,i)=>cupArt(x,BY,{col:CUPC[i],lv:.72})+(o.lab===false?'':mini(x,BY+40,i?'주스':'물',18))).join('')}
@@ -3552,8 +3556,8 @@ function e1Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;let g=bg({});
   const at=k>=2||fi===1?1:0,busy=fi>=0;const val=busy?'':at?MODEL.t1.juice:MODEL.t1.water,showV=k>=1||busy;
   g+='<g'+(fi===1?an('lb-a-slide',0,'--dx:-240px'):'')+'>'+probeAt(at,{val:showV?val:'',blink:busy,hl:UI.mq.hl&&!busy})+'</g>';
   return g}
- if(id==='alc'){const k=seqK('al',['aw']),go=f==='aw',x=420,top=60;const v=k>=1?21.5:0;
-  g+=alcTherm(x,top,v,{anim:go});if(!NAR)g+=mini(x,40,'과학실 벽',17);
+ if(id==='alc'){const k=seqK('al',['aw']),go=f==='aw',x=420,top=60;const v=k>=1||go?21.5:ALC0;
+  g+=alcTherm(x,top,v,{anim:go,from:ALC0});if(!NAR)g+=mini(x,40,k>=1||go?'과학실 벽':'과학실 벽에 방금 건 온도계',17);
   const tp=top+AB-21.5*AK;if(st.eye!=null&&!go){const ey=[tp-70,tp,tp+70][st.eye];g+=eyeLine(600,ey,x+4,tp,st.eye===1)}
   return g}
  if(id==='ir'){const k=seqK('ir',['i1','i2']),fi=['i1','i2'].indexOf(f);g+=stairsArt(480,BY);if(!NAR)g+=mini(690,190,'복도 계단',18);
@@ -3599,7 +3603,7 @@ function otherTable(anim){const L=['처음','1분 뒤','2분 뒤','3분 뒤','4�
  return g+'</g>'}
 
 /* ───── 실험 3: 구리판 ───── */
-const LF=[-1,6,16,28],UF=[-1,.3,.65,1.12].map(x=>x<0?-1:Math.round(x*UD.max));
+const LF=[-1,6,16,28],UF=[-1,.3,.65,.97].map(x=>x<0?-1:Math.round(x*UD.max));
 const TLAB=['','1분쯤','3분쯤','5분쯤'];
 function e3Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
  if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
@@ -3998,7 +4002,7 @@ function eyeArt(x,y){return '<g transform="translate('+x+' '+y+')"><path d="M-26
 function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0 960 540';
  if(no===1){if(k==='touch'){g+=cups1({lab:false})+hand(C1[0]-74,BY-60,0,1.1,0);vb='230 270 480 190'}
   if(k==='probe'){g+=cups1({lab:false})+probeTherm(C1[0],186,{on:1,len:120});vb='250 170 460 290'}
-  if(k==='alc'){g+=alcTherm(480,60,0);vb='330 40 300 420'}
+  if(k==='alc'){g+=alcTherm(480,60,ALC0);vb='330 40 300 420'}
   if(k==='ir'){g+=stairsArt(480,BY)+irGun(330,300,{});vb='150 200 760 260'}}
  if(no===2){if(k==='fill'){g+=tubeArt({hot:MODEL.hot[0]})+canArt(CANX,BY,{t:MODEL.cold[0]});vb='230 160 640 300'}
   if(k==='t0'){g+=tubeArt({hot:MODEL.hot[0]})+canArt(CANX,BY,{t:MODEL.cold[0]})+probeTherm(330,50,{on:1,len:210})+probeTherm(CANX,40,{on:1,len:200});vb='230 20 640 440'}

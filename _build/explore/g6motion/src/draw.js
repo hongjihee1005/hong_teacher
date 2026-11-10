@@ -173,12 +173,12 @@ function speedTable(o){o=o||{};const X=150,Y=110,W=[150,170,170,170],RH=56;let g
  const H=['자동차','이동 거리(cm)','걸린 시간(초)','속력(cm/s)'],tot=W.reduce((a,b)=>a+b,0);
  g+='<rect x="'+(X-14)+'" y="'+(Y-16)+'" width="'+(tot+28)+'" height="'+(RH*5+32)+'" rx="14" fill="var(--w-paper)" stroke="var(--w-felt-s)" stroke-width="2"/>';
  let x=X;H.forEach((h,i)=>{g+='<rect x="'+x+'" y="'+Y+'" width="'+W[i]+'" height="'+RH+'" fill="#E7EFF9" stroke="#9AA6B2" stroke-width="1.5"/><text x="'+(x+W[i]/2)+'" y="'+(Y+35)+'" font-size="19" text-anchor="middle" font-weight="800" fill="#1B2A45">'+h+'</text>';x+=W[i]});
- MODEL.tab.forEach((t,j)=>{const y=Y+RH*(j+1);x=X;const hl=o.hl===j;
+ TAB().forEach((t,j)=>{const y=Y+RH*(j+1);x=X;const hl=o.hl===j;
   const cells=[t[1],o.rows?String(t[2]):'',o.rows?String(t[3]):'',o.sp&&o.sp[j]?o.sp[j]:''];
   cells.forEach((c,i)=>{g+='<rect x="'+x+'" y="'+y+'" width="'+W[i]+'" height="'+RH+'" fill="'+(hl?'#FFF4C2':'#FFFFFF')+'" stroke="#9AA6B2" stroke-width="1.5"/>';
    if(i===0)g+='<rect x="'+(x+14)+'" y="'+(y+18)+'" width="20" height="20" rx="5" fill="'+CARC[t[0]][0]+'" stroke="'+CARC[t[0]][1]+'" stroke-width="1.5"/><text x="'+(x+44)+'" y="'+(y+35)+'" font-size="19" font-weight="800" fill="#141A26">'+c+'</text>';
    else g+='<text x="'+(x+W[i]/2)+'" y="'+(y+36)+'" font-size="22" text-anchor="middle" font-weight="800" fill="#141A26">'+c+'</text>';x+=W[i]})});
- if(o.expr!=null){const t=MODEL.tab[o.expr],y=Y+RH*5+40;g+='<g'+an('lb-a-pop',0)+'><rect x="250" y="'+y+'" width="460" height="64" rx="16" fill="var(--w-label)" stroke="var(--lb-sci)" stroke-width="3"/><text x="480" y="'+(y+42)+'" font-size="27" text-anchor="middle" font-weight="800" fill="var(--w-labeltx)">'+t[2]+' ÷ '+t[3]+' = ?</text></g>'}
+ if(o.expr!=null){const t=TAB()[o.expr],y=Y+RH*5+40;g+='<g'+an('lb-a-pop',0)+'><rect x="250" y="'+y+'" width="460" height="64" rx="16" fill="var(--w-label)" stroke="var(--lb-sci)" stroke-width="3"/><text x="480" y="'+(y+42)+'" font-size="27" text-anchor="middle" font-weight="800" fill="var(--w-labeltx)">'+t[2]+' ÷ '+t[3]+' = ?</text></g>'}
  return g}
 function transTable(){let g='<rect x="250" y="130" width="460" height="230" rx="14" fill="var(--w-paper)" stroke="var(--w-felt-s)" stroke-width="2"/>';
  const H=['교통수단','이동 거리','걸린 시간'],W=[140,150,150],X=260,Y=150,RH=60;let x=X;

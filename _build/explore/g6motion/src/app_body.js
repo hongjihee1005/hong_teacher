@@ -395,6 +395,8 @@ function seqActs(A,key,ids,L0,busy){const c=R().st[key]||0,n=ids.length;
  L0.forEach((t,i)=>A.push({id:ids[i],label:(i+1)+'/'+n+' · '+t,dis:busy||i!==c,pressed:i<c,hide:i!==Math.min(c,n-1)}))}
 /* 아래 막대: 이전 · 진행 · 이어서 */
 function footHTML(v,r,s){const N=v.steps.length;
+ /* 좁은 화면(390): 기록 카드의 멈춤 단추가 그림과 멀어 자동차를 보며 누를 수 없음 → 달리는 동안 아래 막대에 같은 멈춤 단추 */
+ if(narrow()&&UI.run&&UI.run.stopAt==null)return '<button type="button" class="lb-btn lb-pri lb-go lb-stopf" data-act="x" data-x="st'+UI.run.k+'" data-f="stopf">'+ic('hand')+'결승선! 초시계 멈춤</button>';
  let h='<button type="button" class="lb-btn" data-act="prev" data-f="prev"'+(r.step===0?' disabled':'')+'>'+ic('left')+'이전</button>';
  h+='<div class="lb-fmid"><span class="lb-pgn">'+(r.step+1)+' / '+N+'</span><span class="lb-prog" aria-hidden="true">'+v.steps.map((x,i)=>'<i class="'+(i<r.step?'lb-d':i===r.step?'lb-n':'')+'"></i>').join('')+'</span></div>';
  let pri='이어서',priOn=canNext(),priAct='next';if(s.k==='sheet'){pri='실험 고르기로';priOn=true;priAct='home'}
@@ -411,7 +413,7 @@ function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g='',vb='0 0 960
  if(no===2){if(k==='line'){g=track2({line:1,tape:true,cars:false});vb='60 90 820 330'}
   if(k==='tri'){g=track2({line:1,tape:true,tri:1,cars:false});vb='0 64 960 386'}
   if(k==='run'){g=track2({line:1,tape:true,tri:1,key:0});vb='40 90 700 330'}
-  if(k==='read'){g=bg({})+photo5(240,90,.5)+'<g fill="none" stroke="var(--lb-sci)" stroke-width="6"><circle cx="330" cy="200" r="46"/><path d="M364 234 L410 280" stroke-linecap="round"/></g>';vb='220 70 520 260'}}
+  if(k==='read'){/* 예상 전이라 5초 뒤 자동차 자리는 그리지 않음(어느 자동차가 앞섰는지 보이지 않게) */g=bg({})+photoArt(240,90,480,190,'<g transform="scale(.5) translate(0 -70)">'+track2({line:1,tape:true,cars:false})+'</g>')+'<g fill="none" stroke="var(--lb-sci)" stroke-width="6"><circle cx="330" cy="200" r="46"/><path d="M364 234 L410 280" stroke-linecap="round"/></g>';vb='220 70 520 260'}}
  if(no===3){if(k==='line'){g=track3({line:1});vb='40 110 620 270'}
   if(k==='finish'){g=track3({line:1,fin:1});vb='40 110 900 300'}
   if(k==='go'){g=track3({line:1,fin:1,k:'G',key:0,sw:'00.00',swOn:1});vb='40 22 920 390'}
@@ -445,7 +447,7 @@ function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fi
  return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','camera','car','timer','calc'][v.no])+'</i><span><b>'+st+'</b><span>'+(v.no===4?'교과서 활동':'교과서 실험')+'</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
  return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>6학년 1학기 과학</em>2. 물체의 운동</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 보고, 내 눈으로 본 것을 기록해요.</p></div>'+
  '<div class="lb-ex lb-ex4">'+['e1','e2','e3','e4'].map(card).join('')+'</div>'+
- '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 자동차가 5초 동안 이동한 거리(135 cm · 122 cm), 100 cm를 이동하는 데 걸린 시간(4.2초 · 5.8초), 속력 표와 교통수단의 값은 교과서 버전 앱의 예시 값이에요. 교실과 공원 그림 속 물체의 자리와 자동차 그림의 크기는 이 실험관에서 정한 모습이에요. 초시계 기록은 내가 누른 그대로 남아요. 실제 실험에서는 내가 잰 결과를 그대로 써요.</span></p></div>'}
+ '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 자동차가 5초 동안 이동한 거리(135 cm · 122 cm), 100 cm를 이동하는 데 걸린 시간(4.2초 · 5.8초), 속력 표와 교통수단의 값은 교과서 버전 앱의 예시 값이에요. 교실과 공원 그림 속 물체의 자리와 자동차 그림의 크기는 이 실험관에서 정한 모습이에요. 초시계 기록은 내가 누른 그대로 남고, 실험 4의 속력 표에도 그 시간이 들어가요(실험 3을 끝내기 전에는 교과서 예시 값). 실제 실험에서는 내가 잰 결과를 그대로 써요.</span></p></div>'}
 const MOREQ={4:['배와 자전거 중 더 빠른 것은?',['배','자전거'],0,'배의 속력은 138 ÷ 4 = 34.5 km/h, 자전거의 속력은 20 ÷ 1 = 20 km/h이므로 배가 자전거보다 더 빨라요. 걸린 시간만 보면 안 되고 속력을 견줘요.']};
 const LABNAME='motion';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
@@ -465,7 +467,7 @@ function act(a,el){const v=V(),r=R();
  if(a==='prev'){if(r.step>0)go(r.step-1);return}
  if(a==='next'){if(canNext())go(r.step+1);return}
  if(a==='home'){DB.cur=null;resetUI();save();render();scrollTo(0,0);return}
- if(a==='doit'){const s=curStep();if(UI.fx||UI.run)return;if(idxOf('pred')>=0&&r.step>idxOf('pred'))r.obs=1;doAnim(s.id,s.dur||1500);return}
+ if(a==='doit'){const s=curStep();if(UI.fx||UI.run)return;if(s.id==='table'&&V().no===4&&!r.st.tt)r.st.tt=myTimes();if(idxOf('pred')>=0&&r.step>idxOf('pred'))r.obs=1;doAnim(s.id,s.dur||1500);return}
  if(a==='pick'){const s=curStep(),o=s.opts[+el.dataset.i];if(UI.fx||!o)return;if(o.bad){flash(o.bad);return}doAnim(s.id,s.dur||1500);return}
  if(a==='replay'){const s=curStep();doAnim(s.id,s.dur||1500);return}
  if(a==='check'){if(!planChanged(r))return;r.planLast=JSON.parse(JSON.stringify(r.plan));r.planOk=planGood(v,r);save();render();return}
@@ -498,6 +500,7 @@ function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
    if(id==='go'+k&&rs.wound)startRun(k);return}}}
 /* 실험 3: 초시계는 학생이 직접 시작하고 멈춤(멈춘 숫자는 그대로 남김) */
 function startRun(k){UI.run={k,t0:performance.now(),stopAt:null};UI.runMsg='';render();
+ if(narrow()){const sc=$('#lbScene');if(sc){const y=sc.getBoundingClientRect().top+scrollY-64;if(Math.abs(y-scrollY)>8)scrollTo(0,Math.max(0,y))}}
  const T=MODEL.T[k],tick=()=>{const u=UI.run;if(!u||u.k!==k)return;const t=(performance.now()-u.t0)/1000;
   if((u.stopAt!=null&&t>=Math.max(T*1.2,u.stopAt+.4))||(u.stopAt==null&&t>=T*1.9)){endRun(k);return}
   renderScene();requestAnimationFrame(tick)};requestAnimationFrame(tick)}

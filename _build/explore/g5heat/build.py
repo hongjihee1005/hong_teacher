@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """탐구 실험관 · 열과 우리 생활(5학년 2학기 3단원) — src/ 조각을 합쳐 HTML 한 장으로.
-   python3 build.py [출력 경로]  (기본: 저장소 grade5/science/explore/solution.html)"""
+   python3 build.py [출력 경로]  (기본: 저장소 grade5/science/explore/heat.html)"""
 import os,sys,re
 D=os.path.dirname(os.path.abspath(__file__));S=os.path.join(D,'src')
 r=lambda n:open(os.path.join(S,n),encoding='utf-8').read()
