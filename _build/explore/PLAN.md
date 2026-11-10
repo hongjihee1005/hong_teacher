@@ -20,6 +20,6 @@
 - [x] 묶음 1: g4gas(4-2 3단원) · g4climate(4-2 4단원) · g5strata(5-1 1단원) · g5light(5-1 2단원) — 만들기
 - [x] 묶음 1 검토·합치기 (main 66d33201)(5학년 메뉴 `grade5/science/explore/index.html` 새로, 과학방 카드) → main
 - [x] 묶음 2 (main cbac96a2): g5solution(5-1 3) · g5body(5-1 4) · g5mixture(5-2 1) · g5weather(5-2 2)
-- [ ] 묶음 3(만드는 중): g5heat(5-2 3) · g5energy(5-2 4) · g6acid(6-1 1) · g6motion(6-1 2)
-- [ ] 묶음 4: g6plant(6-1 3) · g6earth(6-1 4) · g6season(6-2 1) · g6burn(6-2 2) (6학년 메뉴 새로)
+- [x] 묶음 3 (main): g5heat(5-2 3) · g5energy(5-2 4) · g6acid(6-1 1) · g6motion(6-1 2)
+- [ ] 묶음 4(만드는 중): g6plant(6-1 3) · g6earth(6-1 4) · g6season(6-2 1) · g6burn(6-2 2) (6학년 메뉴 새로)
 - [ ] 선생님께 보고, 깨우기 예약 끄기
