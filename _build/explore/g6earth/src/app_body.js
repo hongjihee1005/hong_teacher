@@ -60,7 +60,7 @@ function fxP(){if(!UI.fx||!UI.fx.ms)return 1;return Math.max(0,Math.min(1,(perfo
 const SUNIDS=['t0','t1','t2','t3','t4'];
 function dateTxt(){return '관찰한 날: '+SD.m+'월 '+SD.d+'일'+(SD.today?'(오늘)':'')+' · 학교 운동장'}
 function e1Scene(s){const r=R(),id=s.id,f=fid(),p=fxP();
- if(id==='place'){if(f==='place')return field(240+240*Math.min(1,p*1.3),{ring:p>.8});return has('place')?field(480,{ring:1}):field(480)+qmark(700,170)}
+ if(id==='place'){if(f==='place')return field(330+370*Math.min(1,p*1.3),{ring:p>.8});return has('place')?field(700,{ring:1}):field(330)+qmark(560,170)}
  if(id==='compass'){let g=bgTop();
   if(f==='compass'){const t=Math.min(1,p*1.1),a=150*Math.cos(t*11)*Math.exp(-4.2*t);g+=compassTop(480,270,150,a,{letters:p>.9})}
   else if(has('compass'))g+=compassTop(480,270,150,0,{letters:1});
@@ -70,10 +70,10 @@ function e1Scene(s){const r=R(),id=s.id,f=fid(),p=fxP();
   let g=bgTop()+'<rect x="150" y="40" width="660" height="460" rx="20" fill="#B9D68F" opacity=".55"/>'+dirBox(480,82,'북',28)+dirBox(480,488,'남',28)+compassTop(760,120,58,0)+kidTop(480,280,th,{s:1.6});
   return g+mini(480,th>90?440:120,'바라보는 쪽',18)}
  if(id==='pred')return skyPan({})+qmark(480,190);
- if(id==='glass'){const on=f==='glass'?Math.min(1,p*1.2):has('glass')?1:0;return glassPic(on)+(on?'':qmark(640,170))}
+ if(id==='glass'){const on=f==='glass'?Math.min(1,p*1.2):has('glass')?1:0;return glassPic(on)+(on?'':qmark(520,170))}
  if(id==='obs'){const k=seqK('sun',SUNIDS),fi=SUNIDS.indexOf(f),stk=[];for(let i=0;i<k;i++)if(i!==fi||p>.55)stk.push(i);
   return skyPan({dark:1,stk,cur:fi>=0&&p<=.55?fi:null,curA:fi>=0?Math.min(1,p*3):1,date:dateTxt()})}
- if(id==='more'){const done=r.more.a!=null;return skyPan({stk:[0,1,2,3,4],extra:MOREDAYS.filter((d,i)=>done||UI.mq['d'+i]||f==='d'+i),date:dateTxt()})}
+ if(id==='more'){const done=r.more.a!=null;return skyPan({stk:[0,1,2,3,4],nolab:1,extra:MOREDAYS.filter((d,i)=>done||UI.mq['d'+i]||f==='d'+i),date:dateTxt()})}
  return skyPan({stk:[0,1,2,3,4],date:dateTxt()})}
 
 /* ───── 실험 2: 자전 역할놀이 ───── */
@@ -119,7 +119,7 @@ function e4Scene(s){const r=R(),id=s.id,f=fid(),p=fxP();
  if(id==='move'){const k=seqK('mv',MVIDS),fi=MVIDS.indexOf(f);let a=null,see=null;
   if(fi>=0){a=fi===0?90:90+90*(fi-1)+90*p;if(fi===0||p>.85)see=fi}else if(k>0){a=90*k;see=k-1}
   const done=[];for(let i=0;i<k;i++)if(i!==fi)done.push(i);
-  return roomTop({arc:1,at:a,done})+eye4(see)+mini(680,124,'관측자 모형의 눈에 보이는 모습',18)}
+  return roomTop({arc:1,at:a,kid:1,done})+eye4(see)+mini(680,124,'관측자 모형의 눈에 보이는 모습',18)}
  return roomTop({arc:1})}
 
 function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
@@ -375,9 +375,9 @@ function footHTML(v,r,s){const N=v.steps.length;
 
 /* ───────── 오늘의 실험: 탐구 문제 · 이렇게 해요 · 이것을 살펴봐요 (결과는 보여 주지 않음) ───────── */
 function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g='',vb='0 0 960 540';
- if(no===1){if(k==='place'){g=field(480,{ring:1});vb='0 80 960 420'}
+ if(no===1){if(k==='place'){g=field(700,{ring:1});vb='0 80 960 420'}
   if(k==='compass'){g=bgTop()+compassTop(480,270,150,0,{letters:1});vb='300 90 360 360'}
-  if(k==='glass'){g=glassPic(1);vb='280 180 400 280'}
+  if(k==='glass'){g=glassPic(1);vb='500 180 400 280'}
   if(k==='obs'){g=skyPan({})+'<g transform="translate(480 200) scale(1.6)">'+itemArt('sticker')+'</g>';vb='0 20 960 500'}}
  if(no===2){if(k==='note'){g=bgTop();['지구','별','동','서'].forEach((t,i)=>{g+=stickyNote(210+i*180,270,t,i%2?5:-5)});vb='100 180 760 180'}
   if(k==='hand'){g=bgTop()+kidTop(480,270,180,{s:1.6,notes:['?','?']});vb='300 130 360 280'}

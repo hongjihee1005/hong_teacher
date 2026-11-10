@@ -38,7 +38,7 @@ const nrm=a=>{a=((a%360)+360)%360;return a>180?a-360:a};
 const f1=n=>(+n).toFixed(1);
 function T(x,y,t,sz,col,anc,wt){return '<text x="'+f1(x)+'" y="'+f1(y)+'" font-size="'+(sz||20)+'" font-weight="'+(wt||800)+'" text-anchor="'+(anc||'middle')+'" fill="'+(col||'var(--w-labeltx)')+'">'+t+'</text>'}
 /* 방위 글자 상자(그림 속 꼭 필요한 글자 — 좁은 화면에서도 그림 안에 둠) */
-function dirBox(x,y,t,sz){sz=sz||24;const w=t.length*sz+16;return '<g><rect x="'+f1(x-w/2)+'" y="'+f1(y-sz*.95)+'" width="'+f1(w)+'" height="'+f1(sz*1.45)+'" rx="8" fill="#FFFFFF" stroke="#0F2E4A" stroke-width="2"/>'+T(x,y+sz*.3,t,sz,'#0F2E4A')+'</g>'}
+function dirBox(x,y,t,sz){sz=sz||24;const w=t.length*sz+16;return '<g><rect x="'+f1(x-w/2)+'" y="'+f1(y-sz*1.02)+'" width="'+f1(w)+'" height="'+f1(sz*1.42)+'" rx="8" fill="#FFFFFF" stroke="#0F2E4A" stroke-width="2"/>'+T(x,y+sz*.12,t,sz,'#0F2E4A')+'</g>'}
 /* ── 실험 1: 남쪽을 바라본 운동장 하늘(그림 왼쪽 끝이 동북동, 오른쪽 끝이 서북서) ── */
 const SX=az=>480+(az-180)*3.6,SY=alt=>420-alt*4.6;
 function skyPan(o){o=o||{};const dark=!!o.dark,id='lbSk'+(++CID);
@@ -55,11 +55,12 @@ function skyPan(o){o=o||{};const dark=!!o.dark,id='lbSk'+(++CID);
  /* 날짜 비교 점선(더 알아보기) */
  (o.extra||[]).forEach(e=>{const P=SUNT.map(h=>sunPos({y:SD.y,m:e[0],d:e[1]},h));let p='';P.forEach((q,i)=>{p+=(i?' L':'M')+f1(SX(q[1]))+' '+f1(SY(q[0]))});
   g+='<path d="'+p+'" fill="none" stroke="'+e[3]+'" stroke-width="4" stroke-dasharray="9 8"/>'+P.map(q=>'<circle cx="'+f1(SX(q[1]))+'" cy="'+f1(SY(q[0]))+'" r="8" fill="'+e[3]+'" stroke="#FFFFFF" stroke-width="2"/>').join('');
-  const L=P[4];g+=mini(Math.min(890,SX(L[1])+40),SY(L[0])-22,e[2],17)});
+});
+ (o.extra||[]).forEach((e,i)=>{const y=34+i*34;g+='<rect x="742" y="'+(y-22)+'" width="196" height="30" rx="8" fill="#FFFFFF" opacity=".92"/><path d="M754 '+(y-7)+' H800" stroke="'+e[3]+'" stroke-width="4" stroke-dasharray="9 6"/><circle cx="777" cy="'+(y-7)+'" r="6" fill="'+e[3]+'"/>'+T(812,y,e[2],19,'#22303C','start')});
  /* 붙인 태양 붙임딱지 */
  const stk=(o.stk||[]).map(i=>{const q=sunPos(SD,SUNT[i]);return {i,x:SX(q[1]),y:SY(q[0])}});
  if(stk.length>1){let p='';stk.forEach((q,i)=>{p+=(i?' L':'M')+f1(q.x)+' '+f1(q.y)});g+='<path d="'+p+'" fill="none" stroke="'+(dark?'#FFD23F':'#C2410C')+'" stroke-width="3" stroke-dasharray="5 7"/>'}
- stk.forEach(q=>{g+=sticker(q.x,q.y,1)+mini(q.x,q.y+52,fmtH(SUNT[q.i]),17)});
+ stk.forEach(q=>{g+=sticker(q.x,q.y,1)+(o.nolab?'':mini(q.x,q.y+52,fmtH(SUNT[q.i]),17))});
  /* 지금 보이는 태양(안경을 쓰면 주황 원, 맨눈이면 눈부심) */
  if(o.cur!=null){const q=sunPos(SD,SUNT[o.cur]),x=SX(q[1]),y=SY(q[0]),a=o.curA==null?1:o.curA;
   g+=dark?'<g opacity="'+f1(a)+'"><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="16" fill="#FF9A2E" stroke="#FFD23F" stroke-width="3"/></g>'
@@ -117,7 +118,7 @@ function roleTop(th,o){o=o||{};let g='<rect x="20" y="40" width="440" height="49
  return g}
 function eyeView(th,o){o=o||{};const X=490,Y=150,W=440,H=270,cx=X+W/2,hw=W/2-40,id='lbEv'+(++CID);
  let g='<defs><clipPath id="'+id+'"><rect x="'+X+'" y="'+Y+'" width="'+W+'" height="'+H+'" rx="14"/></clipPath></defs><g clip-path="url(#'+id+')"><rect x="'+X+'" y="'+Y+'" width="'+W+'" height="'+H+'" fill="#EAF5FB"/><rect x="'+X+'" y="'+(Y+H-70)+'" width="'+W+'" height="70" fill="#D9C7AD"/>';
- (o.trail||[]).forEach(t=>{const rl=nrm(t[1]-t[0]);if(Math.abs(rl)<=90)g+='<circle cx="'+f1(cx+rl/90*hw)+'" cy="'+(t[1]===0?Y+100:Y+110)+'" r="8" fill="'+(t[1]===0?'#F0A020':'#1C6FA8')+'" opacity=".45"/>'});
+ (o.trail||[]).forEach(t=>{const rl=nrm(t[1]-t[0]);if(Math.abs(rl)<=90)g+='<circle cx="'+f1(cx+rl/90*hw)+'" cy="'+(t[1]===0?Y+44:Y+176)+'" r="9" fill="'+(t[1]===0?'#F0A020':'#1C6FA8')+'" opacity=".55"/>'});
  const rl=nrm(0-th),rs=nrm(180-th);
  if(Math.abs(rs)<=95)g+=starFront(cx+rs/90*hw,Y+130,1);
  if(Math.abs(rl)<=95)g+=lampFront(cx+rl/90*hw,Y+92,1);
@@ -161,7 +162,7 @@ function setupSide(o){let g=bg({});const GY=250,LX=190;
  if(o.dk>0)g+='<rect x="-3000" y="-3000" width="7000" height="7000" fill="#0A0E18" opacity="'+f1(.62*o.dk)+'"/>';
  return g}
 /* 실험 1: 안경 쓰기(on 0~1) */
-function glassPic(on){const gx=480+(1-on)*90,gy=338+(1-on)*44;let g=field(480);
+function glassPic(on){const gx=700+(1-on)*90,gy=338+(1-on)*44;let g=field(700);
  g+='<g transform="translate('+f1(gx)+' '+f1(gy)+') scale(.3)">'+itemArt('glasses')+'</g>';
  if(on<1)g+=hand(gx+46,gy+16,-160,.8);
  return g}

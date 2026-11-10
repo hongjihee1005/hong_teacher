@@ -209,7 +209,7 @@ function raysScene(a,anim){let g='<rect x="-3000" y="-3000" width="7000" height=
 
 /* ───────── 실험 4: 전등과 지구본 ───────── */
 const E4G={lx:220,ly:280,gx:520,gy:280,R:92,K:14};   /* 30 cm = 300 px · 그림 속 그림자 1 cm = 14 px */
-const LAT=37.5,TILT=23.5;
+const LAT=37.5,TILT=47/2;   /* 그림 속 자전축 기울기(화면에는 숫자를 쓰지 않음) */
 function lampArt(x,y,glow){return '<g><rect x="'+(x-8)+'" y="'+(y+30)+'" width="16" height="'+(416-y-30)+'" fill="#8A8F96"/><rect x="'+(x-46)+'" y="408" width="92" height="10" rx="4" fill="#6E747B"/>'+(glow?'<circle cx="'+x+'" cy="'+y+'" r="54" fill="#FFE680" opacity=".35"/>':'')+'<circle cx="'+x+'" cy="'+y+'" r="30" fill="#FFE27A" stroke="#D08A00" stroke-width="3"/><rect x="'+(x-11)+'" y="'+(y+26)+'" width="22" height="10" fill="#9AA3AE"/></g>'}
 /* 지구본 옆모습: tau = 북극이 전등(왼쪽) 쪽으로 기운 각(+), 반대(−). sh = 그림자 길이(cm), meter = 측정기 */
 function globeSide(cx,cy,R,tau,o){o=o||{};let g='<path d="M'+(cx-R-14)+' '+cy+' A'+(R+14)+' '+(R+14)+' 0 0 0 '+(cx+R+14)+' '+cy+'" fill="none" stroke="#8A8F96" stroke-width="5"/><rect x="'+(cx-6)+'" y="'+(cy+R+12)+'" width="12" height="'+(416-cy-R-20)+'" fill="#8A8F96"/><rect x="'+(cx-50)+'" y="408" width="100" height="10" rx="4" fill="#6E747B"/>';

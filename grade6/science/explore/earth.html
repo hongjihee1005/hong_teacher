@@ -945,12 +945,12 @@ const MOREDAYS=[[3,21,'3월 21일','#1F6FB2'],[6,21,'6월 21일','#178049'],[12,
 
 /* 기록 줄. t: sel(고르기 칸 — 그림과 견주어 빨간 칸만 알려 줌). need = 이 기록 전에 꼭 해 봐야 하는 행동 */
 const yn=(l,o,ok)=>({l,o,ok});
-const SKY=['동쪽 하늘','남쪽 하늘','서쪽 하늘'],EW=['동쪽','서쪽'],MV=['동쪽 → 서쪽','서쪽 → 동쪽'];
+const SKY=['동쪽','남쪽','서쪽'],EW=['동쪽','서쪽'],MV=['동쪽 → 서쪽','서쪽 → 동쪽'];
 const SEE=['칠판, 시계, 시간표','창문, 화분','사물함, 거울','창문, 출입문'];
 const ROWS={
  /* 실험 1 */
  lr:{n:'남쪽을 바라볼 때 내 양옆',t:'sel',need:['face'],f:[yn('내 왼쪽',EW,0),yn('내 오른쪽',EW,1)]},
- sun:{n:'시각마다 태양이 있는 쪽',t:'sel',need:['t4'],get f(){return [0,2,4].map(i=>yn(fmtH(SUNT[i]),SKY,skyOf(sunPos(SD,SUNT[i])[1])))}},
+ sun:{n:'시각마다 태양이 있는 하늘',t:'sel',need:['t4'],get f(){return [0,2,4].map(i=>yn(fmtH(SUNT[i]),SKY,skyOf(sunPos(SD,SUNT[i])[1])))}},
  /* 실험 2 */
  me:{n:'지구 역할이 회전한 방향',t:'sel',need:['tn'],f:[yn('지구 역할',['서쪽 → 동쪽','동쪽 → 서쪽'],0)]},
  ls:{n:'지구 역할의 눈에 보인 위치 변화',t:'sel',need:['tn'],f:[yn('전등',MV,0),yn('별 역할',MV,0)]},
@@ -972,7 +972,7 @@ const EXPS={
   pred:[{q:'오전일 때와 오후일 때 태양은 어느 쪽 하늘에 있을까요?',o:['오전에는 동쪽, 오후에는 서쪽에 있을 것 같아요','오전에는 서쪽, 오후에는 동쪽에 있을 것 같아요']}],
   rows:['lr','sun'],
   frame:'하루 동안 시간이 지남에 따라 태양은 {0} 하늘에서 {1} 하늘을 지나 {2} 하늘로 위치가 달라져요.',ans:['동쪽','남쪽','서쪽'],chips:['동쪽','서쪽','남쪽','북쪽'],
-  hint:['\'시각마다 태양이 있는 쪽\' 기록에서 오전 8시 30분을 봐요.','\'시각마다 태양이 있는 쪽\' 기록에서 오후 12시 30분을 봐요.','\'시각마다 태양이 있는 쪽\' 기록에서 오후 4시 30분을 봐요.'],
+  hint:['\'시각마다 태양이 있는 하늘\' 기록에서 오전 8시 30분을 봐요.','\'시각마다 태양이 있는 하늘\' 기록에서 오후 12시 30분을 봐요.','\'시각마다 태양이 있는 하늘\' 기록에서 오후 4시 30분을 봐요.'],
   book:'하루 동안 태양은 동쪽 하늘에서 남쪽 하늘을 지나 서쪽 하늘로 위치가 달라져요. 다른 날짜에 관찰해도 같아요.'},
  e2:{no:2,name:'지구의 자전 역할놀이',sub:'붙임쪽지 · 필기도구 · 갓 없는 전등 · 면장갑',title:'역할놀이로 제자리에서 돌며 전등과 별을 관찰하자',q:'지구 역할이 제자리에서 돌 때 전등과 별 역할은 어떻게 보일까요?',
   tools:[['notes','붙임쪽지'],['pencil','필기도구'],['bulb','갓 없는 전등'],['gloves','면장갑']],
@@ -1128,7 +1128,7 @@ const nrm=a=>{a=((a%360)+360)%360;return a>180?a-360:a};
 const f1=n=>(+n).toFixed(1);
 function T(x,y,t,sz,col,anc,wt){return '<text x="'+f1(x)+'" y="'+f1(y)+'" font-size="'+(sz||20)+'" font-weight="'+(wt||800)+'" text-anchor="'+(anc||'middle')+'" fill="'+(col||'var(--w-labeltx)')+'">'+t+'</text>'}
 /* 방위 글자 상자(그림 속 꼭 필요한 글자 — 좁은 화면에서도 그림 안에 둠) */
-function dirBox(x,y,t,sz){sz=sz||24;const w=t.length*sz+16;return '<g><rect x="'+f1(x-w/2)+'" y="'+f1(y-sz*.95)+'" width="'+f1(w)+'" height="'+f1(sz*1.45)+'" rx="8" fill="#FFFFFF" stroke="#0F2E4A" stroke-width="2"/>'+T(x,y+sz*.3,t,sz,'#0F2E4A')+'</g>'}
+function dirBox(x,y,t,sz){sz=sz||24;const w=t.length*sz+16;return '<g><rect x="'+f1(x-w/2)+'" y="'+f1(y-sz*1.02)+'" width="'+f1(w)+'" height="'+f1(sz*1.42)+'" rx="8" fill="#FFFFFF" stroke="#0F2E4A" stroke-width="2"/>'+T(x,y+sz*.12,t,sz,'#0F2E4A')+'</g>'}
 /* ── 실험 1: 남쪽을 바라본 운동장 하늘(그림 왼쪽 끝이 동북동, 오른쪽 끝이 서북서) ── */
 const SX=az=>480+(az-180)*3.6,SY=alt=>420-alt*4.6;
 function skyPan(o){o=o||{};const dark=!!o.dark,id='lbSk'+(++CID);
@@ -1145,11 +1145,12 @@ function skyPan(o){o=o||{};const dark=!!o.dark,id='lbSk'+(++CID);
  /* 날짜 비교 점선(더 알아보기) */
  (o.extra||[]).forEach(e=>{const P=SUNT.map(h=>sunPos({y:SD.y,m:e[0],d:e[1]},h));let p='';P.forEach((q,i)=>{p+=(i?' L':'M')+f1(SX(q[1]))+' '+f1(SY(q[0]))});
   g+='<path d="'+p+'" fill="none" stroke="'+e[3]+'" stroke-width="4" stroke-dasharray="9 8"/>'+P.map(q=>'<circle cx="'+f1(SX(q[1]))+'" cy="'+f1(SY(q[0]))+'" r="8" fill="'+e[3]+'" stroke="#FFFFFF" stroke-width="2"/>').join('');
-  const L=P[4];g+=mini(Math.min(890,SX(L[1])+40),SY(L[0])-22,e[2],17)});
+});
+ (o.extra||[]).forEach((e,i)=>{const y=34+i*34;g+='<rect x="742" y="'+(y-22)+'" width="196" height="30" rx="8" fill="#FFFFFF" opacity=".92"/><path d="M754 '+(y-7)+' H800" stroke="'+e[3]+'" stroke-width="4" stroke-dasharray="9 6"/><circle cx="777" cy="'+(y-7)+'" r="6" fill="'+e[3]+'"/>'+T(812,y,e[2],19,'#22303C','start')});
  /* 붙인 태양 붙임딱지 */
  const stk=(o.stk||[]).map(i=>{const q=sunPos(SD,SUNT[i]);return {i,x:SX(q[1]),y:SY(q[0])}});
  if(stk.length>1){let p='';stk.forEach((q,i)=>{p+=(i?' L':'M')+f1(q.x)+' '+f1(q.y)});g+='<path d="'+p+'" fill="none" stroke="'+(dark?'#FFD23F':'#C2410C')+'" stroke-width="3" stroke-dasharray="5 7"/>'}
- stk.forEach(q=>{g+=sticker(q.x,q.y,1)+mini(q.x,q.y+52,fmtH(SUNT[q.i]),17)});
+ stk.forEach(q=>{g+=sticker(q.x,q.y,1)+(o.nolab?'':mini(q.x,q.y+52,fmtH(SUNT[q.i]),17))});
  /* 지금 보이는 태양(안경을 쓰면 주황 원, 맨눈이면 눈부심) */
  if(o.cur!=null){const q=sunPos(SD,SUNT[o.cur]),x=SX(q[1]),y=SY(q[0]),a=o.curA==null?1:o.curA;
   g+=dark?'<g opacity="'+f1(a)+'"><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="16" fill="#FF9A2E" stroke="#FFD23F" stroke-width="3"/></g>'
@@ -1207,7 +1208,7 @@ function roleTop(th,o){o=o||{};let g='<rect x="20" y="40" width="440" height="49
  return g}
 function eyeView(th,o){o=o||{};const X=490,Y=150,W=440,H=270,cx=X+W/2,hw=W/2-40,id='lbEv'+(++CID);
  let g='<defs><clipPath id="'+id+'"><rect x="'+X+'" y="'+Y+'" width="'+W+'" height="'+H+'" rx="14"/></clipPath></defs><g clip-path="url(#'+id+')"><rect x="'+X+'" y="'+Y+'" width="'+W+'" height="'+H+'" fill="#EAF5FB"/><rect x="'+X+'" y="'+(Y+H-70)+'" width="'+W+'" height="70" fill="#D9C7AD"/>';
- (o.trail||[]).forEach(t=>{const rl=nrm(t[1]-t[0]);if(Math.abs(rl)<=90)g+='<circle cx="'+f1(cx+rl/90*hw)+'" cy="'+(t[1]===0?Y+100:Y+110)+'" r="8" fill="'+(t[1]===0?'#F0A020':'#1C6FA8')+'" opacity=".45"/>'});
+ (o.trail||[]).forEach(t=>{const rl=nrm(t[1]-t[0]);if(Math.abs(rl)<=90)g+='<circle cx="'+f1(cx+rl/90*hw)+'" cy="'+(t[1]===0?Y+44:Y+176)+'" r="9" fill="'+(t[1]===0?'#F0A020':'#1C6FA8')+'" opacity=".55"/>'});
  const rl=nrm(0-th),rs=nrm(180-th);
  if(Math.abs(rs)<=95)g+=starFront(cx+rs/90*hw,Y+130,1);
  if(Math.abs(rl)<=95)g+=lampFront(cx+rl/90*hw,Y+92,1);
@@ -1251,7 +1252,7 @@ function setupSide(o){let g=bg({});const GY=250,LX=190;
  if(o.dk>0)g+='<rect x="-3000" y="-3000" width="7000" height="7000" fill="#0A0E18" opacity="'+f1(.62*o.dk)+'"/>';
  return g}
 /* 실험 1: 안경 쓰기(on 0~1) */
-function glassPic(on){const gx=480+(1-on)*90,gy=338+(1-on)*44;let g=field(480);
+function glassPic(on){const gx=700+(1-on)*90,gy=338+(1-on)*44;let g=field(700);
  g+='<g transform="translate('+f1(gx)+' '+f1(gy)+') scale(.3)">'+itemArt('glasses')+'</g>';
  if(on<1)g+=hand(gx+46,gy+16,-160,.8);
  return g}
@@ -1421,7 +1422,7 @@ function fxP(){if(!UI.fx||!UI.fx.ms)return 1;return Math.max(0,Math.min(1,(perfo
 const SUNIDS=['t0','t1','t2','t3','t4'];
 function dateTxt(){return '관찰한 날: '+SD.m+'월 '+SD.d+'일'+(SD.today?'(오늘)':'')+' · 학교 운동장'}
 function e1Scene(s){const r=R(),id=s.id,f=fid(),p=fxP();
- if(id==='place'){if(f==='place')return field(240+240*Math.min(1,p*1.3),{ring:p>.8});return has('place')?field(480,{ring:1}):field(480)+qmark(700,170)}
+ if(id==='place'){if(f==='place')return field(330+370*Math.min(1,p*1.3),{ring:p>.8});return has('place')?field(700,{ring:1}):field(330)+qmark(560,170)}
  if(id==='compass'){let g=bgTop();
   if(f==='compass'){const t=Math.min(1,p*1.1),a=150*Math.cos(t*11)*Math.exp(-4.2*t);g+=compassTop(480,270,150,a,{letters:p>.9})}
   else if(has('compass'))g+=compassTop(480,270,150,0,{letters:1});
@@ -1431,10 +1432,10 @@ function e1Scene(s){const r=R(),id=s.id,f=fid(),p=fxP();
   let g=bgTop()+'<rect x="150" y="40" width="660" height="460" rx="20" fill="#B9D68F" opacity=".55"/>'+dirBox(480,82,'북',28)+dirBox(480,488,'남',28)+compassTop(760,120,58,0)+kidTop(480,280,th,{s:1.6});
   return g+mini(480,th>90?440:120,'바라보는 쪽',18)}
  if(id==='pred')return skyPan({})+qmark(480,190);
- if(id==='glass'){const on=f==='glass'?Math.min(1,p*1.2):has('glass')?1:0;return glassPic(on)+(on?'':qmark(640,170))}
+ if(id==='glass'){const on=f==='glass'?Math.min(1,p*1.2):has('glass')?1:0;return glassPic(on)+(on?'':qmark(520,170))}
  if(id==='obs'){const k=seqK('sun',SUNIDS),fi=SUNIDS.indexOf(f),stk=[];for(let i=0;i<k;i++)if(i!==fi||p>.55)stk.push(i);
   return skyPan({dark:1,stk,cur:fi>=0&&p<=.55?fi:null,curA:fi>=0?Math.min(1,p*3):1,date:dateTxt()})}
- if(id==='more'){const done=r.more.a!=null;return skyPan({stk:[0,1,2,3,4],extra:MOREDAYS.filter((d,i)=>done||UI.mq['d'+i]||f==='d'+i),date:dateTxt()})}
+ if(id==='more'){const done=r.more.a!=null;return skyPan({stk:[0,1,2,3,4],nolab:1,extra:MOREDAYS.filter((d,i)=>done||UI.mq['d'+i]||f==='d'+i),date:dateTxt()})}
  return skyPan({stk:[0,1,2,3,4],date:dateTxt()})}
 
 /* ───── 실험 2: 자전 역할놀이 ───── */
@@ -1480,7 +1481,7 @@ function e4Scene(s){const r=R(),id=s.id,f=fid(),p=fxP();
  if(id==='move'){const k=seqK('mv',MVIDS),fi=MVIDS.indexOf(f);let a=null,see=null;
   if(fi>=0){a=fi===0?90:90+90*(fi-1)+90*p;if(fi===0||p>.85)see=fi}else if(k>0){a=90*k;see=k-1}
   const done=[];for(let i=0;i<k;i++)if(i!==fi)done.push(i);
-  return roomTop({arc:1,at:a,done})+eye4(see)+mini(680,124,'관측자 모형의 눈에 보이는 모습',18)}
+  return roomTop({arc:1,at:a,kid:1,done})+eye4(see)+mini(680,124,'관측자 모형의 눈에 보이는 모습',18)}
  return roomTop({arc:1})}
 
 function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
@@ -1736,9 +1737,9 @@ function footHTML(v,r,s){const N=v.steps.length;
 
 /* ───────── 오늘의 실험: 탐구 문제 · 이렇게 해요 · 이것을 살펴봐요 (결과는 보여 주지 않음) ───────── */
 function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g='',vb='0 0 960 540';
- if(no===1){if(k==='place'){g=field(480,{ring:1});vb='0 80 960 420'}
+ if(no===1){if(k==='place'){g=field(700,{ring:1});vb='0 80 960 420'}
   if(k==='compass'){g=bgTop()+compassTop(480,270,150,0,{letters:1});vb='300 90 360 360'}
-  if(k==='glass'){g=glassPic(1);vb='280 180 400 280'}
+  if(k==='glass'){g=glassPic(1);vb='500 180 400 280'}
   if(k==='obs'){g=skyPan({})+'<g transform="translate(480 200) scale(1.6)">'+itemArt('sticker')+'</g>';vb='0 20 960 500'}}
  if(no===2){if(k==='note'){g=bgTop();['지구','별','동','서'].forEach((t,i)=>{g+=stickyNote(210+i*180,270,t,i%2?5:-5)});vb='100 180 760 180'}
   if(k==='hand'){g=bgTop()+kidTop(480,270,180,{s:1.6,notes:['?','?']});vb='300 130 360 280'}
