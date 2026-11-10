@@ -319,6 +319,7 @@ html:not(.lb-inrun) .lb-bar{position:sticky;top:0}
 .lb-sheet .lb-tbl td.lb-ca{color:#24548F;font-weight:700}.lb-sheet .lb-tbl td.lb-cb{color:#8C4514;font-weight:700}
 .lb-sh-box{border:1.5px solid #D3CEC3;border-radius:.6rem;padding:.45rem .65rem;background:#fff}
 .lb-sh-concl{font-size:.92rem;line-height:1.75}
+.lb-frame mark{background:var(--lb-sci-soft,#E3F1EA);color:var(--lb-sci-ink,#1A6E52);font-weight:800;padding:.05rem .35rem;border-radius:.3rem;border:1.5px solid var(--lb-sci)}
 .lb-sh-concl mark{background:#E3F1EA;color:#1A6E52;font-weight:800;padding:0 .25rem;border-radius:.25rem}
 .lb-sh-book{font-size:.82rem;color:#1A6E52;font-weight:700}
 .lb-sh-lines{display:flex;flex-direction:column;justify-content:space-evenly;min-height:4.2rem;flex:1}
@@ -3855,7 +3856,7 @@ function recPanel(){const v=V(),r=R();let h='<div class="lb-recpanel" tabindex="
  if(r.pred.length)h+='<section class="lb-rpred"><h2>'+ic('why')+'내 예상</h2><ul>'+v.pred.map((q,j)=>'<li>'+esc(q.q)+' <b>'+(r.pred[j]!=null?esc(q.o[r.pred[j]]):'(고르지 않았어요)')+'</b></li>').join('')+'</ul></section>';
  return h+'</div>'}
 function conclCard(){const v=V(),r=R();let h='<p class="lb-hint2">'+(narrow()?'위의':'왼쪽의')+' 내 기록을 보고 빈칸을 채워요.</p>';
- h+='<p class="lb-frame">'+frameHTML(v,r.bl,'edit')+'</p><div class="lb-chips" role="group" aria-label="낱말 카드">'+v.chips.map((c,i)=>'<button type="button" class="lb-chip" data-f="c'+i+'" data-chip="'+i+'">'+esc(c)+'</button>').join('')+'</div>';
+ h+='<p class="lb-frame">'+frameHTML(v,r.bl,r.cmp?'view':'edit')+'</p>'+(r.cmp?'':'<div class="lb-chips" role="group" aria-label="낱말 카드">'+v.chips.map((c,i)=>'<button type="button" class="lb-chip" data-f="c'+i+'" data-chip="'+i+'">'+esc(c)+'</button>').join('')+'</div>');  /* 맞힌 뒤에는 낱말 카드를 접어 교과서 결론이 카드 안에 들어가게 */
  const all=r.bl.length&&r.bl.every(x=>x);
  if(!r.cmp)h+='<button type="button" class="lb-act" data-act="cmp" data-f="doit"'+(all&&cChanged(r)?'':' disabled')+'>'+ic('flask')+'<span>기록과 견주기</span></button>';
  if(r.cmp)h+='<div class="lb-cmp" role="status"><b>'+ic('flask')+'교과서 결론</b>'+esc(v.book)+'</div><div class="lb-msg lb-good">'+ic('check')+'<span>내 결론이 기록과 맞아요.</span></div>';
