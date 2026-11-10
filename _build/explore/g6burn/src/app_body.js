@@ -52,11 +52,10 @@ const sn=id=>!!R().seen[id]||fxOn(id);   /* 해 본 행동(또는 지금 하는 
 const fid=()=>UI.fx?UI.fx.id:null;
 /* 시퀀스 단계: 지금까지 한 행동 수(움직이는 중이면 그 행동까지) */
 function seqK(key,ids){const c=R().st[key]||0,fi=ids.indexOf(fid());return Math.max(c,fi+1)}
-const noSh=s=>s.replace(/<ellipse[^>]*\/>/,'');
 
 /* ───── 실험 1: 삼각 플라스크와 고무풍선 ───── */
 function e1Set(o){o=o||{};let g='';
- [0,1].forEach(k=>{const x=FX1[k],bx=x+(k?150:-150);
+ [0,1].forEach(k=>{const x=FX1[k],bx=x+(k?132:-132);
   if(o.mode==='table'){g+=shadow(x,BY+3,74)+TR(x,BY,1,flaskBody())+(o.filling===k?fillBalloon(bx,BY,k):balloonLie(bx,BY,k,o.fill&&o.fill[k]))}
   else if(o.mode==='droop')g+=(o.anim?'<g'+an('lb-a-fade',0,'animation-duration:1s')+'>':'<g>')+flaskSet(x,BY,k,{bal:'droop'})+'</g>';
   else g+=flaskSet(x,BY,k,{bal:'up',inf:k?o.inf:0,infAnim:k?o.infAnim:0,foam:k&&o.foam,foamAnim:k?o.foamAnim:0,settle:!k&&o.settle,settleAnim:k?0:o.settleAnim,fall:o.fall});
@@ -88,7 +87,7 @@ function fireObj(no,o){o=o||{};
  if(no===2)return candleArt(FXC,BY,{h:o.t?120:170,drip:o.t?1:(o.lit?.12:0),lit:o.lit,litAnim:o.litAnim});
  return lampArt(FXC,BY,{lv:o.t?.42:.8,cap:o.cap||'side',lit:o.lit,litAnim:o.litAnim,capAnim:o.capAnim})}
 function fireFlame(no,t){return flameArt(FXC,fireTopY(no,t),1,no===2?'c':'a')}
-function flameSpot(){const v=V(),r=R(),t=idxOf('time')<r.step?1:0;return [FXC,Math.round(fireTopY(v.no,t)-30),44,2.2,690,212]}
+function flameSpot(){const v=V(),r=R(),t=idxOf('time')<r.step?1:0;return [FXC,Math.round(fireTopY(v.no,t)-30),44,2.1,640,v.no===2?220:250]}
 function fireScene(s){const v=V(),r=R(),no=v.no,id=s.id,f=fid();
  if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'),true);
  let g=bg({});
@@ -104,8 +103,8 @@ function fireScene(s){const v=V(),r=R(),no=v.no,id=s.id,f=fid();
  if(id==='look'){g+=fireObj(no,{lit:1});if(f==='zm')g+='<g'+an('lb-a-fade',0)+'>'+eyeLook(FXC+170,fireTopY(no,0)-30)+'</g>';return g}
  if(id==='feel'){const ids=['hp','dk'],k=seqK('feel',ids),fi=ids.indexOf(f),fy=fireTopY(no,0);
   g+=fireObj(no,{lit:1});
-  if(k>=1||fi===0)g+=(fi===0?'<g'+an('lb-a-slide',0,'--dx:220px')+'>':'<g>')+tPaper(FXC+24,fy-24,300,1,fi===0?1.1:0)+'</g>';
   if(k>=2||fi===1)g+=darkArt(FXC,fy-28,1,fi===1)+fireFlame(no,0);
+  if(k>=1||fi===0)g+=(fi===0?'<g'+an('lb-a-slide',0,'--dx:220px')+'>':'<g>')+tPaper(FXC+24,fy-24,300,1,fi===0?1.1:0)+'</g>';
   return g}
  if(id==='time'){const go=f==='tm';
   if(go)return g+'<g'+an('lb-a-out',.3,'animation-duration:1.4s')+'>'+fireObj(no,{lit:1})+'</g><g'+an('lb-a-fade',.6,'animation-duration:1.4s')+'>'+fireObj(no,{lit:1,t:1})+'</g>'+mini(620,180,'시간이 지난 뒤',18);
@@ -117,27 +116,27 @@ function fireScene(s){const v=V(),r=R(),no=v.no,id=s.id,f=fid();
  return g+fireObj(no,{cap:capOn?'on':'side'})}
 
 /* ───── 실험 4: 두 촛불과 아크릴 통 ───── */
-const C4=[290,600],BOX4=[[170,196],[540,196]],BK4=715,CH4=70;
+const C4=[305,490],BOX4=[[190,206],[450,206]],BK4=600,CH4=70;
 const c4Top=()=>candleTop(BY,{h:CH4,small:1});
 function e4Base(o){o=o||{};let g='';
  C4.forEach((x,k)=>{const outA=o.out&&o.out[k];g+=candleArt(x,BY,{h:CH4,small:1,lit:o.lit&&!outA&&!(o.fade&&o.fade[k]),litAnim:o.litAnim,out:outA,outAnim:0});
   if(o.fade&&o.fade[k]!=null)g+='<g'+an('lb-a-out',o.fade[k],'animation-duration:.8s')+'>'+flameArt(x,c4Top()-8,1,'c')+'</g>'+smokeArt(x,c4Top()-14,o.fade[k]+.4)});
  if(o.bk)g+=bubBeaker(BK4,BY,{ml:o.ml||0,rise:o.rise,ki:o.ki,bub:o.bub,bubAnim:o.bubAnim});
- if(o.box)BOX4.forEach(([x,y])=>{g+=acrylBox(x,y,240,240,o.boxAnim?an('lb-a-down',0,'--from:-200px'):'')});
- if(!o.nolab)g+=mini(290,170,'㉠ 양초만',17)+mini(660,170,'㉡ 양초와 비커',17);
+ if(o.box)BOX4.forEach(([x,y])=>{g+=acrylBox(x,y,230,230,o.boxAnim?an('lb-a-down',0,'--from:-200px'):'')});
+ if(!o.nolab)g+=mini(305,182,'㉠ 양초만',17)+mini(565,182,'㉡ 양초와 비커',17);
  return g}
 function e4Scene(s){const r=R(),id=s.id,f=fid();
  if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'),true);
  let g=bg({});
- if(id==='light'){const on=has('light'),a=f==='light';if(!on)return g+e4Base({})+lighterArt(450,BY-14,0,0);
+ if(id==='light'){const on=has('light'),a=f==='light';if(!on)return g+e4Base({})+lighterArt(420,BY-14,0,0);
   return g+e4Base({lit:1,litAnim:a?.8:0})+(a?'<g'+an('lb-a-slide',0,'--dx:120px')+'>'+lighterArt(C4[0]+118,c4Top()-12,-12,1)+'</g>':'')}
  if(id==='mix'){const ids=['hp','ki'],k=seqK('mix',ids),fi=ids.indexOf(f);
   g+=e4Base({lit:1,bk:1,ml:k>=1&&fi!==0?60:fi===0?60:0,rise:fi===0,ki:k>=2||fi===1,bub:k>=2||fi===1,bubAnim:fi===1?.9:0});
-  g+=reagent(840,BY,'#E6F2F8')+kiJar(920,BY);
+  g+=reagent(760,BY,'#E6F2F8')+kiJar(840,BY);
   if(fi===0)g+='<g'+an('lb-a-fade',0)+'><g transform="rotate(-70 '+(BK4+40)+' '+(BY-190)+')">'+reagent(BK4+40,BY-110,'#E6F2F8')+'</g></g>'+'<path d="M'+(BK4+10)+' '+(BY-186)+' Q'+(BK4)+' '+(BY-150)+' '+BK4+' '+(BY-90)+'" stroke="#CFE6F2" stroke-width="6" fill="none" stroke-linecap="round" stroke-dasharray="12 8"'+an('lb-a-stream',0)+'/>';
   if(fi===1)g+='<g'+an('lb-a-tip',0,'--rot:-28deg;animation-duration:1.8s')+'>'+spoonArt(BK4+14,BY-176,0,'#FFFFFF','#B9B2A0')+'</g>'+fallGrains(BK4,BY-168,BY-30,'#FFFFFF','#B9B2A0',BK4);
   return g}
- if(id==='pred')return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1})+qmark(450,250);
+ if(id==='pred')return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1})+qmark(430,140);
  if(id==='cover'){const ids=['cv','wt'],k=seqK('cover',ids),fi=ids.indexOf(f);
   if(k<1&&fi<0)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1});
   if(fi===0)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,boxAnim:1});
@@ -159,7 +158,7 @@ function e5Scene(s){const r=R(),id=s.id,f=fid();
  if(id==='put'){const on=has('put'),a=f==='put';
   if(!on)return g+e5Set({})+matchHead(240,BY-4,0)+matchWood(740,BY-4,0)+tweezArt(800,BY-30,30,'');
   g+=e5Set({put:1,putAnim:a});
-  if(!a)g+='<path d="M'+(PL.cx-6)+' '+(PY5-16)+' H'+(HX5+12)+' M'+(PL.cx+6)+' '+(PY5-16)+' H'+(WX5-24)+'" stroke="var(--lb-sci)" stroke-width="3" stroke-dasharray="7 6"/><circle cx="'+PL.cx+'" cy="'+(PY5-16)+'" r="5" fill="var(--lb-sci)"/>'+mini(PL.cx,PY5-34,'같은 거리',14);
+  if(!a)g+='<path d="M'+(PL.cx-6)+' '+(PY5-16)+' H'+(HX5+16)+' M'+(PL.cx+6)+' '+(PY5-16)+' H'+(WX5-42)+'" stroke="var(--lb-sci)" stroke-width="3" stroke-dasharray="7 6"/><circle cx="'+PL.cx+'" cy="'+(PY5-16)+'" r="5" fill="var(--lb-sci)"/>'+mini(PL.cx,PY5-34,'같은 거리',14);
   return g}
  if(id==='pred')return g+e5Set({put:1})+qmark(PL.cx,170);
  if(id==='heat'){const ids=['lt','h1','h2'],k=seqK('heat',ids),fi=ids.indexOf(f);
@@ -190,19 +189,19 @@ function e6Scene(s){const r=R(),id=s.id,f=fid();
   else g+=coPaper(640,BY-6-80,26,80,0)+tweezArt(700,BY-20,30,'');
   return g}
  if(id==='burnA'){const ids=['la','ca','wa'],k=seqK('burnA',ids),fi=ids.indexOf(f);
-  if(k<1&&fi<0)return g+candleArt(CX6,BY,{h:CH4,small:1})+box6(380,'',1)+lighterArt(520,BY-14,0,0);
-  if(fi===0)return g+candleArt(CX6,BY,{h:CH4,small:1,lit:1,litAnim:.8})+box6(380,'',1)+'<g'+an('lb-a-slide',0,'--dx:120px')+'>'+lighterArt(CX6+118,ct-12,-12,1)+'</g>';
-  if(fi===1)return g+candleArt(CX6,BY,{h:CH4,small:1,lit:1})+box6(0,an('lb-a-slide',0,'--dx:380px'),1);
+  if(k<1&&fi<0)return g+candleArt(CX6,BY,{h:CH4,small:1})+box6(300,'',1)+lighterArt(520,BY-14,0,0);
+  if(fi===0)return g+candleArt(CX6,BY,{h:CH4,small:1,lit:1,litAnim:.8})+box6(300,'',1)+'<g'+an('lb-a-slide',0,'--dx:120px')+'>'+lighterArt(CX6+118,ct-12,-12,1)+'</g>';
+  if(fi===1)return g+candleArt(CX6,BY,{h:CH4,small:1,lit:1})+box6(0,an('lb-a-slide',0,'--dx:300px'),1);
   if(fi===2)return g+candleArt(CX6,BY,{h:CH4,small:1})+'<g'+an('lb-a-out',1.4,'animation-duration:.8s')+'>'+flameArt(CX6,ct-8,1,'c')+'</g>'+smokeArt(CX6,ct-14,1.9)+dropletsArt(1)+coPaper(PX6,BX6.y+54,26,80,1,1.2,1)+box6(0,'',0);
   if(k>=3)return g+candleArt(CX6,BY,{h:CH4,small:1,out:1})+dropletsArt(0)+box6(0,'',2);
   if(k>=2)return g+candleArt(CX6,BY,{h:CH4,small:1,lit:1})+box6(0,'',1);
-  return g+candleArt(CX6,BY,{h:CH4,small:1,lit:1})+box6(380,'',1)}
+  return g+candleArt(CX6,BY,{h:CH4,small:1,lit:1})+box6(300,'',1)}
  const JX=440,CX=320;
  if(id==='lime'){const on=has('lime'),a=f==='lime';if(!on)return g+candleArt(CX,BY,{h:CH4,small:1})+limeJar(JX,BY,{lid:'on'})+lighterArt(640,BY-14,0,0);
   return g+candleArt(CX,BY,{h:CH4,small:1,lit:1,litAnim:a?.8:0})+limeJar(JX,BY,{lid:'side',lidAnim:a?1:0})+(a?'<g'+an('lb-a-slide',0,'--dx:140px')+'>'+lighterArt(CX+118,ct-12,-12,1)+'</g>':'')}
  if(id==='burnB'){const ids=['cb','cl','sh'],k=seqK('burnB',ids),fi=ids.indexOf(f);
   if(k<1&&fi<0)return g+candleArt(CX,BY,{h:CH4,small:1,lit:1})+limeJar(JX,BY,{lid:'side'});
-  if(fi===0)return g+candleArt(CX,BY,{h:CH4,small:1})+'<g'+an('lb-a-out',2.2,'animation-duration:.8s')+'>'+flameArt(CX,ct-8,1,'c')+'</g>'+smokeArt(CX,ct-14,2.6)+limeJar(JX,BY,{lid:'side'})+box6(0,an('lb-a-slide',0,'--dx:380px'),0);
+  if(fi===0)return g+candleArt(CX,BY,{h:CH4,small:1})+'<g'+an('lb-a-out',2.2,'animation-duration:.8s')+'>'+flameArt(CX,ct-8,1,'c')+'</g>'+smokeArt(CX,ct-14,2.6)+limeJar(JX,BY,{lid:'side'})+box6(0,an('lb-a-slide',0,'--dx:300px'),0);
   if(fi===1)return g+candleArt(CX,BY,{h:CH4,small:1,out:1})+limeJar(JX,BY,{lid:'on',lidAnim:1})+'<g'+an('lb-a-out',0,'animation-duration:.9s')+'>'+box6(0,'',0)+'</g>';
   if(fi===2)return g+candleArt(CX,BY,{h:CH4,small:1})+limeJar(JX,BY,{lid:'on',shake:1,cloud:.85,cloudAnim:.9});
   if(k>=3)return g+candleArt(CX,BY,{h:CH4,small:1})+limeJar(JX,BY,{lid:'on',cloud:.85});
@@ -214,8 +213,12 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  const T=(g,l,vb)=>svg(g+lensOf(s,g),l||s.t,vb);
  if(id==='tools'){if(!(r.done.tools||fxOn('tools')))return T(bg({})+boxArt(480),'준비물 상자');return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '),v.tools.length>8?'0 10 960 600':null)}
  const F={1:e1Scene,2:fireScene,3:fireScene,4:e4Scene,5:e5Scene,6:e6Scene}[no];
- let vb={1:'80 120 800 390',2:'100 90 760 420',3:'100 90 760 420',4:'110 120 850 390',5:'170 140 620 350',6:'150 110 790 400'}[no];
+ let vb={1:'80 120 800 390',2:'150 100 640 380',3:'170 140 600 330',4:'170 120 720 360',5:'170 140 620 350',6:'200 130 640 340'}[no];
  if(no===1&&id==='more')vb='180 250 600 260';
+ if(no===1&&/^(balA|balB|cover|pred)$/.test(id))vb='110 210 740 300';
+ if((no===2||no===3)&&id==='exit')vb='100 90 760 420';
+ if(no===6&&/^(preCo|preLi)$/.test(id))vb='290 110 380 380';
+ if(no===4&&id==='mix')vb='170 120 760 360';
  return T(F(s),s.t,id==='gear'?'160 40 640 420':vb)}
 
 /* ───────── 오른쪽 카드 ───────── */
@@ -277,7 +280,6 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
 /* ───────── 할 일 카드: ① 해 보기 → ② 살펴보기 → ③ 기록하기 ───────── */
 function acted(s){const r=R();return !!(r.act&&r.act[s.id])||(s.k==='scene'&&!!r.done[s.id])}
 function looked(s){if(s.k==='scene')return !!R().done[s.id];if(s.k==='meas')return s.rows.every(rowReady);if(s.k==='more')return !!R().seen.mm;return true}
-function lbl(a){const x=actsOf(curStep()).find(b=>b.id===a);return x?x.label:''}
 function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
  if(s.k==='more'){const Q=MOREQ[V().no];if(r.more.a===Q[2])return '다 했어요. 이어서 가요.';if(UI.fx)return s.look;if(r.seen.mm)return '③ 알맞은 것을 골라요.';const a=actsOf(s)[0];return '① '+lj(a.label)+' 눌러요.'}
  if(s.k==='scene'){if(UI.fx)return s.look;if(r.done[id])return '잘했어요. 이어서 가요.';return s.opts?s.ask:'① '+jo(s.act,'을','를')+' 눌러요.'}
@@ -369,7 +371,7 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
  return h}
 const LABNAME='burn';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
- if(no===1){if(ok('bl')&&ok('fl'))S(bg({})+e1Set({inf:1,foam:1,settle:1}),'80 120 800 390','두 고무풍선을 세우고 잠시 뒤')}
+ if(no===1){if(ok('bl')&&ok('fl'))S(bg({})+e1Set({inf:1,foam:1,settle:1}),'230 130 500 360','두 고무풍선을 세우고 잠시 뒤')}
  if(no===2||no===3){if(ok(no===2?'cLook':'aLook'))S(bg({})+fireObj(no,{lit:1}),'210 140 340 320','불꽃');if(ok(no===2?'cWarm':'aWarm'))S(bg({})+fireObj(no,{lit:1})+tPaper(FXC+24,fireTopY(no,0)-24,300,1,0),'210 140 600 320','열 변색 종이를 댄 모습');if(ok(no===2?'cTime':'aTime'))S(bg({})+fireObj(no,{lit:1,t:1}),'210 140 340 320','시간이 지난 뒤')}
  if(no===4){if(ok('ord'))S(bg({})+e4Base({bk:1,ml:60,ki:1,box:1,out:[1,1]}),'140 150 680 330','두 촛불이 모두 꺼진 뒤')}
  if(no===5){if(ok('first'))S(bg({})+e5Set({put:1,lit:1,heat:1,hs:1,ws:1}),'170 160 620 330','가운데를 가열한 뒤');if(ok('wood'))S(bg({})+e5Set({put:1,lit:1,heat:1,hs:2,ws:2}),'170 160 620 330','더 오래 가열한 뒤')}
@@ -462,7 +464,6 @@ function footHTML(v,r,s){const N=v.steps.length;
  return h+'<button type="button" class="lb-btn lb-pri'+(priOn&&priAct==='next'?' lb-go':'')+'" data-act="'+priAct+'" data-f="pri"'+(priOn?'':' disabled')+'>'+esc(pri)+ic('right')+'</button>'}
 
 /* ───────── 오늘의 실험: 탐구 문제 · 이렇게 해요 · 이것을 살펴봐요 (결과는 보여 주지 않음) ───────── */
-function eyeArt(x,y){return '<g transform="translate('+x+' '+y+')"><path d="M-26 0 Q0 -20 26 0 Q0 20 -26 0Z" fill="#FFFFFF" stroke="#2A3342" stroke-width="3"/><circle r="8" fill="#2A3342"/></g>'}
 function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0 960 540';
  if(no===1){if(k==='balA'){g+=fillBalloon(480,BY,0).replace(/ class="lb-a[^"]*" style="[^"]*"/g,'');vb='380 260 200 200'}
   if(k==='balB'){g+=fillBalloon(480,BY,1).replace(/ class="lb-a[^"]*" style="[^"]*"/g,'');vb='380 260 200 200'}
@@ -479,7 +480,7 @@ function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0
   if(k==='cover'){g+=e4Base({lit:1,bk:1,ml:60,box:1,nolab:1});vb='150 180 660 280'}
   if(k==='watch'){g+=e4Base({lit:1,bk:1,ml:60,box:1,nolab:1})+eyeLook(480,170);vb='150 130 660 330'}}
  if(no===5){if(k==='put'){g+=plateSet(0)+tweezArt(HX5+30,PY5-10,20,'')+matchHead(HX5,PY5,0);vb='250 180 460 270'}
-  if(k==='same'){g+=plateSet(0)+matchHead(HX5,PY5,0)+matchWood(WX5,PY5,0)+'<path d="M'+(PL.cx-6)+' '+(PY5-16)+' H'+(HX5+12)+' M'+(PL.cx+6)+' '+(PY5-16)+' H'+(WX5-24)+'" stroke="var(--lb-sci)" stroke-width="4" stroke-dasharray="8 6"/><circle cx="'+PL.cx+'" cy="'+(PY5-16)+'" r="6" fill="var(--lb-sci)"/>';vb='250 180 460 270'}
+  if(k==='same'){g+=plateSet(0)+matchHead(HX5,PY5,0)+matchWood(WX5,PY5,0)+'<path d="M'+(PL.cx-6)+' '+(PY5-16)+' H'+(HX5+16)+' M'+(PL.cx+6)+' '+(PY5-16)+' H'+(WX5-42)+'" stroke="var(--lb-sci)" stroke-width="4" stroke-dasharray="8 6"/><circle cx="'+PL.cx+'" cy="'+(PY5-16)+'" r="6" fill="var(--lb-sci)"/>';vb='250 180 460 270'}
   if(k==='heat'){g+=e5Set({put:1,lit:1,nolab:1});vb='250 180 460 270'}
   if(k==='watch'){g+=e5Set({put:1,lit:1,nolab:1})+eyeLook(PL.cx,170);vb='250 130 460 320'}}
  if(no===6){if(k==='paper'){g+=box6(0,'',0)+coPaper(PX6,BX6.y+54,26,80,0,0,1)+tweezArt(PX6+40,BX6.y+110,20,'');vb='230 180 340 280'}
@@ -505,7 +506,7 @@ function homeArt(no){NAR=true;LEG=[];let g=bg({}),vb='120 70 720 420';
  if(no===1){g+=flaskSet(FX1[0],BY,0,{bal:'droop'})+flaskSet(FX1[1],BY,1,{bal:'droop'});vb='200 220 560 240'}
  if(no===2){g+=candleArt(FXC,BY,{h:150})+lighterArt(560,BY-14,0,0);vb='250 200 420 260'}
  if(no===3){g+=lampArt(FXC,BY,{cap:'side'})+lighterArt(600,BY-14,0,0);vb='250 260 450 200'}
- if(no===4){g+=candleArt(C4[0],BY,{h:CH4,small:1})+candleArt(C4[1],BY,{h:CH4,small:1})+bubBeaker(BK4,BY,{})+BOX4.map(([x,y])=>acrylBox(x,y,240,240)).join('');vb='150 170 660 290'}
+ if(no===4){g+=candleArt(C4[0],BY,{h:CH4,small:1})+candleArt(C4[1],BY,{h:CH4,small:1})+bubBeaker(BK4,BY,{})+BOX4.map(([x,y])=>acrylBox(x,y,230,230)).join('');vb='170 190 540 270'}
  if(no===5){g+=e5Set({});vb='240 200 480 260'}
  if(no===6){g+=coPaper(380,BY-130,30,90,0)+limeJar(560,BY,{lid:'on'});vb='300 250 360 210'}
  const s=svg(g,'실험 '+no+' 처음 모습',vb);NAR=false;LEG=[];return s}

@@ -56,6 +56,10 @@ const noSh=s=>s.replace(/<ellipse[^>]*\/>/,'');
 /* 지금 움직이는 행동의 진행(0~1) — requestAnimationFrame으로 그림을 다시 그림 */
 function fxP(){if(!UI.fx||!UI.fx.ms)return 1;return Math.max(0,Math.min(1,(performance.now()-UI.fx.t0)/(RM?120:UI.fx.ms)))}
 
+/* 좁은 화면: 두 그림(위에서 본 모습 · 보이는 모습)을 위아래로 쌓아 크게 보여 줌 */
+function stackLR(Lp,Rp,dx,dy){return NAR?Lp+'<g transform="translate('+dx+' '+dy+')">'+Rp+'</g>':Lp+Rp}
+const STACK={2:{turn:'10 30 460 890',more:'10 30 460 890'},3:{turn:'0 30 580 840'},4:{move:'10 30 500 800'}};
+function stacked(){const v=V(),s=curStep();return NAR&&STACK[v.no]&&STACK[v.no][s.id]}
 /* ───── 실험 1: 하루 동안 태양 관찰 ───── */
 const SUNIDS=['t0','t1','t2','t3','t4'];
 function dateTxt(){return '관찰한 날: '+SD.m+'월 '+SD.d+'일'+(SD.today?'(오늘)':'')+' · 학교 운동장'}
@@ -89,9 +93,9 @@ function e2Scene(s){const r=R(),id=s.id,f=fid(),p=fxP(),st=r.st;
   g+=kidTop(RP.x+170*(1-t),RP.y+40*(1-t),90,{notes:['동','서']});return g}
  if(id==='lamp'){const on=f==='lamp'?Math.min(1,p*1.4):has('lamp')?1:0;let g=roleTop(90,{lamp:on});if(f==='lamp'&&p<.6)g+=hand(RP.lx+70,RP.ly+20,-160,1,true);return g}
  if(id==='pred')return roleTop(90,{})+qmark(380,160);
- if(id==='turn'){const th=turnTh(),n=st.tn||0;return roleTop(th,{dir:1})+eyeView(th,{trail:trailOf(n,1)})+mini(240,514,'위에서 내려다본 모습',17)+mini(710,124,'지구 역할의 눈에 보이는 모습',18)+mini(710,460,Math.min(360,n*45+(f==='tn'?Math.round(45*p):0))+' / 360°',20)}
+ if(id==='turn'){const th=turnTh(),n=st.tn||0;return stackLR(roleTop(th,{dir:1})+mini(240,514,'위에서 내려다본 모습',17),eyeView(th,{trail:trailOf(n,1)})+mini(710,124,'지구 역할의 눈에 보이는 모습',18)+mini(710,460,Math.min(360,n*45+(f==='tn'?Math.round(45*p):0))+' / 360°',20),-470,440)}
  if(id==='more'){const run=f==='rv',dn=!!UI.mq.both||r.more.a!=null,a=run?360*p:dn?360:0,th=90+a,n=Math.floor(a/45+1e-6);
-  return roleTop(th,{dir:-1})+eyeView(th,{trail:a>0?trailOf(n,-1):[]})+mini(710,124,'반대로 돌 때 보이는 모습',18)+mini(710,460,Math.round(a)+' / 360°',20)}
+  return stackLR(roleTop(th,{dir:-1}),eyeView(th,{trail:a>0?trailOf(n,-1):[]})+mini(710,124,'반대로 돌 때 보이는 모습',18)+mini(710,460,Math.round(a)+' / 360°',20),-470,440)}
  return roleTop(90,{})}
 
 /* ───── 실험 3: 지구본과 카메라 ───── */
@@ -106,7 +110,7 @@ function e3Scene(s){const r=R(),id=s.id,f=fid(),p=fxP(),st=r.st,idx=k=>idxOf(k)<
  const lit=!!st.lp||f==='lp';
  if(id==='pred')return camTop(0,false,{dim:1})+qmark(400,90);
  if(id==='turn'){const ph=e3Ph(),n=st.gn||0,d=nrm(180-ph);
-  return camTop(ph,lit,{dim:1})+mini(290,30+44,'북극 위에서 내려다본 지구본',17)+phoneFrame(610,150,320,210,camScreen(610,150,320,210,d,lit))+mini(770,110,'카메라 화면(스마트 기기)',18)+mini(770,410,Math.min(360,Math.round(n*45+(f==='gt'?45*p:0)))+' / 360°',20)}
+  return stackLR(camTop(ph,lit,{dim:1})+mini(290,30+44,'북극 위에서 내려다본 지구본',17),phoneFrame(610,150,320,210,camScreen(610,150,320,210,d,lit))+mini(770,110,'카메라 화면(스마트 기기)',18)+mini(770,410,Math.min(360,Math.round(n*45+(f==='gt'?45*p:0)))+' / 360°',20),-480,430)}
  return camTop(0,false,{dim:1})}
 
 /* ───── 실험 4: 교실에서 지구본 옮기기 ───── */
@@ -119,7 +123,7 @@ function e4Scene(s){const r=R(),id=s.id,f=fid(),p=fxP();
  if(id==='move'){const k=seqK('mv',MVIDS),fi=MVIDS.indexOf(f);let a=null,see=null;
   if(fi>=0){a=fi===0?90:90+90*(fi-1)+90*p;if(fi===0||p>.85)see=fi}else if(k>0){a=90*k;see=k-1}
   const done=[];for(let i=0;i<k;i++)if(i!==fi)done.push(i);
-  return roomTop({arc:1,at:a,kid:1,done})+eye4(see)+mini(680,124,'관측자 모형의 눈에 보이는 모습',18)}
+  return stackLR(roomTop({arc:1,at:a,kid:1,done}),eye4(see)+mini(728,124,'관측자 모형의 눈에 보이는 모습',18),-466,400)}
  return roomTop({arc:1})}
 
 function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
@@ -132,6 +136,7 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  if(no===2&&(id==='note'||id==='hand'))vb='100 30 760 480';
  if(no===2&&(id==='place'||id==='lamp'||id==='pred'))vb='0 30 480 510';
  if(no===4&&(id==='spot'||id==='stand'||id==='pred'))vb='0 30 530 490';
+ if(stacked())vb=STACK[no][id];
  return TT(F(s),s.t,vb)}
 /* ───────── 오른쪽 카드 ───────── */
 function cardHead(t,s){return '<div class="lb-card-h"><span class="lb-clip">'+ic('clip')+'</span><div><b>'+t+'</b><span>'+s+'</span></div></div>'}
@@ -274,7 +279,7 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
  h+='<section class="lb-sh-sec lb-sh-po"><h3><i></i>실험한 차례</h3><div class="lb-sh-steps">'+done.map((s,i)=>'<div><b>'+(i+1)+'.</b> '+esc(s.t)+'</div>').join('')+'</div></section>';
  h+='<section class="lb-sh-sec"><h3><i></i>내 예상</h3><p>'+v.pred.map((q,j)=>(v.pred.length>1?esc(q.q)+' ':'')+(r.pred[j]!=null?esc(q.o[r.pred[j]]):'(고르지 않았어요)')).join('<br>')+(r.why?'<br>까닭: '+esc(r.why):'')+'</p></section>';
  h+='</div><div class="lb-sh-col"><section class="lb-sh-sec"><h3><i></i>관찰 기록</h3>'+sheetTable(v,r)+barChart(v,r)+'</section>';
- /* 실험 1은 관찰 기록 줄이 일곱이라 결론을 아래 한 줄 전체로(오른쪽 칸만 길어져 2쪽이 되던 것, 독립 검토 고침) */
+ /* 실험 1은 결론 문장이 길어 아래 한 줄 전체로 */
  const cs='<section class="lb-sh-sec'+(v.no===1?' lb-sh-wide':'')+'"><h3><i></i>내 결론</h3><div class="lb-sh-box"><p class="lb-sh-concl">'+frameHTML(v,r.bl,'sheet')+'</p>'+(r.cmp?'<p class="lb-sh-book">교과서 결론: '+esc(v.book)+'</p>':'')+'</div></section>';
  h+=(v.no===1?'':cs)+'</div></div>'+(v.no===1?cs:'')+picsHTML(snapList(v,r))+'<section class="lb-sh-sec lb-sh-po lb-sh-fill"><h3><i></i>새로 알게 된 것 · 더 알고 싶은 것</h3><div class="lb-sh-lines">'+'<div class="lb-ln"></div>'.repeat(9)+'</div></section>';
  h+='<footer class="lb-sh-f"><span>아주 단순하게 만든 모형의 결과예요. 실제 교실에서는 결과가 조금 다를 수 있어요.</span><span>만든 사람: 초등교사 홍지희</span></footer></div></article>';
@@ -337,7 +342,7 @@ function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.76);fitBo
 function renderScene(){const r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NAR=narrow();LEG=[];
  let over='';
  if(UI.toast)over+='<div class="lb-toast '+(UI.toastK==='info'?'lb-toast3':'lb-toast2')+'" role="status">'+esc(UI.toast)+'</div>';
- const sv=s.k==='concl'?recPanel():sceneSVG();NAR=false;set(el,over+sv);
+ const sv=s.k==='concl'?recPanel():sceneSVG();el.classList.toggle('lb-tall',!!stacked());NAR=false;set(el,over+sv);
  const lg=$('#lbLeg');if(lg)set(lg,LEG.length?LEG.map(x=>'<span class="lb-lg">'+esc(x[1])+'</span>').join(''):'')}
 function notesHTML(s){if(!s.why&&!s.care)return '';const hideWhy=s.k==='more'&&R().more.a==null;let h=hideWhy?'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.pre||'먼저 해 보고 골라요.')+'</div></div>':'<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
  if(s.know)h+='<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.know)+'</div></div>';
@@ -461,7 +466,7 @@ function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
    if(id==='lp'&&!st.lp)fx('lp',900,()=>{st.lp=1});
    if(id==='gt'&&st.lp){const n=st.gn||0;if(n<8)fx('gt',900,()=>{st.gn=n+1;if(st.gn>=8)r.seen.gt=1})}
    return}}
-/* 숫자 적기: 화면(눈금·초시계·내 계산)과 같은지만 알려 줌. 같은 값으로 다시 누르면 세지 않음 */
+/* 같은 고르기로 다시 누르면 세지 않음 */
 function tryKey(k,val){const r=R();if(r.last[k]===val)return -1;r.last[k]=val;r.tries[k]=(r.tries[k]||0)+1;return r.tries[k]}
 function rowRec(row){const r=R(),R0=ROWS[row],D=UI.draft[row]||{};let ok,wrong=[],key;
  if(R0.t==='note'){if(!rowReady(row))return;r.rec[row]={ok:1,t:R0.f.map((f,j)=>String((D.t||[])[j]||'').trim())};UI.fb={};UI.fb[row]=[1,'살펴본 것을 기록했어요.'];save();render();const p=$('#lbFoot [data-act="next"]:not(:disabled)');if(p&&isDone(R().step))p.focus({preventScroll:true});return}

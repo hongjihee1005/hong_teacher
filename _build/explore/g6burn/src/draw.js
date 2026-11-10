@@ -15,23 +15,15 @@ function tag(x,y,t,sz){sz=sz||20;if(NAR){LEG.push([null,t]);return ''}const w=t.
 function mini(x,y,t,sz){sz=sz||20;const w=t.length*sz*.95+16;return '<g><rect x="'+(x-w/2)+'" y="'+(y-sz*.95)+'" width="'+w+'" height="'+(sz*1.4)+'" rx="'+(sz*.45)+'" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="1.5"/><text x="'+x+'" y="'+(y+sz*.28)+'" text-anchor="middle" font-size="'+sz+'" font-weight="800" fill="var(--w-labeltx)">'+t+'</text></g>'}
 function qmark(x,y,col){return '<g'+an('lb-a-pop',.2)+'><circle cx="'+x+'" cy="'+y+'" r="28" fill="var(--w-label)" stroke="'+(col||'var(--lb-sci)')+'" stroke-width="3" stroke-dasharray="6 5"/><text x="'+x+'" y="'+(y+12)+'" text-anchor="middle" font-size="34" font-weight="800" fill="'+(col||'var(--lb-sci-ink)')+'">?</text></g>'}
 function hand(x,y,rot,s,glove){const sk=glove?'#FFFFFF':'#F2C6A0',ss=glove?'#9AA6B2':'#B9875F';return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+') scale('+(s||1)+')"><path d="M-30 -14 Q-8 -24 18 -18 L40 -16 Q48 -15 47 -9 Q46 -4 38 -4 L22 -4 Q30 2 26 9 Q22 15 10 13 L-30 14Z" fill="'+sk+'" stroke="'+ss+'" stroke-width="2.2" stroke-linejoin="round"/><path d="M-30 -14 L-62 -14 L-62 14 L-30 14Z" fill="#5C8FCB" stroke="#3D6A9C" stroke-width="2"/></g>'}
-function arrow(x1,y1,x2,y2,col,w){col=col||'var(--lb-sci)';w=w||7;const a=Math.atan2(y2-y1,x2-x1),L=18;
- return '<g><path d="M'+x1+' '+y1+' L'+x2+' '+y2+'" stroke="'+col+'" stroke-width="'+w+'" stroke-linecap="round"/><path d="M'+(x2-L*Math.cos(a-.5)).toFixed(1)+' '+(y2-L*Math.sin(a-.5)).toFixed(1)+' L'+x2+' '+y2+' L'+(x2-L*Math.cos(a+.5)).toFixed(1)+' '+(y2-L*Math.sin(a+.5)).toFixed(1)+'" stroke="'+col+'" stroke-width="'+w+'" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>'}
 function shadow(cx,y,rx){return '<ellipse cx="'+cx+'" cy="'+y+'" rx="'+rx+'" ry="7" fill="var(--w-shadow)"/>'}
-function bgTop(){let g='<rect x="-3000" y="-3000" width="7000" height="7000" fill="var(--w-top)"/>';
- for(let i=0;i<14;i++)g+='<path d="M-3000 '+(-40+i*46)+' Q480 '+(-30+i*46+(i%2?10:-10))+' 4000 '+(-40+i*46)+'" stroke="var(--w-grain)" stroke-width="1.4" fill="none" opacity=".28"/>';
- return g}
 function rnd(i,s){const h=Math.sin(i*12.9898+(s||0)*78.233)*43758.5453;return h-Math.floor(h)}
 function clockArt(x,y,t,s){s=s||1;return '<g transform="translate('+x+' '+y+') scale('+s+')"><circle r="34" fill="#FFFFFF" stroke="#2A3342" stroke-width="5"/><path d="M0 0 V-22 M0 0 L15 8" stroke="#2A3342" stroke-width="4" stroke-linecap="round"/><circle r="3.5" fill="#2A3342"/>'+(t?'</g>'+mini(x,y+58*s,t,18):'</g>')}
-function stopwatch(x,y,txt,on){return '<g transform="translate('+x+' '+y+')"><rect x="-8" y="-82" width="16" height="16" rx="3" fill="#7F8C99"/><circle r="70" fill="#F4F6F8" stroke="#3B4650" stroke-width="7"/><rect x="-54" y="-24" width="108" height="48" rx="8" fill="#16241B"/>'+
- '<text x="0" y="14" text-anchor="middle" font-size="32" font-weight="800" font-family="ui-monospace,Menlo,Consolas,monospace" fill="'+(on?'#8EF0B2':'#5E8A6E')+'">'+txt+'</text></g>'}
 /* ───────── 실험복·보안경·장갑 ───────── */
 function coat(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><path d="M-46 -64 L-18 -72 L0 -40 L18 -72 L46 -64 L62 30 L40 34 L36 -10 L34 72 H-34 L-36 -10 L-40 34 L-62 30Z" fill="#FFFFFF" stroke="#9AA6B2" stroke-width="3" stroke-linejoin="round"/><path d="M0 -40 V72" stroke="#9AA6B2" stroke-width="2"/><circle cx="-7" cy="-6" r="3" fill="#9AA6B2"/><circle cx="-7" cy="22" r="3" fill="#9AA6B2"/><rect x="12" y="10" width="16" height="12" rx="2" fill="none" stroke="#9AA6B2" stroke-width="2"/></g>'}
 function goggles(x,y,s){return '<g transform="translate('+x+' '+y+') scale('+(s||1)+')"><rect x="-58" y="-18" width="52" height="36" rx="15" fill="rgba(200,230,245,.6)" stroke="#2F68B0" stroke-width="4"/><rect x="6" y="-18" width="52" height="36" rx="15" fill="rgba(200,230,245,.6)" stroke="#2F68B0" stroke-width="4"/><path d="M-6 -2 h12" stroke="#2F68B0" stroke-width="5"/></g>'}
 function gearArt(on,anim,cotton){const gl=cotton?'#F4F1EA':'#FFFFFF';
  if(!on)return coat(300,250,1.4)+goggles(520,200,1.1)+'<g transform="translate(700 270) scale(1.3)">'+hand(-14,-10,-60,.75,1).replace(/#FFFFFF/g,gl)+hand(22,8,-60,.75,1).replace(/#FFFFFF/g,gl)+'</g>'+qmark(480,90);
  return '<g'+(anim?an('lb-a-up',0,'--from:100px'):'')+'><circle cx="480" cy="116" r="38" fill="#F2C6A0" stroke="#B9875F" stroke-width="3"/>'+goggles(480,108,.82)+coat(480,262,1.75)+hand(330,240,-70,1.4,1).replace(/#FFFFFF/g,gl)+hand(630,240,-110,1.4,1).replace(/#FFFFFF/g,gl)+'</g>'}
-function itemArtAt(k,x,y){return '<g transform="translate('+x+' '+y+') scale(1.4)">'+itemArt(k)+'</g>'}
 function toolsScene(list,anim){let b='';if(NAR)list.forEach(it=>LEG.push([null,it[1]]));const n=list.length,cols=n<=4?n:n<=6?3:4,rows=Math.ceil(n/cols),cw=200,ch=176,gx=18,gy=18;
  const W=cols*cw+(cols-1)*gx,H=rows*ch+(rows-1)*gy,x0=480-W/2,y0=Math.max(30,250-H/2);
  list.forEach((it,i)=>{const c=i%cols,r=Math.floor(i/cols),x=x0+c*(cw+gx),y=y0+r*(ch+gy),cx=x+cw/2;
@@ -88,6 +80,8 @@ function beakerArt(cx,base,o){o=o||{};const D=bkDim(o),w=D.w,h=D.h,top=base-h;le
 /* 흰 종이(비커 뒤) */
 
 /* ───────── 물질의 연소: 실험 기구 그림(모두 직접 그린 SVG) ───────── */
+/* 짧은 이름표(그림 안) */
+function wlab(x,y,t,sz){return mini(x,y,t,sz||15)}
 const TR=(x,y,s,inner,extra)=>'<g transform="translate('+x+' '+y+')'+(s&&s!==1?' scale('+s+')':'')+'"'+(extra||'')+'>'+inner+'</g>';
 /* 불꽃. kind 'c' 양초(노란색·붉은색) · 'a' 알코올(푸른색, 끝이 붉은색) · y = 불꽃 아래 끝 */
 function flameArt(x,y,s,kind){s=s||1;const a=kind==='a';let g='<g class="lb-flk">';
@@ -104,7 +98,9 @@ function candleArt(cx,base,o){o=o||{};const h=o.h||170,w=(o.w||32)/2,small=o.sma
  g+='<rect x="'+(cx-w)+'" y="'+top+'" width="'+2*w+'" height="'+h+'" rx="3" fill="#FBF3E2" stroke="#D9C49C" stroke-width="2.5"/><path d="M'+(cx-w+6)+' '+(top+8)+' V'+(bot-6)+'" stroke="#FFFFFF" stroke-width="4" opacity=".7"/>';
  const d=o.drip||0;
  if(d>0){g+='<ellipse cx="'+cx+'" cy="'+(top+3)+'" rx="'+(w-3)+'" ry="4" fill="#FFF8DE" stroke="#E5D4A6" stroke-width="1.5"/>';
-  g+='<path d="M'+(cx-w)+' '+(top+2)+' q-5 '+(18+d*44).toFixed(0)+' 2 '+(26+d*60).toFixed(0)+' q6 -8 4 -'+(26+d*58).toFixed(0)+'z" fill="#FBF3E2" stroke="#D9C49C" stroke-width="2"/><path d="M'+(cx+w-2)+' '+(top+4)+' q6 '+(10+d*20).toFixed(0)+' 1 '+(16+d*28).toFixed(0)+'" stroke="#E5D4A6" stroke-width="5" fill="none" stroke-linecap="round"/>'}
+  const L1=(10+d*70).toFixed(0),L2=(6+d*34).toFixed(0);
+  g+='<path d="M'+(cx-w+3)+' '+(top+1)+' q-9 6 -8 '+L1+' q0 8 5 7 q4 -1 4 -8 V'+(top+4)+'z" fill="#F3E3BC" stroke="#C9AE74" stroke-width="2"/><path d="M'+(cx+w-3)+' '+(top+1)+' q8 4 7 '+L2+' q0 6 -4 6 q-4 0 -4 -6z" fill="#F3E3BC" stroke="#C9AE74" stroke-width="2"/>';
+  if(d>.5)g+='<ellipse cx="'+(cx-w-2)+'" cy="'+(bot-2)+'" rx="12" ry="4" fill="#F3E3BC" stroke="#C9AE74" stroke-width="1.5"/>'}
  g+='<path d="M'+cx+' '+top+' q1 -7 -1 -12" stroke="#2A2A2A" stroke-width="3" fill="none" stroke-linecap="round"/>';
  if(o.lit)g+=(o.litAnim?'<g'+an('lb-a-pop',o.litAnim===true?0:o.litAnim)+'>':'<g>')+flameArt(cx,top-8,o.fs||1,'c')+'</g>';
  if(o.out)g+=smokeArt(cx,top-14,o.outAnim);
@@ -135,8 +131,9 @@ function tPaper(x0,y,len,heat,anim){let g='<rect x="'+x0+'" y="'+(y-8)+'" width=
   g+=anim?'<g'+an('lb-a-fade',anim===true?0:anim,'animation-duration:1.4s')+'>'+h+'</g>':h;g+='<rect x="'+x0+'" y="'+(y-8)+'" width="'+len+'" height="16" rx="2" fill="none" stroke="#4E7F9E" stroke-width="1.5"/>'}
  return g+hand(x0+len+40,y+2,0,.8,1).replace(/#FFFFFF/g,'#F4F1EA')}
 /* 교실 전등을 끈 모습: 어둡게 덮고 불꽃 둘레만 밝게 */
-function darkArt(fx,fy,lit,anim){let g='<g'+(anim?an('lb-a-fade',0,'animation-duration:.9s'):'')+'><rect x="-3000" y="-3000" width="7000" height="7000" fill="#0B0F1A" opacity=".76"/>';
- if(lit)[[240,.06],[175,.08],[120,.11],[78,.15],[44,.2]].forEach(([r,o])=>{g+='<circle cx="'+fx+'" cy="'+fy+'" r="'+r+'" fill="#FFE7A0" opacity="'+o+'"/>'});
+let GLW=0;
+function darkArt(fx,fy,lit,anim){const id='lbGlw'+(++GLW);let g='<g'+(anim?an('lb-a-fade',0,'animation-duration:.9s'):'')+'><rect x="-3000" y="-3000" width="7000" height="7000" fill="#0B0F1A" opacity=".76"/>';
+ if(lit)g+='<radialGradient id="'+id+'"><stop offset="0" stop-color="#FFE7A0" stop-opacity=".62"/><stop offset=".45" stop-color="#FFE7A0" stop-opacity=".25"/><stop offset="1" stop-color="#FFE7A0" stop-opacity="0"/></radialGradient><circle cx="'+fx+'" cy="'+fy+'" r="250" fill="url(#'+id+')"/>';
  return g+'</g>'}
 /* 확인 표시 */
 function okMark(x,y,anim,d){return '<g'+(anim?an('lb-a-pop',d||0):'')+'><circle cx="'+x+'" cy="'+y+'" r="20" fill="var(--lb-sci)"/><path d="M'+(x-9)+' '+y+' l6 7 l12 -14" stroke="#FFFFFF" stroke-width="4" fill="none" stroke-linecap="round" stroke-linejoin="round"/></g>'}
@@ -197,12 +194,12 @@ function plateSet(heat,anim){const {cx,y,w}=PL;let g=shadow(cx,BY+3,180);
  g+='<rect x="'+(cx-w/2)+'" y="'+y+'" width="'+w+'" height="12" rx="3" fill="#8D969E" stroke="#5D666E" stroke-width="2"/>';
  if(heat){const hg='<ellipse cx="'+cx+'" cy="'+(y+6)+'" rx="'+(40+heat*120)+'" ry="7" fill="#D9543A" opacity="'+(.3+heat*.35).toFixed(2)+'"/><ellipse cx="'+cx+'" cy="'+(y+6)+'" rx="'+(20+heat*50)+'" ry="5" fill="#F07A3A" opacity="'+(.5+heat*.3).toFixed(2)+'"/>';g+=anim?'<g'+an('lb-a-fade',0,'animation-duration:2s')+'>'+hg+'</g>':hg}
  return g}
-function matchHead(x,y,st,anim){let g='<g>';const burnt=st>=2;
+function matchHead(x0,y0,st,anim){let g='<g transform="translate('+x0+' '+y0+') scale(1.6)">';const x=0,y=0;const burnt=st>=2;
  g+='<rect x="'+(x-4)+'" y="'+(y-8)+'" width="14" height="6" rx="2" fill="'+(burnt?'#3A2A20':'#E0C08A')+'" stroke="#9A7A4A" stroke-width="1.2"/><ellipse cx="'+(x-8)+'" cy="'+(y-6)+'" rx="10" ry="7" fill="'+(burnt?'#2E2626':'#C0392B')+'" stroke="'+(burnt?'#1A1414':'#7A1F18')+'" stroke-width="1.5"/>';
  if(st===1)g+='<g'+(anim?an('lb-a-pop',anim===true?0:anim):'')+'>'+flameArt(x-6,y-10,.62,'c')+'</g>';
  if(st===2)g+=smokeArt(x-6,y-14,anim);
  return g+'</g>'}
-function matchWood(x,y,st,anim){let g='<g>';const col=st===0?'#E0C08A':st===1?'#8A6A44':'#2E2626';
+function matchWood(x0,y0,st,anim){let g='<g transform="translate('+x0+' '+y0+') scale(1.6)">';const x=0,y=0;const col=st===0?'#E0C08A':st===1?'#8A6A44':'#2E2626';
  g+=(st&&anim?'<g'+an('lb-a-fade',anim===true?0:anim,'animation-duration:1.4s')+'>':'<g>')+'<rect x="'+(x-22)+'" y="'+(y-8)+'" width="44" height="7" rx="2" fill="'+col+'" stroke="#9A7A4A" stroke-width="1.2"/></g>';
  if(st===2)g+='<g'+(anim?an('lb-a-pop',(anim===true?0:anim)+.6):'')+'>'+flameArt(x,y-8,.5,'c')+'</g>';
  return g+'</g>'}
@@ -217,8 +214,8 @@ function dropletsArt(anim){const {x,y,w}=BX6;let g='<g'+(anim?an('lb-a-fade',ani
 /* 석회수가 든 유리병. lid: 'on'|'side'|'off' · cloud 0~1 · shake 흔드는 중 */
 function limeJar(cx,base,o){o=o||{};let g=shadow(cx,base+3,42);const top=base-110;
  let j='<path d="M'+(cx-36)+' '+(top+16)+' V'+(base-8)+' Q'+(cx-36)+' '+base+' '+(cx-28)+' '+base+' H'+(cx+28)+' Q'+(cx+36)+' '+base+' '+(cx+36)+' '+(base-8)+' V'+(top+16)+' Q'+(cx+36)+' '+(top+6)+' '+(cx+22)+' '+(top+4)+' H'+(cx-22)+' Q'+(cx-36)+' '+(top+6)+' '+(cx-36)+' '+(top+16)+'Z" fill="rgba(232,244,250,.5)"/>';
- j+='<rect x="'+(cx-33)+'" y="'+(base-62)+'" width="66" height="58" rx="6" fill="#EEF7FB" fill-opacity=".9"/><path d="M'+(cx-33)+' '+(base-62)+' h66" stroke="#B7D3E2" stroke-width="2"/>';
- if(o.cloud){const c='<rect x="'+(cx-33)+'" y="'+(base-62)+'" width="66" height="58" rx="6" fill="#E9E9E3" opacity="'+(o.cloud*.95).toFixed(2)+'"/>'+grains(cx-28,cx+28,base-58,base-8,'#FFFFFF','#DADAD2',14,cx+3,2.6);j+=o.cloudAnim?'<g'+an('lb-a-fade',o.cloudAnim,'animation-duration:1.6s')+'>'+c+'</g>':c}
+ j+='<rect x="'+(cx-33)+'" y="'+(base-62)+'" width="66" height="58" rx="6" fill="#DDF0FA" fill-opacity=".55"/><path d="M'+(cx-33)+' '+(base-62)+' h66" stroke="#B7D3E2" stroke-width="2"/>';
+ if(o.cloud){const c='<rect x="'+(cx-33)+'" y="'+(base-62)+'" width="66" height="58" rx="6" fill="#D9D8CE" opacity="'+(o.cloud).toFixed(2)+'"/>'+grains(cx-28,cx+28,base-58,base-8,'#FFFFFF','#B9B8AE',22,cx+3,3);j+=o.cloudAnim?'<g'+an('lb-a-fade',o.cloudAnim,'animation-duration:1.6s')+'>'+c+'</g>':c}
  if(o.inner)j+=o.inner;
  j+='<path d="M'+(cx-36)+' '+(top+16)+' V'+(base-8)+' Q'+(cx-36)+' '+base+' '+(cx-28)+' '+base+' H'+(cx+28)+' Q'+(cx+36)+' '+base+' '+(cx+36)+' '+(base-8)+' V'+(top+16)+' Q'+(cx+36)+' '+(top+6)+' '+(cx+22)+' '+(top+4)+' H'+(cx-22)+' Q'+(cx-36)+' '+(top+6)+' '+(cx-36)+' '+(top+16)+'Z" fill="none" stroke="var(--w-glass-s)" stroke-width="3.5"/><path d="M'+(cx-26)+' '+(top+20)+' V'+(base-14)+'" stroke="#FFFFFF" stroke-width="3.5" opacity=".55" stroke-linecap="round"/>';
  const lid='<rect x="'+(cx-26)+'" y="'+(top-10)+'" width="52" height="16" rx="4" fill="#7A8590" stroke="#4E5862" stroke-width="2"/>';

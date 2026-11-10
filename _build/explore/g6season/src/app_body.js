@@ -54,9 +54,9 @@ const sn=id=>!!R().seen[id]||fxOn(id);   /* 해 본 행동(또는 지금 하는 
 const fid=()=>UI.fx?UI.fx.id:null;
 const VB='0 0 960 540';
 /* 확대 렌즈 자리: 실제로 재는 곳(각도기의 빨간 점 · 막대 그림자)에만, 해 본 뒤에 */
-function e1Spot(i){const c=R().st['k'+(i+1)]||0;if(c<3||fid())return null;const G=e1Geo(i);return [G.dx,G.dy,22,3.2,560,170]}
-function e2Spot(){const c=R().st.dc||0;if(!c||fid())return null;const p=e2Dot(c-1);return [p[0],p[1],22,3,400,150]}
-function e3Spot(){const r=R(),s=curStep();if(!r.seen[s.id==='mS'?'onS':'onL']||fid())return null;return [E3G.sx+50,E3G.sy-24,44,1.9,790,330]}
+function e1Spot(i){const c=R().st['k'+(i+1)]||0;if(c<3||fid())return null;const G=e1Geo(i);return [G.dx,G.dy,36,2.4,590,170]}
+function e2Spot(){const c=R().st.dc||0;if(!c||fid())return null;const p=e2Dot(c-1);return [p[0],p[1],36,2.4,400,140]}
+function e3Spot(){const r=R(),s=curStep();if(!r.seen[s.id==='mS'?'onS':'onL']||fid())return null;return [E3G.sx+46,E3G.sy-34,52,1.7,800,340]}
 /* 기온 재는 곳(그늘·1.5 m) */
 function shadeArt(x,on,anim){let g='<rect x="'+(x-12)+'" y="250" width="24" height="190" fill="#8A6A3A"/><circle cx="'+x+'" cy="210" r="96" fill="#5E9C48"/><circle cx="'+(x-70)+'" cy="250" r="56" fill="#6DAE52"/><circle cx="'+(x+66)+'" cy="246" r="58" fill="#6DAE52"/>';
  g+='<ellipse cx="'+x+'" cy="446" rx="150" ry="16" fill="#2E3338" opacity=".25"/>';
@@ -74,21 +74,21 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,f=fid(),no=v.no,st=r.s
   if(id==='m1'||id==='m2'){const i=id==='m1'?0:1,c=st['k'+(i+1)]||0;return T(e1Scene(i,c,f==='a'+i?'a':f==='c'+i?'c':f==='p'+i?'p':''))}
   if(id==='more')return T(e1More(UI.mq.len||10,!!f))}
  if(no===2){
-  if(id==='place'){const on=has('place');return T(bgOut()+meterSide({x0:E2G.x0,y:E2G.y,h:E2G.h,A:ALT[0],L:SHD[0]*15,r:E2G.r,sun:on,anim:f==='place'?'sh':''}))}
-  if(id==='therm'){const on=has('therm');return T(bgOut()+meterSide({x0:E2G.x0,y:E2G.y,h:E2G.h,A:ALT[0],L:SHD[0]*15,r:E2G.r,sun:1})+shadeArt(720,on,f==='therm'))}
+  if(id==='place'){const on=has('place');return T(bgOut()+meterSide({x0:E2G.x0,y:E2G.y,h:E2G.h,pc:E2G.pc,A:ALT[0],L:SHD[0]*E2G.pc,r:E2G.r,sun:on,anim:f==='place'?'sh':''}))}
+  if(id==='therm'){const on=has('therm');return T(bgOut()+meterSide({x0:E2G.x0,y:E2G.y,h:E2G.h,pc:E2G.pc,A:ALT[0],L:SHD[0]*E2G.pc,r:E2G.r,sun:1})+shadeArt(720,on,f==='therm'))}
   if(s.k==='pred')return T(e2Scene(-1)+qmark(400,200));
   if(id==='day'){const c=st.dc||0,fi=f&&/^t\d$/.test(f)?+f[1]:-1;
    if(fi>=0)return T(e2Scene(fi,{anim:1})+mini(400,236,'재는 중',20));
    return T(e2Scene(c-1,{hl:!!UI.mq.hl}))}
   if(id==='graph'){if(r.seen.gph||f==='gph')return T(graphScene(f==='gph'),'내 기록으로 그린 꺾은선그래프 셋');return T(dayTable(),'내 기록표')}}
- if(no===3){
+ if(no===3){const T=(g,l)=>svg(g+lensOf(s,g),l||s.t,'130 40 830 470');
   if(id==='app')return T(e3Scene({num:has('app')?'0':null}));
   if(id==='stick')return T(e3Scene({num:'0',stick:has('stick'),torch:1,anim:f==='stick'?'stick':''}));
   if(s.k==='pred')return T(e3Scene({num:'0',stick:1,torch:1})+qmark(480,190));
   if(id==='mS'||id==='mL'){const k=id==='mS'?'S':'L',on=!!r.seen['on'+k]||f==='on'+k;
    if(!on)return T(e3Scene({num:'0',stick:1,torch:1}));return T(e3Scene({num:String(LUX[k]),stick:1,a:LANG[k],anim:f==='on'+k?'on':'',hl:!!UI.mq.hl}))}
-  if(id==='cmp'){if(r.seen.cmp3||f==='cmp3')return T('<g'+(f==='cmp3'?an('lb-a-fade',0):'')+'>'+e3Two()+'</g>','두 번 잰 모습');return T(e3Scene({num:'0',stick:1,torch:1}))}
-  if(id==='more')return T(raysScene(UI.mq.ang||30,!!f))}
+  if(id==='cmp'){if(r.seen.cmp3||f==='cmp3')return svg('<g'+(f==='cmp3'?an('lb-a-fade',0):'')+'>'+e3Two()+'</g>','두 번 잰 모습',VB);return T(e3Scene({num:'0',stick:1,torch:1}))}
+  if(id==='more')return svg(raysScene(UI.mq.ang||30,!!f),s.t,VB)}
  if(no===4){
   if(id==='plan')return T(e4Scene({})+orbitInset(16,14,-1,false));
   if(id==='attach')return T(e4Scene({meter:has('attach'),anim:f==='attach'?'meter':''}));
@@ -158,7 +158,7 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
   h+='<p class="lb-hint2">쓰고 싶은 것을 짧게 써요. 쓰지 않아도 돼요.</p>'+R0.f.map((f,j)=>'<label class="lb-nrow"><span>'+esc(f.l)+'</span><input class="lb-input lb-ninp" maxlength="20" autocomplete="off" data-f="nt'+row+j+'" data-nt="'+row+':'+j+'" placeholder="'+esc(R0.ph)+'" value="'+esc(D.t[j]||'')+'"'+(ok?'':' disabled')+'></label>').join('');
   h+=recB(ok)}
  if(R0.t==='num'&&Array.isArray(R0.v)){const op=numOpen(row);
-  h+='<div class="lb-trials lb-trials2">'+R0.lab.map((lb,j)=>'<label class="lb-trial'+(op?' lb-tcur':'')+(wr.indexOf(j)>=0?' lb-wrongn':'')+'"><span>'+esc(lb)+'</span><span><input class="lb-num lb-numw" inputmode="decimal" maxlength="5" autocomplete="off" data-f="in'+row+j+'" data-in="'+row+'#'+j+'" aria-label="'+esc(R0.n+' '+lb)+'" value="'+esc(UI.inp[row+'#'+j]||'')+'"'+(op?'':' disabled')+'> '+uOf(R0,j)+'</span></label>').join('')+'<button type="button" class="lb-mini" data-act="trial" data-row="'+row+'" data-f="tr'+row+'"'+(op?'':' disabled')+'>'+ic('check')+'적기</button></div>'}
+  h+='<div class="lb-trials lb-trials2">'+R0.lab.map((lb,j)=>'<label class="lb-trial'+(op?' lb-tcur':'')+(wr.indexOf(j)>=0?' lb-wrongn':'')+'"><span>'+esc(lb)+'</span><span><input class="lb-num lb-numw" inputmode="decimal" maxlength="5" autocomplete="off" data-f="in'+row+j+'" data-in="'+row+'#'+j+'" aria-label="'+esc(R0.n+' '+lb)+'" value="'+esc(UI.inp[row+'#'+j]||'')+'"'+(op?'':' disabled')+'><i class="lb-u">'+uOf(R0,j)+'</i></span></label>').join('')+'<button type="button" class="lb-mini" data-act="trial" data-row="'+row+'" data-f="tr'+row+'"'+(op?'':' disabled')+'>'+ic('check')+'적기</button></div>'}
  else if(R0.t==='num'){const op=numOpen(row);
   h+='<div class="lb-trials"><label class="lb-trial'+(op?' lb-tcur':'')+'"><span>'+esc(R0.lab||'숫자')+'</span><input class="lb-num lb-numw" inputmode="'+(R0.dec?'decimal':'numeric')+'" maxlength="6" autocomplete="off" data-f="in'+row+'" data-in="'+row+'" aria-label="'+esc(R0.n)+' 숫자" value="'+esc(UI.inp[row]||'')+'"'+(op?'':' disabled')+'><span>'+(R0.u||'')+'</span></label><button type="button" class="lb-mini" data-act="trial" data-row="'+row+'" data-f="tr'+row+'"'+(op?'':' disabled')+'>'+ic('check')+'적기</button></div>';
   }
@@ -274,7 +274,7 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
 const LABNAME='season';
 function snapsOf(v,r){const L=[],S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
  if(v.no===1){if(ok('a1'))S(e1Scene(0,3,''),'0 20 680 440',M1[0].when);if(ok('a2'))S(e1Scene(1,3,''),'0 20 680 440',M1[1].when)}
- if(v.no===2&&DAYS.some((t,k)=>ok('d'+k)))S(graphScene(false),'40 10 880 520','내 기록으로 그린 꺾은선그래프');
+ if(v.no===2&&DAYS.some((t,k)=>ok('d'+k)))S(graphWide(),'0 0 960 250','내 기록으로 그린 꺾은선그래프(태양 고도 · 그림자 길이 · 기온)');
  if(v.no===3&&ok('lS')&&ok('lL'))S(e3Two(),'20 30 920 350','그림자가 짧을 때와 길 때');
  if(v.no===4){const P=k=>bg({})+lampArt(E4G.lx,E4G.ly,1)+globeSide(E4G.gx,E4G.gy,E4G.R,tauOf(k,true),{meter:1,sh:SHT[k]})+mini(E4G.gx,470,'자전축을 기울였을 때 '+POS[k]+' 위치',20);
   if(ok('t1'))S(P(1),'150 140 500 360','자전축을 기울였을 때 나 위치');if(ok('t3'))S(P(3),'150 140 500 360','자전축을 기울였을 때 라 위치')}
@@ -383,8 +383,8 @@ function footHTML(v,r,s){const N=v.steps.length;
 function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g='',vb=VB;
  if(no===1){if(k==='ruler')g=buildScene({ruler:1});if(k==='stick')g=buildScene({ruler:1,stick:1,mark:1});if(k==='prot')g=buildScene({ruler:1,stick:1,str:1,prot:1});
   if(k==='read')g=bgOut()+meterSide({x0:220,y:420,h:150,A:45,L:150,r:105,sun:1,prot:1,str:1})}
- if(no===2){if(k==='place')g=bgOut()+meterSide({x0:E2G.x0+120,y:E2G.y,h:E2G.h,A:45,L:150,r:E2G.r});
-  if(k==='read')g=bgOut()+meterSide({x0:E2G.x0+120,y:E2G.y,h:E2G.h,A:45,L:150,r:E2G.r,sun:1,prot:1,str:1});
+ if(no===2){if(k==='place')g=bgOut()+meterSide({x0:E2G.x0+120,y:E2G.y,h:E2G.h,pc:20,A:45,L:200,r:E2G.r});
+  if(k==='read')g=bgOut()+meterSide({x0:E2G.x0+120,y:E2G.y,h:E2G.h,pc:20,A:45,L:200,r:E2G.r,sun:1,prot:1,str:1});
   if(k==='therm')g=bgOut()+shadeArt(420,1,0);
   if(k==='hour'){g='<rect x="-3000" y="-3000" width="7000" height="7000" fill="var(--w-wall)"/>';DAYS.forEach((t,i)=>{g+=mini(150+i*110,270+(i%2?40:-40),t,26)});vb='60 150 840 240'}}
  if(no===3){if(k==='app')g=e3Scene({num:'0'});if(k==='stick')g=e3Scene({num:'0',stick:1,torch:1});if(k==='shine')g=e3Scene({num:'?',stick:1,a:55});if(k==='two')g=e3Two()}
@@ -406,7 +406,7 @@ function lensOf(s,g){let sp=s.spot;if(typeof sp==='function')sp=sp();if(!sp||!(a
   '<circle cx="'+lx+'" cy="'+ly+'" r="'+R2+'" fill="none" stroke="var(--lb-lens)" stroke-width="7"/></g>'}
 function homeArt(no){NAR=true;LEG=[];let g='',vb=VB,l='';
  if(no===1){g=buildScene({ruler:1,stick:1,str:1,prot:1});vb='150 200 660 260';l='수수깡과 실로 만든 태양 고도 측정기'}
- if(no===2){g=bgOut()+meterSide({x0:E2G.x0+120,y:E2G.y,h:E2G.h,A:45,L:150,r:E2G.r})+shadeArt(800,1,0);vb='120 120 840 360';l='운동장의 태양 고도 측정기와 그늘의 온도계'}
+ if(no===2){g=bgOut()+meterSide({x0:E2G.x0+120,y:E2G.y,h:E2G.h,pc:20,A:45,L:200,r:E2G.r})+shadeArt(800,1,0);vb='120 120 840 360';l='운동장의 태양 고도 측정기와 그늘의 온도계'}
  if(no===3){g=e3Scene({num:null,stick:1,torch:1});vb='120 20 840 440';l='스마트 기기, 빨판 달린 막대, 손전등'}
  if(no===4){g=e4Scene({meter:1,ruler:1});vb='100 130 600 330';l='전등과 지구본'}
  const s=svg(g,l,vb);NAR=false;LEG=[];return s}

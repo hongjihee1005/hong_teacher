@@ -18,5 +18,9 @@ for(const k in c.EXPS){const E=c.EXPS[k];
   if(w.length<2){const m=E.frame.match(new RegExp('\\{'+i+'\\}\\s*([^ ,.]+)'));keys=(m?[w+' '+m[1]]:[]).concat([w+' 가지'])}
   else if(/와 /.test(w))keys=w.split(/와 /);
   keys.forEach(kw=>texts.forEach(t=>{if(t&&!neutral(t)&&t.indexOf(kw)>=0)out.push(k+': "'+kw+'" in "'+t+'"')}))})}
+/* 교과서 낱말(결론에서 처음 나옴)이 결론 전 글에 들어가지 않게 */
+for(const k in c.EXPS){const E=c.EXPS[k],ci=E.steps.indexOf('concl');const texts=[E.name,E.title,E.sub,E.q,E.predT,E.predHint].concat(flat(E.how),flat(E.look),flat(E.tools),E.pred.map(p=>p.q),flat(E.pred.map(p=>p.o)));
+ E.steps.slice(0,ci).forEach(id=>{const s=c.stepDef(E,id);texts.push(...flat(s))});
+ ['세포벽','세포막','광합성','녹말','기공','증산','꽃가루받이','흡수','통로'].forEach(w=>texts.forEach(t=>{if(t&&t.indexOf(w)>=0)out.push(k+': book word "'+w+'" in "'+t+'"')}))}
 if(out.length){console.log([...new Set(out)].join('\n'));process.exit(1)}
 console.log('namecheck ok');
