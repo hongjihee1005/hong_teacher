@@ -100,7 +100,7 @@ function glassJar(cx,base,o){o=o||{};const s=o.s||1,w=JW*s,h=JH*s,top=base-h;let
   if(o.cloud){g+='<path d="M'+(cx-w+4)+' '+wy.toFixed(1)+' H'+(cx+w-4)+' V'+(base-6)+' H'+(cx-w+4)+'Z" fill="#FFFFFF" fill-opacity="'+(.62*o.cloud).toFixed(2)+'"/>'+grains(cx-w+10,cx+w-10,wy+8,base-10,'#FFFFFF','#D5DCE0',Math.round(26*o.cloud),5,1.6)}
   g+='<path d="M'+(cx-w+4)+' '+wy.toFixed(1)+' H'+(cx+w-4)+'" stroke="'+(o.tint&&o.tint!==WC?mixc(o.tint,'#806010',.3):WS)+'" stroke-width="3"/></g>'}
  if(o.grains)g+=grains(cx-w+12,cx+w-12,base-20,base-7,o.grains,o.gst||PWS,16,cx,3);
- if(o.pile)g+=pile(cx,base-5,w-12,o.pile,'#F8F8F4','#C2C8CC');
+ if(o.pile)g+=pile(cx,base-5,w-14,4+o.pile*1.5,'#F8F8F4','#8E9AA3');
  if(o.inner)g+=o.inner;
  g+='<path d="'+body+'" fill="none" stroke="'+GLS+'" stroke-width="3.5"/><path d="M'+(cx-w+10)+' '+(top+30*s)+' V'+(base-24)+'" stroke="#FFFFFF" stroke-width="4" opacity=".55" stroke-linecap="round"/>';
  g+='<rect x="'+(cx-w*.72)+'" y="'+(top-8*s)+'" width="'+(w*1.44)+'" height="'+(10*s)+'" rx="3" fill="rgba(232,244,250,.6)" stroke="'+GLS+'" stroke-width="2.5"/>';

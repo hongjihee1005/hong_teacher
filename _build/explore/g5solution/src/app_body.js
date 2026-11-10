@@ -94,7 +94,8 @@ function e1Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
   if(k>=1&&fi!==0)g+=mini(480,150,'5분 뒤',22);
   return g}
  return g}
-function jarSpot(){const k=seqK('wt',['w5']);if(k<1||UI.fx)return null;return [J1[2],BY-18,34,2,818,192]}
+/* 렌즈를 한 유리병에만 대면 답(가라앉은 것이 있는 병)을 가리키게 되어 쓰지 않음(독립 검토 고침) */
+function jarSpot(){return null}
 
 /* ───── 실험 2: 각설탕 ───── */
 const CUBE_ON_DISH=c=>dishArt(c,330,cubeArt(c,316,1.1));
@@ -163,7 +164,8 @@ function e4Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
   g+=mini(X+190,BY-160,dn&&!go?'약 20 ℃':go?'식히는 중':'약 50 ℃',20);
   return g}
  return g}
-function stirSpot(){const k=seqK('st',['r1','r2']);if(k<2||UI.fx)return null;return [B4[0],BY-10,40,1.8,480,330]}
+/* 차가운 물 비커에만 렌즈를 대면 답을 가리키게 되어 쓰지 않음(독립 검토 고침) */
+function stirSpot(){return null}
 
 /* ───── 실험 5: 황설탕 ───── */
 const B5=[330,630];
