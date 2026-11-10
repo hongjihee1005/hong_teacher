@@ -1,8 +1,8 @@
 /* 이 실험관에서 더 쓰는 아이콘 */
-Object.assign(I,{spoon:'<path d="M4 19.5 13 10.5"/><ellipse cx="16.5" cy="7" rx="3.6" ry="4.6" transform="rotate(45 16.5 7)"/>',scl:'<rect x="3.5" y="13" width="17" height="7" rx="1.5"/><path d="M6 13l1-3h10l1 3M9 16.5h4"/>',beaker:'<path d="M6 4h12M7 4v14a2 2 0 002 2h6a2 2 0 002-2V4"/><path d="M7 12h10"/>',jar:'<rect x="5.5" y="7" width="13" height="14" rx="3"/><path d="M8 3.5h8v3.5H8zM5.5 13h13"/>',tomato:'<circle cx="12" cy="13.5" r="7"/><path d="M9 6.5l3 2 3-2M12 8.5V4"/>'});
+Object.assign(I,{camera:'<path d="M4 8h3.5l1.5-2.5h6L16.5 8H20v11H4z"/><circle cx="12" cy="13.2" r="3.4"/>',car:'<path d="M3.5 15.5V12l2-4.5h13l2 4.5v3.5z"/><circle cx="7.5" cy="16.5" r="1.8"/><circle cx="16.5" cy="16.5" r="1.8"/><path d="M5.5 12h13"/>',timer:'<circle cx="12" cy="13.5" r="7"/><path d="M12 13.5V9.5M10 3.5h4M12 3.5v3"/>',calc:'<rect x="5" y="3.5" width="14" height="17" rx="2"/><path d="M8 7.5h8M8.5 12h1M12 12h1M15.5 12h0M8.5 16h1M12 16h1M15 16h1"/>'});
 
 /* ───────── 기록(이 기기에만) ───────── */
-const KEY='hj-g5solution-v1';
+const KEY='hj-g6motion-v1';
 function blank(){return {v:1,runs:{},cur:null,ui:{open:false,big:false},name:''}}
 function newRun(){return {step:0,max:0,done:{},act:{},plan:{},planLast:null,planOk:false,pred:[],why:'',seen:{},rec:{},pend:{},last:{},tries:{},bl:[],clast:null,ctry:0,cmp:false,fin:false,more:{},st:{},obs:0}}
 function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');
@@ -15,7 +15,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
 const UI={fx:null,nonce:0,timers:[],draft:{},inp:{},wrong:{},fb:{},focus:0,menu:false,rail:false,speaking:false,toast:'',mq:{},a0:null,attn:false};
 function clearTimers(){UI.timers.forEach(t=>clearTimeout(t));UI.timers=[]}
 function later(fn,ms){const t=setTimeout(fn,RM?Math.min(ms,120):ms);UI.timers.push(t);return t}
-function resetUI(){clearTimers();UI.attn=false;UI.fx=null;UI.draft={};UI.inp={};UI.wrong={};UI.fb={};UI.focus=0;UI.rail=false;UI.toast='';UI.mq={};UI.a0=null;stopSay()}
+function resetUI(){clearTimers();UI.run=null;UI.runMsg='';UI.attn=false;UI.fx=null;UI.draft={};UI.inp={};UI.wrong={};UI.fb={};UI.focus=0;UI.rail=false;UI.toast='';UI.mq={};UI.a0=null;stopSay()}
 const V=()=>EXPS[DB.cur],R=()=>DB.runs[DB.cur];
 const narrow=()=>innerWidth<=820;
 function endP(t){t=String(t).trim();return /[.?!]$/.test(t)?t:t+'.'}
@@ -34,7 +34,7 @@ function isDone(i){const r=R(),s=stepOf(i);
  if(s.k==='more')return true;
  if(s.k==='concl')return !!r.cmp;
  return !!r.fin}
-function canNext(){const r=R();return r.step<V().steps.length-1&&isDone(r.step)&&!UI.fx}
+function canNext(){const r=R();return r.step<V().steps.length-1&&isDone(r.step)&&!UI.fx&&!UI.run}
 function canGo(i){const r=R();return i>=0&&i<V().steps.length&&(i<=r.max||DB.ui.open||(i===r.max+1&&isDone(r.max)))}
 function go(i,focusHead){if(!canGo(i))return;const r=R();r.step=i;r.max=Math.max(r.max,i);resetUI();enterStep();save();render();if(focusHead!==false){const h=$('#lbH1');if(h)h.focus({preventScroll:true})}}
 function enterStep(){const v=V(),r=R(),s=stepOf(r.step);r.st=r.st||{};
@@ -53,172 +53,98 @@ const fid=()=>UI.fx?UI.fx.id:null;
 /* 시퀀스 단계: 지금까지 한 행동 수(움직이는 중이면 그 행동까지) */
 function seqK(key,ids){const c=R().st[key]||0,fi=ids.indexOf(fid());return Math.max(c,fi+1)}
 const noSh=s=>s.replace(/<ellipse[^>]*\/>/,'');
-/* 전자저울 장면. o.power: 첫 행동이 전원 켜기. 영점을 맞추기 전 화면은 '----' */
-function scaleScene(key,ids,val,beside,onScale,o){o=o||{};const f=fid(),k=seqK(key,ids),P=o.pre||0,pw=!!o.power,zi=P+(pw?1:0),bi=ids.length-1;
- const on=pw?k>P:true,zero=k>zi,placed=k>bi;
- const v=placed?val:(zero||!pw)?'0.0':'----';
- let g=bg({})+escale(ES.x,{on,val:v,hl:UI.mq.hl&&placed,pw:pw&&f===ids[P],zp:f===ids[zi],item:placed?onScale:null,drop:f===ids[bi],press:pw&&f===ids[P]?'pw':f===ids[zi]?'zp':null});
- if(!placed)g+=typeof beside==='function'?beside(k,f):beside;
- return g}
-function scaleSpot(){return [522,405,62,1.5,800,170]}
+/* 지금 움직이는 행동의 진행(0~1) — requestAnimationFrame으로 그림을 다시 그림 */
+function fxP(){if(!UI.fx||!UI.fx.ms)return 1;return Math.max(0,Math.min(1,(performance.now()-UI.fx.t0)/(RM?120:UI.fx.ms)))}
 
-/* ───── 실험 1: 유리병 세 개 ───── */
-const J1=[260,480,700],JN=['설탕','가루 바이타민','탄산 칼슘'],JG=[[PW,PWS],[VITC,VITS],['#F6F6F2','#C3C3BA']];
-/* 유리병 i의 모습. ph: 0 넣기 전 · 1 가루를 넣음 · 2 흔든 직후 · 3 5분 뒤 */
-function jarState(i,ph){const o={lv:2/3,label:JN[i]};
- if(ph===1){o.grains=JG[i][0];o.gst=JG[i][1]}
- if(ph>=2&&i===1){o.tint='#F5D547';o.op=.62}
- if(ph===2&&i===2){o.cloud=1}
- if(ph>=3&&i===2){o.cloud=.12;o.pile=4}
- return o}
-function e1Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
- if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
- let g=bg({});
- if(id==='label'){const on=has('label');J1.forEach((x,i)=>{g+=glassJar(x,BY,{label:on?JN[i]:null,labelAnim:f==='label'})});if(!on)g+=sticker(860,350,'',0)+sticker(860,390,'',0)+pen(860,330,LCOL.k,30);return g}
- if(id==='water'){const on=has('water');J1.forEach((x,i)=>{g+=glassJar(x,BY,{label:JN[i],lv:on?2/3:0,rise:f==='water'})});return g}
- if(id==='pred'){J1.forEach((x,i)=>{g+=glassJar(x,BY,{label:JN[i],lv:2/3})});return g+qmark(480,120)}
- if(id==='spoon'){const ids=['s1','s2','s3'],k=seqK('sp',ids),fi=ids.indexOf(f);
-  J1.forEach((x,i)=>{const done=i<k&&fi!==i;const o=jarState(0,0);o.label=JN[i];o.lv=2/3;if(done){o.grains=JG[i][0];o.gst=JG[i][1]}
-   if(fi===i)o.inner=fallGrains(x,BY-100,BY-12,JG[i][0],JG[i][1],i+3);g+=glassJar(x,BY,o);
-   if(fi===i)g+='<g'+an('lb-a-fade',0)+'>'+spoonArt(x+10,BY-200,30,JG[i][0],JG[i][1])+'</g>'});return g}
- if(id==='shake'){const ids=['lid','shk'],k=seqK('sh',ids),fi=ids.indexOf(f);
-  J1.forEach((x,i)=>{const o=jarState(i,k>=2&&fi!==1?2:1);o.lid=k>=1;o.lidAnim=fi===0;
-   if(fi===1){o.grains=null;o.cloud=i===2?.6:0;if(i===1){o.tint='#F5D547';o.op=.35}}
-   const j=glassJar(x,BY,o);g+=fi===1?'<g'+an('lb-a-jig',i*.08)+'>'+j+'</g>':j});
-  if(fi===1)g+='<g'+an('lb-a-fade',0)+'>'+hand(J1[0]-110,BY-90,0,1,1)+'</g>';
-  if(k>=2&&fi!==1)g+=mini(480,150,'흔든 직후',22);
-  return g}
- if(id==='wait'){const ids=['w5'],k=seqK('wt',ids),fi=ids.indexOf(f);
-  J1.forEach((x,i)=>{const o=jarState(i,k>=1&&fi!==0?3:2);o.lid=1;g+=glassJar(x,BY,o)});
-  g+='<g transform="translate(840 372) scale(.6)">'+stopwatch(0,0,fi===0?'02:30':k>=1?'05:00':'00:00',1)+'</g>';
-  if(k>=1&&fi!==0)g+=mini(480,150,'5분 뒤',22);
-  return g}
+/* ───── 실험 1: 교실 사진 · 공원 ───── */
+const PH={x:160,y:70,W:520,H:244};   /* 스마트 기기 화면 */
+function roomIn(t,W){const k=W/640;return '<g transform="scale('+k.toFixed(4)+')">'+room(t)+'</g>'}
+function phoneOnTri(t,o){o=o||{};let g=bg({});const cx=PH.x+PH.W/2;
+ if(o.tri!==false)g+='<g'+(o.triA?an('lb-a-up',0,'--from:120px'):'')+'>'+tripodArt(cx,PH.y+PH.H+30,118,1)+'</g>';
+ g+=phoneArt(PH.x,PH.y,PH.W,PH.H,roomIn(t,PH.W)+(o.over||''),{rot:o.rot});
+ if(o.hand)g+=hand(PH.x-20,PH.y+PH.H-10,-20,1.1);
  return g}
-/* 렌즈를 한 유리병에만 대면 답(가라앉은 것이 있는 병)을 가리키게 되어 쓰지 않음(독립 검토 고침) */
-function jarSpot(){return null}
-
-/* ───── 실험 2: 각설탕 ───── */
-const CUBE_ON_DISH=c=>dishArt(c,330,cubeArt(c,316,1.1));
-function jar2(x,base,o){return glassJar(x,base,Object.assign({lv:.5,lid:1},o||{}))}
-function e2Scene(s){const r=R(),id=s.id,f=fid();
- if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
- let g=bg({});
- if(id==='fill'){const on=has('fill');if(!on)return g+glassJar(420,BY,{})+'<rect x="560" y="410" width="96" height="22" rx="5" fill="#4F7FB0" stroke="#2D5582" stroke-width="2.5"/>'+waterJug(700,BY);
-  return g+glassJar(420,BY,{lv:.5,rise:f==='fill',lid:1,lidAnim:f==='fill'})}
- if(id==='pred')return g+jar2(380,BY,{})+dishArt(600,BY,cubeArt(600,BY-14,1.1))+qmark(480,120);
- if(id==='w0')return scaleScene('sc',['sp','sz','sb'],'91.6',jar2(140,BY,{})+dishArt(275,BY,cubeArt(275,BY-14,1)),jar2(470,330,{noShadow:1})+CUBE_ON_DISH(610),{power:1});
- if(id==='drop'||id==='jig'){const ids=['d1','d2','d3'],k=id==='jig'?2+seqK('dq',['d3']):seqK('dp',['d1','d2']),fi=ids.indexOf(f);const X=420,B=BY,s=1.25;
-  /* 각설탕 상태: 넣기 전 접시 위 → 바닥 → 작아짐 → 없어짐 */
-  let inner='';const by=B-8;
-  if(k===0)inner='';
-  else if(fi===0)inner='<g'+an('lb-a-down',.2,'--from:-170px')+'>'+cubeArt(X,by,1.15)+'</g>';
-  else if(k===1)inner=cubeArt(X,by,1.15);
-  else if(fi===1)inner='<g'+an('lb-a-out',1.6,'animation-duration:1s')+'>'+cubeArt(X,by,1.15)+'</g><g'+an('lb-a-fade',1.6,'animation-duration:1s')+'>'+cubeArt(X,by,.7)+grains(X-46,X+46,by-10,by-2,'#FFFFFF','#B5A787',12,4,3)+'</g>'+haze(X,by-34,1);
-  else if(k===2)inner=cubeArt(X,by,.7)+grains(X-46,X+46,by-10,by-2,'#FFFFFF','#B5A787',12,4,3)+haze(X,by-34,0);
-  else if(fi===2)inner='<g'+an('lb-a-out',.9,'animation-duration:1s')+'>'+cubeArt(X,by,.55)+grains(X-46,X+46,by-10,by-2,'#FFFFFF','#B5A787',12,4,3)+'</g>';
-  const jar=glassJar(X,B,{lv:.5,lid:k>=1,lidAnim:fi===0,s,inner});
-  g+=fi===2?'<g'+an('lb-a-jig',0)+'>'+jar+'</g>':jar;
-  g+=dishArt(700,BY,k===0?cubeArt(700,BY-14,1.1):'');
-  if(fi===0)g+='<g'+an('lb-a-fade',0)+'>'+tweezArt(X+40,B-260,18,'')+'</g>';
-  if(k===0)g+=tweezArt(780,BY-6,70,'');
-  if(k>=3&&fi!==2)g+=mini(X,178,'다 녹은 뒤',22);
+function e1Scene(s){const r=R(),id=s.id,f=fid();
+ if(id==='tri'){const on=has('tri');
+  if(!on)return phoneOnTri(0,{tri:false,rot:-5,hand:1})+mini(PH.x+PH.W/2,PH.y+PH.H+80,'손으로 들고 있으면 화면이 흔들려요',20);
+  return phoneOnTri(0,{triA:f==='tri'})}
+ if(id==='pred')return phoneOnTri(0)+qmark(830,120);
+ if(id==='shot'){const k=seqK('ph',['p1','p2']);
+  if(f==='p1'){const p=fxP();return phoneOnTri(0,{over:'<rect width="'+PH.W+'" height="'+PH.H+'" fill="#FFFFFF" opacity="'+(.85*(1-p)).toFixed(2)+'"/>'})}
+  if(f==='p2'){const T=Math.min(5,fxP()*5.6),n=Math.ceil(5-T-1e-6);const sc=PH.W/640;
+   let ov='<circle cx="'+(PH.W-34)+'" cy="34" r="24" fill="#1D232B" opacity=".85"/><text x="'+(PH.W-34)+'" y="44" font-size="26" text-anchor="middle" font-weight="800" fill="#FFFFFF">'+(n>0?n:'')+'</text>';
+   if(T>=5)ov+='<rect width="'+PH.W+'" height="'+PH.H+'" fill="#FFFFFF" opacity=".75"/>';
+   return phoneOnTri(T,{over:ov})+photoArt(740,170,180,84,roomIn(0,180),'처음 사진')}
+  if(k===0)return phoneOnTri(0);
+  if(k===1)return phoneOnTri(0)+photoArt(740,170,180,84,roomIn(0,180),'처음 사진');
+  return bg({})+photoArt(40,150,420,197,roomIn(0,420),'처음 사진')+photoArt(500,150,420,197,roomIn(5,420),'5초 뒤 사진')}
+ if(id==='park'){const k=seqK('pk',['k1v','k2v']);const blank=(x,y)=>'<rect x="'+x+'" y="'+y+'" width="420" height="280" rx="8" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="2" stroke-dasharray="10 8"/>';
+  let g=bg({});
+  g+=(k>=1?'<g'+(f==='k1v'?an('lb-a-fade',0):'')+'>'+photoArt(40,140,420,280,park(0),'처음 모습')+'</g>':blank(40,140));
+  g+=(k>=2?'<g'+(f==='k2v'?an('lb-a-fade',0):'')+'>'+photoArt(500,140,420,280,park(1),'얼마 뒤 모습')+'</g>':blank(500,140));
   return g}
- if(id==='w1')return scaleScene('sc1',['z1','b1'],'91.6',jar2(140,BY,{})+dishArt(275,BY,''),jar2(470,330,{noShadow:1})+dishArt(610,330,''));
- return g}
-function cubeSpot(){const k=seqK('dp',['d1','d2']);if(k<2&&fid()!=='d2')return null;if(k>=3)return null;return [420,BY-30,40,1.9,650,235]}
+ return bg({})}
 
-/* ───── 실험 3: 비커 세 개 ───── */
-const B3=[260,480,700],BN3=['설탕','소금','백반'],BG3=[[PW,PWS],['#FBFBFB','#AEB8C0'],['#F4F8FB','#9FB4C4']];
-function left3(i,n){if(i===0)return 0;const L=MODEL.lim[i];return n>=L?n-L+1:0}
-function e3Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
- if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
- let g=bg({});
- if(id==='label'){const on=has('label');B3.forEach((x,i)=>{g+=beakerArt(x,BY,{label:on?BN3[i]:null,labelAnim:f==='label'})});if(!on)g+=sticker(820,350,'',0)+sticker(820,390,'',0)+pen(820,330,LCOL.k,30);return g}
- if(id==='water'){const on=has('water'),a=f==='water';B3.forEach((x,i)=>{g+=beakerArt(x,BY,{label:BN3[i],ml:on?50:0,rise:a})});
-  if(!on)g+=cylArt(820,BY,100);if(a)g+=pourCyl(800,BY-210,-40,1);if(on)g+=mini(480,200,'물 50 mL · 약 20 ℃',20);return g}
- if(id==='pred'){B3.forEach((x,i)=>{g+=beakerArt(x,BY,{label:BN3[i],ml:50})});return g+qmark(480,215)}
- if(id==='add'){const n=st.n||[0,0,0];const fi=['aG','aS','aA'].indexOf(f);
-  B3.forEach((x,i)=>{const now=fi===i;g+=beakerArt(x,BY,{label:BN3[i],ml:50,cnt:n[i]?n[i]+'숟가락':'물 50 mL',pile:left3(i,now?n[i]-1:n[i]),fall:now?BG3[i][0]:null,fst:BG3[i][1],stir:now,rod:now});
-   if(now)g+='<g'+an('lb-a-fade',0)+'>'+spoonArt(x-30,BY-196,-20,BG3[i][0],BG3[i][1])+'</g>'});
-  return g}
+/* ───── 실험 2: 5초 동안 이동 거리 ───── */
+const DIST=MODEL.dist;
+function e2Scene(s){const r=R(),id=s.id,f=fid(),idx=k=>idxOf(k)<r.step||has(k);
+ const base={line:idx('line'),tape:idx('tape')?true:false,tri:idx('tri'),cars:idx('wind'),key:idx('wind')?0:null};
+ if(id==='line')return track2({line:has('line'),lineA:f==='line',roll:!has('line'),cars:false});
+ if(id==='tape'){const g=f==='tape'?fxP()*150:has('tape')?true:false;return track2({line:1,tape:g,rolled:g===false,cars:false})}
+ if(id==='tri')return track2({line:1,tape:true,tri:has('tri'),triA:f==='tri',cars:false})+(has('tri')?'':tripodArt(860,330,80,.7));
+ if(id==='wind'){if(!has('wind'))return track2({line:1,tape:true,tri:1,cars:false})+carTop(880,412,'R',{s:.75})+carTop(780,412,'B',{s:.75});
+  return track2({line:1,tape:true,tri:1,key:f==='wind'?fxP()*720:0})}
+ if(id==='pred')return track2({line:1,tape:true,tri:1,key:0})+qmark(560,98);
+ if(id==='run'){if(f==='run'){const p=fxP()*6.2,t=Math.max(0,Math.min(5,p-.3));
+   const o={line:1,tape:true,tri:1,key:720-t*144,pos:{R:DIST.R*t/5,B:DIST.B*t/5},clock:t};if(p>=5.3)o.snap=Math.max(0,.8-(p-5.3)*.9);
+   return track2(o)+(p<.5?mini(480,98,'출발!',24):'')}
+  if(!has('run'))return track2({line:1,tape:true,tri:1,key:0,clock:0});
+  return track2({line:1,tape:true,tri:1,key:0,pos:DIST,clock:5})+mini(560,98,'5초 뒤 사진',22)}
+ if(id==='read')return readScene();
+ return track2(base)}
+function photo5(x,y,sc){return photoArt(x,y,960*sc,380*sc,'<g transform="scale('+sc+') translate(0 -70)">'+track2({line:1,tape:true,pos:DIST,key:0})+'</g>')}
+function readScene(){const k=seqK('zm',['zR','zB']),f=fid();let g=bg({})+photo5(240,30,.5)+mini(480,248,'5초 뒤 사진',18);
+ const blank=(x,y)=>'<rect x="'+x+'" y="'+y+'" width="430" height="170" rx="10" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="2" stroke-dasharray="10 8"/>';
+ g+=(k>=1?'<g'+(f==='zR'?an('lb-a-fade',0):'')+'>'+zoom2(30,290,430,170,DIST.R,'R')+'</g>':blank(30,290))+mini(245,278,'빨간색 자동차 앞부분',17);
+ g+=(k>=2?'<g'+(f==='zB'?an('lb-a-fade',0):'')+'>'+zoom2(500,290,430,170,DIST.B,'B')+'</g>':blank(500,290))+mini(715,278,'파란색 자동차 앞부분',17);
  return g}
 
-/* ───── 실험 4: 차가운 물 · 따뜻한 물 ───── */
-const B4=[330,630];
-function e4Beakers(o){o=o||{};let g='';B4.forEach((x,i)=>{const warm=i===1;g+=beakerArt(x,BY,Object.assign({ml:o.ml==null?50:o.ml,rise:o.rise,steam:warm&&o.ml!==0},o.each?o.each(i):{}));
-  if(o.ml!==0)g+=mini(x,BY-205,warm?'따뜻한 물 40~50 ℃':'차가운 물 10 ℃ 이하',19)});return g}
-function e4Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
- if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
- let g=bg({});
- if(id==='plan')return g+B4.map(x=>beakerArt(x,BY,{})).join('')+cylArt(780,BY,0)+heap(200,BY,'#F4F8FB','#A9BCCB',1);
- if(id==='water'){const on=has('water'),a=f==='water';if(!on)return g+e4Beakers({ml:0})+cylArt(780,BY,100);return g+e4Beakers({rise:a})+(a?pourCyl(760,BY-210,-40,1):'')}
- if(id==='pred')return g+e4Beakers({})+heap(780,BY,'#F4F8FB','#A9BCCB',1)+qmark(480,190);
- if(id==='add'){const on=has('add'),a=f==='add';return g+e4Beakers({each:()=>({pile:on&&!a?MODEL.cold[0]:0,fall:a?'#F4F8FB':null,fst:'#9FB4C4'})})+(a?'<g'+an('lb-a-fade',0)+'>'+spoonArt(B4[0]-30,BY-196,-20,'#F4F8FB','#9FB4C4')+spoonArt(B4[1]-30,BY-196,-20,'#F4F8FB','#9FB4C4')+'</g>':'')}
- if(id==='stir'){const k=Math.min(2,seqK('st',['r1','r2'])),fi=['r1','r2'].indexOf(f),now=fi>=0,extra=f==='r3';
-  const prevK=now?fi:k;
-  return g+e4Beakers({each:i=>{const stirring=now||(extra&&i===0);const kk=stirring&&now?prevK:k;return {pile:(i?MODEL.warm:MODEL.cold)[kk],stir:stirring,rod:stirring}}})+(k>=1&&!now&&!extra?mini(480,190,(r.seen.r3?'더 오래 저은 뒤':k>=2?'두 번 저은 뒤':'한 번 저은 뒤'),22):'')}
- if(id==='more'){const go=f==='cool',dn=go||!!UI.mq.both||r.more.a!=null;const X=480;
-  const crys=dn?'<g'+(go?an('lb-a-fade',1.2,'animation-duration:1.4s'):'')+'>'+moruCrys(X,BY-60,16)+crystalsBottom(X,BY-6,46,18)+'</g>':'';
-  g+=beakerArt(X,BY,{ml:80,steam:!dn,inner:moruArt(X,BY-60)+crys});
-  g+='<path d="M'+X+' '+(BY-212)+' V'+(BY-120)+'" stroke="#8A8F96" stroke-width="2"/><path d="M'+(X-100)+' '+(BY-212)+' H'+(X+100)+'" stroke="#9A7A50" stroke-width="8" stroke-linecap="round"/>';
-  g+=mini(X+190,BY-160,dn&&!go?'약 20 ℃':go?'식히는 중':'약 50 ℃',20);
-  return g}
- return g}
-/* 차가운 물 비커에만 렌즈를 대면 답을 가리키게 되어 쓰지 않음(독립 검토 고침) */
-function stirSpot(){return null}
+/* ───── 실험 3: 100 cm를 가는 데 걸린 시간 ───── */
+function runState(k){const st=R().st;st.rs=st.rs||{};return st.rs[k]=st.rs[k]||{}}
+function e3Scene(s){const r=R(),id=s.id,f=fid();
+ if(id==='line')return track3({line:has('line'),lineA:f==='line'});
+ if(id==='finish'){if(f==='finish'){const p=fxP();return track3({line:1,tape:Math.min(110,p*170),fin:p>.7,finA:p>.7&&p<.8})}
+  return track3({line:1,fin:has('finish')})}
+ if(id==='pred')return track3({line:1,fin:1,k:'G',key:0})+qmark(420,120);
+ if(id==='runG'||id==='runY'){const k=id==='runG'?'G':'Y',T=MODEL.T[k],rs=runState(k),run=UI.run&&UI.run.k===k;
+  if(run){const t=(performance.now()-UI.run.t0)/1000,sa=UI.run.stopAt;
+   return track3({line:1,fin:1,k,pos:Math.min(118,100/T*t),ghost:sa!=null?Math.min(118,100/T*sa):null,sw:swTxt((sa!=null?sa:t)*100),swOn:sa==null,key:Math.max(0,720-t*150)})}
+  if(rs.ok)return track3({line:1,fin:1,k,pos:118,ghost:Math.min(118,100/T*R().st.sw[k]/100),sw:swTxt(R().st.sw[k]),swOn:0})+mini(480,92,'초시계를 멈춘 순간의 자동차(흐린 그림)',18);
+  if(rs.miss!=null)return track3({line:1,fin:1,k,pos:0,key:f==='w'+k?fxP()*720:rs.wound?0:null,ghost:Math.min(118,100/T*rs.miss/100),sw:swTxt(rs.miss),swOn:0})+mini(480,92,'지난번에 초시계를 멈춘 순간(흐린 그림)',18);
+  return track3({line:1,fin:1,k,pos:0,key:f==='w'+k?fxP()*720:rs.wound?0:null,sw:'00.00',swOn:0})}
+ return track3({line:1,fin:1})}
 
-/* ───── 실험 5: 황설탕 ───── */
-const B5=[330,630];
-function ycol(n){return mixc('#F1EBDC','#A8641C',Math.min(1,n/14))}
-function e5Beakers(o){o=o||{};let g='';const n=o.n||[0,0];B5.forEach((x,i)=>{g+=beakerArt(x,BY,Object.assign({big:1,ml:o.ml==null?150:o.ml,rise:o.rise,label:'비커 '+(i+1),tint:n[i]?ycol(n[i]):null,op:n[i]?.92:.8},o.each?o.each(i):{}));
-  if(o.cnt&&n[i])g+=mini(x,BY-240,'황설탕 '+n[i]+'숟가락',19)});return g}
-function filmArt(x,base,thick){/* 기울였다 세운 뒤 비커 벽에 남은 용액(정한 모습) */
- const top=base-206,y0=base-150*.8;if(!thick)return '<path d="M'+(x-75)+' '+(y0-34)+' q3 18 0 32" stroke="'+ycol(2)+'" stroke-width="2" fill="none" opacity=".7"/>';
- const c=ycol(10);return '<path d="M'+(x-75)+' '+(y0-70)+' q5 30 2 70 h10 q4 -30 -2 -70z" fill="'+c+'" opacity=".85"/><path d="M'+(x-58)+' '+(y0-52)+' v50 q4 6 8 0 v-50z" fill="'+c+'" opacity=".75"/><circle cx="'+(x-54)+'" cy="'+(y0-1)+'" r="5" fill="'+c+'"/>'}
-function e5Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
- if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
- let g=bg({});
- if(id==='water'){const on=has('water'),a=f==='water';if(!on)return g+e5Beakers({ml:0})+cylArt(745,BY,100);return g+e5Beakers({rise:a})+(a?pourCyl(735,BY-240,-40,1):'')}
- if(id==='pred')return g+e5Beakers({})+heap(752,BY,YSC,YSS)+qmark(480,200);
- const add=seqK('ad',['y1','y2']),fa=['y1','y2'].indexOf(f);
- const n=[add>=1&&fa!==0?MODEL.ys[0]:0,add>=2&&fa!==1?MODEL.ys[1]:0];
- if(id==='add')return g+e5Beakers({n,cnt:1,each:i=>fa===i?{fall:YSC,fst:YSS,stir:1,rod:1}:{}})+(fa>=0?'<g'+an('lb-a-fade',0)+'>'+spoonArt(B5[fa]-30,BY-250,-20,YSC,YSS)+'</g>':'');
- const N=MODEL.ys;
- if(id==='paper'){const on=seqK('pp',['wp'])>=1;return g+(on?paperBack(232,150,496,272,f==='wp'):'')+e5Beakers({n:N,cnt:1})}
- if(id==='tilt'){const k=seqK('tl',['tt']),go=f==='tt';let b='';
-  B5.forEach((x,i)=>{const one=beakerArt(x,BY,{big:1,ml:150,label:'비커 '+(i+1),tint:ycol(N[i]),op:.92,film:k>=1&&!go?filmArt(x,BY,i===1):''});b+=go?'<g'+an('lb-a-tip',0,'--rot:-24deg')+'>'+one+'</g>':one});
-  return g+paperBack(232,150,496,272,0)+b+(k>=1&&!go?mini(480,170,'기울였다가 세운 뒤',20):'')}
- return g}
-function tiltSpot(){const k=seqK('tl',['tt']);if(k<1||UI.fx)return null;return null}
-
-/* ───── 실험 6: 백설탕과 방울토마토 ───── */
-const B6=[330,630],BN6=['비커 ㉮','비커 ㉯'];
-function e6Beakers(o){o=o||{};let g='';B6.forEach((x,i)=>{g+=beakerArt(x,BY,Object.assign({big:1,ml:o.ml==null?150:o.ml,rise:o.rise,label:BN6[i],tint:'#E4F2FA',op:.85},o.each?o.each(i):{}));
-  if(o.cnt&&o.cnt[i])g+=mini(x,BY-240,'백설탕 '+o.cnt[i]+'숟가락',19)});return g}
-function e6Scene(s){const r=R(),id=s.id,f=fid(),st=r.st;
- if(id==='gear')return bg({})+gearArt(has('gear'),fxOn('gear'));
- let g=bg({});
- if(id==='water'){const on=has('water'),a=f==='water';if(!on)return g+e6Beakers({ml:0})+cylArt(745,BY,100);return g+e6Beakers({rise:a})+(a?pourCyl(735,BY-240,-40,1):'')}
- const add=seqK('wa',['b1','b2']),fa=['b1','b2'].indexOf(f),W=MODEL.ws;
- if(id==='add'){const c=[add>=1&&fa!==0?W[0]:0,add>=2&&fa!==1?W[1]:0];return g+e6Beakers({cnt:c,each:i=>fa===i?{fall:PW,fst:PWS,stir:1,rod:1}:{}})+(fa>=0?'<g'+an('lb-a-fade',0)+'>'+spoonArt(B6[fa]-30,BY-250,-20,PW,PWS)+'</g>':'')}
- if(id==='pred')return g+e6Beakers({cnt:W})+tomatoArt(752,BY-22,22)+tomatoArt(800,BY-20,22)+qmark(480,200);
- if(id==='drop'){const k=seqK('tm',['t1','t2']),ft=['t1','t2'].indexOf(f);
-  g+=e6Beakers({cnt:W,each:i=>(i<k&&ft!==i)||ft===i?{tom:tomLevel(W[i]),tomAnim:ft===i}:{}});
-  if(ft>=0)g+='<g'+an('lb-a-fade',0)+'>'+tweezArt(B6[ft]+40,BY-250,18,'')+'</g>';
-  if(k<2)g+=tomatoArt(752,BY-22,22)+(k<1?tomatoArt(800,BY-20,22):'');
-  return g}
- if(id==='more'){const go=f==='m6',dn=go||!!UI.mq.both||r.more.a!=null;const a=W[0]+(dn?MODEL.more6:0),hiLo=(BY-28)-(BY-120+22*.3);
-  return g+e6Beakers({cnt:[a,W[1]],each:i=>i===0?{tom:tomLevel(a),tomFrom:go?(tomLevel(a)-tomLevel(W[0]))*hiLo:null,fall:go?PW:null,fst:PWS,stir:go,rod:go}:{tom:tomLevel(W[1])}})+(go?'<g'+an('lb-a-fade',0)+'>'+spoonArt(B6[0]-30,BY-250,-20,PW,PWS)+'</g>':'')}
- return g}
+/* ───── 실험 4: 속력 표 ───── */
+function spOf(){return MODEL.tab.map(t=>{const x=R().rec['s'+t[0]];return x&&x.ok?x.v:''})}
+function exprAt(ids,rows){const f=fid(),i=ids.indexOf(f);if(i>=0)return ROWS[rows[i]].calc;
+ const p=rows.find(k=>R().pend[k]!=null&&!rowDone(k));return p?ROWS[p].calc:null}
+function e4Scene(s){const r=R(),id=s.id,f=fid();
+ if(id==='table'){const on=has('table');return bgTop()+(on?'<g'+(f==='table'?an('lb-a-fade',0):'')+'>'+speedTable({rows:1})+'</g>':speedTable({rows:0})+qmark(480,300))}
+ if(id==='pred')return bgTop()+speedTable({rows:1})+qmark(800,90);
+ if(id==='calc1')return bgTop()+speedTable({rows:1,sp:spOf(),expr:exprAt(['qR','qB'],['sR','sB']),hl:exprAt(['qR','qB'],['sR','sB'])});
+ if(id==='calc2')return bgTop()+speedTable({rows:1,sp:spOf(),expr:exprAt(['qG','qY'],['sG','sY']),hl:exprAt(['qG','qY'],['sG','sY'])});
+ if(id==='order')return bgTop()+speedTable({rows:1,sp:seqK('od',['ordr'])>=1?spOf():spOf().map(()=>'')});
+ if(id==='more'){const dn=f==='m4'||!!UI.mq.both||r.more.a!=null;return bgTop()+(dn?'<g'+(f==='m4'?an('lb-a-fade',0):'')+'>'+transTable()+'</g>':qmark(480,250))}
+ return bgTop()+speedTable({rows:1,sp:spOf()})}
 
 function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,no=v.no;
  const T=(g,l,vb)=>svg(g+lensOf(s,g),l||s.t,vb);
- if(id==='tools'){if(!(r.done.tools||fxOn('tools')))return T(bg({})+boxArt(480),'준비물 상자');return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '),v.tools.length>8?'0 10 960 600':null)}
- const F={1:e1Scene,2:e2Scene,3:e3Scene,4:e4Scene,5:e5Scene,6:e6Scene}[no];
- const VB={1:'150 100 750 360',2:'40 20 900 470',3:'170 160 700 300',4:'150 150 680 310',5:'200 136 620 334',6:'200 136 640 334'}[no];
- return T(F(s),s.t,id==='gear'?'160 40 640 420':no===2&&(id==='drop'||id==='jig')?'250 140 560 330':VB)}
-
-
+ if(id==='tools'){if(!(r.done.tools||fxOn('tools')))return T(bg({})+boxArt(480),'준비물 상자');return T(bg({})+toolsScene(v.tools,fxOn('tools')),'준비물: '+v.tools.map(x=>x[1]).join(', '),v.tools.length>4?'0 10 960 520':null)}
+ const F={1:e1Scene,2:e2Scene,3:e3Scene,4:e4Scene}[no];
+ let vb={1:'0 30 960 470',2:'0 64 960 386',3:'0 50 960 360',4:'110 70 740 440'}[no];
+ if(no===1&&id==='park')vb='20 90 920 340';
+ if(no===2&&id==='read')vb='0 10 960 460';
+ return T(F(s),s.t,vb)}
 /* ───────── 오른쪽 카드 ───────── */
 function cardHead(t,s){return '<div class="lb-card-h"><span class="lb-clip">'+ic('clip')+'</span><div><b>'+t+'</b><span>'+s+'</span></div></div>'}
 function wrapB(h){return '<div class="lb-card-b"><div class="lb-fit">'+h+'</div></div>'}
@@ -284,15 +210,15 @@ function acted(s){const r=R();return !!(r.act&&r.act[s.id])||(s.k==='scene'&&!!r
 function looked(s){if(s.k==='scene')return !!R().done[s.id];if(s.k==='meas')return s.rows.every(rowReady);if(s.k==='more')return !!UI.mq.both||R().more.a!=null;return true}
 function lbl(a){const x=actsOf(curStep()).find(b=>b.id===a);return x?x.label:''}
 function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
+ if(UI.run)return UI.run.stopAt==null?'자동차 앞부분이 결승선에 닿는 순간 멈춤 단추를 눌러요.':'자동차가 멈출 때까지 지켜봐요.';
  if(s.k==='more'){if(r.more.a!=null)return '다 했어요. 이어서 가요.';if(UI.fx)return s.look;if(UI.mq.both)return '③ 알맞은 것을 골라요.';const a=actsOf(s)[0];return '① '+lj(a.label)+' 눌러요.'}
  if(s.k==='scene'){if(UI.fx)return s.look;if(r.done[id])return '잘했어요. 이어서 가요.';return s.opts?s.ask:'① '+jo(s.act,'을','를')+' 눌러요.'}
  if(D)return '다 했어요. 이어서 가요.';
  if(UI.fx)return s.look;
  const need=s.rows.find(k=>!rowDone(k)),R0=ROWS[need];
- if(rowReady(need)){if(R0.t==='num')return '③ '+(R0.src||'저울 화면의 숫자를')+' ‘'+R0.n+'’ 칸에 써요.';
+ if(rowReady(need)){if(R0.t==='num')return '③ '+R0.src+' ‘'+R0.n+'’ 칸에 써요.';
   return R0.t==='note'?'③ 살펴본 것을 쓰고 기록해요.':'③ '+R0.n+(/\?$/.test(R0.n)?' ':': ')+'알맞은 것을 골라 기록해요.'}
  const A=actsOf(s);
- if(s.id==='add'&&V().no===3)return '① 비커마다 한 숟가락씩 넣고 저어요. 바닥에 남으면 그만 넣어요.';
  const cur=A.find(b=>b.hide===false&&!b.pressed&&!b.dis);if(cur)return '① '+lj(cur.label.replace(/^\d\/\d · /,''))+' 눌러요.';
  const one=A.find(b=>!b.cell&&!b.sub&&b.hide==null&&!b.dis&&!r.seen[b.id]);if(one)return '① '+lj(one.label)+' 눌러요.';
  const cell=A.find(b=>b.cell&&!b.seen&&!b.dis);if(cell)return '① '+cell.grp+': '+lj(cell.label)+' 눌러요.';
@@ -308,8 +234,6 @@ function actBtns(s,cellsOnly){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=c
   /* 모두 본 뒤(기록하는 동안)에는 시간 칸을 한 줄로 작게 — 기록 칸이 카드 안에 들어가게 */
   h+='<div class="lb-cellrow'+(mini?' lb-cellmini':'')+'" role="group" aria-label="'+esc(G.n)+'"><span class="lb-cl">'+esc(G.n)+(mini?' · 다시 볼 때 눌러요':'')+'</span><div style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+G.c.map(a=>'<button type="button" class="lb-cellb'+(a.label.length>6?' lb-cellw':'')+(UI.attn&&!a.dis?' lb-attn':'')+(a.seen?' lb-seen':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(G.n+' '+a.label)+(a.seen?' (해 봤어요)':'')+'">'+(a.seen&&!mini?ic('check'):'')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div></div>'});
  return h}
-const MOREQ={4:['용액을 식힌 뒤 철끈과 비커 바닥은?',['하얀 알갱이가 생겼어요','아무 변화가 없어요'],0,'온도가 낮아지면서 녹아 있던 백반이 더 이상 녹아 있지 못하고 바닥에 가라앉거나 철끈에 달라붙어 결정이 커졌어요. 물의 온도에 따라 용해되는 양이 다르기 때문이에요.'],
- 6:['백설탕을 더 녹인 비커 ㉮의 방울토마토는?',['조금 떠올랐어요','더 내려갔어요','그대로예요'],0,'백설탕을 더 녹이면 비커 ㉮의 용액이 더 진해져서 방울토마토가 떠올라요.']};
 function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=='more'||r.more.a!=null);
  let h='<p class="lb-stat'+(D?' lb-statok':'')+'" role="status">'+ic(D?'check':'info')+'<span>'+esc(hintOf(s))+'</span></p><ol class="lb-guide">';
  if(s.k==='scene'){let b1;const dn=!!r.done[s.id];
@@ -366,7 +290,7 @@ function planSummary(v,r){const P=v.plan;if(!P)return '';if(!r.planOk)return '<p
  return '<div class="lb-sh-tags">'+P.rows.map(x=>{const d=r.plan[x[0]]==='d';return '<span class="lb-sh-tag'+(d?' lb-d':'')+'">'+(d?'다르게: ':'같게: ')+esc(x[1])+'</span>'}).join('')+'</div>'}
 function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id)).filter(s=>(s.k==='scene'||s.k==='meas')&&s.id!=='tools');
  const today=new Date();const ds=today.getFullYear()+'. '+(today.getMonth()+1)+'. '+today.getDate()+'.';
- let h='<article class="lb-sheet lb-sh-e'+v.no+'" id="lbSheet" aria-label="실험 결과 한 장"><div class="lb-sh-in"><header class="lb-sh-h"><div><h2>실험 결과 한 장 · '+esc(v.title)+'</h2><span>탐구 실험관 · 5학년 1학기 과학 · 3. 용해와 용액 · '+ds+'</span></div><div class="lb-sh-name">이름 <u>'+(esc(DB.name)||'&nbsp;')+'</u></div></header><div class="lb-sh-grid"><div class="lb-sh-col">';
+ let h='<article class="lb-sheet lb-sh-e'+v.no+'" id="lbSheet" aria-label="실험 결과 한 장"><div class="lb-sh-in"><header class="lb-sh-h"><div><h2>실험 결과 한 장 · '+esc(v.title)+'</h2><span>탐구 실험관 · 6학년 1학기 과학 · 2. 물체의 운동 · '+ds+'</span></div><div class="lb-sh-name">이름 <u>'+(esc(DB.name)||'&nbsp;')+'</u></div></header><div class="lb-sh-grid"><div class="lb-sh-col">';
  h+='<section class="lb-sh-sec"><h3><i></i>실험 문제</h3><p><b>'+esc(v.q)+'</b></p>'+planSummary(v,r)+'</section>';
  h+='<section class="lb-sh-sec lb-sh-po"><h3><i></i>실험한 차례</h3><div class="lb-sh-steps">'+done.map((s,i)=>'<div><b>'+(i+1)+'.</b> '+esc(s.t)+'</div>').join('')+'</div></section>';
  h+='<section class="lb-sh-sec"><h3><i></i>내 예상</h3><p>'+v.pred.map((q,j)=>(v.pred.length>1?esc(q.q)+' ':'')+(r.pred[j]!=null?esc(q.o[r.pred[j]]):'(고르지 않았어요)')).join('<br>')+(r.why?'<br>까닭: '+esc(r.why):'')+'</p></section>';
@@ -376,17 +300,6 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
  h+=(v.no===1?'':cs)+'</div></div>'+(v.no===1?cs:'')+picsHTML(snapList(v,r))+'<section class="lb-sh-sec lb-sh-po lb-sh-fill"><h3><i></i>새로 알게 된 것 · 더 알고 싶은 것</h3><div class="lb-sh-lines">'+'<div class="lb-ln"></div>'.repeat(9)+'</div></section>';
  h+='<footer class="lb-sh-f"><span>아주 단순하게 만든 모형의 결과예요. 실제 교실에서는 결과가 조금 다를 수 있어요.</span><span>만든 사람: 초등교사 홍지희</span></footer></div></article>';
  return h}
-const LABNAME='solution';
-function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
- const jars=ph=>{let g=bg({});J1.forEach((x,i)=>{const o=jarState(i,ph);o.lid=1;g+=glassJar(x,BY,o)});return g};
- if(no===1){if(ok('just'))S(jars(2),'170 240 620 220','흔든 직후');if(ok('w5s'))S(jars(3),'170 240 620 220','5분 뒤')}
- if(no===2){if(ok('m0'))S(bg({})+escale(ES.x,{on:1,val:'91.6',item:jar2(470,330,{noShadow:1})+CUBE_ON_DISH(610)}),'370 140 380 310','용해되기 전');
-  if(ok('m1'))S(bg({})+escale(ES.x,{on:1,val:'91.6',item:jar2(470,330,{noShadow:1})+dishArt(610,330,'')}),'370 140 380 310','용해된 후')}
- if(no===3){const n=r.st.n||[0,0,0];if(ok('lA')||ok('lS')||ok('lG')){let g=bg({});B3.forEach((x,i)=>{g+=beakerArt(x,BY,{label:BN3[i],ml:50,cnt:n[i]+'숟가락',pile:left3(i,n[i])})});S(g,'170 240 620 220','넣고 저은 뒤')}}
- if(no===4){if(ok('s2'))S(bg({})+e4Beakers({each:i=>({pile:(i?MODEL.warm:MODEL.cold)[2]})}),'190 205 580 255','두 번 저은 뒤')}
- if(no===5){if(ok('ycol'))S(bg({})+paperBack(232,150,496,272,0)+e5Beakers({n:MODEL.ys,cnt:1}),'210 130 540 330','흰 종이를 대고 본 모습')}
- if(no===6){if(ok('tom'))S(bg({})+e6Beakers({cnt:MODEL.ws,each:i=>({tom:tomLevel(MODEL.ws[i])})}),'220 175 520 285','방울토마토를 넣은 뒤')}
- return L}
 /* ───────── 결과 한 장: 관찰 그림 · 이미지로 복사/저장 ───────── */
 function picsHTML(list){if(!list||!list.length)return '';
  return '<section class="lb-sh-sec lb-sh-picsec"><h3><i></i>관찰 그림</h3><div class="lb-sh-pics" style="--n:'+list.length+'">'+list.map(p=>'<figure class="lb-sh-pic">'+p[0]+'<figcaption>'+esc(p[1])+'</figcaption></figure>').join('')+'</div></section>'}
@@ -423,7 +336,7 @@ function set(el,h){if(!el||el._h===h)return false;const a=document.activeElement
 function render(){const H=document.documentElement;H.classList.toggle('lb-big',!!DB.ui.big);
  $('#lbOpenMi').setAttribute('aria-pressed',!!DB.ui.open);$('#lbBigMi').setAttribute('aria-pressed',!!DB.ui.big);
  const main=$('#lbMain');
- if(!DB.cur||!EXPS[DB.cur]){H.classList.remove('lb-inrun');$('#lbSub').textContent='5학년 1학기 과학 · 3단원 용해와 용액';$('#lbChoose').hidden=true;$('#lbClearMi').hidden=true;
+ if(!DB.cur||!EXPS[DB.cur]){H.classList.remove('lb-inrun');$('#lbSub').textContent='6학년 1학기 과학 · 2단원 물체의 운동';$('#lbChoose').hidden=true;$('#lbClearMi').hidden=true;
   if(main.dataset.mode!=='home'){main.dataset.mode='home';main.className='lb-homewrap';main.innerHTML='';main._h=null}
   set(main,homeHTML());return}
  H.classList.add('lb-inrun');const v=V(),r=R(),s=curStep();
@@ -460,27 +373,21 @@ function railHTML(){const v=V(),r=R(),N=v.steps.length;let h='<div class="lb-mto
  h+='</div><div class="lb-rail-note"><p>아주 단순하게 만든 모형이에요. 실제로는 결과가 조금 다를 수 있어요.</p><p>만든 사람: 초등교사 홍지희</p></div></div>';
  return h}
 /* 이 단계의 행동 단추 */
-function actsOf(s){const r=R(),A=[],busy=!!UI.fx,no=V().no,st=r.st||{};
+function actsOf(s){const r=R(),A=[],busy=!!UI.fx||!!UI.run,st=r.st||{};
  switch(s.id){
-  case 'spoon':seqActs(A,'sp',['s1','s2','s3'],['설탕 한 숟가락 넣기','가루 바이타민 한 숟가락 넣기','탄산 칼슘 한 숟가락 넣기'],busy);break;
-  case 'shake':seqActs(A,'sh',['lid','shk'],['뚜껑 닫기','유리병 흔들기'],busy);break;
-  case 'wait':seqActs(A,'wt',['w5'],['내려놓고 5분 기다리기'],busy);break;
-  case 'w0':seqActs(A,'sc',['sp','sz','sb'],['저울 전원 켜기','영점 맞추기','유리병과 접시 올려놓기'],busy);break;
-  case 'jig':seqActs(A,'dq',['d3'],['뚜껑 닫고 천천히 흔들기'],busy);break;
-  case 'drop':if(no===2)seqActs(A,'dp',['d1','d2'],['핀셋으로 각설탕 넣고 뚜껑 닫기','가까이에서 지켜보기'],busy);
-   else seqActs(A,'tm',['t1','t2'],['비커 ㉮에 방울토마토 넣기','비커 ㉯에 방울토마토 넣기'],busy);break;
-  case 'w1':seqActs(A,'sc1',['z1','b1'],['영점 확인하기','유리병과 빈 접시 올려놓기'],busy);break;
-  case 'add':if(no===3){/* 바닥에 남았는지는 학생이 그림을 보고 판단해 '그만 넣기'를 누름(앱이 단추를 바꿔 알려 주지 않음, 독립 검토 고침) */
-    const n=st.n||[0,0,0],sp=st.stop||[0,0,0];['aG','aS','aA'].forEach((id,i)=>{const full=n[i]>=10;
-     const fin=sp[i]?'그만 넣었어요 ('+n[i]+'숟가락)':full?'열 숟가락을 다 넣었어요':'';
-     A.push({id,cell:1,grp:BN3[i]+' 비커',label:fin||'한 숟가락 넣고 젓기',dis:busy||!!fin,fin});
-     A.push({id:'q'+id.slice(1),cell:1,grp:BN3[i]+' 비커',label:'바닥에 남아 그만 넣기',dis:busy||!!fin||!n[i],pressed:!!sp[i],seen:!!sp[i],fin})})}
-   else if(no===5)seqActs(A,'ad',['y1','y2'],['비커 1에 두 숟가락 넣고 젓기','비커 2에 열 숟가락 넣고 젓기'],busy);
-   else if(no===6)seqActs(A,'wa',['b1','b2'],['비커 ㉮에 다섯 숟가락 녹이기','비커 ㉯에 열다섯 숟가락 녹이기'],busy);break;
-  case 'stir':seqActs(A,'st',['r1','r2'],['유리 막대로 두 비커 젓기','두 비커를 한 번 더 젓기'],busy);if((st.st||0)>=2&&rowDone('s2'))A.push({id:'r3',label:'차가운 물을 더 오래 젓기',dis:busy,pressed:!!r.seen.r3});break;
-  case 'paper':seqActs(A,'pp',['wp'],['비커 뒤에 흰 종이 대기'],busy);break;
-  case 'tilt':seqActs(A,'tl',['tt'],['두 비커를 살짝 기울이기'],busy);break;
-  case 'more':A.push(no===4?{id:'cool',label:'용액을 천천히 식히기',dis:busy}:{id:'m6',label:'비커 ㉮에 백설탕 더 녹이기',dis:busy});break}
+  case 'shot':seqActs(A,'ph',['p1','p2'],['첫 번째 사진 찍기','타이머로 5초 뒤 두 번째 사진 찍기'],busy);break;
+  case 'park':seqActs(A,'pk',['k1v','k2v'],['공원의 처음 모습 보기','얼마 뒤 모습 보기'],busy);break;
+  case 'read':seqActs(A,'zm',['zR','zB'],['빨간색 자동차 앞부분 확대하기','파란색 자동차 앞부분 확대하기'],busy);break;
+  case 'calc1':seqActs(A,'c1',['qR','qB'],['빨간색 자동차 식 세우기','파란색 자동차 식 세우기'],busy);break;
+  case 'calc2':seqActs(A,'c2',['qG','qY'],['초록색 자동차 식 세우기','노란색 자동차 식 세우기'],busy);break;
+  case 'order':seqActs(A,'od',['ordr'],['구한 속력을 표에 모으기'],busy);break;
+  case 'runG':case 'runY':{const k=s.id==='runG'?'G':'Y',rs=runState(k),run=!!(UI.run&&UI.run.k===k),stopped=run&&UI.run.stopAt!=null;
+   if(rs.ok)break;
+   const ph=run?2:rs.wound?1:0;
+   A.push({id:'w'+k,label:'1/3 · 출발선에 놓고 태엽 감기',dis:!!UI.fx||run||ph!==0,pressed:ph>0,hide:ph!==0});
+   A.push({id:'go'+k,label:'2/3 · ‘출발!’ 초시계 시작',dis:!!UI.fx||ph!==1,pressed:ph>1,hide:ph!==1});
+   A.push({id:'st'+k,label:'3/3 · 결승선! 초시계 멈춤',dis:ph!==2||stopped,pressed:stopped,hide:ph!==2,stop:1});break}
+  case 'more':A.push({id:'m4',label:'교통수단 표 보기',dis:busy});break}
  return A}
 /* 차례대로 하는 행동: 지금 할 것 하나만 큰 단추로(한 일은 단추 위 차례 줄에 표시) */
 function seqActs(A,key,ids,L0,busy){const c=R().st[key]||0,n=ids.length;
@@ -493,31 +400,25 @@ function footHTML(v,r,s){const N=v.steps.length;
  return h+'<button type="button" class="lb-btn lb-pri'+(priOn&&priAct==='next'?' lb-go':'')+'" data-act="'+priAct+'" data-f="pri"'+(priOn?'':' disabled')+'>'+esc(pri)+ic('right')+'</button>'}
 
 /* ───────── 오늘의 실험: 탐구 문제 · 이렇게 해요 · 이것을 살펴봐요 (결과는 보여 주지 않음) ───────── */
-function eyeArt(x,y){return '<g transform="translate('+x+' '+y+')"><path d="M-26 0 Q0 -20 26 0 Q0 20 -26 0Z" fill="#FFFFFF" stroke="#2A3342" stroke-width="3"/><circle r="8" fill="#2A3342"/></g>'}
-function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g=bg({}),vb='0 0 960 540';
- if(no===1){if(k==='label'){g+=glassJar(400,BY,{label:'설탕'})+glassJar(560,BY,{label:''})+pen(660,330,LCOL.k,30);vb='310 230 400 230'}
-  if(k==='water'){g+=glassJar(480,BY,{label:'설탕',lv:2/3});vb='370 240 220 220'}
-  if(k==='spoon'){g+=glassJar(480,BY,{lv:2/3})+spoonArt(500,BY-196,30,PW,PWS);vb='370 190 240 270'}
-  if(k==='shake'){g+=glassJar(440,BY,{lv:2/3,lid:1})+'<g transform="translate(600 330) scale(.6)">'+stopwatch(0,0,'05:00',1)+'</g>';vb='350 220 330 240'}}
- if(no===2){if(k==='fill'){g+=glassJar(480,BY,{lv:.5,lid:1});vb='380 240 200 220'}
-  if(k==='weigh'){g+=escale(ES.x,{item:jar2(470,330,{noShadow:1})+CUBE_ON_DISH(610)});vb='360 140 400 320'}
-  if(k==='drop'){g+=glassJar(470,BY,{lv:.5})+tweezArt(500,BY-176,18,'')+cubeArt(500,BY-170,.7);vb='370 150 230 310'}
-  if(k==='weigh2'){g+=escale(ES.x,{item:jar2(470,330,{noShadow:1})+dishArt(610,330,'')});vb='360 140 400 320'}}
- if(no===3){if(k==='label'){g+=beakerArt(400,BY,{label:'설탕'})+beakerArt(560,BY,{label:''});vb='310 260 340 200'}
-  if(k==='cyl'){g+=beakerArt(420,BY,{ml:50})+cylArt(560,BY,100);vb='330 180 300 280'}
-  if(k==='add'){g+=beakerArt(480,BY,{ml:50,label:'설탕',rod:1})+spoonArt(450,BY-196,-20,PW,PWS);vb='370 170 240 290'}
-  if(k==='stop'){g+=beakerArt(480,BY,{ml:50,pile:1});vb='390 260 180 200'}}
- if(no===4){if(k==='water'){g+=e4Beakers({});vb='200 200 560 260'}
-  if(k==='add'){g+=e4Beakers({})+spoonArt(B4[0]-30,BY-196,-20,'#F4F8FB','#9FB4C4')+spoonArt(B4[1]-30,BY-196,-20,'#F4F8FB','#9FB4C4');vb='200 200 560 260'}
-  if(k==='stir'){g+=e4Beakers({each:()=>({rod:1})});vb='200 180 560 280'}}
- if(no===5){const bk=o=>e5Beakers(o||{});if(k==='water'){g+=bk();vb='230 210 500 250'}
-  if(k==='add'){g+=bk()+spoonArt(B5[0]-30,BY-250,-20,YSC,YSS);vb='230 160 500 300'}
-  if(k==='paper'){g+=paperBack(232,150,496,272,0)+bk();vb='210 130 540 330'}
-  if(k==='tilt'){g+='<g transform="rotate(-14 408 436)">'+beakerArt(330,BY,{big:1,ml:150,label:'비커 1'})+'</g>'+'<g transform="rotate(-14 708 436)">'+beakerArt(630,BY,{big:1,ml:150,label:'비커 2'})+'</g>';vb='200 150 560 310'}}
- if(no===6){const bk=()=>e6Beakers({});if(k==='water'){g+=bk();vb='230 210 500 250'}
-  if(k==='add'){g+=bk()+spoonArt(B6[0]-30,BY-250,-20,PW,PWS);vb='230 160 500 300'}
-  if(k==='drop'){g+=bk()+tweezArt(B6[0]+40,BY-250,18,'')+tomatoArt(B6[0]+8,BY-250,16);vb='230 150 500 310'}
-  if(k==='eye'){g+=bk()+eyeArt(160,BY-110);vb='110 210 620 250'}}
+function cardTxt(x,y,w,lines){let g='<rect x="'+(x-w/2)+'" y="'+y+'" width="'+w+'" height="'+(lines.length*44+28)+'" rx="16" fill="var(--w-label)" stroke="var(--lb-sci)" stroke-width="3"/>';
+ lines.forEach((t,i)=>{g+='<text x="'+x+'" y="'+(y+50+i*44)+'" font-size="28" text-anchor="middle" font-weight="800" fill="var(--w-labeltx)">'+t+'</text>'});return g}
+function introPic(no,k){const n0=NAR,l0=LEG;NAR=true;LEG=[];let g='',vb='0 0 960 540';
+ if(no===1){if(k==='tri'){g=phoneOnTri(0);vb='110 40 620 440'}
+  if(k==='shot'){g=phoneOnTri(0)+'<g transform="translate(830 150) scale(.8)">'+stopwatch(0,0,'00.05',1)+'</g>';vb='110 40 800 440'}
+  if(k==='cmp'){g=bg({})+photoArt(40,150,420,197,roomIn(0,420))+'<rect x="500" y="150" width="420" height="197" rx="6" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="2" stroke-dasharray="10 8"/>'+qmark(710,248);vb='20 120 920 250'}
+  if(k==='park'){g=bg({})+photoArt(270,130,420,280,park(0));vb='240 110 480 320'}}
+ if(no===2){if(k==='line'){g=track2({line:1,tape:true,cars:false});vb='60 90 820 330'}
+  if(k==='tri'){g=track2({line:1,tape:true,tri:1,cars:false});vb='0 64 960 386'}
+  if(k==='run'){g=track2({line:1,tape:true,tri:1,key:0});vb='40 90 700 330'}
+  if(k==='read'){g=bg({})+photo5(240,90,.5)+'<g fill="none" stroke="var(--lb-sci)" stroke-width="6"><circle cx="330" cy="200" r="46"/><path d="M364 234 L410 280" stroke-linecap="round"/></g>';vb='220 70 520 260'}}
+ if(no===3){if(k==='line'){g=track3({line:1});vb='40 110 620 270'}
+  if(k==='finish'){g=track3({line:1,fin:1});vb='40 110 900 300'}
+  if(k==='go'){g=track3({line:1,fin:1,k:'G',key:0,sw:'00.00',swOn:1});vb='40 50 920 360'}
+  if(k==='stop'){g=track3({line:1,fin:1,k:'G',pos:100});vb='40 110 900 300'}}
+ if(no===4){if(k==='table'){g=bgTop()+speedTable({rows:1});vb='120 80 720 340'}
+  if(k==='calc'){g=bgTop()+cardTxt(480,180,560,['속력 =','이동 거리 ÷ 걸린 시간']);vb='180 150 600 180'}
+  if(k==='round'){g=bgTop()+cardTxt(480,180,560,['소수 둘째 자리에서','반올림해요']);vb='180 150 600 180'}
+  if(k==='order'){g=bgTop()+speedTable({rows:1,sp:['?','?','?','?']});vb='120 80 720 340'}}
  const s=svg(g,'',vb).replace(' role="img" aria-label=""',' aria-hidden="true"');NAR=n0;LEG=l0;return s}
 function introBody(){const v=V();
  return '<div class="lb-intro"><div class="lb-iq"><span class="lb-itag">'+ic('flask')+'탐구 문제</span><p>'+esc(v.q)+'</p></div>'+
@@ -533,27 +434,37 @@ function lensOf(s,g){let sp=s.spot;if(typeof sp==='function')sp=sp();if(!sp||!(a
   '<clipPath id="'+id+'"><circle cx="'+lx+'" cy="'+ly+'" r="'+R2+'"/></clipPath><circle cx="'+lx+'" cy="'+ly+'" r="'+(R2+7)+'" fill="var(--w-label)"/>'+
   '<g clip-path="url(#'+id+')" class="lb-lensin"><rect x="'+(lx-R2)+'" y="'+(ly-R2)+'" width="'+2*R2+'" height="'+2*R2+'" fill="var(--w-wall)"/><g transform="translate('+lx+' '+ly+') scale('+z+') translate('+(-x)+' '+(-y)+')">'+g.replace(/ id="[^"]*"/g,'').replace(/<g class="lb-lens"[\s\S]*$/,'')+'</g></g>'+
   '<circle cx="'+lx+'" cy="'+ly+'" r="'+R2+'" fill="none" stroke="var(--lb-lens)" stroke-width="7"/></g>'}
-function homeArt(no){NAR=true;LEG=[];let g=bg({}),vb='120 70 720 420';
- if(no===1){J1.forEach((x,i)=>{g+=glassJar(x,BY,{label:JN[i],lv:2/3})});vb='170 230 620 240'}
- if(no===2){g+=escale(ES.x,{item:jar2(470,330,{noShadow:1})+CUBE_ON_DISH(610)});vb='340 130 440 330'}
- if(no===3){B3.forEach((x,i)=>{g+=beakerArt(x,BY,{label:BN3[i],ml:50})});vb='160 236 640 228'}
- if(no===4){g+=e4Beakers({});vb='180 200 600 250'}
- if(no===5){g+=e5Beakers({})+heap(760,BY,YSC,YSS);vb='210 205 620 245'}
- if(no===6){g+=e6Beakers({})+tomatoArt(762,BY-22,22);vb='210 205 620 245'}
+function homeArt(no){NAR=true;LEG=[];let g='',vb='0 0 960 540';
+ if(no===1){g=phoneOnTri(0);vb='110 40 620 440'}
+ if(no===2){g=track2({line:1,tape:true,key:0});vb='40 90 800 320'}
+ if(no===3){g=track3({line:1,fin:1,k:'G',key:0});vb='40 110 860 290'}
+ if(no===4){g=bgTop()+speedTable({rows:1});vb='120 80 720 340'}
  const s=svg(g,'실험 '+no+' 처음 모습',vb);NAR=false;LEG=[];return s}
 function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fin?'끝냄 · 결과 보기':(r.step+1)+'단계부터 이어서'):'실험 시작하기';
- return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','jar','scl','beaker','thermo','beaker','tomato'][v.no])+'</i><span><b>'+st+'</b><span>교과서 실험</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
- return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>5학년 1학기 과학</em>3. 용해와 용액</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 보고, 내 눈으로 본 것을 기록해요.</p></div>'+
- '<div class="lb-ex lb-ex5 lb-ex6">'+['e1','e2','e3','e4','e5','e6'].map(card).join('')+'</div>'+
- '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 저울의 무게(91.6 g), 소금과 백반이 바닥에 남는 숟가락 수, 넣는 숟가락 수는 교과서 버전 앱의 예시 값이에요. 바닥에 남은 가루의 크기, 방울토마토가 뜨는 높이, 용액이 비커 벽에 남는 모습, 백반 알갱이의 모습은 이 실험관에서 정한 모습이에요. 실제 실험에서는 내가 관찰한 결과를 그대로 써요.</span></p></div>'}
+ return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','camera','car','timer','calc'][v.no])+'</i><span><b>'+st+'</b><span>'+(v.no===4?'교과서 활동':'교과서 실험')+'</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
+ return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>6학년 1학기 과학</em>2. 물체의 운동</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 보고, 내 눈으로 본 것을 기록해요.</p></div>'+
+ '<div class="lb-ex lb-ex4">'+['e1','e2','e3','e4'].map(card).join('')+'</div>'+
+ '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 자동차가 5초 동안 이동한 거리(135 cm · 122 cm), 100 cm를 이동하는 데 걸린 시간(4.2초 · 5.8초), 속력 표와 교통수단의 값은 교과서 버전 앱의 예시 값이에요. 교실과 공원 그림 속 물체의 자리와 자동차 그림의 크기는 이 실험관에서 정한 모습이에요. 초시계 기록은 내가 누른 그대로 남아요. 실제 실험에서는 내가 잰 결과를 그대로 써요.</span></p></div>'}
+const MOREQ={4:['배와 자전거 중 더 빠른 것은?',['배','자전거'],0,'배의 속력은 138 ÷ 4 = 34.5 km/h, 자전거의 속력은 20 ÷ 1 = 20 km/h이므로 배가 자전거보다 더 빨라요. 걸린 시간만 보면 안 되고 속력을 견줘요.']};
+const LABNAME='motion';
+function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
+ if(no===1){if(ok('c1')||ok('c2'))S(bg({})+photoArt(40,150,420,197,roomIn(0,420),'처음')+photoArt(500,150,420,197,roomIn(5,420),'5초 뒤'),'20 110 920 250','교실 사진 두 장');
+  if(ok('k1')||ok('k2'))S(bg({})+photoArt(40,140,420,280,park(0),'처음')+photoArt(500,140,420,280,park(1),'얼마 뒤'),'20 100 920 330','공원 그림')}
+ if(no===2){if(ok('dR')||ok('dB'))S(track2({line:1,tape:true,pos:DIST,key:0}),'40 90 860 320','5초 뒤 사진')}
+ if(no===3){['G','Y'].forEach(k=>{if(ok('t'+k)){const cs=r.st.sw[k];S(track3({line:1,fin:1,k,pos:100,sw:swTxt(cs),swOn:0}),'40 50 920 330',(k==='G'?'초록색':'노란색')+' 자동차 · 초시계 '+swTxt(cs)+'초')}})}
+ if(no===4){if(ok('sR')||ok('sG'))S(bgTop()+speedTable({rows:1,sp:spOf()}),'120 80 720 340','속력 표')}
+ return L}
 /* ───────── 동작 ───────── */
-function fx(id,ms,after){UI.fx={id,n:++UI.nonce};render();later(()=>{UI.fx=null;if(after)after();save();render()},ms)}
+function fx(id,ms,after){const n=++UI.nonce;UI.fx={id,n,t0:performance.now(),ms};render();
+ /* 움직이는 동안 그림만 다시 그림(진행에 따라 그리는 장면) */
+ const tick=()=>{if(!UI.fx||UI.fx.n!==n)return;renderScene();requestAnimationFrame(tick)};if(!RM)requestAnimationFrame(tick);
+ later(()=>{UI.fx=null;if(after)after();save();render()},ms)}
 function doAnim(id,ms){fx(id,ms,()=>{const r=R();if(r)r.done[id]=true;const p=$('#lbFoot [data-act="next"]');if(p&&!p.disabled)p.focus({preventScroll:true})})}
 function act(a,el){const v=V(),r=R();
  if(a==='prev'){if(r.step>0)go(r.step-1);return}
  if(a==='next'){if(canNext())go(r.step+1);return}
  if(a==='home'){DB.cur=null;resetUI();save();render();scrollTo(0,0);return}
- if(a==='doit'){const s=curStep();if(UI.fx)return;doAnim(s.id,s.dur||1500);return}
+ if(a==='doit'){const s=curStep();if(UI.fx||UI.run)return;if(idxOf('pred')>=0&&r.step>idxOf('pred'))r.obs=1;doAnim(s.id,s.dur||1500);return}
  if(a==='pick'){const s=curStep(),o=s.opts[+el.dataset.i];if(UI.fx||!o)return;if(o.bad){flash(o.bad);return}doAnim(s.id,s.dur||1500);return}
  if(a==='replay'){const s=curStep();doAnim(s.id,s.dur||1500);return}
  if(a==='check'){if(!planChanged(r))return;r.planLast=JSON.parse(JSON.stringify(r.plan));r.planOk=planGood(v,r);save();render();return}
@@ -566,41 +477,50 @@ function act(a,el){const v=V(),r=R();
  if(a==='say'){toggleSay();return}
  if(a==='rail'){UI.rail=!UI.rail;render();return}}
 /* 실험 단계의 행동 */
-function doX(id){const r=R(),s=curStep(),st=r.st,no=V().no;if(UI.fx)return;
- if(id==='cool'||id==='m6'){UI.mq.cur=id;fx(id,id==='cool'?3000:2600,()=>{r.seen[id]=1;UI.mq[id]=1;UI.mq.both=1});return}
+/* 실험 단계의 행동 */
+function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
+ if(id==='m4'){UI.mq.cur=id;fx(id,1200,()=>{r.seen[id]=1;UI.mq[id]=1;UI.mq.both=1});return}
+ if(/^st[GY]$/.test(id)){stopRun(id.slice(2));return}
+ if(UI.run)return;
  r.act[s.id]=1;if(idxOf('pred')>=0&&r.step>idxOf('pred'))r.obs=1;
  const seq=(key,ids,ms,after)=>{const i=ids.indexOf(id),c=st[key]||0;if(i<0||c!==i)return;UI.mq.cur=id;fx(id,Array.isArray(ms)?ms[i]:ms,()=>{st[key]=i+1;r.seen[id]=1;if(after)after(i)})};
- const pendAt=(row,last)=>i=>{if(i===last&&!rowDone(row))r.pend[row]=1};
+ const pendOf=rows=>i=>{const row=rows[i];if(!rowDone(row))r.pend[row]=1};
  switch(s.id){
-  case 'spoon':seq('sp',['s1','s2','s3'],1300);return;
-  case 'shake':seq('sh',['lid','shk'],[1100,2000]);return;
-  case 'wait':seq('wt',['w5'],2200);return;
-  case 'w0':seq('sc',['sp','sz','sb'],[1000,1000,1300],pendAt('m0',2));return;
-  case 'jig':seq('dq',['d3'],2200);return;
-  case 'drop':if(no===2)seq('dp',['d1','d2'],[1700,3000]);else seq('tm',['t1','t2'],[1500,1500]);return;
-  case 'w1':seq('sc1',['z1','b1'],[1000,1300],pendAt('m1',1));return;
-  case 'add':if(no===3){st.n=st.n||[0,0,0];st.stop=st.stop||[0,0,0];const look='비커 바닥을 다시 살펴봐요. 녹지 않고 바닥에 남은 것이 있으면 더 넣지 않아요.';
-    const q=['qG','qS','qA'].indexOf(id);
-    if(q>=0){if(st.stop[q]||!st.n[q])return;if(left3(q,st.n[q])>0){st.stop[q]=1;r.seen[id]=1;const row=q===1?'lS':'lA';if(!rowDone(row))r.pend[row]=1;save();render()}else flash(look);return}
-    const i=['aG','aS','aA'].indexOf(id);if(i<0||st.stop[i]||st.n[i]>=10)return;
-    if(left3(i,st.n[i])>0){flash(look);return}   /* 이미 바닥에 남았는데 더 넣으려 할 때만 */
-    st.n[i]++;UI.mq.cur=id;
-    fx(id,1200,()=>{r.seen[id]=1;if(i===0&&st.n[0]>=10)r.seen.gD=1});return}
-   if(no===5)seq('ad',['y1','y2'],1500);else seq('wa',['b1','b2'],1500);return;
-  case 'stir':if(id==='r3'){if((st.st||0)<2)return;UI.mq.cur=id;fx(id,1600,()=>{r.seen.r3=1});return}seq('st',['r1','r2'],1500);return;
-  case 'paper':seq('pp',['wp'],1200);return;
-  case 'tilt':seq('tl',['tt'],2400);return}}
-/* 숫자 적기: 화면 숫자와 같은지만 알려 줌. 같은 값으로 다시 누르면 세지 않음 */
+  case 'shot':seq('ph',['p1','p2'],[700,5600]);return;
+  case 'park':seq('pk',['k1v','k2v'],[900,900]);return;
+  case 'read':seq('zm',['zR','zB'],[800,800],pendOf(['dR','dB']));return;
+  case 'calc1':seq('c1',['qR','qB'],[600,600],pendOf(['sR','sB']));return;
+  case 'calc2':seq('c2',['qG','qY'],[600,600],pendOf(['sG','sY']));return;
+  case 'order':seq('od',['ordr'],900);return;
+  case 'runG':case 'runY':{const k=s.id==='runG'?'G':'Y',rs=runState(k);if(rs.ok)return;
+   if(id==='w'+k&&!rs.wound){UI.runMsg='';fx(id,1000,()=>{rs.wound=1});return}
+   if(id==='go'+k&&rs.wound)startRun(k);return}}}
+/* 실험 3: 초시계는 학생이 직접 시작하고 멈춤(멈춘 숫자는 그대로 남김) */
+function startRun(k){UI.run={k,t0:performance.now(),stopAt:null};UI.runMsg='';render();
+ const T=MODEL.T[k],tick=()=>{const u=UI.run;if(!u||u.k!==k)return;const t=(performance.now()-u.t0)/1000;
+  if((u.stopAt!=null&&t>=Math.max(T*1.2,u.stopAt+.4))||(u.stopAt==null&&t>=T*1.9)){endRun(k);return}
+  renderScene();requestAnimationFrame(tick)};requestAnimationFrame(tick)}
+function stopRun(k){const u=UI.run;if(!u||u.k!==k||u.stopAt!=null)return;u.stopAt=(performance.now()-u.t0)/1000;render()}
+function endRun(k){const u=UI.run,r=R(),rs=runState(k),T=MODEL.T[k],row='t'+k;UI.run=null;rs.wound=0;
+ if(u.stopAt==null){rs.miss=null;UI.runMsg='멈춤 단추를 누르지 못했어요. 태엽을 다시 감고 재요.'}
+ else{const cs=Math.floor(u.stopAt*100),s=cs/100;
+  if(Math.abs(s-T)>MODEL.tol){rs.miss=cs;UI.runMsg=(s<T?'자동차 앞부분이 결승선에 닿기 전에 멈췄어요.':'자동차 앞부분이 결승선을 지난 뒤에 멈췄어요.')+' 태엽을 다시 감고 재요.'}
+  else{r.st.sw=r.st.sw||{};r.st.sw[k]=cs;rs.ok=1;rs.miss=null;r.seen['s'+k]=1;if(!rowDone(row))r.pend[row]=1;UI.runMsg=''}}
+ save();render()}
+/* 숫자 적기: 화면(눈금·초시계·내 계산)과 같은지만 알려 줌. 같은 값으로 다시 누르면 세지 않음 */
 function tryKey(k,val){const r=R();if(r.last[k]===val)return -1;r.last[k]=val;r.tries[k]=(r.tries[k]||0)+1;return r.tries[k]}
-function trial(row){const r=R(),R0=ROWS[row];if(!R0||R0.t!=='num'||!numOpen(row))return;const txt=String(UI.inp[row]||'').trim();
+const decN=t=>(String(t).split('.')[1]||'').length;
+function trial(row){const r=R(),R0=ROWS[row];if(!R0||R0.t!=='num'||!numOpen(row))return;const txt=String(UI.inp[row]||'').trim(),want=rowV(row);
  if(!txt||!/^\d+(\.\d+)?$/.test(txt)){UI.fb[row]=[0,'숫자로 써요.'];render();return}
- if(txt===R0.v){r.rec[row]={ok:1,v:R0.v};delete r.pend[row];UI.inp[row]='';UI.mq.hl=false;UI.attn=false;UI.fb={};UI.fb[row]=[1,R0.dec?'잘 읽고 적었어요.':'잘 적었어요.'];save();render();const p=$('#lbFoot [data-act="next"]:not(:disabled)');if(p&&isDone(r.step))p.focus({preventScroll:true});return}
+ if(+txt===+want&&decN(txt)<=Math.max(1,R0.rd)){r.rec[row]={ok:1,v:want};delete r.pend[row];UI.inp[row]='';UI.attn=false;UI.fb={};UI.fb[row]=[1,R0.calc!=null?'잘 계산해서 적었어요.':'잘 읽고 적었어요.'];save();render();const p=$('#lbFoot [data-act="next"]:not(:disabled)');if(p&&isDone(r.step))p.focus({preventScroll:true});return}
  const t=tryKey(row+':t',txt);
  if(t===-1){UI.fb[row]=[0,'숫자가 그대로예요. 다시 봐요.'];render();return}
- if(R0.dec&&txt.indexOf('.')<0&&+txt===Math.floor(+R0.v))UI.fb[row]=[0,'소수점 아래 첫째 자리까지 써요. 화면의 숫자를 그대로 써요.'];
- else if(R0.u==='숟가락째')UI.fb[row]=[0,t>=2?'비커 위에 적힌 숟가락 수를 봐요. 그 숟가락을 넣었을 때 처음으로 바닥에 남았어요.':'비커 위에 적힌 숟가락 수를 다시 봐요.'];
- else{UI.fb[row]=[0,t>=2?'반짝이는 화면의 숫자를 한 자리씩 견주어 써요.':'화면의 숫자와 달라요. 다시 봐요.'];if(t>=2)UI.mq.hl=true}
- save();render()}
+ let m;
+ if(decN(txt)>R0.rd)m=R0.rd===0?'소수 첫째 자리에서 반올림해 일의 자리까지 써요.':'소수 둘째 자리에서 반올림해 소수 첫째 자리까지 써요.';
+ else if(R0.raw!=null)m=+txt===Math.floor(R0.raw)?'반올림해요. 앞부분이 작은 눈금 몇 칸째에 있는지 봐요.':t>=2?'빨간 점선이 지나는 곳의 큰 눈금 숫자부터 다시 읽어요. 작은 눈금 한 칸은 1 mm예요.':'자동차 앞부분(빨간 점선)이 가리키는 눈금을 다시 읽어요.';
+ else if(R0.sw)m=+txt===Math.floor(R().st.sw[R0.sw]/10)/10?'반올림해요. 소수 둘째 자리 숫자가 5 이상이면 올려요.':'초시계에 멈춘 숫자를 다시 봐요.';
+ else m=t>=2?'이동 거리 ÷ 걸린 시간을 소수 둘째 자리까지 계산한 뒤 반올림해요.':'나눗셈을 다시 해 봐요. 이동 거리 ÷ 걸린 시간이에요.';
+ UI.fb[row]=[0,m];save();render()}
 function rowRec(row){const r=R(),R0=ROWS[row],D=UI.draft[row]||{};let ok,wrong=[],key;
  if(R0.t==='note'){if(!rowReady(row))return;r.rec[row]={ok:1,t:R0.f.map((f,j)=>String((D.t||[])[j]||'').trim())};UI.fb={};UI.fb[row]=[1,'살펴본 것을 기록했어요.'];save();render();const p=$('#lbFoot [data-act="next"]:not(:disabled)');if(p&&isDone(R().step))p.focus({preventScroll:true});return}
  if(R0.t==='sel'){if(!rowReady(row))return;const f=D.f||[];fOf(row).forEach((x,j)=>{if(f[j]!==x.ok)wrong.push(j)});ok=!wrong.length;key=(R0.crit?r.st[R0.crit]+':':'')+f.join(',')}
@@ -675,3 +595,4 @@ if(DB.cur&&EXPS[DB.cur]){if(!DB.runs[DB.cur])DB.runs[DB.cur]=newRun();enterStep(
 render();
 
 addEventListener('beforeprint',()=>{const s=$('#lbSheet .lb-sh-in');if(s)s.style.zoom=''});addEventListener('afterprint',()=>{try{fitAll()}catch(e){}});
+
