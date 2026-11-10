@@ -61,7 +61,7 @@ function toolLabel(cx,yb,t){const T='<text x="'+cx+'" text-anchor="middle" font-
  return T+' y="'+(yb-21)+'">'+t.slice(0,m)+'</text>'+T+' y="'+yb+'">'+t.slice(m+1)+'</text>'}
 function boxArt(x){return '<g transform="translate('+x+' 300)"><path d="M-130 -60 L-100 -96 H150 L120 -60Z" fill="var(--w-kraft-s)"/><rect x="-130" y="-60" width="250" height="196" rx="8" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="2"/><path d="M120 -60 L150 -96 V100 L120 136Z" fill="var(--w-kraft-s)"/>'+(NAR?'':'<rect x="-60" y="-10" width="110" height="44" rx="8" fill="var(--w-label)"/><text x="-5" y="20" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-labeltx)">준비물</text>')+'</g>'}
 
-/* ───────── 용해와 용액: 실험 기구 그림(모두 직접 그린 SVG) ───────── */
+/* ───────── 실험 기구 그림(비커·점적병·홈판 등, 모두 직접 그린 SVG) ───────── */
 const WC='#BFE3F5',WS='#6FA9CC',GLS='var(--w-glass-s)',PW='#FFFFFF',PWS='#A9B4BC';
 const VITC='#F2C230',VITS='#B88A10',YSC='#B9762E',YSS='#7E4D18';
 function mixc(a,b,t){const h=x=>[1,3,5].map(i=>parseInt(x.substr(i,2),16));const A=h(a),B=h(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
@@ -82,7 +82,7 @@ function swirl(cx,y,w){return '<g'+an('lb-a-fade',0)+'><path d="M'+(cx-w)+' '+y+
 /* 핀셋 */
 function tweezArt(x,y,rot,item){return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+')"><path d="M-4 -110 L-10 -6 L-4 -4 L2 -108Z" fill="#B9C2CA" stroke="#5D6B78" stroke-width="2"/><path d="M4 -110 L10 -6 L4 -4 L-2 -108Z" fill="#CBD3DB" stroke="#5D6B78" stroke-width="2"/>'+(item||'')+'</g>'}
 /* 각설탕 */
-/* ── 비커. o: big(250 mL) · ml 물의 양 · tint · op · pile · fall 떨어지는 가루 색 · stir 젓는 중 · rod · label · cnt 위 이름 · steam · tom 방울토마토 높이(0~1) · film 벽에 남은 용액 ── */
+/* ── 비커. o: big(250 mL) · ml 물의 양 · tint · op · pile · fall 떨어지는 가루 색 · stir 젓는 중 · rod · label · cnt 위 이름 · steam · film 벽에 남은 용액 ── */
 function bkDim(o){return o.big?{w:78,h:206,k:.8}:{w:62,h:150,k:1.2}}
 function beakerArt(cx,base,o){o=o||{};const D=bkDim(o),w=D.w,h=D.h,top=base-h;let g=o.noShadow?'':shadow(cx,base+4,w+8);
  const out='M'+(cx-w)+' '+top+' V'+(base-10)+' Q'+(cx-w)+' '+base+' '+(cx-w+10)+' '+base+' H'+(cx+w-10)+' Q'+(cx+w)+' '+base+' '+(cx+w)+' '+(base-10)+' V'+top;

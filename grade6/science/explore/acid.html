@@ -841,7 +841,7 @@ html .lb-doit.lb-hold:active{background:var(--lb-sci);color:var(--lb-onsci)}
 .lb-cellb .lb-ic{width:.85rem;height:.85rem}
 .lb-cellb{padding:0 .15rem;gap:.15rem}
 
-/* 여러 가지 기체 실험관: 마개·펌프 누르기 · 고무풍선 크기 · 동전 · 뚜껑 열기 */
+/* 움직임 모음(누르기·크기·뚜껑) */
 .lb-a-press{animation-name:lb-press;animation-duration:.5s;animation-iteration-count:4;animation-timing-function:ease-in-out}
 @keyframes lb-press{0%,100%{transform:translateY(0)}50%{transform:translateY(8px)}}
 .lb-a-pump{animation-name:lb-pumpk;animation-duration:.6s;animation-iteration-count:3;animation-timing-function:ease-in-out}
@@ -855,7 +855,7 @@ html .lb-doit.lb-hold:active{background:var(--lb-sci);color:var(--lb-onsci)}
 .lb-a-rub{animation-name:lb-rub;animation-duration:.45s;animation-iteration-count:3;animation-timing-function:ease-in-out}
 @keyframes lb-rub{0%,100%{transform:translateY(0)}50%{transform:translateY(-26px)}}
 .lb-a-out{animation-fill-mode:both}
-/* 용해와 용액: 흔들기 · 젓기 · 기울이기 · 일렁임 */
+/* 움직임: 흔들기 · 젓기 · 기울이기 · 일렁임 */
 .lb-a-jig{transform-origin:50% 100%;animation-name:lb-jig;animation-duration:1.8s;animation-timing-function:ease-in-out}
 @keyframes lb-jig{0%,100%{transform:rotate(0)}12%,46%,80%{transform:translateY(-16px) rotate(-8deg)}29%,63%{transform:translateY(-16px) rotate(8deg)}}
 .lb-a-stir{animation-name:lb-stir;animation-duration:.6s;animation-iteration-count:2;animation-timing-function:ease-in-out}
@@ -3103,7 +3103,7 @@ function stepDef(E,id){const no=E.no;
    why:'두 시험지를 모두 넣어 보아야 용액마다 견줄 수 있어요.',care:['care',SAFE.cap]},
   fill2:Object.assign({},fillS,{g:2,n:'다른 홈판에 용액 넣기',t:'다른 홈판의 각 홈에도 용액을 3분의 1 정도씩 넣어요',act:'다른 홈판에 용액 넣기'}),
   phen:{g:2,n:'페놀프탈레인 용액 떨어뜨리기',t:'각 홈에 페놀프탈레인 용액을 한두 방울씩 떨어뜨려요',k:'meas',rows:['ph'],ids:['pD'],acts:['여섯 홈에 한두 방울씩 떨어뜨리기'],look:'홈 속 용액의 색깔을 하나씩 봐요.',
-   know:'페놀프탈레인 용액은 색깔이 없고 투명해요.',care:['care',SAFE.phen]},
+   know:'페놀프탈레인 용액은 색깔이 없고 투명해요.',care:['care',SAFE.phen+' '+SAFE.trash]},
   hot:{g:1,n:'뜨거운 물 붓기',t:'잘게 자른 붉은 양배추에 뜨거운 물을 붓고 색깔이 우러날 때까지 기다려요',act:'선생님과 함께 뜨거운 물 붓기',look:'비커 속 물의 색깔을 봐요.',k:'scene',dur:2600,
    why:'양배추가 잠길 만큼 물을 부어야 색깔이 잘 우러나요.',care:['care',SAFE.hot]},
   strain:{g:1,n:'걸러서 점적병에 담기',t:'우려낸 용액을 식힌 뒤 체로 걸러 점적병에 담아요',act:'식힌 뒤 거르고 담기',look:'점적병에 담긴 용액의 색깔을 봐요.',k:'scene',dur:2600,
@@ -3120,20 +3120,20 @@ function stepDef(E,id){const no=E.no;
   wait:{g:2,n:'뚜껑 닫고 일주일 관찰하기',t:'홈판의 뚜껑을 닫고 안전한 곳에 두며 일주일 동안 관찰해요',k:'meas',rows:['wA','wB'],ids:['d1','d3','d7'],acts:['뚜껑 닫고 하루 두기','사흘째까지 두기','일주일째까지 두기'],look:'날마다 두 줄의 물질과 용액을 봐요.',
    why:'넣은 직후의 모습과 며칠 뒤의 모습을 견주어 볼 수 있어요.',care:['know','준비한 재료에 따라 결과가 조금씩 다를 수 있으니 본 대로 기록해요.']},
   more:{g:3,n:'더 알아보기',t:'대리암 조각과 두부를 넣어 봐요',k:'more',ids:['mm'],acts:['대리암 조각과 두부 넣기'],look:'두 줄의 대리암 조각과 두부를 봐요.',
-   why:'대리암 조각의 주요 성분은 탄산 칼슘, 두부의 주요 성분은 단백질이에요.',care:['care',SAFE.tw],pre:'먼저 해 보고 골라요.',know:'대리암 조각과 두부를 두 줄에 모두 넣었어요. 며칠 뒤의 모습은 이 실험관에서 정한 모습이에요.'},
+   know:'대리암 조각의 주요 성분은 탄산 칼슘, 두부의 주요 성분은 단백질이에요. 며칠 뒤의 모습은 이 실험관에서 정한 모습이에요.',care:['care',SAFE.tw]},
   /* 실험 5 */
   baseA:{g:1,n:'첫째 줄에 묽은 염산 넣기',t:'첫째 줄 여섯 홈에 묽은 염산을 10방울씩 넣어요',act:'10방울씩 넣기',look:'여섯 홈에 같은 양이 들어갔는지 봐요.',k:'scene',dur:2000,
    why:'여섯 홈에 같은 양을 넣어야 넣는 방울 수에 따라 견줄 수 있어요.',care:['know',SAFE.one]},
   cabA:{g:1,n:'붉은 양배추 용액 넣기',t:'첫째 줄 여섯 홈에 붉은 양배추 용액을 5~6방울씩 넣어요',act:'5~6방울씩 넣기',look:'여섯 홈의 색깔을 봐요.',k:'scene',dur:2000,
    why:'붉은 양배추 용액의 색깔로 용액의 성질을 알아봐요.',care:['care',SAFE.move]},
   addA:{g:2,n:'묽은 수산화 나트륨 용액 넣기',t:'둘째~여섯째 홈에 묽은 수산화 나트륨 용액을 5, 10, 15, 20, 25방울 넣어요',k:'meas',rows:['pA'],cells:['a1','a2','a3','a4','a5'],grp:'넣는 방울 수',look:'넣은 방울 수에 따라 홈의 색깔을 견줘요.',
-   why:'0방울 홈은 아무것도 넣지 않고 처음 색깔과 견주는 홈이에요.',care:['know',SAFE.rod]},
+   why:'0방울 홈에는 묽은 수산화 나트륨 용액을 넣지 않아요. 처음 색깔과 견주는 홈이에요.',care:['know',SAFE.rod]},
   baseB:{g:2,n:'넷째 줄에 묽은 수산화 나트륨 용액 넣기',t:'넷째 줄 여섯 홈에 묽은 수산화 나트륨 용액을 10방울씩 넣어요',act:'10방울씩 넣기',look:'여섯 홈에 같은 양이 들어갔는지 봐요.',k:'scene',dur:2000,
    why:'이번에는 두 용액을 바꾸어 같은 방법으로 해요.',care:['know',SAFE.one]},
   cabB:{g:2,n:'붉은 양배추 용액 넣기',t:'넷째 줄 여섯 홈에 붉은 양배추 용액을 5~6방울씩 넣어요',act:'5~6방울씩 넣기',look:'여섯 홈의 색깔을 봐요.',k:'scene',dur:2000,
    why:'첫째 줄과 같은 방법으로 넣어요.',care:['care',SAFE.move]},
   addB:{g:2,n:'묽은 염산 넣기',t:'둘째~여섯째 홈에 묽은 염산을 5, 10, 15, 20, 25방울 넣어요',k:'meas',rows:['pB'],cells:['b1','b2','b3','b4','b5'],grp:'넣는 방울 수',look:'넣은 방울 수에 따라 홈의 색깔을 견줘요.',
-   why:'0방울 홈은 아무것도 넣지 않고 처음 색깔과 견주는 홈이에요.',care:['know',SAFE.trash]},
+   why:'0방울 홈에는 묽은 염산을 넣지 않아요. 처음 색깔과 견주는 홈이에요.',care:['know',SAFE.trash]},
   concl:{g:3,n:'결론 쓰기',t:'기록을 보고 결론을 써요',k:'concl',why:'결론은 내 기록에서 나와요.',care:['know',no===5?'내 기록과 색깔 변화표를 견줘 봐요.':'내 기록을 차례대로 다시 봐요.']},
   sheet:{g:3,n:'결과 한 장',t:'실험 결과를 한 장으로 정리해요',k:'sheet',why:'',care:null}};
  return Object.assign({id},D[id])}
@@ -3201,7 +3201,7 @@ function toolLabel(cx,yb,t){const T='<text x="'+cx+'" text-anchor="middle" font-
  return T+' y="'+(yb-21)+'">'+t.slice(0,m)+'</text>'+T+' y="'+yb+'">'+t.slice(m+1)+'</text>'}
 function boxArt(x){return '<g transform="translate('+x+' 300)"><path d="M-130 -60 L-100 -96 H150 L120 -60Z" fill="var(--w-kraft-s)"/><rect x="-130" y="-60" width="250" height="196" rx="8" fill="var(--w-kraft)" stroke="var(--w-kraft-s)" stroke-width="2"/><path d="M120 -60 L150 -96 V100 L120 136Z" fill="var(--w-kraft-s)"/>'+(NAR?'':'<rect x="-60" y="-10" width="110" height="44" rx="8" fill="var(--w-label)"/><text x="-5" y="20" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-labeltx)">준비물</text>')+'</g>'}
 
-/* ───────── 용해와 용액: 실험 기구 그림(모두 직접 그린 SVG) ───────── */
+/* ───────── 실험 기구 그림(비커·점적병·홈판 등, 모두 직접 그린 SVG) ───────── */
 const WC='#BFE3F5',WS='#6FA9CC',GLS='var(--w-glass-s)',PW='#FFFFFF',PWS='#A9B4BC';
 const VITC='#F2C230',VITS='#B88A10',YSC='#B9762E',YSS='#7E4D18';
 function mixc(a,b,t){const h=x=>[1,3,5].map(i=>parseInt(x.substr(i,2),16));const A=h(a),B=h(b);return '#'+A.map((v,i)=>Math.round(v+(B[i]-v)*t).toString(16).padStart(2,'0')).join('')}
@@ -3222,7 +3222,7 @@ function swirl(cx,y,w){return '<g'+an('lb-a-fade',0)+'><path d="M'+(cx-w)+' '+y+
 /* 핀셋 */
 function tweezArt(x,y,rot,item){return '<g transform="translate('+x+' '+y+') rotate('+(rot||0)+')"><path d="M-4 -110 L-10 -6 L-4 -4 L2 -108Z" fill="#B9C2CA" stroke="#5D6B78" stroke-width="2"/><path d="M4 -110 L10 -6 L4 -4 L-2 -108Z" fill="#CBD3DB" stroke="#5D6B78" stroke-width="2"/>'+(item||'')+'</g>'}
 /* 각설탕 */
-/* ── 비커. o: big(250 mL) · ml 물의 양 · tint · op · pile · fall 떨어지는 가루 색 · stir 젓는 중 · rod · label · cnt 위 이름 · steam · tom 방울토마토 높이(0~1) · film 벽에 남은 용액 ── */
+/* ── 비커. o: big(250 mL) · ml 물의 양 · tint · op · pile · fall 떨어지는 가루 색 · stir 젓는 중 · rod · label · cnt 위 이름 · steam · film 벽에 남은 용액 ── */
 function bkDim(o){return o.big?{w:78,h:206,k:.8}:{w:62,h:150,k:1.2}}
 function beakerArt(cx,base,o){o=o||{};const D=bkDim(o),w=D.w,h=D.h,top=base-h;let g=o.noShadow?'':shadow(cx,base+4,w+8);
  const out='M'+(cx-w)+' '+top+' V'+(base-10)+' Q'+(cx-w)+' '+base+' '+(cx-w+10)+' '+base+' H'+(cx+w-10)+' Q'+(cx+w)+' '+base+' '+(cx+w)+' '+(base-10)+' V'+top;
@@ -3535,10 +3535,10 @@ function e4Scene(s){const r=R(),id=s.id,f=fid();
  if(id==='putB'){g+=e4Plate({fill:1,putA:1,putB:pB});if(f==='tB'||(kB===1&&!UI.fx))g+=tweezArt(820,BY-20,16,'')+wlab(820,BY+30,'핀셋 ②',15);if(f==='pB')g+='<g'+an('lb-a-fade',0)+'>'+tweezArt(WX4[3]+50,WYF-30,20,'')+'</g>';return g}
  if(id==='wait'){const ids=['d1','d3','d7'],k=seqK('wait',ids),day=DAYS[k];
   return g+e4Plate({fill:1,putA:1,putB:1,day,lid:k>=1,lidAnim:f==='d1'})+mini(510,BY-192,day?(day===7?'일주일 뒤':day===1?'하루 뒤':'사흘 뒤'):'넣은 직후',20)}
- if(id==='more'){const go=f==='mm',dn=go||!!UI.mq.both||r.more.a!=null;
+ if(id==='more'){const go=f==='mm',dn=go||!!r.seen.mm;
   g+=plate2({nolab:1,cell:(rr,k)=>{if(k>1)return {};const y=rr?WYF:WYB,x=WX4[k],c={col:LQ[rr]};const tofu=k===1;
    const melt=dn&&rr===0&&!tofu?.45:0,soft=dn&&rr===1&&tofu?.8:0;
-   c.inner='<g'+(go?an('lb-a-down',k*.15,'--from:-110px'):'')+'>'+matArt(tofu?5:4,x,y-2,melt,soft,rr?.85:.75)+'</g>'+(dn&&rr===0&&!tofu?bubs(x,y,4,1,7):'');if(soft)c.col=mixc(LQ[1],'#D3D3C5',.6);return c}});
+   if(!dn)return c;c.inner='<g'+(go?an('lb-a-down',k*.15,'--from:-110px'):'')+'>'+matArt(tofu?5:4,x,y-2,melt,soft,rr?.85:.75)+'</g>'+(dn&&rr===0&&!tofu?bubs(x,y,4,1,7):'');if(soft)c.col=mixc(LQ[1],'#D3D3C5',.6);return c}});
   g+=wlab(WX4[0],BY+30,'대리암 조각',15)+wlab(WX4[1],BY+30,'두부',15);
   if(dn&&!go)g+=mini(510,BY-192,'며칠 뒤',20);
   return g}
@@ -3629,16 +3629,15 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
   h+='<div class="lb-pdrow" role="group" aria-label="'+esc(R0.n)+'">'+DROPS.map((d,j)=>{const c=D.c[j];return '<button type="button" class="lb-pdot" data-f="pd'+row+j+'" data-dot="'+row+':'+j+'" aria-label="'+d+'방울 홈'+(c!=null?': '+PAL[c][1]:': 칠하지 않음')+'"'+(ok?'':' disabled')+'><i style="background:'+(c!=null?PAL[c][0]:'transparent')+'"></i><span>'+d+'방울</span></button>'}).join('')+'</div>';
   h+=recB(ok&&DROPS.every((d,j)=>D.c[j]!=null))}
  if(R0.t==='num'){const op=numOpen(row);
-  h+='<div class="lb-trials"><label class="lb-trial'+(op?' lb-tcur':'')+'"><span>'+esc(R0.lab||'무게')+'</span><input class="lb-num lb-numw" inputmode="'+(R0.dec?'decimal':'numeric')+'" maxlength="6" autocomplete="off" data-f="in'+row+'" data-in="'+row+'" aria-label="'+esc(R0.n)+' 숫자" value="'+esc(UI.inp[row]||'')+'"'+(op?'':' disabled')+'><span>'+R0.u+'</span></label><button type="button" class="lb-mini" data-act="trial" data-row="'+row+'" data-f="tr'+row+'"'+(op?'':' disabled')+'>'+ic('check')+'적기</button></div>';
-  if(R0.u==='숟가락째')h+='<p class="lb-hint2">처음으로 바닥에 남았을 때 넣은 숟가락 수를 써요.</p>'}
+  h+='<div class="lb-trials"><label class="lb-trial'+(op?' lb-tcur':'')+'"><span>'+esc(R0.lab||'무게')+'</span><input class="lb-num lb-numw" inputmode="'+(R0.dec?'decimal':'numeric')+'" maxlength="6" autocomplete="off" data-f="in'+row+'" data-in="'+row+'" aria-label="'+esc(R0.n)+' 숫자" value="'+esc(UI.inp[row]||'')+'"'+(op?'':' disabled')+'><span>'+R0.u+'</span></label><button type="button" class="lb-mini" data-act="trial" data-row="'+row+'" data-f="tr'+row+'"'+(op?'':' disabled')+'>'+ic('check')+'적기</button></div>';}
  if(UI.fb[row])h+='<div class="lb-msg '+(UI.fb[row][0]?'lb-good':'lb-try')+'" role="status">'+ic(UI.fb[row][0]?'check':'info')+'<span>'+UI.fb[row][1]+'</span></div>';
  return h+'</div>'}
 /* ───────── 할 일 카드: ① 해 보기 → ② 살펴보기 → ③ 기록하기 ───────── */
 function acted(s){const r=R();return !!(r.act&&r.act[s.id])||(s.k==='scene'&&!!r.done[s.id])}
-function looked(s){if(s.k==='scene')return !!R().done[s.id];if(s.k==='meas')return s.rows.every(rowReady);if(s.k==='more')return !!UI.mq.both||R().more.a!=null;return true}
+function looked(s){if(s.k==='scene')return !!R().done[s.id];if(s.k==='meas')return s.rows.every(rowReady);if(s.k==='more')return !!R().seen.mm;return true}
 function lbl(a){const x=actsOf(curStep()).find(b=>b.id===a);return x?x.label:''}
 function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
- if(s.k==='more'){if(r.more.a!=null)return '다 했어요. 이어서 가요.';if(UI.fx)return s.look;if(UI.mq.both)return '③ 알맞은 것을 골라요.';const a=actsOf(s)[0];return '① '+lj(a.label)+' 눌러요.'}
+ if(s.k==='more'){if(r.seen.mm)return '다 했어요. 이어서 가요.';if(UI.fx)return s.look;if(r.more.a==null)return '① 오늘 배운 성질로 예상해 골라요.';const a=actsOf(s)[0];return '② '+lj(a.label)+' 눌러요.'}
  if(s.k==='scene'){if(UI.fx)return s.look;if(r.done[id])return '잘했어요. 이어서 가요.';return s.opts?s.ask:'① '+jo(s.act,'을','를')+' 눌러요.'}
  if(D)return '다 했어요. 이어서 가요.';
  if(UI.fx)return s.look;
@@ -3646,7 +3645,6 @@ function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
  if(rowReady(need)){if(R0.t==='num')return '③ '+(R0.src||'저울 화면의 숫자를')+' ‘'+R0.n+'’ 칸에 써요.';
   return R0.t==='note'?'③ 살펴본 것을 쓰고 기록해요.':'③ '+R0.n+(/\?$/.test(R0.n)?' ':': ')+'알맞은 것을 골라 기록해요.'}
  const A=actsOf(s);
- if(s.id==='add'&&V().no===3)return '① 비커마다 한 숟가락씩 넣고 저어요. 바닥에 남으면 그만 넣어요.';
  const cur=A.find(b=>b.hide===false&&!b.pressed&&!b.dis);if(cur)return '① '+lj(cur.label.replace(/^\d\/\d · /,''))+' 눌러요.';
  const one=A.find(b=>!b.cell&&!b.sub&&b.hide==null&&!b.dis&&!r.seen[b.id]);if(one)return '① '+lj(one.label)+' 눌러요.';
  const cell=A.find(b=>b.cell&&!b.seen&&!b.dis);if(cell)return '① '+cell.grp+': '+lj(cell.label)+' 눌러요.';
@@ -3662,8 +3660,8 @@ function actBtns(s,cellsOnly){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=c
   /* 모두 본 뒤(기록하는 동안)에는 시간 칸을 한 줄로 작게 — 기록 칸이 카드 안에 들어가게 */
   h+='<div class="lb-cellrow'+(mini?' lb-cellmini':'')+'" role="group" aria-label="'+esc(G.n)+'"><span class="lb-cl">'+esc(G.n)+(mini?' · 다시 볼 때 눌러요':'')+'</span><div style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+G.c.map(a=>'<button type="button" class="lb-cellb'+(a.label.length>6?' lb-cellw':'')+(UI.attn&&!a.dis?' lb-attn':'')+(a.seen?' lb-seen':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(G.n+' '+a.label)+(a.seen?' (해 봤어요)':'')+'">'+(a.seen&&!mini?ic('check'):'')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div></div>'});
  return h}
-const MOREQ={4:['며칠 뒤 대리암 조각과 두부는 어떻게 되었나요?',['묽은 염산에서는 대리암 조각이, 묽은 수산화 나트륨 용액에서는 두부가 변했어요','묽은 염산에서는 두부가, 묽은 수산화 나트륨 용액에서는 대리암 조각이 변했어요','모두 변화가 없어요'],0,'대리암 조각은 묽은 염산에서 표면에 기포가 생기며 처음보다 작아졌고, 두부는 묽은 수산화 나트륨 용액에서 흐물흐물해졌어요. 그래서 산성비를 맞은 대리암 조각상이나 문화재가 녹아 모양이 변하기도 해요.']};
-function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=='more'||r.more.a!=null);
+const MOREQ={4:['대리암 조각과 두부를 넣으면 어떻게 될까요?',['묽은 염산에서는 대리암 조각이, 묽은 수산화 나트륨 용액에서는 두부가 변할 것 같아요','묽은 염산에서는 두부가, 묽은 수산화 나트륨 용액에서는 대리암 조각이 변할 것 같아요','모두 변화가 없을 것 같아요'],0,'대리암 조각은 묽은 염산에서 표면에 기포가 생기며 처음보다 작아졌고, 두부는 묽은 수산화 나트륨 용액에서 흐물흐물해졌어요. 그래서 산성비를 맞은 대리암 조각상이나 문화재가 녹아 모양이 변하기도 해요.']};
+function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=='more'||!!r.seen.mm);
  let h='<p class="lb-stat'+(D?' lb-statok':'')+'" role="status">'+ic(D?'check':'info')+'<span>'+esc(hintOf(s))+'</span></p><ol class="lb-guide">';
  if(s.k==='scene'){let b1;const dn=!!r.done[s.id];
   if(s.opts&&!dn&&!fxOn(s.id))b1='<div class="lb-acts" role="group" aria-label="'+esc(s.ask)+'">'+s.opts.map((o,i)=>'<button type="button" class="lb-act lb-act2" data-act="pick" data-i="'+i+'" data-f="pk'+i+'">'+ic('place')+'<span>'+esc(o.t)+'</span></button>').join('')+'</div>';
@@ -3671,10 +3669,12 @@ function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=
   else b1='<div class="lb-acts"><button type="button" class="lb-act lb-act3" data-act="replay" data-f="replay">'+ic('replay')+'<span>처음부터 보기</span></button></div>';
   h+=gPart(1,'해 보기',dn?'ok':'cur',b1)+gPart(2,'살펴보기',dn?'ok':UI.fx?'cur':'wait','<p>'+esc(s.look)+'</p>');
   return cardHead('할 일',stepName(s))+wrapB(h+'</ol>')}
- if(s.k==='more'){const Q=MOREQ[V().no],ans=r.more.a,both=!!UI.mq.both||ans!=null;
-  let b3='<p class="lb-q">'+esc(Q[0])+'</p><div class="lb-opts">'+Q[1].map((t,i)=>'<button type="button" class="lb-opt lb-optsm" data-f="mq'+i+'" data-mq="'+i+'" aria-pressed="'+(ans===i)+'"'+(both?'':' disabled')+'><i>'+(ans===i?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>').join('')+'</div>';
-  if(ans!=null)b3+='<div class="lb-msg '+(ans===Q[2]?'lb-good':'lb-try')+'">'+ic(ans===Q[2]?'check':'info')+'<span>'+(ans===Q[2]?Q[3]:'다시 해 보고 견줘요.')+'</span></div>';
-  h+=gPart(1,'해 보기',both?'ok':'cur',ans!=null?'':actBtns(s))+gPart(2,'살펴보기',both?'ok':Object.keys(UI.mq).length?'cur':'wait','<p>'+esc(s.look)+'</p>')+gPart(3,'고르기',ans!=null?'ok':both?'cur':'wait',b3);
+ if(s.k==='more'){const Q=MOREQ[V().no],ans=r.more.a,seen=!!r.seen.mm;
+  /* 원본(u1-3 더 알아봐요)처럼 먼저 오늘 배운 성질로 예상하고, 넣어 본 뒤 견줌 */
+  let b1='<p class="lb-q">'+esc(Q[0])+'</p><div class="lb-opts">'+Q[1].map((t,i)=>'<button type="button" class="lb-opt lb-optsm" data-f="mq'+i+'" data-mq="'+i+'" aria-pressed="'+(ans===i)+'"'+(seen||UI.fx?' disabled':'')+'><i>'+(ans===i?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>').join('')+'</div>';
+  let b3='<p>'+esc(s.look)+'</p>';
+  if(seen)b3+='<div class="lb-msg '+(ans===Q[2]?'lb-good':'lb-try')+'">'+ic(ans===Q[2]?'check':'info')+'<span>'+(ans===Q[2]?'예상과 같아요. ':'예상과 달라요. ')+Q[3]+'</span></div>';
+  h+=gPart(1,'예상하기',ans!=null?'ok':'cur',b1)+gPart(2,'해 보기',seen?'ok':ans!=null?'cur':'wait',seen?'':ans!=null?actBtns(s):'<p class="lb-hint2">예상을 고르면 열려요.</p>')+gPart(3,'살펴보기',seen?'ok':UI.fx?'cur':'wait',b3);
   return cardHead('더 알아보기','해도 되고 건너뛰어도 돼요')+wrapB(h+'</ol>')}
  const on3=s.rows.some(rowReady)||s.rows.some(k=>ROWS[k].t==='auto'&&acted(s));
  /* ①을 모두 해 보면 단추를 접음(본 결과는 그림에 그대로 남음) — 기록 칸이 넓어져 카드 글자가 줄지 않게 */
@@ -3804,7 +3804,7 @@ function renderScene(){const r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NA
  if(UI.toast)over+='<div class="lb-toast '+(UI.toastK==='info'?'lb-toast3':'lb-toast2')+'" role="status">'+esc(UI.toast)+'</div>';
  const sv=s.k==='concl'?recPanel():sceneSVG();NAR=false;set(el,over+sv);
  const lg=$('#lbLeg');if(lg)set(lg,LEG.length?LEG.map(x=>'<span class="lb-lg">'+esc(x[1])+'</span>').join(''):'')}
-function notesHTML(s){if(!s.why&&!s.care&&!s.know)return '';const hideWhy=s.k==='more'&&R().more.a==null;let h=!s.why&&!hideWhy?'':hideWhy?'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.pre||'먼저 해 보고 골라요.')+'</div></div>':'<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
+function notesHTML(s){if(!s.why&&!s.care&&!s.know)return '';const hideWhy=false;let h=!s.why&&!hideWhy?'':hideWhy?'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.pre||'먼저 해 보고 골라요.')+'</div></div>':'<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
  if(s.know)h+='<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.know)+'</div></div>';
  if(s.care)h+=s.care[0]==='care'?'<div class="lb-note lb-care">'+ic('care')+'<div><b>조심해요</b>'+esc(s.care[1])+'</div></div>':'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.care[1])+'</div></div>';
  return h}
@@ -3882,7 +3882,7 @@ function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fi
  return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','eye','drop','flask','grid','drop'][v.no])+'</i><span><b>'+st+'</b><span>교과서 실험</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
  return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>6학년 1학기 과학</em>1. 산과 염기</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 보고, 내 눈으로 본 것을 기록해요.</p></div>'+
  '<div class="lb-ex lb-ex5">'+['e1','e2','e3','e4','e5'].map(card).join('')+'</div>'+
- '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 여섯 용액의 겉보기 성질과 지시약의 색깔 변화, 물질을 넣은 결과, 방울 수는 교과서 버전 앱의 예시예요. 섞을 때 홈마다 그린 색깔, 일주일 동안 물질이 녹거나 흐물흐물해지는 정도, 대리암 조각과 두부의 며칠 뒤 모습은 이 실험관에서 정한 모습이에요. 실제 실험에서는 내가 관찰한 결과를 그대로 써요.</span></p></div>'}
+ '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 여섯 용액의 겉보기 성질과 지시약의 색깔 변화, 물질을 넣은 결과, 방울 수는 교과서 버전 앱의 예시예요. 섞을 때 홈마다 그린 색깔, 일주일 동안 물질과 용액의 모습, 대리암 조각과 두부의 며칠 뒤 모습은 이 실험관에서 정한 모습이에요. 실제 실험에서는 내가 관찰한 결과를 그대로 써요.</span></p></div>'}
 /* ───────── 동작 ───────── */
 function fx(id,ms,after){UI.fx={id,n:++UI.nonce};render();later(()=>{UI.fx=null;if(after)after();save();render()},ms)}
 function doAnim(id,ms){fx(id,ms,()=>{const r=R();if(r)r.done[id]=true;const p=$('#lbFoot [data-act="next"]');if(p&&!p.disabled)p.focus({preventScroll:true})})}
@@ -3904,7 +3904,7 @@ function act(a,el){const v=V(),r=R();
  if(a==='rail'){UI.rail=!UI.rail;render();return}}
 const XMS={wh:1300,tx:1300,sk:2000,w5:2600,bB:2400,bR:2400,pD:2600,dA:2800,dB:2800,tA:900,pA:2000,tB:900,pB:2000,d1:2000,d3:1800,d7:1800};
 function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
- if(s.k==='more'){UI.mq.cur=id;fx(id,3000,()=>{r.seen[id]=1;UI.mq[id]=1;UI.mq.both=1});return}
+ if(s.k==='more'){if(r.more.a==null||r.seen[id])return;UI.mq.cur=id;fx(id,3000,()=>{r.seen[id]=1});return}
  r.act[s.id]=1;if(idxOf('pred')>=0&&r.step>idxOf('pred'))r.obs=1;
  if(s.cells){const j=s.cells.indexOf(id);if(j<0||r.seen[id])return;UI.mq.cur=id;const n=Math.min(5,DROPS[j+1]/5);fx(id,900+n*350+700,()=>{r.seen[id]=1});return}
  const i=s.ids.indexOf(id),c=st[s.id]||0;if(i<0||c!==i)return;UI.mq.cur=id;fx(id,XMS[id]||1500,()=>{st[s.id]=i+1;r.seen[id]=1})}
@@ -3917,7 +3917,6 @@ function trial(row){const r=R(),R0=ROWS[row];if(!R0||R0.t!=='num'||!numOpen(row)
  const t=tryKey(row+':t',txt);
  if(t===-1){UI.fb[row]=[0,'숫자가 그대로예요. 다시 봐요.'];render();return}
  if(R0.dec&&txt.indexOf('.')<0&&+txt===Math.floor(+R0.v))UI.fb[row]=[0,'소수점 아래 첫째 자리까지 써요. 화면의 숫자를 그대로 써요.'];
- else if(R0.u==='숟가락째')UI.fb[row]=[0,t>=2?'비커 위에 적힌 숟가락 수를 봐요. 그 숟가락을 넣었을 때 처음으로 바닥에 남았어요.':'비커 위에 적힌 숟가락 수를 다시 봐요.'];
  else{UI.fb[row]=[0,t>=2?'반짝이는 화면의 숫자를 한 자리씩 견주어 써요.':'화면의 숫자와 달라요. 다시 봐요.'];if(t>=2)UI.mq.hl=true}
  save();render()}
 function rowRec(row){const r=R(),R0=ROWS[row],D=UI.draft[row]||{};let ok,wrong=[],key;
@@ -3977,7 +3976,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button');
  if(t.dataset.ord){const [row,k]=t.dataset.ord.split(':');const D=UI.draft[row]=UI.draft[row]||{};D.o=D.o||[];if(D.o.indexOf(k)<0)D.o.push(k);UI.wrong[row]=[];render();return}
  if(t.dataset.pal){const [row,i]=t.dataset.pal.split(':');const D=UI.draft[row]=UI.draft[row]||{};D.p=+i;render();return}
  if(t.dataset.dot){const [row,j]=t.dataset.dot.split(':');const D=UI.draft[row]=UI.draft[row]||{};D.c=D.c||[];if(D.p==null){flash('칠할 색연필을 먼저 골라요.','info');return}D.c[+j]=D.p;render();return}
- if(t.dataset.mq!=null){r.more.a=+t.dataset.mq;save();render();return}
+ if(t.dataset.mq!=null){if(r.seen.mm||UI.fx)return;r.more.a=+t.dataset.mq;save();render();return}
  if(t.dataset.blank!=null){const i=+t.dataset.blank;if(UI.focus===i&&r.bl[i]&&!r.cmp){r.bl[i]='';save()}UI.focus=i;render();return}
  if(t.dataset.chip!=null){const v=V(),w=v.chips[+t.dataset.chip];r.bl[UI.focus]=w;if(r.cmp&&r.bl.some((x,i)=>x!==v.ans[i]))r.cmp=false;const nx=r.bl.findIndex(x=>!x);if(nx>=0)UI.focus=nx;save();render();return}
 });

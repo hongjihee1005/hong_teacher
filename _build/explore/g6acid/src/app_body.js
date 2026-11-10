@@ -150,7 +150,7 @@ function e4Scene(s){const r=R(),id=s.id,f=fid();
  if(id==='more'){const go=f==='mm',dn=go||!!r.seen.mm;
   g+=plate2({nolab:1,cell:(rr,k)=>{if(k>1)return {};const y=rr?WYF:WYB,x=WX4[k],c={col:LQ[rr]};const tofu=k===1;
    const melt=dn&&rr===0&&!tofu?.45:0,soft=dn&&rr===1&&tofu?.8:0;
-   c.inner='<g'+(go?an('lb-a-down',k*.15,'--from:-110px'):'')+'>'+matArt(tofu?5:4,x,y-2,melt,soft,rr?.85:.75)+'</g>'+(dn&&rr===0&&!tofu?bubs(x,y,4,1,7):'');if(soft)c.col=mixc(LQ[1],'#D3D3C5',.6);return c}});
+   if(!dn)return c;c.inner='<g'+(go?an('lb-a-down',k*.15,'--from:-110px'):'')+'>'+matArt(tofu?5:4,x,y-2,melt,soft,rr?.85:.75)+'</g>'+(dn&&rr===0&&!tofu?bubs(x,y,4,1,7):'');if(soft)c.col=mixc(LQ[1],'#D3D3C5',.6);return c}});
   g+=wlab(WX4[0],BY+30,'대리암 조각',15)+wlab(WX4[1],BY+30,'두부',15);
   if(dn&&!go)g+=mini(510,BY-192,'며칠 뒤',20);
   return g}
@@ -241,8 +241,7 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
   h+='<div class="lb-pdrow" role="group" aria-label="'+esc(R0.n)+'">'+DROPS.map((d,j)=>{const c=D.c[j];return '<button type="button" class="lb-pdot" data-f="pd'+row+j+'" data-dot="'+row+':'+j+'" aria-label="'+d+'방울 홈'+(c!=null?': '+PAL[c][1]:': 칠하지 않음')+'"'+(ok?'':' disabled')+'><i style="background:'+(c!=null?PAL[c][0]:'transparent')+'"></i><span>'+d+'방울</span></button>'}).join('')+'</div>';
   h+=recB(ok&&DROPS.every((d,j)=>D.c[j]!=null))}
  if(R0.t==='num'){const op=numOpen(row);
-  h+='<div class="lb-trials"><label class="lb-trial'+(op?' lb-tcur':'')+'"><span>'+esc(R0.lab||'무게')+'</span><input class="lb-num lb-numw" inputmode="'+(R0.dec?'decimal':'numeric')+'" maxlength="6" autocomplete="off" data-f="in'+row+'" data-in="'+row+'" aria-label="'+esc(R0.n)+' 숫자" value="'+esc(UI.inp[row]||'')+'"'+(op?'':' disabled')+'><span>'+R0.u+'</span></label><button type="button" class="lb-mini" data-act="trial" data-row="'+row+'" data-f="tr'+row+'"'+(op?'':' disabled')+'>'+ic('check')+'적기</button></div>';
-  if(R0.u==='숟가락째')h+='<p class="lb-hint2">처음으로 바닥에 남았을 때 넣은 숟가락 수를 써요.</p>'}
+  h+='<div class="lb-trials"><label class="lb-trial'+(op?' lb-tcur':'')+'"><span>'+esc(R0.lab||'무게')+'</span><input class="lb-num lb-numw" inputmode="'+(R0.dec?'decimal':'numeric')+'" maxlength="6" autocomplete="off" data-f="in'+row+'" data-in="'+row+'" aria-label="'+esc(R0.n)+' 숫자" value="'+esc(UI.inp[row]||'')+'"'+(op?'':' disabled')+'><span>'+R0.u+'</span></label><button type="button" class="lb-mini" data-act="trial" data-row="'+row+'" data-f="tr'+row+'"'+(op?'':' disabled')+'>'+ic('check')+'적기</button></div>';}
  if(UI.fb[row])h+='<div class="lb-msg '+(UI.fb[row][0]?'lb-good':'lb-try')+'" role="status">'+ic(UI.fb[row][0]?'check':'info')+'<span>'+UI.fb[row][1]+'</span></div>';
  return h+'</div>'}
 /* ───────── 할 일 카드: ① 해 보기 → ② 살펴보기 → ③ 기록하기 ───────── */
@@ -258,7 +257,6 @@ function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
  if(rowReady(need)){if(R0.t==='num')return '③ '+(R0.src||'저울 화면의 숫자를')+' ‘'+R0.n+'’ 칸에 써요.';
   return R0.t==='note'?'③ 살펴본 것을 쓰고 기록해요.':'③ '+R0.n+(/\?$/.test(R0.n)?' ':': ')+'알맞은 것을 골라 기록해요.'}
  const A=actsOf(s);
- if(s.id==='add'&&V().no===3)return '① 비커마다 한 숟가락씩 넣고 저어요. 바닥에 남으면 그만 넣어요.';
  const cur=A.find(b=>b.hide===false&&!b.pressed&&!b.dis);if(cur)return '① '+lj(cur.label.replace(/^\d\/\d · /,''))+' 눌러요.';
  const one=A.find(b=>!b.cell&&!b.sub&&b.hide==null&&!b.dis&&!r.seen[b.id]);if(one)return '① '+lj(one.label)+' 눌러요.';
  const cell=A.find(b=>b.cell&&!b.seen&&!b.dis);if(cell)return '① '+cell.grp+': '+lj(cell.label)+' 눌러요.';
@@ -274,7 +272,7 @@ function actBtns(s,cellsOnly){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=c
   /* 모두 본 뒤(기록하는 동안)에는 시간 칸을 한 줄로 작게 — 기록 칸이 카드 안에 들어가게 */
   h+='<div class="lb-cellrow'+(mini?' lb-cellmini':'')+'" role="group" aria-label="'+esc(G.n)+'"><span class="lb-cl">'+esc(G.n)+(mini?' · 다시 볼 때 눌러요':'')+'</span><div style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+G.c.map(a=>'<button type="button" class="lb-cellb'+(a.label.length>6?' lb-cellw':'')+(UI.attn&&!a.dis?' lb-attn':'')+(a.seen?' lb-seen':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(G.n+' '+a.label)+(a.seen?' (해 봤어요)':'')+'">'+(a.seen&&!mini?ic('check'):'')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div></div>'});
  return h}
-const MOREQ={4:['대리암 조각과 두부를 넣으면 어떻게 될까요?',['묽은 염산에서는 대리암 조각이, 묽은 수산화 나트륨 용액에서는 두부가 변했어요','묽은 염산에서는 두부가, 묽은 수산화 나트륨 용액에서는 대리암 조각이 변했어요','모두 변화가 없어요'],0,'대리암 조각은 묽은 염산에서 표면에 기포가 생기며 처음보다 작아졌고, 두부는 묽은 수산화 나트륨 용액에서 흐물흐물해졌어요. 그래서 산성비를 맞은 대리암 조각상이나 문화재가 녹아 모양이 변하기도 해요.']};
+const MOREQ={4:['대리암 조각과 두부를 넣으면 어떻게 될까요?',['묽은 염산에서는 대리암 조각이, 묽은 수산화 나트륨 용액에서는 두부가 변할 것 같아요','묽은 염산에서는 두부가, 묽은 수산화 나트륨 용액에서는 대리암 조각이 변할 것 같아요','모두 변화가 없을 것 같아요'],0,'대리암 조각은 묽은 염산에서 표면에 기포가 생기며 처음보다 작아졌고, 두부는 묽은 수산화 나트륨 용액에서 흐물흐물해졌어요. 그래서 산성비를 맞은 대리암 조각상이나 문화재가 녹아 모양이 변하기도 해요.']};
 function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=='more'||!!r.seen.mm);
  let h='<p class="lb-stat'+(D?' lb-statok':'')+'" role="status">'+ic(D?'check':'info')+'<span>'+esc(hintOf(s))+'</span></p><ol class="lb-guide">';
  if(s.k==='scene'){let b1;const dn=!!r.done[s.id];
@@ -288,7 +286,7 @@ function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=
   let b1='<p class="lb-q">'+esc(Q[0])+'</p><div class="lb-opts">'+Q[1].map((t,i)=>'<button type="button" class="lb-opt lb-optsm" data-f="mq'+i+'" data-mq="'+i+'" aria-pressed="'+(ans===i)+'"'+(seen||UI.fx?' disabled':'')+'><i>'+(ans===i?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>').join('')+'</div>';
   let b3='<p>'+esc(s.look)+'</p>';
   if(seen)b3+='<div class="lb-msg '+(ans===Q[2]?'lb-good':'lb-try')+'">'+ic(ans===Q[2]?'check':'info')+'<span>'+(ans===Q[2]?'예상과 같아요. ':'예상과 달라요. ')+Q[3]+'</span></div>';
-  h+=gPart(1,'예상하기',ans!=null?'ok':'cur',b1)+gPart(2,'해 보기',seen?'ok':ans!=null?'cur':'wait',seen?'':actBtns(s))+gPart(3,'살펴보기',seen?'ok':UI.fx?'cur':'wait',b3);
+  h+=gPart(1,'예상하기',ans!=null?'ok':'cur',b1)+gPart(2,'해 보기',seen?'ok':ans!=null?'cur':'wait',seen?'':ans!=null?actBtns(s):'<p class="lb-hint2">예상을 고르면 열려요.</p>')+gPart(3,'살펴보기',seen?'ok':UI.fx?'cur':'wait',b3);
   return cardHead('더 알아보기','해도 되고 건너뛰어도 돼요')+wrapB(h+'</ol>')}
  const on3=s.rows.some(rowReady)||s.rows.some(k=>ROWS[k].t==='auto'&&acted(s));
  /* ①을 모두 해 보면 단추를 접음(본 결과는 그림에 그대로 남음) — 기록 칸이 넓어져 카드 글자가 줄지 않게 */
@@ -496,7 +494,7 @@ function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fi
  return '<section class="lb-exc" aria-labelledby="lbE'+v.no+'"><div class="lb-exc-art">'+homeArt(v.no)+'</div><div class="lb-exc-b"><h2 id="lbE'+v.no+'"><em>실험 '+v.no+'</em>'+esc(v.name)+'</h2><p class="lb-exp">'+esc(v.sub)+'</p><button type="button" class="lb-pickb" data-pick="'+k+'" data-f="k'+k+'"><i>'+ic(['','eye','drop','flask','grid','drop'][v.no])+'</i><span><b>'+st+'</b><span>교과서 실험</span></span>'+(r&&r.fin?'<small>'+ic('check')+'</small>':'')+'</button></div></section>'};
  return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>6학년 1학기 과학</em>1. 산과 염기</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 보고, 내 눈으로 본 것을 기록해요.</p></div>'+
  '<div class="lb-ex lb-ex5">'+['e1','e2','e3','e4','e5'].map(card).join('')+'</div>'+
- '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 여섯 용액의 겉보기 성질과 지시약의 색깔 변화, 물질을 넣은 결과, 방울 수는 교과서 버전 앱의 예시예요. 섞을 때 홈마다 그린 색깔, 일주일 동안 물질이 녹거나 흐물흐물해지는 정도, 대리암 조각과 두부의 며칠 뒤 모습은 이 실험관에서 정한 모습이에요. 실제 실험에서는 내가 관찰한 결과를 그대로 써요.</span></p></div>'}
+ '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 여섯 용액의 겉보기 성질과 지시약의 색깔 변화, 물질을 넣은 결과, 방울 수는 교과서 버전 앱의 예시예요. 섞을 때 홈마다 그린 색깔, 일주일 동안 물질과 용액의 모습, 대리암 조각과 두부의 며칠 뒤 모습은 이 실험관에서 정한 모습이에요. 실제 실험에서는 내가 관찰한 결과를 그대로 써요.</span></p></div>'}
 /* ───────── 동작 ───────── */
 function fx(id,ms,after){UI.fx={id,n:++UI.nonce};render();later(()=>{UI.fx=null;if(after)after();save();render()},ms)}
 function doAnim(id,ms){fx(id,ms,()=>{const r=R();if(r)r.done[id]=true;const p=$('#lbFoot [data-act="next"]');if(p&&!p.disabled)p.focus({preventScroll:true})})}
@@ -531,7 +529,6 @@ function trial(row){const r=R(),R0=ROWS[row];if(!R0||R0.t!=='num'||!numOpen(row)
  const t=tryKey(row+':t',txt);
  if(t===-1){UI.fb[row]=[0,'숫자가 그대로예요. 다시 봐요.'];render();return}
  if(R0.dec&&txt.indexOf('.')<0&&+txt===Math.floor(+R0.v))UI.fb[row]=[0,'소수점 아래 첫째 자리까지 써요. 화면의 숫자를 그대로 써요.'];
- else if(R0.u==='숟가락째')UI.fb[row]=[0,t>=2?'비커 위에 적힌 숟가락 수를 봐요. 그 숟가락을 넣었을 때 처음으로 바닥에 남았어요.':'비커 위에 적힌 숟가락 수를 다시 봐요.'];
  else{UI.fb[row]=[0,t>=2?'반짝이는 화면의 숫자를 한 자리씩 견주어 써요.':'화면의 숫자와 달라요. 다시 봐요.'];if(t>=2)UI.mq.hl=true}
  save();render()}
 function rowRec(row){const r=R(),R0=ROWS[row],D=UI.draft[row]||{};let ok,wrong=[],key;
