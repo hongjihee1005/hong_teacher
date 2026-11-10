@@ -147,7 +147,7 @@ function e4Scene(s){const r=R(),id=s.id,f=fid();
  if(id==='putB'){g+=e4Plate({fill:1,putA:1,putB:pB});if(f==='tB'||(kB===1&&!UI.fx))g+=tweezArt(820,BY-20,16,'')+wlab(820,BY+30,'핀셋 ②',15);if(f==='pB')g+='<g'+an('lb-a-fade',0)+'>'+tweezArt(WX4[3]+50,WYF-30,20,'')+'</g>';return g}
  if(id==='wait'){const ids=['d1','d3','d7'],k=seqK('wait',ids),day=DAYS[k];
   return g+e4Plate({fill:1,putA:1,putB:1,day,lid:k>=1,lidAnim:f==='d1'})+mini(510,BY-192,day?(day===7?'일주일 뒤':day===1?'하루 뒤':'사흘 뒤'):'넣은 직후',20)}
- if(id==='more'){const go=f==='mm',dn=go||!!UI.mq.both||r.more.a!=null;
+ if(id==='more'){const go=f==='mm',dn=go||!!r.seen.mm;
   g+=plate2({nolab:1,cell:(rr,k)=>{if(k>1)return {};const y=rr?WYF:WYB,x=WX4[k],c={col:LQ[rr]};const tofu=k===1;
    const melt=dn&&rr===0&&!tofu?.45:0,soft=dn&&rr===1&&tofu?.8:0;
    c.inner='<g'+(go?an('lb-a-down',k*.15,'--from:-110px'):'')+'>'+matArt(tofu?5:4,x,y-2,melt,soft,rr?.85:.75)+'</g>'+(dn&&rr===0&&!tofu?bubs(x,y,4,1,7):'');if(soft)c.col=mixc(LQ[1],'#D3D3C5',.6);return c}});
@@ -247,10 +247,10 @@ function rowUI(row){const r=R(),R0=ROWS[row],x=r.rec[row]||{},done=!!x.ok,wr=UI.
  return h+'</div>'}
 /* ───────── 할 일 카드: ① 해 보기 → ② 살펴보기 → ③ 기록하기 ───────── */
 function acted(s){const r=R();return !!(r.act&&r.act[s.id])||(s.k==='scene'&&!!r.done[s.id])}
-function looked(s){if(s.k==='scene')return !!R().done[s.id];if(s.k==='meas')return s.rows.every(rowReady);if(s.k==='more')return !!UI.mq.both||R().more.a!=null;return true}
+function looked(s){if(s.k==='scene')return !!R().done[s.id];if(s.k==='meas')return s.rows.every(rowReady);if(s.k==='more')return !!R().seen.mm;return true}
 function lbl(a){const x=actsOf(curStep()).find(b=>b.id===a);return x?x.label:''}
 function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
- if(s.k==='more'){if(r.more.a!=null)return '다 했어요. 이어서 가요.';if(UI.fx)return s.look;if(UI.mq.both)return '③ 알맞은 것을 골라요.';const a=actsOf(s)[0];return '① '+lj(a.label)+' 눌러요.'}
+ if(s.k==='more'){if(r.seen.mm)return '다 했어요. 이어서 가요.';if(UI.fx)return s.look;if(r.more.a==null)return '① 오늘 배운 성질로 예상해 골라요.';const a=actsOf(s)[0];return '② '+lj(a.label)+' 눌러요.'}
  if(s.k==='scene'){if(UI.fx)return s.look;if(r.done[id])return '잘했어요. 이어서 가요.';return s.opts?s.ask:'① '+jo(s.act,'을','를')+' 눌러요.'}
  if(D)return '다 했어요. 이어서 가요.';
  if(UI.fx)return s.look;
@@ -274,8 +274,8 @@ function actBtns(s,cellsOnly){const A=actsOf(s),cells=A.filter(a=>a.cell),rest=c
   /* 모두 본 뒤(기록하는 동안)에는 시간 칸을 한 줄로 작게 — 기록 칸이 카드 안에 들어가게 */
   h+='<div class="lb-cellrow'+(mini?' lb-cellmini':'')+'" role="group" aria-label="'+esc(G.n)+'"><span class="lb-cl">'+esc(G.n)+(mini?' · 다시 볼 때 눌러요':'')+'</span><div style="grid-template-columns:repeat('+cols+',minmax(0,1fr))">'+G.c.map(a=>'<button type="button" class="lb-cellb'+(a.label.length>6?' lb-cellw':'')+(UI.attn&&!a.dis?' lb-attn':'')+(a.seen?' lb-seen':'')+'" data-act="x" data-x="'+a.id+'" data-f="x'+a.id+'" aria-pressed="'+!!a.pressed+'"'+(a.dis?' disabled':'')+' aria-label="'+esc(G.n+' '+a.label)+(a.seen?' (해 봤어요)':'')+'">'+(a.seen&&!mini?ic('check'):'')+'<span>'+esc(a.label)+'</span></button>').join('')+'</div></div>'});
  return h}
-const MOREQ={4:['며칠 뒤 대리암 조각과 두부는 어떻게 되었나요?',['묽은 염산에서는 대리암 조각이, 묽은 수산화 나트륨 용액에서는 두부가 변했어요','묽은 염산에서는 두부가, 묽은 수산화 나트륨 용액에서는 대리암 조각이 변했어요','모두 변화가 없어요'],0,'대리암 조각은 묽은 염산에서 표면에 기포가 생기며 처음보다 작아졌고, 두부는 묽은 수산화 나트륨 용액에서 흐물흐물해졌어요. 그래서 산성비를 맞은 대리암 조각상이나 문화재가 녹아 모양이 변하기도 해요.']};
-function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=='more'||r.more.a!=null);
+const MOREQ={4:['대리암 조각과 두부를 넣으면 어떻게 될까요?',['묽은 염산에서는 대리암 조각이, 묽은 수산화 나트륨 용액에서는 두부가 변했어요','묽은 염산에서는 두부가, 묽은 수산화 나트륨 용액에서는 대리암 조각이 변했어요','모두 변화가 없어요'],0,'대리암 조각은 묽은 염산에서 표면에 기포가 생기며 처음보다 작아졌고, 두부는 묽은 수산화 나트륨 용액에서 흐물흐물해졌어요. 그래서 산성비를 맞은 대리암 조각상이나 문화재가 녹아 모양이 변하기도 해요.']};
+function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=='more'||!!r.seen.mm);
  let h='<p class="lb-stat'+(D?' lb-statok':'')+'" role="status">'+ic(D?'check':'info')+'<span>'+esc(hintOf(s))+'</span></p><ol class="lb-guide">';
  if(s.k==='scene'){let b1;const dn=!!r.done[s.id];
   if(s.opts&&!dn&&!fxOn(s.id))b1='<div class="lb-acts" role="group" aria-label="'+esc(s.ask)+'">'+s.opts.map((o,i)=>'<button type="button" class="lb-act lb-act2" data-act="pick" data-i="'+i+'" data-f="pk'+i+'">'+ic('place')+'<span>'+esc(o.t)+'</span></button>').join('')+'</div>';
@@ -283,10 +283,12 @@ function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=
   else b1='<div class="lb-acts"><button type="button" class="lb-act lb-act3" data-act="replay" data-f="replay">'+ic('replay')+'<span>처음부터 보기</span></button></div>';
   h+=gPart(1,'해 보기',dn?'ok':'cur',b1)+gPart(2,'살펴보기',dn?'ok':UI.fx?'cur':'wait','<p>'+esc(s.look)+'</p>');
   return cardHead('할 일',stepName(s))+wrapB(h+'</ol>')}
- if(s.k==='more'){const Q=MOREQ[V().no],ans=r.more.a,both=!!UI.mq.both||ans!=null;
-  let b3='<p class="lb-q">'+esc(Q[0])+'</p><div class="lb-opts">'+Q[1].map((t,i)=>'<button type="button" class="lb-opt lb-optsm" data-f="mq'+i+'" data-mq="'+i+'" aria-pressed="'+(ans===i)+'"'+(both?'':' disabled')+'><i>'+(ans===i?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>').join('')+'</div>';
-  if(ans!=null)b3+='<div class="lb-msg '+(ans===Q[2]?'lb-good':'lb-try')+'">'+ic(ans===Q[2]?'check':'info')+'<span>'+(ans===Q[2]?Q[3]:'다시 해 보고 견줘요.')+'</span></div>';
-  h+=gPart(1,'해 보기',both?'ok':'cur',ans!=null?'':actBtns(s))+gPart(2,'살펴보기',both?'ok':Object.keys(UI.mq).length?'cur':'wait','<p>'+esc(s.look)+'</p>')+gPart(3,'고르기',ans!=null?'ok':both?'cur':'wait',b3);
+ if(s.k==='more'){const Q=MOREQ[V().no],ans=r.more.a,seen=!!r.seen.mm;
+  /* 원본(u1-3 더 알아봐요)처럼 먼저 오늘 배운 성질로 예상하고, 넣어 본 뒤 견줌 */
+  let b1='<p class="lb-q">'+esc(Q[0])+'</p><div class="lb-opts">'+Q[1].map((t,i)=>'<button type="button" class="lb-opt lb-optsm" data-f="mq'+i+'" data-mq="'+i+'" aria-pressed="'+(ans===i)+'"'+(seen||UI.fx?' disabled':'')+'><i>'+(ans===i?ic('check'):'')+'</i><span>'+esc(t)+'</span></button>').join('')+'</div>';
+  let b3='<p>'+esc(s.look)+'</p>';
+  if(seen)b3+='<div class="lb-msg '+(ans===Q[2]?'lb-good':'lb-try')+'">'+ic(ans===Q[2]?'check':'info')+'<span>'+(ans===Q[2]?'예상과 같아요. ':'예상과 달라요. ')+Q[3]+'</span></div>';
+  h+=gPart(1,'예상하기',ans!=null?'ok':'cur',b1)+gPart(2,'해 보기',seen?'ok':ans!=null?'cur':'wait',seen?'':actBtns(s))+gPart(3,'살펴보기',seen?'ok':UI.fx?'cur':'wait',b3);
   return cardHead('더 알아보기','해도 되고 건너뛰어도 돼요')+wrapB(h+'</ol>')}
  const on3=s.rows.some(rowReady)||s.rows.some(k=>ROWS[k].t==='auto'&&acted(s));
  /* ①을 모두 해 보면 단추를 접음(본 결과는 그림에 그대로 남음) — 기록 칸이 넓어져 카드 글자가 줄지 않게 */
@@ -416,7 +418,7 @@ function renderScene(){const r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NA
  if(UI.toast)over+='<div class="lb-toast '+(UI.toastK==='info'?'lb-toast3':'lb-toast2')+'" role="status">'+esc(UI.toast)+'</div>';
  const sv=s.k==='concl'?recPanel():sceneSVG();NAR=false;set(el,over+sv);
  const lg=$('#lbLeg');if(lg)set(lg,LEG.length?LEG.map(x=>'<span class="lb-lg">'+esc(x[1])+'</span>').join(''):'')}
-function notesHTML(s){if(!s.why&&!s.care&&!s.know)return '';const hideWhy=s.k==='more'&&R().more.a==null;let h=!s.why&&!hideWhy?'':hideWhy?'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.pre||'먼저 해 보고 골라요.')+'</div></div>':'<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
+function notesHTML(s){if(!s.why&&!s.care&&!s.know)return '';const hideWhy=false;let h=!s.why&&!hideWhy?'':hideWhy?'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.pre||'먼저 해 보고 골라요.')+'</div></div>':'<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
  if(s.know)h+='<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.know)+'</div></div>';
  if(s.care)h+=s.care[0]==='care'?'<div class="lb-note lb-care">'+ic('care')+'<div><b>조심해요</b>'+esc(s.care[1])+'</div></div>':'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.care[1])+'</div></div>';
  return h}
@@ -516,7 +518,7 @@ function act(a,el){const v=V(),r=R();
  if(a==='rail'){UI.rail=!UI.rail;render();return}}
 const XMS={wh:1300,tx:1300,sk:2000,w5:2600,bB:2400,bR:2400,pD:2600,dA:2800,dB:2800,tA:900,pA:2000,tB:900,pB:2000,d1:2000,d3:1800,d7:1800};
 function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
- if(s.k==='more'){UI.mq.cur=id;fx(id,3000,()=>{r.seen[id]=1;UI.mq[id]=1;UI.mq.both=1});return}
+ if(s.k==='more'){if(r.more.a==null||r.seen[id])return;UI.mq.cur=id;fx(id,3000,()=>{r.seen[id]=1});return}
  r.act[s.id]=1;if(idxOf('pred')>=0&&r.step>idxOf('pred'))r.obs=1;
  if(s.cells){const j=s.cells.indexOf(id);if(j<0||r.seen[id])return;UI.mq.cur=id;const n=Math.min(5,DROPS[j+1]/5);fx(id,900+n*350+700,()=>{r.seen[id]=1});return}
  const i=s.ids.indexOf(id),c=st[s.id]||0;if(i<0||c!==i)return;UI.mq.cur=id;fx(id,XMS[id]||1500,()=>{st[s.id]=i+1;r.seen[id]=1})}
@@ -589,7 +591,7 @@ document.addEventListener('click',e=>{const t=e.target.closest('button');
  if(t.dataset.ord){const [row,k]=t.dataset.ord.split(':');const D=UI.draft[row]=UI.draft[row]||{};D.o=D.o||[];if(D.o.indexOf(k)<0)D.o.push(k);UI.wrong[row]=[];render();return}
  if(t.dataset.pal){const [row,i]=t.dataset.pal.split(':');const D=UI.draft[row]=UI.draft[row]||{};D.p=+i;render();return}
  if(t.dataset.dot){const [row,j]=t.dataset.dot.split(':');const D=UI.draft[row]=UI.draft[row]||{};D.c=D.c||[];if(D.p==null){flash('칠할 색연필을 먼저 골라요.','info');return}D.c[+j]=D.p;render();return}
- if(t.dataset.mq!=null){r.more.a=+t.dataset.mq;save();render();return}
+ if(t.dataset.mq!=null){if(r.seen.mm||UI.fx)return;r.more.a=+t.dataset.mq;save();render();return}
  if(t.dataset.blank!=null){const i=+t.dataset.blank;if(UI.focus===i&&r.bl[i]&&!r.cmp){r.bl[i]='';save()}UI.focus=i;render();return}
  if(t.dataset.chip!=null){const v=V(),w=v.chips[+t.dataset.chip];r.bl[UI.focus]=w;if(r.cmp&&r.bl.some((x,i)=>x!==v.ans[i]))r.cmp=false;const nx=r.bl.findIndex(x=>!x);if(nx>=0)UI.focus=nx;save();render();return}
 });
