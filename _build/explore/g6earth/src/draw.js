@@ -1,5 +1,4 @@
 /* ───────── 그림: 실험 장면 — 모두 직접 그린 SVG (지구의 운동) ───────── */
-const BY=436;
 let NAR=false,LEG=[];   /* 좁은 화면: 작은 그림 글자는 HTML(LEG)로 */
 function an(cls,delay,extra){return ' class="lb-a '+cls+'" style="animation-delay:'+(delay||0)+'s'+(extra?';'+extra:'')+'"'}
 function bg(o){o=o||{};let g='<rect x="-3000" y="-3000" width="7000" height="3416" fill="var(--w-wall)"/><rect x="-3000" y="330" width="7000" height="86" fill="var(--w-wall2)"/><rect x="-3000" y="326" width="7000" height="5" fill="var(--w-rail)"/>';
@@ -40,7 +39,7 @@ const f1=n=>(+n).toFixed(1);
 function T(x,y,t,sz,col,anc,wt){return '<text x="'+f1(x)+'" y="'+f1(y)+'" font-size="'+(sz||20)+'" font-weight="'+(wt||800)+'" text-anchor="'+(anc||'middle')+'" fill="'+(col||'var(--w-labeltx)')+'">'+t+'</text>'}
 /* 방위 글자 상자(그림 속 꼭 필요한 글자 — 좁은 화면에서도 그림 안에 둠) */
 function dirBox(x,y,t,sz){sz=sz||24;const w=t.length*sz+16;return '<g><rect x="'+f1(x-w/2)+'" y="'+f1(y-sz*.95)+'" width="'+f1(w)+'" height="'+f1(sz*1.45)+'" rx="8" fill="#FFFFFF" stroke="#0F2E4A" stroke-width="2"/>'+T(x,y+sz*.3,t,sz,'#0F2E4A')+'</g>'}
-/* ── 실험 1: 남쪽을 바라본 운동장 하늘(방위각 60°~300°, 고도 0°~) ── */
+/* ── 실험 1: 남쪽을 바라본 운동장 하늘(그림 왼쪽 끝이 동북동, 오른쪽 끝이 서북서) ── */
 const SX=az=>480+(az-180)*3.6,SY=alt=>420-alt*4.6;
 function skyPan(o){o=o||{};const dark=!!o.dark,id='lbSk'+(++CID);
  let g='<defs><linearGradient id="'+id+'" x1="0" y1="0" x2="0" y2="1">'+(dark?'<stop offset="0" stop-color="#1C140B"/><stop offset="1" stop-color="#47331A"/>':'<stop offset="0" stop-color="#6FB2E2"/><stop offset="1" stop-color="#D7EEFA"/>')+'</linearGradient></defs>';
@@ -97,9 +96,9 @@ function kidTop(x,y,th,o){o=o||{};const s=o.s||1;
 function lampTop(x,y,on,s){s=s||1;let g='<g transform="translate('+f1(x)+' '+f1(y)+') scale('+s+')">';
  if(on>0){g+='<circle r="58" fill="#FFE27A" opacity="'+f1(.35*on)+'"/>';for(let i=0;i<10;i++){const a=i*Math.PI/5;g+='<path d="M'+f1(30*Math.cos(a))+' '+f1(30*Math.sin(a))+' L'+f1(42*Math.cos(a))+' '+f1(42*Math.sin(a))+'" stroke="#F0A020" stroke-width="5" stroke-linecap="round" opacity="'+f1(on)+'"/>'}}
  return g+'<circle r="22" fill="'+(on>0?'#FFE27A':'#E9EDF2')+'" stroke="'+(on>0?'#D08A00':'#8A96A1')+'" stroke-width="3"/><circle r="9" fill="'+(on>0?'#FFF8D6':'#C9D3DA')+'"/></g>'}
-function lampSide(x,y,on,s){s=s||1;let g='<g transform="translate('+f1(x)+' '+f1(y)+') scale('+s+')">';
+function lampSide(x,y,on,s,h){s=s||1;h=h||140;let g='<g transform="translate('+f1(x)+' '+f1(y)+') scale('+s+')">';
  if(on>0)g+='<circle r="70" fill="#FFE27A" opacity="'+f1(.3*on)+'"/>';
- g+='<path d="M-8 26 V'+(140)+'" stroke="#5A6672" stroke-width="10"/><rect x="-46" y="136" width="92" height="12" rx="5" fill="#3B4650"/><rect x="-14" y="18" width="28" height="18" rx="3" fill="#9AA6B2"/>';
+ g+='<path d="M0 26 V'+f1(h)+'" stroke="#5A6672" stroke-width="10"/><rect x="-46" y="'+f1(h-4)+'" width="92" height="12" rx="5" fill="#3B4650"/><rect x="-14" y="18" width="28" height="18" rx="3" fill="#9AA6B2"/>';
  return g+'<circle r="26" fill="'+(on>0?'#FFE27A':'#E9EDF2')+'" stroke="'+(on>0?'#D08A00':'#8A96A1')+'" stroke-width="3"/><path d="M-8 6 Q0 -10 8 6" stroke="#B88A2E" stroke-width="2.5" fill="none"/></g>'}
 /* 별 역할(위에서 본 모습) */
 function starKid(x,y,s){s=s||1;return '<g transform="translate('+f1(x)+' '+f1(y)+') scale('+s+')"><ellipse rx="32" ry="14" fill="#6EC3F0" stroke="#1C6FA8" stroke-width="3"/><circle r="14" fill="#3B2A20"/><path d="M0 -40 L5 -29 L17 -29 L8 -21 L11 -9 L0 -16 L-11 -9 L-8 -21 L-17 -29 L-5 -29Z" fill="#FFF59A" stroke="#B8860B" stroke-width="2"/></g>'}
@@ -130,7 +129,7 @@ function eyeView(th,o){o=o||{};const X=490,Y=150,W=440,H=270,cx=X+W/2,hw=W/2-40,
 function globeSide(x,y,R,o){o=o||{};const id='lbGs'+(++CID);
  let g='<path d="M'+x+' '+(y+R)+' V'+(y+R+46)+'" stroke="#8A6A40" stroke-width="10"/><ellipse cx="'+x+'" cy="'+(y+R+50)+'" rx="56" ry="10" fill="#7A5A30"/>';
  g+='<defs><clipPath id="'+id+'"><circle cx="'+x+'" cy="'+y+'" r="'+R+'"/></clipPath></defs><g transform="rotate(23.5 '+x+' '+y+')"><circle cx="'+x+'" cy="'+y+'" r="'+R+'" fill="#2F7FC4" stroke="#0F3B5C" stroke-width="3"/><g clip-path="url(#'+id+')"><ellipse cx="'+(x-R*.25)+'" cy="'+(y-R*.35)+'" rx="'+R*.36+'" ry="'+R*.24+'" fill="#5CB85C"/><ellipse cx="'+(x+R*.35)+'" cy="'+(y+R*.2)+'" rx="'+R*.28+'" ry="'+R*.36+'" fill="#5CB85C"/></g><path d="M'+x+' '+(y-R-22)+' V'+(y+R+22)+'" stroke="#8A6A40" stroke-width="5"/></g>';
- if(o.cam){const cx=x-R*.55,cy=y-R*.55;g+='<g transform="translate('+f1(cx)+' '+f1(cy)+') rotate(-35)"><rect x="-15" y="-11" width="30" height="22" rx="4" fill="#222"/><circle cx="-15" r="7" fill="#555" stroke="#DDD" stroke-width="2"/></g>'}
+ if(o.cam){const al=-55,cx=x+Math.sin(al*RAD)*(R+8),cy=y-Math.cos(al*RAD)*(R+8);g+='<g transform="translate('+f1(cx)+' '+f1(cy)+') rotate('+(al-90)+')"><rect x="-15" y="-11" width="30" height="22" rx="4" fill="#222222"/><circle cx="-15" r="7" fill="#555555" stroke="#DDDDDD" stroke-width="2"/></g>'}
  return g}
 /* 북극 위에서 본 지구본. ph = 카메라(우리나라)의 각도(화면 오른쪽에서 시계 반대 방향), lit = 전등 켜짐 */
 function globeTop(x,y,R,ph,lit,o){o=o||{};let g='<circle cx="'+x+'" cy="'+y+'" r="'+R+'" fill="'+(lit?'#1D2F52':'#34465F')+'"/>';
@@ -149,6 +148,23 @@ function camScreen(X,Y,W,H,d,lit){const id='lbCs'+(++CID),b=lit&&Math.abs(d)<90?
  [[X+24,'동'],[X+W/2,'남'],[X+W-24,'서']].forEach(([x,t])=>{g+=T(x,Y+H-12,t,22,b>.35?'#0F2E4A':'#DCE4FF')});
  return g}
 function phoneFrame(X,Y,W,H,inner){return '<rect x="'+(X-14)+'" y="'+(Y-14)+'" width="'+(W+28)+'" height="'+(H+28)+'" rx="18" fill="#1D232B"/>'+inner}
+/* 옆에서 본 준비(지구본·전등·자·스마트 기기). dist 전등 놓기 · hi 높이 맞추기 · dk 어둡게 (0~1) */
+function setupSide(o){let g=bg({});const GY=250,LX=190;
+ g+=globeSide(640,GY,96,{cam:o.cam});
+ if(o.hand)g+='<g transform="translate(820 200)">'+itemArt('cam')+'</g>'+hand(870,240,-160,1);
+ if(o.cam&&!o.hand)g+=mini(760,120,'소형 카메라(우리나라)',18);
+ if(o.dist>0){const L=450*Math.min(1,o.dist);g+='<rect x="'+f1(640-L)+'" y="398" width="'+f1(L)+'" height="20" fill="#FFE680" stroke="#B8860B" stroke-width="2"/>';for(let i=0;i<=10;i++){const x=190+i*45;if(x>=640-L-1)g+='<path d="M'+x+' 398 V'+(i%5?406:414)+'" stroke="#7A5A00" stroke-width="2"/>'}
+  if(o.dist>=.7){const ly=GY-80*(1-o.hi);g+='<g opacity="'+f1(Math.min(1,(o.dist-.7)*4))+'">'+lampSide(LX,ly,0,1,396-ly)+'</g>'}
+  g+=mini(415,450,'50 cm',20)}
+ if(o.hi>=1)g+='<path d="M'+LX+' '+GY+' H640" stroke="#C2332C" stroke-width="3" stroke-dasharray="10 8"/>'+mini(415,GY-24,'중심 높이를 같게',18);
+ g+='<g transform="translate(880 330) scale(.9)">'+itemArt('phone')+'</g>';
+ if(o.dk>0)g+='<rect x="-3000" y="-3000" width="7000" height="7000" fill="#0A0E18" opacity="'+f1(.62*o.dk)+'"/>';
+ return g}
+/* 실험 1: 안경 쓰기(on 0~1) */
+function glassPic(on){const gx=480+(1-on)*90,gy=338+(1-on)*44;let g=field(480);
+ g+='<g transform="translate('+f1(gx)+' '+f1(gy)+') scale(.3)">'+itemArt('glasses')+'</g>';
+ if(on<1)g+=hand(gx+46,gy+16,-160,.8);
+ return g}
 /* 위에서 본 실험(왼쪽) + 스마트 기기 화면(오른쪽) */
 function camTop(ph,lit,o){o=o||{};let g='<rect x="10" y="40" width="560" height="460" rx="18" fill="'+(o.dim?'#1A1D24':'var(--w-paper)')+'" stroke="var(--w-felt-s)" stroke-width="2"/>';
  g+=lampTop(110,270,lit?1:0,1.1);
@@ -171,11 +187,10 @@ function roomTop(o){o=o||{};let s='<g transform="translate('+RMO.x+' '+RMO.y+') 
  s+='<rect x="190" y="178" width="60" height="44" rx="6" fill="#C9A46C" stroke="#7A5A30" stroke-width="2"/>';
  if(o.lamp!==false){for(let i=0;i<8;i++){const a=i*Math.PI/4;s+='<path d="M'+f1(220+15*Math.cos(a))+' '+f1(200+15*Math.sin(a))+' L'+f1(220+22*Math.cos(a))+' '+f1(200+22*Math.sin(a))+'" stroke="#F0A020" stroke-width="3"/>'}
   s+='<circle cx="220" cy="200" r="12" fill="#FFE680" stroke="#D08A00" stroke-width="2"/>'}
- const pv=o.pos==null?0:o.pos;
- POS4.forEach(([a,k],i)=>{if(pv<1&&o.pos!=null)return;const x=220+104*Math.cos(a*RAD),y=200-104*Math.sin(a*RAD),done=(o.done||[]).indexOf(i)>=0;
+ POS4.forEach(([a,k],i)=>{const x=220+104*Math.cos(a*RAD),y=200-104*Math.sin(a*RAD),done=(o.done||[]).indexOf(i)>=0;
   s+='<g opacity="'+f1(o.pos==null?1:Math.min(1,Math.max(0,o.pos*4-i)))+'"><circle cx="'+f1(x)+'" cy="'+f1(y)+'" r="25" fill="#FFFFFF" stroke="'+(done?'#16804A':'#9FB3C0')+'" stroke-width="3"/>'+T(x,y+7,k,20,'#0F3B5C')+'</g>'});
  (o.globes||[]).forEach(a=>{s+=globeAt(a,o.small)});
- if(o.at!=null)s+=globeAt(o.at,false,true);
+ if(o.at!=null){if(o.kid){const kx=220+70*Math.cos(o.at*RAD),ky=200-70*Math.sin(o.at*RAD);s+=kidTop(kx,ky,90-o.at,{s:.42})}s+='<g opacity="'+f1(o.op==null?1:o.op)+'">'+globeAt(o.at,false,true)+'</g>'}
  return s+'</g>'}
 /* 교실의 지구본: a = 전등을 중심으로 한 각(수학 각도). 우리나라(관측자 모형)는 바깥쪽(한밤)을 향함 */
 function globeAt(a,small,big){const x=220+104*Math.cos(a*RAD),y=200-104*Math.sin(a*RAD),ox=Math.cos(a*RAD),oy=-Math.sin(a*RAD),R=big?20:15;
@@ -198,8 +213,8 @@ function eye4(k,X,Y){X=X==null?520:X;Y=Y==null?150:Y;let s='<g transform="transl
  return s}
 /* 지구본(옆모습)과 관측자 모형 */
 function globeObs(x,y,R,o){o=o||{};let g=globeSide(x,y,R);
- if(o.at==='kr'){const px=x-R*.5,py=y-R*.62;g+='<g transform="translate('+f1(px)+' '+f1(py)+') rotate(-45)">'+obsModel(0,0,1)+'</g>'}
- if(o.at==='np'){const px=x+Math.sin(23.5*RAD)*R,py=y-Math.cos(23.5*RAD)*R;g+='<g transform="translate('+f1(px)+' '+f1(py)+') rotate(23.5)">'+obsModel(0,0,1)+'</g>'}
+ const on=al=>'<g transform="translate('+f1(x+Math.sin(al*RAD)*(R-2))+' '+f1(y-Math.cos(al*RAD)*(R-2))+') rotate('+al+')">'+obsModel(0,0,1.6)+'</g>';
+ if(o.at==='kr')g+=on(-40);
  if(o.at==='hand')g+=obsModel(x+R+90,y+40,1.4);
  return g}
 function obsModel(x,y,s){return '<g transform="translate('+f1(x)+' '+f1(y)+') scale('+(s||1)+')"><rect x="-7" y="-30" width="14" height="22" rx="5" fill="#E2573F"/><rect x="-6" y="-9" width="5" height="10" fill="#33415C"/><rect x="1" y="-9" width="5" height="10" fill="#33415C"/><circle cy="-38" r="8" fill="#F1C7A1"/></g>'}

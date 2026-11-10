@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-"""탐구 실험관 · 물체의 운동(6학년 1학기 2단원) — src/ 조각을 합쳐 HTML 한 장으로.
-   python3 build.py [출력 경로]  (기본: 저장소 grade6/science/explore/motion.html)"""
+"""탐구 실험관 · 지구의 운동(6학년 1학기 4단원) — src/ 조각을 합쳐 HTML 한 장으로.
+   python3 build.py [출력 경로]  (기본: 저장소 grade6/science/explore/earth.html)"""
 import os,sys,re
 D=os.path.dirname(os.path.abspath(__file__));S=os.path.join(D,'src')
 r=lambda n:open(os.path.join(S,n),encoding='utf-8').read()
-out=sys.argv[1] if len(sys.argv)>1 else os.path.join(D,'..','..','..','grade6','science','explore','motion.html')
+out=sys.argv[1] if len(sys.argv)>1 else os.path.join(D,'..','..','..','grade6','science','explore','earth.html')
 ic=lambda body:'<svg class="lb-ic" viewBox="0 0 24 24" aria-hidden="true">'+body+'</svg>'
 page=r('page.html')
 js=r('data.js')+'\n'+r('draw.js')+'\n'+r('app_head.js')+r('app_body.js')
@@ -21,9 +21,9 @@ assert not bad,('emoji',set(bad))
 for w in ['다음','다시 하기']:
     for m in re.finditer(r'<button[^>]*>([^<]*(?:<[^/][^>]*>[^<]*)*)</button>',page):
         assert w not in m.group(1),(w,m.group(0)[:80])
-# 쓰지 않을 말(6학년 1학기 2단원 범위 밖 — 지도서 188~231쪽: 빠르기는 이동 거리·걸린 시간·속력으로만 비교하고,
-# 속도·가속도·등속·관성·뉴턴·마찰력·평균 속력·순간 속력·변위·변인 같은 말은 쓰지 않음)
-for w in ['속도','가속','등속','관성','뉴턴','마찰','평균','순간 속력','변위','벡터','운동 에너지','변인','조건 통제',
+# 쓰지 않을 말(6학년 1학기 4단원 범위 밖 — 지도서 348~395쪽: 하루 동안 태양·별의 위치 변화는 방위(동·서·남)로만 말하고,
+# 남중 고도·적경·적위·황도·세차·일주 운동·연주 운동·천구·지평 좌표·각속도 같은 말과 변인은 쓰지 않음. 자전·공전은 교과서 결론 문장에서만)
+for w in ['남중','태양 고도','고도가','고도는','고도를','고도의','적경','적위','황도','세차','일주 운동','연주 운동','천구','방위각','자전 주기','공전 궤도','각속도','변인','조건 통제',
           '이(가)','을(를)','은(는)','이라고(라고)']:
     assert w not in page,('forbidden',w)
 # 결론 빈칸 답이 실험 이름·단계 이름·행동 단추에 들어가지 않게

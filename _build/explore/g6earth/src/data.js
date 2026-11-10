@@ -30,8 +30,8 @@ function altAz(raH,decD,J){const LAT=37.57*RAD,LON=126.98,H=(GMST(J)+LON-raH*15)
 const SUNT=[8.5,10.5,12.5,14.5,16.5];   /* 관찰 시각(원본 앱) */
 function fmtH(h){const hh=Math.floor(h),mm=Math.round((h-hh)*60);return (hh<12?'오전 ':'오후 ')+(hh>12?hh-12:hh)+'시'+(mm?' '+mm+'분':'')}
 const SD=(function(){const t=new Date(),m=t.getMonth()+1,on=m>=3&&m<=9;return on?{y:t.getFullYear(),m,d:t.getDate(),today:1}:{y:t.getFullYear(),m:6,d:10,today:0}})();
-function sunPos(d,h){const J=JDk(d.y,d.m,d.d,h),r=sunRD(J);return altAz(r[0],r[1],J)}   /* [고도, 방위각] */
-/* 방위각을 '동쪽 하늘·남쪽 하늘·서쪽 하늘' 중 가장 가까운 것으로(기록 칸을 그림과 견줄 때만 씀) */
+function sunPos(d,h){const J=JDk(d.y,d.m,d.d,h),r=sunRD(J);return altAz(r[0],r[1],J)}   /* [지평선에서 올라온 각, 북쪽에서 시계 방향으로 잰 방향] */
+/* 태양의 방향을 '동쪽 하늘·남쪽 하늘·서쪽 하늘' 중 가장 가까운 것으로(기록 칸을 그림과 견줄 때만 씀) */
 function skyOf(az){return az<135?0:az<225?1:2}
 const MOREDAYS=[[3,21,'3월 21일','#1F6FB2'],[6,21,'6월 21일','#178049'],[12,22,'12월 22일','#8A3FB0']];
 
