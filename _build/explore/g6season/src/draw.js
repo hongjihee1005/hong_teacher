@@ -173,7 +173,8 @@ function graphScene(anim){let g='<rect x="-3000" y="-3000" width="7000" height="
 
 /* ───────── 실험 3: 손전등과 스마트 기기 ───────── */
 const E3G={sx:450,sy:404,D:300,h:84};
-function phoneArt(x0,x1,y){return '<rect x="'+x0+'" y="'+(y-12)+'" width="'+(x1-x0)+'" height="12" rx="4" fill="#2A3138" stroke="#151A1F" stroke-width="2"/><circle cx="'+E3G.sx+'" cy="'+(y-12)+'" r="4" fill="#8FB3C9"/>'}
+/* 스마트 기기(옆모습): 막대의 검은 그림자가 보이게 밝은 회색 덮개(검토 고침: 어두운 기기 위에서 그림자가 보이지 않았음) */
+function phoneArt(x0,x1,y){return '<rect x="'+x0+'" y="'+(y-12)+'" width="'+(x1-x0)+'" height="12" rx="4" fill="#C9D1D9" stroke="#4A535C" stroke-width="2"/><circle cx="'+E3G.sx+'" cy="'+(y-12)+'" r="4" fill="#8FB3C9"/>'}
 function torchArt(x,y,a,on){/* (x,y) = 빛이 나오는 곳, a = 바닥과 이루는 각 */const ux=Math.cos(a*RAD),uy=Math.sin(a*RAD);
  return '<g transform="translate('+x.toFixed(1)+' '+y.toFixed(1)+') rotate('+(a).toFixed(1)+')"><rect x="-96" y="-15" width="80" height="30" rx="8" fill="#5B6573" stroke="#2F3640" stroke-width="2"/><path d="M-18 -15 L4 -24 V24 L-18 15Z" fill="#7C8794" stroke="#2F3640" stroke-width="2"/><rect x="2" y="-22" width="6" height="44" rx="2" fill="'+(on?'#FFF3B0':'#C9D1D9')+'"/><rect x="-74" y="-6" width="16" height="12" rx="3" fill="#2F3640"/></g>'}
 /* a: 손전등과 스마트 기기가 이루는 각(빛을 켜면), stick: 막대, num: 화면 숫자(문자열) */
@@ -184,7 +185,7 @@ function e3Scene(o){o=o||{};let g=bg({});const sx=E3G.sx,sy=E3G.sy,a=o.a;
   g+='<g'+(o.anim==='on'?an('lb-a-fade',0):'')+'><path d="M'+(tx+px*14).toFixed(1)+' '+(ty+py*14).toFixed(1)+' L'+(sx+w/Math.sin(a*RAD)).toFixed(1)+' '+sy+' L'+(sx-w/Math.sin(a*RAD)).toFixed(1)+' '+sy+' L'+(tx-px*14).toFixed(1)+' '+(ty-py*14).toFixed(1)+'Z" fill="#FFE680" opacity=".45"/>';
   if(o.stick){const L=E3G.h/Math.tan(a*RAD);g+='<rect x="'+(sx+30)+'" y="'+(sy-4)+'" width="'+L.toFixed(1)+'" height="4" fill="#111" opacity=".8"/>'}
   const rr=70;g+='<path d="M'+(sx-rr)+' '+sy+' A'+rr+' '+rr+' 0 0 1 '+(sx-rr*ux).toFixed(1)+' '+(sy-rr*uy).toFixed(1)+'" fill="none" stroke="#C2332C" stroke-width="3"/>';
-  g+='<text x="'+(sx-rr-14-(a>60?0:6)).toFixed(1)+'" y="'+(sy-18)+'" text-anchor="end" font-size="22" font-weight="800" fill="#B3261E">'+a+'°</text>';
+  g+='<text x="'+(sx-rr-14-(a>60?0:6)).toFixed(1)+'" y="'+(sy-18)+'" text-anchor="end" font-size="22" font-weight="800" fill="#B3261E" stroke="#FFFFFF" stroke-width="5" paint-order="stroke" stroke-linejoin="round">'+a+'°</text>';
   g+='<path d="M'+(tx-px*40).toFixed(1)+' '+(ty-py*40).toFixed(1)+' L'+(sx-px*40).toFixed(1)+' '+(sy-py*40).toFixed(1)+'" stroke="var(--w-labeltx)" stroke-width="2" stroke-dasharray="6 6" opacity=".7"/>';
   g+=mini((tx+sx)/2-px*72,(ty+sy)/2-py*72,'약 20 cm',18)+'</g>'+torchArt(tx,ty,a,1)}
  else if(o.torch)g+=torchArt(250,380,0,0);
@@ -192,12 +193,13 @@ function e3Scene(o){o=o||{};let g=bg({});const sx=E3G.sx,sy=E3G.sy,a=o.a;
  g+='<rect x="660" y="36" width="270" height="190" rx="22" fill="#2A3138" stroke="#151A1F" stroke-width="3"/><rect x="674" y="52" width="242" height="158" rx="12" fill="'+(o.num==null?'#3A4148':'#F4F8FB')+'"/>';
  if(o.num!=null){g+='<text x="795" y="84" text-anchor="middle" font-size="18" font-weight="800" fill="#2A3342">빛의 세기</text><text x="795" y="160" text-anchor="middle" font-size="54" font-weight="800" font-family="ui-monospace,Menlo,Consolas,monospace" fill="'+(o.hl?'#B3261E':'#141A26')+'">'+esc(o.num)+'</text>'}
  return g}
-function e3Two(){const r=R();let g=bg({});const P=(x,a,num,cap)=>{const L=40/Math.tan(a*RAD);let s='<g transform="translate('+x+' 0)"><rect x="0" y="40" width="420" height="330" rx="16" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="2"/>';
-  s+='<text x="210" y="74" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-labeltx)">'+cap+'</text><rect x="60" y="300" width="300" height="10" rx="3" fill="#2A3138"/>';
+/* 두 번 잰 모습: 어두운 화면에서도 그림자·각 글자가 보이게 흰 판에(검토 고침) */
+function e3Two(){const r=R();let g=bg({});const P=(x,a,num,cap)=>{const L=40/Math.tan(a*RAD);let s='<g transform="translate('+x+' 0)"><rect x="0" y="40" width="420" height="330" rx="16" fill="#FFFFFF" stroke="#BDB4A2" stroke-width="2"/>';
+  s+='<text x="210" y="74" text-anchor="middle" font-size="22" font-weight="800" fill="#141A26">'+cap+'</text><rect x="60" y="300" width="300" height="10" rx="3" fill="#2A3138"/>';
   const sx=150,sy=300,ux=Math.cos(a*RAD),uy=Math.sin(a*RAD);s+='<path d="M'+(sx-200*ux).toFixed(1)+' '+(sy-200*uy).toFixed(1)+' L'+sx+' '+sy+'" stroke="'+RAYC+'" stroke-width="5" stroke-dasharray="10 7"/>';
   s+='<rect x="'+(sx+14)+'" y="'+(sy-40)+'" width="6" height="40" fill="#8C96A1"/><rect x="'+(sx+20)+'" y="'+(sy-3)+'" width="'+L.toFixed(1)+'" height="3" fill="#111"/>';
   s+='<text x="'+(sx-50)+'" y="'+(sy-10)+'" text-anchor="end" font-size="20" font-weight="800" fill="#B3261E">'+a+'°</text>';
-  s+='<text x="210" y="352" text-anchor="middle" font-size="26" font-weight="800" fill="var(--w-labeltx)">화면 숫자 '+esc(num||'?')+'</text></g>';return s};
+  s+='<text x="210" y="352" text-anchor="middle" font-size="26" font-weight="800" fill="#141A26">화면 숫자 '+esc(num||'?')+'</text></g>';return s};
  const xS=r.rec.lS,xL=r.rec.lL;
  return g+P(40,LANG.S,xS&&xS.ok?xS.v:null,'그림자가 짧을 때')+P(500,LANG.L,xL&&xL.ok?xL.v:null,'그림자가 길 때')}
 /* 더 알아보기: 같은 빛, 다른 넓이 */
