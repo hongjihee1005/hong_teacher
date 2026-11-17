@@ -1,6 +1,7 @@
 /* 이 실험관에서 더 쓰는 아이콘 */
 Object.assign(I,{globe:'<circle cx="12" cy="10" r="6.5"/><path d="M5.5 10h13M12 3.5c2 2 2 11 0 13M12 3.5c-2 2-2 11 0 13"/><path d="M6 16.5a8 8 0 0012 0M12 18.5V21M8.5 21h7"/>',
  tilt:'<circle cx="12" cy="12" r="6"/><path d="M8 4l8 16"/>',
+ up:'<path d="M12 19V5M6 11l6-6 6 6"/>',down:'<path d="M12 5v14M6 13l6 6 6-6"/>',
  flash:'<path d="M3.5 9.5h9v5h-9z"/><path d="M12.5 9.5l4-2.5v10l-4-2.5"/><path d="M19 9l2-1.5M19.5 12h2M19 15l2 1.5"/>'});
 
 /* ───────── 기록(이 기기에만) ───────── */
@@ -17,7 +18,7 @@ function save(){try{localStorage.setItem(KEY,JSON.stringify(DB))}catch(e){}}
 const UI={fx:null,nonce:0,timers:[],draft:{},inp:{},wrong:{},fb:{},focus:0,menu:false,rail:false,speaking:false,toast:'',mq:{},a0:null,attn:false};
 function clearTimers(){UI.timers.forEach(t=>clearTimeout(t));UI.timers=[]}
 function later(fn,ms){const t=setTimeout(fn,RM?Math.min(ms,120):ms);UI.timers.push(t);return t}
-function resetUI(){clearTimers();UI.attn=false;UI.fx=null;UI.draft={};UI.inp={};UI.wrong={};UI.fb={};UI.focus=0;UI.rail=false;UI.toast='';UI.mq={};UI.a0=null;stopSay()}
+function resetUI(){clearTimers();UI.gt=null;UI.attn=false;UI.fx=null;UI.draft={};UI.inp={};UI.wrong={};UI.fb={};UI.focus=0;UI.rail=false;UI.toast='';UI.mq={};UI.a0=null;stopSay()}
 const V=()=>EXPS[DB.cur],R=()=>DB.runs[DB.cur];
 const narrow=()=>innerWidth<=820;
 function endP(t){t=String(t).trim();return /[.?!]$/.test(t)?t:t+'.'}
@@ -80,7 +81,7 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,f=fid(),no=v.no,st=r.s
   if(id==='day'){const c=st.dc||0,fi=f&&/^t\d$/.test(f)?+f[1]:-1;
    if(fi>=0)return T(e2Scene(fi,{anim:1})+mini(400,236,'재는 중',20));
    return T(e2Scene(c-1,{hl:!!UI.mq.hl}))}
-  if(id==='graph'){if(r.seen.gph||f==='gph')return T(graphScene(f==='gph'),'내 기록으로 그린 꺾은선그래프 셋',GVB);return T(dayTable(),'내 기록표')}}
+  if(id==='graph'){if(!plotting())return T(graphScene(f==='gph'),'내가 찍은 점으로 그린 꺾은선그래프 셋',GVB);return plotSVG()}}
  if(no===3){const T=(g,l)=>svg(g+lensOf(s,g),l||s.t,'130 40 830 470');
   if(id==='app')return T(e3Scene({num:has('app')?'0':null}));
   if(id==='stick')return T(e3Scene({num:'0',stick:has('stick'),torch:1,anim:f==='stick'?'stick':''}));
@@ -173,6 +174,7 @@ function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
  if(s.k==='scene'){if(UI.fx)return s.look;if(r.done[id])return '잘했어요. 이어서 가요.';return s.opts?s.ask:'① '+jo(s.act,'을','를')+' 눌러요.'}
  if(D)return '다 했어요. 이어서 가요.';
  if(UI.fx)return s.look;
+ if(s.id==='graph'&&plotting())return gHint();
  const need=s.rows.find(k=>!rowDone(k)),R0=ROWS[need];
  if(rowReady(need)){if(R0.t==='num')return '③ '+(R0.src||'화면의 숫자를')+' ‘'+R0.n+'’ 칸에 써요.';
   return R0.t==='note'?'③ 살펴본 것을 쓰고 기록해요.':'③ '+R0.n+(/\?$/.test(R0.n)?' ':': ')+'알맞은 것을 골라 기록해요.'}
@@ -213,7 +215,7 @@ function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=
  /* 한 번 해 보고 그 기록을 쓰는 동안에는 ①·② 단추를 접음(1분마다 재기 — 기록 칸이 카드 안에 들어가게) */
  const FD=!UI.fx&&typeof s.fold==='function'&&s.fold();
  if(FD)h+=gPart(1,'해 보기','ok','')+gPart(2,'살펴보기','ok','');
- else{h+=gPart(1,'해 보기',L&&!keep?'ok':'cur',L&&!UI.fx?(keep?actBtns(s,true):''):actBtns(s));
+ else{h+=gPart(1,'해 보기',L&&!keep?'ok':'cur',L&&!UI.fx?(keep?actBtns(s,true):''):s.id==='graph'&&V().no===2?plotCtl():actBtns(s));
  h+=gPart(2,'살펴보기',!A?'wait':L?'ok':'cur',L&&s.rows.some(rowReady)?'':'<p>'+esc(s.look)+'</p>')}
  /* ③은 차례가 오면 열림(아직이면 이름만 — 카드 글자가 줄지 않게) */
  const st3=D?'ok':on3?'cur':'wait';const nx=s.rows.find(k=>!rowDone(k)&&rowReady(k));h+=gPart(3,'기록하기',st3,st3==='wait'?'<p class="lb-hint2">해 보기와 살펴보기를 마치면 열려요.</p>':doneRows(s)+s.rows.filter(k=>!rowDone(k)&&k===nx).map(rowUI).join('')+(s.rows.some(k=>!rowDone(k)&&k!==nx)?'<p class="lb-hint2">'+(nx?'이 줄을 기록하면 다음 줄이 열려요.':'남은 것을 해 보면 기록 칸이 더 열려요.')+'</p>':''));
@@ -273,7 +275,7 @@ function sheetHTML(){const v=V(),r=R();const done=v.steps.map(id=>stepDef(v,id))
 const LABNAME='season';
 function snapsOf(v,r){const L=[],S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
  if(v.no===1){if(ok('a1'))S(e1Scene(0,3,''),'0 20 680 440',M1[0].when);if(ok('a2'))S(e1Scene(1,3,''),'0 20 680 440',M1[1].when)}
- if(v.no===2&&DAYS.some((t,k)=>ok('d'+k)))S(graphWide(),'0 0 960 250','내 기록으로 그린 꺾은선그래프(태양 고도 · 그림자 길이 · 기온)');
+ if(v.no===2&&GR.some(G=>plotVals(G.j).some(x=>x!=null)))S(graphWide(),'0 0 960 250','내가 찍은 점으로 그린 꺾은선그래프(태양 고도 · 그림자 길이 · 기온)');
  if(v.no===3&&ok('lS')&&ok('lL'))S(e3Two(),'20 30 920 350','그림자가 짧을 때와 길 때');
  if(v.no===4){const P=k=>bg({})+lampArt(E4G.lx,E4G.ly,1)+globeSide(E4G.gx,E4G.gy,E4G.R,tauOf(k,true),{meter:1,sh:SHT[k]})+mini(E4G.gx,470,'자전축을 기울였을 때 '+POS[k]+' 위치',20);
   if(ok('t1'))S(P(1),'150 140 500 360','자전축을 기울였을 때 나 위치');if(ok('t3'))S(P(3),'150 140 500 360','자전축을 기울였을 때 라 위치')}
@@ -336,6 +338,7 @@ function fitAll(){fitBox($('#lbCard .lb-card-b'),$('#lbCard .lb-fit'),.76);fitBo
 function renderScene(){const r=R(),s=curStep(),el=$('#lbScene');if(!el)return;NAR=narrow();LEG=[];
  let over='';
  if(UI.toast)over+='<div class="lb-toast '+(UI.toastK==='info'?'lb-toast3':'lb-toast2')+'" role="status">'+esc(UI.toast)+'</div>';
+ el.classList.toggle('lb-plotsc',s.id==='graph'&&V().no===2&&plotting());
  const sv=s.k==='concl'?recPanel():sceneSVG();NAR=false;set(el,over+sv);
  const lg=$('#lbLeg');if(lg)set(lg,LEG.length?LEG.map(x=>'<span class="lb-lg">'+esc(x[1])+'</span>').join(''):'')}
 function notesHTML(s){if(!s.why&&!s.care)return '';const hideWhy=s.k==='more'&&R().more.a==null;let h=hideWhy?'<div class="lb-note lb-know">'+ic('info')+'<div><b>알아 두어요</b>'+esc(s.pre||'먼저 해 보고 골라요.')+'</div></div>':'<div class="lb-note lb-why">'+ic('why')+'<div><b>왜 그렇게 할까요?</b>'+esc(s.why)+'</div></div>';
@@ -359,7 +362,6 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx,st=r.st||{},no=V().no;
  switch(s.id){
   case 'm1':case 'm2':{const i=s.id==='m1'?0:1;seqActs(A,'k'+(i+1),['a'+i,'c'+i,'p'+i],['그림자를 자와 나란하게 놓기','각도기 중심을 그림자 끝에 맞추기','실을 그림자 끝까지 당기기'],busy);break}
   case 'day':seqW('dc',DAYT.map((t,i)=>'t'+i),DAYT.map(t=>t+'에 재기'),'d');break;
-  case 'graph':one('gph','꺾은선그래프 그리기');break;
   case 'mS':one('onS','손전등을 높이 들어 비추기');break;
   case 'mL':one('onL','손전등을 낮게 들어 비추기');break;
   case 'cmp':if(no===3)one('cmp3','두 기록 나란히 보기');else one('tbl4','내 기록표 펼쳐 보기');break;
@@ -414,6 +416,47 @@ function homeHTML(){const card=k=>{const v=EXPS[k],r=DB.runs[k];const st=r?(r.fi
  return '<div class="lb-home"><div class="lb-home-h"><div class="lb-kick"><em>6학년 2학기 과학</em>1. 계절의 변화</div><h1>무엇을 실험할까요?</h1><p>실험을 한 단계씩 직접 해 보고, 내 눈으로 읽은 눈금과 숫자를 기록해요.</p></div>'+
  '<div class="lb-ex lb-ex4">'+['e1','e2','e3','e4'].map(card).join('')+'</div>'+
  '<p class="lb-model">'+ic('info')+'<span>아주 단순하게 만든 모형이에요. 같은 조건이면 언제나 같은 결과가 나와요. 각도기·자·온도계·스마트 기기 화면에 나오는 값은 교과서와 「실험관찰」에 실린 예시 값이에요. 손전등의 각도, 그림 속 태양·지구본·전등의 자리와 크기는 이 실험관에서 정한 모습이에요. 실제 실험에서는 날씨와 장소에 따라 값이 다르니 내가 잰 숫자를 그대로 써요.</span></p></div>'}
+/* ───────── 실험 2: 꺾은선그래프에 점 찍기(교과서 앱 u1-2 · 「실험관찰」 10쪽) ─────────
+   학생이 시각을 고르고 그래프 칸을 눌러 점을 놓음(세로축 반 칸에 붙음). 같은 자리를 다시 누르면 빠지고, 다른 높이를 누르면 옮겨짐.
+   앱은 점을 대신 찍지 않음. 일곱 점을 다 찍으면 선으로 잇고, 내 기록과 작은 눈금 한 칸보다 많이 다른 점만 알려 줌(바른 자리는 보여 주지 않음).
+   세 그래프를 모두 맞게 그려야 ③ 기록하기가 열림. 점은 r.st.gp(이 기기 기록)에 남아 결과 한 장에 그대로 들어감. */
+function gpOf(){const st=R().st;if(!st.gp)st.gp=GR.map(()=>DAYS.map(()=>null));return st.gp}
+function gMine(j,k){const x=R().rec['d'+k];return x&&x.ok?+x.v[j]:null}
+function gBad(j){const a=gpOf()[j];if(!gFull(a))return [];const G=GR[j];return a.map((v,k)=>gMine(j,k)!=null&&Math.abs(v-gMine(j,k))>G.minor+1e-9?k:-1).filter(k=>k>=0)}
+function gOk(j){return gFull(gpOf()[j])&&!gBad(j).length}
+function gCur(){return R().st.gi||0}
+function gSel(){if(UI.gt==null){const k=gpOf()[gCur()].findIndex(v=>v==null);UI.gt=k<0?0:k}return UI.gt}
+function plotting(){return !!DB.cur&&V().no===2&&curStep().id==='graph'&&!R().seen.gph&&!fxOn('gph')}
+const gUnit=(G,v)=>G.u==='°'?v+'°':v+' '+G.u;
+function gSet(k,v){const r=R(),j=gCur(),a=gpOf()[j],G=GR[j];if(!plotting()||UI.fx)return;
+ if(v!=null)v=Math.max(G.min,Math.min(G.max,Math.round(v/GSNAP)*GSNAP));
+ a[k]=v;UI.gt=k;r.act.graph=1;r.obs=1;
+ if(GR.every((x,i)=>gOk(i))){save();fx('gph',1700,()=>{r.seen.gph=1});return}
+ save();render()}
+function gNudge(d){const j=gCur(),G=GR[j],k=gSel(),a=gpOf()[j];gSet(k,a[k]==null?(G.min+G.max)/2:a[k]+d*GSNAP)}
+function gTab(j){R().st.gi=j;UI.gt=null;save();render()}
+function gHint(){const j=gCur(),a=gpOf()[j],G=GR[j],bad=gBad(j);
+ if(bad.length)return '① 표시한 점을 내 기록과 견주어 옮겨요.';
+ if(gOk(j)){const i=GR.findIndex((x,i)=>!gOk(i));return i<0?'① 세 그래프를 다 그렸어요.':'① ‘'+GR[i].s+'’ 그래프를 골라 점을 찍어요.'}
+ return '① '+DAYS[gSel()]+' 줄 위에서 내 기록의 높이를 눌러 점을 찍어요.'}
+function plotSVG(){const el=$('#lbScene'),w=el&&el.clientWidth||960,h=el&&el.clientHeight||540,W=960,H=Math.round(W*Math.max(.5,Math.min(1.45,h/w))),z=W/w,j=gCur(),G=GR[j];
+ UI.pg={W,H,z};
+ return svg(plotBoard(W,H,z,G,gpOf()[j],gSel(),gBad(j)),G.s+' 꺾은선그래프를 그리는 모눈. 시각 줄 위를 누르면 점이 놓여요.','0 0 '+W+' '+H).replace('<svg ','<svg class="lb-plotsvg" ')}
+function plotCtl(){const j=gCur(),G=GR[j],a=gpOf()[j],k=gSel(),bad=gBad(j);let h='<div class="lb-plotctl">';
+ h+='<div class="lb-gtabs" role="group" aria-label="그래프 고르기">'+GR.map((x,i)=>{const n=gpOf()[i].filter(v=>v!=null).length,ok=gOk(i);
+  return '<button type="button" class="lb-gtab'+(ok?' lb-gdone':'')+'" data-gtab="'+i+'" data-f="gtab'+i+'" aria-pressed="'+(i===j)+'" style="--gc:'+x.col+'">'+(ok?ic('check'):'')+'<span>'+esc(x.s)+'</span><small>'+n+'/7</small></button>'}).join('')+'</div>';
+ h+='<div class="lb-gtimes" role="group" aria-label="시각 고르기 · 내 기록 '+esc(G.n)+'"><span class="lb-gtl">시각 · 내 기록('+esc(G.u)+')</span>'+DAYS.map((t,i)=>{const mv=gMine(j,i),on=a[i]!=null,wr=bad.indexOf(i)>=0;
+  return '<button type="button" class="lb-gt'+(on?' lb-gon':'')+(wr?' lb-gwr':'')+'" data-gt="'+i+'" data-f="gt'+i+'" aria-pressed="'+(i===k)+'" aria-label="'+t+', 내 기록 '+esc(mv==null?'없음':gUnit(G,mv))+(on?', 점을 찍었어요':', 아직 점이 없어요')+(wr?', 다시 봐요':'')+'"><b>'+t+'</b><span>'+(mv==null?'—':esc(String(mv)))+'</span><i aria-hidden="true"></i></button>'}).join('')+'</div>';
+ h+='<div class="lb-gnud" role="group" aria-label="고른 시각의 점 옮기기"><button type="button" class="lb-gn" data-gn="1" data-f="gn1">'+ic('up')+'<span>위로</span></button><button type="button" class="lb-gn" data-gn="-1" data-f="gn-1">'+ic('down')+'<span>아래로</span></button><button type="button" class="lb-gn" data-gn="0" data-f="gn0"'+(a[k]==null?' disabled':'')+'>'+ic('x')+'<span>점 빼기</span></button></div>';
+ let m='';
+ if(bad.length)m='<div class="lb-msg lb-try" role="status">'+ic('info')+'<span>'+bad.map(i=>DAYS[i]).join(', ')+'의 점이 내 기록과 많이 달라요. 세로축 눈금을 다시 읽고 옮겨요.</span></div>';
+ else if(gOk(j)){const i=GR.findIndex((x,i)=>!gOk(i));m='<div class="lb-msg lb-good" role="status">'+ic('check')+'<span>'+esc(G.s)+' 그래프를 다 그렸어요.'+(i<0?'':' 이번에는 ‘'+esc(GR[i].s)+'’ 그래프를 골라요.')+'</span></div>'}
+ else if(!a.some(v=>v!=null))m='<p class="lb-hint2">시각을 고르고 그래프 칸에서 내 기록의 높이를 눌러요. 같은 자리를 다시 누르면 점이 빠져요.</p>';
+ return h+m+'</div>'}
+function plotClick(e){if(!plotting()||UI.fx||!UI.pg)return;const sv=e.target.closest('svg');if(!sv)return;const pt=sv.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;const M=sv.getScreenCTM();if(!M)return;const p=pt.matrixTransform(M.inverse());
+ const {W,H,z}=UI.pg,P=plotGeo(W,H,z),j=gCur(),G=GR[j],cw=(P.px1-P.px0)/7;
+ const k=Math.max(0,Math.min(6,Math.floor((p.x-P.px0)/cw))),v=Math.max(G.min,Math.min(G.max,Math.round((G.min+(P.py1-p.y)/(P.py1-P.py0)*(G.max-G.min))/GSNAP)*GSNAP)),a=gpOf()[j];
+ gSet(k,a[k]===v?null:v)}
 /* ───────── 동작 ───────── */
 function fx(id,ms,after){UI.fx={id,n:++UI.nonce};render();later(()=>{UI.fx=null;if(after)after();save();render()},ms)}
 function doAnim(id,ms){fx(id,ms,()=>{const r=R();if(r)r.done[id]=true;const p=$('#lbFoot [data-act="next"]');if(p&&!p.disabled)p.focus({preventScroll:true})})}
@@ -440,7 +483,6 @@ function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
  if(s.id==='m1'||s.id==='m2'){const i=s.id==='m1'?0:1,row='a'+(i+1);seq('k'+(i+1),['a'+i,'c'+i,'p'+i],[1000,1200,1700],j=>{if(j===2&&!rowDone(row))r.pend[row]=1});return}
  if(s.id==='day'){const c=st.dc||0;if(c>0&&!rowDone('d'+(c-1)))return;seq('dc',DAYT.map((t,i)=>'t'+i),1500,j=>{if(!rowDone('d'+j))r.pend['d'+j]=1});return}
  if(s.id==='vert'||s.id==='tiltm'){const t=s.id==='tiltm',key=t?'tc':'vc',pre=t?'t':'v',c=st[key]||0;if(c>0&&!rowDone(pre+(c-1)))return;seq(key,['p0','p1','p2','p3'],[900,1400,1400,1400],j=>{if(!rowDone(pre+j))r.pend[pre+j]=1});return}
- if(id==='gph'){one(1700);return}
  if(id==='onS'||id==='onL'){r.obs=1;const row=id==='onS'?'lS':'lL';one(1300,()=>{if(!rowDone(row))r.pend[row]=1});return}
  if(id==='cmp3'||id==='tbl4'){one(900);return}
  if(s.k==='more'){const m=/^([LA])(\d+)$/.exec(id);if(!m)return;const n=+m[2];UI.mq.cur=id;if(m[1]==='L')UI.mq.len=n;else UI.mq.ang=n;fx(id,900,()=>{UI.mq[id]=1;const k=Object.keys(UI.mq).filter(x=>/^[LA]\d+$/.test(x)).length;if(k>=(m[1]==='L'?3:2))UI.mq.both=1});return}}
@@ -502,7 +544,7 @@ function openMenu(o){UI.menu=o;$('#lbMenu').hidden=!o;$('#lbTeach').setAttribute
  b.addEventListener('click',e=>{if(UI.menu){if(!held)openMenu(false);held=false;return}if(held){held=false;return}if(e.detail===0){if(confirm('선생님 메뉴를 열까요?'))openMenu(true);return}flash('선생님 단추는 1초 동안 꾹 눌러요.')})})();
 
 /* ───────── 입력 연결 ───────── */
-document.addEventListener('click',e=>{const t=e.target.closest('button');
+document.addEventListener('click',e=>{if(e.target.closest&&e.target.closest('.lb-plotsvg .lb-hit')){plotClick(e);return}const t=e.target.closest('button');
  if(UI.menu&&!e.target.closest('#lbMenu,#lbTeach'))openMenu(false);
  if(!t||t.id==='lbTeach')return;const r=DB.cur?R():null;
  if(t.id==='lbOpenMi'){DB.ui.open=!DB.ui.open;save();render();return}
@@ -519,6 +561,9 @@ document.addEventListener('click',e=>{const t=e.target.closest('button');
  if(t.dataset.dr){const [row,j,i]=t.dataset.dr.split(':');const D=UI.draft[row]=UI.draft[row]||{};D.f=D.f||[];D.f[+j]=+i;if(UI.wrong[row])UI.wrong[row]=UI.wrong[row].filter(w=>w!==+j);render();return}
  if(t.dataset.ord){const [row,k]=t.dataset.ord.split(':');const D=UI.draft[row]=UI.draft[row]||{};D.o=D.o||[];if(D.o.indexOf(k)<0)D.o.push(k);UI.wrong[row]=[];render();return}
  if(t.dataset.mq!=null){r.more.a=+t.dataset.mq;save();render();return}
+ if(t.dataset.gtab!=null){if(plotting())gTab(+t.dataset.gtab);return}
+ if(t.dataset.gt!=null){if(plotting()){UI.gt=+t.dataset.gt;render()}return}
+ if(t.dataset.gn!=null){if(!plotting())return;const d=+t.dataset.gn;if(d)gNudge(d);else gSet(gSel(),null);return}
  if(t.dataset.blank!=null){const i=+t.dataset.blank;if(UI.focus===i&&r.bl[i]&&!r.cmp){r.bl[i]='';save()}UI.focus=i;render();return}
  if(t.dataset.chip!=null){const v=V(),w=v.chips[+t.dataset.chip];r.bl[UI.focus]=w;if(r.cmp&&r.bl.some((x,i)=>x!==v.ans[i]))r.cmp=false;const nx=r.bl.findIndex(x=>!x);if(nx>=0)UI.focus=nx;save();render();return}
 });
@@ -527,6 +572,11 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape'){if(UI.menu){openMen
  if(tg.dataset&&tg.dataset.in!=null&&e.key==='Enter'){e.preventDefault();trial(tg.dataset.in.split('#')[0]);return}
  if(tg.closest&&tg.closest('input,textarea,select'))return;
  if(!DB.cur||e.altKey||e.ctrlKey||e.metaKey)return;
+ /* 그래프 점 찍기: 위·아래 화살표로 점 옮기기, 왼쪽·오른쪽으로 시각 고르기, Delete로 빼기 */
+ if(tg.closest&&tg.closest('.lb-plotctl')&&plotting()){const K=e.key;
+  if(K==='ArrowUp'||K==='ArrowDown'){e.preventDefault();gNudge(K==='ArrowUp'?1:-1);return}
+  if(K==='ArrowLeft'||K==='ArrowRight'){e.preventDefault();UI.gt=Math.max(0,Math.min(6,gSel()+(K==='ArrowRight'?1:-1)));render();const b=$('[data-f="gt'+UI.gt+'"]');if(b)b.focus({preventScroll:true});return}
+  if(K==='Delete'||K==='Backspace'){e.preventDefault();gSet(gSel(),null);return}}
  if(e.key==='ArrowLeft'&&!tg.closest('.lb-seg')){if(R().step>0){e.preventDefault();go(R().step-1)}}
  if(e.key==='ArrowRight'&&!tg.closest('.lb-seg')){if(canNext()){e.preventDefault();go(R().step+1)}}});
 document.addEventListener('input',e=>{const t=e.target;if(t.id==='lbWhy'&&!predLocked()){R().why=t.value;save()}

@@ -143,33 +143,49 @@ function e2Scene(k,o){o=o||{};let g=bgOut();const on=k>=0;
  g+=skyPanel(560,14,on?k:-1)+zoomRuler(560,122,on?SHD[k]:null,on)+thermPanel(560,284,on?f1(TMP[k]):null,o.hl);
  g+=mini(130,44,on?DAYT[k]:'재기 전',22);
  return g}
-/* 내 기록표(실험 2) */
-function dayTable(){const r=R(),x0=40,y0=120,lw=170,cw=106,rh=62;let g='<rect x="'+(x0-14)+'" y="'+(y0-50)+'" width="'+(lw+cw*7+28)+'" height="'+(rh*4+70)+'" rx="16" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="2"/>';
- g+='<text x="'+(x0+(lw+cw*7)/2)+'" y="'+(y0-16)+'" text-anchor="middle" font-size="22" font-weight="800" fill="var(--w-labeltx)">내 기록표</text>';
- const H=['태양 고도(°)','그림자 길이(cm)','기온(℃)'];
- for(let j=0;j<4;j++)for(let k=-1;k<7;k++){const x=k<0?x0:x0+lw+k*cw,w=k<0?lw:cw,y=y0+j*rh;
-  g+='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+rh+'" fill="'+(j===0||k<0?'#EEF2F5':'#FFFFFF')+'" stroke="#9AA3AE" stroke-width="1.6"/>';
-  let t='';if(j===0)t=k<0?'측정 시각':DAYS[k];else if(k<0)t=H[j-1];else{const x2=r.rec['d'+k];t=x2&&x2.ok?x2.v[j-1]:''}
-  g+='<text x="'+(x+w/2)+'" y="'+(y+rh/2+8)+'" text-anchor="middle" font-size="'+(k<0?18:22)+'" font-weight="800" fill="#141A26">'+esc(t)+'</text>'}
- return g}
-/* 꺾은선그래프 셋(내가 적은 값으로) */
-const GR=[{n:'태양 고도(°)',min:30,max:55,step:5,col:'#C25E00',j:0},{n:'그림자 길이(cm)',min:5,max:20,step:5,col:'#6A4FA3',j:1},{n:'기온(℃)',min:20,max:30,step:2,col:'#C2332C',j:2}];
+/* 꺾은선그래프 셋: 학생이 내 기록을 보고 시각마다 직접 찍은 점(교과서 앱 u1-2 '그래프 그리기'·「실험관찰」 10쪽처럼).
+   세로축 범위·큰 눈금은 교과서 앱 값(태양 고도 30~55 · 그림자 길이 0~20 · 기온 20~30), 작은 눈금 한 칸 1, 점은 반 칸(0.5)마다 붙음 — 이 실험관에서 정한 값 */
+const GR=[{n:'태양 고도(°)',s:'태양 고도',u:'°',min:30,max:55,step:5,minor:1,col:'#C25E00',j:0},{n:'그림자 길이(cm)',s:'그림자 길이',u:'cm',min:0,max:20,step:5,minor:1,col:'#6A4FA3',j:1},{n:'기온(℃)',s:'기온',u:'℃',min:20,max:30,step:2,minor:1,col:'#C2332C',j:2}];
+const GSNAP=.5;
 function dayVals(j){const r=R();return DAYS.map((t,k)=>{const x=r.rec['d'+k];return x&&x.ok?+x.v[j]:null})}
+/* 학생이 찍은 점(옛 기록에 점이 없고 그래프 단계를 이미 마쳤으면 기록 값) */
+function plotVals(j){const r=R(),g=r.st&&r.st.gp;if(g&&g[j])return g[j].slice();return r.seen.gph?dayVals(j):DAYS.map(()=>null)}
+const gFull=a=>a.every(v=>v!=null);
 function lineChart(x,y,w,h,G,vals,anim,fs){fs=fs||1;let g='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="10" fill="#FFFFFF" stroke="#C9C3B6" stroke-width="1.5"/>';
- const px0=x+70*fs,px1=x+w-18,py0=y+30*fs,py1=y+h-30*fs,cx=k=>px0+(px1-px0)/7*(k+.5),cy=v=>py1-(v-G.min)/(G.max-G.min)*(py1-py0);
- for(let v=G.min;v<=G.max+1e-9;v+=G.step){const yy=cy(v);g+='<line x1="'+px0+'" x2="'+px1+'" y1="'+yy.toFixed(1)+'" y2="'+yy.toFixed(1)+'" stroke="#E3E8EC" stroke-width="1.2"/><text x="'+(px0-8)+'" y="'+(yy+5).toFixed(1)+'" text-anchor="end" font-size="'+(14*fs)+'" fill="#3B4A5A">'+v+'</text>'}
+ const px0=x+70*fs,px1=x+w-18,py0=y+38*fs,py1=y+h-30*fs,cx=k=>px0+(px1-px0)/7*(k+.5),cy=v=>py1-(v-G.min)/(G.max-G.min)*(py1-py0);
+ for(let v=G.min;v<=G.max+1e-9;v+=G.minor){const yy=cy(v);if(Math.abs((v-G.min)/G.step-Math.round((v-G.min)/G.step))>1e-6)g+='<line x1="'+px0+'" x2="'+px1+'" y1="'+yy.toFixed(1)+'" y2="'+yy.toFixed(1)+'" stroke="#F0F2F4" stroke-width="1"/>'}
+ for(let v=G.min;v<=G.max+1e-9;v+=G.step){const yy=cy(v);g+='<line x1="'+px0+'" x2="'+px1+'" y1="'+yy.toFixed(1)+'" y2="'+yy.toFixed(1)+'" stroke="#D5DCE2" stroke-width="1.2"/><text x="'+(px0-8)+'" y="'+(yy+5).toFixed(1)+'" text-anchor="end" font-size="'+(14*fs)+'" fill="#3B4A5A">'+v+'</text>'}
  DAYS.forEach((t,k)=>{g+='<text x="'+cx(k).toFixed(1)+'" y="'+(py1+20*fs).toFixed(1)+'" text-anchor="middle" font-size="'+(13*fs)+'" fill="#3B4A5A">'+t+'</text>'});
  g+='<line x1="'+px0+'" x2="'+px0+'" y1="'+py0+'" y2="'+py1+'" stroke="#3B4A5A" stroke-width="2"/><line x1="'+px0+'" x2="'+px1+'" y1="'+py1+'" y2="'+py1+'" stroke="#3B4A5A" stroke-width="2"/>';
  g+='<text x="'+(x+12)+'" y="'+(y+20*fs)+'" font-size="'+(15*fs)+'" font-weight="800" fill="'+G.col+'">'+G.n+'</text>';
- let d='';vals.forEach((v,k)=>{if(v==null)return;d+=(d?' L':'M')+cx(k).toFixed(1)+' '+cy(v).toFixed(1)});
- if(d)g+='<path d="'+d+'" fill="none" stroke="'+G.col+'" stroke-width="'+(3.5*fs)+'"'+(anim?' pathLength="1" stroke-dasharray="1"'+an('lb-a-draw',0):'')+'/>';
+ /* 일곱 점을 모두 찍었을 때만 선으로 이음 */
+ if(gFull(vals)){const d=vals.map((v,k)=>(k?'L':'M')+cx(k).toFixed(1)+' '+cy(v).toFixed(1)).join(' ');g+='<path d="'+d+'" fill="none" stroke="'+G.col+'" stroke-width="'+(3.5*fs)+'"'+(anim?' pathLength="1" stroke-dasharray="1"'+an('lb-a-draw',0):'')+'/>'}
  vals.forEach((v,k)=>{if(v!=null)g+='<circle cx="'+cx(k).toFixed(1)+'" cy="'+cy(v).toFixed(1)+'" r="'+(5*fs)+'" fill="'+G.col+'" stroke="#FFFFFF" stroke-width="1.5"/>'});
  return g}
-function graphWide(){let g='<rect width="960" height="250" fill="#FFFFFF"/>';GR.forEach((G,i)=>{g+=lineChart(4+i*320,4,312,242,G,dayVals(G.j),false,.95)});return g}
-/* 그래프 화면: 세로로 긴 판(0 0 960 720)에 셋을 크게(검토 고침: 1280 화면에서 눈금 글자가 9px쯤이었음) */
+function graphWide(){let g='<rect width="960" height="250" fill="#FFFFFF"/>';GR.forEach((G,i)=>{g+=lineChart(4+i*320,4,312,242,G,plotVals(G.j),false,.95)});return g}
+/* 다 그린 뒤: 세로로 긴 판(0 0 960 720)에 셋을 크게 */
 const GVB='0 0 960 720';
 function graphScene(anim){let g='<rect x="-3000" y="-3000" width="7000" height="7000" fill="var(--w-wall)"/>';
- GR.forEach((G,i)=>{g+=lineChart(20,12+i*236,920,226,G,dayVals(G.j),anim,1.35)});return g}
+ GR.forEach((G,i)=>{g+=lineChart(20,12+i*236,920,226,G,plotVals(G.j),anim,1.35)});return g}
+/* 점 찍는 판: 그래프 하나를 그림 자리 가득. W×H는 그림 자리 비율, z = 화면 1px에 해당하는 그림 단위(글자·점 크기를 화면에서 고르게) */
+function plotGeo(W,H,z){const f=Math.max(1,Math.min(2.8,z));return {f,px0:Math.round(64*f+14),px1:W-Math.round(16*f),py0:Math.round(40*f),py1:H-Math.round(46*f)}}
+function plotBoard(W,H,z,G,vals,sel,bad){const P=plotGeo(W,H,z),f=P.f,{px0,px1,py0,py1}=P,cw=(px1-px0)/7,cx=k=>px0+cw*(k+.5),cy=v=>py1-(v-G.min)/(G.max-G.min)*(py1-py0);
+ let g='<rect x="-3000" y="-3000" width="7000" height="7000" fill="var(--w-wall)"/><rect x="6" y="6" width="'+(W-12)+'" height="'+(H-12)+'" rx="'+(8*f)+'" fill="#FFFFFF" stroke="#C9C3B6" stroke-width="'+(1.5*f)+'"/>';
+ if(sel!=null)g+='<rect x="'+(px0+cw*sel).toFixed(1)+'" y="'+py0+'" width="'+cw.toFixed(1)+'" height="'+(py1-py0)+'" fill="#E3F1EA"/>';
+ for(let v=G.min;v<=G.max+1e-9;v+=G.minor){const yy=cy(v),maj=Math.abs((v-G.min)/G.step-Math.round((v-G.min)/G.step))<1e-6;
+  g+='<line x1="'+px0+'" x2="'+px1+'" y1="'+yy.toFixed(1)+'" y2="'+yy.toFixed(1)+'" stroke="'+(maj?'#AEBBC6':'#DCE3E8')+'" stroke-width="'+(maj?1.4*f:.9*f).toFixed(2)+'"/>';
+  if(maj)g+='<text x="'+(px0-7*f).toFixed(1)+'" y="'+(yy+5*f).toFixed(1)+'" text-anchor="end" font-size="'+(14*f).toFixed(1)+'" font-weight="700" fill="#3B4A5A">'+v+'</text>'}
+ DAYS.forEach((t,k)=>{g+='<line x1="'+cx(k).toFixed(1)+'" x2="'+cx(k).toFixed(1)+'" y1="'+py0+'" y2="'+py1+'" stroke="'+(k===sel?'#1F8060':'#C7D0D8')+'" stroke-width="'+(k===sel?2*f:1*f)+'"'+(k===sel?'':' stroke-dasharray="'+4*f+' '+4*f+'"')+'/><text x="'+cx(k).toFixed(1)+'" y="'+(py1+19*f).toFixed(1)+'" text-anchor="middle" font-size="'+(13*f).toFixed(1)+'" font-weight="'+(k===sel?800:600)+'" fill="'+(k===sel?'#1A6E52':'#3B4A5A')+'">'+t+'</text>'});
+ g+='<line x1="'+px0+'" x2="'+px0+'" y1="'+(py0-6*f)+'" y2="'+py1+'" stroke="#3B4A5A" stroke-width="'+2*f+'"/><line x1="'+px0+'" x2="'+px1+'" y1="'+py1+'" y2="'+py1+'" stroke="#3B4A5A" stroke-width="'+2*f+'"/>';
+ g+='<text x="'+(px0-4*f)+'" y="'+(py0-14*f).toFixed(1)+'" font-size="'+(15*f).toFixed(1)+'" font-weight="800" fill="'+G.col+'">'+G.n+'</text><text x="'+px1+'" y="'+(py1+38*f).toFixed(1)+'" text-anchor="end" font-size="'+(12*f).toFixed(1)+'" fill="#3B4A5A">측정 시각(시:분)</text>';
+ if(gFull(vals)){const d=vals.map((v,k)=>(k?'L':'M')+cx(k).toFixed(1)+' '+cy(v).toFixed(1)).join(' ');g+='<path d="'+d+'" fill="none" stroke="'+G.col+'" stroke-width="'+(3*f).toFixed(1)+'" stroke-linejoin="round"/>'}
+ vals.forEach((v,k)=>{if(v==null)return;const X=cx(k).toFixed(1),Y=cy(v).toFixed(1);
+  if(bad&&bad.indexOf(k)>=0)g+='<circle cx="'+X+'" cy="'+Y+'" r="'+(13*f).toFixed(1)+'" fill="none" stroke="var(--lb-lens)" stroke-width="'+(2.5*f).toFixed(1)+'" stroke-dasharray="'+4*f+' '+3*f+'"/>';
+  if(k===sel)g+='<circle cx="'+X+'" cy="'+Y+'" r="'+(10*f).toFixed(1)+'" fill="none" stroke="#1F8060" stroke-width="'+(2*f).toFixed(1)+'"/>';
+  g+='<circle cx="'+X+'" cy="'+Y+'" r="'+(6*f).toFixed(1)+'" fill="'+G.col+'" stroke="#FFFFFF" stroke-width="'+(1.5*f).toFixed(1)+'"/>'});
+ /* 누르는 자리(그래프 칸 전체 + 둘레 조금) */
+ g+='<rect class="lb-hit" x="'+(px0-4*f)+'" y="'+(py0-10*f)+'" width="'+(px1-px0+8*f)+'" height="'+(py1-py0+20*f)+'" fill="#000" fill-opacity="0"/>';
+ return g}
 
 /* ───────── 실험 3: 손전등과 스마트 기기 ───────── */
 const E3G={sx:450,sy:404,D:300,h:84};
