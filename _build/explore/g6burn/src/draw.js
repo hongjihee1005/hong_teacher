@@ -103,7 +103,7 @@ function candleArt(cx,base,o){o=o||{};const h=o.h||170,w=(o.w||32)/2,small=o.sma
   if(d>.5)g+='<ellipse cx="'+(cx-w-2)+'" cy="'+(bot-2)+'" rx="12" ry="4" fill="#F3E3BC" stroke="#C9AE74" stroke-width="1.5"/>'}
  g+='<path d="M'+cx+' '+top+' q1 -7 -1 -12" stroke="#2A2A2A" stroke-width="3" fill="none" stroke-linecap="round"/>';
  if(o.lit)g+=(o.litAnim?'<g'+an('lb-a-pop',o.litAnim===true?0:o.litAnim)+'>':'<g>')+flameArt(cx,top-8,o.fs||1,'c')+'</g>';
- if(o.out)g+=smokeArt(cx,top-14,o.outAnim);
+ if(o.out&&o.out!==2)g+=smokeArt(cx,top-14,o.outAnim);  /* out:2 = 꺼진 지 오래되어 연기가 없음 */
  return g}
 function candleTop(base,o){o=o||{};return base-((o.small?10:20)+(o.h||170))}
 /* 알코올램프. o.lv 0~1 알코올 높이 · o.cap 'on'|'side'|'none' · o.lit · o.s 크기 */

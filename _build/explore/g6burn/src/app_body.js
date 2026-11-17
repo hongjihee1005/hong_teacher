@@ -137,11 +137,14 @@ function e4Scene(s){const r=R(),id=s.id,f=fid();
   if(fi===1)g+='<g'+an('lb-a-tip',0,'--rot:-28deg;animation-duration:1.8s')+'>'+spoonArt(BK4+14,BY-176,0,'#FFFFFF','#B9B2A0')+'</g>'+fallGrains(BK4,BY-168,BY-30,'#FFFFFF','#B9B2A0',BK4);
   return g}
  if(id==='pred')return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1})+qmark(430,140);
- if(id==='cover'){const ids=['cv','wt'],k=seqK('cover',ids),fi=ids.indexOf(f);
+ if(id==='cover'){const ids=['cv','wt','w2'],k=seqK('cover',ids),fi=ids.indexOf(f);
+  /* 꺼지는 차례가 끝난 그림에도 남게 두 번에 나눠 지켜봄(움직임 줄이기 설정에서도 보이게, 검토 고침) */
   if(k<1&&fi<0)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1});
   if(fi===0)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,boxAnim:1});
-  if(fi===1)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,fade:[1.2,3.6]});
-  if(k>=2)return g+e4Base({bk:1,ml:60,ki:1,bub:1,box:1,out:[1,1]});
+  if(fi===1)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,fade:[1.2]});
+  if(fi===2)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,out:[2,0],fade:[null,1.2]});
+  if(k>=3)return g+e4Base({bk:1,ml:60,ki:1,bub:1,box:1,out:[2,1]});
+  if(k>=2)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,out:[1,0]});
   return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1})}
  return g+e4Base({})}
 
@@ -183,7 +186,7 @@ function e6Scene(s){const r=R(),id=s.id,f=fid();
   if(go)g+='<g'+an('lb-a-drip',0,'animation-duration:1s')+'><path d="M480 '+(BY-330)+' q-9 15 0 21 q9 -6 0 -21z" fill="#BFE3F5" stroke="#6FA9CC" stroke-width="1.5"/></g>';
   return g+wlab(480,BY+32,'푸른색 염화 코발트 종이',15)}
  if(id==='preLi'){const go=f==='co',dn=sn('co');return g+limeJar(480,BY,{lid:'side',cloud:dn?.85:0,cloudAnim:go?1.4:0})+co2Tube(480,BY,go)+wlab(480,BY+32,'석회수',16)}
- if(id==='pred')return g+box6(0,'',1)+limeJar(700,BY,{lid:'on'})+qmark(480,150);
+ if(id==='pred')return g+box6(0,'',0)+limeJar(700,BY,{lid:'on'})+qmark(480,150);
  if(id==='paper'){const on=has('paper'),a=f==='paper';g+=box6(0,'',0);
   if(on)g+=(a?'<g'+an('lb-a-fade',.7)+'>':'<g>')+coPaper(PX6,BX6.y+54,26,80,0,0,1)+'</g>'+(a?'<g'+an('lb-a-slide',0,'--dx:200px')+'>'+tweezArt(PX6+40,BX6.y+110,20,'')+'</g>':'');
   else g+=coPaper(640,BY-6-80,26,80,0)+tweezArt(700,BY-20,30,'');
@@ -373,7 +376,7 @@ const LABNAME='burn';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
  if(no===1){if(ok('bl')&&ok('fl'))S(bg({})+e1Set({inf:1,foam:1,settle:1}),'230 130 500 360','두 고무풍선을 세우고 잠시 뒤')}
  if(no===2||no===3){if(ok(no===2?'cLook':'aLook'))S(bg({})+fireObj(no,{lit:1}),'210 140 340 320','불꽃');if(ok(no===2?'cWarm':'aWarm'))S(bg({})+fireObj(no,{lit:1})+tPaper(FXC+24,fireTopY(no,0)-24,300,1,0),'210 140 600 320','열 변색 종이를 댄 모습');if(ok(no===2?'cTime':'aTime'))S(bg({})+fireObj(no,{lit:1,t:1}),'210 140 340 320','시간이 지난 뒤')}
- if(no===4){if(ok('ord'))S(bg({})+e4Base({bk:1,ml:60,ki:1,box:1,out:[1,1]}),'140 150 680 330','두 촛불이 모두 꺼진 뒤')}
+ if(no===4){if(ok('ord')){S(bg({})+e4Base({lit:1,bk:1,ml:60,ki:1,box:1,out:[1,0]}),'140 150 680 330','잠시 지켜본 뒤');S(bg({})+e4Base({bk:1,ml:60,ki:1,box:1,out:[2,1]}),'140 150 680 330','두 촛불이 모두 꺼진 뒤')}}
  if(no===5){if(ok('first'))S(bg({})+e5Set({put:1,lit:1,heat:1,hs:1,ws:1}),'170 160 620 330','가운데를 가열한 뒤');if(ok('wood'))S(bg({})+e5Set({put:1,lit:1,heat:1,hs:2,ws:2}),'170 160 620 330','더 오래 가열한 뒤')}
  if(no===6){if(ok('co'))S(bg({})+candleArt(CX6,BY,{h:CH4,small:1,out:1})+dropletsArt(0)+box6(0,'',2),'200 160 420 300','촛불이 꺼진 뒤 종이');if(ok('li'))S(bg({})+limeJar(480,BY,{lid:'on',cloud:.85}),'360 280 240 180','흔든 뒤 석회수')}
  return L}
@@ -535,7 +538,7 @@ function act(a,el){const v=V(),r=R();
  if(a==='say'){toggleSay();return}
  if(a==='rail'){UI.rail=!UI.rail;render();return}}
 /* 행동마다 그림이 움직이는 때(ms) */
-const XMS={up:2600,wt:3200,zm:1600,hp:2600,dk:1400,tm:2600,ki:2600,cv:1700,wt4:5200,lt:2000,h1:4600,h2:2600,wd:2400,co:3000,la:1900,ca:1800,wa:3600,cb:3600,cl:1700,sh:2600};
+const XMS={up:2600,wt:3200,zm:1600,hp:2600,dk:1400,tm:2600,ki:2600,cv:1700,wt4:3000,w2:3000,lt:2000,h1:4600,h2:2600,wd:2400,co:3000,la:1900,ca:1800,wa:3600,cb:3600,cl:1700,sh:2600};
 function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
  if(s.k==='more'){if(r.seen[id])return;UI.mq.cur=id;fx(id,2600,()=>{r.seen[id]=1});return}
  r.act[s.id]=1;if(idxOf('pred')>=0&&r.step>idxOf('pred'))r.obs=1;

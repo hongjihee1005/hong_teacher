@@ -3020,7 +3020,7 @@ function stepDef(E,id){const no=E.no;
    why:'같은 장소에서 일정한 시간 간격으로 관찰해야 태양의 위치 변화를 알 수 있어요.',care:['care',SAFE.long+' '+SAFE.wash]},
   more:no===1?{g:3,n:'더 알아보기',t:'다른 날짜에도 같을까요?',k:'more',look:'날짜마다 붙임딱지 자리(점선)를 시각 차례대로 따라가 봐요.',
    why:'날짜에 따라 태양이 보이는 자리는 조금씩 달라요.',care:['know','점선은 오전 8시 30분부터 두 시간마다의 위치예요.'],pre:'먼저 날짜 단추를 모두 눌러 보고 골라요.'}
-   :{g:3,n:'더 알아보기',t:'만약 지구가 동쪽에서 서쪽으로 자전한다면?',k:'more',look:'반대로 돌 때 전등이 처음 보이는 쪽을 봐요.',
+   :{g:3,n:'더 알아보기',t:'만약 지구가 동쪽에서 서쪽으로 자전한다면?',k:'more',look:'반대로 돌 때 전등이 어느 쪽에서 어느 쪽으로 위치가 달라지는지 봐요.',
    why:'이번에는 반대로, 동쪽에서 서쪽(시계 방향)으로 돌아 봐요.',care:['care',SAFE.slow],pre:'먼저 반대로 돌아 보고 골라요.'},
   /* 실험 2 */
   note:{g:1,n:'붙임쪽지 쓰고 역할 정하기',t:'붙임쪽지에 ‘지구’, ‘별’, ‘동’, ‘서’를 쓰고 역할을 정해요',act:'붙임쪽지 쓰기',look:'붙임쪽지 네 장을 봐요.',k:'scene',dur:1600,
@@ -3044,7 +3044,7 @@ function stepDef(E,id){const no=E.no;
    opts:[{t:'지구본의 중심 높이와 같게'},{t:'지구본보다 훨씬 높게',bad:'전등 빛이 지구본의 가운데를 비추도록 맞춰야 해요.'}],
    why:'전등 빛이 지구본의 가운데를 비추도록 맞춰야 해요.',care:['care',SAFE.app]},
   dark:{g:1,n:'주변 어둡게 하기',t:'주변을 어둡게 해요',act:'주변 어둡게 하기',look:'주변이 어두워졌는지 봐요.',k:'scene',dur:1400,
-   why:'주변이 어두워야 카메라 화면이 밝을 때와 어두울 때를 견줄 수 있어요.',care:['care',SAFE.hot3]},
+   why:'주변이 밝으면 전등 빛이 카메라에 닿는지 알아보기 어려워요.',care:['care',SAFE.hot3]},
   /* 실험 4 */
   spot:{g:1,n:'설 위치 정하기',t:'책상 가운데에 전등을 놓고, 전등을 중심으로 설 위치 가 · 나 · 다 · 라를 정해요',act:'전등 놓고 위치 정하기',look:'네 위치가 전등에서 같은 거리에 있는지 봐요.',k:'scene',dur:1800,
    why:'지구본과 전등의 거리를 일정하게 해요.',care:['care',SAFE.wire]},
@@ -3444,7 +3444,7 @@ function e3Scene(s){const r=R(),id=s.id,f=fid(),p=fxP(),st=r.st,idx=k=>idxOf(k)<
  const lit=!!st.lp||f==='lp';
  if(id==='pred')return camTop(0,false,{dim:1})+qmark(400,90);
  if(id==='turn'){const ph=e3Ph(),n=st.gn||0,d=nrm(180-ph);
-  return stackLR(camTop(ph,lit,{dim:1})+mini(290,30+44,'북극 위에서 내려다본 지구본',17),phoneFrame(610,150,320,210,camScreen(610,150,320,210,d,lit))+mini(770,110,'카메라 화면(스마트 기기)',18)+mini(770,410,Math.min(360,Math.round(n*45+(f==='gt'?45*p:0)))+' / 360°',20),-480,430)}
+  return stackLR(camTop(ph,lit,{dim:1})+mini(290,30+44,'북극 위에서 내려다본 지구본',17),phoneFrame(610,150,320,210,camScreen(610,150,320,210,d,lit))+mini(770,110,'카메라 화면(스마트 기기)',18)+mini(770,410,n<8||(n===8&&f!=='gt')?Math.min(360,Math.round(n*45+(f==='gt'?45*p:0)))+' / 360°':'한 바퀴 더 · '+Math.round(((n-8)*45+(f==='gt'?45*p:0))%360)+'°',20),-480,430)}
  return camTop(0,false,{dim:1})}
 
 /* ───── 실험 4: 교실에서 지구본 옮기기 ───── */
@@ -3568,7 +3568,8 @@ function taskCard(s){const r=R(),A=acted(s),L=looked(s),D=isDone(r.step)&&(s.k!=
   return cardHead('더 알아보기','해도 되고 건너뛰어도 돼요')+wrapB(h+'</ol>')}
  const on3=s.rows.some(rowReady)||s.rows.some(k=>ROWS[k].t==='auto'&&acted(s));
  /* ①을 모두 해 보면 단추를 접음(본 결과는 그림에 그대로 남음) — 기록 칸이 넓어져 카드 글자가 줄지 않게 */
- const keep=actsOf(s).some(a=>a.cell)&&!isDone(r.step);h+=gPart(1,'해 보기',L&&!keep?'ok':'cur',L&&!UI.fx?(keep?actBtns(s,true):''):actBtns(s));
+ const keep=actsOf(s).some(a=>a.cell)&&!isDone(r.step);/* 지구본처럼 한 바퀴를 다 돌린 뒤에도 다시 볼 수 있는 단추(sub)는 남김 */
+ const again=actsOf(s).some(a=>a.sub)&&!isDone(r.step);h+=gPart(1,'해 보기',L&&!keep?'ok':'cur',L&&!UI.fx?(keep?actBtns(s,true):again?actBtns(s):''):actBtns(s));
  h+=gPart(2,'살펴보기',!A?'wait':L?'ok':'cur',L&&s.rows.some(rowReady)?'':'<p>'+esc(s.look)+'</p>');
  /* ③은 차례가 오면 열림(아직이면 이름만 — 카드 글자가 줄지 않게) */
  const st3=D?'ok':on3?'cur':'wait';const nx=s.rows.find(k=>!rowDone(k)&&rowReady(k));h+=gPart(3,'기록하기',st3,st3==='wait'?'<p class="lb-hint2">해 보기와 살펴보기를 마치면 열려요.</p>':doneRows(s)+s.rows.filter(k=>!rowDone(k)&&k===nx).map(rowUI).join('')+(s.rows.some(k=>!rowDone(k)&&k!==nx)?'<p class="lb-hint2">'+(nx?'이 줄을 기록하면 다음 줄이 열려요.':'남은 것을 해 보면 기록 칸이 더 열려요.')+'</p>':''));
@@ -3698,7 +3699,7 @@ function actsOf(s){const r=R(),A=[],busy=!!UI.fx,st=r.st||{},no=V().no;
   case 'move':seqActs(A,'mv',MVIDS,['가 위치에 서기','나 위치로 옮기기','다 위치로 옮기기','라 위치로 옮기기'],busy);break;
   case 'turn':if(no===2){const n=st.tn||0;A.push({id:'tn',label:'서쪽에서 동쪽으로 45° 돌기',icon:'turn',dis:busy||n>=8});break}
    if(!st.lp)A.push({id:'lp',label:'전등 켜기',icon:'sun',dis:busy});
-   else{const n=st.gn||0;A.push({id:'gt',label:'서쪽에서 동쪽으로 45° 돌리기',icon:'turn',dis:busy||n>=8})}break;
+   else{const n=st.gn||0;A.push(n<8?{id:'gt',label:'서쪽에서 동쪽으로 45° 돌리기',icon:'turn',dis:busy}:{id:'gt',label:'45° 더 돌리며 다시 보기',icon:'turn',dis:busy,sub:1})}break;
   case 'more':if(no===1)MOREDAYS.forEach((d,i)=>A.push({id:'d'+i,label:d[2],grp:'다른 날짜',cell:1,seen:!!UI.mq['d'+i]||r.more.a!=null,pressed:!!UI.mq['d'+i],dis:busy}));
    else A.push({id:'rv',label:'동쪽에서 서쪽으로 한 바퀴 돌기',icon:'turn',dis:busy});break}
  return A}
@@ -3798,7 +3799,7 @@ function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
   case 'move':seq('mv',MVIDS,[1000,1500,1500,1500]);return;
   case 'turn':if(id==='tn'){const n=st.tn||0;if(n<8)fx('tn',900,()=>{st.tn=n+1;if(st.tn>=8)r.seen.tn=1})}
    if(id==='lp'&&!st.lp)fx('lp',900,()=>{st.lp=1});
-   if(id==='gt'&&st.lp){const n=st.gn||0;if(n<8)fx('gt',900,()=>{st.gn=n+1;if(st.gn>=8)r.seen.gt=1})}
+   if(id==='gt'&&st.lp){const n=st.gn||0;fx('gt',900,()=>{st.gn=n<8?n+1:8+(n-7)%8;if(st.gn>=8)r.seen.gt=1})}
    return}}
 /* 같은 고르기로 다시 누르면 세지 않음 */
 function tryKey(k,val){const r=R();if(r.last[k]===val)return -1;r.last[k]=val;r.tries[k]=(r.tries[k]||0)+1;return r.tries[k]}

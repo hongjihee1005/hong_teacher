@@ -80,7 +80,7 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,f=fid(),no=v.no,st=r.s
   if(id==='day'){const c=st.dc||0,fi=f&&/^t\d$/.test(f)?+f[1]:-1;
    if(fi>=0)return T(e2Scene(fi,{anim:1})+mini(400,236,'재는 중',20));
    return T(e2Scene(c-1,{hl:!!UI.mq.hl}))}
-  if(id==='graph'){if(r.seen.gph||f==='gph')return T(graphScene(f==='gph'),'내 기록으로 그린 꺾은선그래프 셋');return T(dayTable(),'내 기록표')}}
+  if(id==='graph'){if(r.seen.gph||f==='gph')return T(graphScene(f==='gph'),'내 기록으로 그린 꺾은선그래프 셋',GVB);return T(dayTable(),'내 기록표')}}
  if(no===3){const T=(g,l)=>svg(g+lensOf(s,g),l||s.t,'130 40 830 470');
   if(id==='app')return T(e3Scene({num:has('app')?'0':null}));
   if(id==='stick')return T(e3Scene({num:'0',stick:has('stick'),torch:1,anim:f==='stick'?'stick':''}));
@@ -174,7 +174,7 @@ function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
  if(D)return '다 했어요. 이어서 가요.';
  if(UI.fx)return s.look;
  const need=s.rows.find(k=>!rowDone(k)),R0=ROWS[need];
- if(rowReady(need)){if(R0.t==='num')return '③ '+(R0.src||'저울 화면의 숫자를')+' ‘'+R0.n+'’ 칸에 써요.';
+ if(rowReady(need)){if(R0.t==='num')return '③ '+(R0.src||'화면의 숫자를')+' ‘'+R0.n+'’ 칸에 써요.';
   return R0.t==='note'?'③ 살펴본 것을 쓰고 기록해요.':'③ '+R0.n+(/\?$/.test(R0.n)?' ':': ')+'알맞은 것을 골라 기록해요.'}
  const A=actsOf(s);
  const cur=A.find(b=>b.hide===false&&!b.pressed&&!b.dis);if(cur)return '① '+lj(cur.label.replace(/^\d\/\d · /,''))+' 눌러요.';
@@ -246,7 +246,6 @@ function conclCard(){const v=V(),r=R();let h='<p class="lb-hint2">'+(narrow()?'�
  return cardHead('결론 쓰기','빈칸을 누르고 낱말 카드를 골라요')+wrapB(h)}
 
 /* ───────── 결과 한 장 ───────── */
-function barChart(v,r){return ''}
 function sheetTable(v,r){const g=k=>{const x=r.rec[k];return x&&x.ok?x.v:null},c=x=>x==null?'—':esc(x);let h='<table class="lb-sh-ttbl"><caption class="lb-sr">관찰 기록</caption>';
  if(v.no===1)h+='<thead><tr><th scope="col">재는 때</th>'+M1.map(m=>'<th scope="col">'+esc(m.when)+'</th>').join('')+'</tr></thead><tbody><tr><th scope="row">태양 고도(°)</th><td>'+c(g('a1'))+'</td><td>'+c(g('a2'))+'</td></tr></tbody>';
  if(v.no===2){h+='<thead><tr><th scope="col">측정 시각</th>'+DAYS.map(t=>'<th scope="col">'+t+'</th>').join('')+'</tr></thead><tbody>';

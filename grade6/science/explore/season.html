@@ -899,8 +899,9 @@ html .lb-doit.lb-hold:active{background:var(--lb-sci);color:var(--lb-onsci)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--w-skyo:#22384F;--w-hill:#2F4A35;--w-grass:#30482B;--w-grass2:#4E7040}}
 :root[data-theme="dark"]{--w-skyo:#22384F;--w-hill:#2F4A35;--w-grass:#30482B;--w-grass2:#4E7040}
 .lb-sheet,.lb-shimg{--w-skyo:#CFE8F7;--w-hill:#B9D7A0;--w-grass:#BFD99A;--w-grass2:#86AC5F}
-.lb-sh-e2 .lb-sh-pic svg{height:7.5rem}
-@media print{.lb-sh-e2 .lb-sh-pic svg{height:38mm!important}}
+.lb-sh-e2 .lb-sh-pic svg,.lb-sh-e3 .lb-sh-pic svg{height:7.5rem}
+@media print{.lb-sh-e2 .lb-sh-pic svg{height:32mm!important}.lb-sh-e3 .lb-sh-pic svg{height:40mm!important}}
+.lb-shimg .lb-sh-e3 .lb-sh-pic svg{height:10rem}
 @media print{.lb-sheet{font-size:10.5pt!important}.lb-sh-big{font-size:9pt!important}.lb-sh-book{font-size:9pt!important;line-height:1.35!important}.lb-sh-steps{line-height:1.3!important}}
 .lb-trials2 .lb-u{display:inline-block;min-width:1.6em;font-style:normal;text-align:left;padding-left:.2em}
 
@@ -2982,8 +2983,8 @@ Object.assign(ROWS,{
  /* 실험 3 */
  lS:{n:'그림자가 짧을 때의 빛의 세기',t:'num',v:String(LUX.S),u:'',lab:'화면 숫자',src:'스마트 기기 화면의 숫자를'},
  lL:{n:'그림자가 길 때의 빛의 세기',t:'num',v:String(LUX.L),u:'',lab:'화면 숫자',src:'스마트 기기 화면의 숫자를'},
- gS:{n:'그림자가 짧을 때',t:'sel',need:['cmp3'],f:[yn('손전등과 스마트 기기가 이루는 각',['컸어요','작았어요'],0),yn('빛의 세기',['더 셌어요','더 약했어요'],0)]},
- gL:{n:'그림자가 길 때',t:'sel',need:['cmp3'],f:[yn('손전등과 스마트 기기가 이루는 각',['컸어요','작았어요'],1),yn('빛의 세기',['더 셌어요','더 약했어요'],1)]},
+ gS:{n:'그림자가 짧을 때',t:'sel',need:['cmp3'],f:[yn('손전등과 스마트 기기가 이루는 각',['컸어요','작았어요'],0),yn('빛의 세기',['더 셌어요','더 약했어요'],0),yn('센서가 받는 에너지양',['많았어요','적었어요'],0)]},
+ gL:{n:'그림자가 길 때',t:'sel',need:['cmp3'],f:[yn('손전등과 스마트 기기가 이루는 각',['컸어요','작았어요'],1),yn('빛의 세기',['더 셌어요','더 약했어요'],1),yn('센서가 받는 에너지양',['많았어요','적었어요'],1)]},
  mm:{n:'손전등을 태양이라고 하면',t:'sel',need:['cmp3'],f:[yn('스마트 기기는',['태양','지표면'],1),yn('손전등과 스마트 기기가 이루는 각은',['태양 고도','그림자 길이'],0)]}});
 /* 실험 4: 위치마다 한 칸 */
 POS.forEach((p,k)=>{ROWS['v'+k]={n:'자전축이 수직일 때 '+p+' 위치',t:'num',v:f1(SHV[k]),u:'cm',tol:.1,dec:1,lab:'그림자 길이',src:'자의 눈금을 읽어'};
@@ -3030,7 +3031,7 @@ const EXPS={
   pred:[{q:'그림자가 짧을 때와 길 때, 빛의 세기는 어떨까요?',o:['그림자가 짧을 때 더 셀 것 같아요','그림자가 길 때 더 셀 것 같아요','같을 것 같아요']}],
   rows:['lS','lL','gS','gL','mm'],
   frame:'손전등과 스마트 기기가 이루는 각이 클 때 빛의 세기가 더 {0}. 손전등을 태양이라고 하면, 태양 고도가 높아질수록 일정한 면적의 지표면이 받는 태양 에너지양이 {1}.',ans:['셌어요','많아져요'],chips:['셌어요','약했어요','많아져요','적어져요'],
-  hint:['두 번 잰 화면의 숫자를 견줘 봐요. 숫자가 클수록 빛이 세요.','각이 클 때 빛이 셌다면, 센서가 받는 에너지양은 어떨까요?'],
+  hint:['두 번 잰 화면의 숫자를 견줘 봐요. 숫자가 클수록 빛이 세요.','\'그림자가 짧을 때\' 기록에서 센서가 받는 에너지양을 봐요.'],
   book:'태양 고도가 높아질수록 일정한 면적의 지표면이 받는 태양 에너지양이 많아져요. 반대로 태양 고도가 낮아질수록 일정한 면적의 지표면이 받는 태양 에너지양이 적어져요. 여름에는 태양의 남중 고도가 높아 일정한 면적의 지표면이 받는 태양 에너지양이 많고, 겨울에는 적어요.'},
  e4:{no:4,name:'지구본과 전등 모형실험',sub:'각도를 조절할 수 있는 지구본 · 태양 고도 측정기(원형) · 갓 없는 전등 · 자 · 면장갑',title:'지구본을 공전시키며 그림자 길이를 재 보자',
   q:'계절의 변화는 왜 생길까요?',
@@ -3089,7 +3090,7 @@ function stepDef(E,id){const no=E.no;
    why:'같은 때에는 태양 빛이 같은 방향에서 평행하게 들어와요.',care:['know','막대기 길이를 세 가지 이상 바꿔 봐요.'],pre:'먼저 막대기 길이를 바꿔 보고 골라요.'}},
  2:{
   place:{g:1,n:'측정기 놓기',t:'태양 고도 측정기를 태양 빛이 잘 드는 평평한 곳에 놓아요',act:'평평한 곳에 놓기',look:'막대기 그림자가 생겼는지 봐요.',k:'scene',dur:1600,
-   why:'수직이어야 태양 고도를 정확히 잴 수 있어요.',care:['care',SAFE.sun]},
+   why:'평평한 곳에 놓아야 막대기가 수직으로 서서 태양 고도를 정확히 잴 수 있어요.',care:['care',SAFE.sun]},
   therm:{g:1,n:'온도계 놓을 곳 정하기',t:'기온을 잴 온도계를 놓을 곳을 정해요',ask:'기온은 어디에서 측정하나요?',opts:THERM,look:'온도계가 놓인 곳을 봐요.',k:'scene',dur:1500,
    why:'기온은 그늘진 곳의 높이 1.5 m 정도에서 측정해요.',care:['care',SAFE.sun]},
   day:{g:2,n:'한 시간 간격으로 재기',t:'한 시간 간격으로 태양 고도, 그림자 길이, 기온을 재요',k:'meas',rows:['d0','d1','d2','d3','d4','d5','d6'],
@@ -3255,7 +3256,7 @@ function skyPanel(x,y,k){let g='<rect x="'+x+'" y="'+y+'" width="380" height="96
  return g}
 function zoomRuler(x,y,cm,showTip){const w=380,h=150;let g='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="12" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="2"/>';
  g+='<text x="'+(x+16)+'" y="'+(y+28)+'" font-size="17" font-weight="800" fill="var(--w-labeltx)">자를 크게 본 모습</text>';
- const c0=cm==null?6:Math.floor(cm)-1,px=11,x0=x+30,yy=y+118;   /* 3 cm(30 mm)를 330 px로 */
+ const c0=cm==null?0:Math.floor(cm)-1,px=11,x0=x+30,yy=y+118;   /* 3 cm(30 mm)를 330 px로 */
  g+='<rect x="'+(x0-10)+'" y="'+(yy-46)+'" width="350" height="46" fill="#FFE27A" stroke="#B8860B" stroke-width="2"/>';
  if(cm!=null&&showTip){const tx=x0+(cm-c0)*10*px;g+='<rect x="'+(x0-10)+'" y="'+(yy-46)+'" width="'+(tx-x0+10).toFixed(1)+'" height="18" fill="#2E3338" opacity=".72"/>'}
  for(let m=0;m<=30;m++){const xx=x0+m*px,l=m%10?(m%5?10:16):24;g+='<line x1="'+xx+'" y1="'+(yy-46)+'" x2="'+xx+'" y2="'+(yy-46+l)+'" stroke="#5A4510" stroke-width="'+(m%10?1.2:2)+'"/>';
@@ -3297,8 +3298,10 @@ function lineChart(x,y,w,h,G,vals,anim,fs){fs=fs||1;let g='<rect x="'+x+'" y="'+
  vals.forEach((v,k)=>{if(v!=null)g+='<circle cx="'+cx(k).toFixed(1)+'" cy="'+cy(v).toFixed(1)+'" r="'+(5*fs)+'" fill="'+G.col+'" stroke="#FFFFFF" stroke-width="1.5"/>'});
  return g}
 function graphWide(){let g='<rect width="960" height="250" fill="#FFFFFF"/>';GR.forEach((G,i)=>{g+=lineChart(4+i*320,4,312,242,G,dayVals(G.j),false,.95)});return g}
+/* 그래프 화면: 세로로 긴 판(0 0 960 720)에 셋을 크게(검토 고침: 1280 화면에서 눈금 글자가 9px쯤이었음) */
+const GVB='0 0 960 720';
 function graphScene(anim){let g='<rect x="-3000" y="-3000" width="7000" height="7000" fill="var(--w-wall)"/>';
- GR.forEach((G,i)=>{g+=lineChart(60,20+i*172,840,160,G,dayVals(G.j),anim)});return g}
+ GR.forEach((G,i)=>{g+=lineChart(20,12+i*236,920,226,G,dayVals(G.j),anim,1.35)});return g}
 
 /* ───────── 실험 3: 손전등과 스마트 기기 ───────── */
 const E3G={sx:450,sy:404,D:300,h:84};
@@ -3343,12 +3346,12 @@ function raysScene(a,anim){let g='<rect x="-3000" y="-3000" width="7000" height=
 const E4G={lx:220,ly:280,gx:520,gy:280,R:92,K:20};   /* 30 cm = 300 px · 그림 속 그림자 1 cm = 20 px */
 const LAT=37.5,TILT=47/2;   /* 그림 속 자전축 기울기(화면에는 숫자를 쓰지 않음) */
 function lampArt(x,y,glow){return '<g><rect x="'+(x-8)+'" y="'+(y+30)+'" width="16" height="'+(416-y-30)+'" fill="#8A8F96"/><rect x="'+(x-46)+'" y="408" width="92" height="10" rx="4" fill="#6E747B"/>'+(glow?'<circle cx="'+x+'" cy="'+y+'" r="54" fill="#FFE680" opacity=".35"/>':'')+'<circle cx="'+x+'" cy="'+y+'" r="30" fill="#FFE27A" stroke="#D08A00" stroke-width="3"/><rect x="'+(x-11)+'" y="'+(y+26)+'" width="22" height="10" fill="#9AA3AE"/></g>'}
-/* 지구본 옆모습: tau = 북극이 전등(왼쪽) 쪽으로 기운 각(+), 반대(−). sh = 그림자 길이(cm), meter = 측정기 */
+/* 지구본 옆모습(측정기 막대 36 px — 자전축이 수직일 때 그림자 1.4 cm(28 px)와 빛의 방향이 맞게): tau = 북극이 전등(왼쪽) 쪽으로 기운 각(+), 반대(−). sh = 그림자 길이(cm), meter = 측정기 */
 function globeSide(cx,cy,R,tau,o){o=o||{};let g='<path d="M'+(cx-R-14)+' '+cy+' A'+(R+14)+' '+(R+14)+' 0 0 0 '+(cx+R+14)+' '+cy+'" fill="none" stroke="#8A8F96" stroke-width="5"/><rect x="'+(cx-6)+'" y="'+(cy+R+12)+'" width="12" height="'+(416-cy-R-20)+'" fill="#8A8F96"/><rect x="'+(cx-50)+'" y="408" width="100" height="10" rx="4" fill="#6E747B"/>';
  const gg='<circle r="'+R+'" fill="#3F86C8" stroke="#1E4E7A" stroke-width="3"/><path d="M-30 -60 q24 -10 40 6 q10 18 -8 30 q-26 4 -32 -36z M-58 10 q20 -6 26 16 q-4 26 -24 22 q-12 -18 -2 -38z M24 20 q26 -8 40 10 q-6 28 -30 30 q-18 -20 -10 -40z" fill="#7DBE6A" opacity=".85"/><path d="M-'+R+' 0 A'+R+' 26 0 0 0 '+R+' 0" fill="none" stroke="#FFFFFF" stroke-width="1.6" opacity=".7"/><line x1="0" y1="'+(-R-26)+'" x2="0" y2="'+(R+26)+'" stroke="#2A3138" stroke-width="3.5"/><circle cy="'+(-R-26)+'" r="4" fill="#2A3138"/>';
  g+='<g'+(o.anim==='tilt'?an('lb-a-rot',0,'--ox:'+cx+'px;--oy:'+cy+'px;--a0:0deg;--a1:'+(-tau)+'deg'):'')+' transform="rotate('+(-tau)+' '+cx+' '+cy+')"><g transform="translate('+cx+' '+cy+')">'+gg+'</g></g>';
  if(o.meter){const th=(LAT-tau)*RAD,px=cx-R*Math.cos(th),py=cy-R*Math.sin(th),nx=-Math.cos(th),ny=-Math.sin(th),tX=Math.sin(th),tY=-Math.cos(th);
-  g+='<g'+(o.anim==='meter'?an('lb-a-pop',0):'')+'><ellipse cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" rx="15" ry="5" transform="rotate('+(Math.atan2(tY,tX)/RAD).toFixed(1)+' '+px.toFixed(1)+' '+py.toFixed(1)+')" fill="#FFFFFF" stroke="#B9AE98" stroke-width="2"/><line x1="'+px.toFixed(1)+'" y1="'+py.toFixed(1)+'" x2="'+(px+nx*16).toFixed(1)+'" y2="'+(py+ny*16).toFixed(1)+'" stroke="#C2332C" stroke-width="3"/>';
+  g+='<g'+(o.anim==='meter'?an('lb-a-pop',0):'')+'><ellipse cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" rx="15" ry="5" transform="rotate('+(Math.atan2(tY,tX)/RAD).toFixed(1)+' '+px.toFixed(1)+' '+py.toFixed(1)+')" fill="#FFFFFF" stroke="#B9AE98" stroke-width="2"/><line x1="'+px.toFixed(1)+'" y1="'+py.toFixed(1)+'" x2="'+(px+nx*36).toFixed(1)+'" y2="'+(py+ny*36).toFixed(1)+'" stroke="#C2332C" stroke-width="3"/>';
   if(o.sh!=null){const L=o.sh*E4G.K;g+='<line x1="'+px.toFixed(1)+'" y1="'+py.toFixed(1)+'" x2="'+(px+tX*L).toFixed(1)+'" y2="'+(py+tY*L).toFixed(1)+'" stroke="#111" stroke-width="6" stroke-linecap="round" opacity=".9"/>'}
   g+='</g>'}
  return g}
@@ -3366,8 +3369,11 @@ const POSA=[90,180,270,0];
 function orbitInset(x,y,k,tilted,anim,prevK){const cx=x+120,cy=y+134,Ro=64;let g='<rect x="'+x+'" y="'+y+'" width="240" height="236" rx="14" fill="#14223F" stroke="#0A1322" stroke-width="2"/>';
  g+='<text x="'+cx+'" y="'+(y+24)+'" text-anchor="middle" font-size="15" font-weight="800" fill="#E9EEF6">위에서 본 모습</text>';
  g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+Ro+'" fill="none" stroke="#8FA3C0" stroke-width="2" stroke-dasharray="6 6"/><circle cx="'+cx+'" cy="'+cy+'" r="16" fill="#FFE27A" stroke="#D08A00" stroke-width="2"/>';
- g+='<path d="M'+(cx-Ro*Math.cos(35*RAD)-10).toFixed(1)+' '+(cy-Ro*Math.sin(35*RAD)-14).toFixed(1)+' l-12 4 l2 -12" fill="none" stroke="#FFE680" stroke-width="2.5"/>';
- POSA.forEach((d,i)=>{const lx=cx+(Ro+22)*Math.cos(d*RAD),ly=cy-(Ro+22)*Math.sin(d*RAD);g+='<text x="'+lx.toFixed(1)+'" y="'+(ly+6).toFixed(1)+'" text-anchor="middle" font-size="16" font-weight="800" fill="'+(i===k?'#FFE680':'#C8D3E6')+'">'+POS[i]+'</text>'});
+ /* 공전 방향(시계 반대 방향) 화살표: 궤도 위 135°쯤에서 궤도를 따라(검토 고침: 궤도에서 떨어진 꺾쇠가 글자처럼 보였음) */
+ {const a1=120*RAD,a2=150*RAD,R2=Ro+0,p=a=>[(cx+R2*Math.cos(a)).toFixed(1),(cy-R2*Math.sin(a)).toFixed(1)],P1=p(a1),P2=p(a2),tx=-Math.sin(a2),ty=-Math.cos(a2),nx=Math.cos(a2),ny=-Math.sin(a2),hx=+P2[0],hy=+P2[1];
+  g+='<path d="M'+P1[0]+' '+P1[1]+' A'+R2+' '+R2+' 0 0 0 '+P2[0]+' '+P2[1]+'" fill="none" stroke="#FFE680" stroke-width="3"/><path d="M'+(hx+tx*9).toFixed(1)+' '+(hy+ty*9).toFixed(1)+' L'+(hx+nx*6).toFixed(1)+' '+(hy+ny*6).toFixed(1)+' L'+(hx-nx*6).toFixed(1)+' '+(hy-ny*6).toFixed(1)+'Z" fill="#FFE680"/>'}
+ /* 자리 이름: 왼쪽·오른쪽은 지구본과 자전축 화살표에 겹치지 않게 조금 더 바깥에 */
+ POSA.forEach((d,i)=>{const rl=Ro+(d%180===0?40:22),lx=cx+rl*Math.cos(d*RAD),ly=cy-rl*Math.sin(d*RAD);g+='<text x="'+lx.toFixed(1)+'" y="'+(ly+6).toFixed(1)+'" text-anchor="middle" font-size="16" font-weight="800" fill="'+(i===k?'#FFE680':'#C8D3E6')+'">'+POS[i]+'</text>'});
  if(k>=0){const d=POSA[k],ex=cx+Ro*Math.cos(d*RAD),ey=cy-Ro*Math.sin(d*RAD);
   let e='<circle cx="'+ex.toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="13" fill="#3F86C8" stroke="#FFFFFF" stroke-width="2"/>'+(tilted?'<path d="M'+ex.toFixed(1)+' '+ey.toFixed(1)+' h22" stroke="#FFD23F" stroke-width="3.5"/><path d="M'+(ex+26).toFixed(1)+' '+ey.toFixed(1)+' l-8 -5 v10z" fill="#FFD23F"/>':'<circle cx="'+ex.toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="3" fill="#FFD23F"/>');
   if(anim&&prevK!=null&&prevK>=0){const a0=POSA[k]-POSA[prevK];e='<g'+an('lb-a-rot',0,'--ox:'+cx+'px;--oy:'+cy+'px;--a0:'+((a0+360)%360)+'deg;--a1:0deg')+'>'+e+'</g>'}
@@ -3383,7 +3389,7 @@ function e4Scene(o){o=o||{};let g=bg({});const G=E4G;
  g+=globeSide(G.gx,G.gy,G.R,o.tau||0,{meter:o.meter,sh:o.sh,anim:o.anim});
  if(o.note)g+=tag(G.gx,G.gy-G.R-50,o.note,17);
  return g}
-function e4Spot(){const r=R(),s=curStep(),key=s.id==='vert'?'vc':'tc',c=r.st[key]||0;if(!c||fid())return null;return [702+SHk()*60,150,26,2.2,808,360]}
+function e4Spot(){const r=R(),s=curStep(),key=s.id==='vert'?'vc':'tc',c=r.st[key]||0;if(!c||fid())return null;return [702+SHk()*60,124,32,2.1,808,360]}
 function SHk(){const r=R(),s=curStep(),t=s.id==='tiltm',c=r.st[t?'tc':'vc']||0;return (t?SHT:SHV)[Math.max(0,c-1)]}
 function e4Meas(t){const r=R(),key=t?'tc':'vc',c=r.st[key]||0,f=fid(),ids=['p0','p1','p2','p3'],fi=ids.indexOf(f);
  const k=fi>=0?fi:c-1,shown=fi<0&&c>0;let g=e4Scene({light:1,ruler:1,meter:1,tau:tauOf(Math.max(k,0),t),sh:shown?(t?SHT:SHV)[k]:null,note:t&&shown&&(k===0||k===2)?'자전축이 앞뒤로 기울어 있어요':''});
@@ -3536,7 +3542,7 @@ function sceneSVG(){const v=V(),r=R(),s=curStep(),id=s.id,f=fid(),no=v.no,st=r.s
   if(id==='day'){const c=st.dc||0,fi=f&&/^t\d$/.test(f)?+f[1]:-1;
    if(fi>=0)return T(e2Scene(fi,{anim:1})+mini(400,236,'재는 중',20));
    return T(e2Scene(c-1,{hl:!!UI.mq.hl}))}
-  if(id==='graph'){if(r.seen.gph||f==='gph')return T(graphScene(f==='gph'),'내 기록으로 그린 꺾은선그래프 셋');return T(dayTable(),'내 기록표')}}
+  if(id==='graph'){if(r.seen.gph||f==='gph')return T(graphScene(f==='gph'),'내 기록으로 그린 꺾은선그래프 셋',GVB);return T(dayTable(),'내 기록표')}}
  if(no===3){const T=(g,l)=>svg(g+lensOf(s,g),l||s.t,'130 40 830 470');
   if(id==='app')return T(e3Scene({num:has('app')?'0':null}));
   if(id==='stick')return T(e3Scene({num:'0',stick:has('stick'),torch:1,anim:f==='stick'?'stick':''}));
@@ -3630,7 +3636,7 @@ function hintOf(s){const r=R(),id=s.id,D=isDone(r.step);
  if(D)return '다 했어요. 이어서 가요.';
  if(UI.fx)return s.look;
  const need=s.rows.find(k=>!rowDone(k)),R0=ROWS[need];
- if(rowReady(need)){if(R0.t==='num')return '③ '+(R0.src||'저울 화면의 숫자를')+' ‘'+R0.n+'’ 칸에 써요.';
+ if(rowReady(need)){if(R0.t==='num')return '③ '+(R0.src||'화면의 숫자를')+' ‘'+R0.n+'’ 칸에 써요.';
   return R0.t==='note'?'③ 살펴본 것을 쓰고 기록해요.':'③ '+R0.n+(/\?$/.test(R0.n)?' ':': ')+'알맞은 것을 골라 기록해요.'}
  const A=actsOf(s);
  const cur=A.find(b=>b.hide===false&&!b.pressed&&!b.dis);if(cur)return '① '+lj(cur.label.replace(/^\d\/\d · /,''))+' 눌러요.';
@@ -3702,7 +3708,6 @@ function conclCard(){const v=V(),r=R();let h='<p class="lb-hint2">'+(narrow()?'�
  return cardHead('결론 쓰기','빈칸을 누르고 낱말 카드를 골라요')+wrapB(h)}
 
 /* ───────── 결과 한 장 ───────── */
-function barChart(v,r){return ''}
 function sheetTable(v,r){const g=k=>{const x=r.rec[k];return x&&x.ok?x.v:null},c=x=>x==null?'—':esc(x);let h='<table class="lb-sh-ttbl"><caption class="lb-sr">관찰 기록</caption>';
  if(v.no===1)h+='<thead><tr><th scope="col">재는 때</th>'+M1.map(m=>'<th scope="col">'+esc(m.when)+'</th>').join('')+'</tr></thead><tbody><tr><th scope="row">태양 고도(°)</th><td>'+c(g('a1'))+'</td><td>'+c(g('a2'))+'</td></tr></tbody>';
  if(v.no===2){h+='<thead><tr><th scope="col">측정 시각</th>'+DAYS.map(t=>'<th scope="col">'+t+'</th>').join('')+'</tr></thead><tbody>';

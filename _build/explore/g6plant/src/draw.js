@@ -165,14 +165,16 @@ function blackPaper(x,y,w,h){return '<path d="M'+(x+20)+' '+y+' H'+(x+w)+' L'+(x
 
 /* ───────── 실험 3: 백합 · 줄기 단면 ───────── */
 /* 백합(줄기 아래가 x,y). r 붉게 물든 정도 0~1 */
-function lily(x,y,h,r){const stemC=mixc('#4F9D3A','#8A3A4A',r*.35),leafC=mixc('#5AA046','#6D5A3A',r*.25),petal=mixc('#FBFBF6','#F2A3B3',r);
+function lily(x,y,h,r,lo){const stemC=mixc('#4F9D3A','#8A3A4A',r*.35),leafC=mixc('#5AA046','#6D5A3A',r*.25),petal=mixc('#FBFBF6','#F2A3B3',r);
  let s='<path d="M'+x+' '+y+' V'+(y-h)+'" stroke="'+stemC+'" stroke-width="8" stroke-linecap="round"/>';
  if(r>0)s+='<path d="M'+x+' '+y+' V'+(y-h)+'" stroke="#D23A52" stroke-width="2.2" opacity="'+(.75*r).toFixed(2)+'"/>';
- for(let i=0;i<9;i++){const yy=y-h*(.12+i*.085),d=i%2?1:-1,L=40-i*1.6;s+='<path d="M'+x+' '+yy.toFixed(1)+' q'+(d*L*.5).toFixed(1)+' '+(-L*.1).toFixed(1)+' '+(d*L).toFixed(1)+' '+(-L*.55).toFixed(1)+' q'+(-d*L*.6).toFixed(1)+' '+(L*.05).toFixed(1)+' '+(-d*L).toFixed(1)+' '+(L*.55).toFixed(1)+'z" fill="'+leafC+'" stroke="#3D7A2E" stroke-width="1.5"/>';
+ for(let i=lo||0;i<9;i++){const yy=y-h*(.12+i*.085),d=i%2?1:-1,L=40-i*1.6;s+='<path d="M'+x+' '+yy.toFixed(1)+' q'+(d*L*.5).toFixed(1)+' '+(-L*.1).toFixed(1)+' '+(d*L).toFixed(1)+' '+(-L*.55).toFixed(1)+' q'+(-d*L*.6).toFixed(1)+' '+(L*.05).toFixed(1)+' '+(-d*L).toFixed(1)+' '+(L*.55).toFixed(1)+'z" fill="'+leafC+'" stroke="#3D7A2E" stroke-width="1.5"/>';
   if(r>0)s+='<path d="M'+x+' '+yy.toFixed(1)+' q'+(d*L*.5).toFixed(1)+' '+(-L*.15).toFixed(1)+' '+(d*L*.95).toFixed(1)+' '+(-L*.52).toFixed(1)+'" stroke="#D23A52" stroke-width="1.4" fill="none" opacity="'+(r*.9).toFixed(2)+'"/>'}
  [[-1,0],[1,10]].forEach(([d,o])=>{const fx=x+d*38,fy=y-h-4+o;s+='<path d="M'+x+' '+(y-h+20)+' Q'+(x+d*12)+' '+(y-h)+' '+(fx-d*8)+' '+(fy+6)+'" stroke="'+stemC+'" stroke-width="4" fill="none"/>';
   s+='<g transform="translate('+fx+' '+fy+') rotate('+(d*30)+') scale(1.25)">'+[-50,-25,0,25,50].map(a=>'<path d="M0 4 C'+(a*.3-9)+' -18 '+(a-13)+' -46 '+a+' -62 C'+(a+13)+' -46 '+(a*.3+9)+' -18 0 4Z" fill="'+petal+'" stroke="#BDB6A2" stroke-width="1.6"/><path d="M0 2 Q'+(a*.4)+' -26 '+(a*.92)+' -56" stroke="'+(r>0?'#C4314C':'#D8D2BE')+'" stroke-width="'+(r>0?1.6:1.1)+'" fill="none"'+(r>0?' opacity="'+r.toFixed(2)+'"':'')+'/>').join('')+'<path d="M0 0 l-8 -44 M0 0 l8 -44 M0 0 l-2 -50 M0 0 l3 -46" stroke="#B6C46A" stroke-width="2"/><circle cx="-8" cy="-45" r="3.4" fill="#C8742A"/><circle cx="8" cy="-45" r="3.4" fill="#C8742A"/><circle cx="3" cy="-47" r="3.4" fill="#C8742A"/></g>'});
  return s}
+/* 삼각 플라스크에 꽂은 백합: 플라스크 입구보다 아래(물에 잠기는 곳)에는 잎을 그리지 않음(검토 고침) */
+const FLO=4;
 const SDOTS=(()=>{const a=[];for(let i=0;i<46;i++){const ang=i*2.399,rr=Math.sqrt((i+.5)/46)*58;a.push([Math.cos(ang)*rr,Math.sin(ang)*rr])}return a})();
 function crossView(x,y,red,anim){const c=red?'#C4314C':'#FFFFFF',st=red?'#8A1F33':'#AFC0A0';let g='<g transform="translate('+x+' '+y+')"'+(anim?an('lb-a-pop',0):'')+'><circle r="66" fill="#BFE0A2" stroke="#3D7A2E" stroke-width="4"/>';SDOTS.forEach(([a,b])=>{g+='<circle cx="'+a.toFixed(1)+'" cy="'+b.toFixed(1)+'" r="4" fill="'+c+'" stroke="'+st+'" stroke-width="1"/>'});return g+'</g>'}
 function longView(x,y,red,anim){const c=red?'#C4314C':'#FFFFFF';let g='<g transform="translate('+x+' '+y+')"'+(anim?an('lb-a-pop',0):'')+'><rect x="-50" y="-80" width="100" height="160" rx="6" fill="#BFE0A2" stroke="#3D7A2E" stroke-width="4"/>';[-36,-20,-6,8,22,38].forEach(a=>{g+='<path d="M'+a+' -78 V78" stroke="'+c+'" stroke-width="4"/>'+(red?'':'<path d="M'+a+' -78 V78" stroke="#AFC0A0" stroke-width="1" opacity=".6"/>')});return g+'</g>'}
@@ -362,9 +364,9 @@ function e3Scene(s){const r=R(),id=s.id,f=fid();let g=bg({});
   if(a)g+='<g'+an('lb-a-fade',0)+'><g transform="translate(560 '+(BY-200)+') rotate(150)">'+dropBottle(0,0,{col:'#D23A52',op:.9,noShadow:1,s:.7})+'</g></g>'+dropFall(540,BY-180,BY-60,'#D23A52',3,.2);
   else if(!on)g+=dropBottle(680,BY,{col:'#D23A52',op:.9,lab:1});
   return g}
- if(id==='put'){const on=has('put'),a=f==='put';if(on)g+='<g'+(a?an('lb-a-down',0,'--from:-160px'):'')+'>'+lily(480,BY-14,300,0)+'</g>';else g+='<g transform="translate(240 '+(BY-30)+') rotate(-90)">'+lily(0,0,280,0)+'</g>';return g+flaskArt(480,BY,'#D23A52')}
+ if(id==='put'){const on=has('put'),a=f==='put';if(on)g+='<g'+(a?an('lb-a-down',0,'--from:-160px'):'')+'>'+lily(480,BY-14,300,0,FLO)+'</g>';else g+='<g transform="translate(240 '+(BY-30)+') rotate(-90)">'+lily(0,0,280,0)+'</g>';return g+flaskArt(480,BY,'#D23A52')}
  if(id==='sun'){const k=seqK('sun',['s1','s2']);if(k>=1)g+=sunArt(820,90,32,f==='s1');
-  g+=lily(480,BY-14,300,0);if(k>=2)g+='<g'+(f==='s2'?an('lb-a-fade',.2,'animation-duration:2s'):'')+'>'+lily(480,BY-14,300,1)+'</g>';
+  g+=lily(480,BY-14,300,0,FLO);if(k>=2)g+='<g'+(f==='s2'?an('lb-a-fade',.2,'animation-duration:2s'):'')+'>'+lily(480,BY-14,300,1,FLO)+'</g>';
   return g+flaskArt(480,BY,'#D23A52')+(k>=2?dayTag('하루 뒤',300):'')}
  return g}
 /* 실험 4 */
@@ -420,7 +422,7 @@ function e5Scene(s){const r=R(),id=s.id,f=fid();let g=bg({});
 const PK={tS:'S',tP:'P',tT:'T',tA:'A'};
 function e6Scene(s){const r=R(),id=s.id,f=fid();let g=bg({});
  if(id==='gear')return g+gearArt(has('gear'),f==='gear',{coat:false,glove:false,mask:1});
- if(id==='pred')return g+primrose(480,240,1.3,{})+qmark(780,90);
+ if(id==='pred')return g+primrose(480,240,1.3,{})+qmark(712,70);
  const got={};Object.keys(PK).forEach(k=>{if(r.seen[k]||f===k)got[PK[k]]=1});
  if(id==='apart'){const o={};Object.keys(got).forEach(k=>o[k]=false);g+='<rect x="512" y="70" width="0" height="0"/>'+primrose(260,240,.95,o)+paperParts(got,PK[f]);
   if(PK[f])g+='<g'+an('lb-a-fade',0)+'>'+tweezArt(420,200,30,'')+'</g>';
@@ -452,7 +454,7 @@ function introArt(no,k){let g=bg({}),vb='0 0 960 540';
   if(k==='days'){g+=sunArt(620,120,30)+cylArt(400,BY,{lv:CYL.L0,inner:onionInCyl(400,false),mark:CYL.L0})+cylArt(560,BY,{lv:CYL.L0,inner:onionInCyl(560,true),mark:CYL.L0})+mini(700,240,'3일 동안',22);vb='300 60 460 410'}}
  if(no===3){if(k==='look'){g+=lily(480,BY-2,300,0);vb='330 40 300 420'}
   if(k==='cut'){g+=glassPlate(300,BY-6,330)+'<rect x="340" y="'+(BY-40)+'" width="250" height="16" rx="8" fill="#4F9D3A"/>'+knifeArt(460,BY-40,0);vb='280 300 380 170'}
-  if(k==='dye'){g+=lily(480,BY-14,300,0)+flaskArt(480,BY,'#D23A52')+sunArt(640,120,30);vb='330 40 360 420'}
+  if(k==='dye'){g+=lily(480,BY-14,300,0,FLO)+flaskArt(480,BY,'#D23A52')+sunArt(640,120,30);vb='330 40 360 420'}
   if(k==='cut2'){g+='<circle cx="380" cy="240" r="66" fill="none" stroke="var(--w-felt-s)" stroke-width="3" stroke-dasharray="8 6"/><rect x="530" y="160" width="100" height="160" rx="6" fill="none" stroke="var(--w-felt-s)" stroke-width="3" stroke-dasharray="8 6"/>'+knifeArt(470,330,-30)+qmark(470,150);vb='290 130 400 240'}}
  if(no===4){if(k==='foil'){g+=potPlant(480,BY,{foil:2})+sunArt(660,120,30);vb='330 120 380 350'}
   if(k==='hot'){g+=beakerBig(480,BY,WC,{steam:1,inner:tubeArt(430,BY-250,-6,'#F2F8FB','')+tubeArt(530,BY-250,6,'#F2F8FB','')});vb='330 140 300 330'}

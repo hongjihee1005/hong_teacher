@@ -124,7 +124,7 @@ function skyPanel(x,y,k){let g='<rect x="'+x+'" y="'+y+'" width="380" height="96
  return g}
 function zoomRuler(x,y,cm,showTip){const w=380,h=150;let g='<rect x="'+x+'" y="'+y+'" width="'+w+'" height="'+h+'" rx="12" fill="var(--w-label)" stroke="var(--w-felt-s)" stroke-width="2"/>';
  g+='<text x="'+(x+16)+'" y="'+(y+28)+'" font-size="17" font-weight="800" fill="var(--w-labeltx)">자를 크게 본 모습</text>';
- const c0=cm==null?6:Math.floor(cm)-1,px=11,x0=x+30,yy=y+118;   /* 3 cm(30 mm)를 330 px로 */
+ const c0=cm==null?0:Math.floor(cm)-1,px=11,x0=x+30,yy=y+118;   /* 3 cm(30 mm)를 330 px로 */
  g+='<rect x="'+(x0-10)+'" y="'+(yy-46)+'" width="350" height="46" fill="#FFE27A" stroke="#B8860B" stroke-width="2"/>';
  if(cm!=null&&showTip){const tx=x0+(cm-c0)*10*px;g+='<rect x="'+(x0-10)+'" y="'+(yy-46)+'" width="'+(tx-x0+10).toFixed(1)+'" height="18" fill="#2E3338" opacity=".72"/>'}
  for(let m=0;m<=30;m++){const xx=x0+m*px,l=m%10?(m%5?10:16):24;g+='<line x1="'+xx+'" y1="'+(yy-46)+'" x2="'+xx+'" y2="'+(yy-46+l)+'" stroke="#5A4510" stroke-width="'+(m%10?1.2:2)+'"/>';
@@ -166,8 +166,10 @@ function lineChart(x,y,w,h,G,vals,anim,fs){fs=fs||1;let g='<rect x="'+x+'" y="'+
  vals.forEach((v,k)=>{if(v!=null)g+='<circle cx="'+cx(k).toFixed(1)+'" cy="'+cy(v).toFixed(1)+'" r="'+(5*fs)+'" fill="'+G.col+'" stroke="#FFFFFF" stroke-width="1.5"/>'});
  return g}
 function graphWide(){let g='<rect width="960" height="250" fill="#FFFFFF"/>';GR.forEach((G,i)=>{g+=lineChart(4+i*320,4,312,242,G,dayVals(G.j),false,.95)});return g}
+/* 그래프 화면: 세로로 긴 판(0 0 960 720)에 셋을 크게(검토 고침: 1280 화면에서 눈금 글자가 9px쯤이었음) */
+const GVB='0 0 960 720';
 function graphScene(anim){let g='<rect x="-3000" y="-3000" width="7000" height="7000" fill="var(--w-wall)"/>';
- GR.forEach((G,i)=>{g+=lineChart(60,20+i*172,840,160,G,dayVals(G.j),anim)});return g}
+ GR.forEach((G,i)=>{g+=lineChart(20,12+i*236,920,226,G,dayVals(G.j),anim,1.35)});return g}
 
 /* ───────── 실험 3: 손전등과 스마트 기기 ───────── */
 const E3G={sx:450,sy:404,D:300,h:84};
@@ -212,12 +214,12 @@ function raysScene(a,anim){let g='<rect x="-3000" y="-3000" width="7000" height=
 const E4G={lx:220,ly:280,gx:520,gy:280,R:92,K:20};   /* 30 cm = 300 px · 그림 속 그림자 1 cm = 20 px */
 const LAT=37.5,TILT=47/2;   /* 그림 속 자전축 기울기(화면에는 숫자를 쓰지 않음) */
 function lampArt(x,y,glow){return '<g><rect x="'+(x-8)+'" y="'+(y+30)+'" width="16" height="'+(416-y-30)+'" fill="#8A8F96"/><rect x="'+(x-46)+'" y="408" width="92" height="10" rx="4" fill="#6E747B"/>'+(glow?'<circle cx="'+x+'" cy="'+y+'" r="54" fill="#FFE680" opacity=".35"/>':'')+'<circle cx="'+x+'" cy="'+y+'" r="30" fill="#FFE27A" stroke="#D08A00" stroke-width="3"/><rect x="'+(x-11)+'" y="'+(y+26)+'" width="22" height="10" fill="#9AA3AE"/></g>'}
-/* 지구본 옆모습: tau = 북극이 전등(왼쪽) 쪽으로 기운 각(+), 반대(−). sh = 그림자 길이(cm), meter = 측정기 */
+/* 지구본 옆모습(측정기 막대 36 px — 자전축이 수직일 때 그림자 1.4 cm(28 px)와 빛의 방향이 맞게): tau = 북극이 전등(왼쪽) 쪽으로 기운 각(+), 반대(−). sh = 그림자 길이(cm), meter = 측정기 */
 function globeSide(cx,cy,R,tau,o){o=o||{};let g='<path d="M'+(cx-R-14)+' '+cy+' A'+(R+14)+' '+(R+14)+' 0 0 0 '+(cx+R+14)+' '+cy+'" fill="none" stroke="#8A8F96" stroke-width="5"/><rect x="'+(cx-6)+'" y="'+(cy+R+12)+'" width="12" height="'+(416-cy-R-20)+'" fill="#8A8F96"/><rect x="'+(cx-50)+'" y="408" width="100" height="10" rx="4" fill="#6E747B"/>';
  const gg='<circle r="'+R+'" fill="#3F86C8" stroke="#1E4E7A" stroke-width="3"/><path d="M-30 -60 q24 -10 40 6 q10 18 -8 30 q-26 4 -32 -36z M-58 10 q20 -6 26 16 q-4 26 -24 22 q-12 -18 -2 -38z M24 20 q26 -8 40 10 q-6 28 -30 30 q-18 -20 -10 -40z" fill="#7DBE6A" opacity=".85"/><path d="M-'+R+' 0 A'+R+' 26 0 0 0 '+R+' 0" fill="none" stroke="#FFFFFF" stroke-width="1.6" opacity=".7"/><line x1="0" y1="'+(-R-26)+'" x2="0" y2="'+(R+26)+'" stroke="#2A3138" stroke-width="3.5"/><circle cy="'+(-R-26)+'" r="4" fill="#2A3138"/>';
  g+='<g'+(o.anim==='tilt'?an('lb-a-rot',0,'--ox:'+cx+'px;--oy:'+cy+'px;--a0:0deg;--a1:'+(-tau)+'deg'):'')+' transform="rotate('+(-tau)+' '+cx+' '+cy+')"><g transform="translate('+cx+' '+cy+')">'+gg+'</g></g>';
  if(o.meter){const th=(LAT-tau)*RAD,px=cx-R*Math.cos(th),py=cy-R*Math.sin(th),nx=-Math.cos(th),ny=-Math.sin(th),tX=Math.sin(th),tY=-Math.cos(th);
-  g+='<g'+(o.anim==='meter'?an('lb-a-pop',0):'')+'><ellipse cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" rx="15" ry="5" transform="rotate('+(Math.atan2(tY,tX)/RAD).toFixed(1)+' '+px.toFixed(1)+' '+py.toFixed(1)+')" fill="#FFFFFF" stroke="#B9AE98" stroke-width="2"/><line x1="'+px.toFixed(1)+'" y1="'+py.toFixed(1)+'" x2="'+(px+nx*16).toFixed(1)+'" y2="'+(py+ny*16).toFixed(1)+'" stroke="#C2332C" stroke-width="3"/>';
+  g+='<g'+(o.anim==='meter'?an('lb-a-pop',0):'')+'><ellipse cx="'+px.toFixed(1)+'" cy="'+py.toFixed(1)+'" rx="15" ry="5" transform="rotate('+(Math.atan2(tY,tX)/RAD).toFixed(1)+' '+px.toFixed(1)+' '+py.toFixed(1)+')" fill="#FFFFFF" stroke="#B9AE98" stroke-width="2"/><line x1="'+px.toFixed(1)+'" y1="'+py.toFixed(1)+'" x2="'+(px+nx*36).toFixed(1)+'" y2="'+(py+ny*36).toFixed(1)+'" stroke="#C2332C" stroke-width="3"/>';
   if(o.sh!=null){const L=o.sh*E4G.K;g+='<line x1="'+px.toFixed(1)+'" y1="'+py.toFixed(1)+'" x2="'+(px+tX*L).toFixed(1)+'" y2="'+(py+tY*L).toFixed(1)+'" stroke="#111" stroke-width="6" stroke-linecap="round" opacity=".9"/>'}
   g+='</g>'}
  return g}
@@ -235,8 +237,11 @@ const POSA=[90,180,270,0];
 function orbitInset(x,y,k,tilted,anim,prevK){const cx=x+120,cy=y+134,Ro=64;let g='<rect x="'+x+'" y="'+y+'" width="240" height="236" rx="14" fill="#14223F" stroke="#0A1322" stroke-width="2"/>';
  g+='<text x="'+cx+'" y="'+(y+24)+'" text-anchor="middle" font-size="15" font-weight="800" fill="#E9EEF6">위에서 본 모습</text>';
  g+='<circle cx="'+cx+'" cy="'+cy+'" r="'+Ro+'" fill="none" stroke="#8FA3C0" stroke-width="2" stroke-dasharray="6 6"/><circle cx="'+cx+'" cy="'+cy+'" r="16" fill="#FFE27A" stroke="#D08A00" stroke-width="2"/>';
- g+='<path d="M'+(cx-Ro*Math.cos(35*RAD)-10).toFixed(1)+' '+(cy-Ro*Math.sin(35*RAD)-14).toFixed(1)+' l-12 4 l2 -12" fill="none" stroke="#FFE680" stroke-width="2.5"/>';
- POSA.forEach((d,i)=>{const lx=cx+(Ro+22)*Math.cos(d*RAD),ly=cy-(Ro+22)*Math.sin(d*RAD);g+='<text x="'+lx.toFixed(1)+'" y="'+(ly+6).toFixed(1)+'" text-anchor="middle" font-size="16" font-weight="800" fill="'+(i===k?'#FFE680':'#C8D3E6')+'">'+POS[i]+'</text>'});
+ /* 공전 방향(시계 반대 방향) 화살표: 궤도 위 135°쯤에서 궤도를 따라(검토 고침: 궤도에서 떨어진 꺾쇠가 글자처럼 보였음) */
+ {const a1=120*RAD,a2=150*RAD,R2=Ro+0,p=a=>[(cx+R2*Math.cos(a)).toFixed(1),(cy-R2*Math.sin(a)).toFixed(1)],P1=p(a1),P2=p(a2),tx=-Math.sin(a2),ty=-Math.cos(a2),nx=Math.cos(a2),ny=-Math.sin(a2),hx=+P2[0],hy=+P2[1];
+  g+='<path d="M'+P1[0]+' '+P1[1]+' A'+R2+' '+R2+' 0 0 0 '+P2[0]+' '+P2[1]+'" fill="none" stroke="#FFE680" stroke-width="3"/><path d="M'+(hx+tx*9).toFixed(1)+' '+(hy+ty*9).toFixed(1)+' L'+(hx+nx*6).toFixed(1)+' '+(hy+ny*6).toFixed(1)+' L'+(hx-nx*6).toFixed(1)+' '+(hy-ny*6).toFixed(1)+'Z" fill="#FFE680"/>'}
+ /* 자리 이름: 왼쪽·오른쪽은 지구본과 자전축 화살표에 겹치지 않게 조금 더 바깥에 */
+ POSA.forEach((d,i)=>{const rl=Ro+(d%180===0?40:22),lx=cx+rl*Math.cos(d*RAD),ly=cy-rl*Math.sin(d*RAD);g+='<text x="'+lx.toFixed(1)+'" y="'+(ly+6).toFixed(1)+'" text-anchor="middle" font-size="16" font-weight="800" fill="'+(i===k?'#FFE680':'#C8D3E6')+'">'+POS[i]+'</text>'});
  if(k>=0){const d=POSA[k],ex=cx+Ro*Math.cos(d*RAD),ey=cy-Ro*Math.sin(d*RAD);
   let e='<circle cx="'+ex.toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="13" fill="#3F86C8" stroke="#FFFFFF" stroke-width="2"/>'+(tilted?'<path d="M'+ex.toFixed(1)+' '+ey.toFixed(1)+' h22" stroke="#FFD23F" stroke-width="3.5"/><path d="M'+(ex+26).toFixed(1)+' '+ey.toFixed(1)+' l-8 -5 v10z" fill="#FFD23F"/>':'<circle cx="'+ex.toFixed(1)+'" cy="'+ey.toFixed(1)+'" r="3" fill="#FFD23F"/>');
   if(anim&&prevK!=null&&prevK>=0){const a0=POSA[k]-POSA[prevK];e='<g'+an('lb-a-rot',0,'--ox:'+cx+'px;--oy:'+cy+'px;--a0:'+((a0+360)%360)+'deg;--a1:0deg')+'>'+e+'</g>'}
@@ -252,7 +257,7 @@ function e4Scene(o){o=o||{};let g=bg({});const G=E4G;
  g+=globeSide(G.gx,G.gy,G.R,o.tau||0,{meter:o.meter,sh:o.sh,anim:o.anim});
  if(o.note)g+=tag(G.gx,G.gy-G.R-50,o.note,17);
  return g}
-function e4Spot(){const r=R(),s=curStep(),key=s.id==='vert'?'vc':'tc',c=r.st[key]||0;if(!c||fid())return null;return [702+SHk()*60,150,26,2.2,808,360]}
+function e4Spot(){const r=R(),s=curStep(),key=s.id==='vert'?'vc':'tc',c=r.st[key]||0;if(!c||fid())return null;return [702+SHk()*60,124,32,2.1,808,360]}
 function SHk(){const r=R(),s=curStep(),t=s.id==='tiltm',c=r.st[t?'tc':'vc']||0;return (t?SHT:SHV)[Math.max(0,c-1)]}
 function e4Meas(t){const r=R(),key=t?'tc':'vc',c=r.st[key]||0,f=fid(),ids=['p0','p1','p2','p3'],fi=ids.indexOf(f);
  const k=fi>=0?fi:c-1,shown=fi<0&&c>0;let g=e4Scene({light:1,ruler:1,meter:1,tau:tauOf(Math.max(k,0),t),sh:shown?(t?SHT:SHV)[k]:null,note:t&&shown&&(k===0||k===2)?'자전축이 앞뒤로 기울어 있어요':''});

@@ -609,6 +609,9 @@ html .lb-doit.lb-hold:active{background:var(--lb-sci);color:var(--lb-onsci)}
 .lb-shimg .lb-sh-lines .lb-ln:nth-child(n+6){display:none}
 .lb-shimg .lb-sh-pic svg{height:7rem}
 .lb-shimg .lb-sh-pic figcaption{font-size:.8rem}
+/* 관찰 그림이 하나인 실험(1·4)은 크게 */
+.lb-sh-pics[style*="--n:1"] .lb-sh-pic svg{height:10rem}
+.lb-shimg .lb-sh-pics[style*="--n:1"] .lb-sh-pic svg{height:15rem}
 @media (max-width:820px){.lb-sheet{padding:1.1rem 1.1rem 1rem}.lb-sh-pics{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @page{size:A4;margin:7mm}
 @media print{
@@ -621,6 +624,7 @@ html .lb-doit.lb-hold:active{background:var(--lb-sci);color:var(--lb-onsci)}
  .lb-sh-name u{min-width:32mm!important}
  .lb-sh-pics{grid-template-columns:repeat(var(--n,4),minmax(0,1fr))!important;gap:2.5mm!important}
  .lb-sh-pic svg{height:25mm!important}
+ .lb-sh-pics[style*="--n:1"] .lb-sh-pic svg{height:44mm!important}
  .lb-sh-pic figcaption{font-size:8.5pt!important;padding:.6mm 1mm!important}
  .lb-sh-lines{min-height:30mm!important}
  .lb-sh-lines .lb-ln{min-height:7mm!important}
@@ -822,12 +826,10 @@ html .lb-doit.lb-hold:active{background:var(--lb-sci);color:var(--lb-onsci)}
 .lb-cgrid .lb-cells.lb-c1.lb-c2{grid-template-columns:2.2rem minmax(0,1fr);gap:.25rem}
 .lb-cgrid .lb-cl{font-size:.82rem}
 
-/* 물의 상태 변화 실험관: 붓으로 그리기 · 끓을 때 올라가는 기포 */
-.lb-a-draw{animation-name:lb-draw;animation-duration:1.4s;animation-timing-function:ease-in-out}
-@keyframes lb-draw{from{stroke-dashoffset:1}to{stroke-dashoffset:0}}
+/* 식초·비커 속에서 올라가는 기포 */
 .lb-bub{transform-box:fill-box;animation:lb-bub 1.4s linear infinite}
 @keyframes lb-bub{0%{transform:translateY(0);opacity:0}12%{opacity:1}88%{opacity:1}100%{transform:translateY(var(--h,-80px));opacity:0}}
-@media (prefers-reduced-motion:reduce){.lb-bub{animation:none}.lb-a-draw{animation-duration:1ms!important}}
+@media (prefers-reduced-motion:reduce){.lb-bub{animation:none}}
 
 /* 모두 본 시간 칸: 한 줄로 작게(검토 고침) */
 .lb-cellmini>div{gap:.2rem!important}
@@ -2942,7 +2944,7 @@ const ROWS={
  aTime:{n:'시간이 지나면',t:'sel',need:['tm'],f:[yn('알코올의 양',['점점 줄어들어요','그대로예요','점점 늘어나요'],0)]},
  /* 실험 4 */
  bub:{n:'비커 속 모습',t:'sel',need:['ki'],f:[yn('두 숟가락 넣은 뒤',['보글거리며 기포가 생겨요','아무 변화가 없어요'],0)]},
- ord:{n:'촛불이 꺼진 차례',t:'sel',need:['wt'],f:[yn('㉠ 양초만 덮은 촛불',['먼저 꺼져요','나중에 꺼져요'],0),yn('㉡ 비커와 함께 덮은 촛불',['먼저 꺼져요','나중에 꺼져요'],1)]},
+ ord:{n:'촛불이 꺼진 차례',t:'sel',need:['w2'],f:[yn('㉠ 양초만 덮은 촛불',['먼저 꺼져요','나중에 꺼져요'],0),yn('㉡ 비커와 함께 덮은 촛불',['먼저 꺼져요','나중에 꺼져요'],1)]},
  /* 실험 5 */
  first:{n:'불이 붙은 차례',t:'sel',need:['h1'],f:[yn('성냥의 머리 부분',['먼저 붙어요','나중에 붙어요'],0),yn('성냥의 나무 부분',['먼저 붙어요','나중에 붙어요'],1)]},
  wood:{n:'더 오래 가열한 나무 부분',t:'sel',need:['h2'],f:[yn('나무 부분',['검게 변하다가 불이 붙어요','처음 모습 그대로예요'],0)]},
@@ -3005,7 +3007,7 @@ const EXPS={
   hint:['\'촛불이 꺼진 차례\' 기록에서 ㉡ 촛불을 봐요.','산소가 더해진 ㉡ 쪽 촛불이 어떻게 탔는지 떠올려 봐요.'],
   book:'산소는 물질이 타는 것을 돕는 성질이 있어요. 물질이 산소와 만나 빛과 열을 내면서 타는 현상을 연소라고 해요. 공기 중에 산소가 많을수록 연소가 활발하게 일어나요. ㉠ 촛불이 꺼졌을 때에도 아크릴 통 안에는 산소가 남아 있지만, 탈 만큼 충분하지 않아서 꺼진 거예요.'},
  e5:{no:5,name:'철판 위의 성냥 조각 가열하기',sub:'철판 · 삼발이 · 알코올램프 · 성냥의 머리 부분과 나무 부분 · 핀셋',title:'물질이 탈 때 온도의 영향을 알아보자',q:'철판을 가열하면 성냥의 어느 부분에 먼저 불이 붙을까요?',
-  plan:{rows:[['kind','철판에 올려놓는 것(성냥의 머리 부분 · 나무 부분)','fire',true,'이것을 다르게 해야 무엇에 따라 불이 붙는 때가 다른지 알 수 있어요.'],['dist','철판 가운데로부터의 거리','ruler',false]]},
+  plan:{rows:[['kind','철판에 올려놓는 것(성냥의 머리 부분 · 나무 부분)','fire',true,'이것만 다르게 해야 두 조각을 견줄 수 있어요.'],['dist','철판 가운데로부터의 거리','ruler',false]]},
   tools:[['iron','철판'],['tripod','삼발이'],['lamp','알코올램프'],['lighter','점화기'],['match','성냥의 머리 부분과 나무 부분'],['tweez','핀셋'],['gear4','실험복 보안경 실험용 장갑 면장갑']],
   how:[['put','핀셋으로 성냥의 머리 부분과 나무 부분을 철판 위에 놓아요.'],['same','두 조각은 철판 가운데로부터 같은 거리에 놓아요.'],['heat','알코올램프로 철판의 가운데를 가열해요.'],['watch','어느 것에 먼저 불이 붙는지 봐요.']],
   look:['두 조각 가운데 어느 것에 먼저 불이 붙는지 봐요.','더 오래 가열하면 다른 조각이 어떻게 되는지 봐요.'],
@@ -3095,7 +3097,7 @@ function stepDef(E,id){const no=E.no;
   time:{g:2,n:'시간이 지난 뒤 보기',t:no===2?'시간이 지나면서 양초가 어떻게 되는지 봐요':'시간이 지나면서 알코올램프 속 알코올이 어떻게 되는지 봐요',k:'meas',rows:[C+'Time'],ids:['tm'],acts:['시간이 지나기를 기다리기'],look:no===2?'양초의 길이와 옆면을 봐요.':'알코올램프 속 알코올의 높이를 봐요.',
    why:'처음 모습과 시간이 지난 뒤의 모습을 견줘요.',care:['care',no===2?SAFE.burn:SAFE.vent]},
   off:{g:2,n:'알코올램프의 불 끄기',t:'알코올램프의 불은 어떻게 끌까요?',k:'scene',dur:1800,look:'불이 꺼졌는지 봐요.',ask:'① 알코올램프의 불을 끄는 방법을 골라요.',
-   opts:[{t:'입으로 세게 불어서 꺼요',bad:'알코올램프의 불은 입으로 불지 않아요.'},{t:'면장갑을 낀 손으로 뚜껑을 옆에서 살며시 덮어요'}],
+   opts:[{t:'입으로 세게 불어서 꺼요',bad:SAFE.lampOff},{t:'면장갑을 낀 손으로 뚜껑을 옆에서 살며시 덮어요'}],
    care:['care',SAFE.lampFall]}};
  const X={
   1:{
@@ -3114,8 +3116,8 @@ function stepDef(E,id){const no=E.no;
    light:{g:1,n:'두 양초에 불 붙이기',t:'점화기로 크기와 심지 길이가 비슷한 두 양초에 불을 붙여요',act:'점화기로 두 양초에 불 붙이기',look:'두 양초에 불이 붙었는지 봐요.',k:'scene',dur:1900,
     care:['care',SAFE.cotton]},
    mix:{g:1,n:'비커에 두 물질 넣기',n0:'비커 준비하기',t:'비커에 묽은 과산화 수소수를 절반 정도 넣고 아이오딘화 칼륨을 두 숟가락 넣어요',k:'meas',rows:['bub'],ids:['hp','ki'],acts:['묽은 과산화 수소수를 절반 정도 넣기','아이오딘화 칼륨 두 숟가락 넣기'],look:'비커 속을 봐요.',
-    know:'묽은 과산화 수소수와 아이오딘화 칼륨이 만나면 산소가 발생해요. 4학년 2학기 “여러 가지 기체”에서 배운 산소의 성질을 떠올려요.',care:['care',SAFE.h2o2]},
-   cover:{g:2,n:'아크릴 통으로 덮기',t:'아크릴 통 두 개로 두 촛불을 동시에 덮고 지켜봐요',k:'meas',rows:['ord'],ids:['cv','wt'],acts:['아크릴 통 두 개로 동시에 덮기','촛불이 모두 꺼질 때까지 지켜보기'],look:'두 촛불이 꺼지는 차례를 봐요.',
+    know:'묽은 과산화 수소수와 아이오딘화 칼륨이 만나면 산소가 발생해요. 4학년 2학기 “여러 가지 기체”에서 배운 산소의 성질을 떠올려요.',care:['care',SAFE.glass+' '+SAFE.h2o2]},
+   cover:{g:2,n:'아크릴 통으로 덮기',t:'아크릴 통 두 개로 두 촛불을 동시에 덮고 지켜봐요',k:'meas',rows:['ord'],ids:['cv','wt','w2'],acts:['아크릴 통 두 개로 동시에 덮기','잠시 지켜보기','촛불이 모두 꺼질 때까지 지켜보기'],look:'두 촛불이 꺼지는 차례를 봐요.',
     why:'비커에서 나온 기체가 날아가기 전에 바로 덮어요. 크기가 같은 아크릴 통으로 동시에 덮어야 두 촛불을 견줄 수 있어요.',care:['care',SAFE.acryl]}},
   5:{
    put:{g:1,n:'두 조각 놓기',t:'핀셋으로 성냥의 머리 부분과 나무 부분을 철판 위에 놓아요',k:'scene',dur:2100,look:'두 조각이 철판 위에 놓였는지 봐요.',ask:'① 두 조각을 놓을 자리를 골라요.',
@@ -3131,7 +3133,7 @@ function stepDef(E,id){const no=E.no;
    paper:{g:2,n:'종이를 벽면에 붙이기',t:'핀셋으로 푸른색 염화 코발트 종이를 집어 아크릴 통 안쪽 벽면에 셀로판테이프로 붙여요',act:'종이를 안쪽 벽면에 붙이기',look:'종이가 아크릴 통 안쪽 벽면에 붙었는지 봐요.',k:'scene',dur:1800,
     know:'셀로판테이프가 종이를 다 덮지 않게 붙여요.',care:['care',SAFE.cobalt]},
    burnA:{g:2,n:'촛불을 덮고 종이 보기',t:'양초에 불을 붙인 다음, 아크릴 통으로 덮어요',k:'meas',rows:['co','dw'],ids:['la','ca','wa'],acts:['양초에 불 붙이기','아크릴 통으로 덮기','촛불이 꺼질 때까지 지켜보기'],look:'촛불이 꺼진 뒤 종이의 색깔과 아크릴 통 안쪽 벽면을 봐요.',spot:()=>coSpot(),
-    why:'양초가 탈 때 생긴 물질이 아크릴 통 안에 모여요.',care:['care',SAFE.exit+' '+SAFE.acryl]},
+    why:'양초가 탈 때 생긴 물질이 아크릴 통 안에 모여요.',care:['care',SAFE.exit+' '+SAFE.acryl+' '+SAFE.vent]},
    lime:{g:2,n:'석회수 병 뚜껑 열기',t:'양초에 불을 붙이고 석회수 병의 뚜껑을 열어요',act:'불 붙이고 뚜껑 열기',look:'실험하기 전 석회수의 모습을 봐요.',k:'scene',dur:1800,
     know:'실험하기 전 석회수는 무색투명해요.',care:['care',SAFE.cotton]},
    burnB:{g:2,n:'함께 덮고 흔들기',t:'아크릴 통으로 촛불과 유리병을 함께 덮고, 촛불이 꺼지면 뚜껑을 닫고 흔들어요',k:'meas',rows:['li'],ids:['cb','cl','sh'],acts:['촛불과 유리병을 함께 덮기','촛불이 꺼지면 통을 들고 뚜껑 닫기','유리병을 가볍게 흔들기'],look:'흔든 뒤 석회수를 봐요.',
@@ -3244,7 +3246,7 @@ function candleArt(cx,base,o){o=o||{};const h=o.h||170,w=(o.w||32)/2,small=o.sma
   if(d>.5)g+='<ellipse cx="'+(cx-w-2)+'" cy="'+(bot-2)+'" rx="12" ry="4" fill="#F3E3BC" stroke="#C9AE74" stroke-width="1.5"/>'}
  g+='<path d="M'+cx+' '+top+' q1 -7 -1 -12" stroke="#2A2A2A" stroke-width="3" fill="none" stroke-linecap="round"/>';
  if(o.lit)g+=(o.litAnim?'<g'+an('lb-a-pop',o.litAnim===true?0:o.litAnim)+'>':'<g>')+flameArt(cx,top-8,o.fs||1,'c')+'</g>';
- if(o.out)g+=smokeArt(cx,top-14,o.outAnim);
+ if(o.out&&o.out!==2)g+=smokeArt(cx,top-14,o.outAnim);  /* out:2 = 꺼진 지 오래되어 연기가 없음 */
  return g}
 function candleTop(base,o){o=o||{};return base-((o.small?10:20)+(o.h||170))}
 /* 알코올램프. o.lv 0~1 알코올 높이 · o.cap 'on'|'side'|'none' · o.lit · o.s 크기 */
@@ -3568,11 +3570,14 @@ function e4Scene(s){const r=R(),id=s.id,f=fid();
   if(fi===1)g+='<g'+an('lb-a-tip',0,'--rot:-28deg;animation-duration:1.8s')+'>'+spoonArt(BK4+14,BY-176,0,'#FFFFFF','#B9B2A0')+'</g>'+fallGrains(BK4,BY-168,BY-30,'#FFFFFF','#B9B2A0',BK4);
   return g}
  if(id==='pred')return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1})+qmark(430,140);
- if(id==='cover'){const ids=['cv','wt'],k=seqK('cover',ids),fi=ids.indexOf(f);
+ if(id==='cover'){const ids=['cv','wt','w2'],k=seqK('cover',ids),fi=ids.indexOf(f);
+  /* 꺼지는 차례가 끝난 그림에도 남게 두 번에 나눠 지켜봄(움직임 줄이기 설정에서도 보이게, 검토 고침) */
   if(k<1&&fi<0)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1});
   if(fi===0)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,boxAnim:1});
-  if(fi===1)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,fade:[1.2,3.6]});
-  if(k>=2)return g+e4Base({bk:1,ml:60,ki:1,bub:1,box:1,out:[1,1]});
+  if(fi===1)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,fade:[1.2]});
+  if(fi===2)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,out:[2,0],fade:[null,1.2]});
+  if(k>=3)return g+e4Base({bk:1,ml:60,ki:1,bub:1,box:1,out:[2,1]});
+  if(k>=2)return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1,out:[1,0]});
   return g+e4Base({lit:1,bk:1,ml:60,ki:1,bub:1,box:1})}
  return g+e4Base({})}
 
@@ -3614,7 +3619,7 @@ function e6Scene(s){const r=R(),id=s.id,f=fid();
   if(go)g+='<g'+an('lb-a-drip',0,'animation-duration:1s')+'><path d="M480 '+(BY-330)+' q-9 15 0 21 q9 -6 0 -21z" fill="#BFE3F5" stroke="#6FA9CC" stroke-width="1.5"/></g>';
   return g+wlab(480,BY+32,'푸른색 염화 코발트 종이',15)}
  if(id==='preLi'){const go=f==='co',dn=sn('co');return g+limeJar(480,BY,{lid:'side',cloud:dn?.85:0,cloudAnim:go?1.4:0})+co2Tube(480,BY,go)+wlab(480,BY+32,'석회수',16)}
- if(id==='pred')return g+box6(0,'',1)+limeJar(700,BY,{lid:'on'})+qmark(480,150);
+ if(id==='pred')return g+box6(0,'',0)+limeJar(700,BY,{lid:'on'})+qmark(480,150);
  if(id==='paper'){const on=has('paper'),a=f==='paper';g+=box6(0,'',0);
   if(on)g+=(a?'<g'+an('lb-a-fade',.7)+'>':'<g>')+coPaper(PX6,BX6.y+54,26,80,0,0,1)+'</g>'+(a?'<g'+an('lb-a-slide',0,'--dx:200px')+'>'+tweezArt(PX6+40,BX6.y+110,20,'')+'</g>':'');
   else g+=coPaper(640,BY-6-80,26,80,0)+tweezArt(700,BY-20,30,'');
@@ -3804,7 +3809,7 @@ const LABNAME='burn';
 function snapsOf(v,r){const L=[],no=v.no,S=(g,vb,cap)=>L.push([svg(g,cap,vb),cap]);const ok=k=>rowDone(k);
  if(no===1){if(ok('bl')&&ok('fl'))S(bg({})+e1Set({inf:1,foam:1,settle:1}),'230 130 500 360','두 고무풍선을 세우고 잠시 뒤')}
  if(no===2||no===3){if(ok(no===2?'cLook':'aLook'))S(bg({})+fireObj(no,{lit:1}),'210 140 340 320','불꽃');if(ok(no===2?'cWarm':'aWarm'))S(bg({})+fireObj(no,{lit:1})+tPaper(FXC+24,fireTopY(no,0)-24,300,1,0),'210 140 600 320','열 변색 종이를 댄 모습');if(ok(no===2?'cTime':'aTime'))S(bg({})+fireObj(no,{lit:1,t:1}),'210 140 340 320','시간이 지난 뒤')}
- if(no===4){if(ok('ord'))S(bg({})+e4Base({bk:1,ml:60,ki:1,box:1,out:[1,1]}),'140 150 680 330','두 촛불이 모두 꺼진 뒤')}
+ if(no===4){if(ok('ord')){S(bg({})+e4Base({lit:1,bk:1,ml:60,ki:1,box:1,out:[1,0]}),'140 150 680 330','잠시 지켜본 뒤');S(bg({})+e4Base({bk:1,ml:60,ki:1,box:1,out:[2,1]}),'140 150 680 330','두 촛불이 모두 꺼진 뒤')}}
  if(no===5){if(ok('first'))S(bg({})+e5Set({put:1,lit:1,heat:1,hs:1,ws:1}),'170 160 620 330','가운데를 가열한 뒤');if(ok('wood'))S(bg({})+e5Set({put:1,lit:1,heat:1,hs:2,ws:2}),'170 160 620 330','더 오래 가열한 뒤')}
  if(no===6){if(ok('co'))S(bg({})+candleArt(CX6,BY,{h:CH4,small:1,out:1})+dropletsArt(0)+box6(0,'',2),'200 160 420 300','촛불이 꺼진 뒤 종이');if(ok('li'))S(bg({})+limeJar(480,BY,{lid:'on',cloud:.85}),'360 280 240 180','흔든 뒤 석회수')}
  return L}
@@ -3966,7 +3971,7 @@ function act(a,el){const v=V(),r=R();
  if(a==='say'){toggleSay();return}
  if(a==='rail'){UI.rail=!UI.rail;render();return}}
 /* 행동마다 그림이 움직이는 때(ms) */
-const XMS={up:2600,wt:3200,zm:1600,hp:2600,dk:1400,tm:2600,ki:2600,cv:1700,wt4:5200,lt:2000,h1:4600,h2:2600,wd:2400,co:3000,la:1900,ca:1800,wa:3600,cb:3600,cl:1700,sh:2600};
+const XMS={up:2600,wt:3200,zm:1600,hp:2600,dk:1400,tm:2600,ki:2600,cv:1700,wt4:3000,w2:3000,lt:2000,h1:4600,h2:2600,wd:2400,co:3000,la:1900,ca:1800,wa:3600,cb:3600,cl:1700,sh:2600};
 function doX(id){const r=R(),s=curStep(),st=r.st;if(UI.fx)return;
  if(s.k==='more'){if(r.seen[id])return;UI.mq.cur=id;fx(id,2600,()=>{r.seen[id]=1});return}
  r.act[s.id]=1;if(idxOf('pred')>=0&&r.step>idxOf('pred'))r.obs=1;
