@@ -22,4 +22,4 @@
 - [x] 묶음 2 (main cbac96a2): g5solution(5-1 3) · g5body(5-1 4) · g5mixture(5-2 1) · g5weather(5-2 2)
 - [x] 묶음 3 (main): g5heat(5-2 3) · g5energy(5-2 4) · g6acid(6-1 1) · g6motion(6-1 2)
 - [x] 묶음 4(검토 끝): g6plant(6-1 3) · g6earth(6-1 4) · g6season(6-2 1) · g6burn(6-2 2) (6학년 메뉴 새로)
-- [ ] 선생님께 보고, 깨우기 예약 끄기
+- [x] 선생님께 보고, 깨우기 예약 끄기(2026-11-17)
