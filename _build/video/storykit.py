@@ -53,6 +53,8 @@ def show_sources(S, lines, seconds=6.0):
     """'이 영상의 출처' 화면. lines는 글 목록(짧게)."""
     S.settle()
     S.clear_sub() if hasattr(S, "clear_sub") else None
+    if hasattr(S, "hide_chip"):
+        S.hide_chip()
     head = T("이 영상의 출처", 50, GREEN).move_to([0, 2.8, 0])
     body = VGroup(*[M(x, 26) for x in lines]).arrange(DOWN, buff=0.22, aligned_edge=LEFT)
     if body.width > 12.6:

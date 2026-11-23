@@ -17,6 +17,10 @@ class ConceptScene(EpisodeScene):
     GRADE, SEM = "C", 1
     LABEL = "개념 차근차근 {}화"
 
+    def closing(self, *a, **k):
+        self.hide_chip()
+        return super().closing(*a, **k)
+
     def step(self, sec, items, sub, narr, hold=1.2):
         """구역 하나: items = [(마크업, 크기, y)]를 차례로 보여 주고 지움"""
         from manim import FadeIn as _F

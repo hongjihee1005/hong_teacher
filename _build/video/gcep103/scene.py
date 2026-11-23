@@ -30,10 +30,10 @@ class GcEp103(ConceptScene):
     def construct(self):
         self.opening()
         self.section("몇 시 몇 분")
-        c = clock(4, 25, r=1.6, center=(-3.0, 0.4, 0))
+        c = clock(4, 25, r=1.6, center=(-4.3, 0.4, 0))
         self.say("긴바늘의 숫자 한 칸은 5분", "긴바늘이 숫자 1을 가리키면 5분, 2는 10분. 숫자 한 칸이 5분이라 5씩 뛰어 세요. 작은 눈금 한 칸은 1분이에요.")
         self.play(FadeIn(c), run_time=0.6)
-        t = M(f"긴바늘 5 → 5 × 5 = {b('25분')}\n짧은바늘 4와 5 사이 → {o('4시')}\n→ {g('4시 25분')}", 42).move_to([2.6, 0.6, 0])
+        t = M(f"긴바늘 5 → 5 × 5 = {b('25분')}\n짧은바늘 4와 5 사이 → {o('4시')}\n→ {g('4시 25분')}", 42).move_to([1.8, 0.6, 0])
         self.play(FadeIn(t), run_time=0.5)
         self.wait(1.2)
         self.settle()
