@@ -63,9 +63,9 @@ class GpEp09(PrepScene):
         for i in range(3):
             self.say(f"{i + 2}조각 중 1조각 = {b(f'{i + 2}분의')} {o('1')}", nar[i])
             self.play(FadeIn(ps[i]), Write(fs[i]), FadeIn(rd[i]), run_time=0.8)
-        t = M(f"{b('몇 조각')}으로 나누었는지가 아래로 가요", 42).move_to([0, 2.45, 0])
+        t = M(f"{b('몇 조각')}으로 나누었는지가 아래로 가요", 42).move_to([0, -1.85, 0])
         self.say("나눈 조각 수가 아래로", "피자를 몇 조각으로 나누었는지가 분수의 아래로 가요.")
-        self.play(FadeIn(t), run_time=0.5)
+        self.play(FadeOut(rd), FadeIn(t), run_time=0.5)
         self.wait(1.4)
         self.settle()
         clear_stage(self, 0.6)
