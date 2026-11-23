@@ -89,6 +89,7 @@ THEMES = {
     ("F", 1): ("#EAF6F6", "#1D5C63"),                            # 분수 특별편: 연청록 · 짙은 청록
     ("P", 1): ("#F1F7E9", "#3D6B2A"),                            # 분수 준비: 연한 연두 · 짙은 초록
     ("N", 1): ("#F8F2E6", "#7A5A1E"),                            # 자연수 이야기: 모래색 · 갈색
+    ("D", 1): ("#EEF0FA", "#3B4A8C"),                            # 나눗셈 차근차근: 연한 남보라 · 남색
 }
 
 
@@ -117,7 +118,10 @@ def M(markup, size=48, color=INK, bold=True):
     # MarkupText는 weight 값을 따르지 않아 굵기를 글 안에 적음
     if bold:
         markup = f'<span weight="bold">{markup}</span>'
-    return MarkupText(markup, font=FONT, font_size=size, color=color)
+    t = MarkupText(markup, font=FONT, font_size=size, color=color)
+    if t.width > 13.2:      # 화면 밖으로 넘치지 않게
+        t.scale_to_fit_width(13.2)
+    return t
 
 
 def plain(markup):

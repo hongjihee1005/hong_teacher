@@ -414,10 +414,12 @@ def long_division_n(S, a, d, who="모둠", unit="개", title="세로셈으로 �
     S.section(title)
     digits = [int(c) for c in str(a)]
     n = len(digits)
-    F, dx = 60, 0.6
+    # 세 자리 이상이면 줄이 많아 아래 자막과 겹치므로 줄 간격·글자를 줄임
+    k = min(1.0, 4.0 / (2 * n * 0.88))
+    F, dx = int(60 * k), 0.6 * k
     x_right = -1.6
     xs = [x_right - (n - 1 - i) * dx for i in range(n)]
-    yq, ybar, yd, step = 2.45, 1.97, 1.5, 0.88
+    yq, ybar, yd, step = 2.45, 2.45 - 0.48 * k, 2.45 - 0.95 * k, 0.88 * k
 
     def col(i):
         return place_color(n - 1 - i)
@@ -426,13 +428,13 @@ def long_division_n(S, a, d, who="모둠", unit="개", title="세로셈으로 �
         s = str(value)
         if value == 0 and not show_zero:
             return VGroup()
-        return VGroup(*[T(ch, F, color).move_to([xs[i_last - (len(s) - 1 - k)], y, 0]) for k, ch in enumerate(s)])
+        return VGroup(*[T(ch, F, color).move_to([xs[i_last - (len(s) - 1 - j)], y, 0]) for j, ch in enumerate(s)])
 
     divisor = T(str(d), F).move_to([xs[0] - 1.1, yd, 0])
     dig = VGroup(*[T(str(v), F, INK).move_to([xs[i], yd, 0]) for i, v in enumerate(digits)])
-    left = np.array([xs[0] - 0.48, ybar, 0])
-    bar = Line(left, [xs[-1] + 0.42, ybar, 0], color=INK, stroke_width=7)
-    brk = ArcBetweenPoints(left, left + np.array([-0.08, -0.92, 0]), angle=-PI / 2.4, color=INK, stroke_width=7)
+    left = np.array([xs[0] - 0.48 * k, ybar, 0])
+    bar = Line(left, [xs[-1] + 0.42 * k, ybar, 0], color=INK, stroke_width=7)
+    brk = ArcBetweenPoints(left, left + np.array([-0.08, -0.92 * k, 0]), angle=-PI / 2.4, color=INK, stroke_width=7)
     log_x = 2.9
     log = []
 
@@ -481,7 +483,7 @@ def long_division_n(S, a, d, who="모둠", unit="개", title="세로셈으로 �
         S.wait(0.4)
         y -= step
         pr = num_at(prod, i, y, col(i))
-        ln = Line([xs[max(0, i - len(str(cur)) + 1)] - 0.36, y - step / 2, 0], [xs[i] + 0.36, y - step / 2, 0],
+        ln = Line([xs[max(0, i - len(str(cur)) + 1)] - 0.36 * k, y - step / 2, 0], [xs[i] + 0.36 * k, y - step / 2, 0],
                   color=INK, stroke_width=5)
         S.say(f"{d} × {q} = {col_mark(prod, col(i))}을 쓰고 빼면 {col_mark(r, col(i))}",
               f"{d} 곱하기 {j(q, '은는')} {prod}. {cur}에서 {j(prod, '을를')} 빼면 {j(r, '이에요')}.")

@@ -50,3 +50,9 @@
 - 목록: `EPISODES_FR.md` 아래 '분수 이야기', `EPISODES_NAT.md`(자연수, 폴더 `gnep01~03`, 바탕 모래색 `THEMES[("N", 1)]`, 명령 `GRADE=n`).
 - 부품 `storykit.py`: 시간 띠 `timeline`, 파피루스 `scroll`, 옛 책 `book`, 출처 화면 `show_sources`. `fracbasic.step_card(..., label="약속 1")`처럼 이름표 글을 바꿀 수 있음.
 - 주의: 화면 글에 `&`를 쓰면 MarkupText가 깨짐(· 등으로 바꿈).
+
+## 나눗셈 차근차근 (20편, 2026-11-23 선생님 요청)
+- 목록 `EPISODES_DIV.md`(뜻·식 읽기·두 뜻·뺄셈·곱셈구구·1과 0·나머지·검산·생활 문제·몇십·세로셈·세 자리·두 자리 수로 나누기·문장제·곱셈과 구별·□ 구하기·분수와 잇기), 폴더 `gdep01~20`, 화면 "나눗셈 차근차근 N화", 바탕 연보라(`THEMES[("D", 1)]`), 명령 `GRADE=d`.
+- 부품 `divkit.py`: `DivScene`, 접시 칸 `slot`, 나누어 주기 `deal`, 용어 이름표 `term_eq`·`term_labels`(나누어지는 수·나누는 수·몫·나머지).
+- 썸네일 `thumbs.py`(시리즈 `gd`) → `./add_thumb.sh gdepNN`으로 영상 앞 2초에 넣은 `*_final_thumb.mp4`.
+- 2026-11-23 공통 수정: `series_style.M`이 너비 13.2를 넘으면 저절로 줄임(화면 밖 넘침 방지). `division.long_division_n`은 세 자리 이상이면 줄 간격·글자를 줄임(두 자리는 그대로).
