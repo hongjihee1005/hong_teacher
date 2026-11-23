@@ -17,6 +17,38 @@ class ConceptScene(EpisodeScene):
     GRADE, SEM = "C", 1
     LABEL = "개념 차근차근 {}화"
 
+    def step(self, sec, items, sub, narr, hold=1.2):
+        """구역 하나: items = [(마크업, 크기, y)]를 차례로 보여 주고 지움"""
+        from manim import FadeIn as _F
+        from division import clear_stage as _cs
+        self.section(sec)
+        objs = [M(t, sz).move_to([0, y, 0]) for t, sz, y in items]
+        self.say(sub, narr)
+        for ob in objs:
+            self.play(_F(ob), run_time=0.5)
+        self.wait(hold)
+        self.settle()
+        _cs(self, 0.5)
+
+    def ask(self, q, sub, narr, a, asub, anarr, qsize=70, asize=56):
+        """연습 문제 → 생각해 보세요 → 답"""
+        from manim import FadeIn as _F
+        from division import clear_stage as _cs
+        self.section("연습해요")
+        qq = M(q, qsize).move_to([0, 1.2, 0])
+        self.say(sub, narr)
+        self.play(_F(qq), run_time=0.5)
+        self.wait(0.6)
+        self.pause_screen(5)
+        self.settle()
+        aa = M(a, asize).move_to([0, -0.4, 0])
+        self.say(asub, anarr)
+        self.play(_F(aa), run_time=0.5)
+        self.wait(1.4)
+        self.settle()
+        _cs(self, 0.6)
+        self.hide_chip()
+
 
 def dot(color=RED, r=0.24):
     return Circle(radius=r, fill_color=color, fill_opacity=1, stroke_color=INK, stroke_width=2.5)

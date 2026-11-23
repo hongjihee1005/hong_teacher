@@ -52,13 +52,13 @@ class GcEp46(ConceptScene):
 
     def sieve(self):
         self.section("에라토스테네스의 체")
-        cw, ch = 0.95, 0.52
+        cw, ch = 0.68, 0.56
         cells, nums = {}, VGroup()
         grid = VGroup()
         for v in range(1, 51):
             r, c = divmod(v - 1, 10)
-            box = Rectangle(width=cw, height=ch, stroke_color=SOFT, stroke_width=2, fill_color="#FFFFFF", fill_opacity=1).move_to([-4.3 + c * cw, 2.1 - r * ch, 0])
-            t = T(str(v), 28, INK).move_to(box)
+            box = Rectangle(width=cw, height=ch, stroke_color=SOFT, stroke_width=2, fill_color="#FFFFFF", fill_opacity=1).move_to([-6.1 + c * cw, 1.9 - r * ch, 0])
+            t = T(str(v), 26, INK).move_to(box)
             cells[v] = (box, t)
             grid.add(box, t)
         self.say("1부터 50까지 늘어놓고", "약 2200년 전 그리스의 에라토스테네스는 소수만 걸러 내는 방법을 생각했다고 전해져요. 수를 늘어놓고 배수를 지워 가는 방법이에요.")
@@ -66,11 +66,11 @@ class GcEp46(ConceptScene):
         self.play(cells[1][1].animate.set_opacity(0.2), run_time=0.3)
         side = M("", 36).move_to([3.8, 0.8, 0])
         for p, col in [(2, BLUE), (3, ORANGE), (5, GREEN), (7, "#B05FD0")]:
-            lab = M(f'<span foreground="{col}">{p}</span>는 남기고 {p}의 배수를 지워요', 34).move_to([3.4, 1.4 - [2, 3, 5, 7].index(p) * 0.55, 0])
+            lab = M(f'<span foreground="{col}">{p}</span>는 남기고 {p}의 배수를 지워요', 30).move_to([3.5, 1.7 - [2, 3, 5, 7].index(p) * 0.5, 0])
             self.say(f"{p}의 배수를 지워요", f"{p}는 남기고, {p}의 배수를 모두 지워요.")
             outs = [cells[v][1] for v in range(p * 2, 51, p)]
             self.play(cells[p][0].animate.set_fill(col, 0.45), FadeIn(lab), *[o_.animate.set_opacity(0.2) for o_ in outs], run_time=0.8)
-        t = M(f"남은 수 {g('15개')}가 50까지의 소수", 40).move_to([3.4, -1.2, 0])
+        t = M(f"남은 수 {g('15개')}가\n50까지의 소수", 40).move_to([3.5, -0.6, 0])
         self.say(f"남은 {g('15개')}가 소수", "남은 2, 3, 5, 7, 11, 13 … 47까지 15개가 50까지의 소수예요. 체로 거르듯 남긴다고 에라토스테네스의 체라고 불러요.")
         self.play(FadeIn(t), run_time=0.5)
         self.wait(1.4)

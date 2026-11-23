@@ -36,11 +36,11 @@ class GcEp47(ConceptScene):
 
     def bars(self):
         self.section("같은 길이, 다른 이름")
-        bs = VGroup(frac_bar(2, 1, width=7.0), frac_bar(4, 2, width=7.0, color=BLUE), frac_bar(6, 3, width=7.0, color=GREEN)).arrange(DOWN, buff=0.3).move_to([0.8, 0.9, 0])
-        ls = VGroup(*[frac(n, d, 44).next_to(b_, LEFT, buff=0.4) for (n, d), b_ in zip([(1, 2), (2, 4), (3, 6)], bs)])
+        bs = VGroup(frac_bar(2, 1, width=7.0), frac_bar(4, 2, width=7.0, color=BLUE), frac_bar(6, 3, width=7.0, color=GREEN)).arrange(DOWN, buff=0.4).move_to([0.8, 1.0, 0])
+        ls = VGroup(*[M(f"{n}/{d}", 44).next_to(b_, LEFT, buff=0.4) for (n, d), b_ in zip([(1, 2), (2, 4), (3, 6)], bs)])
         self.say("1/2, 2/4, 3/6을 막대로", "같은 막대를 2칸, 4칸, 6칸으로 나누어 2분의 1, 4분의 2, 6분의 3만큼 칠했어요.")
         self.play(LaggedStart(*[FadeIn(VGroup(b_, l)) for b_, l in zip(bs, ls)], lag_ratio=0.3), run_time=1.2)
-        t = M(f"칠한 길이가 모두 같아요 → 1/2 = 2/4 = 3/6", 46).move_to([0, -1.2, 0])
+        t = M(f"칠한 길이가 모두 같아요 → 1/2 = 2/4 = 3/6", 46).move_to([0, -1.5, 0])
         self.say("칠한 길이가 모두 같아요", "칠한 길이가 모두 같아요. 이름은 달라도 크기가 같은 분수예요.")
         self.play(FadeIn(t), run_time=0.5)
         self.wait(1.2)

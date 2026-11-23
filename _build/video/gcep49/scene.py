@@ -38,7 +38,7 @@ class GcEp49(ConceptScene):
         self.section("분모를 같게")
         b1 = frac_bar(2, 1, width=6.0).move_to([0.8, 1.6, 0])
         b2 = frac_bar(3, 1, width=6.0, color=BLUE).move_to([0.8, 0.6, 0])
-        l1, l2 = frac(1, 2, 44).next_to(b1, LEFT, buff=0.4), frac(1, 3, 44).next_to(b2, LEFT, buff=0.4)
+        l1, l2 = M("1/2", 44).next_to(b1, LEFT, buff=0.4), M("1/3", 44).next_to(b2, LEFT, buff=0.4)
         self.say("1/2과 1/3은 조각 크기가 달라요", "2분의 1과 3분의 1은 조각의 크기가 달라서 바로 비교하거나 더하기 어려워요.")
         self.play(FadeIn(b1), FadeIn(b2), FadeIn(l1), FadeIn(l2), run_time=0.7)
         c1 = frac_bar(6, 3, width=6.0).move_to(b1)
