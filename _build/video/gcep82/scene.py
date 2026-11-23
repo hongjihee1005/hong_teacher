@@ -9,6 +9,7 @@ import sys
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.dirname(HERE))
 
+import numpy as np
 from manim import DOWN, LEFT, RIGHT, UP, Create, FadeIn, FadeOut, Indicate, LaggedStart, Line, SurroundingRectangle, TransformFromCopy, VGroup, Write
 
 from series_style import BLUE, GREEN, INK, ORANGE, SOFT, M, T, b, g, o

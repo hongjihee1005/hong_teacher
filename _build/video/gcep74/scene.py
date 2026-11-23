@@ -50,14 +50,14 @@ class GcEp74(ConceptScene):
     def construct(self):
         self.opening()
         self.section("세 가지 모양")
-        shapes = VGroup(box3d(), cyl(), ball()).arrange(RIGHT, buff=2.0).move_to([0, 1.2, 0])
-        names = VGroup(*[M(x, 44, c) for x, c in [("상자 모양", ORANGE), ("둥근기둥 모양", BLUE), ("공 모양", GREEN)]])
+        shapes = VGroup(box3d(), cyl(), ball()).scale(1.3).arrange(RIGHT, buff=3.0).move_to([0, 1.4, 0])
+        names = VGroup(*[M(x, 40, c) for x, c in [("상자 모양", ORANGE), ("둥근기둥 모양", BLUE), ("공 모양", GREEN)]])
         for n_, s_ in zip(names, shapes):
             n_.next_to(s_, DOWN, buff=0.4)
         self.say("물건을 모양에 따라 나누면", "우리 주변의 물건을 모양에 따라 나누면 상자 모양, 둥근기둥 모양, 공 모양이 있어요.")
         self.play(LaggedStart(*[FadeIn(VGroup(s_, n_)) for s_, n_ in zip(shapes, names)], lag_ratio=0.3), run_time=1.4)
         self.wait(1.0)
-        feats = VGroup(M("평평한 면·뾰족한 곳\n잘 쌓여요", 32), M("눕히면 굴러가요\n세우면 쌓여요", 32), M("어느 쪽으로나\n잘 굴러가요", 32))
+        feats = VGroup(M("평평한 면·뾰족한 곳\n잘 쌓여요", 34), M("눕히면 굴러가요\n세우면 쌓여요", 34), M("어느 쪽으로나\n잘 굴러가요", 34))
         for f_, n_ in zip(feats, names):
             f_.next_to(n_, DOWN, buff=0.3)
         self.say("쌓아 보고, 굴려 보면", "상자 모양은 평평한 면과 뾰족한 곳이 있어 잘 쌓여요. 둥근기둥 모양은 눕히면 굴러가고 세우면 쌓여요. 공 모양은 어느 쪽으로나 잘 굴러가요.")

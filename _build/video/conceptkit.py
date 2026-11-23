@@ -147,3 +147,41 @@ def right_mark(corner, d1, d2, s=0.25, color=INK):
     m = VMobject(color=color, stroke_width=4)
     m.set_points_as_corners([c + a * s, c + (a + b) * s, c + b * s])
     return m
+
+
+def clock(h, m, r=1.4, center=(0, 0, 0)):
+    """아날로그 시계: h시 m분"""
+    from manim import Circle as _C, Dot as _D, Line as _L
+    import math
+    c = np.array(center, dtype=float)
+    face = _C(radius=r, fill_color="#FFFFFF", fill_opacity=1, stroke_color=INK, stroke_width=6).move_to(c)
+    nums = VGroup(*[T(str(k), int(r * 22), INK).move_to(c + 0.78 * r * np.array([math.sin(math.radians(30 * k)), math.cos(math.radians(30 * k)), 0])) for k in range(1, 13)])
+    am = math.radians(6 * m)
+    ah = math.radians(30 * (h % 12) + 0.5 * m)
+    mh = _L(c, c + 0.82 * r * np.array([math.sin(am), math.cos(am), 0]), color=BLUE, stroke_width=7)
+    hh = _L(c, c + 0.52 * r * np.array([math.sin(ah), math.cos(ah), 0]), color=ORANGE, stroke_width=10)
+    return VGroup(face, nums, hh, mh, _D(c, radius=0.07, color=INK))
+
+
+def bar_chart(data, x0=-4.0, y0=-1.4, unit=0.35, w=0.8, gap=0.6, color="#2F6FD6", ticks=5, step=1, size=30):
+    """세로 막대그래프: data=[(이름, 값)]. 반환 VGroup(축, 눈금, 막대들, 이름들)"""
+    from manim import Line as _L, Rectangle as _R
+    n = len(data)
+    top = max(v for _, v in data)
+    H = (top + step) * unit
+    W = n * (w + gap) + gap
+    ax = VGroup(_L([x0, y0, 0], [x0 + W, y0, 0], color=INK, stroke_width=4), _L([x0, y0, 0], [x0, y0 + H, 0], color=INK, stroke_width=4))
+    tk = VGroup()
+    for v in range(0, top + step + 1, step):
+            y = y0 + v * unit
+            tk.add(_L([x0, y, 0], [x0 + W, y, 0], color="#DDD3C4", stroke_width=2), T(str(v), size - 4, SOFT).move_to([x0 - 0.35, y, 0]))
+    bars, names = VGroup(), VGroup()
+    for i, (nm, v) in enumerate(data):
+        x = x0 + gap + i * (w + gap) + w / 2
+        b_ = _R(width=w, height=max(v * unit, 0.01), fill_color=color, fill_opacity=0.85, stroke_color=INK, stroke_width=2)
+        b_.move_to([x, y0 + v * unit / 2, 0])
+        bars.add(b_)
+        names.add(M(nm, size).move_to([x, y0 - 0.35, 0]))
+    g_ = VGroup(ax, tk, bars, names)
+    g_.bars, g_.names, g_.unit, g_.y0 = bars, names, unit, y0
+    return g_
