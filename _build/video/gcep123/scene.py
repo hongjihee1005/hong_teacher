@@ -31,7 +31,7 @@ class GcEp123(ConceptScene):
         self.opening()
         self.section("시간에 따라 변하는 양")
         data = [("9시", 8), ("10시", 11), ("11시", 14), ("12시", 16), ("1시", 17)]
-        x0, y0, u, dx = -5.0, -1.4, 0.18, 1.6
+        x0, y0, u, dx = -5.6, -1.4, 0.18, 1.3
         ax = VGroup(Line([x0, y0, 0], [x0 + dx * 5.5, y0, 0], color=INK, stroke_width=4), Line([x0, y0, 0], [x0, y0 + 20 * u, 0], color=INK, stroke_width=4))
         grid = VGroup(*[VGroup(Line([x0, y0 + v * u, 0], [x0 + dx * 5.5, y0 + v * u, 0], color="#DDD3C4", stroke_width=2), T(str(v), 24, SOFT).move_to([x0 - 0.35, y0 + v * u, 0])) for v in range(0, 21, 5)])
         names = VGroup(*[M(n, 30).move_to([x0 + dx * (i + 1), y0 - 0.35, 0]) for i, (n, _) in enumerate(data)])
@@ -44,7 +44,7 @@ class GcEp123(ConceptScene):
         ln.set_points_as_corners(pts)
         self.say("점을 선으로 이어요", "점들을 선으로 이으면 꺾은선그래프예요. 선이 가파르게 올라가면 많이 변한 것, 완만하면 조금 변한 것이에요.")
         self.play(Create(ln), run_time=1.0)
-        t = M(f"9시~11시: {o('많이')} 올랐어요\n12시~1시: {b('조금')} 올랐어요", 36).move_to([4.6, 1.6, 0])
+        t = M(f"9시~11시: {o('많이')} 올랐어요\n12시~1시: {b('조금')} 올랐어요", 34).move_to([4.6, 0.6, 0])
         self.play(FadeIn(t), run_time=0.4)
         self.wait(1.4)
         self.settle()

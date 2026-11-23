@@ -36,7 +36,7 @@ class GcEp122(ConceptScene):
         self.say("가로와 세로를 정하고 눈금을 그려요", "좋아하는 운동을 조사했어요. 가로에 운동, 세로에 학생 수를 정하고 눈금 한 칸의 크기를 정해 막대를 그려요.")
         self.play(FadeIn(ch[0]), FadeIn(ch[1]), FadeIn(ch[3]), run_time=0.6)
         self.play(LaggedStart(*[GrowFromEdge(b_, DOWN) for b_ in ch.bars], lag_ratio=0.25), run_time=1.4)
-        t = M(f"가장 많은 운동: {g('축구')}\n축구는 줄넘기보다 {o('5명')} 더\n막대 길이로 한눈에 비교", 38).move_to([3.4, 0.6, 0])
+        t = M(f"가장 많은 운동: {g('축구')}\n축구는 줄넘기보다 {o('5명')} 더\n막대 길이로 한눈에 비교", 36).move_to([4.2, 0.6, 0])
         self.say("막대의 길이로 비교", "막대가 가장 긴 축구를 가장 많이 좋아해요. 막대의 길이로 많고 적음을 한눈에 비교할 수 있어요.")
         self.play(FadeIn(t), run_time=0.5)
         self.wait(1.4)
