@@ -30,17 +30,17 @@ class GcEp57(ConceptScene):
     def construct(self):
         self.opening()
         self.section("모눈으로 0.8 × 0.6")
-        S_ = 0.32
+        S_ = 0.29
         cells = VGroup()
         for r in range(10):
             for c in range(10):
                 on = c < 8 and r < 6
                 cells.add(Rectangle(width=S_, height=S_, fill_color=GREEN if on else "#FFFFFF", fill_opacity=0.8 if on else 1, stroke_color=SOFT, stroke_width=1.5).move_to([c * S_, -r * S_, 0]))
-        cells.move_to([-3.2, 0.5, 0])
+        cells.move_to([-4.5, 0.5, 0])
         self.say("가로 0.8, 세로 0.6", "1을 100칸으로 나눈 모눈에서 가로 0.8, 세로 0.6만큼 칠하면 몇 칸일까요?")
         self.play(FadeIn(cells), run_time=0.8)
-        e = M(f"8 × 6 = 48칸 → 0.8 × 0.6 = {g('0.48')}", 48).move_to([2.6, 1.0, 0])
-        t = M(f"소수 한 자리 × 소수 한 자리\n→ 곱은 소수 {o('두 자리')}", 40).move_to([2.6, -0.3, 0])
+        e = M(f"8 × 6 = 48칸 → 0.8 × 0.6 = {g('0.48')}", 44).move_to([1.8, 1.0, 0])
+        t = M(f"소수 한 자리 × 소수 한 자리\n→ 곱은 소수 {o('두 자리')}", 40).move_to([1.8, -0.3, 0])
         self.say(f"{g('0.48')}, 소수 두 자리", "8칸 곱하기 6칸, 48칸. 한 칸이 0.01이니까 0.48이에요. 소수 한 자리끼리 곱하면 소수 두 자리가 돼요.")
         self.play(FadeIn(e), FadeIn(t), run_time=0.6)
         self.wait(1.2)

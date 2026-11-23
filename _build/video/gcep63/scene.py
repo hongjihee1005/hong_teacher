@@ -38,16 +38,16 @@ class GcEp63(ConceptScene):
     def construct(self):
         self.opening()
         self.section("수직선으로 나타내기")
-        nl = number_line(20, y=-0.2, label_every=2, size=24)
+        nl = number_line(20, y=-1.0, label_every=2, size=30)
         self.play(FadeIn(nl), run_time=0.5)
-        items = [(10, True, True, BLUE, 2.0, "10 이상: 10과 같거나 큰 수 (●)"),
-                 (10, False, True, ORANGE, 1.4, "10 이하: 10과 같거나 작은 수 (●)"),
-                 (10, True, False, GREEN, 0.8, "10 초과: 10보다 큰 수 (○)"),
-                 (10, False, False, "#B05FD0", 0.2, "10 미만: 10보다 작은 수 (○)")]
+        items = [(10, True, True, BLUE, 1.9, "10 이상: 10과 같거나 큰 수 (●)"),
+                 (10, False, True, ORANGE, 1.1, "10 이하: 10과 같거나 작은 수 (●)"),
+                 (10, True, False, GREEN, 0.3, "10 초과: 10보다 큰 수 (○)"),
+                 (10, False, False, "#B05FD0", -0.5, "10 미만: 10보다 작은 수 (○)")]
         self.say("이상·이하는 ●, 초과·미만은 ○", "이상과 이하는 그 수를 포함해서 점을 까맣게, 초과와 미만은 그 수를 포함하지 않아서 점을 비워 둬요.")
         for v, right, closed, col, y, txt in items:
             r = self.ray(nl, v, right, closed, col, y)
-            lab = M(txt, 30, col).move_to([-3.6 if not right else 3.6, y + 0.32, 0])
+            lab = M(txt, 32, col).move_to([-3.4 if not right else 3.4, y + 0.36, 0])
             self.play(Create(r), FadeIn(lab), run_time=0.6)
         self.wait(1.4)
         self.settle()

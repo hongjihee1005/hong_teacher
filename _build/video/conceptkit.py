@@ -125,3 +125,25 @@ def table_rows(n, upto=9, size=40, color=BLUE):
     """n단: 'n × 1 = n' … 세로 목록"""
     rows = VGroup(*[M(f'{n} × {k} = <span foreground="{color}">{n * k}</span>', size) for k in range(1, upto + 1)])
     return rows.arrange(DOWN, buff=0.08, aligned_edge=LEFT)
+
+
+def poly(pts, color="#2F6FD6", op=0.35, sw=5):
+    """꼭짓점 목록으로 다각형"""
+    from manim import Polygon
+    return Polygon(*[[x, y, 0] for x, y in pts], fill_color=color, fill_opacity=op, stroke_color=INK, stroke_width=sw)
+
+
+def regular(n, r=1.0, color="#2F6FD6", op=0.35, start=90):
+    import math
+    pts = [(r * math.cos(math.radians(start + 360 * k / n)), r * math.sin(math.radians(start + 360 * k / n))) for k in range(n)]
+    return poly(pts, color, op)
+
+
+def right_mark(corner, d1, d2, s=0.25, color=INK):
+    """corner에서 d1, d2 방향(단위 벡터)으로 직각 표시"""
+    from manim import VMobject
+    c = np.array(corner, dtype=float)
+    a, b = np.array(d1, dtype=float), np.array(d2, dtype=float)
+    m = VMobject(color=color, stroke_width=4)
+    m.set_points_as_corners([c + a * s, c + (a + b) * s, c + b * s])
+    return m
