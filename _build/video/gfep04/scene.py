@@ -53,7 +53,7 @@ class GfEp04(EpisodeScene):
         self.C, self.s = C, s
         self.say("정사각형을 세 칸으로 나누고 한 칸을 칠했어요", "정사각형을 세 칸으로 나누고, 그중 한 칸을 색칠했어요.")
         self.play(FadeIn(VGroup(self.big, self.tr, self.br)), run_time=0.6)
-        q = M(f"색칠한 부분은 {o('3분의 1')}일까요?", 50).move_to([3.2, 1.2, 0])
+        q = M(f"색칠한 부분은\n{o('3분의 1')}일까요?", 50).move_to([3.0, 0.4, 0])
         self.say("색칠한 부분은 3분의 1일까요?", "세 칸 중의 한 칸이니까 3분의 1일까요?")
         self.play(FadeIn(q), run_time=0.5)
         self.wait(1.0)

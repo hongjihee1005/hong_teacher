@@ -108,7 +108,7 @@ class GfEp08(EpisodeScene):
             box = SurroundingRectangle(f, color=SOFT, buff=0.3, stroke_width=4, corner_radius=0.15)
             cards.add(VGroup(box, f))
         cards.arrange(RIGHT, buff=0.55).move_to([0, 0.6, 0])
-        c = step_card(1, f"{o('분자')}와 {b('분모')}를 견주어요 → 분자가 더 작으면 {g('진분수')}", size=36).move_to([0, 2.45, 0])
+        c = M(f"방법: {o('분자')}와 {b('분모')}를 견주어요 → 분자가 더 작으면 {g('진분수')}", 38).move_to([0, 2.45, 0])
         self.say("진분수를 모두 골라 보세요", "이 중에서 진분수를 모두 골라 보세요. 분자와 분모를 견주어 보면 돼요.")
         self.play(FadeIn(cards, lag_ratio=0.15), FadeIn(c), run_time=1.0)
         self.wait(0.6)
@@ -126,7 +126,7 @@ class GfEp08(EpisodeScene):
         self.say(f"진분수: {g('7분의 2, 9분의 6, 3분의 1')}",
                  "분자가 분모보다 작은 7분의 2, 9분의 6, 3분의 1이 진분수예요.")
         self.play(FadeIn(notes, lag_ratio=0.1), run_time=1.0)
-        t = M(f"5분의 5·4분의 4·8분의 9는 진분수가 아니에요 → 다음 화에서!", 38).move_to([0, -2.2, 0])
+        t = M("5분의 5, 4분의 4, 8분의 9는 진분수가 아니에요 (다음 화에서!)", 34).move_to([0, -2.2, 0])
         self.say("분자가 분모와 같거나 크면 진분수가 아니에요", "5분의 5, 4분의 4처럼 분자와 분모가 같거나, 8분의 9처럼 분자가 더 크면 진분수가 아니에요. 다음 화에서 알아봐요.")
         self.play(FadeIn(t), run_time=0.5)
         self.wait(1.4)

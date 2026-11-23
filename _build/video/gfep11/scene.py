@@ -17,8 +17,8 @@ from manim import (DOWN, LEFT, RIGHT, UP, Create, Dot, FadeIn, FadeOut, Indicate
 
 from series_style import BLUE, GREEN, INK, ORANGE, PAPER, SOFT, EpisodeScene, M, T, b, g, o
 from division import clear_stage
-from fraction import frac, frac_bar, mixed, row
-from fracbasic import step_card
+from fraction import frac, frac_bar, row
+from fracbasic import mixed_wide as mixed, step_card
 
 
 class GfEp11(EpisodeScene):
@@ -40,7 +40,7 @@ class GfEp11(EpisodeScene):
 
     def to_mixed(self):
         self.section("가분수 → 대분수")
-        f = frac(11, 4, 80, cn=ORANGE, cd=BLUE).move_to([-5.3, 1.6, 0])
+        f = frac(11, 4, 80, cn=ORANGE, cd=BLUE).move_to([-5.9, 0.4, 0])
         self.say("4분의 11을 대분수로 바꾸어 볼까요?", "4분의 11을 대분수로 바꾸어 볼까요?")
         self.play(Write(f), run_time=0.6)
         w = 0.55
@@ -61,10 +61,10 @@ class GfEp11(EpisodeScene):
         self.say(f"꽉 찬 막대 {g('2개')}, 남은 조각 {o('3개')}", "꽉 찬 막대가 2개, 남은 조각이 3개예요.")
         self.play(FadeIn(ones), FadeIn(rest), run_time=0.6)
         c2 = step_card(2, f"꽉 찬 것은 {g('자연수')}, 남은 것은 {o('진분수')}로").move_to([0, 2.55, 0])
-        res = row(frac(11, 4, 60, cn=ORANGE, cd=BLUE), "=", mixed(2, 3, 4, 60, cw=GREEN, cn=ORANGE, cd=BLUE), size=60).move_to([0, -2.1, 0])
+        res = row(frac(11, 4, 60, cn=ORANGE, cd=BLUE), "=", mixed(2, 3, 4, 60, cw=GREEN, cn=ORANGE, cd=BLUE), size=60).move_to([-1.6, -1.95, 0])
         self.say(f"2단계: 4분의 11 = {g('2')}와 {o('4분의 3')}", "2단계. 꽉 찬 2개는 자연수 2, 남은 것은 4분의 3. 4분의 11은 2와 4분의 3이에요.")
         self.play(FadeOut(c1), FadeIn(c2), Write(res), run_time=0.8)
-        tip = M(f"(11 안에 4가 {g('2번')} 들어가고 {o('3')}이 남아요)", 34, SOFT).next_to(res, RIGHT, buff=0.4)
+        tip = M(f"(11 안에 4가 {g('2번')}, {o('3')}이 남아요)", 32, SOFT).next_to(res, RIGHT, buff=0.5)
         self.say("11 안에 4가 2번, 3이 남아요", "11 안에 4가 2번 들어가고 3이 남는 것과 같아요.")
         self.play(FadeIn(tip), run_time=0.5)
         self.wait(1.4)
@@ -73,7 +73,7 @@ class GfEp11(EpisodeScene):
 
     def to_improper(self):
         self.section("대분수 → 가분수")
-        m = mixed(2, 1, 3, 80, cw=GREEN, cn=ORANGE, cd=BLUE).move_to([-5.3, 1.6, 0])
+        m = mixed(2, 1, 3, 80, cw=GREEN, cn=ORANGE, cd=BLUE).move_to([-5.6, 0.4, 0])
         self.say("이번에는 2와 3분의 1을 가분수로", "이번에는 거꾸로, 2와 3분의 1을 가분수로 바꾸어 볼까요?")
         self.play(Write(m), run_time=0.6)
         bars = VGroup(frac_bar(3, 3, width=2.4, height=0.8, color=GREEN), frac_bar(3, 3, width=2.4, height=0.8, color=GREEN),
@@ -141,11 +141,11 @@ class GfEp11(EpisodeScene):
         self.section("세 가지 분수 정리")
         rows = [
             ("진분수", "분자가 분모보다 작아요", "1보다 작아요", "4분의 3"),
-            ("가분수", "분자가 분모와 같거나 커요", "1과 같거나 커요", "4분의 4, 4분의 7"),
+            ("가분수", "분자가 분모와 같거나 커요", "1과 같거나 커요", "4분의 7"),
             ("대분수", "자연수 + 진분수", "1보다 커요", "1과 4분의 3"),
         ]
         head = ["이름", "생김새", "크기", "예"]
-        widths, h = [2.2, 4.9, 3.1, 3.3], 0.95
+        widths, h = [2.1, 5.0, 3.3, 2.9], 0.95
         colors = [GREEN, INK, INK, INK]
         tb = VGroup()
         for r, line in enumerate([head] + [list(x) for x in rows]):
@@ -155,7 +155,7 @@ class GfEp11(EpisodeScene):
                 rect = Rectangle(width=wd, height=h, stroke_color=INK, stroke_width=2, fill_color=fill, fill_opacity=1)
                 rect.move_to([xx + wd / 2, 1.5 - r * h, 0])
                 col = INK if r == 0 else colors[c]
-                tb.add(rect, M(txt, 34 if c else 38, col).move_to(rect))
+                tb.add(rect, M(txt, 32 if c else 38, col).move_to(rect))
                 xx += wd
         self.say("세 가지 분수를 한눈에 정리해요", "진분수, 가분수, 대분수를 한눈에 정리해 볼까요?")
         self.play(FadeIn(tb, lag_ratio=0.05), run_time=1.2)

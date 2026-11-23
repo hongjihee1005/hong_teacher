@@ -16,7 +16,7 @@ from manim import (DOWN, LEFT, RIGHT, UP, Circle, Create, FadeIn, FadeOut, Indic
 from series_style import BLUE, GREEN, INK, ORANGE, PAPER, SOFT, EpisodeScene, M, T, b, g, o
 from division import clear_stage
 from fraction import frac, frac_bar, pie
-from fracbasic import step_card
+from fracbasic import spot, step_card
 from items import check_mark, cross_mark
 
 
@@ -55,7 +55,7 @@ class GfEp05(EpisodeScene):
         self.play(FadeOut(c1), FadeIn(c2), Indicate(f.num, color=ORANGE, scale_factor=1.4), run_time=0.7)
         marks = VGroup()
         for i in range(n):
-            m = T(str(i + 1), 34, INK).move_to(cells[i])
+            m = T(str(i + 1), 34, INK).move_to(spot(cells[i]))
             marks.add(m)
             self.play(cells[i].animate.set_fill(ORANGE, 1), FadeIn(m, scale=1.4), run_time=0.25 if quick else 0.4)
         c3 = step_card(3, f"다시 읽어 확인: {d}칸 중 {n}칸 → {b(str(d) + '분의')} {o(str(n))}").move_to([0, card_y, 0])
@@ -65,12 +65,30 @@ class GfEp05(EpisodeScene):
         self.play(Create(ok), run_time=0.4)
         return VGroup(f, cells, c3, ok)
 
+    def ask(self, n, d, shape, say, narr):
+        f = frac(n, d, 90, cn=ORANGE, cd=BLUE).move_to([4.4, 0.2, 0])
+        if shape == "bar":
+            sh = Rectangle(width=5.6, height=1.1, fill_color=PAPER, fill_opacity=1, stroke_color=INK, stroke_width=5).move_to([-2.6, 0.2, 0])
+        else:
+            sh = Circle(radius=1.5, fill_color=PAPER, fill_opacity=1, stroke_color=INK, stroke_width=5).move_to([-2.6, 0.2, 0])
+        self.say(say, narr)
+        self.play(FadeIn(sh), Write(f), run_time=0.6)
+        self.wait(0.4)
+        self.pause_screen(5)
+        self.settle()
+        self.play(FadeOut(VGroup(sh, f)), run_time=0.3)
+
     def problem(self):
         self.section("문제")
+        f = frac(3, 4, 90, cn=ORANGE, cd=BLUE).move_to([4.4, 0.2, 0])
+        bar = Rectangle(width=5.6, height=1.1, fill_color=PAPER, fill_opacity=1, stroke_color=INK, stroke_width=5).move_to([-2.6, 0.2, 0])
+        q = M(f"막대에 {o('4분의 3')}만큼 색칠하려면?", 48).move_to([0, 2.45, 0])
         self.say("4분의 3만큼 색칠해 볼까요?", "이번에는 거꾸로 해 볼까요? 막대에 4분의 3만큼 색칠해 보세요.")
-        self.wait(0.4)
+        self.play(FadeIn(bar), Write(f), FadeIn(q), run_time=0.7)
+        self.wait(0.6)
         self.pause_screen(5, "어떻게 색칠할까요?")
         self.settle()
+        self.play(FadeOut(VGroup(bar, f, q)), run_time=0.3)
         self.section("3단계로 색칠하기")
         self.color_frac(3, 4)
         self.wait(1.2)
@@ -97,16 +115,12 @@ class GfEp05(EpisodeScene):
 
     def practice(self):
         self.section("연습해요")
-        self.say("연습 1: 5분의 2만큼 색칠해 보세요", "연습 1. 막대에 5분의 2만큼 색칠해 보세요.")
-        self.pause_screen(5)
-        self.settle()
+        self.ask(2, 5, "bar", "연습 1: 5분의 2만큼 색칠해 보세요", "연습 1. 막대에 5분의 2만큼 색칠해 보세요.")
         self.color_frac(2, 5, quick=True)
         self.wait(1.0)
         self.settle()
         clear_stage(self, 0.5)
-        self.say("연습 2: 8분의 5만큼 색칠해 보세요", "연습 2. 이번에는 원에 8분의 5만큼 색칠해 보세요.")
-        self.pause_screen(5)
-        self.settle()
+        self.ask(5, 8, "pie", "연습 2: 8분의 5만큼 색칠해 보세요", "연습 2. 이번에는 원에 8분의 5만큼 색칠해 보세요.")
         self.color_frac(5, 8, shape="pie", quick=True)
         self.wait(1.2)
         self.settle()

@@ -1,9 +1,9 @@
 """「수학 원리 돋보기」 분수 특별편 6화 — 여러 개 중의 부분도 분수로
 
-사과 12개를 3개씩 묶으면 4묶음 → 9개는 3묶음 → 9는 12의 4분의 3
+구슬 12개를 3개씩 묶으면 4묶음 → 9개는 3묶음 → 9는 12의 4분의 3
 ① 몇 묶음으로 똑같이? → 분모 ② 그중 몇 묶음? → 분자 ③ '9는 12의 4분의 3'
 자주 하는 실수: 분자에 개수(9)를 씀 → 분자는 묶음 수
-묶는 방법이 달라지면: 2개씩 6묶음 → 4는 12의 6분의 2 / 연습: 사탕 8개를 2개씩, 6개는 8의 4분의 3
+묶는 방법이 달라지면: 2개씩 6묶음 → 4는 12의 6분의 2 / 연습: 구슬 8개를 2개씩, 6개는 8의 4분의 3
 최종: GRADE=f ./make_final.sh 6
 """
 import os
@@ -59,9 +59,9 @@ class GfEp06(EpisodeScene):
     def problem(self):
         self.section("문제")
         self.apples = self.items(12)
-        self.say("사과가 12개 있어요", "사과가 12개 있어요.")
+        self.say("구슬이 12개 있어요", "구슬이 12개 있어요.")
         self.play(LaggedStart(*[FadeIn(a, scale=0.5) for a in self.apples], lag_ratio=0.08, run_time=1.2))
-        q = row("사과", o("9개"), "는 12개의", o("얼마"), "일까요?", size=48).move_to([0, 2.4, 0])
+        q = M(f"구슬 {o('9개')}는 12개의 {o('얼마')}일까요?", 48).move_to([0, 2.4, 0])
         self.say("9개는 12개의 얼마일까요?", "그중 9개는 12개의 얼마일까요? 분수로 나타낼 수 있을까요?")
         self.play(FadeIn(q), *[self.apples[i].animate.scale(1.15) for i in range(9)], run_time=0.6)
         self.wait(1.0)
@@ -72,12 +72,12 @@ class GfEp06(EpisodeScene):
     def steps(self):
         self.section("3단계로 나타내기")
         c1 = step_card(1, f"{g('똑같이')} 묶어요: 3개씩 묶으면 몇 묶음?").move_to([0, 2.4, 0])
-        self.say("1단계: 3개씩 똑같이 묶어요", "1단계. 사과를 3개씩 똑같이 묶어요.")
+        self.say("1단계: 3개씩 똑같이 묶어요", "1단계. 구슬을 3개씩 똑같이 묶어요.")
         self.play(FadeIn(c1), run_time=0.4)
         self.boxes = self.regroup(self.apples, 3)
         nums = VGroup(*[T(str(i + 1), 34, BLUE).next_to(bx, DOWN, buff=0.15) for i, bx in enumerate(self.boxes)])
         self.play(LaggedStart(*[FadeIn(n_) for n_ in nums], lag_ratio=0.5, run_time=1.0))
-        slots = frac_slots(0.85, (0, -1.6, 0))
+        slots = frac_slots(0.85, (0, -1.15, 0))
         den = slot_num(slots.bot, 4, BLUE, 70)
         self.say(f"전체 {b('4묶음')} → 분모 {b('4')}", "전체가 4묶음이에요. 그래서 분모는 4예요.")
         self.play(FadeIn(slots), run_time=0.3)
@@ -101,7 +101,7 @@ class GfEp06(EpisodeScene):
 
     def mistake(self):
         self.section("자주 하는 실수")
-        w = frac(9, 4, 70, cn=SOFT, cd=SOFT).move_to([4.4, -1.6, 0])
+        w = frac(9, 4, 70, cn=SOFT, cd=SOFT).move_to([4.4, -1.15, 0])
         self.say("분자에 9를 쓰면 될까요?", "어떤 친구는 9개니까 분자에 9를 써서 4분의 9라고 했어요.")
         self.play(FadeIn(w), run_time=0.5)
         no = cross_mark(0.4).next_to(w, LEFT, buff=0.3)
@@ -116,10 +116,10 @@ class GfEp06(EpisodeScene):
         self.section("다르게 묶으면?")
         its = self.items(12)
         self.play(FadeIn(its), run_time=0.4)
-        self.say("이번에는 2개씩 묶어 볼까요?", "같은 사과 12개를 이번에는 2개씩 묶어 볼까요?")
+        self.say("이번에는 2개씩 묶어 볼까요?", "같은 구슬 12개를 이번에는 2개씩 묶어 볼까요?")
         boxes = self.regroup(its, 2, gap=0.95)
         self.play(*[boxes[i].animate.set_stroke(ORANGE, 9) for i in range(2)], run_time=0.5)
-        a = row("전체", b("6묶음"), ", 4개는", o("2묶음"), "→ 4는 12의", frac(2, 6, 52, cn=ORANGE, cd=BLUE), size=44).move_to([0, -1.2, 0])
+        a = row(f"전체 {b('6묶음')}, 4개는 {o('2묶음')} → 4는 12의", frac(2, 6, 52, cn=ORANGE, cd=BLUE), size=44).move_to([0, -1.2, 0])
         self.say(f"4는 12의 {b('6분의')} {o('2')}", "2개씩 묶으면 6묶음이고, 4개는 2묶음이에요. 그래서 4는 12의 6분의 2예요.")
         self.play(FadeIn(a), run_time=0.6)
         t = M(f"묶는 방법에 따라 {b('분모')}가 달라져요", 42).move_to([0, -2.3, 0])
@@ -132,15 +132,15 @@ class GfEp06(EpisodeScene):
     def practice(self):
         self.section("연습해요")
         its = self.items(8, color="#B05FD0")
-        q = row("사탕 8개를 2개씩 묶으면,", o("6개"), "는 8의 얼마일까요?", size=44).move_to([0, 2.4, 0])
-        self.say("연습: 6개는 8의 얼마?", "연습해 볼까요? 사탕 8개를 2개씩 묶으면, 6개는 8의 얼마일까요?")
+        q = M(f"구슬 8개를 2개씩 묶으면, {o('6개')}는 8의 얼마일까요?", 44).move_to([0, 2.4, 0])
+        self.say("연습: 6개는 8의 얼마?", "연습해 볼까요? 구슬 8개를 2개씩 묶으면, 6개는 8의 얼마일까요?")
         self.play(FadeIn(its), FadeIn(q), run_time=0.6)
         self.wait(0.6)
         self.pause_screen(5)
         self.settle()
         boxes = self.regroup(its, 2, gap=1.0)
         self.play(*[boxes[i].animate.set_stroke(ORANGE, 9) for i in range(3)], run_time=0.5)
-        a = row("전체", b("4묶음"), ", 6개는", o("3묶음"), "→ 6은 8의", frac(3, 4, 52, cn=ORANGE, cd=BLUE), size=44).move_to([0, -1.3, 0])
+        a = row(f"전체 {b('4묶음')}, 6개는 {o('3묶음')} → 6은 8의", frac(3, 4, 52, cn=ORANGE, cd=BLUE), size=44).move_to([0, -1.3, 0])
         self.say(f"답: 6은 8의 {b('4분의')} {o('3')}", "전체는 4묶음, 6개는 3묶음이에요. 그래서 6은 8의 4분의 3이에요.")
         self.play(FadeIn(a), run_time=0.6)
         self.wait(1.4)

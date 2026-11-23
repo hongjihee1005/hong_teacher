@@ -62,7 +62,7 @@ class GfEp03(EpisodeScene):
         self.settle()
         white = [i for i in range(8) if i not in {0, 1, 3, 5, 6}]
         three_steps(self, gr, white, pos=(3.6, 0.2, 0), what="색칠하지 않은 부분", quick=True)
-        a = row("색칠한 부분", frac(5, 8, 46, cn=ORANGE, cd=BLUE), "+ 색칠하지 않은 부분", frac(3, 8, 46, cd=BLUE), "= 전체", size=36).move_to([0, -2.1, 0])
+        a = row("색칠한 부분", frac(5, 8, 46, cn=ORANGE, cd=BLUE), "+ 색칠하지 않은 부분", frac(3, 8, 46, cd=BLUE), "= 전체", size=36).move_to([0, -1.95, 0])
         self.say(f"색칠한 부분은 {o('8분의 5')}, 합하면 전체(8분의 8)",
                  "색칠하지 않은 부분은 8분의 3, 색칠한 부분은 8분의 5. 둘을 합하면 8칸 전체가 돼요.")
         self.play(FadeIn(a), run_time=0.6)

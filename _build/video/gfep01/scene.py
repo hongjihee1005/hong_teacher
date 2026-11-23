@@ -84,7 +84,7 @@ class GfEp01(EpisodeScene):
         self.play(Create(no), run_time=0.4)
         t1 = M(f"가의 한 조각 = 전체의 {o('4분의 1')}", 44).move_to([0, 2.3, 0])
         t2 = M("나의 조각은 4분의 1이라고 할 수 없어요", 44).move_to([0, 1.5, 0])
-        self.say(f"똑같이 나눈 {g('가')}만 분수로 나타낼 수 있어요",
+        self.say(f"똑같이 나눈 {g('가')}의 조각만 4분의 1이에요",
                  "그래서 똑같이 나눈 가의 한 조각만 4분의 1이에요. 나의 조각은 4분의 1이라고 할 수 없어요.")
         self.play(FadeIn(t1), run_time=0.5)
         self.play(FadeIn(t2), run_time=0.5)
@@ -102,7 +102,7 @@ class GfEp01(EpisodeScene):
         # ① 원 3조각(같음)
         f1 = pie(3, 0, 0.95).move_to([-4.8, 0.6, 0])
         # ② 정사각형 3줄(다름)
-        f2 = cake([0.35, 0.95, 0.4], h=s, pos=(-1.6, 0.6, 0))
+        f2 = cake([0.35, 0.95, 0.4], h=s, colors=["#FFFFFF"] * 3, pos=(-1.6, 0.6, 0))
         # ③ 정사각형 대각선 4개(같음)
         c3 = np.array([1.6, 0.6, 0])
         h = s / 2
@@ -122,16 +122,16 @@ class GfEp01(EpisodeScene):
         self.pause_screen(5)
         self.settle()
         marks = []
-        reasons = [("세 조각 크기가 같아요", True), ("가운데가 넓어요", False),
-                   ("네 삼각형이 꼭 맞아요", True), ("한쪽이 훨씬 커요", False)]
+        reasons = [("세 조각\n크기가 같아요", True), ("가운데가\n넓어요", False),
+                   ("네 삼각형이\n꼭 맞아요", True), ("한쪽이\n훨씬 커요", False)]
         narr = ["1번은 세 조각의 크기가 같아요. 똑같이 나누었어요.",
                 "2번은 가운데 조각이 더 넓어요. 똑같이 나눈 것이 아니에요.",
                 "3번은 네 삼각형을 돌려 겹치면 꼭 맞아요. 똑같이 나누었어요.",
                 "4번은 한쪽이 훨씬 커요. 똑같이 나눈 것이 아니에요."]
         for i, ((txt, ok), fg, nn) in enumerate(zip(reasons, figs, narr)):
             mk = (check_mark(0.5) if ok else cross_mark(0.42)).next_to(fg, DOWN, buff=0.35)
-            lab = M(g(txt) if ok else txt, 30).next_to(mk, DOWN, buff=0.2)
-            self.say(f"{'①②③④'[i]} {g('똑같이 나눔') if ok else '똑같이 나누지 않음'} — {txt}", nn)
+            lab = M(g(txt) if ok else txt, 28).next_to(mk, DOWN, buff=0.2)
+            self.say(f"{'①②③④'[i]} {g('똑같이 나눔') if ok else '똑같이 나누지 않음'} — {txt.replace(chr(10), ' ')}", nn)
             self.play(Create(mk), FadeIn(lab), Indicate(fg, color=GREEN if ok else SOFT, scale_factor=1.06), run_time=0.7)
             marks += [mk, lab]
         self.say(f"똑같이 나눈 것은 {g('①과 ③')}", "똑같이 나눈 것은 1번과 3번이에요.")

@@ -14,6 +14,8 @@ tl = json.load(open(os.path.join(here, ep, "timeline.json"), encoding="utf-8"))
 files = []
 for i, x in enumerate(tl):
     t = max(x["t"] + 0.5, x["end"] - 0.6)
+    if os.environ.get("FRAME_AT") == "mid":   # 자막이 바뀐 뒤 장면이 다 나온 때(구역 끝 지우기 전)
+        t = min(x["t"] + 1.8, x["end"] - 0.2)
     f = os.path.join(out, f"f{i:02d}.png")
     subprocess.run(["ffmpeg", "-v", "error", "-y", "-ss", f"{t:.2f}", "-i", video,
                     "-frames:v", "1", f], stdin=subprocess.DEVNULL, check=True)

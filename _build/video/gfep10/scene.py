@@ -15,8 +15,8 @@ from manim import (DOWN, LEFT, RIGHT, UP, Brace, Create, FadeIn, FadeOut, Indica
 
 from series_style import BLUE, GREEN, INK, ORANGE, PAPER, SOFT, EpisodeScene, M, T, b, g, o
 from division import clear_stage
-from fraction import frac, frac_bar, mixed, pie, row
-from fracbasic import step_card
+from fraction import frac, frac_bar, pie, row
+from fracbasic import mixed_wide as mixed, step_card
 from items import check_mark, cross_mark
 
 W = 4.4
@@ -41,7 +41,7 @@ class GfEp10(EpisodeScene):
 
     def problem(self):
         self.section("문제")
-        self.b1 = frac_bar(4, 4, width=W, height=0.9).move_to([-2.6, 1.0, 0])
+        self.b1 = frac_bar(4, 4, width=W, height=0.9).move_to([-3.5, 1.0, 0])
         self.b2 = frac_bar(4, 3, width=W, height=0.9).next_to(self.b1, DOWN, buff=0.45, aligned_edge=LEFT)
         f = frac(7, 4, 72, cn=ORANGE, cd=BLUE).move_to([3.6, 0.4, 0])
         self.say("앞에서 본 4분의 7이에요", "앞에서 본 4분의 7이에요. 막대 하나가 꽉 차고, 둘째 막대에 3칸이 있어요.")
@@ -65,19 +65,19 @@ class GfEp10(EpisodeScene):
         c2 = step_card(2, f"남은 부분은? → {o('진분수')}").move_to([0, 2.45, 0])
         self.say(f"2단계: 남은 부분은 {o('4분의 3')}", "2단계. 남은 부분을 분수로 나타내요. 4칸 중 3칸, 4분의 3이에요.")
         self.play(FadeOut(c1), FadeIn(c2), FadeIn(l2), run_time=0.6)
-        m = mixed(1, 3, 4, 90, cw=GREEN, cn=ORANGE, cd=BLUE).move_to([0, -1.75, 0])
+        m = mixed(1, 3, 4, 90, cw=GREEN, cn=ORANGE, cd=BLUE).move_to([5.3, 0.35, 0])
         c3 = step_card(3, f"함께 쓰고 '{g('1')}과 {o('4분의 3')}'이라고 읽어요").move_to([0, 2.45, 0])
         self.say(f"3단계: {g('1')}과 {o('4분의 3')}", "3단계. 자연수 1을 크게 앞에 쓰고, 4분의 3을 옆에 붙여 써요. 1과 4분의 3이라고 읽어요.")
         self.play(FadeOut(c2), FadeIn(c3), Write(m), run_time=0.9)
         self.wait(1.2)
         self.settle()
         clear_stage(self, 0.5)
-        d = M(f"{g('자연수')}와 {o('진분수')}로 이루어진 분수를", 56).move_to([0, 1.4, 0])
-        n = T("대분수", 110, GREEN).move_to([0, 0.1, 0])
+        d = M(f"{g('자연수')}와 {o('진분수')}로 이루어진 분수를", 56).move_to([0, 2.0, 0])
+        n = T("대분수", 110, GREEN).move_to([0, 0.8, 0])
         e = M("라고 해요", 56).next_to(n, DOWN, buff=0.3)
         self.say(f"이런 분수를 {g('대분수')}라고 해요", "1과 4분의 3처럼 자연수와 진분수로 이루어진 분수를 대분수라고 해요.")
         self.play(FadeIn(d), Write(n), FadeIn(e), run_time=0.9)
-        eq = row(frac(7, 4, 50, cn=ORANGE, cd=BLUE), "=", mixed(1, 3, 4, 50, cw=GREEN, cn=ORANGE, cd=BLUE), size=50).move_to([0, -2.1, 0])
+        eq = row(frac(7, 4, 50, cn=ORANGE, cd=BLUE), "=", mixed(1, 3, 4, 50, cw=GREEN, cn=ORANGE, cd=BLUE), size=50).move_to([0, -1.95, 0])
         self.say("4분의 7과 1과 4분의 3은 같은 양", "4분의 7과 1과 4분의 3은 같은 양을 다르게 나타낸 것이에요.")
         self.play(FadeIn(eq), run_time=0.6)
         self.wait(1.4)
@@ -93,12 +93,12 @@ class GfEp10(EpisodeScene):
         self.pause_screen(5)
         self.settle()
         no = cross_mark(0.4).next_to(w, UP, buff=0.3)
-        t1 = M(f"4분의 5는 {o('진분수가 아니에요')}(1보다 커요)", 40).move_to([0, -0.9, 0])
+        t1 = M(f"4분의 5는 {o('진분수가 아니에요')}(1보다 커요)", 40).move_to([0, -0.55, 0])
         self.say(f"분수 부분은 꼭 {o('진분수')}여야 해요", "대분수의 분수 부분은 꼭 1보다 작은 진분수여야 해요. 4분의 5는 1보다 크니까 안 돼요.")
         self.play(Create(no), FadeIn(t1), run_time=0.6)
         bars = VGroup(frac_bar(4, 4, width=2.0, height=0.7), frac_bar(4, 4, width=2.0, height=0.7),
                       frac_bar(4, 1, width=2.0, height=0.7)).arrange(RIGHT, buff=0.2).move_to([1.8, 0.9, 0])
-        r = mixed(2, 1, 4, 80, cw=GREEN, cn=ORANGE, cd=BLUE).move_to([3.0, -2.1, 0])
+        r = mixed(2, 1, 4, 70, cw=GREEN, cn=ORANGE, cd=BLUE).move_to([3.0, -1.75, 0])
         ok = check_mark(0.45).next_to(r, LEFT, buff=0.35)
         self.say(f"4분의 4를 1로 올려 {g('2')}와 {o('4분의 1')}", "4분의 5 안의 4분의 4를 1로 올려 보내면, 꽉 찬 막대가 2개, 남은 것은 4분의 1. 2와 4분의 1이 맞아요.")
         self.play(FadeIn(bars), run_time=0.6)

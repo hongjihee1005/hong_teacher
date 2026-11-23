@@ -45,8 +45,18 @@ def grid(cols, rows, filled=(), cw=0.9, ch=0.9, color=ORANGE, stroke=INK):
     return cells
 
 
+def spot(c):
+    """칸 안에 글자를 놓을 자리: 부채꼴이면 반지름 0.62 지점(가운데 각), 아니면 가운데"""
+    from manim import Sector
+    if isinstance(c, Sector):
+        mid = c.start_angle + c.angle / 2
+        r = c.outer_radius
+        return c.get_arc_center() + np.array([np.cos(mid), np.sin(mid), 0]) * r * 0.62
+    return c.get_center()
+
+
 def count_marks(cells, color=INK, size=34):
-    return VGroup(*[T(str(i + 1), size, color).move_to(c) for i, c in enumerate(cells)])
+    return VGroup(*[T(str(i + 1), size, color).move_to(spot(c)) for i, c in enumerate(cells)])
 
 
 def pie_at(d, k, r=1.0, pos=(0, 0, 0), color=ORANGE):
@@ -90,7 +100,7 @@ def three_steps(S, cells, shaded, pos=(3.6, 0.3, 0), what="색칠한 부분", qu
     S.say(f"1단계: 전체는 몇 칸? → {b('분모')}",
           "1단계. 전체를 몇 칸으로 똑같이 나누었는지 세어요." if not quick else "1단계, 전체는 몇 칸인가요?")
     S.play(FadeIn(c1), run_time=0.4)
-    marks = VGroup(*[T(str(i + 1), 34, BLUE).move_to(c) for i, c in enumerate(cells)])
+    marks = VGroup(*[T(str(i + 1), 34, BLUE).move_to(spot(c)) for i, c in enumerate(cells)])
     S.play(LaggedStart(*[FadeIn(m, scale=1.4) for m in marks], lag_ratio=1.0, run_time=rt * d + 0.3))
     den = slot_num(slots.bot, d, BLUE)
     S.say(f"전체 {d}칸 → 아래(분모)에 {b(str(d))}", f"전체가 {d}칸이니까, 아래 분모 자리에 {d}를 써요.")
@@ -101,7 +111,7 @@ def three_steps(S, cells, shaded, pos=(3.6, 0.3, 0), what="색칠한 부분", qu
     S.say(f"2단계: {what}은 몇 칸? → {o('분자')}",
           f"2단계. {what}이 몇 칸인지 세어요." if not quick else f"2단계, {what}은 몇 칸인가요?")
     S.play(FadeOut(c1), FadeIn(c2), run_time=0.4)
-    marks2 = VGroup(*[T(str(i + 1), 34, INK).move_to(cells[k]) for i, k in enumerate(shaded)])
+    marks2 = VGroup(*[T(str(i + 1), 34, INK).move_to(spot(cells[k])) for i, k in enumerate(shaded)])
     S.play(LaggedStart(*[FadeIn(m, scale=1.4) for m in marks2], lag_ratio=1.0, run_time=rt * n + 0.3))
     num = slot_num(slots.top, n, ORANGE)
     S.say(f"{what} {n}칸 → 위(분자)에 {o(str(n))}", f"{what}이 {n}칸이니까, 위 분자 자리에 {n}을 써요.")
@@ -114,3 +124,13 @@ def three_steps(S, cells, shaded, pos=(3.6, 0.3, 0), what="색칠한 부분", qu
     S.play(Indicate(VGroup(num, den, slots.line), color=GREEN, scale_factor=1.15), run_time=0.7)
     added.add(c3, num, den)
     return added
+
+
+def mixed_wide(w, n, d, size=60, cw=INK, cn=INK, cd=INK):
+    """대분수(자연수와 분수 사이를 조금 띄움): 1과 4분의 3"""
+    from fraction import frac
+    whole = T(str(w), size * 1.15, cw)
+    f = frac(n, d, size, cn=cn, cd=cd)
+    gr = VGroup(whole, f).arrange(RIGHT, buff=size / 260)
+    gr.whole, gr.frac = whole, f
+    return gr
