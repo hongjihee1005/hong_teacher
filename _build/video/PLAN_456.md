@@ -40,3 +40,7 @@
 - 목록 `EPISODES_FR.md`(11편), 폴더 `gfep01`~`gfep11`, 화면 "분수 특별편 N화", 바탕 연청록(`THEMES[("F", 1)]`, 장면에 `GRADE, SEM = "F", 1`, `LABEL = "분수 특별편 {}화"`).
 - 공통 부품 `fracbasic.py`: '1단계' 이름표 카드 `step_card`, 빈 분수 틀 `frac_slots`, 부분 → 분수 3단계 `three_steps`(분모 → 분자 → 읽기), 부채꼴 안 글자 자리 `spot`, 칸 `grid`, 띄운 대분수 `mixed_wide`.
 - 명령: `GRADE=f ./make_final.sh N`. 장면 사진은 `FRAME_AT=mid`(자막이 바뀐 뒤 1.8초)로 뽑으면 구역 끝 지우기 전 장면이 보임(`frames.py`).
+
+## 분수 준비 「곱셈부터 차근차근」 (2026-11-23 선생님 요청)
+- 요청: 분수를 아주 많이 어려워하는 아이들용, 곱셈부터 차근차근. 목록 `EPISODES_PREP.md`(12편: 묶어 세기 → 곱셈 → 배열 → 구구가 생각나지 않을 때 → 나눗셈 두 뜻 → 곱셈으로 나눗셈 → 하나를 똑같이 → 단위분수 → 크기 → 12의 3분의 1 → 12의 3분의 2), 다 보면 분수 특별편 1화로 이어짐.
+- 폴더 `gpep01`~`gpep12`, 화면 "분수 준비 N화", 바탕 연한 연두(`THEMES[("P", 1)]`), 장면 바탕 `prepkit.PrepScene`(구슬 줄 `items`, 묶기 `regroup`, 뛰어 세기 `count_under`, 배열 `grid_items`, 접시 `dish`). 명령 `GRADE=p ./make_final.sh N`.
