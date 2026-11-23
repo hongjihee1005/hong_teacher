@@ -6,7 +6,9 @@
 모양: 시리즈 바탕색, 왼쪽 위 '시리즈 N화' 이름표, 큰 제목(두 줄까지), 오른쪽에 큰 그림 글자(분수·식),
 아래 띠에 「수학 원리 돋보기」와 선생님 로고. 글꼴 Noto Sans CJK KR Bold(리눅스 fonts-noto-cjk).
 """
+import glob
 import os
+import re
 import sys
 
 from PIL import Image, ImageDraw, ImageFont
@@ -122,14 +124,36 @@ def token_w(d, t, size):
     return 0
 
 
-def draw_tokens(d, toks, cx, cy, maxw, size):
-    gap = size * 0.18
+def fit_size(d, toks, maxw, size):
     while size > 40:
-        total = sum(token_w(d, t, size) for t in toks) + gap * (len(toks) - 1)
+        total = sum(token_w(d, t, size) for t in toks) + size * 0.18 * (len(toks) - 1)
         if total <= maxw:
             break
         size -= 6
-        gap = size * 0.18
+    return size
+
+
+def draw_glyph(d, toks, cx, cy, maxw, size):
+    """한 줄에 넣으면 너무 작아지면 = · ↔ 앞에서(없으면 가운데) 두 줄로 나눔"""
+    one = fit_size(d, toks, maxw, size)
+    if one >= 100 or len(toks) < 3 or any(t[0] == "t" and t[1] == "·" for t in toks):
+        return draw_tokens(d, toks, cx, cy, maxw, size)
+    cut = [i for i, t in enumerate(toks) if t[0] == "t" and t[1] in ("=", "↔", "≈", "→", "⊃", ">", "<")]
+    i = min(cut, key=lambda i: abs(i - len(toks) / 2)) if cut else len(toks) // 2
+    a, b = toks[:i], toks[i:]
+    sz = min(fit_size(d, a, maxw, size), fit_size(d, b, maxw, size), 130)
+    has_f = any(t[0] in "fm" for t in toks)
+    if has_f:   # 분수가 있으면 위아래로 쌓지 않음
+        return draw_tokens(d, toks, cx, cy, maxw, size)
+    dy = sz * 0.62
+    draw_tokens(d, a, cx, cy - dy, maxw, sz)
+    draw_tokens(d, b, cx, cy + dy, maxw, sz)
+
+
+def draw_tokens(d, toks, cx, cy, maxw, size):
+    size = fit_size(d, toks, maxw, size)
+    gap = size * 0.18
+    total = sum(token_w(d, t, size) for t in toks) + gap * (len(toks) - 1)
     x = cx - total / 2
     for t in toks:
         if t[0] == "t":
@@ -153,19 +177,70 @@ def draw_tokens(d, toks, cx, cy, maxw, size):
         x += token_w(d, t, size) + gap
 
 
+COL = {"b": BLUE, "o": ORANGE, "g": GREEN, "k": INK, "p": PUR}
+
+
+def parse(spec):
+    """thumbs_main.G의 글 → 토큰 (설명은 thumbs_main.py 맨 위)"""
+    out = []
+    for w in spec.split():
+        mm = re.fullmatch(r"m(\d+)_(\d+)/(\d+)", w)
+        ff = re.fullmatch(r"f(\d+)/(\d+)", w)
+        if mm:
+            out.append(("m", int(mm[1]), int(mm[2]), int(mm[3])))
+        elif ff:
+            out.append(("f", int(ff[1]), int(ff[2])))
+        elif w[0] in COL and len(w) > 1:
+            out.append(("t", w[1:].replace("_", " ").replace("−", "－"), COL[w[0]]))
+        elif w[0] not in COL:
+            out.append(("t", w.replace("_", " "), INK))
+    return out
+
+
+def split_title(t):
+    """제목을 두 줄로(가운데에 가까운 빈칸에서 나눔)"""
+    if len(t) <= 8 or " " not in t:
+        return [t, ""]
+    sp = [i for i, c in enumerate(t) if c == " " and not t[i - 1].isdigit()] or [i for i, c in enumerate(t) if c == " "]
+    i = min(sp, key=lambda i: abs(i - len(t) / 2))
+    return [t[:i], t[i + 1:]]
+
+
+def main_info(folder):
+    """3~6학년 본편: (이름표, 바탕, 강조색, 제목 줄, 토큰)"""
+    from thumbs_main import G
+    src = open(os.path.join(HERE, folder, "scene.py"), encoding="utf-8").read()
+    title = re.search(r'EP_TITLE = "([^"]+)"', src)[1]
+    no = int(re.search(r"EP_NO = (\d+)", src)[1])
+    gs = re.search(r"GRADE, SEM = (\d), (\d)", src)
+    grade, sem = (int(gs[1]), int(gs[2])) if gs else (3, 1)
+    bg, acc = MAIN_THEME[(grade, sem)]
+    return f"{grade}학년 {no}화", bg, acc, split_title(title), parse(G[folder])
+
+
+MAIN_THEME = {  # series_style.THEMES와 같은 색(3학년 강조색만 진한 살구)
+    (3, 1): ("#FFF9EE", "#B4610F"), (3, 2): ("#FFF9EE", "#B4610F"),
+    (4, 1): ("#EDF7F0", "#1F5E46"), (4, 2): ("#EDF3FB", "#24427A"),
+    (5, 1): ("#F4F0FA", "#4B3577"), (5, 2): ("#FDF1EA", "#8A3B1E"),
+    (6, 1): ("#FBF6E1", "#6B5310"), (6, 2): ("#F7EEF1", "#7A2E4A"),
+}
+
+
 def make(folder):
     pre = folder[:2]
-    name, bg, acc = SERIES[pre]
-    no = int(folder[-2:])
-    title, toks = EP[folder]
+    if pre in SERIES:
+        name, bg, acc = SERIES[pre]
+        lab = f"{name} {int(folder[-2:])}화"
+        title, toks = EP[folder]
+    else:
+        lab, bg, acc, title, toks = main_info(folder)
     im = Image.new("RGB", (W, H), bg)
     d = ImageDraw.Draw(im)
     # 오른쪽 흰 판
     d.rounded_rectangle([760, 120, 1230, 560], radius=36, fill="#FFFFFF", outline=acc, width=6)
-    draw_tokens(d, toks, 995, 340, 420, 170)
+    draw_glyph(d, toks, 995, 340, 420, 170)
     # 이름표
     f = font(44)
-    lab = f"{name} {no}화"
     w, h, ox, oy = tw(d, lab, f)
     d.rounded_rectangle([56, 56, 56 + w + 56, 56 + h + 36], radius=22, fill=acc)
     d.text((56 + 28 - ox, 56 + 18 - oy), lab, font=f, fill="#FFFFFF")
@@ -200,6 +275,11 @@ def make(folder):
 
 
 if __name__ == "__main__":
-    names = sys.argv[1:] or list(EP)
+    args = sys.argv[1:]
+    if args == ["main"]:   # 3~6학년 본편 전체
+        names = sorted(os.path.basename(p) for p in glob.glob(os.path.join(HERE, "ep[0-9][0-9]")))
+        names += sorted(os.path.basename(p) for p in glob.glob(os.path.join(HERE, "g[456]ep[0-9][0-9]")))
+    else:
+        names = args or list(EP)
     for n in names:
         print(make(n))

@@ -56,3 +56,8 @@
 - 부품 `divkit.py`: `DivScene`, 접시 칸 `slot`, 나누어 주기 `deal`, 용어 이름표 `term_eq`·`term_labels`(나누어지는 수·나누는 수·몫·나머지).
 - 썸네일 `thumbs.py`(시리즈 `gd`) → `./add_thumb.sh gdepNN`으로 영상 앞 2초에 넣은 `*_final_thumb.mp4`.
 - 2026-11-23 공통 수정: `series_style.M`이 너비 13.2를 넘으면 저절로 줄임(화면 밖 넘침 방지). `division.long_division_n`은 세 자리 이상이면 줄 간격·글자를 줄임(두 자리는 그대로).
+
+## 정한 것 (2026-11-23 선생님): 썸네일은 기본, 사실은 출처로
+- **모든 영상은 썸네일을 넣은 판(`*_final_thumb.mp4`)이 완성본입니다.** 새 영상은 `thumbs.py`에 그림 글자를 넣고 `./add_thumb.sh 폴더`까지 해야 끝. 3~6학년 본편 235편도 2026-11-23에 넣음(그림 글자 `thumbs_main.py`, 제목은 장면의 EP_TITLE, `python3 thumbs.py main`).
+- 역사·사실이 들어가는 영상은 **논문·도서·기사 등 출처로 확인한 것만** 쓰고, 화마다 끝에 '이 영상의 출처' 화면. 확인 못 한 일화는 빼거나 '전해지는 이야기'로.
+- 다음 큰 작업: 「개념 차근차근」(`EPISODES_CONCEPT.md`, 127편) — 1부부터.
