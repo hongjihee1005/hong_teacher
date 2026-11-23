@@ -65,11 +65,11 @@ class GcEp25(ConceptScene):
         def cell(r, c):
             return cells[r * 10 + c]
         a, b2 = cell(3, 4), cell(4, 3)
-        t1 = M(f"3 × 4 = {g('12')}\n4 × 3 = {g('12')}", 44).move_to([3.6, 1.2, 0])
+        t1 = M(f"3 × 4 = {g('12')}\n4 × 3 = {g('12')}", 44).move_to([3.6, 1.4, 0])
         self.say("3 × 4와 4 × 3", "3 곱하기 4와 4 곱하기 3을 찾아볼까요? 둘 다 12예요. 곱하는 두 수를 바꾸어도 곱은 같아요.")
         self.play(a.animate.set_fill(GREEN, 0.5), b2.animate.set_fill(GREEN, 0.5), FadeIn(t1), run_time=0.8)
         diag = VGroup(*[cell(k, k).copy().set_fill(ORANGE, 0.45) for k in range(1, 10)])
-        t2 = M(f"{o('대각선')}: 1, 4, 9, 16 …\n여기를 따라 접으면\n양쪽이 똑같아요", 38).move_to([3.6, -0.6, 0])
+        t2 = M(f"{o('대각선')}: 1, 4, 9, 16 …\n여기를 따라 접으면\n양쪽이 똑같아요", 38).move_to([3.6, -1.0, 0])
         self.say(f"{o('대각선')}을 따라 접으면 똑같이 겹쳐요", "같은 수끼리 곱한 1, 4, 9, 16이 대각선에 놓여요. 이 대각선을 따라 접으면 양쪽 수가 똑같이 겹쳐요.")
         self.play(FadeIn(diag, lag_ratio=0.1), FadeIn(t2), run_time=1.0)
         self.wait(1.4)

@@ -30,7 +30,7 @@ class GcEp38(ConceptScene):
         self.count()
         self.section("소수점을 맞추어 세로셈")
         self.say("1.6 + 0.85", "1.6 더하기 0.85를 세로셈으로 계산해요. 소수점을 위아래로 맞추는 것이 가장 중요해요.")
-        dec_vertical(self, "1.6", "0.85", "+")
+        dec_vertical(self, "1.6", "0.85", "+", x_right=0.4, y0=1.35)
         self.settle()
         clear_stage(self, 0.5)
         self.practice()

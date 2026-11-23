@@ -30,7 +30,7 @@ class GcEp39(ConceptScene):
         self.zero()
         self.section("세로셈으로")
         self.say("5 − 1.37", "5 빼기 1.37을 세로셈으로 계산해요. 5를 5.00으로 보고 소수점을 맞추어요.")
-        dec_vertical(self, "5.00", "1.37", "-")
+        dec_vertical(self, "5.00", "1.37", "-", x_right=0.4, y0=1.35)
         self.settle()
         clear_stage(self, 0.5)
         self.practice()

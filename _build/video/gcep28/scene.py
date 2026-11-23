@@ -82,7 +82,7 @@ class GcEp28(ConceptScene):
                 sums[k + 1] = sums.get(k + 1, 0) + p // 10
         res = a * c
         rs = str(res)
-        t = M(f"대각선을 따라 오른쪽 아래부터 더해요 (10이 넘으면 다음 줄로 올림) → {g(rs)}", 34).move_to([0, -2.0, 0])
+        t = M(f"대각선을 따라 오른쪽 아래부터 더해요\n(10이 넘으면 다음 대각선으로 올림) → {g(rs)}", 36).move_to([0, -2.0, 0])
         self.say(f"대각선을 따라 더하면 {g(rs)}", f"이제 대각선을 따라 오른쪽 아래부터 더해요. 10이 넘으면 다음 대각선으로 올려요. 그러면 {res}가 나와요.")
         self.play(FadeIn(t), run_time=0.5)
         out = T(rs, 64, GREEN).next_to(cells, LEFT, buff=0.5).shift(DOWN * 0.5)
@@ -93,12 +93,12 @@ class GcEp28(ConceptScene):
 
     def story(self):
         self.section("이야기: 창살 모양 곱셈")
-        win = VGroup(*[Square(0.7, stroke_color="#8C7A55", stroke_width=5) for _ in range(9)]).arrange_in_grid(3, 3, buff=0).move_to([-4.4, 0.8, 0])
-        t1 = M(f"이탈리아에서는 {o('겔로시아')}(창살)라고 불렀어요\n아랍·인도에서도 비슷한 방법을 썼어요", 36).move_to([1.4, 1.4, 0])
+        win = VGroup(*[Square(0.7, stroke_color="#8C7A55", stroke_width=5) for _ in range(9)]).arrange_in_grid(3, 3, buff=0).move_to([-5.2, 0.8, 0])
+        t1 = M(f"이탈리아에서는 {o('겔로시아')}(창살)라고 불렀어요\n아랍·인도에서도 비슷한 방법을 썼어요", 36).move_to([1.2, 1.4, 0])
         self.say(f"'{o('겔로시아')}', 창살 모양", "칸이 창문 창살 같아서 이탈리아에서는 겔로시아, 창살이라고 불렀어요. 아랍과 인도에서도 비슷한 방법을 썼어요.")
         self.play(Create(win), FadeIn(t1), run_time=0.8)
-        t2 = M(f"{o('1478년')} 이탈리아의 『트레비소 산술책』에 실렸어요", 36).move_to([1.4, 0.1, 0])
-        t3 = M(f"{o('1617년')} 스코틀랜드의 네이피어는\n이 격자를 막대에 새겨 '곱셈 막대'를 만들었어요", 36).move_to([1.4, -1.2, 0])
+        t2 = M(f"{o('1478년')} 이탈리아의 『트레비소 산술책』에 실렸어요", 36).move_to([1.2, 0.1, 0])
+        t3 = M(f"{o('1617년')} 스코틀랜드의 네이피어는\n이 격자를 막대에 새겨 '곱셈 막대'를 만들었어요", 36).move_to([1.2, -1.2, 0])
         self.say("1478년 책, 1617년 네이피어 막대", "1478년 이탈리아에서 인쇄된 트레비소 산술책에도 실렸고, 1617년 스코틀랜드의 네이피어는 이 격자를 막대에 새겨 곱셈 막대를 만들었어요.")
         self.play(FadeIn(t2), run_time=0.5)
         self.play(FadeIn(t3), run_time=0.5)

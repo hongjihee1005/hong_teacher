@@ -27,16 +27,16 @@ class GcEp34(ConceptScene):
 
     def construct(self):
         self.opening()
-        self.add()
+        self.add_part()
         self.trap()
         self.over()
-        self.sub()
+        self.sub_part()
         self.practice()
         self.closing(f"분모가 같으면 {o('분자끼리')} 더하고 빼요, {b('분모는 그대로')}\n2/7 + 3/7 = {g('5/7')}",
                      next_preview="개념 차근차근 35화 · 소수는 언제 생겼을까? 0.1")
         self.wait(0.5)
 
-    def add(self):
+    def add_part(self):
         self.section("분모가 같은 덧셈")
         b1 = frac_bar(7, 0, width=7.0).move_to([0, 1.2, 0])
         for k in range(2):
@@ -73,7 +73,7 @@ class GcEp34(ConceptScene):
         self.settle()
         clear_stage(self, 0.5)
 
-    def sub(self):
+    def sub_part(self):
         self.section("분모가 같은 뺄셈")
         b1 = frac_bar(8, 6, width=7.0).move_to([0, 1.2, 0])
         xs = VGroup(*[cross_mark(0.3).move_to(b1[k]) for k in (4, 5)])

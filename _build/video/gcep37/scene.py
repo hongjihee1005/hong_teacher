@@ -36,13 +36,13 @@ class GcEp37(ConceptScene):
 
     def trap(self):
         self.section("0.5와 0.45")
-        g1 = grid100(50, size=2.8).move_to([-3.2, 0.6, 0])
-        g2 = grid100(45, size=2.8, color=BLUE).move_to([3.2, 0.6, 0])
+        g1 = grid100(50, size=2.5).move_to([-3.2, 1.0, 0])
+        g2 = grid100(45, size=2.5, color=BLUE).move_to([3.2, 1.0, 0])
         l1 = M("0.5", 50).next_to(g1, DOWN, buff=0.25)
         l2 = M("0.45", 50).next_to(g2, DOWN, buff=0.25)
         self.say("0.5와 0.45, 어느 쪽이 클까요?", "0.5와 0.45. 0.45는 숫자가 더 많으니 더 클까요? 모눈에 칠해 볼게요.")
         self.play(FadeIn(g1), FadeIn(g2), FadeIn(l1), FadeIn(l2), run_time=0.9)
-        t = M(f"0.5 = {o('0.50')} → 50칸 &gt; 45칸 → {g('0.5가 더 커요')}", 46).move_to([0, -1.8, 0])
+        t = M(f"0.5 = {o('0.50')} → 50칸 &gt; 45칸 → {g('0.5가 더 커요')}", 46).move_to([0, -1.95, 0])
         self.say(f"{g('0.5가 더 커요')}", "0.5는 0.50과 같아서 50칸, 0.45는 45칸. 0.5가 더 커요. 숫자가 많다고 큰 게 아니에요.")
         self.play(FadeIn(t), run_time=0.5)
         self.wait(1.2)

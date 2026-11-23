@@ -61,3 +61,9 @@
 - **모든 영상은 썸네일을 넣은 판(`*_final_thumb.mp4`)이 완성본입니다.** 새 영상은 `thumbs.py`에 그림 글자를 넣고 `./add_thumb.sh 폴더`까지 해야 끝. 3~6학년 본편 235편도 2026-11-23에 넣음(그림 글자 `thumbs_main.py`, 제목은 장면의 EP_TITLE, `python3 thumbs.py main`).
 - 역사·사실이 들어가는 영상은 **논문·도서·기사 등 출처로 확인한 것만** 쓰고, 화마다 끝에 '이 영상의 출처' 화면. 확인 못 한 일화는 빼거나 '전해지는 이야기'로.
 - 다음 큰 작업: 「개념 차근차근」(`EPISODES_CONCEPT.md`, 127편) — 1부부터.
+
+## 개념 차근차근 진행 현황 (`EPISODES_CONCEPT.md`, 폴더 `gcepNN`, `GRADE=c`)
+- 부품 `conceptkit.py`(ConceptScene·구슬 dot/dots·10칸 틀 ten_frame·모으기 가르기 pair_card·수직선 number_line/jumps·구구 table_rows). 사실 확인 기록 `SOURCES_CONCEPT.md`.
+- 썸네일 `thumbs.py`의 `gc` 시리즈(EP에 gcepNN 줄). 장면 메서드 이름에 `add`·`remove` 등 Scene 메서드 이름을 쓰지 말 것(34화에서 오류).
+- 2026-11-23: 1~53화 장면 완성, 미리보기 점검 중 → 다음: 최종 렌더(배경 음악·썸네일), 54화(분수 곱셈)부터 이어서 작성.
+- 최종 만들기: `$SP/find.sh`와 같은 방식(GRADE=c, gcepNN) — render final → gen_bgm piano → add_bgm → add_thumb.sh.

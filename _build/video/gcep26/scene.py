@@ -41,7 +41,7 @@ class GcEp26(ConceptScene):
 
     def blocks(self):
         self.section("자리마다 나누어 곱해요")
-        rows = VGroup(*[number_blocks(23, size=0.16) for _ in range(3)]).arrange(DOWN, buff=0.25).move_to([-3.2, 0.8, 0])
+        rows = VGroup(*[number_blocks(23, size=0.12) for _ in range(3)]).arrange(DOWN, buff=0.2).move_to([-3.2, 0.5, 0])
         self.say("23이 3줄", "23 곱하기 3은 23을 세 번 더한 것이에요. 수 모형 23을 3줄 놓았어요.")
         self.play(FadeIn(rows, lag_ratio=0.2), run_time=1.0)
         e1 = M(f"십 모형: {b('20')} × 3 = {b('60')}", 46).move_to([2.6, 1.4, 0])
