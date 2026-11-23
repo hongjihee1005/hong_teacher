@@ -65,5 +65,6 @@
 ## 개념 차근차근 진행 현황 (`EPISODES_CONCEPT.md`, 폴더 `gcepNN`, `GRADE=c`)
 - 부품 `conceptkit.py`(ConceptScene·구슬 dot/dots·10칸 틀 ten_frame·모으기 가르기 pair_card·수직선 number_line/jumps·구구 table_rows). 사실 확인 기록 `SOURCES_CONCEPT.md`.
 - 썸네일 `thumbs.py`의 `gc` 시리즈(EP에 gcepNN 줄). 장면 메서드 이름에 `add`·`remove` 등 Scene 메서드 이름을 쓰지 말 것(34화에서 오류).
-- 2026-11-23: 1~53화 장면 완성, 미리보기 점검 중 → 다음: 최종 렌더(배경 음악·썸네일), 54화(분수 곱셈)부터 이어서 작성.
+- 2026-11-23: **127화 장면·썸네일 모두 완성.** 미리보기 점검: 1~76, 79, 83~86화 끝(고침 반영). 최종본은 `$SP/finc.sh 번호…`로 만드는 중(1~53화부터). 남은 일: 77~127화 미리보기 점검 → 최종본 → 보내기.
+- 최종 만들기 스크립트(세션이 바뀌면 다시 만들기): render final → `music/gen_bgm.py 길이 --style piano` → `add_bgm.py`(GRADE=c) → `./add_thumb.sh gcepNN`.
 - 최종 만들기: `$SP/find.sh`와 같은 방식(GRADE=c, gcepNN) — render final → gen_bgm piano → add_bgm → add_thumb.sh.
