@@ -68,3 +68,4 @@
 - 2026-11-23: **127화 장면·썸네일 모두 완성.** 미리보기 점검: 1~76, 79, 83~86화 끝(고침 반영). 최종본은 `$SP/finc.sh 번호…`로 만드는 중(1~53화부터). 남은 일: 77~127화 미리보기 점검 → 최종본 → 보내기.
 - 최종 만들기 스크립트(세션이 바뀌면 다시 만들기): render final → `music/gen_bgm.py 길이 --style piano` → `add_bgm.py`(GRADE=c) → `./add_thumb.sh gcepNN`.
 - 최종 만들기: `$SP/find.sh`와 같은 방식(GRADE=c, gcepNN) — render final → gen_bgm piano → add_bgm → add_thumb.sh.
+- 2026-11-23 밤: 긴 작업은 세션 백그라운드 시간 제한(2시간)에 걸려 `setsid nohup $SP/runall.sh`(이어서 하기, 이미 된 화는 건너뜀)로 돌림 — 개념 차근차근 최종본 + 3~6학년 썸네일 넣기. 세션이 바뀌면 같은 내용의 스크립트를 만들어 다시 돌리면 됨(스크립트 내용: fin/th 함수, PLAN 위 '최종 만들기' 참고).
