@@ -86,6 +86,7 @@ THEMES = {
     (5, 2): ("#FDF1EA", "#8A3B1E"),                              # 살구 · 밤색
     (6, 1): ("#FBF6E1", "#6B5310"),                              # 연노랑 · 올리브
     (6, 2): ("#F7EEF1", "#7A2E4A"),                              # 연분홍 · 자주
+    ("F", 1): ("#EAF6F6", "#1D5C63"),                            # 분수 특별편: 연청록 · 짙은 청록
 }
 
 
@@ -152,6 +153,7 @@ class EpisodeScene(Scene):
     SEM = None     # 학기(1·2) — 바탕색을 고름(THEMES)
     EP_TITLE = ""
     SERIES = "수학 원리 돋보기"
+    LABEL = ""     # 특별편: "분수 특별편 {}화" → 화면에 그대로
 
     # ── 준비 ──
     def setup(self):
@@ -247,6 +249,8 @@ class EpisodeScene(Scene):
 
     # ── 오프닝 (5초) ──
     def ep_label(self):
+        if self.LABEL:
+            return self.LABEL.format(self.EP_NO)
         return f"{self.GRADE}학년 {self.EP_NO}화" if self.GRADE else f"{self.EP_NO}화"
 
     def opening(self):
