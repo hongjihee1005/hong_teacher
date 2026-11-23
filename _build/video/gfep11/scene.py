@@ -35,7 +35,7 @@ class GfEp11(EpisodeScene):
         self.numline()
         self.summary()
         self.closing(f"가분수 → 대분수: 분모만큼씩 묶어 {g('1')}을 만들어요\n대분수 → 가분수: {g('1')}을 분모만큼 조각으로 풀어요",
-                     next_preview="분수 특별편을 모두 마쳤어요! 처음부터 다시 보아도 좋아요")
+                     next_preview="분수 특별편 12화 · 분수 이야기 ① 분수는 어디에서 왔을까?")
         self.wait(0.5)
 
     def to_mixed(self):

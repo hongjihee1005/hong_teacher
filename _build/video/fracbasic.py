@@ -16,17 +16,17 @@ from fraction import frac_bar, pie
 TEAL = "#1D8A93"   # 특별편 '단계' 이름표 색
 
 
-def step_badge(n, color=TEAL, size=34):
-    t = T(f"{n}단계", size, PAPER)
+def step_badge(n, color=TEAL, size=34, label=None):
+    t = T(label or f"{n}단계", size, PAPER)
     box = RoundedRectangle(corner_radius=0.18, width=t.width + 0.5, height=t.height + 0.32,
                            fill_color=color, fill_opacity=1, stroke_width=0)
     t.move_to(box)
     return VGroup(box, t)
 
 
-def step_card(n, text, size=40, color=TEAL):
-    """'n단계' 이름표 + 설명 글(M 마크업)"""
-    badge = step_badge(n, color)
+def step_card(n, text, size=40, color=TEAL, label=None):
+    """'n단계' 이름표(label로 바꿀 수 있음) + 설명 글(M 마크업)"""
+    badge = step_badge(n, color, label=label)
     body = M(text, size)
     g = VGroup(badge, body).arrange(RIGHT, buff=0.3)
     g.badge, g.body = badge, body
