@@ -89,7 +89,7 @@ class GcEp09(ConceptScene):
         sym = VGroup(eg_one(), eg_ten(), eg_hundred()).arrange(RIGHT, buff=3.4).move_to([0, 1.75, 0])
         labs = VGroup(*[M(x, 28) for x in ["1\n막대", "10\n말발굽처럼 생긴 그림", "100\n감긴 밧줄처럼 생긴 그림"]])
         for s_, l in zip(sym, labs):
-            l.next_to(s_, DOWN, buff=0.25)
+            l.move_to([s_.get_x(), 0.85, 0])
         self.say("옛 이집트 사람들의 숫자", "옛 이집트 사람들은 1, 10, 100마다 다른 그림을 썼어요. 1은 막대, 10은 말발굽처럼 생긴 그림, 100은 감긴 밧줄처럼 생긴 그림이에요.")
         self.play(FadeIn(sc), run_time=0.4)
         self.play(LaggedStart(*[FadeIn(VGroup(s_, l)) for s_, l in zip(sym, labs)], lag_ratio=0.3), run_time=1.4)

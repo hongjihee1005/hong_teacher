@@ -54,13 +54,13 @@ class GcEp12(ConceptScene):
 
     def scale_part(self):
         self.section("= 는 저울과 같아요")
-        bal = balance()
-        lt = M(f"{b('3')} + {o('5')}", 60).move_to([-3.0, 1.1, 0])
-        rt = M(f"{g('8')}", 60).move_to([3.0, 1.1, 0])
+        bal = balance(0.6)
+        lt = M(f"{b('3')} + {o('5')}", 60).move_to([-3.0, 1.22, 0])
+        rt = M(f"{g('8')}", 60).move_to([3.0, 1.22, 0])
         self.say("양쪽이 똑같으면 저울은 수평", "저울의 양쪽 무게가 똑같으면 저울은 기울지 않고 수평이 돼요.")
         self.play(FadeIn(bal), run_time=0.6)
         self.play(FadeIn(lt), FadeIn(rt), run_time=0.5)
-        e = M(f"3 + 5 {g('=')} 8", 80).move_to([0, -2.1, 0])
+        e = M(f"3 + 5 {g('=')} 8", 80).move_to([0, -1.6, 0])
         self.say(f"= 는 '양쪽이 {g('같다')}'", "등호는 바로 이 저울처럼, 왼쪽과 오른쪽이 같다는 뜻이에요.")
         self.play(Write(e), run_time=0.6)
         self.wait(1.2)

@@ -35,8 +35,9 @@ class GcEp13(ConceptScene):
 
     def add0(self):
         self.section("0을 더하면")
-        a = dots(3, RED, cols=3, step=0.8, r=0.3).move_to([-3.0, 1.0, 0])
-        plate = M("빈 접시", 36, SOFT).move_to([3.0, 1.0, 0])
+        a = dots(3, RED, cols=3, step=0.8, r=0.3).move_to([-3.0, 1.2, 0])
+        from prepkit import dish
+        plate = dish("빈 접시", w=2.4, h=0.9).move_to([3.0, 0.9, 0])
         self.say("사과 3개에 빈 접시의 사과를 더하면?", "사과 3개가 있어요. 옆의 빈 접시에는 사과가 하나도 없어요. 둘을 모으면 몇 개일까요?")
         self.play(FadeIn(a), FadeIn(plate), run_time=0.6)
         e = M(f"3 + {g('0')} = 3", 90).move_to([0, -0.6, 0])

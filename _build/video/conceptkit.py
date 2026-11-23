@@ -57,3 +57,39 @@ def pair_card(top, left, right, size=72, color=INK):
     l1 = Line(a.get_bottom(), b.get_top(), color=INK, stroke_width=4)
     l2 = Line(a.get_bottom(), c.get_top(), color=INK, stroke_width=4)
     return VGroup(l1, l2, a, b, c)
+
+
+def number_line(n_max, x0=-6.0, x1=6.0, y=0.0, label_every=1, size=26):
+    """0 ~ n_max 수직선. 반환 VGroup(선, 눈금들, 글자들), .x(v) 위치"""
+    from manim import Line as _L
+    line = _L([x0, y, 0], [x1, y, 0], color=INK, stroke_width=4)
+    ticks, labs = VGroup(), VGroup()
+    for v in range(n_max + 1):
+        x = x0 + (x1 - x0) * v / n_max
+        ticks.add(_L([x, y - 0.12, 0], [x, y + 0.12, 0], color=INK, stroke_width=3))
+        if v % label_every == 0:
+            labs.add(T(str(v), size, SOFT).move_to([x, y - 0.4, 0]))
+    g = VGroup(line, ticks, labs)
+    g.x = lambda v: x0 + (x1 - x0) * v / n_max
+    g.y = y
+    return g
+
+
+def jumps(S, nl, step, times, color=BLUE, run_each=0.35):
+    """수직선 위에서 step씩 times번 뛰기(화살 호), 도착 수를 위에 씀. 반환 VGroup"""
+    from manim import ArcBetweenPoints, Create as _C, FadeIn as _F
+    out = VGroup()
+    for k in range(times):
+        a = [nl.x(step * k), nl.y + 0.1, 0]
+        c = [nl.x(step * (k + 1)), nl.y + 0.1, 0]
+        arc = ArcBetweenPoints(a, c, angle=-1.6, color=color, stroke_width=5)
+        lab = T(str(step * (k + 1)), 30, color).move_to([c[0], nl.y + 0.55 + abs(c[0] - a[0]) * 0.28, 0])
+        S.play(_C(arc), _F(lab), run_time=run_each)
+        out.add(arc, lab)
+    return out
+
+
+def table_rows(n, upto=9, size=40, color=BLUE):
+    """n단: 'n × 1 = n' … 세로 목록"""
+    rows = VGroup(*[M(f'{n} × {k} = <span foreground="{color}">{n * k}</span>', size) for k in range(1, upto + 1)])
+    return rows.arrange(DOWN, buff=0.08, aligned_edge=LEFT)
