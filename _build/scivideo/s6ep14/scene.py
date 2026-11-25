@@ -100,9 +100,9 @@ class S6Ep14(EpisodeScene):
                  "파 한 개는 잎과 뿌리를 자르고, 다른 한 개는 잎만 잘라 각각 물이 든 눈금실린더에 넣어 두어요.")
         self.play(FadeIn(a), FadeIn(b), FadeIn(la), FadeIn(lb), run_time=0.8)
         self.settle()
-        diff = K.text_card(["다르게 할 조건", f"· {o('뿌리가 있는지 없는지')}"], w=4.9, size=28, stroke=ORANGE).move_to([4.2, 1.95, 0])
+        diff = K.text_card(["다르게 할 조건", f"· {o('뿌리가 있는지 없는지')}"], w=4.9, size=28, stroke=ORANGE, pad=0.28).move_to([4.2, 2.03, 0])
         same = K.text_card(["같게 할 조건", "· 눈금실린더의 크기", "· 처음 물의 양", "· 파의 크기", "· 놓아두는 곳(햇빛)", "· 관찰하는 날짜"],
-                           w=4.9, size=24).move_to([4.2, -0.8, 0])
+                           w=4.9, size=22, pad=0.25).next_to(diff, DOWN, buff=0.3)
         self.say(f"{o('뿌리')}만 다르게 하고 나머지 조건은 모두 같게 해요",
                  "뿌리가 있는지 없는지만 다르게 하고, 눈금실린더의 크기, 처음 물의 양, 파의 크기, 놓아두는 곳, 관찰하는 날짜는 모두 같게 해요.")
         self.play(FadeIn(diff), run_time=0.5)
@@ -113,7 +113,7 @@ class S6Ep14(EpisodeScene):
     def experiment(self):
         self.section("실험해요")
         cyls, ons, cots = self.two_onions()
-        heads = [T(t, 30).move_to([c.x + (0.6 if c.x < 0 else 0), 2.75, 0]) for t, c in zip(("뿌리를 자른 파", "뿌리를 자르지 않은 파"), cyls)]
+        heads = [T(t, 30).move_to([c.x + (0.9 if c.x < 0 else 0), 2.75, 0]) for t, c in zip(("뿌리를 자른 파", "뿌리를 자르지 않은 파"), cyls)]
         self.say(f"탈지면으로 감싸 {o('같은 양의 물')}에 넣고 물 높이를 표시해요",
                  "파를 탈지면으로 감싸 같은 양의 물이 든 두 눈금실린더에 넣고, 물의 높이를 유성펜으로 표시해요.")
         self.play(*[FadeIn(c.group) for c in cyls], *[FadeIn(o_) for o_ in ons], *[FadeIn(c_) for c_ in cots],
@@ -182,8 +182,8 @@ class S6Ep14(EpisodeScene):
                 ("빛을 받아 양분을 만들어요", False)]
         cards = VGroup()
         for t_, ok in rows:
-            cards.add(K.word_card(t_, 6.0, 0.85, INK, 28))
-        cards.arrange(DOWN, buff=0.22).move_to([3.95, 0.4, 0])
+            cards.add(K.word_card(t_, 6.0, 0.85, INK, 25))
+        cards.arrange(DOWN, buff=0.22).move_to([3.9, 0.4, 0])
         marks = VGroup(*[K.ox_mark(ok, 0.24).next_to(c_, LEFT, buff=0.12) for c_, (_, ok) in zip(cards, rows)])
         self.say("뿌리가 하는 일을 모두 골라 봐요", "뿌리가 하는 일을 모두 골라 봐요.")
         self.play(FadeIn(cards, lag_ratio=0.1), run_time=0.8)
@@ -200,7 +200,7 @@ class S6Ep14(EpisodeScene):
         t2 = K.tree_rooted(2.6, False)
         t2.shift([3.0, -0.2 - t2.tree.get_bottom()[1], 0])
         wind = K.wind_lines(-6.6, (1.2, 1.9, 2.5), 1.8)
-        q = M("‘뿌리 깊은 나무는 바람에 흔들리지 않는다.’", 30).move_to([1.9, 2.88, 0])
+        q = M("‘뿌리 깊은 나무는 바람에 흔들리지 않는다.’", 30).move_to([1.5, 2.88, 0])
         self.say("‘뿌리 깊은 나무는 바람에 흔들리지 않는다’", "뿌리 깊은 나무는 바람에 흔들리지 않는다. 이 말을 뿌리가 하는 일과 연관 지어 볼까요?")
         self.play(FadeIn(soil), FadeIn(t1), FadeIn(t2), FadeIn(q), run_time=0.8)
         self.play(FadeIn(wind, shift=RIGHT), run_time=0.5)

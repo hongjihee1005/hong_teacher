@@ -169,7 +169,7 @@ class S6Ep26(EpisodeScene):
         self.play(FadeIn(sun, scale=0.5), Create(vl), run_time=0.7)
         self.settle()
         card = K.text_card([f"태양이 {o('남중')}했다: 하루 중 태양 고도가 가장 높을 때",
-                            f"이때의 태양 고도 = {g('태양의 남중 고도')}"], size=32).move_to([0, 1.65, 0])
+                            f"이때의 태양 고도 = {g('태양의 남중 고도')}"], size=30).move_to([0, 0.45, 0])
         self.say(f"이때 태양이 {o('남중')}했다고 하고, 그 고도를 {g('남중 고도')}라고 해요",
                  "이때 태양이 남중했다고 하며, 이때의 태양 고도를 태양의 남중 고도라고 해요.")
         self.play(FadeIn(card), Flash(sun, color=ORANGE), run_time=0.8)
@@ -242,7 +242,7 @@ class S6Ep26(EpisodeScene):
         self.say("생활 속 문제예요", "그림자밟기 놀이를 할 때, 그림자를 밟기 가장 어려운 때는 언제일까요?")
         self.play(FadeIn(q), FadeIn(opts, lag_ratio=0.2), run_time=0.9)
         self.pause_screen(4, "언제일까요?")
-        ok = K.ox_mark(True, 0.6).move_to(opts[1])
+        ok = K.ox_mark(True, 0.6).next_to(opts[1], DOWN, buff=0.25)
         self.say(f"태양 고도가 가장 높아 그림자가 {g('가장 짧은')} 12시 30분 무렵이에요",
                  "태양 고도가 가장 높아 그림자가 가장 짧은 오후 열두 시 삼십 분 무렵이에요.")
         self.play(Create(ok), Circumscribe(opts[1], color=GREEN), run_time=0.9)

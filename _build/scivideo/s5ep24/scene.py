@@ -150,12 +150,12 @@ class S5Ep24(EpisodeScene):
         mixA = K.layered(A, 1.8, 0.5)
         dish = K.E(2.6, 0.4, "#EEF8FD", 3.6, -1.6, K.GLASS, 3)
         dn = T("페트리 접시", 26).next_to(dish, DOWN, buff=0.1)
-        info = T("흡착포: 바다에 유출된 기름을 제거하는 데 이용하는 종이", 28, SOFT).move_to([0.3, 2.55, 0])
+        info = T("흡착포: 바다에 유출된 기름을 제거하는 데 이용하는 종이", 28, SOFT).move_to([1.0, 2.72, 0])
         self.say("다른 비커에는 흡착포를 핀셋으로 가볍게 대요",
                  "다른 비커의 물과 기름 혼합물은 흡착포로 분리해요. 흡착포는 바다에 유출된 기름을 제거하는 데 이용하는 종이예요. 핀셋으로 흡착포를 가볍게 대 봐요.")
         self.play(FadeIn(mixA), FadeIn(A.glass()), FadeIn(dish), FadeIn(dn), FadeIn(info), run_time=0.7)
         pd = K.pad().move_to([-1.8, 1.25, 0])
-        tw = K.tweezers(1.0).rotate(1.1).next_to(pd, UP, buff=-0.05)
+        tw = K.tweezers(0.85).rotate(1.1).next_to(pd, UP, buff=-0.05)
         tool = VGroup(pd, tw)
         self.play(FadeIn(tool), run_time=0.3)
         self.pause_screen(5, "흡착포에 무엇이 흡수될까요?")
@@ -169,7 +169,7 @@ class S5Ep24(EpisodeScene):
             self.play(tool.animate.move_to([3.2 + 0.4 * k, -0.9, 0]), run_time=0.5)
             used.add(K.pad(K.OIL, 0.7).rotate(0.2 * k - 0.2).move_to([3.0 + 0.45 * k, -1.5, 0]))
             self.add(used[-1])
-            new = VGroup(K.pad().move_to([-1.8, 1.25, 0]), K.tweezers(1.0).rotate(1.1))
+            new = VGroup(K.pad().move_to([-1.8, 1.25, 0]), K.tweezers(0.85).rotate(1.1))
             new[1].next_to(new[0], UP, buff=-0.05)
             self.remove(tool)
             pd, tw = new[0], new[1]

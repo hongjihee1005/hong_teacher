@@ -51,7 +51,7 @@ class S6Ep28(EpisodeScene):
         self.section("궁금해요")
         a = K.stage_light(35, w=5.6, cx=-3.2, y=-1.6)
         b = K.stage_light(90, w=5.6, cx=3.2, y=-1.6)
-        la = K.label("비스듬히 비출 때", INK, 28).move_to([-2.9, 2.5, 0])
+        la = K.label("비스듬히 비출 때", INK, 28).move_to([-2.6, 2.5, 0])
         lb = K.label("수직으로 비출 때", INK, 28).move_to([3.2, 2.5, 0])
         self.say("배우가 밝게 보이려면 조명을 어떻게 비춰야 할까요?", "무대 위 배우가 밝게 보이려면 조명을 어떻게 비춰야 할까요?")
         self.play(FadeIn(a), FadeIn(la), run_time=0.7)
@@ -70,7 +70,7 @@ class S6Ep28(EpisodeScene):
     def prepare(self):
         self.section("실험 준비")
         names = ["스마트 기기", "빨판 달린 막대", "LED 손전등", "자"]
-        cards = VGroup(*[K.word_card(n, w=2.9, h=0.9, size=28) for n in names]).arrange(RIGHT, buff=0.25).move_to([0, 2.3, 0])
+        cards = VGroup(*[K.word_card(n, w=2.9, h=0.9, size=28) for n in names]).arrange(RIGHT, buff=0.25).move_to([0, 2.1, 0])
         self.say("준비물이에요", "준비물은 스마트 기기, 빨판 달린 막대, 발광 다이오드 손전등, 자예요.")
         self.play(FadeIn(cards, lag_ratio=0.15), run_time=0.9)
         st = K.steps_row(["빛의 세기 측정\n앱 실행", "카메라 센서 가까이\n빨판 막대 세우기", "약 20 cm에서 비추고\n그림자 짧을 때·길 때 재기"],
@@ -107,8 +107,8 @@ class S6Ep28(EpisodeScene):
         self.play(Indicate(a.arc, color=RED), Indicate(b.arc, color=RED), FadeIn(ka), FadeIn(kb), run_time=1.0)
         self.settle()
         self.pause_screen(5, "빛의 세기는 언제 더 셀까요?")
-        ma = K.light_meter(K.lux(A), w=2.3, h=1.3, size=44).move_to([-1.0, 1.0, 0])
-        mb = K.light_meter(K.lux(B), w=2.3, h=1.3, size=44).move_to([5.6, 1.0, 0])
+        ma = K.light_meter(K.lux(A), w=2.75, h=1.3, size=44).move_to([-1.0, 1.0, 0])
+        mb = K.light_meter(K.lux(B), w=2.75, h=1.3, size=44).move_to([5.45, 1.0, 0])
         ex = T("(화면 숫자는 앱 가상 실험의 예)", 22, SOFT).move_to([0, -2.35, 0])
         self.say(f"각이 클 때 숫자가 더 커요 — 빛이 더 {o('세요')}",
                  "조도 측정기의 숫자가 클수록 빛이 세요. 각이 클 때 숫자가 더 커서 빛이 더 세요.")
@@ -192,7 +192,7 @@ class S6Ep28(EpisodeScene):
         self.play(FadeIn(bgB), FadeIn(b), FadeIn(tb), run_time=0.8)
         self.play(FadeIn(cb), run_time=0.5)
         self.settle()
-        hot = K.text_card([f"그래서 여름은 {r('덥고')}, 겨울은 {g('추워요')}"], size=30).move_to([0, -1.95, 0])
+        hot = K.text_card([f"그래서 여름은 {r('덥고')}, 겨울은 {g('추워요')}"], size=28, pad=0.22).move_to([0, -2.15, 0])
         self.say(f"그래서 여름에는 {r('덥고')} 겨울에는 {g('추워요')}",
                  "그래서 여름에는 지표면이 받는 태양 에너지양이 많아 덥고, 겨울에는 적어 추워요.")
         self.play(FadeOut(ca), FadeOut(cb), FadeIn(hot, scale=0.9), run_time=0.6)
