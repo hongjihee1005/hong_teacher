@@ -21,7 +21,7 @@ from data_routines import R, BY_ID
 from data_more import STAGES
 
 ST = {s['n']: s for s in STAGES}
-VOICE = {'kid': ('ko-KR-SunHiNeural', '-4%'), 'teacher': ('ko-KR-InJoonNeural', '+0%')}
+VOICE = {'kid': ('ko-KR-SunHiNeural', '-4%'), 'teacher': ('ko-KR-SunHiNeural', '+0%')}
 PAUSE = 0.45
 TTS_PY = os.environ.get('TTS_PY', shutil.which('python3.13') or sys.executable)
 CA = '/root/.ccr/ca-bundle.crt'   # 이 작업 환경의 프록시 인증서(없으면 기본 인증서)

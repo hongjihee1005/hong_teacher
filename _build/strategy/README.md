@@ -39,7 +39,7 @@ python3 _build/strategy/kids.py      # → _build/strategy/standalone/
 python3 _build/strategy/video/make.py 출력폴더 [사고전략 id …] [--kid|--teacher]
 ```
 
-- 사고전략마다 학생용(약 2분, 여자 목소리 SunHi)·교사용(약 4~5분, 남자 목소리 InJoon) mp4와 자막(.srt)·대본(.md)을 만듭니다. 대본은 `data_routines.py`에서 저절로 만들어집니다.
+- 사고전략마다 학생용(약 2분, 여자 목소리 SunHi)·교사용(약 4~5분, 같은 여자 목소리 SunHi, 보통 빠르기) mp4와 자막(.srt)·대본(.md)을 만듭니다. 대본은 `data_routines.py`에서 저절로 만들어집니다.
 - 화면 `slide.html`(1920×1080, Pretendard·Noto Color Emoji) → `render.js`(Playwright로 장면 찍기) → edge-tts 목소리 → ffmpeg로 묶기.
 - 컴퓨터 목소리 edge-tts는 마이크로소프트 Edge 읽어 주기 음성을 쓰는 **비공식 도구**입니다. 영상을 공개하기 전에 쓰임이 괜찮은지 확인하세요.
 - mp4는 저장소에 넣지 않습니다.
