@@ -109,6 +109,7 @@
 
 ## 다음 할 일
 - **AI 음성(2026-11-25 선생님 요청, 방법 '나'):** 나레이션을 MeloTTS 한국어(MIT, `/opt/ttsenv` — python3.11 venv, `pip install torch torchaudio --index-url …/cpu` + `git+https://github.com/myshell-ai/MeloTTS.git`, apt `mecab libmecab-dev mecab-ipadic-utf8`, `python -m unidic download`, nltk `cmudict`·`averaged_perceptron_tagger(_eng)`는 `NLTK_ALLOW_PROXIED_URLOPEN=1`)로 읽고, **음성 길이만큼 장면을 기다리게 다시 렌더링**(`VOICE=1`, series_style.voice_time). 숫자·단위 읽기 `tts_norm.py`, 음성 캐시·얹기 `tts_episode.py`(빠르기 1.1, 음성 −16 LUFS), 한 편 `./make_voice.sh <편>` → `<편>_final_voice.mp4`, 전체 `./run_voice_all.sh 목록파일`(3편씩, 로그 media/voice_logs). 영상이 10~15% 길어짐(26화 2:53 → 3:13).
+  **(2026-11-25) 선생님이 'MeloTTS 목소리가 별로'라 하셔서 제작을 멈춤** — 21편(6학년 26화, 3학년 1~15·17화, 마인드맵 1~3)만 MeloTTS로 됨, s3ep18·s3mm04·s3ep19는 렌더링 중 멈춤. 목소리를 바꾸면 길이가 달라지므로 처음부터 다시 만들어야 함. 다른 목소리를 고르는 중.
 - **(2026-11-03) 앱이 있는 단원은 모두 완성(개념 148편 중 앱 있는 편 + 마인드맵).** 남은 것: 4-2 1단원·6-2 3단원(지도서 PDF를 읽지 못해 앱이 없음) — 앱이 생기면 같은 방식으로. 공통에 옮기면 좋을 부품(천문 하늘 그림 kit_s6u14·s6u21, 연소 kit_s6u22, 마지막 편 closing kit_s6u24.NoNextClosing)은 정리 거리.
 - **(2026-11-03) 선생님 '일시 정지'로 6-1 2·3·4단원 제작을 멈춤.** 2단원 s6ep07~12·s6mm02, 3단원 s6ep13~19·s6mm03은 최종본이 모두 있으나 장면 사진 확인이 끝나지 않음(2단원은 10화, 3단원은 18화를 보던 중). 4단원 s6ep20~24는 저화질 미리보기만 있고 최종본·s6mm04 없음.
   (2026-11-03 두 번째 일시 정지) 다시 맡겼다가 또 멈춤: 2단원은 12화 확인 차례, 3단원은 13화부터 다시 보던 중. s6ep09·11·14·16·17·20·21 장면 파일과 kit_s6u12.py를 고쳤으나 **다시 렌더링하지 않았을 수 있음** — 다시 시작하면 최종본이 장면 파일보다 오래된 편은 다시 만들 것.
