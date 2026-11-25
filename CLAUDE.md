@@ -112,6 +112,9 @@ grade1/ … grade6/
 - **`labs.html`을 직접 고치지 마세요.** 학습 목표·준비물·실험 순서·안전·성취기준은 두 학기 원본 `lessons_uN.py`(교사 안내 `notes0`, 실험 단계 `lab`의 `list`·`safe`)에서 저절로 읽고, 차시마다 실험 종류·목표와 이어지는 점·미리 할 일·대신 쓸 것은 `_build/labguide/prep.py`에 손으로 씁니다(지도서에 없는 내용은 '(이 자료)').
   **과학 홍지희 버전에 차시를 더하면 `prep.py`에도 한 줄 넣으세요**(없으면 빌드가 멈춤). 고친 뒤 `python3 _build/labguide/build.py && python3 _build/theme/apply_content_theme.py`(자동 보완 `run_all.py`에도 들어 있음 — 과학 원본이 바뀌어도 다시 만듦, `build.py check`는 점검만).
 - 과학은 검정 교과서라 공통 덮개가 화면에서 교과서 쪽수를 숨깁니다(그래서 성취기준을 함께 보여 줌). 클래스 앞글자 `lg-`.
+- **4~6학년 실험 준비 길잡이(2026-11-25 선생님 요청):** `grade4|5|6/science/labs.html`(과학방 '🧪 실험 준비 길잡이 · 선생님용' 카드, 탐구 실험관 다음) — 4학년 46차시·5학년 52·6학년 45, 3학년과 같은 화면(거르기·준비 끝 `hj-labguide-g<학년>-v1`·인쇄 두 가지·`#tb<학년><학기>-uN-M`으로 바로 열기, 주소만 바뀌어도(hashchange) 그 학기를 엶 — 3학년도 같음). 4-2 1단원·6-2 3단원은 지도서가 없어 '곧 열려요'. 카드마다 교과서 버전 앱·(4학년 1학기) 홍지희 버전·탐구 실험관 링크.
+  **원본은 교과서 버전 앱 `gradeN/science/_build_tb/src/`·`src2/uN-M.html` + 탐구 실험관 `_build/explore/gN*/src/data.js`(실험 순서·준비물) + 손으로 쓰는 `_build/labguide/prepN.py`(kind·why·lead·tip·ex·prep·steps·notool, 원본에 없는 내용은 '(이 자료)', 지도서 글은 넣지 않음). 4학년 1학기 성취기준·지도서 준비물은 홍지희 버전 `lessons_uN.py`에서.** 빌드 `tb.py`·`page_tb.html`·`page_tb.css`(page.css 뒤): `python3 _build/labguide/build.py [3 4 5 6]`(인자 없으면 모두, `check`는 점검만) → `apply_content_theme.py gradeN/science/labs.html`(자동 보완 `run_all.py`에도 들어 있음). **labs.html 직접 고치지 말 것.**
+  tb.py 읽는 규칙: 단추 안 글·태그 속성 값은 읽지 않음, 문단을 표시 글자로 나눠 ⚠️→안전·💡/🗓️→알아 두기(※·그 밖의 이모지 뒤는 버림), 화면 안내 문장(`SCREEN_RE`·`SAFE_OUT_RE`: 예시 값·어림값·연습 화면 등)은 문장째 뺌, 인라인 태그는 빈칸 없이 지움, 준비물은 ' · '·'. ' 앞까지, 실험관 안전 장비 묶음은 나누고 겹치는 이름은 뺌, 정리·결과·예상 같은 부분은 '대표 실험'에서 뺌. 학년별 '며칠 걸리는 실험' 머리말은 tb.py `LONG`. 인쇄는 카드가 상자 경계에서 쪽이 나뉘고 준비물은 여러 칸(1학기 차시 인쇄 4학년 19·5학년 19·6학년 20쪽) — 인쇄를 고치면 학년·학기마다 PDF 쪽 수를 다시 잴 것. 학년마다 작성자와 다른 검토자가 원본과 대조해 고침. 덮개를 입히는 곳에 fonttools·brotli가 있어야 이모지 글꼴 블록이 남음.
 
 ### 3학년 과학 탐구 체험관 (`grade3/science/explore/`, 2026-10-27~, 시험판)
 
