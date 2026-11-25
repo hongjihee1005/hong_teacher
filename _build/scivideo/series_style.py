@@ -314,7 +314,8 @@ class EpisodeScene(Scene):
         if ep.width > 13:
             ep.scale_to_fit_width(13)
         ep.move_to([0, -0.9, 0])
-        bar = Line(LEFT * 5.5, RIGHT * 5.5, stroke_color=self.accent, stroke_width=8).move_to([0, 0.05, 0])
+        half = max(5.5, VGroup(mag, series).width / 2, ep.width / 2) + 0.3   # 위 제목·아래 화 제목보다 조금 길게(2026-11-25 선생님 요청)
+        bar = Line(LEFT * half, RIGHT * half, stroke_color=self.accent, stroke_width=8).move_to([0, 0.05, 0])
         kind = T(f"{self.GRADE}학년 · {self.st['name']}", 34, self.accent).next_to(bar, DOWN, buff=1.45)
         op_narr = f"{self.SERIES}, {self.ep_label()}. {self.EP_TITLE}"
         self._log.append((t0, "오프닝", f"「{self.SERIES}」 {self.ep_label()}: {self.EP_TITLE}", op_narr))
