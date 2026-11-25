@@ -54,11 +54,18 @@
   });
   window.addEventListener('afterprint', function () { document.body.classList.remove('lg-plist'); });
 
-  // 주소의 #차시(예: #sci32-u2-l5)로 열면 그 학기·카드로
-  var h = decodeURIComponent(location.hash.slice(1)), t = h && document.getElementById(h);
-  if (t && t.classList.contains('lg-card')) { st.s = t.dataset.s; st.u[st.s] = '0'; st.hand = false; }
-  show();
-  if (t && t.classList.contains('lg-card')) setTimeout(function () { t.scrollIntoView(); }, 50);
+  // 주소의 #차시(예: #sci32-u2-l5)로 열면 그 학기·카드로 (이미 연 쪽에서 주소만 바뀌어도)
+  function openHash() {
+    var h = '';
+    try { h = decodeURIComponent(location.hash.slice(1)); } catch (e) { h = location.hash.slice(1); }
+    var t = h && document.getElementById(h);
+    if (!t || !t.classList.contains('lg-card')) return false;
+    st.s = t.dataset.s; st.u[st.s] = '0'; st.hand = false; show();
+    setTimeout(function () { t.scrollIntoView(); }, 50);
+    return true;
+  }
+  if (!openHash()) show();
+  window.addEventListener('hashchange', openHash);
   // 미리 할 일 목록의 링크: 그 학기 전체를 보이게 한 뒤 이동
   $('.lg-tl a').forEach(function (a) {
     a.addEventListener('click', function () { var c = document.getElementById(a.getAttribute('href').slice(1)); if (c) { st.u[c.dataset.s] = '0'; st.hand = false; show(); } });

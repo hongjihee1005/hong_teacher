@@ -30,12 +30,24 @@ from prep import WHEN  # 3학년과 같은 때 이름
 KINDS = {'실험': '🧪', '측정': '📏', '관찰': '🔍', '조사': '💻', '만들기': '🛠️', '기르기': '🌱', '토의': '💬', '실천': '🤝'}
 HANDS = {'실험', '측정', '관찰', '기르기'}  # '손으로 하는 탐구만' 거르기
 SEMNAME = {1: '1학기', 2: '2학기'}
+# 머리말의 '며칠 걸리는 실험' 예 (학년마다 prepN.py의 '며칠 전'·'일주일 전'·'단원 전' 할 일에서 고름)
+LONG = {4: '<b>며칠 걸리는 실험</b>(물의 증발 관찰, 버섯·곰팡이 기르기, 해캄 구하기 등)은',
+        5: '<b>날을 골라야 하거나 미리 갖출 것이 많은 실험</b>(햇빛이 드는 날 하는 빛 실험·햇빛과 그늘의 온도 재기, 레이저 지시기·퇴적암 표본·손난로 갖추기 등)은',
+        6: '<b>며칠 걸리는 실험</b>(용액에 넣은 물질 일주일 관찰, 파 뿌리 3일 관찰, 백합 줄기·포일 씌운 잎 하루 전 준비, 맑은 날 하루 동안 태양 관찰 등)은'}
 EXP_RE = re.compile(r'^(실험해요|관찰해요|탐구해요|모형실험|실험하기(?! 전)|같은 주제 다른 탐구)')
 SKIP_RE = re.compile(r'^(형성|스스로|함께|한눈에|평가)')  # 평가 부분은 읽지 않음
 NUM_RE = re.compile(r'^[①-⑳]\s*')
 LEAD_RE = re.compile(r'^\W+')
 esc = lambda s: html.escape(s, quote=True)
-txt = lambda h: re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', h))).strip()
+INLINE = r'(?:a|abbr|b|bdi|code|em|i|mark|q|s|small|span|strong|sub|sup|u|ruby|rt)'
+
+
+def txt(h):
+    """태그를 지운 글: 글자 안에 붙는 태그(b·span 등)는 빈칸 없이, 그 밖의 태그(p·br·div …)는 빈칸으로"""
+    h = re.sub(r'</?' + INLINE + r'\b[^>]*>', '', h)
+    return re.sub(r'\s+', ' ', html.unescape(re.sub(r'<[^>]+>', ' ', h))).strip()
+
+
 norm = lambda s: re.sub(r'[\s,·()（）/]', '', s)
 EX_JS = r"""
 const fs=require('fs'),vm=require('vm'),out={};
@@ -65,6 +77,47 @@ def split_items(s):
     return [x.strip().rstrip('.') for x in out if x.strip().rstrip('.')]
 
 
+TAG_RE = re.compile(r"""<(/?)([a-zA-Z][\w-]*)(?:\s+(?:"[^"]*"|'[^']*'|[^'">])*)?\s*/?>""")
+BLOCK_RE = re.compile(r'<(?:/?(?:p|div|li|ul|ol|h\d|table|tr|td|th|section|figure|figcaption|details|summary)|br)\b[^>]*>')
+MARK_RE = re.compile(r'(⚠️?|💡|🗓️?|※|[\U0001F300-\U0001FAFF\u2600-\u27BF\u2B50\u23E9-\u23FA]\ufe0f?)')
+# 안전·알아 두기에 들어가면 안 되는 '이 화면' 안내 문장 (안전에는 아래 둘 다, 알아 두기에는 SCREEN_RE만)
+SCREEN_RE = re.compile(r'(그림을 위한|꾸민 것|흉내 낸|연습용|연습 화면|그림으로 대신|이 화면|이 자료에서 그린|대강의 위치|▶를|영상처럼 봐요)')
+SAFE_OUT_RE = re.compile(r'(예시 ?값|예시를 따른|어림값|^실제 (?:측정)?값은|조사하지 않아도|만들어도 좋아요|^준비물\s*[:：])')
+NOTEXP_NAV = re.compile(r'(정리|결과|기록|예상|관련|그래프|장단점|까닭|정체|뜻할|기준 정하기|분리 방법|이용할 성질|하는 일|운동하는 물체|빠르기 비교|비교해요|모형과 우리 몸)')
+NOTEXP_NAME = re.compile(r'(관련지어|정리해요|기록해요|예상하기|예상해요|이야기해요|나타내요$|기준을 정해요)')
+FRONT_RE = re.compile(r'^(도우미|도움말|참고)\s*[:：]\s*')
+
+
+def plain_tags(h):
+    """태그의 속성을 지움(속성 값 안의 ⚠️·💡·'준비물:'을 읽지 않게)"""
+    return TAG_RE.sub(lambda m: f'<{m.group(1)}{m.group(2).lower()}>', h)
+
+
+DROPPED = []  # 점검용: 뺀 문장
+
+
+def drop_sentences(t, bad):
+    """글을 문장(마침표 뒤 빈칸·' · ')으로 나눠 bad에 걸리는 문장을 뺌"""
+    parts = re.split(r'(\s+·\s+|(?:(?<=[.!?])|(?<=[.!?]\)))\s+(?=\S))', t)
+    keep = []
+    for i in range(0, len(parts), 2):
+        sent = parts[i].strip()
+        if not sent: continue
+        if bad.search(sent): DROPPED.append(sent); continue
+        keep.append((parts[i - 1] if i and keep else '', sent))
+    return ''.join(sep + x for sep, x in keep).strip(' ·')
+
+
+def marked(chunk):
+    """한 문단을 표시 글자로 나눔 → [(표시, 글)] (표시가 없는 앞부분은 '')"""
+    t = txt(chunk)
+    parts = MARK_RE.split(t)
+    out = [('', parts[0].strip())]
+    for i in range(1, len(parts), 2):
+        out.append((parts[i].rstrip('\ufe0f'), parts[i + 1].strip()))
+    return out
+
+
 def parse_src(path):
     s = path.read_text(encoding='utf-8')
     m = re.match(r'\s*<!--(.*?)-->', s, re.S)
@@ -83,22 +136,33 @@ def parse_src(path):
         h2 = re.search(r'<h2[^>]*>(.*?)</h2>', b, re.S)
         name = txt(h2.group(1)) if h2 else sm.group(1)
         if SKIP_RE.match(stage) or SKIP_RE.match(sm.group(1)): continue
+        # 단추 안 글·속성 값은 읽지 않음 (화면에서 눌러야 나오는 글)
+        b = plain_tags(re.sub(r'<button\b.*?</button>', ' ', b, flags=re.S))
         prep = []
         for pm in re.finditer(r'준비물\s*[:：](.*?)(?:<br|</p>|</div>|</li>)', b, re.S):
             t = txt(pm.group(1)).split(' · ')[0]
+            t = re.split(r'(?<![\d.])\.\s', t)[0]  # '면장갑. 실험 순서대로 …' 같은 문장 꼬리
             prep += split_items(t)
-        safe, note = [], []
-        for wm in re.finditer(r'⚠️(.*?)(?=</p>|</div>|</li>|<br|$)', b, re.S):
-            t = txt(wm.group(1)).split('※')[0].strip()
-            t, _, n = t.partition('💡')
-            if t.strip(): safe.append(t.strip())
-            if n.strip(): note.append(n.strip())
         is_exp = bool(EXP_RE.match(stage) or EXP_RE.match(sm.group(1)) or (prep and stage.startswith('활동해요')))
-        if is_exp:  # 실험 부분의 따로 있는 '💡 …' (짧은 단추 글·예시 보기는 뺌)
-            for nm in re.finditer(r'💡(.*?)(?=</p>|</div>|</li>|<br|$)', b, re.S):
-                t = txt(nm.group(1))
-                if len(t) >= 12 and '예시' not in t and t not in note and not any(t in x for x in safe): note.append(t)
-        secs.append(dict(nav=sm.group(1), stage=stage, name=name, prep=prep, safe=safe, note=note, exp=is_exp))
+        rep = is_exp and not NOTEXP_NAV.search(sm.group(1)) and not NOTEXP_NAME.search(name) and not re.search(r'정리해요|관련짓기', stage)
+        safe, note = [], []
+        for chunk in BLOCK_RE.split(b):
+            if not re.search(r'⚠|💡|🗓', chunk): continue
+            segs = marked(chunk)
+            has_warn = any(k.startswith('⚠') for k, _ in segs)
+            for k, t in segs:
+                if not t: continue
+                if k.startswith('⚠'):
+                    t = drop_sentences(t, re.compile(SCREEN_RE.pattern + '|' + SAFE_OUT_RE.pattern))
+                    if t: safe.append(t)
+                elif k in ('💡', '🗓'):
+                    t = drop_sentences(FRONT_RE.sub('', t), SCREEN_RE)
+                    if not t: continue
+                    # 따로 있는 '💡 …'은 실험 부분의 긴 글만 (짧은 단추 글·예시 보기는 뺌), 🗓️은 어디서나
+                    if k == '💡' and not has_warn and not (is_exp and len(t) >= 12 and '예시' not in t): continue
+                    if t not in note: note.append(t)
+                # 그 밖의 표시(※, 🖍️·🗺️ 같은 화면 안내)와 표시 앞 글은 버림
+        secs.append(dict(nav=sm.group(1), stage=stage, name=name, prep=prep, safe=safe, note=note, exp=is_exp, rep=rep))
     return meta, secs
 
 
@@ -157,6 +221,27 @@ def lessons(g):
     return LS, SOON, P
 
 
+GEAR = ['햇빛 보안경', '레이저 보안경', '실험용 장갑', '안전 장갑', '면장갑', '실험복', '보안경', '마스크', '장갑']
+GEAR_RE = re.compile(r'\s*(' + '|'.join(GEAR) + r')(?=\s|[·,]|와\s|과\s|$)\s*(?:[·,]|와\s|과\s)?\s*')
+COUNT_RE = re.compile(r'\s*(?:\d+|한|두|세|네|다섯|여섯)\s*(?:개|장|대|쌍|병|벌)$')
+
+
+def split_gear(t):
+    """'실험복 보안경 실험용 장갑'·'마스크와 보안경'처럼 안전 장비만 이어 적은 항목을 나눔 (다른 것이 섞이면 그대로)"""
+    out, i = [], 0
+    while i < len(t):
+        m = GEAR_RE.match(t, i)
+        if not m or m.end() == i: return [t]
+        out.append(m.group(1)); i = m.end()
+    return out or [t]
+
+
+def base(t):
+    """'홈판 2개'·'홈판과 뚜껑' → '홈판' (겹침 견주기용)"""
+    t = COUNT_RE.sub('', t.strip())
+    return norm(re.split(r'(?:와|과)\s', t)[0])
+
+
 def gather(L):
     """한 차시의 준비물 묶음·안전·알아 두기·실험 이름·실험 순서"""
     P = L['P'] or {}
@@ -164,23 +249,26 @@ def gather(L):
     for sc in L['secs']:
         if sc['prep']:
             groups.append((sc['name'], sc['prep'])); alltxt += norm(''.join(sc['prep']))
-    extra = []
+    extra, bases = [], set()
+    notool = set(P.get('notool', []))
     for x in L['exs']:
-        for t in (x['e'] or {}).get('tools', []):
-            if norm(t) in alltxt or t in extra: continue
-            toks = [re.sub(r'(가|이|에|을|를|은|는)$', '', w) for w in re.split(r'[\s·,()와과]+', t)]
-            toks = [w for w in toks if len(w) >= 2]
-            if toks and all(w in alltxt for w in toks): continue  # 낱말이 모두 앱 준비물에 있으면 같은 것으로 봄
-            extra.append(t)
+        for t0 in (x['e'] or {}).get('tools', []):
+            for t in split_gear(t0):
+                if t in notool or t0 in notool: continue
+                if norm(t) in alltxt or base(t) in bases: continue
+                toks = [re.sub(r'(가|이|에|을|를|은|는)$', '', w) for w in re.split(r'[\s·,()와과]+', t)]
+                toks = [w for w in toks if len(w) >= 2]
+                if toks and all(w in alltxt for w in toks): continue  # 낱말이 모두 앱 준비물에 있으면 같은 것으로 봄
+                extra.append(t); bases.add(base(t))
     if extra: groups.append(('탐구 실험관에서 더 쓰는 것' if groups else '탐구 실험관 준비물', extra))
-    if P.get('prep'): groups.append(('더 챙길 것', P['prep']))
+    if P.get('prep'): groups.append(('더 챙길 것' if groups else '준비물', P['prep']))
     safe, note = [], []
     for sc in L['secs']:
         for t in sc['safe']:
             if t not in safe: safe.append(t)
         for t in sc['note']:
-            if t not in note: note.append(t)
-    exps = [sc['name'] for sc in L['secs'] if sc['exp']]
+            if t not in note and not any(t in y for y in safe): note.append(t)
+    exps = [sc['name'] for sc in L['secs'] if sc['rep']]
     steps = [(f"탐구 실험관 실험 {x['no']} · {x['e']['name']}", x['e']['how']) for x in L['exs'] if x['e'] and x['e'].get('how')]
     for nm, lst in P.get('steps', []): steps.append((nm + ' (이 자료)', lst))
     return groups, safe, note, exps, steps
@@ -282,7 +370,7 @@ def must_replace(s, a, b, what):
     return s.replace(a, b)
 
 
-def build(g, LS, SOON):
+def build(g, LS, SOON, P):
     rd = lambda f: f.read_text(encoding='utf-8')
     OUT = ROOT / f'grade{g}' / 'science' / 'labs.html'
     cards, tls, ubtns = '', '', ''
@@ -309,7 +397,8 @@ def build(g, LS, SOON):
     n_ex = sum(1 for L in LS if L['exs'])
     hs = sorted({L['s'] for L in LS if L['hong']})
     hong_txt = ('·홍지희 선생님 버전 수업(' + '·'.join(SEMNAME[x] for x in hs) + ')') if hs else ''
-    rep = {'HONGTXT': hong_txt, 'CARDS': cards, 'TL': tls, 'UBTNS': ubtns, 'G': str(g), 'NALL': str(len(LS)), 'NHAND': str(n_hand), 'NEX': str(n_ex),
+    hongprep = '·홍지희 선생님 버전 교사 안내(' + '·'.join(SEMNAME[x] for x in sorted(getattr(P, 'HONG', {}))) + ')' if getattr(P, 'HONG', None) else ''
+    rep = {'HONGTXT': hong_txt, 'HONGPREP': hongprep, 'LONG': LONG[g], 'CARDS': cards, 'TL': tls, 'UBTNS': ubtns, 'G': str(g), 'NALL': str(len(LS)), 'NHAND': str(n_hand), 'NEX': str(n_ex),
            'NS1': str(sum(1 for L in LS if L['s'] == 1)), 'NS2': str(sum(1 for L in LS if L['s'] == 2)), 'SOON': soon_txt,
            'CSS': rd(HERE / 'page.css') + rd(HERE / 'page_tb.css'), 'APP': app, 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': foot, 'HOMEFRAG': rd(OG / 'home.html').replace('{HOME}', '../../index.html')}
@@ -328,4 +417,4 @@ def main(g, only_check):
     if bad: print('\n'.join(bad)); sys.exit(f'{g}학년 실험 준비 길잡이 점검 실패')
     print(f'{g}학년 실험 준비 길잡이 점검 통과 (차시 {len(LS)}개' + (f', 곧 열려요 단원 {len(SOON)}개' if SOON else '') + ')')
     if only_check: return
-    print(f'{g}학년 실험 준비 길잡이 ' + ('다시 만듦' if build(g, LS, SOON) else '바뀐 것 없음') + f': grade{g}/science/labs.html')
+    print(f'{g}학년 실험 준비 길잡이 ' + ('다시 만듦' if build(g, LS, SOON, P) else '바뀐 것 없음') + f': grade{g}/science/labs.html')
