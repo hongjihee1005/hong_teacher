@@ -1,8 +1,11 @@
 #!/usr/bin/env python3
 """3학년 과학 실험 준비 길잡이(선생님용) 만들기 (2026-10-09)
 
-    python3 _build/labguide/build.py          # grade3/science/labs.html (먼저 점검)
-    python3 _build/labguide/build.py check    # 점검만
+    python3 _build/labguide/build.py          # 있는 학년 모두(3학년 + prep4·5·6.py가 있는 학년), 먼저 점검
+    python3 _build/labguide/build.py 4        # 4학년만 (여러 학년: 3 4)
+    python3 _build/labguide/build.py check    # 점검만 (check 4 → 4학년만)
+
+4~6학년은 교과서 버전 앱 원본에서 읽는 tb.py가 만듭니다(설명은 tb.py 맨 위).
 
 학습 목표·준비물·실험 순서·안전은 두 학기 원본에서 저절로 읽습니다:
   1학기 grade3/science/_build_hong/lessons_uN.py · 2학기 grade3/science/_build_hong2/lessons_uN.py
@@ -171,14 +174,28 @@ def build(LS):
            'HOMEFRAG': rd(OG / 'home.html').replace('{HOME}', '../../index.html')}
     s = re.sub(r'\{([A-Z0-9]+)\}', lambda m: rep.get(m.group(1), m.group(0)), rd(HERE / 'page.html'))
     old = OUT.read_text(encoding='utf-8') if OUT.exists() else ''
-    strip = lambda t: re.sub(r'<!--hj-c(?:theme|icons)-->.*?<!--/hj-c(?:theme|icons)-->', '', t, flags=re.S)
+    strip = lambda t: re.sub(r'<!--hj-(c(?:theme|icons)|emfont)-->.*?<!--/hj-\1-->', '', t, flags=re.S)
     if strip(old) == s: return False
     OUT.write_text(s, encoding='utf-8'); return True
 
-if __name__ == '__main__':
+def main3(only_check):
     LS = lessons()
     bad = check(LS)
     if bad: print('\n'.join(bad)); sys.exit('실험 준비 길잡이 점검 실패')
     print(f'실험 준비 길잡이 점검 통과 (차시 {len(LS)}개)')
-    if sys.argv[1:] == ['check']: sys.exit(0)
+    if only_check: return
     print('실험 준비 길잡이 ' + ('다시 만듦' if build(LS) else '바뀐 것 없음') + ': grade3/science/labs.html')
+
+if __name__ == '__main__':
+    args = sys.argv[1:]
+    only_check = 'check' in args
+    grades = [int(a) for a in args if a.isdigit()]
+    bad_args = [a for a in args if a != 'check' and not (a.isdigit() and int(a) in (3, 4, 5, 6))]
+    if bad_args: sys.exit('알 수 없는 인자: ' + ' '.join(bad_args) + ' (학년 3~6, check)')
+    if not grades:  # 인자 없으면 있는 학년 모두 (4~6학년은 prepN.py가 있을 때)
+        grades = [3] + [g for g in (4, 5, 6) if (HERE / f'prep{g}.py').exists()]
+    for g in grades:
+        if g == 3: main3(only_check)
+        else:
+            import tb
+            tb.main(g, only_check)
