@@ -36,7 +36,7 @@ class GcEp80(ConceptScene):
         self.play(FadeIn(cen), Create(circ), run_time=1.0)
         rs = VGroup(*[Line(c, c + 1.5 * np.array([np.cos(a), np.sin(a), 0]), color=BLUE, stroke_width=5) for a in (0.3, 1.6, 2.6, 4.0, 5.2)])
         self.play(Create(rs, lag_ratio=0.2), run_time=0.9)
-        t = M(f"중심과 원 위의 점을 이은 선분: {b('반지름')}\n반지름은 모두 {b('길이가 같아요')}", 40).move_to([2.9, 0.6, 0])
+        t = M(f"중심과 원 위의 점을 이은 선분: {b('반지름')}\n반지름은 모두 {b('길이가 같아요')}", 36).move_to([2.6, 0.6, 0])
         self.say(f"{b('반지름')}은 모두 같아요", "중심과 원 위의 한 점을 이은 선분을 반지름이라고 해요. 한 원에서 반지름은 모두 길이가 같아요.")
         self.play(FadeIn(t), run_time=0.5)
         self.wait(1.2)
