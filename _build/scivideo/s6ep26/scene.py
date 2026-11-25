@@ -100,7 +100,7 @@ class S6Ep26(EpisodeScene):
     def method(self):
         self.section("재는 방법")
         gn = K.gnomon(40, 1.3, x0=-3.9, y0=-1.1, deg_label="태양 고도", size=26, board_w=3.6, sun_d=1.9)
-        ln = K.label("그림자 길이: 자로", SOFT, 24).move_to([gn.get_center()[0] + 0.6, -1.62, 0])
+        ln = K.label("그림자 길이: 자로", SOFT, 24).move_to([gn.get_center()[0] + 0.6, -1.58, 0])
         steps = K.text_card(["① 평평한 곳에 측정기를 놓아요",
                              "② 그림자가 자와 나란하게 해요",
                              "③ 각도기 중심을 그림자 끝에 맞춰 각을 읽어요",
@@ -115,7 +115,7 @@ class S6Ep26(EpisodeScene):
                  "기온은 햇빛이 드는 땅바닥이 아니라, 그늘진 곳의 높이 일 점 오 미터 정도에서 온도계로 재요.")
         self.play(FadeIn(tm), run_time=0.6)
         self.settle()
-        warn = K.safety_note("태양 빛에 눈을 다칠 수 있어요. 태양을 직접 보지 않고, 모자를 써요", w=12.4, size=27).move_to([0, -2.15, 0])
+        warn = K.safety_note("태양 빛에 눈을 다칠 수 있어요. 태양을 직접 보지 않고, 모자를 써요", w=12.4, size=25).move_to([0, -2.3, 0])
         self.say(f"태양을 {r('직접 보지 않아요')}", "태양 빛에 눈을 다칠 수 있으므로 태양을 직접 보지 않아요. 야외 활동 뒤에는 손을 씻어요.")
         self.play(FadeIn(warn), run_time=0.5)
         self.settle()
