@@ -132,8 +132,25 @@ def plain(markup):
 READ_RATE = 6.0     # 나레이션 읽는 빠르기(1초에 글자 수, 띄어쓰기 뺌) — 어린이용으로 느긋하게
 
 
+VOICE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "voice_cache")
+
+
+def voice_key(narr):
+    import hashlib
+    return hashlib.sha1(re.sub(r"\s+", " ", narr).strip().encode("utf-8")).hexdigest()[:16]
+
+
+def voice_len(narr):
+    """'선희' 나레이션(voice.py가 만든 voice_cache/키.mp3)이 있으면 그 길이(초), 없으면 0"""
+    p = os.path.join(VOICE_DIR, voice_key(narr) + ".len")
+    try:
+        return float(open(p).read())
+    except Exception:
+        return 0.0
+
+
 def read_time(narr):
-    return len(re.sub(r"\s", "", narr)) / READ_RATE + 0.4
+    return max(len(re.sub(r"\s", "", narr)) / READ_RATE + 0.4, voice_len(narr) + 0.45 if voice_len(narr) else 0.0)
 
 
 # 글자 크기 (1920×1080 기준, 교실 뒷자리에서 보이게)
@@ -278,7 +295,8 @@ class EpisodeScene(Scene):
         self.play(FadeIn(mag, scale=0.6), run_time=0.8)
         self.play(Write(series), Create(bar, run_time=0.8), run_time=1.2)
         self.play(FadeIn(ep, shift=UP * 0.3), run_time=0.8)
-        self.wait(max(0.0, 5.0 - 0.6 - (self.now() - t0)))
+        op_narr = f"수학 원리 돋보기, {self.ep_label()}. {self.EP_TITLE}"
+        self.wait(max(0.0, max(5.0, voice_len(op_narr) + 0.5) - 0.6 - (self.now() - t0)))
         self.play(FadeOut(VGroup(mag, series, ep, bar)), run_time=0.6)
 
     # ── 생각해 보세요 멈춤 화면 ──
@@ -339,16 +357,18 @@ class EpisodeScene(Scene):
         series = T(f"「{self.SERIES}」 {self.ep_label()}", 34, SOFT)
         logo_l = VGroup(mag, series).arrange(RIGHT, buff=0.3).to_corner(DL, buff=0.45)
         logo = logo_l
-        self._log.append((t0, "마무리", plain(summary_markup),
-                          plain(summary_markup)))
+        sum_narr = plain(summary_markup)
+        nxt_narr = f"다음 화에서는 {next_preview}"
+        t_next = t0 + max(4.5, voice_len(sum_narr) + 0.4)
+        t_end = max(10.0, (t_next - t0) + (voice_len(nxt_narr) + 0.5 if next_preview else 0.0) + 0.8)
+        self._log.append((t0, "마무리", sum_narr, sum_narr))
         if next_preview:
-            self._log.append((t0 + 4.5, "마무리", f"다음 화 예고: {next_preview}",
-                              f"다음 화에서는 {next_preview}"))
+            self._log.append((t_next, "마무리", f"다음 화 예고: {next_preview}", nxt_narr))
         self.play(FadeIn(head, shift=DOWN * 0.2), FadeIn(logo), run_time=0.6)
         self.play(FadeIn(box, scale=0.95), run_time=0.9)
-        self.wait(3.0)
+        self.wait(max(0.1, (t_next - 0.6) - self.now()))
         self.play(FadeIn(nxt, shift=UP * 0.2), run_time=0.6)
-        self.wait(max(0.0, 10.0 - 0.8 - (self.now() - t0)))
+        self.wait(max(0.0, t_end - 0.8 - (self.now() - t0)))
         self.play(FadeOut(VGroup(head, box, nxt, logo)), run_time=0.8)
 
     # ── 렌더링이 끝나면 나레이션 원고 쓰기 ──

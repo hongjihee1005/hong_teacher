@@ -5,7 +5,7 @@
 set -e
 cd "$(dirname "$0")"
 EP=${1:?폴더 이름(예: gfep03)}
-SRC="$EP/${EP}_final_bgm_piano.mp4"
+SRC="$EP/${EP}_final_${THUMB_SRC:-bgm_piano}.mp4"   # THUMB_SRC=voice → 음성 넣은 판에 썸네일
 PNG="thumbs/$EP.png"
 OUT="$EP/${EP}_final_thumb.mp4"
 HOLD=2.0
