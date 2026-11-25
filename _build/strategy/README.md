@@ -32,3 +32,14 @@ python3 _build/strategy/kids.py      # → _build/strategy/standalone/
 - 저장소 `hongjihee1005/thinking-tools`(https://hongjihee1005.github.io/thinking-tools/)가 `repo/.github/workflows/sync.yml`로 한 시간마다 `standalone/`을 가져갑니다.
 - 학생용 안내·활동지만 남기고(교사용 탭 제거), 첫 화면은 과목·탐구 단계에서 도구를 고르는 아이용 화면입니다. 자료실로 가는 링크는 넣지 않습니다(`kids.py`가 점검).
 - 데이터를 고치면 `build.py`와 `kids.py`를 둘 다 돌리세요.
+
+## 설명 동영상 (2026-11-25, 시험판)
+
+```bash
+python3 _build/strategy/video/make.py 출력폴더 [사고전략 id …] [--kid|--teacher]
+```
+
+- 사고전략마다 학생용(약 2분, 여자 목소리 SunHi)·교사용(약 4~5분, 남자 목소리 InJoon) mp4와 자막(.srt)·대본(.md)을 만듭니다. 대본은 `data_routines.py`에서 저절로 만들어집니다.
+- 화면 `slide.html`(1920×1080, Pretendard·Noto Color Emoji) → `render.js`(Playwright로 장면 찍기) → edge-tts 목소리 → ffmpeg로 묶기.
+- 컴퓨터 목소리 edge-tts는 마이크로소프트 Edge 읽어 주기 음성을 쓰는 **비공식 도구**입니다. 영상을 공개하기 전에 쓰임이 괜찮은지 확인하세요.
+- mp4는 저장소에 넣지 않습니다.
