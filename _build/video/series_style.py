@@ -270,11 +270,13 @@ class EpisodeScene(Scene):
         if ep.width > 13:
             ep.scale_to_fit_width(13)
         ep.move_to([0, -0.9, 0])
-        bar = Line(LEFT * 5.5, RIGHT * 5.5, stroke_color=BLUE, stroke_width=8).move_to([0, 0.05, 0])
+        # 가로줄: 제목·화 이름보다 넉넉히 길게(화면 거의 끝까지) — 잘린 느낌이 들지 않게 (2026-11-25 선생님 요청)
+        half = min(6.7, max(6.3, VGroup(mag, series).width / 2 + 0.8, ep.width / 2 + 0.5))
+        bar = Line(LEFT * half, RIGHT * half, stroke_color=BLUE, stroke_width=8).move_to([0, 0.05, 0])
         self._log.append((t0, "오프닝", f"「{self.SERIES}」 {self.ep_label()}: {self.EP_TITLE}",
                           f"수학 원리 돋보기, {self.ep_label()}. {self.EP_TITLE}"))
         self.play(FadeIn(mag, scale=0.6), run_time=0.8)
-        self.play(Write(series), Create(bar), run_time=1.2)
+        self.play(Write(series), Create(bar, run_time=0.8), run_time=1.2)
         self.play(FadeIn(ep, shift=UP * 0.3), run_time=0.8)
         self.wait(max(0.0, 5.0 - 0.6 - (self.now() - t0)))
         self.play(FadeOut(VGroup(mag, series, ep, bar)), run_time=0.6)
