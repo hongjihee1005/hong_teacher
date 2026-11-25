@@ -306,5 +306,7 @@ class NoNextClosing:
         self._log.append((t0, "마무리", plain(summary_markup), plain(summary_markup)))
         self.play(FadeIn(head, shift=DOWN * 0.2), FadeIn(logo), run_time=0.6)
         self.play(FadeIn(box, scale=0.95), run_time=0.9)
-        self.wait(max(0.0, 10.0 - 0.8 - (self.now() - t0)))
+        from series_style import VOICE, voice_time
+        total = max(10.0, voice_time(plain(summary_markup)) + 1.0) if VOICE else 10.0
+        self.wait(max(0.0, total - 0.8 - (self.now() - t0)))
         self.play(FadeOut(VGroup(head, box, logo)), run_time=0.8)

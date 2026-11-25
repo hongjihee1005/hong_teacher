@@ -131,6 +131,29 @@ def read_time(narr):
     return len(re.sub(r"\s", "", narr)) / READ_RATE + 0.4
 
 
+# AI 음성(2026-11-25 선생님 요청 '나': 목소리 길이에 맞춰 장면을 다시 만듦)
+# VOICE=1로 렌더링하면 media/tts_cache/index.json(정리한 글 → 음성 길이, tts_episode.py prep이 만듦)의 길이로 기다림.
+VOICE = os.environ.get("VOICE") == "1"
+VOICE_PAD = 0.5     # 음성 앞(0.1)·뒤 여유
+_VCACHE = None
+
+
+def voice_time(narr):
+    """이 나레이션을 다 읽는 데 걸리는 시간 — 음성이 있으면 음성 길이, 없으면 글자 수로 어림"""
+    global _VCACHE
+    if VOICE:
+        if _VCACHE is None:
+            import json
+            p = os.path.join(os.path.dirname(os.path.abspath(__file__)), "media", "tts_cache", "index.json")
+            _VCACHE = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {}
+        from tts_norm import normalize
+        d = _VCACHE.get(normalize(narr))
+        if d:
+            return d + VOICE_PAD
+        print(f"[음성 없음] {narr}")
+    return read_time(narr)
+
+
 # 글자 크기 (1920×1080 기준, 교실 뒷자리에서 보이게)
 SUB_SIZE = 46       # 자막
 BIG = 120           # 큰 숫자·식
@@ -227,7 +250,7 @@ class EpisodeScene(Scene):
         self.settle()
         narr = narration if narration is not None else plain(markup)
         self._log.append((self.now(), self._section, plain(markup), narr))
-        self._need_until = self.now() + read_time(narr)
+        self._need_until = self.now() + voice_time(narr)
         new = self.make_sub(markup)
         if self._sub is None:
             self.play(FadeIn(new, shift=UP * 0.15), run_time=0.4)
@@ -293,12 +316,13 @@ class EpisodeScene(Scene):
         ep.move_to([0, -0.9, 0])
         bar = Line(LEFT * 5.5, RIGHT * 5.5, stroke_color=self.accent, stroke_width=8).move_to([0, 0.05, 0])
         kind = T(f"{self.GRADE}학년 · {self.st['name']}", 34, self.accent).next_to(bar, DOWN, buff=1.45)
-        self._log.append((t0, "오프닝", f"「{self.SERIES}」 {self.ep_label()}: {self.EP_TITLE}",
-                          f"{self.SERIES}, {self.ep_label()}. {self.EP_TITLE}"))
+        op_narr = f"{self.SERIES}, {self.ep_label()}. {self.EP_TITLE}"
+        self._log.append((t0, "오프닝", f"「{self.SERIES}」 {self.ep_label()}: {self.EP_TITLE}", op_narr))
         self.play(FadeIn(mag, scale=0.6), run_time=0.8)
         self.play(Write(series), Create(bar), run_time=1.2)
         self.play(FadeIn(ep, shift=UP * 0.3), FadeIn(kind), run_time=0.8)
-        self.wait(max(0.0, 5.0 - 0.6 - (self.now() - t0)))
+        op_len = max(5.0, voice_time(op_narr) + 0.3) if VOICE else 5.0
+        self.wait(max(0.0, op_len - 0.6 - (self.now() - t0)))
         self.play(FadeOut(VGroup(mag, series, ep, bar, kind)), run_time=0.6)
 
     # ── 생각해 보세요 멈춤 화면 ──
@@ -306,6 +330,8 @@ class EpisodeScene(Scene):
         self.settle()
         self._log.append((self.now(), self._section, msg,
                           "잠시 멈추고, 옆 친구와 이야기해 보세요."))
+        if VOICE:
+            seconds = max(seconds, voice_time("잠시 멈추고, 옆 친구와 이야기해 보세요.") + 1.0)
         cover = Rectangle(width=16, height=9, fill_color=self.bg, fill_opacity=0.93, stroke_width=0)
         icon = VGroup(
             RoundedRectangle(corner_radius=0.12, width=0.42, height=1.5, fill_color=self.accent, fill_opacity=1, stroke_width=0),
@@ -362,14 +388,20 @@ class EpisodeScene(Scene):
         logo = logo_l
         self._log.append((t0, "마무리", plain(summary_markup),
                           plain(summary_markup)))
+        t_next = max(4.5, voice_time(plain(summary_markup)) + 0.1) if VOICE else 4.5
+        total = 10.0
         if next_preview:
-            self._log.append((t0 + 4.5, "마무리", f"다음 영상: {next_preview}",
+            self._log.append((t0 + t_next, "마무리", f"다음 영상: {next_preview}",
                               f"다음 영상은 {next_preview}"))
+            if VOICE:
+                total = max(10.0, t_next + voice_time(f"다음 영상은 {next_preview}") + 1.0)
+        elif VOICE:
+            total = max(10.0, t_next + 1.0)
         self.play(FadeIn(head, shift=DOWN * 0.2), FadeIn(logo), run_time=0.6)
         self.play(FadeIn(box, scale=0.95), run_time=0.9)
-        self.wait(3.0)
+        self.wait(max(0.0, t_next - 0.6 - (self.now() - t0)))
         self.play(FadeIn(nxt, shift=UP * 0.2), run_time=0.6)
-        self.wait(max(0.0, 10.0 - 0.8 - (self.now() - t0)))
+        self.wait(max(0.0, total - 0.8 - (self.now() - t0)))
         self.play(FadeOut(VGroup(head, box, nxt, logo)), run_time=0.8)
 
     # ── 렌더링이 끝나면 나레이션 원고 쓰기 ──

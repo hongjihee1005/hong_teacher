@@ -133,13 +133,17 @@ class MindMapScene(EpisodeScene):
         self.clear_sub()
         self.hide_chip()
         self._section = "완성"
-        self._log.append((self.now(), "완성", "완성된 마인드맵", "마인드맵이 완성되었어요. 가지를 따라가며 배운 내용을 다시 읽어 보세요."))
+        done_narr = "마인드맵이 완성되었어요. 가지를 따라가며 배운 내용을 다시 읽어 보세요."
+        self._log.append((self.now(), "완성", "완성된 마인드맵", done_narr))
+        from series_style import voice_time
+        self._need_until = self.now() + voice_time(done_narr)
         head = T("완성!", 48, self.accent).to_edge(DOWN, buff=0.45)
         self.play(self.map.animate.scale(1.0), FadeIn(head), run_time=0.6)
         for g_ in self.map[1:]:
             self.play(Indicate(g_[1], scale_factor=1.12), run_time=0.45)
         self.wait(2.0)
         self.play(FadeOut(head), run_time=0.3)
+        self.settle()
         self.talk(10)
         self.play(FadeOut(self.map), run_time=0.6)
 
@@ -148,7 +152,11 @@ class MindMapScene(EpisodeScene):
         from manim import ValueTracker, always_redraw, linear
         from series_style import SUB_Y, SUB_H
         msg = "잠시 멈추고, 마인드맵을 보며 배운 내용을 말해 보세요"
-        self._log.append((self.now(), "완성", msg, "잠시 멈추고, 마인드맵을 보며 배운 내용을 친구에게 말해 보세요."))
+        talk_narr = "잠시 멈추고, 마인드맵을 보며 배운 내용을 친구에게 말해 보세요."
+        self._log.append((self.now(), "완성", msg, talk_narr))
+        from series_style import VOICE, voice_time
+        if VOICE:
+            seconds = max(seconds, voice_time(talk_narr) + 1.5)
         band = RoundedRectangle(corner_radius=0.25, width=13.7, height=SUB_H, fill_color=PAPER, fill_opacity=0.97,
                                 stroke_color=self.accent, stroke_width=5).move_to([0, SUB_Y, 0])
         txt = T(msg, 38, self.accent).move_to(band).shift(LEFT * 0.55)
