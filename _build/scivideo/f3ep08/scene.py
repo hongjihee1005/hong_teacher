@@ -37,11 +37,11 @@ ICE = "#CFEAF7"
 
 # 그림 위 자리(원본 1920×1080 픽셀) — 그림이 들어오면 열어 보고 맞춤
 P = {
-    "bear_fur": (1150, 430), "bear_body": (1000, 560),
-    "rein_hoof1": (720, 960), "rein_hoof2": (1260, 960),
-    "peng_group": (960, 580),
-    "camel_hump": (1000, 300), "camel_eye": (420, 330),
-    "fox_earL": (700, 200), "fox_earR": (1220, 200),
+    "bear_fur": (1100, 420), "bear_body": (1050, 520),
+    "rein_hoof1": (870, 1005), "rein_hoof2": (1490, 1010),
+    "peng_group": (950, 560),
+    "camel_hump": (1150, 150), "camel_eye": (468, 145),
+    "fox_earL": (760, 170), "fox_earR": (1130, 170),
 }
 
 
