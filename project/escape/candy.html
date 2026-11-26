@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="ko"><head><meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>과자 가게 탈출 · 수학 방탈출 · 수학게임 · 기타 · 초등교사 홍지희</title>
-<meta name="description" content="달콤한 과자 가게에 갇혔어요! 진열대마다 걸린 숫자 자물쇠를 풀어 가게 문을 열어요.">
+<meta name="description" content="과자를 고르다 보니 가게 문이 닫혀 버렸어요! 사탕 가게와 쿠키 창고를 둘러보며 단서를 모아 출구 문을 열어요.">
 <style>:root{--bg:#FFF8F0;--paper:#fff;--ink:#2A221C;--soft:#5C5047;--line:#EADCCB;--acc:#E5534B;--ok:#2E9E5B;--bad:#D0453B;
  --display:'Jua','Apple SD Gothic Neo','Malgun Gothic',sans-serif;--body:'Gowun Dodum','Apple SD Gothic Neo','Malgun Gothic',sans-serif;box-sizing:border-box}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#1E1A17;--paper:#2A2420;--ink:#F4ECE3;--soft:#CDBFB1;--line:#4A3F37}}
@@ -41,37 +41,87 @@ h2{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.4vw,26px);m
 .tolist{display:none;align-items:center;gap:8px;font-family:var(--display,sans-serif);font-size:clamp(18px,1.8vw,22px);text-decoration:none;color:inherit;border:3px solid var(--line);background:var(--paper);border-radius:999px;padding:8px 22px}
 .tolist.on{display:inline-flex}
 @media print{.tl-gnav,.tl-bar,.tl-how,.creditbar,.hj-nav,.hj-navbar,#hj-home{display:none!important}@page{size:A4;margin:12mm}}
-.es-start{display:flex;flex-direction:column;align-items:center;gap:10px;padding:20px}.es-intro{font-size:clamp(20px,2.4vw,26px);text-align:center;margin:0;max-width:30em}
-.es-go{font-size:22px;padding:10px 28px}
-.es-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:8px 16px;width:100%}
-.es-bar{display:flex;gap:6px}.es-dot{display:flex;flex-direction:column;align-items:center;font-size:26px;opacity:.45}.es-dot small{font-size:12px;color:var(--soft)}.es-dot.es-ok,.es-dot.es-now{opacity:1}.es-now{transform:scale(1.15)}
-.es-time{font-family:var(--display);font-size:20px}.es-over{color:var(--bad)}.es-hc{font-size:15px;color:var(--soft)}
-.es-lock{width:100%;max-width:720px;border:3px solid var(--acc);border-radius:22px;padding:14px 18px;background:color-mix(in srgb,var(--acc) 5%,var(--paper));display:flex;flex-direction:column;align-items:center;gap:8px}
-.es-door{border-style:double;border-width:6px}
+/* 수학 방탈출 2 (2026-11-26) — 방 그림 · 가방 · 수첩 · 크게 보기 창 · 자물쇠 */
+.es-start{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 4px 20px;width:100%}
+.es-cover{width:100%;max-width:900px;border-radius:16px;display:block}
+.es-intro{font-size:clamp(19px,2.2vw,24px);text-align:center;margin:0;max-width:34em;line-height:1.55}
+.es-rules{margin:0;padding:12px 18px 12px 34px;background:var(--paper);border:2px solid var(--line);border-radius:14px;max-width:640px;font-size:16px;line-height:1.7}
+.es-go{font-size:22px;padding:10px 30px}
+.es-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;width:100%}
+.es-time{font-family:var(--display);font-size:19px}.es-over{color:var(--bad)}
+.es-prog{font-size:16px}.es-hc{font-size:15px;color:var(--soft)}
+.es-tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;width:100%}
+.es-tab{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:5px 16px;font-size:16px;font-weight:700;cursor:pointer}
+.es-tab[aria-selected="true"]{background:var(--acc);border-color:var(--acc);color:#fff}.es-tab:disabled{opacity:.5;cursor:not-allowed}
+.es-main{display:grid;grid-template-columns:minmax(0,1fr) 230px;gap:12px;width:100%;align-items:start}
+@media (max-width:820px){.es-main{grid-template-columns:1fr}}
+.es-room{min-width:0}
+.es-scene{width:100%;display:block;border-radius:14px;border:3px solid #3A2C22;background:#fff}
+.es-obj{cursor:pointer;outline:none}
+.es-hot{fill:transparent;stroke:transparent;stroke-width:4}
+.es-obj:hover .es-hot,.es-obj:focus-visible .es-hot{stroke:#FFE27A;fill:rgba(255,226,122,.12)}
+.es-obj.es-done{opacity:.92}
+.es-pulse .es-hot{stroke:#E5534B;stroke-dasharray:10 6;animation:espl 1s linear infinite}@keyframes espl{to{stroke-dashoffset:-32}}
+.es-say{margin:6px 2px 0;font-size:17px;color:var(--soft);min-height:1.6em}.es-say.es-hint{color:var(--acc);font-weight:700}
+.es-side{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:8px 10px;display:flex;flex-direction:column;gap:4px}
+.es-side h3{margin:4px 0 2px;font-size:16px}.es-side h3 small{color:var(--soft);font-weight:500}
+.es-inv{display:flex;flex-wrap:wrap;gap:6px}
+.es-it{display:flex;flex-direction:column;align-items:center;gap:2px;width:94px;border:2px solid var(--line);border-radius:12px;background:var(--paper);padding:4px;cursor:pointer;font-size:13px;line-height:1.25}
+.es-it[aria-pressed="true"]{border-color:var(--acc);background:color-mix(in srgb,var(--acc) 14%,var(--paper));box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 30%,transparent)}
+.es-iv{width:38px;height:38px}
+.es-notes{display:flex;flex-direction:column;gap:4px}
+.es-nt{text-align:left;border:1.5px solid var(--line);border-radius:10px;background:#FFFDF4;padding:5px 9px;font-size:14px;cursor:pointer}
+.es-empty{margin:0;color:var(--soft);font-size:14px}
+.es-modal{position:fixed;inset:0;z-index:80;background:rgba(20,16,12,.55);display:flex;align-items:center;justify-content:center;padding:12px}
+.es-modal[hidden]{display:none}
+.es-card{background:var(--paper);color:var(--ink);border-radius:18px;max-width:980px;width:100%;max-height:calc(100vh - 24px);overflow:auto;box-shadow:0 20px 60px rgba(0,0,0,.35)}
+.es-chd{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-bottom:2px solid var(--line);position:sticky;top:0;background:var(--paper);z-index:1}.es-chd b{font-size:20px}
+.es-cbody{display:grid;grid-template-columns:minmax(0,.85fr) minmax(0,1.15fr);gap:14px;padding:14px}
+@media (max-width:720px){.es-cbody{grid-template-columns:1fr}}
+.es-big{background:#F7F1E6;border-radius:14px;display:flex;align-items:center;justify-content:center;padding:8px;min-height:200px}.es-big svg{width:100%;max-height:340px}
+.es-ctext{display:flex;flex-direction:column;gap:10px;min-width:0}.es-solo{padding:14px}
+.es-look{margin:0;font-size:18px;line-height:1.6}
+.es-fig{width:100%;max-width:420px;max-height:300px;background:#fff;border:2px dashed var(--line);border-radius:12px;align-self:center}
+.es-need{background:color-mix(in srgb,#F2C230 14%,var(--paper));border-radius:12px;padding:10px 12px}.es-need p{margin:0 0 6px;font-size:17px}.es-try{color:var(--soft);font-size:15px}
+.es-inv2 .es-it{width:100px}
+.es-used{margin:0;color:var(--ok);font-weight:700}
+.es-after{background:color-mix(in srgb,var(--ok) 10%,var(--paper));border:2px solid color-mix(in srgb,var(--ok) 40%,var(--line));border-radius:12px;padding:10px 12px}.es-after p{margin:0 0 6px;font-size:17px;line-height:1.6}
+.es-lock{border:3px solid var(--acc);border-radius:16px;padding:12px;display:flex;flex-direction:column;gap:10px;align-items:center;background:color-mix(in srgb,var(--acc) 5%,var(--paper))}
+.es-lq{margin:0;font-size:18px;text-align:center;line-height:1.55}
+.es-dials{display:flex;gap:8px}
+.es-dial{display:flex;flex-direction:column;align-items:center;background:#2A2E35;border-radius:12px;padding:4px}
+.es-dial button{width:54px;height:36px;border:0;border-radius:8px;background:#4A5160;color:#fff;font-size:18px;cursor:pointer}
+.es-dial b{font-family:'Courier New',monospace;font-size:38px;color:#7CF29B;line-height:1.3}
+.es-slots{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+.es-slot{width:52px;height:52px;border:3px dashed var(--line);border-radius:12px;display:grid;place-items:center;background:#fff}
+.es-keys{display:flex;flex-wrap:wrap;gap:6px;justify-content:center}
+.es-key{min-width:58px;height:54px;border:2px solid var(--line);border-radius:12px;background:#fff;display:inline-flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;cursor:pointer;font-size:12px;padding:2px 8px}
+.es-key.es-del{font-size:14px;font-weight:700}
+.es-sw{display:inline-block;width:26px;height:26px;border-radius:50%;border:2px solid #3A2C22}
+.es-slot .es-sw{width:30px;height:30px}
+.es-msg{margin:0;min-height:1.4em;font-weight:700;color:var(--bad);text-align:center}
+.es-lh p{margin:4px 0;font-size:16px;background:color-mix(in srgb,#E0A21A 14%,var(--paper));border-radius:10px;padding:4px 10px}
+.es-lrow{justify-content:center}.es-teach{font-size:13px;opacity:.75}
 .es-shake{animation:esshake .4s}@keyframes esshake{25%{transform:translateX(-10px)}50%{transform:translateX(8px)}75%{transform:translateX(-5px)}}
-.es-story{margin:0;color:var(--soft);font-size:18px;text-align:center}.es-q{margin:0;font-family:var(--display);font-size:clamp(22px,2.8vw,32px);text-align:center;line-height:1.4}
-.es-clues{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:0}.es-clues span{background:var(--paper);border:2px solid var(--line);border-radius:999px;padding:2px 12px;font-size:16px}
-.es-in{display:flex;justify-content:center}.es-disp{display:inline-grid;place-items:center;min-width:180px;height:58px;border:3px solid var(--ink);border-radius:12px;background:#1E1A17;color:#7CF29B;font-family:'Courier New',monospace;font-size:36px;letter-spacing:6px}
-.es-pad{display:grid;grid-template-columns:repeat(3,72px);gap:6px}.es-k{height:56px;border:2px solid var(--line);border-radius:12px;background:var(--paper);font-family:var(--display);font-size:24px;box-shadow:0 3px 0 var(--line)}
-.es-k:active{transform:translateY(2px);box-shadow:none}.es-open{background:var(--acc);border-color:var(--acc);color:#fff;font-size:17px}
-.es-hints p{margin:4px 0;font-size:17px;background:color-mix(in srgb,#E0A21A 14%,var(--paper));border-radius:10px;padding:4px 10px}
-.es-win{display:flex;flex-direction:column;align-items:center;gap:6px;padding:20px;text-align:center}.es-big{font-family:var(--display);font-size:clamp(36px,5vw,56px);margin:0;color:var(--ok)}
+.es-toast{position:fixed;left:50%;bottom:28px;transform:translateX(-50%);z-index:90;background:#1E2430;color:#fff;padding:10px 20px;border-radius:999px;font-size:17px;font-weight:700;box-shadow:0 8px 24px rgba(0,0,0,.3);animation:estoast 2.2s forwards}@keyframes estoast{0%{opacity:0;transform:translate(-50%,10px)}10%,85%{opacity:1;transform:translate(-50%,0)}100%{opacity:0}}
+.es-win{display:flex;flex-direction:column;align-items:center;gap:6px;padding:6px 4px 20px;text-align:center;width:100%}.es-win p{margin:0;font-size:18px;max-width:34em}
+.es-bigt{font-family:var(--display);font-size:clamp(36px,5vw,56px)!important;color:var(--ok)}
+.es-stars{font-size:44px!important;color:#E0A21A;letter-spacing:4px}.es-stars i{font-style:normal;color:color-mix(in srgb,var(--line) 80%,transparent)}
 .fd-fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1.02;font-size:.8em;margin:0 2px}.fd-fr i{font-style:normal}.fd-fr i:first-child{border-bottom:2px solid currentColor;padding:0 2px}
+@media (prefers-reduced-motion:reduce){.es-pulse .es-hot,.es-toast,.es-shake{animation:none}}
 #esSheet{display:none}
 @page{size:A4;margin:14mm}
 @media print{
  html.es-printing body>*:not(#esSheet){display:none!important}
  html.es-printing,html.es-printing body{background:#fff!important}
- html.es-printing #esSheet{display:block;color:#000;font-size:11pt;line-height:1.45}
- #esSheet .ep-pg{display:flex;flex-direction:column;min-height:266mm;break-after:page}#esSheet .ep-pg:last-child{break-after:auto}
- #esSheet .ep-hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2pt solid #000;padding-bottom:2mm;margin-bottom:3mm}#esSheet .ep-hd b{font-size:17pt}
- #esSheet .ep-l{display:flex;gap:4mm;border:1.2pt solid #000;border-radius:3mm;padding:2.5mm 4mm;margin-bottom:2.5mm;break-inside:avoid}
- #esSheet .ep-l .ep-t{flex:1}#esSheet .ep-l p{margin:0 0 1mm}#esSheet .ep-s{color:#555;font-size:10.5pt}
- #esSheet .ep-work{min-height:13mm}
- #esSheet .ep-a{display:flex;flex-direction:column;align-items:center;justify-content:center;width:34mm;border:1.5pt solid #000;border-radius:2mm;font-size:10pt}
- #esSheet .ep-a i{display:block;width:28mm;height:10mm;border-bottom:1pt solid #000}
- #esSheet .ep-key td,#esSheet .ep-key th{border:1pt solid #000;padding:2mm 3mm;text-align:left;vertical-align:top}#esSheet .ep-key{border-collapse:collapse;width:100%}
+ html.es-printing #esSheet{display:block;color:#000;font-size:10.5pt;line-height:1.45}
+ #esSheet .ep-pg{break-after:page}#esSheet .ep-pg:last-child{break-after:auto}
+ #esSheet .ep-hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2pt solid #000;padding-bottom:2mm;margin-bottom:3mm}#esSheet .ep-hd b{font-size:16pt}
+ #esSheet .ep-key{border-collapse:collapse;width:100%}#esSheet .ep-key td,#esSheet .ep-key th{border:1pt solid #000;padding:1.6mm 2.4mm;text-align:left;vertical-align:top}#esSheet .ep-key th{background:#eee}
+ #esSheet .ep-key tr{break-inside:avoid}
 }
+.es-nbk{width:100%;border:2px solid var(--line);border-radius:12px;background:#FFFDF4;padding:4px 10px}.es-nbk summary{cursor:pointer;font-weight:700;padding:4px 0}
+.es-nbi{border-top:1.5px dashed var(--line);padding:6px 0}.es-nbi p{margin:2px 0;font-size:15px}.es-nbi .es-fig{max-width:300px;max-height:200px}
 
 /* 휴대폰 머리 줄이기(2026-10-29 디자인팀) */
 @media (max-width:600px){
@@ -2085,66 +2135,340 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
 }
 </style><!--/hj-ctheme--></head><body>
 <main>
-<nav class="tl-gnav" aria-label="다른 방"><a href="candy.html" aria-current="page">과자 가게 탈출</a><a href="toy.html">장난감 공장 탈출</a><a href="zoo.html">동물원 탈출</a><a href="library.html">학교 도서관 탈출</a><a href="space.html">우주선 탈출</a><a href="submarine.html">잠수함 탈출</a><a href="lab.html">과학실 탈출</a><a href="museum.html">수학 박물관 탈출</a><a href="castle.html">수학의 성 탈출</a></nav>
-<header class="tl-head"><span class="tl-ico" aria-hidden="true">🛒</span><div><h1>과자 가게 탈출</h1><p class="tl-desc">달콤한 과자 가게에 갇혔어요! 진열대마다 걸린 숫자 자물쇠를 풀어 가게 문을 열어요.</p><p class="tl-rec">추천 1~2학년 · 쉬움 · 덧셈·뺄셈·규칙·시각·모양 · 자물쇠 5개 + 마지막 문</p></div></header>
+<nav class="tl-gnav" aria-label="다른 방"><a href="candy.html" aria-current="page">과자 가게 탈출</a><a href="toy.html">장난감 공장 탈출</a><a href="zoo.html">동물원 탈출</a><a href="library.html">학교 도서관 탈출</a><a href="space.html">우주선 탈출</a></nav>
+<header class="tl-head"><span class="tl-ico" aria-hidden="true">🛒</span><div><h1>과자 가게 탈출</h1><p class="tl-desc">과자를 고르다 보니 가게 문이 닫혀 버렸어요! 사탕 가게와 쿠키 창고를 둘러보며 단서를 모아 출구 문을 열어요.</p><p class="tl-rec">추천 1~2학년 · 쉬움 · 수 세기·덧셈·뺄셈·몇 시·모양 규칙·방향·색깔 순서</p></div></header>
 <section class="tl-stage" id="tlStage" aria-label="방탈출">
-<div class="tl-bar"><span class="tl-bt" id="tlBarT"></span><span class="tl-sp"></span><button type="button" class="tl-btn" id="esPrint">🖨️ 종이로 하기(인쇄)</button><button type="button" class="tl-btn" id="tlFull">⛶ 크게 보기</button></div>
+<div class="tl-bar"><span class="tl-bt" id="tlBarT"></span><span class="tl-sp"></span><button type="button" class="tl-btn" id="esPrint">🖨️ 선생님용 풀이 흐름</button><button type="button" class="tl-btn" id="tlFull">⛶ 크게 보기</button></div>
 <div class="tl-host" id="tlHost"></div>
 </section>
-<details class="tl-how"><summary>이렇게 해요</summary><ul><li><b>탈출 시작</b>을 누르면 시간이 흘러요. 자물쇠마다 문제를 풀어 숫자를 누르고 <b>🔓 열기</b>(키보드 숫자·Enter도 돼요).</li><li>막히면 <b>💡 힌트</b>(자물쇠마다 2개). 힌트와 틀린 횟수는 위에 표시돼요.</li><li>자물쇠 5개를 다 열면 <b>마지막 문</b> — 앞에서 모은 답으로 비밀번호를 계산해요.</li><li>🖨️ <b>종이로 하기</b>: 문제지(답 칸·계산 칸)와 선생님용 정답지가 인쇄돼요. 모둠마다 한 장씩 풀고 답을 선생님께 확인받아요.</li></ul></details>
-<section class="tl-ideas"><h2>💡 수업에서 이렇게 써 보세요</h2><ul><li>전자칠판에 띄우고 반 전체가 모둠 대항으로: 먼저 답을 찾은 모둠이 나와 숫자를 눌러요.</li><li>학기 말·단원 정리 시간에 복습 활동으로(자물쇠마다 다른 단원).</li><li>힌트를 적게 쓰고 탈출한 모둠에게 ‘탈출 대장’ 칭호를!</li></ul></section>
+<details class="tl-how"><summary>이렇게 해요</summary><ul><li><b>탈출 시작</b>을 누르면 시간이 흘러요. 방 그림 속 <b>물건을 눌러</b> 크게 보고 살펴봐요. 단서가 있는 물건은 <b>수첩</b>에 저절로 남아요.</li><li>상자·서랍·금고 속에서 찾은 물건은 <b>가방</b>에 들어가요. 가방에서 물건을 고른 뒤 쓸 곳을 누르거나, 잠긴 물건을 크게 볼 때 나오는 단추로 바로 써요.</li><li>자물쇠는 <b>숫자 다이얼</b>(▲▼ 또는 키보드 숫자) · <b>방향</b>(화살표 단추 또는 방향키) · <b>색깔</b> · <b>모양</b> 네 가지예요. 한 곳의 문제만 풀어서는 안 열려요 — 여러 곳의 단서를 이어 붙여요. 자물쇠 창에서 <b>수첩 펼쳐 보기</b>로 모은 단서를 다시 볼 수 있어요.</li><li>방은 두 칸 이상이에요. 문이 열리면 위의 방 이름 단추로 오갈 수 있어요.</li><li>막히면 <b>어디를 볼까?</b>(다음에 살펴볼 물건이 깜빡여요)와 자물쇠마다 있는 <b>힌트 보기</b>. 힌트와 틀린 횟수가 적을수록 별이 많아요.</li><li>🖨️ <b>선생님용 풀이 흐름</b>: 풀이 차례·자물쇠 답·얻는 물건을 한 장으로 인쇄해요(진행을 도울 때).</li></ul></details>
+<section class="tl-ideas"><h2>💡 수업에서 이렇게 써 보세요</h2><ul><li>전자칠판에 띄우고 반 전체가 함께: 모둠마다 '살펴볼 물건'을 하나씩 맡아 단서를 찾아 말하고, 선생님이 자물쇠를 돌려요.</li><li>모둠마다 태블릿 한 대로 같은 방을 풀고 걸린 시간·별 수를 견줘 보기.</li><li>탈출한 뒤 수첩의 단서를 보며 '어떤 단서를 어떻게 이었는지' 말로 설명하기.</li><li>힌트를 적게 쓰고 탈출한 모둠에게 ‘탈출 대장’ 칭호를!</li></ul></section>
 <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>수학 문제로 자물쇠를 여는 방탈출 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
 </main>
-<div id="esSheet"><div class="ep-pg"><div class="ep-hd"><b>🔐 과자 가게 탈출</b><span>모둠 ______ 이름 ______________</span></div><p>달콤한 과자 가게에 갇혔어요! 진열대마다 걸린 숫자 자물쇠를 풀어 가게 문을 열어요. 문제를 풀어 답 칸에 쓰고, 마지막 문의 비밀번호를 찾아요.</p><div class="ep-l"><div class="ep-t"><p class="ep-s">🔒 1번 자물쇠 — 첫 번째 진열대는 사탕 바구니예요.</p><p><b>딸기 사탕 6개와 포도 사탕 5개가 있어요. 사탕은 모두 몇 개일까요?</b></p><div class="ep-work"></div></div><div class="ep-a">답<i></i></div></div><div class="ep-l"><div class="ep-t"><p class="ep-s">🔒 2번 자물쇠 — 두 번째 진열대에는 과자 상자에 수가 적혀 있어요.</p><p><b>1, 3, 5, 7, □ — □에 들어갈 수는?</b></p><div class="ep-work"></div></div><div class="ep-a">답<i></i></div></div><div class="ep-l"><div class="ep-t"><p class="ep-s">🔒 3번 자물쇠 — 세 번째 진열대 위에 시계가 있어요.</p><p><b>가게 문을 여는 시각에 긴바늘이 12, 짧은바늘이 9를 가리켜요. 몇 시일까요? (몇 시의 수만 써요)</b></p><div class="ep-work"></div></div><div class="ep-a">답<i></i></div></div><div class="ep-l"><div class="ep-t"><p class="ep-s">🔒 4번 자물쇠 — 네 번째 진열대에는 네모 모양 쿠키가 있어요.</p><p><b>네모 모양 쿠키가 3개 있어요. 쿠키의 뾰족한 꼭짓점은 모두 몇 개일까요?</b></p><div class="ep-work"></div></div><div class="ep-a">답<i></i></div></div><div class="ep-l"><div class="ep-t"><p class="ep-s">🔒 5번 자물쇠 — 다섯 번째 진열대는 젤리 통이에요.</p><p><b>젤리 19개 중 6개를 먹었어요. 남은 젤리는 몇 개일까요?</b></p><div class="ep-work"></div></div><div class="ep-a">답<i></i></div></div><div class="ep-l"><div class="ep-t"><p class="ep-s">🚪 마지막 문</p><p><b>가게 문 비밀번호 = (첫 번째 진열대의 답) + (세 번째 진열대의 답)</b></p><div class="ep-work"></div></div><div class="ep-a">비밀번호<i></i></div></div><p style="text-align:right;font-size:9pt;color:#555">수학 방탈출 · 초등교사 홍지희</p></div><div class="ep-pg"><div class="ep-hd"><b>🔑 과자 가게 탈출 · 선생님용 정답</b><span></span></div><table class="ep-key"><tr><th>자물쇠</th><th>답</th><th>풀이</th></tr><tr><td>1번</td><td><b>11</b></td><td>6 + 5 = 11 (6에 4를 더해 10, 10 + 1 = 11)</td></tr><tr><td>2번</td><td><b>9</b></td><td>2씩 커지는 규칙이라 7 + 2 = 9</td></tr><tr><td>3번</td><td><b>9</b></td><td>짧은바늘이 9, 긴바늘이 12이므로 9시</td></tr><tr><td>4번</td><td><b>12</b></td><td>네모 하나에 4개, 4 + 4 + 4 = 12</td></tr><tr><td>5번</td><td><b>13</b></td><td>19 − 6 = 13</td></tr><tr><td>마지막 문</td><td><b>20</b></td><td>가게 문 비밀번호 = (첫 번째 진열대의 답) + (세 번째 진열대의 답)</td></tr></table></div></div>
-<script>window.ER={"id":"candy","title":"과자 가게 탈출","intro":"달콤한 과자 가게에 갇혔어요! 진열대마다 걸린 숫자 자물쇠를 풀어 가게 문을 열어요.","locks":[{"story":"첫 번째 진열대는 사탕 바구니예요.","q":"딸기 사탕 6개와 포도 사탕 5개가 있어요. 사탕은 모두 몇 개일까요?","a":11,"hints":["6에서 7, 8, 9 … 하나씩 이어 세어 보세요.","6 + 4 = 10, 남은 1을 더하면?"],"sol":"6 + 5 = 11 (6에 4를 더해 10, 10 + 1 = 11)"},{"story":"두 번째 진열대에는 과자 상자에 수가 적혀 있어요.","q":"1, 3, 5, 7, □ — □에 들어갈 수는?","a":9,"hints":["수가 얼마씩 커지는지 살펴보세요.","2씩 커져요. 7 다음은?"],"sol":"2씩 커지는 규칙이라 7 + 2 = 9"},{"story":"세 번째 진열대 위에 시계가 있어요.","q":"가게 문을 여는 시각에 긴바늘이 12, 짧은바늘이 9를 가리켜요. 몇 시일까요? (몇 시의 수만 써요)","a":9,"hints":["짧은바늘이 가리키는 수가 ‘몇 시’예요.","긴바늘이 12를 가리키면 ‘정각’이에요."],"sol":"짧은바늘이 9, 긴바늘이 12이므로 9시"},{"story":"네 번째 진열대에는 네모 모양 쿠키가 있어요.","q":"네모 모양 쿠키가 3개 있어요. 쿠키의 뾰족한 꼭짓점은 모두 몇 개일까요?","a":12,"hints":["네모 모양 하나에는 뾰족한 꼭짓점이 몇 개 있나요?","4 + 4 + 4를 계산해요."],"sol":"네모 하나에 4개, 4 + 4 + 4 = 12"},{"story":"다섯 번째 진열대는 젤리 통이에요.","q":"젤리 19개 중 6개를 먹었어요. 남은 젤리는 몇 개일까요?","a":13,"hints":["19에서 6을 빼요.","낱개끼리 9 − 6 = 3, 10은 그대로 두면?"],"sol":"19 − 6 = 13"}],"final":{"q":"가게 문 비밀번호 = (첫 번째 진열대의 답) + (세 번째 진열대의 답)","a":20,"hint":"11 + 9를 계산해요.","story":"문이 열렸어요! 과자 가게를 탈출했어요! 🍬"}};
-/* 수학 방탈출: 자물쇠 5개 → 마지막 문. 자료 window.ER = 방 */
+<div id="esSheet"><div class="ep-pg"><div class="ep-hd"><b>과자 가게 탈출 · 선생님용 풀이 흐름</b><span>추천 1~2학년 · 쉬움 · 수 세기·덧셈·뺄셈·몇 시·모양 규칙·방향·색깔 순서</span></div><p>과자를 고르다 보니 가게 문이 닫혀 버렸어요! 사탕 가게와 쿠키 창고를 둘러보며 단서를 모아 출구 문을 열어요.</p><table class="ep-key"><tr><th>차례</th><th>곳 · 물건</th><th>할 일</th><th>답 · 풀이</th><th>얻는 것</th></tr><tr><td>1</td><td>사탕 가게 · 벽시계</td><td>살펴보기 — 가게 벽시계예요. 짧은바늘과 긴바늘을 잘 보세요. 지금 몇 시일까요?</td><td><b></b></td><td></td></tr><tr><td>2</td><td>사탕 가게 · 쿠키 무늬 포스터</td><td>살펴보기 — 쿠키 무늬가 규칙대로 놓여 있어요. 맨 끝은 ? 로 지워져 있어요. 어떤 모양이 되풀이될까요?</td><td><b></b></td><td></td></tr><tr><td>3</td><td>사탕 가게 · 사탕 진열대</td><td>살펴보기 — 알록달록한 진열대예요. 양쪽을 리본처럼 묶은 사탕, 노란 별 과자, 주황 곰 젤리가 있어요. 무엇이 몇 개인지 세어 볼까요?</td><td><b></b></td><td></td></tr><tr><td>4</td><td>사탕 가게 · 사탕 상자</td><td>숫자 자물쇠: 상자 뚜껑의 쪽지: 진열대에 있는 사탕은 모두 몇 개일까요? (별 과자와 곰 젤리는 빼요) 숫자 두 개를 맞춰요.</td><td><b>12</b><br><small>4 + 3 + 5 = 12</small></td><td>작은 열쇠</td></tr><tr><td>5</td><td>사탕 가게 · 서랍장</td><td>가방의 작은 열쇠 쓰기</td><td><b></b></td><td>동전</td></tr><tr><td>6</td><td>사탕 가게 · 창고 문</td><td>방향 자물쇠: 창고 문에 화살표 단추가 있어요. 창고 가는 길 그림을 보고, 가는 방향이 바뀌는 차례대로 화살표를 눌러요. (같은 쪽으로 여러 칸 가도 화살표는 하나)</td><td><b>↑ → → → ↑ → →</b><br><small>위로 1칸 → 오른쪽으로 2칸 → 위로 2칸 → 오른쪽으로 2칸이니 ↑ → ↑ →</small></td><td></td></tr><tr><td>7</td><td>쿠키 창고 · 주문 칠판</td><td>살펴보기 — 창고 칠판에 쿠키 진열장을 여는 방법이 적혀 있어요.</td><td><b></b></td><td></td></tr><tr><td>8</td><td>쿠키 창고 · 시럽 병</td><td>살펴보기 — 시럽 병 네 개에 계산식이 붙어 있어요. 병마다 계산하면 얼마일까요?</td><td><b></b></td><td></td></tr><tr><td>9</td><td>쿠키 창고 · 시럽 기계</td><td>가방의 동전 쓰기 / 색깔 자물쇠: 기계에 쪽지가 붙어 있어요: 시럽 병의 계산 값이 큰 것부터 그 병의 색 단추를 차례로 눌러요.</td><td><b>노랑 → 빨강 → 파랑 → 초록</b><br><small>노랑 9−1=8 → 빨강 3+4=7 → 파랑 10−4=6 → 초록 2+3=5</small></td><td>큰 열쇠</td></tr><tr><td>10</td><td>쿠키 창고 · 쿠키 진열장</td><td>숫자 자물쇠: 진열장 자물쇠에 숫자 하나를 맞춰요. 주문 칠판에 적힌 방법대로 계산해요.</td><td><b>9</b><br><small>시계 4시, 초록 사탕 5개 → 4 + 5 = 9</small></td><td>톱니바퀴</td></tr><tr><td>11</td><td>쿠키 창고 · 쿠키 기계</td><td>가방의 톱니바퀴 쓰기 / 모양 자물쇠: 구울 쿠키 모양을 정해요. 가게 포스터의 ? 자리부터 규칙대로 쿠키 모양 세 개를 차례로 눌러요.</td><td><b>○ → ○ → ♡</b><br><small>♡ ○ ○ 가 되풀이되므로 ? 자리부터 ○ ○ ♡</small></td><td></td></tr><tr><td>12</td><td>쿠키 창고 · 쿠키 쟁반</td><td>살펴보기 — 갓 구운 하트 쿠키가 쟁반에 놓여 있어요. 몇 개인지 세어 볼까요?</td><td><b></b></td><td></td></tr><tr><td>13</td><td>쿠키 창고 · 출구 문</td><td>가방의 큰 열쇠 쓰기 / 숫자 자물쇠: 숫자판 위 글: 비밀번호 = (쟁반의 하트 쿠키 수) + (사탕 가게 진열대의 빨간 사탕 수)</td><td><b>10</b><br><small>하트 쿠키 6개 + 빨간 사탕 4개 = 10</small></td><td></td></tr></table></div></div>
+<script>window.ER={"id":"candy","title":"과자 가게 탈출","intro":"과자를 고르다 보니 가게 문이 닫혀 버렸어요! 사탕 가게와 쿠키 창고를 둘러보며 단서를 모아 출구 문을 열어요.","outro":"출구 문이 활짝 열렸어요! 주인 아주머니가 \"수고했어요!\" 하며 하트 쿠키 한 개를 손에 쥐여 줬어요. 과자 가게를 탈출했어요!","items":{"key":{"nm":"작은 열쇠","k":"key","c":"#C9A24B","de":"작은 서랍에 맞을 것 같아요"},"coin":{"nm":"동전","k":"coin","c":"#E0A92E","de":"기계에 넣을 수 있는 동전이에요"},"gear":{"nm":"톱니바퀴","k":"gear","c":"#8A929C","de":"쿠키 기계에서 빠진 부품 같아요"},"keyb":{"nm":"큰 열쇠","k":"key","c":"#E5534B","de":"빨간 큰 열쇠예요. 출구 문에 맞을까요?"}},"flow":["clock","poster","shelf","box","cabinet","sdoor","board","bottles","panel","case","belt","tray","exit"],"scenes":[{"id":"a","nm":"사탕 가게","bg":{"wall":"#FDE3EC","floor":"#D9A27A","deco":"stripe"},"objs":[{"id":"clock","nm":"벽시계","art":"clock","x":60,"y":30,"w":120,"h":120,"p":{"h":4,"m":0},"keep":true,"look":"가게 벽시계예요. 짧은바늘과 긴바늘을 잘 보세요. 지금 **몇 시**일까요?","lookFig":{"art":"clock","w":150,"h":150,"p":{"h":4,"m":0}},"guide":"벽시계가 몇 시를 가리키는지 보고 수첩에 남겨 두세요."},{"id":"poster","nm":"쿠키 무늬 포스터","art":"poster","x":40,"y":170,"w":190,"h":150,"p":{"lines":["쿠키 무늬"],"shapes":["♡","○","○","♡","○","○","♡","?"],"sc":["분홍","갈색","갈색","분홍","갈색","갈색","분홍","#C8402F"]},"keep":true,"look":"쿠키 무늬가 규칙대로 놓여 있어요. 맨 끝은 **?** 로 지워져 있어요. 어떤 모양이 되풀이될까요?","lookFig":{"art":"poster","w":320,"h":130,"p":{"lines":["쿠키 무늬"],"shapes":["♡","○","○","♡","○","○","♡","?"],"sc":["분홍","갈색","갈색","분홍","갈색","갈색","분홍","#C8402F"]}},"guide":"쿠키 무늬 포스터의 규칙을 수첩에 남겨 두세요."},{"id":"shelf","nm":"사탕 진열대","art":"shelf","x":260,"y":90,"w":320,"h":290,"p":{"rows":[[{"k":"candy","c":"빨강","n":4},{"k":"star","c":"노랑","n":2}],[{"k":"candy","c":"노랑","n":3},{"k":"bear","c":"주황","n":2}],[{"k":"candy","c":"초록","n":5}]],"c":"#D98E9E"},"keep":true,"look":"알록달록한 진열대예요. 양쪽을 리본처럼 묶은 **사탕**, 노란 **별 과자**, 주황 **곰 젤리**가 있어요. 무엇이 몇 개인지 세어 볼까요?","lookFig":{"art":"shelf","w":320,"h":290,"p":{"rows":[[{"k":"candy","c":"빨강","n":4},{"k":"star","c":"노랑","n":2}],[{"k":"candy","c":"노랑","n":3},{"k":"bear","c":"주황","n":2}],[{"k":"candy","c":"초록","n":5}]],"c":"#D98E9E"}},"guide":"사탕 진열대에 사탕이 색깔마다 몇 개 있는지 세어 보세요."},{"id":"sdoor","nm":"창고 문","art":"door","x":620,"y":170,"w":130,"h":210,"p":{"c":"보라","sign":"창고","keypad":true},"lock":{"t":"dir","code":["↑","→","↑","→"],"q":"창고 문에 화살표 단추가 있어요. **창고 가는 길 그림**을 보고, **가는 방향이 바뀌는 차례대로** 화살표를 눌러요. (같은 쪽으로 여러 칸 가도 화살표는 하나)","hints":["서랍장 안에서 찾은 '창고 가는 길' 그림을 수첩에서 열어 보세요.","'가게'에서 출발해 빨간 점을 따라가요. 처음에는 위로 한 칸 가요.","위 → 오른쪽 → 그다음은 어느 쪽으로 꺾이나요?"],"sol":"위로 1칸 → 오른쪽으로 2칸 → 위로 2칸 → 오른쪽으로 2칸이니 ↑ → ↑ →"},"go":"b","after":"딸깍! 창고 문이 열렸어요. 고소한 쿠키 냄새가 나요.","guide":"서랍장에서 찾은 길 그림대로 창고 문의 화살표를 눌러 보세요."},{"id":"cabinet","nm":"서랍장","art":"cabinet","x":800,"y":200,"w":150,"h":180,"p":{"c":"#E8C9A0","label":"서랍장"},"need":"key","needMsg":"서랍장이 잠겨 있어요. 작은 열쇠 구멍이 보여요.","useMsg":"작은 열쇠로 서랍장을 열었어요.","give":["coin"],"after":"서랍장 안에 반짝이는 **동전**과 **창고 가는 길 그림**이 있어요. 빨간 점이 가는 길이에요.","afterFig":{"art":"map","w":300,"h":240,"p":{"n":4,"m":5,"start":[0,3],"path":"URRUURR","block":[[1,3],[0,0],[3,2],[4,2],[1,1],[4,3]],"sl":"가게","gl":"창고"}},"guide":"작은 열쇠로 서랍장을 열어 보세요."},{"id":"box","nm":"사탕 상자","art":"box","x":50,"y":400,"w":180,"h":130,"p":{"c":"분홍","lock":true,"label":"?"},"lock":{"t":"num","code":"12","q":"상자 뚜껑의 쪽지: **진열대에 있는 사탕은 모두 몇 개일까요?** (별 과자와 곰 젤리는 빼요) 숫자 두 개를 맞춰요.","hints":["진열대를 다시 보세요. 양쪽이 리본처럼 묶인 것만 사탕이에요.","빨간 사탕 4개, 노란 사탕 3개, 초록 사탕 5개예요.","4 + 3 = 7, 7에 5를 더하면?"],"sol":"4 + 3 + 5 = 12"},"give":["key"],"after":"상자가 열렸어요! 사탕 사이에 **작은 열쇠**가 숨어 있어요. 열쇠 고리에 '서랍장'이라고 적혀 있어요.","guide":"사탕 상자를 열어 보세요. 진열대의 사탕을 세면 돼요."},{"id":"counter","nm":"계산대","art":"counter","x":330,"y":390,"w":290,"h":150,"p":{"items":[{"k":"○","c":"갈색","n":3},{"k":"jar","c":"분홍","n":1}]},"look":"계산대 위에 맛보기 쿠키와 분홍 사탕 병이 있어요. 돈 통은 텅 비어 있어요. 여기에는 잠긴 곳이 없네요.","guide":"계산대는 그냥 둘러보기만 해도 괜찮아요."}]},{"id":"b","nm":"쿠키 창고","bg":{"wall":"#FFF1D6","floor":"#B98A6A","deco":"tile"},"objs":[{"id":"board","nm":"주문 칠판","art":"board","x":30,"y":30,"w":320,"h":170,"p":{"lines":["쿠키 진열장 비밀번호","= 가게 시계의 시각","+ 진열대의 초록 사탕 수"],"fs":21},"keep":true,"look":"창고 칠판에 쿠키 진열장을 여는 방법이 적혀 있어요.","lookFig":{"art":"board","w":340,"h":170,"p":{"lines":["쿠키 진열장 비밀번호","= 가게 시계의 시각","+ 진열대의 초록 사탕 수"],"fs":21}},"guide":"주문 칠판을 읽고 수첩에 남겨 두세요."},{"id":"bottles","nm":"시럽 병","art":"bottles","x":370,"y":40,"w":320,"h":180,"p":{"items":[{"c":"빨강","label":"3+4"},{"c":"노랑","label":"9−1"},{"c":"초록","label":"2+3"},{"c":"파랑","label":"10−4"}]},"keep":true,"look":"시럽 병 네 개에 계산식이 붙어 있어요. 병마다 계산하면 얼마일까요?","lookFig":{"art":"bottles","w":400,"h":190,"p":{"items":[{"c":"빨강","label":"3+4"},{"c":"노랑","label":"9−1"},{"c":"초록","label":"2+3"},{"c":"파랑","label":"10−4"}]}},"guide":"시럽 병에 붙은 계산식을 하나씩 계산해 보세요."},{"id":"panel","nm":"시럽 기계","art":"panel","x":720,"y":50,"w":150,"h":150,"p":{"colors":["빨강","노랑","초록","파랑"],"label":"동전","done":"열림"},"need":"coin","needMsg":"시럽 기계 화면에 '동전을 넣어요'라고 나와요. 동전 넣는 구멍이 있어요.","useMsg":"동전을 넣었더니 색깔 단추에 불이 켜졌어요!","lock":{"t":"color","code":["노랑","빨강","파랑","초록"],"q":"기계에 쪽지가 붙어 있어요: **시럽 병의 계산 값이 큰 것부터** 그 병의 색 단추를 차례로 눌러요.","hints":["시럽 병마다 계산해요: 3+4, 9−1, 2+3, 10−4.","값은 7, 8, 5, 6이에요. 가장 큰 수는?","8 → 7 → 6 → 5 차례로, 그 수가 적힌 병의 색을 눌러요."],"sol":"노랑 9−1=8 → 빨강 3+4=7 → 파랑 10−4=6 → 초록 2+3=5","opts":["빨강","노랑","초록","파랑"]},"give":["keyb"],"after":"시럽이 주르륵 나오더니 기계 아래 칸에서 **큰 열쇠**가 툭 떨어졌어요!","guide":"동전을 시럽 기계에 넣고, 시럽 병의 값이 큰 것부터 색을 눌러 보세요."},{"id":"case","nm":"쿠키 진열장","art":"case","x":30,"y":230,"w":240,"h":210,"p":{"items":[{"k":"○","c":"갈색","n":3}],"lock":true},"lock":{"t":"num","code":"9","q":"진열장 자물쇠에 숫자 하나를 맞춰요. **주문 칠판**에 적힌 방법대로 계산해요.","hints":["주문 칠판: 가게 시계의 시각 + 진열대의 초록 사탕 수.","가게 벽시계는 몇 시였나요? 진열대에 초록 사탕은 몇 개였나요?","시계는 4시, 초록 사탕은 5개예요. 4 + 5는?"],"sol":"시계 4시, 초록 사탕 5개 → 4 + 5 = 9"},"give":["gear"],"after":"진열장이 열렸어요! 쿠키 뒤에 **톱니바퀴**가 있어요. 쪽지: \"쿠키 기계는 가게 포스터의 쿠키 무늬대로 구워요.\"","guide":"칠판에 적힌 대로 시계와 초록 사탕을 더해 진열장을 열어 보세요."},{"id":"belt","nm":"쿠키 기계","art":"conveyor","x":280,"y":330,"w":360,"h":170,"p":{"shapes":["?","?","?"],"sc":["#C8402F","#C8402F","#C8402F"]},"need":"gear","needMsg":"쿠키 기계가 멈춰 있어요. 톱니바퀴 하나가 빠진 자리가 보여요.","useMsg":"톱니바퀴를 끼웠더니 기계가 위잉 소리를 내요. 쿠키 모양 단추를 맞게 눌러야 해요.","lock":{"t":"shape","code":["○","○","♡"],"q":"구울 쿠키 모양을 정해요. **가게 포스터의 ? 자리부터** 규칙대로 쿠키 모양 세 개를 차례로 눌러요.","hints":["수첩의 쿠키 무늬 포스터를 열어 보세요.","♡ ○ ○ 가 되풀이돼요. 포스터의 마지막 모양은 ♡ 였어요.","♡ 다음에는 무엇이 두 번 오고, 그다음은?"],"sol":"♡ ○ ○ 가 되풀이되므로 ? 자리부터 ○ ○ ♡","opts":["○","△","□","♡"]},"after":"기계가 돌아가며 따끈한 쿠키를 구워 냈어요! 옆에 **쿠키 쟁반**이 나왔어요.","guide":"톱니바퀴를 쿠키 기계에 끼우고 포스터 규칙대로 모양을 눌러 보세요."},{"id":"tray","nm":"쿠키 쟁반","art":"table","x":650,"y":390,"w":230,"h":140,"p":{"items":[{"k":"♡","c":"분홍","n":6}],"c":"#C9A27A"},"req":["belt"],"keep":true,"look":"갓 구운 **하트 쿠키**가 쟁반에 놓여 있어요. 몇 개인지 세어 볼까요?","lookFig":{"art":"table","w":300,"h":150,"p":{"items":[{"k":"♡","c":"분홍","n":6}],"c":"#C9A27A"}},"guide":"쿠키 기계가 만든 쟁반의 하트 쿠키를 세어 보세요."},{"id":"exit","nm":"출구 문","art":"door","x":890,"y":150,"w":100,"h":230,"p":{"c":"빨강","sign":"출구"},"need":"keyb","needMsg":"출구 문에 큰 열쇠 구멍이 있어요.","useMsg":"큰 열쇠가 딱 맞아요! 이제 문의 숫자판만 남았어요.","lock":{"t":"num","code":"10","q":"숫자판 위 글: **비밀번호 = (쟁반의 하트 쿠키 수) + (사탕 가게 진열대의 빨간 사탕 수)**","hints":["쟁반에 하트 쿠키가 몇 개 있었나요?","사탕 가게 진열대의 빨간 사탕은 몇 개였나요? 수첩을 열어 보세요.","하트 쿠키 6개, 빨간 사탕 4개예요. 6 + 4는?"],"sol":"하트 쿠키 6개 + 빨간 사탕 4개 = 10"},"go":"exit","after":"출구 문이 열렸어요!","guide":"큰 열쇠를 출구 문에 쓰고, 하트 쿠키와 빨간 사탕을 더해 비밀번호를 맞춰요."}]}]};
+/* 수학 방탈출 그림 묶음 (2026-11-26): ART[이름](w, h, p, open) → 0,0~w,h 안에 그리는 SVG 조각.
+   방 그림(장면)과 크게 보기 창에서 같은 함수를 씀. 이모지 대신 모두 직접 그린 도형(공통 덮개가 이모지를 바꾸지 않게). */
+var ART = (function () {
+  var COL = { 빨강: '#E5534B', 주황: '#F08A24', 노랑: '#F2C230', 초록: '#3DA35D', 파랑: '#3B6FD6', 보라: '#8A5BC9', 분홍: '#EE7DB0', 갈색: '#9A6A3F', 하양: '#F6F3EC', 검정: '#2A2A2A', 하늘: '#6CC3EA', 회색: '#9AA0A8' };
+  function c(n) { return COL[n] || n || '#9A6A3F' }
+  function esc(s) { return String(s).replace(/[&<>"]/g, function (x) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[x] }) }
+  function R(x, y, w, h, f, o) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + f + '"' + (o || '') + '/>' }
+  function T(x, y, s, size, f, o) { return '<text x="' + x + '" y="' + y + '" font-size="' + size + '" fill="' + (f || '#2A221C') + '" text-anchor="middle" font-weight="700"' + (o || '') + '>' + esc(s) + '</text>' }
+  var STK = ' stroke="#3A2C22" stroke-width="3" stroke-linejoin="round"';
+  /* 작은 모양: ○ △ □ ☆ ◇ 하트 */
+  function shape(k, cx, cy, r, f) {
+    f = f || '#3A2C22';
+    if (k === '○') return '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + f + '"/>';
+    if (k === '△') return '<path d="M' + cx + ' ' + (cy - r) + 'L' + (cx + r * .95) + ' ' + (cy + r * .75) + 'H' + (cx - r * .95) + 'Z" fill="' + f + '"/>';
+    if (k === '□') return R(cx - r * .82, cy - r * .82, r * 1.64, r * 1.64, f);
+    if (k === '◇') return '<path d="M' + cx + ' ' + (cy - r) + 'L' + (cx + r) + ' ' + cy + 'L' + cx + ' ' + (cy + r) + 'L' + (cx - r) + ' ' + cy + 'Z" fill="' + f + '"/>';
+    if (k === '♡') return '<path d="M' + cx + ' ' + (cy + r * .8) + 'C' + (cx - r * 1.4) + ' ' + (cy - r * .1) + ' ' + (cx - r * .6) + ' ' + (cy - r * 1.1) + ' ' + cx + ' ' + (cy - r * .35) + 'C' + (cx + r * .6) + ' ' + (cy - r * 1.1) + ' ' + (cx + r * 1.4) + ' ' + (cy - r * .1) + ' ' + cx + ' ' + (cy + r * .8) + 'Z" fill="' + f + '"/>';
+    var d = ''; for (var i = 0; i < 10; i++) { var a = -Math.PI / 2 + i * Math.PI / 5, rr = i % 2 ? r * .45 : r; d += (i ? 'L' : 'M') + (cx + rr * Math.cos(a)).toFixed(1) + ' ' + (cy + rr * Math.sin(a)).toFixed(1) } return '<path d="' + d + 'Z" fill="' + f + '"/>';
+  }
+  function arrow(dir, cx, cy, r, f) { var a = { '↑': 0, '→': 90, '↓': 180, '←': 270 }[dir] || 0; return '<g transform="translate(' + cx + ' ' + cy + ') rotate(' + a + ')"><path d="M0 ' + (-r) + 'L' + (r * .8) + ' 0H' + (r * .32) + 'V' + r + 'H' + (-r * .32) + 'V0H' + (-r * .8) + 'Z" fill="' + (f || '#3A2C22') + '"/></g>' }
+  /* 작은 물건(선반·탁자 위에 놓는 것): 높이 s 안에 그림 */
+  function thing(k, x, y, s, col) {
+    var f = c(col);
+    if (k === 'block') return R(x, y + s * .25, s * .8, s * .75, f, STK.replace('3"', '2"')) + R(x + s * .15, y + s * .1, s * .5, s * .17, f, STK.replace('3"', '2"'));
+    if (k === 'book') return R(x, y, s * .32, s, f, STK.replace('3"', '2"')) + R(x + s * .06, y + s * .2, s * .2, s * .08, '#fff', ' opacity=".7"');
+    if (k === 'ball') return '<circle cx="' + (x + s * .45) + '" cy="' + (y + s * .55) + '" r="' + s * .42 + '" fill="' + f + '"' + STK.replace('3"', '2"') + '/><path d="M' + (x + s * .1) + ' ' + (y + s * .5) + 'Q' + (x + s * .45) + ' ' + (y + s * .75) + ' ' + (x + s * .82) + ' ' + (y + s * .45) + '" fill="none" stroke="#fff" stroke-width="3" opacity=".7"/>';
+    if (k === 'jar') return R(x + s * .05, y + s * .2, s * .7, s * .8, f, STK.replace('3"', '2"') + ' rx="' + s * .12 + '"') + R(x + s * .12, y + s * .05, s * .56, s * .18, '#8C8C8C', STK.replace('3"', '2"') + ' rx="4"') + R(x + s * .18, y + s * .38, s * .14, s * .4, '#fff', ' opacity=".45" rx="4"');
+    if (k === 'bear') return '<circle cx="' + (x + s * .4) + '" cy="' + (y + s * .66) + '" r="' + s * .3 + '" fill="' + f + '"' + STK.replace('3"', '2"') + '/><circle cx="' + (x + s * .4) + '" cy="' + (y + s * .3) + '" r="' + s * .24 + '" fill="' + f + '"' + STK.replace('3"', '2"') + '/><circle cx="' + (x + s * .2) + '" cy="' + (y + s * .1) + '" r="' + s * .09 + '" fill="' + f + '"' + STK.replace('3"', '2"') + '/><circle cx="' + (x + s * .6) + '" cy="' + (y + s * .1) + '" r="' + s * .09 + '" fill="' + f + '"' + STK.replace('3"', '2"') + '/><circle cx="' + (x + s * .33) + '" cy="' + (y + s * .27) + '" r="2.4" fill="#2A221C"/><circle cx="' + (x + s * .47) + '" cy="' + (y + s * .27) + '" r="2.4" fill="#2A221C"/>';
+    if (k === 'flask') return '<path d="M' + (x + s * .3) + ' ' + y + 'h' + s * .2 + 'v' + s * .35 + 'l' + s * .3 + ' ' + s * .55 + 'q0 ' + s * .1 + ' -' + s * .1 + ' ' + s * .1 + 'h-' + s * .6 + 'q-' + s * .1 + ' 0 -' + s * .1 + ' -' + s * .1 + 'l' + s * .3 + ' -' + s * .55 + 'z" fill="#EAF2F7"' + STK.replace('3"', '2"') + '/><path d="M' + (x + s * .12) + ' ' + (y + s * .75) + 'h' + s * .56 + 'l' + s * .09 + ' ' + s * .16 + 'q0 ' + s * .05 + ' -.05 ' + s * .05 + 'h-' + s * .7 + 'q-.05 0 -.05 -' + s * .05 + 'z" fill="' + f + '"/>';
+    if (k === 'candy') return '<circle cx="' + (x + s * .45) + '" cy="' + (y + s * .5) + '" r="' + s * .26 + '" fill="' + f + '"' + STK.replace('3"', '2"') + '/><path d="M' + (x + s * .2) + ' ' + (y + s * .5) + 'l-' + s * .18 + ' -' + s * .14 + 'v' + s * .28 + 'z M' + (x + s * .7) + ' ' + (y + s * .5) + 'l' + s * .18 + ' -' + s * .14 + 'v' + s * .28 + 'z" fill="' + f + '"' + STK.replace('3"', '2"') + '/>';
+    if (k === 'star') return shape('☆', x + s * .45, y + s * .5, s * .45, f);
+    if (k === 'shell') return '<path d="M' + (x + s * .45) + ' ' + (y + s) + 'L' + x + ' ' + (y + s * .35) + 'Q' + (x + s * .45) + ' ' + (y - s * .2) + ' ' + (x + s * .9) + ' ' + (y + s * .35) + 'Z" fill="' + f + '"' + STK.replace('3"', '2"') + '/>';
+    if (k === 'gem') return '<path d="M' + (x + s * .1) + ' ' + (y + s * .35) + 'L' + (x + s * .3) + ' ' + (y + s * .1) + 'H' + (x + s * .65) + 'L' + (x + s * .85) + ' ' + (y + s * .35) + 'L' + (x + s * .47) + ' ' + (y + s * .95) + 'Z" fill="' + f + '"' + STK.replace('3"', '2"') + '/>';
+    if (k === 'fish') return '<ellipse cx="' + (x + s * .4) + '" cy="' + (y + s * .5) + '" rx="' + s * .32 + '" ry="' + s * .2 + '" fill="' + f + '"' + STK.replace('3"', '2"') + '/><path d="M' + (x + s * .7) + ' ' + (y + s * .5) + 'l' + s * .22 + ' -' + s * .17 + 'v' + s * .34 + 'z" fill="' + f + '"' + STK.replace('3"', '2"') + '/><circle cx="' + (x + s * .25) + '" cy="' + (y + s * .45) + '" r="2.5" fill="#2A221C"/>';
+    return shape(k, x + s * .45, y + s * .5, s * .42, f);
+  }
+  /* 물건을 줄지어 놓기: items = [{k, c, n}] → 왼쪽부터 */
+  function row(items, x, y, w, s) { var o = '', cx = x, step = s * .95; (items || []).forEach(function (it) { for (var i = 0; i < (it.n || 1); i++) { if (cx + s * .8 > x + w) return; o += thing(it.k, cx, y, s, it.c); cx += it.k === 'book' ? s * .36 : step } }); return o }
+
+  var A = {};
+  A.door = function (w, h, p, open) {
+    var f = c(p.c || '갈색'), o = R(0, 0, w, h, '#5A4030', ' rx="8"') + R(10, 10, w - 20, h - 10, open ? '#1F1A16' : f, STK + ' rx="6"');
+    if (open) return o + '<path d="M10 10L' + (w * .55) + ' 30V' + (h - 10) + 'L10 ' + h + 'Z" fill="' + f + '"' + STK + '/>' + '<rect x="' + w * .2 + '" y="' + h * .3 + '" width="' + w * .6 + '" height="' + h * .4 + '" fill="#FFE9A8" opacity=".25"/>';
+    o += R(24, 26, w - 48, h * .36, '#000', ' opacity=".1" rx="4"') + R(24, h * .48, w - 48, h * .42, '#000', ' opacity=".1" rx="4"');
+    o += '<circle cx="' + (w - 30) + '" cy="' + (h * .55) + '" r="8" fill="#F2C230"' + STK.replace('3"', '2"') + '/>';
+    if (p.sign) o += R(w * .12, -18, w * .76, 30, '#2E7D5B', ' rx="6"') + T(w / 2, 3, p.sign, 18, '#fff');
+    if (p.keypad) o += R(w + 8, h * .4, 34, 52, '#3A3F48', ' rx="5"') + R(w + 13, h * .4 + 6, 24, 12, '#7CF29B') + [0, 1, 2].map(function (i) { return R(w + 13 + i * 8, h * .4 + 24, 6, 6, '#ccc') + R(w + 13 + i * 8, h * .4 + 34, 6, 6, '#ccc') }).join('');
+    return o;
+  };
+  A.clock = function (w, h, p) {
+    var r = Math.min(w, h) / 2 - 4, cx = w / 2, cy = h / 2, o = '<circle cx="' + cx + '" cy="' + cy + '" r="' + r + '" fill="' + c(p.c || '#FFF8E8') + '"' + STK + '/>';
+    for (var i = 1; i <= 12; i++) { var a = i * Math.PI / 6; o += T(cx + Math.sin(a) * r * .78, cy - Math.cos(a) * r * .78 + r * .09, i, r * .22) }
+    var hh = (p.h % 12 + (p.m || 0) / 60) * Math.PI / 6, mm = (p.m || 0) * Math.PI / 30;
+    o += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + Math.sin(hh) * r * .45) + '" y2="' + (cy - Math.cos(hh) * r * .45) + '" stroke="#2A221C" stroke-width="' + r * .09 + '" stroke-linecap="round"/>';
+    o += '<line x1="' + cx + '" y1="' + cy + '" x2="' + (cx + Math.sin(mm) * r * .7) + '" y2="' + (cy - Math.cos(mm) * r * .7) + '" stroke="#C8402F" stroke-width="' + r * .05 + '" stroke-linecap="round"/><circle cx="' + cx + '" cy="' + cy + '" r="' + r * .06 + '" fill="#2A221C"/>';
+    return o;
+  };
+  A.shelf = function (w, h, p) {
+    var rows = p.rows || [], n = Math.max(1, rows.length), rh = (h - 14) / n, o = R(0, 0, w, h, c(p.c || '#B98552'), STK + ' rx="4"');
+    for (var i = 0; i < n; i++) { var y = 7 + i * rh; o += R(8, y, w - 16, rh - 8, '#7A5434', ' opacity=".35"') + R(4, y + rh - 8, w - 8, 8, '#6B4A2E') + row(rows[i], 14, y + rh * .18, w - 24, Math.min(rh * .72, 46)) }
+    return o;
+  };
+  A.table = function (w, h, p) { return R(0, h * .25, w, h * .12, c(p.c || '#B98552'), STK + ' rx="4"') + R(w * .08, h * .37, 12, h * .63, '#7A5434') + R(w * .92 - 12, h * .37, 12, h * .63, '#7A5434') + row(p.items, w * .06, 0, w * .88, h * .25) };
+  A.box = function (w, h, p, open) {
+    var f = c(p.c || '#D99A4E'), o = R(0, h * .25, w, h * .75, f, STK + ' rx="6"');
+    o += open ? '<path d="M0 ' + h * .25 + 'L-' + w * .08 + ' 0H' + w * .92 + 'L' + w + ' ' + h * .25 + 'Z" fill="' + f + '"' + STK + ' opacity=".85"/>' + R(6, h * .25, w - 12, h * .12, '#2A221C', ' opacity=".45"') : R(-4, h * .15, w + 8, h * .16, f, STK + ' rx="5"') + (p.lock ? R(w / 2 - 12, h * .3, 24, 28, '#F2C230', STK.replace('3"', '2"') + ' rx="4"') + '<circle cx="' + w / 2 + '" cy="' + (h * .3 + 12) + '" r="4" fill="#3A2C22"/>' : '');
+    if (p.label) o += R(w * .15, h * .5, w * .7, h * .3, '#fff', ' rx="5" opacity=".9"') + T(w / 2, h * .5 + h * .2, p.label, Math.min(28, h * .2));
+    return o;
+  };
+  A.chest = function (w, h, p, open) { var f = c(p.c || '#A0522D'); return (open ? '<path d="M0 ' + h * .4 + 'Q' + w / 2 + ' -' + h * .2 + ' ' + w + ' ' + h * .4 + 'Z" fill="' + f + '"' + STK + ' opacity=".9"/>' + R(6, h * .38, w - 12, h * .1, '#F2C230', ' opacity=".7"') : '<path d="M0 ' + h * .42 + 'Q' + w / 2 + ' 0 ' + w + ' ' + h * .42 + 'Z" fill="' + f + '"' + STK + '/>') + R(0, h * .4, w, h * .6, f, STK + ' rx="6"') + R(w * .45, h * .35, w * .1, h * .3, '#F2C230', STK.replace('3"', '2"')) + R(0, h * .55, w, 8, '#6B3A1F') };
+  A.desk = function (w, h, p, open) {
+    var f = c(p.c || '#B98552'), o = R(0, h * .3, w, h * .12, f, STK + ' rx="4"') + R(w * .05, h * .42, w * .45, h * .58, f, STK) + R(w * .9, h * .42, w * .06, h * .58, '#7A5434');
+    o += open ? R(w * .02, h * .5, w * .52, h * .2, '#7A5434', STK) + R(w * .06, h * .5, w * .44, h * .06, '#2A221C', ' opacity=".4"') : R(w * .1, h * .5, w * .35, h * .18, f, STK) + '<circle cx="' + w * .275 + '" cy="' + h * .59 + '" r="5" fill="#F2C230"' + STK.replace('3"', '1.5"') + '/>';
+    o += R(w * .1, h * .72, w * .35, h * .18, f, STK) + row(p.items, w * .1, 0, w * .8, h * .3);
+    return o;
+  };
+  A.safe = function (w, h, p, open) {
+    var o = R(0, 0, w, h, '#6E7580', STK + ' rx="8"');
+    if (open) return o + R(10, 10, w - 20, h - 20, '#2A2E35', ' rx="5"') + '<path d="M10 10L-' + w * .25 + ' 28V' + (h - 4) + 'L10 ' + (h - 10) + 'Z" fill="#8A929C"' + STK + '/>';
+    o += R(10, 10, w - 20, h - 20, '#8A929C', STK.replace('3"', '2"') + ' rx="5"') + '<circle cx="' + w / 2 + '" cy="' + h / 2 + '" r="' + Math.min(w, h) * .2 + '" fill="#C8CDD3"' + STK + '/>';
+    for (var i = 0; i < 8; i++) { var a = i * Math.PI / 4; o += '<line x1="' + (w / 2 + Math.cos(a) * Math.min(w, h) * .13) + '" y1="' + (h / 2 + Math.sin(a) * Math.min(w, h) * .13) + '" x2="' + (w / 2 + Math.cos(a) * Math.min(w, h) * .2) + '" y2="' + (h / 2 + Math.sin(a) * Math.min(w, h) * .2) + '" stroke="#3A2C22" stroke-width="2"/>' }
+    if (p.colors) p.colors.forEach(function (k, i) { o += '<circle cx="' + (w * .2 + i * w * .6 / Math.max(1, p.colors.length - 1)) + '" cy="' + h * .85 + '" r="7" fill="' + c(k) + '"' + STK.replace('3"', '1.5"') + '/>' });
+    return o;
+  };
+  A.poster = function (w, h, p) {
+    var o = R(0, 0, w, h, c(p.c || '#FFF6DC'), STK + ' rx="4"') + '<circle cx="' + w / 2 + '" cy="8" r="5" fill="#C8402F"/>', L = p.lines || [], fs = p.fs || Math.min(26, (h - 20) / Math.max(2, L.length + (p.shapes ? 1.6 : 0)) * .72);
+    L.forEach(function (s, i) { o += T(w / 2, 22 + fs * 1.3 * (i + .8), s, fs) });
+    if (p.shapes) { var n = p.shapes.length, gap = (w - 16) / n, rr = Math.min(gap * .42, (h - 26 - L.length * fs * 1.3) * .32), cy = h - rr - 12; p.shapes.forEach(function (k, i) { var cx = 8 + gap * (i + .5); o += k === '?' ? T(cx, cy + rr * .6, '?', rr * 2, '#C8402F') : shape(k, cx, cy, rr, p.sc ? c(p.sc[i]) : '#3A2C22') }) }
+    return o;
+  };
+  A.board = function (w, h, p) { var o = R(0, 0, w, h, '#8A5A2B', ' rx="6"') + R(8, 8, w - 16, h - 16, '#2E5E4E'), L = p.lines || [], fs = p.fs || Math.min(26, (h - 24) / Math.max(2, L.length) * .72); L.forEach(function (s, i) { o += T(w / 2, 18 + fs * 1.3 * (i + .9), s, fs, '#F4F1E8') }); return o };
+  A.frame = function (w, h, p, open) {
+    var o = R(0, 0, w, h, '#C9A24B', STK + ' rx="3"') + R(10, 10, w - 20, h - 20, c(p.bg || '#BFE3F5'));
+    if (p.kind === 'sun') o += '<circle cx="' + w * .7 + '" cy="' + h * .35 + '" r="' + h * .15 + '" fill="#F2C230"/>' + '<path d="M10 ' + (h - 10) + 'L' + w * .4 + ' ' + h * .45 + 'L' + w * .7 + ' ' + (h - 10) + 'Z" fill="#3DA35D"/>';
+    else if (p.kind === 'shapes') (p.shapes || []).forEach(function (k, i, a) { o += shape(k, 10 + (w - 20) / a.length * (i + .5), h / 2, Math.min(h * .25, (w - 20) / a.length * .35), c((p.sc || [])[i] || '#E5534B')) });
+    else o += '<path d="M10 ' + (h - 10) + 'L' + w * .35 + ' ' + h * .35 + 'L' + w * .55 + ' ' + h * .6 + 'L' + w * .75 + ' ' + h * .3 + 'L' + (w - 10) + ' ' + (h - 10) + 'Z" fill="#6E9F5C"/>';
+    if (open) o += R(10, 10, w - 20, h - 20, '#2A221C', ' opacity=".55"');
+    return o;
+  };
+  A.robot = function (w, h, p, open) {
+    var f = c(p.c || '#9AA7B8'), o = R(w * .2, h * .35, w * .6, h * .5, f, STK + ' rx="10"') + R(w * .25, h * .05, w * .5, h * .3, f, STK + ' rx="10"') + R(w * .3, h * .85, w * .12, h * .15, '#6E7580') + R(w * .58, h * .85, w * .12, h * .15, '#6E7580');
+    o += '<line x1="' + w / 2 + '" y1="' + h * .05 + '" x2="' + w / 2 + '" y2="-6" stroke="#3A2C22" stroke-width="3"/><circle cx="' + w / 2 + '" cy="-8" r="6" fill="' + (open ? '#7CF29B' : '#E5534B') + '"/>';
+    o += '<circle cx="' + w * .4 + '" cy="' + h * .18 + '" r="' + w * .06 + '" fill="' + (open ? '#7CF29B' : '#444') + '"/><circle cx="' + w * .6 + '" cy="' + h * .18 + '" r="' + w * .06 + '" fill="' + (open ? '#7CF29B' : '#444') + '"/>';
+    o += R(w * .3, h * .45, w * .4, h * .22, '#1E1A17', ' rx="5"') + (open ? T(w / 2, h * .6, 'OK', h * .12, '#7CF29B') : R(w * .34, h * .52, w * .12, h * .08, '#E5534B') + R(w * .5, h * .52, w * .16, h * .08, '#444'));
+    return o;
+  };
+  A.plant = function (w, h) { return R(w * .25, h * .6, w * .5, h * .4, '#C8743C', STK + ' rx="6"') + '<path d="M' + w / 2 + ' ' + h * .6 + 'C' + w * .1 + ' ' + h * .3 + ' ' + w * .1 + ' ' + h * .1 + ' ' + w * .3 + ' 0C' + w * .35 + ' ' + h * .3 + ' ' + w * .45 + ' ' + h * .4 + ' ' + w / 2 + ' ' + h * .6 + 'C' + w * .55 + ' ' + h * .3 + ' ' + w * .65 + ' ' + h * .1 + ' ' + w * .85 + ' ' + h * .05 + 'C' + w * .9 + ' ' + h * .3 + ' ' + w * .7 + ' ' + h * .45 + ' ' + w / 2 + ' ' + h * .6 + 'Z" fill="#3DA35D"' + STK.replace('3"', '2"') + '/>' };
+  A.rug = function (w, h, p, open) { return open ? '<ellipse cx="' + w * .3 + '" cy="' + h / 2 + '" rx="' + w * .3 + '" ry="' + h * .45 + '" fill="' + c(p.c || '#C8402F') + '" opacity=".85"/>' + R(w * .55, h * .2, w * .3, h * .6, '#5A4030', STK + ' rx="4"') + '<circle cx="' + w * .7 + '" cy="' + h / 2 + '" r="5" fill="#F2C230"/>' : '<ellipse cx="' + w / 2 + '" cy="' + h / 2 + '" rx="' + w / 2 + '" ry="' + h * .45 + '" fill="' + c(p.c || '#C8402F') + '"' + STK + '/><ellipse cx="' + w / 2 + '" cy="' + h / 2 + '" rx="' + w * .35 + '" ry="' + h * .28 + '" fill="none" stroke="#F2C230" stroke-width="4"/>' };
+  A.window = function (w, h, p) { var o = R(0, 0, w, h, '#F4F1E8', STK + ' rx="4"') + R(8, 8, w - 16, h - 16, p.night ? '#1D2B5A' : '#BFE3F5') + '<line x1="' + w / 2 + '" y1="8" x2="' + w / 2 + '" y2="' + (h - 8) + '" stroke="#F4F1E8" stroke-width="6"/><line x1="8" y1="' + h / 2 + '" x2="' + (w - 8) + '" y2="' + h / 2 + '" stroke="#F4F1E8" stroke-width="6"/>'; if (p.night) for (var i = 0; i < 6; i++) o += '<circle cx="' + (14 + (i * 37) % (w - 28)) + '" cy="' + (14 + (i * 23) % (h - 28)) + '" r="2" fill="#fff"/>'; else o += '<circle cx="' + w * .75 + '" cy="' + h * .25 + '" r="' + h * .1 + '" fill="#F2C230"/>'; return o };
+  A.screen = function (w, h, p, open) { var o = R(0, 0, w, h * .85, '#3A3F48', STK + ' rx="8"') + R(10, 10, w - 20, h * .85 - 20, open ? '#123' : '#0E1A12') + R(w * .4, h * .85, w * .2, h * .15, '#3A3F48'), L = (open && p.open) ? p.open : (p.lines || []), fs = p.fs || Math.min(24, (h * .85 - 30) / Math.max(2, L.length) * .7); L.forEach(function (s, i) { o += T(w / 2, 20 + fs * 1.3 * (i + .9), s, fs, '#7CF29B') }); return o };
+  A.panel = function (w, h, p, open) { var o = R(0, 0, w, h, '#4A5160', STK + ' rx="8"'), cols = p.colors || ['빨강', '노랑', '초록', '파랑']; cols.forEach(function (k, i) { o += '<circle cx="' + (w * (i + .5) / cols.length) + '" cy="' + h * .35 + '" r="' + Math.min(18, w / cols.length * .3) + '" fill="' + c(k) + '"' + STK.replace('3"', '2"') + '/>' }); o += R(w * .1, h * .62, w * .8, h * .22, open ? '#123' : '#0E1A12', ' rx="4"') + T(w / 2, h * .78, open ? (p.done || '열림') : (p.label || '잠김'), h * .14, open ? '#7CF29B' : '#E5534B'); return o };
+  A.porthole = function (w, h, p) { var r = Math.min(w, h) / 2 - 3, o = '<circle cx="' + w / 2 + '" cy="' + h / 2 + '" r="' + r + '" fill="#8A929C"' + STK + '/><circle cx="' + w / 2 + '" cy="' + h / 2 + '" r="' + r * .78 + '" fill="' + (p.sea ? '#1E6A8F' : '#11183A') + '"/>'; (p.items || []).forEach(function (it, i, a) { var n = it.n || 1; for (var j = 0; j < n; j++) { var ang = (i * 7 + j * 2.3), rr = r * .45 * ((j % 3) / 3 + .2); o += thing(it.k, w / 2 + Math.cos(ang) * rr - 9, h / 2 + Math.sin(ang) * rr - 9, 18, it.c) } }); if (!p.items) for (var i = 0; i < 7; i++) o += '<circle cx="' + (w / 2 + Math.cos(i * 2.1) * r * .5) + '" cy="' + (h / 2 + Math.sin(i * 1.7) * r * .5) + '" r="2" fill="#fff"/>'; return o };
+  A.cabinet = function (w, h, p, open) { var f = c(p.c || '#C9B99A'), o = R(0, 0, w, h, f, STK + ' rx="5"'); if (open) return o + R(8, 8, w - 16, h - 16, '#3A2C22', ' opacity=".55"') + '<path d="M' + (w - 8) + ' 8L' + (w + w * .3) + ' 20V' + (h - 20) + 'L' + (w - 8) + ' ' + (h - 8) + 'Z" fill="' + f + '"' + STK + '/>'; o += '<line x1="' + w / 2 + '" y1="0" x2="' + w / 2 + '" y2="' + h + '" stroke="#3A2C22" stroke-width="3"/><circle cx="' + (w / 2 - 10) + '" cy="' + h / 2 + '" r="5" fill="#F2C230"/><circle cx="' + (w / 2 + 10) + '" cy="' + h / 2 + '" r="5" fill="#F2C230"/>'; if (p.label) o += R(w * .1, 10, w * .8, 30, '#fff', ' rx="4"') + T(w / 2, 32, p.label, 18); return o };
+  A.sign = function (w, h, p) { return R(0, 0, w, h, c(p.c || '#2E7D5B'), STK + ' rx="8"') + (p.lines || []).map(function (s, i, a) { return T(w / 2, h / 2 + (i - (a.length - 1) / 2) * h * .36 + h * .1, s, Math.min(h * .3, (p.fs || 24)), '#fff') }).join('') };
+  A.lamp = function (w, h, p, open) { return R(w * .45, h * .3, w * .1, h * .6, '#5A4030') + R(w * .25, h * .9, w * .5, h * .1, '#5A4030', ' rx="3"') + '<path d="M' + w * .15 + ' ' + h * .35 + 'L' + w * .3 + ' 0H' + w * .7 + 'L' + w * .85 + ' ' + h * .35 + 'Z" fill="' + (open ? '#FFE27A' : '#E8D9B8') + '"' + STK + '/>' };
+  A.pipe = function (w, h, p, open) { var o = R(0, h * .4, w, h * .2, '#8A929C', STK) + '<circle cx="' + w / 2 + '" cy="' + h / 2 + '" r="' + h * .3 + '" fill="' + c(p.c || '빨강') + '"' + STK + '/>'; o += '<line x1="' + (w / 2 - h * .22) + '" y1="' + h / 2 + '" x2="' + (w / 2 + h * .22) + '" y2="' + h / 2 + '" stroke="#fff" stroke-width="5" transform="rotate(' + (open ? 90 : 0) + ' ' + w / 2 + ' ' + h / 2 + ')"/>'; return o };
+  A.statue = function (w, h, p) { return R(w * .15, h * .75, w * .7, h * .25, '#D9D4CA', STK) + '<circle cx="' + w / 2 + '" cy="' + h * .2 + '" r="' + w * .18 + '" fill="#E8E3D8"' + STK + '/>' + R(w * .3, h * .38, w * .4, h * .38, '#E8E3D8', STK + ' rx="12"') + (p.plate ? R(w * .2, h * .8, w * .6, h * .14, '#C9A24B', ' rx="3"') + T(w / 2, h * .91, p.plate, h * .08) : '') };
+  A.case = function (w, h, p, open) { var o = R(0, h * .55, w, h * .45, '#7A5434', STK) + R(4, 0, w - 8, h * .55, open ? '#E8F4FA' : '#CFE7F3', STK + ' opacity=".85"') + row(p.items, 14, h * .2, w - 28, h * .3); if (!open && p.lock) o += R(w / 2 - 12, h * .58, 24, 26, '#F2C230', STK.replace('3"', '2"') + ' rx="4"'); return o };
+  A.counter = function (w, h, p) { return R(0, h * .35, w, h * .65, c(p.c || '#E8A0B4'), STK + ' rx="6"') + R(-6, h * .3, w + 12, h * .1, '#fff', STK + ' rx="4"') + row(p.items, 10, 0, w - 20, h * .3) };
+  A.scale = function (w, h, p) { var o = R(w * .45, h * .25, w * .1, h * .65, '#8A929C', STK) + R(w * .25, h * .88, w * .5, h * .12, '#6E7580', ' rx="4"') + R(w * .05, h * .2, w * .9, 8, '#6E7580', ' rx="4"'); o += '<path d="M0 ' + h * .38 + 'Q' + w * .17 + ' ' + h * .52 + ' ' + w * .34 + ' ' + h * .38 + 'Z M' + w * .66 + ' ' + h * .38 + 'Q' + w * .83 + ' ' + h * .52 + ' ' + w + ' ' + h * .38 + 'Z" fill="#C8CDD3"' + STK.replace('3"', '2"') + '/>'; o += row(p.left, 4, h * .1, w * .3, h * .25) + row(p.right, w * .68, h * .1, w * .3, h * .25); return o };
+  A.globe = function (w, h) { var r = Math.min(w, h * .8) / 2 - 3; return R(w * .3, h * .88, w * .4, h * .1, '#7A5434', ' rx="4"') + R(w * .47, h * .78, w * .06, h * .12, '#7A5434') + '<circle cx="' + w / 2 + '" cy="' + (r + 3) + '" r="' + r + '" fill="#6CC3EA"' + STK + '/><path d="M' + (w / 2 - r * .5) + ' ' + r * .6 + 'q' + r * .3 + ' -' + r * .3 + ' ' + r * .6 + ' 0t' + r * .2 + ' ' + r * .6 + 'q-' + r * .5 + ' ' + r * .2 + ' -' + r * .8 + ' -' + r * .2 + 'z" fill="#3DA35D"/>' };
+  A.microscope = function (w, h) { return R(w * .2, h * .88, w * .6, h * .12, '#3A3F48', ' rx="4"') + '<path d="M' + w * .55 + ' ' + h * .88 + 'V' + h * .55 + 'Q' + w * .55 + ' ' + h * .3 + ' ' + w * .4 + ' ' + h * .2 + '" fill="none" stroke="#3A3F48" stroke-width="' + w * .08 + '"/>' + R(w * .28, h * .05, w * .16, h * .4, '#E8E3D8', STK + ' rx="5" transform="rotate(-25 ' + w * .36 + ' ' + h * .25 + ')"') + R(w * .25, h * .62, w * .4, h * .05, '#8A929C') };
+  A.banner = function (w, h, p) { var f = c(p.c || '파랑'), o = R(0, 0, w, 8, '#7A5434') + '<path d="M6 8H' + (w - 6) + 'V' + h + 'L' + w / 2 + ' ' + h * .82 + 'L6 ' + h + 'Z" fill="' + f + '"' + STK + '/>'; if (p.shape) o += shape(p.shape, w / 2, h * .42, w * .22, '#F2C230'); if (p.n != null) o += T(w / 2, h * .7, p.n, w * .22, '#fff'); return o };
+  A.cage = function (w, h, p, open) { var o = R(0, h - 12, w, 12, '#6E7580') + R(0, 0, w, 10, '#6E7580'); for (var i = 0; i <= 8; i++) if (!(open && i > 2 && i < 6)) o += R(i * (w - 6) / 8, 10, 6, h - 22, '#8A929C'); if (p.animal) o += thing(p.animal, w * .3, h * .35, h * .5, p.c); return o };
+  A.fence = function (w, h, p) { var o = R(0, h * .3, w, 10, '#B98552') + R(0, h * .65, w, 10, '#B98552'); for (var x = 0; x < w; x += 34) o += '<path d="M' + x + ' ' + h + 'V' + h * .12 + 'L' + (x + 12) + ' 0L' + (x + 24) + ' ' + h * .12 + 'V' + h + 'Z" fill="#D9A86C"' + STK.replace('3"', '2"') + '/>'; return o };
+  A.bookshelf = function (w, h, p) { return A.shelf(w, h, { c: p.c, rows: (p.books || [[]]).map(function (r) { return r.map(function (k) { return { k: 'book', c: k } }) }) }) };
+  A.note = function (w, h, p) { return R(0, 0, w, h, '#FFFDF4', STK.replace('3"', '2"') + ' transform="rotate(-4 ' + w / 2 + ' ' + h / 2 + ')"') + '<line x1="10" y1="' + h * .4 + '" x2="' + (w - 10) + '" y2="' + h * .4 + '" stroke="#9AB" stroke-width="2"/><line x1="10" y1="' + h * .65 + '" x2="' + (w - 10) + '" y2="' + h * .65 + '" stroke="#9AB" stroke-width="2"/>' };
+  A.conveyor = function (w, h, p, open) { var o = R(0, h * .55, w, h * .2, '#4A5160', STK + ' rx="10"'); for (var i = 0; i < 6; i++) o += '<circle cx="' + (12 + i * (w - 24) / 5) + '" cy="' + h * .65 + '" r="' + h * .07 + '" fill="#8A929C"/>'; (p.shapes || []).forEach(function (k, i, a) { var cx = 20 + (w - 40) / a.length * (i + .5); o += k === '?' ? R(cx - h * .18, h * .14, h * .36, h * .36, '#fff', STK.replace('3"', '2"') + ' stroke-dasharray="5 4"') + T(cx, h * .42, '?', h * .3, '#C8402F') : shape(k, cx, h * .32, h * .18, (p.sc ? c(p.sc[i]) : '#E5534B')) }); if (open) o += T(w / 2, h * .95, '움직여요!', h * .16, '#3DA35D'); return o };
+  A.bottles = function (w, h, p) { var it = p.items || [], o = R(0, h * .85, w, h * .15, '#7A5434'), bw = w / Math.max(1, it.length); it.forEach(function (b, i) { var x = i * bw + bw * .2, bwid = bw * .6; o += R(x + bwid * .3, h * .08, bwid * .4, h * .18, '#C8CDD3', STK.replace('3"', '2"')) + R(x, h * .25, bwid, h * .6, c(b.c), STK.replace('3"', '2"') + ' rx="8"') + (b.label ? R(x + 3, h * .42, bwid - 6, h * .24, '#fff', ' rx="4"') + T(x + bwid / 2, h * .6, b.label, Math.min(h * .14, bwid * .26)) : '') }); return o };
+  A.map = function (w, h, p) {
+    var n = p.n || 4, m = p.m || n, cs = Math.min((w - 20) / m, (h - 20) / n), ox = (w - cs * m) / 2, oy = (h - cs * n) / 2, o = R(0, 0, w, h, '#F7EBC9', STK + ' rx="6"'), x = p.start[0], y = p.start[1], cells = [[x, y]];
+    (p.path || '').split('').forEach(function (d) { if (d === 'U') y--; else if (d === 'D') y++; else if (d === 'L') x--; else x++; cells.push([x, y]) });
+    for (var r = 0; r < n; r++) for (var q = 0; q < m; q++) o += R(ox + q * cs, oy + r * cs, cs, cs, '#FFF8E2', ' stroke="#B99A5E" stroke-width="1.5"');
+    (p.block || []).forEach(function (b) { o += R(ox + b[0] * cs + 3, oy + b[1] * cs + 3, cs - 6, cs - 6, '#8A7A5E', ' rx="4"') });
+    if (p.show !== false) cells.forEach(function (cl, i) { if (i) o += '<circle cx="' + (ox + (cl[0] + .5) * cs) + '" cy="' + (oy + (cl[1] + .5) * cs) + '" r="' + cs * .12 + '" fill="#C8402F" opacity=".7"/>' });
+    var s = cells[0], g = cells[cells.length - 1];
+    o += T(ox + (s[0] + .5) * cs, oy + (s[1] + .68) * cs, p.sl || '출발', cs * .3, '#3B6FD6') + R(ox + g[0] * cs + 4, oy + g[1] * cs + 4, cs - 8, cs - 8, 'none', ' stroke="#3DA35D" stroke-width="4" rx="6"') + T(ox + (g[0] + .5) * cs, oy + (g[1] + .68) * cs, p.gl || '도착', cs * .3, '#2E7D5B');
+    return o;
+  };
+  /* 가방 속 물건 아이콘 */
+  var ITEM = {
+    key: function (f) { return '<circle cx="14" cy="20" r="9" fill="none" stroke="' + f + '" stroke-width="5"/><path d="M22 20H40M34 20v7M39 20v5" stroke="' + f + '" stroke-width="5" stroke-linecap="round"/>' },
+    battery: function (f) { return R(8, 12, 30, 18, f, STK.replace('3"', '2"') + ' rx="3"') + R(38, 17, 4, 8, '#3A2C22') + T(20, 26, '+', 12, '#fff') },
+    torch: function (f) { return R(4, 15, 24, 12, '#3A3F48', ' rx="3"') + '<path d="M28 12L40 6V36L28 30Z" fill="' + f + '"' + STK.replace('3"', '2"') + '/>' },
+    lens: function (f) { return '<circle cx="18" cy="18" r="11" fill="#CFE7F3" stroke="' + f + '" stroke-width="4"/><path d="M26 26L40 40" stroke="' + f + '" stroke-width="6" stroke-linecap="round"/>' },
+    card: function (f) { return R(4, 10, 36, 24, f, STK.replace('3"', '2"') + ' rx="4"') + R(8, 15, 12, 8, '#F2C230', ' rx="2"') },
+    gear: function (f) { var d = ''; for (var i = 0; i < 16; i++) { var a = i * Math.PI / 8, r = i % 2 ? 11 : 16; d += (i ? 'L' : 'M') + (22 + r * Math.cos(a)).toFixed(1) + ' ' + (22 + r * Math.sin(a)).toFixed(1) } return '<path d="' + d + 'Z" fill="' + f + '"' + STK.replace('3"', '2"') + '/><circle cx="22" cy="22" r="5" fill="#fff"/>' },
+    coin: function (f) { return '<circle cx="22" cy="22" r="15" fill="' + f + '"' + STK.replace('3"', '2"') + '/><circle cx="22" cy="22" r="9" fill="none" stroke="#fff" stroke-width="2"/>' },
+    piece: function (f) { return '<path d="M8 10H22Q22 4 27 4T32 10H38V22Q44 22 44 27T38 32V38H8Z" fill="' + f + '"' + STK.replace('3"', '2"') + '/>' },
+    paper: function (f) { return R(8, 6, 28, 34, '#FFFDF4', STK.replace('3"', '2"')) + '<path d="M13 16H31M13 23H31M13 30H25" stroke="' + f + '" stroke-width="2.5"/>' },
+    gem: function (f) { return thing('gem', 6, 6, 32, f) },
+    candy: function (f) { return thing('candy', 4, 4, 36, f) }
+  };
+  function item(kind, col) { return '<svg viewBox="0 0 44 44" aria-hidden="true" class="es-iv">' + (ITEM[kind] || ITEM.paper)(c(col || '#C9A24B')) + '</svg>' }
+  return { A: A, c: c, shape: shape, arrow: arrow, thing: thing, item: item, esc: esc, COL: COL };
+})();
+/* 수학 방탈출 2 (2026-11-26 선생님: '말로만 방탈출, 몇 문제 풀고 끝'): 방 그림을 둘러보며 물건을 눌러 단서를 모으고,
+   가방 속 물건을 쓰고, 여러 가지 자물쇠(숫자·방향·색·모양)를 풀어 다음 방으로, 마지막 문으로.
+   자료 window.ER = { title, intro, outro, scenes:[{id, nm, bg, objs:[…]}], items:{id:{nm,k,c}}, flow:[물건 id 차례] }
+   물건: { id, nm, art, x, y, w, h, p, look, lookFig, keep, need, needMsg, useMsg, lock:{t,len,code,q,hints,sol,opts}, give, after, afterFig, go, req, guide } */
 window.TOOL = function (host, api) {
-  var R = window.ER, N = R.locks.length, st, tick = null, limit = 0;
-  function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c] }) }
-  function frac(s) { return esc(s).replace(/(\d+)\/(\d+)/g, '<span class="fd-fr"><i>$1</i><i>$2</i></span>') }
-  function reset() { st = { k: 0, open: [], hints: 0, wrong: 0, t0: 0, done: false, shown: {} }; stop(); draw() }
+  var R = window.ER, A = ART.A, esc = ART.esc, st, tick = null, limit = 0;
+  var OBJ = {}, SCN = {}; R.scenes.forEach(function (s) { SCN[s.id] = s; s.objs.forEach(function (o) { o.scene = s.id; OBJ[o.id] = o }) });
+  function frac(s) { return esc(s).replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/(\d+)\/(\d+)/g, '<span class="fd-fr"><i>$1</i><i>$2</i></span>') }
+  function jo(w, a, b) { var s = String(w), ch = s.charCodeAt(s.length - 1), m = s.match(/\d+$/), f; if (m) { var t = m[0].replace(/0+$/, '') || '0'; f = m[0].length > t.length || '013678'.indexOf(t.slice(-1)) >= 0 } else f = ch >= 0xAC00 && ch <= 0xD7A3 && (ch - 0xAC00) % 28 > 0; return s + (f ? a : b) }
+  function reset() { st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, lh: {}, done: false, open: null, entry: {} }; stop(); draw() }
   function stop() { if (tick) clearInterval(tick); tick = null }
   function sec() { return st.t0 ? Math.floor((Date.now() - st.t0) / 1000) : 0 }
   function mmss(s) { s = Math.max(0, s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') }
-  function timer() { var el = host.querySelector('.es-time'); if (!el) return; var s = sec(); el.textContent = limit ? '남은 시간 ' + mmss(limit * 60 - s) : '걸린 시간 ' + mmss(s); if (limit && s >= limit * 60 && !st.done) { stop(); el.textContent = '⏰ 시간 끝! 계속 풀어도 돼요'; el.classList.add('es-over') } }
-  function bar() { var h = ''; for (var i = 0; i <= N; i++) h += '<span class="es-dot' + (i < st.k ? ' es-ok' : i === st.k && !st.done ? ' es-now' : '') + (st.done ? ' es-ok' : '') + '">' + (i < N ? (i < st.k ? '🔓' : '🔒') : (st.done ? '🚪' : '🚪')) + '<small>' + (i < N ? (i + 1) + '번' : '문') + '</small></span>'; return h }
+  function ok(o) { return (!o.need || st.used[o.id]) && (!o.lock || st.solved[o.id]) }
+  function vis(o) { return !o.req || o.req.every(function (id) { return ok(OBJ[id]) }) }
+  function sceneOpen(id) { return id === R.scenes[0].id || R.scenes.some(function (s) { return s.objs.some(function (o) { return o.go === id && ok(o) }) }) }
+  function nLocks() { var n = 0, d = 0; for (var k in OBJ) if (OBJ[k].lock || OBJ[k].need) { n++; if (ok(OBJ[k])) d++ } return [d, n] }
+  function note(title, html) { if (st.notes.some(function (n) { return n.h === html })) return; st.notes.push({ t: title, h: html }) }
+  function fig(f) { if (!f) return ''; var w = f.w || 300, h = f.h || 200; return '<svg class="es-fig" viewBox="-12 -24 ' + (w + 24) + ' ' + (h + 36) + '" role="img" aria-label="단서 그림">' + A[f.art](w, h, f.p || {}, f.open) + '</svg>' }
+  function timer() { var el = host.querySelector('.es-time'); if (!el) return; var s = sec(); el.textContent = limit ? '남은 시간 ' + mmss(limit * 60 - s) : '걸린 시간 ' + mmss(s); if (limit && s >= limit * 60 && !st.done) { el.textContent = '시간 끝! 계속 해도 돼요'; el.classList.add('es-over') } }
+  /* 처음 화면 */
+  function startView() {
+    host.innerHTML = '<div class="es-start"><svg class="es-cover" viewBox="0 0 1000 300" aria-hidden="true">' + bg(SCN[R.scenes[0].id].bg, 300) + '</svg><p class="es-intro">' + frac(R.intro) + '</p>'
+      + '<ul class="es-rules"><li>방 그림 속 <b>물건을 눌러</b> 살펴봐요. 단서는 <b>수첩</b>에 저절로 모여요.</li><li>얻은 물건은 <b>가방</b>에 들어가요. 가방에서 물건을 고른 뒤 쓸 곳을 눌러요.</li><li>자물쇠는 숫자·방향·색깔·모양 여러 가지예요. 단서를 이어 붙여 풀어요.</li><li>막히면 <b>어디를 볼까?</b> 힌트를 눌러요.</li></ul>'
+      + '<p class="tl-row">시간 제한 <select class="es-lim"><option value="0">없음(걸린 시간만)</option><option value="15">15분</option><option value="20" selected>20분</option><option value="30">30분</option><option value="40">40분</option></select></p><button type="button" class="tl-btn tl-go es-go">탈출 시작!</button></div>';
+    api.bar(R.title);
+  }
+  function bg(b, H) {
+    b = b || {}; H = H || 560; var wall = b.wall || '#F3E3C8', floor = b.floor || '#C9A27A', fy = H * .68, o = '<rect width="1000" height="' + H + '" fill="' + wall + '"/>';
+    if (b.deco === 'stripe') for (var x = 0; x < 1000; x += 60) o += '<rect x="' + x + '" y="0" width="30" height="' + fy + '" fill="#000" opacity=".035"/>';
+    if (b.deco === 'brick') for (var y = 10, r = 0; y < fy; y += 36, r++) for (var x2 = (r % 2) * -40; x2 < 1000; x2 += 80) o += '<rect x="' + x2 + '" y="' + y + '" width="76" height="32" rx="3" fill="#000" opacity=".05"/>';
+    if (b.deco === 'stars') for (var i = 0; i < 40; i++) o += '<circle cx="' + ((i * 137) % 1000) + '" cy="' + ((i * 71) % (fy - 20) + 10) + '" r="' + (i % 3 + 1) + '" fill="#fff" opacity=".7"/>';
+    if (b.deco === 'bubble') for (var j = 0; j < 24; j++) o += '<circle cx="' + ((j * 173) % 1000) + '" cy="' + ((j * 97) % (fy - 30) + 15) + '" r="' + (j % 4 * 3 + 4) + '" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>';
+    if (b.deco === 'tile') for (var k = 0; k < 1000; k += 50) for (var y3 = 0; y3 < fy; y3 += 50) o += '<rect x="' + (k + 2) + '" y="' + (y3 + 2) + '" width="46" height="46" rx="3" fill="#fff" opacity=".18"/>';
+    o += '<rect y="' + fy + '" width="1000" height="' + (H - fy) + '" fill="' + floor + '"/><rect y="' + (fy - 8) + '" width="1000" height="10" fill="#000" opacity=".15"/>';
+    for (var x3 = 0; x3 < 1000; x3 += 120) o += '<line x1="' + x3 + '" y1="' + fy + '" x2="' + (x3 - 60) + '" y2="' + H + '" stroke="#000" stroke-opacity=".06" stroke-width="2"/>';
+    return o;
+  }
+  /* 놀이 화면 */
   function draw() {
-    if (!st.t0) {
-      host.innerHTML = '<div class="es-start"><p class="es-intro">' + esc(R.intro) + '</p><p class="tl-row">시간 제한 <select class="es-lim"><option value="0">없음(걸린 시간만)</option><option value="15">15분</option><option value="20" selected>20분</option><option value="30">30분</option></select></p><button type="button" class="tl-btn tl-go es-go">🔑 탈출 시작!</button></div>';
-      api.bar('🔐 ' + R.title); return;
-    }
-    var h = '<div class="es-top"><div class="es-bar">' + bar() + '</div><span class="es-time"></span><span class="es-hc">💡 힌트 ' + st.hints + ' · ❌ ' + st.wrong + '</span></div>';
-    if (st.done) h += '<div class="es-win"><p class="es-big">🎉 탈출 성공!</p><p>' + esc(R.final.story) + '</p><p>걸린 시간 <b>' + mmss(st.sec) + '</b> · 힌트 <b>' + st.hints + '</b>번 · 틀린 횟수 <b>' + st.wrong + '</b>번</p><button type="button" class="tl-btn" data-a="again">처음부터 다시</button></div>';
+    if (!st.t0) return startView();
+    if (st.done) return win();
+    var S = SCN[st.scene], dn = nLocks(), sel = st.sel;
+    var h = '<div class="es-top"><span class="es-time"></span><span class="es-prog">자물쇠·장치 <b>' + dn[0] + '</b> / ' + dn[1] + '</span><span class="es-hc">힌트 ' + st.hints + ' · 틀림 ' + st.wrong + '</span><button type="button" class="tl-btn es-where" data-a="where">어디를 볼까?</button></div>';
+    if (R.scenes.length > 1) h += '<div class="es-tabs" role="tablist">' + R.scenes.map(function (s) { var on = sceneOpen(s.id); return '<button type="button" role="tab" class="es-tab" data-sc="' + s.id + '" aria-selected="' + (s.id === st.scene) + '"' + (on ? '' : ' disabled') + '>' + (on ? esc(s.nm) : '잠긴 곳') + '</button>' }).join('') + '</div>';
+    h += '<div class="es-main"><div class="es-room"><svg class="es-scene" viewBox="0 0 1000 560" role="group" aria-label="' + esc(S.nm) + '">' + bg(S.bg) + S.objs.filter(vis).map(function (o) {
+      return '<g class="es-obj' + (ok(o) && (o.lock || o.need) ? ' es-done' : '') + (st.seen[o.id] ? '' : ' es-new') + '" data-o="' + o.id + '" transform="translate(' + o.x + ' ' + o.y + ')" tabindex="0" role="button" aria-label="' + esc(o.nm) + '">' + A[o.art](o.w, o.h, o.p || {}, ok(o) && (o.lock || o.need)) + '<rect class="es-hot" x="-8" y="-8" width="' + (o.w + 16) + '" height="' + (o.h + 16) + '" rx="10"/></g>';
+    }).join('') + '</svg><p class="es-say" aria-live="polite">' + (sel ? '<b>' + esc(R.items[sel].nm) + '</b>' + jo(R.items[sel].nm, '을', '를').slice(-1) + ' 들었어요. 쓸 곳을 눌러요.' : esc(S.nm) + ' — 물건을 눌러 살펴봐요.') + '</p></div>';
+    h += '<aside class="es-side"><h3>가방</h3><div class="es-inv">' + (st.inv.length ? st.inv.map(function (id) { var it = R.items[id]; return '<button type="button" class="es-it" data-it="' + id + '" aria-pressed="' + (sel === id) + '" title="' + esc(it.de || it.nm) + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') : '<p class="es-empty">아직 비어 있어요</p>') + '</div>'
+      + '<h3>수첩 <small>' + st.notes.length + '</small></h3><div class="es-notes">' + (st.notes.length ? st.notes.map(function (n, i) { return '<button type="button" class="es-nt" data-nt="' + i + '"><b>' + esc(n.t) + '</b></button>' }).join('') : '<p class="es-empty">살펴본 단서가 여기에 모여요</p>') + '</div></aside></div>';
+    h += '<div class="es-modal" hidden></div>';
+    host.innerHTML = h; timer();
+    api.bar(R.title + ' · ' + S.nm);
+    if (st.open) openObj(st.open, true);
+  }
+  function say(t, cls) { var p = host.querySelector('.es-say'); if (p) { p.innerHTML = t; p.className = 'es-say' + (cls ? ' ' + cls : '') } }
+  /* 물건 크게 보기 */
+  function openObj(id, keep) {
+    var o = OBJ[id], m = host.querySelector('.es-modal'); st.open = id; st.seen[id] = 1;
+    var h = '<div class="es-card" role="dialog" aria-modal="true" aria-label="' + esc(o.nm) + '"><div class="es-chd"><b>' + esc(o.nm) + '</b><button type="button" class="tl-btn es-x" data-a="close">닫기</button></div><div class="es-cbody"><div class="es-big"><svg viewBox="-20 -30 ' + (o.w + 40) + ' ' + (o.h + 50) + '" aria-hidden="true">' + A[o.art](o.w, o.h, o.p || {}, ok(o) && (o.lock || o.need)) + '</svg></div><div class="es-ctext">';
+    if (o.look) { h += '<p class="es-look">' + frac(o.look) + '</p>' + fig(o.lookFig); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
+    if (o.need && !st.used[o.id]) {
+      h += '<div class="es-need"><p>' + frac(o.needMsg || '무언가가 필요해 보여요.') + '</p>' + (st.inv.length ? '<p class="es-try">가방에서 써 볼 물건:</p><div class="es-inv es-inv2">' + st.inv.map(function (iid) { var it = R.items[iid]; return '<button type="button" class="es-it" data-use="' + iid + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') + '</div>' : '<p class="es-try">가방이 비어 있어요. 다른 곳을 먼저 살펴봐요.</p>') + '</div>';
+    } else if (o.lock && !st.solved[o.id]) h += lockUI(o);
+    else if (o.lock || o.need || o.after) h += done(o);
+    h += '</div></div></div>';
+    m.innerHTML = h; m.hidden = false;
+    if (!keep) { var f = m.querySelector('.es-dial button, .es-it, .es-x'); if (f) f.focus({ preventScroll: true }) }
+    if (!(o.lock || o.need) && o.give) give(o);
+  }
+  function give(o) { if (st.given[o.id]) return; st.given[o.id] = 1; (o.give || []).forEach(function (iid) { if (st.inv.indexOf(iid) < 0) st.inv.push(iid) }); if (o.give && o.give.length) toast('가방에 넣었어요: ' + o.give.map(function (i) { return R.items[i].nm }).join(', ')) }
+  function done(o) {
+    var h = '';
+    if (o.after) { h += '<div class="es-after"><p>' + frac(o.after) + '</p>' + fig(o.afterFig) + '</div>'; note(o.nm, '<p>' + frac(o.after) + '</p>' + fig(o.afterFig)) }
+    if (o.go === 'exit') h += '<button type="button" class="tl-btn tl-go es-goexit" data-a="exit">밖으로 나가기</button>';
+    else if (o.go) h += '<button type="button" class="tl-btn tl-go" data-go="' + o.go + '">' + esc(jo(SCN[o.go].nm, '으로', '로')) + ' 가기</button>';
+    return h;
+  }
+  /* 자물쇠 */
+  var SYM = { dir: ['↑', '→', '↓', '←'], shape: ['○', '△', '□', '☆'], color: ['빨강', '노랑', '초록', '파랑'] };
+  function lockUI(o) {
+    var L = o.lock, e = st.entry[o.id] || (st.entry[o.id] = L.t === 'num' ? L.code.split('').map(function () { return 0 }) : []), h = '<div class="es-lock es-lk-' + L.t + '"><p class="es-lq">' + frac(L.q) + '</p>';
+    if (L.t === 'num') h += '<div class="es-dials">' + e.map(function (d, i) { return '<div class="es-dial"><button type="button" data-d="' + i + '" data-v="1" aria-label="' + (i + 1) + '번째 숫자 올리기">▲</button><b>' + d + '</b><button type="button" data-d="' + i + '" data-v="-1" aria-label="' + (i + 1) + '번째 숫자 내리기">▼</button></div>' }).join('') + '</div>';
     else {
-      var fin = st.k >= N, L = fin ? null : R.locks[st.k];
-      h += '<div class="es-lock' + (fin ? ' es-door' : '') + '"><p class="es-story">' + (fin ? '🚪 마지막 문이에요! 모은 단서로 비밀번호를 알아내요.' : '🔒 ' + (st.k + 1) + '번 자물쇠 — ' + esc(L.story)) + '</p><p class="es-q">' + frac(fin ? R.final.q : L.q) + '</p>'
-        + (fin ? '<p class="es-clues">' + st.open.map(function (a, i) { return '<span>' + (i + 1) + '번 답 <b>' + a + '</b></span>' }).join('') + '</p>' : '')
-        + '<div class="es-in"><span class="es-disp" aria-live="polite"></span></div><div class="es-pad">' + [1, 2, 3, 4, 5, 6, 7, 8, 9, '지움', 0, '열기'].map(function (d) { return '<button type="button" class="es-k' + (d === '열기' ? ' es-open' : '') + '" data-k="' + d + '">' + (d === '열기' ? '🔓 열기' : d) + '</button>' }).join('') + '</div>'
-        + '<div class="tl-row"><button type="button" class="tl-btn" data-a="hint">💡 힌트 보기</button><button type="button" class="tl-btn" data-a="ans">🔑 정답 보기(선생님)</button></div><div class="es-hints"></div><p class="tl-msg" aria-live="polite"></p></div>';
+      var opts = L.opts || SYM[L.t];
+      h += '<div class="es-slots">' + L.code.map(function (_, i) { var v = e[i]; return '<span class="es-slot">' + (v == null ? '' : sym(L.t, v, 22)) + '</span>' }).join('') + '</div><div class="es-keys">' + opts.map(function (v) { return '<button type="button" class="es-key" data-put="' + esc(v) + '" aria-label="' + esc(v) + '">' + sym(L.t, v, 26) + (L.t === 'color' ? '<span>' + esc(v) + '</span>' : '') + '</button>' }).join('') + '<button type="button" class="es-key es-del" data-a="del">한 칸 지우기</button></div>';
     }
-    host.innerHTML = h; timer(); var dp = host.querySelector('.es-disp'); if (dp) dp.textContent = typed; api.bar('🔐 ' + R.title + (st.done ? ' · 탈출!' : ' · ' + (st.k >= N ? '마지막 문' : (st.k + 1) + '번 자물쇠')));
-    var hs = host.querySelector('.es-hints'); if (hs) { var arr = st.k >= N ? [R.final.hint] : R.locks[st.k].hints; hs.innerHTML = arr.slice(0, st.shown[st.k] || 0).map(function (t, i) { return '<p>💡 ' + (i + 1) + '. ' + frac(t) + '</p>' }).join('') }
+    h += '<div class="tl-row"><button type="button" class="tl-btn tl-go es-try" data-a="try">열어 보기</button></div><p class="es-msg" aria-live="polite"></p>';
+    if (st.notes.length) h += '<details class="es-nbk"><summary>수첩 펼쳐 보기 (' + st.notes.length + ')</summary>' + st.notes.map(function (n) { return '<div class="es-nbi"><b>' + esc(n.t) + '</b>' + n.h + '</div>' }).join('') + '</details>';
+    var n = st.lh[o.id] || 0;
+    h += '<div class="es-lh">' + L.hints.slice(0, n).map(function (t, i) { return '<p>힌트 ' + (i + 1) + '. ' + frac(t) + '</p>' }).join('') + '</div><div class="tl-row es-lrow">' + (n < L.hints.length ? '<button type="button" class="tl-btn" data-a="lhint">힌트 보기 (' + (L.hints.length - n) + ')</button>' : '') + '<button type="button" class="tl-btn es-teach" data-a="ans">정답 보기(선생님)</button></div></div>';
+    return h;
   }
-  var typed = '';
-  function want() { return st.k >= N ? R.final.a : R.locks[st.k].a }
-  function tryOpen() {
-    var m = host.querySelector('.tl-msg'), box = host.querySelector('.es-lock');
-    if (!typed) return;
-    if (+typed === want()) {
-      st.open.push(want()); typed = '';
-      if (st.k >= N) { st.done = true; st.sec = sec(); stop(); draw(); return }
-      var sol = R.locks[st.k].sol; st.k++; draw(); var mm = host.querySelector('.tl-msg'); mm.innerHTML = '🔓 열렸어요! <small>' + frac(sol) + '</small>'; mm.style.color = 'var(--ok)';
-    } else { st.wrong++; box.classList.remove('es-shake'); void box.offsetWidth; box.classList.add('es-shake'); m.textContent = '❌ 자물쇠가 열리지 않아요. 다시 생각해 보세요.'; m.style.color = 'var(--bad)'; typed = ''; host.querySelector('.es-disp').textContent = ''; host.querySelector('.es-hc').textContent = '💡 힌트 ' + st.hints + ' · ❌ ' + st.wrong }
+  function sym(t, v, s) {
+    if (t === 'dir') return '<svg viewBox="0 0 40 40" width="' + s + '" height="' + s + '" aria-hidden="true">' + ART.arrow(v, 20, 20, 15) + '</svg>';
+    if (t === 'shape') return '<svg viewBox="0 0 40 40" width="' + s + '" height="' + s + '" aria-hidden="true">' + ART.shape(v, 20, 21, 15) + '</svg>';
+    if (t === 'color') return '<i class="es-sw" style="background:' + ART.c(v) + '"></i>';
+    return esc(v);
   }
+  function tryLock(o) {
+    var L = o.lock, e = st.entry[o.id], got = L.t === 'num' ? e.join('') : e.join(','), want = L.t === 'num' ? L.code : L.code.join(','), msg = host.querySelector('.es-msg');
+    if (L.t !== 'num' && e.length < L.code.length) { msg.textContent = '칸을 모두 채워요(' + L.code.length + '칸).'; return }
+    if (got === want) { st.solved[o.id] = 1; give(o); toast('딸깍! ' + jo(o.nm, '이', '가') + ' 열렸어요'); sfx(1); var keep = st.open; draw(); st.open = keep; openObj(o.id); return }
+    st.wrong++; sfx(0); var card = host.querySelector('.es-lock'); card.classList.remove('es-shake'); void card.offsetWidth; card.classList.add('es-shake');
+    msg.textContent = '열리지 않아요. 단서를 다시 살펴봐요.'; if (L.t !== 'num') { st.entry[o.id] = []; refreshLock(o) } host.querySelector('.es-hc').textContent = '힌트 ' + st.hints + ' · 틀림 ' + st.wrong;
+  }
+  function refreshLock(o) { var box = host.querySelector('.es-lock'); if (!box) return; var t = document.createElement('div'); t.innerHTML = lockUI(o); box.replaceWith(t.firstChild) }
+  function toast(t) { var d = document.createElement('div'); d.className = 'es-toast'; d.textContent = t; host.appendChild(d); setTimeout(function () { d.remove() }, 2200) }
+  var AC = null; function sfx(good) { try { AC = AC || new (window.AudioContext || window.webkitAudioContext)(); var o = AC.createOscillator(), g = AC.createGain(); o.connect(g); g.connect(AC.destination); o.frequency.value = good ? 660 : 180; g.gain.value = .08; o.start(); o.frequency.linearRampToValueAtTime(good ? 990 : 120, AC.currentTime + .18); g.gain.linearRampToValueAtTime(0, AC.currentTime + .25); o.stop(AC.currentTime + .26) } catch (e) {} }
+  function useItem(o, iid) {
+    if (o.need === iid) {
+      st.used[o.id] = 1; var it = R.items[iid]; if (!it.keep) st.inv = st.inv.filter(function (x) { return x !== iid }); st.sel = null;
+      if (!o.lock) give(o); toast(jo(it.nm, '을', '를') + ' 썼어요!'); sfx(1);
+      var k = o.id; draw(); openObj(k); if (o.useMsg) { var c = host.querySelector('.es-ctext'); c.insertAdjacentHTML('afterbegin', '<p class="es-used">' + frac(o.useMsg) + '</p>') }
+    } else { toast('여기에는 ' + jo(R.items[iid].nm, '이', '가') + ' 맞지 않아요'); st.wrong++; sfx(0); var hc = host.querySelector('.es-hc'); if (hc) hc.textContent = '힌트 ' + st.hints + ' · 틀림 ' + st.wrong }
+  }
+  function where() {
+    st.hints++; var next = null; for (var i = 0; i < R.flow.length; i++) { var o = OBJ[R.flow[i]]; if (!ok(o) || (!st.seen[o.id] && o.keep)) { next = o; break } }
+    if (!next) { var ex = null; for (var k in OBJ) if (OBJ[k].go === 'exit') ex = OBJ[k]; next = ex }
+    draw();
+    if (next.scene !== st.scene) say('힌트: <b>' + esc(jo(SCN[next.scene].nm, '으로', '로')) + '</b> 가 봐요.', 'es-hint');
+    else { say('힌트: ' + frac(next.guide || jo(next.nm, '을', '를') + ' 살펴봐요.'), 'es-hint'); var g = host.querySelector('.es-obj[data-o="' + next.id + '"]'); if (g) g.classList.add('es-pulse') }
+  }
+  function win() {
+    st.done = true; stop(); var s = st.sec, stars = st.hints <= 2 && st.wrong <= 3 ? 3 : st.hints <= 5 && st.wrong <= 8 ? 2 : 1;
+    host.innerHTML = '<div class="es-win"><svg viewBox="0 0 1000 260" class="es-cover" aria-hidden="true">' + bg({ wall: '#FFF4D6', floor: '#F2C230' }, 260) + '<g transform="translate(430 20)">' + A.door(140, 200, { c: '초록' }, true) + '</g></svg><p class="es-bigt">탈출 성공!</p><p>' + frac(R.outro) + '</p><p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p><p>걸린 시간 <b>' + mmss(s) + '</b> · 힌트 <b>' + st.hints + '</b>번 · 틀린 횟수 <b>' + st.wrong + '</b>번 · 모은 단서 <b>' + st.notes.length + '</b>개</p><button type="button" class="tl-btn tl-go" data-a="again">처음부터 다시</button></div>';
+    api.bar(R.title + ' · 탈출!');
+  }
+  /* 누르기 */
   host.addEventListener('click', function (e) {
-    var b = e.target.closest('button'); if (!b) return;
-    if (b.classList.contains('es-go')) { limit = +host.querySelector('.es-lim').value; st.t0 = Date.now(); tick = setInterval(timer, 1000); typed = ''; draw(); return }
-    if (b.dataset.a === 'again') { reset(); return }
-    if (b.dataset.k != null) { var k = b.dataset.k; if (k === '열기') tryOpen(); else if (k === '지움') typed = typed.slice(0, -1); else if (typed.length < 6) typed += k; var d = host.querySelector('.es-disp'); if (d) d.textContent = typed; return }
-    if (b.dataset.a === 'hint') { var arr = st.k >= N ? [R.final.hint] : R.locks[st.k].hints, s = st.shown[st.k] || 0; if (s < arr.length) { st.shown[st.k] = s + 1; st.hints++ } draw() }
-    if (b.dataset.a === 'ans' && confirm('정답을 볼까요? (선생님 확인용)')) { var mm = host.querySelector('.tl-msg'); mm.innerHTML = '정답: <b>' + want() + '</b>' + (st.k < N ? ' — ' + frac(R.locks[st.k].sol) : ''); mm.style.color = '' }
+    var t = e.target, b = t.closest('button'), g = t.closest('.es-obj');
+    if (b && b.classList.contains('es-go')) { limit = +host.querySelector('.es-lim').value; st.t0 = Date.now(); tick = setInterval(timer, 1000); draw(); return }
+    if (g && !t.closest('.es-modal')) { var o = OBJ[g.dataset.o]; if (st.sel) { var iid = st.sel; if (o.need && !st.used[o.id]) { useItem(o, iid); return } st.sel = null; draw(); toast('여기에는 쓸 수 없어요. 그냥 살펴볼게요') } openObj(o.id); return }
+    if (!b) { if (t.classList.contains('es-modal')) closeM(); return }
+    var a = b.dataset.a, o2 = st.open && OBJ[st.open];
+    if (a === 'close') return closeM();
+    if (a === 'again') return reset();
+    if (a === 'where') return where();
+    if (a === 'exit') { st.sec = sec(); return win() }
+    if (b.dataset.sc) { st.scene = b.dataset.sc; st.open = null; st.sel = null; return draw() }
+    if (b.dataset.go) { st.scene = b.dataset.go; st.open = null; return draw() }
+    if (b.dataset.it) { st.sel = st.sel === b.dataset.it ? null : b.dataset.it; var keep = st.open; st.open = null; draw(); return }
+    if (b.dataset.use && o2) return useItem(o2, b.dataset.use);
+    if (b.dataset.nt) { var n = st.notes[+b.dataset.nt], m = host.querySelector('.es-modal'); st.open = null; m.innerHTML = '<div class="es-card"><div class="es-chd"><b>수첩 · ' + esc(n.t) + '</b><button type="button" class="tl-btn es-x" data-a="close">닫기</button></div><div class="es-ctext es-solo">' + n.h + '</div></div>'; m.hidden = false; return }
+    if (!o2 || !o2.lock) return;
+    var L = o2.lock, en = st.entry[o2.id];
+    if (b.dataset.d != null) { var i = +b.dataset.d; en[i] = (en[i] + (+b.dataset.v) + 10) % 10; b.parentNode.querySelector('b').textContent = en[i]; return }
+    if (b.dataset.put != null) { if (en.length < L.code.length) en.push(b.dataset.put); refreshLock(o2); return }
+    if (a === 'del') { en.pop(); refreshLock(o2); return }
+    if (a === 'try') return tryLock(o2);
+    if (a === 'lhint') { st.lh[o2.id] = (st.lh[o2.id] || 0) + 1; st.hints++; refreshLock(o2); host.querySelector('.es-hc').textContent = '힌트 ' + st.hints + ' · 틀림 ' + st.wrong; return }
+    if (a === 'ans' && confirm('정답을 볼까요? (선생님 확인용)')) { host.querySelector('.es-msg').innerHTML = '정답: <b>' + esc(L.t === 'num' ? L.code : L.code.join(' → ')) + '</b> — ' + frac(L.sol) }
   });
-  document.addEventListener('keydown', function (e) { if (!host.querySelector('.es-pad') || /INPUT|SELECT/.test(e.target.tagName)) return; if (/^[0-9]$/.test(e.key) && typed.length < 6) typed += e.key; else if (e.key === 'Backspace') typed = typed.slice(0, -1); else if (e.key === 'Enter') { e.preventDefault(); tryOpen(); return } else return; host.querySelector('.es-disp').textContent = typed });
+  function closeM() { var m = host.querySelector('.es-modal'); if (m) { m.hidden = true; m.innerHTML = '' } st.open = null; draw() }
+  host.addEventListener('keydown', function (e) {
+    var g = e.target.closest && e.target.closest('.es-obj'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); g.dispatchEvent(new MouseEvent('click', { bubbles: true })) }
+  });
+  document.addEventListener('keydown', function (e) {
+    if (!st || !st.open || /INPUT|SELECT|TEXTAREA/.test(e.target.tagName)) return; var o = OBJ[st.open];
+    if (e.key === 'Escape') return closeM();
+    if (!o.lock || st.solved[o.id] || (o.need && !st.used[o.id])) return; var L = o.lock, en = st.entry[o.id];
+    if (L.t === 'num' && /^[0-9]$/.test(e.key)) { var i = en.__p || 0; en[i] = +e.key; en.__p = (i + 1) % en.length; refreshLock(o); return }
+    if (L.t === 'dir') { var k = { ArrowUp: '↑', ArrowRight: '→', ArrowDown: '↓', ArrowLeft: '←' }[e.key]; if (k) { e.preventDefault(); if (en.length < L.code.length) en.push(k); refreshLock(o); return } }
+    if (e.key === 'Backspace' && L.t !== 'num') { en.pop(); refreshLock(o); return }
+    if (e.key === 'Enter') { e.preventDefault(); tryLock(o) }
+  });
   document.getElementById('esPrint').onclick = function () { document.documentElement.classList.add('es-printing'); var off = function () { document.documentElement.classList.remove('es-printing'); window.removeEventListener('afterprint', off) }; window.addEventListener('afterprint', off); setTimeout(function () { window.print() }, 80) };
   reset();
 };
