@@ -35,11 +35,11 @@ PIV = np.array([-3.3, 2.35, 0.0])   # 부챗살 축
 # 그림 위 자리(원본 1920×1080 픽셀) — 그림이 들어오면 열어 보고 맞춤
 P = {
     "carp_fin_d": (940, 280), "carp_fin_t": (1660, 600), "carp_body": (1000, 560),   # f3ep05/carp
-    "frog_web": (1380, 880),
-    "duck_web": (900, 940),
-    "otter_head": (520, 430), "otter_foot": (1250, 760),
-    "crab_claw": (640, 600), "crab_leg": (1300, 760),
-    "dolphin_body": (960, 560), "dolphin_fin": (1620, 560),
+    "frog_web": (1210, 845),
+    "duck_web": (930, 960),
+    "otter_head": (300, 420), "otter_foot": (1605, 635),
+    "crab_claw": (650, 650), "crab_leg": (1330, 700),
+    "dolphin_body": (980, 530), "dolphin_fin": (1040, 290),
 }
 
 
@@ -124,7 +124,7 @@ class F3Ep07(EpisodeScene):
         ph = F.photo("f3ep07/duck", height=5.2).move_to([0, 0.35, 0])
         self.say("오리의 발도 살펴볼까요?", "오리의 발도 살펴볼까요?")
         self.play(FadeIn(ph), run_time=0.7)
-        a, t = F.callout(ph, P["duck_web"], "물갈퀴", to=(2.4, 0.6))
+        a, t = F.callout(ph, P["duck_web"], "물갈퀴", to=(3.0, 1.3))
         self.say(f"발가락 사이에 {o('물갈퀴')}가 있어 헤엄을 잘 쳐요", "오리도 발가락 사이에 물갈퀴가 있어 물에서 헤엄을 잘 쳐요.")
         self.play(GrowArrow(a), FadeIn(t), run_time=0.7)
         self.say("물갈퀴가 있으면 어떤 점이 좋을까요?", "발에 물갈퀴가 있으면 어떤 점이 좋을까요? 실험으로 알아봐요.")
@@ -237,7 +237,7 @@ class F3Ep07(EpisodeScene):
         ph = F.photo("f3ep07/otter", height=5.2).move_to([0, 0.35, 0])
         self.say("강이나 호수에 사는 수달이에요", "강이나 호수에 사는 수달이에요.")
         self.play(FadeIn(ph), run_time=0.7)
-        a, t = F.callout(ph, P["otter_foot"], "물갈퀴가 있는 발", to=(2.4, -0.6), size=36)
+        a, t = F.callout(ph, P["otter_foot"], "물갈퀴가 있는 발", to=(-0.4, -1.3), size=36)
         self.say(f"머리는 납작하며 둥글고 발에 {o('물갈퀴')}가 있어요", "수달은 머리가 납작하며 둥글고, 발에 물갈퀴가 있어요.")
         self.play(GrowArrow(a), FadeIn(t), run_time=0.7)
         self.say(f"땅과 물을 오가며, {o('물갈퀴 발')}로 헤엄쳐요", "수달은 땅과 물을 오가며 살아요. 물속에서는 물갈퀴가 있는 발로 헤엄쳐 다녀요.")
@@ -247,7 +247,7 @@ class F3Ep07(EpisodeScene):
         ph = F.photo("f3ep07/crab", height=5.2).move_to([0, 0.35, 0])
         self.say("갯벌에 사는 농게예요", "갯벌에 사는 농게예요.")
         self.play(FadeIn(ph), run_time=0.7)
-        a, t = F.callout(ph, P["crab_claw"], "더 큰 집게발", to=(-1.6, 1.6), size=36)
+        a, t = F.callout(ph, P["crab_claw"], "더 큰 집게발", to=(0.9, -1.5), size=36)
         self.say(f"딱딱한 껍데기, 수컷은 한쪽 {o('집게발')}이 더 커요",
                  "농게는 몸이 딱딱한 껍데기로 덮여 있고 다리가 있어요. 수컷은 한쪽 집게발이 더 커요.")
         self.play(GrowArrow(a), FadeIn(t), run_time=0.7)
