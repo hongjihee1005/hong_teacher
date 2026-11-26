@@ -19,5 +19,10 @@ var CP = (function () {
     setTimeout(function () { window.print() }, 120);
   }
   function page(inner, title, name) { return '<div class="cp-pg">' + (title ? '<div class="cp-hd"><b>' + title + '</b>' + (name === false ? '' : '<span>이름 ______________</span>') + '</div>' : '') + inner + '<p class="cp-ft">교실 수학 놀이 · 초등교사 홍지희</p></div>' }
-  return { rnd: rnd, shuffle: shuffle, esc: esc, frac: frac, die: die, dice: dice, print: print, page: page };
+  /* 단계 쉬움·보통·도전(2026-11-26): lvSel(놀이 id) → 고르기 칸 HTML, lv(host) → 0·1·2 (고른 단계는 이 기기에 기억) */
+  var LVN = ['쉬움', '보통', '도전'], LK = 'hj-play-lv';
+  function lvLoad(id) { try { var v = JSON.parse(localStorage.getItem(LK) || '{}')[id]; return v >= 0 && v <= 2 ? v : 1 } catch (e) { return 1 } }
+  function lvSel(id) { var v = lvLoad(id); return '<label>단계 <select class="cp-lv" data-id="' + id + '">' + LVN.map(function (n, i) { return '<option value="' + i + '"' + (i === v ? ' selected' : '') + '>' + n + '</option>' }).join('') + '</select></label>' }
+  function lv(host) { var s = host.querySelector('.cp-lv'); if (!s) return 1; var v = +s.value; try { var o = JSON.parse(localStorage.getItem(LK) || '{}'); o[s.dataset.id] = v; localStorage.setItem(LK, JSON.stringify(o)) } catch (e) {} return v }
+  return { LVN: LVN, lvSel: lvSel, lv: lv, rnd: rnd, shuffle: shuffle, esc: esc, frac: frac, die: die, dice: dice, print: print, page: page };
 })();
