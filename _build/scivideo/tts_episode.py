@@ -17,7 +17,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, HERE)
 from tts_norm import normalize
 
-SPEED = 1.1
+SPEED = float(os.environ.get("TTS_SPEED", "1.1"))   # 처음 배우는 과학은 1.0
 SR = 44100
 CACHE = os.path.join(HERE, 'media', 'tts_cache')
 INDEX = os.path.join(CACHE, 'index.json')
@@ -29,6 +29,11 @@ def lines_of(ep):
            for l in open(f'{HERE}/{ep}/narration.txt', encoding='utf-8') if l.startswith('[')]
     assert len(tl) == len(nar), (ep, len(tl), len(nar))
     return [(d['t'], d['end'], n) for d, n in zip(tl, nar)]
+
+
+def key(say):
+    """index.json 열쇠 — 기본 빠르기(1.1)는 글 그대로, 다른 빠르기는 '빠르기|글'"""
+    return say if SPEED == 1.1 else f'{SPEED}|{say}'
 
 
 def wav_path(say):
@@ -65,7 +70,7 @@ def prep(eps):
     for ep in eps:
         for _, _, text in lines_of(ep):
             say = normalize(text)
-            if re.search('[가-힣]', say) and (say not in idx or not os.path.exists(wav_path(say))) and say not in todo:
+            if re.search('[가-힣]', say) and (key(say) not in idx or not os.path.exists(wav_path(say))) and say not in todo:
                 todo.append(say)
     if not todo:
         print('prep: 새로 만들 음성 없음', eps)
@@ -80,12 +85,12 @@ def prep(eps):
         m.tts_to_file(say, spk, f, speed=SPEED, quiet=True)
         a = trim(read_wav(f))
         sf.write(wav_path(say), a, SR)
-        idx[say] = round(len(a) / SR, 3)
+        idx[key(say)] = round(len(a) / SR, 3)
         if i % 20 == 19 or i == len(todo) - 1:      # 중간에 멈춰도 만든 것은 남게
             cur = load_index(); cur.update(idx); idx = cur
             json.dump(idx, open(INDEX + '.tmp', 'w', encoding='utf-8'), ensure_ascii=False, indent=0)
             os.replace(INDEX + '.tmp', INDEX)
-        print(f'prep {i + 1}/{len(todo)} {idx[say]:4.1f}s {say}', flush=True)
+        print(f'prep {i + 1}/{len(todo)} {idx[key(say)]:4.1f}s {say}', flush=True)
 
 
 def mix(ep):

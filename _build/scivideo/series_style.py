@@ -147,7 +147,9 @@ def voice_time(narr):
             p = os.path.join(os.path.dirname(os.path.abspath(__file__)), "media", "tts_cache", "index.json")
             _VCACHE = json.load(open(p, encoding="utf-8")) if os.path.exists(p) else {}
         from tts_norm import normalize
-        d = _VCACHE.get(normalize(narr))
+        sp = float(os.environ.get("TTS_SPEED", "1.1"))
+        k = normalize(narr)
+        d = _VCACHE.get(k if sp == 1.1 else f"{sp}|{k}")
         if d:
             return d + VOICE_PAD
         print(f"[음성 없음] {narr}")

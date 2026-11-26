@@ -7,7 +7,7 @@ set -e
 cd "$(dirname "$0")"
 EP=${1:?화 폴더 이름을 적으세요 (예: s3ep01)}
 MODE=${2:-preview}
-SCENE=$(echo "$EP" | sed -E 's/^s([0-9])(ep|mm)([0-9]+)$/S\1\u\2\3/')
+SCENE=$(echo "$EP" | sed -E 's/^([sf])([0-9])(ep|mm)([0-9]+)$/\u\1\2\u\3\4/')   # s3ep01 → S3Ep01, f3ep05 → F3Ep05
 MANIM=${MANIM:-/opt/manimenv/bin/manim}
 if [ "$MODE" = "final" ]; then
   Q=(-qh --fps 30); OUT="${EP}_final.mp4"
