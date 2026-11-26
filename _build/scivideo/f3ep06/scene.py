@@ -33,15 +33,15 @@ def b_(s):
 # 그림 위 자리(원본 1920×1080 픽셀) — 그림이 들어오면 열어 보고 맞춤
 P = {
     "snail_body": (900, 700), "butterfly_wing": (1210, 250),
-    # 허물: 위에서 내려다본 모습, 머리가 위쪽
-    "exu_body": (960, 560), "exu_ant": (960, 210),
-    "exu_leg1": (760, 400), "exu_leg2": (1160, 400), "exu_leg3": (720, 560), "exu_leg4": (1200, 560),
-    "exu_leg5": (740, 730), "exu_leg6": (1180, 730),
+    # 허물: 위에서 내려다본 모습, 머리가 위쪽 (photos/f3ep06/exuvia.jpg에 맞춤)
+    "exu_body": (950, 560), "exu_ant": (955, 110),
+    "exu_leg1": (735, 220), "exu_leg2": (1180, 210), "exu_leg3": (670, 465), "exu_leg4": (1230, 455),
+    "exu_leg5": (690, 790), "exu_leg6": (1205, 800),
     # 두더지·땅강아지·개미·지렁이: 옆모습, 머리가 왼쪽
-    "mole_paw": (600, 800), "mole_body": (1150, 520),
-    "cric_fore": (560, 720), "cric_body": (1100, 520),
-    "ant_jaw": (430, 600), "ant_body": (1050, 520),
-    "worm_front": (480, 560), "worm_back": (1480, 600),
+    "mole_paw": (500, 740), "mole_paw2": (1230, 800), "mole_body": (1150, 520),
+    "cric_fore": (450, 650), "cric_body": (1100, 480),
+    "ant_jaw": (400, 520), "ant_body": (1050, 450),
+    "worm_front": (70, 632), "worm_back": (1855, 612),
 }
 
 
@@ -180,7 +180,7 @@ class F3Ep06(EpisodeScene):
         ph = F.photo("f3ep06/mole", height=5.2).move_to([0, 0.35, 0])
         self.say("땅속에 사는 두더지예요", "땅속에 사는 두더지예요.")
         self.play(FadeIn(ph), run_time=0.7)
-        a, t = F.callout(ph, P["mole_paw"], "삽처럼 넓적한 앞다리", to=(2.6, -0.4), size=36)
+        a, t = F.callout(ph, P["mole_paw2"], "삽처럼 넓적한 앞다리", to=(2.0, 2.65), size=36)
         self.say(f"앞다리가 {o('삽처럼 넓적')}하고 두꺼운 발톱이 있어요",
                  "두더지는 앞다리가 삽처럼 넓적하고, 두꺼운 발톱이 있어요. 눈은 거의 보이지 않아요.")
         self.play(GrowArrow(a), FadeIn(t), run_time=0.7)
@@ -192,7 +192,7 @@ class F3Ep06(EpisodeScene):
         ph = F.photo("f3ep06/mole_cricket", height=5.2).move_to([0, 0.35, 0])
         self.say("땅속에 사는 땅강아지예요", "땅속에 사는 땅강아지예요.")
         self.play(FadeIn(ph), run_time=0.7)
-        a, t = F.callout(ph, P["cric_fore"], "넓고 두꺼운 앞다리", to=(2.6, -0.5), size=36)
+        a, t = F.callout(ph, P["cric_fore"], "넓고 두꺼운 앞다리", to=(0.6, 2.2), size=36)
         self.say(f"앞다리가 {o('삽 모양')}으로 넓고 두꺼워요", "땅강아지는 다리가 세 쌍이고, 앞다리가 삽 모양으로 넓고 두꺼워요.")
         self.play(GrowArrow(a), FadeIn(t), run_time=0.7)
         self.say(f"{o('넓적한 앞다리')}로 땅을 파며 살아요", "땅강아지는 넓적한 앞다리로 땅을 파며 땅속에서 살아요.")
