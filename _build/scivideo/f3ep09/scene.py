@@ -32,13 +32,13 @@ def r(s):
 P = {
     "octo_arm": (780, 880),                       # f3ep05/octopus
     "swallow_wingL": (600, 300),                  # f3ep05/swallow
-    "frog_web": (1380, 880),                      # f3ep07/frog
-    "mole_paw": (600, 800),                       # f3ep06/mole
-    "cup_rim": (960, 640), "cup_center": (960, 540),
-    "glove_web": (900, 420),
-    "exc_bucket": (520, 720),
-    "masu_body": (960, 540),
-    "train_nose": (520, 600),
+    "frog_web": (1210, 845),                      # f3ep07/frog
+    "mole_paw": (500, 740),                       # f3ep06/mole
+    "cup_rim": (650, 495), "cup_center": (930, 480),
+    "glove_web": (1170, 380),
+    "exc_bucket": (1700, 600),
+    "masu_body": (900, 560),
+    "train_nose": (330, 600),
 }
 
 
@@ -150,7 +150,7 @@ class F3Ep09(EpisodeScene):
         p1 = F.photo("f3ep09/swim_glove", width=5.2).move_to([-3.55, 0.65, 0])
         p2 = F.photo("f3ep07/frog", width=5.2).move_to([3.55, 0.65, 0])
         ar = T("←", 64, ORANGE).move_to([0, 0.65, 0])
-        a, t = F.callout(p2, P["frog_web"], "물갈퀴", to=(-1.0, 1.1))
+        a, t = F.callout(p2, P["frog_web"], "물갈퀴", to=(-1.7, 0.35))
         self.say(f"물놀이용 물갈퀴는 {o('개구리의 발')}을 이용했어요",
                  "물놀이용 물갈퀴는 발가락 사이에 물갈퀴가 있어 헤엄을 잘 치는 개구리 발의 특징을 이용해 만들었어요.")
         self.play(FadeIn(p1), FadeIn(p2), FadeIn(ar), run_time=0.8)
