@@ -34,7 +34,7 @@ def build(t):
     if t['id'] == 'allow':
         tool += "\n(function(){var f=window.TOOL;window.TOOL=function(h,a){f(h,a);var b=document.createElement('p');b.className='tl-row';b.innerHTML='<button type=\"button\" class=\"tl-btn\">🖨️ 빈 용돈 기입장 인쇄</button>';h.parentNode.appendChild(b);b.querySelector('button').onclick=function(){document.documentElement.classList.add('lf-printing');var off=function(){document.documentElement.classList.remove('lf-printing');window.removeEventListener('afterprint',off)};window.addEventListener('afterprint',off);setTimeout(function(){window.print()},80)}}})();"
     rep = {'TITLE': t['title'], 'DESC': t['desc'], 'ICO': t['ico'], 'REC': t['rec'], 'GNAV': gnav,
-           'HOW': '<ul>' + ''.join(f'<li>{x}</li>' for x in t['how']) + '</ul>', 'IDEAS': ''.join(f'<li>{x}</li>' for x in t['ideas']),
+           'HOW': '<ul><li>위의 <b>쉬움 · 보통 · 도전</b> 단추로 단계를 골라요. 단계를 바꾸면 1번부터 다시 해요(고른 단계는 이 기기에 기억돼요).</li>' + ''.join(f'<li>{x}</li>' for x in t['how']) + '</ul>', 'IDEAS': ''.join(f'<li>{x}</li>' for x in t['ideas']),
            'DATA': json.dumps({'id': t['id']}), 'TOOL': tool, 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', t['acc']).replace('{TOOLCSS}', rd(HERE / 'life.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '생활 속에서 수학을 쓰는 자료입니다.'),
