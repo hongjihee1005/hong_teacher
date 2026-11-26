@@ -117,6 +117,7 @@
     if (t.k === 'n') return '<span class="mg-n">' + t.v + '</span>';
     if (t.k === 'd') return '<span class="mg-n">' + AR.dstr(t.v, t.p) + '</span>';
     if (t.k === 'f') return frH(t);
+    if (t.k === 'fig') return '<span class="mg-fig">' + AR.fig(t) + '</span>';
     if (t.k === 'b') return '<span class="mg-blank" aria-label="빈칸">?</span>';
     return '';
   }
@@ -127,7 +128,7 @@
   }
   function hintOf(p) {
     var s = AR.BY[p.s], a = s.ask;
-    if (a === 'mixed') return '대분수로'; if (a === 'improper') return '가분수로'; if (a === 'simp') return '기약분수로';
+    if (a === 'mixed') return '대분수로'; if (a === 'improper') return '가분수로'; if (a === 'simp') return '기약분수로'; if (a === 'pick') return s.hk;
     if (/de03|de16/.test(s.id)) return '소수로'; if (a === 'qr') return '몫 … 나머지'; if (a === 'cmp') return '○ 안에 >, =, <'; if (a === 'blank') return '? 에 알맞은 수';
     return '';
   }

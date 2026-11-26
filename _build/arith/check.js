@@ -72,9 +72,23 @@ const TX = {
   ms10: (v, s, p) => { const t = p.txt.find(t => typeof t === 'object'); return t.k === 'd' ? t.v * 100 / 10 ** t.p : t.k === 'f' ? t.n * 100 / t.d : v[1] * 100 / v[0] },
   ms11: ([a, b, c], s) => s.includes('정육면체') ? (s.includes('부피') ? a ** 3 : 6 * a * a) : s.includes('부피') ? a * b * c : 2 * (a * b + b * c + c * a),
   ms12: ([a, b, c], s) => s.startsWith('사탕') ? a * b / (b + c) : s.includes('= □') ? a * c / b : b * c / a,
+  /* 3학년 분수(2026-11-26): 글에서 수를 읽어 따로 계산 */
+  fr19: (v, s) => s.includes('씩 묶으면') ? [v[2] / v[1], v[0] / v[1]] : [v[1], v[0]],
+  fr20: (v, s, p) => { const f = p.txt.find(t => typeof t === 'object' && t.k === 'f'); return s.includes(' m의') ? 100 * f.n / f.d : s.includes('시간의') ? 60 * f.n / f.d : v[0] * f.n / f.d },
+  fr33: (v, s, p) => figs(p).map((f, i) => [i + 1, f.s === 'bar' || f.s === 'pie' || f.s === 'grid']).filter(x => x[1]).map(x => x[0]),
+  fr24: (v, s, p) => { const f = figs(p)[0]; return [f.on.length, f.s === 'grid' ? f.rc[0] * f.rc[1] : f.d] },
+  fr25: (v, s, p) => { const t = p.txt.find(t => t.k === 'f'); return figs(p).map((f, i) => [i + 1, (f.s === 'bar' || f.s === 'pie' || f.s === 'grid') && f.d * t.n === f.on.length * t.d && f.d === t.d]).filter(x => x[1]).map(x => x[0]) },
+  fr26: (v, s) => { const K = ['', '일', '이', '삼', '사', '오', '육', '칠', '팔', '구', '십', '십일', '십이'], m = s.match(/'(.+)분의 (.+)'/); return [K.indexOf(m[2]), K.indexOf(m[1])] },
+  fr27: (v, s, p) => { const f = p.txt.find(t => t.k === 'f'); return s.includes('분자') ? f.n : f.d },
+  fr28: ([d, n], s) => s.includes('남은') ? [d - n, d] : [n, d],
+  fr29: (v, s, p) => { const [g] = v.filter(x => x !== undefined); const f = figs(p)[0]; if (f.g !== g) return [-1, -1]; return [f.on.length, f.d] },
+  fr30: (v, s, p) => { const [n] = v.filter(x => x !== undefined); const f = p.txt.find(t => t.k === 'f'); return f.n === 1 ? [n, f.d] : [-1, -1] },
+  fr21: (v, s, p) => kinds(p, 0), fr22: (v, s, p) => kinds(p, 1), fr23: (v, s, p) => kinds(p, 2),
   ms13: ([x], s) => s.includes('넓이') ? x * x * 3.14 : s.startsWith('지름') ? x * 3.14 : 2 * x * 3.14
 };
 
+const figs = (p) => p.txt.filter(t => typeof t === 'object' && t.k === 'fig');
+const kinds = (p, k) => p.txt.filter(t => typeof t === 'object' && t.k === 'f').map((f, i) => [i + 1, f.w ? (f.n < f.d ? 2 : -1) : f.n < f.d ? 0 : 1]).filter(x => x[1] === k).map(x => x[0]);
 function wrong(a) {   // 틀린 답(입력 꼴)
   if (a.t === 'n') return String(a.v + 1);
   if (a.t === 'qr') return [String(a.q), String(a.r + 1)];
@@ -90,7 +104,7 @@ function verify(p, where) {
     if (p.txt) {
       if (!TX[p.s]) throw new Error('글 문제 점검 함수 없음');
       const x = TX[p.s](p.txt.filter(t => typeof t === 'object').map(t => t.v), p.txt.filter(t => typeof t === 'string').join('#'), p);
-      const same = a.t === 'd' ? Math.abs(a.v / 10 ** a.p - x) < 1e-9 : JSON.stringify(a.v) === JSON.stringify(x);
+      const same = a.t === 'd' ? Math.abs(a.v / 10 ** a.p - x) < 1e-9 : a.t === 'f' ? a.n === x[0] && a.d === x[1] : JSON.stringify(a.v) === JSON.stringify(x);
       if (!same) err(`${where} 글 문제 정답 다름 ${JSON.stringify(p)} → ${x}`);
     } else if (q.includes('○')) {
       const i = q.indexOf('○'), l = ev(q.slice(0, i)), r = ev(q.slice(i + 1)), c = l[0] * r[1] - r[0] * l[1];
@@ -120,6 +134,8 @@ function verify(p, where) {
     const ok = A.judge(a, A.canon(a)); if (!ok.ok) err(`${where} 정답 입력이 '틀림' ${JSON.stringify(a)} ${JSON.stringify(A.canon(a))}`);
     const no = A.judge(a, wrong(a)); if (no.ok) err(`${where} 틀린 입력이 '맞음' ${JSON.stringify(a)} ${JSON.stringify(wrong(a))}`);
     if (a.t === 'f' && a.form === 'simp' && a.d < 40) { const k = A.judge(a, ['', String(a.n * 2), String(a.d * 2)]); if (k.ok || !k.near) err(`${where} 약분 안 한 답 처리 이상`) }
+    if (a.t === 'f' && a.form === 'exact') { const k = A.judge(a, ['', String(a.n * 2), String(a.d * 2)]); if (k.ok || !k.near) err(`${where} 나눈 칸 수와 다른 분모가 맞음`) }
+    if (a.t === 'list' && a.mx && !a.v.every(x => x >= 1 && x <= a.mx)) err(`${where} 번호가 보기 밖`);
     if (a.t === 'f' && a.form === 'mixed') { const k = A.judge(a, ['', String(a.n), String(a.d)]); if (k.ok) err(`${where} 대분수 요구인데 가분수가 맞음`) }
     if (a.t === 'f' && a.form === 'improper') { const k = A.judge(a, A.canon({ ...a, form: 'any' })); if (k.ok) err(`${where} 가분수 요구인데 대분수가 맞음`) }
   } catch (e) { err(`${where} 오류 ${e.message} ${JSON.stringify(p)}`) }

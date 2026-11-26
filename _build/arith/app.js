@@ -22,6 +22,7 @@
       if (t.k === 'n') return '<span class="ar-nm">' + t.v + '</span>';
       if (t.k === 'd') return '<span class="ar-nm">' + AR.dstr(t.v, t.p) + '</span>';
       if (t.k === 'f') return fracH(t.w, t.n, t.d);
+      if (t.k === 'fig') return '<span class="ar-fig">' + AR.fig(t) + '</span>';
     }
     if (t === '(' || t === ')') return '<span class="ar-pa">' + t + '</span>';
     if (/^[+−×÷=]$/.test(t)) return '<span class="ar-op">' + t + '</span>';
@@ -33,7 +34,7 @@
     if (a.t === 'd') return AR.dstr(a.v, a.p);
     if (a.t === 'cmp') return a.v;
     if (a.t === 'list') return a.v.join(', ');
-    if (a.t === 'f') { if (a.n % a.d === 0) return String(a.n / a.d); if (a.form === 'improper' || a.n < a.d) return fracH(0, a.n, a.d); return fracH(Math.floor(a.n / a.d), a.n % a.d, a.d) }
+    if (a.t === 'f') { if (a.form === 'exact') return fracH(0, a.n, a.d); if (a.n % a.d === 0) return String(a.n / a.d); if (a.form === 'improper' || a.n < a.d) return fracH(0, a.n, a.d); return fracH(Math.floor(a.n / a.d), a.n % a.d, a.d) }
   }
   function inp(cls, im, lab, w) { return '<input class="ar-in ' + cls + '" inputmode="' + im + '" autocomplete="off" spellcheck="false" aria-label="' + lab + '"' + (w ? ' style="width:' + w + 'ch"' : '') + '>' }
   /* 답 칸: live(입력) print(빈칸) key(정답) */
@@ -103,11 +104,12 @@
   function askOf(s) {
     var a = s.ask; if (a === 'mixed') return '대분수로 나타내세요.'; if (a === 'improper') return '가분수로 나타내세요.';
     if (a === 'list') return '알맞은 수를 모두 쓰세요. (쉼표로 나누어 써요)';
+    if (a === 'pick') return s.pk + (/모두/.test(s.pk) ? ' (쉼표로 나누어 써요)' : '');
     if (s.ar === 'dec' && /de03|de16/.test(s.id)) return '소수로 나타내세요.';
     return AR.ASK[a] || AR.ASK.calc;
   }
   function hintOf(s) {   // 급수 시험처럼 여러 단계가 섞일 때 문제 앞에 붙이는 짧은 안내
-    var a = s.ask; if (a === 'mixed') return '대분수로'; if (a === 'improper') return '가분수로'; if (a === 'simp') return '기약분수로';
+    var a = s.ask; if (a === 'mixed') return '대분수로'; if (a === 'improper') return '가분수로'; if (a === 'simp') return '기약분수로'; if (a === 'pick') return s.hk;
     if (/de03|de16/.test(s.id)) return '소수로'; if (a === 'qr') return '몫 … 나머지'; if (a === 'cmp') return '>, =, <'; return '';
   }
   function hintH(p) { var h = hintOf(AR.BY[p.s]); return h ? '<span class="ar-hint">' + esc(h) + '</span>' : '' }

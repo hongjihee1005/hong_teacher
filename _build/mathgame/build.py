@@ -4,7 +4,7 @@
     python3 _build/mathgame/build.py          # project/mathgame/g1.html ~ g6.html. 먼저 node check.js로 점검합니다.
     python3 _build/mathgame/build.py check    # 점검만
 
-문제는 공통 › 기초연산의 생성기 _build/arith/skills.js를 그대로 씁니다(111단계). 게임에서는 씨앗을 Math.random()으로 줘서 할 때마다 새 숫자가 나옵니다.
+문제는 공통 › 기초연산의 생성기 _build/arith/skills.js를 그대로 씁니다(125단계). 게임에서는 씨앗을 Math.random()으로 줘서 할 때마다 새 숫자가 나옵니다.
 학년별 단원 묶음: units.json (단계 id는 skills.js의 S, 모든 단계가 한 번씩 꼭 들어가야 함 — check.js가 확인)
 보기(정답 + 오답) 만들기: choices.js, 화면: page.html + page.css + app.js. 아래쪽 '만든 사람'·홈 단추 조각은 _build/origami/의 것을 같이 씁니다.
 목록 project/mathgame/index.html은 메뉴 페이지(손으로 고치고 apply_theme.py).

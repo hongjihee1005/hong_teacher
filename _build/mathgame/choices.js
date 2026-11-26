@@ -107,6 +107,13 @@
   /* 수 여러 개(약수·배수·공약수) 오답 */
   function listCand(p, r) {
     var v = p.a.v, mx = v[v.length - 1], c = [], i;
+    if (p.a.mx) {   // 번호 고르기(진분수·가분수·대분수 찾기): 1~mx 번호 묶음 가운데 정답과 다른 것, 정답과 가까운 것부터
+      var all = [];
+      for (var m = 1; m < (1 << p.a.mx); m++) { var t0 = []; for (var b = 0; b < p.a.mx; b++) if (m & (1 << b)) t0.push(b + 1); if (t0.join() !== v.join() && t0.length <= 3) all.push(t0) }
+      all.sort(function (x, y) { return Math.abs(x.length - v.length) - Math.abs(y.length - v.length) || near(x) - near(y) });
+      return shuffle(r, all.slice(0, 8)).map(function (t) { return { t: 'list', v: t, mx: p.a.mx } });
+    }
+    function near(t) { var d = 0; for (var q = 1; q <= p.a.mx; q++) if ((t.indexOf(q) >= 0) !== (v.indexOf(q) >= 0)) d++; return d }
     function non() { for (var k = 0; k < 60; k++) { var x = ri(r, 2, Math.max(mx + 3, 6)); if (v.indexOf(x) < 0) return x } return mx + 1 }
     for (i = 0; i < 6; i++) {
       var t = v.slice(), kind = i % 3;
@@ -148,6 +155,7 @@
   function fShow(o) {
     var n = o.n, d = o.d;
     if (o.form === 'simp') { var g = gcd(n, d); n /= g; d /= g }
+    if (o.form === 'exact') return { k: 'f', w: 0, n: n, d: d };
     if (n % d === 0 && o.form !== 'improper') return { k: 'n', v: n / d };
     if (o.form === 'improper' || n < d) return { k: 'f', w: 0, n: n, d: d };
     return { k: 'f', w: Math.floor(n / d), n: n % d, d: d };
