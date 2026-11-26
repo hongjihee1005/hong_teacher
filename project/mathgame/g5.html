@@ -2687,7 +2687,7 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
 <li>정답 하나에 <b>10점</b>, 빨리 맞힐수록 <b>빠르기 점수</b>가 최대 10점 더 붙어요.</li>
 <li>연달아 맞히면 <b>연속 점수</b>가 붙어요(2연속 +2점, 3연속 +4점 … 최대 +20점). 틀리면 연속이 0으로 돌아가요.</li>
 <li>5문제를 맞힐 때마다 <b>레벨</b>이 올라가고, 풍선·두더지·외계인이 조금씩 빨라지고 탑 쌓기의 시간도 줄어들어요.</li>
-<li><b>난이도</b> — 기초는 고른 계산 가운데 앞(쉬운) 단계와 작은 수가, 심화는 뒤(어려운) 단계와 큰 수·자릿수가 많은 문제가 더 자주 나와요. 기본은 교과서 수준 그대로 섞여 나와요. 최고 기록은 난이도마다 따로 남아요.</li>
+<li><b>난이도</b> — 기초는 고른 계산 가운데 앞(쉬운) 단계와 작은 수가, 심화는 뒤(어려운) 단계와 큰 수·자릿수가 많은 문제가 더 자주 나와요. 기본은 교과서 수준 그대로 섞여 나와요. 게임도 달라져요: 기초는 풍선·두더지·외계인이 느리고 시간이 넉넉하며 하트 5개, 심화는 조금 더 빠르고 60초 우주 도전에서 틀리면 3초가 줄어요. 최고 기록은 난이도마다 따로 남아요.</li>
 <li>문제는 게임을 시작할 때마다 새로 만들어져요. 같은 단원도 할 때마다 숫자가 달라요.</li>
 <li>최고 기록은 이 기기에만 저장되고, 이름은 저장하지 않아요.</li>
 </ul></details>
@@ -3338,7 +3338,7 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
      ① 고른 계산 단계 가운데 기초는 앞(쉬운) 단계, 심화는 뒤(어려운) 단계가 더 자주 나오고(빠지는 단계는 없음)
      ② 같은 단계에서도 문제를 5개 만들어 '어려움'(수의 자릿수·0 아닌 숫자 수·숫자 합, 분모 크기, 답의 크기)이
         기초는 가장 낮은 것, 심화는 가장 높은 것을 고름. 기본은 지금까지처럼 그대로 하나 만듦. */
-  var LVS = [{ id: 'b', nm: '기초', de: '작은 수 · 쉬운 계산부터' }, { id: 'm', nm: '기본', de: '교과서 수준 그대로' }, { id: 'h', nm: '심화', de: '큰 수 · 어려운 계산 위주' }];
+  var LVS = [{ id: 'b', nm: '기초', de: '작은 수 · 쉬운 계산 · 느리게 · 하트 5개' }, { id: 'm', nm: '기본', de: '교과서 수준 그대로' }, { id: 'h', nm: '심화', de: '큰 수 · 어려운 계산 · 빠르게' }];
   function cxNum(v) {
     if (!(v > 0)) return 0;
     var s = String(Math.round(v)), z = 0, sum = 0;
@@ -3569,6 +3569,9 @@ window.MG={"g":5,"units":[{"id":"u1","sem":"1학기 1단원","nm":"자연수의 
   var units = D.units.concat([ALL]);
   var uSel = units.filter(function (u) { return u.id === mine.u })[0] || units[0];
   var kOn = {}, gSel = GBY[mine.game] ? mine.game : 'balloon', nPl = mine.np || 2, lvSel = /^[bmh]$/.test(mine.lv) ? mine.lv : 'm';
+  /* 난이도에 따라 게임도 바꿈(2026-11-26): 속도·시간 배수 sp(클수록 느림·넉넉), 하트, 우주 도전에서 틀릴 때 빼는 초 */
+  var LVF = { b: { sp: 1.3, lives: 5, pen: 1 }, m: { sp: 1, lives: 3, pen: 2 }, h: { sp: .85, lives: 3, pen: 3 } };
+  function lvf() { return LVF[lvSel] }
   function lvNm() { return MGC.LVS.filter(function (x) { return x.id === lvSel })[0].nm }
   function resetK() { kOn = {}; uSel.k.forEach(function (k) { kOn[k] = 1 }) }
   resetK(); if (mine.u === uSel.id && mine.k && mine.k.length) { var kk = mine.k.filter(function (k) { return uSel.k.indexOf(k) >= 0 }); if (kk.length) { kOn = {}; kk.forEach(function (k) { kOn[k] = 1 }) } }
@@ -3705,12 +3708,12 @@ window.MG={"g":5,"units":[{"id":"u1","sem":"1학기 1단원","nm":"자연수의 
     if (S.lives <= 0) { S.ending = 1; setTimeout(function () { end('하트를 모두 썼어요') }, 700) }
   }
   function qbox(q) { return (hintOf(q.p) ? '<span class="mg-hint">' + esc(hintOf(q.p)) + '</span>' : '') + qH(q.p) }
-  function speedOf(base, step, min) { return Math.max(min, base - step * (S.level - 1)) * (D.g <= 2 ? 1.15 : 1) }
+  function speedOf(base, step, min) { return Math.max(min, base - step * (S.level - 1)) * (D.g <= 2 ? 1.15 : 1) * lvf().sp }
 
   function start(game) {
     var two = !!GBY[game].two;
     var P = GBY[game].pl;
-    S = { ks: ksFor(game), game: game, two: two, np: P[0] === P[1] ? P[0] : Math.min(P[1], Math.max(P[0], nPl)), score: 0, combo: 0, bestCombo: 0, right: 0, wrong: 0, level: 1, lives: 3, maxLives: 3, list: [], over: false, paused: true, wait: 0, t: 0 };
+    S = { ks: ksFor(game), game: game, two: two, np: P[0] === P[1] ? P[0] : Math.min(P[1], Math.max(P[0], nPl)), score: 0, combo: 0, bestCombo: 0, right: 0, wrong: 0, level: 1, lives: lvf().lives, maxLives: lvf().lives, list: [], over: false, paused: true, wait: 0, t: 0 };
     stage.className = 'mg-stage mg-g-' + game; stage.hidden = false; document.body.classList.add('mg-playing');
     stage.innerHTML = hud(game) + '<div class="mg-play" id="mgPlay"></div>';
     GM[game].init(); setHud();
@@ -3928,7 +3931,7 @@ window.MG={"g":5,"units":[{"id":"u1","sem":"1학기 1단원","nm":"자연수의 
         bs[i].classList.add('right'); sfx('ok'); gain(1 - q.t / 6, bs[i]); this.climb(); S.wait = .3;
       } else {
         bs[i].classList.add('wrong'); bs[q.c.ok].classList.add('right'); sfx('bad'); wrongRec(q, q.c.opts[i]);
-        S.combo = 0; setHud(); this.left = Math.max(0, this.left - 2); float('−2초', center(bs[i])[0], center(bs[i])[1] - 30, 'minus');
+        S.combo = 0; setHud(); this.left = Math.max(0, this.left - lvf().pen); float('−' + lvf().pen + '초', center(bs[i])[0], center(bs[i])[1] - 30, 'minus');
         stage.classList.remove('mg-shake'); void stage.offsetWidth; stage.classList.add('mg-shake'); S.wait = 1.1;
       }
     },
@@ -4194,6 +4197,7 @@ window.MG={"g":5,"units":[{"id":"u1","sem":"1학기 1단원","nm":"자연수의 
     can: function (s, a) { return (a.t === 'n' || a.t === 'd' || a.t === 'f') && s.ask !== 'blank' },
     T: 30,
     init: function () {
+      this.T = Math.round(30 * lvf().sp);
       $('mgPlay').innerHTML = '<div class="mg-shelf"></div><div class="mg-sorthd" id="mgSh"></div><div class="mg-qt mg-sqt"><i id="mgQt"></i></div><div class="mg-sorts" id="mgSorts"></div><div class="mg-slots" id="mgSlots"></div>';
     },
     go: function () { this.next() },

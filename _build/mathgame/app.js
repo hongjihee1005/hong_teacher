@@ -186,6 +186,9 @@
   var units = D.units.concat([ALL]);
   var uSel = units.filter(function (u) { return u.id === mine.u })[0] || units[0];
   var kOn = {}, gSel = GBY[mine.game] ? mine.game : 'balloon', nPl = mine.np || 2, lvSel = /^[bmh]$/.test(mine.lv) ? mine.lv : 'm';
+  /* 난이도에 따라 게임도 바꿈(2026-11-26): 속도·시간 배수 sp(클수록 느림·넉넉), 하트, 우주 도전에서 틀릴 때 빼는 초 */
+  var LVF = { b: { sp: 1.3, lives: 5, pen: 1 }, m: { sp: 1, lives: 3, pen: 2 }, h: { sp: .85, lives: 3, pen: 3 } };
+  function lvf() { return LVF[lvSel] }
   function lvNm() { return MGC.LVS.filter(function (x) { return x.id === lvSel })[0].nm }
   function resetK() { kOn = {}; uSel.k.forEach(function (k) { kOn[k] = 1 }) }
   resetK(); if (mine.u === uSel.id && mine.k && mine.k.length) { var kk = mine.k.filter(function (k) { return uSel.k.indexOf(k) >= 0 }); if (kk.length) { kOn = {}; kk.forEach(function (k) { kOn[k] = 1 }) } }
@@ -322,12 +325,12 @@
     if (S.lives <= 0) { S.ending = 1; setTimeout(function () { end('하트를 모두 썼어요') }, 700) }
   }
   function qbox(q) { return (hintOf(q.p) ? '<span class="mg-hint">' + esc(hintOf(q.p)) + '</span>' : '') + qH(q.p) }
-  function speedOf(base, step, min) { return Math.max(min, base - step * (S.level - 1)) * (D.g <= 2 ? 1.15 : 1) }
+  function speedOf(base, step, min) { return Math.max(min, base - step * (S.level - 1)) * (D.g <= 2 ? 1.15 : 1) * lvf().sp }
 
   function start(game) {
     var two = !!GBY[game].two;
     var P = GBY[game].pl;
-    S = { ks: ksFor(game), game: game, two: two, np: P[0] === P[1] ? P[0] : Math.min(P[1], Math.max(P[0], nPl)), score: 0, combo: 0, bestCombo: 0, right: 0, wrong: 0, level: 1, lives: 3, maxLives: 3, list: [], over: false, paused: true, wait: 0, t: 0 };
+    S = { ks: ksFor(game), game: game, two: two, np: P[0] === P[1] ? P[0] : Math.min(P[1], Math.max(P[0], nPl)), score: 0, combo: 0, bestCombo: 0, right: 0, wrong: 0, level: 1, lives: lvf().lives, maxLives: lvf().lives, list: [], over: false, paused: true, wait: 0, t: 0 };
     stage.className = 'mg-stage mg-g-' + game; stage.hidden = false; document.body.classList.add('mg-playing');
     stage.innerHTML = hud(game) + '<div class="mg-play" id="mgPlay"></div>';
     GM[game].init(); setHud();
@@ -545,7 +548,7 @@
         bs[i].classList.add('right'); sfx('ok'); gain(1 - q.t / 6, bs[i]); this.climb(); S.wait = .3;
       } else {
         bs[i].classList.add('wrong'); bs[q.c.ok].classList.add('right'); sfx('bad'); wrongRec(q, q.c.opts[i]);
-        S.combo = 0; setHud(); this.left = Math.max(0, this.left - 2); float('−2초', center(bs[i])[0], center(bs[i])[1] - 30, 'minus');
+        S.combo = 0; setHud(); this.left = Math.max(0, this.left - lvf().pen); float('−' + lvf().pen + '초', center(bs[i])[0], center(bs[i])[1] - 30, 'minus');
         stage.classList.remove('mg-shake'); void stage.offsetWidth; stage.classList.add('mg-shake'); S.wait = 1.1;
       }
     },
@@ -811,6 +814,7 @@
     can: function (s, a) { return (a.t === 'n' || a.t === 'd' || a.t === 'f') && s.ask !== 'blank' },
     T: 30,
     init: function () {
+      this.T = Math.round(30 * lvf().sp);
       $('mgPlay').innerHTML = '<div class="mg-shelf"></div><div class="mg-sorthd" id="mgSh"></div><div class="mg-qt mg-sqt"><i id="mgQt"></i></div><div class="mg-sorts" id="mgSorts"></div><div class="mg-slots" id="mgSlots"></div>';
     },
     go: function () { this.next() },
