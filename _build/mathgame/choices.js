@@ -161,6 +161,48 @@
     return { k: 'f', w: Math.floor(n / d), n: n % d, d: d };
   }
 
-  var MGC = { choices: choices, vkey: vkey, fShow: fShow };
+  /* 난이도(2026-11-26 선생님 요청): 기초 · 기본 · 심화
+     ① 고른 계산 단계 가운데 기초는 앞(쉬운) 단계, 심화는 뒤(어려운) 단계가 더 자주 나오고(빠지는 단계는 없음)
+     ② 같은 단계에서도 문제를 5개 만들어 '어려움'(수의 자릿수·0 아닌 숫자 수·숫자 합, 분모 크기, 답의 크기)이
+        기초는 가장 낮은 것, 심화는 가장 높은 것을 고름. 기본은 지금까지처럼 그대로 하나 만듦. */
+  var LVS = [{ id: 'b', nm: '기초', de: '작은 수 · 쉬운 계산부터' }, { id: 'm', nm: '기본', de: '교과서 수준 그대로' }, { id: 'h', nm: '심화', de: '큰 수 · 어려운 계산 위주' }];
+  function cxNum(v) {
+    if (!(v > 0)) return 0;
+    var s = String(Math.round(v)), z = 0, sum = 0;
+    for (var i = 0; i < s.length; i++) { var c = +s[i]; if (c) z++; sum += c }
+    return s.length + .4 * z + sum / 30;
+  }
+  function cxTok(t) {
+    if (!t || typeof t !== 'object') return 0;
+    if (t.k === 'n') return cxNum(t.v);
+    if (t.k === 'd') return cxNum(t.v) + .5 * (t.p || 0);
+    if (t.k === 'f') return cxNum(t.w) + cxNum(t.n) + 1.3 * cxNum(t.d);
+    return 0;
+  }
+  function cxAns(a) {
+    if (a.t === 'n') return cxNum(a.v);
+    if (a.t === 'd') return cxNum(a.v) + .5 * a.p;
+    if (a.t === 'qr') return cxNum(a.q) + cxNum(a.r);
+    if (a.t === 'f') return cxNum(a.n) + cxNum(a.d);
+    if (a.t === 'list') return a.v.reduce(function (x, v) { return x + cxNum(v) }, 0);
+    return 0;
+  }
+  function cx(p) { var s = 0; (p.q || p.txt || []).forEach(function (t) { s += cxTok(t) }); return s + .7 * cxAns(p.a) }
+  function seed(R) { return Math.floor(R() * 4294967296) }
+  function stepOf(ks, lv, R) {
+    if (lv !== 'b' && lv !== 'h' || ks.length < 2) return ks[Math.floor(R() * ks.length)];
+    var o = ks.slice().sort(function (x, y) { return AR.S.indexOf(AR.BY[x]) - AR.S.indexOf(AR.BY[y]) }), n = o.length, tot = n * (n + 1) / 2, x = R() * tot;
+    for (var i = 0; i < n; i++) { x -= lv === 'b' ? n - i : i + 1; if (x < 0) return o[i] }
+    return o[n - 1];
+  }
+  function genLv(ks, lv, R) {
+    var k = stepOf(ks, lv, R);
+    if (lv !== 'b' && lv !== 'h') return AR.gen(k, seed(R));
+    var best = null, bc = 0;
+    for (var i = 0; i < 5; i++) { var p = AR.gen(k, seed(R)), c = cx(p); if (!best || (lv === 'b' ? c < bc : c > bc)) { best = p; bc = c } }
+    return best;
+  }
+
+  var MGC = { choices: choices, vkey: vkey, fShow: fShow, LVS: LVS, cx: cx, genLv: genLv };
   if (typeof module !== 'undefined' && module.exports) module.exports = MGC; else window.MGC = MGC;
 })();

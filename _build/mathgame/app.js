@@ -185,11 +185,12 @@
   var ALL = { id: 'all', nm: '모두 섞기', k: [] }; D.units.forEach(function (u) { ALL.k = ALL.k.concat(u.k) });
   var units = D.units.concat([ALL]);
   var uSel = units.filter(function (u) { return u.id === mine.u })[0] || units[0];
-  var kOn = {}, gSel = GBY[mine.game] ? mine.game : 'balloon', nPl = mine.np || 2;
+  var kOn = {}, gSel = GBY[mine.game] ? mine.game : 'balloon', nPl = mine.np || 2, lvSel = /^[bmh]$/.test(mine.lv) ? mine.lv : 'm';
+  function lvNm() { return MGC.LVS.filter(function (x) { return x.id === lvSel })[0].nm }
   function resetK() { kOn = {}; uSel.k.forEach(function (k) { kOn[k] = 1 }) }
   resetK(); if (mine.u === uSel.id && mine.k && mine.k.length) { var kk = mine.k.filter(function (k) { return uSel.k.indexOf(k) >= 0 }); if (kk.length) { kOn = {}; kk.forEach(function (k) { kOn[k] = 1 }) } }
   function kList() { return uSel.k.filter(function (k) { return kOn[k] }) }
-  function recKey(game) { var ks = kList(); return D.g + '|' + uSel.id + (ks.length < uSel.k.length ? ':' + ks.join(',') : '') + '|' + game }
+  function recKey(game) { var ks = kList(); return D.g + '|' + uSel.id + (ks.length < uSel.k.length ? ':' + ks.join(',') : '') + '|' + game + (lvSel !== 'm' ? '@' + lvSel : '') }   // 기본은 예전 기록 그대로
 
   var skOpen = false;   // 계산 고르기 칩은 눌러야 펼침(2026-10-29 디자인 다시)
   function drawUnits() {   // 단원은 한 줄 알약(짧은 이름), 고른 단원의 온이름은 아래 칸 제목에
@@ -205,6 +206,11 @@
       var egt = (eg.txt || eg.q).map(function (t) { return typeof t === 'string' ? t : t.k === 'n' ? t.v : t.k === 'd' ? AR.dstr(t.v, t.p) : t.k === 'f' ? (t.w ? t.w + ' ' : '') + t.n + '/' + t.d : '□' }).join(' ');
       return '<button type="button" class="mg-chip" data-k="' + k + '" aria-pressed="' + !!kOn[k] + '" title="' + esc(s.de + ' · 예: ' + egt) + '"><span class="mg-ck" aria-hidden="true"></span><span>' + esc(s.nm) + '</span></button>';
     }).join('') + '</div>';
+  }
+  function drawLvs() {
+    $('mgLvs').innerHTML = '<span class="mg-lvh">난이도</span>' + MGC.LVS.map(function (x) {
+      return '<button type="button" class="mg-lv mg-lv-' + x.id + '" data-lv="' + x.id + '" aria-pressed="' + (x.id === lvSel) + '" title="' + x.de + '">' + x.nm + '</button>';
+    }).join('') + '<small class="mg-lvd">' + MGC.LVS.filter(function (x) { return x.id === lvSel })[0].de + '</small>';
   }
   function pl(x) { return x.pl[0] === x.pl[1] ? x.pl[0] + '명' : x.pl[0] + '~' + x.pl[1] + '명' }
   var PICO = '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="8" r="3.2" fill="currentColor"/><path d="M3 20c0-3.6 2.7-6 6-6s6 2.4 6 6Z" fill="currentColor"/><circle cx="17" cy="9" r="2.6" fill="currentColor" opacity=".55"/><path d="M15.5 14.3c3 .2 5.5 2.4 5.5 5.7h-4.4" fill="currentColor" opacity=".55"/></svg>';
@@ -222,9 +228,9 @@
     var G = GBY[gSel], np = '';
     if (G.pl[0] < G.pl[1]) { np = '<span class="mg-npl">몇 명?</span>'; for (var k = G.pl[0]; k <= G.pl[1]; k++) np += '<button type="button" data-np="' + k + '" aria-pressed="' + (k === Math.min(G.pl[1], Math.max(G.pl[0], nPl))) + '">' + k + '명</button>' }
     $('mgNp').innerHTML = np; $('mgNp').hidden = !np;
-    $('mgSel').innerHTML = '<b>' + esc(uSel.sh || uSel.nm) + '</b> · ' + esc(G.nm) + (np ? '' : ' <span class="mg-selpl">' + pl(G) + '</span>');
+    $('mgSel').innerHTML = '<b>' + esc(uSel.sh || uSel.nm) + '</b> · ' + lvNm() + ' · ' + esc(G.nm) + (np ? '' : ' <span class="mg-selpl">' + pl(G) + '</span>');
   }
-  function remember() { last[D.g] = { u: uSel.id, k: kList().length < uSel.k.length ? kList() : [], game: gSel, np: nPl }; save(KEY + '-last', last) }
+  function remember() { last[D.g] = { u: uSel.id, k: kList().length < uSel.k.length ? kList() : [], game: gSel, np: nPl, lv: lvSel }; save(KEY + '-last', last) }
   $('mgUnits').addEventListener('click', function (e) {
     var b = e.target.closest('.mg-unit'); if (!b) return;
     uSel = units.filter(function (u) { return u.id === b.dataset.u })[0]; resetK(); drawUnits(); drawGames(); remember();
@@ -242,6 +248,7 @@
     if (!ksFor(gSel).length) { var m = $('mgSel'); m.innerHTML = '<b class="mg-warn">' + esc(GBY[gSel].nm) + '</b> 게임은 이 내용에서 할 수 없어요. ' + esc(GBY[gSel].noTxt || '') + ' 다른 게임이나 내용을 골라 주세요.'; return }
     start(gSel);
   });
+  $('mgLvs').addEventListener('click', function (e) { var b = e.target.closest('[data-lv]'); if (!b) return; lvSel = b.dataset.lv; drawLvs(); drawGames(); remember() });
   $('mgNp').addEventListener('click', function (e) { var b = e.target.closest('[data-np]'); if (!b) return; nPl = +b.dataset.np; drawGames(); remember() });
   function fromHash() {
     var m = /^#(u\d+|all)(?:-(\w+))?$/.exec(location.hash); if (!m) return;
@@ -249,7 +256,7 @@
     if (m[2] && GBY[m[2]]) gSel = m[2];
     drawUnits(); drawGames();
   }
-  drawUnits(); drawGames(); fromHash(); window.addEventListener('hashchange', fromHash);
+  drawUnits(); drawLvs(); drawGames(); fromHash(); window.addEventListener('hashchange', fromHash);
 
   /* ── 게임 공통 ── */
   var S = null, raf = 0, lastT = 0, stage = $('mgStage');
@@ -259,7 +266,7 @@
   function ksFor(game) { var g = typeof GM === 'object' && GM[game]; return kList().filter(function (k) { return !g || !g.can || g.can(AR.BY[k], probe(k)) }) }
   function makeP() {
     var ks = S && S.ks && S.ks.length ? S.ks : kList(), p, k;
-    for (var i = 0; i < 30; i++) { p = AR.gen(ks[Math.floor(Math.random() * ks.length)], rnd32()); k = JSON.stringify(p.q || p.txt); if (RECENT.indexOf(k) < 0) break }
+    for (var i = 0; i < 30; i++) { p = MGC.genLv(ks, lvSel, Math.random); k = JSON.stringify(p.q || p.txt); if (RECENT.indexOf(k) < 0) break }
     RECENT.push(k); if (RECENT.length > 15) RECENT.shift();
     return { p: p, c: MGC.choices(p, AR.rng(rnd32())) };
   }

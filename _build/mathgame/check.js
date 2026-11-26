@@ -75,5 +75,20 @@ Object.keys(U).forEach(function (g) {
   });
 });
 
+/* ④ 난이도(2026-11-26): 단원마다 기초 ≤ 기본 ≤ 심화로 '어려움' 평균이 커지는지, 기초·심화에서도 모든 단계가 나오는지 */
+var lvUp = 0, lvN = 0;
+Object.keys(U).forEach(function (g) {
+  U[g].forEach(function (u) {
+    var r = AR.rng('mg-lv-' + g + u.id), avg = {}, seenK = { b: {}, h: {} };
+    ['b', 'm', 'h'].forEach(function (lv) {
+      var t = 0; for (var i = 0; i < 400; i++) { var p = MGC.genLv(u.k, lv, r); t += MGC.cx(p); if (seenK[lv]) seenK[lv][p.s] = 1 }
+      avg[lv] = t / 400;
+    });
+    if (avg.b > avg.m + .05 || avg.m > avg.h + .05) bad.push(g + '학년 ' + u.id + ': 난이도 어려움 평균이 거꾸로 ' + avg.b.toFixed(2) + ' / ' + avg.m.toFixed(2) + ' / ' + avg.h.toFixed(2));
+    ['b', 'h'].forEach(function (lv) { u.k.forEach(function (k) { if (!seenK[lv][k]) bad.push(g + '학년 ' + u.id + ': ' + lv + '에서 ' + k + ' 단계가 안 나옴') }) });
+    lvN++; if (avg.h - avg.b > .3) lvUp++;
+  });
+});
+
 if (bad.length) { console.log(bad.slice(0, 40).join('\n')); console.log('수학게임 점검 실패: ' + bad.length + '곳'); process.exit(1) }
-console.log('수학게임 점검 통과: 단원 ' + Object.keys(U).reduce(function (a, g) { return a + U[g].length }, 0) + '개 · 단계 ' + AR.S.length + '개 · 보기 ' + total + '묶음');
+console.log('수학게임 점검 통과: 단원 ' + Object.keys(U).reduce(function (a, g) { return a + U[g].length }, 0) + '개 · 단계 ' + AR.S.length + '개 · 보기 ' + total + '묶음 · 난이도 차이가 뚜렷한 단원 ' + lvUp + '/' + lvN);
