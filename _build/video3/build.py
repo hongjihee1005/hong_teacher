@@ -5,6 +5,8 @@
     python3 _build/video3/build.py check    # 점검만
 
 영상 목록·유튜브 주소는 videos.py(3학년)·videos4.py·videos5.py·videos6.py. 메뉴 HTML을 직접 고치지 마세요.
+유튜브 주소는 _build/youtube/channel.json(채널에서 받은 재생목록)에서 '○학년 … 수학' 재생목록의 'N화' 제목을 화 번호로 맞춰
+저절로 넣습니다(2026-11-26). videosN.py의 LINKS에 손으로 적은 주소가 있으면 그것이 먼저입니다.
 """
 import html, pathlib, re, subprocess, sys, urllib.parse
 HERE = pathlib.Path(__file__).resolve().parent
@@ -139,9 +141,30 @@ def build():
     subprocess.run([sys.executable, str(ROOT / '_build/theme/apply_theme.py'), str(OUT)], check=True)
     print(f'{OUT.relative_to(ROOT)}: {total}편 (영상 주소 {up}편, 나머지는 채널 검색)')
 
+def auto_links(g):
+    """channel.json의 그 학년 수학 재생목록에서 화 번호 → 영상 주소"""
+    import json
+    f = ROOT / '_build/youtube/channel.json'
+    if not f.exists(): return {}, None
+    d = json.loads(f.read_text(encoding='utf-8'))
+    pl = [p for p in d.get('playlists', []) if f'{g}학년' in p['title'] and '수학' in p['title']]
+    if not pl: return {}, None
+    byn = {}
+    for v in pl[0]['videos']:
+        m = re.match(rf'(?:{g}학년\s*)?0*(\d+)화\s*(.*)', v['title'])
+        if m: byn.setdefault(int(m.group(1)), (v['id'], m.group(2)))
+    links = {}
+    for e in V.EPISODES:
+        if e[0] in byn and re.sub(r'\W', '', e[3])[:4] == re.sub(r'\W', '', byn[e[0]][1])[:4]:
+            links[e[1]] = 'https://youtu.be/' + byn[e[0]][0]
+    return links, 'https://www.youtube.com/playlist?list=' + pl[0]['id']
+
 def use(g):
     global V, G, OUT
     G = g; V = importlib.import_module(GRADES[g]); OUT = ROOT / f'grade{g}/math/videos/index.html'
+    links, pl = auto_links(g)
+    V.LINKS = {**links, **V.LINKS}
+    if pl and V.PLAYLIST.endswith('/playlists'): V.PLAYLIST = pl
 
 if __name__ == '__main__':
     ok = True

@@ -715,6 +715,14 @@ grade1/ … grade6/
 - 네이버 서치어드바이저가 사이트를 호스트 단위로만 받아서 만든 첫 화면입니다. '초등교사 홍지희 자료실'(`hong_teacher/`)·'초등 수학 게임'(`math-game/`) 카드 두 장과 네이버 소유 확인 태그(`naver-site-verification`, **지우지 마세요**), `robots.txt`(math-game 사이트맵 알림).
 - 원본 `_build/rootsite/build.py 출력폴더`. 그 저장소에 `hong_teacher/`·`math-game/` 같은 이름의 폴더를 만들면 그 사이트가 가려지니 만들지 마세요.
 
+### 교실 도구 › 유튜브 영상 (`youtube/`, 2026-11-26)
+
+- 유튜브 채널 @hongjihee1005(채널 id `UC46YYcaAMauFIT7XyDjQNTQ`)의 영상을 사이트에 연동한 쪽입니다. 첫 화면 '교실 도구' 넷째 카드 '📺 유튜브 영상', 위 메뉴 '교실 도구'에도 있음(`apply_theme.py`의 `TOOLS`).
+  화면: 새로 올린 영상(최근 30편) · 학생용 재생목록 · 선생님·학부모용 재생목록(나누는 낱말 `build.py`의 `STUDENT`) · 제목 찾기. 영상을 누르면 이 화면에서 바로 재생(youtube-nocookie 퍼가기), 본 영상 표시는 localStorage `hj-youtube-v1`. 썸네일은 `i.ytimg.com` 그림을 그대로 씀(한 파일 원칙의 예외).
+- **`youtube/index.html`을 직접 고치지 마세요.** 원본 `_build/youtube/`: `fetch.py`(공개 페이지만 읽음 — 채널 RSS·동영상·재생목록 페이지, 재생목록마다 앞쪽 100편 → `channel.json`, 받지 못하면 이전 자료 그대로) · `build.py`(→ 페이지 + apply_theme).
+- **3~6학년 수학 영상 메뉴(`gradeN/math/videos`)의 영상 주소도 `channel.json`에서** 저절로 넣습니다(`_build/video3/build.py`의 `auto_links`: '○학년 … 수학' 재생목록의 'N화' 제목 → 화 번호, 제목 앞 네 글자도 같아야 함). 손으로 적은 `LINKS`가 먼저.
+- GitHub Actions '유튜브 영상 가져오기'(`.github/workflows/youtube.yml`)가 한국 시각 매일 아침 6시 17분에 받아 바뀐 것만 main에 올립니다. 바로 맞추려면 Actions에서 Run workflow. 자동 보완 `run_all.py`도 `_build/youtube/`가 바뀌면 페이지를 다시 만듭니다(받기는 하지 않음).
+
 ### 오늘의 교실 산책 (`today/`, 2026-10-01)
 
 - 첫 화면 제목 아래 '🌟 오늘의 한 줄' 띠와 `today/index.html`(오늘의 사건·명언·명화·명곡·책)은 `_build/today/`에서 만듭니다. **두 파일을 직접 고치지 마세요.**

@@ -179,7 +179,7 @@ HERO_ON = re.compile(r'(<main[^>]*>)(\s*)((?:<nav class="crumb".*?</nav>\s*)?<h1
                      r'(?:\s*(?:<!--hj-today-->.*?<!--/hj-today-->|<p class="sub">.*?</p>))?)', re.S)
 # 주 메뉴(2026-10-27 선생님 요청으로 묶고 이름 지음): 학년별 수업 · 기초 학습 · 교육 프로그램 · 교실 도구 · 쉬는 시간
 GRADES = [(f'{n}학년', f'grade{n}/index.html') for n in range(1, 7)]
-TOOLS = [('우리 반 교실', 'class/index.html'), ('오늘의 교실 산책', 'today/index.html'), ('도장 만들기', 'project/stamp/index.html')]
+TOOLS = [('우리 반 교실', 'class/index.html'), ('오늘의 교실 산책', 'today/index.html'), ('도장 만들기', 'project/stamp/index.html'), ('유튜브 영상', 'youtube/index.html')]
 GNAV = [('dd', '학년별 수업', GRADES), ('a', '기초 학습', 'common/index.html'), ('a', '교육 프로그램', 'project/index.html'),
         ('dd', '교실 도구', TOOLS), ('a', '쉬는 시간', 'break/index.html')]
 # 위치 표시줄에 보이는 묶음 이름도 새 이름으로(폴더·파일 이름은 그대로). 특색교육은 교육 프로그램에 합침.
@@ -188,7 +188,7 @@ RENAME = {'공통': '기초 학습', '기타': '교육 프로그램', '특색교
 def section(rel):
     """rel이 주 메뉴의 어느 묶음에 드는지"""
     if re.match(r'grade\d/', rel): return '학년별 수업'
-    if rel.startswith(('class/', 'today/', 'project/stamp/')): return '교실 도구'
+    if rel.startswith(('class/', 'today/', 'project/stamp/', 'youtube/')): return '교실 도구'
     if rel.startswith('common/'): return '기초 학습'
     if rel.startswith(('project/', 'special/')): return '교육 프로그램'
     if rel.startswith('break/'): return '쉬는 시간'
