@@ -34,11 +34,11 @@ def r(s):
 
 # 그림 위 자리(원본 1920×1080 픽셀) — 그림이 들어오면 열어 보고 맞춤
 P = {
-    "cart_handle": (520, 380), "cart_basket": (1050, 520),
-    "seesaw_pivot": (960, 760), "seesaw_board": (960, 610),
-    "bal_pivot": (960, 420), "bal_panL": (520, 700), "bal_panR": (1400, 700),
-    "opener_pivot": (980, 560), "opener_hand": (1550, 480),
-    "ramp_slope": (900, 620),
+    "cart_handle": (1300, 150), "cart_basket": (800, 560),
+    "seesaw_pivot": (960, 580), "seesaw_board": (960, 536),
+    "bal_pivot": (960, 196), "bal_panL": (516, 644), "bal_panR": (1406, 644),
+    "opener_pivot": (880, 240), "opener_hand": (1680, 160),
+    "ramp_slope": (700, 560),
 }
 
 
@@ -83,7 +83,7 @@ class W3U11(WordScene):
         ph = F.photo("w3u11/cart", height=PH_H).move_to([0, PH_Y, 0])
         self.say("물건을 가득 담은 카트를 밀어요", "마트에서 물건을 가득 담은 카트를 밀어요.")
         self.play(FadeIn(ph), run_time=0.7)
-        a, t = F.callout(ph, P["cart_handle"], "미는 힘", to=(-1.2, 1.1))
+        a, t = F.callout(ph, P["cart_handle"], "미는 힘", to=(-2.6, -0.2))
         self.say(f"빈 카트보다 {r('더 큰 힘')}이 들어요", "물건을 가득 담으면 무거워져서, 빈 카트보다 밀 때 더 큰 힘이 들어요.")
         self.play(GrowArrow(a), FadeIn(t), run_time=0.7)
         self.word_end()
@@ -123,7 +123,7 @@ class W3U11(WordScene):
         ph = F.photo("w3u11/seesaw", height=PH_H).move_to([0, PH_Y, 0])
         self.say(f"시소가 {o('수평')}을 이루었어요", "놀이터의 시소가 어느 쪽으로도 기울어지지 않았어요. 수평을 이루었어요.")
         self.play(FadeIn(ph), run_time=0.7)
-        ln = F.arrow(ph.at(260, 610), ph.at(1660, 610), color=GREEN)
+        ln = F.arrow(ph.at(140, 470), ph.at(1780, 470), color=GREEN)
         self.play(GrowArrow(ln), run_time=0.6)
         self.settle()
         clear_stage(self, keep=(self.head,))
@@ -166,7 +166,7 @@ class W3U11(WordScene):
         self.say(f"{o('양팔저울')}은 가운데에 받침점이 있어요",
                  "이것은 양팔저울이에요. 긴 막대의 양쪽에 저울접시가 매달려 있고, 가운데에 받침점이 있어요.")
         self.play(FadeIn(ph), run_time=0.7)
-        a, t = F.callout(ph, P["bal_pivot"], "받침점", to=(2.6, 0.6))
+        a, t = F.callout(ph, P["bal_pivot"], "받침점", to=(2.8, -0.7))
         self.play(GrowArrow(a), FadeIn(t), run_time=0.6)
         self.say(f"고기·과일을 살 때, 몸무게를 잴 때 {o('저울')}을 써요",
                  "일상생활에서는 고기, 과일 등을 살 때나 몸무게가 얼마나 늘었는지 비교할 때 저울을 사용해요.")
@@ -201,7 +201,7 @@ class W3U11(WordScene):
         grp = ss.group()
         self.play(FadeIn(grp), run_time=0.7)
         tags = []
-        for key, txt, to in (("ring", "손잡이", (-2.4, 0.0)), ("knob", "영점 조절 나사", (3.0, -0.3))):
+        for key, txt, to in (("ring", "손잡이", (-2.4, 0.0)), ("knob", "영점 조절 나사", (3.6, -0.3))):
             m = ss.parts[key]
             a = F.arrow(m.get_center() + np.array([to[0] * 0.7, to[1] * 0.7, 0]), m.get_center(), color=ORANGE)
             tg = F.name_tag(txt, 34, INK, stroke=ORANGE).move_to(m.get_center() + np.array([*to, 0]))
