@@ -33,8 +33,8 @@ def r(s):
 
 # 그림 위 자리(원본 1920×1080 픽셀) — 그림이 들어오면 열어 보고 맞춤
 P = {
-    "leaf_blade": (1150, 420), "leaf_vein": (1200, 545), "leaf_stalk": (330, 560), "leaf_edge": (1250, 230),
-    "wh_stalk": (900, 640), "wh_root": (900, 950),
+    "leaf_blade": (1150, 380), "leaf_vein": (1300, 640), "leaf_stalk": (240, 530), "leaf_edge": (1250, 200),
+    "wh_stalk": (955, 410), "wh_root": (960, 760),
     "ww_stem": (960, 540),
     "aloe_leaf": (960, 500),
     "cactus_stem": (960, 520), "cactus_spine": (1080, 400),
