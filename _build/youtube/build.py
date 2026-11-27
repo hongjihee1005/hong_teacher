@@ -5,7 +5,7 @@
     python3 _build/youtube/build.py     # channel.json → youtube/index.html (+ 메뉴 디자인 apply_theme)
 
 자료는 channel.json(fetch.py가 만듦). HTML을 직접 고치지 마세요.
-화면: 찾기 · 새로 올린 영상 · 학생용 재생목록 · 선생님·학부모용 재생목록. 영상을 누르면 이 화면에서 바로 재생
+화면: 찾기 · 새로 올린 영상 · 재생목록(학생용만 — 선생님·학부모용은 2026-11-27 선생님 뜻으로 뺌). 영상을 누르면 이 화면에서 바로 재생
 (youtube-nocookie 퍼가기), '유튜브에서 보기'로 채널에서도 열 수 있음. 학생용/선생님용 나누기는 STUDENT 낱말.
 3~6학년 수학 영상 메뉴(gradeN/math/videos)의 영상 주소도 같은 channel.json에서 _build/video3/build.py가 넣습니다.
 """
@@ -17,6 +17,7 @@ OUT = ROOT / "youtube/index.html"
 SHELL = ROOT / "_build/video3"
 CH = "https://www.youtube.com/@hongjihee1005"
 STUDENT = ("수학", "과학", "분수", "학습자료", "엔트리", "이야기 만드는 선생님")
+ADULT = ("교사연수", "[교사", "학부모", "노동요", "[IB]")   # 이런 말이 든 제목은 어느 묶음에서든 뺌(선생님·학부모용)
 ID = re.compile(r"^[\w-]{11}$")
 PL = re.compile(r"^PL[\w-]{8,40}$")
 e = html.escape
@@ -140,15 +141,21 @@ def build():
     for p in d["playlists"]:
         if not p["videos"]: continue
         groups["s" if any(w in p["title"] for w in STUDENT) else "t"].append(p)
+    # 2026-11-27 선생님: 선생님·학부모용(교사연수·학부모교육·노동요 등)은 싣지 않음 — 그 재생목록의 영상은 '새로 올린 영상'에서도 뺌
+    adult = {v["id"] for p in groups["t"] for v in p["videos"]}
+    groups["t"] = []
+    for p in groups["s"]:
+        p["videos"] = [v for v in p["videos"] if not any(w in v["title"] for w in ADULT)]
+        p["count"] = len(p["videos"]) if p["count"] <= 100 else p["count"]
+    groups["s"] = [p for p in groups["s"] if p["videos"]]
     n_pl = sum(len(x) for x in groups.values())
-    total = f'영상 {d["total"]:,}편 · ' if d.get("total") else ""
     b = ['<nav class="crumb"><a class="back" href="../index.html">🏠 초등교사 홍지희</a></nav>',
          '<h1>📺 유튜브 영상</h1>',
          f'<p class="sub">초등교사 홍지희 유튜브 채널(@hongjihee1005)에 올린 영상을 모았어요. 영상을 누르면 이 화면에서 바로 볼 수 있어요.</p>',
-         f'<p class="yt-note">{total}재생목록 {n_pl}개 · {d["fetched"]} 기준 — 채널에서 하루에 한 번 저절로 새로 가져와요.</p>',
+         f'<p class="yt-note">재생목록 {n_pl}개 · {d["fetched"]} 기준 — 채널에서 하루에 한 번 저절로 새로 가져와요.</p>',
          '<div class="yt-bar"><div class="yt-seg" role="tablist" aria-label="묶음">'
          '<button type="button" role="tab" data-g="new">새로 올린 영상</button>'
-         + (f'<button type="button" role="tab" data-g="s">학생용 재생목록 <small>{len(groups["s"])}</small></button>' if groups["s"] else "")
+         + (f'<button type="button" role="tab" data-g="s">재생목록 <small>{len(groups["s"])}</small></button>' if groups["s"] else "")
          + (f'<button type="button" role="tab" data-g="t">선생님·학부모용 <small>{len(groups["t"])}</small></button>' if groups["t"] else "")
          + '</div><input class="yt-find" type="search" placeholder="영상 제목 찾기" aria-label="영상 제목 찾기">'
          f'<a class="yt-ch" href="{CH}" target="_blank" rel="noopener">▶ 유튜브 채널 가기</a></div>',
@@ -157,7 +164,8 @@ def build():
              for g in ("s", "t") for p in groups[g]) + '</div>']
     seen, new = set(), []
     for v in d["recent"] or d["latest"]:
-        if v["id"] not in seen: seen.add(v["id"]); new.append(v)
+        if v["id"] in seen or v["id"] in adult or any(w in v["title"] for w in ADULT): continue
+        seen.add(v["id"]); new.append(v)
     b.append('<section class="yt-new"><div class="yt-plh"><h3>새로 올린 영상 <small>최근 ' + str(len(new)) + '편</small></h3>'
              f'<a class="yt-all" href="{CH}/videos" target="_blank" rel="noopener">채널에서 모두 보기 ↗</a></div>'
              '<ol class="yt-grid">' + "".join(card(v) for v in new) + '</ol></section>')

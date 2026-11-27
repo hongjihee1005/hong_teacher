@@ -729,7 +729,7 @@ grade1/ … grade6/
 ### 교실 도구 › 유튜브 영상 (`youtube/`, 2026-11-26)
 
 - 유튜브 채널 @hongjihee1005(채널 id `UC46YYcaAMauFIT7XyDjQNTQ`)의 영상을 사이트에 연동한 쪽입니다. 첫 화면 '교실 도구' 넷째 카드 '📺 유튜브 영상', 위 메뉴 '교실 도구'에도 있음(`apply_theme.py`의 `TOOLS`).
-  화면: 새로 올린 영상(최근 30편) · 학생용 재생목록 · 선생님·학부모용 재생목록(나누는 낱말 `build.py`의 `STUDENT`) · 제목 찾기. 영상을 누르면 이 화면에서 바로 재생(youtube-nocookie 퍼가기), 본 영상 표시는 localStorage `hj-youtube-v1`. 썸네일은 `i.ytimg.com` 그림을 그대로 씀(한 파일 원칙의 예외).
+  화면: 새로 올린 영상(최근 30편) · 재생목록(학생용만, 낱말 `build.py`의 `STUDENT`) — **2026-11-27 선생님 뜻으로 선생님·학부모용 재생목록과, 제목에 교사연수·학부모·노동요 등(`ADULT`)이 든 영상은 싣지 않음.** 재생목록에 저장한 다른 채널 영상도 뺌(`fetch.py`) · 제목 찾기. 영상을 누르면 이 화면에서 바로 재생(youtube-nocookie 퍼가기), 본 영상 표시는 localStorage `hj-youtube-v1`. 썸네일은 `i.ytimg.com` 그림을 그대로 씀(한 파일 원칙의 예외).
 - **`youtube/index.html`을 직접 고치지 마세요.** 원본 `_build/youtube/`: `fetch.py`(공개 페이지만 읽음 — 채널 RSS·동영상·재생목록 페이지, 재생목록마다 앞쪽 100편 → `channel.json`, 받지 못하면 이전 자료 그대로) · `build.py`(→ 페이지 + apply_theme).
 - **3~6학년 수학 영상 메뉴(`gradeN/math/videos`)의 영상 주소도 `channel.json`에서** 저절로 넣습니다(`_build/video3/build.py`의 `auto_links`: '○학년 … 수학' 재생목록의 'N화' 제목 → 화 번호, 제목 앞 네 글자도 같아야 함). 손으로 적은 `LINKS`가 먼저.
 - GitHub Actions '유튜브 영상 가져오기'(`.github/workflows/youtube.yml`)가 한국 시각 매일 아침 6시 17분에 받아 바뀐 것만 main에 올립니다. 바로 맞추려면 Actions에서 Run workflow. 자동 보완 `run_all.py`도 `_build/youtube/`가 바뀌면 페이지를 다시 만듭니다(받기는 하지 않음).
