@@ -3,7 +3,7 @@ from fractions import Fraction
 # rooms.py의 도우미와 같음(서로 불러오면 돌고 돌아서 여기에 둠)
 def O(id, nm, art, x, y, w, h, p=None, **k):
     d = dict(id=id, nm=nm, art=art, x=x, y=y, w=w, h=h, p=p or {})
-    d.update({a: b for a, b in k.items() if b is not None})
+    d.update({('in' if a == 'in_' else a): b for a, b in k.items() if b is not None})
     return d
 
 def Lk(t, code, q, hints, sol, chk=None, opts=None):
@@ -39,11 +39,15 @@ ROOM = dict(
     id='library', title='학교 도서관 탈출', ico='📚', acc='#2EAA6A',
     rec='추천 3~4학년 · 쉬움 · 곱셈·나눗셈·분수·길이(mm·cm)·시간 계산·방향·색깔·모양',
     intro='책 읽기에 푹 빠져 있다가 고개를 들어 보니 도서관에 아무도 없어요! 문도 모두 잠겼어요. 열람실과 책 보관실을 둘러보며 단서를 모아, 도서관 문이 닫히기 전에 빠져나가요.',
+    story=['재미있는 책에 푹 빠져 있다가 고개를 들어 보니 도서관에 아무도 없어요.', '딸깍! 불이 반쯤 꺼지고 출구 문에 자물쇠가 걸렸어요.', '책 사이에 숨은 단서를 모아 도서관 문이 닫히기 전에 빠져나가요!'],
     outro='출구 문이 활짝 열렸어요! 복도에서 사서 선생님이 "아직 있었구나!" 하며 웃어 주셨어요. 학교 도서관을 탈출했어요!',
     items={'keyS': dict(nm='작은 열쇠', k='key', c='#C9A24B', de='고리에 \'사서 책상\'이라고 적혀 있어요'),
            'lens': dict(nm='돋보기', k='lens', c='#2E7D5B', de='작은 글씨를 크게 볼 수 있어요'),
            'card': dict(nm='도서 카드', k='card', c='#3B6FD6', de='도서관 기계에 꽂는 카드 같아요'),
-           'keyB': dict(nm='큰 열쇠', k='key', c='#E5534B', de='빨간 큰 열쇠예요')},
+           'keyB': dict(nm='큰 열쇠', k='key', c='#E5534B', de='빨간 큰 열쇠예요'),
+           'kb1': dict(nm='열쇠 손잡이', k='khead', c='#E5534B', de='큰 열쇠의 동그란 손잡이만 있어요. 나머지 반쪽은 어디 있을까요?'),
+           'kb2': dict(nm='열쇠 몸통', k='kblade', c='#E5534B', de='큰 열쇠의 길쭉한 몸통이에요. 손잡이가 없어요.')},
+    combine=[dict(a='kb1', b='kb2', make='keyB', msg='손잡이와 몸통을 딸깍 끼웠더니 **큰 열쇠**가 되었어요!')],
     scenes=[
         dict(id='a', nm='열람실', bg=dict(wall='#E4F2E6', floor='#B98552', deco='stripe'), objs=[
             O('clock', '벽시계', 'clock', 40, 30, 110, 110, dict(h=LB_CLOCK[0], m=LB_CLOCK[1]), keep=True,
@@ -82,6 +86,9 @@ ROOM = dict(
             O('memo', '메모판', 'board', 40, 40, 260, 150, dict(lines=LB_MEMO, fs=22), keep=True,
               look='사서 선생님의 메모판이에요. 도서관 문이 닫히는 시각이 적혀 있어요!',
               lookFig=F('board', 300, 160, lines=LB_MEMO, fs=24), guide='메모판에서 도서관 문이 닫히는 시각을 확인하세요.'),
+            O('mscrap', '메모판 구석 쪽지', 'scrap', 200, 108, 46, 34, dict(t='?'), in_='memo', keep=True,
+              look='메모판 구석에 아주 작은 쪽지가 꽂혀 있어요! "진열장 속 작은 서랍 = **열람실 큰 책장 한 칸의 책 수 × 대출 기록표 초록 모둠의 책 수**"',
+              guide='메모판을 크게 보고 구석의 작은 쪽지를 찾아보세요.'),
             O('record', '대출 기록표', 'poster', 330, 40, 280, 210, dict(lines=LB_REC_LINES, fs=21), keep=True,
               look='이번 주에 모둠마다 빌려 간 책 수가 계산식으로 적혀 있어요. 모둠마다 계산하면 몇 권일까요?',
               lookFig=F('poster', 300, 220, lines=LB_REC_LINES, fs=23), guide='대출 기록표의 계산식을 모둠마다 계산해 보세요.'),
@@ -102,6 +109,11 @@ ROOM = dict(
                       chk=lambda: LB_PER * LB_THICK // 10),
               give=['card'], after=f'진열장 안에 **도서 카드**와 스티커 쪽지가 있어요. 쪽지: "비밀 상자 스티커 {LB_STK}장 중 **1/2은 ○, 1/3은 △, 나머지는 ☆** 이에요."',
               guide='책장 한 칸의 책 수와 포스터의 그림책 두께로 진열장 자물쇠를 열어요.'),
+            O('cdraw', '진열장 속 작은 서랍', 'drawer', 140, 220, 70, 40, dict(c='#B98552', lock=True), in_='case',
+              lock=Lk('num', str(LB_PER * (5 * 3)), '진열장 아래쪽에 아주 작은 서랍이 숨어 있어요! 숫자 세 개 자물쇠예요. 메모판 구석 쪽지에 적힌 대로 계산해요.',
+                      ['책 보관실 메모판을 크게 보면 구석에 작은 쪽지가 있어요. 거기에 계산 방법이 적혀 있어요.', f'큰 책장 한 칸에는 {LB_PER}권, 대출 기록표의 초록 모둠은 5×3권이에요.', f'5 × 3 = 15, {LB_PER} × 15 = {LB_PER} × 10 + {LB_PER} × 5로 나눠 곱해 보세요.'],
+                      f'초록 모둠 5 × 3 = 15권, {LB_PER} × 15 = {LB_PER * 10} + {LB_PER * 5} = {LB_PER * 15}', chk=lambda: LB_PER * dict((c, v) for c, _, v in LB_REC)['초록']),
+              give=['kb2'], after='작은 서랍 안에 **열쇠 몸통**이 들어 있어요. 손잡이는 없어요.', guide='유리 진열장을 연 뒤 진열장 아래쪽의 작은 서랍을 눌러 보세요.'),
             O('plant', '화분', 'plant', 320, 400, 100, 130,
               look='잎이 무성한 화분이에요. 화분 밑을 들춰 봤지만 아무것도 없어요.', guide='화분은 구경만 해도 돼요.'),
             O('chest', '비밀 상자', 'chest', 640, 400, 180, 125, dict(c='보라'), req=['panel'],
@@ -110,7 +122,7 @@ ROOM = dict(
                       ['진열장에서 찾은 스티커 쪽지를 보세요. 스티커는 모두 12장이에요.', '12의 1/2은 6, 12의 1/3은 4예요. 나머지 ☆는 몇 장일까요?'],
                       f'○는 12의 1/2 = {LB_STK_N["○"]}장, △는 12의 1/3 = {LB_STK_N["△"]}장, ☆는 12 − 6 − 4 = {LB_STK_N["☆"]}장 → ○ △ ☆',
                       chk=lambda: [k for _, k in sorted([(-(12 // 2), '○'), (-(12 // 3), '△'), (-(12 - 12 // 2 - 12 // 3), '☆')])]),
-              give=['keyB'], after='비밀 상자가 열렸어요! 안에 **큰 열쇠**가 있어요.', guide='스티커 쪽지의 분수로 모양마다 몇 장인지 구해 비밀 상자를 열어요.'),
+              give=['kb1'], after='비밀 상자가 열렸어요! 안에 **열쇠 손잡이**가 있어요. 그런데 손잡이만 있고 몸통이 없어요.', guide='스티커 쪽지의 분수로 모양마다 몇 장인지 구해 비밀 상자를 열어요.'),
             O('exit', '출구 문', 'door', 860, 170, 120, 210, dict(c='빨강', sign='출구'),
               look='도서관 출구 문이에요. 큰 열쇠 구멍과 숫자판이 있어요.',
               need='keyB', needMsg='출구 문에 큰 열쇠 구멍이 있어요.', useMsg='큰 열쇠가 딱 맞아요! 이제 숫자판만 남았어요.',
@@ -122,5 +134,5 @@ ROOM = dict(
               go='exit', after='출구 문이 열렸어요!', guide='큰 열쇠를 출구 문에 쓰고, 열람실 시계와 메모판의 시각으로 걸리는 시간을 구해요.'),
         ]),
     ],
-    flow=['clock', 'shelf', 'cart', 'desk', 'poster', 'sdoor', 'memo', 'record', 'case', 'panel', 'chest', 'exit'],
+    flow=['clock', 'shelf', 'cart', 'desk', 'poster', 'sdoor', 'memo', 'mscrap', 'record', 'case', 'cdraw', 'panel', 'chest', 'kb1+kb2', 'exit'],
 )

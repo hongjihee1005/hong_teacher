@@ -3,7 +3,7 @@ from fractions import Fraction as Fr
 # rooms.py의 도우미와 같음(서로 불러오면 돌고 돌아서 여기에 둠)
 def O(id, nm, art, x, y, w, h, p=None, **k):
     d = dict(id=id, nm=nm, art=art, x=x, y=y, w=w, h=h, p=p or {})
-    d.update({a: b for a, b in k.items() if b is not None})
+    d.update({('in' if a == 'in_' else a): b for a, b in k.items() if b is not None})
     return d
 
 def Lk(t, code, q, hints, sol, chk=None, opts=None):
@@ -50,10 +50,14 @@ ROOM = dict(
     id='submarine', title='잠수함 탈출', ico='🧭', acc='#1C8C7A',
     rec='추천 3~4학년 · 도전 · 세 자리×두 자리·나머지 있는 나눗셈·분수 덧셈·삼각형·사각형의 각·큰 수·규칙·방향·색깔',
     intro='깊은 바닷속을 탐사하던 잠수함에 경보가 울려요! 문이 모두 잠겨 버렸어요. 조타실·기관실·탈출실을 오가며 단서를 이어 붙여, 탈출 해치를 열고 바다 위로 올라가요.',
+    story=['깊은 바닷속을 탐사하던 잠수함에 갑자기 "삐용삐용!" 경보가 울렸어요.', '쿵! 철컥! 문이 모두 닫히고 탈출 해치에도 자물쇠가 걸렸어요.', '단서를 이어 붙여 해치를 열고 바다 위 구조선까지 올라가요!'],
     outro='탈출 해치가 열렸어요! 탈출정을 타고 올라가니 반짝이는 바다 위에서 구조선이 손을 흔들어요. 잠수함을 탈출했어요!',
     items={'card': dict(nm='승무원 카드', k='card', c='#1C8C7A', de='카드에 \'기관실\'이라고 적혀 있어요'),
            'gear': dict(nm='톱니바퀴', k='gear', c='#8A929C', de='조타 장치에서 빠진 부품 같아요'),
-           'key': dict(nm='해치 열쇠', k='key', c='#E5534B', de='빨간 열쇠에 \'탈출 해치\'라고 적혀 있어요')},
+           'key': dict(nm='해치 열쇠', k='key', c='#E5534B', de='빨간 열쇠에 \'탈출 해치\'라고 적혀 있어요'),
+           'kh1': dict(nm='열쇠 손잡이', k='khead', c='#E5534B', de='빨간 열쇠의 동그란 손잡이만 있어요. 나머지 반쪽은 어디 있을까요?'),
+           'kh2': dict(nm='열쇠 몸통', k='kblade', c='#E5534B', de='빨간 열쇠의 길쭉한 몸통이에요. 손잡이가 없어요.')},
+    combine=[dict(a='kh1', b='kh2', make='key', msg='손잡이와 몸통을 딸깍 끼웠더니 **해치 열쇠**가 되었어요!')],
     scenes=[
         dict(id='a', nm='조타실', bg=dict(wall='#1D5670', floor='#2C4752', deco='bubble'), objs=[
             O('porthole', '관측 창', 'porthole', 30, 30, 150, 150, dict(sea=True, items=[{'k': 'fish', 'c': '주황', 'n': 2}, {'k': 'fish', 'c': '노랑', 'n': 1}]),
@@ -93,6 +97,9 @@ ROOM = dict(
             O('gauge', '압력 계기판', 'board', 360, 40, 360, 210, dict(lines=SB_GAUGE_LINES, fs=21), keep=True,
               look='파이프마다 압력이 분수 덧셈으로 적혀 있어요. 계산하면 어느 파이프의 압력이 가장 낮을까요?',
               lookFig=F('board', 380, 210, lines=SB_GAUGE_LINES, fs=23), guide='압력 계기판의 분수 덧셈을 파이프마다 계산해 보세요.'),
+            O('gnote', '계기판 구석 쪽지', 'scrap', 302, 160, 46, 36, dict(t='?'), in_='gauge', keep=True,
+              look=f'계기판 구석에 아주 작은 쪽지가 끼워져 있어요! "금고 속 작은 서랍 = **산소 탱크 수 × 각도 수리표의 ㄷ**"',
+              guide='압력 계기판을 크게 보고 구석의 작은 쪽지를 찾아보세요.'),
             O('valve', '밸브 조종판', 'panel', 740, 60, 230, 140, dict(colors=['빨강', '노랑', '초록', '파랑'], label='밸브 잠김', done='물 빠짐'),
               look='물이 찬 아래층의 물을 빼는 밸브 조종판이에요. 빨강·노랑·초록·파랑 단추가 있어요.',
               lock=Lk('color', [c for c, _, v in sorted(SB_GAUGE, key=lambda r: r[2])], '조종판 글: **압력이 낮은 파이프부터** 그 색 단추를 차례로 눌러요.',
@@ -109,6 +116,11 @@ ROOM = dict(
                       chk=lambda: 125 * (3 * 5)),
               give=['gear'], after='금고가 열렸어요! 안에 **톱니바퀴**가 있어요. 조타실의 조타 장치에서 빠진 부품 같아요.',
               guide='산소 탱크 수와 탱크 하나의 산소 양을 곱해 공구 금고를 열어요.'),
+            O('sdraw', '금고 속 작은 서랍', 'drawer', 45, 96, 70, 40, dict(c='#8A929C', lock=True), in_='safe',
+              lock=Lk('num', str(SB_TANK_ROWS * SB_TANK_PER * (180 - sum(SB_TRI))), '금고 안쪽에 아주 작은 서랍이 또 있어요! 숫자 세 개 자물쇠예요. 계기판 구석 쪽지에 적힌 대로 계산해요.',
+                      ['압력 계기판을 크게 보면 구석에 작은 쪽지가 있어요. 거기에 계산 방법이 적혀 있어요.', f'산소 탱크는 {SB_TANK_PER} × {SB_TANK_ROWS} = 15개, 각도 수리표의 ㄷ은 180 − 48 − 67 = 65°예요.', '15 × 65 = 15 × 60 + 15 × 5'],
+                      f'탱크 15개 × ㄷ 65 = 900 + 75 = {SB_TANK_ROWS * SB_TANK_PER * (180 - sum(SB_TRI))}', chk=lambda: (3 * 5) * (180 - 48 - 67)),
+              give=['kh2'], after='작은 서랍 안에 빨간 **열쇠 몸통**이 들어 있어요. 손잡이는 없어요.', guide='공구 금고를 연 뒤 금고 안쪽의 작은 서랍을 눌러 보세요.'),
         ]),
         dict(id='c', nm='탈출실', bg=dict(wall='#245A6E', floor='#1D3540', deco='bubble'), objs=[
             O('sonar', '음파 탐지 기록', 'poster', 30, 40, 440, 150, dict(lines=['음파 탐지 기록'], shapes=SB_SONAR, c='#E6F4F6'), keep=True,
@@ -128,7 +140,7 @@ ROOM = dict(
                       ['수첩의 음파 탐지 기록을 보세요. ○ △ □ 가 한 번씩, 그다음엔…?', '○ △ □ 가 1개씩, ○○ △△ □□ 2개씩, 그다음은 3개씩이에요. ○○○ 다음은?'],
                       '○ △ □ / ○○ △△ □□ / ○○○ △△△ □□□ … 이므로 ? 자리부터 △ △ △ □',
                       chk=lambda: sonar(16)[12:]),
-              give=['key'], after='상자가 열렸어요! 구명조끼 위에 **해치 열쇠**가 있어요.', guide='음파 탐지 기록의 늘어나는 규칙으로 구명 장비 상자를 열어요.'),
+              give=['kh1'], after='상자가 열렸어요! 구명조끼 위에 빨간 **열쇠 손잡이**가 있어요. 그런데 손잡이만 있고 몸통이 없어요.', guide='음파 탐지 기록의 늘어나는 규칙으로 구명 장비 상자를 열어요.'),
             O('hatch', '탈출 해치', 'door', 820, 190, 150, 250, dict(c='빨강', sign='탈출 해치'), req=['helm'],
               look='바다 위로 나가는 탈출 해치예요. 열쇠 구멍과 숫자판이 있어요.',
               need='key', needMsg='해치에 열쇠 구멍이 있어요.', useMsg='해치 열쇠가 딱 맞아요! 이제 숫자판만 남았어요.',
@@ -139,5 +151,5 @@ ROOM = dict(
               go='exit', after='해치가 열렸어요!', guide='해치 열쇠를 쓰고, 산소 양을 탈출정 수로 나눈 몫과 나머지를 이어 써요.'),
         ]),
     ],
-    flow=['angles', 'locker', 'chart', 'door', 'tanks', 'safe', 'gauge', 'valve', 'sonar', 'chest', 'radio', 'helm', 'hatch'],
+    flow=['angles', 'locker', 'chart', 'door', 'tanks', 'safe', 'gauge', 'gnote', 'sdraw', 'valve', 'sonar', 'chest', 'kh1+kh2', 'radio', 'helm', 'hatch'],
 )

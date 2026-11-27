@@ -1,20 +1,22 @@
 """수학 방탈출 2 — 방 자료 (2026-11-26 선생님 요청: '문제 몇 개 풀고 끝'이 아니라 진짜 방탈출처럼)
 
 방 = 장면(방 그림) 1~3개 + 물건들. 물건을 눌러 살펴보면 단서가 수첩에 모이고, 얻은 물건은 가방에 들어감.
-  O(id, 이름, 그림, x, y, w, h, p=그림 설정, look=살펴본 글, lookFig=단서 그림, keep=수첩에 남김,
+  O(id, 이름, 그림, x, y, w, h, p=그림 설정, in_=부모 물건 id(크게 볼 때만 보이는 숨은 곳 — x·y는 부모 그림 안 좌표, 부모가 열려야 보임), look=살펴본 글, lookFig=단서 그림, keep=수첩에 남김,
     need=필요한 가방 물건 id, needMsg, useMsg, lock=Lk(...), give=[가방에 넣을 물건 id], after=연 뒤 글, afterFig,
     go=다음 장면 id 또는 'exit', req=[먼저 열려야 보이는 물건 id], guide='어디를 볼까?' 힌트 글)
   Lk(종류 'num'|'dir'|'color'|'shape', 답, 물음, 힌트 [2~3개], 풀이, chk=답을 따로 계산하는 lambda, opts=고를 것)
     num 답은 숫자 글자('15'), 나머지는 목록(['↑','→'] / ['빨강','파랑'] / ['○','△']).
   장면 배경 bg = {wall, floor, deco: 'stripe'|'brick'|'stars'|'bubble'|'tile'}. 방 그림 크기 1000×560, 바닥은 y 381부터.
+  story = 처음 이야기 줄 3개쯤, combine = [dict(a, b, make, msg)] 가방 물건 합치기(flow에는 'a+b').
   flow = 풀이 차례(물건 id). build.py가 이 차례대로 따라가 탈출할 수 있는지, 자물쇠 답이 chk와 같은지 점검함.
 그림 이름은 art.js의 A: door clock shelf table box chest desk safe poster board frame robot plant rug window screen panel porthole
-  cabinet sign lamp pipe statue case counter scale globe microscope banner cage fence bookshelf note conveyor bottles map.
-가방 물건 모양 k: key battery torch lens card gear coin piece paper gem candy.
+  cabinet sign lamp pipe statue case counter scale globe microscope banner cage fence bookshelf note conveyor bottles map,
+  숨은 곳용 drawer(작은 서랍, p.lock) scrap(작은 쪽지, p.t 글자) brick(빠지는 벽돌) hole(작은 구멍).
+가방 물건 모양 k: key battery torch lens card gear coin piece paper gem candy, 합치기용 khead(열쇠 손잡이) kblade(열쇠 몸통) tornL·tornR(찢어진 종이 왼쪽·오른쪽) stick(막대) hook(갈고리).
 """
 def O(id, nm, art, x, y, w, h, p=None, **k):
     d = dict(id=id, nm=nm, art=art, x=x, y=y, w=w, h=h, p=p or {})
-    d.update({a: b for a, b in k.items() if b is not None})
+    d.update({('in' if a == 'in_' else a): b for a, b in k.items() if b is not None})
     return d
 
 def Lk(t, code, q, hints, sol, chk=None, opts=None):
@@ -42,11 +44,15 @@ TOY_SHAPES = ['○', '△', '□', '○', '△', '□', '○', '?']
 TOY = dict(
     id='toy', title='장난감 공장 탈출', ico='🧸', acc='#E0861A', rec='추천 1~2학년 · 보통 · 덧셈·뺄셈·규칙·시각·모양·방향',
     intro='공장장 로봇이 고장 나서 장난감 공장 문이 모두 잠겼어요! 조립실과 포장실을 둘러보며 단서를 모아 출구 문을 열어요.',
+    story=['장난감 공장 견학을 하던 날, 공장장 로봇이 갑자기 "삐― 고장!" 하고 멈췄어요.', '쿵! 출구 문이 닫히고 큰 자물쇠가 철컥 걸렸어요.', '로봇을 고치고 숨은 단서를 모아 공장을 빠져나가요!'],
     outro='출구 문이 활짝 열렸어요! 고친 로봇이 손을 흔들며 배웅해요. 장난감 공장을 탈출했어요!',
     items={'keys': dict(nm='작은 열쇠', k='key', c='#C9A24B', de='작은 열쇠 구멍에 맞을 것 같아요'),
            'bat': dict(nm='건전지', k='battery', c='#3DA35D', de='무언가를 움직이게 할 수 있어요'),
            'gear': dict(nm='톱니바퀴', k='gear', c='#8A929C', de='기계에서 빠진 부품 같아요'),
-           'keyb': dict(nm='큰 열쇠', k='key', c='#E5534B', de='빨간 큰 열쇠예요')},
+           'keyb': dict(nm='큰 열쇠', k='key', c='#E5534B', de='빨간 큰 열쇠예요'),
+           'kb1': dict(nm='열쇠 손잡이', k='khead', c='#E5534B', de='큰 열쇠의 동그란 손잡이만 있어요. 나머지 반쪽은 어디 있을까요?'),
+           'kb2': dict(nm='열쇠 몸통', k='kblade', c='#E5534B', de='큰 열쇠의 길쭉한 몸통이에요. 손잡이가 없어요.')},
+    combine=[dict(a='kb1', b='kb2', make='keyb', msg='손잡이와 몸통을 딸깍 끼웠더니 **큰 열쇠**가 되었어요!')],
     scenes=[
         dict(id='a', nm='조립실', bg=dict(wall='#FBE7C6', floor='#C9A27A', deco='stripe'), objs=[
             O('clock', '벽시계', 'clock', 70, 40, 120, 120, dict(h=3, m=0), keep=True,
@@ -81,6 +87,9 @@ TOY = dict(
             O('board', '작업 칠판', 'board', 60, 50, 280, 160, dict(lines=['오늘 포장할 곰 인형:', '조립실 선반의 곰 인형', '+ 16개']), keep=True,
               look='작업 칠판에 오늘 할 일이 적혀 있어요.', lookFig=F('board', 300, 160, lines=['오늘 포장할 곰 인형:', '조립실 선반의 곰 인형', '+ 16개']),
               guide='작업 칠판을 읽고 수첩에 남겨 두세요.'),
+            O('tnote', '칠판 구석 쪽지', 'scrap', 222, 112, 46, 34, dict(t='?'), in_='board', keep=True,
+              look='칠판 구석에 아주 작은 쪽지가 꽂혀 있어요! "금고 속 작은 서랍 = **조립실 선반의 블록 수 − 선반의 공 수**"',
+              guide='작업 칠판을 크게 보고 구석의 작은 쪽지를 찾아보세요.'),
             O('paint', '물감 통', 'bottles', 360, 200, 290, 180, dict(items=TOY_PAINT), keep=True,
               look='물감 통 네 개에 계산식이 붙어 있어요. 통마다 계산하면 얼마일까요?', lookFig=F('bottles', 300, 150, items=TOY_PAINT),
               guide='물감 통에 붙은 계산식을 살펴보세요.'),
@@ -91,12 +100,17 @@ TOY = dict(
                       chk=lambda: [c for _, c in sorted([(9 + 6, '빨강'), (8 + 4, '파랑'), (7 + 7, '노랑'), (5 + 8, '초록')])], opts=['빨강', '노랑', '초록', '파랑']),
               give=['gear'], after='금고 안에 **톱니바퀴**와 쪽지가 있어요. 쪽지: "벨트는 조립실 포스터의 모양 규칙을 따라 움직여요."',
               guide='물감 통의 계산 값을 작은 것부터 정리해 색깔 금고를 열어 보세요.'),
+            O('sdraw', '금고 속 작은 서랍', 'drawer', 40, 96, 70, 40, dict(c='#8A929C', lock=True), in_='safe',
+              lock=Lk('num', '10', '금고 안쪽에 아주 작은 서랍이 또 있어요! 숫자 두 개 자물쇠예요. 칠판 구석 쪽지에 적힌 대로 계산해요.',
+                      ['칠판을 크게 보면 구석에 작은 쪽지가 있어요. 거기에 계산 방법이 적혀 있어요.', '선반의 블록은 4 + 5 + 3 = 12개, 공은 2개예요.'],
+                      '블록 12 − 공 2 = 10', chk=lambda: (4 + 5 + 3) - 2),
+              give=['kb2'], after='작은 서랍 안에 **열쇠 몸통**이 들어 있어요. 손잡이는 없어요.', guide='금고를 연 뒤 금고 안쪽의 작은 서랍을 눌러 보세요.'),
             O('belt', '컨베이어 벨트', 'conveyor', 60, 340, 420, 170, dict(shapes=['?', '?', '?']),
               need='gear', needMsg='벨트가 멈춰 있어요. 톱니바퀴 하나가 빠진 자리가 보여요.', useMsg='톱니바퀴를 끼웠더니 벨트가 움찔해요. 모양 단추를 맞게 눌러야 움직여요.',
               lock=Lk('shape', ['△', '□', '○'], '벨트에 놓일 모양을 정해요. **조립실 포스터의 ? 자리부터** 규칙대로 모양 세 개를 차례로 눌러요.',
                       ['수첩의 모양 포스터를 열어 보세요. ○ △ □ 가 되풀이돼요.', '포스터의 마지막 모양은 ○ 였어요. 그다음은?'],
                       '○ △ □ 가 되풀이되므로 ? 자리부터 △ □ ○', chk=lambda: [['○', '△', '□'][i % 3] for i in range(7, 10)], opts=['○', '△', '□', '☆']),
-              give=['keyb'], after='벨트가 움직이며 상자 사이로 **큰 열쇠**가 굴러 나왔어요!', guide='톱니바퀴를 벨트에 끼우고 포스터 규칙대로 모양을 눌러 보세요.'),
+              give=['kb1'], after='벨트가 움직이며 상자 사이로 **열쇠 손잡이**가 굴러 나왔어요! 그런데 손잡이만 있고 몸통이 없어요.', guide='톱니바퀴를 벨트에 끼우고 포스터 규칙대로 모양을 눌러 보세요.'),
             O('exit', '출구 문', 'door', 840, 170, 120, 210, dict(c='빨강', sign='출구'),
               need='keyb', needMsg='출구 문에 큰 열쇠 구멍이 있어요.', useMsg='큰 열쇠가 딱 맞아요! 이제 문의 숫자판만 남았어요.',
               lock=Lk('num', '15', '숫자판 위 글: **비밀번호 = (오늘 포장할 곰 인형 수) − (조립실 시계가 가리키는 시각)**',
@@ -105,7 +119,7 @@ TOY = dict(
               go='exit', after='출구 문이 열렸어요!', guide='큰 열쇠를 출구 문에 쓰고, 칠판과 시계 단서로 비밀번호를 계산해요.'),
         ]),
     ],
-    flow=['clock', 'poster', 'shelf', 'toybox', 'desk', 'robot', 'sdoor', 'board', 'paint', 'safe', 'belt', 'exit'],
+    flow=['clock', 'poster', 'shelf', 'toybox', 'desk', 'robot', 'sdoor', 'board', 'tnote', 'paint', 'safe', 'sdraw', 'belt', 'kb1+kb2', 'exit'],
 )
 
 # 방마다 파일 rooms_<id>.py 의 ROOM (없으면 건너뜀). 메뉴·이동 줄 차례 = 이 차례.

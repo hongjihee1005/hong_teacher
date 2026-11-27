@@ -1,6 +1,7 @@
 """수학 방탈출 2 — 과학실 탈출 (5~6학년 · 쉬움, 5학년 기초: 최대공약수·배수와 공배수·분수의 크기 비교와 덧셈·평균·반올림·직사각형의 넓이와 둘레)"""
 from fractions import Fraction
 from math import gcd
+def lcm(a, b): return a * b // gcd(a, b)
 from rooms import O, Lk, F
 
 # 그림에 그린 수 = 자물쇠 계산에 쓰는 수(같은 상수를 함께 씀)
@@ -28,11 +29,15 @@ def r100(n): return (n + 50) // 100 * 100
 ROOM = dict(
     id='lab', title='과학실 탈출', ico='🧪', acc='#C8402F', rec='추천 5~6학년 · 쉬움 · 최대공약수·배수·분수·평균·어림·넓이·모양·색깔',
     intro='실험을 마치고 정리하다 보니 과학실 문이 잠겨 버렸어요! 과학실과 준비실을 살펴 단서를 모으고, 숨은 **비상문**을 찾아 열어요.',
+    story=['실험을 마치고 과학실을 정리하던 저녁, 창밖이 어둑어둑해졌어요.', '찰칵! 자동 잠금 장치가 켜지며 과학실 문이 모두 잠겨 버렸어요.', '숨은 단서를 모아 비밀 **비상문**을 찾아 빠져나가요!'],
     outro='비상문이 덜컥 열렸어요! 복도로 나오자 저녁 햇살이 비쳐요. 과학실을 무사히 탈출했어요!',
     items={'lens': dict(nm='현미경 렌즈', k='lens', c='#3B6FD6', de='현미경에서 빠진 렌즈 같아요'),
            'card': dict(nm='준비실 출입 카드', k='card', c='#C8402F', de='준비실 문에 대는 카드예요'),
            'key': dict(nm='금고 열쇠', k='key', c='#C9A24B', de='작은 금색 열쇠예요'),
+           'kh1': dict(nm='열쇠 손잡이', k='khead', c='#C9A24B', de='금색 열쇠의 동그란 손잡이만 있어요. 나머지 반쪽은 어디 있을까요?'),
+           'kh2': dict(nm='열쇠 몸통', k='kblade', c='#C9A24B', de='금색 열쇠의 길쭉한 몸통이에요. 손잡이가 없어요.'),
            'bat': dict(nm='건전지', k='battery', c='#3DA35D', de='전기 기구를 켤 수 있어요')},
+    combine=[dict(a='kh1', b='kh2', make='key', msg='손잡이와 몸통을 딸깍 끼웠더니 **금고 열쇠**가 되었어요!')],
     scenes=[
         dict(id='a', nm='과학실', bg=dict(wall='#E2F0EA', floor='#AFC0B8', deco='tile'), objs=[
             O('clock', '벽시계', 'clock', 40, 30, 100, 100, dict(h=4, m=30),
@@ -48,6 +53,9 @@ ROOM = dict(
             O('poster', '규칙 포스터', 'poster', 360, 30, 280, 190, dict(lines=RULE, fs=22), keep=True,
               look='벽에 표본장 여는 규칙이 붙어 있어요. **공배수부터 먼저** 따져야 해요.', lookFig=F('poster', 320, 210, lines=RULE, fs=24),
               guide='규칙 포스터를 읽고 수첩에 남겨 두세요.'),
+            O('pnote', '포스터 구석 쪽지', 'scrap', 228, 148, 46, 36, dict(t='?'), in_='poster', keep=True,
+              look='포스터 구석에 아주 작은 쪽지가 꽂혀 있어요! "표본장 속 작은 서랍 = (선반의 **플라스크 수와 시약병 수의 최소공배수**) 뒤에 (**슬라이드 번호 다섯 개의 합**)을 이어 쓴 수"',
+              guide='규칙 포스터를 크게 보고 구석의 작은 쪽지를 찾아보세요.'),
             O('cabinet', '표본장', 'cabinet', 670, 30, 150, 200, dict(label='표본장'),
               lock=Lk('shape', [mark(n) for n in SLIDES], '표본장 문: **현미경 슬라이드 번호**를 왼쪽부터 하나씩, **규칙 포스터**에 맞는 모양으로 바꿔 차례로 눌러요.',
                       ['수첩에서 슬라이드 번호(8, 15, 12, 7, 18)와 규칙 포스터를 함께 보세요.', '12는 3의 배수이면서 4의 배수예요. 그래서 공배수 모양 ☆이에요.', '8 → □, 15 → △, 12 → ☆, 7 → ○, 18 → △'],
@@ -55,6 +63,12 @@ ROOM = dict(
                       chk=lambda: [mark(n) for n in SLIDES]),
               give=['card'], after='표본장이 열렸어요! 나비 표본 옆에 **준비실 출입 카드**가 꽂혀 있어요.',
               guide='슬라이드 번호를 규칙 포스터에 맞춰 모양으로 바꾸면 표본장이 열려요.'),
+            O('cdraw', '표본장 속 작은 서랍', 'drawer', 40, 140, 70, 40, dict(c='#B98552', lock=True), in_='cabinet',
+              lock=Lk('num', f'{lcm(FLASK, JAR)}{sum(SLIDES)}', '표본장 안쪽 아래에 아주 작은 서랍이 또 있어요! 숫자 네 개 자물쇠예요. 포스터 구석 쪽지에 적힌 대로 계산해요.',
+                      ['규칙 포스터를 크게 보면 구석에 작은 쪽지가 있어요. 거기에 계산 방법이 적혀 있어요.', '플라스크 8개, 시약병 12개의 최소공배수를 구해요. 슬라이드 번호는 8, 15, 12, 7, 18이에요.', '8과 12의 최소공배수 24, 슬라이드 번호의 합 60'],
+                      f'8과 12의 최소공배수 {lcm(FLASK, JAR)}, 8 + 15 + 12 + 7 + 18 = {sum(SLIDES)} → {lcm(FLASK, JAR)}{sum(SLIDES)}',
+                      chk=lambda: f'{min(n for n in range(1, 97) if n % FLASK == 0 and n % JAR == 0)}{8 + 15 + 12 + 7 + 18}'),
+              give=['kh2'], after='작은 서랍 안에 금색 **열쇠 몸통**이 들어 있어요. 손잡이는 없어요.', guide='표본장을 연 뒤 안쪽 아래의 작은 서랍을 눌러 보세요.'),
             O('door', '준비실 문', 'door', 850, 170, 120, 210, dict(c='초록', sign='준비실'),
               need='card', needMsg='준비실 문이 잠겨 있어요. 손잡이 옆에 **카드를 대는 곳**이 있어요.', useMsg='카드를 댔더니 삑! 문이 열렸어요.',
               go='b', after='문 너머에 실험 준비실이 보여요.', guide='출입 카드를 준비실 문에 대 보세요.'),
@@ -84,7 +98,7 @@ ROOM = dict(
                       ['분모가 다르면 크기를 바로 비교하기 어려워요. 분모를 12로 **통분**해 보세요.', '1/2 = 6/12, 3/4 = 9/12, 5/12, 1/3 = 4/12', '4/12(노랑) < 5/12(초록) < 6/12(빨강) < 9/12(파랑)'],
                       '통분하면 노랑 4/12 < 초록 5/12 < 빨강 6/12 < 파랑 9/12',
                       chk=lambda: [c for c, _ in sorted(BEAKER, key=lambda t: t[1])]),
-              give=['key'], after='분배기가 비커 네 개의 물을 차례로 큰 수조에 모두 부었어요. 물받이 아래에서 **금고 열쇠**가 굴러 나왔어요!',
+              give=['kh1'], after='분배기가 비커 네 개의 물을 차례로 큰 수조에 모두 부었어요. 물받이 아래에서 금색 **열쇠 손잡이**가 굴러 나왔어요! 그런데 손잡이만 있고 몸통이 없어요.',
               guide='비커의 물을 적은 것부터 물 분배기에 입력해 보세요.'),
             O('plant', '강낭콩 화분', 'plant', 250, 360, 110, 160, keep=True,
               look='강낭콩 화분에 관찰 기록표가 꽂혀 있어요. 닷새 동안 자란 키를 적었대요.', lookFig=F('board', 320, 170, lines=BEAN_FIG),
@@ -107,5 +121,5 @@ ROOM = dict(
               go='exit', after='비상문이 열렸어요!', guide='바닥 안내도의 길이를 어림해 넓이와 둘레로 비상문을 열어요.'),
         ]),
     ],
-    flow=['clock', 'shelf', 'box', 'microscope', 'poster', 'cabinet', 'door', 'bottles', 'panel', 'plant', 'safe', 'screen', 'plan', 'exit'],
+    flow=['clock', 'shelf', 'box', 'microscope', 'poster', 'pnote', 'cabinet', 'cdraw', 'door', 'bottles', 'panel', 'kh1+kh2', 'plant', 'safe', 'screen', 'plan', 'exit'],
 )

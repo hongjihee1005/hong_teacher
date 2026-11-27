@@ -3,7 +3,7 @@ from fractions import Fraction
 # rooms.py의 도우미와 같음(서로 불러오면 돌고 돌아서 여기에 둠)
 def O(id, nm, art, x, y, w, h, p=None, **k):
     d = dict(id=id, nm=nm, art=art, x=x, y=y, w=w, h=h, p=p or {})
-    d.update({a: b for a, b in k.items() if b is not None})
+    d.update({('in' if a == 'in_' else a): b for a, b in k.items() if b is not None})
     return d
 
 def Lk(t, code, q, hints, sol, chk=None, opts=None):
@@ -39,10 +39,14 @@ ROOM = dict(
     id='space', title='우주선 탈출', ico='🚀', acc='#3B6FD6',
     rec='추천 3~4학년 · 보통 · 곱셈·나눗셈·분수 크기 비교·각도·큰 수·규칙·방향·색깔',
     intro='삐뽀삐뽀! 우주선의 전원이 꺼지고 문이 모두 잠겼어요. 조종실과 화물칸을 둘러보며 단서를 모아, 탈출 캡슐을 타고 지구로 돌아가요.',
+    story=['우주선을 타고 별을 구경하던 중, 삐뽀삐뽀! 경고등이 번쩍였어요.', '전원이 꺼지더니 쿵! 문이 모두 닫히고 잠겨 버렸어요.', '조종실과 화물칸의 단서를 모아 탈출 캡슐을 타고 지구로 돌아가요!'],
     outro='탈출 캡슐의 문이 열렸어요! 캡슐에 올라타 단추를 누르니 파란 지구가 점점 커져요. 우주선을 탈출했어요!',
     items={'torch': dict(nm='손전등', k='torch', c='#F2C230', de='어두운 곳을 비출 수 있어요'),
            'card': dict(nm='출입 카드', k='card', c='#3B6FD6', de='카드에 \'화물칸\'이라고 적혀 있어요'),
-           'bat': dict(nm='건전지', k='battery', c='#3DA35D', de='무언가를 움직이게 할 수 있어요')},
+           'bat': dict(nm='건전지', k='battery', c='#3DA35D', de='무언가를 움직이게 할 수 있어요'),
+           'cd1': dict(nm='카드 왼쪽 조각', k='tornL', c='#3B6FD6', de='반으로 찢어진 출입 카드의 왼쪽이에요. 오른쪽 조각은 어디 있을까요?'),
+           'cd2': dict(nm='카드 오른쪽 조각', k='tornR', c='#3B6FD6', de='반으로 찢어진 출입 카드의 오른쪽이에요.')},
+    combine=[dict(a='cd1', b='cd2', make='card', msg='두 조각을 맞대고 테이프로 붙였더니 **출입 카드**가 되었어요!')],
     scenes=[
         dict(id='a', nm='조종실', bg=dict(wall='#2B3A6B', floor='#5A6273', deco='stars'), objs=[
             O('porthole', '관측 창', 'porthole', 30, 30, 150, 150,
@@ -53,6 +57,9 @@ ROOM = dict(
             O('rule', '조종실 규칙판', 'poster', 350, 40, 310, 130, dict(lines=['조종실 규칙판'], shapes=SP_RULE, c='#EAF2FB'), keep=True,
               look='규칙판에 모양이 규칙대로 놓여 있어요. 맨 끝은 **?** 로 지워져 있어요. 어떤 모양들이 되풀이될까요?',
               lookFig=F('poster', 340, 130, lines=['조종실 규칙판'], shapes=SP_RULE, c='#EAF2FB'), guide='규칙판에서 되풀이되는 모양 묶음을 찾아 두세요.'),
+            O('rscrap', '규칙판 구석 쪽지', 'scrap', 258, 6, 46, 34, dict(t='?'), in_='rule', keep=True,
+              look='규칙판 구석에 아주 작은 쪽지가 붙어 있어요! "사물함 속 작은 서랍 = **(규칙판의 ○ 수 + △ 수) × 우주 시계가 가리키는 시각**" (? 자리는 세지 않아요)',
+              guide='조종실 규칙판을 크게 보고 구석의 작은 쪽지를 찾아보세요.'),
             O('screen', '항해 화면', 'screen', 690, 30, 280, 210, dict(lines=['전원 꺼짐', '색 단추로 켜요'], open=['지구까지 남은 거리', f'{SP_DIST} km']),
               look='큰 항해 화면이 꺼져 있어요. 아래에 빨강·노랑·초록·파랑 색 단추가 있어요.',
               lock=Lk('color', [c for c, _ in sorted(SP_FUEL, key=lambda r: -r[1])], '화면 아래 글: **연료가 많이 남은 통부터** 그 통의 색 단추를 차례로 눌러 전원을 켜요.',
@@ -66,7 +73,13 @@ ROOM = dict(
               lock=Lk('num', str(SP_CLOCK * 30), '자물쇠 옆 글: **우주 시계의 두 바늘이 이루는 작은 쪽 각은 몇 도일까요?**',
                       ['시계 한 바퀴는 360°예요. 숫자는 12개 있어요.', '숫자 한 칸 사이는 360° ÷ 12 = 30°예요. 4시에는 두 바늘 사이가 몇 칸일까요?'],
                       f'4시 → 두 바늘 사이 4칸, 한 칸 30° → 30° × 4 = {SP_CLOCK * 30}°', chk=lambda: 360 // 12 * SP_CLOCK),
-              give=['torch'], after='사물함이 열렸어요! 우주복 주머니에 **손전등**이 있어요.', guide='우주 시계의 각도로 우주복 사물함을 열어요.'),
+              give=['torch'], after='사물함이 열렸어요! 우주복 주머니에 **손전등**이 있어요. 사물함 아래쪽에는 작은 서랍도 보여요.', guide='우주 시계의 각도로 우주복 사물함을 열어요.'),
+            O('ldraw', '사물함 속 작은 서랍', 'drawer', 75, 118, 70, 40, dict(c='#8A929C', lock=True), in_='locker',
+              lock=Lk('num', str((SP_RULE.count('○') + SP_RULE.count('△')) * SP_CLOCK), '사물함 아래쪽 작은 서랍에 숫자 두 개 자물쇠가 있어요. 규칙판 구석 쪽지에 적힌 대로 계산해요.',
+                      ['조종실 규칙판을 크게 보면 구석에 작은 쪽지가 있어요. 거기에 계산 방법이 적혀 있어요.', f'규칙판에 ○는 {SP_RULE.count("○")}개, △는 {SP_RULE.count("△")}개예요. 우주 시계는 {SP_CLOCK}시예요.', f'{SP_RULE.count("○")} + {SP_RULE.count("△")} = {SP_RULE.count("○") + SP_RULE.count("△")}, 여기에 {SP_CLOCK}를 곱해요.'],
+                      f'○ {SP_RULE.count("○")}개 + △ {SP_RULE.count("△")}개 = {SP_RULE.count("○") + SP_RULE.count("△")}, × {SP_CLOCK}시 = {(SP_RULE.count("○") + SP_RULE.count("△")) * SP_CLOCK}',
+                      chk=lambda: sum(1 for k in SP_RULE if k in ('○', '△')) * SP_CLOCK),
+              give=['cd2'], after='작은 서랍 안에 찢어진 **카드 오른쪽 조각**이 들어 있어요.', guide='우주복 사물함을 연 뒤 사물함 아래쪽의 작은 서랍을 눌러 보세요.'),
             O('crate', '어두운 구석 상자', 'box', 260, 400, 170, 130, dict(c='#3A3F48', lock=True, label='?'),
               look='조종실 구석의 상자예요. 너무 어두워서 잘 보이지 않아요.',
               need='torch', needMsg='깜깜해서 상자 뚜껑이 보이지 않아요. 비출 것이 있으면 좋겠어요.', useMsg='손전등을 비추니 뚜껑에 모양 단추 네 칸이 보여요!',
@@ -74,7 +87,7 @@ ROOM = dict(
                       ['수첩의 규칙판을 열어 보세요. ☆ ○ ○ △ 가 한 묶음으로 되풀이돼요.', '규칙판의 마지막 보이는 모양은 ☆ 였어요. ☆ 다음에는 무엇이 올까요?'],
                       '☆ ○ ○ △ 가 되풀이되므로 ☆ 다음 ? 자리부터 ○ ○ △ ☆',
                       chk=lambda: [['☆', '○', '○', '△'][i % 4] for i in range(9, 13)]),
-              give=['card'], after='상자 안에 **출입 카드**와 **로봇 길 지도**가 있어요. 지도에는 화물칸 로봇이 짐 더미까지 가는 길이 빨간 점으로 그려져 있어요.',
+              give=['cd1'], after='상자 안에 반으로 찢어진 **카드 왼쪽 조각**과 **로봇 길 지도**가 있어요. 카드 조각에는 \'화물\'까지만 보여요. 지도에는 화물칸 로봇이 짐 더미까지 가는 길이 빨간 점으로 그려져 있어요.',
               afterFig=F('map', 330, 240, **SP_MAP), guide='손전등으로 어두운 구석 상자를 비추고, 규칙판의 규칙으로 모양 단추를 눌러요.'),
             O('hatch', '화물칸 문', 'door', 820, 270, 140, 220, dict(c='회색', sign='화물칸', keypad=False),
               look='화물칸으로 가는 문이에요. 옆에 카드 꽂는 곳이 있어요.',
@@ -117,5 +130,5 @@ ROOM = dict(
               go='exit', after='탈출 캡슐 문이 열렸어요!', guide='항해 화면의 거리와 캡슐 안내문으로 며칠 걸리는지 구해요.'),
         ]),
     ],
-    flow=['clock', 'locker', 'rule', 'crate', 'hatch', 'fuel', 'food', 'log', 'notice', 'tools', 'robot', 'screen', 'exit'],
+    flow=['clock', 'locker', 'rule', 'rscrap', 'ldraw', 'crate', 'cd1+cd2', 'hatch', 'fuel', 'food', 'log', 'notice', 'tools', 'robot', 'screen', 'exit'],
 )
