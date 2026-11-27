@@ -105,7 +105,8 @@ window.TOOL = function (host, api) {
     var kids = (KIDS[id] || []).filter(vis), op = ok(o) && (o.lock || o.need);
     var h = '<div class="es-card" role="dialog" aria-modal="true" aria-label="' + esc(o.nm) + '"><div class="es-chd"><b>' + esc(o.nm) + '</b><span>' + (o.in ? '<button type="button" class="tl-btn" data-back="' + o.in + '">◀ ' + esc(OBJ[o.in].nm) + '</button> ' : '') + '<button type="button" class="tl-btn es-x" data-a="close">닫기</button></span></div><div class="es-cbody"><div class="es-bigw"><div class="es-big"><svg viewBox="-20 -30 ' + (o.w + 40) + ' ' + (o.h + 50) + '" role="group" aria-label="' + esc(o.nm) + ' 크게 보기"><g class="es-art' + (op && st.fresh === id ? ' es-opening' : '') + '">' + A[o.art](o.w, o.h, o.p || {}, op) + '</g>' + kids.map(function (k) { return objG(k, ' es-spot' + (st.seen[k.id] ? '' : ' es-new')) }).join('') + '</svg></div><p class="es-peek">그림 속 작은 곳도 눌러 볼 수 있어요.</p></div><div class="es-ctext">';
     st.fresh = null;
-    if (o.look) { h += '<p class="es-look">' + frac(o.look) + '</p>' + fig(o.lookFig); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
+    /* 연 뒤에는 처음 모습 글(잠겨 있어요·꺼져 있어요)을 빼고 연 뒤 글만 — 단서 물건(keep)은 그대로 */
+    if (o.look && !(op && !o.keep && o.after)) { h += '<p class="es-look">' + frac(o.look) + '</p>' + fig(o.lookFig); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
     if (o.need && !st.used[o.id]) {
       h += '<div class="es-need"><p>' + frac(o.needMsg || '무언가가 필요해 보여요.') + '</p>' + (st.inv.length ? '<p class="es-try">가방에서 써 볼 물건:</p><div class="es-inv es-inv2">' + st.inv.map(function (iid) { var it = R.items[iid]; return '<button type="button" class="es-it" data-use="' + iid + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') + '</div>' : '<p class="es-try">가방이 비어 있어요. 다른 곳을 먼저 살펴봐요.</p>') + '</div>';
     } else if (o.lock && !st.solved[o.id]) h += lockUI(o);
