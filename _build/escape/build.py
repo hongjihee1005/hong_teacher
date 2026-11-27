@@ -15,14 +15,18 @@ MT = ROOT / '_build' / 'mathtools'
 OUT = ROOT / 'project' / 'escape'
 sys.dont_write_bytecode = True
 sys.path.insert(0, str(HERE))
-from rooms import ROOMS
+from rooms import ROOMS, ORDER, ONLY
 
 LTYPES = {'num', 'dir', 'color', 'shape'}
 ARTS = None
 
+def artsrc():
+    """art.js + 주제마다 더한 그림 art_<주제>.js(ART.A.이름 = function …)"""
+    return ''.join(f.read_text(encoding='utf-8') + '\n' for f in [HERE / 'art.js'] + sorted(HERE.glob('art_*.js')))
+
 def arts():
     global ARTS
-    if ARTS is None: ARTS = set(re.findall(r'^\s*A\.(\w+) = function', (HERE / 'art.js').read_text(encoding='utf-8'), re.M))
+    if ARTS is None: ARTS = set(re.findall(r'\bA\.(\w+) = function', artsrc()))
     return ARTS
 
 def check():
@@ -134,9 +138,9 @@ def build(r):
         o = dict(o)
         if 'lock' in o: o['lock'] = {k: v for k, v in o['lock'].items() if k != 'chk'}
         return o
-    data = dict(id=r['id'], idx=ROOMS.index(r), title=r['title'], intro=r['intro'], story=r.get('story', []), combine=r.get('combine', []), outro=r['outro'], items=r['items'], flow=r['flow'], scenes=[dict(sc, objs=[strip(o) for o in sc['objs']]) for sc in r['scenes']])
+    data = dict(id=r['id'], idx=ORDER.index(r['id']), title=r['title'], intro=r['intro'], story=r.get('story', []), combine=r.get('combine', []), outro=r['outro'], items=r['items'], flow=r['flow'], scenes=[dict(sc, objs=[strip(o) for o in sc['objs']]) for sc in r['scenes']])
     rep = {'TITLE': r['title'], 'DESC': re.sub(r'\*\*(.+?)\*\*', r'\1', r['intro']), 'ICO': r['ico'], 'REC': r['rec'], 'GNAV': gnav, 'SHEET': sheet(r),
-           'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/'), 'TOOL': rd(HERE / 'art.js') + rd(HERE / 'escape.js'), 'SHELL': rd(MT / 'shell.js'),
+           'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/'), 'TOOL': artsrc() + rd(HERE / 'escape.js'), 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', r['acc']).replace('{TOOLCSS}', rd(HERE / 'escape.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '수학 문제로 자물쇠를 여는 방탈출 자료입니다.'),
            'HOMEFRAG': rd(OG / 'home.html').replace('{HOME}', '../../index.html')}
@@ -151,7 +155,7 @@ def build_board():
     """모둠 대항 점수판 project/escape/board.html"""
     rd = lambda f: f.read_text(encoding='utf-8')
     gnav = ''.join(f'<a href="{x["id"]}.html">{x["title"]}</a>' for x in ROOMS)
-    data = dict(rooms=[dict(id=r['id'], title=r['title'], acc=r['acc'], n=sum(1 for sc in r['scenes'] for o in sc['objs'] if o.get('lock') or o.get('need'))) for r in ROOMS])
+    data = dict(rooms=[dict(i=ORDER.index(r['id']), id=r['id'], title=r['title'], acc=r['acc'], n=sum(1 for sc in r['scenes'] for o in sc['objs'] if o.get('lock') or o.get('need'))) for r in ROOMS])
     rep = {'GNAV': gnav, 'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')), 'TOOL': rd(HERE / 'board.js'), 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', '#7B4FB0').replace('{TOOLCSS}', rd(HERE / 'board.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '수학 방탈출을 모둠끼리 겨룰 때 쓰는 점수판입니다.'),
@@ -167,5 +171,5 @@ if __name__ == '__main__':
     if bad: print('\n'.join(bad)); sys.exit('수학 방탈출 점검 실패')
     print('수학 방탈출 점검 통과 —', ', '.join(f"{r['title']} 자물쇠·장치 {sum(1 for sc in r['scenes'] for o in sc['objs'] if o.get('lock') or o.get('need'))}개" for r in ROOMS))
     if sys.argv[1:] == ['check']: sys.exit(0)
-    n = sum(build(r) for r in ROOMS) + build_board()
+    n = sum(build(r) for r in ROOMS) + (0 if ONLY else build_board())
     print(f'수학 방탈출 {n}쪽 다시 만듦 (모두 {len(ROOMS)}방)')

@@ -3,7 +3,7 @@
    ③ 탈출한 모둠은 '탈출!'로 시각을 적고, 모둠 화면에 뜬 결과 코드를 넣으면 그 기기의 걸린 시간·힌트·틀림·별을 읽어 순위를 냄.
    자료 window.EB = { rooms:[{id,title,n(자물쇠·장치 수),acc}] }. 기록은 이 기기 localStorage(hj-escape-board-v1). */
 window.TOOL = function (host, api) {
-  var RM = window.EB.rooms, KEY = 'hj-escape-board-v1', S, tick = null;
+  var RM = window.EB.rooms, BYI = {}; RM.forEach(function (r, j) { BYI[r.i] = j }); var KEY = 'hj-escape-board-v1', S, tick = null;
   function esc(s) { return String(s).replace(/[&<>"]/g, function (x) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[x] }) }
   function load() { try { S = JSON.parse(localStorage.getItem(KEY)) } catch (e) {} if (!S || !S.teams) S = { room: 1, t0: 0, teams: [1, 2, 3, 4].map(function (i) { return { nm: i + '모둠', p: 0, esc: 0, code: '' } }) } }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) {} }
@@ -14,8 +14,8 @@ window.TOOL = function (host, api) {
   function decode(code) {
     var d = String(code || '').replace(/\D/g, ''); if (d.length !== 10) return { err: '숫자 10개를 넣어요' };
     var k = 0; for (var i = 0; i < 9; i++) k += (+d[i]) * (i % 2 ? 3 : 1); if ((10 - k % 10) % 10 !== +d[9]) return { err: '코드를 다시 확인해요(숫자가 틀린 것 같아요)' };
-    var n = Number(((BigInt(d.slice(0, 9)) - 123457n + 1000000000n) * 940017679n) % 1000000000n), w = n % 100, h = Math.floor(n / 100) % 100, s = Math.floor(n / 1e4) % 6000, ri = Math.floor(n / 6e7);
-    if (ri >= RM.length) return { err: '이 점수판의 방이 아니에요' };
+    var n = Number(((BigInt(d.slice(0, 9)) - 123457n + 1000000000n) * 940017679n) % 1000000000n), w = n % 100, h = Math.floor(n / 100) % 100, s = Math.floor(n / 1e4) % 3600, ri = BYI[Math.floor(n / 3.6e7)];
+    if (ri == null) return { err: '이 점수판의 방이 아니에요' };
     return { ri: ri, s: s, h: h, w: w, st: stars(h, w) };
   }
   function info(t) { var r = t.code ? decode(t.code) : null; if (r && r.err) r = null; if (r && r.ri !== S.room) return { bad: '다른 방(' + RM[r.ri].title + ')의 코드예요' }; return r || {} }

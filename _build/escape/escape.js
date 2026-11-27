@@ -195,7 +195,7 @@ window.TOOL = function (host, api) {
   }
   /* 모둠 결과 코드: 방 번호·걸린 초·힌트·틀림을 숫자 하나로 섞고 끝에 확인 숫자(점수판 board.html이 풀어 읽음) */
   function rcode(s) {
-    var n = ((((R.idx || 0) * 6000 + Math.min(s, 5999)) * 100 + Math.min(st.hints, 99)) * 100 + Math.min(st.wrong, 99)), m = String((BigInt(n) * 7919n + 123457n) % 1000000000n).padStart(9, '0'), k = 0;
+    var n = ((((R.idx || 0) * 3600 + Math.min(s, 3599)) * 100 + Math.min(st.hints, 99)) * 100 + Math.min(st.wrong, 99)), m = String((BigInt(n) * 7919n + 123457n) % 1000000000n).padStart(9, '0'), k = 0;
     for (var i = 0; i < 9; i++) k += (+m[i]) * (i % 2 ? 3 : 1); m += (10 - k % 10) % 10; return m.slice(0, 3) + '-' + m.slice(3, 6) + '-' + m.slice(6);
   }
   function when() { var d = new Date(), h = d.getHours(); return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + '일월화수목금토'[d.getDay()] + '요일 · ' + (h < 12 ? '오전 ' : '오후 ') + ((h + 11) % 12 + 1) + '시 ' + String(d.getMinutes()).padStart(2, '0') + '분 탈출' }

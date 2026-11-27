@@ -123,10 +123,17 @@ TOY = dict(
 )
 
 # 방마다 파일 rooms_<id>.py 의 ROOM (없으면 건너뜀). 메뉴·이동 줄 차례 = 이 차례.
-import importlib
-ORDER = ['candy', 'toy', 'zoo', 'library', 'space', 'submarine', 'lab', 'museum', 'castle']
+import importlib, os
+# 결과 코드의 방 번호 = ORDER 안의 자리(바꾸면 예전 결과 코드가 다른 방으로 읽힘 — 새 방은 뒤에 붙일 것). 메뉴 차례는 메뉴 HTML에서 정함.
+ORDER = ['candy', 'toy', 'zoo', 'library', 'space', 'submarine', 'lab', 'museum', 'castle',
+         'park-low', 'park-mid', 'park-high', 'pirate-low', 'pirate-mid', 'pirate-high',
+         'school-low', 'school-mid', 'school-high', 'dino-low', 'dino-mid', 'dino-high']
+ONLY = [x for x in os.environ.get('ESC_ONLY', '').split(',') if x]   # 여럿이 함께 만들 때 내 방만 점검·빌드
 ROOMS = []
 for _id in ORDER:
+    if ONLY and _id not in ONLY: continue
     if _id == 'toy': ROOMS.append(TOY); continue
-    try: ROOMS.append(importlib.import_module('rooms_' + _id).ROOM)
-    except ModuleNotFoundError: pass
+    try: _r = importlib.import_module('rooms_' + _id.replace('-', '_')).ROOM
+    except ModuleNotFoundError: continue
+    assert _r['id'] == _id, f'rooms_{_id}: id가 {_r["id"]}'
+    ROOMS.append(_r)
