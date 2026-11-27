@@ -135,7 +135,7 @@ def build(r):
         if 'lock' in o: o['lock'] = {k: v for k, v in o['lock'].items() if k != 'chk'}
         return o
     data = dict(id=r['id'], idx=ROOMS.index(r), title=r['title'], intro=r['intro'], story=r.get('story', []), combine=r.get('combine', []), outro=r['outro'], items=r['items'], flow=r['flow'], scenes=[dict(sc, objs=[strip(o) for o in sc['objs']]) for sc in r['scenes']])
-    rep = {'TITLE': r['title'], 'DESC': r['intro'], 'ICO': r['ico'], 'REC': r['rec'], 'GNAV': gnav, 'SHEET': sheet(r),
+    rep = {'TITLE': r['title'], 'DESC': re.sub(r'\*\*(.+?)\*\*', r'\1', r['intro']), 'ICO': r['ico'], 'REC': r['rec'], 'GNAV': gnav, 'SHEET': sheet(r),
            'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/'), 'TOOL': rd(HERE / 'art.js') + rd(HERE / 'escape.js'), 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', r['acc']).replace('{TOOLCSS}', rd(HERE / 'escape.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '수학 문제로 자물쇠를 여는 방탈출 자료입니다.'),
