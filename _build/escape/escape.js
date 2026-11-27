@@ -56,7 +56,7 @@ window.TOOL = function (host, api) {
   function startView() {
     host.innerHTML = '<div class="es-start"><svg class="es-cover" viewBox="0 0 1000 300" aria-hidden="true">' + bg(SCN[R.scenes[0].id].bg, 300) + '</svg><p class="es-intro">' + frac(R.intro) + '</p>'
       + '<ul class="es-rules"><li>방 그림 속 <b>물건을 눌러</b> 크게 봐요. 크게 본 그림 속 <b>작은 곳</b>도 눌러 볼 수 있어요 — 서랍 안에 또 서랍이 숨어 있기도 해요.</li><li>단서는 <b>수첩</b>에 저절로 모여요. 얻은 물건은 <b>가방</b>에 들어가요. 가방에서 물건을 고른 뒤 쓸 곳을 누르고, 가방의 두 물건을 차례로 누르면 <b>합쳐 볼</b> 수 있어요.</li><li>자물쇠는 숫자·방향·색깔·모양 여러 가지예요. 여러 곳의 단서를 이어 붙여 풀어요.</li><li>막히면 <b>어디를 볼까?</b> 힌트를 눌러요.</li></ul>'
-      + '<p class="tl-row es-opts"><label>시간 제한 <select class="es-lim"><option value="0">없음(걸린 시간만)</option><option value="15">15분</option><option value="20" selected>20분</option><option value="30">30분</option><option value="40">40분</option></select></label><label>모둠 이름(모둠 대항할 때) <input class="es-team-in" maxlength="12" placeholder="예: 1모둠" value="' + esc(team) + '"></label>' + sndBtn() + '</p><button type="button" class="tl-btn tl-go es-go">이야기 보고 시작하기</button></div>';
+      + '<p class="tl-row es-opts"><label>시간 제한 <select class="es-lim"><option value="0">없음(걸린 시간만)</option><option value="15">15분</option><option value="20" selected>20분</option><option value="30">30분</option><option value="40">40분</option></select></label><label>이름 또는 모둠 <input class="es-team-in" maxlength="12" placeholder="예: 3번 · 1모둠" value="' + esc(team) + '"></label>' + sndBtn() + '</p><button type="button" class="tl-btn tl-go es-go">이야기 보고 시작하기</button></div>';
     api.bar(R.title);
   }
   /* 이야기 장면: 첫 장면 그림 + 쾅 닫히는 문 + 이야기 줄이 하나씩 */
@@ -197,11 +197,12 @@ window.TOOL = function (host, api) {
     var n = ((((R.idx || 0) * 6000 + Math.min(s, 5999)) * 100 + Math.min(st.hints, 99)) * 100 + Math.min(st.wrong, 99)), m = String((BigInt(n) * 7919n + 123457n) % 1000000000n).padStart(9, '0'), k = 0;
     for (var i = 0; i < 9; i++) k += (+m[i]) * (i % 2 ? 3 : 1); m += (10 - k % 10) % 10; return m.slice(0, 3) + '-' + m.slice(3, 6) + '-' + m.slice(6);
   }
+  function when() { var d = new Date(), h = d.getHours(); return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + '일월화수목금토'[d.getDay()] + '요일 · ' + (h < 12 ? '오전 ' : '오후 ') + ((h + 11) % 12 + 1) + '시 ' + String(d.getMinutes()).padStart(2, '0') + '분 탈출' }
   function win() {
     st.done = true; stop(); var s = st.sec, stars = st.hints <= 2 && st.wrong <= 3 ? 3 : st.hints <= 5 && st.wrong <= 8 ? 2 : 1, code = '';
     try { code = rcode(s) } catch (e) {}
-    host.innerHTML = '<div class="es-win"><svg viewBox="0 0 1000 260" class="es-cover" aria-hidden="true">' + bg({ wall: '#FFF4D6', floor: '#F2C230' }, 260) + '<g transform="translate(430 20)">' + A.door(140, 200, { c: '초록' }, true) + '</g></svg><p class="es-bigt">탈출 성공!</p>' + (team ? '<p class="es-wteam">' + esc(team) + '</p>' : '') + '<p>' + frac(R.outro) + '</p><p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p><p>걸린 시간 <b>' + mmss(s) + '</b> · 힌트 <b>' + st.hints + '</b>번 · 틀린 횟수 <b>' + st.wrong + '</b>번 · 모은 단서 <b>' + st.notes.length + '</b>개</p>'
-      + (code ? '<div class="es-code"><small>모둠 대항 결과 코드 — 선생님 점수판에 적어요</small><b>' + code + '</b></div>' : '') + '<button type="button" class="tl-btn tl-go" data-a="again">처음부터 다시</button></div>';
+    host.innerHTML = '<div class="es-win"><svg viewBox="0 0 1000 260" class="es-cover" aria-hidden="true">' + bg({ wall: '#FFF4D6', floor: '#F2C230' }, 260) + '<g transform="translate(430 20)">' + A.door(140, 200, { c: '초록' }, true) + '</g></svg><p class="es-bigt">탈출 성공!</p>' + (team ? '<p class="es-wteam">' + esc(team) + '</p>' : '') + '<p class="es-when">' + when() + '</p><p>' + frac(R.outro) + '</p><p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p><p>걸린 시간 <b>' + mmss(s) + '</b> · 힌트 <b>' + st.hints + '</b>번 · 틀린 횟수 <b>' + st.wrong + '</b>번 · 모은 단서 <b>' + st.notes.length + '</b>개</p>'
+      + (code ? '<div class="es-code"><small>결과 코드</small><b>' + code + '</b></div>' : '') + '<button type="button" class="tl-btn tl-go" data-a="again">처음부터 다시</button></div>';
     api.bar(R.title + ' · 탈출!'); sfx('win'); confetti();
   }
   /* 누르기 */

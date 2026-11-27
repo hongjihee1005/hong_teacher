@@ -38,8 +38,14 @@ window.TOOL = function (host, api) {
         + (r.bad ? '<p class="eb-err">' + esc(r.bad) + '</p>' : t.code && r.s == null ? '<p class="eb-err">' + esc(decode(t.code).err || '') + '</p>' : r.s != null ? '<p class="eb-res">걸린 시간 <b>' + mmss(r.s) + '</b> · 힌트 ' + r.h + ' · 틀림 ' + r.w + ' · <span class="eb-st">' + '★★★'.slice(0, r.st) + '<i>' + '★★★'.slice(r.st) + '</i></span></p>' : '')
         + (done ? '<button type="button" class="tl-btn eb-undo" data-a="undo" data-i="' + i + '">탈출 기록 지우기</button>' : '') + '</div>';
     }).join('') + '</div>';
+    h += '<div class="eb-chk"><h3>결과 코드 확인하기 <small>개별 활동 · 캡쳐 확인용 — 모둠 칸과 따로</small></h3><p class="tl-row"><input class="eb-one" inputmode="numeric" placeholder="000-000-0000" aria-label="확인할 결과 코드" value="' + esc(S.one || '') + '"><button type="button" class="tl-btn tl-go" data-a="one">확인</button></p><p class="eb-oneres" aria-live="polite">' + oneRes() + '</p></div>';
     if (rk.length) h += '<div class="eb-rank"><h3>순위</h3><ol>' + rk.map(function (x) { return '<li><b>' + esc(x.t.nm) + '</b> ' + mmss(x.s) + (x.r.s != null ? ' · 힌트 ' + x.r.h + ' · 별 ' + x.r.st : ' (선생님 시계)') + '</li>' }).join('') + '</ol><p class="eb-note">결과 코드를 넣은 모둠은 그 기기의 걸린 시간으로, 넣지 않은 모둠은 선생님이 \'탈출!\'을 누른 시각으로 셉니다. 시간이 같으면 힌트를 적게 쓴 모둠이 앞이에요.</p></div>';
     host.innerHTML = h; api.bar('모둠 대항 점수판 · ' + R.title);
+  }
+  function oneRes() {
+    if (!S.one) return '학생 화면의 결과 코드(숫자 10개)를 넣으면 어느 방을, 몇 분에, 힌트·틀림 몇 번으로 탈출했는지 나와요.';
+    var r = decode(S.one); if (r.err) return '<b class="eb-errt">' + esc(r.err) + '</b>';
+    return '<b>' + esc(RM[r.ri].title) + '</b> · 걸린 시간 <b>' + mmss(r.s) + '</b> · 힌트 ' + r.h + '번 · 틀림 ' + r.w + '번 · <span class="eb-st">' + '★★★'.slice(0, r.st) + '<i>' + '★★★'.slice(r.st) + '</i></span>';
   }
   function clock() { var c = host.querySelector('.eb-clock'); if (c && S.t0) c.textContent = mmss(now()) }
   host.addEventListener('click', function (e) {
@@ -50,6 +56,7 @@ window.TOOL = function (host, api) {
     else if (a === 'm') t.p = Math.max(0, t.p - 1);
     else if (a === 'esc') t.esc = Math.max(1, Math.round(now()));
     else if (a === 'undo') { t.esc = 0; t.code = '' }
+    else if (a === 'one') { S.one = (host.querySelector('.eb-one').value || '').trim() }
     else return;
     save(); draw();
   });
@@ -58,6 +65,7 @@ window.TOOL = function (host, api) {
     if (el.classList.contains('eb-room')) { S.room = +el.value; S.teams.forEach(function (x) { x.p = 0 }) }
     else if (el.classList.contains('eb-n')) { var n = +el.value; while (S.teams.length < n) S.teams.push({ nm: (S.teams.length + 1) + '모둠', p: 0, esc: 0, code: '' }); S.teams.length = n }
     else if (el.classList.contains('eb-nm')) S.teams[+el.dataset.i].nm = el.value.trim() || ((+el.dataset.i + 1) + '모둠');
+    else if (el.classList.contains('eb-one')) S.one = el.value.trim();
     else if (el.classList.contains('eb-code')) S.teams[+el.dataset.i].code = el.value.trim();
     else return;
     save(); draw();
