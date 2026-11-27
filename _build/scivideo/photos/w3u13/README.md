@@ -9,3 +9,4 @@
 | water_hyacinth.jpg | 낱말 4 '공기주머니' | MAHcHtb5PlA | |
 | (버림) waterweed 1차 | 낱말 5 | MAHcHqLuZ7I | 잎이 넓고 톱니가 있어 검정말(가늘고 길쭉한 작은 잎)과 다름 — 다시 만듦 |
 | aloe.jpg | 낱말 6 '사막 식물'(알로에) | MAHcHwxzMXk | |
+| cactus.jpg | 낱말 6 '사막 식물'(선인장) | MAHcH89ZJ30 | |
