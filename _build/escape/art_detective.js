@@ -72,7 +72,7 @@
     var top = 36, g = Math.min((w - 24) / (5.2 + cols * 5), (h - top - 10) / (rows * 5.2)), pw = 5 * g, ph = (h - top - 10) / rows;
     function panel(x, y, pts, f, tag) {
       var s = R(x + 3, y + 3, pw - 6, ph - 6, '#fff', ' stroke="#C9CED6" stroke-width="1.2" rx="4"'), gx = x + g * .5, gy = y + g * .9;
-      for (var a = 0; a <= 4; a++) for (var b = 0; b <= 3; b++) s += C(gx + a * g, gy + b * g * 1, 1.6, '#9AA3AE');
+      for (var a = 0; a <= 4; a++) for (var b = 0; b <= 3; b++) s += C(gx + a * g, gy + b * g * 1, 1.9, '#6E7784');   /* 모눈 점: 세기 쉽게 조금 진하게 */
       s += poly(pts.map(function (q) { return [gx + q[0] * g, gy + q[1] * g] }), f, K2);
       if (tag) s += C(x + pw - g * .55, y + g * .55, g * .38, '#FFF2A8', K2.replace('2"', '1.2"')) + shape(tag, x + pw - g * .55, y + g * .57, g * .24, '#1F2433');
       return s;

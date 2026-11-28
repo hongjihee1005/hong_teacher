@@ -2799,7 +2799,7 @@ var ART = (function () {
       o += E(x + bwid / 2 + 3, h * .86, bwid * .5, 3, '#1A0E06', ' opacity=".2"') + R(x + bwid * .3, h * .06, bwid * .4, h * .13, mat('metal', '#C8CDD3'), edge('#8A929C', 1.2) + ' rx="3"');
       if (fr && m && +m[1] <= +m[2]) {
         var n = +m[1], d = +m[2], fh = bh * n / d;
-        o += R(x, by, bwid, bh, fx.lin([[0, '#F7FBFD'], [1, '#DCE8EE']], 0, 0, 1, 0), ' rx="8"') + R(x, by + bh - fh, bwid, fh, mat('cyl', bc), n === d ? ' rx="8"' : '');
+        o += R(x, by, bwid, bh, fx.lin([[0, '#F7FBFD'], [1, '#DCE8EE']], 0, 0, 1, 0), ' rx="8"') + R(x, by + bh - fh, bwid, fh, mat('cyl', bc), ' rx="8"') + (n < d && fh > 8 ? R(x, by + bh - fh, bwid, Math.min(8, fh / 2), mat('cyl', bc)) : '');   /* 아래 모서리는 병처럼 둥글게, 윗면은 평평하게 */
         if (d <= 12) for (var k = 1; k < d; k++) o += '<line x1="' + n1(x) + '" y1="' + (by + bh * k / d).toFixed(1) + '" x2="' + n1(x + bwid * .45) + '" y2="' + (by + bh * k / d).toFixed(1) + '" stroke="#3A2C22" stroke-width="1.5" opacity=".75"/>';
         o += R(x, by, bwid, bh, 'none', edge('#7E97A6', 1.6) + ' rx="8"');
       } else o += R(x, by, bwid, bh, mat('cyl', bc), edge(bc, 1.6) + ' rx="8"');
@@ -3719,7 +3719,7 @@ var ART = (function () {
     var top = 36, g = Math.min((w - 24) / (5.2 + cols * 5), (h - top - 10) / (rows * 5.2)), pw = 5 * g, ph = (h - top - 10) / rows;
     function panel(x, y, pts, f, tag) {
       var s = R(x + 3, y + 3, pw - 6, ph - 6, '#fff', ' stroke="#C9CED6" stroke-width="1.2" rx="4"'), gx = x + g * .5, gy = y + g * .9;
-      for (var a = 0; a <= 4; a++) for (var b = 0; b <= 3; b++) s += C(gx + a * g, gy + b * g * 1, 1.6, '#9AA3AE');
+      for (var a = 0; a <= 4; a++) for (var b = 0; b <= 3; b++) s += C(gx + a * g, gy + b * g * 1, 1.9, '#6E7784');   /* 모눈 점: 세기 쉽게 조금 진하게 */
       s += poly(pts.map(function (q) { return [gx + q[0] * g, gy + q[1] * g] }), f, K2);
       if (tag) s += C(x + pw - g * .55, y + g * .55, g * .38, '#FFF2A8', K2.replace('2"', '1.2"')) + shape(tag, x + pw - g * .55, y + g * .57, g * .24, '#1F2433');
       return s;
@@ -3886,11 +3886,11 @@ var ART = (function () {
 
   /* 발굴 구덩이(모래 상자): 닫힘 = 모래 더미, 열림 = 이빨 화석 p.teeth개(10개씩 한 줄, 5개마다 틈) + 큰 뼈 화석.
      p.grid = [가로 칸, 세로 칸] 줄, p.bone = 열리면 큰 뼈, p.leave = [x, y, w, h] 비워 둘 곳(숨은 서랍 자리) */
-  ART.A.dnDig = function (w, h, p, open) {
+  ART.A.dnDig = function (w, h, p, open) {   /* 열면 구역 선을 흐리게: 이빨을 셀 때 선이 이빨과 겹쳐 보이지 않게 */
     var o = F.ground(w / 2, h, w * .54, 9) + R(0, 0, w, h, '#9A6A3F', STK + ' rx="6"') + R(10, 10, w - 20, h - 20, F.lin([[0, '#5A3A1E', .9], [.12, open ? '#B88C58' : '#C9A06A'], [1, F.sh(open ? '#B88C58' : '#C9A06A', -.12)]]), ' rx="3"');
     var g = p.grid || [4, 2];
-    for (var i = 1; i < g[0]; i++) o += '<line x1="' + n1(10 + i * (w - 20) / g[0]) + '" y1="10" x2="' + n1(10 + i * (w - 20) / g[0]) + '" y2="' + (h - 10) + '" stroke="#FFF6E0" stroke-width="2" opacity=".8"/>';
-    for (var j = 1; j < g[1]; j++) o += '<line x1="10" y1="' + n1(10 + j * (h - 20) / g[1]) + '" x2="' + (w - 10) + '" y2="' + n1(10 + j * (h - 20) / g[1]) + '" stroke="#FFF6E0" stroke-width="2" opacity=".8"/>';
+    for (var i = 1; i < g[0]; i++) o += '<line x1="' + n1(10 + i * (w - 20) / g[0]) + '" y1="10" x2="' + n1(10 + i * (w - 20) / g[0]) + '" y2="' + (h - 10) + '" stroke="#FFF6E0" stroke-width="2" opacity="' + (open ? '.35' : '.8') + '"/>';
+    for (var j = 1; j < g[1]; j++) o += '<line x1="10" y1="' + n1(10 + j * (h - 20) / g[1]) + '" x2="' + (w - 10) + '" y2="' + n1(10 + j * (h - 20) / g[1]) + '" stroke="#FFF6E0" stroke-width="2" opacity="' + (open ? '.35' : '.8') + '"/>';
     if (!open) {
       for (var m = 0; m < 7; m++) o += '<ellipse cx="' + n1(30 + (m * 71) % (w - 60)) + '" cy="' + n1(h * .35 + (m * 37) % (h * .45)) + '" rx="' + n1(w * .12) + '" ry="' + n1(h * .1) + '" fill="#E6C88E"' + S2.replace('2"', '1.5"') + '/>';
       return o + R(w * .4, h * .44, w * .2, 6, BONE, S2 + ' rx="3"');

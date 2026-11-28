@@ -118,11 +118,11 @@
 
   /* 발굴 구덩이(모래 상자): 닫힘 = 모래 더미, 열림 = 이빨 화석 p.teeth개(10개씩 한 줄, 5개마다 틈) + 큰 뼈 화석.
      p.grid = [가로 칸, 세로 칸] 줄, p.bone = 열리면 큰 뼈, p.leave = [x, y, w, h] 비워 둘 곳(숨은 서랍 자리) */
-  ART.A.dnDig = function (w, h, p, open) {
+  ART.A.dnDig = function (w, h, p, open) {   /* 열면 구역 선을 흐리게: 이빨을 셀 때 선이 이빨과 겹쳐 보이지 않게 */
     var o = F.ground(w / 2, h, w * .54, 9) + R(0, 0, w, h, '#9A6A3F', STK + ' rx="6"') + R(10, 10, w - 20, h - 20, F.lin([[0, '#5A3A1E', .9], [.12, open ? '#B88C58' : '#C9A06A'], [1, F.sh(open ? '#B88C58' : '#C9A06A', -.12)]]), ' rx="3"');
     var g = p.grid || [4, 2];
-    for (var i = 1; i < g[0]; i++) o += '<line x1="' + n1(10 + i * (w - 20) / g[0]) + '" y1="10" x2="' + n1(10 + i * (w - 20) / g[0]) + '" y2="' + (h - 10) + '" stroke="#FFF6E0" stroke-width="2" opacity=".8"/>';
-    for (var j = 1; j < g[1]; j++) o += '<line x1="10" y1="' + n1(10 + j * (h - 20) / g[1]) + '" x2="' + (w - 10) + '" y2="' + n1(10 + j * (h - 20) / g[1]) + '" stroke="#FFF6E0" stroke-width="2" opacity=".8"/>';
+    for (var i = 1; i < g[0]; i++) o += '<line x1="' + n1(10 + i * (w - 20) / g[0]) + '" y1="10" x2="' + n1(10 + i * (w - 20) / g[0]) + '" y2="' + (h - 10) + '" stroke="#FFF6E0" stroke-width="2" opacity="' + (open ? '.35' : '.8') + '"/>';
+    for (var j = 1; j < g[1]; j++) o += '<line x1="10" y1="' + n1(10 + j * (h - 20) / g[1]) + '" x2="' + (w - 10) + '" y2="' + n1(10 + j * (h - 20) / g[1]) + '" stroke="#FFF6E0" stroke-width="2" opacity="' + (open ? '.35' : '.8') + '"/>';
     if (!open) {
       for (var m = 0; m < 7; m++) o += '<ellipse cx="' + n1(30 + (m * 71) % (w - 60)) + '" cy="' + n1(h * .35 + (m * 37) % (h * .45)) + '" rx="' + n1(w * .12) + '" ry="' + n1(h * .1) + '" fill="#E6C88E"' + S2.replace('2"', '1.5"') + '/>';
       return o + R(w * .4, h * .44, w * .2, 6, BONE, S2 + ' rx="3"');
