@@ -25,7 +25,7 @@ window.TOOL = function (host, api) {
     if (a === '으로' && rl) f = false;
     return s + (f ? a : b);
   }
-  function reset() { st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, ans: {}, lh: {}, done: false, open: null, entry: {}, made: {}, shown: {}, drawn: {} }; stop(); unsave(); draw() }
+  function reset(keep) { st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, ans: {}, lh: {}, done: false, open: null, entry: {}, made: {}, shown: {}, drawn: {} }; stop(); if (!keep) unsave(); draw() }
   /* 진행 저장(2026-11-28 예비 사용자 팀): 새로 고침·다른 쪽에 갔다 와도 이 탭(sessionStorage)에서 '이어서 하기' — 걸린 시간은 떠나 있던 동안 멈춤 */
   var SVK = 'hj-escape-run:' + (R.id || R.idx);
   function save() { if (!st || !st.t0 || st.done) return; try { var c = JSON.parse(JSON.stringify(st)); c.el = sec(); c.open = null; c.sel = null; sessionStorage.setItem(SVK, JSON.stringify({ st: c, limit: limit, team: team })) } catch (e) {} }
@@ -274,7 +274,7 @@ window.TOOL = function (host, api) {
       + '<div class="es-stats"><span><small>걸린 시간</small><b>' + mmss(s) + '</b></span><span><small>힌트</small><b>' + st.hints + '번</b></span><span><small>틀린 횟수</small><b>' + st.wrong + '번</b></span></div>'
       + (na ? '<p class="es-wans">정답 보기 ' + na + '번(힌트 ' + na * 3 + '번으로 셈)</p>' : '')
       + (code ? '<div class="es-code"><small>결과 코드</small><b>' + code + '</b></div>' : '') + '<p class="es-when">' + when() + '</p><button type="button" class="es-again" data-a="again">처음부터 다시 하기</button></div>';
-    api.bar(''); sfx('win'); confetti();
+    api.bar(''); sfx('win'); confetti(); [].forEach.call(document.querySelectorAll('.es-toast'), function (x) { x.remove() });
   }
   /* 누르기 */
   root.addEventListener('click', function (e) {
@@ -349,5 +349,5 @@ window.TOOL = function (host, api) {
   }
   new MutationObserver(function () { nob(host) }).observe(host, { childList: true, subtree: true, characterData: false });
   nob(document);
-  reset();
+  reset(true);
 };

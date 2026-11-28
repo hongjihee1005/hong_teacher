@@ -49,12 +49,18 @@
     }
     o += T(rx + rw / 2, h - 5, 'cm', 11);
     var yb = Y(p.from || 0), yt = Y(p.to || 10), L = yb - yt, cx = w * .36, f = '#F08A24';
-    var hy = yt + L * .1, hr = L * .1;
-    o += '<path d="M' + n1(cx) + ' ' + n1(yt + L * .16) + 'C' + n1(cx + L * .2) + ' ' + n1(yt + L * .25) + ' ' + n1(cx + L * .22) + ' ' + n1(yt + L * .55) + ' ' + n1(cx + L * .06) + ' ' + n1(yt + L * .7) + 'C' + n1(cx - L * .02) + ' ' + n1(yt + L * .78) + ' ' + n1(cx - L * .02) + ' ' + n1(yb - L * .04) + ' ' + n1(cx + L * .06) + ' ' + n1(yb) + 'C' + n1(cx + L * .14) + ' ' + n1(yb + 1) + ' ' + n1(cx + L * .14) + ' ' + n1(yb - L * .1) + ' ' + n1(cx + L * .07) + ' ' + n1(yb - L * .08) + 'C' + n1(cx + L * .06) + ' ' + n1(yb - L * .12) + ' ' + n1(cx - L * .1) + ' ' + n1(yt + L * .72) + ' ' + n1(cx - L * .06) + ' ' + n1(yt + L * .5) + 'C' + n1(cx - L * .03) + ' ' + n1(yt + L * .35) + ' ' + n1(cx - L * .1) + ' ' + n1(yt + L * .25) + ' ' + n1(cx) + ' ' + n1(yt + L * .16) + 'Z" fill="' + f + '"' + S2 + '/>';
-    o += '<ellipse cx="' + n1(cx) + '" cy="' + n1(hy) + '" rx="' + n1(hr * .9) + '" ry="' + n1(hr) + '" fill="' + f + '"' + S2 + '/>';
-    o += R(cx - hr * .8 - L * .08, hy - hr * .18, L * .1, hr * .36, f, S2 + ' rx="3"');
-    o += '<circle cx="' + n1(cx - hr * .2) + '" cy="' + n1(hy - hr * .15) + '" r="' + n1(Math.max(2, hr * .15)) + '" fill="' + INK + '"/>';
-    o += '<path d="M' + n1(cx + hr * .5) + ' ' + n1(hy + hr * .2) + 'l' + n1(L * .1) + ' ' + n1(L * .04) + 'l-' + n1(L * .07) + ' ' + n1(L * .06) + 'z" fill="#F2C230"' + S2.replace('2"', '1.2"') + '/>';
+    // 해마(왼쪽을 봄): 위가 머리(yt), 아래가 말린 꼬리 끝(yb). 말 머리 + 긴 주둥이 + 둥근 배 + 등지느러미 + 말린 꼬리
+    var LX = Math.min(L, (rx - cx - 6) / .2, (cx - 6) / .2), P = function (x, y) { return n1(cx + x * LX) + ' ' + n1(yt + y * L) }, hy = yt + L * .1, hr = Math.min(L * .1, LX * .1), tw = Math.min(14, LX * .07);
+    var tail = 'M' + P(.02, .58) + 'C' + P(.06, .74) + ' ' + P(-.08, .82) + ' ' + P(-.04, .93) + 'C' + P(-.01, 1.0) + ' ' + P(.1, 1.0) + ' ' + P(.1, .93) + 'C' + P(.1, .88) + ' ' + P(.04, .87) + ' ' + P(.04, .91);
+    o += '<path d="' + tail + '" fill="none" stroke="' + INK + '" stroke-width="' + n1(tw + 4) + '" stroke-linecap="round"/>';
+    o += '<path d="' + tail + '" fill="none" stroke="' + f + '" stroke-width="' + n1(tw) + '" stroke-linecap="round"/>';
+    o += '<path d="M' + P(.13, .3) + 'Q' + P(.26, .4) + ' ' + P(.15, .52) + 'L' + P(.11, .46) + 'Z" fill="#F7C38A"' + S2 + '/>';
+    o += '<path d="M' + P(-.02, .16) + 'C' + P(.12, .2) + ' ' + P(.2, .36) + ' ' + P(.14, .5) + 'C' + P(.1, .6) + ' ' + P(0, .64) + ' ' + P(-.04, .58) + 'C' + P(-.12, .5) + ' ' + P(-.04, .36) + ' ' + P(-.08, .26) + 'Z" fill="' + f + '"' + S2 + '/>';
+    for (var k = 0; k < 4; k++) o += '<path d="M' + P(-.08 + k * .01, .34 + k * .06) + 'Q' + P(.02, .37 + k * .06) + ' ' + P(.1 - k * .005, .33 + k * .06) + '" fill="none" stroke="' + INK + '" stroke-width="1.4" opacity=".5"/>';
+    o += '<path d="M' + P(-.04, .12) + 'L' + P(-.22, .135) + 'Q' + P(-.26, .155) + ' ' + P(-.22, .175) + 'L' + P(-.04, .19) + 'Z" fill="' + f + '"' + S2 + '/>';
+    o += '<ellipse cx="' + n1(cx) + '" cy="' + n1(hy) + '" rx="' + n1(hr * 1.1) + '" ry="' + n1(L * .1) + '" fill="' + f + '"' + S2 + '/>';
+    o += '<path d="M' + P(.03, .02) + 'L' + P(.05, -.0) + 'L' + P(.07, .03) + 'L' + P(.09, .01) + 'L' + P(.09, .06) + 'Z" fill="#F7C38A"' + S2.replace('2"', '1.4"') + '/>';
+    o += '<circle cx="' + n1(cx - hr * .2) + '" cy="' + n1(hy - hr * .05) + '" r="' + n1(Math.max(3, hr * .22)) + '" fill="#fff"' + S2.replace('2"', '1.2"') + '/><circle cx="' + n1(cx - hr * .25) + '" cy="' + n1(hy - hr * .05) + '" r="' + n1(Math.max(1.6, hr * .1)) + '" fill="' + INK + '"/>';
     [yt, yb].forEach(function (yy) { o += '<line x1="' + n1(cx - L * .12) + '" y1="' + n1(yy) + '" x2="' + n1(rx) + '" y2="' + n1(yy) + '" stroke="#C8402F" stroke-width="2" stroke-dasharray="5 4"/>' });
     return o;
   };
@@ -92,14 +98,15 @@
 
   /* 문어 수조: 문어 p.n마리(다리 8개씩 또렷하게). 오른쪽 아래 구석은 비워 둠 */
   ART.A.aqOcto = function (w, h, p) {
-    var n = p.n || 3, o = R(0, 0, w, h, '#5A6B85', STK + ' rx="14"') + R(8, 8, w - 16, h - 16, '#1E4A73', ' rx="10"'), aw = (w * .78) / n;
+    var n = p.n || 3, o = R(0, 0, w, h, '#5A6B85', STK + ' rx="14"') + R(8, 8, w - 16, h - 16, '#1E4A73', ' rx="10"'), aw = (w - 16) / n;
     o += R(8, h * .86, w - 16, h * .14 - 8, '#C9B48A', ' rx="6"');
     for (var i = 0; i < n; i++) {
       var cx = 8 + aw * (i + .5), hy = h * (.26 + (i % 2) * .08), hr = Math.min(aw * .26, h * .15), f = ['#E5534B', '#EE7DB0', '#F08A24'][i % 3];
-      for (var l = 0; l < 8; l++) {
-        var ex = cx + (l - 3.5) * aw * .125, ey = hy + hr + h * .34 + (l % 2) * h * .06;
-        o += '<path d="M' + n1(cx + (l - 3.5) * hr * .24) + ' ' + n1(hy + hr * .6) + 'Q' + n1((cx + ex) / 2 + 0) + ' ' + n1((hy + ey) / 2) + ' ' + n1(ex) + ' ' + n1(ey) + '" fill="none" stroke="' + INK + '" stroke-width="6" stroke-linecap="round"/>';
-        o += '<path d="M' + n1(cx + (l - 3.5) * hr * .24) + ' ' + n1(hy + hr * .6) + 'Q' + n1((cx + ex) / 2 + 0) + ' ' + n1((hy + ey) / 2) + ' ' + n1(ex) + ' ' + n1(ey) + '" fill="none" stroke="' + f + '" stroke-width="3.4" stroke-linecap="round"/>';
+      for (var l = 0; l < 8; l++) {   // 다리 8개를 부채처럼 벌려 서로 떨어지게(끝에 동그란 발끝)
+        var an = (20 + l * 20) * Math.PI / 180, cs = Math.cos(an), sn = Math.sin(an), RL = Math.min(h * .4, aw * .8), sx = cx + cs * hr * .75, sy = hy + hr * .55 + sn * hr * .3, ex = cx + cs * RL * .58, ey = hy + hr * .5 + sn * RL;
+        var qx = (sx + ex) / 2 + sn * 6 * (l % 2 ? 1 : -1), qy = (sy + ey) / 2 - cs * 6 * (l % 2 ? 1 : -1), d = 'M' + n1(sx) + ' ' + n1(sy) + 'Q' + n1(qx) + ' ' + n1(qy) + ' ' + n1(ex) + ' ' + n1(ey);
+        o += '<path d="' + d + '" fill="none" stroke="' + INK + '" stroke-width="7.5" stroke-linecap="round"/><path d="' + d + '" fill="none" stroke="' + f + '" stroke-width="4.5" stroke-linecap="round"/>';
+        o += '<circle cx="' + n1(ex) + '" cy="' + n1(ey) + '" r="3.6" fill="' + f + '"' + S2.replace('2"', '1.6"') + '/>';
       }
       o += '<ellipse cx="' + n1(cx) + '" cy="' + n1(hy) + '" rx="' + n1(hr) + '" ry="' + n1(hr * 1.15) + '" fill="' + f + '"' + S2 + '/>';
       o += '<circle cx="' + n1(cx - hr * .35) + '" cy="' + n1(hy + hr * .2) + '" r="' + n1(hr * .16) + '" fill="#fff"/><circle cx="' + n1(cx + hr * .35) + '" cy="' + n1(hy + hr * .2) + '" r="' + n1(hr * .16) + '" fill="#fff"/>';
