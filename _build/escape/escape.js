@@ -249,5 +249,26 @@ window.TOOL = function (host, api) {
     if (e.key === 'Enter') { e.preventDefault(); tryLock(o) }
   });
   document.getElementById('esPrint').onclick = function () { document.documentElement.classList.add('es-printing'); var off = function () { document.documentElement.classList.remove('es-printing'); window.removeEventListener('afterprint', off) }; window.addEventListener('afterprint', off); setTimeout(function () { window.print() }, 80) };
+  /* 어색한 줄바꿈 막기(2026-11-28 선생님 요청): 글 덩어리의 마지막 띄어쓰기를 붙는 빈칸으로 바꿔, 마지막 줄에 낱말 하나만 남지 않게 함 */
+  var NOB = '.tl-head p,.tl-how li,.tl-ideas li,.es-intro,.es-rules li,.es-stlines p,.es-look,.es-lq,.es-after p,.es-need p,.es-used,.es-lh p,.es-nbi p,.es-win p,.es-say,.es-msg,.es-peek';
+  function nob(root) {
+    [].forEach.call((root || document).querySelectorAll(NOB), function (el) {
+      var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), ts = [], n; while ((n = w.nextNode())) ts.push(n);
+      for (var i = ts.length - 1; i >= 0; i--) {
+        var v = ts[i].nodeValue, t = v.replace(/[\s\u00a0]+$/, ''), k = Math.max(t.lastIndexOf(' '), t.lastIndexOf('\u00a0'));
+        if (k >= 0) {
+          /* 마지막 낱말들이 일곱 글자가 될 때까지(많아야 세 낱말) 붙임 */
+          for (var c = 0; c < 3 && k >= 0; c++) {
+            if (t[k] === ' ' && (/\S/.test(t.slice(0, k)) || i > 0)) t = t.slice(0, k) + '\u00a0' + t.slice(k + 1);
+            if (t.slice(k + 1).replace(/[\s\u00a0]/g, '').length >= 7) break;
+            k = t.lastIndexOf(' ', k - 1);
+          }
+          ts[i].nodeValue = t + v.slice(t.length); return
+        }
+      }
+    });
+  }
+  var nobT = 0; new MutationObserver(function () { clearTimeout(nobT); nobT = setTimeout(function () { nob(host) }, 0) }).observe(host, { childList: true, subtree: true, characterData: false });
+  nob(document);
   reset();
 };
