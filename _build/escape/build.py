@@ -166,10 +166,32 @@ def build_board():
     if strip(old) == s: return False
     out.write_text(s, encoding='utf-8'); return True
 
+def build_menu():
+    """메뉴 project/escape/index.html의 방 카드 묶음(<!--esc-rooms-->…)을 학년별(1~6학년)로 다시 씀 — 학년은 rec의 '추천 N학년'. 고친 뒤 apply_theme.py"""
+    p = OUT / 'index.html'; s = p.read_text(encoding='utf-8')
+    a, b = '<!--esc-rooms-->', '<!--/esc-rooms-->'
+    if a not in s: return False
+    by = {}
+    for r in ROOMS:
+        m = re.search(r'추천 (\d)학년', r['rec'])
+        if not m: raise SystemExit(f"{r['id']}: rec에 '추천 N학년'이 없음")
+        by.setdefault(int(m.group(1)), []).append(r)
+    h = ''
+    for g in sorted(by):
+        h += f'\n<h2 class="sec-h">{g}학년</h2>\n<div class="grid g3 three">\n'
+        for r in sorted(by[g], key=lambda r: ORDER.index(r['id'])):
+            intro = re.sub(r'\*\*(.+?)\*\*', r'\1', r['intro'])
+            h += f'<a class="card room" style="--acc:{r["acc"]}" href="{r["id"]}.html"><span class="ico">{r["ico"]}</span><span class="nm">{esc(r["title"])}</span><small>{esc(intro)} · {esc(r["rec"])}</small></a>\n'
+        h += '</div>\n'
+    i, j = s.index(a) + len(a), s.index(b)
+    if s[i:j] == h: return False
+    p.write_text(s[:i] + h + s[j:], encoding='utf-8'); return True
+
 if __name__ == '__main__':
     bad = check()
     if bad: print('\n'.join(bad)); sys.exit('수학 방탈출 점검 실패')
     print('수학 방탈출 점검 통과 —', ', '.join(f"{r['title']} 자물쇠·장치 {sum(1 for sc in r['scenes'] for o in sc['objs'] if o.get('lock') or o.get('need'))}개" for r in ROOMS))
     if sys.argv[1:] == ['check']: sys.exit(0)
     n = sum(build(r) for r in ROOMS) + (0 if ONLY else build_board())
+    if not ONLY and build_menu(): print('메뉴 학년별 카드 다시 씀 — apply_theme.py project/escape/index.html')
     print(f'수학 방탈출 {n}쪽 다시 만듦 (모두 {len(ROOMS)}방)')

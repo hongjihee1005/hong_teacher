@@ -42,7 +42,7 @@ TOY_MAP = dict(n=4, m=5, start=[0, 3], path='UURRDRR', sl='로봇', gl='단추')
 TOY_PAINT = [{'c': '빨강', 'label': '9+6'}, {'c': '파랑', 'label': '8+4'}, {'c': '노랑', 'label': '7+7'}, {'c': '초록', 'label': '5+8'}]
 TOY_SHAPES = ['○', '△', '□', '○', '△', '□', '○', '?']
 TOY = dict(
-    id='toy', title='장난감 공장 탈출', ico='🧸', acc='#E0861A', rec='추천 1~2학년 · 보통 · 덧셈·뺄셈·규칙·시각·모양·방향',
+    id='toy', title='장난감 공장 탈출', ico='🧸', acc='#E0861A', rec='추천 1학년 · 덧셈·뺄셈·규칙·시각·모양·방향',
     intro='공장장 로봇이 고장 나서 장난감 공장 문이 모두 잠겼어요! 조립실과 포장실을 둘러보며 단서를 모아 출구 문을 열어요.',
     story=['장난감 공장 견학을 하던 날, 공장장 로봇이 갑자기 "삐― 고장!" 하고 멈췄어요.', '쿵! 출구 문이 닫히고 큰 자물쇠가 철컥 걸렸어요.', '로봇을 고치고 숨은 단서를 모아 공장을 빠져나가요!'],
     outro='출구 문이 활짝 열렸어요! 고친 로봇이 손을 흔들며 배웅해요. 장난감 공장을 탈출했어요!',
@@ -127,7 +127,8 @@ import importlib, os
 # 결과 코드의 방 번호 = ORDER 안의 자리(바꾸면 예전 결과 코드가 다른 방으로 읽힘 — 새 방은 뒤에 붙일 것). 메뉴 차례는 메뉴 HTML에서 정함.
 ORDER = ['candy', 'toy', 'zoo', 'library', 'space', 'submarine', 'lab', 'museum', 'castle',
          'park-low', 'park-mid', 'park-high', 'pirate-low', 'pirate-mid', 'pirate-high',
-         'school-low', 'school-mid', 'school-high', 'dino-low', 'dino-mid', 'dino-high']
+         'school-low', 'school-mid', 'school-high', 'dino-low', 'dino-mid', 'dino-high',
+         'camp', 'farm', 'aquarium', 'station', 'airport', 'circus', 'bakery', 'greenhouse', 'detective']
 ONLY = [x for x in os.environ.get('ESC_ONLY', '').split(',') if x]   # 여럿이 함께 만들 때 내 방만 점검·빌드
 ROOMS = []
 for _id in ORDER:
