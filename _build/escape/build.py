@@ -86,6 +86,8 @@ def check():
         def opened(q):
             o_ = objs[q]
             return (not (o_.get('lock') or o_.get('need')) or q in done) and all(x in done for x in o_.get('req', [])) and (not o_.get('in') or opened(o_['in']))
+        first = {x for x, ox in objs.items() if ox.get('go') not in (None, 'exit') and scene_of[x] == r['scenes'][0]['id'] and opened(x)}
+        if first: bad.append(f'{rid}: 시작부터 열린 장면 {[objs[x]["go"] for x in first]}(문 {sorted(first)}에 잠금·req 없음)')
         for oid in r['flow']:
             if '+' in oid:
                 a_, b_ = oid.split('+'); c = comb.get(frozenset((a_, b_)))
@@ -101,7 +103,12 @@ def check():
                 if o['need'] not in inv: bad.append(f'{rid}: {oid}에 쓸 {o["need"]}이 가방에 없음'); break
                 if not r['items'][o['need']].get('keep'): inv.discard(o['need'])
             inv |= set(o.get('give', [])); done.add(oid)
-            if o.get('go') and o['go'] != 'exit': scenes.add(o['go'])
+            # 화면(escape.js openScenes)과 같은 규칙: 열린 장면 안의 보이고 풀린 문이 가리키는 장면
+            ch = True
+            while ch:
+                ch = False
+                for x, ox in objs.items():
+                    if ox.get('go') not in (None, 'exit') and ox['go'] not in scenes and scene_of[x] in scenes and opened(x): scenes.add(ox['go']); ch = True
         else:
             if not any(objs[x].get('go') == 'exit' for x in done): bad.append(f'{rid}: flow를 따라가도 탈출 문(go=exit)에 닿지 않음')
         for c in r.get('combine', []):
@@ -131,6 +138,21 @@ def sheet(r):
     return (f'<div class="ep-pg"><div class="ep-hd"><b>{esc(r["title"])} · 선생님용 풀이 흐름</b><span>{esc(r["rec"])}</span></div>'
             f'<table class="ep-key"><tr><th>차례</th><th>곳 · 물건</th><th>할 일</th><th>답 · 풀이</th><th>얻는 것</th></tr>{rows}</table></div>')
 
+_ICON = None
+def icon(e):
+    """방 머리 아이콘: 메뉴(icons.js)와 같은 선 아이콘 SVG로(이모지 글꼴로 보이지 않게, 2026-11-28)"""
+    global _ICON
+    if _ICON is None:
+        t = (ROOT / '_build' / 'theme' / 'icons.js').read_text(encoding='utf-8')
+        b = t.split('var P={', 1)[1].split('\nvar E={}', 1)[0]
+        P = dict(re.findall(r"(\w+):'(.*?)'(?=,\s*\w+:'|\};)", b, re.S)); E = {}
+        for k, v in re.findall(r"m\('(\w+)', *'([^']*)'", t.split('var E={}', 1)[1]):
+            for c in v.split(): E[c.replace('\ufe0f', '')] = k
+        _ICON = (P, E)
+    P, E = _ICON; k = E.get(e.replace('\ufe0f', ''))
+    if k not in P: raise SystemExit(f'방 아이콘 {e}: icons.js에 선 아이콘이 없음')
+    return f'<svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">{P[k]}</svg>'
+
 def grade(r):
     m = re.search(r'추천 (\d)학년', r['rec'])
     if not m: raise SystemExit(f"{r['id']}: rec에 '추천 N학년'이 없음")
@@ -146,7 +168,7 @@ def build(r):
         if 'lock' in o: o['lock'] = {k: v for k, v in o['lock'].items() if k != 'chk'}
         return o
     data = dict(id=r['id'], idx=ORDER.index(r['id']), title=r['title'], intro=r['intro'], story=r.get('story', []), combine=r.get('combine', []), outro=r['outro'], items=r['items'], flow=r['flow'], scenes=[dict(sc, objs=[strip(o) for o in sc['objs']]) for sc in r['scenes']])
-    rep = {'TITLE': r['title'], 'DESC': re.sub(r'\*\*(.+?)\*\*', r'\1', r['intro']), 'ICO': r['ico'], 'SUB': f'추천 {g}학년 · 자물쇠와 장치 {nlock}개', 'MATH': ''.join(f'<span>{esc(x)}</span>' for x in re.sub(r'^추천 \d학년\s*·\s*', '', r['rec']).split('·')), 'GNAV': gnav, 'SHEET': sheet(r),
+    rep = {'TITLE': r['title'], 'DESC': re.sub(r'\*\*(.+?)\*\*', r'\1', r['intro']), 'ICO': icon(r['ico']), 'SUB': f'추천 {g}학년 · 자물쇠와 장치 {nlock}개', 'MATH': ''.join(f'<span>{esc(x)}</span>' for x in re.sub(r'^추천 \d학년\s*·\s*', '', r['rec']).split('·')), 'GNAV': gnav, 'SHEET': sheet(r),
            'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/'), 'TOOL': artsrc() + rd(HERE / 'escape.js'), 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', r['acc']).replace('{TOOLCSS}', rd(HERE / 'escape.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '수학 문제로 자물쇠를 여는 방탈출 자료입니다.'),
@@ -187,7 +209,12 @@ def build_menu():
         h += f'\n<h2 class="sec-h">{g}학년</h2>\n<div class="grid g3 three">\n'
         for r in sorted(by[g], key=lambda r: ORDER.index(r['id'])):
             intro = re.sub(r'\*\*(.+?)\*\*', r'\1', r['intro'])
-            h += f'<a class="card room" style="--acc:{r["acc"]}" href="{r["id"]}.html"><span class="ico">{r["ico"]}</span><span class="nm">{esc(r["title"])}</span><small>{esc(intro)} · {esc(r["rec"])}</small></a>\n'
+            mt = []   # 카드에 보이는 수학 주제 한 줄: 앞에서부터 16자 안쪽(한 줄에 들어가게)
+            for x in (x.strip() for x in re.split(r'·(?![^()]*\))', re.sub(r'^추천 \d학년\s*·\s*', '', r['rec']))):
+                if mt and len('·'.join(mt + [x])) > 16: break
+                mt.append(x)
+                if len(mt) == 3: break
+            h += f'<a class="card room" style="--acc:{r["acc"]}" href="{r["id"]}.html"><span class="ico">{r["ico"]}</span><span class="nm">{esc(r["title"])}</span><span class="hj-mt">{esc("·".join(mt))}</span><small>{esc(intro)} · {esc(r["rec"])}</small></a>\n'
         h += '</div>\n'
     i, j = s.index(a) + len(a), s.index(b)
     if s[i:j] == h: return False

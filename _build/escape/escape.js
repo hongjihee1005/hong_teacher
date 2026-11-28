@@ -20,7 +20,9 @@ window.TOOL = function (host, api) {
   function mmss(s) { s = Math.max(0, s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') }
   function ok(o) { return (!o.need || st.used[o.id]) && (!o.lock || st.solved[o.id]) }
   function vis(o) { return (!o.req || o.req.every(function (id) { return ok(OBJ[id]) })) && (!o.in || (vis(OBJ[o.in]) && ok(OBJ[o.in]))) }
-  function sceneOpen(id) { return id === R.scenes[0].id || R.scenes.some(function (s) { return s.objs.some(function (o) { return o.go === id && ok(o) }) }) }
+  /* 열린 장면: 첫 장면에서 시작해, 열린 장면 안의 '보이고(req·부모) 풀린' 문이 가리키는 장면만 더함 */
+  function openScenes() { var on = {}, ch = true; on[R.scenes[0].id] = 1; while (ch) { ch = false; R.scenes.forEach(function (s) { if (!on[s.id]) return; s.objs.forEach(function (o) { if (o.go && o.go !== 'exit' && !on[o.go] && ok(o) && vis(o)) { on[o.go] = 1; ch = true } }) }) } return on }
+  function sceneOpen(id) { return !!openScenes()[id] }
   function nLocks() { var n = 0, d = 0; for (var k in OBJ) if (OBJ[k].lock || OBJ[k].need) { n++; if (ok(OBJ[k])) d++ } return [d, n] }
   function note(title, html) { if (st.notes.some(function (n) { return n.h === html })) return; st.notes.push({ t: title, h: html }) }
   function fig(f) { if (!f) return ''; var w = f.w || 300, h = f.h || 200; return '<svg class="es-fig" viewBox="-12 -24 ' + (w + 24) + ' ' + (h + 36) + '" role="img" aria-label="단서 그림">' + A[f.art](w, h, f.p || {}, f.open) + '</svg>' }
@@ -109,10 +111,15 @@ window.TOOL = function (host, api) {
   function openObj(id, keep) {
     var o = OBJ[id], m = host.querySelector('.es-modal'); st.open = id; st.seen[id] = 1;
     var kids = (KIDS[id] || []).filter(vis), op = ok(o) && (o.lock || o.need);
-    var h = '<div class="es-card" role="dialog" aria-modal="true" aria-label="' + esc(o.nm) + '"><div class="es-chd"><b>' + esc(o.nm) + '</b><span>' + (o.in ? '<button type="button" class="tl-btn" data-back="' + o.in + '">◀ ' + esc(OBJ[o.in].nm) + '</button> ' : '') + '<button type="button" class="tl-btn es-x" data-a="close">닫기</button></span></div><div class="es-cbody"><div class="es-bigw"><div class="es-big" title="그림을 누르면 더 크게 보여요"><svg viewBox="-20 -30 ' + (o.w + 40) + ' ' + (o.h + 50) + '" role="group" aria-label="' + esc(o.nm) + ' 크게 보기"><g class="es-art' + (op && st.fresh === id ? ' es-opening' : '') + '">' + A[o.art](o.w, o.h, o.p || {}, op) + '</g>' + kids.map(function (k) { return objG(k, ' es-spot' + (st.seen[k.id] ? '' : ' es-new')) }).join('') + '</svg></div>' + (kids.length ? '<p class="es-peek">그림 속 작은 곳도 눌러 볼 수 있어요.</p>' : '') + '</div><div class="es-ctext">';
+    /* 연(쓴) 뒤에는 처음 모습 글(잠겨 있어요·열쇠 구멍이 있어요)을 빼고 — 단서 물건(keep)은 그대로 */
+    var showLook = o.look && !(op && !o.keep && (o.after || o.need || o.useMsg));
+    /* 단서 그림이 물건과 같은 그림이면 두 번 보이지 않게 단서 그림(설정 포함)을 큰 그림으로 */
+    var bf = showLook && o.lookFig && o.lookFig.art === o.art && !kids.length ? o.lookFig : null;
+    var BW = bf ? (bf.w || 300) : o.w, BH = bf ? (bf.h || 200) : o.h, bigArt = bf ? A[bf.art](BW, BH, bf.p || {}, bf.open) : A[o.art](o.w, o.h, o.p || {}, op);
+    var h = '<div class="es-card' + (BW / BH >= 2.4 ? ' es-wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(o.nm) + '"><div class="es-chd"><b>' + esc(o.nm) + '</b><span>' + (o.in ? '<button type="button" class="tl-btn" data-back="' + o.in + '">◀ ' + esc(OBJ[o.in].nm) + '</button> ' : '') + '<button type="button" class="tl-btn es-x" data-a="close">닫기</button></span></div><div class="es-cbody"><div class="es-bigw"><div class="es-big" title="그림을 누르면 더 크게 보여요"><svg viewBox="-20 -30 ' + (BW + 40) + ' ' + (BH + 50) + '" role="group" aria-label="' + esc(o.nm) + ' 크게 보기"><g class="es-art' + (op && st.fresh === id ? ' es-opening' : '') + '">' + bigArt + '</g>' + kids.map(function (k) { return objG(k, ' es-spot' + (st.seen[k.id] ? '' : ' es-new')) }).join('') + '</svg></div>' + (kids.length ? '<p class="es-peek">그림 속 작은 곳도 눌러 볼 수 있어요.</p>' : '') + '</div><div class="es-ctext">';
     st.fresh = null;
-    /* 연 뒤에는 처음 모습 글(잠겨 있어요·꺼져 있어요)을 빼고 연 뒤 글만 — 단서 물건(keep)은 그대로 */
-    if (o.look && !(op && !o.keep && o.after)) { h += '<p class="es-look">' + frac(o.look) + '</p>' + (o.lookFig && o.lookFig.art === o.art ? '' : fig(o.lookFig)); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
+    if (o.need && st.used[o.id] && o.useMsg && !(o.lock && st.solved[o.id])) h += '<p class="es-used">' + frac(o.useMsg) + '</p>';
+    if (showLook) { h += '<p class="es-look">' + frac(o.look) + '</p>' + (bf ? '' : fig(o.lookFig)); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
     if (o.need && !st.used[o.id]) {
       h += '<div class="es-need"><p>' + frac(o.needMsg || '무언가가 필요해 보여요.') + '</p>' + (st.inv.length ? '<p class="es-try">가방에서 써 볼 물건:</p><div class="es-inv es-inv2">' + st.inv.map(function (iid) { var it = R.items[iid]; return '<button type="button" class="es-it" data-use="' + iid + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') + '</div>' : '<p class="es-try">가방이 비어 있어요. 다른 곳을 먼저 살펴봐요.</p>') + '</div>';
     } else if (o.lock && !st.solved[o.id]) h += lockUI(o);
@@ -172,7 +179,6 @@ window.TOOL = function (host, api) {
       sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true;
       fx('unlock', jo(it.nm, '을', '를') + ' 썼어요!', function () {
         if (!o.lock) { st.fresh = k; give(o) } draw(); openObj(k);
-        if (o.useMsg) { var c = host.querySelector('.es-ctext'); c.insertAdjacentHTML('afterbegin', '<p class="es-used">' + frac(o.useMsg) + '</p>') }
       });
     } else { toast('여기에는 ' + jo(R.items[iid].nm, '이', '가') + ' 맞지 않아요'); st.wrong++; sfx(0); hc() }
   }

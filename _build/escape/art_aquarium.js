@@ -121,7 +121,7 @@
     var tx1 = x, ox0 = x + 6;
     for (k = 0; k < no; k++) o += R(ox0 + (k % 2) * u * 1.5, top + s - u - Math.floor(k / 2) * u * 1.5, u, u, '#F7A8C8', ' stroke="#B23A6E" stroke-width="1.4"');
     var ly = top + s + lab - 4, fs = Math.min(14, lab * .7);
-    o += T((hx0 + hx1) / 2, ly, '백 모형', fs) + T((tx0 + tx1) / 2, ly, '십 모형', fs) + T(ox0 + u * 1.25, ly, '일', fs);
+    o += T((hx0 + hx1) / 2, ly, '백 모형', fs) + T((tx0 + tx1) / 2, ly, '십 모형', fs) + T(Math.min(ox0 + u * 1.25, w - fs * 2.2), ly, '일 모형', fs);
     return o;
   };
 })();

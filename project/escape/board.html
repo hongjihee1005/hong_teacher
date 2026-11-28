@@ -2089,7 +2089,9 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
 window.TOOL = function (host, api) {
   var RM = window.EB.rooms, BYI = {}; RM.forEach(function (r, j) { BYI[r.i] = j }); var KEY = 'hj-escape-board-v1', S, tick = null;
   function esc(s) { return String(s).replace(/[&<>"]/g, function (x) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[x] }) }
-  function load() { try { S = JSON.parse(localStorage.getItem(KEY)) } catch (e) {} if (!S || !S.teams) S = { room: 1, t0: 0, teams: [1, 2, 3, 4].map(function (i) { return { nm: i + '모둠', p: 0, esc: 0, code: '' } }) } }
+  function load() { try { S = JSON.parse(localStorage.getItem(KEY)) } catch (e) {} if (!S || !S.teams) S = { room: first(), t0: 0, teams: [1, 2, 3, 4].map(function (i) { return { nm: i + '모둠', p: 0, esc: 0, code: '' } }) } }
+  /* 처음 고른 방: 1학년 줄의 첫 방(과자 가게) */
+  function first() { var g = Math.min.apply(null, RM.map(function (r) { return r.g })); for (var i = 0; i < RM.length; i++) if (RM[i].g === g) return i; return 0 }
   function save() { try { localStorage.setItem(KEY, JSON.stringify(S)) } catch (e) {} }
   function mmss(s) { s = Math.max(0, Math.floor(s)); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') }
   function now() { return S.t0 ? (Date.now() - S.t0) / 1000 : 0 }
