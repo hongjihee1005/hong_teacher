@@ -40,9 +40,9 @@ def st_tag(s, size=34):
 # 그림 위 자리(원본 1920×1080 픽셀) — 그림이 들어오면 열어 보고 맞춤
 P = {
     "spatula": (215, 560), "teapot": (690, 520), "can": (1200, 520), "block": (1640, 560),
-    "bowl_glass": (960, 420), "bowl_fish": (980, 520),
-    "hammer": (260, 650), "board": (640, 700), "cup": (1000, 560), "toy": (1330, 680), "boots": (1680, 600),
-    "sand": (700, 900), "umbrella": (980, 330), "sea": (1500, 600), "sky": (420, 160),
+    "bowl_glass": (960, 420), "bowl_fish": (1450, 330),
+    "hammer": (190, 400), "board": (550, 520), "cup": (920, 560), "toy": (1265, 610), "boots": (1680, 530),
+    "sand": (480, 900), "umbrella": (760, 370), "sea": (1550, 640), "sky": (420, 160),
     "balloons": (960, 450),
 }
 
@@ -138,7 +138,7 @@ class W3U21(WordScene):
         ph = F.photo("w3u21/fishbowl", height=4.5).move_to([0, 0.05, 0])
         self.say(f"{o('유리')}는 투명해요", "유리로 만든 어항이에요. 유리는 투명해서 안에 있는 물고기가 잘 보여요.")
         self.play(FadeIn(ph), run_time=0.7)
-        a, t = F.callout(ph, P["bowl_fish"], "투명한 유리", to=(3.2, 0.9))
+        a, t = F.callout(ph, P["bowl_fish"], "투명한 유리", to=(2.6, 0.9))
         self.play(GrowArrow(a), FadeIn(t), run_time=0.6)
         self.say("어항을 나무로 만들면 안이 보이지 않아요", "어항을 나무로 만들면 안이 보이지 않아요.")
         self.settle()
@@ -177,7 +177,7 @@ class W3U21(WordScene):
         self.play(FadeIn(ph), run_time=0.7)
         a1, t1 = F.callout(ph, P["umbrella"], "파라솔", to=(-2.2, 0.3))
         a2, t2 = F.callout(ph, P["sand"], "모래", to=(-2.0, 0.4))
-        tg = VGroup(st_tag("고체", 30).next_to(t1, RIGHT, buff=0.12), st_tag("고체", 30).next_to(t2, RIGHT, buff=0.12))
+        tg = VGroup(st_tag("고체", 30).next_to(t1, LEFT, buff=0.12), st_tag("고체", 30).next_to(t2, LEFT, buff=0.12))
         self.say(f"파라솔과 모래는 {o('고체')}예요",
                  "파라솔과 모래는 고체예요. 모래는 알갱이마다 모양이 정해져 있어서 고체예요.")
         self.play(GrowArrow(a1), GrowArrow(a2), FadeIn(t1), FadeIn(t2), run_time=0.7)
