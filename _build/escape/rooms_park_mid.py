@@ -88,7 +88,7 @@ ROOM = dict(
         ]),
         dict(id='b', nm='범퍼카장', bg=dict(wall='#FFE9D6', floor='#8B95A3', deco='tile'), objs=[
             O('arena', '범퍼카 경기장', 'pkArena', 20, 30, 460, 330, dict(cars=BUMP), keep=True,
-              look='울타리 안에 범퍼카들이 멈춰 있어요. 범퍼카는 모두 몇 대일까요?', lookFig=F('pkArena', 420, 300, cars=BUMP),
+              look='울타리 안에 범퍼카들이 멈춰 있어요. 울타리 안의 범퍼카는 모두 몇 대일까요? (울타리 밖에 나와 있는 범퍼카 1번은 세지 않아요.)', lookFig=F('pkArena', 420, 300, cars=BUMP),
               guide='범퍼카 경기장의 범퍼카를 세어 보세요. 경기장 구석도 잘 보세요.'),
             O('ascrap', '경기장 구석 쪽지', 'scrap', 404, 280, 48, 34, dict(t='?'), in_='arena', keep=True,
               look=f'경기장 구석에 아주 작은 쪽지가 끼어 있어요! "인형 뽑기 기계 속 작은 서랍 = **오늘 롤러코스터에 탈 수 있었던 자리 수 − 토큰 통의 토큰 수**"',
@@ -98,7 +98,7 @@ ROOM = dict(
               guide='토큰 통 안내판을 읽고 수첩에 남겨 두세요.'),
             O('tokbox', '토큰 나눔 상자', 'box', 530, 390, 170, 140, dict(c='주황', lock=True, label='토큰'),
               lock=Lk('num', f'{TOK // len(BUMP)}{TOK % len(BUMP)}', f'상자 쪽지: 토큰 통의 토큰을 **경기장의 범퍼카에 똑같이 나누어** 넣어요. 비밀번호 = (한 대에 넣는 토큰 수)(남는 토큰 수)',
-                      ['토큰 통 안내판에서 토큰 수를, 경기장에서 범퍼카 수를 찾아요.', f'토큰 {TOK}개를 범퍼카 {len(BUMP)}대에 나누어요: {TOK} ÷ {len(BUMP)}', f'{len(BUMP)} × 13 = {len(BUMP) * 13}이고, {TOK} − {len(BUMP) * 13}은?'],
+                      ['토큰 통 안내판에서 토큰 수를, 경기장 울타리 안에서 범퍼카 수를 찾아요.', f'토큰 {TOK}개를 범퍼카 {len(BUMP)}대에 나누어요: {TOK} ÷ {len(BUMP)}', f'{len(BUMP)} × 13 = {len(BUMP) * 13}이고, {TOK} − {len(BUMP) * 13}은?'],
                       f'{TOK} ÷ {len(BUMP)} = {TOK // len(BUMP)} … {TOK % len(BUMP)} → 한 대에 {TOK // len(BUMP)}개, 남는 것 {TOK % len(BUMP)}개 → {TOK // len(BUMP)}{TOK % len(BUMP)}',
                       chk=lambda: (lambda q, r: f'{q}{r}')(*divmod(TOK, len(BUMP)))),
               give=['bat'], after='상자가 열렸어요! 토큰 사이에 **충전 건전지**가 들어 있어요. 건전지에 \'범퍼카 1번\'이라고 적혀 있어요.',

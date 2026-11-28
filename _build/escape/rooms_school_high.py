@@ -106,7 +106,7 @@ ROOM = dict(
             O('sdraw', '창고 속 작은 서랍', 'drawer', 50, 132, 70, 40, dict(c='#5E7A9A', lock=True), in_='storage',
               lock=Lk('num', str(DRAW), '창고 안 아주 작은 서랍이에요! 숫자 자물쇠예요. 교무실 책상 옆 쪽지에 적힌 대로 계산해요.',
                       ['교무실 책상을 크게 보면 책상다리 옆에 작은 쪽지가 있어요. 거기에 계산 방법이 적혀 있어요.', f'체육관 바닥 넓이는 {GYM_W} × {GYM_H}예요. 공 수레의 농구공과 배구공 수의 최대공약수도 구해요.', f'농구공 {BASKET}개와 배구공 {VOLLEY}개의 공약수 가운데 가장 큰 수로 넓이를 나누어요.'],
-                      f'넓이 {GYM_W} × {GYM_H} = {GYM_W * GYM_H} m², {BASKET}와 {VOLLEY}의 최대공약수 {gcd(BASKET, VOLLEY)} → {GYM_W * GYM_H} ÷ {gcd(BASKET, VOLLEY)} = {DRAW}',
+                      f'넓이 {GYM_W} × {GYM_H} = {GYM_W * GYM_H} m², {BASKET}과 {VOLLEY}의 최대공약수 {gcd(BASKET, VOLLEY)} → {GYM_W * GYM_H} ÷ {gcd(BASKET, VOLLEY)} = {DRAW}',
                       chk=lambda: GYM_W * GYM_H // gcd(BASKET, VOLLEY)),
               give=['kh2'], after='작은 서랍 안에 보라색 **열쇠 몸통**이 들어 있어요. 손잡이는 없어요.', guide='체육 창고를 연 뒤 창고 안쪽의 작은 서랍을 눌러 보세요.'),
             O('stairs', '옥상 계단 문', 'door', 824, 160, 130, 220, dict(c='보라', sign='옥상', keypad=True),

@@ -135,7 +135,7 @@ ROOM = dict(
               guide='손전등으로 옷장을 비추고, 거울 전구의 규칙으로 모양 단추를 눌러 보세요.'),
             O('wdoor', '동물 마차 가는 문', 'door', 800, 160, 150, 230, dict(c='갈색', sign='동물 마차'),
               need='key', needMsg='동물 마차로 가는 문이 잠겨 있어요. 빨간 열쇠 구멍이 보여요.', useMsg='동물 마차 열쇠로 문을 열었어요!',
-              go='c', after='문 너머로 동물 마차가 보여요. 코끼리와 물개가 있어요.', guide='열쇠 손잡이와 몸통을 합쳐 동물 마차 가는 문을 열어 보세요.'),
+              go='c', after='문 너머로 동물 마차가 보여요. 배고픈 물개가 기다리고 있어요.', guide='열쇠 손잡이와 몸통을 합쳐 동물 마차 가는 문을 열어 보세요.'),
         ]),
         dict(id='c', nm='동물 마차', bg=dict(wall='#E9D2AE', floor='#C9A86A', deco='brick'), objs=[
             O('fishlog', '물개 먹이 기록', 'poster', 30, 30, 300, 210, dict(lines=FISHLOG, fs=18, c='#FFFDF4'), keep=True,
