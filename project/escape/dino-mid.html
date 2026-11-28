@@ -2416,7 +2416,7 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
 }
 </style><!--/hj-ctheme--></head><body>
 <main>
-<nav class="tl-gnav" aria-label="같은 학년 방"><a href="index.html">모든 방</a><a href="park-mid.html">롤러코스터 놀이공원 탈출</a><a href="dino-mid.html" aria-current="page">화석 발굴장 탈출</a></nav>
+<nav class="tl-gnav" aria-label="같은 학년 방"><a href="index.html">모든 방</a><a href="library.html">학교 도서관 탈출</a><a href="park-mid.html">롤러코스터 놀이공원 탈출</a><a href="pirate-mid.html">보물섬 탈출</a><a href="dino-mid.html" aria-current="page">화석 발굴장 탈출</a><a href="station.html">기차역 탈출</a></nav>
 <header class="tl-head"><span class="tl-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 19c2-1 3-4 3-7a6 6 0 0 1 6-6h1l2-2h4a2 2 0 0 1 2 2v1a2 2 0 0 1-2 2h-3v2c0 4-2 7-5 8"/><path d="M8 19v2M13 18v3M17.5 6h.01"/></svg></span><div><h1>화석 발굴장 탈출</h1><p class="tl-desc">추천 3학년 · 자물쇠와 장치 8개</p></div></header>
 <section class="tl-stage" id="tlStage" aria-label="방탈출">
 <div class="tl-bar"><span class="tl-bt" id="tlBarT"></span><span class="tl-sp"></span><button type="button" class="tl-btn" id="tlFull">⛶ 크게 보기</button></div>
@@ -3465,7 +3465,7 @@ var ART = (function () {
 /* 수학 방탈출 · 서커스 그림 (2026-11-28) — 이름 앞글자 cr. art.js의 ART.c·ART.shape·ART.esc를 씀.
    개수를 세는 그림(깃발·별·전구)과 각도·그래프·눈금은 p로 받은 값 그대로 그림. */
 (function () {
-  var c = ART.c, esc = ART.esc, shape = ART.shape;
+  var c = ART.c, esc = ART.esc, shape = ART.shape, F = ART.fx, E2 = function (k, w) { return F.edge(k, w || 1.8) };
   function R(x, y, w, h, f, o) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + f + '"' + (o || '') + '/>' }
   function T(x, y, s, size, f, o, anc) { return '<text x="' + x + '" y="' + y + '" font-size="' + size + '" fill="' + (f || '#2A221C') + '" text-anchor="' + (anc || 'middle') + '" font-weight="700"' + (o || '') + '>' + esc(s) + '</text>' }
   function C(x, y, r, f, o) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"' + (o || '') + '/>' }
@@ -3479,7 +3479,7 @@ var ART = (function () {
     var n = p.n || 8, s = p.s || 3, fw = w / n, o = P('M0 ' + h * .08 + 'Q' + w / 2 + ' ' + h * .3 + ' ' + w + ' ' + h * .08, 'none', ' stroke="#5A4030" stroke-width="3"');
     for (var i = 0; i < n; i++) {
       var x = i * fw, t = (i + .5) / n, top = h * .08 + (h * .22) * 4 * t * (1 - t) * .5 + 2;
-      o += P('M' + (x + fw * .08) + ' ' + top + 'H' + (x + fw * .92) + 'L' + (x + fw / 2) + ' ' + (h - 2) + 'Z', FC[i % 4], K2);
+      o += P('M' + (x + fw * .08) + ' ' + top + 'H' + (x + fw * .92) + 'L' + (x + fw / 2) + ' ' + (h - 2) + 'Z', F.mat('cloth', FC[i % 4]), E2(FC[i % 4], 1.4)) + P('M' + (x + fw / 2) + ' ' + top + 'H' + (x + fw * .92) + 'L' + (x + fw / 2) + ' ' + (h - 2) + 'Z', '#1A0E06', ' opacity=".1"');
       var rr = Math.min(fw * .12, (h - top) * .1);
       for (var k = 0; k < s; k++) {
         var sx = s === 1 ? x + fw / 2 : x + fw * (.3 + .4 * k / (s - 1)), sy = top + (h - top) * (k === 1 && s === 3 ? .5 : .24);
@@ -3493,7 +3493,7 @@ var ART = (function () {
   /* 인간 대포 + 각도기: 대포가 오른쪽 바닥선에서 p.a도 기울어짐(눈금 5°, 숫자 10°마다) */
   ART.A.crCannon = function (w, h, p) {
     var px = w * .5, py = h * .78, R0 = Math.min(w * .46, h * .72), o = '';
-    o += P('M' + (px - R0) + ' ' + py + 'A' + R0 + ' ' + R0 + ' 0 0 1 ' + (px + R0) + ' ' + py + 'Z', '#FFFDF4', ' stroke="#2A2233" stroke-width="2" opacity=".93"');
+    o += P('M' + (px - R0) + ' ' + py + 'A' + R0 + ' ' + R0 + ' 0 0 1 ' + (px + R0) + ' ' + py + 'Z', F.lin([[0, '#FFFFFF'], [1, '#F1ECDC']]), ' stroke="#6A5A48" stroke-width="2" opacity=".93"');
     for (var d = 0; d <= 180; d += 5) {
       var r1 = R0 * (d % 10 ? .93 : .88), q = d * Math.PI / 180;
       o += L(px + Math.cos(q) * R0, py - Math.sin(q) * R0, px + Math.cos(q) * r1, py - Math.sin(q) * r1, '#2A2233', d % 10 ? 1 : 1.8);
@@ -3502,9 +3502,9 @@ var ART = (function () {
     o += L(px - R0, py, px + R0, py, '#3B6FD6', 3);
     var bl = R0 * .58, bw = R0 * .17, q0 = (p.a || 45) * Math.PI / 180;
     o += L(px, py, px + Math.cos(q0) * R0 * .97, py - Math.sin(q0) * R0 * .97, '#C8402F', 2.5, ' stroke-dasharray="6 4"');
-    o += '<g transform="translate(' + px + ' ' + py + ') rotate(' + (-p.a || -45) + ')">' + R(0, -bw / 2, bl, bw, '#C8402F', K + ' rx="' + bw * .3 + '"') + R(bl - bw * .3, -bw * .62, bw * .4, bw * 1.24, '#8A2A20', K2 + ' rx="4"') + R(bl * .3, -bw / 2, bw * .25, bw, '#F2C230') + '</g>';
-    o += C(px, py, R0 * .12, '#5A4030', K) + C(px, py, R0 * .04, '#F2C230');
-    o += C(px - R0 * .18, h * .9, h * .08, '#5A4030', K2) + C(px + R0 * .18, h * .9, h * .08, '#5A4030', K2);
+    o += '<g transform="translate(' + px + ' ' + py + ') rotate(' + (-p.a || -45) + ')">' + R(0, -bw / 2, bl, bw, F.mat('cylv', '#C8402F'), E2('#C8402F') + ' rx="' + bw * .3 + '"') + R(bl - bw * .3, -bw * .62, bw * .4, bw * 1.24, F.mat('cylv', '#8A2A20'), E2('#8A2A20', 1.4) + ' rx="4"') + R(bl * .3, -bw / 2, bw * .25, bw, F.mat('cylv', '#F2C230')) + '</g>';
+    o += F.ground(px, h * .98, R0 * .3, 5) + C(px, py, R0 * .12, F.ball('#5A4030'), E2('#5A4030')) + C(px, py, R0 * .04, F.ball('#F2C230'));
+    o += C(px - R0 * .18, h * .9, h * .08, F.ball('#5A4030'), E2('#5A4030', 1.4)) + C(px + R0 * .18, h * .9, h * .08, F.ball('#5A4030'), E2('#5A4030', 1.4));
     return o;
   };
 
@@ -3514,9 +3514,9 @@ var ART = (function () {
     var it = p.items || [], n = Math.max(1, it.length), bw = w / n, o = '';
     it.forEach(function (b, i) {
       var x = i * bw + bw * .1, ww = bw * .8, fs = Math.min(h * .15, ww * .29), cy = h * .5, cx = x + ww / 2;
-      o += P('M' + x + ' ' + h * .18 + 'H' + (x + ww) + 'L' + (x + ww * .88) + ' ' + h * .96 + 'H' + (x + ww * .12) + 'Z', c(b.c), K);
+      o += F.ground(cx, h * .97, ww * .42, 5) + P('M' + x + ' ' + h * .18 + 'H' + (x + ww) + 'L' + (x + ww * .88) + ' ' + h * .96 + 'H' + (x + ww * .12) + 'Z', F.mat('cyl', c(b.c)), E2(c(b.c)));
       o += P('M' + (x + ww * .1) + ' ' + h * .18 + 'Q' + (x + ww / 2) + ' ' + (-h * .06) + ' ' + (x + ww * .9) + ' ' + h * .18, 'none', ' stroke="#6E7580" stroke-width="3"');
-      o += R(x + ww * .04, h * .3, ww * .92, h * .5, '#FFFDF4', ' rx="5"');
+      o += R(x + ww * .04, h * .3, ww * .92, h * .5, F.mat('paper', '#FFFDF4'), ' rx="5"');
       o += fr(cx - ww * .28, cy, b.a, b.d, fs, '#2A2233') + T(cx, cy + fs * .36, b.op, fs, '#C8402F') + fr(cx + ww * .28, cy, b.b, b.d, fs, '#2A2233');
       o += T(cx, h * .76, 'L', Math.min(h * .08, ww * .14), '#6A6355');
     });
@@ -3525,30 +3525,30 @@ var ART = (function () {
 
   /* 큰 북 */
   ART.A.crDrum = function (w, h) {
-    var o = '<ellipse cx="' + w / 2 + '" cy="' + h * .25 + '" rx="' + w * .46 + '" ry="' + h * .14 + '" fill="#FFFDF4"' + K + '/>';
-    o += P('M' + w * .04 + ' ' + h * .25 + 'V' + h * .82 + 'A' + w * .46 + ' ' + h * .14 + ' 0 0 0 ' + w * .96 + ' ' + h * .82 + 'V' + h * .25 + 'A' + w * .46 + ' ' + h * .14 + ' 0 0 1 ' + w * .04 + ' ' + h * .25 + 'Z', '#C8402F', K);
-    for (var i = 0; i < 6; i++) { var x = w * .04 + w * .92 * i / 5; o += L(x, h * .3 + (i % 5 ? h * .1 : 0), w * .04 + w * .92 * (i + .5) / 5, h * .8, '#F2C230', 3) }
-    o += L(w * .7, h * .02, w * .45, h * .22, '#8A6A4A', 6, ' stroke-linecap="round"') + C(w * .72, h * .02, 7, '#FFFDF4', K2);
+    var o = F.ground(w / 2, h * .96, w * .48, 7) + '<ellipse cx="' + w / 2 + '" cy="' + h * .25 + '" rx="' + w * .46 + '" ry="' + h * .14 + '" fill="' + F.rad([[0, '#FFFFFF'], [.8, '#F6F0E0'], [1, '#D9CFB4']], .4, .4, .7) + '"' + E2('#C9B894') + '/>';
+    o += P('M' + w * .04 + ' ' + h * .25 + 'V' + h * .82 + 'A' + w * .46 + ' ' + h * .14 + ' 0 0 0 ' + w * .96 + ' ' + h * .82 + 'V' + h * .25 + 'A' + w * .46 + ' ' + h * .14 + ' 0 0 1 ' + w * .04 + ' ' + h * .25 + 'Z', F.mat('cyl', '#C8402F'), E2('#C8402F'));
+    for (var i = 0; i < 6; i++) { var x = w * .04 + w * .92 * i / 5; o += L(x, h * .3 + (i % 5 ? h * .1 : 0), w * .04 + w * .92 * (i + .5) / 5, h * .8, '#E8B830', 3) }
+    o += L(w * .7, h * .02, w * .45, h * .22, '#8A6A4A', 6, ' stroke-linecap="round"') + C(w * .72, h * .02, 7, F.ball('#FFFDF4'), E2('#C9B894', 1.4));
     return o;
   };
 
   /* 소품 트렁크(색 단추 4개) */
   ART.A.crTrunk = function (w, h, p, open) {
-    var o = R(0, h * .35, w, h * .65, '#7A4A8A', K + ' rx="8"') + R(w * .1, h * .35, w * .06, h * .65, '#C9A24B') + R(w * .84, h * .35, w * .06, h * .65, '#C9A24B');
-    o += open ? P('M0 ' + h * .35 + 'L' + w * .05 + ' 0H' + w * .95 + 'L' + w + ' ' + h * .35 + 'Z', '#8E5AA0', K) + R(6, h * .35, w - 12, h * .08, '#2A221C', ' opacity=".5"')
-      : R(-4, h * .2, w + 8, h * .2, '#8E5AA0', K + ' rx="6"');
-    if (!open) (p.colors || []).forEach(function (k, i, a) { o += C(w * .25 + i * w * .5 / Math.max(1, a.length - 1), h * .3, Math.min(w * .05, 9), c(k), K2) });
-    if (!open) o += R(w * .38, h * .5, w * .24, h * .24, '#F2C230', K2 + ' rx="4"') + shape('☆', w / 2, h * .62, h * .08, '#C8402F');
+    var o = F.ground(w / 2, h, w * .54, 8) + F.box(0, h * .35, w, h * .65, '#7A4A8A', 'wood', 8, 1.8) + F.shade(w * .8, h * .35, w * .2, h * .65, 8, .2) + R(w * .1, h * .35, w * .06, h * .65, F.mat('gold')) + R(w * .84, h * .35, w * .06, h * .65, F.mat('gold'));
+    o += open ? P('M0 ' + h * .35 + 'L' + w * .05 + ' 0H' + w * .95 + 'L' + w + ' ' + h * .35 + 'Z', F.mat('wood', '#8E5AA0'), E2('#8E5AA0')) + R(6, h * .35, w - 12, h * .08, '#2A221C', ' opacity=".5"')
+      : R(-4, h * .2, w + 8, h * .2, F.mat('wood', '#8E5AA0'), E2('#8E5AA0') + ' rx="6"') + F.gloss(-2, h * .2 + 1, w + 4, h * .07, 5, .35);
+    if (!open) (p.colors || []).forEach(function (k, i, a) { o += C(w * .25 + i * w * .5 / Math.max(1, a.length - 1), h * .3, Math.min(w * .05, 9), F.ball(c(k)), E2(c(k), 1.3)) });
+    if (!open) o += R(w * .38, h * .5, w * .24, h * .24, F.mat('gold'), E2('#C99A2A', 1.4) + ' rx="4"') + F.shape('☆', w / 2, h * .62, h * .08, '#C8402F');
     return o;
   };
 
   /* 외바퀴 자전거 */
   ART.A.crBike = function (w, h, p, open) {
-    var r = Math.min(w * .4, h * .26), cx = w / 2, cy = h - r - 4, o = '';
-    o += C(cx, cy, r, 'none', ' stroke="#2A2233" stroke-width="7"') + C(cx, cy, r * .14, '#F2C230', K2);
+    var r = Math.min(w * .4, h * .26), cx = w / 2, cy = h - r - 4, o = F.ground(cx, h - 2, r * .9, 5);
+    o += C(cx, cy, r, 'none', ' stroke="#2E3238" stroke-width="7"') + C(cx, cy, r - 2.2, 'none', ' stroke="#6E7580" stroke-width="1.4"') + C(cx, cy, r * .14, F.ball('#F2C230'), E2('#C99A2A', 1.4));
     for (var k = 0; k < 8; k++) { var a = k * Math.PI / 4; o += L(cx, cy, cx + Math.cos(a) * r * .92, cy + Math.sin(a) * r * .92, '#6E7580', 2) }
-    o += L(cx, cy, cx, h * .16, '#C8402F', 7) + R(cx - w * .26, h * .08, w * .52, h * .09, '#2A2233', ' rx="8"');
-    o += L(cx - r * .45, cy - r * .2, cx + r * .45, cy + r * .2, '#3A3F48', 4) + R(cx - r * .62, cy - r * .3, r * .3, r * .14, '#3A3F48', ' rx="2"') + R(cx + r * .32, cy + r * .16, r * .3, r * .14, '#3A3F48', ' rx="2"');
+    o += R(cx - 3.5, h * .16, 7, cy - h * .16, F.mat('cyl', '#C8402F')) + R(cx - w * .26, h * .08, w * .52, h * .09, F.mat('plastic', '#3A3F48'), ' rx="8"');
+    o += L(cx - r * .45, cy - r * .2, cx + r * .45, cy + r * .2, '#3A3F48', 4) + R(cx - r * .62, cy - r * .3, r * .3, r * .14, F.mat('metal', '#3A3F48'), ' rx="2"') + R(cx + r * .32, cy + r * .16, r * .3, r * .14, F.mat('metal', '#3A3F48'), ' rx="2"');
     if (open) o += T(cx, h * .05, '출발!', Math.min(h * .08, w * .2), '#2E7D5B');
     return o;
   };
@@ -3556,7 +3556,7 @@ var ART = (function () {
   /* 꺾은선그래프: p.labels, p.vals, p.max, p.step, p.lab, p.title, p.unit */
   ART.A.crChart = function (w, h, p) {
     var lb = p.labels || [], v = p.vals || [], mx = p.max || 100, st = p.step || 10, lab = p.lab || st * 2;
-    var o = R(0, 0, w, h, '#FFFDF4', K + ' rx="6"'), top = p.title ? h * .16 : 12, gx = w * .17, gw = w - gx - 16, gy = top + 12, gh = h - gy - h * .14;
+    var o = F.drop(R(0, 0, w, h, '#000', ' rx="6"'), 4, 7, .22) + R(0, 0, w, h, F.lin([[0, '#FFFFFF'], [1, '#F3EEDF']]), E2('#C9C2B0', 1.6) + ' rx="6"'), top = p.title ? h * .16 : 12, gx = w * .17, gw = w - gx - 16, gy = top + 12, gh = h - gy - h * .14;
     if (p.title) o += T(w / 2, top * .75, p.title, Math.min(top * .5, 20), '#2A2233');
     for (var k = 0; k <= mx; k += st) {
       var y = gy + gh - gh * k / mx, big = k % lab === 0;
@@ -3574,73 +3574,73 @@ var ART = (function () {
 
   /* 분장 거울: 위쪽에 전구 p.pat(모양 차례, 아래 번호) */
   ART.A.crMirror = function (w, h, p) {
-    var pat = p.pat || [], n = pat.length, o = R(0, 0, w, h, '#C9A24B', K + ' rx="10"') + R(w * .06, h * .3, w * .88, h * .62, '#CFE7F3', K2 + ' rx="6"');
+    var pat = p.pat || [], n = pat.length, o = F.drop(R(0, 0, w, h, '#000', ' rx="10"'), 4, 7, .25) + R(0, 0, w, h, F.mat('gold'), E2('#C99A2A') + ' rx="10"') + R(w * .06, h * .3, w * .88, h * .62, F.lin([[0, '#EAF6FC'], [.5, '#CFE7F3'], [1, '#A8CCE0']], 0, 0, 1, 1), E2('#8A6A1A', 1.5) + ' rx="6"');
     o += P('M' + w * .15 + ' ' + h * .8 + 'L' + w * .35 + ' ' + h * .42 + 'M' + w * .25 + ' ' + h * .85 + 'L' + w * .42 + ' ' + h * .55, 'none', ' stroke="#fff" stroke-width="5" opacity=".7"');
     var bw = (w - 16) / Math.max(1, n), rr = Math.min(bw * .36, h * .07);
-    pat.forEach(function (s, i) { var cx = 8 + bw * (i + .5); o += C(cx, h * .11, rr * 1.35, '#FFF2B0', K2) + shape(s, cx, h * .11, rr, '#C8402F') + T(cx, h * .25, i + 1, Math.min(bw * .45, h * .07), '#2A2233') });
+    pat.forEach(function (s, i) { var cx = 8 + bw * (i + .5); o += C(cx, h * .11, rr * 1.35, F.rad([[0, '#FFFFFF'], [.6, '#FFF2B0'], [1, '#F2D266']]), E2('#C99A2A', 1.4)) + F.shape(s, cx, h * .11, rr, '#C8402F') + T(cx, h * .25, i + 1, Math.min(bw * .45, h * .07), '#2A2233') });
     return o;
   };
 
   /* 분장 상자(서랍 달린 화장대 상자) */
   ART.A.crMakeup = function (w, h, p, open) {
-    var o = R(0, h * .25, w, h * .75, '#E07DA8', K + ' rx="8"') + R(w * .06, h * .32, w * .88, h * .28, open ? '#2A221C' : '#F4A9C8', K2 + ' rx="4"') + R(w * .06, h * .66, w * .88, h * .28, '#F4A9C8', K2 + ' rx="4"');
-    o += C(w / 2, h * .8, 6, '#F2C230', K2);
-    o += open ? R(w * .1, h * .02, w * .8, h * .24, '#F4A9C8', K + ' rx="6"') : R(w * .42, h * .4, w * .16, h * .14, '#F2C230', K2 + ' rx="3"');
-    [.2, .4, .6, .8].forEach(function (f, i) { o += C(w * f, h * .2, Math.min(w * .05, h * .07), ['#E5534B', '#FFFDF4', '#3B6FD6', '#F2C230'][i], K2) });
+    var o = F.ground(w / 2, h, w * .54, 7) + F.box(0, h * .25, w, h * .75, '#E07DA8', 'paint', 8, 1.8) + F.shade(w * .8, h * .25, w * .2, h * .75, 8, .18) + (open ? R(w * .06, h * .32, w * .88, h * .28, F.lin([[0, '#100A08'], [1, '#3A2C24']]), E2('#E07DA8', 1.5) + ' rx="4"') : F.box(w * .06, h * .32, w * .88, h * .28, '#F4A9C8', 'paint', 4, 1.5)) + F.box(w * .06, h * .66, w * .88, h * .28, '#F4A9C8', 'paint', 4, 1.5);
+    o += F.knob(w / 2, h * .8, 6, '#F2C230');
+    o += open ? F.box(w * .1, h * .02, w * .8, h * .24, '#F4A9C8', 'paint', 6, 1.8) : R(w * .42, h * .4, w * .16, h * .14, F.mat('gold'), E2('#C99A2A', 1.4) + ' rx="3"');
+    [.2, .4, .6, .8].forEach(function (f, i) { var bc = ['#E5534B', '#FFFDF4', '#3B6FD6', '#F2C230'][i]; o += C(w * f, h * .2, Math.min(w * .05, h * .07), F.ball(bc), E2(i === 1 ? '#C9C2B0' : bc, 1.4)) });
     return o;
   };
 
   /* 의상 옷장 */
   ART.A.crWardrobe = function (w, h, p, open) {
-    var o = R(0, 0, w, h, '#8A5A2B', K + ' rx="6"');
+    var o = F.ground(w / 2, h, w * .56, 8) + R(0, 0, w, h, F.mat('wood', '#8A5A2B'), E2('#8A5A2B') + ' rx="6"');
     if (open) {
-      o += R(8, 8, w - 16, h - 16, '#2A221C') + L(12, h * .16, w - 12, h * .16, '#C8CDD3', 4);
-      ['#E5534B', '#F2C230', '#3B6FD6', '#3DA35D'].forEach(function (f, i) { var x = 18 + i * (w - 36) / 4; o += P('M' + (x + 6) + ' ' + h * .2 + 'h' + ((w - 36) / 4 - 12) + 'l6 ' + h * .5 + 'h-' + ((w - 36) / 4) + 'z', f, K2) });
-      return o + P('M8 8L-' + w * .2 + ' 20V' + (h - 20) + 'L8 ' + (h - 8) + 'Z', '#A06A35', K);
+      o += R(8, 8, w - 16, h - 16, F.lin([[0, '#0E0B09'], [.7, '#2A211A'], [1, '#4A3A2C']])) + L(12, h * .16, w - 12, h * .16, '#C8CDD3', 4);
+      ['#E5534B', '#F2C230', '#3B6FD6', '#3DA35D'].forEach(function (f, i) { var x = 18 + i * (w - 36) / 4; o += P('M' + (x + 6) + ' ' + h * .2 + 'h' + ((w - 36) / 4 - 12) + 'l6 ' + h * .5 + 'h-' + ((w - 36) / 4) + 'z', F.mat('cloth', f), E2(f, 1.4)) });
+      return o + P('M8 8L-' + w * .2 + ' 20V' + (h - 20) + 'L8 ' + (h - 8) + 'Z', F.mat('wood', '#A06A35'), E2('#A06A35'));
     }
-    o += L(w / 2, 6, w / 2, h - 6, '#2A221C', 3) + R(10, 10, w / 2 - 16, h - 20, '#A06A35', ' rx="4"') + R(w / 2 + 6, 10, w / 2 - 16, h - 20, '#A06A35', ' rx="4"');
-    o += C(w / 2 - 12, h / 2, 6, '#F2C230', K2) + C(w / 2 + 12, h / 2, 6, '#F2C230', K2) + R(w * .3, h * .08, w * .4, h * .1, '#FFFDF4', ' rx="4"') + T(w / 2, h * .155, '의상', Math.min(h * .08, w * .14), '#2A2233');
+    o += L(w / 2, 6, w / 2, h - 6, '#3A2414', 3) + F.box(10, 10, w / 2 - 16, h - 20, '#A06A35', 'wood', 4, 1.2) + F.grain(12, 12, w / 2 - 20, h - 24, '#A06A35', 3, true) + F.box(w / 2 + 6, 10, w / 2 - 16, h - 20, '#A06A35', 'wood', 4, 1.2) + F.grain(w / 2 + 8, 12, w / 2 - 20, h - 24, '#A06A35', 3, true) + F.shade(w * .8, 6, w * .2 - 6, h - 12, 4, .18);
+    o += F.knob(w / 2 - 12, h / 2, 6, '#F2C230') + F.knob(w / 2 + 12, h / 2, 6, '#F2C230') + R(w * .3, h * .08, w * .4, h * .1, F.mat('paper', '#FFFDF4'), E2('#C9C2B0', 1.2) + ' rx="4"') + T(w / 2, h * .155, '의상', Math.min(h * .08, w * .14), '#2A2233');
     return o;
   };
 
   /* 코끼리 물통: 들이 p.cap L, 물 p.v mL, 눈금 p.tick mL마다(숫자는 1 L마다) */
   ART.A.crTank = function (w, h, p) {
     var cap = p.cap || 10, v = p.v || 0, tick = p.tick || 500, x = w * .2, tw = w * .5, ty = h * .08, th = h * .86, o = '';
-    o += R(x, ty, tw, th, '#EAF2F7', K + ' rx="8"') + R(x + 3, ty + th - th * v / (cap * 1000), tw - 6, th * v / (cap * 1000) - 3, '#6CC3EA', ' rx="4"');
+    o += F.ground(x + tw / 2, ty + th, tw * .56, 6) + R(x, ty, tw, th, F.mat('glass', '#DCEBF3'), E2('#9AB4C4') + ' rx="8"') + R(x + 3, ty + th - th * v / (cap * 1000), tw - 6, th * v / (cap * 1000) - 3, F.mat('cyl', '#6CC3EA'), ' rx="4"') + F.streak('M' + (x + tw * .14) + ' ' + (ty + 10) + 'V' + (ty + th - 12), 3, .5);
     for (var m = 0; m <= cap * 1000; m += tick) {
       var y = ty + th - th * m / (cap * 1000), big = m % 1000 === 0;
       o += L(x + tw, y, x + tw - (big ? tw * .3 : tw * .16), y, '#2A2233', big ? 2.4 : 1.4);
       if (big) o += T(x + tw + 6, y + 5, (m / 1000) + ' L', Math.min(w * .1, th / cap * .5), '#2A2233', '', 'start');
     }
-    o += R(x - 6, ty - 8, tw + 12, 12, '#6E7580', ' rx="4"');
+    o += R(x - 6, ty - 8, tw + 12, 12, F.mat('metal', '#6E7580'), E2('#6E7580', 1.2) + ' rx="4"');
     return o;
   };
 
   /* 동물 마차 뒷문 + 물 펌프 */
   ART.A.crGate = function (w, h, p, open) {
-    var o = R(0, 0, w * .7, h, '#9A6A3F', K + ' rx="6"');
-    for (var i = 1; i < 5; i++) o += L(w * .7 * i / 5, 6, w * .7 * i / 5, h - 6, '#6E4A2A', 3);
-    o += open ? R(8, 8, w * .7 - 16, h - 16, '#FFE9A8', ' opacity=".85"') + P('M8 8L-' + w * .15 + ' 24V' + (h - 24) + 'L8 ' + (h - 8) + 'Z', '#B98552', K) : R(w * .55, h * .45, w * .08, h * .1, '#F2C230', K2 + ' rx="3"');
-    o += R(w * .74, h * .3, w * .24, h * .5, '#6E7580', K + ' rx="6"') + R(w * .77, h * .34, w * .18, h * .12, '#14181E', ' rx="3"') + T(w * .86, h * .43, open ? 'OK' : 'mL', Math.min(h * .07, w * .07), open ? '#7CF29B' : '#FFC94A');
-    o += C(w * .86, h * .62, Math.min(w * .07, h * .07), open ? '#8A929C' : '#2A2233', K2);
-    o += R(w * .8, h * .8, w * .12, h * .2, '#6E7580');
-    o += R(w * .08, -24, w * .54, 28, '#2E7D5B', ' rx="6"') + T(w * .35, -4, '뒷문', 18, '#fff');
+    var o = R(0, 0, w * .7, h, F.mat('wood', '#9A6A3F'), E2('#9A6A3F') + ' rx="6"') + F.grain(4, 4, w * .7 - 8, h - 8, '#9A6A3F', 5, true);
+    for (var i = 1; i < 5; i++) o += L(w * .7 * i / 5, 6, w * .7 * i / 5, h - 6, '#5A3A20', 3);
+    o += open ? R(8, 8, w * .7 - 16, h - 16, F.lin([[0, '#FFF4CC', .9], [1, '#FFE08A', .75]]), '') + P('M8 8L-' + w * .15 + ' 24V' + (h - 24) + 'L8 ' + (h - 8) + 'Z', F.mat('wood', '#B98552'), E2('#B98552')) : R(w * .55, h * .45, w * .08, h * .1, F.mat('gold'), E2('#C99A2A', 1.3) + ' rx="3"');
+    o += F.ground(w * .86, h * .8, w * .14, 4) + R(w * .74, h * .3, w * .24, h * .5, F.mat('metal', '#6E7580'), E2('#6E7580') + ' rx="6"') + R(w * .77, h * .34, w * .18, h * .12, F.mat('screen', '#14181E'), ' rx="3"') + T(w * .86, h * .43, open ? 'OK' : 'mL', Math.min(h * .07, w * .07), open ? '#7CF29B' : '#FFC94A');
+    o += C(w * .86, h * .62, Math.min(w * .07, h * .07), F.ball(open ? '#8A929C' : '#3A3F48'), E2(open ? '#8A929C' : '#3A3F48', 1.4));
+    o += R(w * .8, h * .8, w * .12, h * .2, F.mat('cyl', '#6E7580'));
+    o += R(w * .08, -24, w * .54, 28, F.mat('paint', '#2E7D5B'), E2('#2E7D5B', 1.3) + ' rx="6"') + T(w * .35, -4, '뒷문', 18, '#fff');
     if (!open) {
       var ex = w * .05, ey = h * .42, es = Math.min(w * .6, h * .58);
-      o += '<ellipse cx="' + (ex + es * .5) + '" cy="' + (ey + es * .5) + '" rx="' + es * .4 + '" ry="' + es * .3 + '" fill="#9AA0A8"' + K + '/>';
-      [.22, .38, .62, .78].forEach(function (f) { o += R(ex + es * f - es * .06, ey + es * .66, es * .12, es * .3, '#9AA0A8', K2 + ' rx="4"') });
-      o += C(ex + es * .88, ey + es * .3, es * .2, '#9AA0A8', K) + '<ellipse cx="' + (ex + es * .8) + '" cy="' + (ey + es * .3) + '" rx="' + es * .1 + '" ry="' + es * .15 + '" fill="#B8BEC6"' + K2 + '/>';
-      o += P('M' + (ex + es * 1.02) + ' ' + (ey + es * .38) + 'Q' + (ex + es * 1.12) + ' ' + (ey + es * .7) + ' ' + (ex + es * 1.0) + ' ' + (ey + es * .86), 'none', ' stroke="#2A2233" stroke-width="' + es * .09 + '" stroke-linecap="round"') + P('M' + (ex + es * 1.02) + ' ' + (ey + es * .38) + 'Q' + (ex + es * 1.12) + ' ' + (ey + es * .7) + ' ' + (ex + es * 1.0) + ' ' + (ey + es * .86), 'none', ' stroke="#9AA0A8" stroke-width="' + es * .06 + '" stroke-linecap="round"') + C(ex + es * .94, ey + es * .24, es * .025, '#2A2233');
+      o += '<ellipse cx="' + (ex + es * .5) + '" cy="' + (ey + es * .5) + '" rx="' + es * .4 + '" ry="' + es * .3 + '" fill="' + F.ball('#9AA0A8') + '"' + E2('#9AA0A8') + '/>';
+      [.22, .38, .62, .78].forEach(function (f) { o += R(ex + es * f - es * .06, ey + es * .66, es * .12, es * .3, F.mat('cyl', '#9AA0A8'), E2('#9AA0A8', 1.4) + ' rx="4"') });
+      o += C(ex + es * .88, ey + es * .3, es * .2, F.ball('#9AA0A8'), E2('#9AA0A8')) + '<ellipse cx="' + (ex + es * .8) + '" cy="' + (ey + es * .3) + '" rx="' + es * .1 + '" ry="' + es * .15 + '" fill="' + F.mat('cloth', '#B8BEC6') + '"' + E2('#9AA0A8', 1.4) + '/>';
+      o += P('M' + (ex + es * 1.02) + ' ' + (ey + es * .38) + 'Q' + (ex + es * 1.12) + ' ' + (ey + es * .7) + ' ' + (ex + es * 1.0) + ' ' + (ey + es * .86), 'none', ' stroke="#4D5056" stroke-width="' + es * .09 + '" stroke-linecap="round"') + P('M' + (ex + es * 1.02) + ' ' + (ey + es * .38) + 'Q' + (ex + es * 1.12) + ' ' + (ey + es * .7) + ' ' + (ex + es * 1.0) + ' ' + (ey + es * .86), 'none', ' stroke="#9AA0A8" stroke-width="' + es * .06 + '" stroke-linecap="round"') + C(ex + es * .94, ey + es * .24, es * .025, '#2A2233');
     }
     return o;
   };
 
   /* 물개(꾸밈) */
   ART.A.crSeal = function (w, h) {
-    var o = R(w * .05, h * .78, w * .9, h * .2, '#3B6FD6', K + ' rx="10"');
-    o += P('M' + w * .2 + ' ' + h * .8 + 'Q' + w * .15 + ' ' + h * .35 + ' ' + w * .45 + ' ' + h * .3 + 'Q' + w * .7 + ' ' + h * .3 + ' ' + w * .75 + ' ' + h * .8 + 'Z', '#5A5F68', K);
-    o += C(w * .47, h * .25, h * .14, '#5A5F68', K) + C(w * .42, h * .22, 3, '#fff') + C(w * .53, h * .22, 3, '#fff') + C(w * .47, h * .3, 4, '#2A2233');
-    o += P('M' + w * .25 + ' ' + h * .62 + 'L' + w * .1 + ' ' + h * .72 + 'L' + w * .3 + ' ' + h * .72 + 'Z', '#5A5F68', K2) + C(w * .47, h * .07, h * .06, '#E5534B', K2);
+    var o = F.ground(w / 2, h, w * .48, 6) + F.box(w * .05, h * .78, w * .9, h * .2, '#3B6FD6', 'paint', 10, 1.8);
+    o += P('M' + w * .2 + ' ' + h * .8 + 'Q' + w * .15 + ' ' + h * .35 + ' ' + w * .45 + ' ' + h * .3 + 'Q' + w * .7 + ' ' + h * .3 + ' ' + w * .75 + ' ' + h * .8 + 'Z', F.lin([[0, '#8A909A'], [.5, '#5A5F68'], [1, '#3A3E46']], 0, 0, 1, .6), E2('#5A5F68'));
+    o += C(w * .47, h * .25, h * .14, F.ball('#5A5F68'), E2('#5A5F68')) + C(w * .42, h * .22, 3, '#fff') + C(w * .53, h * .22, 3, '#fff') + C(w * .47, h * .3, 4, '#2A2233');
+    o += P('M' + w * .25 + ' ' + h * .62 + 'L' + w * .1 + ' ' + h * .72 + 'L' + w * .3 + ' ' + h * .72 + 'Z', F.mat('plastic', '#5A5F68'), E2('#5A5F68', 1.4)) + C(w * .47, h * .07, h * .06, F.ball('#E5534B'), E2('#E5534B', 1.4));
     return o;
   };
 })();
@@ -4690,25 +4690,27 @@ var ART = (function () {
   };
 })();
 
-/* 수학 방탈출 · 학교 밤 탐험 그림 (2026-11-27) — 이름 앞글자 sc. art.js의 ART.c·ART.shape·ART.esc를 씀.
-   개수를 세는 그림(별·모양·공·우유·별자리)은 p로 받은 수만큼 꼭 그 수대로 그림(겹치지 않는 칸에 하나씩). */
+/* 수학 방탈출 · 학교 밤 탐험 그림 (2026-11-27, B안 · 그림책 삽화 2026-11-28) — 이름 앞글자 sc. art.js의 ART.c·ART.shape·ART.esc·ART.fx를 씀.
+   개수를 세는 그림(별·모양·공·우유·별자리)은 p로 받은 수만큼 꼭 그 수대로 그림(겹치지 않는 칸에 하나씩). B안에서도 자리·개수는 예전 그대로. */
 (function () {
-  var c = ART.c, esc = ART.esc, shape = ART.shape;
+  var c = ART.c, esc = ART.esc, shape = ART.shape, F = ART.fx;
   function R(x, y, w, h, f, o) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + f + '"' + (o || '') + '/>' }
   function T(x, y, s, size, f, o, anc) { return '<text x="' + x + '" y="' + y + '" font-size="' + size + '" fill="' + (f || '#2A221C') + '" text-anchor="' + (anc || 'middle') + '" font-weight="700"' + (o || '') + '>' + esc(s) + '</text>' }
   function C(x, y, r, f, o) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"' + (o || '') + '/>' }
   function P(d, f, o) { return '<path d="' + d + '" fill="' + f + '"' + (o || '') + '/>' }
   function L(x1, y1, x2, y2, s, w, o) { return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + s + '" stroke-width="' + w + '"' + (o || '') + '/>' }
-  var K = ' stroke="#2A2233" stroke-width="3" stroke-linejoin="round"', K2 = ' stroke="#2A2233" stroke-width="2" stroke-linejoin="round"';
+  function M(k, col) { return F.mat(k, col) }
+  function E(col, w) { return F.edge(col, w || 1.6) }
   function gcd(a, b) { return b ? gcd(b, a % b) : a }
   /* n개를 cells칸 안에 골고루 섞어 놓을 자리 번호(서로 다름) */
   function spread(n, cells) { var m = 7; while (gcd(m, cells) !== 1) m++; var out = []; for (var i = 0; i < n; i++) out.push((i * m + 3) % cells); return out }
+  var NIGHT = function () { return F.lin([[0, '#0C1638'], [1, '#22346A']]) };
 
   /* 밤 창문: 달 + 별 p.n개 */
   ART.A.scWin = function (w, h, p) {
-    var o = R(0, 0, w, h, '#E9E4D6', K + ' rx="4"') + R(8, 8, w - 16, h - 16, '#16224A'), pw = (w - 16) / 2, ph = (h - 16) / 2, n = p.n || 0;
+    var o = F.drop(R(0, 0, w, h, '#000', ' rx="4"'), 5, 7, .22) + R(0, 0, w, h, M('wood', '#E9E4D6'), E('#C9C0A8', 2) + ' rx="4"') + R(8, 8, w - 16, h - 16, NIGHT()), pw = (w - 16) / 2, ph = (h - 16) / 2, n = p.n || 0;
     var mx = 8 + pw / 6, my = 8 + ph / 4, mr = Math.min(pw / 6, ph / 4) * .8;
-    o += C(mx, my, mr, '#FFE9A0') + C(mx + mr * .45, my - mr * .25, mr * .85, '#16224A');
+    o += C(mx, my, mr * 1.5, F.rad([[0, '#FFE9A0', .35], [1, '#FFE9A0', 0]])) + C(mx, my, mr, F.rad([[0, '#FFF6D0'], [1, '#F2D27A']], .4, .4, .6)) + C(mx + mr * .45, my - mr * .25, mr * .85, '#152049');
     var cells = [], k, q;
     for (k = 0; k < 6; k++) for (q = 0; q < 4; q++) { if (q === 0 && k === 0) continue; cells.push([q, k % 3, Math.floor(k / 3)]) }
     var rr = Math.min(pw / 3, ph / 2) * .26;
@@ -4716,7 +4718,8 @@ var ART = (function () {
       var cl = cells[i], px = cl[0] % 2, py = Math.floor(cl[0] / 2), jx = ((i * 37) % 7 - 3) * rr * .2, jy = ((i * 53) % 7 - 3) * rr * .2;
       o += shape('☆', 8 + px * pw + (cl[1] + .5) * pw / 3 + jx, 8 + py * ph + (cl[2] + .5) * ph / 2 + jy, rr, '#FFE27A');
     }
-    o += L(w / 2, 8, w / 2, h - 8, '#E9E4D6', 6) + L(8, h / 2, w - 8, h / 2, '#E9E4D6', 6);
+    o += F.glassHL(8, 8, w - 16, h - 16, .08);
+    o += L(w / 2, 8, w / 2, h - 8, '#E2DCCB', 6) + L(8, h / 2, w - 8, h / 2, '#E2DCCB', 6) + L(w / 2 + 2, 8, w / 2 + 2, h - 8, '#A89F88', 1.5) + L(8, h / 2 + 2, w - 8, h / 2 + 2, '#A89F88', 1.5);
     return o;
   };
 
@@ -4724,11 +4727,11 @@ var ART = (function () {
   var SUBJ = { 국어: '#FBD9D3', 수학: '#FCE6C4', 음악: '#D8EFD5', 미술: '#E6DDF4', 체육: '#D6E9F7', 과학: '#DFF1EA', 사회: '#F6E8C9' };
   ART.A.scTimetable = function (w, h, p) {
     var D = p.days || [], RW = p.rows || [], top = p.title ? h * .15 : 8, foot = p.foot || 8, nc = D.length + 1, nr = RW.length + 1;
-    var o = R(0, 0, w, h, '#FFFDF4', K + ' rx="6"'), cw = (w - 12) / nc, ch = (h - top - foot) / nr, fs = Math.min(ch * .5, cw * .3);
+    var o = F.drop(R(0, 0, w, h, '#000', ' rx="6"'), 5, 7, .22) + R(0, 0, w, h, M('paper', '#FFFDF4'), E('#D8CFB4', 1.8) + ' rx="6"'), cw = (w - 12) / nc, ch = (h - top - foot) / nr, fs = Math.min(ch * .5, cw * .3);
     if (p.title) o += T(w / 2, top * .72, p.title, top * .55, '#2A2233');
     for (var r = 0; r < nr; r++) for (var q = 0; q < nc; q++) {
       var x = 6 + q * cw, y = top + r * ch, s = r === 0 ? (q ? D[q - 1] : '') : (q ? RW[r - 1][q - 1] : r + '교시'), f = r === 0 ? '#DCE6F5' : q === 0 ? '#EEEAE0' : (SUBJ[s] || '#fff');
-      o += R(x, y, cw, ch, f, ' stroke="#8C8577" stroke-width="1.2"') + (s ? T(x + cw / 2, y + ch * .66, s, q === 0 && r ? fs * .78 : fs, '#2A2233') : '');
+      o += R(x, y, cw, ch, f, ' stroke="#A39C8C" stroke-width="1.2"') + (s ? T(x + cw / 2, y + ch * .66, s, q === 0 && r ? fs * .78 : fs, '#2A2233') : '');
     }
     if (p.footText) o += T(12, h - foot * .35, p.footText, Math.min(foot * .45, 16), '#6A6355', '', 'start');
     return o;
@@ -4736,7 +4739,7 @@ var ART = (function () {
 
   /* 출석부·명단: p.title, p.rows=[[이름, 'O'|'X'|'']] */
   ART.A.scAttend = function (w, h, p) {
-    var rows = p.rows || [], o = R(0, 0, w, h, '#9A6A3F', K + ' rx="8"') + R(8, 18, w - 16, h - 26, '#FFFDF4', ' rx="3"') + R(w * .3, 2, w * .4, 22, '#B8BEC6', K2 + ' rx="5"');
+    var rows = p.rows || [], o = F.drop(R(0, 0, w, h, '#000', ' rx="8"'), 5, 7, .22) + R(0, 0, w, h, M('wood', '#9A6A3F'), E('#9A6A3F', 2) + ' rx="8"') + R(8, 18, w - 16, h - 26, M('paper', '#FFFDF4'), ' rx="3"') + F.shade(w * .7, 18, w * .3 - 8, h - 26, 3, .08) + R(w * .3, 2, w * .4, 22, M('metal', '#B8BEC6'), E('#8A929C', 1.5) + ' rx="5"');
     var top = 30 + (p.title ? 26 : 0), lh = Math.min(30, (h - top - 14) / Math.max(1, rows.length)), fs = Math.min(lh * .62, 18);
     if (p.title) o += T(w / 2, 46, p.title, Math.min(17, w / (p.title.length + 2)), '#2A2233');
     rows.forEach(function (rw, i) {
@@ -4752,38 +4755,38 @@ var ART = (function () {
   /* 게시판: 핀으로 꽂은 모양 종이 p.items=[{k, c, n}] — 섞어 붙임 */
   ART.A.scArtboard = function (w, h, p) {
     var all = []; (p.items || []).forEach(function (it) { for (var i = 0; i < it.n; i++) all.push(it) });
-    var o = R(0, 0, w, h, '#7A5434', K + ' rx="6"') + R(9, 9, w - 18, h - 18, '#C89B62'), top = p.title ? 34 : 12;
-    if (p.title) o += R(w * .25, 12, w * .5, 22, '#FFFDF4', ' rx="4"') + T(w / 2, 29, p.title, 15, '#2A2233');
+    var o = F.drop(R(0, 0, w, h, '#000', ' rx="6"'), 5, 7, .24) + R(0, 0, w, h, M('wood', '#7A5434'), E('#7A5434', 2) + ' rx="6"') + R(9, 9, w - 18, h - 18, F.pat('dot', '#C89B62', 14)) + R(9, 9, w - 18, h - 18, F.lin([[0, '#FFFFFF', .12], [1, '#1A0E06', .14]], 0, 0, .4, 1)), top = p.title ? 34 : 12;
+    if (p.title) o += R(w * .25, 12, w * .5, 22, M('paper', '#FFFDF4'), ' rx="4"') + T(w / 2, 29, p.title, 15, '#2A2233');
     var cols = Math.ceil(Math.sqrt(all.length * (w - 24) / (h - top - 12))), rows = Math.ceil(all.length / cols);
     while (cols * rows < all.length + 2) cols++;
-    var cw = (w - 24) / cols, ch = (h - top - 12) / rows, rr = Math.min(cw, ch) * .36, pos = spread(all.length, cols * rows);
+    var cw = (w - 24) / cols, ch = (h - top - 12) / rows, rr = Math.min(cw, ch) * .36, pos = spread(all.length, cols * rows), pin = F.ball('#D23B2E');
     all.forEach(function (it, i) {
       var cx = 12 + (pos[i] % cols + .5) * cw, cy = top + (Math.floor(pos[i] / cols) + .5) * ch;
-      o += R(cx - rr * 1.15, cy - rr * 1.15, rr * 2.3, rr * 2.3, '#FFFDF4', ' rx="3"') + shape(it.k, cx, cy + rr * .05, rr * .85, c(it.c)) + C(cx, cy - rr * 1.05, 2.6, '#D23B2E');
+      o += R(cx - rr * 1.15 + 1.5, cy - rr * 1.15 + 2, rr * 2.3, rr * 2.3, '#3A220E', ' rx="3" opacity=".22"') + R(cx - rr * 1.15, cy - rr * 1.15, rr * 2.3, rr * 2.3, M('paper', '#FFFDF4'), ' rx="3"') + shape(it.k, cx, cy + rr * .05, rr * .85, c(it.c)) + C(cx, cy - rr * 1.05, 2.6, pin);
     });
     return o;
   };
 
   /* 사물함: p.cols × p.rows, 번호 1부터, p.lockAt 번째 칸에 자물쇠(열리면 그 칸 문이 열림) */
   ART.A.scLocker = function (w, h, p, open) {
-    var cols = p.cols || 4, rows = p.rows || 3, cw = (w - 12) / cols, ch = (h - 12) / rows, o = R(0, 0, w, h, '#5E7A9A', K + ' rx="4"');
+    var cols = p.cols || 4, rows = p.rows || 3, cw = (w - 12) / cols, ch = (h - 12) / rows, o = F.ground(w / 2, h, w * .52, 8) + R(0, 0, w, h, M('metal', '#5E7A9A'), E('#5E7A9A', 2) + ' rx="4"'), door = M('paint', '#8FB0D0'), gold = M('paint', '#E9C46A');
     for (var r = 0; r < rows; r++) for (var q = 0; q < cols; q++) {
       var n = r * cols + q + 1, x = 6 + q * cw, y = 6 + r * ch, isL = n === p.lockAt;
-      if (isL && open) { o += R(x + 2, y + 2, cw - 4, ch - 4, '#1A1F2B') + P('M' + (x + 2) + ' ' + (y + 2) + 'L' + (x - cw * .25) + ' ' + (y + 8) + 'V' + (y + ch - 8) + 'L' + (x + 2) + ' ' + (y + ch - 2) + 'Z', '#8FB0D0', K2); continue }
-      o += R(x + 2, y + 2, cw - 4, ch - 4, isL ? '#E9C46A' : '#8FB0D0', K2 + ' rx="3"') + R(x + cw * .3, y + ch * .14, cw * .4, ch * .1, '#2A2233', ' opacity=".35" rx="2"') + R(x + cw * .3, y + ch * .3, cw * .4, ch * .25, '#FFFDF4', ' rx="3"') + T(x + cw / 2, y + ch * .49, n, Math.min(ch * .2, cw * .3), '#2A2233');
-      if (isL) o += R(x + cw / 2 - 8, y + ch * .74, 16, 14, '#F2C230', K2 + ' rx="3"') + '<path d="M' + (x + cw / 2 - 5) + ' ' + (y + ch * .74) + 'v-4a5 5 0 0 1 10 0v4" fill="none" stroke="#6E7580" stroke-width="2.5"/>';
+      if (isL && open) { o += R(x + 2, y + 2, cw - 4, ch - 4, F.lin([[0, '#0E121B'], [1, '#2A3142']])) + P('M' + (x + 2) + ' ' + (y + 2) + 'L' + (x - cw * .25) + ' ' + (y + 8) + 'V' + (y + ch - 8) + 'L' + (x + 2) + ' ' + (y + ch - 2) + 'Z', door, E('#8FB0D0', 1.4)); continue }
+      o += R(x + 2, y + 2, cw - 4, ch - 4, isL ? gold : door, E(isL ? '#E9C46A' : '#8FB0D0', 1.4) + ' rx="3"') + R(x + cw * .3, y + ch * .14, cw * .4, ch * .1, '#2A2233', ' opacity=".35" rx="2"') + R(x + cw * .3, y + ch * .3, cw * .4, ch * .25, '#FFFDF4', ' rx="3"') + T(x + cw / 2, y + ch * .49, n, Math.min(ch * .2, cw * .3), '#2A2233');
+      if (isL) o += R(x + cw / 2 - 8, y + ch * .74, 16, 14, M('gold'), E('#C99A2A', 1.2) + ' rx="3"') + '<path d="M' + (x + cw / 2 - 5) + ' ' + (y + ch * .74) + 'v-4a5 5 0 0 1 10 0v4" fill="none" stroke="#8A929C" stroke-width="2.5"/>';
     }
     return o;
   };
 
   /* 실로폰 막대 길이 재기: p.bars=[{c, len(cm)}] 왼쪽 맞춤 + 아래 cm 자 */
   ART.A.scXylo = function (w, h, p) {
-    var bars = p.bars || [], mx = p.max || 18, o = R(0, 0, w, h, '#8A5A2B', K + ' rx="6"') + R(8, 8, w - 16, h - 16, '#FFF8E6'), x0 = 22, u = (w - 44) / mx;
+    var bars = p.bars || [], mx = p.max || 18, o = F.ground(w / 2, h, w * .52, 7) + R(0, 0, w, h, M('wood', '#8A5A2B'), E('#8A5A2B', 2) + ' rx="6"') + R(8, 8, w - 16, h - 16, M('paper', '#FFF8E6')), x0 = 22, u = (w - 44) / mx;
     var rulerH = Math.max(26, h * .17), bh = (h - 24 - rulerH) / Math.max(1, bars.length);
     for (var i = 0; i <= mx; i++) o += L(x0 + i * u, 14, x0 + i * u, h - rulerH - 8, '#E2D6B8', 1);
-    bars.forEach(function (b, i) { var y = 14 + i * bh + bh * .18; o += R(x0, y, b.len * u, bh * .64, c(b.c), K2 + ' rx="3"') + C(x0 + u * .6, y + bh * .32, Math.min(3, bh * .1), '#fff', ' opacity=".8"') + C(x0 + b.len * u - u * .6, y + bh * .32, Math.min(3, bh * .1), '#fff', ' opacity=".8"') });
+    bars.forEach(function (b, i) { var y = 14 + i * bh + bh * .18, bc = c(b.c); o += R(x0, y, b.len * u, bh * .64, M('plastic', bc), E(bc, 1.5) + ' rx="3"') + C(x0 + u * .6, y + bh * .32, Math.min(3, bh * .1), '#fff', ' opacity=".8"') + C(x0 + b.len * u - u * .6, y + bh * .32, Math.min(3, bh * .1), '#fff', ' opacity=".8"') });
     var ry = h - rulerH - 6;
-    o += R(x0 - 8, ry, mx * u + 16, rulerH - 4, '#F6E7A8', K2 + ' rx="2"');
+    o += R(x0 - 8, ry, mx * u + 16, rulerH - 4, M('wood', '#F6E7A8'), E('#C9B470', 1.4) + ' rx="2"');
     for (var j = 0; j <= mx; j++) o += L(x0 + j * u, ry, x0 + j * u, ry + (j % 5 === 0 ? rulerH * .45 : rulerH * .28), '#2A2233', 1.5) + (j % (u < 14 ? 2 : 1) === 0 ? T(x0 + j * u, ry + rulerH * .86, j, Math.min(rulerH * .34, u * .8), '#2A2233') : '');
     o += T(w - 14, ry - 4, 'cm', 12, '#6A6355', '', 'end');
     return o;
@@ -4791,104 +4794,109 @@ var ART = (function () {
 
   /* 피아노(열리면 뚜껑이 올라가고 음표가 나옴) */
   ART.A.scPiano = function (w, h, p, open) {
-    var o = R(0, h * .08, w, h * .72, '#3B2A24', K + ' rx="6"') + R(w * .03, h * .8, w * .06, h * .2, '#2A1D18') + R(w * .91, h * .8, w * .06, h * .2, '#2A1D18');
-    o += open ? P('M0 ' + h * .08 + 'L' + w * .08 + ' -' + h * .06 + 'H' + w * .92 + 'L' + w + ' ' + h * .08 + 'Z', '#4E3830', K) : R(-4, h * .04, w + 8, h * .08, '#4E3830', K + ' rx="4"');
-    o += R(w * .3, h * .16, w * .4, h * .2, '#FFFDF4', K2 + ' rx="3"');
+    var body = '#4A322A', o = F.ground(w / 2, h, w * .54, 8) + R(0, h * .08, w, h * .72, M('wood', body), E(body, 2) + ' rx="6"') + F.grain(4, h * .38, w - 8, h * .1, body, 1) + R(w * .03, h * .8, w * .06, h * .2, M('cyl', '#2A1D18')) + R(w * .91, h * .8, w * .06, h * .2, M('cyl', '#2A1D18'));
+    o += open ? P('M0 ' + h * .08 + 'L' + w * .08 + ' -' + h * .06 + 'H' + w * .92 + 'L' + w + ' ' + h * .08 + 'Z', M('wood', '#5E463C'), E('#5E463C', 2)) : R(-4, h * .04, w + 8, h * .08, M('wood', '#5E463C'), E('#5E463C', 2) + ' rx="4"') + F.streak('M' + w * .02 + ' ' + h * .055 + 'H' + w * .6, 2, .35);
+    o += R(w * .3, h * .16, w * .4, h * .2, M('paper', '#FFFDF4'), E('#C9C0A8', 1.4) + ' rx="3"');
     for (var s = 0; s < 4; s++) o += L(w * .33, h * (.2 + s * .04), w * .67, h * (.2 + s * .04), '#8C8577', 1);
-    var ky = h * .48, kh = h * .24, nk = 14, kw = (w - 16) / nk;
+    var ky = h * .48, kh = h * .24, nk = 14, kw = (w - 16) / nk, ivory = F.lin([[0, '#FFFFFF'], [.8, '#F3EEDF'], [1, '#D8D0BC']]), ebony = F.lin([[0, '#3A2C28'], [1, '#0E0908']]);
     o += R(6, ky - 4, w - 12, kh + 8, '#2A1D18');
-    for (var i = 0; i < nk; i++) o += R(8 + i * kw, ky, kw - 1.5, kh, '#FFFDF4', ' rx="2"');
-    for (var j = 0; j < nk - 1; j++) if ([0, 1, 3, 4, 5].indexOf(j % 7) >= 0) o += R(8 + (j + 1) * kw - kw * .3, ky, kw * .6, kh * .6, '#1A1210');
-    if (open) [[.15, -.02], [.78, .0], [.5, -.1]].forEach(function (n) { o += C(w * n[0], h * n[1] + 10, 7, '#FFE27A') + L(w * n[0] + 6, h * n[1] + 10, w * n[0] + 6, h * n[1] - 14, '#FFE27A', 3) });
+    for (var i = 0; i < nk; i++) o += R(8 + i * kw, ky, kw - 1.5, kh, ivory, ' rx="2"');
+    for (var j = 0; j < nk - 1; j++) if ([0, 1, 3, 4, 5].indexOf(j % 7) >= 0) o += R(8 + (j + 1) * kw - kw * .3, ky, kw * .6, kh * .6, ebony, ' rx="1"');
+    if (open) [[.15, -.02], [.78, .0], [.5, -.1]].forEach(function (n) { o += C(w * n[0], h * n[1] + 10, 7, F.ball('#FFE27A')) + L(w * n[0] + 6, h * n[1] + 10, w * n[0] + 6, h * n[1] - 14, '#FFE27A', 3) });
     return o;
   };
   /* 작은 북 */
   ART.A.scDrum = function (w, h) {
-    return '<ellipse cx="' + w / 2 + '" cy="' + h * .3 + '" rx="' + w * .45 + '" ry="' + h * .14 + '" fill="#F4EEDC"' + K + '/>' + P('M' + w * .05 + ' ' + h * .3 + 'V' + h * .8 + 'Q' + w / 2 + ' ' + h + ' ' + w * .95 + ' ' + h * .8 + 'V' + h * .3 + 'Q' + w / 2 + ' ' + h * .5 + ' ' + w * .05 + ' ' + h * .3 + 'Z', '#C8402F', K)
+    return F.ground(w / 2, h * .9, w * .48, 6) + P('M' + w * .05 + ' ' + h * .3 + 'V' + h * .8 + 'Q' + w / 2 + ' ' + h + ' ' + w * .95 + ' ' + h * .8 + 'V' + h * .3 + 'Q' + w / 2 + ' ' + h * .5 + ' ' + w * .05 + ' ' + h * .3 + 'Z', M('cyl', '#C8402F'), E('#C8402F', 2))
+      + '<ellipse cx="' + w / 2 + '" cy="' + h * .3 + '" rx="' + w * .45 + '" ry="' + h * .14 + '" fill="' + F.rad([[0, '#FFFFFF'], [.7, '#F4EEDC'], [1, '#D8CFB4']], .4, .35, .7) + '"' + E('#C9BC98', 2) + '/>'
       + P('M' + w * .1 + ' ' + h * .45 + 'L' + w * .3 + ' ' + h * .82 + 'L' + w * .5 + ' ' + h * .5 + 'L' + w * .7 + ' ' + h * .82 + 'L' + w * .9 + ' ' + h * .45, 'none', ' stroke="#F2C230" stroke-width="3"')
-      + L(w * .2, h * .02, w * .45, h * .25, '#8A5A2B', 5, ' stroke-linecap="round"') + L(w * .85, h * .02, w * .6, h * .25, '#8A5A2B', 5, ' stroke-linecap="round"');
+      + L(w * .2, h * .02, w * .45, h * .25, '#8A5A2B', 5, ' stroke-linecap="round"') + L(w * .85, h * .02, w * .6, h * .25, '#8A5A2B', 5, ' stroke-linecap="round"') + L(w * .21, h * .02, w * .44, h * .23, '#C79A6A', 1.5, ' stroke-linecap="round"') + L(w * .84, h * .02, w * .61, h * .23, '#C79A6A', 1.5, ' stroke-linecap="round"');
   };
 
   /* 키 재는 기계: p.lo~p.hi cm 눈금(1 cm마다, 5마다 조금 길게, 10마다 숫자), 머리 막대가 p.v */
   ART.A.scHeight = function (w, h, p) {
-    var lo = p.lo || 100, hi = p.hi || 150, x0 = w * .22, top = 14, bot = h * .86, u = (bot - top) / (hi - lo), o = R(w * .1, h * .88, w * .8, h * .12, '#8A929C', K + ' rx="4"') + R(x0 - 8, top - 8, w * .62, bot - top + 16, '#F4F1E8', K + ' rx="3"');
+    var lo = p.lo || 100, hi = p.hi || 150, x0 = w * .22, top = 14, bot = h * .86, u = (bot - top) / (hi - lo), o = F.ground(w / 2, h, w * .46, 6) + R(w * .1, h * .88, w * .8, h * .12, M('metal', '#8A929C'), E('#8A929C', 1.8) + ' rx="4"') + R(x0 - 8, top - 8, w * .62, bot - top + 16, M('paper', '#F4F1E8'), E('#C9C3B4', 1.8) + ' rx="3"');
     for (var v = lo; v <= hi; v++) { var y = bot - (v - lo) * u, len = v % 10 === 0 ? w * .2 : v % 5 === 0 ? w * .13 : w * .07; o += L(x0, y, x0 + len, y, '#2A2233', v % 5 === 0 ? 1.8 : 1); if (v % 10 === 0) o += T(x0 + w * .23, y + 5, v, Math.min(14, w * .16), '#2A2233', '', 'start') }
     var hy = bot - (p.v - lo) * u;
-    o += R(x0 - 2, hy - 3, w * .7, 6, '#D23B2E', ' rx="2"') + P('M' + (x0 - 2) + ' ' + hy + 'l-9 -6v12z', '#D23B2E');
+    o += R(x0 - 2, hy - 3, w * .7, 6, M('plastic', '#D23B2E'), ' rx="2"') + P('M' + (x0 - 2) + ' ' + hy + 'l-9 -6v12z', '#D23B2E');
     return o;
   };
   /* 보건실 침대 */
   ART.A.scBed = function (w, h) {
-    return R(0, h * .1, w * .07, h * .9, '#C8CDD3', K + ' rx="4"') + R(w * .93, h * .35, w * .07, h * .65, '#C8CDD3', K + ' rx="4"') + R(w * .05, h * .45, w * .9, h * .2, '#FFFDF4', K + ' rx="6"')
-      + R(w * .38, h * .4, w * .56, h * .27, '#8FC1E3', K + ' rx="8"') + '<ellipse cx="' + w * .2 + '" cy="' + h * .43 + '" rx="' + w * .11 + '" ry="' + h * .09 + '" fill="#fff"' + K2 + '/>'
-      + R(w * .1, h * .65, w * .05, h * .3, '#8A929C') + R(w * .85, h * .65, w * .05, h * .3, '#8A929C') + C(w * .125, h * .96, h * .04, '#3A3F48') + C(w * .875, h * .96, h * .04, '#3A3F48');
+    var fr = M('metal', '#C8CDD3'), fe = E('#A8AEB6', 1.6);
+    return F.ground(w / 2, h, w * .52, 8) + R(0, h * .1, w * .07, h * .9, fr, fe + ' rx="4"') + R(w * .93, h * .35, w * .07, h * .65, fr, fe + ' rx="4"') + R(w * .05, h * .45, w * .9, h * .2, M('cloth', '#FFFDF4'), E('#D8D0BC', 1.6) + ' rx="6"')
+      + R(w * .38, h * .4, w * .56, h * .27, M('cloth', '#8FC1E3'), E('#8FC1E3', 1.6) + ' rx="8"') + P('M' + w * .42 + ' ' + h * .5 + 'Q' + w * .55 + ' ' + h * .46 + ' ' + w * .7 + ' ' + h * .52, 'none', ' stroke="#5E8FB2" stroke-width="1.4" stroke-opacity=".5"') + '<ellipse cx="' + w * .2 + '" cy="' + h * .43 + '" rx="' + w * .11 + '" ry="' + h * .09 + '" fill="' + F.rad([[0, '#FFFFFF'], [1, '#E2DED2']], .4, .35, .7) + '"' + E('#CFC8B8', 1.4) + '/>'
+      + R(w * .1, h * .65, w * .05, h * .3, M('cyl', '#8A929C')) + R(w * .85, h * .65, w * .05, h * .3, M('cyl', '#8A929C')) + C(w * .125, h * .96, h * .04, F.ball('#3A3F48')) + C(w * .875, h * .96, h * .04, F.ball('#3A3F48'));
   };
   /* 약병: 병마다 p.items=[{c, num, den}] — 칸을 den개로 나누고 num칸만큼 약을 채움 */
   ART.A.scMedB = function (w, h, p) {
-    var it = p.items || [], bw = w / Math.max(1, it.length), o = R(0, h * .88, w, h * .12, '#8A929C', ' rx="3"');
+    var it = p.items || [], bw = w / Math.max(1, it.length), o = F.ground(w / 2, h, w * .52, 6) + R(0, h * .88, w, h * .12, M('metal', '#8A929C'), ' rx="3"');
     it.forEach(function (b, i) {
-      var x = i * bw + bw * .18, bwid = bw * .64, y0 = h * .2, bh = h * .52, uh = bh / b.den;
-      o += R(x + bwid * .3, h * .05, bwid * .4, h * .15, '#E8E3D8', K2) + R(x, y0, bwid, bh, '#EEF6FA', K2 + ' rx="6"') + R(x + 2, y0 + bh - uh * b.num, bwid - 4, uh * b.num - 2, c(b.c), ' rx="4"');
+      var x = i * bw + bw * .18, bwid = bw * .64, y0 = h * .2, bh = h * .52, uh = bh / b.den, bc = c(b.c);
+      o += R(x + bwid * .3, h * .05, bwid * .4, h * .15, M('plastic', '#E8E3D8'), E('#C9C3B4', 1.4)) + R(x, y0, bwid, bh, M('glass', '#DCEEF6'), E('#9AB4C4', 1.6) + ' rx="6"') + R(x + 2, y0 + bh - uh * b.num, bwid - 4, uh * b.num - 2, M('plastic', bc), ' rx="4"');
       for (var k = 1; k < b.den; k++) o += L(x + bwid * .6, y0 + k * uh, x + bwid, y0 + k * uh, '#2A2233', 1.2);
-      o += R(x - 2, h * .74, bwid + 4, h * .13, '#FFFDF4', K2 + ' rx="3"') + T(x + bwid / 2, h * .84, b.num + '/' + b.den, Math.min(h * .1, bwid * .34), '#2A2233');
+      o += F.streak('M' + (x + bwid * .16) + ' ' + (y0 + 6) + 'V' + (y0 + bh * .45), Math.max(1.5, bwid * .07), .6);
+      o += R(x - 2, h * .74, bwid + 4, h * .13, M('paper', '#FFFDF4'), E('#C9C0A8', 1.3) + ' rx="3"') + T(x + bwid / 2, h * .84, b.num + '/' + b.den, Math.min(h * .1, bwid * .34), '#2A2233');
     });
     return o;
   };
   /* 우유 상자(위에서 본 모습): p.rows × p.cols 갑 */
   ART.A.scMilk = function (w, h, p) {
-    var rows = p.rows || 4, cols = p.cols || 6, o = R(0, 0, w, h, '#3B6FD6', K + ' rx="8"') + R(8, 8, w - 16, h - 16, '#28508F', ' rx="4"'), cw = (w - 20) / cols, ch = (h - 20) / rows;
+    var rows = p.rows || 4, cols = p.cols || 6, o = F.ground(w / 2, h, w * .52, 7) + R(0, 0, w, h, M('plastic', '#3B6FD6'), E('#3B6FD6', 2) + ' rx="8"') + R(8, 8, w - 16, h - 16, F.lin([[0, '#1E3E74'], [1, '#2E5A9F']]), ' rx="4"'), cw = (w - 20) / cols, ch = (h - 20) / rows, carton = M('paper', '#FFFDF4');
     for (var r = 0; r < rows; r++) for (var q = 0; q < cols; q++) {
       var x = 10 + q * cw, y = 10 + r * ch;
-      o += R(x + 3, y + 3, cw - 6, ch - 6, '#FFFDF4', K2 + ' rx="2"') + P('M' + (x + 3) + ' ' + (y + ch / 2) + 'L' + (x + cw / 2) + ' ' + (y + 5) + 'L' + (x + cw - 3) + ' ' + (y + ch / 2), 'none', ' stroke="#7DB5E8" stroke-width="2.5"') + R(x + cw * .3, y + ch * .6, cw * .4, ch * .16, '#7DB5E8', ' rx="2"');
+      o += R(x + 3, y + 3, cw - 6, ch - 6, carton, E('#B8C4D4', 1.3) + ' rx="2"') + P('M' + (x + 3) + ' ' + (y + ch / 2) + 'L' + (x + cw / 2) + ' ' + (y + 5) + 'L' + (x + cw - 3) + ' ' + (y + ch / 2), 'none', ' stroke="#7DB5E8" stroke-width="2.5"') + R(x + cw * .3, y + ch * .6, cw * .4, ch * .16, '#7DB5E8', ' rx="2"');
     }
     return o;
   };
   /* 방송 조정기: p.knobs=[{a 각도, s 모양}] — 손잡이마다 반원 눈금(10°마다, 30°마다 숫자), 오른쪽 밑선에서 잰 각 */
   ART.A.scMixer = function (w, h, p) {
     var ks = p.knobs || [], cols = p.cols || ks.length, nr = Math.ceil(ks.length / cols), kw = (w - 20) / Math.max(1, cols), th = Math.min(h * .16, 34), rh = (h - th - 10) / nr;
-    var o = R(0, th * .75, w, h - th * .75, '#3A3F48', K + ' rx="10"') + R(w * .3, 0, w * .4, th, '#2A2E35', K2 + ' rx="5"') + T(w / 2, th * .7, p.title || '방송 조정기', th * .5, '#7CF29B');
+    var o = F.ground(w / 2, h, w * .52, 7) + R(0, th * .75, w, h - th * .75, M('paint', '#3A3F48'), E('#3A3F48', 2) + ' rx="10"') + R(w * .3, 0, w * .4, th, F.lin([[0, '#3A3F48'], [1, '#1A1D22']]), E('#2A2E35', 1.6) + ' rx="5"') + T(w / 2, th * .7, p.title || '방송 조정기', th * .5, '#7CF29B');
+    var face = M('paper', '#F4F1E8');
     ks.forEach(function (k, i) {
       var row = Math.floor(i / cols), inRow = Math.min(cols, ks.length - row * cols), cx = w / 2 + (i % cols - (inRow - 1) / 2) * kw, top = th + 6 + row * rh, r = Math.min(kw * .44, rh * .5), cy = top + (rh - r * 1.75) / 2 + r, sy = cy + r * .42 + 4;
-      o += P('M' + (cx - r) + ' ' + cy + 'A' + r + ' ' + r + ' 0 0 1 ' + (cx + r) + ' ' + cy + 'Z', '#F4F1E8', K2);
+      o += P('M' + (cx - r) + ' ' + cy + 'A' + r + ' ' + r + ' 0 0 1 ' + (cx + r) + ' ' + cy + 'Z', face, E('#C9C3B4', 1.6));
       for (var d = 0; d <= 180; d += 10) { var a = d * Math.PI / 180, l = d % 30 === 0 ? .2 : .1; o += L(cx + Math.cos(a) * r, cy - Math.sin(a) * r, cx + Math.cos(a) * r * (1 - l), cy - Math.sin(a) * r * (1 - l), '#2A2233', d % 30 === 0 ? 1.6 : 1); if (d % 30 === 0 && d % 180) o += T(cx + Math.cos(a) * r * .64, cy - Math.sin(a) * r * .64 + r * .07, d, r * .17, '#4A4358') }
       var ka = k.a * Math.PI / 180;
-      o += L(cx, cy, cx + r * .92, cy, '#3B6FD6', 3) + L(cx, cy, cx + Math.cos(ka) * r * .92, cy - Math.sin(ka) * r * .92, '#D23B2E', 3.5, ' stroke-linecap="round"') + C(cx, cy, r * .08, '#2A2233');
-      o += C(cx, sy, r * .24, '#F4F1E8') + shape(k.s, cx, sy, r * .16, '#2A2233');
+      o += L(cx, cy, cx + r * .92, cy, '#3B6FD6', 3) + L(cx, cy, cx + Math.cos(ka) * r * .92, cy - Math.sin(ka) * r * .92, '#D23B2E', 3.5, ' stroke-linecap="round"') + C(cx, cy, r * .08, F.ball('#4A4F58'));
+      o += C(cx, sy, r * .24, F.ball('#F4F1E8')) + shape(k.s, cx, sy, r * .16, '#2A2233');
     });
     return o;
   };
   /* 방송 마이크와 '방송 중' 불(열리면 빨간 불) */
   ART.A.scMic = function (w, h, p, open) {
-    return R(w * .1, 0, w * .8, h * .16, open ? '#D23B2E' : '#4A4358', K + ' rx="8"') + T(w / 2, h * .11, '방송 중', h * .08, open ? '#fff' : '#9A93A8')
-      + R(w * .2, h * .86, w * .6, h * .14, '#3A3F48', K + ' rx="6"') + R(w * .46, h * .45, w * .08, h * .42, '#6E7580') + P('M' + w * .5 + ' ' + h * .46 + 'Q' + w * .2 + ' ' + h * .42 + ' ' + w * .3 + ' ' + h * .3, 'none', ' stroke="#6E7580" stroke-width="5"')
-      + R(w * .3, h * .22, w * .4, h * .26, '#8A929C', K + ' rx="' + w * .2 + '"') + L(w * .34, h * .3, w * .66, h * .3, '#3A3F48', 2) + L(w * .33, h * .36, w * .67, h * .36, '#3A3F48', 2) + L(w * .34, h * .42, w * .66, h * .42, '#3A3F48', 2);
+    var lc = open ? '#D23B2E' : '#4A4358';
+    return R(w * .1, 0, w * .8, h * .16, open ? F.rad([[0, '#FF7A6E'], [1, '#B42A20']], .45, .4, .7) : M('plastic', lc), E(lc, 2) + ' rx="8"') + T(w / 2, h * .11, '방송 중', h * .08, open ? '#fff' : '#9A93A8')
+      + F.ground(w / 2, h, w * .34, 5) + R(w * .2, h * .86, w * .6, h * .14, M('metal', '#3A3F48'), E('#3A3F48', 1.8) + ' rx="6"') + R(w * .46, h * .45, w * .08, h * .42, M('cyl', '#6E7580')) + P('M' + w * .5 + ' ' + h * .46 + 'Q' + w * .2 + ' ' + h * .42 + ' ' + w * .3 + ' ' + h * .3, 'none', ' stroke="#6E7580" stroke-width="5"')
+      + R(w * .3, h * .22, w * .4, h * .26, M('cyl', '#8A929C'), E('#8A929C', 1.8) + ' rx="' + w * .2 + '"') + L(w * .34, h * .3, w * .66, h * .3, '#4A4F58', 2) + L(w * .33, h * .36, w * .67, h * .36, '#4A4F58', 2) + L(w * .34, h * .42, w * .66, h * .42, '#4A4F58', 2);
   };
 
   /* 열쇠함(유리문 안 열쇠 고리 번호표) */
   ART.A.scKeybox = function (w, h, p, open) {
-    var o = R(0, 0, w, h, '#6B4A2E', K + ' rx="6"') + R(10, 10, w - 20, h - 20, '#2A1D18'), tags = p.tags || [], cols = 3, cw = (w - 30) / cols, ch = (h - 80) / Math.ceil(tags.length / cols);
-    tags.forEach(function (t, i) { var x = 15 + (i % cols) * cw + cw / 2, y = 22 + Math.floor(i / cols) * ch, fs = Math.min(ch * .24, cw * .86 / (String(t).length + .4)); o += C(x, y, 3, '#C9A24B') + L(x, y, x, y + ch * .3, '#C9A24B', 2) + R(x - cw * .45, y + ch * .3, cw * .9, ch * .38, '#FFFDF4', ' rx="3"') + T(x, y + ch * .3 + ch * .19 + fs * .36, t, fs, '#2A2233') });
-    if (open) return o + P('M10 10L-' + w * .3 + ' 24V' + (h - 24) + 'L10 ' + (h - 10) + 'Z', '#BFE3F5', K + ' opacity=".7"');
-    return o + R(10, 10, w - 20, h - 20, '#BFE3F5', ' opacity=".25"') + R(w / 2 - 30, h - 58, 60, 40, '#3A3F48', K2 + ' rx="4"') + R(w / 2 - 24, h - 53, 48, 10, '#7CF29B') + [0, 1, 2, 3].map(function (i) { return R(w / 2 - 22 + i * 11, h - 38, 8, 6, '#ccc') + R(w / 2 - 22 + i * 11, h - 29, 8, 6, '#ccc') }).join('');
+    var o = F.drop(R(0, 0, w, h, '#000', ' rx="6"'), 5, 7, .24) + R(0, 0, w, h, M('wood', '#6B4A2E'), E('#6B4A2E', 2) + ' rx="6"') + R(10, 10, w - 20, h - 20, F.lin([[0, '#1A110D'], [1, '#3A2A22']])), tags = p.tags || [], cols = 3, cw = (w - 30) / cols, ch = (h - 80) / Math.ceil(tags.length / cols);
+    tags.forEach(function (t, i) { var x = 15 + (i % cols) * cw + cw / 2, y = 22 + Math.floor(i / cols) * ch, fs = Math.min(ch * .24, cw * .86 / (String(t).length + .4)); o += C(x, y, 3, F.ball('#C9A24B')) + L(x, y, x, y + ch * .3, '#C9A24B', 2) + R(x - cw * .45, y + ch * .3, cw * .9, ch * .38, M('paper', '#FFFDF4'), ' rx="3"') + T(x, y + ch * .3 + ch * .19 + fs * .36, t, fs, '#2A2233') });
+    if (open) return o + P('M10 10L-' + w * .3 + ' 24V' + (h - 24) + 'L10 ' + (h - 10) + 'Z', M('glass', '#BFE3F5'), E('#8AA3B5', 1.8));
+    return o + R(10, 10, w - 20, h - 20, '#BFE3F5', ' opacity=".2"') + F.glassHL(10, 10, w - 20, h - 20, .16) + R(w / 2 - 30, h - 58, 60, 40, M('metal', '#3A3F48'), E('#3A3F48', 1.5) + ' rx="4"') + R(w / 2 - 24, h - 53, 48, 10, '#7CF29B') + [0, 1, 2, 3].map(function (i) { return R(w / 2 - 22 + i * 11, h - 38, 8, 6, '#D4D8DE') + R(w / 2 - 22 + i * 11, h - 29, 8, 6, '#D4D8DE') }).join('');
   };
   /* 공 수레: p.items=[{k:'basket'|'volley', n}] 섞어 담음 */
   function ball(k, cx, cy, r) {
-    if (k === 'basket') return C(cx, cy, r, '#E8792B', K2) + L(cx - r, cy, cx + r, cy, '#2A2233', 1.4) + L(cx, cy - r, cx, cy + r, '#2A2233', 1.4) + P('M' + (cx - r * .7) + ' ' + (cy - r * .7) + 'Q' + (cx - r * .2) + ' ' + cy + ' ' + (cx - r * .7) + ' ' + (cy + r * .7), 'none', ' stroke="#2A2233" stroke-width="1.4"');
-    return C(cx, cy, r, '#FFFDF4', K2) + P('M' + (cx - r) + ' ' + cy + 'Q' + cx + ' ' + (cy - r * .5) + ' ' + (cx + r) + ' ' + cy, 'none', ' stroke="#3B6FD6" stroke-width="' + r * .35 + '"') + P('M' + (cx - r * .5) + ' ' + (cy + r * .8) + 'Q' + cx + ' ' + (cy + r * .2) + ' ' + (cx + r * .5) + ' ' + (cy + r * .8), 'none', ' stroke="#F2C230" stroke-width="' + r * .3 + '"');
+    if (k === 'basket') return C(cx, cy, r, F.ball('#E8792B'), E('#E8792B', 1.4)) + L(cx - r, cy, cx + r, cy, '#5A2A0E', 1.4) + L(cx, cy - r, cx, cy + r, '#5A2A0E', 1.4) + P('M' + (cx - r * .7) + ' ' + (cy - r * .7) + 'Q' + (cx - r * .2) + ' ' + cy + ' ' + (cx - r * .7) + ' ' + (cy + r * .7), 'none', ' stroke="#5A2A0E" stroke-width="1.4"');
+    return C(cx, cy, r, F.ball('#FFFDF4'), E('#C9C3B4', 1.4)) + P('M' + (cx - r) + ' ' + cy + 'Q' + cx + ' ' + (cy - r * .5) + ' ' + (cx + r) + ' ' + cy, 'none', ' stroke="#3B6FD6" stroke-width="' + r * .35 + '"') + P('M' + (cx - r * .5) + ' ' + (cy + r * .8) + 'Q' + cx + ' ' + (cy + r * .2) + ' ' + (cx + r * .5) + ' ' + (cy + r * .8), 'none', ' stroke="#F2C230" stroke-width="' + r * .3 + '"');
   }
   ART.A.scBallCart = function (w, h, p) {
     var all = []; (p.items || []).forEach(function (it) { for (var i = 0; i < it.n; i++) all.push(it.k) });
-    var bx = 8, by = h * .08, bw = w - 16, bh = h * .74, o = R(bx, by, bw, bh, '#8A929C', K + ' rx="6"') + R(bx + 6, by + 6, bw - 12, bh - 12, '#4A5160');
+    var bx = 8, by = h * .08, bw = w - 16, bh = h * .74, o = F.ground(w / 2, h, w * .5, 6) + R(bx, by, bw, bh, M('metal', '#8A929C'), E('#8A929C', 2) + ' rx="6"') + R(bx + 6, by + 6, bw - 12, bh - 12, F.lin([[0, '#2E333D'], [1, '#4A5160']]));
     var cols = Math.ceil(Math.sqrt(all.length * (bw - 12) / (bh - 12))), rows = Math.ceil(all.length / cols); while (cols * rows < all.length) cols++;
     var cw = (bw - 12) / cols, ch = (bh - 12) / rows, r = Math.min(cw, ch) * .44, pos = spread(all.length, cols * rows);
     all.forEach(function (k, i) { o += ball(k, bx + 6 + (pos[i] % cols + .5) * cw, by + 6 + (Math.floor(pos[i] / cols) + .5) * ch, r) });
     for (var g = 1; g < 5; g++) o += L(bx + g * bw / 5, by, bx + g * bw / 5, by + 8, '#6E7580', 2);
-    o += R(bx + 10, by + bh, 8, h * .12, '#6E7580') + R(bx + bw - 18, by + bh, 8, h * .12, '#6E7580') + C(bx + 14, h * .95, h * .045, '#2A2233') + C(bx + bw - 14, h * .95, h * .045, '#2A2233');
+    o += R(bx + 10, by + bh, 8, h * .12, M('cyl', '#6E7580')) + R(bx + bw - 18, by + bh, 8, h * .12, M('cyl', '#6E7580')) + C(bx + 14, h * .95, h * .045, F.ball('#3A3F48')) + C(bx + bw - 14, h * .95, h * .045, F.ball('#3A3F48'));
     return o;
   };
   /* 도면: p.kind 'rect'(p.W × p.H, p.a·p.b 글) 또는 'circle'(p.r 글), p.title */
   ART.A.scPlan = function (w, h, p) {
-    var o = R(0, 0, w, h, '#E8F0FA', K + ' rx="4"'), top = p.title ? 32 : 12, fs = Math.min(16, w / 14);
+    var o = F.drop(R(0, 0, w, h, '#000', ' rx="4"'), 4, 6, .2) + R(0, 0, w, h, M('paper', '#E8F0FA'), E('#9FB4D2', 1.8) + ' rx="4"'), top = p.title ? 32 : 12, fs = Math.min(16, w / 14);
     for (var gx = 10; gx < w; gx += 16) o += L(gx, 4, gx, h - 4, '#C8D8EE', 1);
     for (var gy = 10; gy < h; gy += 16) o += L(4, gy, w - 4, gy, '#C8D8EE', 1);
     if (p.title) o += T(w / 2, 24, p.title, Math.min(17, w / (p.title.length + 1)), '#1E2F5A');
@@ -4905,22 +4913,22 @@ var ART = (function () {
   };
   /* 응원 깃발 줄: p.flags=[{c, t}] */
   ART.A.scFlags = function (w, h, p) {
-    var fl = p.flags || [], fw = (w - 20) / Math.max(1, fl.length), o = P('M4 10Q' + w / 2 + ' 34 ' + (w - 4) + ' 10', 'none', ' stroke="#E8E3D8" stroke-width="3"');
+    var fl = p.flags || [], fw = (w - 20) / Math.max(1, fl.length), o = P('M4 10Q' + w / 2 + ' 34 ' + (w - 4) + ' 10', 'none', ' stroke="#BDB6A6" stroke-width="3"');
     fl.forEach(function (f, i) {
-      var x = 10 + i * fw + fw * .1, ww = fw * .8, y = 14 + Math.sin((i + .5) / fl.length * Math.PI) * 16;
-      o += P('M' + x + ' ' + y + 'H' + (x + ww) + 'V' + (y + h * .7) + 'L' + (x + ww / 2) + ' ' + (y + h * .55) + 'L' + x + ' ' + (y + h * .7) + 'Z', c(f.c), K2) + R(x + ww * .14, y + h * .12, ww * .72, h * .28, '#FFFDF4', ' rx="4"') + T(x + ww / 2, y + h * .33, f.t, Math.min(h * .2, ww * .3), '#2A2233');
+      var x = 10 + i * fw + fw * .1, ww = fw * .8, y = 14 + Math.sin((i + .5) / fl.length * Math.PI) * 16, fc = c(f.c);
+      o += P('M' + x + ' ' + y + 'H' + (x + ww) + 'V' + (y + h * .7) + 'L' + (x + ww / 2) + ' ' + (y + h * .55) + 'L' + x + ' ' + (y + h * .7) + 'Z', M('cloth', fc), E(fc, 1.5)) + R(x + ww * .14, y + h * .12, ww * .72, h * .28, '#FFFDF4', ' rx="4"') + T(x + ww / 2, y + h * .33, f.t, Math.min(h * .2, ww * .3), '#2A2233');
     });
     return o;
   };
   /* 천체 망원경(열리면 렌즈가 빛남) */
   ART.A.scTelescope = function (w, h, p, open) {
-    var o = L(w * .5, h * .55, w * .18, h, '#6E7580', 6) + L(w * .5, h * .55, w * .82, h, '#6E7580', 6) + L(w * .5, h * .55, w * .5, h, '#6E7580', 6) + R(w * .44, h * .5, w * .12, h * .1, '#3A3F48', K2 + ' rx="3"');
-    o += '<g transform="rotate(-32 ' + w * .5 + ' ' + h * .5 + ')">' + R(w * .04, h * .42, w * .84, h * .15, '#E8E3D8', K + ' rx="8"') + R(w * .8, h * .39, w * .14, h * .21, '#3B4A8A', K + ' rx="5"') + R(w * .0, h * .45, w * .08, h * .09, '#3A3F48', K2 + ' rx="3"') + (open ? C(w * .94, h * .495, h * .07, '#FFE27A', ' opacity=".95"') : '') + '</g>';
+    var o = F.ground(w * .5, h, w * .36, 6) + L(w * .5, h * .55, w * .18, h, '#6E7580', 6) + L(w * .5, h * .55, w * .82, h, '#6E7580', 6) + L(w * .5, h * .55, w * .5, h, '#6E7580', 6) + L(w * .49, h * .56, w * .19, h, '#AEB4BC', 1.5) + R(w * .44, h * .5, w * .12, h * .1, M('metal', '#3A3F48'), E('#3A3F48', 1.4) + ' rx="3"');
+    o += '<g transform="rotate(-32 ' + w * .5 + ' ' + h * .5 + ')">' + R(w * .04, h * .42, w * .84, h * .15, M('cylv', '#E8E3D8'), E('#BDB6A6', 2) + ' rx="8"') + R(w * .8, h * .39, w * .14, h * .21, M('cylv', '#3B4A8A'), E('#3B4A8A', 2) + ' rx="5"') + R(w * .0, h * .45, w * .08, h * .09, M('cylv', '#3A3F48'), E('#3A3F48', 1.4) + ' rx="3"') + (open ? C(w * .94, h * .495, h * .07, F.rad([[0, '#FFFFFF'], [.5, '#FFE27A'], [1, '#F2B83A']]), ' opacity=".95"') : '') + '</g>';
     return o;
   };
   /* 별자리 지도: p.groups=[{s 모양 이름표, n 별 수}] 칸마다 별을 n개 찍고 선으로 이음 */
   ART.A.scStarmap = function (w, h, p) {
-    var gs = p.groups || [], cols = Math.min(3, gs.length), rows = Math.ceil(gs.length / cols), o = R(0, 0, w, h, '#0E1638', K + ' rx="6"'), top = p.title ? 28 : 6;
+    var gs = p.groups || [], cols = Math.min(3, gs.length), rows = Math.ceil(gs.length / cols), o = F.drop(R(0, 0, w, h, '#000', ' rx="6"'), 5, 7, .24) + R(0, 0, w, h, F.lin([[0, '#1A2550'], [1, '#080E26']]), E('#0E1638', 2) + ' rx="6"'), top = p.title ? 28 : 6;
     if (p.title) o += T(w / 2, 21, p.title, 15, '#E8E3D8');
     var gw = (w - 12) / cols, gh = (h - top - 6) / rows;
     gs.forEach(function (g, i) {
@@ -4933,26 +4941,29 @@ var ART = (function () {
       o += '<polyline points="' + pts.map(function (q) { return q[0].toFixed(1) + ',' + q[1].toFixed(1) }).join(' ') + '" fill="none" stroke="#6F86C9" stroke-width="1.4"/>';
       var rr = Math.min((gw - 34) / sc, (gh - 14) / sr) * .3;
       pts.forEach(function (q) { o += shape('☆', q[0], q[1], rr, '#FFE27A') });
-      o += C(gx + 15, gy + 15, 11, '#E8E3D8') + shape(g.s, gx + 15, gy + 15.5, 7, '#0E1638');
+      o += C(gx + 15, gy + 15, 11, F.ball('#E8E3D8')) + shape(g.s, gx + 15, gy + 15.5, 7, '#0E1638');
     });
     return o;
   };
 })();
 
-/* 수학 방탈출 · 우주선 그림 (2026-11-28) — 이름 앞글자 sp. */
+/* 수학 방탈출 · 우주선 그림 (2026-11-28, B안 · 그림책 삽화) — 이름 앞글자 sp. */
 (function () {
+  var F = ART.fx;
   function C(x, y, r, f, o) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"' + (o || '') + '/>' }
-  /* 관측 창: 별 몇 개와 작은 파란 점(지구) */
+  /* 관측 창: 별 몇 개와 작은 파란 점(지구) — 별 7개·지구 자리는 예전 그대로 */
   ART.A.spWindow = function (w, h) {
-    var r = Math.min(w, h) / 2 - 3, cx = w / 2, cy = h / 2, o = C(cx, cy, r, '#8A929C', ' stroke="#2A2233" stroke-width="3"') + C(cx, cy, r * .78, '#11183A');
+    var r = Math.min(w, h) / 2 - 3, cx = w / 2, cy = h / 2;
+    var o = C(cx + 4, cy + 6, r, '#1A1208', ' opacity=".18"') + C(cx, cy, r, F.lin([[0, '#D4DAE2'], [.45, '#9AA2AC'], [1, '#5E6670']], 0, 0, .7, 1), F.edge('#8A929C', 2)) + C(cx, cy, r * .78, F.rad([[0, '#1E2A5C'], [.7, '#11183A'], [1, '#070B1E']], .45, .45, .6), ' stroke="#3A4250" stroke-width="2"');
     for (var i = 0; i < 7; i++) o += C(cx + Math.cos(i * 2.1) * r * .5, cy + Math.sin(i * 1.7) * r * .5, Math.max(1.5, r * .025), '#fff');
     var ex = cx + r * .32, ey = cy + r * .3, er = Math.max(4, r * .11);
-    o += C(ex, ey, er * 1.8, '#3B8CFF', ' opacity=".25"') + C(ex, ey, er, '#3B8CFF', ' stroke="#BFE0FF" stroke-width="1.5"') + '<path d="M' + (ex - er * .5) + ' ' + (ey - er * .3) + 'q' + er * .4 + ' ' + (-er * .4) + ' ' + er * .8 + ' 0q' + (-er * .2) + ' ' + er * .5 + ' ' + (-er * .6) + ' ' + er * .4 + 'z" fill="#4FB06A"/>';
+    o += C(ex, ey, er * 1.8, '#3B8CFF', ' opacity=".25"') + C(ex, ey, er, F.rad([[0, '#8CC4FF'], [.55, '#3B8CFF'], [1, '#1A4FA8']], .5, .5, .62, .32, .28), ' stroke="#BFE0FF" stroke-width="1.5"') + '<path d="M' + (ex - er * .5) + ' ' + (ey - er * .3) + 'q' + er * .4 + ' ' + (-er * .4) + ' ' + er * .8 + ' 0q' + (-er * .2) + ' ' + er * .5 + ' ' + (-er * .6) + ' ' + er * .4 + 'z" fill="#4FB06A"/>';
+    o += '<path d="M' + (cx - r * .62) + ' ' + (cy - r * .1) + 'A' + r * .64 + ' ' + r * .64 + ' 0 0 1 ' + (cx - r * .08) + ' ' + (cy - r * .63) + '" fill="none" stroke="#FFFFFF" stroke-opacity=".22" stroke-width="' + Math.max(2, r * .06) + '" stroke-linecap="round"/>';
     return o;
   };
 })();
 
-/* 수학 방탈출 · 기차역 그림 (2026-11-28) — 이름 앞글자 st. art.js의 ART.c·ART.shape·ART.esc를 씀.
+/* 수학 방탈출 · 기차역 그림 (2026-11-28, B안 · 그림책 삽화) — 이름 앞글자 st. art.js의 ART.c·ART.shape·ART.esc를 씀.
    개수를 세는 그림(손님 칸·바퀴)은 p로 받은 수만큼 꼭 그 수대로 그림. */
 (function () {
   var c = ART.c, esc = ART.esc, shape = ART.shape;
@@ -4961,30 +4972,32 @@ var ART = (function () {
   function C(x, y, r, f, o) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"' + (o || '') + '/>' }
   function P(d, f, o) { return '<path d="' + d + '" fill="' + f + '"' + (o || '') + '/>' }
   function L(x1, y1, x2, y2, s, w, o) { return '<line x1="' + x1 + '" y1="' + y1 + '" x2="' + x2 + '" y2="' + y2 + '" stroke="' + s + '" stroke-width="' + w + '"' + (o || '') + '/>' }
-  var K = ' stroke="#2A2233" stroke-width="3" stroke-linejoin="round"', K2 = ' stroke="#2A2233" stroke-width="2" stroke-linejoin="round"';
+  var F = ART.fx;
+  function M(k, col) { return F.mat(k, col) }
+  function E(col, w) { return F.edge(col, w || 1.6) }
 
   /* 출발 안내판: p.rows=[[열차, 출발, 가는 곳, 승강장]] */
   ART.A.stDepart = function (w, h, p) {
-    var rows = p.rows || [], head = ['열차', '출발', '가는 곳', '승강장'], cw = [.28, .22, .3, .2], o = R(0, 0, w, h, '#2B2F36', K + ' rx="8"') + R(8, 8, w - 16, h - 16, '#14181E', ' rx="4"');
+    var rows = p.rows || [], head = ['열차', '출발', '가는 곳', '승강장'], cw = [.28, .22, .3, .2], o = F.drop(R(0, 0, w, h, '#000', ' rx="8"'), 5, 7, .24) + R(0, 0, w, h, M('metal', '#2B2F36'), E('#2B2F36', 2) + ' rx="8"') + R(8, 8, w - 16, h - 16, F.lin([[0, '#1E232B'], [1, '#0B0E12']]), ' rx="4"');
     var top = 10, rh = (h - 20) / (rows.length + 1.4), fs = Math.min(rh * .5, (w - 20) / 22);
-    o += R(10, top, w - 20, rh * 1.2, '#3B6FD6', ' rx="3"');
+    o += R(10, top, w - 20, rh * 1.2, M('screen', '#3B6FD6'), ' rx="3"');
     var x = 10; head.forEach(function (s, i) { o += T(x + (w - 20) * cw[i] / 2, top + rh * .82, s, fs * .9, '#fff'); x += (w - 20) * cw[i] });
     rows.forEach(function (r, j) {
       var y = top + rh * (1.4 + j); x = 10;
       o += L(14, y + rh, w - 14, y + rh, '#3A3F48', 1.5);
       r.forEach(function (s, i) { o += T(x + (w - 20) * cw[i] / 2, y + rh * .7, s, fs, i === 0 ? '#7CF29B' : '#FFC94A'); x += (w - 20) * cw[i] });
     });
-    return o;
+    return o + F.glassHL(8, 8, w - 16, h - 16, .06);
   };
 
   /* 청소 진행표: p.items=[{c, den}] — 똑같이 den칸으로 나눈 막대에서 1칸만 칠함 */
   ART.A.stFrac = function (w, h, p) {
-    var it = p.items || [], top = p.title ? h * .2 : 10, o = R(0, 0, w, h, '#FFFDF4', K + ' rx="6"') + C(12, 12, 5, '#C8402F');
+    var it = p.items || [], top = p.title ? h * .2 : 10, o = F.drop(R(0, 0, w, h, '#000', ' rx="6"'), 4, 6, .2) + R(0, 0, w, h, M('paper', '#FFFDF4'), E('#D8CFB4', 1.8) + ' rx="6"') + C(12, 12, 5, F.ball('#C8402F'));
     if (p.title) o += T(w / 2, top * .72, p.title, Math.min(top * .5, 22), '#2A2233');
     var bh = (h - top - 10) / Math.max(1, it.length), bx = 14, bw = w - 28;
     it.forEach(function (b, i) {
       var y = top + i * bh + bh * .18, hh = bh * .64, cw = bw / b.den;
-      for (var k = 0; k < b.den; k++) o += R(bx + k * cw, y, cw, hh, k === 0 ? c(b.c) : '#fff', ' stroke="#2A2233" stroke-width="2"');
+      for (var k = 0; k < b.den; k++) o += R(bx + k * cw, y, cw, hh, k === 0 ? M('plastic', c(b.c)) : '#fff', ' stroke="#4A4358" stroke-width="2"');
     });
     return o;
   };
@@ -4992,12 +5005,12 @@ var ART = (function () {
   /* 옛 기차 바퀴 전시: p.n개를 나란히 붙여 놓음, 첫 바퀴에 반지름 p.r cm 표시 */
   ART.A.stWheels = function (w, h, p) {
     var n = p.n || 4, top = h * .2, d = Math.min((w - 20) / n, h * .55), r = d / 2, x0 = (w - d * n) / 2, cy = top + r + 2, by = cy + r - 2, o = '';
-    o += R(4, by, w - 8, h - by, '#8A6A4A', K + ' rx="4"') + R(w * .25, by + (h - by) * .25, w * .5, (h - by) * .5, '#FFFDF4', ' rx="3"') + T(w / 2, by + (h - by) * .62, '옛 기차 바퀴', Math.min(15, (h - by) * .36), '#2A2233');
+    o += F.ground(w / 2, h, w * .52, 6) + R(4, by, w - 8, h - by, M('wood', '#8A6A4A'), E('#8A6A4A', 2) + ' rx="4"') + R(w * .25, by + (h - by) * .25, w * .5, (h - by) * .5, M('paper', '#FFFDF4'), ' rx="3"') + T(w / 2, by + (h - by) * .62, '옛 기차 바퀴', Math.min(15, (h - by) * .36), '#2A2233');
     for (var i = 0; i < n; i++) {
       var cx = x0 + r + i * d;
-      o += C(cx, cy, r - 1, '#4A4F58', K) + C(cx, cy, r * .78, '#6E7580', K2);
+      o += C(cx, cy, r - 1, F.rad([[0, '#7A808A'], [.7, '#4A4F58'], [1, '#2E3238']], .4, .38, .7), E('#4A4F58', 2)) + C(cx, cy, r * .78, M('metal', '#6E7580'), E('#6E7580', 1.4));
       for (var k = 0; k < 8; k++) { var a = k * Math.PI / 4; o += L(cx, cy, cx + Math.cos(a) * r * .74, cy + Math.sin(a) * r * .74, '#3A3F48', 3) }
-      o += C(cx, cy, r * .14, '#C9A24B', K2);
+      o += C(cx, cy, r * .14, F.ball('#C9A24B'), E('#C9A24B', 1.2));
     }
     var cx0 = x0 + r, fs = Math.min(top * .62, 18);
     o += L(cx0, cy, cx0 + r - 2, cy, '#E5534B', 4) + C(cx0, cy, 4, '#E5534B') + L(cx0 + r * .5, cy - 2, cx0 + r * .5, top * .9, '#E5534B', 2);
@@ -5008,77 +5021,78 @@ var ART = (function () {
 
   /* 대기 의자 */
   ART.A.stBench = function (w, h) {
-    var o = R(w * .04, h * .1, w * .92, h * .32, '#3B6FD6', K + ' rx="8"') + R(0, h * .48, w, h * .18, '#4F82E0', K + ' rx="6"');
+    var o = F.ground(w / 2, h, w * .5, 7) + R(w * .04, h * .1, w * .92, h * .32, M('plastic', '#3B6FD6'), E('#3B6FD6', 2) + ' rx="8"') + R(0, h * .48, w, h * .18, M('plastic', '#4F82E0'), E('#4F82E0', 2) + ' rx="6"');
     for (var i = 1; i < 4; i++) o += L(w * .04 + w * .92 * i / 4, h * .12, w * .04 + w * .92 * i / 4, h * .4, '#2A4E9E', 3);
-    o += R(w * .1, h * .66, 14, h * .34, '#5A5F68') + R(w * .9 - 14, h * .66, 14, h * .34, '#5A5F68') + R(w * .48, h * .66, 14, h * .34, '#5A5F68');
+    var lg = M('cyl', '#5A5F68'); o += R(w * .1, h * .66, 14, h * .34, lg) + R(w * .9 - 14, h * .66, 14, h * .34, lg) + R(w * .48, h * .66, 14, h * .34, lg);
     return o;
   };
 
   /* 승차권 발매기 */
   ART.A.stKiosk = function (w, h, p, open) {
-    var o = R(0, 0, w, h, '#D8DEE6', K + ' rx="10"') + R(w * .12, h * .06, w * .76, h * .07, '#3B6FD6', ' rx="3"') + T(w / 2, h * .115, '승차권', Math.min(w * .14, h * .05), '#fff');
-    o += R(w * .12, h * .17, w * .76, h * .28, open ? '#1E5A3A' : '#14181E', K2 + ' rx="4"') + T(w / 2, h * .33, open ? '발매 완료' : (p.screen || '- -'), Math.min(w * .13, h * .05), open ? '#7CF29B' : '#FFC94A');
-    for (var r = 0; r < 4; r++) for (var q = 0; q < 3; q++) o += R(w * .2 + q * w * .22, h * .5 + r * h * .07, w * .16, h * .05, '#fff', K2 + ' rx="3"');
-    o += R(w * .2, h * .82, w * .6, h * .06, '#3A3F48', ' rx="3"');
-    if (open) o += R(w * .3, h * .78, w * .4, h * .1, '#FFE27A', K2 + ' rx="2"');
+    var o = F.ground(w / 2, h, w * .54, 8) + R(0, 0, w, h, M('metal', '#D8DEE6'), E('#A8B0BA', 2) + ' rx="10"') + F.shade(w * .7, 0, w * .3, h, 10, .16) + R(w * .12, h * .06, w * .76, h * .07, M('plastic', '#3B6FD6'), ' rx="3"') + T(w / 2, h * .115, '승차권', Math.min(w * .14, h * .05), '#fff');
+    o += R(w * .12, h * .17, w * .76, h * .28, M('screen', open ? '#1E5A3A' : '#1E232B'), E('#4A4F58', 1.6) + ' rx="4"') + F.glassHL(w * .12, h * .17, w * .76, h * .28, .1) + T(w / 2, h * .33, open ? '발매 완료' : (p.screen || '- -'), Math.min(w * .13, h * .05), open ? '#7CF29B' : '#FFC94A');
+    for (var r = 0; r < 4; r++) for (var q = 0; q < 3; q++) o += R(w * .2 + q * w * .22, h * .5 + r * h * .07, w * .16, h * .05, M('plastic', '#FFFFFF'), E('#B8C0CA', 1.3) + ' rx="3"');
+    o += R(w * .2, h * .82, w * .6, h * .06, F.lin([[0, '#14181E'], [1, '#4A4F58']]), ' rx="3"');
+    if (open) o += R(w * .3, h * .78, w * .4, h * .1, M('paper', '#FFE27A'), E('#E9B93A', 1.4) + ' rx="2"');
     return o;
   };
 
   /* 개찰구 */
   ART.A.stGate = function (w, h, p, open) {
-    var o = R(0, h * .3, w * .28, h * .7, '#9AA3AE', K + ' rx="8"') + R(w * .72, h * .3, w * .28, h * .7, '#9AA3AE', K + ' rx="8"');
-    o += R(w * .05, h * .36, w * .18, h * .08, open ? '#7CF29B' : '#E5534B', ' rx="3"') + R(w * .77, h * .36, w * .18, h * .08, open ? '#7CF29B' : '#E5534B', ' rx="3"');
+    var gm = M('metal', '#9AA3AE'), ge = E('#9AA3AE', 2) + ' rx="8"', o = F.ground(w * .14, h, w * .17, 6) + F.ground(w * .86, h, w * .17, 6) + R(0, h * .3, w * .28, h * .7, gm, ge) + R(w * .72, h * .3, w * .28, h * .7, gm, ge);
+    var lt = M('plastic', open ? '#5CD07E' : '#E5534B'); o += R(w * .05, h * .36, w * .18, h * .08, lt, ' rx="3"') + R(w * .77, h * .36, w * .18, h * .08, lt, ' rx="3"');
     o += R(w * .07, h * .52, w * .14, h * .05, '#2A2233', ' rx="2"');
-    o += open ? R(w * .26, h * .1, 10, h * .3, '#C8CDD3', K2) + R(w * .64, h * .1, 10, h * .3, '#C8CDD3', K2) : R(w * .28, h * .5, w * .22, 10, '#C8CDD3', K2) + R(w * .5, h * .5, w * .22, 10, '#C8CDD3', K2);
-    o += R(w * .2, 0, w * .6, h * .16, '#2E7D5B', ' rx="5"') + T(w / 2, h * .11, '승강장', Math.min(h * .09, w * .12), '#fff');
+    var bm = E('#A8AEB6', 1.4); o += open ? R(w * .26, h * .1, 10, h * .3, M('cyl', '#C8CDD3'), bm) + R(w * .64, h * .1, 10, h * .3, M('cyl', '#C8CDD3'), bm) : R(w * .28, h * .5, w * .22, 10, M('cylv', '#C8CDD3'), bm) + R(w * .5, h * .5, w * .22, 10, M('cylv', '#C8CDD3'), bm);
+    o += R(w * .2, 0, w * .6, h * .16, M('paint', '#2E7D5B'), E('#2E7D5B', 1.4) + ' rx="5"') + T(w / 2, h * .11, '승강장', Math.min(h * .09, w * .12), '#fff');
     return o;
   };
 
   /* 열차: 기관차 + 손님 칸 p.cars개(창문 2개씩) */
   ART.A.stTrain = function (w, h, p) {
-    var n = p.cars || 6, u = w / (1.35 + n * 1.02), o = R(0, h * .86, w, h * .06, '#6E5A48') + L(0, h * .9, w, h * .9, '#4A3A2E', 3);
+    var n = p.cars || 6, u = w / (1.35 + n * 1.02), o = F.ground(w / 2, h * .89, w * .5, 6) + R(0, h * .86, w, h * .06, M('wood', '#6E5A48')) + L(0, h * .9, w, h * .9, '#8A929C', 3) + L(0, h * .896, w, h * .896, '#D4D8DE', 1);
     var lx = 0, lw = u * 1.3, bh = h * .62, by = h * .2;
-    o += P('M' + (lx + lw * .25) + ' ' + by + 'H' + (lx + lw) + 'V' + (by + bh) + 'H' + lx + 'V' + (by + bh * .4) + 'Q' + lx + ' ' + by + ' ' + (lx + lw * .25) + ' ' + by + 'Z', '#C8402F', K);
-    o += R(lx + lw * .45, by + bh * .12, lw * .42, bh * .3, '#CFE7F3', K2 + ' rx="4"') + R(lx + lw * .2, by - bh * .18, lw * .16, bh * .2, '#3A3F48', K2) + C(lx + lw * .12, by + bh * .55, bh * .08, '#FFE27A', K2);
-    o += C(lx + lw * .3, by + bh + h * .02, h * .06, '#3A3F48') + C(lx + lw * .75, by + bh + h * .02, h * .06, '#3A3F48');
+    o += P('M' + (lx + lw * .25) + ' ' + by + 'H' + (lx + lw) + 'V' + (by + bh) + 'H' + lx + 'V' + (by + bh * .4) + 'Q' + lx + ' ' + by + ' ' + (lx + lw * .25) + ' ' + by + 'Z', M('paint', '#C8402F'), E('#C8402F', 2));
+    var win = M('glass', '#9FCDE6'), wh = F.ball('#3A3F48');
+    o += R(lx + lw * .45, by + bh * .12, lw * .42, bh * .3, win, E('#7FA8C0', 1.4) + ' rx="4"') + R(lx + lw * .2, by - bh * .18, lw * .16, bh * .2, M('cyl', '#3A3F48'), E('#3A3F48', 1.4)) + C(lx + lw * .12, by + bh * .55, bh * .08, F.rad([[0, '#FFFFFF'], [.5, '#FFE27A'], [1, '#E9A93A']]), E('#C99A2A', 1.4));
+    o += C(lx + lw * .3, by + bh + h * .02, h * .06, wh) + C(lx + lw * .75, by + bh + h * .02, h * .06, wh);
     for (var i = 0; i < n; i++) {
       var x = lw + u * .02 + i * u * 1.02, cw = u * .98;
       o += R(x - u * .04, by + bh * .55, u * .06, bh * .1, '#3A3F48');
-      o += R(x, by + bh * .1, cw, bh * .9, '#3B6FD6', K + ' rx="6"') + R(x, by + bh * .72, cw, bh * .08, '#F2C230');
-      o += R(x + cw * .12, by + bh * .24, cw * .32, bh * .34, '#CFE7F3', K2 + ' rx="3"') + R(x + cw * .56, by + bh * .24, cw * .32, bh * .34, '#CFE7F3', K2 + ' rx="3"');
-      o += C(x + cw * .25, by + bh + h * .02, h * .05, '#3A3F48') + C(x + cw * .75, by + bh + h * .02, h * .05, '#3A3F48');
+      o += R(x, by + bh * .1, cw, bh * .9, M('paint', '#3B6FD6'), E('#3B6FD6', 2) + ' rx="6"') + R(x, by + bh * .72, cw, bh * .08, M('cylv', '#F2C230'));
+      o += R(x + cw * .12, by + bh * .24, cw * .32, bh * .34, win, E('#7FA8C0', 1.3) + ' rx="3"') + R(x + cw * .56, by + bh * .24, cw * .32, bh * .34, win, E('#7FA8C0', 1.3) + ' rx="3"');
+      o += C(x + cw * .25, by + bh + h * .02, h * .05, wh) + C(x + cw * .75, by + bh + h * .02, h * .05, wh);
     }
     return o;
   };
 
   /* 선로 전환기(손잡이) */
   ART.A.stLever = function (w, h, p, open) {
-    var o = R(w * .1, h * .7, w * .8, h * .3, '#6E7580', K + ' rx="6"') + R(w * .15, h * .02, w * .7, h * .16, '#F2C230', K2 + ' rx="5"') + T(w / 2, h * .12, '선로 전환기', Math.min(h * .07, w * .1), '#2A2233');
+    var o = F.ground(w / 2, h, w * .46, 6) + R(w * .1, h * .7, w * .8, h * .3, M('metal', '#6E7580'), E('#6E7580', 2) + ' rx="6"') + R(w * .15, h * .02, w * .7, h * .16, M('plastic', '#F2C230'), E('#D9A92A', 1.6) + ' rx="5"') + T(w / 2, h * .12, '선로 전환기', Math.min(h * .07, w * .1), '#2A2233');
     var px = w / 2, py = h * .74, a = open ? 30 : -30, rad = a * Math.PI / 180, len = h * .48;
-    o += '<line x1="' + px + '" y1="' + py + '" x2="' + (px + Math.sin(rad) * len) + '" y2="' + (py - Math.cos(rad) * len) + '" stroke="#3A3F48" stroke-width="' + w * .08 + '" stroke-linecap="round"/>' + C(px + Math.sin(rad) * len, py - Math.cos(rad) * len, w * .08, '#E5534B', K2) + C(px, py, w * .1, '#8A929C', K2);
-    o += R(w * .2, h * .84, w * .6, h * .08, '#14181E', ' rx="3"') + T(w / 2, h * .9, open ? '바뀜' : '대기 중', Math.min(h * .06, w * .09), open ? '#7CF29B' : '#FFC94A');
+    o += '<line x1="' + px + '" y1="' + py + '" x2="' + (px + Math.sin(rad) * len) + '" y2="' + (py - Math.cos(rad) * len) + '" stroke="#3A3F48" stroke-width="' + w * .08 + '" stroke-linecap="round"/>' + C(px + Math.sin(rad) * len, py - Math.cos(rad) * len, w * .08, F.ball('#E5534B'), E('#E5534B', 1.4)) + C(px, py, w * .1, F.ball('#8A929C'), E('#8A929C', 1.4));
+    o += R(w * .2, h * .84, w * .6, h * .08, M('screen', '#1E232B'), ' rx="3"') + T(w / 2, h * .9, open ? '바뀜' : '대기 중', Math.min(h * .06, w * .09), open ? '#7CF29B' : '#FFC94A');
     return o;
   };
 
   /* 노선도: p.st=[역 이름], p.d=[사이 거리 글] */
   ART.A.stRoute = function (w, h, p) {
-    var st = p.st || [], d = p.d || [], o = R(0, 0, w, h, '#FFFDF4', K + ' rx="6"'), n = st.length, x0 = w * .1, x1 = w * .9, y = h * .56;
+    var st = p.st || [], d = p.d || [], o = F.drop(R(0, 0, w, h, '#000', ' rx="6"'), 4, 6, .2) + R(0, 0, w, h, M('paper', '#FFFDF4'), E('#D8CFB4', 1.8) + ' rx="6"'), n = st.length, x0 = w * .1, x1 = w * .9, y = h * .56;
     if (p.title) o += T(w / 2, h * .17, p.title, Math.min(h * .12, 22), '#2A2233');
     o += L(x0, y, x1, y, '#2E7D5B', 10);
     var fs = Math.min(h * .1, (x1 - x0) / Math.max(1, n - 1) / 6.2);
-    st.forEach(function (s, i) { var x = x0 + (x1 - x0) * i / Math.max(1, n - 1); o += C(x, y, 11, '#fff', K) + T(x, y + h * .22, s, fs * 1.05, '#2A2233') });
+    st.forEach(function (s, i) { var x = x0 + (x1 - x0) * i / Math.max(1, n - 1); o += C(x, y, 11, F.ball('#FFFFFF'), E('#2E7D5B', 2.4)) + T(x, y + h * .22, s, fs * 1.05, '#2A2233') });
     d.forEach(function (s, i) { var x = x0 + (x1 - x0) * (i + .5) / Math.max(1, n - 1); o += R(x - fs * 3.2, y - h * .2 - fs * .9, fs * 6.4, fs * 1.3, '#FFF2C6', ' rx="4"') + T(x, y - h * .2, s, fs * .95, '#C8402F') });
     return o;
   };
 
   /* 모양 단추 판: p.btns=[{s, t}] (모양 + 계산식) */
   ART.A.stPanel = function (w, h, p, open) {
-    var b = p.btns || [], o = R(0, 0, w, h, '#4A5160', K + ' rx="10"'), bw = (w - 20) / Math.max(1, b.length);
-    o += R(10, 8, w - 20, h * .16, '#14181E', ' rx="4"') + T(w / 2, 8 + h * .115, open ? '출발 준비 완료' : '모양 단추를 차례로', Math.min(h * .09, w * .05), open ? '#7CF29B' : '#FFC94A');
+    var b = p.btns || [], o = F.ground(w / 2, h, w * .5, 6) + R(0, 0, w, h, M('metal', '#4A5160'), E('#4A5160', 2) + ' rx="10"'), bw = (w - 20) / Math.max(1, b.length);
+    o += R(10, 8, w - 20, h * .16, M('screen', '#1E232B'), ' rx="4"') + T(w / 2, 8 + h * .115, open ? '출발 준비 완료' : '모양 단추를 차례로', Math.min(h * .09, w * .05), open ? '#7CF29B' : '#FFC94A');
     b.forEach(function (it, i) {
       var cx = 10 + bw * (i + .5), cy = h * .46, r = Math.min(bw * .3, h * .17);
-      o += C(cx, cy, r * 1.25, '#E8E3D8', K2) + shape(it.s, cx, cy, r * .8, '#2A2233');
-      o += R(cx - bw * .44, h * .7, bw * .88, h * .2, '#FFFDF4', ' rx="4"') + T(cx, h * .84, it.t, Math.min(h * .12, bw * .2), '#2A2233');
+      o += C(cx, cy, r * 1.25, F.ball('#E8E3D8'), E('#BDB6A6', 1.6)) + shape(it.s, cx, cy, r * .8, '#2A2233');
+      o += R(cx - bw * .44, h * .7, bw * .88, h * .2, M('paper', '#FFFDF4'), ' rx="4"') + T(cx, h * .84, it.t, Math.min(h * .12, bw * .2), '#2A2233');
     });
     if (open) o += R(w * .35, h * .93, w * .3, h * .06, '#7CF29B', ' rx="3"');
     return o;
@@ -5086,10 +5100,10 @@ var ART = (function () {
 
   /* 출발 장치(기관실 앞 계기판) */
   ART.A.stThrottle = function (w, h, p, open) {
-    var o = R(0, h * .35, w, h * .65, '#5A5F68', K + ' rx="8"') + R(w * .05, h * .4, w * .9, h * .12, '#3A3F48', ' rx="4"');
-    [.22, .5, .78].forEach(function (f, i) { o += C(w * f, h * .2, Math.min(w * .1, h * .15), '#FFFDF4', K2) + L(w * f, h * .2, w * f + Math.cos(-.9 - i * .7) * w * .08, h * .2 + Math.sin(-.9 - i * .7) * w * .08, '#C8402F', 3) });
-    o += R(w * .2, h * .58, w * .6, h * .14, '#14181E', K2 + ' rx="4"') + T(w / 2, h * .68, open ? '출발!' : '- - - -', Math.min(h * .09, w * .1), open ? '#7CF29B' : '#FFC94A');
-    o += R(w * .42, h * .78, w * .16, h * .16, '#2A2233', ' rx="4"');
+    var o = F.ground(w / 2, h, w * .52, 6) + R(0, h * .35, w, h * .65, M('metal', '#5A5F68'), E('#5A5F68', 2) + ' rx="8"') + R(w * .05, h * .4, w * .9, h * .12, F.lin([[0, '#22262C'], [1, '#4A4F58']]), ' rx="4"');
+    [.22, .5, .78].forEach(function (f, i) { o += C(w * f, h * .2, Math.min(w * .1, h * .15), F.rad([[0, '#FFFFFF'], [.8, '#F4F1E8'], [1, '#C9C3B4']], .45, .4, .6), E('#8A929C', 2.2)) + L(w * f, h * .2, w * f + Math.cos(-.9 - i * .7) * w * .08, h * .2 + Math.sin(-.9 - i * .7) * w * .08, '#C8402F', 3) });
+    o += R(w * .2, h * .58, w * .6, h * .14, M('screen', '#1E232B'), E('#3A3F48', 1.6) + ' rx="4"') + T(w / 2, h * .68, open ? '출발!' : '- - - -', Math.min(h * .09, w * .1), open ? '#7CF29B' : '#FFC94A');
+    o += R(w * .42, h * .78, w * .16, h * .16, F.lin([[0, '#14181E'], [1, '#3A3F48']]), ' rx="4"');
     if (open) o += '<line x1="' + w / 2 + '" y1="' + h * .86 + '" x2="' + w * .7 + '" y2="' + h * .55 + '" stroke="#C9A24B" stroke-width="10" stroke-linecap="round"/>';
     return o;
   };

@@ -366,7 +366,7 @@ var ART = (function () {
       o += E(x + bwid / 2 + 3, h * .86, bwid * .5, 3, '#1A0E06', ' opacity=".2"') + R(x + bwid * .3, h * .06, bwid * .4, h * .13, mat('metal', '#C8CDD3'), edge('#8A929C', 1.2) + ' rx="3"');
       if (fr && m && +m[1] <= +m[2]) {
         var n = +m[1], d = +m[2], fh = bh * n / d;
-        o += R(x, by, bwid, bh, fx.lin([[0, '#F7FBFD'], [1, '#DCE8EE']], 0, 0, 1, 0), ' rx="8"') + R(x, by + bh - fh, bwid, fh, mat('cyl', bc), n === d ? ' rx="8"' : '');
+        o += R(x, by, bwid, bh, fx.lin([[0, '#F7FBFD'], [1, '#DCE8EE']], 0, 0, 1, 0), ' rx="8"') + R(x, by + bh - fh, bwid, fh, mat('cyl', bc), ' rx="8"') + (n < d && fh > 8 ? R(x, by + bh - fh, bwid, Math.min(8, fh / 2), mat('cyl', bc)) : '');   /* 아래 모서리는 병처럼 둥글게, 윗면은 평평하게 */
         if (d <= 12) for (var k = 1; k < d; k++) o += '<line x1="' + n1(x) + '" y1="' + (by + bh * k / d).toFixed(1) + '" x2="' + n1(x + bwid * .45) + '" y2="' + (by + bh * k / d).toFixed(1) + '" stroke="#3A2C22" stroke-width="1.5" opacity=".75"/>';
         o += R(x, by, bwid, bh, 'none', edge('#7E97A6', 1.6) + ' rx="8"');
       } else o += R(x, by, bwid, bh, mat('cyl', bc), edge(bc, 1.6) + ' rx="8"');
