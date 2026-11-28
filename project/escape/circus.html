@@ -240,6 +240,43 @@ h2{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.4vw,26px);m
 /* 가로로 긴 그림(젖소 줄 등)은 그림을 위에 넓게, 글은 아래에 */
 .es-wide .es-cbody{grid-template-columns:1fr}.es-wide .es-big svg{max-height:min(46vh,420px)}
 
+/* 2026-11-28 예비 사용자 팀 피드백 — 모양 글자·읽어 주기·알림·이어서 하기·탈출 화면·휴대폰 가방·전자칠판 */
+.es-shp{display:inline-block;width:1.05em;height:1.05em;vertical-align:-.16em;margin:0 .08em}
+.es-spk{display:none;align-items:center;justify-content:center;width:34px;height:34px;margin:0 6px 0 0;padding:0;vertical-align:middle;border:2px solid var(--line);border-radius:50%;background:var(--paper);color:var(--soft);cursor:pointer;flex:none}
+.es-spk svg{width:19px;height:19px}.es-spk:hover,.es-spk:focus-visible{border-color:var(--acc);color:var(--acc)}
+html.es-ttson .es-spk{display:inline-flex}
+#hj-player{display:none!important}
+.es-dhelp{margin:-4px 0 0;font-size:14px;color:var(--soft)}
+.es-umsg{margin:8px 0 0!important;font-weight:700;color:var(--bad);font-size:16px!important}.es-umsg:empty{display:none}
+.es-resume{width:100%;border:2px solid var(--acc);border-radius:16px;padding:12px 16px;background:color-mix(in srgb,var(--acc) 7%,var(--paper));display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px 16px}
+.es-resume p{margin:0;font-size:17px}.es-resume .tl-row{margin:0;gap:8px}
+/* 탈출 화면: 방 이름 · 꽃가루는 글 뒤로 · 다시 하기는 작게 아래로 */
+.es-wroom{font-size:16px!important;font-weight:700;color:var(--soft);margin-bottom:-6px!important}
+.es-conf{z-index:0}.es-win>:not(.es-conf){position:relative;z-index:1}
+.es-code{background:var(--paper)}.es-stats span{background:var(--bg)}
+.es-wans{font-size:14px!important;color:var(--soft)}
+.es-again{margin-top:18px;border:0;background:none;padding:6px;font:inherit;font-size:14px;color:var(--soft);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.es-outro{text-wrap:pretty!important;max-width:28em!important}
+/* 이야기 화면이 1280×800 한 화면에 들어가게 그림 높이를 줄임 */
+.es-stsv{width:auto;height:min(40vh,378px);max-width:100%}
+@media (max-width:600px){.es-stsv{width:100%;height:auto}}
+/* 전자칠판(넓은 화면)·크게 보기: 위 상태 줄을 크게, 장면은 화면 높이에 맞게 */
+@media (min-width:1700px){.tl-bar{zoom:1.3}}
+.tl-stage:fullscreen .tl-bar,.tl-stage.tl-max .tl-bar{zoom:1.4}
+.tl-stage:fullscreen .es-main,.tl-stage.tl-max .es-main{grid-template-columns:minmax(0,1fr) 250px}
+.tl-stage:fullscreen .es-scene,.tl-stage.tl-max .es-scene{width:auto;max-width:100%;height:calc(100vh - 150px);margin:0 auto}
+/* 휴대폰: 가방·수첩을 장면 위 가로 한 줄로 */
+@media (max-width:820px){
+ .es-main{gap:8px}
+ .es-side{order:-1;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:6px 8px;padding:6px 8px}
+ .es-side h3{margin:0;font-size:14px;white-space:nowrap}.es-side h3+div{margin:0}
+ .es-side .es-inv,.es-side .es-notes{flex-wrap:nowrap;overflow-x:auto;scrollbar-width:thin;padding-bottom:2px}
+ .es-side .es-it{flex:none;width:auto;min-width:64px;flex-direction:row;padding:2px 8px 2px 4px;font-size:12.5px}.es-side .es-iv{width:28px;height:28px}
+ .es-side .es-nt{flex:none;white-space:nowrap}
+ .es-side .es-empty{font-size:12.5px}
+}
+@media print{#esSheet .ep-ans{margin:0 0 3mm;font-size:9.5pt;line-height:1.5}#esSheet .ep-ans>b:first-child{margin-right:2mm}}
+
 /* 휴대폰 머리 줄이기(2026-10-29 디자인팀) */
 @media (max-width:600px){
  .tl-ico{width:44px;height:44px;border-radius:13px;font-size:24px}
@@ -2260,13 +2297,13 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
 </section>
 <details class="tl-how es-guide"><summary>선생님 안내</summary>
 <div class="es-gmath"><b>이 방의 수학</b><span>각도</span><span>분수의 덧셈과 뺄셈</span><span>꺾은선그래프</span><span>수의 규칙</span><span>곱셈구구</span><span>나눗셈</span><span>들이</span><span>방향</span></div>
-<ul><li>방 그림 속 물건을 누르면 크게 보여요. 단서는 <b>수첩</b>에, 상자·서랍에서 찾은 물건은 <b>가방</b>에 저절로 모여요. 크게 본 그림 속 작은 쪽지·서랍도 눌러 볼 수 있어요.</li><li>가방에서 물건을 고른 뒤 쓸 곳을 누르고, 가방의 두 물건을 차례로 누르면 합쳐져요.</li><li>자물쇠는 숫자·방향·색깔·모양 네 가지예요. 여러 곳의 단서를 이어야 열려요.</li><li>막히면 <b>어디를 볼까?</b>와 자물쇠마다 있는 <b>힌트 보기</b>를 써요. 힌트와 틀린 횟수가 적을수록 별이 많아요.</li><li><b>모둠 대항</b>: 시작 화면의 '이름 또는 모둠' 칸에 모둠 이름을 적고, 선생님은 <a href="board.html">점수판</a>을 띄워 다 같이 출발해요. 탈출 화면의 결과 코드를 넣으면 순위가 나와요.</li><li><b>개별 활동</b>: 이름이나 번호를 적고 풀어요. 탈출 화면을 캡쳐해 내고, 결과 코드를 점수판에 넣어 확인해요.</li><li>탈출한 뒤 수첩을 보며 어떤 단서를 어떻게 이었는지 말해 보아요.</li></ul>
+<ul><li>방 그림 속 물건을 누르면 크게 보여요. 단서는 <b>수첩</b>에, 상자·서랍에서 찾은 물건은 <b>가방</b>에 저절로 모여요. 크게 본 그림 속 작은 쪽지·서랍도 눌러 볼 수 있어요.</li><li>가방에서 물건을 고른 뒤 쓸 곳을 누르고, 가방의 두 물건을 차례로 누르면 합쳐져요.</li><li>자물쇠는 숫자·방향·색깔·모양 네 가지예요. 여러 곳의 단서를 이어야 열려요.</li><li>막히면 <b>어디를 볼까?</b>와 자물쇠마다 있는 <b>힌트 보기</b>를 써요. 힌트와 틀린 횟수가 적을수록 별이 많아요. <b>정답 보기</b>는 자물쇠마다 처음 볼 때 힌트 3번으로 세어요.</li><li>걸리는 시간은 1학년 방 30분, 2학년 25분, 3학년부터 20분쯤이에요(이 자료의 어림값). 시작 화면에서 시간 제한을 바꿀 수 있어요.</li><li>하던 중에 새로 고치거나 다른 쪽에 다녀와도 같은 탭이면 시작 화면에서 <b>이어서 하기</b>를 할 수 있어요(떠나 있던 동안은 시간이 멈춰요).</li><li><b>모둠 대항</b>: 시작 화면의 '이름 또는 모둠' 칸에 모둠 이름을 적고, 선생님은 <a href="board.html">점수판</a>을 띄워 다 같이 출발해요. 탈출 화면의 결과 코드를 넣으면 순위가 나와요.</li><li><b>개별 활동</b>: 이름이나 번호를 적고 풀어요. 탈출 화면을 캡쳐해 내고, 결과 코드를 점수판에 넣어 확인해요.</li><li>탈출한 뒤 수첩을 보며 어떤 단서를 어떻게 이었는지 말해 보아요.</li></ul>
 <p class="tl-row es-gbtn"><button type="button" class="tl-btn" id="esPrint">🖨️ 선생님용 풀이 흐름 인쇄</button><a class="tl-btn" href="board.html">🏆 점수판</a></p>
 </details>
 <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>수학 문제로 자물쇠를 여는 방탈출 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
 </main>
-<div id="esSheet"><div class="ep-pg"><div class="ep-hd"><b>서커스 탈출 · 선생님용 풀이 흐름</b><span>추천 4학년 · 각도·분수의 덧셈과 뺄셈·꺾은선그래프·수의 규칙·곱셈구구·나눗셈·들이·방향</span></div><table class="ep-key"><tr><th>차례</th><th>곳 · 물건</th><th>할 일</th><th>답 · 풀이</th><th>얻는 것</th></tr><tr><td>1</td><td>큰 천막 무대 · 깃발 줄</td><td>살펴보기 — 천막 꼭대기에 세모 깃발이 줄지어 걸려 있어요. 깃발마다 하얀 별이 있어요.</td><td><b></b></td><td></td></tr><tr><td>2</td><td>큰 천막 무대 · 인간 대포</td><td>살펴보기 — 사람을 쏘아 올리는 인간 대포예요. 대포 뒤에 큰 각도기가 있어요. 파란 바닥선에서 대포까지의 각을 읽어 보세요.</td><td><b></b></td><td></td></tr><tr><td>3</td><td>큰 천막 무대 · 대포 옆 소품 상자</td><td>숫자 자물쇠: 상자 뚜껑의 쪽지: 인간 대포는 꼭 80°로 쏘아야 안전해요. 지금 각도에서 몇 도를 더 올려야 할까요? 숫자 두 개를 맞춰요.</td><td><b>25</b><br><small>지금 55° → 80° − 55° = 25°</small></td><td></td></tr><tr><td>4</td><td>큰 천막 무대 · 광대 물통</td><td>살펴보기 — 광대가 물을 합치거나 덜어 낸 물통 네 개예요. 통마다 물의 양(L)을 구하는 식이 붙어 있어요.</td><td><b></b></td><td></td></tr><tr><td>5</td><td>큰 천막 무대 · 소품 트렁크</td><td>색깔 자물쇠: 트렁크 쪽지: 광대 물통의 계산 값이 큰 것부터 그 통의 색을 차례로 눌러요.</td><td><b>노랑 → 빨강 → 파랑 → 초록</b><br><small>노랑 6/7 → 빨강 5/7 → 파랑 4/7 → 초록 3/7</small></td><td>열쇠 손잡이</td></tr><tr><td>6</td><td>큰 천막 무대 · 큰 북</td><td>살펴보기 — 공연 때 둥둥 치는 커다란 북이에요. 잠긴 곳은 없어요.</td><td><b></b></td><td></td></tr><tr><td>7</td><td>큰 천막 무대 · 큰 북 속 · 북에 붙은 쪽지</td><td>살펴보기 — 북 옆에 아주 작은 쪽지가 붙어 있어요! &quot;트렁크 속 작은 서랍 = 깃발 줄의 별을 모두 센 수 + 인간 대포의 지금 각도&quot;</td><td><b></b></td><td></td></tr><tr><td>8</td><td>큰 천막 무대 · 소품 트렁크 속 · 트렁크 속 작은 서랍</td><td>숫자 자물쇠: 트렁크 안 아주 작은 서랍이에요! 숫자 자물쇠예요. 북에 붙은 쪽지에 적힌 대로 계산해요.</td><td><b>79</b><br><small>별 8 × 3 = 24개, 24 + 55 = 79</small></td><td>손전등</td></tr><tr><td>9</td><td>큰 천막 무대 · 외바퀴 자전거</td><td>방향 자물쇠: 자전거 손잡이의 화살표 단추예요. 소품 상자에서 찾은 외바퀴 자전거 길을 보고, 가는 방향이 바뀌는 차례대로 화살표를 눌러요. (같은 쪽으로 여러 칸 가도 화살표는 하나)</td><td><b>↑ ← ↑ ←</b><br><small>위로 2칸, 왼쪽으로 3칸, 위로 1칸, 왼쪽으로 1칸 가요. 누를 차례: ↑ ← ↑ ←</small></td><td></td></tr><tr><td>10</td><td>큰 천막 무대 · 분장실 커튼</td><td>살펴보기 — 외바퀴 자전거가 열어 준 커튼이에요.</td><td><b></b></td><td></td></tr><tr><td>11</td><td>분장실 · 관객 수 그래프</td><td>살펴보기 — 이번 주 요일마다 온 관객 수를 나타낸 꺾은선그래프예요. 세로 눈금 한 칸이 몇 명인지 먼저 살펴보세요.</td><td><b></b></td><td></td></tr><tr><td>12</td><td>분장실 · 분장 상자</td><td>숫자 자물쇠: 분장 상자 쪽지: 관객 수가 전날보다 가장 많이 늘어난 날, 몇 명이 늘었을까요? 숫자 세 개를 맞춰요.</td><td><b>200</b><br><small>목 400명 → 금 600명: 600 − 400 = 200명</small></td><td>열쇠 몸통</td></tr><tr><td>13</td><td>가방</td><td>합치기: 열쇠 손잡이 + 열쇠 몸통</td><td></td><td>동물 마차 열쇠</td></tr><tr><td>14</td><td>분장실 · 분장 거울</td><td>살펴보기 — 거울 위에 모양 전구가 규칙대로 달려 있어요. 전구 밑에 번호가 있어요. 13번부터는 전구가 빠져 있어요.</td><td><b></b></td><td></td></tr><tr><td>15</td><td>분장실 · 의상 옷장</td><td>가방의 손전등 쓰기 / 모양 자물쇠: 옷장 단추 위 쪽지: 거울 전구를 규칙대로 계속 달면, 23번·24번·25번 전구는 무슨 모양일까요? 차례로 눌러요.</td><td><b>□ → □ → ○</b><br><small>23 ÷ 6 = 3 … 5 → 다섯째 □, 24번은 여섯째 □, 25번은 새 묶음 첫째 ○</small></td><td>펌프 톱니바퀴</td></tr><tr><td>16</td><td>분장실 · 동물 마차 가는 문</td><td>가방의 동물 마차 열쇠 쓰기</td><td><b></b></td><td></td></tr><tr><td>17</td><td>동물 마차 · 물개 먹이 기록</td><td>살펴보기 — 사육사가 물개에게 준 생선 수를 날마다 적어 둔 기록이에요. 수가 규칙대로 늘어나요.</td><td><b></b></td><td></td></tr><tr><td>18</td><td>동물 마차 · 코끼리 물통</td><td>살펴보기 — 들이가 10 L인 코끼리 물통이에요. 옆 눈금을 보고 지금 물이 얼마나 들어 있는지 읽어 보세요. 작은 눈금 한 칸은 500 mL예요.</td><td><b></b></td><td></td></tr><tr><td>19</td><td>동물 마차 · 물개 먹이 상자</td><td>숫자 자물쇠: 먹이 상자 쪽지: 먹이 기록의 규칙대로라면 5일째에는 생선을 몇 마리 줄까요? 숫자 두 개를 맞춰요.</td><td><b>47</b><br><small>앞의 수 × 2 + 1 → 23 × 2 + 1 = 47마리</small></td><td></td></tr><tr><td>20</td><td>동물 마차 · 마차 뒷문</td><td>가방의 펌프 톱니바퀴 쓰기 / 숫자 자물쇠: 펌프 숫자판: 코끼리 물통을 가득 채우려면 물을 몇 mL 더 넣어야 할까요? 물통이 가득 차면 코끼리가 물을 마시러 비켜 줘요. 숫자 네 개를 맞춰요.</td><td><b>5500</b><br><small>10 L − 4 L 500 mL = 5 L 500 mL = 5500 mL</small></td><td></td></tr></table></div></div>
-<script>window.ER={"id":"circus","idx":26,"title":"서커스 탈출","intro":"서커스 공연이 끝난 뒤 무대 뒤를 구경하다 천막 안에 갇혔어요! 큰 천막 무대·분장실·동물 마차를 지나며 단서를 모아 뒷문으로 빠져나가요.","story":["서커스 공연이 끝나고, 단장님이 무대 뒤를 구경해도 된다고 하셨어요.","그런데 휘이잉 바람에 천막 문이 쾅 닫히더니 자물쇠가 철컥 걸렸어요.","단서를 모아 동물 마차까지 가서, 뒷문을 열고 빠져나가요!"],"combine":[{"a":"kh1","b":"kh2","make":"key","msg":"손잡이와 몸통을 딸깍 끼웠더니 **동물 마차 열쇠**가 되었어요!"}],"outro":"물통이 가득 차자 코끼리가 물을 마시며 비켜섰고, 뒷문이 활짝 열렸어요! 단장님이 박수를 치며 맞아 주셨어요. 서커스를 탈출했어요!","items":{"torch":{"nm":"손전등","k":"torch","c":"#F2C230","de":"어두운 곳을 밝힐 수 있어요"},"kh1":{"nm":"열쇠 손잡이","k":"khead","c":"#C8402F","de":"빨간 열쇠의 동그란 손잡이만 있어요. 나머지 반쪽은 어디 있을까요?"},"kh2":{"nm":"열쇠 몸통","k":"kblade","c":"#C8402F","de":"빨간 열쇠의 길쭉한 몸통이에요. 손잡이가 없어요."},"key":{"nm":"동물 마차 열쇠","k":"key","c":"#C8402F","de":"빨간 열쇠예요. 열쇠 고리에 '동물 마차'라고 적혀 있어요"},"gear":{"nm":"펌프 톱니바퀴","k":"gear","c":"#8A929C","de":"물 펌프에서 빠진 톱니바퀴 같아요"}},"flow":["flags","cannon","cbox","buckets","trunk","drum","dscrap","tdraw","bike","curtain","chart","makeup","kh1+kh2","mirror","wardrobe","wdoor","fishlog","tank","feedbox","exit"],"scenes":[{"id":"a","nm":"큰 천막 무대","bg":{"wall":"#F6E1D8","floor":"#B5654A","deco":"stripe"},"objs":[{"id":"flags","nm":"깃발 줄","art":"crFlags","x":100,"y":10,"w":800,"h":100,"p":{"n":8,"s":3},"keep":true,"look":"천막 꼭대기에 세모 깃발이 줄지어 걸려 있어요. 깃발마다 하얀 별이 있어요.","lookFig":{"art":"crFlags","w":520,"h":190,"p":{"n":8,"s":3}},"guide":"깃발 줄에 깃발과 별이 몇 개인지 세어 보세요."},{"id":"cannon","nm":"인간 대포","art":"crCannon","x":30,"y":130,"w":280,"h":240,"p":{"a":55},"keep":true,"look":"사람을 쏘아 올리는 인간 대포예요. 대포 뒤에 큰 **각도기**가 있어요. 파란 바닥선에서 대포까지의 각을 읽어 보세요.","lookFig":{"art":"crCannon","w":440,"h":340,"p":{"a":55}},"guide":"인간 대포가 몇 도 기울어져 있는지 각도기로 읽어 보세요."},{"id":"cbox","nm":"대포 옆 소품 상자","art":"box","x":40,"y":390,"w":160,"h":130,"p":{"c":"노랑","lock":true,"label":"대포"},"lock":{"t":"num","code":"25","q":"상자 뚜껑의 쪽지: **인간 대포는 꼭 80°로 쏘아야 안전해요. 지금 각도에서 몇 도를 더 올려야 할까요?** 숫자 두 개를 맞춰요.","hints":["인간 대포를 크게 보세요. 파란 바닥선에서 대포까지의 각을 각도기 눈금으로 읽어요.","작은 눈금 한 칸은 5°예요. 대포는 50°와 60° 사이를 가리켜요.","80°에서 지금 각도를 빼요."],"sol":"지금 55° → 80° − 55° = 25°"},"after":"상자가 열렸어요! 안에 **외바퀴 자전거 길** 그림이 있어요. 빨간 점이 자전거가 갈 길이에요.","afterFig":{"art":"map","w":300,"h":240,"p":{"n":4,"m":5,"start":[4,3],"path":"UULLLUL","block":[[3,2],[2,2],[0,2]],"sl":"자전거","gl":"커튼"}},"guide":"인간 대포의 각도를 읽어 소품 상자를 열어 보세요."},{"id":"buckets","nm":"광대 물통","art":"crBuckets","x":330,"y":140,"w":300,"h":170,"p":{"items":[{"c":"빨강","a":2,"op":"+","b":3,"d":7},{"c":"파랑","a":6,"op":"−","b":2,"d":7},{"c":"노랑","a":1,"op":"+","b":5,"d":7},{"c":"초록","a":5,"op":"−","b":2,"d":7}]},"keep":true,"look":"광대가 물을 합치거나 덜어 낸 물통 네 개예요. 통마다 물의 양(L)을 구하는 식이 붙어 있어요.","lookFig":{"art":"crBuckets","w":420,"h":240,"p":{"items":[{"c":"빨강","a":2,"op":"+","b":3,"d":7},{"c":"파랑","a":6,"op":"−","b":2,"d":7},{"c":"노랑","a":1,"op":"+","b":5,"d":7},{"c":"초록","a":5,"op":"−","b":2,"d":7}]}},"guide":"광대 물통마다 붙은 분수 계산식을 살펴보세요."},{"id":"trunk","nm":"소품 트렁크","art":"crTrunk","x":530,"y":370,"w":200,"h":160,"p":{"colors":["빨강","노랑","초록","파랑"]},"lock":{"t":"color","code":["노랑","빨강","파랑","초록"],"q":"트렁크 쪽지: **광대 물통의 계산 값이 큰 것부터** 그 통의 색을 차례로 눌러요.","hints":["광대 물통을 크게 보세요. 통마다 분모가 같은 분수의 덧셈이나 뺄셈이 있어요.","분모가 같으면 분자끼리 더하거나 빼요. 빨강은 2/7 + 3/7 = 5/7이에요.","네 통의 값을 모두 구한 뒤 분자가 큰 것부터 늘어놓아요."],"sol":"노랑 6/7 → 빨강 5/7 → 파랑 4/7 → 초록 3/7","opts":["빨강","노랑","초록","파랑"]},"give":["kh1"],"after":"트렁크가 열렸어요! 광대 모자 밑에 빨간 **열쇠 손잡이**가 있어요. 트렁크 안쪽에 **아주 작은 서랍**도 보여요.","guide":"광대 물통의 분수를 계산해 소품 트렁크를 열어 보세요."},{"id":"tdraw","nm":"트렁크 속 작은 서랍","art":"drawer","x":65,"y":100,"w":70,"h":40,"p":{"c":"#8A929C","lock":true},"in":"trunk","lock":{"t":"num","code":"79","q":"트렁크 안 아주 작은 서랍이에요! 숫자 자물쇠예요. 북에 붙은 쪽지에 적힌 대로 계산해요.","hints":["큰 북을 크게 보면 작은 쪽지가 있어요. 거기에 계산 방법이 적혀 있어요.","깃발은 8개, 깃발마다 별이 3개예요. 곱셈구구로 별을 모두 세어요.","대포 각도는 소품 상자를 열 때 읽은 각이에요. 별의 수에 더해요."],"sol":"별 8 × 3 = 24개, 24 + 55 = 79"},"give":["torch"],"after":"작은 서랍 안에 **손전등**이 들어 있어요.","guide":"트렁크를 연 뒤 트렁크 안쪽의 작은 서랍을 눌러 보세요."},{"id":"drum","nm":"큰 북","art":"crDrum","x":330,"y":370,"w":170,"h":160,"p":{},"look":"공연 때 둥둥 치는 커다란 북이에요. 잠긴 곳은 없어요.","guide":"큰 북을 크게 보면 무언가 붙어 있을지도 몰라요."},{"id":"dscrap","nm":"북에 붙은 쪽지","art":"scrap","x":60,"y":92,"w":50,"h":34,"p":{"t":"?"},"in":"drum","keep":true,"look":"북 옆에 아주 작은 쪽지가 붙어 있어요! \"트렁크 속 작은 서랍 = **깃발 줄의 별을 모두 센 수 + 인간 대포의 지금 각도**\"","guide":"큰 북을 크게 보고 북 옆의 작은 쪽지를 찾아보세요."},{"id":"bike","nm":"외바퀴 자전거","art":"crBike","x":660,"y":130,"w":130,"h":220,"p":{},"lock":{"t":"dir","code":["↑","←","↑","←"],"q":"자전거 손잡이의 화살표 단추예요. 소품 상자에서 찾은 **외바퀴 자전거 길**을 보고, **가는 방향이 바뀌는 차례대로** 화살표를 눌러요. (같은 쪽으로 여러 칸 가도 화살표는 하나)","hints":["수첩에서 외바퀴 자전거 길 그림을 열어 보세요. '자전거'에서 출발해 빨간 점을 따라가요.","처음에는 위로 가요. 그다음은 어느 쪽으로 꺾이나요? 화살표는 모두 4개예요."],"sol":"위로 2칸, 왼쪽으로 3칸, 위로 1칸, 왼쪽으로 1칸 가요. 누를 차례: ↑ ← ↑ ←"},"after":"외바퀴 자전거가 무대를 한 바퀴 돌아 커튼 줄을 당겼어요! 무대 뒤 **분장실 커튼**이 열렸어요.","guide":"자전거 길 그림대로 외바퀴 자전거의 화살표를 눌러 보세요."},{"id":"curtain","nm":"분장실 커튼","art":"door","x":820,"y":140,"w":150,"h":240,"p":{"c":"빨강","sign":"분장실"},"req":["bike"],"go":"b","look":"외바퀴 자전거가 열어 준 커튼이에요.","after":"커튼 너머로 분장실이 보여요.","guide":"새로 열린 커튼으로 분장실에 가 보세요."}]},{"id":"b","nm":"분장실","bg":{"wall":"#F7E3EC","floor":"#A98C7A","deco":"tile"},"objs":[{"id":"chart","nm":"관객 수 그래프","art":"crChart","x":30,"y":30,"w":340,"h":230,"p":{"labels":["월","화","수","목","금"],"vals":[300,350,450,400,600],"max":700,"step":50,"lab":100,"title":"이번 주 관객 수","unit":"명"},"keep":true,"look":"이번 주 요일마다 온 관객 수를 나타낸 꺾은선그래프예요. 세로 눈금 한 칸이 몇 명인지 먼저 살펴보세요.","lookFig":{"art":"crChart","w":420,"h":300,"p":{"labels":["월","화","수","목","금"],"vals":[300,350,450,400,600],"max":700,"step":50,"lab":100,"title":"이번 주 관객 수","unit":"명"}},"guide":"꺾은선그래프에서 요일마다 관객 수가 어떻게 바뀌었는지 보세요."},{"id":"mirror","nm":"분장 거울","art":"crMirror","x":400,"y":30,"w":280,"h":200,"p":{"pat":["○","△","△","□","□","□","○","△","△","□","□","□"]},"keep":true,"look":"거울 위에 모양 전구가 규칙대로 달려 있어요. 전구 밑에 번호가 있어요. 13번부터는 전구가 빠져 있어요.","lookFig":{"art":"crMirror","w":440,"h":260,"p":{"pat":["○","△","△","□","□","□","○","△","△","□","□","□"]}},"guide":"분장 거울 전구의 모양 규칙을 수첩에 남겨 두세요."},{"id":"makeup","nm":"분장 상자","art":"crMakeup","x":60,"y":320,"w":220,"h":170,"p":{},"lock":{"t":"num","code":"200","q":"분장 상자 쪽지: **관객 수가 전날보다 가장 많이 늘어난 날, 몇 명이 늘었을까요?** 숫자 세 개를 맞춰요.","hints":["관객 수 그래프를 크게 보세요. 세로 눈금 한 칸은 50명이에요.","선이 오른쪽 위로 가장 가파르게 올라간 곳을 찾아요.","그날의 관객 수에서 전날의 관객 수를 빼요."],"sol":"목 400명 → 금 600명: 600 − 400 = 200명"},"give":["kh2"],"after":"분장 상자 서랍이 열렸어요! 화장 붓 사이에 빨간 **열쇠 몸통**이 있어요. 손잡이는 없어요.","guide":"꺾은선그래프에서 가장 많이 늘어난 날을 찾아 분장 상자를 열어 보세요."},{"id":"wardrobe","nm":"의상 옷장","art":"crWardrobe","x":420,"y":270,"w":190,"h":260,"p":{},"need":"torch","needMsg":"옷장 안이 너무 깜깜해서 모양 단추가 보이지 않아요.","useMsg":"손전등으로 비추니 옷장 안쪽에 모양 단추가 보여요!","lock":{"t":"shape","code":["□","□","○"],"q":"옷장 단추 위 쪽지: **거울 전구를 규칙대로 계속 달면, 23번·24번·25번 전구는 무슨 모양일까요?** 차례로 눌러요.","hints":["분장 거울을 크게 보세요. 전구 모양이 몇 개씩 되풀이되나요?","○ △ △ □ □ □ 여섯 개가 되풀이돼요. 6번, 12번, 18번 전구는 모두 □예요.","23 ÷ 6의 나머지를 구하면 한 묶음에서 몇 번째 모양인지 알 수 있어요."],"sol":"23 ÷ 6 = 3 … 5 → 다섯째 □, 24번은 여섯째 □, 25번은 새 묶음 첫째 ○","opts":["○","△","□","☆"]},"give":["gear"],"after":"옷장이 열렸어요! 반짝이 의상 아래에서 **펌프 톱니바퀴**가 나왔어요.","guide":"손전등으로 옷장을 비추고, 거울 전구의 규칙으로 모양 단추를 눌러 보세요."},{"id":"wdoor","nm":"동물 마차 가는 문","art":"door","x":800,"y":160,"w":150,"h":230,"p":{"c":"갈색","sign":"동물 마차"},"need":"key","needMsg":"동물 마차로 가는 문이 잠겨 있어요. 빨간 열쇠 구멍이 보여요.","useMsg":"동물 마차 열쇠로 문을 열었어요!","go":"c","after":"문 너머로 동물 마차가 보여요. 배고픈 물개가 기다리고 있어요.","guide":"열쇠 손잡이와 몸통을 합쳐 동물 마차 가는 문을 열어 보세요."}]},{"id":"c","nm":"동물 마차","bg":{"wall":"#E9D2AE","floor":"#C9A86A","deco":"brick"},"objs":[{"id":"fishlog","nm":"물개 먹이 기록","art":"poster","x":30,"y":30,"w":300,"h":210,"p":{"lines":["물개 먹이 기록","1일: 생선 2마리","2일: 생선 5마리","3일: 생선 11마리","4일: 생선 23마리","5일: ?"],"fs":18,"c":"#FFFDF4"},"keep":true,"look":"사육사가 물개에게 준 생선 수를 날마다 적어 둔 기록이에요. 수가 규칙대로 늘어나요.","lookFig":{"art":"poster","w":360,"h":260,"p":{"lines":["물개 먹이 기록","1일: 생선 2마리","2일: 생선 5마리","3일: 생선 11마리","4일: 생선 23마리","5일: ?"],"fs":21,"c":"#FFFDF4"}},"guide":"물개 먹이 기록에서 수가 늘어나는 규칙을 찾아보세요."},{"id":"tank","nm":"코끼리 물통","art":"crTank","x":360,"y":30,"w":180,"h":330,"p":{"cap":10,"v":4500,"tick":500},"keep":true,"look":"들이가 **10 L**인 코끼리 물통이에요. 옆 눈금을 보고 지금 물이 얼마나 들어 있는지 읽어 보세요. 작은 눈금 한 칸은 500 mL예요.","lookFig":{"art":"crTank","w":220,"h":380,"p":{"cap":10,"v":4500,"tick":500}},"guide":"코끼리 물통에 물이 얼마나 들어 있는지 눈금을 읽어 보세요."},{"id":"feedbox","nm":"물개 먹이 상자","art":"box","x":40,"y":370,"w":200,"h":150,"p":{"c":"파랑","lock":true,"label":"먹이"},"lock":{"t":"num","code":"47","q":"먹이 상자 쪽지: **먹이 기록의 규칙대로라면 5일째에는 생선을 몇 마리 줄까요?** 숫자 두 개를 맞춰요.","hints":["물개 먹이 기록을 크게 보세요. 2, 5, 11, 23 …","앞의 수를 두 배 한 뒤 무엇을 하면 뒤의 수가 되는지 살펴보세요. 2 × 2 = 4, 4에서 5가 되려면?","23에도 같은 규칙을 써요."],"sol":"앞의 수 × 2 + 1 → 23 × 2 + 1 = 47마리"},"after":"물개에게 생선을 주었더니 물개가 신나서 박수를 치며 비켜섰어요. 물개 뒤에 숨어 있던 **마차 뒷문**이 보여요!","guide":"물개 먹이 기록의 규칙을 찾아 먹이 상자를 열어 보세요."},{"id":"seal","nm":"물개","art":"crSeal","x":270,"y":390,"w":190,"h":150,"p":{},"look":"공을 코에 올린 물개가 배가 고픈지 끙끙거려요. 물개 뒤에 무언가 숨어 있는 것 같아요.","guide":"물개는 먹이를 기다려요. 먹이 상자를 열어 보세요."},{"id":"exit","nm":"마차 뒷문","art":"crGate","x":650,"y":150,"w":320,"h":300,"p":{},"req":["feedbox"],"need":"gear","needMsg":"뒷문 앞을 코끼리가 막고 있어요. 문 옆 물 펌프에 톱니바퀴 하나가 빠져 있어요.","useMsg":"톱니바퀴를 끼웠더니 펌프가 움직여요! 몇 mL를 넣을지 숫자판을 맞춰요.","lock":{"t":"num","code":"5500","q":"펌프 숫자판: **코끼리 물통을 가득 채우려면 물을 몇 mL 더 넣어야 할까요?** 물통이 가득 차면 코끼리가 물을 마시러 비켜 줘요. 숫자 네 개를 맞춰요.","hints":["코끼리 물통을 크게 보세요. 들이와 지금 들어 있는 물의 양을 읽어요.","지금 물은 4 L와 5 L 사이, 작은 눈금 한 칸(500 mL)만큼 올라가 있어요.","1 L = 1000 mL예요. 들이에서 지금 물의 양을 빼서 mL로 나타내요."],"sol":"10 L − 4 L 500 mL = 5 L 500 mL = 5500 mL"},"go":"exit","after":"콸콸 물이 차오르자 코끼리가 물을 마시러 비켜섰어요. 뒷문이 열렸어요!","guide":"톱니바퀴를 펌프에 끼우고, 물통 눈금으로 더 넣을 물의 양을 계산해요."}]}]};
+<div id="esSheet"><div class="ep-pg"><div class="ep-hd"><b>서커스 탈출 · 선생님용 풀이 흐름</b><span>추천 4학년 · 각도·분수의 덧셈과 뺄셈·꺾은선그래프·수의 규칙·곱셈구구·나눗셈·들이·방향</span></div><p class="ep-ans"><b>답만 한눈에</b> 대포 옆 소품 상자 <b>25</b> · 소품 트렁크 <b>노랑·빨강·파랑·초록</b> · 트렁크 속 작은 서랍 <b>79</b> · 외바퀴 자전거 <b>↑ ← ↑ ←</b> · 분장 상자 <b>200</b> · 의상 옷장 <b>□·□·○</b> · 물개 먹이 상자 <b>47</b> · 마차 뒷문 <b>5500</b></p><table class="ep-key"><tr><th>차례</th><th>곳 · 물건</th><th>할 일</th><th>답 · 풀이</th><th>얻는 것</th></tr><tr><td>1</td><td>큰 천막 무대 · 깃발 줄</td><td>살펴보기 — 천막 꼭대기에 세모 깃발이 줄지어 걸려 있어요. 깃발마다 하얀 별이 있어요.</td><td><b></b></td><td></td></tr><tr><td>2</td><td>큰 천막 무대 · 인간 대포</td><td>살펴보기 — 사람을 쏘아 올리는 인간 대포예요. 대포 뒤에 큰 각도기가 있어요. 파란 바닥선에서 대포까지의 각을 읽어 보세요.</td><td><b></b></td><td></td></tr><tr><td>3</td><td>큰 천막 무대 · 대포 옆 소품 상자</td><td>숫자 자물쇠: 상자 뚜껑의 쪽지: 인간 대포는 꼭 80°로 쏘아야 안전해요. 지금 각도에서 몇 도를 더 올려야 할까요? 숫자 두 개를 맞춰요.</td><td><b>25</b><br><small>지금 55° → 80° − 55° = 25°</small></td><td></td></tr><tr><td>4</td><td>큰 천막 무대 · 광대 물통</td><td>살펴보기 — 광대가 물을 합치거나 덜어 낸 물통 네 개예요. 통마다 물의 양(L)을 구하는 식이 붙어 있어요.</td><td><b></b></td><td></td></tr><tr><td>5</td><td>큰 천막 무대 · 소품 트렁크</td><td>색깔 자물쇠: 트렁크 쪽지: 광대 물통의 계산 값이 큰 것부터 그 통의 색을 차례로 눌러요.</td><td><b>노랑 → 빨강 → 파랑 → 초록</b><br><small>노랑 6/7 → 빨강 5/7 → 파랑 4/7 → 초록 3/7</small></td><td>열쇠 손잡이</td></tr><tr><td>6</td><td>큰 천막 무대 · 큰 북</td><td>살펴보기 — 공연 때 둥둥 치는 커다란 북이에요. 잠긴 곳은 없어요.</td><td><b></b></td><td></td></tr><tr><td>7</td><td>큰 천막 무대 · 큰 북 속 · 북에 붙은 쪽지</td><td>살펴보기 — 북 옆에 아주 작은 쪽지가 붙어 있어요! &quot;트렁크 속 작은 서랍 = 깃발 줄의 별을 모두 센 수 + 인간 대포의 지금 각도&quot;</td><td><b></b></td><td></td></tr><tr><td>8</td><td>큰 천막 무대 · 소품 트렁크 속 · 트렁크 속 작은 서랍</td><td>숫자 자물쇠: 트렁크 안 아주 작은 서랍이에요! 숫자 자물쇠예요. 북에 붙은 쪽지에 적힌 대로 계산해요.</td><td><b>79</b><br><small>별 8 × 3 = 24개, 24 + 55 = 79</small></td><td>손전등</td></tr><tr><td>9</td><td>큰 천막 무대 · 외바퀴 자전거</td><td>방향 자물쇠: 자전거 손잡이의 화살표 단추예요. 소품 상자에서 찾은 외바퀴 자전거 길을 보고, 가는 방향이 바뀌는 차례대로 화살표를 눌러요. (같은 쪽으로 여러 칸 가도 화살표는 하나)</td><td><b>↑ ← ↑ ←</b><br><small>위로 2칸, 왼쪽으로 3칸, 위로 1칸, 왼쪽으로 1칸 가요. 누를 차례: ↑ ← ↑ ←</small></td><td></td></tr><tr><td>10</td><td>큰 천막 무대 · 분장실 커튼</td><td>살펴보기 — 외바퀴 자전거가 열어 준 커튼이에요.</td><td><b></b></td><td></td></tr><tr><td>11</td><td>분장실 · 관객 수 그래프</td><td>살펴보기 — 이번 주 요일마다 온 관객 수를 나타낸 꺾은선그래프예요. 세로 눈금 한 칸이 몇 명인지 먼저 살펴보세요.</td><td><b></b></td><td></td></tr><tr><td>12</td><td>분장실 · 분장 상자</td><td>숫자 자물쇠: 분장 상자 쪽지: 관객 수가 전날보다 가장 많이 늘어난 날, 몇 명이 늘었을까요? 숫자 세 개를 맞춰요.</td><td><b>200</b><br><small>목 400명 → 금 600명: 600 − 400 = 200명</small></td><td>열쇠 몸통</td></tr><tr><td>13</td><td>가방</td><td>합치기: 열쇠 손잡이 + 열쇠 몸통</td><td></td><td>동물 마차 열쇠</td></tr><tr><td>14</td><td>분장실 · 분장 거울</td><td>살펴보기 — 거울 위에 모양 전구가 규칙대로 달려 있어요. 전구 밑에 번호가 있어요. 13번부터는 전구가 빠져 있어요.</td><td><b></b></td><td></td></tr><tr><td>15</td><td>분장실 · 의상 옷장</td><td>가방의 손전등 쓰기 / 모양 자물쇠: 옷장 단추 위 쪽지: 거울 전구를 규칙대로 계속 달면, 23번·24번·25번 전구는 무슨 모양일까요? 차례로 눌러요.</td><td><b>□ → □ → ○</b><br><small>23 ÷ 6 = 3 … 5 → 다섯째 □, 24번은 여섯째 □, 25번은 새 묶음 첫째 ○</small></td><td>펌프 톱니바퀴</td></tr><tr><td>16</td><td>분장실 · 동물 마차 가는 문</td><td>가방의 동물 마차 열쇠 쓰기</td><td><b></b></td><td></td></tr><tr><td>17</td><td>동물 마차 · 물개 먹이 기록</td><td>살펴보기 — 사육사가 물개에게 준 생선 수를 날마다 적어 둔 기록이에요. 수가 규칙대로 늘어나요.</td><td><b></b></td><td></td></tr><tr><td>18</td><td>동물 마차 · 코끼리 물통</td><td>살펴보기 — 들이가 10 L인 코끼리 물통이에요. 옆 눈금을 보고 지금 물이 얼마나 들어 있는지 읽어 보세요. 작은 눈금 한 칸은 500 mL예요.</td><td><b></b></td><td></td></tr><tr><td>19</td><td>동물 마차 · 물개 먹이 상자</td><td>숫자 자물쇠: 먹이 상자 쪽지: 먹이 기록의 규칙대로라면 5일째에는 생선을 몇 마리 줄까요? 숫자 두 개를 맞춰요.</td><td><b>47</b><br><small>앞의 수 × 2 + 1 → 23 × 2 + 1 = 47마리</small></td><td></td></tr><tr><td>20</td><td>동물 마차 · 마차 뒷문</td><td>가방의 펌프 톱니바퀴 쓰기 / 숫자 자물쇠: 펌프 숫자판: 코끼리 물통을 가득 채우려면 물을 몇 mL 더 넣어야 할까요? 물통이 가득 차면 코끼리가 물을 마시러 비켜 줘요. 숫자 네 개를 맞춰요.</td><td><b>5500</b><br><small>10 L − 4 L 500 mL = 5 L 500 mL = 5500 mL</small></td><td></td></tr></table></div></div>
+<script>window.ER={"id":"circus","idx":26,"g":4,"title":"서커스 탈출","intro":"서커스 공연이 끝난 뒤 무대 뒤를 구경하다 천막 안에 갇혔어요! 큰 천막 무대·분장실·동물 마차를 지나며 단서를 모아 뒷문으로 빠져나가요.","story":["서커스 공연이 끝나고, 단장님이 무대 뒤를 구경해도 된다고 하셨어요.","그런데 휘이잉 바람에 천막 문이 쾅 닫히더니 자물쇠가 철컥 걸렸어요.","단서를 모아 동물 마차까지 가서, 뒷문을 열고 빠져나가요!"],"combine":[{"a":"kh1","b":"kh2","make":"key","msg":"손잡이와 몸통을 딸깍 끼웠더니 **동물 마차 열쇠**가 되었어요!"}],"outro":"물통이 가득 차자 코끼리가 물을 마시며 비켜섰어요. 뒷문이 활짝 열리고, 단장님이 손뼉을 치며 반겨 주셨어요. 서커스를 무사히 탈출했어요!","items":{"torch":{"nm":"손전등","k":"torch","c":"#F2C230","de":"어두운 곳을 밝힐 수 있어요"},"kh1":{"nm":"열쇠 손잡이","k":"khead","c":"#C8402F","de":"빨간 열쇠의 동그란 손잡이만 있어요. 나머지 반쪽은 어디 있을까요?"},"kh2":{"nm":"열쇠 몸통","k":"kblade","c":"#C8402F","de":"빨간 열쇠의 길쭉한 몸통이에요. 손잡이가 없어요."},"key":{"nm":"동물 마차 열쇠","k":"key","c":"#C8402F","de":"빨간 열쇠예요. 열쇠 고리에 '동물 마차'라고 적혀 있어요"},"gear":{"nm":"펌프 톱니바퀴","k":"gear","c":"#8A929C","de":"물 펌프에서 빠진 톱니바퀴 같아요"}},"flow":["flags","cannon","cbox","buckets","trunk","drum","dscrap","tdraw","bike","curtain","chart","makeup","kh1+kh2","mirror","wardrobe","wdoor","fishlog","tank","feedbox","exit"],"scenes":[{"id":"a","nm":"큰 천막 무대","bg":{"wall":"#F6E1D8","floor":"#B5654A","deco":"stripe"},"objs":[{"id":"flags","nm":"깃발 줄","art":"crFlags","x":100,"y":10,"w":800,"h":100,"p":{"n":8,"s":3},"keep":true,"look":"천막 꼭대기에 세모 깃발이 줄지어 걸려 있어요. 깃발마다 하얀 별이 있어요.","lookFig":{"art":"crFlags","w":520,"h":190,"p":{"n":8,"s":3}},"guide":"깃발 줄에 깃발과 별이 몇 개인지 세어 보세요."},{"id":"cannon","nm":"인간 대포","art":"crCannon","x":30,"y":130,"w":280,"h":240,"p":{"a":55},"keep":true,"look":"사람을 쏘아 올리는 인간 대포예요. 대포 뒤에 큰 **각도기**가 있어요. 파란 바닥선에서 대포까지의 각을 읽어 보세요.","lookFig":{"art":"crCannon","w":440,"h":340,"p":{"a":55}},"guide":"인간 대포가 몇 도 기울어져 있는지 각도기로 읽어 보세요."},{"id":"cbox","nm":"대포 옆 소품 상자","art":"box","x":40,"y":390,"w":160,"h":130,"p":{"c":"노랑","lock":true,"label":"대포"},"lock":{"t":"num","code":"25","q":"상자 뚜껑의 쪽지: **인간 대포는 꼭 80°로 쏘아야 안전해요. 지금 각도에서 몇 도를 더 올려야 할까요?** 숫자 두 개를 맞춰요.","hints":["인간 대포를 크게 보세요. 파란 바닥선에서 대포까지의 각을 각도기 눈금으로 읽어요.","작은 눈금 한 칸은 5°예요. 대포는 50°와 60° 사이를 가리켜요.","80°에서 지금 각도를 빼요."],"sol":"지금 55° → 80° − 55° = 25°"},"after":"상자가 열렸어요! 안에 **외바퀴 자전거 길** 그림이 있어요. 빨간 점이 자전거가 갈 길이에요.","afterFig":{"art":"map","w":300,"h":240,"p":{"n":4,"m":5,"start":[4,3],"path":"UULLLUL","block":[[3,2],[2,2],[0,2]],"sl":"자전거","gl":"커튼"}},"guide":"인간 대포의 각도를 읽어 소품 상자를 열어 보세요."},{"id":"buckets","nm":"광대 물통","art":"crBuckets","x":330,"y":140,"w":300,"h":170,"p":{"items":[{"c":"빨강","a":2,"op":"+","b":3,"d":7},{"c":"파랑","a":6,"op":"−","b":2,"d":7},{"c":"노랑","a":1,"op":"+","b":5,"d":7},{"c":"초록","a":5,"op":"−","b":2,"d":7}]},"keep":true,"look":"광대가 물을 합치거나 덜어 낸 물통 네 개예요. 통마다 물의 양(L)을 구하는 식이 붙어 있어요.","lookFig":{"art":"crBuckets","w":420,"h":240,"p":{"items":[{"c":"빨강","a":2,"op":"+","b":3,"d":7},{"c":"파랑","a":6,"op":"−","b":2,"d":7},{"c":"노랑","a":1,"op":"+","b":5,"d":7},{"c":"초록","a":5,"op":"−","b":2,"d":7}]}},"guide":"광대 물통마다 붙은 분수 계산식을 살펴보세요."},{"id":"trunk","nm":"소품 트렁크","art":"crTrunk","x":530,"y":370,"w":200,"h":160,"p":{"colors":["빨강","노랑","초록","파랑"]},"lock":{"t":"color","code":["노랑","빨강","파랑","초록"],"q":"트렁크 쪽지: **광대 물통의 계산 값이 큰 것부터** 그 통의 색을 차례로 눌러요.","hints":["광대 물통을 크게 보세요. 통마다 분모가 같은 분수의 덧셈이나 뺄셈이 있어요.","분모가 같으면 분자끼리 더하거나 빼요. 빨강은 2/7 + 3/7 = 5/7이에요.","네 통의 값을 모두 구한 뒤 분자가 큰 것부터 늘어놓아요."],"sol":"노랑 6/7 → 빨강 5/7 → 파랑 4/7 → 초록 3/7","opts":["빨강","노랑","초록","파랑"]},"give":["kh1"],"after":"트렁크가 열렸어요! 광대 모자 밑에 빨간 **열쇠 손잡이**가 있어요. 트렁크 안쪽에 **아주 작은 서랍**도 보여요.","guide":"광대 물통의 분수를 계산해 소품 트렁크를 열어 보세요."},{"id":"tdraw","nm":"트렁크 속 작은 서랍","art":"drawer","x":65,"y":100,"w":70,"h":40,"p":{"c":"#8A929C","lock":true},"in":"trunk","lock":{"t":"num","code":"79","q":"트렁크 안 아주 작은 서랍이에요! 숫자 자물쇠예요. 북에 붙은 쪽지에 적힌 대로 계산해요.","hints":["큰 북을 크게 보면 작은 쪽지가 있어요. 거기에 계산 방법이 적혀 있어요.","깃발은 8개, 깃발마다 별이 3개예요. 곱셈구구로 별을 모두 세어요.","대포 각도는 소품 상자를 열 때 읽은 각이에요. 별의 수에 더해요."],"sol":"별 8 × 3 = 24개, 24 + 55 = 79"},"give":["torch"],"after":"작은 서랍 안에 **손전등**이 들어 있어요.","guide":"트렁크를 연 뒤 트렁크 안쪽의 작은 서랍을 눌러 보세요."},{"id":"drum","nm":"큰 북","art":"crDrum","x":330,"y":370,"w":170,"h":160,"p":{},"look":"공연 때 둥둥 치는 커다란 북이에요. 잠긴 곳은 없어요.","guide":"큰 북을 크게 보면 무언가 붙어 있을지도 몰라요."},{"id":"dscrap","nm":"북에 붙은 쪽지","art":"scrap","x":60,"y":92,"w":50,"h":34,"p":{"t":"?"},"in":"drum","keep":true,"look":"북 옆에 아주 작은 쪽지가 붙어 있어요! \"트렁크 속 작은 서랍 = **깃발 줄의 별을 모두 센 수 + 인간 대포의 지금 각도**\"","guide":"큰 북을 크게 보고 북 옆의 작은 쪽지를 찾아보세요."},{"id":"bike","nm":"외바퀴 자전거","art":"crBike","x":660,"y":130,"w":130,"h":220,"p":{},"lock":{"t":"dir","code":["↑","←","↑","←"],"q":"자전거 손잡이의 화살표 단추예요. 소품 상자에서 찾은 **외바퀴 자전거 길**을 보고, **가는 방향이 바뀌는 차례대로** 화살표를 눌러요. (같은 쪽으로 여러 칸 가도 화살표는 하나)","hints":["수첩에서 외바퀴 자전거 길 그림을 열어 보세요. '자전거'에서 출발해 빨간 점을 따라가요.","처음에는 위로 가요. 그다음은 어느 쪽으로 꺾이나요? 화살표는 모두 4개예요."],"sol":"위로 2칸, 왼쪽으로 3칸, 위로 1칸, 왼쪽으로 1칸 가요. 누를 차례: ↑ ← ↑ ←"},"after":"외바퀴 자전거가 무대를 한 바퀴 돌아 커튼 줄을 당겼어요! 무대 뒤 **분장실 커튼**이 열렸어요.","guide":"자전거 길 그림대로 외바퀴 자전거의 화살표를 눌러 보세요."},{"id":"curtain","nm":"분장실 커튼","art":"door","x":820,"y":140,"w":150,"h":240,"p":{"c":"빨강","sign":"분장실"},"req":["bike"],"go":"b","look":"외바퀴 자전거가 열어 준 커튼이에요.","after":"커튼 너머로 분장실이 보여요.","guide":"새로 열린 커튼으로 분장실에 가 보세요."}]},{"id":"b","nm":"분장실","bg":{"wall":"#F7E3EC","floor":"#A98C7A","deco":"tile"},"objs":[{"id":"chart","nm":"관객 수 그래프","art":"crChart","x":30,"y":30,"w":340,"h":230,"p":{"labels":["월","화","수","목","금"],"vals":[300,350,450,400,600],"max":700,"step":50,"lab":100,"title":"이번 주 관객 수","unit":"명"},"keep":true,"look":"이번 주 요일마다 온 관객 수를 나타낸 꺾은선그래프예요. 세로 눈금 한 칸이 몇 명인지 먼저 살펴보세요.","lookFig":{"art":"crChart","w":420,"h":300,"p":{"labels":["월","화","수","목","금"],"vals":[300,350,450,400,600],"max":700,"step":50,"lab":100,"title":"이번 주 관객 수","unit":"명"}},"guide":"꺾은선그래프에서 요일마다 관객 수가 어떻게 바뀌었는지 보세요."},{"id":"mirror","nm":"분장 거울","art":"crMirror","x":400,"y":30,"w":280,"h":200,"p":{"pat":["○","△","△","□","□","□","○","△","△","□","□","□"]},"keep":true,"look":"거울 위에 모양 전구가 규칙대로 달려 있어요. 전구 밑에 번호가 있어요. 13번부터는 전구가 빠져 있어요.","lookFig":{"art":"crMirror","w":440,"h":260,"p":{"pat":["○","△","△","□","□","□","○","△","△","□","□","□"]}},"guide":"분장 거울 전구의 모양 규칙을 수첩에 남겨 두세요."},{"id":"makeup","nm":"분장 상자","art":"crMakeup","x":60,"y":320,"w":220,"h":170,"p":{},"lock":{"t":"num","code":"200","q":"분장 상자 쪽지: **관객 수가 전날보다 가장 많이 늘어난 날, 몇 명이 늘었을까요?** 숫자 세 개를 맞춰요.","hints":["관객 수 그래프를 크게 보세요. 세로 눈금 한 칸은 50명이에요.","선이 오른쪽 위로 가장 가파르게 올라간 곳을 찾아요.","그날의 관객 수에서 전날의 관객 수를 빼요."],"sol":"목 400명 → 금 600명: 600 − 400 = 200명"},"give":["kh2"],"after":"분장 상자 서랍이 열렸어요! 화장 붓 사이에 빨간 **열쇠 몸통**이 있어요. 손잡이는 없어요.","guide":"꺾은선그래프에서 가장 많이 늘어난 날을 찾아 분장 상자를 열어 보세요."},{"id":"wardrobe","nm":"의상 옷장","art":"crWardrobe","x":420,"y":270,"w":190,"h":260,"p":{},"need":"torch","needMsg":"옷장 안이 너무 깜깜해서 모양 단추가 보이지 않아요.","useMsg":"손전등으로 비추니 옷장 안쪽에 모양 단추가 보여요!","lock":{"t":"shape","code":["□","□","○"],"q":"옷장 단추 위 쪽지: **거울 전구를 규칙대로 계속 달면, 23번·24번·25번 전구는 무슨 모양일까요?** 차례로 눌러요.","hints":["분장 거울을 크게 보세요. 전구 모양이 몇 개씩 되풀이되나요?","○ △ △ □ □ □ 여섯 개가 되풀이돼요. 6번, 12번, 18번 전구는 모두 □예요.","23 ÷ 6의 나머지를 구하면 한 묶음에서 몇 번째 모양인지 알 수 있어요."],"sol":"23 ÷ 6 = 3 … 5 → 다섯째 □, 24번은 여섯째 □, 25번은 새 묶음 첫째 ○","opts":["○","△","□","☆"]},"give":["gear"],"after":"옷장이 열렸어요! 반짝이 의상 아래에서 **펌프 톱니바퀴**가 나왔어요.","guide":"손전등으로 옷장을 비추고, 거울 전구의 규칙으로 모양 단추를 눌러 보세요."},{"id":"wdoor","nm":"동물 마차 가는 문","art":"door","x":800,"y":160,"w":150,"h":230,"p":{"c":"갈색","sign":"동물 마차"},"need":"key","needMsg":"동물 마차로 가는 문이 잠겨 있어요. 빨간 열쇠 구멍이 보여요.","useMsg":"동물 마차 열쇠로 문을 열었어요!","go":"c","after":"문 너머로 동물 마차가 보여요. 배고픈 물개가 기다리고 있어요.","guide":"열쇠 손잡이와 몸통을 합쳐 동물 마차 가는 문을 열어 보세요."}]},{"id":"c","nm":"동물 마차","bg":{"wall":"#E9D2AE","floor":"#C9A86A","deco":"brick"},"objs":[{"id":"fishlog","nm":"물개 먹이 기록","art":"poster","x":30,"y":30,"w":300,"h":210,"p":{"lines":["물개 먹이 기록","1일: 생선 2마리","2일: 생선 5마리","3일: 생선 11마리","4일: 생선 23마리","5일: ?"],"fs":18,"c":"#FFFDF4"},"keep":true,"look":"사육사가 물개에게 준 생선 수를 날마다 적어 둔 기록이에요. 수가 규칙대로 늘어나요.","lookFig":{"art":"poster","w":360,"h":260,"p":{"lines":["물개 먹이 기록","1일: 생선 2마리","2일: 생선 5마리","3일: 생선 11마리","4일: 생선 23마리","5일: ?"],"fs":21,"c":"#FFFDF4"}},"guide":"물개 먹이 기록에서 수가 늘어나는 규칙을 찾아보세요."},{"id":"tank","nm":"코끼리 물통","art":"crTank","x":360,"y":30,"w":180,"h":330,"p":{"cap":10,"v":4500,"tick":500},"keep":true,"look":"들이가 **10 L**인 코끼리 물통이에요. 옆 눈금을 보고 지금 물이 얼마나 들어 있는지 읽어 보세요. 작은 눈금 한 칸은 500 mL예요.","lookFig":{"art":"crTank","w":220,"h":380,"p":{"cap":10,"v":4500,"tick":500}},"guide":"코끼리 물통에 물이 얼마나 들어 있는지 눈금을 읽어 보세요."},{"id":"feedbox","nm":"물개 먹이 상자","art":"box","x":40,"y":370,"w":200,"h":150,"p":{"c":"파랑","lock":true,"label":"먹이"},"lock":{"t":"num","code":"47","q":"먹이 상자 쪽지: **먹이 기록의 규칙대로라면 5일째에는 생선을 몇 마리 줄까요?** 숫자 두 개를 맞춰요.","hints":["물개 먹이 기록을 크게 보세요. 2, 5, 11, 23 …","앞의 수를 두 배 한 뒤 무엇을 하면 뒤의 수가 되는지 살펴보세요. 2 × 2 = 4, 4에서 5가 되려면?","23에도 같은 규칙을 써요."],"sol":"앞의 수 × 2 + 1 → 23 × 2 + 1 = 47마리"},"after":"물개에게 생선을 주었더니 물개가 신나서 박수를 치며 비켜섰어요. 물개 뒤에 숨어 있던 **마차 뒷문**이 보여요!","guide":"물개 먹이 기록의 규칙을 찾아 먹이 상자를 열어 보세요."},{"id":"seal","nm":"물개","art":"crSeal","x":270,"y":390,"w":190,"h":150,"p":{},"look":"공을 코에 올린 물개가 배가 고픈지 끙끙거려요. 물개 뒤에 무언가 숨어 있는 것 같아요.","guide":"물개는 먹이를 기다려요. 먹이 상자를 열어 보세요."},{"id":"exit","nm":"마차 뒷문","art":"crGate","x":650,"y":150,"w":320,"h":300,"p":{},"req":["feedbox"],"need":"gear","needMsg":"뒷문 앞을 코끼리가 막고 있어요. 문 옆 물 펌프에 톱니바퀴 하나가 빠져 있어요.","useMsg":"톱니바퀴를 끼웠더니 펌프가 움직여요! 몇 mL를 넣을지 숫자판을 맞춰요.","lock":{"t":"num","code":"5500","q":"펌프 숫자판: **코끼리 물통을 가득 채우려면 물을 몇 mL 더 넣어야 할까요?** 물통이 가득 차면 코끼리가 물을 마시러 비켜 줘요. 숫자 네 개를 맞춰요.","hints":["코끼리 물통을 크게 보세요. 들이와 지금 들어 있는 물의 양을 읽어요.","지금 물은 4 L와 5 L 사이, 작은 눈금 한 칸(500 mL)만큼 올라가 있어요.","1 L = 1000 mL예요. 들이에서 지금 물의 양을 빼서 mL로 나타내요."],"sol":"10 L − 4 L 500 mL = 5 L 500 mL = 5500 mL"},"go":"exit","after":"콸콸 물이 차오르자 코끼리가 물을 마시러 비켜섰어요. 뒷문이 열렸어요!","guide":"톱니바퀴를 펌프에 끼우고, 물통 눈금으로 더 넣을 물의 양을 계산해요."}]}]};
 /* 수학 방탈출 그림 묶음 (2026-11-26): ART[이름](w, h, p, open) → 0,0~w,h 안에 그리는 SVG 조각.
    방 그림(장면)과 크게 보기 창에서 같은 함수를 씀. 이모지 대신 모두 직접 그린 도형(공통 덮개가 이모지를 바꾸지 않게). */
 var ART = (function () {
@@ -4443,6 +4480,19 @@ var ART = (function () {
   };
 })();
 
+/* 수학 방탈출 · 우주선 그림 (2026-11-28) — 이름 앞글자 sp. */
+(function () {
+  function C(x, y, r, f, o) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"' + (o || '') + '/>' }
+  /* 관측 창: 별 몇 개와 작은 파란 점(지구) */
+  ART.A.spWindow = function (w, h) {
+    var r = Math.min(w, h) / 2 - 3, cx = w / 2, cy = h / 2, o = C(cx, cy, r, '#8A929C', ' stroke="#2A2233" stroke-width="3"') + C(cx, cy, r * .78, '#11183A');
+    for (var i = 0; i < 7; i++) o += C(cx + Math.cos(i * 2.1) * r * .5, cy + Math.sin(i * 1.7) * r * .5, Math.max(1.5, r * .025), '#fff');
+    var ex = cx + r * .32, ey = cy + r * .3, er = Math.max(4, r * .11);
+    o += C(ex, ey, er * 1.8, '#3B8CFF', ' opacity=".25"') + C(ex, ey, er, '#3B8CFF', ' stroke="#BFE0FF" stroke-width="1.5"') + '<path d="M' + (ex - er * .5) + ' ' + (ey - er * .3) + 'q' + er * .4 + ' ' + (-er * .4) + ' ' + er * .8 + ' 0q' + (-er * .2) + ' ' + er * .5 + ' ' + (-er * .6) + ' ' + er * .4 + 'z" fill="#4FB06A"/>';
+    return o;
+  };
+})();
+
 /* 수학 방탈출 · 기차역 그림 (2026-11-28) — 이름 앞글자 st. art.js의 ART.c·ART.shape·ART.esc를 씀.
    개수를 세는 그림(손님 칸·바퀴)은 p로 받은 수만큼 꼭 그 수대로 그림. */
 (function () {
@@ -4508,7 +4558,7 @@ var ART = (function () {
   /* 승차권 발매기 */
   ART.A.stKiosk = function (w, h, p, open) {
     var o = R(0, 0, w, h, '#D8DEE6', K + ' rx="10"') + R(w * .12, h * .06, w * .76, h * .07, '#3B6FD6', ' rx="3"') + T(w / 2, h * .115, '승차권', Math.min(w * .14, h * .05), '#fff');
-    o += R(w * .12, h * .17, w * .76, h * .28, open ? '#1E5A3A' : '#14181E', K2 + ' rx="4"') + T(w / 2, h * .33, open ? '발매 완료' : '- - -', Math.min(w * .13, h * .05), open ? '#7CF29B' : '#FFC94A');
+    o += R(w * .12, h * .17, w * .76, h * .28, open ? '#1E5A3A' : '#14181E', K2 + ' rx="4"') + T(w / 2, h * .33, open ? '발매 완료' : (p.screen || '- -'), Math.min(w * .13, h * .05), open ? '#7CF29B' : '#FFC94A');
     for (var r = 0; r < 4; r++) for (var q = 0; q < 3; q++) o += R(w * .2 + q * w * .22, h * .5 + r * h * .07, w * .16, h * .05, '#fff', K2 + ' rx="3"');
     o += R(w * .2, h * .82, w * .6, h * .06, '#3A3F48', ' rx="3"');
     if (open) o += R(w * .3, h * .78, w * .4, h * .1, '#FFE27A', K2 + ' rx="2"');
@@ -4547,7 +4597,7 @@ var ART = (function () {
     var o = R(w * .1, h * .7, w * .8, h * .3, '#6E7580', K + ' rx="6"') + R(w * .15, h * .02, w * .7, h * .16, '#F2C230', K2 + ' rx="5"') + T(w / 2, h * .12, '선로 전환기', Math.min(h * .07, w * .1), '#2A2233');
     var px = w / 2, py = h * .74, a = open ? 30 : -30, rad = a * Math.PI / 180, len = h * .48;
     o += '<line x1="' + px + '" y1="' + py + '" x2="' + (px + Math.sin(rad) * len) + '" y2="' + (py - Math.cos(rad) * len) + '" stroke="#3A3F48" stroke-width="' + w * .08 + '" stroke-linecap="round"/>' + C(px + Math.sin(rad) * len, py - Math.cos(rad) * len, w * .08, '#E5534B', K2) + C(px, py, w * .1, '#8A929C', K2);
-    o += R(w * .2, h * .84, w * .6, h * .08, '#14181E', ' rx="3"') + T(w / 2, h * .9, open ? '바뀜' : '↑ → ↓ ←', Math.min(h * .06, w * .09), open ? '#7CF29B' : '#FFC94A');
+    o += R(w * .2, h * .84, w * .6, h * .08, '#14181E', ' rx="3"') + T(w / 2, h * .9, open ? '바뀜' : '대기 중', Math.min(h * .06, w * .09), open ? '#7CF29B' : '#FFC94A');
     return o;
   };
 
@@ -4597,12 +4647,30 @@ window.TOOL = function (host, api) {
   var OBJ = {}, SCN = {}, KIDS = {}; R.scenes.forEach(function (s) { SCN[s.id] = s; s.objs.forEach(function (o) { o.scene = s.id; OBJ[o.id] = o; if (o.in) (KIDS[o.in] = KIDS[o.in] || []).push(o) }) });
   var COMB = R.combine || [], RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   var SNDK = 'hj-escape-snd', snd = true; try { snd = localStorage.getItem(SNDK) !== '0' } catch (e) {}
+  /* 모양 글자(○△□☆◇♡)는 자물쇠 단추·그림과 같은 꽉 찬 작은 모양으로(2026-11-28) — '32 : □'처럼 모르는 수 자리의 □는 그대로 */
+  var SHN = { '○': '동그라미', '△': '세모', '□': '네모', '☆': '별', '◇': '마름모', '♡': '하트' };
+  function shp(v) { return '<svg class="es-shp" viewBox="0 0 40 40" role="img" aria-label="' + SHN[v] + '">' + ART.shape(v, 20, 21, 16) + '</svg>' }
   function frac(s) {
     return esc(s).replace(/([^\s<>*]*?)(\d+)\/(\d+)([^\s<>*]*)/g, '<span class="es-nw">$1<span class="fd-fr"><i>$2</i><i>$3</i></span>$4</span>')
-      .replace(/\*\*(.+?)\*\*/g, function (m, t) { return t.replace(/<[^>]+>/g, '').length <= 12 ? '<b class="es-nw">' + t + '</b>' : '<b>' + t + '</b>' });
+      .replace(/\*\*(.+?)\*\*/g, function (m, t) { return t.replace(/<[^>]+>/g, '').length <= 12 ? '<b class="es-nw">' + t + '</b>' : '<b>' + t + '</b>' })
+      .replace(/[○△□☆◇♡]/g, function (v, i, all) { return v === '□' && (/[=:×÷+−-]\s*$/.test(all.slice(Math.max(0, i - 3), i)) || /^\s*[=:]/.test(all.slice(i + 1, i + 4))) ? v : shp(v) });
   }
-  function jo(w, a, b) { var s = String(w), ch = s.charCodeAt(s.length - 1), m = s.match(/\d+$/), f; if (m) { var t = m[0].replace(/0+$/, '') || '0'; f = m[0].length > t.length || '013678'.indexOf(t.slice(-1)) >= 0 } else f = ch >= 0xAC00 && ch <= 0xD7A3 && (ch - 0xAC00) % 28 > 0; return s + (f ? a : b) }
-  function reset() { st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, lh: {}, done: false, open: null, entry: {}, made: {}, shown: {}, drawn: {} }; stop(); draw() }
+  /* 받침에 따라 조사: jo(낱말, '을', '를') — '으로/로'는 받침 ㄹ이면 '로'(우리길로, 1로·7로·8로) */
+  function jo(w, a, b) {
+    var s = String(w), ch = s.charCodeAt(s.length - 1), m = s.match(/\d+$/), f, rl = false;
+    if (m) { var t = m[0].replace(/0+$/, '') || '0', d = t.slice(-1); f = m[0].length > t.length || '013678'.indexOf(d) >= 0; rl = m[0].length === t.length && '178'.indexOf(d) >= 0 }
+    else { var j = ch >= 0xAC00 && ch <= 0xD7A3 ? (ch - 0xAC00) % 28 : 0; f = j > 0; rl = j === 8 }
+    if (a === '으로' && rl) f = false;
+    return s + (f ? a : b);
+  }
+  function reset() { st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, ans: {}, lh: {}, done: false, open: null, entry: {}, made: {}, shown: {}, drawn: {} }; stop(); unsave(); draw() }
+  /* 진행 저장(2026-11-28 예비 사용자 팀): 새로 고침·다른 쪽에 갔다 와도 이 탭(sessionStorage)에서 '이어서 하기' — 걸린 시간은 떠나 있던 동안 멈춤 */
+  var SVK = 'hj-escape-run:' + (R.id || R.idx);
+  function save() { if (!st || !st.t0 || st.done) return; try { var c = JSON.parse(JSON.stringify(st)); c.el = sec(); c.open = null; c.sel = null; sessionStorage.setItem(SVK, JSON.stringify({ st: c, limit: limit, team: team })) } catch (e) {} }
+  function unsave() { try { sessionStorage.removeItem(SVK) } catch (e) {} }
+  function saved() { try { var v = JSON.parse(sessionStorage.getItem(SVK)); return v && v.st && v.st.t0 && !v.st.done ? v : null } catch (e) { return null } }
+  function resume(v) { st = v.st; limit = v.limit || 0; team = v.team || ''; st.t0 = Date.now() - (st.el || 0) * 1000; delete st.el; st.drawn = {}; st.shown = {}; stop(); tick = setInterval(timer, 1000); draw() }
+  window.addEventListener('beforeunload', function (e) { if (st && st.t0 && !st.done) { save(); e.preventDefault(); e.returnValue = '' } });
   function stop() { if (tick) clearInterval(tick); tick = null }
   function sec() { return st.t0 ? Math.floor((Date.now() - st.t0) / 1000) : 0 }
   function mmss(s) { s = Math.max(0, s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') }
@@ -4614,7 +4682,7 @@ window.TOOL = function (host, api) {
   function nLocks() { var n = 0, d = 0; for (var k in OBJ) if (OBJ[k].lock || OBJ[k].need) { n++; if (ok(OBJ[k])) d++ } return [d, n] }
   function note(title, html) { if (st.notes.some(function (n) { return n.h === html })) return; st.notes.push({ t: title, h: html }) }
   function fig(f) { if (!f) return ''; var w = f.w || 300, h = f.h || 200; return '<svg class="es-fig" viewBox="-12 -24 ' + (w + 24) + ' ' + (h + 36) + '" role="img" aria-label="단서 그림">' + A[f.art](w, h, f.p || {}, f.open) + '</svg>' }
-  function timer() { var el = root.querySelector('.es-time'); if (!el) return; var s = sec(); el.textContent = limit ? '남은 시간 ' + mmss(limit * 60 - s) : '걸린 시간 ' + mmss(s); if (limit && s >= limit * 60 && !st.done) { el.textContent = '시간 끝! 계속 해도 돼요'; el.classList.add('es-over') } }
+  function timer() { var el = root.querySelector('.es-time'); if (!el) return; save(); var s = sec(); el.textContent = limit ? '남은 시간 ' + mmss(limit * 60 - s) : '걸린 시간 ' + mmss(s); if (limit && s >= limit * 60 && !st.done) { el.textContent = '시간 끝! 계속 해도 돼요'; el.classList.add('es-over') } }
   function exitObj() { for (var k in OBJ) if (OBJ[k].go === 'exit') return OBJ[k] }
 
   /* ── 효과음(Web Audio, 누른 뒤에만 만듦) ── */
@@ -4647,11 +4715,25 @@ window.TOOL = function (host, api) {
   }
   function confetti() { if (RM) return; var w = host.querySelector('.es-win'); if (!w) return; var cols = ['#E5534B', '#F2C230', '#3DA35D', '#3B6FD6', '#EE7DB0', '#8A5BC9'], h = ''; for (var i = 0; i < 46; i++) h += '<i style="left:' + (i * 37 % 100) + '%;background:' + cols[i % 6] + ';animation-delay:' + (i % 9) * .14 + 's;animation-duration:' + (1.8 + (i % 5) * .3) + 's"></i>'; w.insertAdjacentHTML('afterbegin', '<div class="es-conf" aria-hidden="true">' + h + '</div>') }
 
+  /* 읽어 주기(2026-11-28): 누를 때만, 브라우저 한국어 목소리 — 없으면 단추를 숨김(html.es-ttson) */
+  var SS = window.speechSynthesis, KOV = null;
+  function kov() { try { KOV = SS && SS.getVoices().filter(function (v) { return /^ko/i.test(v.lang) })[0] || null } catch (e) { KOV = null } document.documentElement.classList.toggle('es-ttson', !!KOV) }
+  if (SS) { kov(); try { SS.addEventListener('voiceschanged', kov) } catch (e) { SS.onvoiceschanged = kov } }
+  function spk() { return '<button type="button" class="es-spk" data-a="speak" aria-label="읽어 주기" title="읽어 주기">' + SPK + '<path d="M15.5 9a4 4 0 0 1 0 6"/></svg></button>' }
+  function speak(el) {
+    if (!SS || !el) return; var c = el.cloneNode(true);
+    [].forEach.call(c.querySelectorAll('button'), function (x) { x.remove() });
+    [].forEach.call(c.querySelectorAll('.fd-fr'), function (f) { var i = f.querySelectorAll('i'); f.replaceWith(' ' + i[1].textContent + '분의 ' + i[0].textContent + ' ') });
+    [].forEach.call(c.querySelectorAll('.es-shp'), function (x) { x.replaceWith(' ' + x.getAttribute('aria-label') + ' ') });
+    var t = c.textContent.replace(/×/g, ' 곱하기 ').replace(/÷/g, ' 나누기 ').replace(/−/g, ' 빼기 ').replace(/\+/g, ' 더하기 ').replace(/=/g, ' 는 ').replace(/ → /g, ', ').replace(/[↑→↓←]/g, function (v) { return ' ' + DIRN[v] + ' ' }).replace(/\s+/g, ' ').trim();
+    try { SS.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'ko-KR'; if (KOV) u.voice = KOV; u.rate = .95; SS.speak(u) } catch (e) {}
+  }
   /* 처음 화면 */
   function startView() {
-    host.innerHTML = '<div class="es-start"><p class="es-intro">' + frac(R.intro) + '</p>'
+    var sv = saved(), lim = (R.g || 3) <= 2 ? 30 : 20;
+    host.innerHTML = '<div class="es-start">' + (sv ? '<div class="es-resume"><p><b>하던 탈출이 있어요.</b> 걸린 시간 ' + mmss(sv.st.el || 0) + (sv.team ? ' · ' + esc(sv.team) : '') + '</p><div class="tl-row"><button type="button" class="tl-btn tl-go" data-a="resume">이어서 하기</button><button type="button" class="tl-btn" data-a="fresh">처음부터</button></div></div>' : '') + '<p class="es-intro">' + frac(R.intro) + '</p>'
       + '<ol class="es-steps"><li><span><b>물건을 눌러</b> 크게 살펴봐요</span></li><li><span>단서는 <b>수첩</b>에, 찾은 물건은 <b>가방</b>에 모여요</span></li><li><span>막히면 <b>어디를 볼까?</b>를 눌러요</span></li></ol>'
-      + '<div class="es-opts"><label class="es-opt"><span>이름 또는 모둠</span><input class="es-team-in" maxlength="12" placeholder="예: 3번, 1모둠" value="' + esc(team) + '"></label><label class="es-opt"><span>시간 제한</span><select class="es-lim"><option value="0">없음</option><option value="15">15분</option><option value="20" selected>20분</option><option value="30">30분</option><option value="40">40분</option></select></label><div class="es-opt"><span>소리</span>' + sndBtn(true) + '</div></div><button type="button" class="tl-btn tl-go es-go">이야기 보고 시작하기</button></div>';
+      + '<div class="es-opts"><label class="es-opt"><span>이름 또는 모둠</span><input class="es-team-in" maxlength="12" placeholder="예: 3번, 1모둠" value="' + esc(team) + '"></label><label class="es-opt"><span>시간 제한</span><select class="es-lim">' + [0, 15, 20, 25, 30, 40].map(function (m) { return '<option value="' + m + '"' + (m === lim ? ' selected' : '') + '>' + (m ? m + '분' : '없음') + '</option>' }).join('') + '</select></label><div class="es-opt"><span>소리</span>' + sndBtn(true) + '</div></div><button type="button" class="tl-btn tl-go es-go">이야기 보고 시작하기</button></div>';
     api.bar('');
   }
   /* 이야기 장면: 첫 장면 그림 + 쾅 닫히는 문 + 이야기 줄이 하나씩 */
@@ -4702,14 +4784,15 @@ window.TOOL = function (host, api) {
     /* 연(쓴) 뒤에는 처음 모습 글(잠겨 있어요·열쇠 구멍이 있어요)을 빼고 — 단서 물건(keep)은 그대로 */
     var showLook = o.look && !(op && !o.keep && (o.after || o.need || o.useMsg));
     /* 단서 그림이 물건과 같은 그림이면 두 번 보이지 않게 단서 그림(설정 포함)을 큰 그림으로 */
-    var bf = showLook && o.lookFig && o.lookFig.art === o.art && !kids.length ? o.lookFig : null;
-    var BW = bf ? (bf.w || 300) : o.w, BH = bf ? (bf.h || 200) : o.h, bigArt = bf ? A[bf.art](BW, BH, bf.p || {}, bf.open) : A[o.art](o.w, o.h, o.p || {}, op);
+    var bf = showLook && o.lookFig && o.lookFig.art === o.art ? o.lookFig : null;
+    /* 숨은 곳(kids)이 있으면 그 자리가 물건 크기에 맞춰져 있으므로, 단서 그림 설정을 물건 크기로 그려 한 번만 보여 줌 */
+    var BW = bf && !kids.length ? (bf.w || 300) : o.w, BH = bf && !kids.length ? (bf.h || 200) : o.h, bigArt = bf ? A[bf.art](BW, BH, bf.p || {}, bf.open) : A[o.art](o.w, o.h, o.p || {}, op);
     var h = '<div class="es-card' + (BW / BH >= 2.4 ? ' es-wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(o.nm) + '"><div class="es-chd"><b>' + esc(o.nm) + '</b><span>' + (o.in ? '<button type="button" class="tl-btn" data-back="' + o.in + '">◀ ' + esc(OBJ[o.in].nm) + '</button> ' : '') + '<button type="button" class="tl-btn es-x" data-a="close">닫기</button></span></div><div class="es-cbody"><div class="es-bigw"><div class="es-big" title="그림을 누르면 더 크게 보여요"><svg viewBox="-20 -30 ' + (BW + 40) + ' ' + (BH + 50) + '" role="group" aria-label="' + esc(o.nm) + ' 크게 보기"><g class="es-art' + (op && st.fresh === id ? ' es-opening' : '') + '">' + bigArt + '</g>' + kids.map(function (k) { return objG(k, ' es-spot' + (st.seen[k.id] ? '' : ' es-new')) }).join('') + '</svg></div>' + (kids.length ? '<p class="es-peek">그림 속 작은 곳도 눌러 볼 수 있어요.</p>' : '') + '</div><div class="es-ctext">';
     st.fresh = null;
     if (o.need && st.used[o.id] && o.useMsg && !(o.lock && st.solved[o.id])) h += '<p class="es-used">' + frac(o.useMsg) + '</p>';
-    if (showLook) { h += '<p class="es-look">' + frac(o.look) + '</p>' + (bf ? '' : fig(o.lookFig)); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
+    if (showLook) { h += '<p class="es-look">' + spk() + frac(o.look) + '</p>' + (bf ? '' : fig(o.lookFig)); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
     if (o.need && !st.used[o.id]) {
-      h += '<div class="es-need"><p>' + frac(o.needMsg || '무언가가 필요해 보여요.') + '</p>' + (st.inv.length ? '<p class="es-try">가방에서 써 볼 물건:</p><div class="es-inv es-inv2">' + st.inv.map(function (iid) { var it = R.items[iid]; return '<button type="button" class="es-it" data-use="' + iid + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') + '</div>' : '<p class="es-try">가방이 비어 있어요. 다른 곳을 먼저 살펴봐요.</p>') + '</div>';
+      h += '<div class="es-need"><p>' + spk() + frac(o.needMsg || '무언가가 필요해 보여요.') + '</p>' + (st.inv.length ? '<p class="es-try">가방에서 써 볼 물건:</p><div class="es-inv es-inv2">' + st.inv.map(function (iid) { var it = R.items[iid]; return '<button type="button" class="es-it" data-use="' + iid + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') + '</div>' : '<p class="es-try">가방이 비어 있어요. 다른 곳을 먼저 살펴봐요.</p>') + '<p class="es-umsg" aria-live="polite"></p></div>';
     } else if (o.lock && !st.solved[o.id]) h += lockUI(o);
     else if (o.lock || o.need || o.after) h += done(o);
     h += '</div></div></div>';
@@ -4720,21 +4803,25 @@ window.TOOL = function (host, api) {
   function give(o) { if (st.given[o.id]) return; st.given[o.id] = 1; (o.give || []).forEach(function (iid) { if (st.inv.indexOf(iid) < 0) st.inv.push(iid) }); if (o.give && o.give.length) { toast('가방에 넣었어요: ' + o.give.map(function (i) { return R.items[i].nm }).join(', ')); setTimeout(function () { sfx('pick') }, 350) } }
   function done(o) {
     var h = '';
-    if (o.after) { h += '<div class="es-after"><p>' + frac(o.after) + '</p>' + fig(o.afterFig) + '</div>'; note(o.nm, '<p>' + frac(o.after) + '</p>' + fig(o.afterFig)) }
+    if (o.after) { h += '<div class="es-after"><p>' + spk() + frac(o.after) + '</p>' + fig(o.afterFig) + '</div>'; note(o.nm, '<p>' + frac(o.after) + '</p>' + fig(o.afterFig)) }
     if (o.go === 'exit') h += '<button type="button" class="tl-btn tl-go es-goexit" data-a="exit">밖으로 나가기</button>';
     else if (o.go) h += '<button type="button" class="tl-btn tl-go" data-go="' + o.go + '">' + esc(jo(SCN[o.go].nm, '으로', '로')) + ' 가기</button>';
     return h;
   }
   /* 자물쇠 */
-  var SYM = { dir: ['↑', '→', '↓', '←'], shape: ['○', '△', '□', '☆'], color: ['빨강', '노랑', '초록', '파랑'] };
+  var SYM = { dir: ['↑', '→', '↓', '←'], shape: ['○', '△', '□', '☆'], color: ['빨강', '노랑', '초록', '파랑'] }, DIRN = { '↑': '위', '→': '오른쪽', '↓': '아래', '←': '왼쪽' };
+  var LOW = (R.g || 3) <= 2;
   function lockUI(o) {
-    var L = o.lock, e = st.entry[o.id] || (st.entry[o.id] = L.t === 'num' ? L.code.split('').map(function () { return 0 }) : []), h = '<div class="es-lock es-lk-' + L.t + '"><p class="es-lq">' + frac(L.q) + '</p>';
-    if (L.t === 'num') h += '<div class="es-dials">' + e.map(function (d, i) { return '<div class="es-dial"><button type="button" data-d="' + i + '" data-v="1" aria-label="' + (i + 1) + '번째 숫자 올리기">▲</button><b>' + d + '</b><button type="button" data-d="' + i + '" data-v="-1" aria-label="' + (i + 1) + '번째 숫자 내리기">▼</button></div>' }).join('') + '</div>';
-    else {
+    var L = o.lock, e = st.entry[o.id] || (st.entry[o.id] = L.t === 'num' ? L.code.split('').map(function () { return 0 }) : []), h = '<div class="es-lock es-lk-' + L.t + '"><p class="es-lq">' + spk() + frac(L.q) + '</p>';
+    if (L.t === 'num') {
+      h += '<div class="es-dials">' + e.map(function (d, i) { return '<div class="es-dial"><button type="button" data-d="' + i + '" data-v="1" aria-label="' + (i + 1) + '번째 숫자 올리기">▲</button><b>' + d + '</b><button type="button" data-d="' + i + '" data-v="-1" aria-label="' + (i + 1) + '번째 숫자 내리기">▼</button></div>' }).join('') + '</div>';
+      /* 다이얼 쓰는 법: 1·2학년 방은 늘, 그 밖은 숫자 자물쇠를 처음 열기 전까지 */
+      if (LOW || !Object.keys(st.solved).some(function (k) { return OBJ[k].lock && OBJ[k].lock.t === 'num' })) h += '<p class="es-dhelp">▲▼를 눌러 숫자를 맞춰요</p>';
+    } else {
       var opts = L.opts || SYM[L.t];
-      /* 방향 자물쇠는 빈칸 수로 답의 길이가 드러나지 않게 — 넣은 것과 다음 칸 하나만 */
-      var sl = L.t === 'dir' ? e.concat(e.length < cap(L) ? [null] : []) : L.code.map(function (_, i) { return e[i] });
-      h += '<div class="es-slots">' + sl.map(function (v, i) { return '<span class="es-slot' + (v == null && (L.t === 'dir' || i === e.length) ? ' es-cur' : '') + '">' + (v == null ? '' : sym(L.t, v, 22)) + '</span>' }).join('') + '</div><div class="es-keys">' + opts.map(function (v) { return '<button type="button" class="es-key" data-put="' + esc(v) + '" aria-label="' + esc(v) + '">' + sym(L.t, v, 26) + (L.t === 'color' ? '<span>' + esc(v) + '</span>' : '') + '</button>' }).join('') + '<button type="button" class="es-key es-del" data-a="del">한 칸 지우기</button></div>';
+      /* 방향 자물쇠: 3학년부터는 빈칸 수로 답의 길이가 드러나지 않게(넣은 것과 다음 칸 하나만), 1·2학년은 칸 수를 보여 줌 */
+      var free = L.t === 'dir' && !LOW, sl = free ? e.concat(e.length < cap(L) ? [null] : []) : L.code.map(function (_, i) { return e[i] });
+      h += '<div class="es-slots">' + sl.map(function (v, i) { return '<span class="es-slot' + (v == null && (free || i === e.length) ? ' es-cur' : '') + '">' + (v == null ? '' : sym(L.t, v, 22)) + '</span>' }).join('') + '</div><div class="es-keys">' + opts.map(function (v) { return '<button type="button" class="es-key" data-put="' + esc(v) + '" aria-label="' + esc(SHN[v] || DIRN[v] || v) + '">' + sym(L.t, v, 26) + (L.t === 'color' ? '<span>' + esc(v) + '</span>' : '') + '</button>' }).join('') + '<button type="button" class="es-key es-del" data-a="del">한 칸 지우기</button></div>';
     }
     h += '<div class="tl-row"><button type="button" class="tl-btn tl-go es-try" data-a="try">열어 보기</button></div><p class="es-msg" aria-live="polite"></p>';
     var n = st.lh[o.id] || 0;
@@ -4743,7 +4830,7 @@ window.TOOL = function (host, api) {
     h += '</div>';
     return h;
   }
-  function cap(L) { return L.t === 'dir' ? 8 : L.code.length }
+  function cap(L) { return L.t === 'dir' && !LOW ? 8 : L.code.length }
   function sym(t, v, s) {
     if (t === 'dir') return '<svg viewBox="0 0 40 40" width="' + s + '" height="' + s + '" aria-hidden="true">' + ART.arrow(v, 20, 20, 15) + '</svg>';
     if (t === 'shape') return '<svg viewBox="0 0 40 40" width="' + s + '" height="' + s + '" aria-hidden="true">' + ART.shape(v, 20, 21, 15) + '</svg>';
@@ -4753,12 +4840,17 @@ window.TOOL = function (host, api) {
   function hc() { var el = root.querySelector('.es-hc'); if (el) el.textContent = '힌트 ' + st.hints + ' · 틀림 ' + st.wrong }
   function tryLock(o) {
     var L = o.lock, e = st.entry[o.id], got = L.t === 'num' ? e.join('') : e.join(','), want = L.t === 'num' ? L.code : L.code.join(','), msg = host.querySelector('.es-msg');
-    if (L.t === 'dir' && !e.length) { msg.textContent = '화살표를 먼저 눌러요.'; return }
-    if (L.t !== 'num' && L.t !== 'dir' && e.length < L.code.length) { msg.textContent = '칸을 모두 채워요(' + L.code.length + '칸).'; return }
-    if (got === want) { st.solved[o.id] = 1; sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true; fx('unlock', jo(o.nm, '이', '가') + ' 열렸어요!', function () { st.fresh = k; give(o); draw(); openObj(k) }); return }
-    st.wrong++; sfx(0); var card = host.querySelector('.es-lock'); card.classList.remove('es-shake'); void card.offsetWidth; card.classList.add('es-shake');
-    msg.textContent = '열리지 않아요. 단서를 다시 살펴봐요.'; if (L.t !== 'num') { st.entry[o.id] = []; refreshLock(o) } hc();
+    if (L.t === 'dir' && !e.length) { show(msg, '화살표를 먼저 눌러요.'); return }
+    if (L.t !== 'num' && (L.t !== 'dir' || LOW) && e.length < L.code.length) { show(msg, '칸을 모두 채워요(' + L.code.length + '칸).'); return }
+    if (got === want) { st.solved[o.id] = 1; sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true; fx('unlock', jo(o.nm, '이', '가') + ' 열렸어요!', function () { st.fresh = k; give(o); draw(); openObj(k) }); save(); return }
+    st.wrong++; sfx(0);
+    /* 틀린 답을 지운 뒤 자물쇠를 다시 그리고 나서 알림·흔들림을 넣음(다시 그리면 알림이 지워졌음) */
+    if (L.t !== 'num') { st.entry[o.id] = []; refreshLock(o) }
+    var card = host.querySelector('.es-lock'); card.classList.remove('es-shake'); void card.offsetWidth; card.classList.add('es-shake');
+    show(host.querySelector('.es-msg'), '열리지 않아요. 단서를 다시 살펴봐요.'); hc(); save();
   }
+  /* 알림을 보이게: 글을 넣고 창 안에서 그 자리로 스크롤 */
+  function show(el, t, html) { if (!el) return; if (html) el.innerHTML = t; else el.textContent = t; try { el.scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' }) } catch (er) {} }
   function refreshLock(o) { var box = host.querySelector('.es-lock'); if (!box) return; var nb = box.querySelector('.es-nbk'), was = nb && nb.open, t = document.createElement('div'); t.innerHTML = lockUI(o); box.replaceWith(t.firstChild); if (was) { nb = host.querySelector('.es-nbk'); if (nb) nb.open = true } }
   function toast(t) { var d = document.createElement('div'); d.className = 'es-toast'; d.textContent = t; (host.parentNode || host).appendChild(d); setTimeout(function () { d.remove() }, 2200) }
   function useItem(o, iid) {
@@ -4768,7 +4860,16 @@ window.TOOL = function (host, api) {
       fx('unlock', jo(it.nm, '을', '를') + ' 썼어요!', function () {
         if (!o.lock) { st.fresh = k; give(o) } draw(); openObj(k);
       });
-    } else { toast('여기에는 ' + jo(R.items[iid].nm, '이', '가') + ' 맞지 않아요'); st.wrong++; sfx(0); hc() }
+    } else {
+      /* 합치기 재료(반쪽 등)는 틀림으로 세지 않고 합치라고 알려 줌. 알림은 크게 보기 창 안에 */
+      var part = COMB.some(function (c) { return c.a === iid || c.b === iid }), nm = R.items[iid].nm;
+      if (st.open !== o.id) openObj(o.id, true);
+      var um = host.querySelector('.es-umsg');
+      if (part) { show(um, '<b>' + esc(nm) + '</b>' + jo(nm, '은', '는').slice(-1) + ' 아직 조각이에요. 가방에서 다른 조각과 먼저 합쳐 봐요.', true); sfx('tap') }
+      else { st.wrong++; sfx(0); hc(); show(um, '여기에는 <b>' + esc(nm) + '</b>' + jo(nm, '이', '가').slice(-1) + ' 맞지 않아요.', true); var nd = host.querySelector('.es-need'); if (nd) { nd.classList.remove('es-shake'); void nd.offsetWidth; nd.classList.add('es-shake') } }
+      if (!um) toast(part ? '다른 조각과 먼저 합쳐 봐요' : '여기에는 ' + jo(nm, '이', '가') + ' 맞지 않아요');
+      save();
+    }
   }
   /* 가방 물건 합치기 */
   function combine(a, b) {
@@ -4805,11 +4906,12 @@ window.TOOL = function (host, api) {
   }
   function when() { var d = new Date(), h = d.getHours(); return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + '일월화수목금토'[d.getDay()] + '요일 · ' + (h < 12 ? '오전 ' : '오후 ') + ((h + 11) % 12 + 1) + '시 ' + String(d.getMinutes()).padStart(2, '0') + '분 탈출' }
   function win() {
-    st.done = true; stop(); var s = st.sec, stars = st.hints <= 2 && st.wrong <= 3 ? 3 : st.hints <= 5 && st.wrong <= 8 ? 2 : 1, code = '';
+    st.done = true; stop(); unsave(); var s = st.sec, na = Object.keys(st.ans || {}).length, stars = st.hints <= 2 && st.wrong <= 3 ? 3 : st.hints <= 5 && st.wrong <= 8 ? 2 : 1, code = '';
     try { code = rcode(s) } catch (e) {}
-    host.innerHTML = '<div class="es-win"><svg viewBox="0 0 1000 220" class="es-wcov" aria-hidden="true">' + bg({ wall: '#FFF4D6', floor: '#F2C230' }, 220) + '<g transform="translate(440 14)">' + A.door(120, 172, { c: '초록' }, true) + '</g></svg><p class="es-bigt">탈출 성공!</p>' + (team ? '<p class="es-wteam">' + esc(team) + '</p>' : '') + '<p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p><p class="es-outro">' + frac(R.outro) + '</p>'
+    host.innerHTML = '<div class="es-win"><svg viewBox="0 0 1000 220" class="es-wcov" aria-hidden="true">' + bg({ wall: '#FFF4D6', floor: '#F2C230' }, 220) + '<g transform="translate(440 14)">' + A.door(120, 172, { c: '초록' }, true) + '</g></svg><p class="es-wroom">' + esc(R.title) + '</p><p class="es-bigt">탈출 성공!</p>' + (team ? '<p class="es-wteam">' + esc(team) + '</p>' : '') + '<p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p><p class="es-outro">' + frac(R.outro) + '</p>'
       + '<div class="es-stats"><span><small>걸린 시간</small><b>' + mmss(s) + '</b></span><span><small>힌트</small><b>' + st.hints + '번</b></span><span><small>틀린 횟수</small><b>' + st.wrong + '번</b></span></div>'
-      + (code ? '<div class="es-code"><small>결과 코드</small><b>' + code + '</b></div>' : '') + '<p class="es-when">' + when() + '</p><button type="button" class="tl-btn tl-go" data-a="again">처음부터 다시</button></div>';
+      + (na ? '<p class="es-wans">정답 보기 ' + na + '번(힌트 ' + na * 3 + '번으로 셈)</p>' : '')
+      + (code ? '<div class="es-code"><small>결과 코드</small><b>' + code + '</b></div>' : '') + '<p class="es-when">' + when() + '</p><button type="button" class="es-again" data-a="again">처음부터 다시 하기</button></div>';
     api.bar(''); sfx('win'); confetti();
   }
   /* 누르기 */
@@ -4823,8 +4925,11 @@ window.TOOL = function (host, api) {
     if (g && !t.closest('.es-modal')) { var o = OBJ[g.dataset.o]; if (st.sel) { var iid = st.sel; if (o.need && !st.used[o.id]) { useItem(o, iid); return } st.sel = null; draw(); toast('여기에는 쓸 수 없어요. 그냥 살펴볼게요') } sfx('tap'); openObj(o.id); return }
     if (!b) { if (t.classList.contains('es-modal')) closeM(); return }
     var a = b.dataset.a, o2 = st.open && OBJ[st.open];
+    if (a === 'speak') return speak(b.parentNode);
     if (a === 'close') return closeM();
-    if (a === 'again') return reset();
+    if (a === 'resume') { var sv = saved(); if (sv) return resume(sv); return draw() }
+    if (a === 'fresh') { unsave(); return draw() }
+    if (a === 'again') { if (confirm('처음부터 다시 할까요? 지금 결과 화면은 사라져요.')) reset(); return }
     if (a === 'where') return where();
     if (a === 'exit') { st.sec = sec(); sfx('door'); host.querySelector('.es-modal').hidden = true; return fx('door', '밖으로!', win) }
     if (b.dataset.back) return openObj(b.dataset.back);
@@ -4839,10 +4944,15 @@ window.TOOL = function (host, api) {
     if (b.dataset.put != null) { if (en.length < cap(L)) en.push(b.dataset.put); sfx('tap'); refreshLock(o2); return }
     if (a === 'del') { en.pop(); refreshLock(o2); return }
     if (a === 'try') return tryLock(o2);
-    if (a === 'lhint') { st.lh[o2.id] = (st.lh[o2.id] || 0) + 1; st.hints++; refreshLock(o2); hc(); return }
-    if (a === 'ans' && confirm('정답을 볼까요? (선생님 확인용)')) { host.querySelector('.es-msg').innerHTML = '정답: <b>' + esc(L.t === 'num' ? L.code : L.code.join(L.t === 'dir' ? ' ' : ' → ')) + '</b> — ' + frac(L.sol) }
+    if (a === 'lhint') { st.lh[o2.id] = (st.lh[o2.id] || 0) + 1; st.hints++; refreshLock(o2); hc(); save(); var hp = host.querySelectorAll('.es-lh p'); if (hp.length) try { hp[hp.length - 1].scrollIntoView({ block: 'nearest' }) } catch (er) {} return }
+    if (a === 'ans') {
+      /* 학생이 눌러도 기록에 남게: 자물쇠마다 처음 볼 때 힌트 3번으로 셈(별·결과 코드에 들어감) */
+      if (!st.ans[o2.id] && !confirm('정답을 볼까요? 정답을 보면 힌트 3번으로 세어요.')) return;
+      if (!st.ans[o2.id]) { st.ans[o2.id] = 1; st.hints += 3; hc(); save() }
+      return show(host.querySelector('.es-msg'), '정답: <b>' + (L.t === 'num' ? esc(L.code) : L.code.map(function (v) { return SHN[v] ? shp(v) : esc(v) }).join(L.t === 'dir' ? ' ' : ' → ')) + '</b> — ' + frac(L.sol), true);
+    }
   });
-  function closeM() { var m = host.querySelector('.es-modal'); if (m) { m.hidden = true; m.innerHTML = '' } st.open = null; draw() }
+  function closeM() { try { SS && SS.cancel() } catch (e) {} var m = host.querySelector('.es-modal'); if (m) { m.hidden = true; m.innerHTML = '' } st.open = null; draw() }
   host.addEventListener('keydown', function (e) {
     var g = e.target.closest && e.target.closest('.es-obj'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); g.dispatchEvent(new MouseEvent('click', { bubbles: true })) }
   });

@@ -63,7 +63,7 @@
   /* 승차권 발매기 */
   ART.A.stKiosk = function (w, h, p, open) {
     var o = R(0, 0, w, h, '#D8DEE6', K + ' rx="10"') + R(w * .12, h * .06, w * .76, h * .07, '#3B6FD6', ' rx="3"') + T(w / 2, h * .115, '승차권', Math.min(w * .14, h * .05), '#fff');
-    o += R(w * .12, h * .17, w * .76, h * .28, open ? '#1E5A3A' : '#14181E', K2 + ' rx="4"') + T(w / 2, h * .33, open ? '발매 완료' : '- - -', Math.min(w * .13, h * .05), open ? '#7CF29B' : '#FFC94A');
+    o += R(w * .12, h * .17, w * .76, h * .28, open ? '#1E5A3A' : '#14181E', K2 + ' rx="4"') + T(w / 2, h * .33, open ? '발매 완료' : (p.screen || '- -'), Math.min(w * .13, h * .05), open ? '#7CF29B' : '#FFC94A');
     for (var r = 0; r < 4; r++) for (var q = 0; q < 3; q++) o += R(w * .2 + q * w * .22, h * .5 + r * h * .07, w * .16, h * .05, '#fff', K2 + ' rx="3"');
     o += R(w * .2, h * .82, w * .6, h * .06, '#3A3F48', ' rx="3"');
     if (open) o += R(w * .3, h * .78, w * .4, h * .1, '#FFE27A', K2 + ' rx="2"');
@@ -102,7 +102,7 @@
     var o = R(w * .1, h * .7, w * .8, h * .3, '#6E7580', K + ' rx="6"') + R(w * .15, h * .02, w * .7, h * .16, '#F2C230', K2 + ' rx="5"') + T(w / 2, h * .12, '선로 전환기', Math.min(h * .07, w * .1), '#2A2233');
     var px = w / 2, py = h * .74, a = open ? 30 : -30, rad = a * Math.PI / 180, len = h * .48;
     o += '<line x1="' + px + '" y1="' + py + '" x2="' + (px + Math.sin(rad) * len) + '" y2="' + (py - Math.cos(rad) * len) + '" stroke="#3A3F48" stroke-width="' + w * .08 + '" stroke-linecap="round"/>' + C(px + Math.sin(rad) * len, py - Math.cos(rad) * len, w * .08, '#E5534B', K2) + C(px, py, w * .1, '#8A929C', K2);
-    o += R(w * .2, h * .84, w * .6, h * .08, '#14181E', ' rx="3"') + T(w / 2, h * .9, open ? '바뀜' : '↑ → ↓ ←', Math.min(h * .06, w * .09), open ? '#7CF29B' : '#FFC94A');
+    o += R(w * .2, h * .84, w * .6, h * .08, '#14181E', ' rx="3"') + T(w / 2, h * .9, open ? '바뀜' : '대기 중', Math.min(h * .06, w * .09), open ? '#7CF29B' : '#FFC94A');
     return o;
   };
 

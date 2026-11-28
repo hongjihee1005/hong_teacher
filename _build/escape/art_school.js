@@ -52,7 +52,7 @@
       o += L(14, y + lh, w - 14, y + lh, '#C9D3E0', 1.2) + T(20, y + lh * .72, rw[0], fs, '#2A2233', '', 'start');
       var mx = w - 28, my = y + lh * .5, mr = lh * .3;
       if (rw[1] === 'O') o += C(mx, my, mr, 'none', ' stroke="#D23B2E" stroke-width="3"');
-      else if (rw[1] === 'X') o += L(mx - mr, my - mr, mx + mr, my + mr, '#3B5BB0', 3) + L(mx + mr, my - mr, mx - mr, my + mr, '#3B5BB0', 3);
+      else if (rw[1] === 'X') { var xc = p.xc || '#3B5BB0', xw = p.xc ? 4 : 3, xr = ' stroke-linecap="round"'; o += L(mx - mr, my - mr, mx + mr, my + mr, xc, xw, xr) + L(mx + mr, my - mr, mx - mr, my + mr, xc, xw, xr) }
     });
     return o;
   };

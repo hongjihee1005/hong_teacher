@@ -60,6 +60,15 @@ h2{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.4vw,26px);m
 .eb-rank{width:100%;margin-top:14px;border:2px solid var(--line);border-radius:14px;padding:8px 16px;background:var(--paper)}.eb-rank h3{margin:4px 0}.eb-rank ol{margin:0;font-size:19px;line-height:1.7}.eb-note{font-size:13px;color:var(--soft);margin:6px 0 2px}
 .eb-chk{width:100%;margin-top:14px;border:2px dashed var(--acc);border-radius:14px;padding:8px 16px;background:var(--paper)}.eb-chk h3{margin:4px 0}.eb-chk h3 small{font-size:14px;color:var(--soft);font-weight:500}.eb-one{font:inherit;font-family:'Courier New',monospace;font-size:20px;padding:5px 10px;border:2px solid var(--line);border-radius:10px;width:12em;max-width:100%}.eb-oneres{margin:4px 0;font-size:17px}.eb-errt{color:var(--bad)}
 .tl-head p,.tl-how li,.eb-note,.eb-res,.eb-oneres{text-wrap:pretty}
+/* 2026-11-28: 모둠 이름은 고칠 수 있는 칸처럼 · 카드가 폭을 채움 · 개별 확인 칸은 접어 둠 */
+.eb-grid{grid-template-columns:repeat(auto-fit,minmax(220px,1fr))}
+.eb-nmw{flex:1;min-width:0;display:flex;align-items:center;gap:4px;border:2px dashed var(--line);border-radius:10px;padding:0 8px 0 0;cursor:text;color:var(--soft)}
+.eb-nmw:focus-within{border-style:solid;border-color:var(--acc);background:var(--paper)}
+.eb-nmw svg{width:18px;height:18px;flex:none}
+.eb-nm,.eb-nm:focus{border:0!important;outline:0;background:transparent!important;color:var(--ink)}
+.eb-chk>summary{cursor:pointer;font-weight:700;font-size:18px;padding:4px 0}.eb-chk>summary small{font-size:14px;color:var(--soft);font-weight:500}
+.eb-note b{color:var(--ink)}
+.tl-stage:fullscreen .eb-top,.tl-stage.tl-max .eb-top{font-size:22px}
 
 /* 휴대폰 머리 줄이기(2026-10-29 디자인팀) */
 @media (max-width:600px){
@@ -2105,6 +2114,8 @@ window.TOOL = function (host, api) {
     return { ri: ri, s: s, h: h, w: w, st: stars(h, w) };
   }
   function info(t) { var r = t.code ? decode(t.code) : null; if (r && r.err) r = null; if (r && r.ri !== S.room) return { bad: '다른 방(' + RM[r.ri].title + ')의 코드예요' }; return r || {} }
+  /* 결과 코드의 걸린 시간이 선생님 시계(탈출! 누른 시각, 없으면 지금)보다 1분 넘게 길면 알림 */
+  function long(r, t) { var c = t.esc || (S.t0 ? now() : 0); return c && r.s > c + 60 }
   function rank() {
     return S.teams.map(function (t, i) { var r = info(t); return { i: i, t: t, s: r.s != null ? r.s : (t.esc || null), r: r } }).filter(function (x) { return x.s != null })
       .sort(function (a, b) { return a.s - b.s || (a.r.h || 0) - (b.r.h || 0) });
@@ -2117,15 +2128,15 @@ window.TOOL = function (host, api) {
       + (S.t0 ? '<button type="button" class="tl-btn" data-a="stop">시계 멈추고 처음부터</button>' : '<button type="button" class="tl-btn tl-go" data-a="start">모두 출발!</button>') + '</div>';
     h += '<div class="eb-grid">' + S.teams.map(function (t, i) {
       var r = info(t), done = t.esc || r.s != null, n = R.n, p = done ? n : t.p;
-      return '<div class="eb-card' + (done ? ' eb-done' : '') + '" style="--acc:' + R.acc + '"><div class="eb-hd"><input class="eb-nm" data-i="' + i + '" value="' + esc(t.nm) + '" maxlength="12" aria-label="모둠 이름">' + (pos[i] ? '<span class="eb-rk">' + pos[i] + '등</span>' : '') + '</div>'
+      return '<div class="eb-card' + (done ? ' eb-done' : '') + '" style="--acc:' + R.acc + '"><div class="eb-hd"><label class="eb-nmw" title="눌러서 모둠 이름 고치기"><input class="eb-nm" data-i="' + i + '" value="' + esc(t.nm) + '" maxlength="12" placeholder="' + (i + 1) + '모둠" aria-label="모둠 이름(눌러서 고치기)"><svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg></label>' + (pos[i] ? '<span class="eb-rk">' + pos[i] + '등</span>' : '') + '</div>'
         + '<div class="eb-prog"><button type="button" class="tl-btn" data-a="m" data-i="' + i + '" aria-label="진행 하나 빼기">−</button><span><b>' + p + '</b> / ' + n + '<i class="eb-bar"><i style="width:' + Math.round(p / n * 100) + '%"></i></i><small>자물쇠·장치</small></span><button type="button" class="tl-btn" data-a="p" data-i="' + i + '" aria-label="진행 하나 더하기">+</button></div>'
         + (t.esc ? '<p class="eb-esc">탈출 ' + mmss(t.esc) + '</p>' : done ? '<p class="eb-esc">탈출!</p>' : '<button type="button" class="tl-btn tl-go eb-escb" data-a="esc" data-i="' + i + '"' + (S.t0 ? '' : ' disabled') + '>탈출!</button>')
         + '<label class="eb-cl">결과 코드 <input class="eb-code" data-i="' + i + '" value="' + esc(t.code) + '" inputmode="numeric" placeholder="000-000-0000"></label>'
-        + (r.bad ? '<p class="eb-err">' + esc(r.bad) + '</p>' : t.code && r.s == null ? '<p class="eb-err">' + esc(decode(t.code).err || '') + '</p>' : r.s != null ? '<p class="eb-res">걸린 시간 <b>' + mmss(r.s) + '</b> · 힌트 ' + r.h + ' · 틀림 ' + r.w + ' · <span class="eb-st">' + '★★★'.slice(0, r.st) + '<i>' + '★★★'.slice(r.st) + '</i></span></p>' : '')
+        + (r.bad ? '<p class="eb-err">' + esc(r.bad) + '</p>' : t.code && r.s == null ? '<p class="eb-err">' + esc(decode(t.code).err || '') + '</p>' : r.s != null ? '<p class="eb-res">코드 시간 <b>' + mmss(r.s) + '</b>' + (t.esc ? ' · 선생님 시계 ' + mmss(t.esc) : '') + ' · 힌트 ' + r.h + ' · 틀림 ' + r.w + ' · <span class="eb-st">' + '★★★'.slice(0, r.st) + '<i>' + '★★★'.slice(r.st) + '</i></span></p>' + (long(r, t) ? '<p class="eb-err">코드 시간이 선생님 시계보다 길어요. 먼저 시작했거나 다른 판의 코드인지 확인해요.</p>' : '') : '')
         + (done ? '<button type="button" class="tl-btn eb-undo" data-a="undo" data-i="' + i + '">탈출 기록 지우기</button>' : '') + '</div>';
     }).join('') + '</div>';
-    h += '<div class="eb-chk"><h3>결과 코드 확인하기 <small>개별 활동 · 캡쳐 확인용 — 모둠 칸과 따로</small></h3><p class="tl-row"><input class="eb-one" inputmode="numeric" placeholder="000-000-0000" aria-label="확인할 결과 코드" value="' + esc(S.one || '') + '"><button type="button" class="tl-btn tl-go" data-a="one">확인</button></p><p class="eb-oneres" aria-live="polite">' + oneRes() + '</p></div>';
-    if (rk.length) h += '<div class="eb-rank"><h3>순위</h3><ol>' + rk.map(function (x) { return '<li><b>' + esc(x.t.nm) + '</b> ' + mmss(x.s) + (x.r.s != null ? ' · 힌트 ' + x.r.h + ' · 별 ' + x.r.st : ' (선생님 시계)') + '</li>' }).join('') + '</ol><p class="eb-note">결과 코드를 넣은 모둠은 그 기기의 걸린 시간으로, 넣지 않은 모둠은 선생님이 \'탈출!\'을 누른 시각으로 셉니다. 시간이 같으면 힌트를 적게 쓴 모둠이 앞이에요.</p></div>';
+    h += '<details class="eb-chk"' + (S.one ? ' open' : '') + '><summary>결과 코드 확인하기 <small>개별 활동 · 캡쳐 확인용</small></summary><p class="tl-row"><input class="eb-one" inputmode="numeric" placeholder="000-000-0000" aria-label="확인할 결과 코드" value="' + esc(S.one || '') + '"><button type="button" class="tl-btn tl-go" data-a="one">확인</button></p><p class="eb-oneres" aria-live="polite">' + oneRes() + '</p></details>';
+    if (rk.length) h += '<div class="eb-rank"><h3>순위</h3><ol>' + rk.map(function (x) { return '<li><b>' + esc(x.t.nm) + '</b> ' + mmss(x.s) + (x.r.s != null ? ' (코드 시간' + (x.t.esc ? ' · 선생님 시계 ' + mmss(x.t.esc) : '') + ') · 힌트 ' + x.r.h + ' · 별 ' + x.r.st : ' (선생님 시계)') + '</li>' }).join('') + '</ol><p class="eb-note">순위 기준: 결과 코드를 넣은 모둠은 <b>코드 시간</b>(그 기기에서 이야기 뒤 탈출 시작부터 잰 시간)으로, 넣지 않은 모둠은 선생님이 \'탈출!\'을 누른 <b>선생님 시계</b>로 셉니다. 시간이 같으면 힌트를 적게 쓴 모둠이 앞이에요.</p></div>';
     host.innerHTML = h; api.bar(esc(R.title));
   }
   function oneRes() {
@@ -2156,6 +2167,7 @@ window.TOOL = function (host, api) {
     else return;
     save(); draw();
   });
+  host.addEventListener('focusin', function (e) { if (e.target.classList.contains('eb-nm')) setTimeout(function () { try { e.target.select() } catch (er) {} }, 0) });
   load(); draw(); tick = setInterval(clock, 1000);
 };
 

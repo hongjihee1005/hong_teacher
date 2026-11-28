@@ -135,7 +135,14 @@ def sheet(r):
         ans = (L['code'] if L['t'] == 'num' else (' ' if L['t'] == 'dir' else ' → ').join(L['code'])) if L else ''
         gets = ', '.join(r['items'][g]['nm'] for g in o.get('give', []))
         rows += f'<tr><td>{i}</td><td>{esc(sn)} · {esc(o["nm"])}</td><td>{" / ".join(what)}</td><td><b>{esc(ans)}</b>{"<br><small>" + plain(L["sol"]) + "</small>" if L else ""}</td><td>{esc(gets)}</td></tr>'
+    # 맨 위 '답만 한눈에' 한 줄(2026-11-28 예비 사용자 팀): 자물쇠 이름: 답
+    keys = []
+    for oid in r['flow']:
+        if '+' in oid: continue
+        o, _ = objs[oid]; L = o.get('lock')
+        if L: keys.append(f'{esc(o["nm"])} <b>{esc(L["code"] if L["t"] == "num" else (" " if L["t"] == "dir" else "·").join(L["code"]))}</b>')
     return (f'<div class="ep-pg"><div class="ep-hd"><b>{esc(r["title"])} · 선생님용 풀이 흐름</b><span>{esc(r["rec"])}</span></div>'
+            f'<p class="ep-ans"><b>답만 한눈에</b> ' + ' · '.join(keys) + '</p>'
             f'<table class="ep-key"><tr><th>차례</th><th>곳 · 물건</th><th>할 일</th><th>답 · 풀이</th><th>얻는 것</th></tr>{rows}</table></div>')
 
 _ICON = None
@@ -167,7 +174,7 @@ def build(r):
         o = dict(o)
         if 'lock' in o: o['lock'] = {k: v for k, v in o['lock'].items() if k != 'chk'}
         return o
-    data = dict(id=r['id'], idx=ORDER.index(r['id']), title=r['title'], intro=r['intro'], story=r.get('story', []), combine=r.get('combine', []), outro=r['outro'], items=r['items'], flow=r['flow'], scenes=[dict(sc, objs=[strip(o) for o in sc['objs']]) for sc in r['scenes']])
+    data = dict(id=r['id'], idx=ORDER.index(r['id']), g=g, title=r['title'], intro=r['intro'], story=r.get('story', []), combine=r.get('combine', []), outro=r['outro'], items=r['items'], flow=r['flow'], scenes=[dict(sc, objs=[strip(o) for o in sc['objs']]) for sc in r['scenes']])
     rep = {'TITLE': r['title'], 'DESC': re.sub(r'\*\*(.+?)\*\*', r'\1', r['intro']), 'ICO': icon(r['ico']), 'SUB': f'추천 {g}학년 · 자물쇠와 장치 {nlock}개', 'MATH': ''.join(f'<span>{esc(x)}</span>' for x in re.sub(r'^추천 \d학년\s*·\s*', '', r['rec']).split('·')), 'GNAV': gnav, 'SHEET': sheet(r),
            'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/'), 'TOOL': artsrc() + rd(HERE / 'escape.js'), 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', r['acc']).replace('{TOOLCSS}', rd(HERE / 'escape.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
@@ -214,7 +221,8 @@ def build_menu():
                 if mt and len('·'.join(mt + [x])) > 16: break
                 mt.append(x)
                 if len(mt) == 3: break
-            h += f'<a class="card room" style="--acc:{r["acc"]}" href="{r["id"]}.html"><span class="ico">{r["ico"]}</span><span class="nm">{esc(r["title"])}</span><span class="hj-mt">{esc("·".join(mt))}</span><small>{esc(intro)} · {esc(r["rec"])}</small></a>\n'
+            mins = {1: 30, 2: 25}.get(g, 20)   # 예상 시간: 이 자료의 어림값(1학년 25~35분 · 2학년 25분 · 3학년부터 20분 안팎)
+            h += f'<a class="card room" style="--acc:{r["acc"]}" href="{r["id"]}.html"><span class="ico">{r["ico"]}</span><span class="nm">{esc(r["title"])}</span><span class="hj-mt">{esc("·".join(mt))}<span class="es-mtm"> · 약 {mins}분</span></span><small>{esc(intro)} · {esc(r["rec"])}</small></a>\n'
         h += '</div>\n'
     i, j = s.index(a) + len(a), s.index(b)
     if s[i:j] == h: return False

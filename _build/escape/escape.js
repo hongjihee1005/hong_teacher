@@ -9,12 +9,30 @@ window.TOOL = function (host, api) {
   var OBJ = {}, SCN = {}, KIDS = {}; R.scenes.forEach(function (s) { SCN[s.id] = s; s.objs.forEach(function (o) { o.scene = s.id; OBJ[o.id] = o; if (o.in) (KIDS[o.in] = KIDS[o.in] || []).push(o) }) });
   var COMB = R.combine || [], RM = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
   var SNDK = 'hj-escape-snd', snd = true; try { snd = localStorage.getItem(SNDK) !== '0' } catch (e) {}
+  /* 모양 글자(○△□☆◇♡)는 자물쇠 단추·그림과 같은 꽉 찬 작은 모양으로(2026-11-28) — '32 : □'처럼 모르는 수 자리의 □는 그대로 */
+  var SHN = { '○': '동그라미', '△': '세모', '□': '네모', '☆': '별', '◇': '마름모', '♡': '하트' };
+  function shp(v) { return '<svg class="es-shp" viewBox="0 0 40 40" role="img" aria-label="' + SHN[v] + '">' + ART.shape(v, 20, 21, 16) + '</svg>' }
   function frac(s) {
     return esc(s).replace(/([^\s<>*]*?)(\d+)\/(\d+)([^\s<>*]*)/g, '<span class="es-nw">$1<span class="fd-fr"><i>$2</i><i>$3</i></span>$4</span>')
-      .replace(/\*\*(.+?)\*\*/g, function (m, t) { return t.replace(/<[^>]+>/g, '').length <= 12 ? '<b class="es-nw">' + t + '</b>' : '<b>' + t + '</b>' });
+      .replace(/\*\*(.+?)\*\*/g, function (m, t) { return t.replace(/<[^>]+>/g, '').length <= 12 ? '<b class="es-nw">' + t + '</b>' : '<b>' + t + '</b>' })
+      .replace(/[○△□☆◇♡]/g, function (v, i, all) { return v === '□' && (/[=:×÷+−-]\s*$/.test(all.slice(Math.max(0, i - 3), i)) || /^\s*[=:]/.test(all.slice(i + 1, i + 4))) ? v : shp(v) });
   }
-  function jo(w, a, b) { var s = String(w), ch = s.charCodeAt(s.length - 1), m = s.match(/\d+$/), f; if (m) { var t = m[0].replace(/0+$/, '') || '0'; f = m[0].length > t.length || '013678'.indexOf(t.slice(-1)) >= 0 } else f = ch >= 0xAC00 && ch <= 0xD7A3 && (ch - 0xAC00) % 28 > 0; return s + (f ? a : b) }
-  function reset() { st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, lh: {}, done: false, open: null, entry: {}, made: {}, shown: {}, drawn: {} }; stop(); draw() }
+  /* 받침에 따라 조사: jo(낱말, '을', '를') — '으로/로'는 받침 ㄹ이면 '로'(우리길로, 1로·7로·8로) */
+  function jo(w, a, b) {
+    var s = String(w), ch = s.charCodeAt(s.length - 1), m = s.match(/\d+$/), f, rl = false;
+    if (m) { var t = m[0].replace(/0+$/, '') || '0', d = t.slice(-1); f = m[0].length > t.length || '013678'.indexOf(d) >= 0; rl = m[0].length === t.length && '178'.indexOf(d) >= 0 }
+    else { var j = ch >= 0xAC00 && ch <= 0xD7A3 ? (ch - 0xAC00) % 28 : 0; f = j > 0; rl = j === 8 }
+    if (a === '으로' && rl) f = false;
+    return s + (f ? a : b);
+  }
+  function reset() { st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, ans: {}, lh: {}, done: false, open: null, entry: {}, made: {}, shown: {}, drawn: {} }; stop(); unsave(); draw() }
+  /* 진행 저장(2026-11-28 예비 사용자 팀): 새로 고침·다른 쪽에 갔다 와도 이 탭(sessionStorage)에서 '이어서 하기' — 걸린 시간은 떠나 있던 동안 멈춤 */
+  var SVK = 'hj-escape-run:' + (R.id || R.idx);
+  function save() { if (!st || !st.t0 || st.done) return; try { var c = JSON.parse(JSON.stringify(st)); c.el = sec(); c.open = null; c.sel = null; sessionStorage.setItem(SVK, JSON.stringify({ st: c, limit: limit, team: team })) } catch (e) {} }
+  function unsave() { try { sessionStorage.removeItem(SVK) } catch (e) {} }
+  function saved() { try { var v = JSON.parse(sessionStorage.getItem(SVK)); return v && v.st && v.st.t0 && !v.st.done ? v : null } catch (e) { return null } }
+  function resume(v) { st = v.st; limit = v.limit || 0; team = v.team || ''; st.t0 = Date.now() - (st.el || 0) * 1000; delete st.el; st.drawn = {}; st.shown = {}; stop(); tick = setInterval(timer, 1000); draw() }
+  window.addEventListener('beforeunload', function (e) { if (st && st.t0 && !st.done) { save(); e.preventDefault(); e.returnValue = '' } });
   function stop() { if (tick) clearInterval(tick); tick = null }
   function sec() { return st.t0 ? Math.floor((Date.now() - st.t0) / 1000) : 0 }
   function mmss(s) { s = Math.max(0, s); return Math.floor(s / 60) + ':' + String(s % 60).padStart(2, '0') }
@@ -26,7 +44,7 @@ window.TOOL = function (host, api) {
   function nLocks() { var n = 0, d = 0; for (var k in OBJ) if (OBJ[k].lock || OBJ[k].need) { n++; if (ok(OBJ[k])) d++ } return [d, n] }
   function note(title, html) { if (st.notes.some(function (n) { return n.h === html })) return; st.notes.push({ t: title, h: html }) }
   function fig(f) { if (!f) return ''; var w = f.w || 300, h = f.h || 200; return '<svg class="es-fig" viewBox="-12 -24 ' + (w + 24) + ' ' + (h + 36) + '" role="img" aria-label="단서 그림">' + A[f.art](w, h, f.p || {}, f.open) + '</svg>' }
-  function timer() { var el = root.querySelector('.es-time'); if (!el) return; var s = sec(); el.textContent = limit ? '남은 시간 ' + mmss(limit * 60 - s) : '걸린 시간 ' + mmss(s); if (limit && s >= limit * 60 && !st.done) { el.textContent = '시간 끝! 계속 해도 돼요'; el.classList.add('es-over') } }
+  function timer() { var el = root.querySelector('.es-time'); if (!el) return; save(); var s = sec(); el.textContent = limit ? '남은 시간 ' + mmss(limit * 60 - s) : '걸린 시간 ' + mmss(s); if (limit && s >= limit * 60 && !st.done) { el.textContent = '시간 끝! 계속 해도 돼요'; el.classList.add('es-over') } }
   function exitObj() { for (var k in OBJ) if (OBJ[k].go === 'exit') return OBJ[k] }
 
   /* ── 효과음(Web Audio, 누른 뒤에만 만듦) ── */
@@ -59,11 +77,25 @@ window.TOOL = function (host, api) {
   }
   function confetti() { if (RM) return; var w = host.querySelector('.es-win'); if (!w) return; var cols = ['#E5534B', '#F2C230', '#3DA35D', '#3B6FD6', '#EE7DB0', '#8A5BC9'], h = ''; for (var i = 0; i < 46; i++) h += '<i style="left:' + (i * 37 % 100) + '%;background:' + cols[i % 6] + ';animation-delay:' + (i % 9) * .14 + 's;animation-duration:' + (1.8 + (i % 5) * .3) + 's"></i>'; w.insertAdjacentHTML('afterbegin', '<div class="es-conf" aria-hidden="true">' + h + '</div>') }
 
+  /* 읽어 주기(2026-11-28): 누를 때만, 브라우저 한국어 목소리 — 없으면 단추를 숨김(html.es-ttson) */
+  var SS = window.speechSynthesis, KOV = null;
+  function kov() { try { KOV = SS && SS.getVoices().filter(function (v) { return /^ko/i.test(v.lang) })[0] || null } catch (e) { KOV = null } document.documentElement.classList.toggle('es-ttson', !!KOV) }
+  if (SS) { kov(); try { SS.addEventListener('voiceschanged', kov) } catch (e) { SS.onvoiceschanged = kov } }
+  function spk() { return '<button type="button" class="es-spk" data-a="speak" aria-label="읽어 주기" title="읽어 주기">' + SPK + '<path d="M15.5 9a4 4 0 0 1 0 6"/></svg></button>' }
+  function speak(el) {
+    if (!SS || !el) return; var c = el.cloneNode(true);
+    [].forEach.call(c.querySelectorAll('button'), function (x) { x.remove() });
+    [].forEach.call(c.querySelectorAll('.fd-fr'), function (f) { var i = f.querySelectorAll('i'); f.replaceWith(' ' + i[1].textContent + '분의 ' + i[0].textContent + ' ') });
+    [].forEach.call(c.querySelectorAll('.es-shp'), function (x) { x.replaceWith(' ' + x.getAttribute('aria-label') + ' ') });
+    var t = c.textContent.replace(/×/g, ' 곱하기 ').replace(/÷/g, ' 나누기 ').replace(/−/g, ' 빼기 ').replace(/\+/g, ' 더하기 ').replace(/=/g, ' 는 ').replace(/ → /g, ', ').replace(/[↑→↓←]/g, function (v) { return ' ' + DIRN[v] + ' ' }).replace(/\s+/g, ' ').trim();
+    try { SS.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'ko-KR'; if (KOV) u.voice = KOV; u.rate = .95; SS.speak(u) } catch (e) {}
+  }
   /* 처음 화면 */
   function startView() {
-    host.innerHTML = '<div class="es-start"><p class="es-intro">' + frac(R.intro) + '</p>'
+    var sv = saved(), lim = (R.g || 3) <= 2 ? 30 : 20;
+    host.innerHTML = '<div class="es-start">' + (sv ? '<div class="es-resume"><p><b>하던 탈출이 있어요.</b> 걸린 시간 ' + mmss(sv.st.el || 0) + (sv.team ? ' · ' + esc(sv.team) : '') + '</p><div class="tl-row"><button type="button" class="tl-btn tl-go" data-a="resume">이어서 하기</button><button type="button" class="tl-btn" data-a="fresh">처음부터</button></div></div>' : '') + '<p class="es-intro">' + frac(R.intro) + '</p>'
       + '<ol class="es-steps"><li><span><b>물건을 눌러</b> 크게 살펴봐요</span></li><li><span>단서는 <b>수첩</b>에, 찾은 물건은 <b>가방</b>에 모여요</span></li><li><span>막히면 <b>어디를 볼까?</b>를 눌러요</span></li></ol>'
-      + '<div class="es-opts"><label class="es-opt"><span>이름 또는 모둠</span><input class="es-team-in" maxlength="12" placeholder="예: 3번, 1모둠" value="' + esc(team) + '"></label><label class="es-opt"><span>시간 제한</span><select class="es-lim"><option value="0">없음</option><option value="15">15분</option><option value="20" selected>20분</option><option value="30">30분</option><option value="40">40분</option></select></label><div class="es-opt"><span>소리</span>' + sndBtn(true) + '</div></div><button type="button" class="tl-btn tl-go es-go">이야기 보고 시작하기</button></div>';
+      + '<div class="es-opts"><label class="es-opt"><span>이름 또는 모둠</span><input class="es-team-in" maxlength="12" placeholder="예: 3번, 1모둠" value="' + esc(team) + '"></label><label class="es-opt"><span>시간 제한</span><select class="es-lim">' + [0, 15, 20, 25, 30, 40].map(function (m) { return '<option value="' + m + '"' + (m === lim ? ' selected' : '') + '>' + (m ? m + '분' : '없음') + '</option>' }).join('') + '</select></label><div class="es-opt"><span>소리</span>' + sndBtn(true) + '</div></div><button type="button" class="tl-btn tl-go es-go">이야기 보고 시작하기</button></div>';
     api.bar('');
   }
   /* 이야기 장면: 첫 장면 그림 + 쾅 닫히는 문 + 이야기 줄이 하나씩 */
@@ -114,14 +146,15 @@ window.TOOL = function (host, api) {
     /* 연(쓴) 뒤에는 처음 모습 글(잠겨 있어요·열쇠 구멍이 있어요)을 빼고 — 단서 물건(keep)은 그대로 */
     var showLook = o.look && !(op && !o.keep && (o.after || o.need || o.useMsg));
     /* 단서 그림이 물건과 같은 그림이면 두 번 보이지 않게 단서 그림(설정 포함)을 큰 그림으로 */
-    var bf = showLook && o.lookFig && o.lookFig.art === o.art && !kids.length ? o.lookFig : null;
-    var BW = bf ? (bf.w || 300) : o.w, BH = bf ? (bf.h || 200) : o.h, bigArt = bf ? A[bf.art](BW, BH, bf.p || {}, bf.open) : A[o.art](o.w, o.h, o.p || {}, op);
+    var bf = showLook && o.lookFig && o.lookFig.art === o.art ? o.lookFig : null;
+    /* 숨은 곳(kids)이 있으면 그 자리가 물건 크기에 맞춰져 있으므로, 단서 그림 설정을 물건 크기로 그려 한 번만 보여 줌 */
+    var BW = bf && !kids.length ? (bf.w || 300) : o.w, BH = bf && !kids.length ? (bf.h || 200) : o.h, bigArt = bf ? A[bf.art](BW, BH, bf.p || {}, bf.open) : A[o.art](o.w, o.h, o.p || {}, op);
     var h = '<div class="es-card' + (BW / BH >= 2.4 ? ' es-wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(o.nm) + '"><div class="es-chd"><b>' + esc(o.nm) + '</b><span>' + (o.in ? '<button type="button" class="tl-btn" data-back="' + o.in + '">◀ ' + esc(OBJ[o.in].nm) + '</button> ' : '') + '<button type="button" class="tl-btn es-x" data-a="close">닫기</button></span></div><div class="es-cbody"><div class="es-bigw"><div class="es-big" title="그림을 누르면 더 크게 보여요"><svg viewBox="-20 -30 ' + (BW + 40) + ' ' + (BH + 50) + '" role="group" aria-label="' + esc(o.nm) + ' 크게 보기"><g class="es-art' + (op && st.fresh === id ? ' es-opening' : '') + '">' + bigArt + '</g>' + kids.map(function (k) { return objG(k, ' es-spot' + (st.seen[k.id] ? '' : ' es-new')) }).join('') + '</svg></div>' + (kids.length ? '<p class="es-peek">그림 속 작은 곳도 눌러 볼 수 있어요.</p>' : '') + '</div><div class="es-ctext">';
     st.fresh = null;
     if (o.need && st.used[o.id] && o.useMsg && !(o.lock && st.solved[o.id])) h += '<p class="es-used">' + frac(o.useMsg) + '</p>';
-    if (showLook) { h += '<p class="es-look">' + frac(o.look) + '</p>' + (bf ? '' : fig(o.lookFig)); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
+    if (showLook) { h += '<p class="es-look">' + spk() + frac(o.look) + '</p>' + (bf ? '' : fig(o.lookFig)); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
     if (o.need && !st.used[o.id]) {
-      h += '<div class="es-need"><p>' + frac(o.needMsg || '무언가가 필요해 보여요.') + '</p>' + (st.inv.length ? '<p class="es-try">가방에서 써 볼 물건:</p><div class="es-inv es-inv2">' + st.inv.map(function (iid) { var it = R.items[iid]; return '<button type="button" class="es-it" data-use="' + iid + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') + '</div>' : '<p class="es-try">가방이 비어 있어요. 다른 곳을 먼저 살펴봐요.</p>') + '</div>';
+      h += '<div class="es-need"><p>' + spk() + frac(o.needMsg || '무언가가 필요해 보여요.') + '</p>' + (st.inv.length ? '<p class="es-try">가방에서 써 볼 물건:</p><div class="es-inv es-inv2">' + st.inv.map(function (iid) { var it = R.items[iid]; return '<button type="button" class="es-it" data-use="' + iid + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') + '</div>' : '<p class="es-try">가방이 비어 있어요. 다른 곳을 먼저 살펴봐요.</p>') + '<p class="es-umsg" aria-live="polite"></p></div>';
     } else if (o.lock && !st.solved[o.id]) h += lockUI(o);
     else if (o.lock || o.need || o.after) h += done(o);
     h += '</div></div></div>';
@@ -132,21 +165,25 @@ window.TOOL = function (host, api) {
   function give(o) { if (st.given[o.id]) return; st.given[o.id] = 1; (o.give || []).forEach(function (iid) { if (st.inv.indexOf(iid) < 0) st.inv.push(iid) }); if (o.give && o.give.length) { toast('가방에 넣었어요: ' + o.give.map(function (i) { return R.items[i].nm }).join(', ')); setTimeout(function () { sfx('pick') }, 350) } }
   function done(o) {
     var h = '';
-    if (o.after) { h += '<div class="es-after"><p>' + frac(o.after) + '</p>' + fig(o.afterFig) + '</div>'; note(o.nm, '<p>' + frac(o.after) + '</p>' + fig(o.afterFig)) }
+    if (o.after) { h += '<div class="es-after"><p>' + spk() + frac(o.after) + '</p>' + fig(o.afterFig) + '</div>'; note(o.nm, '<p>' + frac(o.after) + '</p>' + fig(o.afterFig)) }
     if (o.go === 'exit') h += '<button type="button" class="tl-btn tl-go es-goexit" data-a="exit">밖으로 나가기</button>';
     else if (o.go) h += '<button type="button" class="tl-btn tl-go" data-go="' + o.go + '">' + esc(jo(SCN[o.go].nm, '으로', '로')) + ' 가기</button>';
     return h;
   }
   /* 자물쇠 */
-  var SYM = { dir: ['↑', '→', '↓', '←'], shape: ['○', '△', '□', '☆'], color: ['빨강', '노랑', '초록', '파랑'] };
+  var SYM = { dir: ['↑', '→', '↓', '←'], shape: ['○', '△', '□', '☆'], color: ['빨강', '노랑', '초록', '파랑'] }, DIRN = { '↑': '위', '→': '오른쪽', '↓': '아래', '←': '왼쪽' };
+  var LOW = (R.g || 3) <= 2;
   function lockUI(o) {
-    var L = o.lock, e = st.entry[o.id] || (st.entry[o.id] = L.t === 'num' ? L.code.split('').map(function () { return 0 }) : []), h = '<div class="es-lock es-lk-' + L.t + '"><p class="es-lq">' + frac(L.q) + '</p>';
-    if (L.t === 'num') h += '<div class="es-dials">' + e.map(function (d, i) { return '<div class="es-dial"><button type="button" data-d="' + i + '" data-v="1" aria-label="' + (i + 1) + '번째 숫자 올리기">▲</button><b>' + d + '</b><button type="button" data-d="' + i + '" data-v="-1" aria-label="' + (i + 1) + '번째 숫자 내리기">▼</button></div>' }).join('') + '</div>';
-    else {
+    var L = o.lock, e = st.entry[o.id] || (st.entry[o.id] = L.t === 'num' ? L.code.split('').map(function () { return 0 }) : []), h = '<div class="es-lock es-lk-' + L.t + '"><p class="es-lq">' + spk() + frac(L.q) + '</p>';
+    if (L.t === 'num') {
+      h += '<div class="es-dials">' + e.map(function (d, i) { return '<div class="es-dial"><button type="button" data-d="' + i + '" data-v="1" aria-label="' + (i + 1) + '번째 숫자 올리기">▲</button><b>' + d + '</b><button type="button" data-d="' + i + '" data-v="-1" aria-label="' + (i + 1) + '번째 숫자 내리기">▼</button></div>' }).join('') + '</div>';
+      /* 다이얼 쓰는 법: 1·2학년 방은 늘, 그 밖은 숫자 자물쇠를 처음 열기 전까지 */
+      if (LOW || !Object.keys(st.solved).some(function (k) { return OBJ[k].lock && OBJ[k].lock.t === 'num' })) h += '<p class="es-dhelp">▲▼를 눌러 숫자를 맞춰요</p>';
+    } else {
       var opts = L.opts || SYM[L.t];
-      /* 방향 자물쇠는 빈칸 수로 답의 길이가 드러나지 않게 — 넣은 것과 다음 칸 하나만 */
-      var sl = L.t === 'dir' ? e.concat(e.length < cap(L) ? [null] : []) : L.code.map(function (_, i) { return e[i] });
-      h += '<div class="es-slots">' + sl.map(function (v, i) { return '<span class="es-slot' + (v == null && (L.t === 'dir' || i === e.length) ? ' es-cur' : '') + '">' + (v == null ? '' : sym(L.t, v, 22)) + '</span>' }).join('') + '</div><div class="es-keys">' + opts.map(function (v) { return '<button type="button" class="es-key" data-put="' + esc(v) + '" aria-label="' + esc(v) + '">' + sym(L.t, v, 26) + (L.t === 'color' ? '<span>' + esc(v) + '</span>' : '') + '</button>' }).join('') + '<button type="button" class="es-key es-del" data-a="del">한 칸 지우기</button></div>';
+      /* 방향 자물쇠: 3학년부터는 빈칸 수로 답의 길이가 드러나지 않게(넣은 것과 다음 칸 하나만), 1·2학년은 칸 수를 보여 줌 */
+      var free = L.t === 'dir' && !LOW, sl = free ? e.concat(e.length < cap(L) ? [null] : []) : L.code.map(function (_, i) { return e[i] });
+      h += '<div class="es-slots">' + sl.map(function (v, i) { return '<span class="es-slot' + (v == null && (free || i === e.length) ? ' es-cur' : '') + '">' + (v == null ? '' : sym(L.t, v, 22)) + '</span>' }).join('') + '</div><div class="es-keys">' + opts.map(function (v) { return '<button type="button" class="es-key" data-put="' + esc(v) + '" aria-label="' + esc(SHN[v] || DIRN[v] || v) + '">' + sym(L.t, v, 26) + (L.t === 'color' ? '<span>' + esc(v) + '</span>' : '') + '</button>' }).join('') + '<button type="button" class="es-key es-del" data-a="del">한 칸 지우기</button></div>';
     }
     h += '<div class="tl-row"><button type="button" class="tl-btn tl-go es-try" data-a="try">열어 보기</button></div><p class="es-msg" aria-live="polite"></p>';
     var n = st.lh[o.id] || 0;
@@ -155,7 +192,7 @@ window.TOOL = function (host, api) {
     h += '</div>';
     return h;
   }
-  function cap(L) { return L.t === 'dir' ? 8 : L.code.length }
+  function cap(L) { return L.t === 'dir' && !LOW ? 8 : L.code.length }
   function sym(t, v, s) {
     if (t === 'dir') return '<svg viewBox="0 0 40 40" width="' + s + '" height="' + s + '" aria-hidden="true">' + ART.arrow(v, 20, 20, 15) + '</svg>';
     if (t === 'shape') return '<svg viewBox="0 0 40 40" width="' + s + '" height="' + s + '" aria-hidden="true">' + ART.shape(v, 20, 21, 15) + '</svg>';
@@ -165,12 +202,17 @@ window.TOOL = function (host, api) {
   function hc() { var el = root.querySelector('.es-hc'); if (el) el.textContent = '힌트 ' + st.hints + ' · 틀림 ' + st.wrong }
   function tryLock(o) {
     var L = o.lock, e = st.entry[o.id], got = L.t === 'num' ? e.join('') : e.join(','), want = L.t === 'num' ? L.code : L.code.join(','), msg = host.querySelector('.es-msg');
-    if (L.t === 'dir' && !e.length) { msg.textContent = '화살표를 먼저 눌러요.'; return }
-    if (L.t !== 'num' && L.t !== 'dir' && e.length < L.code.length) { msg.textContent = '칸을 모두 채워요(' + L.code.length + '칸).'; return }
-    if (got === want) { st.solved[o.id] = 1; sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true; fx('unlock', jo(o.nm, '이', '가') + ' 열렸어요!', function () { st.fresh = k; give(o); draw(); openObj(k) }); return }
-    st.wrong++; sfx(0); var card = host.querySelector('.es-lock'); card.classList.remove('es-shake'); void card.offsetWidth; card.classList.add('es-shake');
-    msg.textContent = '열리지 않아요. 단서를 다시 살펴봐요.'; if (L.t !== 'num') { st.entry[o.id] = []; refreshLock(o) } hc();
+    if (L.t === 'dir' && !e.length) { show(msg, '화살표를 먼저 눌러요.'); return }
+    if (L.t !== 'num' && (L.t !== 'dir' || LOW) && e.length < L.code.length) { show(msg, '칸을 모두 채워요(' + L.code.length + '칸).'); return }
+    if (got === want) { st.solved[o.id] = 1; sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true; fx('unlock', jo(o.nm, '이', '가') + ' 열렸어요!', function () { st.fresh = k; give(o); draw(); openObj(k) }); save(); return }
+    st.wrong++; sfx(0);
+    /* 틀린 답을 지운 뒤 자물쇠를 다시 그리고 나서 알림·흔들림을 넣음(다시 그리면 알림이 지워졌음) */
+    if (L.t !== 'num') { st.entry[o.id] = []; refreshLock(o) }
+    var card = host.querySelector('.es-lock'); card.classList.remove('es-shake'); void card.offsetWidth; card.classList.add('es-shake');
+    show(host.querySelector('.es-msg'), '열리지 않아요. 단서를 다시 살펴봐요.'); hc(); save();
   }
+  /* 알림을 보이게: 글을 넣고 창 안에서 그 자리로 스크롤 */
+  function show(el, t, html) { if (!el) return; if (html) el.innerHTML = t; else el.textContent = t; try { el.scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' }) } catch (er) {} }
   function refreshLock(o) { var box = host.querySelector('.es-lock'); if (!box) return; var nb = box.querySelector('.es-nbk'), was = nb && nb.open, t = document.createElement('div'); t.innerHTML = lockUI(o); box.replaceWith(t.firstChild); if (was) { nb = host.querySelector('.es-nbk'); if (nb) nb.open = true } }
   function toast(t) { var d = document.createElement('div'); d.className = 'es-toast'; d.textContent = t; (host.parentNode || host).appendChild(d); setTimeout(function () { d.remove() }, 2200) }
   function useItem(o, iid) {
@@ -180,7 +222,16 @@ window.TOOL = function (host, api) {
       fx('unlock', jo(it.nm, '을', '를') + ' 썼어요!', function () {
         if (!o.lock) { st.fresh = k; give(o) } draw(); openObj(k);
       });
-    } else { toast('여기에는 ' + jo(R.items[iid].nm, '이', '가') + ' 맞지 않아요'); st.wrong++; sfx(0); hc() }
+    } else {
+      /* 합치기 재료(반쪽 등)는 틀림으로 세지 않고 합치라고 알려 줌. 알림은 크게 보기 창 안에 */
+      var part = COMB.some(function (c) { return c.a === iid || c.b === iid }), nm = R.items[iid].nm;
+      if (st.open !== o.id) openObj(o.id, true);
+      var um = host.querySelector('.es-umsg');
+      if (part) { show(um, '<b>' + esc(nm) + '</b>' + jo(nm, '은', '는').slice(-1) + ' 아직 조각이에요. 가방에서 다른 조각과 먼저 합쳐 봐요.', true); sfx('tap') }
+      else { st.wrong++; sfx(0); hc(); show(um, '여기에는 <b>' + esc(nm) + '</b>' + jo(nm, '이', '가').slice(-1) + ' 맞지 않아요.', true); var nd = host.querySelector('.es-need'); if (nd) { nd.classList.remove('es-shake'); void nd.offsetWidth; nd.classList.add('es-shake') } }
+      if (!um) toast(part ? '다른 조각과 먼저 합쳐 봐요' : '여기에는 ' + jo(nm, '이', '가') + ' 맞지 않아요');
+      save();
+    }
   }
   /* 가방 물건 합치기 */
   function combine(a, b) {
@@ -217,11 +268,12 @@ window.TOOL = function (host, api) {
   }
   function when() { var d = new Date(), h = d.getHours(); return d.getFullYear() + '년 ' + (d.getMonth() + 1) + '월 ' + d.getDate() + '일 ' + '일월화수목금토'[d.getDay()] + '요일 · ' + (h < 12 ? '오전 ' : '오후 ') + ((h + 11) % 12 + 1) + '시 ' + String(d.getMinutes()).padStart(2, '0') + '분 탈출' }
   function win() {
-    st.done = true; stop(); var s = st.sec, stars = st.hints <= 2 && st.wrong <= 3 ? 3 : st.hints <= 5 && st.wrong <= 8 ? 2 : 1, code = '';
+    st.done = true; stop(); unsave(); var s = st.sec, na = Object.keys(st.ans || {}).length, stars = st.hints <= 2 && st.wrong <= 3 ? 3 : st.hints <= 5 && st.wrong <= 8 ? 2 : 1, code = '';
     try { code = rcode(s) } catch (e) {}
-    host.innerHTML = '<div class="es-win"><svg viewBox="0 0 1000 220" class="es-wcov" aria-hidden="true">' + bg({ wall: '#FFF4D6', floor: '#F2C230' }, 220) + '<g transform="translate(440 14)">' + A.door(120, 172, { c: '초록' }, true) + '</g></svg><p class="es-bigt">탈출 성공!</p>' + (team ? '<p class="es-wteam">' + esc(team) + '</p>' : '') + '<p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p><p class="es-outro">' + frac(R.outro) + '</p>'
+    host.innerHTML = '<div class="es-win"><svg viewBox="0 0 1000 220" class="es-wcov" aria-hidden="true">' + bg({ wall: '#FFF4D6', floor: '#F2C230' }, 220) + '<g transform="translate(440 14)">' + A.door(120, 172, { c: '초록' }, true) + '</g></svg><p class="es-wroom">' + esc(R.title) + '</p><p class="es-bigt">탈출 성공!</p>' + (team ? '<p class="es-wteam">' + esc(team) + '</p>' : '') + '<p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p><p class="es-outro">' + frac(R.outro) + '</p>'
       + '<div class="es-stats"><span><small>걸린 시간</small><b>' + mmss(s) + '</b></span><span><small>힌트</small><b>' + st.hints + '번</b></span><span><small>틀린 횟수</small><b>' + st.wrong + '번</b></span></div>'
-      + (code ? '<div class="es-code"><small>결과 코드</small><b>' + code + '</b></div>' : '') + '<p class="es-when">' + when() + '</p><button type="button" class="tl-btn tl-go" data-a="again">처음부터 다시</button></div>';
+      + (na ? '<p class="es-wans">정답 보기 ' + na + '번(힌트 ' + na * 3 + '번으로 셈)</p>' : '')
+      + (code ? '<div class="es-code"><small>결과 코드</small><b>' + code + '</b></div>' : '') + '<p class="es-when">' + when() + '</p><button type="button" class="es-again" data-a="again">처음부터 다시 하기</button></div>';
     api.bar(''); sfx('win'); confetti();
   }
   /* 누르기 */
@@ -235,8 +287,11 @@ window.TOOL = function (host, api) {
     if (g && !t.closest('.es-modal')) { var o = OBJ[g.dataset.o]; if (st.sel) { var iid = st.sel; if (o.need && !st.used[o.id]) { useItem(o, iid); return } st.sel = null; draw(); toast('여기에는 쓸 수 없어요. 그냥 살펴볼게요') } sfx('tap'); openObj(o.id); return }
     if (!b) { if (t.classList.contains('es-modal')) closeM(); return }
     var a = b.dataset.a, o2 = st.open && OBJ[st.open];
+    if (a === 'speak') return speak(b.parentNode);
     if (a === 'close') return closeM();
-    if (a === 'again') return reset();
+    if (a === 'resume') { var sv = saved(); if (sv) return resume(sv); return draw() }
+    if (a === 'fresh') { unsave(); return draw() }
+    if (a === 'again') { if (confirm('처음부터 다시 할까요? 지금 결과 화면은 사라져요.')) reset(); return }
     if (a === 'where') return where();
     if (a === 'exit') { st.sec = sec(); sfx('door'); host.querySelector('.es-modal').hidden = true; return fx('door', '밖으로!', win) }
     if (b.dataset.back) return openObj(b.dataset.back);
@@ -251,10 +306,15 @@ window.TOOL = function (host, api) {
     if (b.dataset.put != null) { if (en.length < cap(L)) en.push(b.dataset.put); sfx('tap'); refreshLock(o2); return }
     if (a === 'del') { en.pop(); refreshLock(o2); return }
     if (a === 'try') return tryLock(o2);
-    if (a === 'lhint') { st.lh[o2.id] = (st.lh[o2.id] || 0) + 1; st.hints++; refreshLock(o2); hc(); return }
-    if (a === 'ans' && confirm('정답을 볼까요? (선생님 확인용)')) { host.querySelector('.es-msg').innerHTML = '정답: <b>' + esc(L.t === 'num' ? L.code : L.code.join(L.t === 'dir' ? ' ' : ' → ')) + '</b> — ' + frac(L.sol) }
+    if (a === 'lhint') { st.lh[o2.id] = (st.lh[o2.id] || 0) + 1; st.hints++; refreshLock(o2); hc(); save(); var hp = host.querySelectorAll('.es-lh p'); if (hp.length) try { hp[hp.length - 1].scrollIntoView({ block: 'nearest' }) } catch (er) {} return }
+    if (a === 'ans') {
+      /* 학생이 눌러도 기록에 남게: 자물쇠마다 처음 볼 때 힌트 3번으로 셈(별·결과 코드에 들어감) */
+      if (!st.ans[o2.id] && !confirm('정답을 볼까요? 정답을 보면 힌트 3번으로 세어요.')) return;
+      if (!st.ans[o2.id]) { st.ans[o2.id] = 1; st.hints += 3; hc(); save() }
+      return show(host.querySelector('.es-msg'), '정답: <b>' + (L.t === 'num' ? esc(L.code) : L.code.map(function (v) { return SHN[v] ? shp(v) : esc(v) }).join(L.t === 'dir' ? ' ' : ' → ')) + '</b> — ' + frac(L.sol), true);
+    }
   });
-  function closeM() { var m = host.querySelector('.es-modal'); if (m) { m.hidden = true; m.innerHTML = '' } st.open = null; draw() }
+  function closeM() { try { SS && SS.cancel() } catch (e) {} var m = host.querySelector('.es-modal'); if (m) { m.hidden = true; m.innerHTML = '' } st.open = null; draw() }
   host.addEventListener('keydown', function (e) {
     var g = e.target.closest && e.target.closest('.es-obj'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); g.dispatchEvent(new MouseEvent('click', { bubbles: true })) }
   });

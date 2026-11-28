@@ -97,7 +97,7 @@ ROOM = dict(
               look=f'토큰 통 안내판이에요. "토큰 통에 토큰이 **{TOK}개** 들어 있어요."', lookFig=F('sign', 260, 110, lines=['토큰 통', f'토큰 {TOK}개'], c='#C7366E'),
               guide='토큰 통 안내판을 읽고 수첩에 남겨 두세요.'),
             O('tokbox', '토큰 나눔 상자', 'box', 530, 390, 170, 140, dict(c='주황', lock=True, label='토큰'),
-              lock=Lk('num', f'{TOK // len(BUMP)}{TOK % len(BUMP)}', f'상자 쪽지: 토큰 통의 토큰을 **경기장의 범퍼카에 똑같이 나누어** 넣어요. 비밀번호 = (한 대에 넣는 토큰 수)(남는 토큰 수)',
+              lock=Lk('num', f'{TOK // len(BUMP)}{TOK % len(BUMP)}', f'상자 쪽지: 토큰 통의 토큰을 **경기장의 범퍼카에 똑같이 나누어** 넣어요. **비밀번호는 (한 대에 넣는 토큰 수) 뒤에 (남는 토큰 수)를 이어 쓴 수예요.** 숫자 세 개.',
                       ['토큰 통 안내판에서 토큰 수를, 경기장 울타리 안에서 범퍼카 수를 찾아요.', f'토큰 {TOK}개를 범퍼카 {len(BUMP)}대에 나누어요: {TOK} ÷ {len(BUMP)}', f'{len(BUMP)} × 13 = {len(BUMP) * 13}이고, {TOK} − {len(BUMP) * 13}은?'],
                       f'{TOK} ÷ {len(BUMP)} = {TOK // len(BUMP)} … {TOK % len(BUMP)} → 한 대에 {TOK // len(BUMP)}개, 남는 것 {TOK % len(BUMP)}개 → {TOK // len(BUMP)}{TOK % len(BUMP)}',
                       chk=lambda: (lambda q, r: f'{q}{r}')(*divmod(TOK, len(BUMP)))),
