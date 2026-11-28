@@ -1,4 +1,4 @@
-"""수학 방탈출 2 — 과학실 탈출 (5~6학년 · 쉬움, 5학년 기초: 최대공약수·배수와 공배수·분수의 크기 비교와 덧셈·평균·반올림·직사각형의 넓이와 둘레)"""
+"""수학 방탈출 2 — 과학실 탈출 (추천 5학년: 최대공약수·배수와 공배수·분수의 크기 비교와 덧셈·평균·반올림·직사각형의 넓이와 둘레)"""
 from fractions import Fraction
 from math import gcd
 def lcm(a, b): return a * b // gcd(a, b)
@@ -17,8 +17,8 @@ SLIDES = [8, 15, 12, 7, 18]
 def mark(n): return '☆' if n % 12 == 0 else '△' if n % 3 == 0 else '□' if n % 4 == 0 else '○'
 SLIDE_FIG = ['슬라이드 번호 (왼쪽부터)', '  '.join(map(str, SLIDES))]
 
-BEAN = [('월', 4), ('화', 7), ('수', 5), ('목', 8), ('금', 6)]          # 강낭콩이 자란 키(cm)
-BEAN_FIG = ['강낭콩이 자란 키 (cm)', '월 4   화 7   수 5', '목 8   금 6']
+BEAN = [('가', 4), ('나', 7), ('다', 5), ('라', 8), ('마', 6)]          # 강낭콩 다섯 포기의 키(cm)
+BEAN_FIG = ['강낭콩 다섯 포기의 키 (cm)', '가 4   나 7   다 5', '라 8   마 6']
 BEAKER = [('빨강', Fraction(1, 2)), ('파랑', Fraction(3, 4)), ('초록', Fraction(5, 12)), ('노랑', Fraction(1, 3))]
 BOTTLES = [{'c': c, 'label': f'{v.numerator}/{v.denominator}'} for c, v in BEAKER]
 ROOM_W, ROOM_H = 683, 349                                          # 준비실 바닥(cm)
@@ -41,7 +41,7 @@ ROOM = dict(
     scenes=[
         dict(id='a', nm='과학실', bg=dict(wall='#E2F0EA', floor='#AFC0B8', deco='tile'), objs=[
             O('clock', '벽시계', 'clock', 40, 30, 100, 100, dict(h=4, m=30),
-              look='4시 30분이에요. 과학실은 5시면 완전히 잠긴대요. 서둘러요!',
+              look='4시 30분이에요. 5시가 되면 학교 불이 모두 꺼진대요. 서둘러요!',
               guide='벽시계를 살펴보세요. 서둘러야 해요!'),
             O('microscope', '현미경', 'microscope', 150, 60, 100, 130,
               need='lens', needMsg='선반 위 현미경이에요. 그런데 눈을 대는 **렌즈**가 빠져 있어요.', useMsg='렌즈를 끼우고 슬라이드를 들여다봤어요.',
@@ -101,12 +101,12 @@ ROOM = dict(
               give=['kh1'], after='분배기가 비커 네 개의 물을 차례로 큰 수조에 모두 부었어요. 물받이 아래에서 금색 **열쇠 손잡이**가 굴러 나왔어요! 그런데 손잡이만 있고 몸통이 없어요.',
               guide='비커의 물을 적은 것부터 물 분배기에 입력해 보세요.'),
             O('plant', '강낭콩 화분', 'plant', 250, 360, 110, 160, keep=True,
-              look='강낭콩 화분에 관찰 기록표가 꽂혀 있어요. 닷새 동안 자란 키를 적었대요.', lookFig=F('board', 320, 170, lines=BEAN_FIG),
+              look='강낭콩 화분에 관찰 기록표가 꽂혀 있어요. 강낭콩 다섯 포기의 키를 재어 적었대요.', lookFig=F('board', 320, 170, lines=BEAN_FIG),
               guide='강낭콩 화분의 관찰 기록표를 살펴보세요.'),
             O('safe', '약품 금고', 'safe', 560, 370, 160, 150,
               need='key', needMsg='약품 금고예요. **열쇠 구멍**과 숫자판이 있어요.', useMsg='열쇠를 돌렸어요. 이제 숫자판만 맞추면 돼요.',
               lock=Lk('num', f'{sum(v for _, v in BEAN) // len(BEAN)}{int(sum(v for _, v in BEAKER))}{gcd(FLASK, JAR)}',
-                      '숫자판 위 글: 비밀번호 세 자리 = ① 강낭콩이 자란 키의 **평균**(cm) ② 비커 네 개의 물을 **모두 합한 양**(L) ③ 과학실 준비물 상자에서 알아낸 **모둠 수**',
+                      '숫자판 위 글: 비밀번호 세 자리 = ① 강낭콩 다섯 포기 키의 **평균**(cm) ② 비커 네 개의 물을 **모두 합한 양**(L) ③ 과학실 준비물 상자에서 알아낸 **모둠 수**',
                       ['평균 = 자료 값을 모두 더한 수 ÷ 자료의 수. (4 + 7 + 5 + 8 + 6) ÷ 5', '물의 양은 12를 분모로 통분해 더해요: 6/12 + 9/12 + 5/12 + 4/12', '평균 6, 물 24/12 = 2 L, 모둠 수 4'],
                       '평균 30 ÷ 5 = 6, 물 1/2 + 3/4 + 5/12 + 1/3 = 24/12 = 2 (L), 모둠 수 4 → 624',
                       chk=lambda: f'{Fraction(sum(v for _, v in BEAN), len(BEAN))}{sum(v for _, v in BEAKER)}{gcd(FLASK, JAR)}'),

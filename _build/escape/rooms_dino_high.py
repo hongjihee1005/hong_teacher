@@ -1,4 +1,4 @@
-"""수학 방탈출 · 공룡 연구소 탈출 (추천 5~6학년 · 보통) — 형식은 rooms.py 머리말"""
+"""수학 방탈출 · 공룡 연구소 탈출 (추천 6학년) — 형식은 rooms.py 머리말"""
 from fractions import Fraction
 # rooms.py의 도우미와 같음(서로 불러오면 돌고 돌아서 여기에 둠)
 def O(id, nm, art, x, y, w, h, p=None, **k):
