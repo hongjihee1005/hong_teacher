@@ -1,8 +1,6 @@
 /* 수학 방탈출 2 (2026-11-26) — 방 그림 · 가방 · 수첩 · 크게 보기 창 · 자물쇠 */
 .es-start{display:flex;flex-direction:column;align-items:center;gap:10px;padding:8px 4px 20px;width:100%}
-.es-cover{width:100%;max-width:900px;border-radius:16px;display:block}
 .es-intro{font-size:clamp(19px,2.2vw,24px);text-align:center;margin:0;max-width:34em;line-height:1.55}
-.es-rules{margin:0;padding:12px 18px 12px 34px;background:var(--paper);border:2px solid var(--line);border-radius:14px;max-width:640px;font-size:16px;line-height:1.7}
 .es-go{font-size:22px;padding:10px 30px}
 .es-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:6px 14px;width:100%}
 .es-time{font-family:var(--display);font-size:19px}.es-over{color:var(--bad)}
@@ -73,7 +71,7 @@
  html.es-printing,html.es-printing body{background:#fff!important}
  html.es-printing #esSheet{display:block;color:#000;font-size:10.5pt;line-height:1.45}
  #esSheet .ep-pg{break-after:page}#esSheet .ep-pg:last-child{break-after:auto}
- #esSheet .ep-hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2pt solid #000;padding-bottom:2mm;margin-bottom:3mm}#esSheet .ep-hd b{font-size:16pt}
+ #esSheet .ep-hd{display:flex;justify-content:space-between;align-items:flex-end;border-bottom:2pt solid #000;padding-bottom:2mm;margin-bottom:3mm}#esSheet .ep-hd b{font-size:16pt}#esSheet .ep-hd{flex-wrap:wrap;gap:1mm 6mm}#esSheet .ep-hd span{font-size:9.5pt}
  #esSheet .ep-key{border-collapse:collapse;width:100%}#esSheet .ep-key td,#esSheet .ep-key th{border:1pt solid #000;padding:1.6mm 2.4mm;text-align:left;vertical-align:top}#esSheet .ep-key th{background:#eee}
  #esSheet .ep-key tr{break-inside:avoid}
 }
@@ -125,5 +123,72 @@
 @media (prefers-reduced-motion:reduce){.es-stdoor,.es-stlock,.es-stlines p,.es-stgo,.es-appear,.es-opening,.es-pulse2,.es-cmk{animation:none!important;opacity:1!important}}
 .es-when{font-size:16px!important;color:var(--soft);margin-top:-4px!important}
 /* 어색한 줄바꿈 막기(2026-11-28 선생님 요청): 마지막 줄에 한두 낱말만 남지 않게, 가운데 맞춘 짧은 글은 줄 길이를 고르게 */
-.tl-head p,.tl-how li,.tl-ideas li,.es-rules li,.es-look,.es-after p,.es-need p,.es-used,.es-lh p,.es-nbi p,.es-say,.es-nt,.es-it span{text-wrap:pretty}
-.es-intro,.es-lq,.es-stlines p,.es-win p,.es-peek,.es-msg,.es-fx b,.es-toast,.es-code small{text-wrap:balance}
+.tl-head p,.tl-how li,.tl-how p,.es-steps li,.es-look,.es-after p,.es-need p,.es-used,.es-lh p,.es-nbi p,.es-say,.es-nt,.es-it span{text-wrap:pretty}
+.es-intro,.es-lq,.es-stlines p,.es-win p,.es-empty,.es-peek,.es-msg,.es-fx b,.es-toast,.es-code small{text-wrap:balance}
+
+/* 2026-11-28 디자인 정리(선생님: '번잡하고 나열된 느낌') — 머리·판 위 줄 하나·시작 화면·자물쇠·탈출 화면 */
+.es-nw{white-space:nowrap}
+.tl-bar{gap:8px 10px}.tl-bar .tl-sp{display:none}.tl-bar .tl-bt{flex:1 1 auto;min-width:0;font-family:var(--body);font-size:16px}
+.es-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:6px 12px;width:100%}
+.es-tabs{display:flex;flex-wrap:wrap;gap:6px;justify-content:flex-start;width:auto}
+.es-tab{display:inline-flex;align-items:center;gap:4px;min-height:36px;padding:3px 15px}
+.es-tab:disabled{opacity:.55;padding:3px 11px}
+.es-tab1{font-family:var(--display);font-size:20px;font-weight:400}
+.es-stat{display:flex;flex-wrap:wrap;align-items:center;gap:6px 12px;margin-left:auto}
+.es-time{font-size:18px;font-variant-numeric:tabular-nums;white-space:nowrap}
+.es-prog{font-size:15px;color:var(--soft);white-space:nowrap}.es-prog b{color:var(--ink)}
+.es-where{font-size:15px;padding:5px 13px}
+.es-sndb{padding:6px 9px;gap:4px;font-size:15px}.es-sndb svg{display:block}.es-sndb[aria-pressed="false"]{color:var(--soft)}
+.tl-btn.es-sndb[aria-pressed="true"]{background:var(--bg);border-color:var(--line);color:inherit}
+.es-team{font-size:15px;padding:2px 12px}
+.es-say{font-size:16px;margin-top:8px}
+.es-side{gap:2px;padding:10px 12px}.es-side h3{font-size:16px;margin:2px 0}.es-side h3+div{margin-bottom:8px}
+.es-empty{font-size:13.5px;line-height:1.45}
+/* 시작 화면 */
+.es-start{gap:18px;padding:18px 4px 26px;max-width:860px;margin:0 auto}
+.es-intro{font-size:clamp(20px,2.3vw,25px);line-height:1.55;max-width:30em}
+.es-steps{list-style:none;counter-reset:es;margin:0;padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;width:100%}
+.es-steps li{counter-increment:es;display:flex;align-items:center;gap:10px;background:var(--bg);border-radius:14px;padding:10px 14px;font-size:16px;line-height:1.45}
+.es-steps li::before{content:counter(es);flex:none;display:grid;place-items:center;width:28px;height:28px;border-radius:50%;background:var(--acc);color:#fff;font-weight:800;font-size:15px}
+@media (max-width:700px){.es-steps{grid-template-columns:1fr}}
+.es-opts{display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;gap:12px 18px;padding:12px 16px;border:2px solid var(--line);border-radius:16px;width:100%}
+.es-opt{display:flex;flex-direction:column;align-items:flex-start;gap:4px;font-size:14px;color:var(--soft)}
+.es-team-in,.es-lim{font:inherit;font-size:17px;color:var(--ink);height:44px;padding:4px 10px;border:2px solid var(--line);border-radius:10px;background:var(--paper)}
+.es-team-in{width:10em}.es-lim{min-width:7em}
+.es-opt .es-sndb{height:44px;padding:0 14px}
+.es-go{font-size:21px;padding:10px 32px}
+/* 이야기 · 탈출 화면 */
+.es-win{gap:10px;max-width:760px;margin:0 auto}
+.es-wcov{width:100%;max-width:640px;border-radius:16px;display:block}
+.es-bigt{margin-top:2px!important}
+.es-stars{font-size:40px!important;line-height:1}
+.es-outro{font-size:18px}
+.es-stats{display:flex;flex-wrap:wrap;justify-content:center;gap:8px}
+.es-stats span{display:flex;flex-direction:column;align-items:center;min-width:104px;padding:8px 14px;border-radius:14px;background:var(--bg)}
+.es-stats small{font-size:13px;color:var(--soft)}.es-stats b{font-size:22px;font-variant-numeric:tabular-nums}
+.es-when{font-size:14px!important;margin-top:0!important}
+/* 크게 보기 창 */
+.es-card{max-width:1060px}
+.es-cbody{grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr)}
+.es-big{cursor:zoom-in}.es-big svg{max-height:min(58vh,480px)}
+.es-zoom .es-cbody{grid-template-columns:1fr}.es-zoom .es-big{cursor:zoom-out}.es-zoom .es-big svg{max-height:74vh}
+.es-look{font-size:18px}
+/* 자물쇠 */
+.es-lock{gap:12px}
+.es-lq{font-size:19px;font-weight:600;line-height:1.55}
+.es-slot.es-cur{border-color:var(--acc);border-style:solid;box-shadow:0 0 0 3px color-mix(in srgb,var(--acc) 22%,transparent)}
+.es-lrow{display:flex;flex-wrap:wrap;justify-content:center;align-items:center;gap:6px 14px}
+.es-teach{border:0;background:none;padding:4px;font-size:13px;color:var(--soft);text-decoration:underline;text-underline-offset:3px}
+.es-nbk{border-width:1.5px;padding:2px 10px;background:transparent}.es-nbk summary{font-weight:600;font-size:14px;color:var(--soft)}.es-nbk summary small{font-weight:400}
+.es-nbk[open]{background:#FFFDF4}
+/* 선생님 안내 */
+.es-guide{font-size:16px}.es-guide ul{margin:4px 0 8px}.es-guide li{margin:3px 0}
+.es-gmath{margin:6px 0 4px}.es-gmath b{margin-right:6px}
+.es-gbtn{justify-content:flex-start;margin:4px 0}.es-gbtn a{text-decoration:none;color:inherit}
+@media (max-width:600px){.es-stat{margin-left:0}.es-top{justify-content:flex-start}.es-opts{flex-direction:column;align-items:stretch}.es-opt{width:100%}.es-team-in,.es-lim{width:100%}}
+.es-opt>span:first-child{align-self:flex-start;text-align:left}
+@media (max-width:600px){#tlFull{display:none}.es-start{padding-top:8px}}
+@media (max-width:720px){.es-cbody{grid-template-columns:1fr}.es-big svg{max-height:min(40vh,320px)}}
+.es-msg:empty{min-height:0}.es-lh:empty{display:none}
+.es-notes{flex-direction:row;flex-wrap:wrap;gap:5px}.es-nt{padding:3px 10px;font-size:13.5px;border-radius:999px}.es-nt b{font-weight:600}
+.es-gmath{display:flex;flex-wrap:wrap;align-items:center;gap:5px;margin:8px 0 6px}.es-gmath span{padding:1px 10px;border-radius:999px;background:var(--bg);font-size:14px;white-space:nowrap}

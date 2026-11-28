@@ -86,8 +86,8 @@
       o += R(px + 3, py + 2, pw - 6, ph - 4, '#fff', ' stroke="#E0DDD5" stroke-width="1" rx="4"') + R(px + 10, py + 9, 16, 16, f, K2.replace('2"', '1.5"') + ' rx="3"') + T(px + 32, py + 22, t.nm || '', fs * .9, '#5A6070', '', 'start');
       if (t.k === 'para') { var sl = a * .28; o += poly([[x0 - sl / 2, by], [x0 + a - sl / 2, by], [x0 + a + sl / 2, by - b], [x0 + sl / 2, by - b]], f, K2) + DL(x0 + sl / 2, by - b, x0 + sl / 2, by) + T(cx, by + 17, t.a + ' cm', fs) + T(x0 + sl / 2 + 5, by - b / 2 + 5, t.b + ' cm', fs, '#1F2433', HL, 'start') }
       else if (t.k === 'tri') { o += poly([[x0, by], [x0 + a, by], [x0 + a * .35, by - b]], f, K2) + DL(x0 + a * .35, by - b, x0 + a * .35, by) + T(cx, by + 17, t.a + ' cm', fs) + T(x0 + a * .35 + 5, by - b * .3, t.b + ' cm', fs, '#1F2433', HL, 'start') }
-      else if (t.k === 'rhom') { var my = by - b / 2; o += poly([[cx, by - b], [cx + a / 2, my], [cx, by], [cx - a / 2, my]], f, K2) + DL(cx - a / 2, my, cx + a / 2, my) + DL(cx, by - b, cx, by) + T(cx + a / 2 + 5, my + 5, t.a + ' cm', fs, '#1F2433', '', 'start') + T(cx, by + 17, t.b + ' cm', fs) }
-      else { o += R(x0, by - b, a, b, f, K2) + T(cx, by + 17, t.a + ' cm', fs) + T(x0 + a + 5, by - b / 2 + 5, t.b + ' cm', fs, '#1F2433', '', 'start') }
+      else if (t.k === 'rhom') { var my = by - b / 2; o += poly([[cx, by - b], [cx + a / 2, my], [cx, by], [cx - a / 2, my]], f, K2) + DL(cx - a / 2, my, cx + a / 2, my) + DL(cx, by - b, cx, by) + T(cx - a / 4, my - 6, t.a + ' cm', fs, '#1F2433', HL) + T(cx + 6, my + b / 4 + fs * .4, t.b + ' cm', fs, '#1F2433', HL, 'start') }   /* 길이 글을 그 대각선 위에 붙임(2026-11-28) */
+      else { var q = Math.min(a, b) * .14; o += R(x0, by - b, a, b, f, K2) + '<path d="M' + x0 + ' ' + (by - q) + 'H' + (x0 + q) + 'V' + by + 'M' + (x0 + a - q) + ' ' + (by - b) + 'V' + (by - b + q) + 'H' + (x0 + a) + '" fill="none" stroke="#1F2433" stroke-width="1.5"/>' + T(cx, by + 17, t.a + ' cm', fs) + T(x0 + a + 5, by - b / 2 + 5, t.b + ' cm', fs, '#1F2433', '', 'start') }
     });
     return o;
   };

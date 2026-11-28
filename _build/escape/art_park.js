@@ -28,7 +28,7 @@
     if (open) o += R(w * .2, wy - 6, w * .6, 10, '#8A929C', K2 + ' rx="3"') + R(w * .38, wy + wh * .5, w * .24, wh * .32, '#fff', K2 + ' rx="3"') + R(w * .42, wy + wh * .6, w * .16, 4, '#E5534B');
     else { for (var i = 1; i < 6; i++) o += L(w * .2, wy + wh * i / 6, w * .8, wy + wh * i / 6, '#8A929C', 3); }
     o += R(w * .14, wy + wh, w * .72, h * .06, '#9A6A3F', K2);
-    (p.lines || []).forEach(function (s, i, a) { o += T(w / 2, h * .86 + (i - (a.length - 1) / 2) * h * .07 + h * .02, s, Math.min(h * .055, w * .06)) });
+    (p.lines || []).forEach(function (s, i, a) { o += T(w / 2, h * .86 + (i - (a.length - 1) / 2) * h * .08 + h * .02, s, Math.min(h * .066, w * .78 / Math.max(1, em(s)))) });
     return o;
   };
 
@@ -126,10 +126,15 @@
     if (p.title) o += T(w / 2, h * .16, p.title, Math.min(h * .11, w * .06));
     var ty = p.title ? h * .26 : h * .1;
     o += '<path d="M6 ' + ty + 'Q' + w / 2 + ' ' + (ty + h * .08) + ' ' + (w - 6) + ' ' + ty + '" fill="none" stroke="#5A4A3A" stroke-width="2"/>';
+    /* 이름표 글자 크기를 모든 깃발에 같게, 띄어 쓴 긴 이름표('2분 10초')는 두 줄로(2026-11-28) */
+    var LN = it.map(function (t) { var s = String(t.label); return s.indexOf(' ') > 0 && em(s) > 3 ? s.split(' ') : [s] }), two = LN.some(function (a) { return a.length > 1 }),
+      z = Math.min(two ? h * .1 : h * .14, Math.min.apply(null, LN.map(function (a) { return gw * .84 / Math.max.apply(null, a.map(function (x) { return Math.max(2.2, em(x)) })) })));
     it.forEach(function (t, i) {
-      var cx = gw * (i + .5), y0 = ty + h * .02;
+      var cx = gw * (i + .5), y0 = ty + h * .02, a = LN[i];
       o += P('M' + (cx - gw * .32) + ' ' + y0 + 'H' + (cx + gw * .32) + 'L' + cx + ' ' + (y0 + h * .3) + 'Z', c(t.c), K2);
-      o += R(cx - gw * .46, h * .66, gw * .92, h * .26, '#fff', K2 + ' rx="5"') + T(cx, h * .84, t.label, Math.min(h * .14, gw * .84 / Math.max(2.4, em(t.label))));
+      o += R(cx - gw * .46, h * .66, gw * .92, h * .26, '#fff', K2 + ' rx="5"');
+      if (a.length > 1) o += T(cx, h * .785 - z * .3, a[0], z) + T(cx, h * .785 + z * .85, a[1], z);
+      else o += T(cx, h * .79 + z * .36, a[0], z);
     });
     return o;
   };

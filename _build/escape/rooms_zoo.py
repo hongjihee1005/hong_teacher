@@ -85,7 +85,7 @@ ROOM = dict(
             O('ddoor', '사육사 방 문', 'door', 590, 200, 140, 180, dict(c='갈색', sign='사육사 방', keypad=True),
               lock=Lk('dir', segs(MAP['path']), '문에 화살표 단추가 있어요. **매표소 상자에서 찾은 길 그림**을 보고, **가는 방향이 바뀌는 차례대로** 화살표를 눌러요. (같은 쪽으로 여러 칸 가도 화살표는 하나)',
                       ['수첩에서 \'매표소 상자\'의 길 그림을 열어 보세요. \'우리길\'에서 출발해요.', '처음에는 위로 2칸, 그다음 오른쪽으로 3칸 가요.', '↑ → 다음에 위로 2칸, 오른쪽으로 2칸, 마지막에 어느 쪽으로 꺾이나요?'],
-                      '위로 2칸 → 오른쪽으로 3칸 → 위로 2칸 → 오른쪽으로 2칸 → 아래로 2칸이니 ↑ → ↑ → ↓', chk=lambda: segs('UURRRUURRDD')),
+                      '위로 2칸, 오른쪽으로 3칸, 위로 2칸, 오른쪽으로 2칸, 아래로 2칸 가요. 누를 차례: ↑ → ↑ → ↓', chk=lambda: segs('UURRRUURRDD')),
               go='c', after='사육사 방 문이 열렸어요!', guide='정문 광장 매표소 상자에서 찾은 길 그림대로 화살표를 눌러 보세요.'),
         ]),
         dict(id='c', nm='사육사 방', bg=dict(wall='#F5E6CF', floor='#A9845F', deco='tile'), objs=[
@@ -103,7 +103,7 @@ ROOM = dict(
               give=['kb1'], after='상자 뚜껑이 열렸어요! 안에 금색 **열쇠 손잡이**가 있어요. 그런데 손잡이만 있고 몸통이 없어요.',
               guide='작은 열쇠를 사육사 상자에 쓰고, 우리길 포스터의 규칙대로 모양을 눌러 보세요.'),
             O('cdraw', '상자 속 작은 서랍', 'drawer', 20, 108, 70, 40, dict(c='#B98552', lock=True), in_='chest',
-              lock=Lk('num', str(FISH_ROW * FISH_ROWS - BEAR_ROW * ROWS), '상자 안쪽에 아주 작은 서랍이 또 있어요! 숫자 두 개 자물쇠예요. 곰 우리 바닥 쪽지에 적힌 대로 계산해요.',
+              lock=Lk('num', str(FISH_ROW * FISH_ROWS - BEAR_ROW * ROWS), '상자 안쪽에 아주 작은 서랍이 또 있어요! 숫자 자물쇠예요. 곰 우리 바닥 쪽지에 적힌 대로 계산해요.',
                       ['동물 우리길의 곰 우리를 크게 보면 바닥 구석에 작은 쪽지가 있어요. 거기에 계산 방법이 적혀 있어요.', f'물고기는 한 칸에 {FISH_ROW}마리씩 {FISH_ROWS}칸, 곰 인형은 한 칸에 {BEAR_ROW}개씩 {ROWS}칸이에요.', f'{FISH_ROW} × {FISH_ROWS} = {FISH_ROW * FISH_ROWS}, {BEAR_ROW} × {ROWS} = {BEAR_ROW * ROWS}. 큰 수에서 작은 수를 빼요.'],
                       f'물고기 {FISH_ROW} × {FISH_ROWS} = {FISH_ROW * FISH_ROWS}, 곰 인형 {BEAR_ROW} × {ROWS} = {BEAR_ROW * ROWS} → {FISH_ROW * FISH_ROWS} − {BEAR_ROW * ROWS} = {FISH_ROW * FISH_ROWS - BEAR_ROW * ROWS}',
                       chk=lambda: FISH_ROW * FISH_ROWS - BEAR_ROW * ROWS),

@@ -3,6 +3,7 @@
 (function () {
   var c = ART.c, esc = ART.esc, shape = ART.shape;
   function R(x, y, w, h, f, o) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="' + f + '"' + (o || '') + '/>' }
+  function emw(s) { var n = 0; String(s).split('').forEach(function (ch) { n += ch === ' ' ? .3 : /[가-힣]/.test(ch) ? 1.08 : .6 }); return n }
   function T(x, y, s, size, f, o, anc) { return '<text x="' + x + '" y="' + y + '" font-size="' + size + '" fill="' + (f || '#2A221C') + '" text-anchor="' + (anc || 'middle') + '" font-weight="700"' + (o || '') + '>' + esc(s) + '</text>' }
   function C(x, y, r, f, o) { return '<circle cx="' + x + '" cy="' + y + '" r="' + r + '" fill="' + f + '"' + (o || '') + '/>' }
   function P(d, f, o) { return '<path d="' + d + '" fill="' + f + '"' + (o || '') + '/>' }
@@ -27,7 +28,7 @@
   /* 항공사 광고판: p.items=[{c, nm, n}] 손님 수(글) */
   ART.A.apAds = function (w, h, p) {
     var it = p.items || [], top = p.title ? h * .2 : 10, o = R(0, 0, w, h, '#FFFDF4', K + ' rx="6"'), rh = (h - top - 8) / Math.max(1, it.length);
-    if (p.title) o += T(w / 2, top * .7, p.title, Math.min(top * .48, 20), '#2A2233');
+    if (p.title) o += T(w / 2, top * .7, p.title, Math.min(top * .48, 20, (w - 20) / emw(p.title)), '#2A2233');
     var fs = Math.min(rh * .42, w / 15);
     it.forEach(function (a, i) {
       var y = top + i * rh;
@@ -80,15 +81,15 @@
   /* 막대그래프: p.labels, p.vals, p.max, p.step(눈금 한 칸), p.lab(수 적는 간격), p.title, p.unit */
   function graph(w, h, p, line) {
     var lb = p.labels || [], v = p.vals || [], mx = p.max || 100, st = p.step || 10, lab = p.lab || st * 2;
-    var o = R(0, 0, w, h, '#FFFDF4', K + ' rx="6"'), top = p.title ? h * .16 : 12, gx = w * .16, gw = w - gx - 14, gy = top + 10, gh = h - gy - h * .14;
-    if (p.title) o += T(w / 2, top * .75, p.title, Math.min(top * .5, 20), '#2A2233');
+    var o = R(0, 0, w, h, '#FFFDF4', K + ' rx="6"'), top = p.title ? h * .16 : 12, gx = w * .16, gw = w - gx - 14, gy = top + (p.unit ? 20 : 10), gh = h - gy - h * .14;
+    if (p.title) o += T(w / 2, top * .75, p.title, Math.min(top * .5, 20, (w - 20) / emw(p.title)), '#2A2233');
     for (var k = 0; k <= mx; k += st) {
       var y = gy + gh - gh * k / mx, big = k % lab === 0;
       o += L(gx, y, gx + gw, y, big ? '#9AA3AE' : '#D9DEE4', big ? 1.6 : 1);
       if (big) o += T(gx - 6, y + 5, k, Math.min(14, h * .06), '#2A2233', '', 'end');
     }
     o += L(gx, gy, gx, gy + gh, '#2A2233', 2) + L(gx, gy + gh, gx + gw, gy + gh, '#2A2233', 2);
-    if (p.unit) o += T(gx + gw, gy - 3, '(단위: ' + p.unit + ')', Math.min(12, h * .05), '#6A6355', '', 'end');
+    if (p.unit) o += T(gx + gw, gy - 6, '(단위: ' + p.unit + ')', Math.min(12, h * .05), '#6A6355', '', 'end');
     var n = lb.length, cw = gw / Math.max(1, n), pts = [];
     lb.forEach(function (s, i) {
       var cx = gx + cw * (i + .5), y = gy + gh - gh * v[i] / mx;

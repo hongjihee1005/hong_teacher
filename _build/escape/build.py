@@ -125,21 +125,28 @@ def sheet(r):
         if o.get('need'): what.append(f"가방의 {esc(r['items'][o['need']]['nm'])} 쓰기")
         if L: what.append({'num': '숫자', 'dir': '방향', 'color': '색깔', 'shape': '모양'}[L['t']] + ' 자물쇠: ' + plain(L['q']))
         if not what: what.append('살펴보기 — ' + plain(o.get('look', '')))
-        ans = (L['code'] if L['t'] == 'num' else ' → '.join(L['code'])) if L else ''
+        ans = (L['code'] if L['t'] == 'num' else (' ' if L['t'] == 'dir' else ' → ').join(L['code'])) if L else ''
         gets = ', '.join(r['items'][g]['nm'] for g in o.get('give', []))
         rows += f'<tr><td>{i}</td><td>{esc(sn)} · {esc(o["nm"])}</td><td>{" / ".join(what)}</td><td><b>{esc(ans)}</b>{"<br><small>" + plain(L["sol"]) + "</small>" if L else ""}</td><td>{esc(gets)}</td></tr>'
     return (f'<div class="ep-pg"><div class="ep-hd"><b>{esc(r["title"])} · 선생님용 풀이 흐름</b><span>{esc(r["rec"])}</span></div>'
-            f'<p>{esc(r["intro"])}</p><table class="ep-key"><tr><th>차례</th><th>곳 · 물건</th><th>할 일</th><th>답 · 풀이</th><th>얻는 것</th></tr>{rows}</table></div>')
+            f'<table class="ep-key"><tr><th>차례</th><th>곳 · 물건</th><th>할 일</th><th>답 · 풀이</th><th>얻는 것</th></tr>{rows}</table></div>')
+
+def grade(r):
+    m = re.search(r'추천 (\d)학년', r['rec'])
+    if not m: raise SystemExit(f"{r['id']}: rec에 '추천 N학년'이 없음")
+    return int(m.group(1))
 
 def build(r):
     rd = lambda f: f.read_text(encoding='utf-8')
-    gnav = ''.join(f'<a href="{x["id"]}.html"' + (' aria-current="page"' if x is r else '') + f'>{x["title"]}</a>' for x in ROOMS)
+    g = grade(r)
+    gnav = '<a href="index.html">모든 방</a>' + ''.join(f'<a href="{x["id"]}.html"' + (' aria-current="page"' if x is r else '') + f'>{x["title"]}</a>' for x in ROOMS if grade(x) == g)
+    nlock = sum(1 for sc in r['scenes'] for o in sc['objs'] if o.get('lock') or o.get('need'))
     def strip(o):
         o = dict(o)
         if 'lock' in o: o['lock'] = {k: v for k, v in o['lock'].items() if k != 'chk'}
         return o
     data = dict(id=r['id'], idx=ORDER.index(r['id']), title=r['title'], intro=r['intro'], story=r.get('story', []), combine=r.get('combine', []), outro=r['outro'], items=r['items'], flow=r['flow'], scenes=[dict(sc, objs=[strip(o) for o in sc['objs']]) for sc in r['scenes']])
-    rep = {'TITLE': r['title'], 'DESC': re.sub(r'\*\*(.+?)\*\*', r'\1', r['intro']), 'ICO': r['ico'], 'REC': r['rec'], 'GNAV': gnav, 'SHEET': sheet(r),
+    rep = {'TITLE': r['title'], 'DESC': re.sub(r'\*\*(.+?)\*\*', r'\1', r['intro']), 'ICO': r['ico'], 'SUB': f'추천 {g}학년 · 자물쇠와 장치 {nlock}개', 'MATH': ''.join(f'<span>{esc(x)}</span>' for x in re.sub(r'^추천 \d학년\s*·\s*', '', r['rec']).split('·')), 'GNAV': gnav, 'SHEET': sheet(r),
            'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/'), 'TOOL': artsrc() + rd(HERE / 'escape.js'), 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', r['acc']).replace('{TOOLCSS}', rd(HERE / 'escape.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '수학 문제로 자물쇠를 여는 방탈출 자료입니다.'),
@@ -154,9 +161,8 @@ def build(r):
 def build_board():
     """모둠 대항 점수판 project/escape/board.html"""
     rd = lambda f: f.read_text(encoding='utf-8')
-    gnav = ''.join(f'<a href="{x["id"]}.html">{x["title"]}</a>' for x in ROOMS)
     data = dict(rooms=[dict(i=ORDER.index(r['id']), id=r['id'], title=r['title'], acc=r['acc'], n=sum(1 for sc in r['scenes'] for o in sc['objs'] if o.get('lock') or o.get('need'))) for r in ROOMS])
-    rep = {'GNAV': gnav, 'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')), 'TOOL': rd(HERE / 'board.js'), 'SHELL': rd(MT / 'shell.js'),
+    rep = {'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')), 'TOOL': rd(HERE / 'board.js'), 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', '#7B4FB0').replace('{TOOLCSS}', rd(HERE / 'board.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '수학 방탈출을 모둠끼리 겨룰 때 쓰는 점수판입니다.'),
            'HOMEFRAG': rd(OG / 'home.html').replace('{HOME}', '../../index.html')}
