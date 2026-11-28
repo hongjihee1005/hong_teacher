@@ -65,7 +65,7 @@ ROOM = dict(
         dict(id='a', nm='교무실', bg=dict(wall='#283247', floor='#5A5048', deco='stripe'), objs=[
             O('signup', '신청 현황판', 'board', 40, 30, 300, 170, dict(lines=SIGN_FIG, fs=21), keep=True,
               look='반마다 별 보기 행사를 신청한 학생 수가 적혀 있어요.', lookFig=F('board', 380, 180, lines=SIGN_FIG, fs=24),
-              guide='신청 현황판의 반별 인원을 수첩에 남겨 두세요.', say=('momo', '반마다 신청한 학생 수가 달라. 고르게 하면 얼마일까?')),
+              guide='신청 현황판의 반별 인원을 수첩에 남겨 두세요.', say=('momo', '반마다 신청한 학생 수가 다 달라. 잘 적어 두자.')),
             O('duty', '천문대 일정표', 'poster', 360, 30, 280, 170, dict(lines=DUTY, fs=19, c='#FFFDF4'), keep=True,
               look='천문대 일을 하는 날이 적힌 일정표예요.', lookFig=F('poster', 360, 210, lines=DUTY, fs=23, c='#FFFDF4'),
               guide='천문대 일정표를 읽고 수첩에 남겨 두세요.', say=('tori', '두 가지 일을 하는 날이 서로 달라!')),

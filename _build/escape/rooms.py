@@ -64,7 +64,7 @@ TOY = dict(
             O('poster', '모양 포스터', 'poster', 50, 180, 180, 150, dict(lines=['모양 규칙'], shapes=TOY_SHAPES), keep=True, say=('tori', '모양이 되풀이되는 것 같아!'),
               look='모양이 규칙대로 놓여 있어요. 맨 끝 **?** 는 지워졌어요.', lookFig=F('poster', 300, 120, lines=['모양 규칙'], shapes=TOY_SHAPES),
               guide='모양 포스터의 규칙을 수첩에 남겨 두세요.'),
-            O('shelf', '장난감 선반', 'shelf', 250, 120, 320, 260, dict(rows=TOY_SHELF), keep=True, say=('momo', '블록만 세자. 공이랑 곰은 빼고.'),
+            O('shelf', '장난감 선반', 'shelf', 250, 120, 320, 260, dict(rows=TOY_SHELF), keep=True, say=('momo', '블록, 공, 곰 인형을 따로 세어 두자.'),
               look='블록과 공과 곰 인형이 있어요. 무엇이 몇 개일까요?', lookFig=F('shelf', 320, 260, rows=TOY_SHELF),
               guide='장난감 선반에 무엇이 몇 개 있는지 세어 보세요.'),
             O('toybox', '장난감 상자', 'box', 60, 400, 170, 130, dict(c='주황', lock=True, label='?'),

@@ -108,14 +108,14 @@ window.TOOL = function (host, api) {
   function hush() { if (VO) { VO = null; try { SS.cancel() } catch (e) {} } }
   /* 친구 말풍선: 크게 보기·자물쇠 창이 열려 있으면 창 안 맨 위(.es-mbud)에, 아니면 가방 판 위(.es-bud)에 — 창을 가리지 않게 */
   var BUD = null, BUDT = null, BN = 0, LI = {}, LINES = {
-    unlock: [['tori', '열렸다! 우리 진짜 잘한다!'], ['momo', '계산이 딱 맞았어.'], ['tori', '우와, 철컥 열렸어!'], ['momo', '단서를 잘 이었구나.'], ['tori', '해냈어! 또 찾아보자!'], ['momo', '좋아, 하나 더 풀었어.']],
+    unlock: [['tori', '열렸다! 우리 진짜 잘한다!'], ['momo', '딱 맞았어. 단서 정리가 잘 됐네.'], ['tori', '우와, 철컥 열렸어!'], ['momo', '단서를 잘 이었구나.'], ['tori', '해냈어! 또 찾아보자!'], ['momo', '좋아, 하나 더 풀었어.']],
     use: [['tori', '딱 맞는 물건이었어!'], ['momo', '알맞은 곳에 잘 썼어.']],
     wrong1: [['momo', '괜찮아, 단서를 다시 보자.'], ['tori', '아깝다! 한 번 더 해 보자.'], ['momo', '수첩을 펼쳐 보면 어때?']],
     wrong2: [['momo', '힌트 보기를 눌러 봐도 돼.'], ['tori', '막히면 힌트를 봐도 괜찮아!']],
-    wrongi: [['tori', '음, 여기엔 안 맞나 봐.'], ['momo', '어디를 볼까?를 눌러 봐도 돼.']],
+    wrongi: [['tori', '음, 여기엔 안 맞나 봐.'], ['momo', '막히면 ‘어디를 볼까?’ 단추를 눌러 봐.']],
     item: [['tori', '좋은 걸 찾았어! 어디에 쓸까?'], ['tori', '가방에 쏙! 잘 챙겨 두자.']],
     comb: [['momo', '두 조각이 딱 맞았어.'], ['tori', '우와, 합치니까 완성이야!']],
-    idle: [['momo', '어디를 볼까?를 누르면 내가 알려 줄게.'], ['tori', '같이 구석구석 눌러 보자!']]
+    idle: [['momo', '‘어디를 볼까?’ 단추를 누르면 내가 알려 줄게.'], ['tori', '같이 구석구석 눌러 보자!']]
   };
   function pick(k) { var a = LINES[k]; LI[k] = ((LI[k] == null ? -1 : LI[k]) + 1) % a.length; return a[LI[k]] }
   function buddy(who, html, o) {

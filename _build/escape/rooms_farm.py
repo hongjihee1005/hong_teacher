@@ -83,7 +83,7 @@ ROOM = dict(
             O('cows', '젖소 줄', 'fmCows', 30, 40, 600, 220, dict(cows=COW_P), keep=True, say=('tori', '목줄에 번호표가 있어!'),
               look='젖소 여섯 마리의 목줄 색이 모두 달라요. 목줄에 **번호표**가 있어요.',
               lookFig=F('fmCows', 600, 220, cows=COW_P), guide='젖소마다 번호표의 수와 목줄 색을 살펴보세요.'),
-            O('poster', '외양간 무늬 포스터', 'poster', 660, 40, 310, 150, dict(lines=['울타리 무늬'], shapes=POSTER, sc=PSC), keep=True, say=('tori', '무늬가 되풀이돼! 잘 봐.'),
+            O('poster', '외양간 무늬 포스터', 'poster', 660, 40, 310, 150, dict(lines=['울타리 무늬'], shapes=POSTER, sc=PSC), keep=True, say=('tori', '울타리 무늬에 규칙이 있나 봐!'),
               look='울타리 무늬가 규칙대로 그려져 있어요. 맨 끝 **?** 는 지워졌어요.',
               lookFig=F('poster', 360, 140, lines=['울타리 무늬'], shapes=POSTER, sc=PSC), guide='외양간 무늬 포스터의 규칙을 수첩에 남겨 두세요.'),
             O('milk', '우유 보관함', 'cabinet', 60, 290, 170, 240, dict(c='#E8E3D8', label='우유'),
