@@ -136,12 +136,12 @@
   }
   function angFig(ang, x, y, w, h, fs) {
     var g = poly(ang), pts = g.pts, xs = pts.map(function (q) { return q[0] }), ys = pts.map(function (q) { return q[1] });
-    var mnx = Math.min.apply(0, xs), mxx = Math.max.apply(0, xs), mny = Math.min.apply(0, ys), mxy = Math.max.apply(0, ys), s = Math.min((w - fs * 2) / (mxx - mnx), (h - fs * 2) / (mxy - mny));
-    var P2 = pts.map(function (q) { return [x + fs + (q[0] - mnx) * s + ((w - fs * 2) - (mxx - mnx) * s) / 2, y + fs + (q[1] - mny) * s + ((h - fs * 2) - (mxy - mny) * s) / 2] });
+    var mnx = Math.min.apply(0, xs), mxx = Math.max.apply(0, xs), mny = Math.min.apply(0, ys), mxy = Math.max.apply(0, ys), s = Math.min((w - fs * 1.2) / (mxx - mnx), (h - fs * 1.2) / (mxy - mny));
+    var P2 = pts.map(function (q) { return [x + fs * .6 + (q[0] - mnx) * s + ((w - fs * 1.2) - (mxx - mnx) * s) / 2, y + fs * .6 + (q[1] - mny) * s + ((h - fs * 1.2) - (mxy - mny) * s) / 2] });
     var o = '<path d="M' + P2.map(function (q) { return q[0].toFixed(1) + ' ' + q[1].toFixed(1) }).join('L') + 'Z" fill="#FFF8E2" stroke="#2A2233" stroke-width="2.5" stroke-linejoin="round"/>';
     var cx = 0, cy = 0; P2.forEach(function (q) { cx += q[0]; cy += q[1] }); cx /= P2.length; cy /= P2.length;
     P2.forEach(function (q, i) {
-      var dx = cx - q[0], dy = cy - q[1], d = Math.sqrt(dx * dx + dy * dy) || 1, k = Math.min(d * .5, fs * 2.3);
+      var dx = cx - q[0], dy = cy - q[1], d = Math.sqrt(dx * dx + dy * dy) || 1, k = Math.min(d * .6, fs * 2.6);
       o += T(q[0] + dx / d * k, q[1] + dy / d * k + fs * .35, ang[i] == null ? '?' : ang[i] + '°', fs, ang[i] == null ? '#C8402F' : '#2A2233');
     });
     return o;
@@ -151,7 +151,7 @@
     var b = p.btns || [], o = R(0, 0, w, h, '#3A4250', K + ' rx="10"'), bw = (w - 16) / Math.max(1, b.length);
     o += R(8, 6, w - 16, h * .12, '#101820', ' rx="4"') + T(w / 2, 6 + h * .09, open ? '관제 화면 켜짐' : '모르는 각 확인', Math.min(h * .075, w * .04), open ? '#7CF29B' : '#FFC94A');
     b.forEach(function (it, i) {
-      var x = 8 + bw * i, fh = h * .62, fs = Math.min(bw * .13, fh * .12);
+      var x = 8 + bw * i, fh = h * .62, fs = Math.min(bw * .105, fh * .1);
       o += R(x + 4, h * .17, bw - 8, fh, '#FFFDF4', ' rx="6"') + angFig(it.ang, x + 6, h * .17 + 2, bw - 12, fh - 4, fs);
       o += C(x + bw / 2, h * .9, Math.min(bw * .2, h * .08), '#E8E3D8', K2) + shape(it.s, x + bw / 2, h * .9, Math.min(bw * .12, h * .05), '#2A2233');
     });
