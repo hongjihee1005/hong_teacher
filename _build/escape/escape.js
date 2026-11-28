@@ -241,15 +241,39 @@ window.TOOL = function (host, api) {
     var b = host.querySelector('.es-snext'); if (b) b.focus({ preventScroll: true });
   }
   function begin() { stopIntro(); st.t0 = Date.now(); st.lp = 0; tick = setInterval(timer, 1000); draw(); mflash(); setTimeout(function () { if (st.t0 && !st.done && !BUD) buddy('tori', '좋아, 같이 둘러보자!', { mood: 'joy' }) }, RM ? 300 : 1900) }
+  /* 장면 바탕(B안 · 그림책 삽화, 2026-11-28): 벽지·몰딩·원근 바닥 널·창문 빛줄기. 무늬·그러데이션은 ART.fx(문서에 하나뿐인 defs) */
   function bg(b, H) {
-    b = b || {}; H = H || 560; var wall = b.wall || '#F3E3C8', floor = b.floor || '#C9A27A', fy = H * .68, o = '<rect width="1000" height="' + H + '" fill="' + wall + '"/>';
-    if (b.deco === 'stripe') for (var x = 0; x < 1000; x += 60) o += '<rect x="' + x + '" y="0" width="30" height="' + fy + '" fill="#000" opacity=".035"/>';
-    if (b.deco === 'brick') for (var y = 10, r = 0; y < fy; y += 36, r++) for (var x2 = (r % 2) * -40; x2 < 1000; x2 += 80) o += '<rect x="' + x2 + '" y="' + y + '" width="76" height="32" rx="3" fill="#000" opacity=".05"/>';
-    if (b.deco === 'stars') for (var i = 0; i < 40; i++) o += '<circle cx="' + ((i * 137) % 1000) + '" cy="' + ((i * 71) % (fy - 20) + 10) + '" r="' + (i % 3 + 1) + '" fill="#fff" opacity=".7"/>';
-    if (b.deco === 'bubble') for (var j = 0; j < 24; j++) o += '<circle cx="' + ((j * 173) % 1000) + '" cy="' + ((j * 97) % (fy - 30) + 15) + '" r="' + (j % 4 * 3 + 4) + '" fill="none" stroke="#fff" stroke-width="2" opacity=".35"/>';
-    if (b.deco === 'tile') for (var k = 0; k < 1000; k += 50) for (var y3 = 0; y3 < fy; y3 += 50) o += '<rect x="' + (k + 2) + '" y="' + (y3 + 2) + '" width="46" height="46" rx="3" fill="#fff" opacity=".18"/>';
-    o += '<rect y="' + fy + '" width="1000" height="' + (H - fy) + '" fill="' + floor + '"/><rect y="' + (fy - 8) + '" width="1000" height="10" fill="#000" opacity=".15"/>';
-    for (var x3 = 0; x3 < 1000; x3 += 120) o += '<line x1="' + x3 + '" y1="' + fy + '" x2="' + (x3 - 60) + '" y2="' + H + '" stroke="#000" stroke-opacity=".06" stroke-width="2"/>';
+    b = b || {}; H = H || 560; var F = ART.fx, sh = F.sh, wall = b.wall || '#F3E3C8', floor = b.floor || '#C9A27A', fy = H * .68, d = b.deco, lw = F.lum(wall), dark = lw < .42, out = !d;   /* 무늬가 없으면 바깥(하늘·땅) */
+    var o = '<rect width="1000" height="' + fy + '" fill="' + F.lin([[0, sh(wall, .1)], [1, sh(wall, -.07)]]) + '"/>';
+    /* 벽 무늬 */
+    if (d === 'stripe' || d === 'brick' || d === 'tile') o += '<rect width="1000" height="' + fy + '" fill="' + F.pat(d, wall, 50) + '" opacity="' + (d === 'stripe' ? .55 : d === 'brick' ? .8 : .6) + '"/>';
+    if (d === 'stars') for (var i = 0; i < 40; i++) { var sx = (i * 137) % 1000, sy = (i * 71) % (fy - 20) + 10, sr = i % 3 + 1.4; o += '<path d="M' + sx + ' ' + (sy - sr * 2) + 'Q' + sx + ' ' + sy + ' ' + (sx + sr * 2) + ' ' + sy + 'Q' + sx + ' ' + sy + ' ' + sx + ' ' + (sy + sr * 2) + 'Q' + sx + ' ' + sy + ' ' + (sx - sr * 2) + ' ' + sy + 'Q' + sx + ' ' + sy + ' ' + sx + ' ' + (sy - sr * 2) + 'Z" fill="' + (dark ? '#FFF6D0' : '#fff') + '" opacity="' + (dark ? .85 : .75) + '"/>' }
+    if (d === 'bubble') { o += '<path d="M120 0L230 0L80 ' + fy + 'L-60 ' + fy + 'Z M420 0L490 0L360 ' + fy + 'L260 ' + fy + 'Z M700 0L760 0L690 ' + fy + 'L610 ' + fy + 'Z" fill="' + F.lin([[0, '#FFFFFF', .28], [1, '#FFFFFF', 0]]) + '"/>'; for (var j = 0; j < 24; j++) { var bx = (j * 173) % 1000, by = (j * 97) % (fy - 30) + 15, br = j % 4 * 3 + 4; o += '<circle cx="' + bx + '" cy="' + by + '" r="' + br + '" fill="' + F.rad([[0, '#FFFFFF', 0], [.75, '#FFFFFF', .08], [1, '#FFFFFF', .45]]) + '" stroke="#fff" stroke-width="1.2" stroke-opacity=".5"/><circle cx="' + (bx - br * .35) + '" cy="' + (by - br * .35) + '" r="' + (br * .22) + '" fill="#fff" opacity=".7"/>' } }
+    /* 빛: 왼쪽 위 창문에서 들어오는 빛줄기(밝은 실내 벽만) + 오른쪽 아래로 갈수록 살짝 어둡게 */
+    if (!dark && d !== 'bubble') o += '<path d="M0 0H340L150 ' + fy + 'H0Z" fill="' + F.lin([[0, '#FFF7DA', out ? .25 : .45], [1, '#FFF7DA', 0]], 0, 0, 1, 0) + '"/>';
+    o += '<rect width="1000" height="' + fy + '" fill="' + F.lin([[0, '#FFFFFF', dark ? .06 : .22], [.5, '#FFFFFF', 0], [1, '#2A1608', dark ? .25 : .1]], 0, 0, 1, .5) + '"/>';
+    if (!out) {
+      /* 천장 몰딩 · 걸레받이 */
+      var mo = sh(wall, dark ? .12 : .3);
+      o += '<rect width="1000" height="14" fill="' + F.lin([[0, sh(mo, .2)], [1, sh(wall, -.12)]]) + '"/><rect y="14" width="1000" height="4" fill="#1A0E06" opacity=".08"/>';
+      o += '<rect y="' + (fy - 20) + '" width="1000" height="20" fill="' + F.lin([[0, sh(mo, .15)], [.3, mo], [1, sh(wall, -.2)]]) + '"/><rect y="' + (fy - 21) + '" width="1000" height="1.5" fill="' + sh(wall, -.3) + '" opacity=".6"/>';
+    }
+    /* 바닥: 따뜻한 색이면 원근 나무 널, 차가운 색이면 원근 타일, 바깥이면 흙·풀 */
+    var warm = (function () { var m = /^#?([0-9a-f]{6})$/i.exec(floor); if (!m) return true; var v = parseInt(m[1], 16); return ((v >> 16) & 255) > (v & 255) + 18 })(), vx = 500, vy = fy - (H - fy) * 1.55, lnk = sh(floor, -.45);
+    o += '<rect y="' + fy + '" width="1000" height="' + (H - fy) + '" fill="' + F.lin([[0, sh(floor, -.1)], [1, sh(floor, .12)]]) + '"/>';
+    function px(bx, yy) { var t = (yy - vy) / (H - vy); return (vx + (bx - vx) * t).toFixed(1) }
+    if (out) { for (var g = 0; g < 70; g++) { var gx = (g * 263) % 1000, gy = fy + 8 + (g * 89) % (H - fy - 12); o += '<path d="M' + gx + ' ' + gy + 'l3 -' + (4 + g % 4) + 'M' + (gx + 4) + ' ' + gy + 'l-1 -' + (3 + g % 3) + '" stroke="' + lnk + '" stroke-opacity=".35" stroke-width="1.4" stroke-linecap="round"/>' } }
+    else if (warm) {
+      for (var k = -12; k <= 12; k++) { var bx2 = 500 + k * 110; o += '<line x1="' + px(bx2, fy) + '" y1="' + fy + '" x2="' + bx2 + '" y2="' + H + '" stroke="' + lnk + '" stroke-opacity=".3" stroke-width="1.5"/>' }
+      [[1, .3], [3, .7], [-2, .5], [5, .2], [-4, .8], [0, .85], [2, .45], [-1, .15], [4, .6], [-3, .35], [6, .5], [-5, .6], [-6, .25], [7, .75]].forEach(function (s) { var yy = fy + (H - fy) * s[1]; o += '<line x1="' + px(500 + s[0] * 110, yy) + '" y1="' + yy.toFixed(1) + '" x2="' + px(500 + (s[0] + 1) * 110, yy) + '" y2="' + yy.toFixed(1) + '" stroke="' + lnk + '" stroke-opacity=".28" stroke-width="1.3"/>' });
+    } else {
+      for (var k2 = -10; k2 <= 10; k2++) { var bx3 = 500 + k2 * 100; o += '<line x1="' + px(bx3, fy) + '" y1="' + fy + '" x2="' + bx3 + '" y2="' + H + '" stroke="' + lnk + '" stroke-opacity=".28" stroke-width="1.3"/>' }
+      for (var r2 = 1, yy2 = fy; r2 < 6; r2++) { yy2 = fy + (H - fy) * Math.pow(r2 / 6, 1.6); o += '<line x1="0" y1="' + yy2.toFixed(1) + '" x2="1000" y2="' + yy2.toFixed(1) + '" stroke="' + lnk + '" stroke-opacity=".26" stroke-width="1.3"/>' }
+    }
+    /* 바닥에 비친 빛 · 벽 밑 그늘 · 가장자리 어둡게 */
+    o += '<rect y="' + fy + '" width="1000" height="' + (H - fy) + '" fill="' + F.rad([[0, '#FFF3D6', dark ? .12 : .4], [1, '#FFF3D6', 0]], .22, .3, .6) + '"/>';
+    o += '<rect y="' + fy + '" width="1000" height="' + (out ? 10 : 18) + '" fill="' + F.lin([[0, '#1A0E06', out ? .12 : .26], [1, '#1A0E06', 0]]) + '"/>';
+    o += '<rect width="1000" height="' + H + '" fill="' + F.rad([[.6, '#1A0E06', 0], [1, '#1A0E06', dark ? .3 : .16]], .45, .4, .75) + '" pointer-events="none"/>';
     return o;
   }
   function objG(o, cls) { var op = ok(o) && (o.lock || o.need); return '<g class="es-obj' + (cls || '') + (op ? ' es-done' : '') + '" data-o="' + o.id + '" transform="translate(' + o.x + ' ' + o.y + ')" tabindex="0" role="button" aria-label="' + esc(o.nm) + '"><g class="es-art">' + A[o.art](o.w, o.h, o.p || {}, op) + '</g><rect class="es-hot" x="-8" y="-8" width="' + (o.w + 16) + '" height="' + (o.h + 16) + '" rx="10"/></g>' }
