@@ -142,7 +142,7 @@ ROOM = dict(
               look='사육사가 물개에게 준 생선 수를 날마다 적어 둔 기록이에요. 수가 규칙대로 늘어나요.',
               lookFig=F('poster', 360, 260, lines=FISHLOG, fs=21, c='#FFFDF4'), guide='물개 먹이 기록에서 수가 늘어나는 규칙을 찾아보세요.'),
             O('tank', '코끼리 물통', 'crTank', 360, 30, 180, 330, dict(cap=CAP_L, v=NOW_ML, tick=500), keep=True,
-              look=f'코끼리 물통이에요. 들이는 **{CAP_L} L**예요. 옆 눈금을 보고 지금 물이 얼마나 들어 있는지 읽어 보세요. 작은 눈금 한 칸은 500 mL예요.',
+              look=f'들이가 **{CAP_L} L**인 코끼리 물통이에요. 옆 눈금을 보고 지금 물이 얼마나 들어 있는지 읽어 보세요. 작은 눈금 한 칸은 500 mL예요.',
               lookFig=F('crTank', 220, 380, cap=CAP_L, v=NOW_ML, tick=500), guide='코끼리 물통에 물이 얼마나 들어 있는지 눈금을 읽어 보세요.'),
             O('feedbox', '물개 먹이 상자', 'box', 40, 370, 200, 150, dict(c='파랑', lock=True, label='먹이'),
               lock=Lk('num', str(FISH_NEXT), f'먹이 상자 쪽지: **먹이 기록의 규칙대로라면 {len(FISH) + 1}일째에는 생선을 몇 마리 줄까요?** 숫자 두 개를 맞춰요.',
