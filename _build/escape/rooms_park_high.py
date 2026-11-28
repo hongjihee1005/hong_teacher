@@ -139,7 +139,7 @@ ROOM = dict(
               after='끼이익… 유령의 집 문이 열렸어요. 컴컴한 길을 지나 뒷문으로 나오니 **정문**이 바로 앞에 있어요!',
               guide='유령의 집 동전을 넣고, 퍼레이드 차의 지도대로 길을 알려 주세요.'),
             O('screen', '대기 시간 전광판', 'screen', 400, 40, 300, 210, dict(lines=WAIT_LINES, fs=21), keep=True,
-              look='놀이기구 다섯 곳의 오늘 대기 시간을 보여 주는 전광판이에요. 단위는 **분**이에요.', lookFig=F('screen', 340, 220, lines=WAIT_LINES, fs=23),
+              look='놀이기구 다섯 곳의 오늘 대기 시간이 **분** 단위로 나오는 전광판이에요.', lookFig=F('screen', 340, 220, lines=WAIT_LINES, fs=23),
               guide='대기 시간 전광판을 수첩에 남겨 두세요.'),
             O('exit', '정문', 'pkGate', 760, 150, 200, 230, dict(sign='정문', c='보라'), req=['haunt'],
               need='keyb', needMsg='정문 쇠창살에 큰 열쇠 구멍이 있어요.', useMsg='정문 열쇠가 딱 맞아요! 이제 숫자판만 남았어요.',
