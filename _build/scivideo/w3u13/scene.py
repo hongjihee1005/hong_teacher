@@ -38,7 +38,7 @@ P = {
     "ww_stem": (905, 545),
     "aloe_leaf": (900, 620),
     "cactus_stem": (1180, 560), "cactus_spine": (1075, 330),
-    "burr_hook": (960, 520),
+    "burr_hook": (1185, 330),
 }
 
 
@@ -221,7 +221,7 @@ class W3U13(WordScene):
         self.say(f"신발, 가방처럼 {o('붙였다 떼었다')} 하는 곳에 써요",
                  "찍찍이 테이프는 신발, 가방처럼 자주 붙였다 떼었다 하는 곳에 써요.")
         self.play(FadeIn(ph), run_time=0.6)
-        a, t = F.callout(ph, P["burr_hook"], "갈고리 모양 가시", to=(0.3, 1.7), size=32)
+        a, t = F.callout(ph, P["burr_hook"], "갈고리 모양 가시", to=(-2.3, 0.5), size=32)
         self.play(GrowArrow(a), FadeIn(t), run_time=0.5)
         self.play(FadeIn(vc), FadeIn(vt), run_time=0.7)
         self.word_end()
