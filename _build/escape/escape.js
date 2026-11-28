@@ -229,7 +229,8 @@ window.TOOL = function (host, api) {
     var ex = exitObj(), lines = introLines(), dc = (ex && ex.p && ex.p.c) || '갈색', sl = -1;
     lines.some(function (l, i) { if (/쾅|덜컥|철컥|닫히|닫혔|닫혀|잠겼|잠기|잠갔|잠가|갇혔|갇혀/.test(l.t)) { sl = i; return true } });
     if (sl < 0) sl = Math.min(1, lines.length - 1);
-    host.innerHTML = '<div class="es-story"><div class="es-stg"><svg class="es-stsv" viewBox="0 0 1000 520" aria-hidden="true">' + bg(SCN[R.scenes[0].id].bg, 520)
+    var S0 = SCN[R.scenes[0].id];   /* 배경: 그 방 첫 장면(물건 포함)을 흐리고 어둡게 — 방마다 다른 그림(2026-11-28). 따로 한 겹이라 문·친구가 움직여도 다시 그리지 않음 */
+    host.innerHTML = '<div class="es-story"><div class="es-stg"><div class="es-stbg" aria-hidden="true"><svg viewBox="0 20 1000 520" preserveAspectRatio="xMidYMid slice">' + bg(S0.bg) + S0.objs.filter(function (o) { return !o.in && vis(o) }).map(function (o) { return '<g transform="translate(' + o.x + ' ' + o.y + ')">' + A[o.art](o.w, o.h, o.p || {}, false) + '</g>' }).join('') + '</svg></div><svg class="es-stsv" viewBox="0 0 1000 520" aria-hidden="true">'
       + '<g class="es-stopen" transform="translate(400 40)">' + A.door(200, 300, { c: dc }, true) + '</g><g class="es-stdoor" transform="translate(400 40)">' + A.door(200, 300, { c: dc }, false) + '</g>'
       + '<g class="es-stlock" transform="translate(470 145)"><rect x="0" y="22" width="60" height="48" rx="9" fill="#F2C230" stroke="#3A2C22" stroke-width="4"/><path d="M12 24V14a18 18 0 0 1 36 0v10" fill="none" stroke="#8A929C" stroke-width="8"/><circle cx="30" cy="44" r="6" fill="#3A2C22"/></g>'
       + '<g class="es-sc-tori">' + CAST.full('tori', 'wow', '', 'x="170" y="150" width="190" height="230"') + '</g><g class="es-sc-momo">' + CAST.full('momo', 'base', '', 'x="650" y="154" width="180" height="230"') + '</g></svg>'
@@ -248,6 +249,8 @@ window.TOOL = function (host, api) {
     /* 벽 무늬 */
     if (d === 'stripe' || d === 'brick' || d === 'tile') o += '<rect width="1000" height="' + fy + '" fill="' + F.pat(d, wall, 50) + '" opacity="' + (d === 'stripe' ? .55 : d === 'brick' ? .8 : .6) + '"/>';
     if (d === 'stars') for (var i = 0; i < 40; i++) { var sx = (i * 137) % 1000, sy = (i * 71) % (fy - 20) + 10, sr = i % 3 + 1.4; o += '<path d="M' + sx + ' ' + (sy - sr * 2) + 'Q' + sx + ' ' + sy + ' ' + (sx + sr * 2) + ' ' + sy + 'Q' + sx + ' ' + sy + ' ' + sx + ' ' + (sy + sr * 2) + 'Q' + sx + ' ' + sy + ' ' + (sx - sr * 2) + ' ' + sy + 'Q' + sx + ' ' + sy + ' ' + sx + ' ' + (sy - sr * 2) + 'Z" fill="' + (dark ? '#FFF6D0' : '#fff') + '" opacity="' + (dark ? .85 : .75) + '"/>' }
+    /* 유리창 틀(bg.panes): 별 벽을 창밖 하늘로 보이게 — 세로 창살·위 가로대·아래 창턱 + 유리 반사 */
+    if (b.panes) { var pf = b.panes === true || b.panes === 1 ? '#3A3F4C' : b.panes, pm = F.mat('metal', pf), pe = F.edge(pf, 1.4); o += '<path d="M60 30L130 30L40 ' + (fy - 50) + 'L-30 ' + (fy - 50) + 'Z M560 30L600 30L510 ' + (fy - 50) + 'L470 ' + (fy - 50) + 'Z" fill="#FFFFFF" opacity=".07"/>'; o += '<rect x="0" y="14" width="1000" height="18" fill="' + pm + '"' + pe + '/><rect x="0" y="' + (fy - 52) + '" width="1000" height="22" fill="' + pm + '"' + pe + '/><rect x="0" y="' + (fy - 31) + '" width="1000" height="4" fill="#000" opacity=".25"/>'; [0, 250, 500, 750, 1000].forEach(function (x) { o += '<rect x="' + (x - 9) + '" y="20" width="18" height="' + (fy - 60) + '" fill="' + pm + '"' + pe + '/><rect x="' + (x - 7) + '" y="22" width="4" height="' + (fy - 64) + '" fill="#fff" opacity=".18"/>' }) }
     if (d === 'bubble') { o += '<path d="M120 0L230 0L80 ' + fy + 'L-60 ' + fy + 'Z M420 0L490 0L360 ' + fy + 'L260 ' + fy + 'Z M700 0L760 0L690 ' + fy + 'L610 ' + fy + 'Z" fill="' + F.lin([[0, '#FFFFFF', .28], [1, '#FFFFFF', 0]]) + '"/>'; for (var j = 0; j < 24; j++) { var bx = (j * 173) % 1000, by = (j * 97) % (fy - 30) + 15, br = j % 4 * 3 + 4; o += '<circle cx="' + bx + '" cy="' + by + '" r="' + br + '" fill="' + F.rad([[0, '#FFFFFF', 0], [.75, '#FFFFFF', .08], [1, '#FFFFFF', .45]]) + '" stroke="#fff" stroke-width="1.2" stroke-opacity=".5"/><circle cx="' + (bx - br * .35) + '" cy="' + (by - br * .35) + '" r="' + (br * .22) + '" fill="#fff" opacity=".7"/>' } }
     /* 빛: 왼쪽 위 창문에서 들어오는 빛줄기(밝은 실내 벽만) + 오른쪽 아래로 갈수록 살짝 어둡게 */
     if (!dark && d !== 'bubble') o += '<path d="M0 0H340L150 ' + fy + 'H0Z" fill="' + F.lin([[0, '#FFF7DA', out ? .25 : .45], [1, '#FFF7DA', 0]], 0, 0, 1, 0) + '"/>';
@@ -273,6 +276,8 @@ window.TOOL = function (host, api) {
     /* 바닥에 비친 빛 · 벽 밑 그늘 · 가장자리 어둡게 */
     o += '<rect y="' + fy + '" width="1000" height="' + (H - fy) + '" fill="' + F.rad([[0, '#FFF3D6', dark ? .12 : .4], [1, '#FFF3D6', 0]], .22, .3, .6) + '"/>';
     o += '<rect y="' + fy + '" width="1000" height="' + (out ? 10 : 18) + '" fill="' + F.lin([[0, '#1A0E06', out ? .12 : .26], [1, '#1A0E06', 0]]) + '"/>';
+    /* 누르지 않는 장면 소품(러그·의자·화분 등, bg.props = [[그림, x, y, w, h, p]]) */
+    (b.props || []).forEach(function (q) { if (A[q[0]]) o += '<g transform="translate(' + q[1] + ' ' + q[2] + ')" pointer-events="none">' + A[q[0]](q[3], q[4], q[5] || {}, false) + '</g>' });
     o += '<rect width="1000" height="' + H + '" fill="' + F.rad([[.6, '#1A0E06', 0], [1, '#1A0E06', dark ? .3 : .16]], .45, .4, .75) + '" pointer-events="none"/>';
     return o;
   }
@@ -321,6 +326,7 @@ window.TOOL = function (host, api) {
     if (!keep) { var f = m.querySelector('.es-dial button, .es-it, .es-x'); if (f) f.focus({ preventScroll: true }) }
     if (!(o.lock || o.need) && o.give) give(o);
     /* 친구 한마디: 처음 볼 때 그 물건의 say, 없으면 물건을 얻었을 때 */
+    if (!keep && !(firstLook && o.say) && BUD && !BUD.hint) { BUD = null; clearTimeout(BUDT) }   /* 이 물건에 할 말이 없으면 앞 물건의 말풍선을 남기지 않음 */
     if (firstLook && o.say && !keep) buddy(o.say[0], frac(o.say[1]), { mood: o.say[0] === 'tori' ? 'wow' : 'base' });
     else if (gv && !keep) fl('item', { mood: 'joy' });
     else paintBud();

@@ -3,7 +3,7 @@
 (function () {
   var c = ART.c, esc = ART.esc, shape = ART.shape, arrow = ART.arrow;
   /* B안(그림책 삽화, 2026-11-28): 검은 굵은 테두리가 있는 면 → 재질 그러데이션 + 같은 계열 테두리(자리·크기·개수는 그대로, 칠하는 방법만 바꿈) */
-  var F = ART.fx, BMAT = { wood: /^#(7A5434|9A6A3F|8B5A2B|B98552|C99A5B|8A5A30|7A4A22|5A4030|9A6A3F|E8C08B|D9A86C)$/i, metal: /^#(8A929C|6E7580|5E6B78|7A8896|C8CDD3|4A5160|3A3F48|5A6070|5D6675|8A97A6)$/i, glass: /^#(BFE3F5|CFE7F3|E8F4FA|EAF4F8|EEF6FA)$/i, paper: /^#(FFFDF4|FFF8E2|F4F1E8|FFF6E8|FFF2A8|F6F3EC|E6E0D2|FFFFFF|FFF|F2E6C2|FFF3C4|E4F5E8|E3F2DC|FCE6C4|C9B08A)$/i, stone: /^#(7A6A58|6B5A48)$/i };
+  var n1 = ART.fx.n1, F = ART.fx, BMAT = { wood: /^#(7A5434|9A6A3F|8B5A2B|B98552|C99A5B|8A5A30|7A4A22|5A4030|9A6A3F|E8C08B|D9A86C)$/i, metal: /^#(8A929C|6E7580|5E6B78|7A8896|C8CDD3|4A5160|3A3F48|5A6070|5D6675|8A97A6)$/i, glass: /^#(BFE3F5|CFE7F3|E8F4FA|EAF4F8|EEF6FA)$/i, paper: /^#(FFFDF4|FFF8E2|F4F1E8|FFF6E8|FFF2A8|F6F3EC|E6E0D2|FFFFFF|FFF|F2E6C2|FFF3C4|E4F5E8|E3F2DC|FCE6C4|C9B08A)$/i, stone: /^#(7A6A58|6B5A48)$/i };
   function bkind(tag, f, attrs) {
     for (var k in BMAT) if (BMAT[k].test(f) && !(k === 'paper' && tag !== 'rect' && tag !== 'path' && tag !== 'polygon')) return k;
     if (/^#(2A2A2A|2A221C|1F2433|120C1C|2A1D18|1F2A1C|2A2140)$/i.test(f)) return 'paint';
@@ -39,7 +39,8 @@
     var tx = 30 + pw, tw = w * .3, th = h * .45;
     o += R(tx, 22, tw, th, '#F6F3EC', K2 + ' rx="2"') + R(tx + 6, 28, tw - 12, th - 26, '#9FC3D9') + trophy(tx + tw / 2, 28 + (th - 26) * .5, Math.min(tw, th) * .55) + T(tx + tw / 2, 22 + th - 6, '사라진 트로피', Math.min(13, tw * .11), '#1F2433') + pin(tx + tw / 2, 26);
     var nx = tx + tw + 10, nw = w - 18 - nx - 4;
-    if (nw > 30) o += R(nx, 34, nw, h * .3, '#FFF2A8', K2.replace('2"', '1.5"') + ' rx="2"') + T(nx + nw / 2, 34 + h * .18, '?', h * .14, '#C8402F') + pin(nx + nw / 2, 38);
+    /* 핀 꽂힌 사진(고양이 그림자) — 물음표 메모는 진짜 숨은 쪽지와 헷갈려서 바꿈(2026-11-28) */
+    if (nw > 30) { var ph2 = h * .3, cxp = nx + nw / 2, cyp = 34 + 4 + (ph2 - 14) * .55, cr = Math.min(nw - 12, ph2 - 18) * .26; o += R(nx, 34, nw, ph2, '#FBFAF6', K2.replace('2"', '1.5"') + ' rx="2" transform="rotate(4 ' + n1(cxp) + ' ' + n1(34 + ph2 / 2) + ')"') + '<g transform="rotate(4 ' + n1(cxp) + ' ' + n1(34 + ph2 / 2) + ')">' + R(nx + 4, 38, nw - 8, ph2 - 14, F.lin([[0, '#5C7FA6'], [1, '#2E4566']])) + C(cxp, cyp + cr * .3, cr, '#1E2433') + P('M' + n1(cxp - cr * .9) + ' ' + n1(cyp) + 'L' + n1(cxp - cr * .75) + ' ' + n1(cyp - cr * 1.1) + 'L' + n1(cxp - cr * .25) + ' ' + n1(cyp - cr * .6) + 'Z M' + n1(cxp + cr * .9) + ' ' + n1(cyp) + 'L' + n1(cxp + cr * .75) + ' ' + n1(cyp - cr * 1.1) + 'L' + n1(cxp + cr * .25) + ' ' + n1(cyp - cr * .6) + 'Z', '#1E2433') + C(cxp - cr * .35, cyp + cr * .2, cr * .12, '#F2C230') + C(cxp + cr * .35, cyp + cr * .2, cr * .12, '#F2C230') + '</g>' + pin(cxp, 38) }
     o += L(18 + pw / 2, 22, tx + tw / 2, 26, '#D23B2E', 2) + L(tx + tw / 2, 26, nx + nw / 2, 38, '#D23B2E', 2);
     o += R(18, 26 + ph, pw + tw * .7, h - 44 - ph, '#FFFDF4', K2.replace('2"', '1.5"') + ' rx="2"') + T(18 + (pw + tw * .7) / 2, 26 + ph + (h - 44 - ph) * .62, '고양이 털이 떨어져 있었음', Math.min(14, (h - 44 - ph) * .42), '#1F2433');
     return bq(o);
@@ -113,7 +114,7 @@
     var n = p.n || 0, o = '', st = (w - 30) / Math.max(1, n), r = Math.min(st * .45, h * .16);
     for (var i = 0; i < n; i++) {
       var x = 15 + st * (i + .5), y = h * .5 + (i % 2 ? r * 1.1 : -r * 1.1) + Math.sin(i * .5) * h * .12;
-      o += '<g transform="rotate(90 ' + x + ' ' + y + ')"><ellipse cx="' + x + '" cy="' + (y + r * .3) + '" rx="' + r * .55 + '" ry="' + r * .45 + '" fill="#2A2A2A" opacity=".75"/>' + [-.55, -.2, .2, .55].map(function (d) { return C(x + d * r, y - r * .45 - (Math.abs(d) < .3 ? r * .15 : 0), r * .2, '#2A2A2A', ' opacity=".75"') }).join('') + '</g>';
+      o += '<g transform="rotate(90 ' + x + ' ' + y + ')"><ellipse cx="' + x + '" cy="' + (y + r * .3) + '" rx="' + r * .55 + '" ry="' + r * .45 + '" fill="#1C1714" stroke="#FFF4DC" stroke-opacity=".85" stroke-width="' + n1(Math.max(1.2, r * .1)) + '"/>' + [-.55, -.2, .2, .55].map(function (d) { return C(x + d * r, y - r * .45 - (Math.abs(d) < .3 ? r * .15 : 0), r * .2, '#1C1714', ' stroke="#FFF4DC" stroke-opacity=".85" stroke-width="' + n1(Math.max(1, r * .08)) + '"') }).join('') + '</g>';   /* 어두운 바닥에서도 보이게 밝은 테두리 */
     }
     return bq(o);
   };

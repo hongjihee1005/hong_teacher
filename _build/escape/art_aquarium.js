@@ -24,16 +24,19 @@
   ART.A.aqTank = function (w, h, p) {
     var o = F.drop(R(0, 0, w, h, '#000', ' rx="26"'), 5, 8, .25) + R(0, 0, w, h, F.mat('metal', '#8A929C'), F.edge('#8A929C', 1.8) + ' rx="26"') + R(10, 10, w - 20, h - 20, F.lin([[0, '#5BB8E2'], [.5, '#2F8FC4'], [1, '#1D6C9C']]), ' rx="20"') + R(10, 10, w - 20, (h - 20) * .45, F.lin([[0, '#BFE8F8', .55], [1, '#5BB3DE', 0]]), ' rx="20"');
     o += R(10, h * .82, w - 20, h * .18 - 10, F.lin([[0, '#F2E0B4'], [1, '#C9AE76']]), ' rx="8"');
-    for (var k = 0; k < 7; k++) o += weed(30 + k * (w - 60) / 6, h * .86, h * (.25 + (k % 3) * .06), k % 2 ? '#2E8B57' : '#3DA35D');
-    var G = p.groups || 0, per = p.per || 4, cols = Math.ceil(G / 2), cw = (w - 40) / Math.max(1, cols), rh = h * .32;
+    var G = p.groups || 0, per = p.per || 4, cols = Math.ceil(G / 2), cw = (w - 40) / Math.max(1, cols), rh = h * .32, CIR = [];
+    for (var g0 = 0; g0 < G; g0++) { var r0 = g0 < cols ? 0 : 1, c0 = r0 ? g0 - cols : g0, nr0 = r0 ? G - cols : cols; CIR.push([20 + (w - 40 - nr0 * cw) / 2 + c0 * cw + cw / 2, 24 + rh * (r0 + .5) + r0 * 10, Math.min(cw * .44, rh * .48)]) }
+    /* 물고기 묶음 둘레에는 해초·물방울을 두지 않음(묶음이 또렷하게, 2026-11-28) */
+    function clear(x, y1, y2, pad) { return CIR.every(function (q) { var dy = Math.max(0, y1 - q[1], q[1] - y2); return Math.hypot(x - q[0], dy) > q[2] + pad }) }
+    for (var k = 0; k < 7; k++) { var wx = 30 + k * (w - 60) / 6, wh = h * (.25 + (k % 3) * .06); if (clear(wx, h * .86 - wh, h * .86, 12)) o += weed(wx, h * .86, wh, k % 2 ? '#2E8B57' : '#3DA35D') }
     for (var g = 0; g < G; g++) {
-      var row = g < cols ? 0 : 1, col = row ? g - cols : g, nInRow = row ? G - cols : cols, x0 = 20 + (w - 40 - nInRow * cw) / 2 + col * cw, cx = x0 + cw / 2, cy = 24 + rh * (row + .5) + row * 10, rr = Math.min(cw * .44, rh * .48);
+      var cx = CIR[g][0], cy = CIR[g][1], rr = CIR[g][2];
       o += '<circle cx="' + n1(cx) + '" cy="' + n1(cy) + '" r="' + n1(rr) + '" fill="#FFFFFF" fill-opacity=".12" stroke="#FFFFFF" stroke-width="2" stroke-dasharray="5 4"/>';
       var fs = rr * .78;
       for (var f = 0; f < per; f++) { var fx = cx + (f % 2 ? .45 : -.45) * rr, fy = cy + (f < 2 ? -.4 : .4) * rr; o += fish(fx, fy, fs, '#F2C230', f % 2 === 1) }
     }
     for (var t = 0; t < (p.turtle || 0); t++) o += turtle(w * (.2 + t * .3), h * .78, h * .2);
-    for (var b = 0; b < 8; b++) o += '<circle cx="' + n1(w * .9 - (b % 3) * 8) + '" cy="' + n1(h * .75 - b * h * .08) + '" r="' + (2 + b % 3) + '" fill="none" stroke="#fff" stroke-width="1.5" opacity=".7"/>';
+    for (var b = 0; b < 8; b++) if (clear(w * .9 - (b % 3) * 8, h * .75 - b * h * .08, h * .75 - b * h * .08, 8)) o += '<circle cx="' + n1(w * .9 - (b % 3) * 8) + '" cy="' + n1(h * .75 - b * h * .08) + '" r="' + (2 + b % 3) + '" fill="none" stroke="#fff" stroke-width="1.5" opacity=".7"/>';
     return o + F.glassHL(10, 10, w - 20, h - 20, .1);
   };
 

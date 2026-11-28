@@ -81,7 +81,7 @@ ROOM = dict(
            'card': dict(nm='비밀 문 카드', k='card', c='#3D4A7A', de='두 조각을 맞춘 카드예요. \'비밀 책장\'이라고 적혀 있어요.')},
     combine=[dict(a='tl', b='tr', make='card', msg='찢어진 두 조각을 맞춰 붙였더니 **비밀 문 카드**가 되었어요! \'비밀 책장\'이라고 적혀 있어요.')],
     scenes=[
-        dict(id='a', nm='탐정 사무실', bg=dict(wall='#EDE6D6', floor='#6B5A4A', deco='stripe'), objs=[
+        dict(id='a', nm='탐정 사무실', bg=dict(wall='#EDE6D6', floor='#6B5A4A', deco='stripe', props=[['rugRect', 190, 452, 400, 92, dict(c='#7A3B33')], ['lamp', 66, 372, 84, 160], ['chair', 640, 398, 112, 146, dict(c='#7A4E2E')], ['plant', 892, 410, 92, 130]]), objs=[
             O('clock', '벽시계', 'clock', 40, 40, 130, 130, dict(h=CLK_H, m=CLK_M), keep=True,
               look='사무실 벽시계가 멈춰 있어요. 짧은바늘과 긴바늘을 잘 보세요.', lookFig=F('clock', 170, 170, h=CLK_H, m=CLK_M),
               guide='벽시계가 몇 시 몇 분에 멈췄는지 보세요.', say=('tori', '시계가 멈췄어. 바늘을 잘 봐 두자!')),
@@ -142,7 +142,7 @@ ROOM = dict(
               need='card', needMsg='책장 옆에 카드를 꽂는 좁은 틈이 있어요.', useMsg='비밀 문 카드를 꽂았더니 책장이 빙그르 돌아갔어요!',
               go='c', after='책장 뒤에 숨은 **암호 금고 방**이 나타났어요!', guide='찢어진 카드 두 조각을 합쳐 비밀 책장에 꽂아 보세요.'),
         ]),
-        dict(id='c', nm='암호 금고 방', bg=dict(wall='#3A4157', floor='#4A4F5C', deco='brick'), objs=[
+        dict(id='c', nm='암호 금고 방', bg=dict(wall='#3A4157', floor='#4A4F5C', deco='brick', props=[['rugRect', 20, 398, 800, 150, dict(c='#D9CBA8', b='#9A7A4A', plain=1)], ['plant', 868, 412, 104, 132]]), objs=[
             O('tiles', '도형 타일 판', 'dt2Tiles', 40, 30, 470, 340, TILEP, keep=True,
               look='금고 옆 벽에 색깔 도형 타일 네 개가 붙어 있어요. 길이가 cm로 적혀 있고, 점선은 높이나 대각선이에요.',
               lookFig=F('dt2Tiles', 520, 380, **TILEP), guide='도형 타일마다 넓이를 구해 보세요.'),

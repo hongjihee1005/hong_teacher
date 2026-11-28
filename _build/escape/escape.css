@@ -360,3 +360,21 @@ html.es-ttson .es-spk{display:inline-flex}
 .es-mflash{left:50%;top:45%;transform:translate(-50%,-50%);animation:esmf2 1.5s ease forwards}
 @keyframes esmf2{0%{opacity:0;transform:translate(-50%,-50%) scale(.9)}15%{opacity:1;transform:translate(-50%,-50%) scale(1)}75%{opacity:1}100%{opacity:0;transform:translate(-50%,-50%)}}
 @media (prefers-reduced-motion:reduce){.es-swait,.es-snext.es-wait{animation:none}.es-mflash{animation:none}}
+/* 다크 모드: 크게 보기·수첩 그림 판 바탕만 한 톤 낮춤(그림 색은 그대로, 2026-11-28) */
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .es-big,:root:not([data-theme="light"]) .es-fig{background:#BDB3A1}}
+:root[data-theme="dark"] .es-big,:root[data-theme="dark"] .es-fig{background:#BDB3A1}
+/* '계속을 눌러요': 한 줄로, 흐려지지 않게. 좁은 화면은 글을 숨기고 '계속' 단추만 깜빡(2026-11-28) */
+.es-swait{white-space:nowrap}
+@keyframes eswait{from{opacity:.7}to{opacity:1}}
+@media (max-width:700px){.es-strow.es-waiting .es-swait{display:none}}
+/* 1920 전자칠판: 본문 폭(1240px)을 넓혀 장면을 크게 — 화면 높이 안에 장면이 다 들어오는 만큼만(2026-11-28) */
+@media (min-width:1700px){
+ main{max-width:min(96vw,calc((100vh - 330px) * 1000 / 560 + 420px))!important}
+ .es-main{grid-template-columns:minmax(0,1fr) 290px;gap:16px}
+ .es-side h3{font-size:18px}
+}
+/* 이야기 장면 배경: 첫 장면 그림을 흐리고 어둡게 깐 한 겹(한 번만 그려 두고 움직이지 않음) */
+.es-stg{isolation:isolate}
+.es-stbg{position:absolute;top:3px;left:3px;right:3px;aspect-ratio:1000/520;border-radius:15px;overflow:hidden;z-index:-1;background:#2A2230}
+.es-stbg svg{display:block;width:100%;height:100%;filter:blur(2.5px) brightness(.48) saturate(.85);transform:translateZ(0) scale(1.02);will-change:transform}
+.es-stsv{position:relative;background:transparent}

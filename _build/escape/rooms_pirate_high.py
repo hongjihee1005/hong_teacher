@@ -93,7 +93,7 @@ ROOM = dict(
                       chk=lambda: (GOLD + SILVER) * Fraction(CREW, CAP + CREW)),
               go='exit', after='창고 문이 열렸어요!', guide='창고 문 열쇠를 쓰고, 화물 장부와 신호의 대답으로 비례배분을 해요.'),
         ]),
-        dict(id='b', nm='등대 꼭대기', bg=dict(wall='#1D2B5A', floor='#4A5160', deco='stars'), objs=[
+        dict(id='b', nm='등대 꼭대기', bg=dict(wall='#1D2B5A', floor='#4A5160', deco='stars', panes=1, props=[['rugRect', 300, 440, 380, 100, dict(c='#3B4F7A', b='#C9A24B')], ['coil', 60, 452, 150, 86]]), objs=[
             O('log', '등대지기 일지', 'board', 30, 30, 280, 170, dict(lines=LOG, fs=19), keep=True,
               look='등대지기 일지가 펼쳐져 있어요. 렌즈 둘레를 구하는 방법이 적혀 있어요.',
               lookFig=F('board', 320, 170, lines=LOG, fs=21), guide='등대지기 일지를 수첩에 남겨 두세요.', say=('momo', '렌즈 둘레 구하는 방법이 적혀 있어.')),

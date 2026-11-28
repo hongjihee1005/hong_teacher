@@ -33,7 +33,7 @@
     for (var d = 0; d <= 180; d += 5) {
       var r1 = R0 * (d % 10 ? .93 : .88), q = d * Math.PI / 180;
       o += L(px + Math.cos(q) * R0, py - Math.sin(q) * R0, px + Math.cos(q) * r1, py - Math.sin(q) * r1, '#2A2233', d % 10 ? 1 : 1.8);
-      if (d % 10 === 0) o += T(px + Math.cos(q) * R0 * .78, py - Math.sin(q) * R0 * .78 + R0 * .03, d, R0 * .065, '#3A3F48');
+      if (d % 10 === 0) o += T(px + Math.cos(q) * R0 * .78, py - Math.sin(q) * R0 * .78 + (d === 0 || d === 180 ? -R0 * .04 : R0 * .03), d, R0 * .065, '#3A3F48');
     }
     o += L(px - R0, py, px + R0, py, '#3B6FD6', 3);
     var bl = R0 * .58, bw = R0 * .17, q0 = (p.a || 45) * Math.PI / 180;

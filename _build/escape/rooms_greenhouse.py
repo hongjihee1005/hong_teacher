@@ -145,7 +145,7 @@ ROOM = dict(
             O('jar', '씨앗 유리병', 'ghJar', 370, 50, 170, 220, dict(lines=JAR), keep=True,
               look=f'해바라기 씨가 든 유리병이에요. 꼬리표에 "해바라기 씨 {SEEDS}개, 한 봉투에 {BAG}개씩 나누어 담기"라고 적혀 있어요.', lookFig=F('ghJar', 260, 320, lines=JAR),
               guide='씨앗 유리병의 꼬리표를 읽어 보세요.'),
-            O('seedbox', '씨앗 상자', 'ghSeedbox', 380, 320, 230, 180, dict(a=BOX_A, b=BOX_B, c=BOX_C), keep=True,
+            O('seedbox', '씨앗 상자', 'ghSeedbox', 380, 320, 230, 180, dict(a=BOX_A, b=BOX_B, c=BOX_C, fs=17), keep=True,
               look=f'직육면체 모양 씨앗 상자예요. 모서리 길이가 {BOX_A} cm, {BOX_B} cm, {BOX_C} cm로 적혀 있어요.', lookFig=F('ghSeedbox', 300, 230, a=BOX_A, b=BOX_B, c=BOX_C, fs=16),
               lock=Lk('shape', [opposite()[s] for s in ASK], '상자 뚜껑에 정육면체 주사위 자물쇠가 달려 있어요. 쪽지: **주사위 전개도를 접었을 때, ○ 면, △ 면, □ 면과 각각 마주 보는(평행한) 면의 모양을 차례로 눌러요.**',
                       ['주사위 전개도를 수첩에서 열어 보세요. 가운데 줄에 네 면이 이어져 있어요.', '가로로 이어진 네 면 △ □ ☆ ◇는 한 칸 건너 있는 면끼리 마주 봐요.', '□의 위에 붙은 ○와 아래에 붙은 ♡는 서로 마주 봐요.'],
