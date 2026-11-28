@@ -35,7 +35,7 @@ def r(s):
 P = {
     "leaf_blade": (1150, 380), "leaf_vein": (1300, 640), "leaf_stalk": (240, 530), "leaf_edge": (1250, 200),
     "wh_stalk": (955, 410), "wh_root": (960, 760),
-    "ww_stem": (960, 540),
+    "ww_stem": (870, 540),
     "aloe_leaf": (900, 620),
     "cactus_stem": (1180, 520), "cactus_spine": (1300, 380),
     "burr_hook": (960, 520),
