@@ -37,7 +37,7 @@ P = {
     "wh_stalk": (955, 410), "wh_root": (960, 760),
     "ww_stem": (870, 540),
     "aloe_leaf": (900, 620),
-    "cactus_stem": (1180, 520), "cactus_spine": (1300, 380),
+    "cactus_stem": (1180, 560), "cactus_spine": (1075, 330),
     "burr_hook": (960, 520),
 }
 
@@ -185,7 +185,7 @@ class W3U13(WordScene):
         self.say(f"선인장: 줄기가 굵어 {g('물을 저장')}하고, 잎은 {o('가시')} 모양",
                  "선인장은 줄기가 굵어 줄기에 물을 저장할 수 있어요. 잎이 가시 모양이어서 물을 잘 빼앗기지 않아요.")
         self.play(FadeIn(p2), FadeIn(c2), run_time=0.7)
-        a, t = F.callout(p2, P["cactus_spine"], "가시", to=(1.4, 1.0), size=34)
+        a, t = F.callout(p2, P["cactus_spine"], "가시", to=(-1.6, 0.7), size=34)
         self.play(GrowArrow(a), FadeIn(t), run_time=0.5)
         self.word_end()
 
