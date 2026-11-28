@@ -25,7 +25,7 @@ window.TOOL = function (host, api) {
   }
   function draw() {
     var R = RM[S.room], rk = rank(), pos = {}; rk.forEach(function (x, j) { pos[x.i] = j + 1 });
-    var h = '<div class="eb-top"><label>방 <select class="eb-room">' + RM.map(function (r, i) { return '<option value="' + i + '"' + (i === S.room ? ' selected' : '') + '>' + esc(r.title) + '</option>' }).join('') + '</select></label>'
+    var h = '<div class="eb-top"><label>방 <select class="eb-room">' + [1, 2, 3, 4, 5, 6].map(function (g) { return '<optgroup label="' + g + '학년">' + RM.map(function (r, i) { return r.g === g ? '<option value="' + i + '"' + (i === S.room ? ' selected' : '') + '>' + esc(r.title) + '</option>' : '' }).join('') + '</optgroup>' }).join('') + '</select></label>'
       + '<label>모둠 수 <select class="eb-n">' + [2, 3, 4, 5, 6, 7, 8].map(function (n) { return '<option' + (n === S.teams.length ? ' selected' : '') + '>' + n + '</option>' }).join('') + '</select></label>'
       + '<b class="eb-clock">' + (S.t0 ? mmss(now()) : '0:00') + '</b>'
       + (S.t0 ? '<button type="button" class="tl-btn" data-a="stop">시계 멈추고 처음부터</button>' : '<button type="button" class="tl-btn tl-go" data-a="start">모두 출발!</button>') + '</div>';
@@ -40,7 +40,7 @@ window.TOOL = function (host, api) {
     }).join('') + '</div>';
     h += '<div class="eb-chk"><h3>결과 코드 확인하기 <small>개별 활동 · 캡쳐 확인용 — 모둠 칸과 따로</small></h3><p class="tl-row"><input class="eb-one" inputmode="numeric" placeholder="000-000-0000" aria-label="확인할 결과 코드" value="' + esc(S.one || '') + '"><button type="button" class="tl-btn tl-go" data-a="one">확인</button></p><p class="eb-oneres" aria-live="polite">' + oneRes() + '</p></div>';
     if (rk.length) h += '<div class="eb-rank"><h3>순위</h3><ol>' + rk.map(function (x) { return '<li><b>' + esc(x.t.nm) + '</b> ' + mmss(x.s) + (x.r.s != null ? ' · 힌트 ' + x.r.h + ' · 별 ' + x.r.st : ' (선생님 시계)') + '</li>' }).join('') + '</ol><p class="eb-note">결과 코드를 넣은 모둠은 그 기기의 걸린 시간으로, 넣지 않은 모둠은 선생님이 \'탈출!\'을 누른 시각으로 셉니다. 시간이 같으면 힌트를 적게 쓴 모둠이 앞이에요.</p></div>';
-    host.innerHTML = h; api.bar('모둠 대항 점수판 · ' + R.title);
+    host.innerHTML = h; api.bar(esc(R.title));
   }
   function oneRes() {
     if (!S.one) return '학생 화면의 결과 코드(숫자 10개)를 넣으면 어느 방을, 몇 분에, 힌트·틀림 몇 번으로 탈출했는지 나와요.';

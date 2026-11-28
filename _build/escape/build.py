@@ -161,7 +161,7 @@ def build(r):
 def build_board():
     """모둠 대항 점수판 project/escape/board.html"""
     rd = lambda f: f.read_text(encoding='utf-8')
-    data = dict(rooms=[dict(i=ORDER.index(r['id']), id=r['id'], title=r['title'], acc=r['acc'], n=sum(1 for sc in r['scenes'] for o in sc['objs'] if o.get('lock') or o.get('need'))) for r in ROOMS])
+    data = dict(rooms=[dict(i=ORDER.index(r['id']), g=grade(r), id=r['id'], title=r['title'], acc=r['acc'], n=sum(1 for sc in r['scenes'] for o in sc['objs'] if o.get('lock') or o.get('need'))) for r in ROOMS])
     rep = {'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')), 'TOOL': rd(HERE / 'board.js'), 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', '#7B4FB0').replace('{TOOLCSS}', rd(HERE / 'board.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '수학 방탈출을 모둠끼리 겨룰 때 쓰는 점수판입니다.'),
