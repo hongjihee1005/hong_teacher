@@ -125,13 +125,6 @@ h2{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.4vw,26px);m
 .es-opts{flex-wrap:wrap;justify-content:center;gap:8px 16px}.es-opts label{display:inline-flex;align-items:center;gap:6px}
 .es-team-in{font:inherit;padding:4px 8px;border:2px solid var(--line);border-radius:10px;width:9em}
 .es-story{display:flex;flex-direction:column;align-items:center;gap:10px;width:100%;padding-bottom:16px}
-.es-stsv{width:100%;max-width:900px;border-radius:16px;border:3px solid #3A2C22}
-.es-stdoor{transform-box:fill-box;transform-origin:left center;animation:esslam .55s cubic-bezier(.5,0,.8,1.4) both}
-@keyframes esslam{0%{transform:translate(400px,70px) scaleX(.15)}100%{transform:translate(400px,70px) scaleX(1)}}
-.es-stlock{animation:esdrop .4s .45s ease-in both}@keyframes esdrop{0%{transform:translate(470px,40px);opacity:0}70%{transform:translate(470px,182px);opacity:1}100%{transform:translate(470px,175px)}}
-.es-stlines{max-width:40em;display:flex;flex-direction:column;gap:6px;text-align:center}
-.es-stlines p{margin:0;font-size:clamp(18px,2.2vw,23px);line-height:1.5;opacity:0;animation:esline .7s ease forwards}
-.es-stgo{opacity:0;animation:esline .5s ease forwards;font-size:20px}
 @keyframes esline{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
 .es-team{background:var(--acc);color:#fff;font-weight:800;font-size:18px;padding:3px 14px;border-radius:999px}
 .es-pbar{display:inline-block;vertical-align:middle;width:70px;height:9px;border-radius:9px;background:var(--line);margin-left:8px;overflow:hidden}.es-pbar i{display:block;height:100%;background:var(--ok);transition:width .6s}
@@ -164,11 +157,11 @@ h2{font-family:var(--display);font-weight:400;font-size:clamp(21px,2.4vw,26px);m
 .es-win{position:relative;overflow:hidden}
 .es-conf{position:absolute;inset:0;pointer-events:none}.es-conf i{position:absolute;top:-20px;width:10px;height:16px;border-radius:3px;animation:esconf 2s ease-in forwards;opacity:.9}
 @keyframes esconf{to{transform:translateY(560px) rotate(540deg);opacity:0}}
-@media (prefers-reduced-motion:reduce){.es-stdoor,.es-stlock,.es-stlines p,.es-stgo,.es-appear,.es-opening,.es-pulse2,.es-cmk{animation:none!important;opacity:1!important}}
+@media (prefers-reduced-motion:reduce){.es-appear,.es-opening,.es-pulse2,.es-cmk{animation:none!important;opacity:1!important}}
 .es-when{font-size:16px!important;color:var(--soft);margin-top:-4px!important}
 /* 어색한 줄바꿈 막기(2026-11-28 선생님 요청): 마지막 줄에 한두 낱말만 남지 않게, 가운데 맞춘 짧은 글은 줄 길이를 고르게 */
 .tl-head p,.tl-how li,.tl-how p,.es-steps li,.es-look,.es-after p,.es-need p,.es-used,.es-lh p,.es-nbi p,.es-say,.es-nt,.es-it span{text-wrap:pretty}
-.es-intro,.es-lq,.es-stlines p,.es-win p,.es-empty,.es-peek,.es-msg,.es-fx b,.es-toast,.es-code small{text-wrap:balance}
+.es-intro,.es-lq,.es-win p,.es-empty,.es-peek,.es-msg,.es-fx b,.es-toast,.es-code small{text-wrap:balance}
 
 /* 2026-11-28 디자인 정리(선생님: '번잡하고 나열된 느낌') — 머리·판 위 줄 하나·시작 화면·자물쇠·탈출 화면 */
 .es-nw{white-space:nowrap}
@@ -258,8 +251,6 @@ html.es-ttson .es-spk{display:inline-flex}
 .es-again{margin-top:18px;border:0;background:none;padding:6px;font:inherit;font-size:14px;color:var(--soft);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
 .es-outro{text-wrap:pretty!important;max-width:28em!important}
 /* 이야기 화면이 1280×800 한 화면에 들어가게 그림 높이를 줄임 */
-.es-stsv{width:auto;height:min(40vh,378px);max-width:100%}
-@media (max-width:600px){.es-stsv{width:100%;height:auto}}
 /* 전자칠판(넓은 화면)·크게 보기: 위 상태 줄을 크게, 장면은 화면 높이에 맞게 */
 @media (min-width:1700px){.tl-bar{zoom:1.3}}
 .tl-stage:fullscreen .tl-bar,.tl-stage.tl-max .tl-bar{zoom:1.4}
@@ -280,6 +271,100 @@ html.es-ttson .es-spk{display:inline-flex}
 .tl-stage:fullscreen .es-say,.tl-stage.tl-max .es-say{font-size:20px}
 .tl-stage:fullscreen .es-side,.tl-stage.tl-max .es-side{font-size:17px}
 .tl-stage:fullscreen .es-empty,.tl-stage.tl-max .es-empty{font-size:16px}
+
+/* 2026-11-28 미션 카드 · 자막과 목소리로 보는 인트로 · 함께하는 친구 토리·모모(선생님: '처음에 미션이 뜨고, 게임처럼 인트로, 다른 캐릭터도 같이') */
+.cs-face,.cs-full{display:block;width:100%;height:auto;overflow:visible}
+.cs-talk .cm-m{transform-box:fill-box;transform-origin:center;animation:csmouth .2s ease-in-out infinite alternate}
+@keyframes csmouth{to{transform:scaleY(.3)}}
+.es-bf.cs-talk>svg,.es-sface .cs-talk,.es-wc.cs-talk>svg,g.cs-talk{animation:csbob .42s ease-in-out infinite alternate}
+@keyframes csbob{to{transform:translateY(-5px)}}
+/* 미션 카드 */
+.es-mission{display:grid;grid-template-columns:118px minmax(0,1fr) 106px;align-items:end;gap:8px 20px;width:100%;padding:20px 22px 14px;border-radius:22px;background:linear-gradient(180deg,#1B2A4A,#26395F);color:#fff;box-shadow:0 10px 30px rgba(20,30,60,.22)}
+.es-mbody{align-self:center;display:flex;flex-direction:column;align-items:center;text-align:center;gap:6px;padding-bottom:6px}
+.es-mtag{display:inline-block;background:#F2C230;color:#1B2A4A;font-weight:900;font-size:15px;letter-spacing:3px;padding:3px 16px 3px 19px;border-radius:999px}
+.es-mtt{margin:2px 0 0;font-family:var(--display);font-weight:400;font-size:clamp(27px,3.3vw,40px);line-height:1.25;color:#fff;text-wrap:balance}
+.es-mgoal{margin:0;font-size:clamp(17px,1.9vw,20px);line-height:1.5;color:#E3EAF6;max-width:30em;text-wrap:balance}
+.es-mmeta{display:flex;flex-wrap:wrap;justify-content:center;gap:6px;margin:4px 0 0}
+.es-mmeta span{font-size:14px;padding:2px 12px;border-radius:999px;background:rgba(255,255,255,.13);color:#fff;white-space:nowrap}
+.es-tips{list-style:none;margin:2px 0 0;padding:0;display:flex;flex-wrap:wrap;justify-content:center;gap:4px 16px}
+.es-tips li{display:flex;align-items:baseline;gap:7px;font-size:15px;color:#FFE3A0;line-height:1.45;text-align:left}.es-tips li::before{content:'';flex:none;width:7px;height:7px;border-radius:50%;background:#F2C230;transform:translateY(-2px)}
+.es-mc svg{width:100%}
+.es-mc-l svg{margin-bottom:-6px}
+.es-start .es-steps li{background:transparent;border:1.5px solid var(--line);font-size:14.5px;padding:7px 12px}
+.es-start .es-steps li::before{width:24px;height:24px;font-size:13px}
+@media (max-width:600px){
+ .es-mission{grid-template-columns:1fr 1fr;gap:4px 16px;padding:14px 14px 12px}
+ .es-mc{width:66px}.es-mc-l{justify-self:end}.es-mc-r{justify-self:start}
+ .es-mbody{grid-column:1/-1;order:2}.es-mc-l svg{margin:0}
+ .es-tips{flex-direction:column;align-items:flex-start}
+}
+/* 인트로: 자막은 그림 아래쪽에 겹쳐(좁은 화면은 그림 밑에) */
+.es-story{gap:12px;padding-bottom:10px}
+.es-stg{position:relative;width:min(100%,calc((100vh - 360px) * 1000 / 520));min-width:min(100%,600px);margin:0 auto}
+.es-stsv{display:block;width:100%;height:auto;border-radius:18px;border:3px solid #1B2A4A}
+.es-stdoor,.es-stlock{visibility:hidden}
+.es-slammed .es-stopen{visibility:hidden}
+.es-slammed .es-stdoor,.es-slammed .es-stlock{visibility:visible}
+.es-slammed .es-stdoor{transform-box:fill-box;transform-origin:left center;animation:esslam2 .55s cubic-bezier(.5,0,.8,1.4) both}
+@keyframes esslam2{0%{transform:translate(400px,40px) scaleX(.15)}100%{transform:translate(400px,40px) scaleX(1)}}
+.es-slammed .es-stlock{animation:esdrop2 .4s .45s ease-in both}
+@keyframes esdrop2{0%{transform:translate(470px,10px);opacity:0}70%{transform:translate(470px,152px);opacity:1}100%{transform:translate(470px,145px)}}
+.es-sub{position:absolute;left:3%;right:3%;bottom:4%;display:flex;align-items:flex-end;gap:16px;min-height:92px;padding:12px 22px 14px 16px;border-radius:18px;background:rgba(14,20,36,.88);color:#fff;box-shadow:0 8px 24px rgba(0,0,0,.25)}
+.es-sface{flex:none;width:clamp(70px,8.5vw,104px);margin-top:-44px}.es-sface:empty{display:none}
+.es-stx{flex:1;min-width:0}
+.es-swho{display:inline-block;font-size:15px;line-height:1.5;padding:0 12px;border-radius:999px;background:#C8743A;color:#fff;margin-bottom:4px}
+.es-sub-momo .es-swho{background:#2F7FA8}.es-swho:empty{display:none}
+.es-sline{margin:0;font-size:clamp(20px,2.35vw,31px);font-weight:700;line-height:1.42;text-wrap:balance;color:#fff}
+.es-sub-nar{justify-content:center;text-align:center;align-items:center}.es-sub-nar .es-sline{color:#FFE7A0;font-weight:600}
+.es-twoff{color:transparent}
+.es-subin{animation:essub .28s ease}@keyframes essub{from{opacity:.4;transform:translateY(6px)}to{opacity:1;transform:none}}
+.es-strow{display:flex;align-items:center;gap:10px;width:100%;max-width:min(100%,calc((100vh - 360px) * 1000 / 520));min-width:min(100%,600px);margin:0 auto}
+.es-sprog{color:var(--soft);font-size:15px;margin-left:auto;font-variant-numeric:tabular-nums}
+.es-snext{font-size:20px;padding:8px 26px}
+.es-skip{font-size:15px}
+@media (max-width:700px){
+ .es-stg,.es-strow{width:100%;min-width:0;max-width:100%}
+ .es-sub{position:static;margin-top:8px;background:#141C30;min-height:0;padding:10px 12px;gap:10px;align-items:center}
+ .es-sface{width:54px;margin-top:0}.es-sline{font-size:18px}
+ .es-snext{font-size:17px;padding:7px 16px}
+}
+/* 미션 시작 알림 */
+.es-mflash{position:fixed;left:50%;top:24%;transform:translateX(-50%);z-index:96;pointer-events:none;display:flex;flex-direction:column;align-items:center;gap:8px;padding:18px 40px;border-radius:22px;background:#1B2A4A;color:#fff;box-shadow:0 16px 50px rgba(0,0,0,.35);text-align:center;max-width:calc(100vw - 32px);animation:esmf 2.3s ease forwards}
+.es-mflash b{font-family:var(--display);font-weight:400;font-size:clamp(24px,3vw,38px);line-height:1.3;text-wrap:balance}
+@keyframes esmf{0%{opacity:0;transform:translate(-50%,12px) scale(.9)}14%{opacity:1;transform:translate(-50%,0) scale(1)}75%{opacity:1}100%{opacity:0}}
+/* 함께하는 친구: 가방 판 위 · 크게 보기 창 안 맨 위 */
+.es-bud{display:flex;flex-direction:column;gap:8px;margin:0 0 6px;padding-bottom:10px;border-bottom:1.5px dashed var(--line)}
+.es-bfaces{display:flex;gap:8px;align-items:flex-end;padding-left:4px}
+.es-bf{display:block;width:52px;flex:none;opacity:.72;transition:opacity .2s,transform .2s;transform-origin:center bottom}.es-bf.es-on{opacity:1;transform:scale(1.08)}
+.es-bub{position:relative;margin:0;padding:7px 11px;border-radius:14px;background:#FFF5E3;border:2px solid #E5C08E;color:#2A221C;font-size:15px;line-height:1.45;text-wrap:pretty}
+.es-bub-momo{background:#EAF4FB;border-color:#9EC4DF}
+.es-bub-hint{background:#FFF9E0;border-color:var(--acc)}
+.es-bub-idle{background:var(--bg);border-color:var(--line);color:var(--ink);font-size:14px}
+.es-bnm{display:inline-block;margin-right:6px;font-size:12.5px;line-height:1.55;padding:0 8px;border-radius:999px;background:#C8743A;color:#fff;vertical-align:1px;font-weight:700}
+.es-bub-momo .es-bnm,.es-wl-momo .es-bnm{background:#2F7FA8}.es-bub-hint .es-bnm{background:var(--acc)}.es-bub-idle .es-bnm{background:#1B2A4A}
+.es-bub::before{content:'';position:absolute;top:-9px;left:22px;border:8px solid transparent;border-top:0;border-bottom-color:inherit}
+.es-bub-momo::before{left:82px}.es-bub-idle::before{display:none}
+.es-mbud{display:flex;align-items:center;gap:10px}.es-mbud[hidden]{display:none}
+.es-mbud .es-bf{width:48px;opacity:1;transform:none}.es-mbud .es-bub{flex:1;min-width:0;font-size:16px}
+.es-mbud .es-bub::before{top:50%;left:-9px;transform:translateY(-50%);border:8px solid transparent;border-left:0;border-right-color:inherit}
+@media (max-width:820px){
+ .es-side .es-bud{grid-column:1/-1;flex-direction:row;align-items:center;gap:6px;margin:0;padding:0 0 4px;border-bottom:0}
+ .es-side .es-bfaces{gap:2px;padding:0}.es-side .es-bf{width:30px}
+ .es-side .es-bub{flex:1;min-width:0;font-size:13.5px;padding:4px 9px;border-radius:12px}
+ .es-side .es-bnm{font-size:11.5px;padding:0 6px}
+ .es-side .es-bub::before{top:50%;left:-8px;transform:translateY(-50%);border:7px solid transparent;border-left:0;border-right-color:inherit}
+ .es-side .es-bub-idle::before{display:none}
+}
+/* 탈출 화면의 친구 */
+.es-whead{display:grid;grid-template-columns:120px minmax(0,1fr) 110px;align-items:end;gap:10px;width:100%;max-width:640px}
+.es-wmid{display:flex;flex-direction:column;align-items:center;gap:6px;padding-bottom:6px}
+.es-wc svg{width:100%}
+.es-wlines{display:flex;flex-direction:column;gap:6px;width:100%;max-width:560px}
+.es-win .es-wline{margin:0;padding:7px 14px;border-radius:16px;font-size:17px;line-height:1.45;color:#2A221C;max-width:92%;text-align:left;background:#FFF5E3;border:2px solid #E5C08E}
+.es-win .es-wl-tori{align-self:flex-start}.es-win .es-wl-momo{align-self:flex-end;background:#EAF4FB;border-color:#9EC4DF}
+.es-win .es-wl-nar{align-self:center;background:var(--bg);border-color:var(--line);color:var(--ink)}
+@media (max-width:600px){.es-whead{grid-template-columns:72px minmax(0,1fr) 66px;gap:6px}}
+@media (prefers-reduced-motion:reduce){.cs-talk .cm-m,.es-bf.cs-talk>svg,.es-sface .cs-talk,.es-wc.cs-talk>svg,g.cs-talk,.es-subin,.es-mflash,.es-slammed .es-stdoor,.es-slammed .es-stlock{animation:none!important}.es-mflash{opacity:1}}
 
 /* 휴대폰 머리 줄이기(2026-10-29 디자인팀) */
 @media (max-width:600px){
@@ -2291,7 +2376,7 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
  html.hs-sci:not(#hsz):not(#hsz) body section label>:is(input[type=text],input:not([type]),textarea){width:100%;min-width:0}
  html.hs-sci:not(#hsz):not(#hsz):not(#hsz) body section table td.slot{min-width:5rem}
 }
-</style><!--/hj-ctheme--><!--hj-emfont--><style id="hj-emfont">@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAG8AA8AAAAAA2AAAAFmAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgBEEQgKSGYBNgIkAxALCgAEIAU4ByAXJBgKG28CII6UrsZSPPCtpX9mN8DgSoAudwVEBWQrHAqJzzPZ+rT2Ev9PDzzgkBLLNKAAAwsCCzlqYYIHv8GB/LpD2ztNEUk6IKBYq3Zh/sLl6xVKYQSQFjeFu/LIG5d3j9DuJvliR6wurciLIQnRcAl2KnT7olWrFpndWZarKNiXK6VgX/iHABTsQ6ciQVAooFZAq3hy565jAaIEUQx3iU9ARIJaiYBaqdEoVCjSWdb3IlcxIj7259/3eWFYABCEEcUgBYWIqEEXIAVArEy2X/8czl7+UnL2xienL30sPlFw6P66ednsPPlf5meH5u9fbX4mM1/+53mZ7PxRa84NPwUCknAtM3lS/VDF9P+FJYXg16cJO7kMae5xUW/+SxSKIPA4LR4MaeFFvYWU0uSvXcCgE5CqWRLkFLVLhLRIVE771kCpcmttt9Nx+2Qdscl2u+20yzEJkP50FbJQeS4l2FA8GDcXvJWEFAAA) format('woff2');unicode-range:U+25c0}@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAO0AA8AAAAABhgAAANbAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgCBDBEICoU0hGMBNgIkAxILDAAEIAU4ByAXJBgMG7gECAae59/z+7WTU52kl0wHEJuBMhQfiE85Q9fUf6vc2ob3TAOK/EjawIYVQoXSQcNqpenUpdmxY2wBscEGH1+/gACaPAqQZi3adSOMAvB9AEDpLFlPAAJVAztACvIc831GGCl2YsAQU4yDxEEMiDBTW3bs2JJGTtT3Q+P+t8H6yK+AANCfAw4RBCGMAGkIkIcxc+SoaQJgYAIGhqwH4zYACjCBYkxqB1uYvIlmFaWkYB4mGE70/0Tfh1z6+a/yC4LDbIhGyEqNxYiFWrEIYCC/vgyCifx2PLIbBPF9NAcLgGiQNETfgdSkSeH8ESx1QKFdsYRWKSqsbaUmz507e45EGSLJzGLWnNlZnxMHrDop4r5vWd4jiL13If7A2u24HuLdE/euXnWb+J2hAXdfbt/3Ozv03HfuVMmD7xUk73k3ZnlXLsS6907QvfeOPaj4O1p3n9NTr3qvZ/xNy+o7t7flvS2me1drFLe9/bhOn8yxNVvk/UzPbcfkEHn1G3mz5/ZJ6Ru/Y0V33bIs70Z21LsnktIztU9Sn3ffJdl9r0fv3pZ3JL3P3rf07FUnxT1leSeIH59VNDk2J9ZldyX408BGzHntDnTr9LTTk5877+/c8sAf3SupM+qjh0Z02t+pDr/UIUi/sr2qxyonNkuKNRs4qFmxIm8UkTpdu9YxSZZcrKyNJTVLdP/IX5Hn4fzj5G0n3Fanrxkx73Bai6GdG3aodfOzDoeaNE7o7R6bbHfrlu00dH81s0NDJaSF1Ckj1qTrDhMmdGjZ7KvRcS5Sy9tuHduX98sP7FuxyyAgDWQ13zonnR/7Nu5rjb26/JVxOuOvLr3Gyfr+WHjTydr4uEnSr8vefLPYxk8DxRv3gxUPzxYOdl5xejXVGaczddVeLNt3QrRjl8dTm5mfRrsmPpyp5ic/sdts+7SY/mtylccTZ716sJi5OD/jlYyMVz306Z0/6fhV8OHNh3UbHXw45yEACGDKyuwaE94ZmFjvt7AVBuDTd6uPzGsk8v/pSGHwFSCM0Y79QVOXkhCJtAvjAGX+wCgiMmLkMAiBAPuwOghYZlCAiagIBgnA/quATQJdGM5IpjOOwUyhJ8MZzUhGMQ0TANQnLAZNkvTp4JSoSDEkV3Qpo1fojRXRAAAA) format('woff2');unicode-range:U+1f4cb,U+1f5a8}@font-face{font-family:'HJ Emoji';font-style:normal;font-weight:400;font-display:block;src:url(data:font/woff2;base64,d09GMgABAAAAAAPEAA8AAAAABbwAAANuAAMBiQAAAAAAAAAAAAAAAAAAAAAAAAAAHCAGYD9TVEFULgBsEQgKhQiEaAE2AiQDDAsIAAQgBTgHIBckGAgbkwQR1ZsMxUdiutFOTvwRJhzCkew0Yzz8/36/9rn3Ie6RUFxDFk1WWV1jIBMqjDVCmpnMH74/9b0kpRW4AHnq7I/iNPu2nW1qwWEJCodHEbRDje3WcPeWNY0Ga6aS0FbW1Ymqm1JF9khWkBEkS3d47waBar36xdLK1pFKBZRKgKK6iFdllM2WjRL9OMgfjlNzrVhZihwJOHZCJZuru7ur5r7FSqWKy29hJhH/WwKYFNxBVUKopGht90r3J6c3QJIcIMXruHwDBTJGkWxJFpTKqtPCoNBSCI5QVy/+ysfUgklAUtSFJcS/95TERJdWDZlB5aDDL2KLo9T8RKpnKoVnumqkujqbv5W3YbAWD8ZxWIsJth3vyE9sCAZdw4XaUVCDIFwEATUXhNqvQaEapAQKQQlQ47qmHcJaQcE24CGtDYNCNVc4dglhQRhWKX0w8+C2bamO7V0UMSRFA9EGoTgeDOtMS9SCJ7bMKYoGmqTc8KCXsQMXcyBoYElWjDXH1rmjMivFgyOpM4ZmeJrnNoOpBk6i9gliSrdVZqChcTm8QpRhVHpgoXcE25A4Nr4Ru8d8ik9DCmoPyFFhAYyWwc3Umbjqybjkoso4owXZiLgsbdU1YrqTU/PKeivbpamrtoQ8HlNYYKv3yVD/pSGTHBlPyec/e/we8b3jbP/2L2NtGx3jtaZjo93pGiDMyUzDl/qGn/RsPdH9+hJyV61LE7t1Zb3ZKd2JqLqmnRVH1V0wii2uTI6rnpyJ20xtGWQERIXtBbsEOe/wFsYrLk6XfPUwWNAlkK1pvHZEun6/rUz6q/GBBKnHVY7X7UKdc+W8wjUizCLEH8t5MVVYjJJft99NG/u5tGrVkqGDmLZ2uFK+bYmJ75TJaCdE2FWPC8SS305/ZSvTr0+g+9F4rQlk3QUPg5Kvi9PxinyFTjsuQSYD/9/cysw8/hNt8ta0pOStabTJn7fMzFtvQvRPjHJyTowIuqWuvreT/9o1NP6xu5Ps4luafRTxwrK87KXlYQQAEMjR+slkYi9azPl3ZQ0/gD+oTfLj6vm/DQE/3vuASglX/WV29aRCgOdL/CCHOb+TAmh8iOwLCK6EuEr6ZVEIgKQeAhCovf7kgUTJCmWIlSdYolTJUhQgAsVv9aBF0XisIEiCJAFtEGbsW4QQvsdBAg==) format('woff2');unicode-range:U+1f3c6}</style><!--/hj-emfont--></head><body>
+</style><!--/hj-ctheme--></head><body>
 <main>
 <nav class="tl-gnav" aria-label="같은 학년 방"><a href="index.html">모든 방</a><a href="zoo.html">동물원 탈출</a><a href="park-low.html">회전목마 놀이공원 탈출</a><a href="pirate-low.html" aria-current="page">꼬마 해적선 탈출</a><a href="school-low.html">별 보는 밤 교실 탈출</a><a href="aquarium.html">아쿠아리움 탈출</a></nav>
 <header class="tl-head"><span class="tl-ico" aria-hidden="true"><svg viewBox="0 0 24 24" width="40" height="40" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3.5 15.5h17l-2.6 4.5H6.1Z"/><path d="M12 3.5v12M12 4.5l6.5 9H12M10 7 5.5 13.5H10"/></svg></span><div><h1>꼬마 해적선 탈출</h1><p class="tl-desc">추천 2학년 · 자물쇠와 장치 7개</p></div></header>
@@ -2301,13 +2386,13 @@ html.hs-trailon main .og-card .og-meta{font-size:12px!important;gap:4px!importan
 </section>
 <details class="tl-how es-guide"><summary>선생님 안내</summary>
 <div class="es-gmath"><b>이 방의 수학</b><span>두 자리 덧셈</span><span>뺄셈</span><span>곱셈구구</span><span>몇 시 몇 분</span><span>모양 규칙</span><span>방향</span><span>색깔 순서</span></div>
-<ul><li>방 그림 속 물건을 누르면 크게 보여요. 단서는 <b>수첩</b>에, 상자·서랍에서 찾은 물건은 <b>가방</b>에 저절로 모여요. 크게 본 그림 속 작은 쪽지·서랍도 눌러 볼 수 있어요.</li><li>가방에서 물건을 고른 뒤 쓸 곳을 누르고, 가방의 두 물건을 차례로 누르면 합쳐져요.</li><li>자물쇠는 숫자·방향·색깔·모양 네 가지예요. 여러 곳의 단서를 이어야 열려요.</li><li>막히면 <b>어디를 볼까?</b>와 자물쇠마다 있는 <b>힌트 보기</b>를 써요. 힌트와 틀린 횟수가 적을수록 별이 많아요. <b>정답 보기</b>는 자물쇠마다 처음 볼 때 힌트 3번으로 세어요.</li><li>걸리는 시간은 1학년 방 30분, 2학년 25분, 3학년부터 20분쯤이에요(이 자료의 어림값). 시작 화면에서 시간 제한을 바꿀 수 있어요.</li><li>하던 중에 새로 고치거나 다른 쪽에 다녀와도 같은 탭이면 시작 화면에서 <b>이어서 하기</b>를 할 수 있어요(떠나 있던 동안은 시간이 멈춰요).</li><li><b>모둠 대항</b>: 시작 화면의 '이름 또는 모둠' 칸에 모둠 이름을 적고, 선생님은 <a href="board.html">점수판</a>을 띄워 다 같이 출발해요. 탈출 화면의 결과 코드를 넣으면 순위가 나와요.</li><li><b>개별 활동</b>: 이름이나 번호를 적고 풀어요. 탈출 화면을 캡쳐해 내고, 결과 코드를 점수판에 넣어 확인해요.</li><li>탈출한 뒤 수첩을 보며 어떤 단서를 어떻게 이었는지 말해 보아요.</li></ul>
+<ul><li>방 그림 속 물건을 누르면 크게 보여요. 단서는 <b>수첩</b>에, 상자·서랍에서 찾은 물건은 <b>가방</b>에 저절로 모여요. 크게 본 그림 속 작은 쪽지·서랍도 눌러 볼 수 있어요.</li><li>가방에서 물건을 고른 뒤 쓸 곳을 누르고, 가방의 두 물건을 차례로 누르면 합쳐져요.</li><li>처음 이야기는 자막으로 한 줄씩 나오고, 소리가 켜져 있으면 기기의 한국어 목소리로 읽어 줘요(<b>건너뛰기</b>·<b>계속</b>으로 넘김). 친구 <b>토리</b>(다람쥐)와 <b>모모</b>(로봇)가 함께 다니며 단서를 볼 때·열었을 때·막혔을 때 한마디씩 도와요. 답은 말하지 않아요.</li><li>자물쇠는 숫자·방향·색깔·모양 네 가지예요. 여러 곳의 단서를 이어야 열려요.</li><li>막히면 <b>어디를 볼까?</b>와 자물쇠마다 있는 <b>힌트 보기</b>를 써요. 힌트와 틀린 횟수가 적을수록 별이 많아요. <b>정답 보기</b>는 자물쇠마다 처음 볼 때 힌트 3번으로 세어요.</li><li>걸리는 시간은 1학년 방 30분, 2학년 25분, 3학년부터 20분쯤이에요(이 자료의 어림값). 시작 화면에서 시간 제한을 바꿀 수 있어요.</li><li>하던 중에 새로 고치거나 다른 쪽에 다녀와도 같은 탭이면 시작 화면에서 <b>이어서 하기</b>를 할 수 있어요(떠나 있던 동안은 시간이 멈춰요).</li><li><b>모둠 대항</b>: 시작 화면의 '이름 또는 모둠' 칸에 모둠 이름을 적고, 선생님은 <a href="board.html">점수판</a>을 띄워 다 같이 출발해요. 탈출 화면의 결과 코드를 넣으면 순위가 나와요.</li><li><b>개별 활동</b>: 이름이나 번호를 적고 풀어요. 탈출 화면을 캡쳐해 내고, 결과 코드를 점수판에 넣어 확인해요.</li><li>탈출한 뒤 수첩을 보며 어떤 단서를 어떻게 이었는지 말해 보아요.</li></ul>
 <p class="tl-row es-gbtn"><button type="button" class="tl-btn" id="esPrint">🖨️ 선생님용 풀이 흐름 인쇄</button><a class="tl-btn" href="board.html">🏆 점수판</a></p>
 </details>
 <div class="creditbar"><a class="tolist" href="index.html">📋 자료 목록으로</a><footer class="hjfoot"><p>수학 문제로 자물쇠를 여는 방탈출 자료입니다.</p><p>만든 사람: 초등교사 홍지희</p><p class="hj-contact"><a href="mailto:hongjihee1005@gmail.com" aria-label="이메일 보내기: hongjihee1005@gmail.com"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><rect x="2.5" y="5" width="19" height="14" rx="2.5" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3.5 6.5l8.5 6.5 8.5-6.5" fill="none" stroke="currentColor" stroke-width="2" stroke-linejoin="round"/></svg><span>hongjihee1005@gmail.com</span></a><a href="https://www.youtube.com/@hongjihee1005" target="_blank" rel="noopener" aria-label="유튜브 채널 열기: @hongjihee1005"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="12" r="10" fill="#E5484D"/><path d="M10 8.2v7.6l6.2-3.8z" fill="#fff"/></svg><span>유튜브 @hongjihee1005</span></a></p></footer></div>
 </main>
 <div id="esSheet"><div class="ep-pg"><div class="ep-hd"><b>꼬마 해적선 탈출 · 선생님용 풀이 흐름</b><span>추천 2학년 · 두 자리 덧셈·뺄셈·곱셈구구·몇 시 몇 분·모양 규칙·방향·색깔 순서</span></div><p class="ep-ans"><b>답만 한눈에</b> 작은 보물 상자 <b>12</b> · 상자 속 작은 서랍 <b>18</b> · 배의 키 <b>→ ↑ →</b> · 선장 옷장 <b>노랑·초록·파랑·빨강</b> · 보석함 <b>△·△·☆</b> · 구명보트 문 <b>50</b></p><table class="ep-key"><tr><th>차례</th><th>곳 · 물건</th><th>할 일</th><th>답 · 풀이</th><th>얻는 것</th></tr><tr><td>1</td><td>갑판 · 돛대와 깃발</td><td>살펴보기 — 깃발 네 개에 계산식이 적혀 있어요. 얼마일까요?</td><td><b></b></td><td></td></tr><tr><td>2</td><td>갑판 · 돛대와 깃발 속 · 돛대 아래 쪽지</td><td>살펴보기 — 돛대 아래에 작은 쪽지가 있어요! &quot;보물 상자 속 작은 서랍: 나무통 수와 밧줄 매듭 수를 더해요.&quot;</td><td><b></b></td><td></td></tr><tr><td>3</td><td>갑판 · 앵무새 삐리</td><td>살펴보기 — 앵무새 삐리가 &quot;꽥! 세어 봐! 세어 봐!&quot; 하고 외쳐요. 갑판의 물건을 세어 보라는 뜻 같아요.</td><td><b></b></td><td></td></tr><tr><td>4</td><td>갑판 · 밧줄</td><td>살펴보기 — 밧줄에 동그란 매듭이 있어요. 몇 개일까요?</td><td><b></b></td><td></td></tr><tr><td>5</td><td>갑판 · 나무통 더미</td><td>살펴보기 — 나무통이 한 줄에 몇 개씩, 몇 줄일까요?</td><td><b></b></td><td></td></tr><tr><td>6</td><td>갑판 · 작은 보물 상자</td><td>숫자 자물쇠: 갑판의 나무통은 모두 몇 개일까요? 두 자리 수를 만들어요.</td><td><b>12</b><br><small>4개씩 3줄 → 4 × 3 = 12</small></td><td>망원경</td></tr><tr><td>7</td><td>갑판 · 작은 보물 상자 속 · 상자 속 작은 서랍</td><td>숫자 자물쇠: 보물 상자 앞 작은 서랍이에요. 돛대 아래 쪽지대로 계산해요.</td><td><b>18</b><br><small>나무통 12 + 매듭 6 = 18</small></td><td>열쇠 몸통</td></tr><tr><td>8</td><td>갑판 · 망원경 받침대</td><td>가방의 망원경 쓰기</td><td><b></b></td><td></td></tr><tr><td>9</td><td>갑판 · 배의 키</td><td>방향 자물쇠: 망원경으로 본 길을 보고 가는 쪽을 차례로 눌러요. 같은 쪽으로 여러 칸 가도 한 번만 눌러요.</td><td><b>→ ↑ →</b><br><small>오른쪽으로 2칸, 위로 3칸, 오른쪽으로 2칸 가요. 누를 차례: → ↑ →</small></td><td></td></tr><tr><td>10</td><td>갑판 · 선장실 문</td><td>살펴보기 — 빗장이 풀린 선장실 문이에요.</td><td><b></b></td><td></td></tr><tr><td>11</td><td>선장실 · 선장실 시계</td><td>살펴보기 — 벽시계가 멈춰 있어요. 몇 시 몇 분일까요?</td><td><b></b></td><td></td></tr><tr><td>12</td><td>선장실 · 보석 선반</td><td>살펴보기 — 선장님이 모은 보석이에요. 모두 몇 개일까요?</td><td><b></b></td><td></td></tr><tr><td>13</td><td>선장실 · 선장 옷장</td><td>색깔 자물쇠: 갑판 깃발의 값이 작은 것부터 그 깃발의 색 단추를 눌러요.</td><td><b>노랑 → 초록 → 파랑 → 빨강</b><br><small>노랑 25+9=34 → 초록 50−13=37 → 파랑 46−8=38 → 빨강 30+12=42</small></td><td></td></tr><tr><td>14</td><td>선장실 · 깃발 그림</td><td>살펴보기 — 모양이 규칙대로 그려져 있어요. 맨 끝 ? 는 지워졌어요.</td><td><b></b></td><td></td></tr><tr><td>15</td><td>선장실 · 보석함</td><td>모양 자물쇠: 깃발 그림의 ? 자리와 그 뒤 두 개에 올 모양을 차례로 눌러요.</td><td><b>△ → △ → ☆</b><br><small>☆ △ △ 가 되풀이되므로 ? 자리부터 △ △ ☆</small></td><td>열쇠 손잡이</td></tr><tr><td>16</td><td>가방</td><td>합치기: 열쇠 손잡이 + 열쇠 몸통</td><td></td><td>보트 열쇠</td></tr><tr><td>17</td><td>선장실 · 구명보트 문</td><td>가방의 보트 열쇠 쓰기 / 숫자 자물쇠: 시계의 몇 분과 보석 수를 더해요. 두 자리 수를 만들어요.</td><td><b>50</b><br><small>시계 4시 35분 → 35, 보석 6 + 5 + 4 = 15 → 35 + 15 = 50</small></td><td></td></tr></table></div></div>
-<script>window.ER={"id":"pirate-low","idx":12,"g":2,"title":"꼬마 해적선 탈출","intro":"장난꾸러기 앵무새 때문에 해적선 문이 모두 잠겼어요! 갑판과 선장실의 단서로 구명보트 문을 열어요.","story":["해적선을 구경하던 날, 앵무새 '삐리'가 \"꽥!\" 하고 날아오르다 밧줄을 툭 건드렸어요.","쿵! 문이 모두 닫히고 자물쇠가 걸렸어요. 선장님은 낚시를 나가고 안 계셔요.","갑판과 선장실의 단서를 모아 구명보트 문을 열고 배에서 내려요!"],"combine":[{"a":"kb1","b":"kb2","make":"keyb","msg":"손잡이와 몸통을 딸깍 끼웠더니 **보트 열쇠**가 되었어요!"}],"outro":"구명보트 문이 활짝 열렸어요! 낚시에서 돌아온 선장님이 \"꼬마 선원들, 대단해!\" 하며 손을 흔들어요. 앵무새 삐리도 \"꽥꽥!\" 축하해요. 꼬마 해적선을 탈출했어요!","items":{"spy":{"nm":"망원경","k":"lens","c":"#C9A24B","de":"멀리 있는 것을 크게 볼 수 있어요"},"keyb":{"nm":"보트 열쇠","k":"key","c":"#3B6FD6","de":"파란 큰 열쇠예요. 구명보트 문에 맞을까요?"},"kb1":{"nm":"열쇠 손잡이","k":"khead","c":"#3B6FD6","de":"큰 열쇠의 동그란 손잡이만 있어요. 나머지 반쪽은 어디 있을까요?"},"kb2":{"nm":"열쇠 몸통","k":"kblade","c":"#3B6FD6","de":"큰 열쇠의 길쭉한 몸통이에요. 손잡이가 없어요."}},"flow":["mast","pscrap","parrot","rope","barrels","chest","cdraw","scope","wheel","cabin","clock","gems","wardrobe","flagpic","jewel","kb1+kb2","exit"],"scenes":[{"id":"a","nm":"갑판","bg":{"wall":"#BFE3F5","floor":"#B98552","deco":"stripe"},"objs":[{"id":"mast","nm":"돛대와 깃발","art":"prMast","x":30,"y":36,"w":230,"h":344,"p":{"flags":[{"c":"빨강","label":"30+12"},{"c":"노랑","label":"25+9"},{"c":"초록","label":"50−13"},{"c":"파랑","label":"46−8"}]},"keep":true,"look":"깃발 네 개에 계산식이 적혀 있어요. 얼마일까요?","lookFig":{"art":"prMast","w":260,"h":330,"p":{"flags":[{"c":"빨강","label":"30+12"},{"c":"노랑","label":"25+9"},{"c":"초록","label":"50−13"},{"c":"파랑","label":"46−8"}]}},"guide":"돛대의 깃발에 적힌 계산식을 수첩에 남겨 두세요."},{"id":"pscrap","nm":"돛대 아래 쪽지","art":"scrap","x":150,"y":290,"w":50,"h":36,"p":{"t":"?"},"in":"mast","keep":true,"look":"돛대 아래에 작은 쪽지가 있어요! \"보물 상자 속 작은 서랍: **나무통 수와 밧줄 매듭 수**를 더해요.\"","guide":"돛대를 크게 보고 아래쪽의 작은 쪽지를 찾아보세요."},{"id":"parrot","nm":"앵무새 삐리","art":"prParrot","x":290,"y":20,"w":170,"h":180,"p":{"say":"꽥! 세어 봐!"},"look":"앵무새 삐리가 \"꽥! 세어 봐! 세어 봐!\" 하고 외쳐요. 갑판의 물건을 세어 보라는 뜻 같아요.","guide":"앵무새 삐리의 말을 들어 보세요. 그다음 갑판의 물건을 세어 봐요."},{"id":"rope","nm":"밧줄","art":"prRope","x":490,"y":40,"w":250,"h":110,"p":{"n":6},"keep":true,"look":"밧줄에 동그란 **매듭**이 있어요. 몇 개일까요?","lookFig":{"art":"prRope","w":300,"h":130,"p":{"n":6}},"guide":"밧줄의 매듭이 몇 개인지 세어 보세요."},{"id":"barrels","nm":"나무통 더미","art":"prBarrels","x":260,"y":395,"w":200,"h":150,"p":{"rows":3,"cols":4},"keep":true,"look":"나무통이 한 줄에 몇 개씩, 몇 줄일까요?","lookFig":{"art":"prBarrels","w":240,"h":180,"p":{"rows":3,"cols":4}},"guide":"나무통이 한 줄에 몇 개씩 몇 줄 있는지 세어 보세요."},{"id":"chest","nm":"작은 보물 상자","art":"prChest","x":40,"y":400,"w":180,"h":130,"p":{"lock":true},"look":"숫자 자물쇠가 달린 보물 상자예요.","lock":{"t":"num","code":"12","q":"갑판의 **나무통**은 모두 몇 개일까요? 두 자리 수를 만들어요.","hints":["나무통 더미를 보세요. 한 줄에 몇 개씩 있나요?","한 줄에 4개씩 3줄이에요. 4씩 3번 더하거나 곱셈구구로 구해요."],"sol":"4개씩 3줄 → 4 × 3 = 12"},"give":["spy"],"after":"금화 사이에 **망원경**이 있어요. 앞쪽에 **작은 서랍**도 보여요.","guide":"나무통을 세어 작은 보물 상자를 열어요."},{"id":"cdraw","nm":"상자 속 작은 서랍","art":"drawer","x":10,"y":80,"w":60,"h":36,"p":{"c":"#7A4E2A","lock":true},"in":"chest","lock":{"t":"num","code":"18","q":"보물 상자 앞 작은 서랍이에요. **돛대 아래 쪽지**대로 계산해요.","hints":["돛대를 크게 보세요. 아래쪽에 쪽지가 있어요.","나무통은 12개, 밧줄 매듭은 몇 개였나요? 두 수를 더해요."],"sol":"나무통 12 + 매듭 6 = 18"},"give":["kb2"],"after":"작은 서랍 안에 **열쇠 몸통**이 있어요. 손잡이는 없어요.","guide":"보물 상자를 연 뒤 상자 앞쪽의 작은 서랍을 눌러 보세요."},{"id":"scope","nm":"망원경 받침대","art":"prScope","x":780,"y":40,"w":190,"h":180,"p":{"empty":true},"look":"망원경 받침대인데 망원경이 없어요.","need":"spy","needMsg":"받침대가 비어 있어요. 망원경을 얹으면 멀리 볼 수 있겠어요.","useMsg":"망원경을 얹고 바다를 내다봤어요.","after":"**섬**과 큰 **바위**들이 보여요. 빨간 점이 바위를 피해 섬까지 가는 길이에요.","afterFig":{"art":"map","w":300,"h":240,"p":{"n":4,"m":5,"start":[0,3],"path":"RRUUURR","block":[[1,1],[1,2],[3,2],[3,3],[4,3],[0,0]],"sl":"배","gl":"섬"}},"guide":"상자에서 찾은 망원경을 받침대에 얹어 보세요."},{"id":"wheel","nm":"배의 키","art":"prWheel","x":560,"y":200,"w":170,"h":200,"p":{},"look":"배의 방향을 바꾸는 키예요. 옆에 방향 단추가 있어요.","lock":{"t":"dir","code":["→","↑","→"],"q":"**망원경으로 본 길**을 보고 가는 쪽을 차례로 눌러요. 같은 쪽으로 여러 칸 가도 한 번만 눌러요.","hints":["수첩에서 망원경으로 본 지도를 보세요. '배'에서 빨간 점을 따라가요.","처음에는 오른쪽으로 가요. 바위를 피해 그다음은 어느 쪽일까요? 화살표는 모두 3개예요."],"sol":"오른쪽으로 2칸, 위로 3칸, 오른쪽으로 2칸 가요. 누를 차례: → ↑ →"},"after":"배가 섬 옆에 멈췄어요! 덜컹, **선장실 문**의 빗장이 풀렸어요.","guide":"망원경으로 본 지도대로 배의 키를 돌려요."},{"id":"cabin","nm":"선장실 문","art":"door","x":820,"y":250,"w":140,"h":220,"p":{"c":"갈색","sign":"선장실"},"req":["wheel"],"go":"b","look":"빗장이 풀린 선장실 문이에요.","after":"문 너머에 선장실이 보여요.","guide":"새로 열린 선장실 문으로 들어가 보세요."}]},{"id":"b","nm":"선장실","bg":{"wall":"#F3E3C3","floor":"#9A6A3F","deco":"brick"},"objs":[{"id":"clock","nm":"선장실 시계","art":"clock","x":40,"y":40,"w":130,"h":130,"p":{"h":4,"m":35},"keep":true,"look":"벽시계가 멈춰 있어요. **몇 시 몇 분**일까요?","lookFig":{"art":"clock","w":160,"h":160,"p":{"h":4,"m":35}},"guide":"선장실 시계가 몇 시 몇 분인지 수첩에 남겨 두세요."},{"id":"gems","nm":"보석 선반","art":"shelf","x":200,"y":50,"w":300,"h":210,"p":{"rows":[[{"k":"gem","c":"빨강","n":6}],[{"k":"gem","c":"파랑","n":5}],[{"k":"gem","c":"초록","n":4}]],"c":"#8A5A2B"},"keep":true,"look":"선장님이 모은 보석이에요. 모두 몇 개일까요?","lookFig":{"art":"shelf","w":300,"h":210,"p":{"rows":[[{"k":"gem","c":"빨강","n":6}],[{"k":"gem","c":"파랑","n":5}],[{"k":"gem","c":"초록","n":4}]],"c":"#8A5A2B"}},"guide":"보석 선반의 보석을 모두 세어 보세요."},{"id":"wardrobe","nm":"선장 옷장","art":"cabinet","x":540,"y":60,"w":170,"h":300,"p":{"label":"선장 옷장","c":"#B98552"},"look":"문에 빨강·노랑·초록·파랑 단추가 있어요.","lock":{"t":"color","code":["노랑","초록","파랑","빨강"],"q":"**갑판 깃발의 값이 작은 것부터** 그 깃발의 색 단추를 눌러요.","hints":["수첩에서 돛대의 깃발 계산식을 보세요.","빨강 30+12, 노랑 25+9, 초록 50−13, 파랑 46−8. 받아올림·받아내림을 조심해요.","값은 42, 34, 37, 38이에요. 가장 작은 수부터!"],"sol":"노랑 25+9=34 → 초록 50−13=37 → 파랑 46−8=38 → 빨강 30+12=42","opts":["빨강","노랑","초록","파랑"]},"after":"옷장이 열렸어요! 문 안쪽에 붙어 있던 **깃발 그림**이 보여요.","guide":"갑판 깃발의 계산 값을 작은 것부터 정리해 선장 옷장을 열어요."},{"id":"flagpic","nm":"깃발 그림","art":"poster","x":780,"y":40,"w":190,"h":150,"p":{"lines":["선장님 깃발 무늬"],"shapes":["☆","△","△","☆","△","△","☆","?"],"fs":20},"req":["wardrobe"],"keep":true,"look":"모양이 규칙대로 그려져 있어요. 맨 끝 **?** 는 지워졌어요.","lookFig":{"art":"poster","w":300,"h":120,"p":{"lines":["선장님 깃발 무늬"],"shapes":["☆","△","△","☆","△","△","☆","?"]}},"guide":"깃발 그림에서 되풀이되는 모양을 찾아 두세요."},{"id":"jewel","nm":"보석함","art":"box","x":230,"y":400,"w":180,"h":130,"p":{"c":"보라","lock":true,"label":"?"},"look":"뚜껑에 모양 단추가 있어요.","lock":{"t":"shape","code":["△","△","☆"],"q":"깃발 그림의 **? 자리와 그 뒤 두 개**에 올 모양을 차례로 눌러요.","hints":["수첩에서 깃발 그림을 보세요. 어떤 묶음이 되풀이되나요?","☆ △ △ 가 한 묶음이에요. 마지막으로 보이는 모양은 ☆ 였어요."],"sol":"☆ △ △ 가 되풀이되므로 ? 자리부터 △ △ ☆","opts":["○","△","□","☆"]},"give":["kb1"],"after":"구슬 사이에 **열쇠 손잡이**가 있어요. 몸통은 없어요.","guide":"깃발 그림의 규칙대로 보석함의 모양 단추를 눌러요."},{"id":"exit","nm":"구명보트 문","art":"door","x":820,"y":250,"w":140,"h":220,"p":{"c":"파랑","sign":"구명보트"},"look":"큰 열쇠 구멍과 숫자판이 있어요.","need":"keyb","needMsg":"문에 큰 열쇠 구멍이 있어요.","useMsg":"보트 열쇠가 딱 맞아요! 이제 숫자판만 남았어요.","lock":{"t":"num","code":"50","q":"**시계의 몇 분**과 **보석 수**를 더해요. 두 자리 수를 만들어요.","hints":["선장실 시계는 몇 시 몇 분이었나요? 긴바늘에서 5분씩 뛰어 세어요.","보석은 빨강 6개, 파랑 5개, 초록 4개예요.","35 + 15를 계산해요. 일의 자리끼리 더하면 10이 돼요."],"sol":"시계 4시 35분 → 35, 보석 6 + 5 + 4 = 15 → 35 + 15 = 50"},"go":"exit","after":"구명보트 문이 열렸어요!","guide":"두 조각을 합친 보트 열쇠를 쓰고, 시계와 보석 선반으로 비밀번호를 구해요."}]}]};
+<script>window.ER={"id":"pirate-low","idx":12,"g":2,"title":"꼬마 해적선 탈출","intro":"장난꾸러기 앵무새 때문에 해적선 문이 모두 잠겼어요! 갑판과 선장실의 단서로 구명보트 문을 열어요.","story":["해적선을 구경하던 날, 앵무새 '삐리'가 \"꽥!\" 하고 날아오르다 밧줄을 툭 건드렸어요.","쿵! 문이 모두 닫히고 자물쇠가 걸렸어요. 선장님은 낚시를 나가고 안 계셔요.","갑판과 선장실의 단서를 모아 구명보트 문을 열고 배에서 내려요!"],"mission":{"title":"꼬마 해적선을 탈출하라!","goal":"갑판과 선장실의 단서를 모아 구명보트 문을 열어요.","tips":["몇 개씩 몇 줄인지 곱셈으로 세어 봐요","망원경으로 바다를 내다봐요"]},"dialog":[["nar","해적선을 구경하던 날이에요."],["nar","앵무새 삐리가 \"꽥!\" 하고 밧줄을 툭 건드렸어요."],["tori","으악! 문이 전부 닫혔어!"],["nar","선장님은 낚시를 나가고 안 계셔요."],["momo","갑판부터 차근차근 살펴보자."],["tori","꼬마 선원들, 출발!"]],"outro_dialog":[["tori","삐리야, 이제 장난치지 마!"],["momo","곱셈구구로 나무통도 금방 셌어."]],"combine":[{"a":"kb1","b":"kb2","make":"keyb","msg":"손잡이와 몸통을 딸깍 끼웠더니 **보트 열쇠**가 되었어요!"}],"outro":"구명보트 문이 활짝 열렸어요! 낚시에서 돌아온 선장님이 \"꼬마 선원들, 대단해!\" 하며 손을 흔들어요. 앵무새 삐리도 \"꽥꽥!\" 축하해요. 꼬마 해적선을 탈출했어요!","items":{"spy":{"nm":"망원경","k":"lens","c":"#C9A24B","de":"멀리 있는 것을 크게 볼 수 있어요"},"keyb":{"nm":"보트 열쇠","k":"key","c":"#3B6FD6","de":"파란 큰 열쇠예요. 구명보트 문에 맞을까요?"},"kb1":{"nm":"열쇠 손잡이","k":"khead","c":"#3B6FD6","de":"큰 열쇠의 동그란 손잡이만 있어요. 나머지 반쪽은 어디 있을까요?"},"kb2":{"nm":"열쇠 몸통","k":"kblade","c":"#3B6FD6","de":"큰 열쇠의 길쭉한 몸통이에요. 손잡이가 없어요."}},"flow":["mast","pscrap","parrot","rope","barrels","chest","cdraw","scope","wheel","cabin","clock","gems","wardrobe","flagpic","jewel","kb1+kb2","exit"],"scenes":[{"id":"a","nm":"갑판","bg":{"wall":"#BFE3F5","floor":"#B98552","deco":"stripe"},"objs":[{"id":"mast","nm":"돛대와 깃발","art":"prMast","x":30,"y":36,"w":230,"h":344,"p":{"flags":[{"c":"빨강","label":"30+12"},{"c":"노랑","label":"25+9"},{"c":"초록","label":"50−13"},{"c":"파랑","label":"46−8"}]},"keep":true,"say":["tori","깃발에 계산식이 있어!"],"look":"깃발 네 개에 계산식이 적혀 있어요. 얼마일까요?","lookFig":{"art":"prMast","w":260,"h":330,"p":{"flags":[{"c":"빨강","label":"30+12"},{"c":"노랑","label":"25+9"},{"c":"초록","label":"50−13"},{"c":"파랑","label":"46−8"}]}},"guide":"돛대의 깃발에 적힌 계산식을 수첩에 남겨 두세요."},{"id":"pscrap","nm":"돛대 아래 쪽지","art":"scrap","x":150,"y":290,"w":50,"h":36,"p":{"t":"?"},"in":"mast","keep":true,"look":"돛대 아래에 작은 쪽지가 있어요! \"보물 상자 속 작은 서랍: **나무통 수와 밧줄 매듭 수**를 더해요.\"","guide":"돛대를 크게 보고 아래쪽의 작은 쪽지를 찾아보세요."},{"id":"parrot","nm":"앵무새 삐리","art":"prParrot","x":290,"y":20,"w":170,"h":180,"p":{"say":"꽥! 세어 봐!"},"say":["tori","삐리가 뭘 세라는 걸까?"],"look":"앵무새 삐리가 \"꽥! 세어 봐! 세어 봐!\" 하고 외쳐요. 갑판의 물건을 세어 보라는 뜻 같아요.","guide":"앵무새 삐리의 말을 들어 보세요. 그다음 갑판의 물건을 세어 봐요."},{"id":"rope","nm":"밧줄","art":"prRope","x":490,"y":40,"w":250,"h":110,"p":{"n":6},"keep":true,"say":["momo","매듭을 하나씩 짚으며 세자."],"look":"밧줄에 동그란 **매듭**이 있어요. 몇 개일까요?","lookFig":{"art":"prRope","w":300,"h":130,"p":{"n":6}},"guide":"밧줄의 매듭이 몇 개인지 세어 보세요."},{"id":"barrels","nm":"나무통 더미","art":"prBarrels","x":260,"y":395,"w":200,"h":150,"p":{"rows":3,"cols":4},"keep":true,"say":["momo","한 줄에 몇 개씩, 몇 줄인지 보자."],"look":"나무통이 한 줄에 몇 개씩, 몇 줄일까요?","lookFig":{"art":"prBarrels","w":240,"h":180,"p":{"rows":3,"cols":4}},"guide":"나무통이 한 줄에 몇 개씩 몇 줄 있는지 세어 보세요."},{"id":"chest","nm":"작은 보물 상자","art":"prChest","x":40,"y":400,"w":180,"h":130,"p":{"lock":true},"look":"숫자 자물쇠가 달린 보물 상자예요.","lock":{"t":"num","code":"12","q":"갑판의 **나무통**은 모두 몇 개일까요? 두 자리 수를 만들어요.","hints":["나무통 더미를 보세요. 한 줄에 몇 개씩 있나요?","한 줄에 4개씩 3줄이에요. 4씩 3번 더하거나 곱셈구구로 구해요."],"sol":"4개씩 3줄 → 4 × 3 = 12"},"give":["spy"],"after":"금화 사이에 **망원경**이 있어요. 앞쪽에 **작은 서랍**도 보여요.","guide":"나무통을 세어 작은 보물 상자를 열어요."},{"id":"cdraw","nm":"상자 속 작은 서랍","art":"drawer","x":10,"y":80,"w":60,"h":36,"p":{"c":"#7A4E2A","lock":true},"in":"chest","lock":{"t":"num","code":"18","q":"보물 상자 앞 작은 서랍이에요. **돛대 아래 쪽지**대로 계산해요.","hints":["돛대를 크게 보세요. 아래쪽에 쪽지가 있어요.","나무통은 12개, 밧줄 매듭은 몇 개였나요? 두 수를 더해요."],"sol":"나무통 12 + 매듭 6 = 18"},"give":["kb2"],"after":"작은 서랍 안에 **열쇠 몸통**이 있어요. 손잡이는 없어요.","guide":"보물 상자를 연 뒤 상자 앞쪽의 작은 서랍을 눌러 보세요."},{"id":"scope","nm":"망원경 받침대","art":"prScope","x":780,"y":40,"w":190,"h":180,"p":{"empty":true},"say":["tori","망원경이 없네. 어디 있을까?"],"look":"망원경 받침대인데 망원경이 없어요.","need":"spy","needMsg":"받침대가 비어 있어요. 망원경을 얹으면 멀리 볼 수 있겠어요.","useMsg":"망원경을 얹고 바다를 내다봤어요.","after":"**섬**과 큰 **바위**들이 보여요. 빨간 점이 바위를 피해 섬까지 가는 길이에요.","afterFig":{"art":"map","w":300,"h":240,"p":{"n":4,"m":5,"start":[0,3],"path":"RRUUURR","block":[[1,1],[1,2],[3,2],[3,3],[4,3],[0,0]],"sl":"배","gl":"섬"}},"guide":"상자에서 찾은 망원경을 받침대에 얹어 보세요."},{"id":"wheel","nm":"배의 키","art":"prWheel","x":560,"y":200,"w":170,"h":200,"p":{},"look":"배의 방향을 바꾸는 키예요. 옆에 방향 단추가 있어요.","lock":{"t":"dir","code":["→","↑","→"],"q":"**망원경으로 본 길**을 보고 가는 쪽을 차례로 눌러요. 같은 쪽으로 여러 칸 가도 한 번만 눌러요.","hints":["수첩에서 망원경으로 본 지도를 보세요. '배'에서 빨간 점을 따라가요.","처음에는 오른쪽으로 가요. 바위를 피해 그다음은 어느 쪽일까요? 화살표는 모두 3개예요."],"sol":"오른쪽으로 2칸, 위로 3칸, 오른쪽으로 2칸 가요. 누를 차례: → ↑ →"},"after":"배가 섬 옆에 멈췄어요! 덜컹, **선장실 문**의 빗장이 풀렸어요.","guide":"망원경으로 본 지도대로 배의 키를 돌려요."},{"id":"cabin","nm":"선장실 문","art":"door","x":820,"y":250,"w":140,"h":220,"p":{"c":"갈색","sign":"선장실"},"req":["wheel"],"go":"b","look":"빗장이 풀린 선장실 문이에요.","after":"문 너머에 선장실이 보여요.","guide":"새로 열린 선장실 문으로 들어가 보세요."}]},{"id":"b","nm":"선장실","bg":{"wall":"#F3E3C3","floor":"#9A6A3F","deco":"brick"},"objs":[{"id":"clock","nm":"선장실 시계","art":"clock","x":40,"y":40,"w":130,"h":130,"p":{"h":4,"m":35},"keep":true,"look":"벽시계가 멈춰 있어요. **몇 시 몇 분**일까요?","lookFig":{"art":"clock","w":160,"h":160,"p":{"h":4,"m":35}},"guide":"선장실 시계가 몇 시 몇 분인지 수첩에 남겨 두세요."},{"id":"gems","nm":"보석 선반","art":"shelf","x":200,"y":50,"w":300,"h":210,"p":{"rows":[[{"k":"gem","c":"빨강","n":6}],[{"k":"gem","c":"파랑","n":5}],[{"k":"gem","c":"초록","n":4}]],"c":"#8A5A2B"},"keep":true,"say":["momo","보석을 빠짐없이 세어 보자."],"look":"선장님이 모은 보석이에요. 모두 몇 개일까요?","lookFig":{"art":"shelf","w":300,"h":210,"p":{"rows":[[{"k":"gem","c":"빨강","n":6}],[{"k":"gem","c":"파랑","n":5}],[{"k":"gem","c":"초록","n":4}]],"c":"#8A5A2B"}},"guide":"보석 선반의 보석을 모두 세어 보세요."},{"id":"wardrobe","nm":"선장 옷장","art":"cabinet","x":540,"y":60,"w":170,"h":300,"p":{"label":"선장 옷장","c":"#B98552"},"look":"문에 빨강·노랑·초록·파랑 단추가 있어요.","lock":{"t":"color","code":["노랑","초록","파랑","빨강"],"q":"**갑판 깃발의 값이 작은 것부터** 그 깃발의 색 단추를 눌러요.","hints":["수첩에서 돛대의 깃발 계산식을 보세요.","빨강 30+12, 노랑 25+9, 초록 50−13, 파랑 46−8. 받아올림·받아내림을 조심해요.","값은 42, 34, 37, 38이에요. 가장 작은 수부터!"],"sol":"노랑 25+9=34 → 초록 50−13=37 → 파랑 46−8=38 → 빨강 30+12=42","opts":["빨강","노랑","초록","파랑"]},"after":"옷장이 열렸어요! 문 안쪽에 붙어 있던 **깃발 그림**이 보여요.","guide":"갑판 깃발의 계산 값을 작은 것부터 정리해 선장 옷장을 열어요."},{"id":"flagpic","nm":"깃발 그림","art":"poster","x":780,"y":40,"w":190,"h":150,"p":{"lines":["선장님 깃발 무늬"],"shapes":["☆","△","△","☆","△","△","☆","?"],"fs":20},"req":["wardrobe"],"keep":true,"look":"모양이 규칙대로 그려져 있어요. 맨 끝 **?** 는 지워졌어요.","lookFig":{"art":"poster","w":300,"h":120,"p":{"lines":["선장님 깃발 무늬"],"shapes":["☆","△","△","☆","△","△","☆","?"]}},"guide":"깃발 그림에서 되풀이되는 모양을 찾아 두세요."},{"id":"jewel","nm":"보석함","art":"box","x":230,"y":400,"w":180,"h":130,"p":{"c":"보라","lock":true,"label":"?"},"look":"뚜껑에 모양 단추가 있어요.","lock":{"t":"shape","code":["△","△","☆"],"q":"깃발 그림의 **? 자리와 그 뒤 두 개**에 올 모양을 차례로 눌러요.","hints":["수첩에서 깃발 그림을 보세요. 어떤 묶음이 되풀이되나요?","☆ △ △ 가 한 묶음이에요. 마지막으로 보이는 모양은 ☆ 였어요."],"sol":"☆ △ △ 가 되풀이되므로 ? 자리부터 △ △ ☆","opts":["○","△","□","☆"]},"give":["kb1"],"after":"구슬 사이에 **열쇠 손잡이**가 있어요. 몸통은 없어요.","guide":"깃발 그림의 규칙대로 보석함의 모양 단추를 눌러요."},{"id":"exit","nm":"구명보트 문","art":"door","x":820,"y":250,"w":140,"h":220,"p":{"c":"파랑","sign":"구명보트"},"look":"큰 열쇠 구멍과 숫자판이 있어요.","need":"keyb","needMsg":"문에 큰 열쇠 구멍이 있어요.","useMsg":"보트 열쇠가 딱 맞아요! 이제 숫자판만 남았어요.","lock":{"t":"num","code":"50","q":"**시계의 몇 분**과 **보석 수**를 더해요. 두 자리 수를 만들어요.","hints":["선장실 시계는 몇 시 몇 분이었나요? 긴바늘에서 5분씩 뛰어 세어요.","보석은 빨강 6개, 파랑 5개, 초록 4개예요.","35 + 15를 계산해요. 일의 자리끼리 더하면 10이 돼요."],"sol":"시계 4시 35분 → 35, 보석 6 + 5 + 4 = 15 → 35 + 15 = 50"},"go":"exit","after":"구명보트 문이 열렸어요!","guide":"두 조각을 합친 보트 열쇠를 쓰고, 시계와 보석 선반으로 비밀번호를 구해요."}]}]};
 /* 수학 방탈출 그림 묶음 (2026-11-26): ART[이름](w, h, p, open) → 0,0~w,h 안에 그리는 SVG 조각.
    방 그림(장면)과 크게 보기 창에서 같은 함수를 씀. 이모지 대신 모두 직접 그린 도형(공통 덮개가 이모지를 바꾸지 않게). */
 var ART = (function () {
@@ -4650,6 +4735,89 @@ var ART = (function () {
   };
 })();
 
+/* 수학 방탈출 함께하는 친구(2026-11-28 선생님: '다른 캐릭터도 나와서 같이 방탈출을 하는 느낌') — 30방 모두 같은 둘.
+   토리(tori): 호기심 많은 아기 다람쥐 탐험가 — 초록 목수건·작은 배낭·돋보기.  모모(momo): 꼼꼼한 작은 로봇 — 둥근 머리·안테나·화면 얼굴.
+   이 자료에서 직접 그린 SVG(이모지·바깥 그림 없음). CAST.face(누구, 표정) 얼굴만 / CAST.full(누구, 표정) 몸 전체.
+   표정: 'base'(기본) · 'wow'(놀람) · 'joy'(기쁨). 입은 class "cm-m"(말할 때 CSS가 움직임). */
+var CAST = (function () {
+  var NM = { tori: '토리', momo: '모모', nar: '' };
+  var INK = '#4A2A14';
+  function toriHead(m) {
+    var o = '';
+    /* 귀(끝에 털 뭉치) */
+    o += '<path d="M23 38 L17 9 Q26 8 42 26Z" fill="#C8743A" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/><path d="M25 32 L22 15 Q28 15 36 26Z" fill="#F2A98F"/>';
+    o += '<path d="M77 38 L83 9 Q74 8 58 26Z" fill="#C8743A" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/><path d="M75 32 L78 15 Q72 15 64 26Z" fill="#F2A98F"/>';
+    o += '<path d="M17 9 Q14 3 19 1 Q19 6 22 8Z M83 9 Q86 3 81 1 Q81 6 78 8Z" fill="#8E4A1E"/>';
+    /* 머리 · 얼굴 밝은 부분 */
+    o += '<ellipse cx="50" cy="55" rx="34" ry="30" fill="#C8743A" stroke="' + INK + '" stroke-width="3"/>';
+    o += '<path d="M50 34 Q44 40 46 46 M50 34 Q56 40 54 46" fill="none" stroke="#A65A26" stroke-width="2.4" stroke-linecap="round"/>';
+    o += '<ellipse cx="50" cy="68" rx="21" ry="15" fill="#F7E6C8"/>';
+    /* 눈 */
+    if (m === 'joy') o += '<path d="M30 54 Q37 45 44 54 M56 54 Q63 45 70 54" fill="none" stroke="#2B1A10" stroke-width="3.6" stroke-linecap="round"/>';
+    else {
+      var ry = m === 'wow' ? 9 : 7.2, rx = m === 'wow' ? 7 : 5.8;
+      o += '<ellipse cx="37" cy="52" rx="' + rx + '" ry="' + ry + '" fill="#2B1A10"/><ellipse cx="63" cy="52" rx="' + rx + '" ry="' + ry + '" fill="#2B1A10"/>';
+      o += '<circle cx="39.5" cy="48.5" r="2.4" fill="#fff"/><circle cx="65.5" cy="48.5" r="2.4" fill="#fff"/><circle cx="35.5" cy="55.5" r="1.1" fill="#fff"/><circle cx="61.5" cy="55.5" r="1.1" fill="#fff"/>';
+      if (m === 'wow') o += '<path d="M29 38 Q36 33 43 37 M57 37 Q64 33 71 38" fill="none" stroke="' + INK + '" stroke-width="2.6" stroke-linecap="round"/>';
+    }
+    /* 볼 · 코 · 입 */
+    o += '<ellipse cx="25" cy="64" rx="6" ry="4.2" fill="#F08C7E" opacity=".75"/><ellipse cx="75" cy="64" rx="6" ry="4.2" fill="#F08C7E" opacity=".75"/>';
+    o += '<path d="M46 60 Q50 57 54 60 Q50 65 46 60Z" fill="' + INK + '"/>';
+    if (m === 'wow') o += '<ellipse class="cm-m" cx="50" cy="72" rx="4.2" ry="5.2" fill="#7A2E22" stroke="' + INK + '" stroke-width="1.6"/>';
+    else if (m === 'joy') o += '<path class="cm-m" d="M41 66 Q50 80 59 66Z" fill="#7A2E22" stroke="' + INK + '" stroke-width="2" stroke-linejoin="round"/><rect x="47" y="66" width="6" height="4" rx="1" fill="#fff"/>';
+    else o += '<g class="cm-m"><path d="M43 66 Q46.5 70 50 66 Q53.5 70 57 66" fill="none" stroke="' + INK + '" stroke-width="2.4" stroke-linecap="round"/><rect x="47.4" y="66.6" width="5.2" height="4" rx="1" fill="#fff" stroke="' + INK + '" stroke-width="1"/></g>';
+    /* 초록 탐험 목수건 */
+    o += '<path d="M24 80 Q50 93 76 80 L74 90 Q50 101 26 90Z" fill="#3F9A5B" stroke="#245E37" stroke-width="2.4" stroke-linejoin="round"/><path d="M60 89 L68 99 L56 96Z" fill="#3F9A5B" stroke="#245E37" stroke-width="2" stroke-linejoin="round"/>';
+    return o;
+  }
+  function momoHead(m) {
+    var E = '#7DF3E1', o = '';
+    o += '<line x1="50" y1="22" x2="50" y2="9" stroke="#2E3D55" stroke-width="3"/><circle cx="50" cy="7" r="5.5" fill="#FFD54A" stroke="#2E3D55" stroke-width="2.4"/>';
+    o += '<rect x="7" y="44" width="12" height="20" rx="5" fill="#8FA8C0" stroke="#2E3D55" stroke-width="2.4"/><rect x="81" y="44" width="12" height="20" rx="5" fill="#8FA8C0" stroke="#2E3D55" stroke-width="2.4"/>';
+    o += '<rect x="15" y="21" width="70" height="62" rx="28" fill="#DCEAF5" stroke="#2E3D55" stroke-width="3"/>';
+    o += '<path d="M24 34 Q30 26 40 25" fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" opacity=".9"/>';
+    o += '<rect x="25" y="33" width="50" height="38" rx="13" fill="#1F2C46" stroke="#2E3D55" stroke-width="2"/>';
+    if (m === 'joy') o += '<path d="M33 52 Q39 43 45 52 M55 52 Q61 43 67 52" fill="none" stroke="' + E + '" stroke-width="3.6" stroke-linecap="round"/>';
+    else if (m === 'wow') o += '<circle cx="39" cy="48" r="6.5" fill="none" stroke="' + E + '" stroke-width="3.2"/><circle cx="61" cy="48" r="6.5" fill="none" stroke="' + E + '" stroke-width="3.2"/><circle cx="39" cy="48" r="2.2" fill="' + E + '"/><circle cx="61" cy="48" r="2.2" fill="' + E + '"/>';
+    else o += '<rect x="34.5" y="42" width="8" height="12" rx="4" fill="' + E + '"/><rect x="57.5" y="42" width="8" height="12" rx="4" fill="' + E + '"/>';
+    o += '<ellipse cx="31" cy="61" rx="3" ry="2" fill="#FF8FB1" opacity=".85"/><ellipse cx="69" cy="61" rx="3" ry="2" fill="#FF8FB1" opacity=".85"/>';
+    if (m === 'wow') o += '<circle class="cm-m" cx="50" cy="62" r="3.4" fill="none" stroke="' + E + '" stroke-width="2.6"/>';
+    else if (m === 'joy') o += '<path class="cm-m" d="M42 59 Q50 68 58 59" fill="none" stroke="' + E + '" stroke-width="3" stroke-linecap="round"/>';
+    else o += '<path class="cm-m" d="M44 61 Q50 64.5 56 61" fill="none" stroke="' + E + '" stroke-width="2.8" stroke-linecap="round"/>';
+    o += '<rect x="40" y="83" width="20" height="7" rx="2" fill="#8FA8C0" stroke="#2E3D55" stroke-width="2"/>';
+    return o;
+  }
+  function face(who, m, cls, at) {
+    var inner = who === 'momo' ? momoHead(m) : toriHead(m);
+    if (who === 'tori') inner = '<path d="M74 96 C98 92 104 56 90 38 C83 30 73 34 79 43 C87 55 84 74 70 84Z" fill="#B5652E" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/>' + inner;
+    return '<svg ' + (at || '') + ' class="cs-face ' + (cls || '') + '" viewBox="-2 -2 104 104" role="img" aria-label="' + NM[who] + '">' + inner + '</svg>';
+  }
+  function full(who, m, cls, at) {
+    var o = '';
+    if (who === 'tori') {
+      /* 큰 꼬리 · 배낭 · 몸 · 돋보기 */
+      o += '<path d="M80 150 C122 150 132 96 112 64 C100 46 82 54 90 70 C102 92 96 122 74 132Z" fill="#B5652E" stroke="' + INK + '" stroke-width="3" stroke-linejoin="round"/>';
+      o += '<path d="M94 74 C104 90 102 112 90 126" fill="none" stroke="#8E4A1E" stroke-width="2.4" stroke-linecap="round"/>';
+      o += '<rect x="18" y="98" width="22" height="34" rx="7" fill="#4C8F5E" stroke="#245E37" stroke-width="2.6"/><rect x="18" y="98" width="22" height="12" rx="6" fill="#5FAE73" stroke="#245E37" stroke-width="2.4"/>';
+      o += '<ellipse cx="58" cy="122" rx="24" ry="26" fill="#C8743A" stroke="' + INK + '" stroke-width="3"/><ellipse cx="58" cy="127" rx="14" ry="17" fill="#F7E6C8"/>';
+      o += '<path d="M40 104 L50 132" stroke="#245E37" stroke-width="4" stroke-linecap="round"/>';
+      o += '<ellipse cx="46" cy="148" rx="9" ry="5" fill="#A65A26" stroke="' + INK + '" stroke-width="2.4"/><ellipse cx="70" cy="148" rx="9" ry="5" fill="#A65A26" stroke="' + INK + '" stroke-width="2.4"/>';
+      o += '<path d="M76 116 Q86 110 88 100" fill="none" stroke="' + INK + '" stroke-width="9" stroke-linecap="round"/><path d="M76 116 Q86 110 88 100" fill="none" stroke="#C8743A" stroke-width="5" stroke-linecap="round"/>';
+      o += '<line x1="90" y1="98" x2="98" y2="84" stroke="#6B4A2A" stroke-width="5" stroke-linecap="round"/><circle cx="104" cy="74" r="12" fill="#CFEFFF" fill-opacity=".7" stroke="#3A2C22" stroke-width="4"/><path d="M98 70 Q101 66 106 66" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>';
+      o += '<g transform="translate(8 2) scale(1)">' + toriHead(m) + '</g>';
+      return '<svg ' + (at || '') + ' class="cs-full ' + (cls || '') + '" viewBox="0 -4 132 160" role="img" aria-label="토리">' + o + '</svg>';
+    }
+    o += '<rect x="30" y="96" width="60" height="44" rx="16" fill="#DCEAF5" stroke="#2E3D55" stroke-width="3"/>';
+    o += '<rect x="42" y="106" width="36" height="20" rx="6" fill="#1F2C46"/><circle cx="51" cy="116" r="3.4" fill="#FF8FB1"/><circle cx="60" cy="116" r="3.4" fill="#FFD54A"/><circle cx="69" cy="116" r="3.4" fill="#7DF3E1"/>';
+    o += '<path d="M30 110 Q18 112 14 100" fill="none" stroke="#2E3D55" stroke-width="7" stroke-linecap="round"/><path d="M30 110 Q18 112 14 100" fill="none" stroke="#8FA8C0" stroke-width="3.6" stroke-linecap="round"/><circle cx="13" cy="97" r="6" fill="#DCEAF5" stroke="#2E3D55" stroke-width="2.6"/>';
+    o += '<path d="M90 110 Q102 112 106 100" fill="none" stroke="#2E3D55" stroke-width="7" stroke-linecap="round"/><path d="M90 110 Q102 112 106 100" fill="none" stroke="#8FA8C0" stroke-width="3.6" stroke-linecap="round"/><circle cx="107" cy="97" r="6" fill="#DCEAF5" stroke="#2E3D55" stroke-width="2.6"/>';
+    o += '<rect x="36" y="139" width="18" height="12" rx="6" fill="#2E3D55"/><rect x="66" y="139" width="18" height="12" rx="6" fill="#2E3D55"/>';
+    o += '<g transform="translate(10 4)">' + momoHead(m) + '</g>';
+    return '<svg ' + (at || '') + ' class="cs-full ' + (cls || '') + '" viewBox="0 -4 120 160" role="img" aria-label="모모">' + o + '</svg>';
+  }
+  return { face: face, full: full, NM: NM };
+})();
+
 /* 수학 방탈출 2 (2026-11-26 선생님: '말로만 방탈출, 몇 문제 풀고 끝'): 방 그림을 둘러보며 물건을 눌러 단서를 모으고,
    가방 속 물건을 쓰고, 여러 가지 자물쇠(숫자·방향·색·모양)를 풀어 다음 방으로, 마지막 문으로.
    2026-11-27 더함: ① 처음 이야기 장면·자물쇠가 열리는 움직임·문이 열리며 다른 곳으로·효과음(끄고 켜기) ② 가방 물건 합치기(R.combine)
@@ -4677,13 +4845,13 @@ window.TOOL = function (host, api) {
     if (a === '으로' && rl) f = false;
     return s + (f ? a : b);
   }
-  function reset(keep) { st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, ans: {}, lh: {}, done: false, open: null, entry: {}, made: {}, shown: {}, drawn: {} }; stop(); if (!keep) unsave(); draw() }
+  function reset(keep) { BUD = null; stopIntro(); st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, ans: {}, lh: {}, done: false, open: null, entry: {}, made: {}, shown: {}, drawn: {} }; stop(); if (!keep) unsave(); draw() }
   /* 진행 저장(2026-11-28 예비 사용자 팀): 새로 고침·다른 쪽에 갔다 와도 이 탭(sessionStorage)에서 '이어서 하기' — 걸린 시간은 떠나 있던 동안 멈춤 */
   var SVK = 'hj-escape-run:' + (R.id || R.idx);
   function save() { if (!st || !st.t0 || st.done) return; try { var c = JSON.parse(JSON.stringify(st)); c.el = sec(); c.open = null; c.sel = null; sessionStorage.setItem(SVK, JSON.stringify({ st: c, limit: limit, team: team })) } catch (e) {} }
   function unsave() { try { sessionStorage.removeItem(SVK) } catch (e) {} }
   function saved() { try { var v = JSON.parse(sessionStorage.getItem(SVK)); return v && v.st && v.st.t0 && !v.st.done ? v : null } catch (e) { return null } }
-  function resume(v) { st = v.st; limit = v.limit || 0; team = v.team || ''; st.t0 = Date.now() - (st.el || 0) * 1000; delete st.el; st.drawn = {}; st.shown = {}; stop(); tick = setInterval(timer, 1000); draw() }
+  function resume(v) { st = v.st; limit = v.limit || 0; team = v.team || ''; st.t0 = Date.now() - (st.el || 0) * 1000; delete st.el; st.drawn = {}; st.shown = {}; st.lp = sec(); stop(); tick = setInterval(timer, 1000); draw() }
   window.addEventListener('beforeunload', function (e) { if (st && st.t0 && !st.done) { save(); e.preventDefault(); e.returnValue = '' } });
   function stop() { if (tick) clearInterval(tick); tick = null }
   function sec() { return st.t0 ? Math.floor((Date.now() - st.t0) / 1000) : 0 }
@@ -4696,7 +4864,9 @@ window.TOOL = function (host, api) {
   function nLocks() { var n = 0, d = 0; for (var k in OBJ) if (OBJ[k].lock || OBJ[k].need) { n++; if (ok(OBJ[k])) d++ } return [d, n] }
   function note(title, html) { if (st.notes.some(function (n) { return n.h === html })) return; st.notes.push({ t: title, h: html }) }
   function fig(f) { if (!f) return ''; var w = f.w || 300, h = f.h || 200; return '<svg class="es-fig" viewBox="-12 -24 ' + (w + 24) + ' ' + (h + 36) + '" role="img" aria-label="단서 그림">' + A[f.art](w, h, f.p || {}, f.open) + '</svg>' }
-  function timer() { var el = root.querySelector('.es-time'); if (!el) return; save(); var s = sec(); el.textContent = limit ? '남은 시간 ' + mmss(limit * 60 - s) : '걸린 시간 ' + mmss(s); if (limit && s >= limit * 60 && !st.done) { el.textContent = '시간 끝! 계속 해도 돼요'; el.classList.add('es-over') } }
+  function timer() { var el = root.querySelector('.es-time'); if (!el) return; save(); var s = sec(); el.textContent = limit ? '남은 시간 ' + mmss(limit * 60 - s) : '걸린 시간 ' + mmss(s); if (limit && s >= limit * 60 && !st.done) { el.textContent = '시간 끝! 계속 해도 돼요'; el.classList.add('es-over') }
+    /* 60초 동안 아무것도 못 열면 친구가 '어디를 볼까?'·'힌트 보기'를 권함(힌트로 세지 않음) */
+    if (!st.done && s - (st.lp || 0) >= 60) { st.lp = s; var lo = st.open && OBJ[st.open].lock && !st.solved[st.open] && !(OBJ[st.open].need && !st.used[st.open]); if (lo) buddy('momo', '힌트 보기를 눌러 봐도 돼.'); else fl('idle') } }
   function exitObj() { for (var k in OBJ) if (OBJ[k].go === 'exit') return OBJ[k] }
 
   /* ── 효과음(Web Audio, 누른 뒤에만 만듦) ── */
@@ -4734,31 +4904,137 @@ window.TOOL = function (host, api) {
   function kov() { try { KOV = SS && SS.getVoices().filter(function (v) { return /^ko/i.test(v.lang) })[0] || null } catch (e) { KOV = null } document.documentElement.classList.toggle('es-ttson', !!KOV) }
   if (SS) { kov(); try { SS.addEventListener('voiceschanged', kov) } catch (e) { SS.onvoiceschanged = kov } }
   function spk() { return '<button type="button" class="es-spk" data-a="speak" aria-label="읽어 주기" title="읽어 주기">' + SPK + '<path d="M15.5 9a4 4 0 0 1 0 6"/></svg></button>' }
-  function speak(el) {
-    if (!SS || !el) return; var c = el.cloneNode(true);
+  function ttsTxt(el) {
+    var c = el.cloneNode(true);
     [].forEach.call(c.querySelectorAll('button'), function (x) { x.remove() });
     [].forEach.call(c.querySelectorAll('.fd-fr'), function (f) { var i = f.querySelectorAll('i'); f.replaceWith(' ' + i[1].textContent + '분의 ' + i[0].textContent + ' ') });
     [].forEach.call(c.querySelectorAll('.es-shp'), function (x) { x.replaceWith(' ' + x.getAttribute('aria-label') + ' ') });
-    var t = c.textContent.replace(/×/g, ' 곱하기 ').replace(/÷/g, ' 나누기 ').replace(/−/g, ' 빼기 ').replace(/\+/g, ' 더하기 ').replace(/=/g, ' 는 ').replace(/ → /g, ', ').replace(/[↑→↓←]/g, function (v) { return ' ' + DIRN[v] + ' ' }).replace(/\s+/g, ' ').trim();
-    try { SS.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'ko-KR'; if (KOV) u.voice = KOV; u.rate = .95; SS.speak(u) } catch (e) {}
+    return c.textContent.replace(/×/g, ' 곱하기 ').replace(/÷/g, ' 나누기 ').replace(/−/g, ' 빼기 ').replace(/\+/g, ' 더하기 ').replace(/=/g, ' 는 ').replace(/ → /g, ', ').replace(/[↑→↓←]/g, function (v) { return ' ' + DIRN[v] + ' ' }).replace(/\s+/g, ' ').trim();
+  }
+  function plainTxt(html) { var d = document.createElement('div'); d.innerHTML = html; return ttsTxt(d) }
+  var UREAD = false, VO = null;
+  function speak(el) {
+    if (!SS || !el) return; var t = ttsTxt(el);
+    try { SS.cancel(); VO = null; var u = new SpeechSynthesisUtterance(t); u.lang = 'ko-KR'; if (KOV) u.voice = KOV; u.rate = .95; UREAD = true; u.onend = u.onerror = function () { UREAD = false }; SS.speak(u) } catch (e) {}
+  }
+  /* ── 함께하는 친구 토리·모모(2026-11-28 선생님: '다른 캐릭터도 나와서 같이 방탈출을 하는 느낌') ──
+     목소리: 브라우저 한국어 목소리로 사람마다 높이·빠르기를 달리(토리 높고 빠르게, 모모 낮고 또박또박). 소리 꺼짐·목소리 없음이면 글만.
+     학생이 누른 읽어 주기(🔊)가 나오는 중이면 친구 목소리는 내지 않음. 학생이 다른 것을 누르면 멈춤(hush). */
+  var VP = { tori: [1.5, 1.08], momo: [.72, .88], nar: [1, .95] };
+  function voice(who, html, cb) {
+    if (!snd || !SS || !KOV || (UREAD && SS.speaking)) return false;
+    try { SS.cancel(); UREAD = false; var u = new SpeechSynthesisUtterance(plainTxt(html)), p = VP[who] || VP.nar; u.lang = 'ko-KR'; u.voice = KOV; u.pitch = p[0]; u.rate = p[1]; VO = u; u.onend = u.onerror = function () { if (VO === u) VO = null; cb && cb() }; SS.speak(u); return true } catch (e) { return false }
+  }
+  function hush() { if (VO) { VO = null; try { SS.cancel() } catch (e) {} } }
+  /* 친구 말풍선: 크게 보기·자물쇠 창이 열려 있으면 창 안 맨 위(.es-mbud)에, 아니면 가방 판 위(.es-bud)에 — 창을 가리지 않게 */
+  var BUD = null, BUDT = null, BN = 0, LI = {}, LINES = {
+    unlock: [['tori', '열렸다! 우리 진짜 잘한다!'], ['momo', '계산이 딱 맞았어.'], ['tori', '우와, 철컥 열렸어!'], ['momo', '단서를 잘 이었구나.'], ['tori', '해냈어! 또 찾아보자!'], ['momo', '좋아, 하나 더 풀었어.']],
+    use: [['tori', '딱 맞는 물건이었어!'], ['momo', '알맞은 곳에 잘 썼어.']],
+    wrong1: [['momo', '괜찮아, 단서를 다시 보자.'], ['tori', '아깝다! 한 번 더 해 보자.'], ['momo', '수첩을 펼쳐 보면 어때?']],
+    wrong2: [['momo', '힌트 보기를 눌러 봐도 돼.'], ['tori', '막히면 힌트를 봐도 괜찮아!']],
+    wrongi: [['tori', '음, 여기엔 안 맞나 봐.'], ['momo', '어디를 볼까?를 눌러 봐도 돼.']],
+    item: [['tori', '좋은 걸 찾았어! 어디에 쓸까?'], ['tori', '가방에 쏙! 잘 챙겨 두자.']],
+    comb: [['momo', '두 조각이 딱 맞았어.'], ['tori', '우와, 합치니까 완성이야!']],
+    idle: [['momo', '어디를 볼까?를 누르면 내가 알려 줄게.'], ['tori', '같이 구석구석 눌러 보자!']]
+  };
+  function pick(k) { var a = LINES[k]; LI[k] = ((LI[k] == null ? -1 : LI[k]) + 1) % a.length; return a[LI[k]] }
+  function buddy(who, html, o) {
+    o = o || {}; var id = ++BN, len = plainTxt(html).length; clearTimeout(BUDT);
+    BUD = { w: who, t: html, m: o.mood || 'base', hint: !!o.hint, id: id, talk: true }; paintBud();
+    var ms = o.ms || Math.max(3600, len * 85 + 1300);
+    var end = function () { if (BUD && BUD.id === id) { BUD.talk = false; paintBud() } };
+    var spoke = voice(who, html, function () { end(); if (BUD && BUD.id === id) BUDT = setTimeout(function () { if (BUD && BUD.id === id) { BUD = null; paintBud() } }, o.hint ? 6000 : 1400) });
+    if (!spoke) setTimeout(end, Math.min(ms - 600, 300 + len * 45));
+    BUDT = setTimeout(function () { if (BUD && BUD.id === id && !(spoke && VO)) { BUD = null; paintBud() } }, ms);
+  }
+  function budFace(w, b) { var on = b && b.w === w; return '<span class="es-bf es-bf-' + w + (on ? ' es-on' + (b.talk ? ' cs-talk' : '') : '') + '">' + CAST.face(w, on ? b.m : 'base') + '</span>' }
+  function budText(b) { return '<b class="es-bnm">' + (b.hint ? '힌트' : CAST.NM[b.w]) + '</b>' + b.t }
+  function budSide(b) {
+    var M = R.mission;
+    return '<div class="es-bfaces">' + budFace('tori', b) + budFace('momo', b) + '</div><p class="es-bub' + (b ? ' es-bub-' + b.w + (b.hint ? ' es-bub-hint' : '') : ' es-bub-idle') + '">' + (b ? budText(b) : '<b class="es-bnm">미션</b>' + frac(M ? M.title : R.title)) + '</p>';
+  }
+  function paintBud() {
+    var m = host.querySelector('.es-modal'), mo = m && !m.hidden, ms = host.querySelector('.es-mbud'), sd = host.querySelector('.es-bud');
+    if (ms) { ms.innerHTML = BUD && mo ? budFace(BUD.w, BUD) + '<p class="es-bub es-bub-' + BUD.w + (BUD.hint ? ' es-bub-hint' : '') + '">' + budText(BUD) + '</p>' : ''; ms.hidden = !(BUD && mo) }
+    if (sd) sd.innerHTML = budSide(BUD && !(mo && ms) ? BUD : null);
+  }
+  function fl(k, o) { var x = pick(k); buddy(x[0], x[1], o) }
+  /* ── 인트로: 첫 장면 그림 위에 영화 자막처럼 한 줄씩(말하는 친구 얼굴 · 타자 치듯 · 목소리), 끝나면 '미션 시작!' ── */
+  var IN = null;
+  function introLines() {
+    if (R.dialog && R.dialog.length) return R.dialog.map(function (x) { return { w: x[0], t: x[1] } });
+    var L = R.story && R.story.length ? R.story : String(R.intro).split(/(?<=[.!?])\s+/);
+    return L.map(function (t) { return { w: 'nar', t: t } });
+  }
+  /* 자막 마지막 줄에 낱말 하나만 남지 않게 마지막 낱말들(일곱 글자까지)을 붙는 빈칸으로 */
+  function glue(t) { t = String(t); var k = t.lastIndexOf(' '); for (var c = 0; c < 3 && k > 0; c++) { t = t.slice(0, k) + '\u00a0' + t.slice(k + 1); if (t.slice(k + 1).replace(/[\s\u00a0*]/g, '').length >= 7) break; k = t.lastIndexOf(' ', k - 1) } return t }
+  function typeIn(p, html, cb) {
+    p.innerHTML = frac(glue(html));
+    var parts = [], w = document.createTreeWalker(p, NodeFilter.SHOW_TEXT), n, ns = []; while ((n = w.nextNode())) ns.push(n);
+    ns.forEach(function (t) { var on = document.createElement('span'), off = document.createElement('span'); off.className = 'es-twoff'; off.textContent = t.nodeValue; t.parentNode.replaceChild(off, t); off.parentNode.insertBefore(on, off); parts.push([on, off]) });
+    if (RM) { parts.forEach(function (x) { x[0].textContent += x[1].textContent; x[1].textContent = '' }); cb && cb(); return null }
+    var k = 0, iv = setInterval(function () {
+      while (k < parts.length && !parts[k][1].textContent) k++;
+      if (k >= parts.length) { clearInterval(iv); cb && cb(); return }
+      var off = parts[k][1], a = Array.from(off.textContent); parts[k][0].textContent += a[0]; off.textContent = a.slice(1).join('');
+    }, 34);
+    return iv;
+  }
+  function moodOf(l) { return l.w === 'tori' ? (/[!?]/.test(l.t) ? 'wow' : 'base') : 'base' }
+  function stopIntro() { if (IN) { clearInterval(IN.iv); clearTimeout(IN.to); clearTimeout(IN.to2); IN.tok++; IN = null } hush() }
+  function introShow() {
+    if (!IN) return; hush(); clearInterval(IN.iv); clearTimeout(IN.to); clearTimeout(IN.to2);
+    var tok = ++IN.tok, i = IN.i, ln = IN.lines[i], sv = host.querySelector('.es-stsv');
+    if (!ln || !sv) return introEnd();
+    if (i >= IN.sl && !IN.slammed) { IN.slammed = 1; sv.classList.add('es-slammed'); sfx('slam') }
+    var sub = host.querySelector('.es-sub'), mood = moodOf(ln);
+    sub.className = 'es-sub es-sub-' + ln.w + (RM ? '' : ' es-subin');
+    host.querySelector('.es-sface').innerHTML = ln.w === 'nar' ? '' : CAST.face(ln.w, mood, 'cs-talk');
+    host.querySelector('.es-swho').textContent = CAST.NM[ln.w] || '';
+    ['tori', 'momo'].forEach(function (w) { var g = sv.querySelector('.es-sc-' + w); if (g) g.classList.toggle('cs-talk', ln.w === w) });
+    var pr = host.querySelector('.es-sprog'); if (pr) pr.textContent = (i + 1) + ' / ' + IN.lines.length;
+    var len = plainTxt(frac(ln.t)).length, quiet = function () { if (IN && IN.tok === tok) { [].forEach.call(host.querySelectorAll('.es-stg .cs-talk'), function (x) { x.classList.remove('cs-talk') }) } };
+    var go = function () { if (IN && IN.tok === tok) { IN.i++; introShow() } };
+    var spoke = false;
+    IN.iv = typeIn(host.querySelector('.es-sline'), ln.t, function () { if (!spoke) quiet() });
+    spoke = voice(ln.w, frac(ln.t), function () { if (!IN || IN.tok !== tok) return; quiet(); clearTimeout(IN.to2); IN.to = setTimeout(go, 650) });
+    IN.to2 = setTimeout(go, (spoke ? len * .25 + 6 : len * .09 + 1.2) * 1000);
+  }
+  function introEnd() { stopIntro(); begin() }
+  /* 미션 시작 알림(누르기를 막지 않음) */
+  function mflash() {
+    var M = R.mission, d = document.createElement('div'); d.className = 'es-mflash'; d.setAttribute('aria-hidden', 'true');
+    d.innerHTML = '<span class="es-mtag">미션 시작!</span><b>' + frac(M ? M.title : R.title) + '</b>';
+    (host.parentNode || host).appendChild(d); setTimeout(function () { d.remove() }, RM ? 1400 : 2300);
   }
   /* 처음 화면 */
+  function limTxt(m) { return m ? '시간 제한 ' + m + '분' : '시간 제한 없음' }
   function startView() {
-    var sv = saved(), lim = (R.g || 3) <= 2 ? 30 : 20;
-    host.innerHTML = '<div class="es-start">' + (sv ? '<div class="es-resume"><p><b>하던 탈출이 있어요.</b> 걸린 시간 ' + mmss(sv.st.el || 0) + (sv.team ? ' · ' + esc(sv.team) : '') + '</p><div class="tl-row"><button type="button" class="tl-btn tl-go" data-a="resume">이어서 하기</button><button type="button" class="tl-btn" data-a="fresh">처음부터</button></div></div>' : '') + '<p class="es-intro">' + frac(R.intro) + '</p>'
+    var sv = saved(), lim = (R.g || 3) <= 2 ? 30 : 20, M = R.mission || { title: R.title, goal: R.intro }, tips = M.tips || [];
+    host.innerHTML = '<div class="es-start">' + (sv ? '<div class="es-resume"><p><b>하던 탈출이 있어요.</b> 걸린 시간 ' + mmss(sv.st.el || 0) + (sv.team ? ' · ' + esc(sv.team) : '') + '</p><div class="tl-row"><button type="button" class="tl-btn tl-go" data-a="resume">이어서 하기</button><button type="button" class="tl-btn" data-a="fresh">처음부터</button></div></div>' : '')
+      + '<section class="es-mission" aria-label="미션"><span class="es-mc es-mc-l">' + CAST.full('tori', 'wow') + '</span><div class="es-mbody"><span class="es-mtag">미션</span><h2 class="es-mtt">' + frac(M.title) + '</h2><p class="es-mgoal">' + frac(M.goal) + '</p>'
+      + '<p class="es-mmeta"><span>자물쇠와 장치 ' + nLocks()[1] + '개</span><span class="es-mlim">' + limTxt(lim) + '</span></p>' + (tips.length ? '<ul class="es-tips">' + tips.map(function (t) { return '<li>' + frac(t) + '</li>' }).join('') + '</ul>' : '') + '</div><span class="es-mc es-mc-r">' + CAST.full('momo', 'base') + '</span></section>'
       + '<ol class="es-steps"><li><span><b>물건을 눌러</b> 크게 살펴봐요</span></li><li><span>단서는 <b>수첩</b>에, 찾은 물건은 <b>가방</b>에 모여요</span></li><li><span>막히면 <b>어디를 볼까?</b>를 눌러요</span></li></ol>'
       + '<div class="es-opts"><label class="es-opt"><span>이름 또는 모둠</span><input class="es-team-in" maxlength="12" placeholder="예: 3번, 1모둠" value="' + esc(team) + '"></label><label class="es-opt"><span>시간 제한</span><select class="es-lim">' + [0, 15, 20, 25, 30, 40].map(function (m) { return '<option value="' + m + '"' + (m === lim ? ' selected' : '') + '>' + (m ? m + '분' : '없음') + '</option>' }).join('') + '</select></label><div class="es-opt"><span>소리</span>' + sndBtn(true) + '</div></div><button type="button" class="tl-btn tl-go es-go">이야기 보고 시작하기</button></div>';
     api.bar('');
   }
-  /* 이야기 장면: 첫 장면 그림 + 쾅 닫히는 문 + 이야기 줄이 하나씩 */
+  /* 이야기 장면: 첫 장면 그림(친구 둘 · 열린 문 → 쾅 닫히는 문과 자물쇠) + 아래 자막 */
   function story() {
-    var ex = exitObj(), lines = R.story && R.story.length ? R.story : String(R.intro).split(/(?<=[.!?])\s+/), dw = 200, dh = 300;
-    var h = '<div class="es-story"><svg class="es-stsv" viewBox="0 0 1000 420" aria-hidden="true">' + bg(SCN[R.scenes[0].id].bg, 420) + '<g class="es-stdoor" transform="translate(400 70)">' + A.door(dw, dh, { c: (ex && ex.p && ex.p.c) || '갈색' }, false) + '</g><g class="es-stlock" transform="translate(470 175)"><rect x="0" y="22" width="60" height="48" rx="9" fill="#F2C230" stroke="#3A2C22" stroke-width="4"/><path d="M12 24V14a18 18 0 0 1 36 0v10" fill="none" stroke="#8A929C" stroke-width="8"/><circle cx="30" cy="44" r="6" fill="#3A2C22"/></g></svg><div class="es-stlines">'
-      + lines.map(function (t, i) { return '<p style="animation-delay:' + (0.6 + i * 1.5) + 's">' + frac(t) + '</p>' }).join('') + '</div><div class="tl-row"><button type="button" class="tl-btn" data-a="go">건너뛰기</button><button type="button" class="tl-btn tl-go es-stgo" data-a="go" style="animation-delay:' + (0.6 + lines.length * 1.5) + 's">탈출 시작!</button></div></div>';
-    host.innerHTML = h; api.bar(''); sfx('slam');
-    var b = host.querySelector('.es-stgo'); if (b) b.focus({ preventScroll: true });
+    var ex = exitObj(), lines = introLines(), dc = (ex && ex.p && ex.p.c) || '갈색', sl = -1;
+    lines.some(function (l, i) { if (/쾅|덜컥|철컥|닫히|닫혔|닫혀|잠겼|잠기|잠갔|잠가|갇혔|갇혀/.test(l.t)) { sl = i; return true } });
+    if (sl < 0) sl = Math.min(1, lines.length - 1);
+    host.innerHTML = '<div class="es-story"><div class="es-stg"><svg class="es-stsv" viewBox="0 0 1000 520" aria-hidden="true">' + bg(SCN[R.scenes[0].id].bg, 520)
+      + '<g class="es-stopen" transform="translate(400 40)">' + A.door(200, 300, { c: dc }, true) + '</g><g class="es-stdoor" transform="translate(400 40)">' + A.door(200, 300, { c: dc }, false) + '</g>'
+      + '<g class="es-stlock" transform="translate(470 145)"><rect x="0" y="22" width="60" height="48" rx="9" fill="#F2C230" stroke="#3A2C22" stroke-width="4"/><path d="M12 24V14a18 18 0 0 1 36 0v10" fill="none" stroke="#8A929C" stroke-width="8"/><circle cx="30" cy="44" r="6" fill="#3A2C22"/></g>'
+      + '<g class="es-sc-tori">' + CAST.full('tori', 'wow', '', 'x="170" y="150" width="190" height="230"') + '</g><g class="es-sc-momo">' + CAST.full('momo', 'base', '', 'x="650" y="154" width="180" height="230"') + '</g></svg>'
+      + '<div class="es-sub" aria-live="polite"><span class="es-sface"></span><div class="es-stx"><b class="es-swho"></b><p class="es-sline"></p></div></div></div>'
+      + '<div class="es-strow"><button type="button" class="tl-btn es-skip es-stgo" data-a="go">건너뛰기</button>' + sndBtn(true) + '<span class="es-sprog"></span><button type="button" class="tl-btn tl-go es-snext" data-a="next">▶ 계속</button></div></div>';
+    api.bar('');
+    IN = { lines: lines, i: 0, sl: sl, tok: 0 };
+    introShow();
+    var b = host.querySelector('.es-snext'); if (b) b.focus({ preventScroll: true });
   }
-  function begin() { st.t0 = Date.now(); tick = setInterval(timer, 1000); draw() }
+  function begin() { stopIntro(); st.t0 = Date.now(); st.lp = 0; tick = setInterval(timer, 1000); draw(); mflash(); setTimeout(function () { if (st.t0 && !st.done && !BUD) buddy('tori', '좋아, 같이 둘러보자!', { mood: 'joy' }) }, RM ? 300 : 1900) }
   function bg(b, H) {
     b = b || {}; H = H || 560; var wall = b.wall || '#F3E3C8', floor = b.floor || '#C9A27A', fy = H * .68, o = '<rect width="1000" height="' + H + '" fill="' + wall + '"/>';
     if (b.deco === 'stripe') for (var x = 0; x < 1000; x += 60) o += '<rect x="' + x + '" y="0" width="30" height="' + fy + '" fill="#000" opacity=".035"/>';
@@ -4784,16 +5060,17 @@ window.TOOL = function (host, api) {
       var c = st.shown[o.id] || first ? '' : ' es-appear'; st.shown[o.id] = 1; return objG(o, c);
     }).join('') + '</svg><p class="es-say" aria-live="polite">' + (sel ? '<b>' + esc(R.items[sel].nm) + '</b>' + jo(R.items[sel].nm, '을', '를').slice(-1) + ' 들었어요. 쓸 곳을 누르거나, 가방의 다른 물건을 눌러 합쳐 봐요.' : '물건을 눌러 살펴봐요.') + '</p></div>';
     st.drawn[S.id] = 1;
-    h += '<aside class="es-side"><h3>가방</h3><div class="es-inv">' + (st.inv.length ? st.inv.map(function (id) { var it = R.items[id]; return '<button type="button" class="es-it" data-it="' + id + '" aria-pressed="' + (sel === id) + '" title="' + esc(it.de || it.nm) + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') : '<p class="es-empty">상자·서랍에서 찾은 물건이 여기에 들어가요</p>') + '</div>'
+    h += '<aside class="es-side"><div class="es-bud" aria-live="polite">' + budSide(BUD) + '</div><h3>가방</h3><div class="es-inv">' + (st.inv.length ? st.inv.map(function (id) { var it = R.items[id]; return '<button type="button" class="es-it" data-it="' + id + '" aria-pressed="' + (sel === id) + '" title="' + esc(it.de || it.nm) + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') : '<p class="es-empty">상자·서랍에서 찾은 물건이 여기에 들어가요</p>') + '</div>'
       + '<h3>수첩 <small>' + st.notes.length + '</small></h3><div class="es-notes">' + (st.notes.length ? st.notes.map(function (n, i) { return '<button type="button" class="es-nt" data-nt="' + i + '"><b>' + esc(n.t) + '</b></button>' }).join('') : '<p class="es-empty">단서를 찾으면 여기에 모여요</p>') + '</div></aside></div>';
     h += '<div class="es-modal" hidden></div>';
     host.innerHTML = h; api.bar(top); timer();
     if (st.open) openObj(st.open, true);
+    else paintBud();
   }
   function say(t, cls) { var p = host.querySelector('.es-say'); if (p) { p.innerHTML = t; p.className = 'es-say' + (cls ? ' ' + cls : '') } }
   /* 물건 크게 보기 — 크게 본 그림 안의 숨은 곳(KIDS)도 누를 수 있음 */
   function openObj(id, keep) {
-    var o = OBJ[id], m = host.querySelector('.es-modal'); st.open = id; st.seen[id] = 1;
+    var o = OBJ[id], m = host.querySelector('.es-modal'), firstLook = !st.seen[id], gv = !(o.lock || o.need) && o.give && o.give.length && !st.given[o.id]; st.open = id; st.seen[id] = 1;
     var kids = (KIDS[id] || []).filter(vis), op = ok(o) && (o.lock || o.need);
     /* 연(쓴) 뒤에는 처음 모습 글(잠겨 있어요·열쇠 구멍이 있어요)을 빼고 — 단서 물건(keep)은 그대로 */
     var showLook = o.look && !(op && !o.keep && (o.after || o.need || o.useMsg));
@@ -4801,7 +5078,7 @@ window.TOOL = function (host, api) {
     var bf = showLook && o.lookFig && o.lookFig.art === o.art ? o.lookFig : null;
     /* 숨은 곳(kids)이 있으면 그 자리가 물건 크기에 맞춰져 있으므로, 단서 그림 설정을 물건 크기로 그려 한 번만 보여 줌 */
     var BW = bf && !kids.length ? (bf.w || 300) : o.w, BH = bf && !kids.length ? (bf.h || 200) : o.h, bigArt = bf ? A[bf.art](BW, BH, bf.p || {}, bf.open) : A[o.art](o.w, o.h, o.p || {}, op);
-    var h = '<div class="es-card' + (BW / BH >= 2.4 ? ' es-wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(o.nm) + '"><div class="es-chd"><b>' + esc(o.nm) + '</b><span>' + (o.in ? '<button type="button" class="tl-btn" data-back="' + o.in + '">◀ ' + esc(OBJ[o.in].nm) + '</button> ' : '') + '<button type="button" class="tl-btn es-x" data-a="close">닫기</button></span></div><div class="es-cbody"><div class="es-bigw"><div class="es-big" title="그림을 누르면 더 크게 보여요"><svg viewBox="-20 -30 ' + (BW + 40) + ' ' + (BH + 50) + '" role="group" aria-label="' + esc(o.nm) + ' 크게 보기"><g class="es-art' + (op && st.fresh === id ? ' es-opening' : '') + '">' + bigArt + '</g>' + kids.map(function (k) { return objG(k, ' es-spot' + (st.seen[k.id] ? '' : ' es-new')) }).join('') + '</svg></div>' + (kids.length ? '<p class="es-peek">그림 속 작은 곳도 눌러 볼 수 있어요.</p>' : '') + '</div><div class="es-ctext">';
+    var h = '<div class="es-card' + (BW / BH >= 2.4 ? ' es-wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(o.nm) + '"><div class="es-chd"><b>' + esc(o.nm) + '</b><span>' + (o.in ? '<button type="button" class="tl-btn" data-back="' + o.in + '">◀ ' + esc(OBJ[o.in].nm) + '</button> ' : '') + '<button type="button" class="tl-btn es-x" data-a="close">닫기</button></span></div><div class="es-cbody"><div class="es-bigw"><div class="es-big" title="그림을 누르면 더 크게 보여요"><svg viewBox="-20 -30 ' + (BW + 40) + ' ' + (BH + 50) + '" role="group" aria-label="' + esc(o.nm) + ' 크게 보기"><g class="es-art' + (op && st.fresh === id ? ' es-opening' : '') + '">' + bigArt + '</g>' + kids.map(function (k) { return objG(k, ' es-spot' + (st.seen[k.id] ? '' : ' es-new')) }).join('') + '</svg></div>' + (kids.length ? '<p class="es-peek">그림 속 작은 곳도 눌러 볼 수 있어요.</p>' : '') + '</div><div class="es-ctext"><div class="es-mbud" hidden></div>';
     st.fresh = null;
     if (o.need && st.used[o.id] && o.useMsg && !(o.lock && st.solved[o.id])) h += '<p class="es-used">' + frac(o.useMsg) + '</p>';
     if (showLook) { h += '<p class="es-look">' + spk() + frac(o.look) + '</p>' + (bf ? '' : fig(o.lookFig)); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
@@ -4813,6 +5090,10 @@ window.TOOL = function (host, api) {
     m.innerHTML = h; m.hidden = false;
     if (!keep) { var f = m.querySelector('.es-dial button, .es-it, .es-x'); if (f) f.focus({ preventScroll: true }) }
     if (!(o.lock || o.need) && o.give) give(o);
+    /* 친구 한마디: 처음 볼 때 그 물건의 say, 없으면 물건을 얻었을 때 */
+    if (firstLook && o.say && !keep) buddy(o.say[0], frac(o.say[1]), { mood: o.say[0] === 'tori' ? 'wow' : 'base' });
+    else if (gv && !keep) fl('item', { mood: 'joy' });
+    else paintBud();
   }
   function give(o) { if (st.given[o.id]) return; st.given[o.id] = 1; (o.give || []).forEach(function (iid) { if (st.inv.indexOf(iid) < 0) st.inv.push(iid) }); if (o.give && o.give.length) { toast('가방에 넣었어요: ' + o.give.map(function (i) { return R.items[i].nm }).join(', ')); setTimeout(function () { sfx('pick') }, 350) } }
   function done(o) {
@@ -4851,17 +5132,23 @@ window.TOOL = function (host, api) {
     if (t === 'color') return '<i class="es-sw" style="background:' + ART.c(v) + '"></i>';
     return esc(v);
   }
+  /* 열린 뒤 친구 한마디: 새 장소가 열렸으면 그 이야기, 아니면 축하 */
+  function cheer(before, k) {
+    var now = openScenes(), nw = R.scenes.filter(function (s) { return now[s.id] && !before[s.id] })[0];
+    if (nw) buddy('tori', '새로운 곳이 열렸어! <b>' + esc(nw.nm) + '</b>에 가 보자!', { mood: 'wow' }); else fl(k, { mood: 'joy' });
+  }
   function hc() { var el = root.querySelector('.es-hc'); if (el) el.textContent = '힌트 ' + st.hints + ' · 틀림 ' + st.wrong }
   function tryLock(o) {
     var L = o.lock, e = st.entry[o.id], got = L.t === 'num' ? e.join('') : e.join(','), want = L.t === 'num' ? L.code : L.code.join(','), msg = host.querySelector('.es-msg');
     if (L.t === 'dir' && !e.length) { show(msg, '화살표를 먼저 눌러요.'); return }
     if (L.t !== 'num' && (L.t !== 'dir' || LOW) && e.length < L.code.length) { show(msg, '칸을 모두 채워요(' + L.code.length + '칸).'); return }
-    if (got === want) { st.solved[o.id] = 1; sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true; fx('unlock', jo(o.nm, '이', '가') + ' 열렸어요!', function () { st.fresh = k; give(o); draw(); openObj(k) }); save(); return }
+    if (got === want) { var bs = openScenes(); st.solved[o.id] = 1; st.lp = sec(); sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true; fx('unlock', jo(o.nm, '이', '가') + ' 열렸어요!', function () { st.fresh = k; give(o); draw(); openObj(k); cheer(bs, 'unlock') }); save(); return }
     st.wrong++; sfx(0);
     /* 틀린 답을 지운 뒤 자물쇠를 다시 그리고 나서 알림·흔들림을 넣음(다시 그리면 알림이 지워졌음) */
     if (L.t !== 'num') { st.entry[o.id] = []; refreshLock(o) }
     var card = host.querySelector('.es-lock'); card.classList.remove('es-shake'); void card.offsetWidth; card.classList.add('es-shake');
     show(host.querySelector('.es-msg'), '열리지 않아요. 단서를 다시 살펴봐요.'); hc(); save();
+    st.lw = st.lw || {}; st.lw[o.id] = (st.lw[o.id] || 0) + 1; fl(st.lw[o.id] >= 2 ? 'wrong2' : 'wrong1');
   }
   /* 알림을 보이게: 글을 넣고 창 안에서 그 자리로 스크롤 */
   function show(el, t, html) { if (!el) return; if (html) el.innerHTML = t; else el.textContent = t; try { el.scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' }) } catch (er) {} }
@@ -4869,10 +5156,10 @@ window.TOOL = function (host, api) {
   function toast(t) { var d = document.createElement('div'); d.className = 'es-toast'; d.textContent = t; (host.parentNode || host).appendChild(d); setTimeout(function () { d.remove() }, 2200) }
   function useItem(o, iid) {
     if (o.need === iid) {
-      st.used[o.id] = 1; var it = R.items[iid]; if (!it.keep) st.inv = st.inv.filter(function (x) { return x !== iid }); st.sel = null;
+      var bs = openScenes(); st.used[o.id] = 1; st.lp = sec(); var it = R.items[iid]; if (!it.keep) st.inv = st.inv.filter(function (x) { return x !== iid }); st.sel = null;
       sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true;
       fx('unlock', jo(it.nm, '을', '를') + ' 썼어요!', function () {
-        if (!o.lock) { st.fresh = k; give(o) } draw(); openObj(k);
+        if (!o.lock) { st.fresh = k; give(o) } draw(); openObj(k); cheer(bs, 'use');
       });
     } else {
       /* 합치기 재료(반쪽 등)는 틀림으로 세지 않고 합치라고 알려 줌. 알림은 크게 보기 창 안에 */
@@ -4882,6 +5169,7 @@ window.TOOL = function (host, api) {
       if (part) { show(um, '<b>' + esc(nm) + '</b>' + jo(nm, '은', '는').slice(-1) + ' 아직 조각이에요. 가방에서 다른 조각과 먼저 합쳐 봐요.', true); sfx('tap') }
       else { st.wrong++; sfx(0); hc(); show(um, '여기에는 <b>' + esc(nm) + '</b>' + jo(nm, '이', '가').slice(-1) + ' 맞지 않아요.', true); var nd = host.querySelector('.es-need'); if (nd) { nd.classList.remove('es-shake'); void nd.offsetWidth; nd.classList.add('es-shake') } }
       if (!um) toast(part ? '다른 조각과 먼저 합쳐 봐요' : '여기에는 ' + jo(nm, '이', '가') + ' 맞지 않아요');
+      if (!part) { st.lw = st.lw || {}; st.lw[o.id] = (st.lw[o.id] || 0) + 1; fl(st.lw[o.id] >= 2 ? 'wrongi' : 'wrong1') }
       save();
     }
   }
@@ -4892,8 +5180,8 @@ window.TOOL = function (host, api) {
     if (!c) { draw(); toast(jo(R.items[a].nm, '과', '와') + ' ' + jo(R.items[b].nm, '은', '는') + ' 합쳐지지 않아요'); sfx(0); return }
     st.inv = st.inv.filter(function (x) { return x !== a && x !== b }); st.inv.push(c.make); st.made[c.make] = 1; sfx('combine');
     draw(); var m = host.querySelector('.es-modal'), it = R.items[c.make];
-    m.innerHTML = '<div class="es-card" role="dialog" aria-modal="true" aria-label="합치기"><div class="es-chd"><b>합쳤어요!</b><button type="button" class="tl-btn es-x" data-a="close">닫기</button></div><div class="es-ctext es-solo es-comb"><div class="es-cmb"><span>' + ART.item(R.items[a].k, R.items[a].c) + '<small>' + esc(R.items[a].nm) + '</small></span><b>+</b><span>' + ART.item(R.items[b].k, R.items[b].c) + '<small>' + esc(R.items[b].nm) + '</small></span><b>=</b><span class="es-cmk">' + ART.item(it.k, it.c) + '<small>' + esc(it.nm) + '</small></span></div><p class="es-look">' + frac(c.msg || (jo(it.nm, '이', '가') + ' 되었어요!')) + '</p></div></div>';
-    m.hidden = false; var x = m.querySelector('.es-x'); if (x) x.focus({ preventScroll: true });
+    m.innerHTML = '<div class="es-card" role="dialog" aria-modal="true" aria-label="합치기"><div class="es-chd"><b>합쳤어요!</b><button type="button" class="tl-btn es-x" data-a="close">닫기</button></div><div class="es-ctext es-solo es-comb"><div class="es-mbud" hidden></div><div class="es-cmb"><span>' + ART.item(R.items[a].k, R.items[a].c) + '<small>' + esc(R.items[a].nm) + '</small></span><b>+</b><span>' + ART.item(R.items[b].k, R.items[b].c) + '<small>' + esc(R.items[b].nm) + '</small></span><b>=</b><span class="es-cmk">' + ART.item(it.k, it.c) + '<small>' + esc(it.nm) + '</small></span></div><p class="es-look">' + frac(c.msg || (jo(it.nm, '이', '가') + ' 되었어요!')) + '</p></div></div>';
+    m.hidden = false; var x = m.querySelector('.es-x'); if (x) x.focus({ preventScroll: true }); st.lp = sec(); fl('comb', { mood: 'joy' });
   }
   function nextStep() {
     for (var i = 0; i < R.flow.length; i++) {
@@ -4906,6 +5194,7 @@ window.TOOL = function (host, api) {
   function where() {
     st.hints++; var next = nextStep();
     draw();
+    var say = function (t) { buddy('momo', t.replace(/^힌트: /, ''), { hint: true, ms: 9000 }) };
     if (next.comb) { say('힌트: 가방의 <b>' + esc(R.items[next.comb.a].nm) + '</b>' + jo(R.items[next.comb.a].nm, '과', '와').slice(-1) + ' <b>' + esc(R.items[next.comb.b].nm) + '</b>' + jo(R.items[next.comb.b].nm, '을', '를').slice(-1) + ' 차례로 눌러 합쳐 봐요.', 'es-hint'); [next.comb.a, next.comb.b].forEach(function (i) { var b = host.querySelector('.es-it[data-it="' + i + '"]'); if (b) b.classList.add('es-pulse2') }); return }
     var top = next; while (top.in) top = OBJ[top.in];
     if (top.scene !== st.scene) { say('힌트: <b>' + esc(jo(SCN[top.scene].nm, '으로', '로')) + '</b> 가 봐요.', 'es-hint'); return }
@@ -4922,18 +5211,29 @@ window.TOOL = function (host, api) {
   function win() {
     st.done = true; stop(); unsave(); var s = st.sec, na = Object.keys(st.ans || {}).length, stars = st.hints <= 2 && st.wrong <= 3 ? 3 : st.hints <= 5 && st.wrong <= 8 ? 2 : 1, code = '';
     try { code = rcode(s) } catch (e) {}
-    host.innerHTML = '<div class="es-win"><svg viewBox="0 0 1000 220" class="es-wcov" aria-hidden="true">' + bg({ wall: '#FFF4D6', floor: '#F2C230' }, 220) + '<g transform="translate(440 14)">' + A.door(120, 172, { c: '초록' }, true) + '</g></svg><p class="es-wroom">' + esc(R.title) + '</p><p class="es-bigt">탈출 성공!</p>' + (team ? '<p class="es-wteam">' + esc(team) + '</p>' : '') + '<p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p><p class="es-outro">' + frac(R.outro) + '</p>'
+    var OD = R.outro_dialog || [];
+    host.innerHTML = '<div class="es-win"><div class="es-whead"><span class="es-wc es-wc-tori">' + CAST.full('tori', 'joy') + '</span><div class="es-wmid"><p class="es-wroom">' + esc(R.title) + '</p><p class="es-bigt">탈출 성공!</p>' + (team ? '<p class="es-wteam">' + esc(team) + '</p>' : '') + '<p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p></div><span class="es-wc es-wc-momo">' + CAST.full('momo', 'joy') + '</span></div>'
+      + (OD.length ? '<div class="es-wlines">' + OD.map(function (x) { return '<p class="es-wline es-wl-' + x[0] + '">' + (CAST.NM[x[0]] ? '<b class="es-bnm">' + CAST.NM[x[0]] + '</b>' : '') + frac(x[1]) + '</p>' }).join('') + '</div>' : '') + '<p class="es-outro">' + frac(R.outro) + '</p>'
       + '<div class="es-stats"><span><small>걸린 시간</small><b>' + mmss(s) + '</b></span><span><small>힌트</small><b>' + st.hints + '번</b></span><span><small>틀린 횟수</small><b>' + st.wrong + '번</b></span></div>'
       + (na ? '<p class="es-wans">정답 보기 ' + na + '번(힌트 ' + na * 3 + '번으로 셈)</p>' : '')
       + (code ? '<div class="es-code"><small>결과 코드</small><b>' + code + '</b></div>' : '') + '<p class="es-when">' + when() + '</p><button type="button" class="es-again" data-a="again">처음부터 다시 하기</button></div>';
     api.bar(''); sfx('win'); confetti(); [].forEach.call(document.querySelectorAll('.es-toast'), function (x) { x.remove() });
+    BUD = null; clearTimeout(BUDT);
+    /* 탈출 뒤 친구 대사를 차례로 읽어 줌(소리 켜짐일 때) — 말하는 친구가 들썩임 */
+    var wi = 0, wn = BN; (function nx() {
+      if (wn !== BN || wi >= OD.length || !st.done) return; var x = OD[wi++], c = host.querySelector('.es-wc-' + x[0]);
+      [].forEach.call(host.querySelectorAll('.es-wc'), function (e) { e.classList.remove('cs-talk') }); if (c) c.classList.add('cs-talk');
+      if (!voice(x[0], frac(x[1]), function () { if (c) c.classList.remove('cs-talk'); setTimeout(nx, 400) })) setTimeout(function () { if (c) c.classList.remove('cs-talk'); nx() }, 1600);
+    })();
   }
   /* 누르기 */
   root.addEventListener('click', function (e) {
     var t = e.target, b = t.closest('button'), g = t.closest('.es-obj');
-    if (b && b.dataset.a === 'snd') { snd = !snd; try { localStorage.setItem(SNDK, snd ? '1' : '0') } catch (er) {} root.querySelectorAll('.es-sndb').forEach(function (x) { x.outerHTML = sndBtn(x.classList.contains('es-sndt')) }); if (snd) sfx('tap'); return }
+    if (st && st.t0 && !(b && b.dataset.a === 'snd')) { hush(); BN++ }
+    if (b && b.dataset.a === 'snd') { snd = !snd; try { localStorage.setItem(SNDK, snd ? '1' : '0') } catch (er) {} root.querySelectorAll('.es-sndb').forEach(function (x) { x.outerHTML = sndBtn(x.classList.contains('es-sndt')) }); if (snd) sfx('tap'); else hush(); if (IN) introShow(); return }
     if (b && b.classList.contains('es-go')) { limit = +root.querySelector('.es-lim').value; team = (root.querySelector('.es-team-in').value || '').trim(); ac(); story(); return }
     if (b && b.dataset.a === 'go' && !st.t0) return begin();
+    if (b && b.dataset.a === 'next' && IN) { IN.i++; return introShow() }
     if (g && g.classList.contains('es-spot')) { sfx('tap'); openObj(g.dataset.o); return }
     var bigw = t.closest('.es-big'); if (bigw && !b) { var cd = bigw.closest('.es-card'); cd.classList.toggle('es-zoom'); bigw.title = cd.classList.contains('es-zoom') ? '그림을 누르면 작게 돌아가요' : '그림을 누르면 더 크게 보여요'; return }
     if (g && !t.closest('.es-modal')) { var o = OBJ[g.dataset.o]; if (st.sel) { var iid = st.sel; if (o.need && !st.used[o.id]) { useItem(o, iid); return } st.sel = null; draw(); toast('여기에는 쓸 수 없어요. 그냥 살펴볼게요') } sfx('tap'); openObj(o.id); return }
@@ -4966,6 +5266,7 @@ window.TOOL = function (host, api) {
       return show(host.querySelector('.es-msg'), '정답: <b>' + (L.t === 'num' ? esc(L.code) : L.code.map(function (v) { return SHN[v] ? shp(v) : esc(v) }).join(L.t === 'dir' ? ' ' : ' → ')) + '</b> — ' + frac(L.sol), true);
     }
   });
+  root.addEventListener('change', function (e) { if (e.target.classList && e.target.classList.contains('es-lim')) { var x = root.querySelector('.es-mlim'); if (x) x.textContent = limTxt(+e.target.value) } });
   function closeM() { try { SS && SS.cancel() } catch (e) {} var m = host.querySelector('.es-modal'); if (m) { m.hidden = true; m.innerHTML = '' } st.open = null; draw() }
   host.addEventListener('keydown', function (e) {
     var g = e.target.closest && e.target.closest('.es-obj'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); g.dispatchEvent(new MouseEvent('click', { bubbles: true })) }
@@ -4981,7 +5282,7 @@ window.TOOL = function (host, api) {
   });
   document.getElementById('esPrint').onclick = function () { document.documentElement.classList.add('es-printing'); var off = function () { document.documentElement.classList.remove('es-printing'); window.removeEventListener('afterprint', off) }; window.addEventListener('afterprint', off); setTimeout(function () { window.print() }, 80) };
   /* 어색한 줄바꿈 막기(2026-11-28 선생님 요청): 글 덩어리의 마지막 띄어쓰기를 붙는 빈칸으로 바꿔, 마지막 줄에 낱말 하나만 남지 않게 함 */
-  var NOB = '.tl-head p,.tl-how li,.tl-how p,.es-intro,.es-steps li,.es-stlines p,.es-look,.es-lq,.es-after p,.es-need p,.es-used,.es-lh p,.es-nbi p,.es-win p,.es-say,.es-msg,.es-peek';
+  var NOB = '.es-mgoal,.es-tips li,.es-bub,.es-wline,.tl-head p,.tl-how li,.tl-how p,.es-intro,.es-steps li,.es-stlines p,.es-look,.es-lq,.es-after p,.es-need p,.es-used,.es-lh p,.es-nbi p,.es-win p,.es-say,.es-msg,.es-peek';
   function nob(root) {
     [].forEach.call((root || document).querySelectorAll(NOB), function (el) {
       var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), ts = [], n; while ((n = w.nextNode())) ts.push(n);

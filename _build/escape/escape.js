@@ -25,13 +25,13 @@ window.TOOL = function (host, api) {
     if (a === '으로' && rl) f = false;
     return s + (f ? a : b);
   }
-  function reset(keep) { st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, ans: {}, lh: {}, done: false, open: null, entry: {}, made: {}, shown: {}, drawn: {} }; stop(); if (!keep) unsave(); draw() }
+  function reset(keep) { BUD = null; stopIntro(); st = { t0: 0, scene: R.scenes[0].id, used: {}, solved: {}, given: {}, seen: {}, inv: [], sel: null, notes: [], hints: 0, wrong: 0, ans: {}, lh: {}, done: false, open: null, entry: {}, made: {}, shown: {}, drawn: {} }; stop(); if (!keep) unsave(); draw() }
   /* 진행 저장(2026-11-28 예비 사용자 팀): 새로 고침·다른 쪽에 갔다 와도 이 탭(sessionStorage)에서 '이어서 하기' — 걸린 시간은 떠나 있던 동안 멈춤 */
   var SVK = 'hj-escape-run:' + (R.id || R.idx);
   function save() { if (!st || !st.t0 || st.done) return; try { var c = JSON.parse(JSON.stringify(st)); c.el = sec(); c.open = null; c.sel = null; sessionStorage.setItem(SVK, JSON.stringify({ st: c, limit: limit, team: team })) } catch (e) {} }
   function unsave() { try { sessionStorage.removeItem(SVK) } catch (e) {} }
   function saved() { try { var v = JSON.parse(sessionStorage.getItem(SVK)); return v && v.st && v.st.t0 && !v.st.done ? v : null } catch (e) { return null } }
-  function resume(v) { st = v.st; limit = v.limit || 0; team = v.team || ''; st.t0 = Date.now() - (st.el || 0) * 1000; delete st.el; st.drawn = {}; st.shown = {}; stop(); tick = setInterval(timer, 1000); draw() }
+  function resume(v) { st = v.st; limit = v.limit || 0; team = v.team || ''; st.t0 = Date.now() - (st.el || 0) * 1000; delete st.el; st.drawn = {}; st.shown = {}; st.lp = sec(); stop(); tick = setInterval(timer, 1000); draw() }
   window.addEventListener('beforeunload', function (e) { if (st && st.t0 && !st.done) { save(); e.preventDefault(); e.returnValue = '' } });
   function stop() { if (tick) clearInterval(tick); tick = null }
   function sec() { return st.t0 ? Math.floor((Date.now() - st.t0) / 1000) : 0 }
@@ -44,7 +44,9 @@ window.TOOL = function (host, api) {
   function nLocks() { var n = 0, d = 0; for (var k in OBJ) if (OBJ[k].lock || OBJ[k].need) { n++; if (ok(OBJ[k])) d++ } return [d, n] }
   function note(title, html) { if (st.notes.some(function (n) { return n.h === html })) return; st.notes.push({ t: title, h: html }) }
   function fig(f) { if (!f) return ''; var w = f.w || 300, h = f.h || 200; return '<svg class="es-fig" viewBox="-12 -24 ' + (w + 24) + ' ' + (h + 36) + '" role="img" aria-label="단서 그림">' + A[f.art](w, h, f.p || {}, f.open) + '</svg>' }
-  function timer() { var el = root.querySelector('.es-time'); if (!el) return; save(); var s = sec(); el.textContent = limit ? '남은 시간 ' + mmss(limit * 60 - s) : '걸린 시간 ' + mmss(s); if (limit && s >= limit * 60 && !st.done) { el.textContent = '시간 끝! 계속 해도 돼요'; el.classList.add('es-over') } }
+  function timer() { var el = root.querySelector('.es-time'); if (!el) return; save(); var s = sec(); el.textContent = limit ? '남은 시간 ' + mmss(limit * 60 - s) : '걸린 시간 ' + mmss(s); if (limit && s >= limit * 60 && !st.done) { el.textContent = '시간 끝! 계속 해도 돼요'; el.classList.add('es-over') }
+    /* 60초 동안 아무것도 못 열면 친구가 '어디를 볼까?'·'힌트 보기'를 권함(힌트로 세지 않음) */
+    if (!st.done && s - (st.lp || 0) >= 60) { st.lp = s; var lo = st.open && OBJ[st.open].lock && !st.solved[st.open] && !(OBJ[st.open].need && !st.used[st.open]); if (lo) buddy('momo', '힌트 보기를 눌러 봐도 돼.'); else fl('idle') } }
   function exitObj() { for (var k in OBJ) if (OBJ[k].go === 'exit') return OBJ[k] }
 
   /* ── 효과음(Web Audio, 누른 뒤에만 만듦) ── */
@@ -82,31 +84,137 @@ window.TOOL = function (host, api) {
   function kov() { try { KOV = SS && SS.getVoices().filter(function (v) { return /^ko/i.test(v.lang) })[0] || null } catch (e) { KOV = null } document.documentElement.classList.toggle('es-ttson', !!KOV) }
   if (SS) { kov(); try { SS.addEventListener('voiceschanged', kov) } catch (e) { SS.onvoiceschanged = kov } }
   function spk() { return '<button type="button" class="es-spk" data-a="speak" aria-label="읽어 주기" title="읽어 주기">' + SPK + '<path d="M15.5 9a4 4 0 0 1 0 6"/></svg></button>' }
-  function speak(el) {
-    if (!SS || !el) return; var c = el.cloneNode(true);
+  function ttsTxt(el) {
+    var c = el.cloneNode(true);
     [].forEach.call(c.querySelectorAll('button'), function (x) { x.remove() });
     [].forEach.call(c.querySelectorAll('.fd-fr'), function (f) { var i = f.querySelectorAll('i'); f.replaceWith(' ' + i[1].textContent + '분의 ' + i[0].textContent + ' ') });
     [].forEach.call(c.querySelectorAll('.es-shp'), function (x) { x.replaceWith(' ' + x.getAttribute('aria-label') + ' ') });
-    var t = c.textContent.replace(/×/g, ' 곱하기 ').replace(/÷/g, ' 나누기 ').replace(/−/g, ' 빼기 ').replace(/\+/g, ' 더하기 ').replace(/=/g, ' 는 ').replace(/ → /g, ', ').replace(/[↑→↓←]/g, function (v) { return ' ' + DIRN[v] + ' ' }).replace(/\s+/g, ' ').trim();
-    try { SS.cancel(); var u = new SpeechSynthesisUtterance(t); u.lang = 'ko-KR'; if (KOV) u.voice = KOV; u.rate = .95; SS.speak(u) } catch (e) {}
+    return c.textContent.replace(/×/g, ' 곱하기 ').replace(/÷/g, ' 나누기 ').replace(/−/g, ' 빼기 ').replace(/\+/g, ' 더하기 ').replace(/=/g, ' 는 ').replace(/ → /g, ', ').replace(/[↑→↓←]/g, function (v) { return ' ' + DIRN[v] + ' ' }).replace(/\s+/g, ' ').trim();
+  }
+  function plainTxt(html) { var d = document.createElement('div'); d.innerHTML = html; return ttsTxt(d) }
+  var UREAD = false, VO = null;
+  function speak(el) {
+    if (!SS || !el) return; var t = ttsTxt(el);
+    try { SS.cancel(); VO = null; var u = new SpeechSynthesisUtterance(t); u.lang = 'ko-KR'; if (KOV) u.voice = KOV; u.rate = .95; UREAD = true; u.onend = u.onerror = function () { UREAD = false }; SS.speak(u) } catch (e) {}
+  }
+  /* ── 함께하는 친구 토리·모모(2026-11-28 선생님: '다른 캐릭터도 나와서 같이 방탈출을 하는 느낌') ──
+     목소리: 브라우저 한국어 목소리로 사람마다 높이·빠르기를 달리(토리 높고 빠르게, 모모 낮고 또박또박). 소리 꺼짐·목소리 없음이면 글만.
+     학생이 누른 읽어 주기(🔊)가 나오는 중이면 친구 목소리는 내지 않음. 학생이 다른 것을 누르면 멈춤(hush). */
+  var VP = { tori: [1.5, 1.08], momo: [.72, .88], nar: [1, .95] };
+  function voice(who, html, cb) {
+    if (!snd || !SS || !KOV || (UREAD && SS.speaking)) return false;
+    try { SS.cancel(); UREAD = false; var u = new SpeechSynthesisUtterance(plainTxt(html)), p = VP[who] || VP.nar; u.lang = 'ko-KR'; u.voice = KOV; u.pitch = p[0]; u.rate = p[1]; VO = u; u.onend = u.onerror = function () { if (VO === u) VO = null; cb && cb() }; SS.speak(u); return true } catch (e) { return false }
+  }
+  function hush() { if (VO) { VO = null; try { SS.cancel() } catch (e) {} } }
+  /* 친구 말풍선: 크게 보기·자물쇠 창이 열려 있으면 창 안 맨 위(.es-mbud)에, 아니면 가방 판 위(.es-bud)에 — 창을 가리지 않게 */
+  var BUD = null, BUDT = null, BN = 0, LI = {}, LINES = {
+    unlock: [['tori', '열렸다! 우리 진짜 잘한다!'], ['momo', '계산이 딱 맞았어.'], ['tori', '우와, 철컥 열렸어!'], ['momo', '단서를 잘 이었구나.'], ['tori', '해냈어! 또 찾아보자!'], ['momo', '좋아, 하나 더 풀었어.']],
+    use: [['tori', '딱 맞는 물건이었어!'], ['momo', '알맞은 곳에 잘 썼어.']],
+    wrong1: [['momo', '괜찮아, 단서를 다시 보자.'], ['tori', '아깝다! 한 번 더 해 보자.'], ['momo', '수첩을 펼쳐 보면 어때?']],
+    wrong2: [['momo', '힌트 보기를 눌러 봐도 돼.'], ['tori', '막히면 힌트를 봐도 괜찮아!']],
+    wrongi: [['tori', '음, 여기엔 안 맞나 봐.'], ['momo', '어디를 볼까?를 눌러 봐도 돼.']],
+    item: [['tori', '좋은 걸 찾았어! 어디에 쓸까?'], ['tori', '가방에 쏙! 잘 챙겨 두자.']],
+    comb: [['momo', '두 조각이 딱 맞았어.'], ['tori', '우와, 합치니까 완성이야!']],
+    idle: [['momo', '어디를 볼까?를 누르면 내가 알려 줄게.'], ['tori', '같이 구석구석 눌러 보자!']]
+  };
+  function pick(k) { var a = LINES[k]; LI[k] = ((LI[k] == null ? -1 : LI[k]) + 1) % a.length; return a[LI[k]] }
+  function buddy(who, html, o) {
+    o = o || {}; var id = ++BN, len = plainTxt(html).length; clearTimeout(BUDT);
+    BUD = { w: who, t: html, m: o.mood || 'base', hint: !!o.hint, id: id, talk: true }; paintBud();
+    var ms = o.ms || Math.max(3600, len * 85 + 1300);
+    var end = function () { if (BUD && BUD.id === id) { BUD.talk = false; paintBud() } };
+    var spoke = voice(who, html, function () { end(); if (BUD && BUD.id === id) BUDT = setTimeout(function () { if (BUD && BUD.id === id) { BUD = null; paintBud() } }, o.hint ? 6000 : 1400) });
+    if (!spoke) setTimeout(end, Math.min(ms - 600, 300 + len * 45));
+    BUDT = setTimeout(function () { if (BUD && BUD.id === id && !(spoke && VO)) { BUD = null; paintBud() } }, ms);
+  }
+  function budFace(w, b) { var on = b && b.w === w; return '<span class="es-bf es-bf-' + w + (on ? ' es-on' + (b.talk ? ' cs-talk' : '') : '') + '">' + CAST.face(w, on ? b.m : 'base') + '</span>' }
+  function budText(b) { return '<b class="es-bnm">' + (b.hint ? '힌트' : CAST.NM[b.w]) + '</b>' + b.t }
+  function budSide(b) {
+    var M = R.mission;
+    return '<div class="es-bfaces">' + budFace('tori', b) + budFace('momo', b) + '</div><p class="es-bub' + (b ? ' es-bub-' + b.w + (b.hint ? ' es-bub-hint' : '') : ' es-bub-idle') + '">' + (b ? budText(b) : '<b class="es-bnm">미션</b>' + frac(M ? M.title : R.title)) + '</p>';
+  }
+  function paintBud() {
+    var m = host.querySelector('.es-modal'), mo = m && !m.hidden, ms = host.querySelector('.es-mbud'), sd = host.querySelector('.es-bud');
+    if (ms) { ms.innerHTML = BUD && mo ? budFace(BUD.w, BUD) + '<p class="es-bub es-bub-' + BUD.w + (BUD.hint ? ' es-bub-hint' : '') + '">' + budText(BUD) + '</p>' : ''; ms.hidden = !(BUD && mo) }
+    if (sd) sd.innerHTML = budSide(BUD && !(mo && ms) ? BUD : null);
+  }
+  function fl(k, o) { var x = pick(k); buddy(x[0], x[1], o) }
+  /* ── 인트로: 첫 장면 그림 위에 영화 자막처럼 한 줄씩(말하는 친구 얼굴 · 타자 치듯 · 목소리), 끝나면 '미션 시작!' ── */
+  var IN = null;
+  function introLines() {
+    if (R.dialog && R.dialog.length) return R.dialog.map(function (x) { return { w: x[0], t: x[1] } });
+    var L = R.story && R.story.length ? R.story : String(R.intro).split(/(?<=[.!?])\s+/);
+    return L.map(function (t) { return { w: 'nar', t: t } });
+  }
+  /* 자막 마지막 줄에 낱말 하나만 남지 않게 마지막 낱말들(일곱 글자까지)을 붙는 빈칸으로 */
+  function glue(t) { t = String(t); var k = t.lastIndexOf(' '); for (var c = 0; c < 3 && k > 0; c++) { t = t.slice(0, k) + '\u00a0' + t.slice(k + 1); if (t.slice(k + 1).replace(/[\s\u00a0*]/g, '').length >= 7) break; k = t.lastIndexOf(' ', k - 1) } return t }
+  function typeIn(p, html, cb) {
+    p.innerHTML = frac(glue(html));
+    var parts = [], w = document.createTreeWalker(p, NodeFilter.SHOW_TEXT), n, ns = []; while ((n = w.nextNode())) ns.push(n);
+    ns.forEach(function (t) { var on = document.createElement('span'), off = document.createElement('span'); off.className = 'es-twoff'; off.textContent = t.nodeValue; t.parentNode.replaceChild(off, t); off.parentNode.insertBefore(on, off); parts.push([on, off]) });
+    if (RM) { parts.forEach(function (x) { x[0].textContent += x[1].textContent; x[1].textContent = '' }); cb && cb(); return null }
+    var k = 0, iv = setInterval(function () {
+      while (k < parts.length && !parts[k][1].textContent) k++;
+      if (k >= parts.length) { clearInterval(iv); cb && cb(); return }
+      var off = parts[k][1], a = Array.from(off.textContent); parts[k][0].textContent += a[0]; off.textContent = a.slice(1).join('');
+    }, 34);
+    return iv;
+  }
+  function moodOf(l) { return l.w === 'tori' ? (/[!?]/.test(l.t) ? 'wow' : 'base') : 'base' }
+  function stopIntro() { if (IN) { clearInterval(IN.iv); clearTimeout(IN.to); clearTimeout(IN.to2); IN.tok++; IN = null } hush() }
+  function introShow() {
+    if (!IN) return; hush(); clearInterval(IN.iv); clearTimeout(IN.to); clearTimeout(IN.to2);
+    var tok = ++IN.tok, i = IN.i, ln = IN.lines[i], sv = host.querySelector('.es-stsv');
+    if (!ln || !sv) return introEnd();
+    if (i >= IN.sl && !IN.slammed) { IN.slammed = 1; sv.classList.add('es-slammed'); sfx('slam') }
+    var sub = host.querySelector('.es-sub'), mood = moodOf(ln);
+    sub.className = 'es-sub es-sub-' + ln.w + (RM ? '' : ' es-subin');
+    host.querySelector('.es-sface').innerHTML = ln.w === 'nar' ? '' : CAST.face(ln.w, mood, 'cs-talk');
+    host.querySelector('.es-swho').textContent = CAST.NM[ln.w] || '';
+    ['tori', 'momo'].forEach(function (w) { var g = sv.querySelector('.es-sc-' + w); if (g) g.classList.toggle('cs-talk', ln.w === w) });
+    var pr = host.querySelector('.es-sprog'); if (pr) pr.textContent = (i + 1) + ' / ' + IN.lines.length;
+    var len = plainTxt(frac(ln.t)).length, quiet = function () { if (IN && IN.tok === tok) { [].forEach.call(host.querySelectorAll('.es-stg .cs-talk'), function (x) { x.classList.remove('cs-talk') }) } };
+    var go = function () { if (IN && IN.tok === tok) { IN.i++; introShow() } };
+    var spoke = false;
+    IN.iv = typeIn(host.querySelector('.es-sline'), ln.t, function () { if (!spoke) quiet() });
+    spoke = voice(ln.w, frac(ln.t), function () { if (!IN || IN.tok !== tok) return; quiet(); clearTimeout(IN.to2); IN.to = setTimeout(go, 650) });
+    IN.to2 = setTimeout(go, (spoke ? len * .25 + 6 : len * .09 + 1.2) * 1000);
+  }
+  function introEnd() { stopIntro(); begin() }
+  /* 미션 시작 알림(누르기를 막지 않음) */
+  function mflash() {
+    var M = R.mission, d = document.createElement('div'); d.className = 'es-mflash'; d.setAttribute('aria-hidden', 'true');
+    d.innerHTML = '<span class="es-mtag">미션 시작!</span><b>' + frac(M ? M.title : R.title) + '</b>';
+    (host.parentNode || host).appendChild(d); setTimeout(function () { d.remove() }, RM ? 1400 : 2300);
   }
   /* 처음 화면 */
+  function limTxt(m) { return m ? '시간 제한 ' + m + '분' : '시간 제한 없음' }
   function startView() {
-    var sv = saved(), lim = (R.g || 3) <= 2 ? 30 : 20;
-    host.innerHTML = '<div class="es-start">' + (sv ? '<div class="es-resume"><p><b>하던 탈출이 있어요.</b> 걸린 시간 ' + mmss(sv.st.el || 0) + (sv.team ? ' · ' + esc(sv.team) : '') + '</p><div class="tl-row"><button type="button" class="tl-btn tl-go" data-a="resume">이어서 하기</button><button type="button" class="tl-btn" data-a="fresh">처음부터</button></div></div>' : '') + '<p class="es-intro">' + frac(R.intro) + '</p>'
+    var sv = saved(), lim = (R.g || 3) <= 2 ? 30 : 20, M = R.mission || { title: R.title, goal: R.intro }, tips = M.tips || [];
+    host.innerHTML = '<div class="es-start">' + (sv ? '<div class="es-resume"><p><b>하던 탈출이 있어요.</b> 걸린 시간 ' + mmss(sv.st.el || 0) + (sv.team ? ' · ' + esc(sv.team) : '') + '</p><div class="tl-row"><button type="button" class="tl-btn tl-go" data-a="resume">이어서 하기</button><button type="button" class="tl-btn" data-a="fresh">처음부터</button></div></div>' : '')
+      + '<section class="es-mission" aria-label="미션"><span class="es-mc es-mc-l">' + CAST.full('tori', 'wow') + '</span><div class="es-mbody"><span class="es-mtag">미션</span><h2 class="es-mtt">' + frac(M.title) + '</h2><p class="es-mgoal">' + frac(M.goal) + '</p>'
+      + '<p class="es-mmeta"><span>자물쇠와 장치 ' + nLocks()[1] + '개</span><span class="es-mlim">' + limTxt(lim) + '</span></p>' + (tips.length ? '<ul class="es-tips">' + tips.map(function (t) { return '<li>' + frac(t) + '</li>' }).join('') + '</ul>' : '') + '</div><span class="es-mc es-mc-r">' + CAST.full('momo', 'base') + '</span></section>'
       + '<ol class="es-steps"><li><span><b>물건을 눌러</b> 크게 살펴봐요</span></li><li><span>단서는 <b>수첩</b>에, 찾은 물건은 <b>가방</b>에 모여요</span></li><li><span>막히면 <b>어디를 볼까?</b>를 눌러요</span></li></ol>'
       + '<div class="es-opts"><label class="es-opt"><span>이름 또는 모둠</span><input class="es-team-in" maxlength="12" placeholder="예: 3번, 1모둠" value="' + esc(team) + '"></label><label class="es-opt"><span>시간 제한</span><select class="es-lim">' + [0, 15, 20, 25, 30, 40].map(function (m) { return '<option value="' + m + '"' + (m === lim ? ' selected' : '') + '>' + (m ? m + '분' : '없음') + '</option>' }).join('') + '</select></label><div class="es-opt"><span>소리</span>' + sndBtn(true) + '</div></div><button type="button" class="tl-btn tl-go es-go">이야기 보고 시작하기</button></div>';
     api.bar('');
   }
-  /* 이야기 장면: 첫 장면 그림 + 쾅 닫히는 문 + 이야기 줄이 하나씩 */
+  /* 이야기 장면: 첫 장면 그림(친구 둘 · 열린 문 → 쾅 닫히는 문과 자물쇠) + 아래 자막 */
   function story() {
-    var ex = exitObj(), lines = R.story && R.story.length ? R.story : String(R.intro).split(/(?<=[.!?])\s+/), dw = 200, dh = 300;
-    var h = '<div class="es-story"><svg class="es-stsv" viewBox="0 0 1000 420" aria-hidden="true">' + bg(SCN[R.scenes[0].id].bg, 420) + '<g class="es-stdoor" transform="translate(400 70)">' + A.door(dw, dh, { c: (ex && ex.p && ex.p.c) || '갈색' }, false) + '</g><g class="es-stlock" transform="translate(470 175)"><rect x="0" y="22" width="60" height="48" rx="9" fill="#F2C230" stroke="#3A2C22" stroke-width="4"/><path d="M12 24V14a18 18 0 0 1 36 0v10" fill="none" stroke="#8A929C" stroke-width="8"/><circle cx="30" cy="44" r="6" fill="#3A2C22"/></g></svg><div class="es-stlines">'
-      + lines.map(function (t, i) { return '<p style="animation-delay:' + (0.6 + i * 1.5) + 's">' + frac(t) + '</p>' }).join('') + '</div><div class="tl-row"><button type="button" class="tl-btn" data-a="go">건너뛰기</button><button type="button" class="tl-btn tl-go es-stgo" data-a="go" style="animation-delay:' + (0.6 + lines.length * 1.5) + 's">탈출 시작!</button></div></div>';
-    host.innerHTML = h; api.bar(''); sfx('slam');
-    var b = host.querySelector('.es-stgo'); if (b) b.focus({ preventScroll: true });
+    var ex = exitObj(), lines = introLines(), dc = (ex && ex.p && ex.p.c) || '갈색', sl = -1;
+    lines.some(function (l, i) { if (/쾅|덜컥|철컥|닫히|닫혔|닫혀|잠겼|잠기|잠갔|잠가|갇혔|갇혀/.test(l.t)) { sl = i; return true } });
+    if (sl < 0) sl = Math.min(1, lines.length - 1);
+    host.innerHTML = '<div class="es-story"><div class="es-stg"><svg class="es-stsv" viewBox="0 0 1000 520" aria-hidden="true">' + bg(SCN[R.scenes[0].id].bg, 520)
+      + '<g class="es-stopen" transform="translate(400 40)">' + A.door(200, 300, { c: dc }, true) + '</g><g class="es-stdoor" transform="translate(400 40)">' + A.door(200, 300, { c: dc }, false) + '</g>'
+      + '<g class="es-stlock" transform="translate(470 145)"><rect x="0" y="22" width="60" height="48" rx="9" fill="#F2C230" stroke="#3A2C22" stroke-width="4"/><path d="M12 24V14a18 18 0 0 1 36 0v10" fill="none" stroke="#8A929C" stroke-width="8"/><circle cx="30" cy="44" r="6" fill="#3A2C22"/></g>'
+      + '<g class="es-sc-tori">' + CAST.full('tori', 'wow', '', 'x="170" y="150" width="190" height="230"') + '</g><g class="es-sc-momo">' + CAST.full('momo', 'base', '', 'x="650" y="154" width="180" height="230"') + '</g></svg>'
+      + '<div class="es-sub" aria-live="polite"><span class="es-sface"></span><div class="es-stx"><b class="es-swho"></b><p class="es-sline"></p></div></div></div>'
+      + '<div class="es-strow"><button type="button" class="tl-btn es-skip es-stgo" data-a="go">건너뛰기</button>' + sndBtn(true) + '<span class="es-sprog"></span><button type="button" class="tl-btn tl-go es-snext" data-a="next">▶ 계속</button></div></div>';
+    api.bar('');
+    IN = { lines: lines, i: 0, sl: sl, tok: 0 };
+    introShow();
+    var b = host.querySelector('.es-snext'); if (b) b.focus({ preventScroll: true });
   }
-  function begin() { st.t0 = Date.now(); tick = setInterval(timer, 1000); draw() }
+  function begin() { stopIntro(); st.t0 = Date.now(); st.lp = 0; tick = setInterval(timer, 1000); draw(); mflash(); setTimeout(function () { if (st.t0 && !st.done && !BUD) buddy('tori', '좋아, 같이 둘러보자!', { mood: 'joy' }) }, RM ? 300 : 1900) }
   function bg(b, H) {
     b = b || {}; H = H || 560; var wall = b.wall || '#F3E3C8', floor = b.floor || '#C9A27A', fy = H * .68, o = '<rect width="1000" height="' + H + '" fill="' + wall + '"/>';
     if (b.deco === 'stripe') for (var x = 0; x < 1000; x += 60) o += '<rect x="' + x + '" y="0" width="30" height="' + fy + '" fill="#000" opacity=".035"/>';
@@ -132,16 +240,17 @@ window.TOOL = function (host, api) {
       var c = st.shown[o.id] || first ? '' : ' es-appear'; st.shown[o.id] = 1; return objG(o, c);
     }).join('') + '</svg><p class="es-say" aria-live="polite">' + (sel ? '<b>' + esc(R.items[sel].nm) + '</b>' + jo(R.items[sel].nm, '을', '를').slice(-1) + ' 들었어요. 쓸 곳을 누르거나, 가방의 다른 물건을 눌러 합쳐 봐요.' : '물건을 눌러 살펴봐요.') + '</p></div>';
     st.drawn[S.id] = 1;
-    h += '<aside class="es-side"><h3>가방</h3><div class="es-inv">' + (st.inv.length ? st.inv.map(function (id) { var it = R.items[id]; return '<button type="button" class="es-it" data-it="' + id + '" aria-pressed="' + (sel === id) + '" title="' + esc(it.de || it.nm) + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') : '<p class="es-empty">상자·서랍에서 찾은 물건이 여기에 들어가요</p>') + '</div>'
+    h += '<aside class="es-side"><div class="es-bud" aria-live="polite">' + budSide(BUD) + '</div><h3>가방</h3><div class="es-inv">' + (st.inv.length ? st.inv.map(function (id) { var it = R.items[id]; return '<button type="button" class="es-it" data-it="' + id + '" aria-pressed="' + (sel === id) + '" title="' + esc(it.de || it.nm) + '">' + ART.item(it.k, it.c) + '<span>' + esc(it.nm) + '</span></button>' }).join('') : '<p class="es-empty">상자·서랍에서 찾은 물건이 여기에 들어가요</p>') + '</div>'
       + '<h3>수첩 <small>' + st.notes.length + '</small></h3><div class="es-notes">' + (st.notes.length ? st.notes.map(function (n, i) { return '<button type="button" class="es-nt" data-nt="' + i + '"><b>' + esc(n.t) + '</b></button>' }).join('') : '<p class="es-empty">단서를 찾으면 여기에 모여요</p>') + '</div></aside></div>';
     h += '<div class="es-modal" hidden></div>';
     host.innerHTML = h; api.bar(top); timer();
     if (st.open) openObj(st.open, true);
+    else paintBud();
   }
   function say(t, cls) { var p = host.querySelector('.es-say'); if (p) { p.innerHTML = t; p.className = 'es-say' + (cls ? ' ' + cls : '') } }
   /* 물건 크게 보기 — 크게 본 그림 안의 숨은 곳(KIDS)도 누를 수 있음 */
   function openObj(id, keep) {
-    var o = OBJ[id], m = host.querySelector('.es-modal'); st.open = id; st.seen[id] = 1;
+    var o = OBJ[id], m = host.querySelector('.es-modal'), firstLook = !st.seen[id], gv = !(o.lock || o.need) && o.give && o.give.length && !st.given[o.id]; st.open = id; st.seen[id] = 1;
     var kids = (KIDS[id] || []).filter(vis), op = ok(o) && (o.lock || o.need);
     /* 연(쓴) 뒤에는 처음 모습 글(잠겨 있어요·열쇠 구멍이 있어요)을 빼고 — 단서 물건(keep)은 그대로 */
     var showLook = o.look && !(op && !o.keep && (o.after || o.need || o.useMsg));
@@ -149,7 +258,7 @@ window.TOOL = function (host, api) {
     var bf = showLook && o.lookFig && o.lookFig.art === o.art ? o.lookFig : null;
     /* 숨은 곳(kids)이 있으면 그 자리가 물건 크기에 맞춰져 있으므로, 단서 그림 설정을 물건 크기로 그려 한 번만 보여 줌 */
     var BW = bf && !kids.length ? (bf.w || 300) : o.w, BH = bf && !kids.length ? (bf.h || 200) : o.h, bigArt = bf ? A[bf.art](BW, BH, bf.p || {}, bf.open) : A[o.art](o.w, o.h, o.p || {}, op);
-    var h = '<div class="es-card' + (BW / BH >= 2.4 ? ' es-wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(o.nm) + '"><div class="es-chd"><b>' + esc(o.nm) + '</b><span>' + (o.in ? '<button type="button" class="tl-btn" data-back="' + o.in + '">◀ ' + esc(OBJ[o.in].nm) + '</button> ' : '') + '<button type="button" class="tl-btn es-x" data-a="close">닫기</button></span></div><div class="es-cbody"><div class="es-bigw"><div class="es-big" title="그림을 누르면 더 크게 보여요"><svg viewBox="-20 -30 ' + (BW + 40) + ' ' + (BH + 50) + '" role="group" aria-label="' + esc(o.nm) + ' 크게 보기"><g class="es-art' + (op && st.fresh === id ? ' es-opening' : '') + '">' + bigArt + '</g>' + kids.map(function (k) { return objG(k, ' es-spot' + (st.seen[k.id] ? '' : ' es-new')) }).join('') + '</svg></div>' + (kids.length ? '<p class="es-peek">그림 속 작은 곳도 눌러 볼 수 있어요.</p>' : '') + '</div><div class="es-ctext">';
+    var h = '<div class="es-card' + (BW / BH >= 2.4 ? ' es-wide' : '') + '" role="dialog" aria-modal="true" aria-label="' + esc(o.nm) + '"><div class="es-chd"><b>' + esc(o.nm) + '</b><span>' + (o.in ? '<button type="button" class="tl-btn" data-back="' + o.in + '">◀ ' + esc(OBJ[o.in].nm) + '</button> ' : '') + '<button type="button" class="tl-btn es-x" data-a="close">닫기</button></span></div><div class="es-cbody"><div class="es-bigw"><div class="es-big" title="그림을 누르면 더 크게 보여요"><svg viewBox="-20 -30 ' + (BW + 40) + ' ' + (BH + 50) + '" role="group" aria-label="' + esc(o.nm) + ' 크게 보기"><g class="es-art' + (op && st.fresh === id ? ' es-opening' : '') + '">' + bigArt + '</g>' + kids.map(function (k) { return objG(k, ' es-spot' + (st.seen[k.id] ? '' : ' es-new')) }).join('') + '</svg></div>' + (kids.length ? '<p class="es-peek">그림 속 작은 곳도 눌러 볼 수 있어요.</p>' : '') + '</div><div class="es-ctext"><div class="es-mbud" hidden></div>';
     st.fresh = null;
     if (o.need && st.used[o.id] && o.useMsg && !(o.lock && st.solved[o.id])) h += '<p class="es-used">' + frac(o.useMsg) + '</p>';
     if (showLook) { h += '<p class="es-look">' + spk() + frac(o.look) + '</p>' + (bf ? '' : fig(o.lookFig)); if (o.keep) note(o.nm, '<p>' + frac(o.look) + '</p>' + fig(o.lookFig)) }
@@ -161,6 +270,10 @@ window.TOOL = function (host, api) {
     m.innerHTML = h; m.hidden = false;
     if (!keep) { var f = m.querySelector('.es-dial button, .es-it, .es-x'); if (f) f.focus({ preventScroll: true }) }
     if (!(o.lock || o.need) && o.give) give(o);
+    /* 친구 한마디: 처음 볼 때 그 물건의 say, 없으면 물건을 얻었을 때 */
+    if (firstLook && o.say && !keep) buddy(o.say[0], frac(o.say[1]), { mood: o.say[0] === 'tori' ? 'wow' : 'base' });
+    else if (gv && !keep) fl('item', { mood: 'joy' });
+    else paintBud();
   }
   function give(o) { if (st.given[o.id]) return; st.given[o.id] = 1; (o.give || []).forEach(function (iid) { if (st.inv.indexOf(iid) < 0) st.inv.push(iid) }); if (o.give && o.give.length) { toast('가방에 넣었어요: ' + o.give.map(function (i) { return R.items[i].nm }).join(', ')); setTimeout(function () { sfx('pick') }, 350) } }
   function done(o) {
@@ -199,17 +312,23 @@ window.TOOL = function (host, api) {
     if (t === 'color') return '<i class="es-sw" style="background:' + ART.c(v) + '"></i>';
     return esc(v);
   }
+  /* 열린 뒤 친구 한마디: 새 장소가 열렸으면 그 이야기, 아니면 축하 */
+  function cheer(before, k) {
+    var now = openScenes(), nw = R.scenes.filter(function (s) { return now[s.id] && !before[s.id] })[0];
+    if (nw) buddy('tori', '새로운 곳이 열렸어! <b>' + esc(nw.nm) + '</b>에 가 보자!', { mood: 'wow' }); else fl(k, { mood: 'joy' });
+  }
   function hc() { var el = root.querySelector('.es-hc'); if (el) el.textContent = '힌트 ' + st.hints + ' · 틀림 ' + st.wrong }
   function tryLock(o) {
     var L = o.lock, e = st.entry[o.id], got = L.t === 'num' ? e.join('') : e.join(','), want = L.t === 'num' ? L.code : L.code.join(','), msg = host.querySelector('.es-msg');
     if (L.t === 'dir' && !e.length) { show(msg, '화살표를 먼저 눌러요.'); return }
     if (L.t !== 'num' && (L.t !== 'dir' || LOW) && e.length < L.code.length) { show(msg, '칸을 모두 채워요(' + L.code.length + '칸).'); return }
-    if (got === want) { st.solved[o.id] = 1; sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true; fx('unlock', jo(o.nm, '이', '가') + ' 열렸어요!', function () { st.fresh = k; give(o); draw(); openObj(k) }); save(); return }
+    if (got === want) { var bs = openScenes(); st.solved[o.id] = 1; st.lp = sec(); sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true; fx('unlock', jo(o.nm, '이', '가') + ' 열렸어요!', function () { st.fresh = k; give(o); draw(); openObj(k); cheer(bs, 'unlock') }); save(); return }
     st.wrong++; sfx(0);
     /* 틀린 답을 지운 뒤 자물쇠를 다시 그리고 나서 알림·흔들림을 넣음(다시 그리면 알림이 지워졌음) */
     if (L.t !== 'num') { st.entry[o.id] = []; refreshLock(o) }
     var card = host.querySelector('.es-lock'); card.classList.remove('es-shake'); void card.offsetWidth; card.classList.add('es-shake');
     show(host.querySelector('.es-msg'), '열리지 않아요. 단서를 다시 살펴봐요.'); hc(); save();
+    st.lw = st.lw || {}; st.lw[o.id] = (st.lw[o.id] || 0) + 1; fl(st.lw[o.id] >= 2 ? 'wrong2' : 'wrong1');
   }
   /* 알림을 보이게: 글을 넣고 창 안에서 그 자리로 스크롤 */
   function show(el, t, html) { if (!el) return; if (html) el.innerHTML = t; else el.textContent = t; try { el.scrollIntoView({ block: 'nearest', behavior: RM ? 'auto' : 'smooth' }) } catch (er) {} }
@@ -217,10 +336,10 @@ window.TOOL = function (host, api) {
   function toast(t) { var d = document.createElement('div'); d.className = 'es-toast'; d.textContent = t; (host.parentNode || host).appendChild(d); setTimeout(function () { d.remove() }, 2200) }
   function useItem(o, iid) {
     if (o.need === iid) {
-      st.used[o.id] = 1; var it = R.items[iid]; if (!it.keep) st.inv = st.inv.filter(function (x) { return x !== iid }); st.sel = null;
+      var bs = openScenes(); st.used[o.id] = 1; st.lp = sec(); var it = R.items[iid]; if (!it.keep) st.inv = st.inv.filter(function (x) { return x !== iid }); st.sel = null;
       sfx(1); var k = o.id; host.querySelector('.es-modal').hidden = true;
       fx('unlock', jo(it.nm, '을', '를') + ' 썼어요!', function () {
-        if (!o.lock) { st.fresh = k; give(o) } draw(); openObj(k);
+        if (!o.lock) { st.fresh = k; give(o) } draw(); openObj(k); cheer(bs, 'use');
       });
     } else {
       /* 합치기 재료(반쪽 등)는 틀림으로 세지 않고 합치라고 알려 줌. 알림은 크게 보기 창 안에 */
@@ -230,6 +349,7 @@ window.TOOL = function (host, api) {
       if (part) { show(um, '<b>' + esc(nm) + '</b>' + jo(nm, '은', '는').slice(-1) + ' 아직 조각이에요. 가방에서 다른 조각과 먼저 합쳐 봐요.', true); sfx('tap') }
       else { st.wrong++; sfx(0); hc(); show(um, '여기에는 <b>' + esc(nm) + '</b>' + jo(nm, '이', '가').slice(-1) + ' 맞지 않아요.', true); var nd = host.querySelector('.es-need'); if (nd) { nd.classList.remove('es-shake'); void nd.offsetWidth; nd.classList.add('es-shake') } }
       if (!um) toast(part ? '다른 조각과 먼저 합쳐 봐요' : '여기에는 ' + jo(nm, '이', '가') + ' 맞지 않아요');
+      if (!part) { st.lw = st.lw || {}; st.lw[o.id] = (st.lw[o.id] || 0) + 1; fl(st.lw[o.id] >= 2 ? 'wrongi' : 'wrong1') }
       save();
     }
   }
@@ -240,8 +360,8 @@ window.TOOL = function (host, api) {
     if (!c) { draw(); toast(jo(R.items[a].nm, '과', '와') + ' ' + jo(R.items[b].nm, '은', '는') + ' 합쳐지지 않아요'); sfx(0); return }
     st.inv = st.inv.filter(function (x) { return x !== a && x !== b }); st.inv.push(c.make); st.made[c.make] = 1; sfx('combine');
     draw(); var m = host.querySelector('.es-modal'), it = R.items[c.make];
-    m.innerHTML = '<div class="es-card" role="dialog" aria-modal="true" aria-label="합치기"><div class="es-chd"><b>합쳤어요!</b><button type="button" class="tl-btn es-x" data-a="close">닫기</button></div><div class="es-ctext es-solo es-comb"><div class="es-cmb"><span>' + ART.item(R.items[a].k, R.items[a].c) + '<small>' + esc(R.items[a].nm) + '</small></span><b>+</b><span>' + ART.item(R.items[b].k, R.items[b].c) + '<small>' + esc(R.items[b].nm) + '</small></span><b>=</b><span class="es-cmk">' + ART.item(it.k, it.c) + '<small>' + esc(it.nm) + '</small></span></div><p class="es-look">' + frac(c.msg || (jo(it.nm, '이', '가') + ' 되었어요!')) + '</p></div></div>';
-    m.hidden = false; var x = m.querySelector('.es-x'); if (x) x.focus({ preventScroll: true });
+    m.innerHTML = '<div class="es-card" role="dialog" aria-modal="true" aria-label="합치기"><div class="es-chd"><b>합쳤어요!</b><button type="button" class="tl-btn es-x" data-a="close">닫기</button></div><div class="es-ctext es-solo es-comb"><div class="es-mbud" hidden></div><div class="es-cmb"><span>' + ART.item(R.items[a].k, R.items[a].c) + '<small>' + esc(R.items[a].nm) + '</small></span><b>+</b><span>' + ART.item(R.items[b].k, R.items[b].c) + '<small>' + esc(R.items[b].nm) + '</small></span><b>=</b><span class="es-cmk">' + ART.item(it.k, it.c) + '<small>' + esc(it.nm) + '</small></span></div><p class="es-look">' + frac(c.msg || (jo(it.nm, '이', '가') + ' 되었어요!')) + '</p></div></div>';
+    m.hidden = false; var x = m.querySelector('.es-x'); if (x) x.focus({ preventScroll: true }); st.lp = sec(); fl('comb', { mood: 'joy' });
   }
   function nextStep() {
     for (var i = 0; i < R.flow.length; i++) {
@@ -254,6 +374,7 @@ window.TOOL = function (host, api) {
   function where() {
     st.hints++; var next = nextStep();
     draw();
+    var say = function (t) { buddy('momo', t.replace(/^힌트: /, ''), { hint: true, ms: 9000 }) };
     if (next.comb) { say('힌트: 가방의 <b>' + esc(R.items[next.comb.a].nm) + '</b>' + jo(R.items[next.comb.a].nm, '과', '와').slice(-1) + ' <b>' + esc(R.items[next.comb.b].nm) + '</b>' + jo(R.items[next.comb.b].nm, '을', '를').slice(-1) + ' 차례로 눌러 합쳐 봐요.', 'es-hint'); [next.comb.a, next.comb.b].forEach(function (i) { var b = host.querySelector('.es-it[data-it="' + i + '"]'); if (b) b.classList.add('es-pulse2') }); return }
     var top = next; while (top.in) top = OBJ[top.in];
     if (top.scene !== st.scene) { say('힌트: <b>' + esc(jo(SCN[top.scene].nm, '으로', '로')) + '</b> 가 봐요.', 'es-hint'); return }
@@ -270,18 +391,29 @@ window.TOOL = function (host, api) {
   function win() {
     st.done = true; stop(); unsave(); var s = st.sec, na = Object.keys(st.ans || {}).length, stars = st.hints <= 2 && st.wrong <= 3 ? 3 : st.hints <= 5 && st.wrong <= 8 ? 2 : 1, code = '';
     try { code = rcode(s) } catch (e) {}
-    host.innerHTML = '<div class="es-win"><svg viewBox="0 0 1000 220" class="es-wcov" aria-hidden="true">' + bg({ wall: '#FFF4D6', floor: '#F2C230' }, 220) + '<g transform="translate(440 14)">' + A.door(120, 172, { c: '초록' }, true) + '</g></svg><p class="es-wroom">' + esc(R.title) + '</p><p class="es-bigt">탈출 성공!</p>' + (team ? '<p class="es-wteam">' + esc(team) + '</p>' : '') + '<p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p><p class="es-outro">' + frac(R.outro) + '</p>'
+    var OD = R.outro_dialog || [];
+    host.innerHTML = '<div class="es-win"><div class="es-whead"><span class="es-wc es-wc-tori">' + CAST.full('tori', 'joy') + '</span><div class="es-wmid"><p class="es-wroom">' + esc(R.title) + '</p><p class="es-bigt">탈출 성공!</p>' + (team ? '<p class="es-wteam">' + esc(team) + '</p>' : '') + '<p class="es-stars" aria-label="별 ' + stars + '개">' + '★★★'.slice(0, stars) + '<i>' + '★★★'.slice(stars) + '</i></p></div><span class="es-wc es-wc-momo">' + CAST.full('momo', 'joy') + '</span></div>'
+      + (OD.length ? '<div class="es-wlines">' + OD.map(function (x) { return '<p class="es-wline es-wl-' + x[0] + '">' + (CAST.NM[x[0]] ? '<b class="es-bnm">' + CAST.NM[x[0]] + '</b>' : '') + frac(x[1]) + '</p>' }).join('') + '</div>' : '') + '<p class="es-outro">' + frac(R.outro) + '</p>'
       + '<div class="es-stats"><span><small>걸린 시간</small><b>' + mmss(s) + '</b></span><span><small>힌트</small><b>' + st.hints + '번</b></span><span><small>틀린 횟수</small><b>' + st.wrong + '번</b></span></div>'
       + (na ? '<p class="es-wans">정답 보기 ' + na + '번(힌트 ' + na * 3 + '번으로 셈)</p>' : '')
       + (code ? '<div class="es-code"><small>결과 코드</small><b>' + code + '</b></div>' : '') + '<p class="es-when">' + when() + '</p><button type="button" class="es-again" data-a="again">처음부터 다시 하기</button></div>';
     api.bar(''); sfx('win'); confetti(); [].forEach.call(document.querySelectorAll('.es-toast'), function (x) { x.remove() });
+    BUD = null; clearTimeout(BUDT);
+    /* 탈출 뒤 친구 대사를 차례로 읽어 줌(소리 켜짐일 때) — 말하는 친구가 들썩임 */
+    var wi = 0, wn = BN; (function nx() {
+      if (wn !== BN || wi >= OD.length || !st.done) return; var x = OD[wi++], c = host.querySelector('.es-wc-' + x[0]);
+      [].forEach.call(host.querySelectorAll('.es-wc'), function (e) { e.classList.remove('cs-talk') }); if (c) c.classList.add('cs-talk');
+      if (!voice(x[0], frac(x[1]), function () { if (c) c.classList.remove('cs-talk'); setTimeout(nx, 400) })) setTimeout(function () { if (c) c.classList.remove('cs-talk'); nx() }, 1600);
+    })();
   }
   /* 누르기 */
   root.addEventListener('click', function (e) {
     var t = e.target, b = t.closest('button'), g = t.closest('.es-obj');
-    if (b && b.dataset.a === 'snd') { snd = !snd; try { localStorage.setItem(SNDK, snd ? '1' : '0') } catch (er) {} root.querySelectorAll('.es-sndb').forEach(function (x) { x.outerHTML = sndBtn(x.classList.contains('es-sndt')) }); if (snd) sfx('tap'); return }
+    if (st && st.t0 && !(b && b.dataset.a === 'snd')) { hush(); BN++ }
+    if (b && b.dataset.a === 'snd') { snd = !snd; try { localStorage.setItem(SNDK, snd ? '1' : '0') } catch (er) {} root.querySelectorAll('.es-sndb').forEach(function (x) { x.outerHTML = sndBtn(x.classList.contains('es-sndt')) }); if (snd) sfx('tap'); else hush(); if (IN) introShow(); return }
     if (b && b.classList.contains('es-go')) { limit = +root.querySelector('.es-lim').value; team = (root.querySelector('.es-team-in').value || '').trim(); ac(); story(); return }
     if (b && b.dataset.a === 'go' && !st.t0) return begin();
+    if (b && b.dataset.a === 'next' && IN) { IN.i++; return introShow() }
     if (g && g.classList.contains('es-spot')) { sfx('tap'); openObj(g.dataset.o); return }
     var bigw = t.closest('.es-big'); if (bigw && !b) { var cd = bigw.closest('.es-card'); cd.classList.toggle('es-zoom'); bigw.title = cd.classList.contains('es-zoom') ? '그림을 누르면 작게 돌아가요' : '그림을 누르면 더 크게 보여요'; return }
     if (g && !t.closest('.es-modal')) { var o = OBJ[g.dataset.o]; if (st.sel) { var iid = st.sel; if (o.need && !st.used[o.id]) { useItem(o, iid); return } st.sel = null; draw(); toast('여기에는 쓸 수 없어요. 그냥 살펴볼게요') } sfx('tap'); openObj(o.id); return }
@@ -314,6 +446,7 @@ window.TOOL = function (host, api) {
       return show(host.querySelector('.es-msg'), '정답: <b>' + (L.t === 'num' ? esc(L.code) : L.code.map(function (v) { return SHN[v] ? shp(v) : esc(v) }).join(L.t === 'dir' ? ' ' : ' → ')) + '</b> — ' + frac(L.sol), true);
     }
   });
+  root.addEventListener('change', function (e) { if (e.target.classList && e.target.classList.contains('es-lim')) { var x = root.querySelector('.es-mlim'); if (x) x.textContent = limTxt(+e.target.value) } });
   function closeM() { try { SS && SS.cancel() } catch (e) {} var m = host.querySelector('.es-modal'); if (m) { m.hidden = true; m.innerHTML = '' } st.open = null; draw() }
   host.addEventListener('keydown', function (e) {
     var g = e.target.closest && e.target.closest('.es-obj'); if (g && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); g.dispatchEvent(new MouseEvent('click', { bubbles: true })) }
@@ -329,7 +462,7 @@ window.TOOL = function (host, api) {
   });
   document.getElementById('esPrint').onclick = function () { document.documentElement.classList.add('es-printing'); var off = function () { document.documentElement.classList.remove('es-printing'); window.removeEventListener('afterprint', off) }; window.addEventListener('afterprint', off); setTimeout(function () { window.print() }, 80) };
   /* 어색한 줄바꿈 막기(2026-11-28 선생님 요청): 글 덩어리의 마지막 띄어쓰기를 붙는 빈칸으로 바꿔, 마지막 줄에 낱말 하나만 남지 않게 함 */
-  var NOB = '.tl-head p,.tl-how li,.tl-how p,.es-intro,.es-steps li,.es-stlines p,.es-look,.es-lq,.es-after p,.es-need p,.es-used,.es-lh p,.es-nbi p,.es-win p,.es-say,.es-msg,.es-peek';
+  var NOB = '.es-mgoal,.es-tips li,.es-bub,.es-wline,.tl-head p,.tl-how li,.tl-how p,.es-intro,.es-steps li,.es-stlines p,.es-look,.es-lq,.es-after p,.es-need p,.es-used,.es-lh p,.es-nbi p,.es-win p,.es-say,.es-msg,.es-peek';
   function nob(root) {
     [].forEach.call((root || document).querySelectorAll(NOB), function (el) {
       var w = document.createTreeWalker(el, NodeFilter.SHOW_TEXT), ts = [], n; while ((n = w.nextNode())) ts.push(n);

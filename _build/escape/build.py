@@ -81,6 +81,7 @@ def check():
                 if c[k] not in r['items']: bad.append(f'{rid}: 합치기의 없는 물건 {c[k]}')
             comb[frozenset((c['a'], c['b']))] = c
         if r.get('story') is not None and not (1 <= len(r['story']) <= 5): bad.append(f'{rid}: 이야기 줄 {len(r["story"])}개')
+        bad += cast_check(r, objs)
         # 따라가 보기
         inv, done, scenes = set(), set(), {r['scenes'][0]['id']}
         def opened(q):
@@ -115,6 +116,26 @@ def check():
             if not any(f in (c['a'] + '+' + c['b'], c['b'] + '+' + c['a']) for f in r['flow']): bad.append(f'{rid}: 합치기 {c["a"]}+{c["b"]}가 flow에 없음')
         locked = [x for x in objs if (objs[x].get('lock') or objs[x].get('need')) and x not in r['flow']]
         if locked: bad.append(f'{rid}: flow에 없는 자물쇠·장치 {locked}')
+    return bad
+
+WARN = []
+def cast_check(r, objs):
+    """미션 카드·인트로 대사·친구 한마디 꼴(2026-11-28): who는 nar/tori/momo, 물건 say는 (tori|momo, 글). 미션이 없으면 경고만"""
+    rid, bad = r['id'], []
+    M = r.get('mission')
+    if M is None: WARN.append(f'{rid}: mission 없음(시작 화면은 intro로 대신)')
+    elif not (isinstance(M, dict) and isinstance(M.get('title'), str) and M['title'].strip() and isinstance(M.get('goal'), str) and M['goal'].strip()): bad.append(f'{rid}: mission에 title·goal 글이 있어야 함')
+    elif not (isinstance(M.get('tips', []), (list, tuple)) and len(M.get('tips', [])) <= 2 and all(isinstance(t, str) and t.strip() for t in M.get('tips', []))): bad.append(f'{rid}: mission tips는 글 0~2개')
+    for key, who in (('dialog', ('nar', 'tori', 'momo')), ('outro_dialog', ('nar', 'tori', 'momo'))):
+        D = r.get(key)
+        if D is None: continue
+        if not isinstance(D, (list, tuple)): bad.append(f'{rid}: {key}는 목록'); continue
+        for i, x in enumerate(D):
+            if not (isinstance(x, (list, tuple)) and len(x) == 2 and x[0] in who and isinstance(x[1], str) and x[1].strip()): bad.append(f'{rid}: {key}[{i}] 꼴이 (nar|tori|momo, 글)이 아님: {x!r}')
+    if r.get('dialog') is not None and not (1 <= len(r['dialog']) <= 9): bad.append(f'{rid}: dialog 줄 {len(r["dialog"])}개(1~9)')
+    for o in objs.values():
+        v = o.get('say')
+        if v is not None and not (isinstance(v, (list, tuple)) and len(v) == 2 and v[0] in ('tori', 'momo') and isinstance(v[1], str) and v[1].strip()): bad.append(f'{rid} {o["id"]}: say 꼴이 (tori|momo, 글)이 아님: {v!r}')
     return bad
 
 def esc(s): return html.escape(str(s))
@@ -174,9 +195,9 @@ def build(r):
         o = dict(o)
         if 'lock' in o: o['lock'] = {k: v for k, v in o['lock'].items() if k != 'chk'}
         return o
-    data = dict(id=r['id'], idx=ORDER.index(r['id']), g=g, title=r['title'], intro=r['intro'], story=r.get('story', []), combine=r.get('combine', []), outro=r['outro'], items=r['items'], flow=r['flow'], scenes=[dict(sc, objs=[strip(o) for o in sc['objs']]) for sc in r['scenes']])
+    data = dict(id=r['id'], idx=ORDER.index(r['id']), g=g, title=r['title'], intro=r['intro'], story=r.get('story', []), mission=r.get('mission'), dialog=r.get('dialog') or [], outro_dialog=r.get('outro_dialog') or [], combine=r.get('combine', []), outro=r['outro'], items=r['items'], flow=r['flow'], scenes=[dict(sc, objs=[strip(o) for o in sc['objs']]) for sc in r['scenes']])
     rep = {'TITLE': r['title'], 'DESC': re.sub(r'\*\*(.+?)\*\*', r'\1', r['intro']), 'ICO': icon(r['ico']), 'SUB': f'추천 {g}학년 · 자물쇠와 장치 {nlock}개', 'MATH': ''.join(f'<span>{esc(x)}</span>' for x in re.sub(r'^추천 \d학년\s*·\s*', '', r['rec']).split('·')), 'GNAV': gnav, 'SHEET': sheet(r),
-           'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/'), 'TOOL': artsrc() + rd(HERE / 'escape.js'), 'SHELL': rd(MT / 'shell.js'),
+           'DATA': json.dumps(data, ensure_ascii=False, separators=(',', ':')).replace('</', '<\\/'), 'TOOL': artsrc() + rd(HERE / 'cast.js') + '\n' + rd(HERE / 'escape.js'), 'SHELL': rd(MT / 'shell.js'),
            'CSS': rd(MT / 'page.css').replace('{ACC}', r['acc']).replace('{TOOLCSS}', rd(HERE / 'escape.css')), 'HEADSNIP': rd(OG / 'head_snip.html'),
            'FOOT': rd(OG / 'foot.html').replace('쉬는 시간에 친구와 함께 즐기는 종이접기 자료입니다.', '수학 문제로 자물쇠를 여는 방탈출 자료입니다.'),
            'HOMEFRAG': rd(OG / 'home.html').replace('{HOME}', '../../index.html')}
@@ -230,6 +251,7 @@ def build_menu():
 
 if __name__ == '__main__':
     bad = check()
+    if WARN: print('[경고] ' + ' / '.join(WARN))
     if bad: print('\n'.join(bad)); sys.exit('수학 방탈출 점검 실패')
     print('수학 방탈출 점검 통과 —', ', '.join(f"{r['title']} 자물쇠·장치 {sum(1 for sc in r['scenes'] for o in sc['objs'] if o.get('lock') or o.get('need'))}개" for r in ROOMS))
     if sys.argv[1:] == ['check']: sys.exit(0)
