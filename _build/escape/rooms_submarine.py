@@ -31,6 +31,7 @@ SB_TANK_ROWS, SB_TANK_PER, SB_L = 3, 5, 125   # 산소 탱크 3줄 × 5개, 탱�
 SB_TANKS = [[{'k': 'jar', 'c': '하늘', 'n': SB_TANK_PER}] for _ in range(SB_TANK_ROWS)]
 SB_O2 = SB_TANK_ROWS * SB_TANK_PER * SB_L     # 1875 L
 SB_BOATS = 8                                  # 탈출정 8대
+SB_ROW_O2 = SB_TANK_PER * SB_L                # 탈출정에 싣는 산소: 선반 한 줄(탱크 5개) 625 L
 SB_GAUGE = [('빨강', '1과 3/5 + 2/5', Fr(8, 5) + Fr(2, 5)), ('노랑', '2/5 + 4/5', Fr(2, 5) + Fr(4, 5)),
             ('초록', '1과 1/5 + 1과 3/5', Fr(6, 5) + Fr(8, 5)), ('파랑', '3/5 + 1과 4/5', Fr(3, 5) + Fr(9, 5))]
 SB_GAUGE_LINES = ['압력 계기판'] + [f'{c}  {e}' for c, e, _ in SB_GAUGE]
@@ -132,7 +133,7 @@ ROOM = dict(
                       ['조타실 비상 사물함에서 찾은 무전 쪽지를 보세요.', '10000이 2개면 20000, 1000이 4개면 4000, 10이 7개면 70이에요.', '20000 + 4000 + 70 = ? 백의 자리와 일의 자리는 0이에요.'],
                       '10000이 2개 → 20000, 1000이 4개 → 4000, 10이 7개 → 70, 모두 24070',
                       chk=lambda: 10000 * 2 + 1000 * 4 + 10 * 7),
-              after=f'치직… "구조 본부입니다! 먼저 조타실에서 잠수함을 구조선 아래로 몰아 주세요. 해치 비밀번호는 **산소를 모두 탈출정 {SB_BOATS}대에 똑같이 나누어 실을 때, 한 대에 싣는 양(L) 뒤에 남는 양(L)을 이어 쓴 수**예요."',
+              after=f'치직… "구조 본부입니다! 먼저 조타실에서 잠수함을 구조선 아래로 몰아 주세요. 탈출정에는 산소 탱크 선반 **한 줄**의 산소를 실어요. 해치 비밀번호는 **그 산소를 탈출정 {SB_BOATS}대에 똑같이 나누어 실을 때, 한 대에 싣는 양(L) 뒤에 남는 양(L)을 이어 쓴 수**예요."',
               guide='무전 쪽지의 큰 수로 무전기 주파수를 맞춰요.'),
             O('chest', '구명 장비 상자', 'chest', 40, 390, 210, 140, dict(c='주황'),
               look='구명조끼와 장비가 든 상자예요. 뚜껑에 모양 단추 네 칸이 있어요.',
@@ -144,11 +145,11 @@ ROOM = dict(
             O('hatch', '탈출 해치', 'door', 820, 190, 150, 250, dict(c='빨강', sign='탈출 해치'), req=['helm'],
               look='바다 위로 나가는 탈출 해치예요. 열쇠 구멍과 숫자판이 있어요.',
               need='key', needMsg='해치에 열쇠 구멍이 있어요.', useMsg='해치 열쇠가 딱 맞아요! 이제 숫자판만 남았어요.',
-              lock=Lk('num', ''.join(map(str, divmod(SB_O2, SB_BOATS))), '숫자판 위 글: **구조 본부가 알려 준 해치 비밀번호**를 넣어요. (몫 세 자리 뒤에 나머지 한 자리)',
-                      ['산소는 모두 몇 L였나요? 기관실 공구 금고의 답을 떠올려 보세요.', f'{SB_O2} ÷ {SB_BOATS}의 몫과 나머지를 구해요. 먼저 8 × 200 = 1600을 빼면 275가 남아요.', '남은 275를 다시 8로 나누어 몫끼리 더해요. 마지막에 8로 더 나눌 수 없이 남는 수가 나머지예요.'],
-                      f'산소 {SB_O2} L ÷ {SB_BOATS} = {SB_O2 // SB_BOATS} … {SB_O2 % SB_BOATS} → {SB_O2 // SB_BOATS}{SB_O2 % SB_BOATS}',
-                      chk=lambda: ''.join(map(str, divmod(SB_L * SB_TANK_ROWS * SB_TANK_PER, SB_BOATS)))),
-              go='exit', after='해치가 열렸어요!', guide='해치 열쇠를 쓰고, 산소 양을 탈출정 수로 나눈 몫과 나머지를 이어 써요.'),
+              lock=Lk('num', ''.join(map(str, divmod(SB_ROW_O2, SB_BOATS))), '숫자판 위 글: **구조 본부가 알려 준 해치 비밀번호**를 넣어요. (몫 두 자리 뒤에 나머지 한 자리)',
+                      ['산소 탱크 선반 한 줄에는 탱크가 몇 개인가요? 탱크마다 산소가 몇 L인지도 보세요.', f'한 줄의 산소는 {SB_L} × {SB_TANK_PER} = {SB_ROW_O2} L예요. 이것을 {SB_BOATS}로 나눈 몫과 나머지를 구해요.', f'{SB_BOATS} × 70 = 560을 빼면 65가 남아요. 65를 다시 {SB_BOATS}로 나누어 몫끼리 더하고, 더 나눌 수 없이 남는 수가 나머지예요.'],
+                      f'한 줄의 산소 {SB_L} × {SB_TANK_PER} = {SB_ROW_O2} L, {SB_ROW_O2} ÷ {SB_BOATS} = {SB_ROW_O2 // SB_BOATS} … {SB_ROW_O2 % SB_BOATS} → {SB_ROW_O2 // SB_BOATS}{SB_ROW_O2 % SB_BOATS}',
+                      chk=lambda: ''.join(map(str, divmod(SB_L * SB_TANK_PER, SB_BOATS)))),
+              go='exit', after='해치가 열렸어요!', guide='해치 열쇠를 쓰고, 선반 한 줄의 산소 양을 탈출정 수로 나눈 몫과 나머지를 이어 써요.'),
         ]),
     ],
     flow=['angles', 'locker', 'chart', 'door', 'tanks', 'safe', 'gauge', 'gnote', 'sdraw', 'valve', 'sonar', 'chest', 'kh1+kh2', 'radio', 'helm', 'hatch'],
